@@ -1,9 +1,9 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include "Configuration.h"
 #include "CopyParam.h"
-//---------------------------------------------------------------------------
+
 class TGUIConfiguration;
 class TStoredSessionList;
 enum TLogView
@@ -17,16 +17,16 @@ enum TInterface
   ifCommander,
   ifExplorer
 };
-//---------------------------------------------------------------------------
+
 extern const intptr_t ccLocal;
 extern const intptr_t ccShowResults;
 extern const intptr_t ccCopyResults;
 extern const intptr_t ccSet;
-//---------------------------------------------------------------------------
+
 const int soRecurse =        0x01;
 const int soSynchronize =    0x02;
 const int soSynchronizeAsk = 0x04;
-//---------------------------------------------------------------------------
+
 class TGUICopyParamType : public TCopyParamType
 {
 NB_DECLARE_CLASS(TGUICopyParamType)
@@ -60,7 +60,7 @@ private:
   bool FQueueNoConfirmation;
   bool FQueueIndividually;
 };
-//---------------------------------------------------------------------------
+
 struct TCopyParamRuleData : public TObject
 {
   UnicodeString HostName;
@@ -70,7 +70,7 @@ struct TCopyParamRuleData : public TObject
 
   void Default();
 };
-//---------------------------------------------------------------------------
+
 class TCopyParamRule : public TObject
 {
 NB_DECLARE_CLASS(TCopyParamRule)
@@ -100,7 +100,7 @@ private:
   inline bool Match(const UnicodeString & Mask,
     const UnicodeString & Value, bool Path, bool Local = true) const;
 };
-//---------------------------------------------------------------------------
+
 class TCopyParamList : public TObject
 {
 friend class TGUIConfiguration;
@@ -154,7 +154,7 @@ private:
   bool CompareItem(intptr_t Index, const TCopyParamType * CopyParam,
     const TCopyParamRule * Rule) const;
 };
-//---------------------------------------------------------------------------
+
 class TGUIConfiguration : public TConfiguration
 {
 NB_DISABLE_COPY(TGUIConfiguration)
@@ -167,7 +167,7 @@ public:
   void SetLocale(LCID Value);
   void SetLocaleSafe(LCID Value);
   virtual HINSTANCE LoadNewResourceModule(LCID Locale,
-    UnicodeString * FileName = nullptr);
+    UnicodeString * AFileName = nullptr);
   HANDLE GetResourceModule();
   // virtual void SetResourceModule(HINSTANCE Instance);
   TStrings * GetLocales();
@@ -288,6 +288,6 @@ private:
   UnicodeString FChecksumAlg;
   intptr_t FSessionReopenAutoIdle;
 };
-//---------------------------------------------------------------------------
+
 TGUIConfiguration * GetGUIConfiguration();
-//---------------------------------------------------------------------------
+

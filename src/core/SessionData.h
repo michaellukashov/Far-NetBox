@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include "Common.h"
@@ -7,10 +7,10 @@
 #include "NamedObjs.h"
 #include "HierarchicalStorage.h"
 #include "Configuration.h"
-//---------------------------------------------------------------------------
+
 #define SET_SESSION_PROPERTY(Property) \
   if (F##Property != Value) { F##Property = Value; Modify(); }
-//---------------------------------------------------------------------------
+
 enum TCipher
 {
   cipWarn,
@@ -90,7 +90,7 @@ enum TFtps
 // has to match SSL_VERSION_XXX constants in AsyncSslSocketLayer.h
 enum TTlsVersion { ssl2 = 2, ssl3 = 3, tls10 = 10, tls11 = 11, tls12 = 12 };
 enum TSessionSource { ssNone, ssStored, ssStoredModified };
-//---------------------------------------------------------------------------
+
 extern const wchar_t CipherNames[CIPHER_COUNT][10];
 extern const wchar_t KexNames[KEX_COUNT][20];
 // extern const wchar_t ProtocolNames[PROTOCOL_COUNT][10];
@@ -122,7 +122,7 @@ extern const wchar_t UrlParamSeparator;
 extern const wchar_t UrlParamValueSeparator;
 extern const UnicodeString UrlHostKeyParamName;
 extern const UnicodeString UrlSaveParamName;
-//---------------------------------------------------------------------------
+
 struct TIEProxyConfig : public TObject
 {
   TIEProxyConfig() :
@@ -138,9 +138,9 @@ struct TIEProxyConfig : public TObject
   intptr_t ProxyPort;
   TProxyMethod ProxyMethod;
 };
-//---------------------------------------------------------------------------
+
 class TStoredSessionList;
-//---------------------------------------------------------------------------
+
 class TSessionData : public TNamedObject
 {
 friend class TStoredSessionList;
@@ -335,7 +335,7 @@ public:
   virtual void Assign(const TPersistent * Source);
   bool ParseUrl(const UnicodeString & Url, TOptions * Options,
     TStoredSessionList * StoredSessions, bool & DefaultsOnly,
-    UnicodeString * FileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
+    UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
   bool ParseOptions(TOptions * Options);
   void ConfigureTunnel(intptr_t PortNumber);
   void RollbackTunnel();
@@ -474,7 +474,7 @@ public:
   void RemoveProtocolPrefix(UnicodeString & HostName) const;
 
 private:
-  uintptr_t GetDefaultVersion() const { return Sysutils::GetCurrentVersionNumber(); }
+  uintptr_t GetDefaultVersion() const { return ::GetCurrentVersionNumber(); }
   TFSProtocol TranslateFSProtocolNumber(intptr_t FSProtocol);
   TFSProtocol TranslateFSProtocol(const UnicodeString & ProtocolID);
   TFtps TranslateFtpEncryptionNumber(intptr_t FtpEncryption);
@@ -617,7 +617,6 @@ private:
   mutable TIEProxyConfig * FIEProxyConfig;
 };
 
-//---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList
 {
 NB_DISABLE_COPY(TStoredSessionList)
@@ -646,7 +645,7 @@ public:
   bool IsFolder(const UnicodeString & Name);
   bool IsWorkspace(const UnicodeString & Name);
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
-    UnicodeString * FileName = nullptr, bool * ProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
+    UnicodeString * AFileName = nullptr, bool * ProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
   bool IsUrl(const UnicodeString & Url);
   bool CanLogin(TSessionData * Data);
   void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);
@@ -680,12 +679,12 @@ private:
     TSessionData * Data, const UnicodeString & Name);
   // void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & APath);
 };
-//---------------------------------------------------------------------------
+
 bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
 uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage);
 UnicodeString GetCodePageAsString(uintptr_t CodePage);
-//---------------------------------------------------------------------------
+
 UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData);
 bool IsSshProtocol(TFSProtocol FSProtocol);
 intptr_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
-//---------------------------------------------------------------------------
+

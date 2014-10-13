@@ -1,8 +1,8 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <Classes.hpp>
-//---------------------------------------------------------------------------
+
 enum TEOLType
 {
   eolLF /* \n */,
@@ -11,7 +11,7 @@ enum TEOLType
 };
 const int cpRemoveCtrlZ = 0x01;
 const int cpRemoveBOM   = 0x02;
-//---------------------------------------------------------------------------
+
 class TFileBuffer : public TObject
 {
 NB_DISABLE_COPY(TFileBuffer)
@@ -40,7 +40,7 @@ public:
 private:
   TMemoryStream * FMemory;
 };
-//---------------------------------------------------------------------------
+
 class TSafeHandleStream : public THandleStream
 {
 public:
@@ -49,6 +49,6 @@ public:
   virtual int64_t Read(void * Buffer, int64_t Count);
   virtual int64_t Write(const void * Buffer, int64_t Count);
 };
-//---------------------------------------------------------------------------
+
 char * EOLToStr(TEOLType EOLType);
-//---------------------------------------------------------------------------
+

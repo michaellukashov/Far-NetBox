@@ -1,9 +1,9 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <map.h>
 #include <Sysutils.hpp>
-//---------------------------------------------------------------------------
+
 enum TModificationFmt
 {
   mfNone,
@@ -11,7 +11,7 @@ enum TModificationFmt
   mfMDY,
   mfFull
 };
-//---------------------------------------------------------------------------
+
 #define SYMLINKSTR L" -> "
 #define PARENTDIRECTORY L".."
 #define THISDIRECTORY L"."
@@ -20,12 +20,12 @@ enum TModificationFmt
 #define FILETYPE_SYMLINK L'L'
 #define FILETYPE_DIRECTORY L'D'
 #define PARTIAL_EXT L".filepart"
-//---------------------------------------------------------------------------
+
 class TTerminal;
 class TRights;
 class TRemoteFileList;
 class THierarchicalStorage;
-//---------------------------------------------------------------------------
+
 class TRemoteToken : public TObject
 {
 public:
@@ -56,7 +56,7 @@ private:
   intptr_t FID;
   bool FIDValid;
 };
-//---------------------------------------------------------------------------
+
 class TRemoteTokenList : public TObject
 {
 public:
@@ -80,7 +80,7 @@ private:
   mutable TNameMap FNameMap;
   mutable TIDMap FIDMap;
 };
-//---------------------------------------------------------------------------
+
 class TRemoteFile : public TPersistent
 {
 NB_DISABLE_COPY(TRemoteFile)
@@ -176,21 +176,21 @@ private:
 private:
   void LoadTypeInfo() const;
 };
-//---------------------------------------------------------------------------
+
 class TRemoteDirectoryFile : public TRemoteFile
 {
 public:
   TRemoteDirectoryFile();
   virtual ~TRemoteDirectoryFile() {}
 };
-//---------------------------------------------------------------------------
+
 class TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
   explicit TRemoteParentDirectory(TTerminal * Terminal);
   virtual ~TRemoteParentDirectory() {}
 };
-//---------------------------------------------------------------------------
+
 class TRemoteFileList : public TObjectList
 {
 friend class TSCPFileSystem;
@@ -218,7 +218,7 @@ public:
   int64_t GetTotalSize();
   TDateTime GetTimestamp() const { return FTimestamp; }
 };
-//---------------------------------------------------------------------------
+
 class TRemoteDirectory : public TRemoteFileList
 {
 friend class TSCPFileSystem;
@@ -252,7 +252,7 @@ private:
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
 };
-//---------------------------------------------------------------------------
+
 class TRemoteDirectoryCache : private TStringList
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -273,10 +273,10 @@ protected:
   virtual void Delete(intptr_t Index);
 
 private:
-  Sysutils::TCriticalSection FSection;
+  TCriticalSection FSection;
   void DoClearFileList(const UnicodeString & Directory, bool SubDirs);
 };
-//---------------------------------------------------------------------------
+
 class TRemoteDirectoryChangesCache : private TStringList
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -305,7 +305,7 @@ private:
 
   intptr_t FMaxSize;
 };
-//---------------------------------------------------------------------------
+
 class TRights : public TObject
 {
 public:
@@ -401,7 +401,7 @@ private:
   UnicodeString FText;
   bool FUnknown;
 };
-//---------------------------------------------------------------------------
+
 enum TValidProperty
 {
   vpRights = 0x1,
@@ -475,13 +475,13 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
 
-  static TRemoteProperties CommonProperties(TStrings * FileList);
+  static TRemoteProperties CommonProperties(TStrings * AFileList);
   static TRemoteProperties ChangedProperties(const TRemoteProperties & OriginalProperties, TRemoteProperties & NewProperties);
 
 public:
   TRemoteProperties & operator=(const TRemoteProperties & other);
 };
-//---------------------------------------------------------------------------
+
 namespace core {
 
 bool IsUnixStyleWindowsPath(const UnicodeString & APath);
@@ -511,10 +511,10 @@ TModificationFmt LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2);
 UnicodeString UserModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
-UnicodeString ModificationStr(const Classes::TDateTime & DateTime,
+UnicodeString ModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
 int FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
   UnicodeString * TypeName = nullptr);
 
 } // namespace core
-//---------------------------------------------------------------------------
+

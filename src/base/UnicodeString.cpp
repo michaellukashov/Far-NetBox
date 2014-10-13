@@ -3,20 +3,23 @@
 #include "UnicodeString.hpp"
 #pragma hdrstop
 
-//------------------------------------------------------------------------------
-
 AnsiString::AnsiString(const AnsiString & rht)
 {
   Init(rht.c_str(), rht.Length());
 }
 
+AnsiString::AnsiString(const RawByteString & Str)
+{
+   Init(Str.c_str(), Str.GetLength());
+}
+
 void AnsiString::Init(const wchar_t * Str, intptr_t Length)
 {
-  intptr_t Size = WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
+  intptr_t Size = ::WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
   if (Length > 0)
   {
     Data.resize(Size + 1);
-    WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1),
+    ::WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1),
       reinterpret_cast<LPSTR>(const_cast<char *>(Data.c_str())), static_cast<int>(Size), nullptr, nullptr);
     Data[Size] = 0;
     Data = Data.c_str();
@@ -45,11 +48,6 @@ void AnsiString::Init(const uint8_t * Str, intptr_t Length)
     memmove(const_cast<char *>(Data.c_str()), Str, Length);
   }
   Data = Data.c_str();
-}
-
-AnsiString::operator UnicodeString() const
-{
-  return UnicodeString(Data.c_str(), Data.size());
 }
 
 intptr_t AnsiString::Pos(wchar_t Ch) const
@@ -155,15 +153,13 @@ void AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
     throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
-//------------------------------------------------------------------------------
-
 void RawByteString::Init(const wchar_t * Str, intptr_t Length)
 {
-  intptr_t Size = WideCharToMultiByte(CP_ACP, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
+  intptr_t Size = ::WideCharToMultiByte(CP_ACP, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
   if (Length > 0)
   {
     Data.resize(Size + 1);
-    WideCharToMultiByte(CP_ACP, 0, Str, static_cast<int>(Length > 0 ? Length : -1),
+    ::WideCharToMultiByte(CP_ACP, 0, Str, static_cast<int>(Length > 0 ? Length : -1),
       reinterpret_cast<LPSTR>(const_cast<uint8_t *>(Data.c_str())), static_cast<int>(Size), nullptr, nullptr);
     Data[Size] = 0;
   }
@@ -285,8 +281,6 @@ RawByteString & RawByteString::operator +=(const char Ch)
   return *this;
 }
 
-//------------------------------------------------------------------------------
-
 UTF8String::UTF8String(const UTF8String & rht)
 {
   Init(rht.c_str(), rht.Length());
@@ -304,11 +298,11 @@ void UTF8String::Init(const wchar_t * Str, intptr_t Length)
 
 void UTF8String::Init(const char * Str, intptr_t Length)
 {
-  intptr_t Size = MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0);
+  intptr_t Size = ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0);
   Data.resize(Size + 1);
   if (Size > 0)
   {
-    MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), static_cast<int>(Size));
+    ::MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), static_cast<int>(Size));
     Data[Size] = 0;
   }
   Data = Data.c_str();
@@ -396,8 +390,6 @@ bool operator !=(const UTF8String & lhs, const UTF8String & rhs)
   return lhs.Data != rhs.Data;
 }
 
-//------------------------------------------------------------------------------
-
 void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
 {
   Data.resize(Length);
@@ -410,41 +402,46 @@ void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
 
 void UnicodeString::Init(const char * Str, intptr_t Length)
 {
-  intptr_t Size = MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0);
+  intptr_t Size = ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0);
   Data.resize(Size + 1);
   if (Size > 0)
   {
-    MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), static_cast<int>(Size));
+    ::MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), static_cast<int>(Size));
     Data[Size] = 0;
   }
   Data = Data.c_str();
 }
 
+UnicodeString::UnicodeString(const AnsiString & Str)
+{
+  Init(Str.c_str(), Str.GetLength());
+}
+
 UnicodeString & UnicodeString::Lower(intptr_t nStartPos, intptr_t nLength)
 {
-  Data = Sysutils::LowerCase(SubString(nStartPos, nLength)).c_str();
+  Data = ::LowerCase(SubString(nStartPos, nLength)).c_str();
   return *this;
 }
 
 UnicodeString & UnicodeString::Upper(intptr_t nStartPos, intptr_t nLength)
 {
-  Data = Sysutils::UpperCase(SubString(nStartPos, nLength)).c_str();
+  Data = ::UpperCase(SubString(nStartPos, nLength)).c_str();
   return *this;
 }
 
 intptr_t UnicodeString::Compare(const UnicodeString & Str) const
 {
-  return Sysutils::AnsiCompare(*this, Str);
+  return ::AnsiCompare(*this, Str);
 }
 
 intptr_t UnicodeString::CompareIC(const UnicodeString & Str) const
 {
-  return Sysutils::AnsiCompareIC(*this, Str);
+  return ::AnsiCompareIC(*this, Str);
 }
 
 intptr_t UnicodeString::ToInt() const
 {
-  return Sysutils::StrToIntDef(*this, 0);
+  return ::StrToIntDef(*this, 0);
 }
 
 UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen)
@@ -455,7 +452,7 @@ UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t
 
 UnicodeString & UnicodeString::Append(const char * lpszAdd, UINT CodePage)
 {
-  Data.append(Sysutils::MB2W(lpszAdd, CodePage).c_str());
+  Data.append(::MB2W(lpszAdd, CodePage).c_str());
   return *this;
 }
 
@@ -480,34 +477,34 @@ UnicodeString UnicodeString::SubStr(intptr_t Pos, intptr_t Len) const
 
 bool UnicodeString::IsDelimiter(const UnicodeString & Chars, intptr_t Pos) const
 {
-  return Sysutils::IsDelimiter(Chars, *this, Pos);
+  return ::IsDelimiter(Chars, *this, Pos);
 }
 
 intptr_t UnicodeString::LastDelimiter(const UnicodeString & Delimiters) const
 {
-  return Sysutils::LastDelimiter(Delimiters, *this);
+  return ::LastDelimiter(Delimiters, *this);
 }
 
 UnicodeString UnicodeString::Trim() const
 {
-  return Sysutils::Trim(*this);
+  return ::Trim(*this);
 }
 
 UnicodeString UnicodeString::TrimLeft() const
 {
-  return Sysutils::TrimLeft(*this);
+  return ::TrimLeft(*this);
 }
 
 UnicodeString UnicodeString::TrimRight() const
 {
-  return Sysutils::TrimRight(*this);
+  return ::TrimRight(*this);
 }
 
 void UnicodeString::sprintf(const wchar_t * fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
-  Data = Sysutils::Format(fmt, args).c_str();
+  Data = ::Format(fmt, args).c_str();
   va_end(args);
 }
 
@@ -600,8 +597,6 @@ void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
     throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
-//------------------------------------------------------------------------------
-
 UnicodeString operator +(const wchar_t lhs, const UnicodeString & rhs)
 {
   return UnicodeString(&lhs, 1) + rhs;
@@ -646,5 +641,3 @@ bool operator !=(const wchar_t * lhs, const UnicodeString & rhs)
 {
   return wcscmp(NullToEmpty(lhs), rhs.Data.c_str()) != 0;
 }
-
-//------------------------------------------------------------------------------

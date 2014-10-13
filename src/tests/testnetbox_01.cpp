@@ -171,7 +171,7 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
     str = strings.GetText();
     BOOST_TEST_MESSAGE(L"str = " << str.c_str());
     BOOST_CHECK_EQUAL(W2MB(str.c_str()).c_str(), "line 0\r\nline 1\r\nline 2\r\n");
-    strings.SetObject(0, NULL);
+    strings.SetObj(0, NULL);
     UnicodeString str = strings.GetString(0);
     BOOST_CHECK_EQUAL(W2MB(str.c_str()), "line 0");
   }
@@ -214,7 +214,7 @@ BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
   TStringList Lines;
   TObject obj1;
   Lines.InsertObject(0, L"line 1", &obj1);
-  BOOST_CHECK(&obj1 == Lines.GetObject(0));
+  BOOST_CHECK(&obj1 == Lines.GetObjject(0));
 }
 
 BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)

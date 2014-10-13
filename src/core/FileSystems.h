@@ -1,9 +1,9 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <SessionInfo.h>
 #include "Exceptions.h"
-//---------------------------------------------------------------------------
+
 class TTerminal;
 class TRights;
 class TRemoteFile;
@@ -12,7 +12,7 @@ class TCopyParamType;
 struct TSpaceAvailable;
 class TFileOperationProgressType;
 class TRemoteProperties;
-//---------------------------------------------------------------------------
+
 enum TFSCommand
 {
   fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
@@ -22,11 +22,11 @@ enum TFSCommand
   fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
   fsAnyCommand, fsReadSymlink, fsChangeProperties, fsMoveFile
 };
-//---------------------------------------------------------------------------
+
 const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
 const int dfForceDelete = 0x04;
-//---------------------------------------------------------------------------
+
 enum TOverwriteMode
 {
   omOverwrite,
@@ -34,11 +34,11 @@ enum TOverwriteMode
   omResume,
   omComplete
 };
-//---------------------------------------------------------------------------
+
 const int tfFirstLevel   = 0x01;
 const int tfAutoResume   = 0x02;
 const int tfNewDirectory = 0x04;
-//---------------------------------------------------------------------------
+
 struct TSinkFileParams : public TObject
 {
 NB_DECLARE_CLASS(TSinkFileParams)
@@ -50,7 +50,7 @@ public:
   uintptr_t Flags;
   bool Skipped;
 };
-//---------------------------------------------------------------------------
+
 struct TFileTransferData : public TObject
 {
 NB_DISABLE_COPY(TFileTransferData)
@@ -72,7 +72,7 @@ public:
   int OverwriteResult;
   bool AutoResume;
 };
-//---------------------------------------------------------------------------
+
 struct TOverwriteFileParams : public TObject
 {
 NB_DECLARE_CLASS(TOverwriteFileParams)
@@ -91,7 +91,7 @@ public:
   TModificationFmt SourcePrecision;
   TModificationFmt DestPrecision;
 };
-//---------------------------------------------------------------------------
+
 struct TOpenRemoteFileParams : public TObject
 {
 NB_DISABLE_COPY(TOpenRemoteFileParams)
@@ -123,7 +123,6 @@ public:
   TOverwriteFileParams * FileParams;
   bool Confirmed;
 };
-//---------------------------------------------------------------------------
 
 /** @brief Interface for custom filesystems
   *
@@ -137,7 +136,6 @@ public:
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;
 };
 
-//---------------------------------------------------------------------------
 class TCustomFileSystem : public TObject, public TFileSystemIntf
 {
 NB_DISABLE_COPY(TCustomFileSystem)
@@ -159,9 +157,9 @@ public:
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action) = 0;
-  virtual bool LoadFilesProperties(TStrings * FileList) = 0;
+  virtual bool LoadFilesProperties(TStrings * AFileList) = 0;
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
-    TStrings * FileList, TStrings * Checksums,
+    TStrings * AFileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) = 0;
   virtual void CopyToLocal(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
@@ -207,4 +205,4 @@ protected:
 
   explicit TCustomFileSystem(TTerminal * ATerminal);
 };
-//---------------------------------------------------------------------------
+

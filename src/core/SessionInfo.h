@@ -1,18 +1,18 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <CoreDefs.hpp>
 
 #include "SessionData.h"
 #include "Interface.h"
-//---------------------------------------------------------------------------
+
 enum TSessionStatus
 {
   ssClosed,
   ssOpening,
   ssOpened
 };
-//---------------------------------------------------------------------------
+
 struct TSessionInfo : public TObject
 {
   TSessionInfo();
@@ -34,7 +34,7 @@ struct TSessionInfo : public TObject
   UnicodeString CertificateFingerprint;
   UnicodeString Certificate;
 };
-//---------------------------------------------------------------------------
+
 enum TFSCapability
 {
   fcUserGroupListing = 0, fcModeChanging, fcGroupChanging,
@@ -51,7 +51,7 @@ enum TFSCapability
   fcSecondaryShell, fcRemoveCtrlZUpload, fcRemoveBOMUpload, fcMoveToQueue,
   fcCount,
 };
-//---------------------------------------------------------------------------
+
 struct TFileSystemInfo : public TObject
 {
   TFileSystemInfo();
@@ -62,7 +62,7 @@ struct TFileSystemInfo : public TObject
   UnicodeString AdditionalInfo;
   bool IsCapable[fcCount];
 };
-//---------------------------------------------------------------------------
+
 class TSessionUI
 {
 //NB_DECLARE_CLASS(TSessionUI)
@@ -74,17 +74,17 @@ public:
     TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual uintptr_t QueryUserException(const UnicodeString & Query,
-    Sysutils::Exception * E, uintptr_t Answers, const TQueryParams * Params,
+    Exception * E, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Results) = 0;
   virtual void DisplayBanner(const UnicodeString & Banner) = 0;
-  virtual void FatalError(Sysutils::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") = 0;
-  virtual void HandleExtendedException(Sysutils::Exception * E) = 0;
+  virtual void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") = 0;
+  virtual void HandleExtendedException(Exception * E) = 0;
   virtual void Closed() = 0;
 };
-//---------------------------------------------------------------------------
+
 // Duplicated in LogMemo.h for design-time-only purposes
 enum TLogLineType
 {
@@ -98,15 +98,15 @@ enum TLogAction
 {
   laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs, laStat
 };
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE2(TCaptureOutputEvent, void,
   const UnicodeString & /* Str */, bool /* StdError */);
 DEFINE_CALLBACK_TYPE3(TCalculatedChecksumEvent, void,
   const UnicodeString & /* FileName */, const UnicodeString & /* Alg */, const UnicodeString & /* Hash */);
-//---------------------------------------------------------------------------
+
 class TSessionActionRecord;
 class TActionLog;
-//---------------------------------------------------------------------------
+
 class TSessionAction : public TObject
 {
 NB_DISABLE_COPY(TSessionAction)
@@ -117,22 +117,22 @@ public:
   void Restart();
 
   void Commit();
-  void Rollback(Sysutils::Exception * E = nullptr);
+  void Rollback(Exception * E = nullptr);
   void Cancel();
 
 protected:
   TSessionActionRecord * FRecord;
 };
-//---------------------------------------------------------------------------
+
 class TFileSessionAction : public TSessionAction
 {
 public:
   explicit TFileSessionAction(TActionLog * Log, TLogAction Action);
   explicit TFileSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & AFileName);
 
-  void FileName(const UnicodeString & AFileName);
+  void SetFileName(const UnicodeString & AFileName);
 };
-//---------------------------------------------------------------------------
+
 class TFileLocationSessionAction : public TFileSessionAction
 {
 public:
@@ -141,21 +141,21 @@ public:
 
   void Destination(const UnicodeString & Destination);
 };
-//---------------------------------------------------------------------------
+
 class TUploadSessionAction : public TFileLocationSessionAction
 {
 public:
   explicit TUploadSessionAction(TActionLog * Log);
 };
-//---------------------------------------------------------------------------
+
 class TDownloadSessionAction : public TFileLocationSessionAction
 {
 public:
   explicit TDownloadSessionAction(TActionLog * Log);
 };
-//---------------------------------------------------------------------------
+
 class TRights;
-//---------------------------------------------------------------------------
+
 class TChmodSessionAction : public TFileSessionAction
 {
 public:
@@ -166,20 +166,20 @@ public:
   void Rights(const TRights & Rights);
   void Recursive();
 };
-//---------------------------------------------------------------------------
+
 class TTouchSessionAction : public TFileSessionAction
 {
 public:
   explicit TTouchSessionAction(TActionLog * Log, const UnicodeString & AFileName,
     const TDateTime & Modification);
 };
-//---------------------------------------------------------------------------
+
 class TMkdirSessionAction : public TFileSessionAction
 {
 public:
   explicit TMkdirSessionAction(TActionLog * Log, const UnicodeString & AFileName);
 };
-//---------------------------------------------------------------------------
+
 class TRmSessionAction : public TFileSessionAction
 {
 public:
@@ -187,14 +187,14 @@ public:
 
   void Recursive();
 };
-//---------------------------------------------------------------------------
+
 class TMvSessionAction : public TFileLocationSessionAction
 {
 public:
   explicit TMvSessionAction(TActionLog * Log, const UnicodeString & AFileName,
     const UnicodeString & Destination);
 };
-//---------------------------------------------------------------------------
+
 class TCallSessionAction : public TSessionAction
 {
 public:
@@ -203,7 +203,7 @@ public:
 
   void AddOutput(const UnicodeString & Output, bool StdError);
 };
-//---------------------------------------------------------------------------
+
 class TLsSessionAction : public TSessionAction
 {
 public:
@@ -211,7 +211,7 @@ public:
 
   void FileList(TRemoteFileList * FileList);
 };
-//---------------------------------------------------------------------------
+
 class TStatSessionAction : public TFileSessionAction
 {
 public:
@@ -219,10 +219,10 @@ public:
 
   void File(TRemoteFile * AFile);
 };
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE2(TDoAddLogEvent, void,
   TLogLineType, const UnicodeString &);
-//---------------------------------------------------------------------------
+
 class TSessionLog : protected TStringList
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -236,7 +236,7 @@ public:
   HIDESBASE void Add(TLogLineType Type, const UnicodeString & Line);
   void AddSystemInfo();
   void AddStartupInfo();
-  void AddException(Sysutils::Exception * E);
+  void AddException(Exception * E);
   void AddSeparator();
 
   virtual void Clear();
@@ -284,7 +284,7 @@ protected:
 private:
   TConfiguration * FConfiguration;
   TSessionLog * FParent;
-  Sysutils::TCriticalSection FCriticalSection;
+  TCriticalSection FCriticalSection;
   bool FLogging;
   void * FFile;
   UnicodeString FCurrentLogFileName;
@@ -297,7 +297,7 @@ private:
   bool FClosed;
   TNotifyEvent FOnStateChange;
 };
-//---------------------------------------------------------------------------
+
 class TActionLog : public TObject
 {
 friend class TSessionAction;
@@ -309,7 +309,7 @@ public:
   virtual ~TActionLog();
 
   void ReflectSettings();
-  void AddFailure(Sysutils::Exception * E);
+  void AddFailure(Exception * E);
   void AddFailure(TStrings * Messages);
   void BeginGroup(const UnicodeString & Name);
   void EndGroup();
@@ -330,7 +330,7 @@ protected:
 
 private:
   TConfiguration * FConfiguration;
-  Sysutils::TCriticalSection FCriticalSection;
+  TCriticalSection FCriticalSection;
   bool FLogging;
   void * FFile;
   UnicodeString FCurrentLogFileName;
@@ -345,4 +345,4 @@ private:
 
   void OpenLogFile();
 };
-//---------------------------------------------------------------------------
+

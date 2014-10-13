@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -6,8 +6,6 @@
 #include "Option.h"
 #include "TextsCore.h"
 
-using namespace Sysutils;
-//---------------------------------------------------------------------------
 TOptions::TOptions() :
   FSwitchMarks(L"-/"),
   FSwitchValueDelimiters(L":="),
@@ -15,7 +13,7 @@ TOptions::TOptions() :
   FParamCount(0)
 {
 }
-//---------------------------------------------------------------------------
+
 void TOptions::ParseParams(const UnicodeString & Params)
 {
   UnicodeString Param;
@@ -26,7 +24,7 @@ void TOptions::ParseParams(const UnicodeString & Params)
     Add(Param);
   }
 }
-//---------------------------------------------------------------------------
+
 void TOptions::Add(const UnicodeString & Value)
 {
   if (!FNoMoreSwitches &&
@@ -82,35 +80,35 @@ void TOptions::Add(const UnicodeString & Value)
     }
   }
 }
-//---------------------------------------------------------------------------
-UnicodeString TOptions::GetParam(intptr_t Index)
+
+UnicodeString TOptions::GetParam(intptr_t AIndex)
 {
-  assert((Index >= 1) && (Index <= FParamCount));
+  assert((AIndex >= 1) && (AIndex <= FParamCount));
 
   UnicodeString Result;
-  size_t I = 0;
-  while ((I < FOptions.size()) && (Index > 0))
+  size_t Idx = 0;
+  while ((Idx < FOptions.size()) && (AIndex > 0))
   {
-    if (FOptions[I].Type == otParam)
+    if (FOptions[Idx].Type == otParam)
     {
-      --Index;
-      if (Index == 0)
+      --AIndex;
+      if (AIndex == 0)
       {
-        Result = FOptions[I].Value;
-        FOptions[I].Used = true;
+        Result = FOptions[Idx].Value;
+        FOptions[Idx].Used = true;
       }
     }
-    ++I;
+    ++Idx;
   }
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::GetEmpty() const
 {
   return FOptions.empty();
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::FindSwitch(const UnicodeString & Switch,
   UnicodeString & Value, intptr_t & ParamsStart, intptr_t & ParamsCount)
 {
@@ -125,7 +123,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
     }
     else if (FOptions[Index].Type == otSwitch)
     {
-      if (Sysutils::AnsiSameText(FOptions[Index].Name, Switch))
+      if (::AnsiSameText(FOptions[Index].Name, Switch))
       {
         Found = true;
         Value = FOptions[Index].Value;
@@ -152,14 +150,14 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
 
   return Found;
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value)
 {
   intptr_t ParamsStart;
   intptr_t ParamsCount;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::FindSwitch(const UnicodeString & Switch)
 {
   UnicodeString Value;
@@ -167,7 +165,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch)
   intptr_t ParamsCount;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::FindSwitch(const UnicodeString & Switch,
   TStrings * Params, intptr_t ParamsMax)
 {
@@ -192,7 +190,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TOptions::SwitchValue(const UnicodeString & Switch,
   const UnicodeString & Default)
 {
@@ -204,7 +202,7 @@ UnicodeString TOptions::SwitchValue(const UnicodeString & Switch,
   }
   return Value;
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence)
 {
   bool Result = false;
@@ -218,15 +216,15 @@ bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool Defa
   {
     Result = Default;
   }
-  else if (Sysutils::SameText(Value, L"on"))
+  else if (::SameText(Value, L"on"))
   {
     Result = true;
   }
-  else if (Sysutils::SameText(Value, L"off"))
+  else if (::SameText(Value, L"off"))
   {
     Result = false;
   }
-  else if (Sysutils::TryStrToInt(Value, IntValue))
+  else if (::TryStrToInt(Value, IntValue))
   {
     Result = (IntValue != 0);
   }
@@ -236,12 +234,12 @@ bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool Defa
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default)
 {
   return SwitchValue(Switch, Default, Default);
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::UnusedSwitch(UnicodeString & Switch) const
 {
   bool Result = false;
@@ -259,7 +257,7 @@ bool TOptions::UnusedSwitch(UnicodeString & Switch) const
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TOptions::ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount)
 {
   if (ParamsCount > 0)

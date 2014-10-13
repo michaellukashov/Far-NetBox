@@ -1,35 +1,34 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <CoreDefs.hpp>
 #include <headers.hpp>
 
 #include "Exceptions.h"
-//---------------------------------------------------------------------------
-inline void ThrowExtException() { throw ExtException((Sysutils::Exception *)nullptr, UnicodeString(L"")); }
-#define EXCEPTION throw ExtException(nullptr, L"")
-#define THROWOSIFFALSE(C) { if (!(C)) RaiseLastOSError(); }
+
+inline void ThrowExtException() { throw ExtException((Exception *)nullptr, UnicodeString(L"")); }
+//#define EXCEPTION throw ExtException(nullptr, L"")
+#define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
-#define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
-#define ASCOPY(dest, source) \
-  { \
-    AnsiString CopyBuf = ::W2MB(source).c_str(); \
-    strncpy(dest, CopyBuf.c_str(), LENOF(dest)); \
-    dest[LENOF(dest)-1] = '\0'; \
-  }
-
-#define FORMAT(S, ...) Sysutils::Format(S, ##__VA_ARGS__)
-#define FMTLOAD3(Id, ...) FMTLOAD2(MSG_##Id, ##__VA_ARGS__)
+//#define NULL_TERMINATE(S) S[_countof(S) - 1] = L'\0'
+//#define ASCOPY(dest, source) \
+//  { \
+//    AnsiString CopyBuf = ::W2MB(source).c_str(); \
+//    strncpy(dest, CopyBuf.c_str(), _countof(dest)); \
+//    dest[_countof(dest)-1] = '\0'; \
+//  }
+#define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
+#define FMTLOAD(I, ...) ::FmtLoadStr(I, ##__VA_ARGS__)
+//#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FMTLOAD(MsgId, ...) FMTLOAD3(MsgId, ##__VA_ARGS__)
 #define FMTLOAD2(Id, ...) Sysutils::FmtLoadStr(Id, ##__VA_ARGS__)
-#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 #define SWAP(TYPE, FIRST, SECOND) \
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
-//---------------------------------------------------------------------------
+
 extern const wchar_t EngShortMonthNames[12][4];
 extern const std::string Bom;
 extern const wchar_t TokenPrefix;
@@ -37,7 +36,7 @@ extern const wchar_t NoReplacement;
 extern const wchar_t TokenReplacement;
 extern const UnicodeString LocalInvalidChars;
 extern const UnicodeString PasswordMask;
-//---------------------------------------------------------------------------
+
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B);
 UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);
 void PackStr(UnicodeString & Str);
@@ -54,7 +53,7 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
   wchar_t * Delimiter = nullptr, bool DoubleDelimiterEscapes = false);
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars);
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
-UnicodeString ExceptionLogString(Sysutils::Exception *E);
+UnicodeString ExceptionLogString(Exception *E);
 UnicodeString MainInstructions(const UnicodeString & S);
 UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S);
 bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions);
@@ -127,13 +126,13 @@ UnicodeString ExtractFileBaseName(const UnicodeString & APath);
 TStringList * TextToStringList(const UnicodeString & Text);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
-Sysutils::TFormatSettings GetEngFormatSettings();
+TFormatSettings GetEngFormatSettings();
 //int ParseShortEngMonthName(const UnicodeString & MonthStr);
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
-  const UnicodeString & /* FileName */, const Sysutils::TSearchRec & /* Rec */, void * /* Param */);
-bool FileSearchRec(const UnicodeString & AFileName, Sysutils::TSearchRec & Rec);
-struct TSearchRecChecked : public Sysutils::TSearchRec
+  const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
+bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec);
+struct TSearchRecChecked : public TSearchRec
 {
   UnicodeString Path;
 };
@@ -142,7 +141,7 @@ DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearc
 DWORD FindNextChecked(TSearchRecChecked & F);
 void ProcessLocalDirectory(const UnicodeString & ADirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
-//---------------------------------------------------------------------------
+
 enum TDSTMode
 {
   dstmWin  = 0, //
@@ -174,54 +173,53 @@ intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2);
 intptr_t TimeToMSec(const TDateTime & T);
 intptr_t TimeToSeconds(const TDateTime & T);
 intptr_t TimeToMinutes(const TDateTime & T);
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 class TGuard : public TObject
 {
 NB_DISABLE_COPY(TGuard)
 public:
-  explicit TGuard(const Sysutils::TCriticalSection & ACriticalSection);
+  explicit TGuard(const TCriticalSection & ACriticalSection);
   ~TGuard();
 
 private:
-  const Sysutils::TCriticalSection & FCriticalSection;
+  const TCriticalSection & FCriticalSection;
 };
-//---------------------------------------------------------------------------
+
 class TUnguard : public TObject
 {
 NB_DISABLE_COPY(TUnguard)
 public:
-  explicit TUnguard(Sysutils::TCriticalSection & ACriticalSection);
+  explicit TUnguard(TCriticalSection & ACriticalSection);
   ~TUnguard();
 
 private:
-  Sysutils::TCriticalSection & FCriticalSection;
+  TCriticalSection & FCriticalSection;
 };
-//---------------------------------------------------------------------------
-#define MB_TEXT(x) const_cast<wchar_t *>(MB2W(x).c_str())
-#define CALLSTACK
-#define CCALLSTACK(TRACING)
-#define TRACING
-#undef TRACE
-#define TRACE(MESSAGE)
-#define TRACEFMT(MESSAGE, ...)
-#define CTRACE(TRACING, MESSAGE)
-#define CTRACEFMT(TRACING, MESSAGE, ...)
-//---------------------------------------------------------------------------
+
+#define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())
+//#define CALLSTACK
+//#define CCALLSTACK(TRACING)
+//#define TRACING
+//#undef TRACE
+//#define TRACE(MESSAGE)
+//#define TRACEFMT(MESSAGE, ...)
+//#define CTRACE(TRACING, MESSAGE)
+//#define CTRACEFMT(TRACING, MESSAGE, ...)
+
 #include <assert.h>
-#define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
+//#define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 #ifndef _DEBUG
 #undef assert
 #define assert(p)   ((void)0)
 #define CHECK(p) p
 #define FAIL
-#define TRACE_EXCEPT_BEGIN
-#define TRACE_EXCEPT_END
-#define TRACE_CATCH_ALL catch (...)
-#define CLEAN_INLINE
-#define TRACEE_(E)
-#define TRACEE
-#define TRACE_EXCEPT
+//#define TRACE_EXCEPT_BEGIN
+//#define TRACE_EXCEPT_END
+//#define TRACE_CATCH_ALL catch (...)
+//#define CLEAN_INLINE
+//#define TRACEE_(E)
+//#define TRACEE
+//#define TRACE_EXCEPT
 #define ALWAYS_TRUE(p) p
 #define ALWAYS_FALSE(p) p
 #define NOT_NULL(P) P
@@ -236,7 +234,7 @@ private:
 #ifndef USEDPARAM
 #define USEDPARAM(p) void(p);
 #endif
-//---------------------------------------------------------------------------
+
 template<class T>
 class TValueRestorer : public TObject
 {
@@ -262,7 +260,7 @@ protected:
   T & FTarget;
   T FValue;
 };
-//---------------------------------------------------------------------------
+
 class TAutoNestingCounter : TValueRestorer<int>
 {
 public:
@@ -278,6 +276,6 @@ public:
     assert(FTarget == (FValue + 1));
   }
 };
-//---------------------------------------------------------------------------
+
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
-//---------------------------------------------------------------------------
+

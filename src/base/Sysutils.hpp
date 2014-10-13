@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <WinBase.h>
@@ -7,33 +7,40 @@
 #include <Classes.hpp>
 #include <headers.hpp>
 
-namespace Sysutils {
+enum FileAttributesEnum
+{
+  faReadOnly = 0x00000001,
+  faHidden = 0x00000002,
+  faSysFile = 0x00000004,
+  faVolumeId = 0x00000008,
+  faDirectory = 0x00000010,
+  faArchive = 0x00000020,
+  faSymLink = 0x00000040,
+  faAnyFile = 0x0000003f,
+};
 
-//---------------------------------------------------------------------------
 intptr_t __cdecl debug_printf(const wchar_t * format, ...);
 intptr_t __cdecl debug_printf2(const char * format, ...);
 
 #ifdef NETBOX_DEBUG
 #if defined(_MSC_VER)
-#define DEBUG_PRINTF(format, ...) do { Sysutils::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", Sysutils::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, Sysutils::MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
-#define DEBUG_PRINTF2(format, ...) do { Sysutils::debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(Sysutils::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
+#define DEBUG_PRINTF(format, ...) do { ::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
+#define DEBUG_PRINTF2(format, ...) do { ::debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
 #else
-#define DEBUG_PRINTF(format, ...) do { Sysutils::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", Sysutils::ExtractFilename(MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, Sysutils::MB2W(__FUNCTION__).c_str(), ##__VA_ARGS__); } while (0)
-#define DEBUG_PRINTF2(format, ...) do { Sysutils::debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(Sysutils::ExtractFilename(MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, ##__VA_ARGS__); } while (0)
+#define DEBUG_PRINTF(format, ...) do { ::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ::ExtractFilename(MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), ##__VA_ARGS__); } while (0)
+#define DEBUG_PRINTF2(format, ...) do { ::debug_printf2("NetBox: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, ##__VA_ARGS__); } while (0)
 #endif
 #else
 #define DEBUG_PRINTF(format, ...)
 #define DEBUG_PRINTF2(format, ...)
 #endif
 
-//---------------------------------------------------------------------------
 UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
 AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
-//---------------------------------------------------------------------------
+
 typedef int TDayTable[12];
 extern const TDayTable MonthDays[];
 
-//---------------------------------------------------------------------------
 class Exception : public std::runtime_error, public TObject
 {
 NB_DECLARE_CLASS(Exception)
@@ -54,7 +61,6 @@ protected:
   // UnicodeString FHelpKeyword;
 };
 
-//---------------------------------------------------------------------------
 class EAbort : public Exception
 {
 NB_DECLARE_CLASS(EAbort)
@@ -75,11 +81,9 @@ class EFileNotFoundError : public Exception
 {
 NB_DECLARE_CLASS(EFileNotFoundError)
 public:
-  EFileNotFoundError() : Exception("")
+  EFileNotFoundError() : Exception(L"")
   {}
 };
-
-//---------------------------------------------------------------------------
 
 class EOSError : public Exception
 {
@@ -93,23 +97,11 @@ public:
 };
 
 void RaiseLastOSError(DWORD Result = 0);
-//---------------------------------------------------------------------------
 
 struct TFormatSettings : public TObject
 {
 public:
-  explicit TFormatSettings(int /* LCID */)
-  {
-    CurrencyFormat = 0;
-    NegCurrFormat = 0;
-    ThousandSeparator = 0;
-    DecimalSeparator = 0;
-    CurrencyDecimals = 0;
-    DateSeparator = 0;
-    TimeSeparator = 0;
-    ListSeparator = 0;
-    TwoDigitYearCenturyWindow = 0;
-  }
+  explicit TFormatSettings(int /* LCID */);
   static TFormatSettings Create(int LCID ) { return TFormatSettings(LCID); }
   uint8_t CurrencyFormat;
   uint8_t NegCurrFormat;
@@ -131,13 +123,11 @@ public:
 
 void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings);
 
-//---------------------------------------------------------------------------
-
 UnicodeString ExtractShortPathName(const UnicodeString & APath);
-UnicodeString ExtractDirectory(const UnicodeString & APath, wchar_t Delimiter = '/');
-UnicodeString ExtractFilename(const UnicodeString & APath, wchar_t Delimiter = '/');
-UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimiter = '/');
-UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeString & Ext, wchar_t Delimiter = '/');
+UnicodeString ExtractDirectory(const UnicodeString & APath, wchar_t Delimiter = L'/');
+UnicodeString ExtractFilename(const UnicodeString & APath, wchar_t Delimiter = L'/');
+UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimiter = L'/');
+UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeString & Ext, wchar_t Delimiter = L'/');
 
 UnicodeString IncludeTrailingBackslash(const UnicodeString & Str);
 UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str);
@@ -188,7 +178,6 @@ UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & Fro
 bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t AIndex);
 intptr_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
-//---------------------------------------------------------------------------
 
 intptr_t CompareText(const UnicodeString & Str1, const UnicodeString & Str2);
 intptr_t AnsiCompare(const UnicodeString & Str1, const UnicodeString & Str2);
@@ -202,7 +191,6 @@ bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
 int StringCmp(const wchar_t * S1, const wchar_t * S2);
 int StringCmpI(const wchar_t * S1, const wchar_t * S2);
 
-//---------------------------------------------------------------------------
 UnicodeString IntToStr(intptr_t Value);
 UnicodeString Int64ToStr(int64_t Value);
 intptr_t StrToInt(const UnicodeString & Value);
@@ -212,32 +200,16 @@ int64_t StrToInt64(const UnicodeString & Value);
 int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal);
 bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value);
 
-//---------------------------------------------------------------------------
 double StrToFloat(const UnicodeString & Value);
 double StrToFloatDef(const UnicodeString & Value, double DefVal);
 UnicodeString FormatFloat(const UnicodeString & Format, double Value);
 bool IsZero(double Value);
-//---------------------------------------------------------------------------
+
 TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime);
-//---------------------------------------------------------------------------
 
 int64_t FileRead(HANDLE Handle, void * Buffer, int64_t Count);
 int64_t FileWrite(HANDLE Handle, const void * Buffer, int64_t Count);
 int64_t FileSeek(HANDLE Handle, int64_t Offset, DWORD Origin);
-
-//---------------------------------------------------------------------------
-
-enum FileAttributesEnum
-{
-  faReadOnly = 0x00000001,
-  faHidden = 0x00000002,
-  faSysFile = 0x00000004,
-  faVolumeId = 0x00000008,
-  faDirectory = 0x00000010,
-  faArchive = 0x00000020,
-  faSymLink = 0x00000040,
-  faAnyFile = 0x0000003f,
-};
 
 bool FileExists(const UnicodeString & AFileName);
 bool RenameFile(const UnicodeString & From, const UnicodeString & To);
@@ -252,17 +224,15 @@ bool DeleteFile(const UnicodeString & AFileName);
 bool CreateDir(const UnicodeString & ADir);
 bool RemoveDir(const UnicodeString & ADir);
 
-//---------------------------------------------------------------------------
 UnicodeString Format(const wchar_t * Format, ...);
 UnicodeString Format(const wchar_t * Format, va_list Args);
 AnsiString Format(const char * Format, ...);
 AnsiString Format(const char * Format, va_list Args);
 UnicodeString FmtLoadStr(intptr_t Id, ...);
-//---------------------------------------------------------------------------
+
 UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth = 40);
-//---------------------------------------------------------------------------
+
 UnicodeString TranslateExceptionMessage(Exception * E);
-//---------------------------------------------------------------------------
 
 void AppendWChar(UnicodeString & Str2, const wchar_t Ch);
 void AppendChar(std::string & Str2, const char Ch);
@@ -271,15 +241,12 @@ void AppendPathDelimiterW(UnicodeString & Str);
 
 UnicodeString ExpandEnvVars(const UnicodeString & Str);
 
-//---------------------------------------------------------------------------
-
 UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len);
 
 UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt);
 UnicodeString ExtractFileExt(const UnicodeString & AFileName);
 UnicodeString ExpandUNCFileName(const UnicodeString & AFileName);
 
-//---------------------------------------------------------------------------
 typedef WIN32_FIND_DATA TWin32FindData;
 typedef UnicodeString TFileName;
 
@@ -321,16 +288,13 @@ struct TSearchRec
   TWin32FindData FindData;
 };
 
-//---------------------------------------------------------------------------
-
 DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec);
 DWORD FindNext(TSearchRec & Rec);
 DWORD FindClose(TSearchRec & Rec);
 
-//---------------------------------------------------------------------------
 void InitPlatformId();
 bool Win32Check(bool RetVal);
-//---------------------------------------------------------------------------
+
 class EConvertError : public Exception
 {
 public:
@@ -339,12 +303,11 @@ public:
   {}
 };
 
-//---------------------------------------------------------------------------
 UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath);
-//---------------------------------------------------------------------------
+
 extern int RandSeed;
 extern void Randomize();
-//---------------------------------------------------------------------------
+
 TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears = 1);
 TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths = 1);
 TDateTime IncWeek(const TDateTime & AValue, const Int64 ANumberOfWeeks = 1);
@@ -355,9 +318,6 @@ TDateTime IncSecond(const TDateTime & AValue, const Int64 ANumberOfSeconds = 1);
 TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSeconds = 1);
 
 Boolean IsLeapYear(Word Year);
-
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
 
 class TCriticalSection : public TObject
 {
@@ -374,10 +334,10 @@ private:
   mutable CRITICAL_SECTION FSection;
   mutable int FAcquired;
 };
-//---------------------------------------------------------------------------
+
 UnicodeString StripHotkey(const UnicodeString & AText);
 bool StartsText(const UnicodeString & ASubText, const UnicodeString & AText);
-//---------------------------------------------------------------------------
+
 struct TVersionInfo
 {
   DWORD Major;
@@ -393,9 +353,6 @@ uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
 uintptr_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2,1,21); }
 uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobalFunctions()->GetStrVersionNumber()); }
 
-} // namespace Sysutils
-
-//---------------------------------------------------------------------------
 class ScopeExit
 {
 public:
@@ -411,6 +368,3 @@ private:
 #define SCOPE_EXIT \
   std::function<void()> SCOPE_EXIT_NAME(scope_exit_func_, __LINE__); \
   ScopeExit SCOPE_EXIT_NAME(scope_exit_, __LINE__) = SCOPE_EXIT_NAME(scope_exit_func_, __LINE__) = [&]() /* lambda body here */
-//---------------------------------------------------------------------------
-
-//using namespace Sysutils;

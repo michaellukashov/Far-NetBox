@@ -6,8 +6,6 @@
 #include <nbglobals.h>
 #include "local.hpp"
 
-//------------------------------------------------------------------------------
-
 class RawByteString;
 class UnicodeString;
 class AnsiString;
@@ -18,10 +16,10 @@ class UTF8String
 public:
   UTF8String() {}
   explicit UTF8String(const UTF8String & rht);
+  explicit UTF8String(const UnicodeString & Str);
   UTF8String(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
   UTF8String(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   UTF8String(const char * Str, intptr_t Size) { Init(Str, Size); }
-  explicit UTF8String(const UnicodeString & Str);
 
   ~UTF8String() {}
 
@@ -68,8 +66,6 @@ private:
   wstring_t Data;
 };
 
-//------------------------------------------------------------------------------
-
 class UnicodeString
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -83,7 +79,8 @@ public:
   UnicodeString(intptr_t Size, wchar_t Ch) : Data(Size, Ch) {}
 
   UnicodeString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
-  UnicodeString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
+  explicit UnicodeString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
+  explicit UnicodeString(const AnsiString & Str);
 
   ~UnicodeString() {}
 
@@ -201,7 +198,6 @@ private:
   wstring_t Data;
 };
 
-//------------------------------------------------------------------------------
 class RawByteString;
 
 class AnsiString
@@ -209,7 +205,7 @@ class AnsiString
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   AnsiString() {}
-  explicit AnsiString(const AnsiString & rht);
+  AnsiString(const AnsiString & rht);
   AnsiString(intptr_t Size, char Ch) : Data(Size, Ch) {}
   AnsiString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
   AnsiString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
@@ -217,11 +213,11 @@ public:
   AnsiString(const char * Str, intptr_t Size) { Init(Str, Size); }
   AnsiString(const uint8_t * Str) { Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0); }
   AnsiString(const uint8_t * Str, intptr_t Size) { Init(Str, Size); }
-  AnsiString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
-  AnsiString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
+  explicit AnsiString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
+  explicit AnsiString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
+  explicit AnsiString(const RawByteString & Str);
   ~AnsiString() {}
 
-  operator UnicodeString() const;
   const char * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.size(); }
   intptr_t GetLength() const { return Length(); }
@@ -303,8 +299,6 @@ private:
   string_t Data;
 };
 
-//------------------------------------------------------------------------------
-
 class RawByteString
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -379,28 +373,25 @@ private:
 };
 
 namespace rde {
-//-----------------------------------------------------------------------------
+
 template<typename S>
 bool operator==(const S & lhs, const S & rhs)
 {
   return lhs.Compare(rhs) == 0;
 }
 
-//-----------------------------------------------------------------------------
 template<typename S>
 bool operator!=(const S & lhs, const S & rhs)
 {
   return !(lhs == rhs);
 }
 
-//-----------------------------------------------------------------------------
 template<typename S>
 bool operator<(const S & lhs, const S & rhs)
 {
   return lhs.Compare(rhs) < 0;
 }
 
-//-----------------------------------------------------------------------------
 template<typename S>
 bool operator>(const S & lhs, const S & rhs)
 {
@@ -408,6 +399,4 @@ bool operator>(const S & lhs, const S & rhs)
 }
 
 }  // namespace rde
-
-//------------------------------------------------------------------------------
 

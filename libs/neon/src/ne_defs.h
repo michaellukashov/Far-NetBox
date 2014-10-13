@@ -78,7 +78,7 @@ typedef off_t ne_off_t;
 #endif
 
 #ifndef NE_BUFSIZ
-#define NE_BUFSIZ 64 * 1024
+#define NE_BUFSIZ 2 * 64 * 1024
 #endif
 
 #endif /* NE_DEFS_H */

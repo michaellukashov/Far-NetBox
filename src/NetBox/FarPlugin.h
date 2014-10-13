@@ -8,7 +8,6 @@
 
 #include "Common.h"
 
-//---------------------------------------------------------------------------
 class TCustomFarFileSystem;
 class TFarPanelModes;
 class TFarKeyBarTitles;
@@ -19,9 +18,9 @@ class TFarDialogItem;
 class TFarMessageDialog;
 class TFarEditorInfo;
 class TFarPluginGuard;
-//---------------------------------------------------------------------------
+
 const int MaxMessageWidth = 64;
-//---------------------------------------------------------------------------
+
 enum TFarShiftStatus
 {
   fsNone,
@@ -39,10 +38,10 @@ enum THandlesFunction
   hfProcessEvent
 };
 DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString & /* Text */);
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, intptr_t & /* Result */);
 DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void * /* Token */, uintptr_t /* Result */, bool & /* Close */);
-//---------------------------------------------------------------------------
+
 struct TFarMessageParams : public TObject
 {
   TFarMessageParams();
@@ -60,7 +59,7 @@ struct TFarMessageParams : public TObject
   TFarMessageClickEvent ClickEvent;
   void * Token;
 };
-//---------------------------------------------------------------------------
+
 class TCustomFarPlugin : public TObject
 {
 friend class TCustomFarFileSystem;
@@ -102,7 +101,7 @@ public:
   virtual intptr_t ProcessEditorEvent(int Event, void * Param);
   virtual intptr_t ProcessEditorInput(const INPUT_RECORD * Rec);
 
-  virtual void HandleException(Sysutils::Exception * E, int OpMode = 0);
+  virtual void HandleException(Exception * E, int OpMode = 0);
 
   static wchar_t * DuplicateStr(const UnicodeString & Str, bool AllowEmpty = false);
   intptr_t Message(DWORD Flags, const UnicodeString & Title,
@@ -173,7 +172,7 @@ protected:
   HANDLE FConsoleOutput;
   intptr_t FFarVersion;
   bool FTerminalScreenShowing;
-  Sysutils::TCriticalSection FCriticalSection;
+  TCriticalSection FCriticalSection;
   uintptr_t FFarThread;
   bool FValidFarSystemSettings;
   intptr_t FFarSystemSettings;
@@ -188,7 +187,7 @@ protected:
   virtual intptr_t ProcessEditorEventEx(intptr_t Event, void * Param) = 0;
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;
   virtual void HandleFileSystemException(TCustomFarFileSystem * FarFileSystem,
-    Sysutils::Exception * E, int OpMode = 0);
+    Exception * E, int OpMode = 0);
   void ResetCachedInfo();
   intptr_t MaxLength(TStrings * Strings);
   intptr_t FarMessage(DWORD Flags,
@@ -199,7 +198,7 @@ protected:
     TFarMessageParams * Params);
   void InvalidateOpenPluginInfo();
 
-  const Sysutils::TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
+  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
 
 #ifdef NETBOX_DEBUG
 public:
@@ -228,7 +227,7 @@ private:
       lhs.bottom == rhs.bottom;
   }
 };
-//---------------------------------------------------------------------------
+
 class TCustomFarFileSystem : public TObject
 {
 friend class TFarPanelInfo;
@@ -293,18 +292,18 @@ protected:
   bool IsLeft();
   bool IsRight();
 
-  virtual void HandleException(Sysutils::Exception * E, int OpMode = 0);
+  virtual void HandleException(Exception * E, int OpMode = 0);
 
   const TFarPanelInfo * GetPanelInfo() const { return GetPanelInfo(0); }
   TFarPanelInfo * GetPanelInfo() { return GetPanelInfo(0); }
   const TFarPanelInfo * GetAnotherPanelInfo() const { return GetPanelInfo(1); }
   TFarPanelInfo * GetAnotherPanelInfo() { return GetPanelInfo(1); }
-  const Sysutils::TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
-  Sysutils::TCriticalSection & GetCriticalSection() { return FCriticalSection; }
+  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
+  TCriticalSection & GetCriticalSection() { return FCriticalSection; }
   bool GetOpenPluginInfoValid() const { return FOpenPluginInfoValid; }
 
 protected:
-  Sysutils::TCriticalSection FCriticalSection;
+  TCriticalSection FCriticalSection;
   void InvalidateOpenPluginInfo();
 
 private:
@@ -321,7 +320,7 @@ private:
   const TFarPanelInfo * GetPanelInfo(int Another) const;
   TFarPanelInfo * GetPanelInfo(int Another);
 };
-//---------------------------------------------------------------------------
+
 #define PANEL_MODES_COUNT 10
 class TFarPanelModes : public TObject
 {
@@ -344,7 +343,7 @@ private:
   static void ClearPanelMode(PanelMode & Mode);
   static intptr_t CommaCount(const UnicodeString & ColumnTypes);
 };
-//---------------------------------------------------------------------------
+
 class TFarKeyBarTitles : public TObject
 {
 friend class TCustomFarFileSystem;
@@ -365,7 +364,7 @@ private:
   void FillOpenPluginInfo(struct OpenPluginInfo * Info);
   static void ClearKeyBarTitles(KeyBarTitles & Titles);
 };
-//---------------------------------------------------------------------------
+
 class TCustomFarPanelItem : public TObject
 {
 friend class TCustomFarFileSystem;
@@ -383,7 +382,7 @@ protected:
 
   void FillPanelItem(struct PluginPanelItem * PanelItem);
 };
-//---------------------------------------------------------------------------
+
 class TFarPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TFarPanelItem)
@@ -393,7 +392,7 @@ public:
   virtual ~TFarPanelItem();
 
   uintptr_t GetFlags() const;
-  uintptr_t GetFileAttributes() const;
+  uintptr_t GetFileAttrs() const;
   UnicodeString GetFileName() const;
   void * GetUserData();
   bool GetSelected() const;
@@ -413,7 +412,7 @@ protected:
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
   virtual UnicodeString GetCustomColumnData(size_t Column);
 };
-//---------------------------------------------------------------------------
+
 class THintPanelItem : public TCustomFarPanelItem
 {
 public:
@@ -431,7 +430,7 @@ protected:
 private:
   UnicodeString FHint;
 };
-//---------------------------------------------------------------------------
+
 enum TFarPanelType
 {
   ptFile,
@@ -439,7 +438,7 @@ enum TFarPanelType
   ptQuickView,
   ptInfo
 };
-//---------------------------------------------------------------------------
+
 class TFarPanelInfo : public TObject
 {
 public:
@@ -469,7 +468,7 @@ private:
   TObjectList * FItems;
   TCustomFarFileSystem * FOwner;
 };
-//---------------------------------------------------------------------------
+
 class TFarMenuItems : public TStringList
 {
 public:
@@ -492,12 +491,12 @@ public:
   bool GetFlag(intptr_t Index, uintptr_t Flag) const;
 
 protected:
-  virtual void SetObject(intptr_t Index, TObject * AObject);
+  virtual void SetObj(intptr_t Index, TObject * AObject);
 
 private:
   intptr_t FItemFocused;
 };
-//---------------------------------------------------------------------------
+
 class TFarEditorInfo : public TObject
 {
 public:
@@ -510,25 +509,25 @@ public:
 private:
   EditorInfo * FEditorInfo;
 };
-//---------------------------------------------------------------------------
+
 class TFarEnvGuard : public TObject
 {
 public:
   inline TFarEnvGuard();
   inline ~TFarEnvGuard();
 };
-//---------------------------------------------------------------------------
+
 class TFarPluginEnvGuard : public TObject
 {
 public:
   TFarPluginEnvGuard();
   ~TFarPluginEnvGuard();
 };
-//---------------------------------------------------------------------------
+
 void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth);
-//---------------------------------------------------------------------------
+
 extern TCustomFarPlugin * FarPlugin;
-//------------------------------------------------------------------------------
+
 class TGlobalFunctions : public TGlobalFunctionsIntf, public TObject
 {
 public:
@@ -537,4 +536,4 @@ public:
   virtual UnicodeString GetCurrDirectory() const;
   virtual UnicodeString GetStrVersionNumber() const;
 };
-//------------------------------------------------------------------------------
+

@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -15,35 +15,44 @@
 #include "FarDialog.h"
 #include "XmlStorage.h"
 
-using namespace Sysutils;
-
-//---------------------------------------------------------------------------
-
 TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 {
   return new TWinSCPPlugin(HInst);
 }
 
-//---------------------------------------------------------------------------
-TMessageParams::TMessageParams()
+TMessageParams::TMessageParams() :
+  Flags(0),
+  Aliases(nullptr),
+  AliasesCount(0),
+  Params(0),
+  Timer(0),
+  TimerEvent(nullptr),
+  TimerAnswers(0),
+  Timeout(0),
+  TimeoutAnswer(0)
 {
-  Flags = 0;
-  Aliases = nullptr;
-  AliasesCount = 0;
-  Params = 0;
-  Timer = 0;
-  TimerEvent = nullptr;
-  TimerAnswers = 0;
-  Timeout = 0;
-  TimeoutAnswer = 0;
 }
-//---------------------------------------------------------------------------
+
+void TMessageParams::Assign(const TMessageParams * AParams)
+{
+  Aliases = AParams->Aliases;
+  AliasesCount = AParams->AliasesCount;
+  Flags = AParams->Flags;
+  Params = AParams->Params;
+  Timer = AParams->Timer;
+  TimerEvent = AParams->TimerEvent;
+  TimerMessage = AParams->TimerMessage;
+  TimerAnswers = AParams->TimerAnswers;
+  Timeout = AParams->Timeout;
+  TimeoutAnswer = AParams->TimeoutAnswer;
+}
+
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :
   TCustomFarPlugin(HInst),
   FInitialized(false)
 {
 }
-//---------------------------------------------------------------------------
+
 TWinSCPPlugin::~TWinSCPPlugin()
 {
   if (FInitialized)
@@ -52,29 +61,29 @@ TWinSCPPlugin::~TWinSCPPlugin()
     CoreFinalize();
   }
 }
-//---------------------------------------------------------------------------
+
 bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function)
 {
   return (Function == hfProcessKey || Function == hfProcessEvent);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TWinSCPPlugin::GetMinFarVersion()
 {
   return MAKEFARVERSION(2, 0, 1667);
 }
-//---------------------------------------------------------------------------
+
 void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
 {
   try
   {
     TCustomFarPlugin::SetStartupInfo(Info);
   }
-  catch (Sysutils::Exception & E)
+  catch (Exception & E)
   {
     HandleException(&E);
   }
 }
-//---------------------------------------------------------------------------
+
 void TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
   TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
@@ -96,7 +105,7 @@ void TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
   PluginConfigStrings->Add(GetMsg(PLUGIN_NAME));
   CommandPrefixes->SetCommaText(GetFarConfiguration()->GetCommandPrefixes());
 }
-//---------------------------------------------------------------------------
+
 bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
 {
   bool Change = false;
@@ -195,7 +204,7 @@ bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
 
   return Change;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TWinSCPPlugin::ProcessEditorEventEx(intptr_t Event, void * Param)
 {
   // for performance reasons, do not pass the event to file systems on redraw
@@ -211,7 +220,7 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(intptr_t Event, void * Param)
 
   return 0;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 {
   intptr_t Result = 0;
@@ -228,7 +237,7 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t Item)
 {
   std::unique_ptr<TWinSCPFileSystem> FileSystem(nullptr);
@@ -333,7 +342,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
 
   return FileSystem.release();
 }
-//---------------------------------------------------------------------------
+
 void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
   TOptions * Options)
 {
@@ -357,7 +366,7 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
   }
   CmdLine = CmdLine.SubString(Index, -1);
   // Parse params
-  intptr_t Pos = Sysutils::FirstDelimiter(Options->GetSwitchMarks(), CmdLine);
+  intptr_t Pos = ::FirstDelimiter(Options->GetSwitchMarks(), CmdLine);
   UnicodeString CommandLineParams;
   if (Pos > 0)
     CommandLineParams = CmdLine.SubString(Pos, -1);
@@ -367,7 +376,7 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
     CommandLine = CommandLine.SubString(1, CommandLine.Length() - CommandLineParams.Length()).Trim();
   }
 }
-//---------------------------------------------------------------------------
+
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   std::unique_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
@@ -522,8 +531,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     }
   }
 }
-//---------------------------------------------------------------------------
-void TWinSCPPlugin::ShowExtendedException(Sysutils::Exception * E)
+
+void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
@@ -543,15 +552,15 @@ void TWinSCPPlugin::ShowExtendedException(Sysutils::Exception * E)
     }
   }
 }
-//---------------------------------------------------------------------------
-void TWinSCPPlugin::HandleException(Sysutils::Exception * E, int OpMode)
+
+void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
   {
     ShowExtendedException(E);
   }
 }
-//---------------------------------------------------------------------------
+
 struct TFarMessageData : public TObject
 {
 NB_DECLARE_CLASS(TFarMessageData)
@@ -567,12 +576,12 @@ public:
   uintptr_t Buttons[15 + 1];
   uintptr_t ButtonCount;
 };
-//---------------------------------------------------------------------------
+
 void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
 {
   TFarMessageData & Data = *NB_STATIC_DOWNCAST(TFarMessageData, Token);
 
-  assert(Result != -1 && Result < Data.ButtonCount);
+  assert(Result != (uintptr_t)-1 && Result < Data.ButtonCount);
 
   if ((Data.Params != nullptr) && (Data.Params->Aliases != nullptr))
   {
@@ -588,7 +597,7 @@ void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
   const TMessageParams * Params)
@@ -606,11 +615,20 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   intptr_t TitleId = 0;
   switch (Type)
   {
-    case qtConfirmation: TitleId = MSG_TITLE_CONFIRMATION; break;
-    case qtInformation: TitleId = MSG_TITLE_INFORMATION; break;
-    case qtError: TitleId = MSG_TITLE_ERROR; Flags |= FMSG_WARNING; break;
-    case qtWarning: TitleId = MSG_TITLE_WARNING; Flags |= FMSG_WARNING; break;
-    default: assert(false);
+    case qtConfirmation:
+      TitleId = MSG_TITLE_CONFIRMATION;
+      break;
+    case qtInformation:
+      TitleId = MSG_TITLE_INFORMATION;
+      break;
+    case qtError:
+      TitleId = MSG_TITLE_ERROR; Flags |= FMSG_WARNING;
+      break;
+    case qtWarning:
+      TitleId = MSG_TITLE_WARNING; Flags |= FMSG_WARNING;
+      break;
+    default:
+      assert(false);
   }
   TFarMessageData Data;
   Data.Params = Params;
@@ -657,7 +675,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       } \
       if (NeverAskAgainPending && CANNEVERASK) \
       { \
-        ButtonLabels->SetObject(ButtonLabels->GetCount() - 1, reinterpret_cast<TObject *>((size_t)true)); \
+        ButtonLabels->SetObj(ButtonLabels->GetCount() - 1, reinterpret_cast<TObject *>((size_t)true)); \
         NeverAskAgainPending = false; \
       } \
     }
@@ -754,7 +772,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   }
   else
   {
-    assert(Result != -1 && Result < Data.ButtonCount);
+    assert(Result != (uintptr_t)-1 && Result < Data.ButtonCount);
     Result = Data.Buttons[Result];
   }
 
@@ -766,7 +784,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TWinSCPPlugin::CleanupConfiguration()
 {
   // Check if key Configuration\Version exists
@@ -781,16 +799,16 @@ void TWinSCPPlugin::CleanupConfiguration()
     else
     {
       UnicodeString Version = Storage->ReadString(L"Version", L"");
-      if (Sysutils::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2, 1, 19))
+      if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2, 1, 19))
       {
         Storage->DeleteSubKey(L"CDCache");
       }
     }
-    Storage->WriteStringRaw(L"Version", Sysutils::VersionNumberToStr(Sysutils::GetCurrentVersionNumber()));
+    Storage->WriteStringRaw(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     Storage->CloseSubKey();
   }
 }
-//---------------------------------------------------------------------------
+
 NB_IMPLEMENT_CLASS(TWinSCPPlugin, NB_GET_CLASS_INFO(TCustomFarPlugin), nullptr);
 NB_IMPLEMENT_CLASS(TFarMessageData, NB_GET_CLASS_INFO(TObject), nullptr);
-//---------------------------------------------------------------------------
+

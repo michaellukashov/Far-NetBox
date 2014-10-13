@@ -1,13 +1,12 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
-//---------------------------------------------------------------------------
 enum TOptionType
 {
   otParam,
   otSwitch
 };
-//---------------------------------------------------------------------------
+
 class TOptions : public TObject
 {
 public:
@@ -27,7 +26,7 @@ public:
   bool UnusedSwitch(UnicodeString & Switch) const;
 
   intptr_t GetParamCount() const { return FParamCount; }
-  UnicodeString GetParam(intptr_t Index);
+  UnicodeString GetParam(intptr_t AIndex);
   void Clear() { FOptions.resize(0); FNoMoreSwitches = false; FParamCount = 0; }
   bool GetEmpty() const;
   UnicodeString GetSwitchMarks() const { return FSwitchMarks; }
@@ -54,4 +53,4 @@ private:
   bool FNoMoreSwitches;
   intptr_t FParamCount;
 };
-//---------------------------------------------------------------------------
+

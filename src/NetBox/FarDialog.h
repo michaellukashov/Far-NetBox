@@ -1,12 +1,9 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include "FarPlugin.h"
 
 #define MAX_SIZE -1
-
-
-//---------------------------------------------------------------------------
 
 class TFarDialogContainer;
 class TFarDialogItem;
@@ -21,14 +18,14 @@ enum TItemPosition
   ipBelow,
   ipRight
 };
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE4(TFarKeyEvent, void,
   TFarDialog * /* Sender */, TFarDialogItem * /* Item */, long /* KeyCode */, bool & /* Handled */);
 DEFINE_CALLBACK_TYPE2(TFarMouseClickEvent, void,
   TFarDialogItem * /* Item */, MOUSE_EVENT_RECORD * /* Event */);
 DEFINE_CALLBACK_TYPE2(TFarProcessGroupEvent, void,
   TFarDialogItem * /* Item */, void * /* Arg */);
-//---------------------------------------------------------------------------
+
 class TFarDialog : public TObject
 {
 friend TFarDialogItem;
@@ -148,7 +145,7 @@ private:
   HANDLE FSynchronizeObjects[2];
   TThreadMethod FSynchronizeMethod;
 };
-//---------------------------------------------------------------------------
+
 class TFarDialogContainer : public TObject
 {
 friend TFarDialog;
@@ -184,9 +181,9 @@ private:
   TFarDialog * FDialog;
   bool FEnabled;
 };
-//---------------------------------------------------------------------------
+
 #define DIF_INVERSE 0x00000001UL
-//---------------------------------------------------------------------------
+
 class TFarDialogItem : public TObject
 {
 friend TFarDialog;
@@ -335,7 +332,7 @@ private:
   uint32_t FColors;
   uint32_t FColorMask;
 };
-//---------------------------------------------------------------------------
+
 class TFarBox : public TFarDialogItem
 {
 public:
@@ -346,7 +343,7 @@ public:
   virtual bool GetDouble() const { return GetAlterType(DI_DOUBLEBOX); }
   virtual void SetDouble(bool Value) { SetAlterType(DI_DOUBLEBOX, Value); }
 };
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE2(TFarButtonClickEvent, void,
   TFarButton * /* Sender */, bool & /* Close */);
 enum TFarButtonBrackets
@@ -356,7 +353,7 @@ enum TFarButtonBrackets
   brSpace,
   brNormal
 };
-//---------------------------------------------------------------------------
+
 class TFarButton : public TFarDialogItem
 {
 NB_DECLARE_CLASS(TFarButton)
@@ -389,10 +386,10 @@ private:
   TFarButtonClickEvent FOnClick;
   TFarButtonBrackets FBrackets;
 };
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void,
   TFarDialogItem * /* Sender */, intptr_t /* NewState */, bool & /* AllowChange */);
-//---------------------------------------------------------------------------
+
 class TFarCheckBox : public TFarDialogItem
 {
 public:
@@ -415,7 +412,7 @@ protected:
   virtual bool GetIsEmpty() const;
   virtual void SetData(const UnicodeString & Value);
 };
-//---------------------------------------------------------------------------
+
 class TFarRadioButton : public TFarDialogItem
 {
 public:
@@ -434,7 +431,7 @@ protected:
   virtual bool GetIsEmpty() const;
   virtual void SetData(const UnicodeString & Value);
 };
-//---------------------------------------------------------------------------
+
 class TFarEdit : public TFarDialogItem
 {
 NB_DECLARE_CLASS(TFarEdit)
@@ -468,7 +465,7 @@ private:
   UnicodeString GetHistoryMask(size_t Index) const;
   void SetHistoryMask(size_t Index, const UnicodeString & Value);
 };
-//---------------------------------------------------------------------------
+
 class TFarSeparator : public TFarDialogItem
 {
 public:
@@ -484,7 +481,7 @@ public:
 protected:
   virtual void ResetBounds();
 };
-//---------------------------------------------------------------------------
+
 class TFarText : public TFarDialogItem
 {
 NB_DECLARE_CLASS(TFarText)
@@ -501,11 +498,11 @@ public:
 protected:
   virtual void SetData(const UnicodeString & Value);
 };
-//---------------------------------------------------------------------------
+
 class TFarListBox;
 class TFarComboBox;
 class TFarLister;
-//---------------------------------------------------------------------------
+
 class TFarList : public TStringList
 {
 friend TFarListBox;
@@ -555,14 +552,14 @@ private:
   TFarDialogItem * FDialogItem;
   bool FNoDialogUpdate;
 };
-//---------------------------------------------------------------------------
+
 enum TFarListBoxAutoSelect
 {
   asOnlyFocus,
   asAlways,
   asNever
 };
-//---------------------------------------------------------------------------
+
 class TFarListBox : public TFarDialogItem
 {
 NB_DISABLE_COPY(TFarListBox)
@@ -600,7 +597,7 @@ private:
   TFarListBoxAutoSelect FAutoSelect;
   bool FDenyClose;
 };
-//---------------------------------------------------------------------------
+
 class TFarComboBox : public TFarDialogItem
 {
 NB_DISABLE_COPY(TFarComboBox)
@@ -633,7 +630,7 @@ protected:
 private:
   TFarList * FList;
 };
-//---------------------------------------------------------------------------
+
 class TFarLister : public TFarDialogItem
 {
 NB_DISABLE_COPY(TFarLister)
@@ -658,6 +655,6 @@ private:
   TStringList * FItems;
   intptr_t FTopIndex;
 };
-//---------------------------------------------------------------------------
+
 inline TRect Rect(int Left, int Top, int Right, int Bottom);
-//---------------------------------------------------------------------------
+

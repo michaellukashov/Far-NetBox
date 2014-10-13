@@ -1,9 +1,9 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <CoreDefs.hpp>
 #include <CopyParam.h>
-//---------------------------------------------------------------------------
+
 struct TSynchronizeParamType : public TObject
 {
   UnicodeString LocalDirectory;
@@ -11,7 +11,7 @@ struct TSynchronizeParamType : public TObject
   intptr_t Params;
   intptr_t Options;
 };
-//---------------------------------------------------------------------------
+
 class TSynchronizeController;
 struct TSynchronizeOptions;
 class TSynchronizeChecklist;
@@ -44,17 +44,17 @@ DEFINE_CALLBACK_TYPE3(TSynchronizeInvalidEvent, void,
   TSynchronizeController * /* Sender */, const UnicodeString & /* Directory */, const UnicodeString & /* ErrorStr */);
 DEFINE_CALLBACK_TYPE2(TSynchronizeTooManyDirectoriesEvent, void,
   TSynchronizeController * /* Sender */, intptr_t & /* MaxDirectories */);
-//---------------------------------------------------------------------------
+
 namespace Discmon {
 class TDiscMonitor;
 }
-//---------------------------------------------------------------------------
+
 enum TSynchronizeOperation
 {
   soUpload,
   soDelete
 };
-//---------------------------------------------------------------------------
+
 class TSynchronizeController : public TObject
 {
 NB_DISABLE_COPY(TSynchronizeController)
@@ -94,4 +94,4 @@ private:
   void SynchronizeTooManyDirectories(TObject * Sender, intptr_t & MaxDirectories);
   void SynchronizeDirectoriesChange(TObject * Sender, intptr_t Directories);
 };
-//---------------------------------------------------------------------------
+

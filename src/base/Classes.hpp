@@ -21,13 +21,8 @@
 
 #define NPOS static_cast<intptr_t>(-1)
 
-namespace Sysutils {
 class Exception;
-}
 
-namespace Classes {
-
-//---------------------------------------------------------------------------
 extern const UnicodeString sLineBreak;
 extern const intptr_t MonthsPerYear;
 extern const intptr_t DaysPerWeek;
@@ -42,16 +37,15 @@ extern const intptr_t MSecsPerSec;
 extern const intptr_t DateDelta;
 extern const intptr_t UnixDateDelta;
 extern const UnicodeString kernel32;
-//---------------------------------------------------------------------------
+
 class TObject;
 DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 
 DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /* Sender */);
-//---------------------------------------------------------------------------
+
 void Abort();
 //void Error(int ErrorID, intptr_t data);
 #define THROW_EXTEXEPTION(ErrorID, data) { throw ExtException((Sysutils::Exception *)nullptr, FMTLOAD(ErrorID, data)); }
-//---------------------------------------------------------------------------
 
 class TObject
 {
@@ -64,8 +58,6 @@ public:
 
   bool IsKindOf(TObjectClassId ClassId) const;
 };
-
-//---------------------------------------------------------------------------
 
 struct TPoint
 {
@@ -80,8 +72,6 @@ struct TPoint
     y(ay)
   {}
 };
-
-//---------------------------------------------------------------------------
 
 struct TRect
 {
@@ -129,23 +119,19 @@ struct TRect
   }
 };
 
-//---------------------------------------------------------------------------
-
 class TPersistent : public TObject
 {
 NB_DECLARE_CLASS(TPersistent)
 public:
   TPersistent();
   virtual ~TPersistent();
-  virtual void Assign(const Classes::TPersistent * Source);
+  virtual void Assign(const TPersistent * Source);
 protected:
-  virtual void AssignTo(Classes::TPersistent * Dest) const;
+  virtual void AssignTo(TPersistent * Dest) const;
   virtual TPersistent * GetOwner();
 private:
-  void AssignError(const Classes::TPersistent * Source);
+  void AssignError(const TPersistent * Source);
 };
-
-//---------------------------------------------------------------------------
 
 enum TListNotification
 {
@@ -201,7 +187,7 @@ public:
   void Move(intptr_t Index, intptr_t To);
   void Delete(intptr_t Index);
   void Insert(intptr_t Index, TObject * Value);
-  intptr_t IndexOf(const Classes::TObject * Value) const;
+  intptr_t IndexOf(const TObject * Value) const;
   virtual void Clear();
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
@@ -227,7 +213,7 @@ NB_DECLARE_CLASS(TStrings)
 public:
   TStrings();
   virtual ~TStrings();
-  intptr_t Add(const UnicodeString & S, Classes::TObject * AObject = nullptr);
+  intptr_t Add(const UnicodeString & S, TObject * AObject = nullptr);
   virtual void Delete(intptr_t Index) = 0;
   virtual UnicodeString GetTextStr() const;
   virtual void SetTextStr(const UnicodeString & Text);
@@ -236,13 +222,13 @@ public:
   virtual void SetUpdateState(bool Updating);
   intptr_t AddObject(const UnicodeString & S, TObject * AObject);
   virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
-  bool Equals(const Classes::TStrings * Value) const;
+  bool Equals(const TStrings * Value) const;
   virtual void Clear() = 0;
   void Move(intptr_t CurIndex, intptr_t NewIndex);
   intptr_t IndexOf(const UnicodeString & S) const;
   virtual intptr_t IndexOfName(const UnicodeString & Name) const;
   UnicodeString ExtractName(const UnicodeString & S) const;
-  void AddStrings(const Classes::TStrings * Strings);
+  void AddStrings(const TStrings * Strings);
   void Append(const UnicodeString & Value);
   virtual void Insert(intptr_t Index, const UnicodeString & AString, TObject * AObject = nullptr) = 0;
   void SaveToStream(TStream * Stream) const;
@@ -258,8 +244,8 @@ public:
   virtual intptr_t GetCount() const = 0;
 
 public:
-  virtual TObject * GetObject(intptr_t Index) const = 0;
-  virtual void SetObject(intptr_t Index, TObject * AObject) = 0;
+  virtual TObject * GetObj(intptr_t Index) const = 0;
+  virtual void SetObj(intptr_t Index, TObject * AObject) = 0;
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
   virtual bool GetCaseSensitive() const = 0;
@@ -321,8 +307,8 @@ public:
   virtual intptr_t GetCount() const;
 
 public:
-  virtual TObject * GetObject(intptr_t Index) const;
-  virtual void SetObject(intptr_t Index, TObject * AObject);
+  virtual TObject * GetObj(intptr_t Index) const;
+  virtual void SetObj(intptr_t Index, TObject * AObject);
   virtual bool GetSorted() const { return FSorted; }
   virtual void SetSorted(bool Value);
   virtual bool GetCaseSensitive() const { return FCaseSensitive; }
@@ -431,8 +417,6 @@ TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
 double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
 int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
 
-//---------------------------------------------------------------------------
-
 class TSHFileInfo : public TObject
 {
 public:
@@ -447,8 +431,6 @@ public:
   UnicodeString GetFileType(const UnicodeString & StrFileName);
 };
 
-//---------------------------------------------------------------------------
-
 enum TSeekOrigin
 {
   soFromBeginning = 0,
@@ -456,7 +438,6 @@ enum TSeekOrigin
   soFromEnd = 2
 };
 
-//---------------------------------------------------------------------------
 class TStream : public TObject
 {
 public:
@@ -488,8 +469,6 @@ public:
   }
 };
 
-//---------------------------------------------------------------------------
-
 class THandleStream : public TStream
 {
 NB_DISABLE_COPY(THandleStream)
@@ -508,7 +487,6 @@ protected:
   HANDLE FHandle;
 };
 
-//---------------------------------------------------------------------------
 class EReadError : public std::runtime_error
 {
 public:
@@ -524,8 +502,6 @@ public:
     std::runtime_error(Msg)
   {}
 };
-
-//---------------------------------------------------------------------------
 
 class TMemoryStream : public TStream
 {
@@ -562,8 +538,6 @@ private:
   int64_t FCapacity;
 };
 
-//---------------------------------------------------------------------------
-
 struct TRegKeyInfo
 {
   DWORD NumSubKeys;
@@ -574,7 +548,6 @@ struct TRegKeyInfo
   FILETIME FileTime;
 };
 
-//---------------------------------------------------------------------------
 enum TRegDataType
 {
   rdUnknown, rdString, rdExpandString, rdInteger, rdBinary
@@ -585,8 +558,6 @@ struct TRegDataInfo
   TRegDataType RegData;
   DWORD DataSize;
 };
-
-//---------------------------------------------------------------------------
 
 class TRegistry : public TObject
 {
@@ -650,14 +621,12 @@ private:
   uint32_t FAccess;
 };
 
-//---------------------------------------------------------------------------
 struct TTimeStamp
 {
   int Time; // Number of milliseconds since midnight
   int Date; // One plus number of days since 1/1/0001
 };
 
-//---------------------------------------------------------------------------
 // FIXME
 class TShortCut : public TObject
 {
@@ -671,7 +640,6 @@ private:
   intptr_t FValue;
 };
 
-//---------------------------------------------------------------------------
 // from wxvcl\sysset.h
 
 template <class T>
@@ -688,14 +656,14 @@ public:
   {
     int Value = EndValue - StartValue;
     if (StartValue > EndValue)
-      throw Sysutils::Exception(FORMAT(L"Start Value %d is greater than End Value %d", StartValue, EndValue));
+      throw Exception(FORMAT(L"Start Value %d is greater than End Value %d", StartValue, EndValue));
     this->AddRange(StartValue, Value);
   }
 
   DelphiSet(T StartValue, T EndValue , const int Count)
   {
     if (StartValue > EndValue)
-      throw Sysutils::Exception(FORMAT(L"Start Value %d is greater than End Value %d", StartValue, EndValue));
+      throw Exception(FORMAT(L"Start Value %d is greater than End Value %d", StartValue, EndValue));
     this->AddRange(StartValue,Count);
   }
 
@@ -760,7 +728,7 @@ public:
   DelphiSet<T>& AddRange(const T RangeStartValue, const int Count)
   {
     T RangeStartForAdd = RangeStartValue;
-    for (int I = 0; I < Count; ++I)
+    for (int Index = 0; Index < Count; ++Index)
       this->Add(RangeStartForAdd++);
     return *this;
   }
@@ -768,10 +736,10 @@ public:
   DelphiSet<T>& Add(const T RangeStartValue, const T RangeEndValue)
   {
     if (RangeEndValue < RangeStartValue)
-      throw Sysutils::Exception(FORMAT(L"Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
+      throw Exception(FORMAT(L"Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
     int Range = RangeEndValue - RangeStartValue;
     T RangeStartForAdd = RangeStartValue;
-    for (int I = 0; I < Range; ++I)
+    for (int Index = 0; Index < Range; ++Index)
       this->Add(RangeStartForAdd++);
     return *this;
   }
@@ -785,7 +753,7 @@ public:
   DelphiSet<T>& Remove(T RangeStartValue, T RangeEndValue)
   {
     if (RangeEndValue < RangeStartValue)
-      throw Sysutils::Exception(FORMAT(L"Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
+      throw Exception(FORMAT(L"Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
     for (T I = RangeStartValue ; I <= RangeEndValue; ++I)
       this->Remove(I);
     return *this;
@@ -862,8 +830,6 @@ public:
   }
 };
 
-//---------------------------------------------------------------------------
-
 enum TReplaceFlag
 {
   rfReplaceAll,
@@ -877,37 +843,30 @@ enum TShiftStateFlag
 };
 typedef DelphiSet<TShiftStateFlag> TShiftState;
 
-//---------------------------------------------------------------------------
 typedef HANDLE THandle;
 typedef DWORD TThreadID;
 
-//---------------------------------------------------------------------------
 inline double Trunc(double Value) { double intpart; modf(Value, &intpart); return intpart; }
 inline double Frac(double Value) { double intpart; return modf(Value, &intpart); }
 inline double Abs(double Value) { return fabs(Value); }
-//---------------------------------------------------------------------------
+
 class TCustomIniFile : public TObject
 {
 public:
   TCustomIniFile() {}
   virtual ~TCustomIniFile() {}
 };
-//---------------------------------------------------------------------------
-} // namespace Classes
 
-using namespace Classes;
-
-//---------------------------------------------------------------------------
 class TGlobalFunctionsIntf
 {
 public:
-  virtual ~TGlobalFunctionsIntf() {};
+  virtual ~TGlobalFunctionsIntf() {}
 
   virtual HINSTANCE GetInstanceHandle() const = 0;
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;
   virtual UnicodeString GetCurrDirectory() const = 0;
   virtual UnicodeString GetStrVersionNumber() const = 0;
 };
-//---------------------------------------------------------------------------
+
 TGlobalFunctionsIntf * GetGlobalFunctions();
-//---------------------------------------------------------------------------
+

@@ -1,31 +1,19 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <Interface.h>
 #include <Option.h>
 #include "FarPlugin.h"
-//---------------------------------------------------------------------------
+
 class TWinSCPFileSystem;
 class TCopyParamType;
-//---------------------------------------------------------------------------
+
 struct TMessageParams : public TObject
 {
 NB_DISABLE_COPY(TMessageParams)
 public:
   TMessageParams();
-  void Assign(const TMessageParams * AParams)
-  {
-    Aliases = AParams->Aliases;
-    AliasesCount = AParams->AliasesCount;
-    Flags = AParams->Flags;
-    Params = AParams->Params;
-    Timer = AParams->Timer;
-    TimerEvent = AParams->TimerEvent;
-    TimerMessage = AParams->TimerMessage;
-    TimerAnswers = AParams->TimerAnswers;
-    Timeout = AParams->Timeout;
-    TimeoutAnswer = AParams->TimeoutAnswer;
-  }
+  void Assign(const TMessageParams * AParams);
 
   const TQueryButtonAlias * Aliases;
   uintptr_t AliasesCount;
@@ -38,7 +26,7 @@ public:
   uintptr_t Timeout;
   uintptr_t TimeoutAnswer;
 };
-//---------------------------------------------------------------------------
+
 class TWinSCPPlugin : public TCustomFarPlugin
 {
 friend TWinSCPFileSystem;
@@ -48,10 +36,10 @@ public:
   virtual ~TWinSCPPlugin();
   virtual intptr_t GetMinFarVersion();
 
-  virtual void HandleException(Sysutils::Exception * E, int OpMode = 0);
+  virtual void HandleException(Exception * E, int OpMode = 0);
   uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
     TQueryType Type, uintptr_t Answers, const TMessageParams * Params = nullptr);
-  void ShowExtendedException(Sysutils::Exception * E);
+  void ShowExtendedException(Exception * E);
   bool CopyParamCustomDialog(TCopyParamType & CopyParam,
     intptr_t CopyParamAttrs);
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info);
@@ -89,4 +77,4 @@ private:
 private:
   bool FInitialized;
 };
-//---------------------------------------------------------------------------
+

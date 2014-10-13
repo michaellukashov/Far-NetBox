@@ -1,6 +1,6 @@
-//------------------------------------------------------------------------------
+
 #pragma once
-//------------------------------------------------------------------------------
+
 #include <Interface.h>
 #include "FarPlugin.h"
 #include <FileOperationProgress.h>
@@ -8,7 +8,7 @@
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
 #include <Queue.h>
-//------------------------------------------------------------------------------
+
 class TTerminal;
 class TSessionData;
 class TRemoteFile;
@@ -35,7 +35,7 @@ struct TMessageParams;
 #define MOVE_TO_HISTORY L"WinscpMoveTo"
 #define WINSCP_FILE_MASK_HISTORY L"WinscpFileMask"
 #define MAKE_SESSION_FOLDER_HISTORY L"WinscpSessionFolder"
-//------------------------------------------------------------------------------
+
 // for Properties dialog
 const int cpMode  = 0x01;
 const int cpOwner = 0x02;
@@ -56,7 +56,7 @@ enum TSessionActionEnum
   saEdit,
   saConnect
 };
-//------------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
   intptr_t /* Params */, TSynchronizeOptions & /* Options */);
 DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
@@ -77,9 +77,9 @@ struct TEditHistory : public TObject
   UnicodeString Directory;
   bool operator==(const TEditHistory & rh) const { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
-//------------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE2(TProcessSessionEvent, void, TSessionData * /* Data */, void * /* Param */);
-//------------------------------------------------------------------------------
+
 class TWinSCPFileSystem : public TCustomFarFileSystem
 {
 friend class TWinSCPPlugin;
@@ -117,7 +117,7 @@ protected:
 
   void ProcessEditorEvent(intptr_t Event, void * Param);
 
-  virtual void HandleException(Sysutils::Exception * E, int OpMode = 0);
+  virtual void HandleException(Exception * E, int OpMode = 0);
   void KeepaliveThreadCallback();
 
   inline bool SessionList();
@@ -154,7 +154,7 @@ protected:
   void HomeDirectory();
   void ToggleSynchronizeBrowsing();
   bool IsSynchronizedBrowsing();
-  bool PropertiesDialog(TStrings * FileList,
+  bool PropertiesDialog(TStrings * AFileList,
     const UnicodeString & Directory,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
     TRemoteProperties * Properties, intptr_t AllowedChanges);
@@ -180,7 +180,7 @@ protected:
   bool SynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
     TTerminal::TSynchronizeMode Mode, intptr_t Params,
     const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory);
-  bool RemoteTransferDialog(TStrings * FileList, UnicodeString & Target,
+  bool RemoteTransferDialog(TStrings * AFileList, UnicodeString & Target,
     UnicodeString & FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile * AFile, UnicodeString & NewName);
   uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
@@ -220,7 +220,7 @@ protected:
   TTerminalQueueStatus * ProcessQueue(bool Hidden);
   bool EnsureCommandSessionFallback(TFSCapability Capability);
   void ConnectTerminal(TTerminal * Terminal);
-  void TemporarilyDownloadFiles(TStrings * FileList,
+  void TemporarilyDownloadFiles(TStrings * AFileList,
     TCopyParamType & CopyParam, UnicodeString & TempDir);
   intptr_t UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString & DestPath);
   void UploadOnSave(bool NoReload);
@@ -266,7 +266,7 @@ private:
     const UnicodeString & SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
     intptr_t Options);
   void TerminalShowExtendedException(TTerminal * Terminal,
-    Sysutils::Exception * E, void * Arg);
+    Exception * E, void * Arg);
   void TerminalDeleteLocalFile(const UnicodeString & AFileName, bool Alternative);
   HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
@@ -310,7 +310,7 @@ private:
   TTerminal * FTerminal;
   TTerminalQueue * FQueue;
   TTerminalQueueStatus * FQueueStatus;
-  Sysutils::TCriticalSection FQueueStatusSection;
+  TCriticalSection FQueueStatusSection;
   bool FQueueStatusInvalidated;
   bool FQueueItemInvalidated;
   bool FRefreshLocalDirectory;
@@ -355,7 +355,7 @@ private:
   UnicodeString FPrevSessionName;
   bool FCurrentDirectoryWasChanged;
 };
-//------------------------------------------------------------------------------
+
 class TSessionPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TSessionPanelItem)
@@ -376,7 +376,7 @@ protected:
     DWORD & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
 };
-//------------------------------------------------------------------------------
+
 class TSessionFolderPanelItem : public TCustomFarPanelItem
 {
 public:
@@ -392,7 +392,7 @@ protected:
     DWORD & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
 };
-//------------------------------------------------------------------------------
+
 class TRemoteFilePanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TRemoteFilePanelItem)
@@ -414,4 +414,4 @@ protected:
   static void TranslateColumnTypes(UnicodeString & ColumnTypes,
     TStrings * ColumnTitles);
 };
-//------------------------------------------------------------------------------
+

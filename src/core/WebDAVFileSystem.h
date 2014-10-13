@@ -5,17 +5,14 @@
 #include <FileSystems.h>
 #include "Terminal.h"
 
-using namespace Sysutils;
-//------------------------------------------------------------------------------
 struct TListDataEntry;
 struct TFileTransferData;
-//------------------------------------------------------------------------------
+
 namespace webdav {
   struct session_t;
   typedef int error_t;
 } // namespace webdav
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
+
 class TWebDAVFileSystem : public TCustomFileSystem
 {
 friend class TWebDAVFileListHelper;
@@ -42,9 +39,9 @@ public:
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
-  virtual bool LoadFilesProperties(TStrings * FileList);
+  virtual bool LoadFilesProperties(TStrings * AFileList);
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
-    TStrings * FileList, TStrings * Checksums,
+    TStrings * AFileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum);
   virtual void CopyToLocal(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
@@ -223,7 +220,6 @@ private:
   webdav::session_t * FSession;
 };
 
-//------------------------------------------------------------------------------
 void NeonInitialize();
 void NeonFinalize();
 

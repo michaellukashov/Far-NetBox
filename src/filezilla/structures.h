@@ -48,7 +48,7 @@ public:
 		bool bUnsure; //Set by CControlSocket::FileTransfer when uploads fail after sending STOR/APPE
 		bool dir;
 		bool bLink;
-		class t_date : public Classes::TObject
+		class t_date : public TObject
 		{
 		public:
 			t_date();

@@ -1,12 +1,12 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #ifndef NO_FILEZILLA
-//---------------------------------------------------------------------------
+
 #include <time.h>
 #include <list.h>
 #include <FileSystems.h>
-//---------------------------------------------------------------------------
+
 class TFileZillaIntf;
 class TFileZillaImpl;
 class TFTPServerCapabilities;
@@ -15,7 +15,7 @@ struct TListDataEntry;
 struct TFileTransferData;
 struct TFtpsCertificateData;
 struct TRemoteFileTime;
-//---------------------------------------------------------------------------
+
 struct message_t
 {
   message_t() : wparam(0), lparam(0)
@@ -25,13 +25,13 @@ struct message_t
   WPARAM wparam;
   LPARAM lparam;
 };
-//---------------------------------------------------------------------------
+
 class TMessageQueue : public TObject, public rde::list<message_t> //  rde::vector<message_t>
 {
 public:
   typedef message_t value_type;
 };
-//---------------------------------------------------------------------------
+
 class TFTPFileSystem : public TCustomFileSystem
 {
 friend class TFileZillaImpl;
@@ -58,9 +58,9 @@ public:
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
-  virtual bool LoadFilesProperties(TStrings * FileList);
+  virtual bool LoadFilesProperties(TStrings * AFileList);
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
-    TStrings * FileList, TStrings * Checksums,
+    TStrings * AFileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum);
   virtual void CopyToLocal(const TStrings * AFilesToCopy,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
@@ -223,8 +223,8 @@ private:
   };
 
   TFileZillaIntf * FFileZillaIntf;
-  Sysutils::TCriticalSection FQueueCriticalSection;
-  Sysutils::TCriticalSection FTransferStatusCriticalSection;
+  TCriticalSection FQueueCriticalSection;
+  TCriticalSection FTransferStatusCriticalSection;
   TMessageQueue FQueue;
   HANDLE FQueueEvent;
   TSessionInfo FSessionInfo;
@@ -274,8 +274,8 @@ private:
   TDateTime FLastDataSent;
   mutable UnicodeString FOptionScratch;
 };
-//---------------------------------------------------------------------------
+
 UnicodeString GetOpenSSLVersionText();
-//---------------------------------------------------------------------------
+
 #endif // NO_FILEZILLA
-//---------------------------------------------------------------------------
+

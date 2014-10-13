@@ -1,15 +1,15 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <CoreDefs.hpp>
 
 #include "Configuration.h"
 #include "SessionData.h"
 #define HELP_NONE ""
-//---------------------------------------------------------------------------
+
 TConfiguration * CreateConfiguration();
 
-void ShowExtendedException(Sysutils::Exception * E);
+void ShowExtendedException(Exception * E);
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
 
 UnicodeString GetRegistryKey();
@@ -120,13 +120,13 @@ enum TPromptUserParam
 bool IsAuthenticationPrompt(TPromptKind Kind);
 bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
 bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
-//---------------------------------------------------------------------------
+
 DEFINE_CALLBACK_TYPE4(TFileFoundEvent, void,
   TTerminal * /* Terminal */, const UnicodeString & /* FileName */, const TRemoteFile * /* File */,
   bool & /* Cancel */);
 DEFINE_CALLBACK_TYPE3(TFindingFileEvent, void,
   TTerminal * /* Terminal */, const UnicodeString & /* Directory */, bool & /* Cancel */);
-//---------------------------------------------------------------------------
+
 class TOperationVisualizer
 {
 public:
@@ -137,7 +137,7 @@ private:
   bool FUseBusyCursor;
   void * FToken;
 };
-//---------------------------------------------------------------------------
+
 class TInstantOperationVisualizer : public TOperationVisualizer
 {
 public:
@@ -147,7 +147,7 @@ public:
 private:
   TDateTime FStart;
 };
-//---------------------------------------------------------------------------
+
 struct TClipboardHandler
 {
 NB_DECLARE_CLASS(TClipboardHandler)
@@ -160,4 +160,4 @@ public:
     CopyToClipboard(Text);
   }
 };
-//---------------------------------------------------------------------------
+

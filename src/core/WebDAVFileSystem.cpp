@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -35,18 +35,13 @@
 #include "HelpCore.h"
 #include "FileZillaIntf.h"
 
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
 namespace webdav {
 
-//------------------------------------------------------------------------------
 struct auth_baton_t;
 struct vtable_t;
 struct stream_t;
 struct client_ctx_t;
 struct auth_iterstate_t;
-//------------------------------------------------------------------------------
 
 typedef enum tristate_t
 {
@@ -55,7 +50,6 @@ typedef enum tristate_t
   tristate_unknown
 } tristate_t;
 
-//------------------------------------------------------------------------------
 // Userdata for the `proxy_auth' function.
 struct proxy_auth_baton_t
 {
@@ -63,12 +57,10 @@ struct proxy_auth_baton_t
   const char * password; // Cannot be nullptr, but "" is okay.
 };
 
-//------------------------------------------------------------------------------
 // from svn_types.h
 
 typedef error_t (*cancel_func_t)(void * cancel_baton);
 
-//------------------------------------------------------------------------------
 // from svn_ra.h
 
 typedef void (*progress_notify_func_t)(
@@ -98,7 +90,6 @@ typedef struct callback_baton_t
   apr_pool_t * pool;
 } callback_baton_t;
 
-//------------------------------------------------------------------------------
 // from svn_string.h
 
 // A simple counted string.
@@ -118,7 +109,6 @@ typedef struct stringbuf_t
   apr_size_t blocksize;
 } stringbuf_t;
 
-//------------------------------------------------------------------------------
 // from ra_neon.h
 
 // Rename these types and constants to abstract from Neon
@@ -259,8 +249,6 @@ typedef struct list_func_baton_t
   apr_pool_t * pool;
 } list_func_baton_t;
 
-//------------------------------------------------------------------------------
-
 // timeout (in seconds)
 #define DEFAULT_HTTP_TIMEOUT 10
 
@@ -309,7 +297,7 @@ typedef struct list_func_baton_t
 // #define HASH_KEY_STRING ""
 
 #define MAX_REDIRECT_ATTEMPTS 3 // TODO:  Make configurable.
-//------------------------------------------------------------------------------
+
 // #define WEBDAV_ARRAY_IDX(ary,i,type) ((type)(ary)[i])
 #define WEBDAV_NO_ERROR 0
 #define WEBDAV_ERROR_AUTH 1
@@ -370,9 +358,6 @@ typedef struct list_func_baton_t
        }                                         \
    } while (0)
 
-//===========================================================================
-
-//------------------------------------------------------------------------------
 // from error.c
 
 static void
@@ -397,7 +382,7 @@ error_create(
   error_t * child,
   const char * message)
 {
-  AnsiString Message = Format("Error, code: %d, message: %s", apr_err, message ? message : "");
+  AnsiString Message = ::Format("Error, code: %d, message: %s", apr_err, message ? message : "");
   DEBUG_PRINTF2("Message = %s", Message.c_str());
   return apr_err;
 }
@@ -415,10 +400,10 @@ error_createf(
   err = make_error_internal(apr_err, child);
 
   va_start(args, fmt);
-  AnsiString Message = Format(fmt, args);
+  AnsiString Message = ::Format(fmt, args);
   va_end(args);
 
-  AnsiString Message2 = Format("Error, code: %d, message: %s", apr_err, Message.c_str());
+  AnsiString Message2 = ::Format("Error, code: %d, message: %s", apr_err, Message.c_str());
   throw ExtException(UnicodeString(Message2.c_str()), (Exception *)nullptr);
 
   return err;
@@ -436,7 +421,7 @@ error_wrap_apr(
   err = make_error_internal(status, nullptr);
 
   va_start(args, fmt);
-  AnsiString Message = Format(fmt, args);
+  AnsiString Message = ::Format(fmt, args);
   va_end(args);
 
   err = error_create(err, nullptr, Message.c_str());
@@ -444,7 +429,6 @@ error_wrap_apr(
   return err;
 }
 
-//------------------------------------------------------------------------------
 // from utils.c
 
 // a cleanup routine attached to the pool that contains the RA session
@@ -491,7 +475,6 @@ parse_ne_uri(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from svn_types.h
 
 #define atoui64(X) ((apr_uint64_t) apr_atoi64(X))
@@ -560,7 +543,6 @@ typedef enum depth_t
 
 } depth_t;
 
-//------------------------------------------------------------------------------
 // from utf.h
 
 static error_t
@@ -583,7 +565,6 @@ cstring_from_utf8(
   const char * path_utf8,
   apr_pool_t * pool);
 
-//------------------------------------------------------------------------------
 // from ra_neon.h
 
 #ifdef WEBDAV_DEBUG
@@ -707,7 +688,6 @@ typedef error_t (*neon_block_reader)(
   const char * data,
   size_t len);
 
-//------------------------------------------------------------------------------
 // from dirent_uri.h
 
 static bool
@@ -715,7 +695,6 @@ dirent_is_root(
   const char * dirent,
   apr_size_t len);
 
-//------------------------------------------------------------------------------
 // from svn_props.h
 
 static error_t
@@ -727,7 +706,6 @@ neon_get_props_resource(
   bool check_errors,
   apr_pool_t * pool);
 
-//------------------------------------------------------------------------------
 // from ra_loader.h
 
 // The RA layer vtable.
@@ -803,7 +781,6 @@ neon_init(
   const vtable_t ** vtable,
   apr_pool_t * pool);
 
-//------------------------------------------------------------------------------
 // from svn_ctype.h
 // Table of flags for character classification.
 extern const apr_uint32_t * const ctype_table;
@@ -920,7 +897,6 @@ extern const apr_uint32_t * const ctype_table;
 static int
 ctype_casecmp(int a, int b);
 
-//------------------------------------------------------------------------------
 // from svn_string.c
 
 static APR_INLINE bool
@@ -1378,7 +1354,6 @@ cstring_split(
   return a;
 }
 
-//------------------------------------------------------------------------------
 // from ctype.c
 static const apr_uint32_t ctype_table_internal[256] =
 {
@@ -1673,7 +1648,6 @@ ctype_casecmp(int a, int b)
   return A - B;
 }
 
-//------------------------------------------------------------------------------
 // from svn_pool.c
 
 // Pool allocation handler which just aborts, since we aren't generally
@@ -1699,7 +1673,6 @@ pool_create_ex(
   return pool;
 }
 
-//------------------------------------------------------------------------------
 // from time.c
 
 #define OLD_TIMESTAMP_FORMAT \
@@ -1858,7 +1831,6 @@ fail:
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from path.c
 
 // true if s is the canonical empty path, false otherwise
@@ -2225,7 +2197,6 @@ path_is_backpath_present(
   return (path[len - 3] == '/') && (path[len - 2] == '.') && (path[len - 1] == '.');
 }
 
-//------------------------------------------------------------------------------
 // from svn_client.h
 
 typedef error_t (*client_list_func_t)(
@@ -2247,7 +2218,6 @@ typedef struct client_ctx_t
   const char * client_name;
 } client_ctx_t;
 
-//------------------------------------------------------------------------------
 // from win32_xlate.c
 
 static apr_status_t
@@ -2266,7 +2236,7 @@ subr_win32_xlate_to_stringbuf(// win32_xlate_t *handle,
     return APR_SUCCESS;
   }
   int from_page_id = CP_ACP;
-  retval = MultiByteToWideChar(from_page_id, // CP_UTF8, // handle->from_page_id,
+  retval = ::MultiByteToWideChar(from_page_id, // CP_UTF8, // handle->from_page_id,
     0, src_data, (int)src_length, nullptr, 0);
   if (retval == 0)
     return apr_get_os_error();
@@ -2283,14 +2253,14 @@ subr_win32_xlate_to_stringbuf(// win32_xlate_t *handle,
     wide_str = static_cast<WCHAR *>(apr_pcalloc(pool, wide_size * sizeof(WCHAR)));
   }
 
-  retval = MultiByteToWideChar(from_page_id, // handle->from_page_id,
+  retval = ::MultiByteToWideChar(from_page_id, // handle->from_page_id,
     0, src_data, (int)src_length, wide_str, wide_size);
 
   if (retval == 0)
     return apr_get_os_error();
 
   int to_page_id = CP_UTF8;
-  retval = WideCharToMultiByte(to_page_id, // handle->to_page_id,
+  retval = ::WideCharToMultiByte(to_page_id, // handle->to_page_id,
     0, wide_str, wide_size, nullptr, 0, nullptr, nullptr);
 
   if (retval == 0)
@@ -2301,7 +2271,7 @@ subr_win32_xlate_to_stringbuf(// win32_xlate_t *handle,
   *dest = stringbuf_create_ensure(retval + 1, pool);
   (*dest)->len = retval;
 
-  retval = WideCharToMultiByte(to_page_id, // handle->to_page_id,
+  retval = ::WideCharToMultiByte(to_page_id, // handle->to_page_id,
     0, wide_str, wide_size, (*dest)->data, (int)(*dest)->len, nullptr, nullptr);
   if (retval == 0)
     return apr_get_os_error();
@@ -2336,7 +2306,7 @@ utf8_to_unicode(
     return APR_SUCCESS;
   }
 
-  retval = MultiByteToWideChar(CP_UTF8, // handle->from_page_id,
+  retval = ::MultiByteToWideChar(CP_UTF8, // handle->from_page_id,
     0, srcstr, (int)src_length, nullptr, 0);
   if (retval == 0)
     return apr_get_os_error();
@@ -2345,7 +2315,7 @@ utf8_to_unicode(
 
   wide_str = static_cast<WCHAR *>(apr_pcalloc(pool, (wide_size + 1) * sizeof(WCHAR)));
 
-  retval = MultiByteToWideChar(CP_UTF8, // handle->from_page_id,
+  retval = ::MultiByteToWideChar(CP_UTF8, // handle->from_page_id,
     0, srcstr, (int)src_length, wide_str, wide_size);
 
   if (retval == 0)
@@ -2356,7 +2326,6 @@ utf8_to_unicode(
   return APR_SUCCESS;
 }
 
-//------------------------------------------------------------------------------
 // from utf.c
 
 // Verify that the sequence DATA of length LEN is valid UTF-8.
@@ -2462,7 +2431,6 @@ utf_cstring_from_utf8(
   return err;
 }
 
-//------------------------------------------------------------------------------
 // from xml.c
 
 static const char *
@@ -2482,7 +2450,6 @@ xml_get_attr_value(
   return nullptr;
 }
 
-//------------------------------------------------------------------------------
 // from apr_base64.c
 
 static const char basis_64[] =
@@ -2649,7 +2616,6 @@ apr_base64_decode(
   return len;
 }
 
-//------------------------------------------------------------------------------
 // from user.c
 
 // Get the current user's name from the OS
@@ -2696,7 +2662,6 @@ user_get_name(
   return utf8_or_nothing(username, pool);
 }
 
-//------------------------------------------------------------------------------
 // from sorts.c
 
 typedef struct sort_item_t
@@ -2764,7 +2729,6 @@ sort_hash(apr_hash_t * ht,
   return ary;
 }
 
-//------------------------------------------------------------------------------
 // from svn_config.h
 
 #define WEBDAV_CONFIG_TRUE  "TRUE"
@@ -2781,7 +2745,6 @@ sort_hash(apr_hash_t * ht,
 #define WEBDAV_CONFIG_DEFAULT_OPTION_STORE_SSL_CLIENT_CERT_PP_PLAINTEXT \
                                                              WEBDAV_CONFIG_ASK
 
-//------------------------------------------------------------------------------
 // from svn_auth.h
 
 // Certificate is not yet valid.
@@ -3036,7 +2999,6 @@ typedef error_t (*auth_username_prompt_func_t)(
   bool may_save,
   apr_pool_t * pool);
 
-//------------------------------------------------------------------------------
 // from config_auth.c
 
 #define CONST_FS_KEY "fs"
@@ -3077,7 +3039,7 @@ config_read_auth_data(
       string_create(AnsiString(Key).c_str(), pool));
     apr_hash_set(*hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
       string_createf(pool, "%lu", (uint32_t)
-        StrToIntDef(Value, 0)));
+        ::StrToIntDef(Value, 0)));
   }
   return WEBDAV_NO_ERROR;
 }
@@ -3109,7 +3071,6 @@ config_write_auth_data(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from simple_providers.c
 
 // The keys that will be stored on disk.  These serve the same role as
@@ -3767,7 +3728,6 @@ auth_get_simple_prompt_provider(
   *provider = po;
 }
 
-//------------------------------------------------------------------------------
 // from ssl_client_cert_pw_providers.c
 
 // The keys that will be stored on disk.  These serve the same role as
@@ -4224,7 +4184,6 @@ auth_get_ssl_client_cert_pw_prompt_provider(
   *provider = po;
 }
 
-//------------------------------------------------------------------------------
 // from win32_crypto.c
 
 // The description string that's combined with unencrypted data by the
@@ -4691,7 +4650,6 @@ auth_get_windows_ssl_server_trust_provider(
   *provider = po;
 }
 
-//------------------------------------------------------------------------------
 // from username_providers.c
 
 // Username-only Provider
@@ -4966,7 +4924,6 @@ auth_get_username_prompt_provider(
   *provider = po;
 }
 
-//------------------------------------------------------------------------------
 // from auth.c
 
 static void
@@ -5269,7 +5226,6 @@ auth_get_platform_specific_client_providers(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from dirent_uri.c
 
 // true if s is the canonical empty path, false otherwise
@@ -6159,7 +6115,6 @@ dirent_get_absolute(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from atomic.c
 
 #define atomic_t apr_uint32_t
@@ -6223,7 +6178,6 @@ atomic_init_once(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from io.c
 
 #define RETRY_MAX_ATTEMPTS 2
@@ -6545,7 +6499,6 @@ io_file_read_full2(
     pool);
 }
 
-//------------------------------------------------------------------------------
 // from svn_io.h
 
 // Read handler function for a generic stream. see stream_t.
@@ -6583,7 +6536,6 @@ typedef error_t (*stream_seek_fn_t)(
 
 typedef bool (*stream_is_buffered_fn_t)(void * baton);
 
-//------------------------------------------------------------------------------
 // from stream.c
 
 typedef struct stream_t
@@ -6916,7 +6868,6 @@ stream_close(
   return stream->close_fn(stream->baton);
 }
 
-//------------------------------------------------------------------------------
 // from util.c
 
 static apr_status_t
@@ -8381,7 +8332,6 @@ neon_add_response_body_reader(
   attach_ne_body_reader(req, accpt, body_reader_wrapper, b);
 }
 
-//------------------------------------------------------------------------------
 // from fetch.c
 
 typedef struct file_read_ctx_t
@@ -8482,8 +8432,6 @@ custom_get_request(
 
   return err;
 }
-
-//------------------------------------------------------------------------------
 
 static error_t
 get_file(
@@ -8691,8 +8639,6 @@ session_open(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
-
 // This implements the client_list_func_t API
 static error_t
 list_func(
@@ -8783,7 +8729,6 @@ list_func(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from url.c
 
 static error_t
@@ -8810,7 +8755,6 @@ client_url_from_path2(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from ctx.c
 
 static error_t
@@ -8822,7 +8766,6 @@ client_create_context(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from auth.c
 
 static void
@@ -8877,7 +8820,6 @@ create_baton_open(
   }
 }
 
-//------------------------------------------------------------------------------
 // from ssl_client_cert_providers.c
 
 // A function returning an SSL client certificate passphrase provider.
@@ -9053,7 +8995,6 @@ auth_get_ssl_client_cert_prompt_provider(
   *provider = po;
 }
 
-//------------------------------------------------------------------------------
 // from ssl_server_trust_providers.c
 
 // retrieve ssl server CA failure overrides (if any) from servers config
@@ -9261,7 +9202,6 @@ auth_get_ssl_server_trust_prompt_provider(
   *provider = po;
 }
 
-//------------------------------------------------------------------------------
 // from cmdline.h
 
 typedef struct cmdline_prompt_baton2_t
@@ -9270,7 +9210,6 @@ typedef struct cmdline_prompt_baton2_t
   void * cancel_baton;
 } cmdline_prompt_baton2_t;
 
-//------------------------------------------------------------------------------
 // from prompt.c
 
 // This is a helper for plaintext prompt functions.
@@ -9610,7 +9549,6 @@ cmdline_auth_username_prompt(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from cmdline.c
 
 static error_t
@@ -9771,7 +9709,6 @@ auth_baton_init(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from main.c
 
 // A flag to see if we've been canceled by the client or not.
@@ -9787,7 +9724,6 @@ check_cancel(void * baton)
     return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from ra.c
 
 static error_t
@@ -9891,7 +9827,6 @@ client_open_session_internal(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from list.c
 
 static error_t
@@ -9960,7 +9895,6 @@ get_dir_contents(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
 // from options.c
 
 static const neon_xml_elm_t options_elements[] =
@@ -10098,7 +10032,6 @@ cleanup:
   return err;
 }
 
-//------------------------------------------------------------------------------
 // from props.c
 
 typedef struct propfind_ctx_t
@@ -10614,8 +10547,6 @@ neon_get_props_resource(
   return WEBDAV_NO_ERROR;
 }
 
-//------------------------------------------------------------------------------
-
 static error_t
 client_list(
   session_t * session,
@@ -10925,7 +10856,6 @@ client_send_propfind_request(
   return err;
 }
 
-//------------------------------------------------------------------------------
 // from session.c
 
 typedef struct neonprogress_baton_t
@@ -11164,7 +11094,7 @@ server_ssl_callback(
   apr_uint32_t * webdav_failures = static_cast<apr_uint32_t *>(apr_pcalloc(ras->pool, sizeof(*webdav_failures)));
 
   // Construct the realmstring, e.g. https://svn.collab.net:80
-  const char * realmstring = apr_pstrdup(ras->pool, Format("%s://%s:%d", ras->root.scheme,
+  const char * realmstring = apr_pstrdup(ras->pool, ::Format("%s://%s:%d", ras->root.scheme,
     ras->root.host, ras->root.port).c_str());
 
   *webdav_failures = convert_neon_failures(failures);
@@ -12037,9 +11967,8 @@ neon_init(
 
 } // namespace webdav
 
-//------------------------------------------------------------------------------
 class TSessionData;
-//------------------------------------------------------------------------------
+
 class TWebDAVFileListHelper : public TObject
 {
 NB_DISABLE_COPY(TWebDAVFileListHelper)
@@ -12066,19 +11995,18 @@ private:
   bool FIgnoreFileList;
 };
 
-//------------------------------------------------------------------------------
 #undef FILE_OPERATION_LOOP_EX
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
     [&]() { OPERATION })
-//------------------------------------------------------------------------------
+
 static const UnicodeString CONST_WEBDAV_PROTOCOL_BASE_NAME = L"WebDAV";
-//---------------------------------------------------------------------------
+
 #define StrToNeon(S) UTF8String(S).c_str()
 #define StrFromNeon(S) UnicodeString(UTF8String(S))
 #define AbsolutePathToNeon(P) PathEscape(StrToNeon(P)).c_str()
 #define PathToNeon(P) AbsolutePathToNeon(AbsolutePath(P, false))
-//------------------------------------------------------------------------------
+
 void NeonInitialize()
 {
   // Even if this fails, we do not want to interrupt WinSCP starting for that.
@@ -12086,12 +12014,12 @@ void NeonInitialize()
   // Anyway, it can hardly fail.
   ALWAYS_TRUE(ne_sock_init());
 }
-//---------------------------------------------------------------------------
+
 void NeonFinalize()
 {
   ne_sock_exit();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString NeonVersion()
 {
   UnicodeString Str = StrFromNeon(ne_version_string());
@@ -12099,13 +12027,11 @@ UnicodeString NeonVersion()
   UnicodeString Result = CutToChar(Str, L':', true);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString ExpatVersion()
 {
   return FORMAT(L"%d.%d.%d", XML_MAJOR_VERSION, XML_MINOR_VERSION, XML_MICRO_VERSION);
 }
-
-//===========================================================================
 
 TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
@@ -12138,7 +12064,7 @@ void TWebDAVFileSystem::Init(void *)
     throw ExtException(UnicodeString(L"Cannot init APR"));
   apr_pool_create(&webdav_pool, nullptr);
 }
-//------------------------------------------------------------------------------
+
 TWebDAVFileSystem::~TWebDAVFileSystem()
 {
   webdav_pool_destroy(webdav_pool);
@@ -12146,7 +12072,7 @@ TWebDAVFileSystem::~TWebDAVFileSystem()
   webdav_pool = nullptr;
   ne_sock_exit();
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::Open()
 {
   FCurrentDirectory = L"";
@@ -12199,54 +12125,54 @@ void TWebDAVFileSystem::Open()
     throw Exception(LoadStr(CONNECTION_FAILED));
   }
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::Close()
 {
   assert(FActive);
   FTerminal->Closed();
   FActive = false;
 }
-//---------------------------------------------------------------------------
+
 void TWebDAVFileSystem::CollectUsage()
 {
 }
-//------------------------------------------------------------------------------
+
 const TSessionInfo & TWebDAVFileSystem::GetSessionInfo() const
 {
   return FSessionInfo;
 }
-//------------------------------------------------------------------------------
+
 const TFileSystemInfo & TWebDAVFileSystem::GetFileSystemInfo(bool Retrieve)
 {
   return FFileSystemInfo;
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::TemporaryTransferFile(const UnicodeString & /*AFileName*/)
 {
   return false;
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::GetStoredCredentialsTried()
 {
   return false;
 }
-//------------------------------------------------------------------------------
+
 UnicodeString TWebDAVFileSystem::GetUserName()
 {
   return FUserName;
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::Idle()
 {
   // TODO: Keep session alive
   return;
 }
-//------------------------------------------------------------------------------
+
 UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/)
 {
   return core::AbsolutePath(GetCurrDirectory(), APath);
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
 {
   assert(FTerminal);
@@ -12289,7 +12215,6 @@ bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
   }
 }
 
-//------------------------------------------------------------------------------
 void TWebDAVFileSystem::EnsureLocation()
 {
   if (!FCachedDirectoryChange.IsEmpty())
@@ -12318,12 +12243,11 @@ void TWebDAVFileSystem::EnsureLocation()
   }
 }
 
-//------------------------------------------------------------------------------
 UnicodeString TWebDAVFileSystem::GetCurrDirectory()
 {
   return FCurrentDirectory;
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::DoStartup()
 {
   FTerminal->SetExceptionOnFail(true);
@@ -12331,12 +12255,11 @@ void TWebDAVFileSystem::DoStartup()
   ReadCurrentDirectory();
   FTerminal->SetExceptionOnFail(false);
 }
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::LookupUsersGroups()
 {
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::ReadCurrentDirectory()
 {
   if (FCachedDirectoryChange.IsEmpty())
@@ -12348,21 +12271,21 @@ void TWebDAVFileSystem::ReadCurrentDirectory()
     FCurrentDirectory = FCachedDirectoryChange;
   }
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::HomeDirectory()
 {
-  THROW_EXTEXEPTION(SNotImplemented, 1009);
+  Error(SNotImplemented, 1009);
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::AnnounceFileListOperation()
 {
   // noop
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::DoChangeDirectory(const UnicodeString & Directory)
 {
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 {
   UnicodeString Directory = ADirectory;
@@ -12399,7 +12322,7 @@ void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
   // make next ReadCurrentDirectory retrieve actual server-side current directory
   FCachedDirectoryChange = L"";
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 {
   FCachedDirectoryChange = core::UnixExcludeTrailingBackslash(Directory);
@@ -12424,7 +12347,7 @@ void TWebDAVFileSystem::DoReadDirectory(TRemoteFileList * FileList)
     Directory = core::UnixIncludeTrailingBackslash(Directory);
   WebDAVGetList(Directory);
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   assert(FileList);
@@ -12453,19 +12376,19 @@ void TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
   }
   while (Repeat);
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   TRemoteFile *& File)
 {
   CustomReadFile(SymlinkFile->GetLinkTo(), File, SymlinkFile);
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::ReadFile(const UnicodeString & AFileName,
   TRemoteFile *& File)
 {
   CustomReadFile(AFileName, File, nullptr);
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
   TRemoteFile *& File, TRemoteFile * ALinkedByFile)
 {
@@ -12479,7 +12402,7 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
       File->SetType(FILETYPE_DIRECTORY);
   }
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
 {
@@ -12492,7 +12415,7 @@ void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
     ThrowSkipFileNull();
   }
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   const UnicodeString & NewName)
 {
@@ -12503,13 +12426,13 @@ void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
     ThrowSkipFileNull();
   }
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::CopyFile(const UnicodeString & AFileName,
   const UnicodeString & NewName)
 {
-  THROW_EXTEXEPTION(SNotImplemented, 1012);
+  Error(SNotImplemented, 1012);
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
 {
   UnicodeString FullDirName = AbsolutePath(ADirName, true);
@@ -12535,34 +12458,34 @@ void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
     }
   }
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::CreateLink(const UnicodeString & AFileName,
   const UnicodeString & PointTo, bool Symbolic)
 {
-  THROW_EXTEXEPTION(SNotImplemented, 1014);
+  Error(SNotImplemented, 1014);
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const TRemoteProperties * Properties,
   TChmodSessionAction & Action)
 {
-  THROW_EXTEXEPTION(SNotImplemented, 1006);
+  Error(SNotImplemented, 1006);
   assert(Properties);
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 {
   assert(false);
   return false;
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
   TStrings * /*FileList*/, TStrings * /*Checksums*/,
   TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
 {
   assert(false);
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::ConfirmOverwrite(const UnicodeString & AFullFileName, UnicodeString & AFileName,
   TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams,
@@ -12598,7 +12521,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(const UnicodeString & AFullFileName, Un
     Aliases[2].Alias = LoadStr(RENAME_BUTTON);
     TQueryParams QueryParams(qpNeverAskAgainCheck);
     QueryParams.Aliases = Aliases;
-    QueryParams.AliasesCount = LENOF(Aliases);
+    QueryParams.AliasesCount = _countof(Aliases);
 
     {
       TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -12665,7 +12588,6 @@ bool TWebDAVFileSystem::ConfirmOverwrite(const UnicodeString & AFullFileName, Un
   return Result;
 }
 
-//------------------------------------------------------------------------------
 void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent)
 {
@@ -12688,24 +12610,24 @@ void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
       Complete(Command, true);
   }
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::AnyCommand(const UnicodeString & Command,
   TCaptureOutputEvent OutputEvent)
 {
-  THROW_EXTEXEPTION(SNotImplemented, 1008);
+  Error(SNotImplemented, 1008);
 }
-//------------------------------------------------------------------------------
+
 TStrings * TWebDAVFileSystem::GetFixedPaths()
 {
   return nullptr;
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
   TSpaceAvailable & /*ASpaceAvailable*/)
 {
   assert(false);
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
@@ -12721,7 +12643,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = core::ExtractFileName(RealFileName, false);
 
@@ -12737,7 +12659,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (Sysutils::DirectoryExists(ApiPath(::ExtractFilePath(FileName))))
+          if (::DirectoryExists(ApiPath(::ExtractFilePath(FileName))))
           {
             FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
           }
@@ -12759,7 +12681,6 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   }
 }
 
-//------------------------------------------------------------------------------
 void TWebDAVFileSystem::WebDAVSourceRobust(const UnicodeString & AFileName,
   const TRemoteFile * AFile,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
@@ -12800,7 +12721,7 @@ void TWebDAVFileSystem::WebDAVSourceRobust(const UnicodeString & AFileName,
   }
   while (Retry);
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
   const TRemoteFile * AFile,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
@@ -12808,7 +12729,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
   TUploadSessionAction & Action)
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
-  Action.FileName(ExpandUNCFileName(RealFileName));
+  Action.SetFileName(::ExpandUNCFileName(RealFileName));
 
   OperationProgress->SetFile(RealFileName, false);
 
@@ -12894,13 +12815,13 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
     );
   }
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryName,
   const UnicodeString & TargetDir, uintptr_t Attrs, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
-    core::ExtractFileName(Sysutils::ExcludeTrailingBackslash(DirectoryName), false), osLocal,
+    core::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = core::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
   // create DestFullName if it does not exist
@@ -13035,7 +12956,6 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
   }
 }
 
-//------------------------------------------------------------------------------
 void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
@@ -13048,7 +12968,7 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     UnicodeString FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObject(Index));
+    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObj(Index));
     FTerminal->SetExceptionOnFail(true);
     {
       bool Success = false;
@@ -13063,7 +12983,7 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       if (!FileNamePath.IsEmpty())
       {
         TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        Sysutils::ForceDirectories(ApiPath(TargetDirectory));
+        ::ForceDirectories(ApiPath(TargetDirectory));
       }
       try
       {
@@ -13083,7 +13003,7 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
     ++Index;
   }
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::SinkRobust(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params,
@@ -13128,7 +13048,7 @@ void TWebDAVFileSystem::SinkRobust(const UnicodeString & AFileName,
   }
   while (Retry);
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params,
@@ -13137,7 +13057,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 {
   UnicodeString FileNameOnly = core::UnixExtractFileName(AFileName);
 
-  Action.FileName(AFileName);
+  Action.SetFileName(AFileName);
 
   assert(AFile);
   TFileMasks::TParams MaskParams;
@@ -13160,7 +13080,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   if (AFile->GetIsDirectory())
   {
     bool CanProceed = true;
-    if (Sysutils::DirectoryExists(DestFullName))
+    if (::DirectoryExists(DestFullName))
     {
       uintptr_t Answer = 0;
       UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
@@ -13198,7 +13118,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
         );
 
         FILE_OPERATION_LOOP(FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
-          THROWOSIFFALSE(Sysutils::ForceDirectories(ApiPath(DestFullName)));
+          THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFullName)));
         );
 
         TSinkFileParams SinkFileParams;
@@ -13310,7 +13230,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
         LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
       }
 
-      Action.Destination(ExpandUNCFileName(DestFullName));
+      Action.Destination(::ExpandUNCFileName(DestFullName));
 
       if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
       {
@@ -13337,7 +13257,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     FTerminal->RemoteDeleteFile(AFileName, AFile, &Params);
   }
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::SinkFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * Param)
 {
@@ -13368,7 +13288,7 @@ void TWebDAVFileSystem::SinkFile(const UnicodeString & AFileName,
     }
   }
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
   const TListDataEntry * Entries, intptr_t Count)
 {
@@ -13494,7 +13414,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     return true;
   }
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::ResetFileTransfer()
 {
   FFileTransferAbort = ftaNone;
@@ -13502,7 +13422,7 @@ void TWebDAVFileSystem::ResetFileTransfer()
   FFileTransferResumed = 0;
   webdav::cancelled = 0;
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::ReadDirectoryProgress(int64_t Bytes)
 {
   // with WebDAV we do not know exactly how many entries we have received,
@@ -13520,7 +13440,7 @@ void TWebDAVFileSystem::ReadDirectoryProgress(int64_t Bytes)
     }
   }
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::DoFileTransferProgress(int64_t TransferSize,
   int64_t Bytes)
 {
@@ -13556,7 +13476,7 @@ void TWebDAVFileSystem::DoFileTransferProgress(int64_t TransferSize,
     FFileTransferCPSLimit = OperationProgress->CPSLimit;
   }
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::FileTransferProgress(int64_t TransferSize,
   int64_t Bytes)
 {
@@ -13564,7 +13484,7 @@ void TWebDAVFileSystem::FileTransferProgress(int64_t TransferSize,
 
   DoFileTransferProgress(TransferSize, Bytes);
 }
-//------------------------------------------------------------------------------
+
 void TWebDAVFileSystem::FileTransfer(const UnicodeString & AFileName,
   const UnicodeString & LocalFile, const UnicodeString & RemoteFile,
   const UnicodeString & RemotePath, bool Get, int64_t Size, int Type,
@@ -13583,7 +13503,7 @@ void TWebDAVFileSystem::FileTransfer(const UnicodeString & AFileName,
       Result = WebDAVPutFile(FullRemoteFileName.c_str(), LocalFile.c_str(), Size);
     }
     // if (!Result)
-      // EXCEPTION;
+      // ThrowExtException();
   );
 
   switch (FFileTransferAbort)
@@ -13604,7 +13524,7 @@ void TWebDAVFileSystem::FileTransfer(const UnicodeString & AFileName,
     DoFileTransferProgress(OperationProgress->TransferSize, OperationProgress->TransferSize);
   }
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t * Path, int & ResponseCode)
 {
   assert(Path);
@@ -13625,7 +13545,7 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t * Path, int & Response
   webdav_pool_destroy(pool);
   return err == WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::WebDAVCheckExisting(const wchar_t * Path, int & IsDir)
 {
   assert(Path);
@@ -13649,7 +13569,7 @@ bool TWebDAVFileSystem::WebDAVCheckExisting(const wchar_t * Path, int & IsDir)
   webdav_pool_destroy(pool);
   return (err == WEBDAV_NO_ERROR) && (kind != webdav::node_none);
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::WebDAVMakeDirectory(const wchar_t * Path)
 {
   assert(Path);
@@ -13669,7 +13589,7 @@ bool TWebDAVFileSystem::WebDAVMakeDirectory(const wchar_t * Path)
   webdav_pool_destroy(pool);
   return err == WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString & Directory)
 {
   webdav::listdataentry_vector_t Entries;
@@ -13699,7 +13619,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString & Directory)
   webdav_pool_destroy(baton.pool);
   return err == WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::WebDAVGetFile(
   const wchar_t * RemotePath, const wchar_t * LocalPath)
 {
@@ -13748,7 +13668,7 @@ bool TWebDAVFileSystem::WebDAVGetFile(
 
   return Result;
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * RemotePath,
   const wchar_t * LocalPath, const uint64_t /*FileSize*/)
 {
@@ -13787,7 +13707,7 @@ bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * RemotePath,
   }
   return err == WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::WebDAVRenameFile(const wchar_t * SrcPath, const wchar_t * DstPath)
 {
   assert(SrcPath && *SrcPath);
@@ -13814,7 +13734,7 @@ bool TWebDAVFileSystem::WebDAVRenameFile(const wchar_t * SrcPath, const wchar_t 
   webdav_pool_destroy(pool);
   return err == WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 bool TWebDAVFileSystem::WebDAVDeleteFile(const wchar_t * Path)
 {
   assert(Path);
@@ -13835,7 +13755,7 @@ bool TWebDAVFileSystem::WebDAVDeleteFile(const wchar_t * Path)
   webdav_pool_destroy(pool);
   return err == WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 webdav::error_t TWebDAVFileSystem::OpenURL(
   const UnicodeString & SessionURL,
   apr_pool_t * pool)
@@ -13899,7 +13819,7 @@ webdav::error_t TWebDAVFileSystem::OpenURL(
   FSession = session_p;
   return WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 webdav::error_t TWebDAVFileSystem::GetServerSettings(
   int * proxy_method,
   const char ** proxy_host,
@@ -13992,7 +13912,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
 
   return WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 webdav::error_t TWebDAVFileSystem::VerifyCertificate(
   const char * Prompt, const char * fingerprint,
   uintptr_t & RequestResult)
@@ -14010,7 +13930,7 @@ webdav::error_t TWebDAVFileSystem::VerifyCertificate(
   Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
   Params.NoBatchAnswers = qaYes | qaRetry;
   Params.Aliases = Aliases;
-  Params.AliasesCount = LENOF(Aliases);
+  Params.AliasesCount = _countof(Aliases);
   uintptr_t Answer = FTerminal->QueryUser(
     FMTLOAD(VERIFY_CERT_PROMPT3, UnicodeString(Prompt).c_str()),
     nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
@@ -14025,7 +13945,7 @@ webdav::error_t TWebDAVFileSystem::VerifyCertificate(
   }
   return WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 webdav::error_t TWebDAVFileSystem::AskForClientCertificateFilename(
   const char ** cert_file, uintptr_t & RequestResult,
   apr_pool_t * pool)
@@ -14044,7 +13964,7 @@ webdav::error_t TWebDAVFileSystem::AskForClientCertificateFilename(
   RequestResult = qaOK;
   return WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 webdav::error_t TWebDAVFileSystem::NeonRequestAuth(
   const char ** user_name,
   const char ** password,
@@ -14146,7 +14066,7 @@ webdav::error_t TWebDAVFileSystem::NeonRequestAuth(
 
   return Result ? WEBDAV_NO_ERROR : WEBDAV_ERROR_AUTH;
 }
-//------------------------------------------------------------------------------
+
 webdav::error_t TWebDAVFileSystem::AskForUsername(
   const char ** user_name, uintptr_t & RequestResult,
   apr_pool_t * pool)
@@ -14165,7 +14085,7 @@ webdav::error_t TWebDAVFileSystem::AskForUsername(
   RequestResult = qaOK;
   return WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 webdav::error_t TWebDAVFileSystem::AskForUserPassword(
   const char ** password,
   uintptr_t & RequestResult,
@@ -14185,7 +14105,7 @@ webdav::error_t TWebDAVFileSystem::AskForUserPassword(
   RequestResult = qaOK;
   return WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 webdav::error_t TWebDAVFileSystem::AskForPassphrase(
   const char ** passphrase,
   const char * realm,
@@ -14207,7 +14127,7 @@ webdav::error_t TWebDAVFileSystem::AskForPassphrase(
   RequestResult = qaOK;
   return WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 webdav::error_t TWebDAVFileSystem::SimplePrompt(
   const char * prompt_text,
   const char * prompt_string,
@@ -14222,7 +14142,7 @@ webdav::error_t TWebDAVFileSystem::SimplePrompt(
   RequestResult = Answer;
   return RequestResult == qaCancel ? WEBDAV_ERR_CANCELLED : WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 webdav::error_t TWebDAVFileSystem::CreateStorage(
   THierarchicalStorage *& Storage)
 {
@@ -14230,11 +14150,11 @@ webdav::error_t TWebDAVFileSystem::CreateStorage(
     FTerminal->GetConfiguration()->CreateStorage(false);
   return WEBDAV_NO_ERROR;
 }
-//------------------------------------------------------------------------------
+
 uintptr_t TWebDAVFileSystem::AdjustToCPSLimit(uintptr_t Len)
 {
   return FCurrentOperationProgress ? (uintptr_t)FCurrentOperationProgress->AdjustToCPSLimit(Len) : Len;
 }
-//------------------------------------------------------------------------------
+
 NB_IMPLEMENT_CLASS(TWebDAVFileSystem, NB_GET_CLASS_INFO(TCustomFileSystem), nullptr);
-//------------------------------------------------------------------------------
+
