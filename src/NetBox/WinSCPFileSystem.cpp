@@ -286,43 +286,43 @@ void TKeepaliveThread::Execute()
 }
 
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
-  TCustomFarFileSystem(APlugin)
+  TCustomFarFileSystem(APlugin),
+  FReloadDirectory(false),
+  FProgressSaveScreenHandle(0),
+  FSynchronizationSaveScreenHandle(0),
+  FAuthenticationSaveScreenHandle(0),
+  FFileList(nullptr),
+  FPanelItems(nullptr),
+  FSavedFindFolder(L""),
+  FTerminal(nullptr),
+  FQueue(nullptr),
+  FQueueStatus(nullptr),
+  FQueueStatusInvalidated(false),
+  FQueueItemInvalidated(false),
+  FRefreshLocalDirectory(false),
+  FRefreshRemoteDirectory(false),
+  FQueueEventPending(false),
+  FNoProgress(false),
+  FNoProgressFinish(false),
+  FKeepaliveThread(nullptr),
+  FSynchronisingBrowse(false),
+  FSynchronizeController(nullptr),
+  FCapturedLog(nullptr),
+  FAuthenticationLog(nullptr),
+  FLastEditorID(-1),
+  FLoadingSessionList(false),
+  FPathHistory(new TStringList()),
+  FCurrentDirectoryWasChanged(false),
+
+  FLastMultipleEditReadOnly(false),
+  FEditorPendingSave(false),
+  FOutputLog(false)
 {
 }
 
 void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
 {
   TCustomFarFileSystem::Init();
-  FReloadDirectory = false;
-  FProgressSaveScreenHandle = 0;
-  FSynchronizationSaveScreenHandle = 0;
-  FAuthenticationSaveScreenHandle = 0;
-  FFileList = nullptr;
-  FPanelItems = nullptr;
-  FSavedFindFolder = L"";
-  FTerminal = nullptr;
-  FQueue = nullptr;
-  FQueueStatus = nullptr;
-  FQueueStatusInvalidated = false;
-  FQueueItemInvalidated = false;
-  FRefreshLocalDirectory = false;
-  FRefreshRemoteDirectory = false;
-  FQueueEventPending = false;
-  FNoProgress = false;
-  FNoProgressFinish = false;
-  FKeepaliveThread = nullptr;
-  FSynchronisingBrowse = false;
-  FSynchronizeController = nullptr;
-  FCapturedLog = nullptr;
-  FAuthenticationLog = nullptr;
-  FLastEditorID = -1;
-  FLoadingSessionList = false;
-  FPathHistory = new TStringList();
-  FCurrentDirectoryWasChanged = false;
-
-  FLastMultipleEditReadOnly = false;
-  FEditorPendingSave = false;
-  FOutputLog = false;
 }
 
 TWinSCPFileSystem::~TWinSCPFileSystem()
