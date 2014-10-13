@@ -2133,13 +2133,13 @@ uintptr_t ContinueAnswer(uintptr_t Answers)
 
 UnicodeString LoadStr(intptr_t Ident, intptr_t /*MaxLength*/)
 {
-  UnicodeString Result;
+//  UnicodeString Result;
 //  Result.SetLength(MaxLength > 0 ? MaxLength : 1024);
 //  HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
 //  assert(hInstance != 0);
 //  intptr_t Length = static_cast<intptr_t>(::LoadString(hInstance, (UINT)Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), (int)Result.Length()));
 //  Result.SetLength(Length);
-  Result = GetGlobalFunctions()->GetMsg(Ident);
+  UnicodeString Result = GetGlobalFunctions()->GetMsg(Ident);
   return Result;
 }
 
