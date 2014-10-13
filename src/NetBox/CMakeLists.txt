@@ -443,9 +443,9 @@ endif()
 
 add_library(apr STATIC
   ${LIBS_ROOT}/apr/atomic/win32/apr_atomic.c
-  ${LIBS_ROOT}/apr/dso/win32/dso.c
+#  ${LIBS_ROOT}/apr/dso/win32/dso.c
   ${LIBS_ROOT}/apr/file_io/win32/buffer.c
-  ${LIBS_ROOT}/apr/file_io/unix/copy.c
+#  ${LIBS_ROOT}/apr/file_io/unix/copy.c
   ${LIBS_ROOT}/apr/file_io/win32/dir.c
   ${LIBS_ROOT}/apr/file_io/unix/fileacc.c
   ${LIBS_ROOT}/apr/file_io/win32/filedup.c
@@ -460,7 +460,7 @@ add_library(apr STATIC
   ${LIBS_ROOT}/apr/file_io/win32/pipe.c
   ${LIBS_ROOT}/apr/file_io/win32/readwrite.c
   ${LIBS_ROOT}/apr/file_io/win32/seek.c
-  ${LIBS_ROOT}/apr/file_io/unix/tempdir.c
+#  ${LIBS_ROOT}/apr/file_io/unix/tempdir.c
   ${LIBS_ROOT}/apr/locks/win32/proc_mutex.c
   ${LIBS_ROOT}/apr/locks/win32/thread_cond.c
   ${LIBS_ROOT}/apr/locks/win32/thread_mutex.c
@@ -468,36 +468,36 @@ add_library(apr STATIC
   ${LIBS_ROOT}/apr/memory/unix/apr_pools.c
   ${LIBS_ROOT}/apr/misc/win32/apr_app.c
   ${LIBS_ROOT}/apr/misc/win32/charset.c
-  ${LIBS_ROOT}/apr/misc/win32/env.c
+#  ${LIBS_ROOT}/apr/misc/win32/env.c
   ${LIBS_ROOT}/apr/misc/unix/errorcodes.c
-  ${LIBS_ROOT}/apr/misc/unix/getopt.c
+#  ${LIBS_ROOT}/apr/misc/unix/getopt.c
   ${LIBS_ROOT}/apr/misc/win32/internal.c
   ${LIBS_ROOT}/apr/misc/win32/misc.c
-  ${LIBS_ROOT}/apr/misc/unix/otherchild.c
+#  ${LIBS_ROOT}/apr/misc/unix/otherchild.c
   ${LIBS_ROOT}/apr/misc/win32/rand.c
   ${LIBS_ROOT}/apr/misc/win32/start.c
   ${LIBS_ROOT}/apr/misc/win32/utf8.c
-  ${LIBS_ROOT}/apr/misc/unix/version.c
+#  ${LIBS_ROOT}/apr/misc/unix/version.c
   ${LIBS_ROOT}/apr/mmap/unix/common.c
-  ${LIBS_ROOT}/apr/mmap/win32/mmap.c
+#  ${LIBS_ROOT}/apr/mmap/win32/mmap.c
   ${LIBS_ROOT}/apr/network_io/unix/inet_ntop.c
   ${LIBS_ROOT}/apr/network_io/unix/inet_pton.c
-  ${LIBS_ROOT}/apr/network_io/unix/multicast.c
+#  ${LIBS_ROOT}/apr/network_io/unix/multicast.c
   ${LIBS_ROOT}/apr/network_io/win32/sendrecv.c
   ${LIBS_ROOT}/apr/network_io/unix/sockaddr.c
   ${LIBS_ROOT}/apr/network_io/win32/sockets.c
   ${LIBS_ROOT}/apr/network_io/unix/socket_util.c
   ${LIBS_ROOT}/apr/network_io/win32/sockopt.c
-  ${LIBS_ROOT}/apr/passwd/apr_getpass.c
-  ${LIBS_ROOT}/apr/poll/unix/poll.c
-  ${LIBS_ROOT}/apr/poll/unix/pollcb.c
-  ${LIBS_ROOT}/apr/poll/unix/pollset.c
-  ${LIBS_ROOT}/apr/poll/unix/select.c
-  ${LIBS_ROOT}/apr/poll/unix/z_asio.c
+#  ${LIBS_ROOT}/apr/passwd/apr_getpass.c
+#  ${LIBS_ROOT}/apr/poll/unix/poll.c
+#  ${LIBS_ROOT}/apr/poll/unix/pollcb.c
+#  ${LIBS_ROOT}/apr/poll/unix/pollset.c
+#  ${LIBS_ROOT}/apr/poll/unix/select.c
+#  ${LIBS_ROOT}/apr/poll/unix/z_asio.c
   ${LIBS_ROOT}/apr/random/unix/apr_random.c
-  ${LIBS_ROOT}/apr/random/unix/sha2.c
-  ${LIBS_ROOT}/apr/random/unix/sha2_glue.c
-  ${LIBS_ROOT}/apr/shmem/win32/shm.c
+#  ${LIBS_ROOT}/apr/random/unix/sha2.c
+#  ${LIBS_ROOT}/apr/random/unix/sha2_glue.c
+#  ${LIBS_ROOT}/apr/shmem/win32/shm.c
   ${LIBS_ROOT}/apr/strings/apr_cpystrn.c
   ${LIBS_ROOT}/apr/strings/apr_fnmatch.c
   ${LIBS_ROOT}/apr/strings/apr_snprintf.c
@@ -506,14 +506,14 @@ add_library(apr STATIC
   ${LIBS_ROOT}/apr/strings/apr_strtok.c
   ${LIBS_ROOT}/apr/tables/apr_hash.c
   ${LIBS_ROOT}/apr/tables/apr_tables.c
-  ${LIBS_ROOT}/apr/tables/apr_skiplist.c
+#  ${LIBS_ROOT}/apr/tables/apr_skiplist.c
   ${LIBS_ROOT}/apr/threadproc/win32/proc.c
   ${LIBS_ROOT}/apr/threadproc/win32/signals.c
   ${LIBS_ROOT}/apr/threadproc/win32/thread.c
   ${LIBS_ROOT}/apr/threadproc/win32/threadpriv.c
   ${LIBS_ROOT}/apr/time/win32/time.c
   ${LIBS_ROOT}/apr/time/win32/timestr.c
-  ${LIBS_ROOT}/apr/user/win32/groupinfo.c
+#  ${LIBS_ROOT}/apr/user/win32/groupinfo.c
   ${LIBS_ROOT}/apr/user/win32/userinfo.c
 )
 
