@@ -920,7 +920,7 @@ void TFarMessageDialog::Idle()
 
   if (FParams->Timer > 0)
   {
-    size_t SinceLastTimer = static_cast<size_t>((Now() - FLastTimerTime).GetValue() * 24*60*60*1000);
+    size_t SinceLastTimer = static_cast<size_t>((Now() - FLastTimerTime).GetValue() * 24 * 60 * 60 * 1000);
     if (SinceLastTimer >= FParams->Timeout)
     {
       assert(FParams->TimerEvent);
@@ -939,7 +939,7 @@ void TFarMessageDialog::Idle()
 
   if (FParams->Timeout > 0)
   {
-    size_t Running = static_cast<size_t>((Now() - FStartTime).GetValue() * 24*60*60*1000);
+    size_t Running = static_cast<size_t>((Now() - FStartTime).GetValue() * 24 * 60 * 60 * 1000);
     if (Running >= FParams->Timeout)
     {
       assert(FTimeoutButton != nullptr);
