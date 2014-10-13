@@ -1173,7 +1173,7 @@ UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, char Separator
   UnicodeString Result;
   for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
   {
-    Result += CharToHex(static_cast<char>(Str[Index]), UpperCase);
+    Result += CharToHex(Str[Index], UpperCase);
     if ((Separator != L'\0') && (Index <= Str.Length()))
     {
       Result += Separator;

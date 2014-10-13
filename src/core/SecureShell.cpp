@@ -1077,8 +1077,8 @@ UnicodeString TSecureShell::ReceiveLine()
     {
       uint8_t Ch;
       Receive(&Ch, 1);
-      Line += static_cast<char>(Ch);
-      EOL = (static_cast<char>(Ch) == '\n');
+      Line += Ch;
+      EOL = (Ch == '\n');
     }
   }
   while (!EOL);
