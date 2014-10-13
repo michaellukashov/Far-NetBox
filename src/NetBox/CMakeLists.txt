@@ -356,7 +356,7 @@ add_library(putty STATIC
   ${LIBS_ROOT}/Putty/SSHSHA_.c
   ${LIBS_ROOT}/Putty/SSHZLIB.c
   ${LIBS_ROOT}/Putty/TREE234.c
-  ${LIBS_ROOT}/Putty/CHARSET/UTF8.c
+#  ${LIBS_ROOT}/Putty/CHARSET/UTF8.c
   ${LIBS_ROOT}/Putty/WILDCARD.c
   ${LIBS_ROOT}/Putty/WINDOWS/WINGSS.c
   ${LIBS_ROOT}/Putty/WINDOWS/WINHANDL.c
