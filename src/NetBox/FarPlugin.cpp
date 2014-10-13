@@ -2439,7 +2439,7 @@ void TFarPanelItem::SetSelected(bool Value)
   }
 }
 
-uintptr_t TFarPanelItem::GetFileAttributes() const
+uintptr_t TFarPanelItem::GetFileAttrs() const
 {
   return static_cast<uintptr_t>(FPanelItem->FindData.dwFileAttributes);
 }
@@ -2451,7 +2451,7 @@ bool TFarPanelItem::GetIsParentDirectory() const
 
 bool TFarPanelItem::GetIsFile() const
 {
-  return (GetFileAttributes() & FILE_ATTRIBUTE_DIRECTORY) == 0;
+  return (GetFileAttrs() & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
 
 THintPanelItem::THintPanelItem(const UnicodeString & AHint) :

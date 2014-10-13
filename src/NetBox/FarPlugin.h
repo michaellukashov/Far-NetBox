@@ -392,7 +392,7 @@ public:
   virtual ~TFarPanelItem();
 
   uintptr_t GetFlags() const;
-  uintptr_t GetFileAttributes() const;
+  uintptr_t GetFileAttrs() const;
   UnicodeString GetFileName() const;
   void * GetUserData();
   bool GetSelected() const;
