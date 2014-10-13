@@ -1,5 +1,6 @@
 ﻿.Language=English,English
 
+
 "NetBox"
 "NetBox"
 
@@ -298,7 +299,6 @@
 "USER %proxyuser@%host"
 "USER %user@%host %proxyuser"
 "USER %user@%proxyuser@%host"
-
 
 "Pro&xy host name:"
 "Po&rt number:"
@@ -693,8 +693,6 @@
 
 "Imported %d sessions"
 
-//NetBox strings
-
 "NetBox"
 
 "OK"
@@ -703,6 +701,7 @@
 " Session "
 " Proxy "
 
+//Edit link dialog
 "Create session link"
 "Edit session link"
 "Session name:"
@@ -719,12 +718,14 @@
 "The session name can not be empty"
 "The session name contains restricted symbols (<>:\"/\\|?*)"
 
+//Configure menu
 "NetBox - settings"
 "Main settings"
 "Proxy settings"
 "Logging settings"
 "About"
 
+//Main configure dialog
 "Add to disk menu"
 "Add to panels plugin menu"
 "Use own encryption key"
@@ -733,6 +734,7 @@
 "Default timeout (sec):"
 "Saved sessions directory:"
 
+//Proxy configure dialog
 "NetBox - Proxy settings"
 "Proxy type:"
 "None"
@@ -745,6 +747,7 @@
 "User name:"
 "Password:"
 
+//Logging configure dialog
 "NetBox - Logging settings"
 "Enable logging"
 " Logging options "
@@ -754,16 +757,20 @@
 "Log to file:"
 "C:\NetBox.log"
 
+//About menu
 "NetBox - About"
 "FTP/FTPS/SFTP/WebDAV client for Far 2.0"
 "Version %s"
 "Close"
 
+//Prompt to crypto key
 "Enter password for read saved sessions:"
 
+//Create directory dialog
 "Create directory"
 "Directory name:"
 
+//Delete items dialog
 "Delete"
 "Do you wish to delete"
 "the session link?"
@@ -772,16 +779,19 @@
 "selected items?"
 "Delete"
 
+//Copy dialog
 "Copy"
 "Copy %s to:"
 "selected items"
 "Copy"
 
+//Move dialog
 "Move"
 "Move %s to:"
 "selected items"
 "Move"
 
+//Progress titles
 "Establish connection with %s..."
 "Changing directory to \"%s\"..."
 "Get directory listing for %s..."
@@ -790,6 +800,7 @@
 "to"
 "Delete..."
 
+//Error messages
 "Unable to load private key file\n%s"
 "Unable to establish connection with host\n%s"
 "Unable to create directory\n%s"
@@ -806,6 +817,7 @@
 
 "Certificate verification error: %s\nContinue anyway?"
 
+// TextCore1.rc
 "CORE_ERROR"
 "Host key wasn't verified!"
 "Connection failed."
@@ -1164,6 +1176,7 @@
 ""
 "WebDAV code based on neon library %s"
 "Copyright В© 1999-2013 Joe Orton"
+""
 "eXpat library %s"
 "Copyright В© 1998-2012 Expat maintainers"
 ""
