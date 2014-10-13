@@ -1867,7 +1867,7 @@ bool TTerminal::DirectoryFileList(const UnicodeString & APath,
   return Result;
 }
 
-void TTerminal::SetCurrentDirectory(const UnicodeString & Value)
+void TTerminal::TerminalSetCurrentDirectory(const UnicodeString & Value)
 {
   assert(FFileSystem);
   UnicodeString Value2 = TranslateLockedPath(Value, false);
@@ -3333,7 +3333,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
 
       if (FCommandSession->GetCurrDirectory() != GetCurrDirectory())
       {
-        FCommandSession->SetCurrentDirectory(GetCurrDirectory());
+        FCommandSession->TerminalSetCurrentDirectory(GetCurrDirectory());
         // We are likely in transaction, so ReadCurrentDirectory won't get called
         // until transaction ends. But we need to know CurrentDirectory to
         // expand !/ pattern.
@@ -3792,7 +3792,7 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
       assert(GetCommandSessionOpened());
       assert(FCommandSession->GetFSProtocol() == cfsSCP);
       LogEvent(L"Copying file on command session.");
-      FCommandSession->SetCurrentDirectory(GetCurrDirectory());
+      FCommandSession->TerminalSetCurrentDirectory(GetCurrDirectory());
       FCommandSession->FFileSystem->CopyFile(AFileName, NewName);
     }
   }
@@ -4089,7 +4089,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
       assert(FCommandSession->GetFSProtocol() == cfsSCP);
       LogEvent(L"Executing user defined command on command session.");
 
-      FCommandSession->SetCurrentDirectory(GetCurrDirectory());
+      FCommandSession->TerminalSetCurrentDirectory(GetCurrDirectory());
       FCommandSession->FFileSystem->AnyCommand(ACommand, OutputEvent);
 
       FCommandSession->FFileSystem->ReadCurrentDirectory();

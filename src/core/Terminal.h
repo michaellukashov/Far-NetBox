@@ -167,7 +167,7 @@ public:
   const TRemoteTokenList * GetGroups();
   const TRemoteTokenList * GetUsers();
   const TRemoteTokenList * GetMembership();
-  void SetCurrentDirectory(const UnicodeString & Value);
+  void TerminalSetCurrentDirectory(const UnicodeString & Value);
   void SetExceptionOnFail(bool Value);
   void ReactOnCommand(intptr_t /*TFSCommand*/ Cmd);
   UnicodeString GetUserName() const;

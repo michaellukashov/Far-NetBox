@@ -2716,14 +2716,14 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int 
 
         UnicodeString CurrentDirectory = FTerminal->GetCurrDirectory();
         Result = UploadFiles(Move, OpMode, true, CurrentDirectory);
-        FTerminal->SetCurrentDirectory(CurrentDirectory);
+        FTerminal->TerminalSetCurrentDirectory(CurrentDirectory);
       }
     }
     else
     {
       UnicodeString CurrentDirectory = FTerminal->GetCurrDirectory();
       Result = UploadFiles(Move, OpMode, false, CurrentDirectory);
-      FTerminal->SetCurrentDirectory(CurrentDirectory);
+      FTerminal->TerminalSetCurrentDirectory(CurrentDirectory);
     }
   }
   else if (SessionList())
@@ -3733,7 +3733,7 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
         // always upload under the most recent name
         UnicodeString CurrentDirectory = FTerminal->GetCurrDirectory();
         UploadFromEditor(NoReload, FLastEditFile, FLastEditFile, CurrentDirectory);
-        FTerminal->SetCurrentDirectory(CurrentDirectory);
+        FTerminal->TerminalSetCurrentDirectory(CurrentDirectory);
       }
 
       if (MultipleEdit)
