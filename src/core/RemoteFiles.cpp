@@ -1798,7 +1798,7 @@ void TRemoteDirectoryCache::Clear()
   {
     TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
     SAFE_DESTROY(List);
-    SetObject(Index, nullptr);
+    SetObj(Index, nullptr);
   }
 }
 

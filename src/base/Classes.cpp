@@ -1001,7 +1001,7 @@ void TStringList::LoadFromFile(const UnicodeString & AFileName)
   }
 }
 
-void TStringList::SetObject(intptr_t Index, TObject * AObject)
+void TStringList::SetObj(intptr_t Index, TObject * AObject)
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FObjects.size())))
   {

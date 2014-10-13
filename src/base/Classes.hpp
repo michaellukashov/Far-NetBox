@@ -243,7 +243,7 @@ public:
 
 public:
   virtual TObject * GetObj(intptr_t Index) const = 0;
-  virtual void SetObject(intptr_t Index, TObject * AObject) = 0;
+  virtual void SetObj(intptr_t Index, TObject * AObject) = 0;
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
   virtual bool GetCaseSensitive() const = 0;
@@ -306,7 +306,7 @@ public:
 
 public:
   virtual TObject * GetObj(intptr_t Index) const;
-  virtual void SetObject(intptr_t Index, TObject * AObject);
+  virtual void SetObj(intptr_t Index, TObject * AObject);
   virtual bool GetSorted() const { return FSorted; }
   virtual void SetSorted(bool Value);
   virtual bool GetCaseSensitive() const { return FCaseSensitive; }

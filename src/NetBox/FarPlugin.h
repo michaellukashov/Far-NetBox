@@ -491,7 +491,7 @@ public:
   bool GetFlag(intptr_t Index, uintptr_t Flag) const;
 
 protected:
-  virtual void SetObject(intptr_t Index, TObject * AObject);
+  virtual void SetObj(intptr_t Index, TObject * AObject);
 
 private:
   intptr_t FItemFocused;

@@ -961,7 +961,7 @@ TStrings * TGUIConfiguration::GetLocales()
 
         if (Ext >= 0)
         {
-          Exts->SetObject(Ext, reinterpret_cast<TObject *>(Locale));
+          Exts->SetObj(Ext, reinterpret_cast<TObject *>(Locale));
         }
         else
         {
