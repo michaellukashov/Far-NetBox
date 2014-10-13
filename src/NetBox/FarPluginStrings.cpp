@@ -1,6 +1,8 @@
 #include "FarPluginStrings.h"
 #include "TextsCore.h"
+#include "rtlconsts.h"
 #include "FarTexts.h"
+
 
 const TFarPluginStrings FarPluginStrings[] =
 {
