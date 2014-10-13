@@ -1191,8 +1191,8 @@ UnicodeString HexToStr(const UnicodeString & Hex)
   {
     for (intptr_t Index = 1; Index <= Hex.Length(); Index += 2)
     {
-      uintptr_t P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[Index])));
-      uintptr_t P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[Index + 1])));
+      uintptr_t P1 = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[Index])));
+      uintptr_t P2 = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[Index + 1])));
       if ((P1 == std::wstring::npos) || (P2 == std::wstring::npos))
       {
         Result = L"";

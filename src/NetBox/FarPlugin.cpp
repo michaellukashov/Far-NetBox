@@ -1374,7 +1374,7 @@ void TCustomFarPlugin::ScrollTerminalScreen(int Rows)
   COORD Dest;
   CHAR_INFO Fill;
   Source.Left = 0;
-  Source.Top = static_cast<char>(Rows);
+  Source.Top = static_cast<SHORT>(Rows);
   Source.Right = static_cast<SHORT>(Size.x);
   Source.Bottom = static_cast<SHORT>(Size.y);
   Dest.X = 0;

@@ -1399,7 +1399,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
     case 2:     /* fatal error */
       // pscp adds 'Resp' to 'Msg', why?
       UnicodeString Msg = FSecureShell->ReceiveLine();
-      UnicodeString Line = UnicodeString(static_cast<char>(Resp)) + Msg;
+      UnicodeString Line = UnicodeString(reinterpret_cast<char *>(&Resp), 1) + Msg;
       if (IsLastLine(Line))
       {
         if (GotLastLine != nullptr)
@@ -2236,7 +2236,7 @@ inline void TSCPFileSystem::SCPError(const UnicodeString & Message, bool Fatal)
 
 void TSCPFileSystem::SCPSendError(const UnicodeString & Message, bool Fatal)
 {
-  uint8_t ErrorLevel = static_cast<char>(Fatal ? 2 : 1);
+  uint8_t ErrorLevel = static_cast<uint8_t>(Fatal ? 2 : 1);
   FTerminal->LogEvent(FORMAT(L"Sending SCP error (%d) to remote side:",
     static_cast<int>(ErrorLevel)));
   FSecureShell->Send(&ErrorLevel, 1);

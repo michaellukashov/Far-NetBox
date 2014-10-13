@@ -365,7 +365,7 @@ static void FillBufferWithRandomData(char * Buf, intptr_t Len)
 {
   while (Len > 0)
   {
-    *Buf = static_cast<char>((rand() >> 7) & 0xFF);
+    *Buf = static_cast<int8_t>((rand() >> 7) & 0xFF);
     Buf++;
     Len--;
   }

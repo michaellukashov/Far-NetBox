@@ -1122,7 +1122,7 @@ RawByteString HexToBytes(const UnicodeString & Hex)
       }
       else
       {
-        Result += static_cast<char>((P1 - 1) * 16 + P2 - 1);
+        Result += static_cast<int8_t>((P1 - 1) * 16 + P2 - 1);
       }
     }
   }
