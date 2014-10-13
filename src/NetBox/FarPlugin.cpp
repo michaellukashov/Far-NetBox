@@ -2886,8 +2886,11 @@ HINSTANCE TGlobalFunctions::GetInstanceHandle() const
 
 UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 {
-  return FarPlugin->GetMsg(Id);
+  // map Id to PluginString value
+  intptr_t PluginSringId = Id;
+  return FarPlugin->GetMsg(PluginSringId);
 }
+
 UnicodeString TGlobalFunctions::GetCurrDirectory() const
 {
   UnicodeString Result;
