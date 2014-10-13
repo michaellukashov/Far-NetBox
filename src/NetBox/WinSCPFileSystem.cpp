@@ -1925,7 +1925,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   {
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      const TRemoteFile * File = reinterpret_cast<const TRemoteFile *>(FileList->GetObject(Index));
+      const TRemoteFile * File = reinterpret_cast<const TRemoteFile *>(FileList->GetObj(Index));
       if (File != nullptr)
       {
         FileNames->Add(GetFullFilePath(File));
@@ -3249,7 +3249,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
   {
     assert(Instructions.IsEmpty());
     assert(Prompts->GetCount() == 1);
-    assert((Prompts->GetObject(0)) != nullptr);
+    assert((Prompts->GetObj(0)) != nullptr);
     UnicodeString AResult = Results->GetString(0);
 
     Result = WinSCPPlugin()->InputBox(Name, ::StripHotkey(Prompts->GetString(0)), AResult, FIB_NOUSELASTHISTORY);
@@ -3929,7 +3929,7 @@ void TWinSCPFileSystem::MultipleEdit()
     if ((FileList.get() != nullptr) && (FileList->GetCount() == 1))
     {
       MultipleEdit(FTerminal->GetCurrDirectory(), FileList->GetString(0),
-        NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(0)));
+        NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObj(0)));
     }
   }
 }

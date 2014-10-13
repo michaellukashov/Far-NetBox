@@ -625,7 +625,7 @@ bool TStrings::Equals(const TStrings * Strings) const
 
 void TStrings::SetString(intptr_t Index, const UnicodeString & S)
 {
-  TObject * TempObject = GetObject(Index);
+  TObject * TempObject = GetObj(Index);
   Delete(Index);
   InsertObject(Index, S, TempObject);
 }
@@ -645,7 +645,7 @@ void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
       EndUpdate();
     };
     UnicodeString TempString = GetString(CurIndex);
-    TObject * TempObject = GetObject(CurIndex);
+    TObject * TempObject = GetObj(CurIndex);
     Delete(CurIndex);
     InsertObject(NewIndex, TempString, TempObject);
   }
@@ -742,7 +742,7 @@ void TStrings::AddStrings(const TStrings * Strings)
   };
   for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
   {
-    AddObject(Strings->GetString(Index), Strings->GetObject(Index));
+    AddObject(Strings->GetString(Index), Strings->GetObj(Index));
   }
 }
 
@@ -905,7 +905,7 @@ void TStringList::Delete(intptr_t Index)
   Changed();
 }
 
-TObject * TStringList::GetObject(intptr_t Index) const
+TObject * TStringList::GetObj(intptr_t Index) const
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FObjects.size())))
   {

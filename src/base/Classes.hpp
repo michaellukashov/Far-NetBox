@@ -242,7 +242,7 @@ public:
   virtual intptr_t GetCount() const = 0;
 
 public:
-  virtual TObject * GetObject(intptr_t Index) const = 0;
+  virtual TObject * GetObj(intptr_t Index) const = 0;
   virtual void SetObject(intptr_t Index, TObject * AObject) = 0;
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
@@ -305,7 +305,7 @@ public:
   virtual intptr_t GetCount() const;
 
 public:
-  virtual TObject * GetObject(intptr_t Index) const;
+  virtual TObject * GetObj(intptr_t Index) const;
   virtual void SetObject(intptr_t Index, TObject * AObject);
   virtual bool GetSorted() const { return FSorted; }
   virtual void SetSorted(bool Value);

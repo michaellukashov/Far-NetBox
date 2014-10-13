@@ -991,7 +991,7 @@ TStrings * TGUIConfiguration::GetLocales()
     */
     for (intptr_t Index = 0; Index < Exts->GetCount(); ++Index)
     {
-      if ((Exts->GetObject(Index) == nullptr) &&
+      if ((Exts->GetObj(Index) == nullptr) &&
           (Exts->GetString(Index).Length() == 3) &&
           ::SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
       {

@@ -1620,7 +1620,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FFileList->GetObject(FIndex));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FFileList->GetObj(FIndex));
       ++FIndex;
 
       bool MissingRights =
@@ -1707,7 +1707,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FFileList->GetObject(FIndex));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FFileList->GetObj(FIndex));
       assert(File != nullptr);
       ++FIndex;
 
@@ -3775,7 +3775,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
   {
     for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(Index));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index));
       assert(File != nullptr);
       if (File && File->GetIsDirectory() && !File->GetIsSymLink() &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -4031,7 +4031,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = core::ExtractFileName(RealFileName, false);
     assert(!FAvoidBusy);
@@ -5168,7 +5168,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
+    const TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
 
     assert(!FAvoidBusy);
     FAvoidBusy = true;

@@ -12643,7 +12643,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = core::ExtractFileName(RealFileName, false);
 
@@ -12968,7 +12968,7 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     UnicodeString FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObject(Index));
+    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObj(Index));
     FTerminal->SetExceptionOnFail(true);
     {
       bool Success = false;

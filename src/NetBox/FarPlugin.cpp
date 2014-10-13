@@ -81,7 +81,7 @@ TCustomFarPlugin::~TCustomFarPlugin()
   SAFE_DESTROY(FOpenedPlugins);
   for (intptr_t Index = 0; Index < FSavedTitles->GetCount(); ++Index)
   {
-    TObject * Object = FSavedTitles->GetObject(Index);
+    TObject * Object = FSavedTitles->GetObj(Index);
     SAFE_DESTROY(Object);
   }
   SAFE_DESTROY(FSavedTitles);
@@ -842,7 +842,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     Button->SetBottom(Button->GetTop());
     Button->SetResult(Index + 1);
     Button->SetCenterGroup(true);
-    Button->SetTag(reinterpret_cast<intptr_t>(Buttons->GetObject(Index)));
+    Button->SetTag(reinterpret_cast<intptr_t>(Buttons->GetObj(Index)));
     if (PrevButton != nullptr)
     {
       Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -1141,7 +1141,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
   intptr_t Count = 0;
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    uintptr_t Flags = reinterpret_cast<uintptr_t>(Items->GetObject(Index));
+    uintptr_t Flags = reinterpret_cast<uintptr_t>(Items->GetObj(Index));
     if (FLAGCLEAR(Flags, MIF_HIDDEN))
     {
       ClearStruct(MenuItems[Count]);
@@ -1165,9 +1165,9 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
     Result = MenuItems[ResultItem].UserData;
     if (Selected >= 0)
     {
-      Items->SetObject(Selected, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObject(Selected)) & ~MIF_SELECTED));
+      Items->SetObject(Selected, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObj(Selected)) & ~MIF_SELECTED));
     }
-    Items->SetObject(Result, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObject(Result)) | MIF_SELECTED));
+    Items->SetObject(Result, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObj(Result)) | MIF_SELECTED));
   }
   else
   {
@@ -1450,7 +1450,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
 {
   assert(FSavedTitles->GetCount() > 0);
   UnicodeString Title = FSavedTitles->GetString(FSavedTitles->GetCount() - 1);
-  TObject * Object = FSavedTitles->GetObject(FSavedTitles->GetCount()-1);
+  TObject * Object = FSavedTitles->GetObj(FSavedTitles->GetCount()-1);
   TConsoleTitleParam * Param = NB_STATIC_DOWNCAST(TConsoleTitleParam, Object);
   if (Param->Own)
   {
@@ -1466,7 +1466,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
     UpdateProgress(PS_NOPROGRESS, 0);
   }
   {
-    TObject * Object = FSavedTitles->GetObject(FSavedTitles->GetCount() - 1);
+    TObject * Object = FSavedTitles->GetObj(FSavedTitles->GetCount() - 1);
     SAFE_DESTROY(Object);
   }
   FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
@@ -2740,7 +2740,7 @@ void TFarMenuItems::SetFlag(intptr_t Index, uintptr_t Flag, bool Value)
 {
   if (GetFlag(Index, Flag) != Value)
   {
-    uintptr_t F = reinterpret_cast<uintptr_t>(GetObject(Index));
+    uintptr_t F = reinterpret_cast<uintptr_t>(GetObj(Index));
     if (Value)
     {
       F |= Flag;
@@ -2755,7 +2755,7 @@ void TFarMenuItems::SetFlag(intptr_t Index, uintptr_t Flag, bool Value)
 
 bool TFarMenuItems::GetFlag(intptr_t Index, uintptr_t Flag) const
 {
-  return (reinterpret_cast<uintptr_t>(GetObject(Index)) & Flag) > 0;
+  return (reinterpret_cast<uintptr_t>(GetObj(Index)) & Flag) > 0;
 }
 
 TFarEditorInfo::TFarEditorInfo(EditorInfo * Info) :

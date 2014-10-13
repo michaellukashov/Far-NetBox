@@ -27,7 +27,7 @@ void TBookmarks::Clear()
 {
   for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
   {
-    TObject * Object = FBookmarkLists->GetObject(Index);
+    TObject * Object = FBookmarkLists->GetObj(Index);
     SAFE_DESTROY(Object);
   }
   FBookmarkLists->Clear();
@@ -149,7 +149,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
     {
       for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
       {
-        TBookmarkList * BookmarkList = NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObject(Index));
+        TBookmarkList * BookmarkList = NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObj(Index));
         if (All || BookmarkList->GetModified())
         {
           UnicodeString Key;
@@ -215,7 +215,7 @@ void TBookmarks::ModifyAll(bool Modify)
 {
   for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
   {
-    TBookmarkList * BookmarkList = NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObject(Index));
+    TBookmarkList * BookmarkList = NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObj(Index));
     assert(BookmarkList);
     BookmarkList->SetModified(Modify);
   }
@@ -226,7 +226,7 @@ TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & AIndex)
   intptr_t Index = FBookmarkLists->IndexOf(AIndex.c_str());
   if (Index >= 0)
   {
-    return NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObject(Index));
+    return NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObj(Index));
   }
   else
   {
@@ -240,7 +240,7 @@ void TBookmarks::SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Valu
   if (Index >= 0)
   {
     TBookmarkList * BookmarkList;
-    BookmarkList = NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObject(Index));
+    BookmarkList = NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObj(Index));
     BookmarkList->Assign(Value);
   }
   else
@@ -282,7 +282,7 @@ void TBookmarkList::Clear()
 {
   for (intptr_t Index = 0; Index < FBookmarks->GetCount(); ++Index)
   {
-    TObject * Object = FBookmarks->GetObject(Index);
+    TObject * Object = FBookmarks->GetObj(Index);
     SAFE_DESTROY(Object);
   }
   FBookmarks->Clear();
@@ -298,7 +298,7 @@ void TBookmarkList::Assign(const TPersistent * Source)
     for (intptr_t Index = 0; Index < SourceList->FBookmarks->GetCount(); ++Index)
     {
       TBookmark * Bookmark = new TBookmark();
-      Bookmark->Assign(NB_STATIC_DOWNCAST(TBookmark, SourceList->FBookmarks->GetObject(Index)));
+      Bookmark->Assign(NB_STATIC_DOWNCAST(TBookmark, SourceList->FBookmarks->GetObj(Index)));
       Add(Bookmark);
     }
     FOpenedNodes->Assign(SourceList->FOpenedNodes);
@@ -388,7 +388,7 @@ intptr_t TBookmarkList::IndexOf(TBookmark * Bookmark)
 void TBookmarkList::KeyChanged(intptr_t Index)
 {
   assert(Index < GetCount());
-  TBookmark * Bookmark = NB_STATIC_DOWNCAST(TBookmark, FBookmarks->GetObject(Index));
+  TBookmark * Bookmark = NB_STATIC_DOWNCAST(TBookmark, FBookmarks->GetObj(Index));
   assert(FBookmarks->GetString(Index) != Bookmark->GetKey());
   if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) >= 0)
   {
@@ -400,7 +400,7 @@ void TBookmarkList::KeyChanged(intptr_t Index)
 TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, const UnicodeString & Name)
 {
   intptr_t Index = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
-  TBookmark * Bookmark = ((Index >= 0) ? NB_STATIC_DOWNCAST(TBookmark, FBookmarks->GetObject(Index)) : nullptr);
+  TBookmark * Bookmark = ((Index >= 0) ? NB_STATIC_DOWNCAST(TBookmark, FBookmarks->GetObj(Index)) : nullptr);
   assert(!Bookmark || (Bookmark->GetNode() == Node && Bookmark->GetName() == Name));
   return Bookmark;
 }
@@ -424,7 +424,7 @@ intptr_t TBookmarkList::GetCount()
 
 TBookmark * TBookmarkList::GetBookmarks(intptr_t Index)
 {
-  TBookmark * Bookmark = NB_STATIC_DOWNCAST(TBookmark, FBookmarks->GetObject(Index));
+  TBookmark * Bookmark = NB_STATIC_DOWNCAST(TBookmark, FBookmarks->GetObj(Index));
   assert(Bookmark);
   return Bookmark;
 }

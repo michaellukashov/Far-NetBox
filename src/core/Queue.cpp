@@ -1980,8 +1980,8 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   for (intptr_t Index = 0; Index < AFilesToCopy->GetCount(); ++Index)
   {
     FFilesToCopy->AddObject(AFilesToCopy->GetString(Index),
-      ((AFilesToCopy->GetObject(Index) == nullptr) || (Side == osLocal)) ? nullptr :
-        NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index))->Duplicate());
+      ((AFilesToCopy->GetObj(Index) == nullptr) || (Side == osLocal)) ? nullptr :
+        NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index))->Duplicate());
   }
 
   FTargetDir = TargetDir;
@@ -1996,7 +1996,7 @@ TTransferQueueItem::~TTransferQueueItem()
 {
   for (intptr_t Index = 0; Index < FFilesToCopy->GetCount(); ++Index)
   {
-    TObject * Object = FFilesToCopy->GetObject(Index);
+    TObject * Object = FFilesToCopy->GetObj(Index);
     SAFE_DESTROY(Object);
   }
   SAFE_DESTROY(FFilesToCopy);

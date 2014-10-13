@@ -1796,7 +1796,7 @@ void TRemoteDirectoryCache::Clear()
   };
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
+    TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
     SAFE_DESTROY(List);
     SetObject(Index, nullptr);
   }
@@ -1825,7 +1825,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   intptr_t Index = IndexOf(core::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
-    TRemoteFileList * FileList = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
+    TRemoteFileList * FileList = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
     if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
@@ -1843,8 +1843,8 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   bool Result = (Index >= 0);
   if (Result)
   {
-    assert(GetObject(Index) != nullptr);
-    NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index))->DuplicateTo(FileList);
+    assert(GetObj(Index) != nullptr);
+    NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index))->DuplicateTo(FileList);
   }
   return Result;
 }
@@ -1898,7 +1898,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
 
 void TRemoteDirectoryCache::Delete(intptr_t Index)
 {
-  TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
+  TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
   SAFE_DESTROY(List);
   TStringList::Delete(Index);
 }
@@ -2679,7 +2679,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
   TRemoteProperties CommonProperties;
   for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
   {
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(Index));
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index));
     assert(File);
     if (!Index)
     {

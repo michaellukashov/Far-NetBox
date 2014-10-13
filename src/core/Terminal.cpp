@@ -1322,7 +1322,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   {
     if (PasswordOrPassphrasePrompt && !GetConfiguration()->GetRememberPassword())
     {
-      Prompts->SetObject(0, reinterpret_cast<TObject*>(intptr_t(Prompts->GetObject(0)) | pupRemember));
+      Prompts->SetObject(0, reinterpret_cast<TObject*>(intptr_t(Prompts->GetObj(0)) | pupRemember));
     }
 
     if (GetOnPromptUser() != nullptr)
@@ -1333,7 +1333,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     }
 
     if (Result && PasswordOrPassphrasePrompt &&
-        (GetConfiguration()->GetRememberPassword() || FLAGSET(int(Prompts->GetObject(0)), pupRemember)))
+        (GetConfiguration()->GetRememberPassword() || FLAGSET(int(Prompts->GetObj(0)), pupRemember)))
     {
       RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
       if (FTunnelOpening)
@@ -3063,14 +3063,14 @@ bool TTerminal::ProcessFiles(const TStrings * AFileList,
               Success = false;
               if (!Ex)
               {
-                TRemoteFile * RemoteFile = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(Index));
+                TRemoteFile * RemoteFile = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index));
                 ProcessFile(FileName, RemoteFile, Param);
               }
               else
               {
                 // not used anymore
                 // TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
-                // ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObject(Index), Param, Index);
+                // ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObjject(Index), Param, Index);
               }
               Success = true;
             }
@@ -3376,7 +3376,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
     UnicodeString FileList;
     for (intptr_t Index = 0; Index < AFiles->GetCount(); ++Index)
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFiles->GetObject(Index));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFiles->GetObj(Index));
       bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
 
       if (!Dir || FLAGSET(Params, ccApplyToDirectories))
@@ -3496,7 +3496,7 @@ bool TTerminal::LoadFilesProperties(TStrings * AFileList)
     FFileSystem->LoadFilesProperties(AFileList);
   if (Result && GetSessionData()->GetCacheDirectories() &&
       (AFileList->GetCount() > 0) &&
-      (NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(0))->GetDirectory() == FFiles))
+      (NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(0))->GetDirectory() == FFiles))
   {
     AddCachedFileList(FFiles);
   }
@@ -3743,7 +3743,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
         for (intptr_t Index = 0; !PossiblyMoved && (Index < AFileList->GetCount()); ++Index)
         {
           const TRemoteFile * File =
-            NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFileList->GetObject(Index));
+            NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFileList->GetObj(Index));
           // File can be nullptr, and filename may not be full path,
           // but currently this is the only way we can move (at least in GUI)
           // current directory
@@ -4520,7 +4520,7 @@ public:
       for (intptr_t Index = 0; Index < LocalFileList->GetCount(); ++Index)
       {
         TSynchronizeFileData * FileData = NB_STATIC_DOWNCAST(TSynchronizeFileData,
-          LocalFileList->GetObject(Index));
+          LocalFileList->GetObj(Index));
         SAFE_DESTROY(FileData);
       }
       SAFE_DESTROY(LocalFileList);
@@ -4718,7 +4718,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
       for (intptr_t Index = 0; Index < Data.LocalFileList->GetCount(); ++Index)
       {
         FileData = NB_STATIC_DOWNCAST(TSynchronizeFileData,
-          Data.LocalFileList->GetObject(Index));
+          Data.LocalFileList->GetObj(Index));
         // add local file either if we are going to upload it
         // (i.e. if it is updated or we want to upload even new files)
         // or if we are going to delete it (i.e. all "new"=obsolete files)
@@ -4846,7 +4846,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & /*AFileName*/,
     if (!New)
     {
       TSynchronizeFileData * LocalData =
-        NB_STATIC_DOWNCAST(TSynchronizeFileData, Data->LocalFileList->GetObject(LocalIndex));
+        NB_STATIC_DOWNCAST(TSynchronizeFileData, Data->LocalFileList->GetObj(LocalIndex));
 
       LocalData->New = false;
 

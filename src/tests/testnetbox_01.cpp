@@ -214,7 +214,7 @@ BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
   TStringList Lines;
   TObject obj1;
   Lines.InsertObject(0, L"line 1", &obj1);
-  BOOST_CHECK(&obj1 == Lines.GetObject(0));
+  BOOST_CHECK(&obj1 == Lines.GetObjject(0));
 }
 
 BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
