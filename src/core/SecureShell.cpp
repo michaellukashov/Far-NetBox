@@ -180,14 +180,14 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
     int pcipher = 0;
     switch (Data->GetCipher(c))
     {
-      case
-        cipWarn: pcipher = CIPHER_WARN;
+      case cipWarn:
+        pcipher = CIPHER_WARN;
         break;
-      case
-        cip3DES: pcipher = CIPHER_3DES;
+      case cip3DES:
+        pcipher = CIPHER_3DES;
         break;
-      case
-        cipBlowfish: pcipher = CIPHER_BLOWFISH;
+      case cipBlowfish:
+        pcipher = CIPHER_BLOWFISH;
         break;
       case cipAES:
         pcipher = CIPHER_AES;
