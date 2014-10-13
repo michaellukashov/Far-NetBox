@@ -1222,4 +1222,4 @@
 "1.6.2"
 "Based on WinSCP: SFTP/FTP/SCP client for FAR"
 " Version %s"
-  WINSCPFAR_BASED_COPYRIGHT "Copyright © 2000-2014 Martin Prikryl"
+"Copyright © 2000-2014 Martin Prikryl"
