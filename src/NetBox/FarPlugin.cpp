@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include "FarPlugin.h"
+#include "FarPluginStrings.h"
 #include "FarDialog.h"
 #include <Common.h>
 #include "Exceptions.h"
@@ -2888,6 +2889,16 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 {
   // map Id to PluginString value
   intptr_t PluginStringId = Id;
+  const TFarPluginStrings * CurFarPluginStrings = &FarPluginStrings[0];
+  while (CurFarPluginStrings->Id)
+  {
+    if (CurFarPluginStrings->Id == Id)
+    {
+      PluginStringId = CurFarPluginStrings->FarPluginStringId;
+      break;
+    }
+    ++CurFarPluginStrings;
+  }
   return FarPlugin->GetMsg(PluginStringId);
 }
 
