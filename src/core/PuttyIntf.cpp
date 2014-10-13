@@ -315,7 +315,7 @@ void update_specials_menu(void * /*frontend*/)
 
 unsigned long schedule_timer(int ticks, timer_fn_t /*fn*/, void * /*ctx*/)
 {
-  return ticks + GetTickCount();
+  return ticks + ::GetTickCount();
 }
 
 void expire_timer_context(void * /*ctx*/)

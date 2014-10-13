@@ -1275,7 +1275,7 @@ TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor) const
 {
   CONSOLE_SCREEN_BUFFER_INFO BufferInfo;
   ClearStruct(BufferInfo);
-  GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo);
+  ::GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo);
   if (FarPlugin)
     FarAdvControl(ACTL_GETFARRECT, &BufferInfo.srWindow);
 
@@ -1330,16 +1330,16 @@ void TCustomFarPlugin::ToggleVideoMode()
       {
         COORD Size = { static_cast<short>(FNormalConsoleSize.x), static_cast<short>(FNormalConsoleSize.y) };
 
-        ::Win32Check(ShowWindow(Window, SW_RESTORE) > 0);
+        ::Win32Check(::ShowWindow(Window, SW_RESTORE) > 0);
 
         SMALL_RECT WindowSize;
         WindowSize.Left = 0;
         WindowSize.Top = 0;
         WindowSize.Right = static_cast<short>(Size.X - 1);
         WindowSize.Bottom = static_cast<short>(Size.Y - 1);
-        ::Win32Check(SetConsoleWindowInfo(FConsoleOutput, true, &WindowSize) > 0);
+        ::Win32Check(::SetConsoleWindowInfo(FConsoleOutput, true, &WindowSize) > 0);
 
-        ::Win32Check(SetConsoleScreenBufferSize(FConsoleOutput, Size) > 0);
+        ::Win32Check(::SetConsoleScreenBufferSize(FConsoleOutput, Size) > 0);
       }
     }
     else
@@ -1404,7 +1404,7 @@ void TCustomFarPlugin::ShowTerminalScreen()
   COORD Coord;
   Coord.X = 0;
   Coord.Y = static_cast<SHORT>(Cursor.y);
-  SetConsoleCursorPosition(FConsoleOutput, Coord);
+  ::SetConsoleCursorPosition(FConsoleOutput, Coord);
   FTerminalScreenShowing = true;
 }
 
@@ -1514,7 +1514,7 @@ void TCustomFarPlugin::UpdateProgress(intptr_t State, intptr_t Progress)
 void TCustomFarPlugin::UpdateCurrentConsoleTitle()
 {
   UnicodeString Title = FormatConsoleTitle();
-  SetConsoleTitle(Title.c_str());
+  ::SetConsoleTitle(Title.c_str());
   short progress = FCurrentProgress != -1 ? FCurrentProgress : 0;
   UpdateProgress(progress != 0 ? PS_NORMAL : PS_NOPROGRESS, progress);
 }
@@ -1551,16 +1551,16 @@ UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId)
 bool TCustomFarPlugin::CheckForEsc()
 {
   static uint32_t LastTicks;
-  uint32_t Ticks = GetTickCount();
+  uint32_t Ticks = ::GetTickCount();
   if ((LastTicks == 0) || (Ticks - LastTicks > 500))
   {
     LastTicks = Ticks;
 
     INPUT_RECORD Rec;
     DWORD ReadCount;
-    while (PeekConsoleInput(FConsoleInput, &Rec, 1, &ReadCount) && ReadCount)
+    while (::PeekConsoleInput(FConsoleInput, &Rec, 1, &ReadCount) && ReadCount)
     {
-      ReadConsoleInput(FConsoleInput, &Rec, 1, &ReadCount);
+      ::ReadConsoleInput(FConsoleInput, &Rec, 1, &ReadCount);
       if (Rec.EventType == KEY_EVENT &&
           Rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE &&
           Rec.Event.KeyEvent.bKeyDown)

@@ -1516,7 +1516,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
   bool & Continue, bool Collect)
 {
   static uint32_t LastTicks;
-  uint32_t Ticks = GetTickCount();
+  uint32_t Ticks = ::GetTickCount();
   if ((LastTicks == 0) || (Ticks - LastTicks > 500))
   {
     LastTicks = Ticks;
@@ -3368,7 +3368,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
   TFileOperationProgressType & ProgressData, bool First)
 {
   static uint32_t LastTicks;
-  uint32_t Ticks = GetTickCount();
+  uint32_t Ticks = ::GetTickCount();
   short percents = static_cast<short>(ProgressData.OverallProgress());
   if (Ticks - LastTicks > 500 || First)
   {
@@ -3573,7 +3573,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
     case qeEmpty:
       if (Hidden && GetFarConfiguration()->GetQueueBeep())
       {
-        MessageBeep(MB_OK);
+        ::MessageBeep(MB_OK);
       }
       break;
 
@@ -3582,7 +3582,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
       {
         // MB_ICONQUESTION would be more appropriate, but in default Windows Sound
         // schema it has no sound associated
-        MessageBeep(MB_OK);
+        ::MessageBeep(MB_OK);
       }
       break;
     }
@@ -3757,7 +3757,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
     // to default FAR text, not to ours (see EE_SAVE). Hence we periodically
     // reset the title.
     static uint32_t LastTicks = 0;
-    uint32_t Ticks = GetTickCount();
+    uint32_t Ticks = ::GetTickCount();
     if ((LastTicks == 0) || (Ticks - LastTicks > 500))
     {
       LastTicks = Ticks;
