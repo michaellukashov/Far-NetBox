@@ -18,7 +18,7 @@ void Abort()
 
 void Error(int ErrorID, intptr_t data)
 {
-  UnicodeString Msg = FMTLOAD2(ErrorID, data);
+  UnicodeString Msg = FMTLOAD(ErrorID, data);
   throw ExtException((Exception *)nullptr, Msg);
 }
 

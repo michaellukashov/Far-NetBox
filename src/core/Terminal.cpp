@@ -2304,7 +2304,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & AFileName,
     {
       // Side refers to destination side here
       UnicodeString FileNameOnly = (Side == osRemote) ? core::ExtractFileName(AFileName, false) : core::UnixExtractFileName(AFileName);
-      Msg = FMTLOAD2((Side == osLocal ? LOCAL_FILE_OVERWRITE2 :
+      Msg = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE2 :
         REMOTE_FILE_OVERWRITE2), FileNameOnly.c_str(), AFileName.c_str());
     }
     if (FileParams != nullptr)
@@ -3689,7 +3689,7 @@ void TTerminal::DoRenameFile(const UnicodeString & AFileName,
   {
     COMMAND_ERROR_ARI_ACTION
     (
-      FMTLOAD2(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName.c_str(), NewName.c_str()),
+      FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName.c_str(), NewName.c_str()),
       DoRenameFile(AFileName, NewName, Move),
       Action
     );

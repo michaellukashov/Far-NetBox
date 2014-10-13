@@ -118,13 +118,13 @@ Exception::Exception(const UnicodeString & Msg, int AHelpContext) :
 Exception::Exception(Exception * E, int Ident) :
   std::runtime_error(E ? E->what() : "")
 {
-  Message = FMTLOAD2(Ident);
+  Message = FMTLOAD(Ident);
 }
 
 Exception::Exception(int Ident) :
   std::runtime_error("")
 {
-  Message = FMTLOAD2(Ident);
+  Message = FMTLOAD(Ident);
 }
 
 UnicodeString IntToStr(intptr_t Value)
@@ -1254,7 +1254,7 @@ char HexToChar(const UnicodeString & Hex, uintptr_t MinChars)
 
 static void ConvertError(intptr_t ErrorID)
 {
-  UnicodeString Msg = FMTLOAD2(ErrorID, 0);
+  UnicodeString Msg = FMTLOAD(ErrorID, 0);
   throw EConvertError(Msg);
 }
 

@@ -1270,7 +1270,7 @@ int TSecureShell::TranslatePuttyMessage(
           (wcsncmp(Message.c_str(), Original, PrefixLen) == 0) &&
           (wcsncmp(Message.c_str() + Message.Length() - SuffixLen, Div + 1, SuffixLen) == 0))
       {
-        Message = FMTLOAD2(Translation[Index].Translation,
+        Message = FMTLOAD(Translation[Index].Translation,
           Message.SubString(PrefixLen + 1, Message.Length() - PrefixLen - SuffixLen).TrimRight().c_str());
         Result = static_cast<int>(Index);
         break;
@@ -2205,7 +2205,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
       uintptr_t R = FUI->QueryUser(
-        FMTLOAD2((Unknown ? UNKNOWN_KEY3 : DIFFERENT_KEY4), KeyType.c_str(), Fingerprint.c_str()),
+        FMTLOAD((Unknown ? UNKNOWN_KEY3 : DIFFERENT_KEY4), KeyType.c_str(), Fingerprint.c_str()),
         nullptr, Answers, &Params, qtWarning);
 
       switch (R)
