@@ -594,11 +594,11 @@ add_library(rdestl STATIC
   ${LIBS_ROOT}/rdestl/allocator.cpp
   ${LIBS_ROOT}/rdestl/intrusive_list.cpp
   ${LIBS_ROOT}/rdestl/list.cpp
-  ${LIBS_ROOT}/rdestl/intrusive_slist.cpp
-  ${LIBS_ROOT}/rdestl/slist.cpp
+#  ${LIBS_ROOT}/rdestl/intrusive_slist.cpp
+#  ${LIBS_ROOT}/rdestl/slist.cpp
   ${LIBS_ROOT}/rdestl/sort.h
   ${LIBS_ROOT}/rdestl/string_utils.h
-  ${LIBS_ROOT}/rdestl/intrusive_list.h
+#  ${LIBS_ROOT}/rdestl/intrusive_list.h
   ${LIBS_ROOT}/rdestl/sorted_vector.h
   ${LIBS_ROOT}/rdestl/allocator.h
   ${LIBS_ROOT}/rdestl/hash_map.h
@@ -606,12 +606,12 @@ add_library(rdestl STATIC
   ${LIBS_ROOT}/rdestl/basic_string.h
   ${LIBS_ROOT}/rdestl/list.h
   ${LIBS_ROOT}/rdestl/type_traits.h
-  ${LIBS_ROOT}/rdestl/intrusive_slist.h
+#  ${LIBS_ROOT}/rdestl/intrusive_slist.h
   ${LIBS_ROOT}/rdestl/radix_sorter.h
   ${LIBS_ROOT}/rdestl/stack_allocator.h
   ${LIBS_ROOT}/rdestl/utility.h
   ${LIBS_ROOT}/rdestl/vector.h
-  ${LIBS_ROOT}/rdestl/slist.h
+#  ${LIBS_ROOT}/rdestl/slist.h
   ${LIBS_ROOT}/rdestl/fixed_array.h
   ${LIBS_ROOT}/rdestl/pair.h
   ${LIBS_ROOT}/rdestl/algorithm.h
