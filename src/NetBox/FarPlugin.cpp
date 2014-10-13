@@ -2827,11 +2827,11 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidt
     UnicodeString WrappedLine = Lines.GetString(Index);
     if (!WrappedLine.IsEmpty())
     {
-      WrappedLine = ::ReplaceChar(WrappedLine, '\'', '\3');
-      WrappedLine = ::ReplaceChar(WrappedLine, '\"', '\4');
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\'', L'\3');
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\"', L'\4');
       WrappedLine = ::WrapText(WrappedLine, MaxWidth);
-      WrappedLine = ::ReplaceChar(WrappedLine, '\3', '\'');
-      WrappedLine = ::ReplaceChar(WrappedLine, '\4', '\"');
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\3', L'\'');
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\4', L'\"');
       WrappedLines.SetText(WrappedLine);
       for (intptr_t WrappedIndex = 0; WrappedIndex < WrappedLines.GetCount(); ++WrappedIndex)
       {
