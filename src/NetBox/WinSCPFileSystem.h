@@ -310,7 +310,7 @@ private:
   TTerminal * FTerminal;
   TTerminalQueue * FQueue;
   TTerminalQueueStatus * FQueueStatus;
-  ::TCriticalSection FQueueStatusSection;
+  TCriticalSection FQueueStatusSection;
   bool FQueueStatusInvalidated;
   bool FQueueItemInvalidated;
   bool FRefreshLocalDirectory;

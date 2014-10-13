@@ -43,7 +43,7 @@ void FileOperationLoopCustom(TTerminal * Terminal,
     {
       Operation();
     }
-    catch (::EAbort &)
+    catch (EAbort &)
     {
       throw;
     }
@@ -55,11 +55,11 @@ void FileOperationLoopCustom(TTerminal * Terminal,
     {
       throw;
     }
-    catch (::EFileNotFoundError &)
+    catch (EFileNotFoundError &)
     {
       throw;
     }
-    catch (::EOSError &)
+    catch (EOSError &)
     {
       throw;
     }
@@ -772,7 +772,7 @@ UnicodeString TTerminal::DecryptPassword(const RawByteString & APassword) const
   {
     Result = FConfiguration->DecryptPassword(APassword, GetSessionData()->GetSessionName());
   }
-  catch (::EAbort &)
+  catch (EAbort &)
   {
     // silently ignore aborted prompts for master password and return empty password
   }
@@ -4374,7 +4374,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
 }
 
 void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
-  const ::TSearchRec & Rec, void * Param)
+  const TSearchRec & Rec, void * Param)
 {
   TMakeLocalFileListParams & Params = *NB_STATIC_DOWNCAST(TMakeLocalFileListParams, Param);
 
@@ -4391,7 +4391,7 @@ void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
 }
 
 void TTerminal::CalculateLocalFileSize(const UnicodeString & AFileName,
-  const ::TSearchRec & Rec, /*int64_t*/ void * Params)
+  const TSearchRec & Rec, /*int64_t*/ void * Params)
 {
   TCalculateSizeParams * AParams = NB_STATIC_DOWNCAST(TCalculateSizeParams, Params);
 
@@ -4458,7 +4458,7 @@ bool TTerminal::CalculateLocalFilesSize(const TStrings * AFileList,
     for (intptr_t Index = 0; Result && (Index < AFileList->GetCount()); ++Index)
     {
       UnicodeString FileName = AFileList->GetString(Index);
-      ::TSearchRec Rec;
+      TSearchRec Rec;
       if (FileSearchRec(FileName, Rec))
       {
         if (FLAGSET(Rec.Attr, faDirectory) && !AllowDirs)

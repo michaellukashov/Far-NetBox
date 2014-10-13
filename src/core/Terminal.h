@@ -276,7 +276,7 @@ public:
   bool DirectoryFileList(const UnicodeString & APath,
     TRemoteFileList *& FileList, bool CanLoad);
   void MakeLocalFileList(const UnicodeString & AFileName,
-    const ::TSearchRec & Rec, void * Param);
+    const TSearchRec & Rec, void * Param);
   bool FileOperationLoopQuery(Exception & E,
     TFileOperationProgressType * OperationProgress,
     const UnicodeString & Message,
@@ -413,7 +413,7 @@ protected:
   void DoCalculateDirectorySize(const UnicodeString & AFileName,
     const TRemoteFile * AFile, TCalculateSizeParams * Params);
   void CalculateLocalFileSize(const UnicodeString & AFileName,
-    const ::TSearchRec & Rec, /*int64_t*/ void * Params);
+    const TSearchRec & Rec, /*int64_t*/ void * Params);
   bool CalculateLocalFilesSize(const TStrings * AFileList,
     const TCopyParamType * CopyParam, bool AllowDirs,
     OUT int64_t & Size);

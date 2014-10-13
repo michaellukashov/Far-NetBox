@@ -271,7 +271,7 @@ protected:
   TTerminalQueue * FQueue;
   TBackgroundTerminal * FTerminal;
   TQueueItem * FItem;
-  ::TCriticalSection FCriticalSection;
+  TCriticalSection FCriticalSection;
   TUserAction * FUserAction;
   bool FCancel;
   bool FPause;

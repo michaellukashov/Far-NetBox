@@ -124,13 +124,13 @@ UnicodeString ExtractFileBaseName(const UnicodeString & APath);
 TStringList * TextToStringList(const UnicodeString & Text);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
-::TFormatSettings GetEngFormatSettings();
+TFormatSettings GetEngFormatSettings();
 //int ParseShortEngMonthName(const UnicodeString & MonthStr);
 
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
-  const UnicodeString & /* FileName */, const ::TSearchRec & /* Rec */, void * /* Param */);
-bool FileSearchRec(const UnicodeString & AFileName, ::TSearchRec & Rec);
-struct TSearchRecChecked : public ::TSearchRec
+  const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
+bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec);
+struct TSearchRecChecked : public TSearchRec
 {
   UnicodeString Path;
 };
@@ -176,22 +176,22 @@ class TGuard : public TObject
 {
 NB_DISABLE_COPY(TGuard)
 public:
-  explicit TGuard(const ::TCriticalSection & ACriticalSection);
+  explicit TGuard(const TCriticalSection & ACriticalSection);
   ~TGuard();
 
 private:
-  const ::TCriticalSection & FCriticalSection;
+  const TCriticalSection & FCriticalSection;
 };
 
 class TUnguard : public TObject
 {
 NB_DISABLE_COPY(TUnguard)
 public:
-  explicit TUnguard(::TCriticalSection & ACriticalSection);
+  explicit TUnguard(TCriticalSection & ACriticalSection);
   ~TUnguard();
 
 private:
-  ::TCriticalSection & FCriticalSection;
+  TCriticalSection & FCriticalSection;
 };
 
 #define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())

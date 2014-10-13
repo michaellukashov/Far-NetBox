@@ -570,7 +570,7 @@ void TFileMasks::CreateMask(
         Boundary = TMask::Open;
       }
 
-      ::TFormatSettings FormatSettings = ::TFormatSettings::Create(GetDefaultLCID());
+      TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
       FormatSettings.DateSeparator = L'-';
       FormatSettings.TimeSeparator = L':';
       FormatSettings.ShortDateFormat = L"yyyy/mm/dd";

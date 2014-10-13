@@ -284,7 +284,7 @@ protected:
 private:
   TConfiguration * FConfiguration;
   TSessionLog * FParent;
-  ::TCriticalSection FCriticalSection;
+  TCriticalSection FCriticalSection;
   bool FLogging;
   void * FFile;
   UnicodeString FCurrentLogFileName;
@@ -330,7 +330,7 @@ protected:
 
 private:
   TConfiguration * FConfiguration;
-  ::TCriticalSection FCriticalSection;
+  TCriticalSection FCriticalSection;
   bool FLogging;
   void * FFile;
   UnicodeString FCurrentLogFileName;

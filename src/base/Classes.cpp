@@ -13,7 +13,7 @@
 
 void Abort()
 {
-  throw ::EAbort(L"");
+  throw EAbort(L"");
 }
 
 void Error(int ErrorID, intptr_t data)
@@ -2060,7 +2060,7 @@ bool TShortCut::operator < (const TShortCut & rhs) const
   return FValue < rhs.FValue;
 }
 
-void GetLocaleFormatSettings(int LCID, ::TFormatSettings & FormatSettings)
+void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
 {
   (void)LCID;
   (void)FormatSettings;

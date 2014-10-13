@@ -296,7 +296,7 @@ struct TSearchRec
   TFileName Name;
   Integer ExcludeAttr;
   THandle FindHandle;
-  ::TWin32FindData FindData;
+  TWin32FindData FindData;
 };
 
 DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec);

@@ -128,7 +128,7 @@ public:
   TOnceDoneOperation Operation;
 };
 
-class ECallbackGuardAbort : public ::EAbort
+class ECallbackGuardAbort : public EAbort
 {
 NB_DECLARE_CLASS(ECallbackGuardAbort)
 public:
