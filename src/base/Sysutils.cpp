@@ -1666,9 +1666,21 @@ UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
   return Result;
 }
 
+TFormatSettings::TFormatSettings(int) :
+  CurrencyFormat(0),
+  NegCurrFormat(0),
+  ThousandSeparator(0),
+  DecimalSeparator(0),
+  CurrencyDecimals(0),
+  DateSeparator(0),
+  TimeSeparator(0),
+  ListSeparator(0),
+  TwoDigitYearCenturyWindow(0)
+{
+}
+
 NB_IMPLEMENT_CLASS(Exception, NB_GET_CLASS_INFO(TObject), nullptr);
 NB_IMPLEMENT_CLASS(EAccessViolation, NB_GET_CLASS_INFO(Exception), nullptr);
 NB_IMPLEMENT_CLASS(EAbort, NB_GET_CLASS_INFO(Exception), nullptr);
 NB_IMPLEMENT_CLASS(EFileNotFoundError, NB_GET_CLASS_INFO(Exception), nullptr);
 NB_IMPLEMENT_CLASS(EOSError, NB_GET_CLASS_INFO(Exception), nullptr);
-
