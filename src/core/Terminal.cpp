@@ -3190,7 +3190,7 @@ void TTerminal::RecycleFile(const UnicodeString & AFileName,
     // Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()).c_str());
     Params.FileMask = FORMAT(L"*-%s.*", dt.c_str());
 #endif
-    MoveFile(FileName, AFile, &Params);
+    TerminalMoveFile(FileName, AFile, &Params);
   }
 }
 
@@ -3696,7 +3696,7 @@ void TTerminal::DoRenameFile(const UnicodeString & AFileName,
   }
 }
 
-void TTerminal::MoveFile(const UnicodeString & AFileName,
+void TTerminal::TerminalMoveFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, /*const TMoveFileParams*/ void * Param)
 {
   if (GetOperationProgress() &&
@@ -3772,7 +3772,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
       }
       EndTransaction();
     };
-    Result = ProcessFiles(AFileList, foRemoteMove, MAKE_CALLBACK(TTerminal::MoveFile, this), &Params);
+    Result = ProcessFiles(AFileList, foRemoteMove, MAKE_CALLBACK(TTerminal::TerminalMoveFile, this), &Params);
   }
   return Result;
 }

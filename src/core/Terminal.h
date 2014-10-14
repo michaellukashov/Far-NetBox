@@ -248,7 +248,7 @@ public:
   void RefreshDirectory();
   void TerminalRenameFile(const UnicodeString & AFileName, const UnicodeString & NewName);
   void TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString & NewName, bool CheckExistence);
-  void MoveFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
+  void TerminalMoveFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /* const TMoveFileParams */ void * Param);
   bool MoveFiles(TStrings * AFileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
