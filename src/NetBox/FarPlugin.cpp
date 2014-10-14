@@ -1244,7 +1244,7 @@ void TCustomFarPlugin::FlushText()
   FStartupInfo.Text(0, 0, 0, nullptr);
 }
 
-void TCustomFarPlugin::WriteConsole(const UnicodeString & Str)
+void TCustomFarPlugin::FarWriteConsole(const UnicodeString & Str)
 {
   DWORD Written;
   ::WriteConsole(FConsoleOutput, Str.c_str(), static_cast<DWORD>(Str.Length()), &Written, nullptr);

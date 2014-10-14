@@ -771,7 +771,7 @@ void TWinSCPFileSystem::TerminalCaptureLog(
 {
   if (FOutputLog)
   {
-    WinSCPPlugin()->WriteConsole(AddedLine + L"\n");
+    WinSCPPlugin()->FarWriteConsole(AddedLine + L"\n");
   }
   if (FCapturedLog != nullptr)
   {

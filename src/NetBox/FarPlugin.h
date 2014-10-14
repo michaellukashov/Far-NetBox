@@ -133,7 +133,7 @@ public:
   intptr_t FarSystemSettings();
   void Text(int X, int Y, int Color, const UnicodeString & Str);
   void FlushText();
-  void WriteConsole(const UnicodeString & Str);
+  void FarWriteConsole(const UnicodeString & Str);
   void FarCopyToClipboard(const UnicodeString & Str);
   void FarCopyToClipboard(const TStrings * Strings);
   intptr_t FarVersion();
