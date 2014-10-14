@@ -3140,7 +3140,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   LoginTypeCombo->SetItemIndex(
     static_cast<intptr_t>(LoginTypeToIndex(SessionData->GetLoginType())));
 
-  UserNameEdit->SetText(SessionData->GetUserName());
+  UserNameEdit->SetText(SessionData->SessionGetUserName());
   PasswordEdit->SetText(SessionData->GetPassword());
   PrivateKeyEdit->SetText(SessionData->GetPublicKeyFile());
 
