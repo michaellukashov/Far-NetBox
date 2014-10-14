@@ -6223,7 +6223,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
         assert(false);
       }
 
-      if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == ':'))
+      if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == L':'))
       {
         LabelStr.SetLength(LabelStr.Length() - 1);
       }
@@ -6240,7 +6240,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
     {
       assert(NB_STATIC_DOWNCAST(TLabelList, AControl) != nullptr);
       UnicodeString LabelStr = GetMsg(Label);
-      if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == ':'))
+      if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == L':'))
       {
         LabelStr.SetLength(LabelStr.Length() - 1);
       }
@@ -7415,7 +7415,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
     S = ChecklistItem->Local.Directory;
     if (::AnsiSameText(FLocalDirectory, S.SubString(1, FLocalDirectory.Length())))
     {
-      S[1] = '.';
+      S[1] = L'.';
       S.Delete(2, FLocalDirectory.Length() - 1);
     }
     else
@@ -7458,7 +7458,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
     S = ChecklistItem->Remote.Directory;
     if (::AnsiSameText(FRemoteDirectory, S.SubString(1, FRemoteDirectory.Length())))
     {
-      S[1] = '.';
+      S[1] = L'.';
       S.Delete(2, FRemoteDirectory.Length() - 1);
     }
     else

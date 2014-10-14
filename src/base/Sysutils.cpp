@@ -929,8 +929,8 @@ static UnicodeString GetUniversalName(UnicodeString & AFileName)
 UnicodeString ExpandUNCFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result = ExpandFileName(AFileName);
-  if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= 'A') &&
-      (::UpCase(Result[1]) <= 'Z'))
+  if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= L'A') &&
+      (::UpCase(Result[1]) <= L'Z'))
   {
     Result = GetUniversalName(Result);
   }
@@ -1035,7 +1035,7 @@ UnicodeString SysErrorMessage(int ErrorCode)
     static_cast<LPTSTR>(Buffer),
     sizeof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
-    ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.'))))
+    ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == L'.'))))
   {
     Len--;
   }
@@ -1168,7 +1168,7 @@ UnicodeString GetCurrentDir()
   return Result;
 }
 
-UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, char Separator)
+UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, wchar_t Separator)
 {
   UnicodeString Result;
   for (intptr_t Index = 1; Index <= Str.Length(); ++Index)

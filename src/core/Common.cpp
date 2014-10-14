@@ -1142,12 +1142,12 @@ uint8_t HexToByte(const UnicodeString & Hex)
 
 bool IsLowerCaseLetter(wchar_t Ch)
 {
-  return (Ch >= 'a') && (Ch <= 'z');
+  return (Ch >= L'a') && (Ch <= L'z');
 }
 
 bool IsUpperCaseLetter(wchar_t Ch)
 {
-  return (Ch >= 'A') && (Ch <= 'Z');
+  return (Ch >= L'A') && (Ch <= L'Z');
 }
 
 bool IsLetter(wchar_t Ch)
@@ -1157,15 +1157,15 @@ bool IsLetter(wchar_t Ch)
 
 bool IsDigit(wchar_t Ch)
 {
-  return (Ch >= '0') && (Ch <= '9');
+  return (Ch >= L'0') && (Ch <= L'9');
 }
 
 bool IsHex(wchar_t Ch)
 {
   return
     IsDigit(Ch) ||
-    ((Ch >= 'A') && (Ch <= 'F')) ||
-    ((Ch >= 'a') && (Ch <= 'f'));
+    ((Ch >= L'A') && (Ch <= L'F')) ||
+    ((Ch >= L'a') && (Ch <= L'f'));
 }
 
 DWORD FindCheck(DWORD Result, const UnicodeString & APath)
@@ -2164,7 +2164,7 @@ UnicodeString DecodeUrlChars(const UnicodeString & S)
     switch (Result[Index])
     {
       case L'+':
-        Result[Index] = ' ';
+        Result[Index] = L' ';
         break;
 
       case L'%':
@@ -2201,7 +2201,7 @@ UnicodeString DoEncodeUrl(const UnicodeString & S, const UnicodeString & Chars)
     {
       UnicodeString H = ByteToHex(AnsiString(UnicodeString(Result[Index]))[1]);
       Result.Insert(H, Index + 1);
-      Result[Index] = '%';
+      Result[Index] = L'%';
       Index += H.Length();
     }
     ++Index;

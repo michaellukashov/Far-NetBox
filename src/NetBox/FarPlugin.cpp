@@ -2225,7 +2225,7 @@ intptr_t TFarPanelModes::CommaCount(const UnicodeString & ColumnTypes)
   intptr_t Count = 0;
   for (intptr_t Index = 1; Index <= ColumnTypes.Length(); ++Index)
   {
-    if (ColumnTypes[Index] == ',')
+    if (ColumnTypes[Index] == L',')
     {
       Count++;
     }

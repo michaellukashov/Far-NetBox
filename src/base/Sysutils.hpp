@@ -137,7 +137,7 @@ UnicodeString GetCurrentDir();
 
 UnicodeString IncludeTrailingPathDelimiter(const UnicodeString & Str);
 
-UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase = true, char Separator = '\0');
+UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase = true, wchar_t Separator = L'\0');
 UnicodeString HexToStr(const UnicodeString & Hex);
 uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars = 0);
 UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);

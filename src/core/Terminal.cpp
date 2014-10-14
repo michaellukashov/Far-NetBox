@@ -3752,7 +3752,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
               File->GetIsDirectory() &&
               ((CurrentDirectory.SubString(1, Str.Length()) == Str) &&
                ((Str.Length() == CurrentDirectory.Length()) ||
-                (CurrentDirectory[Str.Length() + 1] == '/'))))
+                (CurrentDirectory[Str.Length() + 1] == L'/'))))
           {
             PossiblyMoved = true;
           }
