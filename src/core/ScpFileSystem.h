@@ -70,7 +70,7 @@ public:
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
   virtual bool GetStoredCredentialsTried() const;
-  virtual UnicodeString GetUserName();
+  virtual UnicodeString GetUserName() const;
 
 protected:
   TStrings * GetOutput() const { return FOutput; }

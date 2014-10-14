@@ -12157,7 +12157,7 @@ bool TWebDAVFileSystem::GetStoredCredentialsTried() const
   return false;
 }
 
-UnicodeString TWebDAVFileSystem::GetUserName()
+UnicodeString TWebDAVFileSystem::GetUserName() const
 {
   return FUserName;
 }

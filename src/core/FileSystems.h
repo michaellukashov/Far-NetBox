@@ -197,7 +197,7 @@ public:
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) = 0;
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) = 0;
   virtual bool GetStoredCredentialsTried() const = 0;
-  virtual UnicodeString GetUserName() = 0;
+  virtual UnicodeString GetUserName() const = 0;
   virtual UnicodeString GetCurrDirectory() = 0;
 
 protected:

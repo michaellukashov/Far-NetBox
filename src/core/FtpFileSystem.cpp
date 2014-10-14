@@ -2159,7 +2159,7 @@ bool TFTPFileSystem::GetStoredCredentialsTried() const
   return !FTerminal->GetSessionData()->GetPassword().IsEmpty();
 }
 
-UnicodeString TFTPFileSystem::GetUserName()
+UnicodeString TFTPFileSystem::GetUserName() const
 {
   return FUserName;
 }
