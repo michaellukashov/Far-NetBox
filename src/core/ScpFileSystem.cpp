@@ -1173,7 +1173,7 @@ void TSCPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   ExecCommand2(fsRenameFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
 }
 
-void TSCPFileSystem::CopyFile(const UnicodeString & AFileName,
+void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   const UnicodeString & NewName)
 {
   ExecCommand2(fsCopyFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());

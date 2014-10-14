@@ -3544,7 +3544,7 @@ void TSFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 
-void TSFTPFileSystem::CopyFile(const UnicodeString & AFileName,
+void TSFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   const UnicodeString & ANewName)
 {
   // Implemented by ProFTPD/mod_sftp and Bitvise WinSSHD (without announcing it)

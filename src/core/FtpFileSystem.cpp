@@ -2100,7 +2100,7 @@ void TFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 
-void TFTPFileSystem::CopyFile(const UnicodeString & /* AFileName */,
+void TFTPFileSystem::RemoteCopyFile(const UnicodeString & /* AFileName */,
   const UnicodeString & /* NewName */)
 {
   FAIL;

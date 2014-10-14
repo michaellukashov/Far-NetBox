@@ -3785,7 +3785,7 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
     assert(FFileSystem);
     if (GetIsCapable(fcRemoteCopy))
     {
-      FFileSystem->CopyFile(AFileName, NewName);
+      FFileSystem->RemoteCopyFile(AFileName, NewName);
     }
     else
     {
@@ -3793,7 +3793,7 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
       assert(FCommandSession->GetFSProtocol() == cfsSCP);
       LogEvent(L"Copying file on command session.");
       FCommandSession->TerminalSetCurrentDirectory(GetCurrDirectory());
-      FCommandSession->FFileSystem->CopyFile(AFileName, NewName);
+      FCommandSession->FFileSystem->RemoteCopyFile(AFileName, NewName);
     }
   }
   catch (Exception & E)

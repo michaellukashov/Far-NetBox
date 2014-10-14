@@ -12427,7 +12427,7 @@ void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   }
 }
 
-void TWebDAVFileSystem::CopyFile(const UnicodeString & AFileName,
+void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   const UnicodeString & NewName)
 {
   Error(SNotImplemented, 1012);

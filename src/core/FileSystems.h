@@ -188,7 +188,7 @@ public:
     TRemoteFile *& File) = 0;
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
     const UnicodeString & NewName) = 0;
-  virtual void CopyFile(const UnicodeString & AFileName,
+  virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName) = 0;
   virtual TStrings * GetFixedPaths() = 0;
   virtual void SpaceAvailable(const UnicodeString & APath,
