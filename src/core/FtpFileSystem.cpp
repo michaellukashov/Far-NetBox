@@ -2154,7 +2154,7 @@ bool TFTPFileSystem::TemporaryTransferFile(const UnicodeString & /*FileName*/)
   return false;
 }
 
-bool TFTPFileSystem::GetStoredCredentialsTried()
+bool TFTPFileSystem::GetStoredCredentialsTried() const
 {
   return !FTerminal->GetSessionData()->GetPassword().IsEmpty();
 }

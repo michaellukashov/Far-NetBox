@@ -5356,7 +5356,7 @@ UnicodeString TTerminal::GetRememberedTunnelPassword() const
   return DecryptPassword(FRememberedTunnelPassword);
 }
 
-bool TTerminal::GetStoredCredentialsTried()
+bool TTerminal::GetStoredCredentialsTried() const
 {
   bool Result;
   if (FFileSystem != nullptr)

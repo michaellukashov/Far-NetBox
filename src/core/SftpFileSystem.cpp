@@ -1933,7 +1933,7 @@ bool TSFTPFileSystem::TemporaryTransferFile(const UnicodeString & AFileName)
   return ::AnsiSameText(core::UnixExtractFileExt(AFileName), PARTIAL_EXT);
 }
 
-bool TSFTPFileSystem::GetStoredCredentialsTried()
+bool TSFTPFileSystem::GetStoredCredentialsTried() const
 {
   return FSecureShell->GetStoredCredentialsTried();
 }

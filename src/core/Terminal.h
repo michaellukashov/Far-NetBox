@@ -185,7 +185,7 @@ public:
   UnicodeString GetRememberedPassword() const;
   UnicodeString GetRememberedTunnelPassword() const;
   void SetTunnelPassword(const UnicodeString & Value) { FRememberedTunnelPassword = Value; }
-  bool GetStoredCredentialsTried();
+  bool GetStoredCredentialsTried() const;
   TCustomFileSystem * GetFileSystem() const { return FFileSystem; }
   TCustomFileSystem * GetFileSystem() { return FFileSystem; }
   inline bool InTransaction();

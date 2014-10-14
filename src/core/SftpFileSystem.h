@@ -82,7 +82,7 @@ public:
   virtual const TSessionInfo & GetSessionInfo() const;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
-  virtual bool GetStoredCredentialsTried();
+  virtual bool GetStoredCredentialsTried() const;
   virtual UnicodeString GetUserName();
 
 protected:

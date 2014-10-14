@@ -429,7 +429,7 @@ bool TSCPFileSystem::TemporaryTransferFile(const UnicodeString & /*AFileName*/)
   return false;
 }
 
-bool TSCPFileSystem::GetStoredCredentialsTried()
+bool TSCPFileSystem::GetStoredCredentialsTried() const
 {
   return FSecureShell->GetStoredCredentialsTried();
 }

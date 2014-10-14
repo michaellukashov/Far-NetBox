@@ -12152,7 +12152,7 @@ bool TWebDAVFileSystem::TemporaryTransferFile(const UnicodeString & /*AFileName*
   return false;
 }
 
-bool TWebDAVFileSystem::GetStoredCredentialsTried()
+bool TWebDAVFileSystem::GetStoredCredentialsTried() const
 {
   return false;
 }
