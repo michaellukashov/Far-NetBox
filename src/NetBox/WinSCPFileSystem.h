@@ -117,7 +117,7 @@ protected:
 
   void ProcessEditorEvent(intptr_t Event, void * Param);
 
-  virtual void HandleException(::Exception * E, OPERATION_MODES OpMode = 0);
+  virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0);
   void KeepaliveThreadCallback();
 
   inline bool SessionList();
@@ -266,7 +266,7 @@ private:
     const UnicodeString & SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
     intptr_t Options);
   void TerminalShowExtendedException(TTerminal * Terminal,
-    ::Exception * E, void * Arg);
+    Exception * E, void * Arg);
   void TerminalDeleteLocalFile(const UnicodeString & AFileName, bool Alternative);
   HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
@@ -310,7 +310,7 @@ private:
   TTerminal * FTerminal;
   TTerminalQueue * FQueue;
   TTerminalQueueStatus * FQueueStatus;
-  ::TCriticalSection FQueueStatusSection;
+  TCriticalSection FQueueStatusSection;
   bool FQueueStatusInvalidated;
   bool FQueueItemInvalidated;
   bool FRefreshLocalDirectory;

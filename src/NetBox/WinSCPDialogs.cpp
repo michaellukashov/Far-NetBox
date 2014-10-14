@@ -1165,8 +1165,12 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
   UnicodeString Address;
   switch (Sender->GetTag())
   {
-    case 1: Address = GetMsg(ABOUT_URL) + L"eng/docs/far"; break;
-    case 2: Address = GetMsg(ABOUT_URL) + L"forum/"; break;
+    case 1:
+      Address = GetMsg(ABOUT_URL) + L"eng/docs/far";
+      break;
+    case 2:
+      Address = GetMsg(ABOUT_URL) + L"forum/";
+      break;
   }
   ShellExecute(nullptr, L"open", const_cast<wchar_t *>(Address.c_str()), nullptr, nullptr, SW_SHOWNORMAL);
 }
@@ -1215,7 +1219,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   bool ShowSavePassword = false;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
        (Kind == pkKeybInteractive)) &&
-       (Prompts->GetCount() == 1) && // FLAGSET((intptr_t)Prompts->GetObject(0), pupRemember) &&
+       (Prompts->GetCount() == 1) && // FLAGSET((intptr_t)Prompts->GetObjject(0), pupRemember) &&
       !SessionName.IsEmpty())
   //    // StoredCredentialsTried)
   {
@@ -1340,7 +1344,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   {
     GenerateLabel(Prompts->GetString(Index), Truncated);
 
-    FEdits->Add(GenerateEdit(FLAGSET((intptr_t)Prompts->GetObject(Index), pupEcho)));
+    FEdits->Add(GenerateEdit(FLAGSET((intptr_t)Prompts->GetObj(Index), pupEcho)));
   }
 }
 
@@ -3133,7 +3137,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   LoginTypeCombo->SetItemIndex(
     static_cast<intptr_t>(LoginTypeToIndex(SessionData->GetLoginType())));
 
-  UserNameEdit->SetText(SessionData->GetUserName());
+  UserNameEdit->SetText(SessionData->SessionGetUserName());
   PasswordEdit->SetText(SessionData->GetPassword());
   PrivateKeyEdit->SetText(SessionData->GetPublicKeyFile());
 
@@ -3327,9 +3331,15 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   ProxyLocalhostCheck->SetChecked(SessionData->GetProxyLocalhost());
   switch (SessionData->GetProxyDNS())
   {
-    case asOn: ProxyDNSOnButton->SetChecked(true); break;
-    case asOff: ProxyDNSOffButton->SetChecked(true); break;
-    default: ProxyDNSAutoButton->SetChecked(true); break;
+    case asOn:
+      ProxyDNSOnButton->SetChecked(true);
+      break;
+    case asOff:
+      ProxyDNSOffButton->SetChecked(true);
+      break;
+    default:
+      ProxyDNSAutoButton->SetChecked(true);
+      break;
   }
 
   // Tunnel tab
@@ -3357,10 +3367,18 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   switch (SessionData->GetSshProt())
   {
-    case ssh1only:  SshProt1onlyButton->SetChecked(true); break;
-    case ssh1:      SshProt1Button->SetChecked(true); break;
-    case ssh2:      SshProt2Button->SetChecked(true); break;
-    case ssh2only:  SshProt2onlyButton->SetChecked(true); break;
+    case ssh1only:
+      SshProt1onlyButton->SetChecked(true);
+      break;
+    case ssh1:
+      SshProt1Button->SetChecked(true);
+      break;
+    case ssh2:
+      SshProt2Button->SetChecked(true);
+      break;
+    case ssh2only:
+      SshProt2onlyButton->SetChecked(true);
+      break;
   }
 
   CipherListBox->GetItems()->BeginUpdate();
@@ -3710,7 +3728,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
     {
-      TObject * Obj = static_cast<TObject *>(CipherListBox->GetItems()->GetObject(Index));
+      TObject * Obj = static_cast<TObject *>(CipherListBox->GetItems()->GetObj(Index));
       SessionData->SetCipher(Index, static_cast<TCipher>(reinterpret_cast<size_t>(Obj)));
     }
 
@@ -3721,7 +3739,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
     {
-      SessionData->SetKex(Index, static_cast<TKex>(reinterpret_cast<intptr_t>(KexListBox->GetItems()->GetObject(Index))));
+      SessionData->SetKex(Index, static_cast<TKex>(reinterpret_cast<intptr_t>(KexListBox->GetItems()->GetObj(Index))));
     }
 
     // Authentication tab
@@ -3848,7 +3866,7 @@ intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList *
 {
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TObject * Obj = static_cast<TObject *>(Items->GetObject(Index));
+    TObject * Obj = static_cast<TObject *>(Items->GetObj(Index));
     TProxyMethod Method = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
     if (Method == ProxyMethod)
       return Index;
@@ -3861,7 +3879,7 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items
   TProxyMethod Result = pmNone;
   if (Index >= 0 && Index < Items->GetCount())
   {
-    TObject * Obj = static_cast<TObject *>(Items->GetObject(Index));
+    TObject * Obj = static_cast<TObject *>(Items->GetObj(Index));
     Result = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
   }
   return Result;
@@ -4512,9 +4530,15 @@ void TRightsContainer::SetStates(TRights::TRight Right,
   {
     switch (Value)
     {
-      case TRights::rsNo: CheckBox->SetSelected(BSTATE_UNCHECKED); break;
-      case TRights::rsYes: CheckBox->SetSelected(BSTATE_CHECKED); break;
-      case TRights::rsUndef: CheckBox->SetSelected(BSTATE_3STATE); break;
+      case TRights::rsNo:
+        CheckBox->SetSelected(BSTATE_UNCHECKED);
+        break;
+      case TRights::rsYes:
+        CheckBox->SetSelected(BSTATE_CHECKED);
+        break;
+      case TRights::rsUndef:
+        CheckBox->SetSelected(BSTATE_3STATE);
+        break;
     }
   }
   else
@@ -4627,7 +4651,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   OkButton(nullptr)
 {
   assert(AFileList->GetCount() > 0);
-  TRemoteFile * OnlyFile = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(0));
+  TRemoteFile * OnlyFile = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(0));
   USEDPARAM(OnlyFile);
   assert(OnlyFile);
   FMultiple = (AFileList->GetCount() > 1);
@@ -4651,7 +4675,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     intptr_t Directories = 0;
     for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(Index));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index));
       assert(File);
       if (UsedGroupList.get() && !File->GetFileGroup().GetName().IsEmpty())
       {
@@ -6196,7 +6220,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
         assert(false);
       }
 
-      if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == ':'))
+      if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == L':'))
       {
         LabelStr.SetLength(LabelStr.Length() - 1);
       }
@@ -6213,7 +6237,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
     {
       assert(NB_STATIC_DOWNCAST(TLabelList, AControl) != nullptr);
       UnicodeString LabelStr = GetMsg(Label);
-      if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == ':'))
+      if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == L':'))
       {
         LabelStr.SetLength(LabelStr.Length() - 1);
       }
@@ -7397,7 +7421,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
     S = ChecklistItem->Local.Directory;
     if (::AnsiSameText(FLocalDirectory, S.SubString(1, FLocalDirectory.Length())))
     {
-      S[1] = '.';
+      S[1] = L'.';
       S.Delete(2, FLocalDirectory.Length() - 1);
     }
     else
@@ -7440,7 +7464,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
     S = ChecklistItem->Remote.Directory;
     if (::AnsiSameText(FRemoteDirectory, S.SubString(1, FRemoteDirectory.Length())))
     {
-      S[1] = '.';
+      S[1] = L'.';
       S.Delete(2, FRemoteDirectory.Length() - 1);
     }
     else
@@ -7526,7 +7550,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
       if (!Scroll || (List->GetString(Index).LastDelimiter(L"{}") > 0))
       {
         const TChecklistItem * ChecklistItem =
-          NB_STATIC_DOWNCAST(TChecklistItem, List->GetObject(Index));
+          NB_STATIC_DOWNCAST(TChecklistItem, List->GetObj(Index));
 
         List->SetString(Index, ItemLine(ChecklistItem));
       }
@@ -7698,7 +7722,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
     for (intptr_t Index = 0; Index < Count; ++Index)
     {
       TChecklistItem * ChecklistItem =
-        NB_STATIC_DOWNCAST(TChecklistItem, List->GetObject(Index));
+        NB_STATIC_DOWNCAST(TChecklistItem, List->GetObj(Index));
       ChecklistItem->Checked = List->GetChecked(Index);
     }
   }
@@ -8085,7 +8109,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
       StopButton->SetFocus();
       FStarted = true;
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       FSynchronizing = false;
       UpdateControls();
@@ -8315,7 +8339,7 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   if (QueueListBox->GetItems()->GetSelected() != NPOS)
   {
     TQueueItemProxy * QueueItem = NB_STATIC_DOWNCAST(TQueueItemProxy,
-      QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
+      QueueListBox->GetItems()->GetObj(QueueListBox->GetItems()->GetSelected()));
 
     if (Sender == ExecuteButton)
     {
@@ -8407,7 +8431,7 @@ void TQueueDialog::UpdateControls()
   if (QueueListBox->GetItems()->GetSelected() >= 0)
   {
     QueueItem = NB_STATIC_DOWNCAST(TQueueItemProxy,
-      QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
+      QueueListBox->GetItems()->GetObj(QueueListBox->GetItems()->GetSelected()));
   }
 
   if ((QueueItem != nullptr) && (QueueItem->GetStatus() == TQueueItem::qsProcessing))
@@ -8501,8 +8525,8 @@ void TQueueDialog::RefreshQueue()
 
     intptr_t ILine = 0;
     while ((Index > ILine) &&
-           (QueueListBox->GetItems()->GetObject(Index) ==
-            QueueListBox->GetItems()->GetObject(Index - ILine - 1)))
+           (QueueListBox->GetItems()->GetObj(Index) ==
+            QueueListBox->GetItems()->GetObj(Index - ILine - 1)))
     {
       ILine++;
     }
@@ -8514,7 +8538,7 @@ void TQueueDialog::RefreshQueue()
            (Index < TopIndex + QueueListBox->GetHeight()))
     {
       QueueItem = NB_STATIC_DOWNCAST(TQueueItemProxy,
-        QueueListBox->GetItems()->GetObject(Index));
+        QueueListBox->GetItems()->GetObj(Index));
       assert(QueueItem != nullptr);
       if ((PrevQueueItem != nullptr) && (QueueItem != PrevQueueItem))
       {
@@ -8604,7 +8628,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
 
   bool BlinkHide = QueueItemNeedsFrequentRefresh(QueueItem) &&
     !QueueItem->GetProcessingUserAction() &&
-    ((GetTickCount() % 2000) >= 1000);
+    ((::GetTickCount() % 2000) >= 1000);
 
   UnicodeString Operation;
   UnicodeString Direction;

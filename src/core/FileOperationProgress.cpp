@@ -137,7 +137,7 @@ void TFileOperationProgressType::Suspend()
 {
   assert(!Suspended);
   Suspended = true;
-  FSuspendTime = GetTickCount();
+  FSuspendTime = ::GetTickCount();
   DoProgress();
 }
 
@@ -148,7 +148,7 @@ void TFileOperationProgressType::Resume()
 
   // shift timestamps for CPS calculation in advance
   // by the time the progress was suspended
-  uint32_t Stopped = (uint32_t)(GetTickCount() - FSuspendTime);
+  uint32_t Stopped = (uint32_t)(::GetTickCount() - FSuspendTime);
   size_t Index = 0;
   while (Index < FTicks.size())
   {
@@ -294,7 +294,7 @@ uintptr_t TFileOperationProgressType::AdjustToCPSLimit(
     // we wait until the next second
     do
     {
-      uintptr_t Second = (GetTickCount() / MSecsPerSec);
+      uintptr_t Second = (::GetTickCount() / MSecsPerSec);
 
       if (Second != FLastSecond)
       {
@@ -393,7 +393,7 @@ void TFileOperationProgressType::AddTransfered(int64_t ASize,
   if (AddToTotals)
   {
     TotalTransfered += ASize;
-    uint32_t Ticks = static_cast<uint32_t>(GetTickCount());
+    uint32_t Ticks = static_cast<uint32_t>(::GetTickCount());
     if (FTicks.empty() ||
         (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
         ((Ticks - FTicks.back()) >= static_cast<uint32_t>(MSecsPerSec)))
@@ -473,7 +473,7 @@ uintptr_t TFileOperationProgressType::CPS() const
   }
   else
   {
-    uintptr_t Ticks = (Suspended ? FSuspendTime : GetTickCount());
+    uintptr_t Ticks = (Suspended ? FSuspendTime : ::GetTickCount());
     uintptr_t TimeSpan;
     if (Ticks < FTicks.front())
     {

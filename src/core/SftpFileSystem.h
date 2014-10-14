@@ -74,7 +74,7 @@ public:
     TRemoteFile *& AFile);
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual void CopyFile(const UnicodeString & AFileName,
+  virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName);
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & APath,
@@ -82,8 +82,8 @@ public:
   virtual const TSessionInfo & GetSessionInfo() const;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
-  virtual bool GetStoredCredentialsTried();
-  virtual UnicodeString GetUserName();
+  virtual bool GetStoredCredentialsTried() const;
+  virtual UnicodeString FSGetUserName() const;
 
 protected:
   TSecureShell * FSecureShell;
@@ -116,7 +116,7 @@ protected:
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile, uint8_t Type, TRemoteFile * ALinkedByFile = nullptr,
     intptr_t AllowStatus = -1);
-  virtual UnicodeString GetCurrDirectory();
+  virtual UnicodeString GetCurrDirectory() const;
   UnicodeString GetHomeDirectory();
   uintptr_t GotStatusPacket(TSFTPPacket * Packet, intptr_t AllowStatus);
   bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** AFile = nullptr);

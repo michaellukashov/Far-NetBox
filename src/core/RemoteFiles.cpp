@@ -929,12 +929,12 @@ Boolean TRemoteFile::GetIsInaccesibleDirectory() const
   {
     assert(GetTerminal());
     Result = !
-       (::SameText(GetTerminal()->GetUserName(), L"root")) ||
+       (::SameText(GetTerminal()->TerminalGetUserName(), L"root")) ||
        (((GetRights()->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
         ((GetRights()->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
          GetTerminal()->GetMembership()->Exists(GetFileGroup().GetName())) ||
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
-         (::SameText(GetTerminal()->GetUserName(), GetFileOwner().GetName()))));
+         (::SameText(GetTerminal()->TerminalGetUserName(), GetFileOwner().GetName()))));
   }
   else
   {
@@ -1052,7 +1052,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     auto GetNCol = [&]()
     {
       if (ListingStr.IsEmpty())
-        throw ::Exception(L"");
+        throw Exception(L"");
       intptr_t P = ListingStr.Pos(L' ');
       if (P)
       {
@@ -1337,7 +1337,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       }
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, Value.c_str()), HELP_LIST_LINE_ERROR);
   }
@@ -1402,7 +1402,7 @@ void TRemoteFile::FindLinkedFile()
       };
       GetTerminal()->ReadSymlink(this, FLinkedFile);
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
       {
@@ -1796,9 +1796,9 @@ void TRemoteDirectoryCache::Clear()
   };
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
+    TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
     SAFE_DESTROY(List);
-    SetObject(Index, nullptr);
+    SetObj(Index, nullptr);
   }
 }
 
@@ -1825,7 +1825,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   intptr_t Index = IndexOf(core::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
-    TRemoteFileList * FileList = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
+    TRemoteFileList * FileList = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
     if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
@@ -1843,8 +1843,8 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   bool Result = (Index >= 0);
   if (Result)
   {
-    assert(GetObject(Index) != nullptr);
-    NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index))->DuplicateTo(FileList);
+    assert(GetObj(Index) != nullptr);
+    NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index))->DuplicateTo(FileList);
   }
   return Result;
 }
@@ -1898,7 +1898,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
 
 void TRemoteDirectoryCache::Delete(intptr_t Index)
 {
-  TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObject(Index));
+  TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
   SAFE_DESTROY(List);
   TStringList::Delete(Index);
 }
@@ -2251,7 +2251,7 @@ void TRights::SetText(const UnicodeString & Value)
         (!GetAllowUndef() && (Value.Pos(UndefSymbol) > 0)) ||
         (Value.Pos(L" ") > 0))
     {
-      throw ::Exception(FMTLOAD(RIGHTS_ERROR, Value.c_str()));
+      throw Exception(FMTLOAD(RIGHTS_ERROR, Value.c_str()));
     }
 
     FSet = 0;
@@ -2378,7 +2378,7 @@ void TRights::SetOctal(const UnicodeString & AValue)
 
     if (!Correct)
     {
-      throw ::Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue.c_str()));
+      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue.c_str()));
     }
 
     SetNumber(static_cast<uint16_t>(
@@ -2679,7 +2679,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
   TRemoteProperties CommonProperties;
   for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
   {
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(Index));
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index));
     assert(File);
     if (!Index)
     {

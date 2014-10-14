@@ -197,7 +197,7 @@ public:
     Close(Committed);
   }
 
-  void Rollback(::Exception * E)
+  void Rollback(Exception * E)
   {
     assert(FErrorMessages == nullptr);
     FErrorMessages = ExceptionToMoreMessages(E);
@@ -361,7 +361,7 @@ void TSessionAction::Commit()
   }
 }
 
-void TSessionAction::Rollback(::Exception * E)
+void TSessionAction::Rollback(Exception * E)
 {
   if (FRecord != nullptr)
   {
@@ -571,7 +571,7 @@ FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, b
   }
   else
   {
-    throw ::Exception(FMTLOAD(LOG_OPENERROR, ANewFileName.c_str()));
+    throw Exception(FMTLOAD(LOG_OPENERROR, ANewFileName.c_str()));
   }
   return Result;
 }
@@ -622,7 +622,7 @@ UnicodeString TSessionLog::GetLine(intptr_t Index) const
 
 TLogLineType TSessionLog::GetType(intptr_t Index) const
 {
-  return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObject(Index - FTopIndex)));
+  return static_cast<TLogLineType>(reinterpret_cast<size_t>(GetObj(Index - FTopIndex)));
 }
 
 void TSessionLog::DoAddToParent(TLogLineType AType, const UnicodeString & ALine)
@@ -711,7 +711,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
       }
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogging(false);
@@ -719,7 +719,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       {
         throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
-      catch (::Exception & E)
+      catch (Exception & E)
       {
         AddException(&E);
         FUI->HandleExtendedException(&E);
@@ -728,7 +728,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
   }
 }
 
-void TSessionLog::AddException(::Exception * E)
+void TSessionLog::AddException(Exception * E)
 {
   if (E != nullptr)
   {
@@ -786,7 +786,7 @@ void TSessionLog::OpenLogFile()
     FCurrentLogFileName = FConfiguration->GetLogFileName();
     FFile = OpenFile(FCurrentLogFileName, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     // We failed logging to file, turn it off and notify user.
     FCurrentLogFileName = L"";
@@ -796,7 +796,7 @@ void TSessionLog::OpenLogFile()
     {
       throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       AddException(&E);
       FUI->HandleExtendedException(&E);
@@ -1253,7 +1253,7 @@ void TActionLog::Add(const UnicodeString & Line)
         fwrite("\n", 1, 1, (FILE *)FFile);
       }
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogActions(false);
@@ -1261,7 +1261,7 @@ void TActionLog::Add(const UnicodeString & Line)
       {
         throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
-      catch (::Exception & E)
+      catch (Exception & E)
       {
         FUI->HandleExtendedException(&E);
       }
@@ -1281,7 +1281,7 @@ void TActionLog::AddFailure(TStrings * Messages)
   AddIndented(L"</failure>");
 }
 
-void TActionLog::AddFailure(::Exception * E)
+void TActionLog::AddFailure(Exception * E)
 {
   std::unique_ptr<TStrings> Messages(ExceptionToMoreMessages(E));
   if (Messages.get() != nullptr)
@@ -1349,7 +1349,7 @@ void TActionLog::OpenLogFile()
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
     FFile = OpenFile(FCurrentLogFileName, FSessionData, false, FCurrentFileName);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     // We failed logging to file, turn it off and notify user.
     FCurrentLogFileName = L"";
@@ -1359,7 +1359,7 @@ void TActionLog::OpenLogFile()
     {
       throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       FUI->HandleExtendedException(&E);
     }

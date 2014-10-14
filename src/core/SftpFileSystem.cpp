@@ -676,7 +676,7 @@ public:
       static wchar_t * Types = L"U-DLSUOCBF";
       if (FXType > (uint8_t)wcslen(Types))
       {
-        throw ::Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, static_cast<int>(FXType)));
+        throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, static_cast<int>(FXType)));
       }
       AFile->SetType(Types[FXType]);
     }
@@ -1106,7 +1106,7 @@ private:
   {
     if (Size > GetRemainingLength())
     {
-      throw ::Exception(FMTLOAD(SFTP_PACKET_ERROR, static_cast<int>(FPosition), static_cast<int>(Size), static_cast<int>(FLength)));
+      throw Exception(FMTLOAD(SFTP_PACKET_ERROR, static_cast<int>(FPosition), static_cast<int>(Size), static_cast<int>(FLength)));
     }
   }
 
@@ -1188,7 +1188,7 @@ public:
       {
         FFileSystem->ReceiveResponse(Request, Response);
       }
-      catch (::Exception & E)
+      catch (Exception & E)
       {
         if (FFileSystem->FTerminal->GetActive())
         {
@@ -1620,7 +1620,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FFileList->GetObject(FIndex));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FFileList->GetObj(FIndex));
       ++FIndex;
 
       bool MissingRights =
@@ -1707,7 +1707,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FFileList->GetObject(FIndex));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FFileList->GetObj(FIndex));
       assert(File != nullptr);
       ++FIndex;
 
@@ -1933,14 +1933,14 @@ bool TSFTPFileSystem::TemporaryTransferFile(const UnicodeString & AFileName)
   return ::AnsiSameText(core::UnixExtractFileExt(AFileName), PARTIAL_EXT);
 }
 
-bool TSFTPFileSystem::GetStoredCredentialsTried()
+bool TSFTPFileSystem::GetStoredCredentialsTried() const
 {
   return FSecureShell->GetStoredCredentialsTried();
 }
 
-UnicodeString TSFTPFileSystem::GetUserName()
+UnicodeString TSFTPFileSystem::FSGetUserName() const
 {
-  return FSecureShell->GetUserName();
+  return FSecureShell->ShellGetUserName();
 }
 
 void TSFTPFileSystem::Idle()
@@ -2613,7 +2613,7 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath)
 
     FTerminal->LogEvent(FORMAT(L"Real path is '%s'", Result.c_str()));
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     if (FTerminal->GetActive())
     {
@@ -2773,7 +2773,7 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
   return File.release();
 }
 
-UnicodeString TSFTPFileSystem::GetCurrDirectory()
+UnicodeString TSFTPFileSystem::GetCurrDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -2795,7 +2795,7 @@ void TSFTPFileSystem::DoStartup()
   {
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_VERSION);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     FTerminal->FatalError(&E, LoadStr(SFTP_INITIALIZE_ERROR));
   }
@@ -2934,7 +2934,7 @@ void TSFTPFileSystem::DoStartup()
             }
           }
         }
-        catch (::Exception & E)
+        catch (Exception & E)
         {
           DEBUG_PRINTF(L"before FTerminal->HandleException");
           FFixedPaths->Clear();
@@ -3338,7 +3338,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
               core::UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
           }
         }
-        catch (::Exception & E)
+        catch (Exception & E)
         {
           if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
           {
@@ -3544,7 +3544,7 @@ void TSFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 
-void TSFTPFileSystem::CopyFile(const UnicodeString & AFileName,
+void TSFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   const UnicodeString & ANewName)
 {
   // Implemented by ProFTPD/mod_sftp and Bitvise WinSSHD (without announcing it)
@@ -3775,7 +3775,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
   {
     for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObject(Index));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index));
       assert(File != nullptr);
       if (File && File->GetIsDirectory() && !File->GetIsSymLink() &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -3857,7 +3857,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
 
             Success = true;
           }
-          catch (::Exception & E)
+          catch (Exception & E)
           {
             FTerminal->CommandError(&E, FMTLOAD(CHECKSUM_ERROR,
               File != nullptr ? File->GetFullFileName().c_str() : L""));
@@ -4031,7 +4031,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = core::ExtractFileName(RealFileName, false);
     assert(!FAvoidBusy);
@@ -4314,7 +4314,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & AFileName,
         OperationProgress,
         Flags, Action, ChildError);
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       Retry = FTerminal != nullptr;
       if (FTerminal && (FTerminal->GetActive() ||
@@ -4755,7 +4755,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
             }
           );
         }
-        catch (::Exception & E)
+        catch (Exception & E)
         {
           if (TouchAction.get() != nullptr)
           {
@@ -4890,7 +4890,7 @@ intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
 
       Success = true;
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       if (!OpenParams->Confirmed && (OpenType & SSH_FXF_EXCL) && FTerminal->GetActive())
       {
@@ -5168,7 +5168,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
+    const TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
 
     assert(!FAvoidBusy);
     FAvoidBusy = true;
@@ -5230,7 +5230,7 @@ void TSFTPFileSystem::SFTPSinkRobust(const UnicodeString & AFileName,
       SFTPSink(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action, ChildError);
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||

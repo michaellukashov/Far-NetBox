@@ -39,7 +39,7 @@ DEFINE_CALLBACK_TYPE5(TDisplayBannerEvent, void,
   TTerminal * /* Terminal */, const UnicodeString & /* SessionName */, const UnicodeString & /* Banner */,
   bool & /* NeverShowAgain */, intptr_t /* Options */);
 DEFINE_CALLBACK_TYPE3(TExtendedExceptionEvent, void,
-  TTerminal * /* Terminal */, ::Exception * /* E */, void * /* Arg */);
+  TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */);
 DEFINE_CALLBACK_TYPE2(TReadDirectoryEvent, void, TObject * /* Sender */, Boolean /* ReloadOnly */);
 DEFINE_CALLBACK_TYPE4(TReadDirectoryProgressEvent, void,
   TObject * /* Sender */, intptr_t /* Progress */, intptr_t /* ResolvedLinks */, bool & /* Cancel */);
@@ -73,7 +73,7 @@ DEFINE_CALLBACK_TYPE2(TCreateLocalDirectoryEvent, BOOL,
   const UnicodeString & /* LocalDirName */, LPSECURITY_ATTRIBUTES /* SecurityAttributes */);
 DEFINE_CALLBACK_TYPE0(TCheckForEscEvent, bool);
 
-inline void ThrowSkipFile(::Exception * Exception, const UnicodeString & Message)
+inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 {
   throw ESkipFile(Exception, Message);
 }
@@ -158,8 +158,8 @@ friend class TTunnelUI;
 friend class TCallbackGuard;
 
 public:
-  void CommandError(::Exception * E, const UnicodeString & Msg);
-  uintptr_t CommandError(::Exception * E, const UnicodeString & Msg,
+  void CommandError(Exception * E, const UnicodeString & Msg);
+  uintptr_t CommandError(Exception * E, const UnicodeString & Msg,
     uintptr_t Answers, const UnicodeString & HelpKeyword = L"");
   void SetMasks(const UnicodeString & Value);
   UnicodeString GetCurrDirectory();
@@ -167,10 +167,10 @@ public:
   const TRemoteTokenList * GetGroups();
   const TRemoteTokenList * GetUsers();
   const TRemoteTokenList * GetMembership();
-  void SetCurrentDirectory(const UnicodeString & Value);
+  void TerminalSetCurrentDirectory(const UnicodeString & Value);
   void SetExceptionOnFail(bool Value);
   void ReactOnCommand(intptr_t /*TFSCommand*/ Cmd);
-  UnicodeString GetUserName() const;
+  UnicodeString TerminalGetUserName() const;
   bool GetAreCachesEmpty() const;
   bool GetIsCapable(TFSCapability Capability) const;
   void ClearCachedFileList(const UnicodeString & APath, bool SubDirs);
@@ -185,7 +185,7 @@ public:
   UnicodeString GetRememberedPassword() const;
   UnicodeString GetRememberedTunnelPassword() const;
   void SetTunnelPassword(const UnicodeString & Value) { FRememberedTunnelPassword = Value; }
-  bool GetStoredCredentialsTried();
+  bool GetStoredCredentialsTried() const;
   TCustomFileSystem * GetFileSystem() const { return FFileSystem; }
   TCustomFileSystem * GetFileSystem() { return FFileSystem; }
   inline bool InTransaction();
@@ -202,7 +202,7 @@ public:
   void Reopen(intptr_t Params);
   virtual void DirectoryModified(const UnicodeString & APath, bool SubDirs);
   virtual void DirectoryLoaded(TRemoteFileList * FileList);
-  void ShowExtendedException(::Exception * E);
+  void ShowExtendedException(Exception * E);
   void Idle();
   void RecryptPasswords();
   bool AllowedAnyCommand(const UnicodeString & Command) const;
@@ -243,16 +243,16 @@ public:
     const TRemoteProperties * Properties);
   bool LoadFilesProperties(TStrings * AFileList);
   void TerminalError(const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
-  void TerminalError(::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  void TerminalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   void ReloadDirectory();
   void RefreshDirectory();
   void TerminalRenameFile(const UnicodeString & AFileName, const UnicodeString & NewName);
   void TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString & NewName, bool CheckExistence);
-  void MoveFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
+  void TerminalMoveFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /* const TMoveFileParams */ void * Param);
   bool MoveFiles(TStrings * AFileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
-  void CopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
+  void TerminalCopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /* const TMoveFileParams */ void * Param);
   bool CopyFiles(TStrings * AFileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
@@ -276,14 +276,14 @@ public:
   bool DirectoryFileList(const UnicodeString & APath,
     TRemoteFileList *& FileList, bool CanLoad);
   void MakeLocalFileList(const UnicodeString & AFileName,
-    const ::TSearchRec & Rec, void * Param);
-  bool FileOperationLoopQuery(::Exception & E,
+    const TSearchRec & Rec, void * Param);
+  bool FileOperationLoopQuery(Exception & E,
     TFileOperationProgressType * OperationProgress,
     const UnicodeString & Message,
     bool AllowSkip, const UnicodeString & SpecialRetry = UnicodeString(),
     const UnicodeString & HelpKeyword = L"");
   TUsableCopyParamAttrs UsableCopyParamAttrs(intptr_t Params);
-  bool QueryReopen(::Exception * E, intptr_t Params,
+  bool QueryReopen(Exception * E, intptr_t Params,
     TFileOperationProgressType * OperationProgress);
   UnicodeString PeekCurrentDirectory();
   void FatalAbort();
@@ -407,13 +407,13 @@ protected:
     OUT int64_t * AATime, OUT int64_t * ASize, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(const UnicodeString & AFileName,
     const TCopyParamType * CopyParam, TFileOperationProgressType * OperationProgress);
-  bool HandleException(::Exception * E);
+  bool HandleException(Exception * E);
   void CalculateFileSize(const UnicodeString & AFileName,
     const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * Size);
   void DoCalculateDirectorySize(const UnicodeString & AFileName,
     const TRemoteFile * AFile, TCalculateSizeParams * Params);
   void CalculateLocalFileSize(const UnicodeString & AFileName,
-    const ::TSearchRec & Rec, /*int64_t*/ void * Params);
+    const TSearchRec & Rec, /*int64_t*/ void * Params);
   bool CalculateLocalFilesSize(const TStrings * AFileList,
     const TCopyParamType * CopyParam, bool AllowDirs,
     OUT int64_t & Size);
@@ -444,8 +444,8 @@ protected:
     const TRemoteFile * AFile, void * Param);
   void RecycleFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
   void DoStartup();
-  virtual bool DoQueryReopen(::Exception * E);
-  virtual void FatalError(::Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  virtual bool DoQueryReopen(Exception * E);
+  virtual void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   void ResetConnection();
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
@@ -472,20 +472,20 @@ protected:
     TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
   virtual uintptr_t QueryUserException(const UnicodeString & Query,
-    ::Exception * E, uintptr_t Answers, const TQueryParams * Params,
+    Exception * E, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & AName, const UnicodeString & Instructions, TStrings * Prompts,
     TStrings * Results);
   virtual void DisplayBanner(const UnicodeString & Banner);
   virtual void Closed();
-  virtual void HandleExtendedException(::Exception * E);
+  virtual void HandleExtendedException(Exception * E);
   bool IsListenerFree(uintptr_t PortNumber) const;
   void DoProgress(TFileOperationProgressType & ProgressData);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
     const UnicodeString & AFileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
-    TFileOperationProgressType * OperationProgress, ::Exception * E = nullptr);
+    TFileOperationProgressType * OperationProgress, Exception * E = nullptr);
   void DoAnyCommand(const UnicodeString & ACommand, TCaptureOutputEvent OutputEvent,
     TCallSessionAction * Action);
   TRemoteFileList * DoReadDirectoryListing(const UnicodeString & ADirectory,
@@ -524,11 +524,11 @@ private:
   void InitFileSystem();
 
   void CommandErrorAri(
-    ::Exception & E,
+    Exception & E,
     const UnicodeString & Message,
     const std::function<void()> & Repeat);
   void CommandErrorAriAction(
-    ::Exception & E,
+    Exception & E,
     const UnicodeString & Message,
     const std::function<void()> & Repeat,
     TSessionAction & Action);

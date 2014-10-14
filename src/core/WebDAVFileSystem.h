@@ -69,7 +69,7 @@ public:
     TRemoteFile *& File);
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual void CopyFile(const UnicodeString & AFileName,
+  virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & APath,
@@ -77,8 +77,8 @@ public:
   virtual const TSessionInfo & GetSessionInfo() const;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
-  virtual bool GetStoredCredentialsTried();
-  virtual UnicodeString GetUserName();
+  virtual bool GetStoredCredentialsTried() const;
+  virtual UnicodeString FSGetUserName() const;
 
 public:
   virtual void ReadDirectoryProgress(int64_t Bytes);
@@ -129,7 +129,7 @@ public:
   uintptr_t AdjustToCPSLimit(uintptr_t Len);
 
 protected:
-  virtual UnicodeString GetCurrDirectory();
+  virtual UnicodeString GetCurrDirectory() const;
 
   bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     intptr_t Count);
@@ -215,7 +215,7 @@ private:
   size_t FFileTransferCPSLimit;
   size_t FLastReadDirectoryProgress;
   TFileOperationProgressType * FCurrentOperationProgress;
-  ::TCriticalSection FTransferStatusCriticalSection;
+  TCriticalSection FTransferStatusCriticalSection;
   apr_pool_t * webdav_pool;
   webdav::session_t * FSession;
 };

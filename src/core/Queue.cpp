@@ -166,7 +166,7 @@ public:
 
   TExtendedExceptionEvent OnShowExtendedException;
   TTerminal * Terminal;
-  ::Exception * E;
+  Exception * E;
 };
 
 class TDisplayBannerAction : public TUserAction
@@ -271,7 +271,7 @@ protected:
   TTerminalQueue * FQueue;
   TBackgroundTerminal * FTerminal;
   TQueueItem * FItem;
-  ::TCriticalSection FCriticalSection;
+  TCriticalSection FCriticalSection;
   TUserAction * FUserAction;
   bool FCancel;
   bool FPause;
@@ -288,7 +288,7 @@ protected:
     const UnicodeString & Name, const UnicodeString & Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
   void TerminalShowExtendedException(TTerminal * Terminal,
-    ::Exception * E, void * Arg);
+    Exception * E, void * Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
     bool Temp, const UnicodeString & AFileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
@@ -1171,7 +1171,7 @@ public:
     TSessionData * SessionData, TConfiguration * Configuration,
     TTerminalItem * Item, const UnicodeString & Name);
 protected:
-  virtual bool DoQueryReopen(::Exception * E);
+  virtual bool DoQueryReopen(Exception * E);
 
 private:
   TTerminalItem * FItem;
@@ -1190,7 +1190,7 @@ void TBackgroundTerminal::Init(TSessionData * SessionData, TConfiguration * Conf
   FItem = Item;
 }
 
-bool TBackgroundTerminal::DoQueryReopen(::Exception * /*E*/)
+bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
 {
   bool Result;
   if (FItem->FTerminated || FItem->FCancel)
@@ -1283,7 +1283,7 @@ void TTerminalItem::ProcessEvent()
       FItem->Execute(this);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     UnicodeString Message;
     if (ExceptionMessageFormatted(&E, Message))
@@ -1493,7 +1493,7 @@ void TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
 }
 
 void TTerminalItem::TerminalShowExtendedException(
-  TTerminal * Terminal, ::Exception * E, void * Arg)
+  TTerminal * Terminal, Exception * E, void * Arg)
 {
   USEDPARAM(Arg);
   assert(Arg == nullptr);
@@ -1961,7 +1961,7 @@ UnicodeString TLocatedQueueItem::StartupDirectory()
 void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 {
   assert(Terminal != nullptr);
-  Terminal->SetCurrentDirectory(FCurrentDir);
+  Terminal->TerminalSetCurrentDirectory(FCurrentDir);
 }
 
 // TTransferQueueItem
@@ -1980,8 +1980,8 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   for (intptr_t Index = 0; Index < AFilesToCopy->GetCount(); ++Index)
   {
     FFilesToCopy->AddObject(AFilesToCopy->GetString(Index),
-      ((AFilesToCopy->GetObject(Index) == nullptr) || (Side == osLocal)) ? nullptr :
-        NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index))->Duplicate());
+      ((AFilesToCopy->GetObj(Index) == nullptr) || (Side == osLocal)) ? nullptr :
+        NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index))->Duplicate());
   }
 
   FTargetDir = TargetDir;
@@ -1996,7 +1996,7 @@ TTransferQueueItem::~TTransferQueueItem()
 {
   for (intptr_t Index = 0; Index < FFilesToCopy->GetCount(); ++Index)
   {
-    TObject * Object = FFilesToCopy->GetObject(Index);
+    TObject * Object = FFilesToCopy->GetObj(Index);
     SAFE_DESTROY(Object);
   }
   SAFE_DESTROY(FFilesToCopy);
@@ -2254,7 +2254,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
             {
               FUserAction->Execute(nullptr);
             }
-            catch (::Exception & E)
+            catch (Exception & E)
             {
               SaveException(E, FException);
             }
@@ -2272,7 +2272,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
           break;
 
         default:
-          throw ::Exception(L"Error waiting for background session task to complete");
+          throw Exception(L"Error waiting for background session task to complete");
       }
     }
     while (!Done);
@@ -2314,7 +2314,7 @@ void TTerminalThread::ProcessEvent()
   {
     FAction(nullptr);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     SaveException(E, FException);
   }
@@ -2322,7 +2322,7 @@ void TTerminalThread::ProcessEvent()
   SetEvent(FActionEvent);
 }
 
-void TTerminalThread::Rethrow(::Exception *& Exception)
+void TTerminalThread::Rethrow(Exception *& Exception)
 {
   if (Exception != nullptr)
   {
@@ -2334,7 +2334,7 @@ void TTerminalThread::Rethrow(::Exception *& Exception)
   }
 }
 
-void TTerminalThread::SaveException(::Exception & E, ::Exception *& Exception)
+void TTerminalThread::SaveException(Exception & E, Exception *& Exception)
 {
   assert(Exception == nullptr);
 
@@ -2409,7 +2409,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
             {
               FTerminal->Idle();
             }
-            catch (::Exception & E)
+            catch (Exception & E)
             {
               SaveException(E, FIdleException);
             }
@@ -2527,7 +2527,7 @@ void TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
 }
 
 void TTerminalThread::TerminalShowExtendedException(
-  TTerminal * Terminal, ::Exception * E, void * Arg)
+  TTerminal * Terminal, Exception * E, void * Arg)
 {
   USEDPARAM(Arg);
   assert(Arg == nullptr);

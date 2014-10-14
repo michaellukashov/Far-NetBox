@@ -114,7 +114,7 @@ public:
   virtual intptr_t PutFiles(const struct PutFilesInfo * Info);
   virtual intptr_t ProcessEditorEvent(const struct ProcessEditorEventInfo * Info);
   virtual intptr_t ProcessEditorInput(const struct ProcessEditorInputInfo * Info);
-  virtual void HandleException(::Exception * E, OPERATION_MODES OpMode = 0);
+  virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0);
 
   static wchar_t * DuplicateStr(const UnicodeString & Str, bool AllowEmpty = false);
   intptr_t Message(uintptr_t Flags, const UnicodeString & Title,
@@ -134,7 +134,7 @@ public:
   bool InputBox(const UnicodeString & Title, const UnicodeString & Prompt,
     UnicodeString & Text, PLUGINPANELITEMFLAGS Flags, const UnicodeString & HistoryName = L"",
     intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
-  UnicodeString GetMsg(intptr_t MsgId);
+  UnicodeString GetMsg(intptr_t MsgId) const;
   void SaveScreen(HANDLE & Screen);
   void RestoreScreen(HANDLE & Screen);
   bool CheckForEsc();
@@ -143,13 +143,13 @@ public:
   intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   __int64 FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2 = nullptr) const;
   intptr_t FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2) const;
-  __int64 FarSystemSettings();
+  __int64 GetFarSystemSettings() const;
   void Text(int X, int Y, int Color, const UnicodeString & Str);
   void FlushText();
-  void WriteConsole(const UnicodeString & Str);
+  void FarWriteConsole(const UnicodeString & Str);
   void FarCopyToClipboard(const UnicodeString & Str);
   void FarCopyToClipboard(const TStrings * Strings);
-  intptr_t FarVersion();
+  intptr_t GetFarVersion() const;
   UnicodeString FormatFarVersion(VersionInfo & Info) const;
   UnicodeString GetTemporaryDir() const;
   int InputRecordToKey(const INPUT_RECORD * Rec);
@@ -172,7 +172,7 @@ public:
   UnicodeString GetModuleName() const;
   TFarDialog * GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; }
-  uintptr_t GetFarThread() const { return FFarThread; }
+  uintptr_t GetFarThreadId() const { return FFarThreadId; }
   FarStandardFunctions & GetFarStandardFunctions() { return FFarStandardFunctions; }
   const struct PluginStartupInfo * GetStartupInfo() const { return &FStartupInfo; }
 
@@ -184,12 +184,12 @@ protected:
   TFarDialog * FTopDialog;
   HANDLE FConsoleInput;
   HANDLE FConsoleOutput;
-  intptr_t FFarVersion;
+  mutable intptr_t FFarVersion;
   bool FTerminalScreenShowing;
-  ::TCriticalSection FCriticalSection;
-  uintptr_t FFarThread;
-  bool FValidFarSystemSettings;
-  intptr_t FFarSystemSettings;
+  TCriticalSection FCriticalSection;
+  uintptr_t FFarThreadId;
+  mutable bool FValidFarSystemSettings;
+  mutable intptr_t FFarSystemSettings;
   TPoint FNormalConsoleSize;
 
   virtual bool HandlesFunction(THandlesFunction Function);
@@ -201,7 +201,7 @@ protected:
   virtual intptr_t ProcessEditorEventEx(const struct ProcessEditorEventInfo * Info) = 0;
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;
   virtual void HandleFileSystemException(TCustomFarFileSystem * FarFileSystem,
-    ::Exception * E, OPERATION_MODES OpMode = 0);
+    Exception * E, OPERATION_MODES OpMode = 0);
   void ResetCachedInfo();
   intptr_t MaxLength(TStrings * Strings);
   intptr_t FarMessage(uintptr_t Flags,
@@ -212,7 +212,7 @@ protected:
     TFarMessageParams * Params);
   void InvalidateOpenPanelInfo();
 
-  const ::TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
+  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
 
 #ifdef NETBOX_DEBUG
 public:
@@ -220,7 +220,7 @@ public:
 #endif
 private:
   void UpdateProgress(intptr_t State, intptr_t Progress);
-  __int64 GetSystemSetting(HANDLE & Settings, const wchar_t * Name);
+  __int64 GetSystemSetting(HANDLE & Settings, const wchar_t * Name) const;
 
 private:
   PluginInfo FPluginInfo;
@@ -302,18 +302,18 @@ protected:
   bool IsLeft();
   bool IsRight();
 
-  virtual void HandleException(::Exception * E, OPERATION_MODES OpMode = 0);
+  virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0);
 
   const TFarPanelInfo * GetPanelInfo() const { return GetPanelInfo(0); }
   TFarPanelInfo * GetPanelInfo() { return GetPanelInfo(0); }
   const TFarPanelInfo * GetAnotherPanelInfo() const { return GetPanelInfo(1); }
   TFarPanelInfo * GetAnotherPanelInfo() { return GetPanelInfo(1); }
-  const ::TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
-  ::TCriticalSection & GetCriticalSection() { return FCriticalSection; }
+  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
+  TCriticalSection & GetCriticalSection() { return FCriticalSection; }
   bool GetOpenPanelInfoValid() const { return FOpenPanelInfoValid; }
 
 protected:
-  ::TCriticalSection FCriticalSection;
+  TCriticalSection FCriticalSection;
   void InvalidateOpenPanelInfo();
 
 private:
@@ -403,7 +403,7 @@ public:
   virtual ~TFarPanelItem();
 
   PLUGINPANELITEMFLAGS GetFlags() const;
-  uintptr_t GetFileAttributes() const;
+  uintptr_t GetFileAttrs() const;
   UnicodeString GetFileName() const;
   void * GetUserData();
   bool GetSelected() const;
@@ -502,7 +502,7 @@ public:
   bool GetFlag(intptr_t Index, uintptr_t Flag) const;
 
 protected:
-  virtual void SetObject(intptr_t Index, TObject * AObject);
+  virtual void SetObj(intptr_t Index, TObject * AObject);
 
 private:
   intptr_t FItemFocused;

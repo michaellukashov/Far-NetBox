@@ -89,7 +89,7 @@ public:
     TRemoteFile *& AFile);
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual void CopyFile(const UnicodeString & AFileName,
+  virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & APath,
@@ -97,13 +97,13 @@ public:
   virtual const TSessionInfo & GetSessionInfo() const;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
-  virtual bool GetStoredCredentialsTried();
-  virtual UnicodeString GetUserName();
+  virtual bool GetStoredCredentialsTried() const;
+  virtual UnicodeString FSGetUserName() const;
 
 protected:
   // enum TOverwriteMode { omOverwrite, omResume, omComplete };
 
-  virtual UnicodeString GetCurrDirectory();
+  virtual UnicodeString GetCurrDirectory() const;
 
   const wchar_t * GetOption(intptr_t OptionID) const;
   intptr_t GetOptionVal(intptr_t OptionID) const;
@@ -223,8 +223,8 @@ private:
   };
 
   TFileZillaIntf * FFileZillaIntf;
-  ::TCriticalSection FQueueCriticalSection;
-  ::TCriticalSection FTransferStatusCriticalSection;
+  TCriticalSection FQueueCriticalSection;
+  TCriticalSection FTransferStatusCriticalSection;
   TMessageQueue FQueue;
   HANDLE FQueueEvent;
   TSessionInfo FSessionInfo;

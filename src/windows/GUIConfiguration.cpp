@@ -255,7 +255,7 @@ void TCopyParamList::ValidateName(const UnicodeString & Name)
 {
   if (Name.LastDelimiter(FInvalidChars) > 0)
   {
-    throw ::Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
+    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
   }
 }
 
@@ -811,7 +811,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
   if (!NewInstance && !Internal)
   {
-    throw ::Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
+    throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
   }
   else
   {
@@ -961,7 +961,7 @@ TStrings * TGUIConfiguration::GetLocales()
 
         if (Ext >= 0)
         {
-          Exts->SetObject(Ext, reinterpret_cast<TObject *>(Locale));
+          Exts->SetObj(Ext, reinterpret_cast<TObject *>(Locale));
         }
         else
         {
@@ -991,7 +991,7 @@ TStrings * TGUIConfiguration::GetLocales()
     */
     for (intptr_t Index = 0; Index < Exts->GetCount(); ++Index)
     {
-      if ((Exts->GetObject(Index) == nullptr) &&
+      if ((Exts->GetObj(Index) == nullptr) &&
           (Exts->GetString(Index).Length() == 3) &&
           ::SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
       {

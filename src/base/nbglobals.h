@@ -67,7 +67,7 @@ inline void operator_delete(void * p)
   {                                               \
     operator_delete(p);                           \
   }                                               \
-   void * operator new[](size_t size)             \
+  void * operator new[](size_t size)              \
   {                                               \
     return operator_new(size);                    \
   }                                               \
@@ -100,11 +100,11 @@ inline void operator_delete(void * p)
   { \
     return operator_new(size); \
   } \
-  void operator delete(void* p, const char * /*lpszFileName*/, int /*nLine*/) \
+  void operator delete(void * p, const char * /*lpszFileName*/, int /*nLine*/) \
   { \
     operator_delete(p); \
   } \
-  void operator delete[](void* p, const char * /*lpszFileName*/, int /*nLine*/) \
+  void operator delete[](void * p, const char * /*lpszFileName*/, int /*nLine*/) \
   { \
     operator_delete(p); \
   }
@@ -115,6 +115,8 @@ inline void operator_delete(void * p)
 #else
 #define CUSTOM_MEM_ALLOCATION_IMPL
 #endif // ifdef USE_DLMALLOC
+
+#if defined(__cplusplus)
 
 namespace nballoc
 {
@@ -203,3 +205,4 @@ inline bool operator!=(const custom_nballocator_t<T> &, const custom_nballocator
   return true;
 }
 
+#endif // if defined(__cplusplus)

@@ -36,7 +36,7 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   FSavedTitles(new TStringList())
 {
   ::InitPlatformId();
-  FFarThread = GetCurrentThreadId();
+  FFarThreadId = GetCurrentThreadId();
   FHandle = HInst;
   FFarVersion = 0;
   FTerminalScreenShowing = false;
@@ -81,7 +81,7 @@ TCustomFarPlugin::~TCustomFarPlugin()
   SAFE_DESTROY(FOpenedPlugins);
   for (intptr_t Index = 0; Index < FSavedTitles->GetCount(); ++Index)
   {
-    TObject * Object = FSavedTitles->GetObject(Index);
+    TObject * Object = FSavedTitles->GetObj(Index);
     SAFE_DESTROY(Object);
   }
   SAFE_DESTROY(FSavedTitles);
@@ -122,7 +122,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
               sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -160,7 +160,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
           for (intptr_t Index = 0; Index < NAME.GetCount(); Index++) \
           { \
             StringArray[Index] = DuplicateStr(NAME.GetString(Index)); \
-            Guids[Index] = *reinterpret_cast<const GUID *>(NAME.GetObject(Index)); \
+            Guids[Index] = *reinterpret_cast<const GUID *>(NAME.GetObj(Index)); \
           } \
         }
 
@@ -179,7 +179,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
 
     memmove(Info, &FPluginInfo, sizeof(FPluginInfo));
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -295,7 +295,7 @@ intptr_t TCustomFarPlugin::Configure(const struct ConfigureInfo * Info)
 
     return Result;
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -334,7 +334,7 @@ void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo * Info)
 
     return Result;
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -362,7 +362,7 @@ void TCustomFarPlugin::ClosePanel(void * Plugin)
     // dlmalloc_trim(0); // 64 * 1024);
 #endif
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -370,7 +370,7 @@ void TCustomFarPlugin::ClosePanel(void * Plugin)
 }
 
 void TCustomFarPlugin::HandleFileSystemException(
-  TCustomFarFileSystem * FarFileSystem, ::Exception * E, OPERATION_MODES OpMode)
+  TCustomFarFileSystem * FarFileSystem, Exception * E, OPERATION_MODES OpMode)
 {
   // This method is called as last-resort exception handler before
   // leaving plugin API. Especially for API functions that must update
@@ -399,7 +399,7 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo * Info)
     TGuard Guard(FarFileSystem->GetCriticalSection());
     FarFileSystem->GetOpenPanelInfo(Info);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -419,7 +419,7 @@ intptr_t TCustomFarPlugin::GetFindData(struct GetFindDataInfo * Info)
       return FarFileSystem->GetFindData(Info);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
@@ -440,7 +440,7 @@ void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo * Info)
       FarFileSystem->FreeFindData(Info);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -467,7 +467,7 @@ intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo * In
       return 0;
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
@@ -495,7 +495,7 @@ intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo 
       return 0;
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -531,7 +531,7 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
       return 0;
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -557,7 +557,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
       return FarFileSystem->SetDirectory(Info);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
@@ -574,7 +574,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
         TGuard Guard(FarFileSystem->GetCriticalSection());
         return FarFileSystem->SetDirectory(&Info2);
       }
-      catch (::Exception &)
+      catch (Exception &)
       {
         return 0;
       }
@@ -596,7 +596,7 @@ intptr_t TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo * Info)
       return FarFileSystem->MakeDirectory(Info);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
@@ -617,7 +617,7 @@ intptr_t TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo * Info)
       return FarFileSystem->DeleteFiles(Info);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
@@ -638,7 +638,7 @@ intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo * Info)
       return FarFileSystem->GetFiles(Info);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     // display error even for OPM_FIND
@@ -660,7 +660,7 @@ intptr_t TCustomFarPlugin::PutFiles(const struct PutFilesInfo * Info)
       return FarFileSystem->PutFiles(Info);
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
@@ -676,7 +676,7 @@ intptr_t TCustomFarPlugin::ProcessEditorEvent(const struct ProcessEditorEventInf
 
    return ProcessEditorEventEx(Info);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -692,7 +692,7 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const struct ProcessEditorInputInf
 
     return ProcessEditorInputEx(&Info->Rec);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -844,7 +844,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     Button->SetBottom(Button->GetTop());
     Button->SetResult(Index + 1);
     Button->SetCenterGroup(true);
-    Button->SetTag(reinterpret_cast<intptr_t>(Buttons->GetObject(Index)));
+    Button->SetTag(reinterpret_cast<intptr_t>(Buttons->GetObj(Index)));
     if (PrevButton != nullptr)
     {
       Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -922,7 +922,7 @@ void TFarMessageDialog::Idle()
 
   if (FParams->Timer > 0)
   {
-    size_t SinceLastTimer = static_cast<size_t>((Now() - FLastTimerTime).GetValue() * 24*60*60*1000);
+    size_t SinceLastTimer = static_cast<size_t>((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
     if (SinceLastTimer >= FParams->Timeout)
     {
       assert(FParams->TimerEvent);
@@ -941,7 +941,7 @@ void TFarMessageDialog::Idle()
 
   if (FParams->Timeout > 0)
   {
-    size_t Running = static_cast<size_t>((Now() - FStartTime).GetValue() * 24*60*60*1000);
+    size_t Running = static_cast<size_t>((Now() - FStartTime).GetValue() * MSecsPerDay);
     if (Running >= FParams->Timeout)
     {
       assert(FTimeoutButton != nullptr);
@@ -1150,7 +1150,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
   intptr_t Count = 0;
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    uintptr_t Flags = reinterpret_cast<uintptr_t>(Items->GetObject(Index));
+    uintptr_t Flags = reinterpret_cast<uintptr_t>(Items->GetObj(Index));
     if (FLAGCLEAR(Flags, MIF_HIDDEN))
     {
       ClearStruct(MenuItems[Count]);
@@ -1174,9 +1174,9 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
     Result = MenuItems[ResultItem].UserData;
     if (Selected >= 0)
     {
-      Items->SetObject(Selected, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObject(Selected)) & ~MIF_SELECTED));
+      Items->SetObj(Selected, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObj(Selected)) & ~MIF_SELECTED));
     }
-    Items->SetObject(Result, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObject(Result)) | MIF_SELECTED));
+    Items->SetObj(Result, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObj(Result)) | MIF_SELECTED));
   }
   else
   {
@@ -1229,7 +1229,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
         {
           OnValidate(Text);
         }
-        catch (::Exception & E)
+        catch (Exception & E)
         {
           DEBUG_PRINTF(L"before HandleException");
           HandleException(&E);
@@ -1259,7 +1259,7 @@ void TCustomFarPlugin::FlushText()
   FStartupInfo.Text(0, 0, 0, nullptr);
 }
 
-void TCustomFarPlugin::WriteConsole(const UnicodeString & Str)
+void TCustomFarPlugin::FarWriteConsole(const UnicodeString & Str)
 {
   unsigned long Written;
   ::WriteConsole(FConsoleOutput, Str.c_str(), static_cast<DWORD>(Str.Length()), &Written, nullptr);
@@ -1290,7 +1290,7 @@ TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor) const
 {
   CONSOLE_SCREEN_BUFFER_INFO BufferInfo;
   ClearStruct(BufferInfo);
-  GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo);
+  ::GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo);
   if (FarPlugin)
     FarAdvControl(ACTL_GETFARRECT, 0, &BufferInfo.srWindow);
 
@@ -1345,16 +1345,16 @@ void TCustomFarPlugin::ToggleVideoMode()
       {
         COORD Size = { static_cast<short>(FNormalConsoleSize.x), static_cast<short>(FNormalConsoleSize.y) };
 
-        ::Win32Check(ShowWindow(Window, SW_RESTORE) > 0);
+        ::Win32Check(::ShowWindow(Window, SW_RESTORE) > 0);
 
         SMALL_RECT WindowSize;
         WindowSize.Left = 0;
         WindowSize.Top = 0;
         WindowSize.Right = static_cast<short>(Size.X - 1);
         WindowSize.Bottom = static_cast<short>(Size.Y - 1);
-        ::Win32Check(SetConsoleWindowInfo(FConsoleOutput, true, &WindowSize) > 0);
+        ::Win32Check(::SetConsoleWindowInfo(FConsoleOutput, true, &WindowSize) > 0);
 
-        ::Win32Check(SetConsoleScreenBufferSize(FConsoleOutput, Size) > 0);
+        ::Win32Check(::SetConsoleScreenBufferSize(FConsoleOutput, Size) > 0);
       }
     }
     else
@@ -1389,7 +1389,7 @@ void TCustomFarPlugin::ScrollTerminalScreen(int Rows)
   COORD Dest;
   CHAR_INFO Fill;
   Source.Left = 0;
-  Source.Top = static_cast<char>(Rows);
+  Source.Top = static_cast<SHORT>(Rows);
   Source.Right = static_cast<SHORT>(Size.x);
   Source.Bottom = static_cast<SHORT>(Size.y);
   Dest.X = 0;
@@ -1419,7 +1419,7 @@ void TCustomFarPlugin::ShowTerminalScreen()
   COORD Coord;
   Coord.X = 0;
   Coord.Y = static_cast<SHORT>(Cursor.y);
-  SetConsoleCursorPosition(FConsoleOutput, Coord);
+  ::SetConsoleCursorPosition(FConsoleOutput, Coord);
   FTerminalScreenShowing = true;
 }
 
@@ -1465,7 +1465,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
 {
   assert(FSavedTitles->GetCount() > 0);
   UnicodeString Title = FSavedTitles->GetString(FSavedTitles->GetCount() - 1);
-  TObject * Object = FSavedTitles->GetObject(FSavedTitles->GetCount()-1);
+  TObject * Object = FSavedTitles->GetObj(FSavedTitles->GetCount()-1);
   TConsoleTitleParam * Param = NB_STATIC_DOWNCAST(TConsoleTitleParam, Object);
   if (Param->Own)
   {
@@ -1481,7 +1481,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
     UpdateProgress(TBPS_NOPROGRESS, 0);
   }
   {
-    TObject * Object = FSavedTitles->GetObject(FSavedTitles->GetCount() - 1);
+    TObject * Object = FSavedTitles->GetObj(FSavedTitles->GetCount() - 1);
     SAFE_DESTROY(Object);
   }
   FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
@@ -1530,7 +1530,7 @@ void TCustomFarPlugin::UpdateProgress(intptr_t State, intptr_t Progress)
 void TCustomFarPlugin::UpdateCurrentConsoleTitle()
 {
   UnicodeString Title = FormatConsoleTitle();
-  SetConsoleTitle(Title.c_str());
+  ::SetConsoleTitle(Title.c_str());
   short progress = FCurrentProgress != -1 ? FCurrentProgress : 0;
   UpdateProgress(progress != 0 ? TBPS_NORMAL : TBPS_NOPROGRESS, progress);
 }
@@ -1551,13 +1551,13 @@ void TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
   Screen = 0;
 }
 
-void TCustomFarPlugin::HandleException(::Exception * E, OPERATION_MODES /*OpMode*/)
+void TCustomFarPlugin::HandleException(Exception * E, OPERATION_MODES /*OpMode*/)
 {
   assert(E);
   Message(FMSG_WARNING | FMSG_MB_OK, L"", E ? E->Message : L"");
 }
 
-UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId)
+UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
 {
   TFarEnvGuard Guard;
   UnicodeString Result = FStartupInfo.GetMsg(&MainGuid, (int)MsgId);
@@ -1567,16 +1567,16 @@ UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId)
 bool TCustomFarPlugin::CheckForEsc()
 {
   static uint32_t LastTicks;
-  uint32_t Ticks = GetTickCount();
+  uint32_t Ticks = ::GetTickCount();
   if ((LastTicks == 0) || (Ticks - LastTicks > 500))
   {
     LastTicks = Ticks;
 
     INPUT_RECORD Rec;
     DWORD ReadCount;
-    while (PeekConsoleInput(FConsoleInput, &Rec, 1, &ReadCount) && ReadCount)
+    while (::PeekConsoleInput(FConsoleInput, &Rec, 1, &ReadCount) && ReadCount)
     {
-      ReadConsoleInput(FConsoleInput, &Rec, 1, &ReadCount);
+      ::ReadConsoleInput(FConsoleInput, &Rec, 1, &ReadCount);
       if (Rec.EventType == KEY_EVENT &&
           Rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE &&
           Rec.Event.KeyEvent.bKeyDown)
@@ -1615,7 +1615,7 @@ void TCustomFarPlugin::ResetCachedInfo()
   FValidFarSystemSettings = false;
 }
 
-__int64 TCustomFarPlugin::GetSystemSetting(HANDLE & Settings, const wchar_t * Name)
+__int64 TCustomFarPlugin::GetSystemSetting(HANDLE & Settings, const wchar_t * Name) const
 {
   FarSettingsItem item = {sizeof(FarSettingsItem), FSSF_SYSTEM, Name, FST_UNKNOWN, {0} };
   if (FStartupInfo.SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
@@ -1625,7 +1625,7 @@ __int64 TCustomFarPlugin::GetSystemSetting(HANDLE & Settings, const wchar_t * Na
   return 0;
 }
 
-__int64 TCustomFarPlugin::FarSystemSettings()
+__int64 TCustomFarPlugin::GetFarSystemSettings() const
 {
   if (!FValidFarSystemSettings)
   {
@@ -1721,7 +1721,7 @@ TFarEditorInfo * TCustomFarPlugin::EditorInfo()
   return Result;
 }
 
-intptr_t TCustomFarPlugin::FarVersion()
+intptr_t TCustomFarPlugin::GetFarVersion() const
 {
   if (FFarVersion == 0)
   {
@@ -1804,7 +1804,7 @@ TCustomFarFileSystem::~TCustomFarFileSystem()
   ClearOpenPanelInfo(FOpenPanelInfo);
 }
 
-void TCustomFarFileSystem::HandleException(::Exception * E, OPERATION_MODES OpMode)
+void TCustomFarFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   DEBUG_PRINTF(L"before FPlugin->HandleException");
   FPlugin->HandleException(E, OpMode);
@@ -2282,7 +2282,7 @@ intptr_t TFarPanelModes::CommaCount(const UnicodeString & ColumnTypes)
   intptr_t Count = 0;
   for (intptr_t Index = 1; Index <= ColumnTypes.Length(); ++Index)
   {
-    if (ColumnTypes[Index] == ',')
+    if (ColumnTypes[Index] == L',')
     {
       Count++;
     }
@@ -2490,7 +2490,7 @@ void TFarPanelItem::SetSelected(bool Value)
   }
 }
 
-uintptr_t TFarPanelItem::GetFileAttributes() const
+uintptr_t TFarPanelItem::GetFileAttrs() const
 {
   return static_cast<uintptr_t>(FPanelItem->FileAttributes);
 }
@@ -2502,7 +2502,7 @@ bool TFarPanelItem::GetIsParentDirectory() const
 
 bool TFarPanelItem::GetIsFile() const
 {
-  return (GetFileAttributes() & FILE_ATTRIBUTE_DIRECTORY) == 0;
+  return (GetFileAttrs() & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
 
 THintPanelItem::THintPanelItem(const UnicodeString & AHint) :
@@ -2744,9 +2744,9 @@ void TFarMenuItems::Delete(intptr_t Index)
   TStringList::Delete(Index);
 }
 
-void TFarMenuItems::SetObject(intptr_t Index, TObject * AObject)
+void TFarMenuItems::SetObj(intptr_t Index, TObject * AObject)
 {
-  TStringList::SetObject(Index, AObject);
+  TStringList::SetObj(Index, AObject);
   bool Focused = (reinterpret_cast<uintptr_t>(AObject) & MIF_SEPARATOR) != 0;
   if ((Index == GetItemFocused()) && !Focused)
   {
@@ -2799,7 +2799,7 @@ void TFarMenuItems::SetFlag(intptr_t Index, uintptr_t Flag, bool Value)
 {
   if (GetFlag(Index, Flag) != Value)
   {
-    uintptr_t F = reinterpret_cast<uintptr_t>(GetObject(Index));
+    uintptr_t F = reinterpret_cast<uintptr_t>(GetObj(Index));
     if (Value)
     {
       F |= Flag;
@@ -2808,13 +2808,13 @@ void TFarMenuItems::SetFlag(intptr_t Index, uintptr_t Flag, bool Value)
     {
       F &= ~Flag;
     }
-    SetObject(Index, reinterpret_cast<TObject *>(F));
+    SetObj(Index, reinterpret_cast<TObject *>(F));
   }
 }
 
 bool TFarMenuItems::GetFlag(intptr_t Index, uintptr_t Flag) const
 {
-  return (reinterpret_cast<uintptr_t>(GetObject(Index)) & Flag) > 0;
+  return (reinterpret_cast<uintptr_t>(GetObj(Index)) & Flag) > 0;
 }
 
 TFarEditorInfo::TFarEditorInfo(EditorInfo * Info) :
@@ -2886,11 +2886,11 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidt
     UnicodeString WrappedLine = Lines.GetString(Index);
     if (!WrappedLine.IsEmpty())
     {
-      WrappedLine = ::ReplaceChar(WrappedLine, '\'', '\3');
-      WrappedLine = ::ReplaceChar(WrappedLine, '\"', '\4');
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\'', L'\3');
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\"', L'\4');
       WrappedLine = ::WrapText(WrappedLine, MaxWidth);
-      WrappedLine = ::ReplaceChar(WrappedLine, '\3', '\'');
-      WrappedLine = ::ReplaceChar(WrappedLine, '\4', '\"');
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\3', L'\'');
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\4', L'\"');
       WrappedLines.SetText(WrappedLine);
       for (intptr_t WrappedIndex = 0; WrappedIndex < WrappedLines.GetCount(); ++WrappedIndex)
       {

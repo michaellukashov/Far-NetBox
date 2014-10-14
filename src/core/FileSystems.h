@@ -188,7 +188,7 @@ public:
     TRemoteFile *& File) = 0;
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
     const UnicodeString & NewName) = 0;
-  virtual void CopyFile(const UnicodeString & AFileName,
+  virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName) = 0;
   virtual TStrings * GetFixedPaths() = 0;
   virtual void SpaceAvailable(const UnicodeString & APath,
@@ -196,9 +196,9 @@ public:
   virtual const TSessionInfo & GetSessionInfo() const = 0;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) = 0;
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) = 0;
-  virtual bool GetStoredCredentialsTried() = 0;
-  virtual UnicodeString GetUserName() = 0;
-  virtual UnicodeString GetCurrDirectory() = 0;
+  virtual bool GetStoredCredentialsTried() const = 0;
+  virtual UnicodeString FSGetUserName() const = 0;
+  virtual UnicodeString GetCurrDirectory() const = 0;
 
 protected:
   TTerminal * FTerminal;

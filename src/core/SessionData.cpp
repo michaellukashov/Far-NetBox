@@ -256,7 +256,6 @@ void TSessionData::NonPersistant()
 #define BASE_PROPERTIES \
   PROPERTY(HostName); \
   PROPERTY(PortNumber); \
-  PROPERTY(UserName); \
   PROPERTY(Password); \
   PROPERTY(PublicKeyFile); \
   PROPERTY(Passphrase); \
@@ -267,6 +266,8 @@ void TSessionData::NonPersistant()
   PROPERTY(Color); \
   PROPERTY(SynchronizeBrowsing); \
   PROPERTY(Note);
+
+//  PROPERTY(UserName); \
 
 #define ADVANCED_PROPERTIES \
   PROPERTY(PingInterval); \
@@ -394,6 +395,7 @@ void TSessionData::Assign(const TPersistent * Source)
     //META_PROPERTIES;
 #undef PROPERTY
 
+    SetUserName(SourceData->SessionGetUserName());
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FBugs)); ++Index)
     {
       // PROPERTY(Bug[(TSshBug)Index]);
@@ -474,7 +476,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   // (implemented by TOptionsIniFile)
 
   SetPortNumber(Storage->ReadInteger(L"PortNumber", GetPortNumber()));
-  SetUserName(Storage->ReadString(L"UserName", GetUserName()));
+  SetUserName(Storage->ReadString(L"UserName", SessionGetUserName()));
   // must be loaded after UserName, because HostName may be in format user@host
   SetHostName(Storage->ReadString(L"HostName", GetHostName()));
 
@@ -842,12 +844,15 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 
     if (PuttyExport)
     {
-      WRITE_DATA(StringRaw, UserName);
+//      WRITE_DATA(StringRaw, UserName);
+      WRITE_DATA_EX(StringRaw, L"UserName", SessionGetUserName(), );
+
       WRITE_DATA(StringRaw, PublicKeyFile);
     }
     else
     {
-      WRITE_DATA(String, UserName);
+//      WRITE_DATA(String, UserName);
+      WRITE_DATA_EX(String, L"UserName", SessionGetUserName(), );
       WRITE_DATA(String, PublicKeyFile);
       WRITE_DATA_EX2(String, L"FSProtocol", GetFSProtocolStr(), );
       WRITE_DATA(String, LocalDirectory);
@@ -1155,7 +1160,7 @@ void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExpor
 {
   if (!GetConfiguration()->GetDisablePasswordStoring() && !PuttyExport && !FPassword.IsEmpty())
   {
-    Storage->WriteBinaryDataAsString(L"Password", StronglyRecryptPassword(FPassword, GetUserName() + GetHostName()));
+    Storage->WriteBinaryDataAsString(L"Password", StronglyRecryptPassword(FPassword, SessionGetUserName() + GetHostName()));
   }
   else
   {
@@ -1742,7 +1747,7 @@ void TSessionData::ValidateName(const UnicodeString & Name)
   // keep consistent with MakeValidName
   if (Name.LastDelimiter(L"/") > 0)
   {
-    throw ::Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
+    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
   }
 }
 
@@ -1769,7 +1774,7 @@ UnicodeString TSessionData::DecryptPassword(const RawByteString & Password, cons
   {
     Result = GetConfiguration()->DecryptPassword(Password, Key);
   }
-  catch (::EAbort &)
+  catch (EAbort &)
   {
     // silently ignore aborted prompts for master password and return empty password
   }
@@ -1783,7 +1788,7 @@ bool TSessionData::GetCanLogin() const
 
 UnicodeString TSessionData::GetSessionKey() const
 {
-  return FORMAT(L"%s@%s", GetUserName().c_str(), GetHostName().c_str());
+  return FORMAT(L"%s@%s", SessionGetUserName().c_str(), GetHostName().c_str());
 }
 
 UnicodeString TSessionData::GetInternalStorageKey() const
@@ -1893,18 +1898,18 @@ void TSessionData::SetUserName(const UnicodeString & Value)
 
 UnicodeString TSessionData::GetUserNameExpanded() const
 {
-  return ::ExpandEnvironmentVariables(GetUserName());
+  return ::ExpandEnvironmentVariables(SessionGetUserName());
 }
 
 void TSessionData::SetPassword(const UnicodeString & AValue)
 {
-  RawByteString Value = EncryptPassword(AValue, GetUserName() + GetHostName());
+  RawByteString Value = EncryptPassword(AValue, SessionGetUserName() + GetHostName());
   SET_SESSION_PROPERTY(Password);
 }
 
 UnicodeString TSessionData::GetPassword() const
 {
-  return DecryptPassword(FPassword, GetUserName() + GetHostName());
+  return DecryptPassword(FPassword, SessionGetUserName() + GetHostName());
 }
 
 void TSessionData::SetPingInterval(intptr_t Value)
@@ -2244,7 +2249,7 @@ UnicodeString TSessionData::GetDefaultSessionName() const
 {
   UnicodeString Result;
   UnicodeString HostName = ::TrimLeft(GetHostName());
-  UnicodeString UserName = GetUserName();
+  UnicodeString UserName = SessionGetUserName();
   RemoveProtocolPrefix(HostName);
   // remove path
   {
@@ -2345,9 +2350,9 @@ UnicodeString TSessionData::GetSessionUrl() const
   {
     Url = GetProtocolUrl();
 
-    if (!GetHostName().IsEmpty() && !GetUserName().IsEmpty())
+    if (!GetHostName().IsEmpty() && !SessionGetUserName().IsEmpty())
     {
-      Url += FORMAT(L"%s@%s", GetUserName().c_str(), GetHostName().c_str());
+      Url += FORMAT(L"%s@%s", SessionGetUserName().c_str(), GetHostName().c_str());
     }
     else if (!GetHostName().IsEmpty())
     {
@@ -2967,14 +2972,14 @@ UnicodeString TSessionData::GetInfoTip() const
   if (GetUsesSsh())
   {
     return FMTLOAD(SESSION_INFO_TIP2,
-        GetHostName().c_str(), GetUserName().c_str(),
+        GetHostName().c_str(), SessionGetUserName().c_str(),
          (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
          GetFSProtocolStr().c_str());
   }
   else
   {
     return FMTLOAD(SESSION_INFO_TIP_NO_SSH,
-      GetHostName().c_str(), GetUserName().c_str(), GetFSProtocolStr().c_str());
+      GetHostName().c_str(), SessionGetUserName().c_str(), GetFSProtocolStr().c_str());
   }
 }
 
@@ -3032,7 +3037,7 @@ UnicodeString TSessionData::ComposePath(
 
 TLoginType TSessionData::GetLoginType() const
 {
-  return (GetUserName() == AnonymousUserName) && GetPassword().IsEmpty() ?
+  return (SessionGetUserName() == AnonymousUserName) && GetPassword().IsEmpty() ?
     ltAnonymous : ltNormal;
 }
 
@@ -3277,7 +3282,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
     {
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       UnicodeString Message;
       if (RecryptPasswordOnly && ALWAYS_TRUE(RecryptPasswordErrors != nullptr) &&
@@ -3450,7 +3455,7 @@ void TStoredSessionList::Cleanup()
       Storage->RecursiveDeleteSubKey(GetConfiguration()->GetStoredSessionsSubKey());
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_SESSIONS_ERROR));
   }

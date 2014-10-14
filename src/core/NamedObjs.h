@@ -37,7 +37,7 @@ public:
 
   TNamedObjectList();
 
-  virtual void Notify(void *Ptr, TListNotification Action);
+  virtual void Notify(void * Ptr, TListNotification Action);
   void AlphaSort();
   virtual TNamedObject * AtObject(intptr_t Index);
   virtual const TNamedObject * AtObject(intptr_t Index) const;

@@ -101,18 +101,7 @@ void RaiseLastOSError(DWORD Result = 0);
 struct TFormatSettings : public TObject
 {
 public:
-  explicit TFormatSettings(int /* LCID */)
-  {
-    CurrencyFormat = 0;
-    NegCurrFormat = 0;
-    ThousandSeparator = 0;
-    DecimalSeparator = 0;
-    CurrencyDecimals = 0;
-    DateSeparator = 0;
-    TimeSeparator = 0;
-    ListSeparator = 0;
-    TwoDigitYearCenturyWindow = 0;
-  }
+  explicit TFormatSettings(int /* LCID */);
   static TFormatSettings Create(int LCID ) { return TFormatSettings(LCID); }
   uint8_t CurrencyFormat;
   uint8_t NegCurrFormat;
@@ -148,7 +137,7 @@ UnicodeString GetCurrentDir();
 
 UnicodeString IncludeTrailingPathDelimiter(const UnicodeString & Str);
 
-UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase = true, char Separator = '\0');
+UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase = true, wchar_t Separator = L'\0');
 UnicodeString HexToStr(const UnicodeString & Hex);
 uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars = 0);
 UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
@@ -296,7 +285,7 @@ struct TSearchRec
   TFileName Name;
   Integer ExcludeAttr;
   THandle FindHandle;
-  ::TWin32FindData FindData;
+  TWin32FindData FindData;
 };
 
 DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec);

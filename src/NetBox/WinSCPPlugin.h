@@ -13,19 +13,7 @@ struct TMessageParams : public TObject
 NB_DISABLE_COPY(TMessageParams)
 public:
   TMessageParams();
-  void Assign(const TMessageParams * AParams)
-  {
-    Aliases = AParams->Aliases;
-    AliasesCount = AParams->AliasesCount;
-    Flags = AParams->Flags;
-    Params = AParams->Params;
-    Timer = AParams->Timer;
-    TimerEvent = AParams->TimerEvent;
-    TimerMessage = AParams->TimerMessage;
-    TimerAnswers = AParams->TimerAnswers;
-    Timeout = AParams->Timeout;
-    TimeoutAnswer = AParams->TimeoutAnswer;
-  }
+  void Assign(const TMessageParams * AParams);
 
   const TQueryButtonAlias * Aliases;
   uintptr_t AliasesCount;
@@ -48,10 +36,10 @@ public:
   virtual ~TWinSCPPlugin();
   virtual VersionInfo GetMinFarVersion();
 
-  virtual void HandleException(::Exception * E, OPERATION_MODES OpMode = 0);
+  virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0);
   uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
     TQueryType Type, uintptr_t Answers, const TMessageParams * Params = nullptr);
-  void ShowExtendedException(::Exception * E);
+  void ShowExtendedException(Exception * E);
   bool CopyParamCustomDialog(TCopyParamType & CopyParam,
     intptr_t CopyParamAttrs);
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info);

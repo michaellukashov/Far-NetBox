@@ -43,22 +43,4 @@
 // it is faster to bit-wise copy a CString than to call an official
 //   constructor - since an empty CString can be bit-wise copied
 
-static inline void ConstructElement(CString* pNewData)
-{
-	ENSURE_ARG(pNewData!=NULL);
-	new( pNewData ) CString;
-}
-
-static inline void DestructElement(CString* pOldData)
-{
-	ENSURE_ARG(pOldData!=NULL);
-	pOldData->~CString();
-}
-
-static inline void CopyElement(CString* pSrc, CString* pDest)
-{
-	ENSURE_ARG(pSrc!=NULL && pDest!=NULL);
-	*pSrc = *pDest;
-}
-
 /////////////////////////////////////////////////////////////////////////////

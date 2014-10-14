@@ -1031,7 +1031,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     UnicodeString FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObject(Index));
+    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObj(Index));
 
     {
       bool Success = false;
@@ -1085,7 +1085,7 @@ void TFTPFileSystem::SinkRobust(const UnicodeString & AFileName,
       Sink(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1242,7 +1242,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
         FileTransfer(AFileName, DestFullName, OnlyFileName,
           FilePath, true, AFile->GetSize(), TransferType, UserData, OperationProgress);
       }
-      catch (::Exception &)
+      catch (Exception &)
       {
         //::CloseHandle(LocalFileHandle);
         throw;
@@ -1327,7 +1327,7 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
 
     FileNameOnly = core::ExtractFileName(RealFileName, false);
@@ -1388,7 +1388,7 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & AFileName,
       Source(AFileName, AFile, TargetDir, CopyParam, Params, &OpenParams, &FileParams, OperationProgress,
         Flags, Action);
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1887,7 +1887,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
     }
     else
     {
-      throw ::Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, ResponsePtr->GetText().c_str()));
+      throw Exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, ResponsePtr->GetText().c_str()));
     }
   }
 }
@@ -1965,7 +1965,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         // (e.g. before file transfer)
         FDoListAll = (FListAll == asOn);
       }
-      catch (::Exception &)
+      catch (Exception &)
       {
         FDoListAll = false;
         // reading the first directory has failed,
@@ -2058,7 +2058,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
   if (File == nullptr)
   {
     AFile = nullptr;
-    throw ::Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()));
+    throw Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()));
   }
 
   assert(File != nullptr);
@@ -2100,7 +2100,7 @@ void TFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 
-void TFTPFileSystem::CopyFile(const UnicodeString & /* AFileName */,
+void TFTPFileSystem::RemoteCopyFile(const UnicodeString & /* AFileName */,
   const UnicodeString & /* NewName */)
 {
   FAIL;
@@ -2154,17 +2154,17 @@ bool TFTPFileSystem::TemporaryTransferFile(const UnicodeString & /*FileName*/)
   return false;
 }
 
-bool TFTPFileSystem::GetStoredCredentialsTried()
+bool TFTPFileSystem::GetStoredCredentialsTried() const
 {
   return !FTerminal->GetSessionData()->GetPassword().IsEmpty();
 }
 
-UnicodeString TFTPFileSystem::GetUserName()
+UnicodeString TFTPFileSystem::FSGetUserName() const
 {
   return FUserName;
 }
 
-UnicodeString TFTPFileSystem::GetCurrDirectory()
+UnicodeString TFTPFileSystem::GetCurrDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -3617,7 +3617,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 
         File->Complete();
       }
-      catch (::Exception & E)
+      catch (Exception & E)
       {
         UnicodeString EntryData =
           FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",

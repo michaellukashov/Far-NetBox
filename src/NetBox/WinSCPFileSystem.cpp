@@ -275,9 +275,8 @@ void TKeepaliveThread::Execute()
 {
   while (!IsFinished())
   {
-    static long MillisecondsPerDay = 24 * 60 * 60 * 1000;
     if ((::WaitForSingleObject(FEvent, static_cast<DWORD>(
-         ToDouble(FInterval) * MillisecondsPerDay)) != WAIT_FAILED) &&
+         ToDouble(FInterval) * MSecsPerDay)) != WAIT_FAILED) &&
         !IsFinished())
     {
       FFileSystem->KeepaliveThreadCallback();
@@ -287,43 +286,43 @@ void TKeepaliveThread::Execute()
 }
 
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
-  TCustomFarFileSystem(APlugin)
+  TCustomFarFileSystem(APlugin),
+  FReloadDirectory(false),
+  FProgressSaveScreenHandle(0),
+  FSynchronizationSaveScreenHandle(0),
+  FAuthenticationSaveScreenHandle(0),
+  FFileList(nullptr),
+  FPanelItems(nullptr),
+  FSavedFindFolder(L""),
+  FTerminal(nullptr),
+  FQueue(nullptr),
+  FQueueStatus(nullptr),
+  FQueueStatusInvalidated(false),
+  FQueueItemInvalidated(false),
+  FRefreshLocalDirectory(false),
+  FRefreshRemoteDirectory(false),
+  FQueueEventPending(false),
+  FNoProgress(false),
+  FNoProgressFinish(false),
+  FKeepaliveThread(nullptr),
+  FSynchronisingBrowse(false),
+  FSynchronizeController(nullptr),
+  FCapturedLog(nullptr),
+  FAuthenticationLog(nullptr),
+  FLastEditorID(-1),
+  FLoadingSessionList(false),
+  FPathHistory(new TStringList()),
+  FCurrentDirectoryWasChanged(false),
+
+  FLastMultipleEditReadOnly(false),
+  FEditorPendingSave(false),
+  FOutputLog(false)
 {
 }
 
 void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
 {
   TCustomFarFileSystem::Init();
-  FReloadDirectory = false;
-  FProgressSaveScreenHandle = 0;
-  FSynchronizationSaveScreenHandle = 0;
-  FAuthenticationSaveScreenHandle = 0;
-  FFileList = nullptr;
-  FPanelItems = nullptr;
-  FSavedFindFolder = L"";
-  FTerminal = nullptr;
-  FQueue = nullptr;
-  FQueueStatus = nullptr;
-  FQueueStatusInvalidated = false;
-  FQueueItemInvalidated = false;
-  FRefreshLocalDirectory = false;
-  FRefreshRemoteDirectory = false;
-  FQueueEventPending = false;
-  FNoProgress = false;
-  FNoProgressFinish = false;
-  FKeepaliveThread = nullptr;
-  FSynchronisingBrowse = false;
-  FSynchronizeController = nullptr;
-  FCapturedLog = nullptr;
-  FAuthenticationLog = nullptr;
-  FLastEditorID = -1;
-  FLoadingSessionList = false;
-  FPathHistory = new TStringList();
-  FCurrentDirectoryWasChanged = false;
-
-  FLastMultipleEditReadOnly = false;
-  FEditorPendingSave = false;
-  FOutputLog = false;
 }
 
 TWinSCPFileSystem::~TWinSCPFileSystem()
@@ -332,7 +331,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
   SAFE_DESTROY(FPathHistory);
 }
 
-void TWinSCPFileSystem::HandleException(::Exception * E, OPERATION_MODES OpMode)
+void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   if ((GetTerminal() != nullptr) && (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
   {
@@ -584,7 +583,7 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
     TNamedObject * EData = StoredSessions->FindByName(Name);
     if ((EData != nullptr) && (EData != Data))
     {
-      throw ::Exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
+      throw Exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
     }
     else
     {
@@ -676,7 +675,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
           {
             if (StoredSessions->FindByName(Name))
             {
-              throw ::Exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
+              throw Exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
             }
             else
             {
@@ -780,7 +779,7 @@ void TWinSCPFileSystem::TerminalCaptureLog(
 {
   if (FOutputLog)
   {
-    WinSCPPlugin()->WriteConsole(AddedLine + L"\n");
+    WinSCPPlugin()->FarWriteConsole(AddedLine + L"\n");
   }
   if (FCapturedLog != nullptr)
   {
@@ -792,7 +791,7 @@ void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeSt
 {
   if (Panel->GetIsPlugin() || (Panel->GetType() != ptFile))
   {
-    throw ::Exception(Message);
+    throw Exception(Message);
   }
 }
 
@@ -800,7 +799,7 @@ void TWinSCPFileSystem::RequireCapability(intptr_t Capability)
 {
   if (!FTerminal->GetIsCapable(static_cast<TFSCapability>(Capability)))
   {
-    throw ::Exception(FORMAT(GetMsg(OPERATION_NOT_SUPPORTED).c_str(),
+    throw Exception(FORMAT(GetMsg(OPERATION_NOT_SUPPORTED).c_str(),
       FTerminal->GetFileSystemInfo().ProtocolName.c_str()));
   }
 }
@@ -985,7 +984,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
     }
 
     if ((Key == 'B') && (ControlState & CTRLMASK) &&
-          (ControlState & ALTMASK))
+        (ControlState & ALTMASK))
     {
       ToggleSynchronizeBrowsing();
       Handled = true;
@@ -1095,7 +1094,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(TStrings * AFileList, TCopyPara
   TempDir = WinSCPPlugin()->GetTemporaryDir();
   if (TempDir.IsEmpty() || !::ForceDirectories(ApiPath(TempDir)))
   {
-    throw ::Exception(FMTLOAD(CREATE_TEMP_DIR_ERROR, TempDir.c_str()));
+    throw Exception(FMTLOAD(CREATE_TEMP_DIR_ERROR, TempDir.c_str()));
   }
 
   FTerminal->SetExceptionOnFail(true);
@@ -1221,7 +1220,7 @@ void TWinSCPFileSystem::ApplyCommand()
             {
               if ((LocalFileList.get() == nullptr) || (LocalFileList->GetCount() != 1))
               {
-                throw ::Exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH1));
+                throw Exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH1));
               }
             }
             else
@@ -1231,7 +1230,7 @@ void TWinSCPFileSystem::ApplyCommand()
                    (FileList->GetCount() != 1) &&
                    (LocalFileList->GetCount() != FileList->GetCount())))
               {
-                throw ::Exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH));
+                throw Exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH));
               }
             }
           }
@@ -1314,7 +1313,7 @@ void TWinSCPFileSystem::ApplyCommand()
                 {
                   if (LocalFileList->GetCount() != RemoteFileList->GetCount())
                   {
-                    throw ::Exception(GetMsg(CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED));
+                    throw Exception(GetMsg(CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED));
                   }
 
                   for (intptr_t Index = 0; Index < LocalFileList->GetCount(); ++Index)
@@ -1524,7 +1523,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
   bool & Continue, bool Collect)
 {
   static uint32_t LastTicks;
-  uint32_t Ticks = GetTickCount();
+  uint32_t Ticks = ::GetTickCount();
   if ((LastTicks == 0) || (Ticks - LastTicks > 500))
   {
     LastTicks = Ticks;
@@ -1645,7 +1644,7 @@ void TWinSCPFileSystem::DoSynchronize(
     Synchronize(LocalDirectory, RemoteDirectory, TTerminal::smRemote, CopyParam,
       PParams, Checklist, Options);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -1934,7 +1933,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   {
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      const TRemoteFile * File = reinterpret_cast<const TRemoteFile *>(FileList->GetObject(Index));
+      const TRemoteFile * File = reinterpret_cast<const TRemoteFile *>(FileList->GetObj(Index));
       if (File != nullptr)
       {
         FileNames->Add(GetFullFilePath(File));
@@ -1967,7 +1966,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & APath,
     {
       GetTerminal()->SpaceAvailable(APath, ASpaceAvailable);
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       if (!GetTerminal()->GetActive())
       {
@@ -2274,7 +2273,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, OPERATION_MODE
               }
             }
           }
-          catch (::Exception & E)
+          catch (Exception & E)
           {
             FSynchronisingBrowse = false;
             WinSCPPlugin()->ShowExtendedException(&E);
@@ -2728,14 +2727,14 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPER
 
         UnicodeString CurrentDirectory = FTerminal->GetCurrDirectory();
         Result = UploadFiles(Move, OpMode, true, CurrentDirectory);
-        FTerminal->SetCurrentDirectory(CurrentDirectory);
+        FTerminal->TerminalSetCurrentDirectory(CurrentDirectory);
       }
     }
     else
     {
       UnicodeString CurrentDirectory = FTerminal->GetCurrDirectory();
       Result = UploadFiles(Move, OpMode, false, CurrentDirectory);
-      FTerminal->SetCurrentDirectory(CurrentDirectory);
+      FTerminal->TerminalSetCurrentDirectory(CurrentDirectory);
     }
   }
   else if (SessionList())
@@ -2789,7 +2788,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       }
       if (!AnyData)
       {
-        throw ::Exception(FORMAT(GetMsg(IMPORT_SESSIONS_EMPTY).c_str(), FileName.c_str()));
+        throw Exception(FORMAT(GetMsg(IMPORT_SESSIONS_EMPTY).c_str(), FileName.c_str()));
       }
     }
   }
@@ -2975,10 +2974,10 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     Result = FTerminal->GetActive();
     if (!Result)
     {
-      throw ::Exception(FORMAT(GetMsg(CANNOT_INIT_SESSION).c_str(), Data->GetSessionName().c_str()));
+      throw Exception(FORMAT(GetMsg(CANNOT_INIT_SESSION).c_str(), Data->GetSessionName().c_str()));
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     EFatal * Fatal = NB_STATIC_DOWNCAST(EFatal, &E);
     if ((Fatal == nullptr) || !Fatal->GetReopenQueried())
@@ -3166,12 +3165,12 @@ void TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
 void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & AFileName,
   bool Alternative)
 {
-  bool ToRecycleBin = FLAGSET(WinSCPPlugin()->FarSystemSettings(), NBSS_DELETETORECYCLEBIN) != Alternative;
+  bool ToRecycleBin = FLAGSET(WinSCPPlugin()->GetFarSystemSettings(), NBSS_DELETETORECYCLEBIN) != Alternative;
   if (ToRecycleBin || !WinSCPPlugin()->GetSystemFunctions())
   {
     if (!RecursiveDeleteFile(AFileName, ToRecycleBin))
     {
-      throw ::Exception(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR).c_str(), AFileName.c_str()));
+      throw Exception(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR).c_str(), AFileName.c_str()));
     }
   }
   else
@@ -3304,7 +3303,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
   {
     assert(Instructions.IsEmpty());
     assert(Prompts->GetCount() == 1);
-    assert((Prompts->GetObject(0)) != nullptr);
+    assert((Prompts->GetObj(0)) != nullptr);
     UnicodeString AResult = Results->GetString(0);
 
     Result = WinSCPPlugin()->InputBox(Name, ::StripHotkey(Prompts->GetString(0)), AResult, FIB_NOUSELASTHISTORY);
@@ -3328,7 +3327,7 @@ void TWinSCPFileSystem::TerminalDisplayBanner(
 }
 
 void TWinSCPFileSystem::TerminalShowExtendedException(
-  TTerminal * /*Terminal*/, ::Exception * E, void * /*Arg*/)
+  TTerminal * /*Terminal*/, Exception * E, void * /*Arg*/)
 {
   WinSCPPlugin()->ShowExtendedException(E);
 }
@@ -3422,7 +3421,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
   TFileOperationProgressType & ProgressData, bool First)
 {
   static uint32_t LastTicks;
-  uint32_t Ticks = GetTickCount();
+  uint32_t Ticks = ::GetTickCount();
   short percents = static_cast<short>(ProgressData.OverallProgress());
   if (Ticks - LastTicks > 500 || First)
   {
@@ -3627,7 +3626,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
     case qeEmpty:
       if (Hidden && GetFarConfiguration()->GetQueueBeep())
       {
-        MessageBeep(MB_OK);
+        ::MessageBeep(MB_OK);
       }
       break;
 
@@ -3636,7 +3635,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
       {
         // MB_ICONQUESTION would be more appropriate, but in default Windows Sound
         // schema it has no sound associated
-        MessageBeep(MB_OK);
+        ::MessageBeep(MB_OK);
       }
       break;
     }
@@ -3716,13 +3715,17 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
     switch (Result)
     {
     case qaYes:
-      ACancel = csCancelTransfer; break;
+      ACancel = csCancelTransfer;
+      break;
     case qaOK:
-      ACancel = csCancel; break;
+      ACancel = csCancel;
+      break;
     case qaNo:
-      ACancel = csContinue; break;
+      ACancel = csContinue;
+      break;
     default:
-      ACancel = csContinue; break;
+      ACancel = csContinue;
+      break;
     }
 
     if (ACancel > ProgressData.Cancel)
@@ -3784,7 +3787,7 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
         // always upload under the most recent name
         UnicodeString CurrentDirectory = FTerminal->GetCurrDirectory();
         UploadFromEditor(NoReload, FLastEditFile, FLastEditFile, CurrentDirectory);
-        FTerminal->SetCurrentDirectory(CurrentDirectory);
+        FTerminal->TerminalSetCurrentDirectory(CurrentDirectory);
       }
 
       if (MultipleEdit)
@@ -3811,7 +3814,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
     // to default FAR text, not to ours (see EE_SAVE). Hence we periodically
     // reset the title.
     static uint32_t LastTicks = 0;
-    uint32_t Ticks = GetTickCount();
+    uint32_t Ticks = ::GetTickCount();
     if ((LastTicks == 0) || (Ticks - LastTicks > 500))
     {
       LastTicks = Ticks;
@@ -3983,7 +3986,7 @@ void TWinSCPFileSystem::MultipleEdit()
     if ((FileList.get() != nullptr) && (FileList->GetCount() == 1))
     {
       MultipleEdit(FTerminal->GetCurrDirectory(), FileList->GetString(0),
-        NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObject(0)));
+        NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObj(0)));
     }
   }
 }

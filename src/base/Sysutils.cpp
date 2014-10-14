@@ -77,7 +77,7 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
   return Result;
 }
 
-int RandSeed;
+int RandSeed = 0;
 const TDayTable MonthDays[] =
 {
   { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
@@ -929,8 +929,8 @@ static UnicodeString GetUniversalName(UnicodeString & AFileName)
 UnicodeString ExpandUNCFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result = ExpandFileName(AFileName);
-  if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= 'A') &&
-      (::UpCase(Result[1]) <= 'Z'))
+  if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= L'A') &&
+      (::UpCase(Result[1]) <= L'Z'))
   {
     Result = GetUniversalName(Result);
   }
@@ -1035,7 +1035,7 @@ UnicodeString SysErrorMessage(int ErrorCode)
     static_cast<LPTSTR>(Buffer),
     sizeof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
-    ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.'))))
+    ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == L'.'))))
   {
     Len--;
   }
@@ -1168,12 +1168,12 @@ UnicodeString GetCurrentDir()
   return Result;
 }
 
-UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, char Separator)
+UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, wchar_t Separator)
 {
   UnicodeString Result;
   for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
   {
-    Result += CharToHex(static_cast<char>(Str[Index]), UpperCase);
+    Result += CharToHex(Str[Index], UpperCase);
     if ((Separator != L'\0') && (Index <= Str.Length()))
     {
       Result += Separator;
@@ -1191,8 +1191,8 @@ UnicodeString HexToStr(const UnicodeString & Hex)
   {
     for (intptr_t Index = 1; Index <= Hex.Length(); Index += 2)
     {
-      uintptr_t P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[Index])));
-      uintptr_t P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[Index + 1])));
+      uintptr_t P1 = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[Index])));
+      uintptr_t P2 = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[Index + 1])));
       if ((P1 == std::wstring::npos) || (P2 == std::wstring::npos))
       {
         Result = L"";
@@ -1666,9 +1666,21 @@ UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
   return Result;
 }
 
+TFormatSettings::TFormatSettings(int) :
+  CurrencyFormat(0),
+  NegCurrFormat(0),
+  ThousandSeparator(0),
+  DecimalSeparator(0),
+  CurrencyDecimals(0),
+  DateSeparator(0),
+  TimeSeparator(0),
+  ListSeparator(0),
+  TwoDigitYearCenturyWindow(0)
+{
+}
+
 NB_IMPLEMENT_CLASS(Exception, NB_GET_CLASS_INFO(TObject), nullptr);
 NB_IMPLEMENT_CLASS(EAccessViolation, NB_GET_CLASS_INFO(Exception), nullptr);
 NB_IMPLEMENT_CLASS(EAbort, NB_GET_CLASS_INFO(Exception), nullptr);
 NB_IMPLEMENT_CLASS(EFileNotFoundError, NB_GET_CLASS_INFO(Exception), nullptr);
 NB_IMPLEMENT_CLASS(EOSError, NB_GET_CLASS_INFO(Exception), nullptr);
-

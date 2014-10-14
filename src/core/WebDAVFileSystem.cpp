@@ -404,7 +404,7 @@ error_createf(
   va_end(args);
 
   AnsiString Message2 = ::Format("Error, code: %d, message: %s", apr_err, Message.c_str());
-  throw ExtException(UnicodeString(Message2.c_str()), (::Exception *)nullptr);
+  throw ExtException(UnicodeString(Message2.c_str()), (Exception *)nullptr);
 
   return err;
 }
@@ -12122,7 +12122,7 @@ void TWebDAVFileSystem::Open()
   if (!FActive)
   {
     FTerminal->Closed();
-    throw ::Exception(LoadStr(CONNECTION_FAILED));
+    throw Exception(LoadStr(CONNECTION_FAILED));
   }
 }
 
@@ -12152,12 +12152,12 @@ bool TWebDAVFileSystem::TemporaryTransferFile(const UnicodeString & /*AFileName*
   return false;
 }
 
-bool TWebDAVFileSystem::GetStoredCredentialsTried()
+bool TWebDAVFileSystem::GetStoredCredentialsTried() const
 {
   return false;
 }
 
-UnicodeString TWebDAVFileSystem::GetUserName()
+UnicodeString TWebDAVFileSystem::FSGetUserName() const
 {
   return FUserName;
 }
@@ -12243,7 +12243,7 @@ void TWebDAVFileSystem::EnsureLocation()
   }
 }
 
-UnicodeString TWebDAVFileSystem::GetCurrDirectory()
+UnicodeString TWebDAVFileSystem::GetCurrDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -12361,7 +12361,7 @@ void TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
     {
       DoReadDirectory(FileList);
     }
-    catch (::Exception &)
+    catch (Exception &)
     {
       if (!FTerminal->GetActive())
       {
@@ -12427,7 +12427,7 @@ void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   }
 }
 
-void TWebDAVFileSystem::CopyFile(const UnicodeString & AFileName,
+void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   const UnicodeString & NewName)
 {
   Error(SNotImplemented, 1012);
@@ -12643,7 +12643,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObject(Index));
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = core::ExtractFileName(RealFileName, false);
 
@@ -12698,7 +12698,7 @@ void TWebDAVFileSystem::WebDAVSourceRobust(const UnicodeString & AFileName,
       WebDAVSource(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -12968,7 +12968,7 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     UnicodeString FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObject(Index));
+    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObj(Index));
     FTerminal->SetExceptionOnFail(true);
     {
       bool Success = false;
@@ -13022,7 +13022,7 @@ void TWebDAVFileSystem::SinkRobust(const UnicodeString & AFileName,
       Sink(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -13396,7 +13396,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
 
         File->Complete();
       }
-      catch (::Exception & E)
+      catch (Exception & E)
       {
         UnicodeString EntryData =
           FORMAT(L"%s/%s/%s/%lld/%d/%d/%d/%d/%d/%d/%d/%d/%d",

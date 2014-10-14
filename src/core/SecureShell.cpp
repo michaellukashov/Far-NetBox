@@ -180,13 +180,26 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
     int pcipher = 0;
     switch (Data->GetCipher(c))
     {
-      case cipWarn: pcipher = CIPHER_WARN; break;
-      case cip3DES: pcipher = CIPHER_3DES; break;
-      case cipBlowfish: pcipher = CIPHER_BLOWFISH; break;
-      case cipAES: pcipher = CIPHER_AES; break;
-      case cipDES: pcipher = CIPHER_DES; break;
-      case cipArcfour: pcipher = CIPHER_ARCFOUR; break;
-      default: FAIL;
+      case cipWarn:
+        pcipher = CIPHER_WARN;
+        break;
+      case cip3DES:
+        pcipher = CIPHER_3DES;
+        break;
+      case cipBlowfish:
+        pcipher = CIPHER_BLOWFISH;
+        break;
+      case cipAES:
+        pcipher = CIPHER_AES;
+        break;
+      case cipDES:
+        pcipher = CIPHER_DES;
+        break;
+      case cipArcfour:
+        pcipher = CIPHER_ARCFOUR;
+        break;
+      default:
+        FAIL;
     }
     conf_set_int_int(conf, CONF_ssh_cipherlist, c, pcipher);
   }
@@ -196,11 +209,21 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
     int pkex = 0;
     switch (Data->GetKex(k))
     {
-      case kexWarn: pkex = KEX_WARN; break;
-      case kexDHGroup1: pkex = KEX_DHGROUP1; break;
-      case kexDHGroup14: pkex = KEX_DHGROUP14; break;
-      case kexDHGEx: pkex = KEX_DHGEX; break;
-      case kexRSA: pkex = KEX_RSA; break;
+      case kexWarn:
+        pkex = KEX_WARN;
+        break;
+      case kexDHGroup1:
+        pkex = KEX_DHGROUP1;
+        break;
+      case kexDHGroup14:
+        pkex = KEX_DHGROUP14;
+        break;
+      case kexDHGEx:
+        pkex = KEX_DHGEX;
+        break;
+      case kexRSA:
+        pkex = KEX_RSA;
+        break;
       default: FAIL;
     }
     conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
@@ -385,7 +408,7 @@ void TSecureShell::Open()
 
     CheckConnection(CONNECTION_FAILED);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     if (FNoConnectionResponse && TryFtp())
     {
@@ -525,7 +548,7 @@ void TSecureShell::Init()
       // unless this is tunnel session, it must be safe to send now
       assert(FBackend->sendok(FBackendHandle) || !FSessionData->GetTunnelPortFwd().IsEmpty());
     }
-    catch (::Exception & E)
+    catch (Exception & E)
     {
       if (FAuthenticating && !FAuthenticationLog.IsEmpty())
       {
@@ -537,7 +560,7 @@ void TSecureShell::Init()
       }
     }
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     if (FAuthenticating)
     {
@@ -764,7 +787,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().IsEmpty() &&
         !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
-        FLAGCLEAR((intptr_t)Prompts->GetObject(0), pupEcho))
+        FLAGCLEAR((intptr_t)Prompts->GetObj(0), pupEcho))
     {
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
@@ -807,7 +830,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
     if (Result)
     {
-      if ((Prompts->GetCount() >= 1) && FLAGSET((intptr_t)Prompts->GetObject(0), pupEcho))
+      if ((Prompts->GetCount() >= 1) && FLAGSET((intptr_t)Prompts->GetObj(0), pupEcho))
       {
         LogEvent(FORMAT(L"Response: \"%s\"", Results->GetString(0).c_str()));
       }
@@ -1054,8 +1077,8 @@ UnicodeString TSecureShell::ReceiveLine()
     {
       uint8_t Ch;
       Receive(&Ch, 1);
-      Line += static_cast<char>(Ch);
-      EOL = (static_cast<char>(Ch) == '\n');
+      Line += Ch;
+      EOL = (Ch == '\n');
     }
   }
   while (!EOL);
@@ -1787,7 +1810,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     {
       // LogEvent(L"Looking for network events");
     }
-    uintptr_t TicksBefore = GetTickCount();
+    uintptr_t TicksBefore = ::GetTickCount();
     int HandleCount;
     // note that this returns all handles, not only the session-related handles
     HANDLE * Handles = handle_get_events(&HandleCount);
@@ -1867,7 +1890,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
     run_toplevel_callbacks();
 
-    uintptr_t TicksAfter = GetTickCount();
+    uintptr_t TicksAfter = ::GetTickCount();
     // ticks wraps once in 49.7 days
     if (TicksBefore < TicksAfter)
     {
@@ -1917,7 +1940,7 @@ void TSecureShell::KeepAlive()
 
 static uint32_t minPacketSize = 0;
 
-uint32_t TSecureShell::MinPacketSize()
+uint32_t TSecureShell::MinPacketSize() const
 {
   if (!FSessionInfoValid)
   {
@@ -1938,7 +1961,7 @@ uint32_t TSecureShell::MinPacketSize()
   }
 }
 
-uint32_t TSecureShell::MaxPacketSize()
+uint32_t TSecureShell::MaxPacketSize() const
 {
   if (!FSessionInfoValid)
   {
@@ -2212,7 +2235,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
 
       UnicodeString Message =
         ConfiguredKeyNotMatch ? FMTLOAD(CONFIGURED_KEY_NOT_MATCH, FSessionData->GetHostKey().c_str()) : LoadStr(KEY_NOT_VERIFIED);
-      std::unique_ptr<::Exception> E(new ::Exception(MainInstructions(Message)));
+      std::unique_ptr<Exception> E(new Exception(MainInstructions(Message)));
       FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, Fingerprint.c_str()));
     }
   }

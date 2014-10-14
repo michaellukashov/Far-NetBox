@@ -13,13 +13,13 @@
 
 void Abort()
 {
-  throw ::EAbort(L"");
+  throw EAbort(L"");
 }
 
 void Error(int ErrorID, intptr_t data)
 {
   UnicodeString Msg = FMTLOAD(ErrorID, data);
-  throw ExtException((::Exception *)nullptr, Msg);
+  throw ExtException((Exception *)nullptr, Msg);
 }
 
 bool TObject::IsKindOf(TObjectClassId ClassId) const
@@ -64,7 +64,7 @@ TPersistent * TPersistent::GetOwner()
 void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
-  throw ::Exception(L"Cannot assign");
+  throw Exception(L"Cannot assign");
 }
 
 TList::TList()
@@ -625,7 +625,7 @@ bool TStrings::Equals(const TStrings * Strings) const
 
 void TStrings::SetString(intptr_t Index, const UnicodeString & S)
 {
-  TObject * TempObject = GetObject(Index);
+  TObject * TempObject = GetObj(Index);
   Delete(Index);
   InsertObject(Index, S, TempObject);
 }
@@ -645,7 +645,7 @@ void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
       EndUpdate();
     };
     UnicodeString TempString = GetString(CurIndex);
-    TObject * TempObject = GetObject(CurIndex);
+    TObject * TempObject = GetObj(CurIndex);
     Delete(CurIndex);
     InsertObject(NewIndex, TempString, TempObject);
   }
@@ -742,7 +742,7 @@ void TStrings::AddStrings(const TStrings * Strings)
   };
   for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
   {
-    AddObject(Strings->GetString(Index), Strings->GetObject(Index));
+    AddObject(Strings->GetString(Index), Strings->GetObj(Index));
   }
 }
 
@@ -905,7 +905,7 @@ void TStringList::Delete(intptr_t Index)
   Changed();
 }
 
-TObject * TStringList::GetObject(intptr_t Index) const
+TObject * TStringList::GetObj(intptr_t Index) const
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FObjects.size())))
   {
@@ -1001,7 +1001,7 @@ void TStringList::LoadFromFile(const UnicodeString & AFileName)
   }
 }
 
-void TStringList::SetObject(intptr_t Index, TObject * AObject)
+void TStringList::SetObj(intptr_t Index, TObject * AObject)
 {
   if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FObjects.size())))
   {
@@ -1320,7 +1320,7 @@ void TStream::ReadBuffer(void * Buffer, int64_t Count)
 {
   if ((Count != 0) && (Read(Buffer, Count) != Count))
   {
-    throw ::Exception(FMTLOAD(SReadError));
+    throw Exception(FMTLOAD(SReadError));
   }
 }
 
@@ -1328,13 +1328,13 @@ void TStream::WriteBuffer(const void * Buffer, int64_t Count)
 {
   if ((Count != 0) && (Write(Buffer, Count) != Count))
   {
-    throw ::Exception(FMTLOAD(SWriteError));
+    throw Exception(FMTLOAD(SWriteError));
   }
 }
 
 void ReadError(const UnicodeString & Name)
 {
-  throw ::Exception(FORMAT(L"InvalidRegType: %s", Name.c_str())); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
+  throw Exception(FORMAT(L"InvalidRegType: %s", Name.c_str())); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
 
 THandleStream::THandleStream(HANDLE AHandle) :
@@ -1941,7 +1941,7 @@ int TRegistry::GetData(const UnicodeString & Name, void * Buffer,
   if (::RegQueryValueEx(GetCurrentKey(), Name.c_str(), nullptr, &DataType,
     reinterpret_cast<BYTE *>(Buffer), &bufSize) != ERROR_SUCCESS)
   {
-    throw ::Exception(L"RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
+    throw Exception(L"RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
   RegData = DataTypeToRegData(DataType);
   int Result = static_cast<int>(BufSize);
@@ -1955,7 +1955,7 @@ void TRegistry::PutData(const UnicodeString & Name, const void * Buffer,
   if (::RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
                     reinterpret_cast<const BYTE *>(Buffer), static_cast<DWORD>(BufSize)) != ERROR_SUCCESS)
   {
-    throw ::Exception(L"RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
+    throw Exception(L"RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
   }
 }
 
@@ -2060,7 +2060,7 @@ bool TShortCut::operator < (const TShortCut & rhs) const
   return FValue < rhs.FValue;
 }
 
-void GetLocaleFormatSettings(int LCID, ::TFormatSettings & FormatSettings)
+void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
 {
   (void)LCID;
   (void)FormatSettings;

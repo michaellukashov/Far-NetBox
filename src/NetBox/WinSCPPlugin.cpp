@@ -20,17 +20,31 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
   return new TWinSCPPlugin(HInst);
 }
 
-TMessageParams::TMessageParams()
+TMessageParams::TMessageParams() :
+  Flags(0),
+  Aliases(nullptr),
+  AliasesCount(0),
+  Params(0),
+  Timer(0),
+  TimerEvent(nullptr),
+  TimerAnswers(0),
+  Timeout(0),
+  TimeoutAnswer(0)
 {
-  Flags = 0;
-  Aliases = nullptr;
-  AliasesCount = 0;
-  Params = 0;
-  Timer = 0;
-  TimerEvent = nullptr;
-  TimerAnswers = 0;
-  Timeout = 0;
-  TimeoutAnswer = 0;
+}
+
+void TMessageParams::Assign(const TMessageParams * AParams)
+{
+  Aliases = AParams->Aliases;
+  AliasesCount = AParams->AliasesCount;
+  Flags = AParams->Flags;
+  Params = AParams->Params;
+  Timer = AParams->Timer;
+  TimerEvent = AParams->TimerEvent;
+  TimerMessage = AParams->TimerMessage;
+  TimerAnswers = AParams->TimerAnswers;
+  Timeout = AParams->Timeout;
+  TimeoutAnswer = AParams->TimeoutAnswer;
 }
 
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :
@@ -64,7 +78,7 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
   {
     TCustomFarPlugin::SetStartupInfo(Info);
   }
-  catch (::Exception & E)
+  catch (Exception & E)
   {
     HandleException(&E);
   }
@@ -541,7 +555,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   }
 }
 
-void TWinSCPPlugin::ShowExtendedException(::Exception * E)
+void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
@@ -562,7 +576,7 @@ void TWinSCPPlugin::ShowExtendedException(::Exception * E)
   }
 }
 
-void TWinSCPPlugin::HandleException(::Exception * E, OPERATION_MODES OpMode)
+void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
   {
@@ -590,7 +604,7 @@ void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
 {
   TFarMessageData & Data = *NB_STATIC_DOWNCAST(TFarMessageData, Token);
 
-  assert(Result != -1 && Result < Data.ButtonCount);
+  assert(Result != (uintptr_t)-1 && Result < Data.ButtonCount);
 
   if ((Data.Params != nullptr) && (Data.Params->Aliases != nullptr))
   {
@@ -624,11 +638,20 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   intptr_t TitleId = 0;
   switch (Type)
   {
-    case qtConfirmation: TitleId = MSG_TITLE_CONFIRMATION; break;
-    case qtInformation: TitleId = MSG_TITLE_INFORMATION; break;
-    case qtError: TitleId = MSG_TITLE_ERROR; Flags |= FMSG_WARNING; break;
-    case qtWarning: TitleId = MSG_TITLE_WARNING; Flags |= FMSG_WARNING; break;
-    default: assert(false);
+    case qtConfirmation:
+      TitleId = MSG_TITLE_CONFIRMATION;
+      break;
+    case qtInformation:
+      TitleId = MSG_TITLE_INFORMATION;
+      break;
+    case qtError:
+      TitleId = MSG_TITLE_ERROR; Flags |= FMSG_WARNING;
+      break;
+    case qtWarning:
+      TitleId = MSG_TITLE_WARNING; Flags |= FMSG_WARNING;
+      break;
+    default:
+      assert(false);
   }
   TFarMessageData Data;
   Data.Params = Params;
@@ -675,7 +698,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       } \
       if (NeverAskAgainPending && CANNEVERASK) \
       { \
-        ButtonLabels->SetObject(ButtonLabels->GetCount() - 1, reinterpret_cast<TObject *>((size_t)true)); \
+        ButtonLabels->SetObj(ButtonLabels->GetCount() - 1, reinterpret_cast<TObject *>((size_t)true)); \
         NeverAskAgainPending = false; \
       } \
     }
@@ -772,7 +795,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   }
   else
   {
-    assert(Result != -1 && Result < Data.ButtonCount);
+    assert(Result != (uintptr_t)-1 && Result < Data.ButtonCount);
     Result = Data.Buttons[Result];
   }
 
