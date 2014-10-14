@@ -51,7 +51,7 @@
 //                 v (void)
 //                 i (int)
 //                 l (LRESULT)
-// <WPARAMType> ->                  
+// <WPARAMType> ->
 // Naming scheme:
 // b - BOOL
 // D - CDC*
@@ -466,160 +466,10 @@ enum AfxSig
 		(AFX_PMSG)(AFX_PMSGW) \
 		(static_cast< HBRUSH (AFX_MSG_CALL CWnd::*)(CDC*, UINT) > ( &ThisClass :: CtlColor)) },
 
-#define ON_WM_SETTINGCHANGE() \
-	{ WM_SETTINGCHANGE, 0, 0, 0, AfxSig_vws, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, LPCTSTR) > ( &ThisClass :: OnSettingChange)) },
-
-#define ON_WM_WININICHANGE() \
-	{ WM_WININICHANGE, 0, 0, 0, AfxSig_vs, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(LPCTSTR) > ( &ThisClass :: OnWinIniChange)) },
-
 #define ON_WM_ACTIVATEAPP() \
 	{ WM_ACTIVATEAPP, 0, 0, 0, AfxSig_vww, \
 		(AFX_PMSG)(AFX_PMSGW) \
 		(static_cast< void (AFX_MSG_CALL CWnd::*)(BOOL, DWORD) > ( &ThisClass :: OnActivateApp)) },
-
-#define ON_WM_FONTCHANGE() \
-	{ WM_FONTCHANGE, 0, 0, 0, AfxSig_vv, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(void) > ( &ThisClass :: OnFontChange)) },
-
-#define ON_WM_TIMECHANGE() \
-	{ WM_TIMECHANGE, 0, 0, 0, AfxSig_vv, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(void) > ( &ThisClass :: OnTimeChange)) },
-
-#define ON_WM_CANCELMODE() \
-	{ WM_CANCELMODE, 0, 0, 0, AfxSig_vv, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(void) > ( &ThisClass :: OnCancelMode)) },
-
-#define ON_WM_SETCURSOR() \
-	{ WM_SETCURSOR, 0, 0, 0, AfxSig_bWww, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< BOOL (AFX_MSG_CALL CWnd::*)(CWnd*, UINT, UINT) > ( &ThisClass :: OnSetCursor)) },
-
-#define ON_WM_MOUSEACTIVATE() \
-	{ WM_MOUSEACTIVATE, 0, 0, 0, AfxSig_iWww, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< int (AFX_MSG_CALL CWnd::*)(CWnd*, UINT, UINT) > ( &ThisClass :: OnMouseActivate)) },
-
-#define ON_WM_CHILDACTIVATE() \
-	{ WM_CHILDACTIVATE, 0, 0, 0, AfxSig_vv, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(void) > ( &ThisClass :: OnChildActivate)) },
-
-#define ON_WM_GETMINMAXINFO() \
-	{ WM_GETMINMAXINFO, 0, 0, 0, AfxSig_vs, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(MINMAXINFO*) > ( &ThisClass :: OnGetMinMaxInfo)) },
-
-#define ON_WM_ICONERASEBKGND() \
-	{ WM_ICONERASEBKGND, 0, 0, 0, AfxSig_vD, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(CDC*) > ( &ThisClass :: OnIconEraseBkgnd)) },
-
-#define ON_WM_SPOOLERSTATUS() \
-	{ WM_SPOOLERSTATUS, 0, 0, 0, AfxSig_vww, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, UINT) > ( &ThisClass :: OnSpoolerStatus)) },
-
-#define ON_WM_DRAWITEM() \
-	{ WM_DRAWITEM, 0, 0, 0, AfxSig_vOWNER, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(int, LPDRAWITEMSTRUCT) > ( &ThisClass :: OnDrawItem)) },
-
-#define ON_WM_DRAWITEM_REFLECT() \
-	{ WM_DRAWITEM+WM_REFLECT_BASE, 0, 0, 0, AfxSig_vs, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(LPDRAWITEMSTRUCT) > ( &ThisClass :: DrawItem)) },
-
-#define ON_WM_MEASUREITEM() \
-	{ WM_MEASUREITEM, 0, 0, 0, AfxSig_vOWNER, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(int, LPMEASUREITEMSTRUCT) > ( &ThisClass :: OnMeasureItem)) },
-
-#define ON_WM_MEASUREITEM_REFLECT() \
-	{ WM_MEASUREITEM+WM_REFLECT_BASE, 0, 0, 0, AfxSig_vs, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(LPMEASUREITEMSTRUCT) > ( &ThisClass :: MeasureItem)) },
-
-#define ON_WM_DELETEITEM() \
-	{ WM_DELETEITEM, 0, 0, 0, AfxSig_vOWNER, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(int, LPDELETEITEMSTRUCT) > ( &ThisClass :: OnDeleteItem)) },
-
-#define ON_WM_DELETEITEM_REFLECT() \
-	{ WM_DELETEITEM+WM_REFLECT_BASE, 0, 0, 0, AfxSig_vs, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(LPDELETEITEMSTRUCT) > ( &ThisClass :: DeleteItem)) },
-
-#define ON_WM_VKEYTOITEM_REFLECT() \
-	{ WM_VKEYTOITEM+WM_REFLECT_BASE, 0, 0, 0, AfxSig_iww, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< int (AFX_MSG_CALL CWnd::*)(UINT, UINT) > ( &ThisClass :: VKeyToItem)) },
-
-#define ON_WM_QUERYDRAGICON() \
-	{ WM_QUERYDRAGICON, 0, 0, 0, AfxSig_hv, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< HCURSOR (AFX_MSG_CALL CWnd::*)(void) > ( &ThisClass :: OnQueryDragIcon)) },
-
-#define ON_WM_COMPAREITEM() \
-	{ WM_COMPAREITEM, 0, 0, 0, AfxSig_iis, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< int (AFX_MSG_CALL CWnd::*)(int, LPCOMPAREITEMSTRUCT) > ( &ThisClass :: OnCompareItem)) },
-
-#define ON_WM_COMPAREITEM_REFLECT() \
-	{ WM_COMPAREITEM+WM_REFLECT_BASE, 0, 0, 0, AfxSig_is, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< int (AFX_MSG_CALL CWnd::*)(LPCOMPAREITEMSTRUCT) > ( &ThisClass :: CompareItem)) },
-
-#define ON_WM_COMPACTING() \
-	{ WM_COMPACTING, 0, 0, 0, AfxSig_vw, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT) > ( &ThisClass :: OnCompacting)) },
-
-#define ON_WM_NCCREATE() \
-	{ WM_NCCREATE, 0, 0, 0, AfxSig_is, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< BOOL (AFX_MSG_CALL CWnd::*)(LPCREATESTRUCT) > ( &ThisClass :: OnNcCreate)) },
-
-#define ON_WM_NCCALCSIZE() \
-	{ WM_NCCALCSIZE, 0, 0, 0, AfxSig_vCALC, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(BOOL, NCCALCSIZE_PARAMS*) > ( &ThisClass :: OnNcCalcSize)) },
-
-#define ON_WM_NCPAINT() \
-	{ WM_NCPAINT, 0, 0, 0, AfxSig_vv, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(void) > ( &ThisClass :: OnNcPaint)) },
-
-#define ON_WM_NCACTIVATE() \
-	{ WM_NCACTIVATE, 0, 0, 0, AfxSig_bb, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< BOOL (AFX_MSG_CALL CWnd::*)(BOOL) > ( &ThisClass :: OnNcActivate)) },
-
-#define ON_WM_GETDLGCODE() \
-	{ WM_GETDLGCODE, 0, 0, 0, AfxSig_wv, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< UINT (AFX_MSG_CALL CWnd::*)(void) > ( &ThisClass :: OnGetDlgCode)) },
-
-#define ON_WM_KEYDOWN() \
-	{ WM_KEYDOWN, 0, 0, 0, AfxSig_vwww, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, UINT, UINT) > ( &ThisClass :: OnKeyDown)) },
-
-#define ON_WM_KEYUP() \
-	{ WM_KEYUP, 0, 0, 0, AfxSig_vwww, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, UINT, UINT) > ( &ThisClass :: OnKeyUp)) },
-
-#define ON_WM_HOTKEY() \
-	{ WM_HOTKEY, 0, 0, 0, AfxSig_v_u_uu, \
-		(AFX_PMSG)(AFX_PMSGW) \
-		(static_cast< void (AFX_MSG_CALL CWnd::*)(UINT, UINT, UINT) > ( &ThisClass :: OnHotKey)) },
 
 #define ON_WM_CHAR() \
 	{ WM_CHAR, 0, 0, 0, AfxSig_vwww, \

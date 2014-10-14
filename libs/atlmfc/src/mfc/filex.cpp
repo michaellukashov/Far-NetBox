@@ -14,28 +14,6 @@
 
 
 
-#ifdef _DEBUG
-static const LPCSTR rgszCFileExceptionCause[] =
-{
-	"none",
-	"generic",
-	"fileNotFound",
-	"badPath",
-	"tooManyOpenFiles",
-	"accessDenied",
-	"invalidFile",
-	"removeCurrentDir",
-	"directoryFull",
-	"badSeek",
-	"hardIO",
-	"sharingViolation",
-	"lockViolation",
-	"diskFull",
-	"endOfFile",
-};
-static const char szUnknown2[] = "unknown";
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 // CFileException
 
@@ -60,7 +38,7 @@ BOOL CFileException::GetErrorMessage(_Out_z_cap_(nMaxError) LPTSTR lpszError, _I
 {
 	ASSERT(lpszError != NULL && AfxIsValidString(lpszError, nMaxError));
 
-	if (lpszError == NULL || nMaxError == 0) 
+	if (lpszError == NULL || nMaxError == 0)
 	{
 		return FALSE;
 	}
@@ -90,10 +68,6 @@ void __declspec(noreturn) AFXAPI AfxThrowFileException(int cause, LONG lOsError,
 {
 #ifdef _DEBUG
 	LPCSTR lpsz;
-	if (cause >= 0 && cause < _countof(rgszCFileExceptionCause))
-		lpsz = rgszCFileExceptionCause[cause];
-	else
-		lpsz = szUnknown2;
 #endif
 	THROW(new CFileException(cause, lOsError, lpszFileName));
 }

@@ -195,7 +195,6 @@ struct AFX_GLOBAL_DATA
 	~AFX_GLOBAL_DATA();
 
 	void UpdateSysColors();
-	void OnSettingChange();
 
 	BOOL SetMenuFont(LPLOGFONT lpLogFont, BOOL bHorz);
 
