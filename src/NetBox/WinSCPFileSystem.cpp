@@ -2837,65 +2837,54 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   TOperationSide Side, bool SelectedOnly, const UnicodeString & Directory, bool FileNameOnly,
   TStrings * AFileList)
 {
-  TStrings * FileList = (AFileList == nullptr ? new TStringList() : AFileList);
-  try
+  std::unique_ptr<TStrings> FileList(AFileList == nullptr ? new TStringList() : AFileList);
+  UnicodeString FileName;
+  TFarPanelItem * PanelItem;
+  TObject * Data = nullptr;
+  for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {
-    UnicodeString FileName;
-    TFarPanelItem * PanelItem;
-    TObject * Data = nullptr;
-    for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
+    PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(Index));
+    assert(PanelItem);
+    if ((!SelectedOnly || PanelItem->GetSelected()) &&
+        !PanelItem->GetIsParentDirectory())
     {
-      PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(Index));
-      assert(PanelItem);
-      if ((!SelectedOnly || PanelItem->GetSelected()) &&
-          !PanelItem->GetIsParentDirectory())
+      FileName = PanelItem->GetFileName();
+      if (Side == osRemote)
       {
-        FileName = PanelItem->GetFileName();
-        if (Side == osRemote)
-        {
-          Data = NB_STATIC_DOWNCAST(TRemoteFile, PanelItem->GetUserData());
-          assert(Data);
-        }
-        if (Side == osLocal)
-        {
-          if (::ExtractFilePath(FileName).IsEmpty())
-          {
-            if (!FileNameOnly)
-            {
-              UnicodeString Dir = Directory;
-              if (Dir.IsEmpty())
-              {
-                Dir = ::GetCurrentDir();
-              }
-              FileName = ::IncludeTrailingBackslash(Dir) + FileName;
-            }
-          }
-          else
-          {
-            if (FileNameOnly)
-            {
-              FileName = core::ExtractFileName(FileName, false);
-            }
-          }
-        }
-        FileList->AddObject(FileName, Data);
+        Data = NB_STATIC_DOWNCAST(TRemoteFile, PanelItem->GetUserData());
+        assert(Data);
       }
+      if (Side == osLocal)
+      {
+        if (::ExtractFilePath(FileName).IsEmpty())
+        {
+          if (!FileNameOnly)
+          {
+            UnicodeString Dir = Directory;
+            if (Dir.IsEmpty())
+            {
+              Dir = ::GetCurrentDir();
+            }
+            FileName = ::IncludeTrailingBackslash(Dir) + FileName;
+          }
+        }
+        else
+        {
+          if (FileNameOnly)
+          {
+            FileName = core::ExtractFileName(FileName, false);
+          }
+        }
+      }
+      FileList->AddObject(FileName, Data);
     }
+  }
 
-    if (FileList->GetCount() == 0)
-    {
-      Abort();
-    }
-  }
-  catch (...)
+  if (FileList->GetCount() == 0)
   {
-    if (AFileList == nullptr)
-    {
-      SAFE_DESTROY(FileList);
-    }
-    throw;
+    Abort();
   }
-  return FileList;
+  return FileList.release();
 }
 
 void TWinSCPFileSystem::SaveSession()
