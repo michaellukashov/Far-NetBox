@@ -3806,7 +3806,7 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
   }
 }
 
-void TTerminal::CopyFile(const UnicodeString & AFileName,
+void TTerminal::TerminalCopyFile(const UnicodeString & AFileName,
   const TRemoteFile * /*File*/, /*const TMoveFileParams*/ void * Param)
 {
   if (GetOperationProgress() && (GetOperationProgress()->Operation == foRemoteCopy))
@@ -3834,7 +3834,7 @@ bool TTerminal::CopyFiles(TStrings * AFileList, const UnicodeString & Target,
   Params.Target = Target;
   Params.FileMask = FileMask;
   DirectoryModified(Target, true);
-  return ProcessFiles(AFileList, foRemoteCopy, MAKE_CALLBACK(TTerminal::CopyFile, this), &Params);
+  return ProcessFiles(AFileList, foRemoteCopy, MAKE_CALLBACK(TTerminal::TerminalCopyFile, this), &Params);
 }
 
 void TTerminal::RemoteCreateDirectory(const UnicodeString & ADirName,

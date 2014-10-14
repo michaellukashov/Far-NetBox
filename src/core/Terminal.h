@@ -252,7 +252,7 @@ public:
     /* const TMoveFileParams */ void * Param);
   bool MoveFiles(TStrings * AFileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
-  void CopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
+  void TerminalCopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /* const TMoveFileParams */ void * Param);
   bool CopyFiles(TStrings * AFileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
