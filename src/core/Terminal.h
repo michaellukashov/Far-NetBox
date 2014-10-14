@@ -170,7 +170,7 @@ public:
   void TerminalSetCurrentDirectory(const UnicodeString & Value);
   void SetExceptionOnFail(bool Value);
   void ReactOnCommand(intptr_t /*TFSCommand*/ Cmd);
-  UnicodeString GetUserName() const;
+  UnicodeString TerminalGetUserName() const;
   bool GetAreCachesEmpty() const;
   bool GetIsCapable(TFSCapability Capability) const;
   void ClearCachedFileList(const UnicodeString & APath, bool SubDirs);

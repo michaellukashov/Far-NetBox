@@ -1931,7 +1931,7 @@ const TRemoteTokenList * TTerminal::GetMembership()
   return &FMembership;
 }
 
-UnicodeString TTerminal::GetUserName() const
+UnicodeString TTerminal::TerminalGetUserName() const
 {
   // in future might also be implemented to detect username similar to GetUserGroups
   assert(FFileSystem != nullptr);
@@ -5839,9 +5839,9 @@ void TSecondaryTerminal::Init(
   GetLog()->SetName(Name);
   GetActionLog()->SetEnabled(false);
   GetSessionData()->NonPersistant();
-  if (!FMainTerminal->GetUserName().IsEmpty())
+  if (!FMainTerminal->TerminalGetUserName().IsEmpty())
   {
-    GetSessionData()->SetUserName(FMainTerminal->GetUserName());
+    GetSessionData()->SetUserName(FMainTerminal->TerminalGetUserName());
   }
 }
 
