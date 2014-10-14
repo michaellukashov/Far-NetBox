@@ -98,7 +98,7 @@ public:
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
   virtual bool GetStoredCredentialsTried() const;
-  virtual UnicodeString GetUserName() const;
+  virtual UnicodeString FSGetUserName() const;
 
 protected:
   // enum TOverwriteMode { omOverwrite, omResume, omComplete };

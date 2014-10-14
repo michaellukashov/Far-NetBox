@@ -434,7 +434,7 @@ bool TSCPFileSystem::GetStoredCredentialsTried() const
   return FSecureShell->GetStoredCredentialsTried();
 }
 
-UnicodeString TSCPFileSystem::GetUserName() const
+UnicodeString TSCPFileSystem::FSGetUserName() const
 {
   return FSecureShell->GetUserName();
 }

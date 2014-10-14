@@ -1935,7 +1935,7 @@ UnicodeString TTerminal::TerminalGetUserName() const
 {
   // in future might also be implemented to detect username similar to GetUserGroups
   assert(FFileSystem != nullptr);
-  UnicodeString Result = FFileSystem->GetUserName();
+  UnicodeString Result = FFileSystem->FSGetUserName();
   // Is empty also when stored username was used
   if (Result.IsEmpty())
   {

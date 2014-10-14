@@ -1938,7 +1938,7 @@ bool TSFTPFileSystem::GetStoredCredentialsTried() const
   return FSecureShell->GetStoredCredentialsTried();
 }
 
-UnicodeString TSFTPFileSystem::GetUserName() const
+UnicodeString TSFTPFileSystem::FSGetUserName() const
 {
   return FSecureShell->GetUserName();
 }
