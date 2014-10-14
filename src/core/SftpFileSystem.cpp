@@ -1933,14 +1933,14 @@ bool TSFTPFileSystem::TemporaryTransferFile(const UnicodeString & AFileName)
   return ::AnsiSameText(core::UnixExtractFileExt(AFileName), PARTIAL_EXT);
 }
 
-bool TSFTPFileSystem::GetStoredCredentialsTried()
+bool TSFTPFileSystem::GetStoredCredentialsTried() const
 {
   return FSecureShell->GetStoredCredentialsTried();
 }
 
-UnicodeString TSFTPFileSystem::GetUserName()
+UnicodeString TSFTPFileSystem::FSGetUserName() const
 {
-  return FSecureShell->GetUserName();
+  return FSecureShell->ShellGetUserName();
 }
 
 void TSFTPFileSystem::Idle()
@@ -2773,7 +2773,7 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
   return File.release();
 }
 
-UnicodeString TSFTPFileSystem::GetCurrDirectory()
+UnicodeString TSFTPFileSystem::GetCurrDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -3544,7 +3544,7 @@ void TSFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 
-void TSFTPFileSystem::CopyFile(const UnicodeString & AFileName,
+void TSFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   const UnicodeString & ANewName)
 {
   // Implemented by ProFTPD/mod_sftp and Bitvise WinSSHD (without announcing it)

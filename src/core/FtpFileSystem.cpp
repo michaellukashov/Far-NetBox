@@ -2100,7 +2100,7 @@ void TFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 
-void TFTPFileSystem::CopyFile(const UnicodeString & /* AFileName */,
+void TFTPFileSystem::RemoteCopyFile(const UnicodeString & /* AFileName */,
   const UnicodeString & /* NewName */)
 {
   FAIL;
@@ -2154,17 +2154,17 @@ bool TFTPFileSystem::TemporaryTransferFile(const UnicodeString & /*FileName*/)
   return false;
 }
 
-bool TFTPFileSystem::GetStoredCredentialsTried()
+bool TFTPFileSystem::GetStoredCredentialsTried() const
 {
   return !FTerminal->GetSessionData()->GetPassword().IsEmpty();
 }
 
-UnicodeString TFTPFileSystem::GetUserName()
+UnicodeString TFTPFileSystem::FSGetUserName() const
 {
   return FUserName;
 }
 
-UnicodeString TFTPFileSystem::GetCurrDirectory()
+UnicodeString TFTPFileSystem::GetCurrDirectory() const
 {
   return FCurrentDirectory;
 }

@@ -429,14 +429,14 @@ bool TSCPFileSystem::TemporaryTransferFile(const UnicodeString & /*AFileName*/)
   return false;
 }
 
-bool TSCPFileSystem::GetStoredCredentialsTried()
+bool TSCPFileSystem::GetStoredCredentialsTried() const
 {
   return FSecureShell->GetStoredCredentialsTried();
 }
 
-UnicodeString TSCPFileSystem::GetUserName()
+UnicodeString TSCPFileSystem::FSGetUserName() const
 {
-  return FSecureShell->GetUserName();
+  return FSecureShell->ShellGetUserName();
 }
 
 void TSCPFileSystem::Idle()
@@ -772,7 +772,7 @@ void TSCPFileSystem::ExecCommand2(TFSCommand Cmd, intptr_t Params, ...)
   }
 }
 
-UnicodeString TSCPFileSystem::GetCurrDirectory()
+UnicodeString TSCPFileSystem::GetCurrDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -1173,7 +1173,7 @@ void TSCPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   ExecCommand2(fsRenameFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
 }
 
-void TSCPFileSystem::CopyFile(const UnicodeString & AFileName,
+void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   const UnicodeString & NewName)
 {
   ExecCommand2(fsCopyFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());

@@ -1931,11 +1931,11 @@ const TRemoteTokenList * TTerminal::GetMembership()
   return &FMembership;
 }
 
-UnicodeString TTerminal::GetUserName() const
+UnicodeString TTerminal::TerminalGetUserName() const
 {
   // in future might also be implemented to detect username similar to GetUserGroups
   assert(FFileSystem != nullptr);
-  UnicodeString Result = FFileSystem->GetUserName();
+  UnicodeString Result = FFileSystem->FSGetUserName();
   // Is empty also when stored username was used
   if (Result.IsEmpty())
   {
@@ -3190,7 +3190,7 @@ void TTerminal::RecycleFile(const UnicodeString & AFileName,
     // Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()).c_str());
     Params.FileMask = FORMAT(L"*-%s.*", dt.c_str());
 #endif
-    MoveFile(FileName, AFile, &Params);
+    TerminalMoveFile(FileName, AFile, &Params);
   }
 }
 
@@ -3696,7 +3696,7 @@ void TTerminal::DoRenameFile(const UnicodeString & AFileName,
   }
 }
 
-void TTerminal::MoveFile(const UnicodeString & AFileName,
+void TTerminal::TerminalMoveFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, /*const TMoveFileParams*/ void * Param)
 {
   if (GetOperationProgress() &&
@@ -3752,7 +3752,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
               File->GetIsDirectory() &&
               ((CurrentDirectory.SubString(1, Str.Length()) == Str) &&
                ((Str.Length() == CurrentDirectory.Length()) ||
-                (CurrentDirectory[Str.Length() + 1] == '/'))))
+                (CurrentDirectory[Str.Length() + 1] == L'/'))))
           {
             PossiblyMoved = true;
           }
@@ -3772,7 +3772,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
       }
       EndTransaction();
     };
-    Result = ProcessFiles(AFileList, foRemoteMove, MAKE_CALLBACK(TTerminal::MoveFile, this), &Params);
+    Result = ProcessFiles(AFileList, foRemoteMove, MAKE_CALLBACK(TTerminal::TerminalMoveFile, this), &Params);
   }
   return Result;
 }
@@ -3785,7 +3785,7 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
     assert(FFileSystem);
     if (GetIsCapable(fcRemoteCopy))
     {
-      FFileSystem->CopyFile(AFileName, NewName);
+      FFileSystem->RemoteCopyFile(AFileName, NewName);
     }
     else
     {
@@ -3793,7 +3793,7 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
       assert(FCommandSession->GetFSProtocol() == cfsSCP);
       LogEvent(L"Copying file on command session.");
       FCommandSession->TerminalSetCurrentDirectory(GetCurrDirectory());
-      FCommandSession->FFileSystem->CopyFile(AFileName, NewName);
+      FCommandSession->FFileSystem->RemoteCopyFile(AFileName, NewName);
     }
   }
   catch (Exception & E)
@@ -3806,7 +3806,7 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
   }
 }
 
-void TTerminal::CopyFile(const UnicodeString & AFileName,
+void TTerminal::TerminalCopyFile(const UnicodeString & AFileName,
   const TRemoteFile * /*File*/, /*const TMoveFileParams*/ void * Param)
 {
   if (GetOperationProgress() && (GetOperationProgress()->Operation == foRemoteCopy))
@@ -3834,7 +3834,7 @@ bool TTerminal::CopyFiles(TStrings * AFileList, const UnicodeString & Target,
   Params.Target = Target;
   Params.FileMask = FileMask;
   DirectoryModified(Target, true);
-  return ProcessFiles(AFileList, foRemoteCopy, MAKE_CALLBACK(TTerminal::CopyFile, this), &Params);
+  return ProcessFiles(AFileList, foRemoteCopy, MAKE_CALLBACK(TTerminal::TerminalCopyFile, this), &Params);
 }
 
 void TTerminal::RemoteCreateDirectory(const UnicodeString & ADirName,
@@ -5356,7 +5356,7 @@ UnicodeString TTerminal::GetRememberedTunnelPassword() const
   return DecryptPassword(FRememberedTunnelPassword);
 }
 
-bool TTerminal::GetStoredCredentialsTried()
+bool TTerminal::GetStoredCredentialsTried() const
 {
   bool Result;
   if (FFileSystem != nullptr)
@@ -5839,9 +5839,9 @@ void TSecondaryTerminal::Init(
   GetLog()->SetName(Name);
   GetActionLog()->SetEnabled(false);
   GetSessionData()->NonPersistant();
-  if (!FMainTerminal->GetUserName().IsEmpty())
+  if (!FMainTerminal->TerminalGetUserName().IsEmpty())
   {
-    GetSessionData()->SetUserName(FMainTerminal->GetUserName());
+    GetSessionData()->SetUserName(FMainTerminal->TerminalGetUserName());
   }
 }
 

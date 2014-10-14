@@ -170,7 +170,7 @@ public:
   void TerminalSetCurrentDirectory(const UnicodeString & Value);
   void SetExceptionOnFail(bool Value);
   void ReactOnCommand(intptr_t /*TFSCommand*/ Cmd);
-  UnicodeString GetUserName() const;
+  UnicodeString TerminalGetUserName() const;
   bool GetAreCachesEmpty() const;
   bool GetIsCapable(TFSCapability Capability) const;
   void ClearCachedFileList(const UnicodeString & APath, bool SubDirs);
@@ -185,7 +185,7 @@ public:
   UnicodeString GetRememberedPassword() const;
   UnicodeString GetRememberedTunnelPassword() const;
   void SetTunnelPassword(const UnicodeString & Value) { FRememberedTunnelPassword = Value; }
-  bool GetStoredCredentialsTried();
+  bool GetStoredCredentialsTried() const;
   TCustomFileSystem * GetFileSystem() const { return FFileSystem; }
   TCustomFileSystem * GetFileSystem() { return FFileSystem; }
   inline bool InTransaction();
@@ -248,11 +248,11 @@ public:
   void RefreshDirectory();
   void TerminalRenameFile(const UnicodeString & AFileName, const UnicodeString & NewName);
   void TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString & NewName, bool CheckExistence);
-  void MoveFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
+  void TerminalMoveFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /* const TMoveFileParams */ void * Param);
   bool MoveFiles(TStrings * AFileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
-  void CopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
+  void TerminalCopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /* const TMoveFileParams */ void * Param);
   bool CopyFiles(TStrings * AFileList, const UnicodeString & Target,
     const UnicodeString & FileMask);

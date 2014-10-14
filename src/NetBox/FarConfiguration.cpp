@@ -178,7 +178,7 @@ void TFarConfiguration::CacheFarSettings()
 
 intptr_t TFarConfiguration::FarConfirmations() const
 {
-  if (GetPlugin() && (GetCurrentThreadId() == GetPlugin()->GetFarThread()))
+  if (GetPlugin() && (GetCurrentThreadId() == GetPlugin()->GetFarThreadId()))
   {
     return GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
   }

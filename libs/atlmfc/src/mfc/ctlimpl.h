@@ -46,8 +46,6 @@ BOOL AFXAPI _AfxOleMatchPropsetClipFormat(CLIPFORMAT cfFormat, LPCLSID lpFmtID);
 BOOL AFXAPI _AfxCopyPropValue(VARTYPE vtProp, void* pvDest, const void * pvSrc);
 BOOL AFXAPI _AfxPeekAtClassIDInStream(LPSTREAM pstm, LPCLSID lpClassID);
 BOOL AFXAPI _AfxIsSamePropValue(VARTYPE vtProp, const void* pv1, const void* pv2);
-BOOL AFXAPI _AfxIsSameFont(CFontHolder& font, const FONTDESC* pFontDesc,
-  LPFONTDISP pFontDispAmbient);
 BOOL AFXAPI _AfxIsSameUnknownObject(REFIID iid, LPUNKNOWN pUnk1, LPUNKNOWN pUnk2);
 BOOL AFXAPI _AfxInitBlob(HGLOBAL* phDst, void* pvSrc);
 BOOL AFXAPI _AfxCopyBlob(HGLOBAL* phDst, HGLOBAL hSrc);

@@ -1940,7 +1940,7 @@ void TSecureShell::KeepAlive()
 
 static uint32_t minPacketSize = 0;
 
-uint32_t TSecureShell::MinPacketSize()
+uint32_t TSecureShell::MinPacketSize() const
 {
   if (!FSessionInfoValid)
   {
@@ -1961,7 +1961,7 @@ uint32_t TSecureShell::MinPacketSize()
   }
 }
 
-uint32_t TSecureShell::MaxPacketSize()
+uint32_t TSecureShell::MaxPacketSize() const
 {
   if (!FSessionInfoValid)
   {

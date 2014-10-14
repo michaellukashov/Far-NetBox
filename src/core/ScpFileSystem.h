@@ -61,7 +61,7 @@ public:
     TRemoteFile *& File);
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
-  virtual void CopyFile(const UnicodeString & AFileName,
+  virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & NewName);
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & APath,
@@ -69,14 +69,14 @@ public:
   virtual const TSessionInfo & GetSessionInfo() const;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
-  virtual bool GetStoredCredentialsTried();
-  virtual UnicodeString GetUserName();
+  virtual bool GetStoredCredentialsTried() const;
+  virtual UnicodeString FSGetUserName() const;
 
 protected:
   TStrings * GetOutput() const { return FOutput; }
   intptr_t GetReturnCode() const { return FReturnCode; }
 
-  virtual UnicodeString GetCurrDirectory();
+  virtual UnicodeString GetCurrDirectory() const;
 
 private:
   TSecureShell * FSecureShell;

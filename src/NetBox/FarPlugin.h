@@ -120,7 +120,7 @@ public:
   bool InputBox(const UnicodeString & Title, const UnicodeString & Prompt,
     UnicodeString & Text, DWORD Flags, const UnicodeString & HistoryName = UnicodeString(),
     intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
-  UnicodeString GetMsg(intptr_t MsgId);
+  UnicodeString GetMsg(intptr_t MsgId) const;
   void SaveScreen(HANDLE & Screen);
   void RestoreScreen(HANDLE & Screen);
   bool CheckForEsc();
@@ -130,13 +130,13 @@ public:
   intptr_t FarControl(uintptr_t Command, intptr_t Param1, intptr_t Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   intptr_t FarAdvControl(uintptr_t Command, void * Param = nullptr) const;
   intptr_t FarEditorControl(uintptr_t Command, void * Param);
-  intptr_t FarSystemSettings();
+  intptr_t GetFarSystemSettings() const;
   void Text(int X, int Y, int Color, const UnicodeString & Str);
   void FlushText();
-  void WriteConsole(const UnicodeString & Str);
+  void FarWriteConsole(const UnicodeString & Str);
   void FarCopyToClipboard(const UnicodeString & Str);
   void FarCopyToClipboard(const TStrings * Strings);
-  intptr_t FarVersion();
+  intptr_t GetFarVersion() const;
   UnicodeString FormatFarVersion(intptr_t Version) const;
   UnicodeString GetTemporaryDir() const;
   intptr_t InputRecordToKey(const INPUT_RECORD * Rec);
@@ -159,7 +159,7 @@ public:
   UnicodeString GetModuleName() const;
   TFarDialog * GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; }
-  uintptr_t GetFarThread() const { return FFarThread; }
+  uintptr_t GetFarThreadId() const { return FFarThreadId; }
   FarStandardFunctions & GetFarStandardFunctions() { return FFarStandardFunctions; }
 
 protected:
@@ -170,12 +170,12 @@ protected:
   TFarDialog * FTopDialog;
   HANDLE FConsoleInput;
   HANDLE FConsoleOutput;
-  intptr_t FFarVersion;
+  mutable intptr_t FFarVersion;
   bool FTerminalScreenShowing;
   TCriticalSection FCriticalSection;
-  uintptr_t FFarThread;
-  bool FValidFarSystemSettings;
-  intptr_t FFarSystemSettings;
+  uintptr_t FFarThreadId;
+  mutable bool FValidFarSystemSettings;
+  mutable intptr_t FFarSystemSettings;
   TPoint FNormalConsoleSize;
 
   virtual bool HandlesFunction(THandlesFunction Function);

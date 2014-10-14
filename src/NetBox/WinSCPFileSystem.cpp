@@ -771,7 +771,7 @@ void TWinSCPFileSystem::TerminalCaptureLog(
 {
   if (FOutputLog)
   {
-    WinSCPPlugin()->WriteConsole(AddedLine + L"\n");
+    WinSCPPlugin()->FarWriteConsole(AddedLine + L"\n");
   }
   if (FCapturedLog != nullptr)
   {
@@ -969,14 +969,14 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
     }
 
     if ((Key == 'Q') && (ControlState & PKF_SHIFT) &&
-          (ControlState & PKF_ALT))
+        (ControlState & PKF_ALT))
     {
       QueueShow(false);
       Handled = true;
     }
 
     if ((Key == 'B') && (ControlState & PKF_CONTROL) &&
-          (ControlState & PKF_ALT))
+        (ControlState & PKF_ALT))
     {
       ToggleSynchronizeBrowsing();
       Handled = true;
@@ -2837,65 +2837,54 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   TOperationSide Side, bool SelectedOnly, const UnicodeString & Directory, bool FileNameOnly,
   TStrings * AFileList)
 {
-  TStrings * FileList = (AFileList == nullptr ? new TStringList() : AFileList);
-  try
+  std::unique_ptr<TStrings> FileList(AFileList == nullptr ? new TStringList() : AFileList);
+  UnicodeString FileName;
+  TFarPanelItem * PanelItem;
+  TObject * Data = nullptr;
+  for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {
-    UnicodeString FileName;
-    TFarPanelItem * PanelItem;
-    TObject * Data = nullptr;
-    for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
+    PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(Index));
+    assert(PanelItem);
+    if ((!SelectedOnly || PanelItem->GetSelected()) &&
+        !PanelItem->GetIsParentDirectory())
     {
-      PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(Index));
-      assert(PanelItem);
-      if ((!SelectedOnly || PanelItem->GetSelected()) &&
-          !PanelItem->GetIsParentDirectory())
+      FileName = PanelItem->GetFileName();
+      if (Side == osRemote)
       {
-        FileName = PanelItem->GetFileName();
-        if (Side == osRemote)
-        {
-          Data = NB_STATIC_DOWNCAST(TRemoteFile, PanelItem->GetUserData());
-          assert(Data);
-        }
-        if (Side == osLocal)
-        {
-          if (::ExtractFilePath(FileName).IsEmpty())
-          {
-            if (!FileNameOnly)
-            {
-              UnicodeString Dir = Directory;
-              if (Dir.IsEmpty())
-              {
-                Dir = ::GetCurrentDir();
-              }
-              FileName = ::IncludeTrailingBackslash(Dir) + FileName;
-            }
-          }
-          else
-          {
-            if (FileNameOnly)
-            {
-              FileName = core::ExtractFileName(FileName, false);
-            }
-          }
-        }
-        FileList->AddObject(FileName, Data);
+        Data = NB_STATIC_DOWNCAST(TRemoteFile, PanelItem->GetUserData());
+        assert(Data);
       }
+      if (Side == osLocal)
+      {
+        if (::ExtractFilePath(FileName).IsEmpty())
+        {
+          if (!FileNameOnly)
+          {
+            UnicodeString Dir = Directory;
+            if (Dir.IsEmpty())
+            {
+              Dir = ::GetCurrentDir();
+            }
+            FileName = ::IncludeTrailingBackslash(Dir) + FileName;
+          }
+        }
+        else
+        {
+          if (FileNameOnly)
+          {
+            FileName = core::ExtractFileName(FileName, false);
+          }
+        }
+      }
+      FileList->AddObject(FileName, Data);
     }
+  }
 
-    if (FileList->GetCount() == 0)
-    {
-      Abort();
-    }
-  }
-  catch (...)
+  if (FileList->GetCount() == 0)
   {
-    if (AFileList == nullptr)
-    {
-      SAFE_DESTROY(FileList);
-    }
-    throw;
+    Abort();
   }
-  return FileList;
+  return FileList.release();
 }
 
 void TWinSCPFileSystem::SaveSession()
@@ -3155,7 +3144,7 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & AFileName,
   bool Alternative)
 {
   if (!RecursiveDeleteFile(AFileName,
-        (FLAGSET(WinSCPPlugin()->FarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
+        (FLAGSET(WinSCPPlugin()->GetFarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
   {
     throw Exception(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR).c_str(), AFileName.c_str()));
   }

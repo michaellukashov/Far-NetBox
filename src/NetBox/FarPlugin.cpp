@@ -37,7 +37,7 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   FSavedTitles(new TStringList())
 {
   ::InitPlatformId();
-  FFarThread = GetCurrentThreadId();
+  FFarThreadId = GetCurrentThreadId();
   FHandle = HInst;
   FFarVersion = 0;
   FTerminalScreenShowing = false;
@@ -1245,7 +1245,7 @@ void TCustomFarPlugin::FlushText()
   FStartupInfo.Text(0, 0, 0, nullptr);
 }
 
-void TCustomFarPlugin::WriteConsole(const UnicodeString & Str)
+void TCustomFarPlugin::FarWriteConsole(const UnicodeString & Str)
 {
   DWORD Written;
   ::WriteConsole(FConsoleOutput, Str.c_str(), static_cast<DWORD>(Str.Length()), &Written, nullptr);
@@ -1542,7 +1542,7 @@ void TCustomFarPlugin::HandleException(Exception * E, int /*OpMode*/)
   Message(FMSG_WARNING | FMSG_MB_OK, L"", E ? E->Message : L"");
 }
 
-UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId)
+UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
 {
   TFarEnvGuard Guard;
   UnicodeString Result = FStartupInfo.GetMsg(FStartupInfo.ModuleNumber, (int)MsgId);
@@ -1600,7 +1600,7 @@ void TCustomFarPlugin::ResetCachedInfo()
   FValidFarSystemSettings = false;
 }
 
-intptr_t TCustomFarPlugin::FarSystemSettings()
+intptr_t TCustomFarPlugin::GetFarSystemSettings() const
 {
   if (!FValidFarSystemSettings)
   {
@@ -1685,7 +1685,7 @@ TFarEditorInfo * TCustomFarPlugin::EditorInfo()
   return Result;
 }
 
-intptr_t TCustomFarPlugin::FarVersion()
+intptr_t TCustomFarPlugin::GetFarVersion() const
 {
   if (FFarVersion == 0)
   {
@@ -2226,7 +2226,7 @@ intptr_t TFarPanelModes::CommaCount(const UnicodeString & ColumnTypes)
   intptr_t Count = 0;
   for (intptr_t Index = 1; Index <= ColumnTypes.Length(); ++Index)
   {
-    if (ColumnTypes[Index] == ',')
+    if (ColumnTypes[Index] == L',')
     {
       Count++;
     }

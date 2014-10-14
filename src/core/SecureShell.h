@@ -49,8 +49,8 @@ public:
 
   const TSessionInfo & GetSessionInfo() const;
   bool SshFallbackCmd() const;
-  uint32_t MinPacketSize();
-  uint32_t MaxPacketSize();
+  uint32_t MinPacketSize() const;
+  uint32_t MaxPacketSize() const;
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
   void CollectUsage();
@@ -83,7 +83,7 @@ public:
   void SetOnCaptureOutput(TCaptureOutputEvent Value) { FOnCaptureOutput = Value; }
   TDateTime GetLastDataSent() const { return FLastDataSent; }
   UnicodeString GetLastTunnelError() const { return FLastTunnelError; }
-  UnicodeString GetUserName() const { return FUserName; }
+  UnicodeString ShellGetUserName() const { return FUserName; }
   bool GetSimple() const { return FSimple; }
   void SetSimple(bool Value) { FSimple = Value; }
 
@@ -143,8 +143,8 @@ private:
   TDateTime FLastDataSent;
   Backend * FBackend;
   void * FBackendHandle;
-  const uint32_t * FMinPacketSize;
-  const uint32_t * FMaxPacketSize;
+  mutable const uint32_t * FMinPacketSize;
+  mutable const uint32_t * FMaxPacketSize;
   TNotifyEvent FOnReceive;
   bool FFrozen;
   bool FDataWhileFrozen;

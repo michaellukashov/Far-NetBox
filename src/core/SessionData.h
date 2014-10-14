@@ -354,7 +354,7 @@ public:
   intptr_t GetPortNumber() const { return FPortNumber; }
   TLoginType GetLoginType() const;
   void SetLoginType(TLoginType Value);
-  UnicodeString GetUserName() const { return FUserName; }
+  UnicodeString SessionGetUserName() const { return FUserName; }
   intptr_t GetPingInterval() const { return FPingInterval; }
   bool GetTryAgent() const { return FTryAgent; }
   bool GetAgentFwd() const { return FAgentFwd; }

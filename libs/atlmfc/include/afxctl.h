@@ -29,10 +29,9 @@
 // Classes declared in this file
 
 //CWinApp
-	class COleControlModule;        // Module housekeeping for an .OCX
+//	class COleControlModule;        // Module housekeeping for an .OCX
 
-class CFontHolder;                  // For manipulating font objects
-class CPictureHolder;               // For manipulating picture objects
+//class CPictureHolder;               // For manipulating picture objects
 
 //CWnd
 	// class COleControl;              // OLE Control
@@ -62,14 +61,6 @@ class CPictureHolder;               // For manipulating picture objects
 /////////////////////////////////////////////////////////////////////////////
 // COleControlModule - base class for .OCX module
 //  This object is statically linked into the control.
-
-class COleControlModule : public CWinApp
-{
-	DECLARE_DYNAMIC(COleControlModule)
-public:
-	virtual BOOL InitInstance();
-	virtual int ExitInstance();
-};
 
 /////////////////////////////////////////////////////////////////////////////
 //  Module state macro
@@ -296,40 +287,6 @@ public: \
 		} \
 		cPropPages = _cPropPages_##class_name; \
 		return _rgPropPageIDs_##class_name; }
-
-/////////////////////////////////////////////////////////////////////////////
-// CFontHolder - helper class for dealing with font objects
-
-class CFontHolder
-{
-// Constructors
-public:
-	explicit CFontHolder(LPPROPERTYNOTIFYSINK pNotify);
-
-// Attributes
-	LPFONT m_pFont;
-
-// Operations
-	void InitializeFont(
-			const FONTDESC* pFontDesc = NULL,
-			LPDISPATCH pFontDispAmbient = NULL);
-	void SetFont(LPFONT pNewFont);
-	void ReleaseFont();
-	HFONT GetFontHandle();
-	HFONT GetFontHandle(long cyLogical, long cyHimetric);
-	BOOL GetDisplayString(CString& strValue);
-	LPFONTDISP GetFontDispatch();
-	void QueryTextMetrics(LPTEXTMETRIC lptm);
-
-// Implementation
-public:
-	~CFontHolder();
-	void SetFontNotifySink(LPPROPERTYNOTIFYSINK pNotify);
-
-protected:
-	DWORD m_dwConnectCookie;
-	LPPROPERTYNOTIFYSINK m_pNotify;
-};
 
 /////////////////////////////////////////////////////////////////////////////
 // Registry functions

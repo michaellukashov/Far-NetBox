@@ -12152,12 +12152,12 @@ bool TWebDAVFileSystem::TemporaryTransferFile(const UnicodeString & /*AFileName*
   return false;
 }
 
-bool TWebDAVFileSystem::GetStoredCredentialsTried()
+bool TWebDAVFileSystem::GetStoredCredentialsTried() const
 {
   return false;
 }
 
-UnicodeString TWebDAVFileSystem::GetUserName()
+UnicodeString TWebDAVFileSystem::FSGetUserName() const
 {
   return FUserName;
 }
@@ -12243,7 +12243,7 @@ void TWebDAVFileSystem::EnsureLocation()
   }
 }
 
-UnicodeString TWebDAVFileSystem::GetCurrDirectory()
+UnicodeString TWebDAVFileSystem::GetCurrDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -12427,7 +12427,7 @@ void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   }
 }
 
-void TWebDAVFileSystem::CopyFile(const UnicodeString & AFileName,
+void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   const UnicodeString & NewName)
 {
   Error(SNotImplemented, 1012);
