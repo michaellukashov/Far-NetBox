@@ -36,7 +36,7 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
   FSavedTitles(new TStringList())
 {
   ::InitPlatformId();
-  FFarThread = GetCurrentThreadId();
+  FFarThreadId = GetCurrentThreadId();
   FHandle = HInst;
   FFarVersion = 0;
   FTerminalScreenShowing = false;
