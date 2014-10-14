@@ -49,8 +49,6 @@ AFX_GLOBAL_DATA::AFX_GLOBAL_DATA()
 	m_bUseSystemFont = FALSE;
 	m_bInSettingChange = FALSE;
 
-	OnSettingChange();
-
 	m_bIsRTL = FALSE;
 
 	m_nDragFrameThicknessFloat = 4;  // pixels
@@ -73,71 +71,6 @@ AFX_GLOBAL_DATA::AFX_GLOBAL_DATA()
 AFX_GLOBAL_DATA::~AFX_GLOBAL_DATA()
 {
 	CleanUp();
-}
-
-static BOOL CALLBACK InfoEnumProc( HMONITOR hMonitor, HDC /*hdcMonitor*/, LPRECT /*lprcMonitor*/, LPARAM dwData)
-{
-	CRect* pRect = (CRect*) dwData;
-
-	MONITORINFO mi;
-	mi.cbSize = sizeof(MONITORINFO);
-
-	if (GetMonitorInfo(hMonitor, &mi))
-	{
-		CRect rectMon = mi.rcWork;
-
-		// pRect->left = std::min(pRect->left, rectMon.left);
-		// pRect->right = std::max(pRect->right, rectMon.right);
-		// pRect->top = std::min(pRect->top, rectMon.top);
-		// pRect->bottom = std::max(pRect->bottom, rectMon.bottom);
-	}
-
-	return TRUE;
-}
-
-void AFX_GLOBAL_DATA::OnSettingChange()
-{
-	m_bInSettingChange = TRUE;
-
-	m_sizeSmallIcon.cx = ::GetSystemMetrics(SM_CXSMICON);
-	m_sizeSmallIcon.cy = ::GetSystemMetrics(SM_CYSMICON);
-
-	m_rectVirtual.SetRectEmpty();
-
-	if (!EnumDisplayMonitors(NULL, NULL, InfoEnumProc, (LPARAM) &m_rectVirtual))
-	{
-		::SystemParametersInfo(SPI_GETWORKAREA, 0, &m_rectVirtual, 0);
-	}
-
-	// Get system menu animation type:
-	m_bMenuAnimation = FALSE;
-	m_bMenuFadeEffect = FALSE;
-
-	if (!bIsRemoteSession)
-	{
-		::SystemParametersInfo(SPI_GETMENUANIMATION, 0, &m_bMenuAnimation, 0);
-
-		if (m_bMenuAnimation)
-		{
-			::SystemParametersInfo(SPI_GETMENUFADE, 0, &m_bMenuFadeEffect, 0);
-		}
-	}
-
-	m_nShellAutohideBars = 0;
-	m_bRefreshAutohideBars = TRUE;
-
-	::SystemParametersInfo(SPI_GETMENUUNDERLINES, 0, &m_bSysUnderlineKeyboardShortcuts, 0);
-	m_bUnderlineKeyboardShortcuts = m_bSysUnderlineKeyboardShortcuts;
-
-	m_bInSettingChange = FALSE;
-}
-
-BOOL AFX_GLOBAL_DATA::SetMenuFont(LPLOGFONT lpLogFont, BOOL bHorz)
-{
-	ENSURE(lpLogFont != NULL);
-
-	UpdateTextMetrics();
-	return TRUE;
 }
 
 void AFX_GLOBAL_DATA::UpdateTextMetrics()

@@ -1010,21 +1010,17 @@ BEGIN_MESSAGE_MAP(CWnd, CCmdTarget)
 	// ON_WM_DRAWITEM()
 	// ON_WM_MEASUREITEM()
 	// ON_WM_CTLCOLOR()
-	ON_WM_COMPAREITEM()
-	ON_WM_ENTERIDLE()
-	ON_WM_DELETEITEM()
-	ON_WM_PARENTNOTIFY()
+//	ON_WM_DELETEITEM()
 	// ON_WM_SYSCOLORCHANGE()
 	// ON_WM_HELPINFO()
-	ON_WM_SETTINGCHANGE()
 	//}}AFX_MSG_MAP
 #ifndef _AFX_NO_OCC_SUPPORT
 	ON_WM_DESTROY()
 #endif
-	ON_MESSAGE(WM_ACTIVATETOPLEVEL, &CWnd::OnActivateTopLevel)
+//	ON_MESSAGE(WM_ACTIVATETOPLEVEL, &CWnd::OnActivateTopLevel)
 //	ON_MESSAGE(WM_DISPLAYCHANGE, &CWnd::OnDisplayChange)
 	// ON_REGISTERED_MESSAGE(CWnd::m_nMsgDragList, &CWnd::OnDragList)
-	ON_MESSAGE(WM_GETOBJECT, &CWnd::OnGetObject)
+//	ON_MESSAGE(WM_GETOBJECT, &CWnd::OnGetObject)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1916,22 +1912,6 @@ LRESULT CWnd::OnActivateTopLevel(WPARAM wParam, LPARAM)
 }
 
 BOOL _afxGotScrollLines;
-
-void CWnd::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
-{
-	UNUSED_ALWAYS(uFlags);
-	UNUSED_ALWAYS(lpszSection);
-
-	// force refresh of settings that we cache
-	_afxGotScrollLines = FALSE;
-
-	/*if (m_pCtrlCont != NULL)
-	{
-		m_pCtrlCont->BroadcastAmbientPropertyChange( DISPID_AMBIENT_LOCALEID );
-	}*/
-
-//	CWnd::OnDisplayChange(0, 0);    // to update system metrics, etc.
-}
 
 BOOL CWnd::OnHelpInfo(HELPINFO* /*pHelpInfo*/)
 {
