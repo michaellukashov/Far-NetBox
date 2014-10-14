@@ -1,4 +1,5 @@
 #include "FarPluginStrings.h"
+#include "TextsFileZilla.h"
 #include "TextsCore.h"
 #include "rtlconsts.h"
 #include "FarTexts.h"
@@ -404,5 +405,9 @@ const TFarPluginStrings FarPluginStrings[] =
   { SUnkOSError, MSG_SUnkOSError },
 
   { SDateEncodeError, MSG_SDateEncodeError },
+
+  { IDS_ERRORMSG_TIMEOUT, MSG_IDS_ERRORMSG_TIMEOUT },
+  { IDS_STATUSMSG_DISCONNECTED, MSG_IDS_STATUSMSG_DISCONNECTED },
+
   { 0, 0 }
 };
