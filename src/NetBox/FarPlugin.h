@@ -136,7 +136,7 @@ public:
   void FarWriteConsole(const UnicodeString & Str);
   void FarCopyToClipboard(const UnicodeString & Str);
   void FarCopyToClipboard(const TStrings * Strings);
-  intptr_t FarVersion();
+  intptr_t GetFarVersion() const;
   UnicodeString FormatFarVersion(intptr_t Version) const;
   UnicodeString GetTemporaryDir() const;
   intptr_t InputRecordToKey(const INPUT_RECORD * Rec);
@@ -170,7 +170,7 @@ protected:
   TFarDialog * FTopDialog;
   HANDLE FConsoleInput;
   HANDLE FConsoleOutput;
-  intptr_t FFarVersion;
+  mutable intptr_t FFarVersion;
   bool FTerminalScreenShowing;
   TCriticalSection FCriticalSection;
   uintptr_t FFarThreadId;

@@ -1684,7 +1684,7 @@ TFarEditorInfo * TCustomFarPlugin::EditorInfo()
   return Result;
 }
 
-intptr_t TCustomFarPlugin::FarVersion()
+intptr_t TCustomFarPlugin::GetFarVersion() const
 {
   if (FFarVersion == 0)
   {
