@@ -1599,7 +1599,7 @@ void TCustomFarPlugin::ResetCachedInfo()
   FValidFarSystemSettings = false;
 }
 
-intptr_t TCustomFarPlugin::FarSystemSettings()
+intptr_t TCustomFarPlugin::GetFarSystemSettings() const
 {
   if (!FValidFarSystemSettings)
   {

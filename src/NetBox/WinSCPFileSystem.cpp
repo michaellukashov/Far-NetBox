@@ -3155,7 +3155,7 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & AFileName,
   bool Alternative)
 {
   if (!RecursiveDeleteFile(AFileName,
-        (FLAGSET(WinSCPPlugin()->FarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
+        (FLAGSET(WinSCPPlugin()->GetFarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
   {
     throw Exception(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR).c_str(), AFileName.c_str()));
   }

@@ -130,7 +130,7 @@ public:
   intptr_t FarControl(uintptr_t Command, intptr_t Param1, intptr_t Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   intptr_t FarAdvControl(uintptr_t Command, void * Param = nullptr) const;
   intptr_t FarEditorControl(uintptr_t Command, void * Param);
-  intptr_t FarSystemSettings();
+  intptr_t GetFarSystemSettings() const;
   void Text(int X, int Y, int Color, const UnicodeString & Str);
   void FlushText();
   void FarWriteConsole(const UnicodeString & Str);
@@ -174,8 +174,8 @@ protected:
   bool FTerminalScreenShowing;
   TCriticalSection FCriticalSection;
   uintptr_t FFarThreadId;
-  bool FValidFarSystemSettings;
-  intptr_t FFarSystemSettings;
+  mutable bool FValidFarSystemSettings;
+  mutable intptr_t FFarSystemSettings;
   TPoint FNormalConsoleSize;
 
   virtual bool HandlesFunction(THandlesFunction Function);
