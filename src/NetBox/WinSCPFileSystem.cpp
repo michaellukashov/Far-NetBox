@@ -969,14 +969,14 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
     }
 
     if ((Key == 'Q') && (ControlState & PKF_SHIFT) &&
-          (ControlState & PKF_ALT))
+        (ControlState & PKF_ALT))
     {
       QueueShow(false);
       Handled = true;
     }
 
     if ((Key == 'B') && (ControlState & PKF_CONTROL) &&
-          (ControlState & PKF_ALT))
+        (ControlState & PKF_ALT))
     {
       ToggleSynchronizeBrowsing();
       Handled = true;
