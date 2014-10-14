@@ -49,8 +49,8 @@ public:
 
   const TSessionInfo & GetSessionInfo() const;
   bool SshFallbackCmd() const;
-  uint32_t MinPacketSize();
-  uint32_t MaxPacketSize();
+  uint32_t MinPacketSize() const;
+  uint32_t MaxPacketSize() const;
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
   void CollectUsage();
@@ -143,8 +143,8 @@ private:
   TDateTime FLastDataSent;
   Backend * FBackend;
   void * FBackendHandle;
-  const uint32_t * FMinPacketSize;
-  const uint32_t * FMaxPacketSize;
+  mutable const uint32_t * FMinPacketSize;
+  mutable const uint32_t * FMaxPacketSize;
   TNotifyEvent FOnReceive;
   bool FFrozen;
   bool FDataWhileFrozen;
