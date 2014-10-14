@@ -67,7 +67,7 @@ inline void operator_delete(void * p)
   {                                               \
     operator_delete(p);                           \
   }                                               \
-   void * operator new[](size_t size)             \
+  void * operator new[](size_t size)              \
   {                                               \
     return operator_new(size);                    \
   }                                               \
@@ -100,11 +100,11 @@ inline void operator_delete(void * p)
   { \
     return operator_new(size); \
   } \
-  void operator delete(void* p, const char * /*lpszFileName*/, int /*nLine*/) \
+  void operator delete(void * p, const char * /*lpszFileName*/, int /*nLine*/) \
   { \
     operator_delete(p); \
   } \
-  void operator delete[](void* p, const char * /*lpszFileName*/, int /*nLine*/) \
+  void operator delete[](void * p, const char * /*lpszFileName*/, int /*nLine*/) \
   { \
     operator_delete(p); \
   }
