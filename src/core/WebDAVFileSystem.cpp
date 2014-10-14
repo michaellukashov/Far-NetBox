@@ -12243,7 +12243,7 @@ void TWebDAVFileSystem::EnsureLocation()
   }
 }
 
-UnicodeString TWebDAVFileSystem::GetCurrDirectory()
+UnicodeString TWebDAVFileSystem::GetCurrDirectory() const
 {
   return FCurrentDirectory;
 }

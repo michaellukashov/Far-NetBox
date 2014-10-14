@@ -198,7 +198,7 @@ public:
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) = 0;
   virtual bool GetStoredCredentialsTried() const = 0;
   virtual UnicodeString GetUserName() const = 0;
-  virtual UnicodeString GetCurrDirectory() = 0;
+  virtual UnicodeString GetCurrDirectory() const = 0;
 
 protected:
   TTerminal * FTerminal;

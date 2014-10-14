@@ -772,7 +772,7 @@ void TSCPFileSystem::ExecCommand2(TFSCommand Cmd, intptr_t Params, ...)
   }
 }
 
-UnicodeString TSCPFileSystem::GetCurrDirectory()
+UnicodeString TSCPFileSystem::GetCurrDirectory() const
 {
   return FCurrentDirectory;
 }

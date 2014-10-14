@@ -2773,7 +2773,7 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
   return File.release();
 }
 
-UnicodeString TSFTPFileSystem::GetCurrDirectory()
+UnicodeString TSFTPFileSystem::GetCurrDirectory() const
 {
   return FCurrentDirectory;
 }

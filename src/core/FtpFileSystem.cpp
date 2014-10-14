@@ -2164,7 +2164,7 @@ UnicodeString TFTPFileSystem::GetUserName() const
   return FUserName;
 }
 
-UnicodeString TFTPFileSystem::GetCurrDirectory()
+UnicodeString TFTPFileSystem::GetCurrDirectory() const
 {
   return FCurrentDirectory;
 }
