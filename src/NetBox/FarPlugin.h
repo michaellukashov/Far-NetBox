@@ -120,7 +120,7 @@ public:
   bool InputBox(const UnicodeString & Title, const UnicodeString & Prompt,
     UnicodeString & Text, DWORD Flags, const UnicodeString & HistoryName = UnicodeString(),
     intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
-  UnicodeString GetMsg(intptr_t MsgId);
+  UnicodeString GetMsg(intptr_t MsgId) const;
   void SaveScreen(HANDLE & Screen);
   void RestoreScreen(HANDLE & Screen);
   bool CheckForEsc();
