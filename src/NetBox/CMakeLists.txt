@@ -530,7 +530,7 @@ add_library(expat STATIC
   ${LIBS_ROOT}/expat/lib/xmlrole.c
   ${LIBS_ROOT}/expat/lib/xmltok.c
   ${LIBS_ROOT}/expat/lib/xmltok_impl.c
-  ${LIBS_ROOT}/expat/lib/xmltok_ns.c
+#  ${LIBS_ROOT}/expat/lib/xmltok_ns.c
 )
 
 set(EXPAT_COMPILE_FLAGS "-D_CRTIMP= -D_LIB ${LIBEXPAT_DEFS}")
