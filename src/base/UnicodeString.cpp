@@ -56,6 +56,18 @@ intptr_t AnsiString::Pos(wchar_t Ch) const
   return static_cast<intptr_t>(Data.find(Str.c_str(), 0, 1)) + 1;
 }
 
+char AnsiString::operator [](intptr_t Idx) const
+{
+  ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
+  return Data[Idx-1];
+}
+
+char &AnsiString::operator [](intptr_t Idx)
+{
+  ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
+  return Data[Idx-1];
+}
+
 AnsiString & AnsiString::Insert(const char * Str, intptr_t Pos)
 {
   Data.insert(Pos - 1, Str);
@@ -281,6 +293,26 @@ UTF8String::UTF8String(const UnicodeString & Str)
   Init(Str.c_str(), Str.GetLength());
 }
 
+UTF8String::UTF8String(const wchar_t * Str)
+{
+  Init(Str, ::StrLength(Str));
+}
+
+UTF8String::UTF8String(const wchar_t * Str, intptr_t Size)
+{
+  Init(Str, Size);
+}
+
+UTF8String::UTF8String(const char * Str, intptr_t Size)
+{
+  Init(Str, Size);
+}
+
+UTF8String &UTF8String::Delete(intptr_t Index, intptr_t Count)
+{
+  Data.erase(Index - 1, Count); return *this;
+}
+
 intptr_t UTF8String::Pos(wchar_t Ch) const
 {
   return Data.find(Ch) + 1;
@@ -290,6 +322,11 @@ UTF8String & UTF8String::Insert(const wchar_t * Str, intptr_t Pos)
 {
   Data.insert(Pos - 1, Str);
   return *this;
+}
+
+UTF8String UTF8String::SubString(intptr_t Pos, intptr_t Len) const
+{
+  return UTF8String(Data.substr(Pos - 1, Len).c_str());
 }
 
 UTF8String & UTF8String::operator=(const UnicodeString & StrCopy)
@@ -430,6 +467,16 @@ UnicodeString & UnicodeString::Insert(intptr_t Pos, const wchar_t * Str, intptr_
   return *this;
 }
 
+intptr_t UnicodeString::Pos(wchar_t Ch) const
+{
+   return Data.find(Ch) + 1;
+}
+
+intptr_t UnicodeString::Pos(const UnicodeString & Str) const
+{
+   return Data.find(Str.Data) + 1;
+}
+
 bool UnicodeString::RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos) const
 {
   size_t Pos = Data.find_last_of(Ch, Data.size() - nStartPos);
@@ -441,6 +488,11 @@ UnicodeString UnicodeString::SubStr(intptr_t Pos, intptr_t Len) const
 {
   wstring_t Str(Data.substr(Pos - 1, Len));
   return UnicodeString(Str.c_str(), Str.size());
+}
+
+UnicodeString UnicodeString::SubString(intptr_t Pos, intptr_t Len) const
+{
+  return SubStr(Pos, Len);
 }
 
 bool UnicodeString::IsDelimiter(const UnicodeString & Chars, intptr_t Pos) const
@@ -557,6 +609,18 @@ UnicodeString & UnicodeString::operator +=(const wchar_t Ch)
 {
   Data += Ch;
   return *this;
+}
+
+wchar_t UnicodeString::operator [](intptr_t Idx) const
+{
+  ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
+  return Data[Idx-1];
+}
+
+wchar_t &UnicodeString::operator [](intptr_t Idx)
+{
+  ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
+  return Data[Idx-1];
 }
 
 void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const

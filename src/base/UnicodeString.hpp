@@ -17,9 +17,9 @@ public:
   UTF8String() {}
   explicit UTF8String(const UTF8String & rht);
   explicit UTF8String(const UnicodeString & Str);
-  UTF8String(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
-  UTF8String(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
-  UTF8String(const char * Str, intptr_t Size) { Init(Str, Size); }
+  UTF8String(const wchar_t * Str);
+  UTF8String(const wchar_t * Str, intptr_t Size);
+  UTF8String(const char * Str, intptr_t Size);
 
   ~UTF8String() {}
 
@@ -29,21 +29,16 @@ public:
   intptr_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
   void SetLength(intptr_t nLength) { Data.resize(nLength); }
-  UTF8String & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
-
+  UTF8String & Delete(intptr_t Index, intptr_t Count);
   UTF8String & Insert(const wchar_t * Str, intptr_t Pos);
-
-  UTF8String SubString(intptr_t Pos, intptr_t Len = -1) const
-  {
-    return UTF8String(Data.substr(Pos - 1, Len).c_str());
-  }
+  UTF8String SubString(intptr_t Pos, intptr_t Len = -1) const;
 
   intptr_t Pos(wchar_t Ch) const;
 
 public:
   UTF8String & operator=(const UnicodeString & StrCopy);
-  UTF8String & operator=(const UTF8String & strCopy);
-  UTF8String & operator=(const RawByteString & strCopy);
+  UTF8String & operator=(const UTF8String & StrCopy);
+  UTF8String & operator=(const RawByteString & StrCopy);
   UTF8String & operator=(const char * lpszData);
   UTF8String & operator=(const wchar_t * lpwszData);
   UTF8String & operator=(wchar_t chData);
@@ -123,14 +118,14 @@ public:
   UnicodeString & Insert(const wchar_t Ch, intptr_t Pos) { return Insert(Pos, &Ch, 1); }
   UnicodeString & Insert(const UnicodeString & Str, intptr_t Pos) { return Insert(Pos, Str); }
 
-  intptr_t Pos(wchar_t Ch) const { return Data.find(Ch) + 1; }
-  intptr_t Pos(const UnicodeString & Str) const { return Data.find(Str.Data) + 1; }
+  intptr_t Pos(wchar_t Ch) const;
+  intptr_t Pos(const UnicodeString & Str) const;
 
   intptr_t RPos(wchar_t Ch) const { return Data.find_last_of(Ch) + 1; }
   bool RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
 
   UnicodeString SubStr(intptr_t Pos, intptr_t Len = -1) const;
-  UnicodeString SubString(intptr_t Pos, intptr_t Len = -1) const { return SubStr(Pos, Len); }
+  UnicodeString SubString(intptr_t Pos, intptr_t Len = -1) const;
 
   bool IsDelimiter(const UnicodeString & Chars, intptr_t Pos) const;
   intptr_t LastDelimiter(const UnicodeString & Delimiters) const;
@@ -177,17 +172,8 @@ public:
   friend bool operator !=(const UnicodeString & lhs, const wchar_t * rhs);
   friend bool operator !=(const wchar_t * lhs, const UnicodeString & rhs);
 
-  wchar_t operator [](intptr_t Idx) const
-  {
-    ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-    return Data[Idx-1];
-  }
-
-  wchar_t & operator [](intptr_t Idx)
-  {
-    ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-    return Data[Idx-1];
-  }
+  wchar_t operator [](intptr_t Idx) const;
+  wchar_t & operator [](intptr_t Idx);
 
 private:
   void Init(const wchar_t * Str, intptr_t Length);
@@ -225,25 +211,14 @@ public:
   void SetLength(intptr_t nLength) { Data.resize(nLength); }
   AnsiString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
   AnsiString & Clear() { Data.clear(); return *this; }
-
   AnsiString & Insert(const char * Str, intptr_t Pos);
-
   AnsiString SubString(intptr_t Pos, intptr_t Len = -1) const;
 
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(const wchar_t * Str) const;
 
-  char operator [](intptr_t Idx) const
-  {
-    ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-    return Data[Idx-1];
-  }
-
-  char & operator [](intptr_t Idx)
-  {
-    ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-    return Data[Idx-1];
-  }
+  char operator [](intptr_t Idx) const;
+  char & operator [](intptr_t Idx);
 
   AnsiString & Append(const char * Str, intptr_t StrLen) { Data.append(Str, StrLen); return *this; }
   AnsiString & Append(const AnsiString & Str) { return Append(Str.c_str(), Str.GetLength()); }
@@ -319,9 +294,7 @@ public:
   void SetLength(intptr_t nLength) { Data.resize(nLength); }
   RawByteString & Clear() { SetLength(0); return *this; }
   RawByteString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
-
   RawByteString & Insert(const char * Str, intptr_t Pos);
-
   RawByteString SubString(intptr_t Pos, intptr_t Len = -1) const;
 
   intptr_t Pos(wchar_t Ch) const;
