@@ -19,7 +19,7 @@ inline void ThrowExtException() { throw ExtException((Exception *)nullptr, Unico
 //    dest[_countof(dest)-1] = '\0'; \
 //  }
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
-#define FMTLOAD(I, ...) ::FmtLoadStr(I, ##__VA_ARGS__)
+#define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
 //#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)

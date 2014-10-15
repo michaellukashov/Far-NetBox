@@ -155,9 +155,6 @@ set(NETBOX_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
   ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
-  ${SRC_ROOT}/resource/TextsCore1.rc
-  ${SRC_ROOT}/resource/TextsCore2.rc
-  ${SRC_ROOT}/resource/rtlconsts.rc
   ${SRC_ROOT}/resource/TextsFileZilla.rc
   ${SRC_ROOT}/NetBox/NetBox.rc
   ${SRC_ROOT}/NetBox/NetBox.def
@@ -530,7 +527,7 @@ add_library(expat STATIC
   ${LIBS_ROOT}/expat/lib/xmlrole.c
   ${LIBS_ROOT}/expat/lib/xmltok.c
   ${LIBS_ROOT}/expat/lib/xmltok_impl.c
-  ${LIBS_ROOT}/expat/lib/xmltok_ns.c
+#  ${LIBS_ROOT}/expat/lib/xmltok_ns.c
 )
 
 set(EXPAT_COMPILE_FLAGS "-D_CRTIMP= -D_LIB ${LIBEXPAT_DEFS}")
@@ -553,19 +550,19 @@ endif()
 
 add_library(zlib STATIC
   ${LIBS_ROOT}/zlib/src/adler32.c
-  ${LIBS_ROOT}/zlib/src/compress.c
+#  ${LIBS_ROOT}/zlib/src/compress.c
   ${LIBS_ROOT}/zlib/src/crc32.c
   ${LIBS_ROOT}/zlib/src/deflate.c
-  ${LIBS_ROOT}/zlib/src/gzclose.c
-  ${LIBS_ROOT}/zlib/src/gzlib.c
-  ${LIBS_ROOT}/zlib/src/gzread.c
-  ${LIBS_ROOT}/zlib/src/gzwrite.c
+#  ${LIBS_ROOT}/zlib/src/gzclose.c
+#  ${LIBS_ROOT}/zlib/src/gzlib.c
+#  ${LIBS_ROOT}/zlib/src/gzread.c
+#  ${LIBS_ROOT}/zlib/src/gzwrite.c
   ${LIBS_ROOT}/zlib/src/infback.c
   ${LIBS_ROOT}/zlib/src/inffast.c
   ${LIBS_ROOT}/zlib/src/inflate.c
   ${LIBS_ROOT}/zlib/src/inftrees.c
   ${LIBS_ROOT}/zlib/src/trees.c
-  ${LIBS_ROOT}/zlib/src/uncompr.c
+#  ${LIBS_ROOT}/zlib/src/uncompr.c
   ${LIBS_ROOT}/zlib/src/zutil.c
 )
 

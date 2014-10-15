@@ -543,6 +543,7 @@ class TGlobalFunctions : public TGlobalFunctionsIntf, public TObject
 {
 public:
   virtual HINSTANCE GetInstanceHandle() const;
+  virtual UnicodeString GetMsg(intptr_t Id) const;
   virtual UnicodeString GetCurrDirectory() const;
   virtual UnicodeString GetStrVersionNumber() const;
 };
