@@ -7,7 +7,6 @@
 #include <rdestl/pair.h>
 #include "stdafx.h"
 #include <CoreDefs.hpp>
-#include <FarTexts.h>
 
 #include <WinDef.h>
 
@@ -45,7 +44,6 @@ DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /* Sender */);
 
 void Abort();
 void Error(int ErrorID, intptr_t data);
-#define THROW_EXTEXEPTION(ErrorID, data) { throw ExtException((Sysutils::Exception *)nullptr, FMTLOAD(ErrorID, data)); }
 
 class TObject
 {
