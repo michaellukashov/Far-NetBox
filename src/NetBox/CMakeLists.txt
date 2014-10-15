@@ -155,9 +155,6 @@ set(NETBOX_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
   ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
-  ${SRC_ROOT}/resource/TextsCore1.rc
-  ${SRC_ROOT}/resource/TextsCore2.rc
-  ${SRC_ROOT}/resource/rtlconsts.rc
   ${SRC_ROOT}/resource/TextsFileZilla.rc
   ${SRC_ROOT}/NetBox/NetBox.rc
   ${SRC_ROOT}/NetBox/NetBox.def
