@@ -103,35 +103,9 @@ AnsiString & AnsiString::operator=(const wchar_t * lpwszData)
   return *this;
 }
 
-AnsiString AnsiString::operator +(const RawByteString & rhs) const
-{
-  AnsiString Result = AnsiString(Data.c_str(), Data.size());
-  Result += rhs.c_str();
-  return Result;
-}
-
-AnsiString AnsiString::operator +(const char * rhs) const
-{
-  AnsiString Result = AnsiString(Data.c_str(), Data.size());
-  Result += rhs;
-  return Result;
-}
-
-AnsiString & AnsiString::operator +=(const RawByteString & rhs)
-{
-  Data.append(reinterpret_cast<const char *>(rhs.c_str()), rhs.Length());
-  return *this;
-}
-
 AnsiString & AnsiString::operator +=(const AnsiString & rhs)
 {
   Data.append(rhs.c_str(), rhs.Length());
-  return *this;
-}
-
-AnsiString & AnsiString::operator +=(const UTF8String & rhs)
-{
-  Data.append(reinterpret_cast<const char *>(rhs.c_str()), rhs.Length());
   return *this;
 }
 
@@ -263,12 +237,6 @@ RawByteString RawByteString::operator +(const RawByteString & rhs) const
 }
 
 RawByteString & RawByteString::operator +=(const RawByteString & rhs)
-{
-  Data.append(reinterpret_cast<const uint8_t *>(rhs.c_str()), rhs.Length());
-  return *this;
-}
-
-RawByteString & RawByteString::operator +=(const UTF8String & rhs)
 {
   Data.append(reinterpret_cast<const uint8_t *>(rhs.c_str()), rhs.Length());
   return *this;

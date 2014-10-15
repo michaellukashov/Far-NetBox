@@ -260,15 +260,9 @@ public:
   AnsiString & operator=(wchar_t chData);
 
   AnsiString operator +(const UnicodeString & rhs) const;
-  AnsiString operator +(const RawByteString & rhs) const;
   AnsiString operator +(const AnsiString & rhs) const;
-  AnsiString operator +(const UTF8String & rhs) const;
-  AnsiString operator +(const char * rhs) const;
 
-  AnsiString & operator +=(const UnicodeString & rhs);
-  AnsiString & operator +=(const RawByteString & rhs);
   AnsiString & operator +=(const AnsiString & rhs);
-  AnsiString & operator +=(const UTF8String & rhs);
   AnsiString & operator +=(const char Ch);
   AnsiString & operator +=(const char * rhs);
 
@@ -344,17 +338,10 @@ public:
   RawByteString & operator=(const wchar_t * lpwszData);
   RawByteString & operator=(wchar_t chData);
 
-  RawByteString operator +(const UnicodeString & rhs) const;
   RawByteString operator +(const RawByteString & rhs) const;
-  RawByteString operator +(const AnsiString & rhs) const;
-  RawByteString operator +(const UTF8String & rhs) const;
 
-  RawByteString & operator +=(const UnicodeString & rhs);
   RawByteString & operator +=(const RawByteString & rhs);
-  RawByteString & operator +=(const AnsiString & rhs);
-  RawByteString & operator +=(const UTF8String & rhs);
   RawByteString & operator +=(const char Ch);
-  RawByteString & operator +=(const char * rhs);
 
   bool operator ==(const char * rhs) const
   { return strcmp(reinterpret_cast<const char *>(Data.c_str()), rhs) == 0; }
