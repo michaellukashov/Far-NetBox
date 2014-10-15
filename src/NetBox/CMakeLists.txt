@@ -553,19 +553,19 @@ endif()
 
 add_library(zlib STATIC
   ${LIBS_ROOT}/zlib/src/adler32.c
-  ${LIBS_ROOT}/zlib/src/compress.c
+#  ${LIBS_ROOT}/zlib/src/compress.c
   ${LIBS_ROOT}/zlib/src/crc32.c
   ${LIBS_ROOT}/zlib/src/deflate.c
-  ${LIBS_ROOT}/zlib/src/gzclose.c
-  ${LIBS_ROOT}/zlib/src/gzlib.c
-  ${LIBS_ROOT}/zlib/src/gzread.c
-  ${LIBS_ROOT}/zlib/src/gzwrite.c
+#  ${LIBS_ROOT}/zlib/src/gzclose.c
+#  ${LIBS_ROOT}/zlib/src/gzlib.c
+#  ${LIBS_ROOT}/zlib/src/gzread.c
+#  ${LIBS_ROOT}/zlib/src/gzwrite.c
   ${LIBS_ROOT}/zlib/src/infback.c
   ${LIBS_ROOT}/zlib/src/inffast.c
   ${LIBS_ROOT}/zlib/src/inflate.c
   ${LIBS_ROOT}/zlib/src/inftrees.c
   ${LIBS_ROOT}/zlib/src/trees.c
-  ${LIBS_ROOT}/zlib/src/uncompr.c
+#  ${LIBS_ROOT}/zlib/src/uncompr.c
   ${LIBS_ROOT}/zlib/src/zutil.c
 )
 
