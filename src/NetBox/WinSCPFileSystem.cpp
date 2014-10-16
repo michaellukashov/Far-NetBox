@@ -2849,6 +2849,8 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   TStrings * AFileList)
 {
   std::unique_ptr<TStrings> FileList(AFileList == nullptr ? new TStringList() : AFileList);
+  FileList->SetDuplicates(dupAccept);
+
   UnicodeString FileName;
   TFarPanelItem * PanelItem;
   TObject * Data = nullptr;
