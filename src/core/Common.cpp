@@ -1355,7 +1355,7 @@ static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
 
     uint32_t GTZI;
 
-    HINSTANCE Kernel32 = ::GetModuleHandle(kernel32.c_str());
+    HINSTANCE Kernel32 = ::GetModuleHandle(L"kernel32.dll");
     typedef BOOL (WINAPI * TGetTimeZoneInformationForYear)(USHORT wYear, PDYNAMIC_TIME_ZONE_INFORMATION pdtzi, LPTIME_ZONE_INFORMATION ptzi);
     TGetTimeZoneInformationForYear GetTimeZoneInformationForYear =
       (TGetTimeZoneInformationForYear)::GetProcAddress(Kernel32, "GetTimeZoneInformationForYear");
@@ -2411,7 +2411,7 @@ UnicodeString DefaultEncodingName()
 bool GetWindowsProductType(DWORD & Type)
 {
   bool Result;
-  HINSTANCE Kernel32 = ::GetModuleHandle(kernel32.c_str());
+  HINSTANCE Kernel32 = ::GetModuleHandle(L"kernel32.dll");
   typedef BOOL (WINAPI * TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
   TGetProductInfo GetProductInfo =
       (TGetProductInfo)::GetProcAddress(Kernel32, "GetProductInfo");
