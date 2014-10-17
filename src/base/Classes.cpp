@@ -358,7 +358,6 @@ const intptr_t MSecsPerDay = SecsPerDay * MSecsPerSec;
 // Days between 1/1/0001 and 12/31/1899
 const intptr_t DateDelta = 693594;
 const intptr_t UnixDateDelta = 25569;
-const UnicodeString kernel32 = L"kernel32";
 static const int MemoryDelta = 0x2000;
 
 TStrings::TStrings() :

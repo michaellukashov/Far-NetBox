@@ -35,7 +35,6 @@ extern const intptr_t MSecsPerDay;
 extern const intptr_t MSecsPerSec;
 extern const intptr_t DateDelta;
 extern const intptr_t UnixDateDelta;
-extern const UnicodeString kernel32;
 
 class TObject;
 DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
