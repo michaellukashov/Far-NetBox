@@ -1195,16 +1195,16 @@ UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, wchar_t Separa
 
 UnicodeString HexToStr(const UnicodeString & Hex)
 {
-  static std::wstring Digits = L"0123456789ABCDEF";
-  std::wstring Result;
+  UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Result;
   intptr_t L = Hex.Length() - 1;
   if (L % 2 == 0)
   {
     for (intptr_t Index = 1; Index <= Hex.Length(); Index += 2)
     {
-      uintptr_t P1 = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[Index])));
-      uintptr_t P2 = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[Index + 1])));
-      if ((P1 == std::wstring::npos) || (P2 == std::wstring::npos))
+      intptr_t P1 = Digits.FindFirstOf(static_cast<wchar_t>(toupper(Hex[Index])));
+      intptr_t P2 = Digits.FindFirstOf(static_cast<wchar_t>(toupper(Hex[Index + 1])));
+      if ((P1 == NPOS) || (P2 == NPOS))
       {
         Result = L"";
         break;
@@ -1215,18 +1215,18 @@ UnicodeString HexToStr(const UnicodeString & Hex)
       }
     }
   }
-  return UnicodeString(Result.c_str());
+  return Result;
 }
 
 uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars)
 {
-  static std::wstring Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = L"0123456789ABCDEF";
   uintptr_t Result = 0;
   intptr_t Index = 1;
   while (Index <= Hex.Length())
   {
-    size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[Index])));
-    if (A == std::wstring::npos)
+    intptr_t A = Digits.FindFirstOf(static_cast<wchar_t>(toupper(Hex[Index])));
+    if (A == NPOS)
     {
       if ((MinChars == NPOS) || (Index <= static_cast<intptr_t>(MinChars)))
       {
