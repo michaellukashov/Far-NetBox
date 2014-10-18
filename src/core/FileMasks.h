@@ -13,7 +13,7 @@ public:
   intptr_t ErrorLen;
 };
 
-extern const wchar_t IncludeExcludeFileMasksDelimiter;
+#define INCLUDE_EXCLUDE_FILE_MASKS_DELIMITER L'|'
 #define MASK_INDEX(DIRECTORY, INCLUDE) ((DIRECTORY ? 2 : 0) + (INCLUDE ? 0 : 1))
 
 class TFileMasks : public TObject
