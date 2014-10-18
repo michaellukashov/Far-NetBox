@@ -219,8 +219,6 @@ void TCopyParamRule::SetData(const TCopyParamRuleData & Value)
   FData = Value;
 }
 
-UnicodeString TCopyParamList::FInvalidChars(L"/\\[]");
-
 TCopyParamList::TCopyParamList() :
   FRules(new TList()),
   FCopyParams(new TList()),
@@ -253,9 +251,9 @@ void TCopyParamList::Modify()
 
 void TCopyParamList::ValidateName(const UnicodeString & Name)
 {
-  if (Name.LastDelimiter(FInvalidChars) > 0)
+  if (Name.LastDelimiter(CONST_INVALID_CHARS) > 0)
   {
-    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
+    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), CONST_INVALID_CHARS));
   }
 }
 
