@@ -70,6 +70,6 @@ private:
 void ValidateMaskEdit(TFarComboBox * Edit);
 void ValidateMaskEdit(TFarEdit * Edit);
 
-extern const UnicodeString PageantTool;
-extern const UnicodeString PuttygenTool;
+#define PageantTool L"pageant.exe"
+#define PuttygenTool L"puttygen.exe"
 
