@@ -114,79 +114,79 @@ public:
     bool Result = (FState != Opened);
     if (Result)
     {
-      if (FLog->FLogging && (FState != Cancelled))
-      {
-        const wchar_t * Name = ActionName();
-        UnicodeString Attrs;
-        if (FRecursive)
-        {
-          Attrs = L" recursive=\"true\"";
-        }
-        FLog->AddIndented(FORMAT(L"<%s%s>", Name,  Attrs.c_str()));
-        for (intptr_t Index = 0; Index < FNames->GetCount(); ++Index)
-        {
-          UnicodeString Value = FValues->GetString(Index);
-          if (Value.IsEmpty())
-          {
-            FLog->AddIndented(FORMAT(L"  <%s />", FNames->GetString(Index).c_str()));
-          }
-          else
-          {
-            FLog->AddIndented(FORMAT(L"  <%s value=\"%s\" />",
-              FNames->GetString(Index).c_str(), XmlAttributeEscape(Value).c_str()));
-          }
-        }
-        if (FFileList != nullptr)
-        {
-          FLog->AddIndented(L"  <files>");
-          for (intptr_t Index = 0; Index < FFileList->GetCount(); ++Index)
-          {
-            TRemoteFile * File = FFileList->GetFile(Index);
+//      if (FLog->FLogging && (FState != Cancelled))
+//      {
+//        const wchar_t * Name = ActionName();
+//        UnicodeString Attrs;
+//        if (FRecursive)
+//        {
+//          Attrs = L" recursive=\"true\"";
+//        }
+//        FLog->AddIndented(FORMAT(L"<%s%s>", Name,  Attrs.c_str()));
+//        for (intptr_t Index = 0; Index < FNames->GetCount(); ++Index)
+//        {
+//          UnicodeString Value = FValues->GetString(Index);
+//          if (Value.IsEmpty())
+//          {
+//            FLog->AddIndented(FORMAT(L"  <%s />", FNames->GetString(Index).c_str()));
+//          }
+//          else
+//          {
+//            FLog->AddIndented(FORMAT(L"  <%s value=\"%s\" />",
+//              FNames->GetString(Index).c_str(), XmlAttributeEscape(Value).c_str()));
+//          }
+//        }
+//        if (FFileList != nullptr)
+//        {
+//          FLog->AddIndented(L"  <files>");
+//          for (intptr_t Index = 0; Index < FFileList->GetCount(); ++Index)
+//          {
+//            TRemoteFile * File = FFileList->GetFile(Index);
 
-            FLog->AddIndented(L"    <file>");
-            FLog->AddIndented(FORMAT(L"      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName()).c_str()));
-            FLog->AddIndented(FORMAT(L"      <type value=\"%s\" />", XmlAttributeEscape(File->GetType()).c_str()));
-            if (!File->GetIsDirectory())
-            {
-              FLog->AddIndented(FORMAT(L"      <size value=\"%s\" />", ::Int64ToStr(File->GetSize()).c_str()));
-            }
-            FLog->AddIndented(FORMAT(L"      <modification value=\"%s\" />", StandardTimestamp(File->GetModification()).c_str()));
-            FLog->AddIndented(FORMAT(L"      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
-            FLog->AddIndented(L"    </file>");
-          }
-          FLog->AddIndented(L"  </files>");
-        }
-        if (FFile != nullptr)
-        {
-          FLog->AddIndented(L"  <file>");
-          FLog->AddIndented(FORMAT(L"    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
-          if (!FFile->GetIsDirectory())
-          {
-            FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", ::Int64ToStr(FFile->GetSize()).c_str()));
-          }
-          FLog->AddIndented(FORMAT(L"    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification()).c_str()));
-          FLog->AddIndented(FORMAT(L"    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));
-          FLog->AddIndented(L"  </file>");
-        }
-        if (FState == RolledBack)
-        {
-          if (FErrorMessages != nullptr)
-          {
-            FLog->AddIndented(L"  <result success=\"false\">");
-            FLog->AddMessages(L"    ", FErrorMessages);
-            FLog->AddIndented(L"  </result>");
-          }
-          else
-          {
-            FLog->AddIndented(L"  <result success=\"false\" />");
-          }
-        }
-        else
-        {
-          FLog->AddIndented(L"  <result success=\"true\" />");
-        }
-        FLog->AddIndented(FORMAT(L"</%s>", Name));
-      }
+//            FLog->AddIndented(L"    <file>");
+//            FLog->AddIndented(FORMAT(L"      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName()).c_str()));
+//            FLog->AddIndented(FORMAT(L"      <type value=\"%s\" />", XmlAttributeEscape(File->GetType()).c_str()));
+//            if (!File->GetIsDirectory())
+//            {
+//              FLog->AddIndented(FORMAT(L"      <size value=\"%s\" />", ::Int64ToStr(File->GetSize()).c_str()));
+//            }
+//            FLog->AddIndented(FORMAT(L"      <modification value=\"%s\" />", StandardTimestamp(File->GetModification()).c_str()));
+//            FLog->AddIndented(FORMAT(L"      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
+//            FLog->AddIndented(L"    </file>");
+//          }
+//          FLog->AddIndented(L"  </files>");
+//        }
+//        if (FFile != nullptr)
+//        {
+//          FLog->AddIndented(L"  <file>");
+//          FLog->AddIndented(FORMAT(L"    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
+//          if (!FFile->GetIsDirectory())
+//          {
+//            FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", ::Int64ToStr(FFile->GetSize()).c_str()));
+//          }
+//          FLog->AddIndented(FORMAT(L"    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification()).c_str()));
+//          FLog->AddIndented(FORMAT(L"    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));
+//          FLog->AddIndented(L"  </file>");
+//        }
+//        if (FState == RolledBack)
+//        {
+//          if (FErrorMessages != nullptr)
+//          {
+//            FLog->AddIndented(L"  <result success=\"false\">");
+//            FLog->AddMessages(L"    ", FErrorMessages);
+//            FLog->AddIndented(L"  </result>");
+//          }
+//          else
+//          {
+//            FLog->AddIndented(L"  <result success=\"false\" />");
+//          }
+//        }
+//        else
+//        {
+//          FLog->AddIndented(L"  <result success=\"true\" />");
+//        }
+//        FLog->AddIndented(FORMAT(L"</%s>", Name));
+//      }
       delete this;
     }
     return Result;
