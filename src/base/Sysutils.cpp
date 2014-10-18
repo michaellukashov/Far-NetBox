@@ -262,7 +262,7 @@ UnicodeString LowerCase(const UnicodeString & Str)
   return Result;
 }
 
-inline wchar_t UpCase(const wchar_t Ch)
+wchar_t UpCase(const wchar_t Ch)
 {
   return static_cast<wchar_t>(::toupper(Ch));
 }
@@ -1202,8 +1202,8 @@ UnicodeString HexToStr(const UnicodeString & Hex)
   {
     for (intptr_t Index = 1; Index <= Hex.Length(); Index += 2)
     {
-      intptr_t P1 = Digits.FindFirstOf(static_cast<wchar_t>(toupper(Hex[Index])));
-      intptr_t P2 = Digits.FindFirstOf(static_cast<wchar_t>(toupper(Hex[Index + 1])));
+      intptr_t P1 = Digits.FindFirstOf(::UpCase(Hex[Index]));
+      intptr_t P2 = Digits.FindFirstOf(::UpCase(Hex[Index + 1]));
       if ((P1 == NPOS) || (P2 == NPOS))
       {
         Result = L"";
@@ -1225,7 +1225,7 @@ uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars)
   intptr_t Index = 1;
   while (Index <= Hex.Length())
   {
-    intptr_t A = Digits.FindFirstOf(static_cast<wchar_t>(toupper(Hex[Index])));
+    intptr_t A = Digits.FindFirstOf(UpCase(Hex[Index]));
     if (A == NPOS)
     {
       if ((MinChars == NPOS) || (Index <= static_cast<intptr_t>(MinChars)))
