@@ -1126,7 +1126,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
 void TSessionLog::AddSeparator()
 {
-  Add(llMessage, L"--------------------------------------------------------------------------");
+//  Add(llMessage, L"--------------------------------------------------------------------------");
 }
 
 intptr_t TSessionLog::GetBottomIndex() const
@@ -1308,9 +1308,9 @@ void TActionLog::ReflectSettings()
   if (ALogging && !FLogging)
   {
     FLogging = true;
-    Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-    Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
-      XmlAttributeEscape(FSessionData->GetSessionName()).c_str(), StandardTimestamp().c_str()));
+//    Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+//    Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
+//      XmlAttributeEscape(FSessionData->GetSessionName()).c_str(), StandardTimestamp().c_str()));
   }
   else if (!ALogging && FLogging)
   {
@@ -1321,7 +1321,7 @@ void TActionLog::ReflectSettings()
     // do not try to close the file, if it has not been opened, to avoid recursion
     if (FFile != nullptr)
     {
-      Add(L"</session>");
+//      Add(L"</session>");
     }
     CloseLogFile();
     FLogging = false;
