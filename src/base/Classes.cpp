@@ -442,28 +442,31 @@ UnicodeString TStrings::GetDelimitedText() const
   return Result;
 }
 
-template <class ContainerT>
-void tokenize(const std::wstring & str, ContainerT & tokens,
-  const std::wstring & delimiters = L" ", const bool trimEmpty = false)
+static void tokenize(const UnicodeString & str, rde::vector<UnicodeString> & tokens,
+  const UnicodeString & delimiters = L" ", const bool trimEmpty = false)
 {
-  std::string::size_type pos, lastPos = 0;
+  size_t pos, lastPos = 0;
   while (true)
   {
-    pos = str.find_first_of(delimiters, lastPos);
-    if (pos == std::string::npos)
+    pos = str.FindFirstOf(delimiters.c_str(), lastPos);
+    if (pos == NPOS)
     {
-       pos = str.length();
+       pos = str.Length();
 
        if (pos != lastPos || !trimEmpty)
-         tokens.push_back(typename ContainerT::value_type(str.data()+lastPos,
-            (typename ContainerT::value_type::size_type)pos-lastPos ));
+       {
+         tokens.push_back(
+          UnicodeString(str.data() + lastPos, pos - lastPos));
+       }
        break;
     }
     else
     {
       if (pos != lastPos || !trimEmpty)
-        tokens.push_back(typename ContainerT::value_type(str.data() + lastPos,
-          (typename ContainerT::value_type::size_type)pos-lastPos ));
+      {
+        tokens.push_back(
+          UnicodeString(str.data() + lastPos, pos - lastPos));
+      }
     }
 
     lastPos = pos + 1;
@@ -478,11 +481,9 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
     EndUpdate();
   };
   Clear();
-  rde::vector<std::wstring> Lines;
-  std::wstring delim = std::wstring(1, GetDelimiter());
-  delim.append(1, L'\n');
-  std::wstring StrValue = Value.c_str();
-  tokenize(StrValue, Lines, delim, true);
+  rde::vector<UnicodeString> Lines;
+  UnicodeString delim(GetDelimiter() + L'\n');
+  tokenize(Value, Lines, delim, true);
   for (size_t Index = 0; Index < Lines.size(); Index++)
   {
     Add(Lines[Index].c_str());
