@@ -2282,7 +2282,8 @@ UnicodeString TSessionData::GetSessionName() const
     Result = GetName();
     if (GetHidden())
     {
-      Result = Result.SubString(TNamedObjectList::HiddenPrefix.Length() + 1, Result.Length() - TNamedObjectList::HiddenPrefix.Length());
+      UnicodeString HiddenPrefix(CONST_HIDDEN_PREFIX);
+      Result = Result.SubString(HiddenPrefix.Length() + 1, Result.Length() - HiddenPrefix.Length());
     }
   }
   else

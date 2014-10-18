@@ -4,6 +4,8 @@
 #include <system.hpp>
 #include <contnrs.hpp>
 
+#define CONST_HIDDEN_PREFIX L"_!_"
+
 class TNamedObjectList;
 class TNamedObject : public TPersistent
 {
@@ -30,7 +32,6 @@ public:
   intptr_t GetCount() const;
   void SetCount(intptr_t Value);
 public:
-  static const UnicodeString HiddenPrefix;
   static bool IsHidden(TNamedObject * Object);
 
   bool AutoSort;

@@ -10,7 +10,7 @@
 
 TBookmarks::TBookmarks() : TObject()
 {
-  FSharedKey = TNamedObjectList::HiddenPrefix + L"shared";
+  FSharedKey = UnicodeString(CONST_HIDDEN_PREFIX) + L"shared";
   FBookmarkLists = new TStringList();
   FBookmarkLists->SetSorted(true);
   FBookmarkLists->SetCaseSensitive(false);
