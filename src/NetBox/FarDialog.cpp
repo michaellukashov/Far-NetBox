@@ -1825,11 +1825,12 @@ LONG_PTR TFarButton::ItemProc(int Msg, LONG_PTR Param)
 
 bool TFarButton::HotKey(char HotKey)
 {
-  intptr_t P = GetCaption().Pos(L'&');
+  UnicodeString Caption = GetCaption();
+  intptr_t P = Caption.Pos(L'&');
   bool Result =
     GetVisible() && GetEnabled() &&
-    (P > 0) && (P < GetCaption().Length()) &&
-    (GetCaption()[P + 1] == HotKey);
+    (P > 0) && (P < Caption.Length()) &&
+    (Caption[P + 1] == HotKey);
   if (Result)
   {
     bool Close = (GetResult() != 0);
