@@ -32,8 +32,8 @@ extern const std::string Bom;
 extern const wchar_t TokenPrefix;
 extern const wchar_t NoReplacement;
 extern const wchar_t TokenReplacement;
-extern const UnicodeString LocalInvalidChars;
-extern const UnicodeString PasswordMask;
+#define LOCAL_INVALID_CHARS L"/\\:*?\"<>|"
+#define PASSWORD_MASK L"***"
 
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B);
 UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);

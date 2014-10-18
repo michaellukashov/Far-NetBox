@@ -22,7 +22,6 @@
 
 class Exception;
 
-extern const UnicodeString sLineBreak;
 extern const intptr_t MonthsPerYear;
 extern const intptr_t DaysPerWeek;
 extern const intptr_t MinsPerHour;

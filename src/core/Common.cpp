@@ -66,8 +66,6 @@ const std::string Bom = "\xEF\xBB\xBF";
 const wchar_t TokenPrefix = L'%';
 const wchar_t NoReplacement = wchar_t(0);
 const wchar_t TokenReplacement = wchar_t(1);
-const UnicodeString LocalInvalidChars = L"/\\:*?\"<>|";
-const UnicodeString PasswordMask = L"***";
 
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
@@ -480,7 +478,7 @@ static wchar_t * ReplaceChar(
 
 UnicodeString ValidLocalFileName(const UnicodeString & AFileName)
 {
-  return ValidLocalFileName(AFileName, L'_', L"", LocalInvalidChars);
+  return ValidLocalFileName(AFileName, L'_', L"", LOCAL_INVALID_CHARS);
 }
 
 UnicodeString ValidLocalFileName(

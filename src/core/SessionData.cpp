@@ -1561,7 +1561,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
         (*MaskedUrl) += RawUserName;
         if (!UserInfo.IsEmpty())
         {
-          (*MaskedUrl) += L":" + PasswordMask;
+          (*MaskedUrl) += L":" + UnicodeString(PASSWORD_MASK);
         }
         if (!RawUserName.IsEmpty() || !UserInfo.IsEmpty())
         {
