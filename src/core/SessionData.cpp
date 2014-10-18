@@ -3919,7 +3919,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
   TDateTime N = Now();
   for (intptr_t Index = 1; Index < Result.Length(); ++Index)
   {
-    if (Result[Index] == L'&')
+    if ((Result[Index] == L'&') && (Index < Result.Length()))
     {
       UnicodeString Replacement;
       // keep consistent with TFileCustomCommand::PatternReplacement
