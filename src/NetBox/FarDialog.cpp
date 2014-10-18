@@ -120,7 +120,7 @@ TRect TFarDialog::GetClientRect() const
   return R;
 }
 
-TPoint TFarDialog::GetClientSize()
+TPoint TFarDialog::GetClientSize() const
 {
   TPoint S;
   if (FBorderBox)
@@ -176,12 +176,12 @@ void TFarDialog::SetCentered(bool Value)
   }
 }
 
-bool TFarDialog::GetCentered()
+bool TFarDialog::GetCentered() const
 {
   return (GetBounds().Left < 0) && (GetBounds().Top < 0);
 }
 
-TPoint TFarDialog::GetSize()
+TPoint TFarDialog::GetSize() const
 {
   if (GetCentered())
   {
@@ -214,7 +214,7 @@ void TFarDialog::SetWidth(intptr_t Value)
   SetSize(TPoint((int)Value, (int)GetHeight()));
 }
 
-intptr_t TFarDialog::GetWidth()
+intptr_t TFarDialog::GetWidth() const
 {
   return GetSize().x;
 }
@@ -224,7 +224,7 @@ void TFarDialog::SetHeight(intptr_t Value)
   SetSize(TPoint((int)GetWidth(), (int)Value));
 }
 
-intptr_t TFarDialog::GetHeight()
+intptr_t TFarDialog::GetHeight() const
 {
   return GetSize().y;
 }
@@ -237,7 +237,7 @@ void TFarDialog::SetCaption(const UnicodeString & Value)
   }
 }
 
-UnicodeString TFarDialog::GetCaption()
+UnicodeString TFarDialog::GetCaption() const
 {
   return FBorderBox->GetCaption();
 }

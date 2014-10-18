@@ -49,16 +49,16 @@ public:
   void SetHelpTopic(const UnicodeString & Value);
   DWORD GetFlags() const { return FFlags; }
   void SetFlags(DWORD Value);
-  bool GetCentered();
+  bool GetCentered() const;
   void SetCentered(bool Value);
-  TPoint GetSize();
+  TPoint GetSize() const;
   void SetSize(TPoint Value);
-  TPoint GetClientSize();
-  intptr_t GetWidth();
+  TPoint GetClientSize() const;
+  intptr_t GetWidth() const;
   void SetWidth(intptr_t Value);
-  intptr_t GetHeight();
+  intptr_t GetHeight() const;
   void SetHeight(intptr_t Value);
-  UnicodeString GetCaption();
+  UnicodeString GetCaption() const;
   void SetCaption(const UnicodeString &  Value);
   HANDLE GetHandle() const { return FHandle; }
   TFarButton * GetDefaultButton() const { return FDefaultButton; }
