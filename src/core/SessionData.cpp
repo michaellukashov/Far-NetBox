@@ -3915,11 +3915,11 @@ UnicodeString GetCodePageAsString(uintptr_t CodePage)
 
 UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData)
 {
-  UnicodeString ANewFileName = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
+  UnicodeString Result = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
   TDateTime N = Now();
-  for (intptr_t Index = 1; Index < ANewFileName.Length(); ++Index)
+  for (intptr_t Index = 1; Index < Result.Length(); ++Index)
   {
-    if (ANewFileName[Index] == L'&')
+    if (Result[Index] == L'&')
     {
       UnicodeString Replacement;
       // keep consistent with TFileCustomCommand::PatternReplacement
@@ -3927,7 +3927,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
       TDateTime DateTime = N;
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, NN, S, MS);
-      switch (::LowCase(ANewFileName[Index + 1]))
+      switch (::LowCase(Result[Index + 1]))
       {
         case L'y':
           // Replacement = FormatDateTime(L"yyyy", N);
@@ -3962,15 +3962,15 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
           break;
 
         default:
-          Replacement = UnicodeString(L"&") + ANewFileName[Index + 1];
+          Replacement = UnicodeString(L"&") + Result[Index + 1];
           break;
       }
-      ANewFileName.Delete(Index, 2);
-      ANewFileName.Insert(Replacement, Index);
+      Result.Delete(Index, 2);
+      Result.Insert(Replacement, Index);
       Index += Replacement.Length() - 1;
     }
   }
-  return ANewFileName;
+  return Result;
 }
 
 bool IsSshProtocol(TFSProtocol FSProtocol)
