@@ -1224,7 +1224,7 @@ int TSHFileInfo::GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmall
 
   if (bSmallIcon)
   {
-    SHGetFileInfo(
+    ::SHGetFileInfo(
       static_cast<LPCTSTR>(StrFileName.c_str()),
       FILE_ATTRIBUTE_NORMAL,
       &sfi,
@@ -1233,7 +1233,7 @@ int TSHFileInfo::GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmall
   }
   else
   {
-    SHGetFileInfo(
+    ::SHGetFileInfo(
       static_cast<LPCTSTR>(StrFileName.c_str()),
       FILE_ATTRIBUTE_NORMAL,
       &sfi,
@@ -1248,7 +1248,7 @@ int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon)
   SHFILEINFO sfi;
   if (bSmallIcon)
   {
-    SHGetFileInfo(
+    ::SHGetFileInfo(
       static_cast<LPCTSTR>(L"Doesn't matter"),
       FILE_ATTRIBUTE_DIRECTORY,
       &sfi,
@@ -1257,7 +1257,7 @@ int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon)
   }
   else
   {
-    SHGetFileInfo(
+    ::SHGetFileInfo(
       static_cast<LPCTSTR>(L"Doesn't matter"),
       FILE_ATTRIBUTE_DIRECTORY,
       &sfi,
@@ -1271,7 +1271,7 @@ UnicodeString TSHFileInfo::GetFileType(const UnicodeString & StrFileName)
 {
   SHFILEINFO sfi;
 
-  SHGetFileInfo(
+  ::SHGetFileInfo(
     reinterpret_cast<LPCTSTR>(StrFileName.c_str()),
     FILE_ATTRIBUTE_NORMAL,
     &sfi,

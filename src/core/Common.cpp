@@ -419,7 +419,7 @@ UnicodeString GetShellFolderPath(int CSIdl)
 {
   UnicodeString Result;
   wchar_t Path[2 * MAX_PATH + 10] = L"\0";
-  if (SUCCEEDED(SHGetFolderPath(nullptr, CSIdl, nullptr, SHGFP_TYPE_CURRENT, Path)))
+  if (SUCCEEDED(::SHGetFolderPath(nullptr, CSIdl, nullptr, SHGFP_TYPE_CURRENT, Path)))
   {
     Result = Path;
   }
