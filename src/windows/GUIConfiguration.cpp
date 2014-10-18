@@ -17,7 +17,7 @@ const intptr_t ccCopyResults = ccUser << 2;
 const intptr_t ccSet = 0x80000000;
 
 static const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
-static const UnicodeString AdditionaLanguagePrefix(L"XX");
+#define ADDITIONAL_LANGUAGE_PREFIX L"XX"
 
 TGUICopyParamType::TGUICopyParamType()
   : TCopyParamType()
@@ -786,7 +786,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     }
     else
     {
-      LocaleName = AdditionaLanguagePrefix +
+      LocaleName = UnicodeString(ADDITIONAL_LANGUAGE_PREFIX) +
         static_cast<wchar_t>(ALocale & ~AdditionaLanguageMask);
     }
 
@@ -993,7 +993,7 @@ TStrings * TGUIConfiguration::GetLocales()
     {
       if ((Exts->GetObj(Index) == nullptr) &&
           (Exts->GetString(Index).Length() == 3) &&
-          ::SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
+          ::SameText(Exts->GetString(Index).SubString(1, 2), ADDITIONAL_LANGUAGE_PREFIX))
       {
         UnicodeString LangName = GetFileFileInfoString(L"LangName",
           ::ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));

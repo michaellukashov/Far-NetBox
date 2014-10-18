@@ -12000,7 +12000,7 @@ private:
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
     [&]() { OPERATION })
 
-static const UnicodeString CONST_WEBDAV_PROTOCOL_BASE_NAME = L"WebDAV";
+#define CONST_WEBDAV_PROTOCOL_BASE_NAME L"WebDAV"
 
 #define StrToNeon(S) UTF8String(S).c_str()
 #define StrFromNeon(S) UnicodeString(UTF8String(S))
