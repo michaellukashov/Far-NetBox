@@ -99,8 +99,8 @@ extern const wchar_t ProxyMethodList[][10];
 extern const TCipher DefaultCipherList[CIPHER_COUNT];
 extern const TKex DefaultKexList[KEX_COUNT];
 extern const intptr_t DefaultSendBuf;
-extern const UnicodeString AnonymousUserName;
-extern const UnicodeString AnonymousPassword;
+#define ANONYMOUS_USER_NAME L"anonymous"
+#define ANONYMOUS_PASSWORD L""
 extern const intptr_t SshPortNumber;
 extern const intptr_t FtpPortNumber;
 extern const intptr_t FtpsImplicitPortNumber;

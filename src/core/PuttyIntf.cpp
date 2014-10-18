@@ -22,10 +22,10 @@ extern "C"
 {
 #include <winstuff.h>
 }
-const UnicodeString OriginalPuttyRegistryStorageKey(_T(PUTTY_REG_POS));
-const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
-const UnicodeString OriginalPuttyExecutable(L"putty.exe");
-const UnicodeString KittyExecutable(L"kitty.exe");
+//const UnicodeString OriginalPuttyRegistryStorageKey(_T(PUTTY_REG_POS));
+//const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
+//const UnicodeString OriginalPuttyExecutable(L"putty.exe");
+//const UnicodeString KittyExecutable(L"kitty.exe");
 
 void PuttyInitialize()
 {
@@ -373,6 +373,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   USEDPARAM(Key);
 
   UnicodeString RegKey = SubKey;
+  UnicodeString OriginalPuttyRegistryStorageKey(_T(PUTTY_REG_POS));
   intptr_t PuttyKeyLen = OriginalPuttyRegistryStorageKey.Length();
   assert(RegKey.SubString(1, PuttyKeyLen) == OriginalPuttyRegistryStorageKey);
   RegKey = RegKey.SubString(PuttyKeyLen + 1, RegKey.Length() - PuttyKeyLen);

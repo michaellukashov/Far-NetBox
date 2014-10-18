@@ -42,8 +42,6 @@ const intptr_t HTTPSPortNumber = 443;
 const intptr_t TelnetPortNumber = 23;
 const intptr_t DefaultSendBuf = 256 * 1024;
 const intptr_t ProxyPortNumber = 80;
-const UnicodeString AnonymousUserName(L"anonymous");
-const UnicodeString AnonymousPassword(L"");
 const UnicodeString PuttySshProtocol(L"ssh");
 const UnicodeString PuttyTelnetProtocol(L"telnet");
 const UnicodeString SftpProtocolStr(L"sftp");
@@ -88,8 +86,8 @@ void TSessionData::Default()
 {
   SetHostName(L"");
   SetPortNumber(SshPortNumber);
-  SetUserName(AnonymousUserName);
-  SetPassword(AnonymousPassword);
+  SetUserName(ANONYMOUS_USER_NAME);
+  SetPassword(ANONYMOUS_PASSWORD);
   SetPingInterval(30);
   // when changing default, update load/save logic
   SetPingType(ptOff);
@@ -1094,8 +1092,8 @@ void TSessionData::ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & 
   int LogonType = ReadXmlNode(Node, L"Logontype", 0);
   if (LogonType == 0) // ANONYMOUS
   {
-    UserName = AnonymousUserName;
-    Password = AnonymousPassword;
+    UserName = ANONYMOUS_USER_NAME;
+    Password = ANONYMOUS_PASSWORD;
   }
   else
   {
@@ -3037,7 +3035,7 @@ UnicodeString TSessionData::ComposePath(
 
 TLoginType TSessionData::GetLoginType() const
 {
-  return (SessionGetUserName() == AnonymousUserName) && GetPassword().IsEmpty() ?
+  return (SessionGetUserName() == ANONYMOUS_USER_NAME) && GetPassword().IsEmpty() ?
     ltAnonymous : ltNormal;
 }
 
@@ -3047,7 +3045,7 @@ void TSessionData::SetLoginType(TLoginType Value)
   if (GetLoginType() == ltAnonymous)
   {
     SetPassword(L"");
-    SetUserName(AnonymousUserName);
+    SetUserName(ANONYMOUS_USER_NAME);
   }
 }
 
