@@ -62,7 +62,6 @@ const wchar_t EngShortMonthNames[12][4] =
   L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
   L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"
 };
-const std::string Bom = "\xEF\xBB\xBF";
 const wchar_t TokenPrefix = L'%';
 const wchar_t NoReplacement = wchar_t(0);
 const wchar_t TokenReplacement = wchar_t(1);

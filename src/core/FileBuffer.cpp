@@ -98,6 +98,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
   assert(strlen(Source) <= 2);
   assert(strlen(Dest) <= 2);
 
+  const std::string Bom(CONST_BOM);
   if (FLAGSET(Params, cpRemoveBOM) && (GetSize() >= 3) &&
       (memcmp(GetData(), Bom.c_str(), Bom.size()) == 0))
   {

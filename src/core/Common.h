@@ -28,7 +28,7 @@ inline void ThrowExtException() { throw ExtException((Exception *)nullptr, Unico
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
 
 extern const wchar_t EngShortMonthNames[12][4];
-extern const std::string Bom;
+#define CONST_BOM "\xEF\xBB\xBF"
 extern const wchar_t TokenPrefix;
 extern const wchar_t NoReplacement;
 extern const wchar_t TokenReplacement;
