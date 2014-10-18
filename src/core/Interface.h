@@ -15,8 +15,8 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
 UnicodeString GetRegistryKey();
 void * BusyStart();
 void BusyEnd(void * Token);
-UnicodeString AppNameString();
-UnicodeString SshVersionString();
+UnicodeString GetAppNameString();
+UnicodeString GetSshVersionString();
 void CopyToClipboard(const UnicodeString & Text);
 HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
   /* TThreadFunc ThreadFunc, */ void * Parameter, DWORD CreationFlags,

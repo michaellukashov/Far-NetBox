@@ -41,10 +41,10 @@ void PuttyInitialize()
 
   sk_init();
 
-  AnsiString VersionString = AnsiString(SshVersionString());
+  AnsiString VersionString = AnsiString(GetSshVersionString());
   assert(!VersionString.IsEmpty() && (static_cast<size_t>(VersionString.Length()) < _countof(sshver)));
   strcpy_s(sshver, sizeof(sshver), VersionString.c_str());
-  AnsiString AppName = AnsiString(AppNameString());
+  AnsiString AppName = AnsiString(GetAppNameString());
   assert(!AppName.IsEmpty() && (static_cast<size_t>(AppName.Length()) < _countof(appname_)));
   strcpy_s(appname_, sizeof(appname_), AppName.c_str());
 }
