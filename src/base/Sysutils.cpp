@@ -267,7 +267,7 @@ wchar_t UpCase(const wchar_t Ch)
   return static_cast<wchar_t>(::toupper(Ch));
 }
 
-inline wchar_t LowCase(const wchar_t Ch)
+wchar_t LowCase(const wchar_t Ch)
 {
   return static_cast<wchar_t>(::tolower(Ch));
 }

@@ -3939,7 +3939,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
       TDateTime DateTime = N;
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, NN, S, MS);
-      switch (tolower(ANewFileName[Index + 1]))
+      switch (::LowCase(ANewFileName[Index + 1]))
       {
         case L'y':
           // Replacement = FormatDateTime(L"yyyy", N);
