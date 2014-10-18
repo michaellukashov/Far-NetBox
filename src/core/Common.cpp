@@ -112,7 +112,7 @@ void Shred(UnicodeString & Str)
 UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result = AFileName;
-  static UnicodeString IllegalChars = L":;,=+<>|\"[] \\/?*";
+  UnicodeString IllegalChars(L":;,=+<>|\"[] \\/?*");
   for (intptr_t Index = 0; Index < IllegalChars.Length(); ++Index)
   {
     Result = ReplaceChar(Result, IllegalChars[Index + 1], L'-');
@@ -273,7 +273,7 @@ UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars)
 
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote)
 {
-  static UnicodeString Chars = L"$\\";
+  UnicodeString Chars(L"$\\");
   if (Quote == L'"')
   {
     Chars += L"`\"";
@@ -1103,7 +1103,7 @@ UnicodeString CharToHex(wchar_t Ch, bool UpperCase)
 
 RawByteString HexToBytes(const UnicodeString & Hex)
 {
-  static UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = L"0123456789ABCDEF";
   RawByteString Result;
   intptr_t L = Hex.Length();
   if (L % 2 == 0)
@@ -1128,7 +1128,7 @@ RawByteString HexToBytes(const UnicodeString & Hex)
 
 uint8_t HexToByte(const UnicodeString & Hex)
 {
-  static UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = L"0123456789ABCDEF";
   assert(Hex.Length() == 2);
   intptr_t P1 = Digits.Pos(UpCase(Hex[1]));
   intptr_t P2 = Digits.Pos(UpCase(Hex[2]));
