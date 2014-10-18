@@ -166,7 +166,6 @@ public:
 
 protected:
   static const wchar_t NoQuote;
-  static const UnicodeString Quotes;
   void GetToken(const UnicodeString & Command,
     intptr_t Index, intptr_t & Len, wchar_t & PatternCmd);
   void CustomValidate(const UnicodeString & Command, void * Arg);

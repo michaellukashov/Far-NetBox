@@ -779,7 +779,7 @@ void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
 #define TEXT_TOKEN L'\255'
 
 const wchar_t TCustomCommand::NoQuote = L'\0';
-const UnicodeString TCustomCommand::Quotes = L"\"'";
+#define CONST_QUOTES L"\"'"
 
 TCustomCommand::TCustomCommand()
 {
@@ -864,6 +864,7 @@ UnicodeString TCustomCommand::Complete(const UnicodeString & Command,
     else
     {
       wchar_t Quote = NoQuote;
+      UnicodeString Quotes(CONST_QUOTES);
       if ((Index > 1) && (Index + Len - 1 < Command.Length()) &&
           Command.IsDelimiter(Quotes, Index - 1) &&
           Command.IsDelimiter(Quotes, Index + Len) &&
