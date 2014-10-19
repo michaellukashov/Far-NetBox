@@ -459,6 +459,12 @@ void TSignalThread::Terminate()
 TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   TConfiguration * Configuration) :
   TSignalThread(),
+  FOnQueryUser(nullptr),
+  FOnPromptUser(nullptr),
+  FOnShowExtendedException(nullptr),
+  FOnQueueItemUpdate(nullptr),
+  FOnListUpdate(nullptr),
+  FOnEvent(nullptr),
   FTerminal(Terminal), FConfiguration(Configuration), FSessionData(new TSessionData(L"")),
   FItems(new TList()), FDoneItems(new TList()), FItemsInProcess(0),
   FFreeTerminals(0), FTerminals(new TList()), FForcedItems(new TList()), FTemporaryTerminals(0),
