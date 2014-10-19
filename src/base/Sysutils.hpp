@@ -268,7 +268,7 @@ struct TFileTime
   Integer HighTime;
 };
 
-struct TSearchRec
+struct TSearchRec : public TObject
 {
   TSearchRec() :
     Time(0),
