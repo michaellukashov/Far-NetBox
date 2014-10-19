@@ -244,7 +244,7 @@ UnicodeString FromUnixPath(const UnicodeString & APath)
 
 UnicodeString ToUnixPath(const UnicodeString & APath)
 {
-  return ReplaceStr(APath, L"\\", L"/");
+  return ReplaceStr(APath, L"\\", ROOTDIRECTORY);
 }
 
 static void CutFirstDirectory(UnicodeString & S, bool Unix)

@@ -1779,7 +1779,7 @@ UnicodeString TTerminal::TranslateLockedPath(const UnicodeString & APath, bool L
         Result.Delete(1, FLockDirectory.Length());
         if (Result.IsEmpty())
         {
-          Result = L"/";
+          Result = ROOTDIRECTORY;
         }
       }
     }

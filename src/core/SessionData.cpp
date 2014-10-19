@@ -1562,7 +1562,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       }
     }
 
-    if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != L"/"))
+    if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != ROOTDIRECTORY))
     {
       if ((ARemoteDirectory[ARemoteDirectory.Length()] != L'/') &&
           (AFileName != nullptr))

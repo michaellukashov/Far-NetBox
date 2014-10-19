@@ -12264,7 +12264,7 @@ void TWebDAVFileSystem::ReadCurrentDirectory()
 {
   if (FCachedDirectoryChange.IsEmpty())
   {
-    FCurrentDirectory = FCurrentDirectory.IsEmpty() ? UnicodeString(L"/") : FCurrentDirectory;
+    FCurrentDirectory = FCurrentDirectory.IsEmpty() ? UnicodeString(ROOTDIRECTORY) : FCurrentDirectory;
   }
   else
   {
@@ -12925,7 +12925,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
       UnicodeString fn = core::UnixExcludeTrailingBackslash(DestFullName);
       if (fn.IsEmpty())
       {
-        fn = L"/";
+        fn = ROOTDIRECTORY;
       }
       bool Rethrow =
         !FTerminal->GetActive() ||
@@ -13205,7 +13205,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       UnicodeString FilePath = core::UnixExtractFilePath(AFileName);
       if (FilePath.IsEmpty())
       {
-        FilePath = L"/";
+        FilePath = ROOTDIRECTORY;
       }
 
       {
