@@ -465,10 +465,20 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   FOnQueueItemUpdate(nullptr),
   FOnListUpdate(nullptr),
   FOnEvent(nullptr),
-  FTerminal(Terminal), FConfiguration(Configuration), FSessionData(new TSessionData(L"")),
-  FItems(new TList()), FDoneItems(new TList()), FItemsInProcess(0),
-  FFreeTerminals(0), FTerminals(new TList()), FForcedItems(new TList()), FTemporaryTerminals(0),
-  FOverallTerminals(0), FTransfersLimit(2), FKeepDoneItemsFor(0), FEnabled(true)
+  FTerminal(Terminal),
+  FConfiguration(Configuration),
+  FSessionData(new TSessionData(L"")),
+  FItems(new TList()),
+  FDoneItems(new TList()),
+  FItemsInProcess(0),
+  FFreeTerminals(0),
+  FTerminals(new TList()),
+  FForcedItems(new TList()),
+  FTemporaryTerminals(0),
+  FOverallTerminals(0),
+  FTransfersLimit(2),
+  FKeepDoneItemsFor(0),
+  FEnabled(true)
 {
 }
 
