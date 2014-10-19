@@ -2124,7 +2124,19 @@ void TDownloadQueueItem::DoExecute(TTerminal * Terminal)
 // TTerminalThread
 
 TTerminalThread::TTerminalThread(TTerminal * Terminal) :
-  TSignalThread(), FTerminal(Terminal)
+  TSignalThread(), FTerminal(Terminal),
+  FOnInformation(nullptr),
+  FOnQueryUser(nullptr),
+  FOnPromptUser(nullptr),
+  FOnShowExtendedException(nullptr),
+  FOnDisplayBanner(nullptr),
+  FOnChangeDirectory(nullptr),
+  FOnReadDirectory(nullptr),
+  FOnStartReadDirectory(nullptr),
+  FOnReadDirectoryProgress(nullptr),
+  FOnInitializeLog(nullptr),
+  FOnIdle(nullptr),
+  FAction(nullptr)
 {
   FAction = nullptr;
   FActionEvent = ::CreateEvent(nullptr, false, false, nullptr);
