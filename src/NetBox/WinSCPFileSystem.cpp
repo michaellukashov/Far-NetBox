@@ -290,6 +290,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FProgressSaveScreenHandle(0),
   FSynchronizationSaveScreenHandle(0),
   FAuthenticationSaveScreenHandle(0),
+  FSynchronizationCompare(false),
   FFileList(nullptr),
   FPanelItems(nullptr),
   FSavedFindFolder(L""),
