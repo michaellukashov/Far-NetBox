@@ -598,54 +598,54 @@ void TCallbackGuard::Verify()
 
 TTerminal::TTerminal() :
   TObject(),
-  TSessionUI()
+  TSessionUI(),
+  FReadCurrentDirectoryPending(false),
+  FReadDirectoryPending(false),
+  FTunnelOpening(false),
+  FSessionData(nullptr),
+  FLog(nullptr),
+  FActionLog(nullptr),
+  FConfiguration(nullptr),
+  FFiles(nullptr),
+  FInTransaction(0),
+  FSuspendTransaction(false),
+  FOnChangeDirectory(nullptr),
+  FOnReadDirectory(nullptr),
+  FOnStartReadDirectory(nullptr),
+  FOnReadDirectoryProgress(nullptr),
+  FOnDeleteLocalFile(nullptr),
+  FOnCreateLocalFile(nullptr),
+  FOnGetLocalFileAttributes(nullptr),
+  FOnSetLocalFileAttributes(nullptr),
+  FOnMoveLocalFile(nullptr),
+  FOnRemoveLocalDirectory(nullptr),
+  FOnCreateLocalDirectory(nullptr),
+  FOnInitializeLog(nullptr),
+  FUsersGroupsLookedup(false),
+  FOperationProgress(nullptr),
+  FUseBusyCursor(false),
+  FDirectoryCache(nullptr),
+  FDirectoryChangesCache(nullptr),
+  FFileSystem(nullptr),
+  FSecureShell(nullptr),
+  FFSProtocol(cfsUnknown),
+  FCommandSession(nullptr),
+  FAutoReadDirectory(false),
+  FReadingCurrentDirectory(false),
+  FClosedOnCompletion(nullptr),
+  FStatus(ssClosed),
+  FTunnelThread(nullptr),
+  FTunnel(nullptr),
+  FTunnelData(nullptr),
+  FTunnelLog(nullptr),
+  FTunnelUI(nullptr),
+  FTunnelLocalPortNumber(0),
+  FCallbackGuard(nullptr),
+  FEnableSecureShellUsage(false),
+  FCollectFileSystemUsage(false),
+  FRememberedPasswordTried(false),
+  FRememberedTunnelPasswordTried(false)
 {
-  FReadCurrentDirectoryPending = false;
-  FReadDirectoryPending = false;
-  FTunnelOpening = false;
-  FSessionData = nullptr;
-  FLog = nullptr;
-  FActionLog = nullptr;
-  FConfiguration = nullptr;
-  FFiles = nullptr;
-  FInTransaction = 0;
-  FSuspendTransaction = false;
-  FOnChangeDirectory = nullptr;
-  FOnReadDirectory = nullptr;
-  FOnStartReadDirectory = nullptr;
-  FOnReadDirectoryProgress = nullptr;
-  FOnDeleteLocalFile = nullptr;
-  FOnCreateLocalFile = nullptr;
-  FOnGetLocalFileAttributes = nullptr;
-  FOnSetLocalFileAttributes = nullptr;
-  FOnMoveLocalFile = nullptr;
-  FOnRemoveLocalDirectory = nullptr;
-  FOnCreateLocalDirectory = nullptr;
-  FOnInitializeLog = nullptr;
-  FUsersGroupsLookedup = false;
-  FOperationProgress = nullptr;
-  FUseBusyCursor = false;
-  FDirectoryCache = nullptr;
-  FDirectoryChangesCache = nullptr;
-  FFileSystem = nullptr;
-  FSecureShell = nullptr;
-  FFSProtocol = cfsUnknown;
-  FCommandSession = nullptr;
-  FAutoReadDirectory = false;
-  FReadingCurrentDirectory = false;
-  FClosedOnCompletion = nullptr;
-  FStatus = ssClosed;
-  FTunnelThread = nullptr;
-  FTunnel = nullptr;
-  FTunnelData = nullptr;
-  FTunnelLog = nullptr;
-  FTunnelUI = nullptr;
-  FTunnelLocalPortNumber = 0;
-  FCallbackGuard = nullptr;
-  FEnableSecureShellUsage = false;
-  FCollectFileSystemUsage = false;
-  FRememberedPasswordTried = false;
-  FRememberedTunnelPasswordTried = false;
 }
 
 TTerminal::~TTerminal()
