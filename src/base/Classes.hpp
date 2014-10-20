@@ -593,8 +593,8 @@ public:
     const void * Buffer, size_t Size);
 private:
   void ChangeKey(HKEY Value, const UnicodeString & APath);
-  HKEY GetBaseKey(bool Relative);
-  HKEY GetKey(const UnicodeString & Key);
+  HKEY GetBaseKey(bool Relative) const;
+  HKEY GetKey(const UnicodeString & Key) const;
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
   bool GetKeyInfo(TRegKeyInfo & Value) const;
   int GetData(const UnicodeString & Name, void * Buffer,

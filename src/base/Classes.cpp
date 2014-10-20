@@ -2008,7 +2008,7 @@ void TRegistry::ChangeKey(HKEY Value, const UnicodeString & APath)
   FCurrentPath = APath;
 }
 
-HKEY TRegistry::GetBaseKey(bool Relative)
+HKEY TRegistry::GetBaseKey(bool Relative) const
 {
   HKEY Result = 0;
   if ((FCurrentKey == 0) || !Relative)
@@ -2022,7 +2022,7 @@ HKEY TRegistry::GetBaseKey(bool Relative)
   return Result;
 }
 
-HKEY TRegistry::GetKey(const UnicodeString & Key)
+HKEY TRegistry::GetKey(const UnicodeString & Key) const
 {
   UnicodeString S = Key;
   bool Relative = IsRelative(S);
