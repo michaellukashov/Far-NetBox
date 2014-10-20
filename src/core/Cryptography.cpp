@@ -473,7 +473,7 @@ bool AES256Verify(const UnicodeString & Input, const RawByteString & Verifier)
   return (Mac == Mac2);
 }
 
-uint8_t SScrambleTable[256] =
+static uint8_t SScrambleTable[256] =
 {
   0, 223, 235, 233, 240, 185,  88, 102,  22, 130,  27,  53,  79, 125,  66, 201,
   90,  71,  51,  60, 134, 104, 172, 244, 139,  84,  91,  12, 123, 155, 237, 151,
