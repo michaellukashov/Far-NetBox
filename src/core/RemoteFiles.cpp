@@ -47,7 +47,7 @@ UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & APath)
 UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & APath, bool Simple)
 {
   if (APath.IsEmpty() ||
-      (APath == L"/") ||
+      (APath == ROOTDIRECTORY) ||
       !APath.IsDelimiter(L"/", APath.Length()) ||
       (!Simple && ((APath.Length() == 3) && core::IsUnixStyleWindowsPath(APath))))
   {
@@ -219,7 +219,7 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APa
       // special case, "/../" => "/"
       if (P == 1)
       {
-        Result = L"/";
+        Result = ROOTDIRECTORY;
       }
       else
       {
@@ -1994,7 +1994,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   Key = TTerminal::ExpandFileName(Change, SourceDir);
   if (Key.IsEmpty())
   {
-    Key = L"/";
+    Key = ROOTDIRECTORY;
   }
   bool Result = (IndexOfName(Key.c_str()) >= 0);
   if (Result)

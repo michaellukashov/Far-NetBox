@@ -1953,7 +1953,7 @@ void TSFTPFileSystem::Idle()
         FSecureShell->GetReady())
     {
       TSFTPPacket Packet(SSH_FXP_REALPATH, FCodePage);
-      Packet.AddPathString(L"/", FUtfStrings);
+      Packet.AddPathString(ROOTDIRECTORY, FUtfStrings);
       SendPacketAndReceiveResponse(&Packet, &Packet);
     }
     else

@@ -2154,7 +2154,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
 
     if (IsSessionList())
     {
-      FSessionsFolder = core::AbsolutePath(L"/" + FSessionsFolder, Dir);
+      FSessionsFolder = core::AbsolutePath(ROOTDIRECTORY + FSessionsFolder, Dir);
       assert(FSessionsFolder[1] == L'/');
       FSessionsFolder.Delete(1, 1);
       FNewSessionsFolder.Clear();

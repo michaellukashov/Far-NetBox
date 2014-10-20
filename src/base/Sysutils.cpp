@@ -1162,7 +1162,7 @@ UnicodeString ExtractFileDir(const UnicodeString & Str)
   }
   else
   {
-    Result = (Pos == 1) ? UnicodeString(L"/") : UnicodeString();
+    Result = (Pos == 1) ? UnicodeString(ROOTDIRECTORY) : UnicodeString();
   }
   return Result;
 }

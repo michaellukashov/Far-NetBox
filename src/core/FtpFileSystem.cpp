@@ -700,7 +700,7 @@ void TFTPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
   FCurrentDirectory = core::UnixExcludeTrailingBackslash(Directory);
   if (FCurrentDirectory.IsEmpty())
   {
-    FCurrentDirectory = L"/";
+    FCurrentDirectory = ROOTDIRECTORY;
   }
 }
 
@@ -1225,7 +1225,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     UnicodeString FilePath = core::UnixExtractFilePath(AFileName);
     if (FilePath.IsEmpty())
     {
-      FilePath = L"/";
+      FilePath = ROOTDIRECTORY;
     }
     uintptr_t TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
 
@@ -1642,7 +1642,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
       UnicodeString Fn = core::UnixExcludeTrailingBackslash(DestFullName);
       if (Fn.IsEmpty())
       {
-        Fn = L"/";
+        Fn = ROOTDIRECTORY;
       }
       bool Rethrow =
         !FTerminal->GetActive() ||
@@ -1878,10 +1878,10 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
       if (Result)
       {
-        FCurrentDirectory = core::AbsolutePath(L"/", core::UnixExcludeTrailingBackslash(Path));
+        FCurrentDirectory = core::AbsolutePath(ROOTDIRECTORY, core::UnixExcludeTrailingBackslash(Path));
         if (FCurrentDirectory.IsEmpty())
         {
-          FCurrentDirectory = L"/";
+          FCurrentDirectory = ROOTDIRECTORY;
         }
       }
     }
