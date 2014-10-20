@@ -567,7 +567,7 @@ public:
   bool OpenKey(const UnicodeString & Key, bool CanCreate);
   bool DeleteKey(const UnicodeString & Key);
   bool DeleteValue(const UnicodeString & Value) const;
-  bool KeyExists(const UnicodeString & SubKey);
+  bool KeyExists(const UnicodeString & SubKey) const;
   bool ValueExists(const UnicodeString & Value) const;
   bool GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const;
   TRegDataType GetDataType(const UnicodeString & ValueName) const;
@@ -614,7 +614,7 @@ private:
   // bool FLazyWrite;
   UnicodeString FCurrentPath;
   bool FCloseRootKey;
-  uint32_t FAccess;
+  mutable uint32_t FAccess;
 };
 
 struct TTimeStamp

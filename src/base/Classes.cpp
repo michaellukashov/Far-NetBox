@@ -1771,7 +1771,7 @@ bool TRegistry::DeleteValue(const UnicodeString & Name) const
   return Result;
 }
 
-bool TRegistry::KeyExists(const UnicodeString & Key)
+bool TRegistry::KeyExists(const UnicodeString & Key) const
 {
   bool Result = false;
   uint32_t OldAccess = FAccess;
