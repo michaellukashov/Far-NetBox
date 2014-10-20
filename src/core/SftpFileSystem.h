@@ -125,7 +125,7 @@ protected:
     TRemoteFileList * TempFileList = nullptr, bool Complete = true);
   void LoadFile(TRemoteFile * AFile, TSFTPPacket * Packet,
     bool Complete = true);
-  UnicodeString LocalCanonify(const UnicodeString & APath);
+  UnicodeString LocalCanonify(const UnicodeString & APath) const;
   UnicodeString Canonify(const UnicodeString & APath);
   UnicodeString RealPath(const UnicodeString & APath);
   UnicodeString RealPath(const UnicodeString & APath, const UnicodeString & ABaseDir);

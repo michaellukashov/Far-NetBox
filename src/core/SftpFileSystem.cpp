@@ -2656,7 +2656,7 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath,
   return RealPath(Path);
 }
 
-UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & APath)
+UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & APath) const
 {
   // TODO: improve (handle .. etc.)
   if (core::UnixIsAbsolutePath(APath) ||
