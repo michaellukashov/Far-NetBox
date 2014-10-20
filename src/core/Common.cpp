@@ -105,7 +105,7 @@ void Shred(UnicodeString & Str)
   if (!Str.IsEmpty())
   {
     wmemset(const_cast<wchar_t *>(Str.c_str()), 0, Str.Length());
-    Str = L"";
+    Str.Clear();
   }
 }
 
@@ -189,7 +189,7 @@ UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim)
   else
   {
     Result = Str;
-    Str = L"";
+    Str.Clear();
   }
   if (Trim)
   {
@@ -534,8 +534,8 @@ void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   UnicodeString & Params, UnicodeString & Dir)
 {
   UnicodeString Cmd = Command.Trim();
-  Params = L"";
-  Dir = L"";
+  Params.Clear();
+  Dir.Clear();
   if (!Cmd.IsEmpty() && (Cmd[1] == L'\"'))
   {
     Cmd.Delete(1, 1);
@@ -1114,7 +1114,7 @@ RawByteString HexToBytes(const UnicodeString & Hex)
       intptr_t P2 = Digits.Pos(UpCase(Hex[Index + 1]));
       if (P1 <= 0 || P2 <= 0)
       {
-        Result = L"";
+        Result.Clear();
         break;
       }
       else
@@ -2283,7 +2283,7 @@ bool CutToken(UnicodeString & Str, UnicodeString & Token,
 {
   bool Result;
 
-  Token = L"";
+  Token.Clear();
 
   // inspired by Putty's sftp_getcmd() from PSFTP.C
   intptr_t Index = 1;
@@ -2338,7 +2338,7 @@ bool CutToken(UnicodeString & Str, UnicodeString & Token,
   else
   {
     Result = false;
-    Str = L"";
+    Str.Clear();
   }
 
   return Result;

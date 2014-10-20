@@ -543,13 +543,13 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
     else
     {
       Result = Temp;
-      Temp = L"";
+      Temp.Clear();
     }
     Result = ::IncludeTrailingBackslash(Result);
     Result = Result + AFileName;
     if (!::FileExists(Result))
     {
-      Result = L"";
+      Result.Clear();
     }
   }
   while (!(Temp.Length() == 0) || (Result.Length() != 0));
@@ -1206,7 +1206,7 @@ UnicodeString HexToStr(const UnicodeString & Hex)
       intptr_t P2 = Digits.FindFirstOf(::UpCase(Hex[Index + 1]));
       if ((P1 == NPOS) || (P2 == NPOS))
       {
-        Result = L"";
+        Result.Clear();
         break;
       }
       else

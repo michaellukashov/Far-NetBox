@@ -1884,7 +1884,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 {
   if (!FFileSystemInfoValid)
   {
-    FFileSystemInfo.AdditionalInfo = L"";
+    FFileSystemInfo.AdditionalInfo.Clear();
 
     if (!IsCapable(fcRename))
     {
@@ -3138,7 +3138,7 @@ void TSFTPFileSystem::ReadCurrentDirectory()
   if (!FDirectoryToChangeTo.IsEmpty())
   {
     FCurrentDirectory = FDirectoryToChangeTo;
-    FDirectoryToChangeTo = L"";
+    FDirectoryToChangeTo.Clear();
   }
   else if (FCurrentDirectory.IsEmpty())
   {
@@ -4656,7 +4656,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
           // send close request before waiting for pending read responses
           SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
             OperationProgress, false, true, &CloseRequest);
-          OpenParams.RemoteFileHandle = L"";
+          OpenParams.RemoteFileHandle.Clear();
 
           // when resuming is disabled, we can send "set properties"
           // request before waiting for pending read/close responses
@@ -5640,7 +5640,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
               // close file right away, before waiting for pending responses
               SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress,
                 true, true, nullptr);
-              RemoteHandle = L""; // do not close file again in __finally block
+              RemoteHandle.Clear(); // do not close file again in __finally block
             }
 
             if (!Eof)

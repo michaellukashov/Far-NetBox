@@ -2035,8 +2035,8 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   {
     if (FLAGSET(Params, cpTemporary))
     {
-      FInfo->Source = L"";
-      FInfo->ModifiedLocal = L"";
+      FInfo->Source.Clear();
+      FInfo->ModifiedLocal.Clear();
     }
     else
     {
@@ -2052,7 +2052,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
     if (FLAGSET(Params, cpTemporary))
     {
       FInfo->Source = core::ExtractFileName(AFilesToCopy->GetString(0), true);
-      FInfo->ModifiedLocal = L"";
+      FInfo->ModifiedLocal.Clear();
     }
     else
     {
@@ -2113,7 +2113,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
 
   if (FLAGSET(Params, cpTemporary))
   {
-    FInfo->Destination = L"";
+    FInfo->Destination.Clear();
   }
   else
   {

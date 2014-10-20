@@ -289,7 +289,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
           Abort();
         }
         // directory will be set by FAR itself
-        Directory = L"";
+        Directory.Clear();
       }
       assert(StoredSessions);
       bool DefaultsOnly = false;

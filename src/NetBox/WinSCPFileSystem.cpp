@@ -127,7 +127,7 @@ void TRemoteFilePanelItem::TranslateColumnTypes(UnicodeString & ColumnTypes,
   TStrings * ColumnTitles)
 {
   UnicodeString AColumnTypes = ColumnTypes;
-  ColumnTypes = L"";
+  ColumnTypes.Clear();
   UnicodeString Column;
   UnicodeString Title;
   while (!AColumnTypes.IsEmpty())
@@ -155,7 +155,7 @@ void TRemoteFilePanelItem::TranslateColumnTypes(UnicodeString & ColumnTypes,
     }
     else
     {
-      Title = L"";
+      Title.Clear();
     }
     ColumnTypes += (ColumnTypes.IsEmpty() ? L"" : L",") + Column;
     if (ColumnTitles)
@@ -2157,7 +2157,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
       FSessionsFolder = core::AbsolutePath(L"/" + FSessionsFolder, Dir);
       assert(FSessionsFolder[1] == L'/');
       FSessionsFolder.Delete(1, 1);
-      FNewSessionsFolder = L"";
+      FNewSessionsFolder.Clear();
     }
     else
     {
@@ -2304,7 +2304,7 @@ intptr_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
     }
     else
     {
-      Name = L"";
+      Name.Clear();
       return -1;
     }
   }
@@ -2324,13 +2324,13 @@ intptr_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
     }
     else
     {
-      Name = L"";
+      Name.Clear();
       return -1;
     }
   }
   else
   {
-    Name = L"";
+    Name.Clear();
     return -1;
   }
 }
@@ -2538,8 +2538,8 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
     }
     else
     {
-      FOriginalEditFile = L"";
-      FLastEditFile = L"";
+      FOriginalEditFile.Clear();
+      FLastEditFile.Clear();
       FLastEditorID = -1;
     }
 
@@ -2712,8 +2712,8 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int 
         // just in case file was saved under different name
         FFileList->SetString(0, FLastEditFile);
 
-        FOriginalEditFile = L"";
-        FLastEditFile = L"";
+        FOriginalEditFile.Clear();
+        FLastEditFile.Clear();
 
         UnicodeString CurrentDirectory = FTerminal->GetCurrDirectory();
         Result = UploadFiles(Move, OpMode, true, CurrentDirectory);
@@ -3793,7 +3793,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
           assert(IsLastMultipleEditFile);
           if (IsLastMultipleEditFile)
           {
-            FLastMultipleEditFile = L"";
+            FLastMultipleEditFile.Clear();
 
             TMultipleEdit MultipleEdit;
             MultipleEdit.FileName = core::ExtractFileName(Info->GetFileName(), false);
@@ -4051,10 +4051,10 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     if (FarPlugin->Editor(FLastMultipleEditFile, FullFileName,
           EF_NONMODAL | EF_IMMEDIATERETURN | EF_DISABLEHISTORY))
     {
-      // assert(FLastMultipleEditFile == L"");
+      // assert(FLastMultipleEditFile.IsEmpty());
     }
-    FLastMultipleEditFile = L"";
-    FLastMultipleEditFileTitle = L"";
+    FLastMultipleEditFile.Clear();
+    FLastMultipleEditFileTitle.Clear();
   }
 }
 

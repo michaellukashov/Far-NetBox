@@ -265,8 +265,8 @@ void TFTPFileSystem::Open()
   DiscardMessages();
 
   ResetCaches();
-  FCurrentDirectory = L"";
-  FHomeDirectory = L"";
+  FCurrentDirectory.Clear();
+  FHomeDirectory.Clear();
 
   TSessionData * Data = FTerminal->GetSessionData();
 
@@ -373,7 +373,7 @@ void TFTPFileSystem::Open()
 
   do
   {
-    FSystem = L"";
+    FSystem.Clear();
     FFeatures->Clear();
     FFileSystemInfoValid = false;
 
@@ -408,7 +408,7 @@ void TFTPFileSystem::Open()
       FTerminal->LogEvent(L"Password prompt (last login attempt failed)");
 
       // on retry ask for new password
-      Password = L"";
+      Password.Clear();
       if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
             LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
@@ -692,7 +692,7 @@ void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
   DoChangeDirectory(Directory);
 
   // make next ReadCurrentDirectory retrieve actual server-side current directory
-  FCurrentDirectory = L"";
+  FCurrentDirectory.Clear();
 }
 
 void TFTPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
@@ -2201,12 +2201,12 @@ const wchar_t * TFTPFileSystem::GetOption(intptr_t OptionID) const
 
     case OPTION_ANONPWD:
     case OPTION_TRANSFERIP6:
-      FOptionScratch = L"";
+      FOptionScratch.Clear();
       break;
 
     default:
       FAIL;
-      FOptionScratch = L"";
+      FOptionScratch.Clear();
   }
 
   return FOptionScratch.c_str();
@@ -2839,7 +2839,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
       }
       else
       {
-        FSystem = L"";
+        FSystem.Clear();
       }
     }
     else if (FLastCommand == FEAT)
@@ -3482,7 +3482,7 @@ bool TFTPFileSystem::HandleAsynchRequestNeedPass(
   }
   else
   {
-    UnicodeString Password = L"";
+    UnicodeString Password;
     if (!FPasswordFailed && FTerminal->GetSessionData()->GetLoginType() == ltAnonymous)
     {
       Data.Password = _wcsdup(Password.c_str());

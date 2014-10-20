@@ -772,8 +772,8 @@ void TSessionLog::CloseLogFile()
     fclose(static_cast<FILE *>(FFile));
     FFile = nullptr;
   }
-  FCurrentLogFileName = L"";
-  FCurrentFileName = L"";
+  FCurrentLogFileName.Clear();
+  FCurrentFileName.Clear();
   StateChange();
 }
 
@@ -789,8 +789,8 @@ void TSessionLog::OpenLogFile()
   catch (Exception & E)
   {
     // We failed logging to file, turn it off and notify user.
-    FCurrentLogFileName = L"";
-    FCurrentFileName = L"";
+    FCurrentLogFileName.Clear();
+    FCurrentFileName.Clear();
     FConfiguration->SetLogFileName(UnicodeString());
     try
     {
@@ -1335,8 +1335,8 @@ void TActionLog::CloseLogFile()
     fclose((FILE *)FFile);
     FFile = nullptr;
   }
-  FCurrentLogFileName = L"";
-  FCurrentFileName = L"";
+  FCurrentLogFileName.Clear();
+  FCurrentFileName.Clear();
 }
 
 void TActionLog::OpenLogFile()
@@ -1351,8 +1351,8 @@ void TActionLog::OpenLogFile()
   catch (Exception & E)
   {
     // We failed logging to file, turn it off and notify user.
-    FCurrentLogFileName = L"";
-    FCurrentFileName = L"";
+    FCurrentLogFileName.Clear();
+    FCurrentFileName.Clear();
     FConfiguration->SetLogActions(false);
     try
     {

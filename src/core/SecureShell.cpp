@@ -74,7 +74,7 @@ void TSecureShell::ResetConnection()
   PendSize = 0;
   sfree(Pending);
   Pending = nullptr;
-  FCWriteTemp = L"";
+  FCWriteTemp.Clear();
   ResetSessionInfo();
   FAuthenticating = false;
   FAuthenticated = false;
@@ -378,7 +378,7 @@ void TSecureShell::Open()
 
   SetActive(false);
 
-  FAuthenticationLog = L"";
+  FAuthenticationLog.Clear();
   FNoConnectionResponse = false;
   FUI->Information(LoadStr(STATUS_LOOKUPHOST), true);
 
@@ -1362,9 +1362,9 @@ void TSecureShell::ClearStdError()
         (FAuthenticationLog.IsEmpty() ? L"" : L"\n") + FStdErrorTemp;
     }
     CaptureOutput(llStdError, FStdErrorTemp);
-    FStdErrorTemp = L"";
+    FStdErrorTemp.Clear();
   }
-  FStdError = L"";
+  FStdError.Clear();
 }
 
 void TSecureShell::CaptureOutput(TLogLineType Type,

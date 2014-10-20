@@ -544,7 +544,7 @@ void TSCPFileSystem::EnsureLocation()
     FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
       FCachedDirectoryChange.c_str()));
     UnicodeString Directory = FCachedDirectoryChange;
-    FCachedDirectoryChange = L"";
+    FCachedDirectoryChange.Clear();
     try
     {
       ChangeDirectory(Directory);
@@ -851,7 +851,7 @@ void TSCPFileSystem::DetectReturnVar()
   {
     // #60 17.10.01: "status" and "?" switched
     UnicodeString ReturnVars[2] = { L"status", L"?" };
-    UnicodeString NewReturnVar = L"";
+    UnicodeString NewReturnVar;
     FTerminal->LogEvent(L"Detecting variable containing return code of last command.");
     for (intptr_t Index = 0; Index < 2; ++Index)
     {
@@ -984,7 +984,7 @@ void TSCPFileSystem::ChangeDirectory(const UnicodeString & Directory)
     ToDir = DelimitStr(Directory);
   }
   ExecCommand2(fsChangeDirectory, 0, ToDir.c_str());
-  FCachedDirectoryChange = L"";
+  FCachedDirectoryChange.Clear();
 }
 
 void TSCPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
@@ -1459,7 +1459,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   assert(AFilesToCopy && OperationProgress);
 
   Params &= ~(cpAppend | cpResume);
-  UnicodeString Options = L"";
+  UnicodeString Options;
   bool CheckExistence = core::UnixSamePath(TargetDir, FTerminal->GetCurrDirectory()) &&
     (FTerminal->FFiles != nullptr) && FTerminal->FFiles->GetLoaded();
   bool CopyBatchStarted = false;
@@ -2101,7 +2101,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
 {
   bool CloseSCP = False;
   Params &= ~(cpAppend | cpResume);
-  UnicodeString Options = L"";
+  UnicodeString Options;
   if (CopyParam->GetPreserveRights() || CopyParam->GetPreserveTime())
   {
     Options = L"-p";

@@ -100,7 +100,7 @@ void TConfiguration::Default()
   FTunnelLocalPortNumberHigh = 50099;
   FCacheDirectoryChangesMaxSize = 100;
   FShowFtpWelcomeMessage = false;
-  FExternalIpAddress = L"";
+  FExternalIpAddress.Clear();
   FTryFtpWhenSshFails = true;
   SetCollectUsage(FDefaultCollectUsage);
   FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
@@ -323,7 +323,7 @@ void TConfiguration::LoadData(THierarchicalStorage * Storage)
   {
      FPermanentActionsLogFileName = FPermanentLogFileName;
      FPermanentLogging = false;
-     FPermanentLogFileName = L"";
+     FPermanentLogFileName.Clear();
   }
 }
 
@@ -836,7 +836,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
     {
       (void)e;
       DEBUG_PRINTF(L"Error: %s", ::MB2W(e.what()).c_str());
-      Result = L"";
+      Result.Clear();
     }
   }
   else

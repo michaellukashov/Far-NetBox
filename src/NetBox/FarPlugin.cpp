@@ -1461,7 +1461,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
   }
   else
   {
-    FCurrentTitle = L"";
+    FCurrentTitle.Clear();
     FCurrentProgress = -1;
     ::SetConsoleTitle(Title.c_str());
     UpdateProgress(PS_NOPROGRESS, 0);
@@ -2649,7 +2649,7 @@ bool TFarPanelInfo::GetIsPlugin() const
 
 UnicodeString TFarPanelInfo::GetCurrDirectory() const
 {
-  UnicodeString Result = L"";
+  UnicodeString Result;
   intptr_t Size = FarPlugin->FarControl(FCTL_GETPANELDIR,
     0,
     0,
@@ -2776,7 +2776,7 @@ intptr_t TFarEditorInfo::GetEditorID() const
 
 UnicodeString TFarEditorInfo::GetFileName()
 {
-  UnicodeString Result = L"";
+  UnicodeString Result;
   intptr_t BuffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, nullptr);
   if (BuffLen)
   {

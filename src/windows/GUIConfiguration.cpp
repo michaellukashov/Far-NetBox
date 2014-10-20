@@ -102,10 +102,10 @@ TGUICopyParamType & TGUICopyParamType::operator =(const TGUICopyParamType & rhp)
 
 void TCopyParamRuleData::Default()
 {
-  HostName = L"";
-  UserName = L"";
-  RemoteDirectory = L"";
-  LocalDirectory = L"";
+  HostName.Clear();
+  UserName.Clear();
+  RemoteDirectory.Clear();
+  LocalDirectory.Clear();
 }
 
 TCopyParamRule::TCopyParamRule()
@@ -562,7 +562,7 @@ void TGUIConfiguration::Default()
   FPuttySession = L"WinSCP temporary session";
   FBeepOnFinish = false;
   FBeepOnFinishAfter = TDateTime(0, 0, 30, 0);
-  FCopyParamCurrent = L"";
+  FCopyParamCurrent.Clear();
   FKeepUpToDateChangeDelay = 500;
   FChecksumAlg = L"md5";
   FSessionReopenAutoIdle = 9000;
@@ -1052,7 +1052,7 @@ void TGUIConfiguration::SetCopyParamIndex(intptr_t Value)
   UnicodeString Name;
   if (Value < 0)
   {
-    Name = L"";
+    Name.Clear();
   }
   else
   {

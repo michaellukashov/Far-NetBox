@@ -1026,7 +1026,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   }
   catch (...)
   {
-    Comments = L"";
+    Comments.Clear();
   }
   UnicodeString LegalCopyright; // = GetConfiguration()->GetFileInfoString(L"LegalCopyright");
 
@@ -6324,7 +6324,7 @@ void TFileSystemInfoDialog::ClipboardButtonClick(TFarButton * /*Sender*/,
 {
   NeedSpaceAvailable();
   FLastFeededControl = nullptr;
-  FClipboard = L"";
+  FClipboard.Clear();
   Feed(MAKE_CALLBACK(TFileSystemInfoDialog::ClipboardAddItem, this));
   FarPlugin->FarCopyToClipboard(FClipboard);
   Close = false;

@@ -715,7 +715,7 @@ void TTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration)
   FOnFindingFile = nullptr;
 
   FUseBusyCursor = True;
-  FLockDirectory = L"";
+  FLockDirectory.Clear();
   FDirectoryCache = new TRemoteDirectoryCache();
   FDirectoryChangesCache = nullptr;
   FFSProtocol = cfsUnknown;
@@ -837,7 +837,7 @@ void TTerminal::Close()
 void TTerminal::ResetConnection()
 {
   // used to be called from Reopen(), why?
-  FTunnelError = L"";
+  FTunnelError.Clear();
 
   FRememberedPasswordTried = false;
   FRememberedTunnelPasswordTried = false;
@@ -2621,7 +2621,7 @@ void TTerminal::ReadCurrentDirectory()
       // not to broke the cache, if the next directory change would not
       // be initialized by ChangeDirectory(), which sets it
       // (HomeDirectory() particularly)
-      FLastDirectoryChange = L"";
+      FLastDirectoryChange.Clear();
     }
 
     if (OldDirectory.IsEmpty())

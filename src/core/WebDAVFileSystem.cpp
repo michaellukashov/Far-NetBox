@@ -12075,7 +12075,7 @@ TWebDAVFileSystem::~TWebDAVFileSystem()
 
 void TWebDAVFileSystem::Open()
 {
-  FCurrentDirectory = L"";
+  FCurrentDirectory.Clear();
   FHasTrailingSlash = false;
   FStoredPasswordTried = false;
 
@@ -12227,7 +12227,7 @@ void TWebDAVFileSystem::EnsureLocation()
     FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
       FCachedDirectoryChange.c_str()));
     UnicodeString Directory = FCachedDirectoryChange;
-    FCachedDirectoryChange = L"";
+    FCachedDirectoryChange.Clear();
     try
     {
       ChangeDirectory(Directory);
@@ -12325,7 +12325,7 @@ void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
     FCurrentDirectory = core::UnixIncludeTrailingBackslash(FCurrentDirectory);
 
   // make next ReadCurrentDirectory retrieve actual server-side current directory
-  FCachedDirectoryChange = L"";
+  FCachedDirectoryChange.Clear();
 }
 
 void TWebDAVFileSystem::CachedChangeDirectory(const UnicodeString & Directory)

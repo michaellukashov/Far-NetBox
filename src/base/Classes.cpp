@@ -1698,7 +1698,7 @@ void TRegistry::CloseKey()
   {
     ::RegCloseKey(GetCurrentKey());
     FCurrentKey = 0;
-    FCurrentPath = L"";
+    FCurrentPath.Clear();
   }
 }
 
@@ -1881,7 +1881,7 @@ int64_t TRegistry::ReadInt64(const UnicodeString & Name)
 
 UnicodeString TRegistry::ReadString(const UnicodeString & Name)
 {
-  UnicodeString Result = L"";
+  UnicodeString Result;
   TRegDataType RegData = rdUnknown;
   intptr_t Len = GetDataSize(Name);
   if (Len > 0)
@@ -1896,7 +1896,7 @@ UnicodeString TRegistry::ReadString(const UnicodeString & Name)
   }
   else
   {
-    Result = L"";
+    Result.Clear();
   }
   return Result;
 }

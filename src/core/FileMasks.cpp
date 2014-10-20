@@ -966,13 +966,13 @@ TInteractiveCustomCommand::TInteractiveCustomCommand(
 void TInteractiveCustomCommand::Prompt(
   const UnicodeString & /*Prompt*/, UnicodeString & Value)
 {
-  Value = L"";
+  Value.Clear();
 }
 
 void TInteractiveCustomCommand::Execute(
   const UnicodeString & /*Command*/, UnicodeString & Value)
 {
-  Value = L"";
+  Value.Clear();
 }
 
 intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index)

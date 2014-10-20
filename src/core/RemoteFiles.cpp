@@ -149,7 +149,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
         APath = ::ExtractFilePath(::ExcludeTrailingBackslash(APath));
         if (APath.Length() == PrevLen)
         {
-          APath = L"";
+          APath.Clear();
           Result = false;
         }
       }
@@ -176,7 +176,7 @@ bool UnixExtractCommonPath(const TStrings * const AFiles, OUT UnicodeString & AP
         APath = core::UnixExtractFilePath(core::UnixExcludeTrailingBackslash(APath));
         if (APath.Length() == PrevLen)
         {
-          APath = L"";
+          APath.Clear();
           Result = false;
         }
       }
@@ -252,7 +252,7 @@ static void CutFirstDirectory(UnicodeString & S, bool Unix)
   UnicodeString Sep = Unix ? L"/" : L"\\";
   if (S == Sep)
   {
-    S = L"";
+    S.Clear();
   }
   else
   {
@@ -279,7 +279,7 @@ static void CutFirstDirectory(UnicodeString & S, bool Unix)
     }
     else
     {
-      S = L"";
+      S.Clear();
     }
     if (Root)
     {
@@ -304,7 +304,7 @@ UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, boo
     }
     else
     {
-      Dir = L"";
+      Dir.Clear();
       Name = Result;
     }
   }
@@ -326,9 +326,9 @@ UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, boo
     {
       Dir = L"..." + Sep;
     }
-    else if (Dir == L"")
+    else if (Dir.IsEmpty())
     {
-      Drive = L"";
+      Drive.Clear();
     }
     else
     {
@@ -1318,7 +1318,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       // separating space is already deleted, other spaces are treated as part of name
 
       {
-        FLinkTo = L"";
+        FLinkTo.Clear();
         if (GetIsSymLink())
         {
           intptr_t P = ListingStr.Pos(SYMLINKSTR);
@@ -2421,7 +2421,7 @@ void TRights::SetNumber(uint16_t Value)
   {
     FSet = Value;
     FUnset = static_cast<uint16_t>(rfAllSpecials & ~FSet);
-    FText = L"";
+    FText.Clear();
   }
   FUnknown = false;
 }
@@ -2471,7 +2471,7 @@ void TRights::SetRightUndef(TRight Right, TState Value)
         break;
     }
 
-    FText = L"";
+    FText.Clear();
   }
   FUnknown = false;
 }
@@ -2529,8 +2529,8 @@ UnicodeString TRights::GetModeStr() const
 
   for (int Group = 0; Group < 3; Group++)
   {
-    SetModeStr = L"";
-    UnsetModeStr = L"";
+    SetModeStr.Clear();
+    UnsetModeStr.Clear();
     for (int Mode = 0; Mode < 3; Mode++)
     {
       Index = (Group * 3) + Mode;
@@ -2599,7 +2599,7 @@ void TRights::AllUndef()
   {
     FSet = 0;
     FUnset = 0;
-    FText = L"";
+    FText.Clear();
   }
   FUnknown = false;
 }

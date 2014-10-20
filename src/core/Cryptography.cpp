@@ -569,7 +569,7 @@ bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Passwor
   }
   else
   {
-    Password = L"";
+    Password.Clear();
   }
   return Result;
 }

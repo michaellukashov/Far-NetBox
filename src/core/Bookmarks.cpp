@@ -90,7 +90,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
     }
     else
     {
-      Directory = L""; // use only in case of malformed config
+      Directory.Clear(); // use only in case of malformed config
       ShortCut = static_cast<TShortCut>(Storage->ReadInteger(Name, 0));
     }
     if (Name.ToInt() > 0)

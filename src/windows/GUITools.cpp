@@ -120,7 +120,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
             ExportData->SetPuttyProtocol(PuttyTelnetProtocol);
             ExportData->SetPortNumber(TelnetPortNumber);
             // PuTTY  does not allow -pw for telnet
-            Psw = L"";
+            Psw.Clear();
           }
           else
           {

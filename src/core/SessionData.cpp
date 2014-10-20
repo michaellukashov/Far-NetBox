@@ -1208,8 +1208,8 @@ bool TSessionData::HasAnyPassword() const
 
 void TSessionData::ClearSessionPasswords()
 {
-  FPassword = L"";
-  FTunnelPassword = L"";
+  FPassword.Clear();
+  FTunnelPassword.Clear();
 }
 
 void TSessionData::Modify()
@@ -2347,7 +2347,7 @@ UnicodeString TSessionData::GetSessionUrl() const
     }
     else
     {
-      Url = L"";
+      Url.Clear();
     }
   }
   return Url;
