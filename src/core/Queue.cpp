@@ -1672,7 +1672,7 @@ void TQueueItem::SetProgress(
   FQueue->DoQueueItemUpdate(this);
 }
 
-void TQueueItem::GetData(TQueueItemProxy * Proxy)
+void TQueueItem::GetData(TQueueItemProxy * Proxy) const
 {
   TGuard Guard(FSection);
 

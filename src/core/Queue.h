@@ -219,7 +219,7 @@ public:
   void SetMasks(const UnicodeString & Value);
   void SetStatus(TStatus Status);
   void SetProgress(TFileOperationProgressType & ProgressData);
-  void GetData(TQueueItemProxy * Proxy);
+  void GetData(TQueueItemProxy * Proxy) const;
   void SetCPSLimit(uintptr_t CPSLimit);
   bool GetCPSLimit(uintptr_t & CPSLimit) const;
 
