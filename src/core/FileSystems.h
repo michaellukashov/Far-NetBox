@@ -149,6 +149,7 @@ public:
   virtual void CollectUsage() = 0;
   virtual void Idle() = 0;
   virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local) = 0;
+  virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local) const = 0;
   virtual void AnyCommand(const UnicodeString & Command,
     TCaptureOutputEvent OutputEvent) = 0;
   virtual void ChangeDirectory(const UnicodeString & Directory) = 0;

@@ -2728,6 +2728,11 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
   return Result;
 }
 
+UnicodeString TSFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local) const
+{
+  return const_cast<TSFTPFileSystem *>(this)->AbsolutePath(APath, Local);
+}
+
 UnicodeString TSFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
 {
   if (Local)

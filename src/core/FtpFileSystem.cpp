@@ -575,7 +575,12 @@ void TFTPFileSystem::Discard()
   FActive = false;
 }
 
-UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/)
+UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
+{
+  return static_cast<const TFTPFileSystem *>(this)->AbsolutePath(APath, Local);
+}
+
+UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
   // TODO: improve (handle .. etc.)
   if (core::UnixIsAbsolutePath(APath))

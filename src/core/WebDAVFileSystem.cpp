@@ -12168,7 +12168,12 @@ void TWebDAVFileSystem::Idle()
   return;
 }
 
-UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/)
+UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
+{
+  return static_cast<const TWebDAVFileSystem *>(this)->AbsolutePath(APath, Local);
+}
+
+UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
   return core::AbsolutePath(GetCurrDirectory(), APath);
 }
