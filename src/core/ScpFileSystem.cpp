@@ -1569,7 +1569,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
         }
         else
         {
-          int64_t MTime;
+          int64_t MTime = 0;
           TOverwriteFileParams FileParams;
           FTerminal->OpenLocalFile(FileName, GENERIC_READ,
             nullptr, nullptr, nullptr, &MTime, nullptr,
