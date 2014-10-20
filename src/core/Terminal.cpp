@@ -1512,7 +1512,7 @@ bool TTerminal::GetIsCapable(TFSCapability Capability) const
   return FFileSystem->IsCapable(Capability);
 }
 
-UnicodeString TTerminal::GetAbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TTerminal::GetAbsolutePath(const UnicodeString & APath, bool Local) const
 {
   return FFileSystem->GetAbsolutePath(APath, Local);
 }

@@ -208,7 +208,7 @@ public:
   bool AllowedAnyCommand(const UnicodeString & Command) const;
   void AnyCommand(const UnicodeString & Command, TCaptureOutputEvent OutputEvent);
   void CloseOnCompletion(TOnceDoneOperation Operation = odoDisconnect, const UnicodeString & Message = L"");
-  UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local);
+  UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const;
   void BeginTransaction();
   void ReadCurrentDirectory();
   void ReadDirectory(bool ReloadOnly, bool ForceCache = false);
