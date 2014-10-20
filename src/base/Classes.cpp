@@ -344,7 +344,6 @@ void TObjectList::Notify(void * Ptr, TListNotification Action)
   TList::Notify(Ptr, Action);
 }
 
-const UnicodeString sLineBreak = L"\r\n";
 const intptr_t MonthsPerYear = 12;
 const intptr_t DaysPerWeek = 7;
 const intptr_t MinsPerHour = 60;
@@ -534,7 +533,7 @@ UnicodeString TStrings::GetTextStr() const
   UnicodeString Result;
   intptr_t Count = GetCount();
   intptr_t Size = 0;
-  UnicodeString LB = sLineBreak;
+  UnicodeString LB(L"\r\n");
   for (intptr_t Index = 0; Index < Count; ++Index)
   {
     Size += GetString(Index).Length() + LB.Length();
