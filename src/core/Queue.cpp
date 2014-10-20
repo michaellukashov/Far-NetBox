@@ -1969,7 +1969,7 @@ TLocatedQueueItem::TLocatedQueueItem(TTerminal * Terminal) :
   FCurrentDir = Terminal->GetCurrDirectory();
 }
 
-UnicodeString TLocatedQueueItem::StartupDirectory()
+UnicodeString TLocatedQueueItem::StartupDirectory() const
 {
   return FCurrentDir;
 }
