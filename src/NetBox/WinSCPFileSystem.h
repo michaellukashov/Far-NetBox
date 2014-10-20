@@ -234,7 +234,7 @@ protected:
   bool IsEditHistoryEmpty();
   void EditHistory();
   UnicodeString ProgressBar(intptr_t Percentage, intptr_t Width);
-  bool IsLogging();
+  bool IsLogging() const;
   void ShowLog();
 
   TTerminal * GetTerminal() const { return FTerminal; }

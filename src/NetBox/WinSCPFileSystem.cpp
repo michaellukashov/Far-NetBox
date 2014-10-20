@@ -4100,10 +4100,9 @@ void TWinSCPFileSystem::EditHistory()
   }
 }
 
-bool TWinSCPFileSystem::IsLogging()
+bool TWinSCPFileSystem::IsLogging() const
 {
-  return
-    Connected() && FTerminal->GetLog()->GetLoggingToFile();
+  return Connected() && FTerminal->GetLog()->GetLoggingToFile();
 }
 
 void TWinSCPFileSystem::ShowLog()
