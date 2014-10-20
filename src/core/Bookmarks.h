@@ -101,7 +101,7 @@ protected:
   static UnicodeString BookmarkKey(const UnicodeString & Node, const UnicodeString & Name);
 
 private:
-  UnicodeString GetKey();
+  UnicodeString GetKey() const;
   void Modify(intptr_t OldIndex);
 
 private:

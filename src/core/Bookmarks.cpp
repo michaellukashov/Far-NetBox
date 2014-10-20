@@ -558,7 +558,7 @@ UnicodeString TBookmark::BookmarkKey(const UnicodeString & Node, const UnicodeSt
   return FORMAT(L"%s\1%s", Node.c_str(), Name.c_str());
 }
 
-UnicodeString TBookmark::GetKey()
+UnicodeString TBookmark::GetKey() const
 {
   return BookmarkKey(GetNode(), GetName());
 }
