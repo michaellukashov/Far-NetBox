@@ -1286,7 +1286,7 @@ void TTerminalItem::ProcessEvent()
     {
       FItem->SetStatus(TQueueItem::qsConnecting);
 
-      FTerminal->GetSessionData()->SetRemoteDirectory(FItem->StartupDirectory());
+      FTerminal->GetSessionData()->SetRemoteDirectory(FItem->GetStartupDirectory());
       FTerminal->Open();
     }
 
@@ -1969,7 +1969,7 @@ TLocatedQueueItem::TLocatedQueueItem(TTerminal * Terminal) :
   FCurrentDir = Terminal->GetCurrDirectory();
 }
 
-UnicodeString TLocatedQueueItem::StartupDirectory() const
+UnicodeString TLocatedQueueItem::GetStartupDirectory() const
 {
   return FCurrentDir;
 }

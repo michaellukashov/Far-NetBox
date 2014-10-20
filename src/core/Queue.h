@@ -228,7 +228,7 @@ private:
   virtual void DoExecute(TTerminal * Terminal) = 0;
   uintptr_t GetCPSLimit() const;
   virtual uintptr_t DefaultCPSLimit() const;
-  virtual UnicodeString StartupDirectory() const = 0;
+  virtual UnicodeString GetStartupDirectory() const = 0;
   void Complete();
 };
 
@@ -319,7 +319,7 @@ protected:
   virtual ~TLocatedQueueItem() {}
 
   virtual void DoExecute(TTerminal * Terminal);
-  virtual UnicodeString StartupDirectory() const;
+  virtual UnicodeString GetStartupDirectory() const;
 
 private:
   UnicodeString FCurrentDir;
