@@ -2,6 +2,7 @@
 
 #include <string>
 #include <hash_map.h>
+#include "nbglobals.h"
 
 class TObject;
 class THashTable;
@@ -9,6 +10,7 @@ enum TObjectClassId;
 
 class TClassInfo
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   TClassInfo(int classId,
              const TClassInfo * baseInfo1,
@@ -25,7 +27,7 @@ public:
 
   static const TClassInfo * GetFirst() { return sm_first; }
   const TClassInfo * GetNext() const { return m_next; }
-  static const TClassInfo* FindClass(int classId);
+  static const TClassInfo * FindClass(int classId);
 
   // Climb upwards through inheritance hierarchy.
   bool IsKindOf(const TClassInfo * info) const;
@@ -79,6 +81,7 @@ TObject * NbStaticDownCast(TObjectClassId ClassId, TObject * Object);
 
 class THashTable : public rde::hash_map<int, const TClassInfo *>
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 typedef rde::hash_map<int, const TClassInfo *> ancestor;
 public:
   ancestor::mapped_type Get(const ancestor::key_type & key) const
