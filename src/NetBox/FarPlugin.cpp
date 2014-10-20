@@ -2418,7 +2418,7 @@ UnicodeString TFarPanelItem::GetFileName() const
   return Result;
 }
 
-void * TFarPanelItem::GetUserData()
+void * TFarPanelItem::GetUserData() const
 {
   return ToPtr(FPanelItem->UserData);
 }
