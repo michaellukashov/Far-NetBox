@@ -298,7 +298,7 @@ private:
   void GetSpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void QueueAddItem(TQueueItem * Item);
-  UnicodeString GetFileNameHash(const UnicodeString & AFileName);
+  UnicodeString GetFileNameHash(const UnicodeString & AFileName) const;
   intptr_t GetFilesRemote(TObjectList * PanelItems, bool Move,
     UnicodeString & DestPath, int OpMode);
 

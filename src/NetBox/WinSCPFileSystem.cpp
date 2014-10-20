@@ -4111,7 +4111,7 @@ void TWinSCPFileSystem::ShowLog()
   GetWinSCPPlugin()->Viewer(FTerminal->GetLog()->GetCurrentFileName(), FTerminal->GetLog()->GetCurrentFileName(), VF_NONMODAL);
 }
 
-UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString & AFileName)
+UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString & AFileName) const
 {
   RawByteString Result;
   Result.SetLength(16);
