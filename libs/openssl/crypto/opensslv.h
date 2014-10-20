@@ -35,7 +35,7 @@ extern "C" {
 #else
 #define OPENSSL_VERSION_TEXT	"OpenSSL 1.0.1j 15 Oct 2014"
 #endif
-#define OPENSSL_VERSION_PTEXT	" part of " OPENSSL_VERSION_TEXT
+#define OPENSSL_VERSION_PTEXT	" " // part of " OPENSSL_VERSION_TEXT
 
 
 /* The macros below are to be used for shared library (.so, .dll, ...)

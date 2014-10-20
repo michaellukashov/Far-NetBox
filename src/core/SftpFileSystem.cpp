@@ -601,7 +601,7 @@ public:
     return Result;
   }
 
-  bool CanGetString(uint32_t & Size)
+  bool CanGetString(uint32_t & Size) const
   {
     bool Result = CanGetCardinal();
     if (Result)
@@ -622,7 +622,7 @@ public:
   // as file handles), and SFTP spec does not say explicitly that they
   // are in UTF. For most of them it actually does not matter as
   // the content should be pure ASCII (e.g. extension names, etc.)
-  inline UnicodeString GetAnsiString()
+  inline UnicodeString GetAnsiString() const
   {
     return UnicodeString(AnsiString(GetRawByteString().c_str()).c_str());
   }
@@ -644,7 +644,7 @@ public:
   }
 
   // now purposeless alias to GetString(bool)
-  inline UnicodeString GetPathString(bool Utf)
+  inline UnicodeString GetPathString(bool Utf) const
   {
     return GetString(Utf);
   }
@@ -896,7 +896,7 @@ public:
 
     SetCapacity(1 * 1024 * 1024); // 20480);
     uint8_t Byte[3];
-    memset(Byte, '\0', sizeof(Byte));
+    ::ZeroMemory(Byte, sizeof(Byte));
     intptr_t Index = 1;
     uintptr_t Length = 0;
     while (Index < Dump.Length())
@@ -914,7 +914,7 @@ public:
           assert(Length < GetCapacity());
           GetData()[Length] = HexToByte(UnicodeString(reinterpret_cast<char *>(Byte)));
           Length++;
-          memset(Byte, '\0', sizeof(Byte));
+          ::ZeroMemory(Byte, sizeof(Byte));
         }
       }
       ++Index;
@@ -1884,7 +1884,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 {
   if (!FFileSystemInfoValid)
   {
-    FFileSystemInfo.AdditionalInfo = L"";
+    FFileSystemInfo.AdditionalInfo.Clear();
 
     if (!IsCapable(fcRename))
     {
@@ -1953,7 +1953,7 @@ void TSFTPFileSystem::Idle()
         FSecureShell->GetReady())
     {
       TSFTPPacket Packet(SSH_FXP_REALPATH, FCodePage);
-      Packet.AddPathString(L"/", FUtfStrings);
+      Packet.AddPathString(ROOTDIRECTORY, FUtfStrings);
       SendPacketAndReceiveResponse(&Packet, &Packet);
     }
     else
@@ -2592,7 +2592,7 @@ uintptr_t TSFTPFileSystem::SendPacketAndReceiveResponse(
   return Result;
 }
 
-UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath)
+UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath)
 {
   UnicodeString Result;
   try
@@ -2627,7 +2627,7 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath)
   return Result;
 }
 
-UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath,
+UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath,
   const UnicodeString & ABaseDir)
 {
   UnicodeString Path;
@@ -2653,10 +2653,10 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath,
       Path = core::UnixIncludeTrailingBackslash(L".");
     }
   }
-  return RealPath(Path);
+  return GetRealPath(Path);
 }
 
-UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & APath)
+UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & APath) const
 {
   // TODO: improve (handle .. etc.)
   if (core::UnixIsAbsolutePath(APath) ||
@@ -2679,7 +2679,7 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
   bool TryParent = false;
   try
   {
-    Result = RealPath(Result);
+    Result = GetRealPath(Result);
   }
   catch (...)
   {
@@ -2706,7 +2706,7 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
       UnicodeString FPath = core::UnixExtractFilePath(Path);
       try
       {
-        Result = RealPath(FPath);
+        Result = GetRealPath(FPath);
         Result = core::UnixIncludeTrailingBackslash(Result) + Name;
       }
       catch (...)
@@ -2728,7 +2728,12 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
   return Result;
 }
 
-UnicodeString TSFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TSFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local) const
+{
+  return const_cast<TSFTPFileSystem *>(this)->GetAbsolutePath(APath, Local);
+}
+
+UnicodeString TSFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
 {
   if (Local)
   {
@@ -2736,7 +2741,7 @@ UnicodeString TSFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool Lo
   }
   else
   {
-    return RealPath(APath, GetCurrDirectory());
+    return GetRealPath(APath, GetCurrDirectory());
   }
 }
 
@@ -2744,7 +2749,7 @@ UnicodeString TSFTPFileSystem::GetHomeDirectory()
 {
   if (FHomeDirectory.IsEmpty())
   {
-    FHomeDirectory = RealPath(THISDIRECTORY);
+    FHomeDirectory = GetRealPath(THISDIRECTORY);
   }
   return FHomeDirectory;
 }
@@ -3133,7 +3138,7 @@ void TSFTPFileSystem::ReadCurrentDirectory()
   if (!FDirectoryToChangeTo.IsEmpty())
   {
     FCurrentDirectory = FDirectoryToChangeTo;
-    FDirectoryToChangeTo = L"";
+    FDirectoryToChangeTo.Clear();
   }
   else if (FCurrentDirectory.IsEmpty())
   {
@@ -3181,7 +3186,7 @@ void TSFTPFileSystem::ChangeDirectory(const UnicodeString & Directory)
   UnicodeString Path, Current;
 
   Current = !FDirectoryToChangeTo.IsEmpty() ? FDirectoryToChangeTo : FCurrentDirectory;
-  Path = RealPath(Directory, Current);
+  Path = GetRealPath(Directory, Current);
 
   // to verify existence of directory try to open it (SSH_FXP_REALPATH succeeds
   // for invalid paths on some systems, like CygWin)
@@ -4651,7 +4656,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
           // send close request before waiting for pending read responses
           SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
             OperationProgress, false, true, &CloseRequest);
-          OpenParams.RemoteFileHandle = L"";
+          OpenParams.RemoteFileHandle.Clear();
 
           // when resuming is disabled, we can send "set properties"
           // request before waiting for pending read/close responses
@@ -5635,7 +5640,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
               // close file right away, before waiting for pending responses
               SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress,
                 true, true, nullptr);
-              RemoteHandle = L""; // do not close file again in __finally block
+              RemoteHandle.Clear(); // do not close file again in __finally block
             }
 
             if (!Eof)

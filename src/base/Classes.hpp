@@ -567,7 +567,7 @@ public:
   bool OpenKey(const UnicodeString & Key, bool CanCreate);
   bool DeleteKey(const UnicodeString & Key);
   bool DeleteValue(const UnicodeString & Value) const;
-  bool KeyExists(const UnicodeString & SubKey);
+  bool KeyExists(const UnicodeString & SubKey) const;
   bool ValueExists(const UnicodeString & Value) const;
   bool GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const;
   TRegDataType GetDataType(const UnicodeString & ValueName) const;
@@ -593,8 +593,8 @@ public:
     const void * Buffer, size_t Size);
 private:
   void ChangeKey(HKEY Value, const UnicodeString & APath);
-  HKEY GetBaseKey(bool Relative);
-  HKEY GetKey(const UnicodeString & Key);
+  HKEY GetBaseKey(bool Relative) const;
+  HKEY GetKey(const UnicodeString & Key) const;
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
   bool GetKeyInfo(TRegKeyInfo & Value) const;
   int GetData(const UnicodeString & Name, void * Buffer,
@@ -614,7 +614,7 @@ private:
   // bool FLazyWrite;
   UnicodeString FCurrentPath;
   bool FCloseRootKey;
-  uint32_t FAccess;
+  mutable uint32_t FAccess;
 };
 
 struct TTimeStamp

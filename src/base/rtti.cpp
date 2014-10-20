@@ -50,15 +50,15 @@ bool TClassInfo::IsKindOf(const TClassInfo * info) const
       (m_baseInfo2 && m_baseInfo2->IsKindOf(info)));
 }
 
-TClassInfo * TClassInfo::FindClass(int classId)
+const TClassInfo * TClassInfo::FindClass(int classId)
 {
   if (sm_classTable)
   {
-    return (TClassInfo *)TClassInfo::sm_classTable->Get(classId);
+    return TClassInfo::sm_classTable->Get(classId);
   }
   else
   {
-    for (TClassInfo * info = sm_first; info; info = info->m_next)
+    for (const TClassInfo * info = sm_first; info; info = info->m_next)
     {
       if (classId == info->GetClassId())
         return info;

@@ -22,10 +22,10 @@ extern "C"
 {
 #include <winstuff.h>
 }
-const UnicodeString OriginalPuttyRegistryStorageKey(_T(PUTTY_REG_POS));
-const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
-const UnicodeString OriginalPuttyExecutable(L"putty.exe");
-const UnicodeString KittyExecutable(L"kitty.exe");
+//const UnicodeString OriginalPuttyRegistryStorageKey(_T(PUTTY_REG_POS));
+//const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
+//const UnicodeString OriginalPuttyExecutable(L"putty.exe");
+//const UnicodeString KittyExecutable(L"kitty.exe");
 
 void PuttyInitialize()
 {
@@ -41,10 +41,10 @@ void PuttyInitialize()
 
   sk_init();
 
-  AnsiString VersionString = AnsiString(SshVersionString());
+  AnsiString VersionString = AnsiString(GetSshVersionString());
   assert(!VersionString.IsEmpty() && (static_cast<size_t>(VersionString.Length()) < _countof(sshver)));
   strcpy_s(sshver, sizeof(sshver), VersionString.c_str());
-  AnsiString AppName = AnsiString(AppNameString());
+  AnsiString AppName = AnsiString(GetAppNameString());
   assert(!AppName.IsEmpty() && (static_cast<size_t>(AppName.Length()) < _countof(appname_)));
   strcpy_s(appname_, sizeof(appname_), AppName.c_str());
 }
@@ -373,6 +373,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   USEDPARAM(Key);
 
   UnicodeString RegKey = SubKey;
+  UnicodeString OriginalPuttyRegistryStorageKey(_T(PUTTY_REG_POS));
   intptr_t PuttyKeyLen = OriginalPuttyRegistryStorageKey.Length();
   assert(RegKey.SubString(1, PuttyKeyLen) == OriginalPuttyRegistryStorageKey);
   RegKey = RegKey.SubString(PuttyKeyLen + 1, RegKey.Length() - PuttyKeyLen);
@@ -537,7 +538,7 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
       {
         ssh_gss_library * library = &List->libraries[Index];
         Ssh_gss_ctx ctx;
-        memset(&ctx, 0, sizeof(ctx));
+        ::ZeroMemory(&ctx, sizeof(ctx));
         has =
           ((library->acquire_cred(library, &ctx) == SSH_GSS_OK) &&
            (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;

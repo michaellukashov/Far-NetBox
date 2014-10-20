@@ -459,10 +459,26 @@ void TSignalThread::Terminate()
 TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   TConfiguration * Configuration) :
   TSignalThread(),
-  FTerminal(Terminal), FConfiguration(Configuration), FSessionData(new TSessionData(L"")),
-  FItems(new TList()), FDoneItems(new TList()), FItemsInProcess(0),
-  FFreeTerminals(0), FTerminals(new TList()), FForcedItems(new TList()), FTemporaryTerminals(0),
-  FOverallTerminals(0), FTransfersLimit(2), FKeepDoneItemsFor(0), FEnabled(true)
+  FOnQueryUser(nullptr),
+  FOnPromptUser(nullptr),
+  FOnShowExtendedException(nullptr),
+  FOnQueueItemUpdate(nullptr),
+  FOnListUpdate(nullptr),
+  FOnEvent(nullptr),
+  FTerminal(Terminal),
+  FConfiguration(Configuration),
+  FSessionData(new TSessionData(L"")),
+  FItems(new TList()),
+  FDoneItems(new TList()),
+  FItemsInProcess(0),
+  FFreeTerminals(0),
+  FTerminals(new TList()),
+  FForcedItems(new TList()),
+  FTemporaryTerminals(0),
+  FOverallTerminals(0),
+  FTransfersLimit(2),
+  FKeepDoneItemsFor(0),
+  FEnabled(true)
 {
 }
 
@@ -1270,7 +1286,7 @@ void TTerminalItem::ProcessEvent()
     {
       FItem->SetStatus(TQueueItem::qsConnecting);
 
-      FTerminal->GetSessionData()->SetRemoteDirectory(FItem->StartupDirectory());
+      FTerminal->GetSessionData()->SetRemoteDirectory(FItem->GetStartupDirectory());
       FTerminal->Open();
     }
 
@@ -1603,7 +1619,7 @@ bool TQueueItem::IsUserActionStatus(TStatus Status)
   return (Status == qsQuery) || (Status == qsError) || (Status == qsPrompt);
 }
 
-TQueueItem::TStatus TQueueItem::GetStatus()
+TQueueItem::TStatus TQueueItem::GetStatus() const
 {
   TGuard Guard(FSection);
 
@@ -1656,7 +1672,7 @@ void TQueueItem::SetProgress(
   FQueue->DoQueueItemUpdate(this);
 }
 
-void TQueueItem::GetData(TQueueItemProxy * Proxy)
+void TQueueItem::GetData(TQueueItemProxy * Proxy) const
 {
   TGuard Guard(FSection);
 
@@ -1953,7 +1969,7 @@ TLocatedQueueItem::TLocatedQueueItem(TTerminal * Terminal) :
   FCurrentDir = Terminal->GetCurrDirectory();
 }
 
-UnicodeString TLocatedQueueItem::StartupDirectory()
+UnicodeString TLocatedQueueItem::GetStartupDirectory() const
 {
   return FCurrentDir;
 }
@@ -2019,8 +2035,8 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   {
     if (FLAGSET(Params, cpTemporary))
     {
-      FInfo->Source = L"";
-      FInfo->ModifiedLocal = L"";
+      FInfo->Source.Clear();
+      FInfo->ModifiedLocal.Clear();
     }
     else
     {
@@ -2036,7 +2052,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
     if (FLAGSET(Params, cpTemporary))
     {
       FInfo->Source = core::ExtractFileName(AFilesToCopy->GetString(0), true);
-      FInfo->ModifiedLocal = L"";
+      FInfo->ModifiedLocal.Clear();
     }
     else
     {
@@ -2097,7 +2113,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
 
   if (FLAGSET(Params, cpTemporary))
   {
-    FInfo->Destination = L"";
+    FInfo->Destination.Clear();
   }
   else
   {
@@ -2118,7 +2134,19 @@ void TDownloadQueueItem::DoExecute(TTerminal * Terminal)
 // TTerminalThread
 
 TTerminalThread::TTerminalThread(TTerminal * Terminal) :
-  TSignalThread(), FTerminal(Terminal)
+  TSignalThread(), FTerminal(Terminal),
+  FOnInformation(nullptr),
+  FOnQueryUser(nullptr),
+  FOnPromptUser(nullptr),
+  FOnShowExtendedException(nullptr),
+  FOnDisplayBanner(nullptr),
+  FOnChangeDirectory(nullptr),
+  FOnReadDirectory(nullptr),
+  FOnStartReadDirectory(nullptr),
+  FOnReadDirectoryProgress(nullptr),
+  FOnInitializeLog(nullptr),
+  FOnIdle(nullptr),
+  FAction(nullptr)
 {
   FAction = nullptr;
   FActionEvent = ::CreateEvent(nullptr, false, false, nullptr);

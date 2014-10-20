@@ -405,7 +405,7 @@ public:
   PLUGINPANELITEMFLAGS GetFlags() const;
   uintptr_t GetFileAttrs() const;
   UnicodeString GetFileName() const;
-  void * GetUserData();
+  void * GetUserData() const;
   bool GetSelected() const;
   void SetSelected(bool Value);
   bool GetIsParentDirectory() const;

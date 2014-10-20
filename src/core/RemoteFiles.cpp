@@ -47,7 +47,7 @@ UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & APath)
 UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & APath, bool Simple)
 {
   if (APath.IsEmpty() ||
-      (APath == L"/") ||
+      (APath == ROOTDIRECTORY) ||
       !APath.IsDelimiter(L"/", APath.Length()) ||
       (!Simple && ((APath.Length() == 3) && core::IsUnixStyleWindowsPath(APath))))
   {
@@ -149,7 +149,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
         APath = ::ExtractFilePath(::ExcludeTrailingBackslash(APath));
         if (APath.Length() == PrevLen)
         {
-          APath = L"";
+          APath.Clear();
           Result = false;
         }
       }
@@ -176,7 +176,7 @@ bool UnixExtractCommonPath(const TStrings * const AFiles, OUT UnicodeString & AP
         APath = core::UnixExtractFilePath(core::UnixExcludeTrailingBackslash(APath));
         if (APath.Length() == PrevLen)
         {
-          APath = L"";
+          APath.Clear();
           Result = false;
         }
       }
@@ -219,7 +219,7 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APa
       // special case, "/../" => "/"
       if (P == 1)
       {
-        Result = L"/";
+        Result = ROOTDIRECTORY;
       }
       else
       {
@@ -244,7 +244,7 @@ UnicodeString FromUnixPath(const UnicodeString & APath)
 
 UnicodeString ToUnixPath(const UnicodeString & APath)
 {
-  return ReplaceStr(APath, L"\\", L"/");
+  return ReplaceStr(APath, L"\\", ROOTDIRECTORY);
 }
 
 static void CutFirstDirectory(UnicodeString & S, bool Unix)
@@ -252,7 +252,7 @@ static void CutFirstDirectory(UnicodeString & S, bool Unix)
   UnicodeString Sep = Unix ? L"/" : L"\\";
   if (S == Sep)
   {
-    S = L"";
+    S.Clear();
   }
   else
   {
@@ -279,7 +279,7 @@ static void CutFirstDirectory(UnicodeString & S, bool Unix)
     }
     else
     {
-      S = L"";
+      S.Clear();
     }
     if (Root)
     {
@@ -304,7 +304,7 @@ UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, boo
     }
     else
     {
-      Dir = L"";
+      Dir.Clear();
       Name = Result;
     }
   }
@@ -326,9 +326,9 @@ UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, boo
     {
       Dir = L"..." + Sep;
     }
-    else if (Dir == L"")
+    else if (Dir.IsEmpty())
     {
-      Drive = L"";
+      Drive.Clear();
     }
     else
     {
@@ -777,7 +777,7 @@ const TRemoteToken * TRemoteTokenList::Token(intptr_t Index) const
   return &FTokens[Index];
 }
 
-TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile):
+TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
   TPersistent(),
   FDirectory(nullptr),
   FSize(0),
@@ -1318,7 +1318,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       // separating space is already deleted, other spaces are treated as part of name
 
       {
-        FLinkTo = L"";
+        FLinkTo.Clear();
         if (GetIsSymLink())
         {
           intptr_t P = ListingStr.Pos(SYMLINKSTR);
@@ -1774,7 +1774,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
   }
 }
 
-TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
+TRemoteDirectoryCache::TRemoteDirectoryCache() : TStringList()
 {
   SetSorted(true);
   SetDuplicates(dupError);
@@ -1994,7 +1994,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   Key = TTerminal::ExpandFileName(Change, SourceDir);
   if (Key.IsEmpty())
   {
-    Key = L"/";
+    Key = ROOTDIRECTORY;
   }
   bool Result = (IndexOfName(Key.c_str()) >= 0);
   if (Result)
@@ -2421,7 +2421,7 @@ void TRights::SetNumber(uint16_t Value)
   {
     FSet = Value;
     FUnset = static_cast<uint16_t>(rfAllSpecials & ~FSet);
-    FText = L"";
+    FText.Clear();
   }
   FUnknown = false;
 }
@@ -2471,7 +2471,7 @@ void TRights::SetRightUndef(TRight Right, TState Value)
         break;
     }
 
-    FText = L"";
+    FText.Clear();
   }
   FUnknown = false;
 }
@@ -2529,8 +2529,8 @@ UnicodeString TRights::GetModeStr() const
 
   for (int Group = 0; Group < 3; Group++)
   {
-    SetModeStr = L"";
-    UnsetModeStr = L"";
+    SetModeStr.Clear();
+    UnsetModeStr.Clear();
     for (int Mode = 0; Mode < 3; Mode++)
     {
       Index = (Group * 3) + Mode;
@@ -2599,7 +2599,7 @@ void TRights::AllUndef()
   {
     FSet = 0;
     FUnset = 0;
-    FText = L"";
+    FText.Clear();
   }
   FUnknown = false;
 }

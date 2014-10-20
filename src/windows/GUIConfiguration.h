@@ -4,6 +4,8 @@
 #include "Configuration.h"
 #include "CopyParam.h"
 
+#define CONST_INVALID_CHARS L"/\\[]"
+
 class TGUIConfiguration;
 class TStoredSessionList;
 enum TLogView
@@ -142,7 +144,6 @@ public:
   bool GetAnyRule() const;
 
 private:
-  static UnicodeString FInvalidChars;
   TList * FRules;
   TList * FCopyParams;
   TStrings * FNames;

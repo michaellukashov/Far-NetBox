@@ -35,7 +35,8 @@ public:
   virtual bool GetActive() const;
   virtual void CollectUsage();
   virtual void Idle();
-  virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local);
+  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local);
+  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const;
   virtual void AnyCommand(const UnicodeString & Command,
     TCaptureOutputEvent OutputEvent);
   virtual void ChangeDirectory(const UnicodeString & Directory);
@@ -125,10 +126,10 @@ protected:
     TRemoteFileList * TempFileList = nullptr, bool Complete = true);
   void LoadFile(TRemoteFile * AFile, TSFTPPacket * Packet,
     bool Complete = true);
-  UnicodeString LocalCanonify(const UnicodeString & APath);
+  UnicodeString LocalCanonify(const UnicodeString & APath) const;
   UnicodeString Canonify(const UnicodeString & APath);
-  UnicodeString RealPath(const UnicodeString & APath);
-  UnicodeString RealPath(const UnicodeString & APath, const UnicodeString & ABaseDir);
+  UnicodeString GetRealPath(const UnicodeString & APath);
+  UnicodeString GetRealPath(const UnicodeString & APath, const UnicodeString & ABaseDir);
   void ReserveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response);
   uintptr_t ReceivePacket(TSFTPPacket * Packet, intptr_t ExpectedType = -1,

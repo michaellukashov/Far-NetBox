@@ -17,7 +17,7 @@ const intptr_t ccCopyResults = ccUser << 2;
 const intptr_t ccSet = 0x80000000;
 
 static const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
-static const UnicodeString AdditionaLanguagePrefix(L"XX");
+#define ADDITIONAL_LANGUAGE_PREFIX L"XX"
 
 TGUICopyParamType::TGUICopyParamType()
   : TCopyParamType()
@@ -102,10 +102,10 @@ TGUICopyParamType & TGUICopyParamType::operator =(const TGUICopyParamType & rhp)
 
 void TCopyParamRuleData::Default()
 {
-  HostName = L"";
-  UserName = L"";
-  RemoteDirectory = L"";
-  LocalDirectory = L"";
+  HostName.Clear();
+  UserName.Clear();
+  RemoteDirectory.Clear();
+  LocalDirectory.Clear();
 }
 
 TCopyParamRule::TCopyParamRule()
@@ -219,8 +219,6 @@ void TCopyParamRule::SetData(const TCopyParamRuleData & Value)
   FData = Value;
 }
 
-UnicodeString TCopyParamList::FInvalidChars(L"/\\[]");
-
 TCopyParamList::TCopyParamList() :
   FRules(new TList()),
   FCopyParams(new TList()),
@@ -253,9 +251,9 @@ void TCopyParamList::Modify()
 
 void TCopyParamList::ValidateName(const UnicodeString & Name)
 {
-  if (Name.LastDelimiter(FInvalidChars) > 0)
+  if (Name.LastDelimiter(CONST_INVALID_CHARS) > 0)
   {
-    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
+    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), CONST_INVALID_CHARS));
   }
 }
 
@@ -494,7 +492,7 @@ bool TCopyParamList::GetAnyRule() const
   return Result;
 }
 
-TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
+TGUIConfiguration::TGUIConfiguration() : TConfiguration(),
   FLocale(0),
   FLocales(new TStringList()),
   FContinueOnError(false),
@@ -564,7 +562,7 @@ void TGUIConfiguration::Default()
   FPuttySession = L"WinSCP temporary session";
   FBeepOnFinish = false;
   FBeepOnFinishAfter = TDateTime(0, 0, 30, 0);
-  FCopyParamCurrent = L"";
+  FCopyParamCurrent.Clear();
   FKeepUpToDateChangeDelay = 500;
   FChecksumAlg = L"md5";
   FSessionReopenAutoIdle = 9000;
@@ -786,7 +784,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     }
     else
     {
-      LocaleName = AdditionaLanguagePrefix +
+      LocaleName = UnicodeString(ADDITIONAL_LANGUAGE_PREFIX) +
         static_cast<wchar_t>(ALocale & ~AdditionaLanguageMask);
     }
 
@@ -993,7 +991,7 @@ TStrings * TGUIConfiguration::GetLocales()
     {
       if ((Exts->GetObj(Index) == nullptr) &&
           (Exts->GetString(Index).Length() == 3) &&
-          ::SameText(Exts->GetString(Index).SubString(1, 2), AdditionaLanguagePrefix))
+          ::SameText(Exts->GetString(Index).SubString(1, 2), ADDITIONAL_LANGUAGE_PREFIX))
       {
         UnicodeString LangName = GetFileFileInfoString(L"LangName",
           ::ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
@@ -1054,7 +1052,7 @@ void TGUIConfiguration::SetCopyParamIndex(intptr_t Value)
   UnicodeString Name;
   if (Value < 0)
   {
-    Name = L"";
+    Name.Clear();
   }
   else
   {

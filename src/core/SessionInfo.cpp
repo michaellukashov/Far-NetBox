@@ -114,79 +114,79 @@ public:
     bool Result = (FState != Opened);
     if (Result)
     {
-      if (FLog->FLogging && (FState != Cancelled))
-      {
-        const wchar_t * Name = ActionName();
-        UnicodeString Attrs;
-        if (FRecursive)
-        {
-          Attrs = L" recursive=\"true\"";
-        }
-        FLog->AddIndented(FORMAT(L"<%s%s>", Name,  Attrs.c_str()));
-        for (intptr_t Index = 0; Index < FNames->GetCount(); ++Index)
-        {
-          UnicodeString Value = FValues->GetString(Index);
-          if (Value.IsEmpty())
-          {
-            FLog->AddIndented(FORMAT(L"  <%s />", FNames->GetString(Index).c_str()));
-          }
-          else
-          {
-            FLog->AddIndented(FORMAT(L"  <%s value=\"%s\" />",
-              FNames->GetString(Index).c_str(), XmlAttributeEscape(Value).c_str()));
-          }
-        }
-        if (FFileList != nullptr)
-        {
-          FLog->AddIndented(L"  <files>");
-          for (intptr_t Index = 0; Index < FFileList->GetCount(); ++Index)
-          {
-            TRemoteFile * File = FFileList->GetFile(Index);
+//      if (FLog->FLogging && (FState != Cancelled))
+//      {
+//        const wchar_t * Name = ActionName();
+//        UnicodeString Attrs;
+//        if (FRecursive)
+//        {
+//          Attrs = L" recursive=\"true\"";
+//        }
+//        FLog->AddIndented(FORMAT(L"<%s%s>", Name,  Attrs.c_str()));
+//        for (intptr_t Index = 0; Index < FNames->GetCount(); ++Index)
+//        {
+//          UnicodeString Value = FValues->GetString(Index);
+//          if (Value.IsEmpty())
+//          {
+//            FLog->AddIndented(FORMAT(L"  <%s />", FNames->GetString(Index).c_str()));
+//          }
+//          else
+//          {
+//            FLog->AddIndented(FORMAT(L"  <%s value=\"%s\" />",
+//              FNames->GetString(Index).c_str(), XmlAttributeEscape(Value).c_str()));
+//          }
+//        }
+//        if (FFileList != nullptr)
+//        {
+//          FLog->AddIndented(L"  <files>");
+//          for (intptr_t Index = 0; Index < FFileList->GetCount(); ++Index)
+//          {
+//            TRemoteFile * File = FFileList->GetFile(Index);
 
-            FLog->AddIndented(L"    <file>");
-            FLog->AddIndented(FORMAT(L"      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName()).c_str()));
-            FLog->AddIndented(FORMAT(L"      <type value=\"%s\" />", XmlAttributeEscape(File->GetType()).c_str()));
-            if (!File->GetIsDirectory())
-            {
-              FLog->AddIndented(FORMAT(L"      <size value=\"%s\" />", ::Int64ToStr(File->GetSize()).c_str()));
-            }
-            FLog->AddIndented(FORMAT(L"      <modification value=\"%s\" />", StandardTimestamp(File->GetModification()).c_str()));
-            FLog->AddIndented(FORMAT(L"      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
-            FLog->AddIndented(L"    </file>");
-          }
-          FLog->AddIndented(L"  </files>");
-        }
-        if (FFile != nullptr)
-        {
-          FLog->AddIndented(L"  <file>");
-          FLog->AddIndented(FORMAT(L"    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
-          if (!FFile->GetIsDirectory())
-          {
-            FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", ::Int64ToStr(FFile->GetSize()).c_str()));
-          }
-          FLog->AddIndented(FORMAT(L"    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification()).c_str()));
-          FLog->AddIndented(FORMAT(L"    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));
-          FLog->AddIndented(L"  </file>");
-        }
-        if (FState == RolledBack)
-        {
-          if (FErrorMessages != nullptr)
-          {
-            FLog->AddIndented(L"  <result success=\"false\">");
-            FLog->AddMessages(L"    ", FErrorMessages);
-            FLog->AddIndented(L"  </result>");
-          }
-          else
-          {
-            FLog->AddIndented(L"  <result success=\"false\" />");
-          }
-        }
-        else
-        {
-          FLog->AddIndented(L"  <result success=\"true\" />");
-        }
-        FLog->AddIndented(FORMAT(L"</%s>", Name));
-      }
+//            FLog->AddIndented(L"    <file>");
+//            FLog->AddIndented(FORMAT(L"      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName()).c_str()));
+//            FLog->AddIndented(FORMAT(L"      <type value=\"%s\" />", XmlAttributeEscape(File->GetType()).c_str()));
+//            if (!File->GetIsDirectory())
+//            {
+//              FLog->AddIndented(FORMAT(L"      <size value=\"%s\" />", ::Int64ToStr(File->GetSize()).c_str()));
+//            }
+//            FLog->AddIndented(FORMAT(L"      <modification value=\"%s\" />", StandardTimestamp(File->GetModification()).c_str()));
+//            FLog->AddIndented(FORMAT(L"      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
+//            FLog->AddIndented(L"    </file>");
+//          }
+//          FLog->AddIndented(L"  </files>");
+//        }
+//        if (FFile != nullptr)
+//        {
+//          FLog->AddIndented(L"  <file>");
+//          FLog->AddIndented(FORMAT(L"    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
+//          if (!FFile->GetIsDirectory())
+//          {
+//            FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", ::Int64ToStr(FFile->GetSize()).c_str()));
+//          }
+//          FLog->AddIndented(FORMAT(L"    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification()).c_str()));
+//          FLog->AddIndented(FORMAT(L"    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));
+//          FLog->AddIndented(L"  </file>");
+//        }
+//        if (FState == RolledBack)
+//        {
+//          if (FErrorMessages != nullptr)
+//          {
+//            FLog->AddIndented(L"  <result success=\"false\">");
+//            FLog->AddMessages(L"    ", FErrorMessages);
+//            FLog->AddIndented(L"  </result>");
+//          }
+//          else
+//          {
+//            FLog->AddIndented(L"  <result success=\"false\" />");
+//          }
+//        }
+//        else
+//        {
+//          FLog->AddIndented(L"  <result success=\"true\" />");
+//        }
+//        FLog->AddIndented(FORMAT(L"</%s>", Name));
+//      }
       delete this;
     }
     return Result;
@@ -554,24 +554,23 @@ TSessionInfo::TSessionInfo()
 
 TFileSystemInfo::TFileSystemInfo()
 {
-  memset(&IsCapable, 0, sizeof(IsCapable));
+  ::ZeroMemory(&IsCapable, sizeof(IsCapable));
 }
 
-FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
+static FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, bool Append, UnicodeString & ANewFileName)
 {
-  FILE * Result;
-  UnicodeString ANewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, SessionData));
+  UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, SessionData));
   // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
-  Result = _fsopen(::W2MB(ApiPath(ANewFileName).c_str()).c_str(),
+  FILE * Result = _fsopen(::W2MB(ApiPath(NewFileName).c_str()).c_str(),
     Append ? "a" : "w", SH_DENYWR); // _SH_DENYNO); //
   if (Result != nullptr)
   {
     setvbuf(Result, nullptr, _IONBF, BUFSIZ);
-    NewFileName = ANewFileName;
+    ANewFileName = NewFileName;
   }
   else
   {
-    throw Exception(FMTLOAD(LOG_OPENERROR, ANewFileName.c_str()));
+    throw Exception(FMTLOAD(LOG_OPENERROR, NewFileName.c_str()));
   }
   return Result;
 }
@@ -772,8 +771,8 @@ void TSessionLog::CloseLogFile()
     fclose(static_cast<FILE *>(FFile));
     FFile = nullptr;
   }
-  FCurrentLogFileName = L"";
-  FCurrentFileName = L"";
+  FCurrentLogFileName.Clear();
+  FCurrentFileName.Clear();
   StateChange();
 }
 
@@ -789,8 +788,8 @@ void TSessionLog::OpenLogFile()
   catch (Exception & E)
   {
     // We failed logging to file, turn it off and notify user.
-    FCurrentLogFileName = L"";
-    FCurrentFileName = L"";
+    FCurrentLogFileName.Clear();
+    FCurrentFileName.Clear();
     FConfiguration->SetLogFileName(UnicodeString());
     try
     {
@@ -1127,7 +1126,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
 void TSessionLog::AddSeparator()
 {
-  Add(llMessage, L"--------------------------------------------------------------------------");
+//  Add(llMessage, L"--------------------------------------------------------------------------");
 }
 
 intptr_t TSessionLog::GetBottomIndex() const
@@ -1309,9 +1308,9 @@ void TActionLog::ReflectSettings()
   if (ALogging && !FLogging)
   {
     FLogging = true;
-    Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-    Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
-      XmlAttributeEscape(FSessionData->GetSessionName()).c_str(), StandardTimestamp().c_str()));
+//    Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+//    Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
+//      XmlAttributeEscape(FSessionData->GetSessionName()).c_str(), StandardTimestamp().c_str()));
   }
   else if (!ALogging && FLogging)
   {
@@ -1322,7 +1321,7 @@ void TActionLog::ReflectSettings()
     // do not try to close the file, if it has not been opened, to avoid recursion
     if (FFile != nullptr)
     {
-      Add(L"</session>");
+//      Add(L"</session>");
     }
     CloseLogFile();
     FLogging = false;
@@ -1336,8 +1335,8 @@ void TActionLog::CloseLogFile()
     fclose((FILE *)FFile);
     FFile = nullptr;
   }
-  FCurrentLogFileName = L"";
-  FCurrentFileName = L"";
+  FCurrentLogFileName.Clear();
+  FCurrentFileName.Clear();
 }
 
 void TActionLog::OpenLogFile()
@@ -1352,8 +1351,8 @@ void TActionLog::OpenLogFile()
   catch (Exception & E)
   {
     // We failed logging to file, turn it off and notify user.
-    FCurrentLogFileName = L"";
-    FCurrentFileName = L"";
+    FCurrentLogFileName.Clear();
+    FCurrentFileName.Clear();
     FConfiguration->SetLogActions(false);
     try
     {

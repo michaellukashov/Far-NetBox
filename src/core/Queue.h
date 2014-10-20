@@ -197,7 +197,7 @@ public:
 
   static bool IsUserActionStatus(TStatus Status);
 
-  TStatus GetStatus();
+  TStatus GetStatus() const;
   HANDLE GetCompleteEvent() const { return FCompleteEvent; }
   void SetCompleteEvent(HANDLE Value) { FCompleteEvent = Value; }
 
@@ -219,7 +219,7 @@ public:
   void SetMasks(const UnicodeString & Value);
   void SetStatus(TStatus Status);
   void SetProgress(TFileOperationProgressType & ProgressData);
-  void GetData(TQueueItemProxy * Proxy);
+  void GetData(TQueueItemProxy * Proxy) const;
   void SetCPSLimit(uintptr_t CPSLimit);
   bool GetCPSLimit(uintptr_t & CPSLimit) const;
 
@@ -228,7 +228,7 @@ private:
   virtual void DoExecute(TTerminal * Terminal) = 0;
   uintptr_t GetCPSLimit() const;
   virtual uintptr_t DefaultCPSLimit() const;
-  virtual UnicodeString StartupDirectory() = 0;
+  virtual UnicodeString GetStartupDirectory() const = 0;
   void Complete();
 };
 
@@ -319,7 +319,7 @@ protected:
   virtual ~TLocatedQueueItem() {}
 
   virtual void DoExecute(TTerminal * Terminal);
-  virtual UnicodeString StartupDirectory();
+  virtual UnicodeString GetStartupDirectory() const;
 
 private:
   UnicodeString FCurrentDir;

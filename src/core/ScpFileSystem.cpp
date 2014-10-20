@@ -147,7 +147,7 @@ const TCommandType DefaultCommandSet[ShellCommandCount] =
 #undef F
 #undef T
 
-TCommandSet::TCommandSet(TSessionData * ASessionData):
+TCommandSet::TCommandSet(TSessionData * ASessionData) :
   FSessionData(ASessionData), FReturnVar(L"")
 {
   assert(FSessionData);
@@ -335,7 +335,8 @@ TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) :
   FOutput(nullptr),
   FReturnCode(0),
   FProcessingCommand(false),
-  FLsFullTime(asAuto)
+  FLsFullTime(asAuto),
+  FOnCaptureOutput(nullptr)
 {
 }
 
@@ -470,7 +471,12 @@ void TSCPFileSystem::Idle()
   FSecureShell->Idle();
 }
 
-UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/)
+UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
+{
+  return static_cast<const TSCPFileSystem *>(this)->GetAbsolutePath(APath, Local);
+}
+
+UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
   return core::AbsolutePath(GetCurrDirectory(), APath);
 }
@@ -538,7 +544,7 @@ void TSCPFileSystem::EnsureLocation()
     FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
       FCachedDirectoryChange.c_str()));
     UnicodeString Directory = FCachedDirectoryChange;
-    FCachedDirectoryChange = L"";
+    FCachedDirectoryChange.Clear();
     try
     {
       ChangeDirectory(Directory);
@@ -845,7 +851,7 @@ void TSCPFileSystem::DetectReturnVar()
   {
     // #60 17.10.01: "status" and "?" switched
     UnicodeString ReturnVars[2] = { L"status", L"?" };
-    UnicodeString NewReturnVar = L"";
+    UnicodeString NewReturnVar;
     FTerminal->LogEvent(L"Detecting variable containing return code of last command.");
     for (intptr_t Index = 0; Index < 2; ++Index)
     {
@@ -978,7 +984,7 @@ void TSCPFileSystem::ChangeDirectory(const UnicodeString & Directory)
     ToDir = DelimitStr(Directory);
   }
   ExecCommand2(fsChangeDirectory, 0, ToDir.c_str());
-  FCachedDirectoryChange = L"";
+  FCachedDirectoryChange.Clear();
 }
 
 void TSCPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
@@ -1453,7 +1459,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   assert(AFilesToCopy && OperationProgress);
 
   Params &= ~(cpAppend | cpResume);
-  UnicodeString Options = L"";
+  UnicodeString Options;
   bool CheckExistence = core::UnixSamePath(TargetDir, FTerminal->GetCurrDirectory()) &&
     (FTerminal->FFiles != nullptr) && FTerminal->FFiles->GetLoaded();
   bool CopyBatchStarted = false;
@@ -1563,7 +1569,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
         }
         else
         {
-          int64_t MTime;
+          int64_t MTime = 0;
           TOverwriteFileParams FileParams;
           FTerminal->OpenLocalFile(FileName, GENERIC_READ,
             nullptr, nullptr, nullptr, &MTime, nullptr,
@@ -1714,7 +1720,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
     }
     else
     {
-      UnicodeString AbsoluteFileName = FTerminal->AbsolutePath(/* TargetDir + */DestFileName, false);
+      UnicodeString AbsoluteFileName = FTerminal->GetAbsolutePath(/* TargetDir + */DestFileName, false);
       assert(LocalFileHandle);
 
       // File is regular file (not directory)
@@ -2095,7 +2101,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
 {
   bool CloseSCP = False;
   Params &= ~(cpAppend | cpResume);
-  UnicodeString Options = L"";
+  UnicodeString Options;
   if (CopyParam->GetPreserveRights() || CopyParam->GetPreserveTime())
   {
     Options = L"-p";

@@ -12,9 +12,6 @@
 #include <SessionData.h>
 #include <Interface.h>
 
-extern const UnicodeString PageantTool = L"pageant.exe";
-extern const UnicodeString PuttygenTool = L"puttygen.exe";
-
 template<class TEditControl>
 void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int ForceDirectoryMasks)
 {
@@ -123,7 +120,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
             ExportData->SetPuttyProtocol(PuttyTelnetProtocol);
             ExportData->SetPortNumber(TelnetPortNumber);
             // PuTTY  does not allow -pw for telnet
-            Psw = L"";
+            Psw.Clear();
           }
           else
           {
@@ -191,7 +188,7 @@ bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
   HANDLE & Handle)
 {
   TShellExecuteInfoW ExecuteInfo;
-  memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
+  ::ZeroMemory(&ExecuteInfo, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
   ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
@@ -211,7 +208,7 @@ bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & APath,
   const UnicodeString & Params, TProcessMessagesEvent ProcessMessages)
 {
   TShellExecuteInfoW ExecuteInfo;
-  memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
+  ::ZeroMemory(&ExecuteInfo, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
   ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
@@ -256,8 +253,8 @@ bool SpecialFolderLocation(int PathID, UnicodeString & APath)
 {
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
-  if (SHGetSpecialFolderLocation(nullptr, PathID, &Pidl) == NO_ERROR &&
-      SHGetPathFromIDList(Pidl, Buf))
+  if (::SHGetSpecialFolderLocation(nullptr, PathID, &Pidl) == NO_ERROR &&
+      ::SHGetPathFromIDList(Pidl, Buf))
   {
     APath = UnicodeString(Buf);
     return true;

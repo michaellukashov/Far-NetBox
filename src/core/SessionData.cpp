@@ -42,22 +42,8 @@ const intptr_t HTTPSPortNumber = 443;
 const intptr_t TelnetPortNumber = 23;
 const intptr_t DefaultSendBuf = 256 * 1024;
 const intptr_t ProxyPortNumber = 80;
-const UnicodeString AnonymousUserName(L"anonymous");
-const UnicodeString AnonymousPassword(L"");
-const UnicodeString PuttySshProtocol(L"ssh");
-const UnicodeString PuttyTelnetProtocol(L"telnet");
-const UnicodeString SftpProtocolStr(L"sftp");
-const UnicodeString ScpProtocolStr(L"scp");
-const UnicodeString FtpProtocolStr(L"ftp");
-const UnicodeString FtpsProtocolStr(L"ftps");
-const UnicodeString WebDAVProtocolStr(L"http");
-const UnicodeString WebDAVSProtocolStr(L"https");
-const UnicodeString ProtocolSeparator(L"://");
-const UnicodeString WinSCPProtocolPrefix(L"winscp-");
 const wchar_t UrlParamSeparator = L';';
 const wchar_t UrlParamValueSeparator = L'=';
-const UnicodeString UrlHostKeyParamName(L"fingerprint");
-const UnicodeString UrlSaveParamName(L"save");
 
 const uintptr_t CONST_DEFAULT_CODEPAGE = CP_ACP;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
@@ -88,8 +74,8 @@ void TSessionData::Default()
 {
   SetHostName(L"");
   SetPortNumber(SshPortNumber);
-  SetUserName(AnonymousUserName);
-  SetPassword(AnonymousPassword);
+  SetUserName(ANONYMOUS_USER_NAME);
+  SetPassword(ANONYMOUS_PASSWORD);
   SetPingInterval(30);
   // when changing default, update load/save logic
   SetPingType(ptOff);
@@ -1094,8 +1080,8 @@ void TSessionData::ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & 
   int LogonType = ReadXmlNode(Node, L"Logontype", 0);
   if (LogonType == 0) // ANONYMOUS
   {
-    UserName = AnonymousUserName;
-    Password = AnonymousPassword;
+    UserName = ANONYMOUS_USER_NAME;
+    Password = ANONYMOUS_PASSWORD;
   }
   else
   {
@@ -1222,8 +1208,8 @@ bool TSessionData::HasAnyPassword() const
 
 void TSessionData::ClearSessionPasswords()
 {
-  FPassword = L"";
-  FTunnelPassword = L"";
+  FPassword.Clear();
+  FTunnelPassword.Clear();
 }
 
 void TSessionData::Modify()
@@ -1561,7 +1547,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
         (*MaskedUrl) += RawUserName;
         if (!UserInfo.IsEmpty())
         {
-          (*MaskedUrl) += L":" + PasswordMask;
+          (*MaskedUrl) += L":" + UnicodeString(PASSWORD_MASK);
         }
         if (!RawUserName.IsEmpty() || !UserInfo.IsEmpty())
         {
@@ -1576,7 +1562,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       }
     }
 
-    if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != L"/"))
+    if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != ROOTDIRECTORY))
     {
       if ((ARemoteDirectory[ARemoteDirectory.Length()] != L'/') &&
           (AFileName != nullptr))
@@ -2284,7 +2270,8 @@ UnicodeString TSessionData::GetSessionName() const
     Result = GetName();
     if (GetHidden())
     {
-      Result = Result.SubString(TNamedObjectList::HiddenPrefix.Length() + 1, Result.Length() - TNamedObjectList::HiddenPrefix.Length());
+      UnicodeString HiddenPrefix(CONST_HIDDEN_PREFIX);
+      Result = Result.SubString(HiddenPrefix.Length() + 1, Result.Length() - HiddenPrefix.Length());
     }
   }
   else
@@ -2360,7 +2347,7 @@ UnicodeString TSessionData::GetSessionUrl() const
     }
     else
     {
-      Url = L"";
+      Url.Clear();
     }
   }
   return Url;
@@ -3037,7 +3024,7 @@ UnicodeString TSessionData::ComposePath(
 
 TLoginType TSessionData::GetLoginType() const
 {
-  return (SessionGetUserName() == AnonymousUserName) && GetPassword().IsEmpty() ?
+  return (SessionGetUserName() == ANONYMOUS_USER_NAME) && GetPassword().IsEmpty() ?
     ltAnonymous : ltNormal;
 }
 
@@ -3047,7 +3034,7 @@ void TSessionData::SetLoginType(TLoginType Value)
   if (GetLoginType() == ltAnonymous)
   {
     SetPassword(L"");
-    SetUserName(AnonymousUserName);
+    SetUserName(ANONYMOUS_USER_NAME);
   }
 }
 
@@ -3066,20 +3053,21 @@ void TSessionData::SetCodePage(const UnicodeString & Value)
 
 void TSessionData::AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix) const
 {
-  if (::LowerCase(HostName.SubString(1, Prefix.Length())) == Prefix)
+  UnicodeString FullPrefix = Prefix + ProtocolSeparator;
+  if (::LowerCase(HostName.SubString(1, FullPrefix.Length())) == FullPrefix)
   {
-    HostName.Delete(1, Prefix.Length());
+    HostName.Delete(1, FullPrefix.Length());
   }
 }
 
 void TSessionData::RemoveProtocolPrefix(UnicodeString & HostName) const
 {
-  AdjustHostName(HostName, L"scp://");
-  AdjustHostName(HostName, L"sftp://");
-  AdjustHostName(HostName, L"ftp://");
-  AdjustHostName(HostName, L"ftps://");
-  AdjustHostName(HostName, L"http://");
-  AdjustHostName(HostName, L"https://");
+  AdjustHostName(HostName, ScpProtocolStr);
+  AdjustHostName(HostName, SftpProtocolStr);
+  AdjustHostName(HostName, FtpProtocolStr);
+  AdjustHostName(HostName, FtpsProtocolStr);
+  AdjustHostName(HostName, WebDAVProtocolStr);
+  AdjustHostName(HostName, WebDAVSProtocolStr);
 }
 
 TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t FSProtocol)
@@ -3928,11 +3916,11 @@ UnicodeString GetCodePageAsString(uintptr_t CodePage)
 
 UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData)
 {
-  UnicodeString ANewFileName = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
+  UnicodeString Result = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
   TDateTime N = Now();
-  for (intptr_t Index = 1; Index < ANewFileName.Length(); ++Index)
+  for (intptr_t Index = 1; Index < Result.Length(); ++Index)
   {
-    if (ANewFileName[Index] == L'&')
+    if ((Result[Index] == L'&') && (Index < Result.Length()))
     {
       UnicodeString Replacement;
       // keep consistent with TFileCustomCommand::PatternReplacement
@@ -3940,7 +3928,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
       TDateTime DateTime = N;
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, NN, S, MS);
-      switch (tolower(ANewFileName[Index + 1]))
+      switch (::LowCase(Result[Index + 1]))
       {
         case L'y':
           // Replacement = FormatDateTime(L"yyyy", N);
@@ -3975,15 +3963,15 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
           break;
 
         default:
-          Replacement = UnicodeString(L"&") + ANewFileName[Index + 1];
+          Replacement = UnicodeString(L"&") + Result[Index + 1];
           break;
       }
-      ANewFileName.Delete(Index, 2);
-      ANewFileName.Insert(Replacement, Index);
+      Result.Delete(Index, 2);
+      Result.Insert(Replacement, Index);
       Index += Replacement.Length() - 1;
     }
   }
-  return ANewFileName;
+  return Result;
 }
 
 bool IsSshProtocol(TFSProtocol FSProtocol)

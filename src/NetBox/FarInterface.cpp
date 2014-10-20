@@ -21,7 +21,7 @@ void ShowExtendedException(Exception * E)
   WinSCPPlugin->ShowExtendedException(E);
 }
 
-UnicodeString AppNameString()
+UnicodeString GetAppNameString()
 {
   return L"NetBox";
 }
@@ -36,7 +36,7 @@ void Busy(bool /*Start*/)
   // nothing
 }
 
-UnicodeString SshVersionString()
+UnicodeString GetSshVersionString()
 {
   return FORMAT(L"NetBox-FAR-release-%s", GetConfiguration()->GetVersion().c_str());
 }

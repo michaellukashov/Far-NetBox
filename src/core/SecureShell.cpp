@@ -74,7 +74,7 @@ void TSecureShell::ResetConnection()
   PendSize = 0;
   sfree(Pending);
   Pending = nullptr;
-  FCWriteTemp = L"";
+  FCWriteTemp.Clear();
   ResetSessionInfo();
   FAuthenticating = false;
   FAuthenticated = false;
@@ -378,7 +378,7 @@ void TSecureShell::Open()
 
   SetActive(false);
 
-  FAuthenticationLog = L"";
+  FAuthenticationLog.Clear();
   FNoConnectionResponse = false;
   FUI->Information(LoadStr(STATUS_LOOKUPHOST), true);
 
@@ -489,7 +489,7 @@ bool TSecureShell::TryFtp()
         {
           SOCKADDR_IN Address;
 
-          memset(&Address, 0, sizeof(Address));
+          ::ZeroMemory(&Address, sizeof(Address));
           Address.sin_family = AF_INET;
           intptr_t Port = FtpPortNumber;
           Address.sin_port = htons(static_cast<short>(Port));
@@ -1362,9 +1362,9 @@ void TSecureShell::ClearStdError()
         (FAuthenticationLog.IsEmpty() ? L"" : L"\n") + FStdErrorTemp;
     }
     CaptureOutput(llStdError, FStdErrorTemp);
-    FStdErrorTemp = L"";
+    FStdErrorTemp.Clear();
   }
-  FStdError = L"";
+  FStdError.Clear();
 }
 
 void TSecureShell::CaptureOutput(TLogLineType Type,
@@ -1673,7 +1673,7 @@ void TSecureShell::WaitForData()
       TAutoNestingCounter NestingCounter(FWaitingForData);
 
       WSANETWORKEVENTS Events;
-      memset(&Events, 0, sizeof(Events));
+      ::ZeroMemory(&Events, sizeof(Events));
       TPoolForDataEvent Event(this, Events);
 
       LogEvent(L"Waiting for data timed out, asking user what to do.");
@@ -1789,7 +1789,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 {
   WSANETWORKEVENTS Events;
-  memset(&Events, 0, sizeof(Events));
+  ::ZeroMemory(&Events, sizeof(Events));
   bool Result = EnumNetworkEvents(Socket, Events);
   HandleNetworkEvents(Socket, Events);
 

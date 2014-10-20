@@ -1023,7 +1023,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   }
   catch (...)
   {
-    Comments = L"";
+    Comments.Clear();
   }
   UnicodeString LegalCopyright; // = GetConfiguration()->GetFileInfoString(L"LegalCopyright");
 
@@ -2925,7 +2925,7 @@ void TSessionDialog::LoginTypeComboChange()
   FLoginTypeIndex = LoginTypeCombo->GetItemIndex();
   if (GetLoginType() == ltAnonymous)
   {
-    UserNameEdit->SetText(AnonymousUserName);
+    UserNameEdit->SetText(ANONYMOUS_USER_NAME);
     PasswordEdit->SetText(L"");
   }
   else if (GetLoginType() == ltNormal)
@@ -3144,7 +3144,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   if ((GetLoginType() == ltAnonymous))
   {
     LoginTypeCombo->SetItemIndex(0);
-    UserNameEdit->SetText(AnonymousUserName);
+    UserNameEdit->SetText(ANONYMOUS_USER_NAME);
     PasswordEdit->SetText(L"");
   }
   else
@@ -6323,7 +6323,7 @@ void TFileSystemInfoDialog::ClipboardButtonClick(TFarButton * /*Sender*/,
 {
   NeedSpaceAvailable();
   FLastFeededControl = nullptr;
-  FClipboard = L"";
+  FClipboard.Clear();
   Feed(MAKE_CALLBACK(TFileSystemInfoDialog::ClipboardAddItem, this));
   FarPlugin->FarCopyToClipboard(FClipboard);
   Close = false;

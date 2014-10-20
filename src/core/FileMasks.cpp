@@ -11,11 +11,15 @@
 #include "Terminal.h"
 #include <StrUtils.hpp>
 
-extern const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
-static UnicodeString FileMasksDelimiters = L";,";
-static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
-static UnicodeString DirectoryMaskDelimiters = L"/\\";
-static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
+//extern const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
+//static UnicodeString FileMasksDelimiters = L";,";
+#define FILE_MASKS_DELIMITERS L";,"
+//static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
+#define ALL_FILE_MASKS_DELIMITERS L";,|"
+//static UnicodeString DirectoryMaskDelimiters = L"/\\";
+#define DIRECTORY_MASK_DELIMITERS L"/\\"
+//static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
+#define FILE_MASKS_DELIMITER_STR L'; '
 
 EFileMasksException::EFileMasksException(
   const UnicodeString & AMessage, intptr_t AErrorStart, intptr_t AErrorLen) :
@@ -167,7 +171,7 @@ UnicodeString TFileMasks::ComposeMaskStr(
     {
       for (intptr_t P = 1; P <= Str.Length(); P++)
       {
-        if (Str.IsDelimiter(AllFileMasksDelimiters, P))
+        if (Str.IsDelimiter(ALL_FILE_MASKS_DELIMITERS, P))
         {
           Str.Insert(Str[P], P);
           P++;
@@ -182,15 +186,15 @@ UnicodeString TFileMasks::ComposeMaskStr(
       }
       else
       {
-        while (Str.IsDelimiter(DirectoryMaskDelimiters, Str.Length()))
+        while (Str.IsDelimiter(DIRECTORY_MASK_DELIMITERS, Str.Length()))
         {
           Str.SetLength(Str.Length() - 1);
         }
         StrNoDirMask = Str;
       }
 
-      AddToList(Result, Str, FileMasksDelimiterStr);
-      AddToList(ResultNoDirMask, StrNoDirMask, FileMasksDelimiterStr);
+      AddToList(Result, Str, FILE_MASKS_DELIMITER_STR);
+      AddToList(ResultNoDirMask, StrNoDirMask, FILE_MASKS_DELIMITER_STR);
     }
   }
 
@@ -209,9 +213,9 @@ UnicodeString TFileMasks::ComposeMaskStr(
   TStrings * IncludeDirectoryMasksStr, TStrings * ExcludeDirectoryMasksStr)
 {
   UnicodeString IncludeMasks = ComposeMaskStr(IncludeFileMasksStr, false);
-  AddToList(IncludeMasks, ComposeMaskStr(IncludeDirectoryMasksStr, true), FileMasksDelimiterStr);
+  AddToList(IncludeMasks, ComposeMaskStr(IncludeDirectoryMasksStr, true), FILE_MASKS_DELIMITER_STR);
   UnicodeString ExcludeMasks = ComposeMaskStr(ExcludeFileMasksStr, false);
-  AddToList(ExcludeMasks, ComposeMaskStr(ExcludeDirectoryMasksStr, true), FileMasksDelimiterStr);
+  AddToList(ExcludeMasks, ComposeMaskStr(ExcludeDirectoryMasksStr, true), FILE_MASKS_DELIMITER_STR);
 
   UnicodeString Result = IncludeMasks;
   if (!ExcludeMasks.IsEmpty())
@@ -220,7 +224,7 @@ UnicodeString TFileMasks::ComposeMaskStr(
     {
       Result += L' ';
     }
-    Result += UnicodeString(IncludeExcludeFileMasksDelimiter) + L' ' + ExcludeMasks;
+    Result += UnicodeString(INCLUDE_EXCLUDE_FILE_MASKS_DELIMITER) + L' ' + ExcludeMasks;
   }
   return Result;
 }
@@ -514,12 +518,12 @@ UnicodeString TFileMasks::MakeDirectoryMask(const UnicodeString & Str)
 {
   assert(!Str.IsEmpty());
   UnicodeString Result = Str;
-  if (Result.IsEmpty() || !Result.IsDelimiter(DirectoryMaskDelimiters, Result.Length()))
+  if (Result.IsEmpty() || !Result.IsDelimiter(DIRECTORY_MASK_DELIMITERS, Result.Length()))
   {
-    intptr_t D = Result.LastDelimiter(DirectoryMaskDelimiters);
+    intptr_t D = Result.LastDelimiter(DIRECTORY_MASK_DELIMITERS);
     // if there's any [back]slash anywhere in str,
     // add the same [back]slash at the end, otherwise add slash
-    wchar_t Delimiter = (D > 0) ? Result[D] : DirectoryMaskDelimiters[1];
+    wchar_t Delimiter = (D > 0) ? Result[D] : L'/';
     Result += Delimiter;
   }
   return Result;
@@ -609,7 +613,7 @@ void TFileMasks::CreateMask(
     }
     else if (!PartStr.IsEmpty())
     {
-      intptr_t D = PartStr.LastDelimiter(DirectoryMaskDelimiters);
+      intptr_t D = PartStr.LastDelimiter(DIRECTORY_MASK_DELIMITERS);
 
       Directory = (D > 0) && (D == PartStr.Length());
 
@@ -621,9 +625,9 @@ void TFileMasks::CreateMask(
           Mask.UserStr.Delete(PartStart - MaskStart + D, 1);
           D--;
         }
-        while (PartStr.IsDelimiter(DirectoryMaskDelimiters, PartStr.Length()));
+        while (PartStr.IsDelimiter(DIRECTORY_MASK_DELIMITERS, PartStr.Length()));
 
-        D = PartStr.LastDelimiter(DirectoryMaskDelimiters);
+        D = PartStr.LastDelimiter(DIRECTORY_MASK_DELIMITERS);
 
         if (FForceDirectoryMasks == 0)
         {
@@ -634,7 +638,7 @@ void TFileMasks::CreateMask(
       else if (FForceDirectoryMasks > 0)
       {
         Directory = true;
-        Mask.MaskStr.Insert(DirectoryMaskDelimiters[1], PartStart - MaskStart + PartStr.Length());
+        Mask.MaskStr.Insert(L'/', PartStart - MaskStart + PartStr.Length());
       }
 
       if (D > 0)
@@ -742,7 +746,7 @@ void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
       }
       else
       {
-        MaskStr = CopyToChars(Str, NextMaskFrom, AllFileMasksDelimiters, false, &NextMaskDelimiter, true);
+        MaskStr = CopyToChars(Str, NextMaskFrom, ALL_FILE_MASKS_DELIMITERS, false, &NextMaskDelimiter, true);
       }
       intptr_t MaskEnd = NextMaskFrom - 2;
 
@@ -753,7 +757,7 @@ void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
         CreateMask(MaskStr, MaskStart, MaskEnd, Include);
       }
 
-      if (NextMaskDelimiter == IncludeExcludeFileMasksDelimiter)
+      if (NextMaskDelimiter == INCLUDE_EXCLUDE_FILE_MASKS_DELIMITER)
       {
         if (Include)
         {
@@ -779,7 +783,7 @@ void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
 #define TEXT_TOKEN L'\255'
 
 const wchar_t TCustomCommand::NoQuote = L'\0';
-const UnicodeString TCustomCommand::Quotes = L"\"'";
+#define CONST_QUOTES L"\"'"
 
 TCustomCommand::TCustomCommand()
 {
@@ -864,6 +868,7 @@ UnicodeString TCustomCommand::Complete(const UnicodeString & Command,
     else
     {
       wchar_t Quote = NoQuote;
+      UnicodeString Quotes(CONST_QUOTES);
       if ((Index > 1) && (Index + Len - 1 < Command.Length()) &&
           Command.IsDelimiter(Quotes, Index - 1) &&
           Command.IsDelimiter(Quotes, Index + Len) &&
@@ -961,13 +966,13 @@ TInteractiveCustomCommand::TInteractiveCustomCommand(
 void TInteractiveCustomCommand::Prompt(
   const UnicodeString & /*Prompt*/, UnicodeString & Value)
 {
-  Value = L"";
+  Value.Clear();
 }
 
 void TInteractiveCustomCommand::Execute(
   const UnicodeString & /*Command*/, UnicodeString & Value)
 {
-  Value = L"";
+  Value.Clear();
 }
 
 intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index)

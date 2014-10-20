@@ -26,10 +26,10 @@ bool TObject::IsKindOf(TObjectClassId ClassId) const
 {
   assert(this != nullptr);
 
-  TClassInfo * thisInfo = GetClassInfo();
+  TClassInfo * thisInfo = this->GetClassInfo();
   assert(thisInfo != nullptr);
 
-  TClassInfo * classInfo = TClassInfo::FindClass(ClassId);
+  const TClassInfo * classInfo = TClassInfo::FindClass(ClassId);
   return thisInfo->IsKindOf(classInfo);
 }
 
@@ -442,28 +442,31 @@ UnicodeString TStrings::GetDelimitedText() const
   return Result;
 }
 
-template <class ContainerT>
-void tokenize(const std::wstring & str, ContainerT & tokens,
-  const std::wstring & delimiters = L" ", const bool trimEmpty = false)
+static void tokenize(const UnicodeString & str, rde::vector<UnicodeString> & tokens,
+  const UnicodeString & delimiters = L" ", const bool trimEmpty = false)
 {
-  std::string::size_type pos, lastPos = 0;
+  size_t lastPos = 0;
   while (true)
   {
-    pos = str.find_first_of(delimiters, lastPos);
-    if (pos == std::string::npos)
+    size_t pos = str.FindFirstOf(delimiters.c_str(), lastPos);
+    if (pos == NPOS)
     {
-       pos = str.length();
+       pos = str.Length();
 
        if (pos != lastPos || !trimEmpty)
-         tokens.push_back(typename ContainerT::value_type(str.data()+lastPos,
-            (typename ContainerT::value_type::size_type)pos-lastPos ));
+       {
+         tokens.push_back(
+          UnicodeString(str.data() + lastPos, pos - lastPos));
+       }
        break;
     }
     else
     {
       if (pos != lastPos || !trimEmpty)
-        tokens.push_back(typename ContainerT::value_type(str.data() + lastPos,
-          (typename ContainerT::value_type::size_type)pos-lastPos ));
+      {
+        tokens.push_back(
+          UnicodeString(str.data() + lastPos, pos - lastPos));
+      }
     }
 
     lastPos = pos + 1;
@@ -478,11 +481,9 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
     EndUpdate();
   };
   Clear();
-  rde::vector<std::wstring> Lines;
-  std::wstring delim = std::wstring(1, GetDelimiter());
-  delim.append(1, L'\n');
-  std::wstring StrValue = Value.c_str();
-  tokenize(StrValue, Lines, delim, true);
+  rde::vector<UnicodeString> Lines;
+  UnicodeString delim(GetDelimiter() + L'\n');
+  tokenize(Value, Lines, delim, true);
   for (size_t Index = 0; Index < Lines.size(); Index++)
   {
     Add(Lines[Index].c_str());
@@ -1223,7 +1224,7 @@ int TSHFileInfo::GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmall
 
   if (bSmallIcon)
   {
-    SHGetFileInfo(
+    ::SHGetFileInfo(
       static_cast<LPCTSTR>(StrFileName.c_str()),
       FILE_ATTRIBUTE_NORMAL,
       &sfi,
@@ -1232,7 +1233,7 @@ int TSHFileInfo::GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmall
   }
   else
   {
-    SHGetFileInfo(
+    ::SHGetFileInfo(
       static_cast<LPCTSTR>(StrFileName.c_str()),
       FILE_ATTRIBUTE_NORMAL,
       &sfi,
@@ -1247,7 +1248,7 @@ int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon)
   SHFILEINFO sfi;
   if (bSmallIcon)
   {
-    SHGetFileInfo(
+    ::SHGetFileInfo(
       static_cast<LPCTSTR>(L"Doesn't matter"),
       FILE_ATTRIBUTE_DIRECTORY,
       &sfi,
@@ -1256,7 +1257,7 @@ int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon)
   }
   else
   {
-    SHGetFileInfo(
+    ::SHGetFileInfo(
       static_cast<LPCTSTR>(L"Doesn't matter"),
       FILE_ATTRIBUTE_DIRECTORY,
       &sfi,
@@ -1270,7 +1271,7 @@ UnicodeString TSHFileInfo::GetFileType(const UnicodeString & StrFileName)
 {
   SHFILEINFO sfi;
 
-  SHGetFileInfo(
+  ::SHGetFileInfo(
     reinterpret_cast<LPCTSTR>(StrFileName.c_str()),
     FILE_ATTRIBUTE_NORMAL,
     &sfi,
@@ -1697,7 +1698,7 @@ void TRegistry::CloseKey()
   {
     ::RegCloseKey(GetCurrentKey());
     FCurrentKey = 0;
-    FCurrentPath = L"";
+    FCurrentPath.Clear();
   }
 }
 
@@ -1770,7 +1771,7 @@ bool TRegistry::DeleteValue(const UnicodeString & Name) const
   return Result;
 }
 
-bool TRegistry::KeyExists(const UnicodeString & Key)
+bool TRegistry::KeyExists(const UnicodeString & Key) const
 {
   bool Result = false;
   uint32_t OldAccess = FAccess;
@@ -1880,7 +1881,7 @@ int64_t TRegistry::ReadInt64(const UnicodeString & Name)
 
 UnicodeString TRegistry::ReadString(const UnicodeString & Name)
 {
-  UnicodeString Result = L"";
+  UnicodeString Result;
   TRegDataType RegData = rdUnknown;
   intptr_t Len = GetDataSize(Name);
   if (Len > 0)
@@ -1895,7 +1896,7 @@ UnicodeString TRegistry::ReadString(const UnicodeString & Name)
   }
   else
   {
-    Result = L"";
+    Result.Clear();
   }
   return Result;
 }
@@ -2007,7 +2008,7 @@ void TRegistry::ChangeKey(HKEY Value, const UnicodeString & APath)
   FCurrentPath = APath;
 }
 
-HKEY TRegistry::GetBaseKey(bool Relative)
+HKEY TRegistry::GetBaseKey(bool Relative) const
 {
   HKEY Result = 0;
   if ((FCurrentKey == 0) || !Relative)
@@ -2021,7 +2022,7 @@ HKEY TRegistry::GetBaseKey(bool Relative)
   return Result;
 }
 
-HKEY TRegistry::GetKey(const UnicodeString & Key)
+HKEY TRegistry::GetKey(const UnicodeString & Key) const
 {
   UnicodeString S = Key;
   bool Relative = IsRelative(S);

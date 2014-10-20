@@ -99,8 +99,8 @@ extern const wchar_t ProxyMethodList[][10];
 extern const TCipher DefaultCipherList[CIPHER_COUNT];
 extern const TKex DefaultKexList[KEX_COUNT];
 extern const intptr_t DefaultSendBuf;
-extern const UnicodeString AnonymousUserName;
-extern const UnicodeString AnonymousPassword;
+#define ANONYMOUS_USER_NAME L"anonymous"
+#define ANONYMOUS_PASSWORD L""
 extern const intptr_t SshPortNumber;
 extern const intptr_t FtpPortNumber;
 extern const intptr_t FtpsImplicitPortNumber;
@@ -108,20 +108,20 @@ extern const intptr_t HTTPPortNumber;
 extern const intptr_t HTTPSPortNumber;
 extern const intptr_t TelnetPortNumber;
 extern const intptr_t ProxyPortNumber;
-extern const UnicodeString PuttySshProtocol;
-extern const UnicodeString PuttyTelnetProtocol;
-extern const UnicodeString SftpProtocolStr;
-extern const UnicodeString ScpProtocolStr;
-extern const UnicodeString FtpProtocolStr;
-extern const UnicodeString FtpsProtocolStr;
-extern const UnicodeString WebDAVProtocolStr;
-extern const UnicodeString WebDAVSProtocolStr;
-extern const UnicodeString ProtocolSeparator;
-extern const UnicodeString WinSCPProtocolPrefix;
+#define PuttySshProtocol L"ssh"
+#define PuttyTelnetProtocol L"telnet"
+#define SftpProtocolStr L"sftp"
+#define ScpProtocolStr L"scp"
+#define FtpProtocolStr L"ftp"
+#define FtpsProtocolStr L"ftps"
+#define WebDAVProtocolStr L"http"
+#define WebDAVSProtocolStr L"https"
+#define ProtocolSeparator L"://"
+#define WinSCPProtocolPrefix L"winscp-"
 extern const wchar_t UrlParamSeparator;
 extern const wchar_t UrlParamValueSeparator;
-extern const UnicodeString UrlHostKeyParamName;
-extern const UnicodeString UrlSaveParamName;
+#define UrlHostKeyParamName L"fingerprint"
+#define UrlSaveParamName L"save"
 
 struct TIEProxyConfig : public TObject
 {

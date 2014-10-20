@@ -52,24 +52,24 @@ public:
   void SetHelpTopic(const UnicodeString & Value);
   FARDIALOGITEMFLAGS GetFlags() const { return FFlags; }
   void SetFlags(const FARDIALOGITEMFLAGS Value);
-  bool GetCentered();
+  bool GetCentered() const;
   void SetCentered(bool Value);
-  TPoint GetSize();
+  TPoint GetSize() const;
   void SetSize(TPoint Value);
-  TPoint GetClientSize();
-  intptr_t GetWidth();
+  TPoint GetClientSize() const;
+  intptr_t GetWidth() const;
   void SetWidth(intptr_t Value);
-  intptr_t GetHeight();
+  intptr_t GetHeight() const;
   void SetHeight(intptr_t Value);
-  UnicodeString GetCaption();
+  UnicodeString GetCaption() const;
   void SetCaption(const UnicodeString &  Value);
   HANDLE GetHandle() const { return FHandle; }
   TFarButton * GetDefaultButton() const { return FDefaultButton; }
   TFarBox * GetBorderBox() const { return FBorderBox; }
   intptr_t GetType(TFarDialogItem * Item) const;
   intptr_t GetItem(TFarDialogItem * Item) const;
-  TFarDialogItem * GetItem(intptr_t Index);
-  intptr_t GetItemCount();
+  TFarDialogItem * GetItem(intptr_t Index) const;
+  intptr_t GetItemCount() const;
   TItemPosition GetNextItemPosition() const { return FNextItemPosition; }
   void SetNextItemPosition(const TItemPosition Value) { FNextItemPosition = Value; }
   intptr_t GetDefaultGroup() const { return FDefaultGroup; }
@@ -88,7 +88,7 @@ public:
   void LockChanges();
   void UnlockChanges();
   FarColor GetSystemColor(PaletteColors colorId);
-  bool HotKey(uintptr_t Key, uintptr_t ControlState);
+  bool HotKey(uintptr_t Key, uintptr_t ControlState) const;
 
 protected:
   TCustomFarPlugin * GetFarPlugin() const { return FFarPlugin; }

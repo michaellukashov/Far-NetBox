@@ -62,12 +62,9 @@ const wchar_t EngShortMonthNames[12][4] =
   L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
   L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"
 };
-const std::string Bom = "\xEF\xBB\xBF";
 const wchar_t TokenPrefix = L'%';
 const wchar_t NoReplacement = wchar_t(0);
 const wchar_t TokenReplacement = wchar_t(1);
-const UnicodeString LocalInvalidChars = L"/\\:*?\"<>|";
-const UnicodeString PasswordMask = L"***";
 
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
@@ -108,14 +105,14 @@ void Shred(UnicodeString & Str)
   if (!Str.IsEmpty())
   {
     wmemset(const_cast<wchar_t *>(Str.c_str()), 0, Str.Length());
-    Str = L"";
+    Str.Clear();
   }
 }
 
 UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result = AFileName;
-  static UnicodeString IllegalChars = L":;,=+<>|\"[] \\/?*";
+  UnicodeString IllegalChars(L":;,=+<>|\"[] \\/?*");
   for (intptr_t Index = 0; Index < IllegalChars.Length(); ++Index)
   {
     Result = ReplaceChar(Result, IllegalChars[Index + 1], L'-');
@@ -192,7 +189,7 @@ UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim)
   else
   {
     Result = Str;
-    Str = L"";
+    Str.Clear();
   }
   if (Trim)
   {
@@ -276,7 +273,7 @@ UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars)
 
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote)
 {
-  static UnicodeString Chars = L"$\\";
+  UnicodeString Chars(L"$\\");
   if (Quote == L'"')
   {
     Chars += L"`\"";
@@ -422,7 +419,7 @@ UnicodeString GetShellFolderPath(int CSIdl)
 {
   UnicodeString Result;
   wchar_t Path[2 * MAX_PATH + 10] = L"\0";
-  if (SUCCEEDED(SHGetFolderPath(nullptr, CSIdl, nullptr, SHGFP_TYPE_CURRENT, Path)))
+  if (SUCCEEDED(::SHGetFolderPath(nullptr, CSIdl, nullptr, SHGFP_TYPE_CURRENT, Path)))
   {
     Result = Path;
   }
@@ -480,7 +477,7 @@ static wchar_t * ReplaceChar(
 
 UnicodeString ValidLocalFileName(const UnicodeString & AFileName)
 {
-  return ValidLocalFileName(AFileName, L'_', L"", LocalInvalidChars);
+  return ValidLocalFileName(AFileName, L'_', L"", LOCAL_INVALID_CHARS);
 }
 
 UnicodeString ValidLocalFileName(
@@ -537,8 +534,8 @@ void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   UnicodeString & Params, UnicodeString & Dir)
 {
   UnicodeString Cmd = Command.Trim();
-  Params = L"";
-  Dir = L"";
+  Params.Clear();
+  Dir.Clear();
   if (!Cmd.IsEmpty() && (Cmd[1] == L'\"'))
   {
     Cmd.Delete(1, 1);
@@ -1106,7 +1103,7 @@ UnicodeString CharToHex(wchar_t Ch, bool UpperCase)
 
 RawByteString HexToBytes(const UnicodeString & Hex)
 {
-  static UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = L"0123456789ABCDEF";
   RawByteString Result;
   intptr_t L = Hex.Length();
   if (L % 2 == 0)
@@ -1117,7 +1114,7 @@ RawByteString HexToBytes(const UnicodeString & Hex)
       intptr_t P2 = Digits.Pos(UpCase(Hex[Index + 1]));
       if (P1 <= 0 || P2 <= 0)
       {
-        Result = L"";
+        Result.Clear();
         break;
       }
       else
@@ -1131,7 +1128,7 @@ RawByteString HexToBytes(const UnicodeString & Hex)
 
 uint8_t HexToByte(const UnicodeString & Hex)
 {
-  static UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = L"0123456789ABCDEF";
   assert(Hex.Length() == 2);
   intptr_t P1 = Digits.Pos(UpCase(Hex[1]));
   intptr_t P2 = Digits.Pos(UpCase(Hex[2]));
@@ -2286,7 +2283,7 @@ bool CutToken(UnicodeString & Str, UnicodeString & Token,
 {
   bool Result;
 
-  Token = L"";
+  Token.Clear();
 
   // inspired by Putty's sftp_getcmd() from PSFTP.C
   intptr_t Index = 1;
@@ -2341,7 +2338,7 @@ bool CutToken(UnicodeString & Str, UnicodeString & Token,
   else
   {
     Result = false;
-    Str = L"";
+    Str.Clear();
   }
 
   return Result;

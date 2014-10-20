@@ -244,24 +244,30 @@ UnicodeString TrimRight(const UnicodeString & Str)
 
 UnicodeString UpperCase(const UnicodeString & Str)
 {
-  std::wstring Result(Str.c_str(), Str.Length());
-  std::transform(Result.begin(), Result.end(), Result.begin(), ::toupper);
-  return Result.c_str();
+//  std::wstring Result(Str.c_str(), Str.Length());
+//  std::transform(Result.begin(), Result.end(), Result.begin(), ::toupper);
+//  return Result.c_str();
+  UnicodeString Result(Str);
+  ::CharUpperBuff((LPWSTR)Result.c_str(), Result.Length());
+  return Result;
 }
 
 UnicodeString LowerCase(const UnicodeString & Str)
 {
-  std::wstring Result(Str.c_str(), Str.Length());
-  std::transform(Result.begin(), Result.end(), Result.begin(), ::tolower);
-  return Result.c_str();
+//  std::wstring Result(Str.c_str(), Str.Length());
+//  std::transform(Result.begin(), Result.end(), Result.begin(), ::tolower);
+//  return Result.c_str();
+  UnicodeString Result(Str);
+  ::CharLowerBuff((LPWSTR)Result.c_str(), Result.Length());
+  return Result;
 }
 
-inline wchar_t UpCase(const wchar_t Ch)
+wchar_t UpCase(const wchar_t Ch)
 {
   return static_cast<wchar_t>(::toupper(Ch));
 }
 
-inline wchar_t LowCase(const wchar_t Ch)
+wchar_t LowCase(const wchar_t Ch)
 {
   return static_cast<wchar_t>(::tolower(Ch));
 }
@@ -537,13 +543,13 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
     else
     {
       Result = Temp;
-      Temp = L"";
+      Temp.Clear();
     }
     Result = ::IncludeTrailingBackslash(Result);
     Result = Result + AFileName;
     if (!::FileExists(Result))
     {
-      Result = L"";
+      Result.Clear();
     }
   }
   while (!(Temp.Length() == 0) || (Result.Length() != 0));
@@ -1156,7 +1162,7 @@ UnicodeString ExtractFileDir(const UnicodeString & Str)
   }
   else
   {
-    Result = (Pos == 1) ? UnicodeString(L"/") : UnicodeString();
+    Result = (Pos == 1) ? UnicodeString(ROOTDIRECTORY) : UnicodeString();
   }
   return Result;
 }
@@ -1189,18 +1195,18 @@ UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, wchar_t Separa
 
 UnicodeString HexToStr(const UnicodeString & Hex)
 {
-  static std::wstring Digits = L"0123456789ABCDEF";
-  std::wstring Result;
+  UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Result;
   intptr_t L = Hex.Length() - 1;
   if (L % 2 == 0)
   {
     for (intptr_t Index = 1; Index <= Hex.Length(); Index += 2)
     {
-      uintptr_t P1 = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[Index])));
-      uintptr_t P2 = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[Index + 1])));
-      if ((P1 == std::wstring::npos) || (P2 == std::wstring::npos))
+      intptr_t P1 = Digits.FindFirstOf(::UpCase(Hex[Index]));
+      intptr_t P2 = Digits.FindFirstOf(::UpCase(Hex[Index + 1]));
+      if ((P1 == NPOS) || (P2 == NPOS))
       {
-        Result = L"";
+        Result.Clear();
         break;
       }
       else
@@ -1209,18 +1215,18 @@ UnicodeString HexToStr(const UnicodeString & Hex)
       }
     }
   }
-  return UnicodeString(Result.c_str());
+  return Result;
 }
 
 uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars)
 {
-  static std::wstring Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = L"0123456789ABCDEF";
   uintptr_t Result = 0;
   intptr_t Index = 1;
   while (Index <= Hex.Length())
   {
-    size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[Index])));
-    if (A == std::wstring::npos)
+    intptr_t A = Digits.FindFirstOf(UpCase(Hex[Index]));
+    if (A == NPOS)
     {
       if ((MinChars == NPOS) || (Index <= static_cast<intptr_t>(MinChars)))
       {

@@ -10,7 +10,7 @@
 
 TBookmarks::TBookmarks() : TObject()
 {
-  FSharedKey = TNamedObjectList::HiddenPrefix + L"shared";
+  FSharedKey = UnicodeString(CONST_HIDDEN_PREFIX) + L"shared";
   FBookmarkLists = new TStringList();
   FBookmarkLists->SetSorted(true);
   FBookmarkLists->SetCaseSensitive(false);
@@ -90,7 +90,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
     }
     else
     {
-      Directory = L""; // use only in case of malformed config
+      Directory.Clear(); // use only in case of malformed config
       ShortCut = static_cast<TShortCut>(Storage->ReadInteger(Name, 0));
     }
     if (Name.ToInt() > 0)
@@ -261,7 +261,7 @@ void TBookmarks::SetSharedBookmarks(TBookmarkList * Value)
   SetBookmarks(FSharedKey, Value);
 }
 
-TBookmarkList::TBookmarkList(): TPersistent()
+TBookmarkList::TBookmarkList() : TPersistent()
 {
   FModified = false;
   FBookmarks = new TStringList();
@@ -417,7 +417,7 @@ TBookmark * TBookmarkList::FindByShortCut(TShortCut ShortCut)
   return nullptr;
 }
 
-intptr_t TBookmarkList::GetCount()
+intptr_t TBookmarkList::GetCount() const
 {
   return FBookmarks->GetCount();
 }
@@ -558,7 +558,7 @@ UnicodeString TBookmark::BookmarkKey(const UnicodeString & Node, const UnicodeSt
   return FORMAT(L"%s\1%s", Node.c_str(), Name.c_str());
 }
 
-UnicodeString TBookmark::GetKey()
+UnicodeString TBookmark::GetKey() const
 {
   return BookmarkKey(GetNode(), GetName());
 }

@@ -1476,7 +1476,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
   }
   else
   {
-    FCurrentTitle = L"";
+    FCurrentTitle.Clear();
     FCurrentProgress = -1;
     ::SetConsoleTitle(Title.c_str());
     UpdateProgress(TBPS_NOPROGRESS, 0);
@@ -1783,7 +1783,7 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
   FClosed(false),
   FOpenPanelInfoValid(false)
 {
-  memset(FPanelInfo, 0, sizeof(FPanelInfo));
+  ::ZeroMemory(FPanelInfo, sizeof(FPanelInfo));
   ClearStruct(FOpenPanelInfo);
 }
 
@@ -2064,7 +2064,7 @@ TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another)
       !bAnother ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
     if (!Res)
     {
-      memset(Info, 0, sizeof(*Info));
+      ::ZeroMemory(Info, sizeof(PanelInfo));
       assert(false);
     }
     FPanelInfo[bAnother] = new TFarPanelInfo(Info, !bAnother ? this : nullptr);
@@ -2182,7 +2182,7 @@ TObjectList * TCustomFarFileSystem::CreatePanelItemList(
 
 TFarPanelModes::TFarPanelModes() : TObject()
 {
-  memset(&FPanelModes, 0, sizeof(FPanelModes));
+  ::ZeroMemory(&FPanelModes, sizeof(FPanelModes));
   FReferenced = false;
 }
 
@@ -2293,7 +2293,7 @@ intptr_t TFarPanelModes::CommaCount(const UnicodeString & ColumnTypes)
 
 TFarKeyBarTitles::TFarKeyBarTitles()
 {
-  memset(&FKeyBarTitles, 0, sizeof(FKeyBarTitles));
+  ::ZeroMemory(&FKeyBarTitles, sizeof(FKeyBarTitles));
   FKeyBarTitles.CountLabels = 7 * 12;
   FKeyBarTitles.Labels = static_cast<KeyBarLabel *>(
     nb_malloc(sizeof(KeyBarLabel) * 7 * 12));
@@ -2425,14 +2425,12 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->CustomColumnData = CustomColumnData;
 }
 
-TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem):
+TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem) :
   TCustomFarPanelItem(),
-  FPanelItem(nullptr),
-  FOwnsItem(false)
+  FPanelItem(APanelItem),
+  FOwnsItem(OwnsItem)
 {
-  assert(APanelItem);
-  FPanelItem = APanelItem;
-  FOwnsItem = OwnsItem;
+  assert(FPanelItem);
 }
 
 TFarPanelItem::~TFarPanelItem()
@@ -2469,7 +2467,7 @@ UnicodeString TFarPanelItem::GetFileName() const
   return Result;
 }
 
-void * TFarPanelItem::GetUserData()
+void * TFarPanelItem::GetUserData() const
 {
   return FPanelItem->UserData.Data;
 }
@@ -2522,7 +2520,7 @@ void THintPanelItem::GetData(
   AFileName = FHint;
 }
 
-TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner):
+TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner) :
   TObject(),
   FPanelInfo(APanelInfo),
   FItems(nullptr),
@@ -2576,6 +2574,7 @@ TObjectList * TFarPanelInfo::GetItems()
   }
   if (FOwner)
   {
+    FItems->Clear();
     for (size_t Index = 0; Index < FPanelInfo->ItemsNumber; ++Index)
     {
       // TODO: move to common function
@@ -2705,7 +2704,7 @@ bool TFarPanelInfo::GetIsPlugin() const
 
 UnicodeString TFarPanelInfo::GetCurrDirectory() const
 {
-  UnicodeString Result = L"";
+  UnicodeString Result;
   intptr_t Size = FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
     0,
     0,
@@ -2835,7 +2834,7 @@ intptr_t TFarEditorInfo::GetEditorID() const
 
 UnicodeString TFarEditorInfo::GetFileName()
 {
-  UnicodeString Result = L"";
+  UnicodeString Result;
   intptr_t BuffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, 0);
   if (BuffLen)
   {

@@ -38,7 +38,7 @@ void TCopyParamType::Default()
   SetResumeSupport(rsSmart);
   SetResumeThreshold(100 * 1024); // (100 KB)
   SetInvalidCharsReplacement(TokenReplacement);
-  SetLocalInvalidChars(::LocalInvalidChars);
+  SetLocalInvalidChars(LOCAL_INVALID_CHARS);
   SetCalculateSize(true);
   SetFileMask(L"*.*");
   GetIncludeFileMask().SetMasks(L"");
@@ -331,7 +331,7 @@ void TCopyParamType::SetReplaceInvalidChars(bool Value)
 
 UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString & AFileName) const
 {
-  return ::ValidLocalFileName(AFileName, GetInvalidCharsReplacement(), FTokenizibleChars, LocalInvalidChars);
+  return ::ValidLocalFileName(AFileName, GetInvalidCharsReplacement(), FTokenizibleChars, LOCAL_INVALID_CHARS);
 }
 
 UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) const
@@ -628,9 +628,9 @@ void TCopyParamType::Load(THierarchicalStorage * Storage)
         GetIncludeFileMask().SetMasks(ExcludeFileMask);
       }
       // convert at least simple cases to new format
-      else if (ExcludeFileMask.Pos(IncludeExcludeFileMasksDelimiter) == 0)
+      else if (ExcludeFileMask.Pos(INCLUDE_EXCLUDE_FILE_MASKS_DELIMITER) == 0)
       {
-        GetIncludeFileMask().SetMasks(UnicodeString(IncludeExcludeFileMasksDelimiter) + ExcludeFileMask);
+        GetIncludeFileMask().SetMasks(UnicodeString(INCLUDE_EXCLUDE_FILE_MASKS_DELIMITER) + ExcludeFileMask);
       }
     }
   }

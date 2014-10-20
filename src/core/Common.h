@@ -28,12 +28,12 @@ inline void ThrowExtException() { throw ExtException((Exception *)nullptr, Unico
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
 
 extern const wchar_t EngShortMonthNames[12][4];
-extern const std::string Bom;
+#define CONST_BOM "\xEF\xBB\xBF"
 extern const wchar_t TokenPrefix;
 extern const wchar_t NoReplacement;
 extern const wchar_t TokenReplacement;
-extern const UnicodeString LocalInvalidChars;
-extern const UnicodeString PasswordMask;
+#define LOCAL_INVALID_CHARS L"/\\:*?\"<>|"
+#define PASSWORD_MASK L"***"
 
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B);
 UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);

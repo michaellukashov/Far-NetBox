@@ -115,7 +115,7 @@ TRect TFarDialog::GetClientRect() const
   return R;
 }
 
-TPoint TFarDialog::GetClientSize()
+TPoint TFarDialog::GetClientSize() const
 {
   TPoint S;
   if (FBorderBox)
@@ -171,12 +171,12 @@ void TFarDialog::SetCentered(bool Value)
   }
 }
 
-bool TFarDialog::GetCentered()
+bool TFarDialog::GetCentered() const
 {
   return (GetBounds().Left < 0) && (GetBounds().Top < 0);
 }
 
-TPoint TFarDialog::GetSize()
+TPoint TFarDialog::GetSize() const
 {
   if (GetCentered())
   {
@@ -209,7 +209,7 @@ void TFarDialog::SetWidth(intptr_t Value)
   SetSize(TPoint((int)Value, (int)GetHeight()));
 }
 
-intptr_t TFarDialog::GetWidth()
+intptr_t TFarDialog::GetWidth() const
 {
   return GetSize().x;
 }
@@ -219,7 +219,7 @@ void TFarDialog::SetHeight(intptr_t Value)
   SetSize(TPoint((int)GetWidth(), (int)Value));
 }
 
-intptr_t TFarDialog::GetHeight()
+intptr_t TFarDialog::GetHeight() const
 {
   return GetSize().y;
 }
@@ -232,12 +232,12 @@ void TFarDialog::SetCaption(const UnicodeString & Value)
   }
 }
 
-UnicodeString TFarDialog::GetCaption()
+UnicodeString TFarDialog::GetCaption() const
 {
   return FBorderBox->GetCaption();
 }
 
-intptr_t TFarDialog::GetItemCount()
+intptr_t TFarDialog::GetItemCount() const
 {
   return FItems->GetCount();
 }
@@ -249,7 +249,7 @@ intptr_t TFarDialog::GetItem(TFarDialogItem * Item) const
   return Item->GetItem();
 }
 
-TFarDialogItem * TFarDialog::GetItem(intptr_t Index)
+TFarDialogItem * TFarDialog::GetItem(intptr_t Index) const
 {
   TFarDialogItem * DialogItem;
   if (GetItemCount())
@@ -284,8 +284,7 @@ void TFarDialog::Add(TFarDialogItem * DialogItem)
       memmove(NewDialogItems, FDialogItems, FDialogItemsCapacity * sizeof(FarDialogItem));
       nb_free(FDialogItems);
     }
-    memset(NewDialogItems + FDialogItemsCapacity, 0,
-      DialogItemsDelta * sizeof(FarDialogItem));
+    ::ZeroMemory(NewDialogItems + FDialogItemsCapacity, DialogItemsDelta * sizeof(FarDialogItem));
     FDialogItems = NewDialogItems;
     FDialogItemsCapacity += DialogItemsDelta;
   }
@@ -622,7 +621,7 @@ bool TFarDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
   return Result;
 }
 
-bool TFarDialog::HotKey(uintptr_t Key, uintptr_t ControlState)
+bool TFarDialog::HotKey(uintptr_t Key, uintptr_t ControlState) const
 {
   bool Result = false;
   char HotKey = 0;
@@ -1843,11 +1842,12 @@ intptr_t TFarButton::ItemProc(intptr_t Msg, void * Param)
 
 bool TFarButton::HotKey(char HotKey)
 {
-  intptr_t P = GetCaption().Pos(L'&');
+  UnicodeString Caption = GetCaption();
+  intptr_t P = Caption.Pos(L'&');
   bool Result =
     GetVisible() && GetEnabled() &&
-    (P > 0) && (P < GetCaption().Length()) &&
-    (GetCaption()[P + 1] == HotKey);
+    (P > 0) && (P < Caption.Length()) &&
+    (Caption[P + 1] == HotKey);
   if (Result)
   {
     bool Close = (GetResult() != 0);
@@ -2099,7 +2099,7 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
     (ADialogItem->GetType() == DI_COMBOBOX) || (ADialogItem->GetType() == DI_LISTBOX));
   FDialogItem = ADialogItem;
   FListItems = static_cast<FarList *>(nb_malloc(sizeof(FarList)));
-  memset(FListItems, 0, sizeof(FarList));
+  ::ZeroMemory(FListItems, sizeof(FarList));
   FListItems->StructSize = sizeof(FarList);
   FNoDialogUpdate = false;
 }

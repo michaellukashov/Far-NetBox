@@ -176,10 +176,10 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   return Result;
 }
 
-UnicodeString GetExceptionHelpKeyword(Exception * E)
+UnicodeString GetExceptionHelpKeyword(const Exception * E)
 {
   UnicodeString HelpKeyword;
-  ExtException * ExtE = NB_STATIC_DOWNCAST(ExtException, E);
+  const ExtException * ExtE = NB_STATIC_DOWNCAST_CONST(ExtException, E);
   UnicodeString Message; // not used
   bool InternalError = false;
   if (ExtE != nullptr)
@@ -223,14 +223,14 @@ ExtException::ExtException(Exception * E) :
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
 
-ExtException::ExtException(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword):
+ExtException::ExtException(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   Exception(Msg),
   FMoreMessages(nullptr)
 {
   AddMoreMessages(E);
   FHelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
 }
-/*ExtException::ExtException(ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword):
+/*ExtException::ExtException(ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   Exception(Msg),
   FMoreMessages(nullptr),
   FHelpKeyword()
@@ -245,7 +245,7 @@ ExtException::ExtException(Exception * E, int Ident) :
 {
 }
 
-ExtException::ExtException(const UnicodeString & Msg, Exception * E, const UnicodeString & HelpKeyword) :
+ExtException::ExtException(const UnicodeString & Msg, const Exception * E, const UnicodeString & HelpKeyword) :
   Exception(L""),
   FMoreMessages(nullptr)
 {
@@ -349,12 +349,12 @@ ExtException::~ExtException() noexcept
   FMoreMessages = nullptr;
 }
 
-ExtException * ExtException::CloneFrom(Exception * E)
+ExtException * ExtException::CloneFrom(const Exception * E)
 {
   return new ExtException(E, L"");
 }
 
-ExtException * ExtException::Clone()
+ExtException * ExtException::Clone() const
 {
   return CloneFrom(this);
 }
@@ -385,23 +385,23 @@ EOSExtException::EOSExtException(const UnicodeString & Msg, int LastError) :
 {
 }
 
-EFatal::EFatal(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
+EFatal::EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   ExtException(Msg, E, HelpKeyword),
   FReopenQueried(false)
 {
-  EFatal * F = NB_STATIC_DOWNCAST(EFatal, E);
+  const EFatal * F = NB_STATIC_DOWNCAST_CONST(EFatal, E);
   if (F != nullptr)
   {
     FReopenQueried = F->GetReopenQueried();
   }
 }
 
-ExtException * EFatal::Clone()
+ExtException * EFatal::Clone() const
 {
   return new EFatal(this, L"");
 }
 
-ExtException * ESshTerminate::Clone()
+ExtException * ESshTerminate::Clone() const
 {
   return new ESshTerminate(this, L"", Operation);
 }

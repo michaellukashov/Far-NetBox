@@ -33,7 +33,8 @@ TNamedObject::TNamedObject(const UnicodeString & AName) :
 
 void TNamedObject::SetName(const UnicodeString & Value)
 {
-  FHidden = (Value.SubString(1, TNamedObjectList::HiddenPrefix.Length()) == TNamedObjectList::HiddenPrefix);
+  UnicodeString HiddenPrefix(CONST_HIDDEN_PREFIX);
+  FHidden = (Value.SubString(1, HiddenPrefix.Length()) == HiddenPrefix);
   FName = Value;
 }
 
@@ -78,9 +79,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
     }
 }
 
-const UnicodeString TNamedObjectList::HiddenPrefix = L"_!_";
-
-TNamedObjectList::TNamedObjectList():
+TNamedObjectList::TNamedObjectList() :
   TObjectList(),
   AutoSort(true),
   FHiddenCount(0)

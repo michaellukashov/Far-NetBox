@@ -28,7 +28,7 @@ UnicodeString MungeStr(const UnicodeString & Str, bool ForceAnsi)
     Source = UTF8String(Str);
     if (Source.Length() > Str.Length())
     {
-      Source.Insert(Bom.c_str(), 1);
+      Source.Insert(CONST_BOM, 1);
     }
   }
   // should contain ASCII characters only
@@ -47,6 +47,7 @@ UnicodeString UnMungeStr(const UnicodeString & Str)
   Dest.SetLength(Source.Length() + 1);
   putty_unmungestr(Source.c_str(), const_cast<char *>(Dest.c_str()), static_cast<int>(Dest.Length()));
   UnicodeString Result;
+  const std::string Bom(CONST_BOM);
   if (Dest.Pos(Bom.c_str()) == 1)
   {
     Dest.Delete(1, Bom.size());
@@ -391,7 +392,7 @@ TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage) :
   Init();
 }
 
-TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey):
+TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(nullptr),
   FFailed(0)

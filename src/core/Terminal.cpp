@@ -598,42 +598,54 @@ void TCallbackGuard::Verify()
 
 TTerminal::TTerminal() :
   TObject(),
-  TSessionUI()
+  TSessionUI(),
+  FReadCurrentDirectoryPending(false),
+  FReadDirectoryPending(false),
+  FTunnelOpening(false),
+  FSessionData(nullptr),
+  FLog(nullptr),
+  FActionLog(nullptr),
+  FConfiguration(nullptr),
+  FFiles(nullptr),
+  FInTransaction(0),
+  FSuspendTransaction(false),
+  FOnChangeDirectory(nullptr),
+  FOnReadDirectory(nullptr),
+  FOnStartReadDirectory(nullptr),
+  FOnReadDirectoryProgress(nullptr),
+  FOnDeleteLocalFile(nullptr),
+  FOnCreateLocalFile(nullptr),
+  FOnGetLocalFileAttributes(nullptr),
+  FOnSetLocalFileAttributes(nullptr),
+  FOnMoveLocalFile(nullptr),
+  FOnRemoveLocalDirectory(nullptr),
+  FOnCreateLocalDirectory(nullptr),
+  FOnInitializeLog(nullptr),
+  FUsersGroupsLookedup(false),
+  FOperationProgress(nullptr),
+  FUseBusyCursor(false),
+  FDirectoryCache(nullptr),
+  FDirectoryChangesCache(nullptr),
+  FFileSystem(nullptr),
+  FSecureShell(nullptr),
+  FFSProtocol(cfsUnknown),
+  FCommandSession(nullptr),
+  FAutoReadDirectory(false),
+  FReadingCurrentDirectory(false),
+  FClosedOnCompletion(nullptr),
+  FStatus(ssClosed),
+  FTunnelThread(nullptr),
+  FTunnel(nullptr),
+  FTunnelData(nullptr),
+  FTunnelLog(nullptr),
+  FTunnelUI(nullptr),
+  FTunnelLocalPortNumber(0),
+  FCallbackGuard(nullptr),
+  FEnableSecureShellUsage(false),
+  FCollectFileSystemUsage(false),
+  FRememberedPasswordTried(false),
+  FRememberedTunnelPasswordTried(false)
 {
-  FReadCurrentDirectoryPending = false;
-  FReadDirectoryPending = false;
-  FTunnelOpening = false;
-  FSessionData = nullptr;
-  FLog = nullptr;
-  FActionLog = nullptr;
-  FConfiguration = nullptr;
-  FFiles = nullptr;
-  FInTransaction = 0;
-  FSuspendTransaction = false;
-  FUsersGroupsLookedup = false;
-  FOperationProgress = nullptr;
-  FUseBusyCursor = false;
-  FDirectoryCache = nullptr;
-  FDirectoryChangesCache = nullptr;
-  FFileSystem = nullptr;
-  FSecureShell = nullptr;
-  FFSProtocol = cfsUnknown;
-  FCommandSession = nullptr;
-  FAutoReadDirectory = false;
-  FReadingCurrentDirectory = false;
-  FClosedOnCompletion = nullptr;
-  FStatus = ssClosed;
-  FTunnelThread = nullptr;
-  FTunnel = nullptr;
-  FTunnelData = nullptr;
-  FTunnelLog = nullptr;
-  FTunnelUI = nullptr;
-  FTunnelLocalPortNumber = 0;
-  FCallbackGuard = nullptr;
-  FEnableSecureShellUsage = false;
-  FCollectFileSystemUsage = false;
-  FRememberedPasswordTried = false;
-  FRememberedTunnelPasswordTried = false;
 }
 
 TTerminal::~TTerminal()
@@ -703,7 +715,7 @@ void TTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration)
   FOnFindingFile = nullptr;
 
   FUseBusyCursor = True;
-  FLockDirectory = L"";
+  FLockDirectory.Clear();
   FDirectoryCache = new TRemoteDirectoryCache();
   FDirectoryChangesCache = nullptr;
   FFSProtocol = cfsUnknown;
@@ -825,7 +837,7 @@ void TTerminal::Close()
 void TTerminal::ResetConnection()
 {
   // used to be called from Reopen(), why?
-  FTunnelError = L"";
+  FTunnelError.Clear();
 
   FRememberedPasswordTried = false;
   FRememberedTunnelPasswordTried = false;
@@ -1088,7 +1100,7 @@ bool TTerminal::IsListenerFree(uintptr_t PortNumber) const
   {
     SOCKADDR_IN Address;
 
-    memset(&Address, 0, sizeof(Address));
+    ::ZeroMemory(&Address, sizeof(Address));
     Address.sin_family = AF_INET;
     Address.sin_port = htons(static_cast<short>(PortNumber));
     Address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
@@ -1500,9 +1512,9 @@ bool TTerminal::GetIsCapable(TFSCapability Capability) const
   return FFileSystem->IsCapable(Capability);
 }
 
-UnicodeString TTerminal::AbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TTerminal::GetAbsolutePath(const UnicodeString & APath, bool Local) const
 {
-  return FFileSystem->AbsolutePath(APath, Local);
+  return FFileSystem->GetAbsolutePath(APath, Local);
 }
 
 void TTerminal::ReactOnCommand(intptr_t Cmd)
@@ -1767,7 +1779,7 @@ UnicodeString TTerminal::TranslateLockedPath(const UnicodeString & APath, bool L
         Result.Delete(1, FLockDirectory.Length());
         if (Result.IsEmpty())
         {
-          Result = L"/";
+          Result = ROOTDIRECTORY;
         }
       }
     }
@@ -2609,7 +2621,7 @@ void TTerminal::ReadCurrentDirectory()
       // not to broke the cache, if the next directory change would not
       // be initialized by ChangeDirectory(), which sets it
       // (HomeDirectory() particularly)
-      FLastDirectoryChange = L"";
+      FLastDirectoryChange.Clear();
     }
 
     if (OldDirectory.IsEmpty())
@@ -2753,7 +2765,7 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * AFileList)
 
 TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Directory, const TFileMasks & Mask)
 {
-  TLsSessionAction Action(GetActionLog(), AbsolutePath(Directory, true));
+  TLsSessionAction Action(GetActionLog(), GetAbsolutePath(Directory, true));
   TRemoteFileList * FileList = nullptr;
   try
   {
@@ -2796,7 +2808,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Director
 
 TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
 {
-  TStatSessionAction Action(GetActionLog(), AbsolutePath(APath, true));
+  TStatSessionAction Action(GetActionLog(), GetAbsolutePath(APath, true));
   TRemoteFile * File = nullptr;
   try
   {
@@ -3234,7 +3246,7 @@ void TTerminal::RemoteDeleteFile(const UnicodeString & AFileName,
 void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, intptr_t Params)
 {
-  TRmSessionAction Action(GetActionLog(), AbsolutePath(AFileName, true));
+  TRmSessionAction Action(GetActionLog(), GetAbsolutePath(AFileName, true));
   try
   {
     assert(FFileSystem);
@@ -3465,7 +3477,7 @@ void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
 void TTerminal::DoChangeFileProperties(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const TRemoteProperties * Properties)
 {
-  TChmodSessionAction Action(GetActionLog(), AbsolutePath(AFileName, true));
+  TChmodSessionAction Action(GetActionLog(), GetAbsolutePath(AFileName, true));
   try
   {
     assert(FFileSystem);
@@ -3679,7 +3691,7 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
 void TTerminal::DoRenameFile(const UnicodeString & AFileName,
   const UnicodeString & NewName, bool Move)
 {
-  TMvSessionAction Action(GetActionLog(), AbsolutePath(AFileName, true), AbsolutePath(NewName, true));
+  TMvSessionAction Action(GetActionLog(), GetAbsolutePath(AFileName, true), GetAbsolutePath(NewName, true));
   try
   {
     assert(FFileSystem);
@@ -3857,7 +3869,7 @@ void TTerminal::RemoteCreateDirectory(const UnicodeString & ADirName,
 
 void TTerminal::DoCreateDirectory(const UnicodeString & ADirName)
 {
-  TMkdirSessionAction Action(GetActionLog(), AbsolutePath(ADirName, true));
+  TMkdirSessionAction Action(GetActionLog(), GetAbsolutePath(ADirName, true));
   try
   {
     assert(FFileSystem);
