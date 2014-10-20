@@ -79,7 +79,7 @@ public:
 
   bool GetReady() const;
   bool GetActive() const { return FActive; }
-  TCaptureOutputEvent & GetOnCaptureOutput() { return FOnCaptureOutput; }
+  const TCaptureOutputEvent & GetOnCaptureOutput() const { return FOnCaptureOutput; }
   void SetOnCaptureOutput(TCaptureOutputEvent Value) { FOnCaptureOutput = Value; }
   TDateTime GetLastDataSent() const { return FLastDataSent; }
   UnicodeString GetLastTunnelError() const { return FLastTunnelError; }
