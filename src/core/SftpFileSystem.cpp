@@ -2592,7 +2592,7 @@ uintptr_t TSFTPFileSystem::SendPacketAndReceiveResponse(
   return Result;
 }
 
-UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath)
+UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath)
 {
   UnicodeString Result;
   try
@@ -2627,7 +2627,7 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath)
   return Result;
 }
 
-UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath,
+UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath,
   const UnicodeString & ABaseDir)
 {
   UnicodeString Path;
@@ -2653,7 +2653,7 @@ UnicodeString TSFTPFileSystem::RealPath(const UnicodeString & APath,
       Path = core::UnixIncludeTrailingBackslash(L".");
     }
   }
-  return RealPath(Path);
+  return GetRealPath(Path);
 }
 
 UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & APath) const
@@ -2679,7 +2679,7 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
   bool TryParent = false;
   try
   {
-    Result = RealPath(Result);
+    Result = GetRealPath(Result);
   }
   catch (...)
   {
@@ -2706,7 +2706,7 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
       UnicodeString FPath = core::UnixExtractFilePath(Path);
       try
       {
-        Result = RealPath(FPath);
+        Result = GetRealPath(FPath);
         Result = core::UnixIncludeTrailingBackslash(Result) + Name;
       }
       catch (...)
@@ -2741,7 +2741,7 @@ UnicodeString TSFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool
   }
   else
   {
-    return RealPath(APath, GetCurrDirectory());
+    return GetRealPath(APath, GetCurrDirectory());
   }
 }
 
@@ -2749,7 +2749,7 @@ UnicodeString TSFTPFileSystem::GetHomeDirectory()
 {
   if (FHomeDirectory.IsEmpty())
   {
-    FHomeDirectory = RealPath(THISDIRECTORY);
+    FHomeDirectory = GetRealPath(THISDIRECTORY);
   }
   return FHomeDirectory;
 }
@@ -3186,7 +3186,7 @@ void TSFTPFileSystem::ChangeDirectory(const UnicodeString & Directory)
   UnicodeString Path, Current;
 
   Current = !FDirectoryToChangeTo.IsEmpty() ? FDirectoryToChangeTo : FCurrentDirectory;
-  Path = RealPath(Directory, Current);
+  Path = GetRealPath(Directory, Current);
 
   // to verify existence of directory try to open it (SSH_FXP_REALPATH succeeds
   // for invalid paths on some systems, like CygWin)

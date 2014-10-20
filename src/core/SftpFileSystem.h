@@ -128,8 +128,8 @@ protected:
     bool Complete = true);
   UnicodeString LocalCanonify(const UnicodeString & APath) const;
   UnicodeString Canonify(const UnicodeString & APath);
-  UnicodeString RealPath(const UnicodeString & APath);
-  UnicodeString RealPath(const UnicodeString & APath, const UnicodeString & ABaseDir);
+  UnicodeString GetRealPath(const UnicodeString & APath);
+  UnicodeString GetRealPath(const UnicodeString & APath, const UnicodeString & ABaseDir);
   void ReserveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response);
   uintptr_t ReceivePacket(TSFTPPacket * Packet, intptr_t ExpectedType = -1,
