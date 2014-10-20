@@ -417,7 +417,7 @@ TBookmark * TBookmarkList::FindByShortCut(TShortCut ShortCut)
   return nullptr;
 }
 
-intptr_t TBookmarkList::GetCount()
+intptr_t TBookmarkList::GetCount() const
 {
   return FBookmarks->GetCount();
 }

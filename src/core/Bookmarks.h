@@ -56,7 +56,7 @@ public:
   void SaveOptions(THierarchicalStorage * Storage);
   void ShortCuts(TShortCuts & ShortCuts);
 
-  intptr_t GetCount();
+  intptr_t GetCount() const;
   TBookmark * GetBookmarks(intptr_t Index);
   bool GetNodeOpened(const UnicodeString & Index);
   void SetNodeOpened(const UnicodeString & Index, bool Value);
