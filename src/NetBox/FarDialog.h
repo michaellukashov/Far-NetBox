@@ -65,8 +65,8 @@ public:
   TFarBox * GetBorderBox() const { return FBorderBox; }
   intptr_t GetType(TFarDialogItem * Item) const;
   intptr_t GetItem(TFarDialogItem * Item) const;
-  TFarDialogItem * GetItem(intptr_t Index);
-  intptr_t GetItemCount();
+  TFarDialogItem * GetItem(intptr_t Index) const;
+  intptr_t GetItemCount() const;
   TItemPosition GetNextItemPosition() const { return FNextItemPosition; }
   void SetNextItemPosition(const TItemPosition Value) { FNextItemPosition = Value; }
   intptr_t GetDefaultGroup() const { return FDefaultGroup; }
@@ -85,7 +85,7 @@ public:
   void LockChanges();
   void UnlockChanges();
   uintptr_t GetSystemColor(intptr_t Index);
-  bool HotKey(uintptr_t Key);
+  bool HotKey(uintptr_t Key) const;
 
 protected:
   TCustomFarPlugin * GetFarPlugin() const { return FFarPlugin; }

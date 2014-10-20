@@ -242,7 +242,7 @@ UnicodeString TFarDialog::GetCaption() const
   return FBorderBox->GetCaption();
 }
 
-intptr_t TFarDialog::GetItemCount()
+intptr_t TFarDialog::GetItemCount() const
 {
   return FItems->GetCount();
 }
@@ -254,7 +254,7 @@ intptr_t TFarDialog::GetItem(TFarDialogItem * Item) const
   return Item->GetItem();
 }
 
-TFarDialogItem * TFarDialog::GetItem(intptr_t Index)
+TFarDialogItem * TFarDialog::GetItem(intptr_t Index) const
 {
   TFarDialogItem * DialogItem;
   if (GetItemCount())
@@ -619,7 +619,7 @@ bool TFarDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
   return Result;
 }
 
-bool TFarDialog::HotKey(uintptr_t Key)
+bool TFarDialog::HotKey(uintptr_t Key) const
 {
   bool Result = false;
   char HotKey = 0;
