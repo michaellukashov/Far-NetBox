@@ -1619,7 +1619,7 @@ bool TQueueItem::IsUserActionStatus(TStatus Status)
   return (Status == qsQuery) || (Status == qsError) || (Status == qsPrompt);
 }
 
-TQueueItem::TStatus TQueueItem::GetStatus()
+TQueueItem::TStatus TQueueItem::GetStatus() const
 {
   TGuard Guard(FSection);
 

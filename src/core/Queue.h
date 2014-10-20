@@ -197,7 +197,7 @@ public:
 
   static bool IsUserActionStatus(TStatus Status);
 
-  TStatus GetStatus();
+  TStatus GetStatus() const;
   HANDLE GetCompleteEvent() const { return FCompleteEvent; }
   void SetCompleteEvent(HANDLE Value) { FCompleteEvent = Value; }
 
