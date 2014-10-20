@@ -595,14 +595,17 @@ UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*L
 
 UnicodeString TFTPFileSystem::ActualCurrentDirectory()
 {
-  wchar_t CurrentPath[1024];
-  FFileZillaIntf->GetCurrentPath(CurrentPath, _countof(CurrentPath));
-  UnicodeString fn = core::UnixExcludeTrailingBackslash(CurrentPath);
-  if (fn.IsEmpty())
+  UnicodeString CurrentPath(1024, 0);
+  UnicodeString Result;
+  if (FFileZillaIntf->GetCurrentPath(const_cast<wchar_t *>(CurrentPath.c_str()), CurrentPath.Length()))
   {
-    fn = L"/";
+    Result = core::UnixExcludeTrailingBackslash(CurrentPath);
   }
-  return fn;
+  if (Result.IsEmpty())
+  {
+    Result = ROOTDIRECTORY;
+  }
+  return Result;
 }
 
 void TFTPFileSystem::EnsureLocation()
