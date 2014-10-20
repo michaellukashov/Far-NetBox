@@ -25,7 +25,7 @@ public:
 
   static const TClassInfo * GetFirst() { return sm_first; }
   const TClassInfo * GetNext() const { return m_next; }
-  static TClassInfo * FindClass(int classId);
+  static const TClassInfo* FindClass(int classId);
 
   // Climb upwards through inheritance hierarchy.
   bool IsKindOf(const TClassInfo * info) const;
@@ -81,7 +81,7 @@ class THashTable : public rde::hash_map<int, const TClassInfo *>
 {
 typedef rde::hash_map<int, const TClassInfo *> ancestor;
 public:
-  ancestor::mapped_type Get(const ancestor::key_type & key)
+  ancestor::mapped_type Get(const ancestor::key_type & key) const
   {
     ancestor::const_iterator it = ancestor::find(key);
     if (it != ancestor::end())
