@@ -25,11 +25,11 @@ class ExtException : public Exception
 NB_DECLARE_CLASS(ExtException)
 public:
   explicit ExtException(Exception * E);
-  explicit ExtException(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
-  // explicit ExtException(ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  // explicit ExtException(const ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(Exception * E, int Ident);
   // "copy the exception", just append message to the end
-  explicit ExtException(const UnicodeString & Msg, Exception * E, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(const UnicodeString & Msg, const Exception * E, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
   virtual ~ExtException(void) noexcept;
@@ -45,9 +45,9 @@ public:
   ExtException & operator =(const ExtException &rhs)
   { Message = rhs.Message; AddMoreMessages(&rhs); return *this; }
 
-  static ExtException * CloneFrom(Exception * E);
+  static ExtException * CloneFrom(const Exception* E);
 
-  virtual ExtException * Clone();
+  virtual ExtException * Clone() const;
 
 protected:
   void AddMoreMessages(const Exception * E);
@@ -62,10 +62,10 @@ private:
   { \
   NB_DECLARE_CLASS(NAME) \
   public: \
-    explicit inline NAME(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
+    explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
     virtual inline ~NAME(void) noexcept {} \
     explicit inline NAME(const UnicodeString & Msg, int AHelpContext) : BASE(Msg, AHelpContext) {} \
-    virtual ExtException * Clone() { return new NAME(this, L""); } \
+    virtual ExtException * Clone() const { return new NAME(this, L""); } \
   };
 
 DERIVE_EXT_EXCEPTION(ESsh, ExtException)
@@ -89,12 +89,12 @@ class EFatal : public ExtException
 NB_DECLARE_CLASS(EFatal)
 public:
   // fatal errors are always copied, new message is only appended
-  explicit EFatal(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  explicit EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
 
   bool GetReopenQueried() const { return FReopenQueried; }
   void SetReopenQueried(bool Value) { FReopenQueried = Value; }
 
-  virtual ExtException * Clone();
+  virtual ExtException * Clone() const;
 
 private:
   bool FReopenQueried;
@@ -105,8 +105,8 @@ private:
   { \
   NB_DECLARE_CLASS(NAME) \
   public: \
-    explicit inline NAME(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
-    virtual ExtException * Clone() { return new NAME(this, L""); } \
+    explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
+    virtual ExtException * Clone() const { return new NAME(this, L""); } \
   };
 
 DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
@@ -117,13 +117,13 @@ class ESshTerminate : public EFatal
 {
 NB_DECLARE_CLASS(ESshTerminate)
 public:
-  explicit inline ESshTerminate(Exception * E, const UnicodeString & Msg, TOnceDoneOperation AOperation) :
+  explicit inline ESshTerminate(const Exception * E, const UnicodeString & Msg, TOnceDoneOperation AOperation) :
     EFatal(E, Msg),
     Operation(AOperation)
   {
   }
 
-  virtual ExtException * Clone();
+  virtual ExtException * Clone() const;
 
   TOnceDoneOperation Operation;
 };
@@ -137,7 +137,7 @@ public:
 
 Exception * CloneException(Exception * Exception);
 void RethrowException(Exception * E);
-UnicodeString GetExceptionHelpKeyword(Exception * E);
+UnicodeString GetExceptionHelpKeyword(const Exception* E);
 UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const UnicodeString & SecondaryHelpKeyword);
 bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword);
 
