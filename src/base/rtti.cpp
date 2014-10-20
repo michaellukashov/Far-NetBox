@@ -54,7 +54,7 @@ TClassInfo * TClassInfo::FindClass(int classId)
 {
   if (sm_classTable)
   {
-    return (TClassInfo *)TClassInfo::sm_classTable->Get(classId);
+    return TClassInfo::sm_classTable->Get(classId);
   }
   else
   {
