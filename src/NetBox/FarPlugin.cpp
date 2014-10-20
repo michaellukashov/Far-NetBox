@@ -2376,12 +2376,10 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
 
 TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem) :
   TCustomFarPanelItem(),
-  FPanelItem(nullptr),
-  FOwnsItem(false)
+  FPanelItem(APanelItem),
+  FOwnsItem(OwnsItem)
 {
-  assert(APanelItem);
-  FPanelItem = APanelItem;
-  FOwnsItem = OwnsItem;
+  assert(FPanelItem);
 }
 
 TFarPanelItem::~TFarPanelItem()
