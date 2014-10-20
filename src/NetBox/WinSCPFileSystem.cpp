@@ -4058,7 +4058,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   }
 }
 
-bool TWinSCPFileSystem::IsEditHistoryEmpty()
+bool TWinSCPFileSystem::IsEditHistoryEmpty() const
 {
   return FEditHistories.empty();
 }

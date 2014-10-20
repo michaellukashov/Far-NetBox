@@ -231,7 +231,7 @@ protected:
   void MultipleEdit(const UnicodeString & Directory, const UnicodeString & AFileName, TRemoteFile * AFile);
   void EditViewCopyParam(TCopyParamType & CopyParam);
   bool SynchronizeBrowsing(const UnicodeString & NewPath);
-  bool IsEditHistoryEmpty();
+  bool IsEditHistoryEmpty() const;
   void EditHistory();
   UnicodeString ProgressBar(intptr_t Percentage, intptr_t Width);
   bool IsLogging() const;
