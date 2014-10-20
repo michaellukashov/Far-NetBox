@@ -489,7 +489,7 @@ bool TSecureShell::TryFtp()
         {
           SOCKADDR_IN Address;
 
-          memset(&Address, 0, sizeof(Address));
+          ::ZeroMemory(&Address, sizeof(Address));
           Address.sin_family = AF_INET;
           intptr_t Port = FtpPortNumber;
           Address.sin_port = htons(static_cast<short>(Port));
@@ -1673,7 +1673,7 @@ void TSecureShell::WaitForData()
       TAutoNestingCounter NestingCounter(FWaitingForData);
 
       WSANETWORKEVENTS Events;
-      memset(&Events, 0, sizeof(Events));
+      ::ZeroMemory(&Events, sizeof(Events));
       TPoolForDataEvent Event(this, Events);
 
       LogEvent(L"Waiting for data timed out, asking user what to do.");
@@ -1789,7 +1789,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 {
   WSANETWORKEVENTS Events;
-  memset(&Events, 0, sizeof(Events));
+  ::ZeroMemory(&Events, sizeof(Events));
   bool Result = EnumNetworkEvents(Socket, Events);
   HandleNetworkEvents(Socket, Events);
 

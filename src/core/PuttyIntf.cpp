@@ -538,7 +538,7 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
       {
         ssh_gss_library * library = &List->libraries[Index];
         Ssh_gss_ctx ctx;
-        memset(&ctx, 0, sizeof(ctx));
+        ::ZeroMemory(&ctx, sizeof(ctx));
         has =
           ((library->acquire_cred(library, &ctx) == SSH_GSS_OK) &&
            (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;

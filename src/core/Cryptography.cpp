@@ -66,7 +66,7 @@ typedef struct
 /* initialise the HMAC context to zero */
 static void hmac_sha1_begin(hmac_ctx cx[1])
 {
-  memset(cx, 0, sizeof(hmac_ctx));
+  ::ZeroMemory(cx, sizeof(hmac_ctx));
 }
 
 /* input the HMAC key (can be called multiple times)    */
@@ -101,7 +101,7 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
     }
 
     /* pad the key if necessary */
-    memset(cx->key + cx->klen, 0, IN_BLOCK_LENGTH - cx->klen);
+    ::ZeroMemory(cx->key + cx->klen, IN_BLOCK_LENGTH - cx->klen);
 
     /* xor ipad into key value  */
     for (uint32 i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
@@ -240,7 +240,7 @@ static void derive_key(const uint8_t pwd[],  /* the PASSWORD     */
   for(i = 0; i < n_blk; ++i) /* for each block in key */
   {
     /* ux[] holds the running xor value             */
-    memset(ux, 0, OUT_BLOCK_LENGTH);
+    ::ZeroMemory(ux, OUT_BLOCK_LENGTH);
 
     /* set HMAC context (c3) for password and salt  */
     memmove(c3, c2, sizeof(hmac_ctx));
@@ -318,7 +318,7 @@ static void fcrypt_init(
   cx->encr_pos = BLOCK_SIZE;
   /* if we need a random component in the encryption  */
   /* nonce, this is where it would have to be set     */
-  memset(cx->nonce, 0, BLOCK_SIZE * sizeof(uint8_t));
+  ::ZeroMemory(cx->nonce, BLOCK_SIZE * sizeof(uint8_t));
 
   /* initialise for encryption using key 1            */
   cx->encr_ctx = call_aes_make_context();
@@ -525,7 +525,7 @@ RawByteString ScramblePassword(const UnicodeString & Password)
     S++;
   }
   RawByteString Result = Buf;
-  memset(Buf, 0, Len + SCRAMBLE_LENGTH_EXTENSION);
+  ::ZeroMemory(Buf, Len + SCRAMBLE_LENGTH_EXTENSION);
   nb_free(Buf);
   return Result;
 }

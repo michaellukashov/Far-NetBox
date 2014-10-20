@@ -896,7 +896,7 @@ public:
 
     SetCapacity(1 * 1024 * 1024); // 20480);
     uint8_t Byte[3];
-    memset(Byte, '\0', sizeof(Byte));
+    ::ZeroMemory(Byte, sizeof(Byte));
     intptr_t Index = 1;
     uintptr_t Length = 0;
     while (Index < Dump.Length())
@@ -914,7 +914,7 @@ public:
           assert(Length < GetCapacity());
           GetData()[Length] = HexToByte(UnicodeString(reinterpret_cast<char *>(Byte)));
           Length++;
-          memset(Byte, '\0', sizeof(Byte));
+          ::ZeroMemory(Byte, sizeof(Byte));
         }
       }
       ++Index;

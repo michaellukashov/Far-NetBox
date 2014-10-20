@@ -188,7 +188,7 @@ bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
   HANDLE & Handle)
 {
   TShellExecuteInfoW ExecuteInfo;
-  memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
+  ::ZeroMemory(&ExecuteInfo, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
   ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
@@ -208,7 +208,7 @@ bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & APath,
   const UnicodeString & Params, TProcessMessagesEvent ProcessMessages)
 {
   TShellExecuteInfoW ExecuteInfo;
-  memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
+  ::ZeroMemory(&ExecuteInfo, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
   ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));

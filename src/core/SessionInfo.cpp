@@ -554,7 +554,7 @@ TSessionInfo::TSessionInfo()
 
 TFileSystemInfo::TFileSystemInfo()
 {
-  memset(&IsCapable, 0, sizeof(IsCapable));
+  ::ZeroMemory(&IsCapable, sizeof(IsCapable));
 }
 
 static FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, bool Append, UnicodeString & ANewFileName)

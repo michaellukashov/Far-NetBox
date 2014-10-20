@@ -1100,7 +1100,7 @@ bool TTerminal::IsListenerFree(uintptr_t PortNumber) const
   {
     SOCKADDR_IN Address;
 
-    memset(&Address, 0, sizeof(Address));
+    ::ZeroMemory(&Address, sizeof(Address));
     Address.sin_family = AF_INET;
     Address.sin_port = htons(static_cast<short>(PortNumber));
     Address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);

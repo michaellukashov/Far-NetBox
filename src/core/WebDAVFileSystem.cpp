@@ -4526,7 +4526,7 @@ windows_validate_certificate(
   {
     // Retrieve the certificate chain of the certificate
     // (a certificate without a valid root does not have a chain).
-    memset(&chain_para, 0, sizeof(chain_para));
+    ::ZeroMemory(&chain_para, sizeof(chain_para));
     chain_para.cbSize = sizeof(chain_para);
 
     HCERTCHAINENGINE chain_engine;
@@ -10479,7 +10479,7 @@ neon_get_props(
 
   // Initialize our baton.
   propfind_ctx_t pc;
-  memset(&pc, 0, sizeof(pc));
+  ::ZeroMemory(&pc, sizeof(pc));
   pc.pool = pool;
   pc.propbuffer = apr_hash_make(pool);
   pc.props = apr_hash_make(pool);
