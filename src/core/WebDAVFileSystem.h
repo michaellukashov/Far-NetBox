@@ -27,7 +27,7 @@ public:
 
   virtual void Open();
   virtual void Close();
-  virtual bool GetActive() const {  return FActive; }
+  virtual bool GetActive() const { return FActive; }
   virtual void CollectUsage();
   virtual void Idle();
   virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local);
