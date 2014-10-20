@@ -2374,7 +2374,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->CustomColumnData = CustomColumnData;
 }
 
-TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem):
+TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem) :
   TCustomFarPanelItem(),
   FPanelItem(nullptr),
   FOwnsItem(false)
@@ -2471,7 +2471,7 @@ void THintPanelItem::GetData(
   AFileName = FHint;
 }
 
-TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner):
+TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner) :
   TObject(),
   FPanelInfo(APanelInfo),
   FItems(nullptr),

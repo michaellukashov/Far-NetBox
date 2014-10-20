@@ -777,7 +777,7 @@ const TRemoteToken * TRemoteTokenList::Token(intptr_t Index) const
   return &FTokens[Index];
 }
 
-TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile):
+TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
   TPersistent(),
   FDirectory(nullptr),
   FSize(0),
@@ -1774,7 +1774,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
   }
 }
 
-TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
+TRemoteDirectoryCache::TRemoteDirectoryCache() : TStringList()
 {
   SetSorted(true);
   SetDuplicates(dupError);

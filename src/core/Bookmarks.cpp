@@ -261,7 +261,7 @@ void TBookmarks::SetSharedBookmarks(TBookmarkList * Value)
   SetBookmarks(FSharedKey, Value);
 }
 
-TBookmarkList::TBookmarkList(): TPersistent()
+TBookmarkList::TBookmarkList() : TPersistent()
 {
   FModified = false;
   FBookmarks = new TStringList();

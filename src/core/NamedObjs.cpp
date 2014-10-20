@@ -79,7 +79,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
     }
 }
 
-TNamedObjectList::TNamedObjectList():
+TNamedObjectList::TNamedObjectList() :
   TObjectList(),
   AutoSort(true),
   FHiddenCount(0)

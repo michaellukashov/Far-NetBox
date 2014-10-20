@@ -6,7 +6,7 @@
 #include "RemoteFiles.h"
 #include "Common.h"
 
-TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal):
+TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal) :
   FTerminal(ATerminal)
 {
   assert(FTerminal);

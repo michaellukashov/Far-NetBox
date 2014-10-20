@@ -20,7 +20,7 @@
 #include "PuttyIntf.h"
 #include "XmlStorage.h"
 
-TSessionPanelItem::TSessionPanelItem(const TSessionData * ASessionData):
+TSessionPanelItem::TSessionPanelItem(const TSessionData * ASessionData) :
   TCustomFarPanelItem()
 {
   assert(ASessionData);
@@ -62,7 +62,7 @@ void TSessionPanelItem::GetData(
   UserData = (void *)FSessionData;
 }
 
-TSessionFolderPanelItem::TSessionFolderPanelItem(const UnicodeString & Folder):
+TSessionFolderPanelItem::TSessionFolderPanelItem(const UnicodeString & Folder) :
   TCustomFarPanelItem(),
   FFolder(Folder)
 {
@@ -79,7 +79,7 @@ void TSessionFolderPanelItem::GetData(
   FileAttributes = FILE_ATTRIBUTE_DIRECTORY;
 }
 
-TRemoteFilePanelItem::TRemoteFilePanelItem(TRemoteFile * ARemoteFile):
+TRemoteFilePanelItem::TRemoteFilePanelItem(TRemoteFile * ARemoteFile) :
   TCustomFarPanelItem()
 {
   assert(ARemoteFile);

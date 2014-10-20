@@ -492,7 +492,7 @@ bool TCopyParamList::GetAnyRule() const
   return Result;
 }
 
-TGUIConfiguration::TGUIConfiguration(): TConfiguration(),
+TGUIConfiguration::TGUIConfiguration() : TConfiguration(),
   FLocale(0),
   FLocales(new TStringList()),
   FContinueOnError(false),

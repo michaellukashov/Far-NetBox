@@ -188,7 +188,7 @@ private:
   bool FIgnoreFileList;
 };
 
-TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
+TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
   FFileZillaIntf(nullptr),
   FQueueEvent(::CreateEvent(nullptr, true, false, nullptr)),

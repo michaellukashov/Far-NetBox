@@ -392,7 +392,7 @@ TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage) :
   Init();
 }
 
-TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey):
+TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(nullptr),
   FFailed(0)

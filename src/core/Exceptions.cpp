@@ -223,14 +223,14 @@ ExtException::ExtException(Exception * E) :
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
 
-ExtException::ExtException(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword):
+ExtException::ExtException(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   Exception(Msg),
   FMoreMessages(nullptr)
 {
   AddMoreMessages(E);
   FHelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
 }
-/*ExtException::ExtException(ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword):
+/*ExtException::ExtException(ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   Exception(Msg),
   FMoreMessages(nullptr),
   FHelpKeyword()
