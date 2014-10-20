@@ -557,21 +557,20 @@ TFileSystemInfo::TFileSystemInfo()
   memset(&IsCapable, 0, sizeof(IsCapable));
 }
 
-FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
+static FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * SessionData, bool Append, UnicodeString & ANewFileName)
 {
-  FILE * Result;
-  UnicodeString ANewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, SessionData));
+  UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, SessionData));
   // Result = _wfopen(ANewFileName.c_str(), (Append ? L"a" : L"w"));
-  Result = _fsopen(::W2MB(ApiPath(ANewFileName).c_str()).c_str(),
+  FILE * Result = _fsopen(::W2MB(ApiPath(NewFileName).c_str()).c_str(),
     Append ? "a" : "w", SH_DENYWR); // _SH_DENYNO); //
   if (Result != nullptr)
   {
     setvbuf(Result, nullptr, _IONBF, BUFSIZ);
-    NewFileName = ANewFileName;
+    ANewFileName = NewFileName;
   }
   else
   {
-    throw Exception(FMTLOAD(LOG_OPENERROR, ANewFileName.c_str()));
+    throw Exception(FMTLOAD(LOG_OPENERROR, NewFileName.c_str()));
   }
   return Result;
 }
