@@ -12168,12 +12168,12 @@ void TWebDAVFileSystem::Idle()
   return;
 }
 
-UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return static_cast<const TWebDAVFileSystem *>(this)->AbsolutePath(APath, Local);
+  return static_cast<const TWebDAVFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
 
-UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/) const
+UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
   return core::AbsolutePath(GetCurrDirectory(), APath);
 }
@@ -12310,7 +12310,7 @@ void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
   {
     if (FTerminal->GetActive())
     {
-      Directory = AbsolutePath(Directory, false);
+      Directory = GetAbsolutePath(Directory, false);
       if (HasTrailingSlash)
         Directory = core::UnixIncludeTrailingBackslash(Directory);
     }
@@ -12320,7 +12320,7 @@ void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
     }
   }
 
-  FCurrentDirectory = AbsolutePath(Directory, false);
+  FCurrentDirectory = GetAbsolutePath(Directory, false);
   if (HasTrailingSlash)
     FCurrentDirectory = core::UnixIncludeTrailingBackslash(FCurrentDirectory);
 
@@ -12347,7 +12347,7 @@ void TWebDAVFileSystem::DoReadDirectory(TRemoteFileList * FileList)
   // list "current" dir as:
   // 1) List() lists again the last listed directory, not the current working directory
   // 2) we handle this way the cached directory change
-  UnicodeString Directory = AbsolutePath(FileList->GetDirectory(), false);
+  UnicodeString Directory = GetAbsolutePath(FileList->GetDirectory(), false);
   if (FHasTrailingSlash)
     Directory = core::UnixIncludeTrailingBackslash(Directory);
   WebDAVGetList(Directory);
@@ -12440,7 +12440,7 @@ void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
 
 void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
 {
-  UnicodeString FullDirName = AbsolutePath(ADirName, true);
+  UnicodeString FullDirName = GetAbsolutePath(ADirName, true);
   bool res = WebDAVMakeDirectory(FullDirName.c_str());
   if (!res)
   {
@@ -12642,7 +12642,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
   Params &= ~cpAppend;
   UnicodeString FileName, FileNameOnly;
-  UnicodeString TargetDir = AbsolutePath(ATargetDir, false);
+  UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = core::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
   while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
@@ -12982,7 +12982,7 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
         FTerminal->SetExceptionOnFail(false);
       };
-      UnicodeString AbsoluteFilePath = AbsolutePath(FileName, false);
+      UnicodeString AbsoluteFilePath = GetAbsolutePath(FileName, false);
       UnicodeString TargetDirectory = FullTargetDir;
       UnicodeString FileNamePath = ApiPath(::ExtractFilePath(File->GetFileName()));
       if (!FileNamePath.IsEmpty())
@@ -13312,7 +13312,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     assert(FFileList != nullptr);
     // this can actually fail in real life,
     // when connected to server with case insensitive paths
-    assert(core::UnixSamePath(AbsolutePath(FFileList->GetDirectory(), false), Path));
+    assert(core::UnixSamePath(GetAbsolutePath(FFileList->GetDirectory(), false), Path));
     USEDPARAM(Path);
 
     for (intptr_t Index = 0; Index < Count; ++Index)

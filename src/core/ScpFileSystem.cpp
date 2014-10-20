@@ -471,12 +471,12 @@ void TSCPFileSystem::Idle()
   FSecureShell->Idle();
 }
 
-UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return static_cast<const TSCPFileSystem *>(this)->AbsolutePath(APath, Local);
+  return static_cast<const TSCPFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
 
-UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/) const
+UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
   return core::AbsolutePath(GetCurrDirectory(), APath);
 }
@@ -1720,7 +1720,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
     }
     else
     {
-      UnicodeString AbsoluteFileName = FTerminal->AbsolutePath(/* TargetDir + */DestFileName, false);
+      UnicodeString AbsoluteFileName = FTerminal->GetAbsolutePath(/* TargetDir + */DestFileName, false);
       assert(LocalFileHandle);
 
       // File is regular file (not directory)

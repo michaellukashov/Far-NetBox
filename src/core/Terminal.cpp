@@ -1512,9 +1512,9 @@ bool TTerminal::GetIsCapable(TFSCapability Capability) const
   return FFileSystem->IsCapable(Capability);
 }
 
-UnicodeString TTerminal::AbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TTerminal::GetAbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return FFileSystem->AbsolutePath(APath, Local);
+  return FFileSystem->GetAbsolutePath(APath, Local);
 }
 
 void TTerminal::ReactOnCommand(intptr_t Cmd)
@@ -2765,7 +2765,7 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * AFileList)
 
 TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Directory, const TFileMasks & Mask)
 {
-  TLsSessionAction Action(GetActionLog(), AbsolutePath(Directory, true));
+  TLsSessionAction Action(GetActionLog(), GetAbsolutePath(Directory, true));
   TRemoteFileList * FileList = nullptr;
   try
   {
@@ -2808,7 +2808,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Director
 
 TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
 {
-  TStatSessionAction Action(GetActionLog(), AbsolutePath(APath, true));
+  TStatSessionAction Action(GetActionLog(), GetAbsolutePath(APath, true));
   TRemoteFile * File = nullptr;
   try
   {
@@ -3246,7 +3246,7 @@ void TTerminal::RemoteDeleteFile(const UnicodeString & AFileName,
 void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, intptr_t Params)
 {
-  TRmSessionAction Action(GetActionLog(), AbsolutePath(AFileName, true));
+  TRmSessionAction Action(GetActionLog(), GetAbsolutePath(AFileName, true));
   try
   {
     assert(FFileSystem);
@@ -3477,7 +3477,7 @@ void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
 void TTerminal::DoChangeFileProperties(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const TRemoteProperties * Properties)
 {
-  TChmodSessionAction Action(GetActionLog(), AbsolutePath(AFileName, true));
+  TChmodSessionAction Action(GetActionLog(), GetAbsolutePath(AFileName, true));
   try
   {
     assert(FFileSystem);
@@ -3691,7 +3691,7 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
 void TTerminal::DoRenameFile(const UnicodeString & AFileName,
   const UnicodeString & NewName, bool Move)
 {
-  TMvSessionAction Action(GetActionLog(), AbsolutePath(AFileName, true), AbsolutePath(NewName, true));
+  TMvSessionAction Action(GetActionLog(), GetAbsolutePath(AFileName, true), GetAbsolutePath(NewName, true));
   try
   {
     assert(FFileSystem);
@@ -3869,7 +3869,7 @@ void TTerminal::RemoteCreateDirectory(const UnicodeString & ADirName,
 
 void TTerminal::DoCreateDirectory(const UnicodeString & ADirName)
 {
-  TMkdirSessionAction Action(GetActionLog(), AbsolutePath(ADirName, true));
+  TMkdirSessionAction Action(GetActionLog(), GetAbsolutePath(ADirName, true));
   try
   {
     assert(FFileSystem);

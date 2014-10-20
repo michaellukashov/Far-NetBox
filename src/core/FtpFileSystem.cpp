@@ -575,12 +575,12 @@ void TFTPFileSystem::Discard()
   FActive = false;
 }
 
-UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return static_cast<const TFTPFileSystem *>(this)->AbsolutePath(APath, Local);
+  return static_cast<const TFTPFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
 
-UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/) const
+UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
   // TODO: improve (handle .. etc.)
   if (core::UnixIsAbsolutePath(APath))
@@ -684,7 +684,7 @@ void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
   {
     if (FTerminal->GetActive())
     {
-      Directory = AbsolutePath(Directory, false);
+      Directory = GetAbsolutePath(Directory, false);
     }
     else
     {
@@ -720,7 +720,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   if (Properties && Properties->Valid.Contains(vpRights))
   {
     std::unique_ptr<TRemoteFile> OwnedFile(nullptr);
-    UnicodeString FileName = AbsolutePath(AFileName, false);
+    UnicodeString FileName = GetAbsolutePath(AFileName, false);
 
     if (AFile == nullptr)
     {
@@ -1047,7 +1047,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
       };
-      UnicodeString AbsoluteFilePath = AbsolutePath(FileName, false);
+      UnicodeString AbsoluteFilePath = GetAbsolutePath(FileName, false);
       UnicodeString TargetDirectory = FullTargetDir;
       UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
       if (!FileNamePath.IsEmpty())
@@ -1329,7 +1329,7 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
   Params &= ~cpAppend;
   UnicodeString FileName, FileNameOnly;
-  UnicodeString TargetDir = AbsolutePath(ATargetDir, false);
+  UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = core::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
   while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
@@ -1678,7 +1678,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
 
 void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
 {
-  UnicodeString DirName = AbsolutePath(ADirName, false);
+  UnicodeString DirName = GetAbsolutePath(ADirName, false);
 
   {
     // ignore file list
@@ -1699,7 +1699,7 @@ void TFTPFileSystem::CreateLink(const UnicodeString & /*FileName*/,
 void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
 {
-  UnicodeString FileName = AbsolutePath(AFileName, false);
+  UnicodeString FileName = GetAbsolutePath(AFileName, false);
   UnicodeString FileNameOnly = core::UnixExtractFileName(FileName);
   UnicodeString FilePath = core::UnixExtractFilePath(FileName);
 
@@ -1913,7 +1913,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
   // always specify path to list, do not attempt to list "current" dir as:
   // 1) List() lists again the last listed directory, not the current working directory
   // 2) we handle this way the cached directory change
-  UnicodeString Directory = AbsolutePath(FileList->GetDirectory(), false);
+  UnicodeString Directory = GetAbsolutePath(FileList->GetDirectory(), false);
   FFileZillaIntf->List(Directory.c_str());
 
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
@@ -2091,8 +2091,8 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
 void TFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   const UnicodeString & ANewName)
 {
-  UnicodeString FileName = AbsolutePath(AFileName, false);
-  UnicodeString NewName = AbsolutePath(ANewName, false);
+  UnicodeString FileName = GetAbsolutePath(AFileName, false);
+  UnicodeString NewName = GetAbsolutePath(ANewName, false);
 
   UnicodeString FileNameOnly = core::UnixExtractFileName(FileName);
   UnicodeString FilePathOnly = core::UnixExtractFilePath(FileName);
@@ -3559,7 +3559,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
     assert(FFileList != nullptr);
     // this can actually fail in real life,
     // when connected to server with case insensitive paths
-    assert(core::UnixSamePath(AbsolutePath(FFileList->GetDirectory(), false), Path));
+    assert(core::UnixSamePath(GetAbsolutePath(FFileList->GetDirectory(), false), Path));
     USEDPARAM(Path);
 
     for (uintptr_t Index = 0; Index < Count; ++Index)
