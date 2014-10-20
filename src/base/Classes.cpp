@@ -445,10 +445,10 @@ UnicodeString TStrings::GetDelimitedText() const
 static void tokenize(const UnicodeString & str, rde::vector<UnicodeString> & tokens,
   const UnicodeString & delimiters = L" ", const bool trimEmpty = false)
 {
-  size_t pos, lastPos = 0;
+  size_t lastPos = 0;
   while (true)
   {
-    pos = str.FindFirstOf(delimiters.c_str(), lastPos);
+    size_t pos = str.FindFirstOf(delimiters.c_str(), lastPos);
     if (pos == NPOS)
     {
        pos = str.Length();
