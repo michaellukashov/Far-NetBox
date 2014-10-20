@@ -289,8 +289,7 @@ void TFarDialog::Add(TFarDialogItem * DialogItem)
       memmove(NewDialogItems, FDialogItems, FDialogItemsCapacity * sizeof(FarDialogItem));
       nb_free(FDialogItems);
     }
-    memset(NewDialogItems + FDialogItemsCapacity, 0,
-      DialogItemsDelta * sizeof(FarDialogItem));
+    ::ZeroMemory(NewDialogItems + FDialogItemsCapacity, DialogItemsDelta * sizeof(FarDialogItem));
     FDialogItems = NewDialogItems;
     FDialogItemsCapacity += DialogItemsDelta;
   }
@@ -2078,7 +2077,7 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
     (ADialogItem->GetType() == DI_COMBOBOX) || (ADialogItem->GetType() == DI_LISTBOX));
   FDialogItem = ADialogItem;
   FListItems = static_cast<FarList *>(nb_malloc(sizeof(FarList)));
-  memset(FListItems, 0, sizeof(*FListItems));
+  ::ZeroMemory(FListItems, sizeof(FarList));
   FNoDialogUpdate = false;
 }
 

@@ -1745,7 +1745,7 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
   FClosed(false),
   FOpenPluginInfoValid(false)
 {
-  memset(FPanelInfo, 0, sizeof(FPanelInfo));
+  ::ZeroMemory(FPanelInfo, sizeof(FPanelInfo));
   ClearStruct(FOpenPluginInfo);
 }
 
@@ -2018,7 +2018,7 @@ TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another)
       !bAnother ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
     if (!Res)
     {
-      memset(Info, 0, sizeof(*Info));
+      ::ZeroMemory(Info, sizeof(PanelInfo));
       assert(false);
     }
     FPanelInfo[bAnother] = new TFarPanelInfo(Info, !bAnother ? this : nullptr);
@@ -2137,7 +2137,7 @@ TObjectList * TCustomFarFileSystem::CreatePanelItemList(
 
 TFarPanelModes::TFarPanelModes() : TObject()
 {
-  memset(&FPanelModes, 0, sizeof(FPanelModes));
+  ::ZeroMemory(&FPanelModes, sizeof(FPanelModes));
   FReferenced = false;
 }
 
@@ -2236,7 +2236,7 @@ intptr_t TFarPanelModes::CommaCount(const UnicodeString & ColumnTypes)
 
 TFarKeyBarTitles::TFarKeyBarTitles()
 {
-  memset(&FKeyBarTitles, 0, sizeof(FKeyBarTitles));
+  ::ZeroMemory(&FKeyBarTitles, sizeof(FKeyBarTitles));
   FReferenced = false;
 }
 
