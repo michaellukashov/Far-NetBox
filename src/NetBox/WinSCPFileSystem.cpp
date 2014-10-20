@@ -365,7 +365,7 @@ void TWinSCPFileSystem::KeepaliveThreadCallback()
   }
 }
 
-bool TWinSCPFileSystem::SessionList() const
+bool TWinSCPFileSystem::IsSessionList() const
 {
   return (FTerminal == nullptr);
 }
@@ -374,7 +374,7 @@ bool TWinSCPFileSystem::Connected() const
 {
   // Check for active added to avoid "disconnected" message popup repeatedly
   // from "idle"
-  return !SessionList() && FTerminal->GetActive();
+  return !IsSessionList() && FTerminal->GetActive();
 }
 
 TWinSCPPlugin * TWinSCPFileSystem::WinSCPPlugin()
@@ -410,7 +410,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD & Flags,
   int & /*StartSortMode*/, bool & /*StartSortOrder*/, TFarKeyBarTitles * KeyBarTitles,
   UnicodeString & ShortcutData)
 {
-  if (!SessionList())
+  if (!IsSessionList())
   {
     Flags = OPIF_USEFILTER | OPIF_USESORTGROUPS | OPIF_USEHIGHLIGHTING |
       OPIF_SHOWPRESERVECASE | OPIF_COMPAREFATTIME;
@@ -490,7 +490,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     }
     Result = true;
   }
-  else if (SessionList())
+  else if (IsSessionList())
   {
     Result = true;
     assert(StoredSessions);
@@ -887,7 +887,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
     WinSCPPlugin()->CommandsMenu(true);
     Handled = true;
   }
-  else if (SessionList())
+  else if (IsSessionList())
   {
     TSessionData * Data = nullptr;
     if ((Focused != nullptr) && Focused->GetIsFile() && Focused->GetUserData())
@@ -2120,7 +2120,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
 
 bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
 {
-  if (!SessionList() && !Connected())
+  if (!IsSessionList() && !Connected())
   {
     return false;
   }
@@ -2152,7 +2152,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
       FSavedFindFolder = FTerminal->GetCurrDirectory();
     }
 
-    if (SessionList())
+    if (IsSessionList())
     {
       FSessionsFolder = core::AbsolutePath(L"/" + FSessionsFolder, Dir);
       assert(FSessionsFolder[1] == L'/');
@@ -2308,7 +2308,7 @@ intptr_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
       return -1;
     }
   }
-  else if (SessionList())
+  else if (IsSessionList())
   {
     assert(!(OpMode & OPM_SILENT) || !Name.IsEmpty());
 
@@ -2416,7 +2416,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
     }
     return true;
   }
-  else if (SessionList())
+  else if (IsSessionList())
   {
     if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
         (MoreMessageDialog(GetMsg(DELETE_SESSIONS_CONFIRM), nullptr, qtConfirmation, qaOK | qaCancel) == qaOK))
@@ -2456,7 +2456,7 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     };
     Result = GetFilesRemote(PanelItems, Move, DestPath, OpMode);
   }
-  else if (SessionList())
+  else if (IsSessionList())
   {
     UnicodeString Title = GetMsg(EXPORT_SESSION_TITLE);
     UnicodeString Prompt;
@@ -2727,7 +2727,7 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int 
       FTerminal->TerminalSetCurrentDirectory(CurrentDirectory);
     }
   }
-  else if (SessionList())
+  else if (IsSessionList())
   {
     if (!ImportSessions(PanelItems, Move, OpMode))
     {
