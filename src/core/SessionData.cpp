@@ -3053,20 +3053,21 @@ void TSessionData::SetCodePage(const UnicodeString & Value)
 
 void TSessionData::AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix) const
 {
-  if (::LowerCase(HostName.SubString(1, Prefix.Length())) == Prefix)
+  UnicodeString FullPrefix = Prefix + ProtocolSeparator;
+  if (::LowerCase(HostName.SubString(1, FullPrefix.Length())) == FullPrefix)
   {
-    HostName.Delete(1, Prefix.Length());
+    HostName.Delete(1, FullPrefix.Length());
   }
 }
 
 void TSessionData::RemoveProtocolPrefix(UnicodeString & HostName) const
 {
-  AdjustHostName(HostName, L"scp://");
-  AdjustHostName(HostName, L"sftp://");
-  AdjustHostName(HostName, L"ftp://");
-  AdjustHostName(HostName, L"ftps://");
-  AdjustHostName(HostName, L"http://");
-  AdjustHostName(HostName, L"https://");
+  AdjustHostName(HostName, ScpProtocolStr);
+  AdjustHostName(HostName, SftpProtocolStr);
+  AdjustHostName(HostName, FtpProtocolStr);
+  AdjustHostName(HostName, FtpsProtocolStr);
+  AdjustHostName(HostName, WebDAVProtocolStr);
+  AdjustHostName(HostName, WebDAVSProtocolStr);
 }
 
 TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t FSProtocol)
