@@ -365,12 +365,12 @@ void TWinSCPFileSystem::KeepaliveThreadCallback()
   }
 }
 
-bool TWinSCPFileSystem::SessionList()
+bool TWinSCPFileSystem::SessionList() const
 {
   return (FTerminal == nullptr);
 }
 
-bool TWinSCPFileSystem::Connected()
+bool TWinSCPFileSystem::Connected() const
 {
   // Check for active added to avoid "disconnected" message popup repeatedly
   // from "idle"
