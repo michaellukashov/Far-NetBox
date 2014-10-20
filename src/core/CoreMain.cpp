@@ -58,20 +58,20 @@ TQueryButtonAlias::TQueryButtonAlias() :
 {
 }
 
-TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword)
+TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword) :
+  Params(AParams),
+  Aliases(nullptr),
+  AliasesCount(0),
+  Timer(0),
+  TimerEvent(nullptr),
+  TimerMessage(L""),
+  TimerAnswers(0),
+  TimerQueryType(static_cast<TQueryType>(-1)),
+  Timeout(0),
+  TimeoutAnswer(0),
+  NoBatchAnswers(0),
+  HelpKeyword(AHelpKeyword)
 {
-  Params = AParams;
-  Aliases = nullptr;
-  AliasesCount = 0;
-  Timer = 0;
-  TimerEvent = nullptr;
-  TimerMessage = L"";
-  TimerAnswers = 0;
-  TimerQueryType = static_cast<TQueryType>(-1);
-  Timeout = 0;
-  TimeoutAnswer = 0;
-  NoBatchAnswers = 0;
-  HelpKeyword = AHelpKeyword;
 }
 
 TQueryParams::TQueryParams(const TQueryParams & Source)
