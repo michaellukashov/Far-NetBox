@@ -26,10 +26,10 @@ bool TObject::IsKindOf(TObjectClassId ClassId) const
 {
   assert(this != nullptr);
 
-  TClassInfo * thisInfo = GetClassInfo();
+  TClassInfo * thisInfo = this->GetClassInfo();
   assert(thisInfo != nullptr);
 
-  TClassInfo * classInfo = TClassInfo::FindClass(ClassId);
+  const TClassInfo * classInfo = TClassInfo::FindClass(ClassId);
   return thisInfo->IsKindOf(classInfo);
 }
 
