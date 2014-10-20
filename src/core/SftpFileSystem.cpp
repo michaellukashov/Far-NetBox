@@ -601,7 +601,7 @@ public:
     return Result;
   }
 
-  bool CanGetString(uint32_t & Size)
+  bool CanGetString(uint32_t & Size) const
   {
     bool Result = CanGetCardinal();
     if (Result)
@@ -622,7 +622,7 @@ public:
   // as file handles), and SFTP spec does not say explicitly that they
   // are in UTF. For most of them it actually does not matter as
   // the content should be pure ASCII (e.g. extension names, etc.)
-  inline UnicodeString GetAnsiString()
+  inline UnicodeString GetAnsiString() const
   {
     return UnicodeString(AnsiString(GetRawByteString().c_str()).c_str());
   }
@@ -644,7 +644,7 @@ public:
   }
 
   // now purposeless alias to GetString(bool)
-  inline UnicodeString GetPathString(bool Utf)
+  inline UnicodeString GetPathString(bool Utf) const
   {
     return GetString(Utf);
   }
