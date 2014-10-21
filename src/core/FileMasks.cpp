@@ -11,14 +11,9 @@
 #include "Terminal.h"
 #include <StrUtils.hpp>
 
-//extern const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
-//static UnicodeString FileMasksDelimiters = L";,";
 #define FILE_MASKS_DELIMITERS L";,"
-//static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
 #define ALL_FILE_MASKS_DELIMITERS L";,|"
-//static UnicodeString DirectoryMaskDelimiters = L"/\\";
 #define DIRECTORY_MASK_DELIMITERS L"/\\"
-//static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
 #define FILE_MASKS_DELIMITER_STR L'; '
 
 EFileMasksException::EFileMasksException(

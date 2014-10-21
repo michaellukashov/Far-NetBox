@@ -22,10 +22,6 @@ extern "C"
 {
 #include <winstuff.h>
 }
-//const UnicodeString OriginalPuttyRegistryStorageKey(_T(PUTTY_REG_POS));
-//const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
-//const UnicodeString OriginalPuttyExecutable(L"putty.exe");
-//const UnicodeString KittyExecutable(L"kitty.exe");
 
 void PuttyInitialize()
 {
