@@ -81,7 +81,7 @@ void TClassInfo::Register()
   {
     // keep the hash local initially, reentrance is possible
     classTable = new THashTable();
-    classTable->reserve(50);
+    classTable->reserve(170);
   }
   else
   {

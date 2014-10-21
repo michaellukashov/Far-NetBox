@@ -3,7 +3,7 @@
 #ifdef USE_DLMALLOC
 #include "../../libs/dlmalloc/malloc-2.8.6.h"
 
-#define nb_malloc(size) dlmalloc(size)
+#define nb_malloc(size) dlcalloc(1, size)
 #define nb_calloc(count, size) dlcalloc(count, size)
 #define nb_realloc(ptr, size) dlrealloc(ptr, size)
 

@@ -153,7 +153,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     #define COMPOSESTRINGARRAY(NAME) \
         if (NAME.GetCount()) \
         { \
-          wchar_t ** StringArray = static_cast<wchar_t **>(nb_malloc(sizeof(wchar_t *) * NAME.GetCount())); \
+          wchar_t ** StringArray = static_cast<wchar_t **>(nb_calloc(1, sizeof(wchar_t *) * (1 + NAME.GetCount()))); \
           GUID *Guids = static_cast<GUID *>(nb_malloc(sizeof(GUID) * NAME.GetCount())); \
           FPluginInfo.NAME.Guids = Guids; \
           FPluginInfo.NAME.Strings = StringArray; \
@@ -227,7 +227,7 @@ wchar_t * TCustomFarPlugin::DuplicateStr(const UnicodeString & Str, bool AllowEm
   {
     const size_t sz = Str.Length() + 1;
     wchar_t * Result = static_cast<wchar_t *>(
-      nb_malloc(sizeof(wchar_t) * sz));
+      nb_calloc(1, sizeof(wchar_t) * (1 + sz)));
     wcscpy_s(Result, sz, Str.c_str());
     return Result;
   }
@@ -1069,7 +1069,7 @@ intptr_t TCustomFarPlugin::FarMessage(uintptr_t Flags,
   }
 
   Items = static_cast<wchar_t **>(
-    nb_malloc(sizeof(wchar_t *) * MessageLines->GetCount()));
+    nb_calloc(1, sizeof(wchar_t *) * (1 + MessageLines->GetCount())));
   for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
   {
     UnicodeString S = MessageLines->GetString(Index);
@@ -1142,7 +1142,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
   assert(Items && Items->GetCount());
   intptr_t Result = 0;
   FarMenuItem * MenuItems = static_cast<FarMenuItem *>(
-    nb_malloc(sizeof(FarMenuItem) * Items->GetCount()));
+    nb_calloc(1, sizeof(FarMenuItem) * (1 + Items->GetCount())));
   SCOPE_EXIT
   {
     nb_free(MenuItems);
@@ -2209,7 +2209,7 @@ void TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString & ColumnTypes
 
   ClearPanelMode(FPanelModes[Mode]);
   wchar_t ** Titles = static_cast<wchar_t **>(
-    nb_malloc(sizeof(wchar_t *) * ColumnTypesCount));
+    nb_calloc(1, sizeof(wchar_t *) * (1 + ColumnTypesCount)));
   FPanelModes[Mode].ColumnTypes = TCustomFarPlugin::DuplicateStr(ColumnTypes);
   FPanelModes[Mode].ColumnWidths = TCustomFarPlugin::DuplicateStr(ColumnWidths);
   if (ColumnTitles)
@@ -2416,7 +2416,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
   PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
   wchar_t ** CustomColumnData = static_cast<wchar_t **>(
-    nb_malloc(sizeof(wchar_t *) * PanelItem->CustomColumnNumber));
+    nb_calloc(1, sizeof(wchar_t *) * (1 + PanelItem->CustomColumnNumber)));
   for (size_t Index = 0; Index < PanelItem->CustomColumnNumber; ++Index)
   {
     CustomColumnData[Index] =
