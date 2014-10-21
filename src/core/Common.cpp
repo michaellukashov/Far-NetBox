@@ -1968,14 +1968,13 @@ UnicodeString StandardTimestamp()
   return StandardTimestamp(Now());
 }
 
-static TDateTime TwoSeconds(0, 0, 2, 0);
-
 intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2)
 {
   // "FAT" time precision
   // (when one time is seconds-precision and other is millisecond-precision,
   // we may have times like 12:00:00.000 and 12:00:01.999, which should
   // be treated the same)
+  TDateTime TwoSeconds(0, 0, 2, 0);
   intptr_t Result;
   if (T1 == T2)
   {
