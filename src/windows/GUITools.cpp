@@ -442,7 +442,7 @@ TLocalCustomCommand::TLocalCustomCommand()
 }
 
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-    const UnicodeString & APath) :
+  const UnicodeString & APath) :
   TFileCustomCommand(Data, APath)
 {
 }
