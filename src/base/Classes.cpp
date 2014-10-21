@@ -2066,8 +2066,6 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
   Error(SNotImplemented, 1204);
 }
 
-TDateTime MinDateTime = TDateTime(-657434.0);
-
 NB_IMPLEMENT_CLASS(TObject, nullptr, nullptr)
 NB_IMPLEMENT_CLASS(TPersistent, NB_GET_CLASS_INFO(TObject), nullptr)
 NB_IMPLEMENT_CLASS(TList, NB_GET_CLASS_INFO(TObject), nullptr)

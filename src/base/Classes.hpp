@@ -406,7 +406,7 @@ private:
   double FValue;
 };
 
-extern TDateTime MinDateTime;
+#define MinDateTime TDateTime(-657434.0)
 
 TDateTime Now();
 TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
