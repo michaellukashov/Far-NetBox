@@ -3309,7 +3309,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       (FSynchronizationSaveScreenHandle == 0) &&
       !FNoProgress && !FNoProgressFinish)
   {
-    TFarPanelItem * PanelItem = nullptr;;
+    TFarPanelItem * PanelItem = nullptr;
 
     if (!FPanelItems)
     {

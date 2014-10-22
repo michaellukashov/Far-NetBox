@@ -867,7 +867,7 @@ void AppendPathDelimiterW(UnicodeString & Str)
 {
   if (!Str.IsEmpty() && Str[Str.Length()] != L'/' && Str[Str.Length()] != L'\\')
   {
-    Str += L"\\";;
+    Str += L"\\";
   }
 }
 
