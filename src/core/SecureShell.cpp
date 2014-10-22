@@ -472,12 +472,12 @@ bool TSecureShell::TryFtp()
         (FSessionData->GetPortNumber() != SshPortNumber) ||
         FSessionData->GetTunnel() || (FSessionData->GetProxyMethod() != ::pmNone))
     {
-      LogEvent(L"Using non-standard protocol or port, tunnel or proxy, will not knock FTP port.");
+      LogEvent("Using non-standard protocol or port, tunnel or proxy, will not knock FTP port.");
       Result = false;
     }
     else
     {
-      LogEvent(L"Knocking FTP port.");
+      LogEvent("Knocking FTP port.");
 
       SOCKET Socket = socket(AF_INET, SOCK_STREAM, 0);
       Result = (Socket != INVALID_SOCKET);
@@ -515,11 +515,11 @@ bool TSecureShell::TryFtp()
 
       if (Result)
       {
-        LogEvent(L"FTP port opened, will suggest using FTP protocol.");
+        LogEvent("FTP port opened, will suggest using FTP protocol.");
       }
       else
       {
-        LogEvent(L"FTP port did not open.");
+        LogEvent("FTP port did not open.");
       }
     }
   }
@@ -540,7 +540,7 @@ void TSecureShell::Init()
       {
         if (GetConfiguration()->GetActualLogProtocol() >= 1)
         {
-          LogEvent(L"Waiting for the server to continue with the initialization");
+          LogEvent("Waiting for the server to continue with the initialization");
         }
         WaitForData();
       }
@@ -789,7 +789,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
         !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
         FLAGCLEAR((intptr_t)Prompts->GetObj(0), pupEcho))
     {
-      LogEvent(L"Using stored password.");
+      LogEvent("Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
       Results->SetString(0, FSessionData->GetPassword());
@@ -797,7 +797,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     }
     else if (Instructions2.IsEmpty() && !InstructionsRequired && (Prompts->GetCount() == 0))
     {
-      LogEvent(L"Ignoring empty SSH server authentication request");
+      LogEvent("Ignoring empty SSH server authentication request");
       Result = true;
     }
   }
@@ -805,7 +805,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (!FSessionData->GetPassword().IsEmpty() && !FStoredPasswordTried)
     {
-      LogEvent(L"Using stored password.");
+      LogEvent("Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
       Results->SetString(0, FSessionData->GetPassword());
@@ -816,7 +816,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (!FSessionData->GetPassphrase().IsEmpty() && !FStoredPassphraseTried)
     {
-      LogEvent(L"Using configured passphrase.");
+      LogEvent("Using configured passphrase.");
       Result = true;
       Results->SetString(0, FSessionData->GetPassphrase());
       FStoredPassphraseTried = true;
@@ -1177,7 +1177,7 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
 
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
-      LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
+      LogEvent("Waiting for dispatching send buffer timed out, asking user what to do.");
       uintptr_t Answer = TimeoutPrompt(MAKE_CALLBACK(TSecureShell::SendBuffer, this));
       switch (Answer)
       {
@@ -1224,7 +1224,7 @@ void TSecureShell::Send(const uint8_t * Buf, intptr_t Length)
 
 void TSecureShell::SendNull()
 {
-  LogEvent(L"Sending nullptr.");
+  LogEvent("Sending nullptr.");
   uint8_t Null = 0;
   Send(&Null, 1);
 }
@@ -1556,7 +1556,7 @@ void TSecureShell::Discard()
 
 void TSecureShell::Close()
 {
-  LogEvent(L"Closing connection.");
+  LogEvent("Closing connection.");
   assert(FActive);
 
   // this is particularly necessary when using local proxy command
@@ -1609,7 +1609,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, intptr_t & Result)
     {
       if (GetConfiguration()->GetActualLogProtocol() >= 2)
       {
-        LogEvent(L"Pooling for data in case they finally arrives");
+        LogEvent("Pooling for data in case they finally arrives");
       }
 
       // in extreme condition it may happen that send buffer is full, but there
@@ -1617,7 +1617,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, intptr_t & Result)
       // do not process FD_WRITE until we receive any FD_READ
       if (EventSelectLoop(0, false, &Events))
       {
-        LogEvent(L"Data has arrived, closing query to user.");
+        LogEvent("Data has arrived, closing query to user.");
         Result = qaOK;
       }
     }
@@ -1663,7 +1663,7 @@ void TSecureShell::WaitForData()
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(L"Looking for incoming data");
+      LogEvent("Looking for incoming data");
     }
 
     IncomingData = EventSelectLoop(FSessionData->GetTimeout() * MSecsPerSec, true, nullptr);
@@ -1676,7 +1676,7 @@ void TSecureShell::WaitForData()
       ::ZeroMemory(&Events, sizeof(Events));
       TPoolForDataEvent Event(this, Events);
 
-      LogEvent(L"Waiting for data timed out, asking user what to do.");
+      LogEvent("Waiting for data timed out, asking user what to do.");
       uintptr_t Answer = TimeoutPrompt(MAKE_CALLBACK(TPoolForDataEvent::PoolForData, &Event));
       switch (Answer)
       {
@@ -1808,7 +1808,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      // LogEvent(L"Looking for network events");
+      // LogEvent("Looking for network events");
     }
     uintptr_t TicksBefore = ::GetTickCount();
     int HandleCount;
@@ -1839,7 +1839,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
         if (GetConfiguration()->GetActualLogProtocol() >= 1)
         {
-          LogEvent(L"Detected network event");
+          LogEvent("Detected network event");
         }
 
         if (Events == nullptr)
@@ -1871,7 +1871,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
         if (GetConfiguration()->GetActualLogProtocol() >= 2)
         {
-          // LogEvent(L"Timeout waiting for network events");
+          // LogEvent("Timeout waiting for network events");
         }
 
         MSec = 0;
@@ -1928,7 +1928,7 @@ void TSecureShell::KeepAlive()
 {
   if (FActive && (FWaiting == 0))
   {
-    LogEvent(L"Sending null packet to keep session alive.");
+    LogEvent("Sending null packet to keep session alive.");
     SendSpecial(TS_PING);
   }
   else
@@ -2118,7 +2118,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       if ((!Fingerprint && (StoredKey == KeyStr2)) ||
           (Fingerprint && (NormalizedExpectedKey == NormalizedFingerprint)))
       {
-        LogEvent(L"Host key matches cached key");
+        LogEvent("Host key matches cached key");
         Result = true;
       }
       else
@@ -2148,7 +2148,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       }
       else if (NormalizedExpectedKey == NormalizedFingerprint)
       {
-        LogEvent(L"Host key matches configured key");
+        LogEvent("Host key matches configured key");
         Result = true;
       }
       else

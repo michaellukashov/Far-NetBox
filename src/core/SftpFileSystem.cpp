@@ -1192,12 +1192,12 @@ public:
       {
         if (FFileSystem->FTerminal->GetActive())
         {
-          FFileSystem->FTerminal->LogEvent(L"Error while disposing the SFTP queue.");
+          FFileSystem->FTerminal->LogEvent("Error while disposing the SFTP queue.");
           FFileSystem->FTerminal->GetLog()->AddException(&E);
         }
         else
         {
-          FFileSystem->FTerminal->LogEvent(L"Fatal error while disposing the SFTP queue.");
+          FFileSystem->FTerminal->LogEvent("Fatal error while disposing the SFTP queue.");
           throw;
         }
       }
@@ -2469,12 +2469,12 @@ uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
             IsReserved = true;
             if (ReservedPacket)
             {
-              FTerminal->LogEvent(L"Storing reserved response");
+              FTerminal->LogEvent("Storing reserved response");
               *ReservedPacket = *Packet;
             }
             else
             {
-              FTerminal->LogEvent(L"Discarding reserved response");
+              FTerminal->LogEvent("Discarding reserved response");
               RemoveReservation(Index);
               if ((Reservation >= 0) && (Reservation > Index))
               {
@@ -2917,7 +2917,7 @@ void TSFTPFileSystem::DoStartup()
       }
       else if (ExtensionName == SFTP_EXT_FSROOTS)
       {
-        FTerminal->LogEvent(L"File system roots:\n");
+        FTerminal->LogEvent("File system roots:\n");
         assert(FFixedPaths == nullptr);
         FFixedPaths = new TStringList();
         try
@@ -3025,7 +3025,7 @@ void TSFTPFileSystem::DoStartup()
       (GetSessionData()->GetSFTPBug(sbSignedTS) == asAuto);
     if (FSignedTS)
     {
-      FTerminal->LogEvent(L"We believe the server has signed timestamps bug");
+      FTerminal->LogEvent("We believe the server has signed timestamps bug");
     }
   }
   else
@@ -3043,11 +3043,11 @@ void TSFTPFileSystem::DoStartup()
 
   if (FUtfStrings)
   {
-    FTerminal->LogEvent(L"We will use UTF-8 strings when appropriate");
+    FTerminal->LogEvent("We will use UTF-8 strings when appropriate");
   }
   else
   {
-    FTerminal->LogEvent(L"We will never use UTF-8 strings");
+    FTerminal->LogEvent("We will never use UTF-8 strings");
   }
 
   FMaxPacketSize = static_cast<uint32_t>(GetSessionData()->GetSFTPMaxPacketSize());
@@ -3302,7 +3302,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
         if (Count == 0)
         {
-          FTerminal->LogEvent(L"Empty directory listing packet. Aborting directory reading.");
+          FTerminal->LogEvent("Empty directory listing packet. Aborting directory reading.");
           isEOF = true;
         }
       }
@@ -3595,7 +3595,7 @@ void TSFTPFileSystem::CreateLink(const UnicodeString & AFileName,
     if (GetSessionData()->GetSFTPBug(sbSymlink) == asOn)
     {
       Buggy = true;
-      FTerminal->LogEvent(L"Forcing workaround for SFTP link bug");
+      FTerminal->LogEvent("Forcing workaround for SFTP link bug");
     }
     else if (GetSessionData()->GetSFTPBug(sbSymlink) == asOff)
     {
@@ -3617,7 +3617,7 @@ void TSFTPFileSystem::CreateLink(const UnicodeString & AFileName,
           Buggy = (ProFTPDMajorVer == 0);
           if (Buggy)
           {
-            FTerminal->LogEvent(L"We believe the server has SFTP link bug");
+            FTerminal->LogEvent("We believe the server has SFTP link bug");
           }
         }
         else
@@ -3635,7 +3635,7 @@ void TSFTPFileSystem::CreateLink(const UnicodeString & AFileName,
           (FSecureShell->GetSshImplementation() == sshiProFTPD);
         if (Buggy)
         {
-          FTerminal->LogEvent(L"We believe the server has SFTP symlink bug");
+          FTerminal->LogEvent("We believe the server has SFTP symlink bug");
         }
       }
     }
@@ -3952,12 +3952,12 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
     else if (Packet.CanGetSmallCardinal())
     {
       // See http://bugs.proftpd.org/show_bug.cgi?id=4079
-      FTerminal->LogEvent(L"Assuming ProFTPD/mod_sftp bug of 2-byte bytes-per-allocation-unit field");
+      FTerminal->LogEvent("Assuming ProFTPD/mod_sftp bug of 2-byte bytes-per-allocation-unit field");
       ASpaceAvailable.BytesPerAllocationUnit = Packet.GetSmallCardinal();
     }
     else
     {
-      FTerminal->LogEvent(L"Missing bytes-per-allocation-unit field");
+      FTerminal->LogEvent("Missing bytes-per-allocation-unit field");
     }
   }
   else if (ALWAYS_TRUE(FSupportsStatVfsV2))
@@ -4447,7 +4447,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
 
         if (FLAGCLEAR(Flags, tfNewDirectory))
         {
-          FTerminal->LogEvent(L"Checking existence of file.");
+          FTerminal->LogEvent("Checking existence of file.");
           TRemoteFile * File = nullptr;
           DestFileExists = RemoteFileExists(DestFullName, &File);
           if (DestFileExists)
@@ -4477,7 +4477,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
 
           if (ResumeAllowed)
           {
-            FTerminal->LogEvent(L"Checking existence of partially transfered file.");
+            FTerminal->LogEvent("Checking existence of partially transfered file.");
             if (RemoteFileExists(DestPartialFullName, &File))
             {
               ResumeOffset = File->GetSize();
@@ -4502,7 +4502,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
               }
               else
               {
-                FTerminal->LogEvent(L"Resuming file transfer.");
+                FTerminal->LogEvent("Resuming file transfer.");
               }
             }
             else
@@ -4519,7 +4519,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
                   // update paths in case user changes the file name
                   DestFullName = LocalCanonify(TargetDir + DestFileName);
                   DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
-                  FTerminal->LogEvent(L"Checking existence of new file.");
+                  FTerminal->LogEvent("Checking existence of new file.");
                   DestFileExists = RemoteFileExists(DestFullName, nullptr);
                 }
               }
@@ -4542,7 +4542,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
       OpenParams.FileParams = &FileParams;
       OpenParams.Confirmed = false;
 
-      FTerminal->LogEvent(L"Opening remote file.");
+      FTerminal->LogEvent("Opening remote file.");
       FTerminal->FileOperationLoop(MAKE_CALLBACK(TSFTPFileSystem::SFTPOpenRemote, this), OperationProgress, true,
         FMTLOAD(SFTP_CREATE_FILE_ERROR, OpenParams.RemoteFileName.c_str()),
         &OpenParams);
@@ -4617,14 +4617,14 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
         int64_t DestWriteOffset = 0;
         if (OpenParams.OverwriteMode == omAppend)
         {
-          FTerminal->LogEvent(L"Appending file.");
+          FTerminal->LogEvent("Appending file.");
           DestWriteOffset = OpenParams.DestFileSize;
         }
         else if (ResumeTransfer || (OpenParams.OverwriteMode == omResume))
         {
           if (OpenParams.OverwriteMode == omResume)
           {
-            FTerminal->LogEvent(L"Resuming file transfer (append style).");
+            FTerminal->LogEvent("Resuming file transfer (append style).");
             ResumeOffset = OpenParams.DestFileSize;
           }
           ::FileSeek(LocalFileHandle, ResumeOffset, 0);
@@ -4751,7 +4751,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
                   (!CopyParam->GetPreserveRights() && !CopyParam->GetPreserveTime()))
               {
                 assert(DoResume);
-                FTerminal->LogEvent(L"Ignoring error preserving permissions of overwritten file");
+                FTerminal->LogEvent("Ignoring error preserving permissions of overwritten file");
               }
               else
               {
@@ -5417,10 +5417,10 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
         DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
         LocalFileName = DestPartialFullName;
 
-        FTerminal->LogEvent(L"Checking existence of partially transfered file.");
+        FTerminal->LogEvent("Checking existence of partially transfered file.");
         if (::FileExists(ApiPath(DestPartialFullName)))
         {
-          FTerminal->LogEvent(L"Partially transfered file exists.");
+          FTerminal->LogEvent("Partially transfered file exists.");
           FTerminal->OpenLocalFile(DestPartialFullName, GENERIC_WRITE,
             &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, &ResumeOffset);
 
@@ -5435,7 +5435,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
             ResumeTransfer = !PartialBiggerThanSource;
             if (!ResumeTransfer)
             {
-              FTerminal->LogEvent(L"Partially transfered file is bigger that original file.");
+              FTerminal->LogEvent("Partially transfered file is bigger that original file.");
             }
           }
 
@@ -5449,7 +5449,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           }
           else
           {
-            FTerminal->LogEvent(L"Resuming file transfer.");
+            FTerminal->LogEvent("Resuming file transfer.");
             ::FileSeek(LocalFileHandle, ResumeOffset, 0);
             OperationProgress->AddResumed(ResumeOffset);
           }
@@ -5458,7 +5458,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
 
       // first open source file, not to loose the destination file,
       // if we cannot open the source one in the first place
-      FTerminal->LogEvent(L"Opening remote file.");
+      FTerminal->LogEvent("Opening remote file.");
       FILE_OPERATION_LOOP(FMTLOAD(SFTP_OPEN_FILE_ERROR, AFileName.c_str()),
         uint32_t OpenType = SSH_FXF_READ;
         if ((FVersion >= 4) && OperationProgress->AsciiTransfer)
@@ -5504,7 +5504,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
         FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
           &LocalFileHandle, nullptr, nullptr, &MTime, nullptr, &DestFileSize, false);
 
-        FTerminal->LogEvent(L"Confirming overwriting of file.");
+        FTerminal->LogEvent("Confirming overwriting of file.");
         TOverwriteFileParams FileParams;
         FileParams.SourceSize = OperationProgress->TransferSize;
         FileParams.SourceTimestamp = AFile->GetModification();
@@ -5556,11 +5556,11 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           ::FileSeek(LocalFileHandle, DestFileSize, 0);
           if (OverwriteMode == omAppend)
           {
-            FTerminal->LogEvent(L"Appending to file.");
+            FTerminal->LogEvent("Appending to file.");
           }
           else
           {
-            FTerminal->LogEvent(L"Resuming file transfer (append style).");
+            FTerminal->LogEvent("Resuming file transfer (append style).");
             assert(OverwriteMode == omResume);
             OperationProgress->AddResumed(DestFileSize);
           }

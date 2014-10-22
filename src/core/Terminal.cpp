@@ -745,7 +745,7 @@ void TTerminal::Idle()
   {
     if (FConfiguration->GetActualLogProtocol() >= 1)
     {
-      // LogEvent(L"Session upkeep");
+      // LogEvent("Session upkeep");
     }
 
     assert(FFileSystem != nullptr);
@@ -964,7 +964,7 @@ void TTerminal::InternalDoTryOpen()
   if (FSessionData->GetTunnel())
   {
     DoInformation(LoadStr(OPEN_TUNNEL), true);
-    LogEvent(L"Opening tunnel.");
+    LogEvent("Opening tunnel.");
     OpenTunnel();
     GetLog()->AddSeparator();
 
@@ -998,7 +998,7 @@ void TTerminal::InitFileSystem()
     if ((FSProtocol == fsFTP) && (GetSessionData()->GetFtps() == ftpsNone))
     {
 #ifdef NO_FILEZILLA
-      LogEvent(L"FTP protocol is not supported by this build.");
+      LogEvent("FTP protocol is not supported by this build.");
       FatalError(nullptr, LoadStr(FTP_UNSUPPORTED));
 #else
       FFSProtocol = cfsFTP;
@@ -1006,13 +1006,13 @@ void TTerminal::InitFileSystem()
       FFileSystem->Init(nullptr);
       FFileSystem->Open();
       GetLog()->AddSeparator();
-      LogEvent(L"Using FTP protocol.");
+      LogEvent("Using FTP protocol.");
 #endif
     }
     else if ((FSProtocol == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
     {
 #if defined(NO_FILEZILLA) && defined(MPEXT_NO_SSLDLL)
-      LogEvent(L"FTPS protocol is not supported by this build.");
+      LogEvent("FTPS protocol is not supported by this build.");
       FatalError(nullptr, LoadStr(FTPS_UNSUPPORTED));
 #else
       FFSProtocol = cfsFTPS;
@@ -1020,7 +1020,7 @@ void TTerminal::InitFileSystem()
       FFileSystem->Init(nullptr);
       FFileSystem->Open();
       GetLog()->AddSeparator();
-      LogEvent(L"Using FTPS protocol.");
+      LogEvent("Using FTPS protocol.");
 #endif
     }
     else if (FSProtocol == fsWebDAV)
@@ -1030,7 +1030,7 @@ void TTerminal::InitFileSystem()
       FFileSystem->Init(nullptr);
       FFileSystem->Open();
       GetLog()->AddSeparator();
-      LogEvent(L"Using WebDAV protocol.");
+      LogEvent("Using WebDAV protocol.");
     }
     else
     {
@@ -1072,7 +1072,7 @@ void TTerminal::InitFileSystem()
           FFileSystem= new TSCPFileSystem(this);
           FFileSystem->Init(FSecureShell);
           FSecureShell = nullptr; // ownership passed
-          LogEvent(L"Using SCP protocol.");
+          LogEvent("Using SCP protocol.");
         }
         else
         {
@@ -1080,7 +1080,7 @@ void TTerminal::InitFileSystem()
           FFileSystem = new TSFTPFileSystem(this);
           FFileSystem->Init(FSecureShell);
           FSecureShell = nullptr; // ownership passed
-          LogEvent(L"Using SFTP protocol.");
+          LogEvent("Using SFTP protocol.");
         }
       }
     }
@@ -1323,7 +1323,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
       Results->SetString(0, Password);
       if (!Results->GetString(0).IsEmpty())
       {
-        LogEvent(L"Using remembered password.");
+        LogEvent("Using remembered password.");
         Result = true;
       }
       PasswordTried = true;
@@ -1609,7 +1609,7 @@ bool TTerminal::DoQueryReopen(Exception * E)
     }
     else
     {
-      LogEvent(L"Connection was lost, asking what to do.");
+      LogEvent("Connection was lost, asking what to do.");
 
       NumberOfRetries++;
       FSessionData->SetNumberOfRetries(NumberOfRetries);
@@ -2118,7 +2118,7 @@ void TTerminal::FatalError(Exception * E, const UnicodeString & Msg, const Unico
   {
     // We log this instead of exception handler, because Close() would
     // probably cause exception handler to loose pointer to TShellLog()
-    LogEvent(L"Attempt to close connection due to fatal exception:");
+    LogEvent("Attempt to close connection due to fatal exception:");
     GetLog()->Add(llException, Msg);
     GetLog()->AddException(E);
 
@@ -2223,7 +2223,7 @@ bool TTerminal::HandleException(Exception * E)
 
 void TTerminal::CloseOnCompletion(TOnceDoneOperation Operation, const UnicodeString & Message)
 {
-  LogEvent(L"Closing session after completed operation (as requested by user)");
+  LogEvent("Closing session after completed operation (as requested by user)");
   Close();
   throw ESshTerminate(nullptr,
     Message.IsEmpty() ? UnicodeString(LoadStr(CLOSED_ON_COMPLETION)) : Message,
@@ -2508,7 +2508,7 @@ void TTerminal::RefreshDirectory()
 {
   if (GetSessionData()->GetCacheDirectories())
   {
-    LogEvent(L"Not refreshing directory, caching is off.");
+    LogEvent("Not refreshing directory, caching is off.");
   }
   else if (FDirectoryCache->HasNewerFileList(GetCurrDirectory(), FFiles->GetTimestamp()))
   {
@@ -2570,7 +2570,7 @@ void TTerminal::RollbackAction(TSessionAction & Action,
 
 void TTerminal::DoStartup()
 {
-  LogEvent(L"Doing startup conversation with host.");
+  LogEvent("Doing startup conversation with host.");
   BeginTransaction();
   {
     SCOPE_EXIT
@@ -2592,7 +2592,7 @@ void TTerminal::DoStartup()
       ChangeDirectory(GetSessionData()->GetRemoteDirectory());
     }
   }
-  LogEvent(L"Startup conversation with host finished.");
+  LogEvent("Startup conversation with host finished.");
 }
 
 void TTerminal::ReadCurrentDirectory()
@@ -2603,7 +2603,7 @@ void TTerminal::ReadCurrentDirectory()
     // reset flag is case we are called externally (like from console dialog)
     FReadCurrentDirectoryPending = false;
 
-    LogEvent(L"Getting current directory name.");
+    LogEvent("Getting current directory name.");
     UnicodeString OldDirectory = FFileSystem->GetCurrDirectory();
 
     FFileSystem->ReadCurrentDirectory();
@@ -2648,7 +2648,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
   {
     if (ReloadOnly && !ForceCache)
     {
-      LogEvent(L"Cached directory not reloaded.");
+      LogEvent("Cached directory not reloaded.");
     }
     else
     {
@@ -2663,11 +2663,11 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 
       if (LoadedFromCache)
       {
-        LogEvent(L"Directory content loaded from cache.");
+        LogEvent("Directory content loaded from cache.");
       }
       else
       {
-        LogEvent(L"Cached Directory content has been removed.");
+        LogEvent("Cached Directory content has been removed.");
       }
     }
   }
@@ -3341,7 +3341,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
     {
       assert(GetCommandSessionOpened());
       assert(FCommandSession->GetFSProtocol() == cfsSCP);
-      LogEvent(L"Executing custom command on command session.");
+      LogEvent("Executing custom command on command session.");
 
       if (FCommandSession->GetCurrDirectory() != GetCurrDirectory())
       {
@@ -3803,7 +3803,7 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
     {
       assert(GetCommandSessionOpened());
       assert(FCommandSession->GetFSProtocol() == cfsSCP);
-      LogEvent(L"Copying file on command session.");
+      LogEvent("Copying file on command session.");
       FCommandSession->TerminalSetCurrentDirectory(GetCurrDirectory());
       FCommandSession->FFileSystem->RemoteCopyFile(AFileName, NewName);
     }
@@ -3925,7 +3925,7 @@ void TTerminal::HomeDirectory()
   assert(FFileSystem);
   try
   {
-    LogEvent(L"Changing directory to home directory.");
+    LogEvent("Changing directory to home directory.");
     FFileSystem->HomeDirectory();
     ReactOnCommand(fsHomeDirectory);
   }
@@ -3978,7 +3978,7 @@ void TTerminal::LookupUsersGroups()
     try
     {
       FUsersGroupsLookedup = true;
-      LogEvent(L"Looking up groups and users.");
+      LogEvent("Looking up groups and users.");
       FFileSystem->LookupUsersGroups();
       ReactOnCommand(fsLookupUsersGroups);
 
@@ -4092,14 +4092,14 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
     DirectoryModified(GetCurrDirectory(), false);
     if (GetIsCapable(fcAnyCommand))
     {
-      LogEvent(L"Executing user defined command.");
+      LogEvent("Executing user defined command.");
       FFileSystem->AnyCommand(ACommand, OutputEvent);
     }
     else
     {
       assert(GetCommandSessionOpened());
       assert(FCommandSession->GetFSProtocol() == cfsSCP);
-      LogEvent(L"Executing user defined command on command session.");
+      LogEvent("Executing user defined command on command session.");
 
       FCommandSession->TerminalSetCurrentDirectory(GetCurrDirectory());
       FCommandSession->FFileSystem->AnyCommand(ACommand, OutputEvent);

@@ -456,7 +456,7 @@ void TSCPFileSystem::Idle()
       }
       else
       {
-        FTerminal->LogEvent(L"Cannot send keepalive, command is being executed");
+        FTerminal->LogEvent("Cannot send keepalive, command is being executed");
         // send at least SSH-level keepalive, if nothing else, it at least updates
         // LastDataSent, no the next keepalive attempt is postponed
         FSecureShell->KeepAlive();
@@ -816,7 +816,7 @@ void TSCPFileSystem::SkipStartupMessage()
 {
   try
   {
-    FTerminal->LogEvent(L"Skipping host startup message (if any).");
+    FTerminal->LogEvent("Skipping host startup message (if any).");
     ExecCommand2(fsNull, 0);
   }
   catch (Exception & E)
@@ -852,7 +852,7 @@ void TSCPFileSystem::DetectReturnVar()
     // #60 17.10.01: "status" and "?" switched
     UnicodeString ReturnVars[2] = { L"status", L"?" };
     UnicodeString NewReturnVar;
-    FTerminal->LogEvent(L"Detecting variable containing return code of last command.");
+    FTerminal->LogEvent("Detecting variable containing return code of last command.");
     for (intptr_t Index = 0; Index < 2; ++Index)
     {
       bool Success = true;
@@ -865,7 +865,7 @@ void TSCPFileSystem::DetectReturnVar()
         intptr_t Val = ::StrToIntDef(Str, 256);
         if ((GetOutput()->GetCount() != 1) || Str.IsEmpty() || (Val > 255))
         {
-          FTerminal->LogEvent(L"The response is not numerical exit code");
+          FTerminal->LogEvent("The response is not numerical exit code");
           Abort();
         }
       }
@@ -918,7 +918,7 @@ void TSCPFileSystem::ClearAliases()
 {
   try
   {
-    FTerminal->LogEvent(L"Clearing all aliases.");
+    FTerminal->LogEvent("Clearing all aliases.");
     ClearAlias(TCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
     std::unique_ptr<TStrings> CommandList(FCommandSet->CreateCommandList());
     for (intptr_t Index = 0; Index < CommandList->GetCount(); ++Index)
@@ -936,7 +936,7 @@ void TSCPFileSystem::UnsetNationalVars()
 {
   try
   {
-    FTerminal->LogEvent(L"Clearing national user variables.");
+    FTerminal->LogEvent("Clearing national user variables.");
     for (intptr_t Index = 0; Index < NationalVarCount; ++Index)
     {
       ExecCommand2(fsUnset, 0, NationalVars[Index], false);
@@ -1012,7 +1012,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       bool ListCurrentDirectory = (FileList->GetDirectory() == FTerminal->GetCurrDirectory());
       if (ListCurrentDirectory)
       {
-        FTerminal->LogEvent(L"Listing current directory.");
+        FTerminal->LogEvent("Listing current directory.");
         ExecCommand2(fsListCurrentDirectory, Params,
           FTerminal->GetSessionData()->GetListingCommand().c_str(), Options);
       }
@@ -1397,7 +1397,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
   switch (Resp)
   {
     case 0:     /* ok */
-      FTerminal->LogEvent(L"SCP remote side confirmation (0)");
+      FTerminal->LogEvent("SCP remote side confirmation (0)");
       return;
 
     default:
@@ -1432,11 +1432,11 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
       }
       else if (Resp == 1)
       {
-        FTerminal->LogEvent(L"SCP remote side error (1):");
+        FTerminal->LogEvent("SCP remote side error (1):");
       }
       else
       {
-        FTerminal->LogEvent(L"SCP remote side fatal error (2):");
+        FTerminal->LogEvent("SCP remote side fatal error (2):");
       }
 
       if (Resp == 1)

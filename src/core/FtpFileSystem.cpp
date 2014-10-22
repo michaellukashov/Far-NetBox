@@ -383,7 +383,7 @@ void TFTPFileSystem::Open()
     // but keep previous one as default,
     if (Data->GetUserNameExpanded().IsEmpty())
     {
-      FTerminal->LogEvent(L"Username prompt (no username provided)");
+      FTerminal->LogEvent("Username prompt (no username provided)");
 
       if (!FPasswordFailed && !PromptedForCredentials)
       {
@@ -405,7 +405,7 @@ void TFTPFileSystem::Open()
     // on retry ask for password
     if (FPasswordFailed)
     {
-      FTerminal->LogEvent(L"Password prompt (last login attempt failed)");
+      FTerminal->LogEvent("Password prompt (last login attempt failed)");
 
       // on retry ask for new password
       Password.Clear();
@@ -1960,7 +1960,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             Repeat = true;
             FListAll = asOff;
             GotNoFilesForAll = true;
-            FTerminal->LogEvent(L"LIST with -a switch returned empty directory listing, will try pure LIST");
+            FTerminal->LogEvent("LIST with -a switch returned empty directory listing, will try pure LIST");
           }
           else
           {
@@ -1980,7 +1980,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         // further try without "-a" only as the server may not support it
         if (FListAll == asAuto)
         {
-          FTerminal->LogEvent(L"LIST with -a failed, will try pure LIST");
+          FTerminal->LogEvent("LIST with -a failed, will try pure LIST");
           if (!FTerminal->GetActive())
           {
             FTerminal->Reopen(ropNoReadDirectory);
@@ -2836,7 +2836,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
         if ((FListAll == asAuto) &&
             (FSystem.Pos(L"Personal FTP Server") > 0))
         {
-          FTerminal->LogEvent(L"Server is known not to support LIST -a");
+          FTerminal->LogEvent("Server is known not to support LIST -a");
           FListAll = asOff;
         }
       }
@@ -3106,7 +3106,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
           break;
 
         case omComplete:
-          FTerminal->LogEvent(L"File transfer was completed before disconnect");
+          FTerminal->LogEvent("File transfer was completed before disconnect");
           RequestResult = TFileZillaIntf::FILEEXISTS_COMPLETE;
           break;
 
@@ -3271,7 +3271,7 @@ bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data
   }
   if (!Result && NoMask)
   {
-    FTerminal->LogEvent(L"Certificate has no common name nor subject alternative name, not verifying hostname");
+    FTerminal->LogEvent("Certificate has no common name nor subject alternative name, not verifying hostname");
     Result = true;
   }
   return Result;
@@ -3376,7 +3376,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     {
       if (WindowsValidateCertificate(Data.Certificate, Data.CertificateLen))
       {
-        FTerminal->LogEvent(L"Certificate verified against Windows certificate store");
+        FTerminal->LogEvent("Certificate verified against Windows certificate store");
         VerificationResult = true;
       }
     }
