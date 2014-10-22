@@ -59,7 +59,7 @@ public:
   intptr_t GetHeight() const;
   void SetHeight(intptr_t Value);
   UnicodeString GetCaption() const;
-  void SetCaption(const UnicodeString &  Value);
+  void SetCaption(const UnicodeString & Value);
   HANDLE GetHandle() const { return FHandle; }
   TFarButton * GetDefaultButton() const { return FDefaultButton; }
   TFarBox * GetBorderBox() const { return FBorderBox; }
