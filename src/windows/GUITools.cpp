@@ -216,7 +216,7 @@ bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & APath,
   ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
 
-  bool Result = (ShellExecuteEx(&ExecuteInfo) != 0);
+  bool Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
     if (ProcessMessages != nullptr)
