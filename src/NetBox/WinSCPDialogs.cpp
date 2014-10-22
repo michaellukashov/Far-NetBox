@@ -3120,7 +3120,12 @@ void TSessionDialog::UpdateControls()
 
 bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Action)
 {
-  int Captions[] = { LOGIN_ADD, LOGIN_EDIT, LOGIN_CONNECT };
+  int Captions[] =
+  {
+    LOGIN_ADD,
+    LOGIN_EDIT,
+    LOGIN_CONNECT
+  };
   SetCaption(GetMsg(Captions[Action]));
 
   FSessionData = SessionData;
@@ -6480,8 +6485,15 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     Repeat = false;
     UnicodeString Caption = GetMsg(Add ? OPEN_DIRECTORY_ADD_BOOMARK_ACTION :
       OPEN_DIRECTORY_BROWSE_CAPTION);
-    const int BreakKeys[] = { VK_DELETE, VK_F8, VK_RETURN + (PKF_CONTROL << 16),
-      'C' + (PKF_CONTROL << 16), VK_INSERT + (PKF_CONTROL << 16), 0 };
+    const int BreakKeys[] =
+    {
+      VK_DELETE,
+      VK_F8,
+      VK_RETURN + (PKF_CONTROL << 16),
+      'C' + (PKF_CONTROL << 16),
+      VK_INSERT + (PKF_CONTROL << 16),
+      0
+    };
 
     ItemFocused = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
       Caption, GetMsg(OPEN_DIRECTORY_HELP), BookmarkItems.get(), BreakKeys, BreakCode);
