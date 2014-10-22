@@ -448,7 +448,10 @@ public:
   int64_t CopyFrom(TStream * Source, int64_t Count);
 
 public:
-  int64_t GetPosition() { return Seek(0, soFromCurrent); }
+  int64_t GetPosition()
+  {
+    return Seek(0, soFromCurrent);
+  }
   int64_t GetSize()
   {
     int64_t Pos = Seek(0, soFromCurrent);
