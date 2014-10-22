@@ -1892,7 +1892,10 @@ UnicodeString TRegistry::ReadString(const UnicodeString & Name)
     {
       PackStr(Result);
     }
-    else { ReadError(Name); }
+    else
+    {
+      ReadError(Name);
+    }
   }
   else
   {
