@@ -48,12 +48,12 @@ bool FindFile(UnicodeString & APath)
   bool Result = ::FileExists(APath);
   if (!Result)
   {
-    intptr_t Len = GetEnvironmentVariable(L"PATH", nullptr, 0);
+    intptr_t Len = ::GetEnvironmentVariable(L"PATH", nullptr, 0);
     if (Len > 0)
     {
       UnicodeString Paths;
       Paths.SetLength(Len - 1);
-      GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
+      ::GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
 
       UnicodeString NewPath = ::FileSearch(core::ExtractFileName(APath, true), Paths);
       Result = !NewPath.IsEmpty();
@@ -270,11 +270,11 @@ UnicodeString GetPersonalFolder()
   if (IsWine())
   {
     UnicodeString WineHostHome;
-    int Len = GetEnvironmentVariable(L"WINE_HOST_HOME", NULL, 0);
+    int Len = ::GetEnvironmentVariable(L"WINE_HOST_HOME", NULL, 0);
     if (Len > 0)
     {
       WineHostHome.SetLength(Len - 1);
-      GetEnvironmentVariable(L"WINE_HOST_HOME", (LPWSTR)WineHostHome.c_str(), Len);
+      ::GetEnvironmentVariable(L"WINE_HOST_HOME", (LPWSTR)WineHostHome.c_str(), Len);
     }
     if (!WineHostHome.IsEmpty())
     {
@@ -288,11 +288,11 @@ UnicodeString GetPersonalFolder()
     {
       // Should we use WinAPI GetUserName() instead?
       UnicodeString UserName;
-      int Len = GetEnvironmentVariable(L"USERNAME", NULL, 0);
+      int Len = ::GetEnvironmentVariable(L"USERNAME", NULL, 0);
       if (Len > 0)
       {
         UserName.SetLength(Len - 1);
-        GetEnvironmentVariable(L"USERNAME", (LPWSTR)UserName.c_str(), Len);
+        ::GetEnvironmentVariable(L"USERNAME", (LPWSTR)UserName.c_str(), Len);
       }
       if (!UserName.IsEmpty())
       {
