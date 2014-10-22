@@ -838,7 +838,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
       Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
       FTimeoutButton = Button;
     }
-    Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
+    Button->SetCaption(FORMAT(" %s ", Caption.c_str()));
     Button->SetTop(GetBorderBox()->GetBottom() + ButtonOffset);
     Button->SetBottom(Button->GetTop());
     Button->SetResult(Index + 1);
@@ -949,7 +949,7 @@ void TFarMessageDialog::Idle()
     else
     {
       UnicodeString Caption =
-        FORMAT(L" %s ", ::Format(FParams->TimeoutStr.c_str(),
+        FORMAT(" %s ", ::Format(FParams->TimeoutStr.c_str(),
           FTimeoutButtonCaption.c_str(), static_cast<int>((FParams->Timeout - Running) / 1000)).c_str()).c_str();
       intptr_t sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
       Caption += ::StringOfChar(L' ', sz);
@@ -1490,7 +1490,7 @@ UnicodeString TCustomFarPlugin::FormatConsoleTitle()
   UnicodeString Title;
   if (FCurrentProgress >= 0)
   {
-    Title = FORMAT(L"{%d%%} %s", FCurrentProgress, FCurrentTitle.c_str());
+    Title = FORMAT("{%d%%} %s", FCurrentProgress, FCurrentTitle.c_str());
   }
   else
   {
@@ -1696,7 +1696,7 @@ intptr_t TCustomFarPlugin::GetFarVersion() const
 
 UnicodeString TCustomFarPlugin::FormatFarVersion(intptr_t Version) const
 {
-  return FORMAT(L"%d.%d.%d", (Version >> 8) & 0xFF, Version & 0xFF, Version >> 16);
+  return FORMAT("%d.%d.%d", (Version >> 8) & 0xFF, Version & 0xFF, Version >> 16);
 }
 
 UnicodeString TCustomFarPlugin::GetTemporaryDir() const

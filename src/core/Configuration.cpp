@@ -628,7 +628,7 @@ UnicodeString TConfiguration::GetOSVersionStr() const
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
   if (GetVersionEx(&OSVersionInfo) != 0)
   {
-    Result = FORMAT(L"%d.%d.%d", int(OSVersionInfo.dwMajorVersion),
+    Result = FORMAT("%d.%d.%d", int(OSVersionInfo.dwMajorVersion),
       int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber));
     UnicodeString CSDVersion = OSVersionInfo.szCSDVersion;
     if (!CSDVersion.IsEmpty())
@@ -772,7 +772,7 @@ UnicodeString TConfiguration::GetVersionStr() const
 //    int Month = ParseShortEngMonthName(MonthStr);
 //    int Day = StrToInt64(CutToChar(BuildDate, L' ', true));
 //    int Year = StrToInt64(Trim(BuildDate));
-//    UnicodeString DateStr = FORMAT(L"%d-%2.2d-%2.2d", Year, Month, Day);
+//    UnicodeString DateStr = FORMAT("%d-%2.2d-%2.2d", Year, Month, Day);
 //    AddToList(BuildStr, DateStr, L" ");
 //    #endif
 

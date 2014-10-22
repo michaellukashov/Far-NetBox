@@ -422,13 +422,13 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD & Flags,
     Format = GetSessionData()->GetSessionName();
     if (GetFarConfiguration()->GetHostNameInTitle())
     {
-      PanelTitle = FORMAT(L" %s:%s ", Format.c_str(), CurDir.c_str());
+      PanelTitle = FORMAT(" %s:%s ", Format.c_str(), CurDir.c_str());
     }
     else
     {
-      PanelTitle = FORMAT(L" %s ", CurDir.c_str());
+      PanelTitle = FORMAT(" %s ", CurDir.c_str());
     }
-    ShortcutData = FORMAT(L"%s\1%s", GetSessionData()->GetSessionUrl().c_str(), CurDir.c_str());
+    ShortcutData = FORMAT("%s\1%s", GetSessionData()->GetSessionUrl().c_str(), CurDir.c_str());
 
     TRemoteFilePanelItem::SetPanelModes(PanelModes);
     TRemoteFilePanelItem::SetKeyBarTitles(KeyBarTitles);
@@ -440,7 +440,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD & Flags,
     Flags = OPIF_USESORTGROUPS | OPIF_USEHIGHLIGHTING | OPIF_USEATTRHIGHLIGHTING |
       OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE;
 
-    PanelTitle = FORMAT(L" %s [/%s]", GetMsg(NB_STORED_SESSION_TITLE).c_str(), FSessionsFolder.c_str());
+    PanelTitle = FORMAT(" %s [/%s]", GetMsg(NB_STORED_SESSION_TITLE).c_str(), FSessionsFolder.c_str());
 
     TSessionPanelItem::SetPanelModes(PanelModes);
     TSessionPanelItem::SetKeyBarTitles(KeyBarTitles);
@@ -1838,7 +1838,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString & Token, bo
   {
     if (Token2.Pos(L' ') > 0)
     {
-      Token2 = FORMAT(L"\"%s\"", Token2.c_str());
+      Token2 = FORMAT("\"%s\"", Token2.c_str());
     }
 
     if (Separate)
@@ -1908,7 +1908,7 @@ void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
 UnicodeString TWinSCPFileSystem::GetFullFilePath(const TRemoteFile * AFile) const
 {
   UnicodeString SessionUrl = GetSessionUrl(FTerminal, true);
-  UnicodeString Result = FORMAT(L"%s%s", SessionUrl.c_str(), AFile->GetFullFileName().c_str());
+  UnicodeString Result = FORMAT("%s%s", SessionUrl.c_str(), AFile->GetFullFileName().c_str());
   return Result;
 }
 
@@ -3129,7 +3129,7 @@ void TWinSCPFileSystem::TerminalReadDirectoryProgress(
     if (!FNoProgress)
     {
       GetWinSCPPlugin()->UpdateConsoleTitle(
-        FORMAT(L"%s (%d)", GetMsg(READING_DIRECTORY_TITLE).c_str(), Progress));
+        FORMAT("%s (%d)", GetMsg(READING_DIRECTORY_TITLE).c_str(), Progress));
     }
   }
 }
@@ -3445,7 +3445,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       StatusLine = BytesTransferedLabel +
                    ::StringOfChar(' ', ProgressWidth / 2 - 1 - BytesTransferedLabel.Length() - Value.Length()) +
                    Value + L"  ";
-      Value = FORMAT(L"%s/s", FormatBytes(ProgressData.CPS()).c_str());
+      Value = FORMAT("%s/s", FormatBytes(ProgressData.CPS()).c_str());
       StatusLine = StatusLine + CPSLabel +
                    ::StringOfChar(' ', ProgressWidth - StatusLine.Length() -
                                   CPSLabel.Length() - Value.Length()) + Value;
@@ -3480,7 +3480,7 @@ UnicodeString TWinSCPFileSystem::ProgressBar(intptr_t Percentage, intptr_t Width
   // 0xDB - 0x2588
   Result = ::StringOfChar(0x2588, (Width - 5) * (Percentage > 100 ? 100 : Percentage) / 100);
   Result += ::StringOfChar(0x2591, (Width - 5) - Result.Length());
-  Result += FORMAT(L"%4d%%", Percentage > 100 ? 100 : Percentage);
+  Result += FORMAT("%4d%%", Percentage > 100 ? 100 : Percentage);
   return Result;
 }
 

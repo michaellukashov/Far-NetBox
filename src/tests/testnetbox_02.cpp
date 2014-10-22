@@ -353,12 +353,12 @@ BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
     BOOST_CHECK(W2MB(str2.c_str()) == "test string: \"lalala\" 42");
   }
   {
-    UnicodeString str2 = ::Format(L"test: %s %d", L"lalala", 42);
+    UnicodeString str2 = ::FORMAT("test: %s %d", L"lalala", 42);
     BOOST_TEST_MESSAGE("str2 = " << W2MB(str2.c_str()));
     BOOST_CHECK_EQUAL(0, wcscmp(str2.c_str(), L"test: lalala 42"));
   }
   {
-    UnicodeString str3 = FORMAT(L"test: %s %d", L"lalala", 42);
+    UnicodeString str3 = FORMAT("test: %s %d", L"lalala", 42);
     BOOST_TEST_MESSAGE("str3 = " << W2MB(str3.c_str()));
     BOOST_CHECK_EQUAL(0, wcscmp(str3.c_str(), L"test: lalala 42"));
   }
