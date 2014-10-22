@@ -23,12 +23,12 @@ void ShowExtendedException(Exception * E)
 
 UnicodeString GetAppNameString()
 {
-  return L"NetBox";
+  return "NetBox";
 }
 
 UnicodeString GetRegistryKey()
 {
-  return L"Software\\Far2\\Plugins\\NetBox 2";
+  return "Software\\Far2\\Plugins\\NetBox 2";
 }
 
 void Busy(bool /*Start*/)

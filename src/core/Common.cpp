@@ -123,21 +123,21 @@ UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 UnicodeString RootKeyToStr(HKEY RootKey)
 {
   if (RootKey == HKEY_USERS)
-    return L"HKEY_USERS";
+    return "HKEY_USERS";
   else if (RootKey == HKEY_LOCAL_MACHINE)
-    return L"HKEY_LOCAL_MACHINE";
+    return "HKEY_LOCAL_MACHINE";
   else if (RootKey == HKEY_CURRENT_USER)
-    return L"HKEY_CURRENT_USER";
+    return "HKEY_CURRENT_USER";
   else if (RootKey == HKEY_CLASSES_ROOT)
-    return L"HKEY_CLASSES_ROOT";
+    return "HKEY_CLASSES_ROOT";
   else if (RootKey == HKEY_CURRENT_CONFIG)
-    return L"HKEY_CURRENT_CONFIG";
+    return "HKEY_CURRENT_CONFIG";
   else if (RootKey == HKEY_DYN_DATA)
-    return L"HKEY_DYN_DATA";
+    return "HKEY_DYN_DATA";
   else
   {
     Abort();
-    return L"";
+    return "";
   }
 }
 
@@ -145,11 +145,11 @@ UnicodeString BooleanToEngStr(bool B)
 {
   if (B)
   {
-    return L"Yes";
+    return "Yes";
   }
   else
   {
-    return L"No";
+    return "No";
   }
 }
 
@@ -725,11 +725,11 @@ bool IsReservedName(const UnicodeString & AFileName)
     {
       fileName.SetLength(P - 1);
     }
-    static UnicodeString Reserved[] =
+    UnicodeString Reserved[] =
     {
-      L"CON", L"PRN", L"AUX", L"NUL",
-      L"COM1", L"COM2", L"COM3", L"COM4", L"COM5", L"COM6", L"COM7", L"COM8", L"COM9",
-      L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9"
+      "CON", "PRN", "AUX", "NUL",
+      "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+      "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
     };
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(Reserved)); ++Index)
     {
@@ -1103,7 +1103,7 @@ UnicodeString CharToHex(wchar_t Ch, bool UpperCase)
 
 RawByteString HexToBytes(const UnicodeString & Hex)
 {
-  UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = "0123456789ABCDEF";
   RawByteString Result;
   intptr_t L = Hex.Length();
   if (L % 2 == 0)
@@ -1128,7 +1128,7 @@ RawByteString HexToBytes(const UnicodeString & Hex)
 
 uint8_t HexToByte(const UnicodeString & Hex)
 {
-  UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = "0123456789ABCDEF";
   assert(Hex.Length() == 2);
   intptr_t P1 = Digits.Pos(UpCase(Hex[1]));
   intptr_t P2 = Digits.Pos(UpCase(Hex[2]));

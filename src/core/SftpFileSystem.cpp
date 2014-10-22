@@ -4428,8 +4428,8 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
       OperationProgress->SetAsciiTransfer(
         CopyParam->UseAsciiTransfer(RealFileName, osLocal, MaskParams));
       FTerminal->LogEvent(
-        UnicodeString((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
-          L" transfer mode selected.");
+        UnicodeString((OperationProgress->AsciiTransfer ? "Ascii" : "Binary")) +
+          " transfer mode selected.");
 
       // should we check for interrupted transfer?
       ResumeAllowed = !OperationProgress->AsciiTransfer &&

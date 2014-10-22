@@ -1183,7 +1183,7 @@ UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, wchar_t Separa
 
 UnicodeString HexToStr(const UnicodeString & Hex)
 {
-  UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = "0123456789ABCDEF";
   UnicodeString Result;
   intptr_t L = Hex.Length() - 1;
   if (L % 2 == 0)
@@ -1208,7 +1208,7 @@ UnicodeString HexToStr(const UnicodeString & Hex)
 
 uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars)
 {
-  UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = "0123456789ABCDEF";
   uintptr_t Result = 0;
   intptr_t Index = 1;
   while (Index <= Hex.Length())
