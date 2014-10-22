@@ -292,7 +292,7 @@ public:
   void SetMinTlsVersion(TTlsVersion Value);
   void SetMaxTlsVersion(TTlsVersion Value);
   void SetNotUtf(TAutoSwitch Value);
-  bool IsWorkspace() { return false; }
+  bool IsWorkspace() const { return false; }
   // void SetIsWorkspace(bool Value);
   // void SetLink(const UnicodeString & Value);
   void SetHostKey(const UnicodeString & Value);

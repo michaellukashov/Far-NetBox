@@ -521,7 +521,7 @@ public:
   virtual void SetSize(const int64_t NewSize);
   virtual int64_t Write(const void * Buffer, int64_t Count);
 
-  void * GetMemory() { return FMemory; }
+  void * GetMemory() const { return FMemory; }
 
 protected:
   void SetPointer(void * Ptr, int64_t Size);
