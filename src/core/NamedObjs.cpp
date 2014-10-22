@@ -121,6 +121,11 @@ void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
   Recount();
 }
 
+TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name, Boolean CaseSensitive) const
+{
+  return const_cast<TNamedObjectList *>(this)->FindByName(Name, CaseSensitive);
+}
+
 TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name,
   Boolean CaseSensitive)
 {

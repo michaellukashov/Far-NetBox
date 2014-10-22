@@ -3103,7 +3103,7 @@ TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t FSProtocol)
   return Result;
 }
 
-TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID)
+TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID) const
 {
   // Find protocol by string id
   TFSProtocol Result = static_cast<TFSProtocol>(-1);
@@ -3121,7 +3121,7 @@ TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID)
   return Result;
 }
 
-TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption)
+TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption) const
 {
   TFtps Result = GetFtps();
   if ((GetSessionVersion() < ::GetVersionNumber2110()) &&
@@ -3573,21 +3573,21 @@ void TStoredSessionList::UpdateStaticUsage()
 */
 }
 
-TSessionData * TStoredSessionList::FindSame(TSessionData * Data)
+const TSessionData * TStoredSessionList::FindSame(TSessionData * Data) const
 {
-  TSessionData * Result;
+  const TSessionData * Result;
   if (Data->GetHidden() || Data->GetName().IsEmpty()) // || Data->GetIsWorkspace())
   {
     Result = nullptr;
   }
   else
   {
-    Result = NB_STATIC_DOWNCAST(TSessionData, FindByName(Data->GetName()));
+    Result = NB_STATIC_DOWNCAST_CONST(TSessionData, FindByName(Data->GetName()));
   }
   return Result;
 }
 
-intptr_t TStoredSessionList::IndexOf(TSessionData * Data)
+intptr_t TStoredSessionList::IndexOf(TSessionData * Data) const
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
@@ -3701,10 +3701,10 @@ void TStoredSessionList::Load(const UnicodeString & AKey, bool UseDefaults)
 }
 
 bool TStoredSessionList::IsFolderOrWorkspace(
-  const UnicodeString & Name, bool Workspace)
+  const UnicodeString & Name, bool Workspace) const
 {
   bool Result = false;
-  TSessionData * FirstData = nullptr;
+  const TSessionData * FirstData = nullptr;
   if (!Name.IsEmpty())
   {
     for (intptr_t Index = 0; !Result && (Index < GetCount()); ++Index)
@@ -3723,12 +3723,12 @@ bool TStoredSessionList::IsFolderOrWorkspace(
     (FirstData->IsWorkspace() == Workspace);
 }
 
-bool TStoredSessionList::IsFolder(const UnicodeString & Name)
+bool TStoredSessionList::IsFolder(const UnicodeString & Name) const
 {
   return IsFolderOrWorkspace(Name, false);
 }
 
-bool TStoredSessionList::IsWorkspace(const UnicodeString & Name)
+bool TStoredSessionList::IsWorkspace(const UnicodeString & Name) const
 {
   return IsFolderOrWorkspace(Name, true);
 }
