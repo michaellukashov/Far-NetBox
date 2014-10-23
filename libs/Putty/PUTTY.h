@@ -1071,15 +1071,15 @@ void luni_send(void *, wchar_t * widebuf, int len, int interactive);
  * Exports from sshrand.c.
  */
 
-void random_add_noise(void *noise, int length);
+//void random_add_noise(void *noise, int length);
 int random_byte(void);
 void random_get_savedata(void **data, int *len);
 extern int random_active;
 /* The random number subsystem is activated if at least one other entity
  * within the program expresses an interest in it. So each SSH session
  * calls random_ref on startup and random_unref on shutdown. */
-void random_ref(void);
-void random_unref(void);
+void __cdecl random_ref(void);
+void __cdecl random_unref(void);
 
 /*
  * Exports from pinger.c.
@@ -1170,7 +1170,7 @@ int wc_unescape(char *output, const char *wildcard);
 /*
  * Exports from frontend (windlg.c etc)
  */
-void logevent(void *frontend, const char *);
+//void logevent(void *frontend, const char *);
 void pgp_fingerprints(void);
 /*
  * verify_ssh_host_key() can return one of three values:
@@ -1473,4 +1473,10 @@ void putty_finalize();
 #define MPEXT_PUTTY_SECTION_LEAVE
 #endif
 
+#ifdef MPEXT
+// To mark carefully selected messages from PuTTY code as UTF-8.
+// Only for messages that are certain not to ever get ansi-encoded component,
+// but known to get UTF-8 encoded component (currently private key path only)
+#define MPEXT_BOM "\xEF\xBB\xBF"
+#endif
 #endif
