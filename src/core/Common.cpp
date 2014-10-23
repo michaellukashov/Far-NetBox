@@ -714,6 +714,11 @@ bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2)
   return AnsiSameText(::IncludeTrailingBackslash(APath1), ::IncludeTrailingBackslash(APath2));
 }
 
+int CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2)
+{
+  return StrCmpLogicalW(S1.c_str(), S2.c_str());
+}
+
 bool IsReservedName(const UnicodeString & AFileName)
 {
   UnicodeString fileName = AFileName;

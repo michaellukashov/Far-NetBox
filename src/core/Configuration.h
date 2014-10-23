@@ -221,6 +221,7 @@ private:
   intptr_t FSessionReopenAutoStall;
   UnicodeString FIniFileStorageName;
   UnicodeString FVirtualIniFileStorageName;
+  std::unique_ptr<TStrings> FOptionsStorage;
   intptr_t FProgramIniPathWrittable;
   intptr_t FTunnelLocalPortNumberLow;
   intptr_t FTunnelLocalPortNumberHigh;
