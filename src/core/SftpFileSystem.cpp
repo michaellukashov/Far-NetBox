@@ -5748,8 +5748,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
       {
         FILE_OPERATION_LOOP(
           FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-            FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-              core::ExtractFileName(DestPartialFullName, true).c_str(), DestFileName.c_str()).c_str()),
+            core::ExtractFileName(DestPartialFullName, true).c_str(), DestFileName.c_str()).c_str(),
           if (::FileExists(ApiPath(DestFullName)))
           {
             ::DeleteFileChecked(DestFullName);
