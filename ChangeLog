@@ -1,5 +1,7 @@
-NetBox 2.1.40.342 23.10.2014
+NetBox 2.1.40.343 23.10.2014
 --------------------
+  * Bugfix: SFTP: AV trying to copy files from server
+    (http://forum.farmanager.com/viewtopic.php?p=124692#p124692)
   * Update openssl sources to 1.0.1j
 
 NetBox 2.1.39.331 11.10.2014
