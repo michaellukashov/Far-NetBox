@@ -333,7 +333,7 @@ public:
   void SetOnCreateLocalDirectory(TCreateLocalDirectoryEvent Value) { FOnCreateLocalDirectory = Value; }
   TFileOperationProgressEvent & GetOnProgress() { return FOnProgress; }
   void SetOnProgress(TFileOperationProgressEvent Value) { FOnProgress = Value; }
-  TFileOperationFinishedEvent &  GetOnFinished() { return FOnFinished; }
+  TFileOperationFinishedEvent & GetOnFinished() { return FOnFinished; }
   void SetOnFinished(TFileOperationFinishedEvent Value) { FOnFinished = Value; }
   TCurrentFSProtocol GetFSProtocol() const { return FFSProtocol; }
   bool GetUseBusyCursor() const { return FUseBusyCursor; }

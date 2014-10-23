@@ -292,7 +292,7 @@ public:
   void SetMinTlsVersion(TTlsVersion Value);
   void SetMaxTlsVersion(TTlsVersion Value);
   void SetNotUtf(TAutoSwitch Value);
-  bool IsWorkspace() { return false; }
+  bool IsWorkspace() const { return false; }
   // void SetIsWorkspace(bool Value);
   // void SetLink(const UnicodeString & Value);
   void SetHostKey(const UnicodeString & Value);
@@ -476,8 +476,8 @@ public:
 private:
   uintptr_t GetDefaultVersion() const { return ::GetCurrentVersionNumber(); }
   TFSProtocol TranslateFSProtocolNumber(intptr_t FSProtocol);
-  TFSProtocol TranslateFSProtocol(const UnicodeString & ProtocolID);
-  TFtps TranslateFtpEncryptionNumber(intptr_t FtpEncryption);
+  TFSProtocol TranslateFSProtocol(const UnicodeString & ProtocolID) const;
+  TFtps TranslateFtpEncryptionNumber(intptr_t FtpEncryption) const;
 
 private:
   TProxyMethod GetSystemProxyMethod() const;
@@ -638,12 +638,12 @@ public:
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
   void UpdateStaticUsage();
-  intptr_t IndexOf(TSessionData * Data);
-  TSessionData * FindSame(TSessionData * Data);
+  intptr_t IndexOf(TSessionData * Data) const;
+  const TSessionData * FindSame(TSessionData * Data) const;
   TSessionData * NewSession(const UnicodeString & SessionName, TSessionData * Session);
   void NewWorkspace(const UnicodeString & Name, TList * DataList);
-  bool IsFolder(const UnicodeString & Name);
-  bool IsWorkspace(const UnicodeString & Name);
+  bool IsFolder(const UnicodeString & Name) const;
+  bool IsWorkspace(const UnicodeString & Name) const;
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * AFileName = nullptr, bool * ProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
   bool IsUrl(const UnicodeString & Url);
@@ -674,7 +674,7 @@ private:
     TSessionData * Data, bool All, bool RecryptPasswordOnly,
     TSessionData * FactoryDefaults);
   TSessionData * ResolveSessionData(TSessionData * Data);
-  bool IsFolderOrWorkspace(const UnicodeString & Name, bool Workspace);
+  bool IsFolderOrWorkspace(const UnicodeString & Name, bool Workspace) const;
   TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
     TSessionData * Data, const UnicodeString & Name);
   // void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & APath);

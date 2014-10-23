@@ -382,8 +382,8 @@ error_create(
   error_t * child,
   const char * message)
 {
-  AnsiString Message = ::Format("Error, code: %d, message: %s", apr_err, message ? message : "");
-  DEBUG_PRINTF2("Message = %s", Message.c_str());
+  UnicodeString Message = ::Format("Error, code: %d, message: %s", apr_err, message ? message : "");
+  DEBUG_PRINTF(L"Message = %s", Message.c_str());
   return apr_err;
 }
 
@@ -400,11 +400,11 @@ error_createf(
   err = make_error_internal(apr_err, child);
 
   va_start(args, fmt);
-  AnsiString Message = ::Format(fmt, args);
+  UnicodeString Message = ::Format(fmt, args);
   va_end(args);
 
-  AnsiString Message2 = ::Format("Error, code: %d, message: %s", apr_err, Message.c_str());
-  throw ExtException(UnicodeString(Message2.c_str()), (Exception *)nullptr);
+  UnicodeString Message2 = ::Format("Error, code: %d, message: %s", apr_err, Message.c_str());
+  throw ExtException(Message2, (Exception *)nullptr);
 
   return err;
 }
@@ -421,10 +421,10 @@ error_wrap_apr(
   err = make_error_internal(status, nullptr);
 
   va_start(args, fmt);
-  AnsiString Message = ::Format(fmt, args);
+  UnicodeString Message = ::Format(fmt, args);
   va_end(args);
 
-  err = error_create(err, nullptr, Message.c_str());
+  err = error_create(err, nullptr, AnsiString(Message).c_str());
 
   return err;
 }
@@ -11094,8 +11094,8 @@ server_ssl_callback(
   apr_uint32_t * webdav_failures = static_cast<apr_uint32_t *>(apr_pcalloc(ras->pool, sizeof(*webdav_failures)));
 
   // Construct the realmstring, e.g. https://svn.collab.net:80
-  const char * realmstring = apr_pstrdup(ras->pool, ::Format("%s://%s:%d", ras->root.scheme,
-    ras->root.host, ras->root.port).c_str());
+  const char * realmstring = apr_pstrdup(ras->pool, AnsiString(::Format("%s://%s:%d", ras->root.scheme,
+    ras->root.host, ras->root.port)).c_str());
 
   *webdav_failures = convert_neon_failures(failures);
   auth_baton_set_parameter(ras->callbacks->auth_baton,
@@ -12030,7 +12030,7 @@ UnicodeString NeonVersion()
 
 UnicodeString ExpatVersion()
 {
-  return FORMAT(L"%d.%d.%d", XML_MAJOR_VERSION, XML_MINOR_VERSION, XML_MICRO_VERSION);
+  return FORMAT("%d.%d.%d", XML_MAJOR_VERSION, XML_MINOR_VERSION, XML_MICRO_VERSION);
 }
 
 TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
@@ -12096,7 +12096,7 @@ void TWebDAVFileSystem::Open()
   UnicodeString ProtocolName = !Ssl ? L"http" : L"https";
   UnicodeString UserName = Data->GetUserNameExpanded();
   UnicodeString Path = Data->GetRemoteDirectory();
-  UnicodeString Url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
+  UnicodeString Url = FORMAT("%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
 
   FPasswordFailed = false;
 
@@ -12224,7 +12224,7 @@ void TWebDAVFileSystem::EnsureLocation()
 {
   if (!FCachedDirectoryChange.IsEmpty())
   {
-    FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
+    FTerminal->LogEvent(FORMAT("Locating to cached directory \"%s\".",
       FCachedDirectoryChange.c_str()));
     UnicodeString Directory = FCachedDirectoryChange;
     FCachedDirectoryChange.Clear();
@@ -12740,7 +12740,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
 
   if (!FTerminal->AllowLocalFileTransfer(AFileName, CopyParam, OperationProgress))
   {
-    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", RealFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("File \"%s\" excluded from transfer", RealFileName.c_str()));
     ThrowSkipFileNull();
   }
 
@@ -12764,7 +12764,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
     UnicodeString DestFileName = CopyParam->ChangeFileName(core::ExtractFileName(RealFileName, false),
       osLocal, FLAGSET(Flags, tfFirstLevel));
 
-    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("Copying \"%s\" to remote directory started.", RealFileName.c_str()));
 
     OperationProgress->SetLocalSize(Size);
 
@@ -13070,7 +13070,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 
   if (!CopyParam->AllowTransfer(AFileName, osRemote, AFile->GetIsDirectory(), MaskParams))
   {
-    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", AFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("File \"%s\" excluded from transfer", AFileName.c_str()));
     ThrowSkipFileNull();
   }
 
@@ -13153,7 +13153,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   }
   else
   {
-    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", AFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("Copying \"%s\" to local directory started.", AFileName.c_str()));
     bool CanProceed = true;
     if (::FileExists(ApiPath(DestFullName)))
     {
@@ -13404,7 +13404,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
       catch (Exception & E)
       {
         UnicodeString EntryData =
-          FORMAT(L"%s/%s/%s/%lld/%d/%d/%d/%d/%d/%d/%d/%d/%d",
+          FORMAT("%s/%s/%s/%lld/%d/%d/%d/%d/%d/%d/%d/%d/%d",
                  Entry->Name,
                  Entry->Permissions,
                  Entry->OwnerGroup,

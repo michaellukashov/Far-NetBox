@@ -463,8 +463,8 @@ UnicodeString TCopyParamType::GetLogStr() const
   // OpenArray (ARRAYOFCONST) supports only up to 19 arguments, so we had to split it
   return
    FORMAT(
-      L"  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %c; "
-      L"Resume: %c (%d); CalcS: %s; Mask: %s\n",
+      "  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %c; "
+      "Resume: %c (%d); CalcS: %s; Mask: %s\n",
       BooleanToEngStr(GetPreserveTime()).c_str(),
       BooleanToEngStr(GetPreserveReadOnly()).c_str(),
       GetRights().GetText().c_str(),
@@ -477,8 +477,8 @@ UnicodeString TCopyParamType::GetLogStr() const
       BooleanToEngStr(GetCalculateSize()).c_str(),
       GetFileMask().c_str()) +
     FORMAT(
-      L"  TM: %c; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s; ResumeL: %d\n"
-      L"  AscM: %s\n",
+      "  TM: %c; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s; ResumeL: %d\n"
+      "  AscM: %s\n",
       ModeC[GetTransferMode()],
       BooleanToEngStr(GetClearArchive()).c_str(),
       BooleanToEngStr(GetRemoveCtrlZ()).c_str(),
@@ -489,10 +489,10 @@ UnicodeString TCopyParamType::GetLogStr() const
       ((FTransferSkipList.get() != nullptr) ? FTransferSkipList->GetCount() : 0) + (!FTransferResumeFile.IsEmpty() ? 1 : 0),
       GetAsciiFileMask().GetMasks().c_str());
 //  return FORMAT(
-//    L"  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %s; "
-//       L"Resume: %c (%d); CalcS: %s; Mask: %s\n"
-//    L"  TM: %c; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s\n"
-//    L"  AscM: %s\n",
+//    "  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %s; "
+//       "Resume: %c (%d); CalcS: %s; Mask: %s\n"
+//    "  TM: %c; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s\n"
+//    "  AscM: %s\n",
 //    BooleanToEngStr(GetPreserveTime()).c_str(),
 //    BooleanToEngStr(GetPreserveReadOnly()).c_str(),
 //    GetRights().GetText().c_str(),

@@ -48,12 +48,12 @@ bool FindFile(UnicodeString & APath)
   bool Result = ::FileExists(APath);
   if (!Result)
   {
-    intptr_t Len = GetEnvironmentVariable(L"PATH", nullptr, 0);
+    intptr_t Len = ::GetEnvironmentVariable(L"PATH", nullptr, 0);
     if (Len > 0)
     {
       UnicodeString Paths;
       Paths.SetLength(Len - 1);
-      GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
+      ::GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
 
       UnicodeString NewPath = ::FileSearch(core::ExtractFileName(APath, true), Paths);
       Result = !NewPath.IsEmpty();
@@ -140,12 +140,12 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
     }
     if (!Psw.IsEmpty())
     {
-      Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(Psw).c_str());
+      Params += FORMAT("-pw %s ", EscapePuttyCommandParam(Psw).c_str());
     }
-    //Params += FORMAT(L"-load %s", EscapePuttyCommandParam(SessionName).c_str());
-    Params += FORMAT(L"-l %s ", EscapePuttyCommandParam(SessionData->GetUserNameExpanded()).c_str());
-    Params += FORMAT(L"-P %d ", SessionData->GetPortNumber());
-    Params += FORMAT(L"%s ", EscapePuttyCommandParam(SessionData->GetHostNameExpanded()).c_str());
+    //Params += FORMAT("-load %s", EscapePuttyCommandParam(SessionName).c_str());
+    Params += FORMAT("-l %s ", EscapePuttyCommandParam(SessionData->GetUserNameExpanded()).c_str());
+    Params += FORMAT("-P %d ", SessionData->GetPortNumber());
+    Params += FORMAT("%s ", EscapePuttyCommandParam(SessionData->GetHostNameExpanded()).c_str());
 
     if (!ExecuteShell(Program, Params))
     {
@@ -216,7 +216,7 @@ bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & APath,
   ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
 
-  bool Result = (ShellExecuteEx(&ExecuteInfo) != 0);
+  bool Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
     if (ProcessMessages != nullptr)
@@ -270,11 +270,11 @@ UnicodeString GetPersonalFolder()
   if (IsWine())
   {
     UnicodeString WineHostHome;
-    int Len = GetEnvironmentVariable(L"WINE_HOST_HOME", NULL, 0);
+    int Len = ::GetEnvironmentVariable(L"WINE_HOST_HOME", NULL, 0);
     if (Len > 0)
     {
       WineHostHome.SetLength(Len - 1);
-      GetEnvironmentVariable(L"WINE_HOST_HOME", (LPWSTR)WineHostHome.c_str(), Len);
+      ::GetEnvironmentVariable(L"WINE_HOST_HOME", (LPWSTR)WineHostHome.c_str(), Len);
     }
     if (!WineHostHome.IsEmpty())
     {
@@ -288,11 +288,11 @@ UnicodeString GetPersonalFolder()
     {
       // Should we use WinAPI GetUserName() instead?
       UnicodeString UserName;
-      int Len = GetEnvironmentVariable(L"USERNAME", NULL, 0);
+      int Len = ::GetEnvironmentVariable(L"USERNAME", NULL, 0);
       if (Len > 0)
       {
         UserName.SetLength(Len - 1);
-        GetEnvironmentVariable(L"USERNAME", (LPWSTR)UserName.c_str(), Len);
+        ::GetEnvironmentVariable(L"USERNAME", (LPWSTR)UserName.c_str(), Len);
       }
       if (!UserName.IsEmpty())
       {
@@ -363,7 +363,7 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
       TDateTime dt = Now();
       uint16_t H, M, S, MS;
       dt.DecodeTime(H, M, S, MS);
-      TempDir += ::IncludeTrailingBackslash(FORMAT(L"%02d%03d", M, MS));
+      TempDir += ::IncludeTrailingBackslash(FORMAT("%02d%03d", M, MS));
 #endif
     }
   }
@@ -432,7 +432,7 @@ UnicodeString FormatDateTimeSpan(const UnicodeString & /* TimeFormat */, const T
   TDateTime dt(DateTime - static_cast<int>(DateTime));
   uint16_t H, M, S, MS;
   dt.DecodeTime(H, M, S, MS);
-  Result += FORMAT(L"%02d:%02d:%02d", H, M, S);
+  Result += FORMAT("%02d:%02d:%02d", H, M, S);
 #endif
   return Result;
 }

@@ -10,7 +10,7 @@
 
 TBookmarks::TBookmarks() : TObject()
 {
-  FSharedKey = UnicodeString(CONST_HIDDEN_PREFIX) + L"shared";
+  FSharedKey = UnicodeString(CONST_HIDDEN_PREFIX) + "shared";
   FBookmarkLists = new TStringList();
   FBookmarkLists->SetSorted(true);
   FBookmarkLists->SetCaseSensitive(false);
@@ -33,7 +33,7 @@ void TBookmarks::Clear()
   FBookmarkLists->Clear();
 }
 
-UnicodeString TBookmarks::Keys[] = { L"Local", L"Remote", L"ShortCuts", L"Options" };
+UnicodeString TBookmarks::Keys[] = { "Local", "Remote", "ShortCuts", "Options" };
 
 void TBookmarks::Load(THierarchicalStorage * Storage)
 {
@@ -555,7 +555,7 @@ void TBookmark::Modify(intptr_t OldIndex)
 
 UnicodeString TBookmark::BookmarkKey(const UnicodeString & Node, const UnicodeString & Name)
 {
-  return FORMAT(L"%s\1%s", Node.c_str(), Name.c_str());
+  return FORMAT("%s\1%s", Node.c_str(), Name.c_str());
 }
 
 UnicodeString TBookmark::GetKey() const

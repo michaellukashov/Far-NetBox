@@ -97,7 +97,7 @@ void TSecureShell::UpdateSessionInfo() const
     FSshVersion = get_ssh_version(FBackendHandle);
     FSessionInfo.ProtocolBaseName = L"SSH";
     FSessionInfo.ProtocolName =
-      FORMAT(L"%s-%d", FSessionInfo.ProtocolBaseName.c_str(), get_ssh_version(FBackendHandle));
+      FORMAT("%s-%d", FSessionInfo.ProtocolBaseName.c_str(), get_ssh_version(FBackendHandle));
     FSessionInfo.SecurityProtocolName = FSessionInfo.ProtocolName;
 
     FSessionInfo.CSCompression =
@@ -472,12 +472,12 @@ bool TSecureShell::TryFtp()
         (FSessionData->GetPortNumber() != SshPortNumber) ||
         FSessionData->GetTunnel() || (FSessionData->GetProxyMethod() != ::pmNone))
     {
-      LogEvent(L"Using non-standard protocol or port, tunnel or proxy, will not knock FTP port.");
+      LogEvent("Using non-standard protocol or port, tunnel or proxy, will not knock FTP port.");
       Result = false;
     }
     else
     {
-      LogEvent(L"Knocking FTP port.");
+      LogEvent("Knocking FTP port.");
 
       SOCKET Socket = socket(AF_INET, SOCK_STREAM, 0);
       Result = (Socket != INVALID_SOCKET);
@@ -515,11 +515,11 @@ bool TSecureShell::TryFtp()
 
       if (Result)
       {
-        LogEvent(L"FTP port opened, will suggest using FTP protocol.");
+        LogEvent("FTP port opened, will suggest using FTP protocol.");
       }
       else
       {
-        LogEvent(L"FTP port did not open.");
+        LogEvent("FTP port did not open.");
       }
     }
   }
@@ -540,7 +540,7 @@ void TSecureShell::Init()
       {
         if (GetConfiguration()->GetActualLogProtocol() >= 1)
         {
-          LogEvent(L"Waiting for the server to continue with the initialization");
+          LogEvent("Waiting for the server to continue with the initialization");
         }
         WaitForData();
       }
@@ -736,11 +736,11 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
 
   UnicodeString InstructionsLog =
-    (Instructions.IsEmpty() ? UnicodeString(L"<no instructions>") : FORMAT(L"\"%s\"", Instructions.c_str()));
+    (Instructions.IsEmpty() ? UnicodeString(L"<no instructions>") : FORMAT("\"%s\"", Instructions.c_str()));
   UnicodeString PromptsLog =
-    (Prompts->GetCount() > 0 ? FORMAT(L"\"%s\"", Prompts->GetString(0).c_str()) : UnicodeString(L"<no prompt>")) +
-    (Prompts->GetCount() > 1 ? FORMAT(L"%d more", Prompts->GetCount() - 1) : UnicodeString());
-  LogEvent(FORMAT(L"Prompt (%s, \"%s\", %s, %s)", PromptDesc.c_str(), AName.c_str(), InstructionsLog.c_str(), PromptsLog.c_str()));
+    (Prompts->GetCount() > 0 ? FORMAT("\"%s\"", Prompts->GetString(0).c_str()) : UnicodeString(L"<no prompt>")) +
+    (Prompts->GetCount() > 1 ? FORMAT("%d more", Prompts->GetCount() - 1) : UnicodeString());
+  LogEvent(FORMAT("Prompt (%s, \"%s\", %s, %s)", PromptDesc.c_str(), AName.c_str(), InstructionsLog.c_str(), PromptsLog.c_str()));
 
   Name = Name.Trim();
 
@@ -789,7 +789,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
         !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
         FLAGCLEAR((intptr_t)Prompts->GetObj(0), pupEcho))
     {
-      LogEvent(L"Using stored password.");
+      LogEvent("Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
       Results->SetString(0, FSessionData->GetPassword());
@@ -797,7 +797,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     }
     else if (Instructions2.IsEmpty() && !InstructionsRequired && (Prompts->GetCount() == 0))
     {
-      LogEvent(L"Ignoring empty SSH server authentication request");
+      LogEvent("Ignoring empty SSH server authentication request");
       Result = true;
     }
   }
@@ -805,7 +805,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (!FSessionData->GetPassword().IsEmpty() && !FStoredPasswordTried)
     {
-      LogEvent(L"Using stored password.");
+      LogEvent("Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
       Results->SetString(0, FSessionData->GetPassword());
@@ -816,7 +816,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (!FSessionData->GetPassphrase().IsEmpty() && !FStoredPassphraseTried)
     {
-      LogEvent(L"Using configured passphrase.");
+      LogEvent("Using configured passphrase.");
       Result = true;
       Results->SetString(0, FSessionData->GetPassphrase());
       FStoredPassphraseTried = true;
@@ -832,7 +832,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     {
       if ((Prompts->GetCount() >= 1) && FLAGSET((intptr_t)Prompts->GetObj(0), pupEcho))
       {
-        LogEvent(FORMAT(L"Response: \"%s\"", Results->GetString(0).c_str()));
+        LogEvent(FORMAT("Response: \"%s\"", Results->GetString(0).c_str()));
       }
 
       if ((PromptKind == pkUserName) && (Prompts->GetCount() == 1))
@@ -901,7 +901,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Len
 
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Received %u bytes (%d)", Length, static_cast<int>(IsStdErr)));
+    LogEvent(FORMAT("Received %u bytes (%d)", Length, static_cast<int>(IsStdErr)));
   }
 
   // Following is taken from scp.c from_backend() and modified
@@ -1028,7 +1028,7 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
       {
         if (GetConfiguration()->GetActualLogProtocol() >= 1)
         {
-          LogEvent(FORMAT(L"Waiting for another %u bytes", static_cast<int>(OutLen)));
+          LogEvent(FORMAT("Waiting for another %u bytes", static_cast<int>(OutLen)));
         }
         WaitForData();
       }
@@ -1042,7 +1042,7 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Read %d bytes (%d pending)",
+    LogEvent(FORMAT("Read %d bytes (%d pending)",
       static_cast<int>(Length), static_cast<int>(PendLen)));
   }
   return Length;
@@ -1093,7 +1093,7 @@ UnicodeString TSecureShell::ReceiveLine()
 
 void TSecureShell::SendSpecial(int Code)
 {
-  LogEvent(FORMAT(L"Sending special code: %d", Code));
+  LogEvent(FORMAT("Sending special code: %d", Code));
   CheckConnection();
   FBackend->special(FBackendHandle, static_cast<Telnet_Special>(Code));
   CheckConnection();
@@ -1164,20 +1164,20 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
     CheckConnection();
     if (GetConfiguration()->GetActualLogProtocol() >= 1)
     {
-      LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer, "
-        L"need to send at least another %u bytes",
+      LogEvent(FORMAT("There are %u bytes remaining in the send buffer, "
+        "need to send at least another %u bytes",
         BufSize, BufSize - MAX_BUFSIZE));
     }
     EventSelectLoop(100, false, nullptr);
     BufSize = FBackend->sendbuffer(FBackendHandle);
     if (GetConfiguration()->GetActualLogProtocol() >= 1)
     {
-      LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
+      LogEvent(FORMAT("There are %u bytes remaining in the send buffer", BufSize));
     }
 
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
-      LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
+      LogEvent("Waiting for dispatching send buffer timed out, asking user what to do.");
       uintptr_t Answer = TimeoutPrompt(MAKE_CALLBACK(TSecureShell::SendBuffer, this));
       switch (Answer)
       {
@@ -1208,8 +1208,8 @@ void TSecureShell::Send(const uint8_t * Buf, intptr_t Length)
   int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), static_cast<int>(Length));
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Sent %d bytes", static_cast<int>(Length)));
-    LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
+    LogEvent(FORMAT("Sent %d bytes", static_cast<int>(Length)));
+    LogEvent(FORMAT("There are %u bytes remaining in the send buffer", BufSize));
   }
   FLastDataSent = Now();
   // among other forces receive of pending data to free the servers's send buffer
@@ -1224,7 +1224,7 @@ void TSecureShell::Send(const uint8_t * Buf, intptr_t Length)
 
 void TSecureShell::SendNull()
 {
-  LogEvent(L"Sending nullptr.");
+  LogEvent("Sending nullptr.");
   uint8_t Null = 0;
   Send(&Null, 1);
 }
@@ -1441,14 +1441,14 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
-    LogEvent(FORMAT(L"Selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
+    LogEvent(FORMAT("Selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
   }
 
   if (::WSAEventSelect(Socket, (WSAEVENT)Event, Events) == SOCKET_ERROR)
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(FORMAT(L"Error selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
+      LogEvent(FORMAT("Error selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
     }
 
     if (Startup)
@@ -1501,7 +1501,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET Value, bool Startup)
 {
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
-    LogEvent(FORMAT(L"Updating forwarding socket %d (%d)", static_cast<int>(Value), static_cast<int>(Startup)));
+    LogEvent(FORMAT("Updating forwarding socket %d (%d)", static_cast<int>(Value), static_cast<int>(Startup)));
   }
 
   SocketEventSelect(Value, FSocketEvent, Startup);
@@ -1556,7 +1556,7 @@ void TSecureShell::Discard()
 
 void TSecureShell::Close()
 {
-  LogEvent(L"Closing connection.");
+  LogEvent("Closing connection.");
   assert(FActive);
 
   // this is particularly necessary when using local proxy command
@@ -1609,7 +1609,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, intptr_t & Result)
     {
       if (GetConfiguration()->GetActualLogProtocol() >= 2)
       {
-        LogEvent(L"Pooling for data in case they finally arrives");
+        LogEvent("Pooling for data in case they finally arrives");
       }
 
       // in extreme condition it may happen that send buffer is full, but there
@@ -1617,7 +1617,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, intptr_t & Result)
       // do not process FD_WRITE until we receive any FD_READ
       if (EventSelectLoop(0, false, &Events))
       {
-        LogEvent(L"Data has arrived, closing query to user.");
+        LogEvent("Data has arrived, closing query to user.");
         Result = qaOK;
       }
     }
@@ -1663,7 +1663,7 @@ void TSecureShell::WaitForData()
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(L"Looking for incoming data");
+      LogEvent("Looking for incoming data");
     }
 
     IncomingData = EventSelectLoop(FSessionData->GetTimeout() * MSecsPerSec, true, nullptr);
@@ -1676,7 +1676,7 @@ void TSecureShell::WaitForData()
       ::ZeroMemory(&Events, sizeof(Events));
       TPoolForDataEvent Event(this, Events);
 
-      LogEvent(L"Waiting for data timed out, asking user what to do.");
+      LogEvent("Waiting for data timed out, asking user what to do.");
       uintptr_t Answer = TimeoutPrompt(MAKE_CALLBACK(TPoolForDataEvent::PoolForData, &Event));
       switch (Answer)
       {
@@ -1714,7 +1714,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
-    LogEvent(FORMAT(L"Enumerating network events for socket %d", static_cast<int>(Socket)));
+    LogEvent(FORMAT("Enumerating network events for socket %d", static_cast<int>(Socket)));
   }
 
   // see winplink.c
@@ -1735,7 +1735,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(FORMAT(L"Enumerated %d network events making %d cumulative events for socket %d",
+      LogEvent(FORMAT("Enumerated %d network events making %d cumulative events for socket %d",
         static_cast<int>(AEvents.lNetworkEvents), static_cast<int>(Events.lNetworkEvents), static_cast<int>(Socket)));
     }
   }
@@ -1743,7 +1743,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(FORMAT(L"Error enumerating network events for socket %d", static_cast<int>(Socket)));
+      LogEvent(FORMAT("Error enumerating network events for socket %d", static_cast<int>(Socket)));
     }
   }
 
@@ -1772,7 +1772,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 
       if (GetConfiguration()->GetActualLogProtocol() >= 2)
       {
-        LogEvent(FORMAT(L"Handling network %s event on socket %d with error %d",
+        LogEvent(FORMAT("Handling network %s event on socket %d with error %d",
           EventTypes[Event].Desc, int(Socket), Err));
       }
       LPARAM SelectEvent = WSAMAKESELECTREPLY(EventTypes[Event].Mask, Err);
@@ -1808,7 +1808,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      // LogEvent(L"Looking for network events");
+      // LogEvent("Looking for network events");
     }
     uintptr_t TicksBefore = ::GetTickCount();
     int HandleCount;
@@ -1839,7 +1839,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
         if (GetConfiguration()->GetActualLogProtocol() >= 1)
         {
-          LogEvent(L"Detected network event");
+          LogEvent("Detected network event");
         }
 
         if (Events == nullptr)
@@ -1871,7 +1871,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
         if (GetConfiguration()->GetActualLogProtocol() >= 2)
         {
-          // LogEvent(L"Timeout waiting for network events");
+          // LogEvent("Timeout waiting for network events");
         }
 
         MSec = 0;
@@ -1881,7 +1881,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
         if (GetConfiguration()->GetActualLogProtocol() >= 2)
         {
-          LogEvent(FORMAT(L"Unknown waiting result %d", static_cast<int>(WaitResult)));
+          LogEvent(FORMAT("Unknown waiting result %d", static_cast<int>(WaitResult)));
         }
 
         MSec = 0;
@@ -1928,7 +1928,7 @@ void TSecureShell::KeepAlive()
 {
   if (FActive && (FWaiting == 0))
   {
-    LogEvent(L"Sending null packet to keep session alive.");
+    LogEvent("Sending null packet to keep session alive.");
     SendSpecial(TS_PING);
   }
   else
@@ -2074,7 +2074,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
 {
   UnicodeString Host2 = Host;
   UnicodeString KeyStr2 = KeyStr;
-  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", KeyType.c_str(), FormatKeyStr(KeyStr2).c_str(), Fingerprint.c_str()));
+  LogEvent(FORMAT("Verifying host key %s %s with fingerprint %s", KeyType.c_str(), FormatKeyStr(KeyStr2).c_str(), Fingerprint.c_str()));
 
   GotHostKey();
 
@@ -2118,13 +2118,13 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       if ((!Fingerprint && (StoredKey == KeyStr2)) ||
           (Fingerprint && (NormalizedExpectedKey == NormalizedFingerprint)))
       {
-        LogEvent(L"Host key matches cached key");
+        LogEvent("Host key matches cached key");
         Result = true;
       }
       else
       {
         UnicodeString FormattedKey = Fingerprint ? StoredKey : FormatKeyStr(StoredKey);
-        LogEvent(FORMAT(L"Host key does not match cached key %s", FormattedKey.c_str()));
+        LogEvent(FORMAT("Host key does not match cached key %s", FormattedKey.c_str()));
       }
     }
   }
@@ -2148,12 +2148,12 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       }
       else if (NormalizedExpectedKey == NormalizedFingerprint)
       {
-        LogEvent(L"Host key matches configured key");
+        LogEvent("Host key matches configured key");
         Result = true;
       }
       else
       {
-        LogEvent(FORMAT(L"Host key does not match configured key %s", ExpectedKey.c_str()));
+        LogEvent(FORMAT("Host key does not match configured key %s", ExpectedKey.c_str()));
       }
     }
 

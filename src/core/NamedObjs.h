@@ -42,6 +42,7 @@ public:
   void AlphaSort();
   virtual TNamedObject * AtObject(intptr_t Index);
   virtual const TNamedObject * AtObject(intptr_t Index) const;
+  TNamedObject * FindByName(const UnicodeString & Name, Boolean CaseSensitive = False) const;
   TNamedObject * FindByName(const UnicodeString & Name, Boolean CaseSensitive = False);
   intptr_t GetHiddenCount() const { return FHiddenCount; }
   void SetHiddenCount(intptr_t Value) { FHiddenCount = Value; }

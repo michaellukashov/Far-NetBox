@@ -23,12 +23,12 @@ void ShowExtendedException(Exception * E)
 
 UnicodeString GetAppNameString()
 {
-  return L"NetBox";
+  return "NetBox";
 }
 
 UnicodeString GetRegistryKey()
 {
-  return L"NetBox 3"; // TODO: output MainGuid
+  return "NetBox 3"; // TODO: output MainGuid
 }
 
 void Busy(bool /*Start*/)
@@ -38,7 +38,7 @@ void Busy(bool /*Start*/)
 
 UnicodeString GetSshVersionString()
 {
-  return FORMAT(L"NetBox-FAR-release-%s", GetConfiguration()->GetVersion().c_str());
+  return FORMAT("NetBox-FAR-release-%s", GetConfiguration()->GetVersion().c_str());
 }
 
 DWORD WINAPI threadstartroutine(void * Parameter)

@@ -32,7 +32,10 @@ uint8_t SimpleDecryptNextChar(RawByteString & Str)
     Str.Delete(1, 2);
     return Result;
   }
-  else { return 0x00; }
+  else
+  {
+    return 0x00;
+  }
 }
 
 RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const UnicodeString & UnicodeKey, Integer /* Algorithm */)

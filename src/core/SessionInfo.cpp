@@ -122,17 +122,17 @@ public:
 //        {
 //          Attrs = L" recursive=\"true\"";
 //        }
-//        FLog->AddIndented(FORMAT(L"<%s%s>", Name,  Attrs.c_str()));
+//        FLog->AddIndented(FORMAT("<%s%s>", Name,  Attrs.c_str()));
 //        for (intptr_t Index = 0; Index < FNames->GetCount(); ++Index)
 //        {
 //          UnicodeString Value = FValues->GetString(Index);
 //          if (Value.IsEmpty())
 //          {
-//            FLog->AddIndented(FORMAT(L"  <%s />", FNames->GetString(Index).c_str()));
+//            FLog->AddIndented(FORMAT("  <%s />", FNames->GetString(Index).c_str()));
 //          }
 //          else
 //          {
-//            FLog->AddIndented(FORMAT(L"  <%s value=\"%s\" />",
+//            FLog->AddIndented(FORMAT("  <%s value=\"%s\" />",
 //              FNames->GetString(Index).c_str(), XmlAttributeEscape(Value).c_str()));
 //          }
 //        }
@@ -144,14 +144,14 @@ public:
 //            TRemoteFile * File = FFileList->GetFile(Index);
 
 //            FLog->AddIndented(L"    <file>");
-//            FLog->AddIndented(FORMAT(L"      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName()).c_str()));
-//            FLog->AddIndented(FORMAT(L"      <type value=\"%s\" />", XmlAttributeEscape(File->GetType()).c_str()));
+//            FLog->AddIndented(FORMAT("      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName()).c_str()));
+//            FLog->AddIndented(FORMAT("      <type value=\"%s\" />", XmlAttributeEscape(File->GetType()).c_str()));
 //            if (!File->GetIsDirectory())
 //            {
-//              FLog->AddIndented(FORMAT(L"      <size value=\"%s\" />", ::Int64ToStr(File->GetSize()).c_str()));
+//              FLog->AddIndented(FORMAT("      <size value=\"%s\" />", ::Int64ToStr(File->GetSize()).c_str()));
 //            }
-//            FLog->AddIndented(FORMAT(L"      <modification value=\"%s\" />", StandardTimestamp(File->GetModification()).c_str()));
-//            FLog->AddIndented(FORMAT(L"      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
+//            FLog->AddIndented(FORMAT("      <modification value=\"%s\" />", StandardTimestamp(File->GetModification()).c_str()));
+//            FLog->AddIndented(FORMAT("      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
 //            FLog->AddIndented(L"    </file>");
 //          }
 //          FLog->AddIndented(L"  </files>");
@@ -159,13 +159,13 @@ public:
 //        if (FFile != nullptr)
 //        {
 //          FLog->AddIndented(L"  <file>");
-//          FLog->AddIndented(FORMAT(L"    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
+//          FLog->AddIndented(FORMAT("    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
 //          if (!FFile->GetIsDirectory())
 //          {
-//            FLog->AddIndented(FORMAT(L"    <size value=\"%s\" />", ::Int64ToStr(FFile->GetSize()).c_str()));
+//            FLog->AddIndented(FORMAT("    <size value=\"%s\" />", ::Int64ToStr(FFile->GetSize()).c_str()));
 //          }
-//          FLog->AddIndented(FORMAT(L"    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification()).c_str()));
-//          FLog->AddIndented(FORMAT(L"    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));
+//          FLog->AddIndented(FORMAT("    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification()).c_str()));
+//          FLog->AddIndented(FORMAT("    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));
 //          FLog->AddIndented(L"  </file>");
 //        }
 //        if (FState == RolledBack)
@@ -185,7 +185,7 @@ public:
 //        {
 //          FLog->AddIndented(L"  <result success=\"true\" />");
 //        }
-//        FLog->AddIndented(FORMAT(L"</%s>", Name));
+//        FLog->AddIndented(FORMAT("</%s>", Name));
 //      }
       delete this;
     }
@@ -659,7 +659,7 @@ void TSessionLog::DoAddToSelf(TLogLineType AType, const UnicodeString & ALine)
       TDateTime DateTime = Now();
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
-      UnicodeString dt = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Y, M, D, H, N, S, MS);
+      UnicodeString dt = FORMAT(" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Y, M, D, H, N, S, MS);
       UnicodeString Timestamp = dt;
       UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[AType]) + Timestamp + ALine + "\n");
       fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(AnsiString(UtfLine).c_str()));
@@ -919,7 +919,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       TDateTime DateTime = Now();
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
-      UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
+      UnicodeString dt = FORMAT("%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
       // ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
       ADF(L"Working directory: %s", ::GetCurrentDir().c_str());
       // ADF(L"Command-line: %s", CmdLine.c_str());
@@ -982,7 +982,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       TProxyMethod ProxyMethod = Data->GetProxyMethod();
       ADF(L"Proxy: %s",
         (Data->GetFtpProxyLogonType() != 0) ?
-          FORMAT(L"FTP proxy %d", Data->GetFtpProxyLogonType()).c_str() :
+          FORMAT("FTP proxy %d", Data->GetFtpProxyLogonType()).c_str() :
           UnicodeString(ProxyMethodList[Data->GetActualProxyMethod()]).c_str());
       if ((Data->GetFtpProxyLogonType() != 0) || (ProxyMethod != ::pmNone))
       {
@@ -1101,12 +1101,12 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       UnicodeString TimeInfo;
       if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
       {
-        AddToList(TimeInfo, FORMAT(L"DST mode: %d", int(Data->GetDSTMode())), L";");
+        AddToList(TimeInfo, FORMAT("DST mode: %d", int(Data->GetDSTMode())), L";");
       }
       if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
       {
         intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
-        AddToList(TimeInfo, FORMAT(L"Timezone offset: %dh %dm", (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour)), L";");
+        AddToList(TimeInfo, FORMAT("Timezone offset: %dh %dm", (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour)), L";");
       }
       ADSTR(TimeInfo);
 
@@ -1309,7 +1309,7 @@ void TActionLog::ReflectSettings()
   {
     FLogging = true;
 //    Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-//    Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
+//    Add(FORMAT("<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
 //      XmlAttributeEscape(FSessionData->GetSessionName()).c_str(), StandardTimestamp().c_str()));
   }
   else if (!ALogging && FLogging)
@@ -1384,7 +1384,7 @@ void TActionLog::BeginGroup(const UnicodeString & Name)
   assert(!FInGroup);
   FInGroup = true;
   assert(FIndent == L"  ");
-  AddIndented(FORMAT(L"<group name=\"%s\" start=\"%s\">",
+  AddIndented(FORMAT("<group name=\"%s\" start=\"%s\">",
     XmlAttributeEscape(Name).c_str(), StandardTimestamp().c_str()));
   FIndent = L"    ";
 }

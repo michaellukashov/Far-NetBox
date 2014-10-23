@@ -625,25 +625,13 @@ UnicodeString Format(const wchar_t * Format, va_list Args)
   return Result.c_str();
 }
 
-AnsiString Format(const char * Format, ...)
+UnicodeString Format(const char * Format, ...)
 {
-  AnsiString Result(64, 0);
+  UnicodeString Result(64, 0);
   va_list Args;
   va_start(Args, Format);
-  Result = ::Format(Format, Args);
+  Result = ::Format(::MB2W(Format).c_str(), Args);
   va_end(Args);
-  return Result.c_str();
-}
-
-AnsiString Format(const char * Format, va_list Args)
-{
-  AnsiString Result(64, 0);
-  if (Format && *Format)
-  {
-    intptr_t Len = _vscprintf(Format, Args);
-    Result.SetLength(Len + 1);
-    vsprintf_s(&Result[1], Len + 1, Format, Args);
-  }
   return Result.c_str();
 }
 
@@ -879,7 +867,7 @@ void AppendPathDelimiterW(UnicodeString & Str)
 {
   if (!Str.IsEmpty() && Str[Str.Length()] != L'/' && Str[Str.Length()] != L'\\')
   {
-    Str += L"\\";;
+    Str += L"\\";
   }
 }
 
@@ -1195,7 +1183,7 @@ UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, wchar_t Separa
 
 UnicodeString HexToStr(const UnicodeString & Hex)
 {
-  UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = "0123456789ABCDEF";
   UnicodeString Result;
   intptr_t L = Hex.Length() - 1;
   if (L % 2 == 0)
@@ -1220,7 +1208,7 @@ UnicodeString HexToStr(const UnicodeString & Hex)
 
 uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars)
 {
-  UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = "0123456789ABCDEF";
   uintptr_t Result = 0;
   intptr_t Index = 1;
   while (Index <= Hex.Length())
@@ -1673,7 +1661,7 @@ UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
   DWORD Major = (VersionNumber>>16) & 0xFF;
   DWORD Minor = (VersionNumber>>8) & 0xFF;
   DWORD Revision = (VersionNumber & 0xFF);
-  UnicodeString Result = FORMAT(L"%d.%d.%d", Major, Minor, Revision);
+  UnicodeString Result = FORMAT("%d.%d.%d", Major, Minor, Revision);
   return Result;
 }
 

@@ -448,7 +448,10 @@ public:
   int64_t CopyFrom(TStream * Source, int64_t Count);
 
 public:
-  int64_t GetPosition() { return Seek(0, soFromCurrent); }
+  int64_t GetPosition()
+  {
+    return Seek(0, soFromCurrent);
+  }
   int64_t GetSize()
   {
     int64_t Pos = Seek(0, soFromCurrent);
@@ -518,7 +521,7 @@ public:
   virtual void SetSize(const int64_t NewSize);
   virtual int64_t Write(const void * Buffer, int64_t Count);
 
-  void * GetMemory() { return FMemory; }
+  void * GetMemory() const { return FMemory; }
 
 protected:
   void SetPointer(void * Ptr, int64_t Size);
@@ -652,14 +655,14 @@ public:
   {
     int Value = EndValue - StartValue;
     if (StartValue > EndValue)
-      throw Exception(FORMAT(L"Start Value %d is greater than End Value %d", StartValue, EndValue));
+      throw Exception(FORMAT("Start Value %d is greater than End Value %d", StartValue, EndValue));
     this->AddRange(StartValue, Value);
   }
 
   DelphiSet(T StartValue, T EndValue , const int Count)
   {
     if (StartValue > EndValue)
-      throw Exception(FORMAT(L"Start Value %d is greater than End Value %d", StartValue, EndValue));
+      throw Exception(FORMAT("Start Value %d is greater than End Value %d", StartValue, EndValue));
     this->AddRange(StartValue,Count);
   }
 
@@ -732,7 +735,7 @@ public:
   DelphiSet<T>& Add(const T RangeStartValue, const T RangeEndValue)
   {
     if (RangeEndValue < RangeStartValue)
-      throw Exception(FORMAT(L"Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
+      throw Exception(FORMAT("Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
     int Range = RangeEndValue - RangeStartValue;
     T RangeStartForAdd = RangeStartValue;
     for (int Index = 0; Index < Range; ++Index)
@@ -749,7 +752,7 @@ public:
   DelphiSet<T>& Remove(T RangeStartValue, T RangeEndValue)
   {
     if (RangeEndValue < RangeStartValue)
-      throw Exception(FORMAT(L"Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
+      throw Exception(FORMAT("Start Value %d is greater than End Value %d", RangeStartValue, RangeEndValue));
     for (T I = RangeStartValue ; I <= RangeEndValue; ++I)
       this->Remove(I);
     return *this;

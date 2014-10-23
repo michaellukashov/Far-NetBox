@@ -123,21 +123,21 @@ UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 UnicodeString RootKeyToStr(HKEY RootKey)
 {
   if (RootKey == HKEY_USERS)
-    return L"HKEY_USERS";
+    return "HKEY_USERS";
   else if (RootKey == HKEY_LOCAL_MACHINE)
-    return L"HKEY_LOCAL_MACHINE";
+    return "HKEY_LOCAL_MACHINE";
   else if (RootKey == HKEY_CURRENT_USER)
-    return L"HKEY_CURRENT_USER";
+    return "HKEY_CURRENT_USER";
   else if (RootKey == HKEY_CLASSES_ROOT)
-    return L"HKEY_CLASSES_ROOT";
+    return "HKEY_CLASSES_ROOT";
   else if (RootKey == HKEY_CURRENT_CONFIG)
-    return L"HKEY_CURRENT_CONFIG";
+    return "HKEY_CURRENT_CONFIG";
   else if (RootKey == HKEY_DYN_DATA)
-    return L"HKEY_DYN_DATA";
+    return "HKEY_DYN_DATA";
   else
   {
     Abort();
-    return L"";
+    return "";
   }
 }
 
@@ -145,11 +145,11 @@ UnicodeString BooleanToEngStr(bool B)
 {
   if (B)
   {
-    return L"Yes";
+    return "Yes";
   }
   else
   {
-    return L"No";
+    return "No";
   }
 }
 
@@ -287,7 +287,7 @@ UnicodeString ExceptionLogString(Exception * E)
   if (NB_STATIC_DOWNCAST(Exception, E) != nullptr)
   {
     UnicodeString Msg;
-    Msg = FORMAT(L"%s", UnicodeString(E->what()).c_str());
+    Msg = FORMAT("%s", UnicodeString(E->what()).c_str());
     if (NB_STATIC_DOWNCAST(ExtException, E) != nullptr)
     {
       TStrings * MoreMessages = NB_STATIC_DOWNCAST(ExtException, E)->GetMoreMessages();
@@ -725,11 +725,11 @@ bool IsReservedName(const UnicodeString & AFileName)
     {
       fileName.SetLength(P - 1);
     }
-    static UnicodeString Reserved[] =
+    UnicodeString Reserved[] =
     {
-      L"CON", L"PRN", L"AUX", L"NUL",
-      L"COM1", L"COM2", L"COM3", L"COM4", L"COM5", L"COM6", L"COM7", L"COM8", L"COM9",
-      L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9"
+      "CON", "PRN", "AUX", "NUL",
+      "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+      "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
     };
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(Reserved)); ++Index)
     {
@@ -1103,7 +1103,7 @@ UnicodeString CharToHex(wchar_t Ch, bool UpperCase)
 
 RawByteString HexToBytes(const UnicodeString & Hex)
 {
-  UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = "0123456789ABCDEF";
   RawByteString Result;
   intptr_t L = Hex.Length();
   if (L % 2 == 0)
@@ -1128,7 +1128,7 @@ RawByteString HexToBytes(const UnicodeString & Hex)
 
 uint8_t HexToByte(const UnicodeString & Hex)
 {
-  UnicodeString Digits = L"0123456789ABCDEF";
+  UnicodeString Digits = "0123456789ABCDEF";
   assert(Hex.Length() == 2);
   intptr_t P1 = Digits.Pos(UpCase(Hex[1]));
   intptr_t P2 = Digits.Pos(UpCase(Hex[2]));
@@ -1248,7 +1248,7 @@ TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(FORMAT(L"%s [%04u-%02u-%02u]", E.Message.c_str(), int(Year), int(Month), int(Day)));
+    throw EConvertError(FORMAT("%s [%04u-%02u-%02u]", E.Message.c_str(), int(Year), int(Month), int(Day)));
   }
   return Result;
 }
@@ -1262,7 +1262,7 @@ TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(FORMAT(L"%s [%02u:%02u:%02u.%04u]", E.Message.c_str(), int(Hour), int(Min), int(Sec), int(MSec)));
+    throw EConvertError(FORMAT("%s [%02u:%02u:%02u.%04u]", E.Message.c_str(), int(Hour), int(Min), int(Sec), int(MSec)));
   }
   return Result;
 }
@@ -1276,7 +1276,7 @@ TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(FORMAT(L"%s [%d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d.%3.3d]", E.Message.c_str(), int(SystemTime.wYear), int(SystemTime.wMonth), int(SystemTime.wDay), int(SystemTime.wHour), int(SystemTime.wMinute), int(SystemTime.wSecond), int(SystemTime.wMilliseconds)));
+    throw EConvertError(FORMAT("%s [%d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d.%3.3d]", E.Message.c_str(), int(SystemTime.wYear), int(SystemTime.wMonth), int(SystemTime.wDay), int(SystemTime.wHour), int(SystemTime.wMinute), int(SystemTime.wSecond), int(SystemTime.wMilliseconds)));
   }
 }
 
@@ -1861,15 +1861,15 @@ static UnicodeString FormatTimeZone(intptr_t /* Sec */)
   UnicodeString Str;
   /* if ((Span.Seconds == 0) && (Span.Minutes == 0))
   {
-    Str = FORMAT(L"%d", -Span.Hours);
+    Str = FORMAT("%d", -Span.Hours);
   }
   else if (Span.Seconds == 0)
   {
-    Str = FORMAT(L"%d:%2.2d", -Span.Hours, abs(Span.Minutes));
+    Str = FORMAT("%d:%2.2d", -Span.Hours, abs(Span.Minutes));
   }
   else
   {
-    Str = FORMAT(L"%d:%2.2d:%2.2d", -Span.Hours, abs(Span.Minutes), abs(Span.Seconds));
+    Str = FORMAT("%d:%2.2d:%2.2d", -Span.Hours, abs(Span.Minutes), abs(Span.Seconds));
   }
   Str = ((Span <= TTimeSpan::Zero) ? L"+" : L"") + Str;
   */
@@ -1881,16 +1881,16 @@ UnicodeString GetTimeZoneLogString()
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
 
   UnicodeString Result =
-    FORMAT(L"Current: GMT%s", FormatTimeZone(CurrentParams->CurrentDifferenceSec).c_str());
+    FORMAT("Current: GMT%s", FormatTimeZone(CurrentParams->CurrentDifferenceSec).c_str());
 
   if (!CurrentParams->HasDST())
   {
-    Result += FORMAT(L" (%s), No DST", CurrentParams->StandardName.c_str());
+    Result += FORMAT(" (%s), No DST", CurrentParams->StandardName.c_str());
   }
   else
   {
     Result +=
-      FORMAT(L", Standard: GMT%s (%s), DST: GMT%s (%s), DST Start: %s, DST End: %s",
+      FORMAT(", Standard: GMT%s (%s), DST: GMT%s (%s), DST Start: %s, DST End: %s",
         FormatTimeZone(CurrentParams->BaseDifferenceSec + CurrentParams->StandardDifferenceSec).c_str(),
          CurrentParams->StandardName.c_str(),
          FormatTimeZone(CurrentParams->BaseDifferenceSec + CurrentParams->DaylightDifferenceSec).c_str(),
@@ -1944,7 +1944,7 @@ UnicodeString StandardDatestamp()
   uint16_t Y, M, D, H, N, S, MS;
   DT.DecodeDate(Y, M, D);
   DT.DecodeTime(H, N, S, MS);
-  UnicodeString Result = FORMAT(L"%04d-%02d-%02d", Y, M, D);
+  UnicodeString Result = FORMAT("%04d-%02d-%02d", Y, M, D);
   return Result;
 #endif
 }
@@ -1958,7 +1958,7 @@ UnicodeString StandardTimestamp(const TDateTime & DateTime)
   uint16_t Y, M, D, H, N, S, MS;
   DT.DecodeDate(Y, M, D);
   DT.DecodeTime(H, N, S, MS);
-  UnicodeString Result = FORMAT(L"%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);
+  UnicodeString Result = FORMAT("%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);
   return Result;
 #endif
 }
@@ -2449,7 +2449,7 @@ bool IsDirectoryWriteable(const UnicodeString & APath)
 {
   UnicodeString FileName =
     ::IncludeTrailingPathDelimiter(APath) +
-    FORMAT(L"wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()).c_str(), int(GetCurrentProcessId()));
+    FORMAT("wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()).c_str(), int(GetCurrentProcessId()));
   HANDLE Handle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
     CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, 0);
   bool Result = (Handle != INVALID_HANDLE_VALUE);
@@ -2463,7 +2463,7 @@ bool IsDirectoryWriteable(const UnicodeString & APath)
 UnicodeString FormatNumber(int64_t Number)
 {
 //  return FormatFloat(L"#,##0", Number);
-  return FORMAT(L"%.0f", ToDouble(Number));
+  return FORMAT("%.0f", ToDouble(Number));
 }
 
 // simple alternative to FormatBytes
@@ -2498,7 +2498,7 @@ UnicodeString TrimVersion(const UnicodeString & Version)
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion)
 {
   return
-    TrimVersion(FORMAT(L"%d.%d.%d",
+    TrimVersion(FORMAT("%d.%d.%d",
       MajorVersion, MinorVersion, SubminorVersion));
 }
 
@@ -2520,17 +2520,17 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   if (!UseOrders || (Bytes < static_cast<int64_t>(100 * 1024)))
   {
     // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
-    Result = FORMAT(L"%.0f B", ToDouble(Bytes));
+    Result = FORMAT("%.0f B", ToDouble(Bytes));
   }
   else if (Bytes < static_cast<int64_t>(100 * 1024 * 1024))
   {
     // Result = FormatFloat(L"#,##0 \"KB\"", Bytes / 1024);
-    Result = FORMAT(L"%.0f KB", ToDouble(Bytes / 1024.0));
+    Result = FORMAT("%.0f KB", ToDouble(Bytes / 1024.0));
   }
   else
   {
     // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
-    Result = FORMAT(L"%.0f MiB", ToDouble(Bytes / (1024 * 1024.0)));
+    Result = FORMAT("%.0f MiB", ToDouble(Bytes / (1024 * 1024.0)));
   }
   return Result;
 }
