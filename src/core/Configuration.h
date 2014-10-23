@@ -66,6 +66,8 @@ public:
 //  UnicodeString GetIniFileStorageNameForReading();
 //  UnicodeString GetIniFileStorageName(bool ReadingOnly);
   void SetIniFileStorageName(const UnicodeString & Value);
+  void SetOptionsStorage(TStrings * Value);
+  TStrings * GetOptionsStorage();
   UnicodeString GetPartialExt() const;
   UnicodeString GetFileInfoString(const UnicodeString & Key) const;
   void SetSessionReopenAuto(intptr_t Value);
@@ -131,7 +133,7 @@ public:
 
   virtual void Default();
   virtual void UpdateStaticUsage();
-  void Load();
+  void Load(THierarchicalStorage * Storage);
   void Save();
   void SaveExplicit();
   void SetNulStorage();
@@ -150,7 +152,8 @@ public:
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
   bool ShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
   void NeverShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
-  virtual THierarchicalStorage * CreateStorage(bool SessionList);
+  virtual THierarchicalStorage * CreateConfigStorage();
+  virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
   void TemporaryLogging(const UnicodeString & ALogFileName);
   void TemporaryActionsLogging(const UnicodeString & ALogFileName);
   virtual RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
