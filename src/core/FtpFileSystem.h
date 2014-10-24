@@ -4,7 +4,7 @@
 #ifndef NO_FILEZILLA
 
 #include <time.h>
-#include <list.h>
+#include <vector.h>
 #include <FileSystems.h>
 
 class TFileZillaIntf;
@@ -26,7 +26,7 @@ struct message_t
   LPARAM lparam;
 };
 
-class TMessageQueue : public TObject, public rde::list<message_t> //  rde::vector<message_t>
+class TMessageQueue : public TObject, public rde::vector<message_t>
 {
 public:
   typedef message_t value_type;
