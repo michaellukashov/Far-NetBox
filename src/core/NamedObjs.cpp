@@ -19,7 +19,7 @@ static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
   }
   else
   {
-    return ::AnsiCompareStr(
+    return ::CompareLogicalText(
       NB_STATIC_DOWNCAST_CONST(TNamedObject, Item1)->GetName(),
       NB_STATIC_DOWNCAST_CONST(TNamedObject, Item2)->GetName());
   }
@@ -109,16 +109,20 @@ void TNamedObjectList::Recount()
 void TNamedObjectList::AlphaSort()
 {
   Sort(NamedObjectSortProc);
+  Recount();
 }
 
 void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
 {
   TObjectList::Notify(Ptr, Action);
-  if (AutoSort && (Action == lnAdded))
+  if (Action == lnAdded)
   {
-    AlphaSort();
+    FHiddenCount = -1;
+    if (AutoSort)
+    {
+      AlphaSort();
+    }
   }
-  Recount();
 }
 
 TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name, Boolean CaseSensitive) const
@@ -129,6 +133,7 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name, Boolean 
 TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name,
   Boolean CaseSensitive)
 {
+  // this should/can be optimized when list is sorted
   for (Integer Index = 0; Index < TObjectList::GetCount(); ++Index)
   {
     if (!(NB_STATIC_DOWNCAST(TNamedObject, GetItem(Index)))->CompareName(Name, CaseSensitive))
@@ -146,7 +151,14 @@ void TNamedObjectList::SetCount(intptr_t Value)
 
 intptr_t TNamedObjectList::GetCount() const
 {
+  assert(FHiddenCount >= 0);
   return TObjectList::GetCount() - GetHiddenCount();
+}
+
+intptr_t TNamedObjectList::GetCountIncludingHidden() const
+{
+  assert(FHiddenCount >= 0);
+  return TObjectList::GetCount();
 }
 
 NB_IMPLEMENT_CLASS(TNamedObject, NB_GET_CLASS_INFO(TPersistent), nullptr);
