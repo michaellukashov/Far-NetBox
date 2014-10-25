@@ -12162,6 +12162,11 @@ UnicodeString TWebDAVFileSystem::FSGetUserName() const
   return FUserName;
 }
 
+void TWebDAVFileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)
+{
+  // NOOP
+}
+
 void TWebDAVFileSystem::Idle()
 {
   // TODO: Keep session alive
