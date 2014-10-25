@@ -124,12 +124,62 @@ bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
     (Kind != pkPassphrase);
 }
 
+void CoreLoad()
+{
+  bool SessionList = true;
+  std::unique_ptr<THierarchicalStorage> SessionsStorage(Configuration->CreateScpStorage(SessionList));
+  THierarchicalStorage * ConfigStorage;
+  std::unique_ptr<THierarchicalStorage> ConfigStorageAuto;
+  if (!SessionList)
+  {
+    // can reuse this for configuration
+    ConfigStorage = SessionsStorage.get();
+  }
+  else
+  {
+    ConfigStorageAuto.reset(Configuration->CreateConfigStorage());
+    ConfigStorage = ConfigStorageAuto.get();
+  }
+
+  assert(GetConfiguration() != nullptr);
+
+  try
+  {
+    GetConfiguration->Load(ConfigStorage);
+  }
+  catch (Exception & E)
+  {
+    ShowExtendedException(&E);
+  }
+
+  // should be noop, unless exception occured above
+  ConfigStorage->CloseAll();
+
+  StoredSessions = new TStoredSessionList();
+
+  try
+  {
+    if (SessionsStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false))
+    {
+      StoredSessions->Load(SessionsStorage.get());
+    }
+  }
+  catch (Exception & E)
+  {
+    ShowExtendedException(&E);
+  }
+}
+
 void CoreInitialize()
 {
   Randomize();
   CryptographyInitialize();
 
-  assert(GetConfiguration() != nullptr);
+  // we do not expect configuration re-creation
+  assert(Configuration == NULL);
+  // configuration needs to be created and loaded before putty is initialized,
+  // so that random seed path is known
+  Configuration = CreateConfiguration();
 
   PuttyInitialize();
   #ifndef NO_FILEZILLA
@@ -137,16 +187,7 @@ void CoreInitialize()
   #endif
   NeonInitialize();
 
-  StoredSessions = new TStoredSessionList();
-
-  try
-  {
-    StoredSessions->Load();
-  }
-  catch (Exception & E)
-  {
-    ShowExtendedException(&E);
-  }
+  CoreLoad();
 }
 
 void CoreFinalize()
