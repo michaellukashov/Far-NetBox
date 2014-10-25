@@ -112,7 +112,7 @@ protected:
   static UnicodeString ExcludeTrailingBackslash(const UnicodeString & S);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) = 0;
   UnicodeString MungeKeyName(const UnicodeString & Key);
-  virtual UnicodeString __fastcall GetSource() = 0;
+  virtual UnicodeString GetSource() = 0;
 };
 
 class TRegistryStorage : public THierarchicalStorage
