@@ -95,6 +95,7 @@ public:
   uintptr_t CPS() const;
   void Finish(const UnicodeString & AFileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
+  void Progress();
   uintptr_t LocalBlockSize();
   bool IsLocallyDone() const;
   bool IsTransferDone() const;
