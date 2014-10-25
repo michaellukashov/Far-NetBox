@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include <Sysutils.hpp>
+#include "Common.h"
 #include "NamedObjs.h"
 
 static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
