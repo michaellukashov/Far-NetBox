@@ -1210,6 +1210,11 @@ int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
   return (int64_t)Result;
 }
 
+int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
+{
+  return MilliSecondsBetween(ANow, AThen);
+}
+
 TSHFileInfo::TSHFileInfo()
 {
 }
