@@ -136,6 +136,6 @@ private:
     intptr_t Params, TFileOperationProgressType * OperationProgress);
 
   static bool RemoveLastLine(UnicodeString & Line,
-    intptr_t & ReturnCode, const UnicodeString & ALastLine);
+    intptr_t & ReturnCode, const UnicodeString & ALastLine = L"");
 };
 

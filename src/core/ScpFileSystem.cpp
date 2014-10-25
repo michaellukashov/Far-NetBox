@@ -696,7 +696,7 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
 
     if (FOnCaptureOutput != NULL)
     {
-      FOnCaptureOutput(::Int64ToStr(ReturnCode), cotExitCode);
+      FOnCaptureOutput(::Int64ToStr(GetReturnCode()), cotExitCode);
     }
 
     if ((Params & coOnlyReturnCode) && WrongReturnCode)
@@ -825,34 +825,34 @@ void TSCPFileSystem::DoStartup()
 void TSCPFileSystem::DetectUtf()
 {
   const TSessionData * Data = FTerminal->GetSessionData();
-  switch (FTerminal->SessionData->NotUtf)
+  switch (Data->GetNotUtf())
   {
     case asOn:
-      FSecureShell->UtfStrings = false; // noop
+      FSecureShell->SetUtfStrings(false); // noop
       break;
 
     case asOff:
-      FSecureShell->UtfStrings = true;
+      FSecureShell->SetUtfStrings(true);
       break;
 
     default:
       FAIL;
     case asAuto:
-      FSecureShell->UtfStrings = false; // noop
+      FSecureShell->SetUtfStrings(false); // noop
       try
       {
-        ExecCommand(fsLang, NULL, 0, false);
+        ExecCommand2(fsLang, 0, false);
 
-        if ((FOutput->Count >= 1) &&
-            ContainsText(FOutput->Strings[0], L"UTF-8"))
+        if ((FOutput->GetCount() >= 1) &&
+            ::AnsiContainsText(FOutput->GetString(0), L"UTF-8"))
         {
-          FSecureShell->UtfStrings = true;
+          FSecureShell->SetUtfStrings(true);
         }
       }
       catch (Exception & E)
       {
         // ignore non-fatal errors
-        if (!FTerminal->Active)
+        if (!FTerminal->GetActive())
         {
           throw;
         }
@@ -860,13 +860,13 @@ void TSCPFileSystem::DetectUtf()
       break;
   }
 
-  if (FSecureShell->UtfStrings)
+  if (FSecureShell->GetUtfStrings())
   {
-    FTerminal->LogEvent(L"We will use UTF-8");
+    FTerminal->LogEvent("We will use UTF-8");
   }
   else
   {
-    FTerminal->LogEvent(L"We will not use UTF-8");
+    FTerminal->LogEvent("We will not use UTF-8");
   }
 }
 
@@ -1241,21 +1241,21 @@ void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   const UnicodeString & NewName)
 {
   // ExecCommand2(fsCopyFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
-  UnicodeString DelimitedFileName = DelimitStr(FileName);
+  UnicodeString DelimitedFileName = DelimitStr(AFileName);
   UnicodeString DelimitedNewName = DelimitStr(NewName);
   const UnicodeString AdditionalSwitches = L"-T";
   try
   {
-    ExecCommand2(fsCopyFile, 0, ARRAYOFCONST((AdditionalSwitches, DelimitedFileName, DelimitedNewName)));
+    ExecCommand2(fsCopyFile, 0, AdditionalSwitches.c_str(), DelimitedFileName.c_str(), DelimitedNewName.c_str());
   }
   catch (Exception & E)
   {
-    if (FTerminal->Active)
+    if (FTerminal->GetActive())
     {
       // The -T is GNU switch and may not be available on all platforms.
       // http://lists.gnu.org/archive/html/bug-coreutils/2004-07/msg00000.html
-      FTerminal->LogEvent(FORMAT(L"Attempt with %s failed, trying without", (AdditionalSwitches)));
-      ExecCommand2(fsCopyFile, 0, ARRAYOFCONST((L"", DelimitedFileName, DelimitedNewName)));
+      FTerminal->LogEvent(FORMAT(L"Attempt with %s failed, trying without", AdditionalSwitches.c_str()));
+      ExecCommand2(fsCopyFile, 0, L"", DelimitedFileName.c_str(), DelimitedNewName.c_str());
     }
     else
     {
