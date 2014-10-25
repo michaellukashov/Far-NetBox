@@ -1860,24 +1860,26 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
   return Result;
 }
 
-UnicodeString FormatTimeZone(intptr_t /* Sec */)
+UnicodeString FormatTimeZone(intptr_t Sec)
 {
-  // TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
   UnicodeString Str;
-  /* if ((Span.Seconds == 0) && (Span.Minutes == 0))
+/*
+  TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
+  UnicodeString Str;
+  if ((Span.Seconds == 0) && (Span.Minutes == 0))
   {
-    Str = FORMAT("%d", -Span.Hours);
+    Str = FORMAT(L"%d", (-Span.Hours));
   }
   else if (Span.Seconds == 0)
   {
-    Str = FORMAT("%d:%2.2d", -Span.Hours, abs(Span.Minutes));
+    Str = FORMAT(L"%d:%2.2d", (-Span.Hours, abs(Span.Minutes)));
   }
   else
   {
-    Str = FORMAT("%d:%2.2d:%2.2d", -Span.Hours, abs(Span.Minutes), abs(Span.Seconds));
+    Str = FORMAT(L"%d:%2.2d:%2.2d", (-Span.Hours, abs(Span.Minutes), abs(Span.Seconds)));
   }
   Str = ((Span <= TTimeSpan::Zero) ? L"+" : L"") + Str;
-  */
+*/
   return Str;
 }
 
