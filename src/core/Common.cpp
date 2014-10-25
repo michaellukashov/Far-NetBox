@@ -1860,7 +1860,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
   return Result;
 }
 
-static UnicodeString FormatTimeZone(intptr_t /* Sec */)
+UnicodeString FormatTimeZone(intptr_t /* Sec */)
 {
   // TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
   UnicodeString Str;

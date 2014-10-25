@@ -166,7 +166,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format);
 UnicodeString StandardTimestamp(const TDateTime & DateTime);
 UnicodeString StandardTimestamp();
 UnicodeString StandardDatestamp();
-UnicodeString FormatTimeZone(long Sec);
+UnicodeString FormatTimeZone(intptr_t Sec);
 UnicodeString GetTimeZoneLogString();
 bool AdjustClockForDSTEnabled();
 intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2);
