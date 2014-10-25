@@ -17,39 +17,6 @@
 
 TStoredSessionList * StoredSessions = nullptr;
 
-TConfiguration * GetConfiguration()
-{
-  static TConfiguration * Configuration = nullptr;
-  if (Configuration == nullptr)
-  {
-    // configuration needs to be created and loaded before putty is initialized,
-    // so that random seed path is known
-    Configuration = CreateConfiguration();
-    try
-    {
-      Configuration->Load();
-    }
-    catch (Exception & E)
-    {
-      ShowExtendedException(&E);
-    }
-
-    PuttyInitialize();
-  }
-  return Configuration;
-}
-
-void DeleteConfiguration()
-{
-  static bool ConfigurationDeleted = false;
-  if (!ConfigurationDeleted)
-  {
-    TConfiguration * Conf = GetConfiguration();
-    SAFE_DESTROY(Conf);
-    ConfigurationDeleted = true;
-  }
-}
-
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0),
   OnClick(nullptr),
@@ -124,6 +91,27 @@ bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
     (Kind != pkPassphrase);
 }
 
+TConfiguration * GetConfiguration()
+{
+  static TConfiguration * Configuration = nullptr;
+  if (Configuration == nullptr)
+  {
+    Configuration = CreateConfiguration();
+  }
+  return Configuration;
+}
+
+void DeleteConfiguration()
+{
+  static bool ConfigurationDeleted = false;
+  if (!ConfigurationDeleted)
+  {
+    TConfiguration * Conf = GetConfiguration();
+    SAFE_DESTROY(Conf);
+    ConfigurationDeleted = true;
+  }
+}
+
 void CoreLoad()
 {
   bool SessionList = true;
@@ -159,7 +147,7 @@ void CoreLoad()
 
   try
   {
-    if (SessionsStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false))
+    if (SessionsStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false))
     {
       StoredSessions->Load(SessionsStorage.get());
     }
@@ -176,10 +164,10 @@ void CoreInitialize()
   CryptographyInitialize();
 
   // we do not expect configuration re-creation
-  assert(GetConfiguration() == nullptr);
+  assert(GetConfiguration() != nullptr);
   // configuration needs to be created and loaded before putty is initialized,
   // so that random seed path is known
-  Configuration = CreateConfiguration();
+//  Configuration = CreateConfiguration();
 
   PuttyInitialize();
   #ifndef NO_FILEZILLA
