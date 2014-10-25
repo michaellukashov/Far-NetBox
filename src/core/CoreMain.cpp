@@ -95,7 +95,7 @@ void TQueryParams::Assign(const TQueryParams & Source)
   HelpKeyword = Source.HelpKeyword;
 }
 
-TQueryParams &TQueryParams::operator=(const TQueryParams & other)
+TQueryParams & TQueryParams::operator=(const TQueryParams & other)
 {
   Assign(other);
   return *this;
@@ -127,7 +127,7 @@ bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
 void CoreLoad()
 {
   bool SessionList = true;
-  std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateConfigStorage(SessionList));
+  std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateScpStorage(SessionList));
   THierarchicalStorage * ConfigStorage = nullptr;
   std::unique_ptr<THierarchicalStorage> ConfigStorageAuto;
   if (!SessionList)
@@ -176,7 +176,7 @@ void CoreInitialize()
   CryptographyInitialize();
 
   // we do not expect configuration re-creation
-  assert(Configuration == NULL);
+  assert(GetConfiguration() == nullptr);
   // configuration needs to be created and loaded before putty is initialized,
   // so that random seed path is known
   Configuration = CreateConfiguration();
