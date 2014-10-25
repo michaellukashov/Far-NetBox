@@ -1147,7 +1147,7 @@ private:
 
     if (Utf == asAuto)
     {
-      TEncodeType EncodeType = DetectUTF8Encoding(S);
+      TEncodeType EncodeType = ::DetectUTF8Encoding(S);
       if (EncodeType == etANSI)
       {
         Utf = asOff;
@@ -1849,7 +1849,7 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
   FAvoidBusy(false),
   FExtensions(nullptr),
   FSupport(nullptr),
-  FUtfStrings(false),
+  FUtfStrings(asAuto),
   FSignedTS(false),
   FFixedPaths(nullptr),
   FMaxPacketSize(0),
