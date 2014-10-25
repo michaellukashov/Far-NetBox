@@ -55,16 +55,17 @@ TConfiguration::TConfiguration() :
   // FDefaultCollectUsage = false;
 
   UnicodeString RandomSeedPath;
-  if (!::GetEnvironmentVariable(L"APPDATA").IsEmpty())
+  UnicodeString Str = ::ExpandEnvironmentVariables("APPDATA");
+  if (!Str.IsEmpty())
   {
     RandomSeedPath = L"%APPDATA%";
   }
   else
   {
-    RandomSeedPath = GetShellFolderPath(CSIDL_LOCAL_APPDATA);
+    RandomSeedPath = ::GetShellFolderPath(CSIDL_LOCAL_APPDATA);
     if (RandomSeedPath.IsEmpty())
     {
-      RandomSeedPath = GetShellFolderPath(CSIDL_APPDATA);
+      RandomSeedPath = ::GetShellFolderPath(CSIDL_APPDATA);
     }
   }
 
@@ -266,7 +267,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
   {
      // if saving to TOptionsStorage, make sure we save everything so that
      // all configuration is properly transferred to the master storage
-     bool ConfigAll = All || AStorage->Temporary;
+     bool ConfigAll = All || Storage->GetTemporary();
      SaveData(Storage.get(), ConfigAll);
   }
 
@@ -376,12 +377,12 @@ void TConfiguration::Load(THierarchicalStorage * Storage)
 {
   TGuard Guard(FCriticalSection);
   TStorageAccessMode StorageAccessMode = Storage->GetAccessMode();
-   SCOPE_EXIT
+  SCOPE_EXIT
   {
     Storage->SetAccessMode(StorageAccessMode);
   };
   Storage->SetAccessMode(smRead);
-  LoadFrom(Storage.get());
+  LoadFrom(Storage);
 }
 
 void TConfiguration::CopyData(THierarchicalStorage * Source,
@@ -990,7 +991,7 @@ void TConfiguration::SetOptionsStorage(TStrings * Value)
   {
     FOptionsStorage.reset(new TStringList());
   }
-  FOptionsStorage->AddStrings(value);
+  FOptionsStorage->AddStrings(Value);
 }
 
 TStrings * TConfiguration::GetOptionsStorage()
