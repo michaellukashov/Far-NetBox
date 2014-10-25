@@ -107,11 +107,6 @@ bool TXmlStorage::Copy(TXmlStorage * /* Storage */)
   return Result;
 }
 
-UnicodeString TXmlStorage::GetSource() const
-{
-  return GetStorage();
-}
-
 void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
 {
   THierarchicalStorage::SetAccessMode(Value);
