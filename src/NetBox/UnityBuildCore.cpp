@@ -12,6 +12,7 @@
 #include "../base/StrUtils.cpp"
 #include "../base/local.cpp"
 #include "../base/rtti.cpp"
+#include "../base/WideStrUtils.cpp"
 
 #include "../core/Common.cpp"
 #include "../core/RemoteFiles.cpp"
