@@ -61,7 +61,7 @@ void TFarConfiguration::Default()
 
 THierarchicalStorage * TFarConfiguration::CreateStorage(bool SessionList)
 {
-  return TGUIConfiguration::CreateStorage(SessionList);
+  return TGUIConfiguration::CreateScpStorage(SessionList);
 }
 
 void TFarConfiguration::Saved()
@@ -146,7 +146,7 @@ void TFarConfiguration::Load()
   {
     FForceInheritance = false;
   };
-  TGUIConfiguration::Load();
+  TGUIConfiguration::Load(this);
 }
 
 void TFarConfiguration::Save(bool All, bool Explicit)
