@@ -2294,11 +2294,11 @@ void TFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
 
   UnicodeString Command;
 
-  Command = FORMAT(L"SITE CPFR %s", AFileName.c_str());
+  Command = FORMAT("SITE CPFR %s", AFileName.c_str());
   FFileZillaIntf->CustomCommand(Command.c_str());
   GotReply(WaitForCommandReply(), REPLY_3XX_CODE);
 
-  Command = FORMAT(L"SITE CPTO %s", NewName.c_str());
+  Command = FORMAT("SITE CPTO %s", NewName.c_str());
   FFileZillaIntf->CustomCommand(Command.c_str());
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
