@@ -377,7 +377,7 @@ void TConfiguration::Load(THierarchicalStorage * Storage)
   TStorageAccessMode StorageAccessMode = Storage->GetAccessMode();
    SCOPE_EXIT
   {
-    Storage->AccessMode = StorageAccessMode;
+    Storage->SetAccessMode(StorageAccessMode);
   };
   Storage->SetAccessMode(smRead);
   LoadFrom(Storage.get());
