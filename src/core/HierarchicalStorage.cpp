@@ -205,7 +205,7 @@ void THierarchicalStorage::CloseSubKey()
 
 void THierarchicalStorage::CloseAll()
 {
-  while (!CurrentSubKey.IsEmpty())
+  while (!GetCurrentSubKey().IsEmpty())
   {
     CloseSubKey();
   }
@@ -1308,7 +1308,7 @@ private:
   void __fastcall NotImplemented();
 };
 //---------------------------------------------------------------------------
-__fastcall TOptionsIniFile::TOptionsIniFile(TStrings * Options, bool IgnoreWrite, const UnicodeString & RootKey) :
+TOptionsIniFile::TOptionsIniFile(TStrings * Options, bool IgnoreWrite, const UnicodeString & RootKey) :
   TCustomIniFile(UnicodeString())
 {
   FOptions = Options;
@@ -1427,7 +1427,7 @@ void __fastcall TOptionsIniFile::ReadSections(TStrings * Strings)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptionsIniFile::ReadSectionValues(const UnicodeString Section, TStrings * /*Strings*/)
+void TOptionsIniFile::ReadSectionValues(const UnicodeString Section, TStrings * Strings)
 {
   NotImplemented();
 }
@@ -1447,7 +1447,7 @@ void __fastcall TOptionsIniFile::UpdateFile()
   HandleWrite();
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptionsIniFile::ReadSections(const UnicodeString /*Section*/, TStrings * /*Strings*/)
+void TOptionsIniFile::ReadSections(const UnicodeString Section, TStrings * Strings)
 {
   NotImplemented();
 }
