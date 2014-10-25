@@ -702,8 +702,13 @@ public:
 
 enum TChecklistAction
 {
-  saNone, saUploadNew, saDownloadNew, saUploadUpdate,
-  saDownloadUpdate, saDeleteRemote, saDeleteLocal
+  saNone,
+  saUploadNew,
+  saDownloadNew,
+  saUploadUpdate,
+  saDownloadUpdate,
+  saDeleteRemote,
+  saDeleteLocal
 };
 
 class TChecklistItem : public TObject
@@ -747,9 +752,9 @@ public:
 
   ~TSynchronizeChecklist();
 
-  void Update(const TItem * Item, bool Check, TAction Action);
+  void Update(const TChecklistItem * Item, bool Check, TChecklistAction Action);
 
-  static TAction Reverse(TAction Action);
+  static TChecklistAction Reverse(TChecklistAction Action);
 
 /*
   __property int Count = { read = GetCount };

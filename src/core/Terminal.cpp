@@ -337,7 +337,7 @@ const TChecklistItem * TSynchronizeChecklist::GetItem(intptr_t Index) const
   return NB_STATIC_DOWNCAST(TChecklistItem, FList.GetItem(Index));
 }
 
-TSynchronizeChecklist::TAction TSynchronizeChecklist::Reverse(TSynchronizeChecklist::TAction Action)
+TChecklistAction TSynchronizeChecklist::Reverse(TChecklistAction Action)
 {
   switch (Action)
   {
@@ -4104,7 +4104,7 @@ public:
         FAction.AddOutput(Str, true);
         break;
       case cotExitCode:
-        FAction.AddExitCode(StrToInt(Str));
+        FAction.AddExitCode(::StrToInt64(Str));
         break;
     }
 
@@ -4443,9 +4443,10 @@ void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
   if (!Directory || Params.IncludeDirs)
   {
     Params.FileList->Add(AFileName);
-    if (Params.FileTimes != NULL)
+    if (Params.FileTimes != nullptr)
     {
-      Params.FileTimes->push_back(const_cast<TSearchRec &>(Rec).TimeStamp);
+      // TODO: Add TSearchRec::TimeStamp
+      // Params.FileTimes->push_back(const_cast<TSearchRec &>(Rec).TimeStamp);
     }
   }
 }
