@@ -294,6 +294,7 @@ public:
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
   void LogEvent(const UnicodeString & Str);
+  void GetSupportedChecksumAlgs(TStrings * Algs);
 
   static UnicodeString ExpandFileName(const UnicodeString & APath,
     const UnicodeString & BasePath);
@@ -503,6 +504,7 @@ protected:
     const UnicodeString & CertificateSubject, int Failures);
   void CacheCertificate(const UnicodeString & CertificateStorageKey,
     const UnicodeString & Fingerprint, int Failures);
+  void CollectTlsUsage(const UnicodeString & TlsVersionStr);
 
   TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
 
@@ -673,11 +675,14 @@ public:
   bool Result;
 };
 
+typedef rde::vector<TDateTime> TDateTimes;
+
 struct TMakeLocalFileListParams : public TObject
 {
 NB_DECLARE_CLASS(TMakeLocalFileListParams)
 public:
   TStrings * FileList;
+  TDateTimes * FileTimes;
   bool IncludeDirs;
   bool Recursive;
 };
@@ -742,6 +747,14 @@ public:
 
   ~TSynchronizeChecklist();
 
+  void Update(const TItem * Item, bool Check, TAction Action);
+
+  static TAction Reverse(TAction Action);
+
+/*
+  __property int Count = { read = GetCount };
+  __property const TItem * Item[int Index] = { read = GetItem };
+*/
   intptr_t GetCount() const;
   const TChecklistItem * GetItem(intptr_t Index) const;
 

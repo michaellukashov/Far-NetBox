@@ -337,6 +337,36 @@ const TChecklistItem * TSynchronizeChecklist::GetItem(intptr_t Index) const
   return NB_STATIC_DOWNCAST(TChecklistItem, FList.GetItem(Index));
 }
 
+TSynchronizeChecklist::TAction TSynchronizeChecklist::Reverse(TSynchronizeChecklist::TAction Action)
+{
+  switch (Action)
+  {
+    case saUploadNew:
+      return saDeleteLocal;
+
+    case saDownloadNew:
+      return saDeleteRemote;
+
+    case saUploadUpdate:
+      return saDownloadUpdate;
+
+    case saDownloadUpdate:
+      return saUploadUpdate;
+
+    case saDeleteRemote:
+      return saDownloadNew;
+
+    case saDeleteLocal:
+      return saUploadNew;
+
+    default:
+    case saNone:
+      FAIL;
+      return saNone;
+  }
+}
+
+
 class TTunnelThread : public TSimpleThread
 {
 NB_DISABLE_COPY(TTunnelThread)
@@ -3503,6 +3533,7 @@ void TTerminal::ChangeFilesProperties(TStrings * AFileList,
 
 bool TTerminal::LoadFilesProperties(TStrings * AFileList)
 {
+  // see comment in TSFTPFileSystem::IsCapable
   bool Result =
     GetIsCapable(fcLoadingAdditionalProperties) &&
     FFileSystem->LoadFilesProperties(AFileList);
@@ -4061,12 +4092,25 @@ public:
   {
   }
 
-  void Output(const UnicodeString & Str, bool StdError)
+  void Output(const UnicodeString & Str, TCaptureOutputType OutputType)
   {
-    FAction.AddOutput(Str, StdError);
+    // FAction.AddOutput(Str, StdError);
+    switch (OutputType)
+    {
+      case cotOutput:
+        FAction.AddOutput(Str, false);
+        break;
+      case cotError:
+        FAction.AddOutput(Str, true);
+        break;
+      case cotExitCode:
+        FAction.AddExitCode(StrToInt(Str));
+        break;
+    }
+
     if (FOutputEvent != nullptr)
     {
-      FOutputEvent(Str, StdError);
+      FOutputEvent(Str, OutputType);
     }
   }
 
@@ -4399,6 +4443,10 @@ void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
   if (!Directory || Params.IncludeDirs)
   {
     Params.FileList->Add(AFileName);
+    if (Params.FileTimes != NULL)
+    {
+      Params.FileTimes->push_back(const_cast<TSearchRec &>(Rec).TimeStamp);
+    }
   }
 }
 
@@ -5343,6 +5391,11 @@ const TFileSystemInfo & TTerminal::GetFileSystemInfo(bool Retrieve)
   return FFileSystem->GetFileSystemInfo(Retrieve);
 }
 
+void TTerminal::GetSupportedChecksumAlgs(TStrings * Algs)
+{
+  FFileSystem->GetSupportedChecksumAlgs(Algs);
+}
+
 UnicodeString TTerminal::GetPassword() const
 {
   UnicodeString Result;
@@ -5777,7 +5830,7 @@ bool TTerminal::VerifyCertificate(
 
   UnicodeString CertificateData = FormatCertificateData(Fingerprint, Failures);
 
-  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateConfigStorage());
   Storage->SetAccessMode(smRead);
 
   if (Storage->OpenSubKey(CertificateStorageKey, false))
@@ -5827,12 +5880,41 @@ void TTerminal::CacheCertificate(const UnicodeString & CertificateStorageKey,
 {
   UnicodeString CertificateData = FormatCertificateData(Fingerprint, Failures);
 
-  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateConfigStorage());
   Storage->SetAccessMode(smReadWrite);
 
   if (Storage->OpenSubKey(CertificateStorageKey, true))
   {
     Storage->WriteString(GetSessionData()->GetSiteKey(), CertificateData);
+  }
+}
+
+void TTerminal::CollectTlsUsage(const UnicodeString & TlsVersionStr)
+{
+  // see SSL_get_version() in OpenSSL ssl_lib.c
+  if (TlsVersionStr == L"TLSv1.2")
+  {
+//    Configuration->Usage->Inc(L"OpenedSessionsTLS12");
+  }
+  else if (TlsVersionStr == L"TLSv1.1")
+  {
+//    Configuration->Usage->Inc(L"OpenedSessionsTLS11");
+  }
+  else if (TlsVersionStr == L"TLSv1")
+  {
+//    Configuration->Usage->Inc(L"OpenedSessionsTLS10");
+  }
+  else if (TlsVersionStr == L"SSLv3")
+  {
+//    Configuration->Usage->Inc(L"OpenedSessionsSSL30");
+  }
+  else if (TlsVersionStr == L"SSLv2")
+  {
+//    Configuration->Usage->Inc(L"OpenedSessionsSSL20");
+  }
+  else
+  {
+//    FAIL;
   }
 }
 
