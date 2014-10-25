@@ -93,7 +93,7 @@ const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const
 
 TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
-  return NB_STATIC_DOWNCAST(TNamedObject, GetItem(Index + GetHiddenCount()));
+  return NB_STATIC_DOWNCAST(TNamedObject, GetItem(Index + GetCountIncludingHidden()));
 }
 
 void TNamedObjectList::Recount()
@@ -152,7 +152,7 @@ void TNamedObjectList::SetCount(intptr_t Value)
 intptr_t TNamedObjectList::GetCount() const
 {
   assert(FHiddenCount >= 0);
-  return TObjectList::GetCount() - GetHiddenCount();
+  return TObjectList::GetCount() - FHiddenCount;
 }
 
 intptr_t TNamedObjectList::GetCountIncludingHidden() const
