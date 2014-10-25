@@ -310,7 +310,7 @@ protected:
   void __fastcall SetLocale(LCID value);
   void __fastcall SetLocaleSafe(LCID value);
   virtual HINSTANCE __fastcall LoadNewResourceModule(LCID Locale,
-    UnicodeString * FileName = NULL);
+    UnicodeString * FileName = nullptr);
   HANDLE __fastcall GetResourceModule();
   virtual void __fastcall SetResourceModule(HINSTANCE Instance);
   TStrings * __fastcall GetLocales();

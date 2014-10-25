@@ -138,7 +138,7 @@ static bool ExceptionMessage(const Exception * E, bool /* Count */,
 bool IsInternalException(const Exception * E)
 {
   // see also InternalError in ExceptionMessage
-  return WellKnownException(E, NULL, NULL, NULL, false);
+  return WellKnownException(E, nullptr, nullptr, nullptr, false);
 }
 
 bool ExceptionMessage(const Exception * E, UnicodeString & Message)

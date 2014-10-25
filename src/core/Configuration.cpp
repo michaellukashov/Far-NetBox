@@ -162,7 +162,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
     assert(false);
   }
 
-  if ((FOptionsStorage.get() != NULL) && (FOptionsStorage->GetCount() > 0))
+  if ((FOptionsStorage.get() != nullptr) && (FOptionsStorage->GetCount() > 0))
   {
     if (!SessionList)
     {
@@ -987,7 +987,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
 
 void TConfiguration::SetOptionsStorage(TStrings * Value)
 {
-  if (FOptionsStorage.get() == NULL)
+  if (FOptionsStorage.get() == nullptr)
   {
     FOptionsStorage.reset(new TStringList());
   }

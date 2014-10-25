@@ -216,9 +216,9 @@ protected:
 
   void __fastcall GotHostKey();
   int __fastcall TranslatePuttyMessage(const TPuttyTranslation * Translation,
-    size_t Count, UnicodeString & Message, UnicodeString * HelpKeyword = NULL);
-  int __fastcall TranslateAuthenticationMessage(UnicodeString & Message, UnicodeString * HelpKeyword = NULL);
-  int __fastcall TranslateErrorMessage(UnicodeString & Message, UnicodeString * HelpKeyword = NULL);
+    size_t Count, UnicodeString & Message, UnicodeString * HelpKeyword = nullptr);
+  int __fastcall TranslateAuthenticationMessage(UnicodeString & Message, UnicodeString * HelpKeyword = nullptr);
+  int __fastcall TranslateErrorMessage(UnicodeString & Message, UnicodeString * HelpKeyword = nullptr);
   void __fastcall AddStdError(UnicodeString Str);
   void __fastcall AddStdErrorLine(const UnicodeString & Str);
   void __fastcall inline LogEvent(const UnicodeString & Str);

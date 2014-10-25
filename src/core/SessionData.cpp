@@ -3258,7 +3258,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
         // to secure uniqueness of the key names)
         if (WasEmpty)
         {
-          SessionData = NULL;
+          SessionData = nullptr;
         }
         else
         {
@@ -3933,7 +3933,7 @@ bool TStoredSessionList::IsUrl(const UnicodeString & Url)
 {
   bool DefaultsOnly;
   bool ProtocolDefined = false;
-  std::unique_ptr<TSessionData> ParsedData(ParseUrl(Url, NULL, DefaultsOnly, NULL, &ProtocolDefined));
+  std::unique_ptr<TSessionData> ParsedData(ParseUrl(Url, nullptr, DefaultsOnly, nullptr, &ProtocolDefined));
   bool Result = ProtocolDefined;
   return Result;
 }

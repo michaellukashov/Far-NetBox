@@ -710,7 +710,7 @@ UnicodeString __fastcall TCustomIniFileStorage::GetCurrentSection()
 //---------------------------------------------------------------------------
 void __fastcall TCustomIniFileStorage::CacheSections()
 {
-  if (FSections.get() == NULL)
+  if (FSections.get() == nullptr)
   {
     FSections.reset(new TStringList());
     FIniFile->ReadSections(FSections.get());
@@ -720,12 +720,12 @@ void __fastcall TCustomIniFileStorage::CacheSections()
 //---------------------------------------------------------------------------
 void __fastcall TCustomIniFileStorage::ResetCache()
 {
-  FSections.reset(NULL);
+  FSections.reset(nullptr);
 }
 //---------------------------------------------------------------------------
 void __fastcall TCustomIniFileStorage::SetAccessMode(TStorageAccessMode value)
 {
-  if (FMasterStorage.get() != NULL)
+  if (FMasterStorage.get() != nullptr)
   {
     FMasterStorage->AccessMode = value;
   }
@@ -759,7 +759,7 @@ bool __fastcall TCustomIniFileStorage::OpenRootKey(bool CanCreate)
 {
   // Not supported with master storage.
   // Actually currently, we use OpenRootKey with TRegistryStorage only.
-  assert(FMasterStorage.get() == NULL);
+  assert(FMasterStorage.get() == nullptr);
 
   return THierarchicalStorage::OpenRootKey(CanCreate);
 }
@@ -773,7 +773,7 @@ bool __fastcall TCustomIniFileStorage::OpenSubKey(UnicodeString Key, bool CanCre
     Result = THierarchicalStorage::OpenSubKey(Key, CanCreate, Path);
   }
 
-  if (FMasterStorage.get() != NULL)
+  if (FMasterStorage.get() != nullptr)
   {
     if (FMasterStorageOpenFailures > 0)
     {
@@ -803,7 +803,7 @@ void __fastcall TCustomIniFileStorage::CloseSubKey()
 
   // What we are called to restore previous key from OpenSubKey,
   // when opening path component fails, the master storage was not involved yet
-  if (!FOpeningSubKey && (FMasterStorage.get() != NULL))
+  if (!FOpeningSubKey && (FMasterStorage.get() != nullptr))
   {
     if (FMasterStorageOpenFailures > 0)
     {
@@ -912,7 +912,7 @@ bool __fastcall TCustomIniFileStorage::DeleteValue(const UnicodeString Name)
 bool __fastcall TCustomIniFileStorage::HandleByMasterStorage()
 {
   return
-    (FMasterStorage.get() != NULL) &&
+    (FMasterStorage.get() != nullptr) &&
     (FMasterStorageOpenFailures == 0);
 }
 //---------------------------------------------------------------------------
@@ -1179,11 +1179,11 @@ __fastcall TIniFileStorage::TIniFileStorage(const UnicodeString AStorage):
 //---------------------------------------------------------------------------
 void __fastcall TIniFileStorage::Flush()
 {
-  if (FMasterStorage.get() != NULL)
+  if (FMasterStorage.get() != nullptr)
   {
     FMasterStorage->Flush();
   }
-  if (FOriginal != NULL)
+  if (FOriginal != nullptr)
   {
     TStrings * Strings = new TStringList;
     try
@@ -1204,7 +1204,7 @@ void __fastcall TIniFileStorage::Flush()
         }
 
         HANDLE Handle = CreateFile(ApiPath(Storage).c_str(), GENERIC_READ | GENERIC_WRITE,
-          0, NULL, CREATE_ALWAYS, Attr, 0);
+          0, nullptr, CREATE_ALWAYS, Attr, 0);
 
         if (Handle == INVALID_HANDLE_VALUE)
         {
@@ -1232,7 +1232,7 @@ void __fastcall TIniFileStorage::Flush()
     __finally
     {
       delete FOriginal;
-      FOriginal = NULL;
+      FOriginal = nullptr;
       delete Strings;
     }
   }

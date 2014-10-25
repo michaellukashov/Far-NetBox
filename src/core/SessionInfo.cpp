@@ -523,7 +523,7 @@ void TCallSessionAction::AddOutput(const UnicodeString & Output, bool StdError)
 
 void TCallSessionAction::AddExitCode(int ExitCode)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->AddExitCode(ExitCode);
   }
@@ -1233,14 +1233,14 @@ TActionLog::TActionLog(TSessionUI * UI, TSessionData * SessionData,
   FEnabled(true),
   FIndent(L"  ")
 {
-  assert(UI != NULL);
-  assert(SessionData != NULL);
+  assert(UI != nullptr);
+  assert(SessionData != nullptr);
   Init(UI, SessionData, Configuration);
 }
 
 TActionLog::TActionLog(TConfiguration * Configuration)
 {
-  Init(NULL, NULL, Configuration);
+  Init(nullptr, nullptr, Configuration);
   // not associated with session, so no need to waiting for anything
   ReflectSettings();
 }

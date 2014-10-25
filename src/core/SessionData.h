@@ -791,7 +791,7 @@ public:
   void __fastcall Load(THierarchicalStorage * Storage);
   void __fastcall ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path);
   void __fastcall Save(THierarchicalStorage * Storage, bool PuttyExport,
-    const TSessionData * Default = NULL);
+    const TSessionData * Default = nullptr);
   void __fastcall SaveRecryptedPasswords(THierarchicalStorage * Storage);
   void __fastcall RecryptPasswords();
   bool __fastcall HasPassword();

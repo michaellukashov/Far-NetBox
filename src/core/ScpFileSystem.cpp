@@ -694,7 +694,7 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
     bool WrongReturnCode =
       (GetReturnCode() > 1) || (GetReturnCode() == 1 && !(Params & coIgnoreWarnings));
 
-    if (FOnCaptureOutput != NULL)
+    if (FOnCaptureOutput != nullptr)
     {
       FOnCaptureOutput(::Int64ToStr(GetReturnCode()), cotExitCode);
     }
