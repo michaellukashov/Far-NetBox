@@ -1134,12 +1134,12 @@ private:
     return Result;
   }
 
-  inline UnicodeString AsAnsiString(const RawByteString & S)
+  inline UnicodeString AsAnsiString(const RawByteString & S) const
   {
     return UnicodeString(AnsiString(S.c_str()));
   }
 
-  inline UnicodeString GetUtfString(TAutoSwitch & Utf)
+  inline UnicodeString GetUtfString(TAutoSwitch & Utf) const
   {
     assert(Utf != asOff);
     UnicodeString Result;
