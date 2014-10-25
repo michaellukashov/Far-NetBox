@@ -134,7 +134,7 @@ private:
   void SendBuffer(intptr_t & Result);
   uintptr_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
   bool TryFtp();
-  UnicodeString ConvertInput(const RawByteString & Input) const;
+  UnicodeString ConvertInput(const RawByteString & Input, uintptr_t CodePage = CP_ACP) const;
 
 private:
   SOCKET FSocket;

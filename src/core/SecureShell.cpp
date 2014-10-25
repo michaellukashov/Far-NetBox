@@ -457,7 +457,7 @@ void TSecureShell::Open()
     FSshImplementation = sshiBitvise;
   }
   // e.g. "srtSSHServer_10.00"
-  else if (ContainsText(SshImplementation, L"srtSSHServer"))
+  else if (::AnsiContainsText(SshImplementation, L"srtSSHServer"))
   {
     FSshImplementation = sshiTitan;
   }
@@ -581,7 +581,7 @@ void TSecureShell::Init()
   }
 }
 
-UnicodeString TSecureShell::ConvertFromPutty(const char * Str, int Length)
+UnicodeString TSecureShell::ConvertFromPutty(const char * Str, int Length) const
 {
   int BomLength = strlen(MPEXT_BOM);
   if ((Length >= BomLength) &&
@@ -1255,13 +1255,13 @@ void TSecureShell::SendNull()
   Send(&Null, 1);
 }
 
-void TSecureShell::SendLine(const UnicodeString & Str)
+void TSecureShell::SendLine(const UnicodeString & Line)
 {
   CheckConnection();
   // AnsiString AnsiStr = ::W2MB(Str.c_str(), (UINT)FSessionData->GetCodePageAsNumber());
   // Send(reinterpret_cast<const uint8_t *>(AnsiStr.c_str()), AnsiStr.Length());
   RawByteString Buf;
-  if (UtfStrings)
+  if (GetUtfStrings())
   {
     Buf = RawByteString(UTF8String(Line));
   }
@@ -2340,6 +2340,7 @@ bool TSecureShell::GetReady() const
 
 void TSecureShell::CollectUsage()
 {
+/*
   if (FCollectPrivateKeyUsage)
   {
 //    Configuration->Usage->Inc(L"OpenedSessionsPrivateKey2");
@@ -2358,7 +2359,7 @@ void TSecureShell::CollectUsage()
   {
     // Configuration->Usage->Inc(L"OpenedSessionsSSHProFTPD");
   }
-  else if (SshImplementation == sshiTitan)
+  else if (GetSshImplementation() == sshiTitan)
   {
     // Configuration->Usage->Inc(L"OpenedSessionsSSHTitan");
   }
@@ -2366,6 +2367,7 @@ void TSecureShell::CollectUsage()
   {
     // Configuration->Usage->Inc(L"OpenedSessionsSSHOther");
   }
+*/
 }
 
 NB_IMPLEMENT_CLASS(TSecureShell, NB_GET_CLASS_INFO(TObject), nullptr);
