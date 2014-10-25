@@ -18,8 +18,9 @@ public:
   virtual void GetSubKeyNames(TStrings * Strings);
   virtual bool ValueExists(const UnicodeString & Value) const;
   virtual bool DeleteValue(const UnicodeString & Name);
-
   virtual size_t BinaryDataSize(const UnicodeString & Name);
+  virtual UnicodeString GetSource() const;
+  virtual UnicodeString GetSource();
 
   virtual bool ReadBool(const UnicodeString & Name, bool Default);
   virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default);
@@ -44,8 +45,6 @@ public:
   virtual bool DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate);
 
 protected:
-  virtual UnicodeString GetSource() const;
-
   intptr_t GetFailed();
   void SetFailed(intptr_t Value) { FFailed = Value; }
 

@@ -327,6 +327,16 @@ size_t TXmlStorage::BinaryDataSize(const UnicodeString & /* Name */)
   return Result;
 }
 
+UnicodeString TXmlStorage::GetSource() const
+{
+  return GetStorage();
+}
+
+UnicodeString TXmlStorage::GetSource()
+{
+  return GetStorage();
+}
+
 bool TXmlStorage::ReadBool(const UnicodeString & Name, bool Default)
 {
   UnicodeString Result = ReadString(Name, L"");
