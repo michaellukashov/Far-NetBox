@@ -1248,7 +1248,7 @@ TActionLog::TActionLog(TConfiguration * Configuration)
 void TActionLog::Init(TSessionUI * UI, TSessionData * SessionData,
   TConfiguration * Configuration)
 {
-  FCriticalSection = new TCriticalSection;
+//  FCriticalSection = new TCriticalSection;
   FConfiguration = Configuration;
   FUI = UI;
   FSessionData = SessionData;
