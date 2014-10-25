@@ -100,6 +100,7 @@ public:
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
   virtual bool GetStoredCredentialsTried() const;
   virtual UnicodeString FSGetUserName() const;
+  virtual void GetSupportedChecksumAlgs(TStrings * Algs);
 
 protected:
   // enum TOverwriteMode { omOverwrite, omResume, omComplete };
@@ -210,6 +211,10 @@ protected:
   void StoreLastResponse(const UnicodeString & Text);
   void SetCPSLimit(TFileOperationProgressType * OperationProgress);
   bool VerifyCertificateHostName(const TFtpsCertificateData & Data);
+  bool SupportsReadingFile() const;
+  void AutoDetectTimeDifference(TRemoteFileList * FileList);
+  void ApplyTimeDifference(TRemoteFile * File);
+  bool TimeZoneDifferenceApplicable(TModificationFmt ModificationFmt) const;
 
   static bool Unquote(UnicodeString & Str);
   static UnicodeString ExtractStatusMessage(const UnicodeString & Status);
@@ -251,6 +256,7 @@ private:
   TRemoteFileList * FFileList;
   TRemoteFileList * FFileListCache;
   UnicodeString FFileListCachePath;
+  UnicodeString FWelcomeMessage;
   bool FActive;
   bool FOpening;
   bool FWaitingForReply;
@@ -273,6 +279,10 @@ private:
   bool FDoListAll;
   TFTPServerCapabilities * FServerCapabilities;
   TDateTime FLastDataSent;
+  bool FDetectTimeDifference;
+  int64_t FTimeDifference;
+  bool FSupportsSiteCopy;
+  bool FSupportsSiteSymlink;
   mutable UnicodeString FOptionScratch;
 };
 
