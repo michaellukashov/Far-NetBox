@@ -356,7 +356,7 @@ void TFTPFileSystem::Open()
   }
   int Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
 
-  FDetectTimeDifference = Data->TimeDifferenceAuto;
+  FDetectTimeDifference = Data->GetTimeDifferenceAuto();
   FTimeDifference = 0;
   FSupportsSiteCopy = false;
   FSupportsSiteSymlink = false;
@@ -1764,7 +1764,7 @@ void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
   }
 }
 
-void TFTPFileSystem::CreateLink(const UnicodeString & /*FileName*/,
+void TFTPFileSystem::CreateLink(const UnicodeString & AFileName,
   const UnicodeString & PointTo, bool Symbolic)
 {
   assert(FSupportsSiteSymlink);
@@ -1772,7 +1772,7 @@ void TFTPFileSystem::CreateLink(const UnicodeString & /*FileName*/,
   {
     EnsureLocation();
 
-    UnicodeString Command = FORMAT(L"SITE SYMLINK %s %s", PointTo.c_str(), FileName.c_str());
+    UnicodeString Command = FORMAT(L"SITE SYMLINK %s %s", PointTo.c_str(), AFileName.c_str());
     FFileZillaIntf->CustomCommand(Command.c_str());
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
   }
@@ -2008,16 +2008,16 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 
   if (FTimeDifference != 0) // optimization
   {
-    for (int Index = 0; Index < FileList->Count; Index++)
+    for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      ApplyTimeDifference(FileList->Files[Index]);
+      ApplyTimeDifference(FileList->GetFile(Index));
     }
   }
 
   FLastDataSent = Now();
 }
 
-bool __fastcall TFTPFileSystem::TimeZoneDifferenceApplicable(TModificationFmt ModificationFmt)
+bool TFTPFileSystem::TimeZoneDifferenceApplicable(TModificationFmt ModificationFmt) const
 {
   // Full precision is available for MLST only, so we would not be here.
   return (ModificationFmt == mfMDHM) || ALWAYS_FALSE(ModificationFmt == mfFull);
@@ -2025,11 +2025,11 @@ bool __fastcall TFTPFileSystem::TimeZoneDifferenceApplicable(TModificationFmt Mo
 
 void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
 {
-  if (TimeZoneDifferenceApplicable(File->ModificationFmt))
+  if (TimeZoneDifferenceApplicable(File->GetModificationFmt()))
   {
-    assert(File->Modification == File->LastAccess);
-    File->Modification = IncSecond(File->Modification, FTimeDifference);
-    File->LastAccess = IncSecond(File->LastAccess, FTimeDifference);
+    assert(File->GetModification() == File->GetLastAccess());
+    File->SetModification(IncSecond(File->GetModification(), FTimeDifference));
+    File->SetLastAccess(IncSecond(File->GetLastAccess(), FTimeDifference));
   }
 }
 
@@ -2039,44 +2039,44 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
       // Does not support MLST/MLSD, but supports MDTM at least
       !FFileZillaIntf->UsingMlsd() && SupportsReadingFile())
   {
-    for (int Index = 0; Index < FileList->Count; Index++)
+    for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = FileList->Files[Index];
+      TRemoteFile * File = FileList->GetFile(Index);
       // For directories, we do not do MDTM in ReadFile
       // (it should not be problem to use them otherwise).
       // We are also not interested in files with day precision only.
-      if (!File->IsDirectory && !File->IsSymLink &&
-          TimeZoneDifferenceApplicable(File->ModificationFmt))
+      if (!File->GetIsDirectory() && !File->GetIsSymLink() &&
+          TimeZoneDifferenceApplicable(File->GetModificationFmt()))
       {
         FDetectTimeDifference = false;
 
-        TRemoteFile * UtcFile = NULL;
+        TRemoteFile * UtcFile = nullptr;
         try
         {
-          ReadFile(File->FullFileName, UtcFile);
+          ReadFile(File->GetFullFileName(), UtcFile);
         }
         catch (Exception & E)
         {
-          if (!FTerminal->Active)
+          if (!FTerminal->GetActive())
           {
             throw;
           }
           break;
         }
 
-        TDateTime UtcModification = UtcFile->Modification;
+        TDateTime UtcModification = UtcFile->GetModification();
         delete UtcFile;
 
-        FTimeDifference = SecondsBetween(UtcModification, File->Modification);
+        FTimeDifference = ::SecondsBetween(UtcModification, File->GetModification());
 
         UnicodeString LogMessage;
         if (FTimeDifference == 0)
         {
-          LogMessage = FORMAT(L"No timezone difference detected using file %s", (File->FullFileName));
+          LogMessage = FORMAT("No timezone difference detected using file %s", File->GetFullFileName().c_str());
         }
         else
         {
-          LogMessage = FORMAT(L"Timezone difference of %s detected using file %s", (FormatTimeZone(FTimeDifference), File->FullFileName));
+          LogMessage = FORMAT("Timezone difference of %s detected using file %s", FormatTimeZone((long)FTimeDifference).c_str(), File->GetFullFileName().c_str());
         }
         FTerminal->LogEvent(LogMessage);
 
@@ -2167,7 +2167,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
   TRemoteFile *& AFile)
 {
-  UnicodeString FileName = core::AbsolutePath(AFileName, false);
+  UnicodeString FileName = GetAbsolutePath(AFileName, false);
   UnicodeString FileNameOnly = core::UnixExtractFileName(FileName);
   UnicodeString FilePath = core::UnixExtractFilePath(FileName);
   // end-user has right to expect that client current directory is really
@@ -3001,10 +3001,10 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
   {
     if (FLastCode == 220)
     {
-      FWelcomeMessage = FLastResponse->Text;
-      if (FTerminal->Configuration->ShowFtpWelcomeMessage)
+      FWelcomeMessage = FLastResponse->GetText();
+      if (FTerminal->GetConfiguration()->GetShowFtpWelcomeMessage())
       {
-        FTerminal->DisplayBanner(FWelcomeMessage->GetText());
+        FTerminal->DisplayBanner(FWelcomeMessage);
       }
     }
     else if (FLastCommand == PASS)
@@ -3044,13 +3044,13 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
         FLastResponse->Delete(0);
         FLastResponse->Delete(FLastResponse->GetCount() - 1);
         FFeatures->Assign(FLastResponse);
-        for (intptr_t Index = 0; Index < FFeatures->Count; ++Index)
+        for (intptr_t Index = 0; Index < FFeatures->GetCount(); ++Index)
         {
-          if (SameText(FFeatures->Strings[Index], L"SITE COPY"))
+          if (SameText(FFeatures->GetString(Index), "SITE COPY"))
           {
             FSupportsSiteCopy = true;
           }
-          else if (SameText(FFeatures->Strings[Index], L"SITE SYMLINK"))
+          else if (SameText(FFeatures->GetString(Index), "SITE SYMLINK"))
           {
             FSupportsSiteSymlink = true;
           }
@@ -3761,7 +3761,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
     // This can actually fail in real life,
     // when connected to server with case insensitive paths
     // Is empty when called from DoReadFile
-    assert(FFileList->Directory.IsEmpty() || core::UnixSamePath(GetAbsolutePath(FFileList->GetDirectory(), false), Path));
+    assert(FFileList->GetDirectory().IsEmpty() || core::UnixSamePath(GetAbsolutePath(FFileList->GetDirectory(), false), Path));
     USEDPARAM(Path);
 
     for (uintptr_t Index = 0; Index < Count; ++Index)
@@ -3790,7 +3790,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
           // ignore permissions errors with FTP
         }
 
-        File->HumanRights = Entry->HumanPerm;
+        File->SetHumanRights(Entry->HumanPerm);
 
         const wchar_t * Space = wcschr(Entry->OwnerGroup, L' ');
         if (Space != nullptr)
