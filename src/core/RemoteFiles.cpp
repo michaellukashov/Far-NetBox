@@ -836,6 +836,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
   COPY_FP(Type);
   COPY_FP(Selected);
   COPY_FP(CyclicLink);
+  COPY_FP(HumanRights);
 #undef COPY_FP
   if (Standalone && (!FFullFileName.IsEmpty() || (GetDirectory() != nullptr)))
   {
@@ -1031,7 +1032,9 @@ void TRemoteFile::SetRights(TRights * Value)
 
 UnicodeString TRemoteFile::GetRightsStr() const
 {
-  return FRights->GetUnknown() ? UnicodeString() : FRights->GetText();
+  // note that HumanRights is typically an empty string
+  // (with an exception of Perm-fact-only MLSD FTP listing)
+  return FRights->GetUnknown() ? GetHumanRights() : FRights->GetText();
 }
 
 void TRemoteFile::SetListingStr(const UnicodeString & Value)
