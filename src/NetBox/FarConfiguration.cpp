@@ -146,7 +146,7 @@ void TFarConfiguration::Load()
   {
     FForceInheritance = false;
   };
-  TGUIConfiguration::Load(this);
+  TGUIConfiguration::Load();
 }
 
 void TFarConfiguration::Save(bool All, bool Explicit)
