@@ -382,9 +382,8 @@
 "&Session ID re-use"
 "&Encryption:"
 "No encryption"
-"SSL/TLS Implicit encryption"
-"SSL Explicit encryption"
-"TLS Explicit encryption"
+"TLS/SSL Implicit encryption"
+"TLS/SSL Explicit encryption"
 "Post login &commands:"
 
 " WebDAV protocol options "
