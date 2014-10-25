@@ -997,6 +997,7 @@ public:
   const TSessionData * GetSession(intptr_t Index) const { return NB_STATIC_DOWNCAST_CONST(TSessionData, AtObject(Index)); }
   TSessionData * GetSession(intptr_t Index) { return NB_STATIC_DOWNCAST(TSessionData, AtObject(Index)); }
   const TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
+  TSessionData * GetDefaultSettings() { return FDefaultSettings; }
   const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;
   void SetDefaultSettings(const TSessionData * Value);
 

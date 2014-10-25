@@ -555,7 +555,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetSCPLsFullTime(static_cast<TAutoSwitch>(Storage->ReadInteger(L"SCPLsFullTime", GetSCPLsFullTime())));
   SetScp1Compatibility(Storage->ReadBool(L"Scp1Compatibility", GetScp1Compatibility()));
   SetTimeDifference(TDateTime(Storage->ReadFloat(L"TimeDifference", GetTimeDifference())));
-  SetTimeDifferenceAuto(Storage->ReadBool(L"TimeDifferenceAuto", (GetTimeDifference() == TDateTime()));
+  SetTimeDifferenceAuto(Storage->ReadBool(L"TimeDifferenceAuto", (GetTimeDifference() == TDateTime())));
   SetDeleteToRecycleBin(Storage->ReadBool(L"DeleteToRecycleBin", GetDeleteToRecycleBin()));
   SetOverwrittenToRecycleBin(Storage->ReadBool(L"OverwrittenToRecycleBin", GetOverwrittenToRecycleBin()));
   SetRecycleBinPath(Storage->ReadString(L"RecycleBinPath", GetRecycleBinPath()));
@@ -1436,15 +1436,15 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
           bool Match = false;
           // Comparison optimizations as this is called many times
           // e.g. when updating jumplist
-          if ((AData->Name.Length() == DecodedUrl.Length()) &&
-              SameText(AData->Name, DecodedUrl))
+          if ((AData->GetName().Length() == DecodedUrl.Length()) &&
+              SameText(AData->GetName(), DecodedUrl))
           {
             Match = true;
           }
-          else if ((AData->Name.Length() < DecodedUrl.Length()) &&
-                   (DecodedUrl[AData->Name.Length() + 1] == L'/') &&
+          else if ((AData->GetName().Length() < DecodedUrl.Length()) &&
+                   (DecodedUrl[AData->GetName().Length() + 1] == L'/') &&
                    // StrLIComp is an equivalent of SameText
-                   (StrLIComp(AData->Name.c_str(), DecodedUrl.c_str(), AData->Name.Length()) == 0))
+                   (StrLIComp(AData->GetName().c_str(), DecodedUrl.c_str(), AData->GetName().Length()) == 0))
           {
             Match = true;
           }
@@ -3220,12 +3220,12 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   std::unique_ptr<TList> Loaded(new TList());
   SCOPE_EXIT
   {
-    SetAutoSort(true);
+    AutoSort = true;
     AlphaSort();
   };
 
-  assert(GetAutoSort());
-  SetAutoSort(false);
+  assert(AutoSort);
+  AutoSort = false;
   bool WasEmpty = (GetCount() == 0);
 
   Storage->GetSubKeyNames(SubKeys.get());
