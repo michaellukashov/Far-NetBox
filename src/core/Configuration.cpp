@@ -160,11 +160,12 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
     Error(SNotImplemented, 3005);
     assert(false);
   }
-  if ((FOptionsStorage.get() != NULL) && (FOptionsStorage->Count > 0))
+
+  if ((FOptionsStorage.get() != NULL) && (FOptionsStorage->GetCount() > 0))
   {
     if (!SessionList)
     {
-      Result = new TOptionsStorage(FOptionsStorage.get(), ConfigurationSubKey, Result);
+//      Result = new TOptionsStorage(FOptionsStorage.get(), ConfigurationSubKey, Result);
     }
     else
     {
