@@ -1008,7 +1008,6 @@ public:
 private:
   TSessionData * FDefaultSettings;
   bool FReadOnly;
-  void SetDefaultSettings(TSessionData * Value);
   void DoSave(THierarchicalStorage * Storage, bool All,
     bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors);
   void DoSave(bool All, bool Explicit, bool RecryptPasswordOnly,
