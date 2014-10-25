@@ -14157,7 +14157,7 @@ webdav::error_t TWebDAVFileSystem::CreateStorage(
   THierarchicalStorage *& Storage)
 {
   Storage =
-    FTerminal->GetConfiguration()->CreateStorage(false);
+    FTerminal->GetConfiguration()->CreateConfigStorage();
   return WEBDAV_NO_ERROR;
 }
 
