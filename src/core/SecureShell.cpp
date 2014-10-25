@@ -534,6 +534,20 @@ bool TSecureShell::TryFtp()
   return Result;
 }
 
+UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uintptr_t CodePage) const
+{
+  UnicodeString Result;
+  if (GetUtfStrings())
+  {
+    Result = UnicodeString(UTF8String(Input.c_str()));
+  }
+  else
+  {
+    Result = UnicodeString(AnsiString(Input.c_str()));
+  }
+  return Result;
+}
+
 void TSecureShell::Init()
 {
   try
