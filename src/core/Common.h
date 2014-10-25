@@ -292,7 +292,7 @@ public:
 class TAutoFlag : public TValueRestorer<bool>
 {
 public:
-  __fastcall TAutoFlag(bool & Target) :
+  TAutoFlag(bool & Target) :
     TValueRestorer<bool>(Target)
   {
     assert(!Target);
