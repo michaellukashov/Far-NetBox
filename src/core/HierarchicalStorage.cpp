@@ -469,6 +469,11 @@ UnicodeString TRegistryStorage::GetSource() const
   return RootKeyToStr(FRegistry->GetRootKey()) + L"\\" + GetStorage();
 }
 
+UnicodeString TRegistryStorage::GetSource()
+{
+  return RootKeyToStr(FRegistry->GetRootKey()) + L"\\" + GetStorage();
+}
+
 void TRegistryStorage::SetAccessMode(TStorageAccessMode Value)
 {
   THierarchicalStorage::SetAccessMode(Value);

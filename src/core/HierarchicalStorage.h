@@ -44,8 +44,9 @@ public:
   virtual void WriteValues(TStrings * Strings, bool MaintainKeys = false);
   virtual void ClearValues();
   virtual bool DeleteValue(const UnicodeString & Name) = 0;
-
   virtual size_t BinaryDataSize(const UnicodeString & Name) = 0;
+  virtual UnicodeString GetSource() const = 0;
+  virtual UnicodeString GetSource() = 0;
 
   virtual bool ReadBool(const UnicodeString & Name, bool Default) = 0;
   virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default) = 0;
@@ -83,7 +84,6 @@ public:
   void SetMungeStringValues(bool Value) { FMungeStringValues = Value; }
 
   virtual void SetAccessMode(TStorageAccessMode Value);
-  virtual UnicodeString GetSource() const = 0;
 
 /*
   __property UnicodeString Storage  = { read=FStorage };
@@ -112,7 +112,6 @@ protected:
   static UnicodeString ExcludeTrailingBackslash(const UnicodeString & S);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) = 0;
   UnicodeString MungeKeyName(const UnicodeString & Key);
-  virtual UnicodeString GetSource() = 0;
 };
 
 class TRegistryStorage : public THierarchicalStorage
@@ -159,6 +158,7 @@ protected:
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate);
   virtual UnicodeString GetSource() const;
+  virtual UnicodeString GetSource();
 
 private:
   TRegistry * FRegistry;
