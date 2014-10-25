@@ -159,7 +159,7 @@ protected:
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
     TRemoteProperties * Properties, intptr_t AllowedChanges);
   bool ExecuteCommand(const UnicodeString & Command);
-  void TerminalCaptureLog(const UnicodeString & AddedLine, bool StdError);
+  void TerminalCaptureLog(const UnicodeString & AddedLine, TCaptureOutputType OutputEvent);
   bool CopyDialog(bool ToRemote, bool Move, const TStrings * AFileList,
     intptr_t Options,
     intptr_t CopyParamAttrs,
