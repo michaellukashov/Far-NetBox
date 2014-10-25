@@ -11,6 +11,7 @@
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "SecureShell.h"
+#include <StrUtils.hpp>
 
 #include <stdio.h>
 
@@ -42,7 +43,7 @@ inline void ThrowScpEror(Exception * Exception, const UnicodeString & Message)
   throw EScp(Exception, Message);
 }
 
-#define MaxShellCommand fsAnyCommand
+#define MaxShellCommand fsLang
 #define ShellCommandCount MaxShellCommand + 1
 #define MaxCommandLen 40
 struct TCommandType
@@ -142,7 +143,8 @@ const TCommandType DefaultCommandSet[ShellCommandCount] =
   /*Unalias*/             {  0,  0, F, F, F, L"unalias \"%s\"" /* alias */ },
   /*CreateLink*/          {  0,  0, T, F, F, L"ln %s \"%s\" \"%s\"" /*symbolic (-s), filename, point to*/},
   /*CopyFile*/            {  0,  0, T, F, F, L"cp -p -r -f \"%s\" \"%s\"" /* file/directory, target name*/},
-  /*AnyCommand*/          {  0, -1, T, T, F, L"%s" }
+  /*AnyCommand*/          {  0, -1, T, T, F, L"%s" },
+  /*Lang*/                {  0,  1, F, F, F, L"echo $LANG"},
 };
 #undef F
 #undef T
@@ -692,6 +694,11 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
     bool WrongReturnCode =
       (GetReturnCode() > 1) || (GetReturnCode() == 1 && !(Params & coIgnoreWarnings));
 
+    if (FOnCaptureOutput != NULL)
+    {
+      FOnCaptureOutput(::Int64ToStr(ReturnCode), cotExitCode);
+    }
+
     if ((Params & coOnlyReturnCode) && WrongReturnCode)
     {
       FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, GetReturnCode()));
@@ -806,10 +813,61 @@ void TSCPFileSystem::DoStartup()
     FTerminal->FatalError(&E, L"");
   }
 
-#define COND_OPER(OPER) if (Data->Get##OPER()) OPER()
+  // Needs to be done before UnsetNationalVars()
+  DetectUtf();
+
+  #define COND_OPER(OPER) if (Data->Get##OPER()) OPER()
   COND_OPER(ClearAliases);
   COND_OPER(UnsetNationalVars);
 #undef COND_OPER
+}
+
+void TSCPFileSystem::DetectUtf()
+{
+  const TSessionData * Data = FTerminal->GetSessionData();
+  switch (FTerminal->SessionData->NotUtf)
+  {
+    case asOn:
+      FSecureShell->UtfStrings = false; // noop
+      break;
+
+    case asOff:
+      FSecureShell->UtfStrings = true;
+      break;
+
+    default:
+      FAIL;
+    case asAuto:
+      FSecureShell->UtfStrings = false; // noop
+      try
+      {
+        ExecCommand(fsLang, NULL, 0, false);
+
+        if ((FOutput->Count >= 1) &&
+            ContainsText(FOutput->Strings[0], L"UTF-8"))
+        {
+          FSecureShell->UtfStrings = true;
+        }
+      }
+      catch (Exception & E)
+      {
+        // ignore non-fatal errors
+        if (!FTerminal->Active)
+        {
+          throw;
+        }
+      }
+      break;
+  }
+
+  if (FSecureShell->UtfStrings)
+  {
+    FTerminal->LogEvent(L"We will use UTF-8");
+  }
+  else
+  {
+    FTerminal->LogEvent(L"We will not use UTF-8");
+  }
 }
 
 void TSCPFileSystem::SkipStartupMessage()
@@ -1182,7 +1240,28 @@ void TSCPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
 void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   const UnicodeString & NewName)
 {
-  ExecCommand2(fsCopyFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
+  // ExecCommand2(fsCopyFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
+  UnicodeString DelimitedFileName = DelimitStr(FileName);
+  UnicodeString DelimitedNewName = DelimitStr(NewName);
+  const UnicodeString AdditionalSwitches = L"-T";
+  try
+  {
+    ExecCommand2(fsCopyFile, 0, ARRAYOFCONST((AdditionalSwitches, DelimitedFileName, DelimitedNewName)));
+  }
+  catch (Exception & E)
+  {
+    if (FTerminal->Active)
+    {
+      // The -T is GNU switch and may not be available on all platforms.
+      // http://lists.gnu.org/archive/html/bug-coreutils/2004-07/msg00000.html
+      FTerminal->LogEvent(FORMAT(L"Attempt with %s failed, trying without", (AdditionalSwitches)));
+      ExecCommand2(fsCopyFile, 0, ARRAYOFCONST((L"", DelimitedFileName, DelimitedNewName)));
+    }
+    else
+    {
+      throw;
+    }
+  }
 }
 
 void TSCPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
@@ -1313,16 +1392,18 @@ void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   }
 }
 
-void TSCPFileSystem::CaptureOutput(const UnicodeString & AddedLine, bool StdError)
+void TSCPFileSystem::CaptureOutput(const UnicodeString & AddedLine, TCaptureOutputType OutputType)
 {
   intptr_t ReturnCode;
   UnicodeString Line = AddedLine;
-  if (StdError ||
-      !RemoveLastLine(Line, ReturnCode, UnicodeString()) ||
+  // TSecureShell never uses cotExitCode
+  assert((OutputType == cotOutput) || (OutputType == cotError));
+  if ((OutputType == cotError) || ALWAYS_FALSE(OutputType == cotExitCode) ||
+      !RemoveLastLine(Line, ReturnCode) ||
       !Line.IsEmpty())
   {
     assert(FOnCaptureOutput != nullptr);
-    FOnCaptureOutput(Line, StdError);
+    FOnCaptureOutput(Line, OutputType);
   }
 }
 
@@ -2678,4 +2759,9 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
       }
     }
   }
+}
+
+void TSCPFileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)
+{
+  // NOOP
 }
