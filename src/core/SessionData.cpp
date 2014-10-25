@@ -1424,7 +1424,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     if (StoredSessions != nullptr)
     {
        // this can be optimized as the list is sorted
-      for (Integer Index = 0; Index < StoredSessions->GetCount() + StoredSessions->GetHiddenCount(); ++Index)
+      for (Integer Index = 0; Index < StoredSessions->GetCountIncludingHidden(); ++Index)
       {
         TSessionData * AData = NB_STATIC_DOWNCAST(TSessionData, StoredSessions->GetItem(Index));
         if (true) // !AData->GetIsWorkspace() &&
@@ -3365,7 +3365,7 @@ void TStoredSessionList::DoSave(bool All, bool Explicit,
   bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors)
 {
   bool SessionList = true;
-  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScptorage(SessionList));
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
   Storage->SetAccessMode(smReadWrite);
   Storage->SetExplicit(Explicit);
   if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
