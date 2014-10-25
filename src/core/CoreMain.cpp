@@ -127,8 +127,8 @@ bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
 void CoreLoad()
 {
   bool SessionList = true;
-  std::unique_ptr<THierarchicalStorage> SessionsStorage(Configuration->CreateScpStorage(SessionList));
-  THierarchicalStorage * ConfigStorage;
+  std::unique_ptr<THierarchicalStorage> SessionsStorage(Configuration->CreateConfigStorage(SessionList));
+  THierarchicalStorage * ConfigStorage = nullptr;
   std::unique_ptr<THierarchicalStorage> ConfigStorageAuto;
   if (!SessionList)
   {
@@ -137,7 +137,7 @@ void CoreLoad()
   }
   else
   {
-    ConfigStorageAuto.reset(Configuration->CreateConfigStorage());
+    ConfigStorageAuto.reset(GetConfiguration()->CreateConfigStorage());
     ConfigStorage = ConfigStorageAuto.get();
   }
 
@@ -145,7 +145,7 @@ void CoreLoad()
 
   try
   {
-    GetConfiguration->Load(ConfigStorage);
+    GetConfiguration()->Load(ConfigStorage);
   }
   catch (Exception & E)
   {
