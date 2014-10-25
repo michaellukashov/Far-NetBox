@@ -225,13 +225,13 @@ bool TFileZillaIntf::List(const wchar_t * APath)
 }
 //---------------------------------------------------------------------------
 #ifdef MPEXT
-bool TFileZillaIntf::ListFile(const wchar_t * AFullFileName)
+bool TFileZillaIntf::ListFile(const wchar_t * AFullFileName, const wchar_t * APath)
 {
   ASSERT(FFileZillaApi != NULL);
   CString FileName(AFullFileName);
-  CServerPath Path(FServer->nServerType);
-  Path.SetPath(FileName, TRUE);
-  return Check(FFileZillaApi->ListFile(Path, FileName), L"listfile");
+  CServerPath Path(APath); // FServer->nServerType);
+  // Path.SetPath(FileName, TRUE);
+  return Check(FFileZillaApi->ListFile(FileName, Path), L"listfile");
 }
 #endif
 //---------------------------------------------------------------------------

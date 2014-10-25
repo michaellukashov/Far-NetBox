@@ -481,7 +481,7 @@ int CFileZillaApi::List(const CServerPath& parent, CString dirname, int nListMod
 }
 
 #ifdef MPEXT
-int CFileZillaApi::ListFile(const CServerPath& path, const CString& fileName)
+int CFileZillaApi::ListFile(const CString& fileName, const CServerPath& path)
 {
 	//Check if call allowed
 	if (!m_bInitialized)

@@ -28,11 +28,12 @@ struct TRemoteFileTime
 struct TListDataEntry
 {
   TRemoteFileTime Time;
+  __int64 Size;
+  const wchar_t * LinkTarget;
   const wchar_t * Name;
   const wchar_t * Permissions;
+  const wchar_t * HumanPerm;
   const wchar_t * OwnerGroup;
-  const wchar_t * LinkTarget;
-  __int64 Size;
   bool Dir;
   bool Link;
 };
@@ -179,7 +180,7 @@ public:
   bool List();
   bool List(const wchar_t * Path);
 #ifdef MPEXT
-  bool ListFile(const wchar_t * FullFileName);
+  bool ListFile(const wchar_t * FullFileName, const wchar_t * APath);
 #endif
 
   bool CustomCommand(const wchar_t * Command);
