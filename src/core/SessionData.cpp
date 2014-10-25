@@ -168,6 +168,7 @@ void TSessionData::Default()
   SetIgnoreLsWarnings(true);
   SetScp1Compatibility(false);
   SetTimeDifference(TDateTime(0));
+  SetTimeDifferenceAuto(true);
   SetSCPLsFullTime(asAuto);
   SetNotUtf(asOn); // asAuto
 
@@ -204,7 +205,7 @@ void TSessionData::Default()
   SetFtpPingType(ptDummyCommand);
   SetFtpTransferActiveImmediately(false);
   SetFtps(ftpsNone);
-  SetMinTlsVersion(ssl2);
+  SetMinTlsVersion(tls10);
   SetMaxTlsVersion(tls12);
   SetFtpListAll(asAuto);
   SetFtpDupFF(false);
@@ -296,6 +297,7 @@ void TSessionData::NonPersistant()
   PROPERTY(SCPLsFullTime); \
   \
   PROPERTY(TimeDifference); \
+  PROPERTY(TimeDifferenceAuto); \
   PROPERTY(TcpNoDelay); \
   PROPERTY(SendBuf); \
   PROPERTY(SshSimple); \
@@ -373,39 +375,43 @@ void TSessionData::Assign(const TPersistent * Source)
   if (Source && (NB_STATIC_DOWNCAST_CONST(TSessionData, Source) != nullptr))
   {
     TSessionData * SourceData = NB_STATIC_DOWNCAST(TSessionData, const_cast<TPersistent *>(Source));
-
-#define PROPERTY(P) Set ## P(SourceData->Get ## P())
-    PROPERTY(Name);
-    BASE_PROPERTIES;
-    ADVANCED_PROPERTIES;
-    //META_PROPERTIES;
-#undef PROPERTY
-
-    SetUserName(SourceData->SessionGetUserName());
-    for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FBugs)); ++Index)
-    {
-      // PROPERTY(Bug[(TSshBug)Index]);
-      SetBug(static_cast<TSshBug>(Index),
-          SourceData->GetBug(static_cast<TSshBug>(Index)));
-    }
-    for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FSFTPBugs)); ++Index)
-    {
-      // PROPERTY(SFTPBug[(TSftpBug)Index]);
-      SetSFTPBug(static_cast<TSftpBug>(Index),
-          SourceData->GetSFTPBug(static_cast<TSftpBug>(Index)));
-    }
-
-    FOverrideCachedHostKey = SourceData->GetOverrideCachedHostKey();
-    FModified = SourceData->GetModified();
+    CopyData(SourceData);
     FSource = SourceData->FSource;
-    FSaveOnly = SourceData->GetSaveOnly();
-
-    FNumberOfRetries = SourceData->FNumberOfRetries;
   }
   else
   {
     TNamedObject::Assign(Source);
   }
+}
+
+void TSessionData::CopyData(TSessionData * SourceData)
+{
+#define PROPERTY(P) Set ## P(SourceData->Get ## P())
+  PROPERTY(Name);
+  BASE_PROPERTIES;
+  ADVANCED_PROPERTIES;
+  //META_PROPERTIES;
+#undef PROPERTY
+
+  SetUserName(SourceData->SessionGetUserName());
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FBugs)); ++Index)
+  {
+    // PROPERTY(Bug[(TSshBug)Index]);
+    SetBug(static_cast<TSshBug>(Index),
+      SourceData->GetBug(static_cast<TSshBug>(Index)));
+  }
+  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FSFTPBugs)); ++Index)
+  {
+    // PROPERTY(SFTPBug[(TSftpBug)Index]);
+    SetSFTPBug(static_cast<TSftpBug>(Index),
+      SourceData->GetSFTPBug(static_cast<TSftpBug>(Index)));
+  }
+
+  FOverrideCachedHostKey = SourceData->GetOverrideCachedHostKey();
+  FModified = SourceData->GetModified();
+  FSource = SourceData->FSource;
+  FSaveOnly = SourceData->GetSaveOnly();
+  FNumberOfRetries = SourceData->FNumberOfRetries;
 }
 
 bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const
@@ -549,6 +555,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetSCPLsFullTime(static_cast<TAutoSwitch>(Storage->ReadInteger(L"SCPLsFullTime", GetSCPLsFullTime())));
   SetScp1Compatibility(Storage->ReadBool(L"Scp1Compatibility", GetScp1Compatibility()));
   SetTimeDifference(TDateTime(Storage->ReadFloat(L"TimeDifference", GetTimeDifference())));
+  SetTimeDifferenceAuto(Storage->ReadBool(L"TimeDifferenceAuto", (GetTimeDifference() == TDateTime()));
   SetDeleteToRecycleBin(Storage->ReadBool(L"DeleteToRecycleBin", GetDeleteToRecycleBin()));
   SetOverwrittenToRecycleBin(Storage->ReadBool(L"OverwrittenToRecycleBin", GetOverwrittenToRecycleBin()));
   SetRecycleBinPath(Storage->ReadString(L"RecycleBinPath", GetRecycleBinPath()));
@@ -863,7 +870,17 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA(Bool, IgnoreLsWarnings);
       WRITE_DATA(Integer, SCPLsFullTime);
       WRITE_DATA(Bool, Scp1Compatibility);
-      WRITE_DATA(Float, TimeDifference);
+       if (FTimeDifferenceAuto)
+      {
+        // Have to delete it as TimeDifferenceAuto is not saved when enabled,
+        // but the default is derived from value of TimeDifference.
+        Storage->DeleteValue(L"TimeDifference");
+      }
+      else
+      {
+        WRITE_DATA(Float, TimeDifference);
+      }
+      WRITE_DATA(Bool, TimeDifferenceAuto);
       WRITE_DATA(Bool, DeleteToRecycleBin);
       WRITE_DATA(Bool, OverwrittenToRecycleBin);
       WRITE_DATA(String, RecycleBinPath);
@@ -1093,6 +1110,7 @@ void TSessionData::ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & 
   int DefaultTimeDifference = TimeToSeconds(TimeDifference) / MSecsPerSec;
   TimeDifference =
     (double(ReadXmlNode(Node, L"TimezoneOffset", DefaultTimeDifference) / SecsPerDay));
+  TimeDifferenceAuto = (TimeDifference == TDateTime());
 
   UnicodeString PasvMode = ReadXmlNode(Node, L"PasvMode", L"");
   if (SameText(PasvMode, L"MODE_PASSIVE"))
@@ -1256,7 +1274,8 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
 
 void TSessionData::Remove()
 {
-  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
+  bool SessionList = true;
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
   Storage->SetExplicit(true);
   if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false))
   {
@@ -1404,15 +1423,37 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     // When using to paste URL on Login dialog, we do not want to lookup the stored sites
     if (StoredSessions != nullptr)
     {
+       // this can be optimized as the list is sorted
       for (Integer Index = 0; Index < StoredSessions->GetCount() + StoredSessions->GetHiddenCount(); ++Index)
       {
         TSessionData * AData = NB_STATIC_DOWNCAST(TSessionData, StoredSessions->GetItem(Index));
-        if (// !AData->GetIsWorkspace() &&
-            ::AnsiSameText(AData->GetName(), DecodedUrl) ||
-            ::AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
+        if (true) // !AData->GetIsWorkspace() &&
+            // ::AnsiSameText(AData->GetName(), DecodedUrl) ||
+            // ::AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
         {
-          Data = AData;
-          break;
+            // Data = AData;
+            // break;
+          bool Match = false;
+          // Comparison optimizations as this is called many times
+          // e.g. when updating jumplist
+          if ((AData->Name.Length() == DecodedUrl.Length()) &&
+              SameText(AData->Name, DecodedUrl))
+          {
+            Match = true;
+          }
+          else if ((AData->Name.Length() < DecodedUrl.Length()) &&
+                   (DecodedUrl[AData->Name.Length() + 1] == L'/') &&
+                   // StrLIComp is an equivalent of SameText
+                   (StrLIComp(AData->Name.c_str(), DecodedUrl.c_str(), AData->Name.Length()) == 0))
+          {
+            Match = true;
+          }
+
+          if (Match)
+          {
+            Data = AData;
+            break;
+          }
         }
       }
     }
@@ -1448,7 +1489,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       // This happens when pasting URL on Login dialog
       if (StoredSessions != nullptr)
       {
-        Assign(StoredSessions->GetDefaultSettings());
+        CopyData(StoredSessions->GetDefaultSettings());
       }
       SetName(L"");
 
@@ -1580,7 +1621,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     // This happens when pasting URL on Login dialog
     if (StoredSessions != nullptr)
     {
-      Assign(StoredSessions->GetDefaultSettings());
+      CopyData(StoredSessions->GetDefaultSettings());
     }
 
     DefaultsOnly = true;
@@ -2356,6 +2397,11 @@ UnicodeString TSessionData::GetSessionUrl() const
 void TSessionData::SetTimeDifference(const TDateTime & Value)
 {
   SET_SESSION_PROPERTY(TimeDifference);
+}
+
+void TSessionData::SetTimeDifferenceAuto(bool Value)
+{
+  SET_SESSION_PROPERTY(TimeDifferenceAuto);
 }
 
 void TSessionData::SetLocalDirectory(const UnicodeString & Value)
@@ -3172,10 +3218,22 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
 {
   std::unique_ptr<TStringList> SubKeys(new TStringList());
   std::unique_ptr<TList> Loaded(new TList());
+  SCOPE_EXIT
+  {
+    SetAutoSort(true);
+    AlphaSort();
+  };
+
+  assert(GetAutoSort());
+  SetAutoSort(false);
+  bool WasEmpty = (GetCount() == 0);
+
   Storage->GetSubKeyNames(SubKeys.get());
+
   for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
   {
     UnicodeString SessionName = SubKeys->GetString(Index);
+
     bool ValidName = true;
     try
     {
@@ -3185,6 +3243,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
     {
       ValidName = false;
     }
+
     if (ValidName)
     {
       TSessionData * SessionData = nullptr;
@@ -3194,7 +3253,17 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
       }
       else
       {
-        SessionData = NB_STATIC_DOWNCAST(TSessionData, FindByName(SessionName));
+        // if the list was empty before loading, do not waste time trying to
+        // find existing sites to overwrite (we rely on underlying storage
+        // to secure uniqueness of the key names)
+        if (WasEmpty)
+        {
+          SessionData = NULL;
+        }
+        else
+        {
+          SessionData = NB_STATIC_DOWNCAST(TSessionData, FindByName(SessionName));
+        }
       }
 
       if ((SessionData != FDefaultSettings) || !UseDefaults)
@@ -3204,7 +3273,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
           SessionData = new TSessionData(L"");
           if (UseDefaults)
           {
-            SessionData->Assign(GetDefaultSettings());
+            SessionData->CopyData(GetDefaultSettings());
           }
           SessionData->SetName(SessionName);
           Add(SessionData);
@@ -3234,7 +3303,8 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
 
 void TStoredSessionList::Load()
 {
-  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
+  bool SessionList = true;
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
   if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
   {
     Load(Storage.get());
@@ -3263,7 +3333,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
 {
   std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults.get());
-  for (intptr_t Index = 0; Index < GetCount() + GetHiddenCount(); ++Index)
+  for (intptr_t Index = 0; Index < GetCountIncludingHidden(); ++Index)
   {
     TSessionData * SessionData = NB_STATIC_DOWNCAST(TSessionData, GetItem(Index));
     try
@@ -3294,7 +3364,8 @@ void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 void TStoredSessionList::DoSave(bool All, bool Explicit,
   bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors)
 {
-  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(true));
+  bool SessionList = true;
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScptorage(SessionList));
   Storage->SetAccessMode(smReadWrite);
   Storage->SetExplicit(Explicit);
   if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
@@ -3318,7 +3389,7 @@ void TStoredSessionList::RecryptPasswords(TStrings * RecryptPasswordErrors)
 void TStoredSessionList::Saved()
 {
   FDefaultSettings->SetModified(false);
-  for (intptr_t Index = 0; Index < GetCount() + GetHiddenCount(); ++Index)
+  for (intptr_t Index = 0; Index < GetCountIncludingHidden(); ++Index)
   {
     (NB_STATIC_DOWNCAST(TSessionData, GetItem(Index))->SetModified(false));
   }
@@ -3332,7 +3403,7 @@ void TStoredSessionList::Saved()
     if (ChildNode->NodeName == L"Server")
     {
       std::unique_ptr<TSessionData> SessionData(new TSessionData(L""));
-      SessionData->Assign(DefaultSettings);
+      SessionData->CopyData(DefaultSettings);
       SessionData->ImportFromFilezilla(ChildNode, Path);
       Add(SessionData.release());
     }
@@ -3462,6 +3533,7 @@ void TStoredSessionList::UpdateStaticUsage()
   int Advanced = 0;
   int Color = 0;
   int Note = 0;
+  int Tunnel = 0;
   bool Folders = false;
   bool Workspaces = false;
   std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
@@ -3533,6 +3605,11 @@ void TStoredSessionList::UpdateStaticUsage()
         Advanced++;
       }
 
+      if (Data->Tunnel)
+      {
+        Tunnel++;
+      }
+
       if (!Data->FolderName.IsEmpty())
       {
         Folders = true;
@@ -3552,6 +3629,7 @@ void TStoredSessionList::UpdateStaticUsage()
   Configuration->Usage->Set(L"StoredSessionsCountAdvanced", Advanced);
   DifferentAdvancedProperties->Delimiter = L',';
   Configuration->Usage->Set(L"StoredSessionsAdvancedSettings", DifferentAdvancedProperties->DelimitedText);
+  Configuration->Usage->Set(L"StoredSessionsCountTunnel", Tunnel);
 
   // actually default might be true, see below for when the default is actually used
   bool CustomDefaultStoredSession = false;
