@@ -849,7 +849,7 @@ void TSCPFileSystem::DetectUtf()
           FSecureShell->SetUtfStrings(true);
         }
       }
-      catch (Exception & E)
+      catch (Exception &)
       {
         // ignore non-fatal errors
         if (!FTerminal->GetActive())
@@ -1248,7 +1248,7 @@ void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   {
     ExecCommand2(fsCopyFile, 0, AdditionalSwitches.c_str(), DelimitedFileName.c_str(), DelimitedNewName.c_str());
   }
-  catch (Exception & E)
+  catch (Exception &)
   {
     if (FTerminal->GetActive())
     {
