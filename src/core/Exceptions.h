@@ -17,7 +17,8 @@ enum TOnceDoneOperation
 {
   odoIdle,
   odoDisconnect,
-  odoShutDown
+  odoSuspend,
+  odoShutDown,
 };
 
 class ExtException : public Exception
@@ -82,6 +83,13 @@ public:
   explicit EOSExtException();
   explicit EOSExtException(const UnicodeString & Msg);
   explicit EOSExtException(const UnicodeString & Msg, int LastError);
+};
+
+class ECRTExtException : public EOSExtException
+{
+public:
+  ECRTExtException();
+  ECRTExtException(const UnicodeString & Msg);
 };
 
 class EFatal : public ExtException

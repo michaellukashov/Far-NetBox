@@ -14,7 +14,7 @@
 #define FILE_MASKS_DELIMITERS L";,"
 #define ALL_FILE_MASKS_DELIMITERS L";,|"
 #define DIRECTORY_MASK_DELIMITERS L"/\\"
-#define FILE_MASKS_DELIMITER_STR L'; '
+#define FILE_MASKS_DELIMITER_STR L"; "
 
 EFileMasksException::EFileMasksException(
   const UnicodeString & AMessage, intptr_t AErrorStart, intptr_t AErrorLen) :

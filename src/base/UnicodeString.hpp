@@ -15,16 +15,16 @@ class UTF8String
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UTF8String() {}
-  explicit UTF8String(const UTF8String & rht);
+  UTF8String(const UTF8String & rht);
   explicit UTF8String(const UnicodeString & Str);
-  UTF8String(const wchar_t * Str);
-  UTF8String(const wchar_t * Str, intptr_t Size);
-  UTF8String(const char * Str, intptr_t Size);
+  explicit UTF8String(const wchar_t * Str);
+  explicit UTF8String(const wchar_t * Str, intptr_t Size);
+  explicit UTF8String(const char * Str, intptr_t Size);
 
   ~UTF8String() {}
 
-  operator const wchar_t * () const { return c_str(); }
-  const wchar_t * c_str() const { return Data.c_str(); }
+  operator const char * () const { return c_str(); }
+  const char * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.size(); }
   intptr_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
@@ -33,7 +33,7 @@ public:
   UTF8String & Insert(const wchar_t * Str, intptr_t Pos);
   UTF8String SubString(intptr_t Pos, intptr_t Len = -1) const;
 
-  intptr_t Pos(wchar_t Ch) const;
+  intptr_t Pos(char Ch) const;
 
 public:
   UTF8String & operator=(const UnicodeString & StrCopy);
@@ -57,8 +57,8 @@ private:
   void Init(const wchar_t * Str, intptr_t Length);
   void Init(const char * Str, intptr_t Length);
 
-  typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, custom_nballocator_t<wchar_t> > wstring_t;
-  wstring_t Data;
+  typedef std::basic_string<char, std::char_traits<char>, custom_nballocator_t<char> > string_t;
+  string_t Data;
 };
 
 class UnicodeString

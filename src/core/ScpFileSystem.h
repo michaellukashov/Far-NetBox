@@ -72,6 +72,7 @@ public:
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
   virtual bool GetStoredCredentialsTried() const;
   virtual UnicodeString FSGetUserName() const;
+  virtual void GetSupportedChecksumAlgs(TStrings * Algs);
 
 protected:
   TStrings * GetOutput() const { return FOutput; }
@@ -91,6 +92,7 @@ private:
   int FLsFullTime;
   TCaptureOutputEvent FOnCaptureOutput;
 
+  void DetectUtf();
   void ClearAliases();
   void ClearAlias(const UnicodeString & Alias);
   void CustomReadFile(const UnicodeString & AFileName,
@@ -125,7 +127,7 @@ private:
   void UnsetNationalVars();
   TRemoteFile * CreateRemoteFile(const UnicodeString & ListingStr,
     TRemoteFile * LinkedByFile = nullptr);
-  void CaptureOutput(const UnicodeString & AddedLine, bool StdError);
+  void CaptureOutput(const UnicodeString & AddedLine, TCaptureOutputType OutputType);
   void ChangeFileToken(const UnicodeString & DelimitedName,
     const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr);
   uintptr_t ConfirmOverwrite(
@@ -134,6 +136,6 @@ private:
     intptr_t Params, TFileOperationProgressType * OperationProgress);
 
   static bool RemoveLastLine(UnicodeString & Line,
-    intptr_t & ReturnCode, const UnicodeString & ALastLine);
+    intptr_t & ReturnCode, const UnicodeString & ALastLine = L"");
 };
 

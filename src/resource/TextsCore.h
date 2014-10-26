@@ -389,8 +389,8 @@
 #define SCRIPT_SYNCHRONIZE_NODIFFERENCE 509
 #define SPEED_UNLIMITED         510
 #define FTPS_IMPLICIT           511
-#define FTPS_EXPLICIT_SSL       512
-#define FTPS_EXPLICIT_TLS       513
+#define FTPS_EXPLICIT           512
+//#define FTPS_EXPLICIT_TLS       513
 #define SCRIPT_ECHO_DESC        514
 #define SCRIPT_STAT_DESC        515
 #define HOSTKEY                 516

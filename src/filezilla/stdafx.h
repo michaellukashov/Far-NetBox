@@ -55,7 +55,7 @@ class CFileFix;
 //---------------------------------------------------------------------------
 #define _strlwr strlwr
 #ifndef USEDPARAM
-#define USEDPARAM(p) (void)(p);
+#define USEDPARAM(p) (void)(p)
 #endif
 //---------------------------------------------------------------------------
 

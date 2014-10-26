@@ -17,39 +17,6 @@
 
 TStoredSessionList * StoredSessions = nullptr;
 
-TConfiguration * GetConfiguration()
-{
-  static TConfiguration * Configuration = nullptr;
-  if (Configuration == nullptr)
-  {
-    // configuration needs to be created and loaded before putty is initialized,
-    // so that random seed path is known
-    Configuration = CreateConfiguration();
-    try
-    {
-      Configuration->Load();
-    }
-    catch (Exception & E)
-    {
-      ShowExtendedException(&E);
-    }
-
-    PuttyInitialize();
-  }
-  return Configuration;
-}
-
-void DeleteConfiguration()
-{
-  static bool ConfigurationDeleted = false;
-  if (!ConfigurationDeleted)
-  {
-    TConfiguration * Conf = GetConfiguration();
-    SAFE_DESTROY(Conf);
-    ConfigurationDeleted = true;
-  }
-}
-
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0),
   OnClick(nullptr),
@@ -95,7 +62,7 @@ void TQueryParams::Assign(const TQueryParams & Source)
   HelpKeyword = Source.HelpKeyword;
 }
 
-TQueryParams &TQueryParams::operator=(const TQueryParams & other)
+TQueryParams & TQueryParams::operator=(const TQueryParams & other)
 {
   Assign(other);
   return *this;
@@ -124,12 +91,83 @@ bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
     (Kind != pkPassphrase);
 }
 
+TConfiguration * GetConfiguration()
+{
+  static TConfiguration * Configuration = nullptr;
+  if (Configuration == nullptr)
+  {
+    Configuration = CreateConfiguration();
+  }
+  return Configuration;
+}
+
+void DeleteConfiguration()
+{
+  static bool ConfigurationDeleted = false;
+  if (!ConfigurationDeleted)
+  {
+    TConfiguration * Conf = GetConfiguration();
+    SAFE_DESTROY(Conf);
+    ConfigurationDeleted = true;
+  }
+}
+
+void CoreLoad()
+{
+  bool SessionList = true;
+  std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateScpStorage(SessionList));
+  THierarchicalStorage * ConfigStorage = nullptr;
+  std::unique_ptr<THierarchicalStorage> ConfigStorageAuto;
+  if (!SessionList)
+  {
+    // can reuse this for configuration
+    ConfigStorage = SessionsStorage.get();
+  }
+  else
+  {
+    ConfigStorageAuto.reset(GetConfiguration()->CreateConfigStorage());
+    ConfigStorage = ConfigStorageAuto.get();
+  }
+
+  assert(GetConfiguration() != nullptr);
+
+  try
+  {
+    GetConfiguration()->Load(ConfigStorage);
+  }
+  catch (Exception & E)
+  {
+    ShowExtendedException(&E);
+  }
+
+  // should be noop, unless exception occured above
+  ConfigStorage->CloseAll();
+
+  StoredSessions = new TStoredSessionList();
+
+  try
+  {
+    if (SessionsStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false))
+    {
+      StoredSessions->Load(SessionsStorage.get());
+    }
+  }
+  catch (Exception & E)
+  {
+    ShowExtendedException(&E);
+  }
+}
+
 void CoreInitialize()
 {
   Randomize();
   CryptographyInitialize();
 
+  // we do not expect configuration re-creation
   assert(GetConfiguration() != nullptr);
+  // configuration needs to be created and loaded before putty is initialized,
+  // so that random seed path is known
+//  Configuration = CreateConfiguration();
 
   PuttyInitialize();
   #ifndef NO_FILEZILLA
@@ -137,16 +175,7 @@ void CoreInitialize()
   #endif
   NeonInitialize();
 
-  StoredSessions = new TStoredSessionList();
-
-  try
-  {
-    StoredSessions->Load();
-  }
-  catch (Exception & E)
-  {
-    ShowExtendedException(&E);
-  }
+  CoreLoad();
 }
 
 void CoreFinalize()

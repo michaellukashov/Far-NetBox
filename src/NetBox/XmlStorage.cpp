@@ -107,11 +107,6 @@ bool TXmlStorage::Copy(TXmlStorage * /* Storage */)
   return Result;
 }
 
-UnicodeString TXmlStorage::GetSource() const
-{
-  return GetStorage();
-}
-
 void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
 {
   THierarchicalStorage::SetAccessMode(Value);
@@ -325,6 +320,16 @@ size_t TXmlStorage::BinaryDataSize(const UnicodeString & /* Name */)
   Error(SNotImplemented, 3026);
   size_t Result = 0; // FRegistry->GetDataSize(Name);
   return Result;
+}
+
+UnicodeString TXmlStorage::GetSource() const
+{
+  return GetStorage();
+}
+
+UnicodeString TXmlStorage::GetSource()
+{
+  return GetStorage();
 }
 
 bool TXmlStorage::ReadBool(const UnicodeString & Name, bool Default)

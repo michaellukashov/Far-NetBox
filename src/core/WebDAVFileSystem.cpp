@@ -12162,6 +12162,11 @@ UnicodeString TWebDAVFileSystem::FSGetUserName() const
   return FUserName;
 }
 
+void TWebDAVFileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)
+{
+  // NOOP
+}
+
 void TWebDAVFileSystem::Idle()
 {
   // TODO: Keep session alive
@@ -14152,7 +14157,7 @@ webdav::error_t TWebDAVFileSystem::CreateStorage(
   THierarchicalStorage *& Storage)
 {
   Storage =
-    FTerminal->GetConfiguration()->CreateStorage(false);
+    FTerminal->GetConfiguration()->CreateConfigStorage();
   return WEBDAV_NO_ERROR;
 }
 

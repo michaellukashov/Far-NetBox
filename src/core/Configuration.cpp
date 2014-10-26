@@ -54,18 +54,18 @@ TConfiguration::TConfiguration() :
   // FUsage = new TUsage(this);
   // FDefaultCollectUsage = false;
 
-  wchar_t Buf[10];
   UnicodeString RandomSeedPath;
-  if (::GetEnvironmentVariable(L"APPDATA", Buf, _countof(Buf)) > 0)
+  UnicodeString Str = ::ExpandEnvironmentVariables("APPDATA");
+  if (!Str.IsEmpty())
   {
     RandomSeedPath = L"%APPDATA%";
   }
   else
   {
-    RandomSeedPath = GetShellFolderPath(CSIDL_LOCAL_APPDATA);
+    RandomSeedPath = ::GetShellFolderPath(CSIDL_LOCAL_APPDATA);
     if (RandomSeedPath.IsEmpty())
     {
-      RandomSeedPath = GetShellFolderPath(CSIDL_APPDATA);
+      RandomSeedPath = ::GetShellFolderPath(CSIDL_APPDATA);
     }
   }
 
@@ -143,7 +143,13 @@ void TConfiguration::UpdateStaticUsage()
   StoredSessions->UpdateStaticUsage();
 }
 
-THierarchicalStorage * TConfiguration::CreateStorage(bool /*SessionList*/)
+THierarchicalStorage * TConfiguration::CreateConfigStorage()
+{
+  bool SessionList = false;
+  return CreateScpStorage(SessionList);
+}
+
+THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
 {
   THierarchicalStorage * Result = nullptr;
   if (GetStorage() == stRegistry)
@@ -155,6 +161,26 @@ THierarchicalStorage * TConfiguration::CreateStorage(bool /*SessionList*/)
     Error(SNotImplemented, 3005);
     assert(false);
   }
+
+  if ((FOptionsStorage.get() != nullptr) && (FOptionsStorage->GetCount() > 0))
+  {
+    if (!SessionList)
+    {
+//      Result = new TOptionsStorage(FOptionsStorage.get(), ConfigurationSubKey, Result);
+    }
+    else
+    {
+      // cannot reuse session list storage for configuration as for it we need
+      // the option-override storage above
+    }
+  }
+  else
+  {
+    // All the above stores can be reused for configuration,
+    // if no options-overrides are set
+    SessionList = false;
+  }
+
   return Result;
 }
 
@@ -234,12 +260,15 @@ void TConfiguration::DoSave(bool All, bool Explicit)
     return;
   }
 
-  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   Storage->SetAccessMode(smReadWrite);
   Storage->SetExplicit(Explicit);
   if (Storage->OpenSubKey(GetConfigurationSubKey(), true))
   {
-    SaveData(Storage.get(), All);
+     // if saving to TOptionsStorage, make sure we save everything so that
+     // all configuration is properly transferred to the master storage
+     bool ConfigAll = All || Storage->GetTemporary();
+     SaveData(Storage.get(), ConfigAll);
   }
 
   Saved();
@@ -260,7 +289,7 @@ void TConfiguration::Export(const UnicodeString & /*AFileName*/)
 {
   Error(SNotImplemented, 3004);
   /*
-  std::unique_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   std::unique_ptr<THierarchicalStorage> ExportStorage(nullptr);
   ExportStorage = nullptr; // new TIniFileStorage(FileName);
   ExportStorage->SetAccessMode(smReadWrite);
@@ -283,7 +312,7 @@ void TConfiguration::Import(const UnicodeString & /* AFileName */)
 {
   Error(SNotImplemented, 3005);
 /*
-  std::unique_ptr<THierarchicalStorage> Storage(CreateScpStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   std::unique_ptr<THierarchicalStorage> ImportStorage(new TIniFileStorage(FileName));
   ImportStorage->AccessMode = smRead;
   Storage->AccessMode = smReadWrite;
@@ -344,12 +373,16 @@ void TConfiguration::LoadFrom(THierarchicalStorage * Storage)
   }
 }
 
-void TConfiguration::Load()
+void TConfiguration::Load(THierarchicalStorage * Storage)
 {
   TGuard Guard(FCriticalSection);
-  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  TStorageAccessMode StorageAccessMode = Storage->GetAccessMode();
+  SCOPE_EXIT
+  {
+    Storage->SetAccessMode(StorageAccessMode);
+  };
   Storage->SetAccessMode(smRead);
-  LoadFrom(Storage.get());
+  LoadFrom(Storage);
 }
 
 void TConfiguration::CopyData(THierarchicalStorage * Source,
@@ -423,7 +456,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
 void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   Storage->SetAccessMode(smRead);
   if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
       Storage->OpenSubKey(L"CDCache", false) &&
@@ -436,7 +469,7 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
 void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   Storage->SetAccessMode(smReadWrite);
   if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
       Storage->OpenSubKey(L"CDCache", true))
@@ -460,7 +493,7 @@ UnicodeString TConfiguration::BannerHash(const UnicodeString & Banner) const
 bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
-  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   Storage->SetAccessMode(smRead);
   bool Result =
     !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
@@ -474,7 +507,7 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
 void TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
-  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   Storage->SetAccessMode(smReadWrite);
 
   if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
@@ -952,6 +985,20 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
 }
 */
 
+void TConfiguration::SetOptionsStorage(TStrings * Value)
+{
+  if (FOptionsStorage.get() == nullptr)
+  {
+    FOptionsStorage.reset(new TStringList());
+  }
+  FOptionsStorage->AddStrings(Value);
+}
+
+TStrings * TConfiguration::GetOptionsStorage()
+{
+  return FOptionsStorage.get();
+}
+
 UnicodeString TConfiguration::GetPuttySessionsKey() const
 {
   return GetPuttyRegistryStorageKey() + L"\\Sessions";
@@ -984,8 +1031,8 @@ void TConfiguration::SetStorage(TStorage Value)
     TStorage StorageBak = FStorage;
     try
     {
-      std::unique_ptr<THierarchicalStorage> SourceStorage(CreateStorage(false));
-      std::unique_ptr<THierarchicalStorage> TargetStorage(CreateStorage(false));
+      std::unique_ptr<THierarchicalStorage> SourceStorage(CreateConfigStorage());
+      std::unique_ptr<THierarchicalStorage> TargetStorage(CreateConfigStorage());
       SourceStorage->SetAccessMode(smRead);
 
       FStorage = Value;

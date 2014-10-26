@@ -513,8 +513,8 @@ private:
 class TFarEnvGuard : public TObject
 {
 public:
-  inline TFarEnvGuard();
-  inline ~TFarEnvGuard();
+  TFarEnvGuard();
+  ~TFarEnvGuard();
 };
 
 class TFarPluginEnvGuard : public TObject

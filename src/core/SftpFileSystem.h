@@ -85,6 +85,7 @@ public:
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
   virtual bool GetStoredCredentialsTried() const;
   virtual UnicodeString FSGetUserName() const;
+  virtual void GetSupportedChecksumAlgs(TStrings * Algs);
 
 protected:
   TSecureShell * FSecureShell;
@@ -104,7 +105,8 @@ protected:
   bool FAvoidBusy;
   TStrings * FExtensions;
   TSFTPSupport * FSupport;
-  bool FUtfStrings;
+  TAutoSwitch FUtfStrings;
+  bool FUtfDisablingAnnounced;
   bool FSignedTS;
   TStrings * FFixedPaths;
   uint32_t FMaxPacketSize;

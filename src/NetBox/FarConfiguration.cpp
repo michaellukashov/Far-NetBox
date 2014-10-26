@@ -61,7 +61,7 @@ void TFarConfiguration::Default()
 
 THierarchicalStorage * TFarConfiguration::CreateStorage(bool SessionList)
 {
-  return TGUIConfiguration::CreateStorage(SessionList);
+  return TGUIConfiguration::CreateScpStorage(SessionList);
 }
 
 void TFarConfiguration::Saved()
@@ -141,12 +141,14 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 
 void TFarConfiguration::Load()
 {
+  bool SessionList = false;
+  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(SessionList));
   FForceInheritance = true;
   SCOPE_EXIT
   {
     FForceInheritance = false;
   };
-  TGUIConfiguration::Load();
+  TGUIConfiguration::Load(Storage.get());
 }
 
 void TFarConfiguration::Save(bool All, bool Explicit)

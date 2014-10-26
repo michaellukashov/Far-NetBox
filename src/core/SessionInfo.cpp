@@ -253,6 +253,11 @@ public:
     }
   }
 
+  void AddExitCode(int ExitCode)
+  {
+    Parameter(L"exitcode", IntToStr(ExitCode));
+  }
+
   void FileList(TRemoteFileList * FileList)
   {
     if (FFileList == nullptr)
@@ -516,6 +521,14 @@ void TCallSessionAction::AddOutput(const UnicodeString & Output, bool StdError)
   }
 }
 
+void TCallSessionAction::AddExitCode(int ExitCode)
+{
+  if (FRecord != nullptr)
+  {
+    FRecord->AddExitCode(ExitCode);
+  }
+}
+
 TLsSessionAction::TLsSessionAction(TActionLog * Log,
     const UnicodeString & Destination) :
   TSessionAction(Log, laLs)
@@ -570,7 +583,7 @@ static FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * Session
   }
   else
   {
-    throw Exception(FMTLOAD(LOG_OPENERROR, NewFileName.c_str()));
+    throw ECRTExtException(FMTLOAD(LOG_OPENERROR, NewFileName.c_str()));
   }
   return Result;
 }
@@ -896,8 +909,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     {
       AddSeparator();
       ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
-      std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateStorage(false));
-      assert(Storage.get());
+      std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateConfigStorage());
+       assert(Storage.get());
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
 
       if (0)
@@ -1220,6 +1233,34 @@ TActionLog::TActionLog(TSessionUI * UI, TSessionData * SessionData,
   FEnabled(true),
   FIndent(L"  ")
 {
+  assert(UI != nullptr);
+  assert(SessionData != nullptr);
+  Init(UI, SessionData, Configuration);
+}
+
+TActionLog::TActionLog(TConfiguration * Configuration)
+{
+  Init(nullptr, nullptr, Configuration);
+  // not associated with session, so no need to waiting for anything
+  ReflectSettings();
+}
+
+void TActionLog::Init(TSessionUI * UI, TSessionData * SessionData,
+  TConfiguration * Configuration)
+{
+//  FCriticalSection = new TCriticalSection;
+  FConfiguration = Configuration;
+  FUI = UI;
+  FSessionData = SessionData;
+  FFile = nullptr;
+  FCurrentLogFileName.Clear();
+  FCurrentFileName.Clear();
+  FLogging = false;
+  FClosed = false;
+  FPendingActions = new TList();
+  FIndent = L"  ";
+  FInGroup = false;
+  FEnabled = true;
 }
 
 TActionLog::~TActionLog()
@@ -1261,7 +1302,10 @@ void TActionLog::Add(const UnicodeString & Line)
       }
       catch (Exception & E)
       {
-        FUI->HandleExtendedException(&E);
+        if (FUI != nullptr)
+        {
+          FUI->HandleExtendedException(&E);
+        }
       }
     }
   }
@@ -1359,7 +1403,10 @@ void TActionLog::OpenLogFile()
     }
     catch (Exception & E)
     {
-      FUI->HandleExtendedException(&E);
+      if (FUI != nullptr)
+      {
+        FUI->HandleExtendedException(&E);
+      }
     }
   }
 }

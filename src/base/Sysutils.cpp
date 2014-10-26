@@ -556,13 +556,13 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
   return Result;
 }
 
-inline DWORD FileGetAttr(const UnicodeString & AFileName)
+DWORD FileGetAttr(const UnicodeString & AFileName)
 {
   DWORD LocalFileAttrs = ::GetFileAttributes(AFileName.c_str());
   return LocalFileAttrs;
 }
 
-inline DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs)
+DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs)
 {
   DWORD Result = ::SetFileAttributes(AFileName.c_str(), LocalFileAttrs);
   return Result;

@@ -43,6 +43,7 @@ public:
 		CString name;
 		CString lName; //Name in lowercase characters
 		CString permissionstr;
+		CString humanpermstr; // RFC format
 		CString ownergroup;
 		__int64 size;
 		bool bUnsure; //Set by CControlSocket::FileTransfer when uploads fail after sending STOR/APPE
