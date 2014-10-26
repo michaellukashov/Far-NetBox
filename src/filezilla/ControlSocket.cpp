@@ -103,7 +103,7 @@ CControlSocket::~CControlSocket()
 #ifndef MPEXT_NO_SSL
 #define CONNECT_SSL_INIT -6
 #define CONNECT_SSL_NEGOTIATE -5
-#define CONNECT_SSL_WAITDONE -4 
+#define CONNECT_SSL_WAITDONE -11
 #endif
 
 void CControlSocket::ShowStatus(UINT nID, int type) const
