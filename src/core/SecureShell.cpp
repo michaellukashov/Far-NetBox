@@ -1273,8 +1273,9 @@ void TSecureShell::SendNull()
 void TSecureShell::SendLine(const UnicodeString & Line)
 {
   CheckConnection();
-  // AnsiString AnsiStr = ::W2MB(Str.c_str(), (UINT)FSessionData->GetCodePageAsNumber());
-  // Send(reinterpret_cast<const uint8_t *>(AnsiStr.c_str()), AnsiStr.Length());
+  AnsiString AnsiStr = ::W2MB(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber());
+  Send(reinterpret_cast<const uint8_t *>(AnsiStr.c_str()), AnsiStr.Length());
+  /*
   RawByteString Buf;
   if (GetUtfStrings())
   {
@@ -1288,6 +1289,7 @@ void TSecureShell::SendLine(const UnicodeString & Line)
 
   // FLog->Add(llInput, Line);
   Send(reinterpret_cast<const unsigned char *>(Buf.c_str()), Buf.Length());
+  */
 }
 
 //void TSecureShell::SendLine(const UnicodeString & Line)
