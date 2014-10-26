@@ -55,7 +55,7 @@ public:
 	virtual BOOL IsReady();
 	virtual void List(BOOL bFinish, int nError=0, CServerPath path=CServerPath(), CString subdir=_MPT(""), int nListMode = 0);
 #ifdef MPEXT
-	virtual void ListFile(CString filename, const CServerPath &path);
+	virtual void ListFile(const CString & filename, const CServerPath & path);
 #endif
 	virtual void FtpCommand(LPCTSTR pCommand);
 	virtual void Disconnect();

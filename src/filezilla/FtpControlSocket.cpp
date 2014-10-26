@@ -2464,7 +2464,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 }
 
 #ifdef MPEXT
-void CFtpControlSocket::ListFile(CString filename, const CServerPath &path)
+void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & path)
 {
 	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("ListFile(\"%s\",\"%s\")  OpMode=%d OpState=%d"), path.GetPath(), filename,
 				m_Operation.nOpMode, m_Operation.nOpState);

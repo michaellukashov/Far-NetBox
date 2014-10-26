@@ -247,7 +247,7 @@ bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile,
   Transfer.server = *FServer;
   // 1 = ascii, 2 = binary
   Transfer.nType = Type;
-  Transfer.UserData = UserData;
+  Transfer.nUserData = UserData;
 
   return Check(FFileZillaApi->FileTransfer(Transfer), L"filetransfer");
 }
@@ -350,7 +350,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
             (Data->localtime != NULL) ? Data->localtime->GetTime() : 0,
             (Data->localtime != NULL) && ((Data->localtime->GetHour() != 0) || (Data->localtime->GetMinute() != 0)),
             RemoteTime,
-            ToPtr(Data->pTransferFile->UserData),
+            ToPtr(Data->pTransferFile->nUserData),
             Data->localFileHandle,
             RequestResult);
         }
