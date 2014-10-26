@@ -20,7 +20,7 @@ enum TFSCommand
   fsListFile, fsLookupUsersGroups, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,
   fsRenameFile, fsCreateDirectory, fsChangeMode, fsChangeGroup, fsChangeOwner,
   fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
-  fsAnyCommand, fsReadSymlink, fsChangeProperties, fsMoveFile
+  fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile
 };
 
 const int dfNoRecursive = 0x01;
@@ -199,6 +199,7 @@ public:
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) = 0;
   virtual bool GetStoredCredentialsTried() const = 0;
   virtual UnicodeString FSGetUserName() const = 0;
+  virtual void GetSupportedChecksumAlgs(TStrings * Algs) = 0;
   virtual UnicodeString GetCurrDirectory() const = 0;
 
 protected:

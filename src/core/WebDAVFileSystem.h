@@ -80,6 +80,7 @@ public:
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
   virtual bool GetStoredCredentialsTried() const;
   virtual UnicodeString FSGetUserName() const;
+  virtual void GetSupportedChecksumAlgs(TStrings * Algs);
 
 public:
   virtual void ReadDirectoryProgress(int64_t Bytes);

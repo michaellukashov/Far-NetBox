@@ -28,6 +28,7 @@ extern const intptr_t ccSet;
 const int soRecurse =        0x01;
 const int soSynchronize =    0x02;
 const int soSynchronizeAsk = 0x04;
+const int soContinueOnError = 0x08;
 
 class TGUICopyParamType : public TCopyParamType
 {
@@ -35,7 +36,7 @@ NB_DECLARE_CLASS(TGUICopyParamType)
 public:
   TGUICopyParamType();
   TGUICopyParamType(const TCopyParamType & Source);
-  TGUICopyParamType(const TGUICopyParamType & Source);
+  explicit TGUICopyParamType(const TGUICopyParamType & Source);
   virtual ~TGUICopyParamType() {}
 
   void Load(THierarchicalStorage * Storage);
@@ -46,6 +47,11 @@ public:
   TGUICopyParamType & operator =(const TGUICopyParamType & rhp);
   TGUICopyParamType & operator =(const TCopyParamType & rhp);
 
+/*
+  __property bool Queue = { read = FQueue, write = FQueue };
+  __property bool QueueNoConfirmation = { read = FQueueNoConfirmation, write = FQueueNoConfirmation };
+  __property bool QueueIndividually = { read = FQueueIndividually, write = FQueueIndividually };
+*/
   bool GetQueue() const { return FQueue; }
   void SetQueue(bool Value) { FQueue = Value; }
   bool GetQueueNoConfirmation() const { return FQueueNoConfirmation; }
@@ -108,10 +114,7 @@ class TCopyParamList : public TObject
 friend class TGUIConfiguration;
 public:
   explicit TCopyParamList();
-  explicit TCopyParamList(const TCopyParamList & other)
-  {
-    this->operator=(other);
-  }
+  explicit TCopyParamList(const TCopyParamList & other);
 
   virtual ~TCopyParamList();
   intptr_t Find(const TCopyParamRuleData & Value) const;
@@ -135,6 +138,15 @@ public:
   void Delete(intptr_t Index);
   intptr_t IndexOfName(const UnicodeString & Name) const;
 
+/*
+  __property int Count = { read = GetCount };
+  __property UnicodeString Names[int Index] = { read = GetName };
+  __property const TCopyParamRule * Rules[int Index] = { read = GetRule };
+  __property const TCopyParamType * CopyParams[int Index] = { read = GetCopyParam };
+  __property bool Modified = { read = FModified };
+  __property TStrings * NameList = { read = GetNameList };
+  __property bool AnyRule = { read = GetAnyRule };
+*/
   intptr_t GetCount() const { return FCopyParams ? FCopyParams->GetCount() : 0; }
   UnicodeString GetName(intptr_t Index) const;
   const TCopyParamRule * GetRule(intptr_t Index) const;
@@ -288,6 +300,93 @@ private:
   intptr_t FKeepUpToDateChangeDelay;
   UnicodeString FChecksumAlg;
   intptr_t FSessionReopenAutoIdle;
+/*
+protected:
+  LCID FLocale;
+
+  virtual void __fastcall SaveData(THierarchicalStorage * Storage, bool All);
+  virtual void __fastcall LoadData(THierarchicalStorage * Storage);
+  virtual LCID __fastcall GetLocale();
+  void __fastcall SetLocale(LCID value);
+  void __fastcall SetLocaleSafe(LCID value);
+  virtual HINSTANCE __fastcall LoadNewResourceModule(LCID Locale,
+    UnicodeString * FileName = nullptr);
+  HANDLE __fastcall GetResourceModule();
+  virtual void __fastcall SetResourceModule(HINSTANCE Instance);
+  TStrings * __fastcall GetLocales();
+  LCID __fastcall InternalLocale();
+  void __fastcall FreeResourceModule(HANDLE Instance);
+  void __fastcall SetDefaultCopyParam(const TGUICopyParamType & value);
+  virtual bool __fastcall GetRememberPassword();
+  const TCopyParamList * __fastcall GetCopyParamList();
+  void __fastcall SetCopyParamList(const TCopyParamList * value);
+  virtual void __fastcall DefaultLocalized();
+  int __fastcall GetCopyParamIndex();
+  TGUICopyParamType __fastcall GetCurrentCopyParam();
+  TGUICopyParamType __fastcall GetCopyParamPreset(UnicodeString Name);
+  bool __fastcall GetHasCopyParamPreset(UnicodeString Name);
+  void __fastcall SetCopyParamIndex(int value);
+  void __fastcall SetCopyParamCurrent(UnicodeString value);
+  void __fastcall SetNewDirectoryProperties(const TRemoteProperties & value);
+  virtual void __fastcall Saved();
+  void __fastcall SetQueueTransfersLimit(int value);
+  void __fastcall SetQueueKeepDoneItems(bool value);
+  void __fastcall SetQueueKeepDoneItemsFor(int value);
+  void __fastcall SetLocaleInternal(LCID value, bool Safe);
+  void __fastcall SetInitialLocale(LCID value);
+
+public:
+  __fastcall TGUIConfiguration();
+  virtual __fastcall ~TGUIConfiguration();
+  virtual void __fastcall Default();
+  virtual void __fastcall UpdateStaticUsage();
+
+  HANDLE __fastcall ChangeResourceModule(HANDLE Instance);
+  TStoredSessionList * __fastcall SelectPuttySessionsForImport(TStoredSessionList * Sessions, UnicodeString & Error);
+  bool __fastcall AnyPuttySessionForImport(TStoredSessionList * Sessions);
+  TStoredSessionList * __fastcall SelectFilezillaSessionsForImport(
+    TStoredSessionList * Sessions, UnicodeString & Error);
+  bool __fastcall AnyFilezillaSessionForImport(TStoredSessionList * Sessions);
+  void __fastcall DetectScalingType();
+
+  __property bool ContinueOnError = { read = FContinueOnError, write = FContinueOnError };
+  __property bool ConfirmCommandSession = { read = FConfirmCommandSession, write = FConfirmCommandSession };
+  __property int SynchronizeParams = { read = FSynchronizeParams, write = FSynchronizeParams };
+  __property int SynchronizeOptions = { read = FSynchronizeOptions, write = FSynchronizeOptions };
+  __property int SynchronizeModeAuto = { read = FSynchronizeModeAuto, write = FSynchronizeModeAuto };
+  __property int SynchronizeMode = { read = FSynchronizeMode, write = FSynchronizeMode };
+  __property int MaxWatchDirectories = { read = FMaxWatchDirectories, write = FMaxWatchDirectories };
+  __property int QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
+  __property bool QueueKeepDoneItems = { read = FQueueKeepDoneItems, write = SetQueueKeepDoneItems };
+  __property int QueueKeepDoneItemsFor = { read = FQueueKeepDoneItemsFor, write = SetQueueKeepDoneItemsFor };
+  __property bool QueueAutoPopup = { read = FQueueAutoPopup, write = FQueueAutoPopup };
+  __property bool SessionRememberPassword = { read = FSessionRememberPassword, write = FSessionRememberPassword };
+  __property LCID Locale = { read = GetLocale, write = SetLocale };
+  __property LCID LocaleSafe = { read = GetLocale, write = SetLocaleSafe };
+  __property TStrings * Locales = { read = GetLocales };
+  __property UnicodeString PuttyPath = { read = FPuttyPath, write = FPuttyPath };
+  __property UnicodeString DefaultPuttyPath = { read = FDefaultPuttyPath };
+  __property UnicodeString PSftpPath = { read = FPSftpPath, write = FPSftpPath };
+  __property bool PuttyPassword = { read = FPuttyPassword, write = FPuttyPassword };
+  __property bool TelnetForFtpInPutty = { read = FTelnetForFtpInPutty, write = FTelnetForFtpInPutty };
+  __property UnicodeString PuttySession = { read = FPuttySession, write = FPuttySession };
+  __property TDateTime IgnoreCancelBeforeFinish = { read = FIgnoreCancelBeforeFinish, write = FIgnoreCancelBeforeFinish };
+  __property TGUICopyParamType DefaultCopyParam = { read = FDefaultCopyParam, write = SetDefaultCopyParam };
+  __property bool BeepOnFinish = { read = FBeepOnFinish, write = FBeepOnFinish };
+  __property TDateTime BeepOnFinishAfter = { read = FBeepOnFinishAfter, write = FBeepOnFinishAfter };
+  __property const TCopyParamList * CopyParamList = { read = GetCopyParamList, write = SetCopyParamList };
+  __property UnicodeString CopyParamCurrent = { read = FCopyParamCurrent, write = SetCopyParamCurrent };
+  __property int CopyParamIndex = { read = GetCopyParamIndex, write = SetCopyParamIndex };
+  __property TGUICopyParamType CurrentCopyParam = { read = GetCurrentCopyParam };
+  __property TGUICopyParamType CopyParamPreset[UnicodeString Name] = { read = GetCopyParamPreset };
+  __property bool HasCopyParamPreset[UnicodeString Name] = { read = GetHasCopyParamPreset };
+  __property TRemoteProperties NewDirectoryProperties = { read = FNewDirectoryProperties, write = SetNewDirectoryProperties };
+  __property int KeepUpToDateChangeDelay = { read = FKeepUpToDateChangeDelay, write = FKeepUpToDateChangeDelay };
+  __property UnicodeString ChecksumAlg = { read = FChecksumAlg, write = FChecksumAlg };
+  __property int SessionReopenAutoIdle = { read = FSessionReopenAutoIdle, write = FSessionReopenAutoIdle };
+  __property bool CanApplyLocaleImmediately = { read = FCanApplyLocaleImmediately, write = FCanApplyLocaleImmediately };
+  __property LCID AppliedLocale = { read = FAppliedLocale };
+*/
 };
 
 TGUIConfiguration * GetGUIConfiguration();

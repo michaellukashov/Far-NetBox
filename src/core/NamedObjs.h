@@ -29,10 +29,9 @@ private:
 class TNamedObjectList : public TObjectList
 {
 public:
-  intptr_t GetCount() const;
-  void SetCount(intptr_t Value);
+
 public:
-  static bool IsHidden(TNamedObject * Object);
+  // static bool IsHidden(TNamedObject * Object);
 
   bool AutoSort;
 
@@ -44,14 +43,21 @@ public:
   virtual const TNamedObject * AtObject(intptr_t Index) const;
   TNamedObject * FindByName(const UnicodeString & Name, Boolean CaseSensitive = False) const;
   TNamedObject * FindByName(const UnicodeString & Name, Boolean CaseSensitive = False);
-  intptr_t GetHiddenCount() const { return FHiddenCount; }
-  void SetHiddenCount(intptr_t Value) { FHiddenCount = Value; }
+/*
+  __property int Count = { read = GetCount, write = SetCount };
+  __property int CountIncludingHidden = { read = GetCountIncludingHidden };
+*/
+  intptr_t GetCount() const;
+  void SetCount(intptr_t Value);
+  intptr_t GetCountIncludingHidden() const;
+  //intptr_t GetHiddenCount() const { return FHiddenCount; }
+  //void SetHiddenCount(intptr_t Value) { FHiddenCount = Value; }
 
 protected:
+  intptr_t FHiddenCount;
   void Recount();
 
 private:
-  intptr_t FHiddenCount;
 };
 
 int NamedObjectSortProc(void * Item1, void * Item2);

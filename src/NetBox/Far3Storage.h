@@ -45,6 +45,7 @@ public:
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
   virtual bool DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate);
   virtual UnicodeString GetSource() const;
+  virtual UnicodeString GetSource();
 
 private:
   UnicodeString GetFullCurrentSubKey() { return /* GetStorage() + */ GetCurrentSubKey(); }

@@ -382,9 +382,8 @@
 "&Session ID re-use"
 "&Encryption:"
 "No encryption"
-"SSL/TLS Implicit encryption"
-"SSL Explicit encryption"
-"TLS Explicit encryption"
+"TLS/SSL Implicit encryption"
+"TLS/SSL Explicit encryption"
 "Post login &commands:"
 
 " WebDAV protocol options "
@@ -1141,8 +1140,7 @@
 
 "Unlimited"
 "TLS/SSL Implicit encryption"
-"SSL Explicit encryption"
-"TLS Explicit encryption"
+"TLS/SSL Explicit encryption"
 
 "Host key fingerprint is %s."
 
@@ -1185,7 +1183,7 @@
 "$$"
 
 "WinSCP"
-"5.6.1"
+"5.6.2"
 "1.6.2"
 "Based on WinSCP: SFTP/FTP/SCP client for FAR"
 " Version %s"

@@ -78,6 +78,7 @@ UnicodeString EscapePuttyCommandParam(const UnicodeString & Param);
 UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str);
 bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2);
 bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2);
+int CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2);
 bool IsReservedName(const UnicodeString & AFileName);
 UnicodeString ApiPath(const UnicodeString & APath);
 UnicodeString DisplayableStr(const RawByteString & Str);
@@ -165,6 +166,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format);
 UnicodeString StandardTimestamp(const TDateTime & DateTime);
 UnicodeString StandardTimestamp();
 UnicodeString StandardDatestamp();
+UnicodeString FormatTimeZone(intptr_t Sec);
 UnicodeString GetTimeZoneLogString();
 bool AdjustClockForDSTEnabled();
 intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2);
@@ -239,24 +241,36 @@ class TValueRestorer : public TObject
 public:
   inline explicit TValueRestorer(T & Target, const T & Value) :
     FTarget(Target),
-    FValue(Value)
+    FValue(Value),
+    FArmed(true)
   {
   }
 
   inline explicit TValueRestorer(T & Target) :
     FTarget(Target),
-    FValue(Target)
+    FValue(Target),
+    FArmed(true)
   {
+  }
+
+  void Release()
+  {
+    if (FArmed)
+    {
+      FTarget = FValue;
+      FArmed = false;
+    }
   }
 
   inline ~TValueRestorer()
   {
-    FTarget = FValue;
+    Release();
   }
 
 protected:
   T & FTarget;
   T FValue;
+  bool FArmed;
 };
 
 class TAutoNestingCounter : TValueRestorer<int>
@@ -271,7 +285,23 @@ public:
 
   inline ~TAutoNestingCounter()
   {
-    assert(FTarget == (FValue + 1));
+    assert(!FArmed || (FTarget == (FValue + 1)));
+  }
+};
+
+class TAutoFlag : public TValueRestorer<bool>
+{
+public:
+  TAutoFlag(bool & Target) :
+    TValueRestorer<bool>(Target)
+  {
+    assert(!Target);
+    Target = true;
+  }
+
+  ~TAutoFlag()
+  {
+    assert(!FArmed || FTarget);
   }
 };
 

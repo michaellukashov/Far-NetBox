@@ -137,7 +137,6 @@ include_directories(
   ${LIBS_ROOT}/atlmfc/include
   ${LIBS_ROOT}/Putty
   ${LIBS_ROOT}/Putty/windows
-  ${LIBS_ROOT}/Putty/charset
   ${LIBS_ROOT}/tinyxml2
   ${LIBS_ROOT}/openssl/${CONF}/inc32
   ${LIBS_ROOT}/zlib/src
@@ -353,7 +352,6 @@ add_library(putty STATIC
   ${LIBS_ROOT}/Putty/SSHSHA_.c
   ${LIBS_ROOT}/Putty/SSHZLIB.c
   ${LIBS_ROOT}/Putty/TREE234.c
-#  ${LIBS_ROOT}/Putty/CHARSET/UTF8.c
   ${LIBS_ROOT}/Putty/WILDCARD.c
   ${LIBS_ROOT}/Putty/WINDOWS/WINGSS.c
   ${LIBS_ROOT}/Putty/WINDOWS/WINHANDL.c

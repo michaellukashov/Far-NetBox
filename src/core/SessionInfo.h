@@ -92,15 +92,32 @@ enum TLogLineType
   llInput,
   llStdError,
   llMessage,
-  llException
+  llException,
 };
+
 enum TLogAction
 {
-  laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs, laStat
+  laUpload,
+  laDownload,
+  laTouch,
+  laChmod,
+  laMkdir,
+  laRm,
+  laMv,
+  laCall,
+  laLs,
+  laStat,
+};
+
+enum TCaptureOutputType
+{
+  cotOutput,
+  cotError,
+  cotExitCode,
 };
 
 DEFINE_CALLBACK_TYPE2(TCaptureOutputEvent, void,
-  const UnicodeString & /* Str */, bool /* StdError */);
+  const UnicodeString & /*Str*/, TCaptureOutputType /*OutputType*/);
 DEFINE_CALLBACK_TYPE3(TCalculatedChecksumEvent, void,
   const UnicodeString & /* FileName */, const UnicodeString & /* Alg */, const UnicodeString & /* Hash */);
 
@@ -202,6 +219,7 @@ public:
     const UnicodeString & Destination);
 
   void AddOutput(const UnicodeString & Output, bool StdError);
+  void AddExitCode(int ExitCode);
 };
 
 class TLsSessionAction : public TSessionAction
@@ -306,6 +324,7 @@ NB_DISABLE_COPY(TActionLog)
 public:
   explicit TActionLog(TSessionUI * UI, TSessionData * SessionData,
     TConfiguration * Configuration);
+  explicit TActionLog(TConfiguration * Configuration);
   virtual ~TActionLog();
 
   void ReflectSettings();
@@ -327,6 +346,8 @@ protected:
   void Add(const UnicodeString & Line);
   void AddIndented(const UnicodeString & Line);
   void AddMessages(const UnicodeString & Indent, TStrings * Messages);
+  void Init(TSessionUI * UI, TSessionData * SessionData,
+    TConfiguration * Configuration);
 
 private:
   TConfiguration * FConfiguration;

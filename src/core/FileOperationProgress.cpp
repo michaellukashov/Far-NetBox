@@ -200,6 +200,11 @@ intptr_t TFileOperationProgressType::OverallProgress() const
   }
 }
 
+void TFileOperationProgressType::Progress()
+{
+  DoProgress();
+}
+
 void TFileOperationProgressType::DoProgress()
 {
   SetThreadExecutionState(ES_SYSTEM_REQUIRED);

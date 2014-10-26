@@ -228,6 +228,11 @@ TCopyParamList::TCopyParamList() :
 {
 }
 
+TCopyParamList::TCopyParamList(const TCopyParamList & other)
+{
+  this->operator=(other);
+}
+
 TCopyParamList::~TCopyParamList()
 {
   Clear();

@@ -141,6 +141,8 @@ public:
   UnicodeString GetLinkTo() const;
   void SetLinkTo(const UnicodeString & Value);
   TRights * GetRights() const { return FRights; }
+  UnicodeString GetHumanRights() const { return FHumanRights; }
+  void SetHumanRights(const UnicodeString & Value) { FHumanRights = Value; }
   TTerminal * GetTerminal() const { return FTerminal; }
   bool GetSelected() const { return FSelected; }
   void SetSelected(bool Value) { FSelected = Value; }
@@ -165,6 +167,7 @@ private:
   TRemoteFile * FLinkedByFile;
   UnicodeString FLinkTo;
   TRights * FRights;
+  UnicodeString FHumanRights;
   TTerminal * FTerminal;
   wchar_t FType;
   bool FSelected;
@@ -175,6 +178,41 @@ private:
 
 private:
   void LoadTypeInfo() const;
+/*
+  __property int Attr = { read = GetAttr };
+  __property bool BrokenLink = { read = GetBrokenLink };
+  __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
+  __property UnicodeString RightsStr = { read = GetRightsStr };
+  __property __int64 Size = { read = FSize, write = FSize };
+  __property TRemoteToken Owner = { read = FOwner, write = FOwner };
+  __property TRemoteToken Group = { read = FGroup, write = FGroup };
+  __property UnicodeString FileName = { read = FFileName, write = FFileName };
+  __property int INodeBlocks = { read = FINodeBlocks };
+  __property TDateTime Modification = { read = FModification, write = SetModification };
+  __property UnicodeString ModificationStr = { read = GetModificationStr };
+  __property UnicodeString UserModificationStr = { read = GetUserModificationStr };
+  __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
+  __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
+  __property bool IsSymLink = { read = FIsSymLink };
+  __property bool IsDirectory = { read = GetIsDirectory };
+  __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
+  __property UnicodeString LinkTo = { read = FLinkTo, write = FLinkTo };
+  __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
+  __property TRights * Rights = { read = FRights, write = SetRights };
+  __property UnicodeString HumanRights = { read = FHumanRights, write = FHumanRights };
+  __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
+  __property wchar_t Type = { read = GetType, write = SetType };
+  __property bool Selected  = { read=FSelected, write=FSelected };
+  __property UnicodeString FullFileName  = { read = GetFullFileName, write = FFullFileName };
+  __property bool HaveFullFileName  = { read = GetHaveFullFileName };
+  __property int IconIndex = { read = GetIconIndex };
+  __property UnicodeString TypeName = { read = GetTypeName };
+  __property bool IsHidden = { read = GetIsHidden, write = SetIsHidden };
+  __property bool IsParentDirectory = { read = GetIsParentDirectory };
+  __property bool IsThisDirectory = { read = GetIsThisDirectory };
+  __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
+  __property UnicodeString Extension  = { read=GetExtension };
+*/
 };
 
 class TRemoteDirectoryFile : public TRemoteFile

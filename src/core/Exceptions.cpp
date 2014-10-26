@@ -138,7 +138,7 @@ static bool ExceptionMessage(const Exception * E, bool /* Count */,
 bool IsInternalException(const Exception * E)
 {
   // see also InternalError in ExceptionMessage
-  return WellKnownException(E, NULL, NULL, NULL, false);
+  return WellKnownException(E, nullptr, nullptr, nullptr, false);
 }
 
 bool ExceptionMessage(const Exception * E, UnicodeString & Message)
@@ -365,7 +365,7 @@ UnicodeString SysErrorMessageForError(int LastError)
   if (LastError != 0)
   {
     //Result = FORMAT("System Error. Code: %d.\r\n%s", LastError, SysErrorMessage(LastError).c_str());
-    Result = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError).c_str());
+    Result = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError).c_str(), L"");
   }
   return Result;
 }
@@ -394,6 +394,11 @@ EFatal::EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeStri
   {
     FReopenQueried = F->GetReopenQueried();
   }
+}
+
+ECRTExtException::ECRTExtException(const UnicodeString & Msg) :
+  EOSExtException(Msg, errno)
+{
 }
 
 ExtException * EFatal::Clone() const

@@ -1141,8 +1141,7 @@
 
 "Unlimited"
 "TLS/SSL Implicit encryption"
-"SSL Explicit encryption"
-"TLS Explicit encryption"
+"TLS/SSL Explicit encryption"
 
 "Host key fingerprint is %s."
 
@@ -1185,7 +1184,7 @@
 "$$"
 
 "WinSCP"
-"5.6.1"
+"5.6.2"
 "1.6.2"
 "Based on WinSCP: SFTP/FTP/SCP client for FAR"
 " Version %s"

@@ -776,7 +776,7 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void *Param)
 }
 
 void TWinSCPFileSystem::TerminalCaptureLog(
-  const UnicodeString & AddedLine, bool /*StdError*/)
+  const UnicodeString & AddedLine, TCaptureOutputType /*OutputEvent*/)
 {
   if (FOutputLog)
   {

@@ -714,6 +714,11 @@ bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2)
   return AnsiSameText(::IncludeTrailingBackslash(APath1), ::IncludeTrailingBackslash(APath2));
 }
 
+int CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2)
+{
+  return StrCmpLogicalW(S1.c_str(), S2.c_str());
+}
+
 bool IsReservedName(const UnicodeString & AFileName)
 {
   UnicodeString fileName = AFileName;
@@ -1855,11 +1860,13 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
   return Result;
 }
 
-static UnicodeString FormatTimeZone(intptr_t /* Sec */)
+UnicodeString FormatTimeZone(intptr_t Sec)
 {
-  // TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
   UnicodeString Str;
-  /* if ((Span.Seconds == 0) && (Span.Minutes == 0))
+/*
+  TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
+  UnicodeString Str;
+  if ((Span.Seconds == 0) && (Span.Minutes == 0))
   {
     Str = FORMAT("%d", -Span.Hours);
   }
@@ -1872,7 +1879,7 @@ static UnicodeString FormatTimeZone(intptr_t /* Sec */)
     Str = FORMAT("%d:%2.2d:%2.2d", -Span.Hours, abs(Span.Minutes), abs(Span.Seconds));
   }
   Str = ((Span <= TTimeSpan::Zero) ? L"+" : L"") + Str;
-  */
+*/
   return Str;
 }
 

@@ -270,7 +270,7 @@ UnicodeString GetPersonalFolder()
   if (IsWine())
   {
     UnicodeString WineHostHome;
-    int Len = ::GetEnvironmentVariable(L"WINE_HOST_HOME", NULL, 0);
+    int Len = ::GetEnvironmentVariable(L"WINE_HOST_HOME", nullptr, 0);
     if (Len > 0)
     {
       WineHostHome.SetLength(Len - 1);
@@ -288,7 +288,7 @@ UnicodeString GetPersonalFolder()
     {
       // Should we use WinAPI GetUserName() instead?
       UnicodeString UserName;
-      int Len = ::GetEnvironmentVariable(L"USERNAME", NULL, 0);
+      int Len = ::GetEnvironmentVariable(L"USERNAME", nullptr, 0);
       if (Len > 0)
       {
         UserName.SetLength(Len - 1);

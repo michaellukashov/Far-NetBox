@@ -153,10 +153,10 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len)
     if (CertCreateCertificateChainEngine(&ChainConfig, &ChainEngine))
     {
       const CERT_CHAIN_CONTEXT * ChainContext = nullptr;
-      if (CertGetCertificateChain(ChainEngine, CertContext, NULL, NULL, &ChainPara,
+      if (CertGetCertificateChain(ChainEngine, CertContext, nullptr, nullptr, &ChainPara,
             CERT_CHAIN_CACHE_END_CERT |
             CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
-            NULL, &ChainContext))
+            nullptr, &ChainContext))
       {
         CERT_CHAIN_POLICY_PARA PolicyPara;
 

@@ -225,13 +225,11 @@ bool TFileZillaIntf::List(const wchar_t * APath)
 }
 //---------------------------------------------------------------------------
 #ifdef MPEXT
-bool TFileZillaIntf::ListFile(const wchar_t * AFullFileName)
+bool __fastcall TFileZillaIntf::ListFile(const wchar_t * FileName, const wchar_t * APath)
 {
   ASSERT(FFileZillaApi != NULL);
-  CString FileName(AFullFileName);
-  CServerPath Path(FServer->nServerType);
-  Path.SetPath(FileName, TRUE);
-  return Check(FFileZillaApi->ListFile(Path, FileName), L"listfile");
+  CServerPath Path(APath);
+  return Check(FFileZillaApi->ListFile(FileName, Path), L"listfile");
 }
 #endif
 //---------------------------------------------------------------------------
@@ -249,7 +247,7 @@ bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile,
   Transfer.server = *FServer;
   // 1 = ascii, 2 = binary
   Transfer.nType = Type;
-  Transfer.UserData = UserData;
+  Transfer.nUserData = UserData;
 
   return Check(FFileZillaApi->FileTransfer(Transfer), L"filetransfer");
 }
@@ -352,7 +350,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
             (Data->localtime != NULL) ? Data->localtime->GetTime() : 0,
             (Data->localtime != NULL) && ((Data->localtime->GetHour() != 0) || (Data->localtime->GetMinute() != 0)),
             RemoteTime,
-            ToPtr(Data->pTransferFile->UserData),
+            ToPtr(Data->pTransferFile->nUserData),
             Data->localFileHandle,
             RequestResult);
         }
@@ -455,6 +453,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 
           Dest.Name = Source.name;
           Dest.Permissions = Source.permissionstr;
+          Dest.HumanPerm = Source.humanpermstr;
           Dest.OwnerGroup = Source.ownergroup;
           Dest.Size = Source.size;
           Dest.Dir = Source.dir;

@@ -36,6 +36,11 @@ UnicodeString TFar3Storage::GetSource() const
   return GetStorage();
 }
 
+UnicodeString TFar3Storage::GetSource()
+{
+  return GetStorage();
+}
+
 void TFar3Storage::SetAccessMode(TStorageAccessMode Value)
 {
   THierarchicalStorage::SetAccessMode(Value);
