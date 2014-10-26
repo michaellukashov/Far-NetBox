@@ -543,7 +543,8 @@ UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uintptr_t 
   }
   else
   {
-    Result = UnicodeString(AnsiString(Input.c_str()));
+//    Result = UnicodeString(AnsiString(Input.c_str()));
+    Result = ::MB2W(Line.c_str(), (UINT)CodePage);
   }
   return Result;
 }
@@ -1125,7 +1126,7 @@ UnicodeString TSecureShell::ReceiveLine()
   // We don't want end-of-line character
   Line.SetLength(Line.Length() - 1);
 
-  // UnicodeString UnicodeLine = ::TrimRight(::MB2W(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber()));
+//  UnicodeString Result = ::TrimRight(::MB2W(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber()));
   UnicodeString Result = ConvertInput(Line, FSessionData->GetCodePageAsNumber());
   CaptureOutput(llOutput, Result);
   return Result;
