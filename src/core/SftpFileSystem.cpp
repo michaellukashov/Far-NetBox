@@ -2269,7 +2269,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
   // putting here for a lack of better place
   if (!FUtfDisablingAnnounced && (FUtfStrings == asOff))
   {
-    FTerminal->LogEvent(L"Strings received in non-UTF-8 encoding in a previous packet, will not use UTF-8 anymore");
+    FTerminal->LogEvent("Strings received in non-UTF-8 encoding in a previous packet, will not use UTF-8 anymore");
     FUtfDisablingAnnounced = true;
   }
 
@@ -3161,7 +3161,7 @@ void TSFTPFileSystem::DoStartup()
       break;
 
     case asOn:
-      FTerminal->LogEvent(L"We will not use UTF-8 strings as configured");
+      FTerminal->LogEvent("We will not use UTF-8 strings as configured");
       FUtfStrings = asOff;
       break;
   }
