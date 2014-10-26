@@ -360,7 +360,8 @@ public:
 
   inline void AddString(const UnicodeString & Value, TAutoSwitch Utf)
   {
-    // AddStringW(Value);
+    AddStringW(Value);
+    /*
     // asAuto: Using UTF until we receive non-UTF string from the server
     if ((Utf == asOn) || (Utf == asAuto))
     {
@@ -370,6 +371,7 @@ public:
     {
       AddString(AnsiString(Value));
     }
+    */
   }
 
   // now purposeless alias to AddString
@@ -648,7 +650,8 @@ public:
 
   inline UnicodeString GetString(TAutoSwitch Utf) const
   {
-     // return GetStringW();
+    return GetStringW();
+    /*
     if (Utf != asOff)
     {
       return GetUtfString(Utf);
@@ -657,6 +660,7 @@ public:
     {
       return GetAnsiString();
     }
+    */
   }
 
   // now purposeless alias to GetString(bool)
