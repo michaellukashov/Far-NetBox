@@ -1226,10 +1226,14 @@ int CAsyncSocketEx::Send(const void* lpBuf, int nBufLen, int nFlags /*=0*/, int 
 	}
 #ifndef NOLAYERS
 	if (m_pFirstLayer)
+  {
 		return m_pFirstLayer->Send(vBuf, vBufLen, nFlags);
+  }
 	else
 #endif //NOLAYERS
+  {
 		return send(m_SocketData.hSocket, (LPSTR)vBuf, vBufLen, nFlags);
+  }
 }
 
 BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)

@@ -148,6 +148,24 @@ public:
 	bool lastCmdSentCDUP;
 };
 
+class CFtpControlSocket::CListFileData:public CFtpControlSocket::t_operation::COpData
+{
+public:
+	CListFileData()
+	{
+		direntry = NULL;
+	}
+	~CListFileData()
+	{
+		delete [] direntry;
+	}
+	CString fileName;
+	CString dir;
+	CString path;
+	CServerPath pwd;
+	t_directory::t_direntry * direntry;
+};
+
 class CFtpControlSocket::CMakeDirData : public CFtpControlSocket::t_operation::COpData
 {
 public:
@@ -243,17 +261,17 @@ CFtpControlSocket::~CFtpControlSocket()
 #define CONNECT_SSL_INIT -8
 #undef CONNECT_SSL_NEGOTIATE
 #define CONNECT_SSL_NEGOTIATE -9
-#undef CONNECT_SSL_WAITDONE
-#define CONNECT_SSL_WAITDONE -10
-#define CONNECT_SSL_PBSZ -11
-#define CONNECT_SSL_PROT -12
+#define CONNECT_TLS_NEGOTIATE -10
+#define CONNECT_SSL_WAITDONE -11
+#define CONNECT_SSL_PBSZ -12
+#define CONNECT_SSL_PROT -13
 #endif
-#define CONNECT_FEAT -13
-#define CONNECT_SYST -14
-#define CONNECT_OPTSUTF8 -15
-#define CONNECT_CLNT -16
-#define CONNECT_OPTSMLST -17
-#define CONNECT_NEEDPASS -18
+#define CONNECT_FEAT -14
+#define CONNECT_SYST -15
+#define CONNECT_OPTSUTF8 -16
+#define CONNECT_CLNT -17
+#define CONNECT_OPTSMLST -18
+#define CONNECT_NEEDPASS -19
 
 bool CFtpControlSocket::InitConnect()
 {
@@ -536,23 +554,37 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 	{
 		if (m_CurrentServer.nServerType & FZ_SERVERTYPE_LAYER_SSL_EXPLICIT)
 		{
-			if (!Send("AUTH SSL"))
+			if (!SendAuthSsl())
+			{
 				return;
+			}
 		}
 		else
 		{
 			if (!Send("AUTH TLS"))
 				return;
+			m_Operation.nOpState = CONNECT_TLS_NEGOTIATE;
 		}
-		m_Operation.nOpState = CONNECT_SSL_NEGOTIATE;
 		return;
 	}
-	else if (m_Operation.nOpState == CONNECT_SSL_NEGOTIATE)
+	else if ((m_Operation.nOpState == CONNECT_SSL_NEGOTIATE) ||
+	         (m_Operation.nOpState == CONNECT_TLS_NEGOTIATE))
 	{
 		int res = GetReplyCode();
 		if (res!=2 && res!=3)
 		{
-			DoClose();
+			if (m_Operation.nOpState == CONNECT_TLS_NEGOTIATE)
+			{
+				// Try to fall back to AUTH SSL
+				if (!SendAuthSsl())
+				{
+					return;
+				}
+			}
+			else
+			{
+				DoClose();
+			}
 			return;
 		}
 		else
@@ -631,6 +663,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 	{
 		#ifdef MPEXT
 		std::string facts;
+		// this is never true, see comment is DiscardLine
 		if (m_serverCapabilities.GetCapabilityString(mlsd_command, &facts) == yes)
 		{
 			ftp_capabilities_t cap = m_serverCapabilities.GetCapabilityString(opts_mlst_command);
@@ -740,6 +773,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 		if (m_serverCapabilities.GetCapability(mlsd_command) == yes)
 		{
 			std::string args;
+			// this is never true, see comment is DiscardLine
 			if (m_serverCapabilities.GetCapabilityString(opts_mlst_command, &args) == yes &&
 				!args.empty())
 			{
@@ -1093,6 +1127,14 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 		return;
 }
 
+BOOL CFtpControlSocket::SendAuthSsl()
+{
+	if (!Send("AUTH SSL"))
+		return false;
+	m_Operation.nOpState = CONNECT_SSL_NEGOTIATE;
+	return true;
+}
+
 #define BUFFERSIZE 4096
 void CFtpControlSocket::OnReceive(int nErrorCode)
 {
@@ -1289,7 +1331,7 @@ void CFtpControlSocket::ProcessReply()
 	else if (m_Operation.nOpMode&CSMODE_LIST)
 		List(FALSE);
 	else if (m_Operation.nOpMode&CSMODE_LISTFILE)
-		ListFile();
+		ListFile(_T(""), CServerPath());
 	else if (m_Operation.nOpMode&CSMODE_DELETE)
 		Delete( _T(""),CServerPath());
 	else if (m_Operation.nOpMode&CSMODE_RMDIR)
@@ -2422,14 +2464,20 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 }
 
 #ifdef MPEXT
-void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fileName /*=""*/)
+void CFtpControlSocket::ListFile(CString filename, const CServerPath &path)
 {
-	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("ListFile(\"%s\",\"%s\")  OpMode=%d OpState=%d"), (LPCTSTR)path.GetPath(), (LPCTSTR)fileName,
+	LogMessage(__FILE__, __LINE__, this,FZ_LOG_DEBUG, _T("ListFile(\"%s\",\"%s\")  OpMode=%d OpState=%d"), path.GetPath(), filename,
 				m_Operation.nOpMode, m_Operation.nOpState);
 
 	USES_CONVERSION;
 
-	#define LIST_LISTFILE	1
+	#define LISTFILE_INIT	-1
+	#define LISTFILE_MLST	1
+	#define LISTFILE_SIZE	2
+	#define LISTFILE_MDTM	3
+	#define LISTFILE_PWD	4
+	#define LISTFILE_CWD	5
+	#define LISTFILE_CWD2	6
 
 	ASSERT(!m_Operation.nOpMode || m_Operation.nOpMode&CSMODE_LISTFILE);
 
@@ -2441,50 +2489,50 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 		return;
 	}
 
-	CListData *pData = static_cast<CListData *>(m_Operation.pData);
+	CListFileData * pData = static_cast<CListFileData *>(m_Operation.pData);
 
 	BOOL error = FALSE;
 	CString cmd;
 	CString retmsg;
 	int code = -1;
+	int num = -1;
 	switch (m_Operation.nOpState)
 	{
-	case LIST_INIT:
+	case LISTFILE_INIT:
 		//Initialize some variables
-		pData=new CListData;
-		pData->path=path;
-		pData->fileName=fileName;
-		m_Operation.pData=pData;
+		pData = new CListFileData;
+		pData->fileName = filename;
+		pData->dir = path.GetPath();
+		pData->path = path.FormatFilename(filename);
+		m_Operation.pData = pData;
 		ShowStatus(IDS_STATUSMSG_RETRIEVINGLISTFILE, FZ_LOG_STATUS);
-		pData->nFinish=-1;
-		if (m_pDirectoryListing)
+		if (UsingMlsd())
 		{
-			delete m_pDirectoryListing;
-			m_pDirectoryListing=0;
+			m_Operation.nOpState = LISTFILE_MLST;
+			cmd = L"MLST " + pData->path;
 		}
-		m_Operation.nOpState = LIST_LISTFILE;
-		cmd = _T("MLST ") + path.FormatFilename(fileName);
+		else
+		{
+			m_Operation.nOpState = LISTFILE_PWD;
+			cmd = L"PWD";
+		}
 		if (!Send(cmd))
-			return;
-		pData->ListStartTime=CTime::GetCurrentTime();
+		{
+			error = TRUE;
+		}
 		break;
-	case LIST_LISTFILE:
+	case LISTFILE_MLST:
 		retmsg = GetReply();
 		code = GetReplyCode();
 		if (IsMisleadingListResponse())
 		{
 			ShowStatus(IDS_STATUSMSG_LISTFILESUCCESSFUL, FZ_LOG_STATUS);
-
-			t_directory listing;
-			listing.server = m_CurrentServer;
-			listing.path = m_pOwner->GetCurrentPath();
-
-			SetDirectoryListing(&listing);
-			ResetOperation(FZ_REPLY_OK);
-			return;
+			num = 0;
 		}
 		else if (code != 2)
+		{
 			error = TRUE;
+		}
 		else
 		{
 			USES_CONVERSION;
@@ -2494,23 +2542,94 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 			CFtpListResult * pListResult = new CFtpListResult(m_CurrentServer, &m_bUTF8);
 			pListResult->InitLog(this);
 			pListResult->AddData(buffer, size);
-			int num = 0;
-			pData->pDirectoryListing = new t_directory;
 			if (COptions::GetOptionVal(OPTION_DEBUGSHOWLISTING))
 				pListResult->SendToMessageLog(m_pOwner->m_hOwnerWnd, m_pOwner->m_nReplyMessageID);
-			pData->pDirectoryListing->direntry = pListResult->getList(num, pData->ListStartTime);
-			pData->pDirectoryListing->num = num;
+			pData->direntry = pListResult->getList(num, CTime::GetCurrentTime());
 			if (pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
 				m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
-			pData->pDirectoryListing->server = m_CurrentServer;
-			pData->pDirectoryListing->path.SetServer(pData->pDirectoryListing->server);
-			pData->pDirectoryListing->path = m_pOwner->GetCurrentPath();
 			delete pListResult;
-
-			ShowStatus(IDS_STATUSMSG_LISTFILESUCCESSFUL,FZ_LOG_STATUS);
-			SetDirectoryListing(pData->pDirectoryListing);
-			ResetOperation(FZ_REPLY_OK);
-			return;
+		}
+		break;
+	case LISTFILE_PWD:
+		code = GetReplyCode();
+		retmsg = GetReply();
+		if ((code == 2) &&
+				ParsePwdReply(retmsg, pData->pwd) &&
+				Send(L"CWD " + pData->path))
+		{
+			m_Operation.nOpState = LISTFILE_CWD;
+		}
+		else
+		{
+			error = TRUE;
+		}
+		break;
+	case LISTFILE_CWD:
+		code = GetReplyCode();
+		pData->direntry = new t_directory::t_direntry[1];
+		pData->direntry->name = pData->fileName;
+		if (code == 2)
+		{
+			pData->direntry->dir = TRUE;
+			if (Send(L"CWD " + pData->pwd.GetPath()))
+			{
+				m_Operation.nOpState = LISTFILE_CWD2;
+			}
+			else
+			{
+				error = TRUE;
+			}
+		}
+		else
+		{
+			// CWD failed, file is not a directory, we should not need to restore PWD.
+			if (Send(L"SIZE " + pData->path))
+			{
+				m_Operation.nOpState = LISTFILE_SIZE;
+			}
+			else
+			{
+				error = TRUE;
+			}
+		}
+		break;
+	case LISTFILE_CWD2:
+		code = GetReplyCode();
+		if (code == 2)
+		{
+			// No point trying SIZE on directories.
+			// (More over IIS returns a multi-line response for SIZE /dir and we cannot handle that).
+			// IIS fails even for MDTM, so skipping even that.
+			num = 1;
+		}
+		// this should never really happen
+		else
+		{
+			error = TRUE;
+		}
+		break;
+	case LISTFILE_SIZE:
+		code = GetReplyCode();
+		// Ignore SIZE errors for directories
+		if ((HandleSize(code, pData->direntry->size) || pData->direntry->dir) &&
+				Send(L"MDTM " + pData->path))
+		{
+			m_Operation.nOpState = LISTFILE_MDTM;
+		}
+		else
+		{
+			error = TRUE;
+		}
+		break;
+	case LISTFILE_MDTM:
+		code = GetReplyCode();
+		if (HandleMdtm(code, pData->direntry->date))
+		{
+			num = 1;
+		}
+		else
+		{
+			error = TRUE;
 		}
 		break;
 	default:
@@ -2521,7 +2640,20 @@ void CFtpControlSocket::ListFile(CServerPath path /*=CServerPath()*/, CString fi
 	if (error)
 	{
 		ResetOperation(FZ_REPLY_ERROR);
-		return;
+	}
+	else if (num >= 0)
+	{
+		t_directory * pDirectoryListing = new t_directory;
+		pDirectoryListing->direntry = pData->direntry;
+		pData->direntry = NULL;
+		pDirectoryListing->num = num;
+		pDirectoryListing->server = m_CurrentServer;
+		pDirectoryListing->path.SetServer(pDirectoryListing->server);
+		pDirectoryListing->path = pData->dir;
+		ShowStatus(IDS_STATUSMSG_LISTFILESUCCESSFUL,FZ_LOG_STATUS);
+		SetDirectoryListing(pDirectoryListing);
+		delete pDirectoryListing;
+		ResetOperation(FZ_REPLY_OK);
 	}
 }
 #endif
@@ -2552,7 +2684,6 @@ void CFtpControlSocket::OnClose(int nErrorCode)
 		delete m_pTransferSocket;
 		m_pTransferSocket=0;
 		DoClose();
-		ShowStatus(IDS_ERRORMSG_TIMEOUT,FZ_LOG_ERROR);
 		return;
 	}
 #ifndef MPEXT_NO_SSL
@@ -3570,67 +3701,21 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			}
 			break;
 		case FILETRANSFER_NOLIST_SIZE:
-			if (code==2)
 			{
-				CString line = GetReply();
-				if ( line.GetLength()>4  &&  line.Left(4) == _T("213 ") )
+				__int64 size;
+				if (HandleSize(code, size))
 				{
-					__int64 size=_ttoi64(line.Mid(4));
 					ASSERT(!pData->pFileSize);
-					pData->pFileSize=static_cast<_int64 *>(nb_calloc(1, sizeof(_int64)));
+					pData->pFileSize=new _int64;
 					*pData->pFileSize=size;
 				}
 			}
 			m_Operation.nOpState=FILETRANSFER_NOLIST_MDTM;
 			break;
 		case FILETRANSFER_NOLIST_MDTM:
-			if (code==2)
+			if (HandleMdtm(code, pData->remoteDate))
 			{
-				CString line = GetReply();
-				if ( line.GetLength()>4  &&  line.Left(4) == _T("213 ") )
-				{
-					int y=0, M=0, d=0, h=0, m=0;
-					line=line.Mid(4);
-					y=_ttoi(line.Left(4));
-					if (y && line.GetLength()>4)
-					{
-						line=line.Mid(4);
-						M=_ttoi(line.Left(2));
-						if (M && line.GetLength()>2)
-						{
-							line=line.Mid(2);
-							d=_ttoi(line.Left(2));
-							if (d && line.GetLength()>2)
-							{
-								line=line.Mid(2);
-								h=_ttoi(line.Left(2));
-								if (h && line.GetLength()>2)
-								{
-									line=line.Mid(2);
-									m=_ttoi(line.Left(2));
-									if (m && line.GetLength()>2)
-									{
-										line=line.Mid(2);
-									}
-								}
-							}
-							if (M>0 && M<=12 && d>0 && d<=31 && h>=0 && h<24 && m>=0 && m<60)
-							{
-									pData->hasRemoteDate = true;
-									pData->remoteDate.year = y;
-									pData->remoteDate.month = M;
-									pData->remoteDate.day = d;
-									pData->remoteDate.hour = h;
-									pData->remoteDate.minute = m;
-									pData->remoteDate.second = 0;
-									pData->remoteDate.hastime = true;
-									pData->remoteDate.hasseconds = false;
-									pData->remoteDate.hasdate = true;
-									pData->remoteDate.utc = true;
-							}
-						}
-					}
-				}
+				pData->hasRemoteDate = true;
 			}
 			m_Operation.nOpState=FILETRANSFER_TYPE;
 			nReplyError=CheckOverwriteFile();
@@ -3823,7 +3908,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 					else if (pData->transferdata.localFileHandle==INVALID_HANDLE_VALUE)
 						res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeWrite|CFile::modeCreate|CFile::shareDenyWrite);
 					else
-						res = TRUE;
+						res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeWrite|CFile::modeCreate|CFile::shareDenyWrite);
 				}
 				else
 #ifdef MPEXT
@@ -3833,9 +3918,13 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 #endif
 				if (!res)
 				{
+					wchar_t * Error = m_pTools->LastSysErrorMessage();
 					//Error opening the file
 					CString str;
-					str.Format(IDS_ERRORMSG_FILEOPENFAILED,(LPCTSTR)pData->transferfile.localfile);
+					str.Format(IDS_ERRORMSG_FILEOPENFAILED,pData->transferfile.localfile);
+					str += L"\n";
+					str += Error;
+					free(Error);
 					ShowStatus(str,FZ_LOG_ERROR);
 					nReplyError = FZ_REPLY_ERROR;
 					break;
@@ -4588,6 +4677,75 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 	}
 }
 
+bool CFtpControlSocket::HandleMdtm(int code, t_directory::t_direntry::t_date & date)
+{
+	bool result = false;
+	if (code==2)
+	{
+		CString line = GetReply();
+		if ( line.GetLength()>4  &&  line.Left(4) == _T("213 ") )
+		{
+			int y=0, M=0, d=0, h=0, m=0;
+			line=line.Mid(4);
+			y=_ttoi(line.Left(4));
+			if (y && line.GetLength()>4)
+			{
+				line=line.Mid(4);
+				M=_ttoi(line.Left(2));
+				if (M && line.GetLength()>2)
+				{
+					line=line.Mid(2);
+					d=_ttoi(line.Left(2));
+					if (d && line.GetLength()>2)
+					{
+						line=line.Mid(2);
+						h=_ttoi(line.Left(2));
+						if (h && line.GetLength()>2)
+						{
+							line=line.Mid(2);
+							m=_ttoi(line.Left(2));
+							if (m && line.GetLength()>2)
+							{
+								line=line.Mid(2);
+							}
+						}
+					}
+					if (M>0 && M<=12 && d>0 && d<=31 && h>=0 && h<24 && m>=0 && m<60)
+					{
+						result = true;
+						date.year = y;
+						date.month = M;
+						date.day = d;
+						date.hour = h;
+						date.minute = m;
+						date.second = 0;
+						date.hastime = true;
+						date.hasseconds = false;
+						date.hasdate = true;
+						date.utc = true;
+					}
+				}
+			}
+		}
+	}
+	return result;
+}
+
+bool CFtpControlSocket::HandleSize(int code, __int64 & size)
+{
+	bool result = false;
+	if (code == 2)
+	{
+		CString line = GetReply();
+		if ((line.GetLength() > 4) && (line.Left(4) == _T("213 ")))
+		{
+			size = _ttoi64(line.Mid(4));
+			result = true;
+		}
+	}
+	return result;
+}
+
 void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
 {
 	CFileTransferData *pData=static_cast<CFileTransferData *>(m_Operation.pData);
@@ -4597,7 +4755,7 @@ void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
 	{
 		#ifdef MPEXT
 		m_pTools->PreserveDownloadFileTime(
-			(HANDLE)m_pDataFile->m_hFile, reinterpret_cast<void *>(pData->transferfile.UserData));
+			(HANDLE)m_pDataFile->m_hFile, reinterpret_cast<void *>(pData->transferfile.nUserData));
 		#else
 		if (pData->pFileTime)
 		{
@@ -4612,7 +4770,8 @@ void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
 #ifdef MPEXT
 	if (!pData->transferfile.get &&
 			COptions::GetOptionVal(OPTION_MPEXT_PRESERVEUPLOADFILETIME) && preserveFileTimeForUploads &&
-			(m_serverCapabilities.GetCapability(mfmt_command) == yes))
+			((m_serverCapabilities.GetCapability(mfmt_command) == yes) ||
+			 (m_serverCapabilities.GetCapability(mdtm_command) == yes)))
 	{
 		CString filename =
 			pData->transferfile.remotepath.FormatFilename(pData->transferfile.remotefile, !pData->bUseAbsolutePaths);
@@ -4622,7 +4781,21 @@ void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
 			CString timestr;
 			timestr.Format(L"%02d%02d%02d%02d%02d%02d",
 				1900 + tm.tm_year, 1 + tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-			if (Send( _T("MFMT ") + timestr + _T(" ") + filename))
+			CString command;
+			if (m_serverCapabilities.GetCapability(mfmt_command) == yes)
+			{
+				command = _T("MFMT");
+			}
+			else
+			{
+				// Support for MDTM does not necessarily mean
+				// that the server supportsnon-standard hack
+				// of setting timestamp using
+				// MFMT-like (two argument) call to MDTM.
+				// IIS definitelly does.
+				command = _T("MDTM");
+			}
+			if (Send( command + _T(" ") + timestr + _T(" ") + filename))
 			{
 				m_Operation.nOpState = FILETRANSFER_MFMT;
 				return;
@@ -6100,6 +6273,17 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 
 BOOL CFtpControlSocket::ParsePwdReply(CString& rawpwd)
 {
+	CServerPath realPath;
+	BOOL Result = ParsePwdReply(rawpwd, realPath);
+	if (Result)
+	{
+		m_pOwner->SetCurrentPath(realPath);
+	}
+	return Result;
+}
+
+BOOL CFtpControlSocket::ParsePwdReply(CString& rawpwd, CServerPath & realPath)
+{
 	CListData *pData = static_cast<CListData *>(m_Operation.pData);
 	ASSERT(pData);
 
@@ -6125,7 +6309,7 @@ BOOL CFtpControlSocket::ParsePwdReply(CString& rawpwd)
 	}
 	rawpwd = rawpwd.Mid(pos1 + 1, pos2 - pos1 - 1);
 
-	CServerPath realPath = m_pOwner->GetCurrentPath();
+	realPath = m_pOwner->GetCurrentPath();
 	realPath.SetServer(m_CurrentServer);
 	if (!realPath.SetPath(rawpwd))
 	{
@@ -6133,7 +6317,6 @@ BOOL CFtpControlSocket::ParsePwdReply(CString& rawpwd)
 		ResetOperation(FZ_REPLY_ERROR);
 		return FALSE;
 	}
-	m_pOwner->SetCurrentPath(realPath);
 
 	return TRUE;
 }
@@ -6157,9 +6340,24 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 		{
 			m_serverCapabilities.SetCapability(mlsd_command, yes);
 		}
+		else if (line == _MPAT(" MDTM"))
+		{
+			m_serverCapabilities.SetCapability(mdtm_command, yes);
+		}
+		else if (line == _MPAT(" SIZE"))
+		{
+			m_serverCapabilities.SetCapability(size_command, yes);
+		}
 		else if (line.Left(5) == _MPAT(" MLST"))
 		{
 			USES_CONVERSION;
+			// This is wrong, the -1 for length does not work with
+			// Mid(), so result is always an empty string.
+			// Consequently CONNECT_FEAT state code in
+			// LogOnToServer() is never triggered
+			// and OPTS MLST command is never sent.
+			// Also using 6 index when there are no facts after
+			// MLST (ftp.drivehq.com) triggers an assertion.
 			m_serverCapabilities.SetCapability(mlsd_command, yes, (LPCSTR)line.Mid(6, -1));
 		}
 		else if (line == _MPAT(" MFMT"))
@@ -6218,12 +6416,12 @@ CString CFtpControlSocket::GetReply()
 	{
 		// convert from UTF-8 to ANSI
 		LPCSTR utf8 = (LPCSTR)m_RecvBuffer.front();
-		if (m_Operation.nOpMode&CSMODE_LISTFILE && m_Operation.nOpState==LIST_LISTFILE)
+		if (m_Operation.nOpMode&CSMODE_LISTFILE && m_Operation.nOpState==LISTFILE_MLST)
 		{
 			if (GetReplyCode() == 2)
 				line = (LPCSTR)m_ListFile;
 		}
-		if (!utf8_valid((const uint8_t*)line, (int)strlen(line)))
+		if (!utf8_valid((const unsigned char*)line, strlen(line)))
 		{
 			if (m_CurrentServer.nUTF8 != 1)
 			{
