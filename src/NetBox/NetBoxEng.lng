@@ -1140,8 +1140,7 @@
 
 "Unlimited"
 "TLS/SSL Implicit encryption"
-"SSL Explicit encryption"
-"TLS Explicit encryption"
+"TLS/SSL Explicit encryption"
 
 "Host key fingerprint is %s."
 
