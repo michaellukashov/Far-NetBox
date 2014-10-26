@@ -544,7 +544,7 @@ UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uintptr_t 
   else
   {
 //    Result = UnicodeString(AnsiString(Input.c_str()));
-    Result = ::MB2W(Line.c_str(), (UINT)CodePage);
+    Result = ::MB2W(Input.c_str(), (UINT)CodePage);
   }
   return Result;
 }
