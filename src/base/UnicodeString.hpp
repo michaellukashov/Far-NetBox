@@ -33,7 +33,7 @@ public:
   UTF8String & Insert(const wchar_t * Str, intptr_t Pos);
   UTF8String SubString(intptr_t Pos, intptr_t Len = -1) const;
 
-  intptr_t Pos(wchar_t Ch) const;
+  intptr_t Pos(char Ch) const;
 
 public:
   UTF8String & operator=(const UnicodeString & StrCopy);

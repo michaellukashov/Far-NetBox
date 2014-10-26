@@ -327,7 +327,7 @@ UTF8String &UTF8String::Delete(intptr_t Index, intptr_t Count)
   Data.erase(Index - 1, Count); return *this;
 }
 
-intptr_t UTF8String::Pos(wchar_t Ch) const
+intptr_t UTF8String::Pos(char Ch) const
 {
   return Data.find(Ch) + 1;
 }
