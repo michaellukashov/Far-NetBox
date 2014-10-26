@@ -481,22 +481,24 @@ int CFileZillaApi::List(const CServerPath& parent, CString dirname, int nListMod
 }
 
 #ifdef MPEXT
-int CFileZillaApi::ListFile(const CString& fileName, const CServerPath& path)
+int CFileZillaApi::ListFile(const CString & fileName, const CServerPath & path)
 {
 	//Check if call allowed
 	if (!m_bInitialized)
 		return FZ_REPLY_NOTINITIALIZED;
 	if (IsConnected()==FZ_REPLY_NOTCONNECTED)
 		return FZ_REPLY_NOTCONNECTED;
-	if (fileName.IsEmpty())
+	if (path.IsEmpty())
 		return FZ_REPLY_INVALIDPARAM;
-
+	if (FileName=="")
+		return FZ_REPLY_INVALIDPARAM;
+	
 	if (m_pMainThread->IsBusy())
 		return FZ_REPLY_BUSY;
 	t_command command;
 	command.id=FZ_COMMAND_LISTFILE;
+	command.param1=FileName;
 	command.path=path;
-	command.param1=fileName;
 	m_pMainThread->Command(command);
 	if (m_hOwnerWnd)
 		return FZ_REPLY_WOULDBLOCK;

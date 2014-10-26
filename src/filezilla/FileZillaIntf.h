@@ -180,7 +180,7 @@ public:
   bool List();
   bool List(const wchar_t * Path);
 #ifdef MPEXT
-  bool ListFile(const wchar_t * FullFileName, const wchar_t * APath);
+  bool __fastcall ListFile(const wchar_t * FileName, const wchar_t * APath);
 #endif
 
   bool CustomCommand(const wchar_t * Command);
