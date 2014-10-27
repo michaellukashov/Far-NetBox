@@ -788,7 +788,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
 void TWinSCPPlugin::CleanupConfiguration()
 {
   // Check if key Configuration\Version exists
-  std::unique_ptr<THierarchicalStorage> Storage(GetFarConfiguration()->CreateStorage(false));
+  std::unique_ptr<THierarchicalStorage> Storage(GetFarConfiguration()->CreateConfigStorage());
   Storage->SetAccessMode(smReadWrite);
   if (Storage->OpenSubKey(GetFarConfiguration()->GetConfigurationSubKey(), false))
   {
