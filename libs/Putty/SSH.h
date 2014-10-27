@@ -334,7 +334,7 @@ extern int ssh_fallback_cmd(void *handle);
 void SHATransform(word32 * digest, word32 * data);
 #endif
 
-// GLOBAL int random_byte(void);
+int random_byte(void);
 void random_add_noise(void *noise, int length);
 void random_add_heavynoise(void *noise, int length);
 
