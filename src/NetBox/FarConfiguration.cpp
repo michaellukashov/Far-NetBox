@@ -69,8 +69,8 @@ void TFarConfiguration::Default()
   SetApplyCommandCommand(L"");
   SetApplyCommandParams(0);
 
-  SetPuttygenPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + L"putty\\puttygen.exe", L""));
-  SetPageantPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + L"putty\\pageant.exe", L""));
+  SetPuttygenPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\puttygen.exe", L""));
+  SetPageantPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\pageant.exe", L""));
 
   FBookmarks->Clear();
 }
@@ -78,7 +78,6 @@ void TFarConfiguration::Default()
 THierarchicalStorage * TFarConfiguration::CreateScpStorage(bool & /*SessionList*/)
 {
   assert(FFarPlugin);
-  // return TGUIConfiguration::CreateScpStorage(SessionList);
   return FFarPlugin ? new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl) : nullptr;
 }
 
@@ -159,8 +158,7 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 
 void TFarConfiguration::Load()
 {
-  bool SessionList = false;
-  std::unique_ptr<THierarchicalStorage> Storage(CreateScpStorage(SessionList));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   FForceInheritance = true;
   SCOPE_EXIT
   {

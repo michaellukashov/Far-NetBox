@@ -165,7 +165,7 @@ bool FindTool(const UnicodeString & Name, UnicodeString & APath)
   bool Result = true;
   if (!::FileExists(APath))
   {
-    APath = AppPath + L"PuTTY\\" + Name;
+    APath = AppPath + "PuTTY\\" + Name;
     if (!::FileExists(APath))
     {
       APath = Name;

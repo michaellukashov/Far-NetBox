@@ -380,7 +380,7 @@ void TFTPFileSystem::Open()
       break;
   }
 
-  // FPasswordFailed = false;
+  FPasswordFailed = false;
   bool PromptedForCredentials = false;
 
   do
@@ -397,7 +397,7 @@ void TFTPFileSystem::Open()
     {
       FTerminal->LogEvent("Username prompt (no username provided)");
 
-      if (!PromptedForCredentials)
+      if (!FPasswordFailed && !PromptedForCredentials)
       {
         FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
         PromptedForCredentials = true;
@@ -414,6 +414,20 @@ void TFTPFileSystem::Open()
       }
     }
 
+    // on retry ask for password
+    if (FPasswordFailed)
+    {
+      FTerminal->LogEvent("Password prompt (last login attempt failed)");
+
+      // on retry ask for new password
+      Password.Clear();
+      if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
+            LoadStr(PASSWORD_PROMPT), false, 0, Password))
+      {
+        FTerminal->FatalError(nullptr, LoadStr(AUTHENTICATION_FAILED));
+      }
+    }
+
     FPasswordFailed = false;
     TAutoFlag OpeningFlag(FOpening);
 
@@ -421,9 +435,9 @@ void TFTPFileSystem::Open()
       HostName.c_str(), static_cast<int>(Data->GetPortNumber()), UserName.c_str(),
       Password.c_str(), Account.c_str(), false, Path.c_str(),
       ServerType, Pasv, static_cast<int>(TimeZoneOffset), UTF8,
-       static_cast<int>(Data->GetFtpForcePasvIp()),
-       static_cast<int>(Data->GetFtpUseMlsd()),
-       static_cast<int>(Data->GetFtpDupFF()),
+      static_cast<int>(Data->GetFtpForcePasvIp()),
+      static_cast<int>(Data->GetFtpUseMlsd()),
+      static_cast<int>(Data->GetFtpDupFF()),
       static_cast<int>(Data->GetFtpUndupFF()));
 
     assert(FActive);
@@ -444,7 +458,9 @@ void TFTPFileSystem::Open()
     {
       if (FPasswordFailed)
       {
-        FTerminal->Information(LoadStr(FTP_ACCESS_DENIED), false);
+        FTerminal->Information(
+          LoadStr(Password.IsEmpty() ? FTP_ACCESS_DENIED_EMPTY_PASSWORD : FTP_ACCESS_DENIED),
+          false);
       }
       else
       {
@@ -602,7 +618,7 @@ void TFTPFileSystem::CollectUsage()
   }
 */
 }
-//---------------------------------------------------------------------------
+
 void TFTPFileSystem::Idle()
 {
   if (FActive && !FWaitingForReply)

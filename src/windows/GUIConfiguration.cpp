@@ -558,18 +558,18 @@ void TGUIConfiguration::Default()
   FSessionRememberPassword = false;
   UnicodeString ProgramsFolder;
   SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
-  FDefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
-  FDefaultPuttyPath = FormatCommand(L"%PROGRAMFILES%\\PuTTY\\putty.exe", L"");
+  FDefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + "PuTTY\\putty.exe";
+  FDefaultPuttyPath = FormatCommand("%PROGRAMFILES%\\PuTTY\\putty.exe", L"");
   FPuttyPath = FDefaultPuttyPath;
-  SetPSftpPath(FormatCommand(L"%PROGRAMFILES%\\PuTTY\\psftp.exe", L""));
+  SetPSftpPath(FormatCommand("%PROGRAMFILES%\\PuTTY\\psftp.exe", L""));
   FPuttyPassword = false;
   FTelnetForFtpInPutty = true;
-  FPuttySession = L"WinSCP temporary session";
+  FPuttySession = "WinSCP temporary session";
   FBeepOnFinish = false;
   FBeepOnFinishAfter = TDateTime(0, 0, 30, 0);
   FCopyParamCurrent.Clear();
   FKeepUpToDateChangeDelay = 500;
-  FChecksumAlg = L"md5";
+  FChecksumAlg = "md5";
   FSessionReopenAutoIdle = 9000;
 
   FNewDirectoryProperties.Default();
@@ -598,7 +598,7 @@ void TGUIConfiguration::DefaultLocalized()
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, nullptr);
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
-      CopyParam->GetIncludeFileMask().SetMasks(L"|*.bak; *.tmp; ~$*; *.wbk; *~; #*; .#*");
+      CopyParam->GetIncludeFileMask().SetMasks("|*.bak; *.tmp; ~$*; *.wbk; *~; #*; .#*");
       CopyParam->SetNewerOnly(true);
       FCopyParamList->Add(LoadStr(COPY_PARAM_NEWER_ONLY), CopyParam, nullptr);
     }

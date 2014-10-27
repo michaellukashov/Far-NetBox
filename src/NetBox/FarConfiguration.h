@@ -19,8 +19,8 @@ public:
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
   virtual void Default();
-  // virtual THierarchicalStorage * CreateConfigStorage();
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
+  void CacheFarSettings();
 
   const TCustomFarPlugin * GetPlugin() const { return FFarPlugin; }
   TCustomFarPlugin * GetPlugin() { return FFarPlugin; }
@@ -77,8 +77,6 @@ public:
   void SetPuttygenPath(const UnicodeString & Value) { FPuttygenPath = Value; }
   TBookmarkList * GetBookmarks(const UnicodeString & Key);
   void SetBookmarks(const UnicodeString & Key, TBookmarkList * Value);
-
-  void CacheFarSettings();
 
 protected:
   virtual bool GetConfirmOverwriting() const;
