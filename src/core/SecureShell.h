@@ -78,7 +78,7 @@ public:
   void AskAlg(const UnicodeString & AlgType, const UnicodeString & AlgName);
   void DisplayBanner(const UnicodeString & Banner);
   void OldKeyfileWarning();
-  void PuttyLogEvent(const char * Str);
+  void PuttyLogEvent(const char * AStr);
   UnicodeString ConvertFromPutty(const char * Str, int Length) const;
 
   bool GetReady() const;
