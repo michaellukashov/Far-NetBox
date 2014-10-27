@@ -618,7 +618,7 @@ void TFTPFileSystem::CollectUsage()
   }
 */
 }
-//---------------------------------------------------------------------------
+
 void TFTPFileSystem::Idle()
 {
   if (FActive && !FWaitingForReply)
