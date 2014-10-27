@@ -16,6 +16,12 @@ public:
   explicit TFarConfiguration(TCustomFarPlugin * APlugin);
   virtual ~TFarConfiguration();
 
+  virtual void Load();
+  virtual void Save(bool All, bool Explicit);
+  virtual void Default();
+  // virtual THierarchicalStorage * CreateConfigStorage();
+  virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
+
   const TCustomFarPlugin * GetPlugin() const { return FFarPlugin; }
   TCustomFarPlugin * GetPlugin() { return FFarPlugin; }
   void SetPlugin(TCustomFarPlugin * Value);
@@ -72,10 +78,6 @@ public:
   TBookmarkList * GetBookmarks(const UnicodeString & Key);
   void SetBookmarks(const UnicodeString & Key, TBookmarkList * Value);
 
-  virtual void Load();
-  virtual void Save(bool All, bool Explicit);
-  virtual void Default();
-  virtual THierarchicalStorage * CreateStorage(bool SessionList);
   void CacheFarSettings();
 
 protected:
