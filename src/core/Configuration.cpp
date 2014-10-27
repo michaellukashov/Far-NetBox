@@ -58,7 +58,7 @@ TConfiguration::TConfiguration() :
   UnicodeString Str = ::ExpandEnvironmentVariables("APPDATA");
   if (!Str.IsEmpty())
   {
-    RandomSeedPath = L"%APPDATA%";
+    RandomSeedPath = "%APPDATA%";
   }
   else
   {
@@ -69,7 +69,7 @@ TConfiguration::TConfiguration() :
     }
   }
 
-  FDefaultRandomSeedFile = ::IncludeTrailingBackslash(RandomSeedPath) + L"winscp.rnd";
+  FDefaultRandomSeedFile = ::IncludeTrailingBackslash(RandomSeedPath) + "winscp.rnd";
 }
 
 void TConfiguration::Default()
@@ -116,7 +116,7 @@ void TConfiguration::Default()
   UpdateActualLogProtocol();
   FLogActions = false;
   FPermanentLogActions = false;
-  FActionsLogFileName = L"%TEMP%\\&S.xml";
+  FActionsLogFileName = "%TEMP%\\&S.xml";
   FPermanentActionsLogFileName = FActionsLogFileName;
   FProgramIniPathWrittable = -1;
 
@@ -817,7 +817,7 @@ UnicodeString TConfiguration::GetVersionStr() const
   }
   catch (Exception & E)
   {
-    throw ExtException(&E, L"Can't get application version");
+    throw ExtException(&E, "Can't get application version");
   }
   return Result;
 }
@@ -839,7 +839,7 @@ UnicodeString TConfiguration::GetVersion() const
   }
   catch (Exception & E)
   {
-    throw ExtException(&E, L"Can't get application version");
+    throw ExtException(&E, "Can't get application version");
   }
   return Result;
 }
@@ -1001,22 +1001,22 @@ TStrings * TConfiguration::GetOptionsStorage()
 
 UnicodeString TConfiguration::GetPuttySessionsKey() const
 {
-  return GetPuttyRegistryStorageKey() + L"\\Sessions";
+  return GetPuttyRegistryStorageKey() + "\\Sessions";
 }
 
 UnicodeString TConfiguration::GetStoredSessionsSubKey() const
 {
-  return L"Sessions";
+  return "Sessions";
 }
 
 UnicodeString TConfiguration::GetSshHostKeysSubKey() const
 {
-  return L"SshHostKeys";
+  return "SshHostKeys";
 }
 
 UnicodeString TConfiguration::GetConfigurationSubKey() const
 {
-  return L"Configuration";
+  return "Configuration";
 }
 
 UnicodeString TConfiguration::GetRootKeyStr() const
@@ -1252,7 +1252,7 @@ bool TConfiguration::GetLogWindowComplete() const
 UnicodeString TConfiguration::GetDefaultLogFileName() const
 {
   // return IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"winscp.log";
-  return L"%TEMP%\\&S.log";
+  return "%TEMP%\\&S.log";
 }
 
 void TConfiguration::SetConfirmOverwriting(bool Value)
@@ -1293,7 +1293,7 @@ bool TConfiguration::GetAutoReadDirectoryAfterOp() const
 
 UnicodeString TConfiguration::GetTimeFormat() const
 {
-  return L"h:nn:ss";
+  return "h:nn:ss";
 }
 
 UnicodeString TConfiguration::GetPartialExt() const
