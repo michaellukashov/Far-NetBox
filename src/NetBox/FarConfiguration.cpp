@@ -59,7 +59,7 @@ void TFarConfiguration::Default()
   FBookmarks->Clear();
 }
 
-THierarchicalStorage * TFarConfiguration::CreateStorage(bool SessionList)
+THierarchicalStorage * TFarConfiguration::CreateScpStorage(bool & SessionList)
 {
   return TGUIConfiguration::CreateScpStorage(SessionList);
 }
@@ -141,8 +141,7 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 
 void TFarConfiguration::Load()
 {
-  bool SessionList = false;
-  std::unique_ptr<THierarchicalStorage> Storage(CreateStorage(SessionList));
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   FForceInheritance = true;
   SCOPE_EXIT
   {

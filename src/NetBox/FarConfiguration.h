@@ -15,6 +15,12 @@ public:
   explicit TFarConfiguration(TCustomFarPlugin * APlugin);
   virtual ~TFarConfiguration();
 
+  virtual void Load();
+  virtual void Save(bool All, bool Explicit);
+  virtual void Default();
+  virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
+  void CacheFarSettings();
+
   const TCustomFarPlugin * GetPlugin() const { return FFarPlugin; }
   TCustomFarPlugin * GetPlugin() { return FFarPlugin; }
   void SetPlugin(TCustomFarPlugin * Value);
@@ -70,12 +76,6 @@ public:
   void SetPuttygenPath(const UnicodeString & Value) { FPuttygenPath = Value; }
   TBookmarkList * GetBookmarks(const UnicodeString & Key);
   void SetBookmarks(const UnicodeString & Key, TBookmarkList * Value);
-
-  virtual void Load();
-  virtual void Save(bool All, bool Explicit);
-  virtual void Default();
-  virtual THierarchicalStorage * CreateStorage(bool SessionList);
-  void CacheFarSettings();
 
 protected:
   virtual bool GetConfirmOverwriting() const;
