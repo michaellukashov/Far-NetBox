@@ -146,10 +146,10 @@ void TConfiguration::UpdateStaticUsage()
 THierarchicalStorage * TConfiguration::CreateConfigStorage()
 {
   bool SessionList = false;
-  return CreateScpStorage(SessionList);
+  return CreateStorage(SessionList);
 }
 
-THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
+THierarchicalStorage * TConfiguration::CreateStorage(bool & SessionList)
 {
   THierarchicalStorage * Result = nullptr;
   if (GetStorage() == stRegistry)

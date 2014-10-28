@@ -115,7 +115,7 @@ void DeleteConfiguration()
 void CoreLoad()
 {
   bool SessionList = true;
-  std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateScpStorage(SessionList));
+  std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateStorage(SessionList));
   THierarchicalStorage * ConfigStorage = nullptr;
   std::unique_ptr<THierarchicalStorage> ConfigStorageAuto;
   if (!SessionList)

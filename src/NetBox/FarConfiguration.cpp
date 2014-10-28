@@ -59,9 +59,9 @@ void TFarConfiguration::Default()
   FBookmarks->Clear();
 }
 
-THierarchicalStorage * TFarConfiguration::CreateScpStorage(bool & SessionList)
+THierarchicalStorage * TFarConfiguration::CreateStorage(bool & SessionList)
 {
-  return TGUIConfiguration::CreateScpStorage(SessionList);
+  return TGUIConfiguration::CreateStorage(SessionList);
 }
 
 void TFarConfiguration::Saved()

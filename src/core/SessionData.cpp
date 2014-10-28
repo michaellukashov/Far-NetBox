@@ -1275,7 +1275,7 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
 void TSessionData::Remove()
 {
   bool SessionList = true;
-  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(SessionList));
   Storage->SetExplicit(true);
   if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false))
   {
@@ -3304,7 +3304,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
 void TStoredSessionList::Load()
 {
   bool SessionList = true;
-  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(SessionList));
   if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
   {
     Load(Storage.get());
@@ -3365,7 +3365,7 @@ void TStoredSessionList::DoSave(bool All, bool Explicit,
   bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors)
 {
   bool SessionList = true;
-  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(SessionList));
   Storage->SetAccessMode(smReadWrite);
   Storage->SetExplicit(Explicit);
   if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
