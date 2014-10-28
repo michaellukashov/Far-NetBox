@@ -448,7 +448,7 @@ public:
   const TObjectList * GetItems() const { return const_cast<TFarPanelInfo *>(this)->GetItems(); }
   TObjectList * GetItems();
   intptr_t GetItemCount() const;
-  TFarPanelItem * GetFocusedItem();
+  TFarPanelItem * GetFocusedItem() const;
   void SetFocusedItem(const TFarPanelItem * Value);
   intptr_t GetFocusedIndex() const;
   void SetFocusedIndex(intptr_t Value);

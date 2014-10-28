@@ -2576,10 +2576,10 @@ void TFarPanelInfo::ApplySelection()
   FOwner->FarControl(FCTL_SETSELECTION, 0, reinterpret_cast<intptr_t>(FPanelInfo));
 }
 
-TFarPanelItem * TFarPanelInfo::GetFocusedItem()
+TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
 {
   intptr_t Index = GetFocusedIndex();
-  TObjectList * Items = GetItems();
+  const TObjectList * Items = GetItems();
   if (Items->GetCount() > 0)
   {
     assert(Index < Items->GetCount());
