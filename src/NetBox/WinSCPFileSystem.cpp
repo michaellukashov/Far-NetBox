@@ -614,6 +614,7 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
 
 void TWinSCPFileSystem::FocusSession(const TSessionData * Data)
 {
+  ResetCachedInfo();
   const TFarPanelItem * SessionItem = GetPanelInfo()->FindUserData(Data);
   if (SessionItem != nullptr)
   {
