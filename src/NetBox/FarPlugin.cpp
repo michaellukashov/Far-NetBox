@@ -2593,7 +2593,9 @@ TObjectList * TFarPanelInfo::GetItems()
 
 TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & AFileName) const
 {
-  const TObjectList * Items = GetItems();
+  const TObjectList * Items = FItems;
+  if (!Items)
+    Items = GetItems();
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
     TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, Items->GetItem(Index));
