@@ -214,7 +214,7 @@ protected:
   bool SupportsReadingFile() const;
   void AutoDetectTimeDifference(TRemoteFileList * FileList);
   void ApplyTimeDifference(TRemoteFile * File);
-  bool TimeZoneDifferenceApplicable(TModificationFmt ModificationFmt) const;
+  bool GetTimeZoneDifferenceApplicable(TModificationFmt ModificationFmt) const;
 
   static bool Unquote(UnicodeString & Str);
   static UnicodeString ExtractStatusMessage(const UnicodeString & Status);
