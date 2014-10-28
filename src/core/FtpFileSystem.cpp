@@ -23,6 +23,7 @@
 #include <openssl/x509_vfy.h>
 
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
+#undef FILE_OPERATION_LOOP_EX
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
     [&]() { OPERATION })
@@ -2033,7 +2034,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
   FLastDataSent = Now();
 }
 
-bool TFTPFileSystem::TimeZoneDifferenceApplicable(TModificationFmt ModificationFmt) const
+bool TFTPFileSystem::GetTimeZoneDifferenceApplicable(TModificationFmt ModificationFmt) const
 {
   // Full precision is available for MLST only, so we would not be here.
   return (ModificationFmt == mfMDHM) || ALWAYS_FALSE(ModificationFmt == mfFull);
@@ -2041,7 +2042,7 @@ bool TFTPFileSystem::TimeZoneDifferenceApplicable(TModificationFmt ModificationF
 
 void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
 {
-  if (TimeZoneDifferenceApplicable(File->GetModificationFmt()))
+  if (GetTimeZoneDifferenceApplicable(File->GetModificationFmt()))
   {
     assert(File->GetModification() == File->GetLastAccess());
     File->SetModification(IncSecond(File->GetModification(), FTimeDifference));
@@ -2062,7 +2063,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
       // (it should not be problem to use them otherwise).
       // We are also not interested in files with day precision only.
       if (!File->GetIsDirectory() && !File->GetIsSymLink() &&
-          TimeZoneDifferenceApplicable(File->GetModificationFmt()))
+          GetTimeZoneDifferenceApplicable(File->GetModificationFmt()))
       {
         FDetectTimeDifference = false;
 

@@ -2574,7 +2574,7 @@ TObjectList * TFarPanelInfo::GetItems()
   }
   if (FOwner)
   {
-    FItems->Clear();
+    assert(FItems->GetCount() == 0);
     for (size_t Index = 0; Index < FPanelInfo->ItemsNumber; ++Index)
     {
       // TODO: move to common function
@@ -2593,10 +2593,10 @@ TObjectList * TFarPanelInfo::GetItems()
 
 TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & AFileName) const
 {
-  const TObjectList * AItems = GetItems();
-  for (intptr_t Index = 0; Index < AItems->GetCount(); ++Index)
+  const TObjectList * Items = GetItems();
+  for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, AItems->GetItem(Index));
+    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, Items->GetItem(Index));
     if (PanelItem->GetFileName() == AFileName)
     {
       return PanelItem;
@@ -2612,10 +2612,10 @@ const TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData) const
 
 TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData)
 {
-  TObjectList * AItems = GetItems();
-  for (intptr_t Index = 0; Index < AItems->GetCount(); ++Index)
+  TObjectList * Items = GetItems();
+  for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, AItems->GetItem(Index));
+    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, Items->GetItem(Index));
     if (PanelItem->GetUserData() == UserData)
     {
       return PanelItem;
@@ -2631,10 +2631,10 @@ void TFarPanelInfo::ApplySelection()
   FOwner->FarControl(FCTL_SETSELECTION, 0, reinterpret_cast<void *>(FPanelInfo));
 }
 
-TFarPanelItem * TFarPanelInfo::GetFocusedItem()
+TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
 {
   intptr_t Index = GetFocusedIndex();
-  TObjectList * Items = GetItems();
+  const TObjectList * Items = GetItems();
   if (Items->GetCount() > 0)
   {
     assert(Index < Items->GetCount());
@@ -2648,10 +2648,12 @@ TFarPanelItem * TFarPanelInfo::GetFocusedItem()
 
 void TFarPanelInfo::SetFocusedItem(const TFarPanelItem * Value)
 {
-  TObjectList * Items = GetItems();
-  intptr_t Index = Items->IndexOf(Value);
-  assert(Index != NPOS);
-  SetFocusedIndex(Index);
+  if (FItems && FItems->GetCount())
+  {
+    intptr_t Index = FItems->IndexOf(Value);
+    assert(Index != NPOS);
+    SetFocusedIndex(Index);
+  }
 }
 
 intptr_t TFarPanelInfo::GetFocusedIndex() const

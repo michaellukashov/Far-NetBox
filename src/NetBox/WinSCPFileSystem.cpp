@@ -616,10 +616,11 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
 
 void TWinSCPFileSystem::FocusSession(const TSessionData * Data)
 {
-  const TFarPanelItem * SessionItem = GetPanelInfo()->FindUserData(Data);
+  TFarPanelInfo * PanelInfo = GetPanelInfo();
+  const TFarPanelItem * SessionItem = PanelInfo->FindUserData(Data);
   if (SessionItem != nullptr)
   {
-    GetPanelInfo()->SetFocusedItem(SessionItem);
+    PanelInfo->SetFocusedItem(SessionItem);
   }
 }
 
@@ -717,9 +718,10 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
     if (UpdatePanel())
     {
       RedrawPanel();
-      if (GetPanelInfo()->GetItemCount())
+      TFarPanelInfo * PanelInfo = GetPanelInfo();
+      if (PanelInfo && PanelInfo->GetItemCount())
       {
-        GetPanelInfo()->SetFocusedIndex(0);
+        PanelInfo->SetFocusedIndex(0);
       }
     }
   }
@@ -887,7 +889,8 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
 {
   bool Handled = false;
 
-  TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
+  const TFarPanelInfo * PanelInfo = GetPanelInfo();
+  const TFarPanelItem * Focused = PanelInfo->GetFocusedItem();
 
   if ((Key == 'W') && (ControlState & SHIFTMASK) &&
       (ControlState & ALTMASK))
@@ -1046,9 +1049,10 @@ void TWinSCPFileSystem::CreateLink()
   UnicodeString PointTo;
   bool SymbolicLink = true;
 
-  if (GetPanelInfo()->GetFocusedItem() && GetPanelInfo()->GetFocusedItem()->GetUserData())
+  const TFarPanelInfo * PanelInfo = GetPanelInfo();
+  if (PanelInfo && PanelInfo->GetFocusedItem() && PanelInfo->GetFocusedItem()->GetUserData())
   {
-    File = NB_STATIC_DOWNCAST(TRemoteFile, GetPanelInfo()->GetFocusedItem()->GetUserData());
+    File = NB_STATIC_DOWNCAST(TRemoteFile, PanelInfo->GetFocusedItem()->GetUserData());
 
     Edit = File->GetIsSymLink() && GetTerminal()->GetSessionData()->GetResolveSymlinks();
     if (Edit)
@@ -1416,9 +1420,10 @@ void TWinSCPFileSystem::GetSynchronizeOptions(
     Options.Filter->SetCaseSensitive(false);
     Options.Filter->SetDuplicates(dupAccept);
 
-    if (GetPanelInfo()->GetSelectedCount() > 0)
+    TFarPanelInfo * PanelInfo = GetPanelInfo();
+    if (PanelInfo->GetSelectedCount() > 0)
     {
-      CreateFileList(GetPanelInfo()->GetItems(), osRemote, true, L"", true, Options.Filter);
+      CreateFileList(PanelInfo->GetItems(), osRemote, true, L"", true, Options.Filter);
     }
     if (GetAnotherPanelInfo()->GetSelectedCount() > 0)
     {
@@ -1757,7 +1762,7 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
 
 void TWinSCPFileSystem::RenameFile()
 {
-  TFarPanelItem * PanelItem = GetPanelInfo()->GetFocusedItem();
+  const TFarPanelItem * PanelItem = GetPanelInfo()->GetFocusedItem();
   assert(PanelItem != nullptr);
 
   if (!PanelItem->GetIsParentDirectory())
@@ -1860,7 +1865,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString & Token, bo
 
 void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 {
-  TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
+  const TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
 
   if (Focused != nullptr)
   {
@@ -1884,7 +1889,7 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 
 void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
 {
-  TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
+  const TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
 
   if (Focused != nullptr)
   {
@@ -1947,8 +1952,9 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   }
   else
   {
-    if ((GetPanelInfo()->GetSelectedCount() == 0) &&
-        GetPanelInfo()->GetFocusedItem()->GetIsParentDirectory())
+    const TFarPanelInfo * PanelInfo = GetPanelInfo();
+    if ((PanelInfo->GetSelectedCount() == 0) &&
+        PanelInfo->GetFocusedItem()->GetIsParentDirectory())
     {
       FileNames->Add(core::UnixIncludeTrailingBackslash(FTerminal->GetCurrDirectory()));
     }
@@ -2805,7 +2811,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(
   }
 
   TStrings * Result;
-  TFarPanelItem * PanelItem = PanelInfo->GetFocusedItem();
+  const TFarPanelItem * PanelItem = PanelInfo->GetFocusedItem();
   if (PanelItem->GetIsParentDirectory())
   {
     Result = nullptr;
@@ -2817,7 +2823,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(
     UnicodeString FileName = PanelItem->GetFileName();
     if (Side == osLocal)
     {
-      FileName = ::IncludeTrailingBackslash(GetPanelInfo()->GetCurrDirectory()) + FileName;
+      FileName = ::IncludeTrailingBackslash(PanelInfo->GetCurrDirectory()) + FileName;
     }
     Result->AddObject(FileName, static_cast<TObject *>(PanelItem->GetUserData()));
   }
@@ -2833,10 +2839,10 @@ TStrings * TWinSCPFileSystem::CreateSelectedFileList(
   }
 
   TStrings * Result;
-  if (GetPanelInfo()->GetSelectedCount() > 0)
+  if (PanelInfo->GetSelectedCount() > 0)
   {
-    Result = CreateFileList(GetPanelInfo()->GetItems(), Side, true,
-      GetPanelInfo()->GetCurrDirectory());
+    Result = CreateFileList(PanelInfo->GetItems(), Side, true,
+      PanelInfo->GetCurrDirectory());
   }
   else
   {
@@ -3967,7 +3973,7 @@ void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
 
 void TWinSCPFileSystem::MultipleEdit()
 {
-  TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
+  const TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
   if ((Focused != nullptr) &&
       Focused->GetIsFile() &&
       (Focused->GetUserData() != nullptr))

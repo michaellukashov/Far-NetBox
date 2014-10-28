@@ -15,8 +15,8 @@
 
 #include <stdio.h>
 
-#undef FILE_OPERATION_LOOP_EX
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
+#undef FILE_OPERATION_LOOP_EX
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION)   \
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
     [&]() { OPERATION })
@@ -53,17 +53,17 @@ struct TCommandType
   bool ModifiesFiles;
   bool ChangesDirectory;
   bool InteractiveCommand;
-  wchar_t Command[MaxCommandLen];
+  char Command[MaxCommandLen];
 };
 
 // Only one character! See TSCPFileSystem::ReadCommandOutput()
-#define LastLineSeparator L":"
-#define LAST_LINE L"NetBox: this is end-of-file"
-#define FIRST_LINE L"NetBox: this is begin-of-file"
+#define LastLineSeparator ":"
+#define LAST_LINE "NetBox: this is end-of-file"
+#define FIRST_LINE "NetBox: this is begin-of-file"
 extern const TCommandType DefaultCommandSet[];
 
 #define NationalVarCount 10
-extern const wchar_t NationalVars[NationalVarCount][15];
+extern const char NationalVars[NationalVarCount][15];
 
 #define CHECK_CMD assert((Cmd >=0) && (Cmd <= MaxShellCommand))
 
@@ -106,12 +106,12 @@ private:
   UnicodeString FReturnVar;
 };
 
-const wchar_t NationalVars[NationalVarCount][15] =
+const char NationalVars[NationalVarCount][15] =
 {
-  L"LANG", L"LANGUAGE", L"LC_CTYPE", L"LC_COLLATE", L"LC_MONETARY", L"LC_NUMERIC",
-  L"LC_TIME", L"LC_MESSAGES", L"LC_ALL", L"HUMAN_BLOCKS"
+  "LANG", "LANGUAGE", "LC_CTYPE", "LC_COLLATE", "LC_MONETARY", "LC_NUMERIC",
+  "LC_TIME", "LC_MESSAGES", "LC_ALL", "HUMAN_BLOCKS"
 };
-const wchar_t FullTimeOption[] = L"--full-time";
+const char FullTimeOption[] = "--full-time";
 
 #define F false
 #define T true
@@ -119,32 +119,32 @@ const wchar_t FullTimeOption[] = L"--full-time";
 const TCommandType DefaultCommandSet[ShellCommandCount] =
 {
 //                       min max mf cd ia  command
-  /*Null*/                { -1, -1, F, F, F, L"" },
-  /*VarValue*/            { -1, -1, F, F, F, L"echo \"$%s\"" /* variable */ },
-  /*LastLine*/            { -1, -1, F, F, F, L"echo \"%s" LastLineSeparator L"%s\"" /* last line, return var */ },
-  /*FirstLine*/           { -1, -1, F, F, F, L"echo \"%s\"" /* first line */ },
-  /*CurrentDirectory*/    {  1,  1, F, F, F, L"pwd" },
-  /*ChangeDirectory*/     {  0,  0, F, T, F, L"cd %s" /* directory */ },
+  /*Null*/                { -1, -1, F, F, F, "" },
+  /*VarValue*/            { -1, -1, F, F, F, "echo \"$%s\"" /* variable */ },
+  /*LastLine*/            { -1, -1, F, F, F, "echo \"%s" LastLineSeparator "%s\"" /* last line, return var */ },
+  /*FirstLine*/           { -1, -1, F, F, F, "echo \"%s\"" /* first line */ },
+  /*CurrentDirectory*/    {  1,  1, F, F, F, "pwd" },
+  /*ChangeDirectory*/     {  0,  0, F, T, F, "cd %s" /* directory */ },
 // list directory can be empty on permission denied, this is handled in ReadDirectory
-  /*ListDirectory*/       { -1, -1, F, F, F, L"%s %s \"%s\"" /* listing command, options, directory */ },
-  /*ListCurrentDirectory*/{ -1, -1, F, F, F, L"%s %s" /* listing command, options */ },
-  /*ListFile*/            {  1,  1, F, F, F, L"%s -d %s \"%s\"" /* listing command, options, file/directory */ },
-  /*LookupUserGroups*/    {  0,  1, F, F, F, L"groups" },
-  /*CopyToRemote*/        { -1, -1, T, F, T, L"scp -r %s -d -t \"%s\"" /* options, directory */ },
-  /*CopyToLocal*/         { -1, -1, F, F, T, L"scp -r %s -d -f \"%s\"" /* options, file */ },
-  /*DeleteFile*/          {  0,  0, T, F, F, L"rm -f -r \"%s\"" /* file/directory */},
-  /*RenameFile*/          {  0,  0, T, F, F, L"mv -f \"%s\" \"%s\"" /* file/directory, new name*/},
-  /*CreateDirectory*/     {  0,  0, T, F, F, L"mkdir \"%s\"" /* new directory */},
-  /*ChangeMode*/          {  0,  0, T, F, F, L"chmod %s %s \"%s\"" /* options, mode, filename */},
-  /*ChangeGroup*/         {  0,  0, T, F, F, L"chgrp %s \"%s\" \"%s\"" /* options, group, filename */},
-  /*ChangeOwner*/         {  0,  0, T, F, F, L"chown %s \"%s\" \"%s\"" /* options, owner, filename */},
-  /*HomeDirectory*/       {  0,  0, F, T, F, L"cd" },
-  /*Unset*/               {  0,  0, F, F, F, L"unset \"%s\"" /* variable */ },
-  /*Unalias*/             {  0,  0, F, F, F, L"unalias \"%s\"" /* alias */ },
-  /*CreateLink*/          {  0,  0, T, F, F, L"ln %s \"%s\" \"%s\"" /*symbolic (-s), filename, point to*/},
-  /*CopyFile*/            {  0,  0, T, F, F, L"cp -p -r -f \"%s\" \"%s\"" /* file/directory, target name*/},
-  /*AnyCommand*/          {  0, -1, T, T, F, L"%s" },
-  /*Lang*/                {  0,  1, F, F, F, L"echo $LANG"},
+  /*ListDirectory*/       { -1, -1, F, F, F, "%s %s \"%s\"" /* listing command, options, directory */ },
+  /*ListCurrentDirectory*/{ -1, -1, F, F, F, "%s %s" /* listing command, options */ },
+  /*ListFile*/            {  1,  1, F, F, F, "%s -d %s \"%s\"" /* listing command, options, file/directory */ },
+  /*LookupUserGroups*/    {  0,  1, F, F, F, "groups" },
+  /*CopyToRemote*/        { -1, -1, T, F, T, "scp -r %s -d -t \"%s\"" /* options, directory */ },
+  /*CopyToLocal*/         { -1, -1, F, F, T, "scp -r %s -d -f \"%s\"" /* options, file */ },
+  /*DeleteFile*/          {  0,  0, T, F, F, "rm -f -r \"%s\"" /* file/directory */},
+  /*RenameFile*/          {  0,  0, T, F, F, "mv -f \"%s\" \"%s\"" /* file/directory, new name*/},
+  /*CreateDirectory*/     {  0,  0, T, F, F, "mkdir \"%s\"" /* new directory */},
+  /*ChangeMode*/          {  0,  0, T, F, F, "chmod %s %s \"%s\"" /* options, mode, filename */},
+  /*ChangeGroup*/         {  0,  0, T, F, F, "chgrp %s \"%s\" \"%s\"" /* options, group, filename */},
+  /*ChangeOwner*/         {  0,  0, T, F, F, "chown %s \"%s\" \"%s\"" /* options, owner, filename */},
+  /*HomeDirectory*/       {  0,  0, F, T, F, "cd" },
+  /*Unset*/               {  0,  0, F, F, F, "unset \"%s\"" /* variable */ },
+  /*Unalias*/             {  0,  0, F, F, F, "unalias \"%s\"" /* alias */ },
+  /*CreateLink*/          {  0,  0, T, F, F, "ln %s \"%s\" \"%s\"" /*symbolic (-s), filename, point to*/},
+  /*CopyFile*/            {  0,  0, T, F, F, "cp -p -r -f \"%s\" \"%s\"" /* file/directory, target name*/},
+  /*AnyCommand*/          {  0, -1, T, T, F, "%s" },
+  /*Lang*/                {  0,  1, F, F, F, "echo $LANG"},
 };
 #undef F
 #undef T
@@ -208,7 +208,8 @@ bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/) const
 void TCommandSet::SetCommands(TFSCommand Cmd, const UnicodeString & Value)
 {
   CHECK_CMD;
-  wcscpy_s(const_cast<wchar_t *>(CommandSet[Cmd].Command), MaxCommandLen, Value.SubString(1, MaxCommandLen - 1).c_str());
+  AnsiString AnsiValue(Value);
+  strcpy_s(const_cast<char *>(CommandSet[Cmd].Command), MaxCommandLen, AnsiValue.SubString(1, MaxCommandLen - 1).c_str());
 }
 
 UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
@@ -997,7 +998,7 @@ void TSCPFileSystem::UnsetNationalVars()
     FTerminal->LogEvent("Clearing national user variables.");
     for (intptr_t Index = 0; Index < NationalVarCount; ++Index)
     {
-      ExecCommand2(fsUnset, 0, NationalVars[Index], false);
+      ExecCommand2(fsUnset, 0, UnicodeString(NationalVars[Index]).c_str(), false);
     }
   }
   catch (Exception & E)
@@ -1065,21 +1066,21 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
     {
       intptr_t Params = ecDefault | ecReadProgress |
         FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
-      const wchar_t * Options =
-        ((FLsFullTime == asAuto) || (FLsFullTime == asOn)) ? FullTimeOption : L"";
+      UnicodeString Options =
+        ((FLsFullTime == asAuto) || (FLsFullTime == asOn)) ? FullTimeOption : "";
       bool ListCurrentDirectory = (FileList->GetDirectory() == FTerminal->GetCurrDirectory());
       if (ListCurrentDirectory)
       {
         FTerminal->LogEvent("Listing current directory.");
         ExecCommand2(fsListCurrentDirectory, Params,
-          FTerminal->GetSessionData()->GetListingCommand().c_str(), Options);
+          FTerminal->GetSessionData()->GetListingCommand().c_str(), Options.c_str());
       }
       else
       {
         FTerminal->LogEvent(FORMAT("Listing directory \"%s\".",
           FileList->GetDirectory().c_str()));
         ExecCommand2(fsListDirectory, Params,
-          FTerminal->GetSessionData()->GetListingCommand().c_str(), Options,
+          FTerminal->GetSessionData()->GetListingCommand().c_str(), Options.c_str(),
             DelimitStr(FileList->GetDirectory().c_str()).c_str());
       }
 
@@ -1143,7 +1144,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           FTerminal->LogEvent(
             FORMAT("Directory listing with %s succeed, next time all errors during "
               "directory listing will be displayed immediately.",
-              FullTimeOption));
+              UnicodeString(FullTimeOption).c_str()));
           FLsFullTime = asOn;
       }
     }
@@ -1158,7 +1159,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           Again = true;
           FTerminal->LogEvent(
             FORMAT("Directory listing with %s failed, try again regular listing.",
-              FullTimeOption));
+              UnicodeString(FullTimeOption).c_str()));
         }
         else
         {
@@ -1206,9 +1207,9 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & AFileName,
     FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
   // the auto-detection of --full-time support is not implemented for fsListFile,
   // so we use it only if we already know that it is supported (asOn).
-  const wchar_t * Options = (FLsFullTime == asOn) ? FullTimeOption : L"";
+  UnicodeString Options = (FLsFullTime == asOn) ? FullTimeOption : "";
   ExecCommand2(fsListFile, Params,
-    FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, DelimitStr(AFileName).c_str());
+    FTerminal->GetSessionData()->GetListingCommand().c_str(), Options.c_str(), DelimitStr(AFileName).c_str());
   if (FOutput->GetCount())
   {
     intptr_t LineIndex = 0;

@@ -153,7 +153,7 @@ public:
   bool ShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
   void NeverShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
   virtual THierarchicalStorage * CreateConfigStorage();
-  virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
+  virtual THierarchicalStorage * CreateStorage(bool & SessionList);
   void TemporaryLogging(const UnicodeString & ALogFileName);
   void TemporaryActionsLogging(const UnicodeString & ALogFileName);
   virtual RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
