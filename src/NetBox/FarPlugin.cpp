@@ -2596,7 +2596,7 @@ void TFarPanelInfo::SetFocusedItem(const TFarPanelItem * Value)
   if (FItems && FItems->GetCount())
   {
     intptr_t Index = FItems->IndexOf(Value);
-    //assert(Index != NPOS);
+    assert(Index != NPOS);
     SetFocusedIndex(Index);
   }
 }
@@ -2610,7 +2610,7 @@ void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
 {
   // for "another panel info", there's no owner
   assert(FOwner != nullptr);
-  if ((Value != NPOS) && (GetFocusedIndex() != Value))
+  if (GetFocusedIndex() != Value)
   {
     assert(Value != NPOS && Value < FPanelInfo->ItemsNumber);
     FPanelInfo->CurrentItem = static_cast<int>(Value);
