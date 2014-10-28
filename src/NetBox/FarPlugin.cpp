@@ -2523,7 +2523,7 @@ TObjectList * TFarPanelInfo::GetItems()
   }
   if (FOwner)
   {
-    FItems->Clear();
+    assert(FItems->GetCount() == 0);
     for (intptr_t Index = 0; Index < FPanelInfo->ItemsNumber; ++Index)
     {
       // TODO: move to common function
