@@ -23,6 +23,7 @@
 #include <openssl/x509_vfy.h>
 
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
+#undef FILE_OPERATION_LOOP_EX
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
     [&]() { OPERATION })

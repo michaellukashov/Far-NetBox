@@ -133,6 +133,7 @@ void TTerminal::CommandErrorAriAction(
   CommandErrorAriAction(E, MESSAGE, \
     [&]() { REPEAT; }, ACTION)
 
+#undef FILE_OPERATION_LOOP_EX
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FileOperationLoopCustom(this, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
     [&]() { OPERATION })
