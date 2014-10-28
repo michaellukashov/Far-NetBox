@@ -63,7 +63,7 @@ struct TCommandType
 extern const TCommandType DefaultCommandSet[];
 
 #define NationalVarCount 10
-extern const wchar_t NationalVars[NationalVarCount][15];
+extern const char NationalVars[NationalVarCount][15];
 
 #define CHECK_CMD assert((Cmd >=0) && (Cmd <= MaxShellCommand))
 
@@ -106,10 +106,10 @@ private:
   UnicodeString FReturnVar;
 };
 
-const wchar_t NationalVars[NationalVarCount][15] =
+const char NationalVars[NationalVarCount][15] =
 {
-  L"LANG", L"LANGUAGE", L"LC_CTYPE", L"LC_COLLATE", L"LC_MONETARY", L"LC_NUMERIC",
-  L"LC_TIME", L"LC_MESSAGES", L"LC_ALL", L"HUMAN_BLOCKS"
+  "LANG", "LANGUAGE", "LC_CTYPE", "LC_COLLATE", "LC_MONETARY", "LC_NUMERIC",
+  "LC_TIME", "LC_MESSAGES", "LC_ALL", "HUMAN_BLOCKS"
 };
 const wchar_t FullTimeOption[] = L"--full-time";
 
@@ -998,7 +998,7 @@ void TSCPFileSystem::UnsetNationalVars()
     FTerminal->LogEvent("Clearing national user variables.");
     for (intptr_t Index = 0; Index < NationalVarCount; ++Index)
     {
-      ExecCommand2(fsUnset, 0, NationalVars[Index], false);
+      ExecCommand2(fsUnset, 0, UnicodeString(NationalVars[Index]).c_str(), false);
     }
   }
   catch (Exception & E)
