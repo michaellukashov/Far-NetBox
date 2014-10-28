@@ -2634,11 +2634,10 @@ void TFarPanelInfo::ApplySelection()
 TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
 {
   intptr_t Index = GetFocusedIndex();
-  const TObjectList * Items = GetItems();
-  if (Items->GetCount() > 0)
+  if (FItems && FItems->GetCount() > 0)
   {
-    assert(Index < Items->GetCount());
-    return NB_STATIC_DOWNCAST(TFarPanelItem, Items->GetItem(Index));
+    assert(Index < FItems->GetCount());
+    return NB_STATIC_DOWNCAST(TFarPanelItem, FItems->GetItem(Index));
   }
   else
   {
