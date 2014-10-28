@@ -182,7 +182,7 @@ void CoreFinalize()
 {
   try
   {
-    GetConfiguration()->Save();
+    // GetConfiguration()->Save();
   }
   catch (Exception & E)
   {
