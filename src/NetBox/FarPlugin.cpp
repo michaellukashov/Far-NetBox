@@ -2538,10 +2538,10 @@ TObjectList * TFarPanelInfo::GetItems()
 
 TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & AFileName) const
 {
-  const TObjectList * AItems = GetItems();
-  for (intptr_t Index = 0; Index < AItems->GetCount(); ++Index)
+  const TObjectList * Items = GetItems();
+  for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, AItems->GetItem(Index));
+    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, Items->GetItem(Index));
     if (PanelItem->GetFileName() == AFileName)
     {
       return PanelItem;
@@ -2557,10 +2557,10 @@ const TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData) const
 
 TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData)
 {
-  TObjectList * AItems = GetItems();
-  for (intptr_t Index = 0; Index < AItems->GetCount(); ++Index)
+  TObjectList * Items = GetItems();
+  for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, AItems->GetItem(Index));
+    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, Items->GetItem(Index));
     if (PanelItem->GetUserData() == UserData)
     {
       return PanelItem;
