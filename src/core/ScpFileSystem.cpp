@@ -111,7 +111,7 @@ const char NationalVars[NationalVarCount][15] =
   "LANG", "LANGUAGE", "LC_CTYPE", "LC_COLLATE", "LC_MONETARY", "LC_NUMERIC",
   "LC_TIME", "LC_MESSAGES", "LC_ALL", "HUMAN_BLOCKS"
 };
-const wchar_t FullTimeOption[] = L"--full-time";
+const char FullTimeOption[] = "--full-time";
 
 #define F false
 #define T true
@@ -1066,21 +1066,21 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
     {
       intptr_t Params = ecDefault | ecReadProgress |
         FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
-      const wchar_t * Options =
-        ((FLsFullTime == asAuto) || (FLsFullTime == asOn)) ? FullTimeOption : L"";
+      UnicodeString Options =
+        ((FLsFullTime == asAuto) || (FLsFullTime == asOn)) ? FullTimeOption : "";
       bool ListCurrentDirectory = (FileList->GetDirectory() == FTerminal->GetCurrDirectory());
       if (ListCurrentDirectory)
       {
         FTerminal->LogEvent("Listing current directory.");
         ExecCommand2(fsListCurrentDirectory, Params,
-          FTerminal->GetSessionData()->GetListingCommand().c_str(), Options);
+          FTerminal->GetSessionData()->GetListingCommand().c_str(), Options.c_str());
       }
       else
       {
         FTerminal->LogEvent(FORMAT("Listing directory \"%s\".",
           FileList->GetDirectory().c_str()));
         ExecCommand2(fsListDirectory, Params,
-          FTerminal->GetSessionData()->GetListingCommand().c_str(), Options,
+          FTerminal->GetSessionData()->GetListingCommand().c_str(), Options.c_str(),
             DelimitStr(FileList->GetDirectory().c_str()).c_str());
       }
 
@@ -1144,7 +1144,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           FTerminal->LogEvent(
             FORMAT("Directory listing with %s succeed, next time all errors during "
               "directory listing will be displayed immediately.",
-              FullTimeOption));
+              UnicodeString(FullTimeOption).c_str()));
           FLsFullTime = asOn;
       }
     }
@@ -1159,7 +1159,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           Again = true;
           FTerminal->LogEvent(
             FORMAT("Directory listing with %s failed, try again regular listing.",
-              FullTimeOption));
+              UnicodeString(FullTimeOption).c_str()));
         }
         else
         {
@@ -1207,9 +1207,9 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & AFileName,
     FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
   // the auto-detection of --full-time support is not implemented for fsListFile,
   // so we use it only if we already know that it is supported (asOn).
-  const wchar_t * Options = (FLsFullTime == asOn) ? FullTimeOption : L"";
+  UnicodeString Options = (FLsFullTime == asOn) ? FullTimeOption : "";
   ExecCommand2(fsListFile, Params,
-    FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, DelimitStr(AFileName).c_str());
+    FTerminal->GetSessionData()->GetListingCommand().c_str(), Options.c_str(), DelimitStr(AFileName).c_str());
   if (FOutput->GetCount())
   {
     intptr_t LineIndex = 0;
