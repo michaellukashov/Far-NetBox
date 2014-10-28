@@ -602,7 +602,7 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
       }
 
       // modified only, explicit
-      StoredSessions->Save(false, true);
+      StoredSessions->Save(/*All*/true, /*Explicit*/true);
 
       if (UpdatePanel())
       {
