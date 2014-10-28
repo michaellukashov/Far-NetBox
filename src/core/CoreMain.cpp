@@ -112,37 +112,28 @@ void DeleteConfiguration()
   }
 }
 
-static THierarchicalStorage * GetSessionStorage()
-{
-  static THierarchicalStorage * SessionStorage = nullptr;
-  if (SessionStorage == nullptr)
-  {
-    SessionStorage = GetConfiguration()->CreateConfigStorage();
-  }
-  return SessionStorage;
-}
-
-static void DeleteSessionStorage()
-{
-  static bool SessionStorageDeleted = false;
-  if (!SessionStorageDeleted)
-  {
-    THierarchicalStorage * Storage = GetSessionStorage();
-    SAFE_DESTROY(Storage);
-    SessionStorageDeleted = true;
-  }
-}
-
 void CoreLoad()
 {
-  assert(GetConfiguration() != nullptr);
+  bool SessionList = true;
+  std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateStorage(SessionList));
+  THierarchicalStorage * ConfigStorage = nullptr;
+  std::unique_ptr<THierarchicalStorage> ConfigStorageAuto;
+  if (!SessionList)
+  {
+    // can reuse this for configuration
+    ConfigStorage = SessionsStorage.get();
+  }
+  else
+  {
+    ConfigStorageAuto.reset(GetConfiguration()->CreateConfigStorage());
+    ConfigStorage = ConfigStorageAuto.get();
+  }
 
-  THierarchicalStorage * SessionsStorage = GetSessionStorage();
-  std::unique_ptr<THierarchicalStorage> ConfigStorageAuto(GetConfiguration()->CreateConfigStorage());
+  assert(GetConfiguration() != nullptr);
 
   try
   {
-    GetConfiguration()->Load(ConfigStorageAuto.get());
+    GetConfiguration()->Load(ConfigStorage);
   }
   catch (Exception & E)
   {
@@ -150,7 +141,7 @@ void CoreLoad()
   }
 
   // should be noop, unless exception occured above
-  ConfigStorageAuto->CloseAll();
+  ConfigStorage->CloseAll();
 
   StoredSessions = new TStoredSessionList();
 
@@ -158,7 +149,7 @@ void CoreLoad()
   {
     if (SessionsStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false))
     {
-      StoredSessions->Load(SessionsStorage);
+      StoredSessions->Load(SessionsStorage.get());
     }
   }
   catch (Exception & E)
@@ -191,7 +182,7 @@ void CoreFinalize()
 {
   try
   {
-    GetConfiguration()->SaveData(GetSessionStorage(), false);
+    GetConfiguration()->Save();
   }
   catch (Exception & E)
   {
@@ -206,7 +197,6 @@ void CoreFinalize()
 
   SAFE_DESTROY(StoredSessions);
   DeleteConfiguration();
-  DeleteSessionStorage();
 
   CryptographyFinalize();
 }
