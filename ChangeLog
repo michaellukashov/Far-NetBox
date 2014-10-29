@@ -1,4 +1,4 @@
-NetBox 2.1.40.347 29.10.2014
+NetBox 2.1.40.348 30.10.2014
 --------------------
   * Update WinSCP sources to 5.6.2
   * Bugfix: SFTP: AV trying to copy files from server
