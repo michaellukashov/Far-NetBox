@@ -3909,7 +3909,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 					else if (pData->transferdata.localFileHandle==INVALID_HANDLE_VALUE)
 						res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeWrite|CFile::modeCreate|CFile::shareDenyWrite);
 					else
-						res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeWrite|CFile::modeCreate|CFile::shareDenyWrite);
+						res = TRUE;
 				}
 				else
 #ifdef MPEXT
