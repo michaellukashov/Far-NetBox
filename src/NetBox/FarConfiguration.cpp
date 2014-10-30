@@ -39,7 +39,7 @@ void TFarConfiguration::Default()
   SetHostNameInTitle(true);
   SetEditorDownloadDefaultMode(true);
   SetEditorUploadSameOptions(true);
-  FEditorUploadOnSave = false;
+  FEditorUploadOnSave = true;
   FEditorMultiple = false;
   FQueueBeep = true;
 
