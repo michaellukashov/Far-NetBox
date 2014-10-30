@@ -1855,7 +1855,7 @@ void TCustomFarFileSystem::ClearOpenPanelInfo(OpenPanelInfo & Info)
 
 void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * Info)
 {
-  // ResetCachedInfo();
+  ResetCachedInfo();
   if (FClosed)
   {
     // FAR WORKAROUND
@@ -2009,7 +2009,7 @@ intptr_t TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo * Info)
 
 intptr_t TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
 {
-  // ResetCachedInfo();
+  ResetCachedInfo();
   std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
   intptr_t Result = 0;
   FDestPathStr = Info->DestPath;
