@@ -51,20 +51,20 @@ void TFarConfiguration::Default()
   SetDisksMenuHotKey(0);
   SetPluginsMenu(true);
   SetPluginsMenuCommands(true);
-  SetCommandPrefixes(L"netbox,ftp,scp,sftp,ftps,http,https,webdav");
+  SetCommandPrefixes("netbox,ftp,scp,sftp,ftps,http,https,webdav");
   SetHostNameInTitle(true);
   SetEditorDownloadDefaultMode(true);
   SetEditorUploadSameOptions(true);
-  FEditorUploadOnSave = false;
+  FEditorUploadOnSave = true;
   FEditorMultiple = false;
   FQueueBeep = true;
 
   SetCustomPanelModeDetailed(true);
   SetFullScreenDetailed(true);
-  SetColumnTypesDetailed(L"N,S,DM,O,G,R");
-  SetColumnWidthsDetailed(L"0,8,14,0,0,9");
-  SetStatusColumnTypesDetailed(L"NR");
-  SetStatusColumnWidthsDetailed(L"0");
+  SetColumnTypesDetailed("N,S,DM,O,G,R");
+  SetColumnWidthsDetailed("0,8,14,0,0,9");
+  SetStatusColumnTypesDetailed("NR");
+  SetStatusColumnWidthsDetailed("0");
 
   SetApplyCommandCommand(L"");
   SetApplyCommandParams(0);
