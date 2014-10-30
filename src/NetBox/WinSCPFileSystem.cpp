@@ -2696,7 +2696,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool 
 intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode)
 {
   intptr_t Result;
-  if (Connected() && FLAGCLEAR(OpMode, OPM_EDIT))
+  if (Connected())
   {
     FFileList = CreateFileList(PanelItems, osLocal);
     SCOPE_EXIT
