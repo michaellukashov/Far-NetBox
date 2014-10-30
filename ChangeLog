@@ -1,5 +1,8 @@
-NetBox 2.1.40.348 30.10.2014
+NetBox 2.1.40.349 30.10.2014
 --------------------
+  * Bugfix: cannot save newly created file on remote server
+    (http://forum.farmanager.com/viewtopic.php?p=124914#p124914)
+    (http://bugs.farmanager.com/view.php?id=2852)
   * Update WinSCP sources to 5.6.2
   * Bugfix: SFTP: AV trying to copy files from server
     (http://forum.farmanager.com/viewtopic.php?p=124692#p124692)
