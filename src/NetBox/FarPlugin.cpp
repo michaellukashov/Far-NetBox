@@ -1935,6 +1935,7 @@ void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo * Info)
     {
       // nb_free((void*)Info->PanelItem[Index].FileName);
       delete[] Info->PanelItem[Index].FileName;
+      delete[] Info->PanelItem[Index].AlternateFileName;
       nb_free((void*)Info->PanelItem[Index].Description);
       nb_free((void*)Info->PanelItem[Index].Owner);
       for (size_t CustomIndex = 0; CustomIndex < Info->PanelItem[Index].CustomColumnNumber; ++CustomIndex)
@@ -2415,6 +2416,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
 
   // PanelItem->FileName = TCustomFarPlugin::DuplicateStr(FileName);
   PanelItem->FileName = wcscpy(new wchar_t[FileName.Length() + 1], FileName.c_str());
+  PanelItem->AlternateFileName = wcscpy(new wchar_t[FileName.Length() + 1], FileName.c_str());
   PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
   PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
   wchar_t ** CustomColumnData = static_cast<wchar_t **>(
