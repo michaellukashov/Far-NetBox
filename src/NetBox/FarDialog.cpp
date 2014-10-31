@@ -1368,13 +1368,15 @@ void TFarDialogItem::DoExit()
 LONG_PTR TFarDialogItem::DefaultItemProc(int Msg, LONG_PTR Param)
 {
   TFarEnvGuard Guard;
-  return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(GetItem()), Param);
+  return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
+    Msg, static_cast<int>(GetItem()), Param);
 }
 
 LONG_PTR TFarDialogItem::DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   TFarEnvGuard Guard;
-  return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(Param1), Param2);
+  return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
+    Msg, static_cast<int>(Param1), Param2);
 }
 
 void TFarDialogItem::Change()
