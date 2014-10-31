@@ -317,7 +317,7 @@ protected:
   virtual bool HotKey(char HotKey);
 
 private:
-  struct PluginStartupInfo * GetStartupInfo();
+  const struct PluginStartupInfo * GetStartupInfo() const;
 
 private:
   TFarDialog * FDialog;

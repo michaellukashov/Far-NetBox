@@ -719,7 +719,7 @@ intptr_t TFarDialog::ShowModal()
     {
       TFarEnvGuard Guard;
       TRect Bounds = GetBounds();
-      PluginStartupInfo & Info = *GetFarPlugin()->GetStartupInfo();
+      const PluginStartupInfo & Info = *GetFarPlugin()->GetStartupInfo();
       Handle = Info.DialogInit(
         Info.ModuleNumber,
         Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
@@ -1097,7 +1097,7 @@ void TFarDialogItem::SetColor(intptr_t Index, char Value)
   }
 }
 
-struct PluginStartupInfo * TFarDialogItem::GetStartupInfo()
+const struct PluginStartupInfo * TFarDialogItem::GetStartupInfo() const
 {
  return GetDialog()->GetFarPlugin()->GetStartupInfo();
 }
