@@ -484,16 +484,20 @@ void TFTPFileSystem::Close()
 {
   assert(FActive);
   bool Result;
-  if (FFileZillaIntf->Close(FOpening))
-  {
-    CHECK(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
-    Result = true;
-  }
-  else
-  {
-    // See TFileZillaIntf::Close
-    Result = FOpening;
-  }
+  
+  FFileZillaIntf->CustomCommand(L"QUIT");
+  Result = true;
+
+  //if (FFileZillaIntf->Close(FOpening))
+  //{
+  //  CHECK(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
+  //  Result = true;
+  //}
+  //else
+  //{
+  //  // See TFileZillaIntf::Close
+  //  Result = FOpening;
+  //}
 
   if (ALWAYS_TRUE(Result))
   {
