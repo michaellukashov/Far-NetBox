@@ -75,7 +75,7 @@ public:
   virtual ~TCustomFarPlugin();
   virtual intptr_t GetMinFarVersion();
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info);
-  virtual const struct PluginStartupInfo * GetStartupInfo() const { return &FStartupInfo; }
+  virtual const struct PluginStartupInfo * GetPluginStartupInfo() const { return &FStartupInfo; }
   virtual void ExitFAR();
   virtual void GetPluginInfo(struct PluginInfo * Info);
   virtual intptr_t Configure(intptr_t Item);
