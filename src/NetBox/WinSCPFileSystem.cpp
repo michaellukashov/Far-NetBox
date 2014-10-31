@@ -169,18 +169,19 @@ void TRemoteFilePanelItem::SetPanelModes(TFarPanelModes * PanelModes)
 {
   assert(FarPlugin);
   std::unique_ptr<TStrings> ColumnTitles(new TStringList());
-  if (GetFarConfiguration()->GetCustomPanelModeDetailed())
+  TFarConfiguration * FarConfiguration = GetFarConfiguration();
+  if (FarConfiguration->GetCustomPanelModeDetailed())
   {
-    UnicodeString ColumnTypes = GetFarConfiguration()->GetColumnTypesDetailed();
-    UnicodeString StatusColumnTypes = GetFarConfiguration()->GetStatusColumnTypesDetailed();
+    UnicodeString ColumnTypes = FarConfiguration->GetColumnTypesDetailed();
+    UnicodeString StatusColumnTypes = FarConfiguration->GetStatusColumnTypesDetailed();
 
     TranslateColumnTypes(ColumnTypes, ColumnTitles.get());
     TranslateColumnTypes(StatusColumnTypes, nullptr);
 
     PanelModes->SetPanelMode(5 /*detailed */,
-      ColumnTypes, GetFarConfiguration()->GetColumnWidthsDetailed(),
-      ColumnTitles.get(), GetFarConfiguration()->GetFullScreenDetailed(), false, true, false,
-      StatusColumnTypes, GetFarConfiguration()->GetStatusColumnWidthsDetailed());
+      ColumnTypes, FarConfiguration->GetColumnWidthsDetailed(),
+      ColumnTitles.get(), FarConfiguration->GetFullScreenDetailed(), false, true, false,
+      StatusColumnTypes, FarConfiguration->GetStatusColumnWidthsDetailed());
   }
 }
 
@@ -1123,12 +1124,13 @@ void TWinSCPFileSystem::ApplyCommand()
   std::unique_ptr<TStrings> FileList(CreateSelectedFileList(osRemote));
   if (FileList.get() != nullptr)
   {
-    intptr_t Params = GetFarConfiguration()->GetApplyCommandParams();
-    UnicodeString Command = GetFarConfiguration()->GetApplyCommandCommand();
+    TFarConfiguration * FarConfiguration = GetFarConfiguration();
+    intptr_t Params = FarConfiguration->GetApplyCommandParams();
+    UnicodeString Command = FarConfiguration->GetApplyCommandCommand();
     if (ApplyCommandDialog(Command, Params))
     {
-      GetFarConfiguration()->SetApplyCommandParams(Params);
-      GetFarConfiguration()->SetApplyCommandCommand(Command);
+      FarConfiguration->SetApplyCommandParams(Params);
+      FarConfiguration->SetApplyCommandCommand(Command);
       if (FLAGCLEAR(Params, ccLocal))
       {
         if (EnsureCommandSessionFallback(fcShellAnyCommand))

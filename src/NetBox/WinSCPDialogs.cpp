@@ -397,35 +397,36 @@ bool TWinSCPPlugin::ConfigurationDialog()
 
   Dialog->AddStandardButtons();
 
-  DisksMenuCheck->SetChecked(GetFarConfiguration()->GetDisksMenu());
-  PluginsMenuCheck->SetChecked(GetFarConfiguration()->GetPluginsMenu());
-  PluginsMenuCommandsCheck->SetChecked(GetFarConfiguration()->GetPluginsMenuCommands());
-  HostNameInTitleCheck->SetChecked(GetFarConfiguration()->GetHostNameInTitle());
-  CommandPrefixesEdit->SetText(GetFarConfiguration()->GetCommandPrefixes());
+  TFarConfiguration * FarConfiguration = GetFarConfiguration();
+  DisksMenuCheck->SetChecked(FarConfiguration->GetDisksMenu());
+  PluginsMenuCheck->SetChecked(FarConfiguration->GetPluginsMenu());
+  PluginsMenuCommandsCheck->SetChecked(FarConfiguration->GetPluginsMenuCommands());
+  HostNameInTitleCheck->SetChecked(FarConfiguration->GetHostNameInTitle());
+  CommandPrefixesEdit->SetText(FarConfiguration->GetCommandPrefixes());
 
-  CustomPanelCheck->SetChecked(GetFarConfiguration()->GetCustomPanelModeDetailed());
-  CustomPanelTypesEdit->SetText(GetFarConfiguration()->GetColumnTypesDetailed());
-  CustomPanelWidthsEdit->SetText(GetFarConfiguration()->GetColumnWidthsDetailed());
-  CustomPanelStatusTypesEdit->SetText(GetFarConfiguration()->GetStatusColumnTypesDetailed());
-  CustomPanelStatusWidthsEdit->SetText(GetFarConfiguration()->GetStatusColumnWidthsDetailed());
-  CustomPanelFullScreenCheck->SetChecked(GetFarConfiguration()->GetFullScreenDetailed());
+  CustomPanelCheck->SetChecked(FarConfiguration->GetCustomPanelModeDetailed());
+  CustomPanelTypesEdit->SetText(FarConfiguration->GetColumnTypesDetailed());
+  CustomPanelWidthsEdit->SetText(FarConfiguration->GetColumnWidthsDetailed());
+  CustomPanelStatusTypesEdit->SetText(FarConfiguration->GetStatusColumnTypesDetailed());
+  CustomPanelStatusWidthsEdit->SetText(FarConfiguration->GetStatusColumnWidthsDetailed());
+  CustomPanelFullScreenCheck->SetChecked(FarConfiguration->GetFullScreenDetailed());
 
   bool Result = (Dialog->ShowModal() == brOK);
   if (Result)
   {
-    GetFarConfiguration()->SetDisksMenu(DisksMenuCheck->GetChecked());
-    GetFarConfiguration()->SetPluginsMenu(PluginsMenuCheck->GetChecked());
-    GetFarConfiguration()->SetPluginsMenuCommands(PluginsMenuCommandsCheck->GetChecked());
-    GetFarConfiguration()->SetHostNameInTitle(HostNameInTitleCheck->GetChecked());
+    FarConfiguration->SetDisksMenu(DisksMenuCheck->GetChecked());
+    FarConfiguration->SetPluginsMenu(PluginsMenuCheck->GetChecked());
+    FarConfiguration->SetPluginsMenuCommands(PluginsMenuCommandsCheck->GetChecked());
+    FarConfiguration->SetHostNameInTitle(HostNameInTitleCheck->GetChecked());
 
-    GetFarConfiguration()->SetCommandPrefixes(CommandPrefixesEdit->GetText());
+    FarConfiguration->SetCommandPrefixes(CommandPrefixesEdit->GetText());
 
-    GetFarConfiguration()->SetCustomPanelModeDetailed(CustomPanelCheck->GetChecked());
-    GetFarConfiguration()->SetColumnTypesDetailed(CustomPanelTypesEdit->GetText());
-    GetFarConfiguration()->SetColumnWidthsDetailed(CustomPanelWidthsEdit->GetText());
-    GetFarConfiguration()->SetStatusColumnTypesDetailed(CustomPanelStatusTypesEdit->GetText());
-    GetFarConfiguration()->SetStatusColumnWidthsDetailed(CustomPanelStatusWidthsEdit->GetText());
-    GetFarConfiguration()->SetFullScreenDetailed(CustomPanelFullScreenCheck->GetChecked());
+    FarConfiguration->SetCustomPanelModeDetailed(CustomPanelCheck->GetChecked());
+    FarConfiguration->SetColumnTypesDetailed(CustomPanelTypesEdit->GetText());
+    FarConfiguration->SetColumnWidthsDetailed(CustomPanelWidthsEdit->GetText());
+    FarConfiguration->SetStatusColumnTypesDetailed(CustomPanelStatusTypesEdit->GetText());
+    FarConfiguration->SetStatusColumnWidthsDetailed(CustomPanelStatusWidthsEdit->GetText());
+    FarConfiguration->SetFullScreenDetailed(CustomPanelFullScreenCheck->GetChecked());
   }
   return Result;
 }
@@ -737,11 +738,12 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 
   Dialog->AddStandardButtons();
 
-  QueueTransferLimitEdit->SetAsInteger(GetFarConfiguration()->GetQueueTransfersLimit());
-  QueueCheck->SetChecked(GetFarConfiguration()->GetDefaultCopyParam().GetQueue());
-  QueueAutoPopupCheck->SetChecked(GetFarConfiguration()->GetQueueAutoPopup());
+  TFarConfiguration * FarConfiguration = GetFarConfiguration();
+  QueueTransferLimitEdit->SetAsInteger(FarConfiguration->GetQueueTransfersLimit());
+  QueueCheck->SetChecked(FarConfiguration->GetDefaultCopyParam().GetQueue());
+  QueueAutoPopupCheck->SetChecked(FarConfiguration->GetQueueAutoPopup());
   RememberPasswordCheck->SetChecked(GetGUIConfiguration()->GetSessionRememberPassword());
-  QueueBeepCheck->SetChecked(GetFarConfiguration()->GetQueueBeep());
+  QueueBeepCheck->SetChecked(FarConfiguration->GetQueueBeep());
 
   bool Result = (Dialog->ShowModal() == brOK);
 
@@ -754,11 +756,11 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
     };
     TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
 
-    GetFarConfiguration()->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
+    FarConfiguration->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
     CopyParam.SetQueue(QueueCheck->GetChecked());
-    GetFarConfiguration()->SetQueueAutoPopup(QueueAutoPopupCheck->GetChecked());
+    FarConfiguration->SetQueueAutoPopup(QueueAutoPopupCheck->GetChecked());
     GetGUIConfiguration()->SetSessionRememberPassword(RememberPasswordCheck->GetChecked());
-    GetFarConfiguration()->SetQueueBeep(QueueBeepCheck->GetChecked());
+    FarConfiguration->SetQueueBeep(QueueBeepCheck->GetChecked());
 
     GetGUIConfiguration()->SetDefaultCopyParam(CopyParam);
   }
@@ -826,12 +828,13 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
 
 bool TTransferEditorConfigurationDialog::Execute()
 {
-  EditorDownloadDefaultButton->SetChecked(GetFarConfiguration()->GetEditorDownloadDefaultMode());
-  EditorDownloadOptionsButton->SetChecked(!GetFarConfiguration()->GetEditorDownloadDefaultMode());
-  EditorUploadSameButton->SetChecked(GetFarConfiguration()->GetEditorUploadSameOptions());
-  EditorUploadOptionsButton->SetChecked(!GetFarConfiguration()->GetEditorUploadSameOptions());
-  EditorUploadOnSaveCheck->SetChecked(GetFarConfiguration()->GetEditorUploadOnSave());
-  EditorMultipleCheck->SetChecked(GetFarConfiguration()->GetEditorMultiple());
+  TFarConfiguration * FarConfiguration = GetFarConfiguration();
+  EditorDownloadDefaultButton->SetChecked(FarConfiguration->GetEditorDownloadDefaultMode());
+  EditorDownloadOptionsButton->SetChecked(!FarConfiguration->GetEditorDownloadDefaultMode());
+  EditorUploadSameButton->SetChecked(FarConfiguration->GetEditorUploadSameOptions());
+  EditorUploadOptionsButton->SetChecked(!FarConfiguration->GetEditorUploadSameOptions());
+  EditorUploadOnSaveCheck->SetChecked(FarConfiguration->GetEditorUploadOnSave());
+  EditorMultipleCheck->SetChecked(FarConfiguration->GetEditorMultiple());
 
   bool Result = (ShowModal() == brOK);
 
@@ -842,10 +845,10 @@ bool TTransferEditorConfigurationDialog::Execute()
     {
       GetConfiguration()->EndUpdate();
     };
-    GetFarConfiguration()->SetEditorDownloadDefaultMode(EditorDownloadDefaultButton->GetChecked());
-    GetFarConfiguration()->SetEditorUploadSameOptions(EditorUploadSameButton->GetChecked());
-    GetFarConfiguration()->SetEditorUploadOnSave(EditorUploadOnSaveCheck->GetChecked());
-    GetFarConfiguration()->SetEditorMultiple(EditorMultipleCheck->GetChecked());
+    FarConfiguration->SetEditorDownloadDefaultMode(EditorDownloadDefaultButton->GetChecked());
+    FarConfiguration->SetEditorUploadSameOptions(EditorUploadSameButton->GetChecked());
+    FarConfiguration->SetEditorUploadOnSave(EditorUploadOnSaveCheck->GetChecked());
+    FarConfiguration->SetEditorMultiple(EditorMultipleCheck->GetChecked());
   }
 
   return Result;
@@ -907,12 +910,13 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
 
   Dialog->AddStandardButtons();
 
-  ConfirmOverwritingCheck->SetSelected(!GetFarConfiguration()->GetConfirmOverwritingOverride() ?
+  TFarConfiguration * FarConfiguration = GetFarConfiguration();
+  ConfirmOverwritingCheck->SetSelected(!FarConfiguration->GetConfirmOverwritingOverride() ?
     BSTATE_3STATE : (GetConfiguration()->GetConfirmOverwriting() ? BSTATE_CHECKED :
                        BSTATE_UNCHECKED));
   ConfirmCommandSessionCheck->SetChecked(GetGUIConfiguration()->GetConfirmCommandSession());
   ConfirmResumeCheck->SetChecked(GetGUIConfiguration()->GetConfirmResume());
-  ConfirmSynchronizedBrowsingCheck->SetChecked(GetFarConfiguration()->GetConfirmSynchronizedBrowsing());
+  ConfirmSynchronizedBrowsingCheck->SetChecked(FarConfiguration->GetConfirmSynchronizedBrowsing());
 
   bool Result = (Dialog->ShowModal() == brOK);
 
@@ -923,15 +927,15 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
     {
       GetConfiguration()->EndUpdate();
     };
-    GetFarConfiguration()->SetConfirmOverwritingOverride(
+    FarConfiguration->SetConfirmOverwritingOverride(
       ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
     GetGUIConfiguration()->SetConfirmCommandSession(ConfirmCommandSessionCheck->GetChecked());
     GetGUIConfiguration()->SetConfirmResume(ConfirmResumeCheck->GetChecked());
-    if (GetFarConfiguration()->GetConfirmOverwritingOverride())
+    if (FarConfiguration->GetConfirmOverwritingOverride())
     {
       GetConfiguration()->SetConfirmOverwriting(ConfirmOverwritingCheck->GetChecked());
     }
-    GetFarConfiguration()->SetConfirmSynchronizedBrowsing(ConfirmSynchronizedBrowsingCheck->GetChecked());
+    FarConfiguration->SetConfirmSynchronizedBrowsing(ConfirmSynchronizedBrowsingCheck->GetChecked());
   }
   return Result;
 }

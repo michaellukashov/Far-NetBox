@@ -89,21 +89,22 @@ void TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
   Flags = PF_FULLCMDLINE;
-  if (GetFarConfiguration()->GetDisksMenu())
+  TFarConfiguration * FarConfiguration = GetFarConfiguration();
+  if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
-      reinterpret_cast<TObject *>((size_t)GetFarConfiguration()->GetDisksMenuHotKey()));
+      reinterpret_cast<TObject *>((size_t)FarConfiguration->GetDisksMenuHotKey()));
   }
-  if (GetFarConfiguration()->GetPluginsMenu())
+  if (FarConfiguration->GetPluginsMenu())
   {
     PluginMenuStrings->Add(GetMsg(PLUGIN_NAME));
   }
-  if (GetFarConfiguration()->GetPluginsMenuCommands())
+  if (FarConfiguration->GetPluginsMenuCommands())
   {
     PluginMenuStrings->Add(GetMsg(MENU_COMMANDS));
   }
   PluginConfigStrings->Add(GetMsg(PLUGIN_NAME));
-  CommandPrefixes->SetCommaText(GetFarConfiguration()->GetCommandPrefixes());
+  CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 
 bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
