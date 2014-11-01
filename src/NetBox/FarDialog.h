@@ -321,7 +321,7 @@ protected:
   virtual bool HotKey(char HotKey);
 
 private:
-  struct PluginStartupInfo * GetStartupInfo();
+  const struct PluginStartupInfo * GetPluginStartupInfo() const;
 
 
 private:

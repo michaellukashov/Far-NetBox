@@ -556,7 +556,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 intptr_t TFarDialog::DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   TFarEnvGuard Guard;
-  return GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, static_cast<int>(Param1), Param2);
+  return GetFarPlugin()->GetPluginStartupInfo()->DefDlgProc(GetHandle(), Msg, static_cast<int>(Param1), Param2);
 }
 
 intptr_t TFarDialog::FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
@@ -710,7 +710,7 @@ intptr_t TFarDialog::ShowModal()
       GetFarPlugin()->FTopDialog = PrevTopDialog;
       if (Handle != INVALID_HANDLE_VALUE)
       {
-        GetFarPlugin()->GetStartupInfo()->DialogFree(Handle);
+        GetFarPlugin()->GetPluginStartupInfo()->DialogFree(Handle);
       }
     };
     assert(GetDefaultButton());
@@ -722,7 +722,7 @@ intptr_t TFarDialog::ShowModal()
     {
       TFarEnvGuard Guard;
       TRect Bounds = GetBounds();
-      PluginStartupInfo & Info = *GetFarPlugin()->GetStartupInfo();
+      const PluginStartupInfo & Info = *GetFarPlugin()->GetPluginStartupInfo();
       Handle = Info.DialogInit(
         &MainGuid, &MainGuid,
         Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
@@ -806,7 +806,7 @@ intptr_t TFarDialog::SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2
   if (GetHandle())
   {
     TFarEnvGuard Guard;
-    return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(),
+    return GetFarPlugin()->GetPluginStartupInfo()->SendDlgMessage(GetHandle(),
       Msg, Param1, Param2);
   }
   return 0;
@@ -1105,9 +1105,9 @@ void TFarDialogItem::SetColor(intptr_t Index, char Value)
   }
 }
 
-struct PluginStartupInfo * TFarDialogItem::GetStartupInfo()
+const struct PluginStartupInfo * TFarDialogItem::GetPluginStartupInfo() const
 {
- return GetDialog()->GetFarPlugin()->GetStartupInfo();
+ return GetDialog()->GetFarPlugin()->GetPluginStartupInfo();
 }
 
 void TFarDialogItem::SetFlags(FARDIALOGITEMFLAGS Value)
@@ -1380,13 +1380,15 @@ void TFarDialogItem::DoExit()
 intptr_t TFarDialogItem::DefaultItemProc(intptr_t Msg, void * Param)
 {
   TFarEnvGuard Guard;
-  return GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(GetItem()), Param);
+  return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
+    Msg, static_cast<int>(GetItem()), Param);
 }
 
 intptr_t TFarDialogItem::DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   TFarEnvGuard Guard;
-  return GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, static_cast<int>(Param1), Param2);
+  return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
+    Msg, static_cast<int>(Param1), Param2);
 }
 
 void TFarDialogItem::Change()
@@ -1670,7 +1672,7 @@ bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
 void TFarDialogItem::Text(int X, int Y, const FarColor & Color, const UnicodeString & Str)
 {
   TFarEnvGuard Guard;
-  GetStartupInfo()->Text(
+  GetPluginStartupInfo()->Text(
     static_cast<int>(GetDialog()->GetBounds().Left + GetLeft() + X),
     static_cast<int>(GetDialog()->GetBounds().Top + GetTop() + Y),
     &Color, Str.c_str());

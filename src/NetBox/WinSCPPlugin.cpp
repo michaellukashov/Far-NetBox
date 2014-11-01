@@ -89,24 +89,25 @@ void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS & Flags,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
   Flags = PF_FULLCMDLINE;
-  if (GetFarConfiguration()->GetDisksMenu())
+  TFarConfiguration * FarConfiguration = GetFarConfiguration();
+  if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
-       reinterpret_cast<TObject *>(const_cast<GUID *>(&DisksMenuGuid)));
+      reinterpret_cast<TObject *>(const_cast<GUID *>(&DisksMenuGuid)));
   }
-  if (GetFarConfiguration()->GetPluginsMenu())
+  if (FarConfiguration->GetPluginsMenu())
   {
     PluginMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
           reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuGuid)));
   }
-  if (GetFarConfiguration()->GetPluginsMenuCommands())
+  if (FarConfiguration->GetPluginsMenuCommands())
   {
     PluginMenuStrings->AddObject(GetMsg(MENU_COMMANDS),
       reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuCommandsGuid)));
   }
   PluginConfigStrings->AddObject(GetMsg(PLUGIN_NAME),
       reinterpret_cast<TObject *>(const_cast<GUID *>(&PluginConfigGuid)));
-  CommandPrefixes->SetCommaText(GetFarConfiguration()->GetCommandPrefixes());
+  CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 
 bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
