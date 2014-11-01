@@ -433,8 +433,8 @@ UnicodeString TStrings::GetDelimitedText() const
   {
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
-      UnicodeString line = GetString(Index);
-      Result += GetQuoteChar() + line + GetQuoteChar() + GetDelimiter();
+      UnicodeString Line = GetString(Index);
+      Result += GetQuoteChar() + Line + GetQuoteChar() + GetDelimiter();
     }
     if (Result.Length() > 0)
       Result.SetLength(Result.Length() - 1);
@@ -482,8 +482,8 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
   };
   Clear();
   rde::vector<UnicodeString> Lines;
-  UnicodeString delim(UnicodeString(GetDelimiter()) + L'\n');
-  tokenize(Value, Lines, delim, true);
+  UnicodeString Delimiter(UnicodeString(GetDelimiter()) + L'\n');
+  tokenize(Value, Lines, Delimiter, true);
   for (size_t Index = 0; Index < Lines.size(); Index++)
   {
     Add(Lines[Index].c_str());
