@@ -1,5 +1,7 @@
-NetBox 2.1.40.349 30.10.2014
+NetBox 2.1.40.350 01.11.2014
 --------------------
+  * Bugfix: plugin prefixes do not work
+    (https://github.com/michaellukashov/Far-NetBox/issues/131)
   * Bugfix: cannot save newly created file on remote server
     (http://forum.farmanager.com/viewtopic.php?p=124914#p124914)
     (http://bugs.farmanager.com/view.php?id=2852)
