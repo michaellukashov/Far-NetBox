@@ -482,7 +482,7 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
   };
   Clear();
   rde::vector<UnicodeString> Lines;
-  UnicodeString delim(GetDelimiter() + L'\n');
+  UnicodeString delim(UnicodeString(GetDelimiter()) + L'\n');
   tokenize(Value, Lines, delim, true);
   for (size_t Index = 0; Index < Lines.size(); Index++)
   {
