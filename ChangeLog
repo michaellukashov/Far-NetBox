@@ -1,4 +1,4 @@
-NetBox 2.1.40.350 01.11.2014
+NetBox 2.1.40.351 02.11.2014
 --------------------
   * Bugfix: plugin prefixes do not work
     (https://github.com/michaellukashov/Far-NetBox/issues/131)
