@@ -2118,7 +2118,7 @@ void TSessionData::SetKexList(const UnicodeString & Value)
   {
     if (!Used[DefaultKexList[K]])
     {
-      SetKex(++Index, DefaultKexList[K]);
+      SetKex(Index++, DefaultKexList[K]);
     }
   }
 }
