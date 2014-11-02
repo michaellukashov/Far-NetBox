@@ -4224,8 +4224,12 @@ bool TTerminal::DoCreateFile(const UnicodeString & AFileName,
                 break;
               case qaCancel:
                 OperationProgress->Cancel = csCancel; // continue on next case
+                Result = false;
+                break;
               case qaNoToAll:
                 OperationProgress->BatchOverwrite = boNone;
+                Result = false;
+                break;
               case qaNo:
                 Result = false;
                 break;
