@@ -2061,7 +2061,7 @@ void TSessionData::SetCipherList(const UnicodeString & Value)
   {
     if (!Used[DefaultCipherList[C]])
     {
-      SetCipher(++Index, DefaultCipherList[C]);
+      SetCipher(Index++, DefaultCipherList[C]);
     }
   }
 }
