@@ -152,7 +152,8 @@ void *open_settings_r(const char *sessionname)
 
 char *read_setting_s(void *handle, const char *key)
 {
-    DWORD type, size;
+    DWORD type = 0;
+    DWORD size = 0;
     char *ret;
 
 		if (!handle)
