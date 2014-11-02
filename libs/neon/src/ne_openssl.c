@@ -1063,7 +1063,11 @@ ne_ssl_certificate *ne_ssl_cert_import(const char *data)
     
     /* decode the base64 to get the raw DER representation */
     len = ne_unbase64(data, &der);
-    if (len == 0) return NULL;
+    if (len == 0)
+    {
+      ne_free(der);
+      return NULL;
+    }
 
     p = der;
     x5 = d2i_X509(NULL, &p, len); /* p is incremented */
