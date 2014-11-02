@@ -2094,9 +2094,9 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
   // IncludeTrailingBackslash to expand C: to C:\.
   UnicodeString LocalPath = ::IncludeTrailingBackslash(NewPath);
   if (!FarControl(FCTL_SETPANELDIR,
-                  0,
-                  reinterpret_cast<intptr_t>(LocalPath.c_str()),
-                  reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
+         0,
+         reinterpret_cast<intptr_t>(LocalPath.c_str()),
+         reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
   {
     Result = false;
   }
@@ -2111,9 +2111,9 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
       // directory to initial (?) one. So move this back to
       // previous directory.
       FarControl(FCTL_SETPANELDIR,
-                 0,
-                 reinterpret_cast<intptr_t>(OldPath.c_str()),
-                 reinterpret_cast<HANDLE>(PANEL_PASSIVE));
+        0,
+        reinterpret_cast<intptr_t>(OldPath.c_str()),
+        reinterpret_cast<HANDLE>(PANEL_PASSIVE));
       Result = false;
     }
     else
