@@ -836,8 +836,6 @@ void TSCPFileSystem::DetectUtf()
       FSecureShell->SetUtfStrings(true);
       break;
 
-    default:
-      FAIL;
     case asAuto:
       FSecureShell->SetUtfStrings(false); // noop
       try
@@ -859,6 +857,9 @@ void TSCPFileSystem::DetectUtf()
         }
       }
       break;
+
+    default:
+      FAIL;
   }
 
   if (FSecureShell->GetUtfStrings())
