@@ -228,7 +228,12 @@ TCopyParamList::TCopyParamList() :
 {
 }
 
-TCopyParamList::TCopyParamList(const TCopyParamList & other)
+TCopyParamList::TCopyParamList(const TCopyParamList & other) :
+  FRules(new TList()),
+  FCopyParams(new TList()),
+  FNames(new TStringList()),
+  FNameList(nullptr),
+  FModified(false)
 {
   this->operator=(other);
 }

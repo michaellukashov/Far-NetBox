@@ -2061,7 +2061,7 @@ void TSessionData::SetCipherList(const UnicodeString & Value)
   {
     if (!Used[DefaultCipherList[C]])
     {
-      SetCipher(++Index, DefaultCipherList[C]);
+      SetCipher(Index++, DefaultCipherList[C]);
     }
   }
 }
@@ -2118,7 +2118,7 @@ void TSessionData::SetKexList(const UnicodeString & Value)
   {
     if (!Used[DefaultKexList[K]])
     {
-      SetKex(++Index, DefaultKexList[K]);
+      SetKex(Index++, DefaultKexList[K]);
     }
   }
 }

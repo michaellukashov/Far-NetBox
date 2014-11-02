@@ -1144,7 +1144,7 @@ UnicodeString ExtractFileDir(const UnicodeString & Str)
   UnicodeString Result;
   intptr_t Pos = Str.LastDelimiter(L"/\\");
   // it used to return Path when no slash was found
-  if (Pos > 0)
+  if (Pos > 1)
   {
     Result = Str.SubString(1, Pos);
   }

@@ -101,7 +101,10 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
     }
 
     /* pad the key if necessary */
-    ::ZeroMemory(cx->key + cx->klen, IN_BLOCK_LENGTH - cx->klen);
+    if (cx->klen < IN_BLOCK_LENGTH)
+    {
+      ::ZeroMemory(cx->key + cx->klen, IN_BLOCK_LENGTH - cx->klen);
+    }
 
     /* xor ipad into key value  */
     for (uint32 i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)

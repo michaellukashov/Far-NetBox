@@ -3136,8 +3136,6 @@ void TSFTPFileSystem::DoStartup()
       FTerminal->LogEvent("We will use UTF-8 strings as configured");
       break;
 
-    default:
-      FAIL;
     case asAuto:
       // Nb, Foxit server does not exist anymore
       if (GetSessionInfo().SshImplementation.Pos(L"Foxit-WAC-Server") == 1)
@@ -3165,6 +3163,9 @@ void TSFTPFileSystem::DoStartup()
       FTerminal->LogEvent("We will not use UTF-8 strings as configured");
       FUtfStrings = asOff;
       break;
+
+    default:
+      FAIL;
   }
 
   FMaxPacketSize = static_cast<uint32_t>(GetSessionData()->GetSFTPMaxPacketSize());
