@@ -216,7 +216,8 @@ Bignum dh_create_e(void *handle, int nbits)
     /*
      * Done. Now compute e = g^x mod p.
      */
-    ctx->e = modpow(ctx->g, ctx->x, ctx->p);
+    if (ctx->x)
+      ctx->e = modpow(ctx->g, ctx->x, ctx->p);
 
     return ctx->e;
 }
