@@ -113,7 +113,7 @@ protected:
   void TabButtonClick(TFarButton * Sender, bool & Close);
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   virtual UnicodeString GetTabName(intptr_t Tab);
-  TTabButton * TabButton(intptr_t Tab);
+  TTabButton * GetTabButton(intptr_t Tab) const;
   intptr_t GetTabCount() const { return FTabCount; }
 
 private:
@@ -201,7 +201,7 @@ void TTabbedDialog::SelectTab(intptr_t Tab)
   SetCaption(FORMAT("%s - %s", GetTabName(Tab).c_str(), FOrigCaption.c_str()));
 }
 
-TTabButton * TTabbedDialog::TabButton(intptr_t Tab)
+TTabButton * TTabbedDialog::GetTabButton(intptr_t Tab) const
 {
   TTabButton * Result = nullptr;
   for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
@@ -225,7 +225,7 @@ TTabButton * TTabbedDialog::TabButton(intptr_t Tab)
 
 UnicodeString TTabbedDialog::GetTabName(intptr_t Tab)
 {
-  return TabButton(Tab)->GetTabName();
+  return GetTabButton(Tab)->GetTabName();
 }
 
 void TTabbedDialog::TabButtonClick(TFarButton * Sender, bool & Close)
@@ -257,7 +257,7 @@ bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
         NewTab = NewTab == 1 ? FTabCount - 1 : NewTab - 1;
       }
     }
-    while (!TabButton(NewTab)->GetEnabled());
+    while (!GetTabButton(NewTab)->GetEnabled());
     SelectTab(NewTab);
     Result = true;
   }
@@ -4089,7 +4089,7 @@ bool TSessionDialog::CloseQuery()
 void TSessionDialog::SelectTab(intptr_t Tab)
 {
   TTabbedDialog::SelectTab(Tab);
-  TTabButton * SelectedTabBtn = TabButton(Tab);
+  TTabButton * SelectedTabBtn = GetTabButton(Tab);
   intptr_t Index;
   /*for (Index = 0; Index < FTabs->Count; ++Index)
   {
