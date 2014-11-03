@@ -1139,7 +1139,7 @@ void TFarDialogItem::SetDataInternal(const UnicodeString & Value)
     SendMessage(DM_SETTEXTPTR, reinterpret_cast<LONG_PTR>(FarData.c_str()));
   }
   nb_free((void*)GetDialogItem()->PtrData);
-  GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
+  GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, /*AllowEmpty=*/true);
   DialogChange();
 }
 
@@ -1155,7 +1155,7 @@ void TFarDialogItem::UpdateData(const UnicodeString & Value)
 {
   UnicodeString FarData = Value.c_str();
   nb_free((void*)GetDialogItem()->PtrData);
-  GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
+  GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, /*AllowEmpty=*/true);
 }
 
 UnicodeString TFarDialogItem::GetData() const
@@ -1952,7 +1952,7 @@ LONG_PTR TFarEdit::ItemProc(int Msg, LONG_PTR Param)
   {
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->PtrData;
     nb_free((void*)GetDialogItem()->PtrData);
-    GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
+    GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, /*AllowEmpty=*/true);
   }
   return TFarDialogItem::ItemProc(Msg, Param);
 }
@@ -2111,7 +2111,7 @@ void TFarList::UpdateItem(intptr_t Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
   nb_free((void*)ListItem->Text);
-  ListItem->Text = TCustomFarPlugin::DuplicateStr(GetString(Index), true);
+  ListItem->Text = TCustomFarPlugin::DuplicateStr(GetString(Index), /*AllowEmpty=*/true);
 
   FarListUpdate ListUpdate;
   ClearStruct(ListUpdate);
@@ -2184,7 +2184,7 @@ void TFarList::Changed()
     }
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
-      FListItems->Items[Index].Text = TCustomFarPlugin::DuplicateStr(GetString(Index), true);
+      FListItems->Items[Index].Text = TCustomFarPlugin::DuplicateStr(GetString(Index), /*AllowEmpty=*/true);
     }
     if ((GetDialogItem() != nullptr) && GetDialogItem()->GetDialog()->GetHandle())
     {
@@ -2478,7 +2478,7 @@ LONG_PTR TFarComboBox::ItemProc(int Msg, LONG_PTR Param)
   {
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->PtrData;
     nb_free((void*)GetDialogItem()->PtrData);
-    GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
+    GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, /*AllowEmpty=*/true);
   }
 
   if (FList->ItemProc(Msg, Param))

@@ -54,7 +54,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
       {
         FOnSynchronize(this, Params.LocalDirectory,
           Params.RemoteDirectory, CopyParam,
-          Params, nullptr, FOptions, true);
+          Params, nullptr, FOptions, /*Full=*/true);
       }
 
       FCopyParam = CopyParam;
@@ -234,11 +234,11 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
         ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
     {
       intptr_t FoundIndex;
-      Add = FOptions->Filter->Find(core::ExtractFileName(DirectoryName, true), FoundIndex);
+      Add = FOptions->Filter->Find(core::ExtractFileName(DirectoryName, /*Unix=*/true), FoundIndex);
     }
   }
   TFileMasks::TParams MaskParams; // size/time does not matter for directories
-  Add = Add && FCopyParam.AllowTransfer(DirectoryName, osLocal, true, MaskParams);
+  Add = Add && FCopyParam.AllowTransfer(DirectoryName, osLocal, /*Directory=*/true, MaskParams);
 }
 
 void TSynchronizeController::SynchronizeInvalid(

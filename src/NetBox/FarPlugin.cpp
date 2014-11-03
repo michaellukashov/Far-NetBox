@@ -2305,7 +2305,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   {
     nb_free(Titles[FunctionKey-1]);
   }
-  Titles[FunctionKey-1] = TCustomFarPlugin::DuplicateStr(Title, true);
+  Titles[FunctionKey-1] = TCustomFarPlugin::DuplicateStr(Title, /*AllowEmpty=*/true);
 }
 
 void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
@@ -2530,7 +2530,7 @@ TObjectList * TFarPanelInfo::GetItems()
       intptr_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, 0);
       PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_calloc(1, size));
       FOwner->FarControl(FCTL_GETPANELITEM, Index, reinterpret_cast<intptr_t>(ppi));
-      FItems->Add(new TFarPanelItem(ppi, true));
+      FItems->Add(new TFarPanelItem(ppi, /*OwnsItem=*/true));
     }
   }
   return FItems;
