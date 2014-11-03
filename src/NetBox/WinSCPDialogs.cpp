@@ -112,7 +112,7 @@ protected:
   virtual void SelectTab(intptr_t Tab);
   void TabButtonClick(TFarButton * Sender, bool & Close);
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
-  virtual UnicodeString GetTabName(intptr_t Tab);
+  virtual UnicodeString GetTabName(intptr_t Tab) const;
   TTabButton * GetTabButton(intptr_t Tab) const;
   intptr_t GetTabCount() const { return FTabCount; }
 
@@ -223,7 +223,7 @@ TTabButton * TTabbedDialog::GetTabButton(intptr_t Tab) const
   return Result;
 }
 
-UnicodeString TTabbedDialog::GetTabName(intptr_t Tab)
+UnicodeString TTabbedDialog::GetTabName(intptr_t Tab) const
 {
   return GetTabButton(Tab)->GetTabName();
 }
