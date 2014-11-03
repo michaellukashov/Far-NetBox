@@ -60,7 +60,8 @@ enum TSessionActionEnum
 DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
   intptr_t /*Params*/, TSynchronizeOptions & /*Options*/);
 DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
-  const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/, bool & /*Close*/);
+  const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
+  bool & /*Close*/);
 
 struct TMultipleEdit : public TObject
 {

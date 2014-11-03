@@ -122,7 +122,8 @@ bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
 bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
 
 DEFINE_CALLBACK_TYPE4(TFileFoundEvent, void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
+  TTerminal * /*Terminal*/, const UnicodeString & /*FileName*/,
+  const TRemoteFile * /*File*/,
   bool & /*Cancel*/);
 DEFINE_CALLBACK_TYPE3(TFindingFileEvent, void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool & /*Cancel*/);

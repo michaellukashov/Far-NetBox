@@ -29,7 +29,8 @@ enum TSynchronizeLogEntry
   slDirChange
 };
 DEFINE_CALLBACK_TYPE3(TSynchronizeLogEvent, void,
-  TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/, const UnicodeString & /*Message*/);
+  TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/,
+  const UnicodeString & /*Message*/);
 DEFINE_CALLBACK_TYPE8(TSynchronizeStartStopEvent, void,
   TObject * /*Sender*/, bool /*Start*/, const TSynchronizeParamType & /*Params*/,
   const TCopyParamType & /*CopyParam*/, TSynchronizeOptions * /*Options*/,
@@ -41,7 +42,8 @@ DEFINE_CALLBACK_TYPE8(TSynchronizeEvent, void,
   const TSynchronizeParamType & /*Params*/, TSynchronizeChecklist ** /*Checklist*/,
   TSynchronizeOptions * /*Options*/, bool /*Full*/);
 DEFINE_CALLBACK_TYPE3(TSynchronizeInvalidEvent, void,
-  TSynchronizeController * /*Sender*/, const UnicodeString & /*Directory*/, const UnicodeString & /*ErrorStr*/);
+  TSynchronizeController * /*Sender*/, const UnicodeString & /*Directory*/,
+  const UnicodeString & /*ErrorStr*/);
 DEFINE_CALLBACK_TYPE2(TSynchronizeTooManyDirectoriesEvent, void,
   TSynchronizeController * /*Sender*/, intptr_t & /*MaxDirectories*/);
 
