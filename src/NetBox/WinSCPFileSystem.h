@@ -58,9 +58,9 @@ enum TSessionActionEnum
 };
 
 DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
-  intptr_t /* Params */, TSynchronizeOptions & /* Options */);
+  intptr_t /*Params*/, TSynchronizeOptions & /*Options*/);
 DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
-  const UnicodeString & /* Path */, TSpaceAvailable & /* ASpaceAvailable */, bool & /* Close */);
+  const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/, bool & /*Close*/);
 
 struct TMultipleEdit : public TObject
 {
@@ -78,7 +78,7 @@ struct TEditHistory : public TObject
   bool operator==(const TEditHistory & rh) const { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
 
-DEFINE_CALLBACK_TYPE2(TProcessSessionEvent, void, TSessionData * /* Data */, void * /* Param */);
+DEFINE_CALLBACK_TYPE2(TProcessSessionEvent, void, TSessionData * /*Data*/, void * /*Param*/);
 
 class TWinSCPFileSystem : public TCustomFarFileSystem
 {

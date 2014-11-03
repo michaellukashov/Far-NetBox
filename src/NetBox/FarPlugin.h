@@ -37,10 +37,10 @@ enum THandlesFunction
   hfProcessHostFile,
   hfProcessEvent
 };
-DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString & /* Text */);
+DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString & /*Text*/);
 
-DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, intptr_t & /* Result */);
-DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void * /* Token */, uintptr_t /* Result */, bool & /* Close */);
+DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, intptr_t & /*Result*/);
+DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void * /*Token*/, uintptr_t /*Result*/, bool & /*Close*/);
 
 struct TFarMessageParams : public TObject
 {

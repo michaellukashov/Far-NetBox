@@ -1167,7 +1167,7 @@ bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * Sessions)
 }
 
 TStoredSessionList * TGUIConfiguration::SelectFilezillaSessionsForImport(
-  TStoredSessionList * /* Sessions */)
+  TStoredSessionList * /*Sessions*/)
 {
 /*
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));

@@ -484,7 +484,7 @@ void TFTPFileSystem::Close()
 {
   assert(FActive);
   bool Result;
-  
+
   FFileZillaIntf->CustomCommand(L"QUIT");
   Result = true;
 
@@ -2329,8 +2329,8 @@ TStrings * TFTPFileSystem::GetFixedPaths()
   return nullptr;
 }
 
-void TFTPFileSystem::SpaceAvailable(const UnicodeString & /* Path */,
-  TSpaceAvailable & /* ASpaceAvailable */)
+void TFTPFileSystem::SpaceAvailable(const UnicodeString & /*Path*/,
+  TSpaceAvailable & /*ASpaceAvailable*/)
 {
   FAIL;
 }

@@ -3446,7 +3446,7 @@ void TStoredSessionList::ImportFromFilezilla(const UnicodeString & /*AFileName*/
 */
 }
 
-void TStoredSessionList::Export(const UnicodeString & /* AFileName */)
+void TStoredSessionList::Export(const UnicodeString & /*AFileName*/)
 {
   Error(SNotImplemented, 3003);
 /*

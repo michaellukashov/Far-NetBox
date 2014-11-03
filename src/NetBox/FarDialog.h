@@ -20,11 +20,11 @@ enum TItemPosition
 };
 
 DEFINE_CALLBACK_TYPE4(TFarKeyEvent, void,
-  TFarDialog * /* Sender */, TFarDialogItem * /* Item */, long /* KeyCode */, bool & /* Handled */);
+  TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/);
 DEFINE_CALLBACK_TYPE2(TFarMouseClickEvent, void,
-  TFarDialogItem * /* Item */, MOUSE_EVENT_RECORD * /* Event */);
+  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/);
 DEFINE_CALLBACK_TYPE2(TFarProcessGroupEvent, void,
-  TFarDialogItem * /* Item */, void * /* Arg */);
+  TFarDialogItem * /*Item*/, void * /*Arg*/);
 
 class TFarDialog : public TObject
 {
@@ -345,7 +345,7 @@ public:
 };
 
 DEFINE_CALLBACK_TYPE2(TFarButtonClickEvent, void,
-  TFarButton * /* Sender */, bool & /* Close */);
+  TFarButton * /*Sender*/, bool & /*Close*/);
 enum TFarButtonBrackets
 {
   brNone,
@@ -388,7 +388,7 @@ private:
 };
 
 DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void,
-  TFarDialogItem * /* Sender */, intptr_t /* NewState */, bool & /* AllowChange */);
+  TFarDialogItem * /*Sender*/, intptr_t /*NewState*/, bool & /*AllowChange*/);
 
 class TFarCheckBox : public TFarDialogItem
 {

@@ -4025,15 +4025,15 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
   }
 }
 
-void TSFTPFileSystem::CustomCommandOnFile(const UnicodeString & /* AFileName */,
-  const TRemoteFile * /* AFile */, const UnicodeString & /* Command */, intptr_t /* Params */,
-  TCaptureOutputEvent /* OutputEvent */)
+void TSFTPFileSystem::CustomCommandOnFile(const UnicodeString & /*AFileName*/,
+  const TRemoteFile * /*AFile*/, const UnicodeString & /*Command*/, intptr_t /*Params*/,
+  TCaptureOutputEvent /*OutputEvent*/)
 {
   FAIL;
 }
 
 void TSFTPFileSystem::AnyCommand(const UnicodeString & /*Command*/,
-  TCaptureOutputEvent /* OutputEvent */)
+  TCaptureOutputEvent /*OutputEvent*/)
 {
   FAIL;
 }

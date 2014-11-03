@@ -681,7 +681,7 @@ const UnicodeString TStrings::GetName(intptr_t Index) const
   return ExtractName(GetString(Index));
 }
 
-void TStrings::SetName(intptr_t /* Index */, const UnicodeString & /* Value */)
+void TStrings::SetName(intptr_t /*Index*/, const UnicodeString & /*Value*/)
 {
   Error(SNotImplemented, 2012);
 }
@@ -1471,7 +1471,7 @@ void TMemoryStream::SaveToStream(TStream * Stream)
   }
 }
 
-void TMemoryStream::SaveToFile(const UnicodeString & /* AFileName */)
+void TMemoryStream::SaveToFile(const UnicodeString & /*AFileName*/)
 {
   // TFileStream Stream(FileName, fmCreate);
   // SaveToStream(Stream);

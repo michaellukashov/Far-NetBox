@@ -1493,8 +1493,8 @@ private:
   TLoginType IndexToLoginType(intptr_t Index) const;
   TLoginType GetLoginType() const;
   bool VerifyKey(const UnicodeString & AFileName, bool TypeOnly);
-  void PrevTabClick(TFarButton * /* Sender */, bool & Close);
-  void NextTabClick(TFarButton * /* Sender */, bool & Close);
+  void PrevTabClick(TFarButton * /*Sender*/, bool & Close);
+  void NextTabClick(TFarButton * /*Sender*/, bool & Close);
   void CipherButtonClick(TFarButton * Sender, bool & Close);
   void KexButtonClick(TFarButton * Sender, bool & Close);
   void AuthGSSAPICheckAllowChange(TFarDialogItem * Sender, intptr_t NewState, bool & Allow);
@@ -4118,13 +4118,13 @@ void TSessionDialog::SelectTab(intptr_t Tab)
   }
 }
 
-void TSessionDialog::PrevTabClick(TFarButton * /* Sender */, bool & Close)
+void TSessionDialog::PrevTabClick(TFarButton * /*Sender*/, bool & Close)
 {
   Key(nullptr, KEY_CTRLPGUP);
   Close = false;
 }
 
-void TSessionDialog::NextTabClick(TFarButton * /* Sender */, bool & Close)
+void TSessionDialog::NextTabClick(TFarButton * /*Sender*/, bool & Close)
 {
   Key(nullptr, KEY_CTRLPGDN);
   Close = false;
@@ -5839,7 +5839,7 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
 }
 
 DEFINE_CALLBACK_TYPE3(TFeedFileSystemDataEvent, void,
-  TObject * /* Control */, int /* Label */, const UnicodeString & /* Value */);
+  TObject * /*Control*/, int /*Label*/, const UnicodeString & /*Value*/);
 
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog

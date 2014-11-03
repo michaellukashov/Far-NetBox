@@ -16,9 +16,9 @@ class TSynchronizeController;
 struct TSynchronizeOptions;
 class TSynchronizeChecklist;
 DEFINE_CALLBACK_TYPE2(TSynchronizeAbortEvent, void,
-  TObject * /* Sender */, bool /* Close */);
+  TObject * /*Sender*/, bool /*Close*/);
 DEFINE_CALLBACK_TYPE2(TSynchronizeThreadsEvent, void,
-  TObject * /* Sender */, TThreadMethod /* Method */);
+  TObject * /*Sender*/, TThreadMethod /*Method*/);
 enum TSynchronizeLogEntry
 {
   slScan,
@@ -29,21 +29,21 @@ enum TSynchronizeLogEntry
   slDirChange
 };
 DEFINE_CALLBACK_TYPE3(TSynchronizeLogEvent, void,
-  TSynchronizeController * /* Controller */, TSynchronizeLogEntry /* Entry */, const UnicodeString & /* Message */);
+  TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/, const UnicodeString & /*Message*/);
 DEFINE_CALLBACK_TYPE8(TSynchronizeStartStopEvent, void,
-  TObject * /* Sender */, bool /* Start */, const TSynchronizeParamType & /* Params */,
-  const TCopyParamType & /* CopyParam */, TSynchronizeOptions * /* Options */,
-  TSynchronizeAbortEvent /* OnAbort */, TSynchronizeThreadsEvent /* OnSynchronizeThreads */,
-  TSynchronizeLogEvent /* OnSynchronizeLog */);
+  TObject * /*Sender*/, bool /*Start*/, const TSynchronizeParamType & /*Params*/,
+  const TCopyParamType & /*CopyParam*/, TSynchronizeOptions * /*Options*/,
+  TSynchronizeAbortEvent /*OnAbort*/, TSynchronizeThreadsEvent /*OnSynchronizeThreads*/,
+  TSynchronizeLogEvent /*OnSynchronizeLog*/);
 DEFINE_CALLBACK_TYPE8(TSynchronizeEvent, void,
-  TSynchronizeController * /* Sender */, const UnicodeString & /* LocalDirectory */,
-  const UnicodeString & /* RemoteDirectory */, const TCopyParamType & /* CopyParam */,
-  const TSynchronizeParamType & /* Params */, TSynchronizeChecklist ** /* Checklist */,
-  TSynchronizeOptions * /* Options */, bool /* Full */);
+  TSynchronizeController * /*Sender*/, const UnicodeString & /*LocalDirectory*/,
+  const UnicodeString & /*RemoteDirectory*/, const TCopyParamType & /*CopyParam*/,
+  const TSynchronizeParamType & /*Params*/, TSynchronizeChecklist ** /*Checklist*/,
+  TSynchronizeOptions * /*Options*/, bool /*Full*/);
 DEFINE_CALLBACK_TYPE3(TSynchronizeInvalidEvent, void,
-  TSynchronizeController * /* Sender */, const UnicodeString & /* Directory */, const UnicodeString & /* ErrorStr */);
+  TSynchronizeController * /*Sender*/, const UnicodeString & /*Directory*/, const UnicodeString & /*ErrorStr*/);
 DEFINE_CALLBACK_TYPE2(TSynchronizeTooManyDirectoriesEvent, void,
-  TSynchronizeController * /* Sender */, intptr_t & /* MaxDirectories */);
+  TSynchronizeController * /*Sender*/, intptr_t & /*MaxDirectories*/);
 
 namespace Discmon {
 class TDiscMonitor;
