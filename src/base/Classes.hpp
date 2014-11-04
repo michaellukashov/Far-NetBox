@@ -38,7 +38,7 @@ extern const intptr_t UnixDateDelta;
 class TObject;
 DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 
-DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /* Sender */);
+DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /*Sender*/);
 
 void Abort();
 void Error(int ErrorID, intptr_t data);

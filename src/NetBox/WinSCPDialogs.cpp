@@ -111,8 +111,8 @@ protected:
   virtual void SelectTab(intptr_t Tab);
   void TabButtonClick(TFarButton * Sender, bool & Close);
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
-  virtual UnicodeString TabName(intptr_t Tab);
-  TTabButton * TabButton(intptr_t Tab);
+  virtual UnicodeString GetTabName(intptr_t Tab) const;
+  TTabButton * GetTabButton(intptr_t Tab) const;
   intptr_t GetTabCount() const { return FTabCount; }
 
 private:
@@ -197,10 +197,10 @@ void TTabbedDialog::SelectTab(intptr_t Tab)
   {
     FOrigCaption = GetCaption();
   }
-  SetCaption(FORMAT("%s - %s", TabName(Tab).c_str(), FOrigCaption.c_str()));
+  SetCaption(FORMAT("%s - %s", GetTabName(Tab).c_str(), FOrigCaption.c_str()));
 }
 
-TTabButton * TTabbedDialog::TabButton(intptr_t Tab)
+TTabButton * TTabbedDialog::GetTabButton(intptr_t Tab) const
 {
   TTabButton * Result = nullptr;
   for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
@@ -218,9 +218,9 @@ TTabButton * TTabbedDialog::TabButton(intptr_t Tab)
   return Result;
 }
 
-UnicodeString TTabbedDialog::TabName(intptr_t Tab)
+UnicodeString TTabbedDialog::GetTabName(intptr_t Tab) const
 {
-  return TabButton(Tab)->GetTabName();
+  return GetTabButton(Tab)->GetTabName();
 }
 
 void TTabbedDialog::TabButtonClick(TFarButton * Sender, bool & Close)
@@ -254,7 +254,7 @@ bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
         NewTab = NewTab == 1 ? FTabCount - 1 : NewTab - 1;
       }
     }
-    while (!TabButton(NewTab)->GetEnabled());
+    while (!GetTabButton(NewTab)->GetEnabled());
     SelectTab(NewTab);
     Result = true;
   }
@@ -1490,8 +1490,8 @@ private:
   TLoginType IndexToLoginType(intptr_t Index) const;
   TLoginType GetLoginType() const;
   bool VerifyKey(const UnicodeString & AFileName, bool TypeOnly);
-  void PrevTabClick(TFarButton * /* Sender */, bool & Close);
-  void NextTabClick(TFarButton * /* Sender */, bool & Close);
+  void PrevTabClick(TFarButton * /*Sender*/, bool & Close);
+  void NextTabClick(TFarButton * /*Sender*/, bool & Close);
   void CipherButtonClick(TFarButton * Sender, bool & Close);
   void KexButtonClick(TFarButton * Sender, bool & Close);
   void AuthGSSAPICheckAllowChange(TFarDialogItem * Sender, void * NewState, bool & Allow);
@@ -4086,7 +4086,7 @@ bool TSessionDialog::CloseQuery()
 void TSessionDialog::SelectTab(intptr_t Tab)
 {
   TTabbedDialog::SelectTab(Tab);
-  TTabButton * SelectedTabBtn = TabButton(Tab);
+  TTabButton * SelectedTabBtn = GetTabButton(Tab);
   intptr_t Index;
   /*for (Index = 0; Index < FTabs->Count; ++Index)
   {
@@ -4115,13 +4115,13 @@ void TSessionDialog::SelectTab(intptr_t Tab)
   }
 }
 
-void TSessionDialog::PrevTabClick(TFarButton * /* Sender */, bool & Close)
+void TSessionDialog::PrevTabClick(TFarButton * /*Sender*/, bool & Close)
 {
   Key(nullptr, VK_PRIOR | (CTRLMASK << 16));
   Close = false;
 }
 
-void TSessionDialog::NextTabClick(TFarButton * /* Sender */, bool & Close)
+void TSessionDialog::NextTabClick(TFarButton * /*Sender*/, bool & Close)
 {
   Key(nullptr, VK_NEXT | (CTRLMASK << 16));
   Close = false;
@@ -5836,7 +5836,7 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
 }
 
 DEFINE_CALLBACK_TYPE3(TFeedFileSystemDataEvent, void,
-  TObject * /* Control */, int /* Label */, const UnicodeString & /* Value */);
+  TObject * /*Control*/, int /*Label*/, const UnicodeString & /*Value*/);
 
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog

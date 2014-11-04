@@ -129,7 +129,7 @@ TFormatSettings GetEngFormatSettings();
 //int ParseShortEngMonthName(const UnicodeString & MonthStr);
 
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
-  const UnicodeString & /* FileName */, const TSearchRec & /* Rec */, void * /* Param */);
+  const UnicodeString & /*FileName*/, const TSearchRec & /*Rec*/, void * /*Param*/);
 bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec);
 struct TSearchRecChecked : public TSearchRec
 {

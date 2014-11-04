@@ -196,13 +196,13 @@ struct custom_nballocator_t
 template <typename T, typename U>
 inline bool operator==(const custom_nballocator_t<T> &, const custom_nballocator_t<U> &)
 {
-  return false;
+  return true;
 }
 
 template <typename T, typename U>
 inline bool operator!=(const custom_nballocator_t<T> &, const custom_nballocator_t<U> &)
 {
-  return true;
+  return false;
 }
 
 #endif // if defined(__cplusplus)

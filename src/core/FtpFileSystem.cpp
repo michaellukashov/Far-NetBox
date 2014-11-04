@@ -484,7 +484,7 @@ void TFTPFileSystem::Close()
 {
   assert(FActive);
   bool Result;
-  
+
   FFileZillaIntf->CustomCommand(L"QUIT");
   Result = true;
 
@@ -2329,8 +2329,8 @@ TStrings * TFTPFileSystem::GetFixedPaths()
   return nullptr;
 }
 
-void TFTPFileSystem::SpaceAvailable(const UnicodeString & /* Path */,
-  TSpaceAvailable & /* ASpaceAvailable */)
+void TFTPFileSystem::SpaceAvailable(const UnicodeString & /*Path*/,
+  TSpaceAvailable & /*ASpaceAvailable*/)
 {
   FAIL;
 }
@@ -2581,7 +2581,7 @@ bool TFTPFileSystem::FTPPostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam
   TGuard Guard(FQueueCriticalSection);
 
   FQueue.push_back(TMessageQueue::value_type(wParam, lParam));
-  SetEvent(FQueueEvent);
+  ::SetEvent(FQueueEvent);
 
   return true;
 }

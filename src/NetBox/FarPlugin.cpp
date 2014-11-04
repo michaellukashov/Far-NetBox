@@ -250,7 +250,7 @@ RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
 }
 
 TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
-    HANDLE /* Plugin */)
+    HANDLE /*Plugin*/)
 {
   TCustomFarFileSystem * Result = nullptr;
   RECT ActivePanelBounds = GetPanelBounds(PANEL_ACTIVE);
@@ -1412,7 +1412,7 @@ void TCustomFarPlugin::ShowTerminalScreen()
     UnicodeString Blank = ::StringOfChar(L' ', static_cast<intptr_t>(Size.x));
     for (int Y = Size.y - 2; Y < Size.y; Y++)
     {
-      Text(0, Y, 7/* LIGHTGRAY */, Blank);
+      Text(0, Y, 7 /*LIGHTGRAY*/, Blank);
     }
   }
   FlushText();
@@ -2129,12 +2129,12 @@ bool TCustomFarFileSystem::IsRight()
   return !IsLeft();
 }
 
-bool TCustomFarFileSystem::ProcessHostFileEx(TObjectList * /* PanelItems */, OPERATION_MODES /* OpMode */)
+bool TCustomFarFileSystem::ProcessHostFileEx(TObjectList * /*PanelItems*/, OPERATION_MODES /*OpMode*/)
 {
   return false;
 }
 
-bool TCustomFarFileSystem::ProcessKeyEx(intptr_t /* Key */, uintptr_t /* ControlState */)
+bool TCustomFarFileSystem::ProcessKeyEx(intptr_t /*Key*/, uintptr_t /*ControlState*/)
 {
   return false;
 }
@@ -2144,28 +2144,29 @@ bool TCustomFarFileSystem::ProcessPanelEventEx(intptr_t /*Event*/, void * /*Para
   return false;
 }
 
-bool TCustomFarFileSystem::SetDirectoryEx(const UnicodeString & /* Dir */, OPERATION_MODES /* OpMode */)
+bool TCustomFarFileSystem::SetDirectoryEx(const UnicodeString & /*Dir*/, OPERATION_MODES /*OpMode*/)
 {
   return false;
 }
 
-intptr_t TCustomFarFileSystem::MakeDirectoryEx(UnicodeString & /* Name */, OPERATION_MODES /* OpMode */)
+intptr_t TCustomFarFileSystem::MakeDirectoryEx(UnicodeString & /*Name*/, OPERATION_MODES /*OpMode*/)
 {
   return -1;
 }
 
-bool TCustomFarFileSystem::DeleteFilesEx(TObjectList * /* PanelItems */, OPERATION_MODES /* OpMode */)
+bool TCustomFarFileSystem::DeleteFilesEx(TObjectList * /*PanelItems*/, OPERATION_MODES /*OpMode*/)
 {
   return false;
 }
 
-intptr_t TCustomFarFileSystem::GetFilesEx(TObjectList * /* PanelItems */, bool /* Move */,
-  UnicodeString & /* DestPath */, OPERATION_MODES /* OpMode */)
+intptr_t TCustomFarFileSystem::GetFilesEx(TObjectList * /*PanelItems*/, bool /*Move*/,
+  UnicodeString & /*DestPath*/, OPERATION_MODES /*OpMode*/)
 {
   return 0;
 }
 
-intptr_t TCustomFarFileSystem::PutFilesEx(TObjectList * /* PanelItems */, bool /* Move */, OPERATION_MODES /* OpMode */)
+intptr_t TCustomFarFileSystem::PutFilesEx(TObjectList * /*PanelItems*/,
+  bool /*Move*/, OPERATION_MODES /*OpMode*/)
 {
   return 0;
 }
@@ -2359,7 +2360,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   };
   Labels[FunctionKey - 1].Key.VirtualKeyCode = VK_F1 + FunctionKey - 1;
   Labels[FunctionKey - 1].Key.ControlKeyState = FKeys[shift];
-  Labels[FunctionKey - 1].Text = TCustomFarPlugin::DuplicateStr(Title, true);
+  Labels[FunctionKey - 1].Text = TCustomFarPlugin::DuplicateStr(Title, /*AllowEmpty=*/true);
   Labels[FunctionKey-1].LongText = nullptr;
 }
 
@@ -2589,7 +2590,7 @@ TObjectList * TFarPanelInfo::GetItems()
       gppi.Size = Size;
       gppi.Item = ppi;
       FOwner->FarControl(FCTL_GETPANELITEM, Index, static_cast<void *>(&gppi));
-      FItems->Add(new TFarPanelItem(ppi, true));
+      FItems->Add(new TFarPanelItem(ppi, /*OwnsItem=*/true));
     }
   }
   return FItems;

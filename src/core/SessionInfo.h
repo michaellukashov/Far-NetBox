@@ -119,7 +119,8 @@ enum TCaptureOutputType
 DEFINE_CALLBACK_TYPE2(TCaptureOutputEvent, void,
   const UnicodeString & /*Str*/, TCaptureOutputType /*OutputType*/);
 DEFINE_CALLBACK_TYPE3(TCalculatedChecksumEvent, void,
-  const UnicodeString & /* FileName */, const UnicodeString & /* Alg */, const UnicodeString & /* Hash */);
+  const UnicodeString & /*FileName*/, const UnicodeString & /*Alg*/,
+  const UnicodeString & /*Hash*/);
 
 class TSessionActionRecord;
 class TActionLog;

@@ -38,10 +38,10 @@ enum TBatchOverwrite
 };
 
 DEFINE_CALLBACK_TYPE1(TFileOperationProgressEvent, void,
-  TFileOperationProgressType & /* ProgressData */);
+  TFileOperationProgressType & /*ProgressData*/);
 DEFINE_CALLBACK_TYPE6(TFileOperationFinishedEvent, void,
-  TFileOperation /* Operation */, TOperationSide /* Side */, bool /* Temp */,
-  const UnicodeString & /* FileName */, bool /* Success */, TOnceDoneOperation & /* OnceDoneOperation */);
+  TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
+  const UnicodeString & /*FileName*/, bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/);
 
 class TFileOperationProgressType : public TObject
 {

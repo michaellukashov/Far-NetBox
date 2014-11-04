@@ -132,7 +132,7 @@ void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   REGCONFIG(true);
   #undef KEY
 
-  if (Storage->OpenSubKey(L"Bookmarks", true))
+  if (Storage->OpenSubKey(L"Bookmarks", /*CanCreate=*/true))
   {
     FBookmarks->Save(Storage, All);
 

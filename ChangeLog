@@ -1,5 +1,7 @@
-NetBox 2.1.40.351 02.11.2014
+NetBox 2.1.40.352 04.11.2014
 --------------------
+  * Bugfix: plugin crash after autodisconnect
+    (http://forum.farmanager.com/viewtopic.php?p=125042#p125042)
   * Bugfix: plugin prefixes do not work
     (https://github.com/michaellukashov/Far-NetBox/issues/131)
   * Bugfix: cannot save newly created file on remote server

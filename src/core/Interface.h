@@ -19,7 +19,7 @@ UnicodeString GetAppNameString();
 UnicodeString GetSshVersionString();
 void CopyToClipboard(const UnicodeString & Text);
 HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
-  /* TThreadFunc ThreadFunc, */ void * Parameter, DWORD CreationFlags,
+  /*TThreadFunc ThreadFunc,*/ void * Parameter, DWORD CreationFlags,
   TThreadID & ThreadId);
 
 // Order of the values also define order of the buttons/answers on the prompts
@@ -62,7 +62,7 @@ struct TQueryButtonAlias : public TObject
 };
 
 DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
-  intptr_t & /* Result */);
+  intptr_t & /*Result*/);
 enum TQueryType
 {
   qtConfirmation,
@@ -122,10 +122,11 @@ bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
 bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
 
 DEFINE_CALLBACK_TYPE4(TFileFoundEvent, void,
-  TTerminal * /* Terminal */, const UnicodeString & /* FileName */, const TRemoteFile * /* File */,
-  bool & /* Cancel */);
+  TTerminal * /*Terminal*/, const UnicodeString & /*FileName*/,
+  const TRemoteFile * /*File*/,
+  bool & /*Cancel*/);
 DEFINE_CALLBACK_TYPE3(TFindingFileEvent, void,
-  TTerminal * /* Terminal */, const UnicodeString & /* Directory */, bool & /* Cancel */);
+  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool & /*Cancel*/);
 
 class TOperationVisualizer
 {

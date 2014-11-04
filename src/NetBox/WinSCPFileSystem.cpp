@@ -179,7 +179,7 @@ void TRemoteFilePanelItem::SetPanelModes(TFarPanelModes * PanelModes)
     TranslateColumnTypes(ColumnTypes, ColumnTitles.get());
     TranslateColumnTypes(StatusColumnTypes, nullptr);
 
-    PanelModes->SetPanelMode(5 /*detailed */,
+    PanelModes->SetPanelMode(5 /*detailed*/,
       ColumnTypes, FarConfiguration->GetColumnWidthsDetailed(),
       ColumnTitles.get(), FarConfiguration->GetFullScreenDetailed(), false, true, false,
       StatusColumnTypes, FarConfiguration->GetStatusColumnWidthsDetailed());
@@ -269,7 +269,7 @@ void TKeepaliveThread::Init()
 void TKeepaliveThread::Terminate()
 {
   // TCompThread::Terminate();
-  SetEvent(FEvent);
+  ::SetEvent(FEvent);
 }
 
 void TKeepaliveThread::Execute()
@@ -322,7 +322,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
 {
 }
 
-void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
+void TWinSCPFileSystem::Init(TSecureShell * /*SecureShell*/)
 {
   TCustomFarFileSystem::Init();
 }
@@ -1662,7 +1662,7 @@ void TWinSCPFileSystem::DoSynchronize(
 
 void TWinSCPFileSystem::DoSynchronizeInvalid(
   TSynchronizeController * /*Sender*/, const UnicodeString & Directory,
-  const UnicodeString & /* ErrorStr */)
+  const UnicodeString & /*ErrorStr*/)
 {
   UnicodeString Message;
   if (!Directory.IsEmpty())
@@ -2790,7 +2790,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
             ImportStorage->HasSubKeys())
         {
           AnyData = true;
-          StoredSessions->Load(ImportStorage.get(), /* AsModified */ true, /* UseDefaults */ true);
+          StoredSessions->Load(ImportStorage.get(), /*AsModified*/ true, /*UseDefaults*/ true);
           // modified only, explicit
           StoredSessions->Save(false, true);
         }

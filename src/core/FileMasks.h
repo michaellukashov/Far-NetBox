@@ -150,8 +150,8 @@ bool IsEffectiveFileNameMask(const UnicodeString & Mask);
 UnicodeString DelimitFileNameMask(const UnicodeString & Mask);
 
 DEFINE_CALLBACK_TYPE5(TCustomCommandPatternEvent, void,
-  int /* Index */, const UnicodeString & /* Pattern */, void * /* Arg */, UnicodeString & /* Replacement */,
-  bool & /* LastPass */);
+  int /*Index*/, const UnicodeString & /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
+  bool & /*LastPass*/);
 
 class TCustomCommand : public TObject
 {

@@ -204,7 +204,7 @@ bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
   return Result;
 }
 
-bool ExecuteShellAndWait(HINSTANCE /* Handle */, const UnicodeString & APath,
+bool ExecuteShellAndWait(HINSTANCE /*Handle*/, const UnicodeString & APath,
   const UnicodeString & Params, TProcessMessagesEvent ProcessMessages)
 {
   TShellExecuteInfoW ExecuteInfo;
@@ -417,7 +417,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
   return retval;
 }
 
-UnicodeString FormatDateTimeSpan(const UnicodeString & /* TimeFormat */, const TDateTime & DateTime)
+UnicodeString FormatDateTimeSpan(const UnicodeString & /*TimeFormat*/, const TDateTime & DateTime)
 {
   UnicodeString Result;
   if (static_cast<int>(DateTime) > 0)

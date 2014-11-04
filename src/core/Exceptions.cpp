@@ -92,7 +92,7 @@ static bool WellKnownException(
   return Result;
 }
 
-static bool ExceptionMessage(const Exception * E, bool /* Count */,
+static bool ExceptionMessage(const Exception * E, bool /*Count*/,
   bool Formatted, UnicodeString & Message, bool & InternalError)
 {
   bool Result = true;

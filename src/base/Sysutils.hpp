@@ -101,7 +101,7 @@ void RaiseLastOSError(DWORD Result = 0);
 struct TFormatSettings : public TObject
 {
 public:
-  explicit TFormatSettings(int /* LCID */);
+  explicit TFormatSettings(int /*LCID*/);
   static TFormatSettings Create(int LCID ) { return TFormatSettings(LCID); }
   uint8_t CurrencyFormat;
   uint8_t NegCurrFormat;

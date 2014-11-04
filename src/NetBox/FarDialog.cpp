@@ -391,7 +391,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
       {
         FNeedsSynchronize = false;
         FSynchronizeMethod();
-        ReleaseSemaphore(FSynchronizeObjects[0], 1, nullptr);
+        ::ReleaseSemaphore(FSynchronizeObjects[0], 1, nullptr);
         BreakSynchronize();
       }
       catch (...)
@@ -555,8 +555,12 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 
 intptr_t TFarDialog::DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
-  TFarEnvGuard Guard;
-  return GetFarPlugin()->GetPluginStartupInfo()->DefDlgProc(GetHandle(), Msg, static_cast<int>(Param1), Param2);
+  if (GetHandle())
+  {
+    TFarEnvGuard Guard;
+    return GetFarPlugin()->GetPluginStartupInfo()->DefDlgProc(GetHandle(), Msg, static_cast<int>(Param1), Param2);
+  }
+  return 0;
 }
 
 intptr_t TFarDialog::FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
@@ -753,7 +757,7 @@ intptr_t TFarDialog::ShowModal()
 
 void TFarDialog::BreakSynchronize()
 {
-  SetEvent(FSynchronizeObjects[1]);
+  ::SetEvent(FSynchronizeObjects[1]);
 }
 
 void TFarDialog::Synchronize(TThreadMethod Event)
@@ -1147,7 +1151,7 @@ void TFarDialogItem::SetDataInternal(const UnicodeString & Value)
     SendMessage(DM_SETTEXTPTR, static_cast<void *>(const_cast<wchar_t *>(FarData.c_str())));
   }
   nb_free((void*)GetDialogItem()->Data);
-  GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(FarData, true);
+  GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(FarData, /*AllowEmpty=*/true);
 
   DialogChange();
 }
@@ -1164,8 +1168,7 @@ void TFarDialogItem::UpdateData(const UnicodeString & Value)
 {
   UnicodeString FarData = Value.c_str();
   nb_free((void*)GetDialogItem()->Data);
-  GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(FarData, true);
-
+  GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(FarData, /*AllowEmpty=*/true);
 }
 
 UnicodeString TFarDialogItem::GetData() const
@@ -1379,16 +1382,24 @@ void TFarDialogItem::DoExit()
 
 intptr_t TFarDialogItem::DefaultItemProc(intptr_t Msg, void * Param)
 {
-  TFarEnvGuard Guard;
-  return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
-    Msg, static_cast<int>(GetItem()), Param);
+  if (GetDialog() && GetDialog()->GetHandle())
+  {
+    TFarEnvGuard Guard;
+    return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
+      Msg, static_cast<int>(GetItem()), Param);
+  }
+  return 0;
 }
 
 intptr_t TFarDialogItem::DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
-  TFarEnvGuard Guard;
-  return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
-    Msg, static_cast<int>(Param1), Param2);
+  if (GetDialog() && GetDialog()->GetHandle())
+  {
+    TFarEnvGuard Guard;
+    return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
+      Msg, static_cast<int>(Param1), Param2);
+  }
+  return 0;
 }
 
 void TFarDialogItem::Change()
@@ -1970,7 +1981,7 @@ intptr_t TFarEdit::ItemProc(intptr_t Msg, void * Param)
   {
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->Data;
     nb_free((void*)GetDialogItem()->Data);
-    GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(Data, true);
+    GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(Data, /*AllowEmpty=*/true);
   }
   return TFarDialogItem::ItemProc(Msg, Param);
 }
@@ -2134,7 +2145,7 @@ void TFarList::UpdateItem(intptr_t Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
   nb_free((void*)ListItem->Text);
-  ListItem->Text = TCustomFarPlugin::DuplicateStr(GetString(Index), true);
+  ListItem->Text = TCustomFarPlugin::DuplicateStr(GetString(Index), /*AllowEmpty=*/true);
 
   FarListUpdate ListUpdate;
   ClearStruct(ListUpdate);
@@ -2144,7 +2155,7 @@ void TFarList::UpdateItem(intptr_t Index)
   GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<void *>(&ListUpdate));
 }
 
-void TFarList::Put(intptr_t Index, const UnicodeString & S)
+void TFarList::Put(intptr_t Index, const UnicodeString & Str)
 {
   if ((GetDialogItem() != nullptr) && GetDialogItem()->GetDialog()->GetHandle())
   {
@@ -2153,7 +2164,7 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
     {
       FNoDialogUpdate = false;
     };
-    TStringList::SetString(Index, S);
+    TStringList::SetString(Index, Str);
     if (GetUpdateCount() == 0)
     {
       UpdateItem(Index);
@@ -2161,7 +2172,7 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
   }
   else
   {
-    TStringList::SetString(Index, S);
+    TStringList::SetString(Index, Str);
   }
 }
 
@@ -2208,7 +2219,7 @@ void TFarList::Changed()
     }
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
-      FListItems->Items[Index].Text = TCustomFarPlugin::DuplicateStr(GetString(Index), true);
+      FListItems->Items[Index].Text = TCustomFarPlugin::DuplicateStr(GetString(Index), /*AllowEmpty=*/true);
     }
     if ((GetDialogItem() != nullptr) && GetDialogItem()->GetDialog()->GetHandle())
     {
@@ -2508,7 +2519,7 @@ intptr_t TFarComboBox::ItemProc(intptr_t Msg, void * Param)
   {
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->Data;
     nb_free((void*)GetDialogItem()->Data);
-    GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(Data, true);
+    GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(Data, /*AllowEmpty=*/true);
   }
 
   if (FList->ItemProc(Msg, Param))

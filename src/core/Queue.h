@@ -62,9 +62,9 @@ class TQueueItemProxy;
 class TTerminalQueueStatus;
 
 DEFINE_CALLBACK_TYPE1(TQueueListUpdateEvent, void,
-  TTerminalQueue * /* Queue */);
+  TTerminalQueue * /*Queue*/);
 DEFINE_CALLBACK_TYPE2(TQueueItemUpdateEvent, void,
-  TTerminalQueue * /* Queue */, TQueueItem * /* Item */);
+  TTerminalQueue * /*Queue*/, TQueueItem * /*Item*/);
 
 enum TQueueEvent
 {
@@ -74,7 +74,7 @@ enum TQueueEvent
 };
 
 DEFINE_CALLBACK_TYPE2(TQueueEventEvent, void,
-  TTerminalQueue * /* Queue */, TQueueEvent /* Event */);
+  TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/);
 
 class TTerminalQueue : public TSignalThread
 {

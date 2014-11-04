@@ -30,47 +30,57 @@ class TTunnelUI;
 class TCallbackGuard;
 
 DEFINE_CALLBACK_TYPE8(TQueryUserEvent, void,
-  TObject * /* Sender */, const UnicodeString & /* Query */, TStrings * /* MoreMessages */ , uintptr_t /* Answers */,
-  const TQueryParams * /* Params */, uintptr_t & /* Answer */, TQueryType /* QueryType */, void * /* Arg */);
+  TObject * /*Sender*/, const UnicodeString & /*Query*/, TStrings * /*MoreMessages*/ ,
+  uintptr_t /*Answers*/,
+  const TQueryParams * /*Params*/, uintptr_t & /*Answer*/,
+  TQueryType /*QueryType*/, void * /*Arg*/);
 DEFINE_CALLBACK_TYPE8(TPromptUserEvent, void,
-  TTerminal * /* Terminal */, TPromptKind /* Kind */, const UnicodeString & /* Name */, const UnicodeString & /* Instructions */,
-  TStrings * /* Prompts */, TStrings * /* Results */, bool & /* Result */, void * /* Arg */);
+  TTerminal * /*Terminal*/, TPromptKind /*Kind*/, const UnicodeString & /*Name*/,
+  const UnicodeString & /*Instructions*/,
+  TStrings * /*Prompts*/, TStrings * /*Results*/, bool & /*Result*/, void * /*Arg*/);
 DEFINE_CALLBACK_TYPE5(TDisplayBannerEvent, void,
-  TTerminal * /* Terminal */, const UnicodeString & /* SessionName */, const UnicodeString & /* Banner */,
-  bool & /* NeverShowAgain */, intptr_t /* Options */);
+  TTerminal * /*Terminal*/, const UnicodeString & /*SessionName*/,
+  const UnicodeString & /*Banner*/,
+  bool & /*NeverShowAgain*/, intptr_t /*Options*/);
 DEFINE_CALLBACK_TYPE3(TExtendedExceptionEvent, void,
-  TTerminal * /* Terminal */, Exception * /* E */, void * /* Arg */);
-DEFINE_CALLBACK_TYPE2(TReadDirectoryEvent, void, TObject * /* Sender */, Boolean /* ReloadOnly */);
+  TTerminal * /*Terminal*/, Exception * /*E*/, void * /*Arg*/);
+DEFINE_CALLBACK_TYPE2(TReadDirectoryEvent, void, TObject * /*Sender*/,
+  Boolean /*ReloadOnly*/);
 DEFINE_CALLBACK_TYPE4(TReadDirectoryProgressEvent, void,
-  TObject * /* Sender */, intptr_t /* Progress */, intptr_t /* ResolvedLinks */, bool & /* Cancel */);
+  TObject * /*Sender*/, intptr_t /*Progress*/, intptr_t /*ResolvedLinks*/,
+  bool & /*Cancel*/);
 DEFINE_CALLBACK_TYPE3(TProcessFileEvent, void,
-  const UnicodeString & /* FileName */, const TRemoteFile * /* File */, void * /* Param */);
+  const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
+  void * /*Param*/);
 DEFINE_CALLBACK_TYPE4(TProcessFileEventEx, void,
-  const UnicodeString & /* FileName */, const TRemoteFile * /* File */, void * /* Param */, intptr_t /* Index */);
+  const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
+  void * /*Param*/, intptr_t /*Index*/);
 DEFINE_CALLBACK_TYPE2(TFileOperationEvent, intptr_t,
-  void * /* Param1 */, void * /* Param2 */);
+  void * /*Param1*/, void * /*Param2*/);
 DEFINE_CALLBACK_TYPE4(TSynchronizeDirectoryEvent, void,
-  const UnicodeString & /* LocalDirectory */, const UnicodeString & /* RemoteDirectory */,
-  bool & /* Continue */, bool /* Collect */);
+  const UnicodeString & /*LocalDirectory*/, const UnicodeString & /*RemoteDirectory*/,
+  bool & /*Continue*/, bool /*Collect*/);
 DEFINE_CALLBACK_TYPE2(TDeleteLocalFileEvent, void,
-  const UnicodeString & /* FileName */, bool /* Alternative */);
+  const UnicodeString & /*FileName*/, bool /*Alternative*/);
 DEFINE_CALLBACK_TYPE3(TDirectoryModifiedEvent, int,
-  TTerminal * /* Terminal */, const UnicodeString & /* Directory */, bool /* SubDirs */);
+  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool /*SubDirs*/);
 DEFINE_CALLBACK_TYPE4(TInformationEvent, void,
-  TTerminal * /* Terminal */, const UnicodeString & /* Str */, bool /* Status */, intptr_t /* Phase */);
+  TTerminal * /*Terminal*/, const UnicodeString & /*Str*/, bool /*Status*/,
+  intptr_t /*Phase*/);
 DEFINE_CALLBACK_TYPE5(TCreateLocalFileEvent, HANDLE,
-  const UnicodeString & /* FileName */, DWORD /* DesiredAccess */,
-  DWORD /* ShareMode */, DWORD /* CreationDisposition */, DWORD /* FlagsAndAttributes */);
+  const UnicodeString & /*FileName*/, DWORD /*DesiredAccess*/,
+  DWORD /*ShareMode*/, DWORD /*CreationDisposition*/, DWORD /*FlagsAndAttributes*/);
 DEFINE_CALLBACK_TYPE1(TGetLocalFileAttributesEvent, DWORD,
-  const UnicodeString & /* FileName */);
+  const UnicodeString & /*FileName*/);
 DEFINE_CALLBACK_TYPE2(TSetLocalFileAttributesEvent, BOOL,
-  const UnicodeString & /* FileName */, DWORD /* FileAttributes */);
+  const UnicodeString & /*FileName*/, DWORD /*FileAttributes*/);
 DEFINE_CALLBACK_TYPE3(TMoveLocalFileEvent, BOOL,
-  const UnicodeString & /* FileName */, const UnicodeString & /* NewFileName */, DWORD /* Flags */);
+  const UnicodeString & /*FileName*/, const UnicodeString & /*NewFileName*/,
+  DWORD /*Flags*/);
 DEFINE_CALLBACK_TYPE1(TRemoveLocalDirectoryEvent, BOOL,
-  const UnicodeString & /* LocalDirName */);
+  const UnicodeString & /*LocalDirName*/);
 DEFINE_CALLBACK_TYPE2(TCreateLocalDirectoryEvent, BOOL,
-  const UnicodeString & /* LocalDirName */, LPSECURITY_ATTRIBUTES /* SecurityAttributes */);
+  const UnicodeString & /*LocalDirName*/, LPSECURITY_ATTRIBUTES /*SecurityAttributes*/);
 DEFINE_CALLBACK_TYPE0(TCheckForEscEvent, bool);
 
 inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
@@ -238,7 +248,7 @@ public:
   void EndTransaction();
   void HomeDirectory();
   void ChangeFileProperties(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, /*const TRemoteProperties */ void * Properties);
+    const TRemoteFile * AFile, /*const TRemoteProperties*/ void * Properties);
   void ChangeFilesProperties(TStrings * AFileList,
     const TRemoteProperties * Properties);
   bool LoadFilesProperties(TStrings * AFileList);
@@ -249,11 +259,11 @@ public:
   void TerminalRenameFile(const UnicodeString & AFileName, const UnicodeString & NewName);
   void TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString & NewName, bool CheckExistence);
   void TerminalMoveFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
-    /* const TMoveFileParams */ void * Param);
+    /*const TMoveFileParams*/ void * Param);
   bool MoveFiles(TStrings * AFileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
   void TerminalCopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
-    /* const TMoveFileParams */ void * Param);
+    /*const TMoveFileParams*/ void * Param);
   bool CopyFiles(TStrings * AFileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
   bool CalculateFilesSize(const TStrings * AFileList, int64_t & Size,
