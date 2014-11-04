@@ -2132,7 +2132,7 @@ void TFarList::UpdateItem(intptr_t Index)
   GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<LONG_PTR>(&ListUpdate));
 }
 
-void TFarList::Put(intptr_t Index, const UnicodeString & S)
+void TFarList::Put(intptr_t Index, const UnicodeString & Str)
 {
   if ((GetDialogItem() != nullptr) && GetDialogItem()->GetDialog()->GetHandle())
   {
@@ -2141,7 +2141,7 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
     {
       FNoDialogUpdate = false;
     };
-    TStringList::SetString(Index, S);
+    TStringList::SetString(Index, Str);
     if (GetUpdateCount() == 0)
     {
       UpdateItem(Index);
@@ -2149,7 +2149,7 @@ void TFarList::Put(intptr_t Index, const UnicodeString & S)
   }
   else
   {
-    TStringList::SetString(Index, S);
+    TStringList::SetString(Index, Str);
   }
 }
 

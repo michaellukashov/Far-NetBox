@@ -538,7 +538,7 @@ protected:
   virtual void Init();
   void UpdatePosition(intptr_t Position);
   intptr_t GetPosition() const;
-  virtual void Put(intptr_t Index, const UnicodeString & S);
+  virtual void Put(intptr_t Index, const UnicodeString & Str);
   void SetCurPos(intptr_t Position, intptr_t TopIndex);
   void UpdateItem(intptr_t Index);
 
