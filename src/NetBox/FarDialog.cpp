@@ -395,7 +395,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
       {
         FNeedsSynchronize = false;
         FSynchronizeMethod();
-        ReleaseSemaphore(FSynchronizeObjects[0], 1, nullptr);
+        ::ReleaseSemaphore(FSynchronizeObjects[0], 1, nullptr);
         BreakSynchronize();
       }
       catch (...)
@@ -750,7 +750,7 @@ intptr_t TFarDialog::ShowModal()
 
 void TFarDialog::BreakSynchronize()
 {
-  SetEvent(FSynchronizeObjects[1]);
+  ::SetEvent(FSynchronizeObjects[1]);
 }
 
 void TFarDialog::Synchronize(TThreadMethod Event)

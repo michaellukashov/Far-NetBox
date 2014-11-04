@@ -268,7 +268,7 @@ void TKeepaliveThread::Init()
 void TKeepaliveThread::Terminate()
 {
   // TCompThread::Terminate();
-  SetEvent(FEvent);
+  ::SetEvent(FEvent);
 }
 
 void TKeepaliveThread::Execute()

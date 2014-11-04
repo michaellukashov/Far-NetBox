@@ -411,7 +411,7 @@ void TSignalThread::TriggerEvent()
 {
   if (FEvent && FEvent != INVALID_HANDLE_VALUE)
   {
-    SetEvent(FEvent);
+    ::SetEvent(FEvent);
     //FEvent = INVALID_HANDLE_VALUE;
   }
 }
@@ -1609,7 +1609,7 @@ void TQueueItem::Complete()
 
   if (FCompleteEvent != INVALID_HANDLE_VALUE)
   {
-    SetEvent(FCompleteEvent);
+    ::SetEvent(FCompleteEvent);
     FCompleteEvent = INVALID_HANDLE_VALUE;
   }
 }
@@ -2347,7 +2347,7 @@ void TTerminalThread::ProcessEvent()
     SaveException(E, FException);
   }
 
-  SetEvent(FActionEvent);
+  ::SetEvent(FActionEvent);
 }
 
 void TTerminalThread::Rethrow(Exception *& Exception)
