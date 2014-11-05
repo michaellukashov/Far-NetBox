@@ -104,7 +104,7 @@ void TClassInfo::Register()
     }
     else
     {
-      // the gobal hash has already been created by a reentrant call,
+      // the global hash has already been created by a reentrant call,
       // so delete the local hash and try again
       delete classTable;
       Register();
