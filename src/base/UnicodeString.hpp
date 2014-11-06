@@ -195,14 +195,14 @@ public:
   AnsiString() {}
   AnsiString(const AnsiString & rht);
   AnsiString(intptr_t Size, char Ch) : Data(Size, Ch) {}
-  AnsiString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
-  AnsiString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
-  AnsiString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
-  AnsiString(const char * Str, intptr_t Size) { Init(Str, Size); }
-  AnsiString(const uint8_t * Str) { Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0); }
-  AnsiString(const uint8_t * Str, intptr_t Size) { Init(Str, Size); }
-  explicit AnsiString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
-  explicit AnsiString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
+  AnsiString(const wchar_t * Str);
+  AnsiString(const wchar_t * Str, intptr_t Size);
+  AnsiString(const char * Str);
+  AnsiString(const char * Str, intptr_t Size);
+  AnsiString(const uint8_t * Str);
+  AnsiString(const uint8_t * Str, intptr_t Size);
+  explicit AnsiString(const UnicodeString & Str);
+  explicit AnsiString(const UTF8String & Str);
   explicit AnsiString(const RawByteString & Str);
   ~AnsiString() {}
 
@@ -275,16 +275,16 @@ class RawByteString
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   RawByteString() {}
-  RawByteString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
-  RawByteString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
-  RawByteString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
-  RawByteString(const char * Str, intptr_t Size) { Init(Str, Size); }
-  RawByteString(const uint8_t * Str) { Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0); }
+  RawByteString(const wchar_t * Str);
+  RawByteString(const wchar_t * Str, intptr_t Size);
+  RawByteString(const char * Str);
+  RawByteString(const char * Str, intptr_t Size);
+  RawByteString(const uint8_t * Str);
   RawByteString(const uint8_t * Str, intptr_t Size) { Init(Str, Size); }
-  RawByteString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
-  RawByteString(const RawByteString & Str) { Init(Str.c_str(), Str.GetLength()); }
-  RawByteString(const AnsiString & Str) { Init(Str.c_str(), Str.GetLength()); }
-  RawByteString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
+  RawByteString(const UnicodeString & Str);
+  RawByteString(const RawByteString & Str);
+  RawByteString(const AnsiString & Str);
+  RawByteString(const UTF8String & Str);
   ~RawByteString() {}
 
   operator const char * () const { return reinterpret_cast<const char *>(Data.c_str()); }
