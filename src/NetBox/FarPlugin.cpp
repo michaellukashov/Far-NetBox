@@ -392,7 +392,11 @@ void TCustomFarPlugin::HandleFileSystemException(
 
 void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo * Info)
 {
+  if (!Info)
+    return;
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Info->hPanel);
+  if (!FOpenedPlugins || !FarFileSystem)
+    return;
   try
   {
     ResetCachedInfo();
