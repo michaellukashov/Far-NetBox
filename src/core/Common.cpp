@@ -1437,7 +1437,7 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
     TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
     Result = Temp + ((Date.wDayOfWeek - DayOfWeek(Temp) + 8) % 7) +
       (7 * (Date.wDay - 1));
-    // Day 5 means, the last occurence of day-of-week in month
+    // Day 5 means, the last occurrence of day-of-week in month
     if (Date.wDay == 5)
     {
       uint16_t Month = static_cast<uint16_t>(Date.wMonth + 1);

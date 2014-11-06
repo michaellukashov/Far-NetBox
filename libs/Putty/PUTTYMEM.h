@@ -18,20 +18,11 @@
 #define sfree(z) (mlog(__FILE__,__LINE__), safefree(z))
 void mlog(char *, int);
 #else
-#if defined(USE_DLMALLOC) && !defined(_DEBUG)
-#include "../../src/base/nbglobals.h"
-#define smalloc(z) nb_calloc(1,z)
-#define snmalloc(z,y) nb_calloc(z,y)
-#define srealloc(y,z) nb_realloc(y,z)
-#define snrealloc(y,z,n) nb_realloc(y,z*n)
-#define sfree nb_free
-#else
 #define smalloc(z) safemalloc(z,1)
 #define snmalloc safemalloc
 #define srealloc(y,z) saferealloc(y,z,1)
 #define snrealloc saferealloc
 #define sfree safefree
-#endif // ifdef USE_DLMALLOC
 #endif
 
 void *safemalloc(size_t, size_t);

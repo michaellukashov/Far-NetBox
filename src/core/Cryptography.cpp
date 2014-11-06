@@ -313,7 +313,7 @@ static void fcrypt_init(
   cx->mode = mode;
   cx->pwd_len = pwd_len;
 
-  /* derive the encryption and authetication keys and the password verifier   */
+  /* derive the encryption and authentication keys and the password verifier   */
   derive_key(pwd, pwd_len, salt, SALT_LENGTH(mode), KEYING_ITERATIONS,
              kbuf, 2 * KEY_LENGTH(mode) + PWD_VER_LENGTH);
 

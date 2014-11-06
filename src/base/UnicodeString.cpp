@@ -8,6 +8,46 @@ AnsiString::AnsiString(const AnsiString & rht)
   Init(rht.c_str(), rht.Length());
 }
 
+AnsiString::AnsiString(const wchar_t * Str)
+{
+  Init(Str, ::StrLength(Str));
+}
+
+AnsiString::AnsiString(const wchar_t * Str, intptr_t Size)
+{
+  Init(Str, Size);
+}
+
+AnsiString::AnsiString(const char* Str)
+{
+  Init(Str, Str ? strlen(Str) : 0);
+}
+
+AnsiString::AnsiString(const char * Str, intptr_t Size)
+{
+  Init(Str, Size);
+}
+
+AnsiString::AnsiString(const uint8_t * Str)
+{
+  Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0);
+}
+
+AnsiString::AnsiString(const uint8_t * Str, intptr_t Size)
+{
+  Init(Str, Size);
+}
+
+AnsiString::AnsiString(const UnicodeString & Str)
+{
+  Init(Str.c_str(), Str.GetLength());
+}
+
+AnsiString::AnsiString(const UTF8String & Str)
+{
+  Init(Str.c_str(), Str.GetLength());
+}
+
 AnsiString::AnsiString(const RawByteString & Str)
 {
    Init(Str.c_str(), Str.GetLength());
@@ -191,6 +231,51 @@ intptr_t RawByteString::Pos(const char Ch) const
 intptr_t RawByteString::Pos(const char * Str) const
 {
   return Data.find(reinterpret_cast<const uint8_t *>(Str)) + 1;
+}
+
+RawByteString::RawByteString(const wchar_t * Str)
+{
+  Init(Str, ::StrLength(Str));
+}
+
+RawByteString::RawByteString(const wchar_t * Str, intptr_t Size)
+{
+  Init(Str, Size);
+}
+
+RawByteString::RawByteString(const char * Str)
+{
+  Init(Str, Str ? strlen(Str) : 0);
+}
+
+RawByteString::RawByteString(const char * Str, intptr_t Size)
+{
+  Init(Str, Size);
+}
+
+RawByteString::RawByteString(const uint8_t * Str)
+{
+  Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0);
+}
+
+RawByteString::RawByteString(const UnicodeString & Str)
+{
+  Init(Str.c_str(), Str.GetLength());
+}
+
+RawByteString::RawByteString(const RawByteString & Str)
+{
+  Init(Str.c_str(), Str.GetLength());
+}
+
+RawByteString::RawByteString(const AnsiString & Str)
+{
+  Init(Str.c_str(), Str.GetLength());
+}
+
+RawByteString::RawByteString(const UTF8String & Str)
+{
+  Init(Str.c_str(), Str.GetLength());
 }
 
 RawByteString & RawByteString::Insert(const char * Str, intptr_t Pos)

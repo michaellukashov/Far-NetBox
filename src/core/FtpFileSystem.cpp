@@ -1070,7 +1070,7 @@ void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
 
 void TFTPFileSystem::SetCPSLimit(TFileOperationProgressType * OperationProgress)
 {
-  // Any reason we use separate field intead of directly using OperationProgress->CPSLimit?
+  // Any reason we use separate field instead of directly using OperationProgress->CPSLimit?
   // Maybe thread-safety?
   FFileTransferCPSLimit = OperationProgress->CPSLimit;
   OperationProgress->SetSpeedCounters();
@@ -1625,7 +1625,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
     // Support for MDTM does not necessarily mean that the server supports
     // non-standard hack of setting timestamp using
     // MFMT-like (two argument) call to MDTM.
-    // IIS definitelly does.
+    // IIS definitely does.
     if (FFileTransferPreserveTime &&
         ((FServerCapabilities->GetCapability(mfmt_command) == yes) ||
          ((FServerCapabilities->GetCapability(mdtm_command) == yes))))
@@ -4034,7 +4034,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
   bool Result;
   try
   {
-    // error-handling-free and DST-mode-inaware copy of TTerminal::OpenLocalFile
+    // error-handling-free and DST-mode-unaware copy of TTerminal::OpenLocalFile
     HANDLE Handle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ,
       FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, 0);
     if (Handle == INVALID_HANDLE_VALUE)
