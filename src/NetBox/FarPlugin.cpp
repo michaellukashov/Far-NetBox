@@ -386,7 +386,11 @@ void TCustomFarPlugin::HandleFileSystemException(
 void TCustomFarPlugin::GetOpenPluginInfo(HANDLE Plugin,
   struct OpenPluginInfo * Info)
 {
+  if (!Info)
+    return;
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Plugin);
+  if (!FOpenedPlugins || !FarFileSystem)
+    return;
   try
   {
     ResetCachedInfo();
