@@ -1,4 +1,4 @@
-NetBox 2.1.40.352 04.11.2014
+NetBox 2.1.40.353 06.11.2014
 --------------------
   * Bugfix: plugin crash after autodisconnect
     (http://forum.farmanager.com/viewtopic.php?p=125042#p125042)
