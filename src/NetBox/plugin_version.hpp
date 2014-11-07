@@ -9,8 +9,8 @@
 #define NETBOX_VERSION_MAJOR         2
 #define NETBOX_VERSION_MINOR         1
 #define NETBOX_VERSION_SUBMINOR      40
-#define NETBOX_VERSION_BUILD         353
+#define NETBOX_VERSION_BUILD         354
 
 static const std::wstring NETBOX_VERSION_NUMBER(L"2.1.40");
-static const std::wstring NETBOX_COMPILATION_TIME(L"06.11.2014 23:15:41");
+static const std::wstring NETBOX_COMPILATION_TIME(L"08.11.2014 00:19:35");
 

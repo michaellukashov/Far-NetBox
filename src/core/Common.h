@@ -32,8 +32,8 @@ extern const wchar_t EngShortMonthNames[12][4];
 extern const wchar_t TokenPrefix;
 extern const wchar_t NoReplacement;
 extern const wchar_t TokenReplacement;
-#define LOCAL_INVALID_CHARS L"/\\:*?\"<>|"
-#define PASSWORD_MASK L"***"
+#define LOCAL_INVALID_CHARS "/\\:*?\"<>|"
+#define PASSWORD_MASK "***"
 
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B);
 UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);
