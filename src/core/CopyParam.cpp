@@ -312,7 +312,7 @@ void TCopyParamType::SetLocalInvalidChars(const UnicodeString & Value)
   if (Value != GetLocalInvalidChars())
   {
     FLocalInvalidChars = Value;
-    FTokenizibleChars = FLocalInvalidChars + TokenPrefix;
+    FTokenizibleChars = FLocalInvalidChars; // + TokenPrefix;
   }
 }
 
