@@ -19,12 +19,6 @@
 #include "SecureShell.h"
 #include <WideStrUtils.hpp>
 
-#define FILE_OPERATION_LOOP_TERMINAL FTerminal
-#undef FILE_OPERATION_LOOP_EX
-#define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
-    [&]() { OPERATION })
-
 #define SSH_FX_OK                                 0
 #define SSH_FX_EOF                                1
 #define SSH_FX_NO_SUCH_FILE                       2
