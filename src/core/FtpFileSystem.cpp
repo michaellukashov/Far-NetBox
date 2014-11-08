@@ -22,12 +22,6 @@
 #include <DateUtils.hpp>
 #include <openssl/x509_vfy.h>
 
-#define FILE_OPERATION_LOOP_TERMINAL FTerminal
-#undef FILE_OPERATION_LOOP_EX
-#define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
-    [&]() { OPERATION })
-
 const int DummyCodeClass = 8;
 const int DummyTimeoutCode = 801;
 const int DummyCancelCode = 802;
@@ -922,21 +916,21 @@ bool TFTPFileSystem::ConfirmOverwrite(
     Aliases[0].Button = qaRetry;
     Aliases[0].Alias = LoadStr(RESUME_BUTTON);
     Aliases[0].GroupWith = qaNo;
-    Aliases[0].GrouppedShiftState = TShiftState() << ssAlt;
+    Aliases[0].GrouppedShiftState = ssAlt;
     Aliases[1].Button = qaAll;
     Aliases[1].Alias = LoadStr(YES_TO_NEWER_BUTTON);
     Aliases[1].GroupWith = qaYes;
-    Aliases[1].GrouppedShiftState = TShiftState() << ssCtrl;
+    Aliases[1].GrouppedShiftState = ssCtrl;
     Aliases[2].Button = qaIgnore;
     Aliases[2].Alias = LoadStr(RENAME_BUTTON);
     Aliases[2].GroupWith = qaNo;
-    Aliases[2].GrouppedShiftState = TShiftState() << ssCtrl;
+    Aliases[2].GrouppedShiftState = ssCtrl;
     Aliases[3].Button = qaYesToAll;
     Aliases[3].GroupWith = qaYes;
-    Aliases[3].GrouppedShiftState = TShiftState() << ssShift;
+    Aliases[3].GrouppedShiftState = ssShift;
     Aliases[4].Button = qaNoToAll;
     Aliases[4].GroupWith = qaNo;
-    Aliases[4].GrouppedShiftState = TShiftState() << ssShift;
+    Aliases[4].GrouppedShiftState = ssShift;
     TQueryParams QueryParams(qpNeverAskAgainCheck);
     QueryParams.Aliases = Aliases;
     QueryParams.AliasesCount = _countof(Aliases);
@@ -1089,14 +1083,16 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
   const UnicodeString & RemotePath, bool Get, int64_t Size, intptr_t Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
-  FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, AFileName.c_str()),
+  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName.c_str()), "",
+  [&]()
+  {
     FFileZillaIntf->FileTransfer(LocalFile.c_str(), RemoteFile.c_str(),
       RemotePath.c_str(), Get, Size, (int)Type, &UserData);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
     uintptr_t Reply = WaitForCommandReply();
     GotReply(Reply, FLAGMASK(FFileTransferCancelled, REPLY_ALLOW_CANCEL));
-  );
+  });
 
   switch (FFileTransferAbort)
   {
@@ -1250,17 +1246,21 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     Action.Cancel();
     if (!AFile->GetIsSymLink())
     {
-      FILE_OPERATION_LOOP(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()), "",
+      [&]()
+      {
         DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
         if (FLAGCLEAR(LocalFileAttrs, faDirectory))
         {
           ThrowExtException();
         }
-      );
+      });
 
-      FILE_OPERATION_LOOP(FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()), "",
+      [&]()
+      {
         THROWOSIFFALSE(::ForceDirectories(DestFullName));
-      );
+      });
 
       TSinkFileParams SinkFileParams;
       SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
@@ -1301,13 +1301,15 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
-    FILE_OPERATION_LOOP(FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()), "",
+    [&]()
+    {
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
       if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
       {
         ThrowExtException();
       }
-    );
+    });
 
     OperationProgress->TransferingFile = false; // not set with FTP protocol
 
@@ -1363,9 +1365,11 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
     {
-      FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()), "",
+      [&]()
+      {
         THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, (LocalFileAttrs | NewAttrs)) == 0);
-      );
+      });
     }
   }
 
@@ -1639,16 +1643,20 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   {
     if (!Dir)
     {
-      FILE_OPERATION_LOOP(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()),
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()), "",
+      [&]()
+      {
         THROWOSIFFALSE(::DeleteFile(AFileName));
-      );
+      });
     }
   }
   else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams->LocalFileAttrs, faArchive))
   {
-    FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()), "",
+    [&]()
+    {
       THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, OpenParams->LocalFileAttrs & ~faArchive) == 0);
-    );
+    });
   }
 }
 
@@ -1667,11 +1675,13 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   TSearchRecChecked SearchRec;
   bool FindOK = false;
 
-  FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
+  [&]()
+  {
     FindOK =
       ::FindFirstChecked((DirectoryName + L"*.*").c_str(),
         FindAttrs, SearchRec) == 0;
-  );
+  });
 
   bool CreateDir = true;
 
@@ -1709,9 +1719,11 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
         }
       }
 
-      FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
+      [&]()
+      {
         FindOK = (::FindNextChecked(SearchRec) == 0);
-      );
+      });
     }
   }
 
@@ -1764,9 +1776,11 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
-      FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()), "",
+      [&]()
+      {
         THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
-      );
+      });
     }
   }
 }

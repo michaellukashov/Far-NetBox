@@ -11995,11 +11995,6 @@ private:
   bool FIgnoreFileList;
 };
 
-#undef FILE_OPERATION_LOOP_EX
-#define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
-    [&]() { OPERATION })
-
 #define CONST_WEBDAV_PROTOCOL_BASE_NAME L"WebDAV"
 
 #define StrToNeon(S) UTF8String(S).c_str()
@@ -12813,16 +12808,20 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
   {
     if (!Dir)
     {
-      FILE_OPERATION_LOOP(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()),
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()), "",
+      [&]()
+      {
         THROWOSIFFALSE(::DeleteFile(ApiPath(AFileName).c_str()));
-      );
+      });
     }
   }
   else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
   {
-    FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()),
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()), "",
+    [&]()
+    {
       THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(AFileName), LocalFileAttrs & ~faArchive) == 0);
-    );
+    });
   }
 }
 
@@ -12854,14 +12853,16 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
 
   UnicodeString FindPath = DirectoryName + L"*.*";
 
-  FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
+  [&]()
+  {
     FindHandle = ::FindFirstFile(ApiPath(FindPath).c_str(), &SearchRec);
     FindOK = FindHandle != INVALID_HANDLE_VALUE;
     if (!FindOK)
     {
       FindCheck(::GetLastError(), FindPath);
     }
-  );
+  });
 
   bool CreateDir = true;
 
@@ -12899,13 +12900,15 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
         }
       }
 
-      FILE_OPERATION_LOOP(FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
+      [&]()
+      {
         FindOK = ::FindNextFile(FindHandle, &SearchRec) != FALSE;
         if (!FindOK)
         {
           ::FindCheck(::GetLastError(), FindPath);
         }
-      );
+      });
     }
   }
   if (CreateDir)
@@ -12959,9 +12962,11 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
-      FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()), "",
+      [&]()
+      {
         THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DirectoryName), Attrs & ~faArchive) == 0);
-      );
+      });
     }
   }
 }
@@ -13119,17 +13124,21 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       Action.Cancel();
       if (!AFile->GetIsSymLink())
       {
-        FILE_OPERATION_LOOP(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
+        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()), "",
+        [&]()
+        {
           DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
           if (FLAGCLEAR(LocalFileAttrs, faDirectory))
           {
             ThrowExtException();
           }
-        );
+        });
 
-        FILE_OPERATION_LOOP(FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
+        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()), "",
+        [&]()
+        {
           THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFullName)));
-        );
+        });
 
         TSinkFileParams SinkFileParams;
         SinkFileParams.TargetDir = ApiPath(::IncludeTrailingBackslash(DestFullName));
@@ -13198,13 +13207,15 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
       DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
-      FILE_OPERATION_LOOP(FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()), "",
+      [&]()
+      {
         LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
         if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
         {
           ThrowExtException();
         }
-      );
+      });
 
       OperationProgress->TransferingFile = false; // not set with FTP protocol
 
@@ -13249,9 +13260,11 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
       if ((NewAttrs & LocalFileAttrs) != NewAttrs)
       {
-        FILE_OPERATION_LOOP(FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
+        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()), "",
+        [&]()
+        {
           THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFullName), LocalFileAttrs | NewAttrs) == 0);
-        );
+        });
       }
       // set time
       FTerminal->SetLocalFileTime(DestFullName, AFile->GetModification());
@@ -13501,7 +13514,9 @@ void TWebDAVFileSystem::FileTransfer(const UnicodeString & AFileName,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   FCurrentOperationProgress = OperationProgress;
-  FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, AFileName.c_str()),
+  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName.c_str()), "",
+  [&]()
+  {
     UnicodeString FullRemoteFileName = RemotePath + RemoteFile;
     bool Result;
     if (Get)
@@ -13514,7 +13529,7 @@ void TWebDAVFileSystem::FileTransfer(const UnicodeString & AFileName,
     }
     // if (!Result)
       // ThrowExtException();
-  );
+  });
 
   switch (FFileTransferAbort)
   {
