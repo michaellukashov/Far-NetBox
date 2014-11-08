@@ -15,12 +15,6 @@
 
 #include <stdio.h>
 
-#define FILE_OPERATION_LOOP_TERMINAL FTerminal
-#undef FILE_OPERATION_LOOP_EX
-#define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION)   \
-  FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
-    [&]() { OPERATION })
-
 const int coRaiseExcept = 1;
 const int coExpectNoOutput = 2;
 const int coWaitForLastLine = 4;
@@ -1847,10 +1841,12 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
           TFileBuffer BlockBuf;
 
           // This is crucial, if it fails during file transfer, it's fatal error
-          FILE_OPERATION_LOOP_EX(!OperationProgress->TransferingFile,
-            FMTLOAD(READ_ERROR, AFileName.c_str()),
+          FileOperationLoopCustom(FTerminal, OperationProgress, !OperationProgress->TransferingFile,
+            FMTLOAD(READ_ERROR, AFileName.c_str()), "",
+          [&]()
+          {
             BlockBuf.LoadStream(Stream.get(), OperationProgress->LocalBlockSize(), true);
-          );
+          });
 
           OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
 
@@ -2675,9 +2671,12 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
                   }
 
                   // This is crucial, if it fails during file transfer, it's fatal error
-                  FILE_OPERATION_LOOP_EX(false, FMTLOAD(WRITE_ERROR, DestFileName.c_str()),
+                  FileOperationLoopCustom(FTerminal, OperationProgress, false,
+                    FMTLOAD(WRITE_ERROR, DestFileName.c_str()), "",
+                  [&]()
+                  {
                     BlockBuf.WriteToStream(FileStream.get(), static_cast<uint32_t>(BlockBuf.GetSize()));
-                  );
+                  });
 
                   OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
 
