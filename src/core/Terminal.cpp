@@ -90,10 +90,6 @@ void TTerminal::CommandErrorAri(
   }
 }
 
-#define COMMAND_ERROR_ARI(MESSAGE, REPEAT) \
-  CommandErrorAri(E, MESSAGE, \
-    [&]() { REPEAT; })
-
 // Note that the action may already be canceled when RollbackAction is called
 void TTerminal::CommandErrorAriAction(
   Exception & E,
@@ -2862,11 +2858,11 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Di
   }
   catch (Exception & E)
   {
-    COMMAND_ERROR_ARI
-    (
-      L"",
+    CommandErrorAri(E, L"",
+    [&]()
+    {
       FileList = CustomReadDirectoryListing(Directory, UseCache);
-    );
+    });
   }
   return FileList;
 }
@@ -3388,11 +3384,11 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
   }
   catch (Exception & E)
   {
-    COMMAND_ERROR_ARI
-    (
-      FMTLOAD(CUSTOM_COMMAND_ERROR, Command.c_str(), AFileName.c_str()),
-      DoCustomCommandOnFile(AFileName, AFile, Command, Params, OutputEvent)
-    );
+    CommandErrorAri(E, FMTLOAD(CUSTOM_COMMAND_ERROR, Command.c_str(), AFileName.c_str()),
+    [&]()
+    {
+      DoCustomCommandOnFile(AFileName, AFile, Command, Params, OutputEvent);
+    });
   }
 }
 
@@ -3628,11 +3624,11 @@ void TTerminal::DoCalculateDirectorySize(const UnicodeString & AFileName,
   {
     if (!GetActive() || ((Params->Params & csIgnoreErrors) == 0))
     {
-      COMMAND_ERROR_ARI
-      (
-        FMTLOAD(CALCULATE_SIZE_ERROR, AFileName.c_str()),
-        DoCalculateDirectorySize(AFileName, AFile, Params)
-      );
+      CommandErrorAri(E, FMTLOAD(CALCULATE_SIZE_ERROR, AFileName.c_str()),
+      [&]()
+      {
+        DoCalculateDirectorySize(AFileName, AFile, Params);
+      });
     }
   }
 }
@@ -3836,11 +3832,11 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
   }
   catch (Exception & E)
   {
-    COMMAND_ERROR_ARI
-    (
-      FMTLOAD(COPY_FILE_ERROR, AFileName.c_str(), NewName.c_str()),
-      DoCopyFile(AFileName, NewName)
-    );
+    CommandErrorAri(E, FMTLOAD(COPY_FILE_ERROR, AFileName.c_str(), NewName.c_str()),
+    [&]()
+    {
+      DoCopyFile(AFileName, NewName);
+    });
   }
 }
 
@@ -3939,11 +3935,11 @@ void TTerminal::DoCreateLink(const UnicodeString & AFileName,
   }
   catch (Exception & E)
   {
-    COMMAND_ERROR_ARI
-    (
-      FMTLOAD(CREATE_LINK_ERROR, AFileName.c_str()),
+    CommandErrorAri(E, FMTLOAD(CREATE_LINK_ERROR, AFileName.c_str()),
+    [&]()
+    {
       DoCreateLink(AFileName, PointTo, Symbolic);
-    );
+    });
   }
 }
 
