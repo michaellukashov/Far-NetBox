@@ -98,10 +98,6 @@ void FileOperationLoopCustom(TTerminal * Terminal,
 #define FILE_OPERATION_LOOP(MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_EX(True, MESSAGE, OPERATION)
 
-#define FILE_OPERATION_LOOP_EX2(ALLOW_SKIP, MESSAGE, HELP_KEYWORD, OPERATION) \
-  FileOperationLoopCustom(FTerminal, OperationProgress, ALLOW_SKIP, MESSAGE, HELP_KEYWORD, \
-    [&]() { OPERATION })
-
 enum TCurrentFSProtocol
 {
   cfsUnknown,
