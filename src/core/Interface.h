@@ -58,7 +58,7 @@ struct TQueryButtonAlias : public TObject
   TNotifyEvent OnClick;
   int GroupWith;
   bool Default;
-  TShiftState GrouppedShiftState;
+  TShiftStateFlag GrouppedShiftState;
 };
 
 DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,

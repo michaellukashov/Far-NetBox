@@ -841,7 +841,6 @@ enum TShiftStateFlag
 {
   ssShift, ssAlt, ssCtrl, ssLeft, ssRight, ssMiddle, ssDouble, ssTouch, ssPen
 };
-typedef DelphiSet<TShiftStateFlag> TShiftState;
 
 typedef HANDLE THandle;
 typedef DWORD TThreadID;
