@@ -133,11 +133,6 @@ void TTerminal::CommandErrorAriAction(
   CommandErrorAriAction(E, MESSAGE, \
     [&]() { REPEAT; }, ACTION)
 
-#undef FILE_OPERATION_LOOP_EX
-#define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FileOperationLoopCustom(this, OperationProgress, ALLOW_SKIP, MESSAGE, L"", \
-    [&]() { OPERATION })
-
 class TLoopDetector : public TObject
 {
 public:
@@ -1791,9 +1786,11 @@ intptr_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
 {
   assert(CallBackFunc);
   intptr_t Result = 0;
-  FILE_OPERATION_LOOP_EX(AllowSkip, Message,
+  FileOperationLoopCustom(this, OperationProgress, AllowSkip, Message, "",
+  [&]()
+  {
     Result = CallBackFunc(Param1, Param2);
-  );
+  });
 
   return Result;
 }
