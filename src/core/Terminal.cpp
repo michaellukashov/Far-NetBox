@@ -129,10 +129,6 @@ void TTerminal::CommandErrorAriAction(
   }
 }
 
-#define COMMAND_ERROR_ARI_ACTION(MESSAGE, REPEAT, ACTION) \
-  CommandErrorAriAction(E, MESSAGE, \
-    [&]() { REPEAT; }, ACTION)
-
 class TLoopDetector : public TObject
 {
 public:
@@ -2824,12 +2820,12 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Director
   }
   catch (Exception & E)
   {
-    COMMAND_ERROR_ARI_ACTION
-    (
-      L"",
-      FileList = ReadDirectoryListing(Directory, Mask),
-      Action
-    );
+    CommandErrorAriAction(E, L"",
+    [&]()
+    {
+      FileList = ReadDirectoryListing(Directory, Mask);
+    },
+    Action);
   }
   return FileList;
 }
@@ -2847,12 +2843,12 @@ TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
   }
   catch (Exception & E)
   {
-    COMMAND_ERROR_ARI_ACTION
-    (
-      L"",
-      File = ReadFileListing(APath),
-      Action
-    );
+    CommandErrorAriAction(E, L"",
+    [&]()
+    {
+      File = ReadFileListing(APath);
+    },
+    Action);
   }
   return File;
 }
@@ -3283,12 +3279,12 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
   }
   catch (Exception & E)
   {
-    COMMAND_ERROR_ARI_ACTION
-    (
-      FMTLOAD(DELETE_FILE_ERROR, AFileName.c_str()),
-      DoDeleteFile(AFileName, AFile, Params),
-      Action
-    );
+    CommandErrorAriAction(E, FMTLOAD(DELETE_FILE_ERROR, AFileName.c_str()),
+    [&]()
+    {
+      DoDeleteFile(AFileName, AFile, Params);
+    },
+    Action);
   }
 }
 
@@ -3513,12 +3509,12 @@ void TTerminal::DoChangeFileProperties(const UnicodeString & AFileName,
   }
   catch (Exception & E)
   {
-    COMMAND_ERROR_ARI_ACTION
-    (
-      FMTLOAD(CHANGE_PROPERTIES_ERROR, AFileName.c_str()),
-      DoChangeFileProperties(AFileName, AFile, Properties),
-      Action
-    );
+    CommandErrorAriAction(E, FMTLOAD(CHANGE_PROPERTIES_ERROR, AFileName.c_str()),
+    [&]()
+    {
+      DoChangeFileProperties(AFileName, AFile, Properties);
+    },
+    Action);
   }
 }
 
@@ -3728,12 +3724,13 @@ void TTerminal::DoRenameFile(const UnicodeString & AFileName,
   }
   catch (Exception & E)
   {
-    COMMAND_ERROR_ARI_ACTION
-    (
-      FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName.c_str(), NewName.c_str()),
-      DoRenameFile(AFileName, NewName, Move),
-      Action
-    );
+    CommandErrorAriAction(E,
+    FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName.c_str(), NewName.c_str()),
+    [&]()
+    {
+      DoRenameFile(AFileName, NewName, Move);
+    },
+    Action);
   }
 }
 
@@ -3906,12 +3903,13 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName)
   }
   catch (Exception & E)
   {
-    COMMAND_ERROR_ARI_ACTION
-    (
-      FMTLOAD(CREATE_DIR_ERROR, ADirName.c_str()),
-      DoCreateDirectory(ADirName),
-      Action
-    );
+    CommandErrorAriAction(E,
+    FMTLOAD(CREATE_DIR_ERROR, ADirName.c_str()),
+    [&]()
+    {
+      DoCreateDirectory(ADirName);
+    },
+    Action);
   }
 }
 
