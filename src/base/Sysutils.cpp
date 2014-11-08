@@ -296,7 +296,7 @@ intptr_t Pos(const UnicodeString & Str, const UnicodeString & Substr)
   return Result;
 }
 
-UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To, const TReplaceFlags & /*Flags*/)
+UnicodeString StringReplace(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To)
 {
   return AnsiReplaceStr(Str, From, To);
 }

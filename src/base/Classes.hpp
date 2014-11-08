@@ -835,7 +835,6 @@ enum TReplaceFlag
   rfReplaceAll,
   rfIgnoreCase
 };
-typedef DelphiSet<TReplaceFlag> TReplaceFlags;
 
 enum TShiftStateFlag
 {
