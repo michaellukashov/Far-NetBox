@@ -4820,12 +4820,14 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
 
         // originally this was before CLOSE (last __finally statement),
         // on VShell it failed
-        FILE_OPERATION_LOOP_EX2(true,
+        FileOperationLoopCustom(FTerminal, OperationProgress, true,
           FMTLOAD(RENAME_AFTER_RESUME_ERROR,
             core::UnixExtractFileName(OpenParams.RemoteFileName.c_str()).c_str(), DestFileName.c_str()),
           HELP_RENAME_AFTER_RESUME_ERROR,
+        [&]()
+        {
           this->RemoteRenameFile(OpenParams.RemoteFileName, DestFileName);
-        );
+        });
       }
 
       if (SetProperties)
@@ -4855,8 +4857,11 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
             SendPacket(&PropertiesRequest);
           }
           bool Resend = false;
-          FILE_OPERATION_LOOP_EX2(true, FMTLOAD(PRESERVE_TIME_PERM_ERROR3, DestFileName.c_str()),
+          FileOperationLoopCustom(FTerminal, OperationProgress, true,
+            FMTLOAD(PRESERVE_TIME_PERM_ERROR3, DestFileName.c_str()),
             HELP_PRESERVE_TIME_PERM_ERROR,
+          [&]()
+          {
             try
             {
               TSFTPPacket DummyResponse(FCodePage);
@@ -4886,7 +4891,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
                 throw;
               }
             }
-          );
+          });
         }
         catch (Exception & E)
         {
