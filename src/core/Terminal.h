@@ -95,9 +95,6 @@ void FileOperationLoopCustom(TTerminal * Terminal,
   const UnicodeString & HelpKeyword,
   const std::function<void()> & Operation);
 
-#define FILE_OPERATION_LOOP(MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_EX(True, MESSAGE, OPERATION)
-
 enum TCurrentFSProtocol
 {
   cfsUnknown,
