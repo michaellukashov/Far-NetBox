@@ -1012,7 +1012,7 @@ private:
 
 UnicodeString ReplaceCopyright(const UnicodeString & S)
 {
-  return ::StringReplace(S, L"©", L"(c)");
+  return ::StringReplaceAll(S, L"©", L"(c)");
 }
 
 TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
