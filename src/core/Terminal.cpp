@@ -4368,7 +4368,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
           uint32_t LSize;
           DWORD HSize;
           LSize = ::GetFileSize(LocalFileHandle, &HSize);
-          if ((LSize == 0xFFFFFFFF) && (::GetLastError() != NO_ERROR))
+          if ((LSize == (uint32_t)-1) && (::GetLastError() != NO_ERROR))
           {
             ::RaiseLastOSError();
           }
