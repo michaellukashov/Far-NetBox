@@ -2085,10 +2085,12 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
       {
         FDetectTimeDifference = false;
 
-        TRemoteFile * UtcFile = nullptr;
+        std::unique_ptr<TRemoteFile> UtcFilePtr;
         try
         {
+          TRemoteFile * UtcFile = nullptr;
           ReadFile(File->GetFullFileName(), UtcFile);
+          UtcFilePtr.reset(UtcFile);
         }
         catch (Exception & E)
         {
@@ -2099,8 +2101,8 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
           break;
         }
 
-        TDateTime UtcModification = UtcFile->GetModification();
-        delete UtcFile;
+        TDateTime UtcModification = UtcFilePtr->GetModification();
+        UtcFilePtr.release();
 
         FTimeDifference = ::SecondsBetween(UtcModification, File->GetModification());
 
