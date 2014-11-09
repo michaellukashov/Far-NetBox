@@ -1272,7 +1272,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
 
       FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TFTPFileSystem::SinkFile, this), &SinkFileParams);
 
-      // Do not delete directory if some of its files were skip.
+      // Do not delete directory if some of its files were skipped.
       // Throw "skip file" for the directory to avoid attempt to deletion
       // of any parent directory
       if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
