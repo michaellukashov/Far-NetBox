@@ -264,12 +264,12 @@ UnicodeString LowerCase(const UnicodeString & Str)
 
 wchar_t UpCase(const wchar_t Ch)
 {
-  return static_cast<wchar_t>(::toupper(Ch));
+  return static_cast<wchar_t>(::towupper(Ch));
 }
 
 wchar_t LowCase(const wchar_t Ch)
 {
-  return static_cast<wchar_t>(::tolower(Ch));
+  return static_cast<wchar_t>(::towlower(Ch));
 }
 
 UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & From,
