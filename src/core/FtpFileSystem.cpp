@@ -1272,7 +1272,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
 
       FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TFTPFileSystem::SinkFile, this), &SinkFileParams);
 
-      // Do not delete directory if some of its files were skip.
+      // Do not delete directory if some of its files were skipped.
       // Throw "skip file" for the directory to avoid attempt to deletion
       // of any parent directory
       if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
@@ -2039,7 +2039,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
 
-  AutoDetectTimeDifference(FileList);
+  //AutoDetectTimeDifference(FileList);
 
   if (FTimeDifference != 0) // optimization
   {
@@ -2085,10 +2085,12 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
       {
         FDetectTimeDifference = false;
 
-        TRemoteFile * UtcFile = nullptr;
+        std::unique_ptr<TRemoteFile> UtcFilePtr;
         try
         {
+          TRemoteFile * UtcFile = nullptr;
           ReadFile(File->GetFullFileName(), UtcFile);
+          UtcFilePtr.reset(UtcFile);
         }
         catch (Exception & E)
         {
@@ -2099,8 +2101,8 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
           break;
         }
 
-        TDateTime UtcModification = UtcFile->GetModification();
-        delete UtcFile;
+        TDateTime UtcModification = UtcFilePtr->GetModification();
+        UtcFilePtr.release();
 
         FTimeDifference = ::SecondsBetween(UtcModification, File->GetModification());
 

@@ -1,5 +1,9 @@
-NetBox 2.1.40.354 07.11.2014
+NetBox 2.1.40.356 10.11.2014
 --------------------
+  * Bugfix: Issue #132: FTP: date/time of remote files are incorrect
+    (https://github.com/michaellukashov/Far-NetBox/issues/132)
+  * Bugfix: Issue #130: Check symlink type
+    (https://github.com/michaellukashov/Far-NetBox/issues/130)
   * Bugfix Mantis #0002860: Exception occurred: Access violation (GetFilesW)
     (http://bugs.farmanager.com/view.php?id=2860)
   * Bugfix Mantis #0002859: percent sign in the filename is urlencoded

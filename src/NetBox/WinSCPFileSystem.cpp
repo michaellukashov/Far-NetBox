@@ -471,11 +471,11 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
         FTerminal->ReloadDirectory();
       }
 
-      // TCustomFileSystem * FileSystem = GetTerminal()->GetFileSystem();
+      TCustomFileSystem * FileSystem = GetTerminal()->GetFileSystem();
       for (intptr_t Index = 0; Index < FTerminal->GetFiles()->GetCount(); ++Index)
       {
         TRemoteFile * File = FTerminal->GetFiles()->GetFile(Index);
-        /*if (File->GetIsSymLink())
+        if (File->GetIsSymLink())
         {
           // Check what kind of symlink this is
           const UnicodeString LinkFileName = File->GetLinkTo();
@@ -486,7 +486,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
             File->SetType(FILETYPE_DIRECTORY);
           }
           SAFE_DESTROY(LinkFile);
-        }*/
+        }
         PanelItems->Add(new TRemoteFilePanelItem(File));
       }
     }
@@ -868,15 +868,16 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
         }
       };
       FarControl(FCTL_SETCMDLINE, 0, reinterpret_cast<void *>(L""));
-      GetWinSCPPlugin()->ShowConsoleTitle(Command);
+      TWinSCPPlugin * WinSCPPlugin =  GetWinSCPPlugin();
+      WinSCPPlugin->ShowConsoleTitle(Command);
       {
         SCOPE_EXIT
         {
-          //GetWinSCPPlugin()->ScrollTerminalScreen(1);
-          GetWinSCPPlugin()->SaveTerminalScreen();
-          GetWinSCPPlugin()->ClearConsoleTitle();
+          //WinSCPPlugin->ScrollTerminalScreen(1);
+          WinSCPPlugin->SaveTerminalScreen();
+          WinSCPPlugin->ClearConsoleTitle();
         };
-        GetWinSCPPlugin()->ShowTerminalScreen();
+        WinSCPPlugin->ShowTerminalScreen();
 
         FOutputLog = true;
         FTerminal->AnyCommand(Command, MAKE_CALLBACK(TWinSCPFileSystem::TerminalCaptureLog, this));

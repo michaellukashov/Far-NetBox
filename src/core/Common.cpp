@@ -1115,8 +1115,8 @@ RawByteString HexToBytes(const UnicodeString & Hex)
   {
     for (intptr_t Index = 1; Index <= Hex.Length(); Index += 2)
     {
-      intptr_t P1 = Digits.Pos(UpCase(Hex[Index]));
-      intptr_t P2 = Digits.Pos(UpCase(Hex[Index + 1]));
+      intptr_t P1 = Digits.Pos(::UpCase(Hex[Index]));
+      intptr_t P2 = Digits.Pos(::UpCase(Hex[Index + 1]));
       if (P1 <= 0 || P2 <= 0)
       {
         Result.Clear();
@@ -1135,8 +1135,8 @@ uint8_t HexToByte(const UnicodeString & Hex)
 {
   UnicodeString Digits = "0123456789ABCDEF";
   assert(Hex.Length() == 2);
-  intptr_t P1 = Digits.Pos(UpCase(Hex[1]));
-  intptr_t P2 = Digits.Pos(UpCase(Hex[2]));
+  intptr_t P1 = Digits.Pos(::UpCase(Hex[1]));
+  intptr_t P2 = Digits.Pos(::UpCase(Hex[2]));
 
   return
     static_cast<uint8_t>(((P1 <= 0) || (P2 <= 0)) ? 0 : (((P1 - 1) << 4) + (P2 - 1)));
