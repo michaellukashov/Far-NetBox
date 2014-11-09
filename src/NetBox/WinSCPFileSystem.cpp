@@ -860,15 +860,16 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
         }
       };
       FarControl(FCTL_SETCMDLINE, 0, reinterpret_cast<intptr_t>(L""));
-      GetWinSCPPlugin()->ShowConsoleTitle(Command);
+      TWinSCPPlugin * WinSCPPlugin =  GetWinSCPPlugin();
+      WinSCPPlugin->ShowConsoleTitle(Command);
       {
         SCOPE_EXIT
         {
-          GetWinSCPPlugin()->ScrollTerminalScreen(1);
-          GetWinSCPPlugin()->SaveTerminalScreen();
-          GetWinSCPPlugin()->ClearConsoleTitle();
+          WinSCPPlugin->ScrollTerminalScreen(1);
+          WinSCPPlugin->SaveTerminalScreen();
+          WinSCPPlugin->ClearConsoleTitle();
         };
-        GetWinSCPPlugin()->ShowTerminalScreen();
+        WinSCPPlugin->ShowTerminalScreen();
 
         FOutputLog = true;
         FTerminal->AnyCommand(Command, MAKE_CALLBACK(TWinSCPFileSystem::TerminalCaptureLog, this));
