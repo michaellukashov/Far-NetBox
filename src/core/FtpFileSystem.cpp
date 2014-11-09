@@ -2039,7 +2039,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
 
-  AutoDetectTimeDifference(FileList);
+  //AutoDetectTimeDifference(FileList);
 
   if (FTimeDifference != 0) // optimization
   {
