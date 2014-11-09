@@ -244,9 +244,6 @@ UnicodeString TrimRight(const UnicodeString & Str)
 
 UnicodeString UpperCase(const UnicodeString & Str)
 {
-//  std::wstring Result(Str.c_str(), Str.Length());
-//  std::transform(Result.begin(), Result.end(), Result.begin(), ::toupper);
-//  return Result.c_str();
   UnicodeString Result(Str);
   ::CharUpperBuff((LPWSTR)Result.c_str(), Result.Length());
   return Result;
@@ -254,9 +251,6 @@ UnicodeString UpperCase(const UnicodeString & Str)
 
 UnicodeString LowerCase(const UnicodeString & Str)
 {
-//  std::wstring Result(Str.c_str(), Str.Length());
-//  std::transform(Result.begin(), Result.end(), Result.begin(), ::tolower);
-//  return Result.c_str();
   UnicodeString Result(Str);
   ::CharLowerBuff((LPWSTR)Result.c_str(), Result.Length());
   return Result;
