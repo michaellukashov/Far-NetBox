@@ -1846,6 +1846,7 @@ void XMLDocument::Print( XMLPrinter* streamer ) const
 
 void XMLDocument::SetError( XMLError error, const char* str1, const char* str2 )
 {
+    TIXMLASSERT( error >= 0 && error < XML_ERROR_COUNT );
     _errorID = error;
     _errorStr1 = str1;
     _errorStr2 = str2;
