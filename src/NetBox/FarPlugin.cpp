@@ -513,7 +513,7 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
   TCustomFarFileSystem * FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, Plugin);
   try
   {
-    ResetCachedInfo();
+    //ResetCachedInfo();
     if (HandlesFunction(hfProcessEvent))
     {
       assert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
