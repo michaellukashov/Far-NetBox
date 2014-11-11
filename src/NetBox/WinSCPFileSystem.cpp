@@ -479,7 +479,14 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
           // Check what kind of symlink this is
           const UnicodeString LinkFileName = File->GetLinkTo();
           TRemoteFile * LinkFile = nullptr;
-          FileSystem->ReadFile(LinkFileName, LinkFile);
+          try
+          {
+            FileSystem->ReadFile(LinkFileName, LinkFile);
+          }
+          catch (const Exception & E)
+          {
+            LinkFile = nullptr;
+          }
           if ((LinkFile != nullptr) && LinkFile->GetIsDirectory())
           {
             File->SetType(FILETYPE_DIRECTORY);
