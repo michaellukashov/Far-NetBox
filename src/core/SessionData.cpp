@@ -724,7 +724,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     // In case we are re-loading, reset passwords, to avoid pointless
     // re-cryption, while loading username/hostname. And moreover, when
     // the password is wrongly encrypted (using a different master password),
-    // this breaks sites reload and consequently an overal operation,
+    // this breaks sites reload and consequently an overall operation,
     // such as opening Sites menu
     ClearSessionPasswords();
     SetProxyPassword(L"");
