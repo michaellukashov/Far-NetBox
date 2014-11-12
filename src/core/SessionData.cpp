@@ -79,7 +79,7 @@ void TSessionData::Default()
   SetPingInterval(30);
   // when changing default, update load/save logic
   SetPingType(ptOff);
-  SetTimeout(15);
+  SetTimeout(90);
   SetTryAgent(true);
   SetAgentFwd(false);
   SetAuthTIS(false);
