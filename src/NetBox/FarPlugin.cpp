@@ -1032,8 +1032,6 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
 {
   assert(Params != nullptr);
 
-  TStringList * MessageLines = nullptr;
-  std::unique_ptr<TStrings> MessageLinesPtr(nullptr);
   wchar_t ** Items = nullptr;
   SCOPE_EXIT
   {
@@ -1051,8 +1049,8 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
     FullMessage += L"\n\x01\n";
   }
 
-  MessageLines = new TStringList();
-  MessageLinesPtr.reset(MessageLines);
+  TStringList * MessageLines = new TStringList();
+  std::unique_ptr<TStrings> MessageLinesPtr(MessageLines);
   MessageLines->Add(Title);
   FarWrapText(FullMessage, MessageLines, MaxMessageWidth);
 
