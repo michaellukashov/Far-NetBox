@@ -79,7 +79,7 @@ void TSessionData::Default()
   SetPingInterval(30);
   // when changing default, update load/save logic
   SetPingType(ptOff);
-  SetTimeout(15);
+  SetTimeout(90);
   SetTryAgent(true);
   SetAgentFwd(false);
   SetAuthTIS(false);
@@ -724,7 +724,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     // In case we are re-loading, reset passwords, to avoid pointless
     // re-cryption, while loading username/hostname. And moreover, when
     // the password is wrongly encrypted (using a different master password),
-    // this breaks sites reload and consequently an overal operation,
+    // this breaks sites reload and consequently an overall operation,
     // such as opening Sites menu
     ClearSessionPasswords();
     SetProxyPassword(L"");
@@ -1292,7 +1292,7 @@ void TSessionData::CacheHostKeyIfNotCached()
   Storage->SetAccessMode(smReadWrite);
   if (Storage->OpenRootKey(true))
   {
-    UnicodeString HostKeyName = PuttyMungeStr(FORMAT("%s@%d:%s", KeyType.c_str(), GetPortNumber(), GetHostName().c_str()));
+    UnicodeString HostKeyName = PuttyMungeStr(FORMAT(L"%s@%d:%s", KeyType.c_str(), GetPortNumber(), GetHostName().c_str()));
     if (!Storage->ValueExists(HostKeyName))
     {
       // fingerprint is MD5 of host key, so it cannot be translate back to host key,
@@ -1815,7 +1815,7 @@ bool TSessionData::GetCanLogin() const
 
 UnicodeString TSessionData::GetSessionKey() const
 {
-  return FORMAT("%s@%s", SessionGetUserName().c_str(), GetHostName().c_str());
+  return FORMAT(L"%s@%s", SessionGetUserName().c_str(), GetHostName().c_str());
 }
 
 UnicodeString TSessionData::GetInternalStorageKey() const
@@ -1837,7 +1837,7 @@ UnicodeString TSessionData::GetStorageKey() const
 
 UnicodeString TSessionData::GetSiteKey() const
 {
-  return FORMAT("%s:%d", GetHostNameExpanded().c_str(), GetPortNumber());
+  return FORMAT(L"%s:%d", GetHostNameExpanded().c_str(), GetPortNumber());
 }
 
 void TSessionData::SetHostName(const UnicodeString & Value)
@@ -2285,7 +2285,7 @@ UnicodeString TSessionData::GetDefaultSessionName() const
   }
   if (!HostName.IsEmpty() && !UserName.IsEmpty())
   {
-    Result = FORMAT("%s@%s", UserName.c_str(), HostName.c_str());
+    Result = FORMAT(L"%s@%s", UserName.c_str(), HostName.c_str());
   }
   else if (!HostName.IsEmpty())
   {
@@ -2380,7 +2380,7 @@ UnicodeString TSessionData::GetSessionUrl() const
 
     if (!GetHostName().IsEmpty() && !SessionGetUserName().IsEmpty())
     {
-      Url += FORMAT("%s@%s", SessionGetUserName().c_str(), GetHostName().c_str());
+      Url += FORMAT(L"%s@%s", SessionGetUserName().c_str(), GetHostName().c_str());
     }
     else if (!GetHostName().IsEmpty())
     {
@@ -3346,7 +3346,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
       if (RecryptPasswordOnly && ALWAYS_TRUE(RecryptPasswordErrors != nullptr) &&
           ExceptionMessage(&E, Message))
       {
-        RecryptPasswordErrors->Add(FORMAT("%s: %s", SessionData->GetSessionName().c_str(), Message.c_str()));
+        RecryptPasswordErrors->Add(FORMAT(L"%s: %s", SessionData->GetSessionName().c_str(), Message.c_str()));
       }
       else
       {
@@ -3739,7 +3739,7 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
       TSessionData * Session = Sessions->GetSession(Index);
       if (!OnlySelected || Session->GetSelected())
       {
-        HostKeyName = PuttyMungeStr(FORMAT("@%d:%s", Session->GetPortNumber(), Session->GetHostNameExpanded().c_str()));
+        HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostNameExpanded().c_str()));
         UnicodeString KeyName;
         for (intptr_t KeyIndex = 0; KeyIndex < KeyList->GetCount(); ++KeyIndex)
         {
@@ -4010,22 +4010,22 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
       {
         case L'y':
           // Replacement = FormatDateTime(L"yyyy", N);
-          Replacement = FORMAT("%04d", Y);
+          Replacement = FORMAT(L"%04d", Y);
           break;
 
         case L'm':
           // Replacement = FormatDateTime(L"mm", N);
-          Replacement = FORMAT("%02d", M);
+          Replacement = FORMAT(L"%02d", M);
           break;
 
         case L'd':
           // Replacement = FormatDateTime(L"dd", N);
-          Replacement = FORMAT("%02d", D);
+          Replacement = FORMAT(L"%02d", D);
           break;
 
         case L't':
           // Replacement = FormatDateTime(L"hhnnss", N);
-          Replacement = FORMAT("%02d%02d%02d", H, NN, S);
+          Replacement = FORMAT(L"%02d%02d%02d", H, NN, S);
           break;
 
         case L'@':

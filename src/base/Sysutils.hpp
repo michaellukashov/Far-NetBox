@@ -226,7 +226,8 @@ bool RemoveDir(const UnicodeString & ADir);
 
 UnicodeString Format(const wchar_t * Format, ...);
 UnicodeString Format(const wchar_t * Format, va_list Args);
-UnicodeString Format(const char * Format, ...);
+AnsiString FormatA(const char * Format, ...);
+AnsiString FormatA(const char * Format, va_list Args);
 UnicodeString FmtLoadStr(intptr_t Id, ...);
 
 UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth = 40);

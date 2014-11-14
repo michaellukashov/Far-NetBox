@@ -672,7 +672,7 @@ void TSessionLog::DoAddToSelf(TLogLineType AType, const UnicodeString & ALine)
       TDateTime DateTime = Now();
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
-      UnicodeString dt = FORMAT(" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Y, M, D, H, N, S, MS);
+      UnicodeString dt = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Y, M, D, H, N, S, MS);
       UnicodeString Timestamp = dt;
       UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[AType]) + Timestamp + ALine + "\n");
       fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(AnsiString(UtfLine).c_str()));
@@ -932,7 +932,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       TDateTime DateTime = Now();
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
-      UnicodeString dt = FORMAT("%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
+      UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
       // ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
       ADF(L"Working directory: %s", ::GetCurrentDir().c_str());
       // ADF(L"Command-line: %s", CmdLine.c_str());
@@ -995,7 +995,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       TProxyMethod ProxyMethod = Data->GetProxyMethod();
       ADF(L"Proxy: %s",
         (Data->GetFtpProxyLogonType() != 0) ?
-          FORMAT("FTP proxy %d", Data->GetFtpProxyLogonType()).c_str() :
+          FORMAT(L"FTP proxy %d", Data->GetFtpProxyLogonType()).c_str() :
           UnicodeString(ProxyMethodList[Data->GetActualProxyMethod()]).c_str());
       if ((Data->GetFtpProxyLogonType() != 0) || (ProxyMethod != ::pmNone))
       {
@@ -1114,12 +1114,12 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       UnicodeString TimeInfo;
       if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
       {
-        AddToList(TimeInfo, FORMAT("DST mode: %d", int(Data->GetDSTMode())), L";");
+        AddToList(TimeInfo, FORMAT(L"DST mode: %d", int(Data->GetDSTMode())), L";");
       }
       if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
       {
         intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
-        AddToList(TimeInfo, FORMAT("Timezone offset: %dh %dm", (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour)), L";");
+        AddToList(TimeInfo, FORMAT(L"Timezone offset: %dh %dm", (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour)), L";");
       }
       ADSTR(TimeInfo);
 
@@ -1431,7 +1431,7 @@ void TActionLog::BeginGroup(const UnicodeString & Name)
   assert(!FInGroup);
   FInGroup = true;
   assert(FIndent == L"  ");
-  AddIndented(FORMAT("<group name=\"%s\" start=\"%s\">",
+  AddIndented(FORMAT(L"<group name=\"%s\" start=\"%s\">",
     XmlAttributeEscape(Name).c_str(), StandardTimestamp().c_str()));
   FIndent = L"    ";
 }

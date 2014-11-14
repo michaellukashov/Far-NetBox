@@ -48,8 +48,8 @@ Compile openssl:
 
 Either open src/NetBox/NetBox.sln in Visual Studio, or compile NetBox plugin on the command line as follows:
 
-    cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86 && devenv NetBox.sln /Build "Release|Win32" /USEENV /Project "NetBox"
-    cmd /c %VS100COMNTOOLS%\..\..\VC\vcvarsall.bat x86_amd64 && devenv NetBox.sln /Build "Release|x64" /USEENV /Project "NetBox"
+    cmd /c "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" x86 && devenv NetBox.sln /Build "Release|Win32" /USEENV /Project "NetBox"
+    cmd /c "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64 && devenv NetBox.sln /Build "Release|x64" /USEENV /Project "NetBox"
 
 Replace Release with Debug to build in Debug mode. The built binaries will be in Far2_x86/Plugins/NetBox/ (or Far2_x64/Plugins/NetBox/) directory.
 

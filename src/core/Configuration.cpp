@@ -661,7 +661,7 @@ UnicodeString TConfiguration::GetOSVersionStr() const
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
   if (GetVersionEx(&OSVersionInfo) != 0)
   {
-    Result = FORMAT("%d.%d.%d", int(OSVersionInfo.dwMajorVersion),
+    Result = FORMAT(L"%d.%d.%d", int(OSVersionInfo.dwMajorVersion),
       int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber));
     UnicodeString CSDVersion = OSVersionInfo.szCSDVersion;
     if (!CSDVersion.IsEmpty())

@@ -619,13 +619,25 @@ UnicodeString Format(const wchar_t * Format, va_list Args)
   return Result.c_str();
 }
 
-UnicodeString Format(const char * Format, ...)
+AnsiString FormatA(const char * Format, ...)
 {
-  UnicodeString Result(64, 0);
+  AnsiString Result(64, 0);
   va_list Args;
   va_start(Args, Format);
-  Result = ::Format(::MB2W(Format).c_str(), Args);
+  Result = ::FormatA(Format, Args);
   va_end(Args);
+  return Result;
+}
+
+AnsiString FormatA(const char * Format, va_list Args)
+{
+  AnsiString Result(64, 0);
+  if (Format && *Format)
+  {
+    intptr_t Len = _vscprintf(Format, Args);
+    Result.SetLength(Len + 1);
+    vsprintf_s(&Result[1], Len + 1, Format, Args);
+  }
   return Result.c_str();
 }
 
@@ -1655,7 +1667,7 @@ UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
   DWORD Major = (VersionNumber>>16) & 0xFF;
   DWORD Minor = (VersionNumber>>8) & 0xFF;
   DWORD Revision = (VersionNumber & 0xFF);
-  UnicodeString Result = FORMAT("%d.%d.%d", Major, Minor, Revision);
+  UnicodeString Result = FORMAT(L"%d.%d.%d", Major, Minor, Revision);
   return Result;
 }
 
