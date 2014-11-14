@@ -38,7 +38,7 @@ void Busy(bool /*Start*/)
 
 UnicodeString GetSshVersionString()
 {
-  return FORMAT("NetBox-FAR-release-%s", GetConfiguration()->GetVersion().c_str());
+  return FORMAT(L"NetBox-FAR-release-%s", GetConfiguration()->GetVersion().c_str());
 }
 
 DWORD WINAPI threadstartroutine(void * Parameter)

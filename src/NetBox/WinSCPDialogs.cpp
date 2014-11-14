@@ -198,7 +198,7 @@ void TTabbedDialog::SelectTab(intptr_t Tab)
   {
     FOrigCaption = GetCaption();
   }
-  SetCaption(FORMAT("%s - %s", GetTabName(Tab).c_str(), FOrigCaption.c_str()));
+  SetCaption(FORMAT(L"%s - %s", GetTabName(Tab).c_str(), FOrigCaption.c_str()));
 }
 
 TTabButton * TTabbedDialog::GetTabButton(intptr_t Tab) const
@@ -301,7 +301,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
   TFarText * Text;
 
   Dialog->SetSize(TPoint(67, 22));
-  Dialog->SetCaption(FORMAT("%s - %s",
+  Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_INTERFACE)).c_str()));
 
   TFarCheckBox * DisksMenuCheck = new TFarCheckBox(Dialog);
@@ -435,7 +435,7 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
 {
   std::unique_ptr<TWinSCPDialog> Dialog(new TWinSCPDialog(this));
   Dialog->SetSize(TPoint(65, 7));
-  Dialog->SetCaption(FORMAT("%s - %s",
+  Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_PANEL)).c_str()));
 
   TFarCheckBox * AutoReadDirectoryAfterOpCheck = new TFarCheckBox(Dialog.get());
@@ -468,7 +468,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   TFarText * Text;
 
   Dialog->SetSize(TPoint(65, 15));
-  Dialog->SetCaption(FORMAT("%s - %s",
+  Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_LOGGING)).c_str()));
 
   TFarCheckBox * LoggingCheck = new TFarCheckBox(Dialog);
@@ -557,7 +557,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 
 bool TWinSCPPlugin::TransferConfigurationDialog()
 {
-  UnicodeString Caption = FORMAT("%s - %s",
+  UnicodeString Caption = FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_TRANSFER)).c_str());
 
   TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
@@ -579,7 +579,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   TFarText * Text;
 
   Dialog->SetSize(TPoint(76, 13));
-  Dialog->SetCaption(FORMAT("%s - %s",
+  Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_ENDURANCE)).c_str()));
 
   Separator = new TFarSeparator(Dialog);
@@ -709,7 +709,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   TFarText * Text;
 
   Dialog->SetSize(TPoint(76, 11));
-  Dialog->SetCaption(FORMAT("%s - %s",
+  Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_BACKGROUND)).c_str()));
 
   Text = new TFarText(Dialog);
@@ -796,7 +796,7 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
   TFarSeparator * Separator;
 
   SetSize(TPoint(65, 14));
-  SetCaption(FORMAT("%s - %s",
+  SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_TRANSFER_EDITOR)).c_str()));
 
   EditorMultipleCheck = new TFarCheckBox(this);
@@ -892,7 +892,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   TWinSCPDialog * Dialog = DialogPtr.get();
 
   Dialog->SetSize(TPoint(67, 10));
-  Dialog->SetCaption(FORMAT("%s - %s",
+  Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
 
   TFarCheckBox * ConfirmOverwritingCheck = new TFarCheckBox(Dialog);
@@ -948,7 +948,7 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
   TFarText * Text;
 
   Dialog->SetSize(TPoint(65, 14));
-  Dialog->SetCaption(FORMAT("%s - %s",
+  Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_INTEGRATION)).c_str()));
 
   Text = new TFarText(Dialog);
@@ -1052,7 +1052,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   }
   SetSize(TPoint(55, Height));
 
-  SetCaption(FORMAT("%s - %s",
+  SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_ABOUT)).c_str()));
   Text = new TFarText(this);
   Text->SetCaption(GetConfiguration()->GetFileInfoString(L"FileDescription"));
@@ -6057,7 +6057,7 @@ UnicodeString TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability)
 UnicodeString TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2)
 {
-  return FORMAT("%s/%s", CapabilityStr(Capability1).c_str(), CapabilityStr(Capability2).c_str());
+  return FORMAT(L"%s/%s", CapabilityStr(Capability1).c_str(), CapabilityStr(Capability2).c_str());
 }
 
 UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes)
@@ -6073,7 +6073,7 @@ UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes)
     UnicodeString SizeUnorderedStr = FormatBytes(Bytes, false);
     if (Result != SizeUnorderedStr)
     {
-      Result = FORMAT("%s (%s)", Result.c_str(), SizeUnorderedStr.c_str());
+      Result = FORMAT(L"%s (%s)", Result.c_str(), SizeUnorderedStr.c_str());
     }
   }
   return Result;
@@ -6088,14 +6088,14 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
   UnicodeString Str = FSessionInfo.CSCipher;
   if (FSessionInfo.CSCipher != FSessionInfo.SCCipher)
   {
-    Str += FORMAT("/%s", FSessionInfo.SCCipher.c_str());
+    Str += FORMAT(L"/%s", FSessionInfo.SCCipher.c_str());
   }
   AddItem(ServerLabels, SERVER_CIPHER, Str);
 
   Str = DefaultStr(FSessionInfo.CSCompression, LoadStr(NO_STR));
   if (FSessionInfo.CSCompression != FSessionInfo.SCCompression)
   {
-    Str += FORMAT("/%s", DefaultStr(FSessionInfo.SCCompression, LoadStr(NO_STR)).c_str());
+    Str += FORMAT(L"/%s", DefaultStr(FSessionInfo.SCCompression, LoadStr(NO_STR)).c_str());
   }
   AddItem(ServerLabels, SERVER_COMPRESSION, Str);
   if (FSessionInfo.ProtocolName != FFileSystemInfo.ProtocolName)
@@ -6176,7 +6176,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
       TFarText * Text = NB_STATIC_DOWNCAST(TFarText, List->GetItem(FLastListItem));
       FLastListItem++;
 
-      Text->SetCaption(FORMAT("%d-%s  %s", List->MaxLen, GetMsg(Label).c_str(), Value.c_str()));
+      Text->SetCaption(FORMAT(L"%d-%s  %s", List->MaxLen, GetMsg(Label).c_str(), Value.c_str()));
     }
   }
 }
@@ -6242,7 +6242,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
         Value2.SetLength(Value2.Length() - 2);
       }
 
-      FClipboard += FORMAT("%s\r\n%s\r\n", LabelStr.c_str(), Value2.c_str());
+      FClipboard += FORMAT(L"%s\r\n%s\r\n", LabelStr.c_str(), Value2.c_str());
     }
     else
     {
@@ -6252,7 +6252,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       {
         LabelStr.SetLength(LabelStr.Length() - 1);
       }
-      FClipboard += FORMAT("%s = %s\r\n", LabelStr.c_str(), Value.c_str());
+      FClipboard += FORMAT(L"%s = %s\r\n", LabelStr.c_str(), Value.c_str());
     }
   }
 }
@@ -7384,21 +7384,21 @@ UnicodeString TSynchronizeChecklistDialog::FormatSize(
   int64_t Size, int Column)
 {
   intptr_t Width = static_cast<intptr_t>(FWidths[Column]);
-  UnicodeString Result = FORMAT("%lu", Size);
+  UnicodeString Result = FORMAT(L"%lu", Size);
 
   if (Result.Length() > Width)
   {
-    Result = FORMAT("%.2f 'K'", Size / 1024.0);
+    Result = FORMAT(L"%.2f 'K'", Size / 1024.0);
     if (Result.Length() > Width)
     {
-      Result = FORMAT("%.2f 'M'", Size / (1024.0 * 1024));
+      Result = FORMAT(L"%.2f 'M'", Size / (1024.0 * 1024));
       if (Result.Length() > Width)
       {
-        Result = FORMAT("%.2f 'G'", Size / (1024.0 * 1024 * 1024));
+        Result = FORMAT(L"%.2f 'G'", Size / (1024.0 * 1024 * 1024));
         if (Result.Length() > Width)
         {
           // back to default
-          Result = FORMAT("%lu", Size);
+          Result = FORMAT(L"%lu", Size);
         }
       }
     }
@@ -8673,7 +8673,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
       {
         if (ProgressData->Operation == Info->Operation)
         {
-          Values[1] = FORMAT("%d%%", ProgressData->OverallProgress());
+          Values[1] = FORMAT(L"%d%%", ProgressData->OverallProgress());
         }
         else if (ProgressData->Operation == foCalculateSize)
         {
@@ -8694,7 +8694,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
         (Info->Side == osRemote));
       if (ProgressData->Operation == Info->Operation)
       {
-        Values[1] = FORMAT("%d%%", ProgressData->TransferProgress());
+        Values[1] = FORMAT(L"%d%%", ProgressData->TransferProgress());
       }
     }
     else
@@ -8703,7 +8703,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
     }
   }
 
-  Line = FORMAT("%1s %1s  %-49s %s",
+  Line = FORMAT(L"%1s %1s  %-49s %s",
     Operation.c_str(), Direction.c_str(), Values[0].c_str(), Values[1].c_str());
 
   return true;
