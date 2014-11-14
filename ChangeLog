@@ -1,10 +1,12 @@
-NetBox 2.1.40.357 12.11.2014
+NetBox 2.1.40.358 15.11.2014
 --------------------
+  * Bugfix: Mantis #0002864: AV trying to connect to WebDAV host
+    (http://bugs.farmanager.com/view.php?id=2864)
   * Bugfix: Issue #130: Check symlink type
     (https://github.com/michaellukashov/Far-NetBox/issues/130)
   * Bugfix: Issue #132: FTP: date/time of remote files are incorrect
     (https://github.com/michaellukashov/Far-NetBox/issues/132)
-  * Bugfix Mantis #0002860: Exception occurred: Access violation (GetFilesW)
+  * Bugfix: Mantis #0002860: Exception occurred: Access violation (GetFilesW)
     (http://bugs.farmanager.com/view.php?id=2860)
   * Bugfix Mantis #0002859: percent sign in the filename is urlencoded
     (http://bugs.farmanager.com/view.php?id=2859)
