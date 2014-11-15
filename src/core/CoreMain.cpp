@@ -160,6 +160,7 @@ void CoreLoad()
 
 void CoreInitialize()
 {
+  WinInitialize();
   Randomize();
   CryptographyInitialize();
 
@@ -199,6 +200,7 @@ void CoreFinalize()
   DeleteConfiguration();
 
   CryptographyFinalize();
+  WinFinalize();
 }
 
 void CoreSetResourceModule(void * ResourceHandle)

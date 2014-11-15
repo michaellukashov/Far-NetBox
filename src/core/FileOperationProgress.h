@@ -87,6 +87,7 @@ public:
   explicit TFileOperationProgressType(
     TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished);
   virtual ~TFileOperationProgressType();
+  void AssignButKeepSuspendState(const TFileOperationProgressType & Other);
   void AddLocallyUsed(int64_t ASize);
   void AddTransfered(int64_t ASize, bool AddToTotals = true);
   void AddResumed(int64_t ASize);

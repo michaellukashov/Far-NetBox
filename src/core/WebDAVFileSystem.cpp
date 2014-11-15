@@ -12073,6 +12073,7 @@ void TWebDAVFileSystem::Open()
   FCurrentDirectory.Clear();
   FHasTrailingSlash = false;
   FStoredPasswordTried = false;
+  FTlsVersionStr.Clear();
 
   TSessionData * Data = FTerminal->GetSessionData();
 
@@ -12134,6 +12135,10 @@ void TWebDAVFileSystem::Close()
 
 void TWebDAVFileSystem::CollectUsage()
 {
+//  if (!FTlsVersionStr.IsEmpty())
+//  {
+//    FTerminal->CollectTlsUsage(FTlsVersionStr);
+//  }
 }
 
 const TSessionInfo & TWebDAVFileSystem::GetSessionInfo() const

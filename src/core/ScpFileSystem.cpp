@@ -2028,6 +2028,8 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
         TChmodSessionAction(FTerminal->GetActionLog(), AbsoluteFileName,
           Rights);
       }
+
+      FTerminal->LogFileDone(OperationProgress);
     }
   }
 
@@ -2748,6 +2750,8 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
               THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFileName), FileData.LocalFileAttrs | NewAttrs) == 0);
             });
           }
+
+          FTerminal->LogFileDone(OperationProgress);
         }
       }
     }

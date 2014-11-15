@@ -499,6 +499,7 @@ protected:
   void LogRemoteFile(TRemoteFile * AFile);
   UnicodeString FormatFileDetailsForLog(const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size);
   void LogFileDetails(const UnicodeString & AFileName, const TDateTime & Modification, int64_t Size);
+  void LogFileDone(TFileOperationProgressType * OperationProgress);
   virtual const TTerminal * GetPasswordSource() const { return this; }
   virtual TTerminal * GetPasswordSource() { return this; }
   void DoEndTransaction(bool Inform);

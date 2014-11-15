@@ -611,6 +611,14 @@ void TFTPFileSystem::CollectUsage()
   {
     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPPureFTPd");
   }
+  // 220 Titan FTP Server 10.47.1892 Ready.
+  // ...
+  // SYST
+  // 215 UNIX Type: L8
+  else if (ContainsText(FWelcomeMessage, "Titan FTP Server"))
+  {
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPTitan");
+  }
   else
   {
     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPOther");
@@ -1371,6 +1379,8 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
         THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DestFullName, (LocalFileAttrs | NewAttrs)) == 0);
       });
     }
+
+    FTerminal->LogFileDone(OperationProgress);
   }
 
   if (FLAGSET(Params, cpDelete))
@@ -1636,6 +1646,8 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
     {
       TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, Modification);
     }
+
+    FTerminal->LogFileDone(OperationProgress);
   }
 
   /* TODO : Delete also read-only files. */
@@ -2574,6 +2586,10 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
       Result = FFileTransferRemoveBOM ? TRUE : FALSE;
       break;
 
+    case OPTION_MPEXT_LOG_SENSITIVE:
+      Result = FTerminal->GetConfiguration()->GetLogSensitive() ? TRUE : FALSE;
+      break;
+
     default:
       FAIL;
       Result = FALSE;
@@ -2641,7 +2657,15 @@ void TFTPFileSystem::WaitForMessages()
 {
   //if (FQueue.empty())
   //  return;
-  DWORD Result = ::WaitForSingleObject(FQueueEvent, INFINITE);
+//  DWORD Result = ::WaitForSingleObject(FQueueEvent, INFINITE);
+  DWORD Result = 0;
+  do
+  {
+    Result = ::WaitForSingleObject(FQueueEvent, GUIUpdateInterval);
+    ProcessGUI();
+  }
+  while (Result == WAIT_TIMEOUT);
+
   if (Result != WAIT_OBJECT_0)
   {
     FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", ::IntToStr(Result).c_str()));
@@ -3137,6 +3161,9 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
     case TFileZillaIntf::LOG_COMMAND:
       if (Status == L"SYST")
       {
+        // not to trigger the assert in HandleReplyStatus,
+        // when SYST command is used by the user
+        FSystem.Clear();
         FLastCommand = SYST;
       }
       else if (Status == L"FEAT")

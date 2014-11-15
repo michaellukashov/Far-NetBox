@@ -4042,7 +4042,7 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
         // fallthru
       case ktUnopenable:
       case ktUnknown:
-        Message = FMTLOAD(KEY_TYPE_UNKNOWN, AFileName.c_str());
+        Message = FMTLOAD(KEY_TYPE_UNKNOWN2, AFileName.c_str());
         break;
     }
 

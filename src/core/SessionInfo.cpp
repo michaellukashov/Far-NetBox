@@ -892,6 +892,18 @@ UnicodeString TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion)
   }
 }
 
+UnicodeString TSessionLog::LogSensitive(const UnicodeString & Str)
+{
+  if (FConfiguration->GetLogSensitive() && !Str.IsEmpty())
+  {
+    return Str;
+  }
+  else
+  {
+    return BooleanToEngStr(!Str.IsEmpty());
+  }
+}
+
 void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
   TGuard Guard(FCriticalSection);
