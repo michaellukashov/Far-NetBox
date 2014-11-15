@@ -55,6 +55,8 @@ public:
   void SetLogWindowComplete(bool Value);
   bool GetLogWindowComplete() const;
   void SetLogFileAppend(bool Value);
+  bool GetLogSensitive() const { return FLogSensitive; }
+  void SetLogSensitive(bool Value);
   void SetLogProtocol(intptr_t Value);
   void SetLogActions(bool Value);
   void SetActionsLogFileName(const UnicodeString & Value);
@@ -209,6 +211,7 @@ private:
   UnicodeString FPermanentLogFileName;
   intptr_t FLogWindowLines;
   bool FLogFileAppend;
+  bool FLogSensitive;
   intptr_t FLogProtocol;
   intptr_t FActualLogProtocol;
   bool FLogActions;
@@ -266,6 +269,7 @@ private:
   void __fastcall SetLogWindowComplete(bool value);
   bool __fastcall GetLogWindowComplete();
   void __fastcall SetLogFileAppend(bool value);
+  void __fastcall SetLogSensitive(bool value);
   void __fastcall SetLogProtocol(int value);
   void __fastcall SetLogActions(bool value);
   void __fastcall SetActionsLogFileName(UnicodeString value);

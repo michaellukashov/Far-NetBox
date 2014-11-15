@@ -868,7 +868,8 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
     if (Result)
     {
-      if ((Prompts->GetCount() >= 1) && FLAGSET((intptr_t)Prompts->GetObj(0), pupEcho))
+      if ((Prompts->GetCount() >= 1) &&
+          (FLAGSET((intptr_t)Prompts->GetObj(0), pupEcho) || GetConfiguration()->GetLogSensitive()))
       {
         LogEvent(FORMAT(L"Response: \"%s\"", Results->GetString(0).c_str()));
       }
@@ -1880,7 +1881,17 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       {
         Timeout = 0;
       }
-      uint32_t WaitResult = ::WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, Timeout);
+      // uint32_t WaitResult = ::WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, Timeout);
+      uint32_t WaitResult;
+      do
+      {
+        uint32_t TimeoutStep = min(GUIUpdateInterval, Timeout);
+        Timeout -= TimeoutStep;
+        WaitResult = ::WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, TimeoutStep);
+        ProcessGUI();
+      }
+      while ((WaitResult == WAIT_TIMEOUT) && (Timeout > 0));
+
       if (WaitResult < WAIT_OBJECT_0 + HandleCount)
       {
         if (handle_got_event(Handles[WaitResult - WAIT_OBJECT_0]))

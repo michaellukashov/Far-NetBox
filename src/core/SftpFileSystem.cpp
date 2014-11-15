@@ -4901,6 +4901,8 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
           throw;
         }
       }
+
+      FTerminal->LogFileDone(OperationProgress);
     }
   }
 
@@ -5936,6 +5938,8 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
         });
       }
     }
+
+    FTerminal->LogFileDone(OperationProgress);
   }
 
   if (Params & cpDelete)

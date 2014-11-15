@@ -263,6 +263,21 @@ public:
   void Lock();
   void Unlock();
 
+/*
+  __property TSessionLog * Parent = { read = FParent, write = FParent };
+  __property bool Logging = { read = FLogging };
+  __property int BottomIndex = { read = GetBottomIndex };
+  __property UnicodeString Line[int Index]  = { read=GetLine };
+  __property TLogLineType Type[int Index]  = { read=GetType };
+  __property OnChange;
+  __property TNotifyEvent OnStateChange = { read = FOnStateChange, write = FOnStateChange };
+  __property UnicodeString CurrentFileName = { read = FCurrentFileName };
+  __property bool LoggingToFile = { read = GetLoggingToFile };
+  __property int TopIndex = { read = FTopIndex };
+  __property UnicodeString SessionName = { read = GetSessionName };
+  __property UnicodeString Name = { read = FName, write = FName };
+  __property Count;
+*/
   TSessionLog * GetParent();
   void SetParent(TSessionLog * Value);
   bool GetLogging() const;
@@ -295,6 +310,7 @@ private:
   void AddStartupInfo(bool System);
   void DoAddStartupInfo(TSessionData * Data);
   UnicodeString GetTlsVersionName(TTlsVersion TlsVersion);
+  UnicodeString LogSensitive(const UnicodeString & Str);
 
 protected:
   void CloseLogFile();

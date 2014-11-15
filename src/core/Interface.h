@@ -15,6 +15,12 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
 UnicodeString GetRegistryKey();
 void * BusyStart();
 void BusyEnd(void * Token);
+const uint32_t GUIUpdateInterval = 200;
+
+void WinInitialize();
+void WinFinalize();
+bool ProcessGUI(bool Force = false);
+
 UnicodeString GetAppNameString();
 UnicodeString GetSshVersionString();
 void CopyToClipboard(const UnicodeString & Text);
