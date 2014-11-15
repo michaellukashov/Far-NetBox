@@ -103,7 +103,7 @@ CControlSocket::~CControlSocket()
 #ifndef MPEXT_NO_SSL
 #define CONNECT_SSL_INIT -6
 #define CONNECT_SSL_NEGOTIATE -5
-#define CONNECT_SSL_WAITDONE -11
+#define CONNECT_SSL_WAITDONE -4
 #endif
 
 void CControlSocket::ShowStatus(UINT nID, int type) const
@@ -115,19 +115,22 @@ void CControlSocket::ShowStatus(UINT nID, int type) const
 
 void CControlSocket::ShowStatus(CString status, int type) const
 {
-	if ( status.Left(5)==_T("PASS ") )
+	if (!COptions::GetOptionVal(OPTION_MPEXT_LOG_SENSITIVE))
 	{
-		int len=status.GetLength()-5;
-		status=_T("PASS ");
-		for (int i=0;i<len;i++)
-			status+=_MPT("*");
-	}
-	else if ( status.Left(5)==_T("ACCT ") )
-	{
-		int len=status.GetLength()-5;
-		status=_T("ACCT ");
-		for (int i=0;i<len;i++)
-			status+=_MPT("*");
+		if ( status.Left(5)==_T("PASS ") )
+		{
+			int len=status.GetLength()-5;
+			status=_T("PASS ");
+			for (int i=0;i<len;i++)
+				status+=_MPT("*");
+		}
+		else if ( status.Left(5)==_T("ACCT ") )
+		{
+			int len=status.GetLength()-5;
+			status=_T("ACCT ");
+			for (int i=0;i<len;i++)
+				status+=_MPT("*");
+		}
 	}
 	LogMessageRaw(type, (LPCTSTR)status);
 }
@@ -234,6 +237,9 @@ int CControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 			{
 				switch (iter->nParam1)
 				{
+				case PROXYERROR_NOERROR:
+					ShowStatus(IDS_PROXY_CONNECTED, FZ_LOG_STATUS);
+					break;
 				case PROXYERROR_NOCONN:
 					ShowStatus(IDS_ERRORMSG_PROXY_NOCONN, FZ_LOG_ERROR);
 					break;

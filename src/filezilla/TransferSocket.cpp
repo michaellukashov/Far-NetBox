@@ -1122,6 +1122,9 @@ int CTransferSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 			{
 				switch (iter->nParam1)
 				{
+				case PROXYERROR_NOERROR:
+					m_pOwner->ShowStatus(IDS_PROXY_CONNECTED, FZ_LOG_STATUS);
+					break;
 				case PROXYERROR_NOCONN:
 					m_pOwner->ShowStatus(IDS_ERRORMSG_PROXY_NOCONN, FZ_LOG_ERROR);
 					break;
@@ -1153,12 +1156,7 @@ int CTransferSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 					switch(iter->nParam2)
 					{
 					case SSL_INFO_SHUTDOWNCOMPLETE:
-						Close();
-						if (!m_bSentClose)
-						{
-							m_bSentClose=TRUE;
-							m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode);
-						}
+						CloseAndEnsureSendClose(0);
 						break;
 					case SSL_INFO_ESTABLISHED:
 						m_pOwner->ShowStatus(IDS_STATUSMSG_SSLESTABLISHEDTRANSFER, FZ_LOG_STATUS);

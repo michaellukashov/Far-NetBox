@@ -263,7 +263,7 @@ CFtpControlSocket::~CFtpControlSocket()
 #define CONNECT_SSL_NEGOTIATE -9
 #define CONNECT_TLS_NEGOTIATE -10
 #undef CONNECT_SSL_WAITDONE
-#define CONNECT_SSL_WAITDONE -11
+#define CONNECT_SSL_WAITDONE -4
 #define CONNECT_SSL_PBSZ -12
 #define CONNECT_SSL_PROT -13
 #endif
@@ -569,7 +569,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 		return;
 	}
 	else if ((m_Operation.nOpState == CONNECT_SSL_NEGOTIATE) ||
-	         (m_Operation.nOpState == CONNECT_TLS_NEGOTIATE))
+					 (m_Operation.nOpState == CONNECT_TLS_NEGOTIATE))
 	{
 		int res = GetReplyCode();
 		if (res!=2 && res!=3)
@@ -2447,6 +2447,12 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 
 		if (pData->bPasv)
 		{
+			CString hostname;
+			hostname.Format(L"%s:%d", pData->host, pData->port);
+			CString str;
+			str.Format(IDS_STATUSMSG_CONNECTING, hostname);
+			ShowStatus(str, FZ_LOG_STATUS);
+
 			// if PASV create the socket & initiate outbound data channel connection
 			if (!m_pTransferSocket->Connect(pData->host,pData->port))
 			{
