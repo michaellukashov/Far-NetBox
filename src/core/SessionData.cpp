@@ -77,7 +77,6 @@ void TSessionData::Default()
   SetUserName(ANONYMOUS_USER_NAME);
   SetPassword(ANONYMOUS_PASSWORD);
   SetPingInterval(30);
-  // when changing default, update load/save logic
   SetPingType(ptOff);
   SetTimeout(90);
   SetTryAgent(true);
@@ -499,7 +498,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   {
     SetPingInterval(30);
   }
-  SetPingType(static_cast<TPingType>(Storage->ReadInteger(L"PingType", ptOff)));
+  SetPingType(static_cast<TPingType>(Storage->ReadInteger(L"PingType", GetPingType())));
   SetTimeout(Storage->ReadInteger(L"Timeout", GetTimeout()));
   SetTryAgent(Storage->ReadBool(L"TryAgent", GetTryAgent()));
   SetAgentFwd(Storage->ReadBool(L"AgentFwd", GetAgentFwd()));
@@ -896,40 +895,6 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     }
 
     WRITE_DATA(Integer, ProxyMethod);
-    if (PuttyExport)
-    {
-      // support for Putty 0.53b and older
-      int ProxyType;
-      int ProxySOCKSVersion = 5;
-      switch (GetProxyMethod())
-      {
-        case pmHTTP:
-          ProxyType = pxHTTP;
-          break;
-        case pmTelnet:
-          ProxyType = pxTelnet;
-          break;
-        case pmSocks5:
-          ProxyType = pxSocks;
-          ProxySOCKSVersion = 5;
-          break;
-        case pmSocks4:
-          ProxyType = pxSocks;
-          ProxySOCKSVersion = 4;
-          break;
-        default:
-        case ::pmNone:
-          ProxyType = pxNone;
-          break;
-      }
-      Storage->WriteInteger(L"ProxyType", ProxyType);
-      Storage->WriteInteger(L"ProxySOCKSVersion", ProxySOCKSVersion);
-    }
-    else
-    {
-      Storage->DeleteValue(L"ProxyType");
-      Storage->DeleteValue(L"ProxySOCKSVersion");
-    }
     if (GetProxyMethod() != pmSystem)
     {
       WRITE_DATA(String, ProxyHost);
@@ -1731,6 +1696,12 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
   }
 
   return true;
+}
+
+void TSessionData::ApplyRawSettings(THierarchicalStorage * Storage)
+{
+  bool Dummy;
+  DoLoad(Storage, Dummy);
 }
 
 void TSessionData::ConfigureTunnel(intptr_t APortNumber)

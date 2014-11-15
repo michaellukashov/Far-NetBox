@@ -111,6 +111,7 @@ void TConfiguration::Default()
   FLogFileName = GetDefaultLogFileName();
   FPermanentLogFileName = FLogFileName;
   FLogFileAppend = true;
+  FLogSensitive = false;
   FLogWindowLines = 100;
   FLogProtocol = 0;
   UpdateActualLogProtocol();
@@ -222,6 +223,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
     KEYEX(Bool,  Logging, Logging); \
     KEYEX(String,LogFileName, LogFileName); \
     KEY(Bool,    LogFileAppend); \
+    KEY(Bool,    LogSensitive); \
     KEY(Integer, LogWindowLines); \
     KEY(Integer, LogProtocol); \
     KEYEX(Bool,  LogActions, LogActions); \
@@ -1228,6 +1230,11 @@ void TConfiguration::SetLogActions(bool Value)
 void TConfiguration::SetLogFileAppend(bool Value)
 {
   SET_CONFIG_PROPERTY(LogFileAppend);
+}
+
+void TConfiguration::SetLogSensitive(bool Value)
+{
+  SET_CONFIG_PROPERTY(LogSensitive);
 }
 
 void TConfiguration::SetLogWindowLines(intptr_t Value)

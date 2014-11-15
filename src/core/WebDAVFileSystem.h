@@ -199,7 +199,13 @@ private:
   TSessionInfo FSessionInfo;
   UnicodeString FUserName;
   UnicodeString FPassword;
-  enum TIgnoreAuthenticationFailure { iafNo, iafWaiting, iafPasswordFailed } FIgnoreAuthenticationFailure;
+  UnicodeString FTlsVersionStr;
+  enum TIgnoreAuthenticationFailure
+  {
+    iafNo,
+    iafWaiting,
+    iafPasswordFailed
+  } FIgnoreAuthenticationFailure;
   bool FStoredPasswordTried;
   bool FPasswordFailed;
   bool FActive;
