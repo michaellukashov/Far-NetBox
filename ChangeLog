@@ -1,5 +1,7 @@
-NetBox 2.1.40.359 15.11.2014
+NetBox 2.1.40.360 16.11.2014
 --------------------
+  * Bugfix: Issue #134: Plugin settings not stored
+    (https://github.com/michaellukashov/Far-NetBox/issues/134)
   * Update WinSCP sources to 5.6.3
   * Bugfix: Mantis #0002864: AV trying to connect to WebDAV host
     (http://bugs.farmanager.com/view.php?id=2864)
