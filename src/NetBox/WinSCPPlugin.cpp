@@ -203,14 +203,15 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
         AboutDialog();
       }
     }
+
+    if (Change)
+    {
+      // only modified, implicit
+      GetConfiguration()->DoSave(false, false);
+    }
   }
   while (Result >= 0);
 
-  if (Change)
-  {
-    // only modified, implicit
-    GetConfiguration()->DoSave(false, false);
-  }
   return Change;
 }
 
