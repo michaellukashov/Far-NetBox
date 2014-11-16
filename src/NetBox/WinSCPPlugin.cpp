@@ -200,6 +200,12 @@ bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
         AboutDialog();
       }
     }
+
+    if (Change)
+    {
+      // only modified, implicit
+      GetConfiguration()->DoSave(false, false);
+    }
   }
   while (Result >= 0);
 
