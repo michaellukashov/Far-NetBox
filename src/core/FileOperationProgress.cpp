@@ -31,7 +31,7 @@ TFileOperationProgressType::~TFileOperationProgressType()
 
 void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationProgressType & Other)
 {
-  TValueRestorer<uint32_t > SuspendTimeRestorer(FSuspendTime);
+  TValueRestorer<uintptr_t> SuspendTimeRestorer(FSuspendTime);
   TValueRestorer<bool> SuspendedRestorer(Suspended);
 
   *this = Other;
