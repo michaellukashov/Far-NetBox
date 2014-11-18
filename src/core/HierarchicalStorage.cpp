@@ -499,8 +499,8 @@ bool TRegistryStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate
   {
     FRegistry->CloseKey();
   }
-  UnicodeString K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
-  return FRegistry->OpenKey(K, CanCreate);
+  UnicodeString Key = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
+  return FRegistry->OpenKey(Key, CanCreate);
 }
 
 void TRegistryStorage::CloseSubKey()
@@ -515,13 +515,13 @@ void TRegistryStorage::CloseSubKey()
 
 bool TRegistryStorage::DeleteSubKey(const UnicodeString & SubKey)
 {
-  UnicodeString K;
+  UnicodeString Key;
   if (FKeyHistory->GetCount() == 0)
   {
-    K = GetStorage() + GetCurrentSubKey();
+    Key = GetStorage() + GetCurrentSubKey();
   }
-  K += MungeKeyName(SubKey);
-  return FRegistry->DeleteKey(K);
+  Key += MungeKeyName(SubKey);
+  return FRegistry->DeleteKey(Key);
 }
 
 void TRegistryStorage::GetSubKeyNames(TStrings * Strings)
@@ -545,8 +545,8 @@ bool TRegistryStorage::DeleteValue(const UnicodeString & Name)
 
 bool TRegistryStorage::DoKeyExists(const UnicodeString & SubKey, bool AForceAnsi)
 {
-  UnicodeString K = MungeStr(SubKey, AForceAnsi);
-  bool Result = FRegistry->KeyExists(K);
+  UnicodeString Key = MungeStr(SubKey, AForceAnsi);
+  bool Result = FRegistry->KeyExists(Key);
   return Result;
 }
 

@@ -830,13 +830,16 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
     {
       TMessageParams Params;
       Params.Params = qpNeverAskAgainCheck;
-      uintptr_t Answer = MoreMessageDialog(FORMAT(GetMsg(PERFORM_ON_COMMAND_SESSION).c_str(),
-        FTerminal->GetFileSystemInfo().ProtocolName.c_str(),
-         FTerminal->GetFileSystemInfo().ProtocolName.c_str()), nullptr,
+      uintptr_t Answer = MoreMessageDialog(
+        FORMAT(GetMsg(PERFORM_ON_COMMAND_SESSION).c_str(),
+          FTerminal->GetFileSystemInfo().ProtocolName.c_str(),
+          FTerminal->GetFileSystemInfo().ProtocolName.c_str()),
+        nullptr,
         qtConfirmation, qaOK | qaCancel, &Params);
       if (Answer == qaNeverAskAgain)
       {
         GetGUIConfiguration()->SetConfirmCommandSession(false);
+        GetGUIConfiguration()->DoSave(false, false); // modified, implicit
         Result = true;
       }
       else
