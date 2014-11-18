@@ -831,6 +831,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
       if (Answer == qaNeverAskAgain)
       {
         GetGUIConfiguration()->SetConfirmCommandSession(false);
+        GetGUIConfiguration()->DoSave(false, false); // modified, implicit
         Result = true;
       }
       else
