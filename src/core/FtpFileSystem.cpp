@@ -2072,6 +2072,8 @@ bool TFTPFileSystem::GetTimeZoneDifferenceApplicable(TModificationFmt Modificati
 
 void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
 {
+  if (!File)
+    return;
   if (GetTimeZoneDifferenceApplicable(File->GetModificationFmt()))
   {
     assert(File->GetModification() == File->GetLastAccess());
