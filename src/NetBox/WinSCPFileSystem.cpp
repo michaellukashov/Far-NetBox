@@ -476,6 +476,8 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
         TRemoteFile * File = FTerminal->GetFiles()->GetFile(Index);
         if (File->GetIsSymLink())
         {
+          if (FarPlugin->CheckForEsc())
+            break;
           // Check what kind of symlink this is
           const UnicodeString LinkFileName = File->GetLinkTo();
           TRemoteFile * LinkFile = nullptr;
