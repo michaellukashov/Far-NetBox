@@ -1,4 +1,4 @@
-NetBox 2.1.40.361 18.11.2014
+NetBox 2.1.40.362 21.11.2014
 --------------------
   * Bugfix: Issue #134: Plugin settings not stored
     (https://github.com/michaellukashov/Far-NetBox/issues/134)

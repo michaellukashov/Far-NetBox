@@ -11094,8 +11094,8 @@ server_ssl_callback(
   apr_uint32_t * webdav_failures = static_cast<apr_uint32_t *>(apr_pcalloc(ras->pool, sizeof(*webdav_failures)));
 
   // Construct the realmstring, e.g. https://svn.collab.net:80
-  const char * realmstring = apr_pstrdup(ras->pool, ::FormatA("%s://%s:%d", ras->root.scheme,
-    ras->root.host, ras->root.port).c_str());
+  const char * realmstring = apr_psprintf(ras->pool, "%s://%s:%d", ras->root.scheme,
+    ras->root.host, ras->root.port);
 
   *webdav_failures = convert_neon_failures(failures);
   auth_baton_set_parameter(ras->callbacks->auth_baton,
