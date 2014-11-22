@@ -471,9 +471,9 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
       }
 
       TCustomFileSystem * FileSystem = GetTerminal()->GetFileSystem();
-      for (intptr_t Index = 0; Index < FTerminal->GetFiles()->GetCount(); ++Index)
+      for (intptr_t Index = 0; Index < GetTerminal()->GetFiles()->GetCount(); ++Index)
       {
-        TRemoteFile * File = FTerminal->GetFiles()->GetFile(Index);
+        TRemoteFile * File = GetTerminal()->GetFiles()->GetFile(Index);
         if (File->GetIsSymLink())
         {
           if (FarPlugin->CheckForEsc())
