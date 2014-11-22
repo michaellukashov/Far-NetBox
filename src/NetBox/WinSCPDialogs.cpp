@@ -3036,7 +3036,7 @@ void TSessionDialog::UpdateControls()
     (FSProtocol != fsSCPonly) || CacheDirectoriesCheck->GetChecked());
   PreserveDirectoryChangesCheck->SetEnabled(
     CacheDirectoryChangesCheck->GetIsEnabled() && CacheDirectoryChangesCheck->GetChecked());
-  ResolveSymlinksCheck->SetEnabled(!FtpProtocol && !InternalWebDAVProtocol);
+  ResolveSymlinksCheck->SetEnabled(!InternalWebDAVProtocol);
 
   // Environment tab
   DSTModeUnixCheck->SetEnabled(!FtpProtocol);
