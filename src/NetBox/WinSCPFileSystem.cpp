@@ -472,10 +472,11 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
       }
 
       TCustomFileSystem * FileSystem = GetTerminal()->GetFileSystem();
-      for (intptr_t Index = 0; Index < FTerminal->GetFiles()->GetCount(); ++Index)
+      bool ResolveSymlinks = GetSessionData()->GetResolveSymlinks();
+      for (intptr_t Index = 0; Index < GetTerminal()->GetFiles()->GetCount(); ++Index)
       {
-        TRemoteFile * File = FTerminal->GetFiles()->GetFile(Index);
-        if (File->GetIsSymLink())
+        TRemoteFile * File = GetTerminal()->GetFiles()->GetFile(Index);
+        if (ResolveSymlinks && File->GetIsSymLink())
         {
           if (FarPlugin->CheckForEsc())
             break;
