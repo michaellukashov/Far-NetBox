@@ -2836,18 +2836,23 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(
 }
 
 TStrings * TWinSCPFileSystem::CreateSelectedFileList(
-  TOperationSide Side, TFarPanelInfo * PanelInfo)
+  TOperationSide Side, TFarPanelInfo * APanelInfo)
 {
-  if (PanelInfo == nullptr)
+  TFarPanelInfo * PanelInfo = APanelInfo;
+  if (APanelInfo == nullptr)
   {
     PanelInfo = this->GetPanelInfo();
   }
 
   TStrings * Result;
-  if (PanelInfo->GetSelectedCount() > 0)
+  if (PanelInfo && PanelInfo->GetSelectedCount() > 0)
   {
-    Result = CreateFileList(PanelInfo->GetItems(), Side, true,
-      PanelInfo->GetCurrDirectory());
+    UnicodeString CurrDirectory = PanelInfo->GetCurrDirectory();
+    if (APanelInfo == nullptr)
+    {
+      PanelInfo = this->GetPanelInfo();
+    }
+    Result = CreateFileList(PanelInfo->GetItems(), Side, true, CurrDirectory);
   }
   else
   {
