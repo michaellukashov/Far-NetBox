@@ -792,8 +792,8 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     Storage->WriteString(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     WRITE_DATA(String, HostName);
     WRITE_DATA(Integer, PortNumber);
-    WRITE_DATA_EX(Integer, L"PingInterval", GetPingInterval() / SecsPerMin, );
-    WRITE_DATA_EX(Integer, L"PingIntervalSecs", GetPingInterval() % SecsPerMin, );
+    WRITE_DATA_EX(Integer, "PingInterval", GetPingInterval() / SecsPerMin, );
+    WRITE_DATA_EX(Integer, "PingIntervalSecs", GetPingInterval() % SecsPerMin, );
     Storage->DeleteValue(L"PingIntervalSec"); // obsolete
     WRITE_DATA(Integer, PingType);
     WRITE_DATA(Integer, Timeout);
@@ -814,11 +814,11 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     if (PuttyExport)
     {
       // duplicate kerberos setting with keys of the vintela quest putty
-      WRITE_DATA_EX(Bool, L"AuthSSPI", GetAuthGSSAPI(), );
-      WRITE_DATA_EX(Bool, L"SSPIFwdTGT", GetGSSAPIFwdTGT(), );
-      WRITE_DATA_EX(String, L"KerbPrincipal", GetGSSAPIServerRealm(), );
+      WRITE_DATA_EX(Bool, "AuthSSPI", GetAuthGSSAPI(), );
+      WRITE_DATA_EX(Bool, "SSPIFwdTGT", GetGSSAPIFwdTGT(), );
+      WRITE_DATA_EX(String, "KerbPrincipal", GetGSSAPIServerRealm(), );
       // duplicate kerberos setting with keys of the official putty
-      WRITE_DATA_EX(Bool, L"GssapiFwd", GetGSSAPIFwdTGT(), );
+      WRITE_DATA_EX(Bool, "GssapiFwd", GetGSSAPIFwdTGT(), );
     }
 
     WRITE_DATA(Bool, ChangeUsername);
@@ -826,10 +826,10 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     WRITE_DATA(Integer, SshProt);
     WRITE_DATA(Bool, Ssh2DES);
     WRITE_DATA(Bool, SshNoUserAuth);
-    WRITE_DATA_EX(String, L"Cipher", GetCipherList(), );
-    WRITE_DATA_EX(String, L"KEX", GetKexList(), );
+    WRITE_DATA_EX(String, "Cipher", GetCipherList(), );
+    WRITE_DATA_EX(String, "KEX", GetKexList(), );
     WRITE_DATA(Integer, AddressFamily);
-    WRITE_DATA_EX(String, L"RekeyBytes", GetRekeyData(), );
+    WRITE_DATA_EX(String, "RekeyBytes", GetRekeyData(), );
     WRITE_DATA(Integer, RekeyTime);
 
     WRITE_DATA(Bool, TcpNoDelay);
@@ -837,16 +837,16 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     if (PuttyExport)
     {
 //      WRITE_DATA(StringRaw, UserName);
-      WRITE_DATA_EX(StringRaw, L"UserName", SessionGetUserName(), );
+      WRITE_DATA_EX(StringRaw, "UserName", SessionGetUserName(), );
 
       WRITE_DATA(StringRaw, PublicKeyFile);
     }
     else
     {
 //      WRITE_DATA(String, UserName);
-      WRITE_DATA_EX(String, L"UserName", SessionGetUserName(), );
+      WRITE_DATA_EX(String, "UserName", SessionGetUserName(), );
       WRITE_DATA(String, PublicKeyFile);
-      WRITE_DATA_EX2(String, L"FSProtocol", GetFSProtocolStr(), );
+      WRITE_DATA_EX2(String, "FSProtocol", GetFSProtocolStr(), );
       WRITE_DATA(String, LocalDirectory);
       WRITE_DATA(String, RemoteDirectory);
       WRITE_DATA(Bool, SynchronizeBrowsing);
@@ -856,7 +856,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA(Bool, PreserveDirectoryChanges);
 
       WRITE_DATA(Bool, ResolveSymlinks);
-      WRITE_DATA_EX(Integer, L"ConsiderDST", GetDSTMode(), );
+      WRITE_DATA_EX(Integer, "ConsiderDST", GetDSTMode(), );
       WRITE_DATA(Bool, LockInHome);
       // Special is never stored (if it would, login dialog must be modified not to
       // duplicate Special parameter when Special session is loaded and then stored
@@ -886,10 +886,10 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA(String, PostLoginCommands);
 
       WRITE_DATA(String, ReturnVar);
-      WRITE_DATA_EX(Integer, L"LookupUserGroups2", GetLookupUserGroups(), );
+      WRITE_DATA_EX(Integer, "LookupUserGroups2", GetLookupUserGroups(), );
       WRITE_DATA(Integer, EOLType);
       Storage->DeleteValue(L"SFTPUtfBug");
-      WRITE_DATA_EX(Integer, L"Utf", GetNotUtf(), );
+      WRITE_DATA_EX(Integer, "Utf", GetNotUtf(), );
       WRITE_DATA(Integer, SendBuf);
       WRITE_DATA(Bool, SshSimple);
     }
@@ -903,16 +903,16 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     WRITE_DATA(String, ProxyUsername);
     if (GetProxyMethod() == pmCmd)
     {
-      WRITE_DATA_EX(StringRaw, L"ProxyTelnetCommand", GetProxyLocalCommand(), );
+      WRITE_DATA_EX(StringRaw, "ProxyTelnetCommand", GetProxyLocalCommand(), );
     }
     else
     {
-      WRITE_DATA_EX(StringRaw, L"ProxyTelnetCommand", GetProxyTelnetCommand(), );
+      WRITE_DATA_EX(StringRaw, "ProxyTelnetCommand", GetProxyTelnetCommand(), );
     }
 #define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
-    WRITE_DATA_CONV(Integer, L"ProxyDNS", GetProxyDNS());
+    WRITE_DATA_CONV(Integer, "ProxyDNS", GetProxyDNS());
 #undef WRITE_DATA_CONV_FUNC
-    WRITE_DATA_EX(Bool, L"ProxyLocalhost", GetProxyLocalhost(), );
+    WRITE_DATA_EX(Bool, "ProxyLocalhost", GetProxyLocalhost(), );
 
 #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
 #define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, MB_TEXT("Bug" #BUG), GetBug(sb##BUG));
@@ -935,7 +935,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 
     if (PuttyExport)
     {
-      WRITE_DATA_EX(String, L"Protocol", GetPuttyProtocol(), );
+      WRITE_DATA_EX(String, "Protocol", GetPuttyProtocol(), );
     }
 
     if (!PuttyExport)
@@ -961,7 +961,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA(Integer, TunnelLocalPortNumber);
 
       WRITE_DATA(Bool, FtpPasvMode);
-      WRITE_DATA_EX(Integer, L"FtpForcePasvIp2", GetFtpForcePasvIp(), );
+      WRITE_DATA_EX(Integer, "FtpForcePasvIp2", GetFtpForcePasvIp(), );
       WRITE_DATA(Integer, FtpUseMlsd);
       WRITE_DATA(String, FtpAccount);
       WRITE_DATA(Integer, FtpPingInterval);
@@ -984,9 +984,9 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA(String, CustomParam1);
       WRITE_DATA(String, CustomParam2);
 
-      WRITE_DATA_EX(String, L"CodePage", GetCodePage(), );
-      WRITE_DATA_EX(Integer, L"LoginType", GetLoginType(), );
-      WRITE_DATA_EX(Bool, L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), );
+      WRITE_DATA_EX(String, "CodePage", GetCodePage(), );
+      WRITE_DATA_EX(Integer, "LoginType", GetLoginType(), );
+      WRITE_DATA_EX(Bool, "FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), );
     }
 
     SavePasswords(Storage, PuttyExport);
