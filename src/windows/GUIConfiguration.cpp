@@ -171,18 +171,18 @@ bool TCopyParamRule::Matches(const TCopyParamRuleData & Value) const
 
 void TCopyParamRule::Load(THierarchicalStorage * Storage)
 {
-  FData.HostName = Storage->ReadString(L"HostName", FData.HostName);
-  FData.UserName = Storage->ReadString(L"UserName", FData.UserName);
-  FData.RemoteDirectory = Storage->ReadString(L"RemoteDirectory", FData.RemoteDirectory);
-  FData.LocalDirectory = Storage->ReadString(L"LocalDirectory", FData.LocalDirectory);
+  FData.HostName = Storage->ReadString("HostName", FData.HostName);
+  FData.UserName = Storage->ReadString("UserName", FData.UserName);
+  FData.RemoteDirectory = Storage->ReadString("RemoteDirectory", FData.RemoteDirectory);
+  FData.LocalDirectory = Storage->ReadString("LocalDirectory", FData.LocalDirectory);
 }
 
 void TCopyParamRule::Save(THierarchicalStorage * Storage) const
 {
-  Storage->WriteString(L"HostName", FData.HostName);
-  Storage->WriteString(L"UserName", FData.UserName);
-  Storage->WriteString(L"RemoteDirectory", FData.RemoteDirectory);
-  Storage->WriteString(L"LocalDirectory", FData.LocalDirectory);
+  Storage->WriteString("HostName", FData.HostName);
+  Storage->WriteString("UserName", FData.UserName);
+  Storage->WriteString("RemoteDirectory", FData.RemoteDirectory);
+  Storage->WriteString("LocalDirectory", FData.LocalDirectory);
 }
 
 bool TCopyParamRule::GetEmpty() const
