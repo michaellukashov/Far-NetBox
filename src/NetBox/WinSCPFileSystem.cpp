@@ -2846,6 +2846,10 @@ TStrings * TWinSCPFileSystem::CreateSelectedFileList(TOperationSide Side, TFarPa
   if (PanelInfo && *PanelInfo && (*PanelInfo)->GetSelectedCount() > 0)
   {
     UnicodeString CurrDirectory = (*PanelInfo)->GetCurrDirectory();
+    if (*PanelInfo == nullptr)
+    {
+      PanelInfo = this->GetPanelInfo();
+    }
     Result = CreateFileList((*PanelInfo)->GetItems(), Side, true, CurrDirectory);
   }
   else
