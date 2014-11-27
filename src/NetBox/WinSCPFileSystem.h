@@ -286,9 +286,9 @@ private:
     TOperationSide Side, bool SelectedOnly = false, const UnicodeString & Directory = L"",
     bool FileNameOnly = false, TStrings * AFileList = nullptr);
   TStrings * CreateSelectedFileList(TOperationSide Side,
-    TFarPanelInfo * PanelInfo = nullptr);
+    TFarPanelInfo ** PanelInfo = nullptr);
   TStrings * CreateFocusedFileList(TOperationSide Side,
-    TFarPanelInfo * PanelInfo = nullptr);
+    TFarPanelInfo ** PanelInfo = nullptr);
   void CustomCommandGetParamValue(
     const UnicodeString & AName, UnicodeString & Value);
   void TerminalSynchronizeDirectory(const UnicodeString & LocalDirectory,

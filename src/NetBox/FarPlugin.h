@@ -295,10 +295,10 @@ protected:
 
   virtual void HandleException(Exception * E, int OpMode = 0);
 
-  const TFarPanelInfo * GetPanelInfo() const { return GetPanelInfo(0); }
-  TFarPanelInfo * GetPanelInfo() { return GetPanelInfo(0); }
-  const TFarPanelInfo * GetAnotherPanelInfo() const { return GetPanelInfo(1); }
-  TFarPanelInfo * GetAnotherPanelInfo() { return GetPanelInfo(1); }
+  TFarPanelInfo * const * GetPanelInfo() const { return GetPanelInfo(0); }
+  TFarPanelInfo ** GetPanelInfo() { return GetPanelInfo(0); }
+  TFarPanelInfo * const * GetAnotherPanelInfo() const { return GetPanelInfo(1); }
+  TFarPanelInfo ** GetAnotherPanelInfo() { return GetPanelInfo(1); }
   const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
   TCriticalSection & GetCriticalSection() { return FCriticalSection; }
   bool GetOpenPluginInfoValid() const { return FOpenPluginInfoValid; }
@@ -318,8 +318,8 @@ private:
   void ClearOpenPluginInfo(OpenPluginInfo & Info);
   TObjectList * CreatePanelItemList(struct PluginPanelItem * PanelItem,
     int ItemsNumber);
-  const TFarPanelInfo * GetPanelInfo(int Another) const;
-  TFarPanelInfo * GetPanelInfo(int Another);
+  TFarPanelInfo * const * GetPanelInfo(int Another) const;
+  TFarPanelInfo ** GetPanelInfo(int Another);
 };
 
 #define PANEL_MODES_COUNT 10
