@@ -509,9 +509,9 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   // but fallback to keys of other implementations (official putty and vintela quest putty),
   // to allow imports from all putty versions.
   // Both vaclav tomec and official putty use AuthGSSAPI
-  SetAuthGSSAPI(Storage->ReadBool("AuthGSSAPI", Storage->ReadBool(L"AuthSSPI", GetAuthGSSAPI())));
-  SetGSSAPIFwdTGT(Storage->ReadBool("GSSAPIFwdTGT", Storage->ReadBool(L"GssapiFwd", Storage->ReadBool(L"SSPIFwdTGT", GetGSSAPIFwdTGT()))));
-  SetGSSAPIServerRealm(Storage->ReadString("GSSAPIServerRealm", Storage->ReadString(L"KerbPrincipal", GetGSSAPIServerRealm())));
+  SetAuthGSSAPI(Storage->ReadBool("AuthGSSAPI", Storage->ReadBool("AuthSSPI", GetAuthGSSAPI())));
+  SetGSSAPIFwdTGT(Storage->ReadBool("GSSAPIFwdTGT", Storage->ReadBool("GssapiFwd", Storage->ReadBool("SSPIFwdTGT", GetGSSAPIFwdTGT()))));
+  SetGSSAPIServerRealm(Storage->ReadString("GSSAPIServerRealm", Storage->ReadString("KerbPrincipal", GetGSSAPIServerRealm())));
   SetChangeUsername(Storage->ReadBool("ChangeUsername", GetChangeUsername()));
   SetCompression(Storage->ReadBool("Compression", GetCompression()));
   SetSshProt(static_cast<TSshProt>(Storage->ReadInteger("SshProt", GetSshProt())));
@@ -549,7 +549,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetClearAliases(Storage->ReadBool("ClearAliases", GetClearAliases()));
   SetUnsetNationalVars(Storage->ReadBool("UnsetNationalVars", GetUnsetNationalVars()));
   SetListingCommand(Storage->ReadString("ListingCommand",
-    Storage->ReadBool("AliasGroupList", false) ? UnicodeString(L"ls -gla") : GetListingCommand()));
+    Storage->ReadBool("AliasGroupList", false) ? UnicodeString("ls -gla") : GetListingCommand()));
   SetIgnoreLsWarnings(Storage->ReadBool("IgnoreLsWarnings", GetIgnoreLsWarnings()));
   SetSCPLsFullTime(static_cast<TAutoSwitch>(Storage->ReadInteger("SCPLsFullTime", GetSCPLsFullTime())));
   SetScp1Compatibility(Storage->ReadBool("Scp1Compatibility", GetScp1Compatibility()));
@@ -563,7 +563,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetReturnVar(Storage->ReadString("ReturnVar", GetReturnVar()));
   SetLookupUserGroups(TAutoSwitch(Storage->ReadInteger("LookupUserGroups", GetLookupUserGroups())));
   SetEOLType(static_cast<TEOLType>(Storage->ReadInteger("EOLType", GetEOLType())));
-  SetNotUtf(static_cast<TAutoSwitch>(Storage->ReadInteger("Utf", Storage->ReadInteger(L"SFTPUtfBug", GetNotUtf()))));
+  SetNotUtf(static_cast<TAutoSwitch>(Storage->ReadInteger("Utf", Storage->ReadInteger("SFTPUtfBug", GetNotUtf()))));
 
   SetTcpNoDelay(Storage->ReadBool("TcpNoDelay", GetTcpNoDelay()));
   SetSendBuf(Storage->ReadInteger("SendBuf", Storage->ReadInteger("SshSendBuf", GetSendBuf())));
@@ -742,15 +742,15 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     {
       if (Storage->OpenSubKey(GetInternalStorageKey(), true))
       {
-        Storage->DeleteValue(L"PasswordPlain");
+        Storage->DeleteValue("PasswordPlain");
         if (!GetPassword().IsEmpty())
         {
-          Storage->WriteBinaryDataAsString(L"Password", FPassword);
+          Storage->WriteBinaryDataAsString("Password", FPassword);
         }
-        Storage->DeleteValue(L"TunnelPasswordPlain");
+        Storage->DeleteValue("TunnelPasswordPlain");
         if (!GetTunnelPassword().IsEmpty())
         {
-          Storage->WriteBinaryDataAsString(L"TunnelPassword", FTunnelPassword);
+          Storage->WriteBinaryDataAsString("TunnelPassword", FTunnelPassword);
         }
         Storage->CloseSubKey();
       }
@@ -789,12 +789,12 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
 #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, MB_TEXT(#PROPERTY), Get ## PROPERTY(), )
 
-    Storage->WriteString(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
+    Storage->WriteString("Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     WRITE_DATA(String, HostName);
     WRITE_DATA(Integer, PortNumber);
     WRITE_DATA_EX(Integer, "PingInterval", GetPingInterval() / SecsPerMin, );
     WRITE_DATA_EX(Integer, "PingIntervalSecs", GetPingInterval() % SecsPerMin, );
-    Storage->DeleteValue(L"PingIntervalSec"); // obsolete
+    Storage->DeleteValue("PingIntervalSec"); // obsolete
     WRITE_DATA(Integer, PingType);
     WRITE_DATA(Integer, Timeout);
     WRITE_DATA(Bool, TryAgent);
@@ -807,10 +807,10 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     WRITE_DATA(Bool, AuthGSSAPI);
     WRITE_DATA(Bool, GSSAPIFwdTGT);
     WRITE_DATA(String, GSSAPIServerRealm);
-    Storage->DeleteValue(L"TryGSSKEX");
-    Storage->DeleteValue(L"UserNameFromEnvironment");
-    Storage->DeleteValue(L"GSSAPIServerChoosesUserName");
-    Storage->DeleteValue(L"GSSAPITrustDNS");
+    Storage->DeleteValue("TryGSSKEX");
+    Storage->DeleteValue("UserNameFromEnvironment");
+    Storage->DeleteValue("GSSAPIServerChoosesUserName");
+    Storage->DeleteValue("GSSAPITrustDNS");
     if (PuttyExport)
     {
       // duplicate kerberos setting with keys of the vintela quest putty
@@ -873,7 +873,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       {
         // Have to delete it as TimeDifferenceAuto is not saved when enabled,
         // but the default is derived from value of TimeDifference.
-        Storage->DeleteValue(L"TimeDifference");
+        Storage->DeleteValue("TimeDifference");
       }
       else
       {
@@ -888,7 +888,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA(String, ReturnVar);
       WRITE_DATA_EX(Integer, "LookupUserGroups2", GetLookupUserGroups(), );
       WRITE_DATA(Integer, EOLType);
-      Storage->DeleteValue(L"SFTPUtfBug");
+      Storage->DeleteValue("SFTPUtfBug");
       WRITE_DATA_EX(Integer, "Utf", GetNotUtf(), );
       WRITE_DATA(Integer, SendBuf);
       WRITE_DATA(Bool, SshSimple);
@@ -930,8 +930,8 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 #undef WRITE_BUG
 #undef WRITE_DATA_CONV_FUNC
 
-    Storage->DeleteValue(L"BuggyMAC");
-    Storage->DeleteValue(L"AliasGroupList");
+    Storage->DeleteValue("BuggyMAC");
+    Storage->DeleteValue("AliasGroupList");
 
     if (PuttyExport)
     {
@@ -1129,39 +1129,39 @@ void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExpor
 {
   if (!GetConfiguration()->GetDisablePasswordStoring() && !PuttyExport && !FPassword.IsEmpty())
   {
-    Storage->WriteBinaryDataAsString(L"Password", StronglyRecryptPassword(FPassword, SessionGetUserName() + GetHostName()));
+    Storage->WriteBinaryDataAsString("Password", StronglyRecryptPassword(FPassword, SessionGetUserName() + GetHostName()));
   }
   else
   {
-    Storage->DeleteValue(L"Password");
+    Storage->DeleteValue("Password");
   }
-  Storage->DeleteValue(L"PasswordPlain");
+  Storage->DeleteValue("PasswordPlain");
 
   if (PuttyExport)
   {
     // save password unencrypted
-    Storage->WriteString(L"ProxyPassword", GetProxyPassword());
+    Storage->WriteString("ProxyPassword", GetProxyPassword());
   }
   else
   {
     // save password encrypted
     if (!FProxyPassword.IsEmpty())
     {
-      Storage->WriteBinaryDataAsString(L"ProxyPasswordEnc", StronglyRecryptPassword(FProxyPassword, GetProxyUsername() + GetProxyHost()));
+      Storage->WriteBinaryDataAsString("ProxyPasswordEnc", StronglyRecryptPassword(FProxyPassword, GetProxyUsername() + GetProxyHost()));
     }
     else
     {
-      Storage->DeleteValue(L"ProxyPasswordEnc");
+      Storage->DeleteValue("ProxyPasswordEnc");
     }
-    Storage->DeleteValue(L"ProxyPassword");
+    Storage->DeleteValue("ProxyPassword");
 
     if (!GetConfiguration()->GetDisablePasswordStoring() && !FTunnelPassword.IsEmpty())
     {
-      Storage->WriteBinaryDataAsString(L"TunnelPassword", StronglyRecryptPassword(FTunnelPassword, GetTunnelUserName() + GetTunnelHostName()));
+      Storage->WriteBinaryDataAsString("TunnelPassword", StronglyRecryptPassword(FTunnelPassword, GetTunnelUserName() + GetTunnelHostName()));
     }
     else
     {
-      Storage->DeleteValue(L"TunnelPassword");
+      Storage->DeleteValue("TunnelPassword");
     }
   }
 }
@@ -1603,57 +1603,57 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     // as the option should not make session "connectable"
 
     UnicodeString Value;
-    if (Options->FindSwitch(L"privatekey", Value))
+    if (Options->FindSwitch("privatekey", Value))
     {
       SetPublicKeyFile(Value);
     }
-    if (Options->FindSwitch(L"passphrase", Value))
+    if (Options->FindSwitch("passphrase", Value))
     {
       SetPassphrase(Value);
     }
-    if (Options->FindSwitch(L"timeout", Value))
+    if (Options->FindSwitch("timeout", Value))
     {
       SetTimeout(static_cast<intptr_t>(::StrToInt64(Value)));
     }
-    if (Options->FindSwitch(L"hostkey", Value) ||
-        Options->FindSwitch(L"certificate", Value))
+    if (Options->FindSwitch("hostkey", Value) ||
+        Options->FindSwitch("certificate", Value))
     {
       SetHostKey(Value);
       FOverrideCachedHostKey = true;
     }
-    SetFtpPasvMode(Options->SwitchValue(L"passive", GetFtpPasvMode()));
-    if (Options->FindSwitch(L"implicit"))
+    SetFtpPasvMode(Options->SwitchValue("passive", GetFtpPasvMode()));
+    if (Options->FindSwitch("implicit"))
     {
-      bool Enabled = Options->SwitchValue(L"implicit", true);
+      bool Enabled = Options->SwitchValue("implicit", true);
       SetFtps(Enabled ? ftpsImplicit : ftpsNone);
       if (!PortNumberDefined && Enabled)
       {
         SetPortNumber(FtpsImplicitPortNumber);
       }
     }
-    if (Options->FindSwitch(L"explicitssl", Value))
+    if (Options->FindSwitch("explicitssl", Value))
     {
-      bool Enabled = Options->SwitchValue(L"explicitssl", true);
+      bool Enabled = Options->SwitchValue("explicitssl", true);
       SetFtps(Enabled ? ftpsExplicitSsl : ftpsNone);
       if (!PortNumberDefined && Enabled)
       {
         SetPortNumber(FtpPortNumber);
       }
     }
-    if (Options->FindSwitch(L"explicittls", Value))
+    if (Options->FindSwitch("explicittls", Value))
     {
-      bool Enabled = Options->SwitchValue(L"explicittls", true);
+      bool Enabled = Options->SwitchValue("explicittls", true);
       SetFtps(Enabled ? ftpsExplicitTls : ftpsNone);
       if (!PortNumberDefined && Enabled)
       {
         SetPortNumber(FtpPortNumber);
       }
     }
-    if (Options->FindSwitch(L"rawsettings"))
+    if (Options->FindSwitch("rawsettings"))
     {
       std::unique_ptr<TStrings> RawSettings(new TStringList());
       std::unique_ptr<TRegistryStorage> OptionsStorage(nullptr);
-      if (Options->FindSwitch(L"rawsettings", RawSettings.get()))
+      if (Options->FindSwitch("rawsettings", RawSettings.get()))
       {
         OptionsStorage.reset(new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey()));
 
@@ -1661,11 +1661,11 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
         DoLoad(OptionsStorage.get(), Dummy);
       }
     }
-    if (Options->FindSwitch(L"allowemptypassword", Value))
+    if (Options->FindSwitch("allowemptypassword", Value))
     {
       SetFtpAllowEmptyPassword((::StrToIntDef(Value, 0) != 0));
     }
-    if (Options->FindSwitch(L"explicitssl", Value))
+    if (Options->FindSwitch("explicitssl", Value))
     {
       bool Enabled = (::StrToIntDef(Value, 1) != 0);
       SetFtps(Enabled ? ftpsExplicitSsl : ftpsNone);
@@ -1674,18 +1674,18 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
         SetPortNumber(FtpPortNumber);
       }
     }
-    if (Options->FindSwitch(L"username", Value))
+    if (Options->FindSwitch("username", Value))
     {
       if (!Value.IsEmpty())
       {
         SetUserName(Value);
       }
     }
-    if (Options->FindSwitch(L"password", Value))
+    if (Options->FindSwitch("password", Value))
     {
       SetPassword(Value);
     }
-    if (Options->FindSwitch(L"codepage", Value))
+    if (Options->FindSwitch("codepage", Value))
     {
       intptr_t CodePage = ::StrToIntDef(Value, 0);
       if (CodePage != 0)
@@ -1710,7 +1710,7 @@ void TSessionData::ConfigureTunnel(intptr_t APortNumber)
   FOrigPortNumber = GetPortNumber();
   FOrigProxyMethod = GetProxyMethod();
 
-  SetHostName(L"127.0.0.1");
+  SetHostName("127.0.0.1");
   SetPortNumber(APortNumber);
   // proxy settings is used for tunnel
   SetProxyMethod(::pmNone);
@@ -3995,7 +3995,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
           break;
 
         case L't':
-          // Replacement = FormatDateTime(L"hhnnss", N);
+          // Replacement = FormatDateTime("hhnnss", N);
           Replacement = FORMAT(L"%02d%02d%02d", H, NN, S);
           break;
 
