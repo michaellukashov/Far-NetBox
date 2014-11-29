@@ -486,7 +486,7 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
   tokenize(Value, Lines, Delimiter, true);
   for (size_t Index = 0; Index < Lines.size(); Index++)
   {
-    Add(Lines[Index].c_str());
+    Add(Lines[Index]);
   }
 }
 
