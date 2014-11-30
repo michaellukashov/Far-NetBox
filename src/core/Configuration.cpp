@@ -360,10 +360,10 @@ void TConfiguration::LoadData(THierarchicalStorage * Storage)
 
 void TConfiguration::LoadAdmin(THierarchicalStorage * Storage)
 {
-  FDisablePasswordStoring = Storage->ReadBool(L"DisablePasswordStoring", FDisablePasswordStoring);
-  FForceBanners = Storage->ReadBool(L"ForceBanners", FForceBanners);
-  FDisableAcceptingHostKeys = Storage->ReadBool(L"DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
-  FDefaultCollectUsage = Storage->ReadBool(L"DefaultCollectUsage", FDefaultCollectUsage);
+  FDisablePasswordStoring = Storage->ReadBool("DisablePasswordStoring", FDisablePasswordStoring);
+  FForceBanners = Storage->ReadBool("ForceBanners", FForceBanners);
+  FDisableAcceptingHostKeys = Storage->ReadBool("DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
+  FDefaultCollectUsage = Storage->ReadBool("DefaultCollectUsage", FDefaultCollectUsage);
 }
 
 void TConfiguration::LoadFrom(THierarchicalStorage * Storage)

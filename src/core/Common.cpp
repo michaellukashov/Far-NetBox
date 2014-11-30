@@ -1919,10 +1919,10 @@ bool AdjustClockForDSTEnabled()
   try
   {
     Registry->SetRootKey(HKEY_LOCAL_MACHINE);
-    if (Registry->OpenKey(L"SYSTEM", false) &&
-        Registry->OpenKey(L"CurrentControlSet", false) &&
-        Registry->OpenKey(L"Control", false) &&
-        Registry->OpenKey(L"TimeZoneInformation", false))
+    if (Registry->OpenKey("SYSTEM", false) &&
+        Registry->OpenKey("CurrentControlSet", false) &&
+        Registry->OpenKey("Control", false) &&
+        Registry->OpenKey("TimeZoneInformation", false))
     {
       if (Registry->ValueExists(L"DynamicDaylightTimeDisabled"))
       {
@@ -2438,12 +2438,12 @@ UnicodeString WindowsProductName()
   try
   {
     Registry->SetRootKey(HKEY_LOCAL_MACHINE);
-    if (Registry->OpenKey(L"SOFTWARE", false) &&
-        Registry->OpenKey(L"Microsoft", false) &&
-        Registry->OpenKey(L"Windows NT", false) &&
-        Registry->OpenKey(L"CurrentVersion", false))
+    if (Registry->OpenKey("SOFTWARE", false) &&
+        Registry->OpenKey("Microsoft", false) &&
+        Registry->OpenKey("Windows NT", false) &&
+        Registry->OpenKey("CurrentVersion", false))
     {
-      Result = Registry->ReadString(L"ProductName");
+      Result = Registry->ReadString("ProductName");
     }
   }
   catch (...)

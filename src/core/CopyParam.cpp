@@ -598,31 +598,31 @@ void TCopyParamType::SetTransferSkipList(TStrings * Value)
 
 void TCopyParamType::Load(THierarchicalStorage * Storage)
 {
-  SetAddXToDirectories(Storage->ReadBool(L"AddXToDirectories", GetAddXToDirectories()));
-  GetAsciiFileMask().SetMasks(Storage->ReadString(L"Masks", GetAsciiFileMask().GetMasks()));
-  SetFileNameCase(static_cast<TFileNameCase>(Storage->ReadInteger(L"FileNameCase", GetFileNameCase())));
-  SetPreserveReadOnly(Storage->ReadBool(L"PreserveReadOnly", GetPreserveReadOnly()));
-  SetPreserveTime(Storage->ReadBool(L"PreserveTime", GetPreserveTime()));
-  SetPreserveRights(Storage->ReadBool(L"PreserveRights", GetPreserveRights()));
-  SetIgnorePermErrors(Storage->ReadBool(L"IgnorePermErrors", GetIgnorePermErrors()));
-  FRights.SetText(Storage->ReadString(L"Text", GetRights().GetText()));
-  SetTransferMode(static_cast<TTransferMode>(Storage->ReadInteger(L"TransferMode", GetTransferMode())));
-  SetResumeSupport(static_cast<TResumeSupport>(Storage->ReadInteger(L"ResumeSupport", GetResumeSupport())));
-  SetResumeThreshold(Storage->ReadInt64(L"ResumeThreshold", GetResumeThreshold()));
-  SetInvalidCharsReplacement(static_cast<wchar_t>(Storage->ReadInteger(L"ReplaceInvalidChars",
+  SetAddXToDirectories(Storage->ReadBool("AddXToDirectories", GetAddXToDirectories()));
+  GetAsciiFileMask().SetMasks(Storage->ReadString("Masks", GetAsciiFileMask().GetMasks()));
+  SetFileNameCase(static_cast<TFileNameCase>(Storage->ReadInteger("FileNameCase", GetFileNameCase())));
+  SetPreserveReadOnly(Storage->ReadBool("PreserveReadOnly", GetPreserveReadOnly()));
+  SetPreserveTime(Storage->ReadBool("PreserveTime", GetPreserveTime()));
+  SetPreserveRights(Storage->ReadBool("PreserveRights", GetPreserveRights()));
+  SetIgnorePermErrors(Storage->ReadBool("IgnorePermErrors", GetIgnorePermErrors()));
+  FRights.SetText(Storage->ReadString("Text", GetRights().GetText()));
+  SetTransferMode(static_cast<TTransferMode>(Storage->ReadInteger("TransferMode", GetTransferMode())));
+  SetResumeSupport(static_cast<TResumeSupport>(Storage->ReadInteger("ResumeSupport", GetResumeSupport())));
+  SetResumeThreshold(Storage->ReadInt64("ResumeThreshold", GetResumeThreshold()));
+  SetInvalidCharsReplacement(static_cast<wchar_t>(Storage->ReadInteger("ReplaceInvalidChars",
     static_cast<int>(GetInvalidCharsReplacement()))));
-  SetLocalInvalidChars(Storage->ReadString(L"LocalInvalidChars", GetLocalInvalidChars()));
-  SetCalculateSize(Storage->ReadBool(L"CalculateSize", GetCalculateSize()));
-  if (Storage->ValueExists(L"IncludeFileMask"))
+  SetLocalInvalidChars(Storage->ReadString("LocalInvalidChars", GetLocalInvalidChars()));
+  SetCalculateSize(Storage->ReadBool("CalculateSize", GetCalculateSize()));
+  if (Storage->ValueExists("IncludeFileMask"))
   {
-    GetIncludeFileMask().SetMasks(Storage->ReadString(L"IncludeFileMask", GetIncludeFileMask().GetMasks()));
+    GetIncludeFileMask().SetMasks(Storage->ReadString("IncludeFileMask", GetIncludeFileMask().GetMasks()));
   }
-  else if (Storage->ValueExists(L"ExcludeFileMask"))
+  else if (Storage->ValueExists("ExcludeFileMask"))
   {
-    UnicodeString ExcludeFileMask = Storage->ReadString(L"ExcludeFileMask", UnicodeString());
+    UnicodeString ExcludeFileMask = Storage->ReadString("ExcludeFileMask", UnicodeString());
     if (!ExcludeFileMask.IsEmpty())
     {
-      bool NegativeExclude = Storage->ReadBool(L"NegativeExclude", false);
+      bool NegativeExclude = Storage->ReadBool("NegativeExclude", false);
       if (NegativeExclude)
       {
         GetIncludeFileMask().SetMasks(ExcludeFileMask);
@@ -636,11 +636,11 @@ void TCopyParamType::Load(THierarchicalStorage * Storage)
   }
   SetTransferSkipList(nullptr);
   SetTransferResumeFile(L"");
-  SetClearArchive(Storage->ReadBool(L"ClearArchive", GetClearArchive()));
-  SetRemoveCtrlZ(Storage->ReadBool(L"RemoveCtrlZ", GetRemoveCtrlZ()));
-  SetRemoveBOM(Storage->ReadBool(L"RemoveBOM", GetRemoveBOM()));
-  SetCPSLimit(Storage->ReadInteger(L"CPSLimit", GetCPSLimit()));
-  SetNewerOnly(Storage->ReadBool(L"NewerOnly", GetNewerOnly()));
+  SetClearArchive(Storage->ReadBool("ClearArchive", GetClearArchive()));
+  SetRemoveCtrlZ(Storage->ReadBool("RemoveCtrlZ", GetRemoveCtrlZ()));
+  SetRemoveBOM(Storage->ReadBool("RemoveBOM", GetRemoveBOM()));
+  SetCPSLimit(Storage->ReadInteger("CPSLimit", GetCPSLimit()));
+  SetNewerOnly(Storage->ReadBool("NewerOnly", GetNewerOnly()));
 }
 
 void TCopyParamType::Save(THierarchicalStorage * Storage) const

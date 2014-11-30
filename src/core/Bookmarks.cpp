@@ -312,7 +312,7 @@ void TBookmarkList::Assign(const TPersistent * Source)
 
 void TBookmarkList::LoadOptions(THierarchicalStorage * Storage)
 {
-  FOpenedNodes->SetCommaText(Storage->ReadString(L"OpenedNodes", L""));
+  FOpenedNodes->SetCommaText(Storage->ReadString("OpenedNodes", L""));
 }
 
 void TBookmarkList::SaveOptions(THierarchicalStorage * Storage)
