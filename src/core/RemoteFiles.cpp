@@ -2766,14 +2766,14 @@ TRemoteProperties & TRemoteProperties::operator=(const TRemoteProperties & other
 void TRemoteProperties::Load(THierarchicalStorage * Storage)
 {
   uint8_t Buf[sizeof(Valid)];
-  if (static_cast<size_t>(Storage->ReadBinaryData(L"Valid", &Buf, sizeof(Buf))) == sizeof(Buf))
+  if (static_cast<size_t>(Storage->ReadBinaryData("Valid", &Buf, sizeof(Buf))) == sizeof(Buf))
   {
     memmove(&Valid, Buf, sizeof(Valid));
   }
 
   if (Valid.Contains(vpRights))
   {
-    Rights.SetText(Storage->ReadString(L"Rights", Rights.GetText()));
+    Rights.SetText(Storage->ReadString("Rights", Rights.GetText()));
   }
 
   // TODO

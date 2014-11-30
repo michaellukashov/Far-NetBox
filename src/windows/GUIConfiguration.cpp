@@ -74,9 +74,9 @@ void TGUICopyParamType::Load(THierarchicalStorage * Storage)
 {
   TCopyParamType::Load(Storage);
 
-  SetQueue(Storage->ReadBool(L"Queue", GetQueue()));
-  SetQueueNoConfirmation(Storage->ReadBool(L"QueueNoConfirmation", GetQueueNoConfirmation()));
-  SetQueueIndividually(Storage->ReadBool(L"QueueIndividually", GetQueueIndividually()));
+  SetQueue(Storage->ReadBool("Queue", GetQueue()));
+  SetQueueNoConfirmation(Storage->ReadBool("QueueNoConfirmation", GetQueueNoConfirmation()));
+  SetQueueIndividually(Storage->ReadBool("QueueIndividually", GetQueueIndividually()));
 }
 
 void TGUICopyParamType::Save(THierarchicalStorage * Storage)
@@ -171,18 +171,18 @@ bool TCopyParamRule::Matches(const TCopyParamRuleData & Value) const
 
 void TCopyParamRule::Load(THierarchicalStorage * Storage)
 {
-  FData.HostName = Storage->ReadString(L"HostName", FData.HostName);
-  FData.UserName = Storage->ReadString(L"UserName", FData.UserName);
-  FData.RemoteDirectory = Storage->ReadString(L"RemoteDirectory", FData.RemoteDirectory);
-  FData.LocalDirectory = Storage->ReadString(L"LocalDirectory", FData.LocalDirectory);
+  FData.HostName = Storage->ReadString("HostName", FData.HostName);
+  FData.UserName = Storage->ReadString("UserName", FData.UserName);
+  FData.RemoteDirectory = Storage->ReadString("RemoteDirectory", FData.RemoteDirectory);
+  FData.LocalDirectory = Storage->ReadString("LocalDirectory", FData.LocalDirectory);
 }
 
 void TCopyParamRule::Save(THierarchicalStorage * Storage) const
 {
-  Storage->WriteString(L"HostName", FData.HostName);
-  Storage->WriteString(L"UserName", FData.UserName);
-  Storage->WriteString(L"RemoteDirectory", FData.RemoteDirectory);
-  Storage->WriteString(L"LocalDirectory", FData.LocalDirectory);
+  Storage->WriteString("HostName", FData.HostName);
+  Storage->WriteString("UserName", FData.UserName);
+  Storage->WriteString("RemoteDirectory", FData.RemoteDirectory);
+  Storage->WriteString("LocalDirectory", FData.LocalDirectory);
 }
 
 bool TCopyParamRule::GetEmpty() const
@@ -419,10 +419,10 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
       {
         Storage->CloseSubKey();
       };
-      Name = Storage->ReadString(L"Name", Name);
+      Name = Storage->ReadString("Name", Name);
       CopyParam->Load(Storage);
 
-      if (Storage->ReadBool(L"HasRule", false))
+      if (Storage->ReadBool("HasRule", false))
       {
         Rule.reset(new TCopyParamRule());
         Rule->Load(Storage);
@@ -727,7 +727,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
 
-    intptr_t CopyParamListCount = Storage->ReadInteger(L"CopyParamList", (DWORD)-1);
+    intptr_t CopyParamListCount = Storage->ReadInteger("CopyParamList", (DWORD)-1);
     FCopyParamListDefaults = (CopyParamListCount == (DWORD)-1);
     if (!FCopyParamListDefaults)
     {

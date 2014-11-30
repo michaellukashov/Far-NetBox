@@ -1,3 +1,8 @@
+NetBox 2.1.41.365 29.11.2014
+--------------------
+  * Bugfix: plugin prefixes do not work
+    (https://github.com/michaellukashov/Far-NetBox/issues/131)
+
 NetBox 2.1.40.363 23.11.2014
 --------------------
   * Bugfix: Issue #134: Plugin settings not stored
@@ -15,8 +20,6 @@ NetBox 2.1.40.363 23.11.2014
     (http://bugs.farmanager.com/view.php?id=2859)
   * Bugfix: plugin crash after autodisconnect
     (http://forum.farmanager.com/viewtopic.php?p=125042#p125042)
-  * Bugfix: plugin prefixes do not work
-    (https://github.com/michaellukashov/Far-NetBox/issues/131)
   * Bugfix: cannot save newly created file on remote server
     (http://forum.farmanager.com/viewtopic.php?p=124914#p124914)
     (http://bugs.farmanager.com/view.php?id=2852)

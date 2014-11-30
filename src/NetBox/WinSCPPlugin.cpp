@@ -348,7 +348,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         assert(false);
         Abort();
       }
-      UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw(L"Session", L""));
+      UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", L""));
       std::unique_ptr<TSessionData> Session(new TSessionData(SessionName));
       Session->Load(ImportStorage.get());
       Session->SetModified(true);
@@ -860,7 +860,7 @@ void TWinSCPPlugin::CleanupConfiguration()
     }
     else
     {
-      UnicodeString Version = Storage->ReadString(L"Version", L"");
+      UnicodeString Version = Storage->ReadString("Version", L"");
       if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2, 1, 19))
       {
         Storage->DeleteSubKey(L"CDCache");

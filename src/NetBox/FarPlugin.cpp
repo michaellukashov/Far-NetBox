@@ -2051,12 +2051,12 @@ void TCustomFarFileSystem::ResetCachedInfo()
   }
 }
 
-const TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another) const
+TFarPanelInfo * const * TCustomFarFileSystem::GetPanelInfo(int Another) const
 {
   return const_cast<TCustomFarFileSystem *>(this)->GetPanelInfo(Another);
 }
 
-TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another)
+TFarPanelInfo ** TCustomFarFileSystem::GetPanelInfo(int Another)
 {
   bool bAnother = Another != 0;
   if (FPanelInfo[bAnother] == nullptr)
@@ -2073,7 +2073,7 @@ TFarPanelInfo * TCustomFarFileSystem::GetPanelInfo(int Another)
     }
     FPanelInfo[bAnother] = new TFarPanelInfo(Info, !bAnother ? this : nullptr);
   }
-  return FPanelInfo[bAnother];
+  return &FPanelInfo[bAnother];
 }
 
 intptr_t TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2)
@@ -2123,7 +2123,7 @@ bool TCustomFarFileSystem::IsActiveFileSystem()
 
 bool TCustomFarFileSystem::IsLeft()
 {
-  return (GetPanelInfo(0)->GetBounds().Left <= 0);
+  return ((*GetPanelInfo(0))->GetBounds().Left <= 0);
 }
 
 bool TCustomFarFileSystem::IsRight()
@@ -2581,7 +2581,9 @@ TObjectList * TFarPanelInfo::GetItems()
   }
   if (FOwner)
   {
-    assert(FItems->GetCount() == 0);
+    // assert(FItems->GetCount() == 0);
+    if (!FItems->GetCount())
+      FItems->Clear();
     for (size_t Index = 0; Index < FPanelInfo->ItemsNumber; ++Index)
     {
       // TODO: move to common function
