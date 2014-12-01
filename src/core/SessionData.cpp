@@ -1455,6 +1455,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       if (StoredSessions != nullptr)
       {
         CopyData(StoredSessions->GetDefaultSettings());
+        SetLoginType(ltAnonymous);
       }
       SetName(L"");
 
