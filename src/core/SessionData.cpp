@@ -1455,6 +1455,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       if (StoredSessions != nullptr)
       {
         CopyData(StoredSessions->GetDefaultSettings());
+        SetUserName(ANONYMOUS_USER_NAME);
         SetLoginType(ltAnonymous);
       }
       SetName(L"");
@@ -1529,7 +1530,8 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       }
 
       UnicodeString RawUserName = CutToChar(UserInfo, L':', false);
-      SetUserName(DecodeUrlChars(RawUserName));
+      if (!RawUserName.IsEmpty())
+        SetUserName(DecodeUrlChars(RawUserName));
 
       SetPassword(DecodeUrlChars(UserInfo));
 
