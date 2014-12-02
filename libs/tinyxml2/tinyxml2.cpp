@@ -24,7 +24,7 @@ distribution.
 #include "tinyxml2.h"
 
 #include <new>		// yes, this one new style header, is in the Android SDK.
-#   ifdef ANDROID_NDK
+#if defined(ANDROID_NDK) || defined(__QNXNTO__)
 #   include <stddef.h>
 #else
 #   include <cstddef>
@@ -69,6 +69,29 @@ StrPair::~StrPair()
     Reset();
 }
 
+
+void StrPair::TransferTo( StrPair* other )
+{
+    if ( this == other ) {
+        return;
+    }
+    // This in effect implements the assignment operator by "moving"
+    // ownership (as in auto_ptr).
+
+    TIXMLASSERT( other->_flags == 0 );
+    TIXMLASSERT( other->_start == 0 );
+    TIXMLASSERT( other->_end == 0 );
+
+    other->Reset();
+
+    other->_flags = _flags;
+    other->_start = _start;
+    other->_end = _end;
+
+    _flags = 0;
+    _start = 0;
+    _end = 0;
+}
 
 void StrPair::Reset()
 {
@@ -824,7 +847,7 @@ char* XMLNode::ParseDeep( char* p, StrPair* parentEnd )
         // We read the end tag. Return it to the parent.
         if ( ele && ele->ClosingType() == XMLElement::CLOSING ) {
             if ( parentEnd ) {
-                *parentEnd = ele->_value;
+                ele->_value.TransferTo( parentEnd );
             }
 			node->_memPool->SetTracked();	// created and then immediately deleted.
             DeleteNode( node );
@@ -1631,6 +1654,9 @@ void XMLDocument::Clear()
 {
     DeleteChildren();
 
+#ifdef DEBUG
+    const bool hadError = Error();
+#endif
     _errorID = XML_NO_ERROR;
     _errorStr1 = 0;
     _errorStr2 = 0;
@@ -1646,7 +1672,7 @@ void XMLDocument::Clear()
 #endif
 
 #ifdef DEBUG
-	if ( Error() == false ) {
+    if ( !hadError ) {
 		TIXMLASSERT( _elementPool.CurrentAllocs()   == _elementPool.Untracked() );
 		TIXMLASSERT( _attributePool.CurrentAllocs() == _attributePool.Untracked() );
 		TIXMLASSERT( _textPool.CurrentAllocs()      == _textPool.Untracked() );
