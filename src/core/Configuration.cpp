@@ -24,6 +24,7 @@ TConfiguration::TConfiguration() :
   FPermanentLogging(false),
   FLogWindowLines(0),
   FLogFileAppend(false),
+  FLogSensitive(false),
   FLogProtocol(0),
   FActualLogProtocol(0),
   FLogActions(false),
