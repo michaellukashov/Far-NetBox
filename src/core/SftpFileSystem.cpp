@@ -1851,6 +1851,7 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
   FExtensions(nullptr),
   FSupport(nullptr),
   FUtfStrings(asAuto),
+  FUtfDisablingAnnounced(false),
   FSignedTS(false),
   FFixedPaths(nullptr),
   FMaxPacketSize(0),
