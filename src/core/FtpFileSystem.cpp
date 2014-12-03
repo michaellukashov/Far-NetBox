@@ -224,7 +224,11 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) :
   FOnCaptureOutput(nullptr),
   FListAll(asOn),
   FDoListAll(false),
-  FServerCapabilities(new TFTPServerCapabilities())
+  FServerCapabilities(new TFTPServerCapabilities()),
+  FDetectTimeDifference(false),
+  FTimeDifference(0),
+  FSupportsSiteCopy(false),
+  FSupportsSiteSymlink(false)
 {
 }
 
