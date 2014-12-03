@@ -2236,7 +2236,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
             UnicodeString RemotePath = core::UnixIncludeTrailingBackslash(FTerminal->GetCurrDirectory());
             UnicodeString FullPrevPath = core::UnixIncludeTrailingBackslash(PrevPath);
             UnicodeString ALocalPath;
-            if (RemotePath.SubString(1, FullPrevPath.Length()) == FullPrevPath)
+            if (RemotePath.SubString(1, FullPrevPath.Length()) == FullPrevPath && AnotherPanel)
             {
               ALocalPath = ::IncludeTrailingBackslash((*AnotherPanel)->GetCurrDirectory()) +
                 core::FromUnixPath(RemotePath.SubString(FullPrevPath.Length() + 1,
