@@ -2235,25 +2235,25 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
           {
             UnicodeString RemotePath = core::UnixIncludeTrailingBackslash(FTerminal->GetCurrDirectory());
             UnicodeString FullPrevPath = core::UnixIncludeTrailingBackslash(PrevPath);
-            UnicodeString ALocalPath;
+            UnicodeString LocalPath;
             if (RemotePath.SubString(1, FullPrevPath.Length()) == FullPrevPath && AnotherPanel)
             {
-              ALocalPath = ::IncludeTrailingBackslash((*AnotherPanel)->GetCurrDirectory()) +
+              LocalPath = ::IncludeTrailingBackslash((*AnotherPanel)->GetCurrDirectory()) +
                 core::FromUnixPath(RemotePath.SubString(FullPrevPath.Length() + 1,
                   RemotePath.Length() - FullPrevPath.Length()));
             }
             else if (FullPrevPath.SubString(1, RemotePath.Length()) == RemotePath && AnotherPanel)
             {
               UnicodeString NewLocalPath;
-              ALocalPath = ::ExcludeTrailingBackslash((*AnotherPanel)->GetCurrDirectory());
+              LocalPath = ::ExcludeTrailingBackslash((*AnotherPanel)->GetCurrDirectory());
               while (!core::UnixSamePath(FullPrevPath, RemotePath))
               {
-                NewLocalPath = ::ExcludeTrailingBackslash(::ExtractFileDir(ALocalPath));
-                if (NewLocalPath == ALocalPath)
+                NewLocalPath = ::ExcludeTrailingBackslash(::ExtractFileDir(LocalPath));
+                if (NewLocalPath == LocalPath)
                 {
                   Abort();
                 }
-                ALocalPath = NewLocalPath;
+                LocalPath = NewLocalPath;
                 FullPrevPath = core::UnixExtractFilePath(core::UnixExcludeTrailingBackslash(FullPrevPath));
               }
             }
@@ -2262,18 +2262,18 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
               Abort();
             }
 
-            if (!SynchronizeBrowsing(ALocalPath))
+            if (!SynchronizeBrowsing(LocalPath))
             {
-              if (MoreMessageDialog(FORMAT(GetMsg(SYNC_DIR_BROWSE_CREATE).c_str(), ALocalPath.c_str()),
+              if (MoreMessageDialog(FORMAT(GetMsg(SYNC_DIR_BROWSE_CREATE).c_str(), LocalPath.c_str()),
                     nullptr, qtInformation, qaYes | qaNo) == qaYes)
               {
-                if (!::ForceDirectories(ApiPath(ALocalPath)))
+                if (!::ForceDirectories(ApiPath(LocalPath)))
                 {
                   ::RaiseLastOSError();
                 }
                 else
                 {
-                  if (!SynchronizeBrowsing(ALocalPath))
+                  if (!SynchronizeBrowsing(LocalPath))
                   {
                     Abort();
                   }
