@@ -377,7 +377,7 @@ public:
   virtual void SetOnClick(TFarButtonClickEvent Value) { FOnClick = Value; }
 
 protected:
-  virtual void SetDataInternal(const UnicodeString & Value);
+  virtual void SetDataInternal(const UnicodeString & AValue);
   virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
   virtual bool HotKey(char HotKey);
 
