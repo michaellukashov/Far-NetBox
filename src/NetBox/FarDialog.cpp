@@ -717,7 +717,7 @@ intptr_t TFarDialog::ShowModal()
     assert(GetDefaultButton());
     assert(GetDefaultButton()->GetDefault());
 
-    UnicodeString AHelpTopic = GetHelpTopic();
+    UnicodeString HelpTopic = GetHelpTopic();
     intptr_t BResult = 0;
 
     {
@@ -727,7 +727,7 @@ intptr_t TFarDialog::ShowModal()
       Handle = Info.DialogInit(
         Info.ModuleNumber,
         Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
-        AHelpTopic.c_str(), FDialogItems,
+        HelpTopic.c_str(), FDialogItems,
         static_cast<uint32_t>(GetItemCount()),
         0, GetFlags(),
         DialogProcGeneral, reinterpret_cast<LONG_PTR>(this));
