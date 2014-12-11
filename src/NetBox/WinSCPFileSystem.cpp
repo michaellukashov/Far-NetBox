@@ -123,16 +123,16 @@ UnicodeString TRemoteFilePanelItem::GetCustomColumnData(size_t Column)
   }
 }
 
-void TRemoteFilePanelItem::TranslateColumnTypes(UnicodeString & ColumnTypes,
+void TRemoteFilePanelItem::TranslateColumnTypes(UnicodeString & AColumnTypes,
   TStrings * ColumnTitles)
 {
-  UnicodeString AColumnTypes = ColumnTypes;
-  ColumnTypes.Clear();
+  UnicodeString ColumnTypes = AColumnTypes;
+  AColumnTypes.Clear();
   UnicodeString Column;
   UnicodeString Title;
-  while (!AColumnTypes.IsEmpty())
+  while (!ColumnTypes.IsEmpty())
   {
-    Column = CutToChar(AColumnTypes, ',', false);
+    Column = CutToChar(ColumnTypes, ',', false);
     if (Column == L"G")
     {
       Column = L"C0";
@@ -157,7 +157,7 @@ void TRemoteFilePanelItem::TranslateColumnTypes(UnicodeString & ColumnTypes,
     {
       Title.Clear();
     }
-    ColumnTypes += (ColumnTypes.IsEmpty() ? L"" : L",") + Column;
+    AColumnTypes += (AColumnTypes.IsEmpty() ? L"" : L",") + Column;
     if (ColumnTitles)
     {
       ColumnTitles->Add(Title);
@@ -203,7 +203,7 @@ public:
     TCustomCommand * ChildCustomCommand);
 
 protected:
-  virtual void Prompt(const UnicodeString & Prompt,
+  virtual void Prompt(const UnicodeString & APrompt,
     UnicodeString & Value);
 
 private:
@@ -217,15 +217,16 @@ TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
   FPlugin = Plugin;
 }
 
-void TFarInteractiveCustomCommand::Prompt(const UnicodeString & Prompt, UnicodeString & Value)
+void TFarInteractiveCustomCommand::Prompt(const UnicodeString & APrompt,
+  UnicodeString & Value)
 {
-  UnicodeString APrompt = Prompt;
-  if (APrompt.IsEmpty())
+  UnicodeString Prompt = APrompt;
+  if (Prompt.IsEmpty())
   {
-    APrompt = FPlugin->GetMsg(APPLY_COMMAND_PARAM_PROMPT);
+    Prompt = FPlugin->GetMsg(APPLY_COMMAND_PARAM_PROMPT);
   }
   if (!FPlugin->InputBox(FPlugin->GetMsg(APPLY_COMMAND_PARAM_TITLE),
-        APrompt, Value, 0, APPLY_COMMAND_PARAM_HISTORY))
+        Prompt, Value, 0, APPLY_COMMAND_PARAM_HISTORY))
   {
     Abort();
   }
@@ -3259,7 +3260,7 @@ void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
 
 void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
   TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions,
-  TStrings * Prompts, TStrings * Results, bool & Result,
+  TStrings * Prompts, TStrings * Results, bool & AResult,
   void * /*Arg*/)
 {
   if (Kind == pkPrompt)
@@ -3267,17 +3268,17 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
     assert(Instructions.IsEmpty());
     assert(Prompts->GetCount() == 1);
     assert((Prompts->GetObj(0)) != nullptr);
-    UnicodeString AResult = Results->GetString(0);
+    UnicodeString Result = Results->GetString(0);
 
-    Result = GetWinSCPPlugin()->InputBox(Name, ::StripHotkey(Prompts->GetString(0)), AResult, FIB_NOUSELASTHISTORY);
-    if (Result)
+    AResult = GetWinSCPPlugin()->InputBox(Name, ::StripHotkey(Prompts->GetString(0)), Result, FIB_NOUSELASTHISTORY);
+    if (AResult)
     {
-      Results->SetString(0, AResult);
+      Results->SetString(0, Result);
     }
   }
   else
   {
-    Result = PasswordDialog(Terminal->GetSessionData(), Kind, Name, Instructions,
+    AResult = PasswordDialog(Terminal->GetSessionData(), Kind, Name, Instructions,
       Prompts, Results, GetTerminal()->GetStoredCredentialsTried());
   }
 }

@@ -261,7 +261,7 @@ private:
     const TQueryParams * AParams, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal,
     TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions,
-    TStrings * Prompts, TStrings * Results, bool & Result,
+    TStrings * Prompts, TStrings * Results, bool & AResult,
     void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
     const UnicodeString & SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
@@ -412,7 +412,7 @@ protected:
     DWORD & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
   virtual UnicodeString GetCustomColumnData(size_t Column);
-  static void TranslateColumnTypes(UnicodeString & ColumnTypes,
+  static void TranslateColumnTypes(UnicodeString & AColumnTypes,
     TStrings * ColumnTitles);
 };
 
