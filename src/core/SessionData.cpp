@@ -1423,7 +1423,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       }
     }
 
-    UnicodeString ARemoteDirectory;
+    UnicodeString RemoteDirectory;
 
     if (Data != nullptr)
     {
@@ -1434,7 +1434,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
         P++;
         assert(P <= url.Length());
       }
-      ARemoteDirectory = url.SubString(P + 1, url.Length() - P);
+      RemoteDirectory = url.SubString(P + 1, url.Length() - P);
 
       if (Data->GetHidden())
       {
@@ -1538,7 +1538,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       //ARemoteDirectory = url.SubString(PSlash, Url.Length() - PSlash + 1);
 
       UnicodeString RemoteDirectoryWithSessionParams = url.SubString(PSlash, url.Length() - PSlash + 1);
-      ARemoteDirectory = CutToChar(RemoteDirectoryWithSessionParams, UrlParamSeparator, false);
+      RemoteDirectory = CutToChar(RemoteDirectoryWithSessionParams, UrlParamSeparator, false);
       UnicodeString SessionParams = RemoteDirectoryWithSessionParams;
 
       while (!SessionParams.IsEmpty())
@@ -1562,24 +1562,24 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
         {
           (*MaskedUrl) += L"@";
         }
-        (*MaskedUrl) += OrigHostInfo + ARemoteDirectory;
+        (*MaskedUrl) += OrigHostInfo + RemoteDirectory;
       }
 
       if (PSlash <= url.Length())
       {
-        ARemoteDirectory = url.SubString(PSlash, url.Length() - PSlash + 1);
+        RemoteDirectory = url.SubString(PSlash, url.Length() - PSlash + 1);
       }
     }
 
-    if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != ROOTDIRECTORY))
+    if (!RemoteDirectory.IsEmpty() && (RemoteDirectory != ROOTDIRECTORY))
     {
-      if ((ARemoteDirectory[ARemoteDirectory.Length()] != L'/') &&
+      if ((RemoteDirectory[RemoteDirectory.Length()] != L'/') &&
           (AFileName != nullptr))
       {
-        *AFileName = DecodeUrlChars(core::UnixExtractFileName(ARemoteDirectory));
-        ARemoteDirectory = core::UnixExtractFilePath(ARemoteDirectory);
+        *AFileName = DecodeUrlChars(core::UnixExtractFileName(RemoteDirectory));
+        RemoteDirectory = core::UnixExtractFilePath(RemoteDirectory);
       }
-      SetRemoteDirectory(DecodeUrlChars(ARemoteDirectory));
+      SetRemoteDirectory(DecodeUrlChars(RemoteDirectory));
     }
 
     DefaultsOnly = false;
