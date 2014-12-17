@@ -4534,7 +4534,7 @@ bool TTerminal::CalculateLocalFilesSize(const TStrings * AFileList,
     Params.CopyParam = CopyParam;
 
     assert(!FOperationProgress);
-    FOperationProgress = &OperationProgress;
+    FOperationProgress = &OperationProgress; //-V506
     for (intptr_t Index = 0; Result && (Index < AFileList->GetCount()); ++Index)
     {
       UnicodeString FileName = AFileList->GetString(Index);
@@ -5606,7 +5606,7 @@ bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
     OperationProgress.Start(((Params & cpDelete) != 0 ? foMove : foCopy), osRemote,
       AFilesToCopy->GetCount(), (Params & cpTemporary) != 0, TargetDir, CopyParam->GetCPSLimit());
 
-    FOperationProgress = &OperationProgress;
+    FOperationProgress = &OperationProgress; //-V506
     //bool CollectingUsage = false;
     {
       SCOPE_EXIT

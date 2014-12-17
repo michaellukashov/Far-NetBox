@@ -151,7 +151,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       filename_free(filename); \
     }
 #define CONF_SET_DEFAULT(VALTYPE, KEYTYPE, KEYWORD) CONF_DEF_ ## VALTYPE ## _ ## KEYTYPE(CONF_ ## KEYWORD);
-  CONFIG_OPTIONS(CONF_SET_DEFAULT);
+  CONFIG_OPTIONS(CONF_SET_DEFAULT);  //-V501
 #undef CONF_SET_DEFAULT
 #undef CONF_DEF_FILENAME_NONE
 #undef CONF_DEF_FONT_NONE
@@ -1052,7 +1052,7 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
         {
           PendUsed = OutLen;
         }
-        memmove(OutPtr, Pending, PendUsed);
+        memmove(OutPtr, Pending, PendUsed);  //-V575
         memmove(Pending, Pending + PendUsed, PendLen - PendUsed);
         OutPtr += PendUsed;
         OutLen -= PendUsed;

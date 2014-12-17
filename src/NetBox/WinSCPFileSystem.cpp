@@ -2420,7 +2420,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
     };
     UnicodeString Query;
     bool Recycle = GetSessionData()->GetDeleteToRecycleBin() &&
-      !FTerminal->IsRecycledFile(FFileList->GetString(0));
+      !FTerminal->IsRecycledFile(FFileList->GetString(0));  //-V522
     if (PanelItems->GetCount() > 1)
     {
       Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILES_CONFIRM : DELETE_FILES_CONFIRM).c_str(),
@@ -2718,8 +2718,8 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int 
     // When comparing, beware that one path may be long path and the other short
     // (since 1.70 alpha 6, DestPath in GetFiles is short path,
     // while current path in PutFiles is long path)
-    if (FLAGCLEAR(OpMode, OPM_SILENT) && (FFileList->GetCount() == 1) &&
-        (CompareFileName(FFileList->GetString(0), FOriginalEditFile) ||
+    if (FLAGCLEAR(OpMode, OPM_SILENT) && (FFileList->GetCount() == 1) && //-V522
+        (CompareFileName(FFileList->GetString(0), FOriginalEditFile) || //-V522
          CompareFileName(FFileList->GetString(0), FLastEditFile)))
     {
       // editor should be closed already
@@ -3723,7 +3723,7 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
     FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
     SAFE_DESTROY(FFileList);
   };
-  FFileList->AddObject(AFileName, File.get());
+  FFileList->AddObject(AFileName, File.get()); //-V522
   UploadFiles(false, 0, true, DestPath);
 }
 
