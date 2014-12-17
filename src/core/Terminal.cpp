@@ -3091,18 +3091,17 @@ bool TTerminal::ProcessFiles(const TStrings * AFileList,
         };
         intptr_t Index = 0;
         UnicodeString FileName;
-        bool Success;
         while ((Index < AFileList->GetCount()) && (Progress.Cancel == csContinue))
         {
           FileName = AFileList->GetString(Index);
           try
           {
+            bool Success = false;
             {
               SCOPE_EXIT
               {
                 Progress.Finish(FileName, Success, OnceDoneOperation);
               };
-              Success = false;
               if (!Ex)
               {
                 TRemoteFile * RemoteFile = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index));
