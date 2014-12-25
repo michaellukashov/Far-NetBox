@@ -4,6 +4,7 @@
 #include <CoreDefs.hpp>
 #include <Masks.hpp>
 #include <Exceptions.h>
+//#include "SessionData.h"
 
 class EFileMasksException : public Exception
 {
@@ -203,20 +204,25 @@ class TTerminal;
 class TSessionData;
 struct TCustomCommandData : public TObject
 {
+//NB_DISABLE_COPY(TCustomCommandData)
+public:
   TCustomCommandData();
+  TCustomCommandData(const TCustomCommandData & Data);
   explicit TCustomCommandData(TTerminal * Terminal);
   explicit TCustomCommandData(
     TSessionData * SessionData, const UnicodeString & AUserName,
     const UnicodeString & APassword);
 
-  UnicodeString HostName;
-  UnicodeString UserName;
-  UnicodeString Password;
+  // __property TSessionData * SessionData = { read = GetSesssionData };
+  TSessionData * GetSessionData() const;
+
+  TCustomCommandData & operator=(const TCustomCommandData & Data);
 
 private:
+  std::unique_ptr<TSessionData> FSessionData;
   void Init(
     TSessionData * SessionData, const UnicodeString & AUserName,
-    const UnicodeString & Password);
+    const UnicodeString & APassword, const UnicodeString & AHostKey);
 };
 
 class TFileCustomCommand : public TCustomCommand
