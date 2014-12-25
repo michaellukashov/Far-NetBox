@@ -672,7 +672,7 @@ XMLNode* XMLNode::InsertEndChild( XMLNode* addThis )
     TIXMLASSERT( addThis );
     if ( addThis->_document != _document ) {
         TIXMLASSERT( false );
-		return 0;
+        return 0;
     }
 
 	if (addThis->_parent)
@@ -706,7 +706,7 @@ XMLNode* XMLNode::InsertFirstChild( XMLNode* addThis )
     TIXMLASSERT( addThis );
     if ( addThis->_document != _document ) {
         TIXMLASSERT( false );
-		return 0;
+        return 0;
     }
 
 	if (addThis->_parent)
@@ -741,7 +741,7 @@ XMLNode* XMLNode::InsertAfterChild( XMLNode* afterThis, XMLNode* addThis )
     TIXMLASSERT( addThis );
     if ( addThis->_document != _document ) {
         TIXMLASSERT( false );
-		return 0;
+        return 0;
     }
 
     TIXMLASSERT( afterThis );
@@ -855,7 +855,6 @@ char* XMLNode::ParseDeep( char* p, StrPair* parentEnd )
         p = node->ParseDeep( p, &endTag );
         if ( !p ) {
             DeleteNode( node );
-            node = 0;
             if ( !_document->Error() ) {
                 _document->SetError( XML_ERROR_PARSING, 0, 0 );
             }
@@ -890,16 +889,11 @@ char* XMLNode::ParseDeep( char* p, StrPair* parentEnd )
             }
             if ( mismatch ) {
                 _document->SetError( XML_ERROR_MISMATCHED_ELEMENT, node->Value(), 0 );
-                p = 0;
+                DeleteNode( node );
+                break;
             }
         }
-        if ( p == 0 ) {
-            DeleteNode( node );
-            node = 0;
-        }
-        if ( node ) {
-            this->InsertEndChild( node );
-        }
+        InsertEndChild( node );
     }
     return 0;
 }
@@ -1692,11 +1686,11 @@ void XMLDocument::Clear()
 
 #ifdef DEBUG
     if ( !hadError ) {
-		TIXMLASSERT( _elementPool.CurrentAllocs()   == _elementPool.Untracked() );
-		TIXMLASSERT( _attributePool.CurrentAllocs() == _attributePool.Untracked() );
-		TIXMLASSERT( _textPool.CurrentAllocs()      == _textPool.Untracked() );
-		TIXMLASSERT( _commentPool.CurrentAllocs()   == _commentPool.Untracked() );
-	}
+        TIXMLASSERT( _elementPool.CurrentAllocs()   == _elementPool.Untracked() );
+        TIXMLASSERT( _attributePool.CurrentAllocs() == _attributePool.Untracked() );
+        TIXMLASSERT( _textPool.CurrentAllocs()      == _textPool.Untracked() );
+        TIXMLASSERT( _commentPool.CurrentAllocs()   == _commentPool.Untracked() );
+    }
 #endif
 }
 
@@ -1867,7 +1861,6 @@ XMLError XMLDocument::SaveFile( FILE* fp, bool compact )
 
 XMLError XMLDocument::Parse( const char* p, size_t len )
 {
-	const char* start = p;
     Clear();
 
     if ( len == 0 || !p || !*p ) {
@@ -1881,6 +1874,7 @@ XMLError XMLDocument::Parse( const char* p, size_t len )
     memcpy( _charBuffer, p, len );
     _charBuffer[len] = 0;
 
+    const char* start = p;
     p = XMLUtil::SkipWhiteSpace( p );
     p = XMLUtil::ReadBOM( p, &_writeBOM );
     if ( !p || !*p ) {
@@ -1924,7 +1918,7 @@ void XMLDocument::SetError( XMLError error, const char* str1, const char* str2 )
 
 const char* XMLDocument::ErrorName() const
 {
-	TIXMLASSERT(_errorID >= 0 && _errorID < XML_ERROR_COUNT );
+	TIXMLASSERT( _errorID >= 0 && _errorID < XML_ERROR_COUNT );
 	return _errorNames[_errorID];
 }
 
@@ -1962,16 +1956,13 @@ XMLPrinter::XMLPrinter( FILE* file, bool compact, int depth ) :
         _restrictedEntityFlag[i] = false;
     }
     for( int i=0; i<NUM_ENTITIES; ++i ) {
-        TIXMLASSERT( entities[i].value < ENTITY_RANGE );
-        if ( entities[i].value < ENTITY_RANGE ) {
-            _entityFlag[ (int)entities[i].value ] = true;
-        }
+        const char entityValue = entities[i].value;
+        TIXMLASSERT( 0 <= entityValue && entityValue < ENTITY_RANGE );
+        _entityFlag[ (unsigned char)entityValue ] = true;
     }
-    // Clang doesn't like indexing arrays with 'char'
-    // so cast to int. (Looks strange.)
-    _restrictedEntityFlag[(int)'&'] = true;
-    _restrictedEntityFlag[(int)'<'] = true;
-    _restrictedEntityFlag[(int)'>'] = true;	// not required, but consistency is nice
+    _restrictedEntityFlag[(unsigned char)'&'] = true;
+    _restrictedEntityFlag[(unsigned char)'<'] = true;
+    _restrictedEntityFlag[(unsigned char)'>'] = true;	// not required, but consistency is nice
     _buffer.Push( 0 );
 }
 
@@ -2039,7 +2030,7 @@ void XMLPrinter::PrintString( const char* p, bool restricted )
                 // Check for entities. If one is found, flush
                 // the stream up until the entity, write the
                 // entity, and keep looking.
-                if ( flag[(unsigned)(*q)] ) {
+                if ( flag[(unsigned char)(*q)] ) {
                     while ( p < q ) {
                         Print( "%c", *p );
                         ++p;
@@ -2078,9 +2069,7 @@ void XMLPrinter::PushHeader( bool writeBOM, bool writeDec )
 
 void XMLPrinter::OpenElement( const char* name, bool compactMode )
 {
-    if ( _elementJustOpened ) {
-        SealElement();
-    }
+    SealElementIfJustOpened();
     _stack.Push( name );
 
     if ( _textDepth < 0 && !_firstElement && !compactMode ) {
@@ -2164,8 +2153,11 @@ void XMLPrinter::CloseElement( bool compactMode )
 }
 
 
-void XMLPrinter::SealElement()
+void XMLPrinter::SealElementIfJustOpened()
 {
+    if ( !_elementJustOpened ) {
+        return;
+    }
     _elementJustOpened = false;
     Print( ">" );
 }
@@ -2175,9 +2167,7 @@ void XMLPrinter::PushText( const char* text, bool cdata )
 {
     _textDepth = _depth-1;
 
-    if ( _elementJustOpened ) {
-        SealElement();
-    }
+    SealElementIfJustOpened();
     if ( cdata ) {
         Print( "<![CDATA[" );
         Print( "%s", text );
@@ -2230,9 +2220,7 @@ void XMLPrinter::PushText( double value )
 
 void XMLPrinter::PushComment( const char* comment )
 {
-    if ( _elementJustOpened ) {
-        SealElement();
-    }
+    SealElementIfJustOpened();
     if ( _textDepth < 0 && !_firstElement && !_compactMode) {
         Print( "\n" );
         PrintSpace( _depth );
@@ -2244,9 +2232,7 @@ void XMLPrinter::PushComment( const char* comment )
 
 void XMLPrinter::PushDeclaration( const char* value )
 {
-    if ( _elementJustOpened ) {
-        SealElement();
-    }
+    SealElementIfJustOpened();
     if ( _textDepth < 0 && !_firstElement && !_compactMode) {
         Print( "\n" );
         PrintSpace( _depth );
@@ -2258,9 +2244,7 @@ void XMLPrinter::PushDeclaration( const char* value )
 
 void XMLPrinter::PushUnknown( const char* value )
 {
-    if ( _elementJustOpened ) {
-        SealElement();
-    }
+    SealElementIfJustOpened();
     if ( _textDepth < 0 && !_firstElement && !_compactMode) {
         Print( "\n" );
         PrintSpace( _depth );

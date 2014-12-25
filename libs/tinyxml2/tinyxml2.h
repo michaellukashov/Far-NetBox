@@ -265,7 +265,7 @@ public:
         return _mem[i];
     }
 
-    const T& PeekTop() const                            {
+    const T& PeekTop() const            {
         TIXMLASSERT( _size > 0 );
         return _mem[ _size - 1];
     }
@@ -288,7 +288,9 @@ public:
 
 private:
     void EnsureCapacity( int cap ) {
+        TIXMLASSERT( cap > 0 );
         if ( cap > _allocated ) {
+            TIXMLASSERT( cap <= INT_MAX / 2 );
             int newAllocated = cap * 2;
             T* newMem = new T[newAllocated];
             memcpy( newMem, _mem, sizeof(T)*_size );	// warning: not using constructors, only works for PODs
@@ -560,10 +562,10 @@ public:
     }
 
     inline static bool StringEqual( const char* p, const char* q, int nChar=INT_MAX )  {
-        int n = 0;
         if ( p == q ) {
             return true;
         }
+        int n = 0;
         while( *p && *q && *p == *q && n<nChar ) {
             ++p;
             ++q;
@@ -2066,7 +2068,7 @@ protected:
     virtual void PrintSpace( int depth );
     void Print( const char* format, ... );
 
-    void SealElement();
+    void SealElementIfJustOpened();
     bool _elementJustOpened;
     DynArray< const char*, 10 > _stack;
 
@@ -2078,7 +2080,7 @@ private:
     int _depth;
     int _textDepth;
     bool _processEntities;
-    bool _compactMode;
+	bool _compactMode;
 
     enum {
         ENTITY_RANGE = 64,
