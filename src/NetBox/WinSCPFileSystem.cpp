@@ -2186,13 +2186,16 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
     {
       assert(!FNoProgress);
       bool Normal = FLAGCLEAR(OpMode, OPM_FIND | OPM_SILENT);
-      UnicodeString PrevPath = FTerminal->GetCurrDirectory();
+      UnicodeString PrevPath = FTerminal ? FTerminal->GetCurrDirectory() : L"";
       FNoProgress = !Normal;
       if (!FNoProgress)
       {
         GetWinSCPPlugin()->ShowConsoleTitle(GetMsg(CHANGING_DIRECTORY_TITLE));
       }
-      FTerminal->SetExceptionOnFail(true);
+      if (FTerminal)
+      {
+        FTerminal->SetExceptionOnFail(true);
+      }
       {
         SCOPE_EXIT
         {
