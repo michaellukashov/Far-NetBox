@@ -793,5 +793,19 @@ struct TSpaceAvailable : public TObject
   uintptr_t BytesPerAllocationUnit;
 };
 
+class TRobustOperationLoop : public TObject
+{
+public:
+  TRobustOperationLoop(TTerminal * Terminal, TFileOperationProgressType * OperationProgress);
+  bool TryReopen(Exception & E);
+  bool ShouldRetry() const;
+  bool Retry();
+
+private:
+  TTerminal * FTerminal;
+  TFileOperationProgressType * FOperationProgress;
+  bool FRetry;
+};
+
 UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName = false);
 
