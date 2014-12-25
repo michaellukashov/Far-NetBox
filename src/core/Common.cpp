@@ -123,17 +123,17 @@ UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 UnicodeString RootKeyToStr(HKEY RootKey)
 {
   if (RootKey == HKEY_USERS)
-    return "HKEY_USERS";
+    return "HKU";
   else if (RootKey == HKEY_LOCAL_MACHINE)
-    return "HKEY_LOCAL_MACHINE";
+    return "HKLM";
   else if (RootKey == HKEY_CURRENT_USER)
-    return "HKEY_CURRENT_USER";
+    return "HKCU";
   else if (RootKey == HKEY_CLASSES_ROOT)
-    return "HKEY_CLASSES_ROOT";
+    return "HKCR";
   else if (RootKey == HKEY_CURRENT_CONFIG)
-    return "HKEY_CURRENT_CONFIG";
+    return "HKCC";
   else if (RootKey == HKEY_DYN_DATA)
-    return "HKEY_DYN_DATA";
+    return "HKDD";
   else
   {
     Abort();
@@ -2519,6 +2519,44 @@ TFormatSettings GetEngFormatSettings()
 //  TFormatSettings FormatSettings = GetEngFormatSettings();
 //  return IndexStr(MonthStr, FormatSettings.ShortMonthNames, FormatSettings.ShortMonthNames.size()) + 1;
 //}
+
+TStringList * CreateSortedStringList(bool CaseSensitive, TDuplicatesEnum Duplicates)
+{
+  TStringList * Result = new TStringList();
+  Result->SetCaseSensitive(CaseSensitive);
+  Result->SetDuplicates(Duplicates);
+  return Result;
+}
+
+static UnicodeString NormalizeIdent(UnicodeString Ident)
+{
+  int Index = 1;
+  while (Index <= Ident.Length())
+  {
+    if (Ident[Index] == L'-')
+    {
+      Ident.Delete(Index, 1);
+    }
+    else
+    {
+      Index++;
+    }
+  }
+  return Ident;
+}
+
+UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents)
+{
+  UnicodeString NormalizedIdent(NormalizeIdent(Ident));
+  for (int Index = 0; Index < Idents->GetCount(); Index++)
+  {
+    if (SameText(NormalizedIdent, NormalizeIdent(Idents->GetString(Index))))
+    {
+      return Idents->GetString(Index);
+    }
+  }
+  return Ident;
+}
 
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
 {
