@@ -15,6 +15,16 @@
 #include "WinSCPSecurity.h"
 #include <shlobj.h>
 
+// See http://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
+const UnicodeString Sha1ChecksumAlg(L"sha-1");
+const UnicodeString Sha224ChecksumAlg(L"sha-224");
+const UnicodeString Sha256ChecksumAlg(L"sha-256");
+const UnicodeString Sha384ChecksumAlg(L"sha-384");
+const UnicodeString Sha512ChecksumAlg(L"sha-512");
+const UnicodeString Md5ChecksumAlg(L"md5");
+// Not defined by IANA
+const UnicodeString Crc32ChecksumAlg(L"crc32");
+
 TConfiguration::TConfiguration() :
   FDontSave(false),
   FChanged(false),
