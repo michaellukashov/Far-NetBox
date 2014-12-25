@@ -107,6 +107,8 @@ enum TLogAction
   laCall,
   laLs,
   laStat,
+  laChecksum,
+  laCwd,
 };
 
 enum TCaptureOutputType
@@ -220,7 +222,7 @@ public:
     const UnicodeString & Destination);
 
   void AddOutput(const UnicodeString & Output, bool StdError);
-  void AddExitCode(int ExitCode);
+  void ExitCode(int ExitCode);
 };
 
 class TLsSessionAction : public TSessionAction
@@ -237,6 +239,20 @@ public:
   explicit TStatSessionAction(TActionLog * Log, const UnicodeString & AFileName);
 
   void File(TRemoteFile * AFile);
+};
+
+class TChecksumSessionAction : public TFileSessionAction
+{
+public:
+  TChecksumSessionAction(TActionLog * Log);
+
+  void Checksum(const UnicodeString & Alg, const UnicodeString & Checksum);
+};
+//---------------------------------------------------------------------------
+class TCwdSessionAction : public TSessionAction
+{
+public:
+  TCwdSessionAction(TActionLog * Log, const UnicodeString & Path);
 };
 
 DEFINE_CALLBACK_TYPE2(TDoAddLogEvent, void,
