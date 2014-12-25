@@ -863,6 +863,11 @@ void TRemoteFile::LoadTypeInfo() const
   FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName); */
 }
 
+int64_t TRemoteFile::GetSize() const
+{
+  return GetIsDirectory() ? 0 : FSize;
+}
+
 intptr_t TRemoteFile::GetIconIndex() const
 {
   if (FIconIndex == -1)
@@ -1429,8 +1434,9 @@ UnicodeString TRemoteFile::GetListingStr() const
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
   return FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
-    GetType(), GetRights()->GetText().c_str(), ::Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(),
-    GetFileGroup().GetName().c_str(), ::Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(), GetFileName().c_str(),
+    GetType(), GetRights()->GetText().c_str(), ::Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(), GetFileGroup().GetName().c_str(),
+    ::Int64ToStr(GetSize()).c_str(),  // explicitly using size even for directories
+    GetModificationStr().c_str(), GetFileName().c_str(),
     LinkPart.c_str());
 }
 
@@ -1616,7 +1622,7 @@ int64_t TRemoteFileList::GetTotalSize()
   int64_t Result = 0;
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (!GetFile(Index)->GetIsDirectory())
+    // if (!GetFile(Index)->GetIsDirectory())
     {
       Result += GetFile(Index)->GetSize();
     }
