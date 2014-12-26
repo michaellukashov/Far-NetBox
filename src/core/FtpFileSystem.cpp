@@ -3348,7 +3348,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
 void TFTPFileSystem::SendCommand(const UnicodeString & Command)
 {
   FFileZillaIntf->CustomCommand(Command.c_str());
-  int From = 1;
+  intptr_t From = 1;
   FLastCommandSent = CopyToChars(Command, From, L" ", false);
 }
 
