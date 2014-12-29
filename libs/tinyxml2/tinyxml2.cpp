@@ -140,18 +140,18 @@ char* StrPair::ParseName( char* p )
     if ( !p || !(*p) ) {
         return 0;
     }
+    if ( !XMLUtil::IsNameStartChar( *p ) ) {
+        return 0;
+    }
 
     char* const start = p;
-
-    while( *p && ( p == start ? XMLUtil::IsNameStartChar( *p ) : XMLUtil::IsNameChar( *p ) )) {
+    ++p;
+    while ( *p && XMLUtil::IsNameChar( *p ) ) {
         ++p;
     }
 
-    if ( p > start ) {
-        Set( start, p, 0 );
-        return p;
-    }
-    return 0;
+    Set( start, p, 0 );
+    return p;
 }
 
 
@@ -162,7 +162,7 @@ void StrPair::CollapseWhitespace()
     // Trim leading space.
     _start = XMLUtil::SkipWhiteSpace( _start );
 
-    if ( _start && *_start ) {
+    if ( *_start ) {
         char* p = _start;	// the read pointer
         char* q = _start;	// the write pointer
 
@@ -277,6 +277,8 @@ const char* StrPair::GetStr()
 
 const char* XMLUtil::ReadBOM( const char* p, bool* bom )
 {
+    TIXMLASSERT( p );
+    TIXMLASSERT( bom );
     *bom = false;
     const unsigned char* pu = reinterpret_cast<const unsigned char*>(p);
     // Check for BOM:
@@ -286,6 +288,7 @@ const char* XMLUtil::ReadBOM( const char* p, bool* bom )
         *bom = true;
         p += 3;
     }
+    TIXMLASSERT( p );
     return p;
 }
 
@@ -505,7 +508,7 @@ char* XMLDocument::Identify( char* p, XMLNode** node )
 {
     char* const start = p;
     p = XMLUtil::SkipWhiteSpace( p );
-    if( !p || !*p ) {
+    if( !*p ) {
         return p;
     }
 
@@ -523,15 +526,8 @@ char* XMLDocument::Identify( char* p, XMLNode** node )
     static const int cdataHeaderLen		= 9;
     static const int elementHeaderLen	= 1;
 
-#if defined(_MSC_VER)
-#pragma warning ( push )
-#pragma warning ( disable : 4127 )
-#endif
     TIXMLASSERT( sizeof( XMLComment ) == sizeof( XMLUnknown ) );		// use same memory pool
     TIXMLASSERT( sizeof( XMLComment ) == sizeof( XMLDeclaration ) );	// use same memory pool
-#if defined(_MSC_VER)
-#pragma warning (pop)
-#endif
     XMLNode* returnNode = 0;
     if ( XMLUtil::StringEqual( p, xmlHeader, xmlHeaderLen ) ) {
         TIXMLASSERT( sizeof( XMLDeclaration ) == _commentPool.ItemSize() );
@@ -641,6 +637,7 @@ void XMLNode::DeleteChildren()
 
 void XMLNode::Unlink( XMLNode* child )
 {
+    TIXMLASSERT( child );
     TIXMLASSERT( child->_document == _document );
     if ( child == _firstChild ) {
         _firstChild = _firstChild->_next;
@@ -661,6 +658,7 @@ void XMLNode::Unlink( XMLNode* child )
 
 void XMLNode::DeleteChild( XMLNode* node )
 {
+    TIXMLASSERT( node );
     TIXMLASSERT( node->_document == _document );
     TIXMLASSERT( node->_parent == this );
     DeleteNode( node );
@@ -1132,7 +1130,7 @@ char* XMLAttribute::ParseDeep( char* p, bool processEntities )
 
     // Skip white space before =
     p = XMLUtil::SkipWhiteSpace( p );
-    if ( !p || *p != '=' ) {
+    if ( *p != '=' ) {
         return 0;
     }
 
@@ -1468,7 +1466,7 @@ char* XMLElement::ParseAttributes( char* p )
     // Read the attributes.
     while( p ) {
         p = XMLUtil::SkipWhiteSpace( p );
-        if ( !p || !(*p) ) {
+        if ( !(*p) ) {
             _document->SetError( XML_ERROR_PARSING_ELEMENT, start, Name() );
             return 0;
         }
@@ -1535,9 +1533,6 @@ char* XMLElement::ParseDeep( char* p, StrPair* strPair )
 {
     // Read the element name.
     p = XMLUtil::SkipWhiteSpace( p );
-    if ( !p ) {
-        return 0;
-    }
 
     // The closing element is the </element> form. It is
     // parsed just like a regular element then deleted from
@@ -1828,7 +1823,7 @@ XMLError XMLDocument::LoadFile( FILE* fp )
     const char* p = _charBuffer;
     p = XMLUtil::SkipWhiteSpace( p );
     p = XMLUtil::ReadBOM( p, &_writeBOM );
-    if ( !p || !*p ) {
+    if ( !*p ) {
         SetError( XML_ERROR_EMPTY_DOCUMENT, 0, 0 );
         return _errorID;
     }
@@ -1877,7 +1872,7 @@ XMLError XMLDocument::Parse( const char* p, size_t len )
     const char* start = p;
     p = XMLUtil::SkipWhiteSpace( p );
     p = XMLUtil::ReadBOM( p, &_writeBOM );
-    if ( !p || !*p ) {
+    if ( !*p ) {
         SetError( XML_ERROR_EMPTY_DOCUMENT, 0, 0 );
         return _errorID;
     }
