@@ -21,7 +21,8 @@ TQueryButtonAlias::TQueryButtonAlias() :
   Button(0),
   OnClick(nullptr),
   GroupWith(-1),
-  Default(false)
+  Default(false),
+  GrouppedShiftState(ssShift)
 {
 }
 
