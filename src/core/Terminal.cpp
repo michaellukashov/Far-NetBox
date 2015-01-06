@@ -5527,7 +5527,7 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
         CopyParam->GetCalculateSize(),
         Size);
 
-    OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osLocal,
+    OperationProgress.Start((Params & cpDelete) ? foMove : foCopy, osLocal,
       AFilesToCopy->GetCount(), (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = &OperationProgress; //-V506
