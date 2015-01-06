@@ -258,7 +258,7 @@ public:
   explicit TSFTPPacket(const RawByteString & Source, uintptr_t codePage)
   {
     Init(codePage);
-    FLength = (uintptr_t)Source.Length();
+    FLength = static_cast<uintptr_t>(Source.Length());
     SetCapacity(FLength);
     memmove(GetData(), Source.c_str(), Source.Length());
   }
@@ -322,8 +322,8 @@ public:
 
   void AddInt64(int64_t Value)
   {
-    AddCardinal((uint32_t)(Value >> 32));
-    AddCardinal((uint32_t)(Value & 0xFFFFFFFF));
+    AddCardinal(static_cast<uint32_t>(Value >> 32));
+    AddCardinal(static_cast<uint32_t>(Value & 0xFFFFFFFF));
   }
 
   void AddData(const void * Data, int32_t ALength)
@@ -334,7 +334,7 @@ public:
 
   void AddStringW(const UnicodeString & ValueW)
   {
-    AddString(::W2MB(ValueW.c_str(), (UINT)FCodePage).c_str());
+    AddString(::W2MB(ValueW.c_str(), static_cast<UINT>(FCodePage)).c_str());
   }
 
   void AddString(const RawByteString & Value)
@@ -493,19 +493,19 @@ public:
     {
       if (Properties->Valid.Contains(vpGroup))
       {
-        Valid = (TValid)(Valid | valGroup);
+        Valid = static_cast<TValid>(Valid | valGroup);
         Group = Properties->Group;
       }
 
       if (Properties->Valid.Contains(vpOwner))
       {
-        Valid = (TValid)(Valid | valOwner);
+        Valid = static_cast<TValid>(Valid | valOwner);
         Owner = Properties->Owner;
       }
 
       if (Properties->Valid.Contains(vpRights))
       {
-        Valid = (TValid)(Valid | valRights);
+        Valid = static_cast<TValid>(Valid | valRights);
         TRights Rights = TRights(BaseRights);
         Rights |= Properties->Rights.GetNumberSet();
         Rights &= static_cast<uint16_t >(~Properties->Rights.GetNumberUnset());
@@ -523,13 +523,13 @@ public:
 
       if (Properties->Valid.Contains(vpLastAccess))
       {
-        Valid = (TValid)(Valid | valATime);
+        Valid = static_cast<TValid>(Valid | valATime);
         ATime = Properties->LastAccess;
       }
 
       if (Properties->Valid.Contains(vpModification))
       {
-        Valid = (TValid)(Valid | valMTime);
+        Valid = static_cast<TValid>(Valid | valMTime);
         MTime = Properties->Modification;
       }
     }
@@ -602,7 +602,7 @@ public:
     // cannot happen anyway as Need() would raise exception
     assert(Len < SFTP_MAX_PACKET_LEN);
     Result.SetLength(Len);
-    memmove((void *)Result.c_str(), FData + FPosition, Len);
+    memmove(reinterpret_cast<void *>(const_cast<char *>(Result.c_str())), FData + FPosition, Len);
     DataConsumed(Len);
     return Result;
   }
@@ -640,7 +640,7 @@ public:
 
   inline UnicodeString GetStringW() const
   {
-    return ::MB2W(GetRawByteString().c_str(), (UINT)FCodePage);
+    return ::MB2W(GetRawByteString().c_str(), static_cast<UINT>(FCodePage));
   }
 
   inline UnicodeString GetString(TAutoSwitch Utf) const
@@ -689,7 +689,7 @@ public:
       // SSH-2.0-cryptlib returns file type 0 in response to SSH_FXP_LSTAT,
       // handle this undefined value as "unknown"
       static wchar_t * Types = L"U-DLSUOCBF";
-      if (FXType > (uint8_t)wcslen(Types))
+      if (FXType > static_cast<uint8_t>(wcslen(Types)))
       {
         throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, static_cast<int>(FXType)));
       }
@@ -2553,7 +2553,7 @@ uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
         TSFTPPacket * ReservedPacket;
         for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
         {
-          uint32_t MessageNumber = (uint32_t)FPacketNumbers[Index];
+          uint32_t MessageNumber = static_cast<uint32_t>(FPacketNumbers[Index]);
           if (MessageNumber == Packet->GetMessageNumber())
           {
             ReservedPacket = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Index));
@@ -2621,7 +2621,7 @@ void TSFTPFileSystem::ReserveResponse(const TSFTPPacket * Packet,
     Response->SetReservedBy(this);
   }
   FPacketReservations->Add(Response);
-  if ((size_t)FPacketReservations->GetCount() >= FPacketNumbers.size())
+  if (static_cast<size_t>(FPacketReservations->GetCount()) >= FPacketNumbers.size())
   {
     FPacketNumbers.resize(FPacketReservations->GetCount() + 10);
   }
@@ -2885,7 +2885,7 @@ void TSFTPFileSystem::DoStartup()
   {
     MaxVersion = SFTPMaxVersion;
   }
-  Packet.AddCardinal((uint32_t)MaxVersion);
+  Packet.AddCardinal(static_cast<uint32_t>(MaxVersion));
 
   try
   {
@@ -3225,7 +3225,7 @@ void TSFTPFileSystem::LookupUsersGroups()
   {
     TSFTPPacket * Packet = Packets[Index];
     Packet->AddString(RawByteString(SFTP_EXT_OWNER_GROUP));
-    Packet->AddByte((uint8_t)ListTypes[Index]);
+    Packet->AddByte(static_cast<uint8_t>(ListTypes[Index]));
     SendPacket(Packet);
     ReserveResponse(Packet, Packet);
   }
@@ -5794,7 +5794,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           TSFTPPacket DataPacket(FCodePage);
 
           uintptr_t BlSize = DownloadBlockSize(OperationProgress);
-          intptr_t QueueLen = intptr_t(AFile->GetSize() / (BlSize != 0 ? BlSize : 1)) + 1;
+          intptr_t QueueLen = static_cast<intptr_t>(AFile->GetSize() / (BlSize != 0 ? BlSize : 1)) + 1;
           if ((QueueLen > GetSessionData()->GetSFTPDownloadQueue()) ||
               (QueueLen < 0))
           {

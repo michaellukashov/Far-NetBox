@@ -1047,7 +1047,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
   int Index = 0;
   while ((Index < FileList->GetCount()) && !OperationProgress->Cancel)
   {
-    TRemoteFile * File = (TRemoteFile *)FileList->GetObj(Index);
+    TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObj(Index));
     assert(File != NULL);
 
     if (File->GetIsDirectory())
@@ -1390,7 +1390,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
   [&]()
   {
     FFileZillaIntf->FileTransfer(LocalFile.c_str(), RemoteFile.c_str(),
-      RemotePath.c_str(), Get, Size, (int)Type, &UserData);
+      RemotePath.c_str(), Get, Size, static_cast<int>(Type), &UserData);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
     uintptr_t Reply = WaitForCommandReply();
@@ -2426,7 +2426,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
         }
         else
         {
-          LogMessage = FORMAT(L"Timezone difference of %s detected using file %s", FormatTimeZone((long)FTimeDifference).c_str(), File->GetFullFileName().c_str());
+          LogMessage = FORMAT(L"Timezone difference of %s detected using file %s", FormatTimeZone(static_cast<intptr_t>(FTimeDifference)).c_str(), File->GetFullFileName().c_str());
         }
         FTerminal->LogEvent(LogMessage);
 
@@ -4247,11 +4247,11 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
   if (Source.HasDate)
   {
     DateTime =
-      EncodeDateVerbose((Word)Source.Year, (Word)Source.Month, (Word)Source.Day);
+      EncodeDateVerbose(Source.Year, Source.Month, Source.Day);
     if (Source.HasTime)
     {
       DateTime = DateTime +
-        EncodeTimeVerbose((Word)Source.Hour, (Word)Source.Minute, (Word)Source.Second, 0);
+        EncodeTimeVerbose(Source.Hour, Source.Minute, Source.Second, 0);
       // not exact as we got year as well, but it is most probably
       // guessed by FZAPI anyway
       ModificationFmt = Source.HasSeconds ? mfFull : mfMDHM;

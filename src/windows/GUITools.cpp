@@ -274,7 +274,7 @@ UnicodeString GetPersonalFolder()
     if (Len > 0)
     {
       WineHostHome.SetLength(Len - 1);
-      ::GetEnvironmentVariable(L"WINE_HOST_HOME", (LPWSTR)WineHostHome.c_str(), Len);
+      ::GetEnvironmentVariable(L"WINE_HOST_HOME", const_cast<LPWSTR>(WineHostHome.c_str()), Len);
     }
     if (!WineHostHome.IsEmpty())
     {
@@ -292,7 +292,7 @@ UnicodeString GetPersonalFolder()
       if (Len > 0)
       {
         UserName.SetLength(Len - 1);
-        ::GetEnvironmentVariable(L"USERNAME", (LPWSTR)UserName.c_str(), Len);
+        ::GetEnvironmentVariable(L"USERNAME", const_cast<LPWSTR>(UserName.c_str()), Len);
       }
       if (!UserName.IsEmpty())
       {

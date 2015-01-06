@@ -585,7 +585,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetPostLoginCommands(Storage->ReadString("PostLoginCommands", GetPostLoginCommands()));
 
   SetReturnVar(Storage->ReadString("ReturnVar", GetReturnVar()));
-  SetLookupUserGroups(TAutoSwitch(Storage->ReadInteger("LookupUserGroups", GetLookupUserGroups())));
+  SetLookupUserGroups(static_cast<TAutoSwitch>(Storage->ReadInteger("LookupUserGroups", GetLookupUserGroups())));
   SetEOLType(static_cast<TEOLType>(Storage->ReadInteger("EOLType", GetEOLType())));
   SetNotUtf(static_cast<TAutoSwitch>(Storage->ReadInteger("Utf", Storage->ReadInteger("SFTPUtfBug", GetNotUtf()))));
 
@@ -707,8 +707,8 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
 
   // Ftp prefix
   SetFtpPasvMode(Storage->ReadBool("FtpPasvMode", GetFtpPasvMode()));
-  SetFtpForcePasvIp(TAutoSwitch(Storage->ReadInteger("FtpForcePasvIp2", GetFtpForcePasvIp())));
-  SetFtpUseMlsd(TAutoSwitch(Storage->ReadInteger("FtpUseMlsd", GetFtpUseMlsd())));
+  SetFtpForcePasvIp(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpForcePasvIp2", GetFtpForcePasvIp())));
+  SetFtpUseMlsd(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpUseMlsd", GetFtpUseMlsd())));
   SetFtpAccount(Storage->ReadString("FtpAccount", GetFtpAccount()));
   SetFtpPingInterval(Storage->ReadInteger("FtpPingInterval", GetFtpPingInterval()));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger("FtpPingType", GetFtpPingType())));
@@ -717,7 +717,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetFtpListAll(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpListAll", GetFtpListAll())));
   SetFtpDupFF(Storage->ReadBool("FtpDupFF", GetFtpDupFF()));
   SetFtpUndupFF(Storage->ReadBool("FtpUndupFF", GetFtpUndupFF()));
-  SetFtpHost(TAutoSwitch(Storage->ReadInteger("FtpHost", GetFtpHost())));
+  SetFtpHost(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpHost", GetFtpHost())));
   SetSslSessionReuse(Storage->ReadBool("SslSessionReuse", GetSslSessionReuse()));
 
   SetFtpProxyLogonType(Storage->ReadInteger("FtpProxyLogonType", GetFtpProxyLogonType()));

@@ -6,7 +6,7 @@
 
 #include "Exceptions.h"
 
-inline void ThrowExtException() { throw ExtException((Exception *)nullptr, UnicodeString(L"")); }
+inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
 //#define EXCEPTION throw ExtException(nullptr, L"")
 #define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }

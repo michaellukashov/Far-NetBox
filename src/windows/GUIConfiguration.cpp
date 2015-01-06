@@ -725,8 +725,8 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
 
-    intptr_t CopyParamListCount = Storage->ReadInteger("CopyParamList", (DWORD)-1);
-    FCopyParamListDefaults = (CopyParamListCount == (DWORD)-1);
+    intptr_t CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
+    FCopyParamListDefaults = (CopyParamListCount == -1);
     if (!FCopyParamListDefaults)
     {
       FCopyParamList->Clear();
@@ -913,7 +913,7 @@ TStrings * TGUIConfiguration::GetLocales()
   TSearchRecChecked SearchRec;
   bool Found;
 
-  Found = (bool)(FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
+  Found = (FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
     FindAttrs, SearchRec) == 0);
   {
     SCOPE_EXIT

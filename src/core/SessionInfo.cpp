@@ -1168,7 +1168,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       UnicodeString TimeInfo;
       if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
       {
-        AddToList(TimeInfo, FORMAT(L"DST mode: %d", int(Data->GetDSTMode())), L";");
+        AddToList(TimeInfo, FORMAT(L"DST mode: %d", static_cast<int>(Data->GetDSTMode())), L";");
       }
       if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
       {
@@ -1343,8 +1343,8 @@ void TActionLog::Add(const UnicodeString & Line)
       if (FFile != nullptr)
       {
         UTF8String UtfLine = UTF8String(Line);
-        fwrite(UtfLine.c_str(), 1, UtfLine.Length(), (FILE *)FFile);
-        fwrite("\n", 1, 1, (FILE *)FFile);
+        fwrite(UtfLine.c_str(), 1, UtfLine.Length(), static_cast<FILE *>(FFile));
+        fwrite("\n", 1, 1, static_cast<FILE *>(FFile));
       }
     }
     catch (Exception & E)
@@ -1430,7 +1430,7 @@ void TActionLog::CloseLogFile()
 {
   if (FFile != nullptr)
   {
-    fclose((FILE *)FFile);
+    fclose(static_cast<FILE *>(FFile));
     FFile = nullptr;
   }
   FCurrentLogFileName.Clear();

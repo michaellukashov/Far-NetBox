@@ -677,7 +677,7 @@ UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str)
   intptr_t Size = 1024;
 
   Buf.SetLength(Size);
-  intptr_t Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), (DWORD)Size);
+  intptr_t Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), static_cast<DWORD>(Size));
 
   if (Len > Size)
   {

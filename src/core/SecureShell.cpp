@@ -163,7 +163,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   // user-configurable settings
   conf_set_str(conf, CONF_host, AnsiString(Data->GetHostNameExpanded()).c_str());
   conf_set_str(conf, CONF_username, AnsiString(Data->GetUserNameExpanded()).c_str());
-  conf_set_int(conf, CONF_port, (int)Data->GetPortNumber());
+  conf_set_int(conf, CONF_port, static_cast<int>(Data->GetPortNumber()));
   conf_set_int(conf, CONF_protocol, PROT_SSH);
   // always set 0, as we will handle keepalives ourselves to avoid
   // multi-threaded issues in putty timer list
@@ -173,7 +173,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_int(conf, CONF_agentfwd, Data->GetAgentFwd());
   conf_set_int(conf, CONF_addressfamily, Data->GetAddressFamily());
   conf_set_str(conf, CONF_ssh_rekey_data, AnsiString(Data->GetRekeyData()).c_str());
-  conf_set_int(conf, CONF_ssh_rekey_time, (int)Data->GetRekeyTime());
+  conf_set_int(conf, CONF_ssh_rekey_time, static_cast<int>(Data->GetRekeyTime()));
 
   for (int c = 0; c < CIPHER_COUNT; c++)
   {
@@ -397,7 +397,7 @@ void TSecureShell::Open()
         conf_free(conf);
       };
       InitError = FBackend->init(this, &FBackendHandle, conf,
-        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), (int)FSessionData->GetPortNumber(), &RealHost,
+        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), static_cast<int>(FSessionData->GetPortNumber()), &RealHost,
         (FSessionData->GetTcpNoDelay() ? 1 : 0),
         conf_get_int(conf, CONF_tcp_keepalives));
     }
@@ -502,7 +502,7 @@ bool TSecureShell::TryFtp()
           Address.sin_family = AF_INET;
           intptr_t Port = FtpPortNumber;
           Address.sin_port = htons(static_cast<short>(Port));
-          Address.sin_addr.s_addr = *((uint32_t *)*HostEntry->h_addr_list);
+          Address.sin_addr.s_addr = *(reinterpret_cast<uint32_t *>(*HostEntry->h_addr_list));
 
           HANDLE Event = ::CreateEvent(nullptr, false, false, nullptr);
           Result = (::WSAEventSelect(Socket, (WSAEVENT)Event, FD_CONNECT | FD_CLOSE) != SOCKET_ERROR);
@@ -545,7 +545,7 @@ UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uintptr_t 
   else
   {
 //    Result = UnicodeString(AnsiString(Input.c_str()));
-    Result = ::MB2W(Input.c_str(), (UINT)CodePage);
+    Result = ::MB2W(Input.c_str(), static_cast<UINT>(CodePage));
   }
   return Result;
 }
@@ -827,7 +827,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().IsEmpty() &&
         !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
-        FLAGCLEAR((intptr_t)Prompts->GetObj(0), pupEcho))
+        FLAGCLEAR(reinterpret_cast<intptr_t>(Prompts->GetObj(0)), pupEcho))
     {
       LogEvent("Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
@@ -871,7 +871,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     if (Result)
     {
       if ((Prompts->GetCount() >= 1) &&
-          (FLAGSET((intptr_t)Prompts->GetObj(0), pupEcho) || GetConfiguration()->GetLogSensitive()))
+          (FLAGSET(reinterpret_cast<intptr_t>(Prompts->GetObj(0)), pupEcho) || GetConfiguration()->GetLogSensitive()))
       {
         LogEvent(FORMAT(L"Response: \"%s\"", Results->GetString(0).c_str()));
       }
@@ -1285,7 +1285,7 @@ void TSecureShell::SendLine(const UnicodeString & Line)
   }
   else
   {
-    Buf = RawByteString(AnsiString(::W2MB(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber())));
+    Buf = RawByteString(AnsiString(::W2MB(Line.c_str(), static_cast<UINT>(FSessionData->GetCodePageAsNumber()))));
   }
   Buf += "\n";
 
@@ -1878,7 +1878,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       };
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
       Handles[HandleCount] = FSocketEvent;
-      DWORD Timeout = (DWORD)MSec;
+      DWORD Timeout = static_cast<DWORD>(MSec);
       if (toplevel_callback_pending())
       {
         Timeout = 0;
@@ -2172,8 +2172,9 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
              static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
         Port,
         ::W2MB(KeyType.c_str(),
-             static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-        const_cast<char *>(AnsiStoredKeys.c_str()), (int)AnsiStoredKeys.Length()) == 0)
+            static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
+            const_cast<char *>(AnsiStoredKeys.c_str()),
+            static_cast<int>(AnsiStoredKeys.Length())) == 0)
   {
     StoredKeys = AnsiStoredKeys.c_str();
     UnicodeString Buf = StoredKeys;

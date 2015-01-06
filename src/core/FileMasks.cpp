@@ -1201,11 +1201,11 @@ void TFileCustomCommand::ValidatePattern(const UnicodeString & Command,
 
   if (PatternCmd == L'&')
   {
-    Found[0] = (int)Index;
+    Found[0] = static_cast<int>(Index);
   }
   else if ((PatternCmd != TEXT_TOKEN) && (PatternLen(Command, Index) == 1))
   {
-    Found[1] = (int)Index;
+    Found[1] = static_cast<int>(Index);
   }
 }
 

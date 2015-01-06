@@ -19,7 +19,7 @@ void Abort()
 void Error(int ErrorID, intptr_t data)
 {
   UnicodeString Msg = FMTLOAD(ErrorID, data);
-  throw ExtException((Exception *)nullptr, Msg);
+  throw ExtException(static_cast<Exception *>(nullptr), Msg);
 }
 
 bool TObject::IsKindOf(TObjectClassId ClassId) const
@@ -1207,7 +1207,7 @@ int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
   TDateTime Result;
   Result = floor(MilliSecondSpan(ANow, AThen));
-  return (int64_t)Result;
+  return Result;
 }
 
 int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
@@ -1836,7 +1836,7 @@ DWORD TRegistry::GetDataSize(const UnicodeString & ValueName) const
   }
   else
   {
-    Result = (DWORD)-1;
+    Result = static_cast<DWORD>(-1);
   }
   return Result;
 }

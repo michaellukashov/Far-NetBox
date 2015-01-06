@@ -1930,7 +1930,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
               {
                 uintptr_t BlockSize = OperationProgress->TransferBlockSize();
                 FSecureShell->Send(
-                  reinterpret_cast<uint8_t *>(AsciiBuf.GetData() + (intptr_t)OperationProgress->TransferedSize),
+                  reinterpret_cast<uint8_t *>(AsciiBuf.GetData() + static_cast<intptr_t>(OperationProgress->TransferedSize)),
                   BlockSize);
                 OperationProgress->AddTransfered(BlockSize);
                 if (OperationProgress->Cancel == csCancelTransfer)

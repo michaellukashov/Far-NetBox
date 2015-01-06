@@ -13,12 +13,12 @@ class TFileZillaIntern;
 //---------------------------------------------------------------------------
 struct TRemoteFileTime
 {
-  int Year;
-  int Month;
-  int Day;
-  int Hour;
-  int Minute;
-  int Second;
+  WORD Year;
+  WORD Month;
+  WORD Day;
+  WORD Hour;
+  WORD Minute;
+  WORD Second;
   bool HasTime;
   bool HasSeconds;
   bool HasDate;
