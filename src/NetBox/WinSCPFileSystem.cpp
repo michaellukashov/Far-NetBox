@@ -2233,7 +2233,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
         {
           MoreMessageDialog(GetMsg(SYNCHRONIZE_LOCAL_PATH_REQUIRED), nullptr, qtError, qaOK);
         }
-        else
+        else if (AnotherPanel && *AnotherPanel)
         {
           try
           {
