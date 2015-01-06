@@ -535,11 +535,11 @@ public:
     }
 
     AddProperties(
-      Valid & valRights ? &RightsNum : nullptr,
-      Valid & valOwner ? &Owner : nullptr,
-      Valid & valGroup ? &Group : nullptr,
-      Valid & valMTime ? &MTime : nullptr,
-      Valid & valATime ? &ATime : nullptr,
+      (Valid & valRights) ? &RightsNum : nullptr,
+      (Valid & valOwner) ? &Owner : nullptr,
+      (Valid & valGroup) ? &Group : nullptr,
+      (Valid & valMTime) ? &MTime : nullptr,
+      (Valid & valATime) ? &ATime : nullptr,
       nullptr, IsDirectory, Version, Utf);
   }
 

@@ -1988,7 +1988,7 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   bool SingleFile) :
   TLocatedQueueItem(Terminal), FFilesToCopy(new TStringList()), FCopyParam(nullptr)
 {
-  FInfo->Operation = (Params & cpDelete ? foMove : foCopy);
+  FInfo->Operation = (Params & cpDelete) ? foMove : foCopy;
   FInfo->Side = Side;
   FInfo->SingleFile = SingleFile;
 
