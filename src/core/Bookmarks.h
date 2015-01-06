@@ -50,7 +50,7 @@ public:
   void MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
   void Delete(TBookmark *& Bookmark);
   TBookmark * FindByName(const UnicodeString & Node, const UnicodeString & Name);
-  TBookmark * FindByShortCut(TShortCut ShortCut);
+  TBookmark * FindByShortCut(const TShortCut & ShortCut);
   virtual void Assign(const TPersistent * Source);
   void LoadOptions(THierarchicalStorage * Storage);
   void SaveOptions(THierarchicalStorage * Storage);
@@ -93,7 +93,7 @@ public:
   UnicodeString GetNode() const { return FNode; }
   void SetNode(const UnicodeString & Value);
   TShortCut GetShortCut() const { return FShortCut; }
-  void SetShortCut(TShortCut Value);
+  void SetShortCut(const TShortCut & Value);
 
 protected:
   TBookmarkList * FOwner;

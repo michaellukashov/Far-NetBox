@@ -136,7 +136,7 @@ public:
   TModificationFmt GetModificationFmt() const { return FModificationFmt; }
   void SetModificationFmt(TModificationFmt Value) { FModificationFmt = Value; }
   TDateTime GetLastAccess() const { return FLastAccess; }
-  void SetLastAccess(TDateTime Value) { FLastAccess = Value; }
+  void SetLastAccess(const TDateTime & Value) { FLastAccess = Value; }
   bool GetIsSymLink() const { return FIsSymLink; }
   UnicodeString GetLinkTo() const;
   void SetLinkTo(const UnicodeString & Value);

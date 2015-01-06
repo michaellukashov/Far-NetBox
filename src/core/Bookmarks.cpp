@@ -400,7 +400,7 @@ TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, const UnicodeS
   return Bookmark;
 }
 
-TBookmark * TBookmarkList::FindByShortCut(TShortCut ShortCut)
+TBookmark * TBookmarkList::FindByShortCut(const TShortCut & ShortCut)
 {
   for (intptr_t Index = 0; Index < FBookmarks->GetCount(); ++Index)
   {
@@ -527,7 +527,7 @@ void TBookmark::SetNode(const UnicodeString & Value)
   }
 }
 
-void TBookmark::SetShortCut(TShortCut Value)
+void TBookmark::SetShortCut(const TShortCut & Value)
 {
   if (GetShortCut() != Value)
   {
