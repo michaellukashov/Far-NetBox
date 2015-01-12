@@ -595,10 +595,11 @@ void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
   {
     for (uintptr_t Index = 0; Index < Data.Params->AliasesCount; ++Index)
     {
-      if ((Data.Params->Aliases[Index].Button == Data.Buttons[Result]) &&
-          (Data.Params->Aliases[Index].OnClick))
+      const TQueryButtonAlias & Alias = Data.Params->Aliases[Index];
+      if ((Alias.Button == Data.Buttons[Result]) &&
+          (Alias.OnClick))
       {
-        Data.Params->Aliases[Index].OnClick(nullptr);
+        Alias.OnClick(nullptr);
         Close = false;
         break;
       }
