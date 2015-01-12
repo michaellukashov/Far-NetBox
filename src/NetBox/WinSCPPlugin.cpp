@@ -586,6 +586,7 @@ public:
 
 void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
 {
+  assert(Token);
   TFarMessageData & Data = *NB_STATIC_DOWNCAST(TFarMessageData, Token);
 
   assert(Result != (uintptr_t)-1 && Result < Data.ButtonCount);
