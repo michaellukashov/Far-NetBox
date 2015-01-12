@@ -288,6 +288,9 @@ public:
     }
 
 private:
+    DynArray( const DynArray& ); // not supported
+    void operator=( const DynArray& ); // not supported
+
     void EnsureCapacity( int cap ) {
         TIXMLASSERT( cap > 0 );
         if ( cap > _allocated ) {
@@ -421,6 +424,9 @@ public:
     enum { COUNT = (4*1024)/SIZE }; // Some compilers do not accept to use COUNT in private part if COUNT is private
 
 private:
+    MemPoolT( const MemPoolT& ); // not supported
+    void operator=( const MemPoolT& ); // not supported
+
     union Chunk {
         Chunk*  next;
         char    mem[SIZE];
@@ -552,9 +558,14 @@ public:
     }
     
     inline static bool IsNameStartChar( unsigned char ch ) {
-        return ( ( ch < 128 ) ? std::isalpha( ch ) : 1 )
-               || ch == ':'
-               || ch == '_';
+        if ( ch >= 128 ) {
+            // This is a heuristic guess in attempt to not implement Unicode-aware isalpha()
+            return true;
+        }
+        if ( isalpha( ch ) ) {
+            return true;
+        }
+        return ch == ':' || ch == '_';
     }
     
     inline static bool IsNameChar( unsigned char ch ) {
@@ -877,8 +888,6 @@ public:
 protected:
     XMLNode( XMLDocument* );
     virtual ~XMLNode();
-    XMLNode( const XMLNode& );	// not supported
-    XMLNode& operator=( const XMLNode& );	// not supported
 
     XMLDocument*	_document;
     XMLNode*		_parent;
@@ -894,6 +903,10 @@ private:
     MemPool*		_memPool;
     void Unlink( XMLNode* child );
     static void DeleteNode( XMLNode* node );
+    void InsertChildPreamble( XMLNode* insertThis ) const;
+
+    XMLNode( const XMLNode& );	// not supported
+    XMLNode& operator=( const XMLNode& );	// not supported
 };
 
 
@@ -939,11 +952,12 @@ public:
 protected:
     XMLText( XMLDocument* doc )	: XMLNode( doc ), _isCData( false )	{}
     virtual ~XMLText()												{}
-    XMLText( const XMLText& );	// not supported
-    XMLText& operator=( const XMLText& );	// not supported
 
 private:
     bool _isCData;
+
+    XMLText( const XMLText& );	// not supported
+    XMLText& operator=( const XMLText& );	// not supported
 };
 
 
@@ -968,10 +982,10 @@ public:
 protected:
     XMLComment( XMLDocument* doc );
     virtual ~XMLComment();
-    XMLComment( const XMLComment& );	// not supported
-    XMLComment& operator=( const XMLComment& );	// not supported
 
 private:
+    XMLComment( const XMLComment& );	// not supported
+    XMLComment& operator=( const XMLComment& );	// not supported
 };
 
 
@@ -1006,6 +1020,8 @@ public:
 protected:
     XMLDeclaration( XMLDocument* doc );
     virtual ~XMLDeclaration();
+
+private:
     XMLDeclaration( const XMLDeclaration& );	// not supported
     XMLDeclaration& operator=( const XMLDeclaration& );	// not supported
 };
@@ -1038,6 +1054,8 @@ public:
 protected:
     XMLUnknown( XMLDocument* doc );
     virtual ~XMLUnknown();
+
+private:
     XMLUnknown( const XMLUnknown& );	// not supported
     XMLUnknown& operator=( const XMLUnknown& );	// not supported
 };
@@ -1730,6 +1748,8 @@ private:
     MemPoolT< sizeof(XMLComment) >	 _commentPool;
 
 	static const char* _errorNames[XML_ERROR_COUNT];
+
+    void Parse();
 };
 
 

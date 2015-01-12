@@ -186,6 +186,8 @@ void StrPair::CollapseWhitespace()
 
 const char* StrPair::GetStr()
 {
+    TIXMLASSERT( _start );
+    TIXMLASSERT( _end );
     if ( _flags & NEEDS_FLUSH ) {
         *_end = 0;
         _flags ^= NEEDS_FLUSH;
@@ -267,6 +269,7 @@ const char* StrPair::GetStr()
         }
         _flags = (_flags & NEEDS_DELETE);
     }
+    TIXMLASSERT( _start );
     return _start;
 }
 
@@ -672,11 +675,7 @@ XMLNode* XMLNode::InsertEndChild( XMLNode* addThis )
         TIXMLASSERT( false );
         return 0;
     }
-
-	if (addThis->_parent)
-		addThis->_parent->Unlink( addThis );
-	else
-	   addThis->_memPool->SetTracked();
+    InsertChildPreamble( addThis );
 
     if ( _lastChild ) {
         TIXMLASSERT( _firstChild );
@@ -706,11 +705,7 @@ XMLNode* XMLNode::InsertFirstChild( XMLNode* addThis )
         TIXMLASSERT( false );
         return 0;
     }
-
-	if (addThis->_parent)
-		addThis->_parent->Unlink( addThis );
-	else
-	   addThis->_memPool->SetTracked();
+    InsertChildPreamble( addThis );
 
     if ( _firstChild ) {
         TIXMLASSERT( _lastChild );
@@ -753,10 +748,7 @@ XMLNode* XMLNode::InsertAfterChild( XMLNode* afterThis, XMLNode* addThis )
         // The last node or the only node.
         return InsertEndChild( addThis );
     }
-	if (addThis->_parent)
-		addThis->_parent->Unlink( addThis );
-	else
-	   addThis->_memPool->SetTracked();
+    InsertChildPreamble( addThis );
     addThis->_prev = afterThis;
     addThis->_next = afterThis->_next;
     afterThis->_next->_prev = addThis;
@@ -860,28 +852,30 @@ char* XMLNode::ParseDeep( char* p, StrPair* parentEnd )
         }
 
         XMLElement* ele = node->ToElement();
-        // We read the end tag. Return it to the parent.
-        if ( ele && ele->ClosingType() == XMLElement::CLOSING ) {
-            if ( parentEnd ) {
-                ele->_value.TransferTo( parentEnd );
-            }
-			node->_memPool->SetTracked();	// created and then immediately deleted.
-            DeleteNode( node );
-            return p;
-        }
-
-        // Handle an end tag returned to this level.
-        // And handle a bunch of annoying errors.
         if ( ele ) {
+            // We read the end tag. Return it to the parent.
+            if ( ele->ClosingType() == XMLElement::CLOSING ) {
+                if ( parentEnd ) {
+                    ele->_value.TransferTo( parentEnd );
+                }
+                node->_memPool->SetTracked();   // created and then immediately deleted.
+                DeleteNode( node );
+                return p;
+            }
+
+            // Handle an end tag returned to this level.
+            // And handle a bunch of annoying errors.
             bool mismatch = false;
-            if ( endTag.Empty() && ele->ClosingType() == XMLElement::OPEN ) {
-                mismatch = true;
+            if ( endTag.Empty() ) {
+                if ( ele->ClosingType() == XMLElement::OPEN ) {
+                    mismatch = true;
+                }
             }
-            else if ( !endTag.Empty() && ele->ClosingType() != XMLElement::OPEN ) {
-                mismatch = true;
-            }
-            else if ( !endTag.Empty() ) {
-                if ( !XMLUtil::StringEqual( endTag.GetStr(), node->Value() )) {
+            else {
+                if ( ele->ClosingType() != XMLElement::OPEN ) {
+                    mismatch = true;
+                }
+                else if ( !XMLUtil::StringEqual( endTag.GetStr(), node->Value() ) ) {
                     mismatch = true;
                 }
             }
@@ -906,6 +900,17 @@ void XMLNode::DeleteNode( XMLNode* node )
     pool->Free( node );
 }
 
+void XMLNode::InsertChildPreamble( XMLNode* insertThis ) const
+{
+    TIXMLASSERT( insertThis );
+    TIXMLASSERT( insertThis->_document == _document );
+
+    if ( insertThis->_parent )
+        insertThis->_parent->Unlink( insertThis );
+    else
+        insertThis->_memPool->SetTracked();
+}
+
 // --------- XMLText ---------- //
 char* XMLText::ParseDeep( char* p, StrPair* )
 {
@@ -924,11 +929,11 @@ char* XMLText::ParseDeep( char* p, StrPair* )
         }
 
         p = _value.ParseText( p, "<", flags );
-        if ( !p ) {
-            _document->SetError( XML_ERROR_PARSING_TEXT, start, 0 );
-        }
         if ( p && *p ) {
             return p-1;
+        }
+        if ( !p ) {
+            _document->SetError( XML_ERROR_PARSING_TEXT, start, 0 );
         }
     }
     return 0;
@@ -1820,15 +1825,7 @@ XMLError XMLDocument::LoadFile( FILE* fp )
 
     _charBuffer[size] = 0;
 
-    const char* p = _charBuffer;
-    p = XMLUtil::SkipWhiteSpace( p );
-    p = XMLUtil::ReadBOM( p, &_writeBOM );
-    if ( !*p ) {
-        SetError( XML_ERROR_EMPTY_DOCUMENT, 0, 0 );
-        return _errorID;
-    }
-
-    ParseDeep( _charBuffer + (p-_charBuffer), 0 );
+    Parse();
     return _errorID;
 }
 
@@ -1869,16 +1866,7 @@ XMLError XMLDocument::Parse( const char* p, size_t len )
     memcpy( _charBuffer, p, len );
     _charBuffer[len] = 0;
 
-    const char* start = p;
-    p = XMLUtil::SkipWhiteSpace( p );
-    p = XMLUtil::ReadBOM( p, &_writeBOM );
-    if ( !*p ) {
-        SetError( XML_ERROR_EMPTY_DOCUMENT, 0, 0 );
-        return _errorID;
-    }
-
-    ptrdiff_t delta = p - start;	// skip initial whitespace, BOM, etc.
-    ParseDeep( _charBuffer+delta, 0 );
+    Parse();
     if ( Error() ) {
         // clean up now essentially dangling memory.
         // and the parse fail can put objects in the
@@ -1936,6 +1924,19 @@ void XMLDocument::PrintError() const
     }
 }
 
+void XMLDocument::Parse()
+{
+    TIXMLASSERT( NoChildren() ); // Clear() must have been called previously
+    TIXMLASSERT( _charBuffer );
+    char* p = _charBuffer;
+    p = XMLUtil::SkipWhiteSpace( p );
+    p = const_cast<char*>( XMLUtil::ReadBOM( p, &_writeBOM ) );
+    if ( !*p ) {
+        SetError( XML_ERROR_EMPTY_DOCUMENT, 0, 0 );
+        return;
+    }
+    ParseDeep(p, 0 );
+}
 
 XMLPrinter::XMLPrinter( FILE* file, bool compact, int depth ) :
     _elementJustOpened( false ),
