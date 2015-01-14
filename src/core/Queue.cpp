@@ -1655,7 +1655,7 @@ void TQueueItem::SetProgress(
     // wait until the real transfer operation starts
     if ((FCPSLimit != (uintptr_t)-1) && ((ProgressData.Operation == foMove) || (ProgressData.Operation == foCopy)))
     {
-      ProgressData.CPSLimit = static_cast<unsigned long>(FCPSLimit);
+      ProgressData.CPSLimit = FCPSLimit;
       FCPSLimit = (uintptr_t)-1;
     }
 
