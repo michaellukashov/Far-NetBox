@@ -1,4 +1,4 @@
-NetBox 2.1.41.367 18.01.2015
+NetBox 2.1.41.368 18.01.2015
 --------------------
   * Update WinSCP sources to 5.6.5 RC
   * Bugfix: plugin prefixes do not work
