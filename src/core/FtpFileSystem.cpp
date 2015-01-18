@@ -1048,7 +1048,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
   while ((Index < FileList->GetCount()) && !OperationProgress->Cancel)
   {
     TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObj(Index));
-    assert(File != NULL);
+    assert(File != nullptr);
 
     if (File->GetIsDirectory())
     {
@@ -1061,7 +1061,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
         TRemoteFileList * SubFiles =
           FTerminal->CustomReadDirectoryListing(File->GetFullFileName(), false);
 
-        if (SubFiles != NULL)
+        if (SubFiles != nullptr)
         {
           TStrings * SubFileList = new TStringList();
           bool Success = false;
@@ -1086,7 +1086,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
 
             // do not collect checksums for files in subdirectories,
             // only send back checksums via callback
-            DoCalculateFilesChecksum(UsingHashCommand, Alg, SubFileList, NULL,
+            DoCalculateFilesChecksum(UsingHashCommand, Alg, SubFileList, nullptr,
               OnCalculatedChecksum, OperationProgress, false);
 
             Success = true;
@@ -1104,12 +1104,12 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
 
         UnicodeString Checksum = DoCalculateFileChecksum(UsingHashCommand, Alg, File);
 
-        if (OnCalculatedChecksum != NULL)
+        if (OnCalculatedChecksum != nullptr)
         {
           OnCalculatedChecksum(File->GetFileName(), Alg, Checksum);
         }
         Action.Checksum(Alg, Checksum);
-        if (Checksums != NULL)
+        if (Checksums != nullptr)
         {
           Checksums->Add(Checksum);
         }
@@ -1121,7 +1121,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
         // Error formatting expanded from inline to avoid strange exceptions
         UnicodeString Error =
           FMTLOAD(CHECKSUM_ERROR,
-            (File != NULL ? File->GetFullFileName().c_str() : L""));
+            (File != nullptr ? File->GetFullFileName().c_str() : L""));
         FTerminal->CommandError(&E, Error);
         // Abort loop.
         // TODO: retries? resume?
@@ -2677,8 +2677,8 @@ void TFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
     // XQUOTA is global not path-specific
     UnicodeString Command = XQuotaCommand;
     SendCommand(Command);
-    TStrings * Response = NULL;
-    GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", NULL, &Response);
+    TStrings * Response = nullptr;
+    GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", nullptr, &Response);
     std::unique_ptr<TStrings> ResponseOwner(Response);
 
     __int64 UsedBytes = -1;

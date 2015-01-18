@@ -1271,7 +1271,7 @@ void TTerminal::ProcessGUI()
 {
   // Do not process GUI here, as we are called directly from a GUI loop and may
   // recurse for good.
-  // Alternatively we may check for (FOperationProgress == NULL)
+  // Alternatively we may check for (FOperationProgress == nullptr)
   if (FIdle == 0)
   {
     ::ProcessGUI();

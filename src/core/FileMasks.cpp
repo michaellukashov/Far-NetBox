@@ -1086,7 +1086,7 @@ TCustomCommandData & TCustomCommandData::operator=(const TCustomCommandData & Da
 {
   if (&Data != this)
   {
-    assert(Data.GetSessionData() != NULL);
+    assert(Data.GetSessionData() != nullptr);
     FSessionData.reset(new TSessionData(L""));
     FSessionData->Assign(Data.GetSessionData());
   }

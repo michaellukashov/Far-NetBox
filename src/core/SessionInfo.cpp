@@ -588,7 +588,7 @@ TChecksumSessionAction::TChecksumSessionAction(TActionLog * Log) :
 //---------------------------------------------------------------------------
 void TChecksumSessionAction::Checksum(const UnicodeString & Alg, const UnicodeString & Checksum)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Checksum(Alg, Checksum);
   }
@@ -597,7 +597,7 @@ void TChecksumSessionAction::Checksum(const UnicodeString & Alg, const UnicodeSt
 TCwdSessionAction::TCwdSessionAction(TActionLog * Log, const UnicodeString & Path) :
   TSessionAction(Log, laCwd)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Cwd(Path);
   }

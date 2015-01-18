@@ -2345,7 +2345,7 @@ void TSecureShell::AskAlg(const UnicodeString & AlgType,
 
   if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, nullptr, qtWarning) == qaNo)
   {
-    FUI->FatalError(NULL, Error);
+    FUI->FatalError(nullptr, Error);
   }
 }
 

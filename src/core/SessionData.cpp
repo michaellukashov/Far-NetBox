@@ -4039,7 +4039,7 @@ TSessionData * TStoredSessionList::SaveWorkspaceData(TSessionData * Data)
   std::unique_ptr<TSessionData> Result(new TSessionData(L""));
 
   const TSessionData * SameData = StoredSessions->FindSame(Data);
-  if (SameData != NULL)
+  if (SameData != nullptr)
   {
     Result->CopyStateData(Data);
     Result->SetLink(Data->GetName());
@@ -4057,7 +4057,7 @@ TSessionData * TStoredSessionList::SaveWorkspaceData(TSessionData * Data)
 bool TStoredSessionList::CanLogin(TSessionData * Data)
 {
   Data = ResolveWorkspaceData(Data);
-  return (Data != NULL) && Data->GetCanLogin();
+  return (Data != nullptr) && Data->GetCanLogin();
 }
 
 bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx)
