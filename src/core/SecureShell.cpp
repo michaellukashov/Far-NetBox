@@ -163,7 +163,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   // user-configurable settings
   conf_set_str(conf, CONF_host, AnsiString(Data->GetHostNameExpanded()).c_str());
   conf_set_str(conf, CONF_username, AnsiString(Data->GetUserNameExpanded()).c_str());
-  conf_set_int(conf, CONF_port, (int)Data->GetPortNumber());
+  conf_set_int(conf, CONF_port, static_cast<int>(Data->GetPortNumber()));
   conf_set_int(conf, CONF_protocol, PROT_SSH);
   // always set 0, as we will handle keepalives ourselves to avoid
   // multi-threaded issues in putty timer list
@@ -173,7 +173,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_int(conf, CONF_agentfwd, Data->GetAgentFwd());
   conf_set_int(conf, CONF_addressfamily, Data->GetAddressFamily());
   conf_set_str(conf, CONF_ssh_rekey_data, AnsiString(Data->GetRekeyData()).c_str());
-  conf_set_int(conf, CONF_ssh_rekey_time, (int)Data->GetRekeyTime());
+  conf_set_int(conf, CONF_ssh_rekey_time, static_cast<int>(Data->GetRekeyTime()));
 
   for (int c = 0; c < CIPHER_COUNT; c++)
   {
@@ -397,7 +397,8 @@ void TSecureShell::Open()
         conf_free(conf);
       };
       InitError = FBackend->init(this, &FBackendHandle, conf,
-        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), (int)FSessionData->GetPortNumber(), &RealHost, 0,
+        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), static_cast<int>(FSessionData->GetPortNumber()), &RealHost,
+        (FSessionData->GetTcpNoDelay() ? 1 : 0),
         conf_get_int(conf, CONF_tcp_keepalives));
     }
 
@@ -501,7 +502,7 @@ bool TSecureShell::TryFtp()
           Address.sin_family = AF_INET;
           intptr_t Port = FtpPortNumber;
           Address.sin_port = htons(static_cast<short>(Port));
-          Address.sin_addr.s_addr = *((uint32_t *)*HostEntry->h_addr_list);
+          Address.sin_addr.s_addr = *(reinterpret_cast<uint32_t *>(*HostEntry->h_addr_list));
 
           HANDLE Event = ::CreateEvent(nullptr, false, false, nullptr);
           Result = (::WSAEventSelect(Socket, (WSAEVENT)Event, FD_CONNECT | FD_CLOSE) != SOCKET_ERROR);
@@ -544,7 +545,7 @@ UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uintptr_t 
   else
   {
 //    Result = UnicodeString(AnsiString(Input.c_str()));
-    Result = ::MB2W(Input.c_str(), (UINT)CodePage);
+    Result = ::MB2W(Input.c_str(), static_cast<UINT>(CodePage));
   }
   return Result;
 }
@@ -755,6 +756,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if (Index == 7)
   {
+    // Can be tested with WS_FTP server
     static const TPuttyTranslation NewPasswordPromptTranslation[] =
     {
       { L"Current password (blank for previously entered password): ", NEW_PASSWORD_CURRENT_PROMPT },
@@ -825,7 +827,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().IsEmpty() &&
         !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
-        FLAGCLEAR((intptr_t)Prompts->GetObj(0), pupEcho))
+        FLAGCLEAR(reinterpret_cast<intptr_t>(Prompts->GetObj(0)), pupEcho))
     {
       LogEvent("Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
@@ -869,7 +871,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     if (Result)
     {
       if ((Prompts->GetCount() >= 1) &&
-          (FLAGSET((intptr_t)Prompts->GetObj(0), pupEcho) || GetConfiguration()->GetLogSensitive()))
+          (FLAGSET(reinterpret_cast<intptr_t>(Prompts->GetObj(0)), pupEcho) || GetConfiguration()->GetLogSensitive()))
       {
         LogEvent(FORMAT(L"Response: \"%s\"", Results->GetString(0).c_str()));
       }
@@ -1210,7 +1212,7 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
         L"need to send at least another %u bytes",
         BufSize, BufSize - MAX_BUFSIZE));
     }
-    EventSelectLoop(100, false, nullptr);
+    EventSelectLoop(100, false, true, nullptr);
     BufSize = FBackend->sendbuffer(FBackendHandle);
     if (GetConfiguration()->GetActualLogProtocol() >= 1)
     {
@@ -1255,7 +1257,7 @@ void TSecureShell::Send(const uint8_t * Buf, intptr_t Length)
   }
   FLastDataSent = Now();
   // among other forces receive of pending data to free the servers's send buffer
-  EventSelectLoop(0, false, nullptr);
+  EventSelectLoop(0, false, true, nullptr);
 
   if (BufSize > MAX_BUFSIZE)
   {
@@ -1283,7 +1285,7 @@ void TSecureShell::SendLine(const UnicodeString & Line)
   }
   else
   {
-    Buf = RawByteString(AnsiString(::W2MB(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber())));
+    Buf = RawByteString(AnsiString(::W2MB(Line.c_str(), static_cast<UINT>(FSessionData->GetCodePageAsNumber()))));
   }
   Buf += "\n";
 
@@ -1670,7 +1672,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, intptr_t & Result)
       // in extreme condition it may happen that send buffer is full, but there
       // will be no data coming and we may not empty the send buffer because we
       // do not process FD_WRITE until we receive any FD_READ
-      if (EventSelectLoop(0, false, &Events))
+      if (EventSelectLoop(0, false, true, &Events))
       {
         LogEvent("Data has arrived, closing query to user.");
         Result = qaOK;
@@ -1721,7 +1723,7 @@ void TSecureShell::WaitForData()
       LogEvent("Looking for incoming data");
     }
 
-    IncomingData = EventSelectLoop(FSessionData->GetTimeout() * MSecsPerSec, true, nullptr);
+    IncomingData = EventSelectLoop(FSessionData->GetTimeout() * MSecsPerSec, true, true, nullptr);
     if (!IncomingData)
     {
       assert(FWaitingForData == 0);
@@ -1852,7 +1854,7 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 }
 
 bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
-  WSANETWORKEVENTS * Events)
+  bool DoProcessGUI, WSANETWORKEVENTS * Events)
 {
   CheckConnection();
 
@@ -1876,7 +1878,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       };
       Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
       Handles[HandleCount] = FSocketEvent;
-      DWORD Timeout = (DWORD)MSec;
+      DWORD Timeout = static_cast<DWORD>(MSec);
       if (toplevel_callback_pending())
       {
         Timeout = 0;
@@ -1888,7 +1890,10 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
         uint32_t TimeoutStep = min(GUIUpdateInterval, Timeout);
         Timeout -= TimeoutStep;
         WaitResult = ::WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, TimeoutStep);
-        ProcessGUI();
+        if (DoProcessGUI)
+        {
+          ProcessGUI();
+        }
       }
       while ((WaitResult == WAIT_TIMEOUT) && (Timeout > 0));
 
@@ -1985,7 +1990,9 @@ void TSecureShell::Idle(uintptr_t MSec)
   // do not read here, otherwise we swallow read event and never wake
   if (FWaitingForData <= 0)
   {
-    EventSelectLoop(MSec, false, nullptr);
+    // do not process GUI here, as we are called from GUI loop and may
+    // recurse for good
+    EventSelectLoop(MSec, false, false, nullptr);
   }
 }
 
@@ -2165,8 +2172,9 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
              static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
         Port,
         ::W2MB(KeyType.c_str(),
-             static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-        const_cast<char *>(AnsiStoredKeys.c_str()), (int)AnsiStoredKeys.Length()) == 0)
+            static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
+            const_cast<char *>(AnsiStoredKeys.c_str()),
+            static_cast<int>(AnsiStoredKeys.Length())) == 0)
   {
     StoredKeys = AnsiStoredKeys.c_str();
     UnicodeString Buf = StoredKeys;
@@ -2388,6 +2396,30 @@ void TSecureShell::CollectUsage()
   else if (GetSshImplementation() == sshiTitan)
   {
     // Configuration->Usage->Inc(L"OpenedSessionsSSHTitan");
+  }
+  else if (ContainsText(FSessionInfo.SshImplementation, L"Serv-U"))
+  {
+    Configuration->Usage->Inc(L"OpenedSessionsSSHServU");
+  }
+  else if (ContainsText(FSessionInfo.SshImplementation, L"CerberusFTPServer"))
+  {
+    // Ntb, Cerberus can also be detected using vendor-id extension
+    // Cerberus FTP Server 7.0.5.3 (70005003) by Cerberus, LLC
+    Configuration->Usage->Inc(L"OpenedSessionsSSHCerberus");
+  }
+  else if (ContainsText(FSessionInfo.SshImplementation, L"WS_FTP"))
+  {
+    Configuration->Usage->Inc(L"OpenedSessionsSSHWSFTP");
+  }
+  // SSH-2.0-1.36_sshlib GlobalSCAPE
+  else if (ContainsText(FSessionInfo.SshImplementation, L"GlobalSCAPE"))
+  {
+    Configuration->Usage->Inc(L"OpenedSessionsSSHGlobalScape");
+  }
+  // SSH-2.0-CompleteFTP-8.1.3
+  else if (ContainsText(FSessionInfo.SshImplementation, L"CompleteFTP"))
+  {
+    Configuration->Usage->Inc(L"OpenedSessionsSSHComplete");
   }
   else
   {

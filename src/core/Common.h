@@ -6,7 +6,7 @@
 
 #include "Exceptions.h"
 
-inline void ThrowExtException() { throw ExtException((Exception *)nullptr, UnicodeString(L"")); }
+inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
 //#define EXCEPTION throw ExtException(nullptr, L"")
 #define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
@@ -127,6 +127,9 @@ UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
 TFormatSettings GetEngFormatSettings();
 //int ParseShortEngMonthName(const UnicodeString & MonthStr);
+// The defaults are equal to defaults of TStringList class (except for Sorted)
+TStringList * CreateSortedStringList(bool CaseSensitive = false, TDuplicatesEnum Duplicates = dupIgnore);
+UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);
 
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /*FileName*/, const TSearchRec & /*Rec*/, void * /*Param*/);
@@ -226,8 +229,8 @@ private:
 #else
 #define CHECK(p) { bool __CHECK_RESULT__ = (p); assert(__CHECK_RESULT__); }
 #define FAIL assert(false)
-#define ALWAYS_TRUE(p) p
-#define ALWAYS_FALSE(p) p
+#define ALWAYS_TRUE(p) (p)
+#define ALWAYS_FALSE(p) (p)
 #define NOT_NULL(P) P
 #define CLEAN_INLINE
 #endif

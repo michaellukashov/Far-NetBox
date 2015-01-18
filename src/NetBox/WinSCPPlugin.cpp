@@ -93,7 +93,7 @@ void TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
   if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
-      reinterpret_cast<TObject *>((size_t)FarConfiguration->GetDisksMenuHotKey()));
+      reinterpret_cast<TObject *>(static_cast<size_t>(FarConfiguration->GetDisksMenuHotKey())));
   }
   if (FarConfiguration->GetPluginsMenu())
   {
@@ -286,7 +286,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
         TWinSCPFileSystem * PanelSystem;
         PanelSystem = NB_STATIC_DOWNCAST(TWinSCPFileSystem, GetPanelFileSystem());
         if (PanelSystem && PanelSystem->Connected() &&
-            PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == CommandLine)
+            PanelSystem->GetTerminal()->GetSessionData()->GenerateSessionUrl(sufComplete) == CommandLine)
         {
           PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
           if (PanelSystem->UpdatePanel())
@@ -589,7 +589,7 @@ void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
   assert(Token);
   TFarMessageData & Data = *NB_STATIC_DOWNCAST(TFarMessageData, Token);
 
-  assert(Result != (uintptr_t)-1 && Result < Data.ButtonCount);
+  assert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
 
   if ((Data.Params != nullptr) && (Data.Params->Aliases != nullptr))
   {
@@ -781,7 +781,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   }
   else
   {
-    assert(Result != (uintptr_t)-1 && Result < Data.ButtonCount);
+    assert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
     Result = Data.Buttons[Result];
   }
 

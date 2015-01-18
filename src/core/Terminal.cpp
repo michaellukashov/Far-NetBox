@@ -138,8 +138,7 @@ private:
 
 TLoopDetector::TLoopDetector()
 {
-  FVisitedDirectories.reset(new TStringList());
-  FVisitedDirectories->SetSorted(true);
+  FVisitedDirectories.reset(CreateSortedStringList());
 }
 
 void TLoopDetector::RecordVisitedDirectory(const UnicodeString & Directory)
@@ -613,6 +612,33 @@ void TCallbackGuard::Verify()
       throw ESshFatal(FFatalError, L"");
     }
   }
+}
+
+TRobustOperationLoop::TRobustOperationLoop(TTerminal * Terminal, TFileOperationProgressType * OperationProgress) :
+  FTerminal(Terminal),
+  FOperationProgress(OperationProgress),
+  FRetry(false)
+{
+}
+//---------------------------------------------------------------------------
+bool TRobustOperationLoop::TryReopen(Exception & E)
+{
+  FRetry = FTerminal &&
+    !FTerminal->GetActive() &&
+    FTerminal->QueryReopen(&E, ropNoReadDirectory, FOperationProgress);
+  return FRetry;
+}
+//---------------------------------------------------------------------------
+bool TRobustOperationLoop::ShouldRetry() const
+{
+  return FRetry;
+}
+//---------------------------------------------------------------------------
+bool TRobustOperationLoop::Retry()
+{
+  bool Result = FRetry;
+  FRetry = false;
+  return Result;
 }
 
 TTerminal::TTerminal() :
@@ -1353,7 +1379,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   {
     if (PasswordOrPassphrasePrompt && !GetConfiguration()->GetRememberPassword())
     {
-      Prompts->SetObj(0, reinterpret_cast<TObject*>(intptr_t(Prompts->GetObj(0)) | pupRemember));
+      Prompts->SetObj(0, reinterpret_cast<TObject*>(reinterpret_cast<intptr_t>(Prompts->GetObj(0)) | pupRemember));
     }
 
     if (GetOnPromptUser() != nullptr)
@@ -1364,7 +1390,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     }
 
     if (Result && PasswordOrPassphrasePrompt &&
-        (GetConfiguration()->GetRememberPassword() || FLAGSET(int(Prompts->GetObj(0)), pupRemember)))
+        (GetConfiguration()->GetRememberPassword() || FLAGSET(reinterpret_cast<intptr_t>(Prompts->GetObj(0)), pupRemember)))
     {
       RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
       if (FTunnelOpening)
@@ -1521,7 +1547,7 @@ void TTerminal::SaveCapabilities(TFileSystemInfo & FileSystemInfo)
 {
   for (intptr_t Index = 0; Index < fcCount; ++Index)
   {
-    FileSystemInfo.IsCapable[Index] = GetIsCapable((TFSCapability)Index);
+    FileSystemInfo.IsCapable[Index] = GetIsCapable(static_cast<TFSCapability>(Index));
   }
 }
 
@@ -1676,7 +1702,7 @@ bool TTerminal::QueryReopen(Exception * E, intptr_t Params,
         {
           Result =
             ((FConfiguration->GetSessionReopenTimeout() == 0) ||
-             ((intptr_t)((double)(Now() - Start) * MSecsPerDay) < FConfiguration->GetSessionReopenTimeout())) &&
+             (static_cast<intptr_t>((double)(Now() - Start) * MSecsPerDay) < FConfiguration->GetSessionReopenTimeout())) &&
             DoQueryReopen(&E);
         }
         else
@@ -2780,7 +2806,24 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * AFileList)
 {
   assert(AFileList);
   assert(FFileSystem);
-  FFileSystem->ReadDirectory(AFileList);
+
+  TRobustOperationLoop RobustLoop(this, FOperationProgress);
+
+  do
+  {
+    try
+    {
+      FFileSystem->ReadDirectory(AFileList);
+    }
+    catch (Exception & E)
+    {
+      if (!RobustLoop.TryReopen(E))
+      {
+        throw;
+      }
+    }
+  }
+  while (RobustLoop.Retry());
 
   if (GetLog()->GetLogging())
   {
@@ -3595,10 +3638,6 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
           DoCalculateDirectorySize(AFile->GetFullFileName(), AFile, AParams);
         }
       }
-      else
-      {
-        AParams->Size += AFile->GetSize();
-      }
 
       if (AParams->Stats != nullptr)
       {
@@ -3646,6 +3685,10 @@ bool TTerminal::CalculateFilesSize(const TStrings * AFileList,
   int64_t & Size, intptr_t Params, const TCopyParamType * CopyParam,
   bool AllowDirs, TCalculateSizeStats * Stats)
 {
+  // With FTP protocol, we may se DSIZ command from
+  // draft-peterson-streamlined-ftp-command-extensions-10
+  // Implemented by Serv-U FTP.
+
   TCalculateSizeParams Param;
   Param.Size = 0;
   Param.Params = Params;
@@ -4105,7 +4148,7 @@ public:
         FAction.AddOutput(Str, true);
         break;
       case cotExitCode:
-        FAction.AddExitCode(::StrToInt64(Str));
+        FAction.ExitCode(::StrToInt64(Str));
         break;
     }
 
@@ -4325,7 +4368,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
     FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(OPENFILE_ERROR, AFileName.c_str()), "",
     [&]()
     {
-      LocalFileHandle = this->CreateLocalFile(ApiPath(AFileName).c_str(), (DWORD)Access,
+      LocalFileHandle = this->CreateLocalFile(ApiPath(AFileName).c_str(), static_cast<DWORD>(Access),
         Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
         OPEN_EXISTING, 0);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
@@ -4371,11 +4414,11 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
           uint32_t LSize;
           DWORD HSize;
           LSize = ::GetFileSize(LocalFileHandle, &HSize);
-          if ((LSize == (uint32_t)-1) && (::GetLastError() != NO_ERROR))
+          if ((LSize == static_cast<uint32_t>(-1)) && (::GetLastError() != NO_ERROR))
           {
             ::RaiseLastOSError();
           }
-          *ASize = ((int64_t)(HSize) << 32) + LSize;
+          *ASize = (static_cast<int64_t>(HSize) << 32) + LSize;
         });
       }
 
@@ -4670,7 +4713,7 @@ UnicodeString TTerminal::SynchronizeParamsStr(intptr_t Params)
   AddFlagName(ParamsStr, Params, spMirror, L"Mirror");
   if (Params > 0)
   {
-    AddToList(ParamsStr, FORMAT(L"0x%x", int(Params)), L", ");
+    AddToList(ParamsStr, FORMAT(L"0x%x", static_cast<int>(Params)), L", ");
   }
   return ParamsStr;
 }
@@ -4711,9 +4754,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
     };
     bool Found = false;
     TSearchRecChecked SearchRec;
-    Data.LocalFileList = new TStringList();
-    Data.LocalFileList->SetSorted(true);
-    Data.LocalFileList->SetCaseSensitive(false);
+    Data.LocalFileList = CreateSortedStringList();
 
     FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()), "",
     [&]()

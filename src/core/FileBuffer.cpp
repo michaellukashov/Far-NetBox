@@ -71,7 +71,7 @@ int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceL
     }
     else
     {
-      Result = Stream->Read(GetData() + GetPosition(), (int64_t)Len);
+      Result = Stream->Read(GetData() + GetPosition(), Len);
     }
     if (Result != Len)
     {
@@ -210,13 +210,13 @@ void TFileBuffer::Convert(TEOLType Source, char * Dest, intptr_t Params,
 void TFileBuffer::Insert(int64_t Index, const char * Buf, size_t Len)
 {
   SetSize(GetSize() + Len);
-  memmove(GetData() + Index + Len, GetData() + Index, (size_t)(GetSize() - Index - Len));
+  memmove(GetData() + Index + Len, GetData() + Index, static_cast<size_t>(GetSize() - Index - Len));
   memmove(GetData() + Index, Buf, Len);
 }
 
 void TFileBuffer::Delete(int64_t Index, size_t Len)
 {
-  memmove(GetData() + Index, GetData() + Index + Len, (size_t)(GetSize() - Index - Len));
+  memmove(GetData() + Index, GetData() + Index + Len, static_cast<size_t>(GetSize() - Index - Len));
   SetSize(GetSize() - Len);
 }
 

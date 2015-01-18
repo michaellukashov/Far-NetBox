@@ -11,10 +11,7 @@
 TBookmarks::TBookmarks() : TObject()
 {
   FSharedKey = UnicodeString(CONST_HIDDEN_PREFIX) + "shared";
-  FBookmarkLists = new TStringList();
-  FBookmarkLists->SetSorted(true);
-  FBookmarkLists->SetCaseSensitive(false);
-  FBookmarkLists->SetDuplicates(dupError);
+  FBookmarkLists = CreateSortedStringList(false, dupError);
 }
 
 TBookmarks::~TBookmarks()
@@ -266,9 +263,7 @@ TBookmarkList::TBookmarkList() : TPersistent()
   FModified = false;
   FBookmarks = new TStringList();
   FBookmarks->SetCaseSensitive(false);
-  FOpenedNodes = new TStringList();
-  FOpenedNodes->SetCaseSensitive(false);
-  FOpenedNodes->SetSorted(true);
+  FOpenedNodes = CreateSortedStringList();
 }
 
 TBookmarkList::~TBookmarkList()
@@ -405,7 +400,7 @@ TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, const UnicodeS
   return Bookmark;
 }
 
-TBookmark * TBookmarkList::FindByShortCut(TShortCut ShortCut)
+TBookmark * TBookmarkList::FindByShortCut(const TShortCut & ShortCut)
 {
   for (intptr_t Index = 0; Index < FBookmarks->GetCount(); ++Index)
   {
@@ -532,7 +527,7 @@ void TBookmark::SetNode(const UnicodeString & Value)
   }
 }
 
-void TBookmark::SetShortCut(TShortCut Value)
+void TBookmark::SetShortCut(const TShortCut & Value)
 {
   if (GetShortCut() != Value)
   {

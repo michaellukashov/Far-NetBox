@@ -449,3 +449,15 @@ private:
   rde::vector<TShortCut> FShortCuts;
 };
 
+extern const UnicodeString OriginalPuttyRegistryStorageKey;
+extern const UnicodeString KittyRegistryStorageKey;
+extern const UnicodeString OriginalPuttyExecutable;
+extern const UnicodeString KittyExecutable;
+
+extern const UnicodeString Sha1ChecksumAlg;
+extern const UnicodeString Sha224ChecksumAlg;
+extern const UnicodeString Sha256ChecksumAlg;
+extern const UnicodeString Sha384ChecksumAlg;
+extern const UnicodeString Sha512ChecksumAlg;
+extern const UnicodeString Md5ChecksumAlg;
+extern const UnicodeString Crc32ChecksumAlg;

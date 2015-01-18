@@ -156,7 +156,7 @@ void TFileOperationProgressType::Resume()
 
   // shift timestamps for CPS calculation in advance
   // by the time the progress was suspended
-  uint32_t Stopped = (uint32_t)(::GetTickCount() - FSuspendTime);
+  uint32_t Stopped = static_cast<uint32_t>(::GetTickCount() - FSuspendTime);
   size_t Index = 0;
   while (Index < FTicks.size())
   {
@@ -441,7 +441,7 @@ void TFileOperationProgressType::AddSkippedFileSize(int64_t ASize)
 uintptr_t TFileOperationProgressType::TransferBlockSize()
 {
   uintptr_t Result = TRANSFER_BUF_SIZE;
-  if (TransferedSize + (int64_t)Result > TransferSize)
+  if (TransferedSize + static_cast<int64_t>(Result) > TransferSize)
   {
     Result = static_cast<uintptr_t>(TransferSize - TransferedSize);
   }

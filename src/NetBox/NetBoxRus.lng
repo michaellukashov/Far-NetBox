@@ -960,7 +960,7 @@
 "Operation not supported."
 "Access denied."
 "Prompting for credentials..."
-"Invalid response to PWD command '%s'."
+"Invalid response to %s command '%s'."
 "This version does not support FTP protocol."
 
 "Error transferring file '%s'."
@@ -1016,6 +1016,7 @@
 "The name specified can not be assigned as the primary group of a file."
 "The requested operation could not be completed because the specifed byte range lock has not been granted."
 "Private key file '%s' does not exist or cannot be opened."
+"Checksum algorithm '%s' is not supported."
 
 "CORE_CONFIRMATION"
 "Host is not communicating for %d seconds.\n\nWait for another %d seconds?"
@@ -1184,7 +1185,7 @@
 "$$"
 
 "WinSCP"
-"5.6.3"
+"5.6.4"
 "1.6.2"
 "Based on WinSCP: SFTP/FTP/SCP client for FAR"
 " Version %s"

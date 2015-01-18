@@ -504,7 +504,7 @@ bool TCopyParamList::GetAnyRule() const
 
 TGUIConfiguration::TGUIConfiguration() : TConfiguration(),
   FLocale(0),
-  FLocales(new TStringList()),
+  FLocales(CreateSortedStringList()),
   FContinueOnError(false),
   FConfirmCommandSession(false),
   FPuttyPassword(false),
@@ -526,8 +526,6 @@ TGUIConfiguration::TGUIConfiguration() : TConfiguration(),
   FSessionReopenAutoIdle(0)
 {
   FLastLocalesExts = L"*";
-  NB_STATIC_DOWNCAST(TStringList, FLocales)->SetSorted(true);
-  NB_STATIC_DOWNCAST(TStringList, FLocales)->SetCaseSensitive(false);
   FCopyParamList = new TCopyParamList();
   CoreSetResourceModule(0);
 }
@@ -727,8 +725,8 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
 
-    intptr_t CopyParamListCount = Storage->ReadInteger("CopyParamList", (DWORD)-1);
-    FCopyParamListDefaults = (CopyParamListCount == (DWORD)-1);
+    intptr_t CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
+    FCopyParamListDefaults = (CopyParamListCount == -1);
     if (!FCopyParamListDefaults)
     {
       FCopyParamList->Clear();
@@ -909,15 +907,13 @@ TStrings * TGUIConfiguration::GetLocales()
 {
   Error(SNotImplemented, 93);
   UnicodeString LocalesExts;
-  std::unique_ptr<TStringList> Exts(new TStringList());
-  Exts->SetSorted(true);
-  Exts->SetCaseSensitive(false);
+  std::unique_ptr<TStringList> Exts(CreateSortedStringList());
 
   DWORD FindAttrs = faReadOnly | faArchive;
   TSearchRecChecked SearchRec;
   bool Found;
 
-  Found = (bool)(FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
+  Found = (FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
     FindAttrs, SearchRec) == 0);
   {
     SCOPE_EXIT

@@ -136,7 +136,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
   }
   else
   {
-    Result = ::GetFileVersionInfo(FileName, Handle, (DWORD)DataSize, Data) != 0;
+    Result = ::GetFileVersionInfo(FileName, Handle, static_cast<DWORD>(DataSize), Data) != 0;
   }
 
   return Result;

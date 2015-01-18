@@ -155,6 +155,14 @@ public:
 //            FLog->AddIndented(L"    </file>");
 //          }
 //          FLog->AddIndented(L"  </files>");
+//          if (File->Owner.IsSet)
+//          {
+//            FLog->AddIndented(FORMAT(L"      <owner value=\"%s\" />", (XmlAttributeEscape(File->Owner.DisplayText))));
+//          }
+//          if (File->Group.IsSet)
+//          {
+//            FLog->AddIndented(FORMAT(L"      <group value=\"%s\" />", (XmlAttributeEscape(File->Group.DisplayText))));
+//          }
 //        }
 //        if (FFile != nullptr)
 //        {
@@ -253,9 +261,20 @@ public:
     }
   }
 
-  void AddExitCode(int ExitCode)
+  void ExitCode(int ExitCode)
   {
     Parameter(L"exitcode", IntToStr(ExitCode));
+  }
+
+  void Checksum(const UnicodeString & Alg, const UnicodeString & Checksum)
+  {
+    Parameter(L"algorithm", Alg);
+    Parameter(L"checksum", Checksum);
+  }
+
+  void Cwd(const UnicodeString & Path)
+  {
+    Parameter(L"cwd", Path);
   }
 
   void FileList(TRemoteFileList * FileList)
@@ -306,6 +325,8 @@ protected:
       case laCall: return L"call";
       case laLs: return L"ls";
       case laStat: return L"stat";
+      case laChecksum: return L"checksum";
+      case laCwd: return L"cwd";
       default: FAIL; return L"";
     }
   }
@@ -521,11 +542,11 @@ void TCallSessionAction::AddOutput(const UnicodeString & Output, bool StdError)
   }
 }
 
-void TCallSessionAction::AddExitCode(int ExitCode)
+void TCallSessionAction::ExitCode(int ExitCode)
 {
   if (FRecord != nullptr)
   {
-    FRecord->AddExitCode(ExitCode);
+    FRecord->ExitCode(ExitCode);
   }
 }
 
@@ -557,6 +578,28 @@ void TStatSessionAction::File(TRemoteFile * AFile)
   if (FRecord != nullptr)
   {
     FRecord->File(AFile);
+  }
+}
+
+TChecksumSessionAction::TChecksumSessionAction(TActionLog * Log) :
+  TFileSessionAction(Log, laChecksum)
+{
+}
+//---------------------------------------------------------------------------
+void TChecksumSessionAction::Checksum(const UnicodeString & Alg, const UnicodeString & Checksum)
+{
+  if (FRecord != NULL)
+  {
+    FRecord->Checksum(Alg, Checksum);
+  }
+}
+
+TCwdSessionAction::TCwdSessionAction(TActionLog * Log, const UnicodeString & Path) :
+  TSessionAction(Log, laCwd)
+{
+  if (FRecord != NULL)
+  {
+    FRecord->Cwd(Path);
   }
 }
 
@@ -1125,7 +1168,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       UnicodeString TimeInfo;
       if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
       {
-        AddToList(TimeInfo, FORMAT(L"DST mode: %d", int(Data->GetDSTMode())), L";");
+        AddToList(TimeInfo, FORMAT(L"DST mode: %d", static_cast<int>(Data->GetDSTMode())), L";");
       }
       if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
       {
@@ -1300,8 +1343,8 @@ void TActionLog::Add(const UnicodeString & Line)
       if (FFile != nullptr)
       {
         UTF8String UtfLine = UTF8String(Line);
-        fwrite(UtfLine.c_str(), 1, UtfLine.Length(), (FILE *)FFile);
-        fwrite("\n", 1, 1, (FILE *)FFile);
+        fwrite(UtfLine.c_str(), 1, UtfLine.Length(), static_cast<FILE *>(FFile));
+        fwrite("\n", 1, 1, static_cast<FILE *>(FFile));
       }
     }
     catch (Exception & E)
@@ -1387,7 +1430,7 @@ void TActionLog::CloseLogFile()
 {
   if (FFile != nullptr)
   {
-    fclose((FILE *)FFile);
+    fclose(static_cast<FILE *>(FFile));
     FFile = nullptr;
   }
   FCurrentLogFileName.Clear();

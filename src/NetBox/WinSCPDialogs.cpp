@@ -1351,7 +1351,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   {
     GenerateLabel(Prompts->GetString(Index), Truncated);
 
-    FEdits->Add(GenerateEdit(FLAGSET((intptr_t)Prompts->GetObj(Index), pupEcho)));
+    FEdits->Add(GenerateEdit(FLAGSET(reinterpret_cast<intptr_t>(Prompts->GetObj(Index)), pupEcho)));
   }
 }
 
@@ -2339,15 +2339,15 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   FtpProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS5, pmSocks5);
   FtpProxyMethodComboAddNewItem(LOGIN_PROXY_HTTP, pmHTTP);
   FtpProxyMethodComboAddNewItem(LOGIN_PROXY_SYSTEM, pmSystem);
-  TProxyMethod FtpProxyMethod = (TProxyMethod)(GetLastSupportedFtpProxyMethod());
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_SITE, (TProxyMethod)(FtpProxyMethod + 1));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_USERHOST, (TProxyMethod)(FtpProxyMethod + 2));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_OPEN_HOST, (TProxyMethod)(FtpProxyMethod + 3));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_USERUSER, (TProxyMethod)(FtpProxyMethod + 4));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USER_USERHOST, (TProxyMethod)(FtpProxyMethod + 5));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_HOST, (TProxyMethod)(FtpProxyMethod + 6));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USERHOST_PROXYUSER, (TProxyMethod)(FtpProxyMethod + 7));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USER_USERPROXYUSERHOST, (TProxyMethod)(FtpProxyMethod + 8));
+  TProxyMethod FtpProxyMethod = static_cast<TProxyMethod>(GetLastSupportedFtpProxyMethod());
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_SITE, static_cast<TProxyMethod>(FtpProxyMethod + 1));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_USERHOST, static_cast<TProxyMethod>(FtpProxyMethod + 2));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_OPEN_HOST, static_cast<TProxyMethod>(FtpProxyMethod + 3));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_USERUSER, static_cast<TProxyMethod>(FtpProxyMethod + 4));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USER_USERHOST, static_cast<TProxyMethod>(FtpProxyMethod + 5));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_HOST, static_cast<TProxyMethod>(FtpProxyMethod + 6));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USERHOST_PROXYUSER, static_cast<TProxyMethod>(FtpProxyMethod + 7));
+  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USER_USERPROXYUSERHOST, static_cast<TProxyMethod>(FtpProxyMethod + 8));
   FtpProxyMethodCombo->SetWidth(40);
 
   SshProxyMethodCombo = new TFarComboBox(this);
