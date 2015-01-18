@@ -1214,9 +1214,14 @@ bool TFileCustomCommand::IsFileListCommand(const UnicodeString & Command)
   return FindPattern(Command, L'&');
 }
 
-bool TFileCustomCommand::IsFileCommand(const UnicodeString & Command)
+bool TFileCustomCommand::IsRemoteFileCommand(const UnicodeString & Command)
 {
   return FindPattern(Command, L'!') || FindPattern(Command, L'&');
+}
+
+bool TFileCustomCommand::IsFileCommand(const UnicodeString & Command)
+{
+  return IsRemoteFileCommand(Command);
 }
 
 bool TFileCustomCommand::IsSiteCommand(const UnicodeString & Command)

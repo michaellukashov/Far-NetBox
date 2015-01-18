@@ -49,12 +49,14 @@ UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim);
 UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
   const UnicodeString & Chs, bool Trim,
   wchar_t * Delimiter = nullptr, bool DoubleDelimiterEscapes = false);
+UnicodeString CopyToChar(const UnicodeString & Str, wchar_t Ch, bool Trim);
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars);
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
 UnicodeString ExceptionLogString(Exception *E);
 UnicodeString MainInstructions(const UnicodeString & S);
 UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S);
 bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions);
+UnicodeString RemoveMainInstructionsTag(const UnicodeString & S);
 UnicodeString UnformatMessage(const UnicodeString & S);
 UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S);
 bool IsNumber(const UnicodeString & Str);

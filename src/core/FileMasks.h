@@ -240,6 +240,7 @@ public:
 
   bool IsFileListCommand(const UnicodeString & Command);
   virtual bool IsFileCommand(const UnicodeString & Command);
+  bool IsRemoteFileCommand(const UnicodeString & Command);
   bool IsSiteCommand(const UnicodeString & Command);
   bool IsPasswordCommand(const UnicodeString & Command);
 

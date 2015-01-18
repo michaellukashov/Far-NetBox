@@ -257,6 +257,12 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
   return Result;
 }
 
+UnicodeString CopyToChar(const UnicodeString & Str, wchar_t Ch, bool Trim)
+{
+  int From = 1;
+  return CopyToChars(Str, From, UnicodeString(Ch), Trim);
+}
+
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars)
 {
   UnicodeString Result = Str;
@@ -375,13 +381,24 @@ static intptr_t FindInteractiveMsgStart(const UnicodeString & S)
   return Result;
 }
 
-UnicodeString UnformatMessage(const UnicodeString & S)
+UnicodeString RemoveMainInstructionsTag(const UnicodeString & S)
 {
-  UnicodeString Result = S;
   UnicodeString MainInstruction;
+  UnicodeString Result = S;
   if (ExtractMainInstructions(Result, MainInstruction))
   {
     Result = MainInstruction + Result;
+  }
+  return Result;
+}
+
+UnicodeString UnformatMessage(const UnicodeString & S)
+{
+  UnicodeString Result = RemoveMainInstructionsTag(S);
+  int InteractiveMsgStart = FindInteractiveMsgStart(Result);
+  if (InteractiveMsgStart > 0)
+  {
+    Result = Result.SubString(1, InteractiveMsgStart - 1);
   }
   return Result;
 }
@@ -2524,6 +2541,7 @@ TStringList * CreateSortedStringList(bool CaseSensitive, TDuplicatesEnum Duplica
 {
   TStringList * Result = new TStringList();
   Result->SetCaseSensitive(CaseSensitive);
+  Result->SetSorted(true);
   Result->SetDuplicates(Duplicates);
   return Result;
 }

@@ -16,15 +16,18 @@ enum TFileOperation
 // csCancelTransfer and csRemoteAbort are used with SCP only
 enum TCancelStatus
 {
-  csContinue = 0, csCancel, csCancelTransfer, csRemoteAbort
+  csContinue = 0,
+  csCancel,
+  csCancelTransfer,
+  csRemoteAbort,
 };
 
-enum TResumeStatus
+/*enum TResumeStatus
 {
   rsNotAvailable,
   rsEnabled,
   rsDisabled
-};
+};*/
 
 enum TBatchOverwrite
 {
@@ -64,7 +67,6 @@ public:
   int64_t TransferSize;
   int64_t TransferedSize;
   int64_t SkippedSize;
-  TResumeStatus ResumeStatus;
   bool InProgress;
   bool FileInProgress;
   TCancelStatus Cancel;
@@ -111,7 +113,6 @@ public:
   void Resume();
   void SetLocalSize(int64_t ASize);
   void SetAsciiTransfer(bool AAsciiTransfer);
-  void SetResumeStatus(TResumeStatus AResumeStatus);
   void SetTransferSize(int64_t ASize);
   void ChangeTransferSize(int64_t ASize);
   void RollbackTransfer();

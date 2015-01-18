@@ -436,6 +436,7 @@ public:
   virtual void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpContext);
   virtual void HandleExtendedException(Exception * E);
   virtual void Closed();
+  virtual void ProcessGUI();
 
 private:
   TTerminal * FTerminal;
@@ -530,6 +531,11 @@ void TTunnelUI::HandleExtendedException(Exception * E)
 }
 
 void TTunnelUI::Closed()
+{
+  // noop
+}
+
+void TTunnelUI::ProcessGUI()
 {
   // noop
 }
@@ -689,7 +695,8 @@ TTerminal::TTerminal() :
   FEnableSecureShellUsage(false),
   FCollectFileSystemUsage(false),
   FRememberedPasswordTried(false),
-  FRememberedTunnelPasswordTried(false)
+  FRememberedTunnelPasswordTried(false),
+  FIdle(0)
 {
 }
 
@@ -788,6 +795,8 @@ void TTerminal::Idle()
   // "receives the information"
   if (GetActive())
   {
+    TAutoNestingCounter IdleCounter(FIdle);
+
     if (FConfiguration->GetActualLogProtocol() >= 1)
     {
       // LogEvent("Session upkeep");
@@ -1256,6 +1265,17 @@ void TTerminal::Closed()
   }
 
   FStatus = ssClosed;
+}
+
+void TTerminal::ProcessGUI()
+{
+  // Do not process GUI here, as we are called directly from a GUI loop and may
+  // recurse for good.
+  // Alternatively we may check for (FOperationProgress == NULL)
+  if (FIdle == 0)
+  {
+    ::ProcessGUI();
+  }
 }
 
 void TTerminal::Reopen(intptr_t Params)

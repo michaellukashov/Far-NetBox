@@ -122,9 +122,9 @@ public:
   TPersistent();
   virtual ~TPersistent();
   virtual void Assign(const TPersistent * Source);
+  virtual TPersistent * GetOwner();
 protected:
   virtual void AssignTo(TPersistent * Dest) const;
-  virtual TPersistent * GetOwner();
 private:
   void AssignError(const TPersistent * Source);
 };
