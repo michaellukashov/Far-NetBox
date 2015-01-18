@@ -455,7 +455,7 @@ TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
   FLocalFileName = LocalFileName;
 }
 
-intptr_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index)
+intptr_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index) const
 {
   intptr_t Len = 0;
   if (Command[Index + 1] == L'^')

@@ -785,7 +785,7 @@ TCustomCommand::TCustomCommand()
 }
 
 void TCustomCommand::GetToken(
-  const UnicodeString & Command, intptr_t Index, intptr_t & Len, wchar_t & PatternCmd)
+  const UnicodeString & Command, intptr_t Index, intptr_t & Len, wchar_t & PatternCmd) const
 {
   assert(Index <= Command.Length());
   const wchar_t * Ptr = Command.c_str() + Index - 1;
@@ -925,7 +925,7 @@ void TCustomCommand::CustomValidate(const UnicodeString & Command,
 }
 
 bool TCustomCommand::FindPattern(const UnicodeString & Command,
-  wchar_t PatternCmd)
+  wchar_t PatternCmd) const
 {
   bool Result = false;
   intptr_t Index = 1;
@@ -970,7 +970,7 @@ void TInteractiveCustomCommand::Execute(
   Value.Clear();
 }
 
-intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index)
+intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index) const
 {
   intptr_t Len = 0;
   wchar_t PatternCmd = (Index < Command.Length()) ? Command[Index + 1] : L'\0';
@@ -1119,7 +1119,7 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
 {
 }
 
-intptr_t TFileCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index)
+intptr_t TFileCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index) const
 {
   intptr_t Len;
   wchar_t PatternCmd = (Index < Command.Length()) ? Command[Index + 1] : L'\0';
@@ -1209,27 +1209,27 @@ void TFileCustomCommand::ValidatePattern(const UnicodeString & Command,
   }
 }
 
-bool TFileCustomCommand::IsFileListCommand(const UnicodeString & Command)
+bool TFileCustomCommand::IsFileListCommand(const UnicodeString & Command) const
 {
   return FindPattern(Command, L'&');
 }
 
-bool TFileCustomCommand::IsRemoteFileCommand(const UnicodeString & Command)
+bool TFileCustomCommand::IsRemoteFileCommand(const UnicodeString & Command) const
 {
   return FindPattern(Command, L'!') || FindPattern(Command, L'&');
 }
 
-bool TFileCustomCommand::IsFileCommand(const UnicodeString & Command)
+bool TFileCustomCommand::IsFileCommand(const UnicodeString & Command) const
 {
   return IsRemoteFileCommand(Command);
 }
 
-bool TFileCustomCommand::IsSiteCommand(const UnicodeString & Command)
+bool TFileCustomCommand::IsSiteCommand(const UnicodeString & Command) const
 {
   return FindPattern(Command, L'@');
 }
 
-bool TFileCustomCommand::IsPasswordCommand(const UnicodeString & Command)
+bool TFileCustomCommand::IsPasswordCommand(const UnicodeString & Command) const
 {
   return FindPattern(Command, L'p');
 }

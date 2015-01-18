@@ -168,14 +168,14 @@ public:
 protected:
   static const wchar_t NoQuote;
   void GetToken(const UnicodeString & Command,
-    intptr_t Index, intptr_t & Len, wchar_t & PatternCmd);
+    intptr_t Index, intptr_t & Len, wchar_t & PatternCmd) const;
   void CustomValidate(const UnicodeString & Command, void * Arg);
-  bool FindPattern(const UnicodeString & Command, wchar_t PatternCmd);
+  bool FindPattern(const UnicodeString & Command, wchar_t PatternCmd) const;
 
   virtual void ValidatePattern(const UnicodeString & Command,
     intptr_t Index, intptr_t Len, wchar_t PatternCmd, void * Arg);
 
-  virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) = 0;
+  virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) const = 0;
   virtual bool PatternReplacement(const UnicodeString & Pattern,
     UnicodeString & Replacement, bool & Delimit) = 0;
   virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
@@ -192,7 +192,7 @@ protected:
     UnicodeString & Value);
   virtual void Execute(const UnicodeString & Command,
     UnicodeString & Value);
-  virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index);
+  virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) const;
   virtual bool PatternReplacement(const UnicodeString & Pattern,
     UnicodeString & Replacement, bool & Delimit);
 
@@ -238,14 +238,14 @@ public:
   virtual void ValidatePattern(const UnicodeString & Command,
     intptr_t Index, intptr_t Len, wchar_t PatternCmd, void * Arg);
 
-  bool IsFileListCommand(const UnicodeString & Command);
-  virtual bool IsFileCommand(const UnicodeString & Command);
-  bool IsRemoteFileCommand(const UnicodeString & Command);
-  bool IsSiteCommand(const UnicodeString & Command);
-  bool IsPasswordCommand(const UnicodeString & Command);
+  bool IsFileListCommand(const UnicodeString & Command) const;
+  virtual bool IsFileCommand(const UnicodeString & Command) const;
+  bool IsRemoteFileCommand(const UnicodeString & Command) const;
+  bool IsSiteCommand(const UnicodeString & Command) const;
+  bool IsPasswordCommand(const UnicodeString & Command) const;
 
 protected:
-  virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index);
+  virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) const;
   virtual bool PatternReplacement(const UnicodeString & Pattern,
     UnicodeString & Replacement, bool & Delimit);
 
