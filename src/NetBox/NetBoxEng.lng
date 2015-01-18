@@ -1017,6 +1017,8 @@
 "The requested operation could not be completed because the specifed byte range lock has not been granted."
 "Private key file '%s' does not exist or cannot be opened."
 "Checksum algorithm '%s' is not supported."
+"Cipher %s was not verified!"
+"Key-exchange algorithm %s was not verified!"
 
 "CORE_CONFIRMATION"
 "Host is not communicating for %d seconds.\n\nWait for another %d seconds?"
