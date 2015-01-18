@@ -61,7 +61,6 @@ void TFileOperationProgressType::Clear()
   TransferSize = 0;
   TransferedSize = 0;
   SkippedSize = 0;
-  ResumeStatus = rsNotAvailable;
   InProgress = false;
   FileInProgress = false;
   Cancel = csContinue;
@@ -463,12 +462,6 @@ bool TFileOperationProgressType::IsTransferDone() const
 void TFileOperationProgressType::SetAsciiTransfer(bool AAsciiTransfer)
 {
   AsciiTransfer = AAsciiTransfer;
-  DoProgress();
-}
-
-void TFileOperationProgressType::SetResumeStatus(TResumeStatus AResumeStatus)
-{
-  ResumeStatus = AResumeStatus;
   DoProgress();
 }
 

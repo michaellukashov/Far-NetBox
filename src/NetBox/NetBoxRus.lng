@@ -1017,6 +1017,8 @@
 "The requested operation could not be completed because the specifed byte range lock has not been granted."
 "Private key file '%s' does not exist or cannot be opened."
 "Checksum algorithm '%s' is not supported."
+"Cipher %s was not verified!"
+"Key-exchange algorithm %s was not verified!"
 
 "CORE_CONFIRMATION"
 "Host is not communicating for %d seconds.\n\nWait for another %d seconds?"
@@ -1185,11 +1187,11 @@
 "$$"
 
 "WinSCP"
-"5.6.4"
+"5.6.5"
 "1.6.2"
 "Based on WinSCP: SFTP/FTP/SCP client for FAR"
 " Version %s"
-"Copyright © 2000-2014 Martin Prikryl"
+"Copyright © 2000-2015 Martin Prikryl"
 
 
 "**Continue connecting to an unknown server and add its host key to a cache?**\n\nThe server's host key was not found in the cache. You have no guarantee that the server is the computer you think it is.\n\nThe server's %s key fingerprint is:\n%s\n\nIf you trust this host, press Yes. To connect without adding host key to the cache, press No. To abandon the connection press Cancel."

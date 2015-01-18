@@ -110,6 +110,7 @@ public:
   bool GetAutoReadDirectoryAfterOp() const;
   void SetAutoReadDirectoryAfterOp(bool Value);
   virtual bool GetRememberPassword() const;
+  UnicodeString GetReleaseType() const;
 
   virtual UnicodeString ModuleFileName() const;
 
@@ -148,6 +149,7 @@ public:
   void CleanupRandomSeedFile();
   void BeginUpdate();
   void EndUpdate();
+  void DontSave();
   void LoadDirectoryChangesCache(const UnicodeString & SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
   void SaveDirectoryChangesCache(const UnicodeString & SessionKey,
@@ -326,6 +328,7 @@ protected:
   bool __fastcall GetAutoReadDirectoryAfterOp();
   void __fastcall SetAutoReadDirectoryAfterOp(bool value);
   virtual bool __fastcall GetRememberPassword();
+  UnicodeString __fastcall GetReleaseType();
 
   virtual UnicodeString __fastcall ModuleFileName();
 
@@ -359,6 +362,7 @@ public:
   void __fastcall CleanupRandomSeedFile();
   void __fastcall BeginUpdate();
   void __fastcall EndUpdate();
+  void __fastcall DontSave();
   void __fastcall LoadDirectoryChangesCache(const UnicodeString SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
   void __fastcall SaveDirectoryChangesCache(const UnicodeString SessionKey,
@@ -393,13 +397,13 @@ public:
   __property UnicodeString ProductVersion = { read=GetProductVersion };
   __property UnicodeString ProductName = { read=GetProductName };
   __property UnicodeString CompanyName = { read=GetCompanyName };
-  __property UnicodeString FileInfoString[UnicodeString Key] = { read = GetFileInfoString };
   __property UnicodeString OSVersionStr = { read = GetOSVersionStr };
   __property bool IsUnofficial = { read = GetIsUnofficial };
   __property bool Logging  = { read=FLogging, write=SetLogging };
   __property UnicodeString LogFileName  = { read=FLogFileName, write=SetLogFileName };
   __property bool LogToFile  = { read=GetLogToFile };
   __property bool LogFileAppend  = { read=FLogFileAppend, write=SetLogFileAppend };
+  __property bool LogSensitive  = { read=FLogSensitive, write=SetLogSensitive };
   __property int LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
   __property int ActualLogProtocol  = { read=FActualLogProtocol };
   __property bool LogActions  = { read=FLogActions, write=SetLogActions };

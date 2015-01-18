@@ -83,6 +83,7 @@ public:
   virtual void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") = 0;
   virtual void HandleExtendedException(Exception * E) = 0;
   virtual void Closed() = 0;
+  virtual void ProcessGUI() = 0;
 };
 
 // Duplicated in LogMemo.h for design-time-only purposes

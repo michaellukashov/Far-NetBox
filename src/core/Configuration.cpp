@@ -638,6 +638,11 @@ void TConfiguration::CleanupIniFile()
 #endif
 }
 
+void TConfiguration::DontSave()
+{
+  FDontSave = true;
+}
+
 RawByteString TConfiguration::EncryptPassword(const UnicodeString & Password, const UnicodeString & Key)
 {
   if (Password.IsEmpty())
@@ -769,6 +774,11 @@ UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName
 UnicodeString TConfiguration::GetProductVersion() const
 {
   return GetFileProductVersion(L"");
+}
+
+UnicodeString TConfiguration::GetReleaseType() const
+{
+  return GetFileInfoString(L"ReleaseType");
 }
 
 bool TConfiguration::GetIsUnofficial() const

@@ -1212,7 +1212,7 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
         L"need to send at least another %u bytes",
         BufSize, BufSize - MAX_BUFSIZE));
     }
-    EventSelectLoop(100, false, true, nullptr);
+    EventSelectLoop(100, false, nullptr);
     BufSize = FBackend->sendbuffer(FBackendHandle);
     if (GetConfiguration()->GetActualLogProtocol() >= 1)
     {
@@ -1257,7 +1257,7 @@ void TSecureShell::Send(const uint8_t * Buf, intptr_t Length)
   }
   FLastDataSent = Now();
   // among other forces receive of pending data to free the servers's send buffer
-  EventSelectLoop(0, false, true, nullptr);
+  EventSelectLoop(0, false, nullptr);
 
   if (BufSize > MAX_BUFSIZE)
   {
@@ -1672,7 +1672,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, intptr_t & Result)
       // in extreme condition it may happen that send buffer is full, but there
       // will be no data coming and we may not empty the send buffer because we
       // do not process FD_WRITE until we receive any FD_READ
-      if (EventSelectLoop(0, false, true, &Events))
+      if (EventSelectLoop(0, false, &Events))
       {
         LogEvent("Data has arrived, closing query to user.");
         Result = qaOK;
@@ -1723,7 +1723,7 @@ void TSecureShell::WaitForData()
       LogEvent("Looking for incoming data");
     }
 
-    IncomingData = EventSelectLoop(FSessionData->GetTimeout() * MSecsPerSec, true, true, nullptr);
+    IncomingData = EventSelectLoop(FSessionData->GetTimeout() * MSecsPerSec, true, nullptr);
     if (!IncomingData)
     {
       assert(FWaitingForData == 0);
@@ -1854,7 +1854,7 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 }
 
 bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
-  bool DoProcessGUI, WSANETWORKEVENTS * Events)
+  WSANETWORKEVENTS * Events)
 {
   CheckConnection();
 
@@ -1890,10 +1890,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
         uint32_t TimeoutStep = min(GUIUpdateInterval, Timeout);
         Timeout -= TimeoutStep;
         WaitResult = ::WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, TimeoutStep);
-        if (DoProcessGUI)
-        {
-          ProcessGUI();
-        }
+        FUI->ProcessGUI();
       }
       while ((WaitResult == WAIT_TIMEOUT) && (Timeout > 0));
 
@@ -1990,9 +1987,7 @@ void TSecureShell::Idle(uintptr_t MSec)
   // do not read here, otherwise we swallow read event and never wake
   if (FWaitingForData <= 0)
   {
-    // do not process GUI here, as we are called from GUI loop and may
-    // recurse for good
-    EventSelectLoop(MSec, false, false, nullptr);
+    EventSelectLoop(MSec, false, nullptr);
   }
 }
 
@@ -2182,7 +2177,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
     {
       UnicodeString StoredKey = CutToChar(Buf, Delimiter, false);
       bool Fingerprint = (StoredKey.SubString(1, 2) != L"0x");
-      // its probably a fingerprint (stored by TSessionData::CacheHostKey)
+      // it's probably a fingerprint (stored by TSessionData::CacheHostKey)
       UnicodeString NormalizedExpectedKey;
       if (Fingerprint)
       {
@@ -2318,9 +2313,11 @@ void TSecureShell::AskAlg(const UnicodeString & AlgType,
   const UnicodeString & AlgName)
 {
   UnicodeString Msg;
+  UnicodeString Error;
   if (AlgType == L"key-exchange algorithm")
   {
     Msg = FMTLOAD(KEX_BELOW_TRESHOLD, AlgName.c_str());
+    Error = FMTLOAD(KEX_NOT_VERIFIED, AlgName.c_str());
   }
   else
   {
@@ -2343,11 +2340,12 @@ void TSecureShell::AskAlg(const UnicodeString & AlgType,
     }
 
     Msg = FMTLOAD(CIPHER_BELOW_TRESHOLD, LoadStr(CipherType).c_str(), AlgName.c_str());
+    Error = FMTLOAD(CIPHER_NOT_VERIFIED, AlgName.c_str());
   }
 
   if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, nullptr, qtWarning) == qaNo)
   {
-    Abort();
+    FUI->FatalError(NULL, Error);
   }
 }
 

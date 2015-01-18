@@ -1045,6 +1045,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         }
         ADF(L"Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
           UnicodeString(PingTypes[PingType]).c_str(), PingInterval, Data->GetTimeout());
+        ADF(L"Disable Nagle: %s",
+          BooleanToEngStr(Data->GetTcpNoDelay()).c_str());
       }
       TProxyMethod ProxyMethod = Data->GetProxyMethod();
       ADF(L"Proxy: %s",

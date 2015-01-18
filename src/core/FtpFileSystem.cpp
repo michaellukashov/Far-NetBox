@@ -1897,7 +1897,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
     bool ResumeAllowed = !OperationProgress->AsciiTransfer &&
                          CopyParam->AllowResume(OperationProgress->LocalSize) &&
                          IsCapable(fcRename);
-    OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
+//    OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
 
     FileParams->SourceSize = OperationProgress->LocalSize;
     FileParams->SourceTimestamp = ::UnixToDateTime(MTime,
@@ -3021,7 +3021,7 @@ void TFTPFileSystem::WaitForMessages()
   do
   {
     Result = ::WaitForSingleObject(FQueueEvent, GUIUpdateInterval);
-    ProcessGUI();
+    FTerminal->ProcessGUI();
   }
   while (Result == WAIT_TIMEOUT);
 
@@ -3277,9 +3277,15 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
     {
       Disconnected = true;
     }
+
     if (FLastCode == DummyTimeoutCode)
     {
       HelpKeyword = HELP_ERRORMSG_TIMEOUT;
+    }
+
+    if (FLastCode == DummyDisconnectCode)
+    {
+      HelpKeyword = HELP_STATUSMSG_DISCONNECTED;
     }
 
     MoreMessages->AddStrings(FLastError);
@@ -3348,8 +3354,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
 void TFTPFileSystem::SendCommand(const UnicodeString & Command)
 {
   FFileZillaIntf->CustomCommand(Command.c_str());
-  intptr_t From = 1;
-  FLastCommandSent = CopyToChars(Command, From, L" ", false);
+  FLastCommandSent = CopyToChar(Command, L' ', false);
 }
 
 void TFTPFileSystem::SetLastCode(intptr_t Code)
