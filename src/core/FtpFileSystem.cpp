@@ -275,6 +275,7 @@ TFTPFileSystem::~TFTPFileSystem()
   SAFE_DESTROY(FFileZillaIntf);
 
   ::CloseHandle(FQueueEvent);
+  FQueueEvent = nullptr;
 
   SAFE_DESTROY(FLastResponse);
   SAFE_DESTROY(FLastErrorResponse);

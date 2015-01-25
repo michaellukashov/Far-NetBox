@@ -64,6 +64,7 @@ TSecureShell::~TSecureShell()
   SetActive(false);
   ResetConnection();
   ::CloseHandle(FSocketEvent);
+  FSocketEvent = nullptr;
 }
 
 void TSecureShell::ResetConnection()
