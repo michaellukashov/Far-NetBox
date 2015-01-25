@@ -358,11 +358,11 @@ const char* XMLUtil::GetCharacterRef( const char* p, char* value, int* length )
 
         if ( *(p+2) == 'x' ) {
             // Hexadecimal.
-            if ( !*(p+3) ) {
+            const char* q = p+3;
+            if ( !(*q) ) {
                 return 0;
             }
 
-            const char* q = p+3;
             q = strchr( q, SEMICOLON );
 
             if ( !q ) {
@@ -393,11 +393,11 @@ const char* XMLUtil::GetCharacterRef( const char* p, char* value, int* length )
         }
         else {
             // Decimal.
-            if ( !*(p+2) ) {
+            const char* q = p+2;
+            if ( !(*q) ) {
                 return 0;
             }
 
-            const char* q = p+2;
             q = strchr( q, SEMICOLON );
 
             if ( !q ) {
@@ -938,8 +938,6 @@ char* XMLText::ParseDeep( char* p, StrPair* )
         p = _value.ParseText( p, "<", flags );
         if ( p && *p ) {
             return p-1;
-        } else if ( !p ) {
-            _document->SetError( XML_ERROR_PARSING_TEXT, start, 0 );
         }
         if ( !p ) {
             _document->SetError( XML_ERROR_PARSING_TEXT, start, 0 );
@@ -2027,9 +2025,9 @@ void XMLPrinter::PrintString( const char* p, bool restricted )
 {
     // Look for runs of bytes between entities to print.
     const char* q = p;
-    const bool* flag = restricted ? _restrictedEntityFlag : _entityFlag;
 
     if ( _processEntities ) {
+        const bool* flag = restricted ? _restrictedEntityFlag : _entityFlag;
         while ( *q ) {
             // Remember, char is sometimes signed. (How many times has that bitten me?)
             if ( *q > 0 && *q < ENTITY_RANGE ) {
