@@ -491,12 +491,12 @@ void TLocalCustomCommand::DelimitReplacement(
   // never delimit local commands
 }
 
-bool TLocalCustomCommand::HasLocalFileName(const UnicodeString & Command)
+bool TLocalCustomCommand::HasLocalFileName(const UnicodeString & Command) const
 {
   return FindPattern(Command, L'^');
 }
 
-bool TLocalCustomCommand::IsFileCommand(const UnicodeString & Command)
+bool TLocalCustomCommand::IsFileCommand(const UnicodeString & Command) const
 {
   return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
 }

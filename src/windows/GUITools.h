@@ -54,8 +54,8 @@ public:
     const UnicodeString & FileList);
   virtual ~TLocalCustomCommand() {}
 
-  virtual bool IsFileCommand(const UnicodeString & Command);
-  bool HasLocalFileName(const UnicodeString & Command);
+  virtual bool IsFileCommand(const UnicodeString & Command) const;
+  bool HasLocalFileName(const UnicodeString & Command) const;
 
 protected:
   virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) const;
