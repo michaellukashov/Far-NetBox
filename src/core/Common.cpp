@@ -2546,21 +2546,22 @@ TStringList * CreateSortedStringList(bool CaseSensitive, TDuplicatesEnum Duplica
   return Result;
 }
 
-static UnicodeString NormalizeIdent(UnicodeString Ident)
+static UnicodeString NormalizeIdent(const UnicodeString & Ident)
 {
   int Index = 1;
-  while (Index <= Ident.Length())
+  UnicodeString Result = Ident;
+  while (Index <= Result.Length())
   {
-    if (Ident[Index] == L'-')
+    if (Result[Index] == L'-')
     {
-      Ident.Delete(Index, 1);
+      Result.Delete(Index, 1);
     }
     else
     {
       Index++;
     }
   }
-  return Ident;
+  return Result;
 }
 
 UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents)
