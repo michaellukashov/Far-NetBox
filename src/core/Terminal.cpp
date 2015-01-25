@@ -658,6 +658,7 @@ TTerminal::TTerminal() :
   FActionLog(nullptr),
   FConfiguration(nullptr),
   FFiles(nullptr),
+  FExceptionOnFail(0),
   FInTransaction(0),
   FSuspendTransaction(false),
   FOnChangeDirectory(nullptr),
