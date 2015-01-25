@@ -2961,14 +2961,14 @@ void TSFTPFileSystem::DoStartup()
           // were added only in rev 08, while "supported2" was defined in rev 07
           FSupport->OpenBlockVector = SupportedStruct.GetSmallCardinal();
           FSupport->BlockVector = SupportedStruct.GetSmallCardinal();
-          uintptr_t ExtensionCount;
+          uint32_t ExtensionCount;
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (uintptr_t Index = 0; Index < ExtensionCount; ++Index)
+          for (uint32_t Index = 0; Index < ExtensionCount; ++Index)
           {
             FSupport->AttribExtensions->Add(SupportedStruct.GetAnsiString());
           }
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (uintptr_t Index = 0; Index < ExtensionCount; ++Index)
+          for (uint32_t Index = 0; Index < ExtensionCount; ++Index)
           {
             FSupport->Extensions->Add(SupportedStruct.GetAnsiString());
           }
