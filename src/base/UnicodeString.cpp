@@ -145,7 +145,10 @@ AnsiString & AnsiString::operator=(const UTF8String & StrCopy)
 
 AnsiString & AnsiString::operator=(const char * lpszData)
 {
-  Init(lpszData, strlen(lpszData ? lpszData : ""));
+  if (lpszData)
+  {
+    Init(lpszData, strlen(lpszData ? lpszData : ""));
+  }
   return *this;
 }
 
@@ -317,7 +320,10 @@ RawByteString & RawByteString::operator=(const UTF8String & StrCopy)
 
 RawByteString & RawByteString::operator=(const char * lpszData)
 {
-  Init(lpszData, strlen(lpszData ? lpszData : ""));
+  if (lpszData)
+  {
+    Init(lpszData, strlen(lpszData ? lpszData : ""));
+  }
   return *this;
 }
 
@@ -449,7 +455,10 @@ UTF8String & UTF8String::operator=(const RawByteString & StrCopy)
 
 UTF8String & UTF8String::operator=(const char * lpszData)
 {
-  Init(lpszData, strlen(lpszData ? lpszData : ""));
+  if (lpszData)
+  {
+    Init(lpszData, strlen(lpszData ? lpszData : ""));
+  }
   return *this;
 }
 
@@ -670,7 +679,10 @@ UnicodeString & UnicodeString::operator=(const wchar_t Ch)
 
 UnicodeString & UnicodeString::operator=(const char * lpszData)
 {
-  Init(lpszData, strlen(lpszData ? lpszData : ""));
+  if (lpszData)
+  {
+    Init(lpszData, strlen(lpszData ? lpszData : ""));
+  }
   return *this;
 }
 
