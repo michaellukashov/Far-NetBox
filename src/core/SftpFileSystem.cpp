@@ -667,9 +667,9 @@ public:
   void GetFile(TRemoteFile * AFile, intptr_t Version, TDSTMode DSTMode, TAutoSwitch Utf, bool SignedTS, bool Complete)
   {
     assert(AFile);
-    uintptr_t Flags;
+    uint32_t Flags;
     UnicodeString ListingStr;
-    uintptr_t Permissions = 0;
+    uint32_t Permissions = 0;
     bool ParsingFailed = false;
     if (GetType() != SSH_FXP_ATTRS)
     {
@@ -791,7 +791,7 @@ public:
     {
       // while SSH_FILEXFER_ATTR_BITS is defined for SFTP5 only, vandyke 2.3.3 sets it
       // for SFTP4 as well
-      uintptr_t Bits = GetCardinal();
+      uint32_t Bits = GetCardinal();
       if (Version >= 6)
       {
         uint32_t BitsValid = GetCardinal();
@@ -2330,7 +2330,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
 uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
   intptr_t AllowStatus)
 {
-  uintptr_t Code = Packet->GetCardinal();
+  uint32_t Code = Packet->GetCardinal();
 
   static intptr_t Messages[] =
   {
@@ -3022,7 +3022,7 @@ void TSFTPFileSystem::DoStartup()
           TSFTPPacket RootsPacket(ExtensionData, FCodePage);
           while (RootsPacket.GetNextData() != nullptr)
           {
-            uintptr_t Dummy = RootsPacket.GetCardinal();
+            uint32_t Dummy = RootsPacket.GetCardinal();
             if (Dummy != 1)
             {
               break;
@@ -3250,10 +3250,10 @@ void TSFTPFileSystem::LookupUsersGroups()
     else
     {
       TRemoteTokenList & List = *Lists[Index];
-      uintptr_t Count = Packet->GetCardinal();
+      uint32_t Count = Packet->GetCardinal();
 
       List.Clear();
-      for (uintptr_t Item = 0; Item < Count; Item++)
+      for (uint32_t Item = 0; Item < Count; Item++)
       {
         TRemoteToken Token(Packet->GetString(FUtfStrings));
         List.Add(Token);
@@ -3401,10 +3401,10 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         SendPacket(&Packet);
         ReserveResponse(&Packet, &Response);
 
-        uintptr_t Count = ListingPacket.GetCardinal();
+        uint32_t Count = ListingPacket.GetCardinal();
 
         intptr_t ResolvedLinks = 0;
-        for (intptr_t Index = 0; !isEOF && (Index < static_cast<intptr_t>(Count)); ++Index)
+        for (uint32_t Index = 0; !isEOF && (Index < Count); ++Index)
         {
           File = LoadFile(&ListingPacket, nullptr, L"", FileList);
           if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
