@@ -857,8 +857,8 @@ public:
 
     if (Flags & SSH_FILEXFER_ATTR_EXTENDED)
     {
-      uintptr_t ExtendedCount = GetCardinal();
-      for (intptr_t Index = 0; Index < static_cast<intptr_t>(ExtendedCount); ++Index)
+      uint32_t ExtendedCount = GetCardinal();
+      for (uint32_t Index = 0; Index < ExtendedCount; ++Index)
       {
         GetRawByteString(); // skip extended_type
         GetRawByteString(); // skip extended_data
