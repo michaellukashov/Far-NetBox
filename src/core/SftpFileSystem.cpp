@@ -4047,7 +4047,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
 
   UnicodeString NormalizedAlg = FindIdent(Alg, FChecksumAlgs.get());
   UnicodeString SftpAlg;
-  int Index = FChecksumAlgs->IndexOf(NormalizedAlg);
+  intptr_t Index = FChecksumAlgs->IndexOf(NormalizedAlg);
   if (Index >= 0)
   {
     SftpAlg = FChecksumSftpAlgs->GetString(Index);

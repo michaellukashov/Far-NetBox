@@ -956,7 +956,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(
   }
   else
   {
-    int Index = FChecksumAlgs->IndexOf(Alg);
+    intptr_t Index = FChecksumAlgs->IndexOf(Alg);
     if (Index < 0)
     {
       FAIL;
@@ -1045,7 +1045,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
 {
   TOnceDoneOperation OnceDoneOperation; // not used
 
-  int Index = 0;
+  intptr_t Index = 0;
   while ((Index < FileList->GetCount()) && !OperationProgress->Cancel)
   {
     TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObj(Index));

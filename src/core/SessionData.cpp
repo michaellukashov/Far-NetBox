@@ -2380,7 +2380,7 @@ static bool IsIPv6Literal(const UnicodeString & HostName)
   bool Result = (HostName.Pos(L":") > 0);
   if (Result)
   {
-    for (int Index = 1; Result && (Index <= HostName.Length()); Index++)
+    for (intptr_t Index = 1; Result && (Index <= HostName.Length()); Index++)
     {
       wchar_t C = HostName[Index];
       Result = IsHex(C) || (C == L':');

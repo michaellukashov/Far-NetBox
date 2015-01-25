@@ -1111,7 +1111,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly))
       {
         UnicodeString Bugs;
-        for (int Index = 0; Index < SFTP_BUG_COUNT; ++Index)
+        for (intptr_t Index = 0; Index < SFTP_BUG_COUNT; ++Index)
         {
           Bugs += UnicodeString(BugFlags[Data->GetSFTPBug(static_cast<TSftpBug>(Index))])+(Index<SFTP_BUG_COUNT-1 ? L"," : L"");
         }

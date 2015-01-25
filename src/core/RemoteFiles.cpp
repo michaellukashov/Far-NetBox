@@ -2543,13 +2543,13 @@ UnicodeString TRights::GetModeStr() const
   UnicodeString Result;
   UnicodeString SetModeStr, UnsetModeStr;
   TRight Right;
-  int Index;
+  intptr_t Index;
 
-  for (int Group = 0; Group < 3; Group++)
+  for (intptr_t Group = 0; Group < 3; Group++)
   {
     SetModeStr.Clear();
     UnsetModeStr.Clear();
-    for (int Mode = 0; Mode < 3; Mode++)
+    for (intptr_t Mode = 0; Mode < 3; Mode++)
     {
       Index = (Group * 3) + Mode;
       Right = static_cast<TRight>(rrUserRead + Index);

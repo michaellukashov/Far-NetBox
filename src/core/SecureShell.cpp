@@ -2117,8 +2117,8 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
 UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & KeyStr) const
 {
   UnicodeString Result = KeyStr;
-  int Index = 1;
-  int Digits = 0;
+  intptr_t Index = 1;
+  intptr_t Digits = 0;
   while (Index <= Result.Length())
   {
     if (IsHex(Result[Index]))

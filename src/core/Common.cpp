@@ -2548,7 +2548,7 @@ TStringList * CreateSortedStringList(bool CaseSensitive, TDuplicatesEnum Duplica
 
 static UnicodeString NormalizeIdent(const UnicodeString & Ident)
 {
-  int Index = 1;
+  intptr_t Index = 1;
   UnicodeString Result = Ident;
   while (Index <= Result.Length())
   {
@@ -2567,7 +2567,7 @@ static UnicodeString NormalizeIdent(const UnicodeString & Ident)
 UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents)
 {
   UnicodeString NormalizedIdent(NormalizeIdent(Ident));
-  for (int Index = 0; Index < Idents->GetCount(); Index++)
+  for (intptr_t Index = 0; Index < Idents->GetCount(); Index++)
   {
     if (SameText(NormalizedIdent, NormalizeIdent(Idents->GetString(Index))))
     {
