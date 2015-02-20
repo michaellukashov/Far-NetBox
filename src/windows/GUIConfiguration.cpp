@@ -725,8 +725,8 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
 
-    intptr_t CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
-    FCopyParamListDefaults = (CopyParamListCount == -1);
+    int CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
+    FCopyParamListDefaults = (CopyParamListCount <= 0);
     if (!FCopyParamListDefaults)
     {
       FCopyParamList->Clear();
