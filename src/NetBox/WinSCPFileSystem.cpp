@@ -3863,9 +3863,10 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
       TMultipleEdits::iterator it = FMultipleEdits.find(Info->GetEditorID());
       if (it != FMultipleEdits.end())
       {
-        if (it->second.PendingSave)
+        TMultipleEdit & ed = it->second;
+        if (ed.PendingSave)
         {
-          UploadFromEditor(true, Info->GetFileName(), it->second.FileTitle, it->second.Directory);
+          UploadFromEditor(true, Info->GetFileName(), ed.FileTitle, ed.Directory);
           // reload panel content (if uploaded to current directory.
           // no need for RefreshPanel as panel is not visible yet.
           UpdatePanel();
