@@ -517,11 +517,11 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     ChildPaths->SetCaseSensitive(false);
     for (intptr_t Index = 0; Index < StoredSessions->GetCount(); ++Index)
     {
-      Data = StoredSessions->GetSession(Index);
-      if (Data->GetName().SubString(1, Folder.Length()) == Folder)
+      UnicodeString SessionName = StoredSessions->GetSession(Index)->GetName();
+      if (SessionName.SubString(1, Folder.Length()) == Folder)
       {
-        UnicodeString Name = Data->GetName().SubString(
-          Folder.Length() + 1, Data->GetName().Length() - Folder.Length());
+        UnicodeString Name = SessionName.SubString(
+          Folder.Length() + 1, SessionName.Length() - Folder.Length());
         intptr_t Slash = Name.Pos(L'/');
         if (Slash > 0)
         {
