@@ -4,7 +4,7 @@
 #include <CoreDefs.hpp>
 #include <Masks.hpp>
 #include <Exceptions.h>
-//#include "SessionData.h"
+#include "SessionData.h"
 
 class EFileMasksException : public Exception
 {
@@ -201,7 +201,7 @@ private:
 };
 
 class TTerminal;
-class TSessionData;
+
 struct TCustomCommandData : public TObject
 {
 //NB_DISABLE_COPY(TCustomCommandData)
