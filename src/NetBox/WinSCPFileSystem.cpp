@@ -4139,7 +4139,8 @@ bool TWinSCPFileSystem::IsLogging() const
 void TWinSCPFileSystem::ShowLog()
 {
   assert(Connected() && FTerminal->GetLog()->GetLoggingToFile());
-  GetWinSCPPlugin()->Viewer(FTerminal->GetLog()->GetCurrentFileName(), FTerminal->GetLog()->GetCurrentFileName(), VF_NONMODAL);
+  const TSessionLog * Log = FTerminal->GetLog();
+  GetWinSCPPlugin()->Viewer(Log->GetCurrentFileName(), Log->GetCurrentFileName(), VF_NONMODAL);
 }
 
 UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString & AFileName) const
