@@ -512,12 +512,13 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     {
       Folder = core::UnixIncludeTrailingBackslash(FSessionsFolder);
     }
-    const TSessionData * Data = nullptr;
+
     std::unique_ptr<TStringList> ChildPaths(new TStringList());
     ChildPaths->SetCaseSensitive(false);
     for (intptr_t Index = 0; Index < StoredSessions->GetCount(); ++Index)
     {
-      UnicodeString SessionName = StoredSessions->GetSession(Index)->GetName();
+      const TSessionData * Data = StoredSessions->GetSession(Index);
+      UnicodeString SessionName = Data->GetName();
       if (SessionName.SubString(1, Folder.Length()) == Folder)
       {
         UnicodeString Name = SessionName.SubString(
