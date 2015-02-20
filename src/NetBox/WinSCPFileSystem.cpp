@@ -3979,8 +3979,9 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   TMultipleEdits::iterator it_e = FMultipleEdits.begin();
   while (it_e != FMultipleEdits.end())
   {
-    if (core::UnixSamePath(Directory, it_e->second.Directory) &&
-        (NewFileName == it_e->second.FileName))
+    const TMultipleEdit & ed = it_e->second;
+    if (core::UnixSamePath(Directory, ed.Directory) &&
+        (NewFileName == ed.FileName))
     {
       break;
     }
