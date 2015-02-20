@@ -259,7 +259,7 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
 
 UnicodeString CopyToChar(const UnicodeString & Str, wchar_t Ch, bool Trim)
 {
-  int From = 1;
+  intptr_t From = 1;
   return CopyToChars(Str, From, UnicodeString(Ch), Trim);
 }
 
