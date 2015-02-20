@@ -1579,8 +1579,11 @@ TRemoteFileList::TRemoteFileList() :
 
 void TRemoteFileList::AddFile(TRemoteFile * AFile)
 {
-  Add(AFile);
-  AFile->SetDirectory(this);
+  if (AFile)
+  {
+    Add(AFile);
+    AFile->SetDirectory(this);
+  }
 }
 
 void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy) const
