@@ -2423,6 +2423,17 @@ void TSecureShell::CollectUsage()
   {
     Configuration->Usage->Inc(L"OpenedSessionsSSHComplete");
   }
+  // SSH-2.0-CoreFTP-0.3.3
+  else if (ContainsText(FSessionInfo.SshImplementation, L"CoreFTP"))
+  {
+    Configuration->Usage->Inc(L"OpenedSessionsSSHCore");
+  }
+  // SSH-2.0-SSHD-CORE-0.11.0 (value is configurable, this is a default)
+  // (Apache Mina SSHD, e.g. on brickftp.com)
+  else if (ContainsText(FSessionInfo.SshImplementation, L"SSHD-CORE"))
+  {
+    Configuration->Usage->Inc(L"OpenedSessionsSSHApache");
+  }
   else
   {
     // Configuration->Usage->Inc(L"OpenedSessionsSSHOther");

@@ -8,22 +8,7 @@
 
 static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
-  bool HasPrefix1 = NB_STATIC_DOWNCAST_CONST(TNamedObject, Item1)->GetHidden();
-  bool HasPrefix2 = NB_STATIC_DOWNCAST_CONST(TNamedObject, Item2)->GetHidden();
-  if (HasPrefix1 && !HasPrefix2)
-  {
-    return -1;
-  }
-  else if (!HasPrefix1 && HasPrefix2)
-  {
-    return 1;
-  }
-  else
-  {
-    return ::CompareLogicalText(
-      NB_STATIC_DOWNCAST_CONST(TNamedObject, Item1)->GetName(),
-      NB_STATIC_DOWNCAST_CONST(TNamedObject, Item2)->GetName());
-  }
+  return static_cast<const TNamedObject *>(Item1)->Compare(static_cast<const TNamedObject *>(Item2));
 }
 
 TNamedObject::TNamedObject(const UnicodeString & AName) :
@@ -39,17 +24,27 @@ void TNamedObject::SetName(const UnicodeString & Value)
   FName = Value;
 }
 
-Integer TNamedObject::CompareName(const UnicodeString & AName,
-  Boolean CaseSensitive)
+intptr_t TNamedObject::Compare(const TNamedObject * Other) const
 {
-  if (CaseSensitive)
+  intptr_t Result;
+  if (GetHidden() && !Other->GetHidden())
   {
-    return GetName().Compare(AName);
+    Result = -1;
+  }
+  else if (!GetHidden() && Other->GetHidden())
+  {
+    Result = 1;
   }
   else
   {
-    return GetName().CompareIC(AName);
+    Result = CompareLogicalText(GetName(), Other->GetName());
   }
+  return Result;
+}
+
+bool TNamedObject::IsSameName(const UnicodeString & AName) const
+{
+  return (GetName().CompareIC(AName) == 0);
 }
 
 void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
@@ -126,20 +121,20 @@ void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
   }
 }
 
-TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name, Boolean CaseSensitive) const
+const TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name) const
 {
-  return const_cast<TNamedObjectList *>(this)->FindByName(Name, CaseSensitive);
+  return const_cast<TNamedObjectList *>(this)->FindByName(Name);
 }
 
-TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name,
-  Boolean CaseSensitive)
+TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name)
 {
   // this should/can be optimized when list is sorted
   for (Integer Index = 0; Index < TObjectList::GetCount(); ++Index)
   {
-    if (!(NB_STATIC_DOWNCAST(TNamedObject, GetItem(Index)))->CompareName(Name, CaseSensitive))
+    TNamedObject * NamedObject = AtObject(Index);
+    if (NamedObject->IsSameName(Name))
     {
-      return NB_STATIC_DOWNCAST(TNamedObject, GetItem(Index));
+      return NamedObject;
     }
   }
   return nullptr;

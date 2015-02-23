@@ -44,6 +44,9 @@ const intptr_t DefaultSendBuf = 256 * 1024;
 const intptr_t ProxyPortNumber = 80;
 const wchar_t UrlParamSeparator = L';';
 const wchar_t UrlParamValueSeparator = L'=';
+//const wchar_t * UrlHostKeyParamName = L"fingerprint";
+//const wchar_t * UrlSaveParamName = L"save";
+//const wchar_t * PassphraseOption = L"passphrase";
 
 const uintptr_t CONST_DEFAULT_CODEPAGE = CP_ACP;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
@@ -68,6 +71,22 @@ TSessionData::~TSessionData()
     SAFE_DESTROY(FIEProxyConfig);
     FIEProxyConfig = nullptr;
   }
+}
+
+intptr_t TSessionData::Compare(TNamedObject * Other) const
+{
+  intptr_t Result;
+  // To avoid using CompareLogicalText on hex names of sessions in workspace.
+  // The session 000A would be sorted before 0001.
+//  if (NOT_NULL(dynamic_cast<TSessionData *>(Other))->IsWorkspace)
+//  {
+//    Result = CompareText(Name, Other->GetName());
+//  }
+//  else
+  {
+    Result = TNamedObject::Compare(Other);
+  }
+  return Result;
 }
 
 void TSessionData::Default()
@@ -1323,6 +1342,11 @@ bool TSessionData::IsProtocolUrl(
     DoIsProtocolUrl(Url, WinSCPProtocolPrefix + Protocol, ProtocolLen);
 }
 
+bool TSessionData::IsSensitiveOption(const UnicodeString & Option)
+{
+  return AnsiSameText(Option, PassphraseOption);
+}
+
 bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
   TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl)
@@ -1636,7 +1660,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     {
       SetPublicKeyFile(Value);
     }
-    if (Options->FindSwitch("passphrase", Value))
+    if (Options->FindSwitch(PassphraseOption, Value))
     {
       SetPassphrase(Value);
     }
@@ -3734,7 +3758,8 @@ const TSessionData * TStoredSessionList::FindSame(TSessionData * Data) const
   }
   else
   {
-    Result = NB_STATIC_DOWNCAST_CONST(TSessionData, FindByName(Data->GetName()));
+    const TNamedObject * Obj = FindByName(Data->GetName());
+    Result = NB_STATIC_DOWNCAST_CONST(TSessionData, Obj);
   }
   return Result;
 }

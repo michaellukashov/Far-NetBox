@@ -7,6 +7,9 @@ enum TOptionType
   otSwitch
 };
 
+//typedef void __fastcall (__closure *TLogOptionEvent)(const UnicodeString & LogStr);
+DEFINE_CALLBACK_TYPE1(TLogOptionEvent, void, const UnicodeString &  /*LogStr*/);
+
 class TOptions : public TObject
 {
 public:
@@ -24,6 +27,9 @@ public:
   bool SwitchValue(const UnicodeString & Switch, bool Default);
   bool SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence);
   bool UnusedSwitch(UnicodeString & Switch) const;
+  bool WasSwitchAdded(UnicodeString & Switch) const;
+
+  void LogOptions(TLogOptionEvent OnEnumOption);
 
   intptr_t GetParamCount() const { return FParamCount; }
   UnicodeString GetParam(intptr_t AIndex);
@@ -49,7 +55,9 @@ private:
     bool Used;
   };
 
-  rde::vector<TOption> FOptions;
+  typedef rde::vector<TOption> TOptionsVector;
+  TOptionsVector FOptions;
+  TOptionsVector FOriginalOptions;
   bool FNoMoreSwitches;
   intptr_t FParamCount;
 };

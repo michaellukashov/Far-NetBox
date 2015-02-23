@@ -123,8 +123,10 @@ void TConfiguration::Default()
   FPermanentLogFileName = FLogFileName;
   FLogFileAppend = true;
   FLogSensitive = false;
+  FPermanentLogSensitive = FLogSensitive;
   FLogWindowLines = 100;
   FLogProtocol = 0;
+  FPermanentLogProtocol = FLogProtocol;
   UpdateActualLogProtocol();
   FLogActions = false;
   FPermanentLogActions = false;
@@ -234,10 +236,10 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
     KEYEX(Bool,  Logging, Logging); \
     KEYEX(String,LogFileName, LogFileName); \
     KEY(Bool,    LogFileAppend); \
-    KEY(Bool,    LogSensitive); \
+    KEYEX(Bool,  PermanentLogSensitive, LogSensitive); \
     KEY(Integer, LogWindowLines); \
-    KEY(Integer, LogProtocol); \
-    KEYEX(Bool,  LogActions, LogActions); \
+    KEYEX(Integer,PermanentLogProtocol, LogProtocol); \
+    KEYEX(Bool,  PermanentLogActions, LogActions); \
     KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
   );
 
@@ -1182,6 +1184,16 @@ void TConfiguration::TemporaryActionsLogging(const UnicodeString & ALogFileName)
   FActionsLogFileName = ALogFileName;
 }
 
+void TConfiguration::TemporaryLogProtocol(intptr_t ALogProtocol)
+{
+  FLogProtocol = ALogProtocol;
+}
+
+void TConfiguration::TemporaryLogSensitive(bool ALogSensitive)
+{
+  FLogSensitive = ALogSensitive;
+}
+
 void TConfiguration::SetLogging(bool Value)
 {
   if (GetLogging() != Value)
@@ -1234,8 +1246,13 @@ void TConfiguration::UpdateActualLogProtocol()
 
 void TConfiguration::SetLogProtocol(intptr_t Value)
 {
-  SET_CONFIG_PROPERTY(LogProtocol);
-  UpdateActualLogProtocol();
+  if (GetLogProtocol() != Value)
+  {
+    FPermanentLogProtocol = Value;
+    FLogProtocol = Value;
+    Changed();
+    UpdateActualLogProtocol();
+  }
 }
 
 void TConfiguration::SetLogActions(bool Value)
@@ -1255,7 +1272,12 @@ void TConfiguration::SetLogFileAppend(bool Value)
 
 void TConfiguration::SetLogSensitive(bool Value)
 {
-  SET_CONFIG_PROPERTY(LogSensitive);
+  if (GetLogSensitive() != Value)
+  {
+    FPermanentLogSensitive = Value;
+    FLogSensitive = Value;
+    Changed();
+  }
 }
 
 void TConfiguration::SetLogWindowLines(intptr_t Value)

@@ -129,6 +129,8 @@ public:
   void SetPermanentLogActions(bool Value) { FPermanentLogActions = Value; }
   UnicodeString GetPermanentActionsLogFileName() const;
   void SetPermanentActionsLogFileName(const UnicodeString & Value);
+  intptr_t GetPermanentLogProtocol() const { return FPermanentLogProtocol; }
+  bool GetPermanentLogSensitive() const { return FPermanentLogSensitive; }
 
 public:
   TConfiguration();
@@ -160,6 +162,8 @@ public:
   virtual THierarchicalStorage * CreateStorage(bool & SessionList);
   void TemporaryLogging(const UnicodeString & ALogFileName);
   void TemporaryActionsLogging(const UnicodeString & ALogFileName);
+  void TemporaryLogProtocol(intptr_t ALogProtocol);
+  void TemporaryLogSensitive(bool ALogSensitive);
   virtual RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
@@ -214,7 +218,9 @@ private:
   intptr_t FLogWindowLines;
   bool FLogFileAppend;
   bool FLogSensitive;
+  bool FPermanentLogSensitive;
   intptr_t FLogProtocol;
+  intptr_t FPermanentLogProtocol;
   intptr_t FActualLogProtocol;
   bool FLogActions;
   bool FPermanentLogActions;
@@ -343,6 +349,8 @@ protected:
   __property UnicodeString PermanentLogFileName  = { read=FPermanentLogFileName, write=SetLogFileName };
   __property bool PermanentLogActions  = { read=FPermanentLogActions, write=SetLogActions };
   __property UnicodeString PermanentActionsLogFileName  = { read=FPermanentActionsLogFileName, write=SetActionsLogFileName };
+  __property int PermanentLogProtocol  = { read=FPermanentLogProtocol, write=SetLogProtocol };
+  __property bool PermanentLogSensitive  = { read=FPermanentLogSensitive, write=SetLogSensitive };
 
 public:
   __fastcall TConfiguration();
@@ -373,6 +381,8 @@ public:
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
   void __fastcall TemporaryLogging(const UnicodeString ALogFileName);
   void __fastcall TemporaryActionsLogging(const UnicodeString ALogFileName);
+  void __fastcall TemporaryLogProtocol(int ALogProtocol);
+  void __fastcall TemporaryLogSensitive(bool ALogSensitive);
   virtual RawByteString __fastcall EncryptPassword(UnicodeString Password, UnicodeString Key);
   virtual UnicodeString __fastcall DecryptPassword(RawByteString Password, UnicodeString Key);
   virtual RawByteString __fastcall StronglyRecryptPassword(RawByteString Password, UnicodeString Key);

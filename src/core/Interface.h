@@ -8,6 +8,8 @@
 #define HELP_NONE ""
 
 TConfiguration * CreateConfiguration();
+class TOptions;
+TOptions * GetGlobalOptions();
 
 void ShowExtendedException(Exception * E);
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
@@ -19,6 +21,7 @@ const uint32_t GUIUpdateInterval = 200;
 
 void WinInitialize();
 void WinFinalize();
+void SetNoGUI();
 bool ProcessGUI(bool Force = false);
 
 UnicodeString GetAppNameString();

@@ -2035,6 +2035,7 @@ void TSFTPFileSystem::Idle()
     if ((GetSessionData()->GetPingType() == ptDummyCommand) &&
         FSecureShell->GetReady())
     {
+      FTerminal->LogEvent("Sending dummy command to keep session alive.");
       TSFTPPacket Packet(SSH_FXP_REALPATH, FCodePage);
       Packet.AddPathString(ROOTDIRECTORY, FUtfStrings);
       SendPacketAndReceiveResponse(&Packet, &Packet);
@@ -4626,9 +4627,9 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
             // if file has all permissions and is small, then it is likely symlink.
             // also it is not likely that such a small file (if it is not symlink)
             // gets overwritten by large file (that would trigger resumable transfer).
-            // - Also never do resumable transfer for file owner by other user
+            // - Also never do resumable transfer for file owned by other user
             // as deleting and recreating the file would change ownership.
-            // This won't for work for SFT-3 (OpenSSH) as it does not provide
+            // This won't for work for SFTP-3 (OpenSSH) as it does not provide
             // owner name (only UID) and we know only logged in user name (not UID)
             if (File->GetIsSymLink() ||
                 ((FVersion < 4) &&

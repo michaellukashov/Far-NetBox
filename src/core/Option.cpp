@@ -7,8 +7,8 @@
 #include "TextsCore.h"
 
 TOptions::TOptions() :
-  FSwitchMarks(L"-/"),
-  FSwitchValueDelimiters(L":="),
+  FSwitchMarks(L"/-"),
+  FSwitchValueDelimiters(L"=:"),
   FNoMoreSwitches(false),
   FParamCount(0)
 {
@@ -79,6 +79,8 @@ void TOptions::Add(const UnicodeString & Value)
       ++FParamCount;
     }
   }
+
+  FOriginalOptions = FOptions;
 }
 
 UnicodeString TOptions::GetParam(intptr_t AIndex)
@@ -258,6 +260,18 @@ bool TOptions::UnusedSwitch(UnicodeString & Switch) const
   return Result;
 }
 
+bool TOptions::WasSwitchAdded(UnicodeString & Switch) const
+{
+  bool Result =
+    ALWAYS_TRUE(FOptions.size() > 0) &&
+    (FOptions.back().Type == otSwitch);
+  if (Result)
+  {
+    Switch = FOptions.back().Name;
+  }
+  return Result;
+}
+
 void TOptions::ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount)
 {
   if (ParamsCount > 0)
@@ -285,5 +299,32 @@ void TOptions::ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount)
       }
       ++Index;
     }
+  }
+}
+
+void TOptions::LogOptions(TLogOptionEvent OnLogOption)
+{
+  for (size_t Index = 0; Index < FOriginalOptions.size(); ++Index)
+  {
+    const TOption & Option = FOriginalOptions[Index];
+    UnicodeString LogStr;
+    switch (Option.Type)
+    {
+      case otParam:
+        LogStr = FORMAT(L"Parameter: %s", (Option.Value));
+        assert(Option.Name.IsEmpty());
+        break;
+
+      case otSwitch:
+        LogStr =
+          FORMAT(L"Switch:    %s%s%s%s",
+            (FSwitchMarks[1], Option.Name, (Option.Value.IsEmpty() ? UnicodeString() : FSwitchValueDelimiters.SubString(1, 1)), Option.Value));
+        break;
+
+      default:
+        FAIL;
+        break;
+    }
+    OnLogOption(LogStr);
   }
 }
