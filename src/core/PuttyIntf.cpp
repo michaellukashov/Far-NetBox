@@ -190,7 +190,7 @@ void connection_fatal(void * frontend, char * fmt, ...)
   va_list Param;
   char Buf[200];
   va_start(Param, fmt);
-  vsnprintf(Buf, _countof(Buf), fmt, Param); \
+  vsnprintf_s(Buf, _countof(Buf), fmt, Param); \
   Buf[_countof(Buf) - 1] = '\0'; \
   va_end(Param);
 
@@ -234,7 +234,7 @@ void display_banner(void * frontend, const char * banner, int size)
 static void SSHFatalError(const char * Format, va_list Param)
 {
   char Buf[200];
-  vsnprintf(Buf, _countof(Buf), Format, Param);
+  vsnprintf_s(Buf, _countof(Buf), Format, Param);
   Buf[_countof(Buf) - 1] = '\0';
 
   // Only few calls from putty\winnet.c might be connected with specific
