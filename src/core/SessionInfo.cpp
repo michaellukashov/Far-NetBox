@@ -979,7 +979,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         ULONG UserNameSize = _countof(UserName);
         if ((GetUserNameEx == nullptr) || !GetUserNameEx(NameSamCompatible, (LPWSTR)UserName, &UserNameSize))
         {
-          wcscpy(UserName, L"<Failed to retrieve username>");
+          wcscpy_s(UserName, UNLEN, L"<Failed to retrieve username>");
         }
         UnicodeString LogStr;
         if (FConfiguration->GetLogProtocol() <= 0)
