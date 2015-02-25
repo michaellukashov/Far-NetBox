@@ -27,9 +27,9 @@ TQueryButtonAlias::TQueryButtonAlias() :
 }
 
 TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword) :
-  Params(AParams),
   Aliases(nullptr),
   AliasesCount(0),
+  Params(AParams),
   Timer(0),
   TimerEvent(nullptr),
   TimerMessage(L""),

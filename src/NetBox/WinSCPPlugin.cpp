@@ -21,9 +21,9 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 }
 
 TMessageParams::TMessageParams() :
-  Flags(0),
   Aliases(nullptr),
   AliasesCount(0),
+  Flags(0),
   Params(0),
   Timer(0),
   TimerEvent(nullptr),
