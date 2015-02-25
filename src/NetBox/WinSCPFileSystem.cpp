@@ -288,7 +288,6 @@ void TKeepaliveThread::Execute()
 
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   TCustomFarFileSystem(APlugin),
-  FReloadDirectory(false),
   FProgressSaveScreenHandle(0),
   FSynchronizationSaveScreenHandle(0),
   FAuthenticationSaveScreenHandle(0),
@@ -316,6 +315,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FPathHistory(new TStringList()),
   FCurrentDirectoryWasChanged(false),
 
+  FReloadDirectory(false),
   FLastMultipleEditReadOnly(false),
   FEditorPendingSave(false),
   FOutputLog(false)

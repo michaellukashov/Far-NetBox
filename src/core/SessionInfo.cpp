@@ -947,6 +947,9 @@ UnicodeString TSessionLog::LogSensitive(const UnicodeString & Str)
   }
 }
 
+#define ADSTR(S) DoAdd(llMessage, S, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
+#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
+
 void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
   TGuard Guard(FCriticalSection);
@@ -958,8 +961,6 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       DeleteUnnecessary();
       EndUpdate();
     };
-#define ADSTR(S) DoAdd(llMessage, S, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
-#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
     if (Data == nullptr)
     {
       AddSeparator();
@@ -978,8 +979,26 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         ULONG UserNameSize = _countof(UserName);
         if ((GetUserNameEx == nullptr) || !GetUserNameEx(NameSamCompatible, (LPWSTR)UserName, &UserNameSize))
         {
-          wcscpy(UserName, L"<Failed to retrieve username>");
+          wcscpy_s(UserName, UNLEN, L"<Failed to retrieve username>");
         }
+        UnicodeString LogStr;
+        if (FConfiguration->GetLogProtocol() <= 0)
+        {
+          LogStr = L"Normal";
+        }
+        else if (FConfiguration->GetLogProtocol() == 1)
+        {
+          LogStr = L"Debug 1";
+        }
+        else if (FConfiguration->GetLogProtocol() >= 2)
+        {
+          LogStr = L"Debug 2";
+        }
+        if (FConfiguration->GetLogSensitive())
+        {
+          LogStr += L", Logging passwords";
+        }
+        ADF(L"Log level: %s", LogStr.c_str());
         ADF(L"Local account: %s", UserName);
       }
       uint16_t Y, M, D, H, N, S, MS;
@@ -990,6 +1009,10 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       // ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
       ADF(L"Working directory: %s", ::GetCurrentDir().c_str());
       // ADF(L"Command-line: %s", CmdLine.c_str());
+//      if (FConfiguration->LogProtocol >= 1)
+//      {
+//        AddOptions(GetGlobalOptions());
+//      }
       // ADF(L"Time zone: %s", GetTimeZoneLogString().c_str());
       if (!AdjustClockForDSTEnabled())
       {
@@ -1088,6 +1111,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         }
         ADF(L"Ciphers: %s; Ssh2DES: %s",
           Data->GetCipherList().c_str(), BooleanToEngStr(Data->GetSsh2DES()).c_str());
+//        ADF(L"KEX: %s", (Data->KexList));
         UnicodeString Bugs;
         for (intptr_t Index = 0; Index < BUG_COUNT; ++Index)
         {
@@ -1187,11 +1211,21 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
       AddSeparator();
     }
+  }
+}
+
+void TSessionLog::AddOption(const UnicodeString & LogStr)
+{
+  ADSTR(LogStr);
+}
+//---------------------------------------------------------------------------
+void TSessionLog::AddOptions(TOptions * Options)
+{
+  Options->LogOptions(MAKE_CALLBACK(TSessionLog::AddOption, this));
+}
 
 #undef ADF
 #undef ADSTR
-  }
-}
 
 void TSessionLog::AddSeparator()
 {

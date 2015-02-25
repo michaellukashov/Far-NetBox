@@ -130,6 +130,7 @@ extern const wchar_t UrlParamSeparator;
 extern const wchar_t UrlParamValueSeparator;
 #define UrlHostKeyParamName L"fingerprint"
 #define UrlSaveParamName L"save"
+#define PassphraseOption L"passphrase"
 
 struct TIEProxyConfig : public TObject
 {
@@ -348,6 +349,7 @@ public:
   void Remove();
   void CacheHostKeyIfNotCached();
   virtual void Assign(const TPersistent * Source);
+  virtual intptr_t Compare(const TNamedObject * Other) const;
   void CopyData(TSessionData * Source);
   void CopyDirectoriesStateData(TSessionData * SourceData);
   bool ParseUrl(const UnicodeString & Url, TOptions * Options,
@@ -370,6 +372,7 @@ public:
   static UnicodeString ExtractLocalName(const UnicodeString & Name);
   static UnicodeString ExtractFolderName(const UnicodeString & Name);
   static UnicodeString ComposePath(const UnicodeString & APath, const UnicodeString & Name);
+  static bool IsSensitiveOption(const UnicodeString & Option);
 
   UnicodeString GetHostName() const { return FHostName; }
   intptr_t GetPortNumber() const { return FPortNumber; }
@@ -650,7 +653,6 @@ private:
   UnicodeString __fastcall GetUserNameExpanded();
   void __fastcall SetPassword(UnicodeString value);
   UnicodeString __fastcall GetPassword() const;
-  void __fastcall SetPasswordless(bool value);
   void __fastcall SetPingInterval(int value);
   void __fastcall SetTryAgent(bool value);
   void __fastcall SetAgentFwd(bool value);
@@ -827,6 +829,7 @@ public:
   void __fastcall Remove();
   void __fastcall CacheHostKeyIfNotCached();
   virtual void __fastcall Assign(TPersistent * Source);
+  virtual int __fastcall Compare(TNamedObject * Other);
   void __fastcall CopyData(TSessionData * Source);
   void __fastcall CopyDirectoriesStateData(TSessionData * SourceData);
   bool __fastcall ParseUrl(UnicodeString Url, TOptions * Options,
@@ -846,6 +849,7 @@ public:
   static UnicodeString __fastcall ExtractLocalName(const UnicodeString & Name);
   static UnicodeString __fastcall ExtractFolderName(const UnicodeString & Name);
   static UnicodeString __fastcall ComposePath(const UnicodeString & Path, const UnicodeString & Name);
+  static bool __fastcall IsSensitiveOption(const UnicodeString & Option);
 
   __property UnicodeString HostName  = { read=FHostName, write=SetHostName };
   __property UnicodeString HostNameExpanded  = { read=GetHostNameExpanded };

@@ -47,6 +47,11 @@ bool ProcessGUI(bool Force)
   return Result;
 }
 
+TOptions * GetGlobalOptions()
+{
+  return nullptr; // TProgramParams::Instance();
+}
+
 void WinInitialize()
 {
 //  if (JclHookExceptions())
