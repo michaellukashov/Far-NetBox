@@ -998,7 +998,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         {
           LogStr += L", Logging passwords";
         }
-        ADF(L"Log level: %s", (LogStr));
+        ADF(L"Log level: %s", LogStr.c_str());
         ADF(L"Local account: %s", UserName);
       }
       uint16_t Y, M, D, H, N, S, MS;

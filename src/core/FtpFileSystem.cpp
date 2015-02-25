@@ -2745,7 +2745,7 @@ void TFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
   {
     // draft-peterson-streamlined-ftp-command-extensions-10
     // Implemented by Serv-U.
-    UnicodeString Command = FORMAT(L"%s %s", (AvblCommand, Path));
+    UnicodeString Command = FORMAT(L"%s %s", AvblCommand.c_str(), Path.c_str());
     SendCommand(Command);
     UnicodeString Response = GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_SINGLE_LINE);
     ASpaceAvailable.UnusedBytesAvailableToUser = StrToInt64(Response);
