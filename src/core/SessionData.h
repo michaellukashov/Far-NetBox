@@ -349,7 +349,7 @@ public:
   void Remove();
   void CacheHostKeyIfNotCached();
   virtual void Assign(const TPersistent * Source);
-  virtual intptr_t Compare(TNamedObject * Other) const;
+  virtual intptr_t Compare(const TNamedObject * Other) const;
   void CopyData(TSessionData * Source);
   void CopyDirectoriesStateData(TSessionData * SourceData);
   bool ParseUrl(const UnicodeString & Url, TOptions * Options,

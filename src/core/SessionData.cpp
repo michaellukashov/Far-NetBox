@@ -73,7 +73,7 @@ TSessionData::~TSessionData()
   }
 }
 
-intptr_t TSessionData::Compare(TNamedObject * Other) const
+intptr_t TSessionData::Compare(const TNamedObject * Other) const
 {
   intptr_t Result;
   // To avoid using CompareLogicalText on hex names of sessions in workspace.
