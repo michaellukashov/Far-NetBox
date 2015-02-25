@@ -2035,8 +2035,10 @@ HKEY TRegistry::GetKey(const UnicodeString & Key) const
   UnicodeString S = Key;
   bool Relative = IsRelative(S);
   HKEY Result = 0;
-  ::RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result);
-  return Result;
+  if (::RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result) == ERROR_SUCCESS)
+    return Result;
+  else
+    return 0;
 }
 
 bool TRegistry::GetKeyInfo(TRegKeyInfo & Value) const
