@@ -515,9 +515,13 @@ bool XMLUtil::ToDouble( const char* str, double* value )
 
 char* XMLDocument::Identify( char* p, XMLNode** node )
 {
+    TIXMLASSERT( node );
+    TIXMLASSERT( p );
     char* const start = p;
     p = XMLUtil::SkipWhiteSpace( p );
     if( !*p ) {
+        *node = 0;
+        TIXMLASSERT( p );
         return p;
     }
 
@@ -577,6 +581,8 @@ char* XMLDocument::Identify( char* p, XMLNode** node )
         p = start;	// Back it up, all the text counts.
     }
 
+    TIXMLASSERT( returnNode );
+    TIXMLASSERT( p );
     *node = returnNode;
     return p;
 }
@@ -844,7 +850,7 @@ char* XMLNode::ParseDeep( char* p, StrPair* parentEnd )
         XMLNode* node = 0;
 
         p = _document->Identify( p, &node );
-        if ( p == 0 || node == 0 ) {
+        if ( node == 0 ) {
             break;
         }
 
