@@ -1370,7 +1370,7 @@ bool TSessionData::IsSensitiveOption(const UnicodeString & Option)
 }
 
 bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
-  TStoredSessionList * StoredSessions, bool & DefaultsOnly, UnicodeString * AFileName,
+  TStoredSessionList * AStoredSessions, bool & DefaultsOnly, UnicodeString * AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl)
 {
   UnicodeString url = Url;
@@ -1458,12 +1458,12 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     // by creating stored session named by host)
     TSessionData * Data = nullptr;
     // When using to paste URL on Login dialog, we do not want to lookup the stored sites
-    if (StoredSessions != nullptr)
+    if (AStoredSessions != nullptr)
     {
        // this can be optimized as the list is sorted
-      for (Integer Index = 0; Index < StoredSessions->GetCountIncludingHidden(); ++Index)
+      for (Integer Index = 0; Index < AStoredSessions->GetCountIncludingHidden(); ++Index)
       {
-        TSessionData * AData = NB_STATIC_DOWNCAST(TSessionData, StoredSessions->GetItem(Index));
+        TSessionData * AData = NB_STATIC_DOWNCAST(TSessionData, AStoredSessions->GetItem(Index));
         if (true) // !AData->GetIsWorkspace() &&
             // ::AnsiSameText(AData->GetName(), DecodedUrl) ||
             // ::AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
@@ -1511,9 +1511,9 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       if (Data->GetHidden())
       {
         Data->Remove();
-        StoredSessions->Remove(Data);
+        AStoredSessions->Remove(Data);
         // only modified, implicit
-        StoredSessions->Save(false, false);
+        AStoredSessions->Save(false, false);
       }
 
       if (MaskedUrl != nullptr)
@@ -1524,9 +1524,9 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     else
     {
       // This happens when pasting URL on Login dialog
-      if (StoredSessions != nullptr)
+      if (AStoredSessions != nullptr)
       {
-        CopyData(StoredSessions->GetDefaultSettings());
+        CopyData(AStoredSessions->GetDefaultSettings());
         SetUserName(ANONYMOUS_USER_NAME);
         SetLoginType(ltAnonymous);
       }
@@ -1659,9 +1659,9 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
   else
   {
     // This happens when pasting URL on Login dialog
-    if (StoredSessions != nullptr)
+    if (AStoredSessions != nullptr)
     {
-      CopyData(StoredSessions->GetDefaultSettings());
+      CopyData(AStoredSessions->GetDefaultSettings());
     }
 
     DefaultsOnly = true;

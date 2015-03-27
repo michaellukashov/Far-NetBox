@@ -353,7 +353,7 @@ public:
   void CopyData(TSessionData * Source);
   void CopyDirectoriesStateData(TSessionData * SourceData);
   bool ParseUrl(const UnicodeString & Url, TOptions * Options,
-    TStoredSessionList * StoredSessions, bool & DefaultsOnly,
+    TStoredSessionList * AStoredSessions, bool & DefaultsOnly,
     UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
   bool ParseOptions(TOptions * Options);
   void ConfigureTunnel(intptr_t PortNumber);
@@ -833,7 +833,7 @@ public:
   void __fastcall CopyData(TSessionData * Source);
   void __fastcall CopyDirectoriesStateData(TSessionData * SourceData);
   bool __fastcall ParseUrl(UnicodeString Url, TOptions * Options,
-    TStoredSessionList * StoredSessions, bool & DefaultsOnly,
+    TStoredSessionList * AStoredSessions, bool & DefaultsOnly,
     UnicodeString * FileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
   bool __fastcall ParseOptions(TOptions * Options);
   void __fastcall ConfigureTunnel(int PortNumber);
