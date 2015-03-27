@@ -61,6 +61,7 @@
 "%s\n \nWarning: Aborting this operation will close connection!"
 "Can't create folder '%s'."
 "Directory '%s' doesn't exist. Create?"
+"**Cancel current operation?**"
 "'%s' is invalid mask"
 "View from find dialog is not supported"
 "You are about to close WinSCP plugin, while having some queued background transfers. Do you want to show queue list?\n \nWarning: Pressing 'Cancel' will terminate all transfers immediately."
