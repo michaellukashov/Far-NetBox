@@ -426,7 +426,8 @@ protected:
     bool Special);
   bool CheckRemoteFile(
     const UnicodeString & AFileName, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress);
-  uintptr_t ConfirmFileOverwrite(const UnicodeString & AFileName,
+  uintptr_t ConfirmFileOverwrite(
+    const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
     const TOverwriteFileParams * FileParams, uintptr_t Answers, TQueryParams * QueryParams,
     TOperationSide Side, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, const UnicodeString & Message = L"");
@@ -693,12 +694,13 @@ protected:
   bool __fastcall CalculateLocalFilesSize(TStrings * FileList, __int64 & Size,
     const TCopyParamType * CopyParam, bool AllowDirs);
   TBatchOverwrite __fastcall EffectiveBatchOverwrite(
-    const UnicodeString & FileName, const TCopyParamType * CopyParam, int Params,
+    const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, bool Special);
   bool __fastcall CheckRemoteFile(
     const UnicodeString & FileName, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress);
-  unsigned int __fastcall ConfirmFileOverwrite(const UnicodeString FileName,
+  unsigned int __fastcall ConfirmFileOverwrite(
+    const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
     const TOverwriteFileParams * FileParams, unsigned int Answers, TQueryParams * QueryParams,
     TOperationSide Side, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, UnicodeString Message = L"");

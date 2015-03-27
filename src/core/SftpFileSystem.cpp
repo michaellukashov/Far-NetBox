@@ -664,7 +664,7 @@ public:
     return GetString(Utf);
   }
 
-  void GetFile(TRemoteFile * AFile, intptr_t Version, TDSTMode DSTMode, TAutoSwitch Utf, bool SignedTS, bool Complete)
+  void GetFile(TRemoteFile * AFile, intptr_t Version, TDSTMode DSTMode, TAutoSwitch & Utf, bool SignedTS, bool Complete)
   {
     assert(AFile);
     uint32_t Flags;
@@ -676,7 +676,7 @@ public:
       AFile->SetFileName(GetPathString(Utf));
       if (Version < 4)
       {
-        ListingStr = GetAnsiString();
+        ListingStr = GetString(Utf);
       }
     }
     Flags = GetCardinal();
@@ -2440,6 +2440,10 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     }
     UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, MessageStr.c_str(),
       int(Code), LanguageTag.c_str(), ServerMessage.c_str());
+    if (Code == SSH_FX_FAILURE)
+    {
+      // FTerminal->Configuration->Usage->Inc(L"SftpFailureErrors");
+    }
     FTerminal->TerminalError(nullptr, Error, HelpKeyword);
     return 0;
   }
@@ -2700,6 +2704,28 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath)
 
     TSFTPPacket Packet(SSH_FXP_REALPATH, FCodePage);
     Packet.AddPathString(APath, FUtfStrings);
+
+    // In SFTP-6 new optional field control-byte is added that defaults to
+    // SSH_FXP_REALPATH_NO_CHECK=0x01, meaning it won't fail, if the path does not exist.
+    // That differs from SFTP-5 recommendation that
+    // "The server SHOULD fail the request if the path is not present on the server."
+    // Earlier versions had no recommendation, though canonical SFTP-3 implementation
+    // in OpenSSH fails.
+
+    // While we really do not care much, we anyway set the flag to 0 to make the request fail.
+    // First for consistency.
+    // Second to workaround a bug in ProFTPD/mod_sftp version 1.3.5rc1 through 1.3.5-stable
+    // that sends a completelly malformed response for non-existing paths,
+    // when SSH_FXP_REALPATH_NO_CHECK (even implicitly) is used.
+    // See http://bugs.proftpd.org/show_bug.cgi?id=4160
+
+    // Note that earlier drafts of SFTP-6 (filexfer-07 and -08) had optional compose-path field
+    // before control-byte field. If we ever use this against a server conforming to those drafts,
+    // if may cause trouble.
+    if (FVersion >= 6)
+    {
+      Packet.AddByte(0);
+    }
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_NAME);
     if (Packet.GetCardinal() != 1)
     {
@@ -2900,7 +2926,7 @@ void TSFTPFileSystem::DoStartup()
   }
   catch (Exception & E)
   {
-    FTerminal->FatalError(&E, LoadStr(SFTP_INITIALIZE_ERROR));
+    FTerminal->FatalError(&E, LoadStr(SFTP_INITIALIZE_ERROR), HELP_SFTP_INITIALIZE_ERROR);
   }
 
   FVersion = Packet.GetCardinal();
@@ -4245,7 +4271,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 }
 
 void TSFTPFileSystem::SFTPConfirmOverwrite(
-  const UnicodeString & AFullFileName, UnicodeString & AFileName,
+  const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
   const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams,
   OUT TOverwriteMode & OverwriteMode)
@@ -4292,7 +4318,8 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
     QueryParams.NoBatchAnswers = qaIgnore | qaAbort | qaRetry | qaAll;
     QueryParams.Aliases = Aliases;
     QueryParams.AliasesCount = _countof(Aliases);
-    Answer = FTerminal->ConfirmFileOverwrite(AFullFileName, FileParams,
+    Answer = FTerminal->ConfirmFileOverwrite(
+      ASourceFullFileName, ATargetFileName, FileParams,
       Answers, &QueryParams,
       OperationProgress->Side == osLocal ? osRemote : osLocal,
       CopyParam, Params, OperationProgress);
@@ -4305,7 +4332,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
     bool CanAlternateResume =
       FileParams ? (FileParams->DestSize < FileParams->SourceSize) && !OperationProgress->AsciiTransfer : false;
     TBatchOverwrite BatchOverwrite =
-      FTerminal->EffectiveBatchOverwrite(AFullFileName, CopyParam, Params, OperationProgress, true);
+      FTerminal->EffectiveBatchOverwrite(ASourceFullFileName, CopyParam, Params, OperationProgress, true);
     // when mode is forced by batch, never query user
     if (BatchOverwrite == boAppend)
     {
@@ -4327,7 +4354,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
 
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
-        Answer = FTerminal->QueryUser(FORMAT(LoadStr(APPEND_OR_RESUME2).c_str(), AFileName.c_str()),
+        Answer = FTerminal->QueryUser(FORMAT(LoadStr(APPEND_OR_RESUME2).c_str(), ASourceFullFileName.c_str()),
           nullptr, qaYes | qaNo | qaNoToAll | qaCancel, &Params);
       }
 
@@ -4360,7 +4387,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
   else if (Answer == qaIgnore)
   {
     if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName, LoadStr(RENAME_TITLE), L"",
-          LoadStr(RENAME_PROMPT2), true, 0, AFileName))
+          LoadStr(RENAME_PROMPT2), true, 0, ATargetFileName))
     {
       OverwriteMode = omOverwrite;
     }

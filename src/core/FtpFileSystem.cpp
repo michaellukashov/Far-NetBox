@@ -1209,8 +1209,8 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
 }
 
 bool TFTPFileSystem::ConfirmOverwrite(
-  const UnicodeString & AFullFileName,
-  UnicodeString & AFileName,
+  const UnicodeString & ASourceFullFileName,
+  UnicodeString & ATargetFileName,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   bool AutoResume,
   const TOverwriteFileParams * FileParams,
@@ -1277,7 +1277,8 @@ bool TFTPFileSystem::ConfirmOverwrite(
 
     {
       TSuspendFileOperationProgress Suspend(OperationProgress);
-      Answer = FTerminal->ConfirmFileOverwrite(AFullFileName, FileParams,
+      Answer = FTerminal->ConfirmFileOverwrite(
+        ASourceFullFileName, ATargetFileName, FileParams,
         Answers, &QueryParams,
         OperationProgress->Side == osLocal ? osRemote : osLocal,
         CopyParam, Params, OperationProgress);
@@ -1299,7 +1300,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
     // rename
     case qaIgnore:
       if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
-            LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, AFileName))
+            LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, ATargetFileName))
       {
         OverwriteMode = omOverwrite;
       }
@@ -3790,7 +3791,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
 }
 
 bool TFTPFileSystem::HandleAsynchRequestOverwrite(
-  wchar_t * FileName1, size_t FileName1Len, const wchar_t * /*FileName2*/,
+  wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
   const wchar_t * Path1, const wchar_t * Path2,
   int64_t Size1, int64_t Size2, time_t LocalTime,
   bool /*HasLocalTime*/, const TRemoteFileTime & RemoteTime, void * AUserData,
@@ -3813,8 +3814,8 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   else
   {
     TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
-    UnicodeString FileName = FileName1;
-    assert(UserData.FileName == FileName);
+    UnicodeString TargetFileName = FileName1;
+    assert(UserData.FileName == TargetFileName);
     TOverwriteMode OverwriteMode = omOverwrite;
     TOverwriteFileParams FileParams;
     bool NoFileParams =
@@ -3837,18 +3838,18 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
       }
     }
 
-    UnicodeString FullFileName = Path2;
+    UnicodeString SourceFullFileName = Path2;
     if (OperationProgress->Side == osLocal)
     {
-      FullFileName = ::IncludeTrailingBackslash(FullFileName);
+      SourceFullFileName = ::IncludeTrailingBackslash(SourceFullFileName);
     }
     else
     {
-      FullFileName = core::UnixIncludeTrailingBackslash(FullFileName);
+      SourceFullFileName = core::UnixIncludeTrailingBackslash(SourceFullFileName);
     }
-    FullFileName += FileName;
+    SourceFullFileName += FileName2;
 
-    if (ConfirmOverwrite(FullFileName, FileName, UserData.Params, OperationProgress,
+    if (ConfirmOverwrite(SourceFullFileName, TargetFileName, UserData.Params, OperationProgress,
           UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize),
           NoFileParams ? nullptr : &FileParams, UserData.CopyParam,
           OverwriteMode))
@@ -3863,9 +3864,9 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
             RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
             break;
           }
-          if (FileName != FileName1)
+          if (TargetFileName != FileName1)
           {
-            wcsncpy_s(FileName1, FileName1Len, FileName.c_str(), FileName1Len);
+            wcsncpy_s(FileName1, FileName1Len, TargetFileName.c_str(), FileName1Len);
             FileName1[FileName1Len - 1] = L'\0';
             UserData.FileName = FileName1;
             RequestResult = TFileZillaIntf::FILEEXISTS_RENAME;

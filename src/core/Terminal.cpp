@@ -2299,11 +2299,11 @@ void TTerminal::CloseOnCompletion(TOnceDoneOperation Operation, const UnicodeStr
 }
 
 TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
-  const UnicodeString & AFileName, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special)
+  const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special)
 {
   TBatchOverwrite Result;
   if (Special &&
-      (FLAGSET(Params, cpResume) || CopyParam->ResumeTransfer(AFileName)))
+      (FLAGSET(Params, cpResume) || CopyParam->ResumeTransfer(ASourceFullFileName)))
   {
     Result = boResume;
   }
@@ -2342,7 +2342,8 @@ bool TTerminal::CheckRemoteFile(
   return (EffectiveBatchOverwrite(AFileName, CopyParam, Params, OperationProgress, true) != boAll);
 }
 
-uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & AFileName,
+uintptr_t TTerminal::ConfirmFileOverwrite(
+  const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
   const TOverwriteFileParams * FileParams, uintptr_t Answers, TQueryParams * QueryParams,
   TOperationSide Side, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
   const UnicodeString & Message)
@@ -2353,7 +2354,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & AFileName,
     (FileParams != nullptr) &&
     (FileParams->DestSize < FileParams->SourceSize) &&
     !OperationProgress->AsciiTransfer;
-  TBatchOverwrite BatchOverwrite = EffectiveBatchOverwrite(AFileName, CopyParam, Params, OperationProgress, true);
+  TBatchOverwrite BatchOverwrite = EffectiveBatchOverwrite(ASourceFullFileName, CopyParam, Params, OperationProgress, true);
   bool Applicable = true;
   switch (BatchOverwrite)
   {
@@ -2372,7 +2373,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & AFileName,
 
   if (!Applicable)
   {
-    TBatchOverwrite EffBatchOverwrite = EffectiveBatchOverwrite(AFileName, CopyParam, Params, OperationProgress, false);
+    TBatchOverwrite EffBatchOverwrite = EffectiveBatchOverwrite(ASourceFullFileName, CopyParam, Params, OperationProgress, false);
     assert(BatchOverwrite != EffBatchOverwrite);
     BatchOverwrite = EffBatchOverwrite;
   }
@@ -2383,9 +2384,9 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & AFileName,
     if (Msg.IsEmpty())
     {
       // Side refers to destination side here
-      UnicodeString FileNameOnly = (Side == osRemote) ? core::ExtractFileName(AFileName, false) : core::UnixExtractFileName(AFileName);
+      // UnicodeString FileNameOnly = (Side == osRemote) ? core::ExtractFileName(AFileName, false) : core::UnixExtractFileName(AFileName);
       Msg = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE2 :
-        REMOTE_FILE_OVERWRITE2), FileNameOnly.c_str(), AFileName.c_str());
+        REMOTE_FILE_OVERWRITE2), ATargetFileName.c_str(), ATargetFileName.c_str());
     }
     if (FileParams != nullptr)
     {
@@ -3625,6 +3626,7 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
   {
     if (GetOperationProgress()->Cancel != csContinue)
     {
+      AParams->Result = false;
       Abort();
     }
     GetOperationProgress()->SetFile(LocalFileName);
@@ -4337,7 +4339,7 @@ bool TTerminal::DoCreateFile(const UnicodeString & AFileName,
   return Result;
 }
 
-bool TTerminal::TerminalCreateFile(const UnicodeString & AFileName,
+bool TTerminal::TerminalCreateFile(const UnicodeString & ATargetFileName,
   TFileOperationProgressType * OperationProgress,
   bool Resume,
   bool NoConfirmation,
@@ -4346,17 +4348,17 @@ bool TTerminal::TerminalCreateFile(const UnicodeString & AFileName,
   assert(OperationProgress);
   assert(AHandle);
   bool Result = true;
-  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CREATE_FILE_ERROR, AFileName.c_str()), "",
+  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CREATE_FILE_ERROR, ATargetFileName.c_str()), "",
   [&]()
   {
-    Result = DoCreateFile(AFileName, OperationProgress, Resume, NoConfirmation,
+    Result = DoCreateFile(ATargetFileName, OperationProgress, Resume, NoConfirmation,
       AHandle);
   });
 
   return Result;
 }
 
-void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
+void TTerminal::OpenLocalFile(const UnicodeString & ATargetFileName,
   uintptr_t Access,
   OUT HANDLE * AHandle, OUT uintptr_t * AAttrs, OUT int64_t * ACTime,
   OUT int64_t * AMTime, OUT int64_t * AATime, OUT int64_t * ASize,
@@ -4366,10 +4368,10 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
-  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()), "",
+  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, ATargetFileName.c_str()), "",
   [&]()
   {
-    LocalFileAttrs = this->GetLocalFileAttributes(ApiPath(AFileName));
+    LocalFileAttrs = this->GetLocalFileAttributes(ApiPath(ATargetFileName));
     if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
       ::RaiseLastOSError();
@@ -4386,10 +4388,10 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
       NoHandle = true;
     }
 
-    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(OPENFILE_ERROR, AFileName.c_str()), "",
+    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(OPENFILE_ERROR, ATargetFileName.c_str()), "",
     [&]()
     {
-      LocalFileHandle = this->CreateLocalFile(ApiPath(AFileName).c_str(), static_cast<DWORD>(Access),
+      LocalFileHandle = this->CreateLocalFile(ApiPath(ATargetFileName).c_str(), static_cast<DWORD>(Access),
         Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
         OPEN_EXISTING, 0);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
@@ -4407,7 +4409,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
         FILETIME CTime;
 
         // Get last file access and modification time
-        FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, AFileName.c_str()), "",
+        FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, ATargetFileName.c_str()), "",
         [&]()
         {
           THROWOSIFFALSE(::GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime));
@@ -4429,7 +4431,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & AFileName,
       if (ASize)
       {
         // Get file size
-        FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, AFileName.c_str()), "",
+        FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, ATargetFileName.c_str()), "",
         [&]()
         {
           uint32_t LSize;
@@ -5699,6 +5701,13 @@ bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
             ReactOnCommand(fsCopyToLocal);
           }
         };
+        if (GetLog()->GetLogging())
+        {
+          LogEvent(FORMAT(L"Copying %d files/directories to local directory "
+            L"\"%s\"", AFilesToCopy->GetCount(), TargetDir.c_str()));
+          LogEvent(CopyParam->GetLogStr());
+         }
+
         FFileSystem->CopyToLocal(AFilesToCopy, TargetDir, CopyParam, Params,
           &OperationProgress, OnceDoneOperation);
       }

@@ -160,7 +160,8 @@ protected:
   void WebDAVDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, uintptr_t Attrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
-  bool ConfirmOverwrite(const UnicodeString & AFullFileName, UnicodeString & AFileName,
+  bool ConfirmOverwrite(
+    const UnicodeString & ASourceFullFileName, UnicodeString & ADestFileName,
     TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams,
     const TCopyParamType * CopyParam, intptr_t Params,

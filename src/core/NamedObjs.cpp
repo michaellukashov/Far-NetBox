@@ -128,10 +128,11 @@ const TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name) co
 
 TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name)
 {
-  // this should/can be optimized when list is sorted
-  for (Integer Index = 0; Index < TObjectList::GetCount(); ++Index)
+  // This should/can be optimized when list is sorted
+  for (Integer Index = 0; Index < GetCountIncludingHidden(); ++Index)
   {
-    TNamedObject * NamedObject = AtObject(Index);
+    // Not using AtObject as we iterate even hidden objects here
+    TNamedObject * NamedObject = static_cast<TNamedObject *>(GetItem(Index));
     if (NamedObject->IsSameName(Name))
     {
       return NamedObject;
