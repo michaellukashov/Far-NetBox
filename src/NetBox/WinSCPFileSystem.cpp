@@ -4101,7 +4101,7 @@ void TWinSCPFileSystem::EditHistory()
   TEditHistories::const_iterator it = FEditHistories.begin();
   while (it != FEditHistories.end())
   {
-    MenuItems->Add(core::MinimizeName(core::UnixIncludeTrailingBackslash((*it).Directory) + (*it).FileName,
+    MenuItems->Add(core::MinimizeName(core::UnixIncludeTrailingBackslash(it->Directory) + it->FileName,
       GetWinSCPPlugin()->MaxMenuItemLength(), true));
     ++it;
   }

@@ -291,8 +291,8 @@ void TFileMasks::Clear(TMasks & Masks)
   TMasks::iterator it = Masks.begin();
   while (it != Masks.end())
   {
-    ReleaseMaskMask((*it).FileNameMask);
-    ReleaseMaskMask((*it).DirectoryMask);
+    ReleaseMaskMask(it->FileNameMask);
+    ReleaseMaskMask(it->DirectoryMask);
     ++it;
   }
   Masks.clear();
