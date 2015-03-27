@@ -11,16 +11,8 @@ inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nu
 #define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
-//#define NULL_TERMINATE(S) S[_countof(S) - 1] = L'\0'
-//#define ASCOPY(dest, source) \
-//  { \
-//    AnsiString CopyBuf = ::W2MB(source).c_str(); \
-//    strncpy(dest, CopyBuf.c_str(), _countof(dest)); \
-//    dest[_countof(dest)-1] = '\0'; \
-//  }
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
-//#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)

@@ -7,8 +7,7 @@ enum TOptionType
   otSwitch
 };
 
-//typedef void __fastcall (__closure *TLogOptionEvent)(const UnicodeString & LogStr);
-DEFINE_CALLBACK_TYPE1(TLogOptionEvent, void, const UnicodeString &  /*LogStr*/);
+DEFINE_CALLBACK_TYPE1(TLogOptionEvent, void, const UnicodeString & /*LogStr*/);
 
 class TOptions : public TObject
 {
