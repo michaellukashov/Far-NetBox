@@ -1,7 +1,7 @@
-NetBox 2.1.41.370 25.02.2015
+NetBox 2.1.41.371 27.03.2015
 --------------------
+  * Update openssl sources to 1.0.1m
   * Update WinSCP sources to 5.7
-  * Update openssl sources to 1.0.1l
   * Bugfix: plugin prefixes do not work
     (https://github.com/michaellukashov/Far-NetBox/issues/131)
 
