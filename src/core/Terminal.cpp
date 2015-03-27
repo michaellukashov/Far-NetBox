@@ -4239,7 +4239,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
   }
 }
 
-bool TTerminal::DoCreateFile(const UnicodeString & AFileName,
+bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
   TFileOperationProgressType * OperationProgress,
   bool Resume,
   bool NoConfirmation,
@@ -4351,7 +4351,7 @@ bool TTerminal::TerminalCreateFile(const UnicodeString & ATargetFileName,
   FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CREATE_FILE_ERROR, ATargetFileName.c_str()), "",
   [&]()
   {
-    Result = DoCreateFile(ATargetFileName, OperationProgress, Resume, NoConfirmation,
+    Result = DoCreateLocalFile(ATargetFileName, OperationProgress, Resume, NoConfirmation,
       AHandle);
   });
 

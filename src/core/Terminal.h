@@ -466,7 +466,7 @@ protected:
     OUT UnicodeString & AResult);
   void FileFind(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
   void DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params);
-  bool DoCreateFile(const UnicodeString & AFileName,
+  bool DoCreateLocalFile(const UnicodeString & AFileName,
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,
