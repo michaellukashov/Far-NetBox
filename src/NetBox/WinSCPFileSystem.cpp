@@ -4118,8 +4118,9 @@ void TWinSCPFileSystem::EditHistory()
   if ((Result >= 0) && (Result < static_cast<intptr_t>(FEditHistories.size())))
   {
     TRemoteFile * File = nullptr;
+    const TEditHistory & EditHistory = FEditHistories[Result];
     UnicodeString FullFileName =
-      core::UnixIncludeTrailingBackslash(FEditHistories[Result].Directory) + FEditHistories[Result].FileName;
+      core::UnixIncludeTrailingBackslash(EditHistory.Directory) + EditHistory.FileName;
     FTerminal->ReadFile(FullFileName, File);
     std::unique_ptr<TRemoteFile> FilePtr(File);
     assert(FilePtr.get());
@@ -4127,8 +4128,7 @@ void TWinSCPFileSystem::EditHistory()
     {
       File->SetFullFileName(FullFileName);
     }
-    MultipleEdit(FEditHistories[Result].Directory,
-      FEditHistories[Result].FileName, File);
+    MultipleEdit(EditHistory.Directory, EditHistory.FileName, File);
   }
 }
 
