@@ -131,7 +131,8 @@ private:
   void ChangeFileToken(const UnicodeString & DelimitedName,
     const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr);
   uintptr_t ConfirmOverwrite(
-    const UnicodeString & AFullFileName, const UnicodeString & AFileName, TOperationSide Side,
+    const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
+    TOperationSide Side,
     const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress);
 

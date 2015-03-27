@@ -1435,8 +1435,8 @@ void TSCPFileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
 // transfer protocol
 
 uintptr_t TSCPFileSystem::ConfirmOverwrite(
-  const UnicodeString & /*AFullFileName*/,
-  const UnicodeString & AFileName, TOperationSide Side,
+  const UnicodeString & ASourceFullFileName,
+  const UnicodeString & ATargetFileName, TOperationSide Side,
   const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress)
 {
@@ -1458,7 +1458,7 @@ uintptr_t TSCPFileSystem::ConfirmOverwrite(
   QueryParams.AliasesCount = _countof(Aliases);
   uintptr_t Answer =
     FTerminal->ConfirmFileOverwrite(
-      AFileName, FileParams,
+      ASourceFullFileName, ATargetFileName, FileParams,
       qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
       &QueryParams, Side, CopyParam, Params, OperationProgress);
   return Answer;
@@ -1640,7 +1640,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
           TQueryParams QueryParams(qpNeverAskAgainCheck);
           TSuspendFileOperationProgress Suspend(OperationProgress);
           Answer = FTerminal->ConfirmFileOverwrite(
-            FileNameOnly /*not used*/, nullptr,
+            FileName, FileNameOnly, nullptr,
             qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
             &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
         }
@@ -1655,7 +1655,8 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
             FTerminal->GetSessionData()->GetDSTMode());
           FileParams.DestSize = File->GetSize();
           FileParams.DestTimestamp = File->GetModification();
-          Answer = ConfirmOverwrite(FileName, FileName, osRemote,
+          Answer = ConfirmOverwrite(
+            FileName, FileNameOnly, osRemote,
             &FileParams, CopyParam, Params, OperationProgress);
         }
 
@@ -2535,10 +2536,11 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
 
         FTerminal->LogFileDetails(AFileName, SourceTimestamp, MaskParams.Size);
 
-        UnicodeString DestFileName =
-          ::IncludeTrailingBackslash(TargetDir) +
+        UnicodeString DestFileNameOnly =
           CopyParam->ChangeFileName(OperationProgress->FileName, osRemote,
             Level == 0);
+        UnicodeString DestFileName =
+          ::IncludeTrailingBackslash(TargetDir) + DestFileNameOnly;
 
         FileData.LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFileName));
         // If getting attrs fails, we suppose, that file/folder doesn't exists
@@ -2601,7 +2603,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
 
                   uintptr_t Answer =
                     ConfirmOverwrite(
-                      OperationProgress->FileName, OperationProgress->FileName, osLocal,
+                      OperationProgress->FileName, DestFileNameOnly, osLocal,
                       &FileParams, CopyParam, Params, OperationProgress);
 
                   switch (Answer)

@@ -12502,7 +12502,8 @@ void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
   assert(false);
 }
 
-bool TWebDAVFileSystem::ConfirmOverwrite(const UnicodeString & AFullFileName, UnicodeString & AFileName,
+bool TWebDAVFileSystem::ConfirmOverwrite(
+  const UnicodeString & ASourceFullFileName, UnicodeString & ADestFileName,
   TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams,
   const TCopyParamType * CopyParam, intptr_t Params,
@@ -12541,10 +12542,11 @@ bool TWebDAVFileSystem::ConfirmOverwrite(const UnicodeString & AFullFileName, Un
 
     {
       TSuspendFileOperationProgress Suspend(OperationProgress);
-      Answer = FTerminal->ConfirmFileOverwrite(AFileName, FileParams,
-                 Answers, &QueryParams,
-                 OperationProgress->Side == osLocal ? osRemote : osLocal,
-                 CopyParam, Params, OperationProgress);
+      Answer = FTerminal->ConfirmFileOverwrite(
+         ASourceFullFileName, ADestFileName, FileParams,
+         Answers, &QueryParams,
+         OperationProgress->Side == osLocal ? osRemote : osLocal,
+         CopyParam, Params, OperationProgress);
     }
   }
 
@@ -12563,7 +12565,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(const UnicodeString & AFullFileName, Un
       // rename
     case qaIgnore:
       if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
-            LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, AFileName))
+            LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, ADestFileName))
       {
         OverwriteMode = omOverwrite;
       }
@@ -13115,7 +13117,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         Answer = FTerminal->ConfirmFileOverwrite(
-          FileNameOnly /*not used*/, nullptr,
+          AFileName, DestFileName, nullptr,
           qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
           &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
       }
@@ -13197,7 +13199,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       uintptr_t Answer = 0;
       TOverwriteMode OverwriteMode = omOverwrite;
       bool AutoResume = false;
-      ConfirmOverwrite(DestFullName, DestFullName, OperationProgress,
+      ConfirmOverwrite(AFileName, DestFullName, OperationProgress,
           &FileParams, CopyParam, Params, AutoResume,
           OverwriteMode, Answer);
       switch (Answer)
