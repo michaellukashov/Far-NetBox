@@ -228,7 +228,7 @@ bool TFileZillaIntf::List(const wchar_t * APath)
 }
 //---------------------------------------------------------------------------
 #ifdef MPEXT
-bool __fastcall TFileZillaIntf::ListFile(const wchar_t * FileName, const wchar_t * APath)
+bool TFileZillaIntf::ListFile(const wchar_t * FileName, const wchar_t * APath)
 {
   ASSERT(FFileZillaApi != NULL);
   CServerPath Path(APath);

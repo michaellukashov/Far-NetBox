@@ -216,7 +216,7 @@ protected:
   void AutoDetectTimeDifference(TRemoteFileList * FileList);
   void ApplyTimeDifference(TRemoteFile * File);
   bool GetTimeZoneDifferenceApplicable(TModificationFmt ModificationFmt) const;
-  UnicodeString __fastcall DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString & Alg, TRemoteFile * File);
+  UnicodeString DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString & Alg, TRemoteFile * File);
   void DoCalculateFilesChecksum(bool UsingHashCommand, const UnicodeString & Alg,
     TStrings * FileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum,
