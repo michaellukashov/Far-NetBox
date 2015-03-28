@@ -8752,7 +8752,7 @@ static void do_ssh2_authconn(Ssh ssh, unsigned char *in, int inlen,
 		    assert(s->gsslib);
 		}
 
-		if (s->gsslib->gsslogmsg)
+		if (s->gsslib && s->gsslib->gsslogmsg)
 		    logevent(s->gsslib->gsslogmsg);
 
 		/* Sending USERAUTH_REQUEST with "gssapi-with-mic" method */
