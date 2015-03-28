@@ -1,5 +1,8 @@
-NetBox 2.1.41.372 27.03.2015
+NetBox 2.1.41.373 28.03.2015
 --------------------
+  * Bugfix: Issue #149: Plugin closes if root directory contains symlinks
+    (http://bugs.farmanager.com/view.php?id=2884)
+    (https://github.com/michaellukashov/Far-NetBox/issues/149)
   * Update WinSCP sources to 5.7.1
   * Update openssl sources to 1.0.1m
   * Bugfix: plugin prefixes do not work
