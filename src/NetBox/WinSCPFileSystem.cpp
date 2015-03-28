@@ -482,20 +482,23 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
             break;
           // Check what kind of symlink this is
           const UnicodeString LinkFileName = File->GetLinkTo();
-          TRemoteFile * LinkFile = nullptr;
-          try
+          if (!LinkFileName.IsEmpty())
           {
-            FileSystem->ReadFile(LinkFileName, LinkFile);
+            TRemoteFile * LinkFile = nullptr;
+            try
+            {
+              FileSystem->ReadFile(LinkFileName, LinkFile);
+            }
+            catch (const Exception & E)
+            {
+              LinkFile = nullptr;
+            }
+            if ((LinkFile != nullptr) && LinkFile->GetIsDirectory())
+            {
+              File->SetType(FILETYPE_DIRECTORY);
+            }
+            SAFE_DESTROY(LinkFile);
           }
-          catch (const Exception & E)
-          {
-            LinkFile = nullptr;
-          }
-          if ((LinkFile != nullptr) && LinkFile->GetIsDirectory())
-          {
-            File->SetType(FILETYPE_DIRECTORY);
-          }
-          SAFE_DESTROY(LinkFile);
         }
         PanelItems->Add(new TRemoteFilePanelItem(File));
       }
