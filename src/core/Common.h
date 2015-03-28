@@ -6,21 +6,13 @@
 
 #include "Exceptions.h"
 
-inline void ThrowExtException() { throw ExtException((Exception *)nullptr, UnicodeString(L"")); }
+inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
 //#define EXCEPTION throw ExtException(nullptr, L"")
 #define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
-//#define NULL_TERMINATE(S) S[_countof(S) - 1] = L'\0'
-//#define ASCOPY(dest, source) \
-//  { \
-//    AnsiString CopyBuf = ::W2MB(source).c_str(); \
-//    strncpy(dest, CopyBuf.c_str(), _countof(dest)); \
-//    dest[_countof(dest)-1] = '\0'; \
-//  }
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
-//#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
@@ -49,12 +41,14 @@ UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim);
 UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
   const UnicodeString & Chs, bool Trim,
   wchar_t * Delimiter = nullptr, bool DoubleDelimiterEscapes = false);
+UnicodeString CopyToChar(const UnicodeString & Str, wchar_t Ch, bool Trim);
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars);
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
 UnicodeString ExceptionLogString(Exception *E);
 UnicodeString MainInstructions(const UnicodeString & S);
 UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S);
 bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions);
+UnicodeString RemoveMainInstructionsTag(const UnicodeString & S);
 UnicodeString UnformatMessage(const UnicodeString & S);
 UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S);
 bool IsNumber(const UnicodeString & Str);
@@ -127,6 +121,9 @@ UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
 TFormatSettings GetEngFormatSettings();
 //int ParseShortEngMonthName(const UnicodeString & MonthStr);
+// The defaults are equal to defaults of TStringList class (except for Sorted)
+TStringList * CreateSortedStringList(bool CaseSensitive = false, TDuplicatesEnum Duplicates = dupIgnore);
+UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);
 
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /*FileName*/, const TSearchRec & /*Rec*/, void * /*Param*/);
@@ -226,8 +223,8 @@ private:
 #else
 #define CHECK(p) { bool __CHECK_RESULT__ = (p); assert(__CHECK_RESULT__); }
 #define FAIL assert(false)
-#define ALWAYS_TRUE(p) p
-#define ALWAYS_FALSE(p) p
+#define ALWAYS_TRUE(p) (p)
+#define ALWAYS_FALSE(p) (p)
 #define NOT_NULL(P) P
 #define CLEAN_INLINE
 #endif

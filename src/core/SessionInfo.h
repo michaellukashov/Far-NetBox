@@ -83,6 +83,7 @@ public:
   virtual void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") = 0;
   virtual void HandleExtendedException(Exception * E) = 0;
   virtual void Closed() = 0;
+  virtual void ProcessGUI() = 0;
 };
 
 // Duplicated in LogMemo.h for design-time-only purposes
@@ -107,6 +108,8 @@ enum TLogAction
   laCall,
   laLs,
   laStat,
+  laChecksum,
+  laCwd,
 };
 
 enum TCaptureOutputType
@@ -220,7 +223,7 @@ public:
     const UnicodeString & Destination);
 
   void AddOutput(const UnicodeString & Output, bool StdError);
-  void AddExitCode(int ExitCode);
+  void ExitCode(int ExitCode);
 };
 
 class TLsSessionAction : public TSessionAction
@@ -237,6 +240,20 @@ public:
   explicit TStatSessionAction(TActionLog * Log, const UnicodeString & AFileName);
 
   void File(TRemoteFile * AFile);
+};
+
+class TChecksumSessionAction : public TFileSessionAction
+{
+public:
+  TChecksumSessionAction(TActionLog * Log);
+
+  void Checksum(const UnicodeString & Alg, const UnicodeString & Checksum);
+};
+//---------------------------------------------------------------------------
+class TCwdSessionAction : public TSessionAction
+{
+public:
+  TCwdSessionAction(TActionLog * Log, const UnicodeString & Path);
 };
 
 DEFINE_CALLBACK_TYPE2(TDoAddLogEvent, void,
@@ -311,6 +328,8 @@ private:
   void DoAddStartupInfo(TSessionData * Data);
   UnicodeString GetTlsVersionName(TTlsVersion TlsVersion);
   UnicodeString LogSensitive(const UnicodeString & Str);
+  void AddOption(const UnicodeString & LogStr);
+  void AddOptions(TOptions * Options);
 
 protected:
   void CloseLogFile();
@@ -331,6 +350,27 @@ private:
   UnicodeString FName;
   bool FClosed;
   TNotifyEvent FOnStateChange;
+/*
+  UnicodeString __fastcall GetLine(int Index);
+  TLogLineType __fastcall GetType(int Index);
+  void __fastcall DeleteUnnecessary();
+  void __fastcall StateChange();
+  void __fastcall OpenLogFile();
+  int __fastcall GetBottomIndex();
+  UnicodeString __fastcall GetLogFileName();
+  bool __fastcall GetLoggingToFile();
+  UnicodeString __fastcall GetSessionName();
+  void __fastcall DoAdd(TLogLineType Type, UnicodeString Line,
+    void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line));
+  void __fastcall DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
+  void __fastcall DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);
+  void __fastcall AddStartupInfo(bool System);
+  void __fastcall DoAddStartupInfo(TSessionData * Data);
+  UnicodeString __fastcall GetTlsVersionName(TTlsVersion TlsVersion);
+  UnicodeString __fastcall LogSensitive(const UnicodeString & Str);
+  void __fastcall AddOption(const UnicodeString & LogStr);
+  void __fastcall AddOptions(TOptions * Options);
+*/
 };
 
 class TActionLog : public TObject

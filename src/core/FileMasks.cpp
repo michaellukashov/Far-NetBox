@@ -291,8 +291,8 @@ void TFileMasks::Clear(TMasks & Masks)
   TMasks::iterator it = Masks.begin();
   while (it != Masks.end())
   {
-    ReleaseMaskMask((*it).FileNameMask);
-    ReleaseMaskMask((*it).DirectoryMask);
+    ReleaseMaskMask(it->FileNameMask);
+    ReleaseMaskMask(it->DirectoryMask);
     ++it;
   }
   Masks.clear();
@@ -785,7 +785,7 @@ TCustomCommand::TCustomCommand()
 }
 
 void TCustomCommand::GetToken(
-  const UnicodeString & Command, intptr_t Index, intptr_t & Len, wchar_t & PatternCmd)
+  const UnicodeString & Command, intptr_t Index, intptr_t & Len, wchar_t & PatternCmd) const
 {
   assert(Index <= Command.Length());
   const wchar_t * Ptr = Command.c_str() + Index - 1;
@@ -925,7 +925,7 @@ void TCustomCommand::CustomValidate(const UnicodeString & Command,
 }
 
 bool TCustomCommand::FindPattern(const UnicodeString & Command,
-  wchar_t PatternCmd)
+  wchar_t PatternCmd) const
 {
   bool Result = false;
   intptr_t Index = 1;
@@ -970,7 +970,7 @@ void TInteractiveCustomCommand::Execute(
   Value.Clear();
 }
 
-intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index)
+intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index) const
 {
   intptr_t Len = 0;
   wchar_t PatternCmd = (Index < Command.Length()) ? Command[Index + 1] : L'\0';
@@ -1054,23 +1054,48 @@ TCustomCommandData::TCustomCommandData()
 {
 }
 
+TCustomCommandData::TCustomCommandData(const TCustomCommandData & Data)
+{
+  this->operator=(Data);
+}
+
 TCustomCommandData::TCustomCommandData(TTerminal * Terminal)
 {
-  Init(Terminal->GetSessionData(), Terminal->TerminalGetUserName(), Terminal->GetPassword());
+  Init(Terminal->GetSessionData(), Terminal->TerminalGetUserName(), Terminal->GetPassword(),
+    Terminal->GetSessionInfo().HostKeyFingerprint);
 }
 
 TCustomCommandData::TCustomCommandData(
   TSessionData * SessionData, const UnicodeString & AUserName, const UnicodeString & APassword)
 {
-  Init(SessionData, AUserName, APassword);
+  Init(SessionData, AUserName, APassword, UnicodeString());
 }
 
 void TCustomCommandData::Init(
-  TSessionData * SessionData, const UnicodeString & AUserName, const UnicodeString & APassword)
+  TSessionData * ASessionData, const UnicodeString & AUserName,
+  const UnicodeString & APassword, const UnicodeString & AHostKey)
 {
-  HostName = SessionData->GetHostNameExpanded();
-  UserName = AUserName;
-  Password = APassword;
+  FSessionData.reset(new TSessionData(L""));
+  FSessionData->Assign(ASessionData);
+  FSessionData->SetUserName(AUserName);
+  FSessionData->SetPassword(APassword);
+  FSessionData->SetHostKey(AHostKey);
+}
+
+TCustomCommandData & TCustomCommandData::operator=(const TCustomCommandData & Data)
+{
+  if (&Data != this)
+  {
+    assert(Data.GetSessionData() != nullptr);
+    FSessionData.reset(new TSessionData(L""));
+    FSessionData->Assign(Data.GetSessionData());
+  }
+  return *this;
+}
+
+TSessionData * TCustomCommandData::GetSessionData() const
+{
+  return FSessionData.get();
 }
 
 TFileCustomCommand::TFileCustomCommand()
@@ -1094,12 +1119,13 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
 {
 }
 
-intptr_t TFileCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index)
+intptr_t TFileCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index) const
 {
   intptr_t Len;
   wchar_t PatternCmd = (Index < Command.Length()) ? Command[Index + 1] : L'\0';
   switch (PatternCmd)
   {
+    case L'S':
     case L'@':
     case L'U':
     case L'P':
@@ -1120,17 +1146,21 @@ bool TFileCustomCommand::PatternReplacement(
 {
   // keep consistent with TSessionLog::OpenLogFile
 
-  if (Pattern == L"!@")
+  if (AnsiSameText(Pattern, L"!s"))
   {
-    Replacement = FData.HostName;
+    Replacement = FData.GetSessionData()->GenerateSessionUrl(sufComplete);
+  }
+  else if (Pattern == L"!@")
+  {
+    Replacement = FData.GetSessionData()->GetHostNameExpanded();
   }
   else if (::AnsiSameText(Pattern, L"!u"))
   {
-    Replacement = FData.UserName;
+    Replacement = FData.GetSessionData()->SessionGetUserName();
   }
   else if (::AnsiSameText(Pattern, L"!p"))
   {
-    Replacement = FData.Password;
+    Replacement = FData.GetSessionData()->GetPassword();
   }
   else if (Pattern == L"!/")
   {
@@ -1171,30 +1201,35 @@ void TFileCustomCommand::ValidatePattern(const UnicodeString & Command,
 
   if (PatternCmd == L'&')
   {
-    Found[0] = (int)Index;
+    Found[0] = static_cast<int>(Index);
   }
   else if ((PatternCmd != TEXT_TOKEN) && (PatternLen(Command, Index) == 1))
   {
-    Found[1] = (int)Index;
+    Found[1] = static_cast<int>(Index);
   }
 }
 
-bool TFileCustomCommand::IsFileListCommand(const UnicodeString & Command)
+bool TFileCustomCommand::IsFileListCommand(const UnicodeString & Command) const
 {
   return FindPattern(Command, L'&');
 }
 
-bool TFileCustomCommand::IsFileCommand(const UnicodeString & Command)
+bool TFileCustomCommand::IsRemoteFileCommand(const UnicodeString & Command) const
 {
   return FindPattern(Command, L'!') || FindPattern(Command, L'&');
 }
 
-bool TFileCustomCommand::IsSiteCommand(const UnicodeString & Command)
+bool TFileCustomCommand::IsFileCommand(const UnicodeString & Command) const
+{
+  return IsRemoteFileCommand(Command);
+}
+
+bool TFileCustomCommand::IsSiteCommand(const UnicodeString & Command) const
 {
   return FindPattern(Command, L'@');
 }
 
-bool TFileCustomCommand::IsPasswordCommand(const UnicodeString & Command)
+bool TFileCustomCommand::IsPasswordCommand(const UnicodeString & Command) const
 {
   return FindPattern(Command, L'p');
 }

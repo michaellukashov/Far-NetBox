@@ -23,7 +23,6 @@
 #define _MPT(T) _T(T)
 #define _MPAT(T) T
 //---------------------------------------------------------------------------
-//#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 //---------------------------------------------------------------------------
 #define _ATL_MIN_CRT
 #define _ATL_NO_DEFAULT_LIBS
@@ -119,10 +118,10 @@ public:
     if (!::ReadFile(m_hFile, lpBuf, nCount, &dwRead, NULL))
     {
       // The only change from MFC CFile::Read is m_strFileName
-      CFileException::ThrowOsError((LONG)::GetLastError(), m_strFileName);
+      CFileException::ThrowOsError(static_cast<LONG>(::GetLastError()), m_strFileName);
     }
 
-    return (UINT)dwRead;
+    return static_cast<UINT>(dwRead);
   }
 
   // MFC allocates CObject (ancestor of CFile) with new, but deallocates with free,

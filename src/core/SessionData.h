@@ -90,6 +90,14 @@ enum TFtps
 // has to match SSL_VERSION_XXX constants in AsyncSslSocketLayer.h
 enum TTlsVersion { ssl2 = 2, ssl3 = 3, tls10 = 10, tls11 = 11, tls12 = 12 };
 enum TSessionSource { ssNone, ssStored, ssStoredModified };
+enum TSessionUrlFlags
+{
+  sufSpecific = 0x01,
+  sufUserName = 0x02,
+  sufPassword = 0x04,
+  sufHostKey = 0x08,
+  sufComplete = sufUserName | sufPassword | sufHostKey
+};
 
 extern const wchar_t CipherNames[CIPHER_COUNT][10];
 extern const wchar_t KexNames[KEX_COUNT][20];
@@ -122,6 +130,7 @@ extern const wchar_t UrlParamSeparator;
 extern const wchar_t UrlParamValueSeparator;
 #define UrlHostKeyParamName L"fingerprint"
 #define UrlSaveParamName L"save"
+#define PassphraseOption L"passphrase"
 
 struct TIEProxyConfig : public TObject
 {
@@ -191,7 +200,8 @@ public:
   UnicodeString GetSessionName() const;
   bool HasSessionName() const;
   UnicodeString GetDefaultSessionName() const;
-  UnicodeString GetSessionUrl() const;
+//  UnicodeString GetSessionUrl() const;
+//  UnicodeString GenerateSessionUrl(uintptr_t Flags);
   UnicodeString GetProtocolUrl() const;
   // void SetProtocol(TProtocol Value);
   void SetFSProtocol(TFSProtocol Value);
@@ -257,6 +267,7 @@ public:
   TAutoSwitch GetSFTPBug(TSftpBug Bug) const;
   void SetSCPLsFullTime(TAutoSwitch Value);
   void SetFtpListAll(TAutoSwitch Value);
+  void SetFtpHost(TAutoSwitch Value);
   void SetFtpDupFF(bool Value);
   void SetFtpUndupFF(bool Value);
   void SetSslSessionReuse(bool Value);
@@ -294,6 +305,8 @@ public:
   void SetMinTlsVersion(TTlsVersion Value);
   void SetMaxTlsVersion(TTlsVersion Value);
   void SetNotUtf(TAutoSwitch Value);
+  void SetIsWorkspace(bool Value) { FIsWorkspace = Value; }
+  void SetLink(const UnicodeString & Value) { FLink = Value; }
   bool IsWorkspace() const { return false; }
   // void SetIsWorkspace(bool Value);
   // void SetLink(const UnicodeString & Value);
@@ -336,9 +349,11 @@ public:
   void Remove();
   void CacheHostKeyIfNotCached();
   virtual void Assign(const TPersistent * Source);
+  virtual intptr_t Compare(const TNamedObject * Other) const;
   void CopyData(TSessionData * Source);
+  void CopyDirectoriesStateData(TSessionData * SourceData);
   bool ParseUrl(const UnicodeString & Url, TOptions * Options,
-    TStoredSessionList * StoredSessions, bool & DefaultsOnly,
+    TStoredSessionList * AStoredSessions, bool & DefaultsOnly,
     UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
   bool ParseOptions(TOptions * Options);
   void ConfigureTunnel(intptr_t PortNumber);
@@ -346,13 +361,18 @@ public:
   void ExpandEnvironmentVariables();
   bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const;
   bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
+  UnicodeString GetNameWithoutHiddenPrefix() const;
+  bool HasStateData();
+  void CopyStateData(TSessionData * SourceData);
   bool IsInFolderOrWorkspace(const UnicodeString & Name) const;
+  UnicodeString GenerateSessionUrl(uintptr_t Flags);
   static void ValidatePath(const UnicodeString & APath);
   static void ValidateName(const UnicodeString & Name);
   static UnicodeString MakeValidName(const UnicodeString & Name);
   static UnicodeString ExtractLocalName(const UnicodeString & Name);
   static UnicodeString ExtractFolderName(const UnicodeString & Name);
   static UnicodeString ComposePath(const UnicodeString & APath, const UnicodeString & Name);
+  static bool IsSensitiveOption(const UnicodeString & Option);
 
   UnicodeString GetHostName() const { return FHostName; }
   intptr_t GetPortNumber() const { return FPortNumber; }
@@ -430,6 +450,7 @@ public:
   intptr_t GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
   TAutoSwitch GetSCPLsFullTime() const { return FSCPLsFullTime; }
   TAutoSwitch GetFtpListAll() const { return FFtpListAll; }
+  TAutoSwitch GetFtpHost() const { return FFtpHost; }
   bool GetFtpDupFF() const { return FFtpDupFF; }
   bool GetFtpUndupFF() const { return FFtpUndupFF; }
   bool GetSslSessionReuse() const { return FSslSessionReuse; }
@@ -466,6 +487,8 @@ public:
   TTlsVersion GetMinTlsVersion() const { return FMinTlsVersion; }
   TTlsVersion GetMaxTlsVersion() const { return FMaxTlsVersion; }
   TAutoSwitch GetNotUtf() const { return FNotUtf; }
+  bool GetIsWorkspace() const { return FIsWorkspace; }
+  UnicodeString GetLink() const { return FLink; }
   UnicodeString GetHostKey() const { return FHostKey; }
   bool GetOverrideCachedHostKey() const { return FOverrideCachedHostKey; }
   UnicodeString GetOrigHostName() const { return FOrigHostName; }
@@ -573,6 +596,7 @@ private:
   UnicodeString FPostLoginCommands;
   TAutoSwitch FSCPLsFullTime;
   TAutoSwitch FFtpListAll;
+  TAutoSwitch FFtpHost;
   bool FFtpDupFF;
   bool FFtpUndupFF;
   bool FSslSessionReuse;
@@ -629,7 +653,6 @@ private:
   UnicodeString __fastcall GetUserNameExpanded();
   void __fastcall SetPassword(UnicodeString value);
   UnicodeString __fastcall GetPassword() const;
-  void __fastcall SetPasswordless(bool value);
   void __fastcall SetPingInterval(int value);
   void __fastcall SetTryAgent(bool value);
   void __fastcall SetAgentFwd(bool value);
@@ -663,7 +686,6 @@ private:
   UnicodeString __fastcall GetSessionName();
   bool __fastcall HasSessionName();
   UnicodeString __fastcall GetDefaultSessionName();
-  UnicodeString __fastcall GetSessionUrl();
   UnicodeString __fastcall GetProtocolUrl();
   void __fastcall SetFSProtocol(TFSProtocol value);
   UnicodeString __fastcall GetFSProtocolStr();
@@ -727,6 +749,7 @@ private:
   TAutoSwitch __fastcall GetSFTPBug(TSftpBug Bug) const;
   void __fastcall SetSCPLsFullTime(TAutoSwitch value);
   void __fastcall SetFtpListAll(TAutoSwitch value);
+  void __fastcall SetFtpHost(TAutoSwitch value);
   void __fastcall SetSslSessionReuse(bool value);
   UnicodeString __fastcall GetStorageKey();
   UnicodeString __fastcall GetInternalStorageKey();
@@ -776,6 +799,9 @@ private:
   UnicodeString __fastcall ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
   int __fastcall ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int Default);
   bool __fastcall IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties);
+  UnicodeString __fastcall GetNameWithoutHiddenPrefix();
+  bool __fastcall HasStateData();
+  void __fastcall CopyStateData(TSessionData * SourceData);
   static RawByteString __fastcall EncryptPassword(const UnicodeString & Password, UnicodeString Key);
   static UnicodeString __fastcall DecryptPassword(const RawByteString & Password, UnicodeString Key);
   static RawByteString __fastcall StronglyRecryptPassword(const RawByteString & Password, UnicodeString Key);
@@ -803,9 +829,11 @@ public:
   void __fastcall Remove();
   void __fastcall CacheHostKeyIfNotCached();
   virtual void __fastcall Assign(TPersistent * Source);
+  virtual int __fastcall Compare(TNamedObject * Other);
   void __fastcall CopyData(TSessionData * Source);
+  void __fastcall CopyDirectoriesStateData(TSessionData * SourceData);
   bool __fastcall ParseUrl(UnicodeString Url, TOptions * Options,
-    TStoredSessionList * StoredSessions, bool & DefaultsOnly,
+    TStoredSessionList * AStoredSessions, bool & DefaultsOnly,
     UnicodeString * FileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
   bool __fastcall ParseOptions(TOptions * Options);
   void __fastcall ConfigureTunnel(int PortNumber);
@@ -814,12 +842,14 @@ public:
   bool __fastcall IsSame(const TSessionData * Default, bool AdvancedOnly);
   bool __fastcall IsSameSite(const TSessionData * Default);
   bool __fastcall IsInFolderOrWorkspace(UnicodeString Name);
+  UnicodeString __fastcall GenerateSessionUrl(unsigned int Flags);
   static void __fastcall ValidatePath(const UnicodeString Path);
   static void __fastcall ValidateName(const UnicodeString Name);
   static UnicodeString __fastcall MakeValidName(const UnicodeString & Name);
   static UnicodeString __fastcall ExtractLocalName(const UnicodeString & Name);
   static UnicodeString __fastcall ExtractFolderName(const UnicodeString & Name);
   static UnicodeString __fastcall ComposePath(const UnicodeString & Path, const UnicodeString & Name);
+  static bool __fastcall IsSensitiveOption(const UnicodeString & Option);
 
   __property UnicodeString HostName  = { read=FHostName, write=SetHostName };
   __property UnicodeString HostNameExpanded  = { read=GetHostNameExpanded };
@@ -859,8 +889,6 @@ public:
   __property TPingType PingType = { read = FPingType, write = SetPingType };
   __property UnicodeString SessionName  = { read=GetSessionName };
   __property UnicodeString DefaultSessionName  = { read=GetDefaultSessionName };
-  __property UnicodeString SessionUrl  = { read=GetSessionUrl };
-  __property UnicodeString ProtocolUrl  = { read=GetProtocolUrl };
   __property UnicodeString LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
   __property UnicodeString RemoteDirectory  = { read=FRemoteDirectory, write=SetRemoteDirectory };
   __property bool SynchronizeBrowsing = { read=FSynchronizeBrowsing, write=SetSynchronizeBrowsing };
@@ -913,6 +941,7 @@ public:
   __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
   __property TAutoSwitch SCPLsFullTime = { read = FSCPLsFullTime, write = SetSCPLsFullTime };
   __property TAutoSwitch FtpListAll = { read = FFtpListAll, write = SetFtpListAll };
+  __property TAutoSwitch FtpHost = { read = FFtpHost, write = SetFtpHost };
   __property bool SslSessionReuse = { read = FSslSessionReuse, write = SetSslSessionReuse };
   __property TDSTMode DSTMode = { read = FDSTMode, write = SetDSTMode };
   __property bool DeleteToRecycleBin = { read = FDeleteToRecycleBin, write = SetDeleteToRecycleBin };
@@ -996,6 +1025,7 @@ public:
   TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
   TStrings * GetWorkspaces();
   bool HasAnyWorkspace();
+  TSessionData * SaveWorkspaceData(TSessionData * Data);
   const TSessionData * GetSession(intptr_t Index) const { return NB_STATIC_DOWNCAST_CONST(TSessionData, AtObject(Index)); }
   TSessionData * GetSession(intptr_t Index) { return NB_STATIC_DOWNCAST(TSessionData, AtObject(Index)); }
   const TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
@@ -1017,7 +1047,7 @@ private:
   void DoSave(THierarchicalStorage * Storage,
     TSessionData * Data, bool All, bool RecryptPasswordOnly,
     TSessionData * FactoryDefaults);
-  TSessionData * ResolveSessionData(TSessionData * Data);
+  TSessionData * ResolveWorkspaceData(TSessionData * Data);
   bool IsFolderOrWorkspace(const UnicodeString & Name, bool Workspace) const;
   TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
     TSessionData * Data, const UnicodeString & Name);

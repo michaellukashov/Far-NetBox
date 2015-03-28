@@ -21,9 +21,9 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 }
 
 TMessageParams::TMessageParams() :
-  Flags(0),
   Aliases(nullptr),
   AliasesCount(0),
+  Flags(0),
   Params(0),
   Timer(0),
   TimerEvent(nullptr),
@@ -302,7 +302,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         bool Another = !(Flags & FOSF_ACTIVE);
         PanelSystem = NB_STATIC_DOWNCAST(TWinSCPFileSystem, GetPanelFileSystem(Another));
         if (PanelSystem && PanelSystem->Connected() &&
-            PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == CommandLine)
+            PanelSystem->GetTerminal()->GetSessionData()->GenerateSessionUrl(sufComplete) == CommandLine)
         {
           PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
           if (PanelSystem->UpdatePanel(false, Another))
@@ -604,18 +604,20 @@ public:
 
 void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
 {
+  assert(Token);
   TFarMessageData & Data = *NB_STATIC_DOWNCAST(TFarMessageData, Token);
 
-  assert(Result != (uintptr_t)-1 && Result < Data.ButtonCount);
+  assert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
 
   if ((Data.Params != nullptr) && (Data.Params->Aliases != nullptr))
   {
     for (uintptr_t Index = 0; Index < Data.Params->AliasesCount; ++Index)
     {
-      if ((Data.Params->Aliases[Index].Button == Data.Buttons[Result]) &&
-          (Data.Params->Aliases[Index].OnClick))
+      const TQueryButtonAlias & Alias = Data.Params->Aliases[Index];
+      if ((Alias.Button == Data.Buttons[Result]) &&
+          (Alias.OnClick))
       {
-        Data.Params->Aliases[Index].OnClick(nullptr);
+        Alias.OnClick(nullptr);
         Close = false;
         break;
       }
@@ -797,7 +799,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   }
   else
   {
-    assert(Result != (uintptr_t)-1 && Result < Data.ButtonCount);
+    assert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
     Result = Data.Buttons[Result];
   }
 

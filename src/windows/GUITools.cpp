@@ -274,7 +274,7 @@ UnicodeString GetPersonalFolder()
     if (Len > 0)
     {
       WineHostHome.SetLength(Len - 1);
-      ::GetEnvironmentVariable(L"WINE_HOST_HOME", (LPWSTR)WineHostHome.c_str(), Len);
+      ::GetEnvironmentVariable(L"WINE_HOST_HOME", const_cast<LPWSTR>(WineHostHome.c_str()), Len);
     }
     if (!WineHostHome.IsEmpty())
     {
@@ -292,7 +292,7 @@ UnicodeString GetPersonalFolder()
       if (Len > 0)
       {
         UserName.SetLength(Len - 1);
-        ::GetEnvironmentVariable(L"USERNAME", (LPWSTR)UserName.c_str(), Len);
+        ::GetEnvironmentVariable(L"USERNAME", const_cast<LPWSTR>(UserName.c_str()), Len);
       }
       if (!UserName.IsEmpty())
       {
@@ -455,7 +455,7 @@ TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
   FLocalFileName = LocalFileName;
 }
 
-intptr_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index)
+intptr_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index) const
 {
   intptr_t Len = 0;
   if (Command[Index + 1] == L'^')
@@ -491,12 +491,12 @@ void TLocalCustomCommand::DelimitReplacement(
   // never delimit local commands
 }
 
-bool TLocalCustomCommand::HasLocalFileName(const UnicodeString & Command)
+bool TLocalCustomCommand::HasLocalFileName(const UnicodeString & Command) const
 {
   return FindPattern(Command, L'^');
 }
 
-bool TLocalCustomCommand::IsFileCommand(const UnicodeString & Command)
+bool TLocalCustomCommand::IsFileCommand(const UnicodeString & Command) const
 {
   return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
 }

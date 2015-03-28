@@ -588,17 +588,17 @@ typedef struct neon_resource_t
   // what is the URL for this resource
   const char * url;
 
-  // is this resource a collection? (from the DAV:resourcetype element)
-  int is_collection;
-
   // PROPSET: NAME -> VALUE (const char * -> const string_t *)
   apr_hash_t * propset;
+
+  apr_pool_t * pool;
+
+  // is this resource a collection? (from the DAV:resourcetype element)
+  int is_collection;
 
   // --- only used during response processing ---
   // when we see a DAV:href element, what element is the parent?
   int href_parent;
-
-  apr_pool_t * pool;
 
 } neon_resource_t;
 
@@ -7008,13 +7008,15 @@ typedef struct multistatus_baton_t
   stringbuf_t * want_cdata;
   stringbuf_t * cdata;
 
-  bool in_propstat;
-  bool propstat_has_error;
   stringbuf_t * propname;
   stringbuf_t * propstat_description;
 
   neon_request_t * req;
   stringbuf_t * description;
+
+  bool in_propstat;
+  bool propstat_has_error;
+
   bool contains_error;
   bool contains_precondition_error;
 } multistatus_baton_t;
@@ -10102,8 +10104,8 @@ neon_get_starting_props(
 
 typedef struct elem_defn
 {
-  neon_xml_elmid id;
   const char * name;
+  neon_xml_elmid id;
   int is_property;      // is it a property, or part of some structure?
 } elem_defn;
 
@@ -10113,16 +10115,16 @@ static const elem_defn elem_definitions[] =
   // propfind_elements[]
 
   // DAV elements
-  { ELEM_multistatus, "DAV:multistatus", 0 },
-  { ELEM_response, "DAV:response", 0 },
-  { ELEM_href, "DAV:href", NEON_XML_CDATA },
-  { ELEM_propstat, "DAV:propstat", 0 },
-  { ELEM_prop, "DAV:prop", 0 },
-  { ELEM_status, "DAV:status", NEON_XML_CDATA },
-  { ELEM_collection, "DAV:collection", NEON_XML_CDATA },
-  { ELEM_resourcetype, "DAV:resourcetype", 0 },
-  { ELEM_get_content_length, NEON_PROP_GETCONTENTLENGTH, 1 },
-  { ELEM_creationdate, NEON_PROP_CREATIONDATE, 1 },
+  { "DAV:multistatus", ELEM_multistatus, 0 },
+  { "DAV:response", ELEM_response, 0 },
+  { "DAV:href", ELEM_href, NEON_XML_CDATA },
+  { "DAV:propstat", ELEM_propstat, 0 },
+  { "DAV:prop", ELEM_prop, 0 },
+  { "DAV:status", ELEM_status, NEON_XML_CDATA },
+  { "DAV:collection", ELEM_collection, NEON_XML_CDATA },
+  { "DAV:resourcetype", ELEM_resourcetype, 0 },
+  { NEON_PROP_GETCONTENTLENGTH, ELEM_get_content_length, 1 },
+  { NEON_PROP_CREATIONDATE, ELEM_creationdate, 1 },
 
   { 0 }
 };
@@ -12500,7 +12502,8 @@ void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
   assert(false);
 }
 
-bool TWebDAVFileSystem::ConfirmOverwrite(const UnicodeString & AFullFileName, UnicodeString & AFileName,
+bool TWebDAVFileSystem::ConfirmOverwrite(
+  const UnicodeString & ASourceFullFileName, UnicodeString & ADestFileName,
   TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams,
   const TCopyParamType * CopyParam, intptr_t Params,
@@ -12539,10 +12542,11 @@ bool TWebDAVFileSystem::ConfirmOverwrite(const UnicodeString & AFullFileName, Un
 
     {
       TSuspendFileOperationProgress Suspend(OperationProgress);
-      Answer = FTerminal->ConfirmFileOverwrite(AFileName, FileParams,
-                 Answers, &QueryParams,
-                 OperationProgress->Side == osLocal ? osRemote : osLocal,
-                 CopyParam, Params, OperationProgress);
+      Answer = FTerminal->ConfirmFileOverwrite(
+         ASourceFullFileName, ADestFileName, FileParams,
+         Answers, &QueryParams,
+         OperationProgress->Side == osLocal ? osRemote : osLocal,
+         CopyParam, Params, OperationProgress);
     }
   }
 
@@ -12561,7 +12565,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(const UnicodeString & AFullFileName, Un
       // rename
     case qaIgnore:
       if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
-            LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, AFileName))
+            LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, ADestFileName))
       {
         OverwriteMode = omOverwrite;
       }
@@ -13113,7 +13117,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         Answer = FTerminal->ConfirmFileOverwrite(
-          FileNameOnly /*not used*/, nullptr,
+          AFileName, DestFileName, nullptr,
           qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
           &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
       }
@@ -13195,7 +13199,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       uintptr_t Answer = 0;
       TOverwriteMode OverwriteMode = omOverwrite;
       bool AutoResume = false;
-      ConfirmOverwrite(DestFullName, DestFullName, OperationProgress,
+      ConfirmOverwrite(AFileName, DestFullName, OperationProgress,
           &FileParams, CopyParam, Params, AutoResume,
           OverwriteMode, Answer);
       switch (Answer)

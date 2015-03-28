@@ -21,14 +21,15 @@ TQueryButtonAlias::TQueryButtonAlias() :
   Button(0),
   OnClick(nullptr),
   GroupWith(-1),
-  Default(false)
+  Default(false),
+  GrouppedShiftState(ssShift)
 {
 }
 
 TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword) :
-  Params(AParams),
   Aliases(nullptr),
   AliasesCount(0),
+  Params(AParams),
   Timer(0),
   TimerEvent(nullptr),
   TimerMessage(L""),
@@ -79,7 +80,7 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
 bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
 {
   return
-    (Prompts->GetCount() == 1) && FLAGCLEAR(intptr_t(Prompts->GetObj(0)), pupEcho) &&
+    (Prompts->GetCount() == 1) && FLAGCLEAR(reinterpret_cast<intptr_t>(Prompts->GetObj(0)), pupEcho) &&
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
      (Kind == pkTIS) || (Kind == pkCryptoCard));
 }

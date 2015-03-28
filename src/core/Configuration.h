@@ -110,6 +110,7 @@ public:
   bool GetAutoReadDirectoryAfterOp() const;
   void SetAutoReadDirectoryAfterOp(bool Value);
   virtual bool GetRememberPassword() const;
+  UnicodeString GetReleaseType() const;
 
   virtual UnicodeString ModuleFileName() const;
 
@@ -128,6 +129,8 @@ public:
   void SetPermanentLogActions(bool Value) { FPermanentLogActions = Value; }
   UnicodeString GetPermanentActionsLogFileName() const;
   void SetPermanentActionsLogFileName(const UnicodeString & Value);
+  intptr_t GetPermanentLogProtocol() const { return FPermanentLogProtocol; }
+  bool GetPermanentLogSensitive() const { return FPermanentLogSensitive; }
 
 public:
   TConfiguration();
@@ -148,6 +151,7 @@ public:
   void CleanupRandomSeedFile();
   void BeginUpdate();
   void EndUpdate();
+  void DontSave();
   void LoadDirectoryChangesCache(const UnicodeString & SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
   void SaveDirectoryChangesCache(const UnicodeString & SessionKey,
@@ -158,6 +162,8 @@ public:
   virtual THierarchicalStorage * CreateStorage(bool & SessionList);
   void TemporaryLogging(const UnicodeString & ALogFileName);
   void TemporaryActionsLogging(const UnicodeString & ALogFileName);
+  void TemporaryLogProtocol(intptr_t ALogProtocol);
+  void TemporaryLogSensitive(bool ALogSensitive);
   virtual RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
@@ -212,7 +218,9 @@ private:
   intptr_t FLogWindowLines;
   bool FLogFileAppend;
   bool FLogSensitive;
+  bool FPermanentLogSensitive;
   intptr_t FLogProtocol;
+  intptr_t FPermanentLogProtocol;
   intptr_t FActualLogProtocol;
   bool FLogActions;
   bool FPermanentLogActions;
@@ -326,6 +334,7 @@ protected:
   bool __fastcall GetAutoReadDirectoryAfterOp();
   void __fastcall SetAutoReadDirectoryAfterOp(bool value);
   virtual bool __fastcall GetRememberPassword();
+  UnicodeString __fastcall GetReleaseType();
 
   virtual UnicodeString __fastcall ModuleFileName();
 
@@ -340,6 +349,8 @@ protected:
   __property UnicodeString PermanentLogFileName  = { read=FPermanentLogFileName, write=SetLogFileName };
   __property bool PermanentLogActions  = { read=FPermanentLogActions, write=SetLogActions };
   __property UnicodeString PermanentActionsLogFileName  = { read=FPermanentActionsLogFileName, write=SetActionsLogFileName };
+  __property int PermanentLogProtocol  = { read=FPermanentLogProtocol, write=SetLogProtocol };
+  __property bool PermanentLogSensitive  = { read=FPermanentLogSensitive, write=SetLogSensitive };
 
 public:
   __fastcall TConfiguration();
@@ -359,6 +370,7 @@ public:
   void __fastcall CleanupRandomSeedFile();
   void __fastcall BeginUpdate();
   void __fastcall EndUpdate();
+  void __fastcall DontSave();
   void __fastcall LoadDirectoryChangesCache(const UnicodeString SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
   void __fastcall SaveDirectoryChangesCache(const UnicodeString SessionKey,
@@ -369,6 +381,8 @@ public:
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
   void __fastcall TemporaryLogging(const UnicodeString ALogFileName);
   void __fastcall TemporaryActionsLogging(const UnicodeString ALogFileName);
+  void __fastcall TemporaryLogProtocol(int ALogProtocol);
+  void __fastcall TemporaryLogSensitive(bool ALogSensitive);
   virtual RawByteString __fastcall EncryptPassword(UnicodeString Password, UnicodeString Key);
   virtual UnicodeString __fastcall DecryptPassword(RawByteString Password, UnicodeString Key);
   virtual RawByteString __fastcall StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
@@ -393,13 +407,13 @@ public:
   __property UnicodeString ProductVersion = { read=GetProductVersion };
   __property UnicodeString ProductName = { read=GetProductName };
   __property UnicodeString CompanyName = { read=GetCompanyName };
-  __property UnicodeString FileInfoString[UnicodeString Key] = { read = GetFileInfoString };
   __property UnicodeString OSVersionStr = { read = GetOSVersionStr };
   __property bool IsUnofficial = { read = GetIsUnofficial };
   __property bool Logging  = { read=FLogging, write=SetLogging };
   __property UnicodeString LogFileName  = { read=FLogFileName, write=SetLogFileName };
   __property bool LogToFile  = { read=GetLogToFile };
   __property bool LogFileAppend  = { read=FLogFileAppend, write=SetLogFileAppend };
+  __property bool LogSensitive  = { read=FLogSensitive, write=SetLogSensitive };
   __property int LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
   __property int ActualLogProtocol  = { read=FActualLogProtocol };
   __property bool LogActions  = { read=FLogActions, write=SetLogActions };
@@ -449,3 +463,15 @@ private:
   rde::vector<TShortCut> FShortCuts;
 };
 
+//extern const UnicodeString OriginalPuttyRegistryStorageKey;
+extern const UnicodeString KittyRegistryStorageKey;
+extern const UnicodeString OriginalPuttyExecutable;
+extern const UnicodeString KittyExecutable;
+
+extern const UnicodeString Sha1ChecksumAlg;
+extern const UnicodeString Sha224ChecksumAlg;
+extern const UnicodeString Sha256ChecksumAlg;
+extern const UnicodeString Sha384ChecksumAlg;
+extern const UnicodeString Sha512ChecksumAlg;
+extern const UnicodeString Md5ChecksumAlg;
+extern const UnicodeString Crc32ChecksumAlg;

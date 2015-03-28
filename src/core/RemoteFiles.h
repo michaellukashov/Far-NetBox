@@ -122,7 +122,7 @@ public:
 
   TRemoteFileList * GetDirectory() const { return FDirectory; }
   void SetDirectory(TRemoteFileList * Value) { FDirectory = Value; }
-  int64_t GetSize() const { return FSize; }
+  int64_t GetSize() const;
   void SetSize(int64_t Value) { FSize = Value; }
   const TRemoteToken & GetFileOwner() const;
   TRemoteToken & GetFileOwner();
@@ -136,7 +136,7 @@ public:
   TModificationFmt GetModificationFmt() const { return FModificationFmt; }
   void SetModificationFmt(TModificationFmt Value) { FModificationFmt = Value; }
   TDateTime GetLastAccess() const { return FLastAccess; }
-  void SetLastAccess(TDateTime Value) { FLastAccess = Value; }
+  void SetLastAccess(const TDateTime & Value) { FLastAccess = Value; }
   bool GetIsSymLink() const { return FIsSymLink; }
   UnicodeString GetLinkTo() const;
   void SetLinkTo(const UnicodeString & Value);
@@ -175,15 +175,43 @@ private:
   UnicodeString FFullFileName;
   int FIsHidden;
   UnicodeString FTypeName;
+/*
+  int __fastcall GetAttr();
+  bool __fastcall GetBrokenLink();
+  bool __fastcall GetIsDirectory() const;
+  TRemoteFile * __fastcall GetLinkedFile();
+  void __fastcall SetLinkedFile(TRemoteFile * value);
+  UnicodeString __fastcall GetModificationStr();
+  void __fastcall SetModification(const TDateTime & value);
+  void __fastcall SetListingStr(UnicodeString value);
+  UnicodeString __fastcall GetListingStr();
+  UnicodeString __fastcall GetRightsStr();
+  wchar_t __fastcall GetType() const;
+  void __fastcall SetType(wchar_t AType);
+  void __fastcall SetTerminal(TTerminal * value);
+  void __fastcall SetRights(TRights * value);
+  UnicodeString __fastcall GetFullFileName() const;
+  bool __fastcall GetHaveFullFileName() const;
+  int __fastcall GetIconIndex() const;
+  UnicodeString __fastcall GetTypeName();
+  bool __fastcall GetIsHidden();
+  void __fastcall SetIsHidden(bool value);
+  bool __fastcall GetIsParentDirectory() const;
+  bool __fastcall GetIsThisDirectory() const;
+  bool __fastcall GetIsInaccesibleDirectory() const;
+  UnicodeString __fastcall GetExtension();
+  UnicodeString __fastcall GetUserModificationStr();
+*/
 
 private:
   void LoadTypeInfo() const;
+
 /*
   __property int Attr = { read = GetAttr };
   __property bool BrokenLink = { read = GetBrokenLink };
   __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
   __property UnicodeString RightsStr = { read = GetRightsStr };
-  __property __int64 Size = { read = FSize, write = FSize };
+  __property __int64 Size = { read = GetSize, write = FSize };
   __property TRemoteToken Owner = { read = FOwner, write = FOwner };
   __property TRemoteToken Group = { read = FGroup, write = FGroup };
   __property UnicodeString FileName = { read = FFileName, write = FFileName };
@@ -553,6 +581,7 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
 int FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
   UnicodeString * TypeName = nullptr);
+bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2);
 
 } // namespace core
 

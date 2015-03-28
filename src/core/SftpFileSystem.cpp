@@ -258,7 +258,7 @@ public:
   explicit TSFTPPacket(const RawByteString & Source, uintptr_t codePage)
   {
     Init(codePage);
-    FLength = (uintptr_t)Source.Length();
+    FLength = static_cast<uintptr_t>(Source.Length());
     SetCapacity(FLength);
     memmove(GetData(), Source.c_str(), Source.Length());
   }
@@ -322,8 +322,8 @@ public:
 
   void AddInt64(int64_t Value)
   {
-    AddCardinal((uint32_t)(Value >> 32));
-    AddCardinal((uint32_t)(Value & 0xFFFFFFFF));
+    AddCardinal(static_cast<uint32_t>(Value >> 32));
+    AddCardinal(static_cast<uint32_t>(Value & 0xFFFFFFFF));
   }
 
   void AddData(const void * Data, int32_t ALength)
@@ -334,7 +334,7 @@ public:
 
   void AddStringW(const UnicodeString & ValueW)
   {
-    AddString(::W2MB(ValueW.c_str(), (UINT)FCodePage).c_str());
+    AddString(::W2MB(ValueW.c_str(), static_cast<UINT>(FCodePage)).c_str());
   }
 
   void AddString(const RawByteString & Value)
@@ -493,19 +493,19 @@ public:
     {
       if (Properties->Valid.Contains(vpGroup))
       {
-        Valid = (TValid)(Valid | valGroup);
+        Valid = static_cast<TValid>(Valid | valGroup);
         Group = Properties->Group;
       }
 
       if (Properties->Valid.Contains(vpOwner))
       {
-        Valid = (TValid)(Valid | valOwner);
+        Valid = static_cast<TValid>(Valid | valOwner);
         Owner = Properties->Owner;
       }
 
       if (Properties->Valid.Contains(vpRights))
       {
-        Valid = (TValid)(Valid | valRights);
+        Valid = static_cast<TValid>(Valid | valRights);
         TRights Rights = TRights(BaseRights);
         Rights |= Properties->Rights.GetNumberSet();
         Rights &= static_cast<uint16_t >(~Properties->Rights.GetNumberUnset());
@@ -523,23 +523,23 @@ public:
 
       if (Properties->Valid.Contains(vpLastAccess))
       {
-        Valid = (TValid)(Valid | valATime);
+        Valid = static_cast<TValid>(Valid | valATime);
         ATime = Properties->LastAccess;
       }
 
       if (Properties->Valid.Contains(vpModification))
       {
-        Valid = (TValid)(Valid | valMTime);
+        Valid = static_cast<TValid>(Valid | valMTime);
         MTime = Properties->Modification;
       }
     }
 
     AddProperties(
-      Valid & valRights ? &RightsNum : nullptr,
-      Valid & valOwner ? &Owner : nullptr,
-      Valid & valGroup ? &Group : nullptr,
-      Valid & valMTime ? &MTime : nullptr,
-      Valid & valATime ? &ATime : nullptr,
+      (Valid & valRights) ? &RightsNum : nullptr,
+      (Valid & valOwner) ? &Owner : nullptr,
+      (Valid & valGroup) ? &Group : nullptr,
+      (Valid & valMTime) ? &MTime : nullptr,
+      (Valid & valATime) ? &ATime : nullptr,
       nullptr, IsDirectory, Version, Utf);
   }
 
@@ -602,7 +602,7 @@ public:
     // cannot happen anyway as Need() would raise exception
     assert(Len < SFTP_MAX_PACKET_LEN);
     Result.SetLength(Len);
-    memmove((void *)Result.c_str(), FData + FPosition, Len);
+    memmove(reinterpret_cast<void *>(const_cast<char *>(Result.c_str())), FData + FPosition, Len);
     DataConsumed(Len);
     return Result;
   }
@@ -640,7 +640,7 @@ public:
 
   inline UnicodeString GetStringW() const
   {
-    return ::MB2W(GetRawByteString().c_str(), (UINT)FCodePage);
+    return ::MB2W(GetRawByteString().c_str(), static_cast<UINT>(FCodePage));
   }
 
   inline UnicodeString GetString(TAutoSwitch Utf) const
@@ -664,19 +664,19 @@ public:
     return GetString(Utf);
   }
 
-  void GetFile(TRemoteFile * AFile, intptr_t Version, TDSTMode DSTMode, TAutoSwitch Utf, bool SignedTS, bool Complete)
+  void GetFile(TRemoteFile * AFile, intptr_t Version, TDSTMode DSTMode, TAutoSwitch & Utf, bool SignedTS, bool Complete)
   {
     assert(AFile);
-    uintptr_t Flags;
+    uint32_t Flags;
     UnicodeString ListingStr;
-    uintptr_t Permissions = 0;
+    uint32_t Permissions = 0;
     bool ParsingFailed = false;
     if (GetType() != SSH_FXP_ATTRS)
     {
       AFile->SetFileName(GetPathString(Utf));
       if (Version < 4)
       {
-        ListingStr = GetAnsiString();
+        ListingStr = GetString(Utf);
       }
     }
     Flags = GetCardinal();
@@ -689,7 +689,7 @@ public:
       // SSH-2.0-cryptlib returns file type 0 in response to SSH_FXP_LSTAT,
       // handle this undefined value as "unknown"
       static wchar_t * Types = L"U-DLSUOCBF";
-      if (FXType > (uint8_t)wcslen(Types))
+      if (FXType > static_cast<uint8_t>(wcslen(Types)))
       {
         throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, static_cast<int>(FXType)));
       }
@@ -791,7 +791,7 @@ public:
     {
       // while SSH_FILEXFER_ATTR_BITS is defined for SFTP5 only, vandyke 2.3.3 sets it
       // for SFTP4 as well
-      uintptr_t Bits = GetCardinal();
+      uint32_t Bits = GetCardinal();
       if (Version >= 6)
       {
         uint32_t BitsValid = GetCardinal();
@@ -857,8 +857,8 @@ public:
 
     if (Flags & SSH_FILEXFER_ATTR_EXTENDED)
     {
-      uintptr_t ExtendedCount = GetCardinal();
-      for (intptr_t Index = 0; Index < static_cast<intptr_t>(ExtendedCount); ++Index)
+      uint32_t ExtendedCount = GetCardinal();
+      for (uint32_t Index = 0; Index < ExtendedCount; ++Index)
       {
         GetRawByteString(); // skip extended_type
         GetRawByteString(); // skip extended_data
@@ -1127,9 +1127,9 @@ private:
 
   uint32_t PeekCardinal() const
   {
-    uint32_t Result = 0;
-    Need(sizeof(Result));
-    Result = GET_32BIT(FData + FPosition);
+    Need(sizeof(uint32_t));
+    uint8_t * cp = FData + FPosition;
+    uint32_t Result = GET_32BIT(cp);
     return Result;
   }
 
@@ -1690,11 +1690,14 @@ protected:
       ++FIndex;
 
       bool MissingRights =
-        (FLAGSET(FFileSystem->FSupport->AttributeMask, SSH_FILEXFER_ATTR_PERMISSIONS) &&
-           File->GetRights()->GetUnknown());
+        (FFileSystem->FSupport->Loaded &&
+         FLAGSET(FFileSystem->FSupport->AttributeMask, SSH_FILEXFER_ATTR_PERMISSIONS) &&
+         File->GetRights()->GetUnknown());
       bool MissingOwnerGroup =
-        (FLAGSET(FFileSystem->FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP) &&
-           !File->GetFileOwner().GetIsSet() || !File->GetFileGroup().GetIsSet());
+        (FFileSystem->FSecureShell->GetSshImplementation() == sshiBitvise) ||
+        (FFileSystem->FSupport->Loaded &&
+         FLAGSET(FFileSystem->FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP) &&
+         !File->GetFileOwner().GetIsSet() || !File->GetFileGroup().GetIsSet());
 
       Result = (MissingRights || MissingOwnerGroup);
       if (Result)
@@ -1851,6 +1854,7 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
   FExtensions(nullptr),
   FSupport(nullptr),
   FUtfStrings(asAuto),
+  FUtfDisablingAnnounced(false),
   FSignedTS(false),
   FFixedPaths(nullptr),
   FMaxPacketSize(0),
@@ -1879,6 +1883,18 @@ void TSFTPFileSystem::Init(void * Data)
   FExtensions = new TStringList();
   FFixedPaths = nullptr;
   FFileSystemInfoValid = false;
+
+  FChecksumAlgs.reset(new TStringList());
+  FChecksumSftpAlgs.reset(new TStringList());
+  // List as defined by draft-ietf-secsh-filexfer-extensions-00
+  // MD5 moved to the back
+  RegisterChecksumAlg(Sha1ChecksumAlg, L"sha1");
+  RegisterChecksumAlg(Sha224ChecksumAlg, L"sha224");
+  RegisterChecksumAlg(Sha256ChecksumAlg, L"sha256");
+  RegisterChecksumAlg(Sha384ChecksumAlg, L"sha384");
+  RegisterChecksumAlg(Sha512ChecksumAlg, L"sha512");
+  RegisterChecksumAlg(Md5ChecksumAlg, L"md5");
+  RegisterChecksumAlg(Crc32ChecksumAlg, L"crc32");
 }
 
 TSFTPFileSystem::~TSFTPFileSystem()
@@ -2019,6 +2035,7 @@ void TSFTPFileSystem::Idle()
     if ((GetSessionData()->GetPingType() == ptDummyCommand) &&
         FSecureShell->GetReady())
     {
+      FTerminal->LogEvent("Sending dummy command to keep session alive.");
       TSFTPPacket Packet(SSH_FXP_REALPATH, FCodePage);
       Packet.AddPathString(ROOTDIRECTORY, FUtfStrings);
       SendPacketAndReceiveResponse(&Packet, &Packet);
@@ -2104,11 +2121,14 @@ bool TSFTPFileSystem::IsCapable(intptr_t Capability) const
       // (no other attributes are loaded).
       // This is here only because of VShell
       // (it supports owner/group, but does not include them into response to
-      // SSH_FXP_READDIR).
+      // SSH_FXP_READDIR)
+      // and Bitwise (the same as VShell, but it does not even bother to provide "supported" extension)
       // No other use is known.
-      return FSupport->Loaded &&
-        ((FSupport->AttributeMask &
-          (SSH_FILEXFER_ATTR_PERMISSIONS | SSH_FILEXFER_ATTR_OWNERGROUP)) != 0);
+      return
+        (FSupport->Loaded &&
+         ((FSupport->AttributeMask &
+           (SSH_FILEXFER_ATTR_PERMISSIONS | SSH_FILEXFER_ATTR_OWNERGROUP)) != 0)) ||
+        (FSecureShell->GetSshImplementation() == sshiBitvise);
 
     case fcCheckingSpaceAvailable:
       return
@@ -2311,7 +2331,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
 uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
   intptr_t AllowStatus)
 {
-  uintptr_t Code = Packet->GetCardinal();
+  uint32_t Code = Packet->GetCardinal();
 
   static intptr_t Messages[] =
   {
@@ -2420,6 +2440,10 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     }
     UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, MessageStr.c_str(),
       int(Code), LanguageTag.c_str(), ServerMessage.c_str());
+    if (Code == SSH_FX_FAILURE)
+    {
+      // FTerminal->Configuration->Usage->Inc(L"SftpFailureErrors");
+    }
     FTerminal->TerminalError(nullptr, Error, HelpKeyword);
     return 0;
   }
@@ -2540,7 +2564,7 @@ uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
         TSFTPPacket * ReservedPacket;
         for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
         {
-          uint32_t MessageNumber = (uint32_t)FPacketNumbers[Index];
+          uint32_t MessageNumber = static_cast<uint32_t>(FPacketNumbers[Index]);
           if (MessageNumber == Packet->GetMessageNumber())
           {
             ReservedPacket = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Index));
@@ -2608,7 +2632,7 @@ void TSFTPFileSystem::ReserveResponse(const TSFTPPacket * Packet,
     Response->SetReservedBy(this);
   }
   FPacketReservations->Add(Response);
-  if ((size_t)FPacketReservations->GetCount() >= FPacketNumbers.size())
+  if (static_cast<size_t>(FPacketReservations->GetCount()) >= FPacketNumbers.size())
   {
     FPacketNumbers.resize(FPacketReservations->GetCount() + 10);
   }
@@ -2680,6 +2704,28 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath)
 
     TSFTPPacket Packet(SSH_FXP_REALPATH, FCodePage);
     Packet.AddPathString(APath, FUtfStrings);
+
+    // In SFTP-6 new optional field control-byte is added that defaults to
+    // SSH_FXP_REALPATH_NO_CHECK=0x01, meaning it won't fail, if the path does not exist.
+    // That differs from SFTP-5 recommendation that
+    // "The server SHOULD fail the request if the path is not present on the server."
+    // Earlier versions had no recommendation, though canonical SFTP-3 implementation
+    // in OpenSSH fails.
+
+    // While we really do not care much, we anyway set the flag to 0 to make the request fail.
+    // First for consistency.
+    // Second to workaround a bug in ProFTPD/mod_sftp version 1.3.5rc1 through 1.3.5-stable
+    // that sends a completelly malformed response for non-existing paths,
+    // when SSH_FXP_REALPATH_NO_CHECK (even implicitly) is used.
+    // See http://bugs.proftpd.org/show_bug.cgi?id=4160
+
+    // Note that earlier drafts of SFTP-6 (filexfer-07 and -08) had optional compose-path field
+    // before control-byte field. If we ever use this against a server conforming to those drafts,
+    // if may cause trouble.
+    if (FVersion >= 6)
+    {
+      Packet.AddByte(0);
+    }
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_NAME);
     if (Packet.GetCardinal() != 1)
     {
@@ -2872,7 +2918,7 @@ void TSFTPFileSystem::DoStartup()
   {
     MaxVersion = SFTPMaxVersion;
   }
-  Packet.AddCardinal((uint32_t)MaxVersion);
+  Packet.AddCardinal(static_cast<uint32_t>(MaxVersion));
 
   try
   {
@@ -2880,7 +2926,7 @@ void TSFTPFileSystem::DoStartup()
   }
   catch (Exception & E)
   {
-    FTerminal->FatalError(&E, LoadStr(SFTP_INITIALIZE_ERROR));
+    FTerminal->FatalError(&E, LoadStr(SFTP_INITIALIZE_ERROR), HELP_SFTP_INITIALIZE_ERROR);
   }
 
   FVersion = Packet.GetCardinal();
@@ -2942,14 +2988,14 @@ void TSFTPFileSystem::DoStartup()
           // were added only in rev 08, while "supported2" was defined in rev 07
           FSupport->OpenBlockVector = SupportedStruct.GetSmallCardinal();
           FSupport->BlockVector = SupportedStruct.GetSmallCardinal();
-          uintptr_t ExtensionCount;
+          uint32_t ExtensionCount;
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (uintptr_t Index = 0; Index < ExtensionCount; ++Index)
+          for (uint32_t Index = 0; Index < ExtensionCount; ++Index)
           {
             FSupport->AttribExtensions->Add(SupportedStruct.GetAnsiString());
           }
           ExtensionCount = SupportedStruct.GetCardinal();
-          for (uintptr_t Index = 0; Index < ExtensionCount; ++Index)
+          for (uint32_t Index = 0; Index < ExtensionCount; ++Index)
           {
             FSupport->Extensions->Add(SupportedStruct.GetAnsiString());
           }
@@ -3003,7 +3049,7 @@ void TSFTPFileSystem::DoStartup()
           TSFTPPacket RootsPacket(ExtensionData, FCodePage);
           while (RootsPacket.GetNextData() != nullptr)
           {
-            uintptr_t Dummy = RootsPacket.GetCardinal();
+            uint32_t Dummy = RootsPacket.GetCardinal();
             if (Dummy != 1)
             {
               break;
@@ -3212,7 +3258,7 @@ void TSFTPFileSystem::LookupUsersGroups()
   {
     TSFTPPacket * Packet = Packets[Index];
     Packet->AddString(RawByteString(SFTP_EXT_OWNER_GROUP));
-    Packet->AddByte((uint8_t)ListTypes[Index]);
+    Packet->AddByte(static_cast<uint8_t>(ListTypes[Index]));
     SendPacket(Packet);
     ReserveResponse(Packet, Packet);
   }
@@ -3231,10 +3277,10 @@ void TSFTPFileSystem::LookupUsersGroups()
     else
     {
       TRemoteTokenList & List = *Lists[Index];
-      uintptr_t Count = Packet->GetCardinal();
+      uint32_t Count = Packet->GetCardinal();
 
       List.Clear();
-      for (uintptr_t Item = 0; Item < Count; Item++)
+      for (uint32_t Item = 0; Item < Count; Item++)
       {
         TRemoteToken Token(Packet->GetString(FUtfStrings));
         List.Add(Token);
@@ -3382,10 +3428,10 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         SendPacket(&Packet);
         ReserveResponse(&Packet, &Response);
 
-        uintptr_t Count = ListingPacket.GetCardinal();
+        uint32_t Count = ListingPacket.GetCardinal();
 
         intptr_t ResolvedLinks = 0;
-        for (intptr_t Index = 0; !isEOF && (Index < static_cast<intptr_t>(Count)); ++Index)
+        for (uint32_t Index = 0; !isEOF && (Index < Count); ++Index)
         {
           File = LoadFile(&ListingPacket, nullptr, L"", FileList);
           if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
@@ -3688,6 +3734,11 @@ void TSFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
 void TSFTPFileSystem::CreateLink(const UnicodeString & AFileName,
   const UnicodeString & PointTo, bool Symbolic)
 {
+  // Cerberus server does not even response to LINK or SYMLINK,
+  // Although its log says:
+  // Unrecognized SFTP client command: (20)
+  // Unknown SFTP packet - Sending Unsupported OP response
+
   assert(FVersion >= 3); // links are supported with SFTP version 3 and later
   bool UseLink = (FVersion >= 6);
   bool UseHardlink = !Symbolic && !UseLink && FSupportsHardlink;
@@ -3833,7 +3884,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
 {
   bool Result = false;
   // without knowledge of server's capabilities, this all make no sense
-  if (FSupport->Loaded)
+  if (FSupport->Loaded || (FSecureShell->GetSshImplementation() == sshiBitvise))
   {
     TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
     Progress.Start(foGetProperties, osRemote, AFileList->GetCount());
@@ -3882,7 +3933,8 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
   return Result;
 }
 
-void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
+void TSFTPFileSystem::DoCalculateFilesChecksum(
+  const UnicodeString & Alg, const UnicodeString & SftpAlg,
   TStrings * AFileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum,
   TFileOperationProgressType * OperationProgress, bool FirstLevel)
@@ -3925,8 +3977,8 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
 
             // do not collect checksums for files in subdirectories,
             // only send back checksums via callback
-            DoCalculateFilesChecksum(Alg, SubFileList.get(), nullptr,
-            OnCalculatedChecksum, OperationProgress, false);
+            DoCalculateFilesChecksum(Alg, SftpAlg, SubFileList.get(), nullptr,
+              OnCalculatedChecksum, OperationProgress, false);
 
             Success = true;
           }
@@ -3935,6 +3987,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
     }
   }
 
+  static int CalculateFilesChecksumQueueLen = 5;
   TSFTPCalculateFilesChecksumQueue Queue(this, FCodePage);
   {
     SCOPE_EXIT
@@ -3948,7 +4001,6 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
       bool Next = false;
       do
       {
-        UnicodeString Alg;
         UnicodeString Checksum;
 
         {
@@ -3961,32 +4013,44 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const UnicodeString & Alg,
               OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
             }
           };
+          TChecksumSessionAction Action(FTerminal->GetActionLog());
           try
           {
             Next = Queue.ReceivePacket(&Packet, File);
             assert(Packet.GetType() == SSH_FXP_EXTENDED_REPLY);
 
             OperationProgress->SetFile(File->GetFileName());
+            Action.SetFileName(FTerminal->GetAbsolutePath(File->GetFullFileName(), true));
 
-            Alg = Packet.GetAnsiString();
-            Checksum = BytesToHex(
-              reinterpret_cast<const uint8_t *>(Packet.GetNextData(Packet.GetRemainingLength())),
-              Packet.GetRemainingLength());
-            OnCalculatedChecksum(File->GetFileName(), Alg, Checksum);
+            // skip alg
+            Packet.GetAnsiString();
+            Checksum = BytesToHex(reinterpret_cast<const unsigned char*>(Packet.GetNextData(Packet.GetRemainingLength())), Packet.GetRemainingLength(), false);
+            if (OnCalculatedChecksum != nullptr)
+            {
+              OnCalculatedChecksum(File->GetFileName(), Alg, Checksum);
+            }
+            Action.Checksum(Alg, Checksum);
 
             Success = true;
           }
           catch (Exception & E)
           {
-            FTerminal->CommandError(&E, FMTLOAD(CHECKSUM_ERROR,
-              File != nullptr ? File->GetFullFileName().c_str() : L""));
+            //FTerminal->CommandError(&E, FMTLOAD(CHECKSUM_ERROR,
+            //  File != nullptr ? File->GetFullFileName().c_str() : L""));
+            FTerminal->RollbackAction(Action, OperationProgress, &E);
+
+            // Error formatting expanded from inline to avoid strange exceptions
+            UnicodeString Error =
+              FMTLOAD(CHECKSUM_ERROR,
+                (File != nullptr ? File->GetFullFileName().c_str() : L""));
+            FTerminal->CommandError(&E, Error);
             // TODO: retries? resume?
             Next = false;
           }
 
           if (Checksums != nullptr)
           {
-            Checksums->Add(L"");
+            Checksums->Add(Checksum);
           }
         }
 
@@ -4008,6 +4072,19 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
   TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
   Progress.Start(foCalculateChecksum, osRemote, AFileList->GetCount());
 
+  UnicodeString NormalizedAlg = FindIdent(Alg, FChecksumAlgs.get());
+  UnicodeString SftpAlg;
+  intptr_t Index = FChecksumAlgs->IndexOf(NormalizedAlg);
+  if (Index >= 0)
+  {
+    SftpAlg = FChecksumSftpAlgs->GetString(Index);
+  }
+  else
+  {
+    // try user-specified alg
+    SftpAlg = NormalizedAlg;
+  }
+
   FTerminal->FOperationProgress = &Progress; //-V506
 
   {
@@ -4016,7 +4093,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
       FTerminal->FOperationProgress = nullptr;
       Progress.Stop();
     };
-    DoCalculateFilesChecksum(Alg, AFileList, Checksums, OnCalculatedChecksum,
+    DoCalculateFilesChecksum(NormalizedAlg, SftpAlg, AFileList, Checksums, OnCalculatedChecksum,
       &Progress, true);
   }
 }
@@ -4194,7 +4271,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 }
 
 void TSFTPFileSystem::SFTPConfirmOverwrite(
-  const UnicodeString & AFullFileName, UnicodeString & AFileName,
+  const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
   const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams,
   OUT TOverwriteMode & OverwriteMode)
@@ -4241,7 +4318,8 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
     QueryParams.NoBatchAnswers = qaIgnore | qaAbort | qaRetry | qaAll;
     QueryParams.Aliases = Aliases;
     QueryParams.AliasesCount = _countof(Aliases);
-    Answer = FTerminal->ConfirmFileOverwrite(AFullFileName, FileParams,
+    Answer = FTerminal->ConfirmFileOverwrite(
+      ASourceFullFileName, ATargetFileName, FileParams,
       Answers, &QueryParams,
       OperationProgress->Side == osLocal ? osRemote : osLocal,
       CopyParam, Params, OperationProgress);
@@ -4254,7 +4332,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
     bool CanAlternateResume =
       FileParams ? (FileParams->DestSize < FileParams->SourceSize) && !OperationProgress->AsciiTransfer : false;
     TBatchOverwrite BatchOverwrite =
-      FTerminal->EffectiveBatchOverwrite(AFullFileName, CopyParam, Params, OperationProgress, true);
+      FTerminal->EffectiveBatchOverwrite(ASourceFullFileName, CopyParam, Params, OperationProgress, true);
     // when mode is forced by batch, never query user
     if (BatchOverwrite == boAppend)
     {
@@ -4276,7 +4354,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
 
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
-        Answer = FTerminal->QueryUser(FORMAT(LoadStr(APPEND_OR_RESUME2).c_str(), AFileName.c_str()),
+        Answer = FTerminal->QueryUser(FORMAT(LoadStr(APPEND_OR_RESUME2).c_str(), ASourceFullFileName.c_str()),
           nullptr, qaYes | qaNo | qaNoToAll | qaCancel, &Params);
       }
 
@@ -4309,7 +4387,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
   else if (Answer == qaIgnore)
   {
     if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName, LoadStr(RENAME_TITLE), L"",
-          LoadStr(RENAME_PROMPT2), true, 0, AFileName))
+          LoadStr(RENAME_PROMPT2), true, 0, ATargetFileName))
     {
       OverwriteMode = omOverwrite;
     }
@@ -4415,16 +4493,15 @@ void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & AFileName,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   // the same in TFTPFileSystem
-  bool Retry;
 
   TUploadSessionAction Action(FTerminal ? FTerminal->GetActionLog() : nullptr);
+  TRobustOperationLoop RobustLoop(FTerminal, OperationProgress);
   TOpenRemoteFileParams OpenParams;
   OpenParams.OverwriteMode = omOverwrite;
   TOverwriteFileParams FileParams;
 
   do
   {
-    Retry = false;
     bool ChildError = false;
     try
     {
@@ -4435,9 +4512,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-      Retry = FTerminal != nullptr;
-      if (FTerminal && (FTerminal->GetActive() ||
-          !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress)))
+      if (!RobustLoop.TryReopen(E))
       {
         if (!ChildError)
         {
@@ -4447,7 +4522,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & AFileName,
       }
     }
 
-    if (Retry)
+    if (RobustLoop.ShouldRetry())
     {
       OperationProgress->RollbackTransfer();
       Action.Restart();
@@ -4458,7 +4533,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & AFileName,
       Flags &= ~tfNewDirectory;
     }
   }
-  while (Retry);
+  while (RobustLoop.Retry());
 }
 
 void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
@@ -4549,7 +4624,6 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
       ResumeAllowed = !OperationProgress->AsciiTransfer &&
         CopyParam->AllowResume(OperationProgress->LocalSize) &&
         IsCapable(fcRename);
-      OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
 
       // TOverwriteFileParams FileParams;
       FileParams.SourceSize = OperationProgress->LocalSize;
@@ -4573,20 +4647,24 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
             FileParams.DestSize = OpenParams.DestFileSize;
             FileParams.DestTimestamp = File->GetModification();
             DestRights = *File->GetRights();
-            // if destination file is symlink, never do resumable transfer,
+            // - If destination file is symlink, never do resumable transfer,
             // as it would delete the symlink.
-            // also bit of heuristics to detect symlink on SFTP-3 and older
+            // - Also bit of heuristics to detect symlink on SFTP-3 and older
             // (which does not indicate symlink in SSH_FXP_ATTRS).
             // if file has all permissions and is small, then it is likely symlink.
             // also it is not likely that such a small file (if it is not symlink)
             // gets overwritten by large file (that would trigger resumable transfer).
+            // - Also never do resumable transfer for file owned by other user
+            // as deleting and recreating the file would change ownership.
+            // This won't for work for SFTP-3 (OpenSSH) as it does not provide
+            // owner name (only UID) and we know only logged in user name (not UID)
             if (File->GetIsSymLink() ||
                 ((FVersion < 4) &&
                  ((*File->GetRights() & static_cast<uint16_t>(TRights::rfAll)) == static_cast<uint16_t>(TRights::rfAll)) &&
-                 (File->GetSize() < 100)))
+                 (File->GetSize() < 100)) ||
+                (!File->GetFileOwner().GetName().IsEmpty() && !core::SameUserName(File->GetFileOwner().GetName(), FTerminal->TerminalGetUserName())))
             {
               ResumeAllowed = false;
-              OperationProgress->SetResumeStatus(rsDisabled);
             }
 
             SAFE_DESTROY(File);
@@ -5244,9 +5322,8 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
   [&]()
   {
-    FindOK =
-      ::FindFirstChecked(DirectoryName + L"*.*",
-        FindAttrs, SearchRec) == 0;
+    FindOK = ::FindFirstChecked(DirectoryName + L"*.*",
+                 FindAttrs, SearchRec) == 0;
   });
 
   {
@@ -5367,13 +5444,12 @@ void TSFTPFileSystem::SFTPSinkRobust(const UnicodeString & AFileName,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   // the same in TFTPFileSystem
-  bool Retry;
 
   TDownloadSessionAction Action(FTerminal->GetActionLog());
+  TRobustOperationLoop RobustLoop(FTerminal, OperationProgress);
 
   do
   {
-    Retry = false;
     bool ChildError = false;
     try
     {
@@ -5382,9 +5458,7 @@ void TSFTPFileSystem::SFTPSinkRobust(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-      Retry = true;
-      if (FTerminal->GetActive() ||
-          !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
+      if (!RobustLoop.TryReopen(E))
       {
         if (!ChildError)
         {
@@ -5394,7 +5468,7 @@ void TSFTPFileSystem::SFTPSinkRobust(const UnicodeString & AFileName,
       }
     }
 
-    if (Retry)
+    if (RobustLoop.ShouldRetry())
     {
       OperationProgress->RollbackTransfer();
       Action.Restart();
@@ -5406,7 +5480,7 @@ void TSFTPFileSystem::SFTPSinkRobust(const UnicodeString & AFileName,
       }
     }
   }
-  while (Retry);
+  while (RobustLoop.Retry());
 }
 
 void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
@@ -5486,8 +5560,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
     }
     else
     {
-      // file is symlink to directory, currently do nothing, but it should be
-      // reported to user
+      FTerminal->LogEvent(FORMAT(L"Skipping symlink to directory \"%s\".", AFileName.c_str()));
     }
   }
   else
@@ -5513,7 +5586,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
     ResumeAllowed = ((Params & cpTemporary) == 0) &&
       !OperationProgress->AsciiTransfer &&
       CopyParam->AllowResume(OperationProgress->TransferSize);
-    OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
+    // OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
 
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
     FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()), "",
@@ -5758,7 +5831,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           TSFTPPacket DataPacket(FCodePage);
 
           uintptr_t BlSize = DownloadBlockSize(OperationProgress);
-          intptr_t QueueLen = intptr_t(AFile->GetSize() / (BlSize != 0 ? BlSize : 1)) + 1;
+          intptr_t QueueLen = static_cast<intptr_t>(AFile->GetSize() / (BlSize != 0 ? BlSize : 1)) + 1;
           if ((QueueLen > GetSessionData()->GetSFTPDownloadQueue()) ||
               (QueueLen < 0))
           {
@@ -5985,17 +6058,15 @@ void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & AFileName,
   }
 }
 
+void TSFTPFileSystem::RegisterChecksumAlg(const UnicodeString & Alg, const UnicodeString & SftpAlg)
+{
+  FChecksumAlgs->Add(Alg);
+  FChecksumSftpAlgs->Add(SftpAlg);
+}
+
 void TSFTPFileSystem::GetSupportedChecksumAlgs(TStrings * Algs)
 {
-  // List as defined by draft-ietf-secsh-filexfer-extensions-00
-  // MD5 moved to the back
-  Algs->Add(L"sha1");
-  Algs->Add(L"sha224");
-  Algs->Add(L"sha256");
-  Algs->Add(L"sha384");
-  Algs->Add(L"sha512");
-  Algs->Add(L"md5");
-  Algs->Add(L"crc32");
+  Algs->AddStrings(FChecksumAlgs.get());
 }
 
 NB_IMPLEMENT_CLASS(TSFTPPacket, NB_GET_CLASS_INFO(TObject), nullptr);

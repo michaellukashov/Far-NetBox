@@ -26,7 +26,6 @@
 #ifndef MPEXT
 #include "fileexistsdlg.h"
 #endif
-#include "pathfunctions.h"
 #include "asyncproxysocketlayer.h"
 #ifndef MPEXT_NO_SSL
 #include "AsyncSslSocketLayer.h"
@@ -273,6 +272,9 @@ CFtpControlSocket::~CFtpControlSocket()
 #define CONNECT_CLNT -17
 #define CONNECT_OPTSMLST -18
 #define CONNECT_NEEDPASS -19
+#ifdef MPEXT
+#define CONNECT_HOST -20
+#endif
 
 bool CFtpControlSocket::InitConnect()
 {
@@ -416,6 +418,21 @@ bool CFtpControlSocket::InitConnect()
 	return true;
 }
 
+int CFtpControlSocket::InitConnectState()
+{
+#ifndef MPEXT_NO_SSL
+	if ((m_CurrentServer.nServerType & FZ_SERVERTYPE_LAYERMASK) & (FZ_SERVERTYPE_LAYER_SSL_EXPLICIT | FZ_SERVERTYPE_LAYER_TLS_EXPLICIT))
+		return CONNECT_SSL_INIT;
+	else
+#endif
+#ifndef MPEXT_NO_GSS
+	if (m_pGssLayer)
+		return CONNECT_GSS_INIT;
+	else
+#endif
+	return CONNECT_INIT;
+}
+
 void CFtpControlSocket::Connect(t_server &server)
 {
 	USES_CONVERSION;
@@ -441,11 +458,14 @@ void CFtpControlSocket::Connect(t_server &server)
 	}
 	AsyncSelect();
 
-	m_Operation.nOpState =
-#ifndef MPEXT_NO_GSS
-	m_pGssLayer ? CONNECT_GSS_INIT :
-#endif
-	CONNECT_INIT;
+	if (COptions::GetOptionVal(OPTION_MPEXT_HOST))
+	{
+		m_Operation.nOpState = CONNECT_HOST;
+	}
+	else
+	{
+		m_Operation.nOpState = InitConnectState();
+	}
 
 #ifndef MPEXT_NO_SSL
 	if (server.nServerType & FZ_SERVERTYPE_LAYER_SSL_IMPLICIT)
@@ -502,11 +522,6 @@ void CFtpControlSocket::Connect(t_server &server)
 	CString str;
 	str.Format(IDS_STATUSMSG_CONNECTING, (LPCTSTR)hostname);
 	ShowStatus(str, FZ_LOG_STATUS);
-
-#ifndef MPEXT_NO_SSL
-	if ((server.nServerType & FZ_SERVERTYPE_LAYERMASK) & (FZ_SERVERTYPE_LAYER_SSL_EXPLICIT | FZ_SERVERTYPE_LAYER_TLS_EXPLICIT))
-		m_Operation.nOpState = CONNECT_SSL_INIT;
-#endif
 
 	if (!CControlSocket::Connect(temp, port))
 	{
@@ -646,6 +661,16 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 		{
 			//Incoming reply from server during async is not allowed
 			DoClose();
+			return;
+		}
+	}
+#endif
+#ifdef MPEXT
+	else if (m_Operation.nOpState == CONNECT_HOST)
+	{
+		if (Send(_MPT("HOST " + m_CurrentServer.host)))
+		{
+			m_Operation.nOpState = InitConnectState();
 			return;
 		}
 	}
@@ -3650,10 +3675,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			}
 			else if (code==4 || code==5) //LIST failed, try getting file information using SIZE and MDTM
 			{
-				if (m_pTransferSocket)
-					delete m_pTransferSocket;
-				m_pTransferSocket=0;
-				m_Operation.nOpState = FILETRANSFER_NOLIST_SIZE;
+				TransferHandleListError();
 			}
 			else if (code!=1)
 				nReplyError=FZ_REPLY_ERROR;
@@ -3664,7 +3686,16 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			if (!bFinish)
 			{
 				if (code!=2 && code!=3)
-					nReplyError=FZ_REPLY_ERROR;
+				{
+					if (code==4 || code==5)
+					{
+						TransferHandleListError();
+					}
+					else
+					{
+						nReplyError=FZ_REPLY_ERROR;
+					}
+				}
 				else
 					pData->nGotTransferEndReply = 1;
 			}
@@ -4684,6 +4715,14 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 	}
 }
 
+void CFtpControlSocket::TransferHandleListError()
+{
+	if (m_pTransferSocket)
+		delete m_pTransferSocket;
+	m_pTransferSocket=0;
+	m_Operation.nOpState = FILETRANSFER_NOLIST_SIZE;
+}
+
 bool CFtpControlSocket::HandleMdtm(int code, t_directory::t_direntry::t_date & date)
 {
 	bool result = false;
@@ -5330,7 +5369,9 @@ public:
 int CFtpControlSocket::CheckOverwriteFile()
 {
 	if (!m_Operation.pData)
+	{
 		return FZ_REPLY_ERROR;
+	}
 
 	CFileTransferData *pData = reinterpret_cast<CFileTransferData *>(m_Operation.pData);
 
@@ -5344,14 +5385,21 @@ int CFtpControlSocket::CheckOverwriteFile()
 	if (!res)
 	{
 		if (!pData->transferfile.get)
+		{
+			ShowStatus(IDS_ERRORMSG_CANTGETLISTFILE,FZ_LOG_ERROR);
 			nReplyError = FZ_REPLY_CRITICALERROR; //File has to exist when uploading
+		}
 		else
+		{
 			m_Operation.nOpState = FILETRANSFER_TYPE;
+		}
 	}
 	else
 	{
 		if (status.m_attribute & 0x10)
+		{
 			nReplyError = FZ_REPLY_CRITICALERROR; //Can't transfer to/from dirs
+		}
 		else
 		{
 			_int64 localsize;
@@ -6333,29 +6381,33 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 	if (m_Operation.nOpMode == CSMODE_CONNECT && m_Operation.nOpState == CONNECT_FEAT)
 	{
 		line.MakeUpper();
+		while (line.Left(1) == " ")
+		{
+			line = line.Mid(1, line.GetLength() - 1);
+		}
 #ifndef MPEXT_NO_ZLIB
-		if (line == _MPAT(" MODE Z") || line.Left(8) == _MPAT(" MODE Z "))
+		if (line == _MPAT("MODE Z") || line.Left(7) == _MPAT("MODE Z "))
 			m_zlibSupported = true;
 		else
 #endif
-			if (line == _MPAT(" UTF8") && m_CurrentServer.nUTF8 != 2)
+			if (line == _MPAT("UTF8") && m_CurrentServer.nUTF8 != 2)
 			m_bAnnouncesUTF8 = true;
-		else if (line == _MPAT(" CLNT") || line.Left(6) == _MPAT(" CLNT "))
+		else if (line == _MPAT("CLNT") || line.Left(5) == _MPAT("CLNT "))
 			m_hasClntCmd = true;
 #ifdef MPEXT
-		else if (line == _MPAT(" MLSD"))
+		else if (line == _MPAT("MLSD"))
 		{
 			m_serverCapabilities.SetCapability(mlsd_command, yes);
 		}
-		else if (line == _MPAT(" MDTM"))
+		else if (line == _MPAT("MDTM"))
 		{
 			m_serverCapabilities.SetCapability(mdtm_command, yes);
 		}
-		else if (line == _MPAT(" SIZE"))
+		else if (line == _MPAT("SIZE"))
 		{
 			m_serverCapabilities.SetCapability(size_command, yes);
 		}
-		else if (line.Left(5) == _MPAT(" MLST"))
+		else if (line.Left(4) == _MPAT("MLST"))
 		{
 			USES_CONVERSION;
 			// This is wrong, the -1 for length does not work with
@@ -6365,9 +6417,9 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 			// and OPTS MLST command is never sent.
 			// Also using 6 index when there are no facts after
 			// MLST (ftp.drivehq.com) triggers an assertion.
-			m_serverCapabilities.SetCapability(mlsd_command, yes, (LPCSTR)line.Mid(6, -1));
+			m_serverCapabilities.SetCapability(mlsd_command, yes, (LPCSTR)line.Mid(5, -1));
 		}
-		else if (line == _MPAT(" MFMT"))
+		else if (line == _MPAT("MFMT"))
 		{
 			m_serverCapabilities.SetCapability(mfmt_command, yes);
 		}
@@ -6555,10 +6607,17 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 		case 0: // on
 			if (!GetPeerName(ahost, tmpPort))
 			{
-				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Error retrieving server address"));
-				result = false;
+				// this should happen with proxy server only
+				int logontype = COptions::GetOptionVal(OPTION_LOGONTYPE);
+				// do not know what to do, if there's FTP proxy
+				if (!logontype)
+				{
+					// this is a host name, not an IP, but it should not be a problem
+					ahost = m_CurrentServer.host;
+				}
 			}
-			else if (ahost != host)
+
+			if (ahost != host)
 			{
 				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Using host address %s instead of the one suggested by the server: %s"), (LPCTSTR)ahost, (LPCTSTR)host);
 				host = ahost;
@@ -6572,7 +6631,6 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 		default: // auto
 			if (!GetPeerName(ahost, tmpPort))
 			{
-				// this is not failure in "auto" mode
 				LogMessage(__FILE__, __LINE__, this, FZ_LOG_INFO, _T("Error retrieving server address, cannot test if address is routable"));
 			}
 			else if (!IsRoutableAddress(host) && IsRoutableAddress(ahost))

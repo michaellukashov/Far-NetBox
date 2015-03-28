@@ -140,9 +140,12 @@ bool TFileZillaIntf::Close(bool AllowBusy)
 
   switch (ReturnCode)
   {
-    // it the connection terminated itself meanwhile
+    // If the connection terminated itself meanwhile,
+    // do not try to wait for close response.
     case FZ_REPLY_NOTCONNECTED:
-      Result = true;
+      // We might check AllowBusy here, as it's actually similar scenario,
+      // as we expect this to happen during authentication only
+      Result = false;
       break;
 
     // waiting for disconnect
@@ -225,7 +228,7 @@ bool TFileZillaIntf::List(const wchar_t * APath)
 }
 //---------------------------------------------------------------------------
 #ifdef MPEXT
-bool __fastcall TFileZillaIntf::ListFile(const wchar_t * FileName, const wchar_t * APath)
+bool TFileZillaIntf::ListFile(const wchar_t * FileName, const wchar_t * APath)
 {
   ASSERT(FFileZillaApi != NULL);
   CServerPath Path(APath);

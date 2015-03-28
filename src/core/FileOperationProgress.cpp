@@ -61,7 +61,6 @@ void TFileOperationProgressType::Clear()
   TransferSize = 0;
   TransferedSize = 0;
   SkippedSize = 0;
-  ResumeStatus = rsNotAvailable;
   InProgress = false;
   FileInProgress = false;
   Cancel = csContinue;
@@ -156,7 +155,7 @@ void TFileOperationProgressType::Resume()
 
   // shift timestamps for CPS calculation in advance
   // by the time the progress was suspended
-  uint32_t Stopped = (uint32_t)(::GetTickCount() - FSuspendTime);
+  uint32_t Stopped = static_cast<uint32_t>(::GetTickCount() - FSuspendTime);
   size_t Index = 0;
   while (Index < FTicks.size())
   {
@@ -339,7 +338,7 @@ uintptr_t TFileOperationProgressType::AdjustToCPSLimit(
 
 uintptr_t TFileOperationProgressType::LocalBlockSize()
 {
-  uintptr_t Result = TRANSFER_BUF_SIZE;
+  int64_t Result = TRANSFER_BUF_SIZE;
   if (LocallyUsed + Result > LocalSize)
   {
     Result = static_cast<uintptr_t>(LocalSize - LocallyUsed);
@@ -441,7 +440,7 @@ void TFileOperationProgressType::AddSkippedFileSize(int64_t ASize)
 uintptr_t TFileOperationProgressType::TransferBlockSize()
 {
   uintptr_t Result = TRANSFER_BUF_SIZE;
-  if (TransferedSize + (int64_t)Result > TransferSize)
+  if (TransferedSize + static_cast<int64_t>(Result) > TransferSize)
   {
     Result = static_cast<uintptr_t>(TransferSize - TransferedSize);
   }
@@ -463,12 +462,6 @@ bool TFileOperationProgressType::IsTransferDone() const
 void TFileOperationProgressType::SetAsciiTransfer(bool AAsciiTransfer)
 {
   AsciiTransfer = AAsciiTransfer;
-  DoProgress();
-}
-
-void TFileOperationProgressType::SetResumeStatus(TResumeStatus AResumeStatus)
-{
-  ResumeStatus = AResumeStatus;
   DoProgress();
 }
 

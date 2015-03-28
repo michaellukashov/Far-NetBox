@@ -115,7 +115,8 @@ protected:
     REPLY_CONNECT      = 0x01,
     REPLY_2XX_CODE     = 0x02,
     REPLY_ALLOW_CANCEL = 0x04,
-    REPLY_3XX_CODE     = 0x08
+    REPLY_3XX_CODE     = 0x08,
+    REPLY_SINGLE_LINE  = 0x10,
   };
 
   bool FTPPostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam);
@@ -127,7 +128,7 @@ protected:
   void WaitForFatalNonCommandReply();
   void PoolForFatalNonCommandReply();
   void GotNonCommandReply(uintptr_t Reply);
-  void GotReply(uintptr_t Reply, uintptr_t Flags = 0,
+  UnicodeString GotReply(uintptr_t Reply, uintptr_t Flags = 0,
     const UnicodeString & Error = L"", uintptr_t * Code = nullptr,
     TStrings ** Response = nullptr);
   void ResetReply();
@@ -187,7 +188,7 @@ protected:
   void DirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, intptr_t Attrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
-  bool ConfirmOverwrite(const UnicodeString & AFullFileName, UnicodeString & AFileName,
+  bool ConfirmOverwrite(const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     bool AutoResume,
     const TOverwriteFileParams * FileParams,
@@ -215,6 +216,17 @@ protected:
   void AutoDetectTimeDifference(TRemoteFileList * FileList);
   void ApplyTimeDifference(TRemoteFile * File);
   bool GetTimeZoneDifferenceApplicable(TModificationFmt ModificationFmt) const;
+  UnicodeString DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString & Alg, TRemoteFile * File);
+  void DoCalculateFilesChecksum(bool UsingHashCommand, const UnicodeString & Alg,
+    TStrings * FileList, TStrings * Checksums,
+    TCalculatedChecksumEvent OnCalculatedChecksum,
+    TFileOperationProgressType * OperationProgress, bool FirstLevel);
+  void HandleFeatReply();
+  void ResetFeatures();
+  bool SupportsSiteCommand(const UnicodeString & Command) const;
+  bool SupportsCommand(const UnicodeString & Command) const;
+  void RegisterChecksumAlgCommand(const UnicodeString & Alg, const UnicodeString & Command);
+  void SendCommand(const UnicodeString & Command);
 
   static bool Unquote(UnicodeString & Str);
   static UnicodeString ExtractStatusMessage(const UnicodeString & Status);
@@ -252,6 +264,7 @@ private:
   UnicodeString FSystem;
   TStrings * FFeatures;
   UnicodeString FCurrentDirectory;
+  bool FReadCurrentDirectory;
   UnicodeString FHomeDirectory;
   TRemoteFileList * FFileList;
   TRemoteFileList * FFileListCache;
@@ -281,8 +294,15 @@ private:
   TDateTime FLastDataSent;
   bool FDetectTimeDifference;
   int64_t FTimeDifference;
-  bool FSupportsSiteCopy;
-  bool FSupportsSiteSymlink;
+  std::unique_ptr<TStrings> FChecksumAlgs;
+  std::unique_ptr<TStrings> FChecksumCommands;
+  std::unique_ptr<TStrings> FSupportedCommands;
+  std::unique_ptr<TStrings> FSupportedSiteCommands;
+  std::unique_ptr<TStrings> FHashAlgs;
+  //bool FSupportsSiteCopy;
+  //bool FSupportsSiteSymlink;
+  bool FSupportsAnyChecksumFeature;
+  UnicodeString FLastCommandSent;
   mutable UnicodeString FOptionScratch;
 };
 

@@ -15,6 +15,16 @@
 #include "WinSCPSecurity.h"
 #include <shlobj.h>
 
+// See http://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
+const UnicodeString Sha1ChecksumAlg(L"sha-1");
+const UnicodeString Sha224ChecksumAlg(L"sha-224");
+const UnicodeString Sha256ChecksumAlg(L"sha-256");
+const UnicodeString Sha384ChecksumAlg(L"sha-384");
+const UnicodeString Sha512ChecksumAlg(L"sha-512");
+const UnicodeString Md5ChecksumAlg(L"md5");
+// Not defined by IANA
+const UnicodeString Crc32ChecksumAlg(L"crc32");
+
 TConfiguration::TConfiguration() :
   FDontSave(false),
   FChanged(false),
@@ -24,6 +34,7 @@ TConfiguration::TConfiguration() :
   FPermanentLogging(false),
   FLogWindowLines(0),
   FLogFileAppend(false),
+  FLogSensitive(false),
   FLogProtocol(0),
   FActualLogProtocol(0),
   FLogActions(false),
@@ -112,8 +123,10 @@ void TConfiguration::Default()
   FPermanentLogFileName = FLogFileName;
   FLogFileAppend = true;
   FLogSensitive = false;
+  FPermanentLogSensitive = FLogSensitive;
   FLogWindowLines = 100;
   FLogProtocol = 0;
+  FPermanentLogProtocol = FLogProtocol;
   UpdateActualLogProtocol();
   FLogActions = false;
   FPermanentLogActions = false;
@@ -223,10 +236,10 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
     KEYEX(Bool,  Logging, Logging); \
     KEYEX(String,LogFileName, LogFileName); \
     KEY(Bool,    LogFileAppend); \
-    KEY(Bool,    LogSensitive); \
+    KEYEX(Bool,  PermanentLogSensitive, LogSensitive); \
     KEY(Integer, LogWindowLines); \
-    KEY(Integer, LogProtocol); \
-    KEYEX(Bool,  LogActions, LogActions); \
+    KEYEX(Integer,PermanentLogProtocol, LogProtocol); \
+    KEYEX(Bool,  PermanentLogActions, LogActions); \
     KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
   );
 
@@ -627,6 +640,11 @@ void TConfiguration::CleanupIniFile()
 #endif
 }
 
+void TConfiguration::DontSave()
+{
+  FDontSave = true;
+}
+
 RawByteString TConfiguration::EncryptPassword(const UnicodeString & Password, const UnicodeString & Key)
 {
   if (Password.IsEmpty())
@@ -758,6 +776,11 @@ UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName
 UnicodeString TConfiguration::GetProductVersion() const
 {
   return GetFileProductVersion(L"");
+}
+
+UnicodeString TConfiguration::GetReleaseType() const
+{
+  return GetFileInfoString(L"ReleaseType");
 }
 
 bool TConfiguration::GetIsUnofficial() const
@@ -1161,6 +1184,16 @@ void TConfiguration::TemporaryActionsLogging(const UnicodeString & ALogFileName)
   FActionsLogFileName = ALogFileName;
 }
 
+void TConfiguration::TemporaryLogProtocol(intptr_t ALogProtocol)
+{
+  FLogProtocol = ALogProtocol;
+}
+
+void TConfiguration::TemporaryLogSensitive(bool ALogSensitive)
+{
+  FLogSensitive = ALogSensitive;
+}
+
 void TConfiguration::SetLogging(bool Value)
 {
   if (GetLogging() != Value)
@@ -1213,8 +1246,13 @@ void TConfiguration::UpdateActualLogProtocol()
 
 void TConfiguration::SetLogProtocol(intptr_t Value)
 {
-  SET_CONFIG_PROPERTY(LogProtocol);
-  UpdateActualLogProtocol();
+  if (GetLogProtocol() != Value)
+  {
+    FPermanentLogProtocol = Value;
+    FLogProtocol = Value;
+    Changed();
+    UpdateActualLogProtocol();
+  }
 }
 
 void TConfiguration::SetLogActions(bool Value)
@@ -1234,7 +1272,12 @@ void TConfiguration::SetLogFileAppend(bool Value)
 
 void TConfiguration::SetLogSensitive(bool Value)
 {
-  SET_CONFIG_PROPERTY(LogSensitive);
+  if (GetLogSensitive() != Value)
+  {
+    FPermanentLogSensitive = Value;
+    FLogSensitive = Value;
+    Changed();
+  }
 }
 
 void TConfiguration::SetLogWindowLines(intptr_t Value)

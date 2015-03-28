@@ -510,6 +510,14 @@ int FakeFileImageIndex(const UnicodeString & /*AFileName*/, uint32_t /*Attrs*/,
   return -1;
 }
 
+bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2)
+{
+  // Bitvise reports file owner as "user@host", but we login with "user" only.
+  UnicodeString AUserName1 = CopyToChar(UserName1, L'@', true);
+  UnicodeString AUserName2 = CopyToChar(UserName2, L'@', true);
+  return SameText(AUserName1, AUserName2);
+}
+
 } // namespace core
 
 TRemoteToken::TRemoteToken() :
@@ -718,6 +726,7 @@ void TRemoteTokenList::AddUnique(const TRemoteToken & Token)
 
 bool TRemoteTokenList::Exists(const UnicodeString & Name) const
 {
+  // We should make use of SameUserName
   return (FNameMap.find(Name) != FNameMap.end());
 }
 
@@ -863,6 +872,11 @@ void TRemoteFile::LoadTypeInfo() const
   FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName); */
 }
 
+int64_t TRemoteFile::GetSize() const
+{
+  return GetIsDirectory() ? 0 : FSize;
+}
+
 intptr_t TRemoteFile::GetIconIndex() const
 {
   if (FIconIndex == -1)
@@ -930,12 +944,12 @@ Boolean TRemoteFile::GetIsInaccesibleDirectory() const
   {
     assert(GetTerminal());
     Result = !
-       (::SameText(GetTerminal()->TerminalGetUserName(), L"root")) ||
+       (core::SameUserName(GetTerminal()->TerminalGetUserName(), L"root")) ||
        (((GetRights()->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
         ((GetRights()->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
          GetTerminal()->GetMembership()->Exists(GetFileGroup().GetName())) ||
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
-         (::SameText(GetTerminal()->TerminalGetUserName(), GetFileOwner().GetName()))));
+         (core::SameUserName(GetTerminal()->TerminalGetUserName(), GetFileOwner().GetName()))));
   }
   else
   {
@@ -1429,8 +1443,9 @@ UnicodeString TRemoteFile::GetListingStr() const
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
   return FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
-    GetType(), GetRights()->GetText().c_str(), ::Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(),
-    GetFileGroup().GetName().c_str(), ::Int64ToStr(GetSize()).c_str(), GetModificationStr().c_str(), GetFileName().c_str(),
+    GetType(), GetRights()->GetText().c_str(), ::Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(), GetFileGroup().GetName().c_str(),
+    ::Int64ToStr(GetSize()).c_str(),  // explicitly using size even for directories
+    GetModificationStr().c_str(), GetFileName().c_str(),
     LinkPart.c_str());
 }
 
@@ -1564,8 +1579,11 @@ TRemoteFileList::TRemoteFileList() :
 
 void TRemoteFileList::AddFile(TRemoteFile * AFile)
 {
-  Add(AFile);
-  AFile->SetDirectory(this);
+  if (AFile)
+  {
+    Add(AFile);
+    AFile->SetDirectory(this);
+  }
 }
 
 void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy) const
@@ -1616,7 +1634,7 @@ int64_t TRemoteFileList::GetTotalSize()
   int64_t Result = 0;
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (!GetFile(Index)->GetIsDirectory())
+    // if (!GetFile(Index)->GetIsDirectory())
     {
       Result += GetFile(Index)->GetSize();
     }
@@ -2528,13 +2546,13 @@ UnicodeString TRights::GetModeStr() const
   UnicodeString Result;
   UnicodeString SetModeStr, UnsetModeStr;
   TRight Right;
-  int Index;
+  intptr_t Index;
 
-  for (int Group = 0; Group < 3; Group++)
+  for (intptr_t Group = 0; Group < 3; Group++)
   {
     SetModeStr.Clear();
     UnsetModeStr.Clear();
-    for (int Mode = 0; Mode < 3; Mode++)
+    for (intptr_t Mode = 0; Mode < 3; Mode++)
     {
       Index = (Group * 3) + Mode;
       Right = static_cast<TRight>(rrUserRead + Index);

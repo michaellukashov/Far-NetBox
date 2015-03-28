@@ -139,6 +139,8 @@ int GetUserpassInput(prompts_t * p, uint8_t * /*in*/, int /*inlen*/)
     {
       prompt_t * Prompt = p->prompts[Index];
       Prompts->AddObject(Prompt->prompt, reinterpret_cast<TObject *>(static_cast<size_t>(FLAGMASK(Prompt->echo, pupEcho))));
+      // this fails, when new passwords do not match on change password prompt,
+      // and putty retries the prompt
       assert(Prompt->resultsize == 0);
       Results->Add(L"");
     }
@@ -188,7 +190,7 @@ void connection_fatal(void * frontend, char * fmt, ...)
   va_list Param;
   char Buf[200];
   va_start(Param, fmt);
-  vsnprintf(Buf, _countof(Buf), fmt, Param); \
+  vsnprintf_s(Buf, _countof(Buf), fmt, Param); \
   Buf[_countof(Buf) - 1] = '\0'; \
   va_end(Param);
 
@@ -232,7 +234,7 @@ void display_banner(void * frontend, const char * banner, int size)
 static void SSHFatalError(const char * Format, va_list Param)
 {
   char Buf[200];
-  vsnprintf(Buf, _countof(Buf), Format, Param);
+  vsnprintf_s(Buf, _countof(Buf), Format, Param);
   Buf[_countof(Buf) - 1] = '\0';
 
   // Only few calls from putty\winnet.c might be connected with specific
@@ -454,7 +456,8 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     assert(Type != nullptr);
     *Type = REG_SZ;
     char * DataStr = reinterpret_cast<char *>(Data);
-    strncpy(DataStr, Value.c_str(), static_cast<size_t>(*DataSize));
+    size_t sz = static_cast<size_t>(*DataSize);
+    strncpy_s(DataStr, sz, Value.c_str(), sz);
     DataStr[*DataSize - 1] = '\0';
     *DataSize = static_cast<uint32_t>(strlen(DataStr));
   }

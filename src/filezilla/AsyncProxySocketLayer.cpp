@@ -1157,7 +1157,9 @@ BOOL CAsyncProxySocketLayer::GetPeerName(CString &rPeerAddress, UINT &rPeerPort)
 BOOL CAsyncProxySocketLayer::GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrLen )
 {
 	if (m_ProxyData.nProxyType==PROXYTYPE_NOPROXY)
+	{
 		return GetPeerNameNext(lpSockAddr, lpSockAddrLen);
+	}
 
 	if (GetLayerState()==notsock)
 	{

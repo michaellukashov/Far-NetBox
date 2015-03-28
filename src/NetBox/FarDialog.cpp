@@ -720,7 +720,7 @@ intptr_t TFarDialog::ShowModal()
     assert(GetDefaultButton());
     assert(GetDefaultButton()->GetDefault());
 
-    UnicodeString AHelpTopic = GetHelpTopic();
+    UnicodeString HelpTopic = GetHelpTopic();
     intptr_t BResult = 0;
 
     {
@@ -730,7 +730,7 @@ intptr_t TFarDialog::ShowModal()
       Handle = Info.DialogInit(
         &MainGuid, &MainGuid,
         Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
-        AHelpTopic.c_str(), FDialogItems,
+        HelpTopic.c_str(), FDialogItems,
         GetItemCount(), 0, GetFlags(),
         DialogProcGeneral,
         reinterpret_cast<void *>(this));
@@ -1732,25 +1732,25 @@ TFarButton::TFarButton(TFarDialog * ADialog) :
 {
 }
 
-void TFarButton::SetDataInternal(const UnicodeString & Value)
+void TFarButton::SetDataInternal(const UnicodeString & AValue)
 {
-  UnicodeString AValue;
+  UnicodeString Value;
   switch (FBrackets)
   {
     case brTight:
-      AValue = L"[" + Value + L"]";
+      Value = L"[" + AValue + L"]";
       break;
 
     case brSpace:
-      AValue = L" " + Value + L" ";
+      Value = L" " + AValue + L" ";
       break;
 
     default:
-      AValue = Value;
+      Value = AValue;
       break;
   }
 
-  TFarDialogItem::SetDataInternal(AValue);
+  TFarDialogItem::SetDataInternal(Value);
 
   if ((GetLeft() >= 0) || (GetRight() >= 0))
   {
@@ -1770,7 +1770,7 @@ void TFarButton::SetDataInternal(const UnicodeString & Value)
         Margin = 2;
         break;
     }
-    SetWidth(Margin + ::StripHotkey(AValue).GetLength() + Margin);
+    SetWidth(Margin + ::StripHotkey(Value).GetLength() + Margin);
   }
 }
 
@@ -1822,10 +1822,10 @@ void TFarButton::SetBrackets(TFarButtonBrackets Value)
 {
   if (FBrackets != Value)
   {
-    UnicodeString AData = GetData();
+    UnicodeString Data = GetData();
     SetFlag(DIF_NOBRACKETS, (Value != brNormal));
     FBrackets = Value;
-    SetDataInternal(AData);
+    SetDataInternal(Data);
   }
 }
 

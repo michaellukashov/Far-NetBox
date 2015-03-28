@@ -165,7 +165,7 @@ struct custom_nballocator_t
   {
     if (0 == s)
       return nullptr;
-    pointer temp = (pointer)nb_malloc(s * sizeof(T));
+    pointer temp = reinterpret_cast<pointer>(nb_malloc(s * sizeof(T)));
     if (temp == nullptr)
       throw std::bad_alloc();
     return temp;
@@ -184,7 +184,7 @@ struct custom_nballocator_t
 
   void construct(pointer p, const T & val)
   {
-    new((void *)p) T(val);
+    new(reinterpret_cast<void *>(p)) T(val);
   }
 
   void destroy(pointer p)

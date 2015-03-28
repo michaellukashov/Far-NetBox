@@ -1216,7 +1216,7 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
   }
   else
   {
-    ::Sleep((DWORD)GetConfiguration()->GetSessionReopenBackground());
+    ::Sleep(static_cast<DWORD>(GetConfiguration()->GetSessionReopenBackground()));
     Result = true;
   }
   return Result;
@@ -1653,20 +1653,20 @@ void TQueueItem::SetProgress(
 
     // do not lose CPS limit override on "calculate size" operation,
     // wait until the real transfer operation starts
-    if ((FCPSLimit != (uintptr_t)-1) && ((ProgressData.Operation == foMove) || (ProgressData.Operation == foCopy)))
+    if ((FCPSLimit != static_cast<uintptr_t>(-1)) && ((ProgressData.Operation == foMove) || (ProgressData.Operation == foCopy)))
     {
-      ProgressData.CPSLimit = static_cast<unsigned long>(FCPSLimit);
-      FCPSLimit = (uintptr_t)-1;
+      ProgressData.CPSLimit = FCPSLimit;
+      FCPSLimit = static_cast<uintptr_t>(-1);
     }
 
     assert(FProgressData != nullptr);
     *FProgressData = ProgressData;
     FProgressData->Reset();
 
-    if (FCPSLimit != (uintptr_t)-1)
+    if (FCPSLimit != static_cast<uintptr_t>(-1))
     {
       ProgressData.CPSLimit = static_cast<uint32_t>(FCPSLimit);
-      FCPSLimit = (uintptr_t)-1;
+      FCPSLimit = static_cast<uintptr_t>(-1);
     }
   }
   FQueue->DoQueueItemUpdate(this);
@@ -1716,7 +1716,7 @@ uintptr_t TQueueItem::DefaultCPSLimit() const
 uintptr_t TQueueItem::GetCPSLimit() const
 {
   uintptr_t Result;
-  if (FCPSLimit != (uintptr_t)-1)
+  if (FCPSLimit != static_cast<uintptr_t>(-1))
   {
     Result = FCPSLimit;
   }
@@ -1988,7 +1988,7 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   bool SingleFile) :
   TLocatedQueueItem(Terminal), FFilesToCopy(new TStringList()), FCopyParam(nullptr)
 {
-  FInfo->Operation = (Params & cpDelete ? foMove : foCopy);
+  FInfo->Operation = (Params & cpDelete) ? foMove : foCopy;
   FInfo->Side = Side;
   FInfo->SingleFile = SingleFile;
 

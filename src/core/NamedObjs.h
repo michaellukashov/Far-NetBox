@@ -18,7 +18,8 @@ public:
   bool GetHidden() const { return FHidden; }
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString & Value);
-  Integer CompareName(const UnicodeString & AName, Boolean CaseSensitive = False);
+  bool IsSameName(const UnicodeString & Name) const;
+  virtual intptr_t Compare(const TNamedObject * Other) const;
   void MakeUniqueIn(TNamedObjectList * List);
 
 private:
@@ -39,10 +40,10 @@ public:
 
   virtual void Notify(void * Ptr, TListNotification Action);
   void AlphaSort();
-  virtual TNamedObject * AtObject(intptr_t Index);
   virtual const TNamedObject * AtObject(intptr_t Index) const;
-  TNamedObject * FindByName(const UnicodeString & Name, Boolean CaseSensitive = False) const;
-  TNamedObject * FindByName(const UnicodeString & Name, Boolean CaseSensitive = False);
+  virtual TNamedObject * AtObject(intptr_t Index);
+  const TNamedObject * FindByName(const UnicodeString & Name) const;
+  TNamedObject * FindByName(const UnicodeString & Name);
 /*
   __property int Count = { read = GetCount, write = SetCount };
   __property int CountIncludingHidden = { read = GetCountIncludingHidden };

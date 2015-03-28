@@ -845,6 +845,7 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
 	goto error;
     }
     sfree(public_blob);
+    smemclr(private_blob, private_blob_len);
     sfree(private_blob);
     sfree(encryption);
     if (errorstr)
@@ -865,8 +866,10 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
 	sfree(mac);
     if (public_blob)
 	sfree(public_blob);
-    if (private_blob)
+    if (private_blob) {
+	smemclr(private_blob, private_blob_len);
 	sfree(private_blob);
+    }
     if (errorstr)
 	*errorstr = error;
     return ret;
@@ -1155,13 +1158,13 @@ int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
     }
 
     fp = f_open(filename, "w", TRUE);
-    if (!fp)
-    {
-      sfree(pub_blob);
-      smemclr(priv_blob, priv_blob_len);
-      sfree(priv_blob);
-      sfree(priv_blob_encrypted);
-      return 0;
+    if (!fp) {
+        sfree(pub_blob);
+        smemclr(priv_blob, priv_blob_len);
+        sfree(priv_blob);
+        smemclr(priv_blob_encrypted, priv_blob_len);
+        sfree(priv_blob_encrypted);
+        return 0;
     }
     fprintf(fp, "PuTTY-User-Key-File-2: %s\n", key->alg->name);
     fprintf(fp, "Encryption: %s\n", cipherstr);
@@ -1179,6 +1182,7 @@ int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
     sfree(pub_blob);
     smemclr(priv_blob, priv_blob_len);
     sfree(priv_blob);
+    smemclr(priv_blob_encrypted, priv_blob_len);
     sfree(priv_blob_encrypted);
     return 1;
 }

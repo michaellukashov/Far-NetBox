@@ -13,12 +13,12 @@ class TFileZillaIntern;
 //---------------------------------------------------------------------------
 struct TRemoteFileTime
 {
-  int Year;
-  int Month;
-  int Day;
-  int Hour;
-  int Minute;
-  int Second;
+  WORD Year;
+  WORD Month;
+  WORD Day;
+  WORD Hour;
+  WORD Minute;
+  WORD Second;
   bool HasTime;
   bool HasSeconds;
   bool HasDate;
@@ -102,8 +102,9 @@ public:
     LOG_LIST = 4,
     LOG_APIERROR = 5,
     LOG_WARNING = 6,
-    LOG_INFO = 7,
-    LOG_DEBUG = 8
+    LOG_PROGRESS = 7,
+    LOG_INFO = 8,
+    LOG_DEBUG = 9,
   };
 
   enum TMessageType
@@ -180,7 +181,7 @@ public:
   bool List();
   bool List(const wchar_t * Path);
 #ifdef MPEXT
-  bool __fastcall ListFile(const wchar_t * FileName, const wchar_t * APath);
+  bool ListFile(const wchar_t * FileName, const wchar_t * APath);
 #endif
 
   bool CustomCommand(const wchar_t * Command);
