@@ -363,12 +363,16 @@ add_library(putty STATIC
   ${LIBS_ROOT}/Putty/WINDOWS/WINPROXY.c
   ${LIBS_ROOT}/Putty/WINDOWS/WINSTORE_.c
   ${LIBS_ROOT}/Putty/WINDOWS/WINTIME.c
+  ${LIBS_ROOT}/Putty/WINDOWS/winhsock.c
   ${LIBS_ROOT}/Putty/X11FWD.c
   ${LIBS_ROOT}/Putty/CONF.c
   ${LIBS_ROOT}/Putty/CALLBACK.c
+  ${LIBS_ROOT}/Putty/sshshare.c
+  ${LIBS_ROOT}/Putty/noshare.c
+  ${LIBS_ROOT}/Putty/errsock.c
 )
 
-set(PUTTY_COMPILE_FLAGS "-D_CRTIMP= -DLibrary -DSECURITY_WIN32 -D_MT -DNET_SETUP_DIAGNOSTICS -DNO_SECURITY")
+set(PUTTY_COMPILE_FLAGS "-D_CRTIMP= -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -DNO_SECURITY")
 
 if(MSVC)
 set_target_properties(putty
