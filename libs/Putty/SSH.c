@@ -3478,6 +3478,11 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
 
     ssh->fn = &fn_table;               /* make 'ssh' usable as a Plug */
 
+    #ifdef MPEXT
+    // make sure the field is initialized, in case lookup below fails
+    ssh->fullhostname = NULL;
+    #endif
+
     /*
      * Try connection-sharing, in case that means we don't open a
      * socket after all. ssh_connection_sharing_init will connect to a
