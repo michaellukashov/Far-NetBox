@@ -362,7 +362,7 @@ static int proxy_for_destination (SockAddr addr, const char *hostname,
     return 1;
 }
 
-SockAddr name_lookup(char *host, int port, char **canonicalname,
+SockAddr name_lookup(const char *host, int port, char **canonicalname,
 		     Conf *conf, int addressfamily)
 {
     if (conf_get_int(conf, CONF_proxy_type) != PROXY_NONE &&

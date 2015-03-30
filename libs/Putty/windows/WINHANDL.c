@@ -683,6 +683,9 @@ void handle_got_event(HANDLE event)
         h->u.f.callback(h->u.f.ctx);
         break;
     }
+#ifdef MPEXT
+    return 0;
+#endif
 }
 
 void handle_unthrottle(struct handle *h, int backlog)

@@ -3431,7 +3431,7 @@ static void ssh_sent(Plug plug, int bufsize)
  * Also places the canonical host name into `realhost'. It must be
  * freed by the caller.
  */
-static const char *connect_to_host(Ssh ssh, char *host, int port,
+static const char *connect_to_host(Ssh ssh, const char *host, int port,
 				   char **realhost, int nodelay, int keepalive)
 {
     static const struct plug_function_table fn_table = {
@@ -10581,8 +10581,8 @@ static void ssh_cache_conf_values(Ssh ssh)
  * Returns an error message, or NULL on success.
  */
 static const char *ssh_init(void *frontend_handle, void **backend_handle,
-			    Conf *conf, char *host, int port, char **realhost,
-			    int nodelay, int keepalive)
+		Conf *conf, const char *host, int port, char **realhost,
+		int nodelay, int keepalive)
 {
     const char *p;
     Ssh ssh;

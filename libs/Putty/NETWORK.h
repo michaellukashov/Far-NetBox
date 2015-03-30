@@ -102,7 +102,7 @@ Socket new_connection(SockAddr addr, char *hostname,
 					Plug plug, Conf *conf);
 Socket new_listener(char *srcaddr, int port, Plug plug, int local_host_only,
 				Conf *conf, int addressfamily);
-SockAddr name_lookup(char *host, int port, char **canonicalname,
+SockAddr name_lookup(const char *host, int port, char **canonicalname,
 				 Conf *conf, int addressfamily);
 int proxy_for_destination (SockAddr addr, const char *hostname, int port,
                            Conf *conf);
