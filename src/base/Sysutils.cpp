@@ -1278,8 +1278,8 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   static const int D100 = D4 * 25 - 1;
   static const int D400 = D100 * 4 + 1;
   bool Result = false;
-  uintptr_t T = DateTimeToTimeStamp(DateTime).Date;
-  if (static_cast<int>(T) <= 0)
+  int T = DateTimeToTimeStamp(DateTime).Date;
+  if (T <= 0)
   {
     Year = 0;
     Month = 0;
