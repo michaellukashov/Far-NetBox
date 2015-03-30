@@ -7160,9 +7160,7 @@ static int ssh2_try_send(struct ssh_channel *c)
 	pktout = ssh2_pkt_init(SSH2_MSG_CHANNEL_DATA);
 	ssh2_pkt_adduint32(pktout, c->remoteid);
 	ssh2_pkt_addstring_start(pktout);
-	dont_log_data(ssh, pktout, PKTLOG_OMIT);
 	ssh2_pkt_addstring_data(pktout, data, len);
-	end_log_omission(ssh, pktout);
 	ssh2_pkt_send(ssh, pktout);
 	bufchain_consume(&c->v.v2.outbuffer, len);
 	c->v.v2.remwindow -= len;
@@ -9789,10 +9787,8 @@ static void do_ssh2_authconn(Ssh ssh, unsigned char *in, int inlen,
 		    s->pktout = ssh2_pkt_init(SSH2_MSG_USERAUTH_INFO_RESPONSE);
 		    ssh2_pkt_adduint32(s->pktout, s->num_prompts);
 		    for (i=0; i < s->num_prompts; i++) {
-			dont_log_password(ssh, s->pktout, PKTLOG_BLANK);
 			ssh2_pkt_addstring(s->pktout,
 					   s->cur_prompt->prompts[i]->result);
-			end_log_omission(ssh, s->pktout);
 		    }
 		    ssh2_pkt_send_with_padding(ssh, s->pktout, 256);
 
@@ -9880,9 +9876,7 @@ static void do_ssh2_authconn(Ssh ssh, unsigned char *in, int inlen,
 							/* service requested */
 		ssh2_pkt_addstring(s->pktout, "password");
 		ssh2_pkt_addbool(s->pktout, FALSE);
-		dont_log_password(ssh, s->pktout, PKTLOG_BLANK);
 		ssh2_pkt_addstring(s->pktout, s->password);
-		end_log_omission(ssh, s->pktout);
 		ssh2_pkt_send_with_padding(ssh, s->pktout, 256);
 		logevent("Sent password");
 		s->type = AUTH_TYPE_PASSWORD;
@@ -10009,12 +10003,10 @@ static void do_ssh2_authconn(Ssh ssh, unsigned char *in, int inlen,
 							/* service requested */
 		    ssh2_pkt_addstring(s->pktout, "password");
 		    ssh2_pkt_addbool(s->pktout, TRUE);
-		    dont_log_password(ssh, s->pktout, PKTLOG_BLANK);
 		    ssh2_pkt_addstring(s->pktout, s->password);
 		    ssh2_pkt_addstring(s->pktout,
 				       s->cur_prompt->prompts[1]->result);
 		    free_prompts(s->cur_prompt);
-		    end_log_omission(ssh, s->pktout);
 		    ssh2_pkt_send_with_padding(ssh, s->pktout, 256);
 		    logevent("Sent new password");
 		    
