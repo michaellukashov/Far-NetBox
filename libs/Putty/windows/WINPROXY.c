@@ -13,6 +13,9 @@
 #include "network.h"
 #include "proxy.h"
 
+Socket make_handle_socket(HANDLE send_H, HANDLE recv_H, Plug plug,
+                          int overlapped);
+
 typedef struct Socket_localproxy_tag *Local_Proxy_Socket;
 
 #ifdef MPEXT
@@ -142,21 +145,6 @@ Socket platform_new_connection(SockAddr addr, char *hostname,
 			       Plug plug, Conf *conf)
 {
     char *cmd;
-
-    static const struct socket_function_table socket_fn_table = {
-	sk_localproxy_plug,
-	sk_localproxy_close,
-	sk_localproxy_write,
-	sk_localproxy_write_oob,
-	sk_localproxy_write_eof,
-	sk_localproxy_flush,
-	sk_localproxy_set_private_ptr,
-	sk_localproxy_get_private_ptr,
-	sk_localproxy_set_frozen,
-	sk_localproxy_socket_error
-    };
-
-    Local_Proxy_Socket ret;
     HANDLE us_to_cmd, us_from_cmd, cmd_to_us, cmd_from_us;
     SECURITY_ATTRIBUTES sa;
     STARTUPINFO si;
@@ -167,6 +155,9 @@ Socket platform_new_connection(SockAddr addr, char *hostname,
 
     cmd = format_telnet_command(addr, port, conf);
 
+    /* We are responsible for this and don't need it any more */
+    sk_addr_free(addr);
+
     {
 	char *msg = dupprintf("Starting local proxy command: %s", cmd);
 	/* We're allowed to pass NULL here, because we're part of the Windows
@@ -174,11 +165,6 @@ Socket platform_new_connection(SockAddr addr, char *hostname,
 	logevent(NULL, msg);
 	sfree(msg);
     }
-
-    ret = snew(struct Socket_localproxy_tag);
-    ret->fn = &socket_fn_table;
-    ret->plug = plug;
-    ret->error = NULL;
 
     /*
      * Create the pipes to the proxy command, and spawn the proxy
@@ -188,17 +174,19 @@ Socket platform_new_connection(SockAddr addr, char *hostname,
     sa.lpSecurityDescriptor = NULL;    /* default */
     sa.bInheritHandle = TRUE;
     if (!CreatePipe(&us_from_cmd, &cmd_to_us, &sa, 0)) {
-	ret->error = dupprintf("Unable to create pipes for proxy command");
+	Socket ret =
+            new_error_socket("Unable to create pipes for proxy command", plug);
         sfree(cmd);
-	return (Socket)ret;
+	return ret;
     }
 
     if (!CreatePipe(&cmd_from_us, &us_to_cmd, &sa, 0)) {
+	Socket ret =
+            new_error_socket("Unable to create pipes for proxy command", plug);
+        sfree(cmd);
 	CloseHandle(us_from_cmd);
 	CloseHandle(cmd_to_us);
-	ret->error = dupprintf("Unable to create pipes for proxy command");
-        sfree(cmd);
-	return (Socket)ret;
+	return ret;
     }
 
     SetHandleInformation(us_to_cmd, HANDLE_FLAG_INHERIT, 0);
@@ -225,21 +213,5 @@ Socket platform_new_connection(SockAddr addr, char *hostname,
     CloseHandle(cmd_from_us);
     CloseHandle(cmd_to_us);
 
-    ret->to_cmd_H = us_to_cmd;
-    ret->from_cmd_H = us_from_cmd;
-
-    ret->from_cmd_h = handle_input_new(ret->from_cmd_H, localproxy_gotdata,
-				       ret, 0);
-    ret->to_cmd_h = handle_output_new(ret->to_cmd_H, localproxy_sentdata,
-				      ret, 0);
-
-    /* We are responsible for this and don't need it any more */
-    sk_addr_free(addr);
-
-    #ifdef MPEXT
-    // WinSCP core uses do_select as signalization of connection up/down
-    do_select(plug, INVALID_SOCKET, 1);
-    #endif
-
-    return (Socket) ret;
+    return make_handle_socket(us_to_cmd, us_from_cmd, plug, FALSE);
 }

@@ -46,6 +46,9 @@ struct socket_function_table {
     const char *(*socket_error) (Socket s);
 };
 
+typedef union { void *p; int i; } accept_ctx_t;
+typedef Socket (*accept_fn_t)(accept_ctx_t ctx, Plug plug);
+
 struct plug_function_table {
 		void (*log)(Plug p, int type, SockAddr addr, int port,
 		const char *error_msg, int error_code);
@@ -83,10 +86,13 @@ struct plug_function_table {
 		 * on a socket is cleared or partially cleared. The new backlog
 		 * size is passed in the `bufsize' parameter.
 		 */
-		int (*accepting)(Plug p, OSSocket sock);
-		/*
-		 * returns 0 if the host at address addr is a valid host for connecting or error
-		 */
+    int (*accepting)(Plug p, accept_fn_t constructor, accept_ctx_t ctx);
+    /*
+     * `accepting' is called only on listener-type sockets, and is
+     * passed a constructor function+context that will create a fresh
+     * Socket describing the connection. It returns nonzero if it
+     * doesn't want the connection for some reason, or 0 on success.
+     */
 };
 
 /* proxy indirection layer */
@@ -100,6 +106,8 @@ Socket new_listener(char *srcaddr, int port, Plug plug, int local_host_only,
 				Conf *conf, int addressfamily);
 SockAddr name_lookup(char *host, int port, char **canonicalname,
 				 Conf *conf, int addressfamily);
+int proxy_for_destination (SockAddr addr, const char *hostname, int port,
+                           Conf *conf);
 
 /* platform-dependent callback from new_connection() */
 /* (same caveat about addr as new_connection()) */
@@ -116,6 +124,7 @@ void sk_cleanup(void);		       /* called just before program exit */
 SockAddr sk_namelookup(const char *host, char **canonicalname, int address_family);
 SockAddr sk_nonamelookup(const char *host);
 void sk_getaddr(SockAddr addr, char *buf, int buflen);
+int sk_addr_needs_port(SockAddr addr);
 int sk_hostname_is_local(const char *name);
 int sk_address_is_local(SockAddr addr);
 int sk_address_is_special_local(SockAddr addr);
@@ -160,7 +169,7 @@ Socket sk_register(OSSocket sock, Plug plug);
 #define plug_closing(p,msg,code,callback) (((*p)->closing) (p, msg, code, callback))
 #define plug_receive(p,urgent,buf,len) (((*p)->receive) (p, urgent, buf, len))
 #define plug_sent(p,bufsize) (((*p)->sent) (p, bufsize))
-#define plug_accepting(p, sock) (((*p)->accepting)(p, sock))
+#define plug_accepting(p, constructor, ctx) (((*p)->accepting)(p, constructor, ctx))
 #endif
 
 /*
@@ -214,6 +223,12 @@ int net_service_lookup(char *service);
  * May return NULL.
  */
 char *get_hostname(void);
+
+/*
+ * Trivial socket implementation which just stores an error. Found in
+ * errsock.c.
+ */
+Socket new_error_socket(const char *errmsg, Plug plug);
 
 /********** SSL stuff **********/
 

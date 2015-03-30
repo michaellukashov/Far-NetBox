@@ -10,7 +10,7 @@
 #endif
 #include <windows.h>
 #include <stdio.h>		       /* for FILENAME_MAX */
-#include <Commdlg.h>
+//#include <Commdlg.h>
 
 #include "tree234.h"
 
@@ -247,6 +247,11 @@ GLOBAL void *logctx;
 			       "All Files (*.*)\0*\0\0\0")
 #define FILTER_DYNLIB_FILES ("Dynamic Library Files (*.dll)\0*.dll\0" \
 				 "All Files (*.*)\0*\0\0\0")
+
+/*
+ * Exports from winnet.c.
+ */
+extern int select_result(WPARAM, LPARAM);
 
 /*
  * winnet.c dynamically loads WinSock 2 or WinSock 1 depending on
@@ -508,6 +513,8 @@ void handle_got_event(HANDLE event);
 void handle_unthrottle(struct handle *h, int backlog);
 int handle_backlog(struct handle *h);
 void *handle_get_privdata(struct handle *h);
+struct handle *handle_add_foreign_event(HANDLE event,
+                                        void (*callback)(void *), void *ctx);
 
 /*
  * winpgntc.c needs to schedule callbacks for asynchronous agent

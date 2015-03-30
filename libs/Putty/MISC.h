@@ -7,7 +7,7 @@
 
 #include "puttymem.h"
 
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <stdio.h>		       /* for FILE * */
 #include <stdarg.h>		       /* for va_list */
 #include <time.h>                      /* for struct tm */
@@ -28,9 +28,18 @@ __int64 parse_blocksize64(const char *bs);
 unsigned long parse_blocksize(const char *bs);
 char ctrlparse(char *s, char **next);
 
+size_t host_strcspn(const char *s, const char *set);
+char *host_strchr(const char *s, int c);
+char *host_strrchr(const char *s, int c);
+char *host_strduptrim(const char *s);
+
 char *dupstr(const char *s);
 char *dupcat(const char *s1, ...);
-char *dupprintf(const char *fmt, ...);
+char *dupprintf(const char *fmt, ...)
+#ifdef __GNUC__
+    __attribute__ ((format (printf, 1, 2)))
+#endif
+    ;
 char *dupvprintf(const char *fmt, va_list ap);
 void burnstr(char *string);
 
@@ -39,6 +48,7 @@ int toint(unsigned);
 char *fgetline(FILE *fp);
 
 void base64_encode_atom(unsigned char *data, int n, char *out);
+int base64_decode_atom(char *atom, unsigned char *out);
 
 struct bufchain_granule;
 typedef struct bufchain_tag {
@@ -53,6 +63,8 @@ void bufchain_add(bufchain *ch, const void *data, int len);
 void bufchain_prefix(bufchain *ch, void **data, int *len);
 void bufchain_consume(bufchain *ch, int len);
 void bufchain_fetch(bufchain *ch, void *data, int len);
+
+int validate_manual_hostkey(char *key);
 
 struct tm ltime(void);
 

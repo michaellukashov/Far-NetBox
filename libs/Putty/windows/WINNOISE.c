@@ -10,6 +10,7 @@
 #include "storage.h"
 
 #include <wincrypt.h>
+
 DECL_WINDOWS_FUNCTION(static, BOOL, CryptAcquireContextA,
                       (HCRYPTPROV *, LPCTSTR, LPCTSTR, DWORD, DWORD));
 DECL_WINDOWS_FUNCTION(static, BOOL, CryptGenRandom,

@@ -8,7 +8,8 @@
 #include "putty.h"
 
 #ifndef NO_SECURITY
-#include <aclapi.h>
+#include "winsecur.h"
+//#include <aclapi.h>
 #endif
 
 #define AGENT_COPYDATA_ID 0x804e50ba   /* random goop */
@@ -175,7 +176,7 @@ int agent_query(void *in, int inlen, void **out, int *outlen,
 
     psa = NULL;
 #ifndef NO_SECURITY
-    if (advapi_initialised || init_advapi()) {
+    if (got_advapi()) {
         /*
          * Make the file mapping we create for communication with
          * Pageant owned by the user SID rather than the default. This

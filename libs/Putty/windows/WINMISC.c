@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "putty.h"
+#define SECURITY_WIN32
 #include <security.h>
 #ifdef MPEXT
 #include <assert.h>
@@ -264,7 +265,7 @@ const char *win_strerror(int error)
         es->error = error;
         /* maximum size for FormatMessage is 64K */
         bufsize = 65535;
-        es->text = snewn(bufsize, char);
+        es->text = snewn(bufsize+1, char);
         if (!FormatMessage((FORMAT_MESSAGE_FROM_SYSTEM |
                             FORMAT_MESSAGE_IGNORE_INSERTS), NULL, error,
                            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),

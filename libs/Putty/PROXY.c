@@ -261,16 +261,18 @@ static void plug_proxy_sent (Plug p, int bufsize)
     plug_sent(ps->plug, bufsize);
 }
 
-static int plug_proxy_accepting (Plug p, OSSocket sock)
+static int plug_proxy_accepting(Plug p,
+                                accept_fn_t constructor, accept_ctx_t ctx)
 {
     Proxy_Plug pp = (Proxy_Plug) p;
     Proxy_Socket ps = pp->proxy_socket;
 
     if (ps->state != PROXY_STATE_ACTIVE) {
-	ps->accepting_sock = sock;
+	ps->accepting_constructor = constructor;
+	ps->accepting_ctx = ctx;
 	return ps->negotiate(ps, PROXY_CHANGE_ACCEPTING);
     }
-    return plug_accepting(ps->plug, sock);
+    return plug_accepting(ps->plug, constructor, ctx);
 }
 
 /*
@@ -625,7 +627,8 @@ int proxy_http_negotiate (Proxy_Socket p, int change)
 	 * what should we do? close the socket with an appropriate
 	 * error message?
 	 */
-	return plug_accepting(p->plug, p->accepting_sock);
+	return plug_accepting(p->plug,
+                              p->accepting_constructor, p->accepting_ctx);
     }
 
     if (change == PROXY_CHANGE_RECEIVE) {
@@ -827,7 +830,8 @@ int proxy_socks4_negotiate (Proxy_Socket p, int change)
 	 * what should we do? close the socket with an appropriate
 	 * error message?
 	 */
-	return plug_accepting(p->plug, p->accepting_sock);
+	return plug_accepting(p->plug,
+                              p->accepting_constructor, p->accepting_ctx);
     }
 
     if (change == PROXY_CHANGE_RECEIVE) {
@@ -966,7 +970,8 @@ int proxy_socks5_negotiate (Proxy_Socket p, int change)
 	 * what should we do? close the socket with an appropriate
 	 * error message?
 	 */
-	return plug_accepting(p->plug, p->accepting_sock);
+	return plug_accepting(p->plug,
+                              p->accepting_constructor, p->accepting_ctx);
     }
 
     if (change == PROXY_CHANGE_RECEIVE) {
@@ -1504,7 +1509,8 @@ int proxy_telnet_negotiate (Proxy_Socket p, int change)
 	 * what should we do? close the socket with an appropriate
 	 * error message?
 	 */
-	return plug_accepting(p->plug, p->accepting_sock);
+	return plug_accepting(p->plug,
+                              p->accepting_constructor, p->accepting_ctx);
     }
 
     if (change == PROXY_CHANGE_RECEIVE) {
