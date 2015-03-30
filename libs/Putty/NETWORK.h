@@ -39,8 +39,6 @@ struct socket_function_table {
     int (*write_oob) (Socket s, const char *data, int len);
     void (*write_eof) (Socket s);
     void (*flush) (Socket s);
-    void (*set_private_ptr) (Socket s, void *ptr);
-    void *(*get_private_ptr) (Socket s);
     void (*set_frozen) (Socket s, int is_frozen);
     /* ignored by tcp, but vital for ssl */
     const char *(*socket_error) (Socket s);
