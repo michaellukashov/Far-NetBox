@@ -57,7 +57,6 @@ struct Socket_tag {
     char *error;
     SOCKET s;
     Plug plug;
-    void *private_ptr;
     bufchain output_data;
     int connected;
     int writable;
@@ -875,8 +874,6 @@ static void sk_tcp_close(Socket s);
 static int sk_tcp_write(Socket s, const char *data, int len);
 static int sk_tcp_write_oob(Socket s, const char *data, int len);
 static void sk_tcp_write_eof(Socket s);
-static void sk_tcp_set_private_ptr(Socket s, void *ptr);
-static void *sk_tcp_get_private_ptr(Socket s);
 static void sk_tcp_set_frozen(Socket s, int is_frozen);
 static const char *sk_tcp_socket_error(Socket s);
 
@@ -886,7 +883,7 @@ extern char *do_select(Plug plug, SOCKET skt, int startup);
 extern char *do_select(SOCKET skt, int startup);
 #endif
 
-Socket sk_register(void *sock, Plug plug)
+static Socket sk_tcp_accept(accept_ctx_t ctx, Plug plug)
 {
     static const struct socket_function_table fn_table = {
 	sk_tcp_plug,
@@ -895,8 +892,6 @@ Socket sk_register(void *sock, Plug plug)
 	sk_tcp_write_oob,
 	sk_tcp_write_eof,
 	sk_tcp_flush,
-	sk_tcp_set_private_ptr,
-	sk_tcp_get_private_ptr,
 	sk_tcp_set_frozen,
 	sk_tcp_socket_error
     };
@@ -923,7 +918,7 @@ Socket sk_register(void *sock, Plug plug)
     ret->parent = ret->child = NULL;
     ret->addr = NULL;
 
-    ret->s = (SOCKET)sock;
+    ret->s = (SOCKET)ctx.p;
 
     if (ret->s == INVALID_SOCKET) {
 	err = p_WSAGetLastError();
@@ -1218,8 +1213,6 @@ Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
 	sk_tcp_write_oob,
 	sk_tcp_write_eof,
 	sk_tcp_flush,
-	sk_tcp_set_private_ptr,
-	sk_tcp_get_private_ptr,
 	sk_tcp_set_frozen,
 	sk_tcp_socket_error
     };
@@ -1278,8 +1271,6 @@ Socket sk_newlistener(char *srcaddr, int port, Plug plug, int local_host_only,
 	sk_tcp_write_oob,
 	sk_tcp_write_eof,
 	sk_tcp_flush,
-	sk_tcp_set_private_ptr,
-	sk_tcp_get_private_ptr,
 	sk_tcp_set_frozen,
 	sk_tcp_socket_error
     };
@@ -1849,29 +1840,13 @@ int select_result(WPARAM wParam, LPARAM lParam)
 #endif
 	    {
 		p_closesocket(t);      /* dodgy WinSock let nonlocal through */
-	    } else if (plug_accepting(s->plug, (void*)t)) {
+	    } else if (plug_accepting(s->plug, sk_tcp_accept, actx)) {
 		p_closesocket(t);      /* denied or error */
 	    }
 	}
     }
 
     return 1;
-}
-
-/*
- * Each socket abstraction contains a `void *' private field in
- * which the client can keep state.
- */
-static void sk_tcp_set_private_ptr(Socket sock, void *ptr)
-{
-    Actual_Socket s = (Actual_Socket) sock;
-    s->private_ptr = ptr;
-}
-
-static void *sk_tcp_get_private_ptr(Socket sock)
-{
-    Actual_Socket s = (Actual_Socket) sock;
-    return s->private_ptr;
 }
 
 /*

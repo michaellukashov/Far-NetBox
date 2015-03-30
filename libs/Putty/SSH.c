@@ -963,25 +963,6 @@ static void bomb_out(Ssh ssh, char *text)
 
 #define bombout(msg) bomb_out(ssh, dupprintf msg)
 
-/* Functions to leave bits out of the SSH packet log file. */
-
-static void dont_log_password(Ssh ssh, struct Packet *pkt, int blanktype)
-{
-    if (conf_get_int(ssh->conf, CONF_logomitpass))
-	pkt->logmode = blanktype;
-}
-
-static void dont_log_data(Ssh ssh, struct Packet *pkt, int blanktype)
-{
-    if (ssh->logomitdata)
-	pkt->logmode = blanktype;
-}
-
-static void end_log_omission(Ssh ssh, struct Packet *pkt)
-{
-    pkt->logmode = PKTLOG_EMIT;
-}
-
 /* Helper function for common bits of parsing ttymodes. */
 static void parse_ttymodes(Ssh ssh,
 			   void (*do_mode)(void *data, char *mode, char *val),
@@ -1184,9 +1165,6 @@ static struct Packet *ssh_new_packet(void)
 
     pkt->body = pkt->data = NULL;
     pkt->maxlen = 0;
-    pkt->logmode = PKTLOG_EMIT;
-    pkt->nblanks = 0;
-    pkt->blanks = NULL;
 
     return pkt;
 }
@@ -1970,16 +1948,6 @@ static struct Packet *construct_packet(Ssh ssh, int pkttype, va_list ap)
 	    bn = va_arg(ap, Bignum);
 	    ssh1_pkt_addmp(pkt, bn);
 	    break;
-	  /* Tokens for modifications to packet logging */
-	  case PKTT_PASSWORD:
-	    dont_log_password(ssh, pkt, PKTLOG_BLANK);
-	    break;
-	  case PKTT_DATA:
-	    dont_log_data(ssh, pkt, PKTLOG_OMIT);
-	    break;
-	  case PKTT_OTHER:
-	    end_log_omission(ssh, pkt);
-	    break;
 	}
     }
 
@@ -2060,15 +2028,6 @@ static void ssh_pkt_ensure(struct Packet *pkt, int length)
 }
 static void ssh_pkt_adddata(struct Packet *pkt, const void *data, int len)
 {
-    if (pkt->logmode != PKTLOG_EMIT) {
-	pkt->nblanks++;
-	pkt->blanks = sresize(pkt->blanks, pkt->nblanks, struct logblank_t);
-	assert(pkt->body);
-	pkt->blanks[pkt->nblanks-1].offset = pkt->length -
-					     (pkt->body - pkt->data);
-	pkt->blanks[pkt->nblanks-1].len = len;
-	pkt->blanks[pkt->nblanks-1].type = pkt->logmode;
-    }
     pkt->length += len;
     ssh_pkt_ensure(pkt, pkt->length);
     memcpy(pkt->data + pkt->length - len, data, len);

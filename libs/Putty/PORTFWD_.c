@@ -11,10 +11,10 @@ int is_pfwd(void * handle)
 int is_pfwd_listener(void * handle)
 {
   Plug fn = (Plug)handle;
-  return ((*fn)->accepting == pfd_accepting);
+  return ((*fn)->accepting == pfl_accepting);
 }
 
 void * get_pfwd_backend(void * handle)
 {
-  return ((struct PFwdPrivate*)handle)->backhandle;
+  return ((struct PortForwarding*)handle)->backhandle;
 }

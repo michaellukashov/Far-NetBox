@@ -339,37 +339,6 @@ struct X11Display *x11_setup_display(char *display, Conf *conf)
     }
 
     /*
-     * Invent the remote authorisation details.
-     */
-    if (authtype == X11_MIT) {
-	disp->remoteauthproto = X11_MIT;
-
-	/* MIT-MAGIC-COOKIE-1. Cookie size is 128 bits (16 bytes). */
-	disp->remoteauthdata = snewn(16, unsigned char);
-	for (i = 0; i < 16; i++)
-	    disp->remoteauthdata[i] = random_byte();
-	disp->remoteauthdatalen = 16;
-
-	disp->xdmseen = NULL;
-    } else {
-	assert(authtype == X11_XDM);
-	disp->remoteauthproto = X11_XDM;
-
-	/* XDM-AUTHORIZATION-1. Cookie size is 16 bytes; byte 8 is zero. */
-	disp->remoteauthdata = snewn(16, unsigned char);
-	for (i = 0; i < 16; i++)
-	    disp->remoteauthdata[i] = (i == 8 ? 0 : random_byte());
-	disp->remoteauthdatalen = 16;
-
-	disp->xdmseen = newtree234(xdmseen_cmp);
-    }
-    disp->remoteauthprotoname = dupstr(x11_authnames[disp->remoteauthproto]);
-    disp->remoteauthdatastring = snewn(disp->remoteauthdatalen * 2 + 1, char);
-    for (i = 0; i < disp->remoteauthdatalen; i++)
-	sprintf(disp->remoteauthdatastring + i*2, "%02x",
-		disp->remoteauthdata[i]);
-
-    /*
      * Fetch the local authorisation details.
      */
     disp->localauthproto = X11_NO_AUTH;
@@ -382,22 +351,11 @@ struct X11Display *x11_setup_display(char *display, Conf *conf)
 
 void x11_free_display(struct X11Display *disp)
 {
-    if (disp->xdmseen != NULL) {
-	struct XDMSeen *seen;
-	while ((seen = delpos234(disp->xdmseen, 0)) != NULL)
-	    sfree(seen);
-	freetree234(disp->xdmseen);
-    }
     sfree(disp->hostname);
     sfree(disp->unixsocketpath);
     if (disp->localauthdata)
 	smemclr(disp->localauthdata, disp->localauthdatalen);
     sfree(disp->localauthdata);
-    if (disp->remoteauthdata)
-	smemclr(disp->remoteauthdata, disp->remoteauthdatalen);
-    sfree(disp->remoteauthdata);
-    sfree(disp->remoteauthprotoname);
-    sfree(disp->remoteauthdatastring);
     sk_addr_free(disp->addr);
     sfree(disp);
 }
