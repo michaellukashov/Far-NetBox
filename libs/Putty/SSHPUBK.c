@@ -67,7 +67,7 @@ static int loadrsakey_main(FILE * fp, struct RSAKey *key, int pub_only,
     i += 4;
 
     /* Now the serious stuff. An ordinary SSH-1 public key. */
-    j = makekey(buf + i, len, key, NULL, 1);
+    j = makekey(buf + i, len - i, key, NULL, 1);
     if (j < 0)
 	goto end;		       /* overran */
     i += j;
@@ -867,8 +867,8 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
     if (public_blob)
 	sfree(public_blob);
     if (private_blob) {
-	smemclr(private_blob, private_blob_len);
-	sfree(private_blob);
+        smemclr(private_blob, private_blob_len);
+        sfree(private_blob);
     }
     if (errorstr)
 	*errorstr = error;

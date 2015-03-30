@@ -1457,7 +1457,6 @@ void request_callback_notifications(toplevel_callback_notify_fn_t notify,
 
 /* These macros exist in the Windows API, so the environment may
  * provide them. If not, define them in terms of the above. */
-#ifndef IS_HIGH_SURROGATE
 #define IS_HIGH_SURROGATE(wch) (((wch) >= HIGH_SURROGATE_START) && \
                                 ((wch) <= HIGH_SURROGATE_END))
 #define IS_LOW_SURROGATE(wch) (((wch) >= LOW_SURROGATE_START) && \

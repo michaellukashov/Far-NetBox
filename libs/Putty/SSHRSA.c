@@ -9,6 +9,7 @@
 
 #include "ssh.h"
 #include "misc.h"
+
 int makekey(unsigned char *data, int len, struct RSAKey *result,
 	    unsigned char **keystr, int order)
 {
@@ -263,6 +264,7 @@ static Bignum rsa_privkey_op(Bignum input, struct RSAKey *key)
 	    bitsleft--;
 	    bignum_set_bit(random, bits, v);
 	}
+        bn_restore_invariant(random);
 
 	/*
 	 * Now check that this number is strictly greater than

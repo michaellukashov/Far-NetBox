@@ -346,10 +346,10 @@ int random_byte(void)
 #else
     assert(random_active);
 
-		if (pool.poolpos >= POOLSIZE)
+    if (pool.poolpos >= POOLSIZE)
 	random_stir();
 
-		return pool.pool[pool.poolpos++];
+    return pool.pool[pool.poolpos++];
 #endif
 }
 
