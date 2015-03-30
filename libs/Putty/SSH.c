@@ -10715,7 +10715,7 @@ static const char *ssh_init(void *frontend_handle, void **backend_handle,
 
     p = connect_to_host(ssh, host, port, realhost, nodelay, keepalive);
     if (p != NULL) {
-        random_unref();
+        //random_unref();
 	return p;
     }
 
