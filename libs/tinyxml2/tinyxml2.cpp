@@ -2066,8 +2066,11 @@ void XMLPrinter::PrintString( const char* p, bool restricted )
                 // entity, and keep looking.
                 if ( flag[(unsigned char)(*q)] ) {
                     while ( p < q ) {
-                        Print( "%c", *p );
-                        ++p;
+                        const size_t delta = q - p;
+                        // %.*s accepts type int as "precision"
+                        const int toPrint = ( INT_MAX < delta ) ? INT_MAX : delta;
+                        Print( "%.*s", toPrint, p );
+                        p += toPrint;
                     }
                     for( int i=0; i<NUM_ENTITIES; ++i ) {
                         if ( entities[i].value == *q ) {
@@ -2203,9 +2206,7 @@ void XMLPrinter::PushText( const char* text, bool cdata )
 
     SealElementIfJustOpened();
     if ( cdata ) {
-        Print( "<![CDATA[" );
-        Print( "%s", text );
-        Print( "]]>" );
+        Print( "<![CDATA[%s]]>", text );
     }
     else {
         PrintString( text, true );
