@@ -211,13 +211,13 @@ private:
 	Has a small initial memory pool, so that low or no usage will not
 	cause a call to new/delete
 */
-template <class T, int INIT>
+template <class T, int INITIAL_SIZE>
 class DynArray
 {
 public:
     DynArray() {
         _mem = _pool;
-        _allocated = INIT;
+        _allocated = INITIAL_SIZE;
         _size = 0;
     }
 
@@ -312,7 +312,7 @@ private:
     }
 
     T*  _mem;
-    T   _pool[INIT];
+    T   _pool[INITIAL_SIZE];
     int _allocated;		// objects allocated
     int _size;			// number objects in use
 };
@@ -760,7 +760,7 @@ public:
     }
 
     XMLNode*		LastChild()								{
-        return const_cast<XMLNode*>(const_cast<const XMLNode*>(this)->LastChild() );
+        return _lastChild;
     }
 
     /** Get the last child element or optionally the last child
@@ -887,12 +887,11 @@ public:
     */
     virtual bool Accept( XMLVisitor* visitor ) const = 0;
 
-    // internal
-    virtual char* ParseDeep( char*, StrPair* );
-
 protected:
     XMLNode( XMLDocument* );
     virtual ~XMLNode();
+
+    virtual char* ParseDeep( char*, StrPair* );
 
     XMLDocument*	_document;
     XMLNode*		_parent;
@@ -950,13 +949,14 @@ public:
         return _isCData;
     }
 
-    char* ParseDeep( char*, StrPair* endTag );
     virtual XMLNode* ShallowClone( XMLDocument* document ) const;
     virtual bool ShallowEqual( const XMLNode* compare ) const;
 
 protected:
     XMLText( XMLDocument* doc )	: XMLNode( doc ), _isCData( false )	{}
     virtual ~XMLText()												{}
+
+    char* ParseDeep( char*, StrPair* endTag );
 
 private:
     bool _isCData;
@@ -980,13 +980,14 @@ public:
 
     virtual bool Accept( XMLVisitor* visitor ) const;
 
-    char* ParseDeep( char*, StrPair* endTag );
     virtual XMLNode* ShallowClone( XMLDocument* document ) const;
     virtual bool ShallowEqual( const XMLNode* compare ) const;
 
 protected:
     XMLComment( XMLDocument* doc );
     virtual ~XMLComment();
+
+    char* ParseDeep( char*, StrPair* endTag );
 
 private:
     XMLComment( const XMLComment& );	// not supported
@@ -1018,13 +1019,14 @@ public:
 
     virtual bool Accept( XMLVisitor* visitor ) const;
 
-    char* ParseDeep( char*, StrPair* endTag );
     virtual XMLNode* ShallowClone( XMLDocument* document ) const;
     virtual bool ShallowEqual( const XMLNode* compare ) const;
 
 protected:
     XMLDeclaration( XMLDocument* doc );
     virtual ~XMLDeclaration();
+
+    char* ParseDeep( char*, StrPair* endTag );
 
 private:
     XMLDeclaration( const XMLDeclaration& );	// not supported
@@ -1052,13 +1054,14 @@ public:
 
     virtual bool Accept( XMLVisitor* visitor ) const;
 
-    char* ParseDeep( char*, StrPair* endTag );
     virtual XMLNode* ShallowClone( XMLDocument* document ) const;
     virtual bool ShallowEqual( const XMLNode* compare ) const;
 
 protected:
     XMLUnknown( XMLDocument* doc );
     virtual ~XMLUnknown();
+
+    char* ParseDeep( char*, StrPair* endTag );
 
 private:
     XMLUnknown( const XMLUnknown& );	// not supported
@@ -1509,9 +1512,11 @@ public:
     int ClosingType() const {
         return _closingType;
     }
-    char* ParseDeep( char* p, StrPair* endTag );
     virtual XMLNode* ShallowClone( XMLDocument* document ) const;
     virtual bool ShallowEqual( const XMLNode* compare ) const;
+
+protected:
+    char* ParseDeep( char* p, StrPair* endTag );
 
 private:
     XMLElement( XMLDocument* doc );
