@@ -304,6 +304,12 @@ void TConfiguration::Export(const UnicodeString & /*AFileName*/)
 {
   Error(SNotImplemented, 3004);
   /*
+  // not to "append" the export to an existing file
+  if (FileExists(FileName))
+  {
+    DeleteFileChecked(FileName);
+  }
+
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   std::unique_ptr<THierarchicalStorage> ExportStorage(nullptr);
   ExportStorage = nullptr; // new TIniFileStorage(FileName);

@@ -697,7 +697,7 @@ TTerminal::TTerminal() :
   FCollectFileSystemUsage(false),
   FRememberedPasswordTried(false),
   FRememberedTunnelPasswordTried(false),
-  FIdle(0)
+  FNesting(0)
 {
 }
 
@@ -792,11 +792,14 @@ void TTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration)
 
 void TTerminal::Idle()
 {
-  // once we disconnect, do nothing, until reconnect handler
+  // Once we disconnect, do nothing, until reconnect handler
   // "receives the information"
-  if (GetActive())
+  // "receives the information".
+  // Never go idle when called from within ::ProcessGUI() call
+  // as we may recurse for good, timeouting eventually.
+  if (GetActive() && (FNesting == 0))
   {
-    TAutoNestingCounter IdleCounter(FIdle);
+    TAutoNestingCounter NestingCounter(FNesting);
 
     if (FConfiguration->GetActualLogProtocol() >= 1)
     {
@@ -1273,8 +1276,9 @@ void TTerminal::ProcessGUI()
   // Do not process GUI here, as we are called directly from a GUI loop and may
   // recurse for good.
   // Alternatively we may check for (FOperationProgress == nullptr)
-  if (FIdle == 0)
+  if (FNesting == 0)
   {
+    TAutoNestingCounter NestingCounter(FNesting);
     ::ProcessGUI();
   }
 }
