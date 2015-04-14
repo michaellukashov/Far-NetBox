@@ -2434,6 +2434,10 @@ void TSecureShell::CollectUsage()
   {
     Configuration->Usage->Inc(L"OpenedSessionsSSHApache");
   }
+  else if (ContainsText(FSessionInfo.SshImplementation, L"OpenVMS"))
+  {
+    Configuration->Usage->Inc(L"OpenedSessionsSSHOpenVMS");
+  }
   else
   {
     // Configuration->Usage->Inc(L"OpenedSessionsSSHOther");

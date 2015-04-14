@@ -12002,7 +12002,8 @@ private:
 #define StrToNeon(S) UTF8String(S).c_str()
 #define StrFromNeon(S) UnicodeString(UTF8String(S))
 #define AbsolutePathToNeon(P) PathEscape(StrToNeon(P)).c_str()
-#define PathToNeon(P) AbsolutePathToNeon(AbsolutePath(P, false))
+#define PathToNeonStatic(THIS, P) AbsolutePathToNeon((THIS)->AbsolutePath(P, false))
+#define PathToNeon(P) PathToNeonStatic(this, P)
 
 void NeonInitialize()
 {
