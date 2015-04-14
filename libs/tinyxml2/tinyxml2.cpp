@@ -1539,14 +1539,14 @@ char* XMLElement::ParseAttributes( char* p )
             prevAttribute = attrib;
         }
         // end of the tag
-        else if ( *p == '/' && *(p+1) == '>' ) {
-            _closingType = CLOSED;
-            return p+2;	// done; sealed element.
-        }
-        // end of the tag
         else if ( *p == '>' ) {
             ++p;
             break;
+        }
+        // end of the tag
+        else if ( *p == '/' && *(p+1) == '>' ) {
+            _closingType = CLOSED;
+            return p+2;	// done; sealed element.
         }
         else {
             _document->SetError( XML_ERROR_PARSING_ELEMENT, start, p );
@@ -1958,7 +1958,6 @@ void XMLDocument::PrintError() const
             TIXML_SNPRINTF( buf2, LEN, "%s", _errorStr2 );
         }
 
-        TIXMLASSERT( INT_MIN <= _errorID && _errorID <= INT_MAX );
         printf( "XMLDocument error id=%d '%s' str1=%s str2=%s\n",
                 static_cast<int>( _errorID ), ErrorName(), buf1, buf2 );
     }
