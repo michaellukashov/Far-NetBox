@@ -46,7 +46,8 @@ APR_DECLARE(apr_status_t) apr_file_pipe_timeout_set(apr_file_t *thepipe,
         return APR_ENOTIMPL;
     }
     if (timeout && !(thepipe->pOverlapped)) {
-        /* Cannot be nonzero if a pipe was opened blocking */
+        /* Cannot be nonzero if a pipe was opened blocking
+         */
         return APR_EINVAL;
     }
     thepipe->timeout = timeout;
@@ -128,6 +129,9 @@ APR_DECLARE(apr_status_t) apr_file_pipe_create_ex(apr_file_t **in,
     if (apr_os_level >= APR_WIN_NT) {
         /* Create the read end of the pipe */
         dwOpenMode = PIPE_ACCESS_INBOUND;
+#ifdef FILE_FLAG_FIRST_PIPE_INSTANCE
+        dwOpenMode |= FILE_FLAG_FIRST_PIPE_INSTANCE;
+#endif
         if (blocking == APR_WRITE_BLOCK /* READ_NONBLOCK */
                || blocking == APR_FULL_NONBLOCK) {
             dwOpenMode |= FILE_FLAG_OVERLAPPED;
@@ -148,6 +152,11 @@ APR_DECLARE(apr_status_t) apr_file_pipe_create_ex(apr_file_t **in,
                                           65536,        /* nInBufferSize,   */
                                           1,            /* nDefaultTimeOut, */
                                           &sa);
+        if ((*in)->filehand == INVALID_HANDLE_VALUE) {
+            apr_status_t rv = apr_get_os_error();
+            file_cleanup(*in);
+            return rv;
+        }
 
         /* Create the write end of the pipe */
         dwOpenMode = FILE_ATTRIBUTE_NORMAL;
@@ -166,6 +175,12 @@ APR_DECLARE(apr_status_t) apr_file_pipe_create_ex(apr_file_t **in,
                                       OPEN_EXISTING, /* dwCreationDisposition   */
                                       dwOpenMode,    /* Pipe attributes         */
                                       NULL);         /* handle to template file */
+        if ((*out)->filehand == INVALID_HANDLE_VALUE) {
+            apr_status_t rv = apr_get_os_error();
+            file_cleanup(*out);
+            file_cleanup(*in);
+            return rv;
+        }
     }
     else {
         /* Pipes on Win9* are blocking. Live with it. */
