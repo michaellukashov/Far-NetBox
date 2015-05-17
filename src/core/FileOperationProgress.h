@@ -140,7 +140,7 @@ protected:
 
 private:
   // when it was last time suspended (to calculate suspend time in Resume())
-  uintptr_t FSuspendTime;
+  uint64_t FSuspendTime;
   // when current file was started being transfered
   TDateTime FFileStartTime;
   intptr_t FFilesFinished;

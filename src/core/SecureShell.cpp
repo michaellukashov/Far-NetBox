@@ -1871,7 +1871,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     {
       // LogEvent("Looking for network events");
     }
-    uintptr_t TicksBefore = ::GetTickCount();
+	uint64_t TicksBefore = ::GetTickCount64();
     int HandleCount;
     // note that this returns all handles, not only the session-related handles
     HANDLE * Handles = handle_get_events(&HandleCount);
@@ -1961,11 +1961,11 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
     run_toplevel_callbacks();
 
-    uintptr_t TicksAfter = ::GetTickCount();
+	uint64_t TicksAfter = ::GetTickCount64();
     // ticks wraps once in 49.7 days
     if (TicksBefore < TicksAfter)
     {
-      uintptr_t Ticks = TicksAfter - TicksBefore;
+	  uint64_t Ticks = TicksAfter - TicksBefore;
       if (Ticks > MSec)
       {
         MSec = 0;

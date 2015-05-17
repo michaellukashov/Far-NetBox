@@ -1541,8 +1541,8 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
   const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
   bool & Continue, bool Collect)
 {
-  static uint32_t LastTicks;
-  uint32_t Ticks = ::GetTickCount();
+  static uint64_t LastTicks;
+  uint64_t Ticks = ::GetTickCount64();
   if ((LastTicks == 0) || (Ticks - LastTicks > 500))
   {
     LastTicks = Ticks;
@@ -3391,8 +3391,8 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
 void TWinSCPFileSystem::ShowOperationProgress(
   TFileOperationProgressType & ProgressData, bool First)
 {
-  static uint32_t LastTicks;
-  uint32_t Ticks = ::GetTickCount();
+  static uint64_t LastTicks;
+  uint64_t Ticks = ::GetTickCount64();
   short percents = static_cast<short>(ProgressData.OverallProgress());
   if (Ticks - LastTicks > 500 || First)
   {
@@ -3784,8 +3784,8 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
     // Whenever editor title is changed (and restored back), it is restored
     // to default FAR text, not to ours (see EE_SAVE). Hence we periodically
     // reset the title.
-    static uint32_t LastTicks = 0;
-    uint32_t Ticks = ::GetTickCount();
+    static uint64_t LastTicks = 0;
+    uint64_t Ticks = ::GetTickCount64();
     if ((LastTicks == 0) || (Ticks - LastTicks > 500))
     {
       LastTicks = Ticks;

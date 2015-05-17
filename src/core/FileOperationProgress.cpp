@@ -405,7 +405,7 @@ void TFileOperationProgressType::AddTransfered(int64_t ASize,
   if (AddToTotals)
   {
     TotalTransfered += ASize;
-    uint32_t Ticks = static_cast<uint32_t>(::GetTickCount());
+	uint64_t Ticks = ::GetTickCount64();
     if (FTicks.empty() ||
         (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
         ((Ticks - FTicks.back()) >= static_cast<uint32_t>(MSecsPerSec)))
@@ -479,7 +479,7 @@ uintptr_t TFileOperationProgressType::CPS() const
   }
   else
   {
-    uintptr_t Ticks = (Suspended ? FSuspendTime : ::GetTickCount());
+	uint64_t Ticks = (Suspended ? FSuspendTime : ::GetTickCount64());
     uintptr_t TimeSpan;
     if (Ticks < FTicks.front())
     {
