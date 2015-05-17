@@ -123,7 +123,7 @@
       <ObjectFileName>.\..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>.\..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>src;..\openssl\x86\inc32;..\expat\lib;..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\openssl\vs2015-x86\inc32;..\expat\lib;..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
@@ -156,7 +156,7 @@
       <ObjectFileName>.\..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>.\..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>src;..\openssl\x64\inc32;..\expat\lib;..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\openssl\vs2015-x64\inc32;..\expat\lib;..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
@@ -187,7 +187,7 @@
       <PrecompiledHeaderOutputFile>.\..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libneon.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>.\..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>.\..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>src;..\openssl\x86\inc32;..\expat\lib;..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\openssl\vs2015-x86\inc32;..\expat\lib;..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <IntrinsicFunctions>false</IntrinsicFunctions>
@@ -227,7 +227,7 @@
       <PrecompiledHeaderOutputFile>.\..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libneon.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>.\..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>.\..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>src;..\openssl\x64\inc32;..\expat\lib;..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;..\openssl\vs2015-x64\inc32;..\expat\lib;..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <IntrinsicFunctions>true</IntrinsicFunctions>
