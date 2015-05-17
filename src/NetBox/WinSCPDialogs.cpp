@@ -216,7 +216,7 @@ TTabButton * TTabbedDialog::GetTabButton(intptr_t Tab) const
 
   if (!Result)
   {
-    DEBUG_PRINTF(L"Tab = %d", Tab);
+    DEBUG_PRINTF("Tab = %d", Tab);
   }
   assert(Result != nullptr);
 

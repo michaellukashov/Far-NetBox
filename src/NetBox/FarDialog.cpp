@@ -431,7 +431,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
           catch (Exception & E)
           {
             Handled = true;
-            DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
+            DEBUG_PRINTF("before GetFarPlugin()->HandleException");
             GetFarPlugin()->HandleException(&E);
             Result = Item->FailItemProc(Msg, Param2);
           }
@@ -544,7 +544,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
+    DEBUG_PRINTF("before GetFarPlugin()->HandleException");
     GetFarPlugin()->HandleException(&E);
     if (!Handled)
     {

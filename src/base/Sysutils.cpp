@@ -664,7 +664,7 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
   }
   else
   {
-    DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
+    DEBUG_PRINTF("Unknown resource string id: %d\n", Id);
   }
   return Result;
 }

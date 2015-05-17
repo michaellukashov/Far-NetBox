@@ -11,6 +11,13 @@
 #include <Sysutils.hpp>
 #include <rtlconsts.h>
 
+#if (_MSC_VER >= 1900)
+
+extern "C" {
+	FILE* __iob_func = NULL;
+}
+#endif
+
 void Abort()
 {
   throw EAbort(L"");
