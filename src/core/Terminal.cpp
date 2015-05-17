@@ -1283,6 +1283,15 @@ void TTerminal::ProcessGUI()
   }
 }
 
+void TTerminal::Progress(TFileOperationProgressType * OperationProgress)
+{
+  if (FNesting == 0)
+  {
+    TAutoNestingCounter NestingCounter(FNesting);
+    OperationProgress->Progress();
+  }
+}
+
 void TTerminal::Reopen(intptr_t Params)
 {
   TFSProtocol OrigFSProtocol = GetSessionData()->GetFSProtocol();
@@ -3090,7 +3099,7 @@ bool TTerminal::FileExists(const UnicodeString & AFileName, TRemoteFile ** AFile
       {
         SetExceptionOnFail(false);
       };
-      ReadFile(AFileName, File);
+      ReadFile(core::UnixExcludeTrailingBackslash(AFileName), File);
     }
 
     if (AFile != nullptr)
@@ -5926,7 +5935,8 @@ static UnicodeString FormatCertificateData(const UnicodeString & Fingerprint, in
 }
 
 bool TTerminal::VerifyCertificate(
-  const UnicodeString & CertificateStorageKey, const UnicodeString & Fingerprint,
+  const UnicodeString & CertificateStorageKey, const UnicodeString & SiteKey,
+  const UnicodeString & Fingerprint,
   const UnicodeString & CertificateSubject, int Failures)
 {
   bool Result = false;
@@ -5938,9 +5948,9 @@ bool TTerminal::VerifyCertificate(
 
   if (Storage->OpenSubKey(CertificateStorageKey, false))
   {
-    if (Storage->ValueExists(GetSessionData()->GetSiteKey()))
+    if (Storage->ValueExists(SiteKey))
     {
-      UnicodeString CachedCertificateData = Storage->ReadString(GetSessionData()->GetSiteKey(), L"");
+      UnicodeString CachedCertificateData = Storage->ReadString(SiteKey, L"");
       if (CertificateData == CachedCertificateData)
       {
         LogEvent(FORMAT(L"Certificate for \"%s\" matches cached fingerprint and failures", CertificateSubject.c_str()));
@@ -5979,7 +5989,7 @@ bool TTerminal::VerifyCertificate(
 }
 
 void TTerminal::CacheCertificate(const UnicodeString & CertificateStorageKey,
-  const UnicodeString & Fingerprint, int Failures)
+  const UnicodeString & SiteKey, const UnicodeString & Fingerprint, int Failures)
 {
   UnicodeString CertificateData = FormatCertificateData(Fingerprint, Failures);
 
@@ -5988,7 +5998,7 @@ void TTerminal::CacheCertificate(const UnicodeString & CertificateStorageKey,
 
   if (Storage->OpenSubKey(CertificateStorageKey, true))
   {
-    Storage->WriteString(GetSessionData()->GetSiteKey(), CertificateData);
+    Storage->WriteString(SiteKey, CertificateData);
   }
 }
 

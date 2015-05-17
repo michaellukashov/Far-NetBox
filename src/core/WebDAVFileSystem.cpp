@@ -296,7 +296,7 @@ typedef struct list_func_baton_t
 #define AUTH_PARAM_NO_AUTH_CACHE AUTH_PARAM_PREFIX "no-auth-cache"
 // #define HASH_KEY_STRING ""
 
-#define MAX_REDIRECT_ATTEMPTS 3 // TODO:  Make configurable.
+#define MAX_REDIRECT_ATTEMPTS 5 // TODO:  Make configurable.
 
 // #define WEBDAV_ARRAY_IDX(ary,i,type) ((type)(ary)[i])
 #define WEBDAV_NO_ERROR 0

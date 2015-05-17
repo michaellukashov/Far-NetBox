@@ -485,6 +485,7 @@ protected:
   virtual void DisplayBanner(const UnicodeString & Banner);
   virtual void Closed();
   virtual void ProcessGUI();
+  void Progress(TFileOperationProgressType * OperationProgress);
   virtual void HandleExtendedException(Exception * E);
   bool IsListenerFree(uintptr_t PortNumber) const;
   void DoProgress(TFileOperationProgressType & ProgressData);
@@ -506,10 +507,11 @@ protected:
   virtual TTerminal * GetPasswordSource() { return this; }
   void DoEndTransaction(bool Inform);
   bool VerifyCertificate(
-    const UnicodeString & CertificateStorageKey, const UnicodeString & Fingerprint,
+    const UnicodeString & CertificateStorageKey, const UnicodeString & SiteKey,
+    const UnicodeString & Fingerprint,
     const UnicodeString & CertificateSubject, int Failures);
   void CacheCertificate(const UnicodeString & CertificateStorageKey,
-    const UnicodeString & Fingerprint, int Failures);
+    const UnicodeString & SiteKey, const UnicodeString & Fingerprint, int Failures);
   void CollectTlsUsage(const UnicodeString & TlsVersionStr);
 
   TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
@@ -754,6 +756,7 @@ protected:
   virtual void __fastcall DisplayBanner(const UnicodeString & Banner);
   virtual void __fastcall Closed();
   virtual void __fastcall ProcessGUI();
+  void __fastcall Progress(TFileOperationProgressType * OperationProgress);
   virtual void __fastcall HandleExtendedException(Exception * E);
   bool __fastcall IsListenerFree(unsigned int PortNumber);
   void __fastcall DoProgress(TFileOperationProgressType & ProgressData);
@@ -773,10 +776,11 @@ protected:
   virtual TTerminal * __fastcall GetPasswordSource();
   void __fastcall DoEndTransaction(bool Inform);
   bool  __fastcall VerifyCertificate(
-    const UnicodeString & CertificateStorageKey, const UnicodeString & Fingerprint,
+    const UnicodeString & CertificateStorageKey, const UnicodeString & SiteKey,
+    const UnicodeString & Fingerprint,
     const UnicodeString & CertificateSubject, int Failures);
   void __fastcall CacheCertificate(const UnicodeString & CertificateStorageKey,
-    const UnicodeString & Fingerprint, int Failures);
+    const UnicodeString & SiteKey, const UnicodeString & Fingerprint, int Failures);
   void __fastcall CollectTlsUsage(const UnicodeString & TlsVersionStr);
 
   __property TFileOperationProgressType * OperationProgress = { read=FOperationProgress };

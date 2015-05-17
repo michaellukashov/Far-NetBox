@@ -1620,7 +1620,7 @@ protected:
     // but hanging the application for a long time waiting for responses
     // (common is that the progress window would not even manage to draw itself,
     // showing that upload finished, before the application "hangs")
-    OperationProgress->Progress();
+    FFileSystem->Progress(OperationProgress);
   }
 
   virtual bool ReceivePacketAsynchronously()
@@ -2283,6 +2283,11 @@ uint32_t TSFTPFileSystem::DownloadBlockSize(
     Result = FSupport->MaxReadSize;
   }
   return Result;
+}
+
+void TSFTPFileSystem::Progress(TFileOperationProgressType * OperationProgress)
+{
+  FTerminal->Progress(OperationProgress);
 }
 
 void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)

@@ -201,6 +201,8 @@ private:
   UnicodeString FUserName;
   UnicodeString FPassword;
   UnicodeString FTlsVersionStr;
+  UnicodeString FHostName;
+  int FPortNumber;
   enum TIgnoreAuthenticationFailure
   {
     iafNo,

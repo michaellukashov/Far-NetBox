@@ -206,6 +206,7 @@ protected:
   uint32_t DownloadBlockSize(
     TFileOperationProgressType * OperationProgress);
   intptr_t PacketLength(uint8_t * LenBuf, intptr_t ExpectedType);
+  void Progress(TFileOperationProgressType * OperationProgress);
 
 private:
   const TSessionData * GetSessionData() const;
