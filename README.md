@@ -20,7 +20,7 @@ How to build from source
 To build plugin from source, you will need:
 
 
-  * Visual Studio 2010  
+  * Visual Studio 2010 SP1   
   * Microsoft Platform SDK, available for download at [http://www.microsoft.com/msdownload/platformsdk/sdkupdate/](http://www.microsoft.com/msdownload/platformsdk/sdkupdate/).  
   * Perl 5 (to compile openssl), available at [http://www.activestate.com/ActivePerl/](http://www.activestate.com/ActivePerl/)  
   * UnxUtils [http://unxutils.sourceforge.net/](http://unxutils.sourceforge.net/)  
