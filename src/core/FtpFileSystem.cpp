@@ -2427,6 +2427,8 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
       // Does not support MLST/MLSD, but supports MDTM at least
       !FFileZillaIntf->UsingMlsd() && SupportsReadingFile())
   {
+    FTerminal->LogEvent(L"Detecting timezone difference...");
+
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
       TRemoteFile * File = FileList->GetFile(Index);
@@ -2451,6 +2453,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
           {
             throw;
           }
+          FTerminal->LogEvent(FORMAT(L"Failed to retrieve file %s attributes to detect timezone difference", File->GetFullFileName().c_str()));
           break;
         }
 
@@ -2472,6 +2475,11 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
 
         break;
       }
+    }
+
+    if (FDetectTimeDifference)
+    {
+      FTerminal->LogEvent(L"Found no file to use for detecting timezone difference");
     }
   }
 }
@@ -2558,8 +2566,18 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
   TRemoteFile *& AFile)
 {
   UnicodeString FileName = GetAbsolutePath(AFileName, false);
-  UnicodeString FileNameOnly = core::UnixExtractFileName(FileName);
-  UnicodeString FilePath = core::UnixExtractFilePath(FileName);
+  UnicodeString FileNameOnly; // = core::UnixExtractFileName(FileName);
+  UnicodeString FilePath; // = core::UnixExtractFilePath(FileName);
+  if (core::IsUnixRootPath(FileName))
+  {
+    FileNameOnly = FileName;
+    FilePath = FileName;
+  }
+  else
+  {
+    FileNameOnly = core::UnixExtractFileName(FileName);
+    FilePath = core::UnixExtractFilePath(FileName);
+  }
   // end-user has right to expect that client current directory is really
   // current directory for the server
   // EnsureLocation();
@@ -4198,9 +4216,10 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       RequestResult = 1;
     }
 
+    UnicodeString SiteKey = FTerminal->GetSessionData()->GetSiteKey();
     if (RequestResult == 0)
     {
-      if (FTerminal->VerifyCertificate(FtpsCertificateStorageKey,
+      if (FTerminal->VerifyCertificate(FtpsCertificateStorageKey, SiteKey,
             FSessionInfo.CertificateFingerprint, CertificateSubject, Data.VerificationResult))
       {
         RequestResult = 1;
@@ -4252,7 +4271,8 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       if (RequestResult == 2)
       {
         FTerminal->CacheCertificate(
-          FtpsCertificateStorageKey, FSessionInfo.CertificateFingerprint, Data.VerificationResult);
+          FtpsCertificateStorageKey, SiteKey,
+          FSessionInfo.CertificateFingerprint, Data.VerificationResult);
       }
     }
 

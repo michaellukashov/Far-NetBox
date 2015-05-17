@@ -513,7 +513,7 @@ UnicodeString KeyTypeName(TKeyType KeyType)
 int64_t ParseSize(const UnicodeString & SizeStr)
 {
   AnsiString AnsiSizeStr = AnsiString(SizeStr);
-  return parse_blocksize(AnsiSizeStr.c_str());
+  return parse_blocksize64(AnsiSizeStr.c_str());
 }
 
 bool HasGSSAPI(const UnicodeString & CustomPath)

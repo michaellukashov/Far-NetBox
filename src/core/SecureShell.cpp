@@ -539,21 +539,6 @@ bool TSecureShell::TryFtp()
   return Result;
 }
 
-UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uintptr_t CodePage) const
-{
-  UnicodeString Result;
-  if (GetUtfStrings())
-  {
-    Result = UnicodeString(UTF8String(Input.c_str()));
-  }
-  else
-  {
-//    Result = UnicodeString(AnsiString(Input.c_str()));
-    Result = ::MB2W(Input.c_str(), static_cast<UINT>(CodePage));
-  }
-  return Result;
-}
-
 void TSecureShell::Init()
 {
   try
@@ -1136,6 +1121,21 @@ UnicodeString TSecureShell::ReceiveLine()
 //  UnicodeString Result = ::TrimRight(::MB2W(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber()));
   UnicodeString Result = ConvertInput(Line, FSessionData->GetCodePageAsNumber());
   CaptureOutput(llOutput, Result);
+  return Result;
+}
+
+UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uintptr_t CodePage) const
+{
+  UnicodeString Result;
+  if (GetUtfStrings())
+  {
+    Result = UnicodeString(UTF8String(Input.c_str()));
+  }
+  else
+  {
+//    Result = UnicodeString(AnsiString(Input.c_str()));
+    Result = ::MB2W(Input.c_str(), static_cast<UINT>(CodePage));
+  }
   return Result;
 }
 
