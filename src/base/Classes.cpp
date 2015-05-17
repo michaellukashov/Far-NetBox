@@ -11,6 +11,13 @@
 #include <Sysutils.hpp>
 #include <rtlconsts.h>
 
+#if (_MSC_VER >= 1900)
+
+extern "C" {
+	FILE* __iob_func = NULL;
+}
+#endif
+
 void Abort()
 {
   throw EAbort(L"");
@@ -1207,7 +1214,7 @@ int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
   TDateTime Result;
   Result = floor(MilliSecondSpan(ANow, AThen));
-  return Result;
+  return static_cast<int64_t>(Result);
 }
 
 int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen)

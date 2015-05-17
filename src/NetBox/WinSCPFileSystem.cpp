@@ -770,7 +770,7 @@ bool TWinSCPFileSystem::ProcessEventEx(intptr_t Event, void * Param)
     }
     else if ((Event == FE_GOTFOCUS) || (Event == FE_KILLFOCUS))
     {
-      DEBUG_PRINTF(L"Event = %d, Plugin = %p, Param = %p", Event, this, Param);
+      DEBUG_PRINTF("Event = %d, Plugin = %p, Param = %p", Event, this, Param);
       Result = true;
     }
     else if (Event == FE_REDRAW)
@@ -1665,7 +1665,7 @@ void TWinSCPFileSystem::DoSynchronize(
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleException");
+    DEBUG_PRINTF("before HandleException");
     HandleException(&E);
     throw;
   }
@@ -1992,7 +1992,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & APath,
       {
         Close = true;
       }
-      DEBUG_PRINTF(L"before HandleException");
+      DEBUG_PRINTF("before HandleException");
       HandleException(&E);
     }
   }

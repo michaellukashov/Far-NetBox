@@ -3187,7 +3187,7 @@ bool TTerminal::ProcessFiles(const TStrings * AFileList,
           }
           catch (ESkipFile & E)
           {
-            DEBUG_PRINTF(L"before HandleException");
+            DEBUG_PRINTF("before HandleException");
             TSuspendFileOperationProgress Suspend(OperationProgress);
             if (!HandleException(&E))
             {

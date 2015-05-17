@@ -3080,7 +3080,7 @@ void TSFTPFileSystem::DoStartup()
         }
         catch (Exception & E)
         {
-          DEBUG_PRINTF(L"before FTerminal->HandleException");
+          DEBUG_PRINTF("before FTerminal->HandleException");
           FFixedPaths->Clear();
           FTerminal->LogEvent(FORMAT(L"Failed to decode %s extension",
             SFTP_EXT_FSROOTS));
@@ -4273,7 +4273,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
       }
       catch (ESkipFile & E)
       {
-        DEBUG_PRINTF(L"before FTerminal->HandleException");
+        DEBUG_PRINTF("before FTerminal->HandleException");
         TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
         {
