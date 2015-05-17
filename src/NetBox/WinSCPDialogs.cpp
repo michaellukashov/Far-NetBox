@@ -8630,7 +8630,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
 
   bool BlinkHide = QueueItemNeedsFrequentRefresh(QueueItem) &&
     !QueueItem->GetProcessingUserAction() &&
-    ((::GetTickCount64() % 2000) >= 1000);
+    ((::GetTickCount() % 2000) >= 1000);
 
   UnicodeString Operation;
   UnicodeString Direction;
