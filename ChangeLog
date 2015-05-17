@@ -1,7 +1,7 @@
-NetBox 2.1.42.376 01.05.2015
+NetBox 2.1.42.378 17.05.2015
 --------------------
+  * Update WinSCP sources to 5.7.3
   * Update apr sources to 1.5.2
-  * Update WinSCP sources to 5.7.2
 
 NetBox 2.1.41.373 28.03.2015
 --------------------
