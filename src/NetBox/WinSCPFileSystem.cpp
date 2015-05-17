@@ -1283,7 +1283,7 @@ void TWinSCPFileSystem::ApplyCommand()
               if (FileListCommand)
               {
                 UnicodeString LocalFile;
-                UnicodeString FileList = core::MakeFileList(RemoteFileList.get());
+                UnicodeString FileList2 = core::MakeFileList(RemoteFileList.get());
 
                 if (LocalFileCommand)
                 {
@@ -1293,7 +1293,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
                 TCustomCommandData Data2(FTerminal);
                 TLocalCustomCommand CustomCommand(Data2,
-                  GetTerminal()->GetCurrDirectory(), L"", LocalFile, FileList);
+                  GetTerminal()->GetCurrDirectory(), L"", LocalFile, FileList2);
                 ExecuteShellAndWait(GetWinSCPPlugin()->GetHandle(), CustomCommand.Complete(Command, true),
                   TProcessMessagesEvent());
               }
