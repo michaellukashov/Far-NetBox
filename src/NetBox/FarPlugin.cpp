@@ -1453,7 +1453,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
 {
   assert(FSavedTitles->GetCount() > 0);
   UnicodeString Title = FSavedTitles->GetString(FSavedTitles->GetCount() - 1);
-  TObject * Object = FSavedTitles->GetObj(FSavedTitles->GetCount()-1);
+  TObject * Object = FSavedTitles->GetObj(FSavedTitles->GetCount() - 1);
   TConsoleTitleParam * Param = NB_STATIC_DOWNCAST(TConsoleTitleParam, Object);
   if (Param->Own)
   {

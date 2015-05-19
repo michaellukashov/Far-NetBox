@@ -409,7 +409,7 @@ UnicodeString TCopyParamType::ChangeFileName(const UnicodeString & AFileName,
       break;
     case ncFirstUpperCase:
       Result = Result.SubString(1, 1).UpperCase() +
-        Result.SubString(2, Result.Length()-1).LowerCase();
+        Result.SubString(2, Result.Length() - 1).LowerCase();
       break;
     case ncLowerCaseShort:
       if ((Result.Length() <= 12) && (Result.Pos(L".") <= 9) &&
