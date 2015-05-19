@@ -4014,7 +4014,6 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
     {
       Queue.DisposeSafe();
     };
-    static intptr_t CalculateFilesChecksumQueueLen = 5;
     if (Queue.Init(CalculateFilesChecksumQueueLen, Alg, AFileList))
     {
       TSFTPPacket Packet(FCodePage);
