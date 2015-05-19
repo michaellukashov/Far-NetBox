@@ -960,9 +960,9 @@ void TFarDialogContainer::Remove(TFarDialogItem * Item)
   }
 }
 
-void TFarDialogContainer::SetPosition(intptr_t Index, intptr_t Value)
+void TFarDialogContainer::SetPosition(intptr_t AIndex, intptr_t Value)
 {
-  intptr_t & Position = Index ? FTop : FLeft;
+  intptr_t & Position = AIndex ? FTop : FLeft;
   if (Position != Value)
   {
     Position = Value;
