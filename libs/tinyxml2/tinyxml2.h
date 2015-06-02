@@ -149,7 +149,7 @@ public:
     enum {
         NEEDS_ENTITY_PROCESSING			= 0x01,
         NEEDS_NEWLINE_NORMALIZATION		= 0x02,
-        COLLAPSE_WHITESPACE	                = 0x04,
+        NEEDS_WHITESPACE_COLLAPSING     = 0x04,
 
         TEXT_ELEMENT		            	= NEEDS_ENTITY_PROCESSING | NEEDS_NEWLINE_NORMALIZATION,
         TEXT_ELEMENT_LEAVE_ENTITIES		= NEEDS_NEWLINE_NORMALIZATION,
@@ -708,7 +708,7 @@ public:
 
     /** The meaning of 'value' changes for the specific type.
     	@verbatim
-    	Document:	empty
+    	Document:	empty (NULL is returned, not an empty string)
     	Element:	name of the element
     	Comment:	the comment text
     	Unknown:	the tag contents
