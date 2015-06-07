@@ -631,7 +631,8 @@ static FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * Session
   return Result;
 }
 
-const wchar_t *LogLineMarks = L"<>!.*";
+const wchar_t * LogLineMarks = L"<>!.*";
+
 TSessionLog::TSessionLog(TSessionUI * UI, TSessionData * SessionData,
   TConfiguration * Configuration) :
   TStringList(),

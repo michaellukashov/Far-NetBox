@@ -27,7 +27,7 @@ TClassInfo::~TClassInfo()
   }
   else
   {
-    TClassInfo *info = sm_first;
+    TClassInfo * info = sm_first;
     while (info)
     {
       if (info->m_next == this)

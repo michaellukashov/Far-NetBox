@@ -16,7 +16,7 @@ const int platform_uses_x11_unix_by_default = TRUE;
 CRITICAL_SECTION putty_section;
 bool SaveRandomSeed;
 char appname_[50];
-const char *const appname = appname_;
+const char * const appname = appname_;
 
 extern "C"
 {

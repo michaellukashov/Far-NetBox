@@ -31,7 +31,7 @@ class TConfiguration : public TObject
 NB_DECLARE_CLASS(TConfiguration)
 public:
   UnicodeString GetOSVersionStr() const;
-  TVSFixedFileInfo *GetFixedApplicationInfo() const;
+  TVSFixedFileInfo * GetFixedApplicationInfo() const;
   void * GetApplicationInfo() const;
   virtual UnicodeString GetVersionStr() const;
   virtual UnicodeString GetVersion() const;
