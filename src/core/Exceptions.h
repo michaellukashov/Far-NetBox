@@ -41,9 +41,15 @@ public:
   explicit ExtException(const UnicodeString & Msg, int AHelpContext) : Exception(Msg, AHelpContext), FMoreMessages(nullptr) {}
 
   ExtException(const ExtException & E) : Exception(L""), FMoreMessages(nullptr)
-  { AddMoreMessages(&E); }
+  {
+    AddMoreMessages(&E);
+  }
   ExtException & operator =(const ExtException &rhs)
-  { Message = rhs.Message; AddMoreMessages(&rhs); return *this; }
+  {
+    Message = rhs.Message;
+    AddMoreMessages(&rhs);
+    return *this;
+  }
 
   static ExtException * CloneFrom(const Exception* E);
 

@@ -415,7 +415,8 @@ UTF8String::UTF8String(const char * Str, intptr_t Size)
 
 UTF8String &UTF8String::Delete(intptr_t Index, intptr_t Count)
 {
-  Data.erase(Index - 1, Count); return *this;
+  Data.erase(Index - 1, Count);
+  return *this;
 }
 
 intptr_t UTF8String::Pos(char Ch) const
