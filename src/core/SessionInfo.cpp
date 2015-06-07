@@ -327,7 +327,9 @@ protected:
       case laStat: return L"stat";
       case laChecksum: return L"checksum";
       case laCwd: return L"cwd";
-      default: FAIL; return L"";
+      default:
+        FAIL;
+        return L"";
     }
   }
 

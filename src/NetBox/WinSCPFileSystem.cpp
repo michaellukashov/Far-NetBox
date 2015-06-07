@@ -119,7 +119,9 @@ UnicodeString TRemoteFilePanelItem::GetCustomColumnData(size_t Column)
     case 1: return FRemoteFile->GetRightsStr();
     case 2: return FRemoteFile->GetRights()->GetOctal();
     case 3: return FRemoteFile->GetLinkTo();
-    default: assert(false); return UnicodeString();
+    default:
+      FAIL;
+      return UnicodeString();
   }
 }
 

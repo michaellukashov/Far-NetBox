@@ -9,10 +9,15 @@ char * EOLToStr(TEOLType EOLType)
 {
   switch (EOLType)
   {
-    case eolLF: return "\n";
-    case eolCRLF: return "\r\n";
-    case eolCR: return "\r";
-    default: FAIL; return "";
+    case eolLF:
+      return "\n";
+    case eolCRLF:
+      return "\r\n";
+    case eolCR:
+      return "\r";
+    default:
+      FAIL;
+      return "";
   }
 }
 
