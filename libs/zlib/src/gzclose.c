@@ -3,14 +3,14 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
+#ifdef WITH_GZFILEOP
+
 #include "gzguts.h"
 
 /* gzclose() is in a separate file so that it is linked in only if it is used.
    That way the other gzclose functions can be used instead to avoid linking in
    unneeded compression or decompression routines. */
-int ZEXPORT gzclose(file)
-    gzFile file;
-{
+int ZEXPORT gzclose(gzFile file) {
 #ifndef NO_GZCOMPRESS
     gz_statep state;
 
@@ -23,3 +23,5 @@ int ZEXPORT gzclose(file)
     return gzclose_r(file);
 #endif
 }
+
+#endif
