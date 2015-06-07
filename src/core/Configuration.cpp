@@ -827,7 +827,7 @@ UnicodeString TConfiguration::GetVersionStr() const
     int Build = LOWORD(Info->dwFileVersionLS);
     if (Build > 0)
     {
-      BuildStr += L" " + IntToStr(Build);
+      BuildStr += L" " + ::IntToStr(Build);
     }
 
 //    #ifndef BUILD_OFFICIAL

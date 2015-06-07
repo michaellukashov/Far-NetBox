@@ -743,7 +743,7 @@ UnicodeString SetSpeedLimit(uintptr_t Limit)
   }
   else
   {
-    Result = IntToStr(Limit / 1024);
+    Result = ::IntToStr(Limit / 1024);
   }
   return Result;
 }

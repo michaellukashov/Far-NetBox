@@ -263,7 +263,7 @@ public:
 
   void ExitCode(int ExitCode)
   {
-    Parameter(L"exitcode", IntToStr(ExitCode));
+    Parameter(L"exitcode", ::IntToStr(ExitCode));
   }
 
   void Checksum(const UnicodeString & Alg, const UnicodeString & Checksum)
