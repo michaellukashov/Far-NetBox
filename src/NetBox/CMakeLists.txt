@@ -562,6 +562,7 @@ add_library(zlib STATIC
   ${LIBS_ROOT}/zlib/src/trees.c
 #  ${LIBS_ROOT}/zlib/src/uncompr.c
   ${LIBS_ROOT}/zlib/src/zutil.c
+  ${LIBS_ROOT}/zlib/src/match.c
 )
 
 set_target_properties(zlib
