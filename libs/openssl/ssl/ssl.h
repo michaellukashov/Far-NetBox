@@ -1544,6 +1544,7 @@ extern "C" {
 # define SSL_ST_BEFORE                   0x4000
 # define SSL_ST_OK                       0x03
 # define SSL_ST_RENEGOTIATE              (0x04|SSL_ST_INIT)
+# define SSL_ST_ERR                      0x05
 
 # define SSL_CB_LOOP                     0x01
 # define SSL_CB_EXIT                     0x02
@@ -2303,6 +2304,7 @@ void ERR_load_SSL_strings(void);
 # define SSL_F_SSL3_CHANGE_CIPHER_STATE                   129
 # define SSL_F_SSL3_CHECK_CERT_AND_ALGORITHM              130
 # define SSL_F_SSL3_CHECK_CLIENT_HELLO                    304
+# define SSL_F_SSL3_CHECK_FINISHED                        339
 # define SSL_F_SSL3_CLIENT_HELLO                          131
 # define SSL_F_SSL3_CONNECT                               132
 # define SSL_F_SSL3_CTRL                                  213
@@ -2408,6 +2410,7 @@ void ERR_load_SSL_strings(void);
 # define SSL_F_SSL_READ                                   223
 # define SSL_F_SSL_RSA_PRIVATE_DECRYPT                    187
 # define SSL_F_SSL_RSA_PUBLIC_ENCRYPT                     188
+# define SSL_F_SSL_SESSION_DUP                            348
 # define SSL_F_SSL_SESSION_NEW                            189
 # define SSL_F_SSL_SESSION_PRINT_FP                       190
 # define SSL_F_SSL_SESSION_SET1_ID_CONTEXT                312
@@ -2522,6 +2525,7 @@ void ERR_load_SSL_strings(void);
 # define SSL_R_DATA_LENGTH_TOO_LONG                       146
 # define SSL_R_DECRYPTION_FAILED                          147
 # define SSL_R_DECRYPTION_FAILED_OR_BAD_RECORD_MAC        281
+# define SSL_R_DH_KEY_TOO_SMALL                           372
 # define SSL_R_DH_PUBLIC_VALUE_LENGTH_IS_WRONG            148
 # define SSL_R_DIGEST_CHECK_FAILED                        149
 # define SSL_R_DTLS_MESSAGE_TOO_BIG                       334
@@ -2755,6 +2759,46 @@ void ERR_load_SSL_strings(void);
 # define SSL_R_WRONG_VERSION_NUMBER                       267
 # define SSL_R_X509_LIB                                   268
 # define SSL_R_X509_VERIFICATION_SETUP_PROBLEMS           269
+
+#if 0
+
+#define SSL_TRACE(s, str) \
+	{ \
+	void (*ssl_trace_cb)(const SSL *ssl,int type,int val)=NULL; \
+	if ((s)->info_callback != NULL) \
+		ssl_trace_cb=(s)->info_callback; \
+	else if ((s)->ctx->info_callback != NULL) \
+		ssl_trace_cb=(s)->ctx->info_callback; \
+	if (ssl_trace_cb != NULL) \
+		{ \
+		char* ssl_trace_buf = CRYPTO_malloc((strlen(__FILE__) + strlen(__FUNC__) + strlen(str) + 100), __FILE__, __LINE__); \
+		sprintf(ssl_trace_buf, "[%s:%s:%d] %s", __FILE__, __FUNC__, __LINE__, str); \
+		ssl_trace_cb((s),SSL_CB_LOOP,(int)ssl_trace_buf); \
+		} \
+	}
+
+#define SSL_TRACE_BYTES(s, data, len, prefix) \
+	{ \
+	if (((s)->info_callback != NULL) || ((s)->ctx->info_callback != NULL)) \
+		{ \
+		char* ssl_trace_bytes_buf = OPENSSL_malloc(strlen(prefix) + ((len)*3) + 100); \
+		int ssl_trace_i; \
+		strcpy(ssl_trace_bytes_buf, (prefix)); \
+		for (ssl_trace_i = 0; ssl_trace_i < (len); ssl_trace_i++) \
+			{ \
+			sprintf(ssl_trace_bytes_buf + strlen(ssl_trace_bytes_buf), "%2.2x ", (unsigned char)((data)[ssl_trace_i])); \
+			} \
+		SSL_TRACE((s),ssl_trace_bytes_buf); \
+		OPENSSL_free(ssl_trace_bytes_buf); \
+		} \
+	}
+
+#else
+
+#define SSL_TRACE(s, str)
+#define SSL_TRACE_BYTES(s, data, len, prefix)
+
+#endif
 
 #ifdef  __cplusplus
 }
