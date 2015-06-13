@@ -209,7 +209,7 @@
 "Normal"
 "&User name:"
 "&Password:"
-"Private &key file:"
+"Private &key file (in .ppk format):"
 " Protocol "
 "&File protocol: "
 "SCP"
