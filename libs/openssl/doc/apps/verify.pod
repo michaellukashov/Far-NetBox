@@ -12,6 +12,9 @@ B<openssl> B<verify>
 [B<-purpose purpose>]
 [B<-policy arg>]
 [B<-ignore_critical>]
+[B<-attime timestamp>]
+[B<-check_ss_sig>]
+[B<-crlfile file>]
 [B<-crl_check>]
 [B<-crl_check_all>]
 [B<-policy_check>]
@@ -26,7 +29,6 @@ B<openssl> B<verify>
 [B<-untrusted file>]
 [B<-help>]
 [B<-issuer_checks>]
-[B<-attime timestamp>]
 [B<-verbose>]
 [B<->]
 [certificates]
@@ -51,6 +53,26 @@ create symbolic links to a directory of certificates.
 =item B<-CAfile file>
 A file of trusted certificates. The file should contain multiple certificates
 in PEM format concatenated together.
+
+=item B<-attime timestamp>
+
+Perform validation checks using time specified by B<timestamp> and not
+current system time. B<timestamp> is the number of seconds since
+01.01.1970 (UNIX time).
+
+=item B<-check_ss_sig>
+
+Verify the signature on the self-signed root CA. This is disabled by default
+because it doesn't add any security.
+
+=item B<-crlfile file>
+
+File containing one or more CRL's (in PEM format) to load.
+
+=item B<-crl_check>
+
+Checks end entity certificate validity by attempting to look up a valid CRL.
+If a valid CRL cannot be found an error occurs.
 
 =item B<-untrusted file>
 
@@ -80,12 +102,6 @@ current certificate. This shows why each candidate issuer certificate was
 rejected. The presence of rejection messages does not itself imply that
 anything is wrong; during the normal verification process, several
 rejections may take place.
-
-=item B<-attime timestamp>
-
-Perform validation checks using time specified by B<timestamp> and not
-current system time. B<timestamp> is the number of seconds since
-01.01.1970 (UNIX time).
 
 =item B<-policy arg>
 
@@ -420,6 +436,6 @@ L<x509(1)|x509(1)>
 
 =head1 HISTORY
 
-The -no_alt_chains options was first added to OpenSSL 1.0.1n and 1.0.2b.
+The -no_alt_chains options was first added to OpenSSL 1.0.2b.
 
 =cut
