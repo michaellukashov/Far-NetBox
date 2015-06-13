@@ -286,7 +286,7 @@ static void random_timer(void *ctx, unsigned long now)
 		}
 }
 
-void __cdecl random_ref(void)
+void random_ref(void)
 {
     MPEXT_PUTTY_SECTION_ENTER;
     if (!random_active) {

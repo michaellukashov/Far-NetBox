@@ -375,7 +375,7 @@ SockAddr name_lookup(const char *host, int port, char **canonicalname,
     return sk_namelookup(host, canonicalname, addressfamily);
 }
 
-Socket new_connection(SockAddr addr, char *hostname,
+Socket new_connection(SockAddr addr, const char *hostname,
 		      int port, int privport,
 		      int oobinline, int nodelay, int keepalive,
 		      Plug plug, Conf *conf)
@@ -388,7 +388,8 @@ Socket new_connection(SockAddr addr, char *hostname,
 	sk_proxy_write_eof,
 	sk_proxy_flush,
 	sk_proxy_set_frozen,
-	sk_proxy_socket_error
+	sk_proxy_socket_error,
+        NULL, /* peer_info */
     };
 
     static const struct plug_function_table plug_fn_table = {
@@ -496,8 +497,8 @@ Socket new_connection(SockAddr addr, char *hostname,
       );
 }
 
-Socket new_listener(char *srcaddr, int port, Plug plug, int local_host_only,
-		    Conf *conf, int addressfamily)
+Socket new_listener(const char *srcaddr, int port, Plug plug,
+                    int local_host_only, Conf *conf, int addressfamily)
 {
     /* TODO: SOCKS (and potentially others) support inbound
      * TODO: connections via the proxy. support them.

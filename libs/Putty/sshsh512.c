@@ -2,6 +2,8 @@
  * SHA-512 algorithm as described at
  * 
  *   http://csrc.nist.gov/cryptval/shs.html
+ *
+ * Modifications made for SHA-384 also
  */
 
 #include "ssh.h"
@@ -59,6 +61,22 @@ static void SHA512_Core_Init(SHA512_State *s) {
     int i;
     for (i = 0; i < 8; i++)
 	s->h[i] = iv[i];
+}
+
+static void SHA384_Core_Init(SHA512_State *s) {
+    static const uint64 iv[] = {
+        INIT(0xcbbb9d5d, 0xc1059ed8),
+        INIT(0x629a292a, 0x367cd507),
+        INIT(0x9159015a, 0x3070dd17),
+        INIT(0x152fecd8, 0xf70e5939),
+        INIT(0x67332667, 0xffc00b31),
+        INIT(0x8eb44a87, 0x68581511),
+        INIT(0xdb0c2e0d, 0x64f98fa7),
+        INIT(0x47b5481d, 0xbefa4fa4),
+    };
+    int i;
+    for (i = 0; i < 8; i++)
+        s->h[i] = iv[i];
 }
 
 static void SHA512_Block(SHA512_State *s, uint64 *block) {
@@ -175,7 +193,15 @@ void putty_SHA512_Init(SHA512_State *s) {
 	s->len[i] = 0;
 }
 
-void SHA512_Bytes(SHA512_State *s, const void *p, int len) {
+void putty_SHA384_Init(SHA512_State *s) {
+    int i;
+    SHA384_Core_Init(s);
+    s->blkused = 0;
+    for (i = 0; i < 4; i++)
+        s->len[i] = 0;
+}
+
+void putty_SHA512_Bytes(SHA512_State *s, const void *p, int len) {
     unsigned char *q = (unsigned char *)p;
     uint64 wordblock[16];
     uint32 lenw = len;
@@ -243,7 +269,7 @@ void putty_SHA512_Final(SHA512_State *s, unsigned char *digest) {
 
     memset(c, 0, pad);
     c[0] = 0x80;
-    SHA512_Bytes(s, &c, pad);
+    putty_SHA512_Bytes(s, &c, pad);
 
     for (i = 0; i < 4; i++) {
 	c[i*4+0] = (len[3-i] >> 24) & 0xFF;
@@ -252,7 +278,7 @@ void putty_SHA512_Final(SHA512_State *s, unsigned char *digest) {
 	c[i*4+3] = (len[3-i] >>  0) & 0xFF;
     }
 
-    SHA512_Bytes(s, &c, 16);
+    putty_SHA512_Bytes(s, &c, 16);
 
     for (i = 0; i < 8; i++) {
 	uint32 h, l;
@@ -268,13 +294,84 @@ void putty_SHA512_Final(SHA512_State *s, unsigned char *digest) {
     }
 }
 
-void SHA512_Simple(const void *p, int len, unsigned char *output) {
+void putty_SHA384_Final(SHA512_State *s, unsigned char *digest) {
+    unsigned char biggerDigest[512 / 8];
+    putty_SHA512_Final(s, biggerDigest);
+    memcpy(digest, biggerDigest, 384 / 8);
+}
+
+void putty_SHA512_Simple(const void *p, int len, unsigned char *output) {
     SHA512_State s;
 
     putty_SHA512_Init(&s);
-    SHA512_Bytes(&s, p, len);
+    putty_SHA512_Bytes(&s, p, len);
     putty_SHA512_Final(&s, output);
+    smemclr(&s, sizeof(s));
 }
+
+void putty_SHA384_Simple(const void *p, int len, unsigned char *output) {
+    SHA512_State s;
+
+    SHA384_Init(&s);
+    putty_SHA512_Bytes(&s, p, len);
+    SHA384_Final(&s, output);
+    smemclr(&s, sizeof(s));
+}
+
+/*
+ * Thin abstraction for things where hashes are pluggable.
+ */
+
+static void *sha512_init(void)
+{
+    SHA512_State *s;
+
+    s = snew(SHA512_State);
+    SHA512_Init(s);
+    return s;
+}
+
+static void sha512_bytes(void *handle, const void *p, int len)
+{
+    SHA512_State *s = handle;
+
+    putty_SHA512_Bytes(s, p, len);
+}
+
+static void sha512_final(void *handle, unsigned char *output)
+{
+    SHA512_State *s = handle;
+
+    SHA512_Final(s, output);
+    smemclr(s, sizeof(*s));
+    sfree(s);
+}
+
+const struct ssh_hash ssh_sha512 = {
+    sha512_init, sha512_bytes, sha512_final, 64, "SHA-512"
+};
+
+static void *sha384_init(void)
+{
+    SHA512_State *s;
+
+    s = snew(SHA512_State);
+    SHA384_Init(s);
+    return s;
+}
+
+static void sha384_final(void *handle, unsigned char *output)
+{
+    SHA512_State *s = handle;
+
+    SHA384_Final(s, output);
+    smemclr(s, sizeof(*s));
+    sfree(s);
+}
+
+const struct ssh_hash ssh_sha384 = {
+    sha384_init, sha512_bytes, sha384_final, 48, "SHA-384"
+};
 
 #ifdef TEST
 
@@ -334,7 +431,7 @@ int main(void) {
 	    int n;
 	    putty_SHA512_Init(&s);
 	    for (n = 0; n < 1000000 / 40; n++)
-		SHA512_Bytes(&s, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+		putty_SHA512_Bytes(&s, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 			     40);
 	    putty_SHA512_Final(&s, digest);
 	}

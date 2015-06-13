@@ -190,7 +190,7 @@ int x11_authcmp(void *av, void *bv)
     }
 }
 
-struct X11Display *x11_setup_display(char *display, Conf *conf)
+struct X11Display *x11_setup_display(const char *display, Conf *conf)
 {
     struct X11Display *disp = snew(struct X11Display);
     char *localcopy;
@@ -362,7 +362,7 @@ void x11_free_display(struct X11Display *disp)
 
 #define XDM_MAXSKEW 20*60      /* 20 minute clock skew should be OK */
 
-static char *x11_verify(unsigned long peer_ip, int peer_port,
+static const char *x11_verify(unsigned long peer_ip, int peer_port,
 			tree234 *authtree, char *proto,
 			unsigned char *data, int dlen,
                         struct X11FakeAuth **auth_ret)

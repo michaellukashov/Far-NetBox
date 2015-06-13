@@ -126,7 +126,7 @@ void putty_SHA_Init(SHA_State * s)
     s->lenhi = s->lenlo = 0;
 }
 
-void SHA_Bytes(SHA_State * s, const void *p, int len)
+void putty_SHA_Bytes(SHA_State * s, const void *p, int len)
 {
     const unsigned char *q = (const unsigned char *) p;
     uint32 wordblock[16];
@@ -189,7 +189,7 @@ void putty_SHA_Final(SHA_State * s, unsigned char *output)
 
     memset(c, 0, pad);
     c[0] = 0x80;
-    SHA_Bytes(s, &c, pad);
+    putty_SHA_Bytes(s, &c, pad);
 
     c[0] = (lenhi >> 24) & 0xFF;
     c[1] = (lenhi >> 16) & 0xFF;
@@ -200,7 +200,7 @@ void putty_SHA_Final(SHA_State * s, unsigned char *output)
     c[6] = (lenlo >> 8) & 0xFF;
     c[7] = (lenlo >> 0) & 0xFF;
 
-    SHA_Bytes(s, &c, 8);
+    putty_SHA_Bytes(s, &c, 8);
 
     for (i = 0; i < 5; i++) {
 	output[i * 4] = (s->h[i] >> 24) & 0xFF;
@@ -210,13 +210,14 @@ void putty_SHA_Final(SHA_State * s, unsigned char *output)
     }
 }
 
-void SHA_Simple(const void *p, int len, unsigned char *output)
+void putty_SHA_Simple(const void *p, int len, unsigned char *output)
 {
     SHA_State s;
 
     putty_SHA_Init(&s);
-    SHA_Bytes(&s, p, len);
+    putty_SHA_Bytes(&s, p, len);
     putty_SHA_Final(&s, output);
+    smemclr(&s, sizeof(s));
 }
 
 /*
@@ -232,11 +233,11 @@ static void *sha1_init(void)
     return s;
 }
 
-static void sha1_bytes(void *handle, void *p, int len)
+static void sha1_bytes(void *handle, const void *p, int len)
 {
     SHA_State *s = handle;
 
-    SHA_Bytes(s, p, len);
+    putty_SHA_Bytes(s, p, len);
 }
 
 static void sha1_final(void *handle, unsigned char *output)
@@ -244,6 +245,7 @@ static void sha1_final(void *handle, unsigned char *output)
     SHA_State *s = handle;
 
     putty_SHA_Final(s, output);
+    smemclr(s, sizeof(*s));
     sfree(s);
 }
 
@@ -256,13 +258,14 @@ const struct ssh_hash ssh_sha1 = {
  * HMAC wrapper on it.
  */
 
-static void *sha1_make_context(void)
+static void *sha1_make_context(void *cipher_ctx)
 {
     return snewn(3, SHA_State);
 }
 
 static void sha1_free_context(void *handle)
 {
+    smemclr(handle, 3 * sizeof(SHA_State));
     sfree(handle);
 }
 
@@ -276,13 +279,13 @@ static void sha1_key_internal(void *handle, unsigned char *key, int len)
     for (i = 0; i < len && i < 64; i++)
 	foo[i] ^= key[i];
     putty_SHA_Init(&keys[0]);
-    SHA_Bytes(&keys[0], foo, 64);
+    putty_SHA_Bytes(&keys[0], foo, 64);
 
     memset(foo, 0x5C, 64);
     for (i = 0; i < len && i < 64; i++)
 	foo[i] ^= key[i];
     putty_SHA_Init(&keys[1]);
-    SHA_Bytes(&keys[1], foo, 64);
+    putty_SHA_Bytes(&keys[1], foo, 64);
 
     smemclr(foo, 64);		       /* burn the evidence */
 }
@@ -307,7 +310,7 @@ static void hmacsha1_start(void *handle)
 static void hmacsha1_bytes(void *handle, unsigned char const *blk, int len)
 {
     SHA_State *keys = (SHA_State *)handle;
-    SHA_Bytes(&keys[2], (void *)blk, len);
+    putty_SHA_Bytes(&keys[2], (void *)blk, len);
 }
 
 static void hmacsha1_genresult(void *handle, unsigned char *hmac)
@@ -319,7 +322,7 @@ static void hmacsha1_genresult(void *handle, unsigned char *hmac)
     s = keys[2];		       /* structure copy */
     putty_SHA_Final(&s, intermediate);
     s = keys[1];		       /* structure copy */
-    SHA_Bytes(&s, intermediate, 20);
+    putty_SHA_Bytes(&s, intermediate, 20);
     putty_SHA_Final(&s, hmac);
 }
 
@@ -345,7 +348,7 @@ static int hmacsha1_verresult(void *handle, unsigned char const *hmac)
 {
     unsigned char correct[20];
     hmacsha1_genresult(handle, correct);
-    return !memcmp(correct, hmac, 20);
+    return smemeq(correct, hmac, 20);
 }
 
 static int sha1_verify(void *handle, unsigned char *blk, int len,
@@ -353,7 +356,7 @@ static int sha1_verify(void *handle, unsigned char *blk, int len,
 {
     unsigned char correct[20];
     sha1_do_hmac(handle, blk, len, seq, correct);
-    return !memcmp(correct, blk + len, 20);
+    return smemeq(correct, blk + len, 20);
 }
 
 static void hmacsha1_96_genresult(void *handle, unsigned char *hmac)
@@ -375,7 +378,7 @@ static int hmacsha1_96_verresult(void *handle, unsigned char const *hmac)
 {
     unsigned char correct[20];
     hmacsha1_genresult(handle, correct);
-    return !memcmp(correct, hmac, 12);
+    return smemeq(correct, hmac, 12);
 }
 
 static int sha1_96_verify(void *handle, unsigned char *blk, int len,
@@ -383,7 +386,7 @@ static int sha1_96_verify(void *handle, unsigned char *blk, int len,
 {
     unsigned char correct[20];
     sha1_do_hmac(handle, blk, len, seq, correct);
-    return !memcmp(correct, blk + len, 12);
+    return smemeq(correct, blk + len, 12);
 }
 
 void hmac_sha1_simple(void *key, int keylen, void *data, int datalen,
@@ -392,10 +395,10 @@ void hmac_sha1_simple(void *key, int keylen, void *data, int datalen,
     unsigned char intermediate[20];
 
     sha1_key_internal(states, key, keylen);
-    SHA_Bytes(&states[0], data, datalen);
+    putty_SHA_Bytes(&states[0], data, datalen);
     putty_SHA_Final(&states[0], intermediate);
 
-    SHA_Bytes(&states[1], intermediate, 20);
+    putty_SHA_Bytes(&states[1], intermediate, 20);
     putty_SHA_Final(&states[1], output);
 }
 
@@ -403,7 +406,7 @@ const struct ssh_mac ssh_hmac_sha1 = {
     sha1_make_context, sha1_free_context, sha1_key,
     sha1_generate, sha1_verify,
     hmacsha1_start, hmacsha1_bytes, hmacsha1_genresult, hmacsha1_verresult,
-    "hmac-sha1",
+    "hmac-sha1", "hmac-sha1-etm@openssh.com",
     20,
     "HMAC-SHA1"
 };
@@ -413,7 +416,7 @@ const struct ssh_mac ssh_hmac_sha1_96 = {
     sha1_96_generate, sha1_96_verify,
     hmacsha1_start, hmacsha1_bytes,
     hmacsha1_96_genresult, hmacsha1_96_verresult,
-    "hmac-sha1-96",
+    "hmac-sha1-96", "hmac-sha1-96-etm@openssh.com",
     12,
     "HMAC-SHA1-96"
 };
@@ -422,7 +425,7 @@ const struct ssh_mac ssh_hmac_sha1_buggy = {
     sha1_make_context, sha1_free_context, sha1_key_buggy,
     sha1_generate, sha1_verify,
     hmacsha1_start, hmacsha1_bytes, hmacsha1_genresult, hmacsha1_verresult,
-    "hmac-sha1",
+    "hmac-sha1", NULL,
     20,
     "bug-compatible HMAC-SHA1"
 };
@@ -432,7 +435,7 @@ const struct ssh_mac ssh_hmac_sha1_96_buggy = {
     sha1_96_generate, sha1_96_verify,
     hmacsha1_start, hmacsha1_bytes,
     hmacsha1_96_genresult, hmacsha1_96_verresult,
-    "hmac-sha1-96",
+    "hmac-sha1-96", NULL,
     12,
     "bug-compatible HMAC-SHA1-96"
 };

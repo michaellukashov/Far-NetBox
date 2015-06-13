@@ -502,6 +502,9 @@ static void share_connstate_free(struct ssh_sharing_connstate *cs)
         sfree(globreq);
     }
 
+    if (cs->sock)
+        sk_close(cs->sock);
+
     sfree(cs);
 }
 
@@ -1924,6 +1927,7 @@ static int share_listen_accepting(Plug plug,
     struct ssh_sharing_state *sharestate = (struct ssh_sharing_state *)plug;
     struct ssh_sharing_connstate *cs;
     const char *err;
+    char *peerinfo;
 
     /*
      * A new downstream has connected to us.
@@ -1966,15 +1970,17 @@ static int share_listen_accepting(Plug plug,
     cs->forwardings = newtree234(share_forwarding_cmp);
     cs->globreq_head = cs->globreq_tail = NULL;
 
-    ssh_sharing_downstream_connected(sharestate->ssh, cs->id);
+    peerinfo = sk_peer_info(cs->sock);
+    ssh_sharing_downstream_connected(sharestate->ssh, cs->id, peerinfo);
+    sfree(peerinfo);
 
     return 0;
 }
 
 /* Per-application overrides for what roles we can take (e.g. pscp
  * will never be an upstream) */
-const int share_can_be_downstream = TRUE;
-const int share_can_be_upstream = TRUE;
+extern const int share_can_be_downstream;
+extern const int share_can_be_upstream;
 
 /*
  * Init function for connection sharing. We either open a listening
@@ -2005,10 +2011,10 @@ Socket ssh_connection_sharing_init(const char *host, int port,
 
     if (!conf_get_int(conf, CONF_ssh_connection_sharing))
         return NULL;                   /* do not share anything */
-    can_upstream = share_can_be_upstream &&
-        conf_get_int(conf, CONF_ssh_connection_sharing_upstream);
-    can_downstream = share_can_be_downstream &&
-        conf_get_int(conf, CONF_ssh_connection_sharing_downstream);
+    can_upstream = 0; // share_can_be_upstream &&
+        // conf_get_int(conf, CONF_ssh_connection_sharing_upstream);
+    can_downstream = 0; // share_can_be_downstream &&
+        // conf_get_int(conf, CONF_ssh_connection_sharing_downstream);
     if (!can_upstream && !can_downstream)
         return NULL;
 

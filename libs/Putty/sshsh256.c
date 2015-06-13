@@ -184,6 +184,7 @@ void SHA256_Simple(const void *p, int len, unsigned char *output) {
     putty_SHA256_Init(&s);
     SHA256_Bytes(&s, p, len);
     putty_SHA256_Final(&s, output);
+    smemclr(&s, sizeof(s));
 }
 
 /*
@@ -199,7 +200,7 @@ static void *sha256_init(void)
     return s;
 }
 
-static void sha256_bytes(void *handle, void *p, int len)
+static void sha256_bytes(void *handle, const void *p, int len)
 {
     SHA256_State *s = handle;
 
@@ -211,6 +212,7 @@ static void sha256_final(void *handle, unsigned char *output)
     SHA256_State *s = handle;
 
     putty_SHA256_Final(s, output);
+    smemclr(s, sizeof(*s));
     sfree(s);
 }
 
@@ -223,13 +225,14 @@ const struct ssh_hash ssh_sha256 = {
  * HMAC wrapper on it.
  */
 
-static void *sha256_make_context(void)
+static void *sha256_make_context(void *cipher_ctx)
 {
     return snewn(3, SHA256_State);
 }
 
 static void sha256_free_context(void *handle)
 {
+    smemclr(handle, 3 * sizeof(SHA256_State));
     sfree(handle);
 }
 
@@ -307,7 +310,7 @@ static int hmacsha256_verresult(void *handle, unsigned char const *hmac)
 {
     unsigned char correct[32];
     hmacsha256_genresult(handle, correct);
-    return !memcmp(correct, hmac, 32);
+    return smemeq(correct, hmac, 32);
 }
 
 static int sha256_verify(void *handle, unsigned char *blk, int len,
@@ -315,7 +318,7 @@ static int sha256_verify(void *handle, unsigned char *blk, int len,
 {
     unsigned char correct[32];
     sha256_do_hmac(handle, blk, len, seq, correct);
-    return !memcmp(correct, blk + len, 32);
+    return smemeq(correct, blk + len, 32);
 }
 
 const struct ssh_mac ssh_hmac_sha256 = {
@@ -323,7 +326,7 @@ const struct ssh_mac ssh_hmac_sha256 = {
     sha256_generate, sha256_verify,
     hmacsha256_start, hmacsha256_bytes,
     hmacsha256_genresult, hmacsha256_verresult,
-    "hmac-sha2-256",
+    "hmac-sha2-256", "hmac-sha2-256-etm@openssh.com",
     32,
     "HMAC-SHA-256"
 };

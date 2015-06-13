@@ -9,7 +9,6 @@
 
 #ifndef NO_SECURITY
 #include "winsecur.h"
-//#include <aclapi.h>
 #endif
 
 #define AGENT_COPYDATA_ID 0x804e50ba   /* random goop */
