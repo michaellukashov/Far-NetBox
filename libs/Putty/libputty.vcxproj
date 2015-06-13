@@ -208,6 +208,8 @@
     <ClCompile Include=".\sshshare.c" />
     <ClCompile Include=".\noshare.c" />
     <ClCompile Include=".\errsock.c" />
+    <ClCompile Include=".\sshecc.c" />
+    <ClCompile Include=".\sshccp.c" />
     <ClCompile Include=".\SSHZLIB.c" />
     <ClCompile Include=".\TREE234.c" />
     <ClCompile Include=".\WILDCARD.c" />
