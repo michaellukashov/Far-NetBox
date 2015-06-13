@@ -370,6 +370,9 @@ add_library(putty STATIC
   ${LIBS_ROOT}/Putty/sshshare.c
   ${LIBS_ROOT}/Putty/noshare.c
   ${LIBS_ROOT}/Putty/errsock.c
+  ${LIBS_ROOT}/Putty/sshecc.c
+  ${LIBS_ROOT}/Putty/sshccp.c
+#  ${LIBS_ROOT}/Putty/ldisc.c
 )
 
 set(PUTTY_COMPILE_FLAGS "-D_CRTIMP= -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -DNO_SECURITY")
