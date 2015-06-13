@@ -2166,14 +2166,13 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   UnicodeString StoredKeys;
   AnsiString AnsiStoredKeys(10240, '\0');
 
-  if (retrieve_host_key(
+  if (verify_host_key(
         ::W2MB(Host2.c_str(),
              static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
         Port,
         ::W2MB(KeyType.c_str(),
             static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-            const_cast<char *>(AnsiStoredKeys.c_str()),
-            static_cast<int>(AnsiStoredKeys.Length())) == 0)
+            const_cast<char *>(AnsiStoredKeys.c_str())) == 0)
   {
     StoredKeys = AnsiStoredKeys.c_str();
     UnicodeString Buf = StoredKeys;
