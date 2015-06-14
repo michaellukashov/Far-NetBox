@@ -1297,7 +1297,7 @@ int __cdecl _AfxInitManaged();
 #define AFX_DATA
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, on)
+//#pragma component(minrebuild, on)
 #endif
 
 #ifdef _AFX_ALL_WARNINGS

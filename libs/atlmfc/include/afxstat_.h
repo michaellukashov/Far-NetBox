@@ -23,7 +23,7 @@
 #endif
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, off)
+//#pragma component(minrebuild, off)
 #endif
 
 #ifndef __AFXTLS_H__
@@ -380,7 +380,7 @@ BOOL AFXAPI AfxGetPerUserRegistration(void);
 /////////////////////////////////////////////////////////////////////////////
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, on)
+//#pragma component(minrebuild, on)
 #endif
 
 #ifdef _AFX_PACKING

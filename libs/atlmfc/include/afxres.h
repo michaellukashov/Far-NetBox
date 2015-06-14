@@ -19,7 +19,7 @@
 #endif
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, off)
+//#pragma component(minrebuild, off)
 #endif
 
 #ifndef _MFC_FILENAME_VER
@@ -827,7 +827,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, on)
+//#pragma component(minrebuild, on)
 #endif
 
 #endif //__AFXRES_H__
