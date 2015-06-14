@@ -15,7 +15,7 @@ goto vs2010-x86
 :vs2010-x64
 rm -rf x64
 call "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
-perl Configure VC-WIN64A no-unit-test no-cast no-err no-bf no-sctp no-rsax no-asm enable-static-engine no-shared no-hw no-camellia no-seed no-rc4 no-rc5 no-krb5 no-whirlpool no-srp no-gost no-idea no-ripemd no-des -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy  -DNDEBUG;OPENSSL_NO_CAPIENG;NO_CHMOD;OPENSSL_NO_DGRAM;OPENSSL_NO_RIJNDAEL;DSO_WIN32
+perl Configure VC-WIN64A no-unit-test no-cast no-err no-bf no-sctp no-rsax no-asm enable-static-engine no-shared no-hw no-camellia no-seed no-rc4 no-rc5 no-krb5 no-whirlpool no-srp no-gost no-idea no-ripemd -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy  -DNDEBUG;OPENSSL_NO_CAPIENG;NO_CHMOD;OPENSSL_NO_DGRAM;OPENSSL_NO_RIJNDAEL;DSO_WIN32
 call ms\do_win64a
 nmake -f ms\nt.mak
 mkdir x64
@@ -27,7 +27,7 @@ goto end
 :vs2015-x64
 rm -rf vs2015-x64
 call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
-perl Configure VC-WIN64A no-unit-test no-cast no-err no-bf no-sctp no-rsax no-asm enable-static-engine no-shared no-hw no-camellia no-seed no-rc4 no-rc5 no-krb5 no-whirlpool no-srp no-gost no-idea no-ripemd no-des -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy  -DNDEBUG;OPENSSL_NO_CAPIENG;NO_CHMOD;OPENSSL_NO_DGRAM;OPENSSL_NO_RIJNDAEL;DSO_WIN32
+perl Configure VC-WIN64A no-unit-test no-cast no-err no-bf no-sctp no-rsax no-asm enable-static-engine no-shared no-hw no-camellia no-seed no-rc4 no-rc5 no-krb5 no-whirlpool no-srp no-gost no-idea no-ripemd -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy  -DNDEBUG;OPENSSL_NO_CAPIENG;NO_CHMOD;OPENSSL_NO_DGRAM;OPENSSL_NO_RIJNDAEL;DSO_WIN32
 call ms\do_win64a
 nmake -f ms\nt.mak
 mkdir vs2015-x64
@@ -39,7 +39,7 @@ goto end
 :vs2010-x86
 rm -rf x86
 call "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
-perl Configure VC-WIN32 no-unit-test no-cast no-err no-bf no-sctp no-rsax no-asm enable-static-engine no-shared no-hw no-camellia no-seed no-rc4 no-rc5 no-krb5 no-whirlpool no-srp no-gost no-idea no-ripemd no-des -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy -DNDEBUG;OPENSSL_NO_CAPIENG;NO_CHMOD;OPENSSL_NO_DGRAM;OPENSSL_NO_RIJNDAEL;DSO_WIN32
+perl Configure VC-WIN32 no-unit-test no-cast no-err no-bf no-sctp no-rsax no-asm enable-static-engine no-shared no-hw no-camellia no-seed no-rc4 no-rc5 no-krb5 no-whirlpool no-srp no-gost no-idea no-ripemd -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy -DNDEBUG;OPENSSL_NO_CAPIENG;NO_CHMOD;OPENSSL_NO_DGRAM;OPENSSL_NO_RIJNDAEL;DSO_WIN32
 rem call ms\do_nasm
 call ms\do_ms
 nmake -f ms\nt.mak
@@ -52,7 +52,7 @@ goto end
 :vs2015-x86
 rm -rf vs2015-x86
 call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
-perl Configure VC-WIN32 no-unit-test no-cast no-err no-bf no-sctp no-rsax no-asm enable-static-engine no-shared no-hw no-camellia no-seed no-rc4 no-rc5 no-krb5 no-whirlpool no-srp no-gost no-idea no-ripemd no-des -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy -DNDEBUG;OPENSSL_NO_CAPIENG;NO_CHMOD;OPENSSL_NO_DGRAM;OPENSSL_NO_RIJNDAEL;DSO_WIN32
+perl Configure VC-WIN32 no-unit-test no-cast no-err no-bf no-sctp no-rsax no-asm enable-static-engine no-shared no-hw no-camellia no-seed no-rc4 no-rc5 no-krb5 no-whirlpool no-srp no-gost no-idea no-ripemd -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy -DNDEBUG;OPENSSL_NO_CAPIENG;NO_CHMOD;OPENSSL_NO_DGRAM;OPENSSL_NO_RIJNDAEL;DSO_WIN32
 rem call ms\do_nasm
 call ms\do_ms
 nmake -f ms\nt.mak
