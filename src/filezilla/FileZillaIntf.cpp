@@ -303,12 +303,12 @@ void CopyValidityTime(TFtpsCertificateData::TValidityTime & Dest,
 //---------------------------------------------------------------------------
 void CopyFileTime(TRemoteFileTime & Dest, const t_directory::t_direntry::t_date & Source)
 {
-  Dest.Year = Source.year;
-  Dest.Month = Source.month;
-  Dest.Day = Source.day;
-  Dest.Hour = Source.hour;
-  Dest.Minute = Source.minute;
-  Dest.Second = Source.second;
+  Dest.Year = (WORD)Source.year;
+  Dest.Month = (WORD)Source.month;
+  Dest.Day = (WORD)Source.day;
+  Dest.Hour = (WORD)Source.hour;
+  Dest.Minute = (WORD)Source.minute;
+  Dest.Second = (WORD)Source.second;
   Dest.HasTime = Source.hastime;
   Dest.HasDate = Source.hasdate;
   Dest.HasSeconds = Source.hasseconds;
