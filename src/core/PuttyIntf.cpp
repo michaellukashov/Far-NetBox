@@ -456,9 +456,12 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     assert(Type != nullptr);
     *Type = REG_SZ;
     char * DataStr = reinterpret_cast<char *>(Data);
-    size_t sz = static_cast<size_t>(*DataSize);
-    strncpy_s(DataStr, sz, Value.c_str(), sz);
-    DataStr[*DataSize - 1] = '\0';
+    int sz = static_cast<int>(*DataSize);
+    if (sz > 0)
+    {
+        strncpy(DataStr, Value.c_str(), sz);
+        DataStr[sz - 1] = '\0';
+    }
     *DataSize = static_cast<uint32_t>(strlen(DataStr));
   }
 
