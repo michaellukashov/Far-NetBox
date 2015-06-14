@@ -4184,7 +4184,7 @@ public:
         FAction.AddOutput(Str, true);
         break;
       case cotExitCode:
-        FAction.ExitCode(::StrToInt64(Str));
+        FAction.ExitCode(::StrToInt(Str));
         break;
     }
 
