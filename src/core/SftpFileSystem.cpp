@@ -357,7 +357,7 @@ public:
     AddUtfString(UTF8String(Value));
   }
 
-  inline void AddString(const UnicodeString & Value, TAutoSwitch Utf)
+  inline void AddString(const UnicodeString & Value, TAutoSwitch /*Utf*/)
   {
     AddStringW(Value);
     /*
@@ -647,7 +647,7 @@ public:
     return ::MB2W(GetRawByteString().c_str(), static_cast<UINT>(FCodePage));
   }
 
-  inline UnicodeString GetString(TAutoSwitch Utf) const
+  inline UnicodeString GetString(TAutoSwitch /*Utf*/) const
   {
     return GetStringW();
     /*
