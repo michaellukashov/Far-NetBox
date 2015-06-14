@@ -286,9 +286,9 @@ typedef struct {
     uint32 lenhi, lenlo;
 } SHA256_State;
 void putty_SHA256_Init(SHA256_State * s);
-void SHA256_Bytes(SHA256_State * s, const void *p, int len);
+void putty_SHA256_Bytes(SHA256_State * s, const void *p, int len);
 void putty_SHA256_Final(SHA256_State * s, unsigned char *output);
-void SHA256_Simple(const void *p, int len, unsigned char *output);
+void putty_SHA256_Simple(const void *p, int len, unsigned char *output);
 
 typedef struct {
     uint64 h[8];
