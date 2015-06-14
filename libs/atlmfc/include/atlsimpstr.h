@@ -24,8 +24,8 @@ extern "C"
 	LONG __cdecl _InterlockedDecrement(/* _Inout_ */ LONG volatile * pn);
 };
 
-#pragma intrinsic( _InterlockedIncrement )
-#pragma intrinsic( _InterlockedDecrement )
+//#pragma intrinsic( _InterlockedIncrement )
+//#pragma intrinsic( _InterlockedDecrement )
 
 #pragma pack(push,_ATL_PACKING)
 namespace ATL

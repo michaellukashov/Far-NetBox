@@ -23,7 +23,7 @@
 #endif
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, off)
+//#pragma component(minrebuild, off)
 #endif 
 
 #ifdef _AFX_PACKING
@@ -179,7 +179,7 @@ LPSTR AFXAPI AfxTaskStringW2A(LPCWSTR lpw);
 #define AFX_DATA
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, on)
+//#pragma component(minrebuild, on)
 #endif
 
 #if (defined __AFXPRIV2_H__OLE__) && (defined __AFXPRIV2_H__DISP__)

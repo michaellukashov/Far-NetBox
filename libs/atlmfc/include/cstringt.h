@@ -2759,8 +2759,8 @@ public:
 			_Inout_ CStringData* pData,
 			_In_ int nChars,
 			_In_opt_ IAtlStringMgr* pMgr = NULL) throw() :
-		m_pData( pData ),
-		m_pMgr( pMgr )
+		m_pMgr( pMgr ),
+		m_pData( pData )
 	{
 		m_pData->nRefs = -1;
 		m_pData->nDataLength = 0;

@@ -22,7 +22,7 @@
 #endif
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, off)
+//#pragma component(minrebuild, off)
 #endif
 
 struct CPlex     // warning variable length structure
@@ -45,7 +45,7 @@ struct CPlex     // warning variable length structure
 };
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, on)
+//#pragma component(minrebuild, on)
 #endif
 
 #ifdef _AFX_PACKING

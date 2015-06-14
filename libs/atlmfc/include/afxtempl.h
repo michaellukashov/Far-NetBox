@@ -16,7 +16,7 @@
 #endif
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, off)
+//#pragma component(minrebuild, off)
 #endif 
 
 #ifdef _AFX_PACKING
@@ -1509,7 +1509,7 @@ CMap<KEY, ARG_KEY, VALUE, ARG_VALUE>::PGetNextAssoc(const typename CMap<KEY, ARG
 #endif
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, on)
+//#pragma component(minrebuild, on)
 #endif
 
 #pragma warning( pop )

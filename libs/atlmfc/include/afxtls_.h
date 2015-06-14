@@ -18,7 +18,7 @@
 #endif
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, off)
+//#pragma component(minrebuild, off)
 #endif
 
 #undef AFX_DATA
@@ -242,7 +242,7 @@ void AFXAPI AfxTlsAddRef();
 void AFXAPI AfxTlsRelease();
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, on)
+//#pragma component(minrebuild, on)
 #endif
 
 #ifdef _AFX_PACKING
