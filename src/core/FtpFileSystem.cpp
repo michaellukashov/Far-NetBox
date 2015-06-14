@@ -2447,7 +2447,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
           ReadFile(File->GetFullFileName(), UtcFile);
           UtcFilePtr.reset(UtcFile);
         }
-        catch (Exception & E)
+        catch (Exception & /*E*/)
         {
           if (!FTerminal->GetActive())
           {
