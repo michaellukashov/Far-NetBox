@@ -491,7 +491,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
             {
               FileSystem->ReadFile(LinkFileName, LinkFile);
             }
-            catch (const Exception & E)
+            catch (const Exception & /*E*/)
             {
               LinkFile = nullptr;
             }
