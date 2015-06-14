@@ -128,12 +128,14 @@ void debug_memdump(const void *buf, int len, int L);
 #define lenof(x) ( (sizeof((x))) / (sizeof(*(x))))
 #endif
 
-//#ifndef min
-//#define min(x,y) ( (x) < (y) ? (x) : (y) )
-//#endif
-//#ifndef max
-//#define max(x,y) ( (x) > (y) ? (x) : (y) )
-//#endif
+/*
+#ifndef min
+#define min(x,y) ( (x) < (y) ? (x) : (y) )
+#endif
+#ifndef max
+#define max(x,y) ( (x) > (y) ? (x) : (y) )
+#endif
+*/
 
 #define GET_32BIT_LSB_FIRST(cp) \
   (((unsigned long)(unsigned char)(cp)[0]) | \
