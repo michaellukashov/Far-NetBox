@@ -8716,12 +8716,12 @@ list_func(
     entry.Size = dir == 0 ? dirent->size : 0;
     entry.Dir = dir != 0;
     entry.Link = false;
-    entry.Time.Year = exp_time.tm_year + 1900;
-    entry.Time.Month = exp_time.tm_mon + 1;
-    entry.Time.Day = exp_time.tm_mday;
-    entry.Time.Hour = exp_time.tm_hour;
-    entry.Time.Minute = exp_time.tm_min;
-    entry.Time.Second = exp_time.tm_sec;
+    entry.Time.Year = (WORD)exp_time.tm_year + 1900;
+    entry.Time.Month = (WORD)exp_time.tm_mon + 1;
+    entry.Time.Day = (WORD)exp_time.tm_mday;
+    entry.Time.Hour = (WORD)exp_time.tm_hour;
+    entry.Time.Minute = (WORD)exp_time.tm_min;
+    entry.Time.Second = (WORD)exp_time.tm_sec;
     entry.Time.HasTime = true;
     entry.Time.HasSeconds = true;
     entry.Time.HasDate = true;
