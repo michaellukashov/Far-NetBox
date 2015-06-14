@@ -280,7 +280,7 @@ int conf_get_int_int(Conf *conf, int primary, int secondary)
     key.secondary.i = secondary;
     entry = find234(conf->tree, &key, NULL);
     assert(entry);
-    return entry->value.u.intval;
+    return entry ? entry->value.u.intval : 0;
 }
 
 char *conf_get_str(Conf *conf, int primary)
@@ -293,7 +293,7 @@ char *conf_get_str(Conf *conf, int primary)
     key.primary = primary;
     entry = find234(conf->tree, &key, NULL);
     assert(entry);
-    return entry->value.u.stringval;
+    return entry ? entry->value.u.stringval : NULL;
 }
 
 char *conf_get_str_str_opt(Conf *conf, int primary, const char *secondary)
