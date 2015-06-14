@@ -443,7 +443,7 @@ struct backend_tag {
 		 */
 		void (*unthrottle) (void *handle, int);
 		int (*cfg_info) (void *handle);
-    const char *name;
+		const char *name;
 		int protocol;
 		int default_port;
 };
