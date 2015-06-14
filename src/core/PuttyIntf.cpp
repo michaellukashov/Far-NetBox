@@ -125,7 +125,7 @@ int from_backend_eof(void * /*frontend*/)
   return FALSE;
 }
 
-int GetUserpassInput(prompts_t * p, uint8_t * /*in*/, int /*inlen*/)
+int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
 {
   assert(p != nullptr);
   TSecureShell * SecureShell = NB_STATIC_DOWNCAST(TSecureShell, p->frontend);
@@ -164,7 +164,7 @@ int GetUserpassInput(prompts_t * p, uint8_t * /*in*/, int /*inlen*/)
   return Result;
 }
 
-int get_userpass_input(prompts_t * p, uint8_t * in, int inlen)
+int get_userpass_input(prompts_t * p, const uint8_t * in, int inlen)
 {
   return GetUserpassInput(p, in, inlen);
 }
@@ -185,7 +185,7 @@ void logevent(void * frontend, const char * string)
   }
 }
 
-void connection_fatal(void * frontend, char * fmt, ...)
+void connection_fatal(void * frontend, const char * fmt, ...)
 {
   va_list Param;
   char Buf[200];
@@ -198,7 +198,7 @@ void connection_fatal(void * frontend, char * fmt, ...)
   (NB_STATIC_DOWNCAST(TSecureShell, frontend))->PuttyFatalError(UnicodeString(Buf));
 }
 
-int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
+int verify_ssh_host_key(void * frontend, char * host, int port, const char * keytype,
   char * keystr, char * fingerprint, void (* /*callback*/)(void * ctx, int result),
   void * /*ctx*/)
 {
@@ -243,7 +243,7 @@ static void SSHFatalError(const char * Format, va_list Param)
   throw ESshFatal(nullptr, Buf);
 }
 
-void fatalbox(char * fmt, ...)
+void fatalbox(const char * fmt, ...)
 {
   va_list Param;
   va_start(Param, fmt);
@@ -251,7 +251,7 @@ void fatalbox(char * fmt, ...)
   va_end(Param);
 }
 
-void modalfatalbox(char * fmt, ...)
+void modalfatalbox(const char * fmt, ...)
 {
   va_list Param;
   va_start(Param, fmt);
@@ -259,7 +259,7 @@ void modalfatalbox(char * fmt, ...)
   va_end(Param);
 }
 
-void nonfatal(char * fmt, ...)
+void nonfatal(const char * fmt, ...)
 {
   va_list Param;
   va_start(Param, fmt);
@@ -456,9 +456,12 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     assert(Type != nullptr);
     *Type = REG_SZ;
     char * DataStr = reinterpret_cast<char *>(Data);
-    size_t sz = static_cast<size_t>(*DataSize);
-    strncpy_s(DataStr, sz, Value.c_str(), sz);
-    DataStr[*DataSize - 1] = '\0';
+    int sz = static_cast<int>(*DataSize);
+    if (sz > 0)
+    {
+        strncpy(DataStr, Value.c_str(), sz);
+        DataStr[sz - 1] = '\0';
+    }
     *DataSize = static_cast<uint32_t>(strlen(DataStr));
   }
 

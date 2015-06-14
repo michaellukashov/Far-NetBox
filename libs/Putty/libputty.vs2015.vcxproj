@@ -212,6 +212,8 @@
     <ClCompile Include=".\SSHZLIB.c" />
     <ClCompile Include=".\TREE234.c" />
     <ClCompile Include=".\WILDCARD.c" />
+    <ClCompile Include=".\sshecc.c" />
+    <ClCompile Include=".\sshccp.c" />
     <ClCompile Include=".\windows\WINGSS.c" />
     <ClCompile Include=".\windows\WINHANDL.c" />
     <ClCompile Include=".\windows\WINMISC.c" />

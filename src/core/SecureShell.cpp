@@ -145,7 +145,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   // noop, used only for these and we set the first three explicitly below and latter two are not used in our code
 #define CONF_DEF_INT_INT(KEY) assert((KEY == CONF_ssh_cipherlist) || (KEY == CONF_ssh_kexlist) || (KEY == CONF_ssh_gsslist) || (KEY == CONF_colours) || (KEY == CONF_wordness));
   // noop, used only for these three and they all can handle undef value
-#define CONF_DEF_STR_STR(KEY) assert((KEY == CONF_ttymodes) || (KEY == CONF_portfwd) || (KEY == CONF_environmt));
+#define CONF_DEF_STR_STR(KEY) assert((KEY == CONF_ttymodes) || (KEY == CONF_portfwd) || (KEY == CONF_environmt) || (KEY == CONF_ssh_manual_hostkeys));
   // noop, not used in our code
 #define CONF_DEF_FONT_NONE(KEY) assert((KEY == CONF_font) || (KEY == CONF_boldfont) || (KEY == CONF_widefont) || (KEY == CONF_wideboldfont));
 #define CONF_DEF_FILENAME_NONE(KEY) \
@@ -2166,14 +2166,13 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   UnicodeString StoredKeys;
   AnsiString AnsiStoredKeys(10240, '\0');
 
-  if (retrieve_host_key(
+  if (verify_host_key(
         ::W2MB(Host2.c_str(),
              static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
         Port,
         ::W2MB(KeyType.c_str(),
             static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-            const_cast<char *>(AnsiStoredKeys.c_str()),
-            static_cast<int>(AnsiStoredKeys.Length())) == 0)
+            const_cast<char *>(AnsiStoredKeys.c_str())) == 0)
   {
     StoredKeys = AnsiStoredKeys.c_str();
     UnicodeString Buf = StoredKeys;
