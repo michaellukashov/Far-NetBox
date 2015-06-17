@@ -12487,7 +12487,7 @@ void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & /*AFileName*/
   TChmodSessionAction & /*Action*/)
 {
   Error(SNotImplemented, 1006);
-  assert(Properties);
+//  assert(Properties);
 }
 
 bool TWebDAVFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
