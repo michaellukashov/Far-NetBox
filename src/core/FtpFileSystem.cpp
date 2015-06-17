@@ -715,6 +715,23 @@ void TFTPFileSystem::CollectUsage()
   {
     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPApache");
   }
+  // 220 pos1 FTP server (GNU inetutils 1.3b) ready.
+  // ...
+  // SYST
+  // 215 UNIX Type: L8 Version: Linux 2.6.15.7-ELinOS-314pm3
+  // Displaying "(GNU inetutils 1.3b)" in a welcome message can be turned off (-q switch):
+  // 220 pos1 FTP server ready.
+  // (the same for "Version: Linux 2.6.15.7-ELinOS-314pm3" in SYST response)
+  else if (ContainsText(FWelcomeMessage, L"GNU inetutils"))
+  {
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPInetutils");
+  }
+  // 220 Syncplify.me Server! FTP(S) Service Ready
+  // Message is configurable
+  else if (ContainsText(FWelcomeMessage, L"Syncplify"))
+  {
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPSyncplify");
+  }
   else
   {
     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPOther");

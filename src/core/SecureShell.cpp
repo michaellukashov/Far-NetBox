@@ -2437,9 +2437,14 @@ void TSecureShell::CollectUsage()
   {
     Configuration->Usage->Inc(L"OpenedSessionsSSHOpenVMS");
   }
+  // SSH-2.0-Syncplify_Me_Server
+  else if (ContainsText(FSessionInfo.SshImplementation, L"Syncplify"))
+  {
+    Configuration->Usage->Inc(L"OpenedSessionsSSHSyncplify");
+  }
   else
   {
-    // Configuration->Usage->Inc(L"OpenedSessionsSSHOther");
+    Configuration->Usage->Inc(L"OpenedSessionsSSHOther");
   }
 */
 }

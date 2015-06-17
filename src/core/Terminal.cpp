@@ -686,6 +686,7 @@ TTerminal::TTerminal() :
   FReadingCurrentDirectory(false),
   FClosedOnCompletion(nullptr),
   FStatus(ssClosed),
+  FOpening(0),
   FTunnelThread(nullptr),
   FTunnel(nullptr),
   FTunnelData(nullptr),
@@ -912,6 +913,7 @@ void TTerminal::ResetConnection()
 
 void TTerminal::Open()
 {
+  TAutoNestingCounter OpeningCounter(FOpening);
   ReflectSettings();
   bool Reopen = false;
   do
@@ -2852,7 +2854,11 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * AFileList)
     }
     catch (Exception & E)
     {
-      if (!RobustLoop.TryReopen(E))
+      // Do not retry for initial listing of directory,
+      // we instead retry whole connection attempt,
+      // what would be done anyway (but Open is not ready for recursion).
+      if ((FOpening > 0) ||
+           !RobustLoop.TryReopen(E))
       {
         throw;
       }
@@ -5412,8 +5418,9 @@ void TTerminal::FileFind(const UnicodeString & AFileName,
 
     UnicodeString FullFileName = core::UnixExcludeTrailingBackslash(AFile->GetFullFileName());
     bool ImplicitMatch = false;
+    // Do not use recursive include match
     if (AParams->FileMask.Matches(FullFileName, false,
-         AFile->GetIsDirectory(), &MaskParams, ImplicitMatch))
+         AFile->GetIsDirectory(), &MaskParams, false, ImplicitMatch))
     {
       if (!ImplicitMatch)
       {

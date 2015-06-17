@@ -584,6 +584,7 @@ private:
   bool FReadingCurrentDirectory;
   bool * FClosedOnCompletion;
   TSessionStatus FStatus;
+  int FOpening;
   RawByteString FRememberedPassword;
   RawByteString FRememberedTunnelPassword;
   TTunnelThread * FTunnelThread;
