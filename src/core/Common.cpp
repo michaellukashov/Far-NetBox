@@ -2518,6 +2518,13 @@ TStringList * TextToStringList(const UnicodeString & Text)
   return List.release();
 }
 
+TStrings * CloneStrings(TStrings * Strings)
+{
+  std::unique_ptr<TStringList> List(new TStringList());
+  List->AddStrings(Strings);
+  return List.release();
+}
+
 UnicodeString TrimVersion(const UnicodeString & Version)
 {
   UnicodeString Result = Version;

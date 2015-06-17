@@ -118,6 +118,7 @@ UnicodeString FormatNumber(int64_t Size);
 UnicodeString FormatSize(int64_t Size);
 UnicodeString ExtractFileBaseName(const UnicodeString & APath);
 TStringList * TextToStringList(const UnicodeString & Text);
+TStrings * CloneStrings(TStrings * Strings);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
 TFormatSettings GetEngFormatSettings();
