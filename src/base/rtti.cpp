@@ -19,7 +19,7 @@ TClassInfo::TClassInfo(int classId,
 TClassInfo::~TClassInfo()
 {
   // remove this object from the linked list of all class infos: if we don't
-  // do it, loading/unloading a DLL containing static wxClassInfo objects is
+  // do it, loading/unloading a DLL containing static TClassInfo objects is
   // not going to work
   if (this == sm_first)
   {
@@ -27,7 +27,7 @@ TClassInfo::~TClassInfo()
   }
   else
   {
-    TClassInfo *info = sm_first;
+    TClassInfo * info = sm_first;
     while (info)
     {
       if (info->m_next == this)

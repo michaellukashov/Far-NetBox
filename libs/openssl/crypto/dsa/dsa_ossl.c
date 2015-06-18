@@ -106,23 +106,23 @@ static DSA_METHOD openssl_dsa_meth = {
 #define DSA_MOD_EXP(err_instr,dsa,rr,a1,p1,a2,p2,m,ctx,in_mont) \
         do { \
         int _tmp_res53; \
-        if((dsa)->meth->dsa_mod_exp) \
+        if ((dsa)->meth->dsa_mod_exp) \
                 _tmp_res53 = (dsa)->meth->dsa_mod_exp((dsa), (rr), (a1), (p1), \
                                 (a2), (p2), (m), (ctx), (in_mont)); \
         else \
                 _tmp_res53 = BN_mod_exp2_mont((rr), (a1), (p1), (a2), (p2), \
                                 (m), (ctx), (in_mont)); \
-        if(!_tmp_res53) err_instr; \
+        if (!_tmp_res53) err_instr; \
         } while(0)
 #define DSA_BN_MOD_EXP(err_instr,dsa,r,a,p,m,ctx,m_ctx) \
         do { \
         int _tmp_res53; \
-        if((dsa)->meth->bn_mod_exp) \
+        if ((dsa)->meth->bn_mod_exp) \
                 _tmp_res53 = (dsa)->meth->bn_mod_exp((dsa), (r), (a), (p), \
                                 (m), (ctx), (m_ctx)); \
         else \
                 _tmp_res53 = BN_mod_exp_mont((r), (a), (p), (m), (ctx), (m_ctx)); \
-        if(!_tmp_res53) err_instr; \
+        if (!_tmp_res53) err_instr; \
         } while(0)
 
 const DSA_METHOD *DSA_OpenSSL(void)
@@ -398,11 +398,7 @@ static int dsa_do_verify(const unsigned char *dgst, int dgst_len,
     ret = (BN_ucmp(&u1, sig->r) == 0);
 
  err:
-    /*
-     * XXX: surely this is wrong - if ret is 0, it just didn't verify; there
-     * is no error in BN. Test should be ret == -1 (Ben)
-     */
-    if (ret != 1)
+    if (ret < 0)
         DSAerr(DSA_F_DSA_DO_VERIFY, ERR_R_BN_LIB);
     if (ctx != NULL)
         BN_CTX_free(ctx);

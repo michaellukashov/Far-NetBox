@@ -125,7 +125,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleException");
+    DEBUG_PRINTF("before HandleException");
     HandleException(&E);
   }
 }
@@ -182,7 +182,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleException");
+    DEBUG_PRINTF("before HandleException");
     HandleException(&E);
   }
 }
@@ -298,7 +298,7 @@ intptr_t TCustomFarPlugin::Configure(const struct ConfigureInfo * Info)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleException");
+    DEBUG_PRINTF("before HandleException");
     HandleException(&E);
     return 0;
   }
@@ -337,7 +337,7 @@ void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo * Info)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleException");
+    DEBUG_PRINTF("before HandleException");
     HandleException(&E);
     return nullptr;
   }
@@ -365,7 +365,7 @@ void TCustomFarPlugin::ClosePanel(void * Plugin)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleException");
+    DEBUG_PRINTF("before HandleException");
     HandleException(&E);
   }
 }
@@ -380,12 +380,12 @@ void TCustomFarPlugin::HandleFileSystemException(
   // Check against object pointer is stupid, but no other idea so far.
   if (FOpenedPlugins->IndexOf(FarFileSystem) != NPOS)
   {
-    DEBUG_PRINTF(L"before FileSystem->HandleException");
+    DEBUG_PRINTF("before FileSystem->HandleException");
     FarFileSystem->HandleException(E, OpMode);
   }
   else
   {
-    DEBUG_PRINTF(L"before HandleException");
+    DEBUG_PRINTF("before HandleException");
     HandleException(E, OpMode);
   }
 }
@@ -406,7 +406,7 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo * Info)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleFileSystemException");
+    DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
   }
 }
@@ -426,7 +426,7 @@ intptr_t TCustomFarPlugin::GetFindData(struct GetFindDataInfo * Info)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleFileSystemException");
+    DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
     return 0;
   }
@@ -447,7 +447,7 @@ void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo * Info)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleFileSystemException");
+    DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
   }
 }
@@ -474,7 +474,7 @@ intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo * In
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleFileSystemException");
+    DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
     return 0;
   }
@@ -502,7 +502,7 @@ intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo 
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleFileSystemException");
+    DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
     // when error occurs, assume that key can be handled by plugin and
     // should not be processed by FAR
@@ -538,7 +538,7 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleFileSystemException");
+    DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
     return Info->Event == FE_COMMAND ? true : false;
   }
@@ -564,7 +564,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleFileSystemException");
+    DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
     if (FarFileSystem->GetOpenPanelInfoValid() && !PrevCurrentDirectory.IsEmpty())
     {
@@ -603,7 +603,7 @@ intptr_t TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo * Info)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleFileSystemException");
+    DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
     return 0;
   }
@@ -624,7 +624,7 @@ intptr_t TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo * Info)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleFileSystemException");
+    DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
     return 0;
   }
@@ -645,7 +645,7 @@ intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo * Info)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleFileSystemException");
+    DEBUG_PRINTF("before HandleFileSystemException");
     // display error even for OPM_FIND
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode & ~OPM_FIND);
     return 0;
@@ -667,7 +667,7 @@ intptr_t TCustomFarPlugin::PutFiles(const struct PutFilesInfo * Info)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleFileSystemException");
+    DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
     return 0;
   }
@@ -683,7 +683,7 @@ intptr_t TCustomFarPlugin::ProcessEditorEvent(const struct ProcessEditorEventInf
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleException");
+    DEBUG_PRINTF("before HandleException");
     HandleException(&E);
     return 0;
   }
@@ -699,7 +699,7 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const struct ProcessEditorInputInf
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleException");
+    DEBUG_PRINTF("before HandleException");
     HandleException(&E);
     // when error occurs, assume that input event can be handled by plugin and
     // should not be processed by FAR
@@ -1234,7 +1234,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
         }
         catch (Exception & E)
         {
-          DEBUG_PRINTF(L"before HandleException");
+          DEBUG_PRINTF("before HandleException");
           HandleException(&E);
           Repeat = true;
         }
@@ -1468,7 +1468,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
 {
   assert(FSavedTitles->GetCount() > 0);
   UnicodeString Title = FSavedTitles->GetString(FSavedTitles->GetCount() - 1);
-  TObject * Object = FSavedTitles->GetObj(FSavedTitles->GetCount()-1);
+  TObject * Object = FSavedTitles->GetObj(FSavedTitles->GetCount() - 1);
   TConsoleTitleParam * Param = NB_STATIC_DOWNCAST(TConsoleTitleParam, Object);
   if (Param->Own)
   {
@@ -1809,7 +1809,7 @@ TCustomFarFileSystem::~TCustomFarFileSystem()
 
 void TCustomFarFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
-  DEBUG_PRINTF(L"before FPlugin->HandleException");
+  DEBUG_PRINTF("before FPlugin->HandleException");
   FPlugin->HandleException(E, OpMode);
 }
 

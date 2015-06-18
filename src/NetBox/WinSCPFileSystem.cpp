@@ -120,7 +120,9 @@ UnicodeString TRemoteFilePanelItem::GetCustomColumnData(size_t Column)
     case 1: return FRemoteFile->GetRightsStr();
     case 2: return FRemoteFile->GetRights()->GetOctal();
     case 3: return FRemoteFile->GetLinkTo();
-    default: assert(false); return UnicodeString();
+    default:
+      FAIL;
+      return UnicodeString();
   }
 }
 
@@ -490,7 +492,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
             {
               FileSystem->ReadFile(LinkFileName, LinkFile);
             }
-            catch (const Exception & E)
+            catch (const Exception & /*E*/)
             {
               LinkFile = nullptr;
             }
@@ -1291,7 +1293,7 @@ void TWinSCPFileSystem::ApplyCommand()
               if (FileListCommand)
               {
                 UnicodeString LocalFile;
-                UnicodeString FileList = core::MakeFileList(RemoteFileList.get());
+                UnicodeString FileList2 = core::MakeFileList(RemoteFileList.get());
 
                 if (LocalFileCommand)
                 {
@@ -1301,7 +1303,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
                 TCustomCommandData Data2(FTerminal);
                 TLocalCustomCommand CustomCommand(Data2,
-                  GetTerminal()->GetCurrDirectory(), L"", LocalFile, FileList);
+                  GetTerminal()->GetCurrDirectory(), L"", LocalFile, FileList2);
                 ExecuteShellAndWait(GetWinSCPPlugin()->GetHandle(), CustomCommand.Complete(Command, true),
                   TProcessMessagesEvent());
               }
@@ -1673,7 +1675,7 @@ void TWinSCPFileSystem::DoSynchronize(
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before HandleException");
+    DEBUG_PRINTF("before HandleException");
     HandleException(&E);
     throw;
   }
@@ -2000,7 +2002,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & APath,
       {
         Close = true;
       }
-      DEBUG_PRINTF(L"before HandleException");
+      DEBUG_PRINTF("before HandleException");
       HandleException(&E);
     }
   }

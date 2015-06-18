@@ -251,7 +251,7 @@ public:
 	{
 		typedef rde::pair<iterator, bool> ret_type_t;
 		RDE_ASSERT(invariant());
-		if (m_numUsed * TLoadFactor4 >= m_capacity * 4)
+		if (m_numUsed * TLoadFactor4 >= (int)m_capacity * 4)
 			grow();
 
 		hash_value_t hash;

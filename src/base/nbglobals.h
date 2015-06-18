@@ -28,11 +28,13 @@
 #endif // ifdef USE_DLMALLOC
 
 #if defined(_MSC_VER)
+#if (_MSC_VER < 1900)
 
 #ifndef noexcept
 #define noexcept throw()
 #endif
 
+#endif
 #endif
 
 #if defined(__cplusplus)
@@ -92,13 +94,13 @@ inline void operator_delete(void * p)
 
 #ifdef _DEBUG
 #define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL \
-  void * operator new(size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
+  void * operator new(size_t sz, const char * /*lpszFileName*/, int /*nLine*/) \
   { \
-    return operator_new(size); \
+    return operator_new(sz); \
   } \
-  void * operator new[](size_t size, const char * /*lpszFileName*/, int /*nLine*/) \
+  void * operator new[](size_t sz, const char * /*lpszFileName*/, int /*nLine*/) \
   { \
-    return operator_new(size); \
+    return operator_new(sz); \
   } \
   void operator delete(void * p, const char * /*lpszFileName*/, int /*nLine*/) \
   { \

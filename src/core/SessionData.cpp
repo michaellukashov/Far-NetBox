@@ -1881,9 +1881,14 @@ UnicodeString TSessionData::GetStorageKey() const
   return GetSessionName();
 }
 
+UnicodeString TSessionData::FormatSiteKey(const UnicodeString & HostName, int PortNumber)
+{
+  return FORMAT(L"%s:%d", HostName.c_str(), PortNumber);
+}
+
 UnicodeString TSessionData::GetSiteKey() const
 {
-  return FORMAT(L"%s:%d", GetHostNameExpanded().c_str(), GetPortNumber());
+  return FormatSiteKey(GetHostNameExpanded(), GetPortNumber());
 }
 
 void TSessionData::SetHostName(const UnicodeString & Value)
@@ -2696,7 +2701,7 @@ void TSessionData::PrepareProxyData() const
     if (!WinHttpGetIEProxyConfigForCurrentUser(&IEProxyConfig))
     {
       DWORD Err = ::GetLastError();
-      DEBUG_PRINTF(L"Error reading system proxy configuration, code: %x", Err);
+      DEBUG_PRINTF("Error reading system proxy configuration, code: %x", Err);
     }
     else
     {

@@ -263,7 +263,7 @@ public:
 
   void ExitCode(int ExitCode)
   {
-    Parameter(L"exitcode", IntToStr(ExitCode));
+    Parameter(L"exitcode", ::IntToStr(ExitCode));
   }
 
   void Checksum(const UnicodeString & Alg, const UnicodeString & Checksum)
@@ -327,7 +327,9 @@ protected:
       case laStat: return L"stat";
       case laChecksum: return L"checksum";
       case laCwd: return L"cwd";
-      default: FAIL; return L"";
+      default:
+        FAIL;
+        return L"";
     }
   }
 
@@ -631,7 +633,8 @@ static FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * Session
   return Result;
 }
 
-const wchar_t *LogLineMarks = L"<>!.*";
+const wchar_t * LogLineMarks = L"<>!.*";
+
 TSessionLog::TSessionLog(TSessionUI * UI, TSessionData * SessionData,
   TConfiguration * Configuration) :
   TStringList(),
@@ -799,10 +802,11 @@ void TSessionLog::ReflectSettings()
     !FClosed &&
     ((FParent != nullptr) || FConfiguration->GetLogging());
 
+  bool Changed = false;
   if (FLogging != ALogging)
   {
     FLogging = ALogging;
-    StateChange();
+    Changed = true;
   }
 
   // if logging to file was turned off or log file was changed -> close current log file
@@ -813,6 +817,13 @@ void TSessionLog::ReflectSettings()
   }
 
   DeleteUnnecessary();
+
+  // trigger event only once we are in a consistent state
+  if (Changed)
+  {
+    StateChange();
+  }
+
 }
 
 bool TSessionLog::LogToFile() const

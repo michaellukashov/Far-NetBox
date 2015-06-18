@@ -14,6 +14,7 @@ my $pack_errcode;
 my $load_errcode;
 
 my $errcount;
+my $year = (localtime)[5] + 1900;
 
 while (@ARGV) {
 	my $arg = $ARGV[0];
@@ -391,7 +392,7 @@ foreach $lib (keys %csrc)
 	} else {
 	    push @out,
 "/* ====================================================================\n",
-" * Copyright (c) 2001-2011 The OpenSSL Project.  All rights reserved.\n",
+" * Copyright (c) 2001-$year The OpenSSL Project.  All rights reserved.\n",
 " *\n",
 " * Redistribution and use in source and binary forms, with or without\n",
 " * modification, are permitted provided that the following conditions\n",
@@ -534,14 +535,21 @@ EOF
 	# First, read any existing reason string definitions:
 	my %err_reason_strings;
 	if (open(IN,"<$cfile")) {
+		my $line = "";
 		while (<IN>) {
-			if (/\b(${lib}_R_\w*)\b.*\"(.*)\"/) {
-				$err_reason_strings{$1} = $2;
-			}
-			if (/\b${lib}_F_(\w*)\b.*\"(.*)\"/) {
-				if (!exists $ftrans{$1} && ($1 ne $2)) {
-					print STDERR "WARNING: Mismatched function string $2\n";
-					$ftrans{$1} = $2;
+			chomp;
+			$_ = $line . $_;
+			$line = "";
+			if (/{ERR_(FUNC|REASON)\(/) {
+				if (/\b(${lib}_R_\w*)\b.*\"(.*)\"/) {
+					$err_reason_strings{$1} = $2;
+				} elsif (/\b${lib}_F_(\w*)\b.*\"(.*)\"/) {
+					if (!exists $ftrans{$1} && ($1 ne $2)) {
+						print STDERR "WARNING: Mismatched function string $2\n";
+						$ftrans{$1} = $2;
+					}
+				} else {
+					$line = $_;
 				}
 			}
 		}
@@ -577,7 +585,7 @@ EOF
 	print OUT <<"EOF";
 /* $cfile */
 /* ====================================================================
- * Copyright (c) 1999-2011 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 1999-$year The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions

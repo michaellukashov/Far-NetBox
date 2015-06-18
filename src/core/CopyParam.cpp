@@ -409,7 +409,7 @@ UnicodeString TCopyParamType::ChangeFileName(const UnicodeString & AFileName,
       break;
     case ncFirstUpperCase:
       Result = Result.SubString(1, 1).UpperCase() +
-        Result.SubString(2, Result.Length()-1).LowerCase();
+        Result.SubString(2, Result.Length() - 1).LowerCase();
       break;
     case ncLowerCaseShort:
       if ((Result.Length() <= 12) && (Result.Pos(L".") <= 9) &&
@@ -439,11 +439,16 @@ bool TCopyParamType::UseAsciiTransfer(const UnicodeString & AFileName,
 {
   switch (GetTransferMode())
   {
-    case tmBinary: return false;
-    case tmAscii: return true;
-    case tmAutomatic: return GetAsciiFileMask().Matches(AFileName, (Side == osLocal),
-      false, &Params);
-    default: FAIL; return false;
+    case tmBinary:
+      return false;
+    case tmAscii:
+      return true;
+    case tmAutomatic:
+      return GetAsciiFileMask().Matches(AFileName, (Side == osLocal),
+        false, &Params);
+    default:
+      FAIL;
+      return false;
   }
 }
 
@@ -528,10 +533,15 @@ bool TCopyParamType::AllowResume(int64_t Size) const
 {
   switch (GetResumeSupport())
   {
-    case rsOn: return true;
-    case rsOff: return false;
-    case rsSmart: return (Size >= GetResumeThreshold());
-    default: FAIL; return false;
+    case rsOn:
+      return true;
+    case rsOff:
+      return false;
+    case rsSmart:
+      return (Size >= GetResumeThreshold());
+    default:
+      FAIL;
+      return false;
   }
 }
 
@@ -733,7 +743,7 @@ UnicodeString SetSpeedLimit(uintptr_t Limit)
   }
   else
   {
-    Result = IntToStr(Limit / 1024);
+    Result = ::IntToStr(Limit / 1024);
   }
   return Result;
 }

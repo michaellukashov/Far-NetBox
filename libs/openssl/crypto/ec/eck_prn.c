@@ -171,6 +171,7 @@ int ECPKParameters_print(BIO *bp, const EC_GROUP *x, int off)
     if (EC_GROUP_get_asn1_flag(x)) {
         /* the curve parameter are given by an asn1 OID */
         int nid;
+        const char *nname;
 
         if (!BIO_indent(bp, off, 128))
             goto err;
@@ -183,6 +184,13 @@ int ECPKParameters_print(BIO *bp, const EC_GROUP *x, int off)
             goto err;
         if (BIO_printf(bp, "\n") <= 0)
             goto err;
+        nname = EC_curve_nid2nist(nid);
+        if (nname) {
+            if (!BIO_indent(bp, off, 128))
+                goto err;
+            if (BIO_printf(bp, "NIST CURVE: %s\n", nname) <= 0)
+                goto err;
+        }
     } else {
         /* explicit parameters */
         int is_char_two = 0;
@@ -338,12 +346,14 @@ static int print_bin(BIO *fp, const char *name, const unsigned char *buf,
 
     if (buf == NULL)
         return 1;
-    if (off) {
+    if (off > 0) {
         if (off > 128)
             off = 128;
         memset(str, ' ', off);
         if (BIO_write(fp, str, off) <= 0)
             return 0;
+    } else {
+        off = 0;
     }
 
     if (BIO_printf(fp, "%s", name) <= 0)

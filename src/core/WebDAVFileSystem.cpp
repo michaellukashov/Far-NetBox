@@ -296,7 +296,7 @@ typedef struct list_func_baton_t
 #define AUTH_PARAM_NO_AUTH_CACHE AUTH_PARAM_PREFIX "no-auth-cache"
 // #define HASH_KEY_STRING ""
 
-#define MAX_REDIRECT_ATTEMPTS 3 // TODO:  Make configurable.
+#define MAX_REDIRECT_ATTEMPTS 5 // TODO:  Make configurable.
 
 // #define WEBDAV_ARRAY_IDX(ary,i,type) ((type)(ary)[i])
 #define WEBDAV_NO_ERROR 0
@@ -370,7 +370,7 @@ error_clear(error_t * err)
 static error_t
 make_error_internal(
   apr_status_t apr_err,
-  error_t * child)
+  error_t * /*child*/)
 {
   error_t new_error = apr_err;
   return new_error;
@@ -379,7 +379,7 @@ make_error_internal(
 static error_t
 error_create(
   apr_status_t apr_err,
-  error_t * child,
+  error_t * /*child*/,
   const char * message)
 {
   AnsiString Message = ::FormatA("Error, code: %d, message: %s", apr_err, message ? message : "");
@@ -1654,7 +1654,7 @@ ctype_casecmp(int a, int b)
 // prepared to deal with out-of-memory errors.
 
 static int
-abort_on_pool_failure(int retcode)
+abort_on_pool_failure(int /*retcode*/)
 {
   // Don't translate this string! It requires memory allocation to do so!
   // And we don't have any of it...
@@ -1695,7 +1695,7 @@ static error_t
 time_from_cstring(
   apr_time_t * when,
   const char * data,
-  apr_pool_t * pool)
+  apr_pool_t * /*pool*/)
 {
   apr_time_exp_t exploded_time;
   apr_status_t apr_err = 0;
@@ -2332,9 +2332,9 @@ utf8_to_unicode(
 // If it is not, return an error with code APR_EINVAL.
 static error_t
 check_utf8(
-  const char * data,
-  apr_size_t len,
-  apr_pool_t * pool)
+  const char * /*data*/,
+  apr_size_t /*len*/,
+  apr_pool_t * /*pool*/)
 {
   // TODO: if (!utf_is_valid(data, len)))
     // return invalid_utf8(data, len, pool);
@@ -2397,8 +2397,8 @@ convert_cstring(
 // If it is not, return an error with code APR_EINVAL.
 static APR_INLINE error_t
 check_cstring_utf8(
-  const char * data,
-  apr_pool_t * pool)
+  const char * /*data*/,
+  apr_pool_t * /*pool*/)
 {
 
   // TODO: if (!utf_cstring_is_valid(data))
@@ -3014,8 +3014,8 @@ static const char CertificateStorageKey[] = "HttpsCertificates";
 static error_t
 config_read_auth_data(
   apr_hash_t ** hash,
-  const char * cred_kind,
-  const char * realmstring,
+  const char * /*cred_kind*/,
+  const char * /*realmstring*/,
   TWebDAVFileSystem * fs,
   apr_pool_t * pool)
 {
@@ -3047,10 +3047,10 @@ config_read_auth_data(
 static error_t
 config_write_auth_data(
   apr_hash_t * hash,
-  const char * cred_kind,
-  const char * realmstring,
+  const char * /*cred_kind*/,
+  const char * /*realmstring*/,
   TWebDAVFileSystem * fs,
-  apr_pool_t * pool)
+  apr_pool_t * /*pool*/)
 {
   const char * subkey = CertificateStorageKey;
   assert(fs);
@@ -3097,11 +3097,11 @@ auth_simple_password_get(
   bool * done,
   const char ** password,
   apr_hash_t * creds,
-  const char * realmstring,
+  const char * /*realmstring*/,
   const char * username,
-  apr_hash_t * parameters,
-  bool non_interactive,
-  apr_pool_t * pool)
+  apr_hash_t * /*parameters*/,
+  bool /*non_interactive*/,
+  apr_pool_t * /*pool*/)
 {
   *done = false;
 
@@ -3124,11 +3124,11 @@ static error_t
 auth_simple_password_set(
   bool * done,
   apr_hash_t * creds,
-  const char * realmstring,
-  const char * username,
+  const char * /*realmstring*/,
+  const char * /*username*/,
   const char * password,
-  apr_hash_t * parameters,
-  bool non_interactive,
+  apr_hash_t * /*parameters*/,
+  bool /*non_interactive*/,
   apr_pool_t * pool)
 {
   apr_hash_set(creds, AUTHN_PASSWORD_KEY, APR_HASH_KEY_STRING,
@@ -3143,8 +3143,8 @@ static bool
 simple_username_get(
   const char ** username,
   apr_hash_t * creds,
-  const char * realmstring,
-  bool non_interactive)
+  const char * /*realmstring*/,
+  bool /*non_interactive*/)
 {
   string_t * str = static_cast<string_t *>(apr_hash_get(creds, AUTHN_USERNAME_KEY, APR_HASH_KEY_STRING));
   if (str && str->data)
@@ -3164,7 +3164,7 @@ static error_t
 auth_simple_first_creds_helper(
   void ** credentials,
   void ** iter_baton,
-  void * provider_baton,
+  void * /*provider_baton*/,
   apr_hash_t * parameters,
   const char * realmstring,
   auth_password_get_t password_get,
@@ -3759,11 +3759,11 @@ auth_ssl_client_cert_pw_get(
   bool * done,
   const char ** passphrase,
   apr_hash_t * creds,
-  const char * realmstring,
-  const char * username,
-  apr_hash_t * parameters,
-  bool non_interactive,
-  apr_pool_t * pool)
+  const char * /*realmstring*/,
+  const char * /*username*/,
+  apr_hash_t * /*parameters*/,
+  bool /*non_interactive*/,
+  apr_pool_t * /*pool*/)
 {
   string_t * str = static_cast<string_t *>(apr_hash_get(creds, AUTHN_PASSPHRASE_KEY, APR_HASH_KEY_STRING));
   if (str && str->data)
@@ -3782,11 +3782,11 @@ static error_t
 auth_ssl_client_cert_pw_set(
   bool * done,
   apr_hash_t * creds,
-  const char * realmstring,
-  const char * username,
+  const char * /*realmstring*/,
+  const char * /*username*/,
   const char * passphrase,
-  apr_hash_t * parameters,
-  bool non_interactive,
+  apr_hash_t * /*parameters*/,
+  bool /*non_interactive*/,
   apr_pool_t * pool)
 {
   apr_hash_set(creds, AUTHN_PASSPHRASE_KEY, APR_HASH_KEY_STRING,
@@ -3799,11 +3799,11 @@ static error_t
 auth_ssl_client_cert_pw_file_first_creds_helper(
   void ** credentials_p,
   void ** iter_baton,
-  void * provider_baton,
+  void * /*provider_baton*/,
   apr_hash_t * parameters,
   const char * realmstring,
   auth_password_get_t passphrase_get,
-  const char * passtype,
+  const char * /*passtype*/,
   apr_pool_t * pool)
 {
   bool non_interactive = apr_hash_get(parameters,
@@ -4130,9 +4130,9 @@ static error_t
 ssl_client_cert_pw_prompt_next_cred(
   void ** credentials_p,
   void * iter_baton,
-  void * provider_baton,
+  void * /*provider_baton*/,
   apr_hash_t * parameters,
-  const char * realmstring,
+  const char * /*realmstring*/,
   apr_pool_t * pool)
 {
   ssl_client_cert_pw_prompt_iter_baton_t * ib =
@@ -4586,9 +4586,9 @@ static error_t
 windows_ssl_server_trust_first_credentials(
   void ** credentials,
   void ** iter_baton,
-  void * provider_baton,
+  void * /*provider_baton*/,
   apr_hash_t * parameters,
-  const char * realmstring,
+  const char * /*realmstring*/,
   apr_pool_t * pool)
 {
   apr_uint32_t * failures = static_cast<apr_uint32_t *>(apr_hash_get(parameters,
@@ -4657,7 +4657,7 @@ static error_t
 username_first_creds(
   void ** credentials,
   void ** iter_baton,
-  void * provider_baton,
+  void * /*provider_baton*/,
   apr_hash_t * parameters,
   const char * realmstring,
   apr_pool_t * pool)
@@ -4719,7 +4719,7 @@ static error_t
 username_save_creds(
   bool * saved,
   void * credentials,
-  void * provider_baton,
+  void * /*provider_baton*/,
   apr_hash_t * parameters,
   const char * realmstring,
   apr_pool_t * pool)
@@ -5027,7 +5027,7 @@ static error_t
 auth_next_credentials(
   void ** credentials,
   auth_iterstate_t * state,
-  apr_pool_t * pool)
+  apr_pool_t * /*pool*/)
 {
   auth_baton_t * auth_baton = state->auth_baton;
   auth_provider_object_t * provider = nullptr;
@@ -6466,7 +6466,7 @@ static error_t
 cstring_from_utf8(
   const char ** path_apr,
   const char * path_utf8,
-  apr_pool_t * pool)
+  apr_pool_t * /*pool*/)
 {
   *path_apr = path_utf8;
   return WEBDAV_NO_ERROR;
@@ -6746,8 +6746,8 @@ stream_set_is_buffered(
 
 static error_t
 read_handler_empty(
-  void * baton,
-  char * buffer,
+  void * /*baton*/,
+  char * /*buffer*/,
   apr_size_t * len)
 {
   *len = 0;
@@ -6756,18 +6756,18 @@ read_handler_empty(
 
 static error_t
 write_handler_empty(
-  void * baton,
-  const char * data,
-  apr_size_t * len)
+  void * /*baton*/,
+  const char * /*data*/,
+  apr_size_t * /*len*/)
 {
   return WEBDAV_NO_ERROR;
 }
 
 static error_t
 mark_handler_empty(
-  void * baton,
+  void * /*baton*/,
   stream_mark_t ** mark,
-  apr_pool_t * pool)
+  apr_pool_t * /*pool*/)
 {
   *mark = nullptr; // Seek to start of stream marker
   return WEBDAV_NO_ERROR;
@@ -6775,14 +6775,14 @@ mark_handler_empty(
 
 static error_t
 seek_handler_empty(
-  void * baton,
-  const stream_mark_t * mark)
+  void * /*baton*/,
+  const stream_mark_t * /*mark*/)
 {
   return WEBDAV_NO_ERROR;
 }
 
 static bool
-is_buffered_handler_empty(void * baton)
+is_buffered_handler_empty(void * /*baton*/)
 {
   return false;
 }
@@ -6833,7 +6833,7 @@ stream_open_writable(
   stream_t ** stream,
   apr_os_file_t * thefile,
   apr_pool_t * result_pool,
-  apr_pool_t * scratch_pool)
+  apr_pool_t * /*scratch_pool*/)
 {
   apr_file_t * file = nullptr;
   WEBDAV_ERR(io_file_open_writable(&file,
@@ -7029,7 +7029,7 @@ start_207_element(
   int parent,
   const char * nspace,
   const char * name,
-  const char ** atts)
+  const char ** /*atts*/)
 {
   multistatus_baton_t * b = static_cast<multistatus_baton_t *>(baton);
   const neon_xml_elm_t * elm =
@@ -7074,8 +7074,8 @@ static error_t
 end_207_element(
   void * baton,
   int state,
-  const char * nspace,
-  const char * name)
+  const char * /*nspace*/,
+  const char * /*name*/)
 {
   multistatus_baton_t * b = static_cast<multistatus_baton_t *>(baton);
 
@@ -7340,7 +7340,7 @@ neon_set_neon_body_provider(
 static error_t
 parsed_request(
   neon_request_t * req,
-  neon_session_t * ras,
+  neon_session_t * /*ras*/,
   const char * method,
   const char * url,
   const char * body,
@@ -7497,7 +7497,7 @@ neon_lookup_xml_elem(
 static error_t
 neon_xml_collect_cdata(
   void * baton,
-  int state,
+  int /*state*/,
   const char * cdata,
   size_t len)
 {
@@ -7512,7 +7512,7 @@ neon_xml_collect_cdata(
 // Custom function of type ne_accept_response.
 static int
 ra_neon_error_accepter(
-  void * userdata,
+  void * /*userdata*/,
   ne_request * req,
   const ne_status * st)
 {
@@ -7769,8 +7769,8 @@ static int
 end_err_element(
   void * baton,
   int state,
-  const char * nspace,
-  const char * name)
+  const char * /*nspace*/,
+  const char * /*name*/)
 {
   error_parser_baton_t * b = static_cast<error_parser_baton_t *>(baton);
   error_t * err = &(b->tmp_err);
@@ -7819,7 +7819,7 @@ end_err_element(
 static int
 collect_error_cdata(
   void * baton,
-  int state,
+  int /*state*/,
   const char * cdata,
   size_t len)
 {
@@ -8402,7 +8402,7 @@ static error_t
 custom_get_request(
   neon_session_t * ras,
   const char * url,
-  const char * editor_relpath,
+  const char * /*editor_relpath*/,
   neon_block_reader reader,
   void * subctx,
   void * cb_baton,
@@ -8716,12 +8716,12 @@ list_func(
     entry.Size = dir == 0 ? dirent->size : 0;
     entry.Dir = dir != 0;
     entry.Link = false;
-    entry.Time.Year = exp_time.tm_year + 1900;
-    entry.Time.Month = exp_time.tm_mon + 1;
-    entry.Time.Day = exp_time.tm_mday;
-    entry.Time.Hour = exp_time.tm_hour;
-    entry.Time.Minute = exp_time.tm_min;
-    entry.Time.Second = exp_time.tm_sec;
+    entry.Time.Year = (WORD)exp_time.tm_year + 1900;
+    entry.Time.Month = (WORD)exp_time.tm_mon + 1;
+    entry.Time.Day = (WORD)exp_time.tm_mday;
+    entry.Time.Hour = (WORD)exp_time.tm_hour;
+    entry.Time.Minute = (WORD)exp_time.tm_min;
+    entry.Time.Second = (WORD)exp_time.tm_sec;
     entry.Time.HasTime = true;
     entry.Time.HasSeconds = true;
     entry.Time.HasDate = true;
@@ -8739,7 +8739,7 @@ client_url_from_path2(
   const char * path_or_url,
   stringbuf_t * session_url,
   apr_pool_t * result_pool,
-  apr_pool_t * scratch_pool)
+  apr_pool_t * /*scratch_pool*/)
 {
   if (!path_is_url(path_or_url))
   {
@@ -8834,9 +8834,9 @@ static error_t
 ssl_client_cert_file_first_credentials(
   void ** credentials_p,
   void ** iter_baton,
-  void * provider_baton,
-  apr_hash_t * parameters,
-  const char * realmstring,
+  void * /*provider_baton*/,
+  apr_hash_t * /*parameters*/,
+  const char * /*realmstring*/,
   apr_pool_t * pool)
 {
   const char * cert_file;
@@ -8942,9 +8942,9 @@ static error_t
 ssl_client_cert_prompt_next_cred(
   void ** credentials_p,
   void * iter_baton,
-  void * provider_baton,
+  void * /*provider_baton*/,
   apr_hash_t * parameters,
-  const char * realmstring,
+  const char * /*realmstring*/,
   apr_pool_t * pool)
 {
   ssl_client_cert_prompt_iter_baton_t * ib =
@@ -9004,7 +9004,7 @@ static error_t
 ssl_server_trust_file_first_credentials(
   void ** credentials,
   void ** iter_baton,
-  void * provider_baton,
+  void * /*provider_baton*/,
   apr_hash_t * parameters,
   const char * realmstring,
   apr_pool_t * pool)
@@ -9076,7 +9076,7 @@ static error_t
 ssl_server_trust_file_save_credentials(
   bool * saved,
   void * credentials,
-  void * provider_baton,
+  void * /*provider_baton*/,
   apr_hash_t * parameters,
   const char * realmstring,
   apr_pool_t * pool)
@@ -9218,11 +9218,11 @@ typedef struct cmdline_prompt_baton2_t
 static error_t
 plaintext_prompt_helper(
   bool * may_save_plaintext,
-  const char * realmstring,
+  const char * /*realmstring*/,
   const char * prompt_string,
   const char * prompt_text,
   void * baton,
-  apr_pool_t * pool)
+  apr_pool_t * /*pool*/)
 {
   cmdline_prompt_baton2_t * pb = static_cast<cmdline_prompt_baton2_t *>(baton);
 
@@ -9321,10 +9321,10 @@ static error_t
 cmdline_auth_ssl_server_trust_prompt(
   auth_cred_ssl_server_trust_t ** cred_p,
   void * baton,
-  const char * realm,
+  const char * /*realm*/,
   apr_uint32_t failures,
   const auth_ssl_server_cert_info_t * cert_info,
-  bool may_save,
+  bool /*may_save*/,
   apr_pool_t * pool)
 {
   cmdline_prompt_baton2_t * pb =
@@ -9406,7 +9406,7 @@ static error_t
 cmdline_auth_ssl_client_cert_prompt(
   auth_cred_ssl_client_cert_t ** cred_p,
   void * baton,
-  const char * realm,
+  const char * /*realm*/,
   bool may_save,
   apr_pool_t * pool)
 {
@@ -9477,7 +9477,7 @@ static error_t
 cmdline_auth_simple_prompt(
   auth_cred_simple_t ** cred_p,
   void * baton,
-  const char * realm,
+  const char * /*realm*/,
   const char * username,
   const char * password,
   bool may_save,
@@ -9525,7 +9525,7 @@ static error_t
 cmdline_auth_username_prompt(
   auth_cred_username_t ** cred_p,
   void * baton,
-  const char * realm,
+  const char * /*realm*/,
   bool may_save,
   apr_pool_t * pool)
 {
@@ -9556,11 +9556,11 @@ cmdline_auth_username_prompt(
 static error_t
 ssl_trust_unknown_server_cert(
   auth_cred_ssl_server_trust_t ** cred_p,
-  void * baton,
-  const char * realm,
+  void * /*baton*/,
+  const char * /*realm*/,
   apr_uint32_t failures,
-  const auth_ssl_server_cert_info_t * cert_info,
-  bool may_save,
+  const auth_ssl_server_cert_info_t * /*cert_info*/,
+  bool /*may_save*/,
   apr_pool_t * pool)
 {
   *cred_p = nullptr;
@@ -9718,7 +9718,7 @@ static volatile atomic_t cancelled = 0;
 
 // Our cancellation callback.
 static error_t
-check_cancel(void * baton)
+check_cancel(void * /*baton*/)
 {
   if (cancelled)
     return error_create(WEBDAV_ERR_CANCELLED, nullptr, "Cancelled");
@@ -9947,7 +9947,7 @@ options_start_element(
   int parent,
   const char * nspace,
   const char * name,
-  const char ** atts)
+  const char ** /*atts*/)
 {
   options_ctx_t * oc = static_cast<options_ctx_t *>(baton);
   const neon_xml_elm_t * elm = neon_lookup_xml_elem(options_elements, nspace, name);
@@ -9966,10 +9966,10 @@ options_start_element(
 
 static error_t
 options_end_element(
-  void * baton,
-  int state,
-  const char * nspace,
-  const char * name)
+  void * /*baton*/,
+  int /*state*/,
+  const char * /*nspace*/,
+  const char * /*name*/)
 {
   return WEBDAV_NO_ERROR;
 }
@@ -10264,7 +10264,7 @@ props_start_element(
   int parent,
   const char * nspace,
   const char * name,
-  const char ** atts)
+  const char ** /*atts*/)
 {
   propfind_ctx_t * pc = static_cast<propfind_ctx_t *>(baton);
   const neon_xml_elm_t * elm = neon_lookup_xml_elem(propfind_elements, nspace, name);
@@ -10683,7 +10683,7 @@ client_move_file_or_directory(
   session_t * session,
   const char * remote_path_from,
   const char * remote_path_to,
-  void * baton,
+  void * /*baton*/,
   apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
@@ -10717,7 +10717,7 @@ static error_t
 client_delete_file(
   session_t * session,
   const char * remote_path,
-  void * baton,
+  void * /*baton*/,
   apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
@@ -10799,7 +10799,7 @@ static error_t
 client_make_directory(
   session_t * session,
   const char * remote_path,
-  void * baton,
+  void * /*baton*/,
   apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
@@ -10875,7 +10875,7 @@ client_ssl_pkcs11_pin_entry(
   int attempt,
   const char * slot_descr,
   const char * token_label,
-  uint32_t flags,
+  uint32_t /*flags*/,
   char * pin)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(userdata);
@@ -10979,8 +10979,8 @@ static void
 client_ssl_callback(
   void * userdata,
   ne_session * sess,
-  const ne_ssl_dname * const * dnames,
-  int dncount)
+  const ne_ssl_dname * const * /*dnames*/,
+  int /*dncount*/)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(userdata);
   ne_ssl_client_cert * clicert = nullptr;
@@ -11166,7 +11166,7 @@ server_ssl_callback(
 static int
 proxy_auth(
   void * userdata,
-  const char * realm,
+  const char * /*realm*/,
   int attempt,
   char * username,
   char * password)
@@ -11296,7 +11296,7 @@ progress_func(
   apr_off_t progress,
   apr_off_t total,
   void * baton,
-  apr_pool_t * pool)
+  apr_pool_t * /*pool*/)
 {
   client_ctx_t * ctx = static_cast<client_ctx_t *>(baton);
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(ctx->auth_baton->parameters,
@@ -11355,8 +11355,8 @@ static atomic_t neon_initialized = 0;
 
 static error_t
 initialize_neon(
-  void * baton,
-  apr_pool_t * scratch_pool)
+  void * /*baton*/,
+  apr_pool_t * /*scratch_pool*/)
 {
   if (ne_sock_init() != 0)
     return error_create(WEBDAV_ERR_DAV_SOCK_INIT, nullptr,
@@ -11635,7 +11635,7 @@ static error_t
 neon_reparent(
   session_t * session,
   const char * url,
-  apr_pool_t * pool)
+  apr_pool_t * /*pool*/)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   ne_uri * uri = nullptr;
@@ -11935,7 +11935,7 @@ static error_t
 neon_get_webdav_resource_root(
   session_t * session,
   const char ** url,
-  apr_pool_t * pool)
+  apr_pool_t * /*pool*/)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
   assert(ras);
@@ -11960,7 +11960,7 @@ static const vtable_t neon_vtable =
 static error_t
 neon_init(
   const vtable_t ** vtable,
-  apr_pool_t * pool)
+  apr_pool_t * /*pool*/)
 {
   *vtable = &neon_vtable;
 
@@ -12002,7 +12002,8 @@ private:
 #define StrToNeon(S) UTF8String(S).c_str()
 #define StrFromNeon(S) UnicodeString(UTF8String(S))
 #define AbsolutePathToNeon(P) PathEscape(StrToNeon(P)).c_str()
-#define PathToNeon(P) AbsolutePathToNeon(AbsolutePath(P, false))
+#define PathToNeonStatic(THIS, P) AbsolutePathToNeon((THIS)->AbsolutePath(P, false))
+#define PathToNeon(P) PathToNeonStatic(this, P)
 
 void NeonInitialize()
 {
@@ -12110,7 +12111,7 @@ void TWebDAVFileSystem::Open()
         break;
       }
     }
-    catch (ExtException & E)
+    catch (ExtException & /*E*/)
     {
       throw;
     }
@@ -12148,7 +12149,7 @@ const TSessionInfo & TWebDAVFileSystem::GetSessionInfo() const
   return FSessionInfo;
 }
 
-const TFileSystemInfo & TWebDAVFileSystem::GetFileSystemInfo(bool Retrieve)
+const TFileSystemInfo & TWebDAVFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 {
   return FFileSystemInfo;
 }
@@ -12298,7 +12299,7 @@ void TWebDAVFileSystem::AnnounceFileListOperation()
   // noop
 }
 
-void TWebDAVFileSystem::DoChangeDirectory(const UnicodeString & Directory)
+void TWebDAVFileSystem::DoChangeDirectory(const UnicodeString & /*Directory*/)
 {
 }
 
@@ -12406,7 +12407,7 @@ void TWebDAVFileSystem::ReadFile(const UnicodeString & AFileName,
 }
 
 void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
-  TRemoteFile *& File, TRemoteFile * ALinkedByFile)
+  TRemoteFile *& File, TRemoteFile * /*ALinkedByFile*/)
 {
   File = nullptr;
   int IsDir = 0;
@@ -12419,8 +12420,8 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
   }
 }
 
-void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
+void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & /*AFileName*/,
+  const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & /*Action*/)
 {
   USEDPARAM(AFile);
   USEDPARAM(Params);
@@ -12443,8 +12444,8 @@ void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   }
 }
 
-void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
-  const UnicodeString & NewName)
+void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString & /*AFileName*/,
+  const UnicodeString & /*NewName*/)
 {
   Error(SNotImplemented, 1012);
 }
@@ -12475,18 +12476,18 @@ void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
   }
 }
 
-void TWebDAVFileSystem::CreateLink(const UnicodeString & AFileName,
-  const UnicodeString & PointTo, bool Symbolic)
+void TWebDAVFileSystem::CreateLink(const UnicodeString & /*AFileName*/,
+  const UnicodeString & /*PointTo*/, bool /*Symbolic*/)
 {
   Error(SNotImplemented, 1014);
 }
 
-void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, const TRemoteProperties * Properties,
-  TChmodSessionAction & Action)
+void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & /*AFileName*/,
+  const TRemoteFile * /*AFile*/, const TRemoteProperties * /*Properties*/,
+  TChmodSessionAction & /*Action*/)
 {
   Error(SNotImplemented, 1006);
-  assert(Properties);
+//  assert(Properties);
 }
 
 bool TWebDAVFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
@@ -12629,8 +12630,8 @@ void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   }
 }
 
-void TWebDAVFileSystem::AnyCommand(const UnicodeString & Command,
-  TCaptureOutputEvent OutputEvent)
+void TWebDAVFileSystem::AnyCommand(const UnicodeString & /*Command*/,
+  TCaptureOutputEvent /*OutputEvent*/)
 {
   Error(SNotImplemented, 1008);
 }
@@ -13523,8 +13524,8 @@ void TWebDAVFileSystem::FileTransferProgress(int64_t TransferSize,
 
 void TWebDAVFileSystem::FileTransfer(const UnicodeString & AFileName,
   const UnicodeString & LocalFile, const UnicodeString & RemoteFile,
-  const UnicodeString & RemotePath, bool Get, int64_t Size, int Type,
-  TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
+  const UnicodeString & RemotePath, bool Get, int64_t Size, int /*Type*/,
+  TFileTransferData & /*UserData*/, TFileOperationProgressType * OperationProgress)
 {
   FCurrentOperationProgress = OperationProgress;
   FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName.c_str()), "",

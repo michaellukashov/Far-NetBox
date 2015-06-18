@@ -479,6 +479,11 @@ int MAIN(int argc, char **argv)
                 goto bad;
             infile = *(++argv);
             dorevoke = 1;
+        } else if (strcmp(*argv, "-valid") == 0) {
+            if (--argc < 1)
+                goto bad;
+            infile = *(++argv);
+            dorevoke = 2;
         } else if (strcmp(*argv, "-extensions") == 0) {
             if (--argc < 1)
                 goto bad;
@@ -558,7 +563,7 @@ int MAIN(int argc, char **argv)
 #ifdef OPENSSL_SYS_VMS
         len = strlen(s) + sizeof(CONFIG_FILE);
         tofree = OPENSSL_malloc(len);
-        if(!tofree) {
+        if (!tofree) {
             BIO_printf(bio_err, "Out of memory\n");
             goto err;
         }
@@ -566,7 +571,7 @@ int MAIN(int argc, char **argv)
 #else
         len = strlen(s) + sizeof(CONFIG_FILE) + 1;
         tofree = OPENSSL_malloc(len);
-        if(!tofree) {
+        if (!tofree) {
             BIO_printf(bio_err, "Out of memory\n");
             goto err;
         }
@@ -1441,6 +1446,8 @@ int MAIN(int argc, char **argv)
             revcert = load_cert(bio_err, infile, FORMAT_PEM, NULL, e, infile);
             if (revcert == NULL)
                 goto err;
+            if (dorevoke == 2)
+                rev_type = -1;
             j = do_revoke(revcert, db, rev_type, rev_arg);
             if (j <= 0)
                 goto err;
@@ -1968,8 +1975,12 @@ static int do_body(X509 **xret, EVP_PKEY *pkey, X509 *x509,
 
     if (enddate == NULL)
         X509_time_adj_ex(X509_get_notAfter(ret), days, 0, NULL);
-    else
+    else {
+        int tdays;
         ASN1_TIME_set_string(X509_get_notAfter(ret), enddate);
+        ASN1_TIME_diff(&tdays, NULL, NULL, X509_get_notAfter(ret));
+        days = tdays;
+    }
 
     if (!X509_set_subject_name(ret, subject))
         goto err;
@@ -2409,12 +2420,19 @@ static int do_revoke(X509 *x509, CA_DB *db, int type, char *value)
         }
 
         /* Revoke Certificate */
-        ok = do_revoke(x509, db, type, value);
+        if (type == -1)
+            ok = 1;
+        else
+            ok = do_revoke(x509, db, type, value);
 
         goto err;
 
     } else if (index_name_cmp_noconst(row, rrow)) {
         BIO_printf(bio_err, "ERROR:name does not match %s\n", row[DB_name]);
+        goto err;
+    } else if (type == -1) {
+        BIO_printf(bio_err, "ERROR:Already present, serial number %s\n",
+                   row[DB_serial]);
         goto err;
     } else if (rrow[DB_type][0] == 'R') {
         BIO_printf(bio_err, "ERROR:Already revoked, serial number %s\n",
@@ -2803,7 +2821,7 @@ int unpack_revinfo(ASN1_TIME **prevtm, int *preason, ASN1_OBJECT **phold,
     ASN1_GENERALIZEDTIME *comp_time = NULL;
     tmp = BUF_strdup(str);
 
-    if(!tmp) {
+    if (!tmp) {
         BIO_printf(bio_err, "memory allocation failure\n");
         goto err;
     }
@@ -2825,7 +2843,7 @@ int unpack_revinfo(ASN1_TIME **prevtm, int *preason, ASN1_OBJECT **phold,
 
     if (prevtm) {
         *prevtm = ASN1_UTCTIME_new();
-        if(!*prevtm) {
+        if (!*prevtm) {
             BIO_printf(bio_err, "memory allocation failure\n");
             goto err;
         }
@@ -2869,7 +2887,7 @@ int unpack_revinfo(ASN1_TIME **prevtm, int *preason, ASN1_OBJECT **phold,
                 goto err;
             }
             comp_time = ASN1_GENERALIZEDTIME_new();
-            if(!comp_time) {
+            if (!comp_time) {
                 BIO_printf(bio_err, "memory allocation failure\n");
                 goto err;
             }

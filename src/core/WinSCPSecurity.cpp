@@ -83,7 +83,7 @@ UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeStrin
   }
   else
     Length = Flag;
-  Psw.Delete(1, (static_cast<Integer>(SimpleDecryptNextChar(Psw))*2));
+  Psw.Delete(1, (static_cast<Integer>(SimpleDecryptNextChar(Psw)) * 2));
   for (Index = 0; Index < Length; ++Index)
     Result += static_cast<char>(SimpleDecryptNextChar(Psw));
   if (Flag == PWALG_SIMPLE_FLAG)

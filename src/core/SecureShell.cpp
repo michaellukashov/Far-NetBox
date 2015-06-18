@@ -145,7 +145,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   // noop, used only for these and we set the first three explicitly below and latter two are not used in our code
 #define CONF_DEF_INT_INT(KEY) assert((KEY == CONF_ssh_cipherlist) || (KEY == CONF_ssh_kexlist) || (KEY == CONF_ssh_gsslist) || (KEY == CONF_colours) || (KEY == CONF_wordness));
   // noop, used only for these three and they all can handle undef value
-#define CONF_DEF_STR_STR(KEY) assert((KEY == CONF_ttymodes) || (KEY == CONF_portfwd) || (KEY == CONF_environmt));
+#define CONF_DEF_STR_STR(KEY) assert((KEY == CONF_ttymodes) || (KEY == CONF_portfwd) || (KEY == CONF_environmt) || (KEY == CONF_ssh_manual_hostkeys));
   // noop, not used in our code
 #define CONF_DEF_FONT_NONE(KEY) assert((KEY == CONF_font) || (KEY == CONF_boldfont) || (KEY == CONF_widefont) || (KEY == CONF_wideboldfont));
 #define CONF_DEF_FILENAME_NONE(KEY) \
@@ -535,21 +535,6 @@ bool TSecureShell::TryFtp()
         LogEvent("FTP port did not open.");
       }
     }
-  }
-  return Result;
-}
-
-UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uintptr_t CodePage) const
-{
-  UnicodeString Result;
-  if (GetUtfStrings())
-  {
-    Result = UnicodeString(UTF8String(Input.c_str()));
-  }
-  else
-  {
-//    Result = UnicodeString(AnsiString(Input.c_str()));
-    Result = ::MB2W(Input.c_str(), static_cast<UINT>(CodePage));
   }
   return Result;
 }
@@ -1136,6 +1121,21 @@ UnicodeString TSecureShell::ReceiveLine()
 //  UnicodeString Result = ::TrimRight(::MB2W(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber()));
   UnicodeString Result = ConvertInput(Line, FSessionData->GetCodePageAsNumber());
   CaptureOutput(llOutput, Result);
+  return Result;
+}
+
+UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uintptr_t CodePage) const
+{
+  UnicodeString Result;
+  if (GetUtfStrings())
+  {
+    Result = UnicodeString(UTF8String(Input.c_str()));
+  }
+  else
+  {
+//    Result = UnicodeString(AnsiString(Input.c_str()));
+    Result = ::MB2W(Input.c_str(), static_cast<UINT>(CodePage));
+  }
   return Result;
 }
 
@@ -2166,14 +2166,13 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   UnicodeString StoredKeys;
   AnsiString AnsiStoredKeys(10240, '\0');
 
-  if (retrieve_host_key(
+  if (verify_host_key(
         ::W2MB(Host2.c_str(),
              static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
         Port,
         ::W2MB(KeyType.c_str(),
             static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-            const_cast<char *>(AnsiStoredKeys.c_str()),
-            static_cast<int>(AnsiStoredKeys.Length())) == 0)
+            const_cast<char *>(AnsiStoredKeys.c_str())) == 0)
   {
     StoredKeys = AnsiStoredKeys.c_str();
     UnicodeString Buf = StoredKeys;
@@ -2434,9 +2433,18 @@ void TSecureShell::CollectUsage()
   {
     Configuration->Usage->Inc(L"OpenedSessionsSSHApache");
   }
+  else if (ContainsText(FSessionInfo.SshImplementation, L"OpenVMS"))
+  {
+    Configuration->Usage->Inc(L"OpenedSessionsSSHOpenVMS");
+  }
+  // SSH-2.0-Syncplify_Me_Server
+  else if (ContainsText(FSessionInfo.SshImplementation, L"Syncplify"))
+  {
+    Configuration->Usage->Inc(L"OpenedSessionsSSHSyncplify");
+  }
   else
   {
-    // Configuration->Usage->Inc(L"OpenedSessionsSSHOther");
+    Configuration->Usage->Inc(L"OpenedSessionsSSHOther");
   }
 */
 }

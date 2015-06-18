@@ -1,4 +1,3 @@
-
 #pragma once
 
 #define PWALG_SIMPLE 1

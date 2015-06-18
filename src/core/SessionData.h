@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "Common.h"
@@ -373,6 +372,7 @@ public:
   static UnicodeString ExtractFolderName(const UnicodeString & Name);
   static UnicodeString ComposePath(const UnicodeString & APath, const UnicodeString & Name);
   static bool IsSensitiveOption(const UnicodeString & Option);
+  static UnicodeString FormatSiteKey(const UnicodeString & HostName, int PortNumber);
 
   UnicodeString GetHostName() const { return FHostName; }
   intptr_t GetPortNumber() const { return FPortNumber; }
@@ -850,6 +850,7 @@ public:
   static UnicodeString __fastcall ExtractFolderName(const UnicodeString & Name);
   static UnicodeString __fastcall ComposePath(const UnicodeString & Path, const UnicodeString & Name);
   static bool __fastcall IsSensitiveOption(const UnicodeString & Option);
+  static UnicodeString __fastcall FormatSiteKey(const UnicodeString & HostName, int PortNumber);
 
   __property UnicodeString HostName  = { read=FHostName, write=SetHostName };
   __property UnicodeString HostNameExpanded  = { read=GetHostNameExpanded };

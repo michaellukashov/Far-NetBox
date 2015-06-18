@@ -22,7 +22,7 @@
 #endif
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, off)
+//#pragma component(minrebuild, off)
 #endif 
 
 #ifdef _AFX_PACKING
@@ -247,7 +247,7 @@ protected:
 #define AFX_DATA
 
 #ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, on)
+//#pragma component(minrebuild, on)
 #endif
 
 #endif  // __AFXMT_H__

@@ -3268,7 +3268,7 @@ public :
 	}
 };
 
-#pragma managed(push, off)
+//#pragma managed(push, off)
 
 template <class T>
 inline BOOL WINAPI CAtlDllModuleT<T>::DllMain(
@@ -3291,7 +3291,7 @@ inline BOOL WINAPI CAtlDllModuleT<T>::DllMain(
 #endif
 }
 
-#pragma managed(pop)
+//#pragma managed(pop)
 
 #ifndef _AFX
 
@@ -3783,7 +3783,7 @@ private:
 		_In_ BOOL bIsVerIndProgID);
 };
 
-#pragma managed(push, off)
+//#pragma managed(push, off)
 inline BOOL WINAPI CComModule::DllMain(
 	_In_ HINSTANCE hInstance,
 	_In_ DWORD dwReason,
@@ -3807,7 +3807,7 @@ inline BOOL WINAPI CComModule::DllMain(
 	return _DllMain(hInstance, dwReason, lpReserved, pObjMap, pLibID);
 #endif
 }
-#pragma managed(pop)
+//#pragma managed(pop)
 
 #endif	// !_ATL_NO_COMMODULE
 

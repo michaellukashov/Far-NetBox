@@ -2505,11 +2505,12 @@ void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & p
 
 	#define LISTFILE_INIT	-1
 	#define LISTFILE_MLST	1
-	#define LISTFILE_SIZE	2
-	#define LISTFILE_MDTM	3
-	#define LISTFILE_PWD	4
-	#define LISTFILE_CWD	5
-	#define LISTFILE_CWD2	6
+  #define LISTFILE_TYPE  2
+  #define LISTFILE_SIZE  3
+  #define LISTFILE_MDTM  4
+  #define LISTFILE_PWD   5
+  #define LISTFILE_CWD   6
+  #define LISTFILE_CWD2  7
 
 	ASSERT(!m_Operation.nOpMode || m_Operation.nOpMode&CSMODE_LISTFILE);
 
@@ -2535,7 +2536,8 @@ void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & p
 		pData = new CListFileData;
 		pData->fileName = filename;
 		pData->dir = path.GetPath();
-		pData->path = path.FormatFilename(filename);
+		// special case for listing a root folder
+		pData->path = (filename == L"/") ? pData->dir : path.FormatFilename(filename);
 		m_Operation.pData = pData;
 		ShowStatus(IDS_STATUSMSG_RETRIEVINGLISTFILE, FZ_LOG_STATUS);
 		if (UsingMlsd())
@@ -2615,9 +2617,13 @@ void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & p
 		else
 		{
 			// CWD failed, file is not a directory, we should not need to restore PWD.
-			if (Send(L"SIZE " + pData->path))
+
+			// Force binary mode, as according to RFC 6359,
+			// SIZE command returns size as transferred over the stream.
+			// Moreover ProFTPD does not even support SIZE command in ASCII mode
+			if (Send(L"TYPE I"))
 			{
-				m_Operation.nOpState = LISTFILE_SIZE;
+				m_Operation.nOpState = LISTFILE_TYPE;
 			}
 			else
 			{
@@ -2640,6 +2646,17 @@ void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & p
 			error = TRUE;
 		}
 		break;
+  case LISTFILE_TYPE:
+    // Do not really care if TYPE succeeded or not
+    if (Send(L"SIZE " + pData->path))
+    {
+      m_Operation.nOpState = LISTFILE_SIZE;
+    }
+    else
+    {
+      error = TRUE;
+    }
+    break;
 	case LISTFILE_SIZE:
 		code = GetReplyCode();
 		// Ignore SIZE errors for directories
@@ -2683,8 +2700,9 @@ void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & p
 		pDirectoryListing->path.SetServer(pDirectoryListing->server);
 		pDirectoryListing->path = pData->dir;
 		ShowStatus(IDS_STATUSMSG_LISTFILESUCCESSFUL,FZ_LOG_STATUS);
-		SetDirectoryListing(pDirectoryListing);
-		delete pDirectoryListing;
+		// do not use SetDirectoryListing as that would make
+		// later operations believe that there's only this one file in the folder
+		m_pOwner->SendDirectoryListing(pDirectoryListing);
 		ResetOperation(FZ_REPLY_OK);
 	}
 }
@@ -3977,6 +3995,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 				m_pTransferSocket->m_pFile = m_pDataFile;
 				if (!pData->transferfile.get)
 				{
+					// See comment in !get branch below
 					pData->transferdata.transfersize=GetLength64(*m_pDataFile);
 					pData->transferdata.transferleft=pData->transferdata.transfersize;
 					if (pData->transferdata.bResume)
@@ -4003,6 +4022,9 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 				}
 				else
 				{
+					// Resetting transfersize here is pointless as we
+					// always provide valid size in call to FileTransfer.
+					// We unnecessary reply on the file being in the directory listing.
 					pData->transferdata.transfersize=-1;
 					CString remotefile=pData->transferfile.remotefile;
 					if (m_pDirectoryListing)
@@ -4010,8 +4032,8 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 						{
 							if (m_pDirectoryListing->direntry[i].name==remotefile)
 							{
-									pData->hasRemoteDate = true;
-									pData->remoteDate = m_pDirectoryListing->direntry[i].date;
+							    pData->hasRemoteDate = true;
+							    pData->remoteDate = m_pDirectoryListing->direntry[i].date;
 								pData->transferdata.transfersize=m_pDirectoryListing->direntry[i].size;
 							}
 						}

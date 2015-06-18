@@ -34,6 +34,7 @@
     <ClCompile Include="src\trees.c" />
     <ClCompile Include="src\uncompr.c" />
     <ClCompile Include="src\zutil.c" />
+    <ClCompile Include="src\match.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\crc32.h" />
@@ -47,6 +48,7 @@
     <ClInclude Include="src\zconf.h" />
     <ClInclude Include="src\zlib.h" />
     <ClInclude Include="src\zutil.h" />
+    <ClInclude Include="src\match.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E9F6071A-D2BC-471E-8899-5F49B024AA04}</ProjectGuid>

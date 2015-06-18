@@ -343,8 +343,8 @@ uintptr_t TFileOperationProgressType::LocalBlockSize()
   {
     Result = static_cast<uintptr_t>(LocalSize - LocallyUsed);
   }
-  Result = AdjustToCPSLimit(Result);
-  return Result;
+  Result = (int64_t)AdjustToCPSLimit((uintptr_t)Result);
+  return (uintptr_t)Result;
 }
 
 void TFileOperationProgressType::SetTotalSize(int64_t ASize)

@@ -325,50 +325,57 @@ endif()
 #-------------------------------------------------------------------------------
 
 add_library(putty STATIC
-  ${LIBS_ROOT}/Putty/CPROXY.c
-  ${LIBS_ROOT}/Putty/INT64.c
-  ${LIBS_ROOT}/Putty/LOGGING.c
-  ${LIBS_ROOT}/Putty/MISC.c
-  ${LIBS_ROOT}/Putty/PGSSAPI.c
-  ${LIBS_ROOT}/Putty/PORTFWD_.c
-  ${LIBS_ROOT}/Putty/PROXY.c
-  ${LIBS_ROOT}/Putty/SSH_.c
-  ${LIBS_ROOT}/Putty/SSHAES_.c
-  ${LIBS_ROOT}/Putty/SSHARCF.c
-  ${LIBS_ROOT}/Putty/SSHBLOWF.c
-  ${LIBS_ROOT}/Putty/SSHBN.c
-  ${LIBS_ROOT}/Putty/SSHCRC.c
-  ${LIBS_ROOT}/Putty/SSHCRCDA.c
-  ${LIBS_ROOT}/Putty/SSHDES.c
-  ${LIBS_ROOT}/Putty/SSHDH.c
-  ${LIBS_ROOT}/Putty/SSHDSS.c
-  ${LIBS_ROOT}/Putty/SSHGSSC.c
-  ${LIBS_ROOT}/Putty/SSHMD5.c
-  ${LIBS_ROOT}/Putty/SSHPUBK.c
-  ${LIBS_ROOT}/Putty/SSHRAND.c
-  ${LIBS_ROOT}/Putty/SSHRSA.c
-  ${LIBS_ROOT}/Putty/SSHSH256.c
-  ${LIBS_ROOT}/Putty/SSHSH512.c
-  ${LIBS_ROOT}/Putty/SSHSHA_.c
-  ${LIBS_ROOT}/Putty/SSHZLIB.c
-  ${LIBS_ROOT}/Putty/TREE234.c
-  ${LIBS_ROOT}/Putty/WILDCARD.c
-  ${LIBS_ROOT}/Putty/WINDOWS/WINGSS.c
-  ${LIBS_ROOT}/Putty/WINDOWS/WINHANDL.c
-  ${LIBS_ROOT}/Putty/WINDOWS/WINMISC.c
-  ${LIBS_ROOT}/Putty/WINDOWS/WINNET.c
-  ${LIBS_ROOT}/Putty/WINDOWS/WINNOISE.c
-  ${LIBS_ROOT}/Putty/WINDOWS/WINNOJMP.c
-  ${LIBS_ROOT}/Putty/WINDOWS/WINPGNTC.c
-  ${LIBS_ROOT}/Putty/WINDOWS/WINPROXY.c
-  ${LIBS_ROOT}/Putty/WINDOWS/WINSTORE_.c
-  ${LIBS_ROOT}/Putty/WINDOWS/WINTIME.c
-  ${LIBS_ROOT}/Putty/X11FWD.c
-  ${LIBS_ROOT}/Putty/CONF.c
-  ${LIBS_ROOT}/Putty/CALLBACK.c
+  ${LIBS_ROOT}/Putty/cproxy.c
+  ${LIBS_ROOT}/Putty/int64.c
+  ${LIBS_ROOT}/Putty/logging.c
+  ${LIBS_ROOT}/Putty/misc.c
+  ${LIBS_ROOT}/Putty/pgssapi.c
+  ${LIBS_ROOT}/Putty/portfwd_.c
+  ${LIBS_ROOT}/Putty/proxy.c
+  ${LIBS_ROOT}/Putty/ssh_.c
+  ${LIBS_ROOT}/Putty/sshaes_.c
+  ${LIBS_ROOT}/Putty/ssharcf.c
+  ${LIBS_ROOT}/Putty/sshblowf.c
+  ${LIBS_ROOT}/Putty/sshbn.c
+  ${LIBS_ROOT}/Putty/sshcrc.c
+  ${LIBS_ROOT}/Putty/sshcrcda.c
+  ${LIBS_ROOT}/Putty/sshdes.c
+  ${LIBS_ROOT}/Putty/sshdh.c
+  ${LIBS_ROOT}/Putty/sshdss.c
+  ${LIBS_ROOT}/Putty/sshgssc.c
+  ${LIBS_ROOT}/Putty/sshmd5.c
+  ${LIBS_ROOT}/Putty/sshpubk.c
+  ${LIBS_ROOT}/Putty/sshrand.c
+  ${LIBS_ROOT}/Putty/sshrsa.c
+  ${LIBS_ROOT}/Putty/sshsh256.c
+  ${LIBS_ROOT}/Putty/sshsh512.c
+  ${LIBS_ROOT}/Putty/sshsha_.c
+  ${LIBS_ROOT}/Putty/sshzlib.c
+  ${LIBS_ROOT}/Putty/tree234.c
+  ${LIBS_ROOT}/Putty/wildcard.c
+  ${LIBS_ROOT}/Putty/windows/wingss.c
+  ${LIBS_ROOT}/Putty/windows/winhandl.c
+  ${LIBS_ROOT}/Putty/windows/winmisc.c
+  ${LIBS_ROOT}/Putty/windows/winnet.c
+  ${LIBS_ROOT}/Putty/windows/winnoise.c
+  ${LIBS_ROOT}/Putty/windows/winnojmp.c
+  ${LIBS_ROOT}/Putty/windows/winpgntc.c
+  ${LIBS_ROOT}/Putty/windows/winproxy.c
+  ${LIBS_ROOT}/Putty/windows/winstore_.c
+  ${LIBS_ROOT}/Putty/windows/wintime.c
+  ${LIBS_ROOT}/Putty/windows/winhsock.c
+  ${LIBS_ROOT}/Putty/x11fwd.c
+  ${LIBS_ROOT}/Putty/conf.c
+  ${LIBS_ROOT}/Putty/callback.c
+  ${LIBS_ROOT}/Putty/sshshare.c
+  ${LIBS_ROOT}/Putty/noshare.c
+  ${LIBS_ROOT}/Putty/errsock.c
+  ${LIBS_ROOT}/Putty/sshecc.c
+  ${LIBS_ROOT}/Putty/sshccp.c
+#  ${LIBS_ROOT}/Putty/ldisc.c
 )
 
-set(PUTTY_COMPILE_FLAGS "-D_CRTIMP= -DLibrary -DSECURITY_WIN32 -D_MT -DNET_SETUP_DIAGNOSTICS -DNO_SECURITY")
+set(PUTTY_COMPILE_FLAGS "-D_CRTIMP= -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -DNO_SECURITY")
 
 if(MSVC)
 set_target_properties(putty
@@ -562,6 +569,7 @@ add_library(zlib STATIC
   ${LIBS_ROOT}/zlib/src/trees.c
 #  ${LIBS_ROOT}/zlib/src/uncompr.c
   ${LIBS_ROOT}/zlib/src/zutil.c
+  ${LIBS_ROOT}/zlib/src/match.c
 )
 
 set_target_properties(zlib

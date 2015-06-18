@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <CoreDefs.hpp>
@@ -32,6 +31,8 @@ UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);
 void PackStr(UnicodeString & Str);
 void PackStr(RawByteString & Str);
 void Shred(UnicodeString & Str);
+UnicodeString AnsiToString(const RawByteString & S);
+UnicodeString AnsiToString(const char * S, size_t Len);
 UnicodeString MakeValidFileName(const UnicodeString & AFileName);
 UnicodeString RootKeyToStr(HKEY RootKey);
 UnicodeString BooleanToStr(bool B);
@@ -44,7 +45,7 @@ UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
 UnicodeString CopyToChar(const UnicodeString & Str, wchar_t Ch, bool Trim);
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars);
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
-UnicodeString ExceptionLogString(Exception *E);
+UnicodeString ExceptionLogString(Exception * E);
 UnicodeString MainInstructions(const UnicodeString & S);
 UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S);
 bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions);
@@ -117,6 +118,7 @@ UnicodeString FormatNumber(int64_t Size);
 UnicodeString FormatSize(int64_t Size);
 UnicodeString ExtractFileBaseName(const UnicodeString & APath);
 TStringList * TextToStringList(const UnicodeString & Text);
+TStrings * CloneStrings(TStrings * Strings);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
 TFormatSettings GetEngFormatSettings();

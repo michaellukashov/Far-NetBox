@@ -658,13 +658,6 @@ inline double Trunc(double Value) { double intpart; modf(Value, &intpart); retur
 inline double Frac(double Value) { double intpart; return modf(Value, &intpart); }
 inline double Abs(double Value) { return fabs(Value); }
 
-class TCustomIniFile : public TObject
-{
-public:
-  TCustomIniFile() {}
-  virtual ~TCustomIniFile() {}
-};
-
 class TGlobalFunctionsIntf
 {
 public:

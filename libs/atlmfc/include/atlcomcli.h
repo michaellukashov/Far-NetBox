@@ -510,7 +510,7 @@ public:
 		_In_ int nParams, 
 		_Out_opt_ VARIANT* pvarRet = NULL) throw()
 	{
-		DISPPARAMS dispparams = { pvarParams, NULL, nParams, 0};
+		DISPPARAMS dispparams = { pvarParams, NULL, (UINT)nParams, 0};
 		return p->Invoke(dispid, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &dispparams, pvarRet, NULL, NULL);
 	}
 	// Invoke a method by name with Nparameters

@@ -135,7 +135,6 @@ enum TObjectClassId
   OBJECT_CLASS_TRegistry,
   OBJECT_CLASS_TShortCut,
   OBJECT_CLASS_TDelphiSet,
-  OBJECT_CLASS_TCustomIniFile,
   OBJECT_CLASS_TFormatSettings,
   OBJECT_CLASS_TCriticalSection,
   OBJECT_CLASS_TBookmarks,

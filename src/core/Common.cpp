@@ -109,6 +109,16 @@ void Shred(UnicodeString & Str)
   }
 }
 
+UnicodeString AnsiToString(const RawByteString & S)
+{
+  return UnicodeString(AnsiString(S));
+}
+
+UnicodeString AnsiToString(const char * S, size_t Len)
+{
+  return UnicodeString(AnsiString(S, Len));
+}
+
 UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result = AFileName;
@@ -1877,7 +1887,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
   return Result;
 }
 
-UnicodeString FormatTimeZone(intptr_t Sec)
+UnicodeString FormatTimeZone(intptr_t /*Sec*/)
 {
   UnicodeString Str;
 /*
@@ -2505,6 +2515,13 @@ TStringList * TextToStringList(const UnicodeString & Text)
 {
   std::unique_ptr<TStringList> List(new TStringList());
   List->SetText(Text);
+  return List.release();
+}
+
+TStrings * CloneStrings(TStrings * Strings)
+{
+  std::unique_ptr<TStringList> List(new TStringList());
+  List->AddStrings(Strings);
   return List.release();
 }
 

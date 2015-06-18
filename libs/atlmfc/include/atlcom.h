@@ -1403,11 +1403,11 @@ public:
 	};
 };
 
-#pragma managed(push, off)
+//#pragma managed(push, off)
 inline void WINAPI CComObjectRootBase::ObjectMain(_In_ bool /* bStarting */)
 {
 }
-#pragma managed(pop)
+//#pragma managed(pop)
 
 
 //foward declaration

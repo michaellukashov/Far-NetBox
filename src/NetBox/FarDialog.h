@@ -1,4 +1,3 @@
-
 #pragma once
 
 #pragma warning(push, 1)
@@ -162,7 +161,7 @@ public:
   void SetTop(intptr_t Value) { SetPosition(1, Value); }
   bool GetEnabled() const { return FEnabled; }
   void SetEnabled(bool Value);
-  void SetPosition(intptr_t Index, intptr_t Value);
+  void SetPosition(intptr_t AIndex, intptr_t Value);
   intptr_t GetItemCount() const;
 
 protected:

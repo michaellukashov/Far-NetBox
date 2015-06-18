@@ -715,6 +715,23 @@ void TFTPFileSystem::CollectUsage()
   {
     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPApache");
   }
+  // 220 pos1 FTP server (GNU inetutils 1.3b) ready.
+  // ...
+  // SYST
+  // 215 UNIX Type: L8 Version: Linux 2.6.15.7-ELinOS-314pm3
+  // Displaying "(GNU inetutils 1.3b)" in a welcome message can be turned off (-q switch):
+  // 220 pos1 FTP server ready.
+  // (the same for "Version: Linux 2.6.15.7-ELinOS-314pm3" in SYST response)
+  else if (ContainsText(FWelcomeMessage, L"GNU inetutils"))
+  {
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPInetutils");
+  }
+  // 220 Syncplify.me Server! FTP(S) Service Ready
+  // Message is configurable
+  else if (ContainsText(FWelcomeMessage, L"Syncplify"))
+  {
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPSyncplify");
+  }
   else
   {
     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPOther");
@@ -2427,6 +2444,8 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
       // Does not support MLST/MLSD, but supports MDTM at least
       !FFileZillaIntf->UsingMlsd() && SupportsReadingFile())
   {
+    FTerminal->LogEvent(L"Detecting timezone difference...");
+
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
       TRemoteFile * File = FileList->GetFile(Index);
@@ -2445,12 +2464,13 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
           ReadFile(File->GetFullFileName(), UtcFile);
           UtcFilePtr.reset(UtcFile);
         }
-        catch (Exception & E)
+        catch (Exception & /*E*/)
         {
           if (!FTerminal->GetActive())
           {
             throw;
           }
+          FTerminal->LogEvent(FORMAT(L"Failed to retrieve file %s attributes to detect timezone difference", File->GetFullFileName().c_str()));
           break;
         }
 
@@ -2472,6 +2492,11 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
 
         break;
       }
+    }
+
+    if (FDetectTimeDifference)
+    {
+      FTerminal->LogEvent(L"Found no file to use for detecting timezone difference");
     }
   }
 }
@@ -2558,8 +2583,18 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
   TRemoteFile *& AFile)
 {
   UnicodeString FileName = GetAbsolutePath(AFileName, false);
-  UnicodeString FileNameOnly = core::UnixExtractFileName(FileName);
-  UnicodeString FilePath = core::UnixExtractFilePath(FileName);
+  UnicodeString FileNameOnly; // = core::UnixExtractFileName(FileName);
+  UnicodeString FilePath; // = core::UnixExtractFilePath(FileName);
+  if (core::IsUnixRootPath(FileName))
+  {
+    FileNameOnly = FileName;
+    FilePath = FileName;
+  }
+  else
+  {
+    FileNameOnly = core::UnixExtractFileName(FileName);
+    FilePath = core::UnixExtractFilePath(FileName);
+  }
   // end-user has right to expect that client current directory is really
   // current directory for the server
   // EnsureLocation();
@@ -4198,9 +4233,10 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       RequestResult = 1;
     }
 
+    UnicodeString SiteKey = FTerminal->GetSessionData()->GetSiteKey();
     if (RequestResult == 0)
     {
-      if (FTerminal->VerifyCertificate(FtpsCertificateStorageKey,
+      if (FTerminal->VerifyCertificate(FtpsCertificateStorageKey, SiteKey,
             FSessionInfo.CertificateFingerprint, CertificateSubject, Data.VerificationResult))
       {
         RequestResult = 1;
@@ -4252,7 +4288,8 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       if (RequestResult == 2)
       {
         FTerminal->CacheCertificate(
-          FtpsCertificateStorageKey, FSessionInfo.CertificateFingerprint, Data.VerificationResult);
+          FtpsCertificateStorageKey, SiteKey,
+          FSessionInfo.CertificateFingerprint, Data.VerificationResult);
       }
     }
 

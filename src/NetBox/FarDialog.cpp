@@ -428,7 +428,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
           catch (Exception & E)
           {
             Handled = true;
-            DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
+            DEBUG_PRINTF("before GetFarPlugin()->HandleException");
             GetFarPlugin()->HandleException(&E);
             Result = Item->FailItemProc(Msg, Param2);
           }
@@ -543,7 +543,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
   }
   catch (Exception & E)
   {
-    DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
+    DEBUG_PRINTF("before GetFarPlugin()->HandleException");
     GetFarPlugin()->HandleException(&E);
     if (!Handled)
     {
@@ -968,9 +968,9 @@ void TFarDialogContainer::Remove(TFarDialogItem * Item)
   }
 }
 
-void TFarDialogContainer::SetPosition(intptr_t Index, intptr_t Value)
+void TFarDialogContainer::SetPosition(intptr_t AIndex, intptr_t Value)
 {
-  intptr_t & Position = Index ? FTop : FLeft;
+  intptr_t & Position = AIndex ? FTop : FLeft;
   if (Position != Value)
   {
     Position = Value;

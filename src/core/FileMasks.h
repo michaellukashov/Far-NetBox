@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <CoreDefs.hpp>
@@ -52,11 +51,11 @@ public:
     const UnicodeString & APath = L"", const TParams * Params = nullptr) const;
   bool Matches(const UnicodeString & AFileName, bool Directory,
     const UnicodeString & APath, const TParams * Params,
-    bool & ImplicitMatch) const;
+    bool RecurseInclude, bool & ImplicitMatch) const;
   bool Matches(const UnicodeString & AFileName, bool Local, bool Directory,
     const TParams * Params = nullptr) const;
   bool Matches(const UnicodeString & AFileName, bool Local, bool Directory,
-    const TParams * Params, bool & ImplicitMatch) const;
+    const TParams * Params, bool RecurseInclude, bool & ImplicitMatch) const;
 
   UnicodeString GetMasks() const { return FStr; }
   void SetMasks(const UnicodeString & Value);

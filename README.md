@@ -2,7 +2,7 @@ NetBox: SFTP/FTP/FTP(S)/SCP/WebDAV client for Far Manager 2.0/3.0 x86/x64
 ==============
 
 Based on [WinSCP as FAR Plugin: SFTP/FTP/SCP client for FAR version 1.6.2](http://winscp.net/download/winscpfar162setup.exe) Copyright (c) 2000-2009 Martin Prikryl  
-Based on [WinSCP](http://winscp.net/eng/index.php) version 5.7.1 Copyright (c) 2000-2015 Martin Prikryl  
+Based on [WinSCP](http://winscp.net/eng/index.php) version 5.7.3 Copyright (c) 2000-2015 Martin Prikryl  
 SSH and SCP code based on PuTTY 0.63+ Copyright (c) 1997-2015 Simon Tatham  
 FTP code based on FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse  
 
@@ -20,7 +20,7 @@ How to build from source
 To build plugin from source, you will need:
 
 
-  * Visual Studio 2010  
+  * Visual Studio 2010 SP1   
   * Microsoft Platform SDK, available for download at [http://www.microsoft.com/msdownload/platformsdk/sdkupdate/](http://www.microsoft.com/msdownload/platformsdk/sdkupdate/).  
   * Perl 5 (to compile openssl), available at [http://www.activestate.com/ActivePerl/](http://www.activestate.com/ActivePerl/)  
   * UnxUtils [http://unxutils.sourceforge.net/](http://unxutils.sourceforge.net/)  

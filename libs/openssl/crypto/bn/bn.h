@@ -256,24 +256,6 @@ extern "C" {
 #  define BN_HEX_FMT2     "%08X"
 # endif
 
-/*
- * 2011-02-22 SMS. In various places, a size_t variable or a type cast to
- * size_t was used to perform integer-only operations on pointers.  This
- * failed on VMS with 64-bit pointers (CC /POINTER_SIZE = 64) because size_t
- * is still only 32 bits.  What's needed in these cases is an integer type
- * with the same size as a pointer, which size_t is not certain to be. The
- * only fix here is VMS-specific.
- */
-# if defined(OPENSSL_SYS_VMS)
-#  if __INITIAL_POINTER_SIZE == 64
-#   define PTR_SIZE_INT long long
-#  else                         /* __INITIAL_POINTER_SIZE == 64 */
-#   define PTR_SIZE_INT int
-#  endif                        /* __INITIAL_POINTER_SIZE == 64 [else] */
-# else                          /* defined(OPENSSL_SYS_VMS) */
-#  define PTR_SIZE_INT size_t
-# endif                         /* defined(OPENSSL_SYS_VMS) [else] */
-
 # define BN_DEFAULT_BITS 1280
 
 # define BN_FLG_MALLOCED         0x01
@@ -797,6 +779,7 @@ int RAND_pseudo_bytes(unsigned char *buf, int num);
                          * wouldn't be constructed with top!=dmax. */ \
                         BN_ULONG *_not_const; \
                         memcpy(&_not_const, &_bnum1->d, sizeof(BN_ULONG*)); \
+                        /* Debug only - safe to ignore error return */ \
                         RAND_pseudo_bytes(&_tmp_char, 1); \
                         memset((unsigned char *)(_not_const + _bnum1->top), _tmp_char, \
                                 (_bnum1->dmax - _bnum1->top) * sizeof(BN_ULONG)); \
@@ -910,6 +893,7 @@ void ERR_load_BN_strings(void);
 # define BN_F_BN_GF2M_MOD_SOLVE_QUAD_ARR                  135
 # define BN_F_BN_GF2M_MOD_SQR                             136
 # define BN_F_BN_GF2M_MOD_SQRT                            137
+# define BN_F_BN_LSHIFT                                   145
 # define BN_F_BN_MOD_EXP2_MONT                            118
 # define BN_F_BN_MOD_EXP_MONT                             109
 # define BN_F_BN_MOD_EXP_MONT_CONSTTIME                   124
@@ -925,12 +909,14 @@ void ERR_load_BN_strings(void);
 # define BN_F_BN_NEW                                      113
 # define BN_F_BN_RAND                                     114
 # define BN_F_BN_RAND_RANGE                               122
+# define BN_F_BN_RSHIFT                                   146
 # define BN_F_BN_USUB                                     115
 
 /* Reason codes. */
 # define BN_R_ARG2_LT_ARG3                                100
 # define BN_R_BAD_RECIPROCAL                              101
 # define BN_R_BIGNUM_TOO_LONG                             114
+# define BN_R_BITS_TOO_SMALL                              118
 # define BN_R_CALLED_WITH_EVEN_MODULUS                    102
 # define BN_R_DIV_BY_ZERO                                 103
 # define BN_R_ENCODING_ERROR                              104
@@ -938,6 +924,7 @@ void ERR_load_BN_strings(void);
 # define BN_R_INPUT_NOT_REDUCED                           110
 # define BN_R_INVALID_LENGTH                              106
 # define BN_R_INVALID_RANGE                               115
+# define BN_R_INVALID_SHIFT                               119
 # define BN_R_NOT_A_SQUARE                                111
 # define BN_R_NOT_INITIALIZED                             107
 # define BN_R_NO_INVERSE                                  108

@@ -686,6 +686,7 @@ TTerminal::TTerminal() :
   FReadingCurrentDirectory(false),
   FClosedOnCompletion(nullptr),
   FStatus(ssClosed),
+  FOpening(0),
   FTunnelThread(nullptr),
   FTunnel(nullptr),
   FTunnelData(nullptr),
@@ -697,7 +698,7 @@ TTerminal::TTerminal() :
   FCollectFileSystemUsage(false),
   FRememberedPasswordTried(false),
   FRememberedTunnelPasswordTried(false),
-  FIdle(0)
+  FNesting(0)
 {
 }
 
@@ -792,11 +793,14 @@ void TTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration)
 
 void TTerminal::Idle()
 {
-  // once we disconnect, do nothing, until reconnect handler
+  // Once we disconnect, do nothing, until reconnect handler
   // "receives the information"
-  if (GetActive())
+  // "receives the information".
+  // Never go idle when called from within ::ProcessGUI() call
+  // as we may recurse for good, timeouting eventually.
+  if (GetActive() && (FNesting == 0))
   {
-    TAutoNestingCounter IdleCounter(FIdle);
+    TAutoNestingCounter NestingCounter(FNesting);
 
     if (FConfiguration->GetActualLogProtocol() >= 1)
     {
@@ -909,6 +913,7 @@ void TTerminal::ResetConnection()
 
 void TTerminal::Open()
 {
+  TAutoNestingCounter OpeningCounter(FOpening);
   ReflectSettings();
   bool Reopen = false;
   do
@@ -1273,9 +1278,19 @@ void TTerminal::ProcessGUI()
   // Do not process GUI here, as we are called directly from a GUI loop and may
   // recurse for good.
   // Alternatively we may check for (FOperationProgress == nullptr)
-  if (FIdle == 0)
+  if (FNesting == 0)
   {
+    TAutoNestingCounter NestingCounter(FNesting);
     ::ProcessGUI();
+  }
+}
+
+void TTerminal::Progress(TFileOperationProgressType * OperationProgress)
+{
+  if (FNesting == 0)
+  {
+    TAutoNestingCounter NestingCounter(FNesting);
+    OperationProgress->Progress();
   }
 }
 
@@ -2839,7 +2854,11 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * AFileList)
     }
     catch (Exception & E)
     {
-      if (!RobustLoop.TryReopen(E))
+      // Do not retry for initial listing of directory,
+      // we instead retry whole connection attempt,
+      // what would be done anyway (but Open is not ready for recursion).
+      if ((FOpening > 0) ||
+           !RobustLoop.TryReopen(E))
       {
         throw;
       }
@@ -3086,7 +3105,7 @@ bool TTerminal::FileExists(const UnicodeString & AFileName, TRemoteFile ** AFile
       {
         SetExceptionOnFail(false);
       };
-      ReadFile(AFileName, File);
+      ReadFile(core::UnixExcludeTrailingBackslash(AFileName), File);
     }
 
     if (AFile != nullptr)
@@ -3183,7 +3202,7 @@ bool TTerminal::ProcessFiles(const TStrings * AFileList,
           }
           catch (ESkipFile & E)
           {
-            DEBUG_PRINTF(L"before HandleException");
+            DEBUG_PRINTF("before HandleException");
             TSuspendFileOperationProgress Suspend(OperationProgress);
             if (!HandleException(&E))
             {
@@ -4171,7 +4190,7 @@ public:
         FAction.AddOutput(Str, true);
         break;
       case cotExitCode:
-        FAction.ExitCode(::StrToInt64(Str));
+        FAction.ExitCode((int)::StrToInt64(Str));
         break;
     }
 
@@ -5399,8 +5418,9 @@ void TTerminal::FileFind(const UnicodeString & AFileName,
 
     UnicodeString FullFileName = core::UnixExcludeTrailingBackslash(AFile->GetFullFileName());
     bool ImplicitMatch = false;
+    // Do not use recursive include match
     if (AParams->FileMask.Matches(FullFileName, false,
-         AFile->GetIsDirectory(), &MaskParams, ImplicitMatch))
+         AFile->GetIsDirectory(), &MaskParams, false, ImplicitMatch))
     {
       if (!ImplicitMatch)
       {
@@ -5922,7 +5942,8 @@ static UnicodeString FormatCertificateData(const UnicodeString & Fingerprint, in
 }
 
 bool TTerminal::VerifyCertificate(
-  const UnicodeString & CertificateStorageKey, const UnicodeString & Fingerprint,
+  const UnicodeString & CertificateStorageKey, const UnicodeString & SiteKey,
+  const UnicodeString & Fingerprint,
   const UnicodeString & CertificateSubject, int Failures)
 {
   bool Result = false;
@@ -5934,9 +5955,9 @@ bool TTerminal::VerifyCertificate(
 
   if (Storage->OpenSubKey(CertificateStorageKey, false))
   {
-    if (Storage->ValueExists(GetSessionData()->GetSiteKey()))
+    if (Storage->ValueExists(SiteKey))
     {
-      UnicodeString CachedCertificateData = Storage->ReadString(GetSessionData()->GetSiteKey(), L"");
+      UnicodeString CachedCertificateData = Storage->ReadString(SiteKey, L"");
       if (CertificateData == CachedCertificateData)
       {
         LogEvent(FORMAT(L"Certificate for \"%s\" matches cached fingerprint and failures", CertificateSubject.c_str()));
@@ -5975,7 +5996,7 @@ bool TTerminal::VerifyCertificate(
 }
 
 void TTerminal::CacheCertificate(const UnicodeString & CertificateStorageKey,
-  const UnicodeString & Fingerprint, int Failures)
+  const UnicodeString & SiteKey, const UnicodeString & Fingerprint, int Failures)
 {
   UnicodeString CertificateData = FormatCertificateData(Fingerprint, Failures);
 
@@ -5984,7 +6005,7 @@ void TTerminal::CacheCertificate(const UnicodeString & CertificateStorageKey,
 
   if (Storage->OpenSubKey(CertificateStorageKey, true))
   {
-    Storage->WriteString(GetSessionData()->GetSiteKey(), CertificateData);
+    Storage->WriteString(SiteKey, CertificateData);
   }
 }
 
