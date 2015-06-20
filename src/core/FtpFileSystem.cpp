@@ -3403,7 +3403,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
 
   if ((Code != nullptr) && (FLastCodeClass != DummyCodeClass))
   {
-    *Code = static_cast<int>(FLastCode);
+    *Code = static_cast<uintptr_t>(FLastCode);
   }
 
   if (FLAGSET(Flags, REPLY_SINGLE_LINE))
