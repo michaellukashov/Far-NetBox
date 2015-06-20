@@ -3740,7 +3740,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
     {
       TObject * Obj = static_cast<TObject *>(CipherListBox->GetItems()->GetObj(Index));
-      SessionData->SetCipher(Index, static_cast<TCipher>(reinterpret_cast<size_t>(Obj)));
+      SessionData->SetCipher(Index, static_cast<TCipher>(reinterpret_cast<intptr_t>(Obj)));
     }
 
     // KEX tab
@@ -3878,7 +3878,7 @@ intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList *
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
     TObject * Obj = static_cast<TObject *>(Items->GetObj(Index));
-    TProxyMethod Method = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
+    TProxyMethod Method = static_cast<TProxyMethod>(reinterpret_cast<intptr_t>(Obj));
     if (Method == ProxyMethod)
       return Index;
   }
@@ -3891,7 +3891,7 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items
   if (Index >= 0 && Index < Items->GetCount())
   {
     TObject * Obj = static_cast<TObject *>(Items->GetObj(Index));
-    Result = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
+    Result = static_cast<TProxyMethod>(reinterpret_cast<intptr_t>(Obj));
   }
   return Result;
 }
