@@ -61,17 +61,17 @@ inline void operator_delete(void * p)
 /// custom memory allocation
 #define DEF_CUSTOM_MEM_ALLOCATION_IMPL            \
   public:                                         \
-  void * operator new(size_t size)                \
+  void * operator new(size_t sz)                  \
   {                                               \
-    return operator_new(size);                    \
+    return operator_new(sz);                      \
   }                                               \
   void operator delete(void * p, size_t)          \
   {                                               \
     operator_delete(p);                           \
   }                                               \
-  void * operator new[](size_t size)              \
+  void * operator new[](size_t sz)                \
   {                                               \
-    return operator_new(size);                    \
+    return operator_new(sz);                      \
   }                                               \
   void operator delete[](void * p, size_t)        \
   {                                               \
