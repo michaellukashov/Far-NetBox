@@ -16,7 +16,7 @@
 #include <shlwapi.h>
 #include <CoreMain.h>
 
-#if defined(__MINGW32__) && (GCC_VERSION < 5001)
+#if defined(__MINGW32__) && (__MINGW_GCC_VERSION < 50100)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
 {
   LONG       Bias;
