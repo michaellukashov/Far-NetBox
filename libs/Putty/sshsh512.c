@@ -312,9 +312,9 @@ void putty_SHA512_Simple(const void *p, int len, unsigned char *output) {
 void putty_SHA384_Simple(const void *p, int len, unsigned char *output) {
     SHA512_State s;
 
-    SHA384_Init(&s);
+    putty_SHA384_Init(&s);
     putty_SHA512_Bytes(&s, p, len);
-    SHA384_Final(&s, output);
+    putty_SHA384_Final(&s, output);
     smemclr(&s, sizeof(s));
 }
 
@@ -327,7 +327,7 @@ static void *sha512_init(void)
     SHA512_State *s;
 
     s = snew(SHA512_State);
-    SHA512_Init(s);
+    putty_SHA512_Init(s);
     return s;
 }
 
@@ -342,7 +342,7 @@ static void sha512_final(void *handle, unsigned char *output)
 {
     SHA512_State *s = handle;
 
-    SHA512_Final(s, output);
+    putty_SHA512_Final(s, output);
     smemclr(s, sizeof(*s));
     sfree(s);
 }
