@@ -2460,7 +2460,7 @@ static unsigned char *ecdsa_sign(void *key, const char *data, int datalen,
             }
 
             /* Now calculate s */
-            SHA512_Init(&hs);
+            putty_SHA512_Init(&hs);
             /* Encode the point R */
             for (i = 0; i < pointlen - 1; ++i) {
                 b = bignum_byte(rp->y, i);
