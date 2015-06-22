@@ -247,7 +247,7 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 
 TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t Item)
 {
-  std::unique_ptr<TWinSCPFileSystem> FileSystem(nullptr);
+  std::unique_ptr<TWinSCPFileSystem> FileSystem;
   if (!FInitialized)
   {
     CoreInitialize();

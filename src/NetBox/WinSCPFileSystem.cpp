@@ -1223,8 +1223,8 @@ void TWinSCPFileSystem::ApplyCommand()
 
         Command = InteractiveCustomCommand.Complete(Command, false);
 
-        std::unique_ptr<TStrings> LocalFileList(nullptr);
-        std::unique_ptr<TStrings> RemoteFileList(nullptr);
+        std::unique_ptr<TStrings> LocalFileList;
+        std::unique_ptr<TStrings> RemoteFileList;
         {
           bool FileListCommand = LocalCustomCommand.IsFileListCommand(Command);
           bool LocalFileCommand = LocalCustomCommand.HasLocalFileName(Command);
@@ -1483,7 +1483,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
       }
     }
 
-    std::unique_ptr<TSynchronizeChecklist> Checklist(nullptr);
+    std::unique_ptr<TSynchronizeChecklist> Checklist;
     {
       SCOPE_EXIT
       {

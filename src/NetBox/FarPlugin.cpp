@@ -778,7 +778,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   FarWrapText(Message, MessageLines.get(), MaxMessageWidth);
   intptr_t MaxLen = GetFarPlugin()->MaxLength(MessageLines.get());
   TStrings * MoreMessageLines = nullptr;
-  std::unique_ptr<TStrings> MoreMessageLinesPtr(nullptr);
+  std::unique_ptr<TStrings> MoreMessageLinesPtr;
   if (FParams->MoreMessages != nullptr)
   {
     MoreMessageLines = new TStringList();
