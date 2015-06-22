@@ -1187,7 +1187,9 @@ enum PROGRESSTATE
 	PS_INDETERMINATE=0x1,
 	PS_NORMAL       =0x2,
 	PS_ERROR        =0x4,
-	PS_PAUSED       =0x8,
+#if !defined(__MINGW32__)
+    PS_PAUSED       =0x8,
+#endif
 };
 
 struct PROGRESSVALUE
