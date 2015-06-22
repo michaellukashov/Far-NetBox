@@ -1418,7 +1418,7 @@ struct ec_point *ec_public(const Bignum privateKey, const struct ec_curve *curve
         Bignum a;
         int i, keylen;
         SHA512_State s;
-        SHA512_Init(&s);
+        putty_SHA512_Init(&s);
 
         keylen = curve->fieldBits / 8;
         for (i = 0; i < keylen; ++i) {
