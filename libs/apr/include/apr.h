@@ -289,9 +289,14 @@ extern "C" {
 #define APR_HAVE_SIGSUSPEND     0
 #define APR_HAVE_SIGWAIT        0
 #define APR_HAVE_SA_STORAGE     0
+#if defined(__MINGW32__)
+#define APR_HAVE_STRCASECMP     1
+#define APR_HAVE_STRNCASECMP    1
+#else
 #define APR_HAVE_STRCASECMP     0
-#define APR_HAVE_STRDUP         1
 #define APR_HAVE_STRNCASECMP    0
+#endif
+#define APR_HAVE_STRDUP         1
 #define APR_HAVE_STRSTR         1
 #define APR_HAVE_MEMCHR         1
 #define APR_HAVE_STRUCT_RLIMIT  0
