@@ -3127,7 +3127,7 @@ void TSFTPFileSystem::DoStartup()
       }
       else if (ExtensionName == SFTP_EXT_HARDLINK)
       {
-        UnicodeString HardlinkVersion = UnicodeString(ExtensionData);
+        UnicodeString HardlinkVersion = UnicodeString(ExtensionData.c_str());
         if (HardlinkVersion == SFTP_EXT_HARDLINK_VALUE_V1)
         {
           FSupportsHardlink = true;

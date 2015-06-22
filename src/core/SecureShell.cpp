@@ -1891,7 +1891,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       uint32_t WaitResult;
       do
       {
-        uint32_t TimeoutStep = min(GUIUpdateInterval, (uint32_t)Timeout);
+        uint32_t TimeoutStep = Min(GUIUpdateInterval, (uint32_t)Timeout);
         Timeout -= TimeoutStep;
         WaitResult = ::WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, TimeoutStep);
         FUI->ProcessGUI();
