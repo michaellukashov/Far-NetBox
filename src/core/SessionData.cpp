@@ -1727,7 +1727,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     if (Options->FindSwitch("rawsettings"))
     {
       std::unique_ptr<TStrings> RawSettings(new TStringList());
-      std::unique_ptr<TRegistryStorage> OptionsStorage(nullptr);
+      std::unique_ptr<TRegistryStorage> OptionsStorage;
       if (Options->FindSwitch("rawsettings", RawSettings.get()))
       {
         OptionsStorage.reset(new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey()));

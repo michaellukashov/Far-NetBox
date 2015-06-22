@@ -2677,7 +2677,7 @@ uintptr_t TSFTPFileSystem::ReceiveResponse(
 {
   uintptr_t Result;
   uintptr_t MessageNumber = Packet->GetMessageNumber();
-  std::unique_ptr<TSFTPPacket> Response(nullptr);
+  std::unique_ptr<TSFTPPacket> Response;
   if (!AResponse)
   {
     Response.reset(new TSFTPPacket(FCodePage));
@@ -5733,7 +5733,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
       OperationProgress->Progress();
 
       const TRemoteFile * File = AFile;
-      std::unique_ptr<const TRemoteFile> FilePtr(nullptr);
+      std::unique_ptr<const TRemoteFile> FilePtr;
       // ignore errors
       if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
       {

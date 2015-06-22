@@ -926,7 +926,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
 
   if (Properties && Properties->Valid.Contains(vpRights))
   {
-    std::unique_ptr<TRemoteFile> OwnedFile(nullptr);
+    std::unique_ptr<TRemoteFile> OwnedFile;
     UnicodeString FileName = GetAbsolutePath(AFileName, false);
 
     if (AFile == nullptr)

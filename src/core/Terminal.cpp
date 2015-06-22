@@ -2997,7 +2997,7 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & ADirec
 void TTerminal::ProcessDirectory(const UnicodeString & ADirName,
   TProcessFileEvent CallBackFunc, void * Param, bool UseCache, bool IgnoreErrors)
 {
-  std::unique_ptr<TRemoteFileList> FileList(nullptr);
+  std::unique_ptr<TRemoteFileList> FileList;
   if (IgnoreErrors)
   {
     SetExceptionOnFail(true);
@@ -5649,7 +5649,7 @@ bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
 
   bool Result = false;
   bool OwnsFileList = (AFilesToCopy == nullptr);
-  std::unique_ptr<TStrings> FilesToCopy(nullptr);
+  std::unique_ptr<TStrings> FilesToCopy;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
   if (OwnsFileList)
