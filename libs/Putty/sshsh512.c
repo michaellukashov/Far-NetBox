@@ -356,7 +356,7 @@ static void *sha384_init(void)
     SHA512_State *s;
 
     s = snew(SHA512_State);
-    SHA384_Init(s);
+    putty_SHA384_Init(s);
     return s;
 }
 
@@ -364,7 +364,7 @@ static void sha384_final(void *handle, unsigned char *output)
 {
     SHA512_State *s = handle;
 
-    SHA384_Final(s, output);
+    putty_SHA384_Final(s, output);
     smemclr(s, sizeof(*s));
     sfree(s);
 }

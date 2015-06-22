@@ -2425,7 +2425,7 @@ static unsigned char *ecdsa_sign(void *key, const char *data, int datalen,
             unsigned char b;
             Bignum a;
             SHA512_State hs;
-            SHA512_Init(&hs);
+            putty_SHA512_Init(&hs);
 
             for (i = 0; i < pointlen; ++i) {
                 unsigned char b = (unsigned char)bignum_byte(ec->privateKey, i);
