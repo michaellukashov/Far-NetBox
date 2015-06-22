@@ -168,8 +168,10 @@ struct custom_nballocator_t
     if (0 == s)
       return nullptr;
     pointer temp = reinterpret_cast<pointer>(nb_malloc(s * sizeof(T)));
+#if !defined(__MINGW32__)
     if (temp == nullptr)
       throw std::bad_alloc();
+#endif
     return temp;
   }
 
