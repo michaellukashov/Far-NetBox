@@ -47,6 +47,7 @@ protected:
 private:
   struct TOption : public TObject
   {
+    TOption() : Type(otParam), Used(false) {}
     TOptionType Type;
     UnicodeString Name;
     UnicodeString Value;
