@@ -405,7 +405,7 @@ UnicodeString RemoveMainInstructionsTag(const UnicodeString & S)
 UnicodeString UnformatMessage(const UnicodeString & S)
 {
   UnicodeString Result = RemoveMainInstructionsTag(S);
-  int InteractiveMsgStart = FindInteractiveMsgStart(Result);
+  intptr_t InteractiveMsgStart = FindInteractiveMsgStart(Result);
   if (InteractiveMsgStart > 0)
   {
     Result = Result.SubString(1, InteractiveMsgStart - 1);
