@@ -1759,7 +1759,7 @@ fail:
     exploded_time.tm_wday   = 0;
     exploded_time.tm_yday   = 0;
     exploded_time.tm_isdst  = 0;
-    exploded_time.tm_gmtoff = (gmt_shift == '-' ? -1 : 1) * gmt_hour * SecsPerHour + gmt_min * SecsPerMin;
+    exploded_time.tm_gmtoff = (gmt_shift == '-' ? -1 : 1) * gmt_hour * (apr_int32_t)SecsPerHour + gmt_min * (apr_int32_t)SecsPerMin;
     exploded_time.tm_usec = 0;
 
     apr_err = apr_time_exp_gmt_get(when, &exploded_time);
