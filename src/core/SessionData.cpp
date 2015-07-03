@@ -1481,7 +1481,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
           else if ((AData->GetName().Length() < DecodedUrl.Length()) &&
                    (DecodedUrl[AData->GetName().Length() + 1] == L'/') &&
                    // StrLIComp is an equivalent of SameText
-                   (StrLIComp(AData->GetName().c_str(), DecodedUrl.c_str(), AData->GetName().Length()) == 0))
+                   (StrLIComp(AData->GetName().c_str(), DecodedUrl.c_str(), (int)AData->GetName().Length()) == 0))
           {
             Match = true;
           }
@@ -1881,9 +1881,9 @@ UnicodeString TSessionData::GetStorageKey() const
   return GetSessionName();
 }
 
-UnicodeString TSessionData::FormatSiteKey(const UnicodeString & HostName, int PortNumber)
+UnicodeString TSessionData::FormatSiteKey(const UnicodeString & HostName, intptr_t PortNumber)
 {
-  return FORMAT(L"%s:%d", HostName.c_str(), PortNumber);
+  return FORMAT(L"%s:%d", HostName.c_str(), (int)PortNumber);
 }
 
 UnicodeString TSessionData::GetSiteKey() const

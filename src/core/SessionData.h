@@ -372,7 +372,7 @@ public:
   static UnicodeString ExtractFolderName(const UnicodeString & Name);
   static UnicodeString ComposePath(const UnicodeString & APath, const UnicodeString & Name);
   static bool IsSensitiveOption(const UnicodeString & Option);
-  static UnicodeString FormatSiteKey(const UnicodeString & HostName, int PortNumber);
+  static UnicodeString FormatSiteKey(const UnicodeString & HostName, intptr_t PortNumber);
 
   UnicodeString GetHostName() const { return FHostName; }
   intptr_t GetPortNumber() const { return FPortNumber; }

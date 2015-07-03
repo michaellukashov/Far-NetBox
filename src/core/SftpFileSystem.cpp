@@ -1319,8 +1319,8 @@ protected:
   }
 
   virtual void ReceiveResponse(
-    const TSFTPPacket * Packet, TSFTPPacket * Response, int ExpectedType = -1,
-    int AllowStatus = -1)
+    const TSFTPPacket * Packet, TSFTPPacket * Response, intptr_t ExpectedType = -1,
+    intptr_t AllowStatus = -1)
   {
     FFileSystem->ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
   }

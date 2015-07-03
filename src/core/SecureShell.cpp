@@ -586,9 +586,9 @@ void TSecureShell::Init()
   }
 }
 
-UnicodeString TSecureShell::ConvertFromPutty(const char * Str, int Length) const
+UnicodeString TSecureShell::ConvertFromPutty(const char * Str, size_t Length) const
 {
-  int BomLength = strlen(MPEXT_BOM);
+  size_t BomLength = strlen(MPEXT_BOM);
   if ((Length >= BomLength) &&
       (strncmp(Str, MPEXT_BOM, BomLength) == 0))
   {
