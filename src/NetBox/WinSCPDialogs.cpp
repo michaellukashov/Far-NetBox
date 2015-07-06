@@ -4019,7 +4019,7 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
     UnicodeString Message;
     switch (Type)
     {
-      case ktOpenSSH:
+      case ktOpenSSHAuto:
         Message = FMTLOAD(KEY_TYPE_UNSUPPORTED, AFileName.c_str(), L"OpenSSH SSH-2");
         break;
 
