@@ -20,12 +20,3 @@
 
 #include "winstore.c"
 
-void putty_mungestr(const char *in, char *out)
-{
-  mungestr(in, out);
-}
-
-void putty_unmungestr(const char *in, char *out, int outlen)
-{
-  unmungestr(in, out, outlen);
-}
