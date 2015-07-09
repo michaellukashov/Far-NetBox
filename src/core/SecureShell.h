@@ -78,7 +78,7 @@ public:
   void DisplayBanner(const UnicodeString & Banner);
   void OldKeyfileWarning();
   void PuttyLogEvent(const char * AStr);
-  UnicodeString ConvertFromPutty(const char * Str, int Length) const;
+  UnicodeString ConvertFromPutty(const char * Str, size_t Length) const;
 
   bool GetReady() const;
   bool GetActive() const { return FActive; }

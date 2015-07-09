@@ -36,7 +36,6 @@
 #include "filezillaapi.h"
 #include "misc/utf8.h"
 
-#ifdef _MSC_VER
 #include <MFC64bitFix.h>
 #include <TextsFileZilla.h>
 #include <FileZillaOpt.h>
@@ -44,7 +43,6 @@
 #include <Crypt.h>
 #include <Classes.hpp>
 #include <Common.h>
-#endif
 #ifdef MPEXT
 #endif
 

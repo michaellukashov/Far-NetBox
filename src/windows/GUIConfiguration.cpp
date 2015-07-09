@@ -411,7 +411,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
   for (intptr_t Index = 0; Index < ACount; ++Index)
   {
     UnicodeString Name = ::IntToStr(Index);
-    std::unique_ptr<TCopyParamRule> Rule(nullptr);
+    std::unique_ptr<TCopyParamRule> Rule;
     std::unique_ptr<TCopyParamType> CopyParam(new TCopyParamType());
     if (Storage->OpenSubKey(Name, false))
     {
@@ -725,7 +725,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
 
-    int CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
+    intptr_t CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
     FCopyParamListDefaults = (CopyParamListCount <= 0);
     if (!FCopyParamListDefaults)
     {

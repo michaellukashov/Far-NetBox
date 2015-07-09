@@ -1418,7 +1418,7 @@ struct ec_point *ec_public(const Bignum privateKey, const struct ec_curve *curve
         Bignum a;
         int i, keylen;
         SHA512_State s;
-        SHA512_Init(&s);
+        putty_SHA512_Init(&s);
 
         keylen = curve->fieldBits / 8;
         for (i = 0; i < keylen; ++i) {
@@ -2425,7 +2425,7 @@ static unsigned char *ecdsa_sign(void *key, const char *data, int datalen,
             unsigned char b;
             Bignum a;
             SHA512_State hs;
-            SHA512_Init(&hs);
+            putty_SHA512_Init(&hs);
 
             for (i = 0; i < pointlen; ++i) {
                 unsigned char b = (unsigned char)bignum_byte(ec->privateKey, i);
@@ -2460,7 +2460,7 @@ static unsigned char *ecdsa_sign(void *key, const char *data, int datalen,
             }
 
             /* Now calculate s */
-            SHA512_Init(&hs);
+            putty_SHA512_Init(&hs);
             /* Encode the point R */
             for (i = 0; i < pointlen - 1; ++i) {
                 b = bignum_byte(rp->y, i);

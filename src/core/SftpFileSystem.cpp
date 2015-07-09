@@ -1319,8 +1319,8 @@ protected:
   }
 
   virtual void ReceiveResponse(
-    const TSFTPPacket * Packet, TSFTPPacket * Response, int ExpectedType = -1,
-    int AllowStatus = -1)
+    const TSFTPPacket * Packet, TSFTPPacket * Response, intptr_t ExpectedType = -1,
+    intptr_t AllowStatus = -1)
   {
     FFileSystem->ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
   }
@@ -2266,7 +2266,7 @@ uint32_t TSFTPFileSystem::UploadBlockSize(const RawByteString & Handle,
   // handle length + offset + data size
   const uintptr_t UploadPacketOverhead =
     sizeof(uint32_t) + sizeof(int64_t) + sizeof(uint32_t);
-  return TransferBlockSize(UploadPacketOverhead + static_cast<uint32_t>(Handle.Length()), OperationProgress,
+  return TransferBlockSize(UploadPacketOverhead + static_cast<uintptr_t>(Handle.Length()), OperationProgress,
     static_cast<uint32_t>(GetSessionData()->GetSFTPMinPacketSize()),
     static_cast<uint32_t>(GetSessionData()->GetSFTPMaxPacketSize()));
 }
@@ -2677,7 +2677,7 @@ uintptr_t TSFTPFileSystem::ReceiveResponse(
 {
   uintptr_t Result;
   uintptr_t MessageNumber = Packet->GetMessageNumber();
-  std::unique_ptr<TSFTPPacket> Response(nullptr);
+  std::unique_ptr<TSFTPPacket> Response;
   if (!AResponse)
   {
     Response.reset(new TSFTPPacket(FCodePage));
@@ -3127,7 +3127,7 @@ void TSFTPFileSystem::DoStartup()
       }
       else if (ExtensionName == SFTP_EXT_HARDLINK)
       {
-        UnicodeString HardlinkVersion = UnicodeString(ExtensionData);
+        UnicodeString HardlinkVersion = UnicodeString(ExtensionData.c_str());
         if (HardlinkVersion == SFTP_EXT_HARDLINK_VALUE_V1)
         {
           FSupportsHardlink = true;
@@ -5733,7 +5733,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
       OperationProgress->Progress();
 
       const TRemoteFile * File = AFile;
-      std::unique_ptr<const TRemoteFile> FilePtr(nullptr);
+      std::unique_ptr<const TRemoteFile> FilePtr;
       // ignore errors
       if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
       {

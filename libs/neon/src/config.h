@@ -71,8 +71,10 @@
 #define strcasecmp			_strcmpi
 #define strncasecmp			_strnicmp
 #else
+#if !defined(__MINGW32__) || (__MINGW_GCC_VERSION < 50100)
 #define strcasecmp			strcmpi
 #define strncasecmp			strnicmp
+#endif
 #endif
 #if defined(_MSC_VER) && _MSC_VER >= 1300
 #define HAVE_STRTOLL
@@ -83,7 +85,9 @@
 #if defined(NE_LFS)
 #define lseek64				_lseeki64
 #define fstat64				_fstat64
+#if !defined(__MINGW32__) || (__MINGW_GCC_VERSION < 50100)
 #define stat64				__stat64
+#endif
 #else
 #define off_t                           _off_t
 #endif

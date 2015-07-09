@@ -3737,7 +3737,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
     {
       TObject * Obj = static_cast<TObject *>(CipherListBox->GetItems()->GetObj(Index));
-      SessionData->SetCipher(Index, static_cast<TCipher>(reinterpret_cast<size_t>(Obj)));
+      SessionData->SetCipher(Index, static_cast<TCipher>(reinterpret_cast<intptr_t>(Obj)));
     }
 
     // KEX tab
@@ -3875,7 +3875,7 @@ intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList *
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
     TObject * Obj = static_cast<TObject *>(Items->GetObj(Index));
-    TProxyMethod Method = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
+    TProxyMethod Method = static_cast<TProxyMethod>(reinterpret_cast<intptr_t>(Obj));
     if (Method == ProxyMethod)
       return Index;
   }
@@ -3888,7 +3888,7 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items
   if (Index >= 0 && Index < Items->GetCount())
   {
     TObject * Obj = static_cast<TObject *>(Items->GetObj(Index));
-    Result = static_cast<TProxyMethod>(reinterpret_cast<size_t>(Obj));
+    Result = static_cast<TProxyMethod>(reinterpret_cast<intptr_t>(Obj));
   }
   return Result;
 }
@@ -4016,7 +4016,7 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
     UnicodeString Message;
     switch (Type)
     {
-      case ktOpenSSH:
+      case ktOpenSSHAuto:
         Message = FMTLOAD(KEY_TYPE_UNSUPPORTED, AFileName.c_str(), L"OpenSSH SSH-2");
         break;
 
@@ -4665,8 +4665,8 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   FMultiple = (AFileList->GetCount() > 1);
 
   {
-    std::unique_ptr<TStrings> UsedGroupList(nullptr);
-    std::unique_ptr<TStrings> UsedUserList(nullptr);
+    std::unique_ptr<TStrings> UsedGroupList;
+    std::unique_ptr<TStrings> UsedUserList;
     if ((GroupList == nullptr) || (GroupList->GetCount() == 0))
     {
       UsedGroupList.reset(new TStringList());

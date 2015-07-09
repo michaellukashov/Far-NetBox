@@ -202,6 +202,9 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       case cipArcfour:
         pcipher = CIPHER_ARCFOUR;
         break;
+      case cipCHACHA20:
+        pcipher = CIPHER_CHACHA20;
+        break;
       default:
         FAIL;
     }
@@ -228,7 +231,11 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       case kexRSA:
         pkex = KEX_RSA;
         break;
-      default: FAIL;
+	  case kexECDH:
+		  pkex = KEX_ECDH;
+		  break;
+      default:
+		  FAIL;
     }
     conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
   }
@@ -586,9 +593,9 @@ void TSecureShell::Init()
   }
 }
 
-UnicodeString TSecureShell::ConvertFromPutty(const char * Str, int Length) const
+UnicodeString TSecureShell::ConvertFromPutty(const char * Str, size_t Length) const
 {
-  int BomLength = strlen(MPEXT_BOM);
+  size_t BomLength = strlen(MPEXT_BOM);
   if ((Length >= BomLength) &&
       (strncmp(Str, MPEXT_BOM, BomLength) == 0))
   {
@@ -1891,7 +1898,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       uint32_t WaitResult;
       do
       {
-        uint32_t TimeoutStep = min(GUIUpdateInterval, Timeout);
+        uint32_t TimeoutStep = Min(GUIUpdateInterval, (uint32_t)Timeout);
         Timeout -= TimeoutStep;
         WaitResult = ::WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, TimeoutStep);
         FUI->ProcessGUI();
@@ -2166,13 +2173,9 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
   UnicodeString StoredKeys;
   AnsiString AnsiStoredKeys(10240, '\0');
 
-  if (verify_host_key(
-        ::W2MB(Host2.c_str(),
-             static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-        Port,
-        ::W2MB(KeyType.c_str(),
-            static_cast<UINT>(FSessionData->GetCodePageAsNumber())).c_str(),
-            const_cast<char *>(AnsiStoredKeys.c_str())) == 0)
+  if (retrieve_host_key(
+        AnsiString(Host2).c_str(), Port, AnsiString(KeyType).c_str(),
+        const_cast<char *>(AnsiStoredKeys.c_str()), AnsiStoredKeys.Length()) == 0)
   {
     StoredKeys = AnsiStoredKeys.c_str();
     UnicodeString Buf = StoredKeys;

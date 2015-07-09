@@ -16,7 +16,7 @@
 #include <shlwapi.h>
 #include <CoreMain.h>
 
-#if defined(__MINGW32__)
+#if defined(__MINGW32__) && (__MINGW_GCC_VERSION < 50100)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
 {
   LONG       Bias;
@@ -405,7 +405,7 @@ UnicodeString RemoveMainInstructionsTag(const UnicodeString & S)
 UnicodeString UnformatMessage(const UnicodeString & S)
 {
   UnicodeString Result = RemoveMainInstructionsTag(S);
-  int InteractiveMsgStart = FindInteractiveMsgStart(Result);
+  intptr_t InteractiveMsgStart = FindInteractiveMsgStart(Result);
   if (InteractiveMsgStart > 0)
   {
     Result = Result.SubString(1, InteractiveMsgStart - 1);

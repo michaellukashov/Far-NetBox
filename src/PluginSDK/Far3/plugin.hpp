@@ -1202,7 +1202,9 @@ enum TASKBARPROGRESSTATE
 	TBPS_INDETERMINATE=0x1,
 	TBPS_NORMAL       =0x2,
 	TBPS_ERROR        =0x4,
-	TBPS_PAUSED       =0x8,
+#if !defined(__MINGW32__)
+	PS_PAUSED       =0x8,
+#endif
 };
 
 struct ProgressValue

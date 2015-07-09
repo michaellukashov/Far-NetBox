@@ -94,6 +94,7 @@ other possible license with no implications from the above license on them.
 #elif defined(__GNUC__) || (defined(__WATCOMC__) && (__WATCOMC__ < 1100)) || defined(__LCC__)
 #ifndef _WIN64
 #pragma pack(2)
+#define _export
 #endif
 #if defined(__LCC__)
 #define _export __declspec(dllexport)
@@ -1186,7 +1187,9 @@ enum PROGRESSTATE
 	PS_INDETERMINATE=0x1,
 	PS_NORMAL       =0x2,
 	PS_ERROR        =0x4,
-	PS_PAUSED       =0x8,
+#if !defined(__MINGW32__)
+    PS_PAUSED       =0x8,
+#endif
 };
 
 struct PROGRESSVALUE

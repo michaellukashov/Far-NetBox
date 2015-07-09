@@ -91,34 +91,6 @@ distribution.
 #endif
 
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1400 ) && (!defined WINCE)
-// Microsoft visual studio, version 2005 and higher.
-/*int _snprintf_s(
-   char *buffer,
-   size_t sizeOfBuffer,
-   size_t count,
-   const char *format [,
-	  argument] ...
-);*/
-inline int TIXML_SNPRINTF( char* buffer, size_t size, const char* format, ... )
-{
-    va_list va;
-    va_start( va, format );
-    int result = vsnprintf_s( buffer, size, _TRUNCATE, format, va );
-    va_end( va );
-    return result;
-}
-#define TIXML_SSCANF   sscanf_s
-#elif defined WINCE
-#define TIXML_SNPRINTF _snprintf
-#define TIXML_SSCANF   sscanf
-#else
-// GCC version 3 and higher
-//#warning( "Using sn* functions." )
-#define TIXML_SNPRINTF snprintf
-#define TIXML_SSCANF   sscanf
-#endif
-
 /* Versioning, past 1.0.14:
 	http://semver.org/
 */
@@ -281,14 +253,17 @@ public:
     }
 
     int Capacity() const				{
+        TIXMLASSERT( _allocated >= INITIAL_SIZE );
         return _allocated;
     }
 
     const T* Mem() const				{
+        TIXMLASSERT( _mem );
         return _mem;
     }
 
     T* Mem()							{
+        TIXMLASSERT( _mem );
         return _mem;
     }
 

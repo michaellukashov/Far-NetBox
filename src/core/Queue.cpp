@@ -1665,7 +1665,7 @@ void TQueueItem::SetProgress(
 
     if (FCPSLimit != static_cast<uintptr_t>(-1))
     {
-      ProgressData.CPSLimit = static_cast<uint32_t>(FCPSLimit);
+      ProgressData.CPSLimit = FCPSLimit;
       FCPSLimit = static_cast<uintptr_t>(-1);
     }
   }

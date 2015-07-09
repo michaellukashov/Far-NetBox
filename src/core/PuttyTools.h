@@ -6,8 +6,13 @@ enum TKeyType
   ktUnknown,
   ktSSH1,
   ktSSH2,
-  ktOpenSSH,
-  ktSSHCom
+  ktOpenSSHAuto,
+  ktOpenSSHPem,
+  ktOpenSSHNew,
+  ktSSHCom,
+  ktSSH1Public,
+  ktSSH2PublicRFC4716,
+  ktSSH2PublicOpenSSH,
 };
 
 TKeyType KeyType(const UnicodeString & AFileName);

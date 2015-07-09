@@ -1,3 +1,9 @@
+NetBox 2.1.43.388 09.07.2015
+--------------------
+  * Bugfix: SCP, SFTP: verified host key is not stored
+    (http://forum.farmanager.com/viewtopic.php?p=131079#p131079)
+  * Update openssl sources to 1.0.2d
+
 NetBox 2.1.42.385 17.06.2015
 --------------------
   * Update WinSCP sources to 5.7.4

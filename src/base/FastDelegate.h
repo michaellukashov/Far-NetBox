@@ -868,8 +868,8 @@ public:
 	FastDelegate0() { clear(); }
 	FastDelegate0(const FastDelegate0 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	void operator = (const FastDelegate0 &x)  {
-		m_Closure.CopyFrom(this, x.m_Closure); }
+	FastDelegate0 & operator = (const FastDelegate0 &x)  {
+		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator ==(const FastDelegate0 &x) const {
 		return m_Closure.IsEqual(x.m_Closure);	}
 	bool operator !=(const FastDelegate0 &x) const {
@@ -897,8 +897,8 @@ public:
 	FastDelegate0(DesiredRetType (*function_to_bind)() ) {
 		bind(function_to_bind);	}
 	// for efficiency, prevent creation of a temporary
-	void operator = (DesiredRetType (*function_to_bind)() ) {
-		bind(function_to_bind);	}
+	FastDelegate0 & operator = (DesiredRetType (*function_to_bind)() ) {
+		bind(function_to_bind);	return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)()) {
 		m_Closure.bindstaticfunc(this, &FastDelegate0::InvokeStaticFunction, 
 			function_to_bind); }
@@ -953,8 +953,8 @@ public:
 	FastDelegate1() { clear(); }
 	FastDelegate1(const FastDelegate1 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	void operator = (const FastDelegate1 &x)  {
-		m_Closure.CopyFrom(this, x.m_Closure); }
+	FastDelegate1 & operator = (const FastDelegate1 &x)  {
+		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator ==(const FastDelegate1 &x) const {
 		return m_Closure.IsEqual(x.m_Closure);	}
 	bool operator !=(const FastDelegate1 &x) const {
@@ -982,8 +982,8 @@ public:
 	FastDelegate1(DesiredRetType (*function_to_bind)(Param1 p1) ) {
 		bind(function_to_bind);	}
 	// for efficiency, prevent creation of a temporary
-	void operator = (DesiredRetType (*function_to_bind)(Param1 p1) ) {
-		bind(function_to_bind);	}
+	FastDelegate1 & operator = (DesiredRetType (*function_to_bind)(Param1 p1) ) {
+		bind(function_to_bind);	return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate1::InvokeStaticFunction, 
 			function_to_bind); }
@@ -1038,8 +1038,8 @@ public:
 	FastDelegate2() { clear(); }
 	FastDelegate2(const FastDelegate2 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	void operator = (const FastDelegate2 &x)  {
-		m_Closure.CopyFrom(this, x.m_Closure); }
+	FastDelegate2 & operator = (const FastDelegate2 &x)  {
+		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator ==(const FastDelegate2 &x) const {
 		return m_Closure.IsEqual(x.m_Closure);	}
 	bool operator !=(const FastDelegate2 &x) const {
@@ -1067,8 +1067,8 @@ public:
 	FastDelegate2(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2) ) {
 		bind(function_to_bind);	}
 	// for efficiency, prevent creation of a temporary
-	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2) ) {
-		bind(function_to_bind);	}
+	FastDelegate2 & operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2) ) {
+		bind(function_to_bind);	return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate2::InvokeStaticFunction, 
 			function_to_bind); }
@@ -1123,8 +1123,8 @@ public:
 	FastDelegate3() { clear(); }
 	FastDelegate3(const FastDelegate3 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	void operator = (const FastDelegate3 &x)  {
-		m_Closure.CopyFrom(this, x.m_Closure); }
+	FastDelegate3 & operator = (const FastDelegate3 &x)  {
+		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator ==(const FastDelegate3 &x) const {
 		return m_Closure.IsEqual(x.m_Closure);	}
 	bool operator !=(const FastDelegate3 &x) const {
@@ -1152,8 +1152,8 @@ public:
 	FastDelegate3(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3) ) {
 		bind(function_to_bind);	}
 	// for efficiency, prevent creation of a temporary
-	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3) ) {
-		bind(function_to_bind);	}
+	FastDelegate3 & operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3) ) {
+		bind(function_to_bind);	return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate3::InvokeStaticFunction, 
 			function_to_bind); }
@@ -1208,8 +1208,8 @@ public:
 	FastDelegate4() { clear(); }
 	FastDelegate4(const FastDelegate4 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	void operator = (const FastDelegate4 &x)  {
-		m_Closure.CopyFrom(this, x.m_Closure); }
+	FastDelegate4 & operator = (const FastDelegate4 &x)  {
+		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator ==(const FastDelegate4 &x) const {
 		return m_Closure.IsEqual(x.m_Closure);	}
 	bool operator !=(const FastDelegate4 &x) const {
@@ -1237,8 +1237,8 @@ public:
 	FastDelegate4(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4) ) {
 		bind(function_to_bind);	}
 	// for efficiency, prevent creation of a temporary
-	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4) ) {
-		bind(function_to_bind);	}
+	FastDelegate4 & operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4) ) {
+		bind(function_to_bind);	return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate4::InvokeStaticFunction, 
 			function_to_bind); }
@@ -1293,8 +1293,8 @@ public:
 	FastDelegate5() { clear(); }
 	FastDelegate5(const FastDelegate5 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	void operator = (const FastDelegate5 &x)  {
-		m_Closure.CopyFrom(this, x.m_Closure); }
+	FastDelegate5 & operator = (const FastDelegate5 &x)  {
+		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator ==(const FastDelegate5 &x) const {
 		return m_Closure.IsEqual(x.m_Closure);	}
 	bool operator !=(const FastDelegate5 &x) const {
@@ -1322,8 +1322,8 @@ public:
 	FastDelegate5(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5) ) {
 		bind(function_to_bind);	}
 	// for efficiency, prevent creation of a temporary
-	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5) ) {
-		bind(function_to_bind);	}
+	FastDelegate5 & operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5) ) {
+		bind(function_to_bind);	return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate5::InvokeStaticFunction, 
 			function_to_bind); }
@@ -1378,8 +1378,8 @@ public:
 	FastDelegate6() { clear(); }
 	FastDelegate6(const FastDelegate6 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	void operator = (const FastDelegate6 &x)  {
-		m_Closure.CopyFrom(this, x.m_Closure); }
+	FastDelegate6 & operator = (const FastDelegate6 &x)  {
+		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator ==(const FastDelegate6 &x) const {
 		return m_Closure.IsEqual(x.m_Closure);	}
 	bool operator !=(const FastDelegate6 &x) const {
@@ -1407,8 +1407,8 @@ public:
 	FastDelegate6(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6) ) {
 		bind(function_to_bind);	}
 	// for efficiency, prevent creation of a temporary
-	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6) ) {
-		bind(function_to_bind);	}
+	FastDelegate6 & operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6) ) {
+		bind(function_to_bind);	return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate6::InvokeStaticFunction, 
 			function_to_bind); }
@@ -1463,8 +1463,8 @@ public:
 	FastDelegate7() { clear(); }
 	FastDelegate7(const FastDelegate7 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	void operator = (const FastDelegate7 &x)  {
-		m_Closure.CopyFrom(this, x.m_Closure); }
+	FastDelegate7 & operator = (const FastDelegate7 &x)  {
+		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator ==(const FastDelegate7 &x) const {
 		return m_Closure.IsEqual(x.m_Closure);	}
 	bool operator !=(const FastDelegate7 &x) const {
@@ -1492,8 +1492,8 @@ public:
 	FastDelegate7(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7) ) {
 		bind(function_to_bind);	}
 	// for efficiency, prevent creation of a temporary
-	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7) ) {
-		bind(function_to_bind);	}
+	FastDelegate7 & operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7) ) {
+		bind(function_to_bind);	return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate7::InvokeStaticFunction, 
 			function_to_bind); }
@@ -1548,8 +1548,8 @@ public:
 	FastDelegate8() { clear(); }
 	FastDelegate8(const FastDelegate8 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	void operator = (const FastDelegate8 &x)  {
-		m_Closure.CopyFrom(this, x.m_Closure); }
+	FastDelegate8 & operator = (const FastDelegate8 &x)  {
+		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator ==(const FastDelegate8 &x) const {
 		return m_Closure.IsEqual(x.m_Closure);	}
 	bool operator !=(const FastDelegate8 &x) const {
@@ -1577,8 +1577,8 @@ public:
 	FastDelegate8(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8) ) {
 		bind(function_to_bind);	}
 	// for efficiency, prevent creation of a temporary
-	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8) ) {
-		bind(function_to_bind);	}
+	FastDelegate8 & operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8) ) {
+		bind(function_to_bind);	return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate8::InvokeStaticFunction, 
 			function_to_bind); }
@@ -1667,8 +1667,8 @@ public:
 
   FastDelegate(R (*function_to_bind)(  ))
     : BaseType(function_to_bind)  { }
-  void operator = (const BaseType &x)  {	  
-		*static_cast<BaseType*>(this) = x; }
+  FastDelegate & operator = (const BaseType &x)  {
+        *static_cast<BaseType*>(this) = x; return *this; }
 };
 
 //N=1
@@ -1704,8 +1704,8 @@ public:
 
   FastDelegate(R (*function_to_bind)( Param1 p1 ))
     : BaseType(function_to_bind)  { }
-  void operator = (const BaseType &x)  {	  
-		*static_cast<BaseType*>(this) = x; }
+  FastDelegate & operator = (const BaseType &x)  {
+        *static_cast<BaseType*>(this) = x; return *this; }
 };
 
 //N=2
@@ -1741,8 +1741,8 @@ public:
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2 ))
     : BaseType(function_to_bind)  { }
-  void operator = (const BaseType &x)  {	  
-		*static_cast<BaseType*>(this) = x; }
+  FastDelegate & operator = (const BaseType &x)  {
+        *static_cast<BaseType*>(this) = x; return *this; }
 };
 
 //N=3
@@ -1778,8 +1778,8 @@ public:
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2, Param3 p3 ))
     : BaseType(function_to_bind)  { }
-  void operator = (const BaseType &x)  {	  
-		*static_cast<BaseType*>(this) = x; }
+  FastDelegate & operator = (const BaseType &x)  {
+        *static_cast<BaseType*>(this) = x; return *this; }
 };
 
 //N=4
@@ -1815,8 +1815,8 @@ public:
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4 ))
     : BaseType(function_to_bind)  { }
-  void operator = (const BaseType &x)  {	  
-		*static_cast<BaseType*>(this) = x; }
+  FastDelegate & operator = (const BaseType &x)  {
+        *static_cast<BaseType*>(this) = x; return *this; }
 };
 
 //N=5
@@ -1852,8 +1852,8 @@ public:
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5 ))
     : BaseType(function_to_bind)  { }
-  void operator = (const BaseType &x)  {	  
-		*static_cast<BaseType*>(this) = x; }
+  FastDelegate & operator = (const BaseType &x)  {
+        *static_cast<BaseType*>(this) = x; return *this; }
 };
 
 //N=6
@@ -1889,8 +1889,8 @@ public:
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6 ))
     : BaseType(function_to_bind)  { }
-  void operator = (const BaseType &x)  {	  
-		*static_cast<BaseType*>(this) = x; }
+  FastDelegate & operator = (const BaseType &x)  {
+        *static_cast<BaseType*>(this) = x; return *this; }
 };
 
 //N=7
@@ -1926,8 +1926,8 @@ public:
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7 ))
     : BaseType(function_to_bind)  { }
-  void operator = (const BaseType &x)  {	  
-		*static_cast<BaseType*>(this) = x; }
+  FastDelegate & operator = (const BaseType &x)  {
+        *static_cast<BaseType*>(this) = x; return *this; }
 };
 
 //N=8
@@ -1963,8 +1963,8 @@ public:
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8 ))
     : BaseType(function_to_bind)  { }
-  void operator = (const BaseType &x)  {	  
-		*static_cast<BaseType*>(this) = x; }
+  FastDelegate & operator = (const BaseType &x)  {
+        *static_cast<BaseType*>(this) = x; return *this; }
 };
 
 

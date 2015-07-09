@@ -2,6 +2,14 @@
 
 #pragma warning(push)
 #pragma warning(disable: 4005)
+
+#undef RegOpenKey
+#undef RegCreateKey
+#undef RegCreateKey
+#undef RegQueryValueEx
+#undef RegSetValueEx
+#undef RegCloseKey
+
 #define RegOpenKey reg_open_winscp_key
 #define RegCreateKey reg_create_winscp_key
 #define RegCreateKey reg_create_winscp_key
@@ -12,12 +20,3 @@
 
 #include "winstore.c"
 
-void putty_mungestr(const char *in, char *out)
-{
-  mungestr(in, out);
-}
-
-void putty_unmungestr(const char *in, char *out, int outlen)
-{
-  unmungestr(in, out, outlen);
-}

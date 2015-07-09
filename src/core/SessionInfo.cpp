@@ -1084,10 +1084,13 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
           BooleanToEngStr(Data->GetTcpNoDelay()).c_str());
       }
       TProxyMethod ProxyMethod = Data->GetProxyMethod();
-      ADF(L"Proxy: %s",
-        (Data->GetFtpProxyLogonType() != 0) ?
-          FORMAT(L"FTP proxy %d", Data->GetFtpProxyLogonType()).c_str() :
-          UnicodeString(ProxyMethodList[Data->GetActualProxyMethod()]).c_str());
+      {
+        UnicodeString fp = FORMAT(L"FTP proxy %d", Data->GetFtpProxyLogonType());
+        ADF(L"Proxy: %s",
+          (Data->GetFtpProxyLogonType() != 0) ?
+            fp.c_str() :
+            UnicodeString(ProxyMethodList[Data->GetActualProxyMethod()]).c_str());
+      }
       if ((Data->GetFtpProxyLogonType() != 0) || (ProxyMethod != ::pmNone))
       {
         ADF(L"HostName: %s (Port: %d); Username: %s; Passwd: %s",

@@ -17,9 +17,10 @@ enum TCipher
   cipBlowfish,
   cipAES,
   cipDES,
-  cipArcfour
+  cipArcfour,
+  cipCHACHA20
 };
-#define CIPHER_COUNT (cipArcfour+1)
+#define CIPHER_COUNT (cipCHACHA20+1)
 enum TProtocol
 {
   ptRaw,
@@ -59,9 +60,9 @@ enum TSshProt
 };
 enum TKex
 {
-  kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA
+  kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA, kexECDH
 };
-#define KEX_COUNT (kexRSA+1)
+#define KEX_COUNT (kexECDH+1)
 enum TSshBug
 {
   sbIgnore1, sbPlainPW1, sbRSA1, sbHMAC2, sbDeriveKey2, sbRSAPad2,
@@ -372,7 +373,7 @@ public:
   static UnicodeString ExtractFolderName(const UnicodeString & Name);
   static UnicodeString ComposePath(const UnicodeString & APath, const UnicodeString & Name);
   static bool IsSensitiveOption(const UnicodeString & Option);
-  static UnicodeString FormatSiteKey(const UnicodeString & HostName, int PortNumber);
+  static UnicodeString FormatSiteKey(const UnicodeString & HostName, intptr_t PortNumber);
 
   UnicodeString GetHostName() const { return FHostName; }
   intptr_t GetPortNumber() const { return FPortNumber; }

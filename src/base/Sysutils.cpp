@@ -245,14 +245,14 @@ UnicodeString TrimRight(const UnicodeString & Str)
 UnicodeString UpperCase(const UnicodeString & Str)
 {
   UnicodeString Result(Str);
-  ::CharUpperBuff(const_cast<LPWSTR>(Result.c_str()), Result.Length());
+  ::CharUpperBuff(const_cast<LPWSTR>(Result.c_str()), (DWORD)Result.Length());
   return Result;
 }
 
 UnicodeString LowerCase(const UnicodeString & Str)
 {
   UnicodeString Result(Str);
-  ::CharLowerBuff(const_cast<LPWSTR>(Result.c_str()), Result.Length());
+  ::CharLowerBuff(const_cast<LPWSTR>(Result.c_str()), (DWORD)Result.Length());
   return Result;
 }
 

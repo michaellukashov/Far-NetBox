@@ -7,6 +7,7 @@
 // unique_ptr-like class
 class TProgramParamsOwner : public TObject
 {
+NB_DISABLE_COPY(TProgramParamsOwner)
 public:
   TProgramParamsOwner() :
     FProgramParams(nullptr)

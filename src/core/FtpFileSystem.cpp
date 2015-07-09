@@ -466,7 +466,7 @@ void TFTPFileSystem::Open()
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), static_cast<int>(Data->GetPortNumber()), UserName.c_str(),
       Password.c_str(), Account.c_str(), false, Path.c_str(),
-      ServerType, Pasv, static_cast<int>(TimeZoneOffset), UTF8,
+      ServerType, static_cast<int>(Pasv), static_cast<int>(TimeZoneOffset), UTF8,
       static_cast<int>(Data->GetFtpForcePasvIp()),
       static_cast<int>(Data->GetFtpUseMlsd()),
       static_cast<int>(Data->GetFtpDupFF()),
@@ -926,7 +926,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
 
   if (Properties && Properties->Valid.Contains(vpRights))
   {
-    std::unique_ptr<TRemoteFile> OwnedFile(nullptr);
+    std::unique_ptr<TRemoteFile> OwnedFile;
     UnicodeString FileName = GetAbsolutePath(AFileName, false);
 
     if (AFile == nullptr)
@@ -3403,7 +3403,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
 
   if ((Code != nullptr) && (FLastCodeClass != DummyCodeClass))
   {
-    *Code = static_cast<int>(FLastCode);
+    *Code = static_cast<uintptr_t>(FLastCode);
   }
 
   if (FLAGSET(Flags, REPLY_SINGLE_LINE))

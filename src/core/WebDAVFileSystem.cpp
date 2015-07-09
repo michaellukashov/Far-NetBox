@@ -1759,7 +1759,7 @@ fail:
     exploded_time.tm_wday   = 0;
     exploded_time.tm_yday   = 0;
     exploded_time.tm_isdst  = 0;
-    exploded_time.tm_gmtoff = (gmt_shift == '-' ? -1 : 1) * gmt_hour * SecsPerHour + gmt_min * SecsPerMin;
+    exploded_time.tm_gmtoff = (gmt_shift == '-' ? -1 : 1) * gmt_hour * (apr_int32_t)SecsPerHour + gmt_min * (apr_int32_t)SecsPerMin;
     exploded_time.tm_usec = 0;
 
     apr_err = apr_time_exp_gmt_get(when, &exploded_time);
@@ -6248,16 +6248,16 @@ static apr_status_t
 file_open(
   apr_file_t ** file,
   const char * fname_apr,
-  apr_int32_t flags,
+  apr_int32_t fo_flags,
   apr_fileperms_t perm,
   bool retry_on_failure,
   apr_pool_t * pool)
 {
-  apr_status_t status = apr_file_open(file, fname_apr, flags, perm, pool);
+  apr_status_t status = apr_file_open(file, fname_apr, fo_flags, perm, pool);
 
   if (retry_on_failure)
   {
-    WIN32_RETRY_LOOP(status, apr_file_open(file, fname_apr, flags, perm, pool));
+    WIN32_RETRY_LOOP(status, apr_file_open(file, fname_apr, fo_flags, perm, pool));
   }
   return status;
 }
@@ -6266,7 +6266,7 @@ static error_t
 io_file_open(
   apr_file_t ** new_file,
   const char * fname,
-  apr_int32_t flags,
+  apr_int32_t fo_flags,
   apr_fileperms_t perms,
   apr_pool_t * pool)
 {
@@ -6274,7 +6274,7 @@ io_file_open(
   apr_status_t status = 0;
 
   WEBDAV_ERR(cstring_from_utf8(&fname_apr, fname, pool));
-  status = file_open(new_file, fname_apr, flags | APR_BINARY, perms,
+  status = file_open(new_file, fname_apr, fo_flags | APR_BINARY, perms,
     /* retry_on_failure */ false,
     pool);
 
@@ -6288,13 +6288,13 @@ static error_t
 io_file_open_writable(
   apr_file_t ** new_file,
   apr_os_file_t * thefile,
-  apr_int32_t flags,
+  apr_int32_t fo_flags,
   apr_pool_t * pool)
 {
   apr_status_t status = 0;
 
   status = apr_os_file_put(new_file, thefile,
-    flags | APR_BINARY,
+    fo_flags | APR_BINARY,
     pool);
 
   if (status)
