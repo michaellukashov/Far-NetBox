@@ -202,6 +202,9 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       case cipArcfour:
         pcipher = CIPHER_ARCFOUR;
         break;
+      case cipCHACHA20:
+        pcipher = CIPHER_CHACHA20;
+        break;
       default:
         FAIL;
     }
@@ -228,7 +231,11 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       case kexRSA:
         pkex = KEX_RSA;
         break;
-      default: FAIL;
+	  case kexECDH:
+		  pkex = KEX_ECDH;
+		  break;
+      default:
+		  FAIL;
     }
     conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
   }

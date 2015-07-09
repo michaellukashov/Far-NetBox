@@ -17,9 +17,10 @@ enum TCipher
   cipBlowfish,
   cipAES,
   cipDES,
-  cipArcfour
+  cipArcfour,
+  cipCHACHA20
 };
-#define CIPHER_COUNT (cipArcfour+1)
+#define CIPHER_COUNT (cipCHACHA20+1)
 enum TProtocol
 {
   ptRaw,
@@ -59,9 +60,9 @@ enum TSshProt
 };
 enum TKex
 {
-  kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA
+  kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA, kexECDH
 };
-#define KEX_COUNT (kexRSA+1)
+#define KEX_COUNT (kexECDH+1)
 enum TSshBug
 {
   sbIgnore1, sbPlainPW1, sbRSA1, sbHMAC2, sbDeriveKey2, sbRSAPad2,
