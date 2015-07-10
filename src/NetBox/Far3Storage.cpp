@@ -185,6 +185,10 @@ TDateTime TFar3Storage::ReadDateTime(const UnicodeString & Name, const TDateTime
   {
     Result = Val;
   }
+  else
+  {
+	  Result = Default;
+  }
   return Result;
 }
 
@@ -197,6 +201,10 @@ double TFar3Storage::ReadFloat(const UnicodeString & Name, double Default)
   if (FPluginSettings.Get(FRoot, Name.c_str(), Value, Sz) == Sz)
   {
     Result = Val;
+  }
+  else
+  {
+	Result = Default;
   }
   return Result;
 }
