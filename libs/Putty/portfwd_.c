@@ -2,6 +2,8 @@
 
 #include "puttyexp.h"
 
+#ifndef MPEXT
+
 int is_pfwd(void * handle)
 {
   Plug fn = (Plug)handle;
@@ -18,3 +20,5 @@ void * get_pfwd_backend(void * handle)
 {
   return ((struct PortForwarding*)handle)->backhandle;
 }
+
+#endif

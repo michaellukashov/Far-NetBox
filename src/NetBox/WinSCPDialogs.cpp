@@ -3396,7 +3396,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       CipherListBox->GetItems()->EndUpdate();
     };
     CipherListBox->GetItems()->Clear();
-    assert(CIPHER_NAME_WARN + CIPHER_COUNT - 1 == CIPHER_NAME_ARCFOUR);
+    assert(CIPHER_NAME_WARN + CIPHER_COUNT - 1 == CIPHER_NAME_CHACHA20);
     for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
     {
       TObject * Obj = static_cast<TObject *>(ToPtr(SessionData->GetCipher(Index)));
@@ -3418,7 +3418,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       KexListBox->GetItems()->EndUpdate();
     };
     KexListBox->GetItems()->Clear();
-    assert(KEX_NAME_WARN + KEX_COUNT + 1 == KEX_NAME_GSSGEX);
+    assert(KEX_NAME_WARN + KEX_COUNT - 1 == KEX_NAME_ECDH);
     for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
     {
       KexListBox->GetItems()->AddObject(

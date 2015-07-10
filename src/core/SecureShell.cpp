@@ -2175,7 +2175,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
 
   if (retrieve_host_key(
         AnsiString(Host2).c_str(), Port, AnsiString(KeyType).c_str(),
-        const_cast<char *>(AnsiStoredKeys.c_str()), AnsiStoredKeys.Length()) == 0)
+        const_cast<char *>(AnsiStoredKeys.c_str()), static_cast<int>(AnsiStoredKeys.Length())) == 0)
   {
     StoredKeys = AnsiStoredKeys.c_str();
     UnicodeString Buf = StoredKeys;

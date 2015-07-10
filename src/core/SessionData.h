@@ -60,7 +60,7 @@ enum TSshProt
 };
 enum TKex
 {
-  kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA, kexECDH
+  kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexGSSGROUP1, kexGSSGROUP14, kexGSSGEX, kexRSA, kexECDH
 };
 #define KEX_COUNT (kexECDH+1)
 enum TSshBug

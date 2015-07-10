@@ -2266,7 +2266,7 @@ uint32_t TSFTPFileSystem::UploadBlockSize(const RawByteString & Handle,
   // handle length + offset + data size
   const uintptr_t UploadPacketOverhead =
     sizeof(uint32_t) + sizeof(int64_t) + sizeof(uint32_t);
-  return TransferBlockSize(UploadPacketOverhead + static_cast<uintptr_t>(Handle.Length()), OperationProgress,
+  return TransferBlockSize(static_cast<uint32_t>(UploadPacketOverhead + Handle.Length()), OperationProgress,
     static_cast<uint32_t>(GetSessionData()->GetSFTPMinPacketSize()),
     static_cast<uint32_t>(GetSessionData()->GetSFTPMaxPacketSize()));
 }
