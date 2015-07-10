@@ -2620,7 +2620,7 @@ void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
   assert(FOwner != nullptr);
   if (GetFocusedIndex() != Value)
   {
-    assert(Value != NPOS && Value < FPanelInfo->ItemsNumber);
+    assert(Value != NPOS && Value < (intptr_t)FPanelInfo->ItemsNumber);
     FPanelInfo->CurrentItem = static_cast<int>(Value);
     PanelRedrawInfo PanelInfo;
     PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
