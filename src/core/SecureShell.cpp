@@ -2172,6 +2172,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
 
   UnicodeString StoredKeys;
   AnsiString AnsiStoredKeys(10240, '\0');
+  bool IsFingerprint = false;
 
   if (retrieve_host_key(
         AnsiString(Host2).c_str(), Port, AnsiString(KeyType).c_str(),
@@ -2182,7 +2183,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
     while (!Result && !Buf.IsEmpty())
     {
       UnicodeString StoredKey = CutToChar(Buf, Delimiter, false);
-      bool IsFingerprint = (StoredKey.SubString(1, 2) != L"0x");
+      IsFingerprint = (StoredKey.SubString(1, 2) != L"0x");
       // it's probably a fingerprint (stored by TSessionData::CacheHostKey)
       UnicodeString NormalizedExpectedKey;
       if (IsFingerprint)
@@ -2289,7 +2290,8 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
           KeyStr2 = (StoredKeys + Delimiter + KeyStr2);
           // fall thru
         case qaYes:
-          store_host_key(AnsiString(Host2).c_str(), Port, AnsiString(KeyType).c_str(), AnsiString(KeyStr2).c_str());
+          store_host_key(AnsiString(Host2).c_str(), Port, AnsiString(KeyType).c_str(),
+			  AnsiString(IsFingerprint ? NormalizedFingerprint : KeyStr2).c_str());
           Verified = true;
           break;
 
