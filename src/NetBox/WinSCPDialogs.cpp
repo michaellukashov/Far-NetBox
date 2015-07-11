@@ -1844,7 +1844,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   PortNumberEdit = new TFarEdit(this);
   PortNumberEdit->SetFixed(true);
-  PortNumberEdit->SetMask(L"99999");
+  PortNumberEdit->SetMask(L"999999");
 
   SetNextItemPosition(ipNewLine);
 
@@ -2387,7 +2387,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   ProxyPortEdit = new TFarEdit(this);
   ProxyPortEdit->SetFixed(true);
-  ProxyPortEdit->SetMask(L"99999");
+  ProxyPortEdit->SetMask(L"999999");
   // ProxyPortEdit->SetWidth(12);
   Text->SetEnabledFollow(ProxyPortEdit);
 
@@ -2496,7 +2496,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   TunnelPortNumberEdit = new TFarEdit(this);
   TunnelPortNumberEdit->SetFixed(true);
-  TunnelPortNumberEdit->SetMask(L"99999");
+  TunnelPortNumberEdit->SetMask(L"999999");
   TunnelPortNumberEdit->SetEnabledDependency(TunnelCheck);
 
   SetNextItemPosition(ipNewLine);
