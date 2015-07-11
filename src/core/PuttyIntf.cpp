@@ -560,6 +560,11 @@ UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint)
   UnicodeString Result = Fingerprint;
   UnicodeString DssName = UnicodeString(ssh_dss.name) + L" ";
   UnicodeString RsaName = UnicodeString(ssh_rsa.name) + L" ";
+  // ssh_ecdsa_ed25519 ssh_ecdsa_nistp256 ssh_ecdsa_nistp384 ssh_ecdsa_nistp521
+  UnicodeString ECDSAed25519Name = UnicodeString(ssh_ecdsa_ed25519.name) + L" ";
+  UnicodeString ECDSAnistp256Name = UnicodeString(ssh_ecdsa_nistp256.name) + L" ";
+  UnicodeString ECDSAnistp384Name = UnicodeString(ssh_ecdsa_nistp384.name) + L" ";
+  UnicodeString ECDSAnistp521Name = UnicodeString(ssh_ecdsa_nistp521.name) + L" ";
 
   bool IsFingerprint = false;
   intptr_t LenStart = 0;
@@ -572,6 +577,26 @@ UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint)
   {
     LenStart = RsaName.Length() + 1;
     IsFingerprint = true;
+  }
+  else if (StartsStr(ECDSAed25519Name, Result))
+  {
+	  LenStart = ECDSAed25519Name.Length() + 1;
+	  IsFingerprint = true;
+  }
+  else if (StartsStr(ECDSAnistp256Name, Result))
+  {
+	  LenStart = ECDSAnistp256Name.Length() + 1;
+	  IsFingerprint = true;
+  }
+  else if (StartsStr(ECDSAnistp384Name, Result))
+  {
+	  LenStart = ECDSAnistp384Name.Length() + 1;
+	  IsFingerprint = true;
+  }
+  else if (StartsStr(ECDSAnistp521Name, Result))
+  {
+	  LenStart = ECDSAnistp521Name.Length() + 1;
+	  IsFingerprint = true;
   }
 
   if (IsFingerprint)
