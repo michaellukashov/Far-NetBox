@@ -2182,22 +2182,22 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
     while (!Result && !Buf.IsEmpty())
     {
       UnicodeString StoredKey = CutToChar(Buf, Delimiter, false);
-      bool Fingerprint = (StoredKey.SubString(1, 2) != L"0x");
+      bool IsFingerprint = (StoredKey.SubString(1, 2) != L"0x");
       // it's probably a fingerprint (stored by TSessionData::CacheHostKey)
       UnicodeString NormalizedExpectedKey;
-      if (Fingerprint)
+      if (IsFingerprint)
       {
         NormalizedExpectedKey = NormalizeFingerprint(StoredKey);
       }
-      if ((!Fingerprint && (StoredKey == KeyStr2)) ||
-          (Fingerprint && (NormalizedExpectedKey == NormalizedFingerprint)))
+      if ((!IsFingerprint && (StoredKey == KeyStr2)) ||
+          (IsFingerprint && (NormalizedExpectedKey == NormalizedFingerprint)))
       {
         LogEvent("Host key matches cached key");
         Result = true;
       }
       else
       {
-        UnicodeString FormattedKey = Fingerprint ? StoredKey : FormatKeyStr(StoredKey);
+        UnicodeString FormattedKey = IsFingerprint ? StoredKey : FormatKeyStr(StoredKey);
         LogEvent(FORMAT(L"Host key does not match cached key %s", FormattedKey.c_str()));
       }
     }
