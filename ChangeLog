@@ -1,9 +1,9 @@
-NetBox 2.1.43.390 10.07.2015
+NetBox 2.1.43.391 11.07.2015
 --------------------
-  * Bugfix: AV when connecting using tunnel
-    (http://bugs.farmanager.com/view.php?id=3018)
   * Bugfix: SCP, SFTP: verified host key is not stored
     (http://forum.farmanager.com/viewtopic.php?p=131079#p131079)
+  * Bugfix: AV when connecting using tunnel
+    (http://bugs.farmanager.com/view.php?id=3018)
   * Update openssl sources to 1.0.2d
 
 NetBox 2.1.42.385 17.06.2015
