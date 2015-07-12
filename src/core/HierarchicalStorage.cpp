@@ -305,7 +305,7 @@ void THierarchicalStorage::WriteValues(TStrings * Strings,
   }
 }
 
-UnicodeString THierarchicalStorage::ReadString(const UnicodeString & Name, const UnicodeString & Default)
+UnicodeString THierarchicalStorage::ReadString(const UnicodeString & Name, const UnicodeString & Default) const
 {
   UnicodeString Result;
   if (GetMungeStringValues())
@@ -319,7 +319,7 @@ UnicodeString THierarchicalStorage::ReadString(const UnicodeString & Name, const
   return Result;
 }
 
-RawByteString THierarchicalStorage::ReadBinaryData(const UnicodeString & Name)
+RawByteString THierarchicalStorage::ReadBinaryData(const UnicodeString & Name) const
 {
   size_t Size = BinaryDataSize(Name);
   RawByteString Value;
@@ -328,7 +328,7 @@ RawByteString THierarchicalStorage::ReadBinaryData(const UnicodeString & Name)
   return Value;
 }
 
-RawByteString THierarchicalStorage::ReadStringAsBinaryData(const UnicodeString & Name, const RawByteString & Default)
+RawByteString THierarchicalStorage::ReadStringAsBinaryData(const UnicodeString & Name, const RawByteString & Default) const
 {
   UnicodeString UnicodeDefault = UnicodeString(AnsiString(Default.c_str(), Default.Length()).c_str());
   // This should be exactly the same operation as calling ReadString in
@@ -556,33 +556,33 @@ bool TRegistryStorage::ValueExists(const UnicodeString & Value) const
   return Result;
 }
 
-size_t TRegistryStorage::BinaryDataSize(const UnicodeString & Name)
+size_t TRegistryStorage::BinaryDataSize(const UnicodeString & Name) const
 {
   size_t Result = FRegistry->GetDataSize(Name);
   return Result;
 }
 
-bool TRegistryStorage::ReadBool(const UnicodeString & Name, bool Default)
+bool TRegistryStorage::ReadBool(const UnicodeString & Name, bool Default) const
 {
   READ_REGISTRY(ReadBool);
 }
 
-TDateTime TRegistryStorage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default)
+TDateTime TRegistryStorage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default) const
 {
   READ_REGISTRY(ReadDateTime);
 }
 
-double TRegistryStorage::ReadFloat(const UnicodeString & Name, double Default)
+double TRegistryStorage::ReadFloat(const UnicodeString & Name, double Default) const
 {
   READ_REGISTRY(ReadFloat);
 }
 
-intptr_t TRegistryStorage::ReadInteger(const UnicodeString & Name, intptr_t Default)
+intptr_t TRegistryStorage::ReadInteger(const UnicodeString & Name, intptr_t Default) const
 {
   READ_REGISTRY(ReadInteger);
 }
 
-int64_t TRegistryStorage::ReadInt64(const UnicodeString & Name, int64_t Default)
+int64_t TRegistryStorage::ReadInt64(const UnicodeString & Name, int64_t Default) const
 {
   int64_t Result = Default;
   if (FRegistry->ValueExists(Name))
@@ -599,13 +599,13 @@ int64_t TRegistryStorage::ReadInt64(const UnicodeString & Name, int64_t Default)
   return Result;
 }
 
-UnicodeString TRegistryStorage::ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default)
+UnicodeString TRegistryStorage::ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) const
 {
   READ_REGISTRY(ReadString);
 }
 
 size_t TRegistryStorage::ReadBinaryData(const UnicodeString & Name,
-  void * Buffer, size_t Size)
+  void * Buffer, size_t Size) const
 {
   size_t Result;
   if (FRegistry->ValueExists(Name))
