@@ -18,17 +18,17 @@ public:
   virtual void GetSubKeyNames(TStrings * Strings);
   virtual bool ValueExists(const UnicodeString & Value) const;
   virtual bool DeleteValue(const UnicodeString & Name);
-  virtual size_t BinaryDataSize(const UnicodeString & Name);
+  virtual size_t BinaryDataSize(const UnicodeString & Name) const;
   virtual UnicodeString GetSource() const;
   virtual UnicodeString GetSource();
 
-  virtual bool ReadBool(const UnicodeString & Name, bool Default);
-  virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default);
-  virtual int64_t ReadInt64(const UnicodeString & Name, int64_t Default);
-  virtual TDateTime ReadDateTime(const UnicodeString & Name, const TDateTime & Default);
-  virtual double ReadFloat(const UnicodeString & Name, double Default);
-  virtual UnicodeString ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
-  virtual size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size);
+  virtual bool ReadBool(const UnicodeString & Name, bool Default) const;
+  virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default) const;
+  virtual int64_t ReadInt64(const UnicodeString & Name, int64_t Default) const;
+  virtual TDateTime ReadDateTime(const UnicodeString & Name, const TDateTime & Default) const;
+  virtual double ReadFloat(const UnicodeString & Name, double Default) const;
+  virtual UnicodeString ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) const;
+  virtual size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size) const;
 
   virtual void WriteBool(const UnicodeString & Name, bool Value);
   virtual void WriteInteger(const UnicodeString & Name, intptr_t Value);

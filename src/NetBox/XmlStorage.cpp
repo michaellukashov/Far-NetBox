@@ -315,7 +315,7 @@ bool TXmlStorage::ValueExists(const UnicodeString & Value) const
   return Result;
 }
 
-size_t TXmlStorage::BinaryDataSize(const UnicodeString & /*Name*/)
+size_t TXmlStorage::BinaryDataSize(const UnicodeString & /*Name*/) const
 {
   Error(SNotImplemented, 3026);
   size_t Result = 0; // FRegistry->GetDataSize(Name);
@@ -332,7 +332,7 @@ UnicodeString TXmlStorage::GetSource()
   return GetStorage();
 }
 
-bool TXmlStorage::ReadBool(const UnicodeString & Name, bool Default)
+bool TXmlStorage::ReadBool(const UnicodeString & Name, bool Default) const
 {
   UnicodeString Result = ReadString(Name, L"");
   if (Result.IsEmpty())
@@ -345,35 +345,35 @@ bool TXmlStorage::ReadBool(const UnicodeString & Name, bool Default)
   }
 }
 
-TDateTime TXmlStorage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default)
+TDateTime TXmlStorage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default) const
 {
   double Result = ReadFloat(Name, Default.GetValue());
   return TDateTime(Result);
 }
 
-double TXmlStorage::ReadFloat(const UnicodeString & Name, double Default)
+double TXmlStorage::ReadFloat(const UnicodeString & Name, double Default) const
 {
   return ::StrToFloatDef(GetSubKeyText(Name), Default);
 }
 
-intptr_t TXmlStorage::ReadInteger(const UnicodeString & Name, intptr_t Default)
+intptr_t TXmlStorage::ReadInteger(const UnicodeString & Name, intptr_t Default) const
 {
   return ::StrToIntDef(GetSubKeyText(Name), Default);
 }
 
-int64_t TXmlStorage::ReadInt64(const UnicodeString & Name, int64_t Default)
+int64_t TXmlStorage::ReadInt64(const UnicodeString & Name, int64_t Default) const
 {
   return ::StrToInt64Def(GetSubKeyText(Name), Default);
 }
 
-UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default)
+UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) const
 {
   UnicodeString Result = GetSubKeyText(Name);
   return Result.IsEmpty() ? Default : Result;
 }
 
 size_t TXmlStorage::ReadBinaryData(const UnicodeString & /*Name*/,
-  void * /*Buffer*/, size_t /*Size*/)
+  void * /*Buffer*/, size_t /*Size*/) const
 {
   Error(SNotImplemented, 3028);
   size_t Result = 0;
