@@ -150,6 +150,12 @@ bool TFar3Storage::DeleteValue(const UnicodeString & Name)
   return FPluginSettings.DeleteValue(FRoot, Name.c_str());
 }
 
+size_t TFar3Storage::BinaryDataSize(const UnicodeString & Name) const
+{
+  Error(SNotImplemented, 3012);
+  return 0;
+}
+
 bool TFar3Storage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
 {
   Error(SNotImplemented, 3011);
@@ -170,12 +176,12 @@ size_t TFar3Storage::BinaryDataSize(const UnicodeString & Name)
   return Result;
 }
 
-bool TFar3Storage::ReadBool(const UnicodeString & Name, bool Default)
+bool TFar3Storage::ReadBool(const UnicodeString & Name, bool Default) const
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
 
-TDateTime TFar3Storage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default)
+TDateTime TFar3Storage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default) const
 {
   TDateTime Result;
   double Val = 0.0;
@@ -192,7 +198,7 @@ TDateTime TFar3Storage::ReadDateTime(const UnicodeString & Name, const TDateTime
   return Result;
 }
 
-double TFar3Storage::ReadFloat(const UnicodeString & Name, double Default)
+double TFar3Storage::ReadFloat(const UnicodeString & Name, double Default) const
 {
   double Result = 0.0;
   double Val = 0.0;
@@ -209,24 +215,24 @@ double TFar3Storage::ReadFloat(const UnicodeString & Name, double Default)
   return Result;
 }
 
-intptr_t TFar3Storage::ReadInteger(const UnicodeString & Name, intptr_t Default)
+intptr_t TFar3Storage::ReadInteger(const UnicodeString & Name, intptr_t Default) const
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
 
-__int64 TFar3Storage::ReadInt64(const UnicodeString & Name, __int64 Default)
+__int64 TFar3Storage::ReadInt64(const UnicodeString & Name, __int64 Default) const
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
 
-UnicodeString TFar3Storage::ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default)
+UnicodeString TFar3Storage::ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) const
 {
   UnicodeString Result = FPluginSettings.Get(FRoot, Name.c_str(), Default.c_str());
   return Result;
 }
 
 size_t TFar3Storage::ReadBinaryData(const UnicodeString & Name,
-  void * Buffer, size_t Size)
+  void * Buffer, size_t Size) const
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Buffer, Size);
 }
