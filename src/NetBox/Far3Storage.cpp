@@ -150,12 +150,6 @@ bool TFar3Storage::DeleteValue(const UnicodeString & Name)
   return FPluginSettings.DeleteValue(FRoot, Name.c_str());
 }
 
-size_t TFar3Storage::BinaryDataSize(const UnicodeString & Name) const
-{
-  Error(SNotImplemented, 3012);
-  return 0;
-}
-
 bool TFar3Storage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
 {
   Error(SNotImplemented, 3011);
@@ -170,7 +164,7 @@ bool TFar3Storage::ValueExists(const UnicodeString & Value) const
   return Result;
 }
 
-size_t TFar3Storage::BinaryDataSize(const UnicodeString & Name)
+size_t TFar3Storage::BinaryDataSize(const UnicodeString & Name) const
 {
   size_t Result = FPluginSettings.BinaryDataSize(FRoot, Name.c_str());
   return Result;

@@ -23,8 +23,6 @@ public:
   virtual void GetSubKeyNames(TStrings * Strings);
   virtual bool ValueExists(const UnicodeString & Value) const;
 
-  virtual size_t BinaryDataSize(const UnicodeString & Name);
-
   virtual bool ReadBool(const UnicodeString & Name, bool Default) const;
   virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default) const;
   virtual __int64 ReadInt64(const UnicodeString & Name, __int64 Default) const;
