@@ -1,5 +1,7 @@
-NetBox 2.1.43.392 14.07.2015
+NetBox 2.1.43.393 15.07.2015
 --------------------
+  * Bugfix: Message 2106 not found
+    (http://forum.farmanager.com/viewtopic.php?p=131198#p131198)
   * Bugfix: AV trying to open SCP session
     (http://forum.farmanager.com/viewtopic.php?p=131130#p131130)
   * Bugfix: SCP, SFTP: verified host key is not stored
