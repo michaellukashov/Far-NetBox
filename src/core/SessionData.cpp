@@ -97,7 +97,7 @@ void TSessionData::Default()
   SetPassword(ANONYMOUS_PASSWORD);
   SetPingInterval(30);
   SetPingType(ptOff);
-  SetTimeout(90);
+  SetTimeout(15);
   SetTryAgent(true);
   SetAgentFwd(false);
   SetAuthTIS(false);
