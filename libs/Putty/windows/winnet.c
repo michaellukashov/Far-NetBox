@@ -1023,7 +1023,7 @@ static DWORD try_connect(Actual_Socket sock,
 
     if (sndbuf > 0)
     {
-	int rcvbuf = 4 * 1024 * 1024;
+	int rcvbuf = 256 * 1024; // 4 * 1024 * 1024;
 	p_setsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *) &sndbuf, sizeof(sndbuf));
 
 	// For now we increase receive buffer, whenever send buffer is set.
