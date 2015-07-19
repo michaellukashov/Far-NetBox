@@ -123,7 +123,7 @@ void TSessionData::Default()
   SetPassphrase(L"");
   FProtocol = ptSSH;
   SetPuttyProtocol(PuttySshProtocol);
-  SetTcpNoDelay(false);
+  SetTcpNoDelay(true);
   SetSendBuf(DefaultSendBuf);
   SetSshSimple(true);
   FNotUtf = asAuto;
