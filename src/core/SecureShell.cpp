@@ -410,7 +410,7 @@ void TSecureShell::Open()
       InitError = FBackend->init(this, &FBackendHandle, conf,
         AnsiString(FSessionData->GetHostNameExpanded()).c_str(), 
         static_cast<int>(FSessionData->GetPortNumber()), &RealHost,
-        (FSessionData->GetTcpNoDelay() ? 1 : 0),
+        FSessionData->GetTcpNoDelay() ? 1 : 0,
         conf_get_int(conf, CONF_tcp_keepalives));
     }
 
