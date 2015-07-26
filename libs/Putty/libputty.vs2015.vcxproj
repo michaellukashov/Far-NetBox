@@ -191,8 +191,8 @@
     <ClCompile Include=".\PGSSAPI.c" />
     <ClCompile Include=".\PORTFWD_.c" />
     <ClCompile Include=".\PROXY.c" />
-    <ClCompile Include=".\SSH_.c" />
-    <ClCompile Include=".\SSHAES_.c" />
+    <ClCompile Include=".\SSH.c" />
+    <ClCompile Include=".\SSHAES.c" />
     <ClCompile Include=".\SSHARCF.c" />
     <ClCompile Include=".\SSHBLOWF.c" />
     <ClCompile Include=".\SSHBN.c" />
@@ -208,7 +208,7 @@
     <ClCompile Include=".\SSHRSA.c" />
     <ClCompile Include=".\SSHSH256.c" />
     <ClCompile Include=".\SSHSH512.c" />
-    <ClCompile Include=".\SSHSHA_.c" />
+    <ClCompile Include=".\SSHSHA.c" />
     <ClCompile Include=".\SSHZLIB.c" />
     <ClCompile Include=".\TREE234.c" />
     <ClCompile Include=".\WILDCARD.c" />
