@@ -268,7 +268,7 @@ static int plug_proxy_accepting(Plug p,
  * it will only check the host name.
  */
 int proxy_for_destination (SockAddr addr, const char *hostname,
-                                  int port, Conf *conf)
+                           int port, Conf *conf)
 {
     int s = 0, e = 0;
     char hostip[64];

@@ -80,6 +80,10 @@ void call_sha1_key_internal(void * handle, unsigned char * key, int len);
 
 void win_misc_cleanup();
 
+// from misc.c
+
+const char * get_putty_version();
+
 #ifdef __cplusplus
 }
 #endif /* C++ */

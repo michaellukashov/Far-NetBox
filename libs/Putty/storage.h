@@ -84,7 +84,7 @@ int retrieve_host_key(const char *hostname, int port,
  * or 2 (entry exists in database and is different).
  */
 int verify_host_key(const char *hostname, int port,
-        const char *keytype, const char *key);
+		    const char *keytype, const char *key);
 #endif
 
 /*
@@ -92,7 +92,7 @@ int verify_host_key(const char *hostname, int port,
  * entry that might have been there.
  */
 void store_host_key(const char *hostname, int port,
-        const char *keytype, const char *key);
+		    const char *keytype, const char *key);
 
 /* ----------------------------------------------------------------------
  * Functions to access PuTTY's random number seed file.

@@ -200,7 +200,7 @@ unsigned long crc32_update(unsigned long crc_input, const void *s, size_t len);
 void *crcda_make_context(void);
 void crcda_free_context(void *handle);
 int detect_attack(void *handle, unsigned char *buf, uint32 len,
-      unsigned char *IV);
+		  unsigned char *IV);
 
 /*
  * SSH2 RSA key exchange functions
@@ -246,7 +246,7 @@ struct MD5Context {
 
 void MD5Init(struct MD5Context *context);
 void MD5Update(struct MD5Context *context, unsigned char const *buf,
-         unsigned len);
+	       unsigned len);
 void MD5Final(unsigned char digest[16], struct MD5Context *context);
 void MD5Simple(void const *p, unsigned len, unsigned char output[16]);
 
@@ -254,7 +254,8 @@ void *hmacmd5_make_context(void *);
 void hmacmd5_free_context(void *handle);
 void hmacmd5_key(void *handle, void const *key, int len);
 void hmacmd5_do_hmac(void *handle, unsigned char const *blk, int len,
-         unsigned char *hmac);
+		     unsigned char *hmac);
+
 
 typedef struct {
     uint32 h[5];
@@ -398,7 +399,7 @@ struct ssh_signkey {
     int (*verifysig) (void *key, const char *sig, int siglen,
 		      const char *data, int datalen);
     unsigned char *(*sign) (void *key, const char *data, int datalen,
-          int *siglen);
+			    int *siglen);
     const char *name;
     const char *keytype;               /* for host key cache */
     const void *extra;                 /* private to the public key methods */
@@ -412,11 +413,11 @@ struct ssh_compress {
     void *(*compress_init) (void);
     void (*compress_cleanup) (void *);
     int (*compress) (void *, unsigned char *block, int len,
-         unsigned char **outblock, int *outlen);
+		     unsigned char **outblock, int *outlen);
     void *(*decompress_init) (void);
     void (*decompress_cleanup) (void *);
     int (*decompress) (void *, unsigned char *block, int len,
-           unsigned char **outblock, int *outlen);
+		       unsigned char **outblock, int *outlen);
     int (*disable_compression) (void *);
     const char *text_name;
 };
@@ -670,7 +671,7 @@ int loadrsakey(const Filename *filename, struct RSAKey *key,
 	       const char *passphrase, const char **errorstr);
 int rsakey_encrypted(const Filename *filename, char **comment);
 int rsakey_pubblob(const Filename *filename, void **blob, int *bloblen,
-			 char **commentptr, const char **errorstr);
+		   char **commentptr, const char **errorstr);
 
 int saversakey(const Filename *filename, struct RSAKey *key, char *passphrase);
 
@@ -689,10 +690,10 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
 				       const char *passphrase,
                                        const char **errorstr);
 unsigned char *ssh2_userkey_loadpub(const Filename *filename, char **algorithm,
-						int *pub_blob_len, char **commentptr,
-						const char **errorstr);
+				    int *pub_blob_len, char **commentptr,
+				    const char **errorstr);
 int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
-					char *passphrase);
+		      char *passphrase);
 const struct ssh_signkey *find_pubkey_alg(const char *name);
 const struct ssh_signkey *find_pubkey_alg_len(int namelen, const char *name);
 
@@ -760,18 +761,18 @@ struct ssh2_userkey *import_ssh2(const Filename *filename, int type,
 int export_ssh1(const Filename *filename, int type,
 		struct RSAKey *key, char *passphrase);
 int export_ssh2(const Filename *filename, int type,
-								struct ssh2_userkey *key, char *passphrase);
+                struct ssh2_userkey *key, char *passphrase);
 
 void des3_decrypt_pubkey(unsigned char *key, unsigned char *blk, int len);
 void des3_encrypt_pubkey(unsigned char *key, unsigned char *blk, int len);
 void des3_decrypt_pubkey_ossh(unsigned char *key, unsigned char *iv,
-						unsigned char *blk, int len);
+			      unsigned char *blk, int len);
 void des3_encrypt_pubkey_ossh(unsigned char *key, unsigned char *iv,
-						unsigned char *blk, int len);
+			      unsigned char *blk, int len);
 void aes256_encrypt_pubkey(unsigned char *key, unsigned char *blk,
-				 int len);
+			   int len);
 void aes256_decrypt_pubkey(unsigned char *key, unsigned char *blk,
-				 int len);
+			   int len);
 
 void des_encrypt_xdmauth(const unsigned char *key,
                          unsigned char *blk, int len);
