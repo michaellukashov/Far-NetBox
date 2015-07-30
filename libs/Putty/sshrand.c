@@ -64,7 +64,7 @@ static void random_stir(void)
      * back to here. Prevent recursive stirs.
      */
     if (pool.stir_pending)
-  return;
+	return;
     pool.stir_pending = TRUE;
 
     noise_get_light(random_add_noise);
@@ -123,25 +123,25 @@ static void random_stir(void)
 	 * round, when we subsequently return bytes ...
 	 */
 	for (j = POOLSIZE; (j -= HASHSIZE) >= 0;) {
-			/*
-			 * XOR the bit of the pool we're processing into the
-			 * digest.
-			 */
+	    /*
+	     * XOR the bit of the pool we're processing into the
+	     * digest.
+	     */
 
-			for (k = 0; k < sizeof(digest) / sizeof(*digest); k++)
+	    for (k = 0; k < sizeof(digest) / sizeof(*digest); k++)
 		digest[k] ^= ((word32 *) (pool.pool + j))[k];
 
-			/*
-			 * Munge our unrevealed first block of the pool into
-			 * it.
-			 */
-			SHATransform(digest, block);
+	    /*
+	     * Munge our unrevealed first block of the pool into
+	     * it.
+	     */
+	    SHATransform(digest, block);
 
-			/*
-			 * Stick the result back into the pool.
-			 */
+	    /*
+	     * Stick the result back into the pool.
+	     */
 
-			for (k = 0; k < sizeof(digest) / sizeof(*digest); k++)
+	    for (k = 0; k < sizeof(digest) / sizeof(*digest); k++)
 		((word32 *) (pool.pool + j))[k] = digest[k];
 	}
 
@@ -210,7 +210,7 @@ void random_add_noise(void *noise, int length)
     unsigned char *p = noise;
     int i;
 
-		if (!random_active)
+    if (!random_active)
 	return;
 
     /*
@@ -219,20 +219,20 @@ void random_add_noise(void *noise, int length)
      * sources then we would be throwing away valuable stuff.
      */
     while (length >= (HASHINPUT - pool.incomingpos)) {
-  memcpy(pool.incomingb + pool.incomingpos, p,
-         HASHINPUT - pool.incomingpos);
-  p += HASHINPUT - pool.incomingpos;
-  length -= HASHINPUT - pool.incomingpos;
-  SHATransform((word32 *) pool.incoming, (word32 *) pool.incomingb);
-  for (i = 0; i < HASHSIZE; i++) {
-      pool.pool[pool.poolpos++] ^= pool.incomingb[i];
-      if (pool.poolpos >= POOLSIZE)
-    pool.poolpos = 0;
-  }
-  if (pool.poolpos < HASHSIZE)
-      random_stir();
+	memcpy(pool.incomingb + pool.incomingpos, p,
+	       HASHINPUT - pool.incomingpos);
+	p += HASHINPUT - pool.incomingpos;
+	length -= HASHINPUT - pool.incomingpos;
+	SHATransform((word32 *) pool.incoming, (word32 *) pool.incomingb);
+	for (i = 0; i < HASHSIZE; i++) {
+	    pool.pool[pool.poolpos++] ^= pool.incomingb[i];
+	    if (pool.poolpos >= POOLSIZE)
+		pool.poolpos = 0;
+	}
+	if (pool.poolpos < HASHSIZE)
+	    random_stir();
 
-  pool.incomingpos = 0;
+	pool.incomingpos = 0;
     }
 
 #ifdef MPEXT
@@ -247,16 +247,16 @@ void random_add_heavynoise(void *noise, int length)
     unsigned char *p = noise;
     int i;
 
-		while (length >= POOLSIZE) {
+    while (length >= POOLSIZE) {
 	for (i = 0; i < POOLSIZE; i++)
-			pool.pool[i] ^= *p++;
+	    pool.pool[i] ^= *p++;
 	random_stir();
 	length -= POOLSIZE;
-		}
+    }
 
-		for (i = 0; i < length; i++)
+    for (i = 0; i < length; i++)
 	pool.pool[i] ^= *p++;
-		random_stir();
+    random_stir();
 }
 
 static void random_add_heavynoise_bitbybit(void *noise, int length)
@@ -264,42 +264,42 @@ static void random_add_heavynoise_bitbybit(void *noise, int length)
     unsigned char *p = noise;
     int i;
 
-		while (length >= POOLSIZE - pool.poolpos) {
+    while (length >= POOLSIZE - pool.poolpos) {
 	for (i = 0; i < POOLSIZE - pool.poolpos; i++)
-			pool.pool[pool.poolpos + i] ^= *p++;
+	    pool.pool[pool.poolpos + i] ^= *p++;
 	random_stir();
 	length -= POOLSIZE - pool.poolpos;
 	pool.poolpos = 0;
-		}
+    }
 
-		for (i = 0; i < length; i++)
+    for (i = 0; i < length; i++)
 	pool.pool[i] ^= *p++;
-		pool.poolpos = i;
+    pool.poolpos = i;
 }
 
 static void random_timer(void *ctx, unsigned long now)
 {
-		if (random_active > 0 && now == next_noise_collection) {
+    if (random_active > 0 && now == next_noise_collection) {
 	noise_regular();
 	next_noise_collection =
-			schedule_timer(NOISE_REGULAR_INTERVAL, random_timer, &pool);
-		}
+	    schedule_timer(NOISE_REGULAR_INTERVAL, random_timer, &pool);
+    }
 }
 
 void random_ref(void)
 {
     MPEXT_PUTTY_SECTION_ENTER;
     if (!random_active) {
-  memset(&pool, 0, sizeof(pool));    /* just to start with */
+	memset(&pool, 0, sizeof(pool));    /* just to start with */
 
 	noise_get_heavy(random_add_heavynoise_bitbybit);
 	random_stir();
 
 	next_noise_collection =
-			schedule_timer(NOISE_REGULAR_INTERVAL, random_timer, &pool);
-		}
-		random_active++;
-		MPEXT_PUTTY_SECTION_LEAVE;
+	    schedule_timer(NOISE_REGULAR_INTERVAL, random_timer, &pool);
+    }
+    random_active++;
+    MPEXT_PUTTY_SECTION_LEAVE;
 }
 
 void random_unref(void)

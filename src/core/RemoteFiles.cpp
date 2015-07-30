@@ -1586,6 +1586,16 @@ void TRemoteFileList::AddFile(TRemoteFile * AFile)
   }
 }
 
+void TRemoteFileList::AddFiles(const TRemoteFileList * AFileList)
+{
+  if (!AFileList)
+    return;
+  for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
+  {
+    AddFile(AFileList->GetFile(Index));
+  }
+}
+
 void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy) const
 {
   Copy->Reset();

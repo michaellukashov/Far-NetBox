@@ -97,7 +97,7 @@ void TSessionData::Default()
   SetPassword(ANONYMOUS_PASSWORD);
   SetPingInterval(30);
   SetPingType(ptOff);
-  SetTimeout(90);
+  SetTimeout(15);
   SetTryAgent(true);
   SetAgentFwd(false);
   SetAuthTIS(false);
@@ -123,7 +123,7 @@ void TSessionData::Default()
   SetPassphrase(L"");
   FProtocol = ptSSH;
   SetPuttyProtocol(PuttySshProtocol);
-  SetTcpNoDelay(false);
+  SetTcpNoDelay(true);
   SetSendBuf(DefaultSendBuf);
   SetSshSimple(true);
   FNotUtf = asAuto;

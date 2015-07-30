@@ -211,8 +211,8 @@ Bignum dh_create_e(void *handle, int nbits)
 	 */
 	if (ctx->x)
 	{
-			freebn(ctx->x);
-			ctx->x = NULL;
+		freebn(ctx->x);
+		ctx->x = NULL;
 	}
 	if (nbits == 0 || nbits > bignum_bitcount(ctx->qmask)) {
 	    ssh1_write_bignum(buf, ctx->qmask);
@@ -233,7 +233,7 @@ Bignum dh_create_e(void *handle, int nbits)
 		nb--;
 	    }
 	}
-		} while (ctx->x && (bignum_cmp(ctx->x, One) <= 0 || bignum_cmp(ctx->x, ctx->q) >= 0));
+	} while (ctx->x && (bignum_cmp(ctx->x, One) <= 0 || bignum_cmp(ctx->x, ctx->q) >= 0));
 
     sfree(buf);
 

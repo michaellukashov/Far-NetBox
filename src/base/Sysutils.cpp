@@ -550,6 +550,20 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
   return Result;
 }
 
+void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
+{
+  WIN32_FIND_DATA FindData;
+  HANDLE Handle = FindFirstFile(AFileName.c_str(), &FindData);
+  if (Handle != INVALID_HANDLE_VALUE)
+  {
+    ATimestamp =
+      UnixToDateTime(
+        ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
+        dstmUnix);
+    FindClose(Handle);
+  }
+}
+
 DWORD FileGetAttr(const UnicodeString & AFileName)
 {
   DWORD LocalFileAttrs = ::GetFileAttributes(AFileName.c_str());

@@ -274,6 +274,7 @@ public:
   TRemoteFile * FindFile(const UnicodeString & AFileName) const;
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
   virtual void AddFile(TRemoteFile * AFile);
+  virtual void AddFiles(const TRemoteFileList * AFileList);
   UnicodeString GetDirectory() const { return FDirectory; }
   virtual void SetDirectory(const UnicodeString & Value);
   TRemoteFile * GetFile(Integer Index) const;

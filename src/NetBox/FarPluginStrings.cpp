@@ -389,21 +389,14 @@ const TFarPluginStrings FarPluginStrings[] =
 
   // rtlconsts.rc
   { SDuplicateString, MSG_SDuplicateString },
-
   { SListCountError, MSG_SListCountError },
   { SListIndexError, MSG_SListIndexError },
-
   { SMemoryStreamError, MSG_SMemoryStreamError },
-
   { SReadError, MSG_SReadError },
-
   { SSortedListError, MSG_SSortedListError },
-
   { STimeEncodeError, MSG_STimeEncodeError },
-
   { SWriteError, MSG_SWriteError },
-
-
+  { SNotImplemented, MSG_SNotImplemented },
   { SOSError, MSG_SOSError },
   { SUnkOSError, MSG_SUnkOSError },
 

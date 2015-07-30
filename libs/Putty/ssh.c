@@ -3613,12 +3613,12 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
 	ssh->savedport = port;
     }
 
-    ssh->fn = &fn_table;               /* make 'ssh' usable as a Plug */
-
     #ifdef MPEXT
     // make sure the field is initialized, in case lookup below fails
     ssh->fullhostname = NULL;
     #endif
+
+    ssh->fn = &fn_table;               /* make 'ssh' usable as a Plug */
 
     /*
      * Try connection-sharing, in case that means we don't open a
@@ -3661,10 +3661,9 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
             return err;
         }
         ssh->fullhostname = dupstr(*realhost);   /* save in case of GSSAPI */
-
-        ssh->s = new_connection(addr, *realhost, port,
-                                0, 1, nodelay, keepalive,
-                                (Plug) ssh, ssh->conf);
+    ssh->s = new_connection(addr, *realhost, port,
+			    0, 1, nodelay, keepalive,
+                               (Plug) ssh, ssh->conf);
         if ((err = sk_socket_error(ssh->s)) != NULL) {
             ssh->s = NULL;
             notify_remote_exit(ssh->frontend);
@@ -6493,9 +6492,9 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 		    if (s->userauth_succeeded && c->delayed_name) {
 		    alg = ssh2_kexinit_addalg(s->kexlists[j], c->delayed_name);
 		    alg->u.comp = c;
+		}
 		    }
 		}
-	    }
 	/*
 	 * Construct and send our key exchange packet.
 	 */
@@ -6608,7 +6607,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
         if (s->cscipher_tobe && s->cscipher_tobe->required_mac) {
             s->csmac_tobe = s->cscipher_tobe->required_mac;
 	    s->csmac_etm_tobe = !!(s->csmac_tobe->etm_name);
-	}
+	    }
         if (s->sccipher_tobe && s->sccipher_tobe->required_mac) {
             s->scmac_tobe = s->sccipher_tobe->required_mac;
 	    s->scmac_etm_tobe = !!(s->scmac_tobe->etm_name);
@@ -6748,9 +6747,9 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
                 s->pktout = ssh2_pkt_init(SSH2_MSG_KEX_DH_GEX_REQUEST_OLD);
                 ssh2_pkt_adduint32(s->pktout, s->pbits);
             } else {
-            s->pktout = ssh2_pkt_init(SSH2_MSG_KEX_DH_GEX_REQUEST);
+                s->pktout = ssh2_pkt_init(SSH2_MSG_KEX_DH_GEX_REQUEST);
                 ssh2_pkt_adduint32(s->pktout, DH_MIN_SIZE);
-            ssh2_pkt_adduint32(s->pktout, s->pbits);
+                ssh2_pkt_adduint32(s->pktout, s->pbits);
                 ssh2_pkt_adduint32(s->pktout, DH_MAX_SIZE);
             }
             ssh2_pkt_send_noqueue(ssh, s->pktout);
@@ -7188,12 +7187,20 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 	smemclr(keyspace, sizeof(keyspace));
     }
 
+    #ifdef _DEBUG
+	// To suppress CodeGuard warning
+    logeventf(ssh, "Initialised %s client->server encryption",
+	      ssh->cscipher->text_name);
+    logeventf(ssh, "Initialised %s client->server MAC algorithm",
+	      ssh->csmac->text_name);
+    #else
     logeventf(ssh, "Initialised %.200s client->server encryption",
 	      ssh->cscipher->text_name);
     logeventf(ssh, "Initialised %.200s client->server MAC algorithm%s%s",
 	      ssh->csmac->text_name,
               ssh->csmac_etm ? " (in ETM mode)" : "",
               ssh->cscipher->required_mac ? " (required by cipher)" : "");
+    #endif
     if (ssh->cscomp->text_name)
 	logeventf(ssh, "Initialised %s compression",
 		  ssh->cscomp->text_name);
@@ -7256,12 +7263,20 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 	ssh->scmac->setkey(ssh->sc_mac_ctx, keyspace);
 	smemclr(keyspace, sizeof(keyspace));
     }
+    #ifdef _DEBUG
+	// To suppress CodeGuard warning
+    logeventf(ssh, "Initialised %s server->client encryption",
+	      ssh->sccipher->text_name);
+    logeventf(ssh, "Initialised %s server->client MAC algorithm",
+	      ssh->scmac->text_name);
+    #else
     logeventf(ssh, "Initialised %.200s server->client encryption",
 	      ssh->sccipher->text_name);
     logeventf(ssh, "Initialised %.200s server->client MAC algorithm%s%s",
 	      ssh->scmac->text_name,
               ssh->scmac_etm ? " (in ETM mode)" : "",
               ssh->sccipher->required_mac ? " (required by cipher)" : "");
+    #endif
     if (ssh->sccomp->text_name)
 	logeventf(ssh, "Initialised %s decompression",
 		  ssh->sccomp->text_name);
@@ -7858,7 +7873,7 @@ void ssh_sharing_downstream_connected(Ssh ssh, unsigned id,
         logeventf(ssh, "Connection sharing downstream #%u connected from %s",
                   id, peerinfo);
     else
-    logeventf(ssh, "Connection sharing downstream #%u connected", id);
+        logeventf(ssh, "Connection sharing downstream #%u connected", id);
 }
 
 void ssh_sharing_downstream_disconnected(Ssh ssh, unsigned id)
@@ -9024,7 +9039,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		    char *msgbuf;
 		    logeventf(ssh, "Unable to load key (%s)", 
 			      error);
-		    msgbuf = dupprintf(MPEXT_BOM "Unable to load private key file "
+		    msgbuf = dupprintf(MPEXT_BOM "Unable to load key file "
 				       "\"%.150s\" (%s)\r\n",
 				       filename_to_str(s->keyfile),
 				       error);
@@ -9214,7 +9229,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 	} else {
 	    char *stuff;
 	    if ((flags & FLAG_VERBOSE) || (flags & FLAG_INTERACTIVE)) {
-		stuff = dupprintf("Using username \"%s\".\r\n", ssh->username);
+		stuff = dupprintf(MPEXT_BOM "Using username \"%s\".\r\n", ssh->username);
 		c_write_str(ssh, stuff);
 		sfree(stuff);
 	    }
@@ -10087,7 +10102,12 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		s->cur_prompt = new_prompts(ssh->frontend);
 		s->cur_prompt->to_server = TRUE;
 		s->cur_prompt->name = dupstr("SSH password");
+		#ifdef _DEBUG
+		// To suppress CodeGuard warning
 		add_prompt(s->cur_prompt, dupprintf("%s@%s's password: ",
+		#else
+		add_prompt(s->cur_prompt, dupprintf("%.90s@%.90s's password: ",
+		#endif
 						    ssh->username,
 						    ssh->savedhost),
 			   FALSE);
@@ -10589,7 +10609,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 	     */
 	    for (i = 0; NULL != (c = index234(ssh->channels, i)); i++)
                 if (c->type != CHAN_SHARING)
-		ssh2_try_send_and_unthrottle(ssh, c);
+                    ssh2_try_send_and_unthrottle(ssh, c);
 	}
     }
 
@@ -10843,7 +10863,7 @@ static void ssh_cache_conf_values(Ssh ssh)
 static const char *ssh_init(void *frontend_handle, void **backend_handle,
 			    Conf *conf,
                             const char *host, int port, char **realhost,
-		int nodelay, int keepalive)
+			    int nodelay, int keepalive)
 {
     const char *p;
     Ssh ssh;
@@ -11630,3 +11650,106 @@ Backend ssh_backend = {
     PROT_SSH,
     22
 };
+
+#ifdef MPEXT
+
+#include "puttyexp.h"
+
+void ssh_close(void * handle)
+{
+  ssh_do_close((Ssh)handle, FALSE);
+}
+
+int is_ssh(void * handle)
+{
+  Plug fn = (Plug)handle;
+  return (*fn)->closing == ssh_closing;
+}
+
+void call_ssh_timer(void * handle)
+{
+  if (((Ssh)handle)->version == 2)
+  {
+    ssh2_timer(handle, GETTICKCOUNT());
+  }
+}
+
+int get_ssh_version(void * handle)
+{
+  return ((Ssh)handle)->version;
+}
+
+void * get_ssh_frontend(void * handle)
+{
+  return ((Ssh)handle)->frontend;
+}
+
+int get_ssh1_compressing(void * handle)
+{
+  return ((Ssh)handle)->v1_compressing;
+}
+
+const struct ssh_cipher * get_cipher(void * handle)
+{
+  return ((Ssh)handle)->cipher;
+}
+
+const struct ssh2_cipher * get_cscipher(void * handle)
+{
+  return ((Ssh)handle)->cscipher;
+}
+
+const struct ssh2_cipher * get_sccipher(void * handle)
+{
+  return ((Ssh)handle)->sccipher;
+}
+
+const struct ssh_compress * get_cscomp(void * handle)
+{
+  return ((Ssh)handle)->cscomp;
+}
+
+const struct ssh_compress * get_sccomp(void * handle)
+{
+  return ((Ssh)handle)->sccomp;
+}
+
+int get_ssh_state(void * handle)
+{
+  return ((Ssh)handle)->state;
+}
+
+int get_ssh_state_closed(void * handle)
+{
+  return ((Ssh)handle)->state == SSH_STATE_CLOSED;
+}
+
+int get_ssh_state_session(void * handle)
+{
+  return ((Ssh)handle)->state == SSH_STATE_SESSION;
+}
+
+int get_ssh_exitcode(void * handle)
+{
+  return ssh_return_exitcode(handle);
+}
+
+const unsigned int * ssh2_remmaxpkt(void * handle)
+{
+  return &((Ssh)handle)->mainchan->v.v2.remmaxpkt;
+}
+
+const unsigned int * ssh2_remwindow(void * handle)
+{
+  return &((Ssh)handle)->mainchan->v.v2.remwindow;
+}
+
+void md5checksum(const char * buffer, int len, unsigned char output[16])
+{
+  struct MD5Context md5c;
+  MD5Init(&md5c);
+  MD5Update(&md5c, buffer, len);
+  MD5Final(output, &md5c);
+}
+
+#endif

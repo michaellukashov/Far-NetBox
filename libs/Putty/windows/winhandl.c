@@ -335,7 +335,7 @@ static DWORD WINAPI handle_output_threadfunc(void *param)
              * this.
              */
 	    break;
-    }
+        }
     }
 
     if (povl)
@@ -680,9 +680,10 @@ void handle_got_event(HANDLE event)
 	    handle_throttle(&h->u.i, backlog);
 	}
     #ifdef MPEXT
-    return 1;
-    #endif
+        return 1;
+    #else
         break;
+    #endif
 
       case HT_OUTPUT:
 	h->u.o.busy = FALSE;
@@ -706,18 +707,20 @@ void handle_got_event(HANDLE event)
 	    handle_try_output(&h->u.o);
 	}
     #ifdef MPEXT
-    return 0;
-    #endif
+        return 0;
+    #else
         break;
+    #endif
 
       case HT_FOREIGN:
         /* Just call the callback. */
         h->u.f.callback(h->u.f.ctx);
+    #ifdef MPEXT
+        return 0;
+    #else
         break;
+    #endif
     }
-#ifdef MPEXT
-    return 0;
-#endif
 }
 
 void handle_unthrottle(struct handle *h, int backlog)

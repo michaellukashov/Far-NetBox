@@ -370,7 +370,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
 
   // permanent settings
   conf_set_int(conf, CONF_nopty, TRUE);
-  conf_set_int(conf, CONF_tcp_keepalives, 0);
+  conf_set_int(conf, CONF_tcp_keepalives, 1);
   conf_set_int(conf, CONF_ssh_show_banner, TRUE);
   for (int Index = 0; Index < ngsslibs; ++Index)
   {
@@ -408,8 +408,9 @@ void TSecureShell::Open()
         conf_free(conf);
       };
       InitError = FBackend->init(this, &FBackendHandle, conf,
-        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), static_cast<int>(FSessionData->GetPortNumber()), &RealHost,
-        (FSessionData->GetTcpNoDelay() ? 1 : 0),
+        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), 
+        static_cast<int>(FSessionData->GetPortNumber()), &RealHost,
+        FSessionData->GetTcpNoDelay() ? 1 : 0,
         conf_get_int(conf, CONF_tcp_keepalives));
     }
 

@@ -49,42 +49,42 @@ typedef union { void *p; int i; } accept_ctx_t;
 typedef Socket (*accept_fn_t)(accept_ctx_t ctx, Plug plug);
 
 struct plug_function_table {
-		void (*log)(Plug p, int type, SockAddr addr, int port,
+    void (*log)(Plug p, int type, SockAddr addr, int port,
 		const char *error_msg, int error_code);
-		/*
-		 * Passes the client progress reports on the process of setting
-		 * up the connection.
-		 *
-		 * 	- type==0 means we are about to try to connect to address
-		 * 	  `addr' (error_msg and error_code are ignored)
-		 * 	- type==1 means we have failed to connect to address `addr'
-		 * 	  (error_msg and error_code are supplied). This is not a
-		 * 	  fatal error - we may well have other candidate addresses
-		 * 	  to fall back to. When it _is_ fatal, the closing()
-		 * 	  function will be called.
-		 */
-		int (*closing)
-		 (Plug p, const char *error_msg, int error_code, int calling_back);
-		/* error_msg is NULL iff it is not an error (ie it closed normally) */
-		/* calling_back != 0 iff there is a Plug function */
-		/* currently running (would cure the fixme in try_send()) */
-		int (*receive) (Plug p, int urgent, char *data, int len);
-		/*
-		 *  - urgent==0. `data' points to `len' bytes of perfectly
-		 *    ordinary data.
-		 *
-		 *  - urgent==1. `data' points to `len' bytes of data,
-		 *    which were read from before an Urgent pointer.
-		 *
-		 *  - urgent==2. `data' points to `len' bytes of data,
-		 *    the first of which was the one at the Urgent mark.
-		 */
-		void (*sent) (Plug p, int bufsize);
-		/*
-		 * The `sent' function is called when the pending send backlog
-		 * on a socket is cleared or partially cleared. The new backlog
-		 * size is passed in the `bufsize' parameter.
-		 */
+    /*
+     * Passes the client progress reports on the process of setting
+     * up the connection.
+     * 
+     * 	- type==0 means we are about to try to connect to address
+     * 	  `addr' (error_msg and error_code are ignored)
+     * 	- type==1 means we have failed to connect to address `addr'
+     * 	  (error_msg and error_code are supplied). This is not a
+     * 	  fatal error - we may well have other candidate addresses
+     * 	  to fall back to. When it _is_ fatal, the closing()
+     * 	  function will be called.
+     */
+    int (*closing)
+     (Plug p, const char *error_msg, int error_code, int calling_back);
+    /* error_msg is NULL iff it is not an error (ie it closed normally) */
+    /* calling_back != 0 iff there is a Plug function */
+    /* currently running (would cure the fixme in try_send()) */
+    int (*receive) (Plug p, int urgent, char *data, int len);
+    /*
+     *  - urgent==0. `data' points to `len' bytes of perfectly
+     *    ordinary data.
+     * 
+     *  - urgent==1. `data' points to `len' bytes of data,
+     *    which were read from before an Urgent pointer.
+     * 
+     *  - urgent==2. `data' points to `len' bytes of data,
+     *    the first of which was the one at the Urgent mark.
+     */
+    void (*sent) (Plug p, int bufsize);
+    /*
+     * The `sent' function is called when the pending send backlog
+     * on a socket is cleared or partially cleared. The new backlog
+     * size is passed in the `bufsize' parameter.
+     */
     int (*accepting)(Plug p, accept_fn_t constructor, accept_ctx_t ctx);
     /*
      * `accepting' is called only on listener-type sockets, and is
@@ -98,22 +98,22 @@ struct plug_function_table {
 /* NB, control of 'addr' is passed via new_connection, which takes
  * responsibility for freeing it */
 Socket new_connection(SockAddr addr, const char *hostname,
-					int port, int privport,
-					int oobinline, int nodelay, int keepalive,
-					Plug plug, Conf *conf);
+		      int port, int privport,
+		      int oobinline, int nodelay, int keepalive,
+		      Plug plug, Conf *conf);
 Socket new_listener(const char *srcaddr, int port, Plug plug,
                     int local_host_only, Conf *conf, int addressfamily);
 SockAddr name_lookup(const char *host, int port, char **canonicalname,
-				 Conf *conf, int addressfamily);
+		     Conf *conf, int addressfamily);
 int proxy_for_destination (SockAddr addr, const char *hostname, int port,
                            Conf *conf);
 
 /* platform-dependent callback from new_connection() */
 /* (same caveat about addr as new_connection()) */
 Socket platform_new_connection(SockAddr addr, const char *hostname,
-						 int port, int privport,
-						 int oobinline, int nodelay, int keepalive,
-						 Plug plug, Conf *conf);
+			       int port, int privport,
+			       int oobinline, int nodelay, int keepalive,
+			       Plug plug, Conf *conf);
 
 /* socket functions */
 
@@ -150,7 +150,7 @@ Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
               int timeout,
               int sndbuf
 #endif
-        );
+	      );
 
 Socket sk_newlistener(const char *srcaddr, int port, Plug plug,
                       int local_host_only, int address_family);
@@ -269,7 +269,7 @@ struct ssl_client_plug_function_table {
 };
 
 SSL_Client_Socket sk_ssl_client_over(Socket s,	/* pre-existing (tcp) connection */
-             SSL_Client_Plug p);
+				     SSL_Client_Plug p);
 
 #define sk_renegotiate(s) (((*s)->renegotiate) (s))
 

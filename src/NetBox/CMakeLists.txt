@@ -332,8 +332,8 @@ add_library(putty STATIC
   ${LIBS_ROOT}/Putty/pgssapi.c
   ${LIBS_ROOT}/Putty/portfwd_.c
   ${LIBS_ROOT}/Putty/proxy.c
-  ${LIBS_ROOT}/Putty/ssh_.c
-  ${LIBS_ROOT}/Putty/sshaes_.c
+  ${LIBS_ROOT}/Putty/ssh.c
+  ${LIBS_ROOT}/Putty/sshaes.c
   ${LIBS_ROOT}/Putty/ssharcf.c
   ${LIBS_ROOT}/Putty/sshblowf.c
   ${LIBS_ROOT}/Putty/sshbn.c
@@ -349,7 +349,7 @@ add_library(putty STATIC
   ${LIBS_ROOT}/Putty/sshrsa.c
   ${LIBS_ROOT}/Putty/sshsh256.c
   ${LIBS_ROOT}/Putty/sshsh512.c
-  ${LIBS_ROOT}/Putty/sshsha_.c
+  ${LIBS_ROOT}/Putty/sshsha.c
   ${LIBS_ROOT}/Putty/sshzlib.c
   ${LIBS_ROOT}/Putty/tree234.c
   ${LIBS_ROOT}/Putty/wildcard.c

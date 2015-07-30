@@ -201,7 +201,9 @@ HMODULE load_system32_dll(const char *libname)
      * attack is possible by placing a substitute DLL earlier on that
      * path.)
      */
+#ifndef MPEXT
     static char *sysdir = NULL;
+#endif
     char *fullpath;
     HMODULE ret;
 
