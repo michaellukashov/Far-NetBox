@@ -220,6 +220,7 @@ bool FileExists(const UnicodeString & AFileName);
 bool RenameFile(const UnicodeString & From, const UnicodeString & To);
 bool DirectoryExists(const UnicodeString & ADir);
 UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList);
+void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp);
 
 DWORD FileGetAttr(const UnicodeString & AFileName);
 DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs);
