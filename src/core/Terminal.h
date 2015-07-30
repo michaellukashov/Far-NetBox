@@ -608,6 +608,7 @@ private:
   bool FRememberedPasswordTried;
   bool FRememberedTunnelPasswordTried;
   int FNesting;
+  TRemoteDirectory * FOldFiles;
 
 /*
   void __fastcall CommandError(Exception * E, const UnicodeString Msg);

@@ -698,7 +698,8 @@ TTerminal::TTerminal() :
   FCollectFileSystemUsage(false),
   FRememberedPasswordTried(false),
   FRememberedTunnelPasswordTried(false),
-  FNesting(0)
+  FNesting(0),
+  FOldFiles(new TRemoteDirectory(this))
 {
 }
 
@@ -732,6 +733,7 @@ TTerminal::~TTerminal()
   SAFE_DESTROY_EX(TRemoteDirectoryCache, FDirectoryCache);
   SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
   SAFE_DESTROY(FSessionData);
+  SAFE_DESTROY(FOldFiles);
 }
 
 void TTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration)
@@ -2771,8 +2773,8 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         {
           DoReadDirectoryProgress(-1, 0, Cancel);
           FReadingCurrentDirectory = false;
-          std::unique_ptr<TRemoteDirectory> OldFiles(FFiles);
-          (void)OldFiles;
+          FOldFiles->Reset();
+          FOldFiles->AddFiles(FFiles);
           FFiles = Files;
           DoReadDirectory(ReloadOnly);
           // delete only after loading new files to dir view,
