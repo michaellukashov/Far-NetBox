@@ -553,7 +553,9 @@ SockAddr sk_namelookup(const char *host, char **canonicalname,
                 sfree(trimmed_host);
             }
 	    if (err == 0)
+	    {
 		ret->resolved = TRUE;
+	    }	
 	} else
 #endif
 	{
