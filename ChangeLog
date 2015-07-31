@@ -1,5 +1,6 @@
-NetBox 2.1.43.395 30.07.2015
+NetBox 2.1.43.396 01.08.2015
 --------------------
+  * Bugfix: SFTP: prevent AV when server unexpectedly closes connection
   * Bugfix: AV when remote file is edited in external editor
     (http://bugs.farmanager.com/view.php?id=2943)
   * Update putty sources to 0.65
