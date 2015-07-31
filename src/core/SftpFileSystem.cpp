@@ -2405,7 +2405,10 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
       // message is in UTF only since SFTP specification 01 (specification 00
       // is also version 3)
       // (in other words, always use UTF unless server is known to be buggy)
-      ServerMessage = Packet->GetString(FUtfStrings);
+      if (Packet->GetRemainingLength() > 0)
+      {
+        ServerMessage = Packet->GetString(FUtfStrings);
+      }
       // SSH-2.0-Maverick_SSHD and SSH-2.0-CIGNA SFTP Server Ready! omit the language tag
       // and I believe I've seen one more server doing the same.
       if (Packet->GetRemainingLength() > 0)
