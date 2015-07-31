@@ -1619,7 +1619,7 @@ void TRemoteFileList::SetDirectory(const UnicodeString & Value)
   FDirectory = core::UnixExcludeTrailingBackslash(Value);
 }
 
-UnicodeString TRemoteFileList::GetFullDirectory()
+UnicodeString TRemoteFileList::GetFullDirectory() const
 {
   return core::UnixIncludeTrailingBackslash(GetDirectory());
 }
@@ -1629,17 +1629,17 @@ TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
   return NB_STATIC_DOWNCAST(TRemoteFile, GetItem(Index));
 }
 
-Boolean TRemoteFileList::GetIsRoot()
+Boolean TRemoteFileList::GetIsRoot() const
 {
   return (GetDirectory() == ROOTDIRECTORY);
 }
 
-UnicodeString TRemoteFileList::GetParentPath()
+UnicodeString TRemoteFileList::GetParentPath() const
 {
   return core::UnixExtractFilePath(GetDirectory());
 }
 
-int64_t TRemoteFileList::GetTotalSize()
+int64_t TRemoteFileList::GetTotalSize() const
 {
   int64_t Result = 0;
   for (intptr_t Index = 0; Index < GetCount(); ++Index)

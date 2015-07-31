@@ -278,10 +278,10 @@ public:
   UnicodeString GetDirectory() const { return FDirectory; }
   virtual void SetDirectory(const UnicodeString & Value);
   TRemoteFile * GetFile(Integer Index) const;
-  UnicodeString GetFullDirectory();
-  Boolean GetIsRoot();
-  UnicodeString GetParentPath();
-  int64_t GetTotalSize();
+  UnicodeString GetFullDirectory() const;
+  Boolean GetIsRoot() const;
+  UnicodeString GetParentPath() const;
+  int64_t GetTotalSize() const;
   TDateTime GetTimestamp() const { return FTimestamp; }
 };
 
