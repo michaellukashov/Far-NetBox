@@ -2084,7 +2084,7 @@ void TWinSCPFileSystem::HomeDirectory()
   }
 }
 
-bool TWinSCPFileSystem::IsSynchronizedBrowsing()
+bool TWinSCPFileSystem::IsSynchronizedBrowsing() const
 {
   return FSynchronisingBrowse;
 }
