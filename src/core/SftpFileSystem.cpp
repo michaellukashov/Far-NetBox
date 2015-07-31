@@ -1418,9 +1418,15 @@ protected:
   // event handler for incoming data
   void ReceiveHandler(TObject * /*Sender*/)
   {
-    while (FFileSystem->PeekPacket() && ReceivePacketAsynchronously())
+    try
     {
-      // loop
+      while (FFileSystem->PeekPacket() && ReceivePacketAsynchronously())
+      {
+        // loop
+      }
+    }
+    catch (Exception & E) // prevent crash when server unexpectedly closes connection
+    {
     }
   }
 
