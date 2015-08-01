@@ -88,6 +88,7 @@ void TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
   TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
+  CoreInitializeOnce();
   Flags = PF_FULLCMDLINE;
   TFarConfiguration * FarConfiguration = GetFarConfiguration();
   if (FarConfiguration->GetDisksMenu())
