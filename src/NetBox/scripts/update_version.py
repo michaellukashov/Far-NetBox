@@ -20,7 +20,6 @@ plugin_version_h = \
 #define NETBOX_VERSION_BUILD         %(build)s
 
 static const std::wstring NETBOX_VERSION_NUMBER(L"%(version_major)s.%(version_minor)s.%(version_subminor)s");
-static const std::wstring NETBOX_COMPILATION_TIME(L"%(compile_time)s");
 
 """
 
