@@ -144,8 +144,8 @@ public:
   bool GetIsParentDirectory() const;
   bool GetIsThisDirectory() const;
   bool GetIsInaccesibleDirectory() const;
-  UnicodeString GetExtension();
-  UnicodeString GetUserModificationStr();
+  UnicodeString GetExtension() const;
+  UnicodeString GetUserModificationStr() const;
 
 protected:
   void FindLinkedFile();
@@ -355,10 +355,10 @@ public:
   void ClearDirectoryChange(const UnicodeString & SourceDir);
   void ClearDirectoryChangeTarget(const UnicodeString & TargetDir);
   bool GetDirectoryChange(const UnicodeString & SourceDir,
-    const UnicodeString & Change, UnicodeString & TargetDir);
+    const UnicodeString & Change, UnicodeString & TargetDir) const;
   void Clear();
 
-  void Serialize(UnicodeString & Data);
+  void Serialize(UnicodeString & Data) const;
   void Deserialize(const UnicodeString & Data);
 
   bool GetIsEmpty() const;
@@ -367,6 +367,7 @@ private:
   static bool DirectoryChangeKey(const UnicodeString & SourceDir,
     const UnicodeString & Change, UnicodeString & Key);
   void SetValue(const UnicodeString & Name, const UnicodeString & Value);
+  UnicodeString GetValue(const UnicodeString & Name) const;
   UnicodeString GetValue(const UnicodeString & Name);
 
   intptr_t FMaxSize;

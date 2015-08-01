@@ -1024,7 +1024,7 @@ void TRemoteFile::SetModification(const TDateTime & Value)
   }
 }
 
-UnicodeString TRemoteFile::GetUserModificationStr()
+UnicodeString TRemoteFile::GetUserModificationStr() const
 {
   return core::UserModificationStr(GetModification(), FModificationFmt);
 }
@@ -1034,7 +1034,7 @@ UnicodeString TRemoteFile::GetModificationStr() const
   return core::ModificationStr(GetModification(), FModificationFmt);
 }
 
-UnicodeString TRemoteFile::GetExtension()
+UnicodeString TRemoteFile::GetExtension() const
 {
   return core::UnixExtractFileExt(FFileName);
 }
@@ -1961,6 +1961,11 @@ void TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,
   TStringList::SetValue(Name, Value);
 }
 
+UnicodeString TRemoteDirectoryChangesCache::GetValue(const UnicodeString & Name) const
+{
+  return TStringList::GetValue(Name);
+}
+
 UnicodeString TRemoteDirectoryChangesCache::GetValue(const UnicodeString & Name)
 {
   UnicodeString Value = TStringList::GetValue(Name);
@@ -2019,7 +2024,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
 }
 
 bool TRemoteDirectoryChangesCache::GetDirectoryChange(
-  const UnicodeString & SourceDir, const UnicodeString & Change, UnicodeString & TargetDir)
+  const UnicodeString & SourceDir, const UnicodeString & Change, UnicodeString & TargetDir) const
 {
   UnicodeString Key;
   Key = TTerminal::ExpandFileName(Change, SourceDir);
@@ -2053,7 +2058,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   return Result;
 }
 
-void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
+void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
 {
   Data = L"A";
   intptr_t ACount = GetCount();
