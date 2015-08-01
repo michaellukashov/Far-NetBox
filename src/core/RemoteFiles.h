@@ -330,10 +330,10 @@ NB_DISABLE_COPY(TRemoteDirectoryCache)
 public:
   TRemoteDirectoryCache();
   virtual ~TRemoteDirectoryCache();
-  bool HasFileList(const UnicodeString & Directory);
-  bool HasNewerFileList(const UnicodeString & Directory, const TDateTime & Timestamp);
+  bool HasFileList(const UnicodeString & Directory) const;
+  bool HasNewerFileList(const UnicodeString & Directory, const TDateTime & Timestamp) const;
   bool GetFileList(const UnicodeString & Directory,
-    TRemoteFileList * FileList);
+    TRemoteFileList * FileList) const;
   void AddFileList(TRemoteFileList * FileList);
   void ClearFileList(const UnicodeString & Directory, bool SubDirs);
   void Clear();

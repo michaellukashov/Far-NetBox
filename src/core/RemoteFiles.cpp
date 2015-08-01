@@ -1840,7 +1840,7 @@ bool TRemoteDirectoryCache::GetIsEmpty() const
   return (const_cast<TRemoteDirectoryCache *>(this)->GetCount() == 0);
 }
 
-bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
+bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory) const
 {
   TGuard Guard(FSection);
 
@@ -1849,7 +1849,7 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
 }
 
 bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
-  const TDateTime & Timestamp)
+  const TDateTime & Timestamp) const
 {
   TGuard Guard(FSection);
 
@@ -1866,7 +1866,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
 }
 
 bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
-  TRemoteFileList * FileList)
+  TRemoteFileList * FileList) const
 {
   TGuard Guard(FSection);
 
