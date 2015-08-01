@@ -176,7 +176,7 @@ protected:
 
   virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) const = 0;
   virtual bool PatternReplacement(const UnicodeString & Pattern,
-    UnicodeString & Replacement, bool & Delimit) = 0;
+    UnicodeString & Replacement, bool & Delimit) const = 0;
   virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 };
 
@@ -188,12 +188,12 @@ public:
 
 protected:
   virtual void Prompt(const UnicodeString & Prompt,
-    UnicodeString & Value);
+    UnicodeString & Value) const;
   virtual void Execute(const UnicodeString & Command,
-    UnicodeString & Value);
+    UnicodeString & Value) const;
   virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) const;
   virtual bool PatternReplacement(const UnicodeString & Pattern,
-    UnicodeString & Replacement, bool & Delimit);
+    UnicodeString & Replacement, bool & Delimit) const;
 
 private:
   TCustomCommand * FChildCustomCommand;
@@ -246,7 +246,7 @@ public:
 protected:
   virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) const;
   virtual bool PatternReplacement(const UnicodeString & Pattern,
-    UnicodeString & Replacement, bool & Delimit);
+    UnicodeString & Replacement, bool & Delimit) const;
 
 private:
   TCustomCommandData FData;
