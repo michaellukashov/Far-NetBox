@@ -33,9 +33,9 @@ bool UnixIsAbsolutePath(const UnicodeString & APath)
 UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & APath)
 {
   // it used to return "/" when input path was empty
-  if (!APath.IsEmpty() && !APath.IsDelimiter(L"/", APath.Length()))
+  if (!APath.IsEmpty() && !APath.IsDelimiter(SLASH, APath.Length()))
   {
-    return APath + L"/";
+    return APath + SLASH;
   }
   else
   {
@@ -48,7 +48,7 @@ UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & APath, bool Sim
 {
   if (APath.IsEmpty() ||
       (APath == ROOTDIRECTORY) ||
-      !APath.IsDelimiter(L"/", APath.Length()) ||
+      !APath.IsDelimiter(SLASH, APath.Length()) ||
       (!Simple && ((APath.Length() == 3) && core::IsUnixStyleWindowsPath(APath))))
   {
     return APath;
@@ -239,17 +239,17 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APa
 
 UnicodeString FromUnixPath(const UnicodeString & APath)
 {
-  return ReplaceStr(APath, L"/", L"\\");
+  return ReplaceStr(APath, SLASH, BACKSLASH);
 }
 
 UnicodeString ToUnixPath(const UnicodeString & APath)
 {
-  return ReplaceStr(APath, L"\\", ROOTDIRECTORY);
+  return ReplaceStr(APath, BACKSLASH, SLASH);
 }
 
 static void CutFirstDirectory(UnicodeString & S, bool Unix)
 {
-  UnicodeString Sep = Unix ? L"/" : L"\\";
+  UnicodeString Sep = Unix ? SLASH : BACKSLASH;
   if (S == Sep)
   {
     S.Clear();
@@ -291,12 +291,12 @@ static void CutFirstDirectory(UnicodeString & S, bool Unix)
 UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, bool Unix)
 {
   UnicodeString Drive, Dir, Name, Result;
-  UnicodeString Sep = Unix ? L"/" : L"\\";
+  UnicodeString Sep = Unix ? SLASH : BACKSLASH;
 
   Result = AFileName;
   if (Unix)
   {
-    intptr_t P = Result.LastDelimiter(L"/");
+    intptr_t P = Result.LastDelimiter(SLASH);
     if (P)
     {
       Dir = Result.SubString(1, P);
@@ -358,7 +358,7 @@ UnicodeString MakeFileList(const TStrings * AFileList)
     // currently this is used for local file only, so no delimiting is done
     if (FileName.Pos(L" ") > 0)
     {
-      Result += L"\"" + FileName + L"\"";
+      Result += DOUBLEQUOTE + FileName + DOUBLEQUOTE;
     }
     else
     {

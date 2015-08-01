@@ -15,6 +15,10 @@ enum TModificationFmt
 #define PARENTDIRECTORY L".."
 #define THISDIRECTORY L"."
 #define ROOTDIRECTORY L"/"
+#define SLASH L"/"
+#define BACKSLASH L"\\"
+#define QUOTE L"\'"
+#define DOUBLEQUOTE L"\""
 #define FILETYPE_DEFAULT L'-'
 #define FILETYPE_SYMLINK L'L'
 #define FILETYPE_DIRECTORY L'D'
