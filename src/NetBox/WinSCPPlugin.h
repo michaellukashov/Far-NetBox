@@ -70,6 +70,7 @@ protected:
 
 private:
   void CleanupConfiguration();
+  void CoreInitializeOnce();
   void ParseCommandLine(UnicodeString & CommandLine,
     TOptions * Options);
 

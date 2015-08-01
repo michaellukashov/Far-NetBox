@@ -248,12 +248,7 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t Item)
 {
   std::unique_ptr<TWinSCPFileSystem> FileSystem;
-  if (!FInitialized)
-  {
-    CoreInitialize();
-    CleanupConfiguration();
-    FInitialized = true;
-  }
+  CoreInitializeOnce();
 
   if ((OpenFrom == OPEN_PLUGINSMENU) &&
       (!GetFarConfiguration()->GetPluginsMenu() || (Item == 1)))
@@ -816,6 +811,16 @@ void TWinSCPPlugin::CleanupConfiguration()
     }
     Storage->WriteStringRaw(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     Storage->CloseSubKey();
+  }
+}
+
+void TWinSCPPlugin::CoreInitializeOnce()
+{
+  if (!FInitialized)
+  {
+    CoreInitialize();
+    CleanupConfiguration();
+    FInitialized = true;
   }
 }
 
