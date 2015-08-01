@@ -698,9 +698,9 @@ TTerminal::TTerminal() :
   FCollectFileSystemUsage(false),
   FRememberedPasswordTried(false),
   FRememberedTunnelPasswordTried(false),
-  FNesting(0),
-  FOldFiles(new TRemoteDirectory(this))
+  FNesting(0)
 {
+  FOldFiles = new TRemoteDirectory(this);
 }
 
 TTerminal::~TTerminal()

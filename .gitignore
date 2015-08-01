@@ -1,5 +1,6 @@
 *.log
 build/
+build-CMakeLists.txt-*
 /Far2_x86/
 /Far2_x64/
 /Far3_x86/

@@ -33,9 +33,9 @@ bool UnixIsAbsolutePath(const UnicodeString & APath)
 UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & APath)
 {
   // it used to return "/" when input path was empty
-  if (!APath.IsEmpty() && !APath.IsDelimiter(L"/", APath.Length()))
+  if (!APath.IsEmpty() && !APath.IsDelimiter(SLASH, APath.Length()))
   {
-    return APath + L"/";
+    return APath + SLASH;
   }
   else
   {
@@ -48,7 +48,7 @@ UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & APath, bool Sim
 {
   if (APath.IsEmpty() ||
       (APath == ROOTDIRECTORY) ||
-      !APath.IsDelimiter(L"/", APath.Length()) ||
+      !APath.IsDelimiter(SLASH, APath.Length()) ||
       (!Simple && ((APath.Length() == 3) && core::IsUnixStyleWindowsPath(APath))))
   {
     return APath;
@@ -239,17 +239,17 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APa
 
 UnicodeString FromUnixPath(const UnicodeString & APath)
 {
-  return ReplaceStr(APath, L"/", L"\\");
+  return ReplaceStr(APath, SLASH, BACKSLASH);
 }
 
 UnicodeString ToUnixPath(const UnicodeString & APath)
 {
-  return ReplaceStr(APath, L"\\", ROOTDIRECTORY);
+  return ReplaceStr(APath, BACKSLASH, SLASH);
 }
 
 static void CutFirstDirectory(UnicodeString & S, bool Unix)
 {
-  UnicodeString Sep = Unix ? L"/" : L"\\";
+  UnicodeString Sep = Unix ? SLASH : BACKSLASH;
   if (S == Sep)
   {
     S.Clear();
@@ -291,12 +291,12 @@ static void CutFirstDirectory(UnicodeString & S, bool Unix)
 UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, bool Unix)
 {
   UnicodeString Drive, Dir, Name, Result;
-  UnicodeString Sep = Unix ? L"/" : L"\\";
+  UnicodeString Sep = Unix ? SLASH : BACKSLASH;
 
   Result = AFileName;
   if (Unix)
   {
-    intptr_t P = Result.LastDelimiter(L"/");
+    intptr_t P = Result.LastDelimiter(SLASH);
     if (P)
     {
       Dir = Result.SubString(1, P);
@@ -358,7 +358,7 @@ UnicodeString MakeFileList(const TStrings * AFileList)
     // currently this is used for local file only, so no delimiting is done
     if (FileName.Pos(L" ") > 0)
     {
-      Result += L"\"" + FileName + L"\"";
+      Result += DOUBLEQUOTE + FileName + DOUBLEQUOTE;
     }
     else
     {
@@ -1024,7 +1024,7 @@ void TRemoteFile::SetModification(const TDateTime & Value)
   }
 }
 
-UnicodeString TRemoteFile::GetUserModificationStr()
+UnicodeString TRemoteFile::GetUserModificationStr() const
 {
   return core::UserModificationStr(GetModification(), FModificationFmt);
 }
@@ -1034,7 +1034,7 @@ UnicodeString TRemoteFile::GetModificationStr() const
   return core::ModificationStr(GetModification(), FModificationFmt);
 }
 
-UnicodeString TRemoteFile::GetExtension()
+UnicodeString TRemoteFile::GetExtension() const
 {
   return core::UnixExtractFileExt(FFileName);
 }
@@ -1619,7 +1619,7 @@ void TRemoteFileList::SetDirectory(const UnicodeString & Value)
   FDirectory = core::UnixExcludeTrailingBackslash(Value);
 }
 
-UnicodeString TRemoteFileList::GetFullDirectory()
+UnicodeString TRemoteFileList::GetFullDirectory() const
 {
   return core::UnixIncludeTrailingBackslash(GetDirectory());
 }
@@ -1629,17 +1629,17 @@ TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
   return NB_STATIC_DOWNCAST(TRemoteFile, GetItem(Index));
 }
 
-Boolean TRemoteFileList::GetIsRoot()
+Boolean TRemoteFileList::GetIsRoot() const
 {
   return (GetDirectory() == ROOTDIRECTORY);
 }
 
-UnicodeString TRemoteFileList::GetParentPath()
+UnicodeString TRemoteFileList::GetParentPath() const
 {
   return core::UnixExtractFilePath(GetDirectory());
 }
 
-int64_t TRemoteFileList::GetTotalSize()
+int64_t TRemoteFileList::GetTotalSize() const
 {
   int64_t Result = 0;
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
@@ -1840,7 +1840,7 @@ bool TRemoteDirectoryCache::GetIsEmpty() const
   return (const_cast<TRemoteDirectoryCache *>(this)->GetCount() == 0);
 }
 
-bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
+bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory) const
 {
   TGuard Guard(FSection);
 
@@ -1849,7 +1849,7 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory)
 }
 
 bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
-  const TDateTime & Timestamp)
+  const TDateTime & Timestamp) const
 {
   TGuard Guard(FSection);
 
@@ -1866,7 +1866,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
 }
 
 bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
-  TRemoteFileList * FileList)
+  TRemoteFileList * FileList) const
 {
   TGuard Guard(FSection);
 
@@ -1961,6 +1961,11 @@ void TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,
   TStringList::SetValue(Name, Value);
 }
 
+UnicodeString TRemoteDirectoryChangesCache::GetValue(const UnicodeString & Name) const
+{
+  return TStringList::GetValue(Name);
+}
+
 UnicodeString TRemoteDirectoryChangesCache::GetValue(const UnicodeString & Name)
 {
   UnicodeString Value = TStringList::GetValue(Name);
@@ -2019,7 +2024,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
 }
 
 bool TRemoteDirectoryChangesCache::GetDirectoryChange(
-  const UnicodeString & SourceDir, const UnicodeString & Change, UnicodeString & TargetDir)
+  const UnicodeString & SourceDir, const UnicodeString & Change, UnicodeString & TargetDir) const
 {
   UnicodeString Key;
   Key = TTerminal::ExpandFileName(Change, SourceDir);
@@ -2053,7 +2058,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   return Result;
 }
 
-void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data)
+void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
 {
   Data = L"A";
   intptr_t ACount = GetCount();
@@ -2115,20 +2120,21 @@ const wchar_t TRights::CombinedSymbols[] = L"--s--s--t";
 const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
 const wchar_t TRights::ModeGroups[] = L"ugo";
 
-TRights::TRights()
+TRights::TRights() :
+  FAllowUndef(false),
+  FSet(0),
+  FUnset(0),
+  FUnknown(true)
 {
-  FAllowUndef = false;
-  FSet = 0;
-  FUnset = 0;
   SetNumber(0);
-  FUnknown = true;
 }
 
-TRights::TRights(uint16_t ANumber)
+TRights::TRights(uint16_t ANumber) :
+  FAllowUndef(false),
+  FSet(0),
+  FUnset(0),
+  FUnknown(true)
 {
-  FAllowUndef = false;
-  FSet = 0;
-  FUnset = 0;
   SetNumber(ANumber);
 }
 

@@ -229,10 +229,10 @@ TFileMasks::TFileMasks()
   Init();
 }
 
-TFileMasks::TFileMasks(int ForceDirectoryMasks)
+TFileMasks::TFileMasks(int ForceDirectoryMasks) :
+  FForceDirectoryMasks(ForceDirectoryMasks)
 {
   Init();
-  FForceDirectoryMasks = ForceDirectoryMasks;
 }
 
 TFileMasks::TFileMasks(const TFileMasks & Source)
@@ -959,13 +959,13 @@ TInteractiveCustomCommand::TInteractiveCustomCommand(
 }
 
 void TInteractiveCustomCommand::Prompt(
-  const UnicodeString & /*Prompt*/, UnicodeString & Value)
+  const UnicodeString & /*Prompt*/, UnicodeString & Value) const
 {
   Value.Clear();
 }
 
 void TInteractiveCustomCommand::Execute(
-  const UnicodeString & /*Command*/, UnicodeString & Value)
+  const UnicodeString & /*Command*/, UnicodeString & Value) const
 {
   Value.Clear();
 }
@@ -1008,7 +1008,7 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, in
 }
 
 bool TInteractiveCustomCommand::PatternReplacement(const UnicodeString & Pattern,
-  UnicodeString & Replacement, bool & Delimit)
+  UnicodeString & Replacement, bool & Delimit) const
 {
   bool Result;
   if ((Pattern.Length() >= 3) && (Pattern[2] == L'?'))
@@ -1142,7 +1142,7 @@ intptr_t TFileCustomCommand::PatternLen(const UnicodeString & Command, intptr_t 
 }
 
 bool TFileCustomCommand::PatternReplacement(
-  const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit)
+  const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit) const
 {
   // keep consistent with TSessionLog::OpenLogFile
 

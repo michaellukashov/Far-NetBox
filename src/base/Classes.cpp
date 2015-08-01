@@ -2061,9 +2061,9 @@ TShortCut::TShortCut() : FValue(0)
 {
 }
 
-TShortCut::TShortCut(intptr_t Value)
+TShortCut::TShortCut(intptr_t Value) :
+  FValue(Value)
 {
-  FValue = Value;
 }
 
 TShortCut::operator intptr_t() const

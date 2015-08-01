@@ -511,6 +511,7 @@ private:
 
 class TFarEditorInfo : public TObject
 {
+NB_DISABLE_COPY(TFarEditorInfo)
 public:
   explicit TFarEditorInfo(EditorInfo * Info);
   ~TFarEditorInfo();

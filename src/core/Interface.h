@@ -138,6 +138,7 @@ DEFINE_CALLBACK_TYPE3(TFindingFileEvent, void,
 
 class TOperationVisualizer
 {
+NB_DISABLE_COPY(TOperationVisualizer)
 public:
   explicit TOperationVisualizer(bool UseBusyCursor);
   ~TOperationVisualizer();

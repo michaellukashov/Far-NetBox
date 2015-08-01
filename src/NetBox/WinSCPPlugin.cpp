@@ -88,6 +88,7 @@ void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS & Flags,
   TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
+  CoreInitializeOnce();
   Flags = PF_FULLCMDLINE;
   TFarConfiguration * FarConfiguration = GetFarConfiguration();
   if (FarConfiguration->GetDisksMenu())
@@ -250,12 +251,7 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t Item)
 {
   std::unique_ptr<TWinSCPFileSystem> FileSystem;
-  if (!FInitialized)
-  {
-    CoreInitialize();
-    CleanupConfiguration();
-    FInitialized = true;
-  }
+  CoreInitializeOnce();
 
   if ((OpenFrom == OPEN_PLUGINSMENU) &&
       (!GetFarConfiguration()->GetPluginsMenu() || (Item == 1)))
@@ -589,6 +585,7 @@ void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
 struct TFarMessageData : public TObject
 {
 NB_DECLARE_CLASS(TFarMessageData)
+NB_DISABLE_COPY(TFarMessageData)
 public:
   TFarMessageData() :
     Params(nullptr),
@@ -870,6 +867,16 @@ void TWinSCPPlugin::CleanupConfiguration()
     }
     Storage->WriteStringRaw(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     Storage->CloseSubKey();
+  }
+}
+
+void TWinSCPPlugin::CoreInitializeOnce()
+{
+  if (!FInitialized)
+  {
+    CoreInitialize();
+    CleanupConfiguration();
+    FInitialized = true;
   }
 }
 

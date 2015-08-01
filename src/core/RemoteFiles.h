@@ -15,6 +15,10 @@ enum TModificationFmt
 #define PARENTDIRECTORY L".."
 #define THISDIRECTORY L"."
 #define ROOTDIRECTORY L"/"
+#define SLASH L"/"
+#define BACKSLASH L"\\"
+#define QUOTE L"\'"
+#define DOUBLEQUOTE L"\""
 #define FILETYPE_DEFAULT L'-'
 #define FILETYPE_SYMLINK L'L'
 #define FILETYPE_DIRECTORY L'D'
@@ -85,33 +89,6 @@ class TRemoteFile : public TPersistent
 NB_DISABLE_COPY(TRemoteFile)
 NB_DECLARE_CLASS(TRemoteFile)
 public:
-  intptr_t GetAttr() const;
-  bool GetBrokenLink() const;
-  bool GetIsDirectory() const;
-  TRemoteFile * GetLinkedFile() const;
-  void SetLinkedFile(TRemoteFile * Value);
-  UnicodeString GetModificationStr() const;
-  void SetModification(const TDateTime & Value);
-  void SetListingStr(const UnicodeString & Value);
-  UnicodeString GetListingStr() const;
-  UnicodeString GetRightsStr() const;
-  wchar_t GetType() const;
-  void SetType(wchar_t AType);
-  void SetTerminal(TTerminal * Value);
-  void SetRights(TRights * Value);
-  UnicodeString GetFullFileName() const;
-  bool GetHaveFullFileName() const;
-  intptr_t GetIconIndex() const;
-  UnicodeString GetTypeName() const;
-  bool GetIsHidden() const;
-  void SetIsHidden(bool Value);
-  bool GetIsParentDirectory() const;
-  bool GetIsThisDirectory() const;
-  bool GetIsInaccesibleDirectory() const;
-  UnicodeString GetExtension();
-  UnicodeString GetUserModificationStr();
-
-public:
   explicit TRemoteFile(TRemoteFile * ALinkedByFile = nullptr);
   virtual ~TRemoteFile();
   TRemoteFile * Duplicate(bool Standalone = true) const;
@@ -146,6 +123,33 @@ public:
   bool GetSelected() const { return FSelected; }
   void SetSelected(bool Value) { FSelected = Value; }
   void SetFullFileName(const UnicodeString & Value);
+
+public:
+  intptr_t GetAttr() const;
+  bool GetBrokenLink() const;
+  bool GetIsDirectory() const;
+  TRemoteFile * GetLinkedFile() const;
+  void SetLinkedFile(TRemoteFile * Value);
+  UnicodeString GetModificationStr() const;
+  void SetModification(const TDateTime & Value);
+  void SetListingStr(const UnicodeString & Value);
+  UnicodeString GetListingStr() const;
+  UnicodeString GetRightsStr() const;
+  wchar_t GetType() const;
+  void SetType(wchar_t AType);
+  void SetTerminal(TTerminal * Value);
+  void SetRights(TRights * Value);
+  UnicodeString GetFullFileName() const;
+  bool GetHaveFullFileName() const;
+  intptr_t GetIconIndex() const;
+  UnicodeString GetTypeName() const;
+  bool GetIsHidden() const;
+  void SetIsHidden(bool Value);
+  bool GetIsParentDirectory() const;
+  bool GetIsThisDirectory() const;
+  bool GetIsInaccesibleDirectory() const;
+  UnicodeString GetExtension() const;
+  UnicodeString GetUserModificationStr() const;
 
 protected:
   void FindLinkedFile();
@@ -278,10 +282,10 @@ public:
   UnicodeString GetDirectory() const { return FDirectory; }
   virtual void SetDirectory(const UnicodeString & Value);
   TRemoteFile * GetFile(Integer Index) const;
-  UnicodeString GetFullDirectory();
-  Boolean GetIsRoot();
-  UnicodeString GetParentPath();
-  int64_t GetTotalSize();
+  UnicodeString GetFullDirectory() const;
+  Boolean GetIsRoot() const;
+  UnicodeString GetParentPath() const;
+  int64_t GetTotalSize() const;
   TDateTime GetTimestamp() const { return FTimestamp; }
 };
 
@@ -326,10 +330,10 @@ NB_DISABLE_COPY(TRemoteDirectoryCache)
 public:
   TRemoteDirectoryCache();
   virtual ~TRemoteDirectoryCache();
-  bool HasFileList(const UnicodeString & Directory);
-  bool HasNewerFileList(const UnicodeString & Directory, const TDateTime & Timestamp);
+  bool HasFileList(const UnicodeString & Directory) const;
+  bool HasNewerFileList(const UnicodeString & Directory, const TDateTime & Timestamp) const;
   bool GetFileList(const UnicodeString & Directory,
-    TRemoteFileList * FileList);
+    TRemoteFileList * FileList) const;
   void AddFileList(TRemoteFileList * FileList);
   void ClearFileList(const UnicodeString & Directory, bool SubDirs);
   void Clear();
@@ -355,10 +359,10 @@ public:
   void ClearDirectoryChange(const UnicodeString & SourceDir);
   void ClearDirectoryChangeTarget(const UnicodeString & TargetDir);
   bool GetDirectoryChange(const UnicodeString & SourceDir,
-    const UnicodeString & Change, UnicodeString & TargetDir);
+    const UnicodeString & Change, UnicodeString & TargetDir) const;
   void Clear();
 
-  void Serialize(UnicodeString & Data);
+  void Serialize(UnicodeString & Data) const;
   void Deserialize(const UnicodeString & Data);
 
   bool GetIsEmpty() const;
@@ -367,6 +371,7 @@ private:
   static bool DirectoryChangeKey(const UnicodeString & SourceDir,
     const UnicodeString & Change, UnicodeString & Key);
   void SetValue(const UnicodeString & Name, const UnicodeString & Value);
+  UnicodeString GetValue(const UnicodeString & Name) const;
   UnicodeString GetValue(const UnicodeString & Name);
 
   intptr_t FMaxSize;

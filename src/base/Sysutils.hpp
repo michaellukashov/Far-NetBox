@@ -276,6 +276,8 @@ struct TFileTime
 
 struct TSearchRec : public TObject
 {
+NB_DISABLE_COPY(TSearchRec)
+public:
   TSearchRec() :
     Time(0),
     Size(0),

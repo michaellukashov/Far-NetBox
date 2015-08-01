@@ -2106,15 +2106,15 @@ void TFarText::SetData(const UnicodeString & Value)
 }
 
 TFarList::TFarList(TFarDialogItem * ADialogItem) :
-  TStringList()
+  TStringList(),
+  FDialogItem(ADialogItem),
+  FNoDialogUpdate(false)
 {
   assert((ADialogItem == nullptr) ||
     (ADialogItem->GetType() == DI_COMBOBOX) || (ADialogItem->GetType() == DI_LISTBOX));
-  FDialogItem = ADialogItem;
   FListItems = static_cast<FarList *>(nb_malloc(sizeof(FarList)));
   ::ZeroMemory(FListItems, sizeof(FarList));
   FListItems->StructSize = sizeof(FarList);
-  FNoDialogUpdate = false;
 }
 
 TFarList::~TFarList()
@@ -2421,11 +2421,11 @@ intptr_t TFarList::ItemProc(intptr_t Msg, void * Param)
 
 TFarListBox::TFarListBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_LISTBOX),
+  FAutoSelect(asOnlyFocus),
   FDenyClose(nullptr)
 {
   FList = new TFarList(this);
   GetDialogItem()->ListItems = FList->GetListItems();
-  FAutoSelect = asOnlyFocus;
 }
 
 TFarListBox::~TFarListBox()

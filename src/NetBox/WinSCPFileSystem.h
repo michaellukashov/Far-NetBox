@@ -153,7 +153,7 @@ protected:
   void OpenDirectory(bool Add);
   void HomeDirectory();
   void ToggleSynchronizeBrowsing();
-  bool IsSynchronizedBrowsing();
+  bool IsSynchronizedBrowsing() const;
   bool PropertiesDialog(TStrings * AFileList,
     const UnicodeString & Directory,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,

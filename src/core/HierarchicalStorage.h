@@ -116,6 +116,7 @@ protected:
 
 class TRegistryStorage : public THierarchicalStorage
 {
+NB_DISABLE_COPY(TRegistryStorage)
 public:
   explicit TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey);
   explicit TRegistryStorage(const UnicodeString & AStorage);

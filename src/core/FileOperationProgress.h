@@ -157,9 +157,9 @@ class TSuspendFileOperationProgress : public TObject
 {
 NB_DISABLE_COPY(TSuspendFileOperationProgress)
 public:
-  explicit TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress)
+  explicit TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress) :
+    FOperationProgress(OperationProgress)
   {
-    FOperationProgress = OperationProgress;
     if (FOperationProgress != nullptr)
     {
       FOperationProgress->Suspend();
