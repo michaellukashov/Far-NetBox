@@ -4561,13 +4561,13 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
 {
   enum
   {
-    INIT,
-    QUOTE,
-    QUOTED,
-    DONE
+    STATE_INIT,
+    STATE_QUOTE,
+    STATE_QUOTED,
+    STATE_DONE
   } State;
 
-  State = INIT;
+  State = STATE_INIT;
   assert((Str.Length() > 0) && ((Str[1] == L'"') || (Str[1] == L'\'')));
 
   intptr_t Index = 1;
@@ -4576,11 +4576,11 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
   {
     switch (State)
     {
-      case INIT:
+      case STATE_INIT:
         if ((Str[Index] == L'"') || (Str[Index] == L'\''))
         {
           Quote = Str[Index];
-          State = QUOTED;
+          State = STATE_QUOTED;
           Str.Delete(Index, 1);
         }
         else
@@ -4591,10 +4591,10 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
         }
         break;
 
-      case QUOTED:
+      case STATE_QUOTED:
         if (Str[Index] == Quote)
         {
-          State = QUOTE;
+          State = STATE_QUOTE;
           Str.Delete(Index, 1);
         }
         else
@@ -4603,7 +4603,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
         }
         break;
 
-      case QUOTE:
+      case STATE_QUOTE:
         if (Str[Index] == Quote)
         {
           ++Index;
@@ -4612,13 +4612,13 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
         {
           // end of quoted string, trim the rest
           Str.SetLength(Index - 1);
-          State = DONE;
+          State = STATE_DONE;
         }
         break;
     }
   }
 
-  return (State == DONE);
+  return (State == STATE_DONE);
 }
 
 void TFTPFileSystem::PreserveDownloadFileTime(HANDLE Handle, void * UserData)
