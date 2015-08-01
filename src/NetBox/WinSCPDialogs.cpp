@@ -139,11 +139,10 @@ private:
 };
 
 TTabbedDialog::TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount) :
-  TWinSCPDialog(AFarPlugin)
+  TWinSCPDialog(AFarPlugin),
+  FTab(0),
+  FTabCount(TabCount)
 {
-  FTab = 0;
-  FTabCount = TabCount;
-
   // FAR WORKAROUND
   // (to avoid first control on dialog be a button, that would be "pressed"
   // when listbox loses focus)
@@ -8230,7 +8229,8 @@ bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * AFile,
 
 class TQueueDialog : TFarDialog
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
+NB_DISABLE_COPY(TQueueDialog)
 public:
   explicit TQueueDialog(TCustomFarPlugin * AFarPlugin,
     TWinSCPFileSystem * AFileSystem, bool ClosingPlugin);

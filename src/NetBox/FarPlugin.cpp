@@ -2137,10 +2137,10 @@ TObjectList * TCustomFarFileSystem::CreatePanelItemList(
   return PanelItems.release();
 }
 
-TFarPanelModes::TFarPanelModes() : TObject()
+TFarPanelModes::TFarPanelModes() : TObject(),
+  FReferenced(false)
 {
   ::ZeroMemory(&FPanelModes, sizeof(FPanelModes));
-  FReferenced = false;
 }
 
 TFarPanelModes::~TFarPanelModes()
@@ -2236,10 +2236,10 @@ intptr_t TFarPanelModes::CommaCount(const UnicodeString & ColumnTypes)
   return Count;
 }
 
-TFarKeyBarTitles::TFarKeyBarTitles()
+TFarKeyBarTitles::TFarKeyBarTitles() :
+  FReferenced(false)
 {
   ::ZeroMemory(&FKeyBarTitles, sizeof(FKeyBarTitles));
-  FReferenced = false;
 }
 
 TFarKeyBarTitles::~TFarKeyBarTitles()
@@ -2456,9 +2456,9 @@ bool TFarPanelItem::GetIsFile() const
 }
 
 THintPanelItem::THintPanelItem(const UnicodeString & AHint) :
-  TCustomFarPanelItem()
+  TCustomFarPanelItem(),
+  FHint(AHint)
 {
-  FHint = AHint;
 }
 
 void THintPanelItem::GetData(
@@ -2675,9 +2675,9 @@ UnicodeString TFarPanelInfo::GetCurrDirectory() const
 }
 
 TFarMenuItems::TFarMenuItems() :
-  TStringList()
+  TStringList(),
+  FItemFocused(NPOS)
 {
-  FItemFocused = NPOS;
 }
 
 void TFarMenuItems::Clear()

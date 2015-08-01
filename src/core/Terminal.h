@@ -1047,6 +1047,7 @@ class TChecklistItem : public TObject
 {
 friend class TTerminal;
 NB_DECLARE_CLASS(TChecklistItem)
+NB_DISABLE_COPY(TChecklistItem)
 public:
   struct TFileInfo : public TObject
   {
@@ -1123,6 +1124,7 @@ struct TSpaceAvailable : public TObject
 
 class TRobustOperationLoop : public TObject
 {
+NB_DISABLE_COPY(TRobustOperationLoop)
 public:
   TRobustOperationLoop(TTerminal * Terminal, TFileOperationProgressType * OperationProgress);
   bool TryReopen(Exception & E);

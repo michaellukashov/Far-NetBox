@@ -229,10 +229,10 @@ TFileMasks::TFileMasks()
   Init();
 }
 
-TFileMasks::TFileMasks(int ForceDirectoryMasks)
+TFileMasks::TFileMasks(int ForceDirectoryMasks) :
+  FForceDirectoryMasks(ForceDirectoryMasks)
 {
   Init();
-  FForceDirectoryMasks = ForceDirectoryMasks;
 }
 
 TFileMasks::TFileMasks(const TFileMasks & Source)

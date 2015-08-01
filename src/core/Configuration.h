@@ -29,6 +29,7 @@ enum TFtpEncryptionSwitch_219
 class TConfiguration : public TObject
 {
 NB_DECLARE_CLASS(TConfiguration)
+NB_DISABLE_COPY(TConfiguration)
 public:
   UnicodeString GetOSVersionStr() const;
   TVSFixedFileInfo * GetFixedApplicationInfo() const;

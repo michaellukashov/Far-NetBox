@@ -571,6 +571,7 @@ void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
 struct TFarMessageData : public TObject
 {
 NB_DECLARE_CLASS(TFarMessageData)
+NB_DISABLE_COPY(TFarMessageData)
 public:
   TFarMessageData() :
     Params(nullptr),
