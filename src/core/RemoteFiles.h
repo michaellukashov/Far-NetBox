@@ -85,33 +85,6 @@ class TRemoteFile : public TPersistent
 NB_DISABLE_COPY(TRemoteFile)
 NB_DECLARE_CLASS(TRemoteFile)
 public:
-  intptr_t GetAttr() const;
-  bool GetBrokenLink() const;
-  bool GetIsDirectory() const;
-  TRemoteFile * GetLinkedFile() const;
-  void SetLinkedFile(TRemoteFile * Value);
-  UnicodeString GetModificationStr() const;
-  void SetModification(const TDateTime & Value);
-  void SetListingStr(const UnicodeString & Value);
-  UnicodeString GetListingStr() const;
-  UnicodeString GetRightsStr() const;
-  wchar_t GetType() const;
-  void SetType(wchar_t AType);
-  void SetTerminal(TTerminal * Value);
-  void SetRights(TRights * Value);
-  UnicodeString GetFullFileName() const;
-  bool GetHaveFullFileName() const;
-  intptr_t GetIconIndex() const;
-  UnicodeString GetTypeName() const;
-  bool GetIsHidden() const;
-  void SetIsHidden(bool Value);
-  bool GetIsParentDirectory() const;
-  bool GetIsThisDirectory() const;
-  bool GetIsInaccesibleDirectory() const;
-  UnicodeString GetExtension();
-  UnicodeString GetUserModificationStr();
-
-public:
   explicit TRemoteFile(TRemoteFile * ALinkedByFile = nullptr);
   virtual ~TRemoteFile();
   TRemoteFile * Duplicate(bool Standalone = true) const;
@@ -146,6 +119,33 @@ public:
   bool GetSelected() const { return FSelected; }
   void SetSelected(bool Value) { FSelected = Value; }
   void SetFullFileName(const UnicodeString & Value);
+
+public:
+  intptr_t GetAttr() const;
+  bool GetBrokenLink() const;
+  bool GetIsDirectory() const;
+  TRemoteFile * GetLinkedFile() const;
+  void SetLinkedFile(TRemoteFile * Value);
+  UnicodeString GetModificationStr() const;
+  void SetModification(const TDateTime & Value);
+  void SetListingStr(const UnicodeString & Value);
+  UnicodeString GetListingStr() const;
+  UnicodeString GetRightsStr() const;
+  wchar_t GetType() const;
+  void SetType(wchar_t AType);
+  void SetTerminal(TTerminal * Value);
+  void SetRights(TRights * Value);
+  UnicodeString GetFullFileName() const;
+  bool GetHaveFullFileName() const;
+  intptr_t GetIconIndex() const;
+  UnicodeString GetTypeName() const;
+  bool GetIsHidden() const;
+  void SetIsHidden(bool Value);
+  bool GetIsParentDirectory() const;
+  bool GetIsThisDirectory() const;
+  bool GetIsInaccesibleDirectory() const;
+  UnicodeString GetExtension();
+  UnicodeString GetUserModificationStr();
 
 protected:
   void FindLinkedFile();
