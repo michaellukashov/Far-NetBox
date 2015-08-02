@@ -4679,7 +4679,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 		continue;
 	    } else {
 		char *challenge;
-		int challengelen;
+		int challengelen = 0;
 		char *instr_suf, *prompt;
 
 		ssh_pkt_getstring(pktin, &challenge, &challengelen);
