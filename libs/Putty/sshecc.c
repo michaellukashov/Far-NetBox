@@ -2002,7 +2002,7 @@ static void *ed25519_openssh_createkey(const struct ssh_signkey *self,
     struct ec_key *ec;
     struct ec_point *publicKey;
     const char *p, *q;
-    int plen, qlen;
+    int plen = 0, qlen = 0;
 
     getstring((const char**)blob, len, &p, &plen);
     if (!p)
