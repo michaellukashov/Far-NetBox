@@ -5455,7 +5455,7 @@ static void ssh_setup_portfwd(Ssh ssh, Conf *conf)
 static void ssh1_smsg_stdout_stderr_data(Ssh ssh, struct Packet *pktin)
 {
     char *string;
-    int stringlen, bufsize;
+    int stringlen = 0, bufsize = 0;
 
     ssh_pkt_getstring(pktin, &string, &stringlen);
     if (string == NULL) {
