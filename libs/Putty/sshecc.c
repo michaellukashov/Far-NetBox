@@ -1626,7 +1626,7 @@ static Bignum getmp(const char **data, int *datalen)
 static Bignum getmp_le(const char **data, int *datalen)
 {
     const char *p;
-    int length;
+    int length = 0;
 
     getstring(data, datalen, &p, &length);
     if (!p)
