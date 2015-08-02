@@ -1175,7 +1175,7 @@ Bignum bignum_from_decimal(const char *decimal)
     Bignum result = copybn(Zero);
 
     while (*decimal) {
-        Bignum tmp, tmp2;
+        Bignum tmp, tmp2, tmp3;
 
         if (!isdigit((unsigned char)*decimal)) {
             freebn(result);
@@ -1184,9 +1184,11 @@ Bignum bignum_from_decimal(const char *decimal)
 
         tmp = bigmul(result, Ten);
         tmp2 = bignum_from_long(*decimal - '0');
+        tmp3 = result;
         result = bigadd(tmp, tmp2);
         freebn(tmp);
         freebn(tmp2);
+        freebn(tmp3);
 
         decimal++;
     }
