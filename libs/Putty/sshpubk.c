@@ -1090,6 +1090,7 @@ unsigned char *openssh_loadpub(FILE *fp, char **algorithm,
         *commentptr = comment;
     else
         sfree(comment);
+    sfree(line);
     return pubblob;
 
   error:
