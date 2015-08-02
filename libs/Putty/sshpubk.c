@@ -309,6 +309,7 @@ int rsakey_pubblob(const Filename *filename, void **blob, int *bloblen,
             *commentptr = commentp ? dupstr(commentp) : NULL;
         *blob = rsa_public_blob(&key, bloblen);
         freersakey(&key);
+        sfree(line);
         return 1;
 
       not_public_either:
