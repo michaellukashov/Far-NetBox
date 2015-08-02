@@ -1317,7 +1317,7 @@ int CTransferSocket::ReadDataFromFile(char *buffer, int len)
 		if (COptions::GetOptionVal(OPTION_MPEXT_REMOVE_BOM) &&
 				m_transferdata.bType && (read >= sizeof(Bom)) && (memcmp(buffer, Bom, sizeof(Bom)) == 0))
 		{
-			memcpy(buffer, buffer + 3, read - 3);
+			memmove(buffer, buffer + 3, read - 3);
 			read -= 3;
 			int read2 = m_pFile->Read(buffer + read, 3);
 			if (read2 > 0)
