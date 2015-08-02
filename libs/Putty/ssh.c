@@ -6533,7 +6533,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
      */
     {
 	char *str;
-	int i, j, len;
+	int i, j, len = 0;
 
 	if (pktin->type != SSH2_MSG_KEXINIT) {
 	    bombout(("expected key exchange packet from server"));
