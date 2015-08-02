@@ -8465,7 +8465,7 @@ static void ssh2_msg_channel_open(Ssh ssh, struct Packet *pktin)
     char *type;
     int typelen;
     char *peeraddr;
-    int peeraddrlen;
+    int peeraddrlen = 0;
     int peerport;
     const char *error = NULL;
     struct ssh_channel *c;
