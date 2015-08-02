@@ -1012,7 +1012,7 @@ static struct ec_point *ecp_addw(const struct ec_point *a,
             outz = modmul(H, a->z, a->curve->p);
             freebn(H);
         } else if (b->z) {
-            outz = modmul(H, b->z, a->curve->p);
+            outz = modmul(H, b->z, b->curve->p);
             freebn(H);
         } else {
             outz = H;
