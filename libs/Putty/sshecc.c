@@ -1713,7 +1713,7 @@ static int decodepoint(const char *p, int length, struct ec_point *point)
 static int getmppoint(const char **data, int *datalen, struct ec_point *point)
 {
     const char *p;
-    int length;
+    int length = 0;
 
     getstring(data, datalen, &p, &length);
     if (!p) return 0;
