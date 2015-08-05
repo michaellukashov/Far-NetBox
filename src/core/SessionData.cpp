@@ -675,6 +675,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   READ_BUG(Rekey2);
   READ_BUG(MaxPkt2);
   READ_BUG(Ignore2);
+  READ_BUG(OldGex2);
   READ_BUG(WinAdj);
 #undef READ_BUG
 
@@ -916,7 +917,10 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA(Bool, IgnoreLsWarnings);
       WRITE_DATA(Integer, SCPLsFullTime);
       WRITE_DATA(Bool, Scp1Compatibility);
-       if (FTimeDifferenceAuto)
+      // TimeDifferenceAuto is valid for FTP protocol only.
+      // For other protocols it's typically true (default value),
+      // but ignored so TimeDifference is still taken into account (SCP only actually)
+      if (FTimeDifferenceAuto && (FSProtocol == fsFTP))
       {
         // Have to delete it as TimeDifferenceAuto is not saved when enabled,
         // but the default is derived from value of TimeDifference.
@@ -973,6 +977,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     WRITE_BUG(Rekey2);
     WRITE_BUG(MaxPkt2);
     WRITE_BUG(Ignore2);
+    WRITE_BUG(OldGex2);
     WRITE_BUG(WinAdj);
 #undef WRITE_BUG
 #undef WRITE_DATA_CONV_FUNC

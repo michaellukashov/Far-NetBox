@@ -2427,15 +2427,8 @@ void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
 {
   if (!File)
     return;
-  // FTimeDifference is not only optimization, but also prevents assertion failing
-  // in TimeZoneDifferenceApplicable when the file has full precision
-  if ((FTimeDifference != 0) &&
-      GetTimeZoneDifferenceApplicable(File->GetModificationFmt()))
-  {
-    assert(File->GetModification() == File->GetLastAccess());
-    File->SetModification(IncSecond(File->GetModification(), FTimeDifference));
-    File->SetLastAccess(IncSecond(File->GetLastAccess(), FTimeDifference));
-  }
+  assert(File->GetModification() == File->GetLastAccess());
+  File->ShiftTimeInSeconds(FTimeDifference);
 }
 
 void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
@@ -2453,7 +2446,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
       // (it should not be problem to use them otherwise).
       // We are also not interested in files with day precision only.
       if (!File->GetIsDirectory() && !File->GetIsSymLink() &&
-          GetTimeZoneDifferenceApplicable(File->GetModificationFmt()))
+          File->GetIsTimeShiftingApplicable())
       {
         FDetectTimeDifference = false;
 

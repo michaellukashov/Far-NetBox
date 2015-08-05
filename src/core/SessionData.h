@@ -66,7 +66,7 @@ enum TKex
 enum TSshBug
 {
   sbIgnore1, sbPlainPW1, sbRSA1, sbHMAC2, sbDeriveKey2, sbRSAPad2,
-  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2, sbWinAdj
+  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2, sbOldGex2, sbWinAdj
 };
 #define BUG_COUNT (sbWinAdj+1)
 enum TSftpBug

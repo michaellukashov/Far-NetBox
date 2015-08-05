@@ -1188,7 +1188,7 @@ TRemoteFile * TSCPFileSystem::CreateRemoteFile(
   std::unique_ptr<TRemoteFile> File(new TRemoteFile(LinkedByFile));
   File->SetTerminal(FTerminal);
   File->SetListingStr(ListingStr);
-  File->ShiftTime(FTerminal->GetSessionData()->GetTimeDifference());
+  File->ShiftTimeInSeconds(TimeToSeconds(FTerminal->GetSessionData()->GetTimeDifference()));
   File->Complete();
 
   return File.release();

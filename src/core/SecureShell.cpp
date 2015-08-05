@@ -286,6 +286,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_int(conf, CONF_sshbug_maxpkt2, Data->GetBug(sbMaxPkt2));
   conf_set_int(conf, CONF_sshbug_ignore2, Data->GetBug(sbIgnore2));
   conf_set_int(conf, CONF_sshbug_winadj, Data->GetBug(sbWinAdj));
+  conf_set_int(conf, CONF_sshbug_oldgex2, Data->GetBug[sbOldGex2]));
 
   if (!Data->GetTunnelPortFwd().IsEmpty())
   {
@@ -473,6 +474,10 @@ void TSecureShell::Open()
   else if (::AnsiContainsText(SshImplementation, L"srtSSHServer"))
   {
     FSshImplementation = sshiTitan;
+  }
+  else if (::AnsiContainsText(FSessionInfo.SshImplementation, L"CerberusFTPServer"))
+  {
+    FSshImplementation = sshiCerberus;
   }
   else
   {
@@ -2408,7 +2413,7 @@ void TSecureShell::CollectUsage()
   {
     Configuration->Usage->Inc(L"OpenedSessionsSSHServU");
   }
-  else if (ContainsText(FSessionInfo.SshImplementation, L"CerberusFTPServer"))
+  else if (SshImplementation == sshiCerberus)
   {
     // Ntb, Cerberus can also be detected using vendor-id extension
     // Cerberus FTP Server 7.0.5.3 (70005003) by Cerberus, LLC
