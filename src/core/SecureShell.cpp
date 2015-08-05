@@ -286,7 +286,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_int(conf, CONF_sshbug_maxpkt2, Data->GetBug(sbMaxPkt2));
   conf_set_int(conf, CONF_sshbug_ignore2, Data->GetBug(sbIgnore2));
   conf_set_int(conf, CONF_sshbug_winadj, Data->GetBug(sbWinAdj));
-  conf_set_int(conf, CONF_sshbug_oldgex2, Data->GetBug[sbOldGex2]));
+  conf_set_int(conf, CONF_sshbug_oldgex2, Data->GetBug(sbOldGex2));
 
   if (!Data->GetTunnelPortFwd().IsEmpty())
   {

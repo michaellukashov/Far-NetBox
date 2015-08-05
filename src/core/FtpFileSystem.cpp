@@ -2417,12 +2417,6 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
   FLastDataSent = Now();
 }
 
-bool TFTPFileSystem::GetTimeZoneDifferenceApplicable(TModificationFmt ModificationFmt) const
-{
-  // Full precision is available for MLST only, so we would not be here.
-  return (ModificationFmt == mfMDHM) || ALWAYS_FALSE(ModificationFmt == mfFull);
-}
-
 void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
 {
   if (!File)
@@ -2749,7 +2743,7 @@ void TFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", nullptr, &Response);
     std::unique_ptr<TStrings> ResponseOwner(Response);
 
-    __int64 UsedBytes = -1;
+    int64_t UsedBytes = -1;
     for (intptr_t Index = 0; Index < Response->GetCount(); Index++)
     {
       // trimming padding

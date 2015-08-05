@@ -1003,14 +1003,14 @@ bool TRemoteFile::GetBrokenLink() const
   // "!FLinkTo.IsEmpty()" removed because it does not work with SFTP
 }
 
-bool TRemoteFile::IsTimeShiftingApplicable() const
+bool TRemoteFile::GetIsTimeShiftingApplicable() const
 {
-  return (ModificationFmt == mfMDHM) || (ModificationFmt == mfFull);
+  return (GetModificationFmt() == mfMDHM) || (GetModificationFmt() == mfFull);
 }
 
-void TRemoteFile::ShiftTimeInSeconds(__int64 Seconds)
+void TRemoteFile::ShiftTimeInSeconds(int64_t Seconds)
 {
-  if ((Seconds != 0) && IsTimeShiftingApplicable())
+  if ((Seconds != 0) && GetIsTimeShiftingApplicable())
   {
     assert(int(FModification) != 0);
     FModification = IncSecond(FModification, Seconds);

@@ -920,7 +920,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       // TimeDifferenceAuto is valid for FTP protocol only.
       // For other protocols it's typically true (default value),
       // but ignored so TimeDifference is still taken into account (SCP only actually)
-      if (FTimeDifferenceAuto && (FSProtocol == fsFTP))
+      if (FTimeDifferenceAuto && (GetFSProtocol() == fsFTP))
       {
         // Have to delete it as TimeDifferenceAuto is not saved when enabled,
         // but the default is derived from value of TimeDifference.
