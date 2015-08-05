@@ -95,7 +95,6 @@ public:
 
   void ShiftTimeInSeconds(int64_t Seconds);
   bool GetIsTimeShiftingApplicable() const;
-  bool GetIsTimeShiftingApplicable() const;
   void Complete();
 
   TRemoteFileList * GetDirectory() const { return FDirectory; }
