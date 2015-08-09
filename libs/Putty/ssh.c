@@ -1930,7 +1930,6 @@ static int s_wrpkt_prepare(Ssh ssh, struct Packet *pkt, int *offset_p)
     volatile
 #endif
     int len;
-
     if (ssh->logctx)
         ssh1_log_outgoing_packet(ssh, pkt);
 
@@ -2240,7 +2239,6 @@ static struct Packet *ssh2_pkt_init(int pkt_type)
 static int ssh2_pkt_construct(Ssh ssh, struct Packet *pkt)
 {
     int cipherblk, maclen, padding, unencrypted_prefix, i;
-
     if (ssh->logctx)
         ssh2_log_outgoing_packet(ssh, pkt);
 
@@ -3671,7 +3669,6 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
             return err;
         }
     }
-
     /*
      * If the SSH version number's fixed, set it now, and if it's SSH-2,
      * send the version string too.
@@ -3691,7 +3688,6 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
 	sfree(*realhost);
 	*realhost = dupstr(loghost);
     }
-
     return NULL;
 }
 
@@ -3718,7 +3714,6 @@ static void ssh_throttle_all(Ssh ssh, int enable, int bufsize)
 {
     int i;
     struct ssh_channel *c;
-
     if (enable == ssh->throttled_all)
 	return;
     ssh->throttled_all = enable;
@@ -4225,7 +4220,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 
 	send_packet(ssh, SSH1_CMSG_USER, PKT_STR, ssh->username, PKT_END);
 	{
-	    char *userlog = dupprintf("Sent username \"%s\"", ssh->username);
+	    char *userlog = dupprintf(MPEXT_BOM "Sent username \"%s\"", ssh->username);
 	    logevent(userlog);
 	    if (flags & FLAG_INTERACTIVE &&
 		(!((flags & FLAG_STDERR) && (flags & FLAG_VERBOSE)))) {
@@ -4251,7 +4246,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
     s->keyfile = conf_get_filename(ssh->conf, CONF_keyfile);
     if (!filename_is_null(s->keyfile)) {
 	int keytype;
-	logeventf(ssh, "Reading key file \"%.150s\"",
+	logeventf(ssh, MPEXT_BOM "Reading key file \"%.150s\"",
 		  filename_to_str(s->keyfile));
 	keytype = key_type(s->keyfile);
 	if (keytype == SSH_KEYTYPE_SSH1 ||
@@ -4268,7 +4263,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 	    } else {
 		char *msgbuf;
 		logeventf(ssh, "Unable to load key (%s)", error);
-		msgbuf = dupprintf("Unable to load key file "
+		msgbuf = dupprintf(MPEXT_BOM "Unable to load key file "
 				   "\"%.150s\" (%s)\r\n",
 				   filename_to_str(s->keyfile),
 				   error);
@@ -6555,10 +6550,10 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 	s->guessok = FALSE;
 	for (i = 0; i < NKEXLIST; i++) {
 	    ssh_pkt_getstring(pktin, &str, &len);
-	    if (!str) {
-		bombout(("KEXINIT packet was incomplete"));
-		crStopV;
-	    }
+        if (!str) {
+            bombout(("KEXINIT packet was incomplete"));
+            crStopV;
+        }
 	    for (j = 0; j < MAXKEXLIST; j++) {
 		struct kexinit_algorithm *alg = &s->kexlists[i][j];
 		if (alg->name == NULL) break;
@@ -6569,7 +6564,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 			if (j != 0 ||
 			    !first_in_commasep_string(alg->name, str, len))
 			    s->guessok = FALSE;
-		    }
+	    }
 		    if (i == KEXLIST_KEX) {
 			ssh->kex = alg->u.kex.kex;
 			s->warn_kex = alg->u.kex.warn;
@@ -6988,7 +6983,6 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
             int kstr1len, kstr2len, outstrlen;
 
             s->K = bn_power_2(nbits - 1);
-
             for (i = 0; i < nbits; i++) {
                 if ((i & 7) == 0) {
                     byte = random_byte();

@@ -3,6 +3,26 @@
  * defined in storage.h.
  */
 
+#ifdef MPEXT
+
+#include "puttyexp.h"
+
+#undef RegOpenKey
+#undef RegCreateKey
+#undef RegCreateKey
+#undef RegQueryValueEx
+#undef RegSetValueEx
+#undef RegCloseKey
+
+#define RegOpenKey reg_open_winscp_key
+#define RegCreateKey reg_create_winscp_key
+#define RegCreateKey reg_create_winscp_key
+#define RegQueryValueEx reg_query_winscp_value_ex
+#define RegSetValueEx reg_set_winscp_value_ex
+#define RegCloseKey reg_close_winscp_key
+
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>

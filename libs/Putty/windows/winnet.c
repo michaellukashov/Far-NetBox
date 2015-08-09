@@ -216,7 +216,6 @@ static HMODULE wship6_module = NULL;
 int sk_startup(int hi, int lo)
 {
     WORD winsock_ver;
-
     winsock_ver = MAKEWORD(hi, lo);
 
     if (p_WSAStartup(winsock_ver, &wsadata)) {
@@ -512,7 +511,6 @@ SockAddr sk_namelookup(const char *host, char **canonicalname,
     unsigned long a;
     char realhost[8192];
     int hint_family;
-
     /* Default to IPv4. */
     hint_family = (address_family == ADDRTYPE_IPV4 ? AF_INET :
 #ifndef NO_IPV6
@@ -530,7 +528,6 @@ SockAddr sk_namelookup(const char *host, char **canonicalname,
     ret->resolved = FALSE;
     ret->refcount = 1;
     *realhost = '\0';
-
     if ((a = p_inet_addr(host)) == (unsigned long) INADDR_NONE) {
 	struct hostent *h = NULL;
 	int err;
@@ -909,7 +906,6 @@ static Socket sk_tcp_accept(accept_ctx_t ctx, Plug plug)
     DWORD err;
     char *errstr;
     Actual_Socket ret;
-
     /*
      * Create Socket structure.
      */
@@ -951,7 +947,6 @@ static Socket sk_tcp_accept(accept_ctx_t ctx, Plug plug)
     }
 
     add234(sktree, ret);
-
     return (Socket) ret;
 }
 
@@ -974,7 +969,6 @@ static DWORD try_connect(Actual_Socket sock,
 #ifdef MPEXT
     struct timeval rcvtimeo;
 #endif
-
     if (sock->s != INVALID_SOCKET) {
 #ifdef MPEXT
 	do_select(sock->plug, sock->s, 0);
@@ -983,7 +977,6 @@ static DWORD try_connect(Actual_Socket sock,
 #endif
         p_closesocket(sock->s);
     }
-
     plug_log(sock->plug, 0, sock->addr, sock->port, NULL, 0);
 
     /*
@@ -998,7 +991,6 @@ static DWORD try_connect(Actual_Socket sock,
      * function, whether we changed anything or not.
      */
     del234(sktree, sock);
-
     s = p_socket(family, SOCK_STREAM, 0);
     sock->s = s;
 
@@ -1007,7 +999,6 @@ static DWORD try_connect(Actual_Socket sock,
 	sock->error = winsock_error_string(err);
 	goto ret;
     }
-
     if (sock->oobinline) {
 	BOOL b = TRUE;
 	p_setsockopt(s, SOL_SOCKET, SO_OOBINLINE, (void *) &b, sizeof(b));
@@ -1040,7 +1031,6 @@ static DWORD try_connect(Actual_Socket sock,
 	localport = 1023;	       /* count from 1023 downwards */
     else
 	localport = 0;		       /* just use port 0 (ie winsock picks) */
-
     /* Loop round trying to bind */
     while (1) {
 	int sockcode;
@@ -1074,14 +1064,12 @@ static DWORD try_connect(Actual_Socket sock,
 	    if (err != WSAEADDRINUSE)  /* failed, for a bad reason */
 		break;
 	}
-
 	if (localport == 0)
 	    break;		       /* we're only looping once */
 	localport--;
 	if (localport == 0)
 	    break;		       /* we might have got to the end */
     }
-
     if (err) {
 	sock->error = winsock_error_string(err);
 	goto ret;
@@ -1141,7 +1129,6 @@ static DWORD try_connect(Actual_Socket sock,
         }
     }
 #endif
-
     if ((
 #ifndef NO_IPV6
 	    p_connect(s,
@@ -1180,7 +1167,6 @@ static DWORD try_connect(Actual_Socket sock,
     {
         p_setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (void *) &rcvtimeo, sizeof(rcvtimeo));
     }
-
     // MP: Calling EventSelect only after connect makes sure we receive FD_CLOSE.
     /* Set up a select mechanism. This could be an AsyncSelect on a
      * window, or an EventSelect on an event object. */
@@ -1200,7 +1186,6 @@ static DWORD try_connect(Actual_Socket sock,
      * No matter what happened, put the socket back in the tree.
      */
     add234(sktree, sock);
-
     if (err)
 	{
 	plug_log(sock->plug, 1, sock->addr, sock->port, sock->error, err);
@@ -1230,7 +1215,6 @@ Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
 
     Actual_Socket ret;
     DWORD err;
-
     /*
      * Create Socket structure.
      */
@@ -1256,7 +1240,6 @@ Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
     ret->addr = addr;
     START_STEP(ret->addr, ret->step);
     ret->s = INVALID_SOCKET;
-
     err = 0;
     do {
 #ifdef MPEXT
@@ -1268,7 +1251,6 @@ Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
 #endif
         );
     } while (err && sk_nextaddr(ret->addr, &ret->step));
-
     return (Socket) ret;
 }
 
