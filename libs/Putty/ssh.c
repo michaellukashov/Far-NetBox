@@ -2314,13 +2314,13 @@ static int ssh2_pkt_construct(Ssh ssh, struct Packet *pkt)
         /*
          * SSH-2 standard protocol.
          */
-    if (ssh->csmac)
-	ssh->csmac->generate(ssh->cs_mac_ctx, pkt->data,
-			     pkt->length + padding,
-			     ssh->v2_outgoing_sequence);
-    if (ssh->cscipher)
-	ssh->cscipher->encrypt(ssh->cs_cipher_ctx,
-			       pkt->data, pkt->length + padding);
+        if (ssh->csmac)
+            ssh->csmac->generate(ssh->cs_mac_ctx, pkt->data,
+                                 pkt->length + padding,
+                                 ssh->v2_outgoing_sequence);
+        if (ssh->cscipher)
+            ssh->cscipher->encrypt(ssh->cs_cipher_ctx,
+                                   pkt->data, pkt->length + padding);
     }
 
     ssh->v2_outgoing_sequence++;       /* whether or not we MACed */
@@ -3661,9 +3661,10 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
             return err;
         }
         ssh->fullhostname = dupstr(*realhost);   /* save in case of GSSAPI */
-    ssh->s = new_connection(addr, *realhost, port,
-			    0, 1, nodelay, keepalive,
-                               (Plug) ssh, ssh->conf);
+
+        ssh->s = new_connection(addr, *realhost, port,
+                                0, 1, nodelay, keepalive,
+                                (Plug) ssh, ssh->conf);
         if ((err = sk_socket_error(ssh->s)) != NULL) {
             ssh->s = NULL;
             notify_remote_exit(ssh->frontend);
@@ -4263,7 +4264,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
                 if (!s->privatekey_available)
                     logeventf(ssh, "Key file contains public key only");
 		s->privatekey_encrypted = rsakey_encrypted(s->keyfile,
-							  NULL);
+                                                           NULL);
 	    } else {
 		char *msgbuf;
 		logeventf(ssh, "Unable to load key (%s)", error);
@@ -6424,7 +6425,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 		alg = ssh2_kexinit_addalg(s->kexlists[KEXLIST_HOSTKEY],
 					  hostkey_algs[i]->name);
 		alg->u.hostkey = hostkey_algs[i];
-            }
+	    }
         } else {
             /*
              * In subsequent key exchanges, we list only the kex
@@ -6482,19 +6483,19 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 	     * this function. */
 	    if (s->userauth_succeeded && s->preferred_comp->delayed_name) {
 		alg = ssh2_kexinit_addalg(s->kexlists[j],
-				       s->preferred_comp->delayed_name);
+					  s->preferred_comp->delayed_name);
 		alg->u.comp = s->preferred_comp;
 	    }
 	    for (i = 0; i < lenof(compressions); i++) {
 		const struct ssh_compress *c = compressions[i];
 		alg = ssh2_kexinit_addalg(s->kexlists[j], c->name);
 		alg->u.comp = c;
-		    if (s->userauth_succeeded && c->delayed_name) {
+		if (s->userauth_succeeded && c->delayed_name) {
 		    alg = ssh2_kexinit_addalg(s->kexlists[j], c->delayed_name);
 		    alg->u.comp = c;
 		}
-		    }
-		}
+	    }
+	}
 	/*
 	 * Construct and send our key exchange packet.
 	 */
@@ -6554,10 +6555,10 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 	s->guessok = FALSE;
 	for (i = 0; i < NKEXLIST; i++) {
 	    ssh_pkt_getstring(pktin, &str, &len);
-        if (!str) {
-            bombout(("KEXINIT packet was incomplete"));
-            crStopV;
-        }
+	    if (!str) {
+		bombout(("KEXINIT packet was incomplete"));
+		crStopV;
+	    }
 	    for (j = 0; j < MAXKEXLIST; j++) {
 		struct kexinit_algorithm *alg = &s->kexlists[i][j];
 		if (alg->name == NULL) break;
@@ -6568,7 +6569,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 			if (j != 0 ||
 			    !first_in_commasep_string(alg->name, str, len))
 			    s->guessok = FALSE;
-	    }
+		    }
 		    if (i == KEXLIST_KEX) {
 			ssh->kex = alg->u.kex.kex;
 			s->warn_kex = alg->u.kex.warn;
@@ -6590,13 +6591,13 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 			s->cscomp_tobe = alg->u.comp;
 		    } else if (i == KEXLIST_SCCOMP) {
 			s->sccomp_tobe = alg->u.comp;
-	}
+		    }
 		    goto matched;
-	}
+		}
 		if ((i == KEXLIST_CSCOMP || i == KEXLIST_SCCOMP) &&
 		    in_commasep_string(alg->u.comp->delayed_name, str, len))
 		    s->pending_compression = TRUE;  /* try this later */
-	}
+	    }
 	    bombout(("Couldn't agree a %s ((available: %.*s)",
 		     kexlist_descr[i], len, str));
 	    crStopV;
@@ -6607,11 +6608,11 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
         if (s->cscipher_tobe && s->cscipher_tobe->required_mac) {
             s->csmac_tobe = s->cscipher_tobe->required_mac;
 	    s->csmac_etm_tobe = !!(s->csmac_tobe->etm_name);
-	    }
+        }
         if (s->sccipher_tobe && s->sccipher_tobe->required_mac) {
             s->scmac_tobe = s->sccipher_tobe->required_mac;
 	    s->scmac_etm_tobe = !!(s->scmac_tobe->etm_name);
-	}
+        }
 
 	if (s->pending_compression) {
 	    logevent("Server supports delayed compression; "
@@ -9396,11 +9397,20 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		s->can_keyb_inter = conf_get_int(ssh->conf, CONF_try_ki_auth) &&
 		    in_commasep_string("keyboard-interactive", methods, methlen);
 #ifndef NO_GSSAPI
-		if (!ssh->gsslibs)
-		    ssh->gsslibs = ssh_gss_setup(ssh->conf);
-		s->can_gssapi = conf_get_int(ssh->conf, CONF_try_gssapi_auth) &&
-		    in_commasep_string("gssapi-with-mic", methods, methlen) &&
-		    ssh->gsslibs->nlibraries > 0;
+                if (conf_get_int(ssh->conf, CONF_try_gssapi_auth) &&
+		    in_commasep_string("gssapi-with-mic", methods, methlen)) {
+                    /* Try loading the GSS libraries and see if we
+                     * have any. */
+                    if (!ssh->gsslibs)
+                        ssh->gsslibs = ssh_gss_setup(ssh->conf);
+                    s->can_gssapi = (ssh->gsslibs->nlibraries > 0);
+                } else {
+                    /* No point in even bothering to try to load the
+                     * GSS libraries, if the user configuration and
+                     * server aren't both prepared to attempt GSSAPI
+                     * auth in the first place. */
+                    s->can_gssapi = FALSE;
+                }
 #endif
 	    }
 

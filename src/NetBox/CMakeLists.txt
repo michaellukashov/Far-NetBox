@@ -330,7 +330,7 @@ add_library(putty STATIC
   ${LIBS_ROOT}/Putty/logging.c
   ${LIBS_ROOT}/Putty/misc.c
   ${LIBS_ROOT}/Putty/pgssapi.c
-  ${LIBS_ROOT}/Putty/portfwd_.c
+  ${LIBS_ROOT}/Putty/portfwd.c
   ${LIBS_ROOT}/Putty/proxy.c
   ${LIBS_ROOT}/Putty/ssh.c
   ${LIBS_ROOT}/Putty/sshaes.c

@@ -185,7 +185,7 @@
     <ClCompile Include=".\LOGGING.c" />
     <ClCompile Include=".\MISC.c" />
     <ClCompile Include=".\PGSSAPI.c" />
-    <ClCompile Include=".\PORTFWD_.c" />
+    <ClCompile Include=".\PORTFWD.c" />
     <ClCompile Include=".\PROXY.c" />
     <ClCompile Include=".\SSH.c" />
     <ClCompile Include=".\SSHAES.c" />
