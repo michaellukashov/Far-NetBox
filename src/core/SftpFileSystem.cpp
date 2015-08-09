@@ -3484,7 +3484,10 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           }
         }
 
-        if ((FVersion >= 6) && ListingPacket.CanGetBool())
+        if ((FVersion >= 6) &&
+            // As of 7.0.9 the Cerberus SFTP server always sets the end-of-list to true.
+            (FSecureShell->GetSshImplementation() != sshiCerberus) &&
+            ListingPacket.CanGetBool())
         {
           isEOF = ListingPacket.GetBool();
         }

@@ -22,6 +22,8 @@ enum TSshImplementation
   sshiProFTPD,
   sshiBitvise,
   sshiTitan,
+  sshiOpenVMS,
+  sshiCerberus,
 };
 
 class TSecureShell : public TObject

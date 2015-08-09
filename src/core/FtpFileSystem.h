@@ -214,7 +214,6 @@ protected:
   bool SupportsReadingFile() const;
   void AutoDetectTimeDifference(TRemoteFileList * FileList);
   void ApplyTimeDifference(TRemoteFile * File);
-  bool GetTimeZoneDifferenceApplicable(TModificationFmt ModificationFmt) const;
   UnicodeString DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString & Alg, TRemoteFile * File);
   void DoCalculateFilesChecksum(bool UsingHashCommand, const UnicodeString & Alg,
     TStrings * FileList, TStrings * Checksums,
