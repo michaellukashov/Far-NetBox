@@ -3403,7 +3403,7 @@ void TTerminal::DeleteLocalFile(const UnicodeString & AFileName,
   }
   else
   {
-    GetOnDeleteLocalFile()(AFileName, FLAGSET(*(static_cast<int *>(Params)), dfAlternative));
+    GetOnDeleteLocalFile()(AFileName, FLAGSET(*(static_cast<intptr_t *>(Params)), dfAlternative));
   }
 }
 
