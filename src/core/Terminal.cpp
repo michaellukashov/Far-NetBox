@@ -3337,7 +3337,7 @@ void TTerminal::RemoteDeleteFile(const UnicodeString & AFileName,
     }
     GetOperationProgress()->SetFile(FileName);
   }
-  intptr_t Params = (AParams != nullptr) ? *(static_cast<int *>(AParams)) : 0;
+  intptr_t Params = (AParams != nullptr) ? *(static_cast<intptr_t *>(AParams)) : 0;
   bool Recycle =
     FLAGCLEAR(Params, dfForceDelete) &&
     (GetSessionData()->GetDeleteToRecycleBin() != FLAGSET(Params, dfAlternative)) &&
