@@ -2745,12 +2745,12 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPER
       // editor should be closed already
       assert(FLastEditorID < 0);
 
-      if (GetFarConfiguration()->GetEditorUploadOnSave())
+      /*if (GetFarConfiguration()->GetEditorUploadOnSave())
       {
         // already uploaded from EE_REDRAW
         Result = -1;
       }
-      else
+      else*/
       {
         // just in case file was saved under different name
         FFileList->SetString(0, FLastEditFile);
