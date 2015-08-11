@@ -67,7 +67,7 @@ bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function)
   return (Function == hfProcessKey || Function == hfProcessEvent);
 }
 
-intptr_t TWinSCPPlugin::GetMinFarVersion()
+intptr_t TWinSCPPlugin::GetMinFarVersion() const
 {
   return MAKEFARVERSION(2, 0, 1667);
 }

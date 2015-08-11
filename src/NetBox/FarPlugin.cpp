@@ -95,7 +95,7 @@ bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/)
   return false;
 }
 
-intptr_t TCustomFarPlugin::GetMinFarVersion()
+intptr_t TCustomFarPlugin::GetMinFarVersion() const
 {
   return 0;
 }
