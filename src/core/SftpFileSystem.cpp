@@ -1617,8 +1617,8 @@ protected:
   }
 
   virtual void ReceiveResponse(
-    const TSFTPPacket * Packet, TSFTPPacket * Response, int ExpectedType,
-    int AllowStatus)
+    const TSFTPPacket * Packet, TSFTPPacket * Response, intptr_t ExpectedType = -1,
+    intptr_t AllowStatus = -1)
   {
     TSFTPAsynchronousQueue::ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
     // particularly when uploading a file that completelly fits into send buffer
