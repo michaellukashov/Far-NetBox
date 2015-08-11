@@ -189,7 +189,7 @@
     <ClCompile Include=".\LOGGING.c" />
     <ClCompile Include=".\MISC.c" />
     <ClCompile Include=".\PGSSAPI.c" />
-    <ClCompile Include=".\PORTFWD_.c" />
+    <ClCompile Include=".\PORTFWD.c" />
     <ClCompile Include=".\PROXY.c" />
     <ClCompile Include=".\SSH.c" />
     <ClCompile Include=".\SSHAES.c" />
@@ -222,7 +222,7 @@
     <ClCompile Include=".\windows\WINNOJMP.c" />
     <ClCompile Include=".\windows\WINPGNTC.c" />
     <ClCompile Include=".\windows\WINPROXY.c" />
-    <ClCompile Include=".\windows\WINSTORE_.c" />
+    <ClCompile Include=".\windows\WINSTORE.c" />
     <ClCompile Include=".\windows\WINTIME.c" />
     <ClCompile Include=".\X11FWD.c" />
     <ClCompile Include=".\CONF.c" />
