@@ -93,7 +93,8 @@ public:
   virtual ~TRemoteFile();
   TRemoteFile * Duplicate(bool Standalone = true) const;
 
-  void ShiftTime(const TDateTime & Difference);
+  void ShiftTimeInSeconds(int64_t Seconds);
+  bool GetIsTimeShiftingApplicable() const;
   void Complete();
 
   TRemoteFileList * GetDirectory() const { return FDirectory; }

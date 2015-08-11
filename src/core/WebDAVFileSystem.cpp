@@ -12036,6 +12036,7 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   FFileList(nullptr),
   FOnCaptureOutput(nullptr),
   FIgnoreAuthenticationFailure(iafNo),
+  FPortNumber(0),
   FStoredPasswordTried(false),
   FPasswordFailed(false),
   FActive(false),

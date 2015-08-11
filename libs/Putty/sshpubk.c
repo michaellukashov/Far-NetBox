@@ -309,6 +309,9 @@ int rsakey_pubblob(const Filename *filename, void **blob, int *bloblen,
             *commentptr = commentp ? dupstr(commentp) : NULL;
         *blob = rsa_public_blob(&key, bloblen);
         freersakey(&key);
+        if (fp)
+          fclose(fp);
+        sfree(line);
         return 1;
 
       not_public_either:
@@ -377,7 +380,6 @@ int saversakey(const Filename *filename, struct RSAKey *key, char *passphrase)
      * The encrypted portion starts here.
      */
     estart = p;
-
     /*
      * Two bytes, then the same two bytes repeated.
      */
@@ -1090,6 +1092,7 @@ unsigned char *openssh_loadpub(FILE *fp, char **algorithm,
         *commentptr = comment;
     else
         sfree(comment);
+    sfree(line);
     return pubblob;
 
   error:

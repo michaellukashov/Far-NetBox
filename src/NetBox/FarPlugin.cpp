@@ -95,7 +95,7 @@ bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/)
   return false;
 }
 
-VersionInfo TCustomFarPlugin::GetMinFarVersion()
+VersionInfo TCustomFarPlugin::GetMinFarVersion() const
 {
   return MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
 }

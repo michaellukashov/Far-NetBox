@@ -94,7 +94,7 @@ NB_DECLARE_CLASS(TCustomFarPlugin)
 public:
   explicit TCustomFarPlugin(HINSTANCE HInst);
   virtual ~TCustomFarPlugin();
-  virtual VersionInfo GetMinFarVersion();
+  virtual VersionInfo GetMinFarVersion() const;
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info);
   virtual const struct PluginStartupInfo * GetPluginStartupInfo() const { return &FStartupInfo; }
   virtual void ExitFAR();

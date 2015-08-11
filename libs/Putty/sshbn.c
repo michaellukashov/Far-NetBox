@@ -45,6 +45,8 @@ static Bignum newbn(int length)
     assert(length >= 0 && length < INT_MAX / BIGNUM_INT_BITS);
 
     b = snewn(length + 1, BignumInt);
+    if (!b)
+	abort();		       /* FIXME */
     memset(b, 0, (length + 1) * sizeof(*b));
     b[0] = length;
     return b;
@@ -1175,7 +1177,7 @@ Bignum bignum_from_decimal(const char *decimal)
     Bignum result = copybn(Zero);
 
     while (*decimal) {
-        Bignum tmp, tmp2;
+        Bignum tmp, tmp2, tmp3;
 
         if (!isdigit((unsigned char)*decimal)) {
             freebn(result);
@@ -1184,9 +1186,11 @@ Bignum bignum_from_decimal(const char *decimal)
 
         tmp = bigmul(result, Ten);
         tmp2 = bignum_from_long(*decimal - '0');
+        tmp3 = result;
         result = bigadd(tmp, tmp2);
         freebn(tmp);
         freebn(tmp2);
+        freebn(tmp3);
 
         decimal++;
     }

@@ -344,7 +344,7 @@ static unsigned share_find_unused_id
     while (high - low > 1) {
 	mid = (high + low) / 2;
 	cs = index234(sharestate->connections, mid);
-	if (cs->id == first + (mid - low_orig))
+	if (cs && cs->id == first + (mid - low_orig))
 	    low = mid;		       /* this one is still in the sequence */
 	else
 	    high = mid;		       /* this one is past the end */

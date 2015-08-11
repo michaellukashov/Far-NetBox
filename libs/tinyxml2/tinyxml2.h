@@ -30,14 +30,12 @@ distribution.
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
-#   include <stdarg.h>
 #else
 #   include <cctype>
 #   include <climits>
 #   include <cstdio>
 #   include <cstdlib>
 #   include <cstring>
-#   include <cstdarg>
 #endif
 
 /*
@@ -571,7 +569,7 @@ public:
         return false;
     }
     
-    inline static bool IsUTF8Continuation( const char p ) {
+    inline static bool IsUTF8Continuation( char p ) {
         return ( p & 0x80 ) != 0;
     }
 

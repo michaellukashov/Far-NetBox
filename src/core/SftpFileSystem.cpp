@@ -1617,8 +1617,8 @@ protected:
   }
 
   virtual void ReceiveResponse(
-    const TSFTPPacket * Packet, TSFTPPacket * Response, int ExpectedType,
-    int AllowStatus)
+    const TSFTPPacket * Packet, TSFTPPacket * Response, intptr_t ExpectedType = -1,
+    intptr_t AllowStatus = -1)
   {
     TSFTPAsynchronousQueue::ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
     // particularly when uploading a file that completelly fits into send buffer
@@ -3484,7 +3484,10 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           }
         }
 
-        if ((FVersion >= 6) && ListingPacket.CanGetBool())
+        if ((FVersion >= 6) &&
+            // As of 7.0.9 the Cerberus SFTP server always sets the end-of-list to true.
+            (FSecureShell->GetSshImplementation() != sshiCerberus) &&
+            ListingPacket.CanGetBool())
         {
           isEOF = ListingPacket.GetBool();
         }

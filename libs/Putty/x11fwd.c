@@ -938,6 +938,10 @@ int x11_send(struct X11Connection *xconn, char *data, int len)
          * auth data.
 	 */
 
+        #ifdef MPEXT
+        // placate compiler warning
+        socketdatalen = 0;
+        #endif
         socketdata = sk_getxdmdata(xconn->s, &socketdatalen);
         if (socketdata && socketdatalen==6) {
             sprintf(new_peer_addr, "%d.%d.%d.%d", socketdata[0],

@@ -1930,7 +1930,6 @@ static int s_wrpkt_prepare(Ssh ssh, struct Packet *pkt, int *offset_p)
     volatile
 #endif
     int len;
-
     if (ssh->logctx)
         ssh1_log_outgoing_packet(ssh, pkt);
 
@@ -2240,7 +2239,6 @@ static struct Packet *ssh2_pkt_init(int pkt_type)
 static int ssh2_pkt_construct(Ssh ssh, struct Packet *pkt)
 {
     int cipherblk, maclen, padding, unencrypted_prefix, i;
-
     if (ssh->logctx)
         ssh2_log_outgoing_packet(ssh, pkt);
 
@@ -2314,13 +2312,13 @@ static int ssh2_pkt_construct(Ssh ssh, struct Packet *pkt)
         /*
          * SSH-2 standard protocol.
          */
-    if (ssh->csmac)
-	ssh->csmac->generate(ssh->cs_mac_ctx, pkt->data,
-			     pkt->length + padding,
-			     ssh->v2_outgoing_sequence);
-    if (ssh->cscipher)
-	ssh->cscipher->encrypt(ssh->cs_cipher_ctx,
-			       pkt->data, pkt->length + padding);
+        if (ssh->csmac)
+            ssh->csmac->generate(ssh->cs_mac_ctx, pkt->data,
+                                 pkt->length + padding,
+                                 ssh->v2_outgoing_sequence);
+        if (ssh->cscipher)
+            ssh->cscipher->encrypt(ssh->cs_cipher_ctx,
+                                   pkt->data, pkt->length + padding);
     }
 
     ssh->v2_outgoing_sequence++;       /* whether or not we MACed */
@@ -3661,16 +3659,16 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
             return err;
         }
         ssh->fullhostname = dupstr(*realhost);   /* save in case of GSSAPI */
-    ssh->s = new_connection(addr, *realhost, port,
-			    0, 1, nodelay, keepalive,
-                               (Plug) ssh, ssh->conf);
+
+        ssh->s = new_connection(addr, *realhost, port,
+                                0, 1, nodelay, keepalive,
+                                (Plug) ssh, ssh->conf);
         if ((err = sk_socket_error(ssh->s)) != NULL) {
             ssh->s = NULL;
             notify_remote_exit(ssh->frontend);
             return err;
         }
     }
-
     /*
      * If the SSH version number's fixed, set it now, and if it's SSH-2,
      * send the version string too.
@@ -3690,7 +3688,6 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
 	sfree(*realhost);
 	*realhost = dupstr(loghost);
     }
-
     return NULL;
 }
 
@@ -3717,7 +3714,6 @@ static void ssh_throttle_all(Ssh ssh, int enable, int bufsize)
 {
     int i;
     struct ssh_channel *c;
-
     if (enable == ssh->throttled_all)
 	return;
     ssh->throttled_all = enable;
@@ -4224,7 +4220,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 
 	send_packet(ssh, SSH1_CMSG_USER, PKT_STR, ssh->username, PKT_END);
 	{
-	    char *userlog = dupprintf("Sent username \"%s\"", ssh->username);
+	    char *userlog = dupprintf(MPEXT_BOM "Sent username \"%s\"", ssh->username);
 	    logevent(userlog);
 	    if (flags & FLAG_INTERACTIVE &&
 		(!((flags & FLAG_STDERR) && (flags & FLAG_VERBOSE)))) {
@@ -4250,7 +4246,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
     s->keyfile = conf_get_filename(ssh->conf, CONF_keyfile);
     if (!filename_is_null(s->keyfile)) {
 	int keytype;
-	logeventf(ssh, "Reading key file \"%.150s\"",
+	logeventf(ssh, MPEXT_BOM "Reading key file \"%.150s\"",
 		  filename_to_str(s->keyfile));
 	keytype = key_type(s->keyfile);
 	if (keytype == SSH_KEYTYPE_SSH1 ||
@@ -4263,11 +4259,11 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
                 if (!s->privatekey_available)
                     logeventf(ssh, "Key file contains public key only");
 		s->privatekey_encrypted = rsakey_encrypted(s->keyfile,
-							  NULL);
+                                                           NULL);
 	    } else {
 		char *msgbuf;
 		logeventf(ssh, "Unable to load key (%s)", error);
-		msgbuf = dupprintf("Unable to load key file "
+		msgbuf = dupprintf(MPEXT_BOM "Unable to load key file "
 				   "\"%.150s\" (%s)\r\n",
 				   filename_to_str(s->keyfile),
 				   error);
@@ -4679,7 +4675,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 		continue;
 	    } else {
 		char *challenge;
-		int challengelen;
+		int challengelen = 0;
 		char *instr_suf, *prompt;
 
 		ssh_pkt_getstring(pktin, &challenge, &challengelen);
@@ -5455,7 +5451,7 @@ static void ssh_setup_portfwd(Ssh ssh, Conf *conf)
 static void ssh1_smsg_stdout_stderr_data(Ssh ssh, struct Packet *pktin)
 {
     char *string;
-    int stringlen, bufsize;
+    int stringlen = 0, bufsize = 0;
 
     ssh_pkt_getstring(pktin, &string, &stringlen);
     if (string == NULL) {
@@ -6424,7 +6420,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 		alg = ssh2_kexinit_addalg(s->kexlists[KEXLIST_HOSTKEY],
 					  hostkey_algs[i]->name);
 		alg->u.hostkey = hostkey_algs[i];
-            }
+	    }
         } else {
             /*
              * In subsequent key exchanges, we list only the kex
@@ -6482,19 +6478,19 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 	     * this function. */
 	    if (s->userauth_succeeded && s->preferred_comp->delayed_name) {
 		alg = ssh2_kexinit_addalg(s->kexlists[j],
-				       s->preferred_comp->delayed_name);
+					  s->preferred_comp->delayed_name);
 		alg->u.comp = s->preferred_comp;
 	    }
 	    for (i = 0; i < lenof(compressions); i++) {
 		const struct ssh_compress *c = compressions[i];
 		alg = ssh2_kexinit_addalg(s->kexlists[j], c->name);
 		alg->u.comp = c;
-		    if (s->userauth_succeeded && c->delayed_name) {
+		if (s->userauth_succeeded && c->delayed_name) {
 		    alg = ssh2_kexinit_addalg(s->kexlists[j], c->delayed_name);
 		    alg->u.comp = c;
 		}
-		    }
-		}
+	    }
+	}
 	/*
 	 * Construct and send our key exchange packet.
 	 */
@@ -6533,7 +6529,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
      */
     {
 	char *str;
-	int i, j, len;
+	int i, j, len = 0;
 
 	if (pktin->type != SSH2_MSG_KEXINIT) {
 	    bombout(("expected key exchange packet from server"));
@@ -6590,13 +6586,13 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 			s->cscomp_tobe = alg->u.comp;
 		    } else if (i == KEXLIST_SCCOMP) {
 			s->sccomp_tobe = alg->u.comp;
-	}
+		    }
 		    goto matched;
-	}
+		}
 		if ((i == KEXLIST_CSCOMP || i == KEXLIST_SCCOMP) &&
 		    in_commasep_string(alg->u.comp->delayed_name, str, len))
 		    s->pending_compression = TRUE;  /* try this later */
-	}
+	    }
 	    bombout(("Couldn't agree a %s ((available: %.*s)",
 		     kexlist_descr[i], len, str));
 	    crStopV;
@@ -6607,11 +6603,11 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
         if (s->cscipher_tobe && s->cscipher_tobe->required_mac) {
             s->csmac_tobe = s->cscipher_tobe->required_mac;
 	    s->csmac_etm_tobe = !!(s->csmac_tobe->etm_name);
-	    }
+        }
         if (s->sccipher_tobe && s->sccipher_tobe->required_mac) {
             s->scmac_tobe = s->sccipher_tobe->required_mac;
 	    s->scmac_etm_tobe = !!(s->scmac_tobe->etm_name);
-	}
+        }
 
 	if (s->pending_compression) {
 	    logevent("Server supports delayed compression; "
@@ -6987,7 +6983,6 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
             int kstr1len, kstr2len, outstrlen;
 
             s->K = bn_power_2(nbits - 1);
-
             for (i = 0; i < nbits; i++) {
                 if ((i & 7) == 0) {
                     byte = random_byte();
@@ -8465,7 +8460,7 @@ static void ssh2_msg_channel_open(Ssh ssh, struct Packet *pktin)
     char *type;
     int typelen;
     char *peeraddr;
-    int peeraddrlen;
+    int peeraddrlen = 0;
     int peerport;
     const char *error = NULL;
     struct ssh_channel *c;
@@ -9344,7 +9339,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		     * Additionally, if we'd just tried password
 		     * authentication, we should break out of this
 		     * whole loop so as to go back to the username
-		     * prompt (iff we're configured to allow
+		     * prompt (if we're configured to allow
 		     * username change attempts).
 		     */
 		    if (s->type == AUTH_TYPE_NONE) {
@@ -9396,11 +9391,20 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		s->can_keyb_inter = conf_get_int(ssh->conf, CONF_try_ki_auth) &&
 		    in_commasep_string("keyboard-interactive", methods, methlen);
 #ifndef NO_GSSAPI
-		if (!ssh->gsslibs)
-		    ssh->gsslibs = ssh_gss_setup(ssh->conf);
-		s->can_gssapi = conf_get_int(ssh->conf, CONF_try_gssapi_auth) &&
-		    in_commasep_string("gssapi-with-mic", methods, methlen) &&
-		    ssh->gsslibs->nlibraries > 0;
+                if (conf_get_int(ssh->conf, CONF_try_gssapi_auth) &&
+		    in_commasep_string("gssapi-with-mic", methods, methlen)) {
+                    /* Try loading the GSS libraries and see if we
+                     * have any. */
+                    if (!ssh->gsslibs)
+                        ssh->gsslibs = ssh_gss_setup(ssh->conf);
+                    s->can_gssapi = (ssh->gsslibs->nlibraries > 0);
+                } else {
+                    /* No point in even bothering to try to load the
+                     * GSS libraries, if the user configuration and
+                     * server aren't both prepared to attempt GSSAPI
+                     * auth in the first place. */
+                    s->can_gssapi = FALSE;
+                }
 #endif
 	    }
 

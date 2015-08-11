@@ -1012,7 +1012,7 @@ static struct ec_point *ecp_addw(const struct ec_point *a,
             outz = modmul(H, a->z, a->curve->p);
             freebn(H);
         } else if (b->z) {
-            outz = modmul(H, b->z, a->curve->p);
+            outz = modmul(H, b->z, b->curve->p);
             freebn(H);
         } else {
             outz = H;
@@ -1626,7 +1626,7 @@ static Bignum getmp(const char **data, int *datalen)
 static Bignum getmp_le(const char **data, int *datalen)
 {
     const char *p;
-    int length;
+    int length = 0;
 
     getstring(data, datalen, &p, &length);
     if (!p)
@@ -1713,7 +1713,7 @@ static int decodepoint(const char *p, int length, struct ec_point *point)
 static int getmppoint(const char **data, int *datalen, struct ec_point *point)
 {
     const char *p;
-    int length;
+    int length = 0;
 
     getstring(data, datalen, &p, &length);
     if (!p) return 0;
@@ -2002,7 +2002,7 @@ static void *ed25519_openssh_createkey(const struct ssh_signkey *self,
     struct ec_key *ec;
     struct ec_point *publicKey;
     const char *p, *q;
-    int plen, qlen;
+    int plen = 0, qlen = 0;
 
     getstring((const char**)blob, len, &p, &plen);
     if (!p)
@@ -2028,9 +2028,15 @@ static void *ed25519_openssh_createkey(const struct ssh_signkey *self,
 
     getstring((const char**)blob, len, &q, &qlen);
     if (!q)
+    {
+        ecdsa_freekey(ec);
         return NULL;
+     }
     if (qlen != 64)
+    {
+        ecdsa_freekey(ec);
         return NULL;
+    }
 
     ec->privateKey = bignum_from_bytes_le((const unsigned char *)q, 32);
 

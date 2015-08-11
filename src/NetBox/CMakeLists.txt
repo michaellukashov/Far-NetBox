@@ -330,7 +330,7 @@ add_library(putty STATIC
   ${LIBS_ROOT}/Putty/logging.c
   ${LIBS_ROOT}/Putty/misc.c
   ${LIBS_ROOT}/Putty/pgssapi.c
-  ${LIBS_ROOT}/Putty/portfwd_.c
+  ${LIBS_ROOT}/Putty/portfwd.c
   ${LIBS_ROOT}/Putty/proxy.c
   ${LIBS_ROOT}/Putty/ssh.c
   ${LIBS_ROOT}/Putty/sshaes.c
@@ -361,7 +361,7 @@ add_library(putty STATIC
   ${LIBS_ROOT}/Putty/windows/winnojmp.c
   ${LIBS_ROOT}/Putty/windows/winpgntc.c
   ${LIBS_ROOT}/Putty/windows/winproxy.c
-  ${LIBS_ROOT}/Putty/windows/winstore_.c
+  ${LIBS_ROOT}/Putty/windows/winstore.c
   ${LIBS_ROOT}/Putty/windows/wintime.c
   ${LIBS_ROOT}/Putty/windows/winhsock.c
   ${LIBS_ROOT}/Putty/x11fwd.c

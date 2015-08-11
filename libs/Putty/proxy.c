@@ -371,7 +371,6 @@ SockAddr name_lookup(const char *host, int port, char **canonicalname,
 	*canonicalname = dupstr(host);
 	return sk_nonamelookup(host);
     }
-
     return sk_namelookup(host, canonicalname, addressfamily);
 }
 
@@ -399,7 +398,6 @@ Socket new_connection(SockAddr addr, const char *hostname,
 	plug_proxy_sent,
 	plug_proxy_accepting
     };
-
     if (conf_get_int(conf, CONF_proxy_type) != PROXY_NONE &&
 	proxy_for_destination(addr, hostname, port, conf))
     {
@@ -409,7 +407,6 @@ Socket new_connection(SockAddr addr, const char *hostname,
 	char *proxy_canonical_name;
 	Socket sret;
 	int type;
-
 	if ((sret = platform_new_connection(addr, hostname, port, privport,
 					    oobinline, nodelay, keepalive,
 					    plug, conf)) !=
@@ -427,7 +424,6 @@ Socket new_connection(SockAddr addr, const char *hostname,
 	ret->pending_flush = 0;
 	ret->pending_eof = 0;
 	ret->freeze = 0;
-
 	bufchain_init(&ret->pending_input_data);
 	bufchain_init(&ret->pending_output_data);
 	bufchain_init(&ret->pending_oob_output_data);
@@ -488,7 +484,6 @@ Socket new_connection(SockAddr addr, const char *hostname,
 
 	return (Socket) ret;
     }
-
     /* no proxy, so just return the direct socket */
     return putty_sk_new(addr, port, privport, oobinline, nodelay, keepalive, plug,
       #ifdef MPEXT

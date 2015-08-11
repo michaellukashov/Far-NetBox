@@ -33,7 +33,7 @@ NB_DECLARE_CLASS(TWinSCPPlugin)
 public:
   explicit TWinSCPPlugin(HINSTANCE HInst);
   virtual ~TWinSCPPlugin();
-  virtual VersionInfo GetMinFarVersion();
+  virtual VersionInfo GetMinFarVersion() const;
 
   virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0);
   uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
