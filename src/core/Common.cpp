@@ -743,7 +743,7 @@ bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2)
 
 int CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2)
 {
-  return StrCmpLogicalW(S1.c_str(), S2.c_str());
+  return ::StrCmpLogicalW(S1.c_str(), S2.c_str());
 }
 
 bool IsReservedName(const UnicodeString & AFileName)
@@ -795,7 +795,7 @@ static intptr_t PathRootLength(const UnicodeString & APath)
   UnicodeString Result = ReplaceChar(APath, L'/', L'\\');
 
   // Now call the API
-  LPCTSTR Buffer = PathSkipRoot(Result.c_str());
+  LPCTSTR Buffer = ::PathSkipRoot(Result.c_str());
 
   return (Buffer != nullptr) ? (Buffer - Result.c_str()) : -1;
 }
