@@ -1611,7 +1611,7 @@ void TSecureShell::FreeBackend()
 {
   if (FBackendHandle != nullptr)
   {
-    FBackend->bfree(FBackendHandle);
+    FBackend->putty_free(FBackendHandle);
     FBackendHandle = nullptr;
   }
 }

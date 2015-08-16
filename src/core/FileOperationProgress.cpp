@@ -9,17 +9,18 @@
 
 TFileOperationProgressType::TFileOperationProgressType() :
   FOnProgress(nullptr),
-  FOnFinished(nullptr)
+  FOnFinished(nullptr),
+  FReset(false)
 {
   Clear();
 }
 
 TFileOperationProgressType::TFileOperationProgressType(
-  TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished)
+  TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished) :
+  FOnProgress(AOnProgress),
+  FOnFinished(AOnFinished),
+  FReset(false)
 {
-  FOnProgress = AOnProgress;
-  FOnFinished = AOnFinished;
-  FReset = false;
   Clear();
 }
 

@@ -185,6 +185,11 @@ public:
   };
   struct TInfo : public TObject
   {
+    TInfo() :
+      Operation(foNone),
+      Side(osLocal),
+      SingleFile(false)
+    {}
     TFileOperation Operation;
     TOperationSide Side;
     UnicodeString Source;

@@ -187,8 +187,16 @@ struct TSFTPSupport : public TObject
 NB_DISABLE_COPY(TSFTPSupport)
 public:
   TSFTPSupport() :
+    AttributeMask(0),
+    AttributeBits(0),
+    OpenFlags(0),
+    AccessMask(0),
+    MaxReadSize(0),
+    OpenBlockVector(0),
+    BlockVector(0),
     AttribExtensions(new TStringList()),
-    Extensions(new TStringList())
+    Extensions(new TStringList()),
+    Loaded(false)
   {
     Reset();
   }
@@ -2402,11 +2410,11 @@ uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
         // to the init request), go on, only if there are any more data
         ((FVersion < 0) && (Packet->GetRemainingLength() > 0)))
     {
-      // message is in UTF only since SFTP specification 01 (specification 00
-      // is also version 3)
-      // (in other words, always use UTF unless server is known to be buggy)
       if (Packet->GetRemainingLength() > 0)
       {
+        // message is in UTF only since SFTP specification 01 (specification 00
+        // is also version 3)
+        // (in other words, always use UTF unless server is known to be buggy)
         ServerMessage = Packet->GetString(FUtfStrings);
       }
       // SSH-2.0-Maverick_SSHD and SSH-2.0-CIGNA SFTP Server Ready! omit the language tag

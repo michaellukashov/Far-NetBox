@@ -1066,7 +1066,7 @@ public:
   bool Checked;
   TRemoteFile * RemoteFile;
 
-  const UnicodeString & GetFileName() const;
+  const UnicodeString GetFileName() const;
 
   ~TChecklistItem();
 

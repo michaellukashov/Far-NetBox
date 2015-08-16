@@ -1,6 +1,8 @@
 *.log
 build/
+/src/NetBox-build/
 build-CMakeLists.txt-*
+
 /Far2_x86/
 /Far2_x64/
 /Far3_x86/
@@ -45,4 +47,3 @@ CMakeLists.txt.user
 
 cov-int/
 /src/NetBox/My */
-/src/NetBox-build/

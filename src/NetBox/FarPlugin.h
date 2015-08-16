@@ -51,6 +51,8 @@ DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void * /*Token*/,
 
 struct TFarMessageParams : public TObject
 {
+NB_DISABLE_COPY(TFarMessageParams)
+public:
   TFarMessageParams();
 
   TStrings * MoreMessages;
@@ -453,6 +455,7 @@ enum TFarPanelType
 
 class TFarPanelInfo : public TObject
 {
+NB_DISABLE_COPY(TFarPanelInfo)
 public:
   explicit TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner);
   virtual ~TFarPanelInfo();

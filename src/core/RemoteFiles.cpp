@@ -1575,9 +1575,9 @@ TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal)
 }
 
 TRemoteFileList::TRemoteFileList() :
-  TObjectList()
+  TObjectList(),
+  FTimestamp(Now())
 {
-  FTimestamp = Now();
   SetOwnsObjects(true);
 }
 
@@ -1669,11 +1669,14 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
 }
 
 TRemoteDirectory::TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template) :
-  TRemoteFileList(), FTerminal(aTerminal)
+  TRemoteFileList(),
+  FTerminal(aTerminal),
+  FSelectedFiles(nullptr),
+  FThisDirectory(nullptr),
+  FParentDirectory(nullptr),
+  FIncludeThisDirectory(false),
+  FIncludeParentDirectory(false)
 {
-  FSelectedFiles = nullptr;
-  FThisDirectory = nullptr;
-  FParentDirectory = nullptr;
   if (Template == nullptr)
   {
     FIncludeThisDirectory = false;
@@ -2585,6 +2588,9 @@ UnicodeString TRights::GetModeStr() const
         case rsNo:
           UnsetModeStr += BasicSymbols[Index];
           break;
+
+        case rsUndef:
+          break;
       }
     }
 
@@ -2598,6 +2604,9 @@ UnicodeString TRights::GetModeStr() const
 
       case rsNo:
         UnsetModeStr += CombinedSymbols[Index];
+        break;
+
+      case rsUndef:
         break;
     }
 

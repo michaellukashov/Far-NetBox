@@ -743,7 +743,7 @@ bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2)
 
 int CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2)
 {
-  return StrCmpLogicalW(S1.c_str(), S2.c_str());
+  return ::StrCmpLogicalW(S1.c_str(), S2.c_str());
 }
 
 bool IsReservedName(const UnicodeString & AFileName)
@@ -795,7 +795,7 @@ static intptr_t PathRootLength(const UnicodeString & APath)
   UnicodeString Result = ReplaceChar(APath, L'/', L'\\');
 
   // Now call the API
-  LPCTSTR Buffer = PathSkipRoot(Result.c_str());
+  LPCTSTR Buffer = ::PathSkipRoot(Result.c_str());
 
   return (Buffer != nullptr) ? (Buffer - Result.c_str()) : -1;
 }
@@ -1314,6 +1314,22 @@ TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
 
 struct TDateTimeParams : public TObject
 {
+  TDateTimeParams() :
+    BaseDifference(0.0),
+    BaseDifferenceSec(0),
+    CurrentDaylightDifference(0.0),
+    CurrentDaylightDifferenceSec(0),
+    CurrentDifference(0.0),
+    CurrentDifferenceSec(0),
+    StandardDifference(0.0),
+    StandardDifferenceSec(0),
+    DaylightDifference(0.0),
+    DaylightDifferenceSec(0),
+    DaylightHack(false)
+  {
+    ClearStruct(SystemStandardDate);
+    ClearStruct(SystemDaylightDate);
+  }
   TDateTime UnixEpoch;
   double BaseDifference;
   intptr_t BaseDifferenceSec;
