@@ -458,9 +458,9 @@ void TBookmarkList::ShortCuts(TShortCuts & ShortCuts)
   }
 }
 
-TBookmark::TBookmark()
+TBookmark::TBookmark() :
+  FOwner(nullptr)
 {
-  FOwner = nullptr;
 }
 
 void TBookmark::Assign(const TPersistent * Source)
