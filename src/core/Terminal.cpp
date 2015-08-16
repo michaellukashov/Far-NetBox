@@ -238,7 +238,11 @@ TSpaceAvailable::TSpaceAvailable() :
 }
 
 TChecklistItem::TChecklistItem() :
-  Action(saNone), IsDirectory(false), ImageIndex(-1), Checked(true), RemoteFile(nullptr)
+  Action(saNone),
+  IsDirectory(false),
+  ImageIndex(-1),
+  Checked(true),
+  RemoteFile(nullptr)
 {
   Local.ModificationFmt = mfFull;
   Local.Modification = 0;
