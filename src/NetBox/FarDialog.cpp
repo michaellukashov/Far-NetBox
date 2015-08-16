@@ -2467,7 +2467,8 @@ bool TFarListBox::CloseQuery()
 }
 
 TFarComboBox::TFarComboBox(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_COMBOBOX)
+  TFarDialogItem(ADialog, DI_COMBOBOX),
+  FList(nullptr)
 {
   FList = new TFarList(this);
   GetDialogItem()->ListItems = FList->GetListItems();

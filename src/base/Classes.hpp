@@ -341,9 +341,9 @@ public:
   }
   explicit TDateTime(uint16_t Hour,
     uint16_t Min, uint16_t Sec, uint16_t MSec);
-  TDateTime(const TDateTime & rhs)
+  TDateTime(const TDateTime & rhs) :
+    FValue(rhs.FValue)
   {
-    FValue = rhs.FValue;
   }
   double GetValue() const { return operator double(); }
   TDateTime & operator = (const TDateTime & rhs)

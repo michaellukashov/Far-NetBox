@@ -187,8 +187,16 @@ struct TSFTPSupport : public TObject
 NB_DISABLE_COPY(TSFTPSupport)
 public:
   TSFTPSupport() :
+    AttributeMask(0),
+    AttributeBits(0),
+    OpenFlags(0),
+    AccessMask(0),
+    MaxReadSize(0),
+    OpenBlockVector(0),
+    BlockVector(0),
     AttribExtensions(new TStringList()),
-    Extensions(new TStringList())
+    Extensions(new TStringList()),
+    Loaded(false)
   {
     Reset();
   }
