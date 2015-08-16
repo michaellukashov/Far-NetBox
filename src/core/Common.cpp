@@ -1314,6 +1314,22 @@ TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
 
 struct TDateTimeParams : public TObject
 {
+  TDateTimeParams() :
+    BaseDifference(0.0),
+    BaseDifferenceSec(0),
+    CurrentDaylightDifference(0.0),
+    CurrentDaylightDifferenceSec(0),
+    CurrentDifference(0.0),
+    CurrentDifferenceSec(0),
+    StandardDifference(0.0),
+    StandardDifferenceSec(0),
+    DaylightDifference(0.0),
+    DaylightDifferenceSec(0),
+    DaylightHack(false)
+  {
+    ClearStruct(SystemStandardDate);
+    ClearStruct(SystemDaylightDate);
+  }
   TDateTime UnixEpoch;
   double BaseDifference;
   intptr_t BaseDifferenceSec;
