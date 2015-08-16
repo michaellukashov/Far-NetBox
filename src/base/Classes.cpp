@@ -817,6 +817,8 @@ intptr_t TStringList::AddObject(const UnicodeString & S, TObject * AObject)
         case dupError:
           Error(SDuplicateString, 2);
           break;
+        case dupAccept:
+          break;
       }
     }
     else
