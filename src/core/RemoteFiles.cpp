@@ -2585,6 +2585,9 @@ UnicodeString TRights::GetModeStr() const
         case rsNo:
           UnsetModeStr += BasicSymbols[Index];
           break;
+
+        case rsUndef:
+          break;
       }
     }
 
@@ -2598,6 +2601,9 @@ UnicodeString TRights::GetModeStr() const
 
       case rsNo:
         UnsetModeStr += CombinedSymbols[Index];
+        break;
+
+      case rsUndef:
         break;
     }
 
