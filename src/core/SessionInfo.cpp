@@ -605,9 +605,9 @@ TCwdSessionAction::TCwdSessionAction(TActionLog * Log, const UnicodeString & Pat
   }
 }
 
-TSessionInfo::TSessionInfo()
+TSessionInfo::TSessionInfo() :
+  LoginTime(Now())
 {
-  LoginTime = Now();
 }
 
 TFileSystemInfo::TFileSystemInfo()
