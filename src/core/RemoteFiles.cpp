@@ -1575,9 +1575,9 @@ TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal)
 }
 
 TRemoteFileList::TRemoteFileList() :
-  TObjectList()
+  TObjectList(),
+  FTimestamp(Now())
 {
-  FTimestamp = Now();
   SetOwnsObjects(true);
 }
 
