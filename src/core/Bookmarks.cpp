@@ -258,12 +258,13 @@ void TBookmarks::SetSharedBookmarks(TBookmarkList * Value)
   SetBookmarks(FSharedKey, Value);
 }
 
-TBookmarkList::TBookmarkList() : TPersistent()
+TBookmarkList::TBookmarkList() :
+  TPersistent(),
+  FModified(false),
+  FBookmarks(new TStringList()),
+  FOpenedNodes(CreateSortedStringList())
 {
-  FModified = false;
-  FBookmarks = new TStringList();
   FBookmarks->SetCaseSensitive(false);
-  FOpenedNodes = CreateSortedStringList();
 }
 
 TBookmarkList::~TBookmarkList()
