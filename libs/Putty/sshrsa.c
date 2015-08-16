@@ -76,6 +76,7 @@ int rsaencrypt(unsigned char *data, int length, struct RSAKey *key)
     memmove(data + key->bytes - length, data, length);
     data[0] = 0;
     data[1] = 2;
+
     for (i = 2; i < key->bytes - length - 1; i++) {
 	do {
 	    data[i] = random_byte();
@@ -923,6 +924,7 @@ static unsigned char *rsa2_sign(void *key, const char *data, int datalen,
 
     out = rsa_privkey_op(in, rsa);
     freebn(in);
+
     nbytes = (bignum_bitcount(out) + 7) / 8;
     bytes = snewn(4 + 7 + 4 + nbytes, unsigned char);
     PUT_32BIT(bytes, 7);

@@ -1930,6 +1930,7 @@ static int s_wrpkt_prepare(Ssh ssh, struct Packet *pkt, int *offset_p)
     volatile
 #endif
     int len;
+
     if (ssh->logctx)
         ssh1_log_outgoing_packet(ssh, pkt);
 
@@ -2239,6 +2240,7 @@ static struct Packet *ssh2_pkt_init(int pkt_type)
 static int ssh2_pkt_construct(Ssh ssh, struct Packet *pkt)
 {
     int cipherblk, maclen, padding, unencrypted_prefix, i;
+
     if (ssh->logctx)
         ssh2_log_outgoing_packet(ssh, pkt);
 
@@ -3669,6 +3671,7 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
             return err;
         }
     }
+
     /*
      * If the SSH version number's fixed, set it now, and if it's SSH-2,
      * send the version string too.
@@ -3688,6 +3691,7 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
 	sfree(*realhost);
 	*realhost = dupstr(loghost);
     }
+
     return NULL;
 }
 
@@ -3714,6 +3718,7 @@ static void ssh_throttle_all(Ssh ssh, int enable, int bufsize)
 {
     int i;
     struct ssh_channel *c;
+
     if (enable == ssh->throttled_all)
 	return;
     ssh->throttled_all = enable;
@@ -6097,13 +6102,13 @@ static int first_in_commasep_string(char const *needle, char const *haystack,
 	return 0;
     needlen = strlen(needle);
 
-	if (haylen >= needlen &&       /* haystack is long enough */
-	    !memcmp(needle, haystack, needlen) &&	/* initial match */
-	    (haylen == needlen || haystack[needlen] == ',')
-	    /* either , or EOS follows */
-	    )
-	    return 1;
-	    return 0;
+    if (haylen >= needlen &&       /* haystack is long enough */
+	!memcmp(needle, haystack, needlen) &&	/* initial match */
+	(haylen == needlen || haystack[needlen] == ',')
+	/* either , or EOS follows */
+	)
+	return 1;
+    return 0;
 }
 
 static int in_commasep_string(char const *needle, char const *haystack,
@@ -6463,7 +6468,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 					      s->maclist[i]->etm_name);
 		    alg->u.mac.mac = s->maclist[i];
 		    alg->u.mac.etm = TRUE;
-	    }
+		}
 	}
 	/* List client->server compression algorithms,
 	 * then server->client compression algorithms. (We use the
@@ -6564,7 +6569,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 			if (j != 0 ||
 			    !first_in_commasep_string(alg->name, str, len))
 			    s->guessok = FALSE;
-	    }
+		    }
 		    if (i == KEXLIST_KEX) {
 			ssh->kex = alg->u.kex.kex;
 			s->warn_kex = alg->u.kex.warn;
@@ -6983,6 +6988,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
             int kstr1len, kstr2len, outstrlen;
 
             s->K = bn_power_2(nbits - 1);
+
             for (i = 0; i < nbits; i++) {
                 if ((i & 7) == 0) {
                     byte = random_byte();

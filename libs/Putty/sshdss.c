@@ -599,12 +599,12 @@ Bignum *dss_gen_k(const char *id_string, Bignum modulus, Bignum private_key,
         }
 
         /* Very unlikely we get here, but if so, k was unsuitable. */
-            freebn(k);
-            /* Perturb the hash to think of a different k. */
-            putty_SHA512_Bytes(&ss, "x", 1);
-            /* Go round and try again. */
+        freebn(k);
+        /* Perturb the hash to think of a different k. */
+        putty_SHA512_Bytes(&ss, "x", 1);
+        /* Go round and try again. */
     }
-        }
+}
 
 static unsigned char *dss_sign(void *key, const char *data, int datalen,
                                int *siglen)

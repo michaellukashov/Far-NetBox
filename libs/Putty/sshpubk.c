@@ -380,6 +380,7 @@ int saversakey(const Filename *filename, struct RSAKey *key, char *passphrase)
      * The encrypted portion starts here.
      */
     estart = p;
+
     /*
      * Two bytes, then the same two bytes repeated.
      */

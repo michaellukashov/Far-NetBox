@@ -46,6 +46,7 @@ DWORD WINAPI agent_query_thread(LPVOID param)
     struct agent_query_data *data = (struct agent_query_data *)param;
     unsigned char *ret;
     int id, retlen;
+
     id = SendMessage(data->hwnd, WM_COPYDATA, (WPARAM) NULL,
 		     (LPARAM) &data->cds);
     ret = NULL;
@@ -61,7 +62,9 @@ DWORD WINAPI agent_query_thread(LPVOID param)
     UnmapViewOfFile(data->mapping);
     CloseHandle(data->handle);
     sfree(data->mapname);
+
     agent_schedule_callback(data->callback, data->callback_ctx, ret, retlen);
+
     return 0;
 }
 
@@ -169,6 +172,7 @@ int agent_query(void *in, int inlen, void **out, int *outlen,
     if (!hwnd)
 	return 1;		       /* *out == NULL, so failure */
     mapname = dupprintf("PageantRequest%08x", (unsigned)GetCurrentThreadId());
+
     psa = NULL;
 #ifndef NO_SECURITY
     if (got_advapi()) {
@@ -202,6 +206,7 @@ int agent_query(void *in, int inlen, void **out, int *outlen,
         }
     }
 #endif /* NO_SECURITY */
+
     filemap = CreateFileMapping(INVALID_HANDLE_VALUE, psa, PAGE_READWRITE,
 				0, AGENT_MAX_MSGLEN, mapname);
     if (filemap == NULL || filemap == INVALID_HANDLE_VALUE) {

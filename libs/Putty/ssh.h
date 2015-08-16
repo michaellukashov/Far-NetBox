@@ -256,7 +256,6 @@ void hmacmd5_key(void *handle, void const *key, int len);
 void hmacmd5_do_hmac(void *handle, unsigned char const *blk, int len,
 		     unsigned char *hmac);
 
-
 typedef struct {
     uint32 h[5];
     unsigned char block[64];
@@ -269,7 +268,7 @@ void putty_SHA_Final(SHA_State * s, unsigned char *output);
 void putty_SHA_Simple(const void *p, int len, unsigned char *output);
 
 void hmac_sha1_simple(void *key, int keylen, void *data, int datalen,
-          unsigned char *output);
+		      unsigned char *output);
 typedef struct {
     uint32 h[8];
     unsigned char block[64];
