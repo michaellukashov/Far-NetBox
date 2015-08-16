@@ -255,7 +255,7 @@ TChecklistItem::~TChecklistItem()
   SAFE_DESTROY(RemoteFile);
 }
 
-const UnicodeString & TChecklistItem::GetFileName() const
+const UnicodeString TChecklistItem::GetFileName() const
 {
   if (!Remote.FileName.IsEmpty())
   {
