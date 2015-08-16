@@ -90,6 +90,7 @@ class TFTPServerCapabilities;
 //---------------------------------------------------------------------------
 class TFileZillaIntf : public CFileZillaTools
 {
+NB_DISABLE_COPY(TFileZillaIntf)
 friend class TFileZillaIntern;
 
 public:
