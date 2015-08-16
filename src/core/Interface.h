@@ -161,6 +161,7 @@ private:
 struct TClipboardHandler
 {
 NB_DECLARE_CLASS(TClipboardHandler)
+NB_DISABLE_COPY(TClipboardHandler)
 public:
   UnicodeString Text;
 
