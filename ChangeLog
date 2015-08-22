@@ -1,3 +1,7 @@
+NetBox 2.1.44.401 22.08.2015
+--------------------
+  * Update putty sources
+
 NetBox 2.1.43.400 16.08.2015
 --------------------
   * Bugfix: Remote file was not saved after editing in external editor

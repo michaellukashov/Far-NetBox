@@ -8,8 +8,8 @@
 
 #define NETBOX_VERSION_MAJOR         2
 #define NETBOX_VERSION_MINOR         1
-#define NETBOX_VERSION_SUBMINOR      43
-#define NETBOX_VERSION_BUILD         400
+#define NETBOX_VERSION_SUBMINOR      44
+#define NETBOX_VERSION_BUILD         401
 
-static const std::wstring NETBOX_VERSION_NUMBER(L"2.1.43");
+static const std::wstring NETBOX_VERSION_NUMBER(L"2.1.44");
 
