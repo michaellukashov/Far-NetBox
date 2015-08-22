@@ -4022,6 +4022,11 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
         Message = FMTLOAD(KEY_TYPE_UNSUPPORTED, AFileName.c_str(), L"OpenSSH SSH-2");
         break;
 
+      case ktOpenSSHPem:
+      case ktOpenSSHNew:
+      case ktSSH1Public:
+      case ktSSH2PublicRFC4716:
+      case ktSSH2PublicOpenSSH:
       case ktSSHCom:
         Message = FMTLOAD(KEY_TYPE_UNSUPPORTED, AFileName.c_str(), L"ssh.com SSH-2");
         break;
