@@ -4014,7 +4014,7 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
 
   if (!::Trim(AFileName).IsEmpty())
   {
-    TKeyType KeyType = KeyType(AFileName);
+    TKeyType KeyType = GetKeyType(AFileName);
     UnicodeString Message;
     switch (KeyType)
     {
