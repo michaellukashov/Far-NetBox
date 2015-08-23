@@ -315,7 +315,7 @@ static apr_status_t create_socket_pipe(SOCKET *rd, SOCKET *wr)
         int nc = 0;
         /* Listening socket is nonblocking by now.
          * The accept should create the socket
-         * immediatelly because we are connected already.
+         * immediately because we are connected already.
          * However on buys systems this can take a while
          * until winsock gets a chance to handle the events.
          */
