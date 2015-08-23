@@ -90,23 +90,24 @@ SSH_FILEXFER_TYPE_SYMLINK          = 3,
 SSH_FILEXFER_TYPE_SPECIAL          = 4,
 SSH_FILEXFER_TYPE_UNKNOWN          = 5;
 
-#define SSH_FXF_READ            0x00000001
-#define SSH_FXF_WRITE           0x00000002
-#define SSH_FXF_APPEND          0x00000004
-#define SSH_FXF_CREAT           0x00000008
-#define SSH_FXF_TRUNC           0x00000010
-#define SSH_FXF_EXCL            0x00000020
-#define SSH_FXF_TEXT            0x00000040
+static const SSH_FXF_TYPES
+SSH_FXF_READ            = 0x00000001,
+SSH_FXF_WRITE           = 0x00000002,
+SSH_FXF_APPEND          = 0x00000004,
+SSH_FXF_CREAT           = 0x00000008,
+SSH_FXF_TRUNC           = 0x00000010,
+SSH_FXF_EXCL            = 0x00000020,
+SSH_FXF_TEXT            = 0x00000040,
 
-#define SSH_FXF_ACCESS_DISPOSITION        0x00000007
-#define     SSH_FXF_CREATE_NEW            0x00000000
-#define     SSH_FXF_CREATE_TRUNCATE       0x00000001
-#define     SSH_FXF_OPEN_EXISTING         0x00000002
-#define     SSH_FXF_OPEN_OR_CREATE        0x00000003
-#define     SSH_FXF_TRUNCATE_EXISTING     0x00000004
-#define SSH_FXF_ACCESS_APPEND_DATA        0x00000008
-#define SSH_FXF_ACCESS_APPEND_DATA_ATOMIC 0x00000010
-#define SSH_FXF_ACCESS_TEXT_MODE          0x00000020
+SSH_FXF_ACCESS_DISPOSITION        = 0x00000007,
+    SSH_FXF_CREATE_NEW            = 0x00000000,
+    SSH_FXF_CREATE_TRUNCATE       = 0x00000001,
+    SSH_FXF_OPEN_EXISTING         = 0x00000002,
+    SSH_FXF_OPEN_OR_CREATE        = 0x00000003,
+    SSH_FXF_TRUNCATE_EXISTING     = 0x00000004,
+SSH_FXF_ACCESS_APPEND_DATA        = 0x00000008,
+SSH_FXF_ACCESS_APPEND_DATA_ATOMIC = 0x00000010,
+SSH_FXF_ACCESS_TEXT_MODE          = 0x00000020;
 
 #define ACE4_READ_DATA         0x00000001
 #define ACE4_LIST_DIRECTORY    0x00000001
@@ -5046,7 +5047,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
 }
 
 RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
-  const UnicodeString & AFileName, uint32_t OpenType, int64_t Size)
+  const UnicodeString & AFileName, SSH_FXF_TYPES OpenType, int64_t Size)
 {
   TSFTPPacket Packet(SSH_FXP_OPEN, FCodePage);
 
@@ -5061,7 +5062,7 @@ RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
       FLAGMASK(FLAGSET(OpenType, SSH_FXF_READ), ACE4_READ_DATA) |
       FLAGMASK(FLAGSET(OpenType, SSH_FXF_WRITE), ACE4_WRITE_DATA | ACE4_APPEND_DATA);
 
-    uint32_t Flags = 0;
+    SSH_FXF_TYPES Flags = 0;
 
     if (FLAGSET(OpenType, SSH_FXF_CREAT | SSH_FXF_EXCL))
     {
@@ -5111,7 +5112,7 @@ intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
   assert(OpenParams);
   TFileOperationProgressType * OperationProgress = OpenParams->OperationProgress;
 
-  uint32_t OpenType = 0;
+  SSH_FXF_TYPES OpenType = 0;
   bool Success = false;
   bool ConfirmOverwriting = false;
 
@@ -5730,7 +5731,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(SFTP_OPEN_FILE_ERROR, AFileName.c_str()), "",
       [&]()
       {
-        uint32_t OpenType = SSH_FXF_READ;
+        SSH_FXF_TYPES OpenType = SSH_FXF_READ;
         if ((FVersion >= 4) && OperationProgress->AsciiTransfer)
         {
           OpenType |= SSH_FXF_TEXT;

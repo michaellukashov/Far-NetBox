@@ -7,6 +7,7 @@ typedef uint8_t SSH_FX_TYPES;
 typedef uint8_t SSH_FXP_TYPES;
 typedef uint32_t SSH_FILEXFER_ATTR_TYPES;
 typedef uint8_t SSH_FILEXFER_TYPES;
+typedef uint32_t SSH_FXF_TYPES;
 
 class TSFTPPacket;
 struct TOverwriteFileParams;
@@ -173,7 +174,7 @@ protected:
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TUploadSessionAction & Action, bool & ChildError);
   RawByteString SFTPOpenRemoteFile(const UnicodeString & AFileName,
-    uint32_t OpenType, int64_t Size = -1);
+    SSH_FXF_TYPES OpenType, int64_t Size = -1);
   intptr_t SFTPOpenRemote(void * AOpenParams, void * Param2);
   void SFTPCloseRemote(const RawByteString & Handle,
     const UnicodeString & AFileName, TFileOperationProgressType * OperationProgress,
