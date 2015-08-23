@@ -380,7 +380,7 @@ add_library(openssl STATIC
   #${LIBS_ROOT}/openssl/test/md5test.c
   #${LIBS_ROOT}/openssl/test/md4test.c
   #${LIBS_ROOT}/openssl/test/constant_time_test.c
-  ${LIBS_ROOT}/openssl/ssl/ssl_utst.c
+#  ${LIBS_ROOT}/openssl/ssl/ssl_utst.c
   ${LIBS_ROOT}/openssl/ssl/t1_trce.c
   ${LIBS_ROOT}/openssl/ssl/t1_reneg.c
   ${LIBS_ROOT}/openssl/ssl/kssl.c
