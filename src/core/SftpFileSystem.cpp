@@ -56,30 +56,31 @@ SSH_FXP_ATTRS              = 105,
 SSH_FXP_EXTENDED           = 200,
 SSH_FXP_EXTENDED_REPLY     = 201;
 
-#define SSH_FILEXFER_ATTR_SIZE              0x00000001
-#define SSH_FILEXFER_ATTR_UIDGID            0x00000002
-#define SSH_FILEXFER_ATTR_PERMISSIONS       0x00000004
-#define SSH_FILEXFER_ATTR_ACMODTIME         0x00000008
-#define SSH_FILEXFER_ATTR_EXTENDED          0x80000000
-#define SSH_FILEXFER_ATTR_ACCESSTIME        0x00000008
-#define SSH_FILEXFER_ATTR_CREATETIME        0x00000010
-#define SSH_FILEXFER_ATTR_MODIFYTIME        0x00000020
-#define SSH_FILEXFER_ATTR_ACL               0x00000040
-#define SSH_FILEXFER_ATTR_OWNERGROUP        0x00000080
-#define SSH_FILEXFER_ATTR_SUBSECOND_TIMES   0x00000100
-#define SSH_FILEXFER_ATTR_BITS              0x00000200
-#define SSH_FILEXFER_ATTR_ALLOCATION_SIZE   0x00000400
-#define SSH_FILEXFER_ATTR_TEXT_HINT         0x00000800
-#define SSH_FILEXFER_ATTR_MIME_TYPE         0x00001000
-#define SSH_FILEXFER_ATTR_LINK_COUNT        0x00002000
-#define SSH_FILEXFER_ATTR_UNTRANSLATED_NAME 0x00004000
-#define SSH_FILEXFER_ATTR_CTIME             0x00008000
-#define SSH_FILEXFER_ATTR_EXTENDED          0x80000000
+static const SSH_FILEXFER_ATTR_TYPES
+SSH_FILEXFER_ATTR_SIZE              = 0x00000001,
+SSH_FILEXFER_ATTR_UIDGID            = 0x00000002,
+SSH_FILEXFER_ATTR_PERMISSIONS       = 0x00000004,
+SSH_FILEXFER_ATTR_ACMODTIME         = 0x00000008,
+SSH_FILEXFER_ATTR_ACCESSTIME        = 0x00000008,
+SSH_FILEXFER_ATTR_CREATETIME        = 0x00000010,
+SSH_FILEXFER_ATTR_MODIFYTIME        = 0x00000020,
+SSH_FILEXFER_ATTR_ACL               = 0x00000040,
+SSH_FILEXFER_ATTR_OWNERGROUP        = 0x00000080,
+SSH_FILEXFER_ATTR_SUBSECOND_TIMES   = 0x00000100,
+SSH_FILEXFER_ATTR_BITS              = 0x00000200,
+SSH_FILEXFER_ATTR_ALLOCATION_SIZE   = 0x00000400,
+SSH_FILEXFER_ATTR_TEXT_HINT         = 0x00000800,
+SSH_FILEXFER_ATTR_MIME_TYPE         = 0x00001000,
+SSH_FILEXFER_ATTR_LINK_COUNT        = 0x00002000,
+SSH_FILEXFER_ATTR_UNTRANSLATED_NAME = 0x00004000,
+SSH_FILEXFER_ATTR_CTIME             = 0x00008000,
+SSH_FILEXFER_ATTR_EXTENDED          = 0x80000000;
 
-#define SSH_FILEXFER_ATTR_COMMON \
+static const SSH_FILEXFER_ATTR_TYPES
+SSH_FILEXFER_ATTR_COMMON =
   (SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_OWNERGROUP | \
    SSH_FILEXFER_ATTR_PERMISSIONS | SSH_FILEXFER_ATTR_ACCESSTIME | \
-   SSH_FILEXFER_ATTR_MODIFYTIME)
+   SSH_FILEXFER_ATTR_MODIFYTIME);
 
 #define SSH_FILEXFER_TYPE_REGULAR          1
 #define SSH_FILEXFER_TYPE_DIRECTORY        2
@@ -221,7 +222,7 @@ public:
     Loaded = false;
   }
 
-  uint32_t AttributeMask;
+  SSH_FILEXFER_ATTR_TYPES AttributeMask;
   uint32_t AttributeBits;
   uint32_t OpenFlags;
   uint32_t AccessMask;
@@ -387,7 +388,7 @@ public:
     AddString(Value, Utf);
   }
 
-  uint32_t AllocationSizeAttribute(intptr_t Version)
+  SSH_FILEXFER_ATTR_TYPES AllocationSizeAttribute(intptr_t Version) const
   {
     return (Version >= 6) ? SSH_FILEXFER_ATTR_ALLOCATION_SIZE : SSH_FILEXFER_ATTR_SIZE;
   }
@@ -396,7 +397,7 @@ public:
     TRemoteToken * Group, int64_t * MTime, int64_t * ATime,
     int64_t * Size, bool IsDirectory, intptr_t Version, TAutoSwitch Utf)
   {
-    uint32_t Flags = 0;
+    SSH_FILEXFER_ATTR_TYPES Flags = 0;
     if (Size != nullptr)
     {
       Flags |= AllocationSizeAttribute(Version);
@@ -679,7 +680,7 @@ public:
   void GetFile(TRemoteFile * AFile, intptr_t Version, TDSTMode DSTMode, TAutoSwitch & Utf, bool SignedTS, bool Complete)
   {
     assert(AFile);
-    uint32_t Flags;
+    SSH_FILEXFER_ATTR_TYPES Flags;
     UnicodeString ListingStr;
     uint32_t Permissions = 0;
     bool ParsingFailed = false;
@@ -803,7 +804,7 @@ public:
     {
       // while SSH_FILEXFER_ATTR_BITS is defined for SFTP5 only, vandyke 2.3.3 sets it
       // for SFTP4 as well
-      uint32_t Bits = GetCardinal();
+      SSH_FILEXFER_ATTR_TYPES Bits = GetCardinal();
       if (Version >= 6)
       {
         uint32_t BitsValid = GetCardinal();
@@ -3669,7 +3670,7 @@ void TSFTPFileSystem::CustomReadFile(const UnicodeString & AFileName,
   TRemoteFile *& AFile, SSH_FXP_TYPES Type, TRemoteFile * ALinkedByFile,
   intptr_t AllowStatus)
 {
-  uint32_t Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |
+  SSH_FILEXFER_ATTR_TYPES Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |
     SSH_FILEXFER_ATTR_ACCESSTIME | SSH_FILEXFER_ATTR_MODIFYTIME |
     SSH_FILEXFER_ATTR_OWNERGROUP;
   TSFTPPacket Packet(Type, FCodePage);
