@@ -983,7 +983,7 @@ add_library(openssl STATIC
 
 set_target_properties(openssl
   PROPERTIES
-  COMPILE_FLAGS "-DOPENSSL_SYSNAME_WIN32"
+  COMPILE_FLAGS "/TC -DOPENSSL_SYSNAME_WIN32 -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DSECURITY_WIN32"
 )
 
 #-------------------------------------------------------------------------------
