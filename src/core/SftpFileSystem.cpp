@@ -136,7 +136,7 @@ SSH_FXP_REALPATH_NO_CHECK    = 0x00000001,
 SSH_FXP_REALPATH_STAT_IF     = 0x00000002,
 SSH_FXP_REALPATH_STAT_ALWAYS = 0x00000003;
 
-#define SFTP_MAX_PACKET_LEN   1024000
+static const intptr_t SFTP_MAX_PACKET_LEN   = 1024000;
 
 #define SFTP_EXT_OWNER_GROUP "owner-group-query@generic-extensions"
 #define SFTP_EXT_OWNER_GROUP_REPLY "owner-group-query-reply@generic-extensions"
