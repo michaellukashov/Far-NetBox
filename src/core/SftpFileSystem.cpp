@@ -187,7 +187,7 @@ static const SSH_FX_TYPES asAll = (SSH_FX_TYPES)0xFFFF;
     (cp)[3] = (uint8_t)(value); }
 #endif
 
-#define SFTP_PACKET_ALLOC_DELTA 256
+static const uintptr_t SFTP_PACKET_ALLOC_DELTA = 256;
 
 struct TSFTPSupport : public TObject
 {
