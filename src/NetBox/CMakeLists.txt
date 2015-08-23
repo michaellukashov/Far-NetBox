@@ -971,7 +971,7 @@ add_library(openssl STATIC
   ${LIBS_ROOT}/openssl/crypto/md4/md4_one.c
   ${LIBS_ROOT}/openssl/crypto/md4/md4_dgst.c
   ${LIBS_ROOT}/openssl/crypto/mem_clr.c
-  ${LIBS_ROOT}/openssl/crypto/fips_ers.c
+#  ${LIBS_ROOT}/openssl/crypto/fips_ers.c
   ${LIBS_ROOT}/openssl/crypto/o_init.c
   ${LIBS_ROOT}/openssl/crypto/o_fips.c
   ${LIBS_ROOT}/openssl/crypto/o_dir.c
