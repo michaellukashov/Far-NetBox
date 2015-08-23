@@ -1473,10 +1473,10 @@ public:
     return TSFTPFixedLenQueue::Init(QueueLen);
   }
 
-  void InitFillGapRequest(int64_t Offset, uint32_t Missing,
+  void InitFillGapRequest(int64_t Offset, uint32_t MissingLen,
     TSFTPPacket * Packet)
   {
-    InitRequest(Packet, Offset, Missing);
+    InitRequest(Packet, Offset, MissingLen);
   }
 
   bool ReceivePacket(TSFTPPacket * Packet, uintptr_t & BlockSize)
@@ -5876,16 +5876,16 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           bool PrevIncomplete = false;
           int32_t GapFillCount = 0;
           int32_t GapCount = 0;
-          uint32_t Missing = 0;
+          uint32_t MissingLen = 0;
           uint32_t DataLen = 0;
           uintptr_t BlockSize = 0;
           bool ConvertToken = false;
 
           while (!Eof)
           {
-            if (Missing > 0)
+            if (MissingLen > 0)
             {
-              Queue.InitFillGapRequest(OperationProgress->TransferedSize, Missing,
+              Queue.InitFillGapRequest(OperationProgress->TransferedSize, MissingLen,
                 &DataPacket);
               GapFillCount++;
               SendPacketAndReceiveResponse(&DataPacket, &DataPacket,
@@ -5908,7 +5908,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
 
             if (!Eof)
             {
-              if ((Missing == 0) && PrevIncomplete)
+              if ((MissingLen == 0) && PrevIncomplete)
               {
                 // This can happen only if last request returned less bytes
                 // than expected, but exactly number of bytes missing to last
@@ -5930,10 +5930,10 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
               DataLen = DataPacket.GetCardinal();
 
               PrevIncomplete = false;
-              if (Missing > 0)
+              if (MissingLen > 0)
               {
-                assert(DataLen <= Missing);
-                Missing -= DataLen;
+                assert(DataLen <= MissingLen);
+                MissingLen -= DataLen;
               }
               else if (DataLen < BlockSize)
               {
@@ -5945,7 +5945,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
                   if ((FVersion < 4) || !OperationProgress->AsciiTransfer)
                   {
                     GapCount++;
-                    Missing = static_cast<uint32_t>(BlockSize - DataLen);
+                    MissingLen = static_cast<uint32_t>(BlockSize - DataLen);
                   }
                 }
                 else
@@ -5959,7 +5959,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
               DataPacket.DataConsumed(DataLen);
               OperationProgress->AddTransfered(DataLen);
 
-              if ((FVersion >= 6) && DataPacket.CanGetBool() && (Missing == 0))
+              if ((FVersion >= 6) && DataPacket.CanGetBool() && (MissingLen == 0))
               {
                 Eof = DataPacket.GetBool();
               }
