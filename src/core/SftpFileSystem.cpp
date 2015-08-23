@@ -2679,10 +2679,10 @@ void TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
   }
 }
 
-uintptr_t TSFTPFileSystem::ReceiveResponse(const TSFTPPacket * Packet, TSFTPPacket * AResponse, SSH_FXP_TYPES ExpectedType,
+SSH_FX_TYPES TSFTPFileSystem::ReceiveResponse(const TSFTPPacket * Packet, TSFTPPacket * AResponse, SSH_FXP_TYPES ExpectedType,
   SSH_FX_TYPES AllowStatus)
 {
-  uintptr_t Result;
+  SSH_FX_TYPES Result;
   uintptr_t MessageNumber = Packet->GetMessageNumber();
   std::unique_ptr<TSFTPPacket> Response;
   if (!AResponse)
@@ -2700,12 +2700,12 @@ uintptr_t TSFTPFileSystem::ReceiveResponse(const TSFTPPacket * Packet, TSFTPPack
   return Result;
 }
 
-uintptr_t TSFTPFileSystem::SendPacketAndReceiveResponse(const TSFTPPacket * Packet, TSFTPPacket * Response, SSH_FXP_TYPES ExpectedType,
+SSH_FX_TYPES TSFTPFileSystem::SendPacketAndReceiveResponse(const TSFTPPacket * Packet, TSFTPPacket * Response, SSH_FXP_TYPES ExpectedType,
   SSH_FX_TYPES AllowStatus)
 {
   TSFTPBusy Busy(this);
   SendPacket(Packet);
-  uintptr_t Result = ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
+  SSH_FX_TYPES Result = ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
   return Result;
 }
 

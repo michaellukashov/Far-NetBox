@@ -147,9 +147,9 @@ protected:
   bool PeekPacket();
   void RemoveReservation(intptr_t Reservation);
   void SendPacket(const TSFTPPacket * Packet);
-  uintptr_t ReceiveResponse(const TSFTPPacket * Packet,
+  SSH_FX_TYPES ReceiveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * AResponse, SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1);
-  uintptr_t SendPacketAndReceiveResponse(const TSFTPPacket * Packet,
+  SSH_FX_TYPES SendPacketAndReceiveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response, SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1);
   void UnreserveResponse(TSFTPPacket * Response);
   void TryOpenDirectory(const UnicodeString & Directory);
