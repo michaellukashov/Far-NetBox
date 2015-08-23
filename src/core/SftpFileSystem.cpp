@@ -79,8 +79,8 @@ SSH_FILEXFER_ATTR_EXTENDED          = 0x80000000;
 
 static const SSH_FILEXFER_ATTR_TYPES
 SSH_FILEXFER_ATTR_COMMON =
-  (SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_OWNERGROUP | \
-   SSH_FILEXFER_ATTR_PERMISSIONS | SSH_FILEXFER_ATTR_ACCESSTIME | \
+  (SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_OWNERGROUP |
+   SSH_FILEXFER_ATTR_PERMISSIONS | SSH_FILEXFER_ATTR_ACCESSTIME |
    SSH_FILEXFER_ATTR_MODIFYTIME);
 
 static const SSH_FILEXFER_TYPES
@@ -164,13 +164,13 @@ static const intptr_t SFTPMinVersion = 0;
 static const intptr_t SFTPMaxVersion = 6;
 static const uint32_t SFTPNoMessageNumber = static_cast<uint32_t>(-1);
 
-static const intptr_t asNo =            0;
-static const intptr_t asOK =            1 << SSH_FX_OK;
-static const intptr_t asEOF =           1 << SSH_FX_EOF;
-static const intptr_t asPermDenied =    1 << SSH_FX_PERMISSION_DENIED;
-static const intptr_t asOpUnsupported = 1 << SSH_FX_OP_UNSUPPORTED;
-static const intptr_t asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
-static const intptr_t asAll = 0xFFFF;
+static const SSH_FX_TYPES asNo =            0;
+static const SSH_FX_TYPES asOK =            1 << SSH_FX_OK;
+static const SSH_FX_TYPES asEOF =           1 << SSH_FX_EOF;
+static const SSH_FX_TYPES asPermDenied =    1 << SSH_FX_PERMISSION_DENIED;
+static const SSH_FX_TYPES asOpUnsupported = 1 << SSH_FX_OP_UNSUPPORTED;
+static const SSH_FX_TYPES asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
+static const SSH_FX_TYPES asAll = (SSH_FX_TYPES)0xFFFF;
 
 #ifndef GET_32BIT
 #define GET_32BIT(cp) \
@@ -1280,7 +1280,7 @@ public:
   }
 
   bool ReceivePacket(TSFTPPacket * Packet,
-    intptr_t ExpectedType = -1, intptr_t AllowStatus = -1, void ** Token = nullptr)
+    SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1, void ** Token = nullptr)
   {
     assert(FRequests->GetCount());
     std::unique_ptr<TSFTPQueuePacket> Request(NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetItem(0)));
@@ -1312,7 +1312,7 @@ public:
     return Result;
   }
 
-  bool Next(intptr_t ExpectedType = -1, intptr_t AllowStatus = -1)
+  bool Next(SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1)
   {
     return ReceivePacket(nullptr, ExpectedType, AllowStatus);
   }
@@ -1333,8 +1333,8 @@ protected:
   }
 
   virtual void ReceiveResponse(
-    const TSFTPPacket * Packet, TSFTPPacket * Response, intptr_t ExpectedType = -1,
-    intptr_t AllowStatus = -1)
+    const TSFTPPacket * Packet, TSFTPPacket * Response, SSH_FXP_TYPES ExpectedType = -1,
+    SSH_FX_TYPES AllowStatus = -1)
   {
     FFileSystem->ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
   }
@@ -1632,7 +1632,7 @@ protected:
 
   virtual void ReceiveResponse(
     const TSFTPPacket * Packet, TSFTPPacket * Response, SSH_FXP_TYPES ExpectedType = -1,
-    intptr_t AllowStatus = -1)
+    SSH_FX_TYPES AllowStatus = -1)
   {
     TSFTPAsynchronousQueue::ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
     // particularly when uploading a file that completelly fits into send buffer
@@ -2634,7 +2634,7 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
     RemoveReservation(Reservation);
   }
 
-  if (ExpectedType >= 0)
+  if (ExpectedType != (SSH_FXP_TYPES)-1)
   {
     if (Packet->GetType() == SSH_FXP_STATUS)
     {
