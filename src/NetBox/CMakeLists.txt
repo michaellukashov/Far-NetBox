@@ -144,8 +144,11 @@ include_directories(
   ${LIBS_ROOT}/apr/include/arch/win32
   ${LIBS_ROOT}/apr/include/arch/unix
   ${LIBS_ROOT}/rdestl
+
   ${LIBS_ROOT}/openssl/${CONF}/inc32
   ${LIBS_ROOT}/openssl
+  ${LIBS_ROOT}/openssl/crypto
+  ${LIBS_ROOT}/openssl/crypto/asn1
 )
 
 #-------------------------------------------------------------------------------
@@ -984,6 +987,7 @@ add_library(openssl STATIC
 set_target_properties(openssl
   PROPERTIES
   COMPILE_FLAGS "/TC -DOPENSSL_SYSNAME_WIN32 -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DSECURITY_WIN32"
+#  INCLUDE_DIRECTORIES "${LIBS_ROOT}/openssl ${LIBS_ROOT}/openssl/crypto ${LIBS_ROOT}/openssl/crypto/asn1"
 )
 
 #-------------------------------------------------------------------------------
