@@ -1,5 +1,7 @@
-NetBox 2.1.44.401 22.08.2015
+NetBox 2.1.44.402 23.08.2015
 --------------------
+  * Bugfix: SFTP: cannot create symlink
+    (http://forum.farmanager.com/viewtopic.php?p=132109#p132109)
   * Update putty sources
 
 NetBox 2.1.43.400 16.08.2015
