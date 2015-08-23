@@ -149,6 +149,8 @@ include_directories(
   ${LIBS_ROOT}/openssl
   ${LIBS_ROOT}/openssl/crypto
   ${LIBS_ROOT}/openssl/crypto/asn1
+  ${LIBS_ROOT}/openssl/crypto/modes
+  ${LIBS_ROOT}/openssl/crypto/evp
 )
 
 #-------------------------------------------------------------------------------
@@ -299,56 +301,56 @@ endif()
 
 #-------------------------------------------------------------------------------
 add_library(openssl STATIC
-  ${LIBS_ROOT}/openssl/apps/openssl.c
-  ${LIBS_ROOT}/openssl/apps/ts.c
-  ${LIBS_ROOT}/openssl/apps/prime.c
-  ${LIBS_ROOT}/openssl/apps/ocsp.c
-  ${LIBS_ROOT}/openssl/apps/engine.c
-  ${LIBS_ROOT}/openssl/apps/rand.c
-  ${LIBS_ROOT}/openssl/apps/cms.c
-  ${LIBS_ROOT}/openssl/apps/smime.c
-  ${LIBS_ROOT}/openssl/apps/spkac.c
-  ${LIBS_ROOT}/openssl/apps/pkeyutl.c
-  ${LIBS_ROOT}/openssl/apps/pkeyparam.c
-  ${LIBS_ROOT}/openssl/apps/pkey.c
-  ${LIBS_ROOT}/openssl/apps/pkcs8.c
-  ${LIBS_ROOT}/openssl/apps/pkcs12.c
-  ${LIBS_ROOT}/openssl/apps/nseq.c
-  ${LIBS_ROOT}/openssl/apps/ciphers.c
-  ${LIBS_ROOT}/openssl/apps/sess_id.c
-  ${LIBS_ROOT}/openssl/apps/version.c
-  ${LIBS_ROOT}/openssl/apps/app_rand.c
-  ${LIBS_ROOT}/openssl/apps/s_socket.c
-  ${LIBS_ROOT}/openssl/apps/s_cb.c
-  ${LIBS_ROOT}/openssl/apps/apps.c
-  ${LIBS_ROOT}/openssl/apps/s_time.c
-  ${LIBS_ROOT}/openssl/apps/speed.c
-  ${LIBS_ROOT}/openssl/apps/s_client.c
-  ${LIBS_ROOT}/openssl/apps/s_server.c
-  ${LIBS_ROOT}/openssl/apps/genpkey.c
-  ${LIBS_ROOT}/openssl/apps/gendsa.c
-  ${LIBS_ROOT}/openssl/apps/genrsa.c
-  ${LIBS_ROOT}/openssl/apps/x509.c
-  ${LIBS_ROOT}/openssl/apps/ecparam.c
-  ${LIBS_ROOT}/openssl/apps/ec.c
-  ${LIBS_ROOT}/openssl/apps/dsaparam.c
-  ${LIBS_ROOT}/openssl/apps/dsa.c
-  ${LIBS_ROOT}/openssl/apps/rsautl.c
-  ${LIBS_ROOT}/openssl/apps/rsa.c
-  ${LIBS_ROOT}/openssl/apps/crl.c
-  ${LIBS_ROOT}/openssl/apps/crl2p7.c
-  ${LIBS_ROOT}/openssl/apps/pkcs7.c
-  ${LIBS_ROOT}/openssl/apps/ca.c
-  ${LIBS_ROOT}/openssl/apps/errstr.c
-  ${LIBS_ROOT}/openssl/apps/gendh.c
-  ${LIBS_ROOT}/openssl/apps/passwd.c
-  ${LIBS_ROOT}/openssl/apps/enc.c
-  ${LIBS_ROOT}/openssl/apps/dhparam.c
-  ${LIBS_ROOT}/openssl/apps/dh.c
-  ${LIBS_ROOT}/openssl/apps/dgst.c
-  ${LIBS_ROOT}/openssl/apps/req.c
-  ${LIBS_ROOT}/openssl/apps/asn1pars.c
-  ${LIBS_ROOT}/openssl/apps/verify.c
+#  ${LIBS_ROOT}/openssl/apps/openssl.c
+#  ${LIBS_ROOT}/openssl/apps/ts.c
+#  ${LIBS_ROOT}/openssl/apps/prime.c
+#  ${LIBS_ROOT}/openssl/apps/ocsp.c
+#  ${LIBS_ROOT}/openssl/apps/engine.c
+#  ${LIBS_ROOT}/openssl/apps/rand.c
+#  ${LIBS_ROOT}/openssl/apps/cms.c
+#  ${LIBS_ROOT}/openssl/apps/smime.c
+#  ${LIBS_ROOT}/openssl/apps/spkac.c
+#  ${LIBS_ROOT}/openssl/apps/pkeyutl.c
+#  ${LIBS_ROOT}/openssl/apps/pkeyparam.c
+#  ${LIBS_ROOT}/openssl/apps/pkey.c
+#  ${LIBS_ROOT}/openssl/apps/pkcs8.c
+#  ${LIBS_ROOT}/openssl/apps/pkcs12.c
+#  ${LIBS_ROOT}/openssl/apps/nseq.c
+#  ${LIBS_ROOT}/openssl/apps/ciphers.c
+#  ${LIBS_ROOT}/openssl/apps/sess_id.c
+#  ${LIBS_ROOT}/openssl/apps/version.c
+#  ${LIBS_ROOT}/openssl/apps/app_rand.c
+#  ${LIBS_ROOT}/openssl/apps/s_socket.c
+#  ${LIBS_ROOT}/openssl/apps/s_cb.c
+#  ${LIBS_ROOT}/openssl/apps/apps.c
+#  ${LIBS_ROOT}/openssl/apps/s_time.c
+#  ${LIBS_ROOT}/openssl/apps/speed.c
+#  ${LIBS_ROOT}/openssl/apps/s_client.c
+#  ${LIBS_ROOT}/openssl/apps/s_server.c
+#  ${LIBS_ROOT}/openssl/apps/genpkey.c
+#  ${LIBS_ROOT}/openssl/apps/gendsa.c
+#  ${LIBS_ROOT}/openssl/apps/genrsa.c
+#  ${LIBS_ROOT}/openssl/apps/x509.c
+#  ${LIBS_ROOT}/openssl/apps/ecparam.c
+#  ${LIBS_ROOT}/openssl/apps/ec.c
+#  ${LIBS_ROOT}/openssl/apps/dsaparam.c
+#  ${LIBS_ROOT}/openssl/apps/dsa.c
+#  ${LIBS_ROOT}/openssl/apps/rsautl.c
+#  ${LIBS_ROOT}/openssl/apps/rsa.c
+#  ${LIBS_ROOT}/openssl/apps/crl.c
+#  ${LIBS_ROOT}/openssl/apps/crl2p7.c
+#  ${LIBS_ROOT}/openssl/apps/pkcs7.c
+#  ${LIBS_ROOT}/openssl/apps/ca.c
+#  ${LIBS_ROOT}/openssl/apps/errstr.c
+#  ${LIBS_ROOT}/openssl/apps/gendh.c
+#  ${LIBS_ROOT}/openssl/apps/passwd.c
+#  ${LIBS_ROOT}/openssl/apps/enc.c
+#  ${LIBS_ROOT}/openssl/apps/dhparam.c
+#  ${LIBS_ROOT}/openssl/apps/dh.c
+#  ${LIBS_ROOT}/openssl/apps/dgst.c
+#  ${LIBS_ROOT}/openssl/apps/req.c
+#  ${LIBS_ROOT}/openssl/apps/asn1pars.c
+#  ${LIBS_ROOT}/openssl/apps/verify.c
   #${LIBS_ROOT}/openssl/test/igetest.c
   #${LIBS_ROOT}/openssl/test/heartbeat_test.c
   #${LIBS_ROOT}/openssl/test/ssltest.c
@@ -986,8 +988,10 @@ add_library(openssl STATIC
 
 set_target_properties(openssl
   PROPERTIES
-  COMPILE_FLAGS "/TC -DOPENSSL_SYSNAME_WIN32 -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DSECURITY_WIN32"
-#  INCLUDE_DIRECTORIES "${LIBS_ROOT}/openssl ${LIBS_ROOT}/openssl/crypto ${LIBS_ROOT}/openssl/crypto/asn1"
+  COMPILE_FLAGS "/TC -DMK1MF_BUILD -DOPENSSL_SYSNAME_WIN32 -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DSECURITY_WIN32"
+#  INCLUDE_DIRECTORIES "${LIBS_ROOT}/openssl ${LIBS_ROOT}/openssl/crypto ${LIBS_ROOT}/openssl/crypto/asn1 ${LIBS_ROOT}/openssl/crypto/modes"
+#-DOPENSSL_SYS_WINDOWS
+#-DOPENSSL_IMPORT=
 )
 
 #-------------------------------------------------------------------------------
