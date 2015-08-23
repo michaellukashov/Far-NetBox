@@ -3,6 +3,13 @@
 #include <stdint.h>
 #include <FileSystems.h>
 
+typedef int8_t SSH_FX_TYPES;
+typedef int8_t SSH_FXP_TYPES;
+typedef uint32_t SSH_FILEXFER_ATTR_TYPES;
+typedef uint8_t SSH_FILEXFER_TYPES;
+typedef uint32_t SSH_FXF_TYPES;
+typedef uint32_t ACE4_TYPES;
+
 class TSFTPPacket;
 struct TOverwriteFileParams;
 struct TSFTPSupport;
@@ -118,11 +125,11 @@ protected:
   void SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
     uint32_t Flags);
   void CustomReadFile(const UnicodeString & AFileName,
-    TRemoteFile *& AFile, uint8_t Type, TRemoteFile * ALinkedByFile = nullptr,
-    intptr_t AllowStatus = -1);
+    TRemoteFile *& AFile, SSH_FXP_TYPES Type, TRemoteFile * ALinkedByFile = nullptr,
+    SSH_FX_TYPES AllowStatus = -1);
   virtual UnicodeString GetCurrDirectory() const;
   UnicodeString GetHomeDirectory();
-  uintptr_t GotStatusPacket(TSFTPPacket * Packet, intptr_t AllowStatus);
+  SSH_FX_TYPES GotStatusPacket(TSFTPPacket * Packet, SSH_FX_TYPES AllowStatus);
   bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** AFile = nullptr);
   TRemoteFile * LoadFile(TSFTPPacket * Packet,
     TRemoteFile * ALinkedByFile, const UnicodeString & AFileName,
@@ -135,15 +142,15 @@ protected:
   UnicodeString GetRealPath(const UnicodeString & APath, const UnicodeString & ABaseDir);
   void ReserveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response);
-  uintptr_t ReceivePacket(TSFTPPacket * Packet, intptr_t ExpectedType = -1,
-    intptr_t AllowStatus = -1);
+  SSH_FX_TYPES ReceivePacket(TSFTPPacket * Packet, SSH_FXP_TYPES ExpectedType = -1,
+    SSH_FX_TYPES AllowStatus = -1);
   bool PeekPacket();
   void RemoveReservation(intptr_t Reservation);
   void SendPacket(const TSFTPPacket * Packet);
-  uintptr_t ReceiveResponse(const TSFTPPacket * Packet,
-    TSFTPPacket * AResponse, intptr_t ExpectedType = -1, intptr_t AllowStatus = -1);
-  uintptr_t SendPacketAndReceiveResponse(const TSFTPPacket * Packet,
-    TSFTPPacket * Response, intptr_t ExpectedType = -1, intptr_t AllowStatus = -1);
+  SSH_FX_TYPES ReceiveResponse(const TSFTPPacket * Packet,
+    TSFTPPacket * AResponse, SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1);
+  SSH_FX_TYPES SendPacketAndReceiveResponse(const TSFTPPacket * Packet,
+    TSFTPPacket * Response, SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1);
   void UnreserveResponse(TSFTPPacket * Response);
   void TryOpenDirectory(const UnicodeString & Directory);
   bool SupportsExtension(const UnicodeString & Extension) const;
@@ -154,7 +161,7 @@ protected:
     TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel);
   void RegisterChecksumAlg(const UnicodeString & Alg, const UnicodeString & SftpAlg);
-  void DoDeleteFile(const UnicodeString & AFileName, uint8_t Type);
+  void DoDeleteFile(const UnicodeString & AFileName, SSH_FXP_TYPES Type);
 
   void SFTPSourceRobust(const UnicodeString & AFileName,
     const TRemoteFile * AFile,
@@ -168,7 +175,7 @@ protected:
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TUploadSessionAction & Action, bool & ChildError);
   RawByteString SFTPOpenRemoteFile(const UnicodeString & AFileName,
-    uint32_t OpenType, int64_t Size = -1);
+    SSH_FXF_TYPES OpenType, int64_t Size = -1);
   intptr_t SFTPOpenRemote(void * AOpenParams, void * Param2);
   void SFTPCloseRemote(const RawByteString & Handle,
     const UnicodeString & AFileName, TFileOperationProgressType * OperationProgress,
@@ -204,7 +211,7 @@ protected:
     TFileOperationProgressType * OperationProgress);
   uint32_t DownloadBlockSize(
     TFileOperationProgressType * OperationProgress);
-  intptr_t PacketLength(uint8_t * LenBuf, intptr_t ExpectedType);
+  intptr_t PacketLength(uint8_t * LenBuf, SSH_FXP_TYPES ExpectedType);
   void Progress(TFileOperationProgressType * OperationProgress);
 
 private:

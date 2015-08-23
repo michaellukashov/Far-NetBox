@@ -3626,7 +3626,7 @@ void TFTPFileSystem::HandleFeatReply()
       {
         // Serv-U lists all SITE commands in one line like:
         //  SITE PSWD;SET;ZONE;CHMOD;MSG;EXEC;HELP
-        // But ProFTPD lists them separatelly:
+        // But ProFTPD lists them separately:
         //  SITE UTIME
         //  SITE RMDIR
         //  SITE COPY

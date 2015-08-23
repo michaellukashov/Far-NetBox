@@ -1322,7 +1322,7 @@ void TSessionData::Remove()
 
 void TSessionData::CacheHostKeyIfNotCached()
 {
-  UnicodeString KeyType = KeyTypeFromFingerprint(GetHostKey());
+  UnicodeString KeyType = GetKeyTypeFromFingerprint(GetHostKey());
 
   UnicodeString TargetKey = GetConfiguration()->GetRegistryStorageKey() + L"\\" + GetConfiguration()->GetSshHostKeysSubKey();
   std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(TargetKey));

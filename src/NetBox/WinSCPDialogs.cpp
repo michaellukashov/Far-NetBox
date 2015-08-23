@@ -4011,14 +4011,19 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
 
   if (!::Trim(AFileName).IsEmpty())
   {
-    TKeyType Type = KeyType(AFileName);
+    TKeyType KeyType = GetKeyType(AFileName);
     UnicodeString Message;
-    switch (Type)
+    switch (KeyType)
     {
       case ktOpenSSHAuto:
         Message = FMTLOAD(KEY_TYPE_UNSUPPORTED, AFileName.c_str(), L"OpenSSH SSH-2");
         break;
 
+      case ktOpenSSHPem:
+      case ktOpenSSHNew:
+      case ktSSH1Public:
+      case ktSSH2PublicRFC4716:
+      case ktSSH2PublicOpenSSH:
       case ktSSHCom:
         Message = FMTLOAD(KEY_TYPE_UNSUPPORTED, AFileName.c_str(), L"ssh.com SSH-2");
         break;
@@ -4027,11 +4032,11 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
       case ktSSH2:
         if (!TypeOnly)
         {
-          if ((Type == ktSSH1) !=
+          if ((KeyType == ktSSH1) !=
               (SshProt1onlyButton->GetChecked() || SshProt1Button->GetChecked()))
           {
             Message = FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
-              AFileName.c_str(), (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"));
+              AFileName.c_str(), (KeyType == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"));
           }
         }
         break;

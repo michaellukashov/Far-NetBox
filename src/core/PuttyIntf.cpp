@@ -497,7 +497,7 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 
-TKeyType KeyType(const UnicodeString & AFileName)
+TKeyType GetKeyType(const UnicodeString & AFileName)
 {
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
@@ -508,7 +508,7 @@ TKeyType KeyType(const UnicodeString & AFileName)
   return Result;
 }
 
-UnicodeString KeyTypeName(TKeyType KeyType)
+UnicodeString GetKeyTypeName(TKeyType KeyType)
 {
   return key_type_to_str(KeyType);
 }
@@ -610,7 +610,7 @@ UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint)
   return Result;
 }
 
-UnicodeString KeyTypeFromFingerprint(const UnicodeString & Fingerprint)
+UnicodeString GetKeyTypeFromFingerprint(const UnicodeString & Fingerprint)
 {
   UnicodeString Fingerprint2 = NormalizeFingerprint(Fingerprint);
   UnicodeString Result;
