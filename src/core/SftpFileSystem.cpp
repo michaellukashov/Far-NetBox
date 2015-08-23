@@ -157,17 +157,17 @@ SSH_FXF_ACCESS_TEXT_MODE          = 0x00000020;
 #define OGQ_LIST_OWNERS 0x01
 #define OGQ_LIST_GROUPS 0x02
 
-const intptr_t SFTPMinVersion = 0;
-const intptr_t SFTPMaxVersion = 6;
-const uint32_t SFTPNoMessageNumber = static_cast<uint32_t>(-1);
+static const intptr_t SFTPMinVersion = 0;
+static const intptr_t SFTPMaxVersion = 6;
+static const uint32_t SFTPNoMessageNumber = static_cast<uint32_t>(-1);
 
-const intptr_t asNo =            0;
-const intptr_t asOK =            1 << SSH_FX_OK;
-const intptr_t asEOF =           1 << SSH_FX_EOF;
-const intptr_t asPermDenied =    1 << SSH_FX_PERMISSION_DENIED;
-const intptr_t asOpUnsupported = 1 << SSH_FX_OP_UNSUPPORTED;
-const intptr_t asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
-const intptr_t asAll = 0xFFFF;
+static const intptr_t asNo =            0;
+static const intptr_t asOK =            1 << SSH_FX_OK;
+static const intptr_t asEOF =           1 << SSH_FX_EOF;
+static const intptr_t asPermDenied =    1 << SSH_FX_PERMISSION_DENIED;
+static const intptr_t asOpUnsupported = 1 << SSH_FX_OP_UNSUPPORTED;
+static const intptr_t asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
+static const intptr_t asAll = 0xFFFF;
 
 #ifndef GET_32BIT
 #define GET_32BIT(cp) \
