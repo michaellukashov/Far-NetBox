@@ -981,6 +981,11 @@ add_library(openssl STATIC
   ${LIBS_ROOT}/openssl/crypto/cryptlib.c
 )
 
+set_target_properties(openssl
+  PROPERTIES
+  COMPILE_FLAGS "-DOPENSSL_SYSNAME_WIN32"
+)
+
 #-------------------------------------------------------------------------------
 
 add_library(atlmfc STATIC
