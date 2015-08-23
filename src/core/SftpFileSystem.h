@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <FileSystems.h>
 
+typedef uint8_t SSH_FX_TYPES;
 typedef uint8_t SSH_FXP_TYPES;
 typedef uint32_t SSH_FILEXFER_ATTR_TYPES;
 
@@ -122,10 +123,10 @@ protected:
     uint32_t Flags);
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile, SSH_FXP_TYPES Type, TRemoteFile * ALinkedByFile = nullptr,
-    intptr_t AllowStatus = -1);
+    SSH_FX_TYPES AllowStatus = -1);
   virtual UnicodeString GetCurrDirectory() const;
   UnicodeString GetHomeDirectory();
-  uintptr_t GotStatusPacket(TSFTPPacket * Packet, intptr_t AllowStatus);
+  SSH_FX_TYPES GotStatusPacket(TSFTPPacket * Packet, SSH_FX_TYPES AllowStatus);
   bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** AFile = nullptr);
   TRemoteFile * LoadFile(TSFTPPacket * Packet,
     TRemoteFile * ALinkedByFile, const UnicodeString & AFileName,
@@ -138,15 +139,15 @@ protected:
   UnicodeString GetRealPath(const UnicodeString & APath, const UnicodeString & ABaseDir);
   void ReserveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response);
-  uintptr_t ReceivePacket(TSFTPPacket * Packet, SSH_FXP_TYPES ExpectedType = -1,
-    intptr_t AllowStatus = -1);
+  SSH_FX_TYPES ReceivePacket(TSFTPPacket * Packet, SSH_FXP_TYPES ExpectedType = -1,
+    SSH_FX_TYPES AllowStatus = -1);
   bool PeekPacket();
   void RemoveReservation(intptr_t Reservation);
   void SendPacket(const TSFTPPacket * Packet);
   uintptr_t ReceiveResponse(const TSFTPPacket * Packet,
-    TSFTPPacket * AResponse, SSH_FXP_TYPES ExpectedType = -1, intptr_t AllowStatus = -1);
+    TSFTPPacket * AResponse, SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1);
   uintptr_t SendPacketAndReceiveResponse(const TSFTPPacket * Packet,
-    TSFTPPacket * Response, SSH_FXP_TYPES ExpectedType = -1, intptr_t AllowStatus = -1);
+    TSFTPPacket * Response, SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1);
   void UnreserveResponse(TSFTPPacket * Response);
   void TryOpenDirectory(const UnicodeString & Directory);
   bool SupportsExtension(const UnicodeString & Extension) const;

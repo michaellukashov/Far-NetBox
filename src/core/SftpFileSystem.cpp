@@ -19,12 +19,13 @@
 #include "SecureShell.h"
 #include <WideStrUtils.hpp>
 
-#define SSH_FX_OK                                 0
-#define SSH_FX_EOF                                1
-#define SSH_FX_NO_SUCH_FILE                       2
-#define SSH_FX_PERMISSION_DENIED                  3
-#define SSH_FX_FAILURE                            4
-#define SSH_FX_OP_UNSUPPORTED                     8
+static const SSH_FX_TYPES
+SSH_FX_OK                                 = 0,
+SSH_FX_EOF                                = 1,
+SSH_FX_NO_SUCH_FILE                       = 2,
+SSH_FX_PERMISSION_DENIED                  = 3,
+SSH_FX_FAILURE                            = 4,
+SSH_FX_OP_UNSUPPORTED                     = 8;
 
 static const SSH_FXP_TYPES
 SSH_FXP_INIT               = 1,
@@ -2352,8 +2353,8 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
   }
 }
 
-uintptr_t TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
-  intptr_t AllowStatus)
+SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
+  SSH_FX_TYPES AllowStatus)
 {
   uint32_t Code = Packet->GetCardinal();
 
@@ -2534,12 +2535,12 @@ bool TSFTPFileSystem::PeekPacket()
   return Result;
 }
 
-uintptr_t TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
-  SSH_FXP_TYPES ExpectedType, intptr_t AllowStatus)
+SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
+  SSH_FXP_TYPES ExpectedType, SSH_FX_TYPES AllowStatus)
 {
   TSFTPBusy Busy(this);
 
-  uintptr_t Result = SSH_FX_OK;
+  SSH_FX_TYPES Result = SSH_FX_OK;
   intptr_t Reservation = FPacketReservations->IndexOf(Packet);
 
   if ((Reservation < 0) || (Packet->GetCapacity() == 0))
@@ -2689,9 +2690,8 @@ void TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
   }
 }
 
-uintptr_t TSFTPFileSystem::ReceiveResponse(
-  const TSFTPPacket * Packet, TSFTPPacket * AResponse, SSH_FXP_TYPES ExpectedType,
-  intptr_t AllowStatus)
+uintptr_t TSFTPFileSystem::ReceiveResponse(const TSFTPPacket * Packet, TSFTPPacket * AResponse, SSH_FXP_TYPES ExpectedType,
+  SSH_FX_TYPES AllowStatus)
 {
   uintptr_t Result;
   uintptr_t MessageNumber = Packet->GetMessageNumber();
@@ -2712,7 +2712,7 @@ uintptr_t TSFTPFileSystem::ReceiveResponse(
 }
 
 uintptr_t TSFTPFileSystem::SendPacketAndReceiveResponse(const TSFTPPacket * Packet, TSFTPPacket * Response, SSH_FXP_TYPES ExpectedType,
-  intptr_t AllowStatus)
+  SSH_FX_TYPES AllowStatus)
 {
   TSFTPBusy Busy(this);
   SendPacket(Packet);
@@ -3668,7 +3668,7 @@ void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket * Packet,
 
 void TSFTPFileSystem::CustomReadFile(const UnicodeString & AFileName,
   TRemoteFile *& AFile, SSH_FXP_TYPES Type, TRemoteFile * ALinkedByFile,
-  intptr_t AllowStatus)
+  SSH_FX_TYPES AllowStatus)
 {
   SSH_FILEXFER_ATTR_TYPES Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |
     SSH_FILEXFER_ATTR_ACCESSTIME | SSH_FILEXFER_ATTR_MODIFYTIME |
