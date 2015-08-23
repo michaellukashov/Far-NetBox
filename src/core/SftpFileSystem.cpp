@@ -172,21 +172,6 @@ static const SSH_FX_TYPES asOpUnsupported = 1 << SSH_FX_OP_UNSUPPORTED;
 static const SSH_FX_TYPES asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
 static const SSH_FX_TYPES asAll = (SSH_FX_TYPES)0xFFFF;
 
-#ifndef GET_32BIT
-#define GET_32BIT(cp) \
-    (((uint32_t)(uint8_t)(cp)[0] << 24) | \
-    ((uint32_t)(uint8_t)(cp)[1] << 16) | \
-    ((uint32_t)(uint8_t)(cp)[2] << 8) | \
-    ((uint32_t)(uint8_t)(cp)[3]))
-#endif
-#ifndef PUT_32BIT
-#define PUT_32BIT(cp, value) { \
-    (cp)[0] = (uint8_t)((value) >> 24); \
-    (cp)[1] = (uint8_t)((value) >> 16); \
-    (cp)[2] = (uint8_t)((value) >> 8); \
-    (cp)[3] = (uint8_t)(value); }
-#endif
-
 static const uintptr_t SFTP_PACKET_ALLOC_DELTA = 256;
 
 struct TSFTPSupport : public TObject
