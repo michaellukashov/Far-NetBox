@@ -138,13 +138,14 @@ include_directories(
   ${LIBS_ROOT}/Putty
   ${LIBS_ROOT}/Putty/windows
   ${LIBS_ROOT}/tinyxml2
-  ${LIBS_ROOT}/openssl/${CONF}/inc32
   ${LIBS_ROOT}/zlib/src
   ${LIBS_ROOT}/expat/lib
   ${LIBS_ROOT}/apr/include
   ${LIBS_ROOT}/apr/include/arch/win32
   ${LIBS_ROOT}/apr/include/arch/unix
   ${LIBS_ROOT}/rdestl
+  ${LIBS_ROOT}/openssl/${CONF}/inc32
+  ${LIBS_ROOT}/openssl
 )
 
 #-------------------------------------------------------------------------------
