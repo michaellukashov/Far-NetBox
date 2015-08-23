@@ -157,8 +157,8 @@ static const intptr_t SFTP_MAX_PACKET_LEN   = 1024000;
 #define SFTP_EXT_HARDLINK_VALUE_V1 L"1"
 #define SFTP_EXT_COPY_FILE "copy-file"
 
-#define OGQ_LIST_OWNERS 0x01
-#define OGQ_LIST_GROUPS 0x02
+static const wchar_t OGQ_LIST_OWNERS = 0x01;
+static const wchar_t OGQ_LIST_GROUPS = 0x02;
 
 static const intptr_t SFTPMinVersion = 0;
 static const intptr_t SFTPMaxVersion = 6;
