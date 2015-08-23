@@ -8,6 +8,7 @@ typedef uint8_t SSH_FXP_TYPES;
 typedef uint32_t SSH_FILEXFER_ATTR_TYPES;
 typedef uint8_t SSH_FILEXFER_TYPES;
 typedef uint32_t SSH_FXF_TYPES;
+typedef uint32_t ACE4_TYPES;
 
 class TSFTPPacket;
 struct TOverwriteFileParams;
