@@ -3782,7 +3782,7 @@ void TSFTPFileSystem::CreateLink(const UnicodeString & AFileName,
   assert(FVersion >= 3); // links are supported with SFTP version 3 and later
   bool UseLink = (FVersion >= 6);
   bool UseHardlink = !Symbolic && !UseLink && FSupportsHardlink;
-  TSFTPPacket Packet(UseHardlink ? SSH_FXP_EXTENDED : (UseLink ? SSH_FXP_LINK : SSH_FXP_SYMLINK));
+  TSFTPPacket Packet(UseHardlink ? SSH_FXP_EXTENDED : (UseLink ? SSH_FXP_LINK : SSH_FXP_SYMLINK), FCodePage);
   if (UseHardlink)
   {
     Packet.AddString(SFTP_EXT_HARDLINK);
@@ -4162,7 +4162,7 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
       // See comment in IsCapable
       (FSecureShell->GetSshImplementation() == sshiBitvise))
   {
-    TSFTPPacket Packet(SSH_FXP_EXTENDED);
+    TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
     Packet.AddString(SFTP_EXT_SPACE_AVAILABLE);
     Packet.AddPathString(LocalCanonify(APath), FUtfStrings);
 
@@ -4193,7 +4193,7 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
   else if (ALWAYS_TRUE(FSupportsStatVfsV2))
   {
     // http://www.openbsd.org/cgi-bin/cvsweb/src/usr.bin/ssh/PROTOCOL?rev=HEAD;content-type=text/plain
-    TSFTPPacket Packet(SSH_FXP_EXTENDED);
+    TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
     Packet.AddString(SFTP_EXT_STATVFS);
     Packet.AddPathString(LocalCanonify(APath), FUtfStrings);
 
