@@ -49,42 +49,6 @@ DEFINE_CALLBACK_TYPE6(TFileOperationFinishedEvent, void,
 class TFileOperationProgressType : public TObject
 {
 public:
-  // common data
-  TFileOperation Operation;
-  // on what side if operation being processed (local/remote), source of copy
-  TOperationSide Side;
-  UnicodeString FileName;
-  UnicodeString FullFileName;
-  UnicodeString Directory;
-  bool AsciiTransfer;
-  // Can be true with SCP protocol only
-  bool TransferingFile;
-  bool Temp;
-
-  // file size to read/write
-  int64_t LocalSize;
-  int64_t LocallyUsed;
-  int64_t TransferSize;
-  int64_t TransferedSize;
-  int64_t SkippedSize;
-  bool InProgress;
-  bool FileInProgress;
-  TCancelStatus Cancel;
-  intptr_t Count;
-  // when operation started
-  TDateTime StartTime;
-  // bytes transfered
-  int64_t TotalTransfered;
-  int64_t TotalSkipped;
-  int64_t TotalSize;
-
-  TBatchOverwrite BatchOverwrite;
-  bool SkipToAll;
-  uintptr_t CPSLimit;
-
-  bool TotalSizeSet;
-  bool Suspended;
-
   explicit TFileOperationProgressType();
   explicit TFileOperationProgressType(
     TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished);
@@ -133,6 +97,42 @@ public:
   intptr_t OverallProgress() const;
   intptr_t TotalTransferProgress() const;
   void SetSpeedCounters();
+
+  // common data
+  TFileOperation Operation;
+  // on what side if operation being processed (local/remote), source of copy
+  TOperationSide Side;
+  UnicodeString FileName;
+  UnicodeString FullFileName;
+  UnicodeString Directory;
+  bool AsciiTransfer;
+  // Can be true with SCP protocol only
+  bool TransferingFile;
+  bool Temp;
+
+  // file size to read/write
+  int64_t LocalSize;
+  int64_t LocallyUsed;
+  int64_t TransferSize;
+  int64_t TransferedSize;
+  int64_t SkippedSize;
+  bool InProgress;
+  bool FileInProgress;
+  TCancelStatus Cancel;
+  intptr_t Count;
+  // when operation started
+  TDateTime StartTime;
+  // bytes transfered
+  int64_t TotalTransfered;
+  int64_t TotalSkipped;
+  int64_t TotalSize;
+
+  TBatchOverwrite BatchOverwrite;
+  bool SkipToAll;
+  uintptr_t CPSLimit;
+
+  bool TotalSizeSet;
+  bool Suspended;
 
 protected:
   void ClearTransfer();
