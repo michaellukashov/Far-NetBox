@@ -1303,24 +1303,6 @@ public:
   {}
 };
 
-/*
-class EWriteError : public ExtException
-{
-public:
-    EWriteError(const UnicodeString & Msg) :
-        ExtException(Msg)
-    {}
-};
-
-class EReadError : public ExtException
-{
-public:
-    EReadError(const UnicodeString & Msg) :
-        ExtException(Msg)
-    {}
-};
-*/
-
 TStream::TStream()
 {
 }
