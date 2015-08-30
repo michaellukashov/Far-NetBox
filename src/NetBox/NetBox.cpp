@@ -1,4 +1,3 @@
-
 #include "afxdll.h"
 #include <vcl.h>
 #include <Sysutils.hpp>

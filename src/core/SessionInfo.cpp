@@ -1,4 +1,3 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
@@ -9,9 +8,10 @@
 #include <sspi.h>
 #include <secext.h>
 
-#include "Common.h"
+#include <Common.h>
+#include <Exceptions.h>
+
 #include "SessionInfo.h"
-#include "Exceptions.h"
 #include "TextsCore.h"
 
 static UnicodeString DoXmlEscape(const UnicodeString & Str, bool NewLine)

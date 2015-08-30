@@ -1,16 +1,15 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
+#include <Common.h>
+#include <StrUtils.hpp>
+
 #include "PuttyIntf.h"
-#include "Exceptions.h"
 #include "Interface.h"
 #include "SecureShell.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "CoreMain.h"
-#include <StrUtils.hpp>
 
 #ifndef AUTO_WINSOCK
 #include <winsock2.h>

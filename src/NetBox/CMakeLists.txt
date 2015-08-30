@@ -1375,9 +1375,9 @@ set(TESTNETBOX_01_SOURCES
   ${SRC_ROOT}/base/Sysutils.cpp
   ${SRC_ROOT}/base/UnicodeString.cpp
   ${SRC_ROOT}/base/local.cpp
-  ${SRC_ROOT}/core/Common.cpp
-  ${SRC_ROOT}/core/Exceptions.cpp
-  ${SRC_ROOT}/core/FileBuffer.cpp
+  ${SRC_ROOT}/base/Common.cpp
+  ${SRC_ROOT}/base/Exceptions.cpp
+  ${SRC_ROOT}/base/FileBuffer.cpp
   ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
   ${SRC_ROOT}/resource/TextsCore1.rc
   ${SRC_ROOT}/resource/rtlconsts.rc

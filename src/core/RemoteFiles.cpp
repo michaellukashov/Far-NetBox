@@ -1,14 +1,11 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
-#include "RemoteFiles.h"
-#include "Common.h"
-
+#include <Common.h>
 #include <SysUtils.hpp>
 #include <StrUtils.hpp>
 
-#include "Exceptions.h"
+#include "RemoteFiles.h"
 #include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"
@@ -96,40 +93,6 @@ UnicodeString UnixExtractFilePath(const UnicodeString & APath)
   intptr_t Pos = APath.LastDelimiter(L'/');
   // it used to return Path when no slash was found
   return (Pos > 0) ? APath.SubString(1, Pos) : UnicodeString();
-}
-
-UnicodeString UnixExtractFileName(const UnicodeString & APath)
-{
-  intptr_t Pos = APath.LastDelimiter(L'/');
-  UnicodeString Result;
-  if (Pos > 0)
-  {
-    Result = APath.SubString(Pos + 1, APath.Length() - Pos);
-  }
-  else
-  {
-    Result = APath;
-  }
-  return Result;
-}
-
-UnicodeString UnixExtractFileExt(const UnicodeString & APath)
-{
-  UnicodeString FileName = core::UnixExtractFileName(APath);
-  intptr_t Pos = FileName.LastDelimiter(L".");
-  return (Pos > 0) ? APath.SubString(Pos, APath.Length() - Pos + 1) : UnicodeString();
-}
-
-UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
-{
-  if (Unix)
-  {
-    return core::UnixExtractFileName(APath);
-  }
-  else
-  {
-    return ::ExtractFilename(APath, L'\\');
-  }
 }
 
 bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)

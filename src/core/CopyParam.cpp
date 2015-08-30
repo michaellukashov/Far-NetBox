@@ -1,9 +1,7 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
-#include "Exceptions.h"
+#include <Common.h>
 #include "CopyParam.h"
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"

@@ -1,11 +1,10 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
+#include <Common.h>
+
 #include "Terminal.h"
 #include "Queue.h"
-#include "Exceptions.h"
 
 class TBackgroundTerminal;
 

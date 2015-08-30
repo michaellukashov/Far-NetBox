@@ -1,4 +1,3 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
@@ -8,7 +7,7 @@
 #include "FarDialog.h"
 #include "FarConfiguration.h"
 
-#include <ShellAPI.h>
+#include <shellapi.h>
 #include <PuttyTools.h>
 #include <GUITools.h>
 #include <Tools.h>

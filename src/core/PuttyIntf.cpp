@@ -1,15 +1,15 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
 #define PUTTY_DO_GLOBALS
+#include <Exceptions.h>
+#include <StrUtils.hpp>
+
 #include "PuttyIntf.h"
 #include "Interface.h"
 #include "SecureShell.h"
-#include "Exceptions.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
-#include <StrUtils.hpp>
 
 char sshver[50];
 const int platform_uses_x11_unix_by_default = TRUE;

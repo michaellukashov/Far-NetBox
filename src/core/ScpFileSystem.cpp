@@ -1,17 +1,15 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
-#include "ScpFileSystem.h"
+#include <Common.h>
+#include <StrUtils.hpp>
 
+#include "ScpFileSystem.h"
 #include "Terminal.h"
-#include "Common.h"
-#include "Exceptions.h"
 #include "Interface.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "SecureShell.h"
-#include <StrUtils.hpp>
 
 #include <stdio.h>
 

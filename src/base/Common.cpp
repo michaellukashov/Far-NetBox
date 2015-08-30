@@ -1,20 +1,19 @@
-
 #define NO_WIN32_LEAN_AND_MEAN
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
-#include "Exceptions.h"
-#include "TextsCore.h"
-#include "Interface.h"
+#include <Common.h>
 #include <StrUtils.hpp>
+#include <SysUtils.hpp>
 #include <DateUtils.hpp>
 #include <assert.h>
 #include <math.h>
+#include <rdestl/map.h>
 #include <shlobj.h>
 #include <limits>
 #include <shlwapi.h>
-#include <CoreMain.h>
+
+#include "TextsCore.h"
 
 #if defined(__MINGW32__) && (__MINGW_GCC_VERSION < 50100)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
@@ -1027,10 +1026,10 @@ UnicodeString ApiPath(const UnicodeString & APath)
   UnicodeString Result = APath;
   if (Result.Length() >= MAX_PATH)
   {
-    if (GetConfiguration() != nullptr)
-    {
+//    if (GetConfiguration() != nullptr)
+//    {
 //      GetConfiguration()->Usage->Inc(L"LongPath");
-    }
+//    }
     Result = MakeUnicodeLargePath(Result);
   }
   return Result;
@@ -2631,3 +2630,41 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   }
   return Result;
 }
+
+namespace core {
+
+UnicodeString UnixExtractFileName(const UnicodeString & APath)
+{
+  intptr_t Pos = APath.LastDelimiter(L'/');
+  UnicodeString Result;
+  if (Pos > 0)
+  {
+    Result = APath.SubString(Pos + 1, APath.Length() - Pos);
+  }
+  else
+  {
+    Result = APath;
+  }
+  return Result;
+}
+
+UnicodeString UnixExtractFileExt(const UnicodeString & APath)
+{
+  UnicodeString FileName = core::UnixExtractFileName(APath);
+  intptr_t Pos = FileName.LastDelimiter(L".");
+  return (Pos > 0) ? APath.SubString(Pos, APath.Length() - Pos + 1) : UnicodeString();
+}
+
+UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
+{
+  if (Unix)
+  {
+    return core::UnixExtractFileName(APath);
+  }
+  else
+  {
+    return ::ExtractFilename(APath, L'\\');
+  }
+}
+
+} // namespace core

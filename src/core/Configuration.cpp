@@ -1,19 +1,16 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
 #include <shlobj.h>
 #include <FileInfo.h>
 
-#include "Common.h"
-#include "Exceptions.h"
+#include <Common.h>
 #include "Configuration.h"
 #include "PuttyIntf.h"
 #include "TextsCore.h"
 #include "Interface.h"
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
-#include <shlobj.h>
 
 // See http://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
 const UnicodeString Sha1ChecksumAlg(L"sha-1");

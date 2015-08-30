@@ -20,11 +20,12 @@
 #include <boost/test/unit_test.hpp>
 // #include <boost/type_traits/is_base_of.hpp>
 
+#include <FileBuffer.h>
+
 #include "TestTexts.h"
 #include "Common.h"
 #include "FarPlugin.h"
 #include "testutils.h"
-#include "FileBuffer.h"
 #include "FastDelegate.h"
 #include "CppProperties.h"
 

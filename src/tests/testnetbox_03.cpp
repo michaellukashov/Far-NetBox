@@ -18,11 +18,12 @@
 // #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
+#include <FileBuffer.h>
+
 #include "TestTexts.h"
 #include "Common.h"
 #include "FarPlugin.h"
 #include "testutils.h"
-#include "FileBuffer.h"
 #include "Bookmarks.h"
 
 using namespace boost::unit_test;

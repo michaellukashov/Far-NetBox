@@ -1,12 +1,12 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
 #include <Common.h>
 #include <Exceptions.h>
+#include <FileBuffer.h>
 #include <Windows.hpp>
+
 #include "FileInfo.h"
-#include "FileBuffer.h"
 
 #define DWORD_ALIGN( base, ptr ) \
     ( (LPBYTE)(base) + ((((LPBYTE)(ptr) - (LPBYTE)(base)) + 3) & ~3) )

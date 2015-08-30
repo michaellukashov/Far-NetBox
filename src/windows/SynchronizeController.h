@@ -1,6 +1,5 @@
 #pragma once
 
-#include <CoreDefs.hpp>
 #include <CopyParam.h>
 
 struct TSynchronizeParamType : public TObject

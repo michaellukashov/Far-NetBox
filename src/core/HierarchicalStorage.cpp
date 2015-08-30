@@ -1,13 +1,12 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
-#include "Exceptions.h"
-#include "PuttyIntf.h"
-#include "HierarchicalStorage.h"
+#include <Common.h>
 #include <TextsCore.h>
 #include <StrUtils.hpp>
+
+#include "PuttyIntf.h"
+#include "HierarchicalStorage.h"
 
 #define READ_REGISTRY(Method) \
   if (FRegistry->ValueExists(Name)) \

@@ -1,10 +1,23 @@
 #pragma once
 
-#include <WinBase.h>
-#include <functional>
-
 #include <Classes.hpp>
-#include <headers.hpp>
+
+#define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
+#define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
+
+#define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
+#define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
+#define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
+#define SWAP(TYPE, FIRST, SECOND) \
+  { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
+
+#define PARENTDIRECTORY L".."
+#define THISDIRECTORY L"."
+#define ROOTDIRECTORY L"/"
+#define SLASH L"/"
+#define BACKSLASH L"\\"
+#define QUOTE L"\'"
+#define DOUBLEQUOTE L"\""
 
 enum FileAttributesEnum
 {
@@ -21,7 +34,7 @@ enum FileAttributesEnum
 intptr_t __cdecl debug_printf(const wchar_t * format, ...);
 intptr_t __cdecl debug_printf2(const char * format, ...);
 
-#ifdef NETBOX_DEBUG
+#ifndef NDEBUG
 #if defined(_MSC_VER)
 #if (_MSC_VER >= 1900)
 #define DEBUG_PRINTF(format, ...) do { ::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
@@ -376,3 +389,4 @@ private:
 #define SCOPE_EXIT \
   std::function<void()> SCOPE_EXIT_NAME(scope_exit_func_, __LINE__); \
   ScopeExit SCOPE_EXIT_NAME(scope_exit_, __LINE__) = SCOPE_EXIT_NAME(scope_exit_func_, __LINE__) = [&]() /* lambda body here */
+

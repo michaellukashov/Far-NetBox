@@ -1,12 +1,10 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
+#include <Common.h>
 #include "FarPlugin.h"
 #include "FarPluginStrings.h"
 #include "FarDialog.h"
-#include <Common.h>
-#include "Exceptions.h"
 #include "TextsCore.h"
 #include "FileMasks.h"
 #include "RemoteFiles.h"

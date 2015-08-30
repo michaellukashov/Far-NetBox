@@ -3,12 +3,9 @@
 #include <stdexcept>
 #include <limits>
 #include <stdarg.h>
-#include <vector.h>
+#include <rdestl/vector.h>
 #include <rdestl/pair.h>
-#include "stdafx.h"
-#include <CoreDefs.hpp>
-
-#include <WinDef.h>
+#include <BaseDefs.hpp>
 
 #pragma warning(push, 1)
 
@@ -19,6 +16,9 @@
 #pragma warning(pop)
 
 #define NPOS static_cast<intptr_t>(-1)
+
+typedef HANDLE THandle;
+typedef DWORD TThreadID;
 
 class Exception;
 
@@ -487,6 +487,15 @@ protected:
   HANDLE FHandle;
 };
 
+class TSafeHandleStream : public THandleStream
+{
+public:
+  explicit TSafeHandleStream(THandle AHandle);
+  virtual ~TSafeHandleStream() {}
+  virtual int64_t Read(void * Buffer, int64_t Count);
+  virtual int64_t Write(const void * Buffer, int64_t Count);
+};
+
 class EReadError : public std::runtime_error
 {
 public:
@@ -650,9 +659,6 @@ enum TShiftStateFlag
 {
   ssShift, ssAlt, ssCtrl, ssLeft, ssRight, ssMiddle, ssDouble, ssTouch, ssPen
 };
-
-typedef HANDLE THandle;
-typedef DWORD TThreadID;
 
 inline double Trunc(double Value) { double intpart; modf(Value, &intpart); return intpart; }
 inline double Frac(double Value) { double intpart; return modf(Value, &intpart); }

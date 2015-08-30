@@ -348,14 +348,14 @@
     <ClCompile Include="..\base\StrUtils.cpp" />
     <ClCompile Include="..\base\Sysutils.cpp" />
     <ClCompile Include="..\base\UnicodeString.cpp" />
+    <ClCompile Include="..\base\Common.cpp" />
+    <ClCompile Include="..\base\Exceptions.cpp" />
+    <ClCompile Include="..\base\FileBuffer.cpp" />
     <ClCompile Include="..\core\Bookmarks.cpp" />
-    <ClCompile Include="..\core\Common.cpp" />
     <ClCompile Include="..\core\Configuration.cpp" />
     <ClCompile Include="..\core\CopyParam.cpp" />
     <ClCompile Include="..\core\CoreMain.cpp" />
     <ClCompile Include="..\core\Cryptography.cpp" />
-    <ClCompile Include="..\core\Exceptions.cpp" />
-    <ClCompile Include="..\core\FileBuffer.cpp" />
     <ClCompile Include="..\core\FileInfo.cpp" />
     <ClCompile Include="..\core\FileMasks.cpp" />
     <ClCompile Include="..\core\FileOperationProgress.cpp" />

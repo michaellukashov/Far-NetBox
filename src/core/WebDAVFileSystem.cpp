@@ -1,4 +1,3 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
@@ -24,11 +23,10 @@
 #include <neon/src/ne_pkcs11.h>
 #include <expat/lib/expat.h>
 
-#include "WebDAVFileSystem.h"
+#include <Common.h>
 
+#include "WebDAVFileSystem.h"
 #include "Interface.h"
-#include "Common.h"
-#include "Exceptions.h"
 #include "Terminal.h"
 #include "TextsCore.h"
 #include "SecureShell.h"

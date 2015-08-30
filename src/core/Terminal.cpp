@@ -1,4 +1,3 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
@@ -6,10 +5,10 @@
 
 #include <SysUtils.hpp>
 #include <FileCtrl.hpp>
+#include <Common.h>
+#include <FileBuffer.h>
 
-#include "Common.h"
 #include "PuttyTools.h"
-#include "FileBuffer.h"
 #include "Interface.h"
 #include "RemoteFiles.h"
 #include "SecureShell.h"

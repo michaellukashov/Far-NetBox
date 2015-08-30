@@ -1,18 +1,16 @@
-
 #include <iostream>
 #include <iomanip>
 
-#include <headers.hpp>
 #include <Classes.hpp>
-#include <Sysutils.hpp>
-#include "RemoteFiles.h"
 #include <Common.h>
+#include <rtlconsts.h>
+#include <Sysutils.hpp>
 
 intptr_t __cdecl debug_printf(const wchar_t * format, ...)
 {
   (void)format;
   intptr_t len = 0;
-#ifdef NETBOX_DEBUG
+#ifndef NDEBUG
   va_list args;
   va_start(args, format);
   len = _vscwprintf(format, args);
@@ -28,7 +26,7 @@ intptr_t __cdecl debug_printf2(const char * format, ...)
 {
   (void)format;
   intptr_t len = 0;
-#ifdef NETBOX_DEBUG
+#ifndef NDEBUG
   va_list args;
   va_start(args, format);
   len = _vscprintf(format, args);

@@ -3,11 +3,13 @@
 #include <sstream>
 
 #include <Classes.hpp>
-#include "Common.h"
-#include "Exceptions.h"
-#include <FileBuffer.h>
+#include <Common.h>
+#include <Exceptions.h>
 #include <Sysutils.hpp>
 #include <rtlconsts.h>
+#include <FileBuffer.h>
+
+#include <shellapi.h>
 
 #if (_MSC_VER >= 1900)
 
@@ -1301,24 +1303,6 @@ public:
   {}
 };
 
-/*
-class EWriteError : public ExtException
-{
-public:
-    EWriteError(const UnicodeString & Msg) :
-        ExtException(Msg)
-    {}
-};
-
-class EReadError : public ExtException
-{
-public:
-    EReadError(const UnicodeString & Msg) :
-        ExtException(Msg)
-    {}
-};
-*/
-
 TStream::TStream()
 {
 }
@@ -1411,6 +1395,31 @@ void THandleStream::SetSize(const int64_t NewSize)
   // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
   // handleLastErrorImpl(_path);
   ::Win32Check(::SetEndOfFile(FHandle) > 0);
+}
+
+TSafeHandleStream::TSafeHandleStream(THandle AHandle) :
+  THandleStream(AHandle)
+{
+}
+
+int64_t TSafeHandleStream::Read(void * Buffer, int64_t Count)
+{
+  int64_t Result = ::FileRead(FHandle, Buffer, Count);
+  if (Result == static_cast<int64_t>(-1))
+  {
+    ::RaiseLastOSError();
+  }
+  return Result;
+}
+
+int64_t TSafeHandleStream::Write(const void * Buffer, int64_t Count)
+{
+  int64_t Result = ::FileWrite(FHandle, Buffer, Count);
+  if (Result == -1)
+  {
+    ::RaiseLastOSError();
+  }
+  return Result;
 }
 
 TMemoryStream::TMemoryStream() :

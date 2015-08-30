@@ -41,6 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cstdio>
 #include <cassert>
 #include <cwchar>
+#include <functional>
 
 #undef _W32API_OLD
 
@@ -56,6 +57,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SECURITY_WIN32
 #include <windows.h>
 #include <winsock2.h>
+#include <Ws2tcpip.h>
 
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0501

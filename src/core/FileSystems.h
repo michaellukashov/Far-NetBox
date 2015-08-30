@@ -1,7 +1,8 @@
 #pragma once
 
-#include <SessionInfo.h>
-#include "Exceptions.h"
+#include <Common.h>
+
+#include "SessionInfo.h"
 
 class TTerminal;
 class TRights;

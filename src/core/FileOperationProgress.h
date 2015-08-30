@@ -1,8 +1,9 @@
 #pragma once
 
+#include <Common.h>
+
 #include "Configuration.h"
 #include "CopyParam.h"
-#include "Exceptions.h"
 
 class TFileOperationProgressType;
 enum TFileOperation
