@@ -29,8 +29,8 @@
 
 #include "afxpriv.h"
 #include "afxole.h"
-#include "..\src\mfc\oleimpl2.h"
-#include "..\src\mfc\afximpl.h"
+#include "../src/mfc/oleimpl2.h"
+#include "../src/mfc/afximpl.h"
 
 #include <afx.h>
 #include "wtypes.h"
