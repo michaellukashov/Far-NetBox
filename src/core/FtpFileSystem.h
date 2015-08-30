@@ -3,7 +3,7 @@
 #ifndef NO_FILEZILLA
 
 #include <time.h>
-#include <vector.h>
+#include <rdestl/vector.h>
 #include <FileSystems.h>
 
 class TFileZillaIntf;

@@ -86,7 +86,7 @@ Version 2.0:
 #define ASYNCSSLSOCKETLEAYER_INCLUDED
 
 #include <wincrypt.h>
-#include <map.h>
+#include <rdestl/map.h>
 
 #ifndef _AFX
 #define CString CStdString

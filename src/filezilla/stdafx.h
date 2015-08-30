@@ -37,10 +37,10 @@
 #include <afxmt.h>
 
 //STL includes
-#include <list.h>
-#include <map.h>
-#include <vector.h>
-#include <set.h>
+#include <rdestl/list.h>
+#include <rdestl/map.h>
+#include <rdestl/vector.h>
+#include <rdestl/set.h>
 #include <algorithm>
 //---------------------------------------------------------------------------
 class CFileFix;
