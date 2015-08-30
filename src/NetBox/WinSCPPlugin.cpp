@@ -61,7 +61,7 @@ TWinSCPPlugin::~TWinSCPPlugin()
   }
 }
 
-bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function)
+bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function) const
 {
   return (Function == hfProcessKey || Function == hfProcessEvent);
 }

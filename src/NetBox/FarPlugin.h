@@ -181,7 +181,7 @@ protected:
   mutable intptr_t FFarSystemSettings;
   TPoint FNormalConsoleSize;
 
-  virtual bool HandlesFunction(THandlesFunction Function);
+  virtual bool HandlesFunction(THandlesFunction Function) const;
   virtual void GetPluginInfoEx(DWORD & Flags,
     TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
     TStrings * PluginConfigStrings, TStrings * CommandPrefixes) = 0;
