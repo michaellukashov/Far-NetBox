@@ -1,8 +1,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
-#include "FileBuffer.h"
+#include <Common.h>
+#include <FileBuffer.h>
 
 char * EOLToStr(TEOLType EOLType)
 {

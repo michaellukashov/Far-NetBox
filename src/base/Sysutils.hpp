@@ -1,10 +1,6 @@
 #pragma once
 
-#include <headers.hpp>
 #include <Classes.hpp>
-
-#include <WinBase.h>
-#include <functional>
 
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)

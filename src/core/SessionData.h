@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Common.h"
+#include <Common.h>
+#include <FileBuffer.h>
+
 #include "Option.h"
-#include "FileBuffer.h"
 #include "NamedObjs.h"
 #include "HierarchicalStorage.h"
 #include "Configuration.h"

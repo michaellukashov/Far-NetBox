@@ -41,6 +41,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cstdio>
 #include <cassert>
 #include <cwchar>
+#include <functional>
 
 #undef _W32API_OLD
 

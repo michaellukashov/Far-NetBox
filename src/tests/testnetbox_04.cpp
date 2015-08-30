@@ -14,11 +14,12 @@
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
+#include <Common.h>
+#include <FileBuffer.h>
+
 #include "TestTexts.h"
-#include "Common.h"
 #include "FarPlugin.h"
 #include "testutils.h"
-#include "FileBuffer.h"
 
 #include "ne_session.h"
 #include "ne_request.h"

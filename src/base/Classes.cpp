@@ -7,9 +7,9 @@
 #include <Classes.hpp>
 #include <Common.h>
 #include <Exceptions.h>
-#include <FileBuffer.h>
 #include <Sysutils.hpp>
 #include <rtlconsts.h>
+#include <FileBuffer.h>
 
 #if (_MSC_VER >= 1900)
 

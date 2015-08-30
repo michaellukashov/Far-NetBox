@@ -5,9 +5,9 @@
 
 #include <Common.h>
 #include <StrUtils.hpp>
+#include <FileBuffer.h>
 
 #include "SessionData.h"
-#include "FileBuffer.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
 #include "PuttyIntf.h"
