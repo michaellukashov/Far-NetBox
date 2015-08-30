@@ -3,11 +3,10 @@
 
 #include <Winhttp.h>
 
+#include <Common.h>
 #include <StrUtils.hpp>
-#include "SessionData.h"
 
-#include "Common.h"
-#include "Exceptions.h"
+#include "SessionData.h"
 #include "FileBuffer.h"
 #include "CoreMain.h"
 #include "TextsCore.h"

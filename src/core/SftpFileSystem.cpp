@@ -6,17 +6,16 @@
 
 #define CLEAN_SPACE_AVAILABLE
 
-#include "SftpFileSystem.h"
+#include <Common.h>
+#include <WideStrUtils.hpp>
 
+#include "SftpFileSystem.h"
 #include "PuttyTools.h"
-#include "Common.h"
-#include "Exceptions.h"
 #include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "SecureShell.h"
-#include <WideStrUtils.hpp>
 
 static const SSH_FX_TYPES
 SSH_FX_OK                                 = 0,

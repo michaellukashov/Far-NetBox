@@ -4,8 +4,7 @@
 #include <shlobj.h>
 #include <FileInfo.h>
 
-#include "Common.h"
-#include "Exceptions.h"
+#include <Common.h>
 #include "Configuration.h"
 #include "PuttyIntf.h"
 #include "TextsCore.h"

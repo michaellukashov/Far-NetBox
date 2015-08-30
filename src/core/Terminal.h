@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Classes.hpp>
+#include <Common.h>
 
 #include "SessionInfo.h"
 #include "Interface.h"
 #include "FileOperationProgress.h"
 #include "FileMasks.h"
-#include "Exceptions.h"
 
 class TCopyParamType;
 class TFileOperationProgressType;

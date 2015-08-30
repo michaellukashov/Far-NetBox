@@ -1,8 +1,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
-#include "Exceptions.h"
+#include <Common.h>
+
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "rtlconsts.h"

@@ -1,13 +1,11 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "RemoteFiles.h"
-#include "Common.h"
-
+#include <Common.h>
 #include <SysUtils.hpp>
 #include <StrUtils.hpp>
 
-#include "Exceptions.h"
+#include "RemoteFiles.h"
 #include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"

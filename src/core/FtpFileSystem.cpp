@@ -9,9 +9,8 @@
 #include "FtpFileSystem.h"
 #include "FileZillaIntf.h"
 
-#include "headers.hpp"
-#include "Common.h"
-#include "Exceptions.h"
+#include <Common.h>
+#include <Exceptions.h>
 #include "Terminal.h"
 #include "TextsCore.h"
 #include "TextsFileZilla.h"

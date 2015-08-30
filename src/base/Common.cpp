@@ -2,9 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
-#include "Exceptions.h"
-#include "TextsCore.h"
+#include <Common.h>
 #include <StrUtils.hpp>
 #include <SysUtils.hpp>
 #include <DateUtils.hpp>
@@ -14,6 +12,8 @@
 #include <shlobj.h>
 #include <limits>
 #include <shlwapi.h>
+
+#include "TextsCore.h"
 
 #if defined(__MINGW32__) && (__MINGW_GCC_VERSION < 50100)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
