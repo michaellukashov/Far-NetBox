@@ -41,14 +41,5 @@ private:
   TMemoryStream * FMemory;
 };
 
-class TSafeHandleStream : public THandleStream
-{
-public:
-  explicit TSafeHandleStream(THandle AHandle);
-  virtual ~TSafeHandleStream() {}
-  virtual int64_t Read(void * Buffer, int64_t Count);
-  virtual int64_t Write(const void * Buffer, int64_t Count);
-};
-
 char * EOLToStr(TEOLType EOLType);
 

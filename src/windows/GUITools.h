@@ -1,6 +1,6 @@
 #pragma once
 
-#include <CoreDefs.hpp>
+#include <BaseDefs.hpp>
 
 // from shlobj.h
 #define CSIDL_DESKTOP                   0x0000        // <desktop>

@@ -2,9 +2,11 @@
 #include <string>
 #include <sstream>
 
+#include <shellapi.h>
+
 #include <Classes.hpp>
-#include "Common.h"
-#include "Exceptions.h"
+#include <Common.h>
+#include <Exceptions.h>
 #include <FileBuffer.h>
 #include <Sysutils.hpp>
 #include <rtlconsts.h>
@@ -1411,6 +1413,31 @@ void THandleStream::SetSize(const int64_t NewSize)
   // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
   // handleLastErrorImpl(_path);
   ::Win32Check(::SetEndOfFile(FHandle) > 0);
+}
+
+TSafeHandleStream::TSafeHandleStream(THandle AHandle) :
+  THandleStream(AHandle)
+{
+}
+
+int64_t TSafeHandleStream::Read(void * Buffer, int64_t Count)
+{
+  int64_t Result = ::FileRead(FHandle, Buffer, Count);
+  if (Result == static_cast<int64_t>(-1))
+  {
+    ::RaiseLastOSError();
+  }
+  return Result;
+}
+
+int64_t TSafeHandleStream::Write(const void * Buffer, int64_t Count)
+{
+  int64_t Result = ::FileWrite(FHandle, Buffer, Count);
+  if (Result == -1)
+  {
+    ::RaiseLastOSError();
+  }
+  return Result;
 }
 
 TMemoryStream::TMemoryStream() :

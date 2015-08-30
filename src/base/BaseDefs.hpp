@@ -1,31 +1,5 @@
 #pragma once
 
-#if defined(__BORLANDC__)
-
-#define DEFINE_CALLBACK_TYPE0(EVENT, R) \
-  typedef R __fastcall (__closure *EVENT)()
-#define DEFINE_CALLBACK_TYPE1(EVENT, R, T1) \
-  typedef R __fastcall (__closure *EVENT)(T1)
-#define DEFINE_CALLBACK_TYPE2(EVENT, R, T1, T2) \
-  typedef R __fastcall (__closure *EVENT)(T1, T2)
-#define DEFINE_CALLBACK_TYPE3(EVENT, R, T1, T2, T3) \
-  typedef R __fastcall (__closure *EVENT)(T1, T2, T3)
-#define DEFINE_CALLBACK_TYPE4(EVENT, R, T1, T2, T3, T4) \
-  typedef R __fastcall (__closure *EVENT)(T1, T2, T3, T4)
-#define DEFINE_CALLBACK_TYPE5(EVENT, R, T1, T2, T3, T4, T5) \
-  typedef R __fastcall (__closure *EVENT)(T1, T2, T3, T4, T5)
-#define DEFINE_CALLBACK_TYPE6(EVENT, R, T1, T2, T3, T4, T5, T6) \
-  typedef R __fastcall (__closure *EVENT)(T1, T2, T3, T4, T5, T6)
-#define DEFINE_CALLBACK_TYPE7(EVENT, R, T1, T2, T3, T4, T5, T6, T7) \
-  typedef R __fastcall (__closure *EVENT)(T1, T2, T3, T4, T5, T6, T7)
-#define DEFINE_CALLBACK_TYPE8(EVENT, R, T1, T2, T3, T4, T5, T6, T7, T8) \
-  typedef R __fastcall (__closure *EVENT)(T1, T2, T3, T4, T5, T6, T7, T8)
-
-#define MAKE_CALLBACK(METHOD, OBJECT) \
-  (OBJECT)->METHOD
-
-#else
-
 #include <FastDelegate.h>
 #include <FastDelegateBind.h>
 
@@ -55,6 +29,4 @@
 #define TSHFileInfoW SHFILEINFOW
 #define TVSFixedFileInfo VS_FIXEDFILEINFO
 #define PVSFixedFileInfo VS_FIXEDFILEINFO*
-
-#endif /* _MSC_VER */
 

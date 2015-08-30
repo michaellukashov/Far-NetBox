@@ -1,4 +1,3 @@
-
 #include <vcl.h>
 #pragma hdrstop
 
@@ -6,9 +5,7 @@
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
-#include "Configuration.h"
-#include "CoreMain.h"
-#include "Interface.h"
+#include "rtlconsts.h"
 
 static bool WellKnownException(
   const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)

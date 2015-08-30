@@ -3,6 +3,6 @@
 #include <memory>
 #include <assert.h>
 
-#include <CoreDefs.hpp>
+#include <BaseDefs.hpp>
 #include <Classes.hpp>
 

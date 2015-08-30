@@ -1,6 +1,5 @@
 #pragma once
 
-#include <CoreDefs.hpp>
 #include <Classes.hpp>
 
 #include "SessionInfo.h"

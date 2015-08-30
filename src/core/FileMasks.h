@@ -1,6 +1,5 @@
 #pragma once
 
-#include <CoreDefs.hpp>
 #include <Masks.hpp>
 #include <Exceptions.h>
 #include "SessionData.h"

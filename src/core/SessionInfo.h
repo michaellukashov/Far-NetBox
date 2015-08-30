@@ -1,7 +1,5 @@
 #pragma once
 
-#include <CoreDefs.hpp>
-
 #include "SessionData.h"
 #include "Interface.h"
 
