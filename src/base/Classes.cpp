@@ -2,14 +2,14 @@
 #include <string>
 #include <sstream>
 
-#include <shellapi.h>
-
 #include <Classes.hpp>
 #include <Common.h>
 #include <Exceptions.h>
 #include <Sysutils.hpp>
 #include <rtlconsts.h>
 #include <FileBuffer.h>
+
+#include <shellapi.h>
 
 #if (_MSC_VER >= 1900)
 
