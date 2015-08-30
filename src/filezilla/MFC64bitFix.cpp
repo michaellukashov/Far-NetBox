@@ -37,7 +37,7 @@ BOOL GetLength64(CString filename, _int64 &size)
 	HANDLE hFind = ::FindFirstFile(filename, &findFileData);
 	if (hFind == INVALID_HANDLE_VALUE)
 		return FALSE;
-	VERIFY(FindClose(hFind));
+	VERIFY(::FindClose(hFind));
 
 	size=((_int64)findFileData.nFileSizeHigh<<32)+findFileData.nFileSizeLow;
 	

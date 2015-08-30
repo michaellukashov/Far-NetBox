@@ -558,7 +558,7 @@ void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
       UnixToDateTime(
         ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
         dstmUnix);
-    FindClose(Handle);
+    ::FindClose(Handle);
   }
 }
 
