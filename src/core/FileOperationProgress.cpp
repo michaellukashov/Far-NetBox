@@ -1,7 +1,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
+#include <Common.h>
+
 #include "FileOperationProgress.h"
 
 #define TRANSFER_BUF_SIZE 128 * 1024

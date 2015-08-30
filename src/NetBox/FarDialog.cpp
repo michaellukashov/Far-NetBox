@@ -8,8 +8,9 @@
 #include <farcolor.hpp>
 #pragma warning(pop)
 
+#include <Common.h>
+
 #include "FarDialog.h"
-#include "Common.h"
 
 inline TRect Rect(int Left, int Top, int Right, int Bottom)
 {

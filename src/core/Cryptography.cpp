@@ -1,10 +1,11 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
+#include <process.h>
+#include <Common.h>
+
 #include "PuttyIntf.h"
 #include "Cryptography.h"
-#include <process.h>
 
 /*
  ---------------------------------------------------------------------------

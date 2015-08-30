@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common.h"
+#include <Common.h>
 
 class TConfiguration;
 class TStoredSessionList;

@@ -1,9 +1,9 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "CoreMain.h"
+#include <Common.h>
 
-#include "Common.h"
+#include "CoreMain.h"
 #include "Interface.h"
 #include "Configuration.h"
 #include "PuttyIntf.h"

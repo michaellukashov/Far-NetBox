@@ -1,9 +1,10 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <Common.h>
+
 #include "FileSystems.h"
 #include "RemoteFiles.h"
-#include "Common.h"
 
 TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal) :
   FTerminal(ATerminal)

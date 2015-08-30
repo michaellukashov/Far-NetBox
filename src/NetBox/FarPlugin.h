@@ -6,7 +6,7 @@
 #include <plugin.hpp>
 #pragma warning(pop)
 
-#include "Common.h"
+#include <Common.h>
 
 class TCustomFarFileSystem;
 class TFarPanelModes;

@@ -1,8 +1,9 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <Common.h>
 #include <WinCrypt.h>
-#include "Common.h"
+
 #include "WinSCPSecurity.h"
 
 #define PWALG_SIMPLE_INTERNAL 0x00
