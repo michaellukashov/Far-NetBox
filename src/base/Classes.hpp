@@ -7,9 +7,6 @@
 #include <rdestl/pair.h>
 #include <BaseDefs.hpp>
 
-#include <tchar.h>
-#include <WinDef.h>
-
 #pragma warning(push, 1)
 
 #include <rtlconsts.h>

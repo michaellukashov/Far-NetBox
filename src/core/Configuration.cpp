@@ -12,7 +12,6 @@
 #include "Interface.h"
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
-#include <shlobj.h>
 
 // See http://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
 const UnicodeString Sha1ChecksumAlg(L"sha-1");
