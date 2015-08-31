@@ -166,6 +166,13 @@ set(NETBOX_SOURCES
   ${SRC_ROOT}/NetBox/NetBox.def
 )
 
+add_custom_target(NETBOX_SOURCES SOURCES
+  NetBoxEng.lng
+  NetBoxRus.lng
+  resource.h.template
+  NetBox.rc.template
+)
+
 if(MSVC)
 if(CONF STREQUAL "x86")
 
