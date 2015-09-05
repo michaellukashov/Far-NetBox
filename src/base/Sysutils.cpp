@@ -482,7 +482,7 @@ int64_t FileSeek(HANDLE Handle, int64_t Offset, DWORD Origin)
   LONG low = Offset & 0xFFFFFFFF;
   LONG high = Offset >> 32;
   low = ::SetFilePointer(Handle, low, &high, Origin);
-  return ((_int64)high << 32) + low;
+  return ((int64_t)high << 32) + low;
 }
 
 bool FileExists(const UnicodeString & AFileName)
@@ -1439,12 +1439,12 @@ UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format
 {
   (void)Result;
   (void)Format;
-  return DateTime.FormatString(L"");
+  return DateTime.FormatString((wchar_t *)L"");
 }
 
 UnicodeString DateTimeToString(const TDateTime & DateTime)
 {
-  return DateTime.FormatString(L"");
+  return DateTime.FormatString((wchar_t *)L"");
 }
 
 // DayOfWeek returns the day of the week of the given date. The Result is an
