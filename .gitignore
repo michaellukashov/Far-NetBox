@@ -2,6 +2,7 @@
 build/
 /src/NetBox-build/
 build-CMakeLists.txt-*
+/src/build-NetBox-*
 
 /Far2_x86/
 /Far2_x64/

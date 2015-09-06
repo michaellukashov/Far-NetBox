@@ -45,8 +45,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN64")
 else()
 endif()
 
-set(NETBOX_FLAGS_RELEASE "-U_DEBUG -UNETBOX_DEBUG -DNDEBUG")
-set(NETBOX_FLAGS_DEBUG "-D_DEBUG -DDEBUG -DNETBOX_DEBUG")
+set(NETBOX_FLAGS_RELEASE "-U_DEBUG -DNDEBUG")
+set(NETBOX_FLAGS_DEBUG "-D_DEBUG -DDEBUG")
 
 if(MSVC)
 
@@ -166,6 +166,13 @@ set(NETBOX_SOURCES
   ${SRC_ROOT}/NetBox/NetBox.def
 )
 
+add_custom_target(NETBOX_SOURCES SOURCES
+  NetBoxEng.lng
+  NetBoxRus.lng
+  resource.h.template
+  NetBox.rc.template
+)
+
 if(MSVC)
 if(CONF STREQUAL "x86")
 
@@ -263,7 +270,9 @@ endif(MSVC)
 
 #TODO: COMMAND create_ver.py
 
-target_link_libraries(NetBox ${NETBOX_LIBRARIES})
+target_link_libraries(NetBox
+  ${NETBOX_LIBRARIES}
+)
 
 add_dependencies(NetBox
   atlmfc
@@ -302,85 +311,6 @@ endif()
 
 #-------------------------------------------------------------------------------
 add_library(openssl STATIC
-#  ${LIBS_ROOT}/openssl/apps/openssl.c
-#  ${LIBS_ROOT}/openssl/apps/ts.c
-#  ${LIBS_ROOT}/openssl/apps/prime.c
-#  ${LIBS_ROOT}/openssl/apps/ocsp.c
-#  ${LIBS_ROOT}/openssl/apps/engine.c
-#  ${LIBS_ROOT}/openssl/apps/rand.c
-#  ${LIBS_ROOT}/openssl/apps/cms.c
-#  ${LIBS_ROOT}/openssl/apps/smime.c
-#  ${LIBS_ROOT}/openssl/apps/spkac.c
-#  ${LIBS_ROOT}/openssl/apps/pkeyutl.c
-#  ${LIBS_ROOT}/openssl/apps/pkeyparam.c
-#  ${LIBS_ROOT}/openssl/apps/pkey.c
-#  ${LIBS_ROOT}/openssl/apps/pkcs8.c
-#  ${LIBS_ROOT}/openssl/apps/pkcs12.c
-#  ${LIBS_ROOT}/openssl/apps/nseq.c
-#  ${LIBS_ROOT}/openssl/apps/ciphers.c
-#  ${LIBS_ROOT}/openssl/apps/sess_id.c
-#  ${LIBS_ROOT}/openssl/apps/version.c
-#  ${LIBS_ROOT}/openssl/apps/app_rand.c
-#  ${LIBS_ROOT}/openssl/apps/s_socket.c
-#  ${LIBS_ROOT}/openssl/apps/s_cb.c
-#  ${LIBS_ROOT}/openssl/apps/apps.c
-#  ${LIBS_ROOT}/openssl/apps/s_time.c
-#  ${LIBS_ROOT}/openssl/apps/speed.c
-#  ${LIBS_ROOT}/openssl/apps/s_client.c
-#  ${LIBS_ROOT}/openssl/apps/s_server.c
-#  ${LIBS_ROOT}/openssl/apps/genpkey.c
-#  ${LIBS_ROOT}/openssl/apps/gendsa.c
-#  ${LIBS_ROOT}/openssl/apps/genrsa.c
-#  ${LIBS_ROOT}/openssl/apps/x509.c
-#  ${LIBS_ROOT}/openssl/apps/ecparam.c
-#  ${LIBS_ROOT}/openssl/apps/ec.c
-#  ${LIBS_ROOT}/openssl/apps/dsaparam.c
-#  ${LIBS_ROOT}/openssl/apps/dsa.c
-#  ${LIBS_ROOT}/openssl/apps/rsautl.c
-#  ${LIBS_ROOT}/openssl/apps/rsa.c
-#  ${LIBS_ROOT}/openssl/apps/crl.c
-#  ${LIBS_ROOT}/openssl/apps/crl2p7.c
-#  ${LIBS_ROOT}/openssl/apps/pkcs7.c
-#  ${LIBS_ROOT}/openssl/apps/ca.c
-#  ${LIBS_ROOT}/openssl/apps/errstr.c
-#  ${LIBS_ROOT}/openssl/apps/gendh.c
-#  ${LIBS_ROOT}/openssl/apps/passwd.c
-#  ${LIBS_ROOT}/openssl/apps/enc.c
-#  ${LIBS_ROOT}/openssl/apps/dhparam.c
-#  ${LIBS_ROOT}/openssl/apps/dh.c
-#  ${LIBS_ROOT}/openssl/apps/dgst.c
-#  ${LIBS_ROOT}/openssl/apps/req.c
-#  ${LIBS_ROOT}/openssl/apps/asn1pars.c
-#  ${LIBS_ROOT}/openssl/apps/verify.c
-  #${LIBS_ROOT}/openssl/test/igetest.c
-  #${LIBS_ROOT}/openssl/test/heartbeat_test.c
-  #${LIBS_ROOT}/openssl/test/ssltest.c
-  #${LIBS_ROOT}/openssl/test/enginetest.c
-  #${LIBS_ROOT}/openssl/test/v3nametest.c
-  #${LIBS_ROOT}/openssl/test/verify_extra_test.c
-  #${LIBS_ROOT}/openssl/test/evp_extra_test.c
-  #${LIBS_ROOT}/openssl/test/evp_test.c
-  #${LIBS_ROOT}/openssl/test/randtest.c
-  #${LIBS_ROOT}/openssl/test/ecdsatest.c
-  #${LIBS_ROOT}/openssl/test/ecdhtest.c
-  #${LIBS_ROOT}/openssl/test/ectest.c
-  #${LIBS_ROOT}/openssl/test/dhtest.c
-  #${LIBS_ROOT}/openssl/test/dsatest.c
-  #${LIBS_ROOT}/openssl/test/rsa_test.c
-  #${LIBS_ROOT}/openssl/test/exptest.c
-  #${LIBS_ROOT}/openssl/test/bntest.c
-  #${LIBS_ROOT}/openssl/test/rc2test.c
-  #${LIBS_ROOT}/openssl/test/destest.c
-  #${LIBS_ROOT}/openssl/test/hmactest.c
-  #${LIBS_ROOT}/openssl/test/mdc2test.c
-  #${LIBS_ROOT}/openssl/test/sha512t.c
-  #${LIBS_ROOT}/openssl/test/sha256t.c
-  #${LIBS_ROOT}/openssl/test/sha1test.c
-  #${LIBS_ROOT}/openssl/test/shatest.c
-  #${LIBS_ROOT}/openssl/test/md5test.c
-  #${LIBS_ROOT}/openssl/test/md4test.c
-  #${LIBS_ROOT}/openssl/test/constant_time_test.c
-#  ${LIBS_ROOT}/openssl/ssl/ssl_utst.c
   ${LIBS_ROOT}/openssl/ssl/t1_trce.c
   ${LIBS_ROOT}/openssl/ssl/t1_reneg.c
   ${LIBS_ROOT}/openssl/ssl/kssl.c
@@ -801,10 +731,10 @@ add_library(openssl STATIC
   ${LIBS_ROOT}/openssl/crypto/ec/ec_oct.c
   ${LIBS_ROOT}/openssl/crypto/ec/ec2_oct.c
   ${LIBS_ROOT}/openssl/crypto/ec/ecp_oct.c
-#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistputil.c
-#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp521.c
-#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp256.c
-#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp224.c
+  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistputil.c
+  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp521.c
+  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp256.c
+  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp224.c
   ${LIBS_ROOT}/openssl/crypto/ec/eck_prn.c
   ${LIBS_ROOT}/openssl/crypto/ec/ec_pmeth.c
   ${LIBS_ROOT}/openssl/crypto/ec/ec_ameth.c
@@ -987,12 +917,21 @@ add_library(openssl STATIC
   ${LIBS_ROOT}/openssl/crypto/cryptlib.c
 )
 
+if(MSVC)
+set(OPENSSL_COMPILE_FLAGS "/TC")
+elseif(CMAKE_COMPILER_IS_MINGW)
+set(OPENSSL_COMPILE_FLAGS "")
+endif()
+if(CONF STREQUAL "x64")
+set(OPENSSL_COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS} -DOPENSSL_SYSNAME_WIN32 -DOPENSSL_SYSNAME_WIN64")
+else()
+set(OPENSSL_COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS} -DOPENSSL_SYSNAME_WIN32")
+endif()
+set(OPENSSL_COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS} -DMK1MF_BUILD -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DSECURITY_WIN32 -DOPENSSL_NO_CAPIENG -DNO_CHMOD -DOPENSSL_NO_DGRAM -DOPENSSL_NO_RIJNDAEL -DDSO_WIN32")
+
 set_target_properties(openssl
   PROPERTIES
-  COMPILE_FLAGS "/TC -DMK1MF_BUILD -DOPENSSL_SYSNAME_WIN32 -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DSECURITY_WIN32 -DOPENSSL_NO_CAPIENG -DNO_CHMOD -DOPENSSL_NO_DGRAM -DOPENSSL_NO_RIJNDAEL -DDSO_WIN32"
-#  INCLUDE_DIRECTORIES "${LIBS_ROOT}/openssl ${LIBS_ROOT}/openssl/crypto ${LIBS_ROOT}/openssl/crypto/asn1 ${LIBS_ROOT}/openssl/crypto/modes"
-#-DOPENSSL_SYS_WINDOWS
-#-DOPENSSL_IMPORT=
+  COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS}"
 )
 
 #-------------------------------------------------------------------------------

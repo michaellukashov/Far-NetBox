@@ -88,7 +88,7 @@ TCustomFarPlugin::~TCustomFarPlugin()
   SAFE_DESTROY_EX(TGlobalFunctionsIntf, Intf);
 }
 
-bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/)
+bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/) const
 {
   return false;
 }

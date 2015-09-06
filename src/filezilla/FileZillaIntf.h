@@ -2,7 +2,7 @@
 #ifndef FileZillaIntfH
 #define FileZillaIntfH
 //---------------------------------------------------------------------------
-#include <map.h>
+#include <rdestl/map.h>
 
 #include <time.h>
 #include <FileZillaOpt.h>

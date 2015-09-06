@@ -1,14 +1,15 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <Common.h>
+#include <StrUtils.hpp>
+
 #include "FileMasks.h"
 
-#include "Common.h"
 #include "TextsCore.h"
 #include "RemoteFiles.h"
 #include "PuttyTools.h"
 #include "Terminal.h"
-#include <StrUtils.hpp>
 
 #define FILE_MASKS_DELIMITERS L";,"
 #define ALL_FILE_MASKS_DELIMITERS L";,|"

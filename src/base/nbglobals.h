@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stddef.h>
+#include <stdlib.h>
+
 #ifdef USE_DLMALLOC
 #include "../../libs/dlmalloc/malloc-2.8.6.h"
 

@@ -1,10 +1,11 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <map.h>
+#include <rdestl/map.h>
+
+#include <Common.h>
 
 #include "FarDialog.h"
-#include "Common.h"
 
 inline TRect Rect(int Left, int Top, int Right, int Bottom)
 {
@@ -449,7 +450,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
         if (!Result && (Msg == DN_CONTROLINPUT) &&
             (reinterpret_cast<intptr_t>(Param2) == VK_RETURN) &&
             ((Param1 < 0) ||
-             ((Param1 >= 0) && (NB_STATIC_DOWNCAST(TFarButton, GetItem(Param1)) == nullptr))) &&
+             ((NB_STATIC_DOWNCAST(TFarButton, GetItem(Param1)) == nullptr))) &&
             GetDefaultButton()->GetEnabled() &&
             (GetDefaultButton()->GetOnClick()))
         {

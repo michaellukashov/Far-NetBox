@@ -32,7 +32,9 @@ TConfiguration::TConfiguration() :
   FLogWindowLines(0),
   FLogFileAppend(false),
   FLogSensitive(false),
+  FPermanentLogSensitive(false),
   FLogProtocol(0),
+  FPermanentLogProtocol(0),
   FActualLogProtocol(0),
   FLogActions(false),
   FPermanentLogActions(false),
@@ -1127,7 +1129,7 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
         ::FileExists(ApiPath(PrevRandomSeedFileName)))
     {
       // ignore any error
-      DeleteFile(ApiPath(PrevRandomSeedFileName));
+      ::DeleteFile(ApiPath(PrevRandomSeedFileName));
     }
   }
 }

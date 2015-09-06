@@ -6,7 +6,7 @@
 #include <plugin.hpp>
 #pragma warning(pop)
 
-#include "Common.h"
+#include <Common.h>
 #include "guid.h"
 
 #define RMASK (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED | RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED | SHIFT_PRESSED)
@@ -195,7 +195,7 @@ protected:
   mutable intptr_t FFarSystemSettings;
   TPoint FNormalConsoleSize;
 
-  virtual bool HandlesFunction(THandlesFunction Function);
+  virtual bool HandlesFunction(THandlesFunction Function) const;
   virtual void GetPluginInfoEx(PLUGIN_FLAGS & Flags,
     TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
     TStrings * PluginConfigStrings, TStrings * CommandPrefixes) = 0;
@@ -253,7 +253,7 @@ friend class TCustomFarPlugin;
 NB_DISABLE_COPY(TCustomFarFileSystem)
 NB_DECLARE_CLASS(TCustomFarFileSystem)
 public:
-  TCustomFarFileSystem(TCustomFarPlugin * APlugin);
+  explicit TCustomFarFileSystem(TCustomFarPlugin * APlugin);
   void Init();
   virtual ~TCustomFarFileSystem();
 

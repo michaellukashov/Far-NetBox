@@ -1,11 +1,12 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
+#include <Common.h>
+#include <Queue.h>
+
 #include "CoreMain.h"
 #include "FarConfiguration.h"
 #include "WinSCPPlugin.h"
-#include "Queue.h"
 
 TConfiguration * CreateConfiguration()
 {

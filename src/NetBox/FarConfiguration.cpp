@@ -1,7 +1,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Common.h"
+#include <Common.h>
+
 #include "Bookmarks.h"
 #include "FarConfiguration.h"
 #include "Far3Storage.h"
