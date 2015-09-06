@@ -4014,9 +4014,9 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
     }
   }
 
-  static int CalculateFilesChecksumQueueLen = 5;
   TSFTPCalculateFilesChecksumQueue Queue(this, FCodePage);
   {
+    static int CalculateFilesChecksumQueueLen = 5;
     SCOPE_EXIT
     {
       Queue.DisposeSafe();
@@ -5628,12 +5628,12 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
     OperationProgress->TransferingFile = false; // not set with SFTP protocol
 
     HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-    TStream * FileStream = nullptr;
     RawByteString RemoteHandle;
     UnicodeString LocalFileName = DestFullName;
     TOverwriteMode OverwriteMode = omOverwrite;
 
     {
+      TStream * FileStream = nullptr;
       bool ResumeTransfer = false;
       bool DeleteLocalFile = false;
       SCOPE_EXIT
