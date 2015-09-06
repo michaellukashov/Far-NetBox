@@ -238,7 +238,7 @@ friend class TCustomFarPlugin;
 NB_DISABLE_COPY(TCustomFarFileSystem)
 NB_DECLARE_CLASS(TCustomFarFileSystem)
 public:
-  TCustomFarFileSystem(TCustomFarPlugin * APlugin);
+  explicit TCustomFarFileSystem(TCustomFarPlugin * APlugin);
   void Init();
   virtual ~TCustomFarFileSystem();
 

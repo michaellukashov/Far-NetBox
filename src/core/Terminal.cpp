@@ -547,7 +547,7 @@ class TCallbackGuard : public TObject
 {
 NB_DISABLE_COPY(TCallbackGuard)
 public:
-  inline TCallbackGuard(TTerminal * FTerminal);
+  explicit TCallbackGuard(TTerminal * FTerminal);
   inline ~TCallbackGuard();
 
   void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword);

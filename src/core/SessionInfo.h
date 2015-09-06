@@ -242,7 +242,7 @@ public:
 class TChecksumSessionAction : public TFileSessionAction
 {
 public:
-  TChecksumSessionAction(TActionLog * Log);
+  explicit TChecksumSessionAction(TActionLog * Log);
 
   void Checksum(const UnicodeString & Alg, const UnicodeString & Checksum);
 };
