@@ -190,8 +190,8 @@ void TSessionData::Default()
 
   // SFTP
   SetSftpServer(L"");
-  SetSFTPDownloadQueue(4);
-  SetSFTPUploadQueue(4);
+  SetSFTPDownloadQueue(32);
+  SetSFTPUploadQueue(32);
   SetSFTPListingQueue(2);
   SetSFTPMaxVersion(::SFTPMaxVersion);
   SetSFTPMaxPacketSize(0);
