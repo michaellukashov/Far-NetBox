@@ -2621,9 +2621,9 @@ void TTerminalThread::TerminalReadDirectoryProgress(
   Cancel = Action.Cancel;
 }
 
-NB_IMPLEMENT_CLASS(TSimpleThread, NB_GET_CLASS_INFO(TObject), nullptr);
-NB_IMPLEMENT_CLASS(TQueueItem, NB_GET_CLASS_INFO(TObject), nullptr);
-NB_IMPLEMENT_CLASS(TQueueItemProxy, NB_GET_CLASS_INFO(TObject), nullptr);
-NB_IMPLEMENT_CLASS(TSignalThread, NB_GET_CLASS_INFO(TSimpleThread), nullptr);
-NB_IMPLEMENT_CLASS(TTerminalItem, NB_GET_CLASS_INFO(TSignalThread), nullptr);
+NB_IMPLEMENT_CLASS(TSimpleThread, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TQueueItem, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TQueueItemProxy, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TSignalThread, NB_GET_CLASS_INFO(TSimpleThread), nullptr)
+NB_IMPLEMENT_CLASS(TTerminalItem, NB_GET_CLASS_INFO(TSignalThread), nullptr)
 

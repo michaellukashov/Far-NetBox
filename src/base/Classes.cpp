@@ -478,7 +478,7 @@ static void tokenize(const UnicodeString & str, rde::vector<UnicodeString> & tok
 
     lastPos = pos + 1;
   }
-};
+}
 
 void TStrings::SetDelimitedText(const UnicodeString & Value)
 {

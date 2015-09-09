@@ -824,6 +824,6 @@ void TWinSCPPlugin::CoreInitializeOnce()
   }
 }
 
-NB_IMPLEMENT_CLASS(TWinSCPPlugin, NB_GET_CLASS_INFO(TCustomFarPlugin), nullptr);
-NB_IMPLEMENT_CLASS(TFarMessageData, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TWinSCPPlugin, NB_GET_CLASS_INFO(TCustomFarPlugin), nullptr)
+NB_IMPLEMENT_CLASS(TFarMessageData, NB_GET_CLASS_INFO(TObject), nullptr)
 

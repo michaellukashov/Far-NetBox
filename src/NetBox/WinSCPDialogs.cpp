@@ -8800,6 +8800,6 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
   return Result;
 }
 
-NB_IMPLEMENT_CLASS(TTabButton, NB_GET_CLASS_INFO(TFarButton), nullptr);
-NB_IMPLEMENT_CLASS(TLabelList, NB_GET_CLASS_INFO(TList), nullptr);
+NB_IMPLEMENT_CLASS(TTabButton, NB_GET_CLASS_INFO(TFarButton), nullptr)
+NB_IMPLEMENT_CLASS(TLabelList, NB_GET_CLASS_INFO(TList), nullptr)
 

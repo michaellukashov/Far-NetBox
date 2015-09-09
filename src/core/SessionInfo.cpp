@@ -1563,5 +1563,5 @@ void TActionLog::SetEnabled(bool Value)
   }
 }
 
-NB_IMPLEMENT_CLASS(TSessionActionRecord, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TSessionActionRecord, NB_GET_CLASS_INFO(TObject), nullptr)
 

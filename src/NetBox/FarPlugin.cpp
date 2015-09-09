@@ -2930,9 +2930,9 @@ UnicodeString TGlobalFunctions::GetStrVersionNumber() const
   return NETBOX_VERSION_NUMBER.c_str();
 }
 
-NB_IMPLEMENT_CLASS(TCustomFarFileSystem, NB_GET_CLASS_INFO(TObject), nullptr);
-NB_IMPLEMENT_CLASS(TCustomFarPlugin, NB_GET_CLASS_INFO(TObject), nullptr);
-NB_IMPLEMENT_CLASS(TConsoleTitleParam, NB_GET_CLASS_INFO(TObject), nullptr);
-NB_IMPLEMENT_CLASS(TCustomFarPanelItem, NB_GET_CLASS_INFO(TObject), nullptr);
-NB_IMPLEMENT_CLASS(TFarPanelItem, NB_GET_CLASS_INFO(TCustomFarPanelItem), nullptr);
+NB_IMPLEMENT_CLASS(TCustomFarFileSystem, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TCustomFarPlugin, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TConsoleTitleParam, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TCustomFarPanelItem, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TFarPanelItem, NB_GET_CLASS_INFO(TCustomFarPanelItem), nullptr)
 

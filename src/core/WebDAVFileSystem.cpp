@@ -14194,5 +14194,5 @@ uintptr_t TWebDAVFileSystem::AdjustToCPSLimit(uintptr_t Len)
   return FCurrentOperationProgress ? (uintptr_t)FCurrentOperationProgress->AdjustToCPSLimit(Len) : Len;
 }
 
-NB_IMPLEMENT_CLASS(TWebDAVFileSystem, NB_GET_CLASS_INFO(TCustomFileSystem), nullptr);
+NB_IMPLEMENT_CLASS(TWebDAVFileSystem, NB_GET_CLASS_INFO(TCustomFileSystem), nullptr)
 

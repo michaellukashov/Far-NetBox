@@ -6095,6 +6095,6 @@ void TSFTPFileSystem::GetSupportedChecksumAlgs(TStrings * Algs)
   Algs->AddStrings(FChecksumAlgs.get());
 }
 
-NB_IMPLEMENT_CLASS(TSFTPPacket, NB_GET_CLASS_INFO(TObject), nullptr);
-NB_IMPLEMENT_CLASS(TSFTPQueuePacket, NB_GET_CLASS_INFO(TSFTPPacket), nullptr);
+NB_IMPLEMENT_CLASS(TSFTPPacket, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TSFTPQueuePacket, NB_GET_CLASS_INFO(TSFTPPacket), nullptr)
 

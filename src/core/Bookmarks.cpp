@@ -558,5 +558,5 @@ UnicodeString TBookmark::GetKey() const
   return BookmarkKey(GetNode(), GetName());
 }
 
-NB_IMPLEMENT_CLASS(TBookmark, NB_GET_CLASS_INFO(TPersistent), nullptr);
-NB_IMPLEMENT_CLASS(TBookmarkList, NB_GET_CLASS_INFO(TPersistent), nullptr);
+NB_IMPLEMENT_CLASS(TBookmark, NB_GET_CLASS_INFO(TPersistent), nullptr)
+NB_IMPLEMENT_CLASS(TBookmarkList, NB_GET_CLASS_INFO(TPersistent), nullptr)

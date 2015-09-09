@@ -240,5 +240,5 @@ int CApiLog::GetDebugLevel()
 	return m_nDebugLevel;
 }
 
-NB_IMPLEMENT_CLASS(CApiLog, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(CApiLog, NB_GET_CLASS_INFO(TObject), nullptr)
 
