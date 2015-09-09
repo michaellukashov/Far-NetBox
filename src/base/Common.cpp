@@ -1367,6 +1367,7 @@ struct TDateTimeParams : public TObject
     return HasDST() && (DaylightDate < StandardDate);
   }
 };
+
 typedef rde::map<int, TDateTimeParams> TYearlyDateTimeParams;
 static TYearlyDateTimeParams YearlyDateTimeParams;
 static TCriticalSection DateTimeParamsSection;

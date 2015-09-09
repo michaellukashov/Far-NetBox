@@ -155,10 +155,12 @@ UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /*FileName*/, const TSearchRec & /*Rec*/, void * /*Param*/);
 bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec);
+
 struct TSearchRecChecked : public TSearchRec
 {
   UnicodeString Path;
 };
+
 DWORD FindCheck(DWORD Result, const UnicodeString & APath);
 DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked & F);
 DWORD FindNextChecked(TSearchRecChecked & F);
@@ -171,6 +173,7 @@ enum TDSTMode
   dstmUnix = 1, // adjust UTC time to Windows "bug"
   dstmKeep = 2
 };
+
 bool UsesDaylightHack();
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day);
 TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);

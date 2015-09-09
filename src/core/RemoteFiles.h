@@ -388,6 +388,7 @@ public:
   static const wchar_t CombinedSymbols[];
   static const wchar_t ExtendedSymbols[];
   static const wchar_t ModeGroups[];
+
   enum TRight
   {
     rrUserIDExec, rrGroupIDExec, rrStickyBit,
@@ -396,6 +397,7 @@ public:
     rrOtherRead, rrOtherWrite, rrOtherExec,
     rrFirst = rrUserIDExec, rrLast = rrOtherExec
   };
+
   enum TFlag
   {
     rfSetUID =    04000, rfSetGID =      02000, rfStickyBit = 01000,
@@ -406,10 +408,12 @@ public:
     rfNo =        00000, rfDefault =     00644, rfAll =       00777,
     rfSpecials =  07000, rfAllSpecials = 07777
   };
+
   enum TUnsupportedFlag
   {
     rfDirectory = 040000
   };
+
   enum TState
   {
     rsNo,

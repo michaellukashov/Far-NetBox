@@ -646,6 +646,7 @@ public:
   operator intptr_t() const;
   bool operator < (const TShortCut & rhs) const;
   intptr_t Compare(const TShortCut & rhs) const { return FValue - rhs.FValue; }
+
 private:
   intptr_t FValue;
 };

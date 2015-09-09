@@ -704,6 +704,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     {
       { L"Using TIS authentication.%", TIS_INSTRUCTION },
     };
+
     static const TPuttyTranslation TISPromptTranslation[] =
     {
       { L"Response: ", PROMPT_PROMPT },
@@ -720,6 +721,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     {
       { L"Using CryptoCard authentication.%", CRYPTOCARD_INSTRUCTION },
     };
+
     static const TPuttyTranslation CryptoCardPromptTranslation[] =
     {
       { L"Response: ", PROMPT_PROMPT },
@@ -736,6 +738,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     {
       { L"Using keyboard-interactive authentication.%", KEYBINTER_INSTRUCTION },
     };
+
     static const TPuttyTranslation KeybInteractivePromptTranslation[] =
     {
       // as used by Linux-PAM (pam_exec/pam_exec.c, libpam/pam_get_authtok.c,
@@ -764,6 +767,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       { L"Enter new password: ", NEW_PASSWORD_NEW_PROMPT },
       { L"Confirm new password: ", NEW_PASSWORD_CONFIRM_PROMPT },
     };
+
     PromptTranslation = NewPasswordPromptTranslation;
     PromptTranslationCount = _countof(NewPasswordPromptTranslation);
     PromptKind = pkNewPassword;

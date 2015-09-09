@@ -42,6 +42,7 @@ struct TQueryButtonAlias : public TObject
 
 DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
   intptr_t & /*Result*/);
+
 enum TQueryType
 {
   qtConfirmation,

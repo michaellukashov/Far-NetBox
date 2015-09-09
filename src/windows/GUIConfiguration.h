@@ -7,12 +7,14 @@
 
 class TGUIConfiguration;
 class TStoredSessionList;
+
 enum TLogView
 {
   lvNone,
   lvWindow,
   pvPanel
 };
+
 enum TInterface
 {
   ifCommander,
