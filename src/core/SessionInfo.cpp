@@ -1064,7 +1064,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Code Page: %d", Data->GetCodePageAsNumber());
       if (Data->GetUsesSsh() || (Data->GetFSProtocol() == fsFTP))
       {
-        wchar_t * PingTypes = L"-NC";
+        wchar_t * PingTypes = (wchar_t *)L"-NC";
         TPingType PingType;
         intptr_t PingInterval;
         if (Data->GetFSProtocol() == fsFTP)

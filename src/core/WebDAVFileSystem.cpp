@@ -2300,7 +2300,7 @@ utf8_to_unicode(
 
   if (src_length == 0)
   {
-    *retstr = L"";
+    *retstr = (wchar_t *)L"";
     return APR_SUCCESS;
   }
 
