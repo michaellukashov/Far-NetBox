@@ -1038,24 +1038,24 @@ UnicodeString ApiPath(const UnicodeString & APath)
 UnicodeString DisplayableStr(const RawByteString & Str)
 {
   bool Displayable = true;
-  intptr_t Index = 1;
-  while ((Index <= Str.Length()) && Displayable)
+  intptr_t Index1 = 1;
+  while ((Index1 <= Str.Length()) && Displayable)
   {
-    if (((Str[Index] < '\x20') || (static_cast<uint8_t>(Str[Index]) >= static_cast<uint8_t >('\x80'))) &&
-        (Str[Index] != '\n') && (Str[Index] != '\r') && (Str[Index] != '\t') && (Str[Index] != '\b'))
+    if (((Str[Index1] < '\x20') || (static_cast<uint8_t>(Str[Index1]) >= static_cast<uint8_t >('\x80'))) &&
+        (Str[Index1] != '\n') && (Str[Index1] != '\r') && (Str[Index1] != '\t') && (Str[Index1] != '\b'))
     {
       Displayable = false;
     }
-    ++Index;
+    ++Index1;
   }
 
   UnicodeString Result;
   if (Displayable)
   {
     Result = L"\"";
-    for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
+    for (intptr_t Index2 = 1; Index2 <= Str.Length(); ++Index2)
     {
-      switch (Str[Index])
+      switch (Str[Index2])
       {
         case '\n':
           Result += L"\\n";
@@ -1082,7 +1082,7 @@ UnicodeString DisplayableStr(const RawByteString & Str)
           break;
 
         default:
-          Result += wchar_t(Str[Index]);
+          Result += wchar_t(Str[Index2]);
           break;
       }
     }
@@ -1684,9 +1684,9 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
     SYSTEMTIME SysTime;
     if (!UsesDaylightHack())
     {
-      SYSTEMTIME UniverzalSysTime;
-      FileTimeToSystemTime(&FileTime, &UniverzalSysTime);
-      SystemTimeToTzSpecificLocalTime(nullptr, &UniverzalSysTime, &SysTime);
+      SYSTEMTIME UniversalSysTime;
+      FileTimeToSystemTime(&FileTime, &UniversalSysTime);
+      SystemTimeToTzSpecificLocalTime(nullptr, &UniversalSysTime, &SysTime);
     }
     else
     {
