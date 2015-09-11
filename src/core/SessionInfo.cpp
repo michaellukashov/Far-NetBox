@@ -587,7 +587,7 @@ TChecksumSessionAction::TChecksumSessionAction(TActionLog * Log) :
   TFileSessionAction(Log, laChecksum)
 {
 }
-//---------------------------------------------------------------------------
+
 void TChecksumSessionAction::Checksum(const UnicodeString & Alg, const UnicodeString & Checksum)
 {
   if (FRecord != nullptr)
@@ -1232,7 +1232,7 @@ void TSessionLog::AddOption(const UnicodeString & LogStr)
 {
   ADSTR(LogStr);
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::AddOptions(TOptions * Options)
 {
   Options->LogOptions(MAKE_CALLBACK(TSessionLog::AddOption, this));

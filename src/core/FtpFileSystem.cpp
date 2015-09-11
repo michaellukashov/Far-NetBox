@@ -1088,7 +1088,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(
 
   return LowerCase(Hash);
 }
-//---------------------------------------------------------------------------
+
 void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
   const UnicodeString & Alg, TStrings * FileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum,

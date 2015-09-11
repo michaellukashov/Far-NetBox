@@ -35,7 +35,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <delayimp.h>
 
-//----------------------------------------------------------------------------
 static LPVOID WINAPI no_recode_pointer(LPVOID p)
 {
     return p;

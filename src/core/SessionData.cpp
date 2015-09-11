@@ -4108,7 +4108,7 @@ TSessionData * TStoredSessionList::SaveWorkspaceData(TSessionData * Data)
 
   return Result.release();
 }
-//---------------------------------------------------------------------
+
 bool TStoredSessionList::CanLogin(TSessionData * Data)
 {
   Data = ResolveWorkspaceData(Data);
