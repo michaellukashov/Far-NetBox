@@ -2,8 +2,9 @@ project(NetBox)
 cmake_minimum_required(VERSION 2.8)
 
 if(NOT DEFINED CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug)
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug" FORCE)
 endif()
+message("Build type -- ${CMAKE_BUILD_TYPE}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far2)
@@ -53,7 +54,7 @@ if(MSVC)
 set(NETBOX_WARNING_FLAGS "")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /GR- /EHsc /MP2 /Zi -D_UNICODE -DUNICODE ")
 set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} /GL /Gm- /MT -Ox -Ob1 -Oi -Os -GF -GS- -Gy /fp:fast")
-set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} /Gm- /MTd /GS")
+set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} /Gm- /Od /MTd /GS /RTC1")
 
 elseif(CMAKE_COMPILER_IS_MINGW)
 
@@ -74,6 +75,11 @@ set(CMAKE_CXX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
 set(CMAKE_C_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
 
 if(MSVC)
+
+set(LINK_FLAGS_RELEASE
+  "/LTCG"
+)
+
 set(CMAKE_LINK_FLAGS
   "/DEBUG
   /NODEFAULTLIB:MSVCURT.LIB
@@ -119,6 +125,7 @@ set(CMAKE_LINK_FLAGS
 
 elseif(CMAKE_COMPILER_IS_MINGW)
 set(CMAKE_LINK_FLAGS "")
+set(LINK_FLAGS_RELEASE "")
 endif()
 
 #-------------------------------------------------------
@@ -257,6 +264,7 @@ set_target_properties(NetBox
   PROPERTIES
   COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
+  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
 )
 elseif(CMAKE_COMPILER_IS_MINGW)
 set_target_properties(NetBox
@@ -932,6 +940,8 @@ set(OPENSSL_COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS} -DMK1MF_BUILD -DWIN32_LEAN_A
 set_target_properties(openssl
   PROPERTIES
   COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS}"
+  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
+  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
 )
 
 #-------------------------------------------------------------------------------
@@ -953,6 +963,7 @@ set_target_properties(atlmfc
   PROPERTIES
   COMPILE_FLAGS "${ATLMFC_COMPILE_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
+  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
 )
 elseif(CMAKE_COMPILER_IS_MINGW)
 set_target_properties(atlmfc
@@ -1021,6 +1032,8 @@ if(MSVC)
 set_target_properties(putty
   PROPERTIES
   COMPILE_FLAGS "${PUTTY_COMPILE_FLAGS}"
+  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
+  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
 )
 elseif(CMAKE_COMPILER_IS_MINGW)
 set_target_properties(putty
@@ -1072,6 +1085,7 @@ set_target_properties(neon
   PROPERTIES
   COMPILE_FLAGS "/TC ${NEON_COMPILE_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
+  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
 )
 elseif(CMAKE_COMPILER_IS_MINGW)
 set_target_properties(neon
@@ -1163,6 +1177,7 @@ set_target_properties(apr
   PROPERTIES
   COMPILE_FLAGS "-D_CRTIMP= -D_LIB -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES -U_UNICODE -UUNICODE"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
+  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
 )
 
 #-------------------------------------------------------------------------------
@@ -1182,6 +1197,7 @@ set_target_properties(expat
   PROPERTIES
   COMPILE_FLAGS "/TC ${EXPAT_COMPILE_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
+  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
 )
 elseif(CMAKE_COMPILER_IS_MINGW)
 set_target_properties(expat
@@ -1216,6 +1232,7 @@ set_target_properties(zlib
   PROPERTIES
   COMPILE_FLAGS "-D_CRTIMP= -D_LIB"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
+  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
 )
 
 #-------------------------------------------------------------------------------
@@ -1229,6 +1246,7 @@ set_target_properties(dlmalloc
   PROPERTIES
   COMPILE_FLAGS "-D_CRTIMP= -D_LIB ${DLMALLOC_DEFS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
+  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
 )
 
 #-------------------------------------------------------------------------------
@@ -1283,6 +1301,7 @@ set_target_properties(rdestl
   PROPERTIES
   COMPILE_FLAGS ""
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
+  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
 )
 
 #-------------------------------------------------------------------------------
