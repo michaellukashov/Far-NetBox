@@ -114,7 +114,7 @@ static DWORD WINAPI handle_input_threadfunc(void *param)
 {
     struct handle_input *ctx = (struct handle_input *) param;
     OVERLAPPED ovl, *povl;
-    HANDLE oev;
+    HANDLE oev = 0;
     int readret, readlen, finished;
 
     if (ctx->flags & HANDLE_FLAG_OVERLAPPED) {
