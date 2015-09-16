@@ -1224,7 +1224,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   bool ShowSavePassword = false;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
        (Kind == pkKeybInteractive)) &&
-       (Prompts->GetCount() == 1) && // FLAGSET((intptr_t)Prompts->GetObjject(0), pupRemember) &&
+       (Prompts->GetCount() == 1) && // FLAGSET((intptr_t)Prompts->GetObject(0), pupRemember) &&
       !SessionName.IsEmpty())
   //    // StoredCredentialsTried)
   {
@@ -1521,7 +1521,7 @@ private:
   intptr_t FFtpEncryptionComboIndex;
 
   TTabButton * SshTab;
-  TTabButton * AuthenticatonTab;
+  TTabButton * AuthenticationTab;
   TTabButton * KexTab;
   TTabButton * BugsTab;
   TTabButton * WebDAVTab;
@@ -1767,7 +1767,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   KexTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
 
   Index = AddTab(tabAuthentication, GetMsg(LOGIN_TAB_AUTH).c_str());
-  AuthenticatonTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
+  AuthenticationTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
 
   Index = AddTab(tabBugs, GetMsg(LOGIN_TAB_BUGS).c_str());
   BugsTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
@@ -3014,7 +3014,7 @@ void TSessionDialog::UpdateControls()
     CipherListBox->GetItems()->GetSelected() < CipherListBox->GetItems()->GetCount() - 1);
 
   // Authentication tab
-  AuthenticatonTab->SetEnabled(SshProtocol);
+  AuthenticationTab->SetEnabled(SshProtocol);
   SshNoUserAuthCheck->SetEnabled(!SshProt1onlyButton->GetChecked());
   bool Authentication = !SshNoUserAuthCheck->GetEnabled() || !SshNoUserAuthCheck->GetChecked();
   TryAgentCheck->SetEnabled(Authentication);
