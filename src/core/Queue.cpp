@@ -1026,7 +1026,7 @@ void TTerminalQueue::ProcessEvent()
   do
   {
     TerminalItem = nullptr;
-    TQueueItem * Item = nullptr;
+    TQueueItem * Item1 = nullptr;
 
     {
       TGuard Guard(FItemsSection);
@@ -1042,11 +1042,11 @@ void TTerminalQueue::ProcessEvent()
         }
         for (intptr_t Index = 0; Index < FDoneItems->GetCount(); ++Index)
         {
-          TQueueItem * Item = GetItem(FDoneItems, Index);
-          if (Item->FDoneAt <= RemoveDoneItemsBefore)
+          TQueueItem * Item2 = GetItem(FDoneItems, Index);
+          if (Item2->FDoneAt <= RemoveDoneItemsBefore)
           {
             FDoneItems->Delete(Index);
-            SAFE_DESTROY(Item);
+            SAFE_DESTROY(Item2);
             Index--;
             DoListUpdate();
           }
@@ -1055,8 +1055,8 @@ void TTerminalQueue::ProcessEvent()
 
       if (FItems->GetCount() > FItemsInProcess)
       {
-        Item = GetItem(FItemsInProcess);
-        intptr_t ForcedIndex = FForcedItems->IndexOf(Item);
+        Item1 = GetItem(FItemsInProcess);
+        intptr_t ForcedIndex = FForcedItems->IndexOf(Item1);
 
         if (FEnabled || (ForcedIndex >= 0))
         {
@@ -1090,7 +1090,7 @@ void TTerminalQueue::ProcessEvent()
 
     if (TerminalItem != nullptr)
     {
-      TerminalItem->Process(Item);
+      TerminalItem->Process(Item1);
     }
   }
   while (!FTerminated && (TerminalItem != nullptr));

@@ -1713,22 +1713,22 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TFarText * Text;
   intptr_t GroupTop;
   intptr_t Pos;
-  intptr_t Index;
+  intptr_t Index1;
 
-  Index = AddTab(tabSession, GetMsg(LOGIN_TAB_SESSION).c_str());
+  Index1 = AddTab(tabSession, GetMsg(LOGIN_TAB_SESSION).c_str());
   // Tab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
 
   SetNextItemPosition(ipRight);
 
-  Index = AddTab(tabEnvironment, GetMsg(LOGIN_TAB_ENVIRONMENT).c_str());
+  Index1 = AddTab(tabEnvironment, GetMsg(LOGIN_TAB_ENVIRONMENT).c_str());
 
-  Index = AddTab(tabDirectories, GetMsg(LOGIN_TAB_DIRECTORIES).c_str());
+  Index1 = AddTab(tabDirectories, GetMsg(LOGIN_TAB_DIRECTORIES).c_str());
 
-  Index = AddTab(tabSFTP, GetMsg(LOGIN_TAB_SFTP).c_str());
-  SftpTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
+  Index1 = AddTab(tabSFTP, GetMsg(LOGIN_TAB_SFTP).c_str());
+  SftpTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index1));
 
-  Index = AddTab(tabSCP, GetMsg(LOGIN_TAB_SCP).c_str());
-  ScpTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
+  Index1 = AddTab(tabSCP, GetMsg(LOGIN_TAB_SCP).c_str());
+  ScpTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index1));
 
   PrevTab = new TTabButton(this);
   PrevTab->SetTabName(UnicodeString('\x11'));
@@ -1750,30 +1750,30 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   NextTab->SetLeft(R - NWidth - 1);
   NextTab->SetWidth(PWidth);
 
-  Index = AddTab(tabFTP, GetMsg(LOGIN_TAB_FTP).c_str());
-  FtpTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
+  Index1 = AddTab(tabFTP, GetMsg(LOGIN_TAB_FTP).c_str());
+  FtpTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index1));
 
-  Index = AddTab(tabConnection, GetMsg(LOGIN_TAB_CONNECTION).c_str());
+  Index1 = AddTab(tabConnection, GetMsg(LOGIN_TAB_CONNECTION).c_str());
 
-  Index = AddTab(tabProxy, GetMsg(LOGIN_TAB_PROXY).c_str());
+  Index1 = AddTab(tabProxy, GetMsg(LOGIN_TAB_PROXY).c_str());
 
-  Index = AddTab(tabTunnel, GetMsg(LOGIN_TAB_TUNNEL).c_str());
-  TunnelTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
+  Index1 = AddTab(tabTunnel, GetMsg(LOGIN_TAB_TUNNEL).c_str());
+  TunnelTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index1));
 
-  Index = AddTab(tabSsh, GetMsg(LOGIN_TAB_SSH).c_str());
-  SshTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
+  Index1 = AddTab(tabSsh, GetMsg(LOGIN_TAB_SSH).c_str());
+  SshTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index1));
 
-  Index = AddTab(tabKex, GetMsg(LOGIN_TAB_KEX).c_str());
-  KexTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
+  Index1 = AddTab(tabKex, GetMsg(LOGIN_TAB_KEX).c_str());
+  KexTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index1));
 
-  Index = AddTab(tabAuthentication, GetMsg(LOGIN_TAB_AUTH).c_str());
-  AuthenticationTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
+  Index1 = AddTab(tabAuthentication, GetMsg(LOGIN_TAB_AUTH).c_str());
+  AuthenticationTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index1));
 
-  Index = AddTab(tabBugs, GetMsg(LOGIN_TAB_BUGS).c_str());
-  BugsTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
+  Index1 = AddTab(tabBugs, GetMsg(LOGIN_TAB_BUGS).c_str());
+  BugsTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index1));
 
-  Index = AddTab(tabWebDAV, GetMsg(LOGIN_TAB_WEBDAV).c_str());
-  WebDAVTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index));
+  Index1 = AddTab(tabWebDAV, GetMsg(LOGIN_TAB_WEBDAV).c_str());
+  WebDAVTab = NB_STATIC_DOWNCAST(TTabButton, GetItem(Index1));
 
   // Session tab
 
@@ -2156,9 +2156,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SFTPMaxVersionCombo = new TFarComboBox(this);
   SFTPMaxVersionCombo->SetDropDownList(true);
   SFTPMaxVersionCombo->SetWidth(7);
-  for (intptr_t Index = 0; Index <= 5; ++Index)
+  for (intptr_t Index2 = 0; Index2 <= 5; ++Index2)
   {
-    SFTPMaxVersionCombo->GetItems()->Add(::IntToStr(Index));
+    SFTPMaxVersionCombo->GetItems()->Add(::IntToStr(Index2));
   }
   Text->SetEnabledFollow(SFTPMaxVersionCombo);
 
@@ -2230,10 +2230,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_FTP_POST_LOGIN_COMMANDS));
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(PostLoginCommandsEdits)); ++Index)
+  for (intptr_t Index3 = 0; Index3 < static_cast<intptr_t>(_countof(PostLoginCommandsEdits)); ++Index3)
   {
     TFarEdit * Edit = new TFarEdit(this);
-    PostLoginCommandsEdits[Index] = Edit;
+    PostLoginCommandsEdits[Index3] = Edit;
   }
 
   new TFarSeparator(this);
@@ -2548,10 +2548,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
       TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
     };
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
-    for (intptr_t Index = GetConfiguration()->GetTunnelLocalPortNumberLow();
-         Index <= GetConfiguration()->GetTunnelLocalPortNumberHigh(); ++Index)
+    for (intptr_t Index4 = GetConfiguration()->GetTunnelLocalPortNumberLow();
+         Index4 <= GetConfiguration()->GetTunnelLocalPortNumberHigh(); ++Index4)
     {
-      TunnelLocalPortNumberEdit->GetItems()->Add(::IntToStr(Index));
+      TunnelLocalPortNumberEdit->GetItems()->Add(::IntToStr(Index1));
     }
   }
 
@@ -3398,11 +3398,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     };
     CipherListBox->GetItems()->Clear();
     assert(CIPHER_NAME_WARN + CIPHER_COUNT - 1 == CIPHER_NAME_CHACHA20);
-    for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
+    for (intptr_t Index2 = 0; Index2 < CIPHER_COUNT; ++Index2)
     {
-      TObject * Obj = static_cast<TObject *>(ToPtr(SessionData->GetCipher(Index)));
+      TObject * Obj = static_cast<TObject *>(ToPtr(SessionData->GetCipher(Index2)));
       CipherListBox->GetItems()->AddObject(
-        GetMsg(CIPHER_NAME_WARN + static_cast<intptr_t>(SessionData->GetCipher(Index))),
+        GetMsg(CIPHER_NAME_WARN + static_cast<intptr_t>(SessionData->GetCipher(Index2))),
         Obj);
     }
   }
@@ -3420,11 +3420,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     };
     KexListBox->GetItems()->Clear();
     assert(KEX_NAME_WARN + KEX_COUNT - 1 == KEX_NAME_ECDH);
-    for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
+    for (intptr_t Index3 = 0; Index3 < KEX_COUNT; ++Index3)
     {
       KexListBox->GetItems()->AddObject(
-        GetMsg(KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index))),
-        static_cast<TObject *>(ToPtr(SessionData->GetKex(Index))));
+        GetMsg(KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index3))),
+        static_cast<TObject *>(ToPtr(SessionData->GetKex(Index3))));
     }
   }
 
@@ -3570,17 +3570,17 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetFtpDupFF(FtpDupFFCheck->GetChecked());
     SessionData->SetFtpUndupFF(FtpUndupFFCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
-    std::unique_ptr<TStrings> PostLoginCommands(new TStringList());
-    for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(PostLoginCommandsEdits)); ++Index)
+    std::unique_ptr<TStrings> PostLoginCommands2(new TStringList());
+    for (intptr_t Index4 = 0; Index4 < static_cast<intptr_t>(_countof(PostLoginCommandsEdits)); ++Index4)
     {
-      UnicodeString Text = PostLoginCommandsEdits[Index]->GetText();
+      UnicodeString Text = PostLoginCommandsEdits[Index4]->GetText();
       if (!Text.IsEmpty())
       {
-        PostLoginCommands->Add(PostLoginCommandsEdits[Index]->GetText());
+        PostLoginCommands2->Add(PostLoginCommandsEdits[Index4]->GetText());
       }
     }
 
-    SessionData->SetPostLoginCommands(PostLoginCommands->GetText());
+    SessionData->SetPostLoginCommands(PostLoginCommands2->GetText());
     if ((GetFSProtocol() == fsFTP) && (GetFtps() != ftpsNone))
     {
       SessionData->SetFtps(GetFtps());
@@ -3735,10 +3735,10 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       SessionData->SetSshProt(ssh2only);
     }
 
-    for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
+    for (intptr_t Index5 = 0; Index5 < CIPHER_COUNT; ++Index5)
     {
-      TObject * Obj = static_cast<TObject *>(CipherListBox->GetItems()->GetObj(Index));
-      SessionData->SetCipher(Index, static_cast<TCipher>(reinterpret_cast<intptr_t>(Obj)));
+      TObject * Obj = static_cast<TObject *>(CipherListBox->GetItems()->GetObj(Index5));
+      SessionData->SetCipher(Index5, static_cast<TCipher>(reinterpret_cast<intptr_t>(Obj)));
     }
 
     // KEX tab
@@ -3746,9 +3746,9 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetRekeyTime(RekeyTimeEdit->GetAsInteger());
     SessionData->SetRekeyData(RekeyDataEdit->GetText());
 
-    for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
+    for (intptr_t Index6 = 0; Index6 < KEX_COUNT; ++Index6)
     {
-      SessionData->SetKex(Index, static_cast<TKex>(reinterpret_cast<intptr_t>(KexListBox->GetItems()->GetObj(Index))));
+      SessionData->SetKex(Index6, static_cast<TKex>(reinterpret_cast<intptr_t>(KexListBox->GetItems()->GetObj(Index))));
     }
 
     // Authentication tab
