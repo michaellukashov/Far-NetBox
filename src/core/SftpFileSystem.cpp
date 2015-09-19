@@ -2933,24 +2933,24 @@ void TSFTPFileSystem::DoStartup()
   // do not know yet
   FVersion = -1;
   FFileSystemInfoValid = false;
-  TSFTPPacket Packet(SSH_FXP_INIT, FCodePage);
+  TSFTPPacket Packet1(SSH_FXP_INIT, FCodePage);
   intptr_t MaxVersion = GetSessionData()->GetSFTPMaxVersion();
   if (MaxVersion > SFTPMaxVersion)
   {
     MaxVersion = SFTPMaxVersion;
   }
-  Packet.AddCardinal(static_cast<uint32_t>(MaxVersion));
+  Packet1.AddCardinal(static_cast<uint32_t>(MaxVersion));
 
   try
   {
-    SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_VERSION);
+    SendPacketAndReceiveResponse(&Packet1, &Packet1, SSH_FXP_VERSION);
   }
   catch (Exception & E)
   {
     FTerminal->FatalError(&E, LoadStr(SFTP_INITIALIZE_ERROR), HELP_SFTP_INITIALIZE_ERROR);
   }
 
-  FVersion = Packet.GetCardinal();
+  FVersion = Packet1.GetCardinal();
   FTerminal->LogEvent(FORMAT(L"SFTP version %d negotiated.", FVersion));
   if (FVersion < SFTPMinVersion || FVersion > SFTPMaxVersion)
   {
@@ -2967,10 +2967,10 @@ void TSFTPFileSystem::DoStartup()
 
   if (FVersion >= 3)
   {
-    while (Packet.GetNextData() != nullptr)
+    while (Packet1.GetNextData() != nullptr)
     {
-      UnicodeString ExtensionName = Packet.GetAnsiString();
-      RawByteString ExtensionData = Packet.GetRawByteString();
+      UnicodeString ExtensionName = Packet1.GetAnsiString();
+      RawByteString ExtensionData = Packet1.GetRawByteString();
       UnicodeString ExtensionDisplayData = DisplayableStr(ExtensionData);
 
       if (ExtensionName == SFTP_EXT_NEWLINE)
@@ -3150,15 +3150,15 @@ void TSFTPFileSystem::DoStartup()
     if (SupportsExtension(SFTP_EXT_VENDOR_ID))
     {
       const TConfiguration * Configuration = FTerminal->GetConfiguration();
-      TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
-      Packet.AddString(RawByteString(SFTP_EXT_VENDOR_ID));
-      Packet.AddString(Configuration->GetCompanyName());
-      Packet.AddString(Configuration->GetProductName());
-      Packet.AddString(Configuration->GetProductVersion());
-      Packet.AddInt64(LOWORD(FTerminal->GetConfiguration()->GetFixedApplicationInfo()->dwFileVersionLS));
-      SendPacket(&Packet);
+      TSFTPPacket Packet2(SSH_FXP_EXTENDED, FCodePage);
+      Packet2.AddString(RawByteString(SFTP_EXT_VENDOR_ID));
+      Packet2.AddString(Configuration->GetCompanyName());
+      Packet2.AddString(Configuration->GetProductName());
+      Packet2.AddString(Configuration->GetProductVersion());
+      Packet2.AddInt64(LOWORD(FTerminal->GetConfiguration()->GetFixedApplicationInfo()->dwFileVersionLS));
+      SendPacket(&Packet2);
       // we are not interested in the response, do not wait for it
-      ReceiveResponse(&Packet, &Packet);
+      ReceiveResponse(&Packet2, &Packet2);
       //ReserveResponse(&Packet, nullptr);
     }
   }
