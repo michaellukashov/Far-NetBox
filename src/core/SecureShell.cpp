@@ -910,7 +910,6 @@ void TSecureShell::CWrite(const char * Data, intptr_t Length)
   // We send only whole line at once, so we have to cache incoming data
   FCWriteTemp += DeleteChar(ConvertFromPutty(Data, Length), L'\r');
 
-  UnicodeString Line;
   // Do we have at least one complete line in std error cache?
   while (FCWriteTemp.Pos(L"\n") > 0)
   {
