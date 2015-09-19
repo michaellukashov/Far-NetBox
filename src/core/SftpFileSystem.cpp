@@ -1983,9 +1983,6 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 
     if (FExtensions->GetCount() > 0)
     {
-      UnicodeString Name;
-      UnicodeString Value;
-      UnicodeString Line;
       FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_EXTENSION_INFO) + L"\r\n";
       for (intptr_t Index = 0; Index < FExtensions->GetCount(); ++Index)
       {
