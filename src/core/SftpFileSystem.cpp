@@ -2340,7 +2340,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
 SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
   SSH_FX_TYPES AllowStatus)
 {
-  uint32_t Code = Packet->GetCardinal();
+  SSH_FX_TYPES Code = Packet->GetCardinal();
 
   static intptr_t Messages[] =
   {
