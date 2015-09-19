@@ -1096,10 +1096,10 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
 {
   TOnceDoneOperation OnceDoneOperation; // not used
 
-  intptr_t Index = 0;
-  while ((Index < FileList->GetCount()) && !OperationProgress->Cancel)
+  intptr_t Index1 = 0;
+  while ((Index1 < FileList->GetCount()) && !OperationProgress->Cancel)
   {
-    TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObj(Index));
+    TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObj(Index1));
     assert(File != nullptr);
 
     if (File->GetIsDirectory())
@@ -1130,9 +1130,9 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
           {
             OperationProgress->SetFile(File->GetFileName());
 
-            for (intptr_t Index = 0; Index < SubFiles->GetCount(); Index++)
+            for (intptr_t Index2 = 0; Index2 < SubFiles->GetCount(); Index2++)
             {
-              TRemoteFile * SubFile = SubFiles->GetFile(Index);
+              TRemoteFile * SubFile = SubFiles->GetFile(Index2);
               SubFileList->AddObject(SubFile->GetFullFileName(), SubFile);
             }
 
@@ -1177,10 +1177,10 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
         FTerminal->CommandError(&E, Error);
         // Abort loop.
         // TODO: retries? resume?
-        Index = FileList->GetCount();
+        Index1 = FileList->GetCount();
       }
     }
-    Index++;
+    Index1++;
   }
 }
 
