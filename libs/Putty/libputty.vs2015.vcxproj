@@ -209,11 +209,14 @@
     <ClCompile Include=".\SSHSH256.c" />
     <ClCompile Include=".\SSHSH512.c" />
     <ClCompile Include=".\SSHSHA.c" />
+    <ClCompile Include=".\sshshare.c" />
+    <ClCompile Include=".\noshare.c" />
+    <ClCompile Include=".\errsock.c" />
+    <ClCompile Include=".\sshecc.c" />
+    <ClCompile Include=".\sshccp.c" />
     <ClCompile Include=".\SSHZLIB.c" />
     <ClCompile Include=".\TREE234.c" />
     <ClCompile Include=".\WILDCARD.c" />
-    <ClCompile Include=".\sshecc.c" />
-    <ClCompile Include=".\sshccp.c" />
     <ClCompile Include=".\windows\WINGSS.c" />
     <ClCompile Include=".\windows\WINHANDL.c" />
     <ClCompile Include=".\windows\WINMISC.c" />
@@ -224,6 +227,7 @@
     <ClCompile Include=".\windows\WINPROXY.c" />
     <ClCompile Include=".\windows\WINSTORE.c" />
     <ClCompile Include=".\windows\WINTIME.c" />
+    <ClCompile Include=".\windows\winhsock.c" />
     <ClCompile Include=".\X11FWD.c" />
     <ClCompile Include=".\CONF.c" />
     <ClCompile Include=".\CALLBACK.c" />
