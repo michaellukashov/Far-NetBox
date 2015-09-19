@@ -104,7 +104,7 @@ protected:
   AnsiString FEOL;
   TList * FPacketReservations;
   rde::vector<uintptr_t> FPacketNumbers;
-  uint8_t FPreviousLoggedPacket;
+  SSH_FX_TYPES FPreviousLoggedPacket;
   int FNotLoggedPackets;
   int FBusy;
   void * FBusyToken;

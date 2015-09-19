@@ -283,7 +283,7 @@ public:
     FLength = 0;
     SetCapacity(0);
     FType = AType;
-    AddByte(FType);
+    AddByte((uint8_t)FType);
     if (FType != SSH_FXP_INIT) // && (FType != 1)
     {
       AssignNumber();
