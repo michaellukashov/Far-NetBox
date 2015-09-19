@@ -3968,9 +3968,9 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
   // recurse into subdirectories only if we have callback function
   if (OnCalculatedChecksum != nullptr)
   {
-    for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
+    for (intptr_t Index1 = 0; Index1 < AFileList->GetCount(); ++Index1)
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index1));
       assert(File != nullptr);
       if (File && File->GetIsDirectory() && !File->GetIsSymLink() &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -3993,9 +3993,9 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
             };
             OperationProgress->SetFile(File->GetFileName());
 
-            for (intptr_t Index = 0; Index < SubFiles->GetCount(); ++Index)
+            for (intptr_t Index2 = 0; Index2 < SubFiles->GetCount(); ++Index2)
             {
-              TRemoteFile * SubFile = SubFiles->GetFile(Index);
+              TRemoteFile * SubFile = SubFiles->GetFile(Index2);
               SubFileList->AddObject(SubFile->GetFullFileName(), SubFile);
             }
 
