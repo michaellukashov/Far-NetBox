@@ -803,16 +803,16 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   // on terminal console
   Instructions2 = Instructions2.Trim();
 
-  for (intptr_t Index = 0; Index < Prompts->GetCount(); ++Index)
+  for (intptr_t Index2 = 0; Index2 < Prompts->GetCount(); ++Index2)
   {
-    UnicodeString Prompt = Prompts->GetString(Index);
+    UnicodeString Prompt = Prompts->GetString(Index2);
     if (PromptTranslation != nullptr)
     {
       TranslatePuttyMessage(PromptTranslation, PromptTranslationCount, Prompt);
     }
     // some servers add leading blank line to make the prompt look prettier
     // on terminal console
-    Prompts->SetString(Index, Prompt.Trim());
+    Prompts->SetString(Index2, Prompt.Trim());
   }
 
   bool Result = false;
