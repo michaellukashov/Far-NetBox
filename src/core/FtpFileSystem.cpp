@@ -1564,7 +1564,7 @@ void TFTPFileSystem::SinkRobust(const UnicodeString & AFileName,
 
 void TFTPFileSystem::Sink(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, intptr_t Params,
+  const TCopyParamType * CopyParam, intptr_t AParams,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TDownloadSessionAction & Action)
 {
@@ -1621,7 +1621,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       TSinkFileParams SinkFileParams;
       SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
       SinkFileParams.CopyParam = CopyParam;
-      SinkFileParams.Params = Params;
+      SinkFileParams.Params = AParams;
       SinkFileParams.OperationProgress = OperationProgress;
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
@@ -1631,7 +1631,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       // Do not delete directory if some of its files were skipped.
       // Throw "skip file" for the directory to avoid attempt to deletion
       // of any parent directory
-      if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
+      if (FLAGSET(AParams, cpDelete) && SinkFileParams.Skipped)
       {
         ThrowSkipFileNull();
       }
@@ -1688,7 +1688,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       // not used for downloads anyway
       FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
       UserData.FileName = DestFileName;
-      UserData.Params = Params;
+      UserData.Params = AParams;
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
       UserData.CopyParam = CopyParam;
       UserData.Modification = AFile->GetModification();
@@ -1730,7 +1730,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     FTerminal->LogFileDone(OperationProgress);
   }
 
-  if (FLAGSET(Params, cpDelete))
+  if (FLAGSET(AParams, cpDelete))
   {
     // If file is directory, do not delete it recursively, because it should be
     // empty already. If not, it should not be deleted (some files were
