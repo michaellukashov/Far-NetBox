@@ -184,7 +184,7 @@ protected:
     const UnicodeString & TargetDir, uintptr_t LocalFileAttrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void SFTPConfirmOverwrite(const UnicodeString & AFullFileName, UnicodeString & AFileName,
-    const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
+    const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams,
     OUT TOverwriteMode & Mode);
   bool SFTPConfirmResume(const UnicodeString & DestFileName, bool PartialBiggerThanSource,

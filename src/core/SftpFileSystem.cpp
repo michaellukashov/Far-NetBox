@@ -4295,7 +4295,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
 void TSFTPFileSystem::SFTPConfirmOverwrite(
   const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
-  const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
+  const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams,
   OUT TOverwriteMode & OverwriteMode)
 {
@@ -4345,7 +4345,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
       ASourceFullFileName, ATargetFileName, FileParams,
       Answers, &QueryParams,
       OperationProgress->Side == osLocal ? osRemote : osLocal,
-      CopyParam, Params, OperationProgress);
+      CopyParam, AParams, OperationProgress);
   }
 
   if (CanAppend &&
@@ -4355,7 +4355,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
     bool CanAlternateResume =
       FileParams ? (FileParams->DestSize < FileParams->SourceSize) && !OperationProgress->AsciiTransfer : false;
     TBatchOverwrite BatchOverwrite =
-      FTerminal->EffectiveBatchOverwrite(ASourceFullFileName, CopyParam, Params, OperationProgress, true);
+      FTerminal->EffectiveBatchOverwrite(ASourceFullFileName, CopyParam, AParams, OperationProgress, true);
     // when mode is forced by batch, never query user
     if (BatchOverwrite == boAppend)
     {
