@@ -704,6 +704,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     {
       { L"Using TIS authentication.%", TIS_INSTRUCTION },
     };
+
     static const TPuttyTranslation TISPromptTranslation[] =
     {
       { L"Response: ", PROMPT_PROMPT },
@@ -720,6 +721,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     {
       { L"Using CryptoCard authentication.%", CRYPTOCARD_INSTRUCTION },
     };
+
     static const TPuttyTranslation CryptoCardPromptTranslation[] =
     {
       { L"Response: ", PROMPT_PROMPT },
@@ -736,6 +738,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     {
       { L"Using keyboard-interactive authentication.%", KEYBINTER_INSTRUCTION },
     };
+
     static const TPuttyTranslation KeybInteractivePromptTranslation[] =
     {
       // as used by Linux-PAM (pam_exec/pam_exec.c, libpam/pam_get_authtok.c,
@@ -764,6 +767,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       { L"Enter new password: ", NEW_PASSWORD_NEW_PROMPT },
       { L"Confirm new password: ", NEW_PASSWORD_CONFIRM_PROMPT },
     };
+
     PromptTranslation = NewPasswordPromptTranslation;
     PromptTranslationCount = _countof(NewPasswordPromptTranslation);
     PromptKind = pkNewPassword;
@@ -799,16 +803,16 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   // on terminal console
   Instructions2 = Instructions2.Trim();
 
-  for (intptr_t Index = 0; Index < Prompts->GetCount(); ++Index)
+  for (intptr_t Index2 = 0; Index2 < Prompts->GetCount(); ++Index2)
   {
-    UnicodeString Prompt = Prompts->GetString(Index);
+    UnicodeString Prompt = Prompts->GetString(Index2);
     if (PromptTranslation != nullptr)
     {
       TranslatePuttyMessage(PromptTranslation, PromptTranslationCount, Prompt);
     }
     // some servers add leading blank line to make the prompt look prettier
     // on terminal console
-    Prompts->SetString(Index, Prompt.Trim());
+    Prompts->SetString(Index2, Prompt.Trim());
   }
 
   bool Result = false;
@@ -906,7 +910,6 @@ void TSecureShell::CWrite(const char * Data, intptr_t Length)
   // We send only whole line at once, so we have to cache incoming data
   FCWriteTemp += DeleteChar(ConvertFromPutty(Data, Length), L'\r');
 
-  UnicodeString Line;
   // Do we have at least one complete line in std error cache?
   while (FCWriteTemp.Pos(L"\n") > 0)
   {
@@ -2459,5 +2462,5 @@ void TSecureShell::CollectUsage()
 */
 }
 
-NB_IMPLEMENT_CLASS(TSecureShell, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TSecureShell, NB_GET_CLASS_INFO(TObject), nullptr)
 

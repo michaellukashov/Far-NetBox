@@ -19,6 +19,7 @@ enum TFileNameCase
   ncFirstUpperCase,
   ncLowerCaseShort
 };
+
 // TScript::OptionProc depend on the order
 enum TTransferMode
 {
@@ -33,6 +34,7 @@ enum TResumeSupport
   rsSmart,
   rsOff
 };
+
 class THierarchicalStorage;
 const int cpaIncludeMaskOnly = 0x01;
 const int cpaNoTransferMode  = 0x02;

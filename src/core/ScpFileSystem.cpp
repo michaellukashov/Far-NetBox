@@ -1615,8 +1615,8 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
     !OperationProgress->Cancel; ++IFile)
   {
     UnicodeString FileName = AFilesToCopy->GetString(IFile);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(IFile));
-    UnicodeString RealFileName = File ? File->GetFileName() : FileName;
+    TRemoteFile * File1 = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(IFile));
+    UnicodeString RealFileName = File1 ? File1->GetFileName() : FileName;
     bool CanProceed = false;
 
     UnicodeString FileNameOnly =
@@ -1628,11 +1628,11 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
       // fails for scripting, if 'ls' is not issued before.
       // formally we should call CheckRemoteFile here but as checking is for
       // free here (almost) ...
-      TRemoteFile * File = FTerminal->FFiles->FindFile(FileNameOnly);
-      if (File != nullptr)
+      TRemoteFile * File2 = FTerminal->FFiles->FindFile(FileNameOnly);
+      if (File2 != nullptr)
       {
         uintptr_t Answer;
-        if (File->GetIsDirectory())
+        if (File2->GetIsDirectory())
         {
           UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
           TQueryParams QueryParams(qpNeverAskAgainCheck);
@@ -1651,8 +1651,8 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
             &FileParams.SourceSize);
           FileParams.SourceTimestamp = ::UnixToDateTime(MTime,
             FTerminal->GetSessionData()->GetDSTMode());
-          FileParams.DestSize = File->GetSize();
-          FileParams.DestTimestamp = File->GetModification();
+          FileParams.DestSize = File2->GetSize();
+          FileParams.DestTimestamp = File2->GetModification();
           Answer = ConfirmOverwrite(
             FileName, FileNameOnly, osRemote,
             &FileParams, CopyParam, Params, OperationProgress);
@@ -1705,7 +1705,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
       try
       {
-        SCPSource(FileName, File, TargetDirFull,
+        SCPSource(FileName, File1, TargetDirFull,
           CopyParam, Params, OperationProgress, 0);
         OperationProgress->Finish(RealFileName, true, OnceDoneOperation);
       }
@@ -1713,7 +1713,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
       {
         TQueryParams QueryParams(qpAllowContinueOnError);
 
-        TSuspendFileOperationProgress Suspend(OperationProgress);
+        TSuspendFileOperationProgress Suspend1(OperationProgress);
 
         if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()), &E,
           qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
@@ -1723,7 +1723,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
         OperationProgress->Finish(FileName, false, OnceDoneOperation);
 
         {
-          TSuspendFileOperationProgress Suspend(OperationProgress);
+          TSuspendFileOperationProgress Suspend2(OperationProgress);
           if (!FTerminal->HandleException(&E))
           {
             throw;

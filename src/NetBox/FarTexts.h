@@ -713,7 +713,7 @@ enum PluginString
     StringEdAuth,
     StringEdAuthUser,
     StringEdAuthPsw,
-    StringEdAuthPromtpPsw,
+    StringEdAuthPromptPsw,
     StringEdAuthShowPsw,
     StringEdAuthCert,
     StringEdErrURLEmpty,

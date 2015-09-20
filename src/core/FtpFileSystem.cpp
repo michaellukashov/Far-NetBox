@@ -1088,7 +1088,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(
 
   return LowerCase(Hash);
 }
-//---------------------------------------------------------------------------
+
 void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
   const UnicodeString & Alg, TStrings * FileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum,
@@ -1096,10 +1096,10 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
 {
   TOnceDoneOperation OnceDoneOperation; // not used
 
-  intptr_t Index = 0;
-  while ((Index < FileList->GetCount()) && !OperationProgress->Cancel)
+  intptr_t Index1 = 0;
+  while ((Index1 < FileList->GetCount()) && !OperationProgress->Cancel)
   {
-    TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObj(Index));
+    TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObj(Index1));
     assert(File != nullptr);
 
     if (File->GetIsDirectory())
@@ -1130,9 +1130,9 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
           {
             OperationProgress->SetFile(File->GetFileName());
 
-            for (intptr_t Index = 0; Index < SubFiles->GetCount(); Index++)
+            for (intptr_t Index2 = 0; Index2 < SubFiles->GetCount(); Index2++)
             {
-              TRemoteFile * SubFile = SubFiles->GetFile(Index);
+              TRemoteFile * SubFile = SubFiles->GetFile(Index2);
               SubFileList->AddObject(SubFile->GetFullFileName(), SubFile);
             }
 
@@ -1177,10 +1177,10 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
         FTerminal->CommandError(&E, Error);
         // Abort loop.
         // TODO: retries? resume?
-        Index = FileList->GetCount();
+        Index1 = FileList->GetCount();
       }
     }
-    Index++;
+    Index1++;
   }
 }
 
@@ -1564,7 +1564,7 @@ void TFTPFileSystem::SinkRobust(const UnicodeString & AFileName,
 
 void TFTPFileSystem::Sink(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, intptr_t Params,
+  const TCopyParamType * CopyParam, intptr_t AParams,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TDownloadSessionAction & Action)
 {
@@ -1621,7 +1621,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       TSinkFileParams SinkFileParams;
       SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
       SinkFileParams.CopyParam = CopyParam;
-      SinkFileParams.Params = Params;
+      SinkFileParams.Params = AParams;
       SinkFileParams.OperationProgress = OperationProgress;
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
@@ -1631,7 +1631,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       // Do not delete directory if some of its files were skipped.
       // Throw "skip file" for the directory to avoid attempt to deletion
       // of any parent directory
-      if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
+      if (FLAGSET(AParams, cpDelete) && SinkFileParams.Skipped)
       {
         ThrowSkipFileNull();
       }
@@ -1688,7 +1688,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       // not used for downloads anyway
       FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
       UserData.FileName = DestFileName;
-      UserData.Params = Params;
+      UserData.Params = AParams;
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
       UserData.CopyParam = CopyParam;
       UserData.Modification = AFile->GetModification();
@@ -1730,7 +1730,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     FTerminal->LogFileDone(OperationProgress);
   }
 
-  if (FLAGSET(Params, cpDelete))
+  if (FLAGSET(AParams, cpDelete))
   {
     // If file is directory, do not delete it recursively, because it should be
     // empty already. If not, it should not be deleted (some files were
@@ -2334,9 +2334,9 @@ void TFTPFileSystem::ReadCurrentDirectory()
     assert(ResponsePtr.get() != nullptr);
     bool Result = false;
 
-    // the only allowed 2XX code to "PWD"
-    if ((Code == 257) &&
-        (ResponsePtr->GetCount() == 1))
+    // the only allowed 2XX codes to "PWD"
+    if (((Code == 257) && (ResponsePtr->GetCount() == 1)) ||
+        (Code == 250)) // RTEMS FTP server sends 250 "/" is the current directory. http://bugs.farmanager.com/view.php?id=3090
     {
       UnicodeString Path = ResponsePtr->GetText();
 

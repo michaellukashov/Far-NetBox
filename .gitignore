@@ -48,3 +48,4 @@ CMakeLists.txt.user
 
 cov-int/
 /src/NetBox/My */
+/src/NetBox/.idea/

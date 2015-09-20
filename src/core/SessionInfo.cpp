@@ -587,7 +587,7 @@ TChecksumSessionAction::TChecksumSessionAction(TActionLog * Log) :
   TFileSessionAction(Log, laChecksum)
 {
 }
-//---------------------------------------------------------------------------
+
 void TChecksumSessionAction::Checksum(const UnicodeString & Alg, const UnicodeString & Checksum)
 {
   if (FRecord != nullptr)
@@ -1065,7 +1065,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Code Page: %d", Data->GetCodePageAsNumber());
       if (Data->GetUsesSsh() || (Data->GetFSProtocol() == fsFTP))
       {
-        wchar_t * PingTypes = L"-NC";
+        wchar_t * PingTypes = (wchar_t *)L"-NC";
         TPingType PingType;
         intptr_t PingInterval;
         if (Data->GetFSProtocol() == fsFTP)
@@ -1233,7 +1233,7 @@ void TSessionLog::AddOption(const UnicodeString & LogStr)
 {
   ADSTR(LogStr);
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::AddOptions(TOptions * Options)
 {
   Options->LogOptions(MAKE_CALLBACK(TSessionLog::AddOption, this));
@@ -1564,5 +1564,5 @@ void TActionLog::SetEnabled(bool Value)
   }
 }
 
-NB_IMPLEMENT_CLASS(TSessionActionRecord, NB_GET_CLASS_INFO(TObject), nullptr);
+NB_IMPLEMENT_CLASS(TSessionActionRecord, NB_GET_CLASS_INFO(TObject), nullptr)
 

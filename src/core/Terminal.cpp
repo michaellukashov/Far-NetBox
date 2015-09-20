@@ -629,7 +629,7 @@ TRobustOperationLoop::TRobustOperationLoop(TTerminal * Terminal, TFileOperationP
   FRetry(false)
 {
 }
-//---------------------------------------------------------------------------
+
 bool TRobustOperationLoop::TryReopen(Exception & E)
 {
   FRetry = FTerminal &&
@@ -637,12 +637,12 @@ bool TRobustOperationLoop::TryReopen(Exception & E)
     FTerminal->QueryReopen(&E, ropNoReadDirectory, FOperationProgress);
   return FRetry;
 }
-//---------------------------------------------------------------------------
+
 bool TRobustOperationLoop::ShouldRetry() const
 {
   return FRetry;
 }
-//---------------------------------------------------------------------------
+
 bool TRobustOperationLoop::Retry()
 {
   bool Result = FRetry;

@@ -452,10 +452,10 @@ UnicodeString TStrings::GetDelimitedText() const
 static void tokenize(const UnicodeString & str, rde::vector<UnicodeString> & tokens,
   const UnicodeString & delimiters = L" ", const bool trimEmpty = false)
 {
-  size_t lastPos = 0;
+  intptr_t lastPos = 0;
   while (true)
   {
-    size_t pos = str.FindFirstOf(delimiters.c_str(), lastPos);
+    intptr_t pos = str.FindFirstOf(delimiters.c_str(), lastPos);
     if (pos == NPOS)
     {
        pos = str.Length();
@@ -478,7 +478,7 @@ static void tokenize(const UnicodeString & str, rde::vector<UnicodeString> & tok
 
     lastPos = pos + 1;
   }
-};
+}
 
 void TStrings::SetDelimitedText(const UnicodeString & Value)
 {
@@ -554,13 +554,13 @@ UnicodeString TStrings::GetTextStr() const
     intptr_t L = S.Length() * sizeof(wchar_t);
     if (L != 0)
     {
-      memmove(P, S.c_str(), L);
+      memmove(P, S.c_str(), (size_t)L);
       P += S.Length();
     }
     L = LB.Length() * sizeof(wchar_t);
     if (L != 0)
     {
-      memmove(P, LB.c_str(), L);
+      memmove(P, LB.c_str(), (size_t)L);
       P += LB.Length();
     }
   }
@@ -1365,7 +1365,7 @@ int64_t THandleStream::Write(const void * Buffer, int64_t Count)
 
 int64_t THandleStream::Seek(int64_t Offset, int Origin)
 {
-  int64_t Result = ::FileSeek(FHandle, Offset, Origin);
+  int64_t Result = ::FileSeek(FHandle, Offset, (DWORD)Origin);
   return Result;
 }
 
@@ -1657,7 +1657,7 @@ TRegistry::~TRegistry()
   CloseKey();
 }
 
-void TRegistry::SetAccess(int access)
+void TRegistry::SetAccess(uint32_t access)
 {
   FAccess = access;
 }
@@ -1974,7 +1974,7 @@ int TRegistry::GetData(const UnicodeString & Name, void * Buffer,
 void TRegistry::PutData(const UnicodeString & Name, const void * Buffer,
   intptr_t BufSize, TRegDataType RegData)
 {
-  int DataType = RegDataToDataType(RegData);
+  DWORD DataType = RegDataToDataType(RegData);
   if (::RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
                     reinterpret_cast<const BYTE *>(Buffer), static_cast<DWORD>(BufSize)) != ERROR_SUCCESS)
   {

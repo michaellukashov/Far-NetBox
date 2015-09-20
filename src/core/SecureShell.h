@@ -15,6 +15,7 @@ typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;
 typedef UINT_PTR SOCKET;
 typedef rde::vector<SOCKET> TSockets;
 struct TPuttyTranslation;
+
 enum TSshImplementation
 {
   sshiUnknown,

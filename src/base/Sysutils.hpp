@@ -366,6 +366,7 @@ struct TVersionInfo
   DWORD Revision;
   DWORD Build;
 };
+
 #define MAKEVERSIONNUMBER(major,minor,revision) ( ((major)<<16) | ((minor)<<8) | (revision))
 uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr);
 UnicodeString VersionNumberToStr(uintptr_t VersionNumber);

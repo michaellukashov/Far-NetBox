@@ -158,8 +158,8 @@ static const intptr_t SFTP_MAX_PACKET_LEN   = 1024000;
 static const wchar_t OGQ_LIST_OWNERS = 0x01;
 static const wchar_t OGQ_LIST_GROUPS = 0x02;
 
-static const intptr_t SFTPMinVersion = 0;
-static const intptr_t SFTPMaxVersion = 6;
+const intptr_t SFTPMinVersion = 0;
+const intptr_t SFTPMaxVersion = 6;
 static const uint32_t SFTPNoMessageNumber = static_cast<uint32_t>(-1);
 
 static const SSH_FX_TYPES asNo =            0;
@@ -283,7 +283,7 @@ public:
     FLength = 0;
     SetCapacity(0);
     FType = AType;
-    AddByte(FType);
+    AddByte((uint8_t)FType);
     if (FType != SSH_FXP_INIT) // && (FType != 1)
     {
       AssignNumber();
@@ -689,7 +689,7 @@ public:
 
       // SSH-2.0-cryptlib returns file type 0 in response to SSH_FXP_LSTAT,
       // handle this undefined value as "unknown"
-      static wchar_t * Types = L"U-DLSUOCBF";
+      static wchar_t * Types = (wchar_t *)L"U-DLSUOCBF";
       if (FXType > static_cast<uint8_t>(wcslen(Types)))
       {
         throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, static_cast<int>(FXType)));
@@ -1983,9 +1983,6 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 
     if (FExtensions->GetCount() > 0)
     {
-      UnicodeString Name;
-      UnicodeString Value;
-      UnicodeString Line;
       FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_EXTENSION_INFO) + L"\r\n";
       for (intptr_t Index = 0; Index < FExtensions->GetCount(); ++Index)
       {
@@ -2343,7 +2340,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
 SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
   SSH_FX_TYPES AllowStatus)
 {
-  uint32_t Code = Packet->GetCardinal();
+  SSH_FX_TYPES Code = Packet->GetCardinal();
 
   static intptr_t Messages[] =
   {
@@ -2516,7 +2513,7 @@ bool TSFTPFileSystem::PeekPacket()
   bool Result = FSecureShell->Peek(Buf, 4);
   if (Result)
   {
-    intptr_t Length = PacketLength(Buf, -1);
+    intptr_t Length = PacketLength(Buf, (SSH_FX_TYPES)-1);
     Result = FSecureShell->Peek(Buf, 4 + Length);
   }
   return Result;
@@ -2936,24 +2933,24 @@ void TSFTPFileSystem::DoStartup()
   // do not know yet
   FVersion = -1;
   FFileSystemInfoValid = false;
-  TSFTPPacket Packet(SSH_FXP_INIT, FCodePage);
+  TSFTPPacket Packet1(SSH_FXP_INIT, FCodePage);
   intptr_t MaxVersion = GetSessionData()->GetSFTPMaxVersion();
   if (MaxVersion > SFTPMaxVersion)
   {
     MaxVersion = SFTPMaxVersion;
   }
-  Packet.AddCardinal(static_cast<uint32_t>(MaxVersion));
+  Packet1.AddCardinal(static_cast<uint32_t>(MaxVersion));
 
   try
   {
-    SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_VERSION);
+    SendPacketAndReceiveResponse(&Packet1, &Packet1, SSH_FXP_VERSION);
   }
   catch (Exception & E)
   {
     FTerminal->FatalError(&E, LoadStr(SFTP_INITIALIZE_ERROR), HELP_SFTP_INITIALIZE_ERROR);
   }
 
-  FVersion = Packet.GetCardinal();
+  FVersion = Packet1.GetCardinal();
   FTerminal->LogEvent(FORMAT(L"SFTP version %d negotiated.", FVersion));
   if (FVersion < SFTPMinVersion || FVersion > SFTPMaxVersion)
   {
@@ -2970,10 +2967,10 @@ void TSFTPFileSystem::DoStartup()
 
   if (FVersion >= 3)
   {
-    while (Packet.GetNextData() != nullptr)
+    while (Packet1.GetNextData() != nullptr)
     {
-      UnicodeString ExtensionName = Packet.GetAnsiString();
-      RawByteString ExtensionData = Packet.GetRawByteString();
+      UnicodeString ExtensionName = Packet1.GetAnsiString();
+      RawByteString ExtensionData = Packet1.GetRawByteString();
       UnicodeString ExtensionDisplayData = DisplayableStr(ExtensionData);
 
       if (ExtensionName == SFTP_EXT_NEWLINE)
@@ -3153,15 +3150,15 @@ void TSFTPFileSystem::DoStartup()
     if (SupportsExtension(SFTP_EXT_VENDOR_ID))
     {
       const TConfiguration * Configuration = FTerminal->GetConfiguration();
-      TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
-      Packet.AddString(RawByteString(SFTP_EXT_VENDOR_ID));
-      Packet.AddString(Configuration->GetCompanyName());
-      Packet.AddString(Configuration->GetProductName());
-      Packet.AddString(Configuration->GetProductVersion());
-      Packet.AddInt64(LOWORD(FTerminal->GetConfiguration()->GetFixedApplicationInfo()->dwFileVersionLS));
-      SendPacket(&Packet);
+      TSFTPPacket Packet2(SSH_FXP_EXTENDED, FCodePage);
+      Packet2.AddString(RawByteString(SFTP_EXT_VENDOR_ID));
+      Packet2.AddString(Configuration->GetCompanyName());
+      Packet2.AddString(Configuration->GetProductName());
+      Packet2.AddString(Configuration->GetProductVersion());
+      Packet2.AddInt64(LOWORD(FTerminal->GetConfiguration()->GetFixedApplicationInfo()->dwFileVersionLS));
+      SendPacket(&Packet2);
       // we are not interested in the response, do not wait for it
-      ReceiveResponse(&Packet, &Packet);
+      ReceiveResponse(&Packet2, &Packet2);
       //ReserveResponse(&Packet, nullptr);
     }
   }
@@ -3971,9 +3968,9 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
   // recurse into subdirectories only if we have callback function
   if (OnCalculatedChecksum != nullptr)
   {
-    for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
+    for (intptr_t Index1 = 0; Index1 < AFileList->GetCount(); ++Index1)
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index));
+      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index1));
       assert(File != nullptr);
       if (File && File->GetIsDirectory() && !File->GetIsSymLink() &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -3996,9 +3993,9 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
             };
             OperationProgress->SetFile(File->GetFileName());
 
-            for (intptr_t Index = 0; Index < SubFiles->GetCount(); ++Index)
+            for (intptr_t Index2 = 0; Index2 < SubFiles->GetCount(); ++Index2)
             {
-              TRemoteFile * SubFile = SubFiles->GetFile(Index);
+              TRemoteFile * SubFile = SubFiles->GetFile(Index2);
               SubFileList->AddObject(SubFile->GetFullFileName(), SubFile);
             }
 
@@ -4298,7 +4295,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
 void TSFTPFileSystem::SFTPConfirmOverwrite(
   const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
-  const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
+  const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams,
   OUT TOverwriteMode & OverwriteMode)
 {
@@ -4348,7 +4345,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
       ASourceFullFileName, ATargetFileName, FileParams,
       Answers, &QueryParams,
       OperationProgress->Side == osLocal ? osRemote : osLocal,
-      CopyParam, Params, OperationProgress);
+      CopyParam, AParams, OperationProgress);
   }
 
   if (CanAppend &&
@@ -4358,7 +4355,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
     bool CanAlternateResume =
       FileParams ? (FileParams->DestSize < FileParams->SourceSize) && !OperationProgress->AsciiTransfer : false;
     TBatchOverwrite BatchOverwrite =
-      FTerminal->EffectiveBatchOverwrite(ASourceFullFileName, CopyParam, Params, OperationProgress, true);
+      FTerminal->EffectiveBatchOverwrite(ASourceFullFileName, CopyParam, AParams, OperationProgress, true);
     // when mode is forced by batch, never query user
     if (BatchOverwrite == boAppend)
     {
@@ -6095,6 +6092,6 @@ void TSFTPFileSystem::GetSupportedChecksumAlgs(TStrings * Algs)
   Algs->AddStrings(FChecksumAlgs.get());
 }
 
-NB_IMPLEMENT_CLASS(TSFTPPacket, NB_GET_CLASS_INFO(TObject), nullptr);
-NB_IMPLEMENT_CLASS(TSFTPQueuePacket, NB_GET_CLASS_INFO(TSFTPPacket), nullptr);
+NB_IMPLEMENT_CLASS(TSFTPPacket, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TSFTPQueuePacket, NB_GET_CLASS_INFO(TSFTPPacket), nullptr)
 

@@ -26,6 +26,7 @@ enum TSynchronizeLogEntry
   slDelete,
   slDirChange
 };
+
 DEFINE_CALLBACK_TYPE3(TSynchronizeLogEvent, void,
   TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/,
   const UnicodeString & /*Message*/);

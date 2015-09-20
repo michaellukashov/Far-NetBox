@@ -305,7 +305,7 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE>  {
 	inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind, 
 			GenericMemFuncType &bound_func) {
 #if defined __DMC__  
-		// Digital Mars doesn't allow you to cast between abitrary PMF's, 
+		// Digital Mars doesn't allow you to cast between arbitrary PMF's,
 		// even though the standard says you can. The 32-bit compiler lets you
 		// static_cast through an int, but the DOS compiler doesn't.
 		bound_func = horrible_cast<GenericMemFuncType>(function_to_bind);
@@ -428,7 +428,7 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 	template <class X, class XFuncType, class GenericMemFuncType>
 	inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind, 
 		GenericMemFuncType &bound_func) {
-		// There is an apalling but obscure compiler bug in MSVC6 and earlier:
+		// There is an appalling but obscure compiler bug in MSVC6 and earlier:
 		// vtable_index and 'vtordisp' are always set to 0 in the 
 		// unknown_inheritance case!
 		// This means that an incorrect function could be called!!!
@@ -517,7 +517,7 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-// DelegateMemento -- an opaque structure which can hold an arbitary delegate.
+// DelegateMemento -- an opaque structure which can hold an arbitrary delegate.
 // It knows nothing about the calling convention or number of arguments used by
 // the function pointed to.
 // It supplies comparison operators so that it can be stored in STL collections.

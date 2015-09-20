@@ -3,8 +3,8 @@
 #include <stdint.h>
 #include <FileSystems.h>
 
-typedef int8_t SSH_FX_TYPES;
-typedef int8_t SSH_FXP_TYPES;
+typedef uint32_t SSH_FX_TYPES;
+typedef uint32_t SSH_FXP_TYPES;
 typedef uint32_t SSH_FILEXFER_ATTR_TYPES;
 typedef uint8_t SSH_FILEXFER_TYPES;
 typedef uint32_t SSH_FXF_TYPES;
@@ -104,7 +104,7 @@ protected:
   AnsiString FEOL;
   TList * FPacketReservations;
   rde::vector<uintptr_t> FPacketNumbers;
-  uint8_t FPreviousLoggedPacket;
+  SSH_FX_TYPES FPreviousLoggedPacket;
   int FNotLoggedPackets;
   int FBusy;
   void * FBusyToken;
@@ -184,7 +184,7 @@ protected:
     const UnicodeString & TargetDir, uintptr_t LocalFileAttrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void SFTPConfirmOverwrite(const UnicodeString & AFullFileName, UnicodeString & AFileName,
-    const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
+    const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams,
     OUT TOverwriteMode & Mode);
   bool SFTPConfirmResume(const UnicodeString & DestFileName, bool PartialBiggerThanSource,

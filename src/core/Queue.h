@@ -355,6 +355,7 @@ public:
     const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile);
   virtual ~TUploadQueueItem() {}
+
 protected:
   virtual void DoExecute(TTerminal * Terminal);
 };
@@ -366,6 +367,7 @@ public:
     const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile);
   virtual ~TDownloadQueueItem() {}
+
 protected:
   virtual void DoExecute(TTerminal * Terminal);
 };

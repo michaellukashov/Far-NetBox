@@ -228,7 +228,7 @@ protected:
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities) = 0;
   virtual bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
 
-  inline bool Check(intptr_t ReturnCode, const wchar_t * Context, intptr_t Expected = -1);
+  bool Check(intptr_t ReturnCode, const wchar_t * Context, intptr_t Expected = -1);
 
 private:
   CFileZillaApi * FFileZillaApi;

@@ -857,10 +857,10 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     {
       for (intptr_t PIndex = 0; PIndex < GetItemCount(); ++PIndex)
       {
-        TFarButton * PrevButton = NB_STATIC_DOWNCAST(TFarButton, GetItem(PIndex));
-        if ((PrevButton != nullptr) && (PrevButton != Button))
+        TFarButton * PrevButton2 = NB_STATIC_DOWNCAST(TFarButton, GetItem(PIndex));
+        if ((PrevButton2 != nullptr) && (PrevButton2 != Button))
         {
-          PrevButton->Move(0, -1);
+          PrevButton2->Move(0, -1);
         }
       }
       Button->Move(-(Button->GetLeft() - GetBorderBox()->GetLeft()), 0);
@@ -1151,11 +1151,11 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
   intptr_t Count = 0;
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    uintptr_t Flags = reinterpret_cast<uintptr_t>(Items->GetObj(Index));
-    if (FLAGCLEAR(Flags, MIF_HIDDEN))
+    uintptr_t Flags2 = reinterpret_cast<uintptr_t>(Items->GetObj(Index));
+    if (FLAGCLEAR(Flags2, MIF_HIDDEN))
     {
       ClearStruct(MenuItems[Count]);
-      MenuItems[Count].Flags = static_cast<DWORD>(Flags);
+      MenuItems[Count].Flags = static_cast<DWORD>(Flags2);
       if (MenuItems[Count].Flags & MIF_SELECTED)
       {
         assert(Selected == NPOS);
@@ -1482,8 +1482,8 @@ void TCustomFarPlugin::ClearConsoleTitle()
     UpdateProgress(TBPS_NOPROGRESS, 0);
   }
   {
-    TObject * Object = FSavedTitles->GetObj(FSavedTitles->GetCount() - 1);
-    SAFE_DESTROY(Object);
+    TObject * Obj = FSavedTitles->GetObj(FSavedTitles->GetCount() - 1);
+    SAFE_DESTROY(Obj);
   }
   FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
 }
@@ -2994,9 +2994,9 @@ UnicodeString TGlobalFunctions::GetStrVersionNumber() const
   return NETBOX_VERSION_NUMBER.c_str();
 }
 
-NB_IMPLEMENT_CLASS(TCustomFarFileSystem, NB_GET_CLASS_INFO(TObject), nullptr);
-NB_IMPLEMENT_CLASS(TCustomFarPlugin, NB_GET_CLASS_INFO(TObject), nullptr);
-NB_IMPLEMENT_CLASS(TConsoleTitleParam, NB_GET_CLASS_INFO(TObject), nullptr);
-NB_IMPLEMENT_CLASS(TCustomFarPanelItem, NB_GET_CLASS_INFO(TObject), nullptr);
-NB_IMPLEMENT_CLASS(TFarPanelItem, NB_GET_CLASS_INFO(TCustomFarPanelItem), nullptr);
+NB_IMPLEMENT_CLASS(TCustomFarFileSystem, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TCustomFarPlugin, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TConsoleTitleParam, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TCustomFarPanelItem, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TFarPanelItem, NB_GET_CLASS_INFO(TCustomFarPanelItem), nullptr)
 

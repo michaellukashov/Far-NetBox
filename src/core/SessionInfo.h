@@ -246,7 +246,7 @@ public:
 
   void Checksum(const UnicodeString & Alg, const UnicodeString & Checksum);
 };
-//---------------------------------------------------------------------------
+
 class TCwdSessionAction : public TSessionAction
 {
 public:

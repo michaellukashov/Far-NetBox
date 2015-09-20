@@ -190,8 +190,8 @@ void TSessionData::Default()
 
   // SFTP
   SetSftpServer(L"");
-  SetSFTPDownloadQueue(4);
-  SetSFTPUploadQueue(4);
+  SetSFTPDownloadQueue(32);
+  SetSFTPUploadQueue(32);
   SetSFTPListingQueue(2);
   SetSFTPMaxVersion(::SFTPMaxVersion);
   SetSFTPMaxPacketSize(0);
@@ -4108,7 +4108,7 @@ TSessionData * TStoredSessionList::SaveWorkspaceData(TSessionData * Data)
 
   return Result.release();
 }
-//---------------------------------------------------------------------
+
 bool TStoredSessionList::CanLogin(TSessionData * Data)
 {
   Data = ResolveWorkspaceData(Data);
@@ -4259,5 +4259,5 @@ intptr_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps)
   return Result;
 }
 
-NB_IMPLEMENT_CLASS(TSessionData, NB_GET_CLASS_INFO(TNamedObject), nullptr);
+NB_IMPLEMENT_CLASS(TSessionData, NB_GET_CLASS_INFO(TNamedObject), nullptr)
 

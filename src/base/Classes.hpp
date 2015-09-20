@@ -147,13 +147,13 @@ public:
   virtual ~TList();
   void * operator [](intptr_t Index) const;
   void * GetItem(intptr_t Index) const { return FList[Index]; }
-  void * GetItem(intptr_t Index) { return FList[Index]; }
+  virtual void * GetItem(intptr_t Index) { return FList[Index]; }
   void SetItem(intptr_t Index, void * Item);
   intptr_t Add(void * Value);
   void * Extract(void * Item);
   intptr_t Remove(void * Item);
-  void Move(intptr_t CurIndex, intptr_t NewIndex);
-  void Delete(intptr_t Index);
+  virtual void Move(intptr_t CurIndex, intptr_t NewIndex);
+  virtual void Delete(intptr_t Index);
   void Insert(intptr_t Index, void * Item);
   intptr_t IndexOf(const void * Value) const;
   virtual void Clear();
@@ -181,8 +181,8 @@ public:
   intptr_t Add(TObject * Value);
   intptr_t Remove(TObject * Value);
   void Extract(TObject * Value);
-  void Move(intptr_t Index, intptr_t To);
-  void Delete(intptr_t Index);
+  virtual void Move(intptr_t Index, intptr_t To);
+  virtual void Delete(intptr_t Index);
   void Insert(intptr_t Index, TObject * Value);
   intptr_t IndexOf(const TObject * Value) const;
   virtual void Clear();
@@ -217,12 +217,12 @@ public:
   virtual void BeginUpdate();
   virtual void EndUpdate();
   virtual void SetUpdateState(bool Updating);
-  intptr_t AddObject(const UnicodeString & S, TObject * AObject);
+  virtual intptr_t AddObject(const UnicodeString & S, TObject * AObject);
   virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
   bool Equals(const TStrings * Value) const;
   virtual void Clear() = 0;
   void Move(intptr_t CurIndex, intptr_t NewIndex);
-  intptr_t IndexOf(const UnicodeString & S) const;
+  virtual intptr_t IndexOf(const UnicodeString & S) const;
   virtual intptr_t IndexOfName(const UnicodeString & Name) const;
   UnicodeString ExtractName(const UnicodeString & S) const;
   void AddStrings(const TStrings * Strings);
@@ -278,7 +278,7 @@ public:
   virtual ~TStringList();
 
   intptr_t Add(const UnicodeString & S);
-  intptr_t AddObject(const UnicodeString & S, TObject * AObject);
+  virtual intptr_t AddObject(const UnicodeString & S, TObject * AObject);
   void LoadFromFile(const UnicodeString & AFileName);
   TNotifyEvent & GetOnChange() { return FOnChange; }
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
@@ -617,7 +617,7 @@ private:
     intptr_t BufSize, TRegDataType RegData);
 
 public:
-  void SetAccess(int Value);
+  void SetAccess(uint32_t Value);
   HKEY GetCurrentKey() const;
   HKEY GetRootKey() const;
   void SetRootKey(HKEY ARootKey);
@@ -646,6 +646,7 @@ public:
   operator intptr_t() const;
   bool operator < (const TShortCut & rhs) const;
   intptr_t Compare(const TShortCut & rhs) const { return FValue - rhs.FValue; }
+
 private:
   intptr_t FValue;
 };

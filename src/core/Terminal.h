@@ -132,6 +132,7 @@ public:
     smLocal,
     smBoth
   };
+
   static const int spDelete = 0x01; // cannot be combined with spTimestamp
   static const int spNoConfirmation = 0x02; // has no effect for spTimestamp
   static const int spExistingOnly = 0x04; // is implicit for spTimestamp

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <BaseDefs.hpp>
+#include <Classes.hpp>
 #include "Configuration.h"
 #include "SessionData.h"
 #define HELP_NONE ""
@@ -42,6 +44,7 @@ struct TQueryButtonAlias : public TObject
 
 DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
   intptr_t & /*Result*/);
+
 enum TQueryType
 {
   qtConfirmation,
