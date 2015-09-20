@@ -2334,9 +2334,9 @@ void TFTPFileSystem::ReadCurrentDirectory()
     assert(ResponsePtr.get() != nullptr);
     bool Result = false;
 
-    // the only allowed 2XX code to "PWD"
-    if ((Code == 257) &&
-        (ResponsePtr->GetCount() == 1))
+    // the only allowed 2XX codes to "PWD"
+    if (((Code == 257) && (ResponsePtr->GetCount() == 1)) ||
+        (Code == 250)) // RTEMS FTP server sends 250 "/" is the current directory. http://bugs.farmanager.com/view.php?id=3090
     {
       UnicodeString Path = ResponsePtr->GetText();
 
