@@ -463,7 +463,7 @@ static void tokenize(const UnicodeString & str, rde::vector<UnicodeString> & tok
        if (pos != lastPos || !trimEmpty)
        {
          tokens.push_back(
-          UnicodeString(str.data() + lastPos, pos - lastPos));
+           UnicodeString(str.data() + lastPos, pos - lastPos));
        }
        break;
     }
