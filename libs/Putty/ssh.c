@@ -57,7 +57,7 @@ static const char *const ssh2_disconnect_reasons[] = {
     "connection lost",
     "by application",
     "too many connections",
-    "auth cancelled by user",
+    "auth canceled by user",
     "no more auth methods available",
     "illegal user name",
 };
@@ -1591,7 +1591,7 @@ static struct Packet *ssh2_rdpkt(Ssh ssh, const unsigned char **data,
 	 * and when the MAC passes, see if the length we've got is
 	 * plausible.
          *
-         * This defence is unnecessary in OpenSSH ETM mode, because
+         * This defense is unnecessary in OpenSSH ETM mode, because
          * the whole point of ETM mode is that the attacker can't
          * tweak the ciphertext stream at all without the MAC
          * detecting it before we decrypt anything.
@@ -2447,7 +2447,7 @@ static void ssh2_pkt_queue(Ssh ssh, struct Packet *pkt)
 }
 
 /*
- * Either queue or send a packet, depending on whether queueing is
+ * Either queue or send a packet, depending on whether queuing is
  * set.
  */
 static void ssh2_pkt_send(Ssh ssh, struct Packet *pkt)
@@ -2459,7 +2459,7 @@ static void ssh2_pkt_send(Ssh ssh, struct Packet *pkt)
 }
 
 /*
- * Either queue or defer a packet, depending on whether queueing is
+ * Either queue or defer a packet, depending on whether queuing is
  * set.
  */
 static void ssh2_pkt_defer(Ssh ssh, struct Packet *pkt)
@@ -2476,8 +2476,8 @@ static void ssh2_pkt_defer(Ssh ssh, struct Packet *pkt)
  * 
  * The expected use of the defer mechanism is that you call
  * ssh2_pkt_defer() a few times, then call ssh_pkt_defersend(). If
- * not currently queueing, this simply sets up deferred_send_data
- * and then sends it. If we _are_ currently queueing, the calls to
+ * not currently queuing, this simply sets up deferred_send_data
+ * and then sends it. If we _are_ currently queuing, the calls to
  * ssh2_pkt_defer() put the deferred packets on to the queue
  * instead, and therefore ssh_pkt_defersend() has no deferred data
  * to send. Hence, there's no need to make it conditional on
@@ -3139,14 +3139,14 @@ static int do_ssh_init(Ssh ssh, unsigned char c)
 	ssh->v_s[len] = 0;
 	    
 	/*
-	 * Initialise SSH-2 protocol.
+	 * Initialize SSH-2 protocol.
 	 */
 	ssh->protocol = ssh2_protocol;
 	ssh2_protocol_setup(ssh);
 	ssh->s_rdpkt = ssh2_rdpkt;
     } else {
 	/*
-	 * Initialise SSH-1 protocol.
+	 * Initialize SSH-1 protocol.
 	 */
 	ssh->protocol = ssh1_protocol;
 	ssh1_protocol_setup(ssh);
@@ -3255,7 +3255,7 @@ static int do_ssh_connection_init(Ssh ssh, unsigned char c)
     ssh_send_verstring(ssh, protoname, s->version);
 
     /*
-     * Initialise bare connection protocol.
+     * Initialize bare connection protocol.
      */
     ssh->protocol = ssh2_bare_connection_protocol;
     ssh2_bare_connection_protocol_setup(ssh);
@@ -3332,7 +3332,7 @@ static void ssh_gotdata(Ssh ssh, const unsigned char *data, int datalen)
 
     /*
      * To begin with, feed the characters one by one to the
-     * protocol initialisation / selection function do_ssh_init().
+     * protocol initialization / selection function do_ssh_init().
      * When that returns 0, we're done with the initial greeting
      * exchange and can move on to packet discipline.
      */
@@ -4166,7 +4166,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 		   &ssh_3des);
     ssh->v1_cipher_ctx = ssh->cipher->make_context();
     ssh->cipher->sesskey(ssh->v1_cipher_ctx, ssh->session_key);
-    logeventf(ssh, "Initialised %s encryption", ssh->cipher->text_name);
+    logeventf(ssh, "Initialized %s encryption", ssh->cipher->text_name);
 
     ssh->crcda_ctx = crcda_make_context();
     logevent("Installing CRC compensation attack detector");
@@ -4782,7 +4782,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 	     * 
 	     * A few servers can deal with neither SSH1_MSG_IGNORE
 	     * here _nor_ a padded password string.
-	     * For these servers we are left with no defences
+	     * For these servers we are left with no defenses
 	     * against password length sniffing.
 	     */
 	    if (!(ssh->remote_bugs & BUG_CHOKES_ON_SSH1_IGNORE) &&
@@ -5285,7 +5285,7 @@ static void ssh_setup_portfwd(Ssh ssh, Conf *conf)
 		message = msg2;
 	    }
 
-	    logeventf(ssh, "Cancelling %s", message);
+	    logeventf(ssh, "Canceling %s", message);
 	    sfree(message);
 
 	    /* epf->remote or epf->local may be NULL if setting up a
@@ -5859,7 +5859,7 @@ static void do_ssh1_connection(Ssh ssh, const unsigned char *in, int inlen,
         if (!ssh->x11disp) {
             /* FIXME: return an error message from x11_setup_display */
             logevent("X11 forwarding not enabled: unable to"
-                     " initialise X display");
+                     " initialize X display");
         } else {
             ssh->x11auth = x11_invent_fake_auth
                 (ssh->x11authtree, conf_get_int(ssh->conf, CONF_x11_auth));
@@ -5953,9 +5953,9 @@ static void do_ssh1_connection(Ssh ssh, const unsigned char *in, int inlen,
 	logevent("Started compression");
 	ssh->v1_compressing = TRUE;
 	ssh->cs_comp_ctx = zlib_compress_init();
-	logevent("Initialised zlib (RFC1950) compression");
+	logevent("Initialized zlib (RFC1950) compression");
 	ssh->sc_comp_ctx = zlib_decompress_init();
-	logevent("Initialised zlib (RFC1950) decompression");
+	logevent("Initialized zlib (RFC1950) decompression");
     }
 
     /*
@@ -7221,20 +7221,20 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 
     #ifdef _DEBUG
 	// To suppress CodeGuard warning
-    logeventf(ssh, "Initialised %s client->server encryption",
+    logeventf(ssh, "Initialized %s client->server encryption",
 	      ssh->cscipher->text_name);
-    logeventf(ssh, "Initialised %s client->server MAC algorithm",
+    logeventf(ssh, "Initialized %s client->server MAC algorithm",
 	      ssh->csmac->text_name);
     #else
-    logeventf(ssh, "Initialised %.200s client->server encryption",
+    logeventf(ssh, "Initialized %.200s client->server encryption",
 	      ssh->cscipher->text_name);
-    logeventf(ssh, "Initialised %.200s client->server MAC algorithm%s%s",
+    logeventf(ssh, "Initialized %.200s client->server MAC algorithm%s%s",
 	      ssh->csmac->text_name,
               ssh->csmac_etm ? " (in ETM mode)" : "",
               ssh->cscipher->required_mac ? " (required by cipher)" : "");
     #endif
     if (ssh->cscomp->text_name)
-	logeventf(ssh, "Initialised %s compression",
+	logeventf(ssh, "Initialized %s compression",
 		  ssh->cscomp->text_name);
 
     /*
@@ -7301,20 +7301,20 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
     }
     #ifdef _DEBUG
 	// To suppress CodeGuard warning
-    logeventf(ssh, "Initialised %s server->client encryption",
+    logeventf(ssh, "Initialized %s server->client encryption",
 	      ssh->sccipher->text_name);
-    logeventf(ssh, "Initialised %s server->client MAC algorithm",
+    logeventf(ssh, "Initialized %s server->client MAC algorithm",
 	      ssh->scmac->text_name);
     #else
-    logeventf(ssh, "Initialised %.200s server->client encryption",
+    logeventf(ssh, "Initialized %.200s server->client encryption",
 	      ssh->sccipher->text_name);
-    logeventf(ssh, "Initialised %.200s server->client MAC algorithm%s%s",
+    logeventf(ssh, "Initialized %.200s server->client MAC algorithm%s%s",
 	      ssh->scmac->text_name,
               ssh->scmac_etm ? " (in ETM mode)" : "",
               ssh->sccipher->required_mac ? " (required by cipher)" : "");
     #endif
     if (ssh->sccomp->text_name)
-	logeventf(ssh, "Initialised %s decompression",
+	logeventf(ssh, "Initialized %s decompression",
 		  ssh->sccomp->text_name);
 
     /*
@@ -7511,8 +7511,8 @@ static int ssh_is_simple(Ssh ssh)
     /*
      * We use the 'simple' variant of the SSH protocol if we're asked
      * to, except not if we're also doing connection-sharing (either
-     * tunnelling our packets over an upstream or expecting to be
-     * tunnelled over ourselves), since then the assumption that we
+     * tunneling our packets over an upstream or expecting to be
+     * tunneled over ourselves), since then the assumption that we
      * have only one channel to worry about is not true after all.
      */
     return (conf_get_int(ssh->conf, CONF_ssh_simple) &&
@@ -8285,11 +8285,11 @@ static void ssh2_msg_channel_request(Ssh ssh, struct Packet *pktin)
     /*
      * Having got the channel number, we now look at
      * the request type string to see if it's something
-     * we recognise.
+     * we recognize.
      */
     if (c == ssh->mainchan) {
 	/*
-	 * We recognise "exit-status" and "exit-signal" on
+	 * We recognize "exit-status" and "exit-signal" on
 	 * the primary channel.
 	 */
 	if (typelen == 11 &&
@@ -8540,7 +8540,7 @@ static void ssh2_msg_channel_open(Ssh ssh, struct Packet *pktin)
             /*
              * If we are a connection-sharing upstream, then we should
              * initially present a very small window, adequate to take
-             * the X11 initial authorisation packet but not much more.
+             * the X11 initial authorization packet but not much more.
              * Downstream will then present us a larger window (by
              * fiat of the connection-sharing protocol) and we can
              * guarantee to send a positive-valued WINDOW_ADJUST.
@@ -8568,7 +8568,7 @@ static void ssh2_msg_channel_open(Ssh ssh, struct Packet *pktin)
         sfree(pf.shost);
 
 	if (realpf == NULL) {
-	    error = "Remote port is not recognised";
+	    error = "Remote port is not recognized";
 	} else {
             char *err;
 
@@ -9906,7 +9906,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 
 		    if (s->gss_stat!=SSH_GSS_S_COMPLETE &&
 			s->gss_stat!=SSH_GSS_S_CONTINUE_NEEDED) {
-			logevent("GSSAPI authentication initialisation failed");
+			logevent("GSSAPI authentication initialization failed");
 
 			if (s->gsslib->display_status(s->gsslib, s->gss_ctx,
 						      &s->gss_buf) == SSH_GSS_OK) {
@@ -9916,7 +9916,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 
 			break;
 		    }
-		    logevent("GSSAPI authentication initialised");
+		    logevent("GSSAPI authentication initialized");
 
 		    /* Client and server now exchange tokens until GSSAPI
 		     * no longer says CONTINUE_NEEDED */
