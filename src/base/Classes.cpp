@@ -1298,7 +1298,7 @@ UnicodeString TSHFileInfo::GetFileType(const UnicodeString & StrFileName)
 class EStreamError : public ExtException
 {
 public:
-  EStreamError(const UnicodeString & Msg) :
+  explicit EStreamError(const UnicodeString & Msg) :
     ExtException((Exception * )nullptr, Msg)
   {}
 };
