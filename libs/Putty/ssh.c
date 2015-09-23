@@ -1531,7 +1531,7 @@ static void ssh2_log_outgoing_packet(Ssh ssh, struct Packet *pkt)
         pkt->savedpos = 0;
         ssh_pkt_getuint32(pkt);
         ssh_pkt_getstring(pkt, &str, &slen);
-        if (slen == 7 && !memcmp(str, "x11-req", 0)) {
+        if (slen == 7 && !memcmp(str, "x11-req", 7)) {
             ssh2_pkt_getbool(pkt);
             ssh2_pkt_getbool(pkt);
             ssh_pkt_getstring(pkt, &str, &slen);
