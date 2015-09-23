@@ -36,7 +36,6 @@ class TGUICopyParamType : public TCopyParamType
 NB_DECLARE_CLASS(TGUICopyParamType)
 public:
   TGUICopyParamType();
-  TGUICopyParamType(const TCopyParamType & Source);
   explicit TGUICopyParamType(const TGUICopyParamType & Source);
   virtual ~TGUICopyParamType() {}
 
