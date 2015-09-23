@@ -1343,7 +1343,7 @@ void TTerminal::Reopen(intptr_t Params)
     }
     if (GetSessionData()->GetFSProtocol() == fsSFTP)
     {
-      GetSessionData()->SetFSProtocol((FFSProtocol == cfsSCP ? fsSCPonly : fsSFTPonly));
+      GetSessionData()->SetFSProtocol(FFSProtocol == cfsSCP ? fsSCPonly : fsSFTPonly);
     }
 
     if (GetActive())
