@@ -2301,11 +2301,14 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   default:
     assert(false);
   }
-  if (Titles[FunctionKey-1])
+  if (Titles)
   {
-    nb_free(Titles[FunctionKey-1]);
+    if (Titles[FunctionKey - 1])
+    {
+      nb_free(Titles[FunctionKey - 1]);
+    }
+    Titles[FunctionKey - 1] = TCustomFarPlugin::DuplicateStr(Title, /*AllowEmpty=*/true);
   }
-  Titles[FunctionKey-1] = TCustomFarPlugin::DuplicateStr(Title, /*AllowEmpty=*/true);
 }
 
 void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
