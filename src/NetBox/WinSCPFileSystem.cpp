@@ -3408,7 +3408,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
     static UnicodeString TargetDirLabel;
     static UnicodeString StartTimeLabel;
     static UnicodeString TimeElapsedLabel;
-    static UnicodeString BytesTransferedLabel;
+    static UnicodeString BytesTransferredLabel;
     static UnicodeString CPSLabel;
     static UnicodeString TimeLeftLabel;
 
@@ -3418,7 +3418,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       TargetDirLabel = GetMsg(TARGET_DIR_LABEL);
       StartTimeLabel = GetMsg(START_TIME_LABEL);
       TimeElapsedLabel = GetMsg(TIME_ELAPSED_LABEL);
-      BytesTransferedLabel = GetMsg(BYTES_TRANSFERED_LABEL);
+      BytesTransferredLabel = GetMsg(BYTES_TRANSFERED_LABEL);
       CPSLabel = GetMsg(CPS_LABEL);
       TimeLeftLabel = GetMsg(TIME_LEFT_LABEL);
     }
@@ -3476,8 +3476,8 @@ void TWinSCPFileSystem::ShowOperationProgress(
       Message2 += StatusLine + L"\n";
 
       Value = FormatBytes(ProgressData.TotalTransfered);
-      StatusLine = BytesTransferedLabel +
-                   ::StringOfChar(' ', ProgressWidth / 2 - 1 - BytesTransferedLabel.Length() - Value.Length()) +
+      StatusLine = BytesTransferredLabel +
+                   ::StringOfChar(' ', ProgressWidth / 2 - 1 - BytesTransferredLabel.Length() - Value.Length()) +
                    Value + L"  ";
       Value = FORMAT(L"%s/s", FormatBytes(ProgressData.CPS()).c_str());
       StatusLine = StatusLine + CPSLabel +
