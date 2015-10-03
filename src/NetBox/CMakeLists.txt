@@ -141,6 +141,7 @@ include_directories(
   ${SRC_ROOT}/Common
   ${SRC_ROOT}/filezilla
   ${SRC_ROOT}/filezilla/misc
+  ${SRC_ROOT}/PluginSDK/Far3
   ${LIBS_ROOT}
   ${LIBS_ROOT}/atlmfc/include
   ${LIBS_ROOT}/Putty
