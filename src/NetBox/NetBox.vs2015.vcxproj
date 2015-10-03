@@ -74,7 +74,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\Far2_x86\Plugins\NetBox\</OutDir>
+    <OutDir>..\..\Far3_x86\Plugins\NetBox\</OutDir>
     <IntDir>..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\</IntDir>
     <GenerateManifest>false</GenerateManifest>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -82,20 +82,20 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\Far2_x64\Plugins\NetBox\</OutDir>
+    <OutDir>..\..\Far3_x64\Plugins\NetBox\</OutDir>
     <IntDir>..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\</IntDir>
     <TargetName>NetBox</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\Far2_x86\Plugins\NetBox\</OutDir>
+    <OutDir>..\..\Far3_x86\Plugins\NetBox\</OutDir>
     <IntDir>..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\</IntDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>NetBox</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\Far2_x64\Plugins\NetBox\</OutDir>
+    <OutDir>..\..\Far3_x64\Plugins\NetBox\</OutDir>
     <IntDir>..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\</IntDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>NetBox</TargetName>
