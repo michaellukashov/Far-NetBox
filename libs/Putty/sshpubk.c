@@ -1501,7 +1501,7 @@ static char *ssh2_pubkey_openssh_str_internal(const char *comment,
         i += n;
         p += 4;
     }
-    if (*comment) {
+    if (comment && *comment) {
         *p++ = ' ';
         strcpy(p, comment);
     } else

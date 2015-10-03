@@ -11,7 +11,7 @@ class TFileZillaIntern : public CApiLog
 NB_DECLARE_CLASS(TFileZillaIntern)
 NB_DISABLE_COPY(TFileZillaIntern)
 public:
-  TFileZillaIntern(TFileZillaIntf * AOwner);
+  explicit TFileZillaIntern(TFileZillaIntf * AOwner);
 
   virtual BOOL PostMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) const;
 

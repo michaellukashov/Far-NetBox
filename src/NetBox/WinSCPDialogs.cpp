@@ -8723,9 +8723,9 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
 bool TQueueDialog::QueueItemNeedsFrequentRefresh(
   TQueueItemProxy * QueueItem)
 {
-  return
+  return (QueueItem &&
     (TQueueItem::IsUserActionStatus(QueueItem->GetStatus()) ||
-     (QueueItem->GetStatus() == TQueueItem::qsPaused));
+     (QueueItem->GetStatus() == TQueueItem::qsPaused)));
 }
 
 bool TQueueDialog::Execute(TTerminalQueueStatus * Status)

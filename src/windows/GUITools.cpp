@@ -269,11 +269,11 @@ UnicodeString GetPersonalFolder()
   if (IsWine())
   {
     UnicodeString WineHostHome;
-    int Len = ::GetEnvironmentVariable(L"WINE_HOST_HOME", nullptr, 0);
-    if (Len > 0)
+    int Len1 = ::GetEnvironmentVariable(L"WINE_HOST_HOME", nullptr, 0);
+    if (Len1 > 0)
     {
-      WineHostHome.SetLength(Len - 1);
-      ::GetEnvironmentVariable(L"WINE_HOST_HOME", const_cast<LPWSTR>(WineHostHome.c_str()), Len);
+      WineHostHome.SetLength(Len1 - 1);
+      ::GetEnvironmentVariable(L"WINE_HOST_HOME", const_cast<LPWSTR>(WineHostHome.c_str()), Len1);
     }
     if (!WineHostHome.IsEmpty())
     {
@@ -287,11 +287,11 @@ UnicodeString GetPersonalFolder()
     {
       // Should we use WinAPI GetUserName() instead?
       UnicodeString UserName;
-      int Len = ::GetEnvironmentVariable(L"USERNAME", nullptr, 0);
-      if (Len > 0)
+      int Len2 = ::GetEnvironmentVariable(L"USERNAME", nullptr, 0);
+      if (Len2 > 0)
       {
-        UserName.SetLength(Len - 1);
-        ::GetEnvironmentVariable(L"USERNAME", const_cast<LPWSTR>(UserName.c_str()), Len);
+        UserName.SetLength(Len2 - 1);
+        ::GetEnvironmentVariable(L"USERNAME", const_cast<LPWSTR>(UserName.c_str()), Len2);
       }
       if (!UserName.IsEmpty())
       {
