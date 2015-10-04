@@ -3525,8 +3525,9 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
   if (FQueue == nullptr)
     return Result;
 
-  assert(GetQueueStatus() != nullptr);
-  FarPlugin->UpdateProgress(GetQueueStatus()->GetCount() > 0 ? PS_INDETERMINATE : PS_NOPROGRESS, 0);
+  TTerminalQueueStatus * QueueStatus = GetQueueStatus();
+  assert(QueueStatus != nullptr);
+  FarPlugin->UpdateProgress(QueueStatus->GetCount() > 0 ? PS_INDETERMINATE : PS_NOPROGRESS, 0);
 
   if (FQueueStatusInvalidated || FQueueItemInvalidated)
   {
