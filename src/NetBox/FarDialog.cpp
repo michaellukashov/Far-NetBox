@@ -2288,8 +2288,9 @@ intptr_t TFarList::GetTopIndex() const
   {
     FarListPos ListPos;
     ClearStruct(ListPos);
-    assert(GetDialogItem() != nullptr);
-    GetDialogItem()->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<LONG_PTR>(&ListPos));
+    TFarDialogItem * DialogItem = GetDialogItem();
+    assert(DialogItem != nullptr);
+    DialogItem->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<LONG_PTR>(&ListPos));
     Result = static_cast<intptr_t>(ListPos.TopPos);
   }
   return Result;
