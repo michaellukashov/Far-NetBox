@@ -213,7 +213,7 @@ int CControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 {
 	USES_CONVERSION;
 
-	for (rde::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
+	for (rde::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); ++iter)
 	{
 		if (iter->nType == LAYERCALLBACK_STATECHANGE)
 		{
@@ -391,7 +391,7 @@ _int64 CControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int6
 		_int64 nLeft = 0;
 		int nCount = 0;
 		rde::list<t_ActiveList>::iterator iter2;
-		for (iter2 = m_InstanceList[direction].begin(); iter2 != m_InstanceList[direction].end(); iter2++)
+		for (iter2 = m_InstanceList[direction].begin(); iter2 != m_InstanceList[direction].end(); ++iter2)
 		{
 			if (iter2->nBytesAvailable>0)
 			{
@@ -408,7 +408,7 @@ _int64 CControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int6
 		if (nLeft && nCount)
 		{
 			nMax = nLeft / nCount;
-			for (iter2 = m_InstanceList[direction].begin(); iter2 != m_InstanceList[direction].end(); iter2++)
+			for (iter2 = m_InstanceList[direction].begin(); iter2 != m_InstanceList[direction].end(); ++iter2)
 			{
 				if (!iter2->nBytesTransferred)
 					iter2->nBytesAvailable += nMax;
@@ -433,7 +433,7 @@ _int64 CControlSocket::GetAbleToTransferSize(enum transferDirection direction, b
 {
 	m_SpeedLimitSync.Lock();
 	rde::list<t_ActiveList>::iterator iter;
-	for (iter = m_InstanceList[direction].begin(); iter != m_InstanceList[direction].end(); iter++)
+	for (iter = m_InstanceList[direction].begin(); iter != m_InstanceList[direction].end(); ++iter)
 		if (iter->pOwner == this)
 			break;
 	if (iter == m_InstanceList[direction].end())
@@ -449,7 +449,7 @@ _int64 CControlSocket::GetAbleToTransferSize(enum transferDirection direction, b
 		item.pOwner = this;
 		m_InstanceList[direction].push_back(item);
 		iter = m_InstanceList[direction].end();
-		iter--;
+		--iter;
 	}
 	_int64 limit = GetAbleToUDSize(beenWaiting, m_CurrentTransferTime[direction], m_CurrentTransferLimit[direction], iter, direction, nBufSize);
 	m_SpeedLimitSync.Unlock();
@@ -463,7 +463,7 @@ BOOL CControlSocket::RemoveActiveTransfer()
 	rde::list<t_ActiveList>::iterator iter;
 	for (int i = 0; i < 2; i++)
 	{
-		for (iter = m_InstanceList[i].begin(); iter != m_InstanceList[i].end(); iter++)
+		for (iter = m_InstanceList[i].begin(); iter != m_InstanceList[i].end(); ++iter)
 			if (iter->pOwner == this)
 			{
 				m_InstanceList[i].erase(iter);
@@ -479,7 +479,7 @@ BOOL CControlSocket::SpeedLimitAddTransferredBytes(enum transferDirection direct
 {
 	m_SpeedLimitSync.Lock();
 	rde::list<t_ActiveList>::iterator iter;
-	for (iter = m_InstanceList[direction].begin(); iter != m_InstanceList[direction].end(); iter++)
+	for (iter = m_InstanceList[direction].begin(); iter != m_InstanceList[direction].end(); ++iter)
 		if (iter->pOwner == this)
 		{
 			if (iter->nBytesAvailable > nBytesTransferred)

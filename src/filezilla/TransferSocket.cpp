@@ -1112,7 +1112,7 @@ void CTransferSocket::Close()
 
 int CTransferSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 {
-	for (rde::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
+	for (rde::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); ++iter)
 	{
 		if (iter->nType == LAYERCALLBACK_STATECHANGE)
 		{
