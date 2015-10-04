@@ -2311,8 +2311,9 @@ intptr_t TFarList::GetMaxLength() const
 
 intptr_t TFarList::GetVisibleCount() const
 {
-  assert(GetDialogItem() != nullptr);
-  return GetDialogItem()->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2);
+  TFarDialogItem * DialogItem = GetDialogItem();
+  assert(DialogItem != nullptr);
+  return DialogItem->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2);
 }
 
 intptr_t TFarList::GetSelectedInt(bool Init) const
