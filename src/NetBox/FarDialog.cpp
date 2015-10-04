@@ -2257,12 +2257,13 @@ void TFarList::UpdatePosition(intptr_t Position)
 
 void TFarList::SetCurPos(intptr_t Position, intptr_t TopIndex)
 {
-  assert(GetDialogItem() != nullptr);
-  assert(GetDialogItem()->GetDialog()->GetHandle());
+  TFarDialogItem * DialogItem = GetDialogItem();
+  assert(DialogItem != nullptr);
+  assert(DialogItem->GetDialog()->GetHandle());
   FarListPos ListPos;
   ListPos.SelectPos = static_cast<int>(Position);
   ListPos.TopPos = static_cast<int>(TopIndex);
-  GetDialogItem()->SendMessage(DM_LISTSETCURPOS, reinterpret_cast<LONG_PTR>(&ListPos));
+  DialogItem->SendMessage(DM_LISTSETCURPOS, reinterpret_cast<LONG_PTR>(&ListPos));
 }
 
 void TFarList::SetTopIndex(intptr_t Value)
