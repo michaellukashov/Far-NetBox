@@ -2319,18 +2319,19 @@ intptr_t TFarList::GetVisibleCount() const
 intptr_t TFarList::GetSelectedInt(bool Init) const
 {
   intptr_t Result = NPOS;
-  assert(GetDialogItem() != nullptr);
+  TFarDialogItem * DialogItem = GetDialogItem();
+  assert(DialogItem != nullptr);
   if (GetCount() == 0)
   {
     Result = NPOS;
   }
-  else if (GetDialogItem()->GetDialog()->GetHandle() && !Init)
+  else if (DialogItem->GetDialog()->GetHandle() && !Init)
   {
     Result = GetPosition();
   }
   else
   {
-    const wchar_t * PtrData = GetDialogItem()->GetDialogItem()->PtrData;
+    const wchar_t * PtrData = DialogItem->GetDialogItem()->PtrData;
     if (PtrData)
     {
       Result = IndexOf(PtrData);
