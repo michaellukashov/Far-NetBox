@@ -2871,7 +2871,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 	ASSERT(!m_Operation.nOpMode || m_Operation.nOpMode&CSMODE_TRANSFER);
 	if (!m_pOwner->IsConnected())
 	{
-		m_Operation.nOpMode=CSMODE_TRANSFER|(transferfile->get?CSMODE_DOWNLOAD:CSMODE_UPLOAD);
+		m_Operation.nOpMode=CSMODE_TRANSFER|(transferfile && transferfile->get?CSMODE_DOWNLOAD:CSMODE_UPLOAD);
 		ResetOperation(FZ_REPLY_ERROR|FZ_REPLY_DISCONNECTED);
 		return;
 	}
