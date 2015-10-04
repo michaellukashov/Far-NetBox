@@ -1442,7 +1442,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
   FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName.c_str()), "",
   [&]()
   {
-    FFileZillaIntf->FileTransfer(LocalFile.c_str(), RemoteFile.c_str(),
+    FFileZillaIntf->FileTransfer(ApiPath(LocalFile).c_str(), RemoteFile.c_str(),
       RemotePath.c_str(), Get, Size, static_cast<int>(Type), &UserData);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
