@@ -1021,7 +1021,7 @@ TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, uintptr_t AType) :
 
 TFarDialogItem::~TFarDialogItem()
 {
-  const TFarDialog * Dlg = GetDialog();
+  TFarDialog * Dlg = GetDialog();
   assert(!Dlg);
   if (Dlg)
   {
@@ -1036,8 +1036,9 @@ const FarDialogItem * TFarDialogItem::GetDialogItem() const
 
 FarDialogItem * TFarDialogItem::GetDialogItem()
 {
-  assert(GetDialog());
-  return &GetDialog()->FDialogItems[GetItem()];
+  TFarDialog * Dlg = GetDialog();
+  assert(Dlg);
+  return &Dlg->FDialogItems[GetItem()];
 }
 
 void TFarDialogItem::SetBounds(const TRect & Value)
