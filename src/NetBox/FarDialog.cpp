@@ -2388,17 +2388,18 @@ void TFarList::Init()
 
 LONG_PTR TFarList::ItemProc(int Msg, LONG_PTR Param)
 {
-  assert(GetDialogItem() != nullptr);
+  TFarDialogItem * DialogItem = GetDialogItem();
+  assert(DialogItem != nullptr);
   if (Msg == DN_LISTCHANGE)
   {
     if ((Param < 0) || ((Param == 0) && (GetCount() == 0)))
     {
-      GetDialogItem()->UpdateData(L"");
+      DialogItem->UpdateData(L"");
     }
     else
     {
       assert(Param >= 0 && Param < GetCount());
-      GetDialogItem()->UpdateData(GetString(Param));
+      DialogItem->UpdateData(GetString(Param));
     }
   }
   return 0;
