@@ -3633,9 +3633,10 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
   {
     TGuard Guard(FQueueStatusSection);
 
-    assert(GetQueueStatus() != nullptr);
+    TTerminalQueueStatus * QueueStatus = GetQueueStatus();
+    assert(QueueStatus != nullptr);
 
-    TQueueItemProxy * QueueItem = GetQueueStatus()->FindByQueueItem(Item);
+    TQueueItemProxy * QueueItem = QueueStatus->FindByQueueItem(Item);
 
     if ((Item->GetStatus() == TQueueItem::qsDone) && (GetTerminal() != nullptr))
     {
