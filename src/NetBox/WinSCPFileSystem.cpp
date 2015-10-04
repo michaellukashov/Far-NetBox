@@ -2033,8 +2033,9 @@ void TWinSCPFileSystem::OpenSessionInPutty()
 void TWinSCPFileSystem::QueueShow(bool ClosingPlugin)
 {
   assert(Connected());
-  assert(GetQueueStatus() != nullptr);
-  QueueDialog(GetQueueStatus(), ClosingPlugin);
+  TTerminalQueueStatus * QueueStatus = GetQueueStatus();
+  assert(QueueStatus != nullptr);
+  QueueDialog(QueueStatus, ClosingPlugin);
   ProcessQueue(true);
 }
 
