@@ -1976,7 +1976,8 @@ UnicodeString TLocatedQueueItem::GetStartupDirectory() const
 void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 {
   assert(Terminal != nullptr);
-  Terminal->TerminalSetCurrentDirectory(FCurrentDir);
+  if (Terminal)
+    Terminal->TerminalSetCurrentDirectory(FCurrentDir);
 }
 
 // TTransferQueueItem
