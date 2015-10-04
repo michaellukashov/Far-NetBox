@@ -2073,7 +2073,8 @@ void TUploadQueueItem::DoExecute(TTerminal * Terminal)
   TTransferQueueItem::DoExecute(Terminal);
 
   assert(Terminal != nullptr);
-  Terminal->CopyToRemote(FFilesToCopy, FTargetDir, FCopyParam, FParams);
+  if (Terminal)
+    Terminal->CopyToRemote(FFilesToCopy, FTargetDir, FCopyParam, FParams);
 }
 
 // TDownloadQueueItem
