@@ -13718,10 +13718,10 @@ bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * RemotePath,
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
   const char * local_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(RemotePath).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&remote_path, StrToNeon(RemotePath), pool);
   if (err)
     return false;
-  err = webdav::path_cstring_to_utf8(&local_path, AnsiString(LocalPath).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&local_path, StrToNeon(ApiPath(LocalPath)), pool);
   if (err)
     return false;
   try
