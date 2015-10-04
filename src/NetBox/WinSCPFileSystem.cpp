@@ -3964,6 +3964,7 @@ void TWinSCPFileSystem::MultipleEdit()
 void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   const UnicodeString & AFileName, TRemoteFile * AFile)
 {
+  assert(AFile);
   TEditHistory EditHistory;
   EditHistory.Directory = Directory;
   EditHistory.FileName = AFileName;
@@ -3977,7 +3978,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
 
   UnicodeString FullFileName = core::UnixIncludeTrailingBackslash(Directory) + AFileName;
 
-  std::unique_ptr<TRemoteFile> FileDuplicate(AFile->Duplicate());
+  std::unique_ptr<TRemoteFile> FileDuplicate(AFile ? AFile->Duplicate() : nullptr);
   UnicodeString NewFileName = AFileName; // FullFileName;
   FileDuplicate->SetFileName(NewFileName);
 
