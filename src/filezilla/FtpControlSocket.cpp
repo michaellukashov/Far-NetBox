@@ -6286,6 +6286,7 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 					break;
 				case SSL_VERIFY_CERT:
 					t_SslCertData *pData = new t_SslCertData;
+					memset(pData, 0, sizeof(*pData));
 					LPCTSTR CertError = NULL;
 					if (m_pSslLayer->GetPeerCertificateData(*pData, CertError))
 					{
