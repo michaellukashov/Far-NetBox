@@ -1585,8 +1585,9 @@ bool TFarDialogItem::Focused() const
 void TFarDialogItem::UpdateFocused(bool Value)
 {
   SetFocused(Value);
-  assert(GetDialog());
-  GetDialog()->SetItemFocused(Value ? this : nullptr);
+  TFarDialog * Dlg = GetDialog();
+  assert(Dlg);
+  Dlg->SetItemFocused(Value ? this : nullptr);
 }
 
 void TFarDialogItem::SetFocus()
