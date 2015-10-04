@@ -1021,8 +1021,9 @@ TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, uintptr_t AType) :
 
 TFarDialogItem::~TFarDialogItem()
 {
-  assert(!GetDialog());
-  if (GetDialog())
+  const TFarDialog * Dlg = GetDialog();
+  assert(!Dlg);
+  if (Dlg)
   {
     nb_free((void*)GetDialogItem()->PtrData);
   }
