@@ -2223,16 +2223,17 @@ void TFarList::Changed()
 
 void TFarList::SetSelected(intptr_t Value)
 {
-  assert(GetDialogItem() != nullptr);
+  TFarDialogItem * DialogItem = GetDialogItem();
+  assert(DialogItem != nullptr);
   if (GetSelectedInt(false) != Value)
   {
-    if (GetDialogItem()->GetDialog()->GetHandle())
+    if (DialogItem->GetDialog()->GetHandle())
     {
       UpdatePosition(Value);
     }
     else
     {
-      GetDialogItem()->SetData(GetString(Value));
+      DialogItem->SetData(GetString(Value));
     }
   }
 }
