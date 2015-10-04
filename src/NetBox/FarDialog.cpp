@@ -1431,8 +1431,9 @@ void TFarDialogItem::UpdateEnabled()
 
 void TFarDialogItem::DialogChange()
 {
-  assert(GetDialog());
-  GetDialog()->Change();
+  TFarDialog * Dlg = GetDialog();
+  assert(Dlg);
+  Dlg->Change();
 }
 
 LONG_PTR TFarDialogItem::SendDialogMessage(int Msg, intptr_t Param1, LONG_PTR Param2)
