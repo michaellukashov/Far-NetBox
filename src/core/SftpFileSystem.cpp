@@ -5431,7 +5431,9 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
       };
       UnicodeString TargetDirectory = FullTargetDir;
-      UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
+      UnicodeString DestFileName = CopyParam->ChangeFileName(core::UnixExtractFileName(File->GetFileName()),
+        osRemote, true);
+      UnicodeString FileNamePath = ::ExtractFilePath(DestFileName);
       if (!FileNamePath.IsEmpty())
       {
         TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
