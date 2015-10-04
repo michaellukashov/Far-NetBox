@@ -4129,7 +4129,7 @@ void TWinSCPFileSystem::EditHistory()
     FTerminal->ReadFile(FullFileName, File);
     std::unique_ptr<TRemoteFile> FilePtr(File);
     assert(FilePtr.get());
-    if (!File->GetHaveFullFileName())
+    if (File && !File->GetHaveFullFileName())
     {
       File->SetFullFileName(FullFileName);
     }
