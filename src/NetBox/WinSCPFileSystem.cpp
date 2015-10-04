@@ -2041,8 +2041,9 @@ void TWinSCPFileSystem::OpenSessionInPutty()
 void TWinSCPFileSystem::QueueShow(bool ClosingPlugin)
 {
   assert(Connected());
-  assert(GetQueueStatus() != nullptr);
-  QueueDialog(GetQueueStatus(), ClosingPlugin);
+  TTerminalQueueStatus * QueueStatus = GetQueueStatus();
+  assert(QueueStatus != nullptr);
+  QueueDialog(QueueStatus, ClosingPlugin);
   ProcessQueue(true);
 }
 
@@ -2399,7 +2400,8 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
       }
       else
       {
-        assert(PanelItem->GetFileName() == GetMsg(NEW_SESSION_HINT));
+        UnicodeString Msg = GetMsg(NEW_SESSION_HINT);
+        assert(PanelItem->GetFileName() == Msg);
       }
     }
     else
@@ -3578,8 +3580,9 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
   if (FQueue == nullptr)
     return Result;
 
-  assert(GetQueueStatus() != nullptr);
-  FarPlugin->UpdateProgress(GetQueueStatus()->GetCount() > 0 ? TBPS_INDETERMINATE : TBPS_NOPROGRESS, 0);
+  TTerminalQueueStatus * QueueStatus = GetQueueStatus();
+  assert(QueueStatus != nullptr);
+  FarPlugin->UpdateProgress(QueueStatus->GetCount() > 0 ? TBPS_INDETERMINATE : TBPS_NOPROGRESS, 0);
 
   if (FQueueStatusInvalidated || FQueueItemInvalidated)
   {
@@ -3685,9 +3688,10 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
   {
     TGuard Guard(FQueueStatusSection);
 
-    assert(GetQueueStatus() != nullptr);
+    TTerminalQueueStatus * QueueStatus = GetQueueStatus();
+    assert(QueueStatus != nullptr);
 
-    TQueueItemProxy * QueueItem = GetQueueStatus()->FindByQueueItem(Item);
+    TQueueItemProxy * QueueItem = QueueStatus->FindByQueueItem(Item);
 
     if ((Item->GetStatus() == TQueueItem::qsDone) && (GetTerminal() != nullptr))
     {
@@ -4021,6 +4025,7 @@ void TWinSCPFileSystem::MultipleEdit()
 void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   const UnicodeString & AFileName, TRemoteFile * AFile)
 {
+  assert(AFile);
   TEditHistory EditHistory;
   EditHistory.Directory = Directory;
   EditHistory.FileName = AFileName;
@@ -4034,7 +4039,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
 
   UnicodeString FullFileName = core::UnixIncludeTrailingBackslash(Directory) + AFileName;
 
-  std::unique_ptr<TRemoteFile> FileDuplicate(AFile->Duplicate());
+  std::unique_ptr<TRemoteFile> FileDuplicate(AFile ? AFile->Duplicate() : nullptr);
   UnicodeString NewFileName = AFileName; // FullFileName;
   FileDuplicate->SetFileName(NewFileName);
 
@@ -4185,7 +4190,7 @@ void TWinSCPFileSystem::EditHistory()
     FTerminal->ReadFile(FullFileName, File);
     std::unique_ptr<TRemoteFile> FilePtr(File);
     assert(FilePtr.get());
-    if (!File->GetHaveFullFileName())
+    if (File && !File->GetHaveFullFileName())
     {
       File->SetFullFileName(FullFileName);
     }

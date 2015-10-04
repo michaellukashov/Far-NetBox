@@ -1029,8 +1029,9 @@ TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, FARDIALOGITEMTYPES AType) :
 
 TFarDialogItem::~TFarDialogItem()
 {
-  assert(!GetDialog());
-  if (GetDialog())
+  TFarDialog * Dlg = GetDialog();
+  assert(!Dlg);
+  if (Dlg)
   {
     nb_free((void*)GetDialogItem()->Data);
   }
@@ -1043,8 +1044,9 @@ const FarDialogItem * TFarDialogItem::GetDialogItem() const
 
 FarDialogItem * TFarDialogItem::GetDialogItem()
 {
-  assert(GetDialog());
-  return &GetDialog()->FDialogItems[GetItem()];
+  TFarDialog * Dlg = GetDialog();
+  assert(Dlg);
+  return &Dlg->FDialogItems[GetItem()];
 }
 
 void TFarDialogItem::SetBounds(const TRect & Value)
@@ -1440,8 +1442,9 @@ void TFarDialogItem::UpdateEnabled()
 
 void TFarDialogItem::DialogChange()
 {
-  assert(GetDialog());
-  GetDialog()->Change();
+  TFarDialog * Dlg = GetDialog();
+  assert(Dlg);
+  Dlg->Change();
 }
 
 intptr_t TFarDialogItem::SendDialogMessage(intptr_t Msg, intptr_t Param1, void * Param2)
@@ -1593,8 +1596,9 @@ bool TFarDialogItem::Focused() const
 void TFarDialogItem::UpdateFocused(bool Value)
 {
   SetFocused(Value);
-  assert(GetDialog());
-  GetDialog()->SetItemFocused(Value ? this : nullptr);
+  TFarDialog * Dlg = GetDialog();
+  assert(Dlg);
+  Dlg->SetItemFocused(Value ? this : nullptr);
 }
 
 void TFarDialogItem::SetFocus()
@@ -2242,16 +2246,17 @@ void TFarList::Changed()
 
 void TFarList::SetSelected(intptr_t Value)
 {
-  assert(GetDialogItem() != nullptr);
+  TFarDialogItem * DialogItem = GetDialogItem();
+  assert(DialogItem != nullptr);
   if (GetSelectedInt(false) != Value)
   {
-    if (GetDialogItem()->GetDialog()->GetHandle())
+    if (DialogItem->GetDialog()->GetHandle())
     {
       UpdatePosition(Value);
     }
     else
     {
-      GetDialogItem()->SetData(GetString(Value));
+      DialogItem->SetData(GetString(Value));
     }
   }
 }
@@ -2276,13 +2281,14 @@ void TFarList::UpdatePosition(intptr_t Position)
 
 void TFarList::SetCurPos(intptr_t Position, intptr_t TopIndex)
 {
-  assert(GetDialogItem() != nullptr);
-  assert(GetDialogItem()->GetDialog()->GetHandle());
+  TFarDialogItem * DialogItem = GetDialogItem();
+  assert(DialogItem != nullptr);
+  assert(DialogItem->GetDialog()->GetHandle());
   FarListPos ListPos;
-    ListPos.StructSize = sizeof(FarListPos);
+  ListPos.StructSize = sizeof(FarListPos);
   ListPos.SelectPos = Position;
   ListPos.TopPos = TopIndex;
-  GetDialogItem()->SendMessage(DM_LISTSETCURPOS, reinterpret_cast<void *>(&ListPos));
+  DialogItem->SendMessage(DM_LISTSETCURPOS, reinterpret_cast<void *>(&ListPos));
 }
 
 void TFarList::SetTopIndex(intptr_t Value)
@@ -2295,8 +2301,9 @@ void TFarList::SetTopIndex(intptr_t Value)
 
 intptr_t TFarList::GetPosition() const
 {
-  assert(GetDialogItem() != nullptr);
-  return GetDialogItem()->SendMessage(DM_LISTGETCURPOS, 0);
+  TFarDialogItem * DialogItem = GetDialogItem();
+  assert(DialogItem != nullptr);
+  return DialogItem->SendMessage(DM_LISTGETCURPOS, 0);
 }
 
 intptr_t TFarList::GetTopIndex() const
@@ -2306,9 +2313,10 @@ intptr_t TFarList::GetTopIndex() const
   {
     FarListPos ListPos;
     ClearStruct(ListPos);
+    TFarDialogItem * DialogItem = GetDialogItem();
     ListPos.StructSize = sizeof(FarListPos);
-    assert(GetDialogItem() != nullptr);
-    GetDialogItem()->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<void *>(&ListPos));
+    assert(DialogItem != nullptr);
+    DialogItem->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<void *>(&ListPos));
     Result = static_cast<intptr_t>(ListPos.TopPos);
   }
   return Result;
@@ -2329,25 +2337,27 @@ intptr_t TFarList::GetMaxLength() const
 
 intptr_t TFarList::GetVisibleCount() const
 {
-  assert(GetDialogItem() != nullptr);
-  return GetDialogItem()->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2);
+  TFarDialogItem * DialogItem = GetDialogItem();
+  assert(DialogItem != nullptr);
+  return DialogItem->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2);
 }
 
 intptr_t TFarList::GetSelectedInt(bool Init) const
 {
   intptr_t Result = NPOS;
-  assert(GetDialogItem() != nullptr);
+  TFarDialogItem * DialogItem = GetDialogItem();
+  assert(DialogItem != nullptr);
   if (GetCount() == 0)
   {
     Result = NPOS;
   }
-  else if (GetDialogItem()->GetDialog()->GetHandle() && !Init)
+  else if (DialogItem->GetDialog()->GetHandle() && !Init)
   {
     Result = GetPosition();
   }
   else
   {
-    const wchar_t *Data = GetDialogItem()->GetDialogItem()->Data;
+    const wchar_t * Data = DialogItem->GetDialogItem()->Data;
     if (Data)
     {
       Result = IndexOf(Data);
@@ -2403,18 +2413,19 @@ void TFarList::Init()
 
 intptr_t TFarList::ItemProc(intptr_t Msg, void * Param)
 {
-  assert(GetDialogItem() != nullptr);
+  TFarDialogItem * DialogItem = GetDialogItem();
+  assert(DialogItem != nullptr);
   if (Msg == DN_LISTCHANGE)
   {
     if ((Param == 0) && (GetCount() == 0))
     {
-      GetDialogItem()->UpdateData(L"");
+      DialogItem->UpdateData(L"");
     }
     else
     {
       intptr_t param = reinterpret_cast<intptr_t>(Param);
       assert(param >= 0 && param < GetCount());
-      GetDialogItem()->UpdateData(GetString(param));
+      DialogItem->UpdateData(GetString(param));
     }
   }
   return 0;

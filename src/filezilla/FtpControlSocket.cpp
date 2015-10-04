@@ -2871,7 +2871,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 	ASSERT(!m_Operation.nOpMode || m_Operation.nOpMode&CSMODE_TRANSFER);
 	if (!m_pOwner->IsConnected())
 	{
-		m_Operation.nOpMode=CSMODE_TRANSFER|(transferfile->get?CSMODE_DOWNLOAD:CSMODE_UPLOAD);
+		m_Operation.nOpMode=CSMODE_TRANSFER|(transferfile && transferfile->get?CSMODE_DOWNLOAD:CSMODE_UPLOAD);
 		ResetOperation(FZ_REPLY_ERROR|FZ_REPLY_DISCONNECTED);
 		return;
 	}
@@ -6286,6 +6286,7 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 					break;
 				case SSL_VERIFY_CERT:
 					t_SslCertData *pData = new t_SslCertData;
+					memset(pData, 0, sizeof(*pData));
 					LPCTSTR CertError = NULL;
 					if (m_pSslLayer->GetPeerCertificateData(*pData, CertError))
 					{

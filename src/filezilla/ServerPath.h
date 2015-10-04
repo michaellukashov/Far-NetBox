@@ -37,14 +37,15 @@ public:
 	BOOL HasParent() const;
 	CString GetLastSegment() const;
 	CServerPath();
-	CServerPath(int nServerType);
-	CServerPath(CString path);
+	explicit CServerPath(int nServerType);
+	explicit CServerPath(CString path);
 	CServerPath(CString path, int nServerType);
 	CServerPath(CString subdir, const CServerPath &parent); //If subdir is absolute, parent is ignored
 	CServerPath(const CServerPath &path);
 
 	virtual ~CServerPath();
 
+	CServerPath& operator=(CString path) { SetPath(path); return *this; }
 	void SetServer(const t_server &server);
 	BOOL SetPath(CString &newpath, BOOL bIsFile);
 	BOOL SetPath(CString newpath);
