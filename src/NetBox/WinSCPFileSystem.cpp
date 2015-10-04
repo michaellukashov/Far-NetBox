@@ -2389,7 +2389,8 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
       }
       else
       {
-        assert(PanelItem->GetFileName() == GetMsg(NEW_SESSION_HINT));
+        UnicodeString Msg = GetMsg(NEW_SESSION_HINT);
+        assert(PanelItem->GetFileName() == Msg);
       }
     }
     else
