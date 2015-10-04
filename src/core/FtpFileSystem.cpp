@@ -4366,7 +4366,8 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
     // This can actually fail in real life,
     // when connected to server with case insensitive paths
     // Is empty when called from DoReadFile
-    assert(FFileList->GetDirectory().IsEmpty() || core::UnixSamePath(GetAbsolutePath(FFileList->GetDirectory(), false), Path));
+    UnicodeString AbsPath = GetAbsolutePath(FFileList->GetDirectory(), false);
+    assert(FFileList->GetDirectory().IsEmpty() || core::UnixSamePath(AbsPath, Path));
     USEDPARAM(Path);
 
     for (uintptr_t Index = 0; Index < Count; ++Index)
