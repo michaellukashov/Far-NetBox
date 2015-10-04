@@ -2276,8 +2276,9 @@ void TFarList::SetTopIndex(intptr_t Value)
 
 intptr_t TFarList::GetPosition() const
 {
-  assert(GetDialogItem() != nullptr);
-  return GetDialogItem()->SendMessage(DM_LISTGETCURPOS, 0);
+  TFarDialogItem * DialogItem = GetDialogItem();
+  assert(DialogItem != nullptr);
+  return DialogItem->SendMessage(DM_LISTGETCURPOS, 0);
 }
 
 intptr_t TFarList::GetTopIndex() const
