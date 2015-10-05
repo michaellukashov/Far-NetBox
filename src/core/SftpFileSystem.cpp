@@ -5430,15 +5430,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
         FAvoidBusy = false;
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
       };
-      UnicodeString TargetDirectory = FullTargetDir;
-      UnicodeString DestFileName = CopyParam->ChangeFileName(core::UnixExtractFileName(File->GetFileName()),
-        osRemote, true);
-      UnicodeString FileNamePath = ::ExtractFilePath(DestFileName);
-      if (!FileNamePath.IsEmpty())
-      {
-        TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        ::ForceDirectories(ApiPath(TargetDirectory));
-      }
+      UnicodeString TargetDirectory = CreateTargetDirectory(File->GetFileName(), FullTargetDir, CopyParam);
       try
       {
         SFTPSinkRobust(LocalCanonify(FileName), File, TargetDirectory, CopyParam,

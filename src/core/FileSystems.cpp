@@ -12,6 +12,23 @@ TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal) :
   assert(FTerminal);
 }
 
+UnicodeString TCustomFileSystem::CreateTargetDirectory(
+  IN const UnicodeString & AFileName,
+  IN const UnicodeString & ADirectory,
+  IN const TCopyParamType * CopyParam)
+{
+  UnicodeString Result = ADirectory;
+  UnicodeString DestFileName = CopyParam->ChangeFileName(core::UnixExtractFileName(AFileName),
+    osRemote, true);
+  UnicodeString FileNamePath = ::ExtractFilePath(DestFileName);
+  if (!FileNamePath.IsEmpty())
+  {
+    Result = ::IncludeTrailingBackslash(ADirectory + FileNamePath);
+    ::ForceDirectories(ApiPath(Result));
+  }
+  return Result;
+}
+
 TCustomFileSystem::~TCustomFileSystem()
 {
 #ifdef USE_DLMALLOC

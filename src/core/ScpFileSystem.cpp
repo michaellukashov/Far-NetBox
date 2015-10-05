@@ -2249,15 +2249,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       // operation succeeded (no exception), so it's ok that
       // remote side closed SCP, but we continue with next file
       UnicodeString FullFileName = core::UnixExcludeTrailingBackslash(File->GetFullFileName());
-      UnicodeString TargetDirectory = TargetDir;
-      UnicodeString DestFileName = CopyParam->ChangeFileName(core::UnixExtractFileName(File->GetFileName()),
-        osRemote, true);
-      UnicodeString FileNamePath = ::ExtractFilePath(DestFileName);
-      if (!FileNamePath.IsEmpty())
-      {
-        TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        ::ForceDirectories(ApiPath(TargetDirectory));
-      }
+      UnicodeString TargetDirectory = CreateTargetDirectory(File->GetFileName(), TargetDir, CopyParam);
       try
       {
         bool Success = true; // Have to be set to True (see ::SCPSink)

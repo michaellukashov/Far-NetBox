@@ -206,5 +206,10 @@ protected:
   TTerminal * FTerminal;
 
   explicit TCustomFileSystem(TTerminal * ATerminal);
+
+  UnicodeString CreateTargetDirectory(
+    IN const UnicodeString & AFileName,
+    IN const UnicodeString & ADirectory,
+    IN const TCopyParamType * CopyParam);
 };
 
