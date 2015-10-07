@@ -1,5 +1,7 @@
-NetBox 2.1.44.408 04.10.2015
+NetBox 2.1.44.409 07.10.2015
 --------------------
+  * Bugfix: FTP: AV trying to download file
+    (http://forum.farmanager.com/viewtopic.php?p=132960#p132960)
   * WebDAV, FTP: Fix Unicode-related issues
   * Update minimal Far3 version to 3.0.4400
   * Bugfix: SFTP: cannot create symlink
