@@ -1490,13 +1490,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
       };
       UnicodeString AbsoluteFilePath = GetAbsolutePath(FileName, false);
-      UnicodeString TargetDirectory = FullTargetDir;
-      UnicodeString FileNamePath = ::ExtractFilePath(File->GetFileName());
-      if (!FileNamePath.IsEmpty())
-      {
-        TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        ::ForceDirectories(ApiPath(TargetDirectory));
-      }
+      UnicodeString TargetDirectory = CreateTargetDirectory(File->GetFileName(), FullTargetDir, CopyParam);
       try
       {
         SinkRobust(AbsoluteFilePath, File, TargetDirectory, CopyParam, Params,

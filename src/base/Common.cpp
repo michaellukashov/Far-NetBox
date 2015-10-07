@@ -1024,7 +1024,7 @@ static UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
 UnicodeString ApiPath(const UnicodeString & APath)
 {
   UnicodeString Result = APath;
-  //if (Result.Length() >= MAX_PATH)
+  if (IsWin7() || (Result.Length() >= MAX_PATH))
   {
 //    if (GetConfiguration() != nullptr)
 //    {

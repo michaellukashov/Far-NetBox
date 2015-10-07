@@ -13006,13 +13006,7 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
         FTerminal->SetExceptionOnFail(false);
       };
       UnicodeString AbsoluteFilePath = GetAbsolutePath(FileName, false);
-      UnicodeString TargetDirectory = FullTargetDir;
-      UnicodeString FileNamePath = ApiPath(::ExtractFilePath(File->GetFileName()));
-      if (!FileNamePath.IsEmpty())
-      {
-        TargetDirectory = ::IncludeTrailingBackslash(TargetDirectory + FileNamePath);
-        ::ForceDirectories(ApiPath(TargetDirectory));
-      }
+      UnicodeString TargetDirectory = CreateTargetDirectory(File->GetFileName(), FullTargetDir, CopyParam);
       try
       {
         SinkRobust(AbsoluteFilePath, File, TargetDirectory, CopyParam, Params,

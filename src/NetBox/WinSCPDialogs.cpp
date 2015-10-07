@@ -5561,7 +5561,9 @@ bool TCopyDialog::Execute(OUT UnicodeString & TargetDirectory,
       ::IncludeTrailingBackslash(TargetDirectory);
     if (FFileList->GetCount() == 1)
     {
-      FileMask = core::ExtractFileName(FFileList->GetString(0), false);
+      UnicodeString DestFileName = FFileList->GetString(0);
+      DestFileName = FToRemote ? DestFileName : FCopyParams.ChangeFileName(DestFileName, osRemote, true);
+      FileMask = core::ExtractFileName(DestFileName, false);
     }
     DirectoryEdit->SetText(Directory + FileMask);
     QueueCheck->SetChecked(Params->GetQueue());
