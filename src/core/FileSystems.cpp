@@ -5,6 +5,7 @@
 
 #include "FileSystems.h"
 #include "RemoteFiles.h"
+#include "CopyParam.h"
 
 TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal) :
   FTerminal(ATerminal)
