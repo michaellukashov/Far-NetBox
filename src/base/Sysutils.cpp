@@ -551,7 +551,7 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
 void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
 {
   WIN32_FIND_DATA FindData;
-  HANDLE Handle = FindFirstFile(AFileName.c_str(), &FindData);
+  HANDLE Handle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
   if (Handle != INVALID_HANDLE_VALUE)
   {
     ATimestamp =
@@ -564,24 +564,24 @@ void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
 
 DWORD FileGetAttr(const UnicodeString & AFileName)
 {
-  DWORD LocalFileAttrs = ::GetFileAttributes(AFileName.c_str());
+  DWORD LocalFileAttrs = ::GetFileAttributes(ApiPath(AFileName).c_str());
   return LocalFileAttrs;
 }
 
 DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs)
 {
-  DWORD Result = ::SetFileAttributes(AFileName.c_str(), LocalFileAttrs);
+  DWORD Result = ::SetFileAttributes(ApiPath(AFileName).c_str(), LocalFileAttrs);
   return Result;
 }
 
 bool CreateDir(const UnicodeString & ADir)
 {
-  return ::CreateDirectory(ADir.c_str(), nullptr) != 0;
+  return ::CreateDirectory(ApiPath(ADir).c_str(), nullptr) != 0;
 }
 
 bool RemoveDir(const UnicodeString & ADir)
 {
-  return ::RemoveDirectory(ADir.c_str()) != 0;
+  return ::RemoveDirectory(ApiPath(ADir).c_str()) != 0;
 }
 
 bool ForceDirectories(const UnicodeString & ADir)
@@ -606,7 +606,7 @@ bool ForceDirectories(const UnicodeString & ADir)
 
 bool DeleteFile(const UnicodeString & AFileName)
 {
-  ::DeleteFile(AFileName.c_str());
+  ::DeleteFile(ApiPath(AFileName).c_str());
   return !::FileExists(AFileName);
 }
 
@@ -891,8 +891,8 @@ void AppendPathDelimiterW(UnicodeString & Str)
 
 UnicodeString ExpandEnvVars(const UnicodeString & Str)
 {
-  wchar_t buf[MAX_PATH];
-  intptr_t size = ExpandEnvironmentStringsW(Str.c_str(), buf, static_cast<DWORD>(MAX_PATH - 1));
+  wchar_t buf[32 * 1024];
+  intptr_t size = ExpandEnvironmentStringsW(Str.c_str(), buf, static_cast<DWORD>(32 * 1024 - 1));
   UnicodeString Result = UnicodeString(buf, size - 1);
   return Result;
 }
@@ -925,7 +925,7 @@ UnicodeString ExtractFileExt(const UnicodeString & AFileName)
 static UnicodeString ExpandFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result;
-  UnicodeString Buf(MAX_PATH, 0);
+  UnicodeString Buf(32 * 1024, 0);
   intptr_t Size = ::GetFullPathNameW(AFileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
     reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), nullptr);
   if (Size > Buf.Length())
