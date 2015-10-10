@@ -433,7 +433,7 @@ bool IsNumber(const UnicodeString & Str)
   return TryStrToInt(Str, Value);
 }
 
-UnicodeString SystemTemporaryDirectory()
+UnicodeString GetSystemTemporaryDirectory()
 {
   UnicodeString TempDir;
   TempDir.SetLength(32 * 1024);
