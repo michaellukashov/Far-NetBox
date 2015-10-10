@@ -2915,14 +2915,14 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 UnicodeString TGlobalFunctions::GetCurrDirectory() const
 {
   UnicodeString Result;
-  wchar_t Path[MAX_PATH + 1];
+  UnicodeString Path(32 * 1014, 0);
   if (FarPlugin)
   {
-    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(_countof(Path), Path);
+    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(Path.Length(), (wchar_t *)Path.c_str());
   }
   else
   {
-    ::GetCurrentDirectory(_countof(Path), Path);
+    ::GetCurrentDirectory(Path.Length(), (wchar_t *)Path.c_str());
   }
   Result = Path;
   return Result;
