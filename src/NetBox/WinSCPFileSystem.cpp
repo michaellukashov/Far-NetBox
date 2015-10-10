@@ -3192,32 +3192,32 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & AFileName,
 HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
-  return ::CreateFile(LocalFileName.c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
+  return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
 }
 
 inline DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName)
 {
-  return ::FileGetAttr(LocalFileName);
+  return ::FileGetAttr(ApiPath(LocalFileName));
 }
 
 inline BOOL TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
 {
-  return ::SetFileAttributes(LocalFileName.c_str(), FileAttributes);
+  return ::SetFileAttributes(ApiPath(LocalFileName).c_str(), FileAttributes);
 }
 
 BOOL TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
 {
-  return ::MoveFileExW(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags) != 0;
+  return ::MoveFileExW(ApiPath(LocalFileName).c_str(), NewLocalFileName.c_str(), Flags) != 0;
 }
 
 BOOL TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName)
 {
-  return ::RemoveDirectory(LocalDirName.c_str()) != 0;
+  return ::RemoveDirectory(ApiPath(LocalDirName).c_str()) != 0;
 }
 
 BOOL TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
-  return ::CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != 0;
+  return ::CreateDirectory(ApiPath(LocalDirName).c_str(), SecurityAttributes) != 0;
 }
 
 uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
