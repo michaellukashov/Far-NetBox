@@ -2609,7 +2609,7 @@ void TTerminal::RefreshDirectory()
   }
 }
 
-void TTerminal::EnsureNonExistence(const UnicodeString & AFileName)
+void TTerminal::EnsureNonExistence(const UnicodeString & AFileName, bool IsDirectory)
 {
   // if filename doesn't contain path, we check for existence of file
   if ((core::UnixExtractFileDir(AFileName).IsEmpty()) &&
@@ -2618,11 +2618,11 @@ void TTerminal::EnsureNonExistence(const UnicodeString & AFileName)
     TRemoteFile * File = FFiles->FindFile(AFileName);
     if (File)
     {
-      if (File->GetIsDirectory())
+      if (File->GetIsDirectory() && IsDirectory)
       {
         throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_DIR_EXISTS, AFileName.c_str()));
       }
-      else
+      else if (!File->GetIsDirectory() && !IsDirectory)
       {
         throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_FILE_EXISTS, AFileName.c_str()));
       }
@@ -3974,7 +3974,7 @@ void TTerminal::RemoteCreateDirectory(const UnicodeString & ADirName,
   const TRemoteProperties * Properties)
 {
   assert(FFileSystem);
-  EnsureNonExistence(ADirName);
+  EnsureNonExistence(ADirName, true);
   FileModified(nullptr, ADirName);
 
   LogEvent(FORMAT(L"Creating directory \"%s\".", ADirName.c_str()));
@@ -4009,10 +4009,10 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName)
 }
 
 void TTerminal::CreateLink(const UnicodeString & AFileName,
-  const UnicodeString & PointTo, bool Symbolic)
+  const UnicodeString & PointTo, bool Symbolic, bool IsDirectory)
 {
   assert(FFileSystem);
-  EnsureNonExistence(AFileName);
+  EnsureNonExistence(AFileName, IsDirectory);
   if (GetSessionData()->GetCacheDirectories())
   {
     DirectoryModified(GetCurrDirectory(), false);

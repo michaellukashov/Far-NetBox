@@ -524,7 +524,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   LogToFileCheck->SetChecked(GetConfiguration()->GetLogToFile());
   LogFileNameEdit->SetText(
     (!GetConfiguration()->GetLogToFile() && GetConfiguration()->GetLogFileName().IsEmpty()) ?
-    ::IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"&s.log" :
+    ::IncludeTrailingBackslash(GetSystemTemporaryDirectory()) + L"&s.log" :
     GetConfiguration()->GetLogFileName());
   LogFileAppendButton->SetChecked(GetConfiguration()->GetLogFileAppend());
   LogFileOverwriteButton->SetChecked(!GetConfiguration()->GetLogFileAppend());

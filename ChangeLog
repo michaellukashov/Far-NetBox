@@ -1,5 +1,7 @@
-NetBox 2.1.44.409 07.10.2015
+NetBox 2.1.44.411 10.10.2015
 --------------------
+  * Bugfix: Cannot create directory on remote server if file with the same name already exists
+  * Fix long path issues
   * Bugfix: FTP: AV trying to download file
     (http://forum.farmanager.com/viewtopic.php?p=132960#p132960)
   * WebDAV, FTP: Fix Unicode-related issues

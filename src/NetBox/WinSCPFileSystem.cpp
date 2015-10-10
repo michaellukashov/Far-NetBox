@@ -1103,7 +1103,7 @@ void TWinSCPFileSystem::CreateLink()
         GetTerminal()->RemoteDeleteFile(L"", File, &Params);
       }
     }
-    GetTerminal()->CreateLink(FileName, PointTo, SymbolicLink);
+    GetTerminal()->CreateLink(FileName, PointTo, SymbolicLink, File->GetIsDirectory());
     if (UpdatePanel())
     {
       RedrawPanel();
@@ -3211,7 +3211,7 @@ HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFil
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::CreateFile(LocalFileName.c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
+    return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
   }
   else
   {
@@ -3234,7 +3234,7 @@ inline BOOL TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeStrin
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::SetFileAttributes(LocalFileName.c_str(), FileAttributes);
+    return ::SetFileAttributes(ApiPath(LocalFileName).c_str(), FileAttributes);
   }
   else
   {
@@ -3245,7 +3245,7 @@ BOOL TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString & LocalFileNam
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::MoveFileExW(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags) != 0;
+    return ::MoveFileExW(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), Flags) != 0;
   }
   else
   {
@@ -3256,7 +3256,7 @@ BOOL TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString & Local
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::RemoveDirectory(LocalDirName.c_str()) != 0;
+    return ::RemoveDirectory(ApiPath(LocalDirName).c_str()) != 0;
   }
   else
   {
@@ -3267,7 +3267,7 @@ BOOL TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & Local
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != 0;
+    return ::CreateDirectory(ApiPath(LocalDirName).c_str(), SecurityAttributes) != 0;
   }
   else
   {

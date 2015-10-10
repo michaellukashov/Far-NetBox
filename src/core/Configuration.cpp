@@ -1306,7 +1306,7 @@ bool TConfiguration::GetLogWindowComplete() const
 
 UnicodeString TConfiguration::GetDefaultLogFileName() const
 {
-  // return IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"winscp.log";
+  // return IncludeTrailingBackslash(GetSystemTemporaryDirectory()) + L"winscp.log";
   return "%TEMP%\\&S.log";
 }
 

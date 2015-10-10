@@ -348,7 +348,7 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
   UnicodeString TempDir;
   do
   {
-    TempDir = BaseDir.IsEmpty() ? SystemTemporaryDirectory() : BaseDir;
+    TempDir = BaseDir.IsEmpty() ? GetSystemTemporaryDirectory() : BaseDir;
     TempDir = ::IncludeTrailingBackslash(TempDir) + Identity;
     if (Mask)
     {

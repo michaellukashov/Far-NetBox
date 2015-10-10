@@ -78,7 +78,7 @@ UnicodeString RemoveMainInstructionsTag(const UnicodeString & S);
 UnicodeString UnformatMessage(const UnicodeString & S);
 UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S);
 bool IsNumber(const UnicodeString & Str);
-UnicodeString SystemTemporaryDirectory();
+UnicodeString GetSystemTemporaryDirectory();
 UnicodeString GetShellFolderPath(int CSIdl);
 UnicodeString StripPathQuotes(const UnicodeString & APath);
 UnicodeString AddPathQuotes(const UnicodeString & APath);
