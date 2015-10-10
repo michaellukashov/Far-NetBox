@@ -226,7 +226,7 @@ public:
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params);
   void RemoteCreateDirectory(const UnicodeString & ADirName,
     const TRemoteProperties * Properties = nullptr);
-  void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
+  void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic, bool IsDirectory);
   void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile = nullptr, void * Params = nullptr);
   bool DeleteFiles(TStrings * AFilesToDelete, intptr_t Params = 0);
@@ -381,7 +381,7 @@ protected:
     const TRemoteFile * AFile, const TRemoteProperties * Properties);
   void DoChangeDirectory();
   void DoInitializeLog();
-  void EnsureNonExistence(const UnicodeString & AFileName);
+  void EnsureNonExistence(const UnicodeString & AFileName, bool IsDirectory);
   void LookupUsersGroups();
   void FileModified(const TRemoteFile * AFile,
     const UnicodeString & AFileName, bool ClearDirectoryChange = false);

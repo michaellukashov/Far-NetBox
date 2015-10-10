@@ -1095,7 +1095,7 @@ void TWinSCPFileSystem::CreateLink()
         GetTerminal()->RemoteDeleteFile(L"", File, &Params);
       }
     }
-    GetTerminal()->CreateLink(FileName, PointTo, SymbolicLink);
+    GetTerminal()->CreateLink(FileName, PointTo, SymbolicLink, File->GetIsDirectory());
     if (UpdatePanel())
     {
       RedrawPanel();
