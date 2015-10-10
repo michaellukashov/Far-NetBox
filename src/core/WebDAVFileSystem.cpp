@@ -35,6 +35,12 @@
 
 namespace webdav {
 
+#define StrToNeon(S) UTF8String(S).c_str()
+#define StrFromNeon(S) UnicodeString(UTF8String(S))
+#define AbsolutePathToNeon(P) PathEscape(StrToNeon(P)).c_str()
+#define PathToNeonStatic(THIS, P) AbsolutePathToNeon((THIS)->AbsolutePath(P, false))
+#define PathToNeon(P) PathToNeonStatic(this, P)
+
 struct auth_baton_t;
 struct vtable_t;
 struct stream_t;
@@ -3034,7 +3040,7 @@ config_read_auth_data(
     UnicodeString Key = Keys->GetString(Index);
     UnicodeString Value = StoragePtr->ReadStringRaw(Key, L"");
     apr_hash_set(*hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
-      string_create(AnsiString(Key).c_str(), pool));
+      string_create(StrToNeon(Key), pool));
     apr_hash_set(*hash, AUTHN_FAILURES_KEY, APR_HASH_KEY_STRING,
       string_createf(pool, "%lu", (uint32_t)
         ::StrToIntDef(Value, 0)));
@@ -11507,7 +11513,7 @@ neon_open(
 
   {
     AnsiString useragent = "NetBox/";
-    useragent += AnsiString(GetGlobalFunctions()->GetStrVersionNumber().c_str());
+    useragent += StrToNeon(GetGlobalFunctions()->GetStrVersionNumber());
     ne_set_useragent(sess, useragent.c_str());
   }
 
@@ -11996,12 +12002,6 @@ private:
 };
 
 #define CONST_WEBDAV_PROTOCOL_BASE_NAME L"WebDAV"
-
-#define StrToNeon(S) UTF8String(S).c_str()
-#define StrFromNeon(S) UnicodeString(UTF8String(S))
-#define AbsolutePathToNeon(P) PathEscape(StrToNeon(P)).c_str()
-#define PathToNeonStatic(THIS, P) AbsolutePathToNeon((THIS)->AbsolutePath(P, false))
-#define PathToNeon(P) PathToNeonStatic(this, P)
 
 void NeonInitialize()
 {
@@ -13565,7 +13565,7 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t * Path, int & Response
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&remote_path, StrToNeon(Path), pool);
   if (err)
     return false;
   err = webdav::client_send_propfind_request(
@@ -13587,7 +13587,7 @@ bool TWebDAVFileSystem::WebDAVCheckExisting(const wchar_t * Path, int & IsDir)
   webdav::error_t err = WEBDAV_NO_ERROR;
   webdav::node_kind_t kind = webdav::node_none;
   const char * remote_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&remote_path, StrToNeon(Path), pool);
   if (err)
     return false;
   err = webdav::client_check_path(
@@ -13610,7 +13610,7 @@ bool TWebDAVFileSystem::WebDAVMakeDirectory(const wchar_t * Path)
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&remote_path, StrToNeon(Path), pool);
   if (err)
     return false;
   err = webdav::client_make_directory(
@@ -13634,7 +13634,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString & Directory)
   baton.pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Directory).c_str(), baton.pool);
+  err = webdav::path_cstring_to_utf8(&remote_path, StrToNeon(Directory), baton.pool);
   if (err)
     return false;
   err = webdav::client_list(
@@ -13667,7 +13667,7 @@ bool TWebDAVFileSystem::WebDAVGetFile(
     apr_pool_t * pool = webdav_pool_create(webdav_pool);
     webdav::error_t err = WEBDAV_NO_ERROR;
     const char * remote_path = nullptr;
-    err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(RemotePath).c_str(), pool);
+    err = webdav::path_cstring_to_utf8(&remote_path, StrToNeon(RemotePath), pool);
     if (err)
     {
       ::CloseHandle(LocalFileHandle);
@@ -13750,10 +13750,10 @@ bool TWebDAVFileSystem::WebDAVRenameFile(const wchar_t * SrcPath, const wchar_t 
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * src_path = nullptr;
   const char * dst_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&src_path, AnsiString(SrcPath).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&src_path, StrToNeon(SrcPath), pool);
   if (err)
     return false;
-  err = webdav::path_cstring_to_utf8(&dst_path, AnsiString(DstPath).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&dst_path, StrToNeon(DstPath), pool);
   if (err)
     return false;
   err = webdav::client_move_file_or_directory(
@@ -13775,7 +13775,7 @@ bool TWebDAVFileSystem::WebDAVDeleteFile(const wchar_t * Path)
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
-  err = webdav::path_cstring_to_utf8(&remote_path, AnsiString(Path).c_str(), pool);
+  err = webdav::path_cstring_to_utf8(&remote_path, StrToNeon(Path), pool);
   if (err)
     return false;
   err = webdav::client_delete_file(
@@ -13798,9 +13798,9 @@ webdav::error_t TWebDAVFileSystem::OpenURL(
   const char * auth_username = nullptr;
   const char * auth_password = nullptr;
   WEBDAV_ERR(webdav::utf_cstring_to_utf8(&auth_username,
-    AnsiString(FTerminal->GetSessionData()->GetUserNameExpanded()).c_str(), pool));
+    StrToNeon(FTerminal->GetSessionData()->GetUserNameExpanded()), pool));
   WEBDAV_ERR(webdav::utf_cstring_to_utf8(&auth_password,
-    AnsiString(FTerminal->GetSessionData()->GetPassword()).c_str(), pool));
+    StrToNeon(FTerminal->GetSessionData()->GetPassword()), pool));
   webdav::auth_baton_t * ab = nullptr;
   webdav::auth_baton_create(&ab, pool);
   webdav::auth_baton_init(
@@ -13824,7 +13824,7 @@ webdav::error_t TWebDAVFileSystem::OpenURL(
 
   webdav::session_t * session_p = nullptr;
   const char * corrected_url = nullptr;
-  AnsiString base_url = AnsiString(SessionURL).c_str();
+  UTF8String base_url(SessionURL);
   const char * base_url_encoded = webdav::path_uri_encode(base_url.c_str(), pool);
   WEBDAV_ERR(webdav::client_open_session_internal(
     &session_p,
@@ -13882,9 +13882,9 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
     *proxy_method = static_cast<int>(ProxyMethod);
     if (ProxyMethod != ::pmNone)
     {
-      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_host, AnsiString(Data->GetProxyHost()).c_str(), pool));
-      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_username, AnsiString(Data->GetProxyUsername()).c_str(), pool));
-      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_password, AnsiString(Data->GetProxyPassword()).c_str(), pool));
+      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_host, StrToNeon(Data->GetProxyHost()), pool));
+      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_username, StrToNeon(Data->GetProxyUsername()), pool));
+      WEBDAV_ERR(webdav::path_cstring_to_utf8(proxy_password, StrToNeon(Data->GetProxyPassword()), pool));
     }
   }
 
@@ -13895,7 +13895,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
   int l_debug = Configuration->GetActualLogProtocol() >= 1 ? 1 : 0;
   *pk11_provider = "";
 
-  *ssl_authority_file = apr_pstrdup(pool, AnsiString(Data->GetPublicKeyFile()).c_str());
+  *ssl_authority_file = apr_pstrdup(pool, StrToNeon(Data->GetPublicKeyFile()));
 
   {
     intptr_t l_proxy_port = Data->GetProxyPort();
@@ -13927,9 +13927,7 @@ webdav::error_t TWebDAVFileSystem::GetServerSettings(
     if (Configuration->GetLogToFile())
     {
       WEBDAV_ERR(webdav::path_cstring_to_utf8(neon_debug_file_name,
-        AnsiString(GetExpandedLogFileName(
-          Configuration->GetLogFileName(),
-          Data)).c_str(), pool));
+        StrToNeon(GetExpandedLogFileName(Configuration->GetLogFileName(), Data)), pool));
     }
     else
     {
@@ -13992,7 +13990,7 @@ webdav::error_t TWebDAVFileSystem::AskForClientCertificateFilename(
     FFileTransferAbort = ftaCancel;
     return WEBDAV_ERR_CANCELLED;
   }
-  WEBDAV_ERR(webdav::path_cstring_to_utf8(cert_file, AnsiString(FileName).c_str(), pool));
+  WEBDAV_ERR(webdav::path_cstring_to_utf8(cert_file, StrToNeon(FileName), pool));
   RequestResult = qaOK;
   return WEBDAV_NO_ERROR;
 }
@@ -14091,8 +14089,8 @@ webdav::error_t TWebDAVFileSystem::NeonRequestAuth(
 
   if (Result)
   {
-    WEBDAV_ERR(webdav::path_cstring_to_utf8(user_name, AnsiString(this->FUserName).c_str(), pool));
-    WEBDAV_ERR(webdav::path_cstring_to_utf8(password, AnsiString(Password).c_str(), pool));
+    WEBDAV_ERR(webdav::path_cstring_to_utf8(user_name, StrToNeon(this->FUserName), pool));
+    WEBDAV_ERR(webdav::path_cstring_to_utf8(password, StrToNeon(Password), pool));
     RequestResult = qaOK;
   }
 
@@ -14113,7 +14111,7 @@ webdav::error_t TWebDAVFileSystem::AskForUsername(
     FFileTransferAbort = ftaCancel;
     return WEBDAV_ERR_CANCELLED;
   }
-  WEBDAV_ERR(webdav::path_cstring_to_utf8(user_name, AnsiString(UserName).c_str(), pool));
+  WEBDAV_ERR(webdav::path_cstring_to_utf8(user_name, StrToNeon(UserName), pool));
   RequestResult = qaOK;
   return WEBDAV_NO_ERROR;
 }
@@ -14133,7 +14131,7 @@ webdav::error_t TWebDAVFileSystem::AskForUserPassword(
     FFileTransferAbort = ftaCancel;
     return WEBDAV_ERR_CANCELLED;
   }
-  WEBDAV_ERR(webdav::path_cstring_to_utf8(password, AnsiString(Password).c_str(), pool));
+  WEBDAV_ERR(webdav::path_cstring_to_utf8(password, StrToNeon(Password), pool));
   RequestResult = qaOK;
   return WEBDAV_NO_ERROR;
 }
@@ -14155,7 +14153,7 @@ webdav::error_t TWebDAVFileSystem::AskForPassphrase(
     FFileTransferAbort = ftaCancel;
     return WEBDAV_ERR_CANCELLED;
   }
-  WEBDAV_ERR(webdav::path_cstring_to_utf8(passphrase, AnsiString(Passphrase).c_str(), pool));
+  WEBDAV_ERR(webdav::path_cstring_to_utf8(passphrase, StrToNeon(Passphrase), pool));
   RequestResult = qaOK;
   return WEBDAV_NO_ERROR;
 }
