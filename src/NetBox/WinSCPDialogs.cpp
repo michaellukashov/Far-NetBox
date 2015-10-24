@@ -2881,28 +2881,29 @@ void TSessionDialog::TransferProtocolComboChange()
   intptr_t Port = PortNumberEdit->GetAsInteger();
 
   LoadPing(FSessionData);
-  if (GetFSProtocol() == fsSFTPonly || GetFSProtocol() == fsSCPonly)
+  TFSProtocol FSProtocol = GetFSProtocol();
+  if (FSProtocol == fsSFTPonly || FSProtocol == fsSCPonly)
   {
     if (Port == FtpPortNumber)
     {
       PortNumberEdit->SetAsInteger(SshPortNumber);
     }
   }
-  else if ((GetFSProtocol() == fsFTP) && ((Ftps == ftpsNone) || (Ftps == ftpsExplicitSsl) || (Ftps == ftpsExplicitTls)))
+  else if ((FSProtocol == fsFTP) && ((Ftps == ftpsNone) || (Ftps == ftpsExplicitSsl) || (Ftps == ftpsExplicitTls)))
   {
     if ((Port == SshPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPPortNumber) || (Port == HTTPSPortNumber))
     {
       PortNumberEdit->SetAsInteger(FtpPortNumber);
     }
   }
-  else if ((GetFSProtocol() == fsFTP) && (Ftps == ftpsImplicit))
+  else if ((FSProtocol == fsFTP) && (Ftps == ftpsImplicit))
   {
     if ((Port == SshPortNumber) || (Port == FtpPortNumber) || (Port == HTTPPortNumber) || (Port == HTTPSPortNumber))
     {
       PortNumberEdit->SetAsInteger(FtpsImplicitPortNumber);
     }
   }
-  else if ((GetFSProtocol() == fsWebDAV) && (Ftps == ftpsNone))
+  else if ((FSProtocol == fsWebDAV) && (Ftps == ftpsNone))
   {
     if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPSPortNumber))
     {
@@ -2912,7 +2913,7 @@ void TSessionDialog::TransferProtocolComboChange()
       HostNameEdit->SetText(HostName);
     }
   }
-  else if ((GetFSProtocol() == fsWebDAV) && (Ftps != ftpsNone))
+  else if ((FSProtocol == fsWebDAV) && (Ftps != ftpsNone))
   {
     if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPPortNumber))
     {
