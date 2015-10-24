@@ -91,8 +91,8 @@ void TSessionData::Default()
 {
   SetHostName(L"");
   SetPortNumber(SshPortNumber);
-  SetUserName(ANONYMOUS_USER_NAME);
-  SetPassword(ANONYMOUS_PASSWORD);
+  //SetUserName(ANONYMOUS_USER_NAME);
+  //SetPassword(ANONYMOUS_PASSWORD);
   SetPingInterval(30);
   SetPingType(ptOff);
   SetTimeout(15);
@@ -243,7 +243,7 @@ void TSessionData::Default()
   FSaveOnly = false;
 
   SetCodePage(::GetCodePageAsString(CONST_DEFAULT_CODEPAGE));
-  SetLoginType(ltAnonymous);
+  SetLoginType(ltNormal);
   SetFtpAllowEmptyPassword(false);
 
   FNumberOfRetries = 0;
@@ -3200,8 +3200,8 @@ UnicodeString TSessionData::ComposePath(
 
 TLoginType TSessionData::GetLoginType() const
 {
-  return (SessionGetUserName() == ANONYMOUS_USER_NAME) && GetPassword().IsEmpty() ?
-    ltAnonymous : ltNormal;
+  return FLoginType; // (SessionGetUserName() == ANONYMOUS_USER_NAME) && GetPassword().IsEmpty() ?
+    // ltAnonymous : ltNormal;
 }
 
 void TSessionData::SetLoginType(TLoginType Value)
