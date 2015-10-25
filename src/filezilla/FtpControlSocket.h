@@ -19,8 +19,8 @@
 #if !defined(AFX_FTPCONTROLSOCKET_H__AE6AA44E_B09D_487A_8EF2_A23697434945__INCLUDED_)
 #define AFX_FTPCONTROLSOCKET_H__AE6AA44E_B09D_487A_8EF2_A23697434945__INCLUDED_
 
-#include "structures.h"	// Hinzugefügt von der Klassenansicht
-#include "StdAfx.h"	// Hinzugefügt von der Klassenansicht
+#include "structures.h"	// HinzugefÃ¼gt von der Klassenansicht
+#include "StdAfx.h"	// HinzugefÃ¼gt von der Klassenansicht
 #include "FileZillaApi.h"
 #include "FileZillaIntf.h"
 #include "ControlSocket.h"
@@ -48,7 +48,7 @@ public:
 	CFtpControlSocket(CMainThread *pMainThread, CFileZillaTools * pTools);
 	virtual ~CFtpControlSocket();
 
-// Überschreibungen
+// Ãœberschreibungen
 public:
 	virtual void Connect(t_server &server);
 	virtual void OnTimer();
@@ -96,7 +96,7 @@ public:
 	void TransferHandleListError();
 #endif
 
-	// Vom Klassen-Assistenten generierte virtuelle Funktionsüberschreibungen
+	// Vom Klassen-Assistenten generierte virtuelle FunktionsÃ¼berschreibungen
 	//{{AFX_VIRTUAL(CFtpControlSocket)
 	public:
 	virtual void OnReceive(int nErrorCode);
@@ -107,7 +107,7 @@ public:
 
 	// Generierte Nachrichtenzuordnungsfunktionen
 	//{{AFX_MSG(CFtpControlSocket)
-		// HINWEIS - Der Klassen-Assistent fügt hier Member-Funktionen ein und entfernt diese.
+		// HINWEIS - Der Klassen-Assistent fÃ¼gt hier Member-Funktionen ein und entfernt diese.
 	//}}AFX_MSG
 
 // Implementierung
@@ -196,6 +196,6 @@ private:
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
+// Microsoft Visual C++ fÃ¼gt unmittelbar vor der vorhergehenden Zeile zusÃ¤tzliche Deklarationen ein.
 
 #endif // AFX_FTPCONTROLSOCKET_H__AE6AA44E_B09D_487A_8EF2_A23697434945__INCLUDED_

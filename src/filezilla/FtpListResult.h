@@ -16,14 +16,14 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-// FtpListResult.h: Schnittstelle für die Klasse CFtpListResult.
+// FtpListResult.h: Schnittstelle fÃ¼r die Klasse CFtpListResult.
 //
 //////////////////////////////////////////////////////////////////////
 
 #if !defined(AFX_FTPLISTRESULT_H__A175CA67_9A91_4BC0_AAD3_238DE1A6D9AE__INCLUDED_)
 #define AFX_FTPLISTRESULT_H__A175CA67_9A91_4BC0_AAD3_238DE1A6D9AE__INCLUDED_
 
-#include "FzApiStructures.h"	// Hinzugefügt von der Klassenansicht
+#include "FzApiStructures.h"	// HinzugefÃ¼gt von der Klassenansicht
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000

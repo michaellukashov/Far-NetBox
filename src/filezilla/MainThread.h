@@ -21,7 +21,7 @@ Main thread of FileZilla. Processes the command messages passed by the main wind
 */
 
 #ifndef MPEXT_NO_CACHE
-#include "DirectoryCache.h"	// Hinzugefügt von der Klassenansicht
+#include "DirectoryCache.h"	// HinzugefÃ¼gt von der Klassenansicht
 #endif
 #pragma once
 
@@ -30,8 +30,8 @@ Main thread of FileZilla. Processes the command messages passed by the main wind
 #include "SFtpControlSocket.h"
 #endif
 #include "FtpControlSocket.h"
-#include "structures.h"	// Hinzugefügt von der Klassenansicht
-#include "FileZillaApi.h"	// Hinzugefügt von der Klassenansicht
+#include "structures.h"	// HinzugefÃ¼gt von der Klassenansicht
+#include "FileZillaApi.h"	// HinzugefÃ¼gt von der Klassenansicht
 #include "ApiLog.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ class CIdentServerControl;
 class CMainThread : public CApiLog
 {
 protected:
-	CMainThread();           // Dynamische Erstellung verwendet geschützten Konstruktor
+	CMainThread();           // Dynamische Erstellung verwendet geschÃ¼tzten Konstruktor
 
 // Attribute
 public:
@@ -121,7 +121,7 @@ protected:
 #endif
 	__int64 m_nAsyncRequestID;
 	void OnTimer(WPARAM wParam,LPARAM lParam);
-// Überschreibungen
+// Ãœberschreibungen
 
 // Implementierung
 protected:

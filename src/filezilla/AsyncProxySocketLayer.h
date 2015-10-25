@@ -135,7 +135,7 @@ public:
 	virtual ~CAsyncProxySocketLayer();
 
 
-// Überschreibungen
+// Ãœberschreibungen
 public:
 	virtual void Close();
 	virtual BOOL Connect( LPCTSTR lpHostAddress, UINT nHostPort );
