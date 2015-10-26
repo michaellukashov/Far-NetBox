@@ -48,13 +48,13 @@ enum TFSProtocol
   fsFTP = 5,
   fsWebDAV = 6
 };
+#define FSPROTOCOL_COUNT (fsWebDAV+1)
 
 enum TLoginType
 {
   ltAnonymous = 0,
   ltNormal = 1
 };
-#define FSPROTOCOL_COUNT (fsWebDAV+1)
 
 enum TProxyMethod
 {

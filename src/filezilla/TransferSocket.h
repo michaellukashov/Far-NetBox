@@ -19,7 +19,7 @@
 #if !defined(AFX_TRANSFERSOCKET_H__3F95A3A8_478E_45D4_BFD5_6102B42E12DA__INCLUDED_)
 #define AFX_TRANSFERSOCKET_H__3F95A3A8_478E_45D4_BFD5_6102B42E12DA__INCLUDED_
 
-#include "FtpListResult.h"	// Hinzugefügt von der Klassenansicht
+#include "FtpListResult.h"	// HinzugefÃ¼gt von der Klassenansicht
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
@@ -58,7 +58,7 @@ public:
 	CTransferSocket(CFtpControlSocket *pOwner, int nMode);
 	virtual ~CTransferSocket();
 
-// Überschreibungen
+// Ãœberschreibungen
 public:
 	int m_nInternalMessageID;
 	virtual void Close();
@@ -78,7 +78,7 @@ public:
 #ifndef MPEXT_NO_ZLIB
 	bool InitZlib(int level);
 #endif
-	// Vom Klassen-Assistenten generierte virtuelle Funktionsüberschreibungen
+	// Vom Klassen-Assistenten generierte virtuelle FunktionsÃ¼berschreibungen
 	//{{AFX_VIRTUAL(CTransferSocket)
 	public:
 	virtual void OnReceive(int nErrorCode);
@@ -90,7 +90,7 @@ public:
 
 	// Generierte Nachrichtenzuordnungsfunktionen
 	//{{AFX_MSG(CTransferSocket)
-		// HINWEIS - Der Klassen-Assistent fügt hier Member-Funktionen ein und entfernt diese.
+		// HINWEIS - Der Klassen-Assistent fÃ¼gt hier Member-Funktionen ein und entfernt diese.
 	//}}AFX_MSG
 
 // Implementierung
@@ -147,6 +147,6 @@ protected:
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
+// Microsoft Visual C++ fÃ¼gt unmittelbar vor der vorhergehenden Zeile zusÃ¤tzliche Deklarationen ein.
 
 #endif // AFX_TRANSFERSOCKET_H__3F95A3A8_478E_45D4_BFD5_6102B42E12DA__INCLUDED_

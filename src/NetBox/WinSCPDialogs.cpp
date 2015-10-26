@@ -1465,13 +1465,13 @@ public:
 
 protected:
   virtual void Change();
+  virtual void Init();
   virtual bool CloseQuery();
   virtual void SelectTab(intptr_t Tab);
 
 private:
   void LoadPing(TSessionData * SessionData);
   void SavePing(TSessionData * SessionData);
-  intptr_t LoginTypeToIndex(TLoginType LoginType) const;
   intptr_t ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items) const;
   TProxyMethod IndexToProxyMethod(intptr_t Index, TFarList * Items) const;
   TFarComboBox * GetProxyMethodCombo() const;
@@ -1486,7 +1486,6 @@ private:
   TFtps IndexToFtps(intptr_t Index) const;
   TFtps GetFtps() const;
   TLoginType IndexToLoginType(intptr_t Index) const;
-  TLoginType GetLoginType() const;
   bool VerifyKey(const UnicodeString & AFileName, bool TypeOnly);
   void PrevTabClick(TFarButton * /*Sender*/, bool & Close);
   void NextTabClick(TFarButton * /*Sender*/, bool & Close);
@@ -1514,7 +1513,6 @@ private:
   TSessionActionEnum FAction;
   TSessionData * FSessionData;
   intptr_t FTransferProtocolIndex;
-  intptr_t FLoginTypeIndex;
   intptr_t FFtpEncryptionComboIndex;
 
   TTabButton * SshTab;
@@ -1531,7 +1529,6 @@ private:
   TFarButton * ConnectButton;
   TFarEdit * HostNameEdit;
   TFarEdit * PortNumberEdit;
-  TFarComboBox * LoginTypeCombo;
   TFarEdit * UserNameEdit;
   TFarEdit * PasswordEdit;
   TFarEdit * PrivateKeyEdit;
@@ -1666,7 +1663,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   FAction(Action),
   FSessionData(nullptr),
   FTransferProtocolIndex(0),
-  FLoginTypeIndex(0),
   FFtpEncryptionComboIndex(0),
   FTabs(new TObjectList()),
   FFirstVisibleTabIndex(0)
@@ -1842,20 +1838,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   PortNumberEdit->SetMask(L"999999");
 
   SetNextItemPosition(ipNewLine);
-
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_LOGIN_TYPE));
-  Text->SetWidth(20);
-
-  SetNextItemPosition(ipRight);
-
-  LoginTypeCombo = new TFarComboBox(this);
-  LoginTypeCombo->SetDropDownList(true);
-  LoginTypeCombo->GetItems()->Add(GetMsg(LOGIN_LOGIN_TYPE_ANONYMOUS));
-  LoginTypeCombo->GetItems()->Add(GetMsg(LOGIN_LOGIN_TYPE_NORMAL));
-  LoginTypeCombo->SetWidth(20);
-  LoginTypeCombo->SetRight(CRect.Right - 12 - 2);
-
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
@@ -1869,6 +1852,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   UserNameEdit->SetRight(CRect.Right - 12 - 2);
 
   SetNextItemPosition(ipNewLine);
+  Text = new TFarText(this);
+  SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_PASSWORD));
@@ -1881,6 +1866,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   PasswordEdit->SetWidth(20);
   PasswordEdit->SetRight(CRect.Right - 12 - 2);
 
+  SetNextItemPosition(ipNewLine);
+  Text = new TFarText(this);
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
@@ -2825,10 +2812,6 @@ void TSessionDialog::Change()
     {
       TransferProtocolComboChange();
     }
-    if (FLoginTypeIndex != LoginTypeCombo->GetItemIndex())
-    {
-      LoginTypeComboChange();
-    }
 
     LockChanges();
     SCOPE_EXIT
@@ -2837,6 +2820,12 @@ void TSessionDialog::Change()
     };
     UpdateControls();
   }
+}
+
+void TSessionDialog::Init()
+{
+  TTabbedDialog::Init();
+
 }
 
 static void AdjustRemoteDir(
@@ -2878,28 +2867,29 @@ void TSessionDialog::TransferProtocolComboChange()
   intptr_t Port = PortNumberEdit->GetAsInteger();
 
   LoadPing(FSessionData);
-  if (GetFSProtocol() == fsSFTPonly || GetFSProtocol() == fsSCPonly)
+  TFSProtocol FSProtocol = GetFSProtocol();
+  if (FSProtocol == fsSFTPonly || FSProtocol == fsSCPonly)
   {
     if (Port == FtpPortNumber)
     {
       PortNumberEdit->SetAsInteger(SshPortNumber);
     }
   }
-  else if ((GetFSProtocol() == fsFTP) && ((Ftps == ftpsNone) || (Ftps == ftpsExplicitSsl) || (Ftps == ftpsExplicitTls)))
+  else if ((FSProtocol == fsFTP) && ((Ftps == ftpsNone) || (Ftps == ftpsExplicitSsl) || (Ftps == ftpsExplicitTls)))
   {
     if ((Port == SshPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPPortNumber) || (Port == HTTPSPortNumber))
     {
       PortNumberEdit->SetAsInteger(FtpPortNumber);
     }
   }
-  else if ((GetFSProtocol() == fsFTP) && (Ftps == ftpsImplicit))
+  else if ((FSProtocol == fsFTP) && (Ftps == ftpsImplicit))
   {
     if ((Port == SshPortNumber) || (Port == FtpPortNumber) || (Port == HTTPPortNumber) || (Port == HTTPSPortNumber))
     {
       PortNumberEdit->SetAsInteger(FtpsImplicitPortNumber);
     }
   }
-  else if ((GetFSProtocol() == fsWebDAV) && (Ftps == ftpsNone))
+  else if ((FSProtocol == fsWebDAV) && (Ftps == ftpsNone))
   {
     if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPSPortNumber))
     {
@@ -2909,7 +2899,7 @@ void TSessionDialog::TransferProtocolComboChange()
       HostNameEdit->SetText(HostName);
     }
   }
-  else if ((GetFSProtocol() == fsWebDAV) && (Ftps != ftpsNone))
+  else if ((FSProtocol == fsWebDAV) && (Ftps != ftpsNone))
   {
     if ((Port == FtpPortNumber) || (Port == FtpsImplicitPortNumber) || (Port == HTTPPortNumber))
     {
@@ -2918,19 +2908,6 @@ void TSessionDialog::TransferProtocolComboChange()
       ::AdjustRemoteDir(HostName, PortNumberEdit, RemoteDirectoryEdit);
       HostNameEdit->SetText(HostName);
     }
-  }
-}
-
-void TSessionDialog::LoginTypeComboChange()
-{
-  FLoginTypeIndex = LoginTypeCombo->GetItemIndex();
-  if (GetLoginType() == ltAnonymous)
-  {
-    UserNameEdit->SetText(ANONYMOUS_USER_NAME);
-    PasswordEdit->SetText(L"");
-  }
-  else if (GetLoginType() == ltNormal)
-  {
   }
 }
 
@@ -2964,7 +2941,7 @@ void TSessionDialog::UpdateControls()
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
   bool FtpProtocol = (FSProtocol == fsFTP) && (Ftps == ftpsNone);
   bool FtpsProtocol = (FSProtocol == fsFTP) && (Ftps != ftpsNone);
-  bool LoginAnonymous = (GetLoginType() == ltAnonymous);
+  bool LoginAnonymous = false;
 
   ConnectButton->SetEnabled(!HostNameEdit->GetIsEmpty());
 
@@ -3128,7 +3105,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   FSessionData = SessionData;
   FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
-  FLoginTypeIndex = LoginTypeCombo->GetItemIndex();
+
   FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
 
   HideTabs();
@@ -3140,23 +3117,9 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   HostNameEdit->SetText(SessionData->GetHostName());
   PortNumberEdit->SetAsInteger(SessionData->GetPortNumber());
 
-  LoginTypeCombo->SetItemIndex(
-    static_cast<intptr_t>(LoginTypeToIndex(SessionData->GetLoginType())));
-
   UserNameEdit->SetText(SessionData->SessionGetUserName());
   PasswordEdit->SetText(SessionData->GetPassword());
   PrivateKeyEdit->SetText(SessionData->GetPublicKeyFile());
-
-  if ((GetLoginType() == ltAnonymous))
-  {
-    LoginTypeCombo->SetItemIndex(0);
-    UserNameEdit->SetText(ANONYMOUS_USER_NAME);
-    PasswordEdit->SetText(L"");
-  }
-  else
-  {
-    LoginTypeCombo->SetItemIndex(1);
-  }
 
   bool AllowScpFallback;
   TransferProtocolCombo->SetItemIndex(
@@ -3493,7 +3456,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetPortNumber(PortNumberEdit->GetAsInteger());
     SessionData->SetUserName(UserName);
     SessionData->SetPassword(Password);
-    SessionData->SetLoginType(GetLoginType());
+    SessionData->SetLoginType(ltNormal);
     SessionData->SetPublicKeyFile(PrivateKeyEdit->GetText());
 
     // Directories tab
@@ -3839,11 +3802,6 @@ void TSessionDialog::SavePing(TSessionData * SessionData)
   }
 }
 
-intptr_t TSessionDialog::LoginTypeToIndex(TLoginType LoginType) const
-{
-  return static_cast<intptr_t>(LoginType);
-}
-
 intptr_t TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
   bool & AllowScpFallback) const
 {
@@ -3969,11 +3927,6 @@ TFtps TSessionDialog::IndexToFtps(intptr_t Index) const
 TFtps TSessionDialog::GetFtps() const
 {
   return static_cast<TFtps>(IndexToFtps(FtpEncryptionCombo->GetItemIndex()));
-}
-
-TLoginType TSessionDialog::GetLoginType() const
-{
-  return IndexToLoginType(LoginTypeCombo->GetItemIndex());
 }
 
 TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const

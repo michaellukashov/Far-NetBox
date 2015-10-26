@@ -103,7 +103,7 @@ protected:
   virtual bool MouseEvent(MOUSE_EVENT_RECORD * Event);
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   virtual void Change();
-  void Init();
+  virtual void Init();
   virtual bool CloseQuery();
   UnicodeString GetMsg(intptr_t MsgId);
   void GetNextItemPosition(intptr_t & Left, intptr_t & Top);

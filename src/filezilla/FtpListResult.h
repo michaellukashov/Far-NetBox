@@ -16,14 +16,14 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-// FtpListResult.h: Schnittstelle für die Klasse CFtpListResult.
+// FtpListResult.h: Schnittstelle fÃ¼r die Klasse CFtpListResult.
 //
 //////////////////////////////////////////////////////////////////////
 
 #if !defined(AFX_FTPLISTRESULT_H__A175CA67_9A91_4BC0_AAD3_238DE1A6D9AE__INCLUDED_)
 #define AFX_FTPLISTRESULT_H__A175CA67_9A91_4BC0_AAD3_238DE1A6D9AE__INCLUDED_
 
-#include "FzApiStructures.h"	// Hinzugefügt von der Klassenansicht
+#include "FzApiStructures.h"	// HinzugefÃ¼gt von der Klassenansicht
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
@@ -59,7 +59,7 @@ public:
 	t_server m_server;
 	void SendToMessageLog(HWND hWnd, UINT nMsg);
 	void AddData(char *data,int size);
-	CFtpListResult(t_server server, bool *bUTF8 = 0);
+	CFtpListResult(t_server server, bool *bUTF8 = 0, int *nCodePage = 0);
 	virtual ~CFtpListResult();
 	t_directory::t_direntry *getList(int &num, CTime EntryTime);
 
@@ -105,6 +105,7 @@ private:
 	
 protected:
 	bool *m_bUTF8;
+	int *m_nCodePage;
 	void copyStr(CString &target, int pos, const char *source, int len, bool mayInvalidateUTF8 = false);
 	const char * strnchr(const char *str, int len, char c) const;
 	const char * strnstr(const char *str, int len, const char *c) const;
