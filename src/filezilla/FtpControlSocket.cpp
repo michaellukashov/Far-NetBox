@@ -1630,6 +1630,8 @@ void CFtpControlSocket::DoClose(int nError /*=0*/)
 #endif
 
 	m_bUTF8 = false;
+	m_bAnnouncesUTF8 = false;
+	m_nCodePage = 0;
 	m_hasClntCmd = false;
 #ifdef MPEXT
 	m_serverCapabilities.Clear();
