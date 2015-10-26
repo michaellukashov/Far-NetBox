@@ -105,7 +105,7 @@ bool TFileZillaIntf::Cancel()
 //---------------------------------------------------------------------------
 bool TFileZillaIntf::Connect(const wchar_t * Host, int Port, const wchar_t * User,
   const wchar_t * Pass, const wchar_t * Account, bool FwByPass,
-  const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8,
+  const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8, int CodePage,
   int iForcePasvIp, int iUseMlsd, int iDupFF, int iUndupFF)
 {
   ASSERT(FFileZillaApi != NULL);
@@ -124,6 +124,7 @@ bool TFileZillaIntf::Connect(const wchar_t * Host, int Port, const wchar_t * Use
   Server.nPasv = Pasv;
   Server.nTimeZoneOffset = TimeZoneOffset;
   Server.nUTF8 = UTF8;
+  Server.nCodePage = CodePage;
   Server.iForcePasvIp = iForcePasvIp;
   Server.iUseMlsd = iUseMlsd;
   Server.iDupFF = iDupFF;
