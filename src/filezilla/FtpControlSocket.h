@@ -170,6 +170,7 @@ protected:
 
 	bool m_bUTF8;
 	bool m_bAnnouncesUTF8;
+	int m_nCodePage;
 	bool m_hasClntCmd;
 #ifdef MPEXT
 	TFTPServerCapabilities m_serverCapabilities;

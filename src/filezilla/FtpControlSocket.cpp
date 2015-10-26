@@ -206,6 +206,7 @@ CFtpControlSocket::CFtpControlSocket(CMainThread *pMainThread, CFileZillaTools *
 
 	m_bUTF8 = true;
 	m_bAnnouncesUTF8 = false;
+	m_nCodePage = 0;
 	m_hasClntCmd = false;
 #ifdef MPEXT
 	m_serverCapabilities.Clear();
@@ -287,8 +288,18 @@ bool CFtpControlSocket::InitConnect()
 #endif
 	m_isFileZilla = false;
 
-	if (m_CurrentServer.nUTF8 == 2)
+	if (m_CurrentServer.nUTF8 == 2) // no UTF8
 		m_bUTF8 = false;
+	else if (m_CurrentServer.nUTF8 == 1) // always UTF8
+		m_bUTF8 = true;
+	else if (m_CurrentServer.nUTF8 == 0) // auto detect
+	{
+		if (m_CurrentServer.nCodePage != 0)
+		{
+			m_bUTF8 = false;
+			m_nCodePage = m_CurrentServer.nCodePage;
+		}
+	}
 	else
 		m_bUTF8 = true;
 
