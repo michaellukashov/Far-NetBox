@@ -1268,6 +1268,20 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
 						}
 					}
 				}
+				else if (m_nCodePage)
+				{
+					LPCSTR str = (LPCSTR)m_RecvBuffer.back();
+					int len = MultiByteToWideChar(m_nCodePage, 0, str, -1, NULL, 0);
+					if (!len)
+						m_RecvBuffer.back() = "";
+					else
+					{
+						LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
+						MultiByteToWideChar(m_nCodePage, 0, str, -1 , (LPWSTR)p1, len + 1);
+						ShowStatus(W2CT(p1), FZ_LOG_REPLY);
+						nb_free(p1);
+					}
+				}
 				else
 				{
 					ShowStatus(A2CT(m_RecvBuffer.back()), FZ_LOG_REPLY);
@@ -1450,6 +1464,53 @@ BOOL CFtpControlSocket::Send(CString str)
 		}
 		char* utf8 = static_cast<char *>(nb_calloc(1, len + 1));
 		WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf8, len + 1, 0, 0);
+
+		int sendLen = strlen(utf8);
+		if (!m_awaitsReply && !m_sendBuffer)
+			res = CAsyncSocketEx::Send(utf8, strlen(utf8));
+		else
+			res = -2;
+		if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
+		{
+			nb_free(utf8);
+			ShowStatus(IDS_ERRORMSG_CANTSENDCOMMAND, FZ_LOG_ERROR);
+			DoClose();
+			return FALSE;
+		}
+		if (res != sendLen)
+		{
+			if (res < 0)
+				res = 0;
+			if (!m_sendBuffer)
+			{
+				m_sendBuffer = static_cast<char *>(nb_calloc(1, sendLen - res));
+				memcpy(m_sendBuffer, utf8 + res, sendLen - res);
+				m_sendBufferLen = sendLen - res;
+			}
+			else
+			{
+				char* tmp = static_cast<char *>(nb_calloc(1, m_sendBufferLen + sendLen - res));
+				memcpy(tmp, m_sendBuffer, m_sendBufferLen);
+				memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
+				nb_free(m_sendBuffer);
+				m_sendBuffer = tmp;
+				m_sendBufferLen += sendLen - res;
+			}
+		}
+		nb_free(utf8);
+	}
+	else if (m_nCodePage)
+	{
+		LPCWSTR unicode = T2CW(str);
+		int len = WideCharToMultiByte(m_nCodePage, 0, unicode, -1, 0, 0, 0, 0);
+		if (!len)
+		{
+			ShowStatus(IDS_ERRORMSG_CANTSENDCOMMAND, FZ_LOG_ERROR);
+			DoClose();
+			return FALSE;
+		}
+		char* utf8 = static_cast<char *>(nb_calloc(1, len + 1));
+		WideCharToMultiByte(m_nCodePage, 0, unicode, -1, utf8, len + 1, 0, 0);
 
 		int sendLen = strlen(utf8);
 		if (!m_awaitsReply && !m_sendBuffer)
@@ -6535,6 +6596,43 @@ CString CFtpControlSocket::GetReply()
 		{
 			LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
 			MultiByteToWideChar(CP_UTF8, 0, line, -1 , (LPWSTR)p1, len + 1);
+			CString reply = W2CT(p1);
+			nb_free(p1);
+			return reply;
+		}
+	}
+	else if (m_nCodePage)
+	{
+		// convert from UTF-8 to ANSI
+		LPCSTR utf8 = (LPCSTR)m_RecvBuffer.front();
+		if (m_Operation.nOpMode&CSMODE_LISTFILE && m_Operation.nOpState==LISTFILE_MLST)
+		{
+			if (GetReplyCode() == 2)
+				line = (LPCSTR)m_ListFile;
+		}
+		if (!utf8_valid((const unsigned char*)line, strlen(line)))
+		{
+			if (m_CurrentServer.nUTF8 != 1)
+			{
+				LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Server does not send proper UTF-8, falling back to local charset"));
+				m_bUTF8 = false;
+			}
+			return A2CT(line);
+		}
+
+		// convert from UTF-8 to ANSI
+		int len = MultiByteToWideChar(m_nCodePage, 0, line, -1, NULL, 0);
+		if (!len)
+		{
+			m_RecvBuffer.pop_front();
+			if (m_RecvBuffer.empty())
+				m_RecvBuffer.push_back("");
+			return _MPT("");
+		}
+		else
+		{
+			LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
+			MultiByteToWideChar(m_nCodePage, 0, line, -1 , (LPWSTR)p1, len + 1);
 			CString reply = W2CT(p1);
 			nb_free(p1);
 			return reply;
