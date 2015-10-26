@@ -87,7 +87,7 @@ CTransferSocket::CTransferSocket(CFtpControlSocket *pOwner, int nMode)
 
 	if (m_nMode & CSMODE_LIST)
 	{
-		m_pListResult = new CFtpListResult(pOwner->m_CurrentServer, &pOwner->m_bUTF8);
+		m_pListResult = new CFtpListResult(pOwner->m_CurrentServer, &pOwner->m_bUTF8, &pOwner->m_nCodePage);
 		m_pListResult->InitLog(this);
 	}
 	else

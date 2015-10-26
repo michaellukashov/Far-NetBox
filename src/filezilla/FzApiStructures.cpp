@@ -28,6 +28,7 @@ t_server::t_server()
 	nPasv = 0;
 	nTimeZoneOffset = 0;
 	nUTF8 = 0;
+	nCodePage = 0;
 	iForcePasvIp = -1;
 	iUseMlsd = -1;
 	iDupFF = 0;
@@ -58,6 +59,8 @@ const bool operator == (const t_server &a,const t_server &b)
 		return false;
 	if (a.nUTF8 != b.nUTF8)
 		return false;
+	if (a.nCodePage != b.nCodePage)
+	  return false;
 #ifdef MPEXT
 	if (a.iForcePasvIp != b.iForcePasvIp)
 		return false;
@@ -92,6 +95,8 @@ bool t_server::operator<(const t_server &op) const
 		return true;
 	if (nUTF8 < op.nUTF8)
 		return true;
+	if (nCodePage < op.nCodePage)
+	  return true;
 #ifdef MPEXT
 	if (iForcePasvIp < op.iForcePasvIp)
 		return true;

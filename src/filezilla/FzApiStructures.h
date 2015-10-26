@@ -42,6 +42,7 @@ public:
 	int nPasv;
 	int nTimeZoneOffset;
 	int nUTF8;
+	int nCodePage;
 #ifdef MPEXT
 	int iForcePasvIp;
 	int iUseMlsd;
