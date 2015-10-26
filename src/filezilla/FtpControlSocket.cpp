@@ -2582,7 +2582,7 @@ void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & p
 			int size = m_ListFile.GetLength();
 			char *buffer = static_cast<char *>(nb_calloc(1, size + 1));
 			memmove(buffer, (LPCSTR)m_ListFile, m_ListFile.GetLength());
-			CFtpListResult * pListResult = new CFtpListResult(m_CurrentServer, &m_bUTF8);
+			CFtpListResult * pListResult = new CFtpListResult(m_CurrentServer, &m_bUTF8, &m_nCodePage);
 			pListResult->InitLog(this);
 			pListResult->AddData(buffer, size);
 			if (COptions::GetOptionVal(OPTION_DEBUGSHOWLISTING))

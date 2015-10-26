@@ -164,12 +164,13 @@
 
 #endif
 
-CFtpListResult::CFtpListResult(t_server server, bool *bUTF8)
+CFtpListResult::CFtpListResult(t_server server, bool *bUTF8, int *nCodePage)
 {
 	listhead=curpos=0;
 	
 	m_server = server;
 	m_bUTF8 = bUTF8;
+	m_nCodePage = nCodePage;
 
 	pos=0;
 
@@ -2515,6 +2516,20 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
 			else
 				target = target.Left(pos) + A2CT(p);
 		}
+	}
+	else if (m_nCodePage && *m_nCodePage)
+	{
+		// convert to ANSI
+		int len = MultiByteToWideChar(*m_nCodePage, 0, (LPCSTR)p, -1, NULL, 0);
+		if (len != 0)
+		{
+			LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
+			MultiByteToWideChar(*m_nCodePage, 0, (LPCSTR)p, -1 , (LPWSTR)p1, len + 1);
+			target = target.Left(pos) + W2CT(p1);
+			nb_free(p1);
+		}
+		else
+			target = target.Left(pos) + A2CT(p);
 	}
 	else
 		target = target.Left(pos) + A2CT(p);
