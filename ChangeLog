@@ -2,6 +2,7 @@ NetBox 2.1.44.412 26.10.2015
 --------------------
   * FTP: Fix codepage issues
     (http://forum.farmanager.com/viewtopic.php?p=133226#p133226)
+    (http://bugs.farmanager.com/view.php?id=2516)
   * Bugfix: Cannot create directory on remote server if file with the same name already exists
   * Fix long path issues
   * Bugfix: FTP: AV trying to download file
