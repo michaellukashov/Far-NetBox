@@ -234,14 +234,15 @@ void display_banner(void * frontend, const char * banner, int size)
 
 static void SSHFatalError(const char * Format, va_list Param)
 {
-  char Buf[200];
-  vsnprintf_s(Buf, _countof(Buf), Format, Param);
-  Buf[_countof(Buf) - 1] = '\0';
+  std::string Buf;
+	Buf.resize(32*1024);
+  vsnprintf_s((char *)Buf.c_str(), Buf.size(), _TRUNCATE, Format, Param);
+  Buf[Buf.size() - 1] = '\0';
 
   // Only few calls from putty\winnet.c might be connected with specific
   // TSecureShell. Otherwise called only for really fatal errors
   // like 'out of memory' from putty\ssh.c.
-  throw ESshFatal(nullptr, Buf);
+  throw ESshFatal(nullptr, Buf.c_str());
 }
 
 void fatalbox(const char * fmt, ...)
