@@ -955,7 +955,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Len
 
   if (IsStdErr)
   {
-    AddStdError(ConvertInput(RawByteString(reinterpret_cast<const char *>(Data), Length)));
+    AddStdError(ConvertInput(RawByteString(reinterpret_cast<const char *>(Data), Length), FSessionData->GetCodePageAsNumber()));
   }
   else
   {

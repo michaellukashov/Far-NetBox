@@ -23,6 +23,9 @@
     <ClCompile Include="src\compress.c" />
     <ClCompile Include="src\crc32.c" />
     <ClCompile Include="src\deflate.c" />
+    <ClCompile Include="src\deflate_slow.c" />
+    <ClCompile Include="src\deflate_medium.c" />
+    <ClCompile Include="src\deflate_fast.c" />
     <ClCompile Include="src\gzclose.c" />
     <ClCompile Include="src\gzlib.c" />
     <ClCompile Include="src\gzread.c" />
