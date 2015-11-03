@@ -188,14 +188,15 @@ void logevent(void * frontend, const char * string)
 void connection_fatal(void * frontend, const char * fmt, ...)
 {
   va_list Param;
-  char Buf[200];
+  std::string Buf;
+  Buf.resize(32*1024);
   va_start(Param, fmt);
-  vsnprintf_s(Buf, _countof(Buf), fmt, Param); \
-  Buf[_countof(Buf) - 1] = '\0'; \
+  vsnprintf_s((char *)Buf.c_str(), Buf.size(), _TRUNCATE, fmt, Param);
+  Buf[Buf.size() - 1] = '\0';
   va_end(Param);
 
   assert(frontend != nullptr);
-  (NB_STATIC_DOWNCAST(TSecureShell, frontend))->PuttyFatalError(UnicodeString(Buf));
+  (NB_STATIC_DOWNCAST(TSecureShell, frontend))->PuttyFatalError(UnicodeString(Buf.c_str()));
 }
 
 int verify_ssh_host_key(void * frontend, char * host, int port, const char * keytype,
