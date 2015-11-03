@@ -235,7 +235,7 @@ void display_banner(void * frontend, const char * banner, int size)
 static void SSHFatalError(const char * Format, va_list Param)
 {
   std::string Buf;
-	Buf.resize(32*1024);
+  Buf.resize(32*1024);
   vsnprintf_s((char *)Buf.c_str(), Buf.size(), _TRUNCATE, Format, Param);
   Buf[Buf.size() - 1] = '\0';
 
