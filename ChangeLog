@@ -1,5 +1,7 @@
 NetBox 2.1.44.413 03.11.2015
 --------------------
+  * Update Russion translation, thanks to DenVdmj
+    (https://github.com/michaellukashov/Far-NetBox/pull/169)
   * SFTP, SCP: Fix remote command execution
     (http://forum.ru-board.com:9000/topic.cgi?forum=5&topic=31718&start=7860#7)
   * FTP: Fix codepage issues
