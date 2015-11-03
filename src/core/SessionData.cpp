@@ -30,8 +30,7 @@ const wchar_t ProxyMethodList[][10] = {L"none", L"SOCKS4", L"SOCKS5", L"HTTP", L
 const TCipher DefaultCipherList[CIPHER_COUNT] =
   { cipAES, cipBlowfish, cip3DES, cipWarn, cipArcfour, cipDES };
 const TKex DefaultKexList[KEX_COUNT] =
-  // { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexECDH, kexWarn };
-  { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexGSSGROUP1, kexGSSGROUP14, kexGSSGEX, kexRSA, kexECDH };
+  { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexECDH, kexWarn };
 const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][11] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"WebDAV" };
 const intptr_t SshPortNumber = 22;
 const intptr_t FtpPortNumber = 21;
