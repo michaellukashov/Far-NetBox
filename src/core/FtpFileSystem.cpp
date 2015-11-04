@@ -2457,7 +2457,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
         TDateTime UtcModification = UtcFilePtr->GetModification();
         UtcFilePtr.release();
 
-        FTimeDifference = ::SecondsBetween(UtcModification, File->GetModification());
+        FTimeDifference = static_cast<int64_t>(SecsPerDay * (UtcModification - File->GetModification()));
 
         UnicodeString LogMessage;
         if (FTimeDifference == 0)
