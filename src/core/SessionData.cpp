@@ -424,6 +424,11 @@ void TSessionData::CopyData(TSessionData * SourceData)
     SetSFTPBug(static_cast<TSftpBug>(Index),
       SourceData->GetSFTPBug(static_cast<TSftpBug>(Index)));
   }
+  // Restore default kex list
+  for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
+  {
+    SetKex(Index, DefaultKexList[Index]);
+  }
 
   FOverrideCachedHostKey = SourceData->GetOverrideCachedHostKey();
   FModified = SourceData->GetModified();
