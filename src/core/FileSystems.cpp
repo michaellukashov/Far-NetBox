@@ -19,7 +19,7 @@ UnicodeString TCustomFileSystem::CreateTargetDirectory(
   IN const TCopyParamType * CopyParam)
 {
   UnicodeString Result = ADirectory;
-  UnicodeString DestFileName = CopyParam->ChangeFileName(core::UnixExtractFileName(AFileName),
+  UnicodeString DestFileName = CopyParam->ChangeFileName(base::UnixExtractFileName(AFileName),
     osRemote, true);
   UnicodeString FileNamePath = ::ExtractFilePath(DestFileName);
   if (!FileNamePath.IsEmpty())

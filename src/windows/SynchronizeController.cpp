@@ -233,7 +233,7 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
         ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
     {
       intptr_t FoundIndex;
-      Add = FOptions->Filter->Find(core::ExtractFileName(DirectoryName, /*Unix=*/true), FoundIndex);
+      Add = FOptions->Filter->Find(base::ExtractFileName(DirectoryName, /*Unix=*/true), FoundIndex);
     }
   }
   TFileMasks::TParams MaskParams; // size/time does not matter for directories

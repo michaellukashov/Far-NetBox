@@ -2406,7 +2406,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(
     if (Msg.IsEmpty())
     {
       // Side refers to destination side here
-      // UnicodeString FileNameOnly = (Side == osRemote) ? core::ExtractFileName(AFileName, false) : core::UnixExtractFileName(AFileName);
+      // UnicodeString FileNameOnly = (Side == osRemote) ? base::ExtractFileName(AFileName, false) : base::UnixExtractFileName(AFileName);
       Msg = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE2 :
         REMOTE_FILE_OVERWRITE2), ATargetFileName.c_str(), ATargetFileName.c_str());
     }
@@ -2533,7 +2533,7 @@ void TTerminal::FileModified(const TRemoteFile * AFile,
       if ((AFile != nullptr) && AFile->GetIsDirectory())
       {
         Directory = core::UnixIncludeTrailingBackslash(ParentDirectory) +
-          core::UnixExtractFileName(AFile->GetFileName());
+          base::UnixExtractFileName(AFile->GetFileName());
       }
     }
   }
@@ -3848,7 +3848,7 @@ void TTerminal::TerminalMoveFile(const UnicodeString & AFileName,
   assert(Param != nullptr);
   const TMoveFileParams & Params = *NB_STATIC_DOWNCAST_CONST(TMoveFileParams, Param);
   UnicodeString NewName = core::UnixIncludeTrailingBackslash(Params.Target) +
-    MaskFileName(core::UnixExtractFileName(AFileName), Params.FileMask);
+    MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask);
   LogEvent(FORMAT(L"Moving file \"%s\" to \"%s\".", AFileName.c_str(), NewName.c_str()));
   FileModified(AFile, AFileName);
   DoRenameFile(AFileName, NewName, true);
@@ -3956,7 +3956,7 @@ void TTerminal::TerminalCopyFile(const UnicodeString & AFileName,
   assert(Param != nullptr);
   const TMoveFileParams & Params = *NB_STATIC_DOWNCAST_CONST(TMoveFileParams, Param);
   UnicodeString NewName = core::UnixIncludeTrailingBackslash(Params.Target) +
-    MaskFileName(core::UnixExtractFileName(AFileName), Params.FileMask);
+    MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask);
   LogEvent(FORMAT(L"Copying file \"%s\" to \"%s\".", AFileName.c_str(), NewName.c_str()));
   DoCopyFile(AFileName, NewName);
   ReactOnCommand(fsCopyFile);
