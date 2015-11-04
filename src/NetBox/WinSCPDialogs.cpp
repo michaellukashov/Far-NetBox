@@ -5426,8 +5426,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
       UnicodeString PromptMsg = GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT);
       UnicodeString FileName = FFileList->GetString(0);
       UnicodeString OnlyFileName = ToRemote ?
-        core::ExtractFileName(FileName, false) :
-        core::UnixExtractFileName(FileName);
+        base::ExtractFileName(FileName, false) :
+        base::UnixExtractFileName(FileName);
       UnicodeString MinimizedName = core::MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
       Prompt = FORMAT(PromptMsg.c_str(), MinimizedName.c_str());
     }
@@ -5516,7 +5516,7 @@ bool TCopyDialog::Execute(OUT UnicodeString & TargetDirectory,
     {
       UnicodeString DestFileName = FFileList->GetString(0);
       DestFileName = FToRemote ? DestFileName : FCopyParams.ChangeFileName(DestFileName, osRemote, true);
-      FileMask = core::ExtractFileName(DestFileName, false);
+      FileMask = base::ExtractFileName(DestFileName, false);
     }
     DirectoryEdit->SetText(Directory + FileMask);
     QueueCheck->SetChecked(Params->GetQueue());
@@ -5534,14 +5534,14 @@ bool TCopyDialog::Execute(OUT UnicodeString & TargetDirectory,
       UnicodeString NewTargetDirectory;
       if (FToRemote)
       {
-        Params->SetFileMask(core::UnixExtractFileName(DirectoryEdit->GetText()));
+        Params->SetFileMask(base::UnixExtractFileName(DirectoryEdit->GetText()));
         NewTargetDirectory = core::UnixExtractFilePath(DirectoryEdit->GetText());
         if (!NewTargetDirectory.IsEmpty())
           TargetDirectory = NewTargetDirectory;
       }
       else
       {
-        Params->SetFileMask(core::ExtractFileName(DirectoryEdit->GetText(), false));
+        Params->SetFileMask(base::ExtractFileName(DirectoryEdit->GetText(), false));
         NewTargetDirectory = ::ExtractFilePath(DirectoryEdit->GetText());
         if (!NewTargetDirectory.IsEmpty())
           TargetDirectory = NewTargetDirectory;
@@ -8178,7 +8178,7 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * AFileList,
   if (Result)
   {
     Target = core::UnixExtractFilePath(Value);
-    FileMask = core::UnixExtractFileName(Value);
+    FileMask = base::UnixExtractFileName(Value);
   }
   return Result;
 }

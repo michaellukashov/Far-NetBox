@@ -609,7 +609,7 @@ UnicodeString ExtractProgram(const UnicodeString & Command)
 
 UnicodeString ExtractProgramName(const UnicodeString & Command)
 {
-  UnicodeString Name = core::ExtractFileName(ExtractProgram(Command), false);
+  UnicodeString Name = base::ExtractFileName(ExtractProgram(Command), false);
   intptr_t Dot = Name.LastDelimiter(L".");
   if (Dot > 0)
   {
@@ -2533,7 +2533,7 @@ UnicodeString FormatSize(int64_t Size)
 
 UnicodeString ExtractFileBaseName(const UnicodeString & APath)
 {
-  return ChangeFileExt(core::ExtractFileName(APath, false), L"");
+  return ChangeFileExt(base::ExtractFileName(APath, false), L"");
 }
 
 TStringList * TextToStringList(const UnicodeString & Text)
@@ -2641,7 +2641,7 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   return Result;
 }
 
-namespace core {
+namespace base {
 
 UnicodeString UnixExtractFileName(const UnicodeString & APath)
 {
@@ -2660,7 +2660,7 @@ UnicodeString UnixExtractFileName(const UnicodeString & APath)
 
 UnicodeString UnixExtractFileExt(const UnicodeString & APath)
 {
-  UnicodeString FileName = core::UnixExtractFileName(APath);
+  UnicodeString FileName = base::UnixExtractFileName(APath);
   intptr_t Pos = FileName.LastDelimiter(L".");
   return (Pos > 0) ? APath.SubString(Pos, APath.Length() - Pos + 1) : UnicodeString();
 }
@@ -2669,7 +2669,7 @@ UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
 {
   if (Unix)
   {
-    return core::UnixExtractFileName(APath);
+    return base::UnixExtractFileName(APath);
   }
   else
   {
@@ -2677,4 +2677,4 @@ UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
   }
 }
 
-} // namespace core
+} // namespace base

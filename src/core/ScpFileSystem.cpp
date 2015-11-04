@@ -1620,7 +1620,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
     bool CanProceed = false;
 
     UnicodeString FileNameOnly =
-      CopyParam->ChangeFileName(core::ExtractFileName(RealFileName, false), osLocal, true);
+      CopyParam->ChangeFileName(base::ExtractFileName(RealFileName, false), osLocal, true);
 
     if (CheckExistence)
     {
@@ -1759,7 +1759,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
   UnicodeString DestFileName = CopyParam->ChangeFileName(
-    core::ExtractFileName(RealFileName, false), osLocal, Level == 0);
+    base::ExtractFileName(RealFileName, false), osLocal, Level == 0);
 
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", RealFileName.c_str()));
 
@@ -2066,7 +2066,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
 
   OperationProgress->SetFile(DirectoryName);
   UnicodeString DestFileName = CopyParam->ChangeFileName(
-    core::ExtractFileName(DirectoryName, false), osLocal, Level == 0);
+    base::ExtractFileName(DirectoryName, false), osLocal, Level == 0);
 
   // Get directory attributes
   FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()), "",
@@ -2485,7 +2485,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & AFileName,
           MaskParams.Size = TSize;
           // Security fix: ensure the file ends up where we asked for it.
           // (accept only filename, not path)
-          UnicodeString OnlyFileName = core::UnixExtractFileName(Line);
+          UnicodeString OnlyFileName = base::UnixExtractFileName(Line);
           if (Line != OnlyFileName)
           {
             FTerminal->LogEvent(FORMAT(L"Warning: Remote host set a compound pathname '%s'", Line.c_str()));

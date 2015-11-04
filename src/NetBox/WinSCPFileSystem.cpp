@@ -58,7 +58,7 @@ void TSessionPanelItem::GetData(
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & /*Owner*/, void *& UserData, size_t & /*CustomColumnNumber*/)
 {
-  AFileName = core::UnixExtractFileName(FSessionData->GetName());
+  AFileName = base::UnixExtractFileName(FSessionData->GetName());
   UserData = (void *)FSessionData;
 }
 
@@ -1758,7 +1758,7 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
       UnicodeString Target = FTerminal->GetCurrDirectory();
       UnicodeString FileMask = L"*.*";
       if (FileList->GetCount() == 1)
-        FileMask = core::UnixExtractFileName(FileList->GetString(0));
+        FileMask = base::UnixExtractFileName(FileList->GetString(0));
       if (RemoteTransferDialog(FileList.get(), Target, FileMask, Move))
       {
         SCOPE_EXIT
@@ -2575,7 +2575,7 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
     if ((FFileList->GetCount() == 1) && (OpMode & OPM_EDIT))
     {
       FOriginalEditFile = ::IncludeTrailingBackslash(DestPath) +
-        core::UnixExtractFileName(FFileList->GetString(0));
+        base::UnixExtractFileName(FFileList->GetString(0));
       FLastEditFile = FOriginalEditFile;
       FLastEditCopyParam = CopyParam;
       FLastEditorID = -1;
@@ -2922,7 +2922,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
         {
           if (FileNameOnly)
           {
-            FileName = core::ExtractFileName(FileName, false);
+            FileName = base::ExtractFileName(FileName, false);
           }
         }
       }
@@ -3423,7 +3423,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
     }
 
     assert(PanelItem && PanelItem->GetFileName() ==
-      ((Side == osLocal) ? core::ExtractFileName(AFileName, false) : AFileName));
+      ((Side == osLocal) ? base::ExtractFileName(AFileName, false) : AFileName));
     if (Success && PanelItem)
     {
       PanelItem->SetSelected(false);
@@ -3492,7 +3492,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
     // do not show source directory
     if (TransferOperation && (ProgressData.Side == osLocal) && ProgressData.Temp)
     {
-      FileName = core::ExtractFileName(FileName, false);
+      FileName = base::ExtractFileName(FileName, false);
     }
     Message1 = ProgressFileLabel + core::MinimizeName(FileName,
       ProgressWidth - ProgressFileLabel.Length(), ProgressData.Side == osRemote) + L"\n";
@@ -3889,7 +3889,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
             FLastMultipleEditFile.Clear();
 
             TMultipleEdit MultipleEdit;
-            MultipleEdit.FileName = core::ExtractFileName(Info->GetFileName(), false);
+            MultipleEdit.FileName = base::ExtractFileName(Info->GetFileName(), false);
             MultipleEdit.FileTitle = FLastMultipleEditFileTitle;
             MultipleEdit.Directory = FLastMultipleEditDirectory;
             MultipleEdit.LocalFileName = Info->GetFileName();
@@ -3972,7 +3972,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
         {
           // update file name (after "save as")
           it->second.LocalFileName = Info->GetFileName();
-          it->second.FileName = core::ExtractFileName(Info->GetFileName(), true);
+          it->second.FileName = base::ExtractFileName(Info->GetFileName(), true);
           // update editor title
           UnicodeString FullFileName = core::UnixIncludeTrailingBackslash(it->second.Directory) +
               it->second.FileTitle;

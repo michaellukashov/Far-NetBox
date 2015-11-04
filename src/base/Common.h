@@ -335,8 +335,10 @@ public:
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 
 
-namespace core {
+namespace base {
 
+UnicodeString UnixExtractFileExt(const UnicodeString & APath);
+UnicodeString UnixExtractFileName(const UnicodeString & APath);
 UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix);
 
-} // namespace core
+} // namespace base

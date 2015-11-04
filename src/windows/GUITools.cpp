@@ -54,7 +54,7 @@ bool FindFile(UnicodeString & APath)
       Paths.SetLength(Len - 1);
       ::GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
 
-      UnicodeString NewPath = ::FileSearch(core::ExtractFileName(APath, true), Paths);
+      UnicodeString NewPath = ::FileSearch(base::ExtractFileName(APath, true), Paths);
       Result = !NewPath.IsEmpty();
       if (Result)
       {
@@ -335,8 +335,8 @@ UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
   UnicodeString Item;
   if (AFiles->GetCount() > 0)
   {
-    Item = Remote ? core::UnixExtractFileName(AFiles->GetString(0)) :
-      core::ExtractFileName(AFiles->GetString(0), true);
+    Item = Remote ? base::UnixExtractFileName(AFiles->GetString(0)) :
+      base::ExtractFileName(AFiles->GetString(0), true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
     AFiles->GetCount(), Item);

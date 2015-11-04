@@ -2051,7 +2051,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   {
     if (FLAGSET(Params, cpTemporary))
     {
-      FInfo->Source = core::ExtractFileName(AFilesToCopy->GetString(0), true);
+      FInfo->Source = base::ExtractFileName(AFilesToCopy->GetString(0), true);
       FInfo->ModifiedLocal.Clear();
     }
     else

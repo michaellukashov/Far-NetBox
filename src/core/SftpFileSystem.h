@@ -143,12 +143,12 @@ protected:
   void ReserveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response);
   SSH_FX_TYPES ReceivePacket(TSFTPPacket * Packet, SSH_FXP_TYPES ExpectedType = -1,
-    SSH_FX_TYPES AllowStatus = -1);
+    SSH_FX_TYPES AllowStatus = -1, bool TryOnly = false);
   bool PeekPacket();
   void RemoveReservation(intptr_t Reservation);
   void SendPacket(const TSFTPPacket * Packet);
   SSH_FX_TYPES ReceiveResponse(const TSFTPPacket * Packet,
-    TSFTPPacket * AResponse, SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1);
+    TSFTPPacket * AResponse, SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1, bool TryOnly = false);
   SSH_FX_TYPES SendPacketAndReceiveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response, SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1);
   void UnreserveResponse(TSFTPPacket * Response);

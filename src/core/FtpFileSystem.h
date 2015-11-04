@@ -301,6 +301,7 @@ private:
   //bool FSupportsSiteSymlink;
   bool FSupportsAnyChecksumFeature;
   UnicodeString FLastCommandSent;
+  bool FTransferActiveImmediately;
   mutable UnicodeString FOptionScratch;
 };
 
