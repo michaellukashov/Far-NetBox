@@ -1190,9 +1190,9 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
           ADF(L"TLS/SSL versions: %s-%s", GetTlsVersionName(Data->GetMinTlsVersion()).c_str(), GetTlsVersionName(Data->GetMaxTlsVersion()).c_str());
         }
         // kind of hidden option, so do not reveal it unless it is set
-        if (Data->GetFtpTransferActiveImmediately())
+        if (Data->GetFtpTransferActiveImmediately() != asAuto)
         {
-          ADF(L"Transfer active immediately: %s", BooleanToEngStr(Data->GetFtpTransferActiveImmediately()).c_str());
+          ADF(L"Transfer active immediately: %c", BugFlags[Data->GetFtpTransferActiveImmediately()]);
         }
       }
       ADF(L"Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
