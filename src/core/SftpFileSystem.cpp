@@ -1263,7 +1263,7 @@ public:
   }
 
   bool ReceivePacket(TSFTPPacket * Packet,
-    SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1, void ** Token = nullptr)
+    SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1, void ** Token = nullptr, bool TryOnly = false)
   {
     assert(FRequests->GetCount());
     std::unique_ptr<TSFTPQueuePacket> Request(NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetItem(0)));
@@ -1279,17 +1279,29 @@ public:
     assert(Response.get());
 
     ReceiveResponse(Request.get(), Response.get(),
-      ExpectedType, AllowStatus);
+      ExpectedType, AllowStatus, TryOnly);
 
-    if (Packet)
+    bool Result = false;
+    if ((Response->GetCapacity() == 0) && ALWAYS_TRUE(TryOnly))
     {
-      *Packet = *Response.get();
+      FRequests->Insert(0, Request.get());
+      Request.release();
+      FResponses->Insert(0, Response.get());
+      Response.release();
+      Result = true;
     }
-
-    bool Result = !End(Response.get());
-    if (Result)
+    else
     {
-      SendRequests();
+      if (Packet)
+      {
+        *Packet = *Response.get();
+      }
+
+      Result = !End(Response.get());
+      if (Result)
+      {
+        SendRequests();
+      }
     }
 
     return Result;
@@ -1317,9 +1329,9 @@ protected:
 
   virtual void ReceiveResponse(
     const TSFTPPacket * Packet, TSFTPPacket * Response, SSH_FXP_TYPES ExpectedType = -1,
-    SSH_FX_TYPES AllowStatus = -1)
+    SSH_FX_TYPES AllowStatus = -1, bool TryOnly = false)
   {
-    FFileSystem->ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
+    FFileSystem->ReceiveResponse(Packet, Response, ExpectedType, AllowStatus, TryOnly);
   }
 
   // sends as many requests as allowed by implementation
@@ -1417,7 +1429,9 @@ protected:
   {
     try
     {
-      while (FFileSystem->PeekPacket() && ReceivePacketAsynchronously())
+      while (// optimization only as we call ReceivePacket with TryOnly anyway
+             FFileSystem->PeekPacket() &&
+             ReceivePacketAsynchronously())
       {
         // loop
       }
@@ -1615,15 +1629,18 @@ protected:
 
   virtual void ReceiveResponse(
     const TSFTPPacket * Packet, TSFTPPacket * Response, SSH_FXP_TYPES ExpectedType = -1,
-    SSH_FX_TYPES AllowStatus = -1)
+    SSH_FX_TYPES AllowStatus = -1, bool TryOnly = false)
   {
-    TSFTPAsynchronousQueue::ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
-    // particularly when uploading a file that completely fits into send buffer
-    // over slow line, we may end up seemingly completing the transfer immediately
-    // but hanging the application for a long time waiting for responses
-    // (common is that the progress window would not even manage to draw itself,
-    // showing that upload finished, before the application "hangs")
-    FFileSystem->Progress(OperationProgress);
+    TSFTPAsynchronousQueue::ReceiveResponse(Packet, Response, ExpectedType, AllowStatus, TryOnly);
+    if (Response->GetCapacity() > 0)
+    {
+      // particularly when uploading a file that completely fits into send buffer
+      // over slow line, we may end up seemingly completing the transfer immediately
+      // but hanging the application for a long time waiting for responses
+      // (common is that the progress window would not even manage to draw itself,
+      // showing that upload finished, before the application "hangs")
+      FFileSystem->Progress(OperationProgress);
+    }
   }
 
   virtual bool ReceivePacketAsynchronously()
@@ -1632,7 +1649,11 @@ protected:
     bool Result = (FRequests->GetCount() > 0);
     if (Result)
     {
-      ReceivePacket(nullptr, SSH_FXP_STATUS);
+      // Try only: We cannot read from the socket here as we are already called
+      // from TSecureShell::HandleNetworkEvents as it would cause a recursion
+      // that would potentially make PuTTY code process the SSH packets in wrong order.
+     ReceivePacket(nullptr, SSH_FXP_STATUS, -1, nullptr, true);
+
     }
     return Result;
   }
@@ -2520,7 +2541,7 @@ bool TSFTPFileSystem::PeekPacket()
 }
 
 SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
-  SSH_FXP_TYPES ExpectedType, SSH_FX_TYPES AllowStatus)
+  SSH_FXP_TYPES ExpectedType, SSH_FX_TYPES AllowStatus, bool TryOnly)
 {
   TSFTPBusy Busy(this);
 
@@ -2535,68 +2556,78 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
       IsReserved = false;
 
       assert(Packet);
-      uint8_t LenBuf[4];
-      FSecureShell->Receive(LenBuf, sizeof(LenBuf));
-      intptr_t Length = PacketLength(LenBuf, ExpectedType);
-      Packet->SetCapacity(Length);
-      FSecureShell->Receive(Packet->GetData(), Length);
-      Packet->DataUpdated(Length);
 
-      if (FTerminal->GetLog()->GetLogging())
+      if (TryOnly && !PeekPacket())
       {
-        if ((FPreviousLoggedPacket != SSH_FXP_READ &&
-             FPreviousLoggedPacket != SSH_FXP_WRITE) ||
-            (Packet->GetType() != SSH_FXP_STATUS && Packet->GetType() != SSH_FXP_DATA) ||
-            (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1))
-        {
-          if (FNotLoggedPackets)
-          {
-            FTerminal->LogEvent(FORMAT(L"%d skipped SSH_FXP_WRITE, SSH_FXP_READ, SSH_FXP_DATA and SSH_FXP_STATUS packets.",
-              FNotLoggedPackets));
-            FNotLoggedPackets = 0;
-          }
-          FTerminal->GetLog()->Add(llOutput, FORMAT(L"Type: %s, Size: %d, Number: %d",
-            Packet->GetTypeName().c_str(),
-            static_cast<int>(Packet->GetLength()),
-            static_cast<int>(Packet->GetMessageNumber())));
-          /*if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
-          {
-            FTerminal->GetLog()->Add(llOutput, Packet->Dump());
-          }*/
-        }
-        else
-        {
-          FNotLoggedPackets++;
-        }
+        // Reset packet in case it was filled by previous out-of-order
+        // reserved packet
+        *Packet = TSFTPPacket(FCodePage);
       }
-
-      if ((Reservation < 0) ||
-          Packet->GetMessageNumber() != FPacketNumbers[Reservation])
+      else
       {
-        TSFTPPacket * ReservedPacket;
-        for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
+        uint8_t LenBuf[4];
+        FSecureShell->Receive(LenBuf, sizeof(LenBuf));
+        intptr_t Length = PacketLength(LenBuf, ExpectedType);
+        Packet->SetCapacity(Length);
+        FSecureShell->Receive(Packet->GetData(), Length);
+        Packet->DataUpdated(Length);
+
+        if (FTerminal->GetLog()->GetLogging())
         {
-          uint32_t MessageNumber = static_cast<uint32_t>(FPacketNumbers[Index]);
-          if (MessageNumber == Packet->GetMessageNumber())
+          if ((FPreviousLoggedPacket != SSH_FXP_READ &&
+               FPreviousLoggedPacket != SSH_FXP_WRITE) ||
+              (Packet->GetType() != SSH_FXP_STATUS && Packet->GetType() != SSH_FXP_DATA) ||
+              (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1))
           {
-            ReservedPacket = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Index));
-            IsReserved = true;
-            if (ReservedPacket)
+            if (FNotLoggedPackets)
             {
-              FTerminal->LogEvent("Storing reserved response");
-              *ReservedPacket = *Packet;
+              FTerminal->LogEvent(FORMAT(L"%d skipped SSH_FXP_WRITE, SSH_FXP_READ, SSH_FXP_DATA and SSH_FXP_STATUS packets.",
+                FNotLoggedPackets));
+              FNotLoggedPackets = 0;
             }
-            else
+            FTerminal->GetLog()->Add(llOutput, FORMAT(L"Type: %s, Size: %d, Number: %d",
+              Packet->GetTypeName().c_str(),
+              static_cast<int>(Packet->GetLength()),
+              static_cast<int>(Packet->GetMessageNumber())));
+            /*if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
             {
-              FTerminal->LogEvent("Discarding reserved response");
-              RemoveReservation(Index);
-              if ((Reservation >= 0) && (Reservation > Index))
+              FTerminal->GetLog()->Add(llOutput, Packet->Dump());
+            }*/
+          }
+          else
+          {
+            FNotLoggedPackets++;
+          }
+        }
+
+        if ((Reservation < 0) ||
+            Packet->GetMessageNumber() != FPacketNumbers[Reservation])
+        {
+          TSFTPPacket * ReservedPacket;
+          for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
+          {
+            uint32_t MessageNumber = static_cast<uint32_t>(FPacketNumbers[Index]);
+            if (MessageNumber == Packet->GetMessageNumber())
+            {
+              ReservedPacket = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Index));
+              IsReserved = true;
+              if (ReservedPacket)
               {
-                Reservation--;
-                assert(Reservation == FPacketReservations->IndexOf(Packet));
+                FTerminal->LogEvent("Storing reserved response");
+                *ReservedPacket = *Packet;
               }
+              else
+              {
+                FTerminal->LogEvent("Discarding reserved response");
+                RemoveReservation(Index);
+                if ((Reservation >= 0) && (Reservation > Index))
+                {
+                  Reservation--;
+                  assert(Reservation == FPacketReservations->IndexOf(Packet));
+                }
+              }
+              break;
             }
-            break;
           }
         }
       }
@@ -2604,29 +2635,36 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
     while (IsReserved);
   }
 
-  // before we removed the reservation after check for packet type,
-  // but if it raises exception, removal is unnecessarily
-  // postponed until the packet is removed
-  // (and it have not worked anyway until recent fix to UnreserveResponse)
-  if (Reservation >= 0)
+  if ((Packet->GetCapacity() == 0) && ALWAYS_TRUE(TryOnly))
   {
-    assert(Packet->GetMessageNumber() == FPacketNumbers[Reservation]);
-    RemoveReservation(Reservation);
+    // noop
   }
-
-  if (ExpectedType != (SSH_FXP_TYPES)-1)
+  else
   {
-    if (Packet->GetType() == SSH_FXP_STATUS)
+    // before we removed the reservation after check for packet type,
+    // but if it raises exception, removal is unnecessarily
+    // postponed until the packet is removed
+    // (and it have not worked anyway until recent fix to UnreserveResponse)
+    if (Reservation >= 0)
     {
-      if (AllowStatus < 0)
-      {
-        AllowStatus = (ExpectedType == SSH_FXP_STATUS ? asOK : asNo);
-      }
-      Result = GotStatusPacket(Packet, AllowStatus);
+      assert(Packet->GetMessageNumber() == FPacketNumbers[Reservation]);
+      RemoveReservation(Reservation);
     }
-    else if (ExpectedType != Packet->GetType())
+
+    if (ExpectedType != (SSH_FXP_TYPES)-1)
     {
-      FTerminal->FatalError(nullptr, FMTLOAD(SFTP_INVALID_TYPE, static_cast<int>(Packet->GetType())));
+      if (Packet->GetType() == SSH_FXP_STATUS)
+      {
+        if (AllowStatus < 0)
+        {
+          AllowStatus = (ExpectedType == SSH_FXP_STATUS ? asOK : asNo);
+        }
+        Result = GotStatusPacket(Packet, AllowStatus);
+      }
+      else if (ExpectedType != Packet->GetType())
+      {
+        FTerminal->FatalError(nullptr, FMTLOAD(SFTP_INVALID_TYPE, static_cast<int>(Packet->GetType())));
+      }
     }
   }
 
@@ -2675,7 +2713,7 @@ void TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
 }
 
 SSH_FX_TYPES TSFTPFileSystem::ReceiveResponse(const TSFTPPacket * Packet, TSFTPPacket * AResponse, SSH_FXP_TYPES ExpectedType,
-  SSH_FX_TYPES AllowStatus)
+  SSH_FX_TYPES AllowStatus, bool TryOnly)
 {
   SSH_FX_TYPES Result;
   uintptr_t MessageNumber = Packet->GetMessageNumber();
@@ -2685,7 +2723,7 @@ SSH_FX_TYPES TSFTPFileSystem::ReceiveResponse(const TSFTPPacket * Packet, TSFTPP
     Response.reset(new TSFTPPacket(FCodePage));
     AResponse = Response.get();
   }
-  Result = ReceivePacket(AResponse, ExpectedType, AllowStatus);
+  Result = ReceivePacket(AResponse, ExpectedType, AllowStatus, TryOnly);
   if (MessageNumber != AResponse->GetMessageNumber())
   {
     FTerminal->FatalError(nullptr, FMTLOAD(SFTP_MESSAGE_NUMBER,
