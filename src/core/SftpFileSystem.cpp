@@ -2224,7 +2224,7 @@ uint32_t TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
   uint32_t MinPacketSize,
   uint32_t MaxPacketSize)
 {
-  const uint32_t minPacketSize = MinPacketSize ? MinPacketSize : 4096;
+  const uint32_t minPacketSize = MinPacketSize ? MinPacketSize : 32 * 1024;
 
   // size + message number + type
   const uint32_t SFTPPacketOverhead = 4 + 4 + 1;
