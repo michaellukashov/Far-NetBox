@@ -958,6 +958,8 @@ public:
     Add(Source.GetData(), Source.GetLength());
     DataUpdated(Source.GetLength());
     FPosition = Source.FPosition;
+    FReservedBy = Source.FReservedBy;
+    FCodePage = Source.FCodePage;
     return *this;
   }
 
