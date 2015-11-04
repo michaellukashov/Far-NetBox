@@ -1,7 +1,7 @@
 NetBox 2.1.44.414 04.11.2015
 --------------------
   * SFTP, SCP: Fix connection to remote server using ecdsa-sha2-nistp521 key exchange algorythm, used by default by dropbear_2015.67
-  * Update Russion translation, thanks to DenVdmj
+  * Update Russian translation, thanks to DenVdmj
     (https://github.com/michaellukashov/Far-NetBox/pull/169)
   * SFTP, SCP: Fix remote command execution
     (http://forum.ru-board.com:9000/topic.cgi?forum=5&topic=31718&start=7860#7)
