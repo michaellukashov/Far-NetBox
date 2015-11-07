@@ -1133,8 +1133,8 @@ UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeStri
 UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str)
 {
   UnicodeString Result = Str;
-  if ((Str.Length() > 0) && ((Str[Str.Length()] == L'/') ||
-      (Str[Str.Length()] == L'\\')))
+  if ((Result.Length() > 0) && ((Result[Result.Length()] == L'/') ||
+      (Result[Result.Length()] == L'\\')))
   {
     Result.SetLength(Result.Length() - 1);
   }
