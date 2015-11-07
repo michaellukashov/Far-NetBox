@@ -1144,8 +1144,9 @@ UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str)
 UnicodeString IncludeTrailingBackslash(const UnicodeString & Str)
 {
   UnicodeString Result = Str;
-  if ((Str.Length() == 0) || ((Str[Str.Length()] != L'/') &&
-    (Str[Str.Length()] != L'\\')))
+  intptr_t L = Result.Length();
+  if ((Result.Length() == 0) || ((Result[Result.Length()] != L'/') &&
+    (Result[Result.Length()] != L'\\')))
   {
     Result += L'\\';
   }
