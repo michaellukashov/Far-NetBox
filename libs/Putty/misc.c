@@ -588,7 +588,7 @@ int base64_decode_atom(const char *atom, unsigned char *out)
 /* MP:
 * Default granule of 512 leads to low performance.
 */
-#define BUFFER_MIN_GRANULE  512*2*32
+#define BUFFER_MIN_GRANULE  32*2*512
 
 struct bufchain_granule {
     struct bufchain_granule *next;
@@ -1072,7 +1072,7 @@ int match_ssh_id(int stringlen, const void *string, const char *id)
 void *get_ssh_string(int *datalen, const void **data, int *stringlen)
 {
     void *ret;
-    int len;
+    unsigned int len;
 
     if (*datalen < 4)
         return NULL;
