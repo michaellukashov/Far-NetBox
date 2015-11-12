@@ -2536,7 +2536,7 @@ bool TSFTPFileSystem::PeekPacket()
   bool Result = FSecureShell->Peek(Buf, 4);
   if (Result)
   {
-    intptr_t Length = PacketLength(Buf, (SSH_FX_TYPES)-1);
+    intptr_t Length = PacketLength(Buf, (SSH_FXP_TYPES)-1);
     Result = FSecureShell->Peek(Buf, 4 + Length);
   }
   return Result;
