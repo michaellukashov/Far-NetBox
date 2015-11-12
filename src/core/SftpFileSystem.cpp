@@ -2501,7 +2501,7 @@ void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
   TSFTPPacket * Packet = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Reservation));
   if (Packet)
   {
-    assert(Packet->GetReservedBy() == this);
+    assert((Packet->GetReservedBy() == nullptr) || (Packet->GetReservedBy() == this));
     Packet->SetReservedBy(nullptr);
   }
   FPacketReservations->Delete(Reservation);
