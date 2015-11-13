@@ -2501,7 +2501,7 @@ void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
   TSFTPPacket * Packet = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Reservation));
   if (Packet)
   {
-    assert(Packet->GetReservedBy() == this);
+    assert((Packet->GetReservedBy() == nullptr) || (Packet->GetReservedBy() == this));
     Packet->SetReservedBy(nullptr);
   }
   FPacketReservations->Delete(Reservation);
@@ -2536,7 +2536,7 @@ bool TSFTPFileSystem::PeekPacket()
   bool Result = FSecureShell->Peek(Buf, 4);
   if (Result)
   {
-    intptr_t Length = PacketLength(Buf, (SSH_FX_TYPES)-1);
+    intptr_t Length = PacketLength(Buf, (SSH_FXP_TYPES)-1);
     Result = FSecureShell->Peek(Buf, 4 + Length);
   }
   return Result;
@@ -3255,7 +3255,7 @@ void TSFTPFileSystem::DoStartup()
         }
         else
         {
-          FTerminal->LogEvent("We will use UTF-8 strings until server sends an invalid UTF-8 string as with SFTP version 3 and older UTF-8 string are not mandatory");
+          FTerminal->LogEvent("We will use UTF-8 strings until server sends an invalid UTF-8 string as with SFTP version 3 and older UTF-8 strings are not mandatory");
           FUtfStrings = asAuto;
           FUtfDisablingAnnounced = false;
         }
