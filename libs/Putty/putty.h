@@ -291,7 +291,7 @@ enum {
      * Proxy types.
      */
     PROXY_NONE, PROXY_SOCKS4, PROXY_SOCKS5,
-    PROXY_HTTP, PROXY_TELNET, PROXY_CMD
+    PROXY_HTTP, PROXY_TELNET, PROXY_CMD, PROXY_FUZZ
 };
 
 enum {
@@ -445,6 +445,9 @@ struct backend_tag {
      */
     void (*unthrottle) (void *handle, int);
     int (*cfg_info) (void *handle);
+    /* Only implemented in the SSH protocol: check whether a
+     * connection-sharing upstream exists for a given configuration. */
+    int (*test_for_upstream)(const char *host, int port, Conf *conf);
     const char *name;
     int protocol;
     int default_port;
@@ -753,6 +756,8 @@ void cleanup_exit(int);
     X(INT, NONE, erase_to_scrollback) \
     X(INT, NONE, compose_key) \
     X(INT, NONE, ctrlaltkeys) \
+    X(INT, NONE, osx_option_meta) \
+    X(INT, NONE, osx_command_meta) \
     X(STR, NONE, wintitle) /* initial window title */ \
     /* Terminal options */ \
     X(INT, NONE, savelines) \
@@ -1329,6 +1334,7 @@ int filename_serialise(const Filename *f, void *data);
 Filename *filename_deserialise(void *data, int maxsize, int *used);
 char *get_username(void);	       /* return value needs freeing */
 char *get_random_data(int bytes);      /* used in cmdgen.c */
+char filename_char_sanitise(char c);   /* rewrite special pathname chars */
 
 /*
  * Exports and imports from timing.c.

@@ -1144,8 +1144,7 @@ Bignum bignum_from_bytes(const unsigned char *data, int nbytes)
             (BignumInt)byte << (8*i % BIGNUM_INT_BITS);
     }
 
-    while (result[0] > 1 && result[result[0]] == 0)
-	result[0]--;
+    bn_restore_invariant(result);
     return result;
 }
 
@@ -1167,8 +1166,7 @@ Bignum bignum_from_bytes_le(const unsigned char *data, int nbytes)
             (BignumInt)byte << (8*i % BIGNUM_INT_BITS);
     }
 
-    while (result[0] > 1 && result[result[0]] == 0)
-        result[0]--;
+    bn_restore_invariant(result);
     return result;
 }
 
@@ -1177,7 +1175,7 @@ Bignum bignum_from_decimal(const char *decimal)
     Bignum result = copybn(Zero);
 
     while (*decimal) {
-        Bignum tmp, tmp2, tmp3;
+        Bignum tmp, tmp2;
 
         if (!isdigit((unsigned char)*decimal)) {
             freebn(result);
@@ -1186,11 +1184,9 @@ Bignum bignum_from_decimal(const char *decimal)
 
         tmp = bigmul(result, Ten);
         tmp2 = bignum_from_long(*decimal - '0');
-        tmp3 = result;
         result = bigadd(tmp, tmp2);
         freebn(tmp);
         freebn(tmp2);
-        freebn(tmp3);
 
         decimal++;
     }
@@ -1315,9 +1311,9 @@ int bignum_bit(Bignum bn, int i)
  */
 void bignum_set_bit(Bignum bn, int bitnum, int value)
 {
-    if (bitnum < 0 || bitnum >= (int)(BIGNUM_INT_BITS * bn[0]))
-	abort();		       /* beyond the end */
-    else {
+    if (bitnum < 0 || bitnum >= (int)(BIGNUM_INT_BITS * bn[0])) {
+        if (value) abort();		       /* beyond the end */
+    } else {
 	int v = bitnum / BIGNUM_INT_BITS + 1;
 	BignumInt mask = (BignumInt)1 << (bitnum % BIGNUM_INT_BITS);
 	if (value)
