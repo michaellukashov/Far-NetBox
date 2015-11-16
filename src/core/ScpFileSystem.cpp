@@ -134,9 +134,9 @@ const TCommandType DefaultCommandSet[ShellCommandCount] =
   /*Unset*/               {  0,  0, F, F, F, "unset \"%s\"" /* variable */ },
   /*Unalias*/             {  0,  0, F, F, F, "unalias \"%s\"" /* alias */ },
   /*CreateLink*/          {  0,  0, T, F, F, "ln %s \"%s\" \"%s\"" /*symbolic (-s), filename, point to*/},
-  /*CopyFile*/            {  0,  0, T, F, F, "cp -p -r -f \"%s\" \"%s\"" /* file/directory, target name*/},
+  /*CopyFile*/            {  0,  0, T, F, F, "cp -p -r -f %s \"%s\" \"%s\"" /* file/directory, target name*/},
   /*AnyCommand*/          {  0, -1, T, T, F, "%s" },
-  /*Lang*/                {  0,  1, F, F, F, "echo $LANG"},
+  /*Lang*/                {  0,  1, F, F, F, "printenv LANG"},
 };
 #undef F
 #undef T
