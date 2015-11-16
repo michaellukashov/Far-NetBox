@@ -1226,17 +1226,17 @@ void TSCPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
 }
 
 void TSCPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
-  const UnicodeString & NewName)
+  const UnicodeString & ANewName)
 {
-  ExecCommand2(fsRenameFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
+  ExecCommand2(fsRenameFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(ANewName).c_str());
 }
 
 void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
-  const UnicodeString & NewName)
+  const UnicodeString & ANewName)
 {
   // ExecCommand2(fsCopyFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
   UnicodeString DelimitedFileName = DelimitStr(AFileName);
-  UnicodeString DelimitedNewName = DelimitStr(NewName);
+  UnicodeString DelimitedNewName = DelimitStr(ANewName);
   const UnicodeString AdditionalSwitches = L"-T";
   try
   {

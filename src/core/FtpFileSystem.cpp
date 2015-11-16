@@ -2714,7 +2714,7 @@ void TFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
 }
 
 void TFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
-  const UnicodeString & NewName)
+  const UnicodeString & ANewName)
 {
   assert(SupportsSiteCommand(CopySiteCommand));
   EnsureLocation();
@@ -2725,7 +2725,7 @@ void TFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   SendCommand(Command);
   GotReply(WaitForCommandReply(), REPLY_3XX_CODE);
 
-  Command = FORMAT(L"%s CPTO %s", SiteCommand.c_str(), NewName.c_str());
+  Command = FORMAT(L"%s CPTO %s", SiteCommand.c_str(), ANewName.c_str());
   SendCommand(Command);
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }

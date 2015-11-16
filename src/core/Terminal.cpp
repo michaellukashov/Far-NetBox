@@ -3758,24 +3758,24 @@ void TTerminal::CalculateFilesChecksum(const UnicodeString & Alg,
 }
 
 void TTerminal::TerminalRenameFile(const UnicodeString & AFileName,
-  const UnicodeString & NewName)
+  const UnicodeString & ANewName)
 {
-  LogEvent(FORMAT(L"Renaming file \"%s\" to \"%s\".", AFileName.c_str(), NewName.c_str()));
-  DoRenameFile(AFileName, NewName, false);
+  LogEvent(FORMAT(L"Renaming file \"%s\" to \"%s\".", AFileName.c_str(), ANewName.c_str()));
+  DoRenameFile(AFileName, ANewName, false);
   ReactOnCommand(fsRenameFile);
 }
 
 void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
-  const UnicodeString & NewName, bool CheckExistence)
+  const UnicodeString & ANewName, bool CheckExistence)
 {
   assert(AFile && AFile->GetDirectory() == FFiles);
   bool Proceed = true;
   // if filename doesn't contain path, we check for existence of file
-  if ((AFile->GetFileName() != NewName) && CheckExistence &&
+  if ((AFile->GetFileName() != ANewName) && CheckExistence &&
       FConfiguration->GetConfirmOverwriting() &&
       core::UnixSamePath(GetCurrDirectory(), FFiles->GetDirectory()))
   {
-    TRemoteFile * DuplicateFile = FFiles->FindFile(NewName);
+    TRemoteFile * DuplicateFile = FFiles->FindFile(ANewName);
     if (DuplicateFile)
     {
       UnicodeString QuestionFmt;
@@ -3788,7 +3788,7 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
         QuestionFmt = LoadStr(PROMPT_FILE_OVERWRITE);
       }
       TQueryParams Params(qpNeverAskAgainCheck);
-      UnicodeString Question = MainInstructions(FORMAT(QuestionFmt.c_str(), NewName.c_str()));
+      UnicodeString Question = MainInstructions(FORMAT(QuestionFmt.c_str(), ANewName.c_str()));
       intptr_t Result = QueryUser(Question, nullptr,
         qaYes | qaNo, &Params);
       if (Result == qaNeverAskAgain)
@@ -3806,26 +3806,26 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
   if (Proceed)
   {
     FileModified(AFile, AFile->GetFileName());
-    TerminalRenameFile(AFile->GetFileName(), NewName);
+    TerminalRenameFile(AFile->GetFileName(), ANewName);
   }
 }
 
 void TTerminal::DoRenameFile(const UnicodeString & AFileName,
-  const UnicodeString & NewName, bool Move)
+  const UnicodeString & ANewName, bool Move)
 {
-  TMvSessionAction Action(GetActionLog(), GetAbsolutePath(AFileName, true), GetAbsolutePath(NewName, true));
+  TMvSessionAction Action(GetActionLog(), GetAbsolutePath(AFileName, true), GetAbsolutePath(ANewName, true));
   try
   {
     assert(FFileSystem);
-    FFileSystem->RemoteRenameFile(AFileName, NewName);
+    FFileSystem->RemoteRenameFile(AFileName, ANewName);
   }
   catch (Exception & E)
   {
     CommandErrorAriAction(E,
-    FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName.c_str(), NewName.c_str()),
+    FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName.c_str(), ANewName.c_str()),
     [&]()
     {
-      DoRenameFile(AFileName, NewName, Move);
+      DoRenameFile(AFileName, ANewName, Move);
     },
     Action);
   }
@@ -3913,14 +3913,14 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
 }
 
 void TTerminal::DoCopyFile(const UnicodeString & AFileName,
-  const UnicodeString & NewName)
+  const UnicodeString & ANewName)
 {
   try
   {
     assert(FFileSystem);
     if (GetIsCapable(fcRemoteCopy))
     {
-      FFileSystem->RemoteCopyFile(AFileName, NewName);
+      FFileSystem->RemoteCopyFile(AFileName, ANewName);
     }
     else
     {
@@ -3928,15 +3928,15 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
       assert(FCommandSession->GetFSProtocol() == cfsSCP);
       LogEvent("Copying file on command session.");
       FCommandSession->TerminalSetCurrentDirectory(GetCurrDirectory());
-      FCommandSession->FFileSystem->RemoteCopyFile(AFileName, NewName);
+      FCommandSession->FFileSystem->RemoteCopyFile(AFileName, ANewName);
     }
   }
   catch (Exception & E)
   {
-    CommandErrorAri(E, FMTLOAD(COPY_FILE_ERROR, AFileName.c_str(), NewName.c_str()),
+    CommandErrorAri(E, FMTLOAD(COPY_FILE_ERROR, AFileName.c_str(), ANewName.c_str()),
     [&]()
     {
-      DoCopyFile(AFileName, NewName);
+      DoCopyFile(AFileName, ANewName);
     });
   }
 }

@@ -12433,10 +12433,10 @@ void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & /*AFileName*/,
 }
 
 void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
-  const UnicodeString & NewName)
+  const UnicodeString & ANewName)
 {
   UnicodeString FullFileName = core::UnixIncludeTrailingBackslash(FCurrentDirectory) + AFileName;
-  bool res = WebDAVRenameFile(FullFileName.c_str(), NewName.c_str());
+  bool res = WebDAVRenameFile(FullFileName.c_str(), ANewName.c_str());
   if (!res)
   {
     ThrowSkipFileNull();
@@ -12444,7 +12444,7 @@ void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
 }
 
 void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString & /*AFileName*/,
-  const UnicodeString & /*NewName*/)
+  const UnicodeString & /*ANewName*/)
 {
   Error(SNotImplemented, 1012);
 }
