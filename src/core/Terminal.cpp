@@ -895,7 +895,7 @@ void TTerminal::Close()
   if (GetCommandSessionOpened())
   {
     // prevent recursion
-    FCommandSession->SetOnClose(NULL);
+    FCommandSession->SetOnClose(nullptr);
     FCommandSession->Close();
   }
 }
