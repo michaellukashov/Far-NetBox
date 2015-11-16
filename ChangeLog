@@ -1,5 +1,7 @@
-NetBox 2.1.45.416 07.11.2015
+NetBox 2.1.45.417 16.11.2015
 --------------------
+  * Bugfix: SFTP: remote copy file (Shift-F5) does not work
+    (http://forum.farmanager.com/viewtopic.php?p=133660#p133660)
   * Bugfix: Cannot copy file from subst disk
     (http://forum.ru-board.com/topic.cgi?forum=5&topic=31718&start=7880#9)
 
