@@ -614,12 +614,12 @@ UnicodeString Format(const wchar_t * Format, ...)
 {
   va_list Args;
   va_start(Args, Format);
-  UnicodeString Result = ::Format(Format, Args);
+  UnicodeString Result = ::FormatV(Format, Args);
   va_end(Args);
   return Result.c_str();
 }
 
-UnicodeString Format(const wchar_t * Format, va_list Args)
+UnicodeString FormatV(const wchar_t * Format, va_list Args)
 {
   UnicodeString Result;
   if (Format && *Format)

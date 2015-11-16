@@ -634,7 +634,7 @@ void UnicodeString::sprintf(const wchar_t * fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
-  Data = ::Format(fmt, args).c_str();
+  Data = ::FormatV(fmt, args).c_str();
   va_end(args);
 }
 

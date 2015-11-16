@@ -3750,20 +3750,20 @@ void TSFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
 }
 
 void TSFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
-  const UnicodeString & NewName)
+  const UnicodeString & ANewName)
 {
   TSFTPPacket Packet(SSH_FXP_RENAME, FCodePage);
   UnicodeString RealName = LocalCanonify(AFileName);
   Packet.AddPathString(RealName, FUtfStrings);
   UnicodeString TargetName;
-  if (core::UnixExtractFilePath(NewName).IsEmpty())
+  if (core::UnixExtractFilePath(ANewName).IsEmpty())
   {
     // rename case (TTerminal::RenameFile)
-    TargetName = core::UnixExtractFilePath(RealName) + NewName;
+    TargetName = core::UnixExtractFilePath(RealName) + ANewName;
   }
   else
   {
-    TargetName = LocalCanonify(NewName);
+    TargetName = LocalCanonify(ANewName);
   }
   Packet.AddPathString(TargetName, FUtfStrings);
   if (FVersion >= 5)

@@ -134,9 +134,9 @@ const TCommandType DefaultCommandSet[ShellCommandCount] =
   /*Unset*/               {  0,  0, F, F, F, "unset \"%s\"" /* variable */ },
   /*Unalias*/             {  0,  0, F, F, F, "unalias \"%s\"" /* alias */ },
   /*CreateLink*/          {  0,  0, T, F, F, "ln %s \"%s\" \"%s\"" /*symbolic (-s), filename, point to*/},
-  /*CopyFile*/            {  0,  0, T, F, F, "cp -p -r -f \"%s\" \"%s\"" /* file/directory, target name*/},
+  /*CopyFile*/            {  0,  0, T, F, F, "cp -p -r -f %s \"%s\" \"%s\"" /* file/directory, target name*/},
   /*AnyCommand*/          {  0, -1, T, T, F, "%s" },
-  /*Lang*/                {  0,  1, F, F, F, "echo $LANG"},
+  /*Lang*/                {  0,  1, F, F, F, "printenv LANG"},
 };
 #undef F
 #undef T
@@ -223,7 +223,7 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, ...) const
 UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args) const
 {
   UnicodeString Result;
-  Result = ::Format(GetCommands(Cmd).c_str(), args);
+  Result = ::FormatV(GetCommands(Cmd).c_str(), args);
   return Result.c_str();
 }
 
@@ -1226,17 +1226,17 @@ void TSCPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
 }
 
 void TSCPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
-  const UnicodeString & NewName)
+  const UnicodeString & ANewName)
 {
-  ExecCommand2(fsRenameFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
+  ExecCommand2(fsRenameFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(ANewName).c_str());
 }
 
 void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
-  const UnicodeString & NewName)
+  const UnicodeString & ANewName)
 {
   // ExecCommand2(fsCopyFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
   UnicodeString DelimitedFileName = DelimitStr(AFileName);
-  UnicodeString DelimitedNewName = DelimitStr(NewName);
+  UnicodeString DelimitedNewName = DelimitStr(ANewName);
   const UnicodeString AdditionalSwitches = L"-T";
   try
   {
