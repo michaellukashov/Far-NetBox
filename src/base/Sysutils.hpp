@@ -244,7 +244,7 @@ bool CreateDir(const UnicodeString & ADir);
 bool RemoveDir(const UnicodeString & ADir);
 
 UnicodeString Format(const wchar_t * Format, ...);
-UnicodeString Format(const wchar_t * Format, va_list Args);
+UnicodeString FormatV(const wchar_t * Format, va_list Args);
 AnsiString FormatA(const char * Format, ...);
 AnsiString FormatA(const char * Format, va_list Args);
 UnicodeString FmtLoadStr(intptr_t Id, ...);

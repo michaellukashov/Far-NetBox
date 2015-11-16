@@ -223,7 +223,7 @@ UnicodeString TCommandSet::Command(TFSCommand Cmd, ...) const
 UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args) const
 {
   UnicodeString Result;
-  Result = ::Format(GetCommands(Cmd).c_str(), args);
+  Result = ::FormatV(GetCommands(Cmd).c_str(), args);
   return Result.c_str();
 }
 
