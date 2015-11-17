@@ -3222,7 +3222,7 @@ void TSessionData::SetLoginType(TLoginType Value)
 uintptr_t TSessionData::GetCodePageAsNumber() const
 {
   if (FCodePageAsNumber == 0)
-    FCodePageAsNumber = ::GetCodePageAsNumber(GetCodePage());
+    FCodePageAsNumber = CP_UTF8; //::GetCodePageAsNumber(GetCodePage());
   return FCodePageAsNumber;
 }
 
