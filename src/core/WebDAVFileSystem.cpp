@@ -13337,7 +13337,8 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     assert(FFileList != nullptr);
     // this can actually fail in real life,
     // when connected to server with case insensitive paths
-    assert(core::UnixSamePath(GetAbsolutePath(FFileList->GetDirectory(), false), Path));
+    UnicodeString AbsolutePath = GetAbsolutePath(FFileList->GetDirectory(), false);
+    assert(core::UnixSamePath(AbsolutePath, Path));
     USEDPARAM(Path);
 
     for (intptr_t Index = 0; Index < Count; ++Index)
