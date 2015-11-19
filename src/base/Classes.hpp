@@ -508,7 +508,7 @@ public:
 class EWriteError : public std::runtime_error
 {
 public:
-  EWriteError(const char * Msg) :
+  explicit EWriteError(const char * Msg) :
     std::runtime_error(Msg)
   {}
 };
