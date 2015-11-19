@@ -96,7 +96,7 @@ class ECRTExtException : public EOSExtException
 {
 public:
   ECRTExtException();
-  ECRTExtException(const UnicodeString & Msg);
+  explicit ECRTExtException(const UnicodeString & Msg);
 };
 
 class EFatal : public ExtException
