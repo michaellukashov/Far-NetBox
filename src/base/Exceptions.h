@@ -42,10 +42,12 @@ public:
 
   ExtException(const ExtException & E) : Exception(L""), FMoreMessages(nullptr)
   {
+    FHelpKeyword = E.FHelpKeyword;
     AddMoreMessages(&E);
   }
   ExtException & operator =(const ExtException &rhs)
   {
+    FHelpKeyword = rhs.FHelpKeyword;
     Message = rhs.Message;
     AddMoreMessages(&rhs);
     return *this;
