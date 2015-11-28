@@ -1211,24 +1211,23 @@ endif()
 
 add_library(zlib STATIC
   ${LIBS_ROOT}/zlib/src/adler32.c
-#  ${LIBS_ROOT}/zlib/src/compress.c
   ${LIBS_ROOT}/zlib/src/crc32.c
-#  ${LIBS_ROOT}/zlib/src/gzclose.c
-#  ${LIBS_ROOT}/zlib/src/gzlib.c
-#  ${LIBS_ROOT}/zlib/src/gzread.c
-#  ${LIBS_ROOT}/zlib/src/gzwrite.c
   ${LIBS_ROOT}/zlib/src/infback.c
   ${LIBS_ROOT}/zlib/src/inffast.c
   ${LIBS_ROOT}/zlib/src/inflate.c
   ${LIBS_ROOT}/zlib/src/inftrees.c
   ${LIBS_ROOT}/zlib/src/trees.c
-#  ${LIBS_ROOT}/zlib/src/uncompr.c
   ${LIBS_ROOT}/zlib/src/zutil.c
   ${LIBS_ROOT}/zlib/src/match.c
   ${LIBS_ROOT}/zlib/src/deflate.c
   ${LIBS_ROOT}/zlib/src/deflate_slow.c
   ${LIBS_ROOT}/zlib/src/deflate_medium.c
   ${LIBS_ROOT}/zlib/src/deflate_fast.c
+  ${LIBS_ROOT}/zlib/src/arch/x86/crc_folding.c
+  ${LIBS_ROOT}/zlib/src/arch/x86/deflate_quick.c
+  ${LIBS_ROOT}/zlib/src/arch/x86/fill_window_sse.c
+  ${LIBS_ROOT}/zlib/src/arch/x86/insert_string_sse.c
+  ${LIBS_ROOT}/zlib/src/arch/x86/x86.c
 )
 
 set_target_properties(zlib
