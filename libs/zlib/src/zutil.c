@@ -6,9 +6,6 @@
 /* @(#) $Id$ */
 
 #include "zutil.h"
-#ifdef WITH_GZFILEOP
-#  include "gzguts.h"
-#endif
 
 const char * const z_errmsg[10] = {
 "need dictionary",     /* Z_NEED_DICT       2  */

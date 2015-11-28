@@ -319,7 +319,7 @@ bool Win32Check(bool RetVal);
 class EConvertError : public Exception
 {
 public:
-  EConvertError(const UnicodeString & Msg) :
+  explicit EConvertError(const UnicodeString & Msg) :
     Exception(Msg)
   {}
 };
