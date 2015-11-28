@@ -1,5 +1,7 @@
-NetBox 2.1.45.417 16.11.2015
+NetBox 2.1.45.418 28.11.2015
 --------------------
+  * Bugfix: Bookmarks are not preserved between FAR sessions
+    (https://github.com/michaellukashov/Far-NetBox/issues/174)
   * Bugfix: SFTP: remote copy file (Shift-F5) does not work
     (http://forum.farmanager.com/viewtopic.php?p=133660#p133660)
   * Update putty sources to 0.66
