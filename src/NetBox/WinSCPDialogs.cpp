@@ -4204,10 +4204,10 @@ void TSessionDialog::WindowsEnvironmentButtonClick(
 
 void TSessionDialog::FillCodePageEdit()
 {
-  CodePageEditAdd(CP_ACP);
   // CodePageEditAdd(CP_UTF8);
   CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
     static_cast<TObject *>(ToPtr(65001)));
+  CodePageEditAdd(CP_ACP);
   CodePageEditAdd(CP_OEMCP);
   CodePageEditAdd(20866); // KOI8-r
 }
