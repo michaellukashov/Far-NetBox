@@ -46,7 +46,7 @@ const wchar_t UrlParamValueSeparator = L'=';
 //const wchar_t * UrlSaveParamName = L"save";
 //const wchar_t * PassphraseOption = L"passphrase";
 
-const uintptr_t CONST_DEFAULT_CODEPAGE = CP_ACP;
+const uintptr_t CONST_DEFAULT_CODEPAGE = CP_UTF8;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
 
 static TDateTime SecToDateTime(intptr_t Sec)
@@ -3222,7 +3222,7 @@ void TSessionData::SetLoginType(TLoginType Value)
 uintptr_t TSessionData::GetCodePageAsNumber() const
 {
   if (FCodePageAsNumber == 0)
-    FCodePageAsNumber = CP_UTF8; //::GetCodePageAsNumber(GetCodePage());
+    FCodePageAsNumber = ::GetCodePageAsNumber(GetCodePage());
   return FCodePageAsNumber;
 }
 
