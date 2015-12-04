@@ -1,4 +1,3 @@
-#pragma once
 /* crypto/des/des_old.h -*- mode:C; c-file-style: "eay" -*- */
 
 /*-

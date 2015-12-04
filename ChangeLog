@@ -1,5 +1,6 @@
-NetBox 2.1.45.418 28.11.2015
+NetBox 2.1.45.419 04.12.2015
 --------------------
+  * Update openssl sources to 1.0.2e
   * Bugfix: Bookmarks are not preserved between FAR sessions
     (https://github.com/michaellukashov/Far-NetBox/issues/174)
   * Bugfix: SFTP: remote copy file (Shift-F5) does not work
