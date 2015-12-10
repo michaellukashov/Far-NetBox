@@ -7428,7 +7428,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
     if (ssh->sccipher)
     logeventf(ssh, "Initialized %.200s server->client encryption",
 	      ssh->sccipher->text_name);
-    if (ssh->scmac)
+    if (ssh->scmac && ssh->sccipher)
     logeventf(ssh, "Initialized %.200s server->client MAC algorithm%s%s",
 	      ssh->scmac->text_name,
               ssh->scmac_etm ? " (in ETM mode)" : "",
