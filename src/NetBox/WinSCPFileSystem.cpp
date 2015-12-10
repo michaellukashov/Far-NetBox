@@ -205,7 +205,7 @@ public:
 
 protected:
   virtual void Prompt(const UnicodeString & APrompt,
-    UnicodeString & Value);
+    UnicodeString & Value) const;
 
 private:
   TCustomFarPlugin * FPlugin;
@@ -219,7 +219,7 @@ TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
 }
 
 void TFarInteractiveCustomCommand::Prompt(const UnicodeString & APrompt,
-  UnicodeString & Value)
+  UnicodeString & Value) const
 {
   UnicodeString Prompt = APrompt;
   if (Prompt.IsEmpty())
