@@ -35,7 +35,7 @@ public:
   UnicodeString GetOSVersionStr() const;
   TVSFixedFileInfo * GetFixedApplicationInfo() const;
   void * GetApplicationInfo() const;
-  virtual UnicodeString GetVersionStr() const;
+  virtual UnicodeString GetProductVersionStr() const;
   virtual UnicodeString GetVersion() const;
   UnicodeString GetProductVersion() const;
   UnicodeString GetProductName() const;

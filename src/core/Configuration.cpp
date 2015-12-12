@@ -797,7 +797,7 @@ bool TConfiguration::GetIsUnofficial() const
   #endif
 }
 
-UnicodeString TConfiguration::GetVersionStr() const
+UnicodeString TConfiguration::GetProductVersionStr() const
 {
   UnicodeString Result;
   TGuard Guard(FCriticalSection);
