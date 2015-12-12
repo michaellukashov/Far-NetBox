@@ -778,7 +778,7 @@ UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName
   return GetFileFileInfoString(L"FileDescription", AFileName);
 }
 
-UnicodeString TConfiguration::GetProductVersion() const
+UnicodeString TConfiguration::GetFileProductVersion() const
 {
   return GetFileProductVersion(L"");
 }
@@ -839,7 +839,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
 //    AddToList(BuildStr, DateStr, L" ");
 //    #endif
 
-    Result = FMTLOAD(VERSION2, GetVersion().c_str(), Build);
+    Result = FMTLOAD(VERSION2, GetProductVersion().c_str(), Build);
 
 //    #ifndef BUILD_OFFICIAL
 //    Result += L" " + LoadStr(VERSION_DONT_DISTRIBUTE);
@@ -852,7 +852,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
   return Result;
 }
 
-UnicodeString TConfiguration::GetVersion() const
+UnicodeString TConfiguration::GetProductVersion() const
 {
   TGuard Guard(FCriticalSection);
   UnicodeString Result;

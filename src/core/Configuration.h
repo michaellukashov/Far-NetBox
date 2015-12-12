@@ -36,8 +36,8 @@ public:
   TVSFixedFileInfo * GetFixedApplicationInfo() const;
   void * GetApplicationInfo() const;
   virtual UnicodeString GetProductVersionStr() const;
-  virtual UnicodeString GetVersion() const;
-  UnicodeString GetProductVersion() const;
+  virtual UnicodeString GetProductVersion() const;
+  UnicodeString GetFileProductVersion() const;
   UnicodeString GetProductName() const;
   UnicodeString GetCompanyName() const;
   UnicodeString GetStoredSessionsSubKey() const;
