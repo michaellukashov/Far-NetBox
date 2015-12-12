@@ -12823,7 +12823,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()), "",
       [&]()
       {
-        THROWOSIFFALSE(::DeleteFile(ApiPath(AFileName).c_str()));
+        THROWOSIFFALSE(::RemoveFile(ApiPath(AFileName)));
       });
     }
   }

@@ -604,7 +604,7 @@ bool ForceDirectories(const UnicodeString & ADir)
   return Result;
 }
 
-bool DeleteFile(const UnicodeString & AFileName)
+bool RemoveFile(const UnicodeString & AFileName)
 {
   ::DeleteFile(ApiPath(AFileName).c_str());
   return !::FileExists(AFileName);

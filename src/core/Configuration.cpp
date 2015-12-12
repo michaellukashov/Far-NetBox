@@ -1129,7 +1129,7 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
         ::FileExists(ApiPath(PrevRandomSeedFileName)))
     {
       // ignore any error
-      ::DeleteFile(ApiPath(PrevRandomSeedFileName));
+      ::RemoveFile(ApiPath(PrevRandomSeedFileName));
     }
   }
 }

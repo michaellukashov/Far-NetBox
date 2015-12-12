@@ -384,7 +384,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
     }
     else
     {
-      retval = ::DeleteFile(ApiPath(ADirName + L"\\" + SearchRec.Name));
+      retval = ::RemoveFile(ApiPath(ADirName + L"\\" + SearchRec.Name));
     }
 
     if (retval)
@@ -398,7 +398,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
         }
         else
         {
-          retval = ::DeleteFile(ApiPath(ADirName + L"\\" + SearchRec.Name));
+          retval = ::RemoveFile(ApiPath(ADirName + L"\\" + SearchRec.Name));
         }
 
         if (!retval)
