@@ -59,7 +59,7 @@ public:
 protected:
   virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) const;
   virtual bool PatternReplacement(const UnicodeString & Pattern,
-    UnicodeString & Replacement, bool & Delimit);
+    UnicodeString & Replacement, bool & Delimit) const;
   virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 
 private:

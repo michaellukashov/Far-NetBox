@@ -20,22 +20,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\adler32.c" />
-    <ClCompile Include="src\compress.c" />
     <ClCompile Include="src\crc32.c" />
     <ClCompile Include="src\deflate.c" />
     <ClCompile Include="src\deflate_slow.c" />
     <ClCompile Include="src\deflate_medium.c" />
     <ClCompile Include="src\deflate_fast.c" />
-    <ClCompile Include="src\gzclose.c" />
-    <ClCompile Include="src\gzlib.c" />
-    <ClCompile Include="src\gzread.c" />
-    <ClCompile Include="src\gzwrite.c" />
+    <ClCompile Include="src\arch\x86\crc_folding.c" />
+    <ClCompile Include="src\arch\x86\deflate_quick.c" />
+    <ClCompile Include="src\arch\x86\fill_window_sse.c" />
+    <ClCompile Include="src\arch\x86\insert_string_sse.c" />
+    <ClCompile Include="src\arch\x86\x86.c" />
     <ClCompile Include="src\infback.c" />
     <ClCompile Include="src\inffast.c" />
     <ClCompile Include="src\inflate.c" />
     <ClCompile Include="src\inftrees.c" />
     <ClCompile Include="src\trees.c" />
-    <ClCompile Include="src\uncompr.c" />
     <ClCompile Include="src\zutil.c" />
     <ClCompile Include="src\match.c" />
   </ItemGroup>
@@ -136,6 +135,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,6 +161,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <CallingConvention>Cdecl</CallingConvention>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -189,6 +190,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <CallingConvention>Cdecl</CallingConvention>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -200,6 +202,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

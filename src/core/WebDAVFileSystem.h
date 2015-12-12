@@ -69,9 +69,9 @@ public:
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& File);
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
-    const UnicodeString & NewName);
+    const UnicodeString & ANewName);
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
-    const UnicodeString & NewName);
+    const UnicodeString & ANewName);
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);

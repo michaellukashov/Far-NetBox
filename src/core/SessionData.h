@@ -314,7 +314,7 @@ public:
   void SetFtpAccount(const UnicodeString & Value);
   void SetFtpPingInterval(intptr_t Value);
   void SetFtpPingType(TPingType Value);
-  void SetFtpTransferActiveImmediately(bool Value);
+  void SetFtpTransferActiveImmediately(TAutoSwitch Value);
   void SetFtps(TFtps Value);
   void SetMinTlsVersion(TTlsVersion Value);
   void SetMaxTlsVersion(TTlsVersion Value);
@@ -497,7 +497,7 @@ public:
   UnicodeString GetFtpAccount() const { return FFtpAccount; }
   intptr_t GetFtpPingInterval() const { return FFtpPingInterval; }
   TPingType GetFtpPingType() const { return FFtpPingType; }
-  bool GetFtpTransferActiveImmediately() const { return FFtpTransferActiveImmediately; }
+  TAutoSwitch GetFtpTransferActiveImmediately() const { return FFtpTransferActiveImmediately; }
   TFtps GetFtps() const { return FFtps; }
   TTlsVersion GetMinTlsVersion() const { return FMinTlsVersion; }
   TTlsVersion GetMaxTlsVersion() const { return FMaxTlsVersion; }
@@ -634,7 +634,7 @@ private:
   UnicodeString FFtpAccount;
   intptr_t FFtpPingInterval;
   TPingType FFtpPingType;
-  bool FFtpTransferActiveImmediately;
+  TAutoSwitch FFtpTransferActiveImmediately;
   TFtps FFtps;
   TTlsVersion FMinTlsVersion;
   TTlsVersion FMaxTlsVersion;
@@ -795,7 +795,7 @@ private:
   void __fastcall SetFtpAccount(UnicodeString value);
   void __fastcall SetFtpPingInterval(int value);
   void __fastcall SetFtpPingType(TPingType value);
-  void __fastcall SetFtpTransferActiveImmediately(bool value);
+  void __fastcall SetFtpTransferActiveImmediately(TAutoSwitch value);
   void __fastcall SetFtps(TFtps value);
   void __fastcall SetMinTlsVersion(TTlsVersion value);
   void __fastcall SetMaxTlsVersion(TTlsVersion value);
@@ -985,7 +985,7 @@ public:
   __property int FtpPingInterval  = { read=FFtpPingInterval, write=SetFtpPingInterval };
   __property TDateTime FtpPingIntervalDT  = { read=GetFtpPingIntervalDT };
   __property TPingType FtpPingType = { read = FFtpPingType, write = SetFtpPingType };
-  __property bool FtpTransferActiveImmediately = { read = FFtpTransferActiveImmediately, write = SetFtpTransferActiveImmediately };
+  __property TAutoSwitch FtpTransferActiveImmediately = { read = FFtpTransferActiveImmediately, write = SetFtpTransferActiveImmediately };
   __property TFtps Ftps = { read = FFtps, write = SetFtps };
   __property TTlsVersion MinTlsVersion = { read = FMinTlsVersion, write = SetMinTlsVersion };
   __property TTlsVersion MaxTlsVersion = { read = FMaxTlsVersion, write = SetMaxTlsVersion };

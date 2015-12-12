@@ -88,9 +88,9 @@ public:
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& AFile);
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
-    const UnicodeString & NewName);
+    const UnicodeString & ANewName);
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
-    const UnicodeString & NewName);
+    const UnicodeString & ANewName);
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
@@ -301,6 +301,7 @@ private:
   //bool FSupportsSiteSymlink;
   bool FSupportsAnyChecksumFeature;
   UnicodeString FLastCommandSent;
+  bool FTransferActiveImmediately;
   mutable UnicodeString FOptionScratch;
 };
 

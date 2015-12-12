@@ -46,7 +46,7 @@ const wchar_t UrlParamValueSeparator = L'=';
 //const wchar_t * UrlSaveParamName = L"save";
 //const wchar_t * PassphraseOption = L"passphrase";
 
-const uintptr_t CONST_DEFAULT_CODEPAGE = CP_ACP;
+const uintptr_t CONST_DEFAULT_CODEPAGE = CP_UTF8;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
 
 static TDateTime SecToDateTime(intptr_t Sec)
@@ -219,7 +219,7 @@ void TSessionData::Default()
   SetFtpAccount(L"");
   SetFtpPingInterval(30);
   SetFtpPingType(ptDummyCommand);
-  SetFtpTransferActiveImmediately(false);
+  SetFtpTransferActiveImmediately(asAuto);
   SetFtps(ftpsNone);
   SetMinTlsVersion(tls10);
   SetMaxTlsVersion(tls12);
@@ -738,7 +738,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetFtpAccount(Storage->ReadString("FtpAccount", GetFtpAccount()));
   SetFtpPingInterval(Storage->ReadInteger("FtpPingInterval", GetFtpPingInterval()));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger("FtpPingType", GetFtpPingType())));
-  SetFtpTransferActiveImmediately(Storage->ReadBool("FtpTransferActiveImmediately", GetFtpTransferActiveImmediately()));
+  SetFtpTransferActiveImmediately(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpTransferActiveImmediately2", GetFtpTransferActiveImmediately())));
   SetFtps(static_cast<TFtps>(Storage->ReadInteger("Ftps", GetFtps())));
   SetFtpListAll(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpListAll", GetFtpListAll())));
   SetFtpDupFF(Storage->ReadBool("FtpDupFF", GetFtpDupFF()));
@@ -1024,7 +1024,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA(String, FtpAccount);
       WRITE_DATA(Integer, FtpPingInterval);
       WRITE_DATA(Integer, FtpPingType);
-      WRITE_DATA(Bool, FtpTransferActiveImmediately);
+      WRITE_DATA_EX(Integer, "FtpTransferActiveImmediately2", GetFtpTransferActiveImmediately(), );
       WRITE_DATA(Integer, Ftps);
       WRITE_DATA(Integer, FtpListAll);
       WRITE_DATA(Integer, FtpHost);
@@ -1656,7 +1656,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       if ((RemoteDirectory[RemoteDirectory.Length()] != L'/') &&
           (AFileName != nullptr))
       {
-        *AFileName = DecodeUrlChars(core::UnixExtractFileName(RemoteDirectory));
+        *AFileName = DecodeUrlChars(base::UnixExtractFileName(RemoteDirectory));
         RemoteDirectory = core::UnixExtractFilePath(RemoteDirectory);
       }
       SetRemoteDirectory(DecodeUrlChars(RemoteDirectory));
@@ -3065,7 +3065,7 @@ void TSessionData::SetFtpPingType(TPingType Value)
   SET_SESSION_PROPERTY(FtpPingType);
 }
 
-void TSessionData::SetFtpTransferActiveImmediately(bool Value)
+void TSessionData::SetFtpTransferActiveImmediately(TAutoSwitch Value)
 {
   SET_SESSION_PROPERTY(FtpTransferActiveImmediately);
 }

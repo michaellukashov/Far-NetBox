@@ -567,8 +567,6 @@ UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & APath, bool Sim
 UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & APath);
 UnicodeString UnixExtractFileDir(const UnicodeString & APath);
 UnicodeString UnixExtractFilePath(const UnicodeString & APath);
-UnicodeString UnixExtractFileName(const UnicodeString & APath);
-UnicodeString UnixExtractFileExt(const UnicodeString & APath);
 Boolean UnixSamePath(const UnicodeString & APath1, const UnicodeString & APath2);
 bool UnixIsChildPath(const UnicodeString & Parent, const UnicodeString & Child);
 bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);

@@ -33,9 +33,9 @@ UnicodeString TBookmarks::Keys[] = { "Local", "Remote", "ShortCuts", "Options" }
 
 void TBookmarks::Load(THierarchicalStorage * Storage)
 {
-  for (intptr_t Index1 = 0; Index1 <= 3; ++Index1)
+  for (intptr_t Idx = 0; Idx <= 3; ++Idx)
   {
-    if (Storage->OpenSubKey(Keys[Index1], false))
+    if (Storage->OpenSubKey(Keys[Idx], false))
     {
       std::unique_ptr<TStrings> BookmarkKeys(new TStringList());
       Storage->GetSubKeyNames(BookmarkKeys.get());
@@ -50,9 +50,9 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
             BookmarkList = new TBookmarkList();
             FBookmarkLists->AddObject(Key, BookmarkList);
           }
-          if (Index2 < 3)
+          if (Idx < 3)
           {
-            LoadLevel(Storage, L"", Index2, BookmarkList);
+            LoadLevel(Storage, L"", Idx, BookmarkList);
           }
           else
           {

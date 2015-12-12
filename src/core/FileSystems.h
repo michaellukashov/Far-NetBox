@@ -188,9 +188,9 @@ public:
   virtual void ReadSymlink(TRemoteFile * SymLinkFile,
     TRemoteFile *& File) = 0;
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
-    const UnicodeString & NewName) = 0;
+    const UnicodeString & ANewName) = 0;
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
-    const UnicodeString & NewName) = 0;
+    const UnicodeString & ANewName) = 0;
   virtual TStrings * GetFixedPaths() = 0;
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable) = 0;

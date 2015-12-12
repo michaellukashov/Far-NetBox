@@ -274,7 +274,7 @@ UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, boo
   else
   {
     Dir = ::ExtractFilePath(Result);
-    Name = core::ExtractFileName(Result, false);
+    Name = base::ExtractFileName(Result, false);
 
     if (Dir.Length() >= 2 && Dir[2] == L':')
     {
@@ -442,7 +442,7 @@ int FakeFileImageIndex(const UnicodeString & /*AFileName*/, uint32_t /*Attrs*/,
   }
   // this should be somewhere else, probably in TUnixDirView,
   // as the "partial" overlay is added there too
-  if (AnsiSameText(UnixExtractFileExt(FileName), PARTIAL_EXT))
+  if (AnsiSameText(base::UnixExtractFileExt(FileName), PARTIAL_EXT))
   {
     static const size_t PartialExtLen = _countof(PARTIAL_EXT) - 1;
     FileName.SetLength(FileName.Length() - PartialExtLen);
@@ -1003,7 +1003,7 @@ UnicodeString TRemoteFile::GetModificationStr() const
 
 UnicodeString TRemoteFile::GetExtension() const
 {
-  return core::UnixExtractFileExt(FFileName);
+  return base::UnixExtractFileExt(FFileName);
 }
 
 void TRemoteFile::SetRights(TRights * Value)
@@ -1317,7 +1317,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             Abort();
           }
         }
-        FFileName = core::UnixExtractFileName(::Trim(ListingStr));
+        FFileName = base::UnixExtractFileName(::Trim(ListingStr));
       }
     }
   }
@@ -1978,7 +1978,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
   UnicodeString Key;
   // hack to clear at least local sym-link change in case symlink is deleted
   DirectoryChangeKey(core::UnixExcludeTrailingBackslash(core::UnixExtractFilePath(TargetDir)),
-    core::UnixExtractFileName(TargetDir), Key);
+    base::UnixExtractFileName(TargetDir), Key);
 
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {

@@ -80,7 +80,7 @@ public:
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& AFile);
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
-    const UnicodeString & NewName);
+    const UnicodeString & ANewName);
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName);
   virtual TStrings * GetFixedPaths();
@@ -104,7 +104,7 @@ protected:
   AnsiString FEOL;
   TList * FPacketReservations;
   rde::vector<uintptr_t> FPacketNumbers;
-  SSH_FX_TYPES FPreviousLoggedPacket;
+  SSH_FXP_TYPES FPreviousLoggedPacket;
   int FNotLoggedPackets;
   int FBusy;
   void * FBusyToken;

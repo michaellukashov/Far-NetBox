@@ -12433,10 +12433,10 @@ void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & /*AFileName*/,
 }
 
 void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
-  const UnicodeString & NewName)
+  const UnicodeString & ANewName)
 {
   UnicodeString FullFileName = core::UnixIncludeTrailingBackslash(FCurrentDirectory) + AFileName;
-  bool res = WebDAVRenameFile(FullFileName.c_str(), NewName.c_str());
+  bool res = WebDAVRenameFile(FullFileName.c_str(), ANewName.c_str());
   if (!res)
   {
     ThrowSkipFileNull();
@@ -12444,7 +12444,7 @@ void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
 }
 
 void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString & /*AFileName*/,
-  const UnicodeString & /*NewName*/)
+  const UnicodeString & /*ANewName*/)
 {
   Error(SNotImplemented, 1012);
 }
@@ -12663,7 +12663,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
     FileName = AFilesToCopy->GetString(Index);
     TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
-    FileNameOnly = core::ExtractFileName(RealFileName, false);
+    FileNameOnly = base::ExtractFileName(RealFileName, false);
 
     {
       bool Success = false;
@@ -12774,7 +12774,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
   }
   else
   {
-    UnicodeString DestFileName = CopyParam->ChangeFileName(core::ExtractFileName(RealFileName, false),
+    UnicodeString DestFileName = CopyParam->ChangeFileName(base::ExtractFileName(RealFileName, false),
       osLocal, FLAGSET(Flags, tfFirstLevel));
 
     FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
@@ -12843,7 +12843,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName = CopyParam->ChangeFileName(
-    core::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false), osLocal,
+    base::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false), osLocal,
     FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = core::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
   // create DestFullName if it does not exist
@@ -13077,7 +13077,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TDownloadSessionAction & Action)
 {
-  UnicodeString FileNameOnly = core::UnixExtractFileName(AFileName);
+  UnicodeString FileNameOnly = base::UnixExtractFileName(AFileName);
 
   Action.SetFileName(AFileName);
 
@@ -13095,7 +13095,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 
   OperationProgress->SetFile(FileNameOnly);
 
-  UnicodeString DestFileName = CopyParam->ChangeFileName(core::UnixExtractFileName(AFile->GetFileName()),
+  UnicodeString DestFileName = CopyParam->ChangeFileName(base::UnixExtractFileName(AFile->GetFileName()),
     osRemote, FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = TargetDir + DestFileName;
 
@@ -13337,7 +13337,8 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     assert(FFileList != nullptr);
     // this can actually fail in real life,
     // when connected to server with case insensitive paths
-    assert(core::UnixSamePath(GetAbsolutePath(FFileList->GetDirectory(), false), Path));
+    UnicodeString AbsolutePath = GetAbsolutePath(FFileList->GetDirectory(), false);
+    assert(core::UnixSamePath(AbsolutePath, Path));
     USEDPARAM(Path);
 
     for (intptr_t Index = 0; Index < Count; ++Index)

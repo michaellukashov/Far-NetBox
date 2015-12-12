@@ -614,12 +614,12 @@ UnicodeString Format(const wchar_t * Format, ...)
 {
   va_list Args;
   va_start(Args, Format);
-  UnicodeString Result = ::Format(Format, Args);
+  UnicodeString Result = ::FormatV(Format, Args);
   va_end(Args);
   return Result.c_str();
 }
 
-UnicodeString Format(const wchar_t * Format, va_list Args)
+UnicodeString FormatV(const wchar_t * Format, va_list Args)
 {
   UnicodeString Result;
   if (Format && *Format)
@@ -1133,8 +1133,8 @@ UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeStri
 UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str)
 {
   UnicodeString Result = Str;
-  if ((Str.Length() > 0) && ((Str[Str.Length()] == L'/') ||
-      (Str[Str.Length()] == L'\\')))
+  if ((Result.Length() > 0) && ((Result[Result.Length()] == L'/') ||
+      (Result[Result.Length()] == L'\\')))
   {
     Result.SetLength(Result.Length() - 1);
   }
@@ -1144,8 +1144,9 @@ UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str)
 UnicodeString IncludeTrailingBackslash(const UnicodeString & Str)
 {
   UnicodeString Result = Str;
-  if ((Str.Length() == 0) || ((Str[Str.Length()] != L'/') &&
-    (Str[Str.Length()] != L'\\')))
+  intptr_t L = Result.Length();
+  if ((Result.Length() == 0) || ((Result[Result.Length()] != L'/') &&
+    (Result[Result.Length()] != L'\\')))
   {
     Result += L'\\';
   }

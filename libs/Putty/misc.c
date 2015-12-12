@@ -465,7 +465,7 @@ char *fgetline(FILE *fp)
     int size = 512, len = 0;
     while (fgets(ret + len, size - len, fp)) {
 	len += strlen(ret + len);
-	if (ret[len-1] == '\n')
+	if (len > 0 && ret[len-1] == '\n')
 	    break;		       /* got a newline, we're done */
 	size = len + 512;
 	ret = sresize(ret, size, char);
@@ -588,7 +588,7 @@ int base64_decode_atom(const char *atom, unsigned char *out)
 /* MP:
 * Default granule of 512 leads to low performance.
 */
-#define BUFFER_MIN_GRANULE  512*2*32
+#define BUFFER_MIN_GRANULE  32*2*512
 
 struct bufchain_granule {
     struct bufchain_granule *next;
@@ -1072,7 +1072,7 @@ int match_ssh_id(int stringlen, const void *string, const char *id)
 void *get_ssh_string(int *datalen, const void **data, int *stringlen)
 {
     void *ret;
-    int len;
+    unsigned int len;
 
     if (*datalen < 4)
         return NULL;
@@ -1094,4 +1094,15 @@ int get_ssh_uint32(int *datalen, const void **data, unsigned *ret)
     *datalen -= 4;
     *data = (const char *)*data + 4;
     return TRUE;
+}
+
+int strstartswith(const char *s, const char *t)
+{
+    return !memcmp(s, t, strlen(t));
+}
+
+int strendswith(const char *s, const char *t)
+{
+    size_t slen = strlen(s), tlen = strlen(t);
+    return slen >= tlen && !strcmp(s + (slen - tlen), t);
 }

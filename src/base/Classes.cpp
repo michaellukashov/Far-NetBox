@@ -14,7 +14,7 @@
 #if (_MSC_VER >= 1900)
 
 extern "C" {
-	FILE* __iob_func = NULL;
+	FILE* __iob_func = nullptr;
 }
 #endif
 
@@ -1903,10 +1903,10 @@ int64_t TRegistry::ReadInt64(const UnicodeString & Name)
 UnicodeString TRegistry::ReadString(const UnicodeString & Name)
 {
   UnicodeString Result;
-  TRegDataType RegData = rdUnknown;
   intptr_t Len = GetDataSize(Name);
   if (Len > 0)
   {
+    TRegDataType RegData = rdUnknown;
     Result.SetLength(Len);
     GetData(Name, static_cast<void *>(const_cast<wchar_t *>(Result.c_str())), Len, RegData);
     if ((RegData == rdString) || (RegData == rdExpandString))

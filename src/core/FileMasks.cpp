@@ -392,7 +392,7 @@ bool TFileMasks::MatchesMasks(const UnicodeString & AFileName, bool Directory,
 
   if (!Result && Directory && !core::IsUnixRootPath(APath) && Recurse)
   {
-    UnicodeString ParentFileName = core::UnixExtractFileName(APath);
+    UnicodeString ParentFileName = base::UnixExtractFileName(APath);
     UnicodeString ParentPath = core::SimpleUnixExcludeTrailingBackslash(core::UnixExtractFilePath(APath));
     // Pass Params down or not?
     // Currently it includes Size/Time only, what is not used for directories.
@@ -444,12 +444,12 @@ bool TFileMasks::Matches(const UnicodeString & AFileName, bool Local,
     {
       Path = core::ToUnixPath(::ExcludeTrailingBackslash(Path));
     }
-    Result = Matches(core::ExtractFileName(AFileName, false), Directory, Path, Params,
+    Result = Matches(base::ExtractFileName(AFileName, false), Directory, Path, Params,
       RecurseInclude, ImplicitMatch);
   }
   else
   {
-    Result = Matches(core::UnixExtractFileName(AFileName), Directory,
+    Result = Matches(base::UnixExtractFileName(AFileName), Directory,
       core::SimpleUnixExcludeTrailingBackslash(core::UnixExtractFilePath(AFileName)), Params,
       RecurseInclude, ImplicitMatch);
   }

@@ -500,7 +500,7 @@ public:
 class EReadError : public std::runtime_error
 {
 public:
-  EReadError(const char * Msg) :
+  explicit EReadError(const char * Msg) :
     std::runtime_error(Msg)
   {}
 };
@@ -508,7 +508,7 @@ public:
 class EWriteError : public std::runtime_error
 {
 public:
-  EWriteError(const char * Msg) :
+  explicit EWriteError(const char * Msg) :
     std::runtime_error(Msg)
   {}
 };

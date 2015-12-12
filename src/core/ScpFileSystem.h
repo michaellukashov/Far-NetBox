@@ -60,9 +60,9 @@ public:
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& File);
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
-    const UnicodeString & NewName);
+    const UnicodeString & ANewName);
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
-    const UnicodeString & NewName);
+    const UnicodeString & ANewName);
   virtual TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
@@ -101,9 +101,9 @@ private:
   bool IsLastLine(UnicodeString & Line);
   static bool IsTotalListingLine(const UnicodeString & Line);
   void EnsureLocation();
-  void ExecCommand(const UnicodeString & Cmd, intptr_t Params,
+  void ExecCommand2(const UnicodeString & Cmd, intptr_t Params,
     const UnicodeString & CmdString);
-  void ExecCommand2(TFSCommand Cmd, intptr_t Params, ...);
+  void ExecCommand(TFSCommand Cmd, intptr_t Params, ...);
   void ReadCommandOutput(intptr_t Params, const UnicodeString * Cmd = nullptr);
   void SCPResponse(bool * GotLastLine = nullptr);
   void SCPDirectorySource(const UnicodeString & DirectoryName,
