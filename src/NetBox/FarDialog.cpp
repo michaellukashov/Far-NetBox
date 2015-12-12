@@ -2263,6 +2263,7 @@ void TFarList::SetCurPos(intptr_t Position, intptr_t TopIndex)
   TFarDialog * Dlg = DialogItem->GetDialog();
   assert(Dlg);
   assert(Dlg->GetHandle());
+  USEDPARAM(Dlg);
   FarListPos ListPos;
   ListPos.SelectPos = static_cast<int>(Position);
   ListPos.TopPos = static_cast<int>(TopIndex);
