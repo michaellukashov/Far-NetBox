@@ -4176,6 +4176,9 @@ TTerminal * TTerminal::GetCommandSession()
   return FCommandSession;
 }
 
+#pragma warning(push)
+#pragma warning(disable: 4512) // assignment operator could not be generated
+
 class TOutputProxy : public TObject
 {
 public:
@@ -4211,6 +4214,8 @@ private:
   TCallSessionAction & FAction;
   TCaptureOutputEvent FOutputEvent;
 };
+
+#pragma warning(pop)
 
 void TTerminal::AnyCommand(const UnicodeString & Command,
   TCaptureOutputEvent OutputEvent)
