@@ -10,8 +10,10 @@ if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far2)
 endif()
 
-if(NOT DEFINED CONF)
-  set(CONF "x86")
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(PROJECT_PLATFORM "x64")
+else()
+  set(PROJECT_PLATFORM "x86")
 endif()
 
 if(NOT DEFINED PROJECT_ROOT OR PROJECT_ROOT STREQUAL "")
@@ -27,7 +29,7 @@ endif()
 
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 include(CMakeDetermineCXXCompiler)
-message("System: ${CMAKE_SYSTEM_NAME}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
+message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
 
 set(LIBS_ROOT ${PROJECT_ROOT}/libs)
 set(SRC_ROOT ${PROJECT_ROOT}/src)
@@ -41,7 +43,7 @@ set(CMAKE_C_FLAGS "-D_WINDOWS -DWIN32 -D_SCL_SECURE_NO_WARNINGS -DAPR_DECLARE_ST
 #-D_WINDLL -D_USRDLL
 set(CMAKE_C_FLAGS "-DCOM_NO_WINDOWS_H ${CMAKE_C_FLAGS}")
 
-if(CONF STREQUAL "x64")
+if(PROJECT_PLATFORM STREQUAL "x64")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN64")
 else()
 endif()
@@ -153,7 +155,7 @@ include_directories(
   ${LIBS_ROOT}/apr/include/arch/unix
   ${LIBS_ROOT}/rdestl
 
-  ${LIBS_ROOT}/openssl/${CONF}/inc32
+  ${LIBS_ROOT}/openssl/${PROJECT_PLATFORM}/inc32
   ${LIBS_ROOT}/openssl
   ${LIBS_ROOT}/openssl/crypto
   ${LIBS_ROOT}/openssl/crypto/asn1
@@ -181,7 +183,7 @@ add_custom_target(NETBOX_SOURCES SOURCES
 )
 
 if(MSVC)
-if(CONF STREQUAL "x86")
+if(PROJECT_PLATFORM STREQUAL "x86")
 
 find_program(MASM_EXECUTABLE ml)
 # message("masm: ${MASM_EXECUTABLE}")
@@ -204,17 +206,17 @@ set(NETBOX_SOURCES ${NETBOX_SOURCES}
   ${ASM_OBJECTS}
 )
 
-endif(CONF STREQUAL "x86")
+endif(PROJECT_PLATFORM STREQUAL "x86")
 endif(MSVC)
 
 # add_library(libeay32 STATIC IMPORTED)
 # set_property(TARGET libeay32
-  # PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${CONF}/libeay32.lib
+  # PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${PROJECT_PLATFORM}/libeay32.lib
 # )
 
 # add_library(ssleay32 STATIC IMPORTED)
 # set_property(TARGET ssleay32
-  # PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${CONF}/ssleay32.lib
+  # PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${PROJECT_PLATFORM}/ssleay32.lib
 # )
 
 #-------------------------------------------------------------------------------
@@ -294,7 +296,7 @@ add_dependencies(NetBox
   rdestl
 )
 
-set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${CONF}/Plugins/NetBox)
+set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
 string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 
 add_custom_command(TARGET NetBox
@@ -311,7 +313,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 add_custom_command(TARGET NetBox
   POST_BUILD
   DEPENDS ${BUILD_DIR}\\NetBox.dll
-  COMMAND scripts\\make_dist.cmd ${FAR_VERSION} ${CONF}
+  COMMAND scripts\\make_dist.cmd ${FAR_VERSION} ${PROJECT_PLATFORM}
   WORKING_DIRECTORY ${SRC_ROOT}/NetBox
   VERBATIM
 )
@@ -930,7 +932,7 @@ set(OPENSSL_COMPILE_FLAGS "/TC")
 elseif(CMAKE_COMPILER_IS_MINGW)
 set(OPENSSL_COMPILE_FLAGS "")
 endif()
-if(CONF STREQUAL "x64")
+if(PROJECT_PLATFORM STREQUAL "x64")
 set(OPENSSL_COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS} -DOPENSSL_SYSNAME_WIN32 -DOPENSSL_SYSNAME_WIN64")
 else()
 set(OPENSSL_COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS} -DOPENSSL_SYSNAME_WIN32")
@@ -1318,7 +1320,7 @@ include_directories(
   ${LIBS_ROOT}/boost
 )
 
-if(CONF STREQUAL "x64")
+if(PROJECT_PLATFORM STREQUAL "x64")
 set(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage/x64)
 else()
 set(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage)
