@@ -262,6 +262,9 @@ private:
 #define USEDPARAM(p) (void)(p)
 #endif
 
+#pragma warning(push)
+#pragma warning(disable: 4512) // assignment operator could not be generated
+
 template<class T>
 class TValueRestorer : public TObject
 {
@@ -331,6 +334,8 @@ public:
     assert(!FArmed || FTarget);
   }
 };
+
+#pragma warning(pop)
 
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 
