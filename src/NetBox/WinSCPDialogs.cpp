@@ -4683,6 +4683,20 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     else
     {
       Text->SetCaption(core::MinimizeName(AFileList->GetString(0), static_cast<intptr_t>(GetClientSize().x), true));
+      TRemoteFile* File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(0));
+      if (!File->GetLinkTo().IsEmpty())
+      {
+        Text = new TFarText(this);
+        Text->SetCaption(GetMsg(PROPERTIES_LINKTO));
+
+        SetNextItemPosition(ipRight);
+
+        TFarEdit* Edit = new TFarEdit(this);
+        Edit->SetText(File->GetLinkTo());
+        Edit->SetReadOnly(true);
+		
+        SetNextItemPosition(ipNewLine);
+      }
     }
 
     new TFarSeparator(this);
