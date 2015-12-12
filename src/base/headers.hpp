@@ -82,7 +82,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 typedef intptr_t Integer;
 #endif
 #ifndef Int64
-typedef __int64 Int64;
+typedef int64_t Int64;
 #endif
 #ifndef Boolean
 typedef bool Boolean;
