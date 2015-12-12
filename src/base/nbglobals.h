@@ -2,6 +2,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #ifdef USE_DLMALLOC
 #include "../../libs/dlmalloc/malloc-2.8.6.h"

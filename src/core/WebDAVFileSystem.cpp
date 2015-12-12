@@ -306,30 +306,30 @@ typedef struct list_func_baton_t
 #define WEBDAV_NO_ERROR 0
 #define WEBDAV_ERROR_AUTH 1
 #define WEBDAV_UNKNOWN_ERROR 100
-#define WEBDAV_ERR(expr)              \
-  do {                                \
-  webdav::error_t err__temp = (expr); \
-  if (err__temp)                      \
-    return err__temp;                 \
-  } while (0)
+#define WEBDAV_ERR(expr)                \
+  {                                     \
+    webdav::error_t err__temp = (expr); \
+    if (err__temp)                      \
+      return err__temp;                 \
+  }
 
 // A statement macro, very similar to WEBDAV_ERR.
 // This macro will wrap the error with the specified text before
 // returning the error.
 
 #define WEBDAV_ERR_W(expr, wrap_msg)                            \
-  do {                                                          \
+  {                                                             \
     webdav::error_t err__temp = (expr);                         \
     if (err__temp)                                              \
-      return webdav::error_create(err__temp, nullptr, wrap_msg);   \
-  } while (0)
+      return webdav::error_create(err__temp, nullptr, wrap_msg);\
+  }
 
 #define WEBDAV_ERR_ASSERT(expr)                                 \
-  do {                                                          \
+  {                                                             \
     bool res = (expr);                                          \
     if (!res)                                                   \
       WEBDAV_ERR(WEBDAV_UNKNOWN_ERROR);                         \
-  } while (0)
+  }
 
 #define error_trace(expr)  (expr)
 
@@ -350,7 +350,7 @@ typedef struct list_func_baton_t
 // Sets the 'err' field of REQ to the value obtained by evaluating NEW_ERR.
 
 #define NEON_REQ_ERR(req, new_err)               \
-   do {                                          \
+   {                                             \
      error_t err__tmp = (new_err);               \
      if ((req)->err && !(req)->marshalled_error) \
        error_clear(&err__tmp);                   \
@@ -360,7 +360,7 @@ typedef struct list_func_baton_t
          (req)->err = err__tmp;                  \
          (req)->marshalled_error = false;        \
        }                                         \
-   } while (0)
+   }
 
 // from error.c
 
@@ -6189,7 +6189,6 @@ atomic_init_once(
 #define RETRY_MAX_SLEEP 128000
 
 #define RETRY_LOOP(err, expr, retry_test, sleep_test)                      \
-  do                                                                       \
   {                                                                        \
     apr_status_t os_err = APR_TO_OS_ERROR(err);                            \
     int sleep_count = RETRY_INITIAL_SLEEP;                                 \
@@ -6208,7 +6207,7 @@ atomic_init_once(
       (err) = (expr);                                                      \
     }                                                                      \
   }                                                                        \
-  while (0)
+
 
 #if defined(EDEADLK) && APR_HAS_THREADS
 #define FILE_LOCK_RETRY_LOOP(err, expr)                                    \
@@ -6322,7 +6321,7 @@ io_file_name_get(
     return error_wrap_apr(status, "Can't get file name");
 
   if (fname_apr)
-    WEBDAV_ERR(path_cstring_to_utf8(filename, fname_apr, pool));
+    WEBDAV_ERR(path_cstring_to_utf8(filename, fname_apr, pool))
   else
     *filename = nullptr;
 
@@ -12824,7 +12823,7 @@ void TWebDAVFileSystem::WebDAVSource(const UnicodeString & AFileName,
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()), "",
       [&]()
       {
-        THROWOSIFFALSE(::DeleteFile(ApiPath(AFileName).c_str()));
+        THROWOSIFFALSE(::RemoveFile(AFileName));
       });
     }
   }

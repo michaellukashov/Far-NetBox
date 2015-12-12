@@ -206,7 +206,7 @@ public:
 
 protected:
   virtual void Prompt(const UnicodeString & APrompt,
-    UnicodeString & Value);
+    UnicodeString & Value) const;
 
 private:
   TCustomFarPlugin * FPlugin;
@@ -220,7 +220,7 @@ TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
 }
 
 void TFarInteractiveCustomCommand::Prompt(const UnicodeString & APrompt,
-  UnicodeString & Value)
+  UnicodeString & Value) const
 {
   UnicodeString Prompt = APrompt;
   if (Prompt.IsEmpty())
@@ -3937,7 +3937,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
           UpdatePanel();
         }
 
-        if (::DeleteFile(Info->GetFileName()))
+        if (::RemoveFile(Info->GetFileName()))
         {
           // remove directory only if it is empty
           // (to avoid deleting another directory if user uses "save as")

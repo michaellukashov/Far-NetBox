@@ -1054,7 +1054,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), GetConfiguration()->GetVersion().c_str(), NETBOX_VERSION_BUILD));
+  Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), GetConfiguration()->GetProductVersion().c_str(), NETBOX_VERSION_BUILD));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
@@ -1629,9 +1629,9 @@ private:
   TFarRadioButton * IPAutoButton;
   TFarRadioButton * IPv4Button;
   TFarRadioButton * IPv6Button;
-  TFarCheckBox * FtpPasvModeCheck;
   TFarCheckBox * SshBufferSizeCheck;
   TFarComboBox * FtpUseMlsdCombo;
+  TFarCheckBox * FtpPasvModeCheck;
   TFarCheckBox * FtpAllowEmptyPasswordCheck;
   TFarCheckBox * FtpDupFFCheck;
   TFarCheckBox * FtpUndupFFCheck;
@@ -2189,6 +2189,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   TRISTATE(FtpUseMlsdCombo, FtpUseMlsd, LOGIN_FTP_USE_MLSD);
 
+  FtpPasvModeCheck = new TFarCheckBox(this);
+  FtpPasvModeCheck->SetCaption(GetMsg(LOGIN_FTP_PASV_MODE));
+
   FtpAllowEmptyPasswordCheck = new TFarCheckBox(this);
   FtpAllowEmptyPasswordCheck->SetCaption(GetMsg(LOGIN_FTP_ALLOW_EMPTY_PASSWORD));
 
@@ -2232,8 +2235,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(LOGIN_CONNECTION_GROUP));
 
-  FtpPasvModeCheck = new TFarCheckBox(this);
-  FtpPasvModeCheck->SetCaption(GetMsg(LOGIN_FTP_PASV_MODE));
+  Text = new TFarText(this);
+  SetNextItemPosition(ipNewLine);
 
   SshBufferSizeCheck = new TFarCheckBox(this);
   SshBufferSizeCheck->SetCaption(GetMsg(LOGIN_SSH_OPTIMIZE_BUFFER_SIZE));
@@ -4680,6 +4683,20 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     else
     {
       Text->SetCaption(core::MinimizeName(AFileList->GetString(0), static_cast<intptr_t>(GetClientSize().x), true));
+    }
+    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(0));
+    if (!File->GetLinkTo().IsEmpty())
+    {
+      Text = new TFarText(this);
+      Text->SetCaption(GetMsg(PROPERTIES_LINKTO));
+
+      SetNextItemPosition(ipRight);
+
+      TFarEdit* Edit = new TFarEdit(this);
+      Edit->SetText(File->GetLinkTo());
+      Edit->SetReadOnly(true);
+
+      SetNextItemPosition(ipNewLine);
     }
 
     new TFarSeparator(this);

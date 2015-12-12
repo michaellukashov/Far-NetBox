@@ -384,7 +384,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
     }
     else
     {
-      retval = ::DeleteFile(ApiPath(ADirName + L"\\" + SearchRec.Name));
+      retval = ::RemoveFile(ADirName + L"\\" + SearchRec.Name);
     }
 
     if (retval)
@@ -398,7 +398,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
         }
         else
         {
-          retval = ::DeleteFile(ApiPath(ADirName + L"\\" + SearchRec.Name));
+          retval = ::RemoveFile(ADirName + L"\\" + SearchRec.Name);
         }
 
         if (!retval)
@@ -469,7 +469,7 @@ intptr_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, intptr_t
 }
 
 bool TLocalCustomCommand::PatternReplacement(const UnicodeString & Pattern,
-  UnicodeString & Replacement, bool & Delimit)
+  UnicodeString & Replacement, bool & Delimit) const
 {
   bool Result = false;
   if (Pattern == L"!^!")

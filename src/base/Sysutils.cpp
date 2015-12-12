@@ -604,7 +604,7 @@ bool ForceDirectories(const UnicodeString & ADir)
   return Result;
 }
 
-bool DeleteFile(const UnicodeString & AFileName)
+bool RemoveFile(const UnicodeString & AFileName)
 {
   ::DeleteFile(ApiPath(AFileName).c_str());
   return !::FileExists(AFileName);
@@ -1145,8 +1145,7 @@ UnicodeString IncludeTrailingBackslash(const UnicodeString & Str)
 {
   UnicodeString Result = Str;
   intptr_t L = Result.Length();
-  if ((Result.Length() == 0) || ((Result[Result.Length()] != L'/') &&
-    (Result[Result.Length()] != L'\\')))
+  if ((L == 0) || ((Result[L] != L'/') && (Result[L] != L'\\')))
   {
     Result += L'\\';
   }
