@@ -2710,6 +2710,7 @@ void TSessionData::PrepareProxyData() const
     {
       DWORD Err = ::GetLastError();
       DEBUG_PRINTF("Error reading system proxy configuration, code: %x", Err);
+	  USEDPARAM(Err);
     }
     else
     {
