@@ -2109,7 +2109,7 @@ bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin)
 
 void DeleteFileChecked(const UnicodeString & AFileName)
 {
-  if (!::RemoveFile(ApiPath(AFileName)))
+  if (!::RemoveFile(AFileName))
   {
     throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()));
   }
