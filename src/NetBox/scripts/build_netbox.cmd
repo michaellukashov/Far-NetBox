@@ -8,7 +8,6 @@ if "s%PROJECT_CONFIG%"=="s" set PROJECT_CONFIG=Debug
 if "s%PROJECT_BUILD%"=="s" set PROJECT_BUILD=Build
 
 if "s%PROJECT_CONF%"=="s" set PROJECT_CONF=x86
-if "s%PROJECT_PLATFORM%"=="s" set PROJECT_PLATFORM=Win32
 if "s%PROJECT_GEN%"=="s" set PROJECT_GEN=NMake Makefiles
 if "s%PROJECT_VARS%"=="s" set PROJECT_VARS=x86
 
