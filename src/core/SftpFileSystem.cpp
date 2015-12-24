@@ -1440,7 +1440,7 @@ protected:
     }
     catch (Exception & E) // prevent crash when server unexpectedly closes connection
     {
-      DEBUG_PRINTF(L"ReceiveHandler: %s\n", E.Message.c_str());
+      DEBUG_PRINTF("ReceiveHandler: %s\n", E.Message.c_str());
       USEDPARAM(E);
     }
   }
