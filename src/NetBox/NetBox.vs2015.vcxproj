@@ -279,6 +279,7 @@
     <ClCompile Include="..\windows\ProgParams.cpp" />
     <ClCompile Include="..\windows\SynchronizeController.cpp" />
     <ClCompile Include="..\windows\Tools.cpp" />
+    <ClCompile Include="Far3Storage.cpp" />
     <ClCompile Include="FarConfiguration.cpp" />
     <ClCompile Include="FarDialog.cpp" />
     <ClCompile Include="FarInterface.cpp" />
