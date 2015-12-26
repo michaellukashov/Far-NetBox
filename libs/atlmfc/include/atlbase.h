@@ -5308,7 +5308,6 @@ inline HRESULT WINAPI CComModule::UpdateRegistryClass(
 {
 	if (bRegister)
 	{
-		TCHAR szDesc[256];
 		// LoadString(m_hInst, nDescID, szDesc, 256);
 		return S_OK; // RegisterClassHelper(clsid, lpszProgID, lpszVerIndProgID, szDesc, dwFlags);
 	}
