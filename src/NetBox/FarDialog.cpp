@@ -1232,7 +1232,7 @@ void TFarDialogItem::SetFlag(intptr_t Index, bool Value)
     }
 
     DWORD F = GetFlags();
-    DWORD Flag = Index & 0xFFFFFF00ULL;
+    FarDialogItemFlags Flag = (FarDialogItemFlags)(Index & 0xFFFFFF00ULL);
     bool ToHandle = true;
 
     switch (Flag)
