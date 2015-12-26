@@ -2411,7 +2411,7 @@ LONG_PTR TFarList::ItemProc(int Msg, LONG_PTR Param)
 TFarListBox::TFarListBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_LISTBOX),
   FAutoSelect(asOnlyFocus),
-  FDenyClose(nullptr)
+  FDenyClose(false)
 {
   FList = new TFarList(this);
   GetDialogItem()->ListItems = FList->GetListItems();
