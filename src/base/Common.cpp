@@ -2,6 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <shellapi.h>
 #include <Common.h>
 #include <StrUtils.hpp>
 #include <SysUtils.hpp>

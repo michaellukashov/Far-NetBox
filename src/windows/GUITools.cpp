@@ -2,6 +2,7 @@
 #pragma hdrstop
 
 #include <shlobj.h>
+#include <shellapi.h>
 #include <Common.h>
 
 #include "GUITools.h"
