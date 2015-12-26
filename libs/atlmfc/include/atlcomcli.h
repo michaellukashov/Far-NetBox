@@ -2100,7 +2100,7 @@ public:
 	{
 		HRESULT hr = Clear();
 		ATLASSERT(SUCCEEDED(hr));
-		(hr);
+		(void)(hr);
 	}
 	CComVariant(_In_ const VARIANT& varSrc) ATLVARIANT_THROW()
 	{
@@ -2899,7 +2899,7 @@ private:
 	{
 		HRESULT hr = Clear();
 		ATLASSERT(SUCCEEDED(hr));
-		(hr);
+		(void)(hr);
 #ifndef _ATL_NO_VARIANT_THROW
 		if (FAILED(hr))
 		{

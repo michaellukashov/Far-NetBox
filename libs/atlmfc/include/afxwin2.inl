@@ -340,7 +340,7 @@ _AFXWIN_INLINE void CWnd::OnHotKey(UINT, UINT, UINT)
 	{ Default(); }
 _AFXWIN_INLINE void CWnd::OnAskCbFormatName(_In_ UINT nMaxCount, _Out_z_cap_(nMaxCount) LPTSTR pszName)
 {
-	(nMaxCount);
+	(void)(nMaxCount);
 	if(nMaxCount>0)
 	{
 		/* defwindow proc should do this for us, but to be safe, we'll do it here too */
