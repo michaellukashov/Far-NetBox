@@ -3297,7 +3297,7 @@ TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID) 
       break;
     }
   }
-  if (Result == -1)
+  if (Result == (TFSProtocol)-1)
     Result = CONST_DEFAULT_PROTOCOL;
   assert(Result != -1);
   return Result;
