@@ -34,7 +34,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <nbglobals.h>
-#include "stdafx.h"
 
 #include <new>
 #include <cstdlib>
