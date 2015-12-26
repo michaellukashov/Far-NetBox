@@ -41,6 +41,10 @@
 #endif
 #endif
 
+#ifndef STRICT
+#define STRICT 1
+#endif
+
 #if defined(__cplusplus)
 
 inline void * operator_new(size_t size)
