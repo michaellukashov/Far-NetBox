@@ -1593,7 +1593,7 @@ UnicodeString TRemoteFileList::GetFullDirectory() const
 
 TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
-  return NB_STATIC_DOWNCAST(TRemoteFile, GetItem(Index));
+  return NB_STATIC_DOWNCAST(TRemoteFile, GetObj(Index));
 }
 
 Boolean TRemoteFileList::GetIsRoot() const
