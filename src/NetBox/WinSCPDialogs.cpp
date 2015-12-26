@@ -6176,9 +6176,9 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
   TFarDialogItem * Control = NB_STATIC_DOWNCAST(TFarDialogItem, AControl);
   // check for Enabled instead of Visible, as Visible is false
   // when control is on non-active tab
-  if (!Value.IsEmpty() &&
+  if ((!Value.IsEmpty() &&
       ((Control == nullptr) || Control->GetEnabled()) &&
-      (AControl != SpaceAvailableLabels) ||
+      (AControl != SpaceAvailableLabels)) ||
        SpaceAvailableSupported())
   {
     if (FLastFeededControl != AControl)
