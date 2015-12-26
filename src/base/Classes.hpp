@@ -146,7 +146,7 @@ public:
   TList();
   virtual ~TList();
   void * operator [](intptr_t Index) const;
-  void * GetItem(intptr_t Index) const { return FList[Index]; }
+  virtual void * GetItem(intptr_t Index) const { return FList[Index]; }
   virtual void * GetItem(intptr_t Index) { return FList[Index]; }
   void SetItem(intptr_t Index, void * Item);
   intptr_t Add(void * Value);
