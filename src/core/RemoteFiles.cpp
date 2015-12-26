@@ -1633,12 +1633,12 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
 
 TRemoteDirectory::TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template) :
   TRemoteFileList(),
+  FIncludeParentDirectory(false),
+  FIncludeThisDirectory(false),
   FTerminal(aTerminal),
   FSelectedFiles(nullptr),
-  FThisDirectory(nullptr),
   FParentDirectory(nullptr),
-  FIncludeThisDirectory(false),
-  FIncludeParentDirectory(false)
+  FThisDirectory(nullptr)
 {
   if (Template == nullptr)
   {
