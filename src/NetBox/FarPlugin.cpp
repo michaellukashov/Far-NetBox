@@ -2918,11 +2918,11 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   UnicodeString Path(32 * 1014, 0);
   if (FarPlugin)
   {
-    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(Path.Length(), (wchar_t *)Path.c_str());
+    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
   }
   else
   {
-    ::GetCurrentDirectory(Path.Length(), (wchar_t *)Path.c_str());
+    ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
   }
   Result = Path;
   return Result;
