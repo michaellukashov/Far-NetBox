@@ -488,7 +488,7 @@ enum TValidProperty
 };
 // FIXME
 // typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
-class TValidProperties : public TObject
+class TValidProperties // : public TObject
 {
 public:
   TValidProperties() :
