@@ -51,7 +51,7 @@ NB_DECLARE_CLASS(TObject)
 public:
   TObject() {}
   virtual ~TObject() {}
-  virtual void Change() {}
+  virtual void Changed() {}
 
   bool IsKindOf(TObjectClassId ClassId) const;
 };
