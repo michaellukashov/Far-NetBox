@@ -130,7 +130,7 @@ void CoreLoad()
     ConfigStorage = ConfigStorageAuto.get();
   }
 
-  assert(GetConfiguration() != nullptr);
+  DebugAssert(GetConfiguration() != nullptr);
 
   try
   {
@@ -166,7 +166,7 @@ void CoreInitialize()
   CryptographyInitialize();
 
   // we do not expect configuration re-creation
-  assert(GetConfiguration() != nullptr);
+  DebugAssert(GetConfiguration() != nullptr);
   // configuration needs to be created and loaded before putty is initialized,
   // so that random seed path is known
 //  Configuration = CreateConfiguration();
@@ -209,7 +209,7 @@ void CoreSetResourceModule(void * ResourceHandle)
   #ifndef NO_FILEZILLA
   TFileZillaIntf::SetResourceModule(ResourceHandle);
   #else
-  USEDPARAM(ResourceHandle);
+  DebugUsedParam(ResourceHandle);
   #endif
 }
 

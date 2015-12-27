@@ -10,7 +10,7 @@
 TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal) :
   FTerminal(ATerminal)
 {
-  assert(FTerminal);
+  DebugAssert(FTerminal);
 }
 
 UnicodeString TCustomFileSystem::CreateTargetDirectory(

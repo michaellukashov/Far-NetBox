@@ -12,6 +12,9 @@
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
 
+const wchar_t * AutoSwitchNames = L"On;Off;Auto";
+const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
+
 // See http://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
 const UnicodeString Sha1ChecksumAlg(L"sha-1");
 const UnicodeString Sha224ChecksumAlg(L"sha-224");
@@ -21,6 +24,9 @@ const UnicodeString Sha512ChecksumAlg(L"sha-512");
 const UnicodeString Md5ChecksumAlg(L"md5");
 // Not defined by IANA
 const UnicodeString Crc32ChecksumAlg(L"crc32");
+
+const UnicodeString SshFingerprintType(L"ssh");
+const UnicodeString TlsFingerprintType(L"tls");
 
 TConfiguration::TConfiguration() :
   FDontSave(false),
@@ -51,6 +57,7 @@ TConfiguration::TConfiguration() :
   FCacheDirectoryChangesMaxSize(0),
   FShowFtpWelcomeMessage(false),
   FTryFtpWhenSshFails(false),
+  FScripting(false),
   FDisablePasswordStoring(false),
   FForceBanners(false),
   FDisableAcceptingHostKeys(false),
@@ -63,6 +70,7 @@ TConfiguration::TConfiguration() :
   FApplicationInfo = nullptr;
   // FUsage = new TUsage(this);
   // FDefaultCollectUsage = false;
+  FScripting = false;
 
   UnicodeString RandomSeedPath;
   UnicodeString Str = ::ExpandEnvironmentVariables("APPDATA");
@@ -138,7 +146,7 @@ void TConfiguration::Default()
 
 TConfiguration::~TConfiguration()
 {
-  assert(!FUpdating);
+  DebugAssert(!FUpdating);
   if (FApplicationInfo)
   {
     FreeFileInfo(FApplicationInfo);
@@ -172,7 +180,7 @@ THierarchicalStorage * TConfiguration::CreateStorage(bool & SessionList)
   else
   {
     Error(SNotImplemented, 3005);
-    assert(false);
+    DebugAssert(false);
   }
 
   if ((FOptionsStorage.get() != nullptr) && (FOptionsStorage->GetCount() > 0))
@@ -524,6 +532,60 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
   return Result;
 }
 
+void TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
+  const UnicodeString & Banner)
+{
+  THierarchicalStorage * Storage = CreateConfigStorage();
+  try
+  {
+    Storage->AccessMode = smReadWrite;
+
+    if (Storage->OpenSubKey(ConfigurationSubKey, true) &&
+        Storage->OpenSubKey(L"Banners", true))
+    {
+      Storage->WriteString(SessionKey, BannerHash(Banner));
+    }
+  }
+  __finally
+  {
+    delete Storage;
+  }
+}
+//---------------------------------------------------------------------------
+UnicodeString TConfiguration::FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType)
+{
+  return FORMAT(L"%s:%s", SiteKey.c_str(), FingerprintType.c_str());
+}
+
+void TConfiguration::RememberLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType, const UnicodeString & Fingerprint)
+{
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
+  Storage->SetAccessMode(smReadWrite);
+
+  if (Storage->OpenSubKey(ConfigurationSubKey, true) &&
+      Storage->OpenSubKey(L"LastFingerprints", true))
+  {
+    UnicodeString FingerprintKey = FormatFingerprintKey(SiteKey, FingerprintType);
+    Storage->WriteString(FingerprintKey, Fingerprint);
+  }
+}
+
+UnicodeString TConfiguration::LastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType)
+{
+  UnicodeString Result;
+
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
+  Storage->AccessMode = smRead;
+
+  if (Storage->OpenSubKey(ConfigurationSubKey, false) &&
+      Storage->OpenSubKey(L"LastFingerprints", false))
+  {
+    UnicodeString FingerprintKey = FormatFingerprintKey(SiteKey, FingerprintType);
+    Result = Storage->ReadString(FingerprintKey, L"");
+  }
+  return Result;
+}
+
 void TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
@@ -560,12 +622,12 @@ void TConfiguration::BeginUpdate()
   }
   FUpdating++;
   // Greater Value would probably indicate some nesting problem in code
-  assert(FUpdating < 6);
+  DebugAssert(FUpdating < 6);
 }
 
 void TConfiguration::EndUpdate()
 {
-  assert(FUpdating > 0);
+  DebugAssert(FUpdating > 0);
   FUpdating--;
   if ((FUpdating == 0) && FChanged)
   {
@@ -839,6 +901,16 @@ UnicodeString TConfiguration::GetProductVersionStr() const
 //    AddToList(BuildStr, DateStr, L" ");
 //    #endif
 
+    UnicodeString FullVersion = Version;
+
+    UnicodeString AReleaseType = GetReleaseType();
+    if (DebugAlwaysTrue(!AReleaseType.IsEmpty()) &&
+        !SameText(AReleaseType, L"stable") &&
+        !SameText(AReleaseType, L"development"))
+    {
+      FullVersion += L" " + AReleaseType;
+    }
+
     Result = FMTLOAD(VERSION2, GetProductVersion().c_str(), Build);
 
 //    #ifndef BUILD_OFFICIAL
@@ -850,6 +922,39 @@ UnicodeString TConfiguration::GetProductVersionStr() const
     throw ExtException(&E, "Can't get application version");
   }
   return Result;
+}
+
+UnicodeString TConfiguration::GetFileVersion(const UnicodeString & FileName)
+{
+  UnicodeString Result;
+  void * FileInfo = CreateFileInfo(FileName);
+  try
+  {
+    Result = GetFileVersion(GetFixedFileInfo(FileInfo));
+  }
+  __finally
+  {
+    FreeFileInfo(FileInfo);
+  }
+  return Result;
+}
+
+UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info)
+{
+  TGuard Guard(FCriticalSection);
+  try
+  {
+    UnicodeString Result =
+      FormatVersion(
+        HIWORD(Info->dwFileVersionMS),
+        LOWORD(Info->dwFileVersionMS),
+        HIWORD(Info->dwFileVersionLS));
+    return Result;
+  }
+  catch (Exception &E)
+  {
+    throw ExtException(&E, L"Can't get file version");
+  }
 }
 
 UnicodeString TConfiguration::GetProductVersion() const
@@ -872,6 +977,11 @@ UnicodeString TConfiguration::GetProductVersion() const
     throw ExtException(&E, "Can't get application version");
   }
   return Result;
+}
+
+UnicodeString TConfiguration::GetVersion()
+{
+  return GetFileVersion(FixedApplicationInfo);
 }
 
 UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
@@ -904,7 +1014,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
   }
   else
   {
-    assert(!AFileName.IsEmpty());
+    DebugAssert(!AFileName.IsEmpty());
   }
   return Result;
 }
@@ -1110,6 +1220,51 @@ TStorage TConfiguration::GetStorage()
   return FStorage;
 }
 
+TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
+  TStoredSessionList * Sessions, UnicodeString & Error)
+{
+  std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
+  ImportSessionList->DefaultSettings = Sessions->DefaultSettings;
+
+  UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
+  UnicodeString FilezillaSiteManagerFile =
+    IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\sitemanager.xml";
+
+  if (FileExists(ApiPath(FilezillaSiteManagerFile)))
+  {
+    ImportSessionList->ImportFromFilezilla(FilezillaSiteManagerFile);
+
+    if (ImportSessionList->Count > 0)
+    {
+      ImportSessionList->SelectSessionsToImport(Sessions, true);
+    }
+    else
+    {
+      Error = FMTLOAD(FILEZILLA_NO_SITES, (FilezillaSiteManagerFile));
+    }
+  }
+  else
+  {
+    Error = FMTLOAD(FILEZILLA_SITE_MANAGER_NOT_FOUND, (FilezillaSiteManagerFile));
+  }
+
+  return ImportSessionList.release();
+}
+
+bool TConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
+{
+  try
+  {
+    UnicodeString Error;
+    std::unique_ptr<TStoredSessionList> Sesssions(SelectFilezillaSessionsForImport(Sessions, Error));
+    return (Sesssions->Count > 0);
+  }
+  catch (...)
+  {
+    return false;
+  }
+}
+
 void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
 {
   if (GetRandomSeedFile() != Value)
@@ -1136,6 +1291,7 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
 
 UnicodeString TConfiguration::GetRandomSeedFileName() const
 {
+  // StripPathQuotes should not be needed as we do not feed quotes anymore
   return StripPathQuotes(ExpandEnvironmentVariables(FRandomSeedFile)).Trim();
 }
 
@@ -1429,6 +1585,11 @@ UnicodeString TConfiguration::GetPermanentActionsLogFileName() const
 void TConfiguration::SetPermanentActionsLogFileName(const UnicodeString & Value)
 {
   FPermanentActionsLogFileName = Value;
+}
+
+bool TConfiguration::GetPersistent() const
+{
+  return (Storage != stNul);
 }
 
 void TShortCuts::Add(const TShortCut & ShortCut)

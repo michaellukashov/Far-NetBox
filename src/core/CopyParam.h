@@ -47,7 +47,8 @@ const int cpaNoIgnorePermErrors = 0x80;
 const int cpaNoNewerOnly        = 0x100;
 const int cpaNoRemoveCtrlZ      = 0x200;
 const int cpaNoRemoveBOM        = 0x400;
-
+const int cpaNoPreserveTimeDirs = 0x800;
+//---------------------------------------------------------------------------
 struct TUsableCopyParamAttrs
 {
   int General;
@@ -96,6 +97,8 @@ public:
   void SetPreserveReadOnly(bool Value) { FPreserveReadOnly = Value; }
   bool GetPreserveTime() const { return FPreserveTime; }
   void SetPreserveTime(bool Value) { FPreserveTime = Value; }
+  bool GetPreserveTimeDirs() const { return FPreserveTimeDirs; }
+  void SetPreserveTimeDirs(bool Value) { FPreserveTimeDirs = Value; }
   const TRights & GetRights() const { return FRights; }
   TRights & GetRights() { return FRights; }
   void SetRights(const TRights & Value) { FRights.Assign(&Value); }
@@ -155,6 +158,7 @@ private:
   TFileNameCase FFileNameCase;
   bool FPreserveReadOnly;
   bool FPreserveTime;
+  bool FPreserveTimeDirs;
   TRights FRights;
   TTransferMode FTransferMode;
   bool FAddXToDirectories;
@@ -179,4 +183,4 @@ private:
 
 uintptr_t GetSpeedLimit(const UnicodeString & Text);
 UnicodeString SetSpeedLimit(uintptr_t Limit);
-
+void CopySpeedLimits(TStrings * Source, TStrings * Dest);

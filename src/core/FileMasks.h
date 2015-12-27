@@ -145,6 +145,7 @@ private:
 };
 
 UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString & Mask);
+bool IsFileNameMask(const UnicodeString & AMask);
 bool IsEffectiveFileNameMask(const UnicodeString & Mask);
 UnicodeString DelimitFileNameMask(const UnicodeString & Mask);
 

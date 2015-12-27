@@ -10,7 +10,7 @@ enum TFileOperation
 {
   foNone, foCopy, foMove, foDelete, foSetProperties,
   foRename, foCustomCommand, foCalculateSize, foRemoteMove, foRemoteCopy,
-  foGetProperties, foCalculateChecksum
+  foGetProperties, foCalculateChecksum, foLock, foUnlock
 };
 
 // csCancelTransfer and csRemoteAbort are used with SCP only

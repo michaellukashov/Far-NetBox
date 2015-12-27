@@ -100,6 +100,9 @@ public:
   virtual bool GetStoredCredentialsTried() const;
   virtual UnicodeString FSGetUserName() const;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs);
+  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem);
 
 protected:
   // enum TOverwriteMode { omOverwrite, omResume, omComplete };
@@ -151,8 +154,7 @@ protected:
   bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uintptr_t Count);
   bool HandleTransferStatus(bool Valid, int64_t TransferSize,
-    int64_t Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
-    bool FileTransfer);
+    int64_t Bytes, bool FileTransfer);
   bool HandleReply(intptr_t Command, uintptr_t Reply);
   bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
   bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
@@ -227,7 +229,6 @@ protected:
   void SendCommand(const UnicodeString & Command);
 
   static bool Unquote(UnicodeString & Str);
-  static UnicodeString ExtractStatusMessage(const UnicodeString & Status);
 
 private:
   enum TCommand
@@ -301,6 +302,8 @@ private:
   //bool FSupportsSiteSymlink;
   bool FSupportsAnyChecksumFeature;
   UnicodeString FLastCommandSent;
+  X509 * FCertificate;
+  EVP_PKEY * FPrivateKey;
   bool FTransferActiveImmediately;
   mutable UnicodeString FOptionScratch;
 };

@@ -12,12 +12,15 @@
 
 #define CONST_DEFAULT_NUMBER_OF_RETRIES 2
 
+extern const wchar_t * AutoSwitchNames;
+extern const wchar_t * NotAutoSwitchNames;
 enum TAutoSwitch
 {
   asOn,
   asOff,
   asAuto
 };
+enum TAssemblyLanguage { alCSharp, alVBNET, alPowerShell };
 
 enum TFtpEncryptionSwitch_219
 {
@@ -26,6 +29,8 @@ enum TFtpEncryptionSwitch_219
   fesImplicit,
   fesExplicitTLS
 };
+
+class TStoredSessionList;
 
 class TConfiguration : public TObject
 {
@@ -40,6 +45,7 @@ public:
   UnicodeString GetFileProductVersion() const;
   UnicodeString GetProductName() const;
   UnicodeString GetCompanyName() const;
+  UnicodeString GetFileVersion(TVSFixedFileInfo * Info);
   UnicodeString GetStoredSessionsSubKey() const;
   UnicodeString GetPuttySessionsKey() const;
   void SetRandomSeedFile(const UnicodeString & Value);
@@ -71,6 +77,9 @@ public:
   void SetIniFileStorageName(const UnicodeString & Value);
   void SetOptionsStorage(TStrings * Value);
   TStrings * GetOptionsStorage();
+  bool GetPersistent() const;
+  bool GetScripting() const { return FScripting; }
+  void SetScripting(bool Value) { FScripting = Value; }
   UnicodeString GetPartialExt() const;
   UnicodeString GetFileInfoString(const UnicodeString & Key) const;
   void SetSessionReopenAuto(intptr_t Value);
@@ -103,6 +112,7 @@ public:
   UnicodeString BannerHash(const UnicodeString & Banner) const;
   static UnicodeString PropertyToKey(const UnicodeString & Property);
   virtual void DoSave(bool All, bool Explicit);
+  UnicodeString FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType);
 
   virtual bool GetConfirmOverwriting() const;
   virtual void SetConfirmOverwriting(bool Value);
@@ -159,6 +169,8 @@ public:
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
   bool ShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
   void NeverShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
+  void RememberLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType, const UnicodeString & Fingerprint);
+  UnicodeString LastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType);
   virtual THierarchicalStorage * CreateConfigStorage();
   virtual THierarchicalStorage * CreateStorage(bool & SessionList);
   void TemporaryLogging(const UnicodeString & ALogFileName);
@@ -169,6 +181,11 @@ public:
   virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   UnicodeString GetFileDescription(const UnicodeString & AFileName);
+  UnicodeString GetFileVersion(const UnicodeString & AFileName);
+
+  TStoredSessionList * SelectFilezillaSessionsForImport(
+    TStoredSessionList * Sessions, UnicodeString & Error);
+  bool AnyFilezillaSessionForImport(TStoredSessionList * Sessions);
 
   // TUsage * GetUsage() { return FUsage; }
   UnicodeString GetPuttyRegistryStorageKey() const { return FPuttyRegistryStorageKey; }
@@ -247,6 +264,7 @@ private:
   UnicodeString FPuttyRegistryStorageKey;
   UnicodeString FExternalIpAddress;
   bool FTryFtpWhenSshFails;
+  bool FScripting;
 
   bool FDisablePasswordStoring;
   bool FForceBanners;
@@ -262,6 +280,7 @@ private:
   UnicodeString __fastcall GetProductVersion();
   UnicodeString __fastcall GetProductName();
   UnicodeString __fastcall GetCompanyName();
+  UnicodeString __fastcall GetFileVersion(TVSFixedFileInfo * Info);
   UnicodeString __fastcall GetStoredSessionsSubKey();
   UnicodeString __fastcall GetPuttySessionsKey();
   void __fastcall SetRandomSeedFile(UnicodeString value);
@@ -309,6 +328,7 @@ private:
   bool __fastcall GetCollectUsage();
   void __fastcall SetCollectUsage(bool value);
   bool __fastcall GetIsUnofficial();
+  bool __fastcall GetPersistent();
 
 protected:
   TStorage FStorage;
@@ -327,6 +347,7 @@ protected:
   UnicodeString __fastcall BannerHash(const UnicodeString & Banner);
   static UnicodeString __fastcall PropertyToKey(const UnicodeString & Property);
   virtual void __fastcall DoSave(bool All, bool Explicit);
+  UnicodeString __fastcall FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType);
 
   virtual bool __fastcall GetConfirmOverwriting();
   virtual void __fastcall SetConfirmOverwriting(bool value);
@@ -378,6 +399,8 @@ public:
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
   bool __fastcall ShowBanner(const UnicodeString SessionKey, const UnicodeString & Banner);
   void __fastcall NeverShowBanner(const UnicodeString SessionKey, const UnicodeString & Banner);
+  void __fastcall RememberLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType, const UnicodeString & Fingerprint);
+  UnicodeString __fastcall LastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType);
   THierarchicalStorage * CreateConfigStorage();
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
   void __fastcall TemporaryLogging(const UnicodeString ALogFileName);
@@ -388,6 +411,11 @@ public:
   virtual UnicodeString __fastcall DecryptPassword(RawByteString Password, UnicodeString Key);
   virtual RawByteString __fastcall StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
   UnicodeString __fastcall GetFileDescription(const UnicodeString & FileName);
+  UnicodeString __fastcall GetFileVersion(const UnicodeString & FileName);
+
+  TStoredSessionList * __fastcall SelectFilezillaSessionsForImport(
+    TStoredSessionList * Sessions, UnicodeString & Error);
+  bool __fastcall AnyFilezillaSessionForImport(TStoredSessionList * Sessions);
 
   __property TVSFixedFileInfo *FixedApplicationInfo  = { read=GetFixedApplicationInfo };
   __property void * ApplicationInfo  = { read=GetApplicationInfo };
@@ -445,6 +473,8 @@ public:
   __property UnicodeString IniFileStorageName  = { read=GetIniFileStorageNameForReadingWriting, write=SetIniFileStorageName };
   __property UnicodeString IniFileStorageNameForReading  = { read=GetIniFileStorageNameForReading };
   __property TStrings * OptionsStorage = { read = GetOptionsStorage, write = SetOptionsStorage };
+  __property bool Persistent = { read = GetPersistent };
+  __property bool Scripting = { read = FScripting, write = FScripting };
 
   __property UnicodeString DefaultKeyFile = { read = GetDefaultKeyFile };
 
@@ -476,3 +506,6 @@ extern const UnicodeString Sha384ChecksumAlg;
 extern const UnicodeString Sha512ChecksumAlg;
 extern const UnicodeString Md5ChecksumAlg;
 extern const UnicodeString Crc32ChecksumAlg;
+
+extern const UnicodeString SshFingerprintType;
+extern const UnicodeString TlsFingerprintType;

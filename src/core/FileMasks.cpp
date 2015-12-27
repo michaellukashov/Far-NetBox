@@ -103,6 +103,16 @@ UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString 
   return Result;
 }
 
+bool IsFileNameMask(const UnicodeString & AMask)
+{
+  bool Result = AMask.IsEmpty(); // empty mask is the same as *
+  if (!Result)
+  {
+    MaskFilePart(UnicodeString(), AMask, Result);
+  }
+  return Result;
+}
+
 bool IsEffectiveFileNameMask(const UnicodeString & Mask)
 {
   return !Mask.IsEmpty() && (Mask != L"*") && (Mask != L"*.*");
@@ -396,7 +406,7 @@ bool TFileMasks::MatchesMasks(const UnicodeString & AFileName, bool Directory,
     UnicodeString ParentPath = core::SimpleUnixExcludeTrailingBackslash(core::UnixExtractFilePath(APath));
     // Pass Params down or not?
     // Currently it includes Size/Time only, what is not used for directories.
-    // So it depends of future use. Possibly we should make a copy
+    // So it depends on future use. Possibly we should make a copy
     // and pass on only relevant fields.
     Result = MatchesMasks(ParentFileName, true, ParentPath, Params, Masks, Recurse);
   }
@@ -491,7 +501,7 @@ void TFileMasks::CreateMaskMask(const UnicodeString & Mask, intptr_t Start, intp
 {
   try
   {
-    assert(MaskMask.Mask == nullptr);
+    DebugAssert(MaskMask.Mask == nullptr);
     if (Ex && IsAnyMask(Mask))
     {
       MaskMask.Kind = TMaskMask::Any;
@@ -511,7 +521,7 @@ void TFileMasks::CreateMaskMask(const UnicodeString & Mask, intptr_t Start, intp
 
 UnicodeString TFileMasks::MakeDirectoryMask(const UnicodeString & Str)
 {
-  assert(!Str.IsEmpty());
+  DebugAssert(!Str.IsEmpty());
   UnicodeString Result = Str;
   if (Result.IsEmpty() || !Result.IsDelimiter(DIRECTORY_MASK_DELIMITERS, Result.Length()))
   {
@@ -787,7 +797,7 @@ TCustomCommand::TCustomCommand()
 void TCustomCommand::GetToken(
   const UnicodeString & Command, intptr_t Index, intptr_t & Len, wchar_t & PatternCmd) const
 {
-  assert(Index <= Command.Length());
+  DebugAssert(Index <= Command.Length());
   const wchar_t * Ptr = Command.c_str() + Index - 1;
 
   if (Ptr[0] == L'!')
@@ -1086,7 +1096,7 @@ TCustomCommandData & TCustomCommandData::operator=(const TCustomCommandData & Da
 {
   if (&Data != this)
   {
-    assert(Data.GetSessionData() != nullptr);
+    DebugAssert(Data.GetSessionData() != nullptr);
     FSessionData.reset(new TSessionData(L""));
     FSessionData->Assign(Data.GetSessionData());
   }
@@ -1129,8 +1139,10 @@ intptr_t TFileCustomCommand::PatternLen(const UnicodeString & Command, intptr_t 
     case L'@':
     case L'U':
     case L'P':
+    case L'#':
     case L'/':
     case L'&':
+    case L'N':
       Len = 2;
       break;
 
@@ -1146,21 +1158,27 @@ bool TFileCustomCommand::PatternReplacement(
 {
   // keep consistent with TSessionLog::OpenLogFile
 
+  TSessionData * SessionData = FData.GetSessionData();
+
   if (AnsiSameText(Pattern, L"!s"))
   {
-    Replacement = FData.GetSessionData()->GenerateSessionUrl(sufComplete);
+    Replacement = SessionData->GenerateSessionUrl(sufComplete);
   }
   else if (Pattern == L"!@")
   {
-    Replacement = FData.GetSessionData()->GetHostNameExpanded();
+    Replacement = SessionData->GetHostNameExpanded();
   }
   else if (::AnsiSameText(Pattern, L"!u"))
   {
-    Replacement = FData.GetSessionData()->SessionGetUserName();
+    Replacement = SessionData->SessionGetUserName();
   }
   else if (::AnsiSameText(Pattern, L"!p"))
   {
-    Replacement = FData.GetSessionData()->GetPassword();
+    Replacement = SessionData->GetPassword();
+  }
+  else if (::AnsiSameText(Pattern, L"!#"))
+  {
+    Replacement = IntToStr(SessionData->GetPortNumber());
   }
   else if (Pattern == L"!/")
   {
@@ -1172,9 +1190,13 @@ bool TFileCustomCommand::PatternReplacement(
     // already delimited
     Delimit = false;
   }
+  else if (AnsiSameText(Pattern, L"!n"))
+  {
+    Replacement = SessionData->GetSessionName();
+  }
   else
   {
-    assert(Pattern.Length() == 1);
+    DebugAssert(Pattern.Length() == 1);
     Replacement = FFileName;
   }
 
@@ -1197,7 +1219,7 @@ void TFileCustomCommand::ValidatePattern(const UnicodeString & Command,
 {
   int * Found = static_cast<int *>(Arg);
 
-  assert(Index > 0);
+  DebugAssert(Index > 0);
 
   if (PatternCmd == L'&')
   {
