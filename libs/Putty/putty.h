@@ -608,6 +608,9 @@ void begin_session(void *frontend);
 void sys_cursor(void *frontend, int x, int y);
 void request_paste(void *frontend);
 void frontend_keypress(void *frontend);
+#ifndef MPEXT
+void ldisc_update(void *frontend, int echo, int edit);
+#endif
 void frontend_echoedit_update(void *frontend, int echo, int edit);
 /* It's the backend's responsibility to invoke this at the start of a
  * connection, if necessary; it can also invoke it later if the set of
@@ -1077,13 +1080,13 @@ extern Backend ssh_backend;
 /*
  * Exports from ldisc.c.
  */
-/*
+#ifndef MPEXT
 void *ldisc_create(Conf *, Terminal *, Backend *, void *, void *);
 void ldisc_configure(void *, Conf *);
 void ldisc_free(void *);
 void ldisc_send(void *handle, const char *buf, int len, int interactive);
 void ldisc_echoedit_update(void *handle);
-*/
+#endif
 /*
  * Exports from ldiscucs.c.
  */
@@ -1517,4 +1520,5 @@ void putty_finalize();
 // but known to get UTF-8 encoded component (currently private key path only)
 #define MPEXT_BOM "\xEF\xBB\xBF"
 #endif
+
 #endif
