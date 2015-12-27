@@ -1719,7 +1719,7 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
   TDateTime Result;
   // The 0xFFF... is sometime seen for invalid timestamps,
   // it would cause failure in SystemTimeToDateTime below
-  if (FileTime.dwLowDateTime == std::numeric_limits<DWORD>::max()) // DWORD(-1) / sizeof(DWORD))
+  if (FileTime.dwLowDateTime == DWORD(-1) / sizeof(DWORD)) //std::numeric_limits<DWORD>::max) //
   {
     Result = MinDateTime;
   }
@@ -1952,8 +1952,9 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
 
 UnicodeString FormatTimeZone(intptr_t Sec)
 {
-  TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
   UnicodeString Str;
+  /*TODO: implement class TTimeSpan
+  TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
   if ((Span.Seconds == 0) && (Span.Minutes == 0))
   {
     Str = FORMAT(L"%d", -Span.Hours);
@@ -1966,7 +1967,7 @@ UnicodeString FormatTimeZone(intptr_t Sec)
   {
     Str = FORMAT(L"%d:%2.2d:%2.2d", -Span.Hours, abs(Span.Minutes), abs(Span.Seconds));
   }
-  Str = ((Span <= TTimeSpan::Zero) ? L"+" : L"") + Str;
+  Str = ((Span <= TTimeSpan::Zero) ? L"+" : L"") + Str;*/
   return Str;
 }
 
@@ -2114,16 +2115,16 @@ static bool DoRecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycl
   if (!ToRecycleBin)
   {
     TSearchRecChecked SearchRec;
-    Result = FileSearchRec(FileName, SearchRec);
+    Result = FileSearchRec(AFileName, SearchRec);
     if (Result)
     {
       if (FLAGCLEAR(SearchRec.Attr, faDirectory))
       {
-        Result = ::RemoveFile(FileName);
+        Result = ::RemoveFile(AFileName);
       }
       else
       {
-        Result = (FindFirstUnchecked(FileName + L"\\*", faAnyFile, SearchRec) == 0);
+        Result = (FindFirstUnchecked(AFileName + L"\\*", faAnyFile, SearchRec) == 0);
 
         if (Result)
         {
@@ -2134,7 +2135,7 @@ static bool DoRecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycl
             };
             do
             {
-              UnicodeString FileName2 = FileName + L"\\" + SearchRec.Name;
+              UnicodeString FileName2 = AFileName + L"\\" + SearchRec.Name;
               if (FLAGSET(SearchRec.Attr, faDirectory))
               {
                 if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
@@ -2156,7 +2157,7 @@ static bool DoRecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycl
 
           if (Result)
           {
-            Result = RemoveDir(FileName);
+            Result = ::RemoveDir(AFileName);
           }
         }
       }
@@ -2209,7 +2210,7 @@ static bool DoRecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycl
 bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin)
 {
   UnicodeString ErrorPath; // unused
-  return DoRecursiveDeleteFile(FileName, ToRecycleBin, ErrorPath);
+  return DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath);
 }
 
 void RecursiveDeleteFileChecked(const UnicodeString & AFileName, bool ToRecycleBin)
@@ -2519,9 +2520,9 @@ bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
       }
     }
 
-    if (RawToken != nullptr)
+    if (ARawToken != nullptr)
     {
-      (*RawToken) = AStr.SubString(1, Index - 1);
+      (*ARawToken) = AStr.SubString(1, Index - 1);
     }
 
     if (Index <= AStr.Length())
@@ -2868,8 +2869,24 @@ void ParseCertificate(const UnicodeString & Path,
     PrivateKey = PEM_read_PrivateKey(File, NULL, PemPasswordCallback, &CallbackUserData);
     fclose(File);
 
-    try
     {
+      SCOPE_EXIT
+      {
+        // We loaded private key, but failed to load certificate, discard the certificate
+        // (either exception was thrown or WrongPassphrase)
+        if ((PrivateKey != NULL) && (Certificate == NULL))
+        {
+          EVP_PKEY_free(PrivateKey);
+          PrivateKey = NULL;
+        }
+        // Certificate was verified, but passphrase was wrong when loading private key,
+        // so discard the certificate
+        else if ((Certificate != NULL) && (PrivateKey == NULL))
+        {
+          X509_free(Certificate);
+          Certificate = NULL;
+        }
+      };
       if (PrivateKey == NULL)
       {
         ThrowTlsCertificateErrorIgnorePassphraseErrors(Path);
@@ -2913,23 +2930,6 @@ void ParseCertificate(const UnicodeString & Path,
             }
           }
         }
-      }
-    }
-    __finally
-    {
-      // We loaded private key, but failed to load certificate, discard the certificate
-      // (either exception was thrown or WrongPassphrase)
-      if ((PrivateKey != NULL) && (Certificate == NULL))
-      {
-        EVP_PKEY_free(PrivateKey);
-        PrivateKey = NULL;
-      }
-      // Certificate was verified, but passphrase was wrong when loading private key,
-      // so discard the certificate
-      else if ((Certificate != NULL) && (PrivateKey == NULL))
-      {
-        X509_free(Certificate);
-        Certificate = NULL;
       }
     }
   }
