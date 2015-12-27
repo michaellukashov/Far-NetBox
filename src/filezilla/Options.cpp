@@ -7,13 +7,13 @@
 //---------------------------------------------------------------------------
 CString COptions::GetInstanceOption(CApiLog * Instance, int OptionID)
 {
-  ASSERT(Instance);
-  ASSERT(NB_STATIC_DOWNCAST(TFileZillaIntern, Instance) != NULL);
+  DebugAssert(Instance);
+  DebugAssert(NB_STATIC_DOWNCAST(TFileZillaIntern, Instance) != NULL);
 
   TFileZillaIntern * Intern = NB_STATIC_DOWNCAST(TFileZillaIntern, Instance);
 
   const TFileZillaIntf * Intf = Intern->GetOwner();
-  ASSERT(Intf != NULL);
+  DebugAssert(Intf != NULL);
   CString Result = Intf->Option(OptionID);
   switch (OptionID)
   {
@@ -27,12 +27,12 @@ CString COptions::GetInstanceOption(CApiLog * Instance, int OptionID)
 //---------------------------------------------------------------------------
 int COptions::GetInstanceOptionVal(CApiLog * Instance, int OptionID)
 {
-  ASSERT(Instance);
-  ASSERT(NB_STATIC_DOWNCAST(TFileZillaIntern, Instance) != NULL);
+  DebugAssert(Instance);
+  DebugAssert(NB_STATIC_DOWNCAST(TFileZillaIntern, Instance) != NULL);
 
   TFileZillaIntern * Intern = NB_STATIC_DOWNCAST(TFileZillaIntern, Instance);
 
   const TFileZillaIntf * Intf = Intern->GetOwner();
-  ASSERT(Intf != NULL);
+  DebugAssert(Intf != NULL);
   return (int)Intf->OptionVal(OptionID);
 }

@@ -88,7 +88,7 @@ void PathRemoveFileSpec(CString &path)
 
 CString PathAppend(CString path, LPCTSTR sub)
 {
-	ASSERT(sub);
+	DebugAssert(sub);
 
 	if (path.Right(1) != _T("\\"))
 		path += _T("\\");

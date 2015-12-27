@@ -96,7 +96,7 @@ void t_directory::Merge(const t_directory &directory, CTime MergeTime)
 	}
 	else
 	{
-		ASSERT(num>0 && directory.num>=0);
+		DebugAssert(num>0 && directory.num>=0);
 		int i;
 		CTime oldestTime=CTime::GetCurrentTime();
 		for (i=0; i<num; i++)

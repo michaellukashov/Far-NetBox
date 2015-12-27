@@ -48,7 +48,7 @@
 
 CTransferSocket::CTransferSocket(CFtpControlSocket *pOwner, int nMode)
 {
-	ASSERT(pOwner);
+	DebugAssert(pOwner);
 	InitLog(pOwner);
 	m_pOwner = pOwner;
 	m_nMode = nMode;
@@ -261,7 +261,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 			ableToRead = BUFSIZE;
 
 		if (!beenWaiting)
-			ASSERT(ableToRead);
+			DebugAssert(ableToRead);
 		else if (!ableToRead)
 		{
 			TriggerEvent(FD_READ);
@@ -787,9 +787,9 @@ void CTransferSocket::OnSend(int nErrorCode)
 		else
 			numread = 0;
 
-		ASSERT((numread+m_bufferpos) <= BUFSIZE);
-		ASSERT(numread>=0);
-		ASSERT(m_bufferpos>=0);
+		DebugAssert((numread+m_bufferpos) <= BUFSIZE);
+		DebugAssert(numread>=0);
+		DebugAssert(m_bufferpos>=0);
 
 		if (numread+m_bufferpos <= 0)
 		{
@@ -905,8 +905,8 @@ void CTransferSocket::OnSend(int nErrorCode)
 				return;
 			}
 
-			ASSERT(numread>=0);
-			ASSERT(m_bufferpos>=0);
+			DebugAssert(numread>=0);
+			DebugAssert(m_bufferpos>=0);
 			numsent = Send(m_pBuffer, numread+m_bufferpos);
 		}
 	}
@@ -1064,7 +1064,7 @@ BOOL CTransferSocket::Create(
 				else
 					m_pProxyLayer->SetProxy(PROXYTYPE_HTTP11, T2CA(COptions::GetOption(OPTION_PROXYHOST)), COptions::GetOptionVal(OPTION_PROXYPORT));
 			else
-				ASSERT(FALSE);
+				DebugAssert(FALSE);
 			AddLayer(m_pProxyLayer);
 		}
 	}

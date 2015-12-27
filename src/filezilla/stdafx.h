@@ -104,15 +104,15 @@ public:
   UINT Read(void * lpBuf, UINT nCount)
   {
     ASSERT_VALID(this);
-    ASSERT(m_hFile != hFileNull);
+    DebugAssert(m_hFile != hFileNull);
 
     if (nCount == 0)
     {
       return 0;   // avoid Win32 "null-read"
     }
 
-    ASSERT(lpBuf != NULL);
-    ASSERT(AfxIsValidAddress(lpBuf, nCount));
+    DebugAssert(lpBuf != NULL);
+    DebugAssert(AfxIsValidAddress(lpBuf, nCount));
 
     DWORD dwRead;
     if (!::ReadFile(m_hFile, lpBuf, nCount, &dwRead, NULL))

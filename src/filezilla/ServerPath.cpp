@@ -114,7 +114,7 @@ CServerPath::CServerPath(CString path, int nServerType)
 				int pos1 = path.Find( _T("[") );
 				if (pos1 == -1 || path.Right(1) != _T("]"))
 				{
-					ASSERT(FALSE);
+					DebugAssert(FALSE);
 					m_bEmpty = TRUE;
 					return;
 				}
@@ -160,7 +160,7 @@ CServerPath::CServerPath(CString path, int nServerType)
 				m_Prefix = path;
 				return;
 			}
-			ASSERT(pos == 2);
+			DebugAssert(pos == 2);
 			m_Prefix = path.Left(pos);
 			path = path.Mid(pos + 1);
 			pos = path.Find( _T("\\") );
@@ -175,7 +175,7 @@ CServerPath::CServerPath(CString path, int nServerType)
 		}
 		break;
 	default:
-		ASSERT(FALSE);
+		DebugAssert(FALSE);
 	}
 }
 
@@ -437,7 +437,7 @@ const CString CServerPath::GetPath() const
 
 		break;
 	default:
-		ASSERT(FALSE);
+		DebugAssert(FALSE);
 	}
 	return path;
 }
@@ -517,7 +517,7 @@ CString CServerPath::GetLastSegment() const
 
 CServerPath CServerPath::GetParent() const
 {
-	ASSERT(HasParent());
+	DebugAssert(HasParent());
 	CServerPath path;
 	path = *this;
 	path.m_Segments.pop_back();
@@ -599,7 +599,7 @@ CServerPath::CServerPath(CString subdir, const CServerPath &parent)
 	if ( subdir==_T("") )
 	{
 		if (IsEmpty())
-			ASSERT(FALSE);
+			DebugAssert(FALSE);
 		else
 			return;
 	}
@@ -664,13 +664,13 @@ CServerPath::CServerPath(CString subdir, const CServerPath &parent)
 				int pos1=subdir.Find( _T("[") );
 				if (pos1==-1)
 				{
-					ASSERT( subdir.Right(1)!=_T("]") );
+					DebugAssert( subdir.Right(1)!=_T("]") );
 					while ( subdir.Replace( _T(".."), _T(".") ) );
 				}
 				else
 				{
 					if (subdir.Right(1)!=_MPT("]"))
-						ASSERT(FALSE);
+						DebugAssert(FALSE);
 					subdir=subdir.Left(subdir.GetLength()-1);
 					if (pos1)
 						m_Prefix=subdir.Left(pos1);
@@ -682,7 +682,7 @@ CServerPath::CServerPath(CString subdir, const CServerPath &parent)
 					pos1=subdir.Find( _T("[") );
 					int pos2=subdir.Find( _T("]") );
 					if (pos1!=-1 || pos2!=-1)
-						ASSERT(FALSE);
+						DebugAssert(FALSE);
 				}
 				int pos=subdir.Find( _T(".") );
 				while(pos!=-1)
@@ -759,7 +759,7 @@ CServerPath::CServerPath(CString subdir, const CServerPath &parent)
 				subdir=subdir.Mid(pos+1);
 				subdir.TrimLeft( _T("\\") );
 				if (subdir.Find( _T(":") )!=-1)
-					ASSERT(FALSE);
+					DebugAssert(FALSE);
 			}
 			if (pos==-1 || pos==1)
 			{
@@ -774,11 +774,11 @@ CServerPath::CServerPath(CString subdir, const CServerPath &parent)
 					m_Segments.push_back(subdir);			
 			}
 			else
-				ASSERT(FALSE);
+				DebugAssert(FALSE);
 		}
 		break;
 	default:
-		ASSERT(FALSE);
+		DebugAssert(FALSE);
 	}	
 }
 
@@ -852,7 +852,7 @@ CString CServerPath::FormatFilename(CString fn, bool omitPath /*=false*/) const
 		path += fn;
 		break;
 	default:
-		ASSERT(FALSE);
+		DebugAssert(FALSE);
 	}
 	return path;
 }

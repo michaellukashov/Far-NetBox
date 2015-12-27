@@ -66,7 +66,7 @@ CCriticalSection CControlSocket::m_SpeedLimitSync;
 
 CControlSocket::CControlSocket(CMainThread *pMainThread, CFileZillaTools * pTools)
 {
-	ASSERT(pMainThread);
+	DebugAssert(pMainThread);
 	m_pOwner=pMainThread;
 	m_pTools=pTools;
 

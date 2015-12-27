@@ -158,7 +158,7 @@ CAsyncProxySocketLayer::~CAsyncProxySocketLayer()
 void CAsyncProxySocketLayer::SetProxy(int nProxyType)
 {
 	//Validate the parameters
-	ASSERT(nProxyType==PROXYTYPE_NOPROXY);
+	DebugAssert(nProxyType==PROXYTYPE_NOPROXY);
 	m_ProxyData.nProxyType=nProxyType;
 }
 
@@ -166,14 +166,14 @@ void CAsyncProxySocketLayer::SetProxy(int nProxyType, const char * pProxyHost, i
 {
 	USES_CONVERSION;
 	//Validate the parameters
-	ASSERT(nProxyType==PROXYTYPE_SOCKS4  ||
+	DebugAssert(nProxyType==PROXYTYPE_SOCKS4  ||
 		   nProxyType==PROXYTYPE_SOCKS4A ||
 		   nProxyType==PROXYTYPE_SOCKS5  ||
 		   nProxyType==PROXYTYPE_HTTP11);
-	ASSERT(!m_nProxyOpID);
-	ASSERT(pProxyHost && *pProxyHost);
-	ASSERT(ProxyPort>0);
-	ASSERT(ProxyPort<=65535);
+	DebugAssert(!m_nProxyOpID);
+	DebugAssert(pProxyHost && *pProxyHost);
+	DebugAssert(ProxyPort>0);
+	DebugAssert(ProxyPort<=65535);
 
 	nb_free(m_ProxyData.pProxyHost);
 	nb_free(m_ProxyData.pProxyUser);
@@ -192,11 +192,11 @@ void CAsyncProxySocketLayer::SetProxy(int nProxyType, const char * pProxyHost, i
 {
 	USES_CONVERSION;
 	//Validate the parameters
-	ASSERT(nProxyType==PROXYTYPE_SOCKS5 || nProxyType==PROXYTYPE_HTTP11);
-	ASSERT(!m_nProxyOpID);
-	ASSERT(pProxyHost && *pProxyHost);
-	ASSERT(ProxyPort>0);
-	ASSERT(ProxyPort<=65535);
+	DebugAssert(nProxyType==PROXYTYPE_SOCKS5 || nProxyType==PROXYTYPE_HTTP11);
+	DebugAssert(!m_nProxyOpID);
+	DebugAssert(pProxyHost && *pProxyHost);
+	DebugAssert(ProxyPort>0);
+	DebugAssert(ProxyPort<=65535);
 
 	nb_free(m_ProxyData.pProxyHost);
 	nb_free(m_ProxyData.pProxyUser);
@@ -427,8 +427,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 					//Send authentication
 					LPCSTR lpszAsciiUser = m_ProxyData.pProxyUser;
 					LPCSTR lpszAsciiPass = m_ProxyData.pProxyPass;
-					ASSERT(strlen(lpszAsciiUser)<=255);
-					ASSERT(strlen(lpszAsciiPass)<=255);
+					DebugAssert(strlen(lpszAsciiUser)<=255);
+					DebugAssert(strlen(lpszAsciiPass)<=255);
 					uint8_t *buffer = static_cast<uint8_t *>(nb_calloc(1, 3 + (lpszAsciiUser?strlen(lpszAsciiUser):0) + (lpszAsciiPass?strlen(lpszAsciiPass):0) + 1));
 					sprintf((char *)buffer, "  %s %s", lpszAsciiUser?lpszAsciiUser:"", lpszAsciiPass?lpszAsciiPass:"");
 					buffer[0]=1;
@@ -645,7 +645,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 					m_nProxyOpState++;
 					unsigned long ip;
 					unsigned short port;
-					ASSERT(m_pRecvBuffer[3]==1);
+					DebugAssert(m_pRecvBuffer[3]==1);
 					memcpy(&ip, &m_pRecvBuffer[4], 4);
 					memcpy(&port, &m_pRecvBuffer[8], 2);
 					t_ListenSocketCreatedStruct data;
@@ -784,7 +784,7 @@ BOOL CAsyncProxySocketLayer::Connect( LPCTSTR lpszHostAddress, UINT nHostPort )
 	USES_CONVERSION;
 
 	//Translate the host address
-	ASSERT(lpszHostAddress != NULL);
+	DebugAssert(lpszHostAddress != NULL);
 
 	if (m_ProxyData.nProxyType != PROXYTYPE_SOCKS4)
 	{
@@ -883,7 +883,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
 		TriggerEvent(FD_CONNECT, nErrorCode, TRUE);
 		return;
 	}
-	ASSERT(m_nProxyOpID);
+	DebugAssert(m_nProxyOpID);
 	if (!m_nProxyOpID)
 	{
 		//This should not happen
@@ -906,7 +906,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
 		if (m_nProxyOpState)
 			//Somehow OnConnect has been called more than once
 			return;
-		ASSERT(m_ProxyData.nProxyType!=PROXYTYPE_NOPROXY);
+		DebugAssert(m_ProxyData.nProxyType!=PROXYTYPE_NOPROXY);
 		ClearBuffer();
 		DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYERROR_NOERROR, 0);
 		//Send the initial request
@@ -922,8 +922,8 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
 			memcpy(&command[2],&m_nProxyPeerPort,2); //Copy target address
 			if (!m_nProxyPeerIp || m_ProxyData.nProxyType==PROXYTYPE_SOCKS4A)
 			{
-				ASSERT(m_ProxyData.nProxyType==PROXYTYPE_SOCKS4A);
-				ASSERT(strcmp(lpszAscii, ""));
+				DebugAssert(m_ProxyData.nProxyType==PROXYTYPE_SOCKS4A);
+				DebugAssert(strcmp(lpszAscii, ""));
 				//Set the IP to 0.0.0.x (x is nonzero)
 				command[4]=0;
 				command[5]=0;
@@ -1075,7 +1075,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
 			return;
 		}
 		else
-			ASSERT(FALSE);
+			DebugAssert(FALSE);
 		//Now we'll wait for the response, handled in OnReceive
 		m_nProxyOpState++;
 	}
@@ -1143,7 +1143,7 @@ BOOL CAsyncProxySocketLayer::GetPeerName(CString &rPeerAddress, UINT &rPeerPort)
 		return FALSE;
 	}
 
-	ASSERT(m_ProxyData.nProxyType);
+	DebugAssert(m_ProxyData.nProxyType);
 	BOOL res=GetPeerNameNext( rPeerAddress, rPeerPort );
 	if (res)
 	{
@@ -1177,7 +1177,7 @@ BOOL CAsyncProxySocketLayer::GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrL
 		return FALSE;
 	}
 
-	ASSERT(m_ProxyData.nProxyType);
+	DebugAssert(m_ProxyData.nProxyType);
 	BOOL res=GetPeerNameNext(lpSockAddr,lpSockAddrLen);
 	if (res)
 	{
