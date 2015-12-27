@@ -413,6 +413,7 @@
 "Set UID   "
 "Set GID   "
 "Sticky bit"
+"Link to:"
 
 "&Text (plain text, html, ...)"
 "&Binary (archives, doc, ...)"

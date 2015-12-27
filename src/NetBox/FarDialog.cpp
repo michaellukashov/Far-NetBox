@@ -1232,7 +1232,7 @@ void TFarDialogItem::SetFlag(intptr_t Index, bool Value)
     }
 
     DWORD F = GetFlags();
-    DWORD Flag = Index & 0xFFFFFF00ULL;
+    FarDialogItemFlags Flag = (FarDialogItemFlags)(Index & 0xFFFFFF00ULL);
     bool ToHandle = true;
 
     switch (Flag)
@@ -2263,6 +2263,7 @@ void TFarList::SetCurPos(intptr_t Position, intptr_t TopIndex)
   TFarDialog * Dlg = DialogItem->GetDialog();
   assert(Dlg);
   assert(Dlg->GetHandle());
+  USEDPARAM(Dlg);
   FarListPos ListPos;
   ListPos.SelectPos = static_cast<int>(Position);
   ListPos.TopPos = static_cast<int>(TopIndex);
@@ -2410,7 +2411,7 @@ LONG_PTR TFarList::ItemProc(int Msg, LONG_PTR Param)
 TFarListBox::TFarListBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_LISTBOX),
   FAutoSelect(asOnlyFocus),
-  FDenyClose(nullptr)
+  FDenyClose(false)
 {
   FList = new TFarList(this);
   GetDialogItem()->ListItems = FList->GetListItems();

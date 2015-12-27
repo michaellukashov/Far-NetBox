@@ -2,6 +2,7 @@
 #pragma hdrstop
 
 #include <shlobj.h>
+#include <shellapi.h>
 #include <Common.h>
 
 #include "GUITools.h"
@@ -384,7 +385,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
     }
     else
     {
-      retval = ::DeleteFile(ApiPath(ADirName + L"\\" + SearchRec.Name));
+      retval = ::RemoveFile(ADirName + L"\\" + SearchRec.Name);
     }
 
     if (retval)
@@ -398,7 +399,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
         }
         else
         {
-          retval = ::DeleteFile(ApiPath(ADirName + L"\\" + SearchRec.Name));
+          retval = ::RemoveFile(ADirName + L"\\" + SearchRec.Name);
         }
 
         if (!retval)

@@ -1440,6 +1440,8 @@ protected:
     }
     catch (Exception & E) // prevent crash when server unexpectedly closes connection
     {
+      DEBUG_PRINTF("ReceiveHandler: %s\n", E.Message.c_str());
+      USEDPARAM(E);
     }
   }
 
@@ -1725,9 +1727,9 @@ protected:
          File->GetRights()->GetUnknown());
       bool MissingOwnerGroup =
         (FFileSystem->FSecureShell->GetSshImplementation() == sshiBitvise) ||
-        (FFileSystem->FSupport->Loaded &&
+        ((FFileSystem->FSupport->Loaded &&
          FLAGSET(FFileSystem->FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP) &&
-         !File->GetFileOwner().GetIsSet() || !File->GetFileGroup().GetIsSet());
+         !File->GetFileOwner().GetIsSet()) || !File->GetFileGroup().GetIsSet());
 
       Result = (MissingRights || MissingOwnerGroup);
       if (Result)
@@ -2231,6 +2233,7 @@ uint32_t TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
   // size + message number + type
   const uint32_t SFTPPacketOverhead = 4 + 4 + 1;
   uint32_t AMinPacketSize = FSecureShell->MinPacketSize();
+  (void)AMinPacketSize;
   uint32_t AMaxPacketSize = FSecureShell->MaxPacketSize();
   bool MaxPacketSizeValid = (AMaxPacketSize > 0);
   uint32_t Result = static_cast<uint32_t>(OperationProgress->CPS());
@@ -5055,7 +5058,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()), "",
       [&]()
       {
-        THROWOSIFFALSE(::DeleteFile(ApiPath(AFileName)));
+        THROWOSIFFALSE(::RemoveFile(AFileName));
       });
     }
   }
@@ -5683,7 +5686,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, LocalFileName.c_str()), "",
           [&]()
           {
-            THROWOSIFFALSE(::DeleteFile(ApiPath(LocalFileName)));
+            THROWOSIFFALSE(::RemoveFile(LocalFileName));
           });
         }
 
@@ -5729,7 +5732,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
             FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()), "",
             [&]()
             {
-              THROWOSIFFALSE(::DeleteFile(ApiPath(DestPartialFullName)));
+              THROWOSIFFALSE(::RemoveFile(DestPartialFullName));
             });
           }
           else
@@ -5815,7 +5818,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
               FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()), "",
               [&]()
               {
-                THROWOSIFFALSE(::DeleteFile(ApiPath(DestPartialFullName)));
+                THROWOSIFFALSE(::RemoveFile(DestPartialFullName));
               });
             }
             LocalFileName = DestPartialFullName;

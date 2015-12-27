@@ -1,6 +1,5 @@
 #pragma once
 
-#include <stdint.h>
 #include <string>
 
 #include <nbglobals.h>
@@ -246,18 +245,18 @@ public:
   // bool operator ==(const AnsiString & Str) const { return Data == Str.Data; }
   // bool operator !=(const AnsiString & Str) const { return Data != Str.Data; }
 
-  friend bool operator ==(const AnsiString & lhs, const AnsiString & rhs)
+  inline friend bool operator ==(const AnsiString & lhs, const AnsiString & rhs)
   { return strcmp(lhs.Data.c_str(), rhs.Data.c_str()) == 0; }
-  friend bool operator !=(const AnsiString & lhs, const AnsiString & rhs)
+  inline friend bool operator !=(const AnsiString & lhs, const AnsiString & rhs)
   { return strcmp(lhs.Data.c_str(), rhs.Data.c_str()) != 0; }
 
-  friend bool operator ==(const AnsiString & lhs, const char * rhs)
+  inline friend bool operator ==(const AnsiString & lhs, const char * rhs)
   { return strcmp(lhs.Data.c_str(), rhs ? rhs : "") == 0; }
-  friend bool operator ==(const char * lhs, const AnsiString & rhs)
+  inline friend bool operator ==(const char * lhs, const AnsiString & rhs)
   { return strcmp(lhs ? lhs : "", rhs.Data.c_str()) == 0; }
-  friend bool operator !=(const AnsiString & lhs, const char * rhs)
+  inline friend bool operator !=(const AnsiString & lhs, const char * rhs)
   { return strcmp(lhs.Data.c_str(), rhs ? rhs : "") != 0; }
-  friend bool operator !=(const char * lhs, const AnsiString & rhs)
+  inline friend bool operator !=(const char * lhs, const AnsiString & rhs)
   { return strcmp(lhs ? lhs : "", rhs.Data.c_str()) != 0; }
 
 private:
@@ -320,9 +319,9 @@ public:
 
   bool operator ==(const char * rhs) const
   { return strcmp(reinterpret_cast<const char *>(Data.c_str()), rhs) == 0; }
-  friend bool operator ==(RawByteString & lhs, RawByteString & rhs)
+  inline friend bool operator ==(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data == rhs.Data; }
-  friend bool operator !=(RawByteString & lhs, RawByteString & rhs)
+  inline friend bool operator !=(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data != rhs.Data; }
 
 private:
@@ -337,25 +336,25 @@ private:
 namespace rde {
 
 template<typename S>
-bool operator==(const S & lhs, const S & rhs)
+inline bool operator==(const S & lhs, const S & rhs)
 {
   return lhs.Compare(rhs) == 0;
 }
 
 template<typename S>
-bool operator!=(const S & lhs, const S & rhs)
+inline bool operator!=(const S & lhs, const S & rhs)
 {
   return !(lhs == rhs);
 }
 
 template<typename S>
-bool operator<(const S & lhs, const S & rhs)
+inline bool operator<(const S & lhs, const S & rhs)
 {
   return lhs.Compare(rhs) < 0;
 }
 
 template<typename S>
-bool operator>(const S & lhs, const S & rhs)
+inline bool operator>(const S & lhs, const S & rhs)
 {
   return lhs.Compare(rhs) > 0;
 }

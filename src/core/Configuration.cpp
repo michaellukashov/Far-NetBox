@@ -98,7 +98,7 @@ void TConfiguration::Default()
   }
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
-  SetPuttyRegistryStorageKey(_T(PUTTY_REG_POS));
+  SetPuttyRegistryStorageKey(NB_TEXT(PUTTY_REG_POS));
   FConfirmOverwriting = true;
   FConfirmResume = true;
   FAutoReadDirectoryAfterOp = true;
@@ -778,7 +778,7 @@ UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName
   return GetFileFileInfoString(L"FileDescription", AFileName);
 }
 
-UnicodeString TConfiguration::GetProductVersion() const
+UnicodeString TConfiguration::GetFileProductVersion() const
 {
   return GetFileProductVersion(L"");
 }
@@ -797,7 +797,7 @@ bool TConfiguration::GetIsUnofficial() const
   #endif
 }
 
-UnicodeString TConfiguration::GetVersionStr() const
+UnicodeString TConfiguration::GetProductVersionStr() const
 {
   UnicodeString Result;
   TGuard Guard(FCriticalSection);
@@ -839,7 +839,7 @@ UnicodeString TConfiguration::GetVersionStr() const
 //    AddToList(BuildStr, DateStr, L" ");
 //    #endif
 
-    Result = FMTLOAD(VERSION2, GetVersion().c_str(), Build);
+    Result = FMTLOAD(VERSION2, GetProductVersion().c_str(), Build);
 
 //    #ifndef BUILD_OFFICIAL
 //    Result += L" " + LoadStr(VERSION_DONT_DISTRIBUTE);
@@ -852,7 +852,7 @@ UnicodeString TConfiguration::GetVersionStr() const
   return Result;
 }
 
-UnicodeString TConfiguration::GetVersion() const
+UnicodeString TConfiguration::GetProductVersion() const
 {
   TGuard Guard(FCriticalSection);
   UnicodeString Result;
@@ -1129,7 +1129,7 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
         ::FileExists(ApiPath(PrevRandomSeedFileName)))
     {
       // ignore any error
-      ::DeleteFile(ApiPath(PrevRandomSeedFileName));
+      ::RemoveFile(PrevRandomSeedFileName);
     }
   }
 }

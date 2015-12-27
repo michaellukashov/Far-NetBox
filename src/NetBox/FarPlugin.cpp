@@ -252,7 +252,7 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
   intptr_t Index = 0;
   while (!Result && (Index < FOpenedPlugins->GetCount()))
   {
-    FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, FOpenedPlugins->GetItem(Index));
+    FarFileSystem = NB_STATIC_DOWNCAST(TCustomFarFileSystem, FOpenedPlugins->GetObj(Index));
     assert(FarFileSystem);
     RECT Bounds = GetPanelBounds(FarFileSystem);
     if (Another && CompareRects(Bounds, PassivePanelBounds))
@@ -273,7 +273,7 @@ void TCustomFarPlugin::InvalidateOpenPluginInfo()
   for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
   {
     TCustomFarFileSystem * FarFileSystem =
-      NB_STATIC_DOWNCAST(TCustomFarFileSystem, FOpenedPlugins->GetItem(Index));
+      NB_STATIC_DOWNCAST(TCustomFarFileSystem, FOpenedPlugins->GetObj(Index));
     FarFileSystem->InvalidateOpenPluginInfo();
   }
 }
@@ -1868,7 +1868,7 @@ intptr_t TCustomFarFileSystem::GetFindData(
     *ItemsNumber = static_cast<int>(PanelItems->GetCount());
     for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
-      NB_STATIC_DOWNCAST(TCustomFarPanelItem, PanelItems->GetItem(Index))->FillPanelItem(
+      NB_STATIC_DOWNCAST(TCustomFarPanelItem, PanelItems->GetObj(Index))->FillPanelItem(
         &((*PanelItem)[Index]));
     }
   }
@@ -2548,7 +2548,7 @@ TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & AFileName) con
     Items = GetItems();
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, Items->GetItem(Index));
+    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, Items->GetObj(Index));
     if (PanelItem->GetFileName() == AFileName)
     {
       return PanelItem;
@@ -2567,7 +2567,7 @@ TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData)
   TObjectList * Items = GetItems();
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, Items->GetItem(Index));
+    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, Items->GetObj(Index));
     if (PanelItem->GetUserData() == UserData)
     {
       return PanelItem;
@@ -2592,7 +2592,7 @@ TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
   if (Items->GetCount() > 0)
   {
     assert(Index < Items->GetCount());
-    return NB_STATIC_DOWNCAST(TFarPanelItem, Items->GetItem(Index));
+    return NB_STATIC_DOWNCAST(TFarPanelItem, Items->GetObj(Index));
   }
   else
   {
@@ -2918,11 +2918,11 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   UnicodeString Path(32 * 1014, 0);
   if (FarPlugin)
   {
-    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(Path.Length(), (wchar_t *)Path.c_str());
+    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
   }
   else
   {
-    ::GetCurrentDirectory(Path.Length(), (wchar_t *)Path.c_str());
+    ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
   }
   Result = Path;
   return Result;

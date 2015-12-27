@@ -26,8 +26,8 @@ AFX_COMDAT LPCSTR _afxPchNilA = (LPCSTR)(((BYTE*)&_afxInitDataA)+sizeof(CStringD
 #endif
 
 t_directory::t_directory() :
-	direntry(0),
-	num(0)
+	num(0),
+	direntry(0)
 {
 #ifndef MPEXT_NO_CACHE
 	bCached=FALSE;
@@ -35,8 +35,8 @@ t_directory::t_directory() :
 }
 
 t_directory::t_directory(const t_directory & a) :
-	direntry(0),
-	num(0)
+	num(0),
+	direntry(0)
 {
 	this->operator=(a);
 }

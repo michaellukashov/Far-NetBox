@@ -637,7 +637,7 @@ __declspec(noinline) inline bool _AtlVerifyStackAvailable(_In_ SIZE_T Size)
 		else
 		{
 			PVOID p = _alloca(size);
-			(p);
+			(void)(p);
 		}
     }
 #if !defined(__MINGW32__)

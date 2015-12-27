@@ -259,9 +259,9 @@ void TBookmarks::SetSharedBookmarks(TBookmarkList * Value)
 
 TBookmarkList::TBookmarkList() :
   TPersistent(),
-  FModified(false),
   FBookmarks(new TStringList()),
-  FOpenedNodes(CreateSortedStringList())
+  FOpenedNodes(CreateSortedStringList()),
+  FModified(false)
 {
   FBookmarks->SetCaseSensitive(false);
 }

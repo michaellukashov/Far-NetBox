@@ -44,7 +44,7 @@ inline BOOL AtlIsValidString(
 	_In_z_count_(nMaxLength) LPCWSTR psz,
 	_In_ size_t nMaxLength = INT_MAX)
 {
-	(nMaxLength);
+	(void)(nMaxLength);
 	return (psz != NULL);
 }
 
@@ -53,7 +53,7 @@ inline BOOL AtlIsValidString(
 	_In_z_count_(nMaxLength) LPCSTR psz,
 	_In_ size_t nMaxLength = UINT_MAX)
 {
-	(nMaxLength);
+	(void)(nMaxLength);
 	return (psz != NULL);
 }
 
@@ -63,8 +63,8 @@ inline BOOL AtlIsValidAddress(
 	_In_ size_t nBytes,
 	_In_ BOOL bReadWrite = TRUE)
 {
-	(bReadWrite);
-	(nBytes);
+	(void)(bReadWrite);
+	(void)(nBytes);
 	return (p != NULL);
 }
 

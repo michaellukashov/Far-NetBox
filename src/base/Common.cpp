@@ -2,6 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <shellapi.h>
 #include <Common.h>
 #include <StrUtils.hpp>
 #include <SysUtils.hpp>
@@ -2109,7 +2110,7 @@ bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin)
 
 void DeleteFileChecked(const UnicodeString & AFileName)
 {
-  if (!::DeleteFile(ApiPath(AFileName)))
+  if (!::RemoveFile(AFileName))
   {
     throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()));
   }

@@ -2040,7 +2040,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()), "",
       [&]()
       {
-        THROWOSIFFALSE(::DeleteFile(AFileName));
+        THROWOSIFFALSE(::RemoveFile(AFileName));
       });
     }
   }
