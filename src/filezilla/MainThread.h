@@ -1,42 +1,10 @@
-// FileZilla - a Windows ftp client
-
-// Copyright (C) 2002-2004 - Tim Kosse <tim.kosse@gmx.de>
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-/*CMainThread
-Main thread of FileZilla. Processes the command messages passed by the main window
-*/
-
-#ifndef MPEXT_NO_CACHE
-#include "DirectoryCache.h"	// Hinzugefügt von der Klassenansicht
-#endif
 #pragma once
-
-#include "controlsocket.h"
-#ifndef MPEXT_NO_SFTP
-#include "SFtpControlSocket.h"
-#endif
+//---------------------------------------------------------------------------
 #include "FtpControlSocket.h"
-#include "structures.h"	// Hinzugefügt von der Klassenansicht
-#include "FileZillaApi.h"	// Hinzugefügt von der Klassenansicht
+#include "structures.h"
+#include "FileZillaApi.h"
 #include "ApiLog.h"
-
-/////////////////////////////////////////////////////////////////////////////
-// Thread CMainThread 
-
+//---------------------------------------------------------------------------
 #define FZAPI_THREADMSG_PROCESSREPLY 0
 #define FZAPI_THREADMSG_COMMAND 1
 #define FZAPI_THREADMSG_TRANSFEREND 2
@@ -44,19 +12,12 @@ Main thread of FileZilla. Processes the command messages passed by the main wind
 #define FZAPI_THREADMSG_DISCONNECT 4
 #define FZAPI_THREADMSG_ASYNCREQUESTREPLY 5
 #define FZAPI_THREADMSG_POSTKEEPALIVE 6
-
-#ifndef MPEXT_NO_IDENT
-class CIdentServerControl;
-#endif
+//---------------------------------------------------------------------------
 class CMainThread : public CApiLog
 {
 protected:
-	CMainThread();           // Dynamische Erstellung verwendet geschützten Konstruktor
+  CMainThread();
 
-// Attribute
-public:
-
-// Operationen
 public:
 	DWORD m_dwThreadId;
 	HANDLE m_hThread;
@@ -121,9 +82,7 @@ protected:
 #endif
 	__int64 m_nAsyncRequestID;
 	void OnTimer(WPARAM wParam,LPARAM lParam);
-// Überschreibungen
 
-// Implementierung
 protected:
 #ifndef MPEXT_NO_IDENT
 	CIdentServerControl *m_pIdentServer;
@@ -138,4 +97,4 @@ protected:
 	CEvent m_EventStarted;
 };
 
-/////////////////////////////////////////////////////////////////////////////
+

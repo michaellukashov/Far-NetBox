@@ -14,11 +14,11 @@
 //////////////////////////////////////////////////////////////////////
 //#define LISTDEBUG
 #ifdef LISTDEBUG
-//It's the normal UNIX format (or even another nonstandard format)
-//Some samples are from http://cr.yp.to/ftpparse/ftpparse.c
-/* UNIX-style listing, without inum and without blocks */
+  //It's the normal UNIX format (or even another nonstandard format)
+  //Some samples are from http://cr.yp.to/ftpparse/ftpparse.c
+  /* UNIX-style listing, without inum and without blocks */
 
-static char data[][110]={
+  static char data[][110]={
     "-rw-r--r--   1 root     other        531 Jan 29 03:26 01-unix-std file",
     "dr-xr-xr-x   2 root     other        512 Apr  8  1994 02-unix-std dir",
     "dr-xr-xr-x   2 root                  512 Apr  8  1994 03-unix-nogroup dir",
@@ -63,8 +63,8 @@ static char data[][110]={
     "0  Dec 12, 2002 02:13 22-vshell-old dir/",
 
     /* This type of directory listings is sent by some newer versions of VShell
-               * both year and time in one line is uncommon.
-               */
+     * both year and time in one line is uncommon.
+     */
     "-rwxr-xr-x    1 user group        9 Oct 08, 2002 09:47 23-vshell-new file",
 
     /* Next ones come from an OS/2 server. The server obviously isn't Y2K aware */
@@ -92,7 +92,7 @@ static char data[][110]={
 
     /* VMS multiline */
     "37-vms-multiline-file;1\r\n170774/170775     24-APR-2003 08:16:15  [FTP_CLIENT,SCOT]      (RWED,RWED,RE,)",
-    "38-vms-multiline-file;1\r\n10			     2-JUL-2003 10:30:08.59  [FTP_CLIENT,SCOT]      (RWED,RWED,RE,)",
+    "38-vms-multiline-file;1\r\n10           2-JUL-2003 10:30:08.59  [FTP_CLIENT,SCOT]      (RWED,RWED,RE,)",
 
     /* IBM AS/400 style listing */
     "QSYS            77824 02/23/00 15:09:55 *DIR 39-ibm-as400 dir/",
@@ -133,7 +133,7 @@ static char data[][110]={
 
     // Some asian listing format. Those >127 chars are just examples
     "-rwxrwxrwx   1 root     staff          0 2003   3\xed\xef 20 55-asian date file",
-    "-r--r--r-- 1 root root 2096 8\xed 17 08:52 56-asian date file",
+        "-r--r--r-- 1 root root 2096 8\xed 17 08:52 56-asian date file",
 
     // VMS style listing with a different field order
     "57-vms-alternate-field-order-file;1   [SUMMARY]    1/3     2-AUG-2006 13:05  (RWE,RWE,RE,)",
@@ -490,7 +490,7 @@ BOOL CFtpListResult::parseLine(const char *lineToParse, const int linelen, t_dir
   USES_CONVERSION;
 
   nFTPServerType = 0;
-  direntry.ownergroup = _T("");
+  direntry.ownergroup = L"";
 
   if (parseAsMlsd(lineToParse, linelen, direntry, mlst))
     return TRUE;
@@ -651,7 +651,7 @@ void CFtpListResult::SendToMessageLog(HWND hWnd, UINT nMsg)
     //Displays a message in the message log
     t_ffam_statusmessage *pStatus = new t_ffam_statusmessage;
     pStatus->post = TRUE;
-    pStatus->status = _T("<Empty directory listing>");
+    pStatus->status = L"<Empty directory listing>";
     pStatus->type = FZ_LOG_INFO;
     GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus);
   }
@@ -777,7 +777,7 @@ void CFtpListResult::AddLine(t_directory::t_direntry &direntry)
   if (m_server.nServerType&FZ_SERVERTYPE_SUB_FTP_VMS &&
       (!COptions::GetOptionVal(OPTION_VMSALLREVISIONS) || direntry.dir))
   { //Remove version information, only keep the latest file
-    int pos=direntry.name.ReverseFind(_MPT(';'));
+    int pos=direntry.name.ReverseFind(L';');
     if (pos<=0 || pos>=(direntry.name.GetLength()-1))
       return;;
     int version=_ttoi(direntry.name.Mid(pos+1));
@@ -876,7 +876,7 @@ bool CFtpListResult::ParseShortDate(const char *str, int len, t_directory::t_dir
 
   if (!numeric)
   {
-    //rde::map<CString, int>::const_iterator iter;
+    rde::map<CString, int>::const_iterator iter;
 
     char *tmpstr = static_cast<char *>(nb_calloc(1, i + 1));
     strncpy(tmpstr, str, i);
@@ -884,7 +884,7 @@ bool CFtpListResult::ParseShortDate(const char *str, int len, t_directory::t_dir
     strlwr(tmpstr);
 
     USES_CONVERSION;
-    rde::map<CString, int>::const_iterator iter = const_cast<CFtpListResult *>(this)->m_MonthNamesMap.find(A2T(tmpstr));
+    iter = const_cast<CFtpListResult *>(this)->m_MonthNamesMap.find(A2T(tmpstr));
     nb_free(tmpstr);
     if (iter == m_MonthNamesMap.end())
       return false;
@@ -1010,7 +1010,7 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
   int pos = 0;
   USES_CONVERSION;
 
-  //rde::map<CString, int>::const_iterator iter;
+  rde::map<CString, int>::const_iterator iter;
   t_directory::t_direntry dir;
 
   dir.bUnsure = FALSE;
@@ -1123,7 +1123,7 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
   char buffer[15] = {0};
   memcpy(buffer, pMonth, p-pMonth);
   strlwr(buffer);
-  rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.find(A2T(buffer));
+  iter = m_MonthNamesMap.find(A2T(buffer));
   if (iter == m_MonthNamesMap.end())
     return FALSE;
   dir.date.month = iter->second;
@@ -1269,6 +1269,9 @@ BOOL CFtpListResult::parseAsEPLF(const char *line, const int linelen, t_director
 
 BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_directory::t_direntry &direntry, bool mlst)
 {
+  #ifdef _DEBUG
+  USES_CONVERSION;
+  #endif
   // MLSD format as described here: http://www.ietf.org/internet-drafts/draft-ietf-ftpext-mlst-16.txt
   // Parsing is done strict, abort on slightest error.
 
@@ -1475,18 +1478,18 @@ bool CFtpListResult::parseMlsdDateTime(const CString value, t_directory::t_diren
   {
     try
     {
-      direntry.date.year = Year;
-      direntry.date.month = Month;
-      direntry.date.day = Day;
-      direntry.date.hour = Hours;
-      direntry.date.minute = Minutes;
-      direntry.date.second = Seconds;
-      direntry.date.utc = TRUE;
+      date.year = Year;
+      date.month = Month;
+      date.day = Day;
+      date.hour = Hours;
+      date.minute = Minutes;
+      date.second = Seconds;
+      date.utc = TRUE;
     }
     catch (CAtlException &)
     {
-      direntry.date.hasdate = FALSE;
-      direntry.date.hastime = FALSE;
+      date.hasdate = FALSE;
+      date.hastime = FALSE;
     }
   }
   return result;
@@ -1609,7 +1612,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   int prevstrlen = 0;
 
   __int64 tmp = 0;
-  //rde::map<CString, int>::const_iterator iter;
+  rde::map<CString, int>::const_iterator iter;
   while (str && !ParseSize(str, tokenlen, tmp) && !IsNumeric(skipped, skippedlen))
   {
     //Maybe the server has left no space between the group and the size
@@ -1620,7 +1623,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
     strlwr(tmpstr);
 
     USES_CONVERSION;
-    rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.find(A2T(tmpstr));
+    iter = m_MonthNamesMap.find(A2T(tmpstr));
     nb_free(tmpstr);
     if (iter != m_MonthNamesMap.end())
     {
@@ -1970,7 +1973,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   {
     //Try if we can recognize the month name
     USES_CONVERSION;
-    rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.find(A2T(lwr));
+    iter = m_MonthNamesMap.find(A2T(lwr));
     nb_free(lwr);
     if (iter == m_MonthNamesMap.end())
     {
@@ -2290,7 +2293,7 @@ BOOL CFtpListResult::parseAsOther(const char *line, const int linelen, t_directo
   }
   else
   {
-    //rde::map<CString, int>::const_iterator iter;
+    rde::map<CString, int>::const_iterator iter;
 
     //Get size
     direntry.size = strntoi64(skipped, skippedtokenlen);
@@ -2304,7 +2307,7 @@ BOOL CFtpListResult::parseAsOther(const char *line, const int linelen, t_directo
     strlwr(buffer);
 
     USES_CONVERSION;
-    rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.find(A2T(buffer));
+    iter = m_MonthNamesMap.find(A2T(buffer));
     if (iter == m_MonthNamesMap.end())
     {
       direntry.dir = FALSE;
