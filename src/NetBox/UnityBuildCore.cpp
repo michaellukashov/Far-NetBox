@@ -42,6 +42,7 @@
 #include "../core/FileSystems.cpp"
 #include "../core/Bookmarks.cpp"
 #include "../core/WinSCPSecurity.cpp"
+#include "../core/Http.cpp"
 #include "../windows/SynchronizeController.cpp"
 #include "../windows/GUITools.cpp"
 #include "../windows/GUIConfiguration.cpp"

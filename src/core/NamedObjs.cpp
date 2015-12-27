@@ -78,7 +78,8 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
 TNamedObjectList::TNamedObjectList() :
   TObjectList(),
   AutoSort(true),
-  FHiddenCount(0)
+  FHiddenCount(0),
+  FControlledAdd(false)
 {
 }
 
@@ -108,12 +109,43 @@ void TNamedObjectList::AlphaSort()
   Recount();
 }
 
+int TNamedObjectList::Add(TObject * AObject)
+{
+  int Result;
+  TAutoFlag ControlledAddFlag(FControlledAdd);
+  TNamedObject * NamedObject = static_cast<TNamedObject *>(AObject);
+  // If temporarily not auto-sorting (when loading session list),
+  // keep the hidden objects in front, so that HiddenCount is correct
+  if (!AutoSort && NamedObject->Hidden)
+  {
+    Result = 0;
+    Insert(Result, AObject);
+    FHiddenCount++;
+  }
+  else
+  {
+    Result = TObjectList::Add(AObject);
+  }
+  return Result;
+}
+
 void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
 {
+  if (Action == lnDeleted)
+  {
+    TNamedObject * NamedObject = static_cast<TNamedObject *>(Ptr);
+    if (NamedObject->Hidden && (FHiddenCount >= 0))
+    {
+      FHiddenCount--;
+    }
+  }
   TObjectList::Notify(Ptr, Action);
   if (Action == lnAdded)
   {
-    FHiddenCount = -1;
+    if (!FControlledAdd)
+    {
+      FHiddenCount = -1;
+    }
     if (AutoSort)
     {
       AlphaSort();

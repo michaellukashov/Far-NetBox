@@ -20,11 +20,11 @@ UnicodeString MungeStr(const UnicodeString & Str, bool ForceAnsi)
   RawByteString Source;
   if (ForceAnsi)
   {
-    Source = AnsiString(Str);
+    Source = RawByteString(AnsiString(Str));
   }
   else
   {
-    Source = UTF8String(Str);
+    Source = RawByteString(UTF8String(Str));
     if (Source.Length() > Str.Length())
     {
       Source.Insert(CONST_BOM, 1);
@@ -45,16 +45,18 @@ UnicodeString UnMungeStr(const UnicodeString & Str)
   RawByteString Dest;
   Dest.SetLength(Source.Length() + 1);
   putty_unmungestr(Source.c_str(), const_cast<char *>(Dest.c_str()), static_cast<int>(Dest.Length()));
+  // Cut the string at null character
+  PackStr(Dest);
   UnicodeString Result;
   const std::string Bom(CONST_BOM);
   if (Dest.Pos(Bom.c_str()) == 1)
   {
     Dest.Delete(1, Bom.size());
-    Result = UTF8String(Dest.c_str());
+    Result = UTF8ToString(Dest);
   }
   else
   {
-    Result = AnsiString(Dest.c_str());
+    Result = AnsiToString(Dest);
   }
   return Result;
 }
@@ -161,7 +163,7 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, bool CanCrea
   UnicodeString SubKey2 = SubKey;
   if (Path)
   {
-    assert(SubKey2.IsEmpty() || (SubKey2[SubKey2.Length()] != L'\\'));
+    DebugAssert(SubKey2.IsEmpty() || (SubKey2[SubKey2.Length()] != L'\\'));
     Result = true;
     while (!SubKey2.IsEmpty() && Result)
     {
@@ -293,7 +295,7 @@ void THierarchicalStorage::WriteValues(TStrings * Strings,
     {
       if (MaintainKeys)
       {
-        assert(Strings->GetString(Index).Pos(L"=") > 1);
+        DebugAssert(Strings->GetString(Index).Pos(L"=") > 1);
         WriteString(Strings->GetName(Index), Strings->GetValue(Strings->GetName(Index)));
       }
       else
@@ -329,7 +331,7 @@ RawByteString THierarchicalStorage::ReadBinaryData(const UnicodeString & Name) c
 
 RawByteString THierarchicalStorage::ReadStringAsBinaryData(const UnicodeString & Name, const RawByteString & Default) const
 {
-  UnicodeString UnicodeDefault = UnicodeString(AnsiString(Default.c_str(), Default.Length()).c_str());
+  UnicodeString UnicodeDefault = AnsiToString(Default);
   // This should be exactly the same operation as calling ReadString in
   // C++Builder 6 (non-Unicode) on Unicode-based OS
   // (conversion is done by Ansi layer of the OS)
@@ -362,8 +364,7 @@ void THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString & Name, c
   // This should be exactly the same operation as calling WriteString in
   // C++Builder 6 (non-Unicode) on Unicode-based OS
   // (conversion is done by Ansi layer of the OS)
-  AnsiString Ansi = AnsiString(Value.c_str(), Value.Length());
-  WriteString(Name, UnicodeString(Ansi.c_str()));
+  WriteString(Name, AnsiToString(Value));
 }
 
 UnicodeString THierarchicalStorage::IncludeTrailingBackslash(const UnicodeString & S)
@@ -758,7 +759,7 @@ bool __fastcall TCustomIniFileStorage::OpenRootKey(bool CanCreate)
 {
   // Not supported with master storage.
   // Actually currently, we use OpenRootKey with TRegistryStorage only.
-  assert(FMasterStorage.get() == nullptr);
+  DebugAssert(FMasterStorage.get() == NULL);
 
   return THierarchicalStorage::OpenRootKey(CanCreate);
 }
@@ -784,7 +785,7 @@ bool __fastcall TCustomIniFileStorage::OpenSubKey(UnicodeString Key, bool CanCre
       if (!Result && MasterResult)
       {
         Result = THierarchicalStorage::OpenSubKey(Key, true, Path);
-        assert(Result);
+        DebugAssert(Result);
       }
       else if (Result && !MasterResult)
       {
@@ -1084,7 +1085,7 @@ size_t __fastcall TCustomIniFileStorage::ReadBinaryData(const UnicodeString Name
     {
       Size = Len;
     }
-    assert(Buffer);
+    DebugAssert(Buffer);
     memcpy(Buffer, Value.c_str(), Size);
   }
   return Size;
@@ -1281,6 +1282,8 @@ void __fastcall TIniFileStorage::ApplyOverrides()
   }
 }
 //===========================================================================
+enum TWriteMode { wmAllow, wmFail, wmIgnore };
+//---------------------------------------------------------------------------
 class TOptionsIniFile : public TCustomIniFile
 {
 public:
@@ -1300,18 +1303,18 @@ public:
 
 private:
   TStrings * FOptions;
-  bool FIgnoreWrite;
+  TWriteMode FWriteMode;
   UnicodeString FRootKey;
 
-  void __fastcall HandleWrite();
+  bool __fastcall AllowWrite();
   void __fastcall NotImplemented();
 };
 //---------------------------------------------------------------------------
-TOptionsIniFile::TOptionsIniFile(TStrings * Options, bool IgnoreWrite, const UnicodeString & RootKey) :
+__fastcall TOptionsIniFile::TOptionsIniFile(TStrings * Options, TWriteMode WriteMode, const UnicodeString & RootKey) :
   TCustomIniFile(UnicodeString())
 {
   FOptions = Options;
-  FIgnoreWrite = IgnoreWrite;
+  FWriteMode = WriteMode;
   FRootKey = RootKey;
   if (!FRootKey.IsEmpty())
   {
@@ -1324,11 +1327,23 @@ void __fastcall TOptionsIniFile::NotImplemented()
   throw Exception(L"Not implemented");
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptionsIniFile::HandleWrite()
+bool __fastcall TOptionsIniFile::AllowWrite()
 {
-  if (!FIgnoreWrite)
+  switch (FWriteMode)
   {
-    NotImplemented();
+    case wmAllow:
+      return true;
+
+    case wmFail:
+      NotImplemented();
+      return false; // never gets here
+
+    case wmIgnore:
+      return false;
+
+    default:
+      DebugFail();
+      return false;
   }
 }
 //---------------------------------------------------------------------------
@@ -1364,7 +1379,12 @@ UnicodeString __fastcall TOptionsIniFile::ReadString(const UnicodeString Section
 //---------------------------------------------------------------------------
 void __fastcall TOptionsIniFile::WriteString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Value)
 {
-  HandleWrite();
+  if (AllowWrite() &&
+      // Implemented for TSessionData.DoSave only
+      DebugAlwaysTrue(Section.IsEmpty() && FRootKey.IsEmpty()))
+  {
+    FOptions->Values[Ident] = Value;
+  }
 }
 //---------------------------------------------------------------------------
 void __fastcall TOptionsIniFile::ReadSection(const UnicodeString Section, TStrings * Strings)
@@ -1424,42 +1444,57 @@ void __fastcall TOptionsIniFile::ReadSections(TStrings * Strings)
   }
 }
 //---------------------------------------------------------------------------
-void TOptionsIniFile::ReadSectionValues(const UnicodeString Section, TStrings * Strings)
+void __fastcall TOptionsIniFile::ReadSectionValues(const UnicodeString Section, TStrings * /*Strings*/)
 {
   NotImplemented();
 }
 //---------------------------------------------------------------------------
 void __fastcall TOptionsIniFile::EraseSection(const UnicodeString Section)
 {
-  HandleWrite();
+  if (AllowWrite())
+  {
+    NotImplemented();
+  }
 }
 //---------------------------------------------------------------------------
 void __fastcall TOptionsIniFile::DeleteKey(const UnicodeString Section, const UnicodeString Ident)
 {
-  HandleWrite();
+  if (AllowWrite() &&
+      // Implemented for TSessionData.DoSave only
+      DebugAlwaysTrue(Section.IsEmpty() && FRootKey.IsEmpty()))
+  {
+    int Index = FOptions->IndexOfName(Ident);
+    if (Index >= 0)
+    {
+      FOptions->Delete(Index);
+    }
+  }
 }
 //---------------------------------------------------------------------------
 void __fastcall TOptionsIniFile::UpdateFile()
 {
-  HandleWrite();
+  if (AllowWrite())
+  {
+    // noop
+  }
 }
 //---------------------------------------------------------------------------
-void TOptionsIniFile::ReadSections(const UnicodeString Section, TStrings * Strings)
+void __fastcall TOptionsIniFile::ReadSections(const UnicodeString /*Section*/, TStrings * /*Strings*/)
 {
   NotImplemented();
 }
 //===========================================================================
-__fastcall TOptionsStorage::TOptionsStorage(TStrings * Options):
+__fastcall TOptionsStorage::TOptionsStorage(TStrings * Options, bool AllowWrite):
   TCustomIniFileStorage(
     UnicodeString(L"Command-line options"),
-    new TOptionsIniFile(Options, false, UnicodeString()))
+    new TOptionsIniFile(Options, (AllowWrite ? wmAllow : wmFail), UnicodeString()))
 {
 }
 //---------------------------------------------------------------------------
 __fastcall TOptionsStorage::TOptionsStorage(TStrings * Options, const UnicodeString & RootKey, THierarchicalStorage * MasterStorage) :
   TCustomIniFileStorage(
     UnicodeString(L"Command-line options overriding " + MasterStorage->Source),
-    new TOptionsIniFile(Options, true, RootKey))
+    new TOptionsIniFile(Options, wmIgnore, RootKey))
 {
   FMasterStorage.reset(MasterStorage);
 }

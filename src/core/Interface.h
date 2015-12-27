@@ -19,7 +19,7 @@ UnicodeString GetCompanyRegistryKey();
 UnicodeString GetRegistryKey();
 void * BusyStart();
 void BusyEnd(void * Token);
-const uint32_t GUIUpdateInterval = 200;
+const uint32_t GUIUpdateInterval = 100;
 void SetNoGUI();
 bool ProcessGUI(bool Force = false);
 UnicodeString GetAppNameString();

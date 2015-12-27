@@ -1,5 +1,4 @@
 #pragma once
-#define PuttyIntfH
 
 void PuttyInitialize();
 void PuttyFinalize();
@@ -18,7 +17,10 @@ extern "C"
 #include <ssh.h>
 #include <proxy.h>
 #include <storage.h>
+// Defined in misc.h - Conflicts with std::min/max
+#undef min
+#undef max
 
-  extern CRITICAL_SECTION noise_section;
+extern CRITICAL_SECTION noise_section;
 }
 

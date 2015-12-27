@@ -28,3 +28,6 @@ void AES256EncodeWithMAC(char * Data, size_t Len, const char * Password,
 UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint);
 UnicodeString GetKeyTypeFromFingerprint(const UnicodeString & Fingerprint);
 
+UnicodeString GetPuTTYVersion();
+
+UnicodeString Sha256(const char * Data, size_t Size);

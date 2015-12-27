@@ -39,6 +39,7 @@ public:
 
   virtual void Notify(void * Ptr, TListNotification Action);
   void AlphaSort();
+  intptr_t Add(TObject * AObject);
   virtual const TNamedObject * AtObject(intptr_t Index) const;
   virtual TNamedObject * AtObject(intptr_t Index);
   const TNamedObject * FindByName(const UnicodeString & Name) const;
@@ -55,6 +56,7 @@ public:
 
 protected:
   intptr_t FHiddenCount;
+  bool FControlledAdd;
   void Recount();
 
 private:
