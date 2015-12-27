@@ -2,6 +2,7 @@
 
 #include <Classes.hpp>
 
+extern const wchar_t * EOLTypeNames;
 enum TEOLType
 {
   eolLF,    // \n
@@ -22,8 +23,8 @@ public:
   void Convert(TEOLType Source, TEOLType Dest, intptr_t Params, bool & Token);
   void Convert(char * Source, TEOLType Dest, intptr_t Params, bool & Token);
   void Convert(TEOLType Source, char * Dest, intptr_t Params, bool & Token);
-  void Insert(int64_t Index, const char * Buf, size_t Len);
-  void Delete(int64_t Index, size_t Len);
+  void Insert(int64_t Index, const char * Buf, int64_t Len);
+  void Delete(int64_t Index, int64_t Len);
   int64_t LoadStream(TStream * Stream, const int64_t Len, bool ForceLen);
   int64_t ReadStream(TStream * Stream, const int64_t Len, bool ForceLen);
   void WriteToStream(TStream * Stream, const int64_t Len);

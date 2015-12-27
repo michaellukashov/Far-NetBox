@@ -8,6 +8,7 @@
 bool ShouldDisplayException(Exception * E);
 bool ExceptionMessage(const Exception * E, UnicodeString & Message);
 bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message);
+UnicodeString SysErrorMessageForError(int LastError);
 UnicodeString LastSysErrorMessage();
 TStrings * ExceptionToMoreMessages(Exception * E);
 bool IsInternalException(const Exception * E);
@@ -36,9 +37,9 @@ public:
   TStrings * GetMoreMessages() const { return FMoreMessages; }
   UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
 
-  explicit ExtException(const UnicodeString & Msg) : Exception(Msg), FMoreMessages(nullptr) {}
-  explicit ExtException(int Ident) : Exception(Ident), FMoreMessages(nullptr) {}
-  explicit ExtException(const UnicodeString & Msg, int AHelpContext) : Exception(Msg, AHelpContext), FMoreMessages(nullptr) {}
+  explicit inline ExtException(const UnicodeString & Msg) : Exception(Msg), FMoreMessages(nullptr) {}
+  explicit inline ExtException(int Ident) : Exception(Ident), FMoreMessages(nullptr) {}
+  explicit inline ExtException(const UnicodeString & Msg, int AHelpContext) : Exception(Msg, AHelpContext), FMoreMessages(nullptr) {}
 
   ExtException(const ExtException & E) : Exception(L""), FMoreMessages(nullptr)
   {

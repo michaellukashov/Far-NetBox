@@ -16,6 +16,7 @@
 #include "../base/Common.cpp"
 #include "../base/Exceptions.cpp"
 #include "../base/FileBuffer.cpp"
+#include "../base/Global.cpp"
 
 #include "../core/RemoteFiles.cpp"
 #include "../core/Terminal.cpp"
