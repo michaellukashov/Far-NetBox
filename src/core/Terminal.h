@@ -155,9 +155,10 @@ friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TFTPFileSystem;
 friend class TWebDAVFileSystem;
-
 friend class TTunnelUI;
 friend class TCallbackGuard;
+friend class TSecondaryTerminal;
+friend class TRetryOperationLoop;
 
 public:
   void CommandError(Exception * E, const UnicodeString & Msg);
@@ -275,6 +276,8 @@ public:
   void FilesFind(const UnicodeString & Directory, const TFileMasks & FileMask,
     TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
   void SpaceAvailable(const UnicodeString & APath, TSpaceAvailable & ASpaceAvailable);
+  void LockFiles(TStrings * AFileList);
+  void UnlockFiles(TStrings * AFileList);
   bool DirectoryFileList(const UnicodeString & APath,
     TRemoteFileList *& FileList, bool CanLoad);
   void MakeLocalFileList(const UnicodeString & AFileName,
@@ -297,6 +300,9 @@ public:
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
   void LogEvent(const UnicodeString & Str);
   void GetSupportedChecksumAlgs(TStrings * Algs);
+  UnicodeString ChangeFileName(const TCopyParamType * CopyParam,
+    const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel);
+  UnicodeString GetBaseFileName(const UnicodeString & AFileName);
 
   static UnicodeString ExpandFileName(const UnicodeString & APath,
     const UnicodeString & BasePath);
@@ -364,6 +370,7 @@ protected:
   bool FReadCurrentDirectoryPending;
   bool FReadDirectoryPending;
   bool FTunnelOpening;
+  TCustomFileSystem * FFileSystem;
 
   void DoStartReadDirectory();
   void DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel);
@@ -470,6 +477,10 @@ protected:
     bool Resume,
     bool NoConfirmation,
     OUT HANDLE * AHandle);
+  void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * AParam);
+  void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * AParam);
+  void DoLockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  void DoUnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
 
   virtual void Information(const UnicodeString & Str, bool Status);
   virtual uintptr_t QueryUser(const UnicodeString & Query,
@@ -512,6 +523,12 @@ protected:
   void CacheCertificate(const UnicodeString & CertificateStorageKey,
     const UnicodeString & SiteKey, const UnicodeString & Fingerprint, int Failures);
   void CollectTlsUsage(const UnicodeString & TlsVersionStr);
+  bool LoadTlsCertificate(X509 *& Certificate, EVP_PKEY *& PrivateKey);
+  bool TryStartOperationWithFile(
+    const UnicodeString & AFileName, TFileOperation Operation1, TFileOperation Operation2 = foNone);
+  void StartOperationWithFile(
+    const UnicodeString & AFileName, TFileOperation Operation1, TFileOperation Operation2 = foNone);
+  void CommandSessionClose(TObject * Sender);
 
   TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
 
@@ -575,7 +592,6 @@ private:
   bool FUseBusyCursor;
   TRemoteDirectoryCache * FDirectoryCache;
   TRemoteDirectoryChangesCache * FDirectoryChangesCache;
-  TCustomFileSystem * FFileSystem;
   TSecureShell * FSecureShell;
   UnicodeString FLastDirectoryChange;
   TCurrentFSProtocol FFSProtocol;
@@ -643,6 +659,7 @@ protected:
   bool FReadCurrentDirectoryPending;
   bool FReadDirectoryPending;
   bool FTunnelOpening;
+  TCustomFileSystem * FFileSystem;
 
   void __fastcall DoStartReadDirectory();
   void __fastcall DoReadDirectoryProgress(int Progress, int ResolvedLinks, bool & Cancel);
@@ -744,6 +761,10 @@ protected:
   bool __fastcall DoCreateLocalFile(const UnicodeString FileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
+  void __fastcall LockFile(const UnicodeString FileName, const TRemoteFile * File, void * Param);
+  void __fastcall UnlockFile(const UnicodeString FileName, const TRemoteFile * File, void * Param);
+  void __fastcall DoLockFile(const UnicodeString & FileName, const TRemoteFile * File);
+  void __fastcall DoUnlockFile(const UnicodeString & FileName, const TRemoteFile * File);
 
   virtual void __fastcall Information(const UnicodeString & Str, bool Status);
   virtual unsigned int __fastcall QueryUser(const UnicodeString Query,
@@ -783,6 +804,12 @@ protected:
   void __fastcall CacheCertificate(const UnicodeString & CertificateStorageKey,
     const UnicodeString & SiteKey, const UnicodeString & Fingerprint, int Failures);
   void __fastcall CollectTlsUsage(const UnicodeString & TlsVersionStr);
+  bool __fastcall LoadTlsCertificate(X509 *& Certificate, EVP_PKEY *& PrivateKey);
+  bool __fastcall TryStartOperationWithFile(
+    const UnicodeString & FileName, TFileOperation Operation1, TFileOperation Operation2 = foNone);
+  void __fastcall StartOperationWithFile(
+    const UnicodeString & FileName, TFileOperation Operation1, TFileOperation Operation2 = foNone);
+  void __fastcall CommandSessionClose(TObject * Sender);
 
   __property TFileOperationProgressType * OperationProgress = { read=FOperationProgress };
 
@@ -865,6 +892,8 @@ public:
   void __fastcall FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
     TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
   void __fastcall SpaceAvailable(const UnicodeString Path, TSpaceAvailable & ASpaceAvailable);
+  void __fastcall LockFiles(TStrings * FileList);
+  void __fastcall UnlockFiles(TStrings * FileList);
   bool __fastcall DirectoryFileList(const UnicodeString Path,
     TRemoteFileList *& FileList, bool CanLoad);
   void __fastcall MakeLocalFileList(const UnicodeString FileName,
@@ -884,6 +913,9 @@ public:
   const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve = false);
   void __fastcall inline LogEvent(const UnicodeString & Str);
   void __fastcall GetSupportedChecksumAlgs(TStrings * Algs);
+  UnicodeString __fastcall ChangeFileName(const TCopyParamType * CopyParam,
+    UnicodeString FileName, TOperationSide Side, bool FirstLevel);
+  UnicodeString __fastcall GetBaseFileName(UnicodeString FileName);
 
   static UnicodeString __fastcall ExpandFileName(UnicodeString Path,
     const UnicodeString BasePath);
@@ -940,6 +972,8 @@ public:
   virtual ~TSecondaryTerminal() {}
   void Init(TSessionData * SessionData, TConfiguration * Configuration,
     const UnicodeString & Name);
+
+  void UpdateFromMain();
 
   TTerminal * GetMainTerminal() const { return FMainTerminal; }
 

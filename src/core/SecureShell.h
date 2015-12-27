@@ -68,6 +68,7 @@ public:
   void UpdateSocket(SOCKET Value, bool Startup);
   void UpdatePortFwdSocket(SOCKET Value, bool Startup);
   void PuttyFatalError(const UnicodeString & Error);
+  TPromptKind IdentifyPromptKind(const UnicodeString & AName);
   bool PromptUser(bool ToServer,
     const UnicodeString & AName, bool NameRequired,
     const UnicodeString & Instructions, bool InstructionsRequired,
@@ -259,6 +260,7 @@ public:
   void __fastcall UpdateSocket(SOCKET value, bool Startup);
   void __fastcall UpdatePortFwdSocket(SOCKET value, bool Startup);
   void __fastcall PuttyFatalError(UnicodeString Error);
+  TPromptKind __fastcall IdentifyPromptKind(UnicodeString & Name);
   bool __fastcall PromptUser(bool ToServer,
     UnicodeString AName, bool NameRequired,
     UnicodeString Instructions, bool InstructionsRequired,
