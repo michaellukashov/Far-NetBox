@@ -1252,8 +1252,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       //ADF(L"DST mode: %d; Timezone offset: %dh %dm", static_cast<int>(Data->GetDSTMode()), (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour));
       ADF(L"Recycle bin: Delete to: %s, Overwritten to: %s, Bin path: %s",
         BooleanToEngStr(Data->GetDeleteToRecycleBin()).c_str(),
-        BooleanToEngStr(Data->GetOverwrittenToRecycleBin()).c_str(),
-        Data->GetRecycleBinPath().c_str());
+        BooleanToEngStr(Data->GetOverwrittenToRecycleBin()).c_str(), Data->GetRecycleBinPath().c_str());
       if (Data->TrimVMSVersions)
       {
         ADF(L"Trim VMS versions: %s",

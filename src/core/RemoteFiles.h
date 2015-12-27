@@ -590,6 +590,7 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
 int FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
   UnicodeString * TypeName = nullptr);
 bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2);
+UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, bool Unix);
 
 } // namespace core
 
