@@ -180,13 +180,13 @@ void TNamedObjectList::SetCount(intptr_t Value)
 
 intptr_t TNamedObjectList::GetCount() const
 {
-  assert(FHiddenCount >= 0);
+  DebugAssert(FHiddenCount >= 0);
   return TObjectList::GetCount() - FHiddenCount;
 }
 
 intptr_t TNamedObjectList::GetCountIncludingHidden() const
 {
-  assert(FHiddenCount >= 0);
+  DebugAssert(FHiddenCount >= 0);
   return TObjectList::GetCount();
 }
 

@@ -2010,8 +2010,8 @@ path_join(
   apr_size_t clen = strlen(component);
   char * path = nullptr;
 
-  // assert(path_is_canonical(base, pool));
-  // assert(path_is_canonical(component, pool));
+  // DebugAssert(path_is_canonical(base, pool));
+  // DebugAssert(path_is_canonical(component, pool));
 
   // If the component is absolute, then return it.
   if (*component == '/')
@@ -2139,7 +2139,7 @@ static void
 path_remove_component(
   stringbuf_t * path)
 {
-  // assert(is_canonical(path->data, path->len));
+  // DebugAssert(is_canonical(path->data, path->len));
 
   path->len = previous_segment(path->data, path->len);
   path->data[path->len] = '\0';
@@ -3027,7 +3027,7 @@ config_read_auth_data(
   THierarchicalStorage * Storage = nullptr;
   WEBDAV_ERR(fs->CreateStorage(Storage));
   std::unique_ptr<THierarchicalStorage> StoragePtr(Storage);
-  assert(StoragePtr.get());
+  DebugAssert(StoragePtr.get());
   StoragePtr->SetAccessMode(smRead);
   if (!StoragePtr->OpenSubKey(UnicodeString(subkey), false))
     return WEBDAV_ERR_BAD_PARAM;
@@ -3057,11 +3057,11 @@ config_write_auth_data(
   apr_pool_t * /*pool*/)
 {
   const char * subkey = CertificateStorageKey;
-  assert(fs);
+  DebugAssert(fs);
   THierarchicalStorage * Storage = nullptr;
   WEBDAV_ERR(fs->CreateStorage(Storage));
   std::unique_ptr<THierarchicalStorage> StoragePtr(Storage);
-  assert(StoragePtr.get());
+  DebugAssert(StoragePtr.get());
   StoragePtr->SetAccessMode(smReadWrite);
 
   if (!StoragePtr->OpenSubKey(UnicodeString(subkey), true))
@@ -3201,7 +3201,7 @@ auth_simple_first_creds_helper(
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(parameters,
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
-  assert(fs);
+  DebugAssert(fs);
   err = config_read_auth_data(&creds_hash, AUTH_CRED_SIMPLE,
     realmstring, fs, pool);
   if (err)
@@ -3465,7 +3465,7 @@ auth_simple_save_creds_helper(
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(parameters,
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
-  assert(fs);
+  DebugAssert(fs);
   // Save credentials to disk.
   err = config_write_auth_data(creds_hash, AUTH_CRED_SIMPLE,
     realmstring, fs, pool);
@@ -3591,7 +3591,7 @@ prompt_for_simple_creds(
       TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(parameters,
         CONST_FS_KEY,
         APR_HASH_KEY_STRING));
-      assert(fs);
+      DebugAssert(fs);
       err = config_read_auth_data(&creds_hash, AUTH_CRED_SIMPLE,
         realmstring, fs, pool);
       error_clear(&err);
@@ -3822,7 +3822,7 @@ auth_ssl_client_cert_pw_file_first_creds_helper(
     TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(parameters,
       CONST_FS_KEY,
       APR_HASH_KEY_STRING));
-    assert(fs);
+    DebugAssert(fs);
     // Try to load passphrase from the auth/ cache.
     err = config_read_auth_data(&creds_hash,
       AUTH_CRED_SSL_CLIENT_CERT_PW,
@@ -3985,7 +3985,7 @@ auth_ssl_client_cert_pw_file_save_creds_helper(
       TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(parameters,
         CONST_FS_KEY,
         APR_HASH_KEY_STRING));
-      assert(fs);
+      DebugAssert(fs);
       // Save credentials to disk.
       err = config_write_auth_data(creds_hash,
         AUTH_CRED_SSL_CLIENT_CERT_PW,
@@ -4680,7 +4680,7 @@ username_first_creds(
     TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(parameters,
       CONST_FS_KEY,
       APR_HASH_KEY_STRING));
-    assert(fs);
+    DebugAssert(fs);
     // Try to load credentials from a file on disk, based on the
     // realmstring.  Don't throw an error, though: if something went
     // wrong reading the file, no big deal.  What really matters is that
@@ -4746,7 +4746,7 @@ username_save_creds(
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(parameters,
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
-  assert(fs);
+  DebugAssert(fs);
   err = config_write_auth_data(creds_hash, WEBDAV_AUTH_CRED_USERNAME,
     realmstring,
     fs,
@@ -5287,7 +5287,7 @@ canonicalize(
   // depends on path not being zero-length.
   if (PATH_IS_EMPTY(path))
   {
-    assert(type != type_uri);
+    DebugAssert(type != type_uri);
     return "";
   }
 
@@ -5299,7 +5299,7 @@ canonicalize(
   src = path;
   if (type == type_uri)
   {
-    assert(*src != '/');
+    DebugAssert(*src != '/');
 
     while (*src && (*src != '/') && (*src != ':'))
       src++;
@@ -5760,7 +5760,7 @@ relpath_basename(
   apr_size_t len = strlen(relpath);
   apr_size_t start = 0;
 
-  assert(relpath_is_canonical(relpath));
+  DebugAssert(relpath_is_canonical(relpath));
 
   start = len;
   while ((start > 0) && (relpath[start - 1] != '/'))
@@ -5782,8 +5782,8 @@ relpath_join(
   apr_size_t clen = strlen(component);
   char * path = nullptr;
 
-  assert(relpath_is_canonical(base));
-  assert(relpath_is_canonical(component));
+  DebugAssert(relpath_is_canonical(base));
+  DebugAssert(relpath_is_canonical(component));
 
   // If either is empty return the other
   if (blen == 0)
@@ -5866,7 +5866,7 @@ dirent_basename(
   apr_size_t len = strlen(dirent);
   apr_size_t start = 0;
 
-  assert(!pool || dirent_is_canonical(dirent, pool));
+  DebugAssert(!pool || dirent_is_canonical(dirent, pool));
 
   if (dirent_is_root(dirent, len))
   {
@@ -6036,7 +6036,7 @@ uri_is_child(
 {
   const char * relpath = nullptr;
 
-  assert(pool); // hysterical raisins.
+  DebugAssert(pool); // hysterical raisins.
 
   relpath = is_child(type_uri, parent_uri, child_uri, pool);
   if (relpath)
@@ -7294,7 +7294,7 @@ ra_neon_body_provider(
     TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(cb->ctx->auth_baton->parameters,
       CONST_FS_KEY,
       APR_HASH_KEY_STRING));
-    assert(fs);
+    DebugAssert(fs);
     fs->AdjustToCPSLimit(buflen);
 
     apr_size_t nbytes = buflen;
@@ -7460,8 +7460,8 @@ neon_add_depth_header(
   apr_hash_t * extra_headers,
   int depth)
 {
-  assert(extra_headers != nullptr);
-  assert(depth == NEON_DEPTH_ZERO ||
+  DebugAssert(extra_headers != nullptr);
+  DebugAssert(depth == NEON_DEPTH_ZERO ||
          depth == NEON_DEPTH_ONE ||
          depth == NEON_DEPTH_INFINITE);
   apr_hash_set(extra_headers, "Depth", APR_HASH_KEY_STRING,
@@ -8179,7 +8179,7 @@ neon_request_create(
   req->rv = -1;
 
   // Neon resources may be nullptr on out-of-memory
-  assert(req->ne_req != nullptr);
+  DebugAssert(req->ne_req != nullptr);
   apr_pool_cleanup_register(sess->pool, req,
     dav_request_sess_cleanup,
     apr_pool_cleanup_null);
@@ -8383,13 +8383,13 @@ get_file_reader(
       cgc->req->sess->callback_baton));
   }
 
-  assert(cgc->callback_baton);
+  DebugAssert(cgc->callback_baton);
   callback_baton_t * cb = static_cast<callback_baton_t *>(cgc->callback_baton);
 
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(cb->ctx->auth_baton->parameters,
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
-  assert(fs);
+  DebugAssert(fs);
   fs->AdjustToCPSLimit(len);
 
   // The stream we want to push data at.
@@ -8545,7 +8545,7 @@ session_open(
   void * callback_baton,
   apr_pool_t * pool)
 {
-  assert(callback_baton);
+  DebugAssert(callback_baton);
   // check options, url, prepare parameters, callbacks, auth etc
   apr_pool_t * sesspool = webdav_pool_create(pool);
 
@@ -8654,12 +8654,12 @@ list_func(
   apr_pool_t * pool)
 {
   list_func_baton_t * pb = static_cast<list_func_baton_t *>(baton);
-  assert(pb);
-  assert(pb->entries);
+  DebugAssert(pb);
+  DebugAssert(pb->entries);
   const char * entryname = nullptr;
 
   neon_session_t * ras = static_cast<neon_session_t *>(pb->session->priv);
-  assert(ras);
+  DebugAssert(ras);
   if (ras->callbacks->cancel_func)
     WEBDAV_ERR(ras->callbacks->cancel_func(ras->callback_baton));
 
@@ -9022,7 +9022,7 @@ ssl_server_trust_file_first_credentials(
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(parameters,
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
-  assert(fs);
+  DebugAssert(fs);
   apr_hash_t * creds_hash = nullptr;
   error_t error = WEBDAV_NO_ERROR;
 
@@ -9098,7 +9098,7 @@ ssl_server_trust_file_save_credentials(
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(parameters,
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
-  assert(fs);
+  DebugAssert(fs);
 
   creds_hash = apr_hash_make(pool);
   apr_hash_set(creds_hash, AUTHN_ASCII_CERT_KEY, APR_HASH_KEY_STRING,
@@ -9230,11 +9230,11 @@ plaintext_prompt_helper(
   cmdline_prompt_baton2_t * pb = static_cast<cmdline_prompt_baton2_t *>(baton);
 
   auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
-  assert(ab);
+  DebugAssert(ab);
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(ab->parameters,
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
-  assert(fs);
+  DebugAssert(fs);
 
   uintptr_t RequestResult = 0;
   error_t err = fs->SimplePrompt(prompt_text, prompt_string, RequestResult);
@@ -9375,11 +9375,11 @@ cmdline_auth_ssl_server_trust_prompt(
   stringbuf_appendstr(buf, msg);
 
   auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
-  assert(ab);
+  DebugAssert(ab);
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(ab->parameters,
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
-  assert(fs);
+  DebugAssert(fs);
 
   uintptr_t RequestResult = 0;
   WEBDAV_ERR(fs->VerifyCertificate(buf->data, cert_info->fingerprint, RequestResult));
@@ -9420,11 +9420,11 @@ cmdline_auth_ssl_client_cert_prompt(
     static_cast<cmdline_prompt_baton2_t *>(baton);
 
   auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
-  assert(ab);
+  DebugAssert(ab);
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(ab->parameters,
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
-  assert(fs);
+  DebugAssert(fs);
 
   uintptr_t RequestResult = 0;
   WEBDAV_ERR(fs->AskForClientCertificateFilename(&cert_file, RequestResult, pool));
@@ -9455,11 +9455,11 @@ cmdline_auth_ssl_client_cert_pw_prompt(
     static_cast<cmdline_prompt_baton2_t *>(baton);
 
   auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
-  assert(ab);
+  DebugAssert(ab);
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(ab->parameters,
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
-  assert(fs);
+  DebugAssert(fs);
 
   uintptr_t RequestResult = 0;
   const char * result = nullptr;
@@ -9492,11 +9492,11 @@ cmdline_auth_simple_prompt(
     static_cast<cmdline_prompt_baton2_t *>(baton);
 
   auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
-  assert(ab);
+  DebugAssert(ab);
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(ab->parameters,
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
-  assert(fs);
+  DebugAssert(fs);
   uintptr_t RequestResult = 0;
 
   if (username && password)
@@ -9538,11 +9538,11 @@ cmdline_auth_username_prompt(
     static_cast<cmdline_prompt_baton2_t *>(baton);
 
   auth_baton_t * ab = static_cast<auth_baton_t *>(pb->cancel_baton);
-  assert(ab);
+  DebugAssert(ab);
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(ab->parameters,
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
-  assert(fs);
+  DebugAssert(fs);
 
   uintptr_t RequestResult = 0;
   WEBDAV_ERR(fs->AskForUsername(&ret->username, RequestResult, pool));
@@ -9760,7 +9760,7 @@ init_session_from_path(
   const char * initial_url, *url;
 
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
+  DebugAssert(ras);
 
   WEBDAV_ERR(client_url_from_path2(&initial_url, path_or_url,
     ras->url, pool, pool));
@@ -9867,7 +9867,7 @@ get_dir_contents(
   WEBDAV_ERR(err);
 
   neon_session_t * ras = static_cast<neon_session_t *>(ra_session->priv);
-  assert(ras);
+  DebugAssert(ras);
   if (ras->callbacks->cancel_func)
     WEBDAV_ERR(ras->callbacks->cancel_func(ras->callback_baton));
 
@@ -10568,7 +10568,7 @@ client_list(
   const char * fs_path = nullptr;
   error_t err = WEBDAV_NO_ERROR;
 
-  assert(session);
+  DebugAssert(session);
 
   // We use the kind field to determine if we should recurse, so we
   // always need it.
@@ -10642,7 +10642,7 @@ client_put_file(
   apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
+  DebugAssert(ras);
 
   error_t err = WEBDAV_NO_ERROR;
   int code = 0;
@@ -10690,7 +10690,7 @@ client_move_file_or_directory(
   apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
+  DebugAssert(ras);
 
   error_t err = WEBDAV_NO_ERROR;
   const char * target_from = path_uri_encode(remote_path_from, pool);
@@ -10724,7 +10724,7 @@ client_delete_file(
   apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
+  DebugAssert(ras);
 
   error_t err = WEBDAV_NO_ERROR;
   const char * target = path_uri_encode(remote_path, pool);
@@ -10754,7 +10754,7 @@ client_check_path(
   apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
+  DebugAssert(ras);
 
   *kind = node_none;
 
@@ -10806,7 +10806,7 @@ client_make_directory(
   apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
+  DebugAssert(ras);
 
   error_t err = WEBDAV_NO_ERROR;
   const char * target = path_uri_encode(remote_path, pool);
@@ -10835,7 +10835,7 @@ client_send_propfind_request(
   apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
+  DebugAssert(ras);
 
   error_t err = WEBDAV_NO_ERROR;
   int code = 0;
@@ -11305,7 +11305,7 @@ progress_func(
   TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(ctx->auth_baton->parameters,
     CONST_FS_KEY,
     APR_HASH_KEY_STRING));
-  assert(fs);
+  DebugAssert(fs);
   if (total == -1)
     fs->ReadDirectoryProgress(progress);
   else
@@ -11383,7 +11383,7 @@ neon_open(
   void * callback_baton,
   apr_pool_t * pool)
 {
-  assert(callback_baton);
+  DebugAssert(callback_baton);
   callback_baton_t * cb = static_cast<callback_baton_t *>(callback_baton);
 
   *corrected_url = nullptr;
@@ -11421,7 +11421,7 @@ neon_open(
     TWebDAVFileSystem * fs = NB_STATIC_DOWNCAST(TWebDAVFileSystem, apr_hash_get(cb->ctx->auth_baton->parameters,
       CONST_FS_KEY,
       APR_HASH_KEY_STRING));
-    assert(fs);
+    DebugAssert(fs);
     WEBDAV_ERR(fs->GetServerSettings(
       &proxy_method,
       &proxy_host,
@@ -11658,7 +11658,7 @@ neon_get_session_url(
   apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
+  DebugAssert(ras);
   *url = apr_pstrmemdup(pool, ras->url->data, ras->url->len);
   return WEBDAV_NO_ERROR;
 }
@@ -11678,7 +11678,7 @@ neon_get_file(
   apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
+  DebugAssert(ras);
   const char * url = path_url_add_component2(ras->url->data, path, pool);
   const ne_propname * which_props = nullptr;
 
@@ -11821,7 +11821,7 @@ neon_check_path(
   apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
+  DebugAssert(ras);
 
   const char * url = ras->url->data;
   error_t err = WEBDAV_NO_ERROR;
@@ -11867,7 +11867,7 @@ neon_stat(
   apr_pool_t * pool)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
+  DebugAssert(ras);
   const char * url = ras->url->data;
 
   // If we were given a relative path to append, append it.
@@ -11941,7 +11941,7 @@ neon_get_webdav_resource_root(
   apr_pool_t * /*pool*/)
 {
   neon_session_t * ras = static_cast<neon_session_t *>(session->priv);
-  assert(ras);
+  DebugAssert(ras);
 
   *url = ras->webdav_root;
   return WEBDAV_NO_ERROR;
@@ -12129,7 +12129,7 @@ void TWebDAVFileSystem::Open()
 
 void TWebDAVFileSystem::Close()
 {
-  assert(FActive);
+  DebugAssert(FActive);
   FTerminal->Closed();
   FActive = false;
 }
@@ -12190,7 +12190,7 @@ UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString & APath, bo
 
 bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
 {
-  assert(FTerminal);
+  DebugAssert(FTerminal);
   switch (Capability)
   {
     case fcUserGroupListing:
@@ -12225,7 +12225,7 @@ bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
       return false;
 
     default:
-      assert(false);
+      DebugAssert(false);
       return false;
   }
 }
@@ -12365,7 +12365,7 @@ void TWebDAVFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 
 void TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
-  assert(FileList);
+  DebugAssert(FileList);
   webdav::cancelled = 0;
   bool Repeat = false;
 
@@ -12485,12 +12485,12 @@ void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & /*AFileName*/
   TChmodSessionAction & /*Action*/)
 {
   Error(SNotImplemented, 1006);
-//  assert(Properties);
+//  DebugAssert(Properties);
 }
 
 bool TWebDAVFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 {
-  assert(false);
+  DebugAssert(false);
   return false;
 }
 
@@ -12498,7 +12498,7 @@ void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
   TStrings * /*FileList*/, TStrings * /*Checksums*/,
   TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
 {
-  assert(false);
+  DebugAssert(false);
 }
 
 bool TWebDAVFileSystem::ConfirmOverwrite(
@@ -12556,8 +12556,8 @@ bool TWebDAVFileSystem::ConfirmOverwrite(
       // resume
     case qaRetry:
       OverwriteMode = omResume;
-      assert(FileParams != nullptr);
-      assert(CanResume);
+      DebugAssert(FileParams != nullptr);
+      DebugAssert(CanResume);
       FFileTransferResumed = FileParams->DestSize;
       break;
 
@@ -12598,7 +12598,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(
       break;
 
     default:
-      assert(false);
+      DebugAssert(false);
       Result = false;
       break;
   }
@@ -12608,7 +12608,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(
 void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent)
 {
-  assert(AFile);
+  DebugAssert(AFile);
   bool Dir = AFile->GetIsDirectory() && !AFile->GetIsSymLink();
   if (Dir && (Params & ccRecursive))
   {
@@ -12642,7 +12642,7 @@ TStrings * TWebDAVFileSystem::GetFixedPaths()
 void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
   TSpaceAvailable & /*ASpaceAvailable*/)
 {
-  assert(false);
+  DebugAssert(false);
 }
 
 void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
@@ -12650,7 +12650,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-  assert((AFilesToCopy != nullptr) && (OperationProgress != nullptr));
+  DebugAssert((AFilesToCopy != nullptr) && (OperationProgress != nullptr));
 
   Params &= ~cpAppend;
   UnicodeString FileName, FileNameOnly;
@@ -13058,7 +13058,7 @@ void TWebDAVFileSystem::SinkRobust(const UnicodeString & AFileName,
     {
       OperationProgress->RollbackTransfer();
       Action.Restart();
-      assert(AFile != nullptr);
+      DebugAssert(AFile != nullptr);
       if (!AFile->GetIsDirectory())
       {
         // prevent overwrite confirmations
@@ -13080,7 +13080,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 
   Action.SetFileName(AFileName);
 
-  assert(AFile);
+  DebugAssert(AFile);
   TFileMasks::TParams MaskParams;
   MaskParams.Size = AFile->GetSize();
 
@@ -13291,7 +13291,7 @@ void TWebDAVFileSystem::SinkFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * Param)
 {
   TSinkFileParams * Params = NB_STATIC_DOWNCAST(TSinkFileParams, Param);
-  assert(Params->OperationProgress);
+  DebugAssert(Params->OperationProgress);
   try
   {
     SinkRobust(AFileName, AFile, Params->TargetDir, Params->CopyParam,
@@ -13328,16 +13328,16 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
   else if (FIgnoreFileList)
   {
     // directory listing provided implicitly by FZAPI during certain operations is ignored
-    assert(FFileList == nullptr);
+    DebugAssert(FFileList == nullptr);
     return false;
   }
   else
   {
-    assert(FFileList != nullptr);
+    DebugAssert(FFileList != nullptr);
     // this can actually fail in real life,
     // when connected to server with case insensitive paths
     UnicodeString AbsolutePath = GetAbsolutePath(FFileList->GetDirectory(), false);
-    assert(core::UnixSamePath(AbsolutePath, Path));
+    DebugAssert(core::UnixSamePath(AbsolutePath, Path));
     USEDPARAM(Path);
 
     for (intptr_t Index = 0; Index < Count; ++Index)
@@ -13559,9 +13559,9 @@ void TWebDAVFileSystem::FileTransfer(const UnicodeString & AFileName,
 
 bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t * Path, int & ResponseCode)
 {
-  assert(Path);
+  DebugAssert(Path);
 
-  assert(FSession);
+  DebugAssert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
@@ -13580,9 +13580,9 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t * Path, int & Response
 
 bool TWebDAVFileSystem::WebDAVCheckExisting(const wchar_t * Path, int & IsDir)
 {
-  assert(Path);
+  DebugAssert(Path);
   IsDir = 0;
-  assert(FSession);
+  DebugAssert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = WEBDAV_NO_ERROR;
   webdav::node_kind_t kind = webdav::node_none;
@@ -13604,9 +13604,9 @@ bool TWebDAVFileSystem::WebDAVCheckExisting(const wchar_t * Path, int & IsDir)
 
 bool TWebDAVFileSystem::WebDAVMakeDirectory(const wchar_t * Path)
 {
-  assert(Path);
+  DebugAssert(Path);
 
-  assert(FSession);
+  DebugAssert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
@@ -13626,7 +13626,7 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString & Directory)
 {
   webdav::listdataentry_vector_t Entries;
 
-  assert(FSession);
+  DebugAssert(FSession);
   webdav::list_func_baton_t baton = {0};
   baton.verbose = true;
   baton.entries = &Entries;
@@ -13655,8 +13655,8 @@ bool TWebDAVFileSystem::WebDAVGetList(const UnicodeString & Directory)
 bool TWebDAVFileSystem::WebDAVGetFile(
   const wchar_t * RemotePath, const wchar_t * LocalPath)
 {
-  assert(RemotePath && *RemotePath);
-  assert(FSession);
+  DebugAssert(RemotePath && *RemotePath);
+  DebugAssert(FSession);
 
   bool Result = false;
   HANDLE LocalFileHandle = FTerminal->CreateLocalFile(LocalPath,
@@ -13704,10 +13704,10 @@ bool TWebDAVFileSystem::WebDAVGetFile(
 bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * RemotePath,
   const wchar_t * LocalPath, const uint64_t /*FileSize*/)
 {
-  assert(RemotePath && *RemotePath);
-  assert(LocalPath && *LocalPath);
+  DebugAssert(RemotePath && *RemotePath);
+  DebugAssert(LocalPath && *LocalPath);
 
-  assert(FSession);
+  DebugAssert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;
@@ -13742,10 +13742,10 @@ bool TWebDAVFileSystem::WebDAVPutFile(const wchar_t * RemotePath,
 
 bool TWebDAVFileSystem::WebDAVRenameFile(const wchar_t * SrcPath, const wchar_t * DstPath)
 {
-  assert(SrcPath && *SrcPath);
-  assert(DstPath && *DstPath);
+  DebugAssert(SrcPath && *SrcPath);
+  DebugAssert(DstPath && *DstPath);
 
-  assert(FSession);
+  DebugAssert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * src_path = nullptr;
@@ -13769,9 +13769,9 @@ bool TWebDAVFileSystem::WebDAVRenameFile(const wchar_t * SrcPath, const wchar_t 
 
 bool TWebDAVFileSystem::WebDAVDeleteFile(const wchar_t * Path)
 {
-  assert(Path);
+  DebugAssert(Path);
 
-  assert(FSession);
+  DebugAssert(FSession);
   apr_pool_t * pool = webdav_pool_create(webdav_pool);
   webdav::error_t err = WEBDAV_NO_ERROR;
   const char * remote_path = nullptr;

@@ -31,7 +31,7 @@ static double GUIUpdateIntervalFrac = static_cast<double>(MSecsPerSec / 1000 * G
 
 bool ProcessGUI(bool Force)
 {
-  assert(MainThread != 0);
+  DebugAssert(MainThread != 0);
   bool Result = false;
   if (MainThread == ::GetCurrentThreadId())
   {
