@@ -91,6 +91,9 @@ public:
   virtual bool GetStoredCredentialsTried() const;
   virtual UnicodeString FSGetUserName() const;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs);
+  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem);
 
 protected:
   TSecureShell * FSecureShell;

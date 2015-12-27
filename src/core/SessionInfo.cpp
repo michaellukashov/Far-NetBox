@@ -207,7 +207,7 @@ public:
 
   void Rollback(Exception * E)
   {
-    assert(FErrorMessages == nullptr);
+    DebugAssert(FErrorMessages == nullptr);
     FErrorMessages = ExceptionToMoreMessages(E);
     Close(RolledBack);
   }
@@ -306,7 +306,7 @@ protected:
 
   inline void Close(TState State)
   {
-    assert(FState == Opened);
+    DebugAssert(FState == Opened);
     FState = State;
     FLog->RecordPendingActions();
   }
@@ -328,7 +328,7 @@ protected:
       case laChecksum: return L"checksum";
       case laCwd: return L"cwd";
       default:
-        FAIL;
+        DebugFail();
         return L"";
     }
   }
@@ -654,7 +654,7 @@ TSessionLog::~TSessionLog()
 {
   FClosed = true;
   ReflectSettings();
-  assert(FFile == nullptr);
+  DebugAssert(FFile == nullptr);
 }
 
 void TSessionLog::Lock()
@@ -669,7 +669,7 @@ void TSessionLog::Unlock()
 
 UnicodeString TSessionLog::GetSessionName() const
 {
-  assert(FSessionData != nullptr);
+  DebugAssert(FSessionData != nullptr);
   return FSessionData->GetSessionName();
 }
 
@@ -685,7 +685,7 @@ TLogLineType TSessionLog::GetType(intptr_t Index) const
 
 void TSessionLog::DoAddToParent(TLogLineType AType, const UnicodeString & ALine)
 {
-  assert(FParent != nullptr);
+  DebugAssert(FParent != nullptr);
   FParent->Add(AType, ALine);
 }
 
@@ -746,7 +746,7 @@ void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString & Line,
 
 void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
 {
-  assert(FConfiguration);
+  DebugAssert(FConfiguration);
   if (GetLogging())
   {
     try
@@ -847,8 +847,8 @@ void TSessionLog::OpenLogFile()
 {
   try
   {
-    assert(FFile == nullptr);
-    assert(FConfiguration != nullptr);
+    DebugAssert(FFile == nullptr);
+    DebugAssert(FConfiguration != nullptr);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
     FFile = OpenFile(FCurrentLogFileName, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
   }
@@ -932,7 +932,7 @@ UnicodeString TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion)
   switch (TlsVersion)
   {
     default:
-      FAIL;
+      DebugFail();
     case ssl2:
       return "SSLv2";
     case ssl3:
@@ -958,6 +958,38 @@ UnicodeString TSessionLog::LogSensitive(const UnicodeString & Str)
   }
 }
 
+UnicodeString TSessionLog::GetCmdLineLog()
+{
+  UnicodeString Result = CmdLine;
+
+  if (!GetConfiguration->GetLogSensitive())
+  {
+//    TManagementScript Script(StoredSessions, false);
+//    Script.MaskPasswordInCommandLine(Result, true);
+  }
+
+  return Result;
+}
+
+template <typename T>
+UnicodeString EnumName(T Value, const UnicodeString & Names)
+{
+  int N = int(Value);
+
+  do
+  {
+    UnicodeString Name = CutToChar(Names, L';', true);
+    if (N == 0)
+    {
+      return Name;
+    }
+    N--;
+  }
+  while ((N >= 0) && !Names.IsEmpty());
+
+  return L"(unknown)";
+}
+
 #define ADSTR(S) DoAdd(llMessage, S, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
 #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
 
@@ -977,7 +1009,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       AddSeparator();
       ADF(L"NetBox %s (OS %s)", FConfiguration->GetProductVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
       std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateConfigStorage());
-       assert(Storage.get());
+       DebugAssert(Storage.get());
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
 
       if (0)
@@ -988,7 +1020,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
           (Secur32 != nullptr) ? reinterpret_cast<TGetUserNameEx>(::GetProcAddress(Secur32, "GetUserNameExW")) : nullptr;
         wchar_t UserName[UNLEN + 1];
         ULONG UserNameSize = _countof(UserName);
-        if ((GetUserNameEx == nullptr) || !GetUserNameEx(NameSamCompatible, (LPWSTR)UserName, &UserNameSize))
+        if ((GetUserNameEx == nullptr) || DebugAlwaysFalse(!GetUserNameEx(NameSamCompatible, (LPWSTR)UserName, &UserNameSize)))
         {
           wcscpy_s(UserName, UNLEN, L"<Failed to retrieve username>");
         }
@@ -1019,7 +1051,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d", D, M, Y, H, N, S);
       // ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
       ADF(L"Working directory: %s", ::GetCurrentDir().c_str());
-      // ADF(L"Command-line: %s", CmdLine.c_str());
+      // ADF(L"Command-line: %s", GetCmdLineLog().c_str());
 //      if (FConfiguration->LogProtocol >= 1)
 //      {
 //        AddOptions(GetGlobalOptions());
@@ -1064,7 +1096,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Code Page: %d", Data->GetCodePageAsNumber());
       if (Data->GetUsesSsh() || (Data->GetFSProtocol() == fsFTP))
       {
-        wchar_t * PingTypes = (wchar_t *)L"-NC";
+        // wchar_t * PingTypes = (wchar_t *)L"-NC";
         TPingType PingType;
         intptr_t PingInterval;
         if (Data->GetFSProtocol() == fsFTP)
@@ -1078,7 +1110,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
           PingInterval = Data->GetPingInterval();
         }
         ADF(L"Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
-          UnicodeString(PingTypes[PingType]).c_str(), PingInterval, Data->GetTimeout());
+          EnumName(PingType, PingTypeNames).c_str(), PingInterval, Data->GetTimeout());
         ADF(L"Disable Nagle: %s",
           BooleanToEngStr(Data->GetTcpNoDelay()).c_str());
       }
@@ -1108,7 +1140,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       {
         ADF(L"Send buffer: %d", Data->GetSendBuf());
       }
-      wchar_t const * BugFlags = L"+-A";
+      // wchar_t const * BugFlags = L"+-A";
       if (Data->GetUsesSsh())
       {
         ADF(L"SSH protocol version: %s; Compression: %s",
@@ -1129,15 +1161,15 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         UnicodeString Bugs;
         for (intptr_t Index = 0; Index < BUG_COUNT; ++Index)
         {
-          Bugs += UnicodeString(BugFlags[Data->GetBug(static_cast<TSshBug>(Index))])+(Index<BUG_COUNT-1?L",":L"");
+          AddToList(Bugs, EnumName(Data->GetBug(static_cast<TSshBug>(Index)), AutoSwitchNames).c_str());
         }
         ADF(L"SSH Bugs: %s", Bugs.c_str());
         ADF(L"Simple channel: %s", BooleanToEngStr(Data->GetSshSimple()).c_str());
         ADF(L"Return code variable: %s; Lookup user groups: %c",
            Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
-           BugFlags[Data->GetLookupUserGroups()]);
+           EnumName(Data->GetLookupUserGroups(), AutoSwitchNames).c_str());
         ADF(L"Shell: %s", Data->GetShell().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetShell().c_str());
-        ADF(L"EOL: %d, UTF: %d", Data->GetEOLType(), Data->GetNotUtf()); // NotUtf duplicated in FTP branch
+        ADF(L"EOL: %s, UTF: %s", EnumName(Data->GetEOLType(), EOLTypeNames).c_str(), EnumName(Data->GetNotUtf(), NotAutoSwitchNames).c_str()); // NotUtf duplicated in FTP branch
         ADF(L"Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s",
            BooleanToEngStr(Data->GetClearAliases()).c_str(), BooleanToEngStr(Data->GetUnsetNationalVars()).c_str(),
            BooleanToEngStr(Data->GetResolveSymlinks()).c_str());
@@ -1151,49 +1183,62 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         UnicodeString Bugs;
         for (intptr_t Index = 0; Index < SFTP_BUG_COUNT; ++Index)
         {
-          Bugs += UnicodeString(BugFlags[Data->GetSFTPBug(static_cast<TSftpBug>(Index))])+(Index<SFTP_BUG_COUNT-1 ? L"," : L"");
+          AddToList(Bugs, EnumName(Data->GetSFTPBug(static_cast<TSftpBug>(Index)), AutoSwitchNames).c_str());
         }
         ADF(L"SFTP Bugs: %s", Bugs.c_str());
         ADF(L"SFTP Server: %s", Data->GetSftpServer().IsEmpty()? UnicodeString(L"default").c_str() : Data->GetSftpServer().c_str());
       }
+      bool FtpsOn = false;
       if (Data->GetFSProtocol() == fsFTP)
       {
-        ADF(L"UTF: %d", Data->GetNotUtf()); // duplicated in UsesSsh branch
+        ADF(L"UTF: %s", EnumName(Data->GetNotUtf(), NotAutoSwitchNames).c_str()); // duplicated in UsesSsh branch
         UnicodeString Ftps;
         switch (Data->GetFtps())
         {
           case ftpsImplicit:
             Ftps = L"Implicit TLS/SSL";
+            FtpsOn = true;
             break;
 
           case ftpsExplicitSsl:
-            Ftps = L"Explicit SSL";
+            Ftps = L"Explicit SSL/TLS";
+            FtpsOn = true;
             break;
 
           case ftpsExplicitTls:
-            Ftps = L"Explicit TLS";
+            Ftps = L"Explicit TLS/SSL";
+            FtpsOn = true;
             break;
 
           default:
-            assert(Data->GetFtps() == ftpsNone);
+            DebugAssert(Data->GetFtps() == ftpsNone);
             Ftps = L"None";
             break;
         }
+        // kind of hidden option, so do not reveal it unless it is set
+        if (Data->FtpTransferActiveImmediately != asAuto)
+        {
+          ADF(L"Transfer active immediately: %s", EnumName(Data->GetFtpTransferActiveImmediately(), AutoSwitchNames).c_str());
+        }
         ADF(L"FTP: FTPS: %s; Passive: %s [Force IP: %c]; MLSD: %c  [List all: %c]",
            Ftps.c_str(), BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
-           BugFlags[Data->GetFtpForcePasvIp()],
-           BugFlags[Data->GetFtpUseMlsd()],
-           BugFlags[Data->GetFtpListAll()]);
-        if (Data->GetFtps() != ftpsNone)
+           EnumName(Data->GetFtpForcePasvIp(), AutoSwitchNames).c_str(),
+           EnumName(Data->GetFtpUseMlsd(), AutoSwitchNames).c_str(),
+           EnumName(Data->GetFtpListAll(), AutoSwitchNames).c_str());
+      }
+      if (Data->FSProtocol == fsWebDAV)
+      {
+        FtpsOn = (Data->Ftps != ftpsNone);
+        ADF(L"HTTPS: %s",
+          BooleanToEngStr(FtpsOn).c_str());
+      }
+      if (FtpsOn)
+      {
+        if (Data->FSProtocol == fsFTP)
         {
-          ADF(L"Session reuse: %s", BooleanToEngStr(Data->GetSslSessionReuse()).c_str());
-          ADF(L"TLS/SSL versions: %s-%s", GetTlsVersionName(Data->GetMinTlsVersion()).c_str(), GetTlsVersionName(Data->GetMaxTlsVersion()).c_str());
+          ADF(L"Session reuse: %s", BooleanToEngStr(Data->SslSessionReuse).c_str());
         }
-        // kind of hidden option, so do not reveal it unless it is set
-        if (Data->GetFtpTransferActiveImmediately() != asAuto)
-        {
-          ADF(L"Transfer active immediately: %c", BugFlags[Data->GetFtpTransferActiveImmediately()]);
-        }
+        ADF(L"TLS/SSL versions: %s-%s", GetTlsVersionName(Data->GetMinTlsVersion()).c_str(), GetTlsVersionName(Data->GetMaxTlsVersion()).c_str());
       }
       ADF(L"Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
          Data->GetLocalDirectory().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetLocalDirectory().c_str(),
@@ -1205,10 +1250,19 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
          BooleanToEngStr(Data->GetPreserveDirectoryChanges()).c_str());
       //intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
       //ADF(L"DST mode: %d; Timezone offset: %dh %dm", static_cast<int>(Data->GetDSTMode()), (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour));
+      ADF(L"Recycle bin: Delete to: %s, Overwritten to: %s, Bin path: %s",
+        BooleanToEngStr(Data->GetDeleteToRecycleBin()).c_str(),
+        BooleanToEngStr(Data->GetOverwrittenToRecycleBin()).c_str(),
+        Data->GetRecycleBinPath().c_str());
+      if (Data->TrimVMSVersions)
+      {
+        ADF(L"Trim VMS versions: %s",
+          (BooleanToEngStr(Data->TrimVMSVersions)));
+      }
       UnicodeString TimeInfo;
       if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
       {
-        AddToList(TimeInfo, FORMAT(L"DST mode: %d", static_cast<int>(Data->GetDSTMode())), L";");
+        AddToList(TimeInfo, FORMAT(L"DST mode: %s", EnumName(static_cast<int>(Data->GetDSTMode()), DSTModeNames).c_str()), L";");
       }
       if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
       {
@@ -1253,7 +1307,7 @@ intptr_t TSessionLog::GetBottomIndex() const
 
 bool TSessionLog::GetLoggingToFile() const
 {
-  assert((FFile == nullptr) || LogToFile());
+  DebugAssert((FFile == nullptr) || LogToFile());
   return (FFile != nullptr);
 }
 
@@ -1338,8 +1392,8 @@ TActionLog::TActionLog(TSessionUI * UI, TSessionData * SessionData,
   FEnabled(true),
   FIndent(L"  ")
 {
-  assert(UI != nullptr);
-  assert(SessionData != nullptr);
+  DebugAssert(UI != nullptr);
+  DebugAssert(SessionData != nullptr);
   Init(UI, SessionData, Configuration);
 }
 
@@ -1370,16 +1424,16 @@ void TActionLog::Init(TSessionUI * UI, TSessionData * SessionData,
 
 TActionLog::~TActionLog()
 {
-  assert(FPendingActions->GetCount() == 0);
+  DebugAssert(FPendingActions->GetCount() == 0);
   SAFE_DESTROY(FPendingActions);
   FClosed = true;
   ReflectSettings();
-  assert(FFile == nullptr);
+  DebugAssert(FFile == nullptr);
 }
 
 void TActionLog::Add(const UnicodeString & Line)
 {
-  assert(FConfiguration);
+  DebugAssert(FConfiguration);
   if (FLogging)
   {
     try
@@ -1491,8 +1545,8 @@ void TActionLog::OpenLogFile()
 {
   try
   {
-    assert(FFile == nullptr);
-    assert(FConfiguration != nullptr);
+    DebugAssert(FFile == nullptr);
+    DebugAssert(FConfiguration != nullptr);
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
     FFile = OpenFile(FCurrentLogFileName, FSessionData, false, FCurrentFileName);
   }
@@ -1532,9 +1586,9 @@ void TActionLog::RecordPendingActions()
 
 void TActionLog::BeginGroup(const UnicodeString & Name)
 {
-  assert(!FInGroup);
+  DebugAssert(!FInGroup);
   FInGroup = true;
-  assert(FIndent == L"  ");
+  DebugAssert(FIndent == L"  ");
   AddIndented(FORMAT(L"<group name=\"%s\" start=\"%s\">",
     XmlAttributeEscape(Name).c_str(), StandardTimestamp().c_str()));
   FIndent = L"    ";
@@ -1542,9 +1596,9 @@ void TActionLog::BeginGroup(const UnicodeString & Name)
 
 void TActionLog::EndGroup()
 {
-  assert(FInGroup);
+  DebugAssert(FInGroup);
   FInGroup = false;
-  assert(FIndent == L"    ");
+  DebugAssert(FIndent == L"    ");
   FIndent = L"  ";
   // this is called from ReflectSettings that in turn is called when logging fails,
   // so do not try to close the group, if it has not been opened, to avoid recursion

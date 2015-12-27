@@ -46,6 +46,7 @@ enum TFSCapability
   fcCheckingSpaceAvailable, fcIgnorePermErrors, fcCalculatingChecksum,
   fcModeChangingUpload, fcPreservingTimestampUpload, fcShellAnyCommand,
   fcSecondaryShell, fcRemoveCtrlZUpload, fcRemoveBOMUpload, fcMoveToQueue,
+  fcLocking, fcPreservingTimestampDirs,
   fcCount,
 };
 
@@ -327,6 +328,7 @@ private:
   UnicodeString LogSensitive(const UnicodeString & Str);
   void AddOption(const UnicodeString & LogStr);
   void AddOptions(TOptions * Options);
+  UnicodeString GetCmdLineLog();
 
 protected:
   void CloseLogFile();
@@ -367,6 +369,7 @@ private:
   UnicodeString __fastcall LogSensitive(const UnicodeString & Str);
   void __fastcall AddOption(const UnicodeString & LogStr);
   void __fastcall AddOptions(TOptions * Options);
+  UnicodeString __fastcall GetCmdLineLog();
 */
 };
 
