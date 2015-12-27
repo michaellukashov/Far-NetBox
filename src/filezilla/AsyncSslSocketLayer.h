@@ -36,8 +36,8 @@ OnLayerCallback of your socket class.
 Valid notification IDs are:
 - SSL_INFO 0
   There are two possible values for param2:
-	SSL_INFO_ESTABLISHED 0 - You'll get this notification if the SSL negotiation was successful
-	SSL_INFO_SHUTDOWNCOMPLETE 1 - You'll get this notification if the SSL connection has been shut 
+  SSL_INFO_ESTABLISHED 0 - You'll get this notification if the SSL negotiation was successful
+  SSL_INFO_SHUTDOWNCOMPLETE 1 - You'll get this notification if the SSL connection has been shut 
                                   down successfully. See below for details.
 - SSL_FAILURE 1
   This notification is sent if the SSL connection could not be established or if an existing 
@@ -98,152 +98,152 @@ Version 2.0:
 // Details of SSL certificate, can be used by app to verify if certificate is valid
 struct t_SslCertData
 {
-	CUSTOM_MEM_ALLOCATION_IMPL
+  CUSTOM_MEM_ALLOCATION_IMPL
 
-	~t_SslCertData()
-	{
-		nb_free(certificate);
-	}
+  ~t_SslCertData()
+  {
+    nb_free(certificate);
+  }
 
-	struct t_Contact
-	{
-		TCHAR Organization[256];
-		TCHAR Unit[256];
-		TCHAR CommonName[256];
-		TCHAR Mail[256];
-		TCHAR Country[256];
-		TCHAR StateProvince[256];
-		TCHAR Town[256];
-		TCHAR Other[1024];
-	} subject, issuer;
+  struct t_Contact
+  {
+    TCHAR Organization[256];
+    TCHAR Unit[256];
+    TCHAR CommonName[256];
+    TCHAR Mail[256];
+    TCHAR Country[256];
+    TCHAR StateProvince[256];
+    TCHAR Town[256];
+    TCHAR Other[1024];
+  } subject, issuer;
 
-	struct t_validTime
-	{
-		//Year, Month, day, hour, minute, second
-		int y,M,d,h,m,s;
-	} validFrom, validUntil;
+  struct t_validTime
+  {
+    //Year, Month, day, hour, minute, second
+    int y,M,d,h,m,s;
+  } validFrom, validUntil;
 
-	TCHAR subjectAltName[10240];
+  TCHAR subjectAltName[10240];
 
-	uint8_t hash[20];
+  uint8_t hash[20];
 
-	uint8_t * certificate;
-	size_t certificateLen;
+  uint8_t * certificate;
+  size_t certificateLen;
 
-	int verificationResult;
-	int verificationDepth;
+  int verificationResult;
+  int verificationDepth;
 
-	int priv_data; //Internal data, do not modify
+  int priv_data; //Internal data, do not modify
 };
 
 class CCriticalSectionWrapper;
 class CAsyncSslSocketLayer : public CAsyncSocketExLayer
 {
 public:
-	BOOL SetCertStorage(CString file);
-	CAsyncSslSocketLayer();
-	virtual ~CAsyncSslSocketLayer();
+  BOOL SetCertStorage(CString file);
+  CAsyncSslSocketLayer();
+  virtual ~CAsyncSslSocketLayer();
 
-	void SetNotifyReply(int nID, int nCode, int result);
-	BOOL GetPeerCertificateData(t_SslCertData &SslCertData, LPCTSTR & Error);
-	std::string GetTlsVersionStr();
-	std::string GetCipherName();
+  void SetNotifyReply(int nID, int nCode, int result);
+  BOOL GetPeerCertificateData(t_SslCertData &SslCertData, LPCTSTR & Error);
+  std::string GetTlsVersionStr();
+  std::string GetCipherName();
 
-	bool IsUsingSSL();
-	int InitSSLConnection(bool clientMode, 
-		CAsyncSslSocketLayer* main,
-		bool sessionreuse, int minTlsVersion, int maxTlsVersion,
-		void* pContext = 0);
+  bool IsUsingSSL();
+  int InitSSLConnection(bool clientMode, 
+    CAsyncSslSocketLayer* main,
+    bool sessionreuse, int minTlsVersion, int maxTlsVersion,
+    void* pContext = 0);
 
-	// Send raw text, useful to send a confirmation after the ssl connection
-	// has been initialized
-	int SendRaw(const void* lpBuf, int nBufLen, int nFlags = 0);
+  // Send raw text, useful to send a confirmation after the ssl connection
+  // has been initialized
+  int SendRaw(const void* lpBuf, int nBufLen, int nFlags = 0);
 
-	void* GetContext() { return m_ssl_ctx; }
-	
+  void* GetContext() { return m_ssl_ctx; }
+  
 private:
-	virtual void Close();
-	virtual BOOL Connect(LPCTSTR lpszHostAddress, UINT nHostPort );
-	virtual BOOL Connect(const SOCKADDR* lpSockAddr, int nSockAddrLen );
-	virtual void OnConnect(int nErrorCode);
-	virtual void OnReceive(int nErrorCode);
-	virtual void OnSend(int nErrorCode);
-	virtual void OnClose(int nErrorCode);
-	virtual int Receive(void* lpBuf, int nBufLen, int nFlags = 0);
-	virtual int Send(const void* lpBuf, int nBufLen, int nFlags = 0);
-	virtual BOOL ShutDown( int nHow = sends );
-	
-	void ResetSslSession();
-	void PrintSessionInfo();
-	BOOL ShutDownComplete();
-	int InitSSL();
-	void UnloadSSL();
-	void PrintLastErrorMsg();
+  virtual void Close();
+  virtual BOOL Connect(LPCTSTR lpszHostAddress, UINT nHostPort );
+  virtual BOOL Connect(const SOCKADDR* lpSockAddr, int nSockAddrLen );
+  virtual void OnConnect(int nErrorCode);
+  virtual void OnReceive(int nErrorCode);
+  virtual void OnSend(int nErrorCode);
+  virtual void OnClose(int nErrorCode);
+  virtual int Receive(void* lpBuf, int nBufLen, int nFlags = 0);
+  virtual int Send(const void* lpBuf, int nBufLen, int nFlags = 0);
+  virtual BOOL ShutDown( int nHow = sends );
+  
+  void ResetSslSession();
+  void PrintSessionInfo();
+  BOOL ShutDownComplete();
+  int InitSSL();
+  void UnloadSSL();
+  void PrintLastErrorMsg();
 
-	void TriggerEvents();
+  void TriggerEvents();
 
-	//Will be called from the OpenSSL library
-	static void apps_ssl_info_callback(const SSL *s, int where, int ret);
-	static int verify_callback(int preverify_ok, X509_STORE_CTX *ctx);
-	static int pem_passwd_cb(char *buf, int size, int rwflag, void *userdata);
+  //Will be called from the OpenSSL library
+  static void apps_ssl_info_callback(const SSL *s, int where, int ret);
+  static int verify_callback(int preverify_ok, X509_STORE_CTX *ctx);
+  static int pem_passwd_cb(char *buf, int size, int rwflag, void *userdata);
 
-	bool m_bUseSSL;
-	BOOL m_bFailureSent;
+  bool m_bUseSSL;
+  BOOL m_bFailureSent;
 
-	//Critical section for thread synchronization
-	static CCriticalSectionWrapper m_sCriticalSection;
+  //Critical section for thread synchronization
+  static CCriticalSectionWrapper m_sCriticalSection;
 
-	// Status variables
-	static int m_nSslRefCount;
-	BOOL m_bSslInitialized;
-	int m_nShutDown;
-	int m_nNetworkError;
-	int m_nSslAsyncNotifyId;
-	BOOL m_bBlocking;
-	BOOL m_bSslEstablished;
-	CString m_CertStorage;
-	int m_nVerificationResult;
-	int m_nVerificationDepth;
-	
+  // Status variables
+  static int m_nSslRefCount;
+  BOOL m_bSslInitialized;
+  int m_nShutDown;
+  int m_nNetworkError;
+  int m_nSslAsyncNotifyId;
+  BOOL m_bBlocking;
+  BOOL m_bSslEstablished;
+  CString m_CertStorage;
+  int m_nVerificationResult;
+  int m_nVerificationDepth;
+  
 
-	static struct t_SslLayerList : public TObject
-	{
-		CAsyncSslSocketLayer *pLayer;
-		t_SslLayerList *pNext;
-	} *m_pSslLayerList;
+  static struct t_SslLayerList : public TObject
+  {
+    CAsyncSslSocketLayer *pLayer;
+    t_SslLayerList *pNext;
+  } *m_pSslLayerList;
 
-	// SSL data
-	SSL_CTX* m_ssl_ctx;	// SSL context
-	static rde::map<SSL_CTX *, int> m_contextRefCount;
-	SSL* m_ssl;			// current session handle
-	SSL_SESSION * m_sessionid;
-	bool m_sessionreuse;
-	CAsyncSslSocketLayer * m_Main;
+  // SSL data
+  SSL_CTX* m_ssl_ctx;  // SSL context
+  static rde::map<SSL_CTX *, int> m_contextRefCount;
+  SSL* m_ssl;      // current session handle
+  SSL_SESSION * m_sessionid;
+  bool m_sessionreuse;
+  CAsyncSslSocketLayer * m_Main;
 
-	//Data channels for encrypted/unencrypted data
-	BIO* m_nbio;	//Network side, sends/receives encrypted data
-	BIO* m_ibio;	//Internal side, won't be used directly
-	BIO* m_sslbio;	//The data to encrypt / the decrypted data has to go though this bio
+  //Data channels for encrypted/unencrypted data
+  BIO* m_nbio;  //Network side, sends/receives encrypted data
+  BIO* m_ibio;  //Internal side, won't be used directly
+  BIO* m_sslbio;  //The data to encrypt / the decrypted data has to go though this bio
 
-	//Send buffer
-	char* m_pNetworkSendBuffer;
-	int m_nNetworkSendBufferLen;
-	int m_nNetworkSendBufferMaxLen;
+  //Send buffer
+  char* m_pNetworkSendBuffer;
+  int m_nNetworkSendBufferLen;
+  int m_nNetworkSendBufferMaxLen;
 
-	char* m_pRetrySendBuffer;
-	int m_nRetrySendBufferLen;
+  char* m_pRetrySendBuffer;
+  int m_nRetrySendBufferLen;
 
-	bool m_mayTriggerRead;
-	bool m_mayTriggerWrite;
-	bool m_mayTriggerReadUp;
-	bool m_mayTriggerWriteUp;
+  bool m_mayTriggerRead;
+  bool m_mayTriggerWrite;
+  bool m_mayTriggerReadUp;
+  bool m_mayTriggerWriteUp;
 
-	bool m_onCloseCalled;
+  bool m_onCloseCalled;
 
-	char* m_pKeyPassword;
+  char* m_pKeyPassword;
 
-	std::string m_TlsVersionStr;
-	std::string m_CipherName;
+  std::string m_TlsVersionStr;
+  std::string m_CipherName;
 };
 
 #define SSL_INFO 0

@@ -53,7 +53,7 @@ protected:
   int ReadDataFromFile(char * buffer, int len);
   virtual void LogSocketMessageRaw(int nMessageType, LPCTSTR pMsg);
   virtual void ConfigureSocket();
-	
+  
   CFtpControlSocket * m_pOwner;
   CAsyncProxySocketLayer * m_pProxyLayer;
   CAsyncSslSocketLayer * m_pSslLayer;

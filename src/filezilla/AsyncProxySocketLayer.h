@@ -38,9 +38,9 @@ PROXYERROR_CANTRESOLVEHOST 7
 
 //Status messages
 PROXYSTATUS_LISTENSOCKETCREATED 8 //Called when a listen socket was created successfully. Unlike the normal listen function,
-								//a socksified socket has to connect to the proxy to negotiate the details with the server
-								//on which the listen socket will be created
-								//The two parameters will contain the ip and port of the listen socket on the server.
+                //a socksified socket has to connect to the proxy to negotiate the details with the server
+                //on which the listen socket will be created
+                //The two parameters will contain the ip and port of the listen socket on the server.
 
 If you want to use CAsyncProxySocketLayer to create a listen socket, you
 have to use this overloaded function:
@@ -81,7 +81,7 @@ There are also some other functions:
 
 GetProxyPeerName
 Like GetPeerName of CAsyncSocket, but returns the address of the
-server connected through the proxy.	If using proxies, GetPeerName
+server connected through the proxy.  If using proxies, GetPeerName
 only returns the address of the proxy.
 
 int GetProxyType();
@@ -107,7 +107,7 @@ Version history
 - 1.4 added UNICODE support
 - 1.3 added basic HTTP1.1 authentication
       fixed memory leak in SOCKS5 code
-	  OnSocksOperationFailed will be called after Socket has been closed
+    OnSocksOperationFailed will be called after Socket has been closed
       fixed some minor bugs
 - 1.2 renamed into CAsyncProxySocketLayer
       added HTTP1.1 proxy support
@@ -131,73 +131,73 @@ public:
 
 // Operationen
 public:
-	CAsyncProxySocketLayer();
-	virtual ~CAsyncProxySocketLayer();
+  CAsyncProxySocketLayer();
+  virtual ~CAsyncProxySocketLayer();
 
 
 // Überschreibungen
 public:
-	virtual void Close();
-	virtual BOOL Connect( LPCTSTR lpHostAddress, UINT nHostPort );
-	virtual BOOL Connect( const SOCKADDR* lpSockAddr, int nSockAddrLen );
-	virtual BOOL Listen( int nConnectionBacklog);
+  virtual void Close();
+  virtual BOOL Connect( LPCTSTR lpHostAddress, UINT nHostPort );
+  virtual BOOL Connect( const SOCKADDR* lpSockAddr, int nSockAddrLen );
+  virtual BOOL Listen( int nConnectionBacklog);
 
-	void SetProxy(int nProxyType); //Only PROXYTYPE_NOPROXY
-	void SetProxy(int nProxyType, const char * pProxyHost, int ProxyPort); //May not be PROXYTYPE_NOPROXY
-	void SetProxy(int nProxyType, const char * pProxyHost, int ProxyPort, const char * pProxyUser, const char * pProxyPass); //Only SOCKS5 and HTTP1.1 proxies
-	//Sets the proxy details.
-	//nProxyType - Type of the proxy. May be PROXYTYPE_NONE, PROXYTYPE_SOCKS4, PROXYTYPE_SOCKS5 or PROXYTYPE_HTTP11
-	//ProxyHost - The address of the proxy. Can be either IP or URL
-	//ProxyPort - The port of the proxy
-	//ProxyUser - the username for SOCKS5 proxies
-	//ProxyPass - the password for SOCKS5 proxies
+  void SetProxy(int nProxyType); //Only PROXYTYPE_NOPROXY
+  void SetProxy(int nProxyType, const char * pProxyHost, int ProxyPort); //May not be PROXYTYPE_NOPROXY
+  void SetProxy(int nProxyType, const char * pProxyHost, int ProxyPort, const char * pProxyUser, const char * pProxyPass); //Only SOCKS5 and HTTP1.1 proxies
+  //Sets the proxy details.
+  //nProxyType - Type of the proxy. May be PROXYTYPE_NONE, PROXYTYPE_SOCKS4, PROXYTYPE_SOCKS5 or PROXYTYPE_HTTP11
+  //ProxyHost - The address of the proxy. Can be either IP or URL
+  //ProxyPort - The port of the proxy
+  //ProxyUser - the username for SOCKS5 proxies
+  //ProxyPass - the password for SOCKS5 proxies
 
-	//Prepare listen
-	BOOL PrepareListen(unsigned long ip);
+  //Prepare listen
+  BOOL PrepareListen(unsigned long ip);
 
-	int GetProxyType() const;
-	//Returns the type of the proxy
+  int GetProxyType() const;
+  //Returns the type of the proxy
 
 #ifdef _AFX
-	virtual BOOL GetPeerName( CString& rPeerAddress, UINT& rPeerPort );
+  virtual BOOL GetPeerName( CString& rPeerAddress, UINT& rPeerPort );
 #endif
-	virtual BOOL GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrLen );
+  virtual BOOL GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrLen );
 
 
-	//Returns the address of the server behind the SOCKS proxy you are connected to
+  //Returns the address of the server behind the SOCKS proxy you are connected to
 
 
 // Implementierung
 protected:
-	virtual BOOL Accept( CAsyncSocketEx& rConnectedSocket, SOCKADDR* lpSockAddr = NULL, int* lpSockAddrLen = NULL );
-	virtual void OnReceive(int nErrorCode);
-	virtual void OnConnect(int nErrorCode);
-	virtual int Send(const void* lpBuf, int nBufLen, int nFlags = 0);
-	virtual int Receive(void* lpBuf, int nBufLen, int nFlags = 0);
+  virtual BOOL Accept( CAsyncSocketEx& rConnectedSocket, SOCKADDR* lpSockAddr = NULL, int* lpSockAddrLen = NULL );
+  virtual void OnReceive(int nErrorCode);
+  virtual void OnConnect(int nErrorCode);
+  virtual int Send(const void* lpBuf, int nBufLen, int nFlags = 0);
+  virtual int Receive(void* lpBuf, int nBufLen, int nFlags = 0);
 
 private:
-	void Reset();
-	void ClearBuffer();		//Clears the receive buffer
-	char *m_pRecvBuffer;	//The receive buffer
-	int m_nRecvBufferLen;	//Length of the RecvBuffer
-	int m_nRecvBufferPos;	//Position within the receive buffer
-	char *m_pStrBuffer;		//Recvbuffer needed by HTTP1.1 proxy
-	int m_nProxyOpState;	//State of an operation
-	int m_nProxyOpID;		//Currently active operation (0 if none)
-	int m_nProxyPeerPort;	//Port of the server you are connected to, retrieve via GetPeerName
-	ULONG m_nProxyPeerIp;	//IP of the server you are connected to, retrieve via GetPeerName
-	typedef struct
-	{
-		int nProxyType;
-		char * pProxyHost;
-		int nProxyPort;
-		char * pProxyUser;
-		char * pProxyPass;
-		BOOL bUseLogon;
-	} t_proxydata; //This structure will be used to hold the proxy details
+  void Reset();
+  void ClearBuffer();    //Clears the receive buffer
+  char *m_pRecvBuffer;  //The receive buffer
+  int m_nRecvBufferLen;  //Length of the RecvBuffer
+  int m_nRecvBufferPos;  //Position within the receive buffer
+  char *m_pStrBuffer;    //Recvbuffer needed by HTTP1.1 proxy
+  int m_nProxyOpState;  //State of an operation
+  int m_nProxyOpID;    //Currently active operation (0 if none)
+  int m_nProxyPeerPort;  //Port of the server you are connected to, retrieve via GetPeerName
+  ULONG m_nProxyPeerIp;  //IP of the server you are connected to, retrieve via GetPeerName
+  typedef struct
+  {
+    int nProxyType;
+    char * pProxyHost;
+    int nProxyPort;
+    char * pProxyUser;
+    char * pProxyPass;
+    BOOL bUseLogon;
+  } t_proxydata; //This structure will be used to hold the proxy details
 
-	t_proxydata m_ProxyData; //Structure to hold the data set by SetProxy
-	char * m_pProxyPeerHost; //The host connected to
+  t_proxydata m_ProxyData; //Structure to hold the data set by SetProxy
+  char * m_pProxyPeerHost; //The host connected to
 };
 
 //Errorcodes
@@ -212,13 +212,13 @@ private:
 
 //Status messages
 #define PROXYSTATUS_LISTENSOCKETCREATED 8 //Called when a listen socket was created successfully. Unlike the normal listen function,
-										//a socksified socket has to connect to the proxy to negotiate the details with the server
-										//on which the listen socket will be created
-										//The two parameters will contain the ip and port of the listen socket on the server.
+                    //a socksified socket has to connect to the proxy to negotiate the details with the server
+                    //on which the listen socket will be created
+                    //The two parameters will contain the ip and port of the listen socket on the server.
 struct t_ListenSocketCreatedStruct
 {
-	unsigned long ip;
-	UINT nPort;
+  unsigned long ip;
+  UINT nPort;
 };
 
 //Proxytypes
