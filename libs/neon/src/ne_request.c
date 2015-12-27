@@ -773,7 +773,7 @@ void ne_request_destroy(ne_request *req)
 
     ne_buffer_destroy(req->headers);
 
-    NE_DEBUG(NE_DBG_HTTP, "Running destroy hooks.\n");
+    NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "Running destroy hooks.\n");
     for (hk = req->session->destroy_req_hooks; hk; hk = next_hk) {
 	ne_destroy_req_fn fn = (ne_destroy_req_fn)hk->fn;
         next_hk = hk->next;
@@ -820,7 +820,7 @@ static int read_response_block(ne_request *req, struct ne_response *resp,
             SOCK_ERR(req,
                      ne_sock_readline(sock, req->respbuf, sizeof req->respbuf),
                      _("Could not read chunk size"));
-            NE_DEBUG(NE_DBG_HTTP, "[chunk] < %s", req->respbuf);
+            NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "[chunk] < %s", req->respbuf);
             chunk_len = strtoul(req->respbuf, &ptr, 16);
 	    /* limit chunk size to <= UINT_MAX, so it will probably
 	     * fit in a size_t. */
@@ -828,7 +828,7 @@ static int read_response_block(ne_request *req, struct ne_response *resp,
 		chunk_len == ULONG_MAX || chunk_len > UINT_MAX) {
 		return aborted(req, _("Could not parse chunk size"), 0);
 	    }
-	    NE_DEBUG(NE_DBG_HTTP, "Got chunk size: %lu\n", chunk_len);
+	    NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "Got chunk size: %lu\n", chunk_len);
 	    resp->body.chunk.remain = chunk_len;
 	}
 	willread = resp->body.chunk.remain > *buflen
@@ -850,7 +850,7 @@ static int read_response_block(ne_request *req, struct ne_response *resp,
 	*buflen = 0;
 	return 0;
     }
-    NE_DEBUG(NE_DBG_HTTP,
+    NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL,
 	     "Reading %" NE_FMT_SIZE_T " bytes of response body.\n", willread);
     readlen = ne_sock_read(sock, buffer, willread);
 
@@ -859,13 +859,13 @@ static int read_response_block(ne_request *req, struct ne_response *resp,
      * any case, but SSL servers are just too buggy.  */
     if (resp->mode == R_TILLEOF && 
 	(readlen == NE_SOCK_CLOSED || readlen == NE_SOCK_TRUNC)) {
-	NE_DEBUG(NE_DBG_HTTP, "Got EOF.\n");
+	NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "Got EOF.\n");
 	req->can_persist = 0;
 	readlen = 0;
     } else if (readlen < 0) {
 	return aborted(req, _("Could not read response body"), readlen);
     } else {
-	NE_DEBUG(NE_DBG_HTTP, "Got %" NE_FMT_SSIZE_T " bytes.\n", readlen);
+	NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "Got %" NE_FMT_SSIZE_T " bytes.\n", readlen);
     }
     /* safe to cast: readlen guaranteed to be >= 0 above */
     *buflen = (size_t)readlen;
@@ -931,7 +931,7 @@ static ne_buffer *build_request(ne_request *req)
         ne_buffer_czappend(buf, "Expect: 100-continue\r\n");
     }
 
-    NE_DEBUG(NE_DBG_HTTP, "Running pre_send hooks\n");
+    NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "Running pre_send hooks\n");
     for (hk = req->session->pre_send_hooks; hk!=NULL; hk = hk->next) {
 	ne_pre_send_fn fn = (ne_pre_send_fn)hk->fn;
 	fn(req, hk->userdata, buf);
@@ -942,9 +942,15 @@ static ne_buffer *build_request(ne_request *req)
 }
 
 #ifdef NE_DEBUGGING
+#ifdef WINSCP
+#define DEBUG_DUMP_REQUEST(x) dump_request(req, x)
+
+static void dump_request(ne_request *req, const char *request)
+#else
 #define DEBUG_DUMP_REQUEST(x) dump_request(x)
 
 static void dump_request(const char *request)
+#endif
 { 
     if (ne_debug_mask & NE_DBG_HTTPPLAIN) { 
 	/* Display everything mode */
@@ -1104,7 +1110,7 @@ static int read_message_header(ne_request *req, char *buf, size_t buflen)
     n = ne_sock_readline(sock, buf, buflen);
     if (n <= 0)
 	return aborted(req, _("Error reading response headers"), n);
-    NE_DEBUG(NE_DBG_HTTP, "[hdr] %s", buf);
+    NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "[hdr] %s", buf);
 
     strip_eol(buf, &n);
 
@@ -1134,7 +1140,7 @@ static int read_message_header(ne_request *req, char *buf, size_t buflen)
 	    return aborted(req, _("Error reading response headers"), n);
 	}
 
-	NE_DEBUG(NE_DBG_HTTP, "[cont] %s", buf);
+	NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "[cont] %s", buf);
 
 	strip_eol(buf, &n);
 	
@@ -1396,7 +1402,7 @@ int ne_begin_request(ne_request *req)
         req->resp.mode = R_TILLEOF; /* otherwise: read-till-eof mode */
     }
     
-    NE_DEBUG(NE_DBG_HTTP, "Running post_headers hooks\n");
+    NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "Running post_headers hooks\n");
     for (hk = req->session->post_headers_hooks; hk != NULL; hk = hk->next) {
         ne_post_headers_fn fn = (ne_post_headers_fn)hk->fn;
         fn(req, hk->userdata, &req->status);
@@ -1430,7 +1436,7 @@ int ne_end_request(ne_request *req)
         ret = NE_OK;
     }
     
-    NE_DEBUG(NE_DBG_HTTP, "Running post_send hooks\n");
+    NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "Running post_send hooks\n");
     for (hk = req->session->post_send_hooks; 
 	 ret == NE_OK && hk != NULL; hk = hk->next) {
 	ne_post_send_fn fn = (ne_post_send_fn)hk->fn;
