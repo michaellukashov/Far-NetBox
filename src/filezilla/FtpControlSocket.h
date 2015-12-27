@@ -1,34 +1,10 @@
-// FileZilla - a Windows ftp client
+#pragma once
 
-// Copyright (C) 2002-2004 - Tim Kosse <tim.kosse@gmx.de>
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-#if !defined(AFX_FTPCONTROLSOCKET_H__AE6AA44E_B09D_487A_8EF2_A23697434945__INCLUDED_)
-#define AFX_FTPCONTROLSOCKET_H__AE6AA44E_B09D_487A_8EF2_A23697434945__INCLUDED_
-
-#include "structures.h"	// Hinzugefügt von der Klassenansicht
-#include "StdAfx.h"	// Hinzugefügt von der Klassenansicht
+#include "structures.h"
+#include "StdAfx.h"
 #include "FileZillaApi.h"
 #include "FileZillaIntf.h"
 #include "ControlSocket.h"
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-// FtpControlSocket.h : Header-Datei
-//
 
 class CTransferSocket;
 class CMainThread;
@@ -40,15 +16,12 @@ class CMainThread;
 class CFtpControlSocket : public CControlSocket
 {
 	friend CTransferSocket;
-// Attribute
 public:
 
-// Operationen
 public:
 	CFtpControlSocket(CMainThread *pMainThread, CFileZillaTools * pTools);
 	virtual ~CFtpControlSocket();
 
-// Überschreibungen
 public:
 	virtual void Connect(t_server &server);
 	virtual void OnTimer();
@@ -194,9 +167,3 @@ private:
 	BOOL m_bCheckForTimeout;
 };
 
-/////////////////////////////////////////////////////////////////////////////
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
-
-#endif // AFX_FTPCONTROLSOCKET_H__AE6AA44E_B09D_487A_8EF2_A23697434945__INCLUDED_
