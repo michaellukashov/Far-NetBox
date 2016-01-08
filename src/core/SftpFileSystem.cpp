@@ -5456,10 +5456,10 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
       Properties.Valid << vpModification;
 
       FTerminal->OpenLocalFile(
-        ExcludeTrailingBackslash(DirectoryName), GENERIC_READ, NULL, NULL, NULL,
-        &Properties.Modification, &Properties.LastAccess, NULL);
+        ExcludeTrailingBackslash(DirectoryName), GENERIC_READ, nullptr, nullptr, nullptr,
+        &Properties.Modification, &Properties.LastAccess, nullptr);
 
-      FTerminal->ChangeFileProperties(DestFullName, NULL, &Properties);
+      FTerminal->ChangeFileProperties(DestFullName, nullptr, &Properties);
     }
 
     if (FLAGSET(Params, cpDelete))
@@ -5648,21 +5648,21 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
         int SetFileTimeError = ERROR_SUCCESS;
         // FILE_FLAG_BACKUP_SEMANTICS is needed to "open" directory
         // TODO: FTerminal->TerminalCreateFile(LocalFileName, OperationProgress,
-        HANDLE LocalHandle = CreateFile(ApiPath(DestFullName).c_str(), GENERIC_WRITE,
-          FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
-        if (LocalHandle == INVALID_HANDLE_VALUE)
+        HANDLE LocalFileHandle = ::CreateFile(ApiPath(DestFullName).c_str(), GENERIC_WRITE,
+          FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
+        if (LocalFileHandle == INVALID_HANDLE_VALUE)
         {
-          SetFileTimeError = GetLastError();
+          SetFileTimeError = ::GetLastError();
         }
         else
         {
           FILETIME AcTime = DateTimeToFileTime(AFile->GetLastAccess(), FTerminal->GetSessionData()->GetDSTMode());
           FILETIME WrTime = DateTimeToFileTime(AFile->GetModification(), FTerminal->GetSessionData()->GetDSTMode());
-          if (!SetFileTime(LocalHandle, NULL, &AcTime, &WrTime))
+          if (!::SetFileTime(LocalFileHandle, nullptr, &AcTime, &WrTime))
           {
             SetFileTimeError = ::GetLastError();
           }
-          CloseHandle(LocalHandle);
+          ::CloseHandle(LocalFileHandle);
         }
 
         if (SetFileTimeError != ERROR_SUCCESS)

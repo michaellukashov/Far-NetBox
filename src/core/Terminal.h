@@ -530,7 +530,8 @@ protected:
     const UnicodeString & AFileName, TFileOperation Operation1, TFileOperation Operation2 = foNone);
   void CommandSessionClose(TObject * Sender);
 
-  TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
+  const TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
+  TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
 
   void SetLocalFileTime(const UnicodeString & LocalFileName,
     const TDateTime & Modification);

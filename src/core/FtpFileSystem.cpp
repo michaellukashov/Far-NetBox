@@ -466,7 +466,7 @@ void TFTPFileSystem::Open()
       }
     }
 
-    if ((Data->Ftps != ftpsNone) && (FCertificate == NULL))
+    if ((Data->Ftps != ftpsNone) && (FCertificate == nullptr))
     {
       FTerminal->LoadTlsCertificate(FCertificate, FPrivateKey);
     }
@@ -808,15 +808,15 @@ void TFTPFileSystem::Discard()
   FActive = false;
 
   // See neon's ne_ssl_clicert_free
-  if (FPrivateKey != NULL)
+  if (FPrivateKey != nullptr)
   {
     EVP_PKEY_free(FPrivateKey);
-    FPrivateKey = NULL;
+    FPrivateKey = nullptr;
   }
-  if (FCertificate != NULL)
+  if (FCertificate != nullptr)
   {
     X509_free(FCertificate);
-    FCertificate = NULL;
+    FCertificate = nullptr;
   }
 }
 
@@ -4379,7 +4379,7 @@ bool TFTPFileSystem::HandleAsynchRequestNeedPass(
   else
   {
     UnicodeString Password;
-    if (FCertificate != NULL)
+    if (FCertificate != nullptr)
     {
       FTerminal->LogEvent(L"Server asked for password, but we are using certificate, and no password was specified upfront, using fake password");
       Password = L"USINGCERT";

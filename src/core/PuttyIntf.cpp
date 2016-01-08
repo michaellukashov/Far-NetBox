@@ -499,7 +499,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
 long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*Reserved*/,
   unsigned long Type, const uint8_t * Data, unsigned long DataSize)
 {
-  DebugAssert(Configuration != NULL);
+  DebugAssert(Configuration != nullptr);
 
   DebugAssert(Type == REG_SZ);
   DebugUsedParam(Type);
@@ -543,7 +543,7 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeStr
   UTF8String UtfFileName = UTF8String(FileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
   bool Result;
-  char * CommentStr = NULL;
+  char * CommentStr = nullptr;
   switch (KeyType)
   {
     case ktSSH2:
@@ -552,7 +552,7 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeStr
 
     case ktOpenSSH:
     case ktSSHCom:
-      Result = (import_encrypted(KeyFile, KeyType, &CommentStr) != NULL);
+      Result = (import_encrypted(KeyFile, KeyType, &CommentStr) != nullptr);
       break;
 
     default:
@@ -561,7 +561,7 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeStr
       break;
   }
 
-  if (CommentStr != NULL)
+  if (CommentStr != nullptr)
   {
     Comment = UnicodeString(AnsiString(CommentStr));
     // ktOpenSSH has no comment, PuTTY defaults to file path
@@ -580,8 +580,8 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
   UTF8String UtfFileName = UTF8String(FileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
   AnsiString AnsiPassphrase = Passphrase;
-  struct ssh2_userkey * Ssh2Key = NULL;
-  const char * ErrorStr = NULL;
+  struct ssh2_userkey * Ssh2Key = nullptr;
+  const char * ErrorStr = nullptr;
 
   switch (KeyType)
   {
@@ -601,7 +601,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
 
   Shred(AnsiPassphrase);
 
-  if (Ssh2Key == NULL)
+  if (Ssh2Key == nullptr)
   {
     UnicodeString Error = AnsiString(ErrorStr);
     // While theoretically we may get "unable to open key file" and
@@ -633,7 +633,7 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
   struct ssh2_userkey * Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
   AnsiString AnsiPassphrase = Passphrase;
-  char * PassphrasePtr = (AnsiPassphrase.IsEmpty() ? NULL : AnsiPassphrase.c_str());
+  char * PassphrasePtr = (AnsiPassphrase.IsEmpty() ? nullptr : AnsiPassphrase.c_str());
   switch (KeyType)
   {
     case ktSSH2:

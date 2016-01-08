@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef PuttyIntfH
+#define PuttyIntfH
 
 void PuttyInitialize();
 void PuttyFinalize();
@@ -24,3 +26,4 @@ extern "C"
 extern CRITICAL_SECTION noise_section;
 }
 
+#endif

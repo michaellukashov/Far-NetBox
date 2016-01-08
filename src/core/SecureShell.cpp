@@ -650,7 +650,7 @@ void TSecureShell::PuttyLogEvent(const char * AStr)
   LogEvent(Str);
 }
 
-TPromptKind __fastcall TSecureShell::IdentifyPromptKind(UnicodeString & Name)
+TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & Name)
 {
   // beware of changing order
   static const TPuttyTranslation NameTranslation[] =

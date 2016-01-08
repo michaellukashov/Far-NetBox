@@ -4,6 +4,7 @@
 #include <Classes.hpp>
 #include "Configuration.h"
 #include "SessionData.h"
+
 #define HELP_NONE ""
 #define COMMAND_SWITCH L"Command"
 #define SESSIONNAME_SWICH L"SessionName"
@@ -11,9 +12,6 @@
 TConfiguration * CreateConfiguration();
 class TOptions;
 TOptions * GetGlobalOptions();
-
-void ShowExtendedException(Exception * E);
-bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
 
 UnicodeString GetCompanyRegistryKey();
 UnicodeString GetRegistryKey();

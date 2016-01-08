@@ -12,7 +12,7 @@
 THttp::THttp()
 {
   FProxyPort = 0;
-  FOnDownload = NULL;
+  FOnDownload = nullptr;
   FResponseLimit = -1;
 }
 
@@ -50,14 +50,14 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
     FHostName = StrFromNeon(uri.host);
 
     UnicodeString Uri = StrFromNeon(uri.path);
-    if (uri.query != NULL)
+    if (uri.query != nullptr)
     {
       Uri += L"?" + StrFromNeon(uri.query);
     }
 
     FResponse.SetLength(0);
     FCertificateError.SetLength(0);
-    FException.reset(NULL);
+    FException.reset(nullptr);
 
     TProxyMethod ProxyMethod = ProxyHost.IsEmpty() ? ::pmNone : pmHTTP;
 
@@ -91,7 +91,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
 
         // Exception has precedence over status as status will always be NE_ERROR,
         // as we returned 1 from NeonBodyReader
-        if (FException.get() != NULL)
+        if (FException.get() != nullptr)
         {
           RethrowException(FException.get());
         }
@@ -152,7 +152,7 @@ int THttp::NeonBodyReaderImpl(const char * Buf, size_t Len)
   {
     FResponse += RawByteString(Buf, Len);
 
-    if (FOnDownload != NULL)
+    if (FOnDownload != nullptr)
     {
       bool Cancel = false;
 
@@ -192,7 +192,7 @@ int64_t THttp::GetResponseLength()
 void THttp::InitSslSession(ssl_st * Ssl, ne_session * /*Session*/)
 {
   int Options = SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1;
-  SSL_ctrl(Ssl, SSL_CTRL_OPTIONS, Options, NULL);
+  SSL_ctrl(Ssl, SSL_CTRL_OPTIONS, Options, nullptr);
 }
 
 int THttp::NeonServerSSLCallback(void * UserData, int Failures, const ne_ssl_certificate * Certificate)

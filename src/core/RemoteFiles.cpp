@@ -104,11 +104,11 @@ UnicodeString UnixExtractFilePath(const UnicodeString & APath)
 
 UnicodeString UnixExtractFileName(const UnicodeString & APath)
 {
-  int Pos = APath.LastDelimiter(L'/');
+  intptr_t Pos = APath.LastDelimiter(L'/');
   UnicodeString Result;
   if (Pos > 0)
   {
-    Result = Path.SubString(Pos + 1, APath.Length() - Pos);
+    Result = APath.SubString(Pos + 1, APath.Length() - Pos);
   }
   else
   {
@@ -135,7 +135,7 @@ UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix)
   }
   else
   {
-    return ExtractFileName(Path);
+    return base::ExtractFileName(Path, Unix);
   }
 }
 

@@ -2871,7 +2871,7 @@ void TSessionData::AddAssemblyPropertyRaw(
   Result += FORMAT(PropertyCode, (Name, Value));
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::AddAssemblyProperty(
+void TSessionData::AddAssemblyProperty(
   UnicodeString & Result, TAssemblyLanguage Language,
   const UnicodeString & Name, UnicodeString Value)
 {

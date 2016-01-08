@@ -122,7 +122,7 @@ void TTerminal::CommandErrorAriAction(
       Action.Cancel();
       break;
     default:
-      FAIL;
+      DebugFail();
   }
 }
 
@@ -330,14 +330,14 @@ const TChecklistItem * TSynchronizeChecklist::GetItem(intptr_t Index) const
   return NB_STATIC_DOWNCAST(TChecklistItem, FList.GetItem(Index));
 }
 
-void TSynchronizeChecklist::Update(const TItem * Item, bool Check, TAction Action)
+void TSynchronizeChecklist::Update(const TChecklistItem * Item, bool Check, TChecklistAction Action)
 {
   // TSynchronizeChecklist owns non-const items so it can manipulate them freely,
   // const_cast here is just an optimization
-  TItem * MutableItem = const_cast<TItem *>(Item);
-  DebugAssert(FList->IndexOf(MutableItem) >= 0);
-  MutableItem->SetChecked(Check);
-  MutableItem->SetAction(Action);
+  TChecklistItem * MutableItem = const_cast<TChecklistItem *>(Item);
+  DebugAssert(FList.IndexOf(MutableItem) >= 0);
+  MutableItem->Checked = Check;
+  MutableItem->Action = Action;
 }
 
 TChecklistAction TSynchronizeChecklist::Reverse(TChecklistAction Action)
@@ -696,9 +696,9 @@ void TRetryOperationLoop::DoError(Exception & E, TSessionAction * Action, const 
   }
   catch (Exception & E2)
   {
-    if (Action != NULL)
+    if (Action != nullptr)
     {
-      FTerminal->RollbackAction(*Action, NULL, &E2);
+      FTerminal->RollbackAction(*Action, nullptr, &E2);
     }
     throw;
   }
@@ -707,22 +707,22 @@ void TRetryOperationLoop::DoError(Exception & E, TSessionAction * Action, const 
   {
     case qaRetry:
       FRetry = true;
-      if (Action != NULL)
+      if (Action != nullptr)
       {
         Action->Cancel();
       }
       break;
 
     case qaAbort:
-      if (Action != NULL)
+      if (Action != nullptr)
       {
-        FTerminal->RollbackAction(*Action, NULL, &E);
+        FTerminal->RollbackAction(*Action, nullptr, &E);
       }
       Abort();
       break;
 
     case qaSkip:
-      if (Action != NULL)
+      if (Action != nullptr)
       {
         Action->Cancel();
       }
@@ -736,7 +736,7 @@ void TRetryOperationLoop::DoError(Exception & E, TSessionAction * Action, const 
 
 void TRetryOperationLoop::Error(Exception & E)
 {
-  DoError(E, NULL, UnicodeString());
+  DoError(E, nullptr, UnicodeString());
 }
 
 void TRetryOperationLoop::Error(Exception & E, TSessionAction & Action)
@@ -746,7 +746,7 @@ void TRetryOperationLoop::Error(Exception & E, TSessionAction & Action)
 
 void TRetryOperationLoop::Error(Exception & E, const UnicodeString & Message)
 {
-  DoError(E, NULL, Message);
+  DoError(E, nullptr, Message);
 }
 
 void TRetryOperationLoop::Error(Exception & E, TSessionAction & Action, const UnicodeString & Message)
@@ -1606,10 +1606,12 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
       MoreMessages->AddStrings(EE->GetMoreMessages());
     }
 
-    // We know MoreMessages not to be NULL here,
+    // We know MoreMessages not to be nullptr here,
       // AppendExceptionStackTraceAndForget should never return true
     // (indicating it had to create the string list)
-    DebugAlwaysFalse(AppendExceptionStackTraceAndForget(MoreMessages));
+    TStrings * MoreMessagesPtr = MoreMessages.get();
+    DebugAlwaysFalse(AppendExceptionStackTraceAndForget(MoreMessagesPtr));
+    MoreMessages.reset(MoreMessagesPtr);
 
     TQueryParams HelpKeywordOverrideParams;
     if (Params != nullptr)
@@ -3060,6 +3062,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Director
 TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
 {
   TRemoteFile * File = nullptr;
+  TRetryOperationLoop RetryLoop(this);
   do
   {
     File = nullptr;
@@ -3473,17 +3476,17 @@ bool TTerminal::TryStartOperationWithFile(
   const UnicodeString & AFileName, TFileOperation Operation1, TFileOperation Operation2)
 {
   bool Result = true;
-  if ((OperationProgress != NULL) &&
-      ((OperationProgress->Operation == Operation1) ||
-       ((Operation2 != foNone) && (OperationProgress->Operation == Operation2))))
+  if ((GetOperationProgress() != nullptr) &&
+      ((GetOperationProgress()->Operation == Operation1) ||
+       ((Operation2 != foNone) && (GetOperationProgress()->Operation == Operation2))))
   {
-    if (OperationProgress->Cancel != csContinue)
+    if (GetOperationProgress()->Cancel != csContinue)
     {
       Result = false;
     }
     else
     {
-      OperationProgress->SetFile(AFileName);
+      GetOperationProgress()->SetFile(AFileName);
     }
   }
   return Result;
@@ -3546,7 +3549,7 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
 //        DoDeleteFile(AFileName, AFile, Params);
 //      },
 //      Action);
-      RetryLoop.Error(E, Action, FMTLOAD(DELETE_FILE_ERROR, FileName.c_str()));
+      RetryLoop.Error(E, Action, FMTLOAD(DELETE_FILE_ERROR, AFileName.c_str()));
     }
   }
   while (RetryLoop.Retry());
@@ -3765,7 +3768,7 @@ void TTerminal::DoChangeFileProperties(const UnicodeString & AFileName,
 //        DoChangeFileProperties(AFileName, AFile, Properties);
 //      },
 //      Action);
-      RetryLoop.Error(E, Action, FMTLOAD(CHANGE_PROPERTIES_ERROR, (FileName)));
+      RetryLoop.Error(E, Action, FMTLOAD(CHANGE_PROPERTIES_ERROR, AFileName.c_str()));
     }
   }
   while (RetryLoop.Retry());
@@ -4101,7 +4104,7 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
 //      {
 //        DoCopyFile(AFileName, ANewName);
 //      });
-      RetryLoop.Error(E, FMTLOAD(COPY_FILE_ERROR, (FileName, NewName)));
+      RetryLoop.Error(E, FMTLOAD(COPY_FILE_ERROR, AFileName.c_str(), ANewName.c_str()));
     }
   }
   while (RetryLoop.Retry());
@@ -4339,7 +4342,7 @@ TTerminal * TTerminal::GetCommandSession()
     CommandSession->SetOnProgress(GetOnProgress());
     CommandSession->SetOnFinished(GetOnFinished());
     CommandSession->SetOnInformation(GetOnInformation());
-    CommandSession->SetOnClose(GetCommandSessionClose());
+    CommandSession->SetOnClose(MAKE_CALLBACK(TTerminal::CommandSessionClose, this));
     // do not copy OnDisplayBanner to avoid it being displayed
     FCommandSession = CommandSession.release();
   }
@@ -5202,9 +5205,9 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & /*AFileName*/,
 
     bool Modified = false;
     bool New = false;
-    if (File->IsDirectory && File->IsSymLink)
+    if (AFile->GetIsDirectory() && AFile->GetIsSymLink())
     {
-      LogEvent(FORMAT(L"Skipping symlink to directory \"%s\".", (File->FileName)));
+      LogEvent(FORMAT(L"Skipping symlink to directory \"%s\".", AFile->GetFileName().c_str()));
     }
     else
     {
@@ -5758,7 +5761,7 @@ void TTerminal::LockFiles(TStrings * AFileList)
     EndTransaction();
   };
   {
-    ProcessFiles(AFileList, foLock, LockFile, NULL);
+    ProcessFiles(AFileList, foLock, MAKE_CALLBACK(TTerminal::LockFile, this), nullptr);
   }
 }
 
@@ -5770,7 +5773,7 @@ void TTerminal::UnlockFiles(TStrings * AFileList)
     EndTransaction();
   };
   {
-    ProcessFiles(AFileList, foUnlock, UnlockFile, NULL);
+    ProcessFiles(AFileList, foUnlock, MAKE_CALLBACK(TTerminal::UnlockFile, this), nullptr);
   }
 }
 
@@ -6336,7 +6339,7 @@ bool TTerminal::LoadTlsCertificate(X509 *& Certificate, EVP_PKEY *& PrivateKey)
       Retry = false;
 
       bool WrongPassphrase = false;
-      ParseCertificate(SessionData->TlsCertificateFile, Passphrase, Certificate, PrivateKey, WrongPassphrase);
+      ParseCertificate(GetSessionData()->GetTlsCertificateFile(), Passphrase, Certificate, PrivateKey, WrongPassphrase);
       if (WrongPassphrase)
       {
         if (Passphrase.IsEmpty())
@@ -6351,7 +6354,7 @@ bool TTerminal::LoadTlsCertificate(X509 *& Certificate, EVP_PKEY *& PrivateKey)
 
         Passphrase = L"";
         if (PromptUser(
-              SessionData, pkPassphrase,
+              GetSessionData(), pkPassphrase,
               LoadStr(CERTIFICATE_PASSPHRASE_TITLE), L"",
               LoadStr(CERTIFICATE_PASSPHRASE_PROMPT), false, 0, Passphrase))
         {
@@ -6414,7 +6417,7 @@ void TSecondaryTerminal::Init(
 
 void TSecondaryTerminal::UpdateFromMain()
 {
-  if ((FFileSystem != NULL) && (FMainTerminal->FFileSystem != NULL))
+  if ((FFileSystem != nullptr) && (FMainTerminal->FFileSystem != nullptr))
   {
     FFileSystem->UpdateFromMain(FMainTerminal->FFileSystem);
   }

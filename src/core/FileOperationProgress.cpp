@@ -27,7 +27,7 @@ TFileOperationProgressType::TFileOperationProgressType(
 TFileOperationProgressType::~TFileOperationProgressType()
 {
   DebugAssert(!InProgress || FReset);
-  DebugDebugAssert(!Suspended || FReset);
+  DebugAssert(!Suspended || FReset);
 }
 
 void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationProgressType & Other)
