@@ -27,9 +27,7 @@ public:
   virtual void OnTimer();
   virtual BOOL IsReady();
   virtual void List(BOOL bFinish, int nError=0, CServerPath path=CServerPath(), CString subdir=_MPT(""), int nListMode = 0);
-#ifdef MPEXT
   virtual void ListFile(const CString & filename, const CServerPath & path);
-#endif
   virtual void FtpCommand(LPCTSTR pCommand);
   virtual void Disconnect();
   virtual void FileTransfer(t_transferfile *transferfile = 0, BOOL bFinish = FALSE, int nError = 0);
@@ -59,7 +57,6 @@ public:
   // Other servers return "550 No files found."
   bool IsMisleadingListResponse();
 
-#ifdef MPEXT
   virtual bool UsingMlsd();
   virtual bool UsingUtf8();
   virtual std::string GetTlsVersionStr();
@@ -67,7 +64,6 @@ public:
   bool HandleSize(int code, __int64 & size);
   bool HandleMdtm(int code, t_directory::t_direntry::t_date & date);
   void TransferHandleListError();
-#endif
 
   // Vom Klassen-Assistenten generierte virtuelle Funktionsüberschreibungen
   //{{AFX_VIRTUAL(CFtpControlSocket)
@@ -115,11 +111,9 @@ protected:
   bool InitConnect();
   int InitConnectState();
 
-#ifdef MPEXT
   bool IsRoutableAddress(const CString & host);
   bool CheckForcePasvIp(CString & host);
   void TransferFinished(bool preserveFileTimeForUploads);
-#endif
 
   CFile *m_pDataFile;
   CTransferSocket *m_pTransferSocket;
@@ -145,11 +139,9 @@ protected:
   bool m_bAnnouncesUTF8;
   int m_nCodePage;
   bool m_hasClntCmd;
-#ifdef MPEXT
   TFTPServerCapabilities m_serverCapabilities;
   CStringA m_ListFile;
   __int64 m_ListFileSize;
-#endif
   bool m_isFileZilla;
 
   bool m_awaitsReply;

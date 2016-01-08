@@ -19,9 +19,7 @@ public:
   BOOL SetDebugLevel(int nLogLevel);
   int GetDebugLevel();
 protected:
-#ifdef MPEXT
   virtual BOOL PostMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) const;
-#endif
   void SendLogMessage(int nMessageType, LPCTSTR pMsg) const;
   int m_nDebugLevel;
   CApiLog *m_pApiLogParent; //Pointer to topmost parent

@@ -3,9 +3,6 @@
 
 #ifndef NO_FILEZILLA
 
-#ifndef MPEXT
-#define MPEXT
-#endif
 #include "FtpFileSystem.h"
 #include "FileZillaIntf.h"
 

@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <nbglobals.h>
@@ -12,11 +13,8 @@ public:
   CString host;
   int port;
   CString user, pass, account;
-  BOOL fwbypass;
   CString path;
-  BOOL bDontRememberPass;
   int nServerType;
-  CString name; //Name of server, used in SiteManager
   int nPasv;
   int nTimeZoneOffset;
   int nUTF8;

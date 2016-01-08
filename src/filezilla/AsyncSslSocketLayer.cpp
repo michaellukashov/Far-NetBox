@@ -766,11 +766,7 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
       return SSL_FAILURE_INITSSL;
     }
 
-#ifdef MPEXT
     rde::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find((SSL_CTX*)pSslContext);
-#else
-    rde::map<SSL_CTX *, int>::iterator& iter = m_contextRefCount.find((SSL_CTX*)pSslContext);
-#endif
     if (iter == m_contextRefCount.end() || iter->second < 1)
     {
       m_sCriticalSection.Unlock();
@@ -945,11 +941,7 @@ void CAsyncSslSocketLayer::ResetSslSession()
 
   if (m_ssl_ctx)
   {
-#ifdef MPEXT
     rde::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find(m_ssl_ctx);
-#else
-    rde::map<SSL_CTX *, int>::iterator& iter = m_contextRefCount.find(m_ssl_ctx);
-#endif
     if (iter != m_contextRefCount.end())
     {
       if (iter->second <= 1)
@@ -1020,14 +1012,12 @@ BOOL CAsyncSslSocketLayer::ShutDown(int nHow /*=sends*/)
       WSASetLastError(WSAEWOULDBLOCK);
       return false;
     }
-#ifdef MPEXT
     if (!m_bSslEstablished)
     {
       m_mayTriggerWriteUp = true;
       SetLastError(WSAEWOULDBLOCK);
       return false;
     }
-#endif
     if (!m_nShutDown)
       m_nShutDown = 1;
     else
@@ -1063,10 +1053,8 @@ BOOL CAsyncSslSocketLayer::ShutDown(int nHow /*=sends*/)
       int error = SSL_get_error(m_ssl, -1);
       if (error == SSL_ERROR_WANT_READ || error == SSL_ERROR_WANT_WRITE)
       {
-#ifdef MPEXT
         // retry shutdown later
         m_nShutDown = 0;
-#endif
         TriggerEvents();
         WSASetLastError(WSAEWOULDBLOCK);
         return FALSE;
@@ -1707,10 +1695,7 @@ void CAsyncSslSocketLayer::SetNotifyReply(int nID, int nCode, int result)
 
 void CAsyncSslSocketLayer::PrintSessionInfo()
 {
-  #ifdef MPEXT
-  const
-  #endif
-  SSL_CIPHER *ciph;
+  const SSL_CIPHER *ciph;
   X509 *cert;
 
   ciph = SSL_get_current_cipher(m_ssl);

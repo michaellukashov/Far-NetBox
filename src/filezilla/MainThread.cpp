@@ -1,21 +1,9 @@
+
 #include "stdafx.h"
 #include "MainThread.h"
-#ifndef MPEXT
-#include "fileexistsdlg.h"
-#include "resource.h"
-#include "entersomething.h"
-#endif
-#ifndef MPEXT_NO_CACHE
-#include "directorycache.h"
-#endif
 
 #define ECS m_CriticalSection.Lock()
 #define LCS m_CriticalSection.Unlock()
-
-#if !defined(__BORLANDC__)
-#define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
-#define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainThread
@@ -26,26 +14,15 @@ CMainThread::CMainThread()
   m_LastCommand.param4 = 0;
   m_hOwnerWnd = 0;
   m_pTools = NULL;
-  m_nReplyMessageID = 0;
   m_nInternalMessageID = 0;
   m_pPostKeepAliveCommand = 0;
   m_nTimerID = 0;
   m_pControlSocket = NULL;
-  m_pFtpControlSocket = NULL;
-#ifndef MPEXT_NO_SFTP
-  m_pSFtpControlSocket = NULL;
-#endif
   m_bBusy = FALSE;
   m_bConnected = FALSE;
-#ifndef MPEXT_NO_CACHE
-  m_pDirectoryCache = 0;
-#endif
   m_pWorkingDir = 0;
   m_nAsyncRequestID = 0;
   m_bQuit = FALSE;
-#ifndef MPEXT_NO_IDENT
-  m_pIdentServer = 0;
-#endif
   m_hThread = 0;
   m_dwThreadId = 0;
 }
@@ -64,9 +41,6 @@ BOOL CMainThread::InitInstance()
 #endif
 
   m_nTimerID=SetTimer(0,1,1000,0);
-#ifndef MPEXT_NO_CACHE
-  m_pDirectoryCache=new CDirectoryCache;          
-#endif
   m_pPostKeepAliveCommand=0;
   
   // initialize Winsock library
@@ -83,39 +57,16 @@ BOOL CMainThread::InitInstance()
     res=FALSE;
   }
   
-  m_pFtpControlSocket=new CFtpControlSocket(this, m_pTools);
-#ifndef MPEXT_NO_SFTP
-  m_pSFtpControlSocket=new CSFtpControlSocket(this);
-#endif
-  m_pControlSocket=m_pFtpControlSocket;
-  m_pFtpControlSocket->InitLog(this);
-#ifndef MPEXT_NO_SFTP
-  m_pSFtpControlSocket->InitLog(this);
-#endif
-#ifndef MPEXT_NO_IDENT
-  if (COptions::GetOptionVal(OPTION_IDENT) && !COptions::GetOptionVal(OPTION_IDENTCONNECT))
-    m_pIdentServer=new CIdentServerControl(this);
-#endif
+  m_pControlSocket=new CFtpControlSocket(this, m_pTools);
+  m_pControlSocket->InitIntern(GetIntern());
   return TRUE;
 }
 
 DWORD CMainThread::ExitInstance()
 {
   KillTimer(0,m_nTimerID);
-  if (m_pFtpControlSocket)
-    delete m_pFtpControlSocket;
-#ifndef MPEXT_NO_SFTP
-  if (m_pSFtpControlSocket)
-    delete m_pSFtpControlSocket;
-#endif
-#ifndef MPEXT_NO_CACHE
-  if (m_pDirectoryCache)
-    delete m_pDirectoryCache;
-#endif
-#ifndef MPEXT_NO_IDENT
-  if (m_pIdentServer)
-    delete m_pIdentServer;
-#endif
+  if (m_pControlSocket)
+    delete m_pControlSocket;
   return 1;
 }
 
@@ -153,7 +104,7 @@ void CMainThread::ShowStatus(CString status, int type)
   pStatus->post = TRUE;
   pStatus->status = status;
   pStatus->type = type;
-  if (!PostMessage(m_hOwnerWnd, m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
+  if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
     delete pStatus;
 }
 
@@ -187,18 +138,11 @@ BOOL CMainThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
         case FZ_COMMAND_CONNECT:
           DebugAssert(!IsConnected());
           SetCurrentPath(CServerPath());
-#ifndef MPEXT_NO_SFTP
-          if (pCommand->server.nServerType&FZ_SERVERTYPE_SUB_FTP_SFTP)
-            m_pControlSocket=m_pSFtpControlSocket;
-          else
-#endif
-            m_pControlSocket=m_pFtpControlSocket;
-          DebugAssert(m_pControlSocket);
           m_pControlSocket->Connect(pCommand->server);
           break;
         case FZ_COMMAND_LIST:
           DebugAssert(m_pControlSocket);
-          m_pControlSocket->List(FALSE, 0, pCommand->path, pCommand->param1, pCommand->param4);
+          m_pControlSocket->List(FALSE, 0, pCommand->path, pCommand->param1);
           break;
         case FZ_COMMAND_LISTFILE:
           DebugAssert(m_pControlSocket);
@@ -258,13 +202,13 @@ BOOL CMainThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
       if (pData)
       {
         if (pData->nRequestID!=GetAsyncRequestID())
-          LogMessage(__FILE__, __LINE__, this,FZ_LOG_INFO, _T("Ignoring old request ID"));
+          LogMessage(FZ_LOG_INFO, L"Ignoring old request ID");
         else
           m_pControlSocket->SetAsyncRequestResult(pData->nRequestResult, pData);
         delete pData;
       }
       else
-        LogMessage(__FILE__, __LINE__, this,FZ_LOG_WARNING, _T("Request reply without data"));
+        LogMessage(FZ_LOG_WARNING, L"Request reply without data");
     }
     return TRUE;
   }
@@ -318,14 +262,12 @@ void CMainThread::SetConnected(BOOL bConnected /*=TRUE*/)
 {
   ECS;
   m_bConnected=bConnected;
-#ifdef MPEXT
   if (!bConnected)
   {
     // when we loose connection
     // reset pending commands as we cannot fulfill them anyway
     m_pPostKeepAliveCommand = 0;
   }
-#endif
   LCS;
 }
 
@@ -377,25 +319,6 @@ void CMainThread::SetCurrentPath(CServerPath path)
   return;
 }
 
-#ifndef MPEXT
-int CMainThread::GetOption(int nOption)
-{
-  int nValue=0;
-  ECS;
-  rde::map<int, int>::iterator iter=m_Options.find(nOption);
-  if (iter!=m_Options.end())
-    nValue=iter->second;
-  LCS;
-  return nValue;
-}
-
-void CMainThread::SetOption(int nOption, int nValue)
-{
-  ECS;
-  m_Options[nOption]=nValue;
-  LCS;
-}
-#else
 bool CMainThread::UsingMlsd()
 {
   if (!IsConnected())
@@ -423,7 +346,6 @@ std::string CMainThread::GetCipherName()
     return std::string();
   return m_pControlSocket->GetCipherName();
 }
-#endif
 
 BOOL CMainThread::GetWorkingDir(t_directory *pWorkingDir)
 {
@@ -467,7 +389,7 @@ void CMainThread::SetWorkingDir(t_directory *pWorkingDir)
 
 void CMainThread::SendDirectoryListing(t_directory * pDirectoryToSend)
 {
-  if (!PostMessage(m_hOwnerWnd, m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_LISTDATA, 0), (LPARAM)pDirectoryToSend))
+  if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_LISTDATA, 0), (LPARAM)pDirectoryToSend))
   {
     delete pDirectoryToSend;
   }
@@ -558,15 +480,6 @@ BOOL CMainThread::IsValid() const
     return FALSE;
 
   if (IsBadWritePtr((VOID *)this, sizeof(CMainThread)) )
-    return FALSE;
-
-  if (m_pControlSocket &&
-    m_pControlSocket != m_pFtpControlSocket
-#ifndef MPEXT_NO_SFTP
-    &&
-    m_pControlSocket != m_pSFtpControlSocket
-#endif
-    )
     return FALSE;
 
   return TRUE;

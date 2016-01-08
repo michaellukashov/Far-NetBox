@@ -53,10 +53,8 @@ void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
   text.FormatV(pMsgFormat, ap);
   va_end(ap);
   
-#ifdef MPEXT
   if (nMessageType>=FZ_LOG_DEBUG)
     return;
-#endif
   SendLogMessage(nMessageType, text);
 }
 
@@ -67,10 +65,8 @@ void CApiLog::LogMessageRaw(int nMessageType, LPCTSTR pMsg) const
   if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
     return;
 
-#ifdef MPEXT
   if (nMessageType>=FZ_LOG_DEBUG)
     return;
-#endif
   SendLogMessage(nMessageType, pMsg);
 }
 
@@ -91,10 +87,8 @@ void CApiLog::LogMessage(int nMessageType, UINT nFormatID, ...) const
   text.FormatV(str, ap);
   va_end(ap);
   
-#ifdef MPEXT
   if (nMessageType>=FZ_LOG_DEBUG)
     return;
-#endif
   SendLogMessage(nMessageType, text);
 }
 
@@ -116,10 +110,8 @@ void CApiLog::LogMessage(CString SourceFile, int nSourceLine, void *pInstance, i
   text.FormatV(pMsgFormat, ap);
   va_end(ap);
 
-#ifdef MPEXT
   if (nMessageType>=FZ_LOG_DEBUG)
     return;
-#endif
 
   CString msg;
   msg.Format(_T("%s(%d): %s   caller=0x%08x"), (LPCTSTR)SourceFile, nSourceLine, (LPCTSTR)text, (int)this);
@@ -127,12 +119,10 @@ void CApiLog::LogMessage(CString SourceFile, int nSourceLine, void *pInstance, i
   SendLogMessage(nMessageType, msg);
 }
 
-#ifdef MPEXT
 BOOL CApiLog::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) const
 {
   return m_pApiLogParent->PostMessage(hWnd, Msg, wParam, lParam);
 }
-#endif
 
 void CApiLog::LogMessageRaw(CString SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsg) const
 {
@@ -144,10 +134,8 @@ void CApiLog::LogMessageRaw(CString SourceFile, int nSourceLine, void *pInstance
   if (pos!=-1)
     SourceFile=SourceFile.Mid(pos+1);
   
-#ifdef MPEXT
   if (nMessageType>=FZ_LOG_DEBUG)
     return;
-#endif
 
   CString msg;
   msg.Format(_T("%s(%d): %s   caller=0x%08x"), (LPCTSTR)SourceFile, nSourceLine, pMsg, (int)this);
@@ -157,7 +145,6 @@ void CApiLog::LogMessageRaw(CString SourceFile, int nSourceLine, void *pInstance
 
 void CApiLog::SendLogMessage(int nMessageType, LPCTSTR pMsg) const
 {
-#ifdef MPEXT
   DebugAssert(m_pApiLogParent);
   DebugAssert(m_pApiLogParent->m_hTargetWnd == 0);
   DebugAssert(m_pApiLogParent->m_nLogMessage == 0);
@@ -170,35 +157,6 @@ void CApiLog::SendLogMessage(int nMessageType, LPCTSTR pMsg) const
   pStatus->type = nMessageType;
   if (!this->PostMessage(m_pApiLogParent->m_hTargetWnd, m_pApiLogParent->m_nLogMessage, FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
     delete pStatus;
-#else
-  if (m_hTargetWnd)
-  {
-    DebugAssert(m_nLogMessage);
-    if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_nDebugLevel)
-      return;
-  }
-  else
-  {
-    DebugAssert(m_pApiLogParent);
-    DebugAssert(m_pApiLogParent->m_hTargetWnd);
-    DebugAssert(m_pApiLogParent->m_nLogMessage);
-    if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
-      return;
-  }
-  //Displays a message in the message log  
-  t_ffam_statusmessage *pStatus = new t_ffam_statusmessage;
-  pStatus->post = TRUE;
-  pStatus->status = pMsg;
-  pStatus->type = nMessageType;
-  if (m_hTargetWnd)
-  {
-    if (!PostMessage(m_hTargetWnd, m_nLogMessage, FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
-      delete pStatus;
-  }
-  else
-    if (!PostMessage(m_pApiLogParent->m_hTargetWnd, m_pApiLogParent->m_nLogMessage, FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
-      delete pStatus;
-#endif
 }
 
 BOOL CApiLog::SetDebugLevel(int nDebugLevel)

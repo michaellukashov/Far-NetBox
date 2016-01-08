@@ -59,9 +59,7 @@ struct t_command : public TObject
 #define FZ_COMMAND_RENAME    0x0080
 #define FZ_COMMAND_MAKEDIR    0x0100
 #define FZ_COMMAND_CHMOD    0x0200
-#ifdef MPEXT
 #define FZ_COMMAND_LISTFILE    0x0400
-#endif
 
 #define FZ_MSG_OFFSET 16
 #define FZ_MSG_OFFSETMASK 0xFFFF
@@ -77,9 +75,7 @@ struct t_command : public TObject
 #define FZ_MSG_STATUS      6
 #define FZ_MSG_TRANSFERSTATUS  7
 #define FZ_MSG_QUITCOMPLETE    8
-#ifdef MPEXT
 #define FZ_MSG_CAPABILITIES    9
-#endif
 
 #define FZ_ASYNCREQUEST_OVERWRITE 1
 #ifndef MPEXT_NO_SSL
@@ -273,10 +269,6 @@ class CFileZillaApi : public TObject
 {
 public:
   BOOL IsValid() const;
-#ifndef MPEXT
-  int GetOption( int nOption, int &value );
-  int SetOption( int nOption, int value );
-#endif
   int SetDebugLevel( int nDebugLevel );
 
   int CustomCommand(CString command);
@@ -299,11 +291,7 @@ public:
   CFileZillaApi();
   virtual ~CFileZillaApi();
   //Initialization
-#ifndef MPEXT
-  int Init(HWND hOwnerWnd, int nReplyMessageID = 0);
-#else
   int Init(CApiLog * pParent, CFileZillaTools * pTools);
-#endif
   unsigned int GetMessageID();
 
   //Status
@@ -322,14 +310,12 @@ public:
   int FileTransfer(const t_transferfile &TransferFile);
   int GetCurrentServer(t_server &server);
 
-#ifdef MPEXT
   int SetCurrentPath(CServerPath path);
   int GetCurrentPath(CServerPath & path);
   bool UsingMlsd();
   bool UsingUtf8();
   std::string GetTlsVersionStr();
   std::string GetCipherName();
-#endif
 
 #ifndef MPEXT_NO_CACHE
   //Debugging functions
@@ -342,5 +328,3 @@ protected:
   unsigned int m_nReplyMessageID;
   HWND m_hOwnerWnd;
 };
-
-#endif // !defined(AFX_FILEZILLAAPI_H__F1970156_455F_4495_A813_4B676F0F03E5__INCLUDED_)

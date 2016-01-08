@@ -25,12 +25,7 @@ static char THIS_FILE[]=__FILE__;
 CFileZillaApi::CFileZillaApi()
 {
   m_hOwnerWnd=0;
-#ifndef MPEXT
-  //Create Message IDs
-  m_nReplyMessageID=RegisterWindowMessage( _T("FileZillaApiReplyMessage{8EF2E328-685E-4815-A9B9-823512F8381D}") );
-#else
   m_nReplyMessageID=0;
-#endif
   m_nInternalMessageID=0;
   m_pMainThread=0;
   m_bInitialized=FALSE;
@@ -41,11 +36,7 @@ CFileZillaApi::~CFileZillaApi()
   Destroy();
 }
 
-#ifndef MPEXT
-int CFileZillaApi::Init(HWND hOwnerWnd, int nReplyMessageID /*=0*/)
-#else
 int CFileZillaApi::Init(CApiLog * pParent, CFileZillaTools * pTools)
-#endif
 {
   //Check parameters
   //-> No check needed, if hOwnerWnd is NULL, use blocking mode and don't send status messages
@@ -55,11 +46,6 @@ int CFileZillaApi::Init(CApiLog * pParent, CFileZillaTools * pTools)
     return FZ_REPLY_ALREADYINIZIALIZED;
 
   //Initialize variables
-#ifndef MPEXT
-  if (nReplyMessageID)
-    m_nReplyMessageID=nReplyMessageID;
-  m_hOwnerWnd=hOwnerWnd;
-#endif
   m_nInternalMessageID=RegisterWindowMessage( _T("FileZillaInternalApiMessage{F958620E-040C-4b33-A091-7E04E10AA660}") );
   if (!m_nInternalMessageID)
     return FZ_REPLY_NOTINITIALIZED;
@@ -73,11 +59,7 @@ int CFileZillaApi::Init(CApiLog * pParent, CFileZillaTools * pTools)
   m_pMainThread->m_hOwnerWnd=m_hOwnerWnd;
   m_pMainThread->m_pTools=pTools;
 
-#ifndef MPEXT
-  m_pMainThread->InitLog(m_hOwnerWnd, m_nReplyMessageID);
-#else
   m_pMainThread->InitLog(pParent);
-#endif
 
   //Resume Thread
   m_pMainThread->ResumeThread();
@@ -253,9 +235,6 @@ void CFileZillaApi::Destroy()
   m_pMainThread->Quit();
   //Wait for the main thread to quit
   ::WaitForSingleObject(tmp, 10000);
-#ifndef MPEXT
-  PostMessage(m_hOwnerWnd, m_nReplyMessageID, FZ_MSG_MAKEMSG(FZ_MSG_QUITCOMPLETE, 0), 0);
-#endif
 
   m_pMainThread=0;
   m_bInitialized=FALSE;
@@ -458,7 +437,6 @@ int CFileZillaApi::List(const CServerPath& parent, CString dirname, int nListMod
     return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
 }
 
-#ifdef MPEXT
 int CFileZillaApi::ListFile(const CString & FileName, const CServerPath & path)
 {
   //Check if call allowed
@@ -483,7 +461,6 @@ int CFileZillaApi::ListFile(const CString & FileName, const CServerPath & path)
   else
     return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
 }
-#endif
 
 int CFileZillaApi::FileTransfer(const t_transferfile &TransferFile)
 {
@@ -519,7 +496,6 @@ int CFileZillaApi::GetCurrentServer(t_server &server)
     return FZ_REPLY_NOTCONNECTED;
 }
 
-#ifdef MPEXT
 int CFileZillaApi::SetCurrentPath(CServerPath path)
 {
   //Check if call allowed
@@ -580,7 +556,6 @@ std::string CFileZillaApi::GetCipherName()
     return std::string();
   return m_pMainThread->GetCipherName();
 }
-#endif
 
 int CFileZillaApi::CustomCommand(CString CustomCommand)
 {
@@ -774,9 +749,7 @@ int CFileZillaApi::SetAsyncRequestResult(int nAction, CAsyncRequestData *pData)
   case FZ_ASYNCREQUEST_GSS_AUTHFAILED:
   case FZ_ASYNCREQUEST_GSS_NEEDUSER:
   case FZ_ASYNCREQUEST_GSS_NEEDPASS:
-#ifdef MPEXT
     break;
-#endif
 #endif
 #ifndef MPEXT_NO_SFTP
   case FZ_ASYNCREQUEST_NEWHOSTKEY:
@@ -798,81 +771,6 @@ int CFileZillaApi::SetAsyncRequestResult(int nAction, CAsyncRequestData *pData)
 
   return FZ_REPLY_OK;
 }
-
-#ifndef MPEXT
-int CFileZillaApi::SetOption(int nOption, int value)
-{
-  if (!m_bInitialized)
-    return FZ_REPLY_NOTINITIALIZED;
-  switch (nOption)
-  {
-    case FZAPI_OPTION_SHOWHIDDEN:
-      m_pMainThread->SetOption(nOption, value);
-      break;
-    default:
-      return FZ_REPLY_INVALIDPARAM;
-  }
-  return FZ_REPLY_OK;
-}
-
-int CFileZillaApi::GetOption(int nOption, int &value)
-{
-  if (!m_bInitialized)
-    return FZ_REPLY_NOTINITIALIZED;
-  switch (nOption)
-  {
-    case FZAPI_OPTION_SHOWHIDDEN:
-      value = m_pMainThread->GetOption(nOption);
-      break;
-    default:
-      return FZ_REPLY_INVALIDPARAM;
-  }
-  return FZ_REPLY_OK;
-}
-#endif
-
-int CFileZillaApi::Chmod(int nValue, CString FileName, const CServerPath &path /*=CServerPath()*/ )
-{
-  //Check if call allowed
-  if (!m_bInitialized)
-    return FZ_REPLY_NOTINITIALIZED;
-  if (IsConnected()==FZ_REPLY_NOTCONNECTED)
-    return FZ_REPLY_NOTCONNECTED;
-  if (IsBusy()==FZ_REPLY_BUSY)
-    return FZ_REPLY_BUSY;
-  if (FileName==_MPT(""))
-    return FZ_REPLY_INVALIDPARAM;
-
-  t_command command;
-  command.id=FZ_COMMAND_CHMOD;
-  command.param1=FileName;
-  command.param4=nValue;
-  command.path=path;
-  m_pMainThread->Command(command);
-  if (m_hOwnerWnd)
-    return FZ_REPLY_WOULDBLOCK;
-  else
-    return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
-}
-
-int CFileZillaApi::SetDebugLevel(int nDebugLevel)
-{
-  //Check if call allowed
-  if (!m_bInitialized)
-    return FZ_REPLY_NOTINITIALIZED;
-  if (!m_pMainThread->SetDebugLevel(nDebugLevel))
-    return FZ_REPLY_ERROR;
-
-  return FZ_REPLY_OK;
-}
-
-#ifndef MPEXT_NO_CACHE
-BOOL CFileZillaApi::DumpDirectoryCache(LPCTSTR pFileName)
-{
-  CDirectoryCache cache;
-  return cache.Dump(pFileName);
-}
-#endif
 
 //CAsyncRequestData derived classes
 CAsyncRequestData::CAsyncRequestData()

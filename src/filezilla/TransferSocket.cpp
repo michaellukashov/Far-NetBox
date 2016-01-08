@@ -3,7 +3,6 @@
 #include "TransferSocket.h"
 #include "mainthread.h"
 #include "AsyncProxySocketLayer.h"
-#include "Options.h"
 #include "TextsFileZilla.h"
 #ifndef MPEXT_NO_GSS
 #include "AsyncGssSocketLayer.h"
@@ -163,9 +162,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
       m_transferdata.transfersize += numread;
       t_ffam_transferstatus *status = new t_ffam_transferstatus;
       status->bFileTransfer = FALSE;
-#ifdef MPEXT
       status->transfersize = -1;
-#endif
       status->bytes = m_transferdata.transfersize;
       status->percent = -1;
       status->timeelapsed = elapsed;
@@ -1186,4 +1183,3 @@ void CTransferSocket::LogError(int Error)
     LocalFree(Buffer);
   }
 }
-

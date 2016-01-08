@@ -229,14 +229,12 @@ bool TFileZillaIntf::List(const wchar_t * APath)
   return Check(FFileZillaApi->List(Path), L"list");
 }
 
-#ifdef MPEXT
 bool TFileZillaIntf::ListFile(const wchar_t * FileName, const wchar_t * APath)
 {
   DebugAssert(FFileZillaApi != NULL);
   CServerPath Path(APath);
   return Check(FFileZillaApi->ListFile(FileName, Path), L"listfile");
 }
-#endif
 
 bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile,
   const wchar_t * RemoteFile, const wchar_t * RemotePath, bool Get, __int64 Size,

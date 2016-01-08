@@ -24,7 +24,7 @@ t_server::~t_server()
 {
 }
 
-const bool operator == (const t_server &a,const t_server &b)
+const bool operator == (const t_server & a, const t_server & b)
 {
   if (a.host!=b.host)
       return false;
@@ -46,21 +46,19 @@ const bool operator == (const t_server &a,const t_server &b)
       return false;
   if (a.nCodePage != b.nCodePage)
     return false;
-#ifdef MPEXT
   if (a.iForcePasvIp != b.iForcePasvIp)
       return false;
   if (a.iUseMlsd != b.iUseMlsd)
       return false;
-#endif
   return true;
 }
 
-const bool operator != (const t_server &a,const t_server &b)
+const bool operator != (const t_server & a, const t_server & b)
 {
   return !(a == b);
 }
 
-bool t_server::operator<(const t_server &op) const
+bool t_server::operator<(const t_server & op) const
 {
   if (host<op.host)
     return true;
@@ -82,12 +80,10 @@ bool t_server::operator<(const t_server &op) const
     return true;
   if (nCodePage < op.nCodePage)
     return true;
-#ifdef MPEXT
   if (iForcePasvIp < op.iForcePasvIp)
     return true;
   if (iUseMlsd < op.iUseMlsd)
     return true;
-#endif
 
   return false;
 }

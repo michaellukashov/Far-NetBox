@@ -76,9 +76,7 @@ to tim.kosse@gmx.de
 #endif
 
 #if defined(__BORLANDC__)
-#ifdef MPEXT
 #pragma warn -inl
-#endif
 #endif
 
 #ifdef _DEBUG

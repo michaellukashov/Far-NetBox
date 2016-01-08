@@ -341,14 +341,6 @@ enum SocketState
   attached
 };
 
-#ifndef MPEXT
-#ifdef _UNICODE
-#define _sntprintf _snwprintf
-#else
-#define _sntprintf _snprintf
-#endif
-#endif
-
 inline TCHAR* Inet6AddrToString(in6_addr& addr)
 {
   LPTSTR buf = static_cast<TCHAR *>(nb_calloc(512, sizeof(TCHAR)));
