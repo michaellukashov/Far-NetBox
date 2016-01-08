@@ -159,5 +159,7 @@ private: \
 #define NB_STATIC_ASSERT(Condition, Message) \
   static_assert(bool(Condition), Message)
 
+#define NB_MAX_PATH 32 * 1024
+
 #include "UnicodeString.hpp"
 #include "local.hpp"

@@ -437,8 +437,8 @@ bool IsNumber(const UnicodeString & Str)
 UnicodeString GetSystemTemporaryDirectory()
 {
   UnicodeString TempDir;
-  TempDir.SetLength(32 * 1024);
-  TempDir.SetLength(GetTempPath(32 * 1024, const_cast<LPWSTR>(TempDir.c_str())));
+  TempDir.SetLength(NB_MAX_PATH);
+  TempDir.SetLength(GetTempPath(NB_MAX_PATH, const_cast<LPWSTR>(TempDir.c_str())));
   return TempDir;
 }
 
