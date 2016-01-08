@@ -87,7 +87,7 @@ public:
   UINT Read(void * lpBuf, UINT nCount)
   {
     ASSERT_VALID(this);
-    DebugAssert(m_hFile != static_cast<UINT>(hFileNull));
+    DebugAssert(m_hFile != hFileNull);
 
     if (nCount == 0)
     {
@@ -135,6 +135,7 @@ extern LPCSTR _afxPchNilA;
 extern CStringDataA* _afxDataNilA;
 #define afxEmptyStringA ((CStringA&)*(CStringA*)&_afxPchNilA)
 
+#if 0
 class CStringA
 {
 public:
@@ -536,3 +537,4 @@ inline CStringA AFXAPI operator+(const CStringA & string1, char ch)
   return s;
 }
 
+#endif
