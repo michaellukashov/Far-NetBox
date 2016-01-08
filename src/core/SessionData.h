@@ -135,8 +135,8 @@ extern const intptr_t HTTPPortNumber;
 extern const intptr_t HTTPSPortNumber;
 extern const intptr_t TelnetPortNumber;
 extern const intptr_t ProxyPortNumber;
-#define PuttySshProtocol L"ssh"
-#define PuttyTelnetProtocol L"telnet"
+#define PuttySshProtocolStr L"ssh"
+#define PuttyTelnetProtocolStr L"telnet"
 #define SftpProtocolStr L"sftp"
 #define ScpProtocolStr L"scp"
 #define FtpProtocolStr L"ftp"

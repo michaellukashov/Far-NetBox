@@ -170,6 +170,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value)
 {
   intptr_t ParamsStart;
   intptr_t ParamsCount;
+  bool ValueSet;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount, false, ValueSet);
 }
 

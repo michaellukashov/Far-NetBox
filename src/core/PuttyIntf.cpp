@@ -24,6 +24,10 @@ extern "C"
 {
 #include <winstuff.h>
 }
+const UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
+const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
+const UnicodeString OriginalPuttyExecutable("putty.exe");
+const UnicodeString KittyExecutable("kitty.exe");
 
 void PuttyInitialize()
 {
@@ -171,11 +175,11 @@ int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
         RawByteString S;
         if (UTF8Prompt)
         {
-          S = RawByteString(UTF8String(Results->Strings[Index]));
+          S = RawByteString(UTF8String(Results->GetString(Index)));
         }
         else
         {
-          S = RawByteString(AnsiString(Results->Strings[Index]));
+          S = RawByteString(AnsiString(Results->GetString(Index)));
         }
         prompt_set_result(Prompt, S.c_str());
       }
@@ -499,7 +503,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
 long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*Reserved*/,
   unsigned long Type, const uint8_t * Data, unsigned long DataSize)
 {
-  DebugAssert(Configuration != nullptr);
+  DebugAssert(GetConfiguration() != nullptr);
 
   DebugAssert(Type == REG_SZ);
   DebugUsedParam(Type);
@@ -550,9 +554,11 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeStr
       Result = (ssh2_userkey_encrypted(KeyFile, &CommentStr) != 0);
       break;
 
-    case ktOpenSSH:
+    case ktOpenSSHAuto:
+    case ktOpenSSHPem:
+    case ktOpenSSHNew:
     case ktSSHCom:
-      Result = (import_encrypted(KeyFile, KeyType, &CommentStr) != nullptr);
+      Result = (import_encrypted(KeyFile, KeyType, &CommentStr) != 0);
       break;
 
     default:
@@ -567,7 +573,7 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeStr
     // ktOpenSSH has no comment, PuTTY defaults to file path
     if (Comment == FileName)
     {
-      Comment = ExtractFileName(FileName);
+      Comment = base::ExtractFileName(FileName, false);
     }
     sfree(CommentStr);
   }
@@ -579,7 +585,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
 {
   UTF8String UtfFileName = UTF8String(FileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
-  AnsiString AnsiPassphrase = Passphrase;
+  AnsiString AnsiPassphrase = AnsiString(Passphrase);
   struct ssh2_userkey * Ssh2Key = nullptr;
   const char * ErrorStr = nullptr;
 
@@ -589,9 +595,9 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
       Ssh2Key = ssh2_load_userkey(KeyFile, AnsiPassphrase.c_str(), &ErrorStr);
       break;
 
-    case ktOpenSSH:
+    case ktOpenSSHAuto:
     case ktSSHCom:
-      Ssh2Key = import_ssh2(KeyFile, KeyType, AnsiPassphrase.c_str(), &ErrorStr);
+      Ssh2Key = import_ssh2(KeyFile, KeyType, (char *)AnsiPassphrase.c_str(), &ErrorStr);
       break;
 
     default:
@@ -603,7 +609,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
 
   if (Ssh2Key == nullptr)
   {
-    UnicodeString Error = AnsiString(ErrorStr);
+    UnicodeString Error = UnicodeString(ErrorStr);
     // While theoretically we may get "unable to open key file" and
     // so we should check system error code,
     // we actully never get here unless we call KeyType previously
@@ -632,8 +638,8 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
   UTF8String UtfFileName = UTF8String(FileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
   struct ssh2_userkey * Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
-  AnsiString AnsiPassphrase = Passphrase;
-  char * PassphrasePtr = (AnsiPassphrase.IsEmpty() ? nullptr : AnsiPassphrase.c_str());
+  AnsiString AnsiPassphrase = AnsiString(Passphrase);
+  const char * PassphrasePtr = (AnsiPassphrase.IsEmpty() ? nullptr : AnsiPassphrase.c_str());
   switch (KeyType)
   {
     case ktSSH2:
@@ -787,8 +793,8 @@ UnicodeString GetPuTTYVersion()
 UnicodeString Sha256(const char * Data, size_t Size)
 {
   unsigned char Digest[32];
-  SHA256_Simple(Data, Size, Digest);
-  UnicodeString Result(BytesToHex(Digest, LENOF(Digest)));
+  putty_SHA256_Simple(Data, Size, Digest);
+  UnicodeString Result(BytesToHex(Digest, _countof(Digest)));
   return Result;
 }
 

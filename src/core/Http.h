@@ -9,7 +9,9 @@ struct ne_ssl_certificate_s;
 struct ssl_st;
 
 class THttp;
-typedef void (__closure * THttpDownloadEvent)(THttp * Sender, int64_t Size, bool & Cancel);
+//typedef void (__closure * THttpDownloadEvent)(THttp * Sender, int64_t Size, bool & Cancel);
+DEFINE_CALLBACK_TYPE3(THttpDownloadEvent, void,
+  THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/);
 
 class THttp : public TObject
 {

@@ -19,6 +19,7 @@
 #include <neon/src/ne_uri.h>
 #include <neon/src/ne_session.h>
 #include <neon/src/ne_request.h>
+#include <neon/src/ne_utils.h>
 #include <neon/src/ne_xml.h>
 #include <neon/src/ne_pkcs11.h>
 #include <expat/lib/expat.h>
@@ -12007,7 +12008,7 @@ void NeonInitialize()
   // Even if this fails, we do not want to interrupt WinSCP starting for that.
   // We may possibly remember that and fail opening session later.
   // Anyway, it can hardly fail.
-  ALWAYS_TRUE(ne_sock_init());
+  DebugAlwaysTrue(ne_sock_init());
 }
 
 void NeonFinalize()
@@ -12421,8 +12422,8 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
 void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & /*AFileName*/,
   const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & /*Action*/)
 {
-  USEDPARAM(AFile);
-  USEDPARAM(Params);
+  DebugUsedParam(AFile);
+  DebugUsedParam(Params);
   UnicodeString FullFileName = AFile->GetFullFileName();
   bool res = WebDAVDeleteFile(FullFileName.c_str());
   if (!res)
@@ -13338,7 +13339,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     // when connected to server with case insensitive paths
     UnicodeString AbsolutePath = GetAbsolutePath(FFileList->GetDirectory(), false);
     DebugAssert(core::UnixSamePath(AbsolutePath, Path));
-    USEDPARAM(Path);
+    DebugUsedParam(Path);
 
     for (intptr_t Index = 0; Index < Count; ++Index)
     {

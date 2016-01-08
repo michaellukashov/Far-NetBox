@@ -1444,7 +1444,7 @@ void __fastcall TOptionsIniFile::ReadSections(TStrings * Strings)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptionsIniFile::ReadSectionValues(const UnicodeString Section, TStrings * /*Strings*/)
+void __fastcall TOptionsIniFile::ReadSectionValues(const UnicodeString Section, TStrings * / *Strings* /)
 {
   NotImplemented();
 }
@@ -1479,7 +1479,7 @@ void __fastcall TOptionsIniFile::UpdateFile()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptionsIniFile::ReadSections(const UnicodeString /*Section*/, TStrings * /*Strings*/)
+void __fastcall TOptionsIniFile::ReadSections(const UnicodeString / *Section* /, TStrings * / * Strings* /)
 {
   NotImplemented();
 }

@@ -466,7 +466,7 @@ void TFTPFileSystem::Open()
       }
     }
 
-    if ((Data->Ftps != ftpsNone) && (FCertificate == nullptr))
+    if ((Data->GetFtps() != ftpsNone) && (FCertificate == nullptr))
     {
       FTerminal->LoadTlsCertificate(FCertificate, FPrivateKey);
     }
@@ -4266,10 +4266,10 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       Summary = VerificationResultStr + L" " + FMTLOAD(CERT_ERRDEPTH, Data.VerificationDepth + 1);
     }
 
-    if (IsIPAddress(FTerminal->SessionData->HostNameExpanded))
+    if (IsIPAddress(FTerminal->GetSessionData()->GetHostNameExpanded()))
     {
       VerificationResult = false;
-      AddToList(Summary, FMTLOAD(CERT_IP_CANNOT_VERIFY, (FTerminal->SessionData->HostNameExpanded)), L"\n\n");
+      AddToList(Summary, FMTLOAD(CERT_IP_CANNOT_VERIFY, FTerminal->GetSessionData()->GetHostNameExpanded().c_str()), L"\n\n");
     }
     else if (!VerifyCertificateHostName(Data))
     {
@@ -4361,8 +4361,8 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     // Cache only if the certificate was not automatically accepted
     if (!VerificationResult && (RequestResult != 0))
     {
-      FTerminal->Configuration->RememberLastFingerprint(
-        FTerminal->SessionData->SiteKey, TlsFingerprintType, FSessionInfo.CertificateFingerprint);
+      FTerminal->GetConfiguration()->RememberLastFingerprint(
+        FTerminal->GetSessionData()->GetSiteKey(), GetTlsFingerprintType(), FSessionInfo.CertificateFingerprint);
     }
 
     return true;

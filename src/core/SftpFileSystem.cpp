@@ -1436,7 +1436,7 @@ protected:
     catch (Exception & E) // prevent crash when server unexpectedly closes connection
     {
       DEBUG_PRINTF("ReceiveHandler: %s\n", E.Message.c_str());
-      USEDPARAM(E);
+      DebugUsedParam(E);
     }
   }
 
@@ -2640,7 +2640,7 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
     while (IsReserved);
   }
 
-  if ((Packet->GetCapacity() == 0) && ALWAYS_TRUE(TryOnly))
+  if ((Packet->GetCapacity() == 0) && DebugAlwaysTrue(TryOnly))
   {
     // noop
   }
@@ -5450,7 +5450,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
   /* TODO : Show error message on failure. */
   if (!OperationProgress->Cancel)
   {
-    if (CopyParam->PreserveTime && CopyParam->PreserveTimeDirs)
+    if (CopyParam->GetPreserveTime() && CopyParam->GetPreserveTimeDirs())
     {
       TRemoteProperties Properties;
       Properties.Valid << vpModification;
@@ -5644,7 +5644,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
       if (CopyParam->GetPreserveTime() && CopyParam->GetPreserveTimeDirs())
       {
         FTerminal->LogEvent(FORMAT(L"Preserving directory timestamp [%s]",
-          StandardTimestamp(File->Modification).c_str()));
+          StandardTimestamp(AFile->GetModification()).c_str()));
         int SetFileTimeError = ERROR_SUCCESS;
         // FILE_FLAG_BACKUP_SEMANTICS is needed to "open" directory
         // TODO: FTerminal->TerminalCreateFile(LocalFileName, OperationProgress,

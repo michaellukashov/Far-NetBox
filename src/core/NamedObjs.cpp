@@ -116,7 +116,7 @@ int TNamedObjectList::Add(TObject * AObject)
   TNamedObject * NamedObject = static_cast<TNamedObject *>(AObject);
   // If temporarily not auto-sorting (when loading session list),
   // keep the hidden objects in front, so that HiddenCount is correct
-  if (!AutoSort && NamedObject->Hidden)
+  if (!AutoSort && NamedObject->GetHidden())
   {
     Result = 0;
     Insert(Result, AObject);
@@ -134,7 +134,7 @@ void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
   if (Action == lnDeleted)
   {
     TNamedObject * NamedObject = static_cast<TNamedObject *>(Ptr);
-    if (NamedObject->Hidden && (FHiddenCount >= 0))
+    if (NamedObject->GetHidden() && (FHiddenCount >= 0))
     {
       FHiddenCount--;
     }

@@ -1526,7 +1526,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     AFSProtocol = fsFTP;
     AFtps = ftpsExplicitTls;
     APortNumber = FtpPortNumber;
-    MoveStr(Url, MaskedUrl, ProtocolLen);
+    MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
   else if (IsProtocolUrl(url, WebDAVProtocolStr, ProtocolLen))
@@ -1545,14 +1545,14 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(url, SshProtocol, ProtocolLen))
+  else if (IsProtocolUrl(url, SshProtocolStr, ProtocolLen))
   {
     // For most uses, handling ssh:// the same way as sftp://
     // The only place where a difference is made is GetLoginData() in WinMain.cpp
     AFSProtocol = fsSFTPonly;
-    PuttyProtocol = PuttySshProtocol;
+    SetPuttyProtocol(PuttySshProtocolStr);
     APortNumber = SshPortNumber;
-    MoveStr(Url, MaskedUrl, ProtocolLen);
+    MoveStr(url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
 
@@ -1796,7 +1796,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     UnicodeString Value;
     if (Options->FindSwitch(SESSIONNAME_SWICH, Value))
     {
-      Name = Value;
+      SetName(Value);
     }
     if (Options->FindSwitch("privatekey", Value))
     {
@@ -1804,7 +1804,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
     }
     if (Options->FindSwitch(L"clientcert", Value))
     {
-      TlsCertificateFile = Value;
+      SetTlsCertificateFile(Value);
     }
     if (Options->FindSwitch(PassphraseOption, Value))
     {
@@ -2422,7 +2422,7 @@ void TSessionData::SetPuttyProtocol(const UnicodeString & Value)
 
 UnicodeString TSessionData::GetNormalizedPuttyProtocol() const
 {
-  return DefaultStr(PuttyProtocol, PuttySshProtocol);
+  return DefaultStr(GetPuttyProtocol(), PuttySshProtocolStr);
 }
 
 void TSessionData::SetPingIntervalDT(const TDateTime & Value)
@@ -2516,10 +2516,10 @@ UnicodeString TSessionData::GetSessionName() const
   return Result;
 }
 
-bool TSessionData::IsSecure()
+bool TSessionData::IsSecure() const
 {
   bool Result;
-  switch (FSProtocol)
+  switch (GetFSProtocol())
   {
     case fsSCPonly:
     case fsSFTP:
@@ -2529,7 +2529,7 @@ bool TSessionData::IsSecure()
 
     case fsFTP:
     case fsWebDAV:
-      Result = (Ftps != ftpsNone);
+      Result = (GetFtps() != ftpsNone);
       break;
 
     default:
@@ -2561,7 +2561,7 @@ UnicodeString TSessionData::GetProtocolUrl() const
       {
         Url = FtpsProtocolStr;
       }
-      else if ((Ftps == ftpsExplicitTls) || (Ftps == ftpsExplicitSsl))
+      else if ((GetFtps() == ftpsExplicitTls) || (GetFtps() == ftpsExplicitSsl))
       {
         Url = FtpesProtocolStr;
       }
@@ -2690,7 +2690,7 @@ void TSessionData::AddSwitchValue(UnicodeString & Result, const UnicodeString & 
 
 void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value)
 {
-  AddSwitchValue(Result, Name, FORMAT("\"%s\"", (EscapeParam(Value))));
+  AddSwitchValue(Result, Name, FORMAT(L"\"%s\"", EscapeParam(Value).c_str()));
 }
 
 void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Name, int Value)
@@ -2701,18 +2701,18 @@ void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Name,
 void TSessionData::LookupLastFingerprint()
 {
   UnicodeString FingerprintType;
-  if (IsSshProtocol(FSProtocol))
+  if (IsSshProtocol(GetFSProtocol()))
   {
     FingerprintType = SshFingerprintType;
   }
-  else if (Ftps != ftpsNone)
+  else if (GetFtps() != ftpsNone)
   {
     FingerprintType = TlsFingerprintType;
   }
 
   if (!FingerprintType.IsEmpty())
   {
-    HostKey = Configuration->LastFingerprint(SiteKey, FingerprintType);
+    SetHostKey(GetConfiguration()->GetLastFingerprint(GetSiteKey(), FingerprintType));
   }
 }
 
@@ -2726,58 +2726,60 @@ UnicodeString TSessionData::GenerateOpenCommandArgs()
   UnicodeString Result = SessionData->GenerateSessionUrl(sufOpen);
 
   // Before we reset the FSProtocol
-  bool AUsesSsh = SessionData->UsesSsh;
+  bool AUsesSsh = SessionData->GetUsesSsh();
   // SFTP-only is not reflected by the protocol prefix, we have to use rawsettings for that
-  if (SessionData->FSProtocol != fsSFTPonly)
+  if (SessionData->GetFSProtocol() != fsSFTPonly)
   {
-    SessionData->FSProtocol = FactoryDefaults->FSProtocol;
+    SessionData->SetFSProtocol(FactoryDefaults->GetFSProtocol());
   }
-  SessionData->HostName = FactoryDefaults->HostName;
-  SessionData->PortNumber = FactoryDefaults->PortNumber;
-  SessionData->UserName = FactoryDefaults->UserName;
-  SessionData->Password = FactoryDefaults->Password;
+  SessionData->SetHostName(FactoryDefaults->GetHostName());
+  SessionData->SetPortNumber(FactoryDefaults->GetPortNumber());
+  SessionData->SetUserName(FactoryDefaults->SessionGetUserName());
+  SessionData->SetPassword(FactoryDefaults->GetPassword());
   SessionData->CopyNonCoreData(FactoryDefaults.get());
-  SessionData->Ftps = FactoryDefaults->Ftps;
+  SessionData->SetFtps(FactoryDefaults->GetFtps());
 
-  if (SessionData->HostKey != FactoryDefaults->HostKey)
+  if (SessionData->GetHostKey() != FactoryDefaults->GetHostKey())
   {
     UnicodeString SwitchName = AUsesSsh ? L"hostkey" : L"certificate";
-    AddSwitch(Result, SwitchName, SessionData->HostKey);
-    SessionData->HostKey = FactoryDefaults->HostKey;
+    AddSwitch(Result, SwitchName, SessionData->GetHostKey());
+    SessionData->SetHostKey(FactoryDefaults->GetHostKey());
   }
-  if (SessionData->PublicKeyFile != FactoryDefaults->PublicKeyFile)
+  if (SessionData->GetPublicKeyFile() != FactoryDefaults->GetPublicKeyFile())
   {
-    AddSwitch(Result, L"privatekey", SessionData->PublicKeyFile);
-    SessionData->PublicKeyFile = FactoryDefaults->PublicKeyFile;
+    AddSwitch(Result, L"privatekey", SessionData->GetPublicKeyFile());
+    SessionData->SetPublicKeyFile(FactoryDefaults->GetPublicKeyFile());
   }
-  if (SessionData->TlsCertificateFile != FactoryDefaults->TlsCertificateFile)
+  if (SessionData->GetTlsCertificateFile() != FactoryDefaults->GetTlsCertificateFile())
   {
-    AddSwitch(Result, L"clientcert", SessionData->TlsCertificateFile);
-    SessionData->TlsCertificateFile = FactoryDefaults->TlsCertificateFile;
+    AddSwitch(Result, L"clientcert", SessionData->GetTlsCertificateFile());
+    SessionData->SetTlsCertificateFile(FactoryDefaults->GetTlsCertificateFile());
   }
-  if (SessionData->Passphrase != FactoryDefaults->Passphrase)
+  if (SessionData->GetPassphrase() != FactoryDefaults->GetPassphrase())
   {
-    AddSwitch(Result, PassphraseOption, SessionData->Passphrase);
-    SessionData->Passphrase = FactoryDefaults->Passphrase;
+    AddSwitch(Result, PassphraseOption, SessionData->GetPassphrase());
+    SessionData->SetPassphrase(FactoryDefaults->GetPassphrase());
   }
-  if (SessionData->FtpPasvMode != FactoryDefaults->FtpPasvMode)
+  if (SessionData->GetFtpPasvMode() != FactoryDefaults->GetFtpPasvMode())
   {
-    AddSwitch(Result, L"passive", SessionData->FtpPasvMode ? 1 : 0);
-    SessionData->FtpPasvMode = FactoryDefaults->FtpPasvMode;
+    AddSwitch(Result, L"passive", SessionData->GetFtpPasvMode() ? 1 : 0);
+    SessionData->SetFtpPasvMode(FactoryDefaults->GetFtpPasvMode());
   }
-  if (SessionData->Timeout != FactoryDefaults->Timeout)
+  if (SessionData->GetTimeout() != FactoryDefaults->GetTimeout())
   {
-    AddSwitch(Result, L"timeout", SessionData->Timeout);
-    SessionData->Timeout = FactoryDefaults->Timeout;
+    AddSwitch(Result, L"timeout", SessionData->GetTimeout());
+    SessionData->SetTimeout(FactoryDefaults->GetTimeout());
   }
 
   std::unique_ptr<TStrings> RawSettings(SessionData->SaveToOptions(FactoryDefaults.get()));
 
-  if (RawSettings->Count > 0)
+  if (RawSettings->GetCount() > 0)
   {
     AddSwitch(Result, L"rawsettings");
 
-    for (int Index = 0; Index < RawSettings->Count; Index++)
+#if 0
+    // TODO: implement
+    for (int Index = 0; Index < RawSettings->GetCount(); Index++)
     {
       UnicodeString Name = RawSettings->GetName(Index);
       UnicodeString Value = RawSettings->GetValueFromIndex(Index);
@@ -2788,6 +2790,7 @@ UnicodeString TSessionData::GenerateOpenCommandArgs()
       }
       Result += FORMAT(L" %s=%s", Name.c_str(), Value.c_str());
     }
+#endif
   }
 
   return Result;
@@ -2815,30 +2818,31 @@ void TSessionData::AddAssemblyProperty(
       break;
   }
 
-  Result += FORMAT(PropertyCode, (Name, Type, Member));
+  Result += FORMAT(PropertyCode.c_str(), Name.c_str(), Type.c_str(), Member.c_str());
 }
 
-UnicodeString TSessionData::AssemblyString(TAssemblyLanguage Language, UnicodeString S)
+UnicodeString TSessionData::AssemblyString(TAssemblyLanguage Language, const UnicodeString & S)
 {
+  UnicodeString Result = S;
   switch (Language)
   {
     case alCSharp:
-      if (S.Pos(L"\\") > 0)
+      if (Result.Pos(L"\\") > 0)
       {
-        S = FORMAT(L"@\"%s\"", (ReplaceStr(S, L"\"", L"\"\"")));
+        Result = FORMAT(L"@\"%s\"", ReplaceStr(Result, L"\"", L"\"\"").c_str());
       }
       else
       {
-        S = FORMAT(L"\"%s\"", (ReplaceStr(S, L"\"", L"\\\"")));
+        Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"\\\"").c_str());
       }
       break;
 
     case alVBNET:
-      S = FORMAT(L"\"%s\"", (ReplaceStr(S, L"\"", L"\"\"")));
+      Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"\"\"").c_str());
       break;
 
     case alPowerShell:
-      S = FORMAT(L"\"%s\"", (ReplaceStr(S, L"\"", L"`\"")));
+      Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"`\"").c_str());
       break;
 
     default:
@@ -2846,7 +2850,7 @@ UnicodeString TSessionData::AssemblyString(TAssemblyLanguage Language, UnicodeSt
       break;
   }
 
-  return S;
+  return Result;
 }
 
 void TSessionData::AddAssemblyPropertyRaw(
@@ -2870,7 +2874,7 @@ void TSessionData::AddAssemblyPropertyRaw(
       break;
   }
 
-  Result += FORMAT(PropertyCode, (Name, Value));
+  Result += FORMAT(PropertyCode.c_str(), Name.c_str(), Value.c_str());
 }
 //---------------------------------------------------------------------
 void TSessionData::AddAssemblyProperty(
@@ -2925,24 +2929,24 @@ UnicodeString TSessionData::GenerateAssemblyCode(
     case alCSharp:
       SessionOptionsPreamble =
         L"// %s\n"
-         "SessionOptions sessionOptions = new SessionOptions\n"
-         "{\n";
+        L"SessionOptions sessionOptions = new SessionOptions\n"
+        L"{\n";
       break;
 
     case alVBNET:
       SessionOptionsPreamble =
         L"' %s\n"
-         "Dim mySessionOptions As New SessionOptions\n"
-         "With mySessionOptions\n";
+        L"Dim mySessionOptions As New SessionOptions\n"
+        L"With mySessionOptions\n";
       break;
 
     case alPowerShell:
       SessionOptionsPreamble =
         FORMAT(L"# %s\n", (LoadStr(CODE_PS_ADD_TYPE))) +
         L"Add-Type -Path \"WinSCPnet.dll\"\n"
-         "\n"
-         "# %s\n"
-         "$sessionOptions = New-Object WinSCP.SessionOptions\n";
+        L"\n"
+        L"# %s\n"
+        L"$sessionOptions = New-Object WinSCP.SessionOptions\n";
       break;
 
     default:
@@ -2950,10 +2954,10 @@ UnicodeString TSessionData::GenerateAssemblyCode(
       break;
   }
 
-  Result = FORMAT(SessionOptionsPreamble, (LoadStr(CODE_SESSION_OPTIONS)));
+  Result = FORMAT(SessionOptionsPreamble.c_str(), LoadStr(CODE_SESSION_OPTIONS).c_str());
 
   UnicodeString ProtocolMember;
-  switch (SessionData->FSProtocol)
+  switch (SessionData->GetFSProtocol())
   {
     case fsSCPonly:
       ProtocolMember = "Scp";
@@ -2977,47 +2981,47 @@ UnicodeString TSessionData::GenerateAssemblyCode(
   }
 
   // Before we reset the FSProtocol
-  bool AUsesSsh = SessionData->UsesSsh;
+  bool AUsesSsh = SessionData->GetUsesSsh();
 
   // Protocol is set unconditionally, we want even the default SFTP
   AddAssemblyProperty(Result, Language, L"Protocol", L"Protocol", ProtocolMember);
   // SFTP-only is not reflected by the protocol prefix, we have to use rawsettings for that
-  if (SessionData->FSProtocol != fsSFTPonly)
+  if (SessionData->GetFSProtocol() != fsSFTPonly)
   {
-    SessionData->FSProtocol = FactoryDefaults->FSProtocol;
+    SessionData->SetFSProtocol(FactoryDefaults->GetFSProtocol());
   }
-  if (SessionData->HostName != FactoryDefaults->HostName)
+  if (SessionData->GetHostName() != FactoryDefaults->GetHostName())
   {
-    AddAssemblyProperty(Result, Language, L"HostName", HostName);
-    SessionData->HostName = FactoryDefaults->HostName;
+    AddAssemblyProperty(Result, Language, L"HostName", GetHostName());
+    SessionData->SetHostName(FactoryDefaults->GetHostName());
   }
-  if (SessionData->PortNumber != FactoryDefaults->PortNumber)
+  if (SessionData->GetPortNumber() != FactoryDefaults->GetPortNumber())
   {
-    AddAssemblyProperty(Result, Language, L"PortNumber", PortNumber);
-    SessionData->PortNumber = FactoryDefaults->PortNumber;
+    AddAssemblyProperty(Result, Language, L"PortNumber", GetPortNumber());
+    SessionData->SetPortNumber(FactoryDefaults->GetPortNumber());
   }
-  if (SessionData->UserName != FactoryDefaults->UserName)
+  if (SessionData->SessionGetUserName() != FactoryDefaults->SessionGetUserName())
   {
-    AddAssemblyProperty(Result, Language, L"UserName", UserName);
-    SessionData->UserName = FactoryDefaults->UserName;
+    AddAssemblyProperty(Result, Language, L"UserName", SessionGetUserName());
+    SessionData->SetUserName(FactoryDefaults->SessionGetUserName());
   }
-  if (SessionData->Password != FactoryDefaults->Password)
+  if (SessionData->GetPassword() != FactoryDefaults->GetPassword())
   {
-    AddAssemblyProperty(Result, Language, L"Password", Password);
-    SessionData->Password = FactoryDefaults->Password;
+    AddAssemblyProperty(Result, Language, L"Password", GetPassword());
+    SessionData->SetPassword(FactoryDefaults->GetPassword());
   }
 
   SessionData->CopyNonCoreData(FactoryDefaults.get());
 
-  if (SessionData->Ftps != FactoryDefaults->Ftps)
+  if (SessionData->GetFtps() != FactoryDefaults->GetFtps())
   {
     // SessionData->FSProtocol is reset already
-    switch (FSProtocol)
+    switch (GetFSProtocol())
     {
       case fsFTP:
         {
           UnicodeString FtpSecureMember;
-          switch (SessionData->Ftps)
+          switch (SessionData->GetFtps())
           {
             case ftpsNone:
               // noop
@@ -3041,46 +3045,46 @@ UnicodeString TSessionData::GenerateAssemblyCode(
         break;
 
       case fsWebDAV:
-        AddAssemblyProperty(Result, Language, L"WebdavSecure", (SessionData->Ftps != ftpsNone));
+        AddAssemblyProperty(Result, Language, L"WebdavSecure", (SessionData->GetFtps() != ftpsNone));
         break;
 
       default:
         DebugFail();
         break;
     }
-    SessionData->Ftps = FactoryDefaults->Ftps;
+    SessionData->SetFtps(FactoryDefaults->GetFtps());
   }
 
-  if (SessionData->HostKey != FactoryDefaults->HostKey)
+  if (SessionData->GetHostKey() != FactoryDefaults->GetHostKey())
   {
     UnicodeString PropertyName = AUsesSsh ? L"SshHostKeyFingerprint" : L"TlsHostCertificateFingerprint";
-    AddAssemblyProperty(Result, Language, PropertyName, SessionData->HostKey);
-    SessionData->HostKey = FactoryDefaults->HostKey;
+    AddAssemblyProperty(Result, Language, PropertyName, SessionData->GetHostKey());
+    SessionData->SetHostKey(FactoryDefaults->GetHostKey());
   }
-  if (SessionData->PublicKeyFile != FactoryDefaults->PublicKeyFile)
+  if (SessionData->GetPublicKeyFile() != FactoryDefaults->GetPublicKeyFile())
   {
-    AddAssemblyProperty(Result, Language, L"SshPrivateKeyPath", SessionData->PublicKeyFile);
-    SessionData->PublicKeyFile = FactoryDefaults->PublicKeyFile;
+    AddAssemblyProperty(Result, Language, L"SshPrivateKeyPath", SessionData->GetPublicKeyFile());
+    SessionData->SetPublicKeyFile(FactoryDefaults->GetPublicKeyFile());
   }
-  if (SessionData->TlsCertificateFile != FactoryDefaults->TlsCertificateFile)
+  if (SessionData->GetTlsCertificateFile() != FactoryDefaults->GetTlsCertificateFile())
   {
-    AddAssemblyProperty(Result, Language, L"TlsClientCertificatePath", SessionData->TlsCertificateFile);
-    SessionData->TlsCertificateFile = FactoryDefaults->TlsCertificateFile;
+    AddAssemblyProperty(Result, Language, L"TlsClientCertificatePath", SessionData->GetTlsCertificateFile());
+    SessionData->SetTlsCertificateFile(FactoryDefaults->GetTlsCertificateFile());
   }
-  if (SessionData->Passphrase != FactoryDefaults->Passphrase)
+  if (SessionData->GetPassphrase() != FactoryDefaults->GetPassphrase())
   {
-    AddAssemblyProperty(Result, Language, L"PrivateKeyPassphrase", SessionData->Passphrase);
-    SessionData->Passphrase = FactoryDefaults->Passphrase;
+    AddAssemblyProperty(Result, Language, L"PrivateKeyPassphrase", SessionData->GetPassphrase());
+    SessionData->SetPassphrase(FactoryDefaults->GetPassphrase());
   }
-  if (SessionData->FtpPasvMode != FactoryDefaults->FtpPasvMode)
+  if (SessionData->GetFtpPasvMode() != FactoryDefaults->GetFtpPasvMode())
   {
-    AddAssemblyProperty(Result, Language, L"FtpMode", L"FtpMode", (SessionData->FtpPasvMode ? L"Passive" : L"Active"));
-    SessionData->FtpPasvMode = FactoryDefaults->FtpPasvMode;
+    AddAssemblyProperty(Result, Language, L"FtpMode", L"FtpMode", (SessionData->GetFtpPasvMode() ? L"Passive" : L"Active"));
+    SessionData->SetFtpPasvMode(FactoryDefaults->GetFtpPasvMode());
   }
-  if (SessionData->Timeout != FactoryDefaults->Timeout)
+  if (SessionData->GetTimeout() != FactoryDefaults->GetTimeout())
   {
-    AddAssemblyProperty(Result, Language, L"TimeoutInMilliseconds", SessionData->Timeout);
-    SessionData->Timeout = FactoryDefaults->Timeout;
+    AddAssemblyProperty(Result, Language, L"TimeoutInMilliseconds", SessionData->GetTimeout());
+    SessionData->SetTimeout(FactoryDefaults->GetTimeout());
   }
 
   switch (Language)
@@ -3097,10 +3101,12 @@ UnicodeString TSessionData::GenerateAssemblyCode(
 
   std::unique_ptr<TStrings> RawSettings(SessionData->SaveToOptions(FactoryDefaults.get()));
 
-  if (RawSettings->Count > 0)
+  if (RawSettings->GetCount() > 0)
   {
     Result += L"\n";
 
+#if 0
+    // TODO: implement
     for (int Index = 0; Index < RawSettings->Count; Index++)
     {
       UnicodeString Name = RawSettings->Names[Index];
@@ -3122,10 +3128,12 @@ UnicodeString TSessionData::GenerateAssemblyCode(
       }
       Result += FORMAT(SettingsCode, (Name, AssemblyString(Language, Value)));
     }
+#endif
   }
 
   UnicodeString SessionCode;
 
+#if 0
   switch (Language)
   {
     case alCSharp:
@@ -3170,8 +3178,9 @@ UnicodeString TSessionData::GenerateAssemblyCode(
          "}\n";
       break;
   }
+#endif
 
-  Result += FORMAT(SessionCode, (LoadStr(CODE_CONNECT), LoadStr(CODE_YOUR_CODE)));
+  Result += FORMAT(SessionCode.c_str(), LoadStr(CODE_CONNECT).c_str(), LoadStr(CODE_YOUR_CODE).c_str());
 
   return Result;
 }
@@ -3362,7 +3371,7 @@ void TSessionData::PrepareProxyData() const
     {
       DWORD Err = ::GetLastError();
       DEBUG_PRINTF("Error reading system proxy configuration, code: %x", Err);
-      USEDPARAM(Err);
+      DebugUsedParam(Err);
     }
     else
     {
@@ -4288,7 +4297,7 @@ void TStoredSessionList::SelectSessionsToImport(TStoredSessionList * Dest, bool 
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     GetSession(Index)->SetSelected(
-      (!SSHOnly || (GetSession(Index)->GetNormalizedPuttyProtocol() == PuttySshProtocol)) &&
+      (!SSHOnly || (GetSession(Index)->GetNormalizedPuttyProtocol() == PuttySshProtocolStr)) &&
       !Dest->FindByName(GetSession(Index)->GetName()));
   }
 }

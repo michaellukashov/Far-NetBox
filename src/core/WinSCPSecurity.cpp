@@ -113,7 +113,7 @@ bool GetExternalEncryptedPassword(const RawByteString & Encrypted, RawByteString
     (SimpleDecryptNextChar(Enc) == PWALG_SIMPLE_EXTERNAL);
   if (Result)
   {
-    Password = HexToBytes(UTF8ToString(Enc))));
+    Password = HexToBytes(UTF8ToString(Enc));
   }
   return Result;
 }

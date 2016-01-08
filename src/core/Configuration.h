@@ -42,6 +42,7 @@ public:
   void * GetApplicationInfo() const;
   virtual UnicodeString GetProductVersionStr() const;
   virtual UnicodeString GetProductVersion() const;
+  UnicodeString GetVersion();
   UnicodeString GetFileProductVersion() const;
   UnicodeString GetProductName() const;
   UnicodeString GetCompanyName() const;
@@ -99,7 +100,7 @@ public:
   bool GetIsUnofficial() const;
 
 public:
-  virtual TStorage GetStorage();
+  virtual TStorage GetStorage() const;
   virtual void Changed();
   virtual void SaveData(THierarchicalStorage * Storage, bool All);
   virtual void LoadData(THierarchicalStorage * Storage);
@@ -112,7 +113,7 @@ public:
   UnicodeString BannerHash(const UnicodeString & Banner) const;
   static UnicodeString PropertyToKey(const UnicodeString & Property);
   virtual void DoSave(bool All, bool Explicit);
-  UnicodeString FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType);
+  UnicodeString FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType) const;
 
   virtual bool GetConfirmOverwriting() const;
   virtual void SetConfirmOverwriting(bool Value);
@@ -170,7 +171,7 @@ public:
   bool ShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
   void NeverShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
   void RememberLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType, const UnicodeString & Fingerprint);
-  UnicodeString LastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType);
+  UnicodeString GetLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType);
   virtual THierarchicalStorage * CreateConfigStorage();
   virtual THierarchicalStorage * CreateStorage(bool & SessionList);
   void TemporaryLogging(const UnicodeString & ALogFileName);
@@ -218,7 +219,7 @@ public:
   void SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value);
 
 protected:
-  TStorage FStorage;
+  mutable TStorage FStorage;
   TCriticalSection FCriticalSection;
 
 private:
@@ -494,7 +495,7 @@ private:
   rde::vector<TShortCut> FShortCuts;
 };
 
-//extern const UnicodeString OriginalPuttyRegistryStorageKey;
+extern const UnicodeString OriginalPuttyRegistryStorageKey;
 extern const UnicodeString KittyRegistryStorageKey;
 extern const UnicodeString OriginalPuttyExecutable;
 extern const UnicodeString KittyExecutable;

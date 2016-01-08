@@ -522,37 +522,33 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
-  Storage->SetAccessMode(smRead);
-  bool Result =
-    !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
-    !Storage->OpenSubKey(L"Banners", false) ||
-    !Storage->ValueExists(SessionKey) ||
-    (Storage->ReadString(SessionKey, L"") != BannerHash(Banner));
-
-  return Result;
+  {
+    Storage->SetAccessMode(smRead);
+    bool Result =
+      !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
+      !Storage->OpenSubKey(L"Banners", false) ||
+      !Storage->ValueExists(SessionKey) ||
+      (Storage->ReadString(SessionKey, L"") != BannerHash(Banner));
+    return Result;
+  }
 }
 
-void TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
+void TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
-  THierarchicalStorage * Storage = CreateConfigStorage();
-  try
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   {
-    Storage->AccessMode = smReadWrite;
+    Storage->SetAccessMode(smReadWrite);
 
-    if (Storage->OpenSubKey(ConfigurationSubKey, true) &&
+    if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
         Storage->OpenSubKey(L"Banners", true))
     {
       Storage->WriteString(SessionKey, BannerHash(Banner));
     }
   }
-  __finally
-  {
-    delete Storage;
-  }
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType)
+UnicodeString TConfiguration::FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType) const
 {
   return FORMAT(L"%s:%s", SiteKey.c_str(), FingerprintType.c_str());
 }
@@ -562,7 +558,7 @@ void TConfiguration::RememberLastFingerprint(const UnicodeString & SiteKey, cons
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   Storage->SetAccessMode(smReadWrite);
 
-  if (Storage->OpenSubKey(ConfigurationSubKey, true) &&
+  if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
       Storage->OpenSubKey(L"LastFingerprints", true))
   {
     UnicodeString FingerprintKey = FormatFingerprintKey(SiteKey, FingerprintType);
@@ -570,33 +566,20 @@ void TConfiguration::RememberLastFingerprint(const UnicodeString & SiteKey, cons
   }
 }
 
-UnicodeString TConfiguration::LastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType)
+UnicodeString TConfiguration::GetLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType)
 {
   UnicodeString Result;
 
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
-  Storage->AccessMode = smRead;
+  Storage->SetAccessMode(smRead);
 
-  if (Storage->OpenSubKey(ConfigurationSubKey, false) &&
+  if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
       Storage->OpenSubKey(L"LastFingerprints", false))
   {
     UnicodeString FingerprintKey = FormatFingerprintKey(SiteKey, FingerprintType);
     Result = Storage->ReadString(FingerprintKey, L"");
   }
   return Result;
-}
-
-void TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
-  const UnicodeString & Banner)
-{
-  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
-  Storage->SetAccessMode(smReadWrite);
-
-  if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
-      Storage->OpenSubKey(L"Banners", true))
-  {
-    Storage->WriteString(SessionKey, BannerHash(Banner));
-  }
 }
 
 void TConfiguration::Changed()
@@ -901,7 +884,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
 //    AddToList(BuildStr, DateStr, L" ");
 //    #endif
 
-    UnicodeString FullVersion = Version;
+    UnicodeString FullVersion = GetProductVersion();
 
     UnicodeString AReleaseType = GetReleaseType();
     if (DebugAlwaysTrue(!AReleaseType.IsEmpty()) &&
@@ -928,13 +911,12 @@ UnicodeString TConfiguration::GetFileVersion(const UnicodeString & FileName)
 {
   UnicodeString Result;
   void * FileInfo = CreateFileInfo(FileName);
-  try
-  {
-    Result = GetFileVersion(GetFixedFileInfo(FileInfo));
-  }
-  __finally
+  SCOPE_EXIT
   {
     FreeFileInfo(FileInfo);
+  };
+  {
+    Result = GetFileVersion(GetFixedFileInfo(FileInfo));
   }
   return Result;
 }
@@ -1204,7 +1186,7 @@ void TConfiguration::Saved()
   // nothing
 }
 
-TStorage TConfiguration::GetStorage()
+TStorage TConfiguration::GetStorage() const
 {
   if (FStorage == stDetect)
   {
@@ -1224,7 +1206,7 @@ TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
   TStoredSessionList * Sessions, UnicodeString & Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
-  ImportSessionList->DefaultSettings = Sessions->DefaultSettings;
+  ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
   UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
   UnicodeString FilezillaSiteManagerFile =
@@ -1234,18 +1216,18 @@ TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
   {
     ImportSessionList->ImportFromFilezilla(FilezillaSiteManagerFile);
 
-    if (ImportSessionList->Count > 0)
+    if (ImportSessionList->GetCount() > 0)
     {
       ImportSessionList->SelectSessionsToImport(Sessions, true);
     }
     else
     {
-      Error = FMTLOAD(FILEZILLA_NO_SITES, (FilezillaSiteManagerFile));
+      Error = FMTLOAD(FILEZILLA_NO_SITES, FilezillaSiteManagerFile.c_str());
     }
   }
   else
   {
-    Error = FMTLOAD(FILEZILLA_SITE_MANAGER_NOT_FOUND, (FilezillaSiteManagerFile));
+    Error = FMTLOAD(FILEZILLA_SITE_MANAGER_NOT_FOUND, FilezillaSiteManagerFile.c_str());
   }
 
   return ImportSessionList.release();
@@ -1257,7 +1239,7 @@ bool TConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
   {
     UnicodeString Error;
     std::unique_ptr<TStoredSessionList> Sesssions(SelectFilezillaSessionsForImport(Sessions, Error));
-    return (Sesssions->Count > 0);
+    return (Sesssions->GetCount() > 0);
   }
   catch (...)
   {
@@ -1589,7 +1571,7 @@ void TConfiguration::SetPermanentActionsLogFileName(const UnicodeString & Value)
 
 bool TConfiguration::GetPersistent() const
 {
-  return (Storage != stNul);
+  return (GetStorage() != stNul);
 }
 
 void TShortCuts::Add(const TShortCut & ShortCut)

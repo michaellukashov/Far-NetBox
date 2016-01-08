@@ -17,6 +17,13 @@ enum TKeyType
 
 TKeyType GetKeyType(const UnicodeString & AFileName);
 UnicodeString GetKeyTypeName(TKeyType KeyType);
+bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeString & Comment);
+struct TPrivateKey;
+TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const UnicodeString & Passphrase);
+void ChangeKeyComment(TPrivateKey * PrivateKey, const UnicodeString & Comment);
+void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
+  const UnicodeString & Passphrase, TPrivateKey * PrivateKey);
+void FreeKey(TPrivateKey * PrivateKey);
 
 int64_t ParseSize(const UnicodeString & SizeStr);
 
