@@ -963,7 +963,7 @@ UnicodeString TConfiguration::GetProductVersion() const
 
 UnicodeString TConfiguration::GetVersion()
 {
-  return GetFileVersion(FixedApplicationInfo);
+  return GetFileVersion(GetFixedApplicationInfo());
 }
 
 UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,

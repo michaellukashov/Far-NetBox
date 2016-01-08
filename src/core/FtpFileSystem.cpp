@@ -481,9 +481,9 @@ void TFTPFileSystem::Open()
       static_cast<int>(CodePage),
       static_cast<int>(Data->GetFtpForcePasvIp()),
       static_cast<int>(Data->GetFtpUseMlsd()),
-      FCertificate, FPrivateKey,
       static_cast<int>(Data->GetFtpDupFF()),
-      static_cast<int>(Data->GetFtpUndupFF()));
+      static_cast<int>(Data->GetFtpUndupFF()),
+      FCertificate, FPrivateKey);
 
     DebugAssert(FActive);
 
@@ -4362,7 +4362,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     if (!VerificationResult && (RequestResult != 0))
     {
       FTerminal->GetConfiguration()->RememberLastFingerprint(
-        FTerminal->GetSessionData()->GetSiteKey(), GetTlsFingerprintType(), FSessionInfo.CertificateFingerprint);
+        FTerminal->GetSessionData()->GetSiteKey(), TlsFingerprintType, FSessionInfo.CertificateFingerprint);
     }
 
     return true;

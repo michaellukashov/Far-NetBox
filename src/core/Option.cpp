@@ -13,17 +13,6 @@ TOptions::TOptions() :
 {
 }
 
-void TOptions::ParseParams(const UnicodeString & Params)
-{
-  UnicodeString Param;
-  UnicodeString ParamsLocal = Params;
-  // CutToken(Params, Param); // To remove program name
-  while (CutToken(ParamsLocal, Param))
-  {
-    Add(Param);
-  }
-}
-
 void TOptions::Add(const UnicodeString & Value)
 {
   if (!FNoMoreSwitches &&
@@ -160,17 +149,16 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
   return Found;
 }
 
-bool TOptions::FindSwitch(const UnicodeString Switch, UnicodeString & Value)
+bool TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value)
 {
   bool ValueSet;
   return FindSwitch(Switch, Value, ValueSet);
 }
 
-bool TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value)
+bool TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value, bool & ValueSet)
 {
   intptr_t ParamsStart;
   intptr_t ParamsCount;
-  bool ValueSet;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount, false, ValueSet);
 }
 
@@ -192,13 +180,13 @@ bool TOptions::FindSwitchCaseSensitive(const UnicodeString & Switch)
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount, true, ValueSet);
 }
 
-bool TOptions::FindSwitch(const UnicodeString Switch,
+bool TOptions::FindSwitch(const UnicodeString & Switch,
   TStrings * Params, int ParamsMax)
 {
   return DoFindSwitch(Switch, Params, ParamsMax, false);
 }
 //---------------------------------------------------------------------------
-bool TOptions::FindSwitchCaseSensitive(const UnicodeString Switch,
+bool TOptions::FindSwitchCaseSensitive(const UnicodeString & Switch,
   TStrings * Params, int ParamsMax)
 {
   return DoFindSwitch(Switch, Params, ParamsMax, true);
@@ -211,7 +199,7 @@ bool TOptions::DoFindSwitch(const UnicodeString & Switch,
   intptr_t ParamsStart;
   intptr_t ParamsCount;
   bool ValueSet;
-  bool Result = FindSwitch(Switch, Value, ParamsStart, ParamsCount);
+  bool Result = FindSwitch(Switch, Value, ParamsStart, ParamsCount, CaseSensitive, ValueSet);
   if (Result)
   {
     if ((ParamsMax >= 0) && (ParamsCount > ParamsMax))
@@ -304,7 +292,7 @@ bool TOptions::WasSwitchAdded(UnicodeString & Switch, wchar_t & SwitchMark) cons
     (FOptions.back().Type == otSwitch);
   if (Result)
   {
-    TOption & Option = FOptions.back();
+    const TOption & Option = FOptions.back();
     Switch = Option.Name;
     SwitchMark = Option.SwitchMark;
   }
