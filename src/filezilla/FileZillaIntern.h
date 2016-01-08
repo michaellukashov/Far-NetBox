@@ -4,7 +4,7 @@
 
 class TFileZillaIntf;
 
-class TFileZillaIntern
+class TFileZillaIntern : public TObject
 {
 NB_DECLARE_CLASS(TFileZillaIntern)
 NB_DISABLE_COPY(TFileZillaIntern)

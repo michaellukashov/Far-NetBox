@@ -1,65 +1,10 @@
-/*CAsyncSocketEx by Tim Kosse (Tim.Kosse@gmx.de)
-            Version 1.1 (2002-11-01)
---------------------------------------------------------
+// CAsyncSocketEx by Tim Kosse (Tim.Kosse@gmx.de)
+//            Version 1.1 (2002-11-01)
 
-Introduction:
--------------
-
-CAsyncSocketEx is a replacement for the MFC class CAsyncSocket.
-This class was written because CAsyncSocket is not the fastest WinSock
-wrapper and it's very hard to add new functionality to CAsyncSocket
-derived classes. This class offers the same functionality as CAsyncSocket.
-Also, CAsyncSocketEx offers some enhancements which were not possible with
-CAsyncSocket without some tricks.
-
-How do I use it?
-----------------
-Basically exactly like CAsyncSocket.
-To use CAsyncSocketEx, just replace all occurrences of CAsyncSocket in your
-code with CAsyncSocketEx, if you did not enhance CAsyncSocket yourself in
-any way, you won't have to change anything else in your code.
-
-Why is CAsyncSocketEx faster?
------------------------------
-
-CAsyncSocketEx is slightly faster when dispatching notification event messages.
-First have a look at the way CAsyncSocket works. For each thread that uses
-CAsyncSocket, a window is created. CAsyncSocket calls WSAAsyncSelect with
-the handle of that window. Until here, CAsyncSocketEx works the same way.
-But CAsyncSocket uses only one window message (WM_SOCKET_NOTIFY) for all
-sockets within one thread. When the window recieve WM_SOCKET_NOTIFY, wParam
-contains the socket handle and the window looks up an CAsyncSocket instance
-using a map. CAsyncSocketEx works differently. It's helper window uses a
-wide range of different window messages (WM_USER through 0xBFFF) and passes
-a different message to WSAAsyncSelect for each socket. When a message in
-the specified range is received, CAsyncSocketEx looks up the pointer to a
-CAsyncSocketEx instance in an Array using the index of message - WM_USER.
-As you can see, CAsyncSocketEx uses the helper window in a more efficient
-way, as it don't have to use the slow maps to lookup it's own instance.
-Still, speed increase is not very much, but it may be noticeable when using
-a lot of sockets at the same time.
-Please note that the changes do not affect the raw data throughput rate,
-CAsyncSocketEx only dispatches the notification messages faster.
-
-What else does CAsyncSocketEx offer?
-------------------------------------
-
-CAsyncSocketEx offers a flexible layer system. One example is the proxy layer.
-Just create an instance of the proxy layer, configure it and add it to the layer
-chain of your CAsyncSocketEx instance. After that, you can connect through
-proxies.
-Benefit: You don't have to change much to use the layer system.
-Another layer that is currently in development is the SSL layer to establish
-SSL encrypted connections.
-
-License
--------
-
-Feel free to use this class, as long as you don't claim that you wrote it
-and this copyright notice stays intact in the source files.
-If you use this class in commercial applications, please send a short message
-to tim.kosse@gmx.de
-*/
+// Feel free to use this class, as long as you don't claim that you wrote it
+// and this copyright notice stays intact in the source files.
+// If you use this class in commercial applications, please send a short message
+// to tim.kosse@gmx.de
 
 #include "stdafx.h"
 #include "AsyncSocketExLayer.h"
@@ -490,8 +435,6 @@ BOOL CAsyncSocketExLayer::ConnectNext( const SOCKADDR* lpSockAddr, int nSockAddr
 }
 
 //Gets the address of the peer socket to which the socket is connected
-#ifdef _AFX
-
 BOOL CAsyncSocketExLayer::GetPeerName( CString& rPeerAddress, UINT& rPeerPort )
 {
   return GetPeerNameNext(rPeerAddress, rPeerPort);
@@ -549,8 +492,6 @@ BOOL CAsyncSocketExLayer::GetPeerNameNext( CString& rPeerAddress, UINT& rPeerPor
   }
 }
 
-#endif //_AFX
-
 BOOL CAsyncSocketExLayer::GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrLen )
 {
   return GetPeerNameNext(lpSockAddr, lpSockAddrLen);
@@ -577,8 +518,6 @@ BOOL CAsyncSocketExLayer::GetPeerNameNext( SOCKADDR* lpSockAddr, int* lpSockAddr
 }
 
 //Gets the address of the sock socket to which the socket is connected
-#ifdef _AFX
-
 BOOL CAsyncSocketExLayer::GetSockName( CString& rSockAddress, UINT& rSockPort )
 {
   return GetSockNameNext(rSockAddress, rSockPort);
@@ -634,8 +573,6 @@ BOOL CAsyncSocketExLayer::GetSockNameNext( CString& rSockAddress, UINT& rSockPor
   }
 }
 
-#endif //_AFX
-
 BOOL CAsyncSocketExLayer::GetSockName( SOCKADDR* lpSockAddr, int* lpSockAddrLen )
 {
   return GetSockNameNext(lpSockAddr, lpSockAddrLen);
@@ -661,9 +598,7 @@ void CAsyncSocketExLayer::Init(CAsyncSocketExLayer *pPrevLayer, CAsyncSocketEx *
   m_pPrevLayer=pPrevLayer;
   m_pOwnerSocket=pOwnerSocket;
   m_pNextLayer=0;
-#ifndef NOSOCKETSTATES
   SetLayerState(pOwnerSocket->GetState());
-#endif //NOSOCKETSTATES
 }
 
 int CAsyncSocketExLayer::GetLayerState()
@@ -905,9 +840,7 @@ BOOL CAsyncSocketExLayer::AcceptNext( CAsyncSocketEx& rConnectedSocket, SOCKADDR
     rConnectedSocket.m_SocketData.hSocket=hTemp;
     rConnectedSocket.AttachHandle(hTemp);
     rConnectedSocket.SetFamily(GetFamily());
-#ifndef NOSOCKETSTATES
     rConnectedSocket.SetState(connected);
-#endif //NOSOCKETSTATES
   }
   return TRUE;
 }
@@ -983,7 +916,6 @@ bool CAsyncSocketExLayer::TryNextProtocol()
       continue;
     }
 
-#ifndef NOLAYERS
     if (m_pOwnerSocket->m_pFirstLayer)
     {
       if (WSAAsyncSelect(m_pOwnerSocket->m_SocketData.hSocket, m_pOwnerSocket->GetHelperWindowHandle(), m_pOwnerSocket->m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE))
@@ -994,7 +926,6 @@ bool CAsyncSocketExLayer::TryNextProtocol()
         continue;
       }
     }
-#endif //NOLAYERS
 
     m_pOwnerSocket->m_SocketData.nFamily = m_nextAddr->ai_family;
     m_nFamily = m_nextAddr->ai_family;
@@ -1036,10 +967,18 @@ bool CAsyncSocketExLayer::TryNextProtocol()
     return TRUE;
 }
 
-void CAsyncSocketExLayer::LogSocketMessage(int nMessageType, LPCTSTR pMsgFormat)
+void CAsyncSocketExLayer::LogSocketMessageRaw(int nMessageType, LPCTSTR pMsg)
 {
   if (m_pPrevLayer)
-    m_pPrevLayer->LogSocketMessage(nMessageType, pMsgFormat);
+    m_pPrevLayer->LogSocketMessageRaw(nMessageType, pMsg);
   else
-    m_pOwnerSocket->LogSocketMessage(nMessageType, pMsgFormat);
+    m_pOwnerSocket->LogSocketMessageRaw(nMessageType, pMsg);
+}
+
+bool CAsyncSocketExLayer::LoggingSocketMessage(int nMessageType)
+{
+  if (m_pPrevLayer)
+    return m_pPrevLayer->LoggingSocketMessage(nMessageType);
+  else
+    return m_pOwnerSocket->LoggingSocketMessage(nMessageType);
 }

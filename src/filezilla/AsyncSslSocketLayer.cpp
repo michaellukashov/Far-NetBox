@@ -1,125 +1,16 @@
-/*           CAsyncSslSocketLayer by Tim Kosse
-          mailto: tim.kosse@filezilla-project.org)
-                 Version 2.0 (2005-02-27)
--------------------------------------------------------------
+// CAsyncSslSocketLayer by Tim Kosse (Tim.Kosse@gmx.de)
+//            Version 2.0 (2005-02-27)
 
-Introduction
-------------
-
-CAsyncSslSocketLayer is a layer class for CAsyncSocketEx which allows you to establish SSL secured
-connections. Support for both client and server side is provided.
-
-How to use
-----------
-
-Using this class is really simple. In the easiest case, just add an instance of
-CAsyncSslSocketLayer to your socket and call InitClientSsl after creation of the socket.
-
-This class only has a couple of public functions:
-- InitSSLConnection(bool clientMode);
-  This functions establishes an SSL connection. The clientMode parameter specifies whether the SSL connection 
-  is in server or in client mode.
-  Most likely you want to call this function right after calling Create for the socket.
-  But sometimes, you'll need to call this function later. One example is for an FTP connection
-  with explicit SSL: In this case you would have to call InitSSLConnection after receiving the reply
-  to an 'AUTH SSL' command.
-- Is UsingSSL();
-  Returns true if you've previously called InitClientSsl()
-- SetNotifyReply(SetNotifyReply(int nID, int nCode, int result);
-  You can call this function only after receiving a layerspecific callback with the SSL_VERIFY_CERT
-  id. Set result to 1 if you trust the certificate and 0 if you don't trust it.
-  nID has to be the priv_data element of the t_SslCertData structure and nCode has to be SSL_VERIFY_CERT.
-
-This layer sends some layerspecific notifications to your socket instance, you can handle them in
-OnLayerCallback of your socket class.
-Valid notification IDs are:
-- SSL_INFO 0
-  There are two possible values for param2:
-  SSL_INFO_ESTABLISHED 0 - You'll get this notification if the SSL negotiation was successful
-  SSL_INFO_SHUTDOWNCOMPLETE 1 - You'll get this notification if the SSL connection has been shut
-                                  down sucessfully. See below for details.
-- SSL_FAILURE 1
-  This notification is sent if the SSL connection could not be established or if an existing
-  connection failed. Valid values for param2 are:
-  - SSL_FAILURE_UNKNOWN 0 - Details may have been sent with a SSL_VERBOSE_* notification.
-  - SSL_FAILURE_ESTABLISH 1 - Problem during SSL negotiation
-  - SSL_FAILURE_INITSSL 4
-  - SSL_FAILURE_VERIFYCERT 8 - The remote SSL certificate was invalid
-  - SSL_FAILURE_CERTREJECTED 16 - The remote SSL certificate was rejected by user
-- SSL_VERBOSE_WARNING 3
-  SSL_VERBOSE_INFO 4
-  This two notifications contain some additional information. The value given by param2 is a
-  pointer to a null-terminated char string (char *) with some useful information.
-- SSL_VERIFY_CERT 2
-  This notification is sent each time a remote certificate has to be verified.
-  param2 is a pointer to a t_SslCertData structure which contains some information
-  about the remote certificate.
-  You have to set the reply to this message using the SetNotifyReply function.
-
-Be careful with closing the connection after sending data, not all data may have been sent already.
-Before closing the connection, you should call Shutdown() and wait for the SSL_INFO_SHUTDOWNCOMPLETE
-notification. This assures that all encrypted data really has been sent.
-
-License
--------
-
-Feel free to use this class, as long as you don't claim that you wrote it
-and this copyright notice stays intact in the source files.
-If you want to use this class in a commercial application, a short message
-to tim.kosse@filezilla-project.org would be appreciated but is not required.
-
-This product includes software developed by the OpenSSL Project
-for use in the OpenSSL Toolkit. (http://www.openssl.org/)
-
-Version history
----------------
-
-Version 2.0:
-- Add server support
-- a lot of bug fixes
-
-*/
+// Feel free to use this class, as long as you don't claim that you wrote it
+// and this copyright notice stays intact in the source files.
+// If you use this class in commercial applications, please send a short message
+// to tim.kosse@gmx.de
 
 #include "stdafx.h"
 #include "AsyncSslSocketLayer.h"
 
 #include <openssl/x509v3.h>
 #include <openssl/err.h>
-
-// Critical section wrapper class
-#ifndef CCRITICALSECTIONWRAPPERINCLUDED
-class CCriticalSectionWrapper
-{
-public:
-  CCriticalSectionWrapper()
-  {
-    m_bInitialized = TRUE;
-    InitializeCriticalSection(&m_criticalSection);
-  }
-
-  ~CCriticalSectionWrapper()
-  {
-    if (m_bInitialized)
-      DeleteCriticalSection(&m_criticalSection);
-    m_bInitialized = FALSE;
-  }
-
-  void Lock()
-  {
-    if (m_bInitialized)
-      EnterCriticalSection(&m_criticalSection);
-  }
-  void Unlock()
-  {
-    if (m_bInitialized)
-      LeaveCriticalSection(&m_criticalSection);
-  }
-protected:
-  CRITICAL_SECTION m_criticalSection;
-  BOOL m_bInitialized;
-};
-#define CCRITICALSECTIONWRAPPERINCLUDED
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CAsyncSslSocketLayer
@@ -159,10 +50,12 @@ CAsyncSslSocketLayer::CAsyncSslSocketLayer()
   m_mayTriggerWriteUp = true;
 
   m_onCloseCalled = false;
-  m_pKeyPassword = 0;
   m_Main = NULL;
   m_sessionid = NULL;
   m_sessionreuse = true;
+
+  FCertificate = NULL;
+  FPrivateKey = NULL;
 }
 
 CAsyncSslSocketLayer::~CAsyncSslSocketLayer()
@@ -185,7 +78,6 @@ int CAsyncSslSocketLayer::InitSSL()
     SSL_load_error_strings();
     if (!SSL_library_init())
     {
-      m_sCriticalSection.Unlock();
       return SSL_FAILURE_INITSSL;
     }
   }
@@ -276,7 +168,7 @@ void CAsyncSslSocketLayer::OnReceive(int nErrorCode)
           nb_free(m_pRetrySendBuffer);
           m_pRetrySendBuffer = 0;
 
-          SetLastError(WSAECONNABORTED);
+          ::SetLastError(WSAECONNABORTED);
           TriggerEvent(FD_CLOSE, 0, TRUE);
           return;
         }
@@ -360,9 +252,9 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
     }
 
     //Send the data waiting in the network bio
-    char buffer[16384];
+    char buffer[32 * 1024];
     size_t len = BIO_ctrl_pending(m_nbio);
-    int numread = BIO_read(m_nbio, buffer, len);
+    int numread = BIO_read(m_nbio, buffer, std::min(len, sizeof(buffer)));
     if (numread <= 0)
       m_mayTriggerWrite = true;
     while (numread > 0)
@@ -434,7 +326,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
           nb_free(m_pRetrySendBuffer);
           m_pRetrySendBuffer = 0;
 
-          SetLastError(WSAECONNABORTED);
+          ::SetLastError(WSAECONNABORTED);
           TriggerEvent(FD_CLOSE, 0, TRUE);
           return;
         }
@@ -468,7 +360,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
     if (m_bBlocking || m_pRetrySendBuffer)
     {
       m_mayTriggerWriteUp = true;
-      SetLastError(WSAEWOULDBLOCK);
+      ::SetLastError(WSAEWOULDBLOCK);
       return SOCKET_ERROR;
     }
     if (m_nNetworkError)
@@ -478,13 +370,13 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
     }
     if (m_nShutDown)
     {
-      SetLastError(WSAESHUTDOWN);
+      ::SetLastError(WSAESHUTDOWN);
       return SOCKET_ERROR;
     }
     if (!m_bSslEstablished)
     {
       m_mayTriggerWriteUp = true;
-      SetLastError(WSAEWOULDBLOCK);
+      ::SetLastError(WSAEWOULDBLOCK);
       return SOCKET_ERROR;
     }
     if (!nBufLen)
@@ -505,7 +397,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
     {
       m_mayTriggerWriteUp = true;
       TriggerEvents();
-      SetLastError(WSAEWOULDBLOCK);
+      ::SetLastError(WSAEWOULDBLOCK);
     }
 
     m_pRetrySendBuffer = static_cast<char *>(nb_calloc(1, nBufLen));
@@ -542,7 +434,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
         nb_free(m_pRetrySendBuffer);
         m_pRetrySendBuffer = 0;
 
-        SetLastError(WSAECONNABORTED);
+        ::SetLastError(WSAECONNABORTED);
       }
       return SOCKET_ERROR;
     }
@@ -565,7 +457,7 @@ int CAsyncSslSocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
     if (m_bBlocking)
     {
       m_mayTriggerReadUp = true;
-      SetLastError(WSAEWOULDBLOCK);
+      ::SetLastError(WSAEWOULDBLOCK);
       return SOCKET_ERROR;
     }
     if (m_nNetworkError)
@@ -582,7 +474,7 @@ int CAsyncSslSocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
     }
     if (m_nShutDown)
     {
-      SetLastError(WSAESHUTDOWN);
+      ::SetLastError(WSAESHUTDOWN);
       return SOCKET_ERROR;
     }
     if (!nBufLen)
@@ -631,7 +523,7 @@ int CAsyncSslSocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
       }
       m_mayTriggerReadUp = true;
       TriggerEvents();
-      SetLastError(WSAEWOULDBLOCK);
+      ::SetLastError(WSAEWOULDBLOCK);
       return SOCKET_ERROR;
     }
     int numread = BIO_read(m_sslbio, lpBuf, nBufLen);
@@ -659,7 +551,7 @@ int CAsyncSslSocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
       }
       m_mayTriggerReadUp = true;
       TriggerEvents();
-      SetLastError(WSAEWOULDBLOCK);
+      ::SetLastError(WSAEWOULDBLOCK);
       return SOCKET_ERROR;
     }
     if (numread < 0)
@@ -696,7 +588,7 @@ int CAsyncSslSocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
         }
         m_mayTriggerReadUp = true;
         TriggerEvents();
-        SetLastError(WSAEWOULDBLOCK);
+        ::SetLastError(WSAEWOULDBLOCK);
         return SOCKET_ERROR;
       }
     }
@@ -791,6 +683,7 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
     {
       USES_CONVERSION;
       SSL_CTX_set_verify(m_ssl_ctx, SSL_VERIFY_PEER, verify_callback);
+      SSL_CTX_set_client_cert_cb(m_ssl_ctx, ProvideClientCert);
       CFileStatus Dummy;
       if (CFile::GetStatus((LPCTSTR)m_CertStorage, Dummy))
       {
@@ -807,6 +700,20 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
     return SSL_FAILURE_INITSSL;
   }
 
+#ifdef _DEBUG
+  if ((main == NULL) && LoggingSocketMessage(FZ_LOG_INFO))
+  {
+    USES_CONVERSION;
+    LogSocketMessageRaw(FZ_LOG_INFO, L"Supported ciphersuites:");
+    STACK_OF(SSL_CIPHER) * ciphers = SSL_get_ciphers(m_ssl);
+    for (int i = 0; i < sk_SSL_CIPHER_num(ciphers); i++)
+    {
+      SSL_CIPHER * cipher = sk_SSL_CIPHER_value(ciphers, i);
+      LogSocketMessageRaw(FZ_LOG_INFO, A2CT(cipher->name));
+    }
+  }
+#endif
+
   //Add current instance to list of active instances
   t_SslLayerList *tmp = m_pSslLayerList;
   m_pSslLayerList = new t_SslLayerList;
@@ -818,7 +725,7 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
 
   //Create bios
   m_sslbio = BIO_new(BIO_f_ssl());
-  BIO_new_bio_pair(&m_ibio, 4096, &m_nbio, 4096);
+  BIO_new_bio_pair(&m_ibio, 32 * 1024, &m_nbio, 32 * 1024);
 
   if (!m_sslbio || !m_nbio || !m_ibio)
   {
@@ -840,25 +747,22 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
 
   //Init SSL connection
   void *ssl_sessionid = NULL;
-  {
-    USES_CONVERSION;
-    m_Main = main;
-    m_sessionreuse = sessionreuse;
-  }
+  m_Main = main;
+  m_sessionreuse = sessionreuse;
   if ((m_Main != NULL) && m_sessionreuse)
   {
     if (m_Main->m_sessionid != NULL)
     {
       if (!SSL_set_session(m_ssl, m_Main->m_sessionid))
       {
-        LogSocketMessage(FZ_LOG_INFO, _T("SSL_set_session failed"));
+        LogSocketMessageRaw(FZ_LOG_INFO, L"SSL_set_session failed");
         return SSL_FAILURE_INITSSL;
       }
-      LogSocketMessage(FZ_LOG_INFO, _T("Trying reuse main TLS session ID"));
+      LogSocketMessageRaw(FZ_LOG_INFO, L"Trying reuse main TLS session ID");
     }
     else
     {
-      LogSocketMessage(FZ_LOG_INFO, _T("Main TLS session ID was not reused previously, not trying again"));
+      LogSocketMessageRaw(FZ_LOG_INFO, L"Main TLS session ID was not reused previously, not trying again");
       SSL_set_session(m_ssl, NULL);
     }
   }
@@ -947,16 +851,13 @@ void CAsyncSslSocketLayer::ResetSslSession()
       if (iter->second <= 1)
       {
         SSL_CTX_free(m_ssl_ctx);
-        m_contextRefCount.erase(m_ssl_ctx);
+        m_contextRefCount.erase(iter);
       }
       else
         iter->second--;
     }
     m_ssl_ctx = 0;
   }
-
-  nb_free(m_pKeyPassword);
-  m_pKeyPassword = 0;
 
   m_ssl = 0;
   t_SslLayerList *cur = m_pSslLayerList;
@@ -1015,7 +916,7 @@ BOOL CAsyncSslSocketLayer::ShutDown(int nHow /*=sends*/)
     if (!m_bSslEstablished)
     {
       m_mayTriggerWriteUp = true;
-      SetLastError(WSAEWOULDBLOCK);
+      ::SetLastError(WSAEWOULDBLOCK);
       return false;
     }
     if (!m_nShutDown)
@@ -1123,7 +1024,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
   if (!cur)
   {
     m_sCriticalSection.Unlock();
-    MessageBox(0, _T("Can't lookup TLS session!"), _T("Critical error"), MB_ICONEXCLAMATION);
+    MessageBox(0, L"Can't lookup TLS session!", L"Critical error", MB_ICONEXCLAMATION);
     return;
   }
   else
@@ -1151,23 +1052,23 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
         {
           if (SSL_session_reused(pLayer->m_ssl))
           {
-            pLayer->LogSocketMessage(FZ_LOG_INFO, _T("Session ID reused"));
+            pLayer->LogSocketMessageRaw(FZ_LOG_PROGRESS, L"Session ID reused");
           }
           else
           {
             if ((pLayer->m_Main != NULL) && (pLayer->m_Main->m_sessionid != NULL))
             {
-              pLayer->LogSocketMessage(FZ_LOG_INFO, _T("Main TLS session ID not reused, will not try again"));
+              pLayer->LogSocketMessageRaw(FZ_LOG_INFO, L"Main TLS session ID not reused, will not try again");
               SSL_SESSION_free(pLayer->m_Main->m_sessionid);
               pLayer->m_Main->m_sessionid = NULL;
             }
           }
-          pLayer->LogSocketMessage(FZ_LOG_DEBUG, _T("Saving session ID"));
+          pLayer->LogSocketMessageRaw(FZ_LOG_DEBUG, L"Saving session ID");
         }
         else
         {
           SSL_SESSION_free(pLayer->m_sessionid);
-          pLayer->LogSocketMessage(FZ_LOG_INFO, _T("Session ID changed"));
+          pLayer->LogSocketMessageRaw(FZ_LOG_INFO, L"Session ID changed");
         }
         pLayer->m_sessionid = sessionid;
       }
@@ -1199,7 +1100,9 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
       sprintf(buffer + strlen(buffer), " [%s]", debug);
       OPENSSL_free(debug);
     }
-    pLayer->DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_VERBOSE_INFO, 0, buffer);
+    USES_CONVERSION;
+    pLayer->LogSocketMessageRaw(FZ_LOG_INFO, A2T(buffer));
+    nb_free(buffer);
   }
   else if (where & SSL_CB_ALERT)
   {
@@ -1211,12 +1114,13 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     {
       if (strcmp(desc, "close notify"))
       {
-        char *buffer = static_cast<char *>(nb_calloc(1, 4096));
+        char *buffer = static_cast<char *>(nb_calloc(1, 4 * 1024));
         sprintf(buffer, "SSL3 alert %s: %s: %s",
             str,
             SSL_alert_type_string_long(ret),
             desc);
-        pLayer->DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_VERBOSE_WARNING, 0, buffer);
+        pLayer->LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+        nb_free(buffer);
       }
     }
   }
@@ -1225,11 +1129,12 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
   {
     if (ret == 0)
     {
-      char *buffer = static_cast<char *>(nb_calloc(1, 4096));
+      char *buffer = static_cast<char *>(nb_calloc(1, 4 * 1024));
       sprintf(buffer, "%s: failed in %s",
           str,
           SSL_state_string_long(s));
-      pLayer->DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_VERBOSE_WARNING, 0, buffer);
+      pLayer->LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+      nb_free(buffer);
       if (!pLayer->m_bFailureSent)
       {
         pLayer->m_bFailureSent=TRUE;
@@ -1241,11 +1146,12 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
       int error = SSL_get_error(s,ret);
       if (error != SSL_ERROR_WANT_READ && error != SSL_ERROR_WANT_WRITE)
       {
-        char *buffer = static_cast<char *>(nb_calloc(1, 4096));
+        char *buffer = static_cast<char *>(nb_calloc(1, 4 * 1024));
         sprintf(buffer, "%s: error in %s",
             str,
             SSL_state_string_long(s));
-        pLayer->DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_VERBOSE_WARNING, 0, buffer);
+        pLayer->LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+        nb_free(buffer);
         if (!pLayer->m_bFailureSent)
         {
           pLayer->m_bFailureSent=TRUE;
@@ -1352,7 +1258,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
   X509 *pX509=SSL_get_peer_certificate(m_ssl);
   if (!pX509)
   {
-    Error = _T("Cannot get certificate");
+    Error = L"Cannot get certificate";
     return FALSE;
   }
 
@@ -1434,18 +1340,18 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
         if ( !OBJ_nid2sn(OBJ_obj2nid(pObject)) )
         {
           TCHAR tmp[20];
-          _stprintf(tmp, _T("%d"), OBJ_obj2nid(pObject));
+          _stprintf(tmp, L"%d", OBJ_obj2nid(pObject));
           int maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
           _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), tmp, maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
-          _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), _T("="), maxlen);
+          _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), L"=", maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
           _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), str, maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
-          _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), _T(";"), maxlen);
+          _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), L";", maxlen);
         }
         else
         {
@@ -1455,13 +1361,13 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
           _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), A2CT(OBJ_nid2sn(OBJ_obj2nid(pObject))), maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
-          _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), _T("="), maxlen);
+          _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), L"=", maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
           _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), str, maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
-          _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), _T(";"), maxlen);
+          _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), L";", maxlen);
         }
         break;
       }
@@ -1543,18 +1449,18 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
         if ( !OBJ_nid2sn(OBJ_obj2nid(pObject)) )
         {
           TCHAR tmp[20];
-          _stprintf(tmp, _T("%d"), OBJ_obj2nid(pObject));
+          _stprintf(tmp, L"%d", OBJ_obj2nid(pObject));
           int maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
           _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), tmp, maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
-          _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), _T("="), maxlen);
+          _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), L"=", maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
           _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), str, maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
-          _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), _T(";"), maxlen);
+          _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), L";", maxlen);
         }
         else
         {
@@ -1564,13 +1470,13 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
           _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), A2CT(OBJ_nid2sn(OBJ_obj2nid(pObject))), maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
-          _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), _T("="), maxlen);
+          _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), L"=", maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
           _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), str, maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
-          _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), _T(";"), maxlen);
+          _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), L";", maxlen);
         }
         break;
       }
@@ -1584,14 +1490,14 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
   if (!pTime)
   {
     X509_free(pX509);
-    Error = _T("Cannot get start time");
+    Error = L"Cannot get start time";
     return FALSE;
   }
 
   if (!AsnTimeToValidTime(pTime, SslCertData.validFrom))
   {
     X509_free(pX509);
-    Error = _T("Invalid start time");
+    Error = L"Invalid start time";
     return FALSE;
   }
 
@@ -1600,14 +1506,14 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
   if (!pTime)
   {
     X509_free(pX509);
-    Error = _T("Cannot get end time");
+    Error = L"Cannot get end time";
     return FALSE;
   }
 
   if (!AsnTimeToValidTime(pTime, SslCertData.validUntil))
   {
     X509_free(pX509);
-    Error = _T("Invalid end time");
+    Error = L"Invalid end time";
     return FALSE;
   }
 
@@ -1726,7 +1632,7 @@ void CAsyncSslSocketLayer::PrintSessionInfo()
      * otherwise we should print their lengths too */
   }
 
-  char *buffer = static_cast<char *>(nb_calloc(1, 4096));
+  char *buffer = static_cast<char *>(nb_calloc(1, 4 * 1024));
   // see also ne_ssl_get_version and ne_ssl_get_cipher
   m_TlsVersionStr = SSL_get_version(m_ssl);
   sprintf(buffer, "%s: %s, %s",
@@ -1738,7 +1644,9 @@ void CAsyncSslSocketLayer::PrintSessionInfo()
   sprintf(buffer, "Using %s, cipher %s",
       m_TlsVersionStr.c_str(),
       m_CipherName.c_str());
-  DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_VERBOSE_WARNING, 0, buffer);
+  USES_CONVERSION;
+  LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+  nb_free(buffer);
 }
 
 void CAsyncSslSocketLayer::OnConnect(int nErrorCode)
@@ -1746,6 +1654,34 @@ void CAsyncSslSocketLayer::OnConnect(int nErrorCode)
   if (m_bUseSSL && nErrorCode)
     TriggerEvent(FD_WRITE, 0);
   TriggerEvent(FD_CONNECT, nErrorCode, TRUE);
+}
+
+CAsyncSslSocketLayer * CAsyncSslSocketLayer::LookupLayer(SSL * Ssl)
+{
+  CAsyncSslSocketLayer * Result = NULL;
+  m_sCriticalSection.Lock();
+  t_SslLayerList * Cur = m_pSslLayerList;
+  while (Cur != NULL)
+  {
+    if (Cur->pLayer->m_ssl == Ssl)
+    {
+      break;
+    }
+    Cur = Cur->pNext;
+  }
+  m_sCriticalSection.Unlock();
+
+  if (Cur == NULL)
+  {
+    MessageBox(0, L"Can't lookup TLS session!", L"Critical error", MB_ICONEXCLAMATION);
+    Result = NULL;
+  }
+  else
+  {
+    Result = Cur->pLayer;
+  }
+
+  return Result;
 }
 
 int CAsyncSslSocketLayer::verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
@@ -1764,25 +1700,13 @@ int CAsyncSslSocketLayer::verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
      */
     ssl = (SSL *)X509_STORE_CTX_get_ex_data(ctx, SSL_get_ex_data_X509_STORE_CTX_idx());
 
-  // Lookup CAsyncSslSocketLayer instance
-  CAsyncSslSocketLayer *pLayer = 0;
-  m_sCriticalSection.Lock();
-  t_SslLayerList *cur = m_pSslLayerList;
-  while (cur)
-  {
-    if (cur->pLayer->m_ssl == ssl)
-      break;
-    cur = cur->pNext;
-  }
-  if (!cur)
-  {
-    m_sCriticalSection.Unlock();
-    MessageBox(0, _T("Can't lookup TLS session!"), _T("Critical error"), MB_ICONEXCLAMATION);
-    return 1;
-  }
-  else
-    pLayer = cur->pLayer;
-  m_sCriticalSection.Unlock();
+
+    CAsyncSslSocketLayer * pLayer = LookupLayer(ssl);
+
+    if (pLayer == NULL)
+    {
+      return 1;
+    }
 
     /*
      * Catch a too long certificate chain. The depth limit set using
@@ -1808,6 +1732,45 @@ int CAsyncSslSocketLayer::verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
     }
   }
   return 1;
+}
+
+int CAsyncSslSocketLayer::ProvideClientCert(
+  SSL * Ssl, X509 ** Certificate, EVP_PKEY ** PrivateKey)
+{
+  CAsyncSslSocketLayer * Layer = LookupLayer(Ssl);
+
+  USES_CONVERSION;
+  CString Message;
+  Message.LoadString(NEED_CLIENT_CERTIFICATE);
+  char * Buffer = static_cast<char *>(nb_calloc(1, Message.GetLength() + 1));
+  strcpy(Buffer, T2A(Message));
+
+  int Level;
+  int Result;
+  if ((Layer->FCertificate == NULL) || (Layer->FPrivateKey == NULL))
+  {
+    Level = FZ_LOG_WARNING;
+    Result = 0;
+  }
+  else
+  {
+    Level = FZ_LOG_INFO;
+    *Certificate = X509_dup(Layer->FCertificate);
+    CRYPTO_add(&Layer->FPrivateKey->references, 1, CRYPTO_LOCK_EVP_PKEY);
+    *PrivateKey = Layer->FPrivateKey;
+    Result = 1;
+  }
+
+  Layer->LogSocketMessageRaw(Level, A2T(Buffer));
+  nb_free(Buffer);
+
+  return Result;
+}
+
+void CAsyncSslSocketLayer::SetClientCertificate(X509 * Certificate, EVP_PKEY * PrivateKey)
+{
+  FCertificate = Certificate;
+  FPrivateKey = PrivateKey;
 }
 
 BOOL CAsyncSslSocketLayer::SetCertStorage(CString file)
@@ -1840,7 +1803,9 @@ void CAsyncSslSocketLayer::PrintLastErrorMsg()
     char *buffer = static_cast<char *>(nb_calloc(1, 512));
     ERR_error_string(err, buffer);
     err = ERR_get_error();
-    DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_VERBOSE_WARNING, 0, buffer);
+    USES_CONVERSION;
+    LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+    nb_free(buffer);
   }
 }
 
@@ -1889,23 +1854,6 @@ void CAsyncSslSocketLayer::TriggerEvents()
       TriggerEvent(FD_CLOSE, 0, TRUE);
     }
   }
-}
-
-int CAsyncSslSocketLayer::pem_passwd_cb(char *buf, int size, int rwflag, void *userdata)
-{
-  CAsyncSslSocketLayer* pThis = (CAsyncSslSocketLayer*)userdata;
-
-  if (!pThis || !pThis->m_pKeyPassword)
-    return 0;
-
-  int len = strlen(pThis->m_pKeyPassword);
-  if (len >= size)
-    len = size - 1;
-
-  memcpy(buf, pThis->m_pKeyPassword, len);
-  buf[len] = 0;
-
-  return len;
 }
 
 

@@ -1,4 +1,7 @@
+
 #pragma once
+
+#include "FileZillaIntern.h"
 
 class CApiLog : public TObject
 {
@@ -7,22 +10,20 @@ public:
   CApiLog();
   virtual ~CApiLog();
 
-  BOOL InitLog(HWND hTargerWnd, int nLogMessage);
-  BOOL InitLog(CApiLog *pParent);
+  void InitIntern(TFileZillaIntern * Intern);
+  TFileZillaIntern * GetIntern();
+
+  bool LoggingMessageType(int nMessageType) const;
 
   void LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const;
   void LogMessageRaw(int nMessageType, LPCTSTR pMsg) const;
   void LogMessage(int nMessageType, UINT nFormatID, ...) const;
-  void LogMessage(CString SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsgFormat, ...) const;
-  void LogMessageRaw(CString SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsg) const;
 
-  BOOL SetDebugLevel(int nLogLevel);
-  int GetDebugLevel();
+  CString GetOption(int OptionID) const;
+  int GetOptionVal(int OptionID) const;
+
 protected:
-  virtual BOOL PostMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) const;
   void SendLogMessage(int nMessageType, LPCTSTR pMsg) const;
-  int m_nDebugLevel;
-  CApiLog *m_pApiLogParent; //Pointer to topmost parent
-  int m_nLogMessage;
-  HWND m_hTargetWnd;
+
+  TFileZillaIntern * FIntern;
 };

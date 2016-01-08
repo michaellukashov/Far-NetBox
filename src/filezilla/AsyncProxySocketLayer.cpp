@@ -1,122 +1,15 @@
-/*CAsyncProxySocketLayer by Tim Kosse (Tim.Kosse@gmx.de)
-                 Version 1.6 (2003-03-26)
---------------------------------------------------------
+// CAsyncProxySocketLayer by Tim Kosse (Tim.Kosse@gmx.de)
+//                 Version 1.6 (2003-03-26)
 
-Introduction:
--------------
-
-This class is layer class for CAsyncSocketEx. With this class you
-can connect through SOCKS4/5 and HTTP 1.1 proxies. This class works
-as semi-transparent layer between CAsyncSocketEx and the actual socket.
-This class is used in FileZilla, a powerful open-source FTP client.
-It can be found under http://sourceforge.net/projects/filezilla
-For more information about SOCKS4/5 goto
-http://www.socks.nec.com/socksprot.html
-For more information about HTTP 1.1 goto http://www.rfc-editor.org
-and search for RFC2616
-
-How to use?
------------
-
-You don't have to change much in you already existing code to use
-CAsyncProxySocketLayer.
-To use it, create an instance of CAsyncProxySocketLayer, call SetProxy
-and attach it to a CAsyncSocketEx instance.
-You have to process OnLayerCallback in you CAsyncSocketEx instance as it will
-receive all layer nofications.
-The following notifications are sent:
-
-//Error codes
-PROXYERROR_NOERROR 0
-PROXYERROR_NOCONN 1 //Can't connect to proxy server, use GetLastError for more information
-PROXYERROR_REQUESTFAILED 2 //Request failed, can't send data
-PROXYERROR_AUTHREQUIRED 3 //Authentication required
-PROXYERROR_AUTHTYPEUNKNOWN 4 //Authtype unknown or not supported
-PROXYERROR_AUTHFAILED 5  //Authentication failed
-PROXYERROR_AUTHNOLOGON 6
-PROXYERROR_CANTRESOLVEHOST 7
-
-//Status messages
-PROXYSTATUS_LISTENSOCKETCREATED 8 //Called when a listen socket was created successfully. Unlike the normal listen function,
-                //a socksified socket has to connect to the proxy to negotiate the details with the server
-                //on which the listen socket will be created
-                //The two parameters will contain the ip and port of the listen socket on the server.
-
-If you want to use CAsyncProxySocketLayer to create a listen socket, you
-have to use this overloaded function:
-BOOL PrepareListen(unsigned long serverIp);
-serverIP is the IP of the server you are already connected
-through the SOCKS proxy. You can't use listen sockets over a
-SOCKS proxy without a primary connection. Listen sockets are only
-supported by SOCKS proxies, this won't work with HTTP proxies.
-When the listen socket is created successfully, the PROXYSTATUS_LISTENSOCKETCREATED
-notification is sent. The parameters  will tell you the ip and the port of the listen socket.
-After it you have to handle the OnAccept message and accept the
-connection.
-Be careful when calling Accept: rConnected socket will NOT be filled! Instead use the instance which created the
-listen socket, it will handle the data connection.
-If you want to accept more than one connection, you have to create a listing socket for each of them!
-
-Description of important functions and their parameters:
---------------------------------------------------------
-
-void SetProxy(int nProxyType);
-void SetProxy(int nProxyType, const char * pProxyHost, int nProxyPort);
-void SetProxy(int nProxyType, const char * pProxyHost, int nProxyPort, const char *pProxyUser, const char * pProxyPass);
-
-Call one of this functions to set the proxy type.
-Parameters:
-- nProxyType specifies the Proxy Type.
-- ProxyHost and nProxyPort specify the address of the proxy
-- ProxyUser and ProxyPass are only available for SOCKS5 proxies.
-
-supported proxy types:
-PROXYTYPE_NOPROXY
-PROXYTYPE_SOCKS4
-PROXYTYPE_SOCKS4A
-PROXYTYPE_SOCKS5
-PROXYTYPE_HTTP11
-
-There are also some other functions:
-
-GetProxyPeerName
-Like GetPeerName of CAsyncSocket, but returns the address of the
-server connected through the proxy.  If using proxies, GetPeerName
-only returns the address of the proxy.
-
-int GetProxyType();
-Returns the used proxy
-
-const int GetLastProxyError() const;
-Returns the last proxy error
-
-License
--------
-
-Feel free to use this class, as long as you don't claim that you wrote it
-and this copyright notice stays intact in the source files.
-If you use this class in commercial applications, please send a short message
-to tim.kosse@gmx.de
-
-Version history
----------------
-
-- 1.6 got rid of MFC
-- 1.5 released CAsyncSocketExLayer version
-- 1.4 added UNICODE support
-- 1.3 added basic HTTP1.1 authentication
-      fixed memory leak in SOCKS5 code
-    OnSocksOperationFailed will be called after Socket has been closed
-      fixed some minor bugs
-- 1.2 renamed into CAsyncProxySocketLayer
-      added HTTP1.1 proxy support
-- 1.1 fixes all known bugs, mostly with SOCKS5 authentication
-- 1.0 initial release
-*/
+// Feel free to use this class, as long as you don't claim that you wrote it
+// and this copyright notice stays intact in the source files.
+// If you use this class in commercial applications, please send a short message
+// to tim.kosse@gmx.de
 
 #include "stdafx.h"
 #include "AsyncProxySocketLayer.h"
 #include "atlconv.h" //Unicode<->Ascii conversion macros declared here
+// #include <Soap.EncdDecd.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
@@ -695,7 +588,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
   }
   if (m_ProxyData.nProxyType==PROXYTYPE_HTTP11)
   {
-    ASSERT (m_nProxyOpID==PROXYOP_CONNECT);
+    DebugAssert(m_nProxyOpID==PROXYOP_CONNECT);
     char buffer[9];
     memset(buffer, 0, sizeof(buffer));
     for(;;)
@@ -1016,25 +909,12 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
 
         char userpass[4096];
         sprintf(userpass, "%s:%s", m_ProxyData.pProxyUser?m_ProxyData.pProxyUser:"", m_ProxyData.pProxyPass?m_ProxyData.pProxyPass:"");
-        char base64str[4096];
 
-        CBase64Coding base64coding;
-        if (!base64coding.Encode(userpass, strlen(userpass), base64str))
-        {
-          DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYERROR_REQUESTFAILED, 0);
-          if (m_nProxyOpID==PROXYOP_CONNECT)
-            TriggerEvent(FD_CONNECT, WSAECONNABORTED, TRUE);
-          else
-            TriggerEvent(FD_ACCEPT, WSAECONNABORTED, TRUE);
-          Reset();
-          ClearBuffer();
-          nb_free(pHost);
-          return;
-        }
+        AnsiString base64str = EncodeBase64(userpass, strlen(userpass));
         strcat(str, "Authorization: Basic ");
-        strcat(str, base64str);
+        strcat(str, base64str.c_str());
         strcat(str, "\r\nProxy-Authorization: Basic ");
-        strcat(str, base64str);
+        strcat(str, base64str.c_str());
         strcat(str, "\r\n\r\n");
       }
       nb_free(pHost);
@@ -1068,7 +948,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
       return;
     }
     else
-      DebugAssert(FALSE);
+      DebugFail();
     //Now we'll wait for the response, handled in OnReceive
     m_nProxyOpState++;
   }
@@ -1085,7 +965,6 @@ void CAsyncProxySocketLayer::ClearBuffer()
   }
   m_nRecvBufferLen=0;
   m_nRecvBufferPos=0;
-
 }
 
 BOOL CAsyncProxySocketLayer::Listen( int nConnectionBacklog)
@@ -1112,7 +991,6 @@ BOOL CAsyncProxySocketLayer::Listen( int nConnectionBacklog)
   return TRUE;
 }
 
-#ifdef _AFX
 BOOL CAsyncProxySocketLayer::GetPeerName(CString &rPeerAddress, UINT &rPeerPort)
 {
   if (m_ProxyData.nProxyType==PROXYTYPE_NOPROXY)
@@ -1141,11 +1019,10 @@ BOOL CAsyncProxySocketLayer::GetPeerName(CString &rPeerAddress, UINT &rPeerPort)
   if (res)
   {
     rPeerPort=ntohs(m_nProxyPeerPort);
-    rPeerAddress.Format(_T("%d.%d.%d.%d"), m_nProxyPeerIp%256,(m_nProxyPeerIp>>8)%256,(m_nProxyPeerIp>>16)%256, m_nProxyPeerIp>>24);
+    rPeerAddress.Format(L"%d.%d.%d.%d", m_nProxyPeerIp%256,(m_nProxyPeerIp>>8)%256,(m_nProxyPeerIp>>16)%256, m_nProxyPeerIp>>24);
   }
   return res;
 }
-#endif
 
 BOOL CAsyncProxySocketLayer::GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrLen )
 {
@@ -1206,7 +1083,6 @@ void CAsyncProxySocketLayer::Reset()
   m_nProxyOpState=0;
   m_nProxyOpID=0;
 }
-
 
 int CAsyncProxySocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
 {
