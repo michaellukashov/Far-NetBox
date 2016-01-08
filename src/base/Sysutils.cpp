@@ -400,6 +400,23 @@ UnicodeString UTF8ToString(const RawByteString & Str)
   return MB2W(Str.c_str(), CP_UTF8);
 }
 
+UnicodeString UTF8ToString(const char * Str, intptr_t Len)
+{
+  if (!Str || !*Str || !Len)
+  {
+    return UnicodeString(L"");
+  }
+
+  intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, Len, nullptr, 0);
+  UnicodeString Result;
+  if (reqLength)
+  {
+    Result.SetLength(reqLength);
+    ::MultiByteToWideChar(CP_UTF8, 0, Str, Len, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
+    Result.SetLength(Result.Length() - 1);  //remove NULL character
+  }
+  return Result;
+}
 
 void RaiseLastOSError(DWORD LastError)
 {

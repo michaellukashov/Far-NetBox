@@ -208,6 +208,7 @@ bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
 bool ContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
 
 UnicodeString UTF8ToString(const RawByteString & Str);
+UnicodeString UTF8ToString(const char * Str, intptr_t Len);
 
 int StringCmp(const wchar_t * S1, const wchar_t * S2);
 int StringCmpI(const wchar_t * S1, const wchar_t * S2);
