@@ -141,10 +141,10 @@ extern const intptr_t ProxyPortNumber;
 #define ScpProtocolStr L"scp"
 #define FtpProtocolStr L"ftp"
 #define FtpsProtocolStr L"ftps"
-#define FtpesProtocolStr L"ftpes";
+#define FtpesProtocolStr L"ftpes"
 #define WebDAVProtocolStr L"http"
 #define WebDAVSProtocolStr L"https"
-#define SshProtocolStr L"ssh";
+#define SshProtocolStr L"ssh"
 #define ProtocolSeparator L"://"
 #define WinSCPProtocolPrefix L"winscp-"
 extern const wchar_t UrlParamSeparator;

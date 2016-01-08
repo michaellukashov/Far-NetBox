@@ -960,9 +960,9 @@ UnicodeString TSessionLog::LogSensitive(const UnicodeString & Str)
 
 UnicodeString TSessionLog::GetCmdLineLog()
 {
-  UnicodeString Result = CmdLine;
+  UnicodeString Result = L""; // TODO: GetCmdLine();
 
-  if (!GetConfiguration->GetLogSensitive())
+  if (!GetConfiguration()->GetLogSensitive())
   {
 //    TManagementScript Script(StoredSessions, false);
 //    Script.MaskPasswordInCommandLine(Result, true);
@@ -1114,13 +1114,13 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         ADF(L"Disable Nagle: %s",
           BooleanToEngStr(Data->GetTcpNoDelay()).c_str());
       }
-      TProxyMethod ProxyMethod = Data->GetProxyMethod();
+      TProxyMethod ProxyMethod = Data->GetActualProxyMethod();
       {
         UnicodeString fp = FORMAT(L"FTP proxy %d", Data->GetFtpProxyLogonType());
         ADF(L"Proxy: %s",
           (Data->GetFtpProxyLogonType() != 0) ?
             fp.c_str() :
-            UnicodeString(ProxyMethodList[Data->GetActualProxyMethod()]).c_str());
+            EnumName(ProxyMethod, ProxyMethodNames).c_str());
       }
       if ((Data->GetFtpProxyLogonType() != 0) || (ProxyMethod != ::pmNone))
       {
@@ -1161,7 +1161,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         UnicodeString Bugs;
         for (intptr_t Index = 0; Index < BUG_COUNT; ++Index)
         {
-          AddToList(Bugs, EnumName(Data->GetBug(static_cast<TSshBug>(Index)), AutoSwitchNames).c_str());
+          AddToList(Bugs, EnumName(Data->GetBug(static_cast<TSshBug>(Index)), AutoSwitchNames), L",");
         }
         ADF(L"SSH Bugs: %s", Bugs.c_str());
         ADF(L"Simple channel: %s", BooleanToEngStr(Data->GetSshSimple()).c_str());
@@ -1183,7 +1183,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         UnicodeString Bugs;
         for (intptr_t Index = 0; Index < SFTP_BUG_COUNT; ++Index)
         {
-          AddToList(Bugs, EnumName(Data->GetSFTPBug(static_cast<TSftpBug>(Index)), AutoSwitchNames).c_str());
+          AddToList(Bugs, EnumName(Data->GetSFTPBug(static_cast<TSftpBug>(Index)), AutoSwitchNames), L",");
         }
         ADF(L"SFTP Bugs: %s", Bugs.c_str());
         ADF(L"SFTP Server: %s", Data->GetSftpServer().IsEmpty()? UnicodeString(L"default").c_str() : Data->GetSftpServer().c_str());
@@ -1216,7 +1216,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
             break;
         }
         // kind of hidden option, so do not reveal it unless it is set
-        if (Data->FtpTransferActiveImmediately != asAuto)
+        if (Data->GetFtpTransferActiveImmediately() != asAuto)
         {
           ADF(L"Transfer active immediately: %s", EnumName(Data->GetFtpTransferActiveImmediately(), AutoSwitchNames).c_str());
         }
@@ -1226,17 +1226,17 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
            EnumName(Data->GetFtpUseMlsd(), AutoSwitchNames).c_str(),
            EnumName(Data->GetFtpListAll(), AutoSwitchNames).c_str());
       }
-      if (Data->FSProtocol == fsWebDAV)
+      if (Data->GetFSProtocol() == fsWebDAV)
       {
-        FtpsOn = (Data->Ftps != ftpsNone);
+        FtpsOn = (Data->GetFtps() != ftpsNone);
         ADF(L"HTTPS: %s",
           BooleanToEngStr(FtpsOn).c_str());
       }
       if (FtpsOn)
       {
-        if (Data->FSProtocol == fsFTP)
+        if (Data->GetFSProtocol() == fsFTP)
         {
-          ADF(L"Session reuse: %s", BooleanToEngStr(Data->SslSessionReuse).c_str());
+          ADF(L"Session reuse: %s", BooleanToEngStr(Data->GetSslSessionReuse()).c_str());
         }
         ADF(L"TLS/SSL versions: %s-%s", GetTlsVersionName(Data->GetMinTlsVersion()).c_str(), GetTlsVersionName(Data->GetMaxTlsVersion()).c_str());
       }
@@ -1253,10 +1253,10 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Recycle bin: Delete to: %s, Overwritten to: %s, Bin path: %s",
         BooleanToEngStr(Data->GetDeleteToRecycleBin()).c_str(),
         BooleanToEngStr(Data->GetOverwrittenToRecycleBin()).c_str(), Data->GetRecycleBinPath().c_str());
-      if (Data->TrimVMSVersions)
+      if (Data->GetTrimVMSVersions())
       {
         ADF(L"Trim VMS versions: %s",
-          (BooleanToEngStr(Data->TrimVMSVersions)));
+          BooleanToEngStr(Data->GetTrimVMSVersions()).c_str());
       }
       UnicodeString TimeInfo;
       if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))

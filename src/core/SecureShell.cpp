@@ -650,7 +650,7 @@ void TSecureShell::PuttyLogEvent(const char * AStr)
   LogEvent(Str);
 }
 
-TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & Name)
+TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & AName)
 {
   // beware of changing order
   static const TPuttyTranslation NameTranslation[] =
@@ -665,7 +665,7 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & Name)
     { L"New SSH password", NEW_PASSWORD_TITLE },
   };
 
-  int Index = TranslatePuttyMessage(NameTranslation, _countof(NameTranslation), Name);
+  int Index = TranslatePuttyMessage(NameTranslation, _countof(NameTranslation), AName);
 
   TPromptKind PromptKind;
   if (Index == 0) // username
@@ -2282,7 +2282,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       Verified = false;
     }
     // no point offering manual verification, if we cannot persist the verified key
-    else if (!GetConfiguration()->GetPersistent() && GetConfiguration->GetScripting())
+    else if (!GetConfiguration()->GetPersistent() && GetConfiguration()->GetScripting())
     {
       Verified = false;
     }
@@ -2362,9 +2362,9 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
       UnicodeString Message;
       if (ConfiguredKeyNotMatch)
       {
-        Message = FMTLOAD(CONFIGURED_KEY_NOT_MATCH, FSessionData->GetHostKey.c_str());
+        Message = FMTLOAD(CONFIGURED_KEY_NOT_MATCH, FSessionData->GetHostKey().c_str());
       }
-      else if (!Configuration->Persistent && Configuration->Scripting)
+      else if (!GetConfiguration()->GetPersistent() && GetConfiguration()->GetScripting())
       {
         Message = LoadStr(HOSTKEY_NOT_CONFIGURED);
       }
@@ -2378,7 +2378,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
     }
   }
 
-  GetConfiguration->RememberLastFingerprint(FSessionData->GetSiteKey(), SshFingerprintType, Fingerprint);
+  GetConfiguration()->RememberLastFingerprint(FSessionData->GetSiteKey(), SshFingerprintType, Fingerprint);
 }
 
 void TSecureShell::AskAlg(const UnicodeString & AlgType,

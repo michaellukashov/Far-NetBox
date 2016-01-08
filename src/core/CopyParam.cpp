@@ -747,7 +747,7 @@ static bool TryGetSpeedLimit(const UnicodeString & Text, uintptr_t & Speed)
   }
   else
   {
-    int SSpeed;
+    int64_t SSpeed;
     Result = TryStrToInt(Text, SSpeed) && (SSpeed >= 0);
     if (Result)
     {

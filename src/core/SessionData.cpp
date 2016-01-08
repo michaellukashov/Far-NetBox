@@ -491,8 +491,8 @@ void TSessionData::CopyStateData(TSessionData * SourceData)
 void TSessionData::CopyNonCoreData(TSessionData * SourceData)
 {
   CopyStateData(SourceData);
-  UpdateDirectories = SourceData->UpdateDirectories;
-  Note = SourceData->Note;
+  SetUpdateDirectories(SourceData->GetUpdateDirectories());
+  SetNote(SourceData->GetNote());
 }
 
 bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const
@@ -1092,15 +1092,17 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
 TStrings * TSessionData::SaveToOptions(const TSessionData * Default)
 {
   std::unique_ptr<TStringList> Options(new TStringList());
+#if 0
   std::unique_ptr<TOptionsStorage> OptionsStorage(new TOptionsStorage(Options.get(), true, false));
   DoSave(OptionsStorage.get(), false, Default, true);
   return Options.release();
+#endif
 }
 
 void TSessionData::Save(THierarchicalStorage * Storage,
   bool PuttyExport, const TSessionData * Default)
 {
-  if (Storage->OpenSubKey(InternalStorageKey, true))
+  if (Storage->OpenSubKey(GetInternalStorageKey(), true))
   {
     DoSave(Storage, PuttyExport, Default, false);
 
@@ -1260,7 +1262,7 @@ void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExpor
   {
     // DoNotEncryptPasswords is set when called from GenerateOpenCommandArgs only
     // and it never saves session password
-    DebugDebugAssert(!DoNotEncryptPasswords);
+    DebugAssert(!DoNotEncryptPasswords);
 
     Storage->WriteBinaryDataAsString("Password", StronglyRecryptPassword(FPassword, SessionGetUserName() + GetHostName()));
   }
@@ -1308,7 +1310,7 @@ void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExpor
     {
       if (!FTunnelPassword.IsEmpty())
       {
-        Storage->WriteString("TunnelPasswordPlain", TunnelPassword);
+        Storage->WriteString("TunnelPasswordPlain", GetTunnelPassword());
       }
       else
       {
@@ -2777,14 +2779,14 @@ UnicodeString TSessionData::GenerateOpenCommandArgs()
 
     for (int Index = 0; Index < RawSettings->Count; Index++)
     {
-      UnicodeString Name = RawSettings->Names[Index];
-      UnicodeString Value = RawSettings->ValueFromIndex[Index];
+      UnicodeString Name = RawSettings->GetName(Index);
+      UnicodeString Value = RawSettings->GetValueFromIndex(Index);
       // Do not quote if it is all-numeric
       if (IntToStr(StrToIntDef(Value, -1)) != Value)
       {
-        Value = FORMAT(L"\"%s\"", (EscapeParam(Value)));
+        Value = FORMAT(L"\"%s\"", EscapeParam(Value).c_str());
       }
-      Result += FORMAT(L" %s=%s", (Name, Value));
+      Result += FORMAT(L" %s=%s", Name.c_str(), Value.c_str());
     }
   }
 

@@ -68,7 +68,7 @@ public:
   void UpdateSocket(SOCKET Value, bool Startup);
   void UpdatePortFwdSocket(SOCKET Value, bool Startup);
   void PuttyFatalError(const UnicodeString & Error);
-  TPromptKind IdentifyPromptKind(const UnicodeString & AName);
+  TPromptKind IdentifyPromptKind(UnicodeString & AName);
   bool PromptUser(bool ToServer,
     const UnicodeString & AName, bool NameRequired,
     const UnicodeString & Instructions, bool InstructionsRequired,
