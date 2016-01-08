@@ -95,7 +95,7 @@ static void DoVerifyKey(
         {
           UnicodeString TypeName = (Type == ktOpenSSH) ? L"OpenSSH SSH-2" : L"ssh.com SSH-2";
           TryPuttygen = FindTool(PuttygenTool, PuttygenPath);
-          Message = FMTLOAD(KEY_TYPE_UNSUPPORTED, (AFileName, TypeName));
+          Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName.c_str(), TypeName.c_str());
           if (TryPuttygen)
           {
             TRACE("3");
