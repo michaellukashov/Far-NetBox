@@ -4622,7 +4622,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 {
   assert(AFileList->GetCount() > 0);
   TRemoteFile * OnlyFile = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(0));
-  USEDPARAM(OnlyFile);
+  DebugUsedParam(OnlyFile);
   assert(OnlyFile);
   FMultiple = (AFileList->GetCount() > 1);
 

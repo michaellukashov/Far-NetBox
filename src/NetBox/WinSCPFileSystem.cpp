@@ -119,7 +119,7 @@ UnicodeString TRemoteFilePanelItem::GetCustomColumnData(size_t Column)
     case 2: return FRemoteFile->GetRights()->GetOctal();
     case 3: return FRemoteFile->GetLinkTo();
     default:
-      FAIL;
+      DebugFail();
       return UnicodeString();
   }
 }
@@ -3337,7 +3337,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
   TOperationSide Side, bool /*Temp*/, const UnicodeString & AFileName, bool Success,
   TOnceDoneOperation & /*DisconnectWhenComplete*/)
 {
-  USEDPARAM(Side);
+  DebugUsedParam(Side);
 
   if ((Operation != foCalculateSize) &&
       (Operation != foGetProperties) &&

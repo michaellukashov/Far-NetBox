@@ -703,9 +703,9 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
 #undef ADD_BUTTON
 #undef ADD_BUTTON_EX
 
-  USEDPARAM(AAnswers);
+  DebugUsedParam(AAnswers);
   assert(!AAnswers);
-  USEDPARAM(NeverAskAgainPending);
+  DebugUsedParam(NeverAskAgainPending);
   assert(!NeverAskAgainPending);
 
   uintptr_t DefaultButtonIndex = 0;
