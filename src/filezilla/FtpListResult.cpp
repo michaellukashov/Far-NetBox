@@ -1,7 +1,7 @@
+
 #include "stdafx.h"
 #include "FtpListResult.h"
 #include "FileZillaApi.h"
-#include "Options.h"
 #include "misc/utf8.h"
 
 #if !defined(__BORLANDC__)

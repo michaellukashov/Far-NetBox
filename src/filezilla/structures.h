@@ -36,7 +36,7 @@ public:
       bool hasdate;
       bool utc;
     } date;
-  } *direntry;
-  t_directory & operator=(const t_directory &a);
+  } * direntry;
+  t_directory & operator=(const t_directory & a);
 };
 

@@ -1,3 +1,4 @@
+
 #pragma once
 
 class CServerPath
@@ -13,21 +14,21 @@ public:
   explicit CServerPath(int nServerType);
   explicit CServerPath(CString path, bool trim = true);
   CServerPath(CString path, int nServerType, bool trim = true);
-  CServerPath(CString subdir, const CServerPath & parent); //If subdir is absolute, parent is ignored
+  CServerPath(CString subdir, const CServerPath & parent); // If subdir is absolute, parent is ignored
   CServerPath(const CServerPath &path);
 
   virtual ~CServerPath();
 
-  CServerPath& operator=(CString path) { SetPath(path); return *this; }
-  void SetServer(const t_server &server);
-  BOOL SetPath(CString &newpath, BOOL bIsFile);
+  CServerPath & operator=(CString path) { SetPath(path); return *this; }
+  void SetServer(const t_server & server);
+  BOOL SetPath(CString & newpath, BOOL bIsFile);
   BOOL SetPath(CString newpath);
   const CString GetPath() const;
 
-  CServerPath& operator=(const CServerPath &op);
+  CServerPath & operator=(const CServerPath & op);
 
-  const bool operator == (const CServerPath &op) const;
-  const bool operator != (const CServerPath &op) const;
+  const bool operator == (const CServerPath & op) const;
+  const bool operator != (const CServerPath & op) const;
 
   CString FormatFilename(CString fn, bool omitPath = false) const;
 
@@ -40,6 +41,6 @@ protected:
   int m_nServerType;
 };
 
-const BOOL operator == (const CServerPath &a, const CString &b);
+const BOOL operator == (const CServerPath & a, const CString & b);
 
 

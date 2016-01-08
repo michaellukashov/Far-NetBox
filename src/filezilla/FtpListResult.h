@@ -1,4 +1,6 @@
+
 #pragma once
+
 /*This class parses the directory listing returned from the server. These formats are supported:
 -rw-r--r--   1 root     other        531 Jan 29 03:26 README\r\n
 dr-xr-xr-x   2 root     other        512 Apr  8  1994 etc\r\n
@@ -28,11 +30,11 @@ class CFtpListResult : public CApiLog
 {
 public:
   t_server m_server;
-  void SendToMessageLog(HWND hWnd, UINT nMsg);
+  void SendToMessageLog();
   void AddData(char * data, int size);
   CFtpListResult(t_server server, bool * bUTF8 = 0, int * nCodePage = 0);
   virtual ~CFtpListResult();
-  t_directory::t_direntry * getList(int & num, CTime EntryTime, bool mlst);
+  t_directory::t_direntry * getList(int & num, bool mlst);
 
 private:
   typedef rde::list<t_directory::t_direntry> tEntryList;
@@ -58,7 +60,7 @@ private:
   bool parseTime(const char * str, int len, t_directory::t_direntry::t_date & date) const;
   bool ParseSize(const char * str, int len, __int64 & size) const;
 
-  bool parseMlsdDateTime(const CString value, t_directory::t_direntry &direntry) const;
+  bool parseMlsdDateTime(const CString value, t_directory::t_direntry::t_date & date) const;
 
   int pos;
   struct t_list : public TObject

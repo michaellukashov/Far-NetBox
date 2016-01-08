@@ -1,3 +1,4 @@
+
 #pragma once
 
 __int64 GetLength64(CFile & file);
@@ -16,4 +17,4 @@ struct CFileStatus64
   BYTE _m_padding;  // pad the structure to a WORD
 };
 
-BOOL PASCAL GetStatus64(LPCTSTR lpszFileName, CFileStatus64& rStatus);
+BOOL PASCAL GetStatus64(LPCTSTR lpszFileName, CFileStatus64 & rStatus);
