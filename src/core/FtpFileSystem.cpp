@@ -1960,14 +1960,14 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
     TDateTime Modification;
     // Inspired by ::FileAge
     WIN32_FIND_DATA FindData;
-    HANDLE Handle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
-    if (Handle != INVALID_HANDLE_VALUE)
+    HANDLE LocalFileHandle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
+    if (LocalFileHandle != INVALID_HANDLE_VALUE)
     {
       Modification =
         ::UnixToDateTime(
           ::ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
           dstmUnix);
-      ::FindClose(Handle);
+      ::FindClose(LocalFileHandle);
     }
 
     // Will we use ASCII of BINARY file transfer?
