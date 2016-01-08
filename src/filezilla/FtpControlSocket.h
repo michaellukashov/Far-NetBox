@@ -156,11 +156,11 @@ protected:
     __int64 nBytesAvailable;
     __int64 nBytesTransferred;
   };
-  static std::list<t_ActiveList> m_InstanceList[2];
+  static rde::list<t_ActiveList> m_InstanceList[2];
   static CTime m_CurrentTransferTime[2];
   static _int64 m_CurrentTransferLimit[2];
   static CCriticalSection m_SpeedLimitSync;
-  _int64 GetAbleToUDSize(bool & beenWaiting, CTime & curTime, _int64 & curLimit, std::list<t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize);
+  _int64 GetAbleToUDSize(bool & beenWaiting, CTime & curTime, _int64 & curLimit, rde::list<t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize);
   _int64 GetSpeedLimit(CTime & time, int valType, int valValue);
 
   void SetDirectoryListing(t_directory * pDirectory, bool bSetWorkingDir = true);

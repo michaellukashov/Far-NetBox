@@ -49,7 +49,7 @@ public:
   virtual void OnSend(int nErrorCode);
 
 protected:
-  virtual int OnLayerCallback(std::list<t_callbackMsg> & callbacks);
+  virtual int OnLayerCallback(rde::list<t_callbackMsg> & callbacks);
   int ReadDataFromFile(char * buffer, int len);
   virtual void LogSocketMessageRaw(int nMessageType, LPCTSTR pMsg);
   virtual void ConfigureSocket();

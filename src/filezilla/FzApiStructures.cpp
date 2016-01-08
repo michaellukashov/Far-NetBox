@@ -5,8 +5,6 @@
 t_server::t_server()
 {
   port = 0;
-  fwbypass = FALSE;
-  bDontRememberPass = FALSE;
   nServerType = 0;
   nPasv = 0;
   nTimeZoneOffset = 0;
@@ -34,7 +32,7 @@ const bool operator == (const t_server & a, const t_server & b)
       return false;
   if (a.account != b.account)
       return false;
-  if (a.pass!=b.pass && a.user!=_MPT("anonymous"))
+  if (a.pass!=b.pass && a.user!=L"anonymous")
       return false;
   if (a.nServerType!=b.nServerType)
       return false;

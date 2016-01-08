@@ -8,10 +8,6 @@
 
 CApiLog::CApiLog()
 {
-  m_hTargetWnd=0;
-  m_pApiLogParent=0;
-  m_nDebugLevel=0;
-  m_nLogMessage=0;
   FIntern = NULL;
 }
 

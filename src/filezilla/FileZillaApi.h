@@ -233,7 +233,7 @@ public:
 
   int Disconnect();
   int Cancel();
-  int Chmod(int nValue, CString FileName, const CServerPath & path = CServerPath());
+  int Chmod(int nValue, const CString & FileName, const CServerPath & path = CServerPath());
 
   //Initialization
   int Init(TFileZillaIntern * Intern, CFileZillaTools * pTools);
@@ -244,7 +244,7 @@ public:
   int List();
   int List(const CServerPath & path);
 
-  int ListFile(CString FileName, const CServerPath & path); //Get info about specified file
+  int ListFile(const CString & FileName, const CServerPath & path); //Get info about specified file
 
   int FileTransfer(const t_transferfile & TransferFile);
   int GetCurrentServer(t_server & server);

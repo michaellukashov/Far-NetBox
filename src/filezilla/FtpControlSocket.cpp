@@ -143,7 +143,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // CFtpControlSocket
 
-std::list<CFtpControlSocket::t_ActiveList> CFtpControlSocket::m_InstanceList[2];
+rde::list<CFtpControlSocket::t_ActiveList> CFtpControlSocket::m_InstanceList[2];
 
 CTime CFtpControlSocket::m_CurrentTransferTime[2] = { CTime::GetCurrentTime(), CTime::GetCurrentTime() };
 _int64 CFtpControlSocket::m_CurrentTransferLimit[2] = {0, 0};
@@ -1094,7 +1094,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
   }
 #endif
   CLogonData *pData = static_cast<CLogonData *>(m_Operation.pData);
-  bool needpass = (m_CurrentServer.pass == COptions::GetOption(OPTION_ANONPWD)) || (m_CurrentServer.pass == _MPT(""));
+  bool needpass = (m_CurrentServer.pass == COptions::GetOption(OPTION_ANONPWD)) || (m_CurrentServer.pass == L"");
   switch(logonseq[logontype][m_Operation.nOpState])
   {
     case 0:

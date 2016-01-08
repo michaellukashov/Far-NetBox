@@ -8,6 +8,7 @@
 
 #include "stdafx.h"
 #include "AsyncSslSocketLayer.h"
+#include <TextsCore.h>
 
 #include <openssl/x509v3.h>
 #include <openssl/err.h>
@@ -63,7 +64,6 @@ CAsyncSslSocketLayer::~CAsyncSslSocketLayer()
   UnloadSSL();
   nb_free(m_pNetworkSendBuffer);
   nb_free(m_pRetrySendBuffer);
-  nb_free(m_pKeyPassword);
 }
 
 int CAsyncSslSocketLayer::InitSSL()
@@ -254,7 +254,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
     //Send the data waiting in the network bio
     char buffer[32 * 1024];
     size_t len = BIO_ctrl_pending(m_nbio);
-    int numread = BIO_read(m_nbio, buffer, std::min(len, sizeof(buffer)));
+    int numread = BIO_read(m_nbio, buffer, Min(len, sizeof(buffer)));
     if (numread <= 0)
       m_mayTriggerWrite = true;
     while (numread > 0)
@@ -851,7 +851,7 @@ void CAsyncSslSocketLayer::ResetSslSession()
       if (iter->second <= 1)
       {
         SSL_CTX_free(m_ssl_ctx);
-        m_contextRefCount.erase(iter);
+        m_contextRefCount.erase(m_ssl_ctx);
       }
       else
         iter->second--;

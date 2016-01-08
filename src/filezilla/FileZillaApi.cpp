@@ -9,8 +9,6 @@
 
 CFileZillaApi::CFileZillaApi()
 {
-  m_hOwnerWnd=0;
-  m_nReplyMessageID=0;
   m_nInternalMessageID=0;
   m_pMainThread=0;
   m_bInitialized=FALSE;
