@@ -438,7 +438,7 @@ UnicodeString GetSystemTemporaryDirectory()
 {
   UnicodeString TempDir;
   TempDir.SetLength(NB_MAX_PATH);
-  TempDir.SetLength(GetTempPath(NB_MAX_PATH, const_cast<LPWSTR>(TempDir.c_str())));
+  TempDir.SetLength(::GetTempPath(NB_MAX_PATH, const_cast<LPWSTR>(TempDir.c_str())));
   return TempDir;
 }
 
@@ -704,12 +704,12 @@ UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str)
   intptr_t Size = 1024;
 
   Buf.SetLength(Size);
-  intptr_t Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), static_cast<DWORD>(Size));
+  intptr_t Len = ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), static_cast<DWORD>(Size));
 
   if (Len > Size)
   {
     Buf.SetLength(Len);
-    ExpandEnvironmentStrings(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), static_cast<DWORD>(Len));
+    ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), static_cast<DWORD>(Len));
   }
 
   PackStr(Buf);

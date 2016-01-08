@@ -48,7 +48,7 @@ template<int Index>
 static PVOID WINAPI Wrapper(PVOID Ptr)
 {
 	typedef PVOID (WINAPI *PointerFunction)(PVOID);
-	static PVOID FunctionAddress = GetProcAddress(GetModuleHandleW(L"kernel32"), ProcNames[Index]);
+	static PVOID FunctionAddress = ::GetProcAddress(::GetModuleHandleW(L"kernel32"), ProcNames[Index]);
 	static PointerFunction ProcessPointer = FunctionAddress? reinterpret_cast<PointerFunction>(FunctionAddress) : ReturnSamePointer;
 	return ProcessPointer(Ptr);
 }
