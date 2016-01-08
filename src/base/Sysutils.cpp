@@ -385,6 +385,11 @@ intptr_t AnsiCompareIC(const UnicodeString & Str1, const UnicodeString & Str2)
   return AnsiCompareText(Str1, Str2);
 }
 
+bool AnsiSameStr(const UnicodeString & Str1, const UnicodeString & Str2)
+{
+  return AnsiCompareIC(Str1, Str2) == 0;
+}
+
 bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
 {
   return ::Pos(Str1, Str2) > 0;
