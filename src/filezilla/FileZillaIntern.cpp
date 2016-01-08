@@ -1,16 +1,16 @@
-//---------------------------------------------------------------------------
+
 #include "stdafx.h"
-//---------------------------------------------------------------------------
+
 #include "FileZillaIntern.h"
 #include "FileZillaIntf.h"
-//---------------------------------------------------------------------------
+
 TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
   FOwner(AOwner)
 {
   // not being initialized by CApiLog
   m_nLogMessage = 0;
 }
-//---------------------------------------------------------------------------
+
 BOOL TFileZillaIntern::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam,
   LPARAM lParam) const
 {
@@ -55,6 +55,6 @@ BOOL TFileZillaIntern::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam,
 
   return (Result ? TRUE : FALSE);
 }
-//------------------------------------------------------------------------------
+---
 NB_IMPLEMENT_CLASS(TFileZillaIntern, NB_GET_CLASS_INFO(CApiLog), nullptr)
-//---------------------------------------------------------------------------
+

@@ -1,10 +1,10 @@
-//---------------------------------------------------------------------------
+
 #ifndef FileZillaToolsH
 #define FileZillaToolsH
-//---------------------------------------------------------------------------
+
 #include <ctime>
 #include <Classes.hpp>
-//---------------------------------------------------------------------------
+
 class CFileZillaTools : public TObject
 {
 public:
@@ -12,5 +12,5 @@ public:
   virtual bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time) = 0;
   virtual wchar_t * LastSysErrorMessage() const = 0;
 };
-//---------------------------------------------------------------------------
+
 #endif // FileZillaToolsH

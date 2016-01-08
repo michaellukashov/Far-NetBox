@@ -1,11 +1,11 @@
-//---------------------------------------------------------------------------
+
 #ifndef FileZillaInternH
 #define FileZillaInternH
 
 #include "ApiLog.h"
-//---------------------------------------------------------------------------
+
 class TFileZillaIntf;
-//---------------------------------------------------------------------------
+
 class TFileZillaIntern : public CApiLog
 {
 NB_DECLARE_CLASS(TFileZillaIntern)
@@ -20,5 +20,5 @@ public:
 protected:
   TFileZillaIntf * FOwner;
 };
-//---------------------------------------------------------------------------
+
 #endif // FileZillaInternH

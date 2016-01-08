@@ -1,10 +1,10 @@
-//---------------------------------------------------------------------------
+
 #include "stdafx.h"
 #include <Options.h>
 #include <FileZillaIntern.h>
 #include <FileZillaIntf.h>
 #include <Crypt.h>
-//---------------------------------------------------------------------------
+
 CString COptions::GetInstanceOption(CApiLog * Instance, int OptionID)
 {
   DebugAssert(Instance);
@@ -24,7 +24,7 @@ CString COptions::GetInstanceOption(CApiLog * Instance, int OptionID)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int COptions::GetInstanceOptionVal(CApiLog * Instance, int OptionID)
 {
   DebugAssert(Instance);

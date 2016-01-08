@@ -1,10 +1,10 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #ifndef MPEXT_NO_SPEED_LIM_RULES
 #include <SpeedLimit.h>
 #endif
-//---------------------------------------------------------------------------
+
 class COptions
 {
 public:
@@ -17,4 +17,4 @@ public:
   static CString GetInstanceOption(CApiLog * Instance, int OptionID);
   static int GetInstanceOptionVal(CApiLog * Instance, int OptionID);
 };
-//---------------------------------------------------------------------------
+

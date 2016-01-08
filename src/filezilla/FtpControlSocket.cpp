@@ -6762,7 +6762,7 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 }
 #endif
 
-//---------------------------------------------------------------------------
+
 ftp_capabilities_t TFTPServerCapabilities::GetCapability(ftp_capability_names_t Name)
 {
   t_cap tcap = FCapabilityMap[Name];

@@ -1,8 +1,8 @@
 #pragma once
-//---------------------------------------------------------------------------
+
 __int64 GetLength64(CFile & file);
 BOOL GetLength64(CString filename, _int64 & size);
-//---------------------------------------------------------------------------
+
 struct CFileStatus64
 {
   bool m_has_ctime;
