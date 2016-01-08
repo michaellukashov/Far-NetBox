@@ -2,12 +2,6 @@
 #include "stdafx.h"
 #include "FtpListResult.h"
 #include "FileZillaApi.h"
-#include "misc/utf8.h"
-
-#if !defined(__BORLANDC__)
-#define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
-#define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
-#endif
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
@@ -400,11 +394,11 @@ CFtpListResult::~CFtpListResult()
     nb_free(m_curline);
 }
 
-t_directory::t_direntry *CFtpListResult::getList(int &num, CTime EntryTime, bool mlst)
+t_directory::t_direntry *CFtpListResult::getList(int &num, bool mlst)
 {
-#ifdef _DEBUG
+  #ifdef _DEBUG
   USES_CONVERSION;
-#endif
+  #endif
   char *line=GetLine();
   m_curline=line;
   while (line)
@@ -418,7 +412,7 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, CTime EntryTime, bool
       nb_free(tmpline);
       if (tmp)
         m_server.nServerType |= tmp;
-      if (direntry.name!=_MPT(".") && direntry.name!=_MPT(".."))
+      if (direntry.name!=L"." && direntry.name!=L"..")
       {
         AddLine(direntry);
       }
@@ -478,7 +472,6 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, CTime EntryTime, bool
   for (tEntryList::iterator iter=m_EntryList.begin();iter!=m_EntryList.end();iter++, i++)
   {
     res[i]=*iter;
-    res[i].EntryTime=EntryTime;
   }
   m_EntryList.clear();
 
@@ -537,9 +530,9 @@ BOOL CFtpListResult::parseLine(const char *lineToParse, const int linelen, t_dir
 // Used only with LISTDEBUG
 void CFtpListResult::AddData(char *data, int size)
 {
-#ifdef _DEBUG
+  #ifdef _DEBUG
   USES_CONVERSION;
-#endif
+  #endif
   if (!size)
     return;
 
@@ -589,7 +582,7 @@ void CFtpListResult::AddData(char *data, int size)
       nb_free(tmpline);
       if (tmp)
         m_server.nServerType |= tmp;
-      if (direntry.name!=_MPT(".") && direntry.name!=_MPT(".."))
+      if (direntry.name!=L"." && direntry.name!=L"..")
       {
         AddLine(direntry);
       }
@@ -636,7 +629,7 @@ void CFtpListResult::AddData(char *data, int size)
 
 }
 
-void CFtpListResult::SendToMessageLog(HWND hWnd, UINT nMsg)
+void CFtpListResult::SendToMessageLog()
 {
   t_list *oldlistpos = curpos;
   int oldbufferpos = pos;
@@ -771,11 +764,9 @@ void CFtpListResult::AddLine(t_directory::t_direntry &direntry)
     direntry.date.minute = st.wMinute;
     direntry.date.second = st.wSecond;
   }
-  direntry.lName = direntry.name;
-  direntry.lName.MakeLower();
 
   if (m_server.nServerType&FZ_SERVERTYPE_SUB_FTP_VMS &&
-      (!COptions::GetOptionVal(OPTION_VMSALLREVISIONS) || direntry.dir))
+    (!COptions::GetOptionVal(OPTION_VMSALLREVISIONS) || direntry.dir))
   { //Remove version information, only keep the latest file
     int pos=direntry.name.ReverseFind(L';');
     if (pos<=0 || pos>=(direntry.name.GetLength()-1))
@@ -788,7 +779,7 @@ void CFtpListResult::AddLine(t_directory::t_direntry &direntry)
     BOOL bContinue=FALSE;
     while (entryiter!=m_EntryList.end())
     {
-      DebugAssert(((dataiter!=m_TempData.end());
+      DebugAssert(dataiter!=m_TempData.end());
       t_directory::t_direntry dir=*entryiter;
       int oldversion=*dataiter;
       if (direntry.name==dir.name)

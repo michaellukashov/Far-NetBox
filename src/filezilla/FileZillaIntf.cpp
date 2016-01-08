@@ -35,10 +35,9 @@ void TFileZillaIntf::SetResourceModule(void * ResourceHandle)
 
 TFileZillaIntf::TFileZillaIntf() :
   FFileZillaApi(NULL),
-  FIntern(NULL),
+  FIntern(new TFileZillaIntern(this)),
   FServer(new t_server())
 {
-  FIntern = new TFileZillaIntern(this);
 }
 
 TFileZillaIntf::~TFileZillaIntf()
@@ -106,7 +105,9 @@ bool TFileZillaIntf::Cancel()
 bool TFileZillaIntf::Connect(const wchar_t * Host, int Port, const wchar_t * User,
   const wchar_t * Pass, const wchar_t * Account, bool FwByPass,
   const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8, int CodePage,
-  int iForcePasvIp, int iUseMlsd, int iDupFF, int iUndupFF)
+  int iForcePasvIp, int iUseMlsd,
+  int iDupFF, int iUndupFF,
+  X509 * Certificate, EVP_PKEY * PrivateKey)
 {
   DebugAssert(FFileZillaApi != NULL);
   DebugAssert((ServerType & FZ_SERVERTYPE_HIGHMASK) == FZ_SERVERTYPE_FTP);
@@ -118,7 +119,6 @@ bool TFileZillaIntf::Connect(const wchar_t * Host, int Port, const wchar_t * Use
   Server.user = User;
   Server.pass = Pass;
   Server.account = Account;
-  Server.fwbypass = FwByPass;
   Server.path = Path;
   Server.nServerType = ServerType;
   Server.nPasv = Pasv;
@@ -129,6 +129,8 @@ bool TFileZillaIntf::Connect(const wchar_t * Host, int Port, const wchar_t * Use
   Server.iUseMlsd = iUseMlsd;
   Server.iDupFF = iDupFF;
   Server.iUndupFF = iUndupFF;
+  Server.Certificate = Certificate;
+  Server.PrivateKey = PrivateKey;
 
   *FServer = Server;
 
@@ -437,7 +439,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         // FZ_ASYNCREQUEST_GSS_AUTHFAILED
         // FZ_ASYNCREQUEST_GSS_NEEDUSER
         // FZ_ASYNCREQUEST_GSS_NEEDPASS
-        DebugAssert(FALSE);
+        DebugFail();
         Result = false;
       }
       break;
@@ -479,14 +481,13 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         t_ffam_transferstatus * Status = reinterpret_cast<t_ffam_transferstatus *>(lParam);
         if (Status != NULL)
         {
-          Result = HandleTransferStatus(true, Status->transfersize, Status->bytes,
-            Status->percent, Status->timeelapsed, Status->timeleft,
-            Status->transferrate, Status->bFileTransfer != 0);
+          Result = HandleTransferStatus(
+            true, Status->transfersize, Status->bytes, Status->bFileTransfer);
           delete Status;
         }
         else
         {
-          Result = HandleTransferStatus(false, -1, -1, -1, -1, -1, -1, false);
+          Result = HandleTransferStatus(false, -1, -1, false);
         }
       }
       break;
@@ -499,11 +500,8 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       Result = HandleCapabilities((TFTPServerCapabilities *)lParam);
       break;
 
-    case FZ_MSG_SOCKETSTATUS:
-    case FZ_MSG_SECURESERVER:
-    case FZ_MSG_QUITCOMPLETE:
     default:
-      DebugAssert(false);
+      DebugFail();
       Result = false;
       break;
   }
@@ -516,7 +514,7 @@ bool TFileZillaIntf::CheckError(intptr_t /*ReturnCode*/, const wchar_t * /*Conte
   return false;
 }
 
-bool TFileZillaIntf::Check(intptr_t ReturnCode,
+inline bool TFileZillaIntf::Check(intptr_t ReturnCode,
   const wchar_t * Context, intptr_t Expected)
 {
   if ((ReturnCode & (Expected == -1 ? FZ_REPLY_OK : Expected)) == ReturnCode)

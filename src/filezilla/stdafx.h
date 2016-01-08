@@ -6,7 +6,6 @@
 
 #define MPEXT_NO_ZLIB
 #define MPEXT_NO_GSS
-#define MPEXT_NO_SFTP
 #define MPEXT_NO_IDENT
 #define MPEXT_NO_CACHE
 #define MPEXT_NO_SPEED_LIM_RULES

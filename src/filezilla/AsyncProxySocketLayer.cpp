@@ -117,7 +117,6 @@ Version history
 #include "stdafx.h"
 #include "AsyncProxySocketLayer.h"
 #include "atlconv.h" //Unicode<->Ascii conversion macros declared here
-#include "CBase64coding.hpp"
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion

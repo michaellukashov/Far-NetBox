@@ -1,57 +1,77 @@
+
 #pragma once
 
 #include "structures.h"
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "FileZillaApi.h"
 #include "FileZillaIntf.h"
-#include "ControlSocket.h"
 
 class CTransferSocket;
 class CMainThread;
-/////////////////////////////////////////////////////////////////////////////
-// Befehlsziel CFtpControlSocket 
 
 class CAsyncProxySocketLayer;
 class CMainThread;
-class CFtpControlSocket : public CControlSocket
+
+#define CSMODE_NONE             0x0000
+#define CSMODE_CONNECT          0x0001
+#define CSMODE_COMMAND          0x0002
+#define CSMODE_LIST             0x0004
+#define CSMODE_TRANSFER         0x0008
+#define CSMODE_DOWNLOAD         0x0010
+#define CSMODE_UPLOAD           0x0020
+#define CSMODE_TRANSFERERROR    0x0040
+#define CSMODE_TRANSFERTIMEOUT  0x0080
+#define CSMODE_DELETE           0x0100
+#define CSMODE_RMDIR            0x0200
+#define CSMODE_DISCONNECT       0x0400
+#define CSMODE_MKDIR            0x0800
+#define CSMODE_RENAME           0x1000
+#define CSMODE_CHMOD            0x2000
+#define CSMODE_LISTFILE         0x4000
+
+typedef struct
+{
+  BOOL bResume,bResumeAppend,bType;
+  __int64 transfersize,transferleft;
+} t_transferdata;
+
+class CFtpControlSocket : public CAsyncSocketEx, public CApiLog
 {
   friend CTransferSocket;
-public:
 
 public:
-  CFtpControlSocket(CMainThread *pMainThread, CFileZillaTools * pTools);
+  CFtpControlSocket(CMainThread * pMainThread, CFileZillaTools * pTools);
   virtual ~CFtpControlSocket();
 
 public:
-  virtual void Connect(t_server &server);
+  virtual void Connect(t_server & server);
   virtual void OnTimer();
   virtual BOOL IsReady();
-  virtual void List(BOOL bFinish, int nError=0, CServerPath path=CServerPath(), CString subdir=_MPT(""), int nListMode = 0);
+  virtual void List(BOOL bFinish, int nError = 0, CServerPath path = CServerPath(), CString subdir = L"", int nListMode = 0);
   virtual void ListFile(const CString & filename, const CServerPath & path);
   virtual void FtpCommand(LPCTSTR pCommand);
   virtual void Disconnect();
-  virtual void FileTransfer(t_transferfile *transferfile = 0, BOOL bFinish = FALSE, int nError = 0);
-  virtual void Delete(CString filename, const CServerPath &path);
-  virtual void Rename(CString oldName, CString newName, const CServerPath &path, const CServerPath &newPath);
-  virtual void MakeDir(const CServerPath &path);
-  virtual void RemoveDir(CString dirname, const CServerPath &path);
-  virtual void Chmod(CString filename, const CServerPath &path, int nValue);
+  virtual void FileTransfer(t_transferfile * transferfile = 0, BOOL bFinish = FALSE, int nError = 0);
+  virtual void Delete(const CString & filename, const CServerPath & path);
+  virtual void Rename(const CString & oldName, const CString & newName, const CServerPath & path, const CServerPath & newPath);
+  virtual void MakeDir(const CServerPath & path);
+  virtual void RemoveDir(const CString & dirname, const CServerPath & path);
+  virtual void Chmod(const CString & filename, const CServerPath & path, int nValue);
     
   virtual void ProcessReply();
   virtual void TransferEnd(int nMode);
-  virtual void Cancel(BOOL bQuit=FALSE);
+  virtual void Cancel(BOOL bQuit = FALSE);
 
-  virtual void SetAsyncRequestResult(int nAction, CAsyncRequestData *pData);
+  virtual void SetAsyncRequestResult(int nAction, CAsyncRequestData * pData);
   
   
   int CheckOverwriteFile();
   virtual BOOL Create();
-  void TransfersocketListenFinished(unsigned int ip,unsigned short port);
+  void TransfersocketListenFinished(unsigned int ip, unsigned short port);
   
   BOOL m_bKeepAliveActive;
-#ifndef MPEXT_NO_SSL
   BOOL m_bDidRejectCertificate;
-#endif
+
   // Some servers are broken. Instead of an empty listing, some MVS servers
   // for example they return something "550 no members found"
   // Other servers return "550 No files found."
@@ -65,32 +85,36 @@ public:
   bool HandleMdtm(int code, t_directory::t_direntry::t_date & date);
   void TransferHandleListError();
 
-  // Vom Klassen-Assistenten generierte virtuelle Funktionsüberschreibungen
-  //{{AFX_VIRTUAL(CFtpControlSocket)
-  public:
+  enum transferDirection
+  {
+    download = 0,
+    upload = 1
+  };
+
+  BOOL RemoveActiveTransfer();
+  BOOL SpeedLimitAddTransferredBytes(enum transferDirection direction, _int64 nBytesTransferred);
+
+  _int64 GetSpeedLimit(enum transferDirection direction, CTime & time);
+
+  _int64 GetAbleToTransferSize(enum transferDirection direction, bool &beenWaiting, int nBufSize = 0);
+
+  t_server GetCurrentServer();
+
+public:
   virtual void OnReceive(int nErrorCode);
   virtual void OnConnect(int nErrorCode);
   virtual void OnClose(int nErrorCode);
   virtual void OnSend(int nErrorCode);
-  //}}AFX_VIRTUAL
 
-  // Generierte Nachrichtenzuordnungsfunktionen
-  //{{AFX_MSG(CFtpControlSocket)
-    // HINWEIS - Der Klassen-Assistent fügt hier Member-Funktionen ein und entfernt diese.
-  //}}AFX_MSG
-
-// Implementierung
 protected:
-  //Called by OnTimer()
+  // Called by OnTimer()
   void ResumeTransfer();
   void CheckForTimeout();
   void SendKeepAliveCommand();
 
-  virtual int OnLayerCallback(rde::list<t_callbackMsg>& callbacks);
-  void SetFileExistsAction(int nAction, COverwriteRequestData *pData);
-#ifndef MPEXT_NO_SSL
-  void SetVerifyCertResult( int nResult, t_SslCertData *pData );
-#endif
+  virtual int OnLayerCallback(rde::list<t_callbackMsg> & callbacks);
+  void SetFileExistsAction(int nAction, COverwriteRequestData * pData);
+  void SetVerifyCertResult(int nResult, t_SslCertData * pData);
   void ResetOperation(int nSuccessful = -1);
 
   virtual void DoClose(int nError = 0);
@@ -99,8 +123,8 @@ protected:
   void LogOnToServer(BOOL bSkipReply = FALSE);
   BOOL Send(CString str);
   
-  BOOL ParsePwdReply(CString& rawpwd);
-  BOOL ParsePwdReply(CString& rawpwd, CServerPath & realPath);
+  BOOL ParsePwdReply(CString & rawpwd);
+  BOOL ParsePwdReply(CString & rawpwd, CServerPath & realPath);
   BOOL SendAuthSsl();
 
   void DiscardLine(CStringA line);
@@ -115,8 +139,38 @@ protected:
   bool CheckForcePasvIp(CString & host);
   void TransferFinished(bool preserveFileTimeForUploads);
 
-  CFile *m_pDataFile;
-  CTransferSocket *m_pTransferSocket;
+  virtual void LogSocketMessageRaw(int nMessageType, LPCTSTR pMsg);
+  virtual bool LoggingSocketMessage(int nMessageType);
+
+  void ShowStatus(UINT nID, int type) const;
+  void ShowStatus(CString status,int type) const;
+  void ShowTimeoutError(UINT nID) const;
+
+  void Close();
+  BOOL Connect(CString hostAddress, UINT nHostPort);
+  CString ConvertDomainName(CString domain);
+
+  struct t_ActiveList
+  {
+    CFtpControlSocket * pOwner;
+    __int64 nBytesAvailable;
+    __int64 nBytesTransferred;
+  };
+  static std::list<t_ActiveList> m_InstanceList[2];
+  static CTime m_CurrentTransferTime[2];
+  static _int64 m_CurrentTransferLimit[2];
+  static CCriticalSection m_SpeedLimitSync;
+  _int64 GetAbleToUDSize(bool & beenWaiting, CTime & curTime, _int64 & curLimit, std::list<t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize);
+  _int64 GetSpeedLimit(CTime & time, int valType, int valValue);
+
+  void SetDirectoryListing(t_directory * pDirectory, bool bSetWorkingDir = true);
+  t_directory * m_pDirectoryListing;
+
+  CMainThread * m_pOwner;
+  CFileZillaTools * m_pTools;
+
+  CFile * m_pDataFile;
+  CTransferSocket * m_pTransferSocket;
   CStringA m_MultiLine;
   CTime m_LastSendTime;
   
@@ -147,13 +201,36 @@ protected:
   bool m_awaitsReply;
   bool m_skipReply;
 
-  char* m_sendBuffer;
+  char * m_sendBuffer;
   int m_sendBufferLen;
 
   bool m_bProtP;
 
   bool m_mayBeMvsFilesystem;
   bool m_mayBeBS2000Filesystem;
+
+  struct t_operation
+  {
+    int nOpMode;
+    int nOpState;
+    class COpData //Base class which will store operation specific parameters.
+    {
+    public:
+      COpData() {};
+      virtual ~COpData() {};
+    };
+    COpData * pData;
+  public:
+  };
+
+  t_operation m_Operation;
+
+  CAsyncProxySocketLayer * m_pProxyLayer;
+  CAsyncSslSocketLayer * m_pSslLayer;
+#ifndef MPEXT_NO_GSS
+  CAsyncGssSocketLayer * m_pGssLayer;
+#endif
+  t_server m_CurrentServer;
 
 private:
   BOOL m_bCheckForTimeout;

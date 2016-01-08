@@ -7,16 +7,11 @@
 TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
   FOwner(AOwner)
 {
-  // not being initialized by CApiLog
-  m_nLogMessage = 0;
+  FDebugLevel = 0;
 }
 
-BOOL TFileZillaIntern::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam,
-  LPARAM lParam) const
+bool TFileZillaIntern::PostMessage(WPARAM wParam, LPARAM lParam) const
 {
-  DebugAssert(hWnd == NULL);
-  DebugAssert(Msg == 0);
-
   bool Result;
   unsigned int MessageID = FZ_MSG_ID(wParam);
 
@@ -31,30 +26,34 @@ BOOL TFileZillaIntern::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam,
       Result = FOwner->PostMessage(wParam, lParam);
       break;
 
-    // ignored for performance
-    case FZ_MSG_SOCKETSTATUS:
-      Result = false;
-      break;
-
-    // ignore
-    // not useful. although FTP allows switching between secure and unsecure
-    // connection during session, filezilla does not support it,
-    // so we are either secure or not for whole session
-    case FZ_MSG_SECURESERVER:
-      DebugAssert(lParam == 0);
-      Result = false;
-      break;
-
-    // should never get here, call compiled out in filezilla code
-    case FZ_MSG_QUITCOMPLETE:
     default:
-      DebugAssert(FALSE);
+      DebugFail();
       Result = false;
       break;
   }
 
-  return (Result ? TRUE : FALSE);
+  return Result;
 }
----
-NB_IMPLEMENT_CLASS(TFileZillaIntern, NB_GET_CLASS_INFO(CApiLog), nullptr)
+
+CString TFileZillaIntern::GetOption(int OptionID) const
+{
+  return FOwner->Option(OptionID);
+}
+
+int TFileZillaIntern::GetOptionVal(int OptionID) const
+{
+  return FOwner->OptionVal(OptionID);
+}
+
+int TFileZillaIntern::GetDebugLevel() const
+{
+  return FDebugLevel;
+}
+
+void TFileZillaIntern::SetDebugLevel(int DebugLevel)
+{
+  FDebugLevel = DebugLevel;
+}
+
+NB_IMPLEMENT_CLASS(TFileZillaIntern, nullptr, nullptr)
 

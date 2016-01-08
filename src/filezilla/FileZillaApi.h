@@ -1,56 +1,56 @@
+
 #pragma once
 
 #include <Classes.hpp>
 
 #include "FzApiStructures.h"
 #include "structures.h"
-#ifndef MPEXT_NO_SSL
 #include "AsyncSslSocketLayer.h"
-#endif
 
-//This structure holds the commands which will be processed by the api.
-//You don't have to fill this struct, you may use the command specific
-//functions which is easier.
-//See below for a list of supported commands and their parameters.
+// This structure holds the commands which will be processed by the api.
+// You don't have to fill this struct, you may use the command specific
+// functions which is easier.
+// See below for a list of supported commands and their parameters.
 struct t_command : public TObject
 {
-  int id; //Type of command, see below
-  CString param1; //Parameters for this command
+  int id; // Type of command, see below
+  CString param1; // Parameters for this command
   CString param2;
   int  param4;
   CServerPath path;
-  CServerPath newPath; //Used for rename
+  CServerPath newPath; // Used for rename
   t_transferfile transferfile;
   t_server server;
 };
 
 //Description of all api commands
+
 #define FZ_COMMAND_CONNECT 0x0001
-//Connects to the server passed in t_command::server
-//Possible return values:
-//FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM,
-//FZ_REPLY_NOTINITIALIZED, FZ_REPLY_OK, FZ_REPLY_WOULDBLOCK
+// Connects to the server passed in t_command::server
+// Possible return values:
+// FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM,
+// FZ_REPLY_NOTINITIALIZED, FZ_REPLY_OK, FZ_REPLY_WOULDBLOCK
 
 #define FZ_COMMAND_LIST 0x0002
-//Lists the contents of a directory. If no parameter is given, the current
-//directory will be listed, else t_command::path specifies the directory
-//which contents will be listed. t_command::param1 may specify the name
-//of a direct child or parent directory (Use only the last path segment or
-//".."). When the directory listing is successful, it will be sent to the
-//owner window (see FZ_DATA_LIST)
-//t_command::param4 controls the list mode. (See list modes section)
-//Possible return values:
-//FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM,
-//FZ_REPLY_NOTCONNECTED, FZ_REPLY_NOTINITIALIZED, FZ_REPLY_OK,
-//FZ_REPLY_WOULDBLOCK
+// Lists the contents of a directory. If no parameter is given, the current
+// directory will be listed, else t_command::path specifies the directory
+// which contents will be listed. t_command::param1 may specify the name
+// of a direct child or parent directory (Use only the last path segment or
+// ".."). When the directory listing is successful, it will be sent to the
+// owner window (see FZ_DATA_LIST)
+// t_command::param4 controls the list mode. (See list modes section)
+// Possible return values:
+// FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM,
+// FZ_REPLY_NOTCONNECTED, FZ_REPLY_NOTINITIALIZED, FZ_REPLY_OK,
+// FZ_REPLY_WOULDBLOCK
 
 #define FZ_COMMAND_FILETRANSFER 0x0004
-//Transfers the file specified with t_command::transferfile, see
-//t_transferfile for detailed information
-//Possible return values:
-//FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM,
-//FZ_REPLY_NOTCONNECTED, FZ_REPLY_NOTINITIALIZED, FZ_REPLY_OK,
-//FZ_REPLY_WOULDBLOCK
+// Transfers the file specified with t_command::transferfile, see
+// t_transferfile for detailed information
+// Possible return values:
+// FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM,
+// FZ_REPLY_NOTCONNECTED, FZ_REPLY_NOTINITIALIZED, FZ_REPLY_OK,
+// FZ_REPLY_WOULDBLOCK
 
 #define FZ_COMMAND_DISCONNECT 0x0008
 #define FZ_COMMAND_CUSTOMCOMMAND 0x0010
@@ -69,26 +69,16 @@ struct t_command : public TObject
 
 #define FZ_MSG_REPLY      0
 #define FZ_MSG_LISTDATA      1
-#define FZ_MSG_SOCKETSTATUS    3
-#define FZ_MSG_SECURESERVER    4
 #define FZ_MSG_ASYNCREQUEST    5
 #define FZ_MSG_STATUS      6
 #define FZ_MSG_TRANSFERSTATUS  7
-#define FZ_MSG_QUITCOMPLETE    8
 #define FZ_MSG_CAPABILITIES    9
 
 #define FZ_ASYNCREQUEST_OVERWRITE 1
-#ifndef MPEXT_NO_SSL
 #define FZ_ASYNCREQUEST_VERIFYCERT 2
-#endif
 #ifndef MPEXT_NO_GSS
 #define FZ_ASYNCREQUEST_GSS_AUTHFAILED 3
 #define FZ_ASYNCREQUEST_GSS_NEEDPASS 4
-#endif
-#ifndef MPEXT_NO_SFTP
-#define FZ_ASYNCREQUEST_NEWHOSTKEY 5
-#define FZ_ASYNCREQUEST_CHANGEDHOSTKEY 6
-#define FZ_ASYNCREQUEST_KEYBOARDINTERACTIVE 7
 #endif
 #ifndef MPEXT_NO_GSS
 #define FZ_ASYNCREQUEST_GSS_NEEDUSER 8
@@ -115,21 +105,19 @@ public:
   CString path1,path2;
   __int64 size1;
   __int64 size2;
-  CTime *localtime;
+  CTime * localtime;
   HANDLE localFileHandle;
   t_directory::t_direntry::t_date remotetime;
-  const t_transferfile *pTransferFile;
+  const t_transferfile * pTransferFile;
 };
 
-#ifndef MPEXT_NO_SSL
 class CVerifyCertRequestData : public CAsyncRequestData
 {
 public:
   CVerifyCertRequestData();
   virtual ~CVerifyCertRequestData();
-  t_SslCertData *pCertData;
+  t_SslCertData * pCertData;
 };
-#endif
 
 class CNeedPassRequestData : public CAsyncRequestData
 {
@@ -160,78 +148,39 @@ public:
 };
 #endif
 
-#ifndef MPEXT_NO_SFTP
-class CNewHostKeyRequestData : public CAsyncRequestData
-{
-public:
-  CNewHostKeyRequestData();
-  virtual ~CNewHostKeyRequestData();
-  CString Hostkey;
-};
-
-class CChangedHostKeyRequestData : public CAsyncRequestData
-{
-public:
-  CChangedHostKeyRequestData();
-  virtual ~CChangedHostKeyRequestData();
-  CString Hostkey;
-};
-
-class CKeyboardInteractiveRequestData : public CAsyncRequestData
-{
-public:
-  char data[20480];
-};
-#endif
-
-#define FZ_SOCKETSTATUS_RECV 0
-#define FZ_SOCKETSTATUS_SEND 1
-
 #define FZAPI_OPTION_SHOWHIDDEN 1
 
-
 #define FTP_CONNECT 0 // SERVER USER PASS PORT
-#define FTP_COMMAND 1 //COMMAND - - -
-#define FTP_LIST 2 //- - - -
-#define FTP_FILETRANSFER 3 //TRANSFERFILE
-#define FTP_DISCONNECT 4 //- - - -
-#define FTP_RECONNECT 5 //- - - -
-#ifndef MPEXT_NO_CACHE
-#define FTP_LISTCACHE 6 //- - - - Directory listing may be read from cache
-#endif
-#define FTP_DELETE 7 //FILENAME
-#define FTP_REMOVEDIR 8 //DIRNAME
+#define FTP_COMMAND 1 // COMMAND - - -
+#define FTP_LIST 2 // - - - -
+#define FTP_FILETRANSFER 3 // TRANSFERFILE
+#define FTP_DISCONNECT 4 // - - - -
+#define FTP_RECONNECT 5 // - - - -
+#define FTP_DELETE 7 // FILENAME
+#define FTP_REMOVEDIR 8 // DIRNAME
 
-#define FZ_REPLY_OK          0x0001
-#define FZ_REPLY_WOULDBLOCK      0x0002
-#define FZ_REPLY_ERROR        0x0004
-#define FZ_REPLY_OWNERNOTSET    0x0008
-#define FZ_REPLY_INVALIDPARAM    0x0010
-#define FZ_REPLY_NOTCONNECTED    0x0020
-#define FZ_REPLY_ALREADYCONNECTED  0x0040
-#define FZ_REPLY_BUSY        0x0080
-#define FZ_REPLY_IDLE        0x0100
-#define FZ_REPLY_NOTINITIALIZED    0x0200
-#define FZ_REPLY_ALREADYINIZIALIZED  0x0400
-#define FZ_REPLY_CANCEL        0x0800
-#define FZ_REPLY_DISCONNECTED    0x1000 //Always sent when disconnected from server
-#define FZ_REPLY_CRITICALERROR    0x2000 //Used for FileTransfers only
-#define FZ_REPLY_ABORTED      0x4000 //Used for FileTransfers only
-#define FZ_REPLY_NOTSUPPORTED    0x8000 //Command is not supported for the current server
+#define FZ_REPLY_OK                 0x0001
+#define FZ_REPLY_WOULDBLOCK         0x0002
+#define FZ_REPLY_ERROR              0x0004
+#define FZ_REPLY_OWNERNOTSET        0x0008
+#define FZ_REPLY_INVALIDPARAM       0x0010
+#define FZ_REPLY_NOTCONNECTED       0x0020
+#define FZ_REPLY_ALREADYCONNECTED   0x0040
+#define FZ_REPLY_BUSY               0x0080
+#define FZ_REPLY_IDLE               0x0100
+#define FZ_REPLY_NOTINITIALIZED     0x0200
+#define FZ_REPLY_ALREADYINIZIALIZED 0x0400
+#define FZ_REPLY_CANCEL             0x0800
+#define FZ_REPLY_DISCONNECTED       0x1000 // Always sent when disconnected from server
+#define FZ_REPLY_CRITICALERROR      0x2000 // Used for FileTransfers only
+#define FZ_REPLY_ABORTED            0x4000 // Used for FileTransfers only
+#define FZ_REPLY_NOTSUPPORTED       0x8000 // Command is not supported for the current server
 
-#define FZ_LIST_USECACHE      0x0001
-#define FZ_LIST_FORCECACHE      0x0002
-#define FZ_LIST_REALCHANGE      0x0004
-#define FZ_LIST_EXACT         0x0008
-
-//Additional replies
+// Additional replies
 #define FZ_REPLY_NOTBUSY FZ_REPLY_IDLE
 
-
-//Servertypes
-
-//General types
-
+// Servertypes
+// General types
 #define FZ_SERVERTYPE_HIGHMASK  0xF000
 #define FZ_SERVERTYPE_SUBMASK  0x00FF
 #define FZ_SERVERTYPE_LAYERMASK 0x0FF0
@@ -239,11 +188,9 @@ public:
 #define FZ_SERVERTYPE_FTP    0x1000
 #define FZ_SERVERTYPE_LOCAL    0x2000
 
-#ifndef MPEXT_NO_SSL
 #define FZ_SERVERTYPE_LAYER_SSL_IMPLICIT 0x0100
 #define FZ_SERVERTYPE_LAYER_SSL_EXPLICIT 0x0200
 #define FZ_SERVERTYPE_LAYER_TLS_EXPLICIT 0x0400
-#endif
 
 #define FZ_SERVERTYPE_SUB_FTP_VMS    0x0001
 #define FZ_SERVERTYPE_SUB_FTP_SFTP    0x0002
@@ -251,64 +198,56 @@ public:
 #define FZ_SERVERTYPE_SUB_FTP_MVS    0x0010
 #define FZ_SERVERTYPE_SUB_FTP_BS2000  0x0020
 
-//Log messages
+// Log messages
 #define FZ_LOG_STATUS 0
 #define FZ_LOG_ERROR 1
 #define FZ_LOG_COMMAND 2
 #define FZ_LOG_REPLY 3
 #define FZ_LOG_LIST 4
-//By calling CFileZillaApi::SetDebugLevel, the application can enable logging of the following messages:
+// By calling CFileZillaApi::SetDebugLevel, the aplication can enable logging of the following messages:
 #define FZ_LOG_APIERROR 5
 #define FZ_LOG_WARNING 6
-#define FZ_LOG_INFO 7
-#define FZ_LOG_DEBUG 8
+#define FZ_LOG_PROGRESS 7
+#define FZ_LOG_INFO 8
+#define FZ_LOG_DEBUG 9
 
 class CMainThread;
 class CFileZillaTools;
+
 class CFileZillaApi : public TObject
 {
 public:
-  BOOL IsValid() const;
-  int SetDebugLevel( int nDebugLevel );
-
-  int CustomCommand(CString command);
-  int Delete(CString FileName, const CServerPath &path = CServerPath());
-  int RemoveDir(CString DirName, const CServerPath &path = CServerPath());
-  int Rename(CString oldName,CString newName, const CServerPath &path = CServerPath(), const CServerPath &newPath = CServerPath());
-  int MakeDir(const CServerPath &path);
-
-
-  //Functions to reply to async requests
-
-  //General reply function
-  int SetAsyncRequestResult(int nAction, CAsyncRequestData *pData);
-
-  int Command(t_command *pCommand);
-  int Disconnect();
-  void Destroy();
-  int Cancel();
-  int Chmod(int nValue, CString FileName, const CServerPath &path = CServerPath());
   CFileZillaApi();
   virtual ~CFileZillaApi();
+
+  void SetDebugLevel(int nDebugLevel);
+
+  int CustomCommand(CString command);
+  int Delete(CString FileName, const CServerPath & path = CServerPath());
+  int RemoveDir(CString DirName, const CServerPath & path = CServerPath());
+  int Rename(CString oldName, CString newName, const CServerPath & path = CServerPath(), const CServerPath & newPath = CServerPath());
+  int MakeDir(const CServerPath & path);
+
+  // General async request reply function
+  int SetAsyncRequestResult(int nAction, CAsyncRequestData * pData);
+
+  int Disconnect();
+  int Cancel();
+  int Chmod(int nValue, CString FileName, const CServerPath & path = CServerPath());
+
   //Initialization
-  int Init(CApiLog * pParent, CFileZillaTools * pTools);
-  unsigned int GetMessageID();
+  int Init(TFileZillaIntern * Intern, CFileZillaTools * pTools);
 
-  //Status
-  int IsConnected();
-  int IsBusy();
+  // Operations
+  int Connect(const t_server & server);
 
-  //Operations
-  int Connect(const t_server& server);
+  int List();
+  int List(const CServerPath & path);
 
-  int List(int nListMode=FZ_LIST_USECACHE); //Lists current folder
-  int List(const CServerPath& path, int nListMode=FZ_LIST_USECACHE);
-  int List(const CServerPath& parent, CString dirname, int nListMode=FZ_LIST_USECACHE);
+  int ListFile(CString FileName, const CServerPath & path); //Get info about specified file
 
-  int ListFile(const CString & fileName, const CServerPath & path); //Get info about specified file
-
-  int FileTransfer(const t_transferfile &TransferFile);
-  int GetCurrentServer(t_server &server);
+  int FileTransfer(const t_transferfile & TransferFile);
+  int GetCurrentServer(t_server & server);
 
   int SetCurrentPath(CServerPath path);
   int GetCurrentPath(CServerPath & path);
@@ -317,14 +256,12 @@ public:
   std::string GetTlsVersionStr();
   std::string GetCipherName();
 
-#ifndef MPEXT_NO_CACHE
-  //Debugging functions
-  static BOOL DumpDirectoryCache(LPCTSTR pFileName);
-#endif
 protected:
-  CMainThread* m_pMainThread;
+  CMainThread * m_pMainThread;
   unsigned int m_nInternalMessageID;
   BOOL m_bInitialized;
-  unsigned int m_nReplyMessageID;
-  HWND m_hOwnerWnd;
+
+  void Destroy();
+  int IsBusy();
+  int IsConnected();
 };
