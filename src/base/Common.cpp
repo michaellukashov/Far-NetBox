@@ -2733,11 +2733,13 @@ TFormatSettings GetEngFormatSettings()
   return TFormatSettings::Create(1033);
 }
 
+#if 0
 int ParseShortEngMonthName(const UnicodeString & MonthStr)
 {
   TFormatSettings FormatSettings = GetEngFormatSettings();
   return IndexStr(MonthStr, FormatSettings.ShortMonthNames, FormatSettings.ShortMonthNames.size()) + 1;
 }
+#endif
 
 TStringList * CreateSortedStringList(bool CaseSensitive, TDuplicatesEnum Duplicates)
 {

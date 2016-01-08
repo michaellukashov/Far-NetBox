@@ -155,7 +155,9 @@ TStrings * CloneStrings(TStrings * Strings);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
 TFormatSettings GetEngFormatSettings();
-//int ParseShortEngMonthName(const UnicodeString & MonthStr);
+#if 0
+int ParseShortEngMonthName(const UnicodeString & MonthStr);
+#endif
 // The defaults are equal to defaults of TStringList class (except for Sorted)
 TStringList * CreateSortedStringList(bool CaseSensitive = false, TDuplicatesEnum Duplicates = dupIgnore);
 UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);

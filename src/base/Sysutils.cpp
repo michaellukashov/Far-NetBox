@@ -390,6 +390,17 @@ bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
   return ::Pos(Str1, Str2) > 0;
 }
 
+bool ContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
+{
+  return AnsiContainsText(Str1, Str2);
+}
+
+UnicodeString UTF8ToString(const RawByteString & Str)
+{
+  return MB2W(Str.c_str(), CP_UTF8);
+}
+
+
 void RaiseLastOSError(DWORD LastError)
 {
   if (LastError == 0)

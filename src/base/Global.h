@@ -1,13 +1,17 @@
 #pragma once
 
-#include <Classes.hpp>
 #include <assert.h>
+#include <Classes.hpp>
+#include <Sysutils.hpp>
 
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
+
+void ShowExtendedException(Exception * E);
+bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
 
 class TGuard : public TObject
 {
