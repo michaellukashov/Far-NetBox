@@ -585,7 +585,7 @@ void CFtpControlSocket::Connect(t_server &server)
   str.Format(IDS_STATUSMSG_CONNECTING, (LPCTSTR)hostname);
   ShowStatus(str, FZ_LOG_STATUS);
 
-  if (!CControlSocket::Connect(temp, port))
+  if (!Connect(temp, port))
   {
     if (WSAGetLastError() != WSAEWOULDBLOCK)
     {
@@ -2126,7 +2126,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
       m_pDirectoryListing=0;
     }
 
-    if (COptions::GetOptionVal(OPTION_PROXYTYPE)!=PROXYTYPE_NOPROXY && !m_CurrentServer.fwbypass)
+    if (COptions::GetOptionVal(OPTION_PROXYTYPE)!=PROXYTYPE_NOPROXY)
       pData->bPasv = TRUE;
     else if (m_CurrentServer.nPasv == 1)
       pData->bPasv = TRUE;
@@ -2911,7 +2911,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     m_Operation.pData=new CFileTransferData;
     pData=static_cast<CFileTransferData *>(m_Operation.pData);
 
-    if (COptions::GetOptionVal(OPTION_PROXYTYPE)!=PROXYTYPE_NOPROXY && !m_CurrentServer.fwbypass)
+    if (COptions::GetOptionVal(OPTION_PROXYTYPE)!=PROXYTYPE_NOPROXY)
       pData->bPasv = TRUE;
     else if (m_CurrentServer.nPasv == 1)
       pData->bPasv = TRUE;
@@ -4806,7 +4806,7 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
   m_Operation.pData=0;
 }
 
-void CFtpControlSocket::Delete(CString filename, const CServerPath &path)
+void CFtpControlSocket::Delete(const CString & filename, const CServerPath & path)
 {
   class CDeleteData : public CFtpControlSocket::t_operation::COpData
   {
@@ -4905,7 +4905,7 @@ public:
   }
 }
 
-void CFtpControlSocket::RemoveDir(CString dirname, const CServerPath &path)
+void CFtpControlSocket::RemoveDir(const CString & dirname, const CServerPath & path)
 {
 
   class CRemoveDirData : public CFtpControlSocket::t_operation::COpData
@@ -5426,7 +5426,7 @@ void CFtpControlSocket::MakeDir(const CServerPath &path)
     DebugFail();
 }
 
-void CFtpControlSocket::Rename(CString oldName, CString newName, const CServerPath &path, const CServerPath &newPath)
+void CFtpControlSocket::Rename(const CString & oldName, const CString & newName, const CServerPath & path, const CServerPath & newPath)
 {
   class CRenameData : public CFtpControlSocket::t_operation::COpData
   {
@@ -5642,7 +5642,7 @@ BOOL CFtpControlSocket::IsReady()
   return !m_bKeepAliveActive;
 }
 
-void CFtpControlSocket::Chmod(CString filename, const CServerPath &path, int nValue)
+void CFtpControlSocket::Chmod(const CString & filename, const CServerPath & path, int nValue)
 {
   m_Operation.nOpMode=CSMODE_CHMOD;
   CString str;
@@ -5960,7 +5960,7 @@ _int64 CFtpControlSocket::GetSpeedLimit(enum transferDirection direction, CTime 
   return ( _int64)1000000000000;
 }
 
-_int64 CFtpControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int64 &curLimit, std::list<CFtpControlSocket::t_ActiveList>::iterator &iter, enum transferDirection direction, int nBufSize)
+_int64 CFtpControlSocket::GetAbleToUDSize( bool & beenWaiting, CTime & curTime, _int64 & curLimit, rde::list<CFtpControlSocket::t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize)
 {
   beenWaiting = false;
 
@@ -6014,7 +6014,7 @@ _int64 CFtpControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _i
     __int64 nMax = curLimit / m_InstanceList[direction].size();
     _int64 nLeft = 0;
     int nCount = 0;
-    std::list<t_ActiveList>::iterator iter2;
+    rde::list<t_ActiveList>::iterator iter2;
     for (iter2 = m_InstanceList[direction].begin(); iter2 != m_InstanceList[direction].end(); iter2++)
     {
       if (iter2->nBytesAvailable>0)
@@ -6056,7 +6056,7 @@ _int64 CFtpControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _i
 _int64 CFtpControlSocket::GetAbleToTransferSize(enum transferDirection direction, bool &beenWaiting, int nBufSize)
 {
   m_SpeedLimitSync.Lock();
-  std::list<t_ActiveList>::iterator iter;
+  rde::list<t_ActiveList>::iterator iter;
   for (iter = m_InstanceList[direction].begin(); iter != m_InstanceList[direction].end(); iter++)
     if (iter->pOwner == this)
       break;
@@ -6080,7 +6080,7 @@ BOOL CFtpControlSocket::RemoveActiveTransfer()
 {
   BOOL bFound = FALSE;
   m_SpeedLimitSync.Lock();
-  std::list<t_ActiveList>::iterator iter;
+  rde::list<t_ActiveList>::iterator iter;
   for (int i = 0; i < 2; i++)
   {
     for (iter = m_InstanceList[i].begin(); iter != m_InstanceList[i].end(); iter++)
@@ -6098,7 +6098,7 @@ BOOL CFtpControlSocket::RemoveActiveTransfer()
 BOOL CFtpControlSocket::SpeedLimitAddTransferredBytes(enum transferDirection direction, _int64 nBytesTransferred)
 {
   m_SpeedLimitSync.Lock();
-  std::list<t_ActiveList>::iterator iter;
+  rde::list<t_ActiveList>::iterator iter;
   for (iter = m_InstanceList[direction].begin(); iter != m_InstanceList[direction].end(); iter++)
     if (iter->pOwner == this)
     {

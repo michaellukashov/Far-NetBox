@@ -29,11 +29,17 @@ class CMainThread;
 #define CSMODE_CHMOD            0x2000
 #define CSMODE_LISTFILE         0x4000
 
-typedef struct
+struct t_transferdata
 {
-  BOOL bResume,bResumeAppend,bType;
-  __int64 transfersize,transferleft;
-} t_transferdata;
+  t_transferdata() :
+    transfersize(0), transferleft(0),
+    localFileHandle(INVALID_HANDLE_VALUE),
+    bResume(FALSE), bResumeAppend(FALSE), bType(FALSE)
+  {}
+  __int64 transfersize, transferleft;
+  HANDLE localFileHandle;
+  BOOL bResume, bResumeAppend, bType;
+};
 
 class CFtpControlSocket : public CAsyncSocketEx, public CApiLog
 {

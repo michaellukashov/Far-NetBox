@@ -37,17 +37,16 @@ CTransferSocket::CTransferSocket(CFtpControlSocket *pOwner, int nMode)
   m_nInternalMessageID = 0;
   m_transferdata.transfersize = 0;
   m_transferdata.transferleft = 0;
-  m_transferdata.nTransferStart = 0;
   m_nNotifyWaiting = 0;
   m_bShutDown = FALSE;
 
   UpdateStatusBar(true);
 
-  for (int i = 0; i < SPEED_SECONDS; i++)
-  {
-    m_Transfered[i] = 0;
-    m_UsedForTransfer[i] = 0;
-  }
+//  for (int i = 0; i < SPEED_SECONDS; i++)
+//  {
+//    m_Transfered[i] = 0;
+//    m_UsedForTransfer[i] = 0;
+//  }
 
   m_pProxyLayer = NULL;
   m_pSslLayer = NULL;
@@ -164,10 +163,6 @@ void CTransferSocket::OnReceive(int nErrorCode)
       status->bFileTransfer = FALSE;
       status->transfersize = -1;
       status->bytes = m_transferdata.transfersize;
-      status->percent = -1;
-      status->timeelapsed = elapsed;
-      status->timeleft = -1;
-      status->transferrate = transferrate;
       GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_TRANSFERSTATUS, 0), (LPARAM)status);
     }
     else

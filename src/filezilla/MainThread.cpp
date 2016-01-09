@@ -12,7 +12,6 @@ CMainThread::CMainThread()
 {
   m_LastCommand.id = 0;
   m_LastCommand.param4 = 0;
-  m_hOwnerWnd = 0;
   m_pTools = NULL;
   m_nInternalMessageID = 0;
   m_pPostKeepAliveCommand = 0;
