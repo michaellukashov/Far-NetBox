@@ -716,7 +716,7 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
 
   //Add current instance to list of active instances
   t_SslLayerList *tmp = m_pSslLayerList;
-  m_pSslLayerList = new t_SslLayerList;
+  m_pSslLayerList = new t_SslLayerList();
   m_pSslLayerList->pNext = tmp;
   m_pSslLayerList->pLayer = this;
   m_sCriticalSection.Unlock();

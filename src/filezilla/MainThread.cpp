@@ -99,7 +99,7 @@ void CMainThread::ShowStatus(CString status, int type)
   }
   LCS;
   //Displays a message in the message log
-  t_ffam_statusmessage *pStatus = new t_ffam_statusmessage;
+  t_ffam_statusmessage *pStatus = new t_ffam_statusmessage();
   pStatus->post = TRUE;
   pStatus->status = status;
   pStatus->type = type;

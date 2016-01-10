@@ -1457,7 +1457,7 @@ BOOL CAsyncSocketEx::TriggerEvent(long lEvent)
 
   if (m_pFirstLayer)
   {
-    CAsyncSocketExLayer::t_LayerNotifyMsg *pMsg = new CAsyncSocketExLayer::t_LayerNotifyMsg;
+    CAsyncSocketExLayer::t_LayerNotifyMsg *pMsg = new CAsyncSocketExLayer::t_LayerNotifyMsg();
     pMsg->hSocket = m_SocketData.hSocket;
     pMsg->lEvent=lEvent%0xFFFF;
     pMsg->pLayer=0;

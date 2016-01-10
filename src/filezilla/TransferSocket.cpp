@@ -159,7 +159,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 #endif
         m_pListResult->AddData(buffer, numread);
       m_transferdata.transfersize += numread;
-      t_ffam_transferstatus *status = new t_ffam_transferstatus;
+      t_ffam_transferstatus *status = new t_ffam_transferstatus();
       status->bFileTransfer = FALSE;
       status->transfersize = -1;
       status->bytes = m_transferdata.transfersize;
@@ -869,7 +869,7 @@ BOOL CTransferSocket::Create(BOOL bUseSsl)
 {
   if (bUseSsl)
   {
-    m_pSslLayer = new CAsyncSslSocketLayer;
+    m_pSslLayer = new CAsyncSslSocketLayer();
 
     m_pSslLayer->SetClientCertificate(m_pOwner->m_CurrentServer.Certificate, m_pOwner->m_CurrentServer.PrivateKey);
   }
@@ -879,7 +879,7 @@ BOOL CTransferSocket::Create(BOOL bUseSsl)
   {
     USES_CONVERSION;
 
-    m_pProxyLayer = new CAsyncProxySocketLayer;
+    m_pProxyLayer = new CAsyncProxySocketLayer();
     if (nProxyType == PROXYTYPE_SOCKS4)
       m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4, T2CA(COptions::GetOption(OPTION_PROXYHOST)), COptions::GetOptionVal(OPTION_PROXYPORT));
     else if (nProxyType == PROXYTYPE_SOCKS4A)
@@ -1068,7 +1068,7 @@ int CTransferSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 #ifndef MPEXT_NO_GSS
 void CTransferSocket::UseGSS(CAsyncGssSocketLayer *pGssLayer)
 {
-  m_pGssLayer = new CAsyncGssSocketLayer;
+  m_pGssLayer = new CAsyncGssSocketLayer();
   m_pGssLayer->InitTransferChannel(pGssLayer);
 }
 #endif

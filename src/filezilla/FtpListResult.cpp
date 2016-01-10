@@ -537,10 +537,10 @@ void CFtpListResult::AddData(char *data, int size)
     return;
 
   if (!m_curlistaddpos)
-    m_curlistaddpos = new t_list;
+    m_curlistaddpos = new t_list();
   else
   {
-    m_curlistaddpos->next = new t_list;
+    m_curlistaddpos->next = new t_list();
     m_curlistaddpos = m_curlistaddpos->next;
   }
   if (!listhead)
@@ -642,7 +642,7 @@ void CFtpListResult::SendToMessageLog()
   if (!line)
   {
     //Displays a message in the message log
-    t_ffam_statusmessage *pStatus = new t_ffam_statusmessage;
+    t_ffam_statusmessage *pStatus = new t_ffam_statusmessage();
     pStatus->post = TRUE;
     pStatus->status = L"<Empty directory listing>";
     pStatus->type = FZ_LOG_INFO;
@@ -654,7 +654,7 @@ void CFtpListResult::SendToMessageLog()
     nb_free(line);
 
     //Displays a message in the message log
-    t_ffam_statusmessage *pStatus = new t_ffam_statusmessage;
+    t_ffam_statusmessage *pStatus = new t_ffam_statusmessage();
     pStatus->post = TRUE;
     pStatus->status = status;
     pStatus->type = FZ_LOG_INFO;

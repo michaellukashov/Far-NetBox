@@ -87,7 +87,7 @@ void CApiLog::SendLogMessage(int nMessageType, LPCTSTR pMsg) const
   if (!LoggingMessageType(nMessageType))
     return;
   //Displays a message in the message log  
-  t_ffam_statusmessage *pStatus = new t_ffam_statusmessage;
+  t_ffam_statusmessage *pStatus = new t_ffam_statusmessage();
   pStatus->post = TRUE;
   pStatus->status = pMsg;
   pStatus->type = nMessageType;

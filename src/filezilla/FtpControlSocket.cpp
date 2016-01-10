@@ -400,7 +400,7 @@ bool CFtpControlSocket::InitConnect()
     m_CurrentServer.nServerType & FZ_SERVERTYPE_LAYER_SSL_EXPLICIT ||
     m_CurrentServer.nServerType & FZ_SERVERTYPE_LAYER_TLS_EXPLICIT)
   {
-    m_pSslLayer = new CAsyncSslSocketLayer;
+    m_pSslLayer = new CAsyncSslSocketLayer();
     AddLayer(m_pSslLayer);
 
     m_pSslLayer->SetClientCertificate(m_CurrentServer.Certificate, m_CurrentServer.PrivateKey);
@@ -422,7 +422,7 @@ bool CFtpControlSocket::InitConnect()
   int nProxyType = GetOptionVal(OPTION_PROXYTYPE);
   if (nProxyType != PROXYTYPE_NOPROXY)
   {
-    m_pProxyLayer = new CAsyncProxySocketLayer;
+    m_pProxyLayer = new CAsyncProxySocketLayer();
     if (nProxyType == PROXYTYPE_SOCKS4)
       m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4, T2CA(COptions::GetOption(OPTION_PROXYHOST)), COptions::GetOptionVal(OPTION_PROXYPORT));
     else if (nProxyType==PROXYTYPE_SOCKS4A)
@@ -475,7 +475,7 @@ bool CFtpControlSocket::InitConnect()
   }
   if (bUseGSS)
   {
-    m_pGssLayer = new CAsyncGssSocketLayer;
+    m_pGssLayer = new CAsyncGssSocketLayer();
     AddLayer(m_pGssLayer);
     if (!m_pGssLayer->InitGSS())
     {
@@ -1060,7 +1060,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         m_CurrentServer.user = str;
       if (m_CurrentServer.user == L"")
       {
-        CGssNeedUserRequestData *pData = new CGssNeedUserRequestData;
+        CGssNeedUserRequestData *pData = new CGssNeedUserRequestData();
         pData->nRequestID = m_pOwner->GetNextAsyncRequestID();
         pData->nOldOpState = m_Operation.nOpState;
         m_Operation.nOpState = CONNECT_GSS_NEEDUSER;
@@ -1823,7 +1823,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
     }
 
     int num = 0;
-    pData->pDirectoryListing = new t_directory;
+    pData->pDirectoryListing = new t_directory();
     if (COptions::GetOptionVal(OPTION_DEBUGSHOWLISTING))
       m_pTransferSocket->m_pListResult->SendToMessageLog();
     pData->pDirectoryListing->direntry = m_pTransferSocket->m_pListResult->getList(num, false);
@@ -2455,7 +2455,7 @@ void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & p
   {
   case LISTFILE_INIT:
     //Initialize some variables
-    pData = new CListFileData;
+    pData = new CListFileData();
     pData->fileName = filename;
     pData->dir = path.GetPath();
     // special case for listing a root folder
@@ -2614,7 +2614,7 @@ void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & p
   }
   else if (num >= 0)
   {
-    t_directory * pDirectoryListing = new t_directory;
+    t_directory * pDirectoryListing = new t_directory();
     pDirectoryListing->direntry = pData->direntry;
     pData->direntry = NULL;
     pDirectoryListing->num = num;
@@ -4931,7 +4931,7 @@ public:
     }
     if (!Send(L"RMD "+ newPath.GetPath()))
       return;
-    CRemoveDirData *data = new CRemoveDirData;
+    CRemoveDirData *data = new CRemoveDirData();
     data->m_DirName = dirname;
     data->path = path;
     m_Operation.pData = data;
@@ -5105,7 +5105,7 @@ int CFtpControlSocket::CheckOverwriteFile()
 
       if (bRemoteFileExists || pData->transferfile.get )
       {
-        COverwriteRequestData *pOverwriteData = new COverwriteRequestData;
+        COverwriteRequestData *pOverwriteData = new COverwriteRequestData();
         t_transferfile *pTransferFile = new t_transferfile;
         *pTransferFile = pData->transferfile;
         pOverwriteData->pTransferFile = pTransferFile;
@@ -5275,7 +5275,7 @@ void CFtpControlSocket::MakeDir(const CServerPath &path)
     m_Operation.nOpMode = CSMODE_MKDIR;
     if (!Send(L"CWD "+path.GetParent().GetPath()))
       return;
-    CMakeDirData *data = new CMakeDirData;
+    CMakeDirData *data = new CMakeDirData();
     data->path = path;
     data->Current = path.GetParent();
     data->Segments.push_front(path.GetLastSegment());
@@ -5447,7 +5447,7 @@ void CFtpControlSocket::Rename(const CString & oldName, const CString & newName,
     m_Operation.nOpMode = CSMODE_RENAME;
     if (!Send(L"RNFR " + path.FormatFilename(oldName)))
       return;
-    CRenameData *data = new CRenameData;
+    CRenameData *data = new CRenameData();
     data->oldName = oldName;
     data->newName = newName;
     data->path = path;
@@ -5884,7 +5884,7 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
           LogMessageRaw(FZ_LOG_WARNING, A2CT(iter->str));
           break;
         case SSL_VERIFY_CERT:
-          t_SslCertData *pData = new t_SslCertData;
+          t_SslCertData *pData = new t_SslCertData();
           memset(pData, 0, sizeof(*pData));
           LPCTSTR CertError = NULL;
           if (m_pSslLayer->GetPeerCertificateData(*pData, CertError))
