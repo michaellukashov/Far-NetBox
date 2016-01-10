@@ -766,7 +766,7 @@ void CFtpListResult::AddLine(t_directory::t_direntry &direntry)
   }
 
   if (m_server.nServerType&FZ_SERVERTYPE_SUB_FTP_VMS &&
-    (!COptions::GetOptionVal(OPTION_VMSALLREVISIONS) || direntry.dir))
+    (!GetOptionVal(OPTION_VMSALLREVISIONS) || direntry.dir))
   { //Remove version information, only keep the latest file
     int pos=direntry.name.ReverseFind(L';');
     if (pos<=0 || pos>=(direntry.name.GetLength()-1))

@@ -424,26 +424,26 @@ bool CFtpControlSocket::InitConnect()
   {
     m_pProxyLayer = new CAsyncProxySocketLayer();
     if (nProxyType == PROXYTYPE_SOCKS4)
-      m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4, T2CA(COptions::GetOption(OPTION_PROXYHOST)), COptions::GetOptionVal(OPTION_PROXYPORT));
+      m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT));
     else if (nProxyType==PROXYTYPE_SOCKS4A)
-      m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4A, T2CA(COptions::GetOption(OPTION_PROXYHOST)),COptions::GetOptionVal(OPTION_PROXYPORT));
+      m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4A, T2CA(GetOption(OPTION_PROXYHOST)),GetOptionVal(OPTION_PROXYPORT));
     else if (nProxyType==PROXYTYPE_SOCKS5)
-      if (COptions::GetOptionVal(OPTION_PROXYUSELOGON))
-        m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS5, T2CA(COptions::GetOption(OPTION_PROXYHOST)),
-                    COptions::GetOptionVal(OPTION_PROXYPORT),
-                    T2CA(COptions::GetOption(OPTION_PROXYUSER)),
-                    T2CA(COptions::GetOption(OPTION_PROXYPASS)));
+      if (GetOptionVal(OPTION_PROXYUSELOGON))
+        m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS5, T2CA(GetOption(OPTION_PROXYHOST)),
+                    GetOptionVal(OPTION_PROXYPORT),
+                    T2CA(GetOption(OPTION_PROXYUSER)),
+                    T2CA(GetOption(OPTION_PROXYPASS)));
       else
-        m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS5, T2CA(COptions::GetOption(OPTION_PROXYHOST)),
-                    COptions::GetOptionVal(OPTION_PROXYPORT));
+        m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS5, T2CA(GetOption(OPTION_PROXYHOST)),
+                    GetOptionVal(OPTION_PROXYPORT));
     else if (nProxyType==PROXYTYPE_HTTP11)
-      if (COptions::GetOptionVal(OPTION_PROXYUSELOGON))
-        m_pProxyLayer->SetProxy(PROXYTYPE_HTTP11, T2CA(COptions::GetOption(OPTION_PROXYHOST)),
-                    COptions::GetOptionVal(OPTION_PROXYPORT),
-                    T2CA(COptions::GetOption(OPTION_PROXYUSER)),
-                    T2CA(COptions::GetOption(OPTION_PROXYPASS)));
+      if (GetOptionVal(OPTION_PROXYUSELOGON))
+        m_pProxyLayer->SetProxy(PROXYTYPE_HTTP11, T2CA(GetOption(OPTION_PROXYHOST)),
+                    GetOptionVal(OPTION_PROXYPORT),
+                    T2CA(GetOption(OPTION_PROXYUSER)),
+                    T2CA(GetOption(OPTION_PROXYPASS)));
       else
-        m_pProxyLayer->SetProxy(PROXYTYPE_HTTP11, T2CA(COptions::GetOption(OPTION_PROXYHOST)) ,COptions::GetOptionVal(OPTION_PROXYPORT));
+        m_pProxyLayer->SetProxy(PROXYTYPE_HTTP11, T2CA(GetOption(OPTION_PROXYHOST)) ,GetOptionVal(OPTION_PROXYPORT));
     else
       DebugFail();
     AddLayer(m_pProxyLayer);
@@ -451,9 +451,9 @@ bool CFtpControlSocket::InitConnect()
 
 #ifndef MPEXT_NO_GSS
   BOOL bUseGSS = FALSE;
-  if (COptions::GetOptionVal(OPTION_USEGSS) && !m_pSslLayer)
+  if (GetOptionVal(OPTION_USEGSS) && !m_pSslLayer)
   {
-    CString GssServers=COptions::GetOption(OPTION_GSSSERVERS);
+    CString GssServers=GetOption(OPTION_GSSSERVERS);
     LPCSTR lpszAscii=T2CA(m_CurrentServer.host);
     hostent *fullname=gethostbyname(lpszAscii);
     CString host;
@@ -527,7 +527,7 @@ void CFtpControlSocket::Connect(t_server &server)
   }
   AsyncSelect();
 
-  if (COptions::GetOptionVal(OPTION_MPEXT_HOST))
+  if (GetOptionVal(OPTION_MPEXT_HOST))
   {
     m_Operation.nOpState = CONNECT_HOST;
   }
@@ -545,9 +545,9 @@ void CFtpControlSocket::Connect(t_server &server)
       return;
     }
     int res = m_pSslLayer->InitSSLConnection(true, NULL,
-      COptions::GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
-      COptions::GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
-      COptions::GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
+      GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
+      GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
+      GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
     if (res == SSL_FAILURE_INITSSL)
       ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
     if (res)
@@ -557,7 +557,7 @@ void CFtpControlSocket::Connect(t_server &server)
     }
   }
 
-  int logontype = COptions::GetOptionVal(OPTION_LOGONTYPE);
+  int logontype = GetOptionVal(OPTION_LOGONTYPE);
   int port;
   CString buf,temp;
   // are we connecting directly to the host (logon type 0) or via a firewall? (logon type>0)
@@ -570,8 +570,8 @@ void CFtpControlSocket::Connect(t_server &server)
   }
   else
   {
-    fwhost=COptions::GetOption(OPTION_FWHOST);
-    fwport=COptions::GetOptionVal(OPTION_FWPORT);
+    fwhost=GetOption(OPTION_FWHOST);
+    fwport=GetOptionVal(OPTION_FWPORT);
     temp=fwhost;
     port=fwport;
     if(fwport!=21)
@@ -605,7 +605,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 #ifndef MPEXT_NO_GSS
   m_pGssLayer ? 0 :
 #endif
-  COptions::GetOptionVal(OPTION_LOGONTYPE);
+  GetOptionVal(OPTION_LOGONTYPE);
   const int LO = -2, ER = -1;
   CString buf, temp;
   const int NUMLOGIN = 9; // currently supports 9 different login sequences
@@ -671,9 +671,9 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         return;
       }
       int res = m_pSslLayer->InitSSLConnection(true, NULL,
-        COptions::GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
-        COptions::GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
-        COptions::GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
+        GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
+        GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
+        GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
       if (res == SSL_FAILURE_INITSSL)
         ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
       if (res)
@@ -1075,7 +1075,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         return;
       }
     }
-    else if ((i == 1 || i == 11) && (m_CurrentServer.pass == COptions::GetOption(OPTION_ANONPWD) || m_CurrentServer.pass == ""))
+    else if ((i == 1 || i == 11) && (m_CurrentServer.pass == GetOption(OPTION_ANONPWD) || m_CurrentServer.pass == ""))
     {
       CGssNeedPassRequestData *pData=new CGssNeedPassRequestData;
       pData->nRequestID=m_pOwner->GetNextAsyncRequestID();
@@ -1094,7 +1094,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
   }
 #endif
   CLogonData *pData = static_cast<CLogonData *>(m_Operation.pData);
-  bool needpass = (m_CurrentServer.pass == COptions::GetOption(OPTION_ANONPWD)) || (m_CurrentServer.pass == L"");
+  bool needpass = (m_CurrentServer.pass == GetOption(OPTION_ANONPWD)) || (m_CurrentServer.pass == L"");
   switch(logonseq[logontype][m_Operation.nOpState])
   {
     case 0:
@@ -1133,10 +1133,10 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
       temp=L"ACCT "+GetOption(OPTION_FWPASS);
       break;
     case 3:
-      temp=L"USER "+COptions::GetOption(OPTION_FWUSER);
+      temp=L"USER "+GetOption(OPTION_FWUSER);
       break;
     case 4:
-      temp=L"PASS "+COptions::GetOption(OPTION_FWPASS);
+      temp=L"PASS "+GetOption(OPTION_FWPASS);
       break;
     case 5:
       temp=L"SITE "+hostname;
@@ -1148,7 +1148,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
       temp=L"OPEN "+hostname;
       break;
     case 8:
-      temp=L"USER "+COptions::GetOption(OPTION_FWUSER)+L"@"+hostname;
+      temp=L"USER "+GetOption(OPTION_FWUSER)+L"@"+hostname;
       break;
     case 9:
       temp=L"USER "+m_CurrentServer.user+L"@"+hostname+L" "+GetOption(OPTION_FWUSER);
@@ -1691,7 +1691,7 @@ void CFtpControlSocket::CheckForTimeout()
     return;
   if (!m_bCheckForTimeout)
     return;
-  int delay=COptions::GetOptionVal(OPTION_TIMEOUTLENGTH);
+  int delay=GetOptionVal(OPTION_TIMEOUTLENGTH);
   if (m_pTransferSocket)
   {
     int res=m_pTransferSocket->CheckForTimeout(delay);
@@ -1760,7 +1760,7 @@ CString CFtpControlSocket::GetListingCmd()
   else
   {
     cmd = L"LIST";
-    if (COptions::GetOptionVal(OPTION_MPEXT_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
+    if (GetOptionVal(OPTION_MPEXT_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
       cmd += L" -a";
   }
   return cmd;
@@ -1824,7 +1824,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 
     int num = 0;
     pData->pDirectoryListing = new t_directory();
-    if (COptions::GetOptionVal(OPTION_DEBUGSHOWLISTING))
+    if (GetOptionVal(OPTION_DEBUGSHOWLISTING))
       m_pTransferSocket->m_pListResult->SendToMessageLog();
     pData->pDirectoryListing->direntry = m_pTransferSocket->m_pListResult->getList(num, false);
     pData->pDirectoryListing->num = num;
@@ -2126,14 +2126,14 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
       m_pDirectoryListing=0;
     }
 
-    if (COptions::GetOptionVal(OPTION_PROXYTYPE)!=PROXYTYPE_NOPROXY)
+    if (GetOptionVal(OPTION_PROXYTYPE)!=PROXYTYPE_NOPROXY)
       pData->bPasv = TRUE;
     else if (m_CurrentServer.nPasv == 1)
       pData->bPasv = TRUE;
     else if (m_CurrentServer.nPasv == 2)
       pData->bPasv = FALSE;
     else
-      pData->bPasv = COptions::GetOptionVal(OPTION_PASV);
+      pData->bPasv = GetOptionVal(OPTION_PASV);
 
     CServerPath path = pData->path;
     CServerPath realpath = m_pOwner->GetCurrentPath();
@@ -2335,7 +2335,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
         }
         else if (GetFamily() == AF_INET6)
         {
-          host = COptions::GetOption(OPTION_TRANSFERIP6);
+          host = GetOption(OPTION_TRANSFERIP6);
           if (host != L"")
           {
             USES_CONVERSION;
@@ -2498,7 +2498,7 @@ void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & p
       CFtpListResult * pListResult = new CFtpListResult(m_CurrentServer, &m_bUTF8, &m_nCodePage);
       pListResult->InitIntern(GetIntern());
       pListResult->AddData(buffer, size);
-      if (COptions::GetOptionVal(OPTION_DEBUGSHOWLISTING))
+      if (GetOptionVal(OPTION_DEBUGSHOWLISTING))
         pListResult->SendToMessageLog();
       pData->direntry = pListResult->getList(num, true);
       if (pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
@@ -2841,7 +2841,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 
       int num=0;
       pData->pDirectoryListing=new t_directory;
-      if (COptions::GetOptionVal(OPTION_DEBUGSHOWLISTING))
+      if (GetOptionVal(OPTION_DEBUGSHOWLISTING))
         m_pTransferSocket->m_pListResult->SendToMessageLog();
       pData->pDirectoryListing->direntry=m_pTransferSocket->m_pListResult->getList(num, false);
       pData->pDirectoryListing->num=num;
@@ -2911,14 +2911,14 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     m_Operation.pData=new CFileTransferData;
     pData=static_cast<CFileTransferData *>(m_Operation.pData);
 
-    if (COptions::GetOptionVal(OPTION_PROXYTYPE)!=PROXYTYPE_NOPROXY)
+    if (GetOptionVal(OPTION_PROXYTYPE)!=PROXYTYPE_NOPROXY)
       pData->bPasv = TRUE;
     else if (m_CurrentServer.nPasv == 1)
       pData->bPasv = TRUE;
     else if (m_CurrentServer.nPasv == 2)
       pData->bPasv = FALSE;
     else
-      pData->bPasv = COptions::GetOptionVal(OPTION_PASV);
+      pData->bPasv = GetOptionVal(OPTION_PASV);
 
     //Replace invalid characters in the local filename
     int pos=transferfile->localfile.ReverseFind(L'\\');
@@ -3888,12 +3888,12 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
               }
             }
           }
-          if (!nReplyError && !COptions::GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY))
+          if (!nReplyError && !GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY))
           {
             m_pTransferSocket->SetActive();
           }
         }
-        else if (pData->bPasv && !COptions::GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY))
+        else if (pData->bPasv && !GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY))
         {
           m_pTransferSocket->SetActive();
         }
@@ -3992,7 +3992,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     DebugFail();
 #else
     {
-      pData->newZlibLevel = COptions::GetOptionVal(OPTION_MODEZ_LEVEL);
+      pData->newZlibLevel = GetOptionVal(OPTION_MODEZ_LEVEL);
       CString str;
       str.Format(L"OPTS MODE Z LEVEL %d", pData->newZlibLevel);
       if (!Send(str))
@@ -4069,7 +4069,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         CString host;
         if (GetFamily() == AF_INET)
         {
-          host = COptions::GetOption(OPTION_TRANSFERIP);
+          host = GetOption(OPTION_TRANSFERIP);
           if (host != L"")
           {
             DWORD ip = inet_addr(T2CA(host));
@@ -4112,7 +4112,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         }
         else if (GetFamily() == AF_INET6)
         {
-          host = COptions::GetOption(OPTION_TRANSFERIP6);
+          host = GetOption(OPTION_TRANSFERIP6);
           if (host != L"")
           {
             USES_CONVERSION;
@@ -4230,7 +4230,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     DebugFail();
 #else
     {
-      pData->newZlibLevel = COptions::GetOptionVal(OPTION_MODEZ_LEVEL);
+      pData->newZlibLevel = GetOptionVal(OPTION_MODEZ_LEVEL);
       CString str;
       str.Format(L"OPTS MODE Z LEVEL %d", pData->newZlibLevel);
       if (!Send(str))
@@ -4305,7 +4305,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         CString host;
         if (GetFamily() == AF_INET)
         {
-          host = COptions::GetOption(OPTION_TRANSFERIP);
+          host = GetOption(OPTION_TRANSFERIP);
           if (host != L"")
           {
             DWORD ip = inet_addr(T2CA(host));
@@ -4345,7 +4345,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         }
         else if (GetFamily() == AF_INET6)
         {
-          host = COptions::GetOption(OPTION_TRANSFERIP6);
+          host = GetOption(OPTION_TRANSFERIP6);
           if (host != L"")
           {
             USES_CONVERSION;
@@ -4415,7 +4415,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     m_pTransferSocket->m_transferdata=pData->transferdata;
     // not sure what happens when we active transfer socket immediately while resuming
     // it can possibly make transfer socket start reading from a file before a file pointer is advanced
-    if (COptions::GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY) ||
+    if (GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY) ||
         ((pData->transferfile.get || !pData->transferdata.bResume) && !pData->bPasv))
     {
       m_pTransferSocket->SetActive();
@@ -4526,14 +4526,14 @@ void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
 {
   CFileTransferData *pData=static_cast<CFileTransferData *>(m_Operation.pData);
 
-  if (COptions::GetOptionVal(OPTION_PRESERVEDOWNLOADFILETIME) && m_pDataFile &&
+  if (GetOptionVal(OPTION_PRESERVEDOWNLOADFILETIME) && m_pDataFile &&
         pData->transferfile.get)
   {
     m_pTools->PreserveDownloadFileTime(
       (HANDLE)m_pDataFile->m_hFile, reinterpret_cast<void *>(pData->transferfile.nUserData));
   }
   if (!pData->transferfile.get &&
-      COptions::GetOptionVal(OPTION_MPEXT_PRESERVEUPLOADFILETIME) && preserveFileTimeForUploads &&
+      GetOptionVal(OPTION_MPEXT_PRESERVEUPLOADFILETIME) && preserveFileTimeForUploads &&
       ((m_serverCapabilities.GetCapability(mfmt_command) == yes) ||
        (m_serverCapabilities.GetCapability(mdtm_command) == yes)))
   {
@@ -4618,12 +4618,12 @@ void CFtpControlSocket::ResumeTransfer()
 
 BOOL CFtpControlSocket::Create()
 {
-  if (!COptions::GetOptionVal(OPTION_LIMITPORTRANGE))
-    return CAsyncSocketEx::Create(0, SOCK_STREAM, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT |  FD_CONNECT | FD_CLOSE, 0, COptions::GetOptionVal(OPTION_ENABLE_IPV6) ? AF_UNSPEC : AF_INET);
+  if (!GetOptionVal(OPTION_LIMITPORTRANGE))
+    return CAsyncSocketEx::Create(0, SOCK_STREAM, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT |  FD_CONNECT | FD_CLOSE, 0, GetOptionVal(OPTION_ENABLE_IPV6) ? AF_UNSPEC : AF_INET);
   else
   {
-    int min=COptions::GetOptionVal(OPTION_PORTRANGELOW);
-    int max=COptions::GetOptionVal(OPTION_PORTRANGEHIGH);
+    int min=GetOptionVal(OPTION_PORTRANGELOW);
+    int max=GetOptionVal(OPTION_PORTRANGEHIGH);
     if (min>=max)
     {
       ShowStatus(IDS_ERRORMSG_CANTCREATEDUETOPORTRANGE,FZ_LOG_ERROR);
@@ -4632,7 +4632,7 @@ BOOL CFtpControlSocket::Create()
     int startport = static_cast<int>(min+((double)rand()*(max-min))/(RAND_MAX+1));
     int port = startport;
 
-    while (!CAsyncSocketEx::Create(port, SOCK_STREAM, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT |  FD_CONNECT | FD_CLOSE, 0, COptions::GetOptionVal(OPTION_ENABLE_IPV6) ? AF_UNSPEC : AF_INET))
+    while (!CAsyncSocketEx::Create(port, SOCK_STREAM, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT |  FD_CONNECT | FD_CLOSE, 0, GetOptionVal(OPTION_ENABLE_IPV6) ? AF_UNSPEC : AF_INET))
     {
       port++;
       if (port>max)
@@ -5619,13 +5619,13 @@ void CFtpControlSocket::OnTimer()
 {
   CheckForTimeout();
   ResumeTransfer();
-  if (COptions::GetOptionVal(OPTION_KEEPALIVE))
+  if (GetOptionVal(OPTION_KEEPALIVE))
   {
     if (!m_pOwner->IsBusy() && m_pOwner->IsConnected() && !m_bKeepAliveActive)
     {
       //Getting intervals for the Keep Alive feature
-      int low=COptions::GetOptionVal(OPTION_INTERVALLOW);
-      int diff=COptions::GetOptionVal(OPTION_INTERVALHIGH)-low;
+      int low=GetOptionVal(OPTION_INTERVALLOW);
+      int diff=GetOptionVal(OPTION_INTERVALHIGH)-low;
 
       //Choose a new delay
       int delay=low+(rand()*diff)/RAND_MAX;
@@ -6255,9 +6255,9 @@ bool CFtpControlSocket::NeedModeCommand()
 #else
   bool useZlib;
   if (m_Operation.nOpMode == CSMODE_LIST || (m_Operation.nOpMode == CSMODE_TRANSFER && m_Operation.nOpMode <= FILETRANSFER_TYPE))
-    useZlib = COptions::GetOptionVal(OPTION_MODEZ_USE) != 0;
+    useZlib = GetOptionVal(OPTION_MODEZ_USE) != 0;
   else
-    useZlib = COptions::GetOptionVal(OPTION_MODEZ_USE) > 1;
+    useZlib = GetOptionVal(OPTION_MODEZ_USE) > 1;
 
   if (!m_useZlib && !m_zlibSupported)
     return false;
@@ -6274,7 +6274,7 @@ bool CFtpControlSocket::NeedOptsCommand()
     return false;
 
 #ifndef MPEXT_NO_ZLIB
-  return m_zlibLevel != COptions::GetOptionVal(OPTION_MODEZ_LEVEL);
+  return m_zlibLevel != GetOptionVal(OPTION_MODEZ_LEVEL);
 #endif
 }
 
@@ -6447,7 +6447,7 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
       if (!GetPeerName(ahost, tmpPort))
       {
         // this should happen with proxy server only
-        int logontype = COptions::GetOptionVal(OPTION_LOGONTYPE);
+        int logontype = GetOptionVal(OPTION_LOGONTYPE);
         // do not know what to do, if there's FTP proxy
         if (!logontype)
         {

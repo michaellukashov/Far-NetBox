@@ -69,11 +69,11 @@ int CFileZillaApi::Connect(const t_server &server)
 
 #ifndef MPEXT_NO_GSS
   BOOL bUseGSS = FALSE;
-  if (COptions::GetOptionVal(OPTION_USEGSS))
+  if (GetOptionVal(OPTION_USEGSS))
   {
     USES_CONVERSION;
 
-    CString GssServers = COptions::GetOption(OPTION_GSSSERVERS);
+    CString GssServers = GetOption(OPTION_GSSSERVERS);
     hostent *fullname = gethostbyname(T2CA(server.host));
     CString host;
     if (fullname)

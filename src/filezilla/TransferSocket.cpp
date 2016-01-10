@@ -315,7 +315,7 @@ void CTransferSocket::SetBuffers()
   DWORD value = 0;
   int len = sizeof(value);
   GetSockOpt(SO_SNDBUF, &value, &len);
-  int sndbuf = COptions::GetOptionVal(OPTION_MPEXT_SNDBUF);
+  int sndbuf = GetOptionVal(OPTION_MPEXT_SNDBUF);
   if (value < sndbuf)
   {
     value = sndbuf;
@@ -365,9 +365,9 @@ void CTransferSocket::OnAccept(int nErrorCode)
     {
       AddLayer(m_pSslLayer);
       int res = m_pSslLayer->InitSSLConnection(true, m_pOwner->m_pSslLayer,
-        COptions::GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
-        COptions::GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
-        COptions::GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
+        GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
+        GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
+        GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
       if (res == SSL_FAILURE_INITSSL)
         m_pOwner->ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
 
@@ -397,7 +397,7 @@ void CTransferSocket::ConfigureSocket()
   // has to be set before connect()
   // http://stackoverflow.com/questions/22583941/what-is-the-workaround-for-tcp-delayed-acknowledgment/25871250#25871250
 
-  int nodelay = COptions::GetOptionVal(OPTION_MPEXT_NODELAY);
+  int nodelay = GetOptionVal(OPTION_MPEXT_NODELAY);
   if (nodelay != 0)
   {
     BOOL bvalue = TRUE;
@@ -448,9 +448,9 @@ void CTransferSocket::OnConnect(int nErrorCode)
     {
       AddLayer(m_pSslLayer);
       int res = m_pSslLayer->InitSSLConnection(true, m_pOwner->m_pSslLayer,
-        COptions::GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
-        COptions::GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
-        COptions::GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
+        GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
+        GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
+        GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
       if (res == SSL_FAILURE_INITSSL)
       {
         m_pOwner->ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
@@ -874,38 +874,38 @@ BOOL CTransferSocket::Create(BOOL bUseSsl)
     m_pSslLayer->SetClientCertificate(m_pOwner->m_CurrentServer.Certificate, m_pOwner->m_CurrentServer.PrivateKey);
   }
 
-  int nProxyType = COptions::GetOptionVal(OPTION_PROXYTYPE);
+  int nProxyType = GetOptionVal(OPTION_PROXYTYPE);
   if (nProxyType != PROXYTYPE_NOPROXY)
   {
     USES_CONVERSION;
 
     m_pProxyLayer = new CAsyncProxySocketLayer();
     if (nProxyType == PROXYTYPE_SOCKS4)
-      m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4, T2CA(COptions::GetOption(OPTION_PROXYHOST)), COptions::GetOptionVal(OPTION_PROXYPORT));
+      m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT));
     else if (nProxyType == PROXYTYPE_SOCKS4A)
-      m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4A, T2CA(COptions::GetOption(OPTION_PROXYHOST)), COptions::GetOptionVal(OPTION_PROXYPORT));
+      m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4A, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT));
     else if (nProxyType == PROXYTYPE_SOCKS5)
-      if (COptions::GetOptionVal(OPTION_PROXYUSELOGON))
-        m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS5, T2CA(COptions::GetOption(OPTION_PROXYHOST)),
-                    COptions::GetOptionVal(OPTION_PROXYPORT),
-                    T2CA(COptions::GetOption(OPTION_PROXYUSER)),
-                    T2CA(COptions::GetOption(OPTION_PROXYPASS)));
+      if (GetOptionVal(OPTION_PROXYUSELOGON))
+        m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS5, T2CA(GetOption(OPTION_PROXYHOST)),
+                    GetOptionVal(OPTION_PROXYPORT),
+                    T2CA(GetOption(OPTION_PROXYUSER)),
+                    T2CA(GetOption(OPTION_PROXYPASS)));
       else
-        m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS5, T2CA(COptions::GetOption(OPTION_PROXYHOST)),
-                    COptions::GetOptionVal(OPTION_PROXYPORT));
+        m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS5, T2CA(GetOption(OPTION_PROXYHOST)),
+                    GetOptionVal(OPTION_PROXYPORT));
     else if (nProxyType == PROXYTYPE_HTTP11)
-      if (COptions::GetOptionVal(OPTION_PROXYUSELOGON))
-        m_pProxyLayer->SetProxy(PROXYTYPE_HTTP11, T2CA(COptions::GetOption(OPTION_PROXYHOST)), COptions::GetOptionVal(OPTION_PROXYPORT),
-                    T2CA(COptions::GetOption(OPTION_PROXYUSER)),
-                    T2CA(COptions::GetOption(OPTION_PROXYPASS)));
+      if (GetOptionVal(OPTION_PROXYUSELOGON))
+        m_pProxyLayer->SetProxy(PROXYTYPE_HTTP11, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT),
+                    T2CA(GetOption(OPTION_PROXYUSER)),
+                    T2CA(GetOption(OPTION_PROXYPASS)));
       else
-        m_pProxyLayer->SetProxy(PROXYTYPE_HTTP11, T2CA(COptions::GetOption(OPTION_PROXYHOST)), COptions::GetOptionVal(OPTION_PROXYPORT));
+        m_pProxyLayer->SetProxy(PROXYTYPE_HTTP11, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT));
     else
       DebugFail();
     AddLayer(m_pProxyLayer);
   }
 
-  if (!COptions::GetOptionVal(OPTION_LIMITPORTRANGE))
+  if (!GetOptionVal(OPTION_LIMITPORTRANGE))
   {
     if (!CAsyncSocketEx::Create(0, SOCK_STREAM, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE, 0, GetFamily()))
       return FALSE;
@@ -914,8 +914,8 @@ BOOL CTransferSocket::Create(BOOL bUseSsl)
   }
   else
   {
-    int min=COptions::GetOptionVal(OPTION_PORTRANGELOW);
-    int max=COptions::GetOptionVal(OPTION_PORTRANGEHIGH);
+    int min=GetOptionVal(OPTION_PORTRANGELOW);
+    int max=GetOptionVal(OPTION_PORTRANGEHIGH);
     if (min>=max)
     {
       m_pOwner->ShowStatus(IDS_ERRORMSG_CANTCREATEDUETOPORTRANGE,FZ_LOG_ERROR);
@@ -1097,7 +1097,7 @@ int CTransferSocket::ReadDataFromFile(char *buffer, int len)
     // leaving it onto the server (what Filezilla 3 seems to do too)
     const char Bom[4] = "\xEF\xBB\xBF";
     int read = m_pFile->Read(buffer, len);
-    if (COptions::GetOptionVal(OPTION_MPEXT_REMOVE_BOM) &&
+    if (GetOptionVal(OPTION_MPEXT_REMOVE_BOM) &&
         m_transferdata.bType && (read >= sizeof(Bom)) && (memcmp(buffer, Bom, sizeof(Bom)) == 0))
     {
       memmove(buffer, buffer + 3, read - 3);
