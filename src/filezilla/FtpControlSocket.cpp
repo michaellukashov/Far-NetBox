@@ -6120,17 +6120,17 @@ CString CFtpControlSocket::ConvertDomainName(CString domain)
 
   LPCWSTR buffer = T2CW(domain);
 
-  char *utf8 = new char[wcslen(buffer) * 2 + 2];
+  char *utf8 = static_cast<char *>(nb_calloc(1, wcslen(buffer) * 2 + 2));
   if (!WideCharToMultiByte(CP_UTF8, 0, buffer, -1, utf8, wcslen(buffer) * 2 + 2, 0, 0))
   {
-    delete [] utf8;
+    nb_free(utf8);
     LogMessage(FZ_LOG_WARNING, L"Could not convert domain name");
     return domain;
   }
 
   char *output = 0;
   output = strdup(utf8);
-  delete [] utf8;
+  nb_free(utf8);
 
   CString result = A2T(output);
   free(output);

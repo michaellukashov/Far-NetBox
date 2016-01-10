@@ -1528,12 +1528,13 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
       USES_CONVERSION;
       u_char *data;
       int len = BIO_get_mem_data(subjectAltNameBio, &data);
-      char * buf = new char[len + 1];
+      char * buf = static_cast<char *>(nb_calloc(1, len + 1));
+
       memcpy(buf, data, len);
       buf[len] = '\0';
       _tcsncpy(SslCertData.subjectAltName, A2CT(buf), _countof(SslCertData.subjectAltName));
       SslCertData.subjectAltName[_countof(SslCertData.subjectAltName) - 1] = '\0';
-      delete[] buf;
+      nb_free(buf);
     }
 
     BIO_vfree(subjectAltNameBio);
