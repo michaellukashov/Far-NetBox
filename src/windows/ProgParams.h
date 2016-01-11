@@ -9,7 +9,7 @@ public:
   // static TProgramParams * Instance();
 
   explicit TProgramParams();
-  TProgramParams(const UnicodeString & CmdLine);
+  explicit TProgramParams(const UnicodeString & CmdLine);
 
 private:
   void Init(const UnicodeString & CmdLine);
