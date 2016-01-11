@@ -1,10 +1,21 @@
+
 #pragma once
 
-#include <apr_pools.h>
 
+#include <ne_uri.h>
+#include <ne_utils.h>
+#include <ne_string.h>
+#include <ne_request.h>
 #include <FileSystems.h>
-#include "Terminal.h"
 
+struct TWebDAVCertificateData;
+struct ne_ssl_certificate_s;
+struct ne_session_s;
+struct ne_prop_result_set_s;
+struct ne_lock_store_s;
+struct TOverwriteFileParams;
+struct ssl_st;
+struct ne_lock;
 struct TListDataEntry;
 struct TFileTransferData;
 
@@ -27,7 +38,7 @@ public:
 
   virtual void Open();
   virtual void Close();
-  virtual bool GetActive() const { return FActive; }
+  virtual bool GetActive() const;
   virtual void CollectUsage();
   virtual void Idle();
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local);
@@ -81,6 +92,11 @@ public:
   virtual bool GetStoredCredentialsTried() const;
   virtual UnicodeString FSGetUserName() const;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs);
+  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem);
+
+  void NeonDebug(const UnicodeString & Message);
 
 public:
   virtual void ReadDirectoryProgress(int64_t Bytes);
@@ -168,6 +184,37 @@ protected:
     bool AutoResume,
     OUT TOverwriteMode & OverwriteMode,
     OUT uintptr_t & Answer);
+  void CheckStatus(int NeonStatus);
+  void ClearNeonError();
+  static void NeonPropsResult(
+    void * UserData, const ne_uri * Uri, const ne_prop_result_set_s * Results);
+  void ParsePropResultSet(TRemoteFile * File,
+    const UnicodeString & Path, const ne_prop_result_set_s * Results);
+  void TryOpenDirectory(UnicodeString Directory);
+  static int NeonBodyReader(void * UserData, const char * Buf, size_t Len);
+  static void NeonPreSend(ne_request * Request, void * UserData, ne_buffer * Header);
+  static int NeonBodyAccepter(void * UserData, ne_request * Request, const ne_status * Status);
+  static void NeonCreateRequest(ne_request * Request, void * UserData, const char * Method, const char * Uri);
+  static int NeonRequestAuth(void * UserData, const char * Realm, int Attempt, char * UserName, char * Password);
+  void NeonOpen(UnicodeString & CorrectedUrl, const UnicodeString & Url);
+  void NeonClientOpenSessionInternal(UnicodeString & CorrectedUrl, UnicodeString Url);
+  static void NeonNotifier(void * UserData, ne_session_status Status, const ne_session_status_info * StatusInfo);
+  static ssize_t NeonUploadBodyProvider(void * UserData, char * Buffer, size_t BufLen);
+  static int NeonPostSend(ne_request * Req, void * UserData, const ne_status * Status);
+  void ExchangeCapabilities(const char * Path, UnicodeString & CorrectedUrl);
+  static int NeonServerSSLCallback(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
+  static void NeonProvideClientCert(void * UserData, ne_session * Sess, const ne_ssl_dname * const * DNames, int DNCount);
+  void CloseNeonSession();
+  bool CancelTransfer();
+  UnicodeString GetNeonError();
+  static void NeonQuotaResult(void * UserData, const ne_uri * Uri, const ne_prop_result_set_s * Results);
+  static const char * GetProp(const ne_prop_result_set_s * Results,
+    const char * Name, const char * NameSpace = NULL);
+  static void LockResult(void * UserData, const struct ne_lock * Lock,
+   const ne_uri * Uri, const ne_status * Status);
+  void RequireLockStore();
+  static void InitSslSession(ssl_st * Ssl, ne_session * Session);
+  void InitSslSessionImpl(ssl_st * Ssl);
   void ResetFileTransfer();
   void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
   void DoReadDirectory(TRemoteFileList * FileList);
@@ -199,16 +246,45 @@ private:
   TCaptureOutputEvent FOnCaptureOutput;
   TSessionInfo FSessionInfo;
   UnicodeString FUserName;
-  UnicodeString FPassword;
+  bool FActive;
+  bool FHasTrailingSlash;
+  bool FCancelled;
+  bool FStoredPasswordTried;
+  bool FUploading;
+  bool FDownloading;
+  ne_session_s * FNeonSession;
+  ne_lock_store_s * FNeonLockStore;
+  TCriticalSection * FNeonLockStoreSection;
+  bool FInitialHandshake;
+  bool FAuthenticationRequested;
+  UnicodeString FResponse;
+  RawByteString FPassword;
   UnicodeString FTlsVersionStr;
+  unsigned int FCapabilities;
   UnicodeString FHostName;
   int FPortNumber;
-  enum TIgnoreAuthenticationFailure
-  {
-    iafNo,
-    iafWaiting,
-    iafPasswordFailed
-  } FIgnoreAuthenticationFailure;
+  enum TIgnoreAuthenticationFailure { iafNo, iafWaiting, iafPasswordFailed } FIgnoreAuthenticationFailure;
+
+  void CustomReadFile(UnicodeString FileName,
+    TRemoteFile *& File, TRemoteFile * ALinkedByFile);
+  int CustomReadFileInternal(const UnicodeString FileName,
+    TRemoteFile *& File, TRemoteFile * ALinkedByFile);
+  void RegisterForDebug();
+  void UnregisterFromDebug();
+  bool VerifyCertificate(
+    const TWebDAVCertificateData & Data);
+  void OpenUrl(const UnicodeString & Url);
+  void CollectTLSSessionInfo();
+  UnicodeString GetRedirectUrl();
+  UnicodeString ParsePathFromUrl(const UnicodeString & Url);
+  int ReadDirectoryInternal(const UnicodeString & Path, TRemoteFileList * FileList);
+  int RenameFileInternal(const UnicodeString & FileName, const UnicodeString & NewName);
+  bool IsValidRedirect(int NeonStatus, UnicodeString & Path);
+  UnicodeString DirectoryPath(UnicodeString Path);
+  UnicodeString FilePath(const TRemoteFile * File);
+  struct ne_lock * FindLock(const RawByteString & Path);
+  void DiscardLock(const RawByteString & Path);
+
   bool FStoredPasswordTried;
   bool FPasswordFailed;
   bool FActive;
