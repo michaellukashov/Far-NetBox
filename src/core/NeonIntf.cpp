@@ -1,6 +1,9 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
+
+#include <neon/src/ne_auth.h>
+#include <neon/src/ne_redirect.h>
 
 #include "NeonIntf.h"
 #include "Interface.h"
@@ -8,13 +11,11 @@
 #include "Exceptions.h"
 #include "Security.h"
 #include <TextsCore.h>
-#include <ne_auth.h>
-#include <ne_redirect.h>
 #include <StrUtils.hpp>
-//---------------------------------------------------------------------------
+
 #define SESSION_PROXY_AUTH_KEY "proxyauth"
 #define SESSION_TLS_INIT_KEY "tlsinit"
-//---------------------------------------------------------------------------
+
 void NeonParseUrl(const UnicodeString & Url, ne_uri & uri)
 {
   if (ne_uri_parse(StrToNeon(Url), &uri) != 0)
@@ -29,18 +30,18 @@ void NeonParseUrl(const UnicodeString & Url, ne_uri & uri)
     uri.port = ne_uri_defaultport(uri.scheme);
   }
 }
-//---------------------------------------------------------------------------
+
 bool IsTlsUri(const ne_uri & uri)
 {
   return SameText(StrFromNeon(uri.scheme), WebDAVSProtocol);
 }
-//---------------------------------------------------------------------------
+
 struct TProxyAuthData
 {
   UnicodeString UserName;
   UnicodeString Password;
 };
-//------------------------------------------------------------------------------
+
 static int NeonProxyAuth(
   void * UserData, const char * /*Realm*/, int Attempt, char * UserName, char * Password)
 {
@@ -62,7 +63,7 @@ static int NeonProxyAuth(
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 ne_session * CreateNeonSession(
   const ne_uri & uri, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
   int ProxyPort, const UnicodeString & ProxyUsername, const UnicodeString & ProxyPassword)
@@ -103,7 +104,7 @@ ne_session * CreateNeonSession(
 
   return Session;
 }
-//---------------------------------------------------------------------------
+
 void DestroyNeonSession(ne_session * Session)
 {
   TProxyAuthData * ProxyAuthData =
@@ -114,12 +115,12 @@ void DestroyNeonSession(ne_session * Session)
   }
   ne_session_destroy(Session);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetNeonError(ne_session * Session)
 {
   return StrFromNeon(ne_get_error(Session));
 }
-//---------------------------------------------------------------------------
+
 void CheckNeonStatus(ne_session * Session, int NeonStatus,
   const UnicodeString & HostName, const UnicodeString & CustomError)
 {
@@ -186,7 +187,7 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
     throw ExtException(Error, NeonError);
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetNeonRedirectUrl(ne_session * Session)
 {
   const ne_uri * RedirectUri = ne_redirect_location(Session);
@@ -195,9 +196,9 @@ UnicodeString GetNeonRedirectUrl(ne_session * Session)
   ne_free(RedirectUriStr);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 #define MAX_REDIRECT_ATTEMPTS 5
-//---------------------------------------------------------------------------
+
 void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls)
 {
   if (AttemptedUrls->Count > MAX_REDIRECT_ATTEMPTS)
@@ -214,7 +215,7 @@ void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUr
     AttemptedUrls->Add(RedirectUrl);
   }
 }
-//---------------------------------------------------------------------------
+
 extern "C"
 {
 
@@ -229,12 +230,12 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 }
 
 } // extern "C"
-//---------------------------------------------------------------------------
+
 void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit)
 {
   ne_set_session_private(Session, SESSION_TLS_INIT_KEY, OnNeonTlsInit);
 }
-//---------------------------------------------------------------------------
+
 AnsiString NeonExportCertificate(const ne_ssl_certificate * Certificate)
 {
   char * AsciiCert = ne_ssl_cert_export(Certificate);
@@ -242,7 +243,7 @@ AnsiString NeonExportCertificate(const ne_ssl_certificate * Certificate)
   ne_free(AsciiCert);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert)
 {
   bool Result = false;
@@ -264,7 +265,7 @@ bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString & HostName)
 {
   int FailuresToList = Failures;
