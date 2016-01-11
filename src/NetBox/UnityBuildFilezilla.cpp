@@ -22,5 +22,6 @@
 #include "../filezilla/AsyncProxySocketLayer.cpp"
 #include "../filezilla/structures.cpp"
 #include "../filezilla/MFC64bitFix.cpp"
+#include "../filezilla/misc/CBase64Coding.cpp"
 
 #pragma warning(pop)

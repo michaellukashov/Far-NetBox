@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "AsyncProxySocketLayer.h"
 #include "atlconv.h" //Unicode<->Ascii conversion macros declared here
-// #include <Soap.EncdDecd.hpp>
+#include "misc/CBase64Coding.hpp"
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
@@ -910,11 +910,15 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
         char userpass[4096];
         sprintf(userpass, "%s:%s", m_ProxyData.pProxyUser?m_ProxyData.pProxyUser:"", m_ProxyData.pProxyPass?m_ProxyData.pProxyPass:"");
 
-        AnsiString base64str = EncodeBase64(userpass, strlen(userpass));
+//        AnsiString base64str = EncodeBase64(userpass, strlen(userpass));
+        char base64str[4096];
+
+        CBase64Coding base64coding;
+        base64coding.Encode(userpass, strlen(userpass), base64str);
         strcat(str, "Authorization: Basic ");
-        strcat(str, base64str.c_str());
+        strcat(str, base64str);
         strcat(str, "\r\nProxy-Authorization: Basic ");
-        strcat(str, base64str.c_str());
+        strcat(str, base64str);
         strcat(str, "\r\n\r\n");
       }
       nb_free(pHost);

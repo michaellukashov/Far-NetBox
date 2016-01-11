@@ -8,8 +8,8 @@
 #include "AsyncGssSocketLayer.h"
 #endif
 
-// #define BUFSIZE 16384
-#define BUFSIZE 128 * 1024 // 64 * 1024
+#define BUFSIZE 16384
+//#define BUFSIZE 128 * 1024 // 64 * 1024
 
 #define STATE_WAITING    0
 #define STATE_STARTING    1
