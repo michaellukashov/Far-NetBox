@@ -33,7 +33,7 @@ void NeonParseUrl(const UnicodeString & Url, ne_uri & uri)
 
 bool IsTlsUri(const ne_uri & uri)
 {
-  return SameText(StrFromNeon(uri.scheme), WebDAVSProtocol);
+  return SameText(StrFromNeon(uri.scheme), GetWebDAVSProtocol());
 }
 
 struct TProxyAuthData
@@ -100,7 +100,7 @@ ne_session * CreateNeonSession(
   }
 
   ne_redirect_register(Session);
-  ne_set_useragent(Session, StrToNeon(FORMAT(L"%s/%s", (AppNameString(), Configuration->Version))));
+  ne_set_useragent(Session, StrToNeon(FORMAT(L"%s/%s", GetAppNameString().c_str(), GetConfiguration()->GetVersion().c_str())));
 
   return Session;
 }
@@ -201,7 +201,7 @@ UnicodeString GetNeonRedirectUrl(ne_session * Session)
 
 void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls)
 {
-  if (AttemptedUrls->Count > MAX_REDIRECT_ATTEMPTS)
+  if (AttemptedUrls->GetCount() > MAX_REDIRECT_ATTEMPTS)
   {
     throw Exception(LoadStr(TOO_MANY_REDIRECTS));
   }

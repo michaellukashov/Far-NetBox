@@ -22,6 +22,20 @@ public:
   void Get();
   void Post(const UnicodeString & Request);
 
+  UnicodeString GetURL() const { return FURL; }
+  void SetURL(const UnicodeString & Value) { FURL = Value; }
+  UnicodeString GetProxyHost() const { return FProxyHost; }
+  void SetProxyHost(const UnicodeString & Value) { FProxyHost = Value; }
+  int GetProxyPort() const { return FProxyPort; }
+  void SetProxyPort(int Value) { FProxyPort = Value; }
+  UnicodeString GetResponse() const;
+  RawByteString GetResponseRaw() const { return FResponse; }
+  int64_t GetResponseLength() const;
+  int64_t GetResponseLimit() const { return FResponseLimit; }
+  void SetResponseLimit(int64_t Value) { FResponseLimit = Value; }
+  THttpDownloadEvent GetOnDownload() const { return FOnDownload; }
+  void SetOnDownload(THttpDownloadEvent Value) { FOnDownload = Value; }
+
   /*__property UnicodeString URL = { read = FURL, write = FURL };
   __property UnicodeString ProxyHost = { read = FProxyHost, write = FProxyHost };
   __property int ProxyPort = { read = FProxyPort, write = FProxyPort };
@@ -45,8 +59,8 @@ private:
   static int NeonBodyReader(void * UserData, const char * Buf, size_t Len);
   int NeonBodyReaderImpl(const char * Buf, size_t Len);
   void SendRequest(const char * Method, const UnicodeString & Request);
-  UnicodeString GetResponse();
-  int64_t GetResponseLength();
+//  UnicodeString GetResponse();
+//  int64_t GetResponseLength();
   static void InitSslSession(ssl_st * Ssl, ne_session_s * Session);
   static int NeonServerSSLCallback(void * UserData, int Failures, const ne_ssl_certificate_s * Certificate);
   int NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate_s * Certificate);

@@ -2,12 +2,13 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <neon/src/ne_request.h>
+#include <openssl/ssl.h>
+
 #include "Http.h"
 #include "NeonIntf.h"
 #include "Exceptions.h"
-#include "ne_request.h"
 #include "TextsCore.h"
-#include <openssl/ssl.h>
 
 THttp::THttp()
 {
@@ -23,8 +24,8 @@ THttp::~THttp()
 void THttp::SendRequest(const char * Method, const UnicodeString & Request)
 {
   std::unique_ptr<TStringList> AttemptedUrls(CreateSortedStringList());
-  AttemptedUrls->Add(URL);
-  UnicodeString RequestUrl = URL;
+  AttemptedUrls->Add(GetURL());
+  UnicodeString RequestUrl = GetURL();
   bool WasTlsUri = false; // shut up
 
   bool Retry;
@@ -35,7 +36,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
     NeonParseUrl(RequestUrl, uri);
 
     bool IsTls = IsTlsUri(uri);
-    if (RequestUrl == URL)
+    if (RequestUrl == GetURL())
     {
       WasTlsUri = IsTls;
     }
@@ -59,13 +60,18 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
     FCertificateError.SetLength(0);
     FException.reset(nullptr);
 
-    TProxyMethod ProxyMethod = ProxyHost.IsEmpty() ? ::pmNone : pmHTTP;
+    TProxyMethod ProxyMethod = GetProxyHost().IsEmpty() ? ::pmNone : pmHTTP;
 
     ne_session_s * NeonSession =
       CreateNeonSession(
-        uri, ProxyMethod, ProxyHost, ProxyPort, UnicodeString(), UnicodeString());
-    try
+        uri, ProxyMethod, GetProxyHost(), GetProxyPort(), UnicodeString(), UnicodeString());
+
     {
+      SCOPE_EXIT
+      {
+        DestroyNeonSession(NeonSession);
+        ne_uri_free(&uri);
+      };
       if (IsTls)
       {
         SetNeonTlsInit(NeonSession, InitSslSession);
@@ -76,8 +82,12 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
       }
 
       ne_request_s * NeonRequest = ne_request_create(NeonSession, Method, StrToNeon(Uri));
-      try
+
       {
+        SCOPE_EXIT
+        {
+          ne_request_destroy(NeonRequest);
+        };
         UTF8String RequestUtf;
         if (!Request.IsEmpty())
         {
@@ -114,15 +124,6 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           }
         }
       }
-      __finally
-      {
-        ne_request_destroy(NeonRequest);
-      }
-    }
-    __finally
-    {
-      DestroyNeonSession(NeonSession);
-      ne_uri_free(&uri);
     }
   }
   while (Retry);
@@ -138,7 +139,7 @@ void THttp::Post(const UnicodeString & Request)
   SendRequest("POST", Request);
 }
 
-UnicodeString THttp::GetResponse()
+UnicodeString THttp::GetResponse() const
 {
   UTF8String UtfResponse(FResponse);
   return UnicodeString(UtfResponse);
@@ -158,7 +159,7 @@ int THttp::NeonBodyReaderImpl(const char * Buf, size_t Len)
 
       try
       {
-        FOnDownload(this, ResponseLength, Cancel);
+        FOnDownload(this, GetResponseLength(), Cancel);
       }
       catch (Exception & E)
       {
@@ -184,7 +185,7 @@ int THttp::NeonBodyReader(void * UserData, const char * Buf, size_t Len)
   return Http->NeonBodyReaderImpl(Buf, Len);
 }
 
-int64_t THttp::GetResponseLength()
+int64_t THttp::GetResponseLength() const
 {
   return FResponse.Length();
 }

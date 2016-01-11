@@ -117,14 +117,14 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
         {
           if (GetGUIConfiguration()->GetTelnetForFtpInPutty())
           {
-            ExportData->SetPuttyProtocol(PuttyTelnetProtocol);
+            ExportData->SetPuttyProtocol(PuttyTelnetProtocolStr);
             ExportData->SetPortNumber(TelnetPortNumber);
             // PuTTY  does not allow -pw for telnet
             Psw.Clear();
           }
           else
           {
-            ExportData->SetPuttyProtocol(PuttySshProtocol);
+            ExportData->SetPuttyProtocol(PuttySshProtocolStr);
             ExportData->SetPortNumber(SshPortNumber);
           }
         }

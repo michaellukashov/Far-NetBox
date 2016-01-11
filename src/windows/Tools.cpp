@@ -77,7 +77,6 @@ static void DoVerifyKey(
 {
   if (!AFileName.Trim().IsEmpty())
   {
-    TRACE("1");
     UnicodeString FileName = ExpandEnvironmentVariables(AFileName);
     TKeyType Type = GetKeyType(FileName);
     // reason _wfopen failed
@@ -89,17 +88,15 @@ static void DoVerifyKey(
     bool TryPuttygen = false;
     switch (Type)
     {
-      case ktOpenSSH:
+      case ktOpenSSHAuto:
       case ktSSHCom:
-        TRACE("2");
         {
-          UnicodeString TypeName = (Type == ktOpenSSH) ? L"OpenSSH SSH-2" : L"ssh.com SSH-2";
+          UnicodeString TypeName = (Type == ktOpenSSHAuto) ? L"OpenSSH SSH-2" : L"ssh.com SSH-2";
           TryPuttygen = FindTool(PuttygenTool, PuttygenPath);
           Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName.c_str(), TypeName.c_str());
           if (TryPuttygen)
           {
-            TRACE("3");
-            Message = FMTLOAD(KEY_TYPE_CONVERT2, (TypeName, RemoveMainInstructionsTag(Message)));
+            Message = FMTLOAD(KEY_TYPE_CONVERT2, TypeName.c_str(), RemoveMainInstructionsTag(Message).c_str());
           }
         }
         HelpKeyword = HELP_KEY_TYPE_UNSUPPORTED;
@@ -107,16 +104,13 @@ static void DoVerifyKey(
 
       case ktSSH1:
       case ktSSH2:
-        TRACE("4");
         // on file select do not check for SSH version as user may
         // intend to change it only after he/she selects key file
         if (!TypeOnly)
         {
-          TRACE("5");
           if ((Type == ktSSH1) !=
                 ((SshProt == ssh1only) || (SshProt == ssh1)))
           {
-            TRACE("6");
             Message =
               MainInstructions(
                 FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
@@ -126,7 +120,6 @@ static void DoVerifyKey(
         break;
 
       case ktUnopenable:
-        TRACE("8");
         Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, (AFileName)));
         if (Error != ERROR_SUCCESS)
         {
@@ -135,11 +128,9 @@ static void DoVerifyKey(
         break;
 
       default:
-        TRACE("7");
-        FAIL;
+        DebugFail();
         // fallthru
       case ktUnknown:
-        TRACE("9");
         Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, (AFileName)));
         break;
     }
@@ -148,11 +139,9 @@ static void DoVerifyKey(
     {
       if (TryPuttygen)
       {
-        TRACE("10");
-        Configuration->Usage->Inc(L"PrivateKeyConvertSuggestions");
+//        Configuration->Usage->Inc(L"PrivateKeyConvertSuggestions");
         if (MoreMessageDialog(Message, MoreMessages.get(), qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
         {
-          TRACE("11");
           if (!ExecuteShell(PuttygenPath, AddPathQuotes(AFileName)))
           {
             throw Exception(FMTLOAD(EXECUTE_APP_ERROR, (PuttygenPath)));
@@ -162,12 +151,10 @@ static void DoVerifyKey(
       }
       else
       {
-        TRACE("12");
-        Configuration->Usage->Inc(L"PrivateKeySelectErrors");
+//        Configuration->Usage->Inc(L"PrivateKeySelectErrors");
         if (MoreMessageDialog(Message, MoreMessages.get(), qtWarning, qaIgnore | qaAbort,
              HelpKeyword) == qaAbort)
         {
-          TRACE("13");
           Abort();
         }
       }
@@ -187,7 +174,6 @@ void VerifyKeyIncludingVersion(const UnicodeString & AFileName, TSshProt SshProt
 //---------------------------------------------------------------------------
 void VerifyCertificate(const UnicodeString & AFileName)
 {
-  CALLSTACK;
   if (!AFileName.Trim().IsEmpty())
   {
     try
