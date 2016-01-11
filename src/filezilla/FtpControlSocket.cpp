@@ -15,6 +15,7 @@
 #include <FileZillaOpt.h>
 #include <Classes.hpp>
 #include <Common.h>
+#include <WideStrUtils.hpp>
 
 class CFtpControlSocket::CFileTransferData : public CFtpControlSocket::t_operation::COpData
 {
