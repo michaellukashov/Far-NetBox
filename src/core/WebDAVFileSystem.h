@@ -1,11 +1,11 @@
 
 #pragma once
 
-
-#include <ne_uri.h>
-#include <ne_utils.h>
-#include <ne_string.h>
-#include <ne_request.h>
+#include <apr_pools.h>
+#include <neon/src/ne_uri.h>
+#include <neon/src/ne_utils.h>
+#include <neon/src/ne_string.h>
+#include <neon/src/ne_request.h>
 #include <FileSystems.h>
 
 struct TWebDAVCertificateData;
@@ -224,8 +224,8 @@ protected:
     TFileOperationProgressType * OperationProgress);
 
 private:
-  void CustomReadFile(const UnicodeString & AFileName,
-    TRemoteFile *& File, TRemoteFile * ALinkedByFile);
+//  void CustomReadFile(const UnicodeString & AFileName,
+//    TRemoteFile *& File, TRemoteFile * ALinkedByFile);
   bool SendPropFindRequest(const wchar_t * Path, int & ResponseCode);
   webdav::error_t OpenURL(const UnicodeString & SessionURL,
     apr_pool_t * pool);
@@ -265,9 +265,9 @@ private:
   int FPortNumber;
   enum TIgnoreAuthenticationFailure { iafNo, iafWaiting, iafPasswordFailed } FIgnoreAuthenticationFailure;
 
-  void CustomReadFile(UnicodeString FileName,
+  void CustomReadFile(const UnicodeString & FileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
-  int CustomReadFileInternal(const UnicodeString FileName,
+  int CustomReadFileInternal(const UnicodeString & AFileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
   void RegisterForDebug();
   void UnregisterFromDebug();
@@ -285,9 +285,9 @@ private:
   struct ne_lock * FindLock(const RawByteString & Path);
   void DiscardLock(const RawByteString & Path);
 
-  bool FStoredPasswordTried;
+//  bool FStoredPasswordTried;
   bool FPasswordFailed;
-  bool FActive;
+//  bool FActive;
   enum
   {
     ftaNone,
@@ -298,7 +298,7 @@ private:
   bool FFileTransferCancelled;
   int64_t FFileTransferResumed;
   bool FFileTransferPreserveTime;
-  bool FHasTrailingSlash;
+//  bool FHasTrailingSlash;
   size_t FFileTransferCPSLimit;
   size_t FLastReadDirectoryProgress;
   TFileOperationProgressType * FCurrentOperationProgress;
