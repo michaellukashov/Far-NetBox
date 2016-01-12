@@ -5182,11 +5182,6 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
     pTransferData->nWaitNextOpState = FILETRANSFER_TYPE;
     pTransferData->transferdata.localFileHandle = pData->localFileHandle;
     break;
-  case FILEEXISTS_OVERWRITEIFNEWER:
-    // MPEXT
-    DebugAssert(FALSE);
-    nReplyError = FZ_REPLY_OK;
-    break;
   case FILEEXISTS_RENAME:
     if (pTransferData->transferfile.get)
     {
@@ -5228,9 +5223,6 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
         pTransferData->nWaitNextOpState = FILETRANSFER_TYPE;
       }
     }
-    break;
-  case FILEEXISTS_RESUME_ASKONFAIL:
-    pTransferData->askOnResumeFail = true;
     break;
   case FILEEXISTS_RESUME:
     if (pData->size1 >= 0)
@@ -5878,15 +5870,8 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
           }
           TriggerEvent(FD_CLOSE);
           break;
-        case SSL_VERBOSE_INFO:
-          LogMessageRaw(FZ_LOG_INFO, A2CT(iter->str));
-          break;
-        case SSL_VERBOSE_WARNING:
-          LogMessageRaw(FZ_LOG_WARNING, A2CT(iter->str));
-          break;
         case SSL_VERIFY_CERT:
           t_SslCertData *pData = new t_SslCertData();
-          memset(pData, 0, sizeof(*pData));
           LPCTSTR CertError = NULL;
           if (m_pSslLayer->GetPeerCertificateData(*pData, CertError))
           {
