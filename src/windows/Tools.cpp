@@ -82,7 +82,7 @@ static void DoVerifyKey(
     // reason _wfopen failed
     int Error = errno;
     UnicodeString Message;
-    UnicodeString HelpKeyword = HELP_LOGIN_KEY_TYPE;
+    UnicodeString HelpKeyword; // = HELP_LOGIN_KEY_TYPE;
     UnicodeString PuttygenPath;
     std::unique_ptr<TStrings> MoreMessages;
     bool TryPuttygen = false;
