@@ -13982,6 +13982,7 @@ webdav::error_t TWebDAVFileSystem::AskForClientCertificateFilename(
   apr_pool_t * pool)
 {
   RequestResult = 0;
+#if 0
   TSessionData * Data = FTerminal->GetSessionData();
   UnicodeString FileName;
   if (!FTerminal->PromptUser(Data, pkFileName, LoadStr(CERT_FILENAME_PROMPT_TITLE), L"",
@@ -13993,6 +13994,7 @@ webdav::error_t TWebDAVFileSystem::AskForClientCertificateFilename(
   }
   WEBDAV_ERR(webdav::path_cstring_to_utf8(cert_file, StrToNeon(FileName), pool));
   RequestResult = qaOK;
+#endif
   return WEBDAV_NO_ERROR;
 }
 
