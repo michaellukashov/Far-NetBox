@@ -172,7 +172,7 @@ protected:
     const TRemoteFile * AFile,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
-    TUploadSessionAction & Action);
+    TUploadSessionAction & Action, bool & ChildError);
   void WebDAVDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, uintptr_t Attrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
