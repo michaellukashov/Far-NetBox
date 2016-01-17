@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include <neon/src/ne_request.h>
+#include <openssl/x509_vfy.h>
 #include <openssl/ssl.h>
 
 #include "Http.h"
@@ -141,7 +142,7 @@ void THttp::Post(const UnicodeString & Request)
 
 UnicodeString THttp::GetResponse() const
 {
-  UTF8String UtfResponse(FResponse);
+  UTF8String UtfResponse(FResponse.c_str());
   return UnicodeString(UtfResponse);
 }
 
