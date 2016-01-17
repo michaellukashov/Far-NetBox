@@ -2,42 +2,54 @@
 #pragma hdrstop
 
 #include <stdio.h>
+#include <io.h>
+#include <fcntl.h>
 #include <wincrypt.h>
 
-#include <apr_hash.h>
+#define NE_LFS
+#define WINSCP
+#include <neon/src/ne_basic.h>
+#include <neon/src/ne_auth.h>
+#include <neon/src/ne_props.h>
+#include <neon/src/ne_uri.h>
+#include <neon/src/ne_session.h>
+#include <neon/src/ne_request.h>
+#include <neon/src/ne_xml.h>
+#include <neon/src/ne_redirect.h>
+#include <neon/src/ne_xmlreq.h>
+#include <neon/src/ne_locks.h>
+#include <expat/lib/expat.h>
+
+/*#include <apr_hash.h>
 #include <apr_strings.h>
 #include <apr_tables.h>
 #include <apr_file_io.h>
 #include <apr_portable.h>
 #include <apr_atomic.h>
 
-#include <neon/src/ne_basic.h>
-#include <neon/src/ne_auth.h>
 #include <neon/src/ne_compress.h>
-#include <neon/src/ne_props.h>
 #include <neon/src/ne_defs.h>
-#include <neon/src/ne_uri.h>
-#include <neon/src/ne_session.h>
-#include <neon/src/ne_request.h>
 #include <neon/src/ne_utils.h>
-#include <neon/src/ne_xml.h>
-#include <neon/src/ne_pkcs11.h>
-#include <expat/lib/expat.h>
+#include <neon/src/ne_pkcs11.h>*/
 
-#include <Common.h>
 
 #include "WebDAVFileSystem.h"
+
 #include "Interface.h"
+#include "Common.h"
+#include "Exceptions.h"
 #include "Terminal.h"
 #include "TextsCore.h"
 #include "SecureShell.h"
 #include "HelpCore.h"
-#include "FileZillaIntf.h"
+#include "CoreMain.h"
+#include "Security.h"
+#include <StrUtils.hpp>
+#include <NeonIntf.h>
+#include <openssl/ssl.h>
 
 namespace webdav {
 
-#define StrToNeon(S) UTF8String(S).c_str()
-#define StrFromNeon(S) UnicodeString(UTF8String(S))
 #define AbsolutePathToNeon(P) PathEscape(StrToNeon(P)).c_str()
 #define PathToNeonStatic(THIS, P) AbsolutePathToNeon((THIS)->AbsolutePath(P, false))
 #define PathToNeon(P) PathToNeonStatic(this, P)
