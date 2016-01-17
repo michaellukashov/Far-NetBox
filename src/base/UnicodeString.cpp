@@ -408,11 +408,6 @@ UTF8String::UTF8String(const wchar_t * Str, intptr_t Size)
   Init(Str, Size);
 }
 
-UTF8String::UTF8String(const char * Str, intptr_t Size)
-{
-  Init(Str, Size);
-}
-
 UTF8String &UTF8String::Delete(intptr_t Index, intptr_t Count)
 {
   Data.erase(Index - 1, Count);
