@@ -218,6 +218,7 @@ public:
   AnsiString & Insert(const char * Str, intptr_t Pos);
   AnsiString SubString(intptr_t Pos, intptr_t Len = -1) const;
 
+  intptr_t Pos(const AnsiString & Str) const;
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(const wchar_t * Str) const;
 

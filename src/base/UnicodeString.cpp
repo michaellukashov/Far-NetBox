@@ -90,6 +90,11 @@ void AnsiString::Init(const uint8_t * Str, intptr_t Length)
   Data = Data.c_str();
 }
 
+intptr_t AnsiString::Pos(const AnsiString & Str) const
+{
+  return static_cast<intptr_t>(Data.find(Str.c_str(), 0, 1)) + 1;
+}
+
 intptr_t AnsiString::Pos(wchar_t Ch) const
 {
   AnsiString Str(&Ch, 1);
