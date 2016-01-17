@@ -65,15 +65,56 @@ void WinInitialize()
   MainThread = GetCurrentThreadId();
 
 }
-//---------------------------------------------------------------------------
+
 void WinFinalize()
 {
   // JclRemoveExceptNotifier(DoExceptNotify);
 }
 
-//---------------------------------------------------------------------------
+
+static void ConvertKey(UnicodeString & FileName, TKeyType Type)
+{
+  UnicodeString Passphrase;
+
+  UnicodeString Comment;
+  if (IsKeyEncrypted(Type, FileName, Comment))
+  {
+    if (!InputDialog(
+          LoadStr(PASSPHRASE_TITLE),
+          FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE), Comment.c_str()),
+          Passphrase, HELP_NONE, NULL, false, NULL, false))
+    {
+      Abort();
+    }
+  }
+
+  TPrivateKey * PrivateKey = LoadKey(Type, FileName, Passphrase);
+
+  // try
+  {
+    SCOPE_EXIT
+    {
+      FreeKey(PrivateKey);
+    };
+    FileName = ChangeFileExt(FileName, ".ppk");
+
+    if (!SaveDialog(LoadStr(CONVERTKEY_SAVE_TITLE), LoadStr(CONVERTKEY_SAVE_FILTER), L"ppk", FileName))
+    {
+      Abort();
+    }
+
+    SaveKey(ktSSH2, FileName, Passphrase, PrivateKey);
+
+    MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, (FileName))), qtInformation, qaOK);
+  }
+  __finally
+  {
+    FreeKey(PrivateKey);
+  };
+}
+
 static void DoVerifyKey(
-  const UnicodeString & AFileName, bool TypeOnly, TSshProt SshProt)
+  const UnicodeString & AFileName, bool TypeOnly, TSshProt SshProt, bool Convert)
 {
   if (!AFileName.Trim().IsEmpty())
   {
@@ -85,21 +126,34 @@ static void DoVerifyKey(
     UnicodeString HelpKeyword; // = HELP_LOGIN_KEY_TYPE;
     UnicodeString PuttygenPath;
     std::unique_ptr<TStrings> MoreMessages;
-    bool TryPuttygen = false;
     switch (Type)
     {
       case ktOpenSSHAuto:
       case ktSSHCom:
         {
           UnicodeString TypeName = (Type == ktOpenSSHAuto) ? L"OpenSSH SSH-2" : L"ssh.com SSH-2";
-          TryPuttygen = FindTool(PuttygenTool, PuttygenPath);
           Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName.c_str(), TypeName.c_str());
-          if (TryPuttygen)
+
+          if (Convert)
           {
-            Message = FMTLOAD(KEY_TYPE_CONVERT2, TypeName.c_str(), RemoveMainInstructionsTag(Message).c_str());
+            // Configuration->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
+            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, (TypeName, RemoveMainInstructionsTag(Message)));
+            Message = UnicodeString();
+            if (MoreMessageDialog(ConvertMessage, NULL, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
+            {
+              ConvertKey(FileName, Type);
+              // Configuration->Usage->Inc(L"PrivateKeyConverted");
+            }
+            else
+            {
+              Abort();
+            }
+          }
+          else
+          {
+            HelpKeyword = 0; // HELP_KEY_TYPE_UNSUPPORTED;
           }
         }
-        HelpKeyword = HELP_KEY_TYPE_UNSUPPORTED;
         break;
 
       case ktSSH1:
@@ -137,41 +191,31 @@ static void DoVerifyKey(
 
     if (!Message.IsEmpty())
     {
-      if (TryPuttygen)
+      // Configuration->Usage->Inc(L"PrivateKeySelectErrors");
+      if (MoreMessageDialog(Message, MoreMessages.get(), qtWarning, qaIgnore | qaAbort,
+           HelpKeyword) == qaAbort)
       {
-//        Configuration->Usage->Inc(L"PrivateKeyConvertSuggestions");
-        if (MoreMessageDialog(Message, MoreMessages.get(), qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
-        {
-          if (!ExecuteShell(PuttygenPath, AddPathQuotes(AFileName)))
-          {
-            throw Exception(FMTLOAD(EXECUTE_APP_ERROR, (PuttygenPath)));
-          }
-        }
         Abort();
-      }
-      else
-      {
-//        Configuration->Usage->Inc(L"PrivateKeySelectErrors");
-        if (MoreMessageDialog(Message, MoreMessages.get(), qtWarning, qaIgnore | qaAbort,
-             HelpKeyword) == qaAbort)
-        {
-          Abort();
-        }
       }
     }
   }
 }
-//---------------------------------------------------------------------------
+
+void VerifyAndConvertKey(UnicodeString & FileName)
+{
+  DoVerifyKey(FileName, true, TSshProt(0), true);
+}
+
 void VerifyKey(const UnicodeString & AFileName)
 {
-  DoVerifyKey(AFileName, true, TSshProt(0));
+  DoVerifyKey(AFileName, true, TSshProt(0), false);
 }
-//---------------------------------------------------------------------------
+
 void VerifyKeyIncludingVersion(const UnicodeString & AFileName, TSshProt SshProt)
 {
-  DoVerifyKey(AFileName, false, SshProt);
+  DoVerifyKey(AFileName, false, SshProt, false);
 }
-//---------------------------------------------------------------------------
+
 void VerifyCertificate(const UnicodeString & AFileName)
 {
   if (!AFileName.Trim().IsEmpty())
