@@ -74,6 +74,7 @@ for use in the OpenSSL Toolkit. (http://www.openssl.org/)
 #define AsyncSslSocketLayerH
 
 #include "AsyncSocketExLayer.h"
+#include <openssl/x509_vfy.h>
 #include <openssl/ssl.h>
 
 // Details of SSL certificate, can be used by app to verify if certificate is valid

@@ -51,7 +51,7 @@
 #include "Security.h"
 #include <StrUtils.hpp>
 #include <NeonIntf.h>
-//#include <openssl/x509_vfy.h>
+#include <openssl/x509_vfy.h>
 #include <openssl/ssl.h>
 
 struct TWebDAVCertificateData

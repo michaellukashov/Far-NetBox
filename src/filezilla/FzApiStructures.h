@@ -2,6 +2,7 @@
 #pragma once
 
 #include <nbglobals.h>
+#include <openssl/x509_vfy.h>
 #include <openssl/pkcs12.h>
 
 class t_server

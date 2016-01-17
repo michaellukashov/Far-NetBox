@@ -199,10 +199,12 @@ typedef struct X509_extension_st {
     ASN1_OCTET_STRING *value;
 } X509_EXTENSION;
 
+DECLARE_ASN1_SET_OF(X509_EXTENSION)
+
 typedef STACK_OF(X509_EXTENSION) X509_EXTENSIONS;
 
 DECLARE_STACK_OF(X509_EXTENSION)
-DECLARE_ASN1_SET_OF(X509_EXTENSION)
+//DECLARE_ASN1_SET_OF(X509_EXTENSION)
 
 /* a sequence of these are used */
 typedef struct x509_attributes_st {
