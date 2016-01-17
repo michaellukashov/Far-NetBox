@@ -265,7 +265,7 @@ private:
   int FPortNumber;
   enum TIgnoreAuthenticationFailure { iafNo, iafWaiting, iafPasswordFailed } FIgnoreAuthenticationFailure;
 
-  void CustomReadFile(const UnicodeString & FileName,
+  void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
   int CustomReadFileInternal(const UnicodeString & AFileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
@@ -278,7 +278,7 @@ private:
   UnicodeString GetRedirectUrl();
   UnicodeString ParsePathFromUrl(const UnicodeString & Url);
   int ReadDirectoryInternal(const UnicodeString & Path, TRemoteFileList * FileList);
-  int RenameFileInternal(const UnicodeString & FileName, const UnicodeString & NewName);
+  int RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
   bool IsValidRedirect(int NeonStatus, UnicodeString & Path);
   UnicodeString DirectoryPath(UnicodeString Path);
   UnicodeString FilePath(const TRemoteFile * File);
