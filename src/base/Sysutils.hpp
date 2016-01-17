@@ -373,7 +373,7 @@ struct TVersionInfo
   DWORD Build;
 };
 
-#define MAKEVERSIONNUMBER(major,minor,revision) ( ((major)<<16) | ((minor)<<8) | (revision))
+#define MAKEVERSIONNUMBER(major, minor, revision) ( ((major)<<16) | ((minor)<<8) | (revision))
 uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr);
 UnicodeString VersionNumberToStr(uintptr_t VersionNumber);
 uintptr_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
