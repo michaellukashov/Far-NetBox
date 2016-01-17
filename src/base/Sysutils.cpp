@@ -397,7 +397,7 @@ bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
 
 bool ContainsStr(const AnsiString & Str1, const AnsiString & Str2)
 {
-  return Str1.Pos(Str2.c_str()) > 0;
+  return Str1.Pos(Str2) > 0;
 }
 
 bool ContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
