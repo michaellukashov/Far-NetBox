@@ -206,6 +206,7 @@ intptr_t AnsiCompareText(const UnicodeString & Str1, const UnicodeString & Str2)
 intptr_t AnsiCompareIC(const UnicodeString & Str1, const UnicodeString & Str2);
 bool AnsiSameStr(const UnicodeString & Str1, const UnicodeString & Str2);
 bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
+bool ContainsStr(const AnsiString & Str1, const AnsiString & Str2);
 bool ContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
 
 UnicodeString UTF8ToString(const RawByteString & Str);
