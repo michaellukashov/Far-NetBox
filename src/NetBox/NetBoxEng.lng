@@ -1264,3 +1264,7 @@
 
 "Timeout detected."
 "Disconnected from server"
+
+"Save converted private key"
+"PuTTY Private Key Files (*.ppk)|*.ppk|All files (*.*)|*.*"
+"Private key was converted and saved to '%s'."
