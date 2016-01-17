@@ -128,6 +128,10 @@ enum PluginString {
     CPS_LABEL,
     TIME_LEFT_LABEL,
 
+    CONVERTKEY_SAVE_TITLE, // "Save converted private key"
+    CONVERTKEY_SAVE_FILTER, // "PuTTY Private Key Files (*.ppk)|*.ppk|All files (*.*)|*.*"
+    CONVERTKEY_SAVED, // "Private key was converted and saved to '%s'."
+
     CANCEL_OPERATION_FATAL,
     CANCEL_OPERATION,
 
