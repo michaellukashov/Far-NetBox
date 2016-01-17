@@ -34,6 +34,8 @@ public:
 
   intptr_t Pos(char Ch) const;
 
+  int vprintf(const char * Format, va_list ArgList);
+
 public:
   UTF8String & operator=(const UnicodeString & StrCopy);
   UTF8String & operator=(const UTF8String & StrCopy);

@@ -424,6 +424,12 @@ intptr_t UTF8String::Pos(char Ch) const
   return Data.find(Ch) + 1;
 }
 
+int UTF8String::vprintf(const char * Format, va_list ArgList)
+{
+  SetLength(32 * 1024);
+  return vsnprintf_s((char *)Data.c_str(), Data.size(), _TRUNCATE, Format, ArgList);
+}
+
 UTF8String & UTF8String::Insert(const wchar_t * Str, intptr_t Pos)
 {
   UTF8String UTF8(Str);
