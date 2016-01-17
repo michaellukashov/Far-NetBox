@@ -158,7 +158,7 @@ protected:
     const TRemoteFile * AFile, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
-    TDownloadSessionAction & Action);
+    TDownloadSessionAction & Action, bool & ChildError);
   void SinkRobust(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params,
