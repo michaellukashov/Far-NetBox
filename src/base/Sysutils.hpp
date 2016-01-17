@@ -396,3 +396,13 @@ private:
   std::function<void()> SCOPE_EXIT_NAME(scope_exit_func_, __LINE__); \
   ScopeExit SCOPE_EXIT_NAME(scope_exit_, __LINE__) = SCOPE_EXIT_NAME(scope_exit_func_, __LINE__) = [&]() /* lambda body here */
 
+class NullFunc
+{
+public:
+  NullFunc(const std::function<void()> & f) { (void)(f); }
+  ~NullFunc() { }
+};
+
+#define __finally \
+  std::function<void()> SCOPE_EXIT_NAME(null_func_, __LINE__); \
+  NullFunc SCOPE_EXIT_NAME(null_, __LINE__) = SCOPE_EXIT_NAME(null_func_, __LINE__) = [&]() /* lambda body here */
