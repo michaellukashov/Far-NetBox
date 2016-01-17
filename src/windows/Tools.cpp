@@ -81,7 +81,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   {
     if (!InputDialog(
           LoadStr(PASSPHRASE_TITLE),
-          FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE), Comment.c_str()),
+          FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE).c_str(), Comment.c_str()),
           Passphrase, HELP_NONE, NULL, false, NULL, false))
     {
       Abort();
@@ -105,7 +105,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 
     SaveKey(ktSSH2, FileName, Passphrase, PrivateKey);
 
-    MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, (FileName))), qtInformation, qaOK);
+    MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName.c_str())), qtInformation, qaOK);
   }
   __finally
   {
@@ -151,7 +151,7 @@ static void DoVerifyKey(
           }
           else
           {
-            HelpKeyword = 0; // HELP_KEY_TYPE_UNSUPPORTED;
+            HelpKeyword = ""; // HELP_KEY_TYPE_UNSUPPORTED;
           }
         }
         break;
