@@ -188,9 +188,9 @@ protected:
   void ClearNeonError();
   static void NeonPropsResult(
     void * UserData, const ne_uri * Uri, const ne_prop_result_set_s * Results);
-  void ParsePropResultSet(TRemoteFile * File,
-    const UnicodeString & Path, const ne_prop_result_set_s * Results);
-  void TryOpenDirectory(UnicodeString Directory);
+  void ParsePropResultSet(TRemoteFile * AFile,
+    const UnicodeString & APath, const ne_prop_result_set_s * Results);
+  void TryOpenDirectory(const UnicodeString & ADirectory);
   static int NeonBodyReader(void * UserData, const char * Buf, size_t Len);
   static void NeonPreSend(ne_request * Request, void * UserData, ne_buffer * Header);
   static int NeonBodyAccepter(void * UserData, ne_request * Request, const ne_status * Status);
@@ -206,7 +206,7 @@ protected:
   static void NeonProvideClientCert(void * UserData, ne_session * Sess, const ne_ssl_dname * const * DNames, int DNCount);
   void CloseNeonSession();
   bool CancelTransfer();
-  UnicodeString GetNeonError();
+  UnicodeString GetNeonError() const;
   static void NeonQuotaResult(void * UserData, const ne_uri * Uri, const ne_prop_result_set_s * Results);
   static const char * GetProp(const ne_prop_result_set_s * Results,
     const char * Name, const char * NameSpace = NULL);
@@ -254,7 +254,7 @@ private:
   bool FDownloading;
   ne_session_s * FNeonSession;
   ne_lock_store_s * FNeonLockStore;
-  TCriticalSection * FNeonLockStoreSection;
+  TCriticalSection FNeonLockStoreSection;
   bool FInitialHandshake;
   bool FAuthenticationRequested;
   UnicodeString FResponse;
