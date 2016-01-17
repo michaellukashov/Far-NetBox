@@ -164,7 +164,7 @@ void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
 {
   if (GetPlugin() != Value)
   {
-    assert(!GetPlugin() || !Value);
+    DebugAssert(!GetPlugin() || !Value);
     FFarPlugin = Value;
   }
 }
@@ -185,7 +185,7 @@ intptr_t TFarConfiguration::FarConfirmations() const
   }
   else
   {
-    assert(FFarConfirmations >= 0);
+    DebugAssert(FFarConfirmations >= 0);
     return FFarConfirmations;
   }
 }
@@ -198,7 +198,7 @@ bool TFarConfiguration::GetConfirmOverwriting() const
   }
   else
   {
-    // assert(GetPlugin());
+    // DebugAssert(GetPlugin());
     return (FarConfirmations() & FCS_COPYOVERWRITE) != 0;
   }
 }
@@ -221,13 +221,13 @@ void TFarConfiguration::SetConfirmOverwriting(bool Value)
 
 bool TFarConfiguration::GetConfirmDeleting() const
 {
-  assert(GetPlugin());
+  DebugAssert(GetPlugin());
   return (FarConfirmations() & FCS_DELETE) != 0;
 }
 
 UnicodeString TFarConfiguration::ModuleFileName() const
 {
-  assert(GetPlugin());
+  DebugAssert(GetPlugin());
   return GetPlugin()->GetModuleName();
 }
 

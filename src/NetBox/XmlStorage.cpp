@@ -119,7 +119,7 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
     case smReadWrite:
     default:
       FXmlDoc->LinkEndChild(FXmlDoc->NewDeclaration());
-      assert(FCurrentElement == nullptr);
+      DebugAssert(FCurrentElement == nullptr);
       FCurrentElement = FXmlDoc->NewElement(CONST_ROOT_NODE);
       FCurrentElement->SetAttribute(CONST_VERSION_ATTR, CONST_XML_VERSION21);
       FXmlDoc->LinkEndChild(FCurrentElement);
@@ -273,7 +273,7 @@ tinyxml2::XMLElement * TXmlStorage::FindElement(const UnicodeString & Name) cons
 tinyxml2::XMLElement * TXmlStorage::FindChildElement(const std::string & subKey) const
 {
   tinyxml2::XMLElement * Result = nullptr;
-  // assert(FCurrentElement);
+  // DebugAssert(FCurrentElement);
   if (FStoredSessionsOpened)
   {
     tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement(CONST_SESSION_NODE);
@@ -291,7 +291,7 @@ tinyxml2::XMLElement * TXmlStorage::FindChildElement(const std::string & subKey)
 
 UnicodeString TXmlStorage::GetValue(tinyxml2::XMLElement * Element) const
 {
-  assert(Element);
+  DebugAssert(Element);
   UnicodeString Result;
   if (FStoredSessionsOpened && Element->Attribute(CONST_NAME_ATTR))
   {

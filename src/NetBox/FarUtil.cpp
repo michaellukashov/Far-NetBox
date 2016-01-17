@@ -8,8 +8,8 @@
 
 bool CNBFile::OpenWrite(const wchar_t *fileName)
 {
-  assert(m_File == INVALID_HANDLE_VALUE);
-  assert(fileName);
+  DebugAssert(m_File == INVALID_HANDLE_VALUE);
+  DebugAssert(fileName);
   m_LastError = ERROR_SUCCESS;
 
   m_File = ::CreateFile(fileName, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
@@ -22,8 +22,8 @@ bool CNBFile::OpenWrite(const wchar_t *fileName)
 
 bool CNBFile::OpenRead(const wchar_t *fileName)
 {
-  assert(m_File == INVALID_HANDLE_VALUE);
-  assert(fileName);
+  DebugAssert(m_File == INVALID_HANDLE_VALUE);
+  DebugAssert(fileName);
   m_LastError = ERROR_SUCCESS;
 
   m_File = ::CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
@@ -36,7 +36,7 @@ bool CNBFile::OpenRead(const wchar_t *fileName)
 
 bool CNBFile::Read(void *buff, size_t &buffSize)
 {
-  assert(m_File != INVALID_HANDLE_VALUE);
+  DebugAssert(m_File != INVALID_HANDLE_VALUE);
   m_LastError = ERROR_SUCCESS;
 
   DWORD bytesRead = static_cast<DWORD>(buffSize);
@@ -54,7 +54,7 @@ bool CNBFile::Read(void *buff, size_t &buffSize)
 
 bool CNBFile::Write(const void *buff, const size_t buffSize)
 {
-  assert(m_File != INVALID_HANDLE_VALUE);
+  DebugAssert(m_File != INVALID_HANDLE_VALUE);
   m_LastError = ERROR_SUCCESS;
 
   DWORD bytesWritten;
@@ -67,7 +67,7 @@ bool CNBFile::Write(const void *buff, const size_t buffSize)
 
 int64_t CNBFile::GetFileSize()
 {
-  assert(m_File != INVALID_HANDLE_VALUE);
+  DebugAssert(m_File != INVALID_HANDLE_VALUE);
   m_LastError = ERROR_SUCCESS;
 
   LARGE_INTEGER fileSize;
@@ -105,7 +105,7 @@ DWORD CNBFile::SaveFile(const wchar_t *fileName, const rde::vector<char>& fileCo
 
 DWORD CNBFile::SaveFile(const wchar_t *fileName, const char *fileContent)
 {
-  assert(fileContent);
+  DebugAssert(fileContent);
   CNBFile f;
   if (f.OpenWrite(fileName) && *fileContent)
   {
