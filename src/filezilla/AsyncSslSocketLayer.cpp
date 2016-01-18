@@ -10,7 +10,6 @@
 #include "AsyncSslSocketLayer.h"
 #include <TextsCore.h>
 
-#include <openssl/x509_vfy.h>
 #include <openssl/x509v3.h>
 #include <openssl/err.h>
 
