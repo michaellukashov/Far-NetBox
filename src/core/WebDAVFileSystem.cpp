@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
-//#undef X509_EXTENSIONS
 #include <openssl/x509_vfy.h>
 #include <openssl/ssl.h>
 #include <wincrypt.h>
