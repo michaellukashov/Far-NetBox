@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
+//#undef X509_EXTENSIONS
+#include <openssl/x509_vfy.h>
+#include <openssl/ssl.h>
 #include <wincrypt.h>
 #include <rdestl/set.h>
 
@@ -51,8 +54,6 @@
 #include "Security.h"
 #include <StrUtils.hpp>
 #include <NeonIntf.h>
-#include <openssl/x509_vfy.h>
-#include <openssl/ssl.h>
 
 struct TWebDAVCertificateData
 {
