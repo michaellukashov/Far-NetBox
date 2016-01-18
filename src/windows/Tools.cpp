@@ -82,7 +82,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
     if (!InputDialog(
           LoadStr(PASSPHRASE_TITLE),
           FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE).c_str(), Comment.c_str()),
-          Passphrase, HELP_NONE, NULL, false, NULL, false))
+          Passphrase, HELP_NONE, nullptr, false, nullptr, false))
     {
       Abort();
     }
@@ -139,7 +139,7 @@ static void DoVerifyKey(
             // Configuration->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
             UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, (TypeName, RemoveMainInstructionsTag(Message)));
             Message = UnicodeString();
-            if (MoreMessageDialog(ConvertMessage, NULL, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
+            if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
             {
               ConvertKey(FileName, Type);
               // Configuration->Usage->Inc(L"PrivateKeyConverted");
