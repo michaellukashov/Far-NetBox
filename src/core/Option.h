@@ -56,9 +56,9 @@ private:
   struct TOption : public TObject
   {
     TOption() : Type(otParam), ValueSet(false), Used(false), SwitchMark(0) {}
-    TOptionType Type;
     UnicodeString Name;
     UnicodeString Value;
+    TOptionType Type;
     bool ValueSet;
     bool Used;
     wchar_t SwitchMark;
@@ -67,7 +67,7 @@ private:
   typedef rde::vector<TOption> TOptionsVector;
   TOptionsVector FOptions;
   TOptionsVector FOriginalOptions;
-  bool FNoMoreSwitches;
   intptr_t FParamCount;
+  bool FNoMoreSwitches;
 };
 

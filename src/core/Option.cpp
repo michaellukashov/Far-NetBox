@@ -8,8 +8,8 @@
 TOptions::TOptions() :
   FSwitchMarks(L"/-"),
   FSwitchValueDelimiters(L"=:"),
-  FNoMoreSwitches(false),
-  FParamCount(0)
+  FParamCount(0),
+  FNoMoreSwitches(false)
 {
 }
 
