@@ -15,11 +15,13 @@ TEncodeType DetectUTF8Encoding(const RawByteString & S)
     {
       if ((c&0xC0) == 0x80)  // Does trailing byte follow UTF-8 format?
       {
-        if (byte2mask)        // Need to check 2nd byte for proper range?
-          if (c&byte2mask)     // Are appropriate bits set?
-            byte2mask=0x00;
-          else
-            return etANSI;
+      if (byte2mask)        // Need to check 2nd byte for proper range?
+      {
+        if (c&byte2mask)     // Are appropriate bits set?
+          byte2mask = 0x00;
+        else
+          return etANSI;
+      }
         trailing--;
       }
       else
