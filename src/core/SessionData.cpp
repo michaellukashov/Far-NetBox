@@ -3966,7 +3966,7 @@ TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID) 
   }
   if (Result == (TFSProtocol)-1)
     Result = CONST_DEFAULT_PROTOCOL;
-  DebugAssert(Result != -1);
+  DebugAssert(Result != static_cast<TFSProtocol>(-1));
   return Result;
 }
 
@@ -3994,7 +3994,7 @@ TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption) const
         break;
     }
   }
-  DebugAssert(Result != -1);
+  DebugAssert(Result != static_cast<TFtps>(-1));
   return Result;
 }
 
