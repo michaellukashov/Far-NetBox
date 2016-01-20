@@ -121,7 +121,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           const ne_status * NeonStatus = ne_get_status(NeonRequest);
           if (NeonStatus->klass != 2)
           {
-            throw Exception(FMTLOAD(HTTP_ERROR, (NeonStatus->code, StrFromNeon(NeonStatus->reason_phrase), FHostName)));
+            throw Exception(FMTLOAD(HTTP_ERROR, NeonStatus->code, StrFromNeon(NeonStatus->reason_phrase).c_str(), FHostName.c_str()));
           }
         }
       }

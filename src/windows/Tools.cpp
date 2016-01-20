@@ -137,7 +137,7 @@ static void DoVerifyKey(
           if (Convert)
           {
             // Configuration->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
-            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, (TypeName, RemoveMainInstructionsTag(Message)));
+            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName.c_str(), RemoveMainInstructionsTag(Message).c_str());
             Message = UnicodeString();
             if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
             {
@@ -174,7 +174,7 @@ static void DoVerifyKey(
         break;
 
       case ktUnopenable:
-        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, (AFileName)));
+        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, AFileName.c_str()));
         if (Error != ERROR_SUCCESS)
         {
           MoreMessages.reset(TextToStringList(SysErrorMessageForError(Error)));
@@ -185,7 +185,7 @@ static void DoVerifyKey(
         DebugFail();
         // fallthru
       case ktUnknown:
-        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, (AFileName)));
+        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, AFileName.c_str()));
         break;
     }
 
