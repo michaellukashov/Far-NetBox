@@ -2680,12 +2680,12 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags)
 
 void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Switch)
 {
-  Result += FORMAT(L" -%s", (Switch));
+  Result += FORMAT(L" -%s", Switch.c_str());
 }
 
 void TSessionData::AddSwitchValue(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value)
 {
-  AddSwitch(Result, FORMAT(L"%s=%s", (Name, Value)));
+  AddSwitch(Result, FORMAT(L"%s=%s", Name.c_str(), Value.c_str()));
 }
 
 void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value)
@@ -2942,7 +2942,7 @@ UnicodeString TSessionData::GenerateAssemblyCode(
 
     case alPowerShell:
       SessionOptionsPreamble =
-        FORMAT(L"# %s\n", (LoadStr(CODE_PS_ADD_TYPE))) +
+        FORMAT(L"# %s\n", LoadStr(CODE_PS_ADD_TYPE).c_str()) +
         L"Add-Type -Path \"WinSCPnet.dll\"\n"
         L"\n"
         L"# %s\n"
