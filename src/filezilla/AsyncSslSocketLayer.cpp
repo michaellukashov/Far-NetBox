@@ -1035,7 +1035,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
   if (!pLayer->m_bUseSSL && (where != SSL_CB_LOOP))
     return;
 
-  char * str;
+  const char * str;
   int w;
 
   w = where& ~SSL_ST_MASK;
