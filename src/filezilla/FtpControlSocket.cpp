@@ -5052,11 +5052,12 @@ int CFtpControlSocket::CheckOverwriteFile()
     {
       _int64 localsize;
       if (!GetLength64(pData->transferfile.localfile, localsize))
+      {
         if (!pData->transferfile.get)
           nReplyError = FZ_REPLY_CRITICALERROR;
         else
           m_Operation.nOpState = FILETRANSFER_TYPE;
-
+      }
 
       CTime *localtime = NULL;
       TRY
