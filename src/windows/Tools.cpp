@@ -79,10 +79,11 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   UnicodeString Comment;
   if (IsKeyEncrypted(Type, FileName, Comment))
   {
-    if (!InputDialog(
-          LoadStr(PASSPHRASE_TITLE),
-          FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE).c_str(), Comment.c_str()),
-          Passphrase, HELP_NONE, nullptr, false, nullptr, false))
+//    TODO: implement
+//    if (!InputDialog(
+//          LoadStr(PASSPHRASE_TITLE),
+//          FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE).c_str(), Comment.c_str()),
+//          Passphrase, HELP_NONE, nullptr, false, nullptr, false))
     {
       Abort();
     }
@@ -98,14 +99,16 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
     };
     FileName = ChangeFileExt(FileName, ".ppk");
 
-    if (!SaveDialog(LoadStr(CONVERTKEY_SAVE_TITLE), LoadStr(CONVERTKEY_SAVE_FILTER), L"ppk", FileName))
+//    TODO: implement
+//    if (!SaveDialog(LoadStr(CONVERTKEY_SAVE_TITLE), LoadStr(CONVERTKEY_SAVE_FILTER), L"ppk", FileName))
     {
       Abort();
     }
 
     SaveKey(ktSSH2, FileName, Passphrase, PrivateKey);
 
-    MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName.c_str())), qtInformation, qaOK);
+//    TODO: implement
+//    MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName.c_str())), qtInformation, qaOK);
   }
   __finally
   {
@@ -139,12 +142,13 @@ static void DoVerifyKey(
             // Configuration->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
             UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName.c_str(), RemoveMainInstructionsTag(Message).c_str());
             Message = UnicodeString();
-            if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
-            {
-              ConvertKey(FileName, Type);
-              // Configuration->Usage->Inc(L"PrivateKeyConverted");
-            }
-            else
+//          TODO: implement
+//          if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
+//            {
+//              ConvertKey(FileName, Type);
+//              // Configuration->Usage->Inc(L"PrivateKeyConverted");
+//            }
+//            else
             {
               Abort();
             }
@@ -192,8 +196,9 @@ static void DoVerifyKey(
     if (!Message.IsEmpty())
     {
       // Configuration->Usage->Inc(L"PrivateKeySelectErrors");
-      if (MoreMessageDialog(Message, MoreMessages.get(), qtWarning, qaIgnore | qaAbort,
-           HelpKeyword) == qaAbort)
+//      TODO: implement
+//      if (MoreMessageDialog(Message, MoreMessages.get(), qtWarning, qaIgnore | qaAbort,
+//           HelpKeyword) == qaAbort)
       {
         Abort();
       }
@@ -226,7 +231,8 @@ void VerifyCertificate(const UnicodeString & AFileName)
     }
     catch (Exception & E)
     {
-      if (ExceptionMessageDialog(&E, qtWarning, L"", qaIgnore | qaAbort) == qaAbort)
+//      TODO: implement
+//      if (ExceptionMessageDialog(&E, qtWarning, L"", qaIgnore | qaAbort) == qaAbort)
       {
         Abort();
       }
