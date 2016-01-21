@@ -11,7 +11,7 @@ template<typename T,
 class set : private rb_tree<T, TAllocator>
 {
 	typedef rb_tree<T, TAllocator>  Base;
-    typedef typename Base::node     BaseNode;
+	typedef typename Base::node     BaseNode;
 
 	template<typename TNodePtr, typename TPtr, typename TRef>
 	class node_iterator
