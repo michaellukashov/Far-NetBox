@@ -52,6 +52,17 @@ UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C)
   return Result;
 }
 
+intptr_t PosFrom(const UnicodeString & SubStr, const UnicodeString & Str, intptr_t Index)
+{
+  UnicodeString S = Str.SubString(Index, Str.Length() - Index + 1);
+  intptr_t Result = S.Pos(SubStr);
+  if (Result > 0)
+  {
+    Result += Index - 1;
+  }
+  return Result;
+}
+
 template<typename T>
 void DoPackStr(T & Str)
 {
@@ -669,6 +680,7 @@ UnicodeString ExpandFileNameCommand(const UnicodeString & Command,
 
 UnicodeString EscapeParam(const UnicodeString & AParam)
 {
+  // Make sure this won't break RTF syntax
   return ReplaceStr(AParam, L"\"", L"\"\"");
 }
 
@@ -1613,8 +1625,7 @@ TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
 
   if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
   {
-    Result -= (IsDateInDST(Result) ?
-      Params->DaylightDifference : Params->StandardDifference);
+    Result -= DSTDifferenceForTime(Result);
   }
 
   return Result;
@@ -1805,10 +1816,8 @@ TDateTime ConvertTimestampToUTC(const TDateTime & DateTime)
 {
   TDateTime Result = DateTime;
 
-  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
-  Result +=
-    (IsDateInDST(Result) ?
-      Params->DaylightDifference : Params->StandardDifference);
+  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
+  Result += DSTDifferenceForTime(DateTime);
   Result += Params->BaseDifference;
 
   if (Params->DaylightHack)
@@ -1825,9 +1834,7 @@ TDateTime ConvertTimestampFromUTC(const TDateTime & DateTime)
   TDateTime Result = DateTime;
 
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
-  Result -=
-    (IsDateInDST(Result) ?
-      Params->DaylightDifference : Params->StandardDifference);
+  Result -= DSTDifferenceForTime(DateTime);
   Result -= Params->BaseDifference;
 
   if (Params->DaylightHack)
@@ -1851,6 +1858,21 @@ int64_t ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   else
   {
     Result = ::ConvertTimestampToUnix(FileTime, DSTMode);
+  }
+  return Result;
+}
+
+double DSTDifferenceForTime(const TDateTime & DateTime)
+{
+  double Result;
+  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
+  if (IsDateInDST(DateTime))
+  {
+    Result = Params->DaylightDifference;
+  }
+  else
+  {
+    Result = Params->StandardDifference;
   }
   return Result;
 }
@@ -1885,14 +1907,7 @@ TDateTime AdjustDateTimeFromUnix(const TDateTime & DateTime, TDSTMode DSTMode)
   {
     if (DSTMode == dstmWin)
     {
-      if (IsDateInDST(Result))
-      {
-        Result = Result + Params->DaylightDifference;
-      }
-      else
-      {
-        Result = Result + Params->StandardDifference;
-      }
+      Result = Result + DSTDifferenceForTime(Result);
     }
   }
 
@@ -2702,6 +2717,20 @@ TStringList * TextToStringList(const UnicodeString & Text)
   return List.release();
 }
 
+UnicodeString StringsToText(TStrings * Strings)
+{
+  UnicodeString Result;
+  if (Strings->Count == 1)
+  {
+    Result = Strings->GetString(0);
+  }
+  else
+  {
+    Result = Strings->GetText();
+  }
+  return Result;
+}
+
 TStrings * CloneStrings(TStrings * Strings)
 {
   std::unique_ptr<TStringList> List(new TStringList());
@@ -2818,18 +2847,24 @@ static int PemPasswordCallback(char * Buf, int Size, int /*RWFlag*/, void * User
 //---------------------------------------------------------------------------
 static bool IsTlsPassphraseError(int Error)
 {
+  int ErrorLib = ERR_GET_LIB(Error);
+  int ErrorReason = ERR_GET_REASON(Error);
+
   bool Result =
-    ((ERR_GET_LIB(Error) == ERR_LIB_PKCS12) &&
-     (ERR_GET_REASON(Error) == PKCS12_R_MAC_VERIFY_FAILURE)) ||
-    ((ERR_GET_LIB(Error) == ERR_LIB_PEM) &&
-     (ERR_GET_REASON(Error) == PEM_R_BAD_PASSWORD_READ));
+    ((ErrorLib == ERR_LIB_PKCS12) &&
+     (ErrorReason == PKCS12_R_MAC_VERIFY_FAILURE)) ||
+    ((ErrorLib == ERR_LIB_PEM) &&
+     (ErrorReason == PEM_R_BAD_PASSWORD_READ)) ||
+    (HasPassphrase && (ERR_LIB_EVP == ERR_LIB_EVP) &&
+     ((ErrorReason == PEM_R_BAD_DECRYPT) || (ErrorReason == PEM_R_BAD_BASE64_DECODE)));
+
   return Result;
 }
 //---------------------------------------------------------------------------
 static void ThrowTlsCertificateErrorIgnorePassphraseErrors(const UnicodeString & Path)
 {
   int Error = ERR_get_error();
-  if (!IsTlsPassphraseError(Error))
+  if (!IsTlsPassphraseError(Error, HasPassphrase))
   {
     throw ExtException(MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, Path.c_str())), GetTlsErrorStr(Error));
   }
@@ -2839,10 +2874,16 @@ void ParseCertificate(const UnicodeString & Path,
   const UnicodeString & Passphrase, X509 *& Certificate, EVP_PKEY *& PrivateKey,
   bool & WrongPassphrase)
 {
+  Certificate = NULL;
+  PrivateKey = NULL;
+  bool HasPassphrase = !Passphrase.IsEmpty();
+
   FILE * File;
 
   // Inspired by neon's ne_ssl_clicert_read
   File = OpenCertificate(Path);
+  // openssl pkcs12 -inkey cert.pem -in cert.crt -export -out cert.pfx
+  // Binary file
   PKCS12 * Pkcs12 = d2i_PKCS12_fp(File, NULL);
   fclose(File);
 
@@ -2855,7 +2896,7 @@ void ParseCertificate(const UnicodeString & Path,
 
     if (!Result)
     {
-      ThrowTlsCertificateErrorIgnorePassphraseErrors(Path);
+      ThrowTlsCertificateErrorIgnorePassphraseErrors(Path, HasPassphrase);
       WrongPassphrase = true;
     }
   }
@@ -2868,9 +2909,24 @@ void ParseCertificate(const UnicodeString & Path,
     CallbackUserData.Passphrase = const_cast<UnicodeString *>(&Passphrase);
 
     File = OpenCertificate(Path);
+    // Encrypted:
+    // openssl req -x509 -newkey rsa:2048 -keyout cert.pem -out cert.crt
+    // -----BEGIN ENCRYPTED PRIVATE KEY-----
+    // ...
+    // -----END ENCRYPTED PRIVATE KEY-----
+
+    // Not encrypted (add -nodes):
+    // -----BEGIN PRIVATE KEY-----
+    // ...
+    // -----END PRIVATE KEY-----
+    // Or (openssl genrsa -out client.key 1024   # used for certificate signing request)
+    // -----BEGIN RSA PRIVATE KEY-----
+    // ...
+    // -----END RSA PRIVATE KEY-----
     PrivateKey = PEM_read_PrivateKey(File, NULL, PemPasswordCallback, &CallbackUserData);
     fclose(File);
 
+    // try
     {
       SCOPE_EXIT
       {
@@ -2896,6 +2952,14 @@ void ParseCertificate(const UnicodeString & Path,
       }
 
       File = OpenCertificate(Path);
+      // The file can contain both private and public key
+      // (basically cert.pem and cert.crt appended one to each other)
+      // -----BEGIN ENCRYPTED PRIVATE KEY-----
+      // ...
+      // -----END ENCRYPTED PRIVATE KEY-----
+      // -----BEGIN CERTIFICATE-----
+      // ...
+      // -----END CERTIFICATE-----
       Certificate = PEM_read_X509(File, NULL, PemPasswordCallback, &CallbackUserData);
       fclose(File);
 
@@ -2903,7 +2967,7 @@ void ParseCertificate(const UnicodeString & Path,
       {
         int Error = ERR_get_error();
         // unlikely
-        if (IsTlsPassphraseError(Error))
+        if (IsTlsPassphraseError(Error, HasPassphrase))
         {
           WrongPassphrase = true;
         }
@@ -2922,18 +2986,54 @@ void ParseCertificate(const UnicodeString & Path,
           else
           {
             File = OpenCertificate(CertificatePath);
+            // -----BEGIN CERTIFICATE-----
+            // ...
+            // -----END CERTIFICATE-----
             Certificate = PEM_read_X509(File, NULL, PemPasswordCallback, &CallbackUserData);
             fclose(File);
 
             if (Certificate == NULL)
             {
-              ThrowTlsCertificateErrorIgnorePassphraseErrors(CertificatePath);
-              WrongPassphrase = true;
+              int Base64Error = ERR_get_error();
+
+              File = OpenCertificate(CertificatePath);
+              // Binary DER-encoded certificate
+              // (as above, with BEGIN/END removed, and decoded from Base64 to binary)
+              // openssl x509 -in cert.crt -out client.der.crt -outform DER
+              Certificate = d2i_X509_fp(File, NULL);
+              fclose(File);
+
+              if (Certificate == NULL)
+              {
+                int DERError = ERR_get_error();
+
+                UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, (CertificatePath)));
+                UnicodeString MoreMessages =
+                  FORMAT(L"Base64: %s\nDER: %s", (GetTlsErrorStr(Base64Error), GetTlsErrorStr(DERError)));
+                throw ExtException(Message, MoreMessages);
+              }
             }
           }
         }
       }
     }
+    __finally
+    {
+      // We loaded private key, but failed to load certificate, discard the certificate
+      // (either exception was thrown or WrongPassphrase)
+      if ((PrivateKey != NULL) && (Certificate == NULL))
+      {
+        EVP_PKEY_free(PrivateKey);
+        PrivateKey = NULL;
+      }
+      // Certificate was verified, but passphrase was wrong when loading private key,
+      // so discard the certificate
+      else if ((Certificate != NULL) && (PrivateKey == NULL))
+      {
+        X509_free(Certificate);
+        Certificate = NULL;
+      }
+    };
   }
 }
 //---------------------------------------------------------------------------
@@ -2959,6 +3059,10 @@ bool IsHttpUrl(const UnicodeString & S)
 {
   return SameText(S.SubString(1, 4), L"http");
 }
+
+const UnicodeString RtfPara = L"\\par\n";
+const UnicodeString RtfHyperlinkField = L"HYPERLINK";
+const UnicodeString RtfHyperlinkFieldPrefix = RtfHyperlinkField + L" \"";
 
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
 {

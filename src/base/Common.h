@@ -50,6 +50,7 @@ inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nu
 
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B);
 UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);
+intptr_t PosFrom(const UnicodeString & SubStr, const UnicodeString & Str, intptr_t Index);
 void PackStr(UnicodeString & Str);
 void PackStr(RawByteString & Str);
 void PackStr(AnsiString & Str);
@@ -151,6 +152,7 @@ UnicodeString FormatNumber(int64_t Size);
 UnicodeString FormatSize(int64_t Size);
 UnicodeString ExtractFileBaseName(const UnicodeString & APath);
 TStringList * TextToStringList(const UnicodeString & Text);
+UnicodeString StringsToText(TStrings * Strings);
 TStrings * CloneStrings(TStrings * Strings);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
@@ -196,6 +198,7 @@ enum TDSTMode
 bool UsesDaylightHack();
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day);
 TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
+double DSTDifferenceForTime(const TDateTime & DateTime);
 TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime);
 TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode);
 TDateTime ConvertTimestampToUTC(const TDateTime & DateTime);
