@@ -251,6 +251,7 @@ private:
   uintptr_t FCommandReply;
   TCommand FLastCommand;
   bool FPasswordFailed;
+  bool FStoredPasswordTried;
   bool FMultineResponse;
   intptr_t FLastCode;
   intptr_t FLastCodeClass;
@@ -298,13 +299,12 @@ private:
   std::unique_ptr<TStrings> FSupportedCommands;
   std::unique_ptr<TStrings> FSupportedSiteCommands;
   std::unique_ptr<TStrings> FHashAlgs;
-  //bool FSupportsSiteCopy;
-  //bool FSupportsSiteSymlink;
   bool FSupportsAnyChecksumFeature;
   UnicodeString FLastCommandSent;
   X509 * FCertificate;
   EVP_PKEY * FPrivateKey;
   bool FTransferActiveImmediately;
+  bool FWindowsServer;
   mutable UnicodeString FOptionScratch;
 };
 

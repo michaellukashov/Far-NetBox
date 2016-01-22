@@ -8,6 +8,7 @@
 #define HELP_NONE ""
 #define COMMAND_SWITCH L"Command"
 #define SESSIONNAME_SWICH L"SessionName"
+#define INI_NUL L"nul"
 
 TConfiguration * CreateConfiguration();
 class TOptions;

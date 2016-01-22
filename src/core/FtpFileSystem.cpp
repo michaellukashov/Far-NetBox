@@ -354,6 +354,7 @@ void TFTPFileSystem::Open()
     FFileZillaIntf = FileZillaImpl.release();
   }
 
+  FWindowsServer = false;
   FTransferActiveImmediately = (Data->GetFtpTransferActiveImmediately() == asOn);
 
   FSessionInfo.LoginTime = Now();
@@ -421,6 +422,7 @@ void TFTPFileSystem::Open()
   }
 
   FPasswordFailed = false;
+  FStoredPasswordTried = false;
   bool PromptedForCredentials = false;
 
   do
@@ -652,7 +654,8 @@ void TFTPFileSystem::CollectUsage()
   // 220 Microsoft FTP Service
   // SYST
   // 215 Windows_NT
-  else if (ContainsText(FWelcomeMessage, L"Microsoft FTP Service"))
+  else if (ContainsText(FWelcomeMessage, L"Microsoft FTP Service") ||
+           ContainsText(FSystem, L"Windows_NT"))
   {
     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPIIS");
   }
@@ -2513,6 +2516,9 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
         TDateTime UtcModification = UtcFilePtr->GetModification();
         UtcFilePtr.release();
 
+        // Time difference between timestamp retrieved using MDTM (UTC converted to local timezone)
+        // and using LIST (no conversion, expecting the server uses the same timezone as the client).
+        // Note that FormatTimeZone reverses the value.
         FTimeDifference = static_cast<int64_t>(SecsPerDay * (UtcModification - File->GetModification()));
 
         UnicodeString LogMessage;
@@ -2873,7 +2879,7 @@ bool TFTPFileSystem::TemporaryTransferFile(const UnicodeString & /*FileName*/)
 
 bool TFTPFileSystem::GetStoredCredentialsTried() const
 {
-  return !FTerminal->GetSessionData()->GetPassword().IsEmpty();
+  return FStoredPasswordTried;
 }
 
 UnicodeString TFTPFileSystem::FSGetUserName() const
@@ -3608,6 +3614,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
     }
     else if (FLastCommand == PASS)
     {
+      FStoredPasswordTried = true;
       // 530 = "Not logged in."
       if (FLastCode == 530)
       {
@@ -3627,6 +3634,12 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
         {
           FTerminal->LogEvent("Server is known not to support LIST -a");
           FListAll = asOff;
+        }
+        // The FWelcomeMessage usually contains "Microsoft FTP Service" but can be empty
+        if (ContainsText(FSystem, L"Windows_NT"))
+        {
+          FTerminal->LogEvent(L"The server is probably running Windows, assuming that directory listing timestamps are affected by DST.");
+          FWindowsServer = true;
         }
       }
       else
@@ -3815,7 +3828,6 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
       break;
 
     case TFileZillaIntf::LOG_DEBUG:
-      // used for directory listing only
       LogType = llMessage;
       break;
 
@@ -4405,7 +4417,9 @@ bool TFTPFileSystem::HandleAsynchRequestNeedPass(
     }
 
     Data.Password = nullptr;
-    if (!Password.IsEmpty())
+    // When returning REPLY_OK, we need to return an allocated password,
+    // even if we were returning and empty string we got on input.
+    if (RequestResult == TFileZillaIntf::REPLY_OK)
     {
       Data.Password = _wcsdup(Password.c_str());
     }
@@ -4428,6 +4442,12 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
       // not exact as we got year as well, but it is most probably
       // guessed by FZAPI anyway
       ModificationFmt = Source.HasSeconds ? mfFull : mfMDHM;
+
+      // With IIS, the Utc should be false only for MDTM
+      if (FWindowsServer && !Source.Utc)
+      {
+        DateTime -= DSTDifferenceForTime(DateTime);
+      }
     }
     else
     {

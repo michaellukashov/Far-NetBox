@@ -148,8 +148,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
         TBookmarkList * BookmarkList = NB_STATIC_DOWNCAST(TBookmarkList, FBookmarkLists->GetObj(Index));
         if (All || BookmarkList->GetModified())
         {
-          UnicodeString Key;
-          Key = FBookmarkLists->GetString(Index);
+          UnicodeString Key = FBookmarkLists->GetString(Index);
           Storage->RecursiveDeleteSubKey(Key);
           if (Storage->OpenSubKey(Key, true))
           {

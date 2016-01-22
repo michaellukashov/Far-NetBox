@@ -190,6 +190,11 @@ int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
       Result = 0;
     }
   }
+  __finally
+  {
+    delete Prompts;
+    delete Results;
+  };
 
   return Result;
 }
@@ -238,6 +243,13 @@ int verify_ssh_host_key(void * frontend, char * host, int port, const char * key
 
   // We should return 0 when key was not confirmed, we throw exception instead.
   return 1;
+}
+
+int have_ssh_host_key(void * frontend, const char * hostname, int port,
+  const char * keytype)
+{
+  DebugAssert(frontend != NULL);
+  return static_cast<TSecureShell *>(frontend)->HaveHostKey(hostname, port, keytype) ? 1 : 0;
 }
 
 int askalg(void * frontend, const char * algtype, const char * algname,
@@ -317,14 +329,9 @@ int askappend(void * /*frontend*/, Filename * /*filename*/,
   return 0;
 }
 
-void ldisc_send(void * /*handle*/, char * /*buf*/, int len, int /*interactive*/)
+void ldisc_echoedit_update(void * /*handle*/)
 {
-  // This is only here because of the calls to ldisc_send(nullptr,
-  // 0) in ssh.c. Nothing in PSCP actually needs to use the ldisc
-  // as an ldisc. So if we get called with any real data, I want
-  // to know about it.
-  DebugAssert(len == 0);
-  DebugUsedParam(len);
+  DebugFail();
 }
 
 void agent_schedule_callback(void (* /*callback*/)(void *, void *, int),
@@ -535,7 +542,8 @@ TKeyType GetKeyType(const UnicodeString & AFileName)
 {
   DebugAssert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   DebugAssert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
-  UTF8String UtfFileName = UTF8String(AFileName);
+  DebugAssert(ktSSH2PublicOpenSSH == SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH);
+  UTF8String UtfFileName = UTF8String(FileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
   TKeyType Result = static_cast<TKeyType>(key_type(KeyFile));
   filename_free(KeyFile);
@@ -554,8 +562,7 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeStr
       Result = (ssh2_userkey_encrypted(KeyFile, &CommentStr) != 0);
       break;
 
-    case ktOpenSSHAuto:
-    case ktOpenSSHPem:
+    case ktOpenSSHPEM:
     case ktOpenSSHNew:
     case ktSSHCom:
       Result = (import_encrypted(KeyFile, KeyType, &CommentStr) != 0);
@@ -595,7 +602,8 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
       Ssh2Key = ssh2_load_userkey(KeyFile, AnsiPassphrase.c_str(), &ErrorStr);
       break;
 
-    case ktOpenSSHAuto:
+    case ktOpenSSHPEM:
+    case ktOpenSSHNew:
     case ktSSHCom:
       Ssh2Key = import_ssh2(KeyFile, KeyType, (char *)AnsiPassphrase.c_str(), &ErrorStr);
       break;
@@ -663,11 +671,6 @@ void FreeKey(TPrivateKey * PrivateKey)
   sfree(Ssh2Key);
 }
 
-UnicodeString GetKeyTypeName(TKeyType KeyType)
-{
-  return key_type_to_str(KeyType);
-}
-
 int64_t ParseSize(const UnicodeString & SizeStr)
 {
   AnsiString AnsiSizeStr = AnsiString(SizeStr);
@@ -708,6 +711,37 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
     }
   }
   return (has > 0);
+}
+
+static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & KeyType)
+{
+  int Count = 0;
+  const wchar_t NormalizedSeparator = L'-';
+  // We may use find_pubkey_alg, but it gets complicated with normalized fingerprint
+  // as the names have different number of dashes
+  const ssh_signkey ** SignKeys = get_hostkey_algs(&Count);
+
+  for (int Index = 0; Index < Count; Index++)
+  {
+    const ssh_signkey * SignKey = SignKeys[Index];
+    UnicodeString Name = UnicodeString(SignKey->name);
+    if (StartsStr(Name + L" ", Fingerprint))
+    {
+      int LenStart = Name.Length() + 1;
+      Fingerprint[LenStart] = NormalizedSeparator;
+      int Space = Fingerprint.Pos(L" ");
+      DebugAssert(IsNumber(Fingerprint.SubString(LenStart + 1, Space - LenStart - 1)));
+      Fingerprint.Delete(LenStart + 1, Space - LenStart);
+      Fingerprint = ReplaceChar(Fingerprint, L':', NormalizedSeparator);
+      KeyType = UnicodeString(SignKey->keytype);
+      return;
+    }
+    else if (StartsStr(Name + NormalizedSeparator, Fingerprint))
+    {
+      KeyType = UnicodeString(SignKey->keytype);
+      return;
+    }
+  }
 }
 
 UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint)
