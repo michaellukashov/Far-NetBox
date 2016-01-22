@@ -1085,7 +1085,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
   const char * Executable = GetProp(Results, PROP_EXECUTABLE, MODDAV_PROP_NAMESPACE);
   if (Executable != nullptr)
   {
-    if (strcmp(Executable, "T") == nullptr)
+    if (strcmp(Executable, "T") == 0)
     {
       UnicodeString ExecutableRights;
       // The "gear" character is supported since Windows 8
