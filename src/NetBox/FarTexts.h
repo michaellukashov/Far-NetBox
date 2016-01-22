@@ -1265,6 +1265,6 @@ enum PluginString {
   MSG_CONVERTKEY_SAVE_TITLE, // "Save converted private key"
   MSG_CONVERTKEY_SAVE_FILTER, // "PuTTY Private Key Files (*.ppk)|*.ppk|All files (*.*)|*.*"
   MSG_CONVERTKEY_SAVED, // "Private key was converted and saved to '%s'."
-  
+
   MSG_STACK_TRACE, // "Stack trace:"
 };
