@@ -37,6 +37,8 @@ public:
 
   int vprintf(const char * Format, va_list ArgList);
 
+  void Unique() {}
+
 public:
   UTF8String & operator=(const UnicodeString & StrCopy);
   UTF8String & operator=(const UTF8String & StrCopy);
@@ -138,6 +140,8 @@ public:
   UnicodeString TrimLeft() const;
   UnicodeString TrimRight() const;
 
+  void Unique() {}
+
   void sprintf(const wchar_t * fmt, ...);
 
 public:
@@ -229,6 +233,8 @@ public:
   AnsiString & Append(const AnsiString & Str) { return Append(Str.c_str(), Str.GetLength()); }
   AnsiString & Append(const char * Str) { return Append(Str, strlen(Str ? Str : "")); }
   AnsiString & Append(const char Ch) { return Append(&Ch, 1); }
+
+  void Unique() {}
 
 public:
   AnsiString & operator=(const UnicodeString & strCopy);
