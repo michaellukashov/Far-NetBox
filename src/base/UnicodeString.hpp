@@ -18,7 +18,7 @@ public:
   explicit UTF8String(const UnicodeString & Str);
   explicit UTF8String(const wchar_t * Str);
   explicit UTF8String(const wchar_t * Str, intptr_t Size);
-  explicit UTF8String(const char * Str, intptr_t Size);
+  explicit UTF8String(const char * Str, intptr_t Size) { Init(Str, Size); }
   explicit UTF8String(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
 
   ~UTF8String() {}
