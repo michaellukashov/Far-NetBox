@@ -3540,10 +3540,10 @@ void TWebDAVFileSystem::FileTransferProgress(int64_t TransferSize,
   DoFileTransferProgress(TransferSize, Bytes);
 }
 
-void TWebDAVFileSystem::FileTransfer(const UnicodeString & AFileName,
+/*void TWebDAVFileSystem::FileTransfer(const UnicodeString & AFileName,
   const UnicodeString & LocalFile, const UnicodeString & RemoteFile,
-  const UnicodeString & RemotePath, bool Get, int64_t Size, int /*Type*/,
-  TFileTransferData & /*UserData*/, TFileOperationProgressType * OperationProgress)
+  const UnicodeString & RemotePath, bool Get, int64_t Size, int / *Type* /,
+  TFileTransferData & / *UserData* /, TFileOperationProgressType * OperationProgress)
 {
   FCurrentOperationProgress = OperationProgress;
   FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName.c_str()), "",
@@ -3580,7 +3580,7 @@ void TWebDAVFileSystem::FileTransfer(const UnicodeString & AFileName,
     // (we are not waiting for reply anymore so keepalives are free to proceed)
     DoFileTransferProgress(OperationProgress->TransferSize, OperationProgress->TransferSize);
   }
-}
+}*/
 
 /*bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t * Path, int & ResponseCode)
 {

@@ -16,7 +16,7 @@ public:
 
   void Add(const UnicodeString & Option);
 
-  void ParseParams(const UnicodeString & Params);
+  // void ParseParams(const UnicodeString & Params);
 
   bool FindSwitch(const UnicodeString & Switch);
   bool FindSwitch(const UnicodeString & Switch, UnicodeString & Value);
