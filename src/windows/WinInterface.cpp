@@ -1,4 +1,5 @@
 #include <Interface.h>
+#include <FarTexts.h>
 
 static TCriticalSection StackTraceCriticalSection;
 typedef rde::map<DWORD, TStrings *> TStackTraceMap;
@@ -10,7 +11,8 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 
   TGuard Guard(StackTraceCriticalSection);
 
-  TStackTraceMap::iterator Iterator = StackTraceMap.find(::GetCurrentThreadId());
+  DWORD Id = ::GetCurrentThreadId();
+  TStackTraceMap::iterator Iterator = StackTraceMap.find(Id);
   if (Iterator != StackTraceMap.end())
   {
     std::unique_ptr<TStrings> OwnedMoreMessages;
@@ -24,11 +26,11 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
     {
       MoreMessages->SetText(MoreMessages->GetText() + "\n");
     }
-    MoreMessages->SetText(MoreMessages->GetText()) + LoadStr(STACK_TRACE) + "\n";
+    MoreMessages->SetText(MoreMessages->GetText() + LoadStr(MSG_STACK_TRACE) + "\n");
     MoreMessages->AddStrings(Iterator->second);
 
     delete Iterator->second;
-    StackTraceMap.erase(Iterator);
+    StackTraceMap.erase(Id);
 
     OwnedMoreMessages.release();
   }
