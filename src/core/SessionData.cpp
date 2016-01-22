@@ -1091,12 +1091,13 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
 
 TStrings * TSessionData::SaveToOptions(const TSessionData * Default)
 {
-  std::unique_ptr<TStringList> Options(new TStringList());
 #if 0
+  std::unique_ptr<TStringList> Options(new TStringList());
   std::unique_ptr<TOptionsStorage> OptionsStorage(new TOptionsStorage(Options.get(), true, false));
   DoSave(OptionsStorage.get(), false, Default, true);
   return Options.release();
 #endif
+  return nullptr;
 }
 
 void TSessionData::Save(THierarchicalStorage * Storage,
