@@ -269,4 +269,4 @@ void DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber)
   _wassert(Message, Filename, LineNumber);
 }
 
-#endif // ifdef _DEBUG
+#endif // _DEBUG

@@ -36,7 +36,13 @@ private:
   TCriticalSection & FCriticalSection;
 };
 
-#ifdef _DEBUG
+#if !defined(_DEBUG)
+
+#define DebugAssert(p) ((void)(p)
+#define DebugCheck(p) (p)
+#define DebugFail() (void)
+
+#else // _DEBUG
 
 void SetTraceFile(HANDLE TraceFile);
 void CleanupTracing();
@@ -58,15 +64,6 @@ void TraceInMemoryCallback(const wchar_t * Msg);
 
 #define ACCESS_VIOLATION_TEST { (*((int*)NULL)) = 0; }
 
-#if !defined(_DEBUG)
-
-#define DebugAssert(p) ((void)(p)
-#define DebugCheck(p) (p)
-#define DebugFail() (void)
-
-#else // if !defined(_DEBUG)
-
-#undef DebugAssert
 void DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber);
 
 inline bool DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int LineNumber)
@@ -101,14 +98,12 @@ inline typename T * DoCheckNotNull(T* p, wchar_t * Message, wchar_t * Filename, 
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
 #define DebugFail() DebugAssert(false)
 
-#endif // if !defined(_DEBUG)
-
 #define DebugAlwaysTrue(p) (p)
 #define DebugAlwaysFalse(p) (p)
 #define DebugNotNull(p) (p)
 #define DebugUsedParam(p) (void)(p)
 
-#endif // ifdef _DEBUG
+#endif // _DEBUG
 
 #define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())
 
