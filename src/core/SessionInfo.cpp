@@ -976,16 +976,18 @@ UnicodeString EnumName(T Value, const UnicodeString & Names)
 {
   int N = int(Value);
 
+  UnicodeString N(Names);
+
   do
   {
-    UnicodeString Name = CutToChar(Names, L';', true);
+    UnicodeString Name = CutToChar(N, L';', true);
     if (N == 0)
     {
       return Name;
     }
     N--;
   }
-  while ((N >= 0) && !Names.IsEmpty());
+  while ((N >= 0) && !N.IsEmpty());
 
   return L"(unknown)";
 }
