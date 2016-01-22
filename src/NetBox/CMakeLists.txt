@@ -1025,6 +1025,7 @@ add_library(putty STATIC
   ${LIBS_ROOT}/Putty/errsock.c
   ${LIBS_ROOT}/Putty/sshecc.c
   ${LIBS_ROOT}/Putty/sshccp.c
+  ${LIBS_ROOT}/Putty/import.c
 #  ${LIBS_ROOT}/Putty/ldisc.c
 )
 
