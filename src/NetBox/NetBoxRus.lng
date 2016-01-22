@@ -128,10 +128,6 @@
 "CPS:        "
 "Осталось:   "
 
-"Save converted private key"
-"PuTTY Private Key Files (*.ppk)|*.ppk|All files (*.*)|*.*"
-"Private key was converted and saved to '%s'."
-
 "Прервать передачу файлов?\n \nОперация не может быть корректно прервана во время передачи файла.\nНажмите «Yes» чтобы прервать передачу файла и закрыть соединение.\nНажмите «No» чтобы завершить передачу текущего файла и прервать операцию.\nНажмите «Cancel» чтобы продолжить операцию."
 "Отменить текущую операцию?"
 
@@ -1269,3 +1265,9 @@
 "Save converted private key"
 "PuTTY Private Key Files (*.ppk)|*.ppk|All files (*.*)|*.*"
 "Private key was converted and saved to '%s'."
+
+"Save converted private key"
+"PuTTY Private Key Files (*.ppk)|*.ppk|All files (*.*)|*.*"
+"Private key was converted and saved to '%s'."
+
+"Stack trace:"

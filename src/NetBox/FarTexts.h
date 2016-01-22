@@ -128,10 +128,6 @@ enum PluginString {
     CPS_LABEL,
     TIME_LEFT_LABEL,
 
-    CONVERTKEY_SAVE_TITLE, // "Save converted private key"
-    CONVERTKEY_SAVE_FILTER, // "PuTTY Private Key Files (*.ppk)|*.ppk|All files (*.*)|*.*"
-    CONVERTKEY_SAVED, // "Private key was converted and saved to '%s'."
-
     CANCEL_OPERATION_FATAL,
     CANCEL_OPERATION,
 
@@ -1266,7 +1262,7 @@ enum PluginString {
   MSG_IDS_ERRORMSG_TIMEOUT,
   MSG_IDS_STATUSMSG_DISCONNECTED,
 
-  MSG_CONVERTKEY_SAVE_TITLE,
-  MSG_CONVERTKEY_SAVE_FILTER,
-  MSG_CONVERTKEY_SAVED,
+  MSG_CONVERTKEY_SAVE_TITLE, // "Save converted private key"
+  MSG_CONVERTKEY_SAVE_FILTER, // "PuTTY Private Key Files (*.ppk)|*.ppk|All files (*.*)|*.*"
+  MSG_CONVERTKEY_SAVED, // "Private key was converted and saved to '%s'."
 };

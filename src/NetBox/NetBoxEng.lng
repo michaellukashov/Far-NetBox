@@ -127,10 +127,6 @@
 "CPS:"
 "Left:"
 
-"Save converted private key"
-"PuTTY Private Key Files (*.ppk)|*.ppk|All files (*.*)|*.*"
-"Private key was converted and saved to '%s'."
-
 "Cancel file transfer?\n \nOperation can't be canceled in the middle of file transfer.\nPress 'Yes' to cancel file transfer and to close connection.\nPress 'No' to finish current file transfer.\nPress 'Cancel' to continue operation."
 "Cancel current operation?"
 
@@ -1268,3 +1264,5 @@
 "Save converted private key"
 "PuTTY Private Key Files (*.ppk)|*.ppk|All files (*.*)|*.*"
 "Private key was converted and saved to '%s'."
+
+"Stack trace:"
