@@ -249,14 +249,14 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
 #endif TRACE_IN_MEMORY
 }
 
-//void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-//  int Line, const wchar_t * AFormat, TVarRec * Args, const int Args_Size)
-//{
-//  DebugAssert(IsTracing);
+void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+  int Line, const wchar_t * AFormat, va_list Args)
+{
+  DebugAssert(IsTracing);
 
-//  UnicodeString Message = Format(AFormat, Args, Args_Size);
-//  Trace(SourceFile, Func, Line, Message.c_str());
-//}
+  UnicodeString Message = FormatV(AFormat, Args);
+  Trace(SourceFile, Func, Line, Message.c_str());
+}
 
 #endif // TRACE_IN_MEMORY_NO_FORMATTING
 

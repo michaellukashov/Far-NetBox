@@ -46,8 +46,8 @@ const unsigned int CallstackTlsOff = (unsigned int)-1;
 extern unsigned int CallstackTls;
 extern "C" void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * Message);
-//void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-//  int Line, const wchar_t * Format, TVarRec * Args, const int Args_Size);
+void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+  int Line, const wchar_t * Format, va_list Args);
 
 #ifdef TRACE_IN_MEMORY
 
