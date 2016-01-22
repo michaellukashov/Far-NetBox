@@ -1441,6 +1441,8 @@ bool TWebDAVFileSystem::ConfirmOverwrite(
       Abort();
       break;
   }
+  bool Result = false;
+  return Result;
 }
 
 void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
