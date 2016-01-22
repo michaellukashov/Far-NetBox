@@ -147,7 +147,7 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
 
         if (FileSystems.size() == 1)
         {
-          FileSystem = *FileSystems.begin();
+//          TODO: implement FileSystem = *FileSystems.begin();
         }
       }
 
