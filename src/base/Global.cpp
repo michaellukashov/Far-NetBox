@@ -267,9 +267,8 @@ void DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber)
     Trace(Filename, L"assert", LineNumber, Message);
   }
 //  _assert(AnsiString(Message).c_str(), AnsiString(Filename).c_str(), LineNumber);
-  _CrtDbgReport(0,
-                AnsiString(Filename).c_str(), LineNumber, 0,
-                "%s", AnsiString(Message).c_str());
+  _CrtDbgReport(0, AnsiString(Filename).c_str(), LineNumber, 0,
+    "%s", AnsiString(Message).c_str());
 }
 
 #endif // ifdef _DEBUG
