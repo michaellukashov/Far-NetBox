@@ -13,6 +13,9 @@ TConfiguration * CreateConfiguration();
 class TOptions;
 TOptions * GetGlobalOptions();
 
+void ShowExtendedException(Exception * E);
+bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
+
 UnicodeString GetCompanyRegistryKey();
 UnicodeString GetRegistryKey();
 void * BusyStart();
