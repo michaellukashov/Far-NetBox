@@ -742,6 +742,7 @@ enum {
      * as AUTO, only PEM or NEW; key export UIs should not be able to
      * select PEM, only AUTO or NEW.
      */
+    SSH_KEYTYPE_OPENSSH,
     SSH_KEYTYPE_OPENSSH_AUTO,
     SSH_KEYTYPE_OPENSSH_PEM,
     SSH_KEYTYPE_OPENSSH_NEW,
