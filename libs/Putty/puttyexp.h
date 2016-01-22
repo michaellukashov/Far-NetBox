@@ -25,6 +25,7 @@ int get_ssh_exitcode(void * handle);
 const unsigned int * ssh2_remmaxpkt(void * handle);
 const unsigned int * ssh2_remwindow(void * handle);
 void md5checksum(const char * buffer, int len, unsigned char output[16]);
+const struct ssh_signkey ** get_hostkey_algs(int * count);
 
 // from wingss.c
 
@@ -35,7 +36,6 @@ void md5checksum(const char * buffer, int len, unsigned char output[16]);
 // from portfwd.c
 
 int is_pfwd(void * handle);
-int is_pfwd_listener(void * handle);
 void * get_pfwd_backend(void * handle);
 
 // for winstore.c

@@ -636,7 +636,8 @@ const struct ssh_signkey *find_pubkey_alg(const char *name)
 }
 
 struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
-				       const char *passphrase, const char **errorstr)
+				       const char *passphrase,
+                                       const char **errorstr)
 {
     FILE *fp;
     char header[40], *b, *encryption, *comment, *mac;

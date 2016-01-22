@@ -228,6 +228,8 @@
     <ClCompile Include=".\CONF.c" />
     <ClCompile Include=".\CALLBACK.c" />
     <ClCompile Include=".\import.c" />
+    <ClCompile Include=".\be_misc.c" />
+    <ClCompile Include=".\sshbcrypt.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

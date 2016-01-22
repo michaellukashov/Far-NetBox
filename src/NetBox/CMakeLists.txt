@@ -1026,6 +1026,8 @@ add_library(putty STATIC
   ${LIBS_ROOT}/Putty/sshecc.c
   ${LIBS_ROOT}/Putty/sshccp.c
   ${LIBS_ROOT}/Putty/import.c
+  ${LIBS_ROOT}/Putty/be_misc.c
+  ${LIBS_ROOT}/Putty/sshbcrypt.c
 #  ${LIBS_ROOT}/Putty/ldisc.c
 )
 
