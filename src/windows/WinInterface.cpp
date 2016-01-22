@@ -1,26 +1,30 @@
 #include <Interface.h>
 
+static TCriticalSection StackTraceCriticalSection;
+typedef rde::map<DWORD, TStrings *> TStackTraceMap;
+static TStackTraceMap StackTraceMap;
+
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 {
   bool Result = false;
 
-  TGuard Guard(StackTraceCriticalSection.get());
+  TGuard Guard(StackTraceCriticalSection);
 
-  TStackTraceMap::iterator Iterator = StackTraceMap.find(GetCurrentThreadId());
+  TStackTraceMap::iterator Iterator = StackTraceMap.find(::GetCurrentThreadId());
   if (Iterator != StackTraceMap.end())
   {
     std::unique_ptr<TStrings> OwnedMoreMessages;
-    if (MoreMessages == NULL)
+    if (MoreMessages == nullptr)
     {
       OwnedMoreMessages.reset(new TStringList());
       MoreMessages = OwnedMoreMessages.get();
       Result = true;
     }
-    if (!MoreMessages->Text.IsEmpty())
+    if (!MoreMessages->GetText().IsEmpty())
     {
-      MoreMessages->Text = MoreMessages->Text + "\n";
+      MoreMessages->SetText(MoreMessages->GetText() + "\n");
     }
-    MoreMessages->Text = MoreMessages->Text + LoadStr(STACK_TRACE) + "\n";
+    MoreMessages->SetText(MoreMessages->GetText()) + LoadStr(STACK_TRACE) + "\n";
     MoreMessages->AddStrings(Iterator->second);
 
     delete Iterator->second;
