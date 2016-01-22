@@ -1266,8 +1266,4 @@
 "PuTTY Private Key Files (*.ppk)|*.ppk|All files (*.*)|*.*"
 "Private key was converted and saved to '%s'."
 
-"Save converted private key"
-"PuTTY Private Key Files (*.ppk)|*.ppk|All files (*.*)|*.*"
-"Private key was converted and saved to '%s'."
-
 "Stack trace:"
