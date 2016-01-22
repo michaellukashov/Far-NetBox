@@ -374,7 +374,8 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
     CommandLineParams = CmdLine.SubString(Pos, -1);
   if (!CommandLineParams.IsEmpty())
   {
-    Options->ParseParams(CommandLineParams);
+    // TODO: implement Options->ParseParams(CommandLineParams);
+    Error(SNotImplemented, 3015);
     CommandLine = CommandLine.SubString(1, CommandLine.Length() - CommandLineParams.Length()).Trim();
   }
 }
