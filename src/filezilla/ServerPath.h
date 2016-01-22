@@ -11,10 +11,8 @@ public:
   BOOL HasParent() const;
   CString GetLastSegment() const;
   CServerPath();
-  explicit CServerPath(int nServerType);
   explicit CServerPath(CString path, bool trim = true);
   CServerPath(CString path, int nServerType, bool trim = true);
-  CServerPath(CString subdir, const CServerPath & parent); // If subdir is absolute, parent is ignored
   CServerPath(const CServerPath &path);
 
   virtual ~CServerPath();

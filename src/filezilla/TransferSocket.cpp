@@ -38,7 +38,7 @@ CTransferSocket::CTransferSocket(CFtpControlSocket *pOwner, int nMode)
   m_transferdata.transfersize = 0;
   m_transferdata.transferleft = 0;
   m_nNotifyWaiting = 0;
-  m_bShutDown = FALSE;
+  m_bActivationPending = false;
 
   UpdateStatusBar(true);
 
@@ -359,33 +359,7 @@ void CTransferSocket::OnAccept(int nErrorCode)
 
   if (m_nTransferState == STATE_STARTING)
   {
-    m_nTransferState = STATE_STARTED;
-
-    if (m_pSslLayer)
-    {
-      AddLayer(m_pSslLayer);
-      int res = m_pSslLayer->InitSSLConnection(true, m_pOwner->m_pSslLayer,
-        GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
-        GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
-        GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
-      if (res == SSL_FAILURE_INITSSL)
-        m_pOwner->ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
-
-      if (res)
-      {
-        CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
-        return;
-      }
-    }
-
-#ifndef MPEXT_NO_GSS
-    if (m_pGssLayer)
-    {
-      AddLayer(m_pGssLayer);
-    }
-#endif
-
-    m_LastActiveTime = CTime::GetCurrentTime();
+    Start();
   }
 }
 
@@ -440,38 +414,42 @@ void CTransferSocket::OnConnect(int nErrorCode)
   }
   else if (m_nTransferState == STATE_STARTING)
   {
-    m_nTransferState = STATE_STARTED;
-
-    m_LastActiveTime=CTime::GetCurrentTime();
-
-    if (m_pSslLayer)
-    {
-      AddLayer(m_pSslLayer);
-      int res = m_pSslLayer->InitSSLConnection(true, m_pOwner->m_pSslLayer,
-        GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
-        GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
-        GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
-      if (res == SSL_FAILURE_INITSSL)
-      {
-        m_pOwner->ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
-      }
-
-      if (res)
-      {
-        CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
-        return;
-      }
-    }
-
-#ifndef MPEXT_NO_GSS
-    if (m_pGssLayer)
-    {
-      AddLayer(m_pGssLayer);
-    }
-#endif
+    Start();
   }
 }
 
+void CTransferSocket::Start()
+{
+  m_nTransferState = STATE_STARTED;
+
+  m_LastActiveTime=CTime::GetCurrentTime();
+
+  if (m_pSslLayer)
+  {
+    AddLayer(m_pSslLayer);
+    int res = m_pSslLayer->InitSSLConnection(true, m_pOwner->m_pSslLayer,
+      GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
+      GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
+      GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
+    if (res == SSL_FAILURE_INITSSL)
+    {
+      m_pOwner->ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
+    }
+
+    if (res)
+    {
+      CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
+      return;
+    }
+  }
+
+#ifndef MPEXT_NO_GSS
+  if (m_pGssLayer)
+  {
+    AddLayer(m_pGssLayer);
+  }
+#endif
+}
 
 void CTransferSocket::OnClose(int nErrorCode)
 {
@@ -506,19 +484,47 @@ int CTransferSocket::CheckForTimeout(int delay)
   return 1;
 }
 
+void CTransferSocket::SetState(int nState)
+{
+  CAsyncSocketEx::SetState(nState);
+  if (m_bActivationPending && Activate())
+  {
+    m_bActivationPending = false;
+  }
+}
+
+bool CTransferSocket::Activate()
+{
+  // Activation (OnSend => OnConnect) indirectly causes adding
+  // of TLS layer, which needs connected underlying layers.
+  // The code should be generic, but we particularly need it for this (TLS over proxy)
+  // scenario only. So for a safety, we use it for the scenario only.
+  bool Result =
+    (GetState() == connected) || (GetState() == attached) ||
+    (m_pSslLayer == NULL) || (m_pProxyLayer == NULL);
+  if (Result)
+  {
+    if (m_nTransferState == STATE_WAITING)
+      m_nTransferState = STATE_STARTING;
+    m_bCheckTimeout = TRUE;
+    m_LastActiveTime = CTime::GetCurrentTime();
+
+    if (m_nNotifyWaiting & FD_READ)
+      OnReceive(0);
+    if (m_nNotifyWaiting & FD_WRITE)
+      OnSend(0);
+    if (m_nNotifyWaiting & FD_CLOSE)
+      OnClose(0);
+  }
+  return Result;
+}
+
 void CTransferSocket::SetActive()
 {
-  if (m_nTransferState == STATE_WAITING)
-    m_nTransferState = STATE_STARTING;
-  m_bCheckTimeout = TRUE;
-  m_LastActiveTime = CTime::GetCurrentTime();
-
-  if (m_nNotifyWaiting & FD_READ)
-    OnReceive(0);
-  if (m_nNotifyWaiting & FD_WRITE)
-    OnSend(0);
-  if (m_nNotifyWaiting & FD_CLOSE)
-    OnClose(0);
+  if (!Activate())
+  {
+    m_bActivationPending = true;
+  }
 }
 
 void CTransferSocket::OnSend(int nErrorCode)
@@ -878,30 +884,10 @@ BOOL CTransferSocket::Create(BOOL bUseSsl)
   if (nProxyType != PROXYTYPE_NOPROXY)
   {
     USES_CONVERSION;
-
-    m_pProxyLayer = new CAsyncProxySocketLayer();
-    if (nProxyType == PROXYTYPE_SOCKS4)
-      m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT));
-    else if (nProxyType == PROXYTYPE_SOCKS4A)
-      m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4A, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT));
-    else if (nProxyType == PROXYTYPE_SOCKS5)
-      if (GetOptionVal(OPTION_PROXYUSELOGON))
-        m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS5, T2CA(GetOption(OPTION_PROXYHOST)),
-                    GetOptionVal(OPTION_PROXYPORT),
-                    T2CA(GetOption(OPTION_PROXYUSER)),
-                    T2CA(GetOption(OPTION_PROXYPASS)));
-      else
-        m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS5, T2CA(GetOption(OPTION_PROXYHOST)),
-                    GetOptionVal(OPTION_PROXYPORT));
-    else if (nProxyType == PROXYTYPE_HTTP11)
-      if (GetOptionVal(OPTION_PROXYUSELOGON))
-        m_pProxyLayer->SetProxy(PROXYTYPE_HTTP11, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT),
-                    T2CA(GetOption(OPTION_PROXYUSER)),
-                    T2CA(GetOption(OPTION_PROXYPASS)));
-      else
-        m_pProxyLayer->SetProxy(PROXYTYPE_HTTP11, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT));
-    else
-      DebugFail();
+    m_pProxyLayer = new CAsyncProxySocketLayer;
+    m_pProxyLayer->SetProxy(
+      nProxyType, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT),
+      GetOptionVal(OPTION_PROXYUSELOGON), T2CA(GetOption(OPTION_PROXYUSER)), T2CA(GetOption(OPTION_PROXYPASS)));
     AddLayer(m_pProxyLayer);
   }
 
@@ -1135,7 +1121,7 @@ void CTransferSocket::EnsureSendClose(int Mode)
       m_nMode |= Mode;
     }
     m_bSentClose = TRUE;
-    VERIFY(m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode));
+    DebugCheck(m_pOwner->m_pOwner->PostThreadMessage(m_nInternalMessageID, FZAPI_THREADMSG_TRANSFEREND, m_nMode));
   }
 }
 

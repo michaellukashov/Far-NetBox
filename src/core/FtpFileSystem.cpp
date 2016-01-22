@@ -56,6 +56,7 @@ protected:
   virtual void PreserveDownloadFileTime(HANDLE Handle, void * UserData);
   virtual bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
   virtual wchar_t * LastSysErrorMessage() const;
+  virtual std::wstring GetClientString() const;
 
 private:
   TFTPFileSystem * FFileSystem;
@@ -144,14 +145,19 @@ void TFileZillaImpl::PreserveDownloadFileTime(HANDLE Handle, void * UserData)
   return FFileSystem->PreserveDownloadFileTime(Handle, UserData);
 }
 
+bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time)
+{
+  return FFileSystem->GetFileModificationTimeInUtc(FileName, Time);
+}
+
 wchar_t * TFileZillaImpl::LastSysErrorMessage() const
 {
   return _wcsdup(::LastSysErrorMessage().c_str());
 }
 
-bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time)
+std::wstring TFileZillaImpl::GetClientString() const
 {
-  return FFileSystem->GetFileModificationTimeInUtc(FileName, Time);
+  return std::wstring(GetSshVersionString().c_str());
 }
 
 static const wchar_t FtpsCertificateStorageKey[] = L"FtpsCertificates";

@@ -423,30 +423,10 @@ bool CFtpControlSocket::InitConnect()
   int nProxyType = GetOptionVal(OPTION_PROXYTYPE);
   if (nProxyType != PROXYTYPE_NOPROXY)
   {
-    m_pProxyLayer = new CAsyncProxySocketLayer();
-    if (nProxyType == PROXYTYPE_SOCKS4)
-      m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT));
-    else if (nProxyType==PROXYTYPE_SOCKS4A)
-      m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS4A, T2CA(GetOption(OPTION_PROXYHOST)),GetOptionVal(OPTION_PROXYPORT));
-    else if (nProxyType==PROXYTYPE_SOCKS5)
-      if (GetOptionVal(OPTION_PROXYUSELOGON))
-        m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS5, T2CA(GetOption(OPTION_PROXYHOST)),
-                    GetOptionVal(OPTION_PROXYPORT),
-                    T2CA(GetOption(OPTION_PROXYUSER)),
-                    T2CA(GetOption(OPTION_PROXYPASS)));
-      else
-        m_pProxyLayer->SetProxy(PROXYTYPE_SOCKS5, T2CA(GetOption(OPTION_PROXYHOST)),
-                    GetOptionVal(OPTION_PROXYPORT));
-    else if (nProxyType==PROXYTYPE_HTTP11)
-      if (GetOptionVal(OPTION_PROXYUSELOGON))
-        m_pProxyLayer->SetProxy(PROXYTYPE_HTTP11, T2CA(GetOption(OPTION_PROXYHOST)),
-                    GetOptionVal(OPTION_PROXYPORT),
-                    T2CA(GetOption(OPTION_PROXYUSER)),
-                    T2CA(GetOption(OPTION_PROXYPASS)));
-      else
-        m_pProxyLayer->SetProxy(PROXYTYPE_HTTP11, T2CA(GetOption(OPTION_PROXYHOST)) ,GetOptionVal(OPTION_PROXYPORT));
-    else
-      DebugFail();
+    m_pProxyLayer = new CAsyncProxySocketLayer;
+    m_pProxyLayer->SetProxy(
+      nProxyType, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT),
+      GetOptionVal(OPTION_PROXYUSELOGON), T2CA(GetOption(OPTION_PROXYUSER)), T2CA(GetOption(OPTION_PROXYPASS)));
     AddLayer(m_pProxyLayer);
   }
 
@@ -823,7 +803,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
       // compatibility with other clients.
       // Rather than forcing MS to fix Internet Explorer, letting other clients
       // suffer is a questionable decision in my opinion.
-      if (Send(L"CLNT FileZilla"))
+      if (Send(CString(L"CLNT ") + m_pTools->GetClientString().c_str()))
         m_Operation.nOpState = CONNECT_CLNT;
       return;
     }
@@ -1337,7 +1317,11 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
             else // end of multi-line found
             {
               m_MultiLine = "";
-              m_pOwner->PostThreadMessage(m_pOwner->m_nInternalMessageID, FZAPI_THREADMSG_PROCESSREPLY, 0);
+              LPARAM lParam = 0;
+              #ifdef _DEBUG
+              lParam = GetTickCount();
+              #endif
+              m_pOwner->PostThreadMessage(m_pOwner->m_nInternalMessageID, FZAPI_THREADMSG_PROCESSREPLY, lParam);
             }
           }
           // start of new multi-line
@@ -1349,7 +1333,11 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
           }
           else
           {
-            m_pOwner->PostThreadMessage(m_pOwner->m_nInternalMessageID, FZAPI_THREADMSG_PROCESSREPLY, 0);
+            LPARAM lParam = 0;
+            #ifdef _DEBUG
+            lParam = GetTickCount();
+            #endif
+            m_pOwner->PostThreadMessage(m_pOwner->m_nInternalMessageID, FZAPI_THREADMSG_PROCESSREPLY, lParam);
           }
         }
         else
@@ -2935,7 +2923,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     pData->transferdata.bType = (pData->transferfile.nType == 1) ? TRUE : FALSE;
 
     CServerPath path;
-    VERIFY(m_pOwner->GetCurrentPath(path));
+    DebugCheck(m_pOwner->GetCurrentPath(path));
     if (path == pData->transferfile.remotepath)
     {
       if (m_pDirectoryListing)
@@ -3646,7 +3634,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
             break;
           }
 
-          VERIFY(m_pTransferSocket->AsyncSelect());
+          DebugCheck(m_pTransferSocket->AsyncSelect());
         }
 
         if (pData->transferdata.bResume)

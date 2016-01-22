@@ -89,38 +89,6 @@ void CMainThread::OnTimer(WPARAM wParam, LPARAM lParam)
   return;
 }
 
-void CMainThread::ShowStatus(CString status, int type)
-{
-  ECS;
-  if (m_bQuit)
-  {
-    LCS;
-    return;
-  }
-  LCS;
-  //Displays a message in the message log
-  t_ffam_statusmessage *pStatus = new t_ffam_statusmessage();
-  pStatus->post = TRUE;
-  pStatus->status = status;
-  pStatus->type = type;
-  if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
-    delete pStatus;
-}
-
-void CMainThread::ShowStatus(UINT nID, int type)
-{
-  ECS;
-  if (m_bQuit)
-  {
-    LCS;
-    return;
-  }
-  LCS;
-  CString str;
-  str.LoadString(nID);
-  ShowStatus(str,type);
-}
-
 BOOL CMainThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
 {
   if (Msg==m_nInternalMessageID)
@@ -240,7 +208,7 @@ void CMainThread::Command(const t_command &command)
   m_bBusy=TRUE;
   t_command *pCommand=new t_command;
   *pCommand=command;
-  VERIFY(PostThreadMessage(m_nInternalMessageID,FZAPI_THREADMSG_COMMAND,(LPARAM)pCommand));
+  DebugCheck(PostThreadMessage(m_nInternalMessageID,FZAPI_THREADMSG_COMMAND,(LPARAM)pCommand));
   m_LastCommand=command;
   LCS;
 }
@@ -394,20 +362,6 @@ void CMainThread::SendDirectoryListing(t_directory * pDirectoryToSend)
   }
 }
 
-bool CMainThread::GetWorkingDirPath(CServerPath &path)
-{
-  ECS;
-  if (m_pWorkingDir)
-  {
-    path = m_pWorkingDir->path;
-    LCS;
-    return true;
-  }
-  LCS;
-
-  return false;
-}
-
 __int64 CMainThread::GetAsyncRequestID() const
 {
   return m_nAsyncRequestID;
@@ -418,7 +372,7 @@ __int64 CMainThread::GetNextAsyncRequestID()
   return ++m_nAsyncRequestID;
 }
 
-CMainThread* CMainThread::Create(int nPriority /*=THREAD_PRIORITY_NORMAL*/, DWORD dwCreateFlags /*=0*/)
+CMainThread* CMainThread::Create(int nPriority, DWORD dwCreateFlags)
 {
   CMainThread *pMainThread=new CMainThread();
   pMainThread->m_hThread=CreateThread(0, 0, ThreadProc, pMainThread, dwCreateFlags, &pMainThread->m_dwThreadId);
@@ -459,7 +413,7 @@ DWORD CMainThread::Run()
   m_EventStarted.SetEvent();
   LCS;
   MSG msg;
-  while (IsValid() && !m_bQuit && GetMessage(&msg, 0, 0, 0))
+  while (GetMessage(&msg, 0, 0, 0))
   {
     TranslateMessage(&msg);
     if (!msg.hwnd)
@@ -471,15 +425,4 @@ DWORD CMainThread::Run()
   DWORD res = ExitInstance();
   delete this;
   return res;
-}
-
-BOOL CMainThread::IsValid() const
-{
-  if (!this)
-    return FALSE;
-
-  if (IsBadWritePtr((VOID *)this, sizeof(CMainThread)) )
-    return FALSE;
-
-  return TRUE;
 }

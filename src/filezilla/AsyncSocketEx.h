@@ -257,7 +257,7 @@ protected:
   int m_nPendingEvents;
 
   int GetState() const;
-  void SetState(int nState);
+  virtual void SetState(int nState);
   static const TCHAR * GetStateDesc(int nState);
   static bool LogStateChange(int nState1, int nState2);
 
@@ -269,7 +269,7 @@ protected:
 
   friend CAsyncSocketExLayer;
 
-  //Called by the layers to notify application of some events
+  // Called by the layers to notify application of some events
   virtual int OnLayerCallback(rde::list<t_callbackMsg> & callbacks);
 
   // Used by Bind with AF_UNSPEC sockets
