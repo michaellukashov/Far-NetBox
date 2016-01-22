@@ -450,9 +450,9 @@ TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
   const UnicodeString & APath, const UnicodeString & AFileName,
   const UnicodeString & LocalFileName, const UnicodeString & FileList) :
-  TFileCustomCommand(Data, APath, AFileName, FileList)
+  TFileCustomCommand(Data, APath, AFileName, FileList),
+  FLocalFileName(LocalFileName)
 {
-  FLocalFileName = LocalFileName;
 }
 
 intptr_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index) const

@@ -289,6 +289,9 @@ void TKeepaliveThread::Execute()
 
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   TCustomFarFileSystem(APlugin),
+  FTerminal(nullptr),
+  FQueue(nullptr),
+  FQueueStatus(nullptr),
   FProgressSaveScreenHandle(0),
   FSynchronizationSaveScreenHandle(0),
   FAuthenticationSaveScreenHandle(0),
@@ -296,9 +299,6 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FFileList(nullptr),
   FPanelItems(nullptr),
   FSavedFindFolder(L""),
-  FTerminal(nullptr),
-  FQueue(nullptr),
-  FQueueStatus(nullptr),
   FQueueStatusInvalidated(false),
   FQueueItemInvalidated(false),
   FRefreshLocalDirectory(false),

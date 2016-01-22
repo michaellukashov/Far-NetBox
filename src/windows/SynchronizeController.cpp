@@ -15,13 +15,13 @@ TSynchronizeController::TSynchronizeController(
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
   TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories) :
   FOnSynchronize(AOnSynchronize),
-  FOnSynchronizeInvalid(AOnSynchronizeInvalid),
-  FOnTooManyDirectories(AOnTooManyDirectories),
+  FOptions(nullptr),
+  FOnSynchronizeThreads(nullptr),
   FSynchronizeMonitor(nullptr),
   FSynchronizeAbort(nullptr),
-  FSynchronizeLog(nullptr),
-  FOptions(nullptr),
-  FOnSynchronizeThreads(nullptr)
+  FOnSynchronizeInvalid(AOnSynchronizeInvalid),
+  FOnTooManyDirectories(AOnTooManyDirectories),
+  FSynchronizeLog(nullptr)
 {
   FSynchronizeParams.Params = 0;
   FSynchronizeParams.Options = 0;
