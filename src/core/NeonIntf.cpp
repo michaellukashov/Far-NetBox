@@ -9,7 +9,7 @@
 #include "Interface.h"
 #include "CoreMain.h"
 #include "Exceptions.h"
-#include "Security.h"
+#include "WinSCPSecurity.h"
 #include <TextsCore.h>
 #include <StrUtils.hpp>
 

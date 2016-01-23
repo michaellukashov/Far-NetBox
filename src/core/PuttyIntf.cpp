@@ -719,7 +719,7 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
 
 static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & KeyType)
 {
-  intptr_t Count = 0;
+  int Count = 0;
   const wchar_t NormalizedSeparator = L'-';
   // We may use find_pubkey_alg, but it gets complicated with normalized fingerprint
   // as the names have different number of dashes

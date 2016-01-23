@@ -77,7 +77,7 @@ public:
   void FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Length);
   void CWrite(const char * Data, intptr_t Length);
   const UnicodeString & GetStdError() const;
-  void VerifyHostKey(const UnicodeString & Host, int Port,
+  void VerifyHostKey(const UnicodeString & Host, intptr_t Port,
     const UnicodeString & KeyType, const UnicodeString & KeyStr, const UnicodeString & Fingerprint);
   bool HaveHostKey(const UnicodeString & Host, intptr_t Port, const UnicodeString & KeyType);
   void AskAlg(const UnicodeString & AlgType, const UnicodeString & AlgName);

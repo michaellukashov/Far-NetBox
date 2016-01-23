@@ -1010,7 +1010,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
   // Some servers do not use DAV:collection tag, but indicate the folder by trailing slash only.
   // It seems that all servers actually use the trailing slash, including IIS, mod_Dav, IT Hit, OpenDrive, etc.
   bool Collection = (AFile->GetFullFileName() != APath);
-  AFile->SetFileName(core::UnixExtractFileName(AFile->GetFullFileName()));
+  AFile->SetFileName(base::UnixExtractFileName(AFile->GetFullFileName()));
   const char * ContentLength = GetProp(Results, PROP_CONTENT_LENGTH);
   // some servers, for example iFiles, do not provide "getcontentlength" for folders
   if (ContentLength != nullptr)
@@ -3346,7 +3346,7 @@ void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem * AMainFileSystem)
   }
 }
 
-bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
+/*bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
   const TListDataEntry * Entries, intptr_t Count)
 {
   if (!FActive)
@@ -3471,7 +3471,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     }
     return true;
   }
-}
+}*/
 
 void TWebDAVFileSystem::ResetFileTransfer()
 {

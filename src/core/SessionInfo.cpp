@@ -962,7 +962,7 @@ UnicodeString TSessionLog::GetCmdLineLog()
 {
   UnicodeString Result = L""; // TODO: GetCmdLine();
 
-  if (!GetConfiguration()->GetLogSensitive())
+  if (!FConfiguration->GetLogSensitive())
   {
 //    TManagementScript Script(StoredSessions, false);
 //    Script.MaskPasswordInCommandLine(Result, true);

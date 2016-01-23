@@ -174,14 +174,14 @@ bool TOptions::FindSwitch(const UnicodeString & Switch)
 bool TOptions::FindSwitchCaseSensitive(const UnicodeString & Switch)
 {
   UnicodeString Value;
-  int ParamsStart;
-  int ParamsCount;
+  intptr_t ParamsStart;
+  intptr_t ParamsCount;
   bool ValueSet;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount, true, ValueSet);
 }
 
 bool TOptions::FindSwitch(const UnicodeString & Switch,
-  TStrings * Params, int ParamsMax)
+  TStrings * Params, intptr_t ParamsMax)
 {
   return DoFindSwitch(Switch, Params, ParamsMax, false);
 }

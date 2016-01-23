@@ -2209,7 +2209,7 @@ UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, intptr_t
   return Result;
 }
 
-void TSecureShell::VerifyHostKey(const UnicodeString & Host, int Port,
+void TSecureShell::VerifyHostKey(const UnicodeString & Host, intptr_t Port,
   const UnicodeString & KeyType, const UnicodeString & KeyStr, const UnicodeString & Fingerprint)
 {
   UnicodeString Host2 = Host;

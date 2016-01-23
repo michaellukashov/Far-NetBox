@@ -362,14 +362,14 @@ public:
     const UnicodeString & AName, const UnicodeString & Value);
   static void AddAssemblyProperty(
     UnicodeString & Result, TAssemblyLanguage Language,
-    const UnicodeString & AName, UnicodeString Value);
+    const UnicodeString & AName, const UnicodeString & Value);
   static void AddAssemblyProperty(
     UnicodeString & Result, TAssemblyLanguage Language,
     const UnicodeString & AName, const UnicodeString & Type,
     const UnicodeString & Member);
   static void AddAssemblyProperty(
     UnicodeString & Result, TAssemblyLanguage Language,
-    const UnicodeString & AName, int Value);
+    const UnicodeString & AName, intptr_t Value);
   void AddAssemblyProperty(
     UnicodeString & Result, TAssemblyLanguage Language,
     const UnicodeString & AName, bool Value);

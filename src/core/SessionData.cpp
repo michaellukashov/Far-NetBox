@@ -2988,14 +2988,14 @@ void TSessionData::AddAssemblyPropertyRaw(
 //---------------------------------------------------------------------
 void TSessionData::AddAssemblyProperty(
   UnicodeString & Result, TAssemblyLanguage Language,
-  const UnicodeString & Name, UnicodeString Value)
+  const UnicodeString & Name, const UnicodeString & Value)
 {
   AddAssemblyPropertyRaw(Result, Language, Name, AssemblyString(Language, Value));
 }
 
 void TSessionData::AddAssemblyProperty(
   UnicodeString & Result, TAssemblyLanguage Language,
-  const UnicodeString & Name, int Value)
+  const UnicodeString & Name, intptr_t Value)
 {
   AddAssemblyPropertyRaw(Result, Language, Name, IntToStr(Value));
 }
