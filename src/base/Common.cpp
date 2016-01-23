@@ -3122,4 +3122,16 @@ UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
   }
 }
 
+UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName)
+{
+  UnicodeString Result;
+  intptr_t Len = ::GetEnvironmentVariable(L"PATH", nullptr, 0);
+  if (Len > 0)
+  {
+    Result.SetLength(Len - 1);
+    ::GetEnvironmentVariable(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), static_cast<DWORD>(Len));
+  }
+  return Result;
+}
+
 } // namespace base
