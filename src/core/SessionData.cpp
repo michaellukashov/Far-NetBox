@@ -646,7 +646,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetSendBuf(Storage->ReadInteger("SendBuf", Storage->ReadInteger("SshSendBuf", GetSendBuf())));
   SetSshSimple(Storage->ReadBool("SshSimple", GetSshSimple()));
 
-  SetProxyMethod(static_cast<TProxyMethod>(Storage->ReadInteger("ProxyMethod", -1)));
+  SetProxyMethod(static_cast<TProxyMethod>(Storage->ReadInteger("ProxyMethod", ::pmNone)));
   if (GetProxyMethod() != pmSystem)
   {
     SetProxyHost(Storage->ReadString("ProxyHost", GetProxyHost()));
