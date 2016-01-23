@@ -204,6 +204,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) :
   FCommandReply(0),
   FLastCommand(CMD_UNKNOWN),
   FPasswordFailed(false),
+  FStoredPasswordTried(false),
   FMultineResponse(false),
   FLastCode(0),
   FLastCodeClass(0),
@@ -237,7 +238,8 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) :
   FSupportsAnyChecksumFeature(false),
   FCertificate(nullptr),
   FPrivateKey(nullptr),
-  FTransferActiveImmediately(false)
+  FTransferActiveImmediately(false),
+  FWindowsServer(false)
 {
 }
 
