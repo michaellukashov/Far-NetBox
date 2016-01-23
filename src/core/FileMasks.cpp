@@ -72,35 +72,35 @@ static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeStrin
 
 UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString & Mask)
 {
-  UnicodeString Result = AFileName;
+  UnicodeString FileName = AFileName;
   if (IsEffectiveFileNameMask(Mask))
   {
     bool Masked = false;
     intptr_t P = Mask.LastDelimiter(L".");
     if (P > 0)
     {
-      intptr_t P2 = Result.LastDelimiter(L".");
+      intptr_t P2 = FileName.LastDelimiter(L".");
       // only dot at beginning of file name is not considered as
       // name/ext separator
       UnicodeString FileExt = P2 > 1 ?
-        Result.SubString(P2 + 1, Result.Length() - P2) : UnicodeString();
+        FileName.SubString(P2 + 1, FileName.Length() - P2) : UnicodeString();
       FileExt = MaskFilePart(FileExt, Mask.SubString(P + 1, Mask.Length() - P), Masked);
       if (P2 > 1)
       {
-        Result.SetLength(P2 - 1);
+        FileName.SetLength(P2 - 1);
       }
-      Result = MaskFilePart(Result, Mask.SubString(1, P - 1), Masked);
+      FileName = MaskFilePart(FileName, Mask.SubString(1, P - 1), Masked);
       if (!FileExt.IsEmpty())
       {
-        Result += L"." + FileExt;
+        FileName += L"." + FileExt;
       }
     }
     else
     {
-      Result = MaskFilePart(Result, Mask, Masked);
+      FileName = MaskFilePart(FileName, Mask, Masked);
     }
   }
-  return Result;
+  return FileName;
 }
 
 bool IsFileNameMask(const UnicodeString & AMask)
@@ -113,24 +113,25 @@ bool IsFileNameMask(const UnicodeString & AMask)
   return Result;
 }
 
-bool IsEffectiveFileNameMask(const UnicodeString & Mask)
+bool IsEffectiveFileNameMask(const UnicodeString & AMask)
 {
-  return !Mask.IsEmpty() && (Mask != L"*") && (Mask != L"*.*");
+  return !AMask.IsEmpty() && (AMask != L"*") && (AMask != L"*.*");
 }
 
-UnicodeString DelimitFileNameMask(const UnicodeString & Mask)
+UnicodeString DelimitFileNameMask(const UnicodeString & AMask)
 {
-  UnicodeString Result = Mask;
-  for (intptr_t Index = 1; Index <= Result.Length(); ++Index)
+  UnicodeString Mask = AMask;
+  for (intptr_t Index = 1; Index <= Mask.Length(); ++Index)
   {
-    if (wcschr(L"\\*?", Result[Index]) != nullptr)
+    if (wcschr(L"\\*?", Mask[Index]) != nullptr)
     {
-      Result.Insert(L"\\", Index);
+      Mask.Insert(L"\\", Index);
       ++Index;
     }
   }
-  return Result;
+  return Mask;
 }
+
 
 TFileMasks::TParams::TParams() :
   Size(0)
@@ -239,7 +240,7 @@ TFileMasks::TFileMasks()
   Init();
 }
 
-TFileMasks::TFileMasks(int ForceDirectoryMasks) :
+TFileMasks::TFileMasks(intptr_t ForceDirectoryMasks) :
   FForceDirectoryMasks(ForceDirectoryMasks)
 {
   Init();
@@ -519,19 +520,19 @@ void TFileMasks::CreateMaskMask(const UnicodeString & Mask, intptr_t Start, intp
   }
 }
 
-UnicodeString TFileMasks::MakeDirectoryMask(const UnicodeString & Str)
+UnicodeString TFileMasks::MakeDirectoryMask(const UnicodeString & AStr)
 {
-  DebugAssert(!Str.IsEmpty());
-  UnicodeString Result = Str;
-  if (Result.IsEmpty() || !Result.IsDelimiter(DIRECTORY_MASK_DELIMITERS, Result.Length()))
+  DebugAssert(!AStr.IsEmpty());
+  UnicodeString Str = AStr;
+  if (Str.IsEmpty() || !Str.IsDelimiter(DIRECTORY_MASK_DELIMITERS, Str.Length()))
   {
-    intptr_t D = Result.LastDelimiter(DIRECTORY_MASK_DELIMITERS);
+    intptr_t D = Str.LastDelimiter(DIRECTORY_MASK_DELIMITERS);
     // if there's any [back]slash anywhere in str,
     // add the same [back]slash at the end, otherwise add slash
-    wchar_t Delimiter = (D > 0) ? Result[D] : L'/';
-    Result += Delimiter;
+    wchar_t Delimiter = (D > 0) ? Str[D] : L'/';
+    Str += Delimiter;
   }
-  return Result;
+  return Str;
 }
 
 void TFileMasks::CreateMask(
@@ -582,8 +583,8 @@ void TFileMasks::CreateMask(
       TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
       FormatSettings.DateSeparator = L'-';
       FormatSettings.TimeSeparator = L':';
-      FormatSettings.ShortDateFormat = L"yyyy/mm/dd";
-      FormatSettings.ShortTimeFormat = L"hh:nn:ss";
+      FormatSettings.ShortDateFormat = "yyyy/mm/dd";
+      FormatSettings.ShortTimeFormat = "hh:nn:ss";
 
       TDateTime Modification;
       if (TryStrToDateTime(PartStr, Modification, FormatSettings) ||
@@ -785,6 +786,7 @@ void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
   }
 }
 
+
 #define TEXT_TOKEN L'\255'
 
 const wchar_t TCustomCommand::NoQuote = L'\0';
@@ -962,6 +964,7 @@ void TCustomCommand::ValidatePattern(const UnicodeString & /*Command*/,
 {
 }
 
+
 TInteractiveCustomCommand::TInteractiveCustomCommand(
   TCustomCommand * ChildCustomCommand)
 {
@@ -1060,6 +1063,7 @@ bool TInteractiveCustomCommand::PatternReplacement(const UnicodeString & Pattern
   return Result;
 }
 
+
 TCustomCommandData::TCustomCommandData()
 {
 }
@@ -1069,6 +1073,7 @@ TCustomCommandData::TCustomCommandData(const TCustomCommandData & Data)
   this->operator=(Data);
 }
 
+//---------------------------------------------------------------------------
 TCustomCommandData::TCustomCommandData(TTerminal * Terminal)
 {
   Init(Terminal->GetSessionData(), Terminal->TerminalGetUserName(), Terminal->GetPassword(),
@@ -1111,6 +1116,7 @@ TSessionData * TCustomCommandData::GetSessionData() const
 TFileCustomCommand::TFileCustomCommand()
 {
 }
+
 
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
   const UnicodeString & APath) :

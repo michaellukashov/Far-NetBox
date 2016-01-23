@@ -1,5 +1,7 @@
+
 #pragma once
 
+#include <rdestl/vector.h>
 #include <Masks.hpp>
 #include <Exceptions.h>
 #include "SessionData.h"
@@ -35,7 +37,7 @@ public:
   static UnicodeString ComposeMaskStr(TStrings * MasksStr, bool Directory);
 
   TFileMasks();
-  explicit TFileMasks(int ForceDirectoryMasks);
+  explicit TFileMasks(intptr_t ForceDirectoryMasks);
   TFileMasks(const TFileMasks & Source);
   explicit TFileMasks(const UnicodeString & AMasks);
   virtual ~TFileMasks();
@@ -56,6 +58,13 @@ public:
   bool Matches(const UnicodeString & AFileName, bool Local, bool Directory,
     const TParams * Params, bool RecurseInclude, bool & ImplicitMatch) const;
 
+  /*__property UnicodeString Masks = { read = FStr, write = SetMasks };
+
+  __property TStrings * IncludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, true) };
+  __property TStrings * ExcludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, false) };
+  __property TStrings * IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
+  __property TStrings * ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };*/
+
   UnicodeString GetMasks() const { return FStr; }
   void SetMasks(const UnicodeString & Value);
 
@@ -65,7 +74,7 @@ public:
   TStrings * GetExcludeDirectoryMasksStr() const { return GetMasksStr(MASK_INDEX(true, false)); }
 
 private:
-  int FForceDirectoryMasks;
+  intptr_t FForceDirectoryMasks;
   UnicodeString FStr;
 
   struct TMaskMask : public TObject
@@ -78,7 +87,7 @@ private:
     {
       Any,
       NoExt,
-      Regular
+      Regular,
     } Kind;
     Masks::TMask * Mask;
   };
@@ -100,7 +109,7 @@ private:
     {
       None,
       Open,
-      Close
+      Close,
     };
 
     TMaskBoundary HighSizeMask;
@@ -128,9 +137,7 @@ private:
   void CreateMask(const UnicodeString & MaskStr, intptr_t MaskStart,
     intptr_t MaskEnd, bool Include);
   TStrings * GetMasksStr(intptr_t Index) const;
-
-private:
-  static UnicodeString MakeDirectoryMask(const UnicodeString & Str);
+  static UnicodeString MakeDirectoryMask(const UnicodeString & AStr);
   static inline void ReleaseMaskMask(TMaskMask & MaskMask);
   inline void Init();
   void DoInit(bool Delete);
@@ -146,9 +153,12 @@ private:
 
 UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString & Mask);
 bool IsFileNameMask(const UnicodeString & AMask);
-bool IsEffectiveFileNameMask(const UnicodeString & Mask);
-UnicodeString DelimitFileNameMask(const UnicodeString & Mask);
+bool IsEffectiveFileNameMask(const UnicodeString & AMask);
+UnicodeString DelimitFileNameMask(const UnicodeString & AMask);
 
+//typedef void __fastcall (__closure * TCustomCommandPatternEvent)
+//  (int Index, const UnicodeString Pattern, void * Arg, UnicodeString & Replacement,
+//   bool & LastPass);
 DEFINE_CALLBACK_TYPE5(TCustomCommandPatternEvent, void,
   int /*Index*/, const UnicodeString & /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
   bool & /*LastPass*/);
@@ -213,7 +223,6 @@ public:
     const UnicodeString & APassword);
 
   // __property TSessionData * SessionData = { read = GetSesssionData };
-  TSessionData * GetSessionData() const;
 
   TCustomCommandData & operator=(const TCustomCommandData & Data);
 
@@ -222,6 +231,9 @@ private:
   void Init(
     TSessionData * SessionData, const UnicodeString & AUserName,
     const UnicodeString & APassword, const UnicodeString & AHostKey);
+
+public:
+  TSessionData * GetSessionData() const;
 };
 
 class TFileCustomCommand : public TCustomCommand
