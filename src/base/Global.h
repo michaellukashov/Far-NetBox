@@ -38,7 +38,7 @@ private:
 
 #if !defined(_DEBUG)
 
-#define DebugAssert(p) ((void)(p)
+#define DebugAssert(p) (void)(p)
 #define DebugCheck(p) (p)
 #define DebugFail() (void)
 
