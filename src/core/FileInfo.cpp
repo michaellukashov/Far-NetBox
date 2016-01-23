@@ -35,55 +35,72 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
   }
   else
   {
-    SCOPE_EXIT
+    try__finally
     {
-      if (NeedFree)
+      SCOPE_EXIT
       {
-        ::FreeLibrary(Module);
-      }
-    };
-    HRSRC Rsrc = ::FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
-      MAKEINTRESOURCE(VS_FILE_INFO));
-    if (Rsrc == nullptr)
-    {
-    }
-    else
-    {
-      Len = ::SizeofResource(Module, static_cast<HRSRC>(Rsrc));
-      HANDLE Mem = ::LoadResource(Module, static_cast<HRSRC>(Rsrc));
-      if (Mem == nullptr)
+        if (NeedFree)
+        {
+          ::FreeLibrary(Module);
+        }
+      };
+      HRSRC Rsrc = ::FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
+        MAKEINTRESOURCE(VS_FILE_INFO));
+      if (Rsrc == nullptr)
       {
       }
       else
       {
-        SCOPE_EXIT
+        Len = ::SizeofResource(Module, static_cast<HRSRC>(Rsrc));
+        HANDLE Mem = ::LoadResource(Module, static_cast<HRSRC>(Rsrc));
+        if (Mem == nullptr)
         {
-          ::FreeResource(Mem);
-        };
-        VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
-        const VS_FIXEDFILEINFO * FixedInfo =
-          (VS_FIXEDFILEINFO *)DWORD_ALIGN(VersionInfo, VersionInfo->szKey + wcslen(VersionInfo->szKey) + 1);
-
-        if (FixedInfo->dwSignature != VS_FFI_SIGNATURE)
-        {
-          Len = 0;
         }
         else
         {
-          if (Data != nullptr)
+          try__finally
           {
-            if (DataSize < Len)
+            SCOPE_EXIT
             {
-              Len = DataSize;
+              ::FreeResource(Mem);
+            };
+            VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
+            const VS_FIXEDFILEINFO * FixedInfo =
+              (VS_FIXEDFILEINFO *)DWORD_ALIGN(VersionInfo, VersionInfo->szKey + wcslen(VersionInfo->szKey) + 1);
+
+            if (FixedInfo->dwSignature != VS_FFI_SIGNATURE)
+            {
+              Len = 0;
             }
-            if (Len > 0)
+            else
             {
-              memmove(Data, VersionInfo, Len);
+              if (Data != nullptr)
+              {
+                if (DataSize < Len)
+                {
+                  Len = DataSize;
+                }
+                if (Len > 0)
+                {
+                  memmove(Data, VersionInfo, Len);
+                }
+              }
             }
           }
+          __finally
+          {
+            FreeResource(Mem);
+          };
         }
       }
     }
+    __finally
+    {
+      if (NeedFree)
+      {
+        FreeLibrary(Module);
+      }
+    };
   }
 
   return Len;
