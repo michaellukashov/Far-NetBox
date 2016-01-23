@@ -32,8 +32,8 @@ bool HasGSSAPI(const UnicodeString & CustomPath);
 void AES256EncodeWithMAC(char * Data, size_t Len, const char * Password,
   size_t PasswordLen, const char * Salt);
 
-UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint);
-UnicodeString GetKeyTypeFromFingerprint(const UnicodeString & Fingerprint);
+UnicodeString NormalizeFingerprint(const UnicodeString & AFingerprint);
+UnicodeString GetKeyTypeFromFingerprint(const UnicodeString & AFingerprint);
 
 UnicodeString GetPuTTYVersion();
 
