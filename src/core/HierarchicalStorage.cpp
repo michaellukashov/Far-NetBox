@@ -1,7 +1,9 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <rdestl/vector.h>
 #include <Common.h>
+#include <Exceptions.h>
 #include <TextsCore.h>
 #include <StrUtils.hpp>
 
@@ -105,7 +107,10 @@ THierarchicalStorage::THierarchicalStorage(const UnicodeString & AStorage) :
 {
   SetAccessMode(smRead);
   SetExplicit(false);
-  SetForceAnsi(true);
+  // While this was implemented in 5.0 already, for some reason
+  // it was disabled (by mistake?). So although enabled for 5.6.1 only,
+  // data written in Unicode/UTF8 can be read by all versions back to 5.0.
+  SetForceAnsi(false);
   SetMungeStringValues(true);
 }
 
@@ -156,22 +161,22 @@ UnicodeString THierarchicalStorage::MungeKeyName(const UnicodeString & Key)
   return Result;
 }
 
-bool THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, bool CanCreate, bool Path)
+bool THierarchicalStorage::OpenSubKey(const UnicodeString & ASubKey, bool CanCreate, bool Path)
 {
   bool Result;
   UnicodeString MungedKey;
-  UnicodeString SubKey2 = SubKey;
+  UnicodeString Key = ASubKey;
   if (Path)
   {
-    DebugAssert(SubKey2.IsEmpty() || (SubKey2[SubKey2.Length()] != L'\\'));
+    DebugAssert(Key.IsEmpty() || (Key[Key.Length()] != L'\\'));
     Result = true;
-    while (!SubKey2.IsEmpty() && Result)
+    while (!Key.IsEmpty() && Result)
     {
       if (!MungedKey.IsEmpty())
       {
         MungedKey += L'\\';
       }
-      MungedKey += MungeKeyName(CutToChar(SubKey2, L'\\', false));
+      MungedKey += MungeKeyName(CutToChar(Key, L'\\', false));
       Result = DoOpenSubKey(MungedKey, CanCreate);
     }
 
@@ -184,7 +189,7 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & SubKey, bool CanCrea
   }
   else
   {
-    MungedKey = MungeKeyName(SubKey2);
+    MungedKey = MungeKeyName(Key);
     Result = DoOpenSubKey(MungedKey, CanCreate);
   }
 
@@ -215,11 +220,18 @@ void THierarchicalStorage::CloseAll()
 void THierarchicalStorage::ClearSubKeys()
 {
   std::unique_ptr<TStringList> SubKeys(new TStringList());
-  GetSubKeyNames(SubKeys.get());
-  for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
+  try__finally
   {
-    RecursiveDeleteSubKey(SubKeys->GetString(Index));
+    GetSubKeyNames(SubKeys.get());
+    for (intptr_t Index = 0; Index < SubKeys->GetCount(); ++Index)
+    {
+      RecursiveDeleteSubKey(SubKeys->GetString(Index));
+    }
   }
+  __finally
+  {
+//    delete SubKeys;
+  };
 }
 
 void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString & Key)
@@ -234,9 +246,17 @@ void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString & Key)
 
 bool THierarchicalStorage::HasSubKeys()
 {
+  bool Result = false;
   std::unique_ptr<TStrings> SubKeys(new TStringList());
-  GetSubKeyNames(SubKeys.get());
-  bool Result = SubKeys->GetCount() > 0;
+  try__finally
+  {
+    GetSubKeyNames(SubKeys.get());
+    Result = SubKeys->GetCount() > 0;
+  }
+  __finally
+  {
+//    delete SubKeys;
+  };
   return Result;
 }
 
@@ -259,28 +279,42 @@ void THierarchicalStorage::ReadValues(TStrings * Strings,
   bool MaintainKeys)
 {
   std::unique_ptr<TStrings> Names(new TStringList());
-  GetValueNames(Names.get());
-  for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
+  try__finally
   {
-    if (MaintainKeys)
+    GetValueNames(Names.get());
+    for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
     {
-      Strings->Add(FORMAT(L"%s=%s", Names->GetString(Index).c_str(),
-        ReadString(Names->GetString(Index), L"").c_str()));
-    }
-    else
-    {
-      Strings->Add(ReadString(Names->GetString(Index), L""));
+      if (MaintainKeys)
+      {
+        Strings->Add(FORMAT(L"%s=%s", Names->GetString(Index).c_str(),
+          ReadString(Names->GetString(Index), L"").c_str()));
+      }
+      else
+      {
+        Strings->Add(ReadString(Names->GetString(Index), L""));
+      }
     }
   }
+  __finally
+  {
+//    delete Names;
+  };
 }
 
 void THierarchicalStorage::ClearValues()
 {
   std::unique_ptr<TStrings> Names(new TStringList());
-  GetValueNames(Names.get());
-  for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
+  try__finally
   {
-    DeleteValue(Names->GetString(Index));
+    GetValueNames(Names.get());
+    for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
+    {
+      DeleteValue(Names->GetString(Index));
+    }
+  }
+  __finally
+  {
+//    delete Names;
   }
 }
 
@@ -431,36 +465,43 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
   std::unique_ptr<TStrings> Names(new TStringList());
-  rde::vector<uint8_t> Buffer(1024);
-  Registry->GetValueNames(Names.get());
-  intptr_t Index = 0;
-  while ((Index < Names->GetCount()) && Result)
+  try__finally
   {
-    UnicodeString Name = MungeStr(Names->GetString(Index), GetForceAnsi());
-    DWORD Size = static_cast<DWORD>(Buffer.size());
-    DWORD Type;
-    int RegResult = 0;
-    do
+    rde::vector<uint8_t> Buffer(1024);
+    Registry->GetValueNames(Names.get());
+    intptr_t Index = 0;
+    while ((Index < Names->GetCount()) && Result)
     {
-      RegResult = ::RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), nullptr,
-        &Type, &Buffer[0], &Size);
-      if (RegResult == ERROR_MORE_DATA)
+      UnicodeString Name = MungeStr(Names->GetString(Index), GetForceAnsi());
+      DWORD Size = static_cast<DWORD>(Buffer.size());
+      DWORD Type;
+      int RegResult = 0;
+      do
       {
-        Buffer.resize(Size);
+        RegResult = ::RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), nullptr,
+          &Type, &Buffer[0], &Size);
+        if (RegResult == ERROR_MORE_DATA)
+        {
+          Buffer.resize(Size);
+        }
       }
-    }
-    while (RegResult == ERROR_MORE_DATA);
+      while (RegResult == ERROR_MORE_DATA);
 
-    Result = (RegResult == ERROR_SUCCESS);
-    if (Result)
-    {
-      RegResult = ::RegSetValueEx(FRegistry->GetCurrentKey(), Name.c_str(), 0, Type,
-        &Buffer[0], Size);
       Result = (RegResult == ERROR_SUCCESS);
-    }
+      if (Result)
+      {
+        RegResult = ::RegSetValueEx(FRegistry->GetCurrentKey(), Name.c_str(), 0, Type,
+          &Buffer[0], Size);
+        Result = (RegResult == ERROR_SUCCESS);
+      }
 
-    ++Index;
+      ++Index;
+    }
   }
+  __finally
+  {
+//    delete Names;
+  };
   return Result;
 }
 
@@ -1287,7 +1328,7 @@ enum TWriteMode { wmAllow, wmFail, wmIgnore };
 class TOptionsIniFile : public TCustomIniFile
 {
 public:
-  __fastcall TOptionsIniFile(TStrings * Options, bool IgnoreWrite, const UnicodeString & RootKey);
+  __fastcall TOptionsIniFile(TStrings * Options, TWriteMode WriteMode, const UnicodeString & RootKey);
 
   virtual UnicodeString __fastcall ReadString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Default);
   virtual void __fastcall WriteString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Value);

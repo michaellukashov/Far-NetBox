@@ -9,15 +9,15 @@ enum TStorage
   stRegistry,
   stIniFile,
   stNul,
-  stXmlFile
+  stXmlFile,
 };
 
 enum TStorageAccessMode
 {
   smRead,
-  smReadWrite
+  smReadWrite,
 };
-
+//---------------------------------------------------------------------------
 class THierarchicalStorage : public TObject
 {
 NB_DISABLE_COPY(THierarchicalStorage)
@@ -25,9 +25,8 @@ public:
   explicit THierarchicalStorage(const UnicodeString & AStorage);
   virtual ~THierarchicalStorage();
   virtual void Init() {}
-
   virtual bool OpenRootKey(bool CanCreate);
-  virtual bool OpenSubKey(const UnicodeString & SubKey, bool CanCreate, bool Path = false);
+  virtual bool OpenSubKey(const UnicodeString & ASubKey, bool CanCreate, bool Path = false);
   virtual void CloseSubKey();
   void CloseAll();
   virtual bool DeleteSubKey(const UnicodeString & SubKey) = 0;
@@ -44,8 +43,6 @@ public:
   virtual void ClearValues();
   virtual bool DeleteValue(const UnicodeString & Name) = 0;
   virtual size_t BinaryDataSize(const UnicodeString & Name) const = 0;
-  virtual UnicodeString GetSource() const = 0;
-  virtual UnicodeString GetSource() = 0;
 
   virtual bool ReadBool(const UnicodeString & Name, bool Default) const = 0;
   virtual intptr_t ReadInteger(const UnicodeString & Name, intptr_t Default) const = 0;
@@ -73,6 +70,15 @@ public:
 
   virtual void Flush();
 
+  /*__property UnicodeString Storage  = { read=FStorage };
+  __property UnicodeString CurrentSubKey  = { read=GetCurrentSubKey };
+  __property TStorageAccessMode AccessMode  = { read=FAccessMode, write=SetAccessMode };
+  __property bool Explicit = { read = FExplicit, write = FExplicit };
+  __property bool ForceAnsi = { read = FForceAnsi, write = FForceAnsi };
+  __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
+  __property UnicodeString Source = { read = GetSource };
+  __property bool Temporary = { read = GetTemporary };*/
+
   UnicodeString GetStorage() const { return FStorage; }
   TStorageAccessMode GetAccessMode() const { return FAccessMode; }
   bool GetExplicit() const { return FExplicit; }
@@ -83,18 +89,6 @@ public:
   void SetMungeStringValues(bool Value) { FMungeStringValues = Value; }
 
   virtual void SetAccessMode(TStorageAccessMode Value);
-
-/*
-  __property UnicodeString Storage  = { read=FStorage };
-  __property UnicodeString CurrentSubKey  = { read=GetCurrentSubKey };
-  __property TStorageAccessMode AccessMode  = { read=FAccessMode, write=SetAccessMode };
-  __property bool Explicit = { read = FExplicit, write = FExplicit };
-  __property bool ForceAnsi = { read = FForceAnsi, write = FForceAnsi };
-  __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
-  __property UnicodeString Source = { read = GetSource };
-  __property bool Temporary = { read = GetTemporary };
-*/
-  virtual bool GetTemporary() const;
 
 protected:
   UnicodeString FStorage;
@@ -111,6 +105,10 @@ protected:
   static UnicodeString ExcludeTrailingBackslash(const UnicodeString & S);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) = 0;
   UnicodeString MungeKeyName(const UnicodeString & Key);
+
+  virtual UnicodeString GetSource() const = 0;
+  virtual UnicodeString GetSource() = 0;
+  virtual bool GetTemporary() const;
 };
 
 class TRegistryStorage : public THierarchicalStorage
@@ -150,15 +148,17 @@ public:
 
   virtual void GetValueNames(TStrings * Strings) const;
 
-  intptr_t GetFailed() const;
-  void SetFailed(intptr_t Value) { FFailed = Value; }
-  virtual void SetAccessMode(TStorageAccessMode Value);
-
 protected:
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate);
   virtual UnicodeString GetSource() const;
   virtual UnicodeString GetSource();
+
+public:
+//  __property int Failed  = { read=GetFailed, write=FFailed };
+  intptr_t GetFailed() const;
+  void SetFailed(intptr_t Value) { FFailed = Value; }
+  virtual void SetAccessMode(TStorageAccessMode Value);
 
 private:
   TRegistry * FRegistry;
