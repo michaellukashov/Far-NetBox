@@ -44,7 +44,6 @@
 #include "../core/WinSCPSecurity.cpp"
 #include "../core/Http.cpp"
 #include "../core/NeonIntf.cpp"
-#include "../core/Security.cpp"
 #include "../windows/SynchronizeController.cpp"
 #include "../windows/GUITools.cpp"
 #include "../windows/GUIConfiguration.cpp"
