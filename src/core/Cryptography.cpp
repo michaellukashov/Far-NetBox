@@ -396,6 +396,7 @@ void AES256EncyptWithMAC(const RawByteString & Input, const UnicodeString & Pass
     reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
     reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
+  Output.Unique();
   fcrypt_encrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
   Mac.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   fcrypt_end(reinterpret_cast<uint8_t *>(const_cast<char *>(Mac.c_str())), &aes);
