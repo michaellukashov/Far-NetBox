@@ -1126,7 +1126,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       }
       if ((Data->GetFtpProxyLogonType() != 0) || (ProxyMethod != ::pmNone))
       {
-        ADF(L"HostName: %s (Port: %d); Username: %s; Passwd: %s",
+        ADF(L"ProxyHostName: %s (Port: %d); ProxyUsername: %s; Passwd: %s",
           Data->GetProxyHost().c_str(), Data->GetProxyPort(),
           Data->GetProxyUsername().c_str(), BooleanToEngStr(!Data->GetProxyPassword().IsEmpty()).c_str());
         if (ProxyMethod == pmTelnet)
