@@ -4054,7 +4054,8 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & Val
       static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
       static_cast<uint16_t>(ValidityTime.Sec), 0));
   */
-  uint16_t Y, M, D, H, N, S, MS;
+	// TODO: use SysUtils::FormatDateTime
+  uint16_t Y, M, D, H, Mm, S, MS;
   TDateTime DateTime =
     EncodeDateVerbose(
       static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
@@ -4063,8 +4064,8 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & Val
       static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
       static_cast<uint16_t>(ValidityTime.Sec), 0);
   DateTime.DecodeDate(Y, M, D);
-  DateTime.DecodeTime(H, N, S, MS);
-  UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
+  DateTime.DecodeTime(H, Mm, S, MS);
+  UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
   return dt;
 }
 
