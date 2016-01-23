@@ -1506,7 +1506,41 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTi
   (void)Fmt;
   (void)DateTime;
   UnicodeString Result;
-  Error(SNotImplemented, 150);
+  if (Fmt == L"ddddd tt")
+	{
+		/*
+		return FormatDateTime(L"ddddd tt",
+			EncodeDateVerbose(
+				static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
+				static_cast<uint16_t>(ValidityTime.Day)) +
+			EncodeTimeVerbose(
+				static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
+				static_cast<uint16_t>(ValidityTime.Sec), 0));
+		*/
+		uint16_t Year;
+		uint16_t Month;
+		uint16_t Day;
+		uint16_t Hour;
+		uint16_t Minutes;
+		uint16_t Seconds;
+		uint16_t Milliseconds;
+		
+		DateTime.DecodeDate(Year, Month, Day);
+		DateTime.DecodeTime(Hour, Minutes, Seconds, Milliseconds);
+
+		int Sec;
+		uint16_t Y, M, D, H, Mm, S, MS;
+		TDateTime DateTime =
+			EncodeDateVerbose(Year, Month, Day) +
+			EncodeTimeVerbose(Hour, Minutes, Seconds, Milliseconds);
+		DateTime.DecodeDate(Y, M, D);
+		DateTime.DecodeTime(H, Mm, S, MS);
+		Result = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
+	}
+	else
+	{
+		Error(SNotImplemented, 150);
+	}
   return Result;
 }
 
