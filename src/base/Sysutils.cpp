@@ -417,12 +417,12 @@ UnicodeString UTF8ToString(const char * Str, intptr_t Len)
     return UnicodeString(L"");
   }
 
-  intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, Len, nullptr, 0);
+  intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Len), nullptr, 0);
   UnicodeString Result;
   if (reqLength)
   {
     Result.SetLength(reqLength);
-    ::MultiByteToWideChar(CP_UTF8, 0, Str, Len, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
+    ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Len), const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
     Result.SetLength(Result.Length() - 1);  //remove NULL character
   }
   return Result;
