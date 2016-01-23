@@ -2847,7 +2847,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
 {
   FTerminal->LogEvent(
     FORMAT(L"Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
-      (Data.Subject, Data.Fingerprint, Data.Failures)));
+      Data.Subject.c_str(), Data.Fingerprint.c_str(), Data.Failures));
 
   int Failures = Data.Failures;
   if (NeonWindowsValidateCertificate(Failures, Data.AsciiCert))
@@ -2872,8 +2872,8 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
     FMTLOAD(CERT_TEXT, (
       Data.Issuer + L"\n",
       Data.Subject + L"\n",
-      FormatDateTime(ValidityTimeFormat, Data.ValidFrom),
-      FormatDateTime(ValidityTimeFormat, Data.ValidUntil),
+      FormatDateTime(ValidityTimeFormat, Data.ValidFrom).c_str(),
+      FormatDateTime(ValidityTimeFormat, Data.ValidUntil).c_str(),
       Data.Fingerprint,
       Summary));
 
@@ -2954,7 +2954,7 @@ void TWebDAVFileSystem::CollectTLSSessionInfo()
   FSessionInfo.SCCipher = Cipher;
 
   // see CAsyncSslSocketLayer::PrintSessionInfo()
-  FTerminal->LogEvent(FORMAT(L"Using %s, cipher %s", (FTlsVersionStr, Cipher)));
+  FTerminal->LogEvent(FORMAT(L"Using %s, cipher %s", FTlsVersionStr.c_str(), Cipher.c_str()));
 }
 
 // A neon-session callback to validate the SSL certificate when the CA
