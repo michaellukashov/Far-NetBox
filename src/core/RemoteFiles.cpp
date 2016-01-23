@@ -11,6 +11,7 @@
 #include "TextsCore.h"
 #include "HelpCore.h"
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
+//---------------------------------------------------------------------------
 
 namespace core {
 
@@ -66,11 +67,11 @@ Boolean UnixSamePath(const UnicodeString & APath1, const UnicodeString & APath2)
   return (core::UnixIncludeTrailingBackslash(APath1) == core::UnixIncludeTrailingBackslash(APath2));
 }
 
-bool UnixIsChildPath(const UnicodeString & Parent, const UnicodeString & Child)
+bool UnixIsChildPath(const UnicodeString & AParent, const UnicodeString & AChild)
 {
-  UnicodeString Parent2 = core::UnixIncludeTrailingBackslash(Parent);
-  UnicodeString Child2 = core::UnixIncludeTrailingBackslash(Child);
-  return (Child2.SubString(1, Parent2.Length()) == Parent2);
+  UnicodeString Parent = core::UnixIncludeTrailingBackslash(AParent);
+  UnicodeString Child = core::UnixIncludeTrailingBackslash(AChild);
+  return (Child.SubString(1, Parent.Length()) == Parent);
 }
 
 UnicodeString UnixExtractFileDir(const UnicodeString & APath)
@@ -364,20 +365,20 @@ UnicodeString MakeFileList(const TStrings * AFileList)
 }
 
 // copy from BaseUtils.pas
-TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
+TDateTime ReduceDateTimePrecision(const TDateTime & ADateTime,
   TModificationFmt Precision)
 {
-  TDateTime Result = DateTime;
+  TDateTime DateTime = ADateTime;
   if (Precision == mfNone)
   {
-    Result = double(0.0);
+    DateTime = double(0.0);
   }
   else if (Precision != mfFull)
   {
     uint16_t Y, M, D, H, N, S, MS;
 
-    ::DecodeDate(Result, Y, M, D);
-    ::DecodeTime(Result, H, N, S, MS);
+    ::DecodeDate(DateTime, Y, M, D);
+    ::DecodeTime(DateTime, H, N, S, MS);
     switch (Precision)
     {
       case mfMDHM:
@@ -396,9 +397,9 @@ TDateTime ReduceDateTimePrecision(const TDateTime & DateTime,
         DebugFail();
     }
 
-    Result = EncodeDateVerbose(Y, M, D) + EncodeTimeVerbose(H, N, S, MS);
+    DateTime = EncodeDateVerbose(Y, M, D) + EncodeTimeVerbose(H, N, S, MS);
   }
-  return Result;
+  return DateTime;
 }
 
 TModificationFmt LessDateTimePrecision(
@@ -535,6 +536,8 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, b
 
 } // namespace core
 
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 TRemoteToken::TRemoteToken() :
   FID(0),
   FIDValid(false)
@@ -670,16 +673,25 @@ UnicodeString TRemoteToken::GetLogText() const
 {
   return FORMAT(L"\"%s\" [%d]", FName.c_str(), static_cast<int>(FID));
 }
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 TRemoteTokenList * TRemoteTokenList::Duplicate() const
 {
   std::unique_ptr<TRemoteTokenList> Result(new TRemoteTokenList());
-  TTokens::const_iterator it = FTokens.begin();
-  while (it != FTokens.end())
+//  try
   {
-    Result->Add(*it);
-    ++it;
+    TTokens::const_iterator it = FTokens.begin();
+    while (it != FTokens.end())
+    {
+      Result->Add(*it);
+      ++it;
+    }
   }
+//  catch (...)
+//  {
+//    delete Result;
+//    throw;
+//  }
   return Result.release();
 }
 
@@ -800,7 +812,8 @@ const TRemoteToken * TRemoteTokenList::Token(intptr_t Index) const
 {
   return &FTokens[Index];
 }
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
   TPersistent(),
   FDirectory(nullptr),
@@ -837,42 +850,50 @@ TRemoteFile::~TRemoteFile()
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
   std::unique_ptr<TRemoteFile> Result(new TRemoteFile());
-  if (FLinkedFile)
+//  try
   {
-    Result->FLinkedFile = FLinkedFile->Duplicate(true);
-    Result->FLinkedFile->FLinkedByFile = Result.get();
-  }
-  Result->SetRights(FRights);
+    if (FLinkedFile)
+    {
+      Result->FLinkedFile = FLinkedFile->Duplicate(true);
+      Result->FLinkedFile->FLinkedByFile = Result.get();
+    }
+    Result->SetRights(FRights);
 #define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
-  COPY_FP(Terminal);
-  COPY_FP(Owner);
-  COPY_FP(ModificationFmt);
-  COPY_FP(Size);
-  COPY_FP(FileName);
-  COPY_FP(INodeBlocks);
-  COPY_FP(Modification);
-  COPY_FP(LastAccess);
-  COPY_FP(Group);
-  COPY_FP(IconIndex);
-  COPY_FP(TypeName);
-  COPY_FP(IsSymLink);
-  COPY_FP(LinkTo);
-  COPY_FP(Type);
-  COPY_FP(Selected);
-  COPY_FP(CyclicLink);
-  COPY_FP(HumanRights);
+    COPY_FP(Terminal);
+    COPY_FP(Owner);
+    COPY_FP(ModificationFmt);
+    COPY_FP(Size);
+    COPY_FP(FileName);
+    COPY_FP(INodeBlocks);
+    COPY_FP(Modification);
+    COPY_FP(LastAccess);
+    COPY_FP(Group);
+    COPY_FP(IconIndex);
+    COPY_FP(TypeName);
+    COPY_FP(IsSymLink);
+    COPY_FP(LinkTo);
+    COPY_FP(Type);
+    COPY_FP(Selected);
+    COPY_FP(CyclicLink);
+    COPY_FP(HumanRights);
 #undef COPY_FP
-  if (Standalone && (!FFullFileName.IsEmpty() || (GetDirectory() != nullptr)))
-  {
-    Result->FFullFileName = GetFullFileName();
+    if (Standalone && (!FFullFileName.IsEmpty() || (GetDirectory() != nullptr)))
+    {
+      Result->FFullFileName = GetFullFileName();
+    }
   }
+//  catch (...)
+//  {
+//    delete Result;
+//    throw;
+//  }
   return Result.release();
 }
 
 void TRemoteFile::LoadTypeInfo() const
 {
   /* TODO : If file is link: Should be attributes taken from linked file? */
-  /* uint32_t Attrs = INVALID_FILE_ATTRIBUTES;
+  /*uint32_t Attrs = INVALID_FILE_ATTRIBUTES;
   if (GetIsDirectory())
   {
     Attrs |= FILE_ATTRIBUTE_DIRECTORY;
@@ -884,7 +905,7 @@ void TRemoteFile::LoadTypeInfo() const
 
   UnicodeString DumbFileName = (GetIsSymLink() && !GetLinkTo().IsEmpty() ? GetLinkTo() : GetFileName());
 
-  FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName); */
+  FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);*/
 }
 
 int64_t TRemoteFile::GetSize() const
@@ -1432,11 +1453,18 @@ void TRemoteFile::FindLinkedFile()
     GetTerminal()->SetExceptionOnFail(true);
     try
     {
-      SCOPE_EXIT
+      try__finally
+      {
+        SCOPE_EXIT
+        {
+          GetTerminal()->SetExceptionOnFail(false);
+        };
+        GetTerminal()->ReadSymlink(this, FLinkedFile);
+      }
+      __finally
       {
         GetTerminal()->SetExceptionOnFail(false);
       };
-      GetTerminal()->ReadSymlink(this, FLinkedFile);
     }
     catch (Exception & E)
     {
@@ -1572,7 +1600,8 @@ void TRemoteFile::SetFullFileName(const UnicodeString & Value)
 {
   FFullFileName = Value;
 }
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
 {
   SetModification(TDateTime(0.0));
@@ -1581,14 +1610,15 @@ TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
   SetType(L'D');
   SetSize(0);
 }
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal)
   : TRemoteDirectoryFile()
 {
   SetFileName(PARENTDIRECTORY);
   SetTerminal(ATerminal);
 }
-
+//=== TRemoteFileList ------------------------------------------------------
 TRemoteFileList::TRemoteFileList() :
   TObjectList(),
   FTimestamp(Now())
@@ -1682,7 +1712,7 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
   }
   return nullptr;
 }
-
+//=== TRemoteDirectory ------------------------------------------------------
 TRemoteDirectory::TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template) :
   TRemoteFileList(),
   FIncludeParentDirectory(false),
@@ -1843,16 +1873,23 @@ void TRemoteDirectoryCache::Clear()
 {
   TGuard Guard(FSection);
 
-  SCOPE_EXIT
+  try__finally
+  {
+    SCOPE_EXIT
+    {
+      TStringList::Clear();
+    };
+    for (intptr_t Index = 0; Index < GetCount(); ++Index)
+    {
+      TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
+      SAFE_DESTROY(List);
+      SetObj(Index, nullptr);
+    }
+  }
+  __finally
   {
     TStringList::Clear();
   };
-  for (intptr_t Index = 0; Index < GetCount(); ++Index)
-  {
-    TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
-    SAFE_DESTROY(List);
-    SetObj(Index, nullptr);
-  }
 }
 
 bool TRemoteDirectoryCache::GetIsEmpty() const
@@ -2087,13 +2124,20 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
   if (ACount > FMaxSize)
   {
     std::unique_ptr<TStrings> Limited(new TStringList());
-    intptr_t Index = ACount - FMaxSize;
-    while (Index < ACount)
+    try__finally
     {
-      Limited->Add(GetString(Index));
-      ++Index;
+      intptr_t Index = ACount - FMaxSize;
+      while (Index < ACount)
+      {
+        Limited->Add(GetString(Index));
+        ++Index;
+      }
+      Data += Limited->GetText();
     }
-    Data += Limited->GetText();
+    __finally
+    {
+//      delete Limited;
+    };
   }
   else
   {
@@ -2186,7 +2230,7 @@ bool TRights::operator ==(const TRights & rhr) const
     for (int Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
-          rhr.GetRightUndef(static_cast<TRight>(Right)))
+            rhr.GetRightUndef(static_cast<TRight>(Right)))
       {
         return false;
       }
@@ -2824,7 +2868,7 @@ TRemoteProperties & TRemoteProperties::operator=(const TRemoteProperties & other
   LastAccess = other.Modification;
   return *this;
 }
-
+//---------------------------------------------------------------------------
 void TRemoteProperties::Load(THierarchicalStorage * Storage)
 {
   uint8_t Buf[sizeof(Valid)];
