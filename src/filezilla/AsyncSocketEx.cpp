@@ -14,6 +14,10 @@
 
 #include "AsyncSocketExLayer.h"
 
+#ifndef GWL_USERDATA
+#define GWL_USERDATA        (-21)
+#endif
+
 #undef TRACE_TRANSMIT
 
 CCriticalSectionWrapper CAsyncSocketEx::m_sGlobalCriticalSection;
