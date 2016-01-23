@@ -404,6 +404,9 @@ public:
   ~NullFunc() { }
 };
 
+#define try__finally (void)0
+
 #define __finally \
   std::function<void()> SCOPE_EXIT_NAME(null_func_, __LINE__); \
   NullFunc SCOPE_EXIT_NAME(null_, __LINE__) = SCOPE_EXIT_NAME(null_func_, __LINE__) = [&]() /* lambda body here */
+
