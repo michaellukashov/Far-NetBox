@@ -2337,7 +2337,7 @@ TLibModule * FindModule(void * Instance)
 }
 #endif
 
-UnicodeString LoadStr(intptr_t Ident, intptr_t /*MaxLength*/)
+UnicodeString LoadStr(intptr_t Ident, uintptr_t /*MaxLength*/)
 {
 #ifndef _MSC_VER
   TLibModule * MainModule = FindModule(HInstance);
@@ -2720,7 +2720,7 @@ TStringList * TextToStringList(const UnicodeString & Text)
 UnicodeString StringsToText(TStrings * Strings)
 {
   UnicodeString Result;
-  if (Strings->Count == 1)
+  if (Strings->GetCount() == 1)
   {
     Result = Strings->GetString(0);
   }
@@ -2845,7 +2845,7 @@ static int PemPasswordCallback(char * Buf, int Size, int /*RWFlag*/, void * User
   return strlen(Buf);
 }
 //---------------------------------------------------------------------------
-static bool IsTlsPassphraseError(int Error)
+static bool IsTlsPassphraseError(int Error, bool HasPassphrase)
 {
   int ErrorLib = ERR_GET_LIB(Error);
   int ErrorReason = ERR_GET_REASON(Error);
@@ -2861,7 +2861,7 @@ static bool IsTlsPassphraseError(int Error)
   return Result;
 }
 //---------------------------------------------------------------------------
-static void ThrowTlsCertificateErrorIgnorePassphraseErrors(const UnicodeString & Path)
+static void ThrowTlsCertificateErrorIgnorePassphraseErrors(const UnicodeString & Path, bool HasPassphrase)
 {
   int Error = ERR_get_error();
   if (!IsTlsPassphraseError(Error, HasPassphrase))
@@ -2874,8 +2874,8 @@ void ParseCertificate(const UnicodeString & Path,
   const UnicodeString & Passphrase, X509 *& Certificate, EVP_PKEY *& PrivateKey,
   bool & WrongPassphrase)
 {
-  Certificate = NULL;
-  PrivateKey = NULL;
+  Certificate = nullptr;
+  PrivateKey = nullptr;
   bool HasPassphrase = !Passphrase.IsEmpty();
 
   FILE * File;
@@ -2884,14 +2884,14 @@ void ParseCertificate(const UnicodeString & Path,
   File = OpenCertificate(Path);
   // openssl pkcs12 -inkey cert.pem -in cert.crt -export -out cert.pfx
   // Binary file
-  PKCS12 * Pkcs12 = d2i_PKCS12_fp(File, NULL);
+  PKCS12 * Pkcs12 = d2i_PKCS12_fp(File, nullptr);
   fclose(File);
 
-  if (Pkcs12 != NULL)
+  if (Pkcs12 != nullptr)
   {
     // Not sure about the UTF-8 encoding, but there's no wchar_t API
     bool Result =
-      (PKCS12_parse(Pkcs12, UTF8String(Passphrase).c_str(), &PrivateKey, &Certificate, NULL) == 1);
+      (PKCS12_parse(Pkcs12, UTF8String(Passphrase).c_str(), &PrivateKey, &Certificate, nullptr) == 1);
     PKCS12_free(Pkcs12);
 
     if (!Result)
@@ -2923,7 +2923,7 @@ void ParseCertificate(const UnicodeString & Path,
     // -----BEGIN RSA PRIVATE KEY-----
     // ...
     // -----END RSA PRIVATE KEY-----
-    PrivateKey = PEM_read_PrivateKey(File, NULL, PemPasswordCallback, &CallbackUserData);
+    PrivateKey = PEM_read_PrivateKey(File, nullptr, PemPasswordCallback, &CallbackUserData);
     fclose(File);
 
     // try
@@ -2932,22 +2932,22 @@ void ParseCertificate(const UnicodeString & Path,
       {
         // We loaded private key, but failed to load certificate, discard the certificate
         // (either exception was thrown or WrongPassphrase)
-        if ((PrivateKey != NULL) && (Certificate == NULL))
+        if ((PrivateKey != nullptr) && (Certificate == nullptr))
         {
           EVP_PKEY_free(PrivateKey);
-          PrivateKey = NULL;
+          PrivateKey = nullptr;
         }
         // Certificate was verified, but passphrase was wrong when loading private key,
         // so discard the certificate
-        else if ((Certificate != NULL) && (PrivateKey == NULL))
+        else if ((Certificate != nullptr) && (PrivateKey == nullptr))
         {
           X509_free(Certificate);
-          Certificate = NULL;
+          Certificate = nullptr;
         }
       };
-      if (PrivateKey == NULL)
+      if (PrivateKey == nullptr)
       {
-        ThrowTlsCertificateErrorIgnorePassphraseErrors(Path);
+        ThrowTlsCertificateErrorIgnorePassphraseErrors(Path, HasPassphrase);
         WrongPassphrase = true;
       }
 
@@ -2960,10 +2960,10 @@ void ParseCertificate(const UnicodeString & Path,
       // -----BEGIN CERTIFICATE-----
       // ...
       // -----END CERTIFICATE-----
-      Certificate = PEM_read_X509(File, NULL, PemPasswordCallback, &CallbackUserData);
+      Certificate = PEM_read_X509(File, nullptr, PemPasswordCallback, &CallbackUserData);
       fclose(File);
 
-      if (Certificate == NULL)
+      if (Certificate == nullptr)
       {
         int Error = ERR_get_error();
         // unlikely
@@ -2989,10 +2989,10 @@ void ParseCertificate(const UnicodeString & Path,
             // -----BEGIN CERTIFICATE-----
             // ...
             // -----END CERTIFICATE-----
-            Certificate = PEM_read_X509(File, NULL, PemPasswordCallback, &CallbackUserData);
+            Certificate = PEM_read_X509(File, nullptr, PemPasswordCallback, &CallbackUserData);
             fclose(File);
 
-            if (Certificate == NULL)
+            if (Certificate == nullptr)
             {
               int Base64Error = ERR_get_error();
 
@@ -3000,10 +3000,10 @@ void ParseCertificate(const UnicodeString & Path,
               // Binary DER-encoded certificate
               // (as above, with BEGIN/END removed, and decoded from Base64 to binary)
               // openssl x509 -in cert.crt -out client.der.crt -outform DER
-              Certificate = d2i_X509_fp(File, NULL);
+              Certificate = d2i_X509_fp(File, nullptr);
               fclose(File);
 
-              if (Certificate == NULL)
+              if (Certificate == nullptr)
               {
                 int DERError = ERR_get_error();
 
@@ -3021,17 +3021,17 @@ void ParseCertificate(const UnicodeString & Path,
     {
       // We loaded private key, but failed to load certificate, discard the certificate
       // (either exception was thrown or WrongPassphrase)
-      if ((PrivateKey != NULL) && (Certificate == NULL))
+      if ((PrivateKey != nullptr) && (Certificate == nullptr))
       {
         EVP_PKEY_free(PrivateKey);
-        PrivateKey = NULL;
+        PrivateKey = nullptr;
       }
       // Certificate was verified, but passphrase was wrong when loading private key,
       // so discard the certificate
-      else if ((Certificate != NULL) && (PrivateKey == NULL))
+      else if ((Certificate != nullptr) && (PrivateKey == nullptr))
       {
         X509_free(Certificate);
-        Certificate = NULL;
+        Certificate = nullptr;
       }
     };
   }
@@ -3045,11 +3045,11 @@ void CheckCertificate(const UnicodeString & Path)
 
   ParseCertificate(Path, L"", Certificate, PrivateKey, WrongPassphrase);
 
-  if (PrivateKey != NULL)
+  if (PrivateKey != nullptr)
   {
     EVP_PKEY_free(PrivateKey);
   }
-  if (Certificate != NULL)
+  if (Certificate != nullptr)
   {
     X509_free(Certificate);
   }

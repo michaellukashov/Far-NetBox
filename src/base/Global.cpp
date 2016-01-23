@@ -3,7 +3,7 @@
 
 #ifdef _DEBUG
 #include <stdio.h>
-#include <vector>
+#include <rdestl/vector.h>
 #include "Interface.h"
 #endif // ifdef _DEBUG
 
@@ -76,7 +76,7 @@ struct TTraceInMemory
   UTF8String Message;
 #endif // TRACE_IN_MEMORY_NO_FORMATTING
 };
-typedef std::vector<TTraceInMemory> TTracesInMemory;
+typedef rde::vector<TTraceInMemory> TTracesInMemory;
 TTracesInMemory TracesInMemory;
 
 int TraceThreadProc(void *)

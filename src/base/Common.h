@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Global.h>
 #include <Exceptions.h>
 
 //#define EXCEPTION throw ExtException(nullptr, L"")
@@ -127,7 +128,7 @@ void DeleteFileChecked(const UnicodeString & AFileName);
 uintptr_t CancelAnswer(uintptr_t Answers);
 uintptr_t AbortAnswer(uintptr_t Answers);
 uintptr_t ContinueAnswer(uintptr_t Answers);
-UnicodeString LoadStr(intptr_t Ident, intptr_t MaxLength = 0);
+UnicodeString LoadStr(intptr_t Ident, uintptr_t MaxLength = 0);
 UnicodeString LoadStrPart(intptr_t Ident, intptr_t Part);
 UnicodeString EscapeHotkey(const UnicodeString & Caption);
 bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
@@ -233,8 +234,6 @@ MethodT __fastcall MakeMethod(void * Data, void * Code)
   return Method;
 }
 #endif
-
-#include "Global.h"
 
 #pragma warning(push)
 #pragma warning(disable: 4512) // assignment operator could not be generated
