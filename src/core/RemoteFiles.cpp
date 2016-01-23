@@ -120,7 +120,7 @@ UnicodeString UnixExtractFileName(const UnicodeString & APath)
 UnicodeString UnixExtractFileExt(const UnicodeString & APath)
 {
   UnicodeString FileName = UnixExtractFileName(APath);
-  int Pos = FileName.LastDelimiter(L".");
+  intptr_t Pos = FileName.LastDelimiter(L".");
   if (Pos > 0)
     return APath.SubString(Pos, APath.Length() - Pos + 1);
   else

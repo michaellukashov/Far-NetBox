@@ -355,7 +355,7 @@ public:
   static void AddSwitch(UnicodeString & Result, const UnicodeString & Switch);
   static void AddSwitchValue(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value);
   static void AddSwitch(UnicodeString & Result, const UnicodeString & AName, const UnicodeString & Value);
-  static void AddSwitch(UnicodeString & Result, const UnicodeString & AName, int Value);
+  static void AddSwitch(UnicodeString & Result, const UnicodeString & AName, intptr_t Value);
   static UnicodeString AssemblyString(TAssemblyLanguage Language, const UnicodeString & S);
   static void AddAssemblyPropertyRaw(
     UnicodeString & Result, TAssemblyLanguage Language,

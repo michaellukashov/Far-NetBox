@@ -2200,8 +2200,8 @@ UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, intptr_t
   AnsiString AnsiStoredKeys;
   AnsiStoredKeys.SetLength(10 * 1024);
   UnicodeString Result;
-  if (retrieve_host_key(AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(),
-        (char *)AnsiStoredKeys.c_str(), AnsiStoredKeys.Length()) == 0)
+  if (retrieve_host_key(AnsiString(Host).c_str(), static_cast<int>(Port), AnsiString(KeyType).c_str(),
+        (char *)AnsiStoredKeys.c_str(), static_cast<int>(AnsiStoredKeys.Length())) == 0)
   {
     PackStr(AnsiStoredKeys);
     Result = UnicodeString(AnsiStoredKeys);
@@ -2233,7 +2233,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, intptr_t Port,
   {
     UnicodeString StoredKey = CutToChar(Buf, HostKeyDelimiter, false);
     // skip leading ECDH subtype identification
-    int P = StoredKey.Pos(L",");
+    intptr_t P = StoredKey.Pos(L",");
     // start from beginning or after the comma, if there 's any
     bool Fingerprint = (StoredKey.SubString(P + 1, 2) != L"0x");
     // it's probably a fingerprint (stored by TSessionData::CacheHostKey)
@@ -2355,7 +2355,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, intptr_t Port,
           KeyStr2 = (StoredKeys + HostKeyDelimiter + KeyStr2);
           // fall thru
         case qaYes:
-          store_host_key(AnsiString(Host2).c_str(), Port, AnsiString(KeyType).c_str(),
+          store_host_key(AnsiString(Host2).c_str(), static_cast<int>(Port), AnsiString(KeyType).c_str(),
             AnsiString(KeyStr2).c_str());
           Verified = true;
           break;

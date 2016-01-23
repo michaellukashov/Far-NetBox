@@ -689,7 +689,7 @@ TRetryOperationLoop::TRetryOperationLoop(TTerminal * Terminal)
 void TRetryOperationLoop::DoError(Exception & E, TSessionAction * Action, const UnicodeString & Message)
 {
   // Note that the action may already be canceled when RollbackAction is called
-  unsigned int Result;
+  uintptr_t Result;
   try
   {
     Result = FTerminal->CommandError(&E, Message, qaRetry | qaSkip | qaAbort);

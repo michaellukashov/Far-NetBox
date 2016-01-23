@@ -2802,7 +2802,7 @@ void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Name,
   AddSwitchValue(Result, Name, FORMAT(L"\"%s\"", EscapeParam(Value).c_str()));
 }
 
-void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Name, int Value)
+void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Name, intptr_t Value)
 {
   AddSwitchValue(Result, Name, IntToStr(Value));
 }

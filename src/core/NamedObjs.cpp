@@ -111,7 +111,7 @@ void TNamedObjectList::AlphaSort()
 
 intptr_t TNamedObjectList::Add(TObject * AObject)
 {
-  int Result;
+  intptr_t Result;
   TAutoFlag ControlledAddFlag(FControlledAdd);
   TNamedObject * NamedObject = static_cast<TNamedObject *>(AObject);
   // If temporarily not auto-sorting (when loading session list),

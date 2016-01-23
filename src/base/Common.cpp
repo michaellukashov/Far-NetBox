@@ -2842,7 +2842,7 @@ static int PemPasswordCallback(char * Buf, int Size, int /*RWFlag*/, void * User
   strncpy(Buf, UtfPassphrase.c_str(), Size);
   Shred(UtfPassphrase);
   Buf[Size - 1] = '\0';
-  return strlen(Buf);
+  return static_cast<int>(strlen(Buf));
 }
 //---------------------------------------------------------------------------
 static bool IsTlsPassphraseError(int Error, bool HasPassphrase)

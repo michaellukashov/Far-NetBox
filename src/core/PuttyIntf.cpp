@@ -771,7 +771,7 @@ UnicodeString GetPuTTYVersion()
   // "Development snapshot 2015-12-22.51465fa"
   UnicodeString Result = get_putty_version();
   // Skip "Release", "Pre-release", "Development snapshot"
-  int P = Result.LastDelimiter(L" ");
+  intptr_t P = Result.LastDelimiter(L" ");
   Result.Delete(1, P);
   return Result;
 }
@@ -779,7 +779,7 @@ UnicodeString GetPuTTYVersion()
 UnicodeString Sha256(const char * Data, size_t Size)
 {
   unsigned char Digest[32];
-  putty_SHA256_Simple(Data, Size, Digest);
+  putty_SHA256_Simple(Data, static_cast<int>(Size), Digest);
   UnicodeString Result(BytesToHex(Digest, _countof(Digest)));
   return Result;
 }

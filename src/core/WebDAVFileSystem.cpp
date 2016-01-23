@@ -415,7 +415,7 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
   DebugAssert(FNeonSession == nullptr);
   FNeonSession =
     CreateNeonSession(
-      uri, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
+      uri, Data->GetProxyMethod(), Data->GetProxyHost(), static_cast<int>(Data->GetProxyPort()),
       Data->GetProxyUsername(), Data->GetProxyPassword());
 
   UTF8String Path(uri.path);
@@ -437,9 +437,9 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
     NE_DBG_SSL |
     FLAGMASK(GetConfiguration()->GetLogSensitive(), NE_DBG_HTTPPLAIN);
 
-  ne_set_read_timeout(FNeonSession, Data->GetTimeout());
+  ne_set_read_timeout(FNeonSession, static_cast<int>(Data->GetTimeout()));
 
-  ne_set_connect_timeout(FNeonSession, Data->GetTimeout());
+  ne_set_connect_timeout(FNeonSession, static_cast<int>(Data->GetTimeout()));
 
   unsigned int NeonAuthTypes = NE_AUTH_BASIC | NE_AUTH_DIGEST;
   if (Ssl)
@@ -2903,7 +2903,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
       Params.NoBatchAnswers = qaYes | qaRetry;
       Params.Aliases = Aliases;
       Params.AliasesCount = _countof(Aliases);
-      unsigned int Answer = FTerminal->QueryUser(
+      uintptr_t Answer = FTerminal->QueryUser(
         FMTLOAD(VERIFY_CERT_PROMPT3, (FSessionInfo.Certificate)),
         nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
       switch (Answer)
