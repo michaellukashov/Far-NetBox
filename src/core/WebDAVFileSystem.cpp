@@ -2869,13 +2869,13 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
   UnicodeString ValidityTimeFormat = L"ddddd tt";
   FSessionInfo.CertificateFingerprint = Data.Fingerprint;
   FSessionInfo.Certificate =
-    FMTLOAD(CERT_TEXT, (
-      Data.Issuer + L"\n",
-      Data.Subject + L"\n",
+    FMTLOAD(CERT_TEXT,
+      UnicodeString(Data.Issuer + L"\n").c_str(),
+      UnicodeString(Data.Subject + L"\n").c_str(),
       FormatDateTime(ValidityTimeFormat, Data.ValidFrom).c_str(),
       FormatDateTime(ValidityTimeFormat, Data.ValidUntil).c_str(),
-      Data.Fingerprint,
-      Summary));
+      Data.Fingerprint.c_str(),
+      Summary.c_str());
 
   bool Result = (Failures == 0);
 
