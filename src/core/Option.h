@@ -37,6 +37,10 @@ public:
 
   void LogOptions(TLogOptionEvent OnEnumOption);
 
+  /*__property int ParamCount = { read = FParamCount };
+  __property UnicodeString Param[int Index] = { read = GetParam };
+  __property bool Empty = { read = GetEmpty };*/
+
   intptr_t GetParamCount() const { return FParamCount; }
   UnicodeString GetParam(intptr_t AIndex);
   void Clear() { FOptions.resize(0); FNoMoreSwitches = false; FParamCount = 0; }
@@ -70,9 +74,7 @@ private:
   intptr_t FParamCount;
   bool FNoMoreSwitches;
 
-/*
-  UnicodeString __fastcall GetParam(int Index);
-  bool __fastcall GetEmpty();
-*/
+  /*UnicodeString __fastcall GetParam(int Index);
+  bool __fastcall GetEmpty();*/
 };
 
