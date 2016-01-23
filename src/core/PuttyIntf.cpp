@@ -130,6 +130,13 @@ int from_backend_eof(void * /*frontend*/)
 {
   return FALSE;
 }
+//---------------------------------------------------------------------------
+int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/);
+
+int get_userpass_input(prompts_t * p, const uint8_t * in, int inlen)
+{
+  return GetUserpassInput(p, in, inlen);
+}
 
 int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
 {
@@ -166,7 +173,7 @@ int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
     }
 
     UnicodeString Instructions = UTF8ToString(p->instruction);
-    if (SecureShell->PromptUser(p->to_server != 0, p->name, p->name_reqd != 0,
+    if (SecureShell->PromptUser(p->to_server != 0, Name, p->name_reqd != 0,
           Instructions, p->instr_reqd != 0, Prompts.get(), Results.get()))
     {
       for (size_t Index = 0; Index < p->n_prompts; ++Index)
@@ -197,11 +204,6 @@ int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
   };
 
   return Result;
-}
-
-int get_userpass_input(prompts_t * p, const uint8_t * in, int inlen)
-{
-  return GetUserpassInput(p, in, inlen);
 }
 
 char * get_ttymode(void * /*frontend*/, const char * /*mode*/)
@@ -310,17 +312,18 @@ void nonfatal(const char * fmt, ...)
   SSHFatalError(fmt, Param);
   va_end(Param);
 }
-
-void CleanupExit(int /*code*/)
-{
-  throw ESshFatal(nullptr, L"");
-}
-
+//---------------------------------------------------------------------------
+void CleanupExit(int /*code*/);
 void cleanup_exit(int code)
 {
   CleanupExit(code);
 }
 
+void CleanupExit(int /*code*/)
+{
+  throw ESshFatal(nullptr, L"");
+}
+//---------------------------------------------------------------------------
 int askappend(void * /*frontend*/, Filename * /*filename*/,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
@@ -683,6 +686,7 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
   {
     Conf * conf = conf_new();
     ssh_gss_liblist * List = nullptr;
+    try__finally
     {
       SCOPE_EXIT
       {
@@ -748,19 +752,19 @@ static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & 
   }
 }
 
-UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint)
+UnicodeString NormalizeFingerprint(const UnicodeString & AFingerprint)
 {
-  UnicodeString Result = Fingerprint;
+  UnicodeString Fingerprint = AFingerprint;
   UnicodeString KeyType; // unused
-  DoNormalizeFingerprint(Result, KeyType);
-  return Result;
+  DoNormalizeFingerprint(Fingerprint, KeyType);
+  return Fingerprint;
 }
 
-UnicodeString GetKeyTypeFromFingerprint(const UnicodeString & Fingerprint)
+UnicodeString GetKeyTypeFromFingerprint(const UnicodeString & AFingerprint)
 {
-  UnicodeString Fingerprint2 = Fingerprint;
+  UnicodeString Fingerprint = AFingerprint;
   UnicodeString KeyType;
-  DoNormalizeFingerprint(Fingerprint2, KeyType);
+  DoNormalizeFingerprint(Fingerprint, KeyType);
   return KeyType;
 }
 
