@@ -22,6 +22,15 @@ public:
   void Get();
   void Post(const UnicodeString & Request);
 
+  /*__property UnicodeString URL = { read = FURL, write = FURL };
+  __property UnicodeString ProxyHost = { read = FProxyHost, write = FProxyHost };
+  __property int ProxyPort = { read = FProxyPort, write = FProxyPort };
+  __property UnicodeString Response = { read = GetResponse };
+  __property RawByteString ResponseRaw = { read = FResponse };
+  __property __int64 ResponseLength = { read = GetResponseLength };
+  __property __int64 ResponseLimit = { read = FResponseLimit, write = FResponseLimit };
+  __property THttpDownloadEvent OnDownload = { read = FOnDownload, write = FOnDownload};*/
+
   UnicodeString GetURL() const { return FURL; }
   void SetURL(const UnicodeString & Value) { FURL = Value; }
   UnicodeString GetProxyHost() const { return FProxyHost; }
@@ -35,15 +44,6 @@ public:
   void SetResponseLimit(int64_t Value) { FResponseLimit = Value; }
   THttpDownloadEvent GetOnDownload() const { return FOnDownload; }
   void SetOnDownload(THttpDownloadEvent Value) { FOnDownload = Value; }
-
-  /*__property UnicodeString URL = { read = FURL, write = FURL };
-  __property UnicodeString ProxyHost = { read = FProxyHost, write = FProxyHost };
-  __property int ProxyPort = { read = FProxyPort, write = FProxyPort };
-  __property UnicodeString Response = { read = GetResponse };
-  __property RawByteString ResponseRaw = { read = FResponse };
-  __property int64_t ResponseLength = { read = GetResponseLength };
-  __property int64_t ResponseLimit = { read = FResponseLimit, write = FResponseLimit };
-  __property THttpDownloadEvent OnDownload = { read = FOnDownload, write = FOnDownload};*/
 
 private:
   UnicodeString FURL;
@@ -59,8 +59,6 @@ private:
   static int NeonBodyReader(void * UserData, const char * Buf, size_t Len);
   int NeonBodyReaderImpl(const char * Buf, size_t Len);
   void SendRequest(const char * Method, const UnicodeString & Request);
-//  UnicodeString GetResponse();
-//  int64_t GetResponseLength();
   static void InitSslSession(ssl_st * Ssl, ne_session_s * Session);
   static int NeonServerSSLCallback(void * UserData, int Failures, const ne_ssl_certificate_s * Certificate);
   int NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate_s * Certificate);

@@ -3,7 +3,6 @@
 #pragma hdrstop
 
 #include <neon/src/ne_request.h>
-#include <openssl/x509_vfy.h>
 #include <openssl/ssl.h>
 
 #include "Http.h"
@@ -11,11 +10,11 @@
 #include "Exceptions.h"
 #include "TextsCore.h"
 
-THttp::THttp()
+THttp::THttp() :
+  FProxyPort(0),
+  FOnDownload(nullptr),
+  FResponseLimit(-1)
 {
-  FProxyPort = 0;
-  FOnDownload = nullptr;
-  FResponseLimit = -1;
 }
 
 THttp::~THttp()
@@ -67,6 +66,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
       CreateNeonSession(
         uri, ProxyMethod, GetProxyHost(), GetProxyPort(), UnicodeString(), UnicodeString());
 
+    try__finally
     {
       SCOPE_EXIT
       {
@@ -83,7 +83,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
       }
 
       ne_request_s * NeonRequest = ne_request_create(NeonSession, Method, StrToNeon(Uri));
-
+      try__finally
       {
         SCOPE_EXIT
         {
@@ -125,7 +125,16 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           }
         }
       }
+      __finally
+      {
+        ne_request_destroy(NeonRequest);
+      };
     }
+    __finally
+    {
+      DestroyNeonSession(NeonSession);
+      ne_uri_free(&uri);
+    };
   }
   while (Retry);
 }
