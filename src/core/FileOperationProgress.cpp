@@ -277,6 +277,15 @@ bool TFileOperationProgressType::IsLocallyDone() const
   return (LocallyUsed == LocalSize);
 }
 
+void TFileOperationProgressType::SetSpeedCounters()
+{
+  if ((CPSLimit > 0) && !FCounterSet)
+  {
+    FCounterSet = true;
+    // Configuration->Usage->Inc(L"SpeedLimitUses");
+  }
+}
+
 void TFileOperationProgressType::ThrottleToCPSLimit(
   uintptr_t Size)
 {
@@ -284,15 +293,6 @@ void TFileOperationProgressType::ThrottleToCPSLimit(
   while (Remaining > 0)
   {
     Remaining -= AdjustToCPSLimit(Remaining);
-  }
-}
-
-void TFileOperationProgressType::SetSpeedCounters()
-{
-  if ((CPSLimit > 0) && !FCounterSet)
-  {
-    FCounterSet = true;
-    // Configuration->Usage->Inc(L"SpeedLimitUses");
   }
 }
 
@@ -339,13 +339,13 @@ uintptr_t TFileOperationProgressType::AdjustToCPSLimit(
 
 uintptr_t TFileOperationProgressType::LocalBlockSize()
 {
-  int64_t Result = TRANSFER_BUF_SIZE;
-  if (LocallyUsed + Result > LocalSize)
+  uintptr_t Result = TRANSFER_BUF_SIZE;
+  if (LocallyUsed + (int64_t)Result > LocalSize)
   {
     Result = static_cast<uintptr_t>(LocalSize - LocallyUsed);
   }
-  Result = (int64_t)AdjustToCPSLimit((uintptr_t)Result);
-  return (uintptr_t)Result;
+  Result = AdjustToCPSLimit(Result);
+  return Result;
 }
 
 void TFileOperationProgressType::SetTotalSize(int64_t ASize)

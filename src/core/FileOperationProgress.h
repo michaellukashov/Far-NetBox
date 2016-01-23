@@ -22,13 +22,6 @@ enum TCancelStatus
   csRemoteAbort,
 };
 
-/*enum TResumeStatus
-{
-  rsNotAvailable,
-  rsEnabled,
-  rsDisabled
-};*/
-
 enum TBatchOverwrite
 {
   boNo,
@@ -37,18 +30,79 @@ enum TBatchOverwrite
   boOlder,
   boAlternateResume,
   boAppend,
-  boResume
+  boResume,
 };
 
+/*typedef void __fastcall (__closure *TFileOperationProgressEvent)
+  (TFileOperationProgressType & ProgressData);*/
 DEFINE_CALLBACK_TYPE1(TFileOperationProgressEvent, void,
   TFileOperationProgressType & /*ProgressData*/);
+/*typedef void __fastcall (__closure *TFileOperationFinished)
+  (TFileOperation Operation, TOperationSide Side, bool Temp,
+    const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);*/
 DEFINE_CALLBACK_TYPE6(TFileOperationFinishedEvent, void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
   const UnicodeString & /*FileName*/, bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/);
-
+//---------------------------------------------------------------------------
 class TFileOperationProgressType : public TObject
 {
+private:
+  // when it was last time suspended (to calculate suspend time in Resume())
+  uintptr_t FSuspendTime;
+  // when current file was started being transfered
+  TDateTime FFileStartTime;
+  intptr_t FFilesFinished;
+  TFileOperationProgressEvent FOnProgress;
+  TFileOperationFinishedEvent FOnFinished;
+  bool FReset;
+  uintptr_t FLastSecond;
+  uintptr_t FRemainingCPS;
+  bool FCounterSet;
+  rde::vector<uint32_t> FTicks;
+  rde::vector<int64_t> FTotalTransferredThen;
+
+protected:
+  void ClearTransfer();
+  inline void DoProgress();
+
 public:
+  // common data
+  TFileOperation Operation;
+  // on what side if operation being processed (local/remote), source of copy
+  TOperationSide Side;
+  UnicodeString FileName;
+  UnicodeString FullFileName;
+  UnicodeString Directory;
+  bool AsciiTransfer;
+  // Can be true with SCP protocol only
+  bool TransferingFile;
+  bool Temp;
+
+  // file size to read/write
+  int64_t LocalSize;
+  int64_t LocallyUsed;
+  int64_t TransferSize;
+  int64_t TransferedSize;
+  int64_t SkippedSize;
+  bool InProgress;
+  bool FileInProgress;
+  TCancelStatus Cancel;
+  intptr_t Count;
+  // when operation started
+  TDateTime StartTime;
+  // bytes transfered
+  int64_t TotalTransfered;
+  int64_t TotalSkipped;
+  int64_t TotalSize;
+
+  TBatchOverwrite BatchOverwrite;
+  bool SkipToAll;
+  uintptr_t CPSLimit;
+
+  bool TotalSizeSet;
+
+  bool Suspended;
+
   explicit TFileOperationProgressType();
   explicit TFileOperationProgressType(
     TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished);
@@ -97,61 +151,6 @@ public:
   intptr_t OverallProgress() const;
   intptr_t TotalTransferProgress() const;
   void SetSpeedCounters();
-
-  // common data
-  TFileOperation Operation;
-  // on what side if operation being processed (local/remote), source of copy
-  TOperationSide Side;
-  UnicodeString FileName;
-  UnicodeString FullFileName;
-  UnicodeString Directory;
-  bool AsciiTransfer;
-  // Can be true with SCP protocol only
-  bool TransferingFile;
-  bool Temp;
-
-  // file size to read/write
-  int64_t LocalSize;
-  int64_t LocallyUsed;
-  int64_t TransferSize;
-  int64_t TransferedSize;
-  int64_t SkippedSize;
-  bool InProgress;
-  bool FileInProgress;
-  TCancelStatus Cancel;
-  intptr_t Count;
-  // when operation started
-  TDateTime StartTime;
-  // bytes transfered
-  int64_t TotalTransfered;
-  int64_t TotalSkipped;
-  int64_t TotalSize;
-
-  TBatchOverwrite BatchOverwrite;
-  bool SkipToAll;
-  uintptr_t CPSLimit;
-
-  bool TotalSizeSet;
-  bool Suspended;
-
-protected:
-  void ClearTransfer();
-  inline void DoProgress();
-
-private:
-  // when it was last time suspended (to calculate suspend time in Resume())
-  uintptr_t FSuspendTime;
-  // when current file was started being transfered
-  TDateTime FFileStartTime;
-  intptr_t FFilesFinished;
-  TFileOperationProgressEvent FOnProgress;
-  TFileOperationFinishedEvent FOnFinished;
-  bool FReset;
-  uintptr_t FLastSecond;
-  uintptr_t FRemainingCPS;
-  bool FCounterSet;
-  rde::vector<uint32_t> FTicks;
-  rde::vector<int64_t> FTotalTransferredThen;
 };
 
 class TSuspendFileOperationProgress : public TObject
