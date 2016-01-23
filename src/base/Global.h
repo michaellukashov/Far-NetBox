@@ -40,7 +40,11 @@ private:
 
 #define DebugAssert(p) (void)(p)
 #define DebugCheck(p) (p)
-#define DebugFail() (void)
+#define DebugFail() (void)0
+
+#define DebugAlwaysTrue(p) (p)
+#define DebugAlwaysFalse(p) (p)
+#define DebugNotNull(p) (p)
 
 #else // _DEBUG
 
@@ -65,6 +69,10 @@ void TraceInMemoryCallback(const wchar_t * Msg);
 #define ACCESS_VIOLATION_TEST { (*((int*)NULL)) = 0; }
 
 void DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber);
+
+#define DebugAssert(p) ((p) ? (void)0 : DoAssert(TEXT(#p), TEXT(__FILE__), __LINE__))
+#define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
+#define DebugFail() DebugAssert(false)
 
 inline bool DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int LineNumber)
 {
@@ -94,16 +102,13 @@ inline typename T * DoCheckNotNull(T* p, wchar_t * Message, wchar_t * Filename, 
   return p;
 }
 
-#define DebugAssert(p) ((p) ? (void)0 : DoAssert(TEXT(#p), TEXT(__FILE__), __LINE__))
-#define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
-#define DebugFail() DebugAssert(false)
-
-#define DebugAlwaysTrue(p) (p)
-#define DebugAlwaysFalse(p) (p)
-#define DebugNotNull(p) (p)
-#define DebugUsedParam(p) (void)(p)
+#define DebugAlwaysTrue(p) DoAlwaysTrue((p), TEXT(#p), TEXT(__FILE__), __LINE__)
+#define DebugAlwaysFalse(p) DoAlwaysFalse((p), TEXT(#p), TEXT(__FILE__), __LINE__)
+#define DebugNotNull(p) DoCheckNotNull((p), TEXT(#p), TEXT(__FILE__), __LINE__)
 
 #endif // _DEBUG
+
+#define DebugUsedParam(p) (void)(p)
 
 #define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())
 
