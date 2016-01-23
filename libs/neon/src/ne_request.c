@@ -187,6 +187,7 @@ static inline unsigned int hash_and_lower(char *name)
 static int aborted(ne_request *req, const char *doing, ssize_t code)
 {
     ne_session *sess = req->session;
+    NE_DEBUG_WINSCP_CONTEXT(sess);
     int ret = NE_ERROR;
 
     NE_DEBUG(NE_DBG_HTTP, "Aborted request (%" NE_FMT_SSIZE_T "): %s\n",
@@ -376,6 +377,7 @@ static ssize_t body_fd_send(void *userdata, char *buffer, size_t count)
 static int send_request_body(ne_request *req, int retry)
 {
     ne_session *const sess = req->session;
+    NE_DEBUG_WINSCP_CONTEXT(sess);
     char buffer[NE_BUFSIZ], *start;
     ssize_t bytes;
     size_t buflen;
@@ -473,6 +475,7 @@ static int send_request_body(ne_request *req, int retry)
 static void add_fixed_headers(ne_request *req) 
 {
     ne_session *const sess = req->session;
+    NE_DEBUG_WINSCP_CONTEXT(sess);
 
     if (sess->user_agent) {
         ne_buffer_zappend(req->headers, sess->user_agent);
@@ -758,6 +761,7 @@ void ne_add_response_body_reader(ne_request *req, ne_accept_response acpt,
 
 void ne_request_destroy(ne_request *req) 
 {
+    NE_DEBUG_WINSCP_CONTEXT(req->session);
     struct body_reader *rdr, *next_rdr;
     struct hook *hk, *next_hk;
 
@@ -802,6 +806,7 @@ void ne_request_destroy(ne_request *req)
 static int read_response_block(ne_request *req, struct ne_response *resp, 
 			       char *buffer, size_t *buflen) 
 {
+    NE_DEBUG_WINSCP_CONTEXT(req->session);
     ne_socket *const sock = req->session->socket;
     size_t willread;
     ssize_t readlen;
@@ -918,6 +923,7 @@ ssize_t ne_read_response_block(ne_request *req, char *buffer, size_t buflen)
 /* Build the request string, returning the buffer. */
 static ne_buffer *build_request(ne_request *req) 
 {
+    NE_DEBUG_WINSCP_CONTEXT(req->session);
     struct hook *hk;
     ne_buffer *buf = ne_buffer_create();
 
@@ -952,6 +958,7 @@ static void dump_request(ne_request *req, const char *request)
 static void dump_request(const char *request)
 #endif
 { 
+    NE_DEBUG_WINSCP_CONTEXT(req->session);
     if (ne_debug_mask & NE_DBG_HTTPPLAIN) { 
 	/* Display everything mode */
 	NE_DEBUG(NE_DBG_HTTP, "Sending request headers:\n%s", request);
@@ -988,6 +995,7 @@ static inline void strip_eol(char *buf, ssize_t *len)
  * if an NE_RETRY should be returned if an EOF is received. */
 static int read_status_line(ne_request *req, ne_status *status, int retry)
 {
+    NE_DEBUG_WINSCP_CONTEXT(req->session);
     char *buffer = req->respbuf;
     ssize_t ret;
 
@@ -1024,6 +1032,7 @@ static int read_status_line(ne_request *req, ne_status *status, int retry)
 /* Discard a set of message headers. */
 static int discard_headers(ne_request *req)
 {
+    NE_DEBUG_WINSCP_CONTEXT(req->session);
     do {
 	SOCK_ERR(req, ne_sock_readline(req->session->socket, req->respbuf, 
 				       sizeof req->respbuf),
@@ -1044,6 +1053,7 @@ static int discard_headers(ne_request *req)
 static int send_request(ne_request *req, const ne_buffer *request)
 {
     ne_session *const sess = req->session;
+    NE_DEBUG_WINSCP_CONTEXT(sess);
     ne_status *const status = &req->status;
     int sentbody = 0; /* zero until body has been sent. */
     int ret, retry; /* retry non-zero whilst the request should be retried */
@@ -1104,6 +1114,7 @@ static int send_request(ne_request *req, const ne_buffer *request)
  */
 static int read_message_header(ne_request *req, char *buf, size_t buflen)
 {
+    NE_DEBUG_WINSCP_CONTEXT(req->session);
     ssize_t n;
     ne_socket *sock = req->session->socket;
 
@@ -1195,6 +1206,7 @@ static void add_response_header(ne_request *req, unsigned int hash,
  * closes connection on error. */
 static int read_response_headers(ne_request *req) 
 {
+    NE_DEBUG_WINSCP_CONTEXT(req->session);
     char hdr[MAX_HEADER_LEN];
     int ret, count = 0;
     
@@ -1246,6 +1258,7 @@ static int read_response_headers(ne_request *req)
  * returns NE_ code with error string set on error. */
 static int lookup_host(ne_session *sess, struct host_info *info)
 {
+    NE_DEBUG_WINSCP_CONTEXT(sess);
     NE_DEBUG(NE_DBG_HTTP, "Doing DNS lookup on %s...\n", info->hostname);
     sess->status.lu.hostname = info->hostname;
     notify_status(sess, ne_status_lookup);
@@ -1265,6 +1278,7 @@ static int lookup_host(ne_session *sess, struct host_info *info)
 
 int ne_begin_request(ne_request *req)
 {
+    NE_DEBUG_WINSCP_CONTEXT(req->session);
     struct body_reader *rdr;
     ne_buffer *data;
     const ne_status *const st = &req->status;
@@ -1425,6 +1439,7 @@ int ne_begin_request(ne_request *req)
 
 int ne_end_request(ne_request *req)
 {
+    NE_DEBUG_WINSCP_CONTEXT(req->session);
     struct hook *hk;
     int ret;
 
@@ -1494,6 +1509,7 @@ int ne_discard_response(ne_request *req)
 
 int ne_request_dispatch(ne_request *req) 
 {
+    NE_DEBUG_WINSCP_CONTEXT(req->session);
     int ret;
     
     do {
@@ -1572,6 +1588,7 @@ static const ne_inet_addr *resolve_next(struct host_info *host)
  * connect. */
 static int do_connect(ne_session *sess, struct host_info *host)
 {
+    NE_DEBUG_WINSCP_CONTEXT(sess);
     int ret;
 
     /* Resolve hostname if necessary. */

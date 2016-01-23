@@ -370,6 +370,7 @@ static int verify_callback(int ok, X509_STORE_CTX *ctx)
     int depth = X509_STORE_CTX_get_error_depth(ctx);
     int err = X509_STORE_CTX_get_error(ctx);
     int failures = 0;
+    NE_DEBUG_WINSCP_CONTEXT(sess);
 
     /* If there's no error, nothing to do here. */
     if (ok) return ok;
@@ -511,6 +512,7 @@ static ne_ssl_client_cert *dup_client_cert(const ne_ssl_client_cert *cc)
 static int provide_client_cert(SSL *ssl, X509 **cert, EVP_PKEY **pkey)
 {
     ne_session *const sess = SSL_get_app_data(ssl);
+    NE_DEBUG_WINSCP_CONTEXT(sess);
 
     if (!sess->client_cert && sess->ssl_provide_fn) {
 	ne_ssl_dname **dnames = NULL, *dnarray = NULL;
@@ -680,6 +682,7 @@ static int SSL_SESSION_cmp(SSL_SESSION *a, SSL_SESSION *b)
 /* For internal use only. */
 int ne__negotiate_ssl(ne_session *sess)
 {
+    NE_DEBUG_WINSCP_CONTEXT(sess);
     ne_ssl_context *ctx = sess->ssl_context;
     SSL *ssl;
     STACK_OF(X509) *chain;
