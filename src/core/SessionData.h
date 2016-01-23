@@ -19,16 +19,16 @@ enum TCipher
   cipAES,
   cipDES,
   cipArcfour,
-  cipCHACHA20
+  cipChaCha20,
 };
-#define CIPHER_COUNT (cipCHACHA20+1)
+#define CIPHER_COUNT (cipChaCha20+1)
 
 enum TProtocol
 {
   ptRaw,
   ptTelnet,
   ptRLogin,
-  ptSSH
+  ptSSH,
 };
 #define PROTOCOL_COUNT (ptSSH+1)
 
@@ -37,7 +37,7 @@ enum TFSProtocol_219
 {
   fsFTPS_219 = 6,
   fsHTTP_219 = 7,
-  fsHTTPS_219 = 8
+  fsHTTPS_219 = 8,
 };
 
 enum TFSProtocol
@@ -46,38 +46,38 @@ enum TFSProtocol
   fsSFTP = 1,
   fsSFTPonly = 2,
   fsFTP = 5,
-  fsWebDAV = 6
+  fsWebDAV = 6,
 };
 #define FSPROTOCOL_COUNT (fsWebDAV+1)
 
 enum TLoginType
 {
   ltAnonymous = 0,
-  ltNormal = 1
+  ltNormal = 1,
 };
 
 extern const wchar_t * ProxyMethodNames;
 
 enum TProxyMethod
 {
-  pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd, pmSystem
+  pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd, pmSystem,
 };
 
 enum TSshProt
 {
-  ssh1only, ssh1, ssh2, ssh2only
+  ssh1only, ssh1, ssh2, ssh2only,
 };
 
 enum TKex
 {
-  kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexGSSGROUP1, kexGSSGROUP14, kexGSSGEX, kexRSA, kexECDH
+  kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA, kexECDH,
 };
 #define KEX_COUNT (kexECDH+1)
 
 enum TSshBug
 {
   sbIgnore1, sbPlainPW1, sbRSA1, sbHMAC2, sbDeriveKey2, sbRSAPad2,
-  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2, sbOldGex2, sbWinAdj
+  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2, sbOldGex2, sbWinAdj,
 };
 #define BUG_COUNT (sbWinAdj+1)
 
@@ -118,11 +118,9 @@ enum TSessionUrlFlags
   sufOpen = sufUserName | sufPassword,
 };
 
-extern const wchar_t CipherNames[CIPHER_COUNT][10];
-extern const wchar_t KexNames[KEX_COUNT][20];
-// extern const wchar_t ProtocolNames[PROTOCOL_COUNT][10];
+extern const UnicodeString CipherNames[CIPHER_COUNT];
+extern const UnicodeString KexNames[KEX_COUNT];
 extern const wchar_t SshProtList[][10];
-//extern const wchar_t ProxyMethodList[][10];
 extern const TCipher DefaultCipherList[CIPHER_COUNT];
 extern const TKex DefaultKexList[KEX_COUNT];
 extern const intptr_t DefaultSendBuf;
@@ -376,6 +374,9 @@ public:
     UnicodeString & Result, TAssemblyLanguage Language,
     const UnicodeString & AName, bool Value);
   TStrings * SaveToOptions(const TSessionData * Default);
+  template<class AlgoT>
+  void SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
+    intptr_t Count, AlgoT WarnAlgo, const UnicodeString & AValue);
 
 public:
   explicit TSessionData(const UnicodeString & AName);
@@ -894,6 +895,9 @@ private:
     UnicodeString & Result, TAssemblyLanguage Language,
     const UnicodeString & Name, bool Value);
   TStrings * __fastcall SaveToOptions(const TSessionData * Default);
+  template<class AlgoT>
+  void __fastcall SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
+    int Count, AlgoT WarnAlgo, UnicodeString value);
 
   __property UnicodeString InternalStorageKey = { read = GetInternalStorageKey };
 

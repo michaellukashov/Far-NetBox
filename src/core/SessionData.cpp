@@ -1,6 +1,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <algorithm>
+#include <rdestl/vector.h>
 #include <Winhttp.h>
 
 #include <Common.h>
@@ -14,25 +16,17 @@
 #include "RemoteFiles.h"
 #include "SFTPFileSystem.h"
 
-enum TProxyType
-{
-  pxNone,
-  pxHTTP,
-  pxSocks,
-  pxTelnet
-}; // 0.53b and older
 const wchar_t * PingTypeNames = L"Off;Null;Dummy";
 const wchar_t * ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
 const wchar_t * DefaultName = L"Default Settings";
-const wchar_t CipherNames[CIPHER_COUNT][10] = {L"WARN", L"3des", L"blowfish", L"aes", L"des", L"arcfour"};
-const wchar_t KexNames[KEX_COUNT][20] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-gex-sha1", L"rsa",  L"ecdh" };
-//const wchar_t ProtocolNames[PROTOCOL_COUNT][10] = { L"raw", L"telnet", L"rlogin", L"ssh" };
+const UnicodeString CipherNames[CIPHER_COUNT] = {L"WARN", L"3des", L"blowfish", L"aes", L"des", L"arcfour"};
+const UnicodeString KexNames[KEX_COUNT] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-gex-sha1", L"rsa",  L"ecdh" };
 const wchar_t SshProtList[][10] = {L"1 only", L"1", L"2", L"2 only"};
-//const wchar_t ProxyMethodList[][10] = {L"none", L"SOCKS4", L"SOCKS5", L"HTTP", L"Telnet", L"Cmd", L"System" };
 const TCipher DefaultCipherList[CIPHER_COUNT] =
-  { cipAES, cipBlowfish, cip3DES, cipWarn, cipArcfour, cipDES };
+  // Contrary to PuTTY, we put chacha below AES, as we want to field-test it before promoting it
+  { cipAES, cipBlowfish, cipChaCha20, cip3DES, cipWarn, cipArcfour, cipDES };
 const TKex DefaultKexList[KEX_COUNT] =
-  { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexECDH, kexWarn };
+  { kexECDH, kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
 const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][11] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"WebDAV" };
 const intptr_t SshPortNumber = 22;
 const intptr_t FtpPortNumber = 21;
@@ -131,7 +125,7 @@ void TSessionData::Default()
   SetGSSAPIServerRealm(L"");
   SetChangeUsername(false);
   SetCompression(false);
-  SetSshProt(ssh2);
+  SetSshProt(ssh2only);
   SetSsh2DES(false);
   SetSshNoUserAuth(false);
   for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
@@ -653,28 +647,6 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetSshSimple(Storage->ReadBool("SshSimple", GetSshSimple()));
 
   SetProxyMethod(static_cast<TProxyMethod>(Storage->ReadInteger("ProxyMethod", -1)));
-  if (GetProxyMethod() < 0)
-  {
-    intptr_t ProxyType = Storage->ReadInteger("ProxyType", pxNone);
-    intptr_t ProxySOCKSVersion = 0;
-    switch (ProxyType)
-    {
-      case pxHTTP:
-        SetProxyMethod(pmHTTP);
-        break;
-      case pxTelnet:
-        SetProxyMethod(pmTelnet);
-        break;
-      case pxSocks:
-        ProxySOCKSVersion = Storage->ReadInteger("ProxySOCKSVersion", 5);
-        SetProxyMethod(ProxySOCKSVersion == 5 ? pmSocks5 : pmSocks4);
-        break;
-      default:
-      case pxNone:
-        SetProxyMethod(::pmNone);
-        break;
-    }
-  }
   if (GetProxyMethod() != pmSystem)
   {
     SetProxyHost(Storage->ReadString("ProxyHost", GetProxyHost()));
@@ -802,6 +774,46 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   {
     SetFtps(TranslateFtpEncryptionNumber(Storage->ReadInteger("FtpEncryption", -1)));
   }
+
+#ifdef TEST
+  #define KEX_TEST(VALUE, EXPECTED) KexList = VALUE; DebugAssert(KexList == EXPECTED);
+  #define KEX_DEFAULT L"ecdh,dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN"
+  // Empty source should result in default list
+  KEX_TEST(L"", KEX_DEFAULT);
+  // Default of pre 5.8.1 should result in new default
+  KEX_TEST(L"dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN", KEX_DEFAULT);
+  // Missing first two priority algos, and last non-priority algo => default
+  KEX_TEST(L"dh-group14-sha1,dh-group1-sha1,WARN", L"ecdh,dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN");
+  // Missing first two priority algos, last non-priority algo and WARN => default
+  KEX_TEST(L"dh-group14-sha1,dh-group1-sha1", L"ecdh,dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN");
+  // Old algos, with all but the first below WARN
+  KEX_TEST(L"dh-gex-sha1,WARN,dh-group14-sha1,dh-group1-sha1,rsa", L"ecdh,dh-gex-sha1,WARN,dh-group14-sha1,dh-group1-sha1,rsa");
+  // Unknown algo at front
+  KEX_TEST(L"unknown,ecdh,dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN", KEX_DEFAULT);
+  // Unknown algo at back
+  KEX_TEST(L"ecdh,dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN,unknown", KEX_DEFAULT);
+  // Unknown algo in the middle
+  KEX_TEST(L"ecdh,dh-gex-sha1,dh-group14-sha1,unknown,dh-group1-sha1,rsa,WARN", KEX_DEFAULT);
+  #undef KEX_DEFAULT
+  #undef KEX_TEST
+
+  #define CIPHER_TEST(VALUE, EXPECTED) CipherList = VALUE; DebugAssert(CipherList == EXPECTED);
+  #define CIPHER_DEFAULT L"aes,blowfish,chacha20,3des,WARN,arcfour,des"
+  // Empty source should result in default list
+  CIPHER_TEST(L"", CIPHER_DEFAULT);
+  // Default of pre 5.8.1
+  CIPHER_TEST(L"aes,blowfish,3des,WARN,arcfour,des", L"aes,blowfish,3des,chacha20,WARN,arcfour,des");
+  // Missing priority algo
+  CIPHER_TEST(L"blowfish,chacha20,3des,WARN,arcfour,des", CIPHER_DEFAULT);
+  // Missing non-priority algo
+  CIPHER_TEST(L"aes,chacha20,3des,WARN,arcfour,des", L"aes,chacha20,3des,blowfish,WARN,arcfour,des");
+  // Missing last warn algo
+  CIPHER_TEST(L"aes,blowfish,chacha20,3des,WARN,arcfour", L"aes,blowfish,chacha20,3des,WARN,arcfour,des");
+  // Missing first warn algo
+  CIPHER_TEST(L"aes,blowfish,chacha20,3des,WARN,des", L"aes,blowfish,chacha20,3des,WARN,des,arcfour");
+  #undef CIPHER_DEFAULT
+  #undef CIPHER_TEST
+#endif
 }
 
 void TSessionData::Load(THierarchicalStorage * Storage)
@@ -1730,6 +1742,9 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
       RemoteDirectory = CutToChar(RemoteDirectoryWithSessionParams, UrlParamSeparator, false);
       UnicodeString SessionParams = RemoteDirectoryWithSessionParams;
 
+      // We should handle session params in "stored session" branch too.
+      // And particularly if there's a "save" param, we should actually not try to match the
+      // URL against site names
       while (!SessionParams.IsEmpty())
       {
         UnicodeString SessionParam = CutToChar(SessionParams, UrlParamSeparator, false);
@@ -2207,8 +2222,96 @@ TCipher TSessionData::GetCipher(intptr_t Index) const
   return FCiphers[Index];
 }
 
+template<class AlgoT>
+void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
+  intptr_t Count, AlgoT WarnAlgo, const UnicodeString & AValue)
+{
+  rde::vector<bool> Used(Count); // initialized to false
+  rde::vector<AlgoT> NewList(Count);
+  UnicodeString Value = AValue;
+
+  const AlgoT * WarnPtr = std::find(DefaultList, DefaultList + Count, WarnAlgo);
+  DebugAssert(WarnPtr != NULL);
+  intptr_t WarnDefaultIndex = (WarnPtr - DefaultList);
+
+  intptr_t Index = 0;
+  while (!Value.IsEmpty())
+  {
+    UnicodeString AlgoStr = CutToChar(Value, L',', true);
+    for (intptr_t Algo = 0; Algo < Count; ++Algo)
+    {
+      if (!AlgoStr.CompareIC(Names[Algo]) &&
+          !Used[Algo] && DebugAlwaysTrue(Index < Count))
+      {
+        NewList[Index] = (AlgoT)Algo;
+        Used[Algo] = true;
+        ++Index;
+        break;
+      }
+    }
+  }
+
+  if (!Used[WarnAlgo] && DebugAlwaysTrue(Index < Count))
+  {
+    NewList[Index] = WarnAlgo;
+    Used[WarnAlgo] = true;
+    ++Index;
+  }
+
+  intptr_t WarnIndex = std::find(NewList.begin(), NewList.end(), WarnAlgo) - NewList.begin();
+
+  bool Priority = true;
+  for (intptr_t DefaultIndex = 0; (DefaultIndex < Count); DefaultIndex++)
+  {
+    AlgoT DefaultAlgo = DefaultList[DefaultIndex];
+    if (!Used[DefaultAlgo] && DebugAlwaysTrue(Index < Count))
+    {
+      intptr_t TargetIndex;
+      // Unused algs that are prioritized in the default list,
+      // should be merged before the existing custom list
+      if (Priority)
+      {
+        TargetIndex = DefaultIndex;
+      }
+      else
+      {
+        if (DefaultIndex < WarnDefaultIndex)
+        {
+          TargetIndex = WarnIndex;
+        }
+        else
+        {
+          TargetIndex = Index;
+        }
+      }
+
+      NewList.insert(NewList.begin() + TargetIndex, DefaultAlgo);
+      DebugAssert(NewList.back() == AlgoT());
+      NewList.pop_back();
+
+      if (TargetIndex <= WarnIndex)
+      {
+        ++WarnIndex;
+      }
+
+      ++Index;
+    }
+    else
+    {
+      Priority = false;
+    }
+  }
+
+  if (!std::equal(NewList.begin(), NewList.end(), List))
+  {
+    std::copy(NewList.begin(), NewList.end(), List);
+    Modify();
+  }
+}
+
 void TSessionData::SetCipherList(const UnicodeString & Value)
 {
+/*
   bool Used[CIPHER_COUNT];
   for (intptr_t C = 0; C < CIPHER_COUNT; C++)
   {
@@ -2240,6 +2343,8 @@ void TSessionData::SetCipherList(const UnicodeString & Value)
       SetCipher(Index++, DefaultCipherList[C]);
     }
   }
+*/
+  SetAlgoList(FCiphers, DefaultCipherList, CipherNames, CIPHER_COUNT, cipWarn, Value);
 }
 
 UnicodeString TSessionData::GetCipherList() const
@@ -2266,6 +2371,7 @@ TKex TSessionData::GetKex(intptr_t Index) const
 
 void TSessionData::SetKexList(const UnicodeString & Value)
 {
+/*
   bool Used[KEX_COUNT];
   for (int K = 0; K < KEX_COUNT; K++)
   {
@@ -2297,6 +2403,8 @@ void TSessionData::SetKexList(const UnicodeString & Value)
       SetKex(Index++, DefaultKexList[K]);
     }
   }
+*/
+  SetAlgoList(FKex, DefaultKexList, KexNames, KEX_COUNT, kexWarn, Value);
 }
 
 UnicodeString TSessionData::GetKexList() const

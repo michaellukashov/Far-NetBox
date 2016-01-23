@@ -6362,7 +6362,7 @@ bool TTerminal::LoadTlsCertificate(X509 *& Certificate, EVP_PKEY *& PrivateKey)
         }
         else
         {
-          Abort();
+          Result = false;
         }
       }
     }

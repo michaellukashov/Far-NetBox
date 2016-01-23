@@ -7,7 +7,7 @@ enum TKeyType
   ktSSH1,
   ktSSH2,
   ktOpenSSHAuto,
-  ktOpenSSHPem,
+  ktOpenSSHPEM,
   ktOpenSSHNew,
   ktSSHCom,
   ktSSH1Public,

@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "PuttyIntf.h"
@@ -78,6 +79,7 @@ public:
   const UnicodeString & GetStdError() const;
   void VerifyHostKey(const UnicodeString & Host, int Port,
     const UnicodeString & KeyType, const UnicodeString & KeyStr, const UnicodeString & Fingerprint);
+  bool HaveHostKey(const UnicodeString & Host, intptr_t Port, const UnicodeString & KeyType);
   void AskAlg(const UnicodeString & AlgType, const UnicodeString & AlgName);
   void DisplayBanner(const UnicodeString & Banner);
   void OldKeyfileWarning();
@@ -138,6 +140,8 @@ private:
   uintptr_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
   bool TryFtp();
   UnicodeString ConvertInput(const RawByteString & Input, uintptr_t CodePage = CP_ACP) const;
+  void GetRealHost(UnicodeString & Host, intptr_t & Port);
+  UnicodeString RetrieveHostKey(const UnicodeString & Host, intptr_t Port, const UnicodeString & KeyType);
 
 private:
   SOCKET FSocket;
@@ -213,6 +217,8 @@ private:
   unsigned int __fastcall TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
   bool __fastcall TryFtp();
   UnicodeString __fastcall ConvertInput(const RawByteString & Input);
+  void __fastcall GetRealHost(UnicodeString & Host, int & Port);
+  UnicodeString __fastcall RetrieveHostKey(UnicodeString Host, int Port, const UnicodeString KeyType);
 
 protected:
   TCaptureOutputEvent FOnCaptureOutput;
@@ -270,6 +276,7 @@ public:
   const UnicodeString & __fastcall GetStdError();
   void __fastcall VerifyHostKey(UnicodeString Host, int Port,
     const UnicodeString KeyType, UnicodeString KeyStr, UnicodeString Fingerprint);
+  bool __fastcall HaveHostKey(UnicodeString Host, int Port, const UnicodeString KeyType);
   void __fastcall AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
   void __fastcall DisplayBanner(const UnicodeString & Banner);
   void __fastcall OldKeyfileWarning();

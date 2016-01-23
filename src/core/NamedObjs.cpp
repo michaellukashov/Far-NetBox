@@ -109,7 +109,7 @@ void TNamedObjectList::AlphaSort()
   Recount();
 }
 
-int TNamedObjectList::Add(TObject * AObject)
+intptr_t TNamedObjectList::Add(TObject * AObject)
 {
   int Result;
   TAutoFlag ControlledAddFlag(FControlledAdd);

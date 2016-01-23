@@ -192,8 +192,8 @@ int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
   }
   __finally
   {
-    delete Prompts;
-    delete Results;
+//    delete Prompts;
+//    delete Results;
   };
 
   return Result;
@@ -213,7 +213,7 @@ char * get_ttymode(void * /*frontend*/, const char * /*mode*/)
 
 void logevent(void * frontend, const char * string)
 {
-  // Frontend maybe nullptr here
+  // Frontend maybe NULL here
   if (frontend != nullptr)
   {
     (NB_STATIC_DOWNCAST(TSecureShell, frontend))->PuttyLogEvent(string);
@@ -224,7 +224,7 @@ void connection_fatal(void * frontend, const char * fmt, ...)
 {
   va_list Param;
   std::string Buf;
-  Buf.resize(32*1024);
+  Buf.resize(32 * 1024);
   va_start(Param, fmt);
   vsnprintf_s((char *)Buf.c_str(), Buf.size(), _TRUNCATE, fmt, Param);
   Buf[Buf.size() - 1] = '\0';
@@ -277,7 +277,7 @@ void display_banner(void * frontend, const char * banner, int size)
 static void SSHFatalError(const char * Format, va_list Param)
 {
   std::string Buf;
-  Buf.resize(32*1024);
+  Buf.resize(32 * 1024);
   vsnprintf_s((char *)Buf.c_str(), Buf.size(), _TRUNCATE, Format, Param);
   Buf[Buf.size() - 1] = '\0';
 
@@ -410,7 +410,6 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   DebugUsedParam(Key);
 
   UnicodeString RegKey = SubKey;
-  UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
   intptr_t PuttyKeyLen = OriginalPuttyRegistryStorageKey.Length();
   DebugAssert(RegKey.SubString(1, PuttyKeyLen) == OriginalPuttyRegistryStorageKey);
   RegKey = RegKey.SubString(PuttyKeyLen + 1, RegKey.Length() - PuttyKeyLen);
@@ -543,7 +542,7 @@ TKeyType GetKeyType(const UnicodeString & AFileName)
   DebugAssert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   DebugAssert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
   DebugAssert(ktSSH2PublicOpenSSH == SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH);
-  UTF8String UtfFileName = UTF8String(FileName);
+  UTF8String UtfFileName = UTF8String(AFileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
   TKeyType Result = static_cast<TKeyType>(key_type(KeyFile));
   filename_free(KeyFile);
@@ -704,6 +703,11 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
            (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;
       }
     }
+    __finally
+    {
+      ssh_gss_cleanup(List);
+      conf_free(conf);
+    };
 
     if (has < 0)
     {
@@ -715,21 +719,21 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
 
 static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & KeyType)
 {
-  int Count = 0;
+  intptr_t Count = 0;
   const wchar_t NormalizedSeparator = L'-';
   // We may use find_pubkey_alg, but it gets complicated with normalized fingerprint
   // as the names have different number of dashes
   const ssh_signkey ** SignKeys = get_hostkey_algs(&Count);
 
-  for (int Index = 0; Index < Count; Index++)
+  for (intptr_t Index = 0; Index < Count; Index++)
   {
     const ssh_signkey * SignKey = SignKeys[Index];
     UnicodeString Name = UnicodeString(SignKey->name);
     if (StartsStr(Name + L" ", Fingerprint))
     {
-      int LenStart = Name.Length() + 1;
+      intptr_t LenStart = Name.Length() + 1;
       Fingerprint[LenStart] = NormalizedSeparator;
-      int Space = Fingerprint.Pos(L" ");
+      intptr_t Space = Fingerprint.Pos(L" ");
       DebugAssert(IsNumber(Fingerprint.SubString(LenStart + 1, Space - LenStart - 1)));
       Fingerprint.Delete(LenStart + 1, Space - LenStart);
       Fingerprint = ReplaceChar(Fingerprint, L':', NormalizedSeparator);
@@ -747,80 +751,28 @@ static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & 
 UnicodeString NormalizeFingerprint(const UnicodeString & Fingerprint)
 {
   UnicodeString Result = Fingerprint;
-  UnicodeString DssName = UnicodeString(ssh_dss.name) + L" ";
-  UnicodeString RsaName = UnicodeString(ssh_rsa.name) + L" ";
-  // ssh_ecdsa_ed25519 ssh_ecdsa_nistp256 ssh_ecdsa_nistp384 ssh_ecdsa_nistp521
-  UnicodeString ECDSAed25519Name = UnicodeString(ssh_ecdsa_ed25519.name) + L" ";
-  UnicodeString ECDSAnistp256Name = UnicodeString(ssh_ecdsa_nistp256.name) + L" ";
-  UnicodeString ECDSAnistp384Name = UnicodeString(ssh_ecdsa_nistp384.name) + L" ";
-  UnicodeString ECDSAnistp521Name = UnicodeString(ssh_ecdsa_nistp521.name) + L" ";
-
-  bool IsFingerprint = false;
-  intptr_t LenStart = 0;
-  if (StartsStr(DssName, Result))
-  {
-    LenStart = DssName.Length() + 1;
-    IsFingerprint = true;
-  }
-  else if (StartsStr(RsaName, Result))
-  {
-    LenStart = RsaName.Length() + 1;
-    IsFingerprint = true;
-  }
-  else if (StartsStr(ECDSAed25519Name, Result))
-  {
-    LenStart = ECDSAed25519Name.Length() + 1;
-    IsFingerprint = true;
-  }
-  else if (StartsStr(ECDSAnistp256Name, Result))
-  {
-    LenStart = ECDSAnistp256Name.Length() + 1;
-    IsFingerprint = true;
-  }
-  else if (StartsStr(ECDSAnistp384Name, Result))
-  {
-    LenStart = ECDSAnistp384Name.Length() + 1;
-    IsFingerprint = true;
-  }
-  else if (StartsStr(ECDSAnistp521Name, Result))
-  {
-    LenStart = ECDSAnistp521Name.Length() + 1;
-    IsFingerprint = true;
-  }
-
-  if (IsFingerprint)
-  {
-    Result[LenStart - 1] = L'-';
-    intptr_t Space = Result.Pos(L" ");
-    DebugAssert(IsNumber(Result.SubString(LenStart, Space - LenStart)));
-    Result.Delete(LenStart, Space - LenStart + 1);
-    Result = ReplaceChar(Result, L':', L'-');
-  }
+  UnicodeString KeyType; // unused
+  DoNormalizeFingerprint(Result, KeyType);
   return Result;
 }
 
 UnicodeString GetKeyTypeFromFingerprint(const UnicodeString & Fingerprint)
 {
-  UnicodeString Fingerprint2 = NormalizeFingerprint(Fingerprint);
-  UnicodeString Result;
-  if (StartsStr(UnicodeString(ssh_dss.name) + L"-", Fingerprint2))
-  {
-    Result = ssh_dss.keytype;
-  }
-  else if (StartsStr(UnicodeString(ssh_rsa.name) + L"-", Fingerprint2))
-  {
-    Result = ssh_rsa.keytype;
-  }
-  return Result;
+  UnicodeString Fingerprint2 = Fingerprint;
+  UnicodeString KeyType;
+  DoNormalizeFingerprint(Fingerprint2, KeyType);
+  return KeyType;
 }
 
 UnicodeString GetPuTTYVersion()
 {
   // "Release 0.64"
   // "Pre-release 0.65:2015-07-20.95501a1"
+  // "Development snapshot 2015-12-22.51465fa"
   UnicodeString Result = get_putty_version();
-  // Skip "Release" (or "Pre-release")
-  CutToChar(Result, L' ', true);
+  // Skip "Release", "Pre-release", "Development snapshot"
+  int P = Result.LastDelimiter(L" ");
+  Result.Delete(1, P);
   return Result;
 }
 

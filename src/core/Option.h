@@ -48,9 +48,9 @@ protected:
   UnicodeString FSwitchValueDelimiters;
 
   bool FindSwitch(const UnicodeString & Switch,
-    UnicodeString & Value, int & ParamsStart, int & ParamsCount, bool CaseSensitive, bool & ValueSet);
+    UnicodeString & Value, intptr_t & ParamsStart, intptr_t & ParamsCount, bool CaseSensitive, bool & ValueSet);
   bool DoFindSwitch(const UnicodeString & Switch, TStrings * Params,
-    int ParamsMax, bool CaseInsensitive);
+    intptr_t ParamsMax, bool CaseInsensitive);
 
 private:
   struct TOption : public TObject
@@ -69,5 +69,10 @@ private:
   TOptionsVector FOriginalOptions;
   intptr_t FParamCount;
   bool FNoMoreSwitches;
+
+/*
+  UnicodeString __fastcall GetParam(int Index);
+  bool __fastcall GetEmpty();
+*/
 };
 

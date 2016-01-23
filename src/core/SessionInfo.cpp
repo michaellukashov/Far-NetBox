@@ -1222,8 +1222,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         {
           ADF(L"Transfer active immediately: %s", EnumName(Data->GetFtpTransferActiveImmediately(), AutoSwitchNames).c_str());
         }
-        ADF(L"FTP: FTPS: %s; Passive: %s [Force IP: %c]; MLSD: %c  [List all: %c]",
-           Ftps.c_str(), BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
+        ADF(L"FTP: FTPS: %s; [Client certificate: %s]; Passive: %s [Force IP: %c]; MLSD: %c  [List all: %c]",
+           Ftps.c_str(), LogSensitive(Data->GetTlsCertificateFile()).c_str(), BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
            EnumName(Data->GetFtpForcePasvIp(), AutoSwitchNames).c_str(),
            EnumName(Data->GetFtpUseMlsd(), AutoSwitchNames).c_str(),
            EnumName(Data->GetFtpListAll(), AutoSwitchNames).c_str());
@@ -1231,8 +1231,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       if (Data->GetFSProtocol() == fsWebDAV)
       {
         FtpsOn = (Data->GetFtps() != ftpsNone);
-        ADF(L"HTTPS: %s",
-          BooleanToEngStr(FtpsOn).c_str());
+        ADF(L"HTTPS: %s [Client certificate: %s]",
+          BooleanToEngStr(FtpsOn).c_str(), LogSensitive(Data->GetTlsCertificateFile()).c_str());
       }
       if (FtpsOn)
       {
