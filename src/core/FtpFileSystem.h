@@ -75,8 +75,7 @@ public:
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params,
-    TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
   virtual bool IsCapable(intptr_t Capability) const;
@@ -198,6 +197,7 @@ protected:
   void ReadDirectoryProgress(int64_t Bytes);
   void ResetFileTransfer();
   void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
+  void FileTransferProgress(int64_t TransferSize, int64_t Bytes);
   void ResetCaches();
   void CaptureOutput(const UnicodeString & Str);
   void DoReadDirectory(TRemoteFileList * FileList);
@@ -277,7 +277,7 @@ private:
   {
     ftaNone,
     ftaSkip,
-    ftaCancel
+    ftaCancel,
   } FFileTransferAbort;
   bool FIgnoreFileList;
   bool FFileTransferCancelled;
