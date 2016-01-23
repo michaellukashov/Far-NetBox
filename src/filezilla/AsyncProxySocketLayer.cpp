@@ -426,6 +426,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
     }
     else if (m_nProxyOpState==4)
     {
+      DebugAssert(m_nProxyOpID == PROXYOP_LISTEN);
       if (!m_pRecvBuffer)
         m_pRecvBuffer=static_cast<char *>(nb_calloc(1, 10));
       int numread=ReceiveNext(m_pRecvBuffer+m_nRecvBufferPos,10-m_nRecvBufferPos);

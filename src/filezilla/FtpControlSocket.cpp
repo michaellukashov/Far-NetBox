@@ -3354,7 +3354,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
           break;
         }
 
-        VERIFY(m_pTransferSocket->AsyncSelect());
+        DebugCheck(m_pTransferSocket->AsyncSelect());
       }
       m_Operation.nOpState=FILETRANSFER_LIST_LIST;
       break;

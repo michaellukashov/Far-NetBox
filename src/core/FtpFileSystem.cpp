@@ -484,7 +484,7 @@ void TFTPFileSystem::Open()
 
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), static_cast<int>(Data->GetPortNumber()), UserName.c_str(),
-      Password.c_str(), Account.c_str(), false, Path.c_str(),
+      Password.c_str(), Account.c_str(), Path.c_str(),
       ServerType, static_cast<int>(Pasv), static_cast<int>(TimeZoneOffset), UTF8,
       static_cast<int>(CodePage),
       static_cast<int>(Data->GetFtpForcePasvIp()),

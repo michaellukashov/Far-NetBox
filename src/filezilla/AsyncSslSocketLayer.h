@@ -190,7 +190,6 @@ private:
   int m_nVerificationResult;
   int m_nVerificationDepth;
   
-
   static struct t_SslLayerList : public TObject
   {
     CAsyncSslSocketLayer * pLayer;

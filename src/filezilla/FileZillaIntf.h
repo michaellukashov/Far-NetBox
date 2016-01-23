@@ -173,7 +173,7 @@ public:
   bool Cancel();
 
   bool Connect(const wchar_t * Host, int Port, const wchar_t * User,
-    const wchar_t * Pass, const wchar_t * Account, bool FwByPass,
+    const wchar_t * Pass, const wchar_t * Account,
     const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8, int CodePage,
     int iForcePasvIp, int iUseMlsd,
     int iDupFF, int iUndupFF,
