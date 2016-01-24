@@ -7,7 +7,7 @@ enum TSessionStatus
 {
   ssClosed,
   ssOpening,
-  ssOpened
+  ssOpened,
 };
 
 struct TSessionInfo : public TObject
@@ -117,8 +117,12 @@ enum TCaptureOutputType
   cotExitCode,
 };
 
+//typedef void (__closure *TCaptureOutputEvent)(
+//  const UnicodeString & Str, TCaptureOutputType OutputType);
 DEFINE_CALLBACK_TYPE2(TCaptureOutputEvent, void,
   const UnicodeString & /*Str*/, TCaptureOutputType /*OutputType*/);
+//typedef void (__closure *TCalculatedChecksumEvent)(
+//  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
 DEFINE_CALLBACK_TYPE3(TCalculatedChecksumEvent, void,
   const UnicodeString & /*FileName*/, const UnicodeString & /*Alg*/,
   const UnicodeString & /*Hash*/);
@@ -254,8 +258,9 @@ public:
   TCwdSessionAction(TActionLog * Log, const UnicodeString & Path);
 };
 
+// void (__closure *f)(TLogLineType Type, const UnicodeString & Line));
 DEFINE_CALLBACK_TYPE2(TDoAddLogEvent, void,
-  TLogLineType, const UnicodeString &);
+  TLogLineType /*Type*/, const UnicodeString & /*Line*/);
 
 class TSessionLog : protected TStringList
 {
@@ -306,30 +311,6 @@ public:
   void SetName(const UnicodeString & Value);
   virtual intptr_t GetCount() const;
 
-public:
-  UnicodeString GetLine(intptr_t Index) const;
-  TLogLineType GetType(intptr_t Index) const;
-  void DeleteUnnecessary();
-  void StateChange();
-  void OpenLogFile();
-  intptr_t GetBottomIndex() const;
-  UnicodeString GetLogFileName() const;
-  bool GetLoggingToFile() const;
-  UnicodeString GetSessionName() const;
-
-private:
-  void DoAdd(TLogLineType AType, const UnicodeString & Line,
-    TDoAddLogEvent Event);
-  void DoAddToParent(TLogLineType AType, const UnicodeString & ALine);
-  void DoAddToSelf(TLogLineType AType, const UnicodeString & ALine);
-  void AddStartupInfo(bool System);
-  void DoAddStartupInfo(TSessionData * Data);
-  UnicodeString GetTlsVersionName(TTlsVersion TlsVersion);
-  UnicodeString LogSensitive(const UnicodeString & Str);
-  void AddOption(const UnicodeString & LogStr);
-  void AddOptions(TOptions * Options);
-  UnicodeString GetCmdLineLog();
-
 protected:
   void CloseLogFile();
   bool LogToFile() const;
@@ -349,28 +330,30 @@ private:
   UnicodeString FName;
   bool FClosed;
   TNotifyEvent FOnStateChange;
-/*
-  UnicodeString __fastcall GetLine(int Index);
-  TLogLineType __fastcall GetType(int Index);
-  void __fastcall DeleteUnnecessary();
-  void __fastcall StateChange();
-  void __fastcall OpenLogFile();
-  int __fastcall GetBottomIndex();
-  UnicodeString __fastcall GetLogFileName();
-  bool __fastcall GetLoggingToFile();
-  UnicodeString __fastcall GetSessionName();
-  void __fastcall DoAdd(TLogLineType Type, UnicodeString Line,
-    void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line));
-  void __fastcall DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
-  void __fastcall DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);
-  void __fastcall AddStartupInfo(bool System);
-  void __fastcall DoAddStartupInfo(TSessionData * Data);
-  UnicodeString __fastcall GetTlsVersionName(TTlsVersion TlsVersion);
-  UnicodeString __fastcall LogSensitive(const UnicodeString & Str);
-  void __fastcall AddOption(const UnicodeString & LogStr);
-  void __fastcall AddOptions(TOptions * Options);
-  UnicodeString __fastcall GetCmdLineLog();
-*/
+
+public:
+  UnicodeString GetLine(intptr_t Index) const;
+  TLogLineType GetType(intptr_t Index) const;
+  void DeleteUnnecessary();
+  void StateChange();
+  void OpenLogFile();
+  intptr_t GetBottomIndex() const;
+  UnicodeString GetLogFileName() const;
+  bool GetLoggingToFile() const;
+  UnicodeString GetSessionName() const;
+
+private:
+  void DoAdd(TLogLineType AType, const UnicodeString & ALine,
+    TDoAddLogEvent Event);
+  void DoAddToParent(TLogLineType AType, const UnicodeString & ALine);
+  void DoAddToSelf(TLogLineType AType, const UnicodeString & ALine);
+  void AddStartupInfo(bool System);
+  void DoAddStartupInfo(TSessionData * Data);
+  UnicodeString GetTlsVersionName(TTlsVersion TlsVersion);
+  UnicodeString LogSensitive(const UnicodeString & Str);
+  void AddOption(const UnicodeString & LogStr);
+  void AddOptions(TOptions * Options);
+  UnicodeString GetCmdLineLog();
 };
 
 class TActionLog : public TObject
@@ -390,11 +373,12 @@ public:
   void BeginGroup(const UnicodeString & Name);
   void EndGroup();
 
+/*
+  __property UnicodeString CurrentFileName = { read = FCurrentFileName };
+  __property bool Enabled = { read = FEnabled, write = SetEnabled };
+*/
   UnicodeString GetCurrentFileName() const { return FCurrentFileName; }
   bool GetEnabled() const { return FEnabled; }
-
-  UnicodeString GetLogFileName();
-  void SetEnabled(bool Value);
 
 protected:
   void CloseLogFile();
@@ -418,9 +402,13 @@ private:
   TList * FPendingActions;
   bool FClosed;
   bool FInGroup;
-  bool FEnabled;
   UnicodeString FIndent;
+  bool FEnabled;
 
   void OpenLogFile();
+
+public:
+  UnicodeString GetLogFileName() const;
+  void SetEnabled(bool Value);
 };
 

@@ -14,13 +14,13 @@
 #include "SessionInfo.h"
 #include "TextsCore.h"
 
-static UnicodeString DoXmlEscape(const UnicodeString & Str, bool NewLine)
+static UnicodeString DoXmlEscape(const UnicodeString & AStr, bool NewLine)
 {
-  UnicodeString Result = Str;
-  for (intptr_t Index = 1; Index <= Result.Length(); ++Index)
+  UnicodeString Str = AStr;
+  for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
   {
     const wchar_t * Repl = nullptr;
-    switch (Result[Index])
+    switch (Str[Index])
     {
       case L'&':
         Repl = L"amp;";
@@ -46,19 +46,19 @@ static UnicodeString DoXmlEscape(const UnicodeString & Str, bool NewLine)
         break;
 
       case L'\r':
-        Result.Delete(Index, 1);
+        Str.Delete(Index, 1);
         Index--;
         break;
     }
 
     if (Repl != nullptr)
     {
-      Result[Index] = L'&';
-      Result.Insert(Repl, Index + 1);
+      Str[Index] = L'&';
+      Str.Insert(Repl, Index + 1);
       Index += wcslen(Repl);
     }
   }
-  return Result;
+  return Str;
 }
 
 static UnicodeString XmlEscape(const UnicodeString & Str)
@@ -112,91 +112,93 @@ public:
   bool Record()
   {
     bool Result = (FState != Opened);
+#if 0
     if (Result)
     {
-//      if (FLog->FLogging && (FState != Cancelled))
-//      {
-//        const wchar_t * Name = ActionName();
-//        UnicodeString Attrs;
-//        if (FRecursive)
-//        {
-//          Attrs = L" recursive=\"true\"";
-//        }
-//        FLog->AddIndented(FORMAT("<%s%s>", Name,  Attrs.c_str()));
-//        for (intptr_t Index = 0; Index < FNames->GetCount(); ++Index)
-//        {
-//          UnicodeString Value = FValues->GetString(Index);
-//          if (Value.IsEmpty())
-//          {
-//            FLog->AddIndented(FORMAT("  <%s />", FNames->GetString(Index).c_str()));
-//          }
-//          else
-//          {
-//            FLog->AddIndented(FORMAT("  <%s value=\"%s\" />",
-//              FNames->GetString(Index).c_str(), XmlAttributeEscape(Value).c_str()));
-//          }
-//        }
-//        if (FFileList != nullptr)
-//        {
-//          FLog->AddIndented(L"  <files>");
-//          for (intptr_t Index = 0; Index < FFileList->GetCount(); ++Index)
-//          {
-//            TRemoteFile * File = FFileList->GetFile(Index);
+      if (FLog->FLogging && (FState != Cancelled))
+      {
+        const wchar_t * Name = ActionName();
+        UnicodeString Attrs;
+        if (FRecursive)
+        {
+          Attrs = L" recursive=\"true\"";
+        }
+        FLog->AddIndented(FORMAT("<%s%s>", Name,  Attrs.c_str()));
+        for (intptr_t Index = 0; Index < FNames->GetCount(); ++Index)
+        {
+          UnicodeString Value = FValues->GetString(Index);
+          if (Value.IsEmpty())
+          {
+            FLog->AddIndented(FORMAT("  <%s />", FNames->GetString(Index).c_str()));
+          }
+          else
+          {
+            FLog->AddIndented(FORMAT("  <%s value=\"%s\" />",
+              FNames->GetString(Index).c_str(), XmlAttributeEscape(Value).c_str()));
+          }
+        }
+        if (FFileList != nullptr)
+        {
+          FLog->AddIndented(L"  <files>");
+          for (intptr_t Index = 0; Index < FFileList->GetCount(); ++Index)
+          {
+            TRemoteFile * File = FFileList->GetFile(Index);
 
-//            FLog->AddIndented(L"    <file>");
-//            FLog->AddIndented(FORMAT("      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName()).c_str()));
-//            FLog->AddIndented(FORMAT("      <type value=\"%s\" />", XmlAttributeEscape(File->GetType()).c_str()));
-//            if (!File->GetIsDirectory())
-//            {
-//              FLog->AddIndented(FORMAT("      <size value=\"%s\" />", ::Int64ToStr(File->GetSize()).c_str()));
-//            }
-//            FLog->AddIndented(FORMAT("      <modification value=\"%s\" />", StandardTimestamp(File->GetModification()).c_str()));
-//            FLog->AddIndented(FORMAT("      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
-//            FLog->AddIndented(L"    </file>");
-//          }
-//          FLog->AddIndented(L"  </files>");
-//          if (File->Owner.IsSet)
-//          {
-//            FLog->AddIndented(FORMAT(L"      <owner value=\"%s\" />", (XmlAttributeEscape(File->Owner.DisplayText))));
-//          }
-//          if (File->Group.IsSet)
-//          {
-//            FLog->AddIndented(FORMAT(L"      <group value=\"%s\" />", (XmlAttributeEscape(File->Group.DisplayText))));
-//          }
-//        }
-//        if (FFile != nullptr)
-//        {
-//          FLog->AddIndented(L"  <file>");
-//          FLog->AddIndented(FORMAT("    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
-//          if (!FFile->GetIsDirectory())
-//          {
-//            FLog->AddIndented(FORMAT("    <size value=\"%s\" />", ::Int64ToStr(FFile->GetSize()).c_str()));
-//          }
-//          FLog->AddIndented(FORMAT("    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification()).c_str()));
-//          FLog->AddIndented(FORMAT("    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));
-//          FLog->AddIndented(L"  </file>");
-//        }
-//        if (FState == RolledBack)
-//        {
-//          if (FErrorMessages != nullptr)
-//          {
-//            FLog->AddIndented(L"  <result success=\"false\">");
-//            FLog->AddMessages(L"    ", FErrorMessages);
-//            FLog->AddIndented(L"  </result>");
-//          }
-//          else
-//          {
-//            FLog->AddIndented(L"  <result success=\"false\" />");
-//          }
-//        }
-//        else
-//        {
-//          FLog->AddIndented(L"  <result success=\"true\" />");
-//        }
-//        FLog->AddIndented(FORMAT("</%s>", Name));
-//      }
+            FLog->AddIndented(L"    <file>");
+            FLog->AddIndented(FORMAT("      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName()).c_str()));
+            FLog->AddIndented(FORMAT("      <type value=\"%s\" />", XmlAttributeEscape(File->GetType()).c_str()));
+            if (!File->GetIsDirectory())
+            {
+              FLog->AddIndented(FORMAT("      <size value=\"%s\" />", ::Int64ToStr(File->GetSize()).c_str()));
+            }
+            FLog->AddIndented(FORMAT("      <modification value=\"%s\" />", StandardTimestamp(File->GetModification()).c_str()));
+            FLog->AddIndented(FORMAT("      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
+            FLog->AddIndented(L"    </file>");
+          }
+          FLog->AddIndented(L"  </files>");
+          if (File->Owner.IsSet)
+          {
+            FLog->AddIndented(FORMAT(L"      <owner value=\"%s\" />", (XmlAttributeEscape(File->Owner.DisplayText))));
+          }
+          if (File->Group.IsSet)
+          {
+            FLog->AddIndented(FORMAT(L"      <group value=\"%s\" />", (XmlAttributeEscape(File->Group.DisplayText))));
+          }
+        }
+        if (FFile != nullptr)
+        {
+          FLog->AddIndented(L"  <file>");
+          FLog->AddIndented(FORMAT("    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
+          if (!FFile->GetIsDirectory())
+          {
+            FLog->AddIndented(FORMAT("    <size value=\"%s\" />", ::Int64ToStr(FFile->GetSize()).c_str()));
+          }
+          FLog->AddIndented(FORMAT("    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification()).c_str()));
+          FLog->AddIndented(FORMAT("    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));
+          FLog->AddIndented(L"  </file>");
+        }
+        if (FState == RolledBack)
+        {
+          if (FErrorMessages != nullptr)
+          {
+            FLog->AddIndented(L"  <result success=\"false\">");
+            FLog->AddMessages(L"    ", FErrorMessages);
+            FLog->AddIndented(L"  </result>");
+          }
+          else
+          {
+            FLog->AddIndented(L"  <result success=\"false\" />");
+          }
+        }
+        else
+        {
+          FLog->AddIndented(L"  <result success=\"true\" />");
+        }
+        FLog->AddIndented(FORMAT("</%s>", Name));
+      }
       delete this;
     }
+#endif
     return Result;
   }
 
@@ -301,7 +303,7 @@ protected:
     Opened,
     Committed,
     RolledBack,
-    Cancelled
+    Cancelled,
   };
 
   inline void Close(TState State)
@@ -409,6 +411,7 @@ void TSessionAction::Cancel()
   }
 }
 
+
 TFileSessionAction::TFileSessionAction(TActionLog * Log, TLogAction Action) :
   TSessionAction(Log, Action)
 {
@@ -428,6 +431,7 @@ void TFileSessionAction::SetFileName(const UnicodeString & AFileName)
     FRecord->SetFileName(AFileName);
   }
 }
+
 
 TFileLocationSessionAction::TFileLocationSessionAction(
   TActionLog * Log, TLogAction Action) :
@@ -449,15 +453,18 @@ void TFileLocationSessionAction::Destination(const UnicodeString & Destination)
   }
 }
 
+
 TUploadSessionAction::TUploadSessionAction(TActionLog * Log) :
   TFileLocationSessionAction(Log, laUpload)
 {
 }
 
+
 TDownloadSessionAction::TDownloadSessionAction(TActionLog * Log) :
   TFileLocationSessionAction(Log, laDownload)
 {
 }
+
 
 TChmodSessionAction::TChmodSessionAction(
   TActionLog * Log, const UnicodeString & AFileName) :
@@ -583,6 +590,7 @@ void TStatSessionAction::File(TRemoteFile * AFile)
   }
 }
 
+
 TChecksumSessionAction::TChecksumSessionAction(TActionLog * Log) :
   TFileSessionAction(Log, laChecksum)
 {
@@ -595,6 +603,7 @@ void TChecksumSessionAction::Checksum(const UnicodeString & Alg, const UnicodeSt
     FRecord->Checksum(Alg, Checksum);
   }
 }
+
 
 TCwdSessionAction::TCwdSessionAction(TActionLog * Log, const UnicodeString & Path) :
   TSessionAction(Log, laCwd)
@@ -727,7 +736,7 @@ void TSessionLog::DoAddToSelf(TLogLineType AType, const UnicodeString & ALine)
   }
 }
 
-void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString & Line,
+void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString & ALine,
   TDoAddLogEvent Event)
 {
   UnicodeString Prefix;
@@ -737,10 +746,10 @@ void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString & Line,
     Prefix = L"[" + GetName() + L"] ";
   }
 
-  UnicodeString Ln = Line;
-  while (!Ln.IsEmpty())
+  UnicodeString Line = ALine;
+  while (!Line.IsEmpty())
   {
-    Event(AType, Prefix + CutToChar(Ln, L'\n', false));
+    Event(AType, Prefix + CutToChar(Line, L'\n', false));
   }
 }
 
@@ -760,13 +769,23 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         TGuard Guard(FCriticalSection);
 
         BeginUpdate();
-        SCOPE_EXIT
+
+        try__finally
+        {
+          SCOPE_EXIT
+          {
+            DeleteUnnecessary();
+
+            EndUpdate();
+          };
+          DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
+        }
+        __finally
         {
           DeleteUnnecessary();
 
           EndUpdate();
         };
-        DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
       }
     }
     catch (Exception & E)
@@ -882,22 +901,29 @@ void TSessionLog::StateChange()
 void TSessionLog::DeleteUnnecessary()
 {
   BeginUpdate();
-  SCOPE_EXIT
+  try__finally
+  {
+    SCOPE_EXIT
+    {
+      EndUpdate();
+    };
+    if (!GetLogging() || (FParent != nullptr))
+    {
+      Clear();
+    }
+    else
+    {
+      while (!FConfiguration->GetLogWindowComplete() && (GetCount() > FConfiguration->GetLogWindowLines()))
+      {
+        Delete(0);
+        ++FTopIndex;
+      }
+    }
+  }
+  __finally
   {
     EndUpdate();
   };
-  if (!GetLogging() || (FParent != nullptr))
-  {
-    Clear();
-  }
-  else
-  {
-    while (!FConfiguration->GetLogWindowComplete() && (GetCount() > FConfiguration->GetLogWindowLines()))
-    {
-      Delete(0);
-      ++FTopIndex;
-    }
-  }
 }
 
 void TSessionLog::AddSystemInfo()
@@ -964,30 +990,32 @@ UnicodeString TSessionLog::GetCmdLineLog()
 
   if (!FConfiguration->GetLogSensitive())
   {
-//    TManagementScript Script(StoredSessions, false);
-//    Script.MaskPasswordInCommandLine(Result, true);
+#if 0
+    TManagementScript Script(StoredSessions, false);
+    Script.MaskPasswordInCommandLine(Result, true);
+#endif
   }
 
   return Result;
 }
 
 template <typename T>
-UnicodeString EnumName(T Value, const UnicodeString & Names)
+UnicodeString EnumName(T Value, const UnicodeString & ANames)
 {
   int N = int(Value);
 
-  UnicodeString names(Names);
+  UnicodeString Names(ANames);
 
   do
   {
-    UnicodeString Name = CutToChar(names, L';', true);
+    UnicodeString Name = CutToChar(Names, L';', true);
     if (N == 0)
     {
       return Name;
     }
     N--;
   }
-  while ((N >= 0) && !names.IsEmpty());
+  while ((N >= 0) && !Names.IsEmpty());
 
   return L"(unknown)";
 }
@@ -1000,6 +1028,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
   TGuard Guard(FCriticalSection);
 
   BeginUpdate();
+  try__finally
   {
     SCOPE_EXIT
     {
@@ -1142,7 +1171,6 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       {
         ADF(L"Send buffer: %d", Data->GetSendBuf());
       }
-      // wchar_t const * BugFlags = L"+-A";
       if (Data->GetUsesSsh())
       {
         ADF(L"SSH protocol version: %s; Compression: %s",
@@ -1250,11 +1278,10 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Cache directory changes: %s, Permanent: %s",
          BooleanToEngStr(Data->GetCacheDirectoryChanges()).c_str(),
          BooleanToEngStr(Data->GetPreserveDirectoryChanges()).c_str());
-      //intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
-      //ADF(L"DST mode: %d; Timezone offset: %dh %dm", static_cast<int>(Data->GetDSTMode()), (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour));
       ADF(L"Recycle bin: Delete to: %s, Overwritten to: %s, Bin path: %s",
-        BooleanToEngStr(Data->GetDeleteToRecycleBin()).c_str(),
-        BooleanToEngStr(Data->GetOverwrittenToRecycleBin()).c_str(), Data->GetRecycleBinPath().c_str());
+         BooleanToEngStr(Data->GetDeleteToRecycleBin()).c_str(),
+         BooleanToEngStr(Data->GetOverwrittenToRecycleBin()).c_str(),
+         Data->GetRecycleBinPath().c_str());
       if (Data->GetTrimVMSVersions())
       {
         ADF(L"Trim VMS versions: %s",
@@ -1281,6 +1308,12 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       AddSeparator();
     }
   }
+  __finally
+  {
+    DeleteUnnecessary();
+
+    EndUpdate();
+  };
 }
 
 void TSessionLog::AddOption(const UnicodeString & LogStr)
@@ -1488,7 +1521,13 @@ void TActionLog::AddFailure(Exception * E)
   std::unique_ptr<TStrings> Messages(ExceptionToMoreMessages(E));
   if (Messages.get() != nullptr)
   {
-    AddFailure(Messages.get());
+    try__finally
+    {
+      AddFailure(Messages.get());
+    __finally
+    {
+//      delete Messages;
+    };
   }
 }
 
@@ -1511,9 +1550,13 @@ void TActionLog::ReflectSettings()
   if (ALogging && !FLogging)
   {
     FLogging = true;
-//    Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-//    Add(FORMAT("<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
-//      XmlAttributeEscape(FSessionData->GetSessionName()).c_str(), StandardTimestamp().c_str()));
+#if 0
+    Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    UnicodeString SessionName =
+      (FSessionData != NULL) ? XmlAttributeEscape(FSessionData->SessionName) : UnicodeString(L"nosession");
+    Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
+      (SessionName, StandardTimestamp())));
+#endif
   }
   else if (!ALogging && FLogging)
   {
@@ -1529,6 +1572,7 @@ void TActionLog::ReflectSettings()
     CloseLogFile();
     FLogging = false;
   }
+
 }
 
 void TActionLog::CloseLogFile()
