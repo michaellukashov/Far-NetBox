@@ -444,7 +444,7 @@ public:
   void SetMinTlsVersion(TTlsVersion Value);
   void SetMaxTlsVersion(TTlsVersion Value);
   void SetNotUtf(TAutoSwitch Value);
-  void SetIsWorkspace(bool Value) { FIsWorkspace = Value; }
+  void SetIsWorkspace(bool Value);
   void SetLink(const UnicodeString & Value) { FLink = Value; }
   void SetHostKey(const UnicodeString & Value);
   void SetNote(const UnicodeString & Value);
@@ -529,8 +529,9 @@ public:
   void ConfigureTunnel(intptr_t PortNumber);
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
-  bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const;
   bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
+  bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const;
+  bool IsSameSite(const TSessionData * Default) const;
   bool IsInFolderOrWorkspace(const UnicodeString & Name) const;
   UnicodeString GenerateSessionUrl(uintptr_t Flags);
   UnicodeString GenerateOpenCommandArgs();

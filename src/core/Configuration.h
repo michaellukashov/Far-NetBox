@@ -148,6 +148,8 @@ public:
   void SetCollectUsage(bool Value);
   bool GetIsUnofficial() const;
   bool GetPersistent() const;
+  bool GetScripting() const { return FScripting; }
+  void SetScripting(bool Value) { FScripting = Value; }
 
 protected:
   TStorage FStorage;

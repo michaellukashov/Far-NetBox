@@ -41,7 +41,6 @@ public:
   virtual ~TFTPFileSystem();
 
   virtual void Init(void *);
-  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes);
 
   virtual void Open();
   virtual void Close();
@@ -196,8 +195,8 @@ protected:
     OUT TOverwriteMode & OverwriteMode);
   void ReadDirectoryProgress(int64_t Bytes);
   void ResetFileTransfer();
-  void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
-  void FileTransferProgress(int64_t TransferSize, int64_t Bytes);
+  virtual void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
+  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes);
   void ResetCaches();
   void CaptureOutput(const UnicodeString & Str);
   void DoReadDirectory(TRemoteFileList * FileList);

@@ -142,7 +142,6 @@ void TSessionData::Default()
   }
   SetPublicKeyFile(L"");
   SetPassphrase(L"");
-  FProtocol = ptSSH;
   SetPuttyProtocol(L"");
   SetTcpNoDelay(true);
   SetSendBuf(DefaultSendBuf);
@@ -534,13 +533,13 @@ bool TSessionData::IsSame(const TSessionData * Default, bool AdvancedOnly) const
   return IsSame(Default, AdvancedOnly, nullptr);
 }
 
-bool TSessionData::IsSameSite(const TSessionData * Other)
+bool TSessionData::IsSameSite(const TSessionData * Other) const
 {
   return
       (GetFSProtocol() == Other->GetFSProtocol()) &&
       (GetHostName() == Other->GetHostName()) &&
       (GetPortNumber() == Other->GetPortNumber()) &&
-      (GetUserName() == Other->GetUserName());
+      (SessionGetUserName() == Other->SessionGetUserName());
 }
 
 bool TSessionData::IsInFolderOrWorkspace(const UnicodeString & AFolder) const
@@ -1898,7 +1897,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         if (Options->FindSwitch("rawsettings", RawSettings.get()))
         {
           OptionsStorage.reset(new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey()));
-          ApplyRawSettings(OptionsStorage);
+          ApplyRawSettings(OptionsStorage.get());
         }
       }
       __finally

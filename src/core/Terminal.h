@@ -407,7 +407,7 @@ public:
   void LogFileDetails(const UnicodeString & AFileName, const TDateTime & Modification, int64_t Size);
   void LogFileDone(TFileOperationProgressType * OperationProgress);
   virtual const TTerminal * GetPasswordSource() const { return this; }
-  virtual TTerminal * GetPasswordSource() { return this; }
+  virtual TTerminal * GetPasswordSource();
   void DoEndTransaction(bool Inform);
   bool VerifyCertificate(
     const UnicodeString & CertificateStorageKey, const UnicodeString & SiteKey,
@@ -696,7 +696,7 @@ protected:
   virtual void DirectoryModified(const UnicodeString & APath,
     bool SubDirs);
   virtual const TTerminal * GetPasswordSource() const { return FMainTerminal; }
-  virtual TTerminal * GetPasswordSource() { return FMainTerminal; }
+  virtual TTerminal * GetPasswordSource();
 
 private:
   TTerminal * FMainTerminal;

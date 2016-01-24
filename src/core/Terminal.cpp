@@ -1539,7 +1539,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   return DoPromptUser(Data, Kind, AName, Instructions, Prompts, Results);
 }
 
-TTerminal * TTerminal::GetPasswordSource() const
+TTerminal * TTerminal::GetPasswordSource()
 {
   return this;
 }
@@ -3896,11 +3896,9 @@ void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
       DateTime.DecodeTime(H, N, S, MS);
       UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
       LogEvent(FORMAT(L" - modification: \"%s\"",
-#if 0
-        FormatDateTime(L"dddddd tt",
-           ::UnixToDateTime(RProperties->Modification, GetSessionData()->GetDSTMode())).c_str()));
-#endif
-           dt.c_str()));
+//       FormatDateTime(L"dddddd tt",
+//       ::UnixToDateTime(RProperties->Modification, GetSessionData()->GetDSTMode())).c_str()));
+         dt.c_str()));
     }
     if (RProperties->Valid.Contains(vpLastAccess))
     {
@@ -3910,11 +3908,9 @@ void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
       DateTime.DecodeTime(H, N, S, MS);
       UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
       LogEvent(FORMAT(L" - last access: \"%s\"",
-#if 0
-        FormatDateTime(L"dddddd tt",
-           ::UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode())).c_str()));
-#endif
-           dt.c_str()));
+//       FormatDateTime(L"dddddd tt",
+//       ::UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode())).c_str()));
+         dt.c_str()));
     }
   }
   FileModified(AFile, LocalFileName);
@@ -5431,7 +5427,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
       delete Data.LocalFileList;
     }
 #endif
-  }
+  };
 }
 
 void TTerminal::SynchronizeCollectFile(const UnicodeString & AFileName,
@@ -6058,7 +6054,7 @@ void TTerminal::DoUnlockFile(const UnicodeString & AFileName, const TRemoteFile 
 void TTerminal::LockFiles(TStrings * AFileList)
 {
   BeginTransaction();
-  try_finally
+  try__finally
   {
     SCOPE_EXIT
     {
@@ -6077,7 +6073,7 @@ void TTerminal::LockFiles(TStrings * AFileList)
 void TTerminal::UnlockFiles(TStrings * AFileList)
 {
   BeginTransaction();
-  try_finally
+  try__finally
   {
     SCOPE_EXIT
     {
@@ -6201,7 +6197,7 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
 
       UnicodeString UnlockedTargetDir = TranslateLockedPath(TargetDir, false);
       BeginTransaction();
-      try_finally
+      try__finally
       {
         SCOPE_EXIT
         {
@@ -6214,7 +6210,7 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
         if (GetLog()->GetLogging())
         {
           LogEvent(FORMAT(L"Copying %d files/directories to remote directory "
-            L\"%s\"", AFilesToCopy->GetCount(), TargetDir.c_str()));
+            L"%s\"", AFilesToCopy->GetCount(), TargetDir.c_str()));
           LogEvent(CopyParam->GetLogStr());
         }
 
@@ -6237,15 +6233,15 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
     }
     __finally
     {
-      if (CollectingUsage)
+//      if (GetCollectingUsage())
       {
-        int CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
-        Configuration->Usage->Inc(L"UploadTime", CounterTime);
-        Configuration->Usage->SetMax(L"MaxUploadTime", CounterTime);
+//        int CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
+//        Configuration->Usage->Inc(L"UploadTime", CounterTime);
+//        Configuration->Usage->SetMax(L"MaxUploadTime", CounterTime);
       }
       OperationProgress.Stop();
       FOperationProgress = NULL;
-    }
+    };
   }
   catch (Exception & E)
   {
@@ -6328,13 +6324,15 @@ bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
       {
         SCOPE_EXIT
         {
+#if 0
           if (CollectingUsage)
           {
             int CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
             Configuration->Usage->Inc(L"DownloadTime", CounterTime);
             Configuration->Usage->SetMax(L"MaxDownloadTime", CounterTime);
           }
-          FOperationProgress = NULL;
+#endif
+          FOperationProgress = nullptr;
           OperationProgress.Stop();
         };
         if (TotalSizeKnown)
@@ -6397,13 +6395,15 @@ bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
       }
       __finally
       {
+#if 0
         if (CollectingUsage)
         {
           int CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
           Configuration->Usage->Inc(L"DownloadTime", CounterTime);
           Configuration->Usage->SetMax(L"MaxDownloadTime", CounterTime);
         }
-        FOperationProgress = NULL;
+#endif
+        FOperationProgress = nullptr;
         OperationProgress.Stop();
       };
     }
@@ -6583,7 +6583,7 @@ void TTerminal::CollectUsage()
   }
 
   std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
-  if (!GetSessionData()->IsSame(FactoryDefaults.get(), true))
+  if (!GetSessionData()->IsSame(FactoryDefaults.get(), true, nullptr))
   {
 //    Configuration->Usage->Inc(L"OpenedSessionsAdvanced");
   }
@@ -6822,7 +6822,7 @@ void TSecondaryTerminal::DirectoryModified(const UnicodeString & APath,
   FMainTerminal->DirectoryModified(APath, SubDirs);
 }
 
-TTerminal * TSecondaryTerminal::GetPasswordSource() const
+TTerminal * TSecondaryTerminal::GetPasswordSource()
 {
   return FMainTerminal;
 }

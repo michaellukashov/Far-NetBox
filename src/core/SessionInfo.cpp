@@ -1524,6 +1524,7 @@ void TActionLog::AddFailure(Exception * E)
     try__finally
     {
       AddFailure(Messages.get());
+    }
     __finally
     {
 //      delete Messages;

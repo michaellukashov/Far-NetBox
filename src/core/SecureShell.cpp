@@ -2179,9 +2179,9 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
   return Result;
 }
 
-UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & KeyStr) const
+UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & AKeyStr) const
 {
-  UnicodeString KeyStr = KeyStr;
+  UnicodeString KeyStr = AKeyStr;
   intptr_t Index = 1;
   intptr_t Digits = 0;
   while (Index <= KeyStr.Length())

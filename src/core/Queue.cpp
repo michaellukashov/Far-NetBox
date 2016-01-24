@@ -1220,13 +1220,6 @@ private:
   TTerminalItem * FItem;
 };
 
-TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal,
-    TSessionData * SessionData, TConfiguration * Configuration, TTerminalItem * Item,
-    const UnicodeString & Name) :
-  TSecondaryTerminal(MainTerminal, SessionData, Configuration, Name), FItem(Item)
-{
-}
-
 TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal) :
   TSecondaryTerminal(MainTerminal),
   FItem(nullptr)

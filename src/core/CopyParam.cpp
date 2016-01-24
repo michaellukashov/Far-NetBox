@@ -763,9 +763,9 @@ void CopySpeedLimits(TStrings * Source, TStrings * Dest)
   std::unique_ptr<TStringList> Temp(new TStringList());
 
   bool Unlimited = false;
-  for (intptr_t Index = 0; Index < Source->Count; Index++)
+  for (intptr_t Index = 0; Index < Source->GetCount(); ++Index)
   {
-    UnicodeString Text = Source->Strings[Index];
+    UnicodeString Text = Source->GetString(Index);
     uintptr_t Speed;
     bool Valid = TryGetSpeedLimit(Text, Speed);
     if ((!Valid || (Speed == 0)) && !Unlimited)
