@@ -3,6 +3,7 @@
 
 #include <Common.h>
 #include <StrUtils.hpp>
+#include <Exceptions.h>
 
 #include "PuttyIntf.h"
 #include "Interface.h"
@@ -407,17 +408,22 @@ void TSecureShell::Open()
     FreeBackend(); // in case we are reconnecting
     const char * InitError = nullptr;
     Conf * conf = StoreToConfig(FSessionData, GetSimple());
+    try__finally
     {
       SCOPE_EXIT
       {
         conf_free(conf);
       };
       InitError = FBackend->init(this, &FBackendHandle, conf,
-        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), 
+        AnsiString(FSessionData->GetHostNameExpanded()).c_str(),
         static_cast<int>(FSessionData->GetPortNumber()), &RealHost,
         FSessionData->GetTcpNoDelay() ? 1 : 0,
         conf_get_int(conf, CONF_tcp_keepalives));
     }
+    __finally
+    {
+      conf_free(conf);
+    };
 
     sfree(RealHost);
     if (InitError)
@@ -458,7 +464,7 @@ void TSecureShell::Open()
 
   UnicodeString SshImplementation = GetSessionInfo().SshImplementation;
   if (// e.g. "OpenSSH_5.3"
-    (SshImplementation.Pos(L"OpenSSH") == 1) ||
+      (SshImplementation.Pos(L"OpenSSH") == 1) ||
       // Sun SSH is based on OpenSSH (suffers the same bugs)
       (SshImplementation.Pos(L"Sun_SSH") == 1))
   {
@@ -711,7 +717,7 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & AName)
 
 bool TSecureShell::PromptUser(bool /*ToServer*/,
   const UnicodeString & AName, bool /*NameRequired*/,
-  const UnicodeString & Instructions, bool InstructionsRequired,
+  const UnicodeString & AInstructions, bool InstructionsRequired,
   TStrings * Prompts, TStrings * Results)
 {
   // there can be zero prompts!
@@ -823,7 +829,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
 
   UnicodeString InstructionsLog =
-    (Instructions.IsEmpty() ? UnicodeString(L"<no instructions>") : FORMAT(L"\"%s\"", Instructions.c_str()));
+    (AInstructions.IsEmpty() ? UnicodeString(L"<no instructions>") : FORMAT(L"\"%s\"", AInstructions.c_str()));
   UnicodeString PromptsLog =
     (Prompts->GetCount() > 0 ? FORMAT(L"\"%s\"", Prompts->GetString(0).c_str()) : UnicodeString(L"<no prompt>")) +
     (Prompts->GetCount() > 1 ? FORMAT(L"%d more", Prompts->GetCount() - 1) : UnicodeString());
@@ -831,19 +837,19 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
   Name = Name.Trim();
 
-  UnicodeString Instructions2 = ::ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
-  Instructions2 = ::ReplaceStrAll(Instructions2, L"\x0A\x0D", L"\x01");
-  Instructions2 = ::ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
-  Instructions2 = ::ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
-  Instructions2 = ::ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
+  UnicodeString Instructions = ::ReplaceStrAll(AInstructions, L"\x0D\x0A", L"\x01");
+  Instructions = ::ReplaceStrAll(Instructions, L"\x0A\x0D", L"\x01");
+  Instructions = ::ReplaceStrAll(Instructions, L"\x0A", L"\x01");
+  Instructions = ::ReplaceStrAll(Instructions, L"\x0D", L"\x01");
+  Instructions = ::ReplaceStrAll(Instructions, L"\x01", L"\x0D\x0A");
   if (InstructionTranslation != nullptr)
   {
-    TranslatePuttyMessage(InstructionTranslation, 1, Instructions2);
+    TranslatePuttyMessage(InstructionTranslation, 1, Instructions);
   }
 
   // some servers add leading blank line to make the prompt look prettier
   // on terminal console
-  Instructions2 = Instructions2.Trim();
+  Instructions = Instructions.Trim();
 
   for (intptr_t Index2 = 0; Index2 < Prompts->GetCount(); ++Index2)
   {
@@ -871,7 +877,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       Results->SetString(0, FSessionData->GetPassword());
       FStoredPasswordTriedForKI = true;
     }
-    else if (Instructions2.IsEmpty() && !InstructionsRequired && (Prompts->GetCount() == 0))
+    else if (Instructions.IsEmpty() && !InstructionsRequired && (Prompts->GetCount() == 0))
     {
       LogEvent("Ignoring empty SSH server authentication request");
       Result = true;
@@ -902,7 +908,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   if (!Result)
   {
     Result = FUI->PromptUser(FSessionData,
-      PromptKind, Name, Instructions2, Prompts, Results);
+      PromptKind, Name, Instructions, Prompts, Results);
 
     if (Result)
     {
@@ -1029,6 +1035,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Len
       if (!FFrozen)
       {
         FFrozen = true;
+        try__finally
         {
           SCOPE_EXIT
           {
@@ -1041,6 +1048,10 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Len
           }
           while (FDataWhileFrozen);
         }
+        __finally
+        {
+          FFrozen = false;
+        };
       }
       else
       {
@@ -1073,6 +1084,7 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
     OutPtr = Buf;
     OutLen = Length;
 
+    try__finally
     {
       SCOPE_EXIT
       {
@@ -1117,6 +1129,10 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
 //        FatalError(LoadStr(LOST_CONNECTION));
 //      }
     }
+    __finally
+    {
+      OutPtr = NULL;
+    };
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
@@ -1167,6 +1183,7 @@ UnicodeString TSecureShell::ReceiveLine()
 //  UnicodeString Result = ::TrimRight(::MB2W(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber()));
   UnicodeString Result = ConvertInput(Line, FSessionData->GetCodePageAsNumber());
   CaptureOutput(llOutput, Result);
+
   return Result;
 }
 
@@ -1204,6 +1221,7 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   FWaiting++;
 
   uintptr_t Answer = 0;
+  try__finally
   {
     SCOPE_EXIT
     {
@@ -1224,6 +1242,10 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     Answer = FUI->QueryUser(MainInstructions(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout())),
       nullptr, qaRetry | qaAbort, &Params);
   }
+  __finally
+  {
+    FWaiting--;
+  };
   return Answer;
 }
 
@@ -1326,8 +1348,6 @@ void TSecureShell::SendNull()
 void TSecureShell::SendLine(const UnicodeString & Line)
 {
   CheckConnection();
-  //AnsiString AnsiStr = ::W2MB(Line.c_str(), (UINT)FSessionData->GetCodePageAsNumber());
-  //Send(reinterpret_cast<const uint8_t *>(AnsiStr.c_str()), AnsiStr.Length());
   RawByteString Buf;
   if (GetUtfStrings())
   {
@@ -1342,13 +1362,6 @@ void TSecureShell::SendLine(const UnicodeString & Line)
   // FLog->Add(llInput, Line);
   Send(reinterpret_cast<const uint8_t *>(Buf.c_str()), Buf.Length());
 }
-
-//void TSecureShell::SendLine(const UnicodeString & Line)
-//{
-//  SendStr(Line);
-//  Send(reinterpret_cast<const uint8_t *>("\n"), 1);
-//  FLog->Add(llInput, Line);
-//}
 
 int TSecureShell::TranslatePuttyMessage(
   const TPuttyTranslation * Translation, intptr_t Count, UnicodeString & Message,
@@ -1422,15 +1435,16 @@ int TSecureShell::TranslateAuthenticationMessage(
   return Result;
 }
 
-void TSecureShell::AddStdError(const UnicodeString & Str)
+void TSecureShell::AddStdError(const UnicodeString & AStr)
 {
-  FStdError += Str;
+  UnicodeString Str;
+  FStdError += AStr;
 
   intptr_t P = 0;
-  UnicodeString Str2 = DeleteChar(Str, L'\r');
+  Str = DeleteChar(AStr, L'\r');
   // We send only whole line at once to log, so we have to cache
   // incoming std error data
-  FStdErrorTemp += Str2;
+  FStdErrorTemp += Str;
   UnicodeString Line;
   // Do we have at least one complete line in std error cache?
   while ((P = FStdErrorTemp.Pos(L"\n")) > 0)
@@ -1441,15 +1455,15 @@ void TSecureShell::AddStdError(const UnicodeString & Str)
   }
 }
 
-void TSecureShell::AddStdErrorLine(const UnicodeString & Str)
+void TSecureShell::AddStdErrorLine(const UnicodeString & AStr)
 {
   if (FAuthenticating)
   {
-    FAuthenticationLog += (FAuthenticationLog.IsEmpty() ? L"" : L"\n") + Str;
+    FAuthenticationLog += (FAuthenticationLog.IsEmpty() ? L"" : L"\n") + AStr;
   }
-  if (!Str.Trim().IsEmpty())
+  if (!AStr.Trim().IsEmpty())
   {
-    CaptureOutput(llStdError, Str);
+    CaptureOutput(llStdError, AStr);
   }
 }
 
@@ -1525,11 +1539,11 @@ void TSecureShell::FatalError(const UnicodeString & Error, const UnicodeString &
   FUI->FatalError(nullptr, Error, HelpKeyword);
 }
 
-void TSecureShell::LogEvent(const UnicodeString & Str)
+void TSecureShell::LogEvent(const UnicodeString & AStr)
 {
   if (FLog->GetLogging())
   {
-    FLog->Add(llMessage, Str);
+    FLog->Add(llMessage, AStr);
   }
 }
 
@@ -1921,6 +1935,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     int HandleCount;
     // note that this returns all handles, not only the session-related handles
     HANDLE * Handles = handle_get_events(&HandleCount);
+    try__finally
     {
       SCOPE_EXIT
       {
@@ -2004,6 +2019,10 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
         MSec = 0;
       }
     }
+    __finally
+    {
+      sfree(Handles);
+    };
 
     run_toplevel_callbacks();
 
@@ -2105,7 +2124,7 @@ UnicodeString TSecureShell::FuncToCompression(
   enum TCompressionType
   {
     ctNone,
-    ctZLib
+    ctZLib,
   };
   if (SshVersion == 1)
   {
@@ -2162,17 +2181,17 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
 
 UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & KeyStr) const
 {
-  UnicodeString Result = KeyStr;
+  UnicodeString KeyStr = KeyStr;
   intptr_t Index = 1;
   intptr_t Digits = 0;
-  while (Index <= Result.Length())
+  while (Index <= KeyStr.Length())
   {
-    if (IsHex(Result[Index]))
+    if (IsHex(KeyStr[Index]))
     {
       Digits++;
       if (Digits >= 16)
       {
-        Result.Insert(L" ", Index + 1);
+        KeyStr.Insert(L" ", Index + 1);
         ++Index;
         Digits = 0;
       }
@@ -2183,7 +2202,7 @@ UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & KeyStr) const
     }
     ++Index;
   }
-  return Result;
+  return KeyStr;
 }
 
 void TSecureShell::GetRealHost(UnicodeString & Host, intptr_t & Port)
@@ -2209,25 +2228,25 @@ UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, intptr_t
   return Result;
 }
 
-void TSecureShell::VerifyHostKey(const UnicodeString & Host, intptr_t Port,
-  const UnicodeString & KeyType, const UnicodeString & KeyStr, const UnicodeString & Fingerprint)
+void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
+  const UnicodeString & AKeyType, const UnicodeString & AKeyStr, const UnicodeString & Fingerprint)
 {
-  UnicodeString Host2 = Host;
-  UnicodeString KeyStr2 = KeyStr;
-  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", KeyType.c_str(), FormatKeyStr(KeyStr2).c_str(), Fingerprint.c_str()));
+  UnicodeString Host = AHost;
+  UnicodeString KeyStr = AKeyStr;
+  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", AKeyType.c_str(), FormatKeyStr(KeyStr).c_str(), Fingerprint.c_str()));
 
   GotHostKey();
 
-  DebugAssert(KeyStr.Pos(HostKeyDelimiter) == 0);
+  DebugAssert(AKeyStr.Pos(HostKeyDelimiter) == 0);
 
-  GetRealHost(Host2, Port);
+  GetRealHost(Host, Port);
 
   FSessionInfo.HostKeyFingerprint = Fingerprint;
   UnicodeString NormalizedFingerprint = NormalizeFingerprint(Fingerprint);
 
   bool Result = false;
 
-  UnicodeString StoredKeys = RetrieveHostKey(Host, Port, KeyType);
+  UnicodeString StoredKeys = RetrieveHostKey(AHost, Port, AKeyType);
   UnicodeString Buf = StoredKeys;
   while (!Result && !Buf.IsEmpty())
   {
@@ -2242,7 +2261,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, intptr_t Port,
     {
       NormalizedExpectedKey = NormalizeFingerprint(StoredKey);
     }
-    if ((!Fingerprint && (StoredKey == KeyStr)) ||
+    if ((!Fingerprint && (StoredKey == AKeyStr)) ||
         (Fingerprint && (NormalizedExpectedKey == NormalizedFingerprint)))
     {
       LogEvent(L"Host key matches cached key");
@@ -2339,7 +2358,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, intptr_t Port,
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
 
-      UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY3 : DIFFERENT_KEY4), KeyType.c_str(), Fingerprint.c_str());
+      UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY3 : DIFFERENT_KEY4), AKeyType.c_str(), Fingerprint.c_str());
       if (GetConfiguration()->GetScripting())
       {
         AddToList(Message, LoadStr(SCRIPTING_USE_HOSTKEY), L"\n");
@@ -2352,11 +2371,11 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, intptr_t Port,
       {
         case qaOK:
           DebugAssert(!Unknown);
-          KeyStr2 = (StoredKeys + HostKeyDelimiter + KeyStr2);
+          KeyStr = (StoredKeys + HostKeyDelimiter + KeyStr);
           // fall thru
         case qaYes:
-          store_host_key(AnsiString(Host2).c_str(), static_cast<int>(Port), AnsiString(KeyType).c_str(),
-            AnsiString(KeyStr2).c_str());
+          store_host_key(AnsiString(Host).c_str(), static_cast<int>(Port), AnsiString(AKeyType).c_str(),
+            AnsiString(KeyStr).c_str());
           Verified = true;
           break;
 
@@ -2403,14 +2422,14 @@ void TSecureShell::VerifyHostKey(const UnicodeString & Host, intptr_t Port,
   GetConfiguration()->RememberLastFingerprint(FSessionData->GetSiteKey(), SshFingerprintType, Fingerprint);
 }
 
-bool TSecureShell::HaveHostKey(const UnicodeString & Host, intptr_t Port, const UnicodeString & KeyType)
+bool TSecureShell::HaveHostKey(const UnicodeString & AHost, intptr_t Port, const UnicodeString & KeyType)
 {
+  UnicodeString Host = AHost;
   // Return true, if we have any host key fingerprint of a particular type
-  UnicodeString Host2 = Host;
 
-  GetRealHost(Host2, Port);
+  GetRealHost(Host, Port);
 
-  UnicodeString StoredKeys = RetrieveHostKey(Host2, Port, KeyType);
+  UnicodeString StoredKeys = RetrieveHostKey(Host, Port, KeyType);
   bool Result = !StoredKeys.IsEmpty();
 
   if (!FSessionData->GetHostKey().IsEmpty())
@@ -2495,28 +2514,35 @@ bool TSecureShell::GetReady() const
 
 void TSecureShell::CollectUsage()
 {
-/*
-  if (FCollectPrivateKeyUsage)
+  /*if (FCollectPrivateKeyUsage)
   {
-//    Configuration->Usage->Inc(L"OpenedSessionsPrivateKey2");
+    Configuration->Usage->Inc(L"OpenedSessionsPrivateKey2");
   }
 
   if (FSshVersion == 1)
   {
-    // Configuration->Usage->Inc(L"OpenedSessionsSSH1");
+    Configuration->Usage->Inc(L"OpenedSessionsSSH1");
+  }
+  else if (FSshVersion == 2)
+  {
+    Configuration->Usage->Inc(L"OpenedSessionsSSH2");
   }
 
-  if (GetSshImplementation() == sshiOpenSSH)
+  if (SshImplementation == sshiOpenSSH)
   {
-    // Configuration->Usage->Inc(L"OpenedSessionsSSHOpenSSH");
+    Configuration->Usage->Inc(L"OpenedSessionsSSHOpenSSH");
   }
-  else if (GetSshImplementation() == sshiProFTPD)
+  else if (SshImplementation == sshiProFTPD)
   {
-    // Configuration->Usage->Inc(L"OpenedSessionsSSHProFTPD");
+    Configuration->Usage->Inc(L"OpenedSessionsSSHProFTPD");
   }
-  else if (GetSshImplementation() == sshiTitan)
+  else if (SshImplementation == sshiBitvise)
   {
-    // Configuration->Usage->Inc(L"OpenedSessionsSSHTitan");
+    Configuration->Usage->Inc(L"OpenedSessionsSSHBitvise");
+  }
+  else if (SshImplementation == sshiTitan)
+  {
+    Configuration->Usage->Inc(L"OpenedSessionsSSHTitan");
   }
   else if (SshImplementation == sshiOpenVMS)
   {
@@ -2569,8 +2595,7 @@ void TSecureShell::CollectUsage()
   else
   {
     Configuration->Usage->Inc(L"OpenedSessionsSSHOther");
-  }
-*/
+  }*/
 }
 
 NB_IMPLEMENT_CLASS(TSecureShell, NB_GET_CLASS_INFO(TObject), nullptr)
