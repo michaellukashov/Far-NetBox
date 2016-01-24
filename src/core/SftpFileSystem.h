@@ -32,7 +32,7 @@ public:
   explicit TSFTPFileSystem(TTerminal * ATermina);
   virtual ~TSFTPFileSystem();
 
-  virtual void Init(void * Data); // TSecureShell *
+  virtual void Init(void * Data /*TSecureShell* */);
   virtual void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) {}
 
   virtual void Open();
@@ -205,15 +205,15 @@ protected:
   char * GetEOL() const;
   inline void BusyStart();
   inline void BusyEnd();
-  uint32_t TransferBlockSize(uint32_t Overhead,
+  inline uint32_t TransferBlockSize(uint32_t Overhead,
     TFileOperationProgressType * OperationProgress,
     uint32_t MinPacketSize = 0,
     uint32_t MaxPacketSize = 0);
-  uint32_t UploadBlockSize(const RawByteString & Handle,
+  inline uint32_t UploadBlockSize(const RawByteString & Handle,
     TFileOperationProgressType * OperationProgress);
-  uint32_t DownloadBlockSize(
+  inline uint32_t DownloadBlockSize(
     TFileOperationProgressType * OperationProgress);
-  intptr_t PacketLength(uint8_t * LenBuf, SSH_FXP_TYPES ExpectedType);
+  inline intptr_t PacketLength(uint8_t * LenBuf, SSH_FXP_TYPES ExpectedType);
   void Progress(TFileOperationProgressType * OperationProgress);
 
 private:
