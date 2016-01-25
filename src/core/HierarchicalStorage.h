@@ -98,6 +98,7 @@ protected:
   bool FMungeStringValues;
   bool FForceAnsi;
 
+public:
   UnicodeString GetCurrentSubKey() const;
   UnicodeString GetCurrentSubKeyMunged() const;
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) = 0;

@@ -109,7 +109,7 @@ void TConfiguration::Default()
   }
   __finally
   {
-    delete AdminStorage;
+//    delete AdminStorage;
   };
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
@@ -305,7 +305,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
   }
   __finally
   {
-    delete AStorage;
+//    delete AStorage;
   };
 
   Saved();
@@ -525,7 +525,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
   }
   __finally
   {
-    delete Names;
+//    delete Names;
   };
 }
 
@@ -545,7 +545,7 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
   }
   __finally
   {
-    delete Storage;
+//    delete Storage;
   };
 }
 
@@ -553,7 +553,7 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
-  try
+  try__finally
   {
     Storage->SetAccessMode(smReadWrite);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
@@ -566,7 +566,7 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
   }
   __finally
   {
-    delete Storage;
+//    delete Storage;
   };
 }
 
@@ -583,11 +583,12 @@ UnicodeString TConfiguration::BannerHash(const UnicodeString & Banner) const
 bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
   const UnicodeString & Banner)
 {
+  bool Result = false;
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   try__finally
   {
     Storage->SetAccessMode(smRead);
-    bool Result =
+    Result =
       !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
       !Storage->OpenSubKey("Banners", false) ||
       !Storage->ValueExists(SessionKey) ||
@@ -596,7 +597,7 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
   }
   __finally
   {
-    delete Storage;
+//    delete Storage;
   };
 
   return Result;
@@ -618,7 +619,7 @@ void TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
   }
   __finally
   {
-    delete Storage;
+//    delete Storage;
   };
 }
 //---------------------------------------------------------------------------
@@ -718,7 +719,7 @@ void TConfiguration::CleanupRegistry(const UnicodeString & CleanupSubKey)
   }
   __finally
   {
-    delete Registry;
+//    delete Registry;
   };
 }
 
@@ -1095,7 +1096,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
   }
   __finally
   {
-    if (!FileName.IsEmpty())
+    if (!AFileName.IsEmpty())
     {
       FreeFileInfo(Info);
     }

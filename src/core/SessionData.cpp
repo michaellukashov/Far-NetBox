@@ -3893,7 +3893,7 @@ void TSessionData::SetIsWorkspace(bool Value)
   SET_SESSION_PROPERTY(IsWorkspace);
 }
 
-void TSessionData::SetLink(UnicodeString Value)
+void TSessionData::SetLink(const UnicodeString & Value)
 {
   SET_SESSION_PROPERTY(Link);
 }
@@ -3963,7 +3963,7 @@ UnicodeString TSessionData::ExtractFolderName(const UnicodeString & Name)
 UnicodeString TSessionData::GetFolderName() const
 {
   UnicodeString Result;
-  if (HasSessionName()) || GetIsWorkspace())
+  if (HasSessionName() || GetIsWorkspace())
   {
     Result = ExtractFolderName(GetName());
   }
@@ -4760,15 +4760,15 @@ bool TStoredSessionList::IsFolderOrWorkspace(
   return
     Result &&
     DebugAlwaysTrue(FirstData != nullptr) &&
-    (FirstData->IsWorkspace() == Workspace);
+    (FirstData->GetIsWorkspace() == Workspace);
 }
 
-bool TStoredSessionList::IsFolder(const UnicodeString & Name) const
+bool TStoredSessionList::GetIsFolder(const UnicodeString & Name) const
 {
   return IsFolderOrWorkspace(Name, false);
 }
 
-bool TStoredSessionList::IsWorkspace(const UnicodeString & Name) const
+bool TStoredSessionList::GetIsWorkspace(const UnicodeString & Name) const
 {
   return IsFolderOrWorkspace(Name, true);
 }
@@ -4843,7 +4843,7 @@ TStrings * TStoredSessionList::GetWorkspaces()
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     TSessionData * Data = GetSession(Index);
-    if (Data->IsWorkspace())
+    if (Data->GetIsWorkspace())
     {
       Result->Add(Data->GetFolderName());
     }
@@ -4885,7 +4885,7 @@ bool TStoredSessionList::HasAnyWorkspace()
   for (intptr_t Index = 0; !Result && (Index < GetCount()); ++Index)
   {
     TSessionData * Data = GetSession(Index);
-    Result = Data->IsWorkspace();
+    Result = Data->GetIsWorkspace();
   }
   return Result;
 }

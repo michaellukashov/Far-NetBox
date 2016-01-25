@@ -811,7 +811,7 @@ void TFTPFileSystem::Idle()
       }
       __finally
       {
-        delete Files;
+//        delete Files;
       };
     }
   }
@@ -1576,9 +1576,9 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
     UnicodeString FileName = AFilesToCopy->GetString(Index);
     const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObj(Index));
 
+    bool Success = false;
     try__finally
     {
-      bool Success = false;
       SCOPE_EXIT
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);

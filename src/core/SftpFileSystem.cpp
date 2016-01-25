@@ -1371,18 +1371,17 @@ protected:
       throw;
     }*/
 
-      if (Request.get() != nullptr)
-      {
-        TSFTPPacket * Response = new TSFTPPacket(FCodePage);
-        FRequests->Add(Request.get());
-        FResponses->Add(Response);
+    if (Request.get() != nullptr)
+    {
+      TSFTPPacket * Response = new TSFTPPacket(FCodePage);
+      FRequests->Add(Request.get());
+      FResponses->Add(Response);
 
-        // make sure the response is reserved before actually ending the message
-        // as we may receive response asynchronously before SendPacket finishes
-        FFileSystem->ReserveResponse(Request.get(), Response);
-        SendPacket(Request.release());
-        return true;
-      }
+      // make sure the response is reserved before actually ending the message
+      // as we may receive response asynchronously before SendPacket finishes
+      FFileSystem->ReserveResponse(Request.get(), Response);
+      SendPacket(Request.release());
+      return true;
     }
 
     return false;
@@ -2860,7 +2859,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath)
     UnicodeString RealDir = core::UnixExcludeTrailingBackslash(Packet.GetPathString(FUtfStrings));
     // ignore rest of SSH_FXP_NAME packet
 
-    FTerminal->LogEvent(FORMAT(L"Real path is '%s'", Result.c_str()));
+    FTerminal->LogEvent(FORMAT(L"Real path is '%s'", RealDir.c_str()));
 
     return RealDir;
   }
@@ -2930,7 +2929,7 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
   bool TryParent = false;
   try
   {
-    Result = RealPath(Path);
+    Result = GetRealPath(Path);
   }
   catch (...)
   {
@@ -3517,11 +3516,9 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   }
 
   TSFTPPacket Response(FCodePage);
+  try__finally
   {
-    try
     SCOPE_EXIT
-    {
-    if (FTerminal->Active)
     {
       if (FTerminal->GetActive())
       {
@@ -4186,12 +4183,12 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
       bool Next = false;
       do
       {
+        bool Success = false;
         UnicodeString Checksum;
+        TRemoteFile * File = nullptr;
 
         try__finally
         {
-          TRemoteFile * File = nullptr;
-          bool Success = false;
           SCOPE_EXIT
           {
             if (FirstLevel && File)
@@ -4427,6 +4424,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
+    bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
     TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
@@ -4436,7 +4434,6 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
     try__finally
     {
-      bool Success = false;
       SCOPE_EXIT
       {
         FAvoidBusy = false;
@@ -5000,9 +4997,9 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
           nullptr, false, FVersion, FUtfStrings);
       }
 
+      bool TransferFinished = false;
       try__finally
       {
-        bool TransferFinished = false;
         SCOPE_EXIT
         {
           if (FTerminal->GetActive())
@@ -5662,6 +5659,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
+    bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
     const TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
 
@@ -5670,7 +5668,6 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
 
     try__finally
     {
-      bool Success = false;
       SCOPE_EXIT
       {
         FAvoidBusy = false;
@@ -5903,15 +5900,15 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
     OperationProgress->TransferingFile = false; // not set with SFTP protocol
 
     HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
+    TStream * FileStream = nullptr;
+    bool DeleteLocalFile = false;
     RawByteString RemoteHandle;
     UnicodeString LocalFileName = DestFullName;
     TOverwriteMode OverwriteMode = omOverwrite;
 
     try__finally
     {
-      TStream * FileStream = nullptr;
       bool ResumeTransfer = false;
-      bool DeleteLocalFile = false;
       SCOPE_EXIT
       {
         if (LocalFileHandle != INVALID_HANDLE_VALUE)
@@ -6363,7 +6360,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
         SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress,
           true, true, nullptr);
       }
-    }
+    };
 
     FTerminal->LogFileDone(OperationProgress);
   }

@@ -428,7 +428,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
     }
     __finally
     {
-      FTerminal->ExceptionOnFail = false;
+      FTerminal->SetExceptionOnFail(false);
     };
 
     FFileSystemInfo.RemoteSystem = UName;
@@ -1472,7 +1472,7 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
   __finally
   {
     FOnCaptureOutput = nullptr;
-    FSecureShell->OnCaptureOutput = nullptr;
+    FSecureShell->SetOnCaptureOutput(nullptr);
   };
 }
 
@@ -2299,7 +2299,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       FSecureShell->SendLine(L"E");
       SCPResponse();
     }
-  }
+  };
 }
 
 void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,

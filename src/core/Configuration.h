@@ -152,7 +152,7 @@ public:
   void SetScripting(bool Value) { FScripting = Value; }
 
 protected:
-  TStorage FStorage;
+  mutable TStorage FStorage;
   TCriticalSection FCriticalSection;
 
 public:

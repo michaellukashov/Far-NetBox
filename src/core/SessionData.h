@@ -445,7 +445,7 @@ public:
   void SetMaxTlsVersion(TTlsVersion Value);
   void SetNotUtf(TAutoSwitch Value);
   void SetIsWorkspace(bool Value);
-  void SetLink(const UnicodeString & Value) { FLink = Value; }
+  void SetLink(const UnicodeString & Value);
   void SetHostKey(const UnicodeString & Value);
   void SetNote(const UnicodeString & Value);
   TDateTime GetTimeoutDT();
@@ -861,8 +861,8 @@ public:
   const TSessionData * FindSame(TSessionData * Data) const;
   TSessionData * NewSession(const UnicodeString & SessionName, TSessionData * Session);
   void NewWorkspace(const UnicodeString & Name, TList * DataList);
-  bool IsFolder(const UnicodeString & Name) const;
-  bool IsWorkspace(const UnicodeString & Name) const;
+  bool GetIsFolder(const UnicodeString & Name) const;
+  bool GetIsWorkspace(const UnicodeString & Name) const;
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * AFileName = nullptr, bool * ProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
   bool IsUrl(const UnicodeString & Url);

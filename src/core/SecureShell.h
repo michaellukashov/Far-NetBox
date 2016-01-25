@@ -79,6 +79,7 @@ private:
   UnicodeString FUserName;
   bool FUtfStrings;
 
+public:
   static TCipher FuncToSsh1Cipher(const void * Cipher);
   static TCipher FuncToSsh2Cipher(const void * Cipher);
   UnicodeString FuncToCompression(int SshVersion, const void * Compress) const;
