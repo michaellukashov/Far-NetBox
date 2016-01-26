@@ -239,29 +239,29 @@ UnicodeString ExpatVersion()
 
 TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
-  FFileList(nullptr),
+//  FFileList(nullptr),
   FOnCaptureOutput(nullptr),
   FPortNumber(0),
   FIgnoreAuthenticationFailure(iafNo),
   FStoredPasswordTried(false),
-  FPasswordFailed(false),
+//  FPasswordFailed(false),
   FActive(false),
-  FFileTransferAbort(ftaNone),
-  FIgnoreFileList(false),
-  FFileTransferCancelled(false),
-  FFileTransferResumed(0),
-  FFileTransferPreserveTime(false),
+//  FFileTransferAbort(ftaNone),
+//  FIgnoreFileList(false),
+//  FFileTransferCancelled(false),
+//  FFileTransferResumed(0),
+//  FFileTransferPreserveTime(false),
   FHasTrailingSlash(false),
   FNeonSession(nullptr),
   FNeonLockStore(nullptr),
   FUploading(false),
   FDownloading(false),
-  FInitialHandshake(false),
-  FFileTransferCPSLimit(0),
-  FLastReadDirectoryProgress(0),
-  FCurrentOperationProgress(nullptr),
-  webdav_pool(nullptr),
-  FSession(nullptr)
+  FInitialHandshake(false)
+//  FFileTransferCPSLimit(0),
+//  FLastReadDirectoryProgress(0),
+//  FCurrentOperationProgress(nullptr),
+//  webdav_pool(nullptr),
+//  FSession(nullptr)
 {
 }
 
@@ -685,34 +685,6 @@ bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
     default:
       DebugFail();
       return false;
-  }
-}
-
-void TWebDAVFileSystem::EnsureLocation()
-{
-  if (!FCachedDirectoryChange.IsEmpty())
-  {
-    FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
-      FCachedDirectoryChange.c_str()));
-    UnicodeString Directory = FCachedDirectoryChange;
-    FCachedDirectoryChange.Clear();
-    try
-    {
-      ChangeDirectory(Directory);
-    }
-    catch (...)
-    {
-      // when location to cached directory fails, pretend again
-      // location in cached directory
-      // here used to be check (CurrentDirectory != Directory), but it is
-      // false always (current directory is already set to cached directory),
-      // making the condition below useless. check removed.
-      if (FTerminal->GetActive())
-      {
-        FCachedDirectoryChange = Directory;
-      }
-      throw;
-    }
   }
 }
 
@@ -1435,8 +1407,6 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
   Action.SetFileName(::ExpandUNCFileName(RealFileName));
 
-  Action.FileName(::ExpandUNCFileName(RealFileName));
-
   OperationProgress->SetFile(RealFileName, false);
 
   if (!FTerminal->AllowLocalFileTransfer(RealFileName, CopyParam, OperationProgress))
@@ -1475,7 +1445,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
     if (Dir)
     {
       Action.Cancel();
-      WebDAVDirectorySource(::IncludeTrailingBackslash(RealFileName), TargetDir,
+      DirectorySource(::IncludeTrailingBackslash(RealFileName), TargetDir,
         LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
     }
     else
@@ -1649,7 +1619,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
   }
 }
 
-void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryName,
+void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   const UnicodeString & TargetDir, uintptr_t Attrs, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
@@ -1701,7 +1671,7 @@ void TWebDAVFileSystem::WebDAVDirectorySource(const UnicodeString & DirectoryNam
       {
         if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
         {
-          WebDAVSourceRobust(FileName, nullptr, DestFullName, CopyParam, Params, OperationProgress,
+          SourceRobust(FileName, nullptr, DestFullName, CopyParam, Params, OperationProgress,
             Flags & ~(tfFirstLevel));
         }
       }
@@ -2061,7 +2031,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 
   if (CopyParam->SkipTransfer(AFileName, AFile->GetIsDirectory()))
   {
-    OperationProgress->AddSkippedFileSize(File->Size);
+    OperationProgress->AddSkippedFileSize(AFile->GetSize());
     ThrowSkipFileNull();
   }
 
@@ -2136,8 +2106,11 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       FileParams.DestTimestamp = ::UnixToDateTime(MTime,
         FTerminal->GetSessionData()->GetDSTMode());
 
-      ConfirmOverwrite(AFileName, DestFileName, OperationProgress,
-        &FileParams, CopyParam, Params);
+      /*ConfirmOverwrite(AFileName, DestFileName, OperationProgress,
+        &FileParams, CopyParam, Params,
+        AutoResume,
+        OverwriteMode,
+        Answer);*/
     }
 
     // Suppose same data size to transfer as to write
@@ -2813,72 +2786,9 @@ void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem * AMainFileSystem)
   }
 }
 
-void TWebDAVFileSystem::ResetFileTransfer()
-{
-  FFileTransferAbort = ftaNone;
-  FFileTransferCancelled = false;
-  FFileTransferResumed = 0;
-}
-
-void TWebDAVFileSystem::ReadDirectoryProgress(int64_t Bytes)
-{
-  // with WebDAV we do not know exactly how many entries we have received,
-  // instead we know number of bytes received only.
-  // so we report approximation based on average size of entry.
-  int Progress = static_cast<int>(Bytes / 80);
-  if (Progress - FLastReadDirectoryProgress >= 10)
-  {
-    bool Cancel = false;
-    FLastReadDirectoryProgress = Progress;
-    FTerminal->DoReadDirectoryProgress(Progress, 0, Cancel);
-    if (Cancel)
-    {
-      FTerminal->DoReadDirectoryProgress(-2, 0, Cancel);
-    }
-  }
-}
-
-void TWebDAVFileSystem::DoFileTransferProgress(int64_t TransferSize,
-  int64_t Bytes)
-{
-  TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
-  if (!OperationProgress)
-  {
-    return;
-  }
-
-  OperationProgress->SetTransferSize(TransferSize);
-
-  if (FFileTransferResumed > 0)
-  {
-    OperationProgress->AddResumed(FFileTransferResumed);
-    FFileTransferResumed = 0;
-  }
-
-  int64_t Diff = Bytes - OperationProgress->TransferedSize;
-  if (Diff >= 0)
-  {
-    OperationProgress->AddTransfered(Diff);
-  }
-
-  if (!FFileTransferCancelled && OperationProgress->Cancel == csCancel)
-  {
-    FFileTransferCancelled = true;
-    FFileTransferAbort = ftaCancel;
-  }
-
-  if (FFileTransferCPSLimit != OperationProgress->CPSLimit)
-  {
-    FFileTransferCPSLimit = OperationProgress->CPSLimit;
-  }
-}
-
 void TWebDAVFileSystem::FileTransferProgress(int64_t TransferSize,
   int64_t Bytes)
 {
-  TGuard Guard(FTransferStatusCriticalSection);
-
-  DoFileTransferProgress(TransferSize, Bytes);
 }
 
 NB_IMPLEMENT_CLASS(TWebDAVFileSystem, NB_GET_CLASS_INFO(TCustomFileSystem), nullptr)

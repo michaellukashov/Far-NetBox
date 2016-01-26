@@ -315,7 +315,7 @@ void THierarchicalStorage::ClearValues()
   __finally
   {
 //    delete Names;
-  }
+  };
 }
 
 void THierarchicalStorage::WriteValues(TStrings * Strings,
