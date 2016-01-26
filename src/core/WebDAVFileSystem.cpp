@@ -2029,8 +2029,8 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()), "",
       [&]()
       {
-        int Attrs = ::FileGetAttr(ApiPath(DestFullName));
-        if (FLAGCLEAR(Attrs, faDirectory))
+        DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
+        if (FLAGCLEAR(LocalFileAttrs, faDirectory))
         {
           ThrowExtException();
         }
@@ -2094,12 +2094,12 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     OperationProgress->SetTransferSize(AFile->GetSize());
     OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
-    uintptr_t LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
+    DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
     FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()), "",
     [&]()
     {
-      LocalFileAttrs = ::FileGetAttr(ApiPath(DestFullName));
-      if ((LocalFileAttrs >= 0) && FLAGSET(LocalFileAttrs, faDirectory))
+      LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
+      if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
       {
         ThrowExtException();
       }
@@ -2113,7 +2113,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       FilePath = L"/";
     }
 
-    Action.Destination(ExpandUNCFileName(DestFullName));
+    Action.Destination(::ExpandUNCFileName(DestFullName));
 
     FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName.c_str()), "",
     [&]()
@@ -2204,7 +2204,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     {
       LocalFileAttrs = faArchive;
     }
-    uintptr_t  NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
+    DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
     {
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()), "",
