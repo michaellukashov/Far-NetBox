@@ -313,6 +313,8 @@ public:
   intptr_t Pos(const char Ch) const;
   intptr_t Pos(const char * Ch) const;
 
+  void Unique() {}
+
 public:
   RawByteString & operator=(const UnicodeString & strCopy);
   RawByteString & operator=(const RawByteString & strCopy);
