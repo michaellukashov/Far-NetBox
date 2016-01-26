@@ -18,6 +18,7 @@ extern const wchar_t NoReplacement;
 extern const wchar_t TokenReplacement;
 #define LOCAL_INVALID_CHARS "/\\:*?\"<>|"
 #define PASSWORD_MASK "***"
+#define sLineBreak L"\n"
 
 // Order of the values also define order of the buttons/answers on the prompts
 // MessageDlg relies on these to be <= 0x0000FFFF

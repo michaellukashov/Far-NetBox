@@ -19,7 +19,6 @@ struct ne_lock;
 
 class TWebDAVFileSystem : public TCustomFileSystem
 {
-friend class TWebDAVFileListHelper;
 NB_DISABLE_COPY(TWebDAVFileSystem)
 NB_DECLARE_CLASS(TWebDAVFileSystem)
 public:
@@ -116,7 +115,7 @@ protected:
   void DirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, uintptr_t Attrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
-  bool ConfirmOverwrite(
+  void ConfirmOverwrite(
     const UnicodeString & ASourceFullFileName, UnicodeString & ADestFileName,
     TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
@@ -160,7 +159,6 @@ private:
   TFileSystemInfo FFileSystemInfo;
   UnicodeString FCurrentDirectory;
   UnicodeString FCachedDirectoryChange;
-  TCaptureOutputEvent FOnCaptureOutput;
   TSessionInfo FSessionInfo;
   UnicodeString FUserName;
   bool FActive;
