@@ -1619,7 +1619,7 @@ void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
 
   OperationProgress->SetFile(DirectoryName);
 
-  int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+  DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   TSearchRecChecked SearchRec;
   bool FindOK = false;
 
@@ -1629,7 +1629,7 @@ void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   [&]()
   {
     FindOK =
-      (FindFirstChecked(DirectoryName + L"*.*", FindAttrs, SearchRec) == 0);
+      (FindFirstChecked(FindPath.c_str(), FindAttrs, SearchRec) == 0);
   });
 //  FILE_OPERATION_LOOP_END(FMTLOAD(LIST_DIR_ERROR, (DirectoryName)));
 
@@ -1643,7 +1643,7 @@ void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     };
     while (FindOK && !OperationProgress->Cancel)
     {
-      UnicodeString FileName = DirectoryName + SearchRec.Path;
+      UnicodeString FileName = DirectoryName + SearchRec.Name;
       try
       {
         if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
