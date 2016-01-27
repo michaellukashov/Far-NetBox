@@ -1259,7 +1259,7 @@ void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & APath,
   UnicodeString Path = DirectoryPath(APath);
 
   ne_propname QuotaProps[3];
-  memset(QuotaProps, 0, sizeof(QuotaProps));
+  ::ZeroMemory(QuotaProps, sizeof(QuotaProps));
   QuotaProps[0].nspace = DAV_PROP_NAMESPACE;
   QuotaProps[0].name = PROP_QUOTA_AVAILABLE;
   QuotaProps[1].nspace = DAV_PROP_NAMESPACE;
@@ -1525,7 +1525,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
           UTF8String NeonLastModified(LastModified);
           // second element is "NULL-terminating"
           ne_proppatch_operation Operations[2];
-          memset(Operations, 0, sizeof(Operations));
+          ::ZeroMemory(Operations, sizeof(Operations));
           ne_propname LastModifiedProp;
           LastModifiedProp.nspace = DAV_PROP_NAMESPACE;
           LastModifiedProp.name = PROP_LAST_MODIFIED;

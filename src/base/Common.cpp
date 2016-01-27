@@ -91,7 +91,7 @@ void DoShred(T & Str)
   if (!Str.IsEmpty())
   {
     Str.Unique();
-    memset((void*)Str.c_str(), 0, Str.Length() * sizeof(*Str.c_str()));
+    ::ZeroMemory((void*)Str.c_str(), Str.Length() * sizeof(*Str.c_str()));
     Str = L"";
   }
 }
