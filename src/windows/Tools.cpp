@@ -90,7 +90,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 
   TPrivateKey * PrivateKey = LoadKey(Type, FileName, Passphrase);
 
-  // try
+  try__finally
   {
     SCOPE_EXIT
     {
