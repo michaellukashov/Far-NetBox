@@ -3197,12 +3197,12 @@ HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFil
 
 inline DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName)
 {
-  return ::FileGetAttr(ApiPath(LocalFileName));
+  return ::FileGetAttr(LocalFileName);
 }
 
 inline BOOL TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
 {
-  return ::SetFileAttributes(ApiPath(LocalFileName).c_str(), FileAttributes);
+  return ::FileSetAttr(LocalFileName, FileAttributes) != 0;
 }
 
 BOOL TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
@@ -3212,7 +3212,7 @@ BOOL TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString & LocalFileNam
 
 BOOL TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName)
 {
-  return ::RemoveDirectory(ApiPath(LocalDirName).c_str()) != 0;
+  return ::RemoveDir(LocalDirName);
 }
 
 BOOL TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
