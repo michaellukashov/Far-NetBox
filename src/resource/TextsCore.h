@@ -481,12 +481,12 @@
 
 // 7xxx used by errors as secondary sequence
 
-#define WINSCPFAR_NAME              720
-#define WINSCP_VERSION              721
-#define WINSCPFAR_VERSION           722
-#define WINSCPFAR_BASED_ON          723
-#define WINSCPFAR_BASED_VERSION     724
-#define WINSCPFAR_BASED_COPYRIGHT   725
+#define WINSCPFAR_NAME              740
+#define WINSCP_VERSION              741
+#define WINSCPFAR_VERSION           742
+#define WINSCPFAR_BASED_ON          743
+#define WINSCPFAR_BASED_VERSION     744
+#define WINSCPFAR_BASED_COPYRIGHT   745
 
 #define CONVERTKEY_SAVE_TITLE   1945
 #define CONVERTKEY_SAVE_FILTER  1946
