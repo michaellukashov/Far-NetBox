@@ -2341,7 +2341,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
 {
   DebugAssert(FunctionKey >= 1 && FunctionKey <= 12);
   int shift = static_cast<int>(ShiftStatus);
-  assert(shift >= 0 && shift < 7);
+  DebugAssert(shift >= 0 && shift < 7);
   KeyBarLabel *Labels = &FKeyBarTitles.Labels[shift * 12];
   if (Labels[FunctionKey-1].Key.VirtualKeyCode)
   {

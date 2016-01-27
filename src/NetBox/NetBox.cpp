@@ -209,7 +209,7 @@ HANDLE WINAPI OpenW(const struct OpenInfo * Info)
 {
   if (Info->StructSize < sizeof(OpenInfo))
     return nullptr;
-  assert(FarPlugin);
+  DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
   HANDLE Handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info));
   return Handle;

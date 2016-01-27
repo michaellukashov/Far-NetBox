@@ -2005,7 +2005,7 @@ void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString & Value)
   {
     DebugAssert(!GetDialog()->GetHandle());
     FarDialogItem * Item = GetDialogItem();
-    // assert(&GetDialogItem()->Mask == &GetDialogItem()->History);
+    // DebugAssert(&GetDialogItem()->Mask == &GetDialogItem()->History);
 
     nb_free((void*)Item->Mask);
     nb_free((void*)Item->History);

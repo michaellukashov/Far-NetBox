@@ -67,7 +67,7 @@ bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCrea
   bool Result = true;
   {
     UnicodeString subKey = MungedSubKey;
-    assert(subKey.IsEmpty() || (subKey[subKey.Length()] != '\\'));
+    DebugAssert(subKey.IsEmpty() || (subKey[subKey.Length()] != '\\'));
     // CutToChar(subKey, L'\\', false);
     while (!subKey.IsEmpty())
     {
@@ -86,7 +86,7 @@ bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCrea
 void TFar3Storage::CloseSubKey()
 {
   THierarchicalStorage::CloseSubKey();
-  // assert(FKeyHistory->GetCount() == FSubKeyIds.size() - 1);
+  // DebugAssert(FKeyHistory->GetCount() == FSubKeyIds.size() - 1);
   if (FKeyHistory->GetCount() && FSubKeyIds.size())
   {
     FRoot = FSubKeyIds.back();
