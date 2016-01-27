@@ -2237,7 +2237,7 @@ UnicodeString TSessionData::GetSshProtStr() const
 
 bool TSessionData::GetUsesSsh() const
 {
-  return IsSshProtocol(GetFSProtocol());
+  return GetIsSshProtocol(GetFSProtocol());
 }
 
 void TSessionData::SetCipher(intptr_t Index, TCipher Value)
@@ -2647,7 +2647,7 @@ UnicodeString TSessionData::GetSessionName() const
   return Result;
 }
 
-bool TSessionData::IsSecure() const
+bool TSessionData::GetIsSecure() const
 {
   bool Result;
   switch (GetFSProtocol())
@@ -2773,7 +2773,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags)
     Url += EncodeUrlString(GetHostNameExpanded());
   }
 
-  if (GetPortNumber() != DefaultPort(GetFSProtocol(), GetFtps()))
+  if (GetPortNumber() != GetDefaultPort(GetFSProtocol(), GetFtps()))
   {
     Url += L":" + ::Int64ToStr(GetPortNumber());
   }
@@ -2805,7 +2805,7 @@ void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Name,
 void TSessionData::LookupLastFingerprint()
 {
   UnicodeString FingerprintType;
-  if (IsSshProtocol(GetFSProtocol()))
+  if (GetIsSshProtocol(GetFSProtocol()))
   {
     FingerprintType = SshFingerprintType;
   }
@@ -5073,14 +5073,14 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
   return Result;
 }
 
-bool IsSshProtocol(TFSProtocol FSProtocol)
+bool GetIsSshProtocol(TFSProtocol FSProtocol)
 {
   return
     (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) ||
     (FSProtocol == fsSCPonly);
 }
 
-intptr_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps)
+intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps)
 {
   intptr_t Result;
   switch (FSProtocol)
@@ -5108,7 +5108,7 @@ intptr_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps)
       break;
 
     default:
-      if (IsSshProtocol(FSProtocol))
+      if (GetIsSshProtocol(FSProtocol))
       {
         Result = SshPortNumber;
       }
