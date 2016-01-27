@@ -1242,7 +1242,7 @@ void TFarDialogItem::SetFlag(FARDIALOGITEMFLAGS Index, bool Value)
     }
 
     FARDIALOGITEMFLAGS F = GetFlags();
-    FarDialogItemFlags Flag = (FarDialogItemFlags)(Index & 0xFFFFFF00ULL);
+    FARDIALOGITEMFLAGS Flag = Index & 0xFFFFFFFFFFFFFF00ULL;
     bool ToHandle = true;
 
     switch (Flag)
@@ -2316,6 +2316,7 @@ intptr_t TFarList::GetTopIndex() const
   {
     FarListPos ListPos;
     ClearStruct(ListPos);
+    ListPos.StructSize = sizeof(FarListPos);
     TFarDialogItem * DialogItem = GetDialogItem();
     ListPos.StructSize = sizeof(FarListPos);
     assert(DialogItem != nullptr);
