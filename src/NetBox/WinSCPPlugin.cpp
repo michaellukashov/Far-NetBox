@@ -223,7 +223,7 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo
   {
     for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
-      TWinSCPFileSystem * FileSystem = NB_STATIC_DOWNCAST(TWinSCPFileSystem, FOpenedPlugins->GetItem(Index));
+      TWinSCPFileSystem * FileSystem = NB_STATIC_DOWNCAST(TWinSCPFileSystem, FOpenedPlugins->GetObj(Index));
       FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
     }
   }

@@ -29,7 +29,7 @@
 
 class CCrypt  
 {
-	static char *m_key;
+	static const char *m_key;
 public:
 	static CString decrypt(CString str);
 	static CString encrypt(CString str);

@@ -588,7 +588,7 @@ BOOL AFXAPI _AfxFullPath2(_Out_z_cap_c_(_MAX_PATH) LPTSTR lpszPathOut, LPCTSTR l
 	// (both in ANSI character set)
 	// pException - pointer to exception object - can be NULL.
 {
-	pException;
+	(void)pException;
 	ENSURE(lpszPathOut);
 	ENSURE(lpszFileIn);
 	ASSERT(AfxIsValidAddress(lpszPathOut, _MAX_PATH));

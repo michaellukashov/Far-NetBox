@@ -1876,9 +1876,9 @@ static FORCEINLINE void x86_clear_lock(int* sl) {
 
 #if !defined(USE_RECURSIVE_LOCKS) || USE_RECURSIVE_LOCKS == 0
 /* Plain spin locks use single word (embedded in malloc_states) */
-static int spin_acquire_lock(int *sl) {
+static int spin_acquire_lock(long *sl) {
   int spins = 0;
-  while (*(volatile int *)sl != 0 || CAS_LOCK(sl)) {
+  while (*(volatile long *)sl != 0 || CAS_LOCK(sl)) {
     if ((++spins & SPINS_PER_YIELD) == 0) {
       SPIN_LOCK_YIELD;
     }
@@ -1886,7 +1886,7 @@ static int spin_acquire_lock(int *sl) {
   return 0;
 }
 
-#define MLOCK_T               int
+#define MLOCK_T               long
 #define TRY_LOCK(sl)          !CAS_LOCK(sl)
 #define RELEASE_LOCK(sl)      CLEAR_LOCK(sl)
 #define ACQUIRE_LOCK(sl)      (CAS_LOCK(sl)? spin_acquire_lock(sl) : 0)
@@ -1912,7 +1912,7 @@ static MLOCK_T malloc_global_mutex = 0;
 #endif
 
 struct malloc_recursive_lock {
-  int sl;
+  long sl;
   unsigned int c;
   THREAD_ID_T threadid;
 };
@@ -1931,7 +1931,7 @@ static FORCEINLINE int recursive_acquire_lock(MLOCK_T *lk) {
   THREAD_ID_T mythreadid = CURRENT_THREAD;
   int spins = 0;
   for (;;) {
-    if (*((volatile int *)(&lk->sl)) == 0) {
+    if (*((volatile long *)(&lk->sl)) == 0) {
       if (!CAS_LOCK(&lk->sl)) {
         lk->threadid = mythreadid;
         lk->c = 1;

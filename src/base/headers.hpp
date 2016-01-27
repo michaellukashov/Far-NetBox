@@ -34,7 +34,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <nbglobals.h>
-#include "stdafx.h"
 
 #include <new>
 #include <cstdlib>
@@ -159,6 +158,8 @@ private: \
 
 #define NB_STATIC_ASSERT(Condition, Message) \
   static_assert(bool(Condition), Message)
+
+#define NB_MAX_PATH 32 * 1024
 
 #include "UnicodeString.hpp"
 #include "local.hpp"

@@ -1593,7 +1593,7 @@ UnicodeString TRemoteFileList::GetFullDirectory() const
 
 TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
-  return NB_STATIC_DOWNCAST(TRemoteFile, GetItem(Index));
+  return NB_STATIC_DOWNCAST(TRemoteFile, GetObj(Index));
 }
 
 Boolean TRemoteFileList::GetIsRoot() const
@@ -1633,12 +1633,12 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
 
 TRemoteDirectory::TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template) :
   TRemoteFileList(),
+  FIncludeParentDirectory(false),
+  FIncludeThisDirectory(false),
   FTerminal(aTerminal),
   FSelectedFiles(nullptr),
-  FThisDirectory(nullptr),
   FParentDirectory(nullptr),
-  FIncludeThisDirectory(false),
-  FIncludeParentDirectory(false)
+  FThisDirectory(nullptr)
 {
   if (Template == nullptr)
   {

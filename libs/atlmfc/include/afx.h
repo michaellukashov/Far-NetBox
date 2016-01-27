@@ -358,7 +358,7 @@ inline void AFX_CDECL AfxTrace(...) { }
 	ASSERT(((p) == NULL) || AfxIsValidAddress((p), sizeof(type), FALSE))
 
 #ifdef _DEBUG
-#define UNUSED(x)
+#define UNUSED(x) (void)(x)
 #else
 #define UNUSED(x) UNREFERENCED_PARAMETER(x)
 #endif

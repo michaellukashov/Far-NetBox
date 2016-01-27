@@ -1727,9 +1727,9 @@ protected:
          File->GetRights()->GetUnknown());
       bool MissingOwnerGroup =
         (FFileSystem->FSecureShell->GetSshImplementation() == sshiBitvise) ||
-        (FFileSystem->FSupport->Loaded &&
+        ((FFileSystem->FSupport->Loaded &&
          FLAGSET(FFileSystem->FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP) &&
-         !File->GetFileOwner().GetIsSet() || !File->GetFileGroup().GetIsSet());
+         !File->GetFileOwner().GetIsSet()) || !File->GetFileGroup().GetIsSet());
 
       Result = (MissingRights || MissingOwnerGroup);
       if (Result)
@@ -2233,6 +2233,7 @@ uint32_t TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
   // size + message number + type
   const uint32_t SFTPPacketOverhead = 4 + 4 + 1;
   uint32_t AMinPacketSize = FSecureShell->MinPacketSize();
+  (void)AMinPacketSize;
   uint32_t AMaxPacketSize = FSecureShell->MaxPacketSize();
   bool MaxPacketSizeValid = (AMaxPacketSize > 0);
   uint32_t Result = static_cast<uint32_t>(OperationProgress->CPS());

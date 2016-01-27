@@ -284,7 +284,7 @@ TObject * TObjectList::operator [](intptr_t Index) const
   return static_cast<TObject *>(TList::operator[](Index));
 }
 
-TObject * TObjectList::GetItem(intptr_t Index) const
+TObject * TObjectList::GetObj(intptr_t Index) const
 {
   return static_cast<TObject *>(TList::GetItem(Index));
 }

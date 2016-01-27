@@ -373,7 +373,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   USEDPARAM(Key);
 
   UnicodeString RegKey = SubKey;
-  UnicodeString OriginalPuttyRegistryStorageKey(_T(PUTTY_REG_POS));
+  UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
   intptr_t PuttyKeyLen = OriginalPuttyRegistryStorageKey.Length();
   assert(RegKey.SubString(1, PuttyKeyLen) == OriginalPuttyRegistryStorageKey);
   RegKey = RegKey.SubString(PuttyKeyLen + 1, RegKey.Length() - PuttyKeyLen);

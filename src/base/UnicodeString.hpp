@@ -16,9 +16,9 @@ public:
   UTF8String() {}
   UTF8String(const UTF8String & rht);
   explicit UTF8String(const UnicodeString & Str);
-  explicit UTF8String(const wchar_t * Str);
+  UTF8String(const wchar_t * Str);
   explicit UTF8String(const wchar_t * Str, intptr_t Size);
-  explicit UTF8String(const char * Str, intptr_t Size);
+  UTF8String(const char * Str, intptr_t Size);
 
   ~UTF8String() {}
 
@@ -194,12 +194,12 @@ public:
   AnsiString() {}
   AnsiString(const AnsiString & rht);
   AnsiString(intptr_t Size, char Ch) : Data(Size, Ch) {}
-  AnsiString(const wchar_t * Str);
-  AnsiString(const wchar_t * Str, intptr_t Size);
+  explicit AnsiString(const wchar_t * Str);
+  explicit AnsiString(const wchar_t * Str, intptr_t Size);
   AnsiString(const char * Str);
-  AnsiString(const char * Str, intptr_t Size);
-  AnsiString(const uint8_t * Str);
-  AnsiString(const uint8_t * Str, intptr_t Size);
+  explicit AnsiString(const char * Str, intptr_t Size);
+  explicit AnsiString(const uint8_t * Str);
+  explicit AnsiString(const uint8_t * Str, intptr_t Size);
   explicit AnsiString(const UnicodeString & Str);
   explicit AnsiString(const UTF8String & Str);
   explicit AnsiString(const RawByteString & Str);
@@ -274,12 +274,12 @@ class RawByteString
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   RawByteString() {}
-  RawByteString(const wchar_t * Str);
-  RawByteString(const wchar_t * Str, intptr_t Size);
+  explicit RawByteString(const wchar_t * Str);
+  explicit RawByteString(const wchar_t * Str, intptr_t Size);
   RawByteString(const char * Str);
-  RawByteString(const char * Str, intptr_t Size);
-  RawByteString(const uint8_t * Str);
-  RawByteString(const uint8_t * Str, intptr_t Size) { Init(Str, Size); }
+  explicit RawByteString(const char * Str, intptr_t Size);
+  explicit RawByteString(const uint8_t * Str);
+  explicit RawByteString(const uint8_t * Str, intptr_t Size) { Init(Str, Size); }
   RawByteString(const UnicodeString & Str);
   RawByteString(const RawByteString & Str);
   RawByteString(const AnsiString & Str);

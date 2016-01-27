@@ -504,6 +504,7 @@ bool TCopyParamList::GetAnyRule() const
 TGUIConfiguration::TGUIConfiguration() : TConfiguration(),
   FLocale(0),
   FLocales(CreateSortedStringList()),
+  FLastLocalesExts(L"*"),
   FContinueOnError(false),
   FConfirmCommandSession(false),
   FPuttyPassword(false),
@@ -519,13 +520,11 @@ TGUIConfiguration::TGUIConfiguration() : TConfiguration(),
   FQueueKeepDoneItems(false),
   FQueueKeepDoneItemsFor(0),
   FBeepOnFinish(false),
-  FCopyParamList(nullptr),
+  FCopyParamList(new TCopyParamList()),
   FCopyParamListDefaults(false),
   FKeepUpToDateChangeDelay(0),
   FSessionReopenAutoIdle(0)
 {
-  FLastLocalesExts = L"*";
-  FCopyParamList = new TCopyParamList();
   CoreSetResourceModule(0);
 }
 

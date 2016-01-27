@@ -290,6 +290,9 @@ void TKeepaliveThread::Execute()
 
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   TCustomFarFileSystem(APlugin),
+  FTerminal(nullptr),
+  FQueue(nullptr),
+  FQueueStatus(nullptr),
   FProgressSaveScreenHandle(0),
   FSynchronizationSaveScreenHandle(0),
   FAuthenticationSaveScreenHandle(0),
@@ -297,9 +300,6 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FFileList(nullptr),
   FPanelItems(nullptr),
   FSavedFindFolder(L""),
-  FTerminal(nullptr),
-  FQueue(nullptr),
-  FQueueStatus(nullptr),
   FQueueStatusInvalidated(false),
   FQueueItemInvalidated(false),
   FRefreshLocalDirectory(false),
@@ -2389,7 +2389,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
 {
   for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(Index));
+    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(Index));
     assert(PanelItem);
     if (PanelItem->GetIsFile())
     {
@@ -2450,7 +2450,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES 
     else
     {
       Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILE_CONFIRM : DELETE_FILE_CONFIRM).c_str(),
-        NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(0))->GetFileName().c_str());
+        NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(0))->GetFileName().c_str());
     }
 
     if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
@@ -2507,7 +2507,7 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     if (PanelItems->GetCount() == 1)
     {
       Prompt = FORMAT(GetMsg(EXPORT_SESSION_PROMPT).c_str(),
-        NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(0))->GetFileName().c_str());
+        NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(0))->GetFileName().c_str());
     }
     else
     {
@@ -2802,7 +2802,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
     TFarPanelItem * PanelItem;
     for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
-      PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(Index));
+      PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(Index));
       bool AnyData = false;
       FileName = PanelItem->GetFileName();
       if (PanelItem->GetIsFile())
@@ -2893,7 +2893,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   TObject * Data = nullptr;
   for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {
-    PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(Index));
+    PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(Index));
     assert(PanelItem);
     if ((!SelectedOnly || PanelItem->GetSelected()) &&
         !PanelItem->GetIsParentDirectory())
@@ -3406,9 +3406,9 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       TObjectList * PanelItems = (*GetPanelInfo())->GetItems();
       for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
       {
-        if ((NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(Index)))->GetFileName() == AFileName)
+        if ((NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(Index)))->GetFileName() == AFileName)
         {
-          PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetItem(Index));
+          PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(Index));
           break;
         }
       }

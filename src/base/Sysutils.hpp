@@ -34,13 +34,13 @@ enum FileAttributesEnum
 intptr_t __cdecl debug_printf(const wchar_t * format, ...);
 intptr_t __cdecl debug_printf2(const char * format, ...);
 
+#define NB_TEXT(T) L#T
 #ifndef NDEBUG
 #if defined(_MSC_VER)
 #if (_MSC_VER >= 1900)
 #define DEBUG_PRINTF(format, ...) do { ::debug_printf(L"Plugin: [%s:%d] %s: "format L"\n", ::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
 #define DEBUG_PRINTF2(format, ...) do { ::debug_printf2("Plugin: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
 #else
-#define NB_TEXT(T) L#T
 #define DEBUG_PRINTF(format, ...) do { ::debug_printf(L"Plugin: [%s:%d] %s: "NB_TEXT(format) L"\n", ::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
 #define DEBUG_PRINTF2(format, ...) do { ::debug_printf2("Plugin: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
 #endif

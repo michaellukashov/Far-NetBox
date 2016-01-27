@@ -6125,7 +6125,7 @@ void TTerminalList::FreeAndNullTerminal(TTerminal *& Terminal)
 
 TTerminal * TTerminalList::GetTerminal(intptr_t Index)
 {
-  return NB_STATIC_DOWNCAST(TTerminal, GetItem(Index));
+  return NB_STATIC_DOWNCAST(TTerminal, GetObj(Index));
 }
 
 void TTerminalList::Idle()

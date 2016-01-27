@@ -1242,7 +1242,7 @@ void TFarDialogItem::SetFlag(FARDIALOGITEMFLAGS Index, bool Value)
     }
 
     FARDIALOGITEMFLAGS F = GetFlags();
-    FARDIALOGITEMFLAGS Flag = Index & 0xFFFFFFFFFFFFFF00ULL;
+    FarDialogItemFlags Flag = (FarDialogItemFlags)(Index & 0xFFFFFF00ULL);
     bool ToHandle = true;
 
     switch (Flag)
@@ -2437,7 +2437,7 @@ intptr_t TFarList::ItemProc(intptr_t Msg, void * Param)
 TFarListBox::TFarListBox(TFarDialog * ADialog) :
   TFarDialogItem(ADialog, DI_LISTBOX),
   FAutoSelect(asOnlyFocus),
-  FDenyClose(nullptr)
+  FDenyClose(false)
 {
   FList = new TFarList(this);
   GetDialogItem()->ListItems = FList->GetListItems();

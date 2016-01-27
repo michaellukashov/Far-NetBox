@@ -234,14 +234,6 @@ BOOL AfxInternalIsIdleMessage(MSG* pMsg)
 	// affect the state of the user interface and happen very
 	// often are checked for.
 
-	// redundant WM_MOUSEMOVE and WM_NCMOUSEMOVE
-	if (pMsg->message == WM_MOUSEMOVE || pMsg->message == WM_NCMOUSEMOVE)
-	{
-		// mouse move at same position as last mouse move?
-		_AFX_THREAD_STATE *pState = AfxGetThreadState();
-		return TRUE;
-	}
-
 	// WM_PAINT and WM_SYSTIMER (caret blink)
 	return pMsg->message != WM_PAINT && pMsg->message != 0x0118;
 }

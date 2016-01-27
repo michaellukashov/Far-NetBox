@@ -3077,8 +3077,8 @@ public :
 		_In_ BOOL bRegTypeLib = FALSE,
 		_In_opt_ const CLSID* pCLSID = NULL) throw()
 	{
-		(pCLSID);
-		(bRegTypeLib);
+		(void)(pCLSID);
+		(void)(bRegTypeLib);
 
 		HRESULT hr = S_OK;
 
@@ -3100,8 +3100,8 @@ public :
 		_In_ BOOL bUnRegTypeLib,
 		_In_opt_ const CLSID* pCLSID = NULL) throw()
 	{
-		(bUnRegTypeLib);
-		(pCLSID);
+		(void)(bUnRegTypeLib);
+		(void)(pCLSID);
 
 		HRESULT hr = S_OK;
 
@@ -3610,9 +3610,9 @@ public :
 		_In_ BOOL bRegister,
 		_In_opt_ struct _ATL_REGMAP_ENTRY* pMapEntries = NULL) throw()
 	{
-		(lpszRes);
-		(bRegister);
-		(pMapEntries);
+		(void)(lpszRes);
+		(void)(bRegister);
+		(void)(pMapEntries);
 		return E_FAIL;
 	}
 #else
@@ -3631,9 +3631,9 @@ public :
 		_In_opt_ struct _ATL_REGMAP_ENTRY* pMapEntries = NULL) throw()
 	{
 #if defined(_ATL_STATIC_REGISTRY)
-		(nResID);
-		(bRegister);
-		(pMapEntries);
+		(void)(nResID);
+		(void)(bRegister);
+		(void)(pMapEntries);
 		return E_FAIL;
 #else
 		return CAtlModuleT<CComModule>::UpdateRegistryFromResourceD(nResID, bRegister, pMapEntries);
@@ -5308,7 +5308,6 @@ inline HRESULT WINAPI CComModule::UpdateRegistryClass(
 {
 	if (bRegister)
 	{
-		TCHAR szDesc[256];
 		// LoadString(m_hInst, nDescID, szDesc, 256);
 		return S_OK; // RegisterClassHelper(clsid, lpszProgID, lpszVerIndProgID, szDesc, dwFlags);
 	}

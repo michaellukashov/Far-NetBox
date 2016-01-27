@@ -98,7 +98,7 @@ void TConfiguration::Default()
   }
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
-  SetPuttyRegistryStorageKey(_T(PUTTY_REG_POS));
+  SetPuttyRegistryStorageKey(PUTTY_REG_POS);
   FConfirmOverwriting = true;
   FConfirmResume = true;
   FAutoReadDirectoryAfterOp = true;

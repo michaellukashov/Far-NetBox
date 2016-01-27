@@ -27,7 +27,7 @@
 // Konstruktion/Destruktion
 //////////////////////////////////////////////////////////////////////
 
-char* CCrypt::m_key = "FILEZILLA1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const char* CCrypt::m_key = "FILEZILLA1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 CString CCrypt::encrypt(CString str)
 {

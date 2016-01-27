@@ -109,32 +109,11 @@ _AfxHandleActivate(CWnd* pWnd, WPARAM nState, CWnd* pWndOther)
 {
 	ASSERT(pWnd != NULL);
 
-	// send WM_ACTIVATETOPLEVEL when top-level parents change
-	if (!(pWnd->GetStyle() & WS_CHILD))
-	{
-		CWnd* pTopLevel= pWnd->GetTopLevelParent();
-	}
 }
 
 AFX_STATIC BOOL AFXAPI
 _AfxHandleSetCursor(CWnd* pWnd, UINT nHitTest, UINT nMsg)
 {
-	if (nHitTest == HTERROR &&
-		(nMsg == WM_LBUTTONDOWN || nMsg == WM_MBUTTONDOWN ||
-		 nMsg == WM_RBUTTONDOWN))
-	{
-		// activate the last active window if not active
-		CWnd* pLastActive = pWnd->GetTopLevelParent();
-		if (pLastActive != NULL)
-			pLastActive = pLastActive->GetLastActivePopup();
-		if (pLastActive != NULL &&
-			pLastActive != CWnd::GetForegroundWindow() &&
-			pLastActive->IsWindowEnabled())
-		{
-			pLastActive->SetForegroundWindow();
-			return TRUE;
-		}
-	}
 	return FALSE;
 }
 
@@ -161,10 +140,6 @@ LRESULT AFXAPI AfxCallWndProc(CWnd* pWnd, HWND hWnd, UINT nMsg,
 		if ((nMsg == WM_DESTROY) && (pWnd->m_pCtrlCont != NULL))
 			pWnd->m_pCtrlCont->OnUIActivate(NULL);
 #endif
-
-		// special case for WM_INITDIALOG
-		CRect rectOld;
-		DWORD dwStyle = 0;
 
 		// delegate to object's WindowProc
 		lResult = pWnd->WindowProc(nMsg, wParam, lParam);
@@ -342,30 +317,9 @@ _AfxActivationWndProc(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		BOOL bCallDefault = TRUE;
 		switch (nMsg)
 		{
-		case WM_INITDIALOG:
-			{
-				DWORD dwStyle;
-				CRect rectOld;
-				CWnd* pWnd = CWnd::FromHandle(hWnd);
-				bCallDefault = FALSE;
-				lResult = CallWindowProc(oldWndProc, hWnd, nMsg, wParam, lParam);
-			}
-			break;
-
 		case WM_ACTIVATE:
 			_AfxHandleActivate(CWnd::FromHandle(hWnd), wParam,
 				CWnd::FromHandle((HWND)lParam));
-			break;
-
-		case WM_SETCURSOR:
-			bCallDefault = !_AfxHandleSetCursor(CWnd::FromHandle(hWnd),
-				(short)LOWORD(lParam), HIWORD(lParam));
-			break;
-
-		case WM_NCDESTROY:
-			SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<INT_PTR>(oldWndProc));
-			RemoveProp(hWnd, _afxOldWndProc);
-			GlobalDeleteAtom(GlobalFindAtom(_afxOldWndProc));
 			break;
 		}
 
@@ -489,7 +443,6 @@ _AfxCbtFilterHook(int code, WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-lCallNextHook:
 	LRESULT lResult = CallNextHookEx(pThreadState->m_hHookOldCbtFilter, code,
 		wParam, lParam);
 
@@ -789,10 +742,6 @@ void CWnd::OnDrawItem(int /*nIDCtl*/, LPDRAWITEMSTRUCT lpDrawItemStruct)
 int CWnd::OnCompareItem(int /*nIDCtl*/, LPCOMPAREITEMSTRUCT lpCompareItemStruct)
 {
 	// reflect notification to child window control
-	LRESULT lResult;
-	// if (ReflectLastMsg(lpCompareItemStruct->hwndItem, &lResult))
-		// return (int)lResult;        // eat it
-
 	// not handled - do default
 	return (int)Default();
 }
@@ -809,17 +758,6 @@ void CWnd::OnDeleteItem(int /*nIDCtl*/, LPDELETEITEMSTRUCT lpDeleteItemStruct)
 // Measure item implementation relies on unique control/menu IDs
 void CWnd::OnMeasureItem(int /*nIDCtl*/, LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
-	if (lpMeasureItemStruct->CtlType == ODT_MENU)
-	{
-		ASSERT(lpMeasureItemStruct->CtlID == 0);
-
-		{
-		}
-	}
-	else
-	{
-		CWnd* pChild = GetDescendantWindow(lpMeasureItemStruct->CtlID, TRUE);
-	}
 	// not handled - do default
 	Default();
 }
@@ -1650,8 +1588,6 @@ BOOL CWnd::IsTopParentActive() const
 
 void CWnd::ActivateTopParent()
 {
-	// special activate logic for floating toolbars and palettes
-	CWnd* pActiveWnd = GetForegroundWindow();
 }
 
 CWnd* PASCAL CWnd::GetSafeOwner(CWnd* pParent, HWND* pWndTop)
@@ -1670,39 +1606,6 @@ int CWnd::MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption, UINT nType)
 
 CWnd* PASCAL CWnd::GetDescendantWindow(HWND hWnd, int nID, BOOL bOnlyPerm)
 {
-	// GetDlgItem recursive (return first found)
-	// breadth-first for 1 level, then depth-first for next level
-
-	// use GetDlgItem since it is a fast USER function
-	HWND hWndChild;
-	CWnd* pWndChild;
-	if ((hWndChild = ::GetDlgItem(hWnd, nID)) != NULL)
-	{
-		if (::GetTopWindow(hWndChild) != NULL)
-		{
-			// children with the same ID as their parent have priority
-			pWndChild = GetDescendantWindow(hWndChild, nID, bOnlyPerm);
-			if (pWndChild != NULL)
-				return pWndChild;
-		}
-		// return temporary handle if allowed
-		if (!bOnlyPerm)
-			return CWnd::FromHandle(hWndChild);
-
-		// return only permanent handle
-		pWndChild = CWnd::FromHandlePermanent(hWndChild);
-		if (pWndChild != NULL)
-			return pWndChild;
-	}
-
-	// walk each child
-	for (hWndChild = ::GetTopWindow(hWnd); hWndChild != NULL;
-		hWndChild = ::GetNextWindow(hWndChild, GW_HWNDNEXT))
-	{
-		pWndChild = GetDescendantWindow(hWndChild, nID, bOnlyPerm);
-		if (pWndChild != NULL)
-			return pWndChild;
-	}
 	return NULL;    // not found
 }
 
@@ -1747,10 +1650,6 @@ void PASCAL CWnd::SendMessageToDescendants(HWND hWnd, UINT message,
 
 void CWnd::CalcWindowRect(LPRECT lpClientRect, UINT nAdjustType)
 {
-	DWORD dwExStyle = GetExStyle();
-	if (nAdjustType == 0)
-		dwExStyle &= ~WS_EX_CLIENTEDGE;
-	::AdjustWindowRectEx(lpClientRect, GetStyle(), FALSE, dwExStyle);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1758,24 +1657,6 @@ BOOL PASCAL CWnd::WalkPreTranslateTree(HWND hWndStop, MSG* pMsg)
 {
 	ASSERT(hWndStop == NULL || ::IsWindow(hWndStop));
 	ASSERT(pMsg != NULL);
-
-	// walk from the target window up to the hWndStop window checking
-	//  if any window wants to translate this message
-
-	for (HWND hWnd = pMsg->hwnd; hWnd != NULL; hWnd = ::GetParent(hWnd))
-	{
-		CWnd* pWnd = CWnd::FromHandlePermanent(hWnd);
-		if (pWnd != NULL)
-		{
-			// target window is a C++ window
-			if (pWnd->PreTranslateMessage(pMsg))
-				return TRUE; // trapped by target window (eg: accelerators)
-		}
-
-		// got to hWndStop window without interest
-		if (hWnd == hWndStop)
-			break;
-	}
 	return FALSE;       // no special processing
 }
 
@@ -1857,21 +1738,6 @@ BOOL CWnd::ReflectChildNotify(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT* 
 
 	// other special cases (WM_CTLCOLOR family)
 	default:
-		if (uMsg >= WM_CTLCOLORMSGBOX && uMsg <= WM_CTLCOLORSTATIC)
-		{
-			// fill in special struct for compatiblity with 16-bit WM_CTLCOLOR
-			AFX_CTLCOLOR ctl;
-			ctl.hDC = (HDC)wParam;
-			ctl.nCtlType = uMsg - WM_CTLCOLORMSGBOX;
-			//ASSERT(ctl.nCtlType >= CTLCOLOR_MSGBOX);
-			ASSERT(ctl.nCtlType <= CTLCOLOR_STATIC);
-
-			// reflect the message through the message map as OCM_CTLCOLOR
-			BOOL bResult = CWnd::OnWndMsg(WM_REFLECT_BASE+WM_CTLCOLOR, 0, (LPARAM)&ctl, pResult);
-			if ((HBRUSH)*pResult == NULL)
-				bResult = FALSE;
-			return bResult;
-		}
 		break;
 	}
 
@@ -1915,31 +1781,11 @@ BOOL _afxGotScrollLines;
 
 BOOL CWnd::OnHelpInfo(HELPINFO* /*pHelpInfo*/)
 {
-	if (!(GetStyle() & WS_CHILD))
-	{
-		CWnd* pMainWnd = AfxGetMainWnd();
-		if (pMainWnd != NULL &&
-			GetKeyState(VK_SHIFT) >= 0 &&
-			GetKeyState(VK_CONTROL) >= 0 &&
-			GetKeyState(VK_MENU) >= 0)
-		{
-			pMainWnd->SendMessage(WM_COMMAND, ID_HELP);
-			return TRUE;
-		}
-	}
 	return Default() != 0;
 }
 
 LRESULT CWnd::OnDragList(WPARAM, LPARAM lParam)
 {
-	LPDRAGLISTINFO lpInfo = (LPDRAGLISTINFO)lParam;
-	ASSERT(lpInfo != NULL);
-
-	LRESULT lResult;
-	// if (ReflectLastMsg(lpInfo->hWnd, &lResult))
-		// return (int)lResult;    // eat it
-
-	// not handled - do default
 	return (int)Default();
 }
 
@@ -2065,42 +1911,6 @@ HRESULT CWnd::GetAccessibleChild(VARIANT varChild, IDispatch** ppdispChild)
 
 HRESULT CWnd::GetAccessibleName(VARIANT varChild, BSTR* pszName)
 {
-	if (varChild.lVal == CHILDID_SELF)
-	{
-		CString strText;
-		GetWindowText(strText);
-		*pszName = strText.AllocSysString();
-		return S_OK;
-	}
-	else
-	{
-		// Get Number of windowed children
-		long lCount = GetWindowedChildCount();
-		if (varChild.lVal > lCount)
-		{
-			/* if (m_pCtrlCont != NULL)
-			{
-				// Add to the count the number of windowless active X controls.
-				POSITION pos = m_pCtrlCont->m_listSitesOrWnds.GetHeadPosition();
-				while(pos != NULL)
-				{
-					COleControlSiteOrWnd *pSiteOrWnd = m_pCtrlCont->m_listSitesOrWnds.GetNext(pos);
-					ASSERT(pSiteOrWnd);
-					if(pSiteOrWnd->m_pSite && pSiteOrWnd->m_pSite->m_bIsWindowless)
-					{
-						lCount ++;
-						if (lCount == varChild.lVal)
-						{
-							CString strText;
-							pSiteOrWnd->m_pSite->GetWindowText(strText);
-							*pszName = strText.AllocSysString();
-							return S_OK;
-						}
-					}
-				}
-			}*/
-		}
-	}
 	//out of range
 	return E_INVALIDARG;
 }

@@ -46,7 +46,7 @@ static FARPROC WINAPI delayFailureHook(/*dliNotification*/unsigned dliNotify,
 {
     if(   dliNotify == /*dliFailGetProcAddress*/dliFailGetProc
        && pdli && pdli->cb == sizeof(*pdli)
-       && pdli->hmodCur == GetModuleHandleA("kernel32")
+       && pdli->hmodCur == ::GetModuleHandleA("kernel32")
        && pdli->dlp.fImportByName && pdli->dlp.szProcName
        && (   !lstrcmpA(pdli->dlp.szProcName, "EncodePointer")
            || !lstrcmpA(pdli->dlp.szProcName, "DecodePointer")))

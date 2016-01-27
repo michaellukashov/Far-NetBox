@@ -89,13 +89,13 @@ const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const
 
 TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
-  return NB_STATIC_DOWNCAST(TNamedObject, GetItem(Index + FHiddenCount));
+  return NB_STATIC_DOWNCAST(TNamedObject, GetObj(Index + FHiddenCount));
 }
 
 void TNamedObjectList::Recount()
 {
   intptr_t Index = 0;
-  while ((Index < TObjectList::GetCount()) && (NB_STATIC_DOWNCAST(TNamedObject, GetItem(Index))->GetHidden()))
+  while ((Index < TObjectList::GetCount()) && (NB_STATIC_DOWNCAST(TNamedObject, GetObj(Index))->GetHidden()))
   {
     ++Index;
   }
@@ -132,7 +132,7 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name)
   for (Integer Index = 0; Index < GetCountIncludingHidden(); ++Index)
   {
     // Not using AtObject as we iterate even hidden objects here
-    TNamedObject * NamedObject = static_cast<TNamedObject *>(GetItem(Index));
+    TNamedObject * NamedObject = static_cast<TNamedObject *>(GetObj(Index));
     if (NamedObject->IsSameName(Name))
     {
       return NamedObject;

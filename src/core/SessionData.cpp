@@ -1471,7 +1471,7 @@ bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
        // this can be optimized as the list is sorted
       for (Integer Index = 0; Index < AStoredSessions->GetCountIncludingHidden(); ++Index)
       {
-        TSessionData * AData = NB_STATIC_DOWNCAST(TSessionData, AStoredSessions->GetItem(Index));
+        TSessionData * AData = NB_STATIC_DOWNCAST(TSessionData, AStoredSessions->GetObj(Index));
         if (true) // !AData->GetIsWorkspace() &&
             // ::AnsiSameText(AData->GetName(), DecodedUrl) ||
             // ::AnsiSameText(AData->GetName() + L"/", DecodedUrl.SubString(1, AData->GetName().Length() + 1)))
@@ -3297,7 +3297,7 @@ TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID) 
       break;
     }
   }
-  if (Result == -1)
+  if (Result == (TFSProtocol)-1)
     Result = CONST_DEFAULT_PROTOCOL;
   assert(Result != -1);
   return Result;
@@ -3428,7 +3428,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   {
     for (intptr_t Index = 0; Index < TObjectList::GetCount(); ++Index)
     {
-      if (Loaded->IndexOf(GetItem(Index)) < 0)
+      if (Loaded->IndexOf(GetObj(Index)) < 0)
       {
         Delete(Index);
         Index--;
@@ -3471,7 +3471,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults.get());
   for (intptr_t Index = 0; Index < GetCountIncludingHidden(); ++Index)
   {
-    TSessionData * SessionData = NB_STATIC_DOWNCAST(TSessionData, GetItem(Index));
+    TSessionData * SessionData = NB_STATIC_DOWNCAST(TSessionData, GetObj(Index));
     try
     {
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
@@ -3527,7 +3527,7 @@ void TStoredSessionList::Saved()
   FDefaultSettings->SetModified(false);
   for (intptr_t Index = 0; Index < GetCountIncludingHidden(); ++Index)
   {
-    (NB_STATIC_DOWNCAST(TSessionData, GetItem(Index))->SetModified(false));
+    (NB_STATIC_DOWNCAST(TSessionData, GetObj(Index))->SetModified(false));
   }
 }
 
