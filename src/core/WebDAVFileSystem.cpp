@@ -1591,7 +1591,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
     FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, RealFileName.c_str()), "",
     [&]()
     {
-      THROWOSIFFALSE(FileSetAttr(ApiPath(RealFileName), LocalFileAttrs & ~faArchive) == 0);
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(RealFileName), LocalFileAttrs & ~faArchive) == 0);
     });
   }
 }
@@ -2210,7 +2210,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()), "",
       [&]()
       {
-        THROWOSIFFALSE(FileSetAttr(ApiPath(DestFullName), LocalFileAttrs | NewAttrs) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFullName), LocalFileAttrs | NewAttrs) == 0);
       });
     }
 
