@@ -784,8 +784,8 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     MoreMessageLines = new TStringList();
     MoreMessageLinesPtr.reset(MoreMessageLines);
     UnicodeString MoreMessages = FParams->MoreMessages->GetText();
-    while (MoreMessages[MoreMessages.Length()] == L'\n' ||
-           MoreMessages[MoreMessages.Length()] == L'\r')
+    while ((MoreMessages.Length() > 0) && (MoreMessages[MoreMessages.Length()] == L'\n' ||
+           MoreMessages[MoreMessages.Length()] == L'\r'))
     {
       MoreMessages.SetLength(MoreMessages.Length() - 1);
     }
