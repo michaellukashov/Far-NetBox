@@ -152,9 +152,10 @@ bool TFar3Storage::DeleteValue(const UnicodeString & Name)
 
 bool TFar3Storage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
 {
-  Error(SNotImplemented, 3011);
+  DebugUsedParam(ForceAnsi);
+  // Error(SNotImplemented, 3011);
   UnicodeString K = PuttyMungeStr(SubKey);
-  bool Result = true; // FPluginSettings.KeyExists(K);
+  bool Result = FPluginSettings.ValueExists(FRoot, K.c_str());
   return Result;
 }
 
