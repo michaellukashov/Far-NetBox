@@ -334,11 +334,6 @@ int ne_sock_init(void)
     if (err != 0) {
 	return init_state = -1;
     }
-#ifdef HAVE_SSPI
-    if (ne_sspi_init() < 0) {
-        return init_state = -1;
-    }
-#endif
 #endif
 
 #ifdef NE_HAVE_SOCKS
@@ -360,6 +355,16 @@ int ne_sock_init(void)
 #endif
 
     init_state = 1;
+
+#ifdef WIN32    
+#ifdef HAVE_SSPI
+    // This fails on Wine, and we do not want to abort
+    // whole Neon initialization because of that
+    if (ne_sspi_init() < 0) {
+        return -2;
+    }
+#endif
+#endif
     return 0;
 }
 
@@ -1782,6 +1787,10 @@ int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx, void *userdata)
     
     if (ctx->sess)
 	SSL_set_session(ssl, ctx->sess);
+
+#ifdef WINSCP
+    ne_init_ssl_session(ssl, userdata);
+#endif
 
     ret = SSL_connect(ssl);
     if (ret != 1) {

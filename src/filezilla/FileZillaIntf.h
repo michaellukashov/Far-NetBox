@@ -1,16 +1,16 @@
-//---------------------------------------------------------------------------
+
 #ifndef FileZillaIntfH
 #define FileZillaIntfH
-//---------------------------------------------------------------------------
+
 #include <rdestl/map.h>
 
 #include <time.h>
 #include <FileZillaOpt.h>
 #include <FileZillaTools.h>
-//---------------------------------------------------------------------------
+
 class CFileZillaApi;
 class TFileZillaIntern;
-//---------------------------------------------------------------------------
+
 struct TRemoteFileTime
 {
   WORD Year;
@@ -24,7 +24,7 @@ struct TRemoteFileTime
   bool HasDate;
   bool Utc;
 };
-//---------------------------------------------------------------------------
+
 struct TListDataEntry
 {
   TRemoteFileTime Time;
@@ -37,7 +37,7 @@ struct TListDataEntry
   bool Dir;
   bool Link;
 };
-//---------------------------------------------------------------------------
+
 struct TFtpsCertificateData
 {
   struct TContact
@@ -79,15 +79,17 @@ struct TFtpsCertificateData
   int VerificationResult;
   int VerificationDepth;
 };
-//---------------------------------------------------------------------------
+
 struct TNeedPassRequestData
 {
   wchar_t * Password;
 };
-//---------------------------------------------------------------------------
+
 class t_server;
 class TFTPServerCapabilities;
-//---------------------------------------------------------------------------
+typedef struct x509_st X509;
+typedef struct evp_pkey_st EVP_PKEY;
+
 class TFileZillaIntf : public CFileZillaTools
 {
 NB_DISABLE_COPY(TFileZillaIntf)
@@ -100,7 +102,6 @@ public:
     LOG_ERROR = 1,
     LOG_COMMAND = 2,
     LOG_REPLY = 3,
-    LOG_LIST = 4,
     LOG_APIERROR = 5,
     LOG_WARNING = 6,
     LOG_PROGRESS = 7,
@@ -117,12 +118,10 @@ public:
   enum
   {
     FILEEXISTS_OVERWRITE = 0,
-    // 1 is FILEEXISTS_OVERWRITEIFNEWER what we do not use
-    FILEEXISTS_RESUME = 2,
-    FILEEXISTS_RENAME = 3,
-    FILEEXISTS_SKIP = 4,
-    // 5 is FILEEXISTS_RESUME_ASKONFAIL what we do not use
-    FILEEXISTS_COMPLETE = 6,
+    FILEEXISTS_RESUME = 1,
+    FILEEXISTS_RENAME = 2,
+    FILEEXISTS_SKIP = 3,
+    FILEEXISTS_COMPLETE = 4,
   };
 
   enum
@@ -174,16 +173,15 @@ public:
   bool Cancel();
 
   bool Connect(const wchar_t * Host, int Port, const wchar_t * User,
-    const wchar_t * Pass, const wchar_t * Account, bool FwByPass,
+    const wchar_t * Pass, const wchar_t * Account,
     const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8, int CodePage,
-    int iForcePasvIp, int iUseMlsd, int iDupFF, int iUndupFF);
+    int iForcePasvIp, int iUseMlsd,
+    int iDupFF, int iUndupFF,
+    X509 * Certificate, EVP_PKEY * PrivateKey);
   bool Close(bool AllowBusy);
 
-  bool List();
   bool List(const wchar_t * Path);
-#ifdef MPEXT
   bool ListFile(const wchar_t * FileName, const wchar_t * APath);
-#endif
 
   bool CustomCommand(const wchar_t * Command);
 
@@ -222,29 +220,26 @@ protected:
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uintptr_t Count) = 0;
   virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
-    __int64 Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
-    bool FileTransfer) = 0;
+    __int64 Bytes, bool FileTransfer) = 0;
   virtual bool HandleReply(intptr_t Command, uintptr_t Reply) = 0;
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities) = 0;
   virtual bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
 
-  bool Check(intptr_t ReturnCode, const wchar_t * Context, intptr_t Expected = -1);
+  inline bool Check(intptr_t ReturnCode, const wchar_t * Context, intptr_t Expected = -1);
 
 private:
   CFileZillaApi * FFileZillaApi;
   TFileZillaIntern * FIntern;
   t_server * FServer;
 };
-//---------------------------------------------------------------------------
-#ifdef MPEXT
-//---------------------------------------------------------------------------
+
 enum ftp_capabilities_t
 {
   unknown,
   yes,
   no
 };
-//---------------------------------------------------------------------------
+
 enum ftp_capability_names_t
 {
   syst_command = 1, // reply of SYST command as option
@@ -262,9 +257,10 @@ enum ftp_capability_names_t
   list_hidden_support, // LIST -a command
   rest_stream, // supports REST+STOR in addition to APPE
 };
-//---------------------------------------------------------------------------
+
 class TFTPServerCapabilities : public TObject
 {
+NB_DISABLE_COPY(TFTPServerCapabilities)
 public:
   TFTPServerCapabilities(){}
   ftp_capabilities_t GetCapability(ftp_capability_names_t Name);
@@ -298,10 +294,6 @@ protected:
   };
 
   rde::map<ftp_capability_names_t, t_cap> FCapabilityMap;
-private:
-  TFTPServerCapabilities(const TFTPServerCapabilities &);
-  TFTPServerCapabilities & operator = (const TFTPServerCapabilities &);
 };
-#endif
-//---------------------------------------------------------------------------
+
 #endif // FileZillaIntfH

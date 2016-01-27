@@ -16,6 +16,7 @@
 #include "../base/Common.cpp"
 #include "../base/Exceptions.cpp"
 #include "../base/FileBuffer.cpp"
+#include "../base/Global.cpp"
 
 #include "../core/RemoteFiles.cpp"
 #include "../core/Terminal.cpp"
@@ -41,10 +42,13 @@
 #include "../core/FileSystems.cpp"
 #include "../core/Bookmarks.cpp"
 #include "../core/WinSCPSecurity.cpp"
+#include "../core/Http.cpp"
+#include "../core/NeonIntf.cpp"
 #include "../windows/SynchronizeController.cpp"
 #include "../windows/GUITools.cpp"
 #include "../windows/GUIConfiguration.cpp"
 #include "../windows/Tools.cpp"
 #include "../windows/ProgParams.cpp"
+#include "../windows/WinInterface.cpp"
 
 #pragma warning(pop)

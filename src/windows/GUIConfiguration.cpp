@@ -338,9 +338,9 @@ void TCopyParamList::Add(const UnicodeString & Name,
 void TCopyParamList::Insert(intptr_t Index, const UnicodeString & Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
-  assert(FNames->IndexOf(Name) < 0);
+  DebugAssert(FNames->IndexOf(Name) < 0);
   FNames->Insert(Index, Name);
-  assert(CopyParam != nullptr);
+  DebugAssert(CopyParam != nullptr);
   FCopyParams->Insert(Index, CopyParam);
   FRules->Insert(Index, Rule);
   Modify();
@@ -378,7 +378,7 @@ void TCopyParamList::Move(intptr_t CurIndex, intptr_t NewIndex)
 
 void TCopyParamList::Delete(intptr_t Index)
 {
-  assert((Index >= 0) && (Index < GetCount()));
+  DebugAssert((Index >= 0) && (Index < GetCount()));
   FNames->Delete(Index);
   delete GetCopyParam(Index);
   FCopyParams->Delete(Index);
@@ -681,7 +681,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 
     if (FCopyParamListDefaults)
     {
-      assert(!FCopyParamList->GetModified());
+      DebugAssert(!FCopyParamList->GetModified());
       Storage->WriteInteger(L"CopyParamList", -1);
     }
     else if (All || FCopyParamList->GetModified())
@@ -786,7 +786,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
       LOCALESIGNATURE LocSig;
       GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, reinterpret_cast<LPWSTR>(&LocSig), sizeof(LocSig) / sizeof(TCHAR));
       LocaleName = *reinterpret_cast<LPWSTR>(&LocSig);
-      assert(!LocaleName.IsEmpty());
+      DebugAssert(!LocaleName.IsEmpty());
     }
     else
     {
@@ -845,7 +845,7 @@ LCID TGUIConfiguration::InternalLocale() const
   }
   else
   {
-    assert(false);
+    DebugAssert(false);
     Result = 0;
   }
   return Result;
@@ -872,7 +872,7 @@ void TGUIConfiguration::SetLocale(LCID Value)
     }
     else
     {
-      assert(false);
+      DebugAssert(false);
     }
   }
 }
@@ -1081,11 +1081,11 @@ const TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeStrin
   if (!Name.IsEmpty())
   {
     intptr_t Index = FCopyParamList->IndexOfName(Name);
-    assert(Index >= 0);
+    DebugAssert(Index >= 0);
     if (Index >= 0)
     {
       const TCopyParamType * Preset = FCopyParamList->GetCopyParam(Index);
-      assert(Preset != nullptr);
+      DebugAssert(Preset != nullptr);
       Result.Assign(Preset); // overwrite all but GUI options
       // reset all options known not to be configurable per-preset
       // kind of hack

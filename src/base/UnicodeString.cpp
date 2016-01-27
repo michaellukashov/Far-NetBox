@@ -90,6 +90,11 @@ void AnsiString::Init(const uint8_t * Str, intptr_t Length)
   Data = Data.c_str();
 }
 
+intptr_t AnsiString::Pos(const AnsiString & Str) const
+{
+  return static_cast<intptr_t>(Data.find(Str.c_str(), 0, 1)) + 1;
+}
+
 intptr_t AnsiString::Pos(wchar_t Ch) const
 {
   AnsiString Str(&Ch, 1);
@@ -408,11 +413,6 @@ UTF8String::UTF8String(const wchar_t * Str, intptr_t Size)
   Init(Str, Size);
 }
 
-UTF8String::UTF8String(const char * Str, intptr_t Size)
-{
-  Init(Str, Size);
-}
-
 UTF8String &UTF8String::Delete(intptr_t Index, intptr_t Count)
 {
   Data.erase(Index - 1, Count);
@@ -422,6 +422,12 @@ UTF8String &UTF8String::Delete(intptr_t Index, intptr_t Count)
 intptr_t UTF8String::Pos(char Ch) const
 {
   return Data.find(Ch) + 1;
+}
+
+int UTF8String::vprintf(const char * Format, va_list ArgList)
+{
+  SetLength(32 * 1024);
+  return vsnprintf_s((char *)Data.c_str(), Data.size(), _TRUNCATE, Format, ArgList);
 }
 
 UTF8String & UTF8String::Insert(const wchar_t * Str, intptr_t Pos)

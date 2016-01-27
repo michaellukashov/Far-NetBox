@@ -40,7 +40,7 @@ static bool WellKnownException(
     {
       throw EIntError(E->Message);
     }
-    Message = E->Message;
+    Message = MainInstructions(E->Message);
     CounterName = L"InternalExceptions";
     Clone.reset(new EIntError(E->Message));
   }
@@ -82,7 +82,7 @@ static bool WellKnownException(
     }
     if (AClone != nullptr)
     {
-      (*AClone) = NOT_NULL(Clone.release());
+      (*AClone) = DebugNotNull(Clone.release());
     }
   }
 
@@ -330,7 +330,7 @@ void ExtException::AddMoreMessages(const Exception * E)
 
     if (IsInternalException(E))
     {
-      // AppendExceptionStackTraceAndForget(FMoreMessages);
+      AppendExceptionStackTraceAndForget(FMoreMessages);
     }
 
     if (FMoreMessages->GetCount() == 0)
@@ -436,7 +436,7 @@ Exception * CloneException(Exception * E)
   else
   {
     // we do not expect this to happen
-    if (ALWAYS_FALSE(IsInternalException(E)))
+    if (DebugAlwaysFalse(IsInternalException(E)))
     {
       // to save exception stack trace
       Result = ExtException::CloneFrom(E);

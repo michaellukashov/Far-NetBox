@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <BaseDefs.hpp>
@@ -5,6 +6,9 @@
 #include "Configuration.h"
 #include "SessionData.h"
 #define HELP_NONE ""
+#define COMMAND_SWITCH L"Command"
+#define SESSIONNAME_SWICH L"SessionName"
+#define INI_NUL L"nul"
 
 TConfiguration * CreateConfiguration();
 class TOptions;
@@ -13,22 +17,22 @@ TOptions * GetGlobalOptions();
 void ShowExtendedException(Exception * E);
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
 
+UnicodeString GetCompanyRegistryKey();
 UnicodeString GetRegistryKey();
 void * BusyStart();
 void BusyEnd(void * Token);
-const uint32_t GUIUpdateInterval = 200;
-
-void WinInitialize();
-void WinFinalize();
+const uint32_t GUIUpdateInterval = 100;
 void SetNoGUI();
 bool ProcessGUI(bool Force = false);
-
 UnicodeString GetAppNameString();
 UnicodeString GetSshVersionString();
 void CopyToClipboard(const UnicodeString & Text);
 HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
   /*TThreadFunc ThreadFunc,*/ void * Parameter, DWORD CreationFlags,
   TThreadID & ThreadId);
+
+void WinInitialize();
+void WinFinalize();
 
 struct TQueryButtonAlias : public TObject
 {
@@ -40,8 +44,10 @@ struct TQueryButtonAlias : public TObject
   int GroupWith;
   bool Default;
   TShiftStateFlag GrouppedShiftState;
+  bool ElevationRequired;
 };
 
+// typedef void __fastcall (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
 DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
   intptr_t & /*Result*/);
 
@@ -50,7 +56,7 @@ enum TQueryType
   qtConfirmation,
   qtWarning,
   qtError,
-  qtInformation
+  qtInformation,
 };
 
 struct TQueryParams : public TObject
@@ -96,17 +102,22 @@ enum TPromptKind
 enum TPromptUserParam
 {
   pupEcho = 0x01,
-  pupRemember = 0x02
+  pupRemember = 0x02,
 };
 
 bool IsAuthenticationPrompt(TPromptKind Kind);
 bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
 bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
-
+//---------------------------------------------------------------------------
+//typedef void __fastcall (__closure *TFileFoundEvent)
+//  (TTerminal * Terminal, const UnicodeString FileName, const TRemoteFile * File,
+//   bool & Cancel);
 DEFINE_CALLBACK_TYPE4(TFileFoundEvent, void,
   TTerminal * /*Terminal*/, const UnicodeString & /*FileName*/,
   const TRemoteFile * /*File*/,
   bool & /*Cancel*/);
+//typedef void __fastcall (__closure *TFindingFileEvent)
+//  (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
 DEFINE_CALLBACK_TYPE3(TFindingFileEvent, void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool & /*Cancel*/);
 
@@ -114,7 +125,7 @@ class TOperationVisualizer
 {
 NB_DISABLE_COPY(TOperationVisualizer)
 public:
-  explicit TOperationVisualizer(bool UseBusyCursor);
+  explicit TOperationVisualizer(bool UseBusyCursor = true);
   ~TOperationVisualizer();
 
 private:

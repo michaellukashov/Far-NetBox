@@ -385,9 +385,47 @@ intptr_t AnsiCompareIC(const UnicodeString & Str1, const UnicodeString & Str2)
   return AnsiCompareText(Str1, Str2);
 }
 
+bool AnsiSameStr(const UnicodeString & Str1, const UnicodeString & Str2)
+{
+  return AnsiCompareIC(Str1, Str2) == 0;
+}
+
 bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
 {
   return ::Pos(Str1, Str2) > 0;
+}
+
+bool ContainsStr(const AnsiString & Str1, const AnsiString & Str2)
+{
+  return Str1.Pos(Str2) > 0;
+}
+
+bool ContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
+{
+  return AnsiContainsText(Str1, Str2);
+}
+
+UnicodeString UTF8ToString(const RawByteString & Str)
+{
+  return MB2W(Str.c_str(), CP_UTF8);
+}
+
+UnicodeString UTF8ToString(const char * Str, intptr_t Len)
+{
+  if (!Str || !*Str || !Len)
+  {
+    return UnicodeString(L"");
+  }
+
+  intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Len), nullptr, 0);
+  UnicodeString Result;
+  if (reqLength)
+  {
+    Result.SetLength(reqLength);
+    ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Len), const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
+    Result.SetLength(Result.Length() - 1);  //remove NULL character
+  }
+  return Result;
 }
 
 void RaiseLastOSError(DWORD LastError)
@@ -551,14 +589,14 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
 void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
 {
   WIN32_FIND_DATA FindData;
-  HANDLE Handle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
-  if (Handle != INVALID_HANDLE_VALUE)
+  HANDLE LocalFileHandle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
+  if (LocalFileHandle != INVALID_HANDLE_VALUE)
   {
     ATimestamp =
       UnixToDateTime(
         ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
         dstmUnix);
-    ::FindClose(Handle);
+    ::FindClose(LocalFileHandle);
   }
 }
 
@@ -1468,7 +1506,41 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTi
   (void)Fmt;
   (void)DateTime;
   UnicodeString Result;
-  Error(SNotImplemented, 150);
+  if (Fmt == L"ddddd tt")
+	{
+		/*
+		return FormatDateTime(L"ddddd tt",
+			EncodeDateVerbose(
+				static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
+				static_cast<uint16_t>(ValidityTime.Day)) +
+			EncodeTimeVerbose(
+				static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
+				static_cast<uint16_t>(ValidityTime.Sec), 0));
+		*/
+		uint16_t Year;
+		uint16_t Month;
+		uint16_t Day;
+		uint16_t Hour;
+		uint16_t Minutes;
+		uint16_t Seconds;
+		uint16_t Milliseconds;
+		
+		DateTime.DecodeDate(Year, Month, Day);
+		DateTime.DecodeTime(Hour, Minutes, Seconds, Milliseconds);
+
+		int Sec;
+		uint16_t Y, M, D, H, Mm, S, MS;
+		TDateTime DateTime =
+			EncodeDateVerbose(Year, Month, Day) +
+			EncodeTimeVerbose(Hour, Minutes, Seconds, Milliseconds);
+		DateTime.DecodeDate(Y, M, D);
+		DateTime.DecodeTime(H, Mm, S, MS);
+		Result = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
+	}
+	else
+	{
+		Error(SNotImplemented, 150);
+	}
   return Result;
 }
 

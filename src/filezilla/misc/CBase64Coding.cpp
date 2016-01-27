@@ -2,12 +2,6 @@
 #include "CBase64Coding.hpp"
 #pragma hdrstop
 
-#ifdef MPEXT
-#if defined(__BORLANDC__)
-#pragma warn -inl
-#endif
-#endif
-
 #define CARRIAGE_RETURN (13)
 #define LINE_FEED       (10)
 

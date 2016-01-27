@@ -309,7 +309,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         // directory will be set by FAR itself
         Directory.Clear();
       }
-      assert(StoredSessions);
+      DebugAssert(StoredSessions);
       bool DefaultsOnly = false;
       std::unique_ptr<TOptions> Options(new TProgramParams());
       ParseCommandLine(CommandLine, Options.get());
@@ -320,7 +320,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
       }
       if (!Session->GetCanLogin())
       {
-        assert(false);
+        DebugAssert(false);
         Abort();
       }
       FileSystem->Connect(Session.get());
@@ -340,7 +340,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
       if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
             ImportStorage->HasSubKeys()))
       {
-        assert(false);
+        DebugAssert(false);
         Abort();
       }
       UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", L""));
@@ -349,14 +349,14 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
       Session->SetModified(true);
       if (!Session->GetCanLogin())
       {
-        assert(false);
+        DebugAssert(false);
         Abort();
       }
       FileSystem->Connect(Session.get());
     }
     else
     {
-      assert(false);
+      DebugAssert(false);
     }
   }
 
@@ -392,7 +392,8 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
     CommandLineParams = CmdLine.SubString(Pos, -1);
   if (!CommandLineParams.IsEmpty())
   {
-    Options->ParseParams(CommandLineParams);
+    // TODO: implement Options->ParseParams(CommandLineParams);
+    Error(SNotImplemented, 3015);
     CommandLine = CommandLine.SubString(1, CommandLine.Length() - CommandLineParams.Length()).Trim();
   }
 }
@@ -446,22 +447,22 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   {
     if ((Result == MLog) && FileSystem)
     {
-      assert(FileSystem);
+      DebugAssert(FileSystem);
       FileSystem->ShowLog();
     }
     else if ((Result == MAttributes) && FileSystem)
     {
-      assert(FileSystem);
+      DebugAssert(FileSystem);
       FileSystem->FileProperties();
     }
     else if ((Result == MLink) && FileSystem)
     {
-      assert(FileSystem);
+      DebugAssert(FileSystem);
       FileSystem->CreateLink();
     }
     else if ((Result == MApplyCommand) && FileSystem)
     {
-      assert(FileSystem);
+      DebugAssert(FileSystem);
       FileSystem->ApplyCommand();
     }
     else if (Result == MFullSynchronize)
@@ -472,7 +473,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       }
       else
       {
-        assert(AnotherFileSystem != nullptr);
+        DebugAssert(AnotherFileSystem != nullptr);
         if (AnotherFileSystem)
           AnotherFileSystem->FullSynchronize(false);
       }
@@ -485,19 +486,19 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       }
       else
       {
-        assert(AnotherFileSystem != nullptr);
+        DebugAssert(AnotherFileSystem != nullptr);
         if (AnotherFileSystem)
           AnotherFileSystem->Synchronize();
       }
     }
     else if ((Result == MQueue) && FileSystem)
     {
-      assert(FileSystem);
+      DebugAssert(FileSystem);
       FileSystem->QueueShow(false);
     }
     else if ((Result == MAddBookmark || Result == MOpenDirectory) && FileSystem)
     {
-      assert(FileSystem);
+      DebugAssert(FileSystem);
       FileSystem->OpenDirectory(Result == MAddBookmark);
     }
     else if (Result == MHomeDirectory && FileSystem)
@@ -514,12 +515,12 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     }
     else if ((Result == MPutty) && FileSystem)
     {
-      assert(FileSystem);
+      DebugAssert(FileSystem);
       FileSystem->OpenSessionInPutty();
     }
     else if ((Result == MEditHistory) && FileSystem)
     {
-      assert(FileSystem);
+      DebugAssert(FileSystem);
       FileSystem->EditHistory();
     }
     else if (Result == MPageant || Result == MPuttygen)
@@ -532,22 +533,22 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     }
     else if ((Result == MClearCaches) && FileSystem)
     {
-      assert(FileSystem);
+      DebugAssert(FileSystem);
       FileSystem->ClearCaches();
     }
     else if ((Result == MSynchronizeBrowsing) && FileSystem)
     {
-      assert(FileSystem != nullptr);
+      DebugAssert(FileSystem != nullptr);
       FileSystem->ToggleSynchronizeBrowsing();
     }
     else if (Result == MInformation && FileSystem)
     {
-      assert(FileSystem);
+      DebugAssert(FileSystem);
       FileSystem->ShowInformation();
     }
     else
     {
-      assert(false);
+      DebugAssert(false);
     }
   }
 }
@@ -600,10 +601,10 @@ public:
 
 void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
 {
-  assert(Token);
+  DebugAssert(Token);
   TFarMessageData & Data = *NB_STATIC_DOWNCAST(TFarMessageData, Token);
 
-  assert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
+  DebugAssert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
 
   if ((Data.Params != nullptr) && (Data.Params->Aliases != nullptr))
   {
@@ -651,7 +652,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       TitleId = MSG_TITLE_WARNING; Flags |= FMSG_WARNING;
       break;
     default:
-      assert(false);
+      DebugAssert(false);
   }
   TFarMessageData Data;
   Data.Params = Params;
@@ -721,10 +722,10 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
 #undef ADD_BUTTON
 #undef ADD_BUTTON_EX
 
-  USEDPARAM(AAnswers);
-  assert(!AAnswers);
-  USEDPARAM(NeverAskAgainPending);
-  assert(!NeverAskAgainPending);
+  DebugUsedParam(AAnswers);
+  DebugAssert(!AAnswers);
+  DebugUsedParam(NeverAskAgainPending);
+  DebugAssert(!NeverAskAgainPending);
 
   uintptr_t DefaultButtonIndex = 0;
   if ((Params != nullptr) && (Params->Aliases != nullptr))
@@ -795,13 +796,13 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   }
   else
   {
-    assert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
+    DebugAssert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
     Result = Data.Buttons[Result];
   }
 
   if (FarParams.CheckBox)
   {
-    assert(NeverAskAgainCheck);
+    DebugAssert(NeverAskAgainCheck);
     Result = qaNeverAskAgain;
   }
 
