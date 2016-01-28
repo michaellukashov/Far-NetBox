@@ -38,21 +38,21 @@ const int mpAllowContinueOnError = 0x02;
 
 struct TMessageParams
 {
-  TMessageParams(unsigned int AParams = 0);
+  TMessageParams(uintptr_t AParams = 0);
   TMessageParams(const TQueryParams * AParams);
 
   const TQueryButtonAlias * Aliases;
-  unsigned int AliasesCount;
-  unsigned int Params;
-  unsigned int Timer;
+  uintptr_t AliasesCount;
+  uintptr_t Params;
+  uintptr_t Timer;
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
-  unsigned int TimerAnswers;
+  uintptr_t TimerAnswers;
   TQueryType TimerQueryType;
-  unsigned int Timeout;
-  unsigned int TimeoutAnswer;
+  uintptr_t Timeout;
+  uintptr_t TimeoutAnswer;
   UnicodeString NeverAskAgainTitle;
-  unsigned int NeverAskAgainAnswer;
+  uintptr_t NeverAskAgainAnswer;
   bool NeverAskAgainCheckedInitially;
   bool AllowHelp;
   UnicodeString ImageName;
@@ -99,21 +99,21 @@ void InitializeWinHelp();
 void FinalizeWinHelp();
 
 // windows\WinInterface.cpp
-unsigned int MessageDialog(const UnicodeString Msg, TQueryType Type,
-  unsigned int Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
-unsigned int MessageDialog(int Ident, TQueryType Type,
-  unsigned int Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
-unsigned int SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages = L"");
+uintptr_t MessageDialog(const UnicodeString Msg, TQueryType Type,
+  uintptr_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+uintptr_t MessageDialog(int Ident, TQueryType Type,
+  uintptr_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+uintptr_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages = L"");
 
-unsigned int MoreMessageDialog(const UnicodeString Message,
-  TStrings * MoreMessages, TQueryType Type, unsigned int Answers,
+uintptr_t MoreMessageDialog(const UnicodeString Message,
+  TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
     UnicodeString HelpKeyword, const TMessageParams * Params = nullptr);
 
-unsigned int ExceptionMessageDialog(Exception * E, TQueryType Type,
-  const UnicodeString MessageFormat = L"", unsigned int Answers = qaOK,
+uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
+  const UnicodeString MessageFormat = L"", uintptr_t Answers = qaOK,
   UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
-unsigned int FatalExceptionMessageDialog(Exception * E, TQueryType Type,
-  int SessionReopenTimeout, const UnicodeString MessageFormat = L"", unsigned int Answers = qaOK,
+uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
+  int SessionReopenTimeout, const UnicodeString MessageFormat = L"", uintptr_t Answers = qaOK,
   UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 
 // forms\Custom.cpp
@@ -394,17 +394,17 @@ void DoFileSystemInfoDialog(
 
 // forms\MessageDlg.cpp
 void AnswerNameAndCaption(
-  unsigned int Answer, UnicodeString & Name, UnicodeString & Caption);
+  uintptr_t Answer, UnicodeString & Name, UnicodeString & Caption);
 //TForm * CreateMoreMessageDialog(const UnicodeString & Msg,
-//  TStrings * MoreMessages, TMsgDlgType DlgType, unsigned int Answers,
-//  const TQueryButtonAlias * Aliases, unsigned int AliasesCount,
-//  unsigned int TimeoutAnswer, TButton ** TimeoutButton,
+//  TStrings * MoreMessages, TMsgDlgType DlgType, uintptr_t Answers,
+//  const TQueryButtonAlias * Aliases, uintptr_t AliasesCount,
+//  uintptr_t TimeoutAnswer, TButton ** TimeoutButton,
 //  const UnicodeString & ImageName, const UnicodeString & NeverAskAgainCaption,
 //  const UnicodeString & MoreMessagesUrl, TSize MoreMessagesSize,
 //  const UnicodeString & CustomCaption);
 //TForm * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMessages,
-//  TQueryType Type, unsigned int Answers, UnicodeString HelpKeyword, const TMessageParams * Params);
-//unsigned int ExecuteMessageDialog(TForm * Dialog, unsigned int Answers, const TMessageParams * Params);
+//  TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params);
+//uintptr_t ExecuteMessageDialog(TForm * Dialog, uintptr_t Answers, const TMessageParams * Params);
 //void InsertPanelToMessageDialog(TCustomForm * Form, TPanel * Panel);
 //void NavigateMessageDialogToUrl(TCustomForm * Form, const UnicodeString & Url);
 
@@ -503,10 +503,10 @@ void ForceTracing();
 struct TCopyDataMessage
 {
   enum { CommandCanCommandLine, CommandCommandLine };
-  static const unsigned int Version1 = 1;
+  static const uintptr_t Version1 = 1;
 
-  unsigned int Version;
-  unsigned int Command;
+  uintptr_t Version;
+  uintptr_t Command;
 
   union
   {
