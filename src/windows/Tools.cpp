@@ -131,6 +131,8 @@ bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
   return Result;
 }
 
+#if 0
+// implemented in FarInterface.cpp
 void CopyToClipboard(const UnicodeString & Text)
 {
   HANDLE Data;
@@ -184,6 +186,7 @@ void CopyToClipboard(const UnicodeString & Text)
     throw Exception(SCannotOpenClipboard);
   }
 }
+#endif
 
 void CopyToClipboard(TStrings * Strings)
 {
@@ -286,7 +289,7 @@ static void DoVerifyKey(
             // Configuration->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
             UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName.c_str(), RemoveMainInstructionsTag(Message).c_str());
             Message = UnicodeString();
-          if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
+            if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
             {
               ConvertKey(FileName, Type);
               // Configuration->Usage->Inc(L"PrivateKeyConverted");
