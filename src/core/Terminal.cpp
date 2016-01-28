@@ -3222,7 +3222,7 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Di
 TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & ADirectory, bool UseCache)
 {
   std::unique_ptr<TRemoteFileList> FileList(new TRemoteFileList());
-//  try
+  try__catch
   {
     bool Cache = UseCache && GetSessionData()->GetCacheDirectories();
     bool LoadedFromCache = Cache && FDirectoryCache->HasFileList(ADirectory);
@@ -4547,7 +4547,7 @@ TTerminal * TTerminal::GetCommandSession()
     // levels between main and command session
     DebugAssert(FInTransaction == 0);
 
-//    try
+    try__catch
     {
       std::unique_ptr<TSecondaryTerminal> CommandSession(new TSecondaryTerminal(this));
       CommandSession->Init(GetSessionData(), FConfiguration, L"Shell");
@@ -5135,7 +5135,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   FUseBusyCursor = false;
 
   std::unique_ptr<TSynchronizeChecklist> Checklist(new TSynchronizeChecklist());
-//  try
+  try__catch
   {
     DoSynchronizeCollectDirectory(LocalDirectory, RemoteDirectory, Mode,
       CopyParam, Params, OnSynchronizeDirectory, Options, sfFirstLevel,
@@ -5438,7 +5438,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & AFileName,
   {
     DoSynchronizeCollectFile(AFileName, AFile, Param);
   }
-  catch(ESkipFile & E)
+  catch (ESkipFile & E)
   {
     TSuspendFileOperationProgress Suspend(OperationProgress);
     if (!HandleException(&E))

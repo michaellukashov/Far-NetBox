@@ -4895,15 +4895,15 @@ TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
   bool * AProtocolDefined, UnicodeString * MaskedUrl)
 {
   std::unique_ptr<TSessionData> Data(new TSessionData(L""));
-//  try
+  try__catch
   {
     Data->ParseUrl(Url, Options, this, DefaultsOnly, AFileName, AProtocolDefined, MaskedUrl);
   }
-//  catch(...)
-//  {
-//    delete Data;
-//    throw;
-//  }
+  /*catch (...)
+  {
+    delete Data;
+    throw;
+  }*/
   return Data.release();
 }
 

@@ -678,7 +678,7 @@ UnicodeString TRemoteToken::GetLogText() const
 TRemoteTokenList * TRemoteTokenList::Duplicate() const
 {
   std::unique_ptr<TRemoteTokenList> Result(new TRemoteTokenList());
-//  try
+  try__catch
   {
     TTokens::const_iterator it = FTokens.begin();
     while (it != FTokens.end())
@@ -687,11 +687,11 @@ TRemoteTokenList * TRemoteTokenList::Duplicate() const
       ++it;
     }
   }
-//  catch (...)
-//  {
-//    delete Result;
-//    throw;
-//  }
+  /*catch (...)
+  {
+    delete Result;
+    throw;
+  }*/
   return Result.release();
 }
 
@@ -850,7 +850,7 @@ TRemoteFile::~TRemoteFile()
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
   std::unique_ptr<TRemoteFile> Result(new TRemoteFile());
-//  try
+  try__catch
   {
     if (FLinkedFile)
     {
@@ -882,11 +882,11 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
       Result->FFullFileName = GetFullFileName();
     }
   }
-//  catch (...)
-//  {
-//    delete Result;
-//    throw;
-//  }
+  /*catch (...)
+  {
+    delete Result;
+    throw;
+  }*/
   return Result.release();
 }
 

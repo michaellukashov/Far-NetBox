@@ -342,7 +342,7 @@ void TFTPFileSystem::Open()
   {
     std::unique_ptr<TFileZillaIntf> FileZillaImpl(new TFileZillaImpl(this));
 
-//    try
+    try__catch
     {
       TFileZillaIntf::TLogLevel LogLevel;
       switch (FTerminal->GetConfiguration()->GetActualLogProtocol())
@@ -361,12 +361,12 @@ void TFTPFileSystem::Open()
       FileZillaImpl->Init();
       FFileZillaIntf = FileZillaImpl.release();
     }
-//    catch (...)
-//    {
-//      delete FFileZillaIntf;
-//      FFileZillaIntf = NULL;
-//      throw;
-//    }
+    /*catch (...)
+    {
+      delete FFileZillaIntf;
+      FFileZillaIntf = NULL;
+      throw;
+    }*/
   }
 
   FWindowsServer = false;
@@ -2783,15 +2783,15 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
       {
         std::unique_ptr<TRemoteFileList> FileListCache(new TRemoteFileList());
         FileListCache->SetDirectory(Path);
-//        try
+        try__catch
         {
           ReadDirectory(FileListCache.get());
         }
-//        catch(...)
-//        {
-//          delete FileListCache;
-//          throw;
-//        }
+        /*catch (...)
+        {
+          delete FileListCache;
+          throw;
+        }*/
         // set only after we successfully read the directory,
         // otherwise, when we reconnect from ReadDirectory,
         // the FFileListCache is reset from ResetCache.
@@ -2824,7 +2824,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   // Moreover FZAPI does not support that anyway.
   // Though nowadays we could use MLST to read the symlink.
   std::unique_ptr<TRemoteFile> File(new TRemoteFile(SymlinkFile));
-//  try
+  try__catch
   {
     File->SetTerminal(FTerminal);
     File->SetFileName(base::UnixExtractFileName(SymlinkFile->GetLinkTo()));
@@ -2832,12 +2832,12 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
     File->SetType(FILETYPE_SYMLINK);
     AFile = File.release();
   }
-//  catch(...)
-//  {
-//    delete File;
-//    File = NULL;
-//    throw;
-//  }
+  /*catch (...)
+  {
+    delete File;
+    File = NULL;
+    throw;
+  }*/
 }
 
 void TFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
@@ -3474,7 +3474,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
 
       UnicodeString HelpKeyword;
       std::unique_ptr<TStrings> MoreMessages(new TStringList());
-      // try
+      try__catch
       {
         if (Disconnected)
         {
@@ -3552,11 +3552,11 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
           MoreMessages.reset();
         }
       }
-//      catch(...)
-//      {
-//        delete MoreMessages;
-//        throw;
-//      }
+      /*catch(...)
+      {
+        delete MoreMessages;
+        throw;
+      }*/
 
       UnicodeString ErrorStr = Error;
       if (ErrorStr.IsEmpty() && (MoreMessages.get() != nullptr))
