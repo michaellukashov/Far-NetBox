@@ -366,6 +366,7 @@ public:
 
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
+  virtual intptr_t GetModalResult() const { return FResult; }
   virtual intptr_t GetResult() const { return FResult; }
   virtual void SetResult(intptr_t Value) { FResult = Value; }
   virtual UnicodeString GetData() const { return const_cast<TFarButton *>(this)->GetData(); }
