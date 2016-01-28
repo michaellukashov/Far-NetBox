@@ -9,6 +9,7 @@
 #include <RemoteFiles.h>
 #include <Interface.h>
 
+#include "WinInterface.h"
 #include "GUITools.h"
 #include "PuttyTools.h"
 #include "Tools.h"
