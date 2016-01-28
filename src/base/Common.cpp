@@ -2926,7 +2926,7 @@ void ParseCertificate(const UnicodeString & Path,
     PrivateKey = PEM_read_PrivateKey(File, nullptr, PemPasswordCallback, &CallbackUserData);
     fclose(File);
 
-    // try
+    try__finally
     {
       SCOPE_EXIT
       {

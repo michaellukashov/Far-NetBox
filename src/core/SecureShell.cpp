@@ -2409,7 +2409,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
       }
 
       std::unique_ptr<Exception> E(new Exception(MainInstructions(Message)));
-      // try
+      try__finally
       {
         FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, Fingerprint.c_str()));
       }
