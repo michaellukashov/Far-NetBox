@@ -2,9 +2,6 @@
 #include <FarTexts.h>
 #include <FarDialog.h>
 
-#define TCheckBox TFarCheckBox
-#define TForm TFarDialog
-
 static bool IsPositiveAnswer(uintptr_t Answer)
 {
   return (Answer == qaYes) || (Answer == qaOK) || (Answer == qaYesToAll);
@@ -12,9 +9,9 @@ static bool IsPositiveAnswer(uintptr_t Answer)
 
 static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
 {
-  TCheckBox * CheckBox = dynamic_cast<TCheckBox *>(Sender);
+  TFarCheckBox * CheckBox = NB_STATIC_DOWNCAST(TFarCheckBox, Sender);
   DebugAssert(CheckBox != nullptr);
-  TForm * Dialog = NB_STATIC_DOWNCAST_CONST(TFarDialog, CheckBox->GetOwner());
+  TFarDialog * Dialog = NB_STATIC_DOWNCAST(TFarDialog, CheckBox->GetOwner());
   DebugAssert(Dialog != nullptr);
 
   uintptr_t PositiveAnswer = 0;
@@ -23,13 +20,13 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
   {
     if (CheckBox->GetTag() > 0)
     {
-      PositiveAnswer = CheckBox->Tag;
+      PositiveAnswer = CheckBox->GetTag();
     }
     else
     {
-      for (int ii = 0; ii < Dialog->ControlCount; ii++)
+      for (int ii = 0; ii < Dialog->GetControlCount(); ii++)
       {
-        TButton * Button = dynamic_cast<TButton *>(Dialog->Controls[ii]);
+        TFarButton * Button = NB_STATIC_DOWNCAST(TFarButton, Dialog->GetControl(ii));
         if (Button != nullptr)
         {
           if (IsPositiveAnswer(Button->ModalResult))
