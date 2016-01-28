@@ -103,26 +103,26 @@ private:
   TRemoteFileList * FDirectory;
   TRemoteToken FOwner;
   TModificationFmt FModificationFmt;
-  int64_t FSize;
   UnicodeString FFileName;
-  int64_t FINodeBlocks;
   TDateTime FModification;
   TDateTime FLastAccess;
   TRemoteToken FGroup;
-  intptr_t FIconIndex;
-  Boolean FIsSymLink;
   TRemoteFile * FLinkedFile;
   TRemoteFile * FLinkedByFile;
-  UnicodeString FLinkTo;
   TRights * FRights;
-  UnicodeString FHumanRights;
   TTerminal * FTerminal;
+  UnicodeString FLinkTo;
+  UnicodeString FHumanRights;
+  UnicodeString FFullFileName;
+  UnicodeString FTypeName;
+  int64_t FSize;
+  int64_t FINodeBlocks;
+  intptr_t FIconIndex;
+  int FIsHidden;
   wchar_t FType;
+  Boolean FIsSymLink;
   bool FSelected;
   bool FCyclicLink;
-  UnicodeString FFullFileName;
-  int FIsHidden;
-  UnicodeString FTypeName;
 
 public:
   intptr_t GetAttr() const;
@@ -291,12 +291,12 @@ friend class TSFTPFileSystem;
 friend class TWebDAVFileSystem;
 NB_DISABLE_COPY(TRemoteDirectory)
 private:
-  Boolean FIncludeParentDirectory;
-  Boolean FIncludeThisDirectory;
   TTerminal * FTerminal;
   mutable TStrings * FSelectedFiles;
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
+  Boolean FIncludeParentDirectory;
+  Boolean FIncludeThisDirectory;
 public:
   virtual void SetDirectory(const UnicodeString & Value);
   TStrings * GetSelectedFiles() const;
@@ -470,10 +470,10 @@ public:
   __property bool Unknown = { read = FUnknown };*/
 
 private:
-  bool FAllowUndef;
+  UnicodeString FText;
   uint16_t FSet;
   uint16_t FUnset;
-  UnicodeString FText;
+  bool FAllowUndef;
   bool FUnknown;
 
 public:
@@ -557,13 +557,13 @@ class TRemoteProperties : public TObject
 NB_DECLARE_CLASS(TRemoteProperties)
 public:
   TValidProperties Valid;
-  bool Recursive;
   TRights Rights;
-  bool AddXToDirectories;
   TRemoteToken Group;
   TRemoteToken Owner;
   int64_t Modification; // unix time
   int64_t LastAccess; // unix time
+  bool Recursive;
+  bool AddXToDirectories;
 
   TRemoteProperties();
   TRemoteProperties(const TRemoteProperties & rhp);
