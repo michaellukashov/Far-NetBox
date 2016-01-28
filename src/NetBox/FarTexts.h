@@ -1257,6 +1257,7 @@ enum PluginString {
   MSG_SUnkOSError,
 
   MSG_SDateEncodeError,
+  MSG_SCannotOpenClipboard,
 
   MSG_IDS_ERRORMSG_TIMEOUT,
   MSG_IDS_STATUSMSG_DISCONNECTED,

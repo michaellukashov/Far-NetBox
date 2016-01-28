@@ -1256,6 +1256,7 @@
 "A call to an OS function failed"
 
 "Invalid argument to date encode"
+"Cannot open clipboard"
 
 "Timeout detected."
 "Disconnected from server"

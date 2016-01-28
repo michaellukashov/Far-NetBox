@@ -436,6 +436,7 @@ const TFarPluginStrings FarPluginStrings[] =
   { SUnkOSError, MSG_SUnkOSError },
 
   { SDateEncodeError, MSG_SDateEncodeError },
+  { SCannotOpenClipboard, MSG_SCannotOpenClipboard },
 
   { IDS_ERRORMSG_TIMEOUT, MSG_IDS_ERRORMSG_TIMEOUT },
   { IDS_STATUSMSG_DISCONNECTED, MSG_IDS_STATUSMSG_DISCONNECTED },
