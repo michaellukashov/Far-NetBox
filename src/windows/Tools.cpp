@@ -70,7 +70,7 @@ void WinInitialize()
 bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
   const UnicodeString & DefaultExt, UnicodeString & FileName)
 {
-  bool Result;
+  bool Result = false;
   #if 0
   TFileSaveDialog * Dialog = new TFileSaveDialog(Application);
   try
@@ -97,6 +97,8 @@ bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
     delete Dialog;
   }
   #else
+  Error(SNotImplemented, 3300);
+  /* TODO: implement
   TSaveDialog * Dialog = new TSaveDialog(Application);
   try__finally
   {
@@ -124,7 +126,7 @@ bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
   __finally
   {
     delete Dialog;
-  };
+  };*/
   #endif
   return Result;
 }
@@ -144,15 +146,19 @@ void CopyToClipboard(const UnicodeString & Text)
       };
       size_t Size = (Text.Length() + 1) * sizeof(wchar_t);
       Data = GlobalAlloc(GMEM_MOVEABLE + GMEM_DDESHARE, Size);
-      try__finally
+      try
       {
         SCOPE_EXIT
         {
           GlobalUnlock(Data);
         };
         DataPtr = GlobalLock(Data);
-        try
+        try__finally
         {
+          SCOPE_EXIT
+          {
+            GlobalUnlock(Data);
+          };
           memcpy(DataPtr, Text.c_str(), Size);
           EmptyClipboard();
           SetClipboardData(CF_UNICODETEXT, Data);
@@ -162,7 +168,7 @@ void CopyToClipboard(const UnicodeString & Text)
           GlobalUnlock(Data);
         };
       }
-      catch(...)
+      catch (...)
       {
         GlobalFree(Data);
         throw;
@@ -175,7 +181,7 @@ void CopyToClipboard(const UnicodeString & Text)
   }
   else
   {
-    throw Exception(Vcl_Consts_SCannotOpenClipboard);
+    throw Exception(SCannotOpenClipboard);
   }
 }
 
