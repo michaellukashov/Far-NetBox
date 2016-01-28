@@ -404,6 +404,7 @@ public:
   ~NullFunc() { }
 };
 
+#define try__catch (void)0;
 #define try__finally (void)0;
 
 #define __finally \
