@@ -391,6 +391,8 @@ DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void,
 
 class TFarCheckBox : public TFarDialogItem
 {
+NB_DISABLE_COPY(TFarCheckBox)
+NB_DECLARE_CLASS(TFarCheckBox)
 public:
   explicit TFarCheckBox(TFarDialog * ADialog);
 
