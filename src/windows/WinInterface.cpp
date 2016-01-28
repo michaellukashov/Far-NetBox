@@ -29,9 +29,9 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
         TFarButton * Button = NB_STATIC_DOWNCAST(TFarButton, Dialog->GetControl(ii));
         if (Button != nullptr)
         {
-          if (IsPositiveAnswer(Button->ModalResult))
+          if (IsPositiveAnswer(Button->GetModalResult()))
           {
-            PositiveAnswer = Button->ModalResult;
+            PositiveAnswer = Button->GetModalResult();
             break;
           }
         }
@@ -41,16 +41,17 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
     DebugAssert(PositiveAnswer != 0);
   }
 
-  for (int ii = 0; ii < Dialog->ControlCount; ii++)
+  for (int ii = 0; ii < Dialog->GetControlCount(); ii++)
   {
-    TButton * Button = dynamic_cast<TButton *>(Dialog->Controls[ii]);
+    TFarButton * Button = NB_STATIC_DOWNCAST(TFarButton, Dialog->GetControl(ii));
     if (Button != nullptr)
     {
-      if ((Button->ModalResult != 0) && (Button->ModalResult != static_cast<int>(qaCancel)))
+      if ((Button->GetModalResult() != 0) && (Button->GetModalResult() != static_cast<intptr_t>(qaCancel)))
       {
-        Button->Enabled = !CheckBox->Checked || (Button->ModalResult == static_cast<int>(PositiveAnswer));
+        Button->SetEnabled(!CheckBox->GetChecked() || (Button->GetModalResult() == static_cast<intptr_t>(PositiveAnswer)));
       }
 
+#if 0
       if (Button->DropDownMenu != nullptr)
       {
         for (int iii = 0; iii < Button->DropDownMenu->Items->Count; iii++)
@@ -59,21 +60,23 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
           Item->Enabled = Item->Default || !CheckBox->Checked;
         }
       }
+#endif
     }
   }
 }
 
-static TCheckBox * FindNeverAskAgainCheck(TForm * Dialog)
+static TFarCheckBox * FindNeverAskAgainCheck(TFarDialog * Dialog)
 {
-  return DebugNotNull(dynamic_cast<TCheckBox *>(Dialog->FindComponent(L"NeverAskAgainCheck")));
+  return nullptr; // DebugNotNull(NB_STATIC_DOWNCAST(TFarCheckBox, Dialog->FindComponent(L"NeverAskAgainCheck")));
 }
 
-TForm * CreateMessageDialogEx(const UnicodeString Msg,
-  TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword,
-  const TMessageParams * Params, TButton *& TimeoutButton)
+TFarDialog * CreateMessageDialogEx(const UnicodeString & Msg,
+  TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const UnicodeString & HelpKeyword,
+  const TMessageParams * Params, TFarButton *& TimeoutButton)
 {
   TMsgDlgType DlgType;
-  switch (Type) {
+  switch (Type)
+  {
     case qtConfirmation: DlgType = mtConfirmation; break;
     case qtInformation: DlgType = mtInformation; break;
     case qtError: DlgType = mtError; break;
@@ -84,23 +87,24 @@ TForm * CreateMessageDialogEx(const UnicodeString Msg,
   uintptr_t TimeoutAnswer = (Params != nullptr) ? Params->TimeoutAnswer : 0;
 
   uintptr_t ActualAnswers = Answers;
-  if ((Params == nullptr) || Params->AllowHelp)
+  /*if ((Params == nullptr) || Params->AllowHelp)
   {
     Answers = Answers | qaHelp;
-  }
+  }*/
 
   if (IsInternalErrorHelpKeyword(HelpKeyword))
   {
     Answers = Answers | qaReport;
   }
 
-  if ((MoreMessages != nullptr) && (MoreMessages->Count == 0))
+  if ((MoreMessages != nullptr) && (MoreMessages->GetCount() == 0))
   {
     MoreMessages = nullptr;
   }
 
   UnicodeString ImageName;
   UnicodeString MoreMessagesUrl;
+#if 0
   TSize MoreMessagesSize;
   UnicodeString CustomCaption;
   if (Params != nullptr)
@@ -110,10 +114,11 @@ TForm * CreateMessageDialogEx(const UnicodeString Msg,
     MoreMessagesSize = Params->MoreMessagesSize;
     CustomCaption = Params->CustomCaption;
   }
-
+#endif
   const TQueryButtonAlias * Aliases = (Params != nullptr) ? Params->Aliases : nullptr;
   uintptr_t AliasesCount = (Params != nullptr) ? Params->AliasesCount : 0;
 
+#if 0
   UnicodeString NeverAskAgainCaption;
   bool HasNeverAskAgain = (Params != nullptr) && FLAGSET(Params->Params, mpNeverAskAgainCheck);
   if (HasNeverAskAgain)
@@ -125,8 +130,8 @@ TForm * CreateMessageDialogEx(const UnicodeString Msg,
         LoadStr(((ActualAnswers == qaOK) || (ActualAnswers == (qaOK | qaIgnore))) ?
           NEVER_SHOW_AGAIN : NEVER_ASK_AGAIN);
   }
-
-  TForm * Dialog = CreateMoreMessageDialog(Msg, MoreMessages, DlgType, Answers,
+#endif
+  TFarDialog * Dialog = CreateMoreMessageDialog(Msg, MoreMessages, DlgType, Answers,
     Aliases, AliasesCount, TimeoutAnswer, &TimeoutButton, ImageName, NeverAskAgainCaption,
     MoreMessagesUrl, MoreMessagesSize, CustomCaption);
 
@@ -134,8 +139,8 @@ TForm * CreateMessageDialogEx(const UnicodeString Msg,
   {
     if (HasNeverAskAgain && DebugAlwaysTrue(Params != nullptr))
     {
-      TCheckBox * NeverAskAgainCheck = FindNeverAskAgainCheck(Dialog);
-      NeverAskAgainCheck->Checked = Params->NeverAskAgainCheckedInitially;
+      TFarsCheckBox * NeverAskAgainCheck = FindNeverAskAgainCheck(Dialog);
+      NeverAskAgainCheck->SetChecked(Params->NeverAskAgainCheckedInitially;
       if (Params->NeverAskAgainAnswer > 0)
       {
         NeverAskAgainCheck->Tag = Params->NeverAskAgainAnswer;
@@ -152,7 +157,7 @@ TForm * CreateMessageDialogEx(const UnicodeString Msg,
     }
     ResetSystemSettings(Dialog);
   }
-  catch(...)
+  catch (...)
   {
     delete Dialog;
     throw;
@@ -417,21 +422,21 @@ TForm * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMe
   return Dialog.release();
 }
 
-uintptr_t MoreMessageDialog(const UnicodeString Message, TStrings * MoreMessages,
-  TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
+uintptr_t MoreMessageDialog(const UnicodeString & Message, TStrings * MoreMessages,
+  TQueryType Type, uintptr_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
   std::unique_ptr<TForm> Dialog(CreateMoreMessageDialogEx(Message, MoreMessages, Type, Answers, HelpKeyword, Params));
   uintptr_t Result = ExecuteMessageDialog(Dialog.get(), Answers, Params);
   return Result;
 }
 
-uintptr_t MessageDialog(const UnicodeString Msg, TQueryType Type,
-  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
+uintptr_t MessageDialog(const UnicodeString & Msg, TQueryType Type,
+  uintptr_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
   return MoreMessageDialog(Msg, nullptr, Type, Answers, HelpKeyword, Params);
 }
 
-uintptr_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages)
+uintptr_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & MoreMessages)
 {
   uintptr_t Result;
   TStrings * More = nullptr;
@@ -450,6 +455,7 @@ uintptr_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMes
   return Result;
 }
 
+#if 0
 static TStrings * StackInfoListToStrings(
   TJclStackInfoList * StackInfoList)
 {
@@ -475,6 +481,7 @@ static TStrings * StackInfoListToStrings(
   }
   return StackTrace.release();
 }
+#endif
 
 static TCriticalSection StackTraceCriticalSection;
 typedef rde::map<DWORD, TStrings *> TStackTraceMap;
@@ -513,7 +520,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 }
 
 uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
-  const UnicodeString MessageFormat, uintptr_t Answers, UnicodeString HelpKeyword,
+  const UnicodeString & MessageFormat, uintptr_t Answers, const UnicodeString & HelpKeyword,
   const TMessageParams * Params)
 {
   TStrings * MoreMessages = nullptr;
@@ -542,8 +549,8 @@ uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
 }
 
 uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
-  int SessionReopenTimeout, const UnicodeString MessageFormat, uintptr_t Answers,
-  UnicodeString HelpKeyword, const TMessageParams * Params)
+  int SessionReopenTimeout, const UnicodeString & MessageFormat, uintptr_t Answers,
+  const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
   DebugAssert(FLAGCLEAR(Answers, qaRetry));
   Answers |= qaRetry;
@@ -653,6 +660,7 @@ bool ProcessGUI(bool Force)
   return Result;
 }
 
+#if 0
 void CopyParamListButton(TButton * Button)
 {
   if (!SupportsSplitButton())
@@ -1464,4 +1472,4 @@ void ::TTrayIcon::SetHint(UnicodeString value)
     Update();
   }
 }
-
+#endif

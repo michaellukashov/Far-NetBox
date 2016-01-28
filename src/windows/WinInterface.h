@@ -7,6 +7,14 @@
 //#include <WinConfiguration.h>
 #include <SynchronizeController.h>
 
+enum TMsgDlgType
+{
+  mtConfirmation,
+  mtInformation,
+  mtError,
+  mtWarning,
+};
+
 #ifdef LOCALINTERFACE
 #include <LocalInterface.h>
 #endif
@@ -395,18 +403,18 @@ void DoFileSystemInfoDialog(
 // forms\MessageDlg.cpp
 void AnswerNameAndCaption(
   uintptr_t Answer, UnicodeString & Name, UnicodeString & Caption);
-//TForm * CreateMoreMessageDialog(const UnicodeString & Msg,
-//  TStrings * MoreMessages, TMsgDlgType DlgType, uintptr_t Answers,
-//  const TQueryButtonAlias * Aliases, uintptr_t AliasesCount,
-//  uintptr_t TimeoutAnswer, TButton ** TimeoutButton,
-//  const UnicodeString & ImageName, const UnicodeString & NeverAskAgainCaption,
-//  const UnicodeString & MoreMessagesUrl, TSize MoreMessagesSize,
-//  const UnicodeString & CustomCaption);
-//TForm * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMessages,
-//  TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params);
-//uintptr_t ExecuteMessageDialog(TForm * Dialog, uintptr_t Answers, const TMessageParams * Params);
-//void InsertPanelToMessageDialog(TCustomForm * Form, TPanel * Panel);
-//void NavigateMessageDialogToUrl(TCustomForm * Form, const UnicodeString & Url);
+TFarDialog * CreateMoreMessageDialog(const UnicodeString & Msg,
+  TStrings * MoreMessages, TMsgDlgType DlgType, uintptr_t Answers,
+  const TQueryButtonAlias * Aliases, uintptr_t AliasesCount,
+  uintptr_t TimeoutAnswer, TButton ** TimeoutButton,
+  const UnicodeString & ImageName, const UnicodeString & NeverAskAgainCaption,
+  const UnicodeString & MoreMessagesUrl, TSize MoreMessagesSize,
+  const UnicodeString & CustomCaption);
+TFarDialog * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMessages,
+  TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params);
+uintptr_t ExecuteMessageDialog(TForm * Dialog, uintptr_t Answers, const TMessageParams * Params);
+void InsertPanelToMessageDialog(TCustomForm * Form, TPanel * Panel);
+void NavigateMessageDialogToUrl(TCustomForm * Form, const UnicodeString & Url);
 
 // windows\Console.cpp
 enum TConsoleMode { cmNone, cmScripting, cmHelp, cmBatchSettings, cmKeyGen };
