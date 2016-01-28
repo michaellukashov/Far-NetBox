@@ -49,6 +49,5 @@
 #include "../windows/GUIConfiguration.cpp"
 #include "../windows/Tools.cpp"
 #include "../windows/ProgParams.cpp"
-#include "../windows/WinInterface.cpp"
 
 #pragma warning(pop)

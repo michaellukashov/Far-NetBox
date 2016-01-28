@@ -1,5 +1,9 @@
 #include <Interface.h>
 #include <FarTexts.h>
+#include <FarDialog.h>
+
+#define TCheckBox TFarCheckBox
+#define TForm TFarDialog
 
 static bool IsPositiveAnswer(uintptr_t Answer)
 {
@@ -10,14 +14,14 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
 {
   TCheckBox * CheckBox = dynamic_cast<TCheckBox *>(Sender);
   DebugAssert(CheckBox != nullptr);
-  TForm * Dialog = dynamic_cast<TForm *>(CheckBox->Owner);
+  TForm * Dialog = NB_STATIC_DOWNCAST_CONST(TForm, CheckBox->GetOwner());
   DebugAssert(Dialog != nullptr);
 
   uintptr_t PositiveAnswer = 0;
 
-  if (CheckBox->Checked)
+  if (CheckBox->GetChecked())
   {
-    if (CheckBox->Tag > 0)
+    if (CheckBox->GetTag() > 0)
     {
       PositiveAnswer = CheckBox->Tag;
     }

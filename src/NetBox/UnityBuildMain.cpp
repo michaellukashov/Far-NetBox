@@ -15,5 +15,6 @@
 #include "FarInterface.cpp"
 #include "XmlStorage.cpp"
 #include "FarPluginStrings.cpp"
+#include "../windows/WinInterface.cpp"
 
 #pragma warning(pop)
