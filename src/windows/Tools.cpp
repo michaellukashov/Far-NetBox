@@ -97,7 +97,7 @@ bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
     delete Dialog;
   }
   #else
-  Error(SNotImplemented, 3300);
+  ThrowNotImplemented(3300);
   /* TODO: implement
   TSaveDialog * Dialog = new TSaveDialog(Application);
   try__finally

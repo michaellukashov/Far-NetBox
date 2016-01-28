@@ -271,7 +271,7 @@ void TList::Sort()
 {
   // if (FList.size() > 1)
     // QuickSort(FList, 0, GetCount() - 1, Compare);
-  Error(SNotImplemented, 15);
+  ThrowNotImplemented(15);
 }
 
 TObjectList::TObjectList() :
@@ -695,7 +695,7 @@ const UnicodeString TStrings::GetName(intptr_t Index) const
 
 void TStrings::SetName(intptr_t /*Index*/, const UnicodeString & /*Value*/)
 {
-  Error(SNotImplemented, 2012);
+  ThrowNotImplemented(2012);
 }
 
 UnicodeString TStrings::ExtractName(const UnicodeString & S) const
@@ -764,7 +764,7 @@ void TStrings::Append(const UnicodeString & Value)
 
 void TStrings::SaveToStream(TStream * /*Stream*/) const
 {
-  Error(SNotImplemented, 12);
+  ThrowNotImplemented(12);
 }
 
 intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2)
@@ -1496,7 +1496,7 @@ void TMemoryStream::SaveToFile(const UnicodeString & /*AFileName*/)
 {
   // TFileStream Stream(FileName, fmCreate);
   // SaveToStream(Stream);
-  Error(SNotImplemented, 1203);
+  ThrowNotImplemented(1203);
 }
 
 void TMemoryStream::Clear()
@@ -2094,7 +2094,7 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
 {
   (void)LCID;
   (void)FormatSettings;
-  Error(SNotImplemented, 1204);
+  ThrowNotImplemented(1204);
 }
 
 NB_IMPLEMENT_CLASS(TObject, nullptr, nullptr)

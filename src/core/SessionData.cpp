@@ -4371,7 +4371,7 @@ void TStoredSessionList::Saved()
 
 void TStoredSessionList::ImportFromFilezilla(const UnicodeString & /*AFileName*/)
 {
-  Error(SNotImplemented, 3004);
+  ThrowNotImplemented(3004);
 /*
   const _di_IXMLDocument Document = interface_cast<Xmlintf::IXMLDocument>(new TXMLDocument(nullptr));
   Document->LoadFromFile(FileName);
@@ -4389,7 +4389,7 @@ void TStoredSessionList::ImportFromFilezilla(const UnicodeString & /*AFileName*/
 
 void TStoredSessionList::Export(const UnicodeString & /*AFileName*/)
 {
-  Error(SNotImplemented, 3003);
+  ThrowNotImplemented(3003);
 /*try__finally
   {
     std::unique_ptr<THierarchicalStorage> Storage(new TIniFileStorage(FileName));
