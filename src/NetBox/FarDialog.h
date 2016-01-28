@@ -65,7 +65,9 @@ public:
   intptr_t GetType(TFarDialogItem * Item) const;
   intptr_t GetItem(TFarDialogItem * Item) const;
   TFarDialogItem * GetItem(intptr_t Index) const;
+  TFarDialogItem * GetControl(intptr_t Index) const { return GetItem(Index); }
   intptr_t GetItemCount() const;
+  intptr_t GetControlCount() const { return GetItemCount(); }
   TItemPosition GetNextItemPosition() const { return FNextItemPosition; }
   void SetNextItemPosition(const TItemPosition Value) { FNextItemPosition = Value; }
   intptr_t GetDefaultGroup() const { return FDefaultGroup; }
