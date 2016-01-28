@@ -235,11 +235,12 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       case kexRSA:
         pkex = KEX_RSA;
         break;
-	  case kexECDH:
-		  pkex = KEX_ECDH;
-		  break;
+      case kexECDH:
+        pkex = KEX_ECDH;
+        break;
       default:
-		  DebugFail();
+        DebugFail();
+        break;
     }
     conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
   }

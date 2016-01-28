@@ -14,7 +14,7 @@
 #if (_MSC_VER >= 1900)
 
 extern "C" {
-	FILE* __iob_func = nullptr;
+  FILE* __iob_func = nullptr;
 }
 #endif
 
