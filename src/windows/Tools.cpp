@@ -67,6 +67,145 @@ void WinInitialize()
 
 }
 
+bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
+  const UnicodeString & DefaultExt, UnicodeString & FileName)
+{
+  bool Result;
+  #if 0
+  TFileSaveDialog * Dialog = new TFileSaveDialog(Application);
+  try
+  {
+    Dialog->Title = Title;
+    FilterToFileTypes(Filter, Dialog->FileTypes);
+    Dialog->DefaultExtension = DefaultExt;
+    Dialog->FileName = FileName;
+    UnicodeString DefaultFolder = ExtractFilePath(FileName);
+    if (!DefaultFolder.IsEmpty())
+    {
+      Dialog->DefaultFolder = DefaultFolder;
+    }
+    Dialog->Options = Dialog->Options << fdoOverWritePrompt << fdoForceFileSystem <<
+      fdoPathMustExist << fdoNoReadOnlyReturn;
+    Result = Dialog->Execute();
+    if (Result)
+    {
+      FileName = Dialog->FileName;
+    }
+  }
+  __finally
+  {
+    delete Dialog;
+  }
+  #else
+  TSaveDialog * Dialog = new TSaveDialog(Application);
+  try__finally
+  {
+    SCOPE_EXIT
+    {
+      delete Dialog;
+    };
+    Dialog->Title = Title;
+    Dialog->Filter = Filter;
+    Dialog->DefaultExt = DefaultExt;
+    Dialog->FileName = FileName;
+    UnicodeString InitialDir = ExtractFilePath(FileName);
+    if (!InitialDir.IsEmpty())
+    {
+      Dialog->InitialDir = InitialDir;
+    }
+    Dialog->Options = Dialog->Options << ofOverwritePrompt << ofPathMustExist <<
+      ofNoReadOnlyReturn;
+    Result = Dialog->Execute();
+    if (Result)
+    {
+      FileName = Dialog->FileName;
+    }
+  }
+  __finally
+  {
+    delete Dialog;
+  };
+  #endif
+  return Result;
+}
+
+void CopyToClipboard(const UnicodeString & Text)
+{
+  HANDLE Data;
+  void * DataPtr;
+
+  if (OpenClipboard(0))
+  {
+    try__finally
+    {
+      SCOPE_EXIT
+      {
+        CloseClipboard();
+      };
+      size_t Size = (Text.Length() + 1) * sizeof(wchar_t);
+      Data = GlobalAlloc(GMEM_MOVEABLE + GMEM_DDESHARE, Size);
+      try__finally
+      {
+        SCOPE_EXIT
+        {
+          GlobalUnlock(Data);
+        };
+        DataPtr = GlobalLock(Data);
+        try
+        {
+          memcpy(DataPtr, Text.c_str(), Size);
+          EmptyClipboard();
+          SetClipboardData(CF_UNICODETEXT, Data);
+        }
+        __finally
+        {
+          GlobalUnlock(Data);
+        };
+      }
+      catch(...)
+      {
+        GlobalFree(Data);
+        throw;
+      }
+    }
+    __finally
+    {
+      CloseClipboard();
+    };
+  }
+  else
+  {
+    throw Exception(Vcl_Consts_SCannotOpenClipboard);
+  }
+}
+
+void CopyToClipboard(TStrings * Strings)
+{
+  if (Strings->GetCount() > 0)
+  {
+    CopyToClipboard(StringsToText(Strings));
+  }
+}
+
+bool IsWin64()
+{
+  static int Result = -1;
+  if (Result < 0)
+  {
+    Result = 0;
+    BOOL Wow64Process = FALSE;
+    if (::IsWow64Process(::GetCurrentProcess(), &Wow64Process))
+    {
+      if (Wow64Process)
+      {
+        Result = 1;
+      }
+    }
+  }
+
+  return (Result > 0);
+}
+
 void WinFinalize()
 {
   // JclRemoveExceptNotifier(DoExceptNotify);
@@ -129,7 +268,8 @@ static void DoVerifyKey(
     std::unique_ptr<TStrings> MoreMessages;
     switch (Type)
     {
-      case ktOpenSSHAuto:
+      case ktOpenSSHPEM:
+      case ktOpenSSHNew:
       case ktSSHCom:
         {
           UnicodeString TypeName = (Type == ktOpenSSHAuto) ? L"OpenSSH SSH-2" : L"ssh.com SSH-2";
@@ -172,6 +312,13 @@ static void DoVerifyKey(
                   (AFileName, (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"))));
           }
         }
+        break;
+
+      case ktSSH1Public:
+      case ktSSH2PublicRFC4716:
+      case ktSSH2PublicOpenSSH:
+        // noop
+        // Do not even bother checking SSH protocol version
         break;
 
       case ktUnopenable:
@@ -232,4 +379,107 @@ void VerifyCertificate(const UnicodeString & AFileName)
       }
     }
   }
+}
+
+
+// Code from http://gentoo.osuosl.org/distfiles/cl331.zip/io/
+
+// this was moved to global scope in past in some attempt to fix crashes,
+// not sure it really helped
+WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyInfo;
+
+static bool GetProxyUrlFromIE(UnicodeString & Proxy)
+{
+  bool Result = false;
+  memset(&IEProxyInfo, 0, sizeof(IEProxyInfo));
+  if (WinHttpGetIEProxyConfigForCurrentUser(&IEProxyInfo))
+  {
+    if (IEProxyInfo.lpszProxy != NULL)
+    {
+      UnicodeString IEProxy = IEProxyInfo.lpszProxy;
+      Proxy = L"";
+      while (Proxy.IsEmpty() && !IEProxy.IsEmpty())
+      {
+        UnicodeString Str = CutToChar(IEProxy, L';', true);
+        if (Str.Pos(L"=") == 0)
+        {
+          Proxy = Str;
+        }
+        else
+        {
+          UnicodeString Protocol = CutToChar(Str, L'=', true);
+          if (SameText(Protocol, L"http"))
+          {
+            Proxy = Str;
+          }
+        }
+      }
+
+      GlobalFree(IEProxyInfo.lpszProxy);
+      Result = true;
+    }
+    if (IEProxyInfo.lpszAutoConfigUrl != NULL)
+    {
+      GlobalFree(IEProxyInfo.lpszAutoConfigUrl);
+    }
+    if (IEProxyInfo.lpszProxyBypass != NULL)
+    {
+      GlobalFree(IEProxyInfo.lpszProxyBypass);
+    }
+  }
+  return Result;
+}
+
+bool AutodetectProxy(UnicodeString & HostName, int & PortNumber)
+{
+  bool Result = false;
+
+  /* First we try for proxy info direct from the registry if
+     it's available. */
+  UnicodeString Proxy;
+  WINHTTP_PROXY_INFO ProxyInfo;
+  memset(&ProxyInfo, 0, sizeof(ProxyInfo));
+  if (WinHttpGetDefaultProxyConfiguration(&ProxyInfo))
+  {
+    if (ProxyInfo.lpszProxy != NULL)
+    {
+      Proxy = ProxyInfo.lpszProxy;
+      GlobalFree(ProxyInfo.lpszProxy);
+      Result = true;
+    }
+    if (ProxyInfo.lpszProxyBypass != NULL)
+    {
+      GlobalFree(ProxyInfo.lpszProxyBypass);
+    }
+  }
+
+  /* The next fallback is to get the proxy info from MSIE.  This is also
+     usually much quicker than WinHttpGetProxyForUrl(), although sometimes
+     it seems to fall back to that, based on the longish delay involved.
+     Another issue with this is that it won't work in a service process
+     that isn't impersonating an interactive user (since there isn't a
+     current user), but in that case we just fall back to
+     WinHttpGetProxyForUrl() */
+  if (!Result)
+  {
+    Result = GetProxyUrlFromIE(Proxy);
+  }
+
+  if (Result)
+  {
+    if (Proxy.Trim().IsEmpty())
+    {
+      Result = false;
+    }
+    else
+    {
+      HostName = CutToChar(Proxy, L':', true);
+      PortNumber = StrToIntDef(Proxy, ProxyPortNumber);
+    }
+  }
+
+  // We can also use WinHttpGetProxyForUrl, but it is lengthy
+  // See the source address of the code for example
+
+  return Result;
 }
