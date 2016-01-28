@@ -14,7 +14,7 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
 {
   TCheckBox * CheckBox = dynamic_cast<TCheckBox *>(Sender);
   DebugAssert(CheckBox != nullptr);
-  TForm * Dialog = NB_STATIC_DOWNCAST_CONST(TForm, CheckBox->GetOwner());
+  TForm * Dialog = NB_STATIC_DOWNCAST_CONST(TFarDialog, CheckBox->GetOwner());
   DebugAssert(Dialog != nullptr);
 
   uintptr_t PositiveAnswer = 0;
