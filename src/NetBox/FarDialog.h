@@ -265,6 +265,8 @@ protected:
   explicit TFarDialogItem(TFarDialog * ADialog, uintptr_t AType);
   virtual ~TFarDialogItem();
 
+  const TFarDialog * GetOwner() const { return FDialog; }
+  TFarDialog * GetOwner() { return FDialog; }
   const FarDialogItem * GetDialogItem() const;
   FarDialogItem * GetDialogItem();
   bool GetCenterGroup() const { return GetFlag(DIF_CENTERGROUP); }
