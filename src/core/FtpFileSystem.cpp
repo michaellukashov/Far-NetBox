@@ -237,8 +237,6 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) :
   FServerCapabilities(new TFTPServerCapabilities()),
   FDetectTimeDifference(false),
   FTimeDifference(0),
-//  FSupportsSiteCopy(false),
-//  FSupportsSiteSymlink(false)
   FSupportsAnyChecksumFeature(false),
   FCertificate(nullptr),
   FPrivateKey(nullptr),
@@ -1386,8 +1384,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
     {
       TSuspendFileOperationProgress Suspend(OperationProgress);
       Answer = FTerminal->ConfirmFileOverwrite(
-        ASourceFullFileName, ATargetFileName, FileParams,
-        Answers, &QueryParams,
+        ASourceFullFileName, ATargetFileName, FileParams, Answers, &QueryParams,
         OperationProgress->Side == osLocal ? osRemote : osLocal,
         CopyParam, Params, OperationProgress);
     }
@@ -1783,16 +1780,8 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
       UserData.CopyParam = CopyParam;
       UserData.Modification = AFile->GetModification();
-      try
-      {
-        FileTransfer(AFileName, DestFullName, OnlyFileName,
-          FilePath, true, AFile->GetSize(), TransferType, UserData, OperationProgress);
-      }
-      catch (Exception &)
-      {
-        //::CloseHandle(LocalFileHandle);
-        throw;
-      }
+      FileTransfer(AFileName, DestFullName, OnlyFileName,
+        FilePath, true, AFile->GetSize(), TransferType, UserData, OperationProgress);
     }
 
     // in case dest filename is changed from overwrite dialog
@@ -4055,8 +4044,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
 
       if (ConfirmOverwrite(SourceFullFileName, TargetFileName, UserData.Params, OperationProgress,
             UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize),
-            NoFileParams ? nullptr : &FileParams, UserData.CopyParam,
-            OverwriteMode))
+            NoFileParams ? nullptr : &FileParams, UserData.CopyParam, OverwriteMode))
       {
         switch (OverwriteMode)
         {
@@ -4119,9 +4107,9 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
       // by setting dummy one, as FZAPI won't do anything then
       SetLastCode(DummyTimeoutCode);
     }
-  }
 
-  return true;
+    return true;
+  }
 }
 
 static UnicodeString FormatContactList(const UnicodeString & Entry1, const UnicodeString & Entry2)
@@ -4266,7 +4254,7 @@ bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 static bool IsIPAddress(const UnicodeString & HostName)
 {
   bool IPv4 = true;
@@ -4947,6 +4935,7 @@ void TFTPFileSystem::LockFile(const UnicodeString & /*FileName*/, const TRemoteF
 {
   DebugFail();
 }
+
 void TFTPFileSystem::UnlockFile(const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();

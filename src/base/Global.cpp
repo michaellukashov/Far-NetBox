@@ -98,7 +98,7 @@ int TraceThreadProc(void *)
     }
     while (true);
   }
-  catch(...)
+  catch (...)
   {
     TRACE(L"E");
   }

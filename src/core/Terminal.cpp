@@ -1073,10 +1073,10 @@ void TTerminal::Open()
         throw;
       }
     }
-    // catch (EFatal &)
-    // {
-    //   throw;
-    // }
+    /*catch (EFatal &)
+    {
+      throw;
+    }*/
     catch (Exception & E)
     {
       LogEvent(FORMAT(L"Got error: \"%s\"", E.Message.c_str()));
@@ -1279,7 +1279,7 @@ void TTerminal::InitFileSystem()
     SAFE_DESTROY(FFileSystem);
     throw;
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     // any exception while opening session is fatal
     FatalError(&E, L"");
@@ -4573,12 +4573,12 @@ TTerminal * TTerminal::GetCommandSession()
       // do not copy OnDisplayBanner to avoid it being displayed
       FCommandSession = CommandSession.release();
     }
+    /*catch(...)
+    {
+      SAFE_DESTROY(FCommandSession);
+      throw;
+    }*/
   }
-  /*catch(...)
-  {
-    SAFE_DESTROY(FCommandSession);
-    throw;
-  }*/
 
   return FCommandSession;
 }
@@ -6014,7 +6014,7 @@ void TTerminal::DoLockFile(const UnicodeString & AFileName, const TRemoteFile * 
     {
       FFileSystem->LockFile(AFileName, AFile);
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       RetryLoop.Error(E, FMTLOAD(LOCK_FILE_ERROR, AFileName.c_str()));
     }
@@ -6043,7 +6043,7 @@ void TTerminal::DoUnlockFile(const UnicodeString & AFileName, const TRemoteFile 
     {
       FFileSystem->UnlockFile(AFileName, AFile);
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       RetryLoop.Error(E, FMTLOAD(UNLOCK_FILE_ERROR, AFileName.c_str()));
     }
