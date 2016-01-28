@@ -29,6 +29,11 @@ void Error(int ErrorID, intptr_t data)
   throw ExtException(static_cast<Exception *>(nullptr), Msg);
 }
 
+void ThrowNotImplemented(intptr_t data)
+{
+  Error(SNotImplemented, data);
+}
+
 bool TObject::IsKindOf(TObjectClassId ClassId) const
 {
   assert(this != nullptr);
