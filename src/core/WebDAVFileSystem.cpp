@@ -4547,11 +4547,11 @@ windows_validate_certificate(
     chain_config.MaximumCachedCertificates =0;
     chain_config.CycleDetectionModulus = 0;
 
-    CertCreateCertificateChainEngine(
+    ::CertCreateCertificateChainEngine(
         &chain_config,
         &chain_engine);
 
-    if (CertGetCertificateChain(chain_engine, cert_context, nullptr, nullptr, &chain_para,
+    if (::CertGetCertificateChain(chain_engine, cert_context, nullptr, nullptr, &chain_para,
           CERT_CHAIN_CACHE_END_CERT |
           CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
           nullptr, &chain_context))
@@ -4565,7 +4565,7 @@ windows_validate_certificate(
 
       policy_status.cbSize = sizeof(policy_status);
 
-      if (CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_SSL,
+      if (::CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_SSL,
             chain_context, &policy_para,
             &policy_status))
       {
@@ -4576,10 +4576,10 @@ windows_validate_certificate(
         }
       }
 
-      CertFreeCertificateChain(chain_context);
+      ::CertFreeCertificateChain(chain_context);
     }
-    CertFreeCertificateContext(cert_context);
-    CertFreeCertificateChainEngine(chain_engine);
+    ::CertFreeCertificateContext(cert_context);
+    ::CertFreeCertificateChainEngine(chain_engine);
   }
 
   return WEBDAV_NO_ERROR;
