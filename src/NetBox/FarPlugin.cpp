@@ -1930,7 +1930,7 @@ void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo * Info)
   ResetCachedInfo();
   if (Info->PanelItem)
   {
-    DebugAssert(Info->ItemsNumber > 0);
+    assert(Info->ItemsNumber > 0);
     for (size_t Index = 0; Index < Info->ItemsNumber; ++Index)
     {
       // nb_free((void*)Info->PanelItem[Index].FileName);
@@ -2339,7 +2339,7 @@ void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
 void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   intptr_t FunctionKey, const UnicodeString & Title)
 {
-  DebugAssert(FunctionKey >= 1 && FunctionKey <= 12);
+  assert(FunctionKey >= 1 && FunctionKey <= 12);
   int shift = static_cast<int>(ShiftStatus);
   assert(shift >= 0 && shift < 7);
   KeyBarLabel *Labels = &FKeyBarTitles.Labels[shift * 12];
