@@ -681,20 +681,20 @@ static void DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
 
 void * BusyStart()
 {
-  void * Token = reinterpret_cast<void *>(Screen->Cursor);
-  Screen->Cursor = crHourGlass;
+  void * Token = nullptr; // reinterpret_cast<void *>(Screen->Cursor);
+//  Screen->Cursor = crHourGlass;
   return Token;
 }
 
 void BusyEnd(void * Token)
 {
-  Screen->Cursor = reinterpret_cast<TCursor>(Token);
+//  Screen->Cursor = reinterpret_cast<TCursor>(Token);
 }
 
 
 static DWORD MainThread = 0;
-static TDateTime LastGUIUpdate = 0;
-static double GUIUpdateIntervalFrac = static_cast<double>(OneSecond/1000*GUIUpdateInterval);  // 1/5 sec
+static TDateTime LastGUIUpdate = 0.0;
+static double GUIUpdateIntervalFrac = static_cast<double>(OneSecond / 1000 * GUIUpdateInterval);  // 1/5 sec
 static bool NoGUI = false;
 
 void SetNoGUI()
