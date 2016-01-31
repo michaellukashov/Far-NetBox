@@ -23,15 +23,15 @@ void Abort()
   throw EAbort(L"");
 }
 
-void Error(int ErrorID, intptr_t data)
+void Error(intptr_t Id, intptr_t ErrorId)
 {
-  UnicodeString Msg = FMTLOAD(ErrorID, data);
+  UnicodeString Msg = FMTLOAD(Id, ErrorId);
   throw ExtException(static_cast<Exception *>(nullptr), Msg);
 }
 
-void ThrowNotImplemented(intptr_t data)
+void ThrowNotImplemented(intptr_t ErrorId)
 {
-  Error(SNotImplemented, data);
+  Error(SNotImplemented, ErrorId);
 }
 
 bool TObject::IsKindOf(TObjectClassId ClassId) const

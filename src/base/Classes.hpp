@@ -43,8 +43,8 @@ DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /*Sender*/);
 
 void Abort();
-void Error(int ErrorID, intptr_t data);
-void ThrowNotImplemented(intptr_t data);
+void Error(intptr_t Id, intptr_t ErrorId);
+void ThrowNotImplemented(intptr_t ErrorId);
 
 class TObject
 {
