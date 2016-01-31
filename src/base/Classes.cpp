@@ -362,6 +362,7 @@ const intptr_t MinsPerHour = 60;
 const intptr_t SecsPerMin = 60;
 const intptr_t HoursPerDay = 24;
 const intptr_t MSecsPerSec = 1000;
+const intptr_t OneSecond = MSecsPerSec;
 const intptr_t SecsPerHour = MinsPerHour * SecsPerMin;
 const intptr_t MinsPerDay  = HoursPerDay * MinsPerHour;
 const intptr_t SecsPerDay  = MinsPerDay * SecsPerMin;

@@ -33,6 +33,7 @@ extern const intptr_t HoursPerDay;
 extern const intptr_t SecsPerDay;
 extern const intptr_t MSecsPerDay;
 extern const intptr_t MSecsPerSec;
+extern const intptr_t OneSecond;
 extern const intptr_t DateDelta;
 extern const intptr_t UnixDateDelta;
 
