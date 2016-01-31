@@ -413,7 +413,7 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
 
   ne_set_connect_timeout(FNeonSession, static_cast<int>(Data->GetTimeout()));
 
-  unsigned int NeonAuthTypes = NE_AUTH_BASIC | NE_AUTH_DIGEST;
+  uintptr_t NeonAuthTypes = NE_AUTH_BASIC | NE_AUTH_DIGEST;
   if (Ssl)
   {
     NeonAuthTypes |= NE_AUTH_NEGOTIATE;
@@ -463,8 +463,8 @@ void TWebDAVFileSystem::ExchangeCapabilities(const char * Path, UnicodeString & 
     if (FCapabilities > 0)
     {
       UnicodeString Str;
-      unsigned int Capability = 0x01;
-      unsigned int Capabilities = FCapabilities;
+      uintptr_t Capability = 0x01;
+      uintptr_t Capabilities = FCapabilities;
       while (Capabilities > 0)
       {
         if (FLAGSET(Capabilities, Capability))

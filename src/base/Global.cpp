@@ -39,7 +39,7 @@ TUnguard::~TUnguard()
 
 static HANDLE TraceFile = nullptr;
 BOOL IsTracing = false;
-unsigned int CallstackTls = CallstackTlsOff;
+uintptr_t CallstackTls = CallstackTlsOff;
 TCriticalSection * TracingCriticalSection = nullptr;
 
 void SetTraceFile(HANDLE ATraceFile)
