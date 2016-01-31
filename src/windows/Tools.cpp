@@ -19,8 +19,8 @@ TOptions * GetGlobalOptions()
   return nullptr; // TProgramParams::Instance();
 }
 
-bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
-  const UnicodeString & DefaultExt, UnicodeString & FileName)
+bool SaveDialog(const UnicodeString & ATitle, const UnicodeString & Filter,
+  const UnicodeString & ADefaultExt, UnicodeString & AFileName)
 {
   bool Result = false;
   #if 0
@@ -303,9 +303,9 @@ static void DoVerifyKey(
   }
 }
 
-void VerifyAndConvertKey(UnicodeString & FileName)
+void VerifyAndConvertKey(UnicodeString & AFileName)
 {
-  DoVerifyKey(FileName, true, TSshProt(0), true);
+  DoVerifyKey(AFileName, true, TSshProt(0), true);
 }
 
 void VerifyKey(const UnicodeString & AFileName)
@@ -385,7 +385,7 @@ static bool GetProxyUrlFromIE(UnicodeString & Proxy)
   return Result;
 }
 
-bool AutodetectProxy(UnicodeString & HostName, int & PortNumber)
+bool AutodetectProxy(UnicodeString & AHostName, intptr_t & APortNumber)
 {
   bool Result = false;
 
@@ -428,8 +428,8 @@ bool AutodetectProxy(UnicodeString & HostName, int & PortNumber)
     }
     else
     {
-      HostName = CutToChar(Proxy, L':', true);
-      PortNumber = StrToIntDef(Proxy, ProxyPortNumber);
+      AHostName = CutToChar(Proxy, L':', true);
+      APortNumber = StrToIntDef(Proxy, ProxyPortNumber);
     }
   }
 
