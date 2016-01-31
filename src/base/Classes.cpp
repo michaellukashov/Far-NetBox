@@ -36,10 +36,10 @@ void ThrowNotImplemented(intptr_t data)
 
 bool TObject::IsKindOf(TObjectClassId ClassId) const
 {
-  assert(this != nullptr);
+  DebugAssert(this != nullptr);
 
   TClassInfo * thisInfo = this->GetClassInfo();
-  assert(thisInfo != nullptr);
+  DebugAssert(thisInfo != nullptr);
 
   const TClassInfo * classInfo = TClassInfo::FindClass(ClassId);
   return thisInfo->IsKindOf(classInfo);
@@ -518,7 +518,7 @@ void TStrings::Assign(const TPersistent * Source)
       EndUpdate();
     };
     Clear();
-    assert(Strings);
+    DebugAssert(Strings);
     FQuoteChar = Strings->FQuoteChar;
     FDelimiter = Strings->FDelimiter;
     AddStrings(Strings);
@@ -790,7 +790,7 @@ void TStringList::Assign(const TPersistent * Source)
 
 intptr_t TStringList::GetCount() const
 {
-  assert(FStrings.size() == FObjects.size());
+  DebugAssert(FStrings.size() == FObjects.size());
   return static_cast<intptr_t>(FStrings.size());
 }
 

@@ -86,11 +86,11 @@ void TClassInfo::Register()
   else
   {
     // guard against reentrance once the global has been created
-    assert(++entry == 1 || "TClassInfo::Register() reentrance");
+    DebugAssert(++entry == 1 || "TClassInfo::Register() reentrance");
     classTable = sm_classTable;
   }
 
-  assert(classTable->Get(m_classId) == nullptr);
+  DebugAssert(classTable->Get(m_classId) == nullptr);
 
   classTable->Put(m_classId, this);
 

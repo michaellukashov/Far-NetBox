@@ -1690,7 +1690,7 @@ TCriticalSection::TCriticalSection() :
 
 TCriticalSection::~TCriticalSection()
 {
-  assert(FAcquired == 0);
+  DebugAssert(FAcquired == 0);
   DeleteCriticalSection(&FSection);
 }
 
