@@ -111,18 +111,3 @@ inline typename T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t
 #define DebugUsedParam(p) (void)(p)
 
 #define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())
-
-#if defined(__MINGW32__) && (__MINGW_GCC_VERSION < 50100)
-typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
-{
-  LONG       Bias;
-  WCHAR      StandardName[32];
-  SYSTEMTIME StandardDate;
-  LONG       StandardBias;
-  WCHAR      DaylightName[32];
-  SYSTEMTIME DaylightDate;
-  LONG       DaylightBias;
-  WCHAR      TimeZoneKeyName[128];
-  BOOLEAN    DynamicDaylightTimeDisabled;
-} DYNAMIC_TIME_ZONE_INFORMATION, *PDYNAMIC_TIME_ZONE_INFORMATION;
-#endif
