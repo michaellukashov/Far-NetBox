@@ -37,16 +37,16 @@ TUnguard::~TUnguard()
 
 #ifdef _DEBUG
 
-static HANDLE TraceFile = NULL;
+static HANDLE TraceFile = nullptr;
 BOOL IsTracing = false;
 unsigned int CallstackTls = CallstackTlsOff;
-TCriticalSection * TracingCriticalSection = NULL;
+TCriticalSection * TracingCriticalSection = nullptr;
 
 void SetTraceFile(HANDLE ATraceFile)
 {
   TraceFile = ATraceFile;
   IsTracing = (TraceFile != 0);
-  if (TracingCriticalSection == NULL)
+  if (TracingCriticalSection == nullptr)
   {
     TracingCriticalSection = new TCriticalSection();
   }
@@ -54,10 +54,10 @@ void SetTraceFile(HANDLE ATraceFile)
 
 void CleanupTracing()
 {
-  if (TracingCriticalSection != NULL)
+  if (TracingCriticalSection != nullptr)
   {
     delete TracingCriticalSection;
-    TracingCriticalSection = NULL;
+    TracingCriticalSection = nullptr;
   }
 }
 
@@ -112,7 +112,7 @@ int TraceThreadProc(void *)
 void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * Message)
 {
-  if (TracingCriticalSection != NULL)
+  if (TracingCriticalSection != nullptr)
   {
     TTraceInMemory TraceInMemory;
     TraceInMemory.Ticks = GetTickCount();
@@ -128,7 +128,7 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
     {
       TracesInMemory.reserve(100000);
       TThreadID ThreadID;
-      StartThread(NULL, 0, TraceThreadProc, NULL, 0, ThreadID);
+      StartThread(nullptr, 0, TraceThreadProc, nullptr, 0, ThreadID);
     }
 
     TracesInMemory.push_back(TraceInMemory);
@@ -147,7 +147,7 @@ void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
 
 void TraceDumpToFile()
 {
-  if (TraceFile != NULL)
+  if (TraceFile != nullptr)
   {
     TGuard Guard(TracingCriticalSection);
 
@@ -164,7 +164,7 @@ void TraceDumpToFile()
     UTF8String Buffer = UTF8String(
       FORMAT("[%s] Dumping in-memory tracing =================================\n",
         (TimeString)));
-    WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
+    WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, nullptr);
 
     TTracesInMemory::const_iterator i = TracesInMemory.begin();
     while (i != TracesInMemory.end())
@@ -172,7 +172,7 @@ void TraceDumpToFile()
       #ifdef TRACE_IN_MEMORY_NO_FORMATTING
       const wchar_t * SourceFile = i->SourceFile;
       const wchar_t * Slash = wcsrchr(SourceFile, L'\\');
-      if (Slash != NULL)
+      if (Slash != nullptr)
       {
         SourceFile = Slash + 1;
       }
@@ -183,9 +183,9 @@ void TraceDumpToFile()
       Buffer = UTF8String(FORMAT(L"[%s] [%.4X] [%s:%d:%s] %s\n",
         (TimeString, int(i->Thread), SourceFile,
          i->Line, i->Func, i->Message)));
-      WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
+      WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, nullptr);
       #else
-      WriteFile(TraceFile, i->Message.c_str(), i->Message.Length(), &Written, NULL);
+      WriteFile(TraceFile, i->Message.c_str(), i->Message.Length(), &Written, nullptr);
       #endif
       i++;
     }
@@ -195,7 +195,7 @@ void TraceDumpToFile()
     Buffer = UTF8String(
       FORMAT("[%s] Done in-memory tracing =================================\n",
         (TimeString)));
-    WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, NULL);
+    WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, nullptr);
   }
 }
 
@@ -219,7 +219,7 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   // DateTimeToString(TimeString, L"hh:mm:ss.zzz", Now());
   // TODO: use Format
   const wchar_t * Slash = wcsrchr(SourceFile, L'\\');
-  if (Slash != NULL)
+  if (Slash != nullptr)
   {
     SourceFile = Slash + 1;
   }
@@ -227,7 +227,7 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
     (TimeString, int(GetCurrentThreadId()), SourceFile,
      Line, Func, Message)));
 #ifdef TRACE_IN_MEMORY
-  if (TracingCriticalSection != NULL)
+  if (TracingCriticalSection != nullptr)
   {
     TTraceInMemory TraceInMemory;
     TraceInMemory.Message = Buffer;
@@ -238,14 +238,14 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
     {
       TracesInMemory.reserve(100000);
       TThreadID ThreadID;
-      StartThread(NULL, 0, TraceThreadProc, NULL, 0, ThreadID);
+      StartThread(nullptr, 0, TraceThreadProc, nullptr, 0, ThreadID);
     }
 
     TracesInMemory.push_back(TraceInMemory);
   }
 #else
   DWORD Written;
-  WriteFile(TraceFile, Buffer.c_str(), static_cast<DWORD>(Buffer.Length()), &Written, NULL);
+  WriteFile(TraceFile, Buffer.c_str(), static_cast<DWORD>(Buffer.Length()), &Written, nullptr);
 #endif TRACE_IN_MEMORY
 }
 

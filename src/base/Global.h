@@ -66,7 +66,7 @@ void TraceInMemoryCallback(const wchar_t * Msg);
 
 #endif // TRACE_IN_MEMORY
 
-#define ACCESS_VIOLATION_TEST { (*((int*)NULL)) = 0; }
+#define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 
 void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber);
 
@@ -95,7 +95,7 @@ inline bool DoAlwaysFalse(bool Value, const wchar_t * Message, const wchar_t * F
 template<typename T>
 inline typename T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
 {
-  if (p == NULL)
+  if (p == nullptr)
   {
     DoAssert(Message, Filename, LineNumber);
   }

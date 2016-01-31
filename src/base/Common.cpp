@@ -2341,7 +2341,7 @@ UnicodeString LoadStr(intptr_t Ident, uintptr_t /*MaxLength*/)
 {
 #ifndef _MSC_VER
   TLibModule * MainModule = FindModule(HInstance);
-  DebugAssert(MainModule != NULL);
+  DebugAssert(MainModule != nullptr);
 
   UnicodeString Result;
   Result.SetLength(MaxLength);
@@ -2542,7 +2542,7 @@ bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
 
     if (Index <= AStr.Length())
     {
-      if (ASeparator != NULL)
+      if (ASeparator != nullptr)
       {
         *ASeparator = AStr.SubString(Index, 1);
       }
@@ -2821,7 +2821,7 @@ static UnicodeString GetTlsErrorStr(int Err)
 static FILE * OpenCertificate(const UnicodeString & Path)
 {
   FILE * Result = _wfopen(ApiPath(Path).c_str(), L"rb");
-  if (Result == NULL)
+  if (Result == nullptr)
   {
     int Error = errno;
     throw EOSExtException(MainInstructions(FMTLOAD(CERTIFICATE_OPEN_ERROR, Path.c_str())), Error);
