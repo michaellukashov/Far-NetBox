@@ -260,7 +260,7 @@ void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
 
 #endif // TRACE_IN_MEMORY_NO_FORMATTING
 
-void DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber)
+void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
 {
   if (IsTracing)
   {

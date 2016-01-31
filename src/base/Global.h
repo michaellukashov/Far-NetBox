@@ -68,13 +68,13 @@ void TraceInMemoryCallback(const wchar_t * Msg);
 
 #define ACCESS_VIOLATION_TEST { (*((int*)NULL)) = 0; }
 
-void DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber);
+void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber);
 
 #define DebugAssert(p) ((p) ? (void)0 : DoAssert(TEXT(#p), TEXT(__FILE__), __LINE__))
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
 #define DebugFail() DebugAssert(false)
 
-inline bool DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int LineNumber)
+inline bool DoAlwaysTrue(bool Value, const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
 {
   if (!Value)
   {
@@ -83,7 +83,7 @@ inline bool DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int 
   return Value;
 }
 
-inline bool DoAlwaysFalse(bool Value, wchar_t * Message, wchar_t * Filename, int LineNumber)
+inline bool DoAlwaysFalse(bool Value, const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
 {
   if (Value)
   {
@@ -93,7 +93,7 @@ inline bool DoAlwaysFalse(bool Value, wchar_t * Message, wchar_t * Filename, int
 }
 
 template<typename T>
-inline typename T * DoCheckNotNull(T* p, wchar_t * Message, wchar_t * Filename, int LineNumber)
+inline typename T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
 {
   if (p == NULL)
   {
