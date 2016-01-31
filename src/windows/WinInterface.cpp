@@ -693,7 +693,7 @@ void BusyEnd(void * Token)
 
 
 static DWORD MainThread = 0;
-static TDateTime LastGUIUpdate = 0.0;
+static TDateTime LastGUIUpdate(0.0);
 static double GUIUpdateIntervalFrac = static_cast<double>(OneSecond / 1000 * GUIUpdateInterval);  // 1/5 sec
 static bool NoGUI = false;
 
@@ -706,16 +706,14 @@ bool ProcessGUI(bool Force)
 {
   DebugAssert(MainThread != 0);
   bool Result = false;
-  // Calling ProcessMessages in Azure WebJob causes access violation in VCL.
-  // As we do not really need to call it in scripting/.NET, just skip it.
-  if ((MainThread == GetCurrentThreadId()) && !NoGUI)
+  if (MainThread == ::GetCurrentThreadId() && !NoGUI)
   {
     TDateTime N = Now();
     if (Force ||
         (double(N) - double(LastGUIUpdate) > GUIUpdateIntervalFrac))
     {
       LastGUIUpdate = N;
-      Application->ProcessMessages();
+//      Application->ProcessMessages(); TODO: GetGlobalFunctions()->ProcessMessages()
       Result = true;
     }
   }
@@ -1243,29 +1241,29 @@ bool HandleMinimizeSysCommand(TMessage & Message)
   }
   return Result;
 }
+#endif
 
 void WinInitialize()
 {
-  if (JclHookExceptions())
-  {
-    JclStackTrackingOptions << stAllModules;
-    JclAddExceptNotifier(DoExceptNotify, npFirstChain);
-  }
+//  if (JclHookExceptions())
+//  {
+//    JclStackTrackingOptions << stAllModules;
+//    JclAddExceptNotifier(DoExceptNotify, npFirstChain);
+//  }
 
   SetErrorMode(SEM_FAILCRITICALERRORS);
-  OnApiPath = ApiPath;
-  MainThread = GetCurrentThreadId();
-
-#pragma warn -8111
-#pragma warn .8111
+//  OnApiPath = ::ApiPath;
+  MainThread = ::GetCurrentThreadId();
 
 }
+
 
 void WinFinalize()
 {
-  JclRemoveExceptNotifier(DoExceptNotify);
+//  JclRemoveExceptNotifier(DoExceptNotify);
 }
 
+#if 0
 ::TTrayIcon::TTrayIcon(uintptr_t Id)
 {
   FVisible = false;
