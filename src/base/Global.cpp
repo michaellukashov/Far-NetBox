@@ -89,11 +89,11 @@ int TraceThreadProc(void *)
       Trace(L"2");
       TraceDumpToFile();
       Trace(L"3");
-      Sleep(60000);
+      ::Sleep(60000);
       Trace(L"4");
       // if resuming from sleep causes the previous Sleep to immediately break,
       // make sure we wait a little more before dumping
-      Sleep(60000);
+      ::Sleep(60000);
       Trace(L"5");
     }
     while (true);
@@ -115,8 +115,8 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
   if (TracingCriticalSection != nullptr)
   {
     TTraceInMemory TraceInMemory;
-    TraceInMemory.Ticks = GetTickCount();
-    TraceInMemory.Thread = GetCurrentThreadId();
+    TraceInMemory.Ticks = ::GetTickCount();
+    TraceInMemory.Thread = ::GetCurrentThreadId();
     TraceInMemory.SourceFile = SourceFile;
     TraceInMemory.Func = Func;
     TraceInMemory.Line = Line;
@@ -224,7 +224,7 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
     SourceFile = Slash + 1;
   }
   UTF8String Buffer = UTF8String(FORMAT(L"[%s] [%.4X] [%s:%d:%s] %s\n",
-    (TimeString, int(GetCurrentThreadId()), SourceFile,
+    (TimeString, int(::GetCurrentThreadId()), SourceFile,
      Line, Func, Message)));
 #ifdef TRACE_IN_MEMORY
   if (TracingCriticalSection != nullptr)
