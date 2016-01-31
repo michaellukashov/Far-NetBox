@@ -5,7 +5,7 @@
 #include <Classes.hpp>
 #include "Configuration.h"
 #include "SessionData.h"
-#define HELP_NONE ""
+#define HELP_NONE L""
 #define COMMAND_SWITCH L"Command"
 #define SESSIONNAME_SWICH L"SessionName"
 #define INI_NUL L"nul"

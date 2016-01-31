@@ -113,22 +113,22 @@ void InitializeWinHelp();
 void FinalizeWinHelp();
 
 // windows\WinInterface.cpp
-uintptr_t MessageDialog(const UnicodeString Msg, TQueryType Type,
-  uintptr_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+uintptr_t MessageDialog(const UnicodeString & Msg, TQueryType Type,
+  uintptr_t Answers, const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 uintptr_t MessageDialog(int Ident, TQueryType Type,
-  uintptr_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
-uintptr_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages = L"");
+  uintptr_t Answers, const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+uintptr_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & MoreMessages = L"");
 
-uintptr_t MoreMessageDialog(const UnicodeString Message,
+uintptr_t MoreMessageDialog(const UnicodeString & Message,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
-    UnicodeString HelpKeyword, const TMessageParams * Params = nullptr);
+  const UnicodeString & HelpKeyword, const TMessageParams * Params = nullptr);
 
 uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
-  const UnicodeString MessageFormat = L"", uintptr_t Answers = qaOK,
-  UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+  const UnicodeString & MessageFormat = L"", uintptr_t Answers = qaOK,
+  const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
-  int SessionReopenTimeout, const UnicodeString MessageFormat = L"", uintptr_t Answers = qaOK,
-  UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+  intptr_t SessionReopenTimeout, const UnicodeString & MessageFormat = L"", uintptr_t Answers = qaOK,
+  const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 
 // forms\Custom.cpp
 TSessionData * DoSaveSession(TSessionData * SessionData,
@@ -164,8 +164,8 @@ struct TInputDialogData
 DEFINE_CALLBACK_TYPE2(TInputDialogInitializeEvent, void,
   TObject * /*Sender*/, TInputDialogData * /*Data*/);
 
-bool InputDialog(const UnicodeString ACaption,
-  const UnicodeString APrompt, UnicodeString & Value, UnicodeString HelpKeyword = HELP_NONE,
+bool InputDialog(const UnicodeString & ACaption,
+  const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword = HELP_NONE,
   TStrings * History = nullptr, bool PathInput = false,
   TInputDialogInitializeEvent OnInitialize = nullptr, bool Echo = true);
 

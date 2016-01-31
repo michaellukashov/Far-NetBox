@@ -1533,3 +1533,46 @@ void ::TTrayIcon::SetHint(UnicodeString value)
   }
 }
 #endif
+
+bool InputDialog(const UnicodeString & ACaption,
+  const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
+  TStrings * History, bool PathInput,
+  TInputDialogInitializeEvent OnInitialize, bool Echo)
+{
+  ThrowNotImplemented(3301);
+  bool Result = false;
+  return Result;
+}
+
+uintptr_t MessageDialog(const UnicodeString & Msg, TQueryType Type,
+  uintptr_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
+{
+  ThrowNotImplemented(3302);
+  uintptr_t Result = 0;
+  return Result;
+}
+
+uintptr_t MessageDialog(int Ident, TQueryType Type,
+  uintptr_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
+{
+  ThrowNotImplemented(3303);
+  uintptr_t Result = 0;
+  return Result;
+}
+
+uintptr_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & MoreMessages)
+{
+  ThrowNotImplemented(3304);
+  uintptr_t Result = 0;
+  return Result;
+}
+
+uintptr_t MoreMessageDialog(const UnicodeString & Message,
+  TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
+    const UnicodeString & HelpKeyword, const TMessageParams * Params)
+{
+  ThrowNotImplemented(3305);
+  uintptr_t Result = 0;
+  return Result;
+}
+
