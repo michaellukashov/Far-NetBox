@@ -81,36 +81,36 @@ TTracesInMemory TracesInMemory;
 
 int TraceThreadProc(void *)
 {
-  TRACE(L">");
+  Trace(L">");
   try
   {
     do
     {
-      TRACE(L"2");
+      Trace(L"2");
       TraceDumpToFile();
-      TRACE(L"3");
+      Trace(L"3");
       Sleep(60000);
-      TRACE(L"4");
+      Trace(L"4");
       // if resuming from sleep causes the previous Sleep to immediately break,
       // make sure we wait a little more before dumping
       Sleep(60000);
-      TRACE(L"5");
+      Trace(L"5");
     }
     while (true);
   }
   catch (...)
   {
-    TRACE(L"E");
+    Trace(L"E");
   }
-  TRACE_EXIT;
+  TraceExit();
   return 0;
 }
 #endif // TRACE_IN_MEMORY
 
 #ifdef TRACE_IN_MEMORY_NO_FORMATTING
 
-void Trace(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * Message)
+void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
+  intptr_t Line, const wchar_t * Message)
 {
   if (TracingCriticalSection != nullptr)
   {
@@ -135,10 +135,10 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
   }
 }
 
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * AFormat, TVarRec * /*Args*/, const int /*Args_Size*/)
+void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+  intptr_t Line, const wchar_t * AFormat, TVarRec * /*Args*/, const int /*Args_Size*/)
 {
-  Trace(SourceFile, Func, Line, AFormat);
+  DoTrace(SourceFile, Func, Line, AFormat);
 }
 
 #endif // TRACE_IN_MEMORY_NO_FORMATTING
@@ -203,14 +203,14 @@ void TraceInMemoryCallback(const wchar_t * Msg)
 {
   if (IsTracing)
   {
-    Trace(L"PAS", L"unk", GetCurrentThreadId(), Msg);
+    DoTrace(L"PAS", L"unk", ::GetCurrentThreadId(), Msg);
   }
 }
 #endif // TRACE_IN_MEMORY
 
 #ifndef TRACE_IN_MEMORY_NO_FORMATTING
 
-void Trace(const wchar_t * SourceFile, const wchar_t * Func,
+void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * Message)
 {
   DebugAssert(IsTracing);
@@ -249,13 +249,13 @@ void Trace(const wchar_t * SourceFile, const wchar_t * Func,
 #endif TRACE_IN_MEMORY
 }
 
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
   int Line, const wchar_t * AFormat, va_list Args)
 {
   DebugAssert(IsTracing);
 
   UnicodeString Message = FormatV(AFormat, Args);
-  Trace(SourceFile, Func, Line, Message.c_str());
+  DoTrace(SourceFile, Func, Line, Message.c_str());
 }
 
 #endif // TRACE_IN_MEMORY_NO_FORMATTING
@@ -264,7 +264,7 @@ void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineN
 {
   if (IsTracing)
   {
-    Trace(Filename, L"assert", LineNumber, Message);
+    DoTrace(Filename, L"assert", LineNumber, Message);
   }
   _wassert(Message, Filename, LineNumber);
 }

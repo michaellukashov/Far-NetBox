@@ -7,6 +7,7 @@
 
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
+#define LENOF(x) (_countof(X))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
@@ -54,13 +55,12 @@ void CleanupTracing();
 extern BOOL IsTracing;
 const unsigned int CallstackTlsOff = (unsigned int)-1;
 extern unsigned int CallstackTls;
-extern "C" void Trace(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * Message);
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * Format, va_list Args);
+extern "C" void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
+  intptr_t Line, const wchar_t * Message);
+void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+  intptr_t Line, const wchar_t * Format, va_list Args);
 
 #ifdef TRACE_IN_MEMORY
-
 void TraceDumpToFile();
 void TraceInMemoryCallback(const wchar_t * Msg);
 
