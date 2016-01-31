@@ -44,13 +44,19 @@ const int mpAllowContinueOnError = 0x02;
 #define LOG_SWITCH L"Log"
 #define INI_SWITCH L"Ini"
 
-struct TMessageParams
+typedef int TSize;
+
+struct TMessageParams : public TObject
 {
+NB_DISABLE_COPY(TMessageParams)
+public:
+//  TMessageParams();
   TMessageParams(uintptr_t AParams = 0);
-  TMessageParams(const TQueryParams * AParams);
+  void Assign(const TMessageParams * AParams);
 
   const TQueryButtonAlias * Aliases;
   uintptr_t AliasesCount;
+  uintptr_t Flags;
   uintptr_t Params;
   uintptr_t Timer;
   TQueryParamsTimerEvent TimerEvent;
@@ -65,7 +71,7 @@ struct TMessageParams
   bool AllowHelp;
   UnicodeString ImageName;
   UnicodeString MoreMessagesUrl;
-//  TSize MoreMessagesSize;
+  TSize MoreMessagesSize;
   UnicodeString CustomCaption;
 
 private:
@@ -152,10 +158,12 @@ struct TInputDialogData
 //  TCustomEdit * Edit;
   void * Edit;
 };
+
 //typedef void (__closure *TInputDialogInitialize)
 //  (TObject * Sender, TInputDialogData * Data);
 DEFINE_CALLBACK_TYPE2(TInputDialogInitializeEvent, void,
   TObject * /*Sender*/, TInputDialogData * /*Data*/);
+
 bool InputDialog(const UnicodeString ACaption,
   const UnicodeString APrompt, UnicodeString & Value, UnicodeString HelpKeyword = HELP_NONE,
   TStrings * History = nullptr, bool PathInput = false,
@@ -199,6 +207,10 @@ const int coShortCutHint        = 0x800;
 const int cooDoNotShowAgain     = 0x01;
 const int cooRemoteTransfer     = 0x02;
 const int cooSaveSettings       = 0x04;
+
+const int coTempTransfer        = 0x08;
+const int coDisableNewerOnly    = 0x10;
+
 bool DoCopyDialog(bool ToRemote,
   bool Move, TStrings * FileList, UnicodeString & TargetDirectory,
   TGUICopyParamType * Params, int Options, int CopyParamAttrs,
@@ -406,15 +418,15 @@ void AnswerNameAndCaption(
 TFarDialog * CreateMoreMessageDialog(const UnicodeString & Msg,
   TStrings * MoreMessages, TMsgDlgType DlgType, uintptr_t Answers,
   const TQueryButtonAlias * Aliases, uintptr_t AliasesCount,
-  uintptr_t TimeoutAnswer, TButton ** TimeoutButton,
+  uintptr_t TimeoutAnswer, TFarButton ** TimeoutButton,
   const UnicodeString & ImageName, const UnicodeString & NeverAskAgainCaption,
   const UnicodeString & MoreMessagesUrl, TSize MoreMessagesSize,
   const UnicodeString & CustomCaption);
 TFarDialog * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMessages,
   TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params);
-uintptr_t ExecuteMessageDialog(TForm * Dialog, uintptr_t Answers, const TMessageParams * Params);
-void InsertPanelToMessageDialog(TCustomForm * Form, TPanel * Panel);
-void NavigateMessageDialogToUrl(TCustomForm * Form, const UnicodeString & Url);
+uintptr_t ExecuteMessageDialog(TFarDialog * Dialog, uintptr_t Answers, const TMessageParams * Params);
+//void InsertPanelToMessageDialog(TFarDialog * Form, TPanel * Panel);
+//void NavigateMessageDialogToUrl(TFarDialog * Form, const UnicodeString & Url);
 
 // windows\Console.cpp
 enum TConsoleMode { cmNone, cmScripting, cmHelp, cmBatchSettings, cmKeyGen };

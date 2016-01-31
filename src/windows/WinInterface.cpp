@@ -1,10 +1,60 @@
 #include <Interface.h>
 #include <FarTexts.h>
 #include <FarDialog.h>
+#include <WinInterface.h>
 
 static bool IsPositiveAnswer(uintptr_t Answer)
 {
   return (Answer == qaYes) || (Answer == qaOK) || (Answer == qaYesToAll);
+}
+
+TMessageParams::TMessageParams(uintptr_t AParams) :
+  Aliases(nullptr),
+  AliasesCount(0),
+  Flags(0),
+  Params(0),
+  Timer(0),
+  TimerEvent(nullptr),
+  TimerAnswers(0),
+  Timeout(0),
+  TimeoutAnswer(0)
+{
+}
+
+void TMessageParams::Assign(const TMessageParams * AParams)
+{
+  Aliases = AParams->Aliases;
+  AliasesCount = AParams->AliasesCount;
+  Flags = AParams->Flags;
+  Params = AParams->Params;
+  Timer = AParams->Timer;
+  TimerEvent = AParams->TimerEvent;
+  TimerMessage = AParams->TimerMessage;
+  TimerAnswers = AParams->TimerAnswers;
+  Timeout = AParams->Timeout;
+  TimeoutAnswer = AParams->TimeoutAnswer;
+}
+
+inline void TMessageParams::Reset()
+{
+  Params = 0;
+  Aliases = NULL;
+  AliasesCount = 0;
+  Timer = 0;
+  TimerEvent = NULL;
+  TimerMessage = L"";
+  TimerAnswers = 0;
+  TimerQueryType = static_cast<TQueryType>(-1);
+  Timeout = 0;
+  TimeoutAnswer = 0;
+  NeverAskAgainTitle = L"";
+  NeverAskAgainAnswer = 0;
+  NeverAskAgainCheckedInitially = false;
+  AllowHelp = true;
+  ImageName = L"";
+  MoreMessagesUrl = L"";
+  MoreMessagesSize = TSize();
+  CustomCaption = L"";
 }
 
 static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
@@ -70,6 +120,7 @@ static TFarCheckBox * FindNeverAskAgainCheck(TFarDialog * Dialog)
   return nullptr; // DebugNotNull(NB_STATIC_DOWNCAST(TFarCheckBox, Dialog->FindComponent(L"NeverAskAgainCheck")));
 }
 
+#if 0
 TFarDialog * CreateMessageDialogEx(const UnicodeString & Msg,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const UnicodeString & HelpKeyword,
   const TMessageParams * Params, TFarButton *& TimeoutButton)
@@ -104,7 +155,7 @@ TFarDialog * CreateMessageDialogEx(const UnicodeString & Msg,
 
   UnicodeString ImageName;
   UnicodeString MoreMessagesUrl;
-#if 0
+
   TSize MoreMessagesSize;
   UnicodeString CustomCaption;
   if (Params != nullptr)
@@ -114,11 +165,10 @@ TFarDialog * CreateMessageDialogEx(const UnicodeString & Msg,
     MoreMessagesSize = Params->MoreMessagesSize;
     CustomCaption = Params->CustomCaption;
   }
-#endif
+
   const TQueryButtonAlias * Aliases = (Params != nullptr) ? Params->Aliases : nullptr;
   uintptr_t AliasesCount = (Params != nullptr) ? Params->AliasesCount : 0;
 
-#if 0
   UnicodeString NeverAskAgainCaption;
   bool HasNeverAskAgain = (Params != nullptr) && FLAGSET(Params->Params, mpNeverAskAgainCheck);
   if (HasNeverAskAgain)
@@ -128,9 +178,9 @@ TFarDialog * CreateMessageDialogEx(const UnicodeString & Msg,
         (UnicodeString)Params->NeverAskAgainTitle :
         // qaOK | qaIgnore is used, when custom "non-answer" button is required
         LoadStr(((ActualAnswers == qaOK) || (ActualAnswers == (qaOK | qaIgnore))) ?
-          NEVER_SHOW_AGAIN : NEVER_ASK_AGAIN);
+          MSG_CHECK_NEVER_SHOW_AGAIN : MSG_CHECK_NEVER_ASK_AGAIN);
   }
-#endif
+
   TFarDialog * Dialog = CreateMoreMessageDialog(Msg, MoreMessages, DlgType, Answers,
     Aliases, AliasesCount, TimeoutAnswer, &TimeoutButton, ImageName, NeverAskAgainCaption,
     MoreMessagesUrl, MoreMessagesSize, CustomCaption);
@@ -139,7 +189,7 @@ TFarDialog * CreateMessageDialogEx(const UnicodeString & Msg,
   {
     if (HasNeverAskAgain && DebugAlwaysTrue(Params != nullptr))
     {
-      TFarsCheckBox * NeverAskAgainCheck = FindNeverAskAgainCheck(Dialog);
+      TFarCheckBox * NeverAskAgainCheck = FindNeverAskAgainCheck(Dialog);
       NeverAskAgainCheck->SetChecked(Params->NeverAskAgainCheckedInitially;
       if (Params->NeverAskAgainAnswer > 0)
       {
@@ -454,6 +504,7 @@ uintptr_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & Mor
   }
   return Result;
 }
+#endif
 
 #if 0
 static TStrings * StackInfoListToStrings(
@@ -535,7 +586,7 @@ uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
   // so it should never fail here
   DebugCheck(ExceptionMessageFormatted(E, Message));
 
-  HelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
+  HelpKeyword = ""; // MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
 
   std::unique_ptr<TStrings> OwnedMoreMessages;
   if (AppendExceptionStackTraceAndForget(MoreMessages))
