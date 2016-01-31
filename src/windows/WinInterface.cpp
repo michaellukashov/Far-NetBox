@@ -574,6 +574,7 @@ uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
   const UnicodeString & MessageFormat, uintptr_t Answers, const UnicodeString & HelpKeyword,
   const TMessageParams * Params)
 {
+#if 0
   TStrings * MoreMessages = nullptr;
   ExtException * EE = dynamic_cast<ExtException *>(E);
   if (EE != nullptr)
@@ -597,12 +598,16 @@ uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
   return MoreMessageDialog(
     FORMAT(MessageFormat.IsEmpty() ? UnicodeString(L"%s") : MessageFormat, (Message)),
     MoreMessages, Type, Answers, HelpKeyword, Params);
+#endif
+  ThrowNotImplemented(3018);
+  return 0;
 }
 
 uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
   int SessionReopenTimeout, const UnicodeString & MessageFormat, uintptr_t Answers,
   const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
+#if 0
   DebugAssert(FLAGCLEAR(Answers, qaRetry));
   Answers |= qaRetry;
 
@@ -627,11 +632,15 @@ uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
   AParams.AliasesCount = LENOF(Aliases);
 
   return ExceptionMessageDialog(E, Type, MessageFormat, Answers, HelpKeyword, &AParams);
+#endif
+  ThrowNotImplemented(3017);
+  return 0;
 }
 
 static void DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
   bool OSException, void * BaseOfStack)
 {
+#if 0
   if (ExceptObj != nullptr)
   {
     Exception * E = dynamic_cast<Exception *>(ExceptObj);
@@ -666,6 +675,8 @@ static void DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
       }
     }
   }
+#endif
+  ThrowNotImplemented(3016);
 }
 
 void * BusyStart()
