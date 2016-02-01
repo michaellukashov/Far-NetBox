@@ -58,9 +58,9 @@ extern BOOL IsTracing;
 const uintptr_t CallstackTlsOff = (uintptr_t)-1;
 extern uintptr_t CallstackTls;
 extern "C" void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
-  intptr_t Line, const wchar_t * Message);
+  uintptr_t Line, const wchar_t * Message);
 void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  intptr_t Line, const wchar_t * Format, va_list Args);
+  uintptr_t Line, const wchar_t * Format, va_list Args);
 
 #ifdef TRACE_IN_MEMORY
 void TraceDumpToFile();

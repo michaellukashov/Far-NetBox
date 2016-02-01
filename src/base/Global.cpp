@@ -110,7 +110,7 @@ int TraceThreadProc(void *)
 #ifdef TRACE_IN_MEMORY_NO_FORMATTING
 
 void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
-  intptr_t Line, const wchar_t * Message)
+  uintptr_t Line, const wchar_t * Message)
 {
   if (TracingCriticalSection != nullptr)
   {
@@ -136,7 +136,7 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
 }
 
 void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  intptr_t Line, const wchar_t * AFormat, TVarRec * /*Args*/, const int /*Args_Size*/)
+  uintptr_t Line, const wchar_t * AFormat, TVarRec * /*Args*/, const int /*Args_Size*/)
 {
   DoTrace(SourceFile, Func, Line, AFormat);
 }
@@ -211,7 +211,7 @@ void TraceInMemoryCallback(const wchar_t * Msg)
 #ifndef TRACE_IN_MEMORY_NO_FORMATTING
 
 void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * Message)
+  uintptr_t Line, const wchar_t * Message)
 {
   DebugAssert(IsTracing);
 
@@ -224,8 +224,8 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
     SourceFile = Slash + 1;
   }
   UTF8String Buffer = UTF8String(FORMAT(L"[%s] [%.4X] [%s:%d:%s] %s\n",
-    (TimeString, int(::GetCurrentThreadId()), SourceFile,
-     Line, Func, Message)));
+    TimeString.c_str(), int(::GetCurrentThreadId()), SourceFile,
+     Line, Func, Message));
 #ifdef TRACE_IN_MEMORY
   if (TracingCriticalSection != nullptr)
   {
@@ -250,7 +250,7 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
 }
 
 void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * AFormat, va_list Args)
+  uintptr_t Line, const wchar_t * AFormat, va_list Args)
 {
   DebugAssert(IsTracing);
 

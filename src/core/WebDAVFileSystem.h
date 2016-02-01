@@ -175,7 +175,7 @@ private:
   UnicodeString FResponse;
   RawByteString FPassword;
   UnicodeString FTlsVersionStr;
-  uintptr_t FCapabilities;
+  unsigned int FCapabilities;
   UnicodeString FHostName;
   int FPortNumber;
   enum TIgnoreAuthenticationFailure { iafNo, iafWaiting, iafPasswordFailed } FIgnoreAuthenticationFailure;
