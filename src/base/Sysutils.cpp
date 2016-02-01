@@ -1528,7 +1528,6 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTi
     DateTime.DecodeDate(Year, Month, Day);
     DateTime.DecodeTime(Hour, Minutes, Seconds, Milliseconds);
 
-    int Sec;
     uint16_t Y, M, D, H, Mm, S, MS;
     TDateTime DateTime =
         EncodeDateVerbose(Year, Month, Day) +
