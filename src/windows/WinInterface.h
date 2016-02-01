@@ -365,10 +365,10 @@ enum TSynchronizeMode { smRemote, smLocal, smBoth };
 const int fsoDisableTimestamp = 0x01;
 const int fsoDoNotUsePresets =  0x02;
 const int fsoAllowSelectedOnly = 0x04;
-bool DoFullSynchronizeDialog(TSynchronizeMode & Mode, int & Params,
+bool DoFullSynchronizeDialog(TSynchronizeMode & Mode, intptr_t & Params,
   UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
   TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode,
-  int Options, const TUsableCopyParamAttrs & CopyParamAttrs);
+  intptr_t Options, const TUsableCopyParamAttrs & CopyParamAttrs);
 
 // forms\SynchronizeChecklist.cpp
 class TSynchronizeChecklist;
@@ -377,7 +377,7 @@ class TSynchronizeChecklist;
 DEFINE_CALLBACK_TYPE3(TCustomCommandMenuEvent, void,
   void * /*Action*/, TStrings * /*LocalFileList*/, TStrings * /*RemoteFileList*/);
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
-  TSynchronizeMode Mode, int Params,
+  TSynchronizeMode Mode, intptr_t Params,
   const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
   TCustomCommandMenuEvent OnCustomCommandMenu);
 
