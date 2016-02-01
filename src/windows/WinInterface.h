@@ -345,7 +345,7 @@ const int soAllowSelectedOnly = 0x04;
 //typedef void (__closure *TGetSynchronizeOptionsEvent)
 //  (int Params, TSynchronizeOptions & Options);
 DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
-  int /*Params*/, TSynchronizeOptions & /*Options*/);
+  intptr_t /*Params*/, TSynchronizeOptions & /*Options*/);
 //typedef void (__closure *TFeedSynchronizeError)
 //  (const UnicodeString & Message, TStrings * MoreMessages, TQueryType Type,
 //   const UnicodeString & HelpKeyword);

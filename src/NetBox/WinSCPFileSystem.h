@@ -7,6 +7,7 @@
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
 #include <Queue.h>
+#include <WinInterface.h>
 
 class TTerminal;
 class TSessionData;
@@ -56,8 +57,8 @@ enum TSessionActionEnum
   saConnect
 };
 
-DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
-  intptr_t /*Params*/, TSynchronizeOptions & /*Options*/);
+//DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
+//  intptr_t /*Params*/, TSynchronizeOptions & /*Options*/);
 DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
   const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
   bool & /*Close*/);
