@@ -4,13 +4,13 @@ TEncodeType DetectUTF8Encoding(const RawByteString & S)
 {
   const uint8_t *buf = reinterpret_cast<const uint8_t *>(S.c_str());
   intptr_t len = S.Length();
-  const uint8_t *endbuf = buf + len;
-  uint8_t byte2mask=0x00, c;
+  const uint8_t * endbuf = buf + len;
+  uint8_t byte2mask = 0x00;
   int trailing = 0;  // trailing (continuation) bytes to follow
 
   while (buf != endbuf)
   {
-    c = *buf++;
+    uint8_t c = *buf++;
     if (trailing)
     {
       if ((c&0xC0) == 0x80)  // Does trailing byte follow UTF-8 format?
