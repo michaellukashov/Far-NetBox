@@ -51,7 +51,7 @@ struct TMessageParams : public TObject
 NB_DISABLE_COPY(TMessageParams)
 public:
 //  TMessageParams();
-  TMessageParams(uintptr_t AParams = 0);
+  explicit TMessageParams(uintptr_t AParams = 0);
   void Assign(const TMessageParams * AParams);
 
   const TQueryButtonAlias * Aliases;
