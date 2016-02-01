@@ -388,14 +388,14 @@ DEFINE_CALLBACK_TYPE2(TFileClosedEvent, void,
   TObject * /*Sender*/, bool /*Forced*/);
 DEFINE_CALLBACK_TYPE2(TAnyModifiedEvent, void,
   TObject * /*Sender*/, bool & /*Modified*/);
-//TForm * ShowEditorForm(const UnicodeString FileName, TCustomForm * ParentForm,
-//  TNotifyEvent OnFileChanged, TNotifyEvent OnFileReload, TFileClosedEvent OnClose,
-//  TNotifyEvent OnSaveAll, TAnyModifiedEvent OnAnyModified,
-//  const UnicodeString Caption, bool StandaloneEditor, TColor Color);
-//void ReconfigureEditorForm(TForm * Form);
-//void EditorFormFileUploadComplete(TForm * Form);
-//void EditorFormFileSave(TForm * Form);
-//bool IsEditorFormModified(TForm * Form);
+/*TForm * ShowEditorForm(const UnicodeString FileName, TCustomForm * ParentForm,
+  TNotifyEvent OnFileChanged, TNotifyEvent OnFileReload, TFileClosedEvent OnClose,
+  TNotifyEvent OnSaveAll, TAnyModifiedEvent OnAnyModified,
+  const UnicodeString Caption, bool StandaloneEditor, TColor Color);
+void ReconfigureEditorForm(TForm * Form);
+void EditorFormFileUploadComplete(TForm * Form);
+void EditorFormFileSave(TForm * Form);
+bool IsEditorFormModified(TForm * Form);*/
 
 bool DoSymlinkDialog(UnicodeString & FileName, UnicodeString & PointTo,
   TOperationSide Side, bool & SymbolicLink, bool Edit, bool AllowSymbolic);
@@ -425,8 +425,8 @@ TFarDialog * CreateMoreMessageDialog(const UnicodeString & Msg,
 TFarDialog * CreateMoreMessageDialogEx(const UnicodeString & Message, TStrings * MoreMessages,
   TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params);
 uintptr_t ExecuteMessageDialog(TFarDialog * Dialog, uintptr_t Answers, const TMessageParams * Params);
-//void InsertPanelToMessageDialog(TFarDialog * Form, TPanel * Panel);
-//void NavigateMessageDialogToUrl(TFarDialog * Form, const UnicodeString & Url);
+/*void InsertPanelToMessageDialog(TFarDialog * Form, TPanel * Panel);
+void NavigateMessageDialogToUrl(TFarDialog * Form, const UnicodeString & Url);*/
 
 // windows\Console.cpp
 enum TConsoleMode { cmNone, cmScripting, cmHelp, cmBatchSettings, cmKeyGen };
