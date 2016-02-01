@@ -191,7 +191,7 @@ bool DoCleanupDialog(TStoredSessionList *SessionList,
 
 // forms\Console.cpp
 void DoConsoleDialog(TTerminal * Terminal,
-    const UnicodeString Command = L"", const TStrings * Log = nullptr);
+    const UnicodeString & Command = L"", const TStrings * Log = nullptr);
 
 // forms\Copy.cpp
 const int coTemp                = 0x001;
@@ -305,7 +305,7 @@ DEFINE_CALLBACK_TYPE4(TCalculateChecksumEvent, void,
   const UnicodeString & /*Alg*/, TStrings * /*FileList*/,
   TCalculatedChecksumCallbackEvent /*OnCalculatedChecksum*/, bool & /*Close*/);
 bool DoPropertiesDialog(TStrings * FileList,
-    const UnicodeString Directory, const TRemoteTokenList * GroupList,
+    const UnicodeString & Directory, const TRemoteTokenList * GroupList,
     const TRemoteTokenList * UserList, TStrings * ChecksumAlgs,
     TRemoteProperties * Properties,
     int AllowedChanges, bool UserGroupByID, TCalculateSizeEvent OnCalculateSize,
@@ -378,7 +378,7 @@ DEFINE_CALLBACK_TYPE3(TCustomCommandMenuEvent, void,
   void * /*Action*/, TStrings * /*LocalFileList*/, TStrings * /*RemoteFileList*/);
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
   TSynchronizeMode Mode, int Params,
-  const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+  const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
   TCustomCommandMenuEvent OnCustomCommandMenu);
 
 // forms\Editor.cpp
@@ -422,7 +422,7 @@ TFarDialog * CreateMoreMessageDialog(const UnicodeString & Msg,
   const UnicodeString & ImageName, const UnicodeString & NeverAskAgainCaption,
   const UnicodeString & MoreMessagesUrl, TSize MoreMessagesSize,
   const UnicodeString & CustomCaption);
-TFarDialog * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMessages,
+TFarDialog * CreateMoreMessageDialogEx(const UnicodeString & Message, TStrings * MoreMessages,
   TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params);
 uintptr_t ExecuteMessageDialog(TFarDialog * Dialog, uintptr_t Answers, const TMessageParams * Params);
 //void InsertPanelToMessageDialog(TFarDialog * Form, TPanel * Panel);
@@ -538,7 +538,7 @@ class TWinInteractiveCustomCommand : public TInteractiveCustomCommand
 {
 public:
   TWinInteractiveCustomCommand(TCustomCommand * ChildCustomCommand,
-    const UnicodeString CustomCommandName);
+    const UnicodeString & CustomCommandName);
 
 protected:
   virtual void Prompt(const UnicodeString & Prompt,
