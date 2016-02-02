@@ -3,7 +3,6 @@ NetBox 2.1.45.421 01.02.2016
   * Update openssl sources to 1.0.2f
   * Fix Issue #175: Symlinks attributes dialog: show linked file name
     (https://github.com/michaellukashov/Far-NetBox/issues/175)
-  * Update openssl sources to 1.0.2e
   * Bugfix: Bookmarks are not preserved between FAR sessions
     (https://github.com/michaellukashov/Far-NetBox/issues/174)
   * Bugfix: SFTP: remote copy file (Shift-F5) does not work
