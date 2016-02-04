@@ -1,5 +1,7 @@
-NetBox 2.1.45.421 01.02.2016
+NetBox 2.1.45.422 04.02.2016
 --------------------
+  * Bugfix: WebDAV: fix AV
+    (http://forum.farmanager.com/viewtopic.php?p=135432#p135432)
   * Update openssl sources to 1.0.2f
   * Fix Issue #175: Symlinks attributes dialog: show linked file name
     (https://github.com/michaellukashov/Far-NetBox/issues/175)
