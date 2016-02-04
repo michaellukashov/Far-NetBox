@@ -4535,6 +4535,7 @@ windows_validate_certificate(
 
     HCERTCHAINENGINE chain_engine;
     CERT_CHAIN_ENGINE_CONFIG chain_config;
+    ::ZeroMemory(&chain_config, sizeof(chain_config));
 
     chain_config.cbSize = sizeof(CERT_CHAIN_ENGINE_CONFIG);
     chain_config.hRestrictedRoot = nullptr;
@@ -4551,7 +4552,7 @@ windows_validate_certificate(
         &chain_config,
         &chain_engine);
 
-    if (::CertGetCertificateChain(chain_engine, cert_context, nullptr, nullptr, &chain_para,
+    if (chain_engine && ::CertGetCertificateChain(chain_engine, cert_context, nullptr, nullptr, &chain_para,
           CERT_CHAIN_CACHE_END_CERT |
           CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
           nullptr, &chain_context))
