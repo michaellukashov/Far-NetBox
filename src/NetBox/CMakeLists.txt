@@ -30,6 +30,7 @@ endif()
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 include(CMakeDetermineCXXCompiler)
 message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
+message("MSVC_VERSION: ${MSVC_VERSION}")
 
 set(LIBS_ROOT ${PROJECT_ROOT}/libs)
 set(SRC_ROOT ${PROJECT_ROOT}/src)
@@ -42,10 +43,16 @@ set(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
 set(CMAKE_C_FLAGS "-D_WINDOWS -DWIN32 -D_SCL_SECURE_NO_WARNINGS -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} -DMPEXT -DWINSCP -DSTRICT -DNOCRYPT ${DLMALLOC_DEFS}")
 #-D_WINDLL -D_USRDLL
 set(CMAKE_C_FLAGS "-DCOM_NO_WINDOWS_H ${CMAKE_C_FLAGS}")
+if (MSVC_VERSION GREATER 1899)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Zc:threadSafeInit-")
+endif()
 
 if(PROJECT_PLATFORM STREQUAL "x64")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN64")
 else()
+if (MSVC_VERSION GREATER 1699)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /arch:IA32")
+endif()
 endif()
 
 set(NETBOX_FLAGS_RELEASE "-U_DEBUG -DNDEBUG")
@@ -188,7 +195,7 @@ if(PROJECT_PLATFORM STREQUAL "x86")
 find_program(MASM_EXECUTABLE ml)
 # message("masm: ${MASM_EXECUTABLE}")
 set(ASM_OBJECTS)
-foreach(src vc10)
+foreach(src vc_crt_fix)
   set(ASM_SOURCE ${SRC_ROOT}/NetBox/${src}.asm)
   set(ASM_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${src}.obj)
   set(ASM_OBJECTS ${ASM_OBJECTS} ${ASM_OBJECT})
@@ -201,8 +208,8 @@ foreach(src vc10)
 endforeach(src)
 
 set(NETBOX_SOURCES ${NETBOX_SOURCES}
-  ${SRC_ROOT}/NetBox/vc10wrapper.cpp
-  ${SRC_ROOT}/NetBox/vc10u.cpp
+  ${SRC_ROOT}/NetBox/vc_crt_fix_ulink.cpp
+  ${SRC_ROOT}/NetBox/vc_crt_fix_impl.cpp
   ${ASM_OBJECTS}
 )
 
