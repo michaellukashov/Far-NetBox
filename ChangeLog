@@ -1,5 +1,6 @@
-NetBox 2.1.45.422 04.02.2016
+NetBox 2.1.45.423 06.02.2016
 --------------------
+  * Fix VS2015 build
   * Bugfix: WebDAV: fix AV
     (http://forum.farmanager.com/viewtopic.php?p=135432#p135432)
   * Update openssl sources to 1.0.2f
