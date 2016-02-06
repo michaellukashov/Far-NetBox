@@ -48,10 +48,10 @@ set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} /Zc:threadSafeInit-")
 endif()
 
 if(PROJECT_PLATFORM STREQUAL "x64")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN64")
+set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} -DWIN64")
 else()
 if (MSVC_VERSION GREATER 1699)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /arch:IA32")
+set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} /arch:IA32")
 endif()
 endif()
 
@@ -61,22 +61,22 @@ set(NETBOX_FLAGS_DEBUG "-D_DEBUG -DDEBUG")
 if(MSVC)
 
 set(NETBOX_WARNING_FLAGS "")
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /GR- /EHsc /MP2 /Zi -D_UNICODE -DUNICODE ")
+set(NETBOX_CXX_FLAGS "${NETBOX_C_FLAGS} /GR- /EHsc /MP2 /Zi -D_UNICODE -DUNICODE ")
 set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} /GL /Gm- /MT -Ox -Ob1 -Oi -Os -GF -GS- -Gy /fp:fast")
 set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} /Gm- /Od /MTd /GS /RTC1")
 
 elseif(CMAKE_COMPILER_IS_MINGW)
 
-set(NETBOX_CFLAGS "${NETBOX_CFLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wold-style-cast -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
+set(NETBOX_CFLAGS "${NETBOX_CFLAGS} ${NETBOX_C_FLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wold-style-cast -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
 set(NETBOX_WARNING_FLAGS "-Wno-attributes -Wno-write-strings -Wno-unknown-pragmas")
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -D_UNICODE -DUNICODE -D_AFXDLL -std=c++11 -Weffc++ -Woverloaded-virtual -Wnon-virtual-dtor")
+set(NETBOX_CXX_FLAGS "${NETBOX_CXX_FLAGS} -D_UNICODE -DUNICODE -D_AFXDLL -std=c++11 -Weffc++ -Woverloaded-virtual -Wnon-virtual-dtor")
 set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} ${NETBOX_CFLAGS}")
 set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} ${NETBOX_CFLAGS}")
 
 endif()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${NETBOX_WARNING_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${NETBOX_WARNING_FLAGS}")
+set(CMAKE_C_FLAGS "${NETBOX_C_FLAGS} ${NETBOX_WARNING_FLAGS}")
+set(CMAKE_CXX_FLAGS "${NETBOX_CXX_FLAGS} ${NETBOX_WARNING_FLAGS}")
 
 set(CMAKE_CXX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
 set(CMAKE_C_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
