@@ -29,7 +29,7 @@ BOOL AFXAPI AfxWinInit(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	AFX_MODULE_STATE* pModuleState = AfxGetModuleState();
 	pModuleState->m_hCurrentInstanceHandle = hInstance;
 	pModuleState->m_hCurrentResourceHandle = hInstance;
-	pModuleState->CreateActivationContext();
+//	pModuleState->CreateActivationContext();
 
 	// initialize thread specific data (for main thread)
 	if (!afxContextIsDLL)

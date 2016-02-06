@@ -247,7 +247,9 @@ void CAsyncSocketExLayer::Close()
 void CAsyncSocketExLayer::CloseNext()
 {
 	if (m_addrInfo)
-		freeaddrinfo(m_addrInfo);
+	{
+		if (p_freeaddrinfo) p_freeaddrinfo(m_addrInfo);
+	}
 	m_nextAddr = 0;
 	m_addrInfo = 0;
 
@@ -375,7 +377,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
 		int error;
 		char port[10];
 
-		freeaddrinfo(m_addrInfo);
+		if (p_freeaddrinfo) p_freeaddrinfo(m_addrInfo);
 		m_nextAddr = 0;
 		m_addrInfo = 0;
 
@@ -384,7 +386,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
 		hints.ai_socktype = SOCK_STREAM;
 		hints.ai_flags = 0;
 		_snprintf(port, 9, "%lu", nHostPort);
-		error = getaddrinfo(T2CA(lpszHostAddress), port, &hints, &res0);
+		error = p_getaddrinfo ? p_getaddrinfo(T2CA(lpszHostAddress), port, &hints, &res0) : 1;
 		if (error)
 			return FALSE;
 
@@ -461,7 +463,9 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
 			m_nextAddr = res1;
 		}
 		else
-			freeaddrinfo(res0);
+		{
+			if (p_freeaddrinfo) p_freeaddrinfo(res0);
+		}
 
 		if (INVALID_SOCKET == m_pOwnerSocket->GetSocketHandle())
 			res = FALSE ;
@@ -1025,7 +1029,7 @@ bool CAsyncSocketExLayer::TryNextProtocol()
 
 	if (!m_nextAddr)
 	{
-		freeaddrinfo(m_addrInfo);
+		if (p_freeaddrinfo) p_freeaddrinfo(m_addrInfo);
 		m_nextAddr = 0;
 		m_addrInfo = 0;
 	}

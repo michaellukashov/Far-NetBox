@@ -33,6 +33,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "disable_warnings_in_std_begin.hpp"
 #include <nbglobals.h>
 
 #include <new>
@@ -57,6 +58,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <windows.h>
 #include <winsock2.h>
 #include <Ws2tcpip.h>
+
+#include "disable_warnings_in_std_end.hpp"
 
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0501
