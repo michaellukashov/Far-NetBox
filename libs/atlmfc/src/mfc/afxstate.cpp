@@ -92,12 +92,14 @@ AFX_MAINTAIN_STATE2::AFX_MAINTAIN_STATE2(AFX_MODULE_STATE* pNewState) throw()
 	}
 #endif
 
+#if 0
 	if (AfxGetAmbientActCtx() &&
 		pNewState->m_hActCtx != INVALID_HANDLE_VALUE)
 	{
 		m_bValidActCtxCookie = ActivateActCtx(pNewState->m_hActCtx, &m_ulActCtxCookie);
 	}
 	else
+#endif
 	{
 		m_bValidActCtxCookie = FALSE;
 	}
@@ -113,12 +115,14 @@ AFX_MAINTAIN_STATE2::~AFX_MAINTAIN_STATE2()
 	}
 #endif
 
+#if 0
 	if (m_bValidActCtxCookie)
 	{
 		BOOL bRet;
 		bRet = DeactivateActCtx(0, m_ulActCtxCookie);
 		ASSERT(bRet == TRUE);
 	}
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -225,6 +229,7 @@ AFX_MODULE_STATE::AFX_MODULE_STATE(BOOL bDLL)
 	m_bInitNetworkAddressControlCalled = FALSE;
 }
 
+#if 0
 HANDLE AFXAPI AfxCreateActCtxW(PCACTCTXW pActCtx)
 {
 	HANDLE hCtx = CreateActCtxW(pActCtx);
@@ -298,6 +303,7 @@ void AFX_MODULE_STATE::CreateActivationContext()
 		m_hActCtx = NULL;
 	}
 }
+#endif
 
 AFX_MODULE_STATE::~AFX_MODULE_STATE()
 {
