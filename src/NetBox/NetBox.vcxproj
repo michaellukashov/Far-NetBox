@@ -287,16 +287,16 @@
     <ClCompile Include="WinSCPFileSystem.cpp" />
     <ClCompile Include="WinSCPPlugin.cpp" />
     <ClCompile Include="XmlStorage.cpp" />
-    <MASM Include="vc10.asm">
+    <MASM Include="vc_crt_fix.asm">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </MASM>
-    <ClCompile Include="vc10wrapper.cpp">
+    <ClCompile Include="vc_crt_fix_ulink.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="vc10u.cpp">
+    <ClCompile Include="vc_crt_fix_impl.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
