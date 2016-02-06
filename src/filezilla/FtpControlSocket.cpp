@@ -2493,10 +2493,10 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 						memset(&hints, 0, sizeof(addrinfo));
 						hints.ai_family = AF_INET6;
 						hints.ai_socktype = SOCK_STREAM;
-						if (!getaddrinfo(T2CA(host), "1024", &hints, &res))
+						if (p_getaddrinfo && !p_getaddrinfo(T2CA(host), "1024", &hints, &res))
 						{
 							host = Inet6AddrToString(((SOCKADDR_IN6 *)res->ai_addr)->sin6_addr);
-							freeaddrinfo(res);
+							if (p_freeaddrinfo) p_freeaddrinfo(res);
 						}
 						else
 							host = _T("");
@@ -4485,10 +4485,10 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 						memset(&hints, 0, sizeof(addrinfo));
 						hints.ai_family = AF_INET6;
 						hints.ai_socktype = SOCK_STREAM;
-						if (!getaddrinfo(T2CA(host), "1024", &hints, &res))
+						if (p_getaddrinfo && !p_getaddrinfo(T2CA(host), "1024", &hints, &res))
 						{
 							host = Inet6AddrToString(((SOCKADDR_IN6 *)res->ai_addr)->sin6_addr);
-							freeaddrinfo(res);
+							if (p_freeaddrinfo) p_freeaddrinfo(res);
 						}
 						else
 							host = _T("");
@@ -4725,10 +4725,10 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 						memset(&hints, 0, sizeof(addrinfo));
 						hints.ai_family = AF_INET6;
 						hints.ai_socktype = SOCK_STREAM;
-						if (!getaddrinfo(T2CA(host), "1024", &hints, &res))
+						if (p_getaddrinfo && !p_getaddrinfo(T2CA(host), "1024", &hints, &res))
 						{
 							host = Inet6AddrToString(((SOCKADDR_IN6 *)res->ai_addr)->sin6_addr);
-							freeaddrinfo(res);
+							if (p_freeaddrinfo) p_freeaddrinfo(res);
 						}
 						else
 							host = _T("");

@@ -254,8 +254,8 @@ public:
 	//Defaults to TRUE. When FALSE - MFC will not activate context in AFX_MAINTAIN_STATE2 (used by AFX_MANAGE_STATE).
 	BOOL	m_bSetAmbientActCtx;
 	//Handle of the module context.
-	HANDLE	m_hActCtx;
-	void CreateActivationContext();
+//	HANDLE	m_hActCtx;
+//	void CreateActivationContext();
 
 	// bool indicating the return value of InitNetworkAddressControl() (from shell32.dll)
 	BOOL m_bInitNetworkAddressControl;
