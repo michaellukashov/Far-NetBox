@@ -2686,32 +2686,32 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & FileName, const TRemote
     RawByteString Path = PathToNeon(FilePath(File));
     RawByteString LockToken;
 
-    struct ne_lock * Lock = nullptr;
+    struct ne_lock * Lock2 = nullptr;
 
     {
       TGuard Guard(FNeonLockStoreSection);
       if (FNeonLockStore != nullptr)
       {
-        Lock = FindLock(Path);
+        Lock2 = FindLock(Path);
       }
     }
 
     // we are not aware of the file being locked,
     // though it can be locked from another (previous and already closed)
     // session, so query the server.
-    if (Lock == nullptr)
+    if (Lock2 == nullptr)
     {
       CheckStatus(ne_lock_discover(FNeonSession, Path.c_str(), LockResult, &LockToken));
     }
 
-    if ((Lock == nullptr) && (LockToken.IsEmpty()))
+    if ((Lock2 == nullptr) && (LockToken.IsEmpty()))
     {
       throw Exception(FMTLOAD(NOT_LOCKED, (FileName)));
     }
     else
     {
       struct ne_lock * Unlock;
-      if (Lock == nullptr)
+      if (Lock2 == nullptr)
       {
         DebugAssert(!LockToken.IsEmpty());
         Unlock = ne_lock_create();
@@ -2720,7 +2720,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & FileName, const TRemote
       }
       else
       {
-        Unlock = Lock;
+        Unlock = Lock2;
       }
       CheckStatus(ne_unlock(FNeonSession, Unlock));
 
