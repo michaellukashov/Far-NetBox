@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetBox", "NetBox.vs2015.vcxproj", "{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetBox.vs2015", "NetBox.vs2015.vcxproj", "{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{EC262402-898F-49D4-8599-850B0C19C1C6} = {EC262402-898F-49D4-8599-850B0C19C1C6}
 		{74BFD665-A62B-4745-8A2A-EE1A2A63CD08} = {74BFD665-A62B-4745-8A2A-EE1A2A63CD08}
@@ -12,26 +12,26 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetBox", "NetBox.vs2015.vcx
 		{90DE9ADC-75C4-2AC0-72B1-5F2903110E0A} = {90DE9ADC-75C4-2AC0-72B1-5F2903110E0A}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\..\libs\zlib\zlib.vs2015.vcxproj", "{E9F6071A-D2BC-471E-8899-5F49B024AA04}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib.vs2015", "..\..\libs\zlib\zlib.vs2015.vcxproj", "{E9F6071A-D2BC-471E-8899-5F49B024AA04}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libputty", "..\..\libs\Putty\libputty.vs2015.vcxproj", "{456AD982-730D-46F8-8BE2-0E00D7433741}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libputty.vs2015", "..\..\libs\Putty\libputty.vs2015.vcxproj", "{456AD982-730D-46F8-8BE2-0E00D7433741}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtinyxml2", "..\..\libs\tinyxml2\libtinyxml2.vs2015.vcxproj", "{593A4FB1-1787-4192-BF73-9C43BF8FC142}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtinyxml2.vs2015", "..\..\libs\tinyxml2\libtinyxml2.vs2015.vcxproj", "{593A4FB1-1787-4192-BF73-9C43BF8FC142}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libexpat", "..\..\libs\expat\lib\libexpat.vs2015.vcxproj", "{27250AA6-FED6-F96F-E32B-E8E9719F8FEB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libexpat.vs2015", "..\..\libs\expat\lib\libexpat.vs2015.vcxproj", "{27250AA6-FED6-F96F-E32B-E8E9719F8FEB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libneon", "..\..\libs\neon\libneon.vs2015.vcxproj", "{90DE9ADC-75C4-2AC0-72B1-5F2903110E0A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libneon.vs2015", "..\..\libs\neon\libneon.vs2015.vcxproj", "{90DE9ADC-75C4-2AC0-72B1-5F2903110E0A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{27250AA6-FED6-F96F-E32B-E8E9719F8FEB} = {27250AA6-FED6-F96F-E32B-E8E9719F8FEB}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libapr", "..\..\libs\apr\build\libapr.vs2015.vcxproj", "{74BFD665-A62B-4745-8A2A-EE1A2A63CD08}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libapr.vs2015", "..\..\libs\apr\build\libapr.vs2015.vcxproj", "{74BFD665-A62B-4745-8A2A-EE1A2A63CD08}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mfc", "..\..\libs\atlmfc\mfc.vs2015.vcxproj", "{EC262402-898F-49D4-8599-850B0C19C1C6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mfc.vs2015", "..\..\libs\atlmfc\mfc.vs2015.vcxproj", "{EC262402-898F-49D4-8599-850B0C19C1C6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dlmalloc", "..\..\libs\dlmalloc\dlmalloc.vs2015.vcxproj", "{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dlmalloc.vs2015", "..\..\libs\dlmalloc\dlmalloc.vs2015.vcxproj", "{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rdestl", "..\..\libs\rdestl\rdestl.vs2015.vcxproj", "{77BA777C-4766-4CA4-AA41-7C089679A948}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rdestl.vs2015", "..\..\libs\rdestl\rdestl.vs2015.vcxproj", "{77BA777C-4766-4CA4-AA41-7C089679A948}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,10 +49,10 @@ Global
 		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Debug|Win32.Build.0 = Debug|Win32
 		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Debug|x64.ActiveCfg = Debug|x64
 		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Debug|x64.Build.0 = Debug|x64
-		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Intel_SSA|Win32.ActiveCfg = Intel_SSA|Win32
-		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Intel_SSA|Win32.Build.0 = Intel_SSA|Win32
-		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Intel_SSA|x64.ActiveCfg = Intel_SSA|x64
-		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Intel_SSA|x64.Build.0 = Intel_SSA|x64
+		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Intel_SSA|Win32.ActiveCfg = Release|Win32
+		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Intel_SSA|Win32.Build.0 = Release|Win32
+		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Intel_SSA|x64.ActiveCfg = Release|x64
+		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Intel_SSA|x64.Build.0 = Release|x64
 		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Release|Win32.ActiveCfg = Release|Win32
 		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Release|Win32.Build.0 = Release|Win32
 		{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}.Release|x64.ActiveCfg = Release|x64
