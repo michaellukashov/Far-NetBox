@@ -1648,9 +1648,9 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
       }
 
       // We know MoreMessages not to be NULL here,
-        // AppendExceptionStackTraceAndForget should never return true
+      // AppendExceptionStackTraceAndForget should never return true
       // (indicating it had to create the string list)
-      TStrings * MoreMessagesPtr = MoreMessages.get();
+      TStrings * MoreMessagesPtr = MoreMessages.release();
       DebugAlwaysFalse(AppendExceptionStackTraceAndForget(MoreMessagesPtr));
       MoreMessages.reset(MoreMessagesPtr);
 
