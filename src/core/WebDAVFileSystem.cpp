@@ -998,23 +998,23 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
   struct ne_lock * Lock = static_cast<struct ne_lock *>(ne_propset_private(Results));
   if ((Lock != nullptr) && (Lock->token != nullptr))
   {
-    UnicodeString Owner;
+    UnicodeString Owner2;
     if (Lock->owner != nullptr)
     {
-      Owner = StrFromNeon(Lock->owner).Trim();
+      Owner2 = StrFromNeon(Lock->owner).Trim();
     }
     UnicodeString LockRights;
     if (IsWin8())
     {
       // The "lock" character is supported since Windows 8
-//      LockRights = L"\uD83D\uDD12" + Owner;
+//      LockRights = L"\uD83D\uDD12" + Owner2;
     }
     else
     {
       LockRights = LoadStr(LOCKED);
-      if (!Owner.IsEmpty())
+      if (!Owner2.IsEmpty())
       {
-        LockRights = FORMAT(L"%s (%s)", LockRights.c_str(), Owner.c_str());
+        LockRights = FORMAT(L"%s (%s)", LockRights.c_str(), Owner2.c_str());
       }
     }
 
