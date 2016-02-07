@@ -1256,7 +1256,7 @@ DWORD FindCheck(DWORD Result, const UnicodeString & APath)
   return Result;
 }
 
-static DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD Attr, TSearchRecChecked & F)
+DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD Attr, TSearchRecChecked & F)
 {
   F.Path = APath;
   return FindFirst(ApiPath(APath), Attr, F);
