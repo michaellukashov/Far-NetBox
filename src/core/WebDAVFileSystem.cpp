@@ -1986,7 +1986,7 @@ int TWebDAVFileSystem::NeonBodyReader(void * UserData, const char * Buf, size_t 
 
 void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, intptr_t Params,
+  const TCopyParamType * CopyParam, intptr_t AParams,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TDownloadSessionAction & Action, bool & ChildError)
 {
@@ -2045,7 +2045,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       TSinkFileParams SinkFileParams;
       SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
       SinkFileParams.CopyParam = CopyParam;
-      SinkFileParams.Params = Params;
+      SinkFileParams.Params = AParams;
       SinkFileParams.OperationProgress = OperationProgress;
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~tfFirstLevel;
@@ -2055,7 +2055,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       // Do not delete directory if some of its files were skip.
       // Throw "skip file" for the directory to avoid attempt to deletion
       // of any parent directory
-      if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
+      if (FLAGSET(AParams, cpDelete) && SinkFileParams.Skipped)
       {
         ThrowSkipFileNull();
       }
@@ -2086,7 +2086,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       TOverwriteMode OverwriteMode = omOverwrite;
       uintptr_t Answer = 0;
       ConfirmOverwrite(AFileName, DestFileName, OperationProgress,
-        &FileParams, CopyParam, Params,
+        &FileParams, CopyParam, AParams,
         false, OverwriteMode, Answer);
     }
 
@@ -2217,7 +2217,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     FTerminal->LogFileDone(OperationProgress);
   }
 
-  if (FLAGSET(Params, cpDelete))
+  if (FLAGSET(AParams, cpDelete))
   {
     ChildError = true;
     // If file is directory, do not delete it recursively, because it should be
