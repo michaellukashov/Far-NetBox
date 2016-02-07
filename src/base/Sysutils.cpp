@@ -929,9 +929,9 @@ void AppendPathDelimiterW(UnicodeString & Str)
 
 UnicodeString ExpandEnvVars(const UnicodeString & Str)
 {
-  wchar_t buf[32 * 1024];
-  intptr_t size = ::ExpandEnvironmentStringsW(Str.c_str(), buf, static_cast<DWORD>(32 * 1024 - 1));
-  UnicodeString Result = UnicodeString(buf, size - 1);
+  UnicodeString Buf(32 * 1024, 0);
+  intptr_t size = ::ExpandEnvironmentStringsW(Str.c_str(), (wchar_t *)Buf.c_str(), static_cast<DWORD>(32 * 1024 - 1));
+  UnicodeString Result = UnicodeString(Buf.c_str(), size - 1);
   return Result;
 }
 
