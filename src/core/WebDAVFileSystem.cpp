@@ -419,7 +419,7 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
   {
     NeonAuthTypes |= NE_AUTH_NEGOTIATE;
   }
-  ne_add_server_auth(FNeonSession, NeonAuthTypes, NeonRequestAuth, this);
+  ne_add_server_auth(FNeonSession, (unsigned int)NeonAuthTypes, NeonRequestAuth, this);
 
   if (Ssl)
   {

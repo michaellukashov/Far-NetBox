@@ -266,7 +266,7 @@ void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineN
   {
     DoTrace(Filename, L"assert", LineNumber, Message);
   }
-  _wassert(Message, Filename, LineNumber);
+  _wassert(Message, Filename, (unsigned int)LineNumber);
 }
 
 #endif // _DEBUG
