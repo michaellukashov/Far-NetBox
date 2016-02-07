@@ -63,6 +63,7 @@ static const char CertificateStorageKey[] = "HttpsCertificates";
 #define MODDAV_PROP_NAMESPACE "http://apache.org/dav/props/"
 #define PROP_CONTENT_LENGTH "getcontentlength"
 #define PROP_LAST_MODIFIED "getlastmodified"
+#define PROP_CREATIONDATE "creationdate"
 #define PROP_RESOURCE_TYPE "resourcetype"
 #define PROP_HIDDEN "ishidden"
 #define PROP_QUOTA_AVAILABLE "quota-available-bytes"
@@ -912,7 +913,9 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     AFile->SetSize(StrToInt64Def(ContentLength, 0));
   }
   const char * LastModified = GetProp(Results, PROP_LAST_MODIFIED);
-  if (DebugAlwaysTrue(LastModified != nullptr))
+  const char * CreationDate = GetProp(Results, PROP_CREATIONDATE);
+  const char * Modified = LastModified ? LastModified : CreationDate;
+  if (DebugAlwaysTrue(Modified != nullptr))
   {
     char WeekDay[4] = { L'\0' };
     int Year = 0;
@@ -923,7 +926,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     int Sec = 0;
     #define RFC1123_FORMAT "%3s, %02d %3s %4d %02d:%02d:%02d GMT"
     int Filled =
-      sscanf(LastModified, RFC1123_FORMAT, WeekDay, &Day, MonthStr, &Year, &Hour, &Min, &Sec);
+      sscanf(Modified, RFC1123_FORMAT, WeekDay, &Day, MonthStr, &Year, &Hour, &Min, &Sec);
     // we need at least a complete date
     if (Filled >= 4)
     {
