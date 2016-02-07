@@ -531,7 +531,7 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, b
     Name = ExtractFileName(ATarget, Unix);
     Path = IncludeTrailingBackslash(ATarget);
   }
-  return FMTLOAD(MULTI_FILES_TO_ONE, (Name, Dir, Path));
+  return FMTLOAD(MULTI_FILES_TO_ONE, Name.c_str(), Dir.c_str(), Path.c_str());
 }
 
 } // namespace core

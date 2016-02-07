@@ -3230,7 +3230,7 @@ UnicodeString TSessionData::GenerateAssemblyCode(
           SettingsCode = L"$sessionOptions.AddRawSettings(\"%s\", %s)\n";
           break;
       }
-      Result += FORMAT(SettingsCode, (Name, AssemblyString(Language, Value)));
+      Result += FORMAT(SettingsCode, Name.c_str(), AssemblyString(Language, Value).c_str());
     }
 #endif
   }

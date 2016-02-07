@@ -170,7 +170,7 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
         case NE_REDIRECT:
           {
             char * Uri = ne_uri_unparse(ne_redirect_location(Session));
-            Error = FMTLOAD(REQUEST_REDIRECTED, (Uri));
+            Error = FMTLOAD(REQUEST_REDIRECTED, Uri);
             ne_free(Uri);
           }
           break;

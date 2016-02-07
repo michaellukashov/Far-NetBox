@@ -340,7 +340,7 @@ void TMessageTimeout::UpdateButton()
 {
   DebugAssert(FButton != nullptr);
   FButton->Caption =
-    !Enabled ? FOrigCaption : FMTLOAD(TIMEOUT_BUTTON, (FOrigCaption, int(FTimeout / MSecsPerSec)));
+    !Enabled ? FOrigCaption : FMTLOAD(TIMEOUT_BUTTON, FOrigCaption.c_str(), int(FTimeout / MSecsPerSec));
 }
 
 void TMessageTimeout::DoTimer(TObject * /*Sender*/)
@@ -879,10 +879,10 @@ void TWinInteractiveCustomCommand::Prompt(
   UnicodeString APrompt = Prompt;
   if (APrompt.IsEmpty())
   {
-    APrompt = FMTLOAD(CUSTOM_COMMANDS_PARAM_PROMPT, (FCustomCommandName));
+    APrompt = FMTLOAD(CUSTOM_COMMANDS_PARAM_PROMPT, FCustomCommandName.c_str());
   }
   std::unique_ptr<TStrings> History(CloneStrings(CustomWinConfiguration->History[L"CustomCommandParam"]));
-  if (InputDialog(FMTLOAD(CUSTOM_COMMANDS_PARAM_TITLE, (FCustomCommandName)),
+  if (InputDialog(FMTLOAD(CUSTOM_COMMANDS_PARAM_TITLE, FCustomCommandName.c_str()),
         APrompt, Value, HELP_CUSTOM_COMMAND_PARAM, History.get()))
   {
     CustomWinConfiguration->History[L"CustomCommandParam"] = History.get();
@@ -910,11 +910,11 @@ void TWinInteractiveCustomCommand::Execute(
   {
     if (!CreatePipe(&StdOutOutput, &StdOutInput, &SecurityAttributes, 0))
     {
-      throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, (Command, L"out")));
+      throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"out"));
     }
     else if (!CreatePipe(&StdInOutput, &StdInInput, &SecurityAttributes, 0))
     {
-      throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, (Command, L"in")));
+      throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"in"));
     }
     else
     {
@@ -931,7 +931,7 @@ void TWinInteractiveCustomCommand::Execute(
       if (!CreateProcess(nullptr, Command.c_str(), &SecurityAttributes, &SecurityAttributes,
             TRUE, NORMAL_PRIORITY_CLASS, nullptr, nullptr, &StartupInfo, &ProcessInformation))
       {
-        throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, (Command, L"process")));
+        throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"process"));
       }
       else
       {
@@ -952,7 +952,7 @@ void TWinInteractiveCustomCommand::Execute(
                 break;
 
               default:
-                throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, (Command, L"wait")));
+                throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"wait"));
             }
           }
 
@@ -964,7 +964,7 @@ void TWinInteractiveCustomCommand::Execute(
           {
             if (!ReadFile(StdOutOutput, &Buffer, Read, &Read, nullptr))
             {
-              throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, (Command, L"read")));
+              throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"read"));
             }
             else if (Read > 0)
             {
