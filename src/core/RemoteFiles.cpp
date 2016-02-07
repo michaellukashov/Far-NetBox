@@ -2892,7 +2892,7 @@ void TRemoteProperties::Save(THierarchicalStorage * Storage) const
 
   if (Valid.Contains(vpRights))
   {
-    Storage->WriteString(L"Rights", Rights.GetText());
+    Storage->WriteString("Rights", Rights.GetText());
   }
 
   // TODO

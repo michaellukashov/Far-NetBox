@@ -771,19 +771,19 @@ void TWinSCPPlugin::CleanupConfiguration()
   Storage->SetAccessMode(smReadWrite);
   if (Storage->OpenSubKey(GetFarConfiguration()->GetConfigurationSubKey(), false))
   {
-    if (!Storage->ValueExists(L"Version"))
+    if (!Storage->ValueExists("Version"))
     {
-      Storage->DeleteSubKey(L"CDCache");
+      Storage->DeleteSubKey("CDCache");
     }
     else
     {
       UnicodeString Version = Storage->ReadString("Version", L"");
       if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2, 1, 19))
       {
-        Storage->DeleteSubKey(L"CDCache");
+        Storage->DeleteSubKey("CDCache");
       }
     }
-    Storage->WriteStringRaw(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
+    Storage->WriteStringRaw("Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     Storage->CloseSubKey();
   }
 }

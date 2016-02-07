@@ -2027,15 +2027,15 @@ bool AdjustClockForDSTEnabled()
         Registry->OpenKey("Control", false) &&
         Registry->OpenKey("TimeZoneInformation", false))
     {
-      if (Registry->ValueExists(L"DynamicDaylightTimeDisabled"))
+      if (Registry->ValueExists("DynamicDaylightTimeDisabled"))
       {
-        DynamicDaylightTimeDisabled = Registry->ReadBool(L"DynamicDaylightTimeDisabled");
+        DynamicDaylightTimeDisabled = Registry->ReadBool("DynamicDaylightTimeDisabled");
       }
       // WORKAROUND
       // Windows XP equivalent
-      else if (Registry->ValueExists(L"DisableAutoDaylightTimeSet"))
+      else if (Registry->ValueExists("DisableAutoDaylightTimeSet"))
       {
-        DynamicDaylightTimeDisabled = Registry->ReadBool(L"DisableAutoDaylightTimeSet");
+        DynamicDaylightTimeDisabled = Registry->ReadBool("DisableAutoDaylightTimeSet");
       }
     }
   }
