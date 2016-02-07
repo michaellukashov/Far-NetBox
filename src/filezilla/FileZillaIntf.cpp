@@ -15,14 +15,68 @@
 #pragma comment(lib, "uafxcwd.lib")
 #endif
 
+#ifndef NO_IPV6
+DECL_WINDOWS_FUNCTION(static, int, getaddrinfo,
+  (const char *nodename, const char *servname,
+   const struct addrinfo *hints, struct addrinfo **res));
+DECL_WINDOWS_FUNCTION(static, void, freeaddrinfo, (struct addrinfo *res));
+DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
+  (const struct sockaddr FAR * sa, socklen_t salen,
+   char FAR * host, size_t hostlen, char FAR * serv,
+   size_t servlen, int flags));
+#endif
+static HMODULE winsock_module = NULL;
+#ifndef NO_IPV6
+static HMODULE winsock2_module = NULL;
+static HMODULE wship6_module = NULL;
+#endif // NO_IPV6
+
 void TFileZillaIntf::Initialize()
 {
-  // noop
+#ifndef NO_IPV6
+  winsock2_module =
+#endif
+    winsock_module = ::LoadLibrary(L"ws2_32.dll");
+  if (!winsock_module)
+  {
+    winsock_module = ::LoadLibrary(L"wsock32.dll");
+  }
+  if (!winsock_module)
+  {
+//    fatalbox("Unable to load any WinSock library");
+  }
+#ifndef NO_IPV6
+  /* Check if we have getaddrinfo in Winsock */
+  if (::GetProcAddress(winsock_module, "getaddrinfo") != NULL)
+  {
+    GET_WINDOWS_FUNCTION(winsock_module, getaddrinfo);
+    GET_WINDOWS_FUNCTION(winsock_module, freeaddrinfo);
+    GET_WINDOWS_FUNCTION(winsock_module, getnameinfo);
+  }
+  else
+  {
+  /* Fall back to wship6.dll for Windows 2000 */
+    wship6_module = ::LoadLibrary(L"wship6.dll");
+    if (wship6_module)
+    {
+      GET_WINDOWS_FUNCTION(wship6_module, getaddrinfo);
+      GET_WINDOWS_FUNCTION(wship6_module, freeaddrinfo);
+      GET_WINDOWS_FUNCTION(wship6_module, getnameinfo);
+    }
+  }
+#endif // NO_IPV6
 }
 
 void TFileZillaIntf::Finalize()
 {
-  // noop
+#ifndef NO_IPV6
+  if (wship6_module)
+    ::FreeLibrary(wship6_module);
+  if (winsock2_module)
+    ::FreeLibrary(winsock2_module);
+#endif
+  if (winsock_module)
+    ::FreeLibrary(winsock_module);
 }
 
 void TFileZillaIntf::SetResourceModule(void * ResourceHandle)

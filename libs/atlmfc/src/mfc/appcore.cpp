@@ -71,6 +71,7 @@ static BOOL CALLBACK _AfxEnumResLangProc(HMODULE /*hModule*/, LPCTSTR /*pszType*
 	return TRUE;
 }
 
+#if 0
 class CActivationContext
 {
 protected :
@@ -141,6 +142,7 @@ public:
 		return true;
 	}
 };
+#endif
 
 
 // HINSTANCE of the module

@@ -795,7 +795,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
     hints.ai_family = m_SocketData.nFamily;
     hints.ai_socktype = SOCK_STREAM;
     _snprintf(port, 9, "%lu", nSocketPort);
-    error = getaddrinfo(lpszAscii, port, &hints, &res0);
+    error = p_getaddrinfo ? p_getaddrinfo(lpszAscii, port, &hints, &res0) : 1;
     if (error)
       return FALSE;
 
@@ -808,7 +808,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
       else
         continue ;
 
-      freeaddrinfo(res0);
+      if (p_freeaddrinfo) p_freeaddrinfo(res0);
 
       return ret ;
   }
@@ -878,7 +878,7 @@ void CAsyncSocketEx::Close()
   }
   if (m_SocketData.addrInfo)
   {
-    freeaddrinfo(m_SocketData.addrInfo);
+    if (p_freeaddrinfo) p_freeaddrinfo(m_SocketData.addrInfo);
     m_SocketData.addrInfo = 0;
     m_SocketData.nextAddr = 0;
   }
@@ -1102,7 +1102,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 
     if (m_SocketData.addrInfo)
     {
-      freeaddrinfo(m_SocketData.addrInfo);
+      if (p_freeaddrinfo) p_freeaddrinfo(m_SocketData.addrInfo);
       m_SocketData.addrInfo = 0;
       m_SocketData.nextAddr = 0;
     }
@@ -1116,7 +1116,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
     hints.ai_family = m_SocketData.nFamily;
     hints.ai_socktype = SOCK_STREAM;
     _snprintf(port, 9, "%lu", nHostPort);
-    error = getaddrinfo(T2CA(lpszHostAddress), port, &hints, &m_SocketData.addrInfo);
+    error = p_getaddrinfo ? p_getaddrinfo(T2CA(lpszHostAddress), port, &hints, &m_SocketData.addrInfo) : 1;
     if (error)
       return FALSE;
 
@@ -1195,7 +1195,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 
     if (!m_SocketData.nextAddr)
     {
-      freeaddrinfo(m_SocketData.addrInfo);
+      if (p_freeaddrinfo) p_freeaddrinfo(m_SocketData.addrInfo);
       m_SocketData.nextAddr = 0;
       m_SocketData.addrInfo = 0;
     }
@@ -1670,7 +1670,7 @@ bool CAsyncSocketEx::TryNextProtocol()
 
   if (!m_SocketData.nextAddr)
   {
-    freeaddrinfo(m_SocketData.addrInfo);
+    if (p_freeaddrinfo) p_freeaddrinfo(m_SocketData.addrInfo);
     m_SocketData.nextAddr = 0;
     m_SocketData.addrInfo = 0;
   }

@@ -92,12 +92,14 @@ AFX_MAINTAIN_STATE2::AFX_MAINTAIN_STATE2(AFX_MODULE_STATE* pNewState) throw()
 	}
 #endif
 
+#if 0
 	if (AfxGetAmbientActCtx() &&
 		pNewState->m_hActCtx != INVALID_HANDLE_VALUE)
 	{
 		m_bValidActCtxCookie = ActivateActCtx(pNewState->m_hActCtx, &m_ulActCtxCookie);
 	}
 	else
+#endif
 	{
 		m_bValidActCtxCookie = FALSE;
 	}
@@ -113,12 +115,14 @@ AFX_MAINTAIN_STATE2::~AFX_MAINTAIN_STATE2()
 	}
 #endif
 
+#if 0
 	if (m_bValidActCtxCookie)
 	{
 		BOOL bRet;
 		bRet = DeactivateActCtx(0, m_ulActCtxCookie);
 		ASSERT(bRet == TRUE);
 	}
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -220,11 +224,12 @@ AFX_MODULE_STATE::AFX_MODULE_STATE(BOOL bDLL)
 	m_pDllIsolationWrappers[_AFX_SHELL_ISOLATION_WRAPPER_INDEX] = new CShellWrapper;
 	AfxEnableMemoryTracking(bEnable);
 	m_bSetAmbientActCtx = TRUE;
-	m_hActCtx = NULL;
+//	m_hActCtx = NULL;
 	m_bInitNetworkAddressControl = FALSE;
 	m_bInitNetworkAddressControlCalled = FALSE;
 }
 
+#if 0
 HANDLE AFXAPI AfxCreateActCtxW(PCACTCTXW pActCtx)
 {
 	HANDLE hCtx = CreateActCtxW(pActCtx);
@@ -276,6 +281,7 @@ void AFX_MODULE_STATE::CreateActivationContext()
 	}
 	//First try ID 2 and then ID 1 - this is to consider also a.dll.manifest file
 	//for dlls, which ID 2 ignores.
+#if 0
 	ACTCTXW actCtx;
 	actCtx.cbSize = sizeof(actCtx);
 	actCtx.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID | ACTCTX_FLAG_HMODULE_VALID;
@@ -297,7 +303,9 @@ void AFX_MODULE_STATE::CreateActivationContext()
 	{
 		m_hActCtx = NULL;
 	}
+#endif
 }
+#endif
 
 AFX_MODULE_STATE::~AFX_MODULE_STATE()
 {
@@ -317,11 +325,13 @@ AFX_MODULE_STATE::~AFX_MODULE_STATE()
 #endif
 	delete m_pDllIsolationWrappers[_AFX_SHELL_ISOLATION_WRAPPER_INDEX];
 	delete [] m_pDllIsolationWrappers;
+#if 0
 	if (m_hActCtx != NULL && m_hActCtx != INVALID_HANDLE_VALUE)
 	{
 		ReleaseActCtx(m_hActCtx);
 		m_hActCtx = INVALID_HANDLE_VALUE;
 	}
+#endif
 }
 
 AFX_MODULE_THREAD_STATE::AFX_MODULE_THREAD_STATE()

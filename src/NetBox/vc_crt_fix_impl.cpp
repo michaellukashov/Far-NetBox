@@ -34,13 +34,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#define FAR_USE_INTERNALS
 #endif // END FAR_USE_INTERNALS
 #ifdef FAR_USE_INTERNALS
-#include "disable_warnings_in_std_begin.hpp"
+#include <disable_warnings_in_std_begin.hpp>
 //----------------------------------------------------------------------------
 #endif // END FAR_USE_INTERNALS
 #include <windows.h>
 #ifdef FAR_USE_INTERNALS
 //----------------------------------------------------------------------------
-#include "disable_warnings_in_std_end.hpp"
+#include <disable_warnings_in_std_end.hpp>
 #endif // END FAR_USE_INTERNALS
 
 template<typename T>
