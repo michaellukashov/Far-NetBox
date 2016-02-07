@@ -70,10 +70,8 @@ const TClassInfo * TClassInfo::FindClass(int classId)
 
 void TClassInfo::Register()
 {
-#if _DEBUG
   // reentrance guard
   static int entry = 0;
-#endif
 
   THashTable * classTable;
 
