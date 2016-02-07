@@ -596,7 +596,7 @@ uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
   }
 
   return MoreMessageDialog(
-    FORMAT(MessageFormat.IsEmpty() ? UnicodeString(L"%s") : MessageFormat, (Message)),
+    FORMAT(UnicodeString(MessageFormat.IsEmpty() ? UnicodeString(L"%s") : MessageFormat).c_str(), Message.c_str()),
     MoreMessages, Type, Answers, HelpKeyword, Params);
 #endif
   ThrowNotImplemented(3018);
