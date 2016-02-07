@@ -2321,7 +2321,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
       Params.Aliases = Aliases;
       Params.AliasesCount = _countof(Aliases);
       uintptr_t Answer = FTerminal->QueryUser(
-        FMTLOAD(VERIFY_CERT_PROMPT3, (FSessionInfo.Certificate)),
+        FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate.c_str()),
         nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
       switch (Answer)
       {
@@ -2706,7 +2706,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & FileName, const TRemote
 
     if ((Lock2 == nullptr) && (LockToken.IsEmpty()))
     {
-      throw Exception(FMTLOAD(NOT_LOCKED, (FileName)));
+      throw Exception(FMTLOAD(NOT_LOCKED, FileName.c_str()));
     }
     else
     {
