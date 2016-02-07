@@ -1324,7 +1324,7 @@ LONG_PTR TFarDialogItem::FailItemProc(int Msg, LONG_PTR Param)
 
 LONG_PTR TFarDialogItem::ItemProc(int Msg, LONG_PTR Param)
 {
-  intptr_t Result = 0;
+  LONG_PTR Result = 0;
   bool Handled = false;
 
   if (Msg == DN_GOTFOCUS)
