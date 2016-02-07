@@ -176,7 +176,7 @@ void DecodeDate(const TDateTime & DateTime, uint16_t & Y,
 void DecodeTime(const TDateTime & DateTime, uint16_t & H,
   uint16_t & N, uint16_t & S, uint16_t & MS);
 
-UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTime);
+UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime);
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 
 TDateTime EncodeDate(int Year, int Month, int Day);

@@ -1501,10 +1501,9 @@ TDateTime Date()
   return Result;
 }
 
-UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTime)
+UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime)
 {
   (void)Fmt;
-  (void)DateTime;
   UnicodeString Result;
   if (Fmt == L"ddddd tt")
   {
@@ -1525,8 +1524,8 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTi
     uint16_t Seconds;
     uint16_t Milliseconds;
 
-    DateTime.DecodeDate(Year, Month, Day);
-    DateTime.DecodeTime(Hour, Minutes, Seconds, Milliseconds);
+    ADateTime.DecodeDate(Year, Month, Day);
+    ADateTime.DecodeTime(Hour, Minutes, Seconds, Milliseconds);
 
     uint16_t Y, M, D, H, Mm, S, MS;
     TDateTime DateTime =
