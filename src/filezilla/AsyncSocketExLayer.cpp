@@ -783,7 +783,7 @@ BOOL CAsyncSocketExLayer::CreateNext(UINT nSocketPort, int nSocketType, long lEv
   return res;
 }
 
-int CAsyncSocketExLayer::DoLayerCallback(int nType, int nParam1, int nParam2, char* str /*=0*/)
+int CAsyncSocketExLayer::DoLayerCallback(int nType, intptr_t nParam1, intptr_t nParam2, char* str /*=0*/)
 {
   if (!m_pOwnerSocket)
     return 0;

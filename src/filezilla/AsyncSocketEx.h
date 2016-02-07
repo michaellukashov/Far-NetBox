@@ -77,8 +77,8 @@ struct t_callbackMsg
 {
   CAsyncSocketExLayer* pLayer;
   int nType;
-  int nParam1;
-  int nParam2;
+  intptr_t nParam1;
+  intptr_t nParam2;
   char* str;
 };
 
