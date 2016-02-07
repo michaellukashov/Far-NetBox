@@ -104,7 +104,7 @@ UnicodeString EscapePuttyCommandParam(const UnicodeString & AParam);
 UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str);
 bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2);
 bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2);
-int CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2);
+intptr_t CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2);
 bool IsReservedName(const UnicodeString & AFileName);
 UnicodeString ApiPath(const UnicodeString & APath);
 UnicodeString DisplayableStr(const RawByteString & Str);

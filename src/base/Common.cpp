@@ -773,7 +773,7 @@ bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2)
   return AnsiSameText(::IncludeTrailingBackslash(APath1), ::IncludeTrailingBackslash(APath2));
 }
 
-int CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2)
+intptr_t CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2)
 {
   if (S1.Length() > S2.Length())
   {
