@@ -930,7 +930,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     // we need at least a complete date
     if (Filled >= 4)
     {
-      int Month = 0; // TODO: ParseShortEngMonthName(MonthStr);
+      int Month = ParseShortEngMonthName(MonthStr);
       if (Month >= 1)
       {
         TDateTime Modification =
