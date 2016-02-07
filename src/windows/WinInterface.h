@@ -247,7 +247,7 @@ bool LocationProfilesDialog(TOpenDirectoryMode Mode,
 enum TPreferencesMode { pmDefault, pmEditor, pmCustomCommands,
     pmQueue, pmLogging, pmUpdates, pmPresets, pmEditors, pmCommander,
     pmEditorInternal };
-class TCopyParamRuleData;
+struct TCopyParamRuleData;
 struct TPreferencesDialogData
 {
   TCopyParamRuleData * CopyParamRuleData;
