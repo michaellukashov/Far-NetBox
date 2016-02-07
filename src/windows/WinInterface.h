@@ -4,8 +4,9 @@
 #include <Classes.hpp>
 //#include <Buttons.hpp>
 #include <Interface.h>
-//#include <WinConfiguration.h>
+#include <GUIConfiguration.h>
 #include <SynchronizeController.h>
+#include <FarDialog.h>
 
 enum TMsgDlgType
 {

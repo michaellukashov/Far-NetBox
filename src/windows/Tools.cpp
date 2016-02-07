@@ -1,6 +1,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <winhttp.h>
 #include <Common.h>
 #include <TextsCore.h>
 #include <Exceptions.h>

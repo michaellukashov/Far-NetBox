@@ -1,4 +1,4 @@
-#include <Classes.hpp>
+#include <Global.h>
 #include "rtti.hpp"
 
 TClassInfo * TClassInfo::sm_first = nullptr;
