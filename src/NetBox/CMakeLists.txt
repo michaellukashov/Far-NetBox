@@ -1028,6 +1028,9 @@ add_library(putty STATIC
   ${LIBS_ROOT}/Putty/x11fwd.c
   ${LIBS_ROOT}/Putty/conf.c
   ${LIBS_ROOT}/Putty/callback.c
+  ${LIBS_ROOT}/Putty/import.c
+  ${LIBS_ROOT}/Putty/be_misc.c
+  ${LIBS_ROOT}/Putty/sshbcrypt.c
   ${LIBS_ROOT}/Putty/sshshare.c
   ${LIBS_ROOT}/Putty/noshare.c
   ${LIBS_ROOT}/Putty/errsock.c
