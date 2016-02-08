@@ -67,7 +67,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
         SynchronizeLog(slScan,
           FMTLOAD(SYNCHRONIZE_SCAN, FSynchronizeParams.LocalDirectory.c_str()));
       }
-      Error(SNotImplemented, 256);
+      ThrowNotImplemented(256);
       /*
       // FIXME
       FSynchronizeMonitor = new TDiscMonitor(NB_STATIC_DOWNCAST(TComponent, Sender));
@@ -98,7 +98,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
     catch (...)
     {
       // FIXME SAFE_DESTROY(FSynchronizeMonitor);
-      Error(SNotImplemented, 257);
+      ThrowNotImplemented(257);
       throw;
     }
   }
@@ -185,7 +185,7 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
   if (FSynchronizeMonitor != nullptr)
   {
     // FIXME FSynchronizeMonitor->Close();
-    Error(SNotImplemented, 258);
+    ThrowNotImplemented(258);
   }
   DebugAssert(FSynchronizeAbort);
   FSynchronizeAbort(nullptr, Close);

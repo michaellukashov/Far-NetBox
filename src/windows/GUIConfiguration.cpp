@@ -82,9 +82,9 @@ void TGUICopyParamType::Save(THierarchicalStorage * Storage)
 {
   TCopyParamType::Save(Storage);
 
-  Storage->WriteBool(L"Queue", GetQueue());
-  Storage->WriteBool(L"QueueNoConfirmation", GetQueueNoConfirmation());
-  Storage->WriteBool(L"QueueIndividually", GetQueueIndividually());
+  Storage->WriteBool("Queue", GetQueue());
+  Storage->WriteBool("QueueNoConfirmation", GetQueueNoConfirmation());
+  Storage->WriteBool("QueueIndividually", GetQueueIndividually());
 }
 
 TGUICopyParamType & TGUICopyParamType::operator =(const TCopyParamType & rhp)
@@ -449,9 +449,9 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
       const TCopyParamType * CopyParam = GetCopyParam(Index);
       const TCopyParamRule * Rule = GetRule(Index);
 
-      Storage->WriteString(L"Name", GetName(Index));
+      Storage->WriteString("Name", GetName(Index));
       CopyParam->Save(Storage);
-      Storage->WriteBool(L"HasRule", (Rule != nullptr));
+      Storage->WriteBool("HasRule", (Rule != nullptr));
       if (Rule != nullptr)
       {
         Rule->Save(Storage);
@@ -682,11 +682,11 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     if (FCopyParamListDefaults)
     {
       DebugAssert(!FCopyParamList->GetModified());
-      Storage->WriteInteger(L"CopyParamList", -1);
+      Storage->WriteInteger("CopyParamList", -1);
     }
     else if (All || FCopyParamList->GetModified())
     {
-      Storage->WriteInteger(L"CopyParamList", FCopyParamList->GetCount());
+      Storage->WriteInteger("CopyParamList", FCopyParamList->GetCount());
       FCopyParamList->Save(Storage);
     }
   }
@@ -821,7 +821,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   {
     if (Internal)
     {
-      Error(SNotImplemented, 90);
+      ThrowNotImplemented(90);
       NewInstance = 0; // FIXME  HInstance;
     }
   }
@@ -903,7 +903,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
 
 TStrings * TGUIConfiguration::GetLocales()
 {
-  Error(SNotImplemented, 93);
+  ThrowNotImplemented(93);
   UnicodeString LocalesExts;
   std::unique_ptr<TStringList> Exts(CreateSortedStringList());
 

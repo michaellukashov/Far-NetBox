@@ -1224,18 +1224,18 @@ TRemoteFile * TSCPFileSystem::CreateRemoteFile(
   const UnicodeString & ListingStr, TRemoteFile * LinkedByFile)
 {
   std::unique_ptr<TRemoteFile> File(new TRemoteFile(LinkedByFile));
-//  try
+  try__catch
   {
     File->SetTerminal(FTerminal);
     File->SetListingStr(ListingStr);
     File->ShiftTimeInSeconds(TimeToSeconds(FTerminal->GetSessionData()->GetTimeDifference()));
     File->Complete();
   }
-//  catch (...)
-//  {
-//    delete File;
-//    throw;
-//  }
+  /*catch (...)
+  {
+    delete File;
+    throw;
+  }*/
 
   return File.release();
 }

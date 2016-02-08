@@ -7,6 +7,9 @@
 
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
+#ifndef LENOF
+#define LENOF(x) (_countof(X))
+#endif
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
@@ -52,29 +55,28 @@ void SetTraceFile(HANDLE TraceFile);
 void CleanupTracing();
 #define TRACEENV "WINSCPTRACE"
 extern BOOL IsTracing;
-const unsigned int CallstackTlsOff = (unsigned int)-1;
-extern unsigned int CallstackTls;
-extern "C" void Trace(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * Message);
-void TraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  int Line, const wchar_t * Format, va_list Args);
+const uintptr_t CallstackTlsOff = (uintptr_t)-1;
+extern uintptr_t CallstackTls;
+extern "C" void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
+  uintptr_t Line, const wchar_t * Message);
+void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+  uintptr_t Line, const wchar_t * Format, va_list Args);
 
 #ifdef TRACE_IN_MEMORY
-
 void TraceDumpToFile();
 void TraceInMemoryCallback(const wchar_t * Msg);
 
 #endif // TRACE_IN_MEMORY
 
-#define ACCESS_VIOLATION_TEST { (*((int*)NULL)) = 0; }
+#define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 
-void DoAssert(wchar_t * Message, wchar_t * Filename, int LineNumber);
+void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber);
 
 #define DebugAssert(p) ((p) ? (void)0 : DoAssert(TEXT(#p), TEXT(__FILE__), __LINE__))
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
 #define DebugFail() DebugAssert(false)
 
-inline bool DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int LineNumber)
+inline bool DoAlwaysTrue(bool Value, const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
 {
   if (!Value)
   {
@@ -83,7 +85,7 @@ inline bool DoAlwaysTrue(bool Value, wchar_t * Message, wchar_t * Filename, int 
   return Value;
 }
 
-inline bool DoAlwaysFalse(bool Value, wchar_t * Message, wchar_t * Filename, int LineNumber)
+inline bool DoAlwaysFalse(bool Value, const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
 {
   if (Value)
   {
@@ -93,9 +95,9 @@ inline bool DoAlwaysFalse(bool Value, wchar_t * Message, wchar_t * Filename, int
 }
 
 template<typename T>
-inline typename T * DoCheckNotNull(T* p, wchar_t * Message, wchar_t * Filename, int LineNumber)
+inline typename T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
 {
-  if (p == NULL)
+  if (p == nullptr)
   {
     DoAssert(Message, Filename, LineNumber);
   }
@@ -111,18 +113,3 @@ inline typename T * DoCheckNotNull(T* p, wchar_t * Message, wchar_t * Filename, 
 #define DebugUsedParam(p) (void)(p)
 
 #define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())
-
-#if defined(__MINGW32__) && (__MINGW_GCC_VERSION < 50100)
-typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
-{
-  LONG       Bias;
-  WCHAR      StandardName[32];
-  SYSTEMTIME StandardDate;
-  LONG       StandardBias;
-  WCHAR      DaylightName[32];
-  SYSTEMTIME DaylightDate;
-  LONG       DaylightBias;
-  WCHAR      TimeZoneKeyName[128];
-  BOOLEAN    DynamicDaylightTimeDisabled;
-} DYNAMIC_TIME_ZONE_INFORMATION, *PDYNAMIC_TIME_ZONE_INFORMATION;
-#endif

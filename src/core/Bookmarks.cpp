@@ -325,7 +325,7 @@ void TBookmarkList::LoadOptions(THierarchicalStorage * Storage)
 
 void TBookmarkList::SaveOptions(THierarchicalStorage * Storage)
 {
-  Storage->WriteString(L"OpenedNodes", FOpenedNodes->GetCommaText());
+  Storage->WriteString("OpenedNodes", FOpenedNodes->GetCommaText());
 }
 
 void TBookmarkList::Add(TBookmark * Bookmark)

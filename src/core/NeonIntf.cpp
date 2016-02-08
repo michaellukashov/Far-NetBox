@@ -170,7 +170,7 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
         case NE_REDIRECT:
           {
             char * Uri = ne_uri_unparse(ne_redirect_location(Session));
-            Error = FMTLOAD(REQUEST_REDIRECTED, (Uri));
+            Error = FMTLOAD(REQUEST_REDIRECTED, Uri);
             ne_free(Uri);
           }
           break;
@@ -179,7 +179,7 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
         case NE_RETRY: // not sure if this is a public API
         default:
           DebugFail();
-          Error = FORMAT(L"Unexpected neon error %d", (NeonStatus));
+          Error = FORMAT(L"Unexpected neon error %d", NeonStatus);
           break;
       }
     }

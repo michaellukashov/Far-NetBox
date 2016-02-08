@@ -773,7 +773,7 @@ bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2)
   return AnsiSameText(::IncludeTrailingBackslash(APath1), ::IncludeTrailingBackslash(APath2));
 }
 
-int CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2)
+intptr_t CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2)
 {
   if (S1.Length() > S2.Length())
   {
@@ -784,7 +784,7 @@ int CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2)
     return -1;
   }
   else
-    return ::StrCmpNCW(S1.c_str(), S2.c_str(), S1.Length());
+    return ::StrCmpNCW(S1.c_str(), S2.c_str(), (int)S1.Length());
 }
 
 bool IsReservedName(const UnicodeString & AFileName)
@@ -1256,7 +1256,7 @@ DWORD FindCheck(DWORD Result, const UnicodeString & APath)
   return Result;
 }
 
-static DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD Attr, TSearchRecChecked & F)
+DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD Attr, TSearchRecChecked & F)
 {
   F.Path = APath;
   return FindFirst(ApiPath(APath), Attr, F);
@@ -2027,15 +2027,15 @@ bool AdjustClockForDSTEnabled()
         Registry->OpenKey("Control", false) &&
         Registry->OpenKey("TimeZoneInformation", false))
     {
-      if (Registry->ValueExists(L"DynamicDaylightTimeDisabled"))
+      if (Registry->ValueExists("DynamicDaylightTimeDisabled"))
       {
-        DynamicDaylightTimeDisabled = Registry->ReadBool(L"DynamicDaylightTimeDisabled");
+        DynamicDaylightTimeDisabled = Registry->ReadBool("DynamicDaylightTimeDisabled");
       }
       // WORKAROUND
       // Windows XP equivalent
-      else if (Registry->ValueExists(L"DisableAutoDaylightTimeSet"))
+      else if (Registry->ValueExists("DisableAutoDaylightTimeSet"))
       {
-        DynamicDaylightTimeDisabled = Registry->ReadBool(L"DisableAutoDaylightTimeSet");
+        DynamicDaylightTimeDisabled = Registry->ReadBool("DisableAutoDaylightTimeSet");
       }
     }
   }
@@ -2341,7 +2341,7 @@ UnicodeString LoadStr(intptr_t Ident, uintptr_t /*MaxLength*/)
 {
 #ifndef _MSC_VER
   TLibModule * MainModule = FindModule(HInstance);
-  DebugAssert(MainModule != NULL);
+  DebugAssert(MainModule != nullptr);
 
   UnicodeString Result;
   Result.SetLength(MaxLength);
@@ -2352,7 +2352,7 @@ UnicodeString LoadStr(intptr_t Ident, uintptr_t /*MaxLength*/)
 //  UnicodeString Result;
 //  Result.SetLength(MaxLength > 0 ? MaxLength : 1024);
 //  HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
-//  assert(hInstance != 0);
+//  DebugAssert(hInstance != 0);
 //  intptr_t Length = static_cast<intptr_t>(::LoadString(hInstance, (UINT)Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), (int)Result.Length()));
 //  Result.SetLength(Length);
   UnicodeString Result = GetGlobalFunctions()->GetMsg(Ident);
@@ -2542,7 +2542,7 @@ bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
 
     if (Index <= AStr.Length())
     {
-      if (ASeparator != NULL)
+      if (ASeparator != nullptr)
       {
         *ASeparator = AStr.SubString(Index, 1);
       }
@@ -2762,13 +2762,26 @@ TFormatSettings GetEngFormatSettings()
   return TFormatSettings::Create(1033);
 }
 
-#if 0
+static int IndexStr(const UnicodeString & AStr)
+{
+  int Result = -1;
+  for (int Index = 0; Index < 12; ++Index)
+  {
+    if (AStr.CompareIC(EngShortMonthNames[Index]) == 0)
+    {
+      Result = Index;
+      break;
+    }
+  }
+  return Result;
+}
+
 int ParseShortEngMonthName(const UnicodeString & MonthStr)
 {
-  TFormatSettings FormatSettings = GetEngFormatSettings();
-  return IndexStr(MonthStr, FormatSettings.ShortMonthNames, FormatSettings.ShortMonthNames.size()) + 1;
+  // TFormatSettings FormatSettings = GetEngFormatSettings();
+  // return IndexStr(MonthStr, FormatSettings.ShortMonthNames, FormatSettings.ShortMonthNames.size()) + 1;
+  return IndexStr(MonthStr) + 1;
 }
-#endif
 
 TStringList * CreateSortedStringList(bool CaseSensitive, TDuplicatesEnum Duplicates)
 {
@@ -2821,7 +2834,7 @@ static UnicodeString GetTlsErrorStr(int Err)
 static FILE * OpenCertificate(const UnicodeString & Path)
 {
   FILE * Result = _wfopen(ApiPath(Path).c_str(), L"rb");
-  if (Result == NULL)
+  if (Result == nullptr)
   {
     int Error = errno;
     throw EOSExtException(MainInstructions(FMTLOAD(CERTIFICATE_OPEN_ERROR, Path.c_str())), Error);
@@ -2926,7 +2939,7 @@ void ParseCertificate(const UnicodeString & Path,
     PrivateKey = PEM_read_PrivateKey(File, nullptr, PemPasswordCallback, &CallbackUserData);
     fclose(File);
 
-    // try
+    try__finally
     {
       SCOPE_EXIT
       {
@@ -3007,9 +3020,9 @@ void ParseCertificate(const UnicodeString & Path,
               {
                 int DERError = ERR_get_error();
 
-                UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, (CertificatePath)));
+                UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, CertificatePath.c_str()));
                 UnicodeString MoreMessages =
-                  FORMAT(L"Base64: %s\nDER: %s", (GetTlsErrorStr(Base64Error), GetTlsErrorStr(DERError)));
+                  FORMAT(L"Base64: %s\nDER: %s", GetTlsErrorStr(Base64Error).c_str(), GetTlsErrorStr(DERError).c_str());
                 throw ExtException(Message, MoreMessages);
               }
             }

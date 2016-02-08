@@ -167,6 +167,8 @@ enum TObjectClassId
   OBJECT_CLASS_CApiLog,
   OBJECT_CLASS_TFarPanelItem,
   OBJECT_CLASS_TFarText,
+  OBJECT_CLASS_TFarCheckBox,
+
 };
 
 class TClassInfo

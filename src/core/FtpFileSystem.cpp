@@ -237,8 +237,6 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) :
   FServerCapabilities(new TFTPServerCapabilities()),
   FDetectTimeDifference(false),
   FTimeDifference(0),
-//  FSupportsSiteCopy(false),
-//  FSupportsSiteSymlink(false)
   FSupportsAnyChecksumFeature(false),
   FCertificate(nullptr),
   FPrivateKey(nullptr),
@@ -342,7 +340,7 @@ void TFTPFileSystem::Open()
   {
     std::unique_ptr<TFileZillaIntf> FileZillaImpl(new TFileZillaImpl(this));
 
-//    try
+    try__catch
     {
       TFileZillaIntf::TLogLevel LogLevel;
       switch (FTerminal->GetConfiguration()->GetActualLogProtocol())
@@ -361,12 +359,12 @@ void TFTPFileSystem::Open()
       FileZillaImpl->Init();
       FFileZillaIntf = FileZillaImpl.release();
     }
-//    catch (...)
-//    {
-//      delete FFileZillaIntf;
-//      FFileZillaIntf = NULL;
-//      throw;
-//    }
+    /*catch (...)
+    {
+      delete FFileZillaIntf;
+      FFileZillaIntf = NULL;
+      throw;
+    }*/
   }
 
   FWindowsServer = false;
@@ -1386,8 +1384,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
     {
       TSuspendFileOperationProgress Suspend(OperationProgress);
       Answer = FTerminal->ConfirmFileOverwrite(
-        ASourceFullFileName, ATargetFileName, FileParams,
-        Answers, &QueryParams,
+        ASourceFullFileName, ATargetFileName, FileParams, Answers, &QueryParams,
         OperationProgress->Side == osLocal ? osRemote : osLocal,
         CopyParam, Params, OperationProgress);
     }
@@ -1783,16 +1780,8 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
       UserData.CopyParam = CopyParam;
       UserData.Modification = AFile->GetModification();
-      try
-      {
-        FileTransfer(AFileName, DestFullName, OnlyFileName,
-          FilePath, true, AFile->GetSize(), TransferType, UserData, OperationProgress);
-      }
-      catch (Exception &)
-      {
-        //::CloseHandle(LocalFileHandle);
-        throw;
-      }
+      FileTransfer(AFileName, DestFullName, OnlyFileName,
+        FilePath, true, AFile->GetSize(), TransferType, UserData, OperationProgress);
     }
 
     // in case dest filename is changed from overwrite dialog
@@ -2783,15 +2772,15 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
       {
         std::unique_ptr<TRemoteFileList> FileListCache(new TRemoteFileList());
         FileListCache->SetDirectory(Path);
-//        try
+        try__catch
         {
           ReadDirectory(FileListCache.get());
         }
-//        catch(...)
-//        {
-//          delete FileListCache;
-//          throw;
-//        }
+        /*catch (...)
+        {
+          delete FileListCache;
+          throw;
+        }*/
         // set only after we successfully read the directory,
         // otherwise, when we reconnect from ReadDirectory,
         // the FFileListCache is reset from ResetCache.
@@ -2824,7 +2813,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   // Moreover FZAPI does not support that anyway.
   // Though nowadays we could use MLST to read the symlink.
   std::unique_ptr<TRemoteFile> File(new TRemoteFile(SymlinkFile));
-//  try
+  try__catch
   {
     File->SetTerminal(FTerminal);
     File->SetFileName(base::UnixExtractFileName(SymlinkFile->GetLinkTo()));
@@ -2832,12 +2821,12 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
     File->SetType(FILETYPE_SYMLINK);
     AFile = File.release();
   }
-//  catch(...)
-//  {
-//    delete File;
-//    File = NULL;
-//    throw;
-//  }
+  /*catch (...)
+  {
+    delete File;
+    File = NULL;
+    throw;
+  }*/
 }
 
 void TFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
@@ -3474,7 +3463,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
 
       UnicodeString HelpKeyword;
       std::unique_ptr<TStrings> MoreMessages(new TStringList());
-      // try
+      try__catch
       {
         if (Disconnected)
         {
@@ -3552,11 +3541,11 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
           MoreMessages.reset();
         }
       }
-//      catch(...)
-//      {
-//        delete MoreMessages;
-//        throw;
-//      }
+      /*catch(...)
+      {
+        delete MoreMessages;
+        throw;
+      }*/
 
       UnicodeString ErrorStr = Error;
       if (ErrorStr.IsEmpty() && (MoreMessages.get() != nullptr))
@@ -3572,7 +3561,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
         // for fatal error, it is essential that there is some message
         DebugAssert(!ErrorStr.IsEmpty());
         std::unique_ptr<ExtException> E(new ExtException(ErrorStr, MoreMessages.release(), true));
-//        try
+        try__finally
         {
           FTerminal->FatalError(E.get(), L"");
         }
@@ -4055,8 +4044,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
 
       if (ConfirmOverwrite(SourceFullFileName, TargetFileName, UserData.Params, OperationProgress,
             UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize),
-            NoFileParams ? nullptr : &FileParams, UserData.CopyParam,
-            OverwriteMode))
+            NoFileParams ? nullptr : &FileParams, UserData.CopyParam, OverwriteMode))
       {
         switch (OverwriteMode)
         {
@@ -4119,9 +4107,9 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
       // by setting dummy one, as FZAPI won't do anything then
       SetLastCode(DummyTimeoutCode);
     }
-  }
 
-  return true;
+    return true;
+  }
 }
 
 static UnicodeString FormatContactList(const UnicodeString & Entry1, const UnicodeString & Entry2)
@@ -4172,7 +4160,7 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & Val
       static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
       static_cast<uint16_t>(ValidityTime.Sec), 0));
   */
-	// TODO: use SysUtils::FormatDateTime
+  // TODO: use SysUtils::FormatDateTime
   uint16_t Y, M, D, H, Mm, S, MS;
   TDateTime DateTime =
     EncodeDateVerbose(
@@ -4266,7 +4254,7 @@ bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 static bool IsIPAddress(const UnicodeString & HostName)
 {
   bool IPv4 = true;
@@ -4947,6 +4935,7 @@ void TFTPFileSystem::LockFile(const UnicodeString & /*FileName*/, const TRemoteF
 {
   DebugFail();
 }
+
 void TFTPFileSystem::UnlockFile(const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();

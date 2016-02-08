@@ -735,7 +735,7 @@ void TTerminalQueue::UpdateStatusForList(
 TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Current)
 {
   std::unique_ptr<TTerminalQueueStatus> Status(new TTerminalQueueStatus());
-//  try
+  try__catch
   {
     SCOPE_EXIT
     {
@@ -761,11 +761,11 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
       }
     };
   }
-//  catch(...)
-//  {
-//    delete Status;
-//    throw;
-//  }
+  /*catch (...)
+  {
+    delete Status;
+    throw;
+  }*/
 
   return Status.release();
 }
@@ -1262,7 +1262,7 @@ void TTerminalItem::Init(intptr_t Index)
   TSignalThread::Init(true);
 
   std::unique_ptr<TBackgroundTerminal> Terminal(new TBackgroundTerminal(FQueue->FTerminal));
-  // try
+  try__catch
   {
     Terminal->Init(FQueue->FSessionData, FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
     Terminal->SetUseBusyCursor(false);
@@ -1274,11 +1274,11 @@ void TTerminalItem::Init(intptr_t Index)
     Terminal->SetOnFinished(MAKE_CALLBACK(TTerminalItem::OperationFinished, this));
     FTerminal = Terminal.release();
   }
-//  catch(...)
-//  {
-//    delete FTerminal;
-//    throw;
-//  }
+  /*catch(...)
+  {
+    delete FTerminal;
+    throw;
+  }*/
 
   Start();
 }

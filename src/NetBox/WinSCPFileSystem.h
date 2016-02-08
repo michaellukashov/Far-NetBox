@@ -7,6 +7,7 @@
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
 #include <Queue.h>
+#include <WinInterface.h>
 
 class TTerminal;
 class TSessionData;
@@ -36,19 +37,19 @@ struct TMessageParams;
 #define MAKE_SESSION_FOLDER_HISTORY L"WinscpSessionFolder"
 
 // for Properties dialog
-const int cpMode  = 0x01;
-const int cpOwner = 0x02;
-const int cpGroup = 0x04;
+//const int cpMode  = 0x01;
+//const int cpOwner = 0x02;
+//const int cpGroup = 0x04;
 // for Copy dialog
-const int coTempTransfer        = 0x01;
-const int coDisableNewerOnly    = 0x04;
-// for Synchronize and FullSynchronize dialogs
-const int spSelectedOnly = 0x800;
-// for Synchronize dialogs
-const int soAllowSelectedOnly = 0x01;
-// for FullSynchronize dialog
-const int fsoDisableTimestamp = 0x01;
-const int fsoAllowSelectedOnly = 0x02;
+//const int coTempTransfer        = 0x01;
+//const int coDisableNewerOnly    = 0x04;
+//// for Synchronize and FullSynchronize dialogs
+//const int spSelectedOnly = 0x800;
+//// for Synchronize dialogs
+//const int soAllowSelectedOnly = 0x01;
+//// for FullSynchronize dialog
+//const int fsoDisableTimestamp = 0x01;
+//const int fsoAllowSelectedOnly = 0x02;
 enum TSessionActionEnum
 {
   saAdd,
@@ -56,8 +57,8 @@ enum TSessionActionEnum
   saConnect
 };
 
-DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
-  intptr_t /*Params*/, TSynchronizeOptions & /*Options*/);
+//DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
+//  intptr_t /*Params*/, TSynchronizeOptions & /*Options*/);
 DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
   const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
   bool & /*Close*/);

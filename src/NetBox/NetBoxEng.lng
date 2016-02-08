@@ -363,6 +363,7 @@
 "Diffie-Hellman group exchange"
 "RSA"
 "ECDH"
+
 " Tunnel "
 "&Connect through SSH tunnel"
 " Host to setup tunnel on "
@@ -374,6 +375,7 @@
 " Connection "
 "&Passive mode"
 "Optimize connection &buffer size"
+
 "&Allow empty password"
 "Use &MLSD command for directory listing"
 " Protocol options "
@@ -1254,6 +1256,7 @@
 "A call to an OS function failed"
 
 "Invalid argument to date encode"
+"Cannot open clipboard"
 
 "Timeout detected."
 "Disconnected from server"

@@ -95,7 +95,7 @@ protected:
 
   void Sink(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, intptr_t Params,
+    const TCopyParamType * CopyParam, intptr_t AParams,
     TFileOperationProgressType * OperationProgress, uintptr_t Flags,
     TDownloadSessionAction & Action, bool & ChildError);
   void SinkRobust(const UnicodeString & AFileName,

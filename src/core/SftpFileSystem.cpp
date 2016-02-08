@@ -1358,7 +1358,7 @@ protected:
   virtual bool SendRequest()
   {
     std::unique_ptr<TSFTPQueuePacket> Request(new TSFTPQueuePacket(FCodePage));
-//    try
+    try__catch
     {
       if (!InitRequest(Request.get()))
       {
@@ -3016,7 +3016,7 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
   TRemoteFileList * TempFileList, bool Complete)
 {
   std::unique_ptr<TRemoteFile> File(new TRemoteFile(ALinkedByFile));
-//  try
+  try__catch
   {
     File->SetTerminal(FTerminal);
     if (!AFileName.IsEmpty())

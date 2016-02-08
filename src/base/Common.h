@@ -104,7 +104,7 @@ UnicodeString EscapePuttyCommandParam(const UnicodeString & AParam);
 UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str);
 bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2);
 bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2);
-int CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2);
+intptr_t CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2);
 bool IsReservedName(const UnicodeString & AFileName);
 UnicodeString ApiPath(const UnicodeString & APath);
 UnicodeString DisplayableStr(const RawByteString & Str);
@@ -159,9 +159,7 @@ TStrings * CloneStrings(TStrings * Strings);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
 TFormatSettings GetEngFormatSettings();
-#if 0
 int ParseShortEngMonthName(const UnicodeString & MonthStr);
-#endif
 // The defaults are equal to defaults of TStringList class (except for Sorted)
 TStringList * CreateSortedStringList(bool CaseSensitive = false, TDuplicatesEnum Duplicates = dupIgnore);
 UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);

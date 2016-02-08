@@ -235,11 +235,12 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       case kexRSA:
         pkex = KEX_RSA;
         break;
-	  case kexECDH:
-		  pkex = KEX_ECDH;
-		  break;
+      case kexECDH:
+        pkex = KEX_ECDH;
+        break;
       default:
-		  DebugFail();
+        DebugFail();
+        break;
     }
     conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
   }
@@ -2408,7 +2409,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
       }
 
       std::unique_ptr<Exception> E(new Exception(MainInstructions(Message)));
-      // try
+      try__finally
       {
         FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, Fingerprint.c_str()));
       }

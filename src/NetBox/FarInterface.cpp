@@ -72,8 +72,8 @@ HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
     CreationFlags, ThreadId);
 }
 
-void CopyToClipboard(const UnicodeString & Text)
+void CopyToClipboard(const UnicodeString & AText)
 {
   DebugAssert(FarPlugin != nullptr);
-  FarPlugin->FarCopyToClipboard(Text);
+  FarPlugin->FarCopyToClipboard(AText);
 }

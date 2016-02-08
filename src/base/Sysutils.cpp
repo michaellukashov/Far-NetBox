@@ -929,9 +929,9 @@ void AppendPathDelimiterW(UnicodeString & Str)
 
 UnicodeString ExpandEnvVars(const UnicodeString & Str)
 {
-  wchar_t buf[32 * 1024];
-  intptr_t size = ::ExpandEnvironmentStringsW(Str.c_str(), buf, static_cast<DWORD>(32 * 1024 - 1));
-  UnicodeString Result = UnicodeString(buf, size - 1);
+  UnicodeString Buf(32 * 1024, 0);
+  intptr_t size = ::ExpandEnvironmentStringsW(Str.c_str(), (wchar_t *)Buf.c_str(), static_cast<DWORD>(32 * 1024 - 1));
+  UnicodeString Result = UnicodeString(Buf.c_str(), size - 1);
   return Result;
 }
 
@@ -1458,7 +1458,7 @@ TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec)
 TDateTime StrToDateTime(const UnicodeString & Value)
 {
   (void)Value;
-  Error(SNotImplemented, 145);
+  ThrowNotImplemented(145);
   return TDateTime();
 }
 
@@ -1468,7 +1468,7 @@ bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value,
   (void)StrValue;
   (void)Value;
   (void)FormatSettings;
-  Error(SNotImplemented, 147);
+  ThrowNotImplemented(147);
   return false;
 }
 
@@ -1501,46 +1501,44 @@ TDateTime Date()
   return Result;
 }
 
-UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTime)
+UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime)
 {
   (void)Fmt;
-  (void)DateTime;
   UnicodeString Result;
   if (Fmt == L"ddddd tt")
-	{
-		/*
-		return FormatDateTime(L"ddddd tt",
-			EncodeDateVerbose(
-				static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
-				static_cast<uint16_t>(ValidityTime.Day)) +
-			EncodeTimeVerbose(
-				static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
-				static_cast<uint16_t>(ValidityTime.Sec), 0));
-		*/
-		uint16_t Year;
-		uint16_t Month;
-		uint16_t Day;
-		uint16_t Hour;
-		uint16_t Minutes;
-		uint16_t Seconds;
-		uint16_t Milliseconds;
-		
-		DateTime.DecodeDate(Year, Month, Day);
-		DateTime.DecodeTime(Hour, Minutes, Seconds, Milliseconds);
+  {
+    /*
+    return FormatDateTime(L"ddddd tt",
+        EncodeDateVerbose(
+            static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
+            static_cast<uint16_t>(ValidityTime.Day)) +
+        EncodeTimeVerbose(
+            static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
+            static_cast<uint16_t>(ValidityTime.Sec), 0));
+    */
+    uint16_t Year;
+    uint16_t Month;
+    uint16_t Day;
+    uint16_t Hour;
+    uint16_t Minutes;
+    uint16_t Seconds;
+    uint16_t Milliseconds;
 
-		int Sec;
-		uint16_t Y, M, D, H, Mm, S, MS;
-		TDateTime DateTime =
-			EncodeDateVerbose(Year, Month, Day) +
-			EncodeTimeVerbose(Hour, Minutes, Seconds, Milliseconds);
-		DateTime.DecodeDate(Y, M, D);
-		DateTime.DecodeTime(H, Mm, S, MS);
-		Result = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
-	}
-	else
-	{
-		Error(SNotImplemented, 150);
-	}
+    ADateTime.DecodeDate(Year, Month, Day);
+    ADateTime.DecodeTime(Hour, Minutes, Seconds, Milliseconds);
+
+    uint16_t Y, M, D, H, Mm, S, MS;
+    TDateTime DateTime =
+        EncodeDateVerbose(Year, Month, Day) +
+        EncodeTimeVerbose(Hour, Minutes, Seconds, Milliseconds);
+    DateTime.DecodeDate(Y, M, D);
+    DateTime.DecodeTime(H, Mm, S, MS);
+    Result = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
+  }
+  else
+  {
+    ThrowNotImplemented(150);
+  }
   return Result;
 }
 
@@ -1690,7 +1688,7 @@ TCriticalSection::TCriticalSection() :
 
 TCriticalSection::~TCriticalSection()
 {
-  assert(FAcquired == 0);
+  DebugAssert(FAcquired == 0);
   DeleteCriticalSection(&FSection);
 }
 

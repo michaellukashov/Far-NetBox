@@ -187,7 +187,7 @@ THierarchicalStorage * TConfiguration::CreateStorage(bool & SessionList)
   }
   else
   {
-    Error(SNotImplemented, 3005);
+    ThrowNotImplemented(3005);
     DebugAssert(false);
   }
 
@@ -324,7 +324,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
 
 void TConfiguration::Export(const UnicodeString & /*AFileName*/)
 {
-  Error(SNotImplemented, 3004);
+  ThrowNotImplemented(3004);
   /*
   // not to "append" the export to an existing file
   if (FileExists(FileName))
@@ -362,7 +362,7 @@ void TConfiguration::Export(const UnicodeString & /*AFileName*/)
 
 void TConfiguration::Import(const UnicodeString & /*AFileName*/)
 {
-  Error(SNotImplemented, 3005);
+  ThrowNotImplemented(3005);
 
 /*THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ImportStorage = NULL;
@@ -849,7 +849,7 @@ intptr_t TConfiguration::GetCompoundVersion() const
 
 UnicodeString TConfiguration::ModuleFileName() const
 {
-  Error(SNotImplemented, 204);
+  ThrowNotImplemented(204);
   return L"";
 }
 

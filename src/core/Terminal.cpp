@@ -1073,10 +1073,10 @@ void TTerminal::Open()
         throw;
       }
     }
-    // catch (EFatal &)
-    // {
-    //   throw;
-    // }
+    /*catch (EFatal &)
+    {
+      throw;
+    }*/
     catch (Exception & E)
     {
       LogEvent(FORMAT(L"Got error: \"%s\"", E.Message.c_str()));
@@ -1279,7 +1279,7 @@ void TTerminal::InitFileSystem()
     SAFE_DESTROY(FFileSystem);
     throw;
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     // any exception while opening session is fatal
     FatalError(&E, L"");
@@ -1648,9 +1648,9 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
       }
 
       // We know MoreMessages not to be NULL here,
-        // AppendExceptionStackTraceAndForget should never return true
+      // AppendExceptionStackTraceAndForget should never return true
       // (indicating it had to create the string list)
-      TStrings * MoreMessagesPtr = MoreMessages.get();
+      TStrings * MoreMessagesPtr = MoreMessages.release();
       DebugAlwaysFalse(AppendExceptionStackTraceAndForget(MoreMessagesPtr));
       MoreMessages.reset(MoreMessagesPtr);
 
@@ -3222,7 +3222,7 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Di
 TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & ADirectory, bool UseCache)
 {
   std::unique_ptr<TRemoteFileList> FileList(new TRemoteFileList());
-//  try
+  try__catch
   {
     bool Cache = UseCache && GetSessionData()->GetCacheDirectories();
     bool LoadedFromCache = Cache && FDirectoryCache->HasFileList(ADirectory);
@@ -4547,7 +4547,7 @@ TTerminal * TTerminal::GetCommandSession()
     // levels between main and command session
     DebugAssert(FInTransaction == 0);
 
-//    try
+    try__catch
     {
       std::unique_ptr<TSecondaryTerminal> CommandSession(new TSecondaryTerminal(this));
       CommandSession->Init(GetSessionData(), FConfiguration, L"Shell");
@@ -4573,12 +4573,12 @@ TTerminal * TTerminal::GetCommandSession()
       // do not copy OnDisplayBanner to avoid it being displayed
       FCommandSession = CommandSession.release();
     }
+    /*catch(...)
+    {
+      SAFE_DESTROY(FCommandSession);
+      throw;
+    }*/
   }
-  /*catch(...)
-  {
-    SAFE_DESTROY(FCommandSession);
-    throw;
-  }*/
 
   return FCommandSession;
 }
@@ -5135,7 +5135,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   FUseBusyCursor = false;
 
   std::unique_ptr<TSynchronizeChecklist> Checklist(new TSynchronizeChecklist());
-//  try
+  try__catch
   {
     DoSynchronizeCollectDirectory(LocalDirectory, RemoteDirectory, Mode,
       CopyParam, Params, OnSynchronizeDirectory, Options, sfFirstLevel,
@@ -5438,7 +5438,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & AFileName,
   {
     DoSynchronizeCollectFile(AFileName, AFile, Param);
   }
-  catch(ESkipFile & E)
+  catch (ESkipFile & E)
   {
     TSuspendFileOperationProgress Suspend(OperationProgress);
     if (!HandleException(&E))
@@ -6014,7 +6014,7 @@ void TTerminal::DoLockFile(const UnicodeString & AFileName, const TRemoteFile * 
     {
       FFileSystem->LockFile(AFileName, AFile);
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       RetryLoop.Error(E, FMTLOAD(LOCK_FILE_ERROR, AFileName.c_str()));
     }
@@ -6043,7 +6043,7 @@ void TTerminal::DoUnlockFile(const UnicodeString & AFileName, const TRemoteFile 
     {
       FFileSystem->UnlockFile(AFileName, AFile);
     }
-    catch(Exception & E)
+    catch (Exception & E)
     {
       RetryLoop.Error(E, FMTLOAD(UNLOCK_FILE_ERROR, AFileName.c_str()));
     }

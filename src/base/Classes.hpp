@@ -33,6 +33,7 @@ extern const intptr_t HoursPerDay;
 extern const intptr_t SecsPerDay;
 extern const intptr_t MSecsPerDay;
 extern const intptr_t MSecsPerSec;
+extern const intptr_t OneSecond;
 extern const intptr_t DateDelta;
 extern const intptr_t UnixDateDelta;
 
@@ -42,7 +43,8 @@ DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /*Sender*/);
 
 void Abort();
-void Error(int ErrorID, intptr_t data);
+void Error(intptr_t Id, intptr_t ErrorId);
+void ThrowNotImplemented(intptr_t ErrorId);
 
 class TObject
 {

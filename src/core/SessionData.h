@@ -537,7 +537,7 @@ public:
   UnicodeString GenerateOpenCommandArgs();
   UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language);
   void LookupLastFingerprint();
-  bool IsSecure() const;
+  bool GetIsSecure() const;
   static void ValidatePath(const UnicodeString & APath);
   static void ValidateName(const UnicodeString & AName);
   static UnicodeString MakeValidName(const UnicodeString & Name);
@@ -910,6 +910,6 @@ uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage);
 UnicodeString GetCodePageAsString(uintptr_t CodePage);
 
 UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData);
-bool IsSshProtocol(TFSProtocol FSProtocol);
-intptr_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
+bool GetIsSshProtocol(TFSProtocol FSProtocol);
+intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 

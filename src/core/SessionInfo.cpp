@@ -158,11 +158,11 @@ public:
           FLog->AddIndented(L"  </files>");
           if (File->Owner.IsSet)
           {
-            FLog->AddIndented(FORMAT(L"      <owner value=\"%s\" />", (XmlAttributeEscape(File->Owner.DisplayText))));
+            FLog->AddIndented(FORMAT(L"      <owner value=\"%s\" />", XmlAttributeEscape(File->Owner.DisplayText)));
           }
           if (File->Group.IsSet)
           {
-            FLog->AddIndented(FORMAT(L"      <group value=\"%s\" />", (XmlAttributeEscape(File->Group.DisplayText))));
+            FLog->AddIndented(FORMAT(L"      <group value=\"%s\" />", XmlAttributeEscape(File->Group.DisplayText)));
           }
         }
         if (FFile != nullptr)

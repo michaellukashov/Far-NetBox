@@ -115,3 +115,5 @@
 #define SUnkOSError 2108
 
 #define SDateEncodeError 2109
+
+#define SCannotOpenClipboard 2110

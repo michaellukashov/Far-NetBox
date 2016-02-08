@@ -19,33 +19,6 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
   return new TWinSCPPlugin(HInst);
 }
 
-TMessageParams::TMessageParams() :
-  Aliases(nullptr),
-  AliasesCount(0),
-  Flags(0),
-  Params(0),
-  Timer(0),
-  TimerEvent(nullptr),
-  TimerAnswers(0),
-  Timeout(0),
-  TimeoutAnswer(0)
-{
-}
-
-void TMessageParams::Assign(const TMessageParams * AParams)
-{
-  Aliases = AParams->Aliases;
-  AliasesCount = AParams->AliasesCount;
-  Flags = AParams->Flags;
-  Params = AParams->Params;
-  Timer = AParams->Timer;
-  TimerEvent = AParams->TimerEvent;
-  TimerMessage = AParams->TimerMessage;
-  TimerAnswers = AParams->TimerAnswers;
-  Timeout = AParams->Timeout;
-  TimeoutAnswer = AParams->TimeoutAnswer;
-}
-
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :
   TCustomFarPlugin(HInst),
   FInitialized(false)
@@ -393,7 +366,7 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
   if (!CommandLineParams.IsEmpty())
   {
     // TODO: implement Options->ParseParams(CommandLineParams);
-    Error(SNotImplemented, 3015);
+    ThrowNotImplemented(3015);
     CommandLine = CommandLine.SubString(1, CommandLine.Length() - CommandLineParams.Length()).Trim();
   }
 }
@@ -853,19 +826,19 @@ void TWinSCPPlugin::CleanupConfiguration()
   Storage->SetAccessMode(smReadWrite);
   if (Storage->OpenSubKey(GetFarConfiguration()->GetConfigurationSubKey(), false))
   {
-    if (!Storage->ValueExists(L"Version"))
+    if (!Storage->ValueExists("Version"))
     {
-      Storage->DeleteSubKey(L"CDCache");
+      Storage->DeleteSubKey("CDCache");
     }
     else
     {
       UnicodeString Version = Storage->ReadString("Version", L"");
       if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2, 1, 19))
       {
-        Storage->DeleteSubKey(L"CDCache");
+        Storage->DeleteSubKey("CDCache");
       }
     }
-    Storage->WriteStringRaw(L"Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
+    Storage->WriteStringRaw("Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
     Storage->CloseSubKey();
   }
 }

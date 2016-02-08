@@ -13,7 +13,7 @@
 #define _AFX_NOFORCE_LIBS
 
 #ifndef LENOF
-#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
+#define LENOF(x) (_countof(X))
 #endif
 
 #define _ATL_MIN_CRT
