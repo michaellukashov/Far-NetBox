@@ -784,7 +784,7 @@ int CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2)
     return -1;
   }
   else
-    return ::StrCmpLogicalW(S1.c_str(), S2.c_str());
+    return ::StrCmpNCW(S1.c_str(), S2.c_str(), S1.Length());
 }
 
 bool IsReservedName(const UnicodeString & AFileName)
