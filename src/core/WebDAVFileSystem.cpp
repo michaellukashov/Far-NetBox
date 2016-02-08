@@ -4517,71 +4517,76 @@ windows_validate_certificate(
   const char * ascii_cert,
   apr_pool_t * pool)
 {
-  PCCERT_CONTEXT cert_context = nullptr;
-  CERT_CHAIN_PARA chain_para;
-  PCCERT_CHAIN_CONTEXT chain_context = nullptr;
-
   *ok_p = false;
+  unsigned char * Certificate = nullptr;
+  size_t CertificateLen = ne_unbase64(ascii_cert, &Certificate);
 
-  // Parse the certificate into a context.
-  cert_context = certcontext_from_base64(ascii_cert, pool);
-
-  if (cert_context)
+  if (CertificateLen > 0)
   {
-    // Retrieve the certificate chain of the certificate
-    // (a certificate without a valid root does not have a chain).
-    ::ZeroMemory(&chain_para, sizeof(chain_para));
-    chain_para.cbSize = sizeof(chain_para);
+    const CERT_CONTEXT * cert_context =
+      ::CertCreateCertificateContext(
+        X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, Certificate, CertificateLen);
 
-    HCERTCHAINENGINE chain_engine;
-    CERT_CHAIN_ENGINE_CONFIG chain_config;
-    ::ZeroMemory(&chain_config, sizeof(chain_config));
-
-    chain_config.cbSize = sizeof(CERT_CHAIN_ENGINE_CONFIG);
-    chain_config.hRestrictedRoot = nullptr;
-    chain_config.hRestrictedTrust = nullptr;
-    chain_config.hRestrictedOther = nullptr;
-    chain_config.cAdditionalStore = 0;
-    chain_config.rghAdditionalStore = nullptr;
-    chain_config.dwFlags = CERT_CHAIN_CACHE_END_CERT;
-    chain_config.dwUrlRetrievalTimeout = 0;
-    chain_config.MaximumCachedCertificates =0;
-    chain_config.CycleDetectionModulus = 0;
-
-    ::CertCreateCertificateChainEngine(
-        &chain_config,
-        &chain_engine);
-
-    if (chain_engine && ::CertGetCertificateChain(chain_engine, cert_context, nullptr, nullptr, &chain_para,
-          CERT_CHAIN_CACHE_END_CERT |
-          CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
-          nullptr, &chain_context))
+    if (cert_context != nullptr)
     {
-      CERT_CHAIN_POLICY_PARA policy_para;
-      CERT_CHAIN_POLICY_STATUS policy_status;
+      CERT_CHAIN_PARA chain_para;
+      // Retrieve the certificate chain of the certificate
+      // (a certificate without a valid root does not have a chain).
+      ::ZeroMemory(&chain_para, sizeof(chain_para));
+      chain_para.cbSize = sizeof(chain_para);
 
-      policy_para.cbSize = sizeof(policy_para);
-      policy_para.dwFlags = 0;
-      policy_para.pvExtraPolicyPara = nullptr;
+      CERT_CHAIN_ENGINE_CONFIG chain_config;
+      ::ZeroMemory(&chain_config, sizeof(chain_config));
+      chain_config.cbSize = sizeof(CERT_CHAIN_ENGINE_CONFIG);
+      chain_config.hRestrictedRoot = nullptr;
+      chain_config.hRestrictedTrust = nullptr;
+      chain_config.hRestrictedOther = nullptr;
+      chain_config.cAdditionalStore = 0;
+      chain_config.rghAdditionalStore = nullptr;
+      chain_config.dwFlags = CERT_CHAIN_CACHE_END_CERT;
+      chain_config.dwUrlRetrievalTimeout = 0;
+      chain_config.MaximumCachedCertificates =0;
+      chain_config.CycleDetectionModulus = 0;
 
-      policy_status.cbSize = sizeof(policy_status);
-
-      if (::CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_SSL,
-            chain_context, &policy_para,
-            &policy_status))
+      HCERTCHAINENGINE chain_engine;
+      if (::CertCreateCertificateChainEngine(&chain_config, &chain_engine))
       {
-        if (policy_status.dwError == S_OK)
+        const CERT_CHAIN_CONTEXT * chain_context = nullptr;
+        if (chain_engine && ::CertGetCertificateChain(chain_engine, cert_context, nullptr, nullptr, &chain_para,
+              CERT_CHAIN_CACHE_END_CERT |
+              CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
+              nullptr, &chain_context))
         {
-          // Windows thinks the certificate is valid.
-          *ok_p = true;
-        }
-      }
+          CERT_CHAIN_POLICY_PARA policy_para;
+          ::ZeroMemory(&policy_para, sizeof(policy_para));
+          CERT_CHAIN_POLICY_STATUS policy_status;
+          ::ZeroMemory(&policy_status, sizeof(policy_status));
 
-      ::CertFreeCertificateChain(chain_context);
+          policy_para.cbSize = sizeof(policy_para);
+          policy_para.dwFlags = 0;
+          policy_para.pvExtraPolicyPara = nullptr;
+
+          policy_status.cbSize = sizeof(policy_status);
+
+          if (::CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_SSL,
+                chain_context, &policy_para,
+                &policy_status))
+          {
+            if (policy_status.dwError == S_OK)
+            {
+              // Windows thinks the certificate is valid.
+              *ok_p = true;
+            }
+          }
+
+          ::CertFreeCertificateChain(chain_context);
+        }
+        ::CertFreeCertificateChainEngine(chain_engine);
+      }
+      ::CertFreeCertificateContext(cert_context);
     }
-    ::CertFreeCertificateContext(cert_context);
-    ::CertFreeCertificateChainEngine(chain_engine);
   }
+  ne_free(Certificate);
 
   return WEBDAV_NO_ERROR;
 }

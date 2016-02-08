@@ -1,5 +1,6 @@
-NetBox 2.1.45.424 06.02.2016
+NetBox 2.1.45.425 08.02.2016
 --------------------
+  * WebDAV: fix AV in Win2000, WinXPSP2
   * Plugin is functional under win2k
   * Fix VS2015 build
   * Bugfix: WebDAV: fix AV
