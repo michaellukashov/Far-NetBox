@@ -1136,7 +1136,7 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
 
 UnicodeString TConfiguration::GetRandomSeedFileName() const
 {
-  return StripPathQuotes(ExpandEnvironmentVariables(FRandomSeedFile)).Trim();
+  return StripPathQuotes(::ExpandEnvironmentVariables(FRandomSeedFile)).Trim();
 }
 
 void TConfiguration::SetExternalIpAddress(const UnicodeString & Value)

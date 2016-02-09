@@ -4545,7 +4545,7 @@ windows_validate_certificate(
       chain_config.rghAdditionalStore = nullptr;
       chain_config.dwFlags = CERT_CHAIN_CACHE_END_CERT;
       chain_config.dwUrlRetrievalTimeout = 0;
-      chain_config.MaximumCachedCertificates =0;
+      chain_config.MaximumCachedCertificates = 0;
       chain_config.CycleDetectionModulus = 0;
 
       HCERTCHAINENGINE chain_engine;
