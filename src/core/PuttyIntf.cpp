@@ -502,7 +502,7 @@ long reg_close_winscp_key(HKEY Key)
 TKeyType GetKeyType(const UnicodeString & AFileName)
 {
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
-  assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
+  assert(ktSSH2PublicOpenSSH == SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH);
   UTF8String UtfFileName = UTF8String(AFileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
   TKeyType Result = static_cast<TKeyType>(key_type(KeyFile));
