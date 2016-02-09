@@ -146,7 +146,7 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len)
     ChainConfig.rghAdditionalStore = nullptr;
     ChainConfig.dwFlags = CERT_CHAIN_CACHE_END_CERT;
     ChainConfig.dwUrlRetrievalTimeout = 0;
-    ChainConfig.MaximumCachedCertificates =0;
+    ChainConfig.MaximumCachedCertificates = 0;
     ChainConfig.CycleDetectionModulus = 0;
 
     HCERTCHAINENGINE ChainEngine;
