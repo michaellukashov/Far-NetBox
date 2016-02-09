@@ -3979,11 +3979,15 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
 
       case ktOpenSSHPEM:
       case ktOpenSSHNew:
+      case ktSSHCom:
+        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName.c_str(), L"ssh.com SSH-2");
+        break;
+
       case ktSSH1Public:
       case ktSSH2PublicRFC4716:
       case ktSSH2PublicOpenSSH:
-      case ktSSHCom:
-        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName.c_str(), L"ssh.com SSH-2");
+        // noop
+        // Do not even bother checking SSH protocol version
         break;
 
       case ktSSH1:
