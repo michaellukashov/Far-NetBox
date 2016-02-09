@@ -4158,7 +4158,7 @@ UnicodeString GetCodePageAsString(uintptr_t CodePage)
 
 UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData)
 {
-  UnicodeString Result = StripPathQuotes(ExpandEnvironmentVariables(LogFileName));
+  UnicodeString Result = StripPathQuotes(::ExpandEnvironmentVariables(LogFileName));
   TDateTime N = Now();
   for (intptr_t Index = 1; Index < Result.Length(); ++Index)
   {

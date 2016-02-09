@@ -77,10 +77,10 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
 {
   UnicodeString Program, Params, Dir;
   SplitCommand(PuttyPath, Program, Params, Dir);
-  Program = ExpandEnvironmentVariables(Program);
+  Program = ::ExpandEnvironmentVariables(Program);
   if (FindFile(Program))
   {
-    Params = ExpandEnvironmentVariables(Params);
+    Params = ::ExpandEnvironmentVariables(Params);
     UnicodeString Password = GetGUIConfiguration()->GetPuttyPassword() ? SessionData->GetPassword() : UnicodeString();
     UnicodeString Psw = Password;
     UnicodeString SessionName;
