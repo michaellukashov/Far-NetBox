@@ -627,10 +627,12 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       TitleId = MSG_TITLE_INFORMATION;
       break;
     case qtError:
-      TitleId = MSG_TITLE_ERROR; Flags |= FMSG_WARNING;
+      TitleId = MSG_TITLE_ERROR; 
+      Flags |= FMSG_WARNING;
       break;
     case qtWarning:
-      TitleId = MSG_TITLE_WARNING; Flags |= FMSG_WARNING;
+      TitleId = MSG_TITLE_WARNING;
+      Flags |= FMSG_WARNING;
       break;
     default:
       assert(false);
