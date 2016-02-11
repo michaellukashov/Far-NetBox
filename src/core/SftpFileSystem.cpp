@@ -522,13 +522,13 @@ public:
         }
       }
 
-      if (Properties->Valid.Contains(vpLastAccess))
+      if (Properties->Valid.Contains(vpLastAccess) && Properties->LastAccess)
       {
         Valid = static_cast<TValid>(Valid | valATime);
         ATime = Properties->LastAccess;
       }
 
-      if (Properties->Valid.Contains(vpModification))
+      if (Properties->Valid.Contains(vpModification) && Properties->Modification)
       {
         Valid = static_cast<TValid>(Valid | valMTime);
         MTime = Properties->Modification;
