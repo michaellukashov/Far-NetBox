@@ -214,7 +214,7 @@ static void DoVerifyKey(
 {
   if (!AFileName.Trim().IsEmpty())
   {
-    UnicodeString FileName = ExpandEnvironmentVariables(AFileName);
+    UnicodeString FileName = ::ExpandEnvironmentVariables(AFileName);
     TKeyType Type = GetKeyType(FileName);
     // reason _wfopen failed
     int Error = errno;
