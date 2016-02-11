@@ -3967,6 +3967,8 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
 {
   bool Result = true;
 
+  Result = ::VerifyKey(AFileName, TypeOnly);
+#if 0
   if (!::Trim(AFileName).IsEmpty())
   {
     TKeyType KeyType = GetKeyType(AFileName);
@@ -4019,7 +4021,7 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
                 qaIgnore | qaAbort) != qaAbort);
     }
   }
-
+#endif
   return Result;
 }
 

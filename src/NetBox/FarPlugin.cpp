@@ -3,6 +3,7 @@
 
 #include <Common.h>
 #include "FarPlugin.h"
+#include "WinSCPPlugin.h"
 #include "FarPluginStrings.h"
 #include "FarDialog.h"
 #include "TextsCore.h"
@@ -2930,6 +2931,12 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
 UnicodeString TGlobalFunctions::GetStrVersionNumber() const
 {
   return NETBOX_VERSION_NUMBER.c_str();
+}
+
+uintptr_t TGlobalFunctions::MoreMessageDialog(const UnicodeString & Message, TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams * Params)
+{
+  TWinSCPPlugin * WinSCPPlugin = NB_STATIC_DOWNCAST(TWinSCPPlugin, FarPlugin);
+  return WinSCPPlugin->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);
 }
 
 NB_IMPLEMENT_CLASS(TCustomFarFileSystem, NB_GET_CLASS_INFO(TObject), nullptr)

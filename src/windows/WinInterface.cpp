@@ -1300,8 +1300,9 @@ uintptr_t MoreMessageDialog(const UnicodeString & Message,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
     const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
-  ThrowNotImplemented(3305);
-  uintptr_t Result = 0;
+  DebugUsedParam(HelpKeyword);
+//  ThrowNotImplemented(3305);
+  uintptr_t Result = GetGlobalFunctions()->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);
   return Result;
 }
 

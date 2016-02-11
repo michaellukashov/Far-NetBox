@@ -540,5 +540,8 @@ public:
   virtual UnicodeString GetMsg(intptr_t Id) const;
   virtual UnicodeString GetCurrDirectory() const;
   virtual UnicodeString GetStrVersionNumber() const;
+  virtual uintptr_t MoreMessageDialog(const UnicodeString & Message,
+    TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
+      const TMessageParams * Params);
 };
 
