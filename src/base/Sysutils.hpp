@@ -11,6 +11,36 @@
 #define SWAP(TYPE, FIRST, SECOND) \
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
 
+#if !defined(_MSC_VER)
+
+#define TODO(s)
+#define WARNING(s)
+#define PRAGMA_ERROR(s)
+
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
+
+#else
+
+#define STRING2(x) #x
+#define STRING(x) STRING2(x)
+#define FILE_LINE __FILE__ "(" STRING(__LINE__) "): "
+#ifdef HIDE_TODO
+#define TODO(s)
+#define WARNING(s)
+#else
+#define TODO(s) __pragma(message (FILE_LINE /*"warning: "*/ "TODO: " s))
+#define WARNING(s) __pragma(message (FILE_LINE /*"warning: "*/ "WARN: " s))
+#endif
+#define PRAGMA_ERROR(s) __pragma(message (FILE_LINE "error: " s))
+
+#endif
+
 #define PARENTDIRECTORY L".."
 #define THISDIRECTORY L"."
 #define ROOTDIRECTORY L"/"
