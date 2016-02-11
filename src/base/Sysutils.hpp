@@ -2,6 +2,11 @@
 
 #include <Classes.hpp>
 
+//#define EXCEPTION throw ExtException(nullptr, L"")
+#define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
+#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
+#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
+
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
 

@@ -2,11 +2,6 @@
 
 #include <Exceptions.h>
 
-//#define EXCEPTION throw ExtException(nullptr, L"")
-#define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
-#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
-#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
-
 // Order of the values also define order of the buttons/answers on the prompts
 // MessageDlg relies on these to be <= 0x0000FFFF
 const uint32_t qaYes      = 0x00000001;
