@@ -420,7 +420,7 @@ void TFTPFileSystem::Open()
     FWelcomeMessage.Clear();
     FFileSystemInfoValid = false;
 
-    // TODO: the same for account? it ever used?
+    TODO("the same for account? it ever used?");
 
     // ask for username if it was not specified in advance, even on retry,
     // but keep previous one as default,
@@ -799,7 +799,7 @@ UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool 
 
 UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
-  // TODO: improve (handle .. etc.)
+  TODO("improve (handle .. etc.)");
   if (core::UnixIsAbsolutePath(APath))
   {
     return APath;
@@ -1189,7 +1189,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
             (File != nullptr ? File->GetFullFileName().c_str() : L""));
         FTerminal->CommandError(&E, Error);
         // Abort loop.
-        // TODO: retries? resume?
+        TODO("retries? resume?");
         Index1 = FileList->GetCount();
       }
     }
@@ -3292,7 +3292,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       FLAGSET(Reply, TFileZillaIntf::REPLY_ERROR) ||
       FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
 
-    // TODO: REPLY_CRITICALERROR ignored
+    TODO("REPLY_CRITICALERROR ignored");
 
     // REPLY_NOTCONNECTED happens if connection is closed between moment
     // when FZAPI interface method dispatches the command to FZAPI thread

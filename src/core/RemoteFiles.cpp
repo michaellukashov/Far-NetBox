@@ -1057,7 +1057,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     };
 
     // Rights string may contain special permission attributes (S,t, ...)
-    // (TODO: maybe no longer necessary, once we can handle the special permissions)
+    TODO("maybe no longer necessary, once we can handle the special permissions");
     GetRights()->SetAllowUndef(True);
     // On some system there is no space between permissions and node blocks count columns
     // so we get only first 9 characters and trim all following spaces (if any)
@@ -2688,7 +2688,7 @@ bool TRemoteProperties::operator !=(const TRemoteProperties & rhp) const
 
 TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
 {
-  // TODO: Modification and LastAccess
+  TODO("Modification and LastAccess");
   TRemoteProperties CommonProperties;
   for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
   {
@@ -2735,7 +2735,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
 TRemoteProperties TRemoteProperties::ChangedProperties(
   const TRemoteProperties & OriginalProperties, TRemoteProperties & NewProperties)
 {
-  // TODO: Modification and LastAccess
+  TODO("Modification and LastAccess");
   if (!NewProperties.Recursive)
   {
     if (NewProperties.Rights == OriginalProperties.Rights &&

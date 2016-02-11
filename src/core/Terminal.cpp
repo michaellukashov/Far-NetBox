@@ -869,7 +869,7 @@ UnicodeString TTerminal::ExpandFileName(const UnicodeString & APath,
   UnicodeString Result = core::UnixExcludeTrailingBackslash(APath);
   if (!core::UnixIsAbsolutePath(Result) && !BasePath.IsEmpty())
   {
-    // TODO: Handle more complicated cases like "../../xxx"
+    TODO("Handle more complicated cases like '../../xxx'");
     if (Result == PARENTDIRECTORY)
     {
       Result = core::UnixExcludeTrailingBackslash(core::UnixExtractFilePath(
@@ -3386,7 +3386,7 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
 
 bool TTerminal::DeleteFiles(TStrings * AFilesToDelete, intptr_t Params)
 {
-  // TODO: avoid resolving symlinks while reading subdirectories.
+  TODO("avoid resolving symlinks while reading subdirectories.");
   // Resolving does not work anyway for relative symlinks in subdirectories
   // (at least for SFTP).
   return ProcessFiles(AFilesToDelete, foDelete, MAKE_CALLBACK(TTerminal::RemoteDeleteFile, this), &Params);
@@ -4561,7 +4561,7 @@ void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
     Params.FileList->Add(AFileName);
     if (Params.FileTimes != nullptr)
     {
-      // TODO: Add TSearchRec::TimeStamp
+      TODO("Add TSearchRec::TimeStamp");
       // Params.FileTimes->push_back(const_cast<TSearchRec &>(Rec).TimeStamp);
     }
   }

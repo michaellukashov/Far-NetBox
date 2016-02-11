@@ -737,7 +737,7 @@ bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2)
 
 bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2)
 {
-  // TODO: ExpandUNCFileName
+  TODO("ExpandUNCFileName");
   return AnsiSameText(::IncludeTrailingBackslash(APath1), ::IncludeTrailingBackslash(APath2));
 }
 

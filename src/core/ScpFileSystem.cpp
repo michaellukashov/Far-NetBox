@@ -107,7 +107,7 @@ const char FullTimeOption[] = "--full-time";
 
 #define F false
 #define T true
-// TODO: remove "mf" and "cd", it is implemented in TTerminal already
+TODO("remove 'mf' and 'cd, it is implemented in TTerminal already");
 const TCommandType DefaultCommandSet[ShellCommandCount] =
 {
 //                       min max mf cd ia  command

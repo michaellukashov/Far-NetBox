@@ -2530,7 +2530,7 @@ TObjectList * TFarPanelInfo::GetItems()
       FItems->Clear();
     for (intptr_t Index = 0; Index < FPanelInfo->ItemsNumber; ++Index)
     {
-      // TODO: move to common function
+      TODO("move to common function");
       intptr_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, 0);
       PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_calloc(1, size));
       FOwner->FarControl(FCTL_GETPANELITEM, Index, reinterpret_cast<intptr_t>(ppi));

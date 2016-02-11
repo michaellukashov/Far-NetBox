@@ -2846,7 +2846,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath,
 
 UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & APath) const
 {
-  // TODO: improve (handle .. etc.)
+  TODO("improve (handle .. etc.)");
   if (core::UnixIsAbsolutePath(APath) ||
       (!FCurrentDirectory.IsEmpty() && core::UnixSamePath(FCurrentDirectory, APath)))
   {
@@ -4110,7 +4110,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
               FMTLOAD(CHECKSUM_ERROR,
                 (File != nullptr ? File->GetFullFileName().c_str() : L""));
             FTerminal->CommandError(&E, Error);
-            // TODO: retries? resume?
+            TODO("retries? resume?");
             Next = false;
           }
 
@@ -5490,7 +5490,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       }
       catch (...)
       {
-        // TODO: remove the block?
+        TODO("remove the block?");
         throw;
       }
     }
