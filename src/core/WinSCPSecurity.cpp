@@ -132,12 +132,12 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len)
     CERT_CHAIN_PARA ChainPara;
     // Retrieve the certificate chain of the certificate
     // (a certificate without a valid root does not have a chain).
-    ::ZeroMemory(&ChainPara, sizeof(ChainPara));
+    ClearStruct(ChainPara);
     ChainPara.cbSize = sizeof(ChainPara);
 
     CERT_CHAIN_ENGINE_CONFIG ChainConfig;
 
-    ::ZeroMemory(&ChainConfig, sizeof(ChainConfig));
+    ClearStruct(ChainConfig);
     ChainConfig.cbSize = sizeof(CERT_CHAIN_ENGINE_CONFIG);
     ChainConfig.hRestrictedRoot = nullptr;
     ChainConfig.hRestrictedTrust = nullptr;
