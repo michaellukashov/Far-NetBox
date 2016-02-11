@@ -2018,7 +2018,6 @@ TFarPanelInfo ** TCustomFarFileSystem::GetPanelInfo(int Another)
       !bAnother ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
     if (!Res)
     {
-      ::ZeroMemory(Info, sizeof(PanelInfo));
       assert(false);
     }
     FPanelInfo[bAnother] = new TFarPanelInfo(Info, !bAnother ? this : nullptr);
