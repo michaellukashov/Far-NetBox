@@ -408,11 +408,11 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 
   MenuItems->SetDisabled(MLog, !FSVisible || (FileSystem && !FileSystem->IsLogging()));
   MenuItems->SetDisabled(MClearCaches, !FSVisible || (FileSystem && FileSystem->AreCachesEmpty()));
-  MenuItems->SetDisabled(MPutty, !FSVisible || !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPuttyPath()))));
+  MenuItems->SetDisabled(MPutty, !FSVisible || !FileExistsEx(::ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPuttyPath()))));
   MenuItems->SetDisabled(MEditHistory, !FSConnected || (FileSystem && FileSystem->IsEditHistoryEmpty()));
   MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && (FileSystem && FileSystem->IsSynchronizedBrowsing()));
-  MenuItems->SetDisabled(MPageant, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPageantPath()))));
-  MenuItems->SetDisabled(MPuttygen, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPuttygenPath()))));
+  MenuItems->SetDisabled(MPageant, !FileExistsEx(::ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPageantPath()))));
+  MenuItems->SetDisabled(MPuttygen, !FileExistsEx(::ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPuttygenPath()))));
 
   intptr_t Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems.get());
 
@@ -501,7 +501,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       UnicodeString Path = (Result == MPageant) ?
         GetFarConfiguration()->GetPageantPath() : GetFarConfiguration()->GetPuttygenPath();
       UnicodeString Program, Params, Dir;
-      SplitCommand(ExpandEnvironmentVariables(Path), Program, Params, Dir);
+      SplitCommand(::ExpandEnvironmentVariables(Path), Program, Params, Dir);
       ExecuteShell(Program, Params);
     }
     else if ((Result == MClearCaches) && FileSystem)
@@ -619,10 +619,12 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       TitleId = MSG_TITLE_INFORMATION;
       break;
     case qtError:
-      TitleId = MSG_TITLE_ERROR; Flags |= FMSG_WARNING;
+      TitleId = MSG_TITLE_ERROR; 
+      Flags |= FMSG_WARNING;
       break;
     case qtWarning:
-      TitleId = MSG_TITLE_WARNING; Flags |= FMSG_WARNING;
+      TitleId = MSG_TITLE_WARNING;
+      Flags |= FMSG_WARNING;
       break;
     default:
       DebugAssert(false);

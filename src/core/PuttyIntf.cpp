@@ -543,9 +543,8 @@ long reg_close_winscp_key(HKEY Key)
 TKeyType GetKeyType(const UnicodeString & AFileName)
 {
   DebugAssert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
-  DebugAssert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
-  DebugAssert(ktSSH2PublicOpenSSH == SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH);
-  UTF8String UtfFileName = UTF8String(AFileName);
+  assert(ktSSH2PublicOpenSSH == SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH);
+  UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(AFileName));
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
   TKeyType Result = static_cast<TKeyType>(key_type(KeyFile));
   filename_free(KeyFile);

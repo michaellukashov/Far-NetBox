@@ -746,8 +746,8 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   // it should be called only for custom users path, let's expect that the user
   // can take care of it.
   if ((FPuttyPath.SubString(1, 1) != L"\"") &&
-      (CompareFileName(ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
-       ::FileExists(ExpandEnvironmentVariables(FPuttyPath))))
+      (CompareFileName(::ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
+       ::FileExists(::ExpandEnvironmentVariables(FPuttyPath))))
   {
     FPuttyPath = FormatCommand(FPuttyPath, L"");
   }
