@@ -2096,8 +2096,7 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
 {
   DebugAssert((ADialogItem == nullptr) ||
     (ADialogItem->GetType() == DI_COMBOBOX) || (ADialogItem->GetType() == DI_LISTBOX));
-  FListItems = static_cast<FarList *>(nb_malloc(sizeof(FarList)));
-  ::ZeroMemory(FListItems, sizeof(FarList));
+  FListItems = static_cast<FarList *>(nb_calloc(1, sizeof(FarList)));
 }
 
 TFarList::~TFarList()

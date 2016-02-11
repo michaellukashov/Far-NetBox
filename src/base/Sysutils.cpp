@@ -109,7 +109,7 @@ Exception::Exception(const UnicodeString & Msg, int AHelpContext) :
   std::runtime_error(""),
   Message(Msg)
 {
-  // TODO: FHelpContext = AHelpContext
+  TODO("FHelpContext = AHelpContext");
   (void)AHelpContext;
 }
 

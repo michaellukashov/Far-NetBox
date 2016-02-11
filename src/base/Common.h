@@ -3,14 +3,6 @@
 #include <Global.h>
 #include <Exceptions.h>
 
-//#define EXCEPTION throw ExtException(nullptr, L"")
-#define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
-#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
-#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
-#define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
-#define SWAP(TYPE, FIRST, SECOND) \
-  { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
-
 extern const wchar_t EngShortMonthNames[12][4];
 #define CONST_BOM "\xEF\xBB\xBF"
 extern const wchar_t TokenPrefix;
