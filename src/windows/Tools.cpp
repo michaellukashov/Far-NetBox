@@ -192,7 +192,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
     {
       FreeKey(PrivateKey);
     };
-    FileName = ChangeFileExt(FileName, ".ppk");
+    FileName = ChangeFileExt(FileName, ".ppk", L'\\');
 
     if (!SaveDialog(LoadStr(CONVERTKEY_SAVE_TITLE), LoadStr(CONVERTKEY_SAVE_FILTER), L"ppk", FileName))
     {
@@ -309,9 +309,9 @@ static bool DoVerifyKey(
   return Result;
 }
 
-void VerifyAndConvertKey(UnicodeString & AFileName)
+bool VerifyAndConvertKey(const UnicodeString & AFileName, bool TypeOnly)
 {
-  DoVerifyKey(AFileName, true, TSshProt(0), true);
+  return DoVerifyKey(AFileName, TypeOnly, TSshProt(0), true);
 }
 
 bool VerifyKey(const UnicodeString & AFileName, bool TypeOnly)

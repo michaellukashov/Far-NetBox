@@ -3967,7 +3967,8 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
 {
   bool Result = true;
 
-  Result = ::VerifyKey(AFileName, TypeOnly);
+//  Result = ::VerifyKey(AFileName, TypeOnly);
+  Result = ::VerifyAndConvertKey(AFileName, TypeOnly);
 #if 0
   if (!::Trim(AFileName).IsEmpty())
   {
