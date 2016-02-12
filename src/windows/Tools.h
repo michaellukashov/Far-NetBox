@@ -11,6 +11,6 @@ void CopyToClipboard(const UnicodeString & AText);
 void CopyToClipboard(TStrings * Strings);
 
 void VerifyAndConvertKey(UnicodeString & AFileName);
-void VerifyKey(const UnicodeString & AFileName);
+bool VerifyKey(const UnicodeString & AFileName, bool TypeOnly);
 void VerifyKeyIncludingVersion(const UnicodeString & AFileName, TSshProt SshProt);
 void VerifyCertificate(const UnicodeString & AFileName);

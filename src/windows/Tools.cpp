@@ -209,9 +209,10 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   };
 }
 
-static void DoVerifyKey(
+static bool DoVerifyKey(
   const UnicodeString & AFileName, bool TypeOnly, TSshProt SshProt, bool Convert)
 {
+  bool Result = true;
   if (!AFileName.Trim().IsEmpty())
   {
     UnicodeString FileName = ::ExpandEnvironmentVariables(AFileName);
@@ -240,6 +241,7 @@ static void DoVerifyKey(
             {
               ConvertKey(FileName, Type);
               // Configuration->Usage->Inc(L"PrivateKeyConverted");
+              Result = true;
             }
             else
             {
@@ -265,7 +267,7 @@ static void DoVerifyKey(
             Message =
               MainInstructions(
                 FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
-                  (AFileName, (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"))));
+                  AFileName.c_str(), (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2")));
           }
         }
         break;
@@ -275,6 +277,7 @@ static void DoVerifyKey(
       case ktSSH2PublicOpenSSH:
         // noop
         // Do not even bother checking SSH protocol version
+        Result = true;
         break;
 
       case ktUnopenable:
@@ -300,8 +303,10 @@ static void DoVerifyKey(
       {
         Abort();
       }
+      Result = true;
     }
   }
+  return Result;
 }
 
 void VerifyAndConvertKey(UnicodeString & AFileName)
@@ -309,9 +314,9 @@ void VerifyAndConvertKey(UnicodeString & AFileName)
   DoVerifyKey(AFileName, true, TSshProt(0), true);
 }
 
-void VerifyKey(const UnicodeString & AFileName)
+bool VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
 {
-  DoVerifyKey(AFileName, true, TSshProt(0), false);
+  return DoVerifyKey(AFileName, TypeOnly, TSshProt(0), false);
 }
 
 void VerifyKeyIncludingVersion(const UnicodeString & AFileName, TSshProt SshProt)

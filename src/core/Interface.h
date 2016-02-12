@@ -51,14 +51,6 @@ struct TQueryButtonAlias : public TObject
 DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
   intptr_t & /*Result*/);
 
-enum TQueryType
-{
-  qtConfirmation,
-  qtWarning,
-  qtError,
-  qtInformation,
-};
-
 struct TQueryParams : public TObject
 {
   explicit TQueryParams(uintptr_t AParams = 0, const UnicodeString & AHelpKeyword = HELP_NONE);

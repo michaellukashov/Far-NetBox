@@ -46,6 +46,15 @@ void Abort();
 void Error(intptr_t Id, intptr_t ErrorId);
 void ThrowNotImplemented(intptr_t ErrorId);
 
+enum TQueryType
+{
+  qtConfirmation,
+  qtWarning,
+  qtError,
+  qtInformation,
+};
+struct TMessageParams;
+
 class TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -677,6 +686,9 @@ public:
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;
   virtual UnicodeString GetCurrDirectory() const = 0;
   virtual UnicodeString GetStrVersionNumber() const = 0;
+  virtual uintptr_t MoreMessageDialog(const UnicodeString & Message,
+    TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
+      const TMessageParams * Params) = 0;
 };
 
 TGlobalFunctionsIntf * GetGlobalFunctions();
