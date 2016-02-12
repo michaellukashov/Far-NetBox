@@ -304,7 +304,8 @@ UnicodeString ExpandEnvVars(const UnicodeString & Str);
 
 UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len);
 
-UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt);
+UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt,
+  wchar_t Delimiter = L'/');
 UnicodeString ExtractFileExt(const UnicodeString & AFileName);
 UnicodeString ExpandUNCFileName(const UnicodeString & AFileName);
 
