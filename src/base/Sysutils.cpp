@@ -551,14 +551,14 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
 void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
 {
   WIN32_FIND_DATA FindData;
-  HANDLE Handle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
-  if (Handle != INVALID_HANDLE_VALUE)
+  HANDLE LocalFileHandle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
+  if (LocalFileHandle != INVALID_HANDLE_VALUE)
   {
     ATimestamp =
       UnixToDateTime(
         ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
         dstmUnix);
-    ::FindClose(Handle);
+    ::FindClose(LocalFileHandle);
   }
 }
 

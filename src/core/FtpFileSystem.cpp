@@ -1927,14 +1927,14 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
     TDateTime Modification;
     // Inspired by ::FileAge
     WIN32_FIND_DATA FindData;
-    HANDLE Handle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
-    if (Handle != INVALID_HANDLE_VALUE)
+    HANDLE LocalFileHandle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
+    if (LocalFileHandle != INVALID_HANDLE_VALUE)
     {
       Modification =
         ::UnixToDateTime(
           ::ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
           dstmUnix);
-      ::FindClose(Handle);
+      ::FindClose(LocalFileHandle);
     }
 
     // Will we use ASCII of BINARY file transfer?
@@ -4648,16 +4648,16 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
   try
   {
     // error-handling-free and DST-mode-unaware copy of TTerminal::OpenLocalFile
-    HANDLE Handle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ,
+    HANDLE LocalFileHandle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ,
       FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, 0);
-    if (Handle == INVALID_HANDLE_VALUE)
+    if (LocalFileHandle == INVALID_HANDLE_VALUE)
     {
       Result = false;
     }
     else
     {
       FILETIME MTime;
-      if (!GetFileTime(Handle, nullptr, nullptr, &MTime))
+      if (!GetFileTime(LocalFileHandle, nullptr, nullptr, &MTime))
       {
         Result = false;
       }
@@ -4685,7 +4685,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
         Result = true;
       }
 
-      ::CloseHandle(Handle);
+      ::CloseHandle(LocalFileHandle);
     }
   }
   catch (...)

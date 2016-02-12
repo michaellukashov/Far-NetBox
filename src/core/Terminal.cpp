@@ -4508,17 +4508,17 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
   if (GetLog()->GetLogging() || !CopyParam->AllowAnyTransfer())
   {
     WIN32_FIND_DATA FindData = {};
-    HANDLE Handle = INVALID_HANDLE_VALUE;
+    HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
     FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()), "",
     [&]()
     {
-      Handle = ::FindFirstFile(ApiPath(::ExcludeTrailingBackslash(AFileName)).c_str(), &FindData);
-      if (Handle == INVALID_HANDLE_VALUE)
+      LocalFileHandle = ::FindFirstFile(ApiPath(::ExcludeTrailingBackslash(AFileName)).c_str(), &FindData);
+      if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
         ::RaiseLastOSError();
       }
     });
-    ::FindClose(Handle);
+    ::FindClose(LocalFileHandle);
     bool Directory = FLAGSET(FindData.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
     TFileMasks::TParams Params;
     // SearchRec.Size in C++B2010 is int64_t,
