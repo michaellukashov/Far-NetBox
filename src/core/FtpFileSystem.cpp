@@ -57,7 +57,7 @@ protected:
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
   virtual bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
 
-  virtual void PreserveDownloadFileTime(HANDLE Handle, void * UserData);
+  virtual void PreserveDownloadFileTime(HANDLE AHandle, void * UserData);
   virtual bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
   virtual wchar_t * LastSysErrorMessage() const;
 
@@ -145,9 +145,9 @@ bool TFileZillaImpl::CheckError(intptr_t ReturnCode, const wchar_t * Context)
   return FFileSystem->CheckError(ReturnCode, Context);
 }
 
-void TFileZillaImpl::PreserveDownloadFileTime(HANDLE Handle, void * UserData)
+void TFileZillaImpl::PreserveDownloadFileTime(HANDLE AHandle, void * UserData)
 {
-  return FFileSystem->PreserveDownloadFileTime(Handle, UserData);
+  return FFileSystem->PreserveDownloadFileTime(AHandle, UserData);
 }
 
 wchar_t * TFileZillaImpl::LastSysErrorMessage() const
@@ -4635,11 +4635,11 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
   return (State == STATE_DONE);
 }
 
-void TFTPFileSystem::PreserveDownloadFileTime(HANDLE Handle, void * UserData)
+void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData)
 {
   TFileTransferData * Data = NB_STATIC_DOWNCAST(TFileTransferData, UserData);
   FILETIME WrTime = ::DateTimeToFileTime(Data->Modification, dstmUnix);
-  SetFileTime(Handle, nullptr, nullptr, &WrTime);
+  SetFileTime(AHandle, nullptr, nullptr, &WrTime);
 }
 
 bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time)
