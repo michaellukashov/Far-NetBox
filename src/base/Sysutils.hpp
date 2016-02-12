@@ -260,9 +260,9 @@ bool IsZero(double Value);
 
 TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime);
 
-int64_t FileRead(HANDLE Handle, void * Buffer, int64_t Count);
-int64_t FileWrite(HANDLE Handle, const void * Buffer, int64_t Count);
-int64_t FileSeek(HANDLE Handle, int64_t Offset, DWORD Origin);
+int64_t FileRead(HANDLE AHandle, void * Buffer, int64_t Count);
+int64_t FileWrite(HANDLE AHandle, const void * Buffer, int64_t Count);
+int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin);
 
 bool FileExists(const UnicodeString & AFileName);
 bool RenameFile(const UnicodeString & From, const UnicodeString & To);
