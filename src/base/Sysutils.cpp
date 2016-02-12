@@ -948,15 +948,16 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
   return Result;
 }
 
-UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt)
+UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt,
+  wchar_t Delimiter)
 {
-  UnicodeString Result = ::ChangeFileExtension(AFileName, AExt);
+  UnicodeString Result = ::ChangeFileExtension(AFileName, AExt, Delimiter);
   return Result;
 }
 
 UnicodeString ExtractFileExt(const UnicodeString & AFileName)
 {
-  UnicodeString Result = ExtractFileExtension(AFileName, L'.');
+  UnicodeString Result = ::ExtractFileExtension(AFileName, L'.');
   return Result;
 }
 
@@ -1123,7 +1124,8 @@ UnicodeString ExtractShortPathName(const UnicodeString & APath)
 // "/foo/bar/baz.txt" --> "/foo/bar/"
 UnicodeString ExtractDirectory(const UnicodeString & APath, wchar_t Delimiter)
 {
-  return APath.SubString(1, APath.RPos(Delimiter) + 1);
+  UnicodeString Result = APath.SubString(1, APath.RPos(Delimiter));
+  return Result;
 }
 
 //
@@ -1163,9 +1165,18 @@ UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimite
 UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeString & Ext, wchar_t Delimiter)
 {
   UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
-  return ExtractDirectory(APath, Delimiter) +
-         FileName.SubString(1, FileName.RPos(L'.')) +
-         Ext;
+  if (FileName.RPos(L'.') > 1)
+  {
+    return ExtractDirectory(APath, Delimiter) +
+           FileName.SubString(1, FileName.RPos(L'.')) +
+           Ext;
+  }
+  else
+  {
+    return ExtractDirectory(APath, Delimiter) +
+           FileName +
+           Ext;
+  }
 }
 
 UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str)
