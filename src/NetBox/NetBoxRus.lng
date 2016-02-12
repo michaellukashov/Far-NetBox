@@ -1088,7 +1088,7 @@
 "Issuer:\n%s\nSubject:\n%s\nValid: %s - %s\n\nFingerprint (SHA1): %s\n\nSummary: %s"
 "&Passphrase for client certificate:"
 "Client certificate passphrase"
-"**Do you want to load this %s private key to PuTTYgen to convert it to PuTTY format?**\n\nPrivate key file '%s' contains key in %s format. WinSCP supports only PuTTY format.\n \nYou can use PuTTYgen tool to convert your private key file."
+"**Do you want to convert this %s private key to PuTTY format?**\n\n%s"
 "**Are you sure you want to transfer multiple files to a single file '%s' in a directory '%s'?**\n\nThe files will overwrite one another.\n\nIf you actually want to transfer all files to a directory '%s', keeping their name, make sure you terminate the path with a slash."
 
 "CORE_INFORMATION"
