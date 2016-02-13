@@ -75,58 +75,6 @@ void FileOperationLoopCustom(TTerminal * Terminal,
   while (DoRepeat);
 }
 
-void TTerminal::CommandErrorAri(
-  Exception & E,
-  const UnicodeString & Message,
-  const std::function<void()> & Repeat)
-{
-  uintptr_t Result = CommandError(&E, Message, qaRetry | qaSkip | qaAbort);
-  switch (Result)
-  {
-    case qaRetry:
-      Repeat();
-      break;
-    case qaAbort:
-      Abort();
-      break;
-  }
-}
-
-// Note that the action may already be canceled when RollbackAction is called
-void TTerminal::CommandErrorAriAction(
-  Exception & E,
-  const UnicodeString & Message,
-  const std::function<void()> & Repeat,
-  TSessionAction & Action)
-{
-  uintptr_t Result;
-  try
-  {
-    Result = CommandError(&E, Message, qaRetry | qaSkip | qaAbort);
-  }
-  catch (Exception & E2)
-  {
-    RollbackAction(Action, nullptr, &E2);
-    throw;
-  }
-  switch (Result)
-  {
-    case qaRetry:
-      Action.Cancel();
-      Repeat();
-      break;
-    case qaAbort:
-      RollbackAction(Action, nullptr, &E);
-      Abort();
-      break;
-    case qaSkip:
-      Action.Cancel();
-      break;
-    default:
-      DebugFail();
-  }
-}
-
 class TLoopDetector : public TObject
 {
 public:
@@ -3146,14 +3094,6 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Director
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAriAction(E, L"",
-      [&]()
-      {
-        FileList = ReadDirectoryListing(Directory, Mask);
-      },
-      Action);
-#endif
       RetryLoop.Error(E, Action);
     }
   }
@@ -3178,14 +3118,6 @@ TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAriAction(E, L"",
-      [&]()
-      {
-        File = ReadFileListing(APath);
-      },
-      Action);
-#endif
       RetryLoop.Error(E, Action);
     }
   }
@@ -3205,13 +3137,6 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Di
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAri(E, L"",
-      [&]()
-      {
-        FileList = CustomReadDirectoryListing(Directory, UseCache);
-      });
-#endif
       RetryLoop.Error(E);
     }
   }
@@ -3709,14 +3634,6 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAriAction(E, FMTLOAD(DELETE_FILE_ERROR, AFileName.c_str()),
-      [&]()
-      {
-        DoDeleteFile(AFileName, AFile, Params);
-      },
-      Action);
-#endif
       RetryLoop.Error(E, Action, FMTLOAD(DELETE_FILE_ERROR, AFileName.c_str()));
     }
   }
@@ -3810,13 +3727,6 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAri(E, FMTLOAD(CUSTOM_COMMAND_ERROR, Command.c_str(), AFileName.c_str()),
-      [&]()
-      {
-        DoCustomCommandOnFile(AFileName, AFile, Command, Params, OutputEvent);
-      });
-#endif
       RetryLoop.Error(E, FMTLOAD(CUSTOM_COMMAND_ERROR, Command.c_str(), AFileName.c_str()));
     }
   }
@@ -3932,14 +3842,6 @@ void TTerminal::DoChangeFileProperties(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAriAction(E, FMTLOAD(CHANGE_PROPERTIES_ERROR, AFileName.c_str()),
-      [&]()
-      {
-        DoChangeFileProperties(AFileName, AFile, Properties);
-      },
-      Action);
-#endif
       RetryLoop.Error(E, Action, FMTLOAD(CHANGE_PROPERTIES_ERROR, AFileName.c_str()));
     }
   }
@@ -4053,13 +3955,6 @@ void TTerminal::DoCalculateDirectorySize(const UnicodeString & AFileName,
     {
       if (!GetActive() || ((Params->Params & csIgnoreErrors) == 0))
       {
-#if 0
-        CommandErrorAri(E, FMTLOAD(CALCULATE_SIZE_ERROR, AFileName.c_str()),
-        [&]()
-        {
-          DoCalculateDirectorySize(AFileName, AFile, Params);
-        });
-#endif
         RetryLoop.Error(E, FMTLOAD(CALCULATE_SIZE_ERROR, AFileName.c_str()));
       }
     }
@@ -4164,15 +4059,6 @@ void TTerminal::DoRenameFile(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAriAction(E,
-      FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName.c_str(), ANewName.c_str()),
-      [&]()
-      {
-        DoRenameFile(AFileName, ANewName, Move);
-      },
-      Action);
-#endif
       UnicodeString Message = FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName.c_str(), ANewName.c_str());
       RetryLoop.Error(E, Action, Message);
     }
@@ -4318,13 +4204,6 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAri(E, FMTLOAD(COPY_FILE_ERROR, AFileName.c_str(), ANewName.c_str()),
-      [&]()
-      {
-        DoCopyFile(AFileName, ANewName);
-      });
-#endif
       RetryLoop.Error(E, FMTLOAD(COPY_FILE_ERROR, AFileName.c_str(), ANewName.c_str()));
     }
   }
@@ -4385,15 +4264,6 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName)
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAriAction(E,
-      FMTLOAD(CREATE_DIR_ERROR, ADirName.c_str()),
-      [&]()
-      {
-        DoCreateDirectory(ADirName);
-      },
-      Action);
-#endif
       RetryLoop.Error(E, Action, FMTLOAD(CREATE_DIR_ERROR, ADirName.c_str()));
     }
   }
@@ -4429,13 +4299,6 @@ void TTerminal::DoCreateLink(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAri(E, FMTLOAD(CREATE_LINK_ERROR, AFileName.c_str()),
-      [&]()
-      {
-        DoCreateLink(AFileName, PointTo, Symbolic);
-      });
-#endif
       RetryLoop.Error(E, FMTLOAD(CREATE_LINK_ERROR, AFileName.c_str()));
     }
   }
@@ -4924,8 +4787,6 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
   if (GetLog()->GetLogging() || !CopyParam->AllowAnyTransfer())
   {
     WIN32_FIND_DATA FindData = {};
-    HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-    // FILE_OPERATION_LOOP_BEGIN
     FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()), "",
     [&]()
     {
@@ -4935,7 +4796,6 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
         ::RaiseLastOSError();
       }
     });
-    ::FindClose(LocalFileHandle);
     bool Directory = FLAGSET(FindData.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
     TFileMasks::TParams Params;
     // SearchRec.Size in C++B2010 is int64_t,
@@ -6458,11 +6318,11 @@ HANDLE TTerminal::CreateLocalFile(const UnicodeString & LocalFileName, DWORD Des
 {
   if (GetOnCreateLocalFile())
   {
-    return GetOnCreateLocalFile()(LocalFileName, DesiredAccess, ShareMode, CreationDisposition, FlagsAndAttributes);
+    return GetOnCreateLocalFile()(ApiPath(LocalFileName), DesiredAccess, ShareMode, CreationDisposition, FlagsAndAttributes);
   }
   else
   {
-    return ::CreateFile(LocalFileName.c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
+    return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
   }
 }
 
@@ -6470,7 +6330,7 @@ DWORD TTerminal::GetLocalFileAttributes(const UnicodeString & LocalFileName)
 {
   if (GetOnGetLocalFileAttributes())
   {
-    return GetOnGetLocalFileAttributes()(LocalFileName);
+    return GetOnGetLocalFileAttributes()(ApiPath(LocalFileName));
   }
   else
   {
@@ -6482,11 +6342,11 @@ BOOL TTerminal::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWOR
 {
   if (GetOnSetLocalFileAttributes())
   {
-    return GetOnSetLocalFileAttributes()(LocalFileName, FileAttributes);
+    return GetOnSetLocalFileAttributes()(ApiPath(LocalFileName), FileAttributes);
   }
   else
   {
-    return ::SetFileAttributes(LocalFileName.c_str(), FileAttributes);
+    return ::FileSetAttr(LocalFileName, FileAttributes) != 0;
   }
 }
 
@@ -6498,7 +6358,7 @@ BOOL TTerminal::MoveLocalFile(const UnicodeString & LocalFileName, const Unicode
   }
   else
   {
-    return ::MoveFileEx(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags) != 0;
+    return ::MoveFileEx(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), Flags) != 0;
   }
 }
 
@@ -6510,7 +6370,7 @@ BOOL TTerminal::RemoveLocalDirectory(const UnicodeString & LocalDirName)
   }
   else
   {
-    return ::RemoveDirectory(LocalDirName.c_str()) != 0;
+    return ::RemoveDir(LocalDirName);
   }
 }
 
@@ -6522,7 +6382,7 @@ BOOL TTerminal::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECUR
   }
   else
   {
-    return ::CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != 0;
+    return ::CreateDir(LocalDirName, SecurityAttributes);
   }
 }
 

@@ -129,9 +129,9 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
 
 bool TXmlStorage::DoKeyExists(const UnicodeString & SubKey, bool /*ForceAnsi*/)
 {
-  ThrowNotImplemented(3024);
   UnicodeString K = PuttyMungeStr(SubKey);
-  bool Result = false; // FRegistry->KeyExists(K);
+  const tinyxml2::XMLElement * Element = FindChildElement(ToStdString(K));
+  bool Result = Element != nullptr;
   return Result;
 }
 

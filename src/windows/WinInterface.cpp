@@ -1,6 +1,4 @@
 #include <Interface.h>
-#include <FarTexts.h>
-#include <FarDialog.h>
 #include <WinInterface.h>
 
 static bool IsPositiveAnswer(uintptr_t Answer)
@@ -57,6 +55,7 @@ inline void TMessageParams::Reset()
   CustomCaption = L"";
 }
 
+#if 0
 static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
 {
   TFarCheckBox * CheckBox = NB_STATIC_DOWNCAST(TFarCheckBox, Sender);
@@ -114,13 +113,14 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
     }
   }
 }
+#endif
 
+#if 0
 static TFarCheckBox * FindNeverAskAgainCheck(TFarDialog * Dialog)
 {
   return nullptr; // DebugNotNull(NB_STATIC_DOWNCAST(TFarCheckBox, Dialog->FindComponent(L"NeverAskAgainCheck")));
 }
 
-#if 0
 TFarDialog * CreateMessageDialogEx(const UnicodeString & Msg,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const UnicodeString & HelpKeyword,
   const TMessageParams * Params, TFarButton *& TimeoutButton)
@@ -534,6 +534,8 @@ static TStrings * StackInfoListToStrings(
 }
 #endif
 
+#if 0
+//moved to FarInterface.cpp
 static TCriticalSection StackTraceCriticalSection;
 typedef rde::map<DWORD, TStrings *> TStackTraceMap;
 static TStackTraceMap StackTraceMap;
@@ -569,6 +571,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
   }
   return Result;
 }
+#endif
 
 uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
   const UnicodeString & MessageFormat, uintptr_t Answers, const UnicodeString & HelpKeyword,
@@ -1268,40 +1271,40 @@ bool InputDialog(const UnicodeString & ACaption,
   TStrings * History, bool PathInput,
   TInputDialogInitializeEvent OnInitialize, bool Echo)
 {
-  ThrowNotImplemented(3301);
-  bool Result = false;
+  bool Result = GetGlobalFunctions()->InputDialog(ACaption, APrompt, Value, HelpKeyword,
+                                                  History, PathInput, OnInitialize, Echo);
   return Result;
 }
 
 uintptr_t MessageDialog(const UnicodeString & Msg, TQueryType Type,
   uintptr_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
-  ThrowNotImplemented(3302);
-  uintptr_t Result = 0;
+  DebugUsedParam(HelpKeyword);
+  uintptr_t Result = GetGlobalFunctions()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
   return Result;
 }
 
-uintptr_t MessageDialog(int Ident, TQueryType Type,
+uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
   uintptr_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
-  ThrowNotImplemented(3303);
-  uintptr_t Result = 0;
+  DebugUsedParam(HelpKeyword);
+  UnicodeString Msg = LoadStr(Ident);
+  uintptr_t Result = GetGlobalFunctions()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
   return Result;
 }
 
 uintptr_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & MoreMessages)
 {
-  ThrowNotImplemented(3304);
-  uintptr_t Result = 0;
+  uintptr_t Answers = qaOK;
+  uintptr_t Result = GetGlobalFunctions()->MoreMessageDialog(Msg, nullptr, qtError, Answers, nullptr);
   return Result;
 }
 
 uintptr_t MoreMessageDialog(const UnicodeString & Message,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
-    const UnicodeString & HelpKeyword, const TMessageParams * Params)
+  const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
   DebugUsedParam(HelpKeyword);
-//  ThrowNotImplemented(3305);
   uintptr_t Result = GetGlobalFunctions()->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);
   return Result;
 }

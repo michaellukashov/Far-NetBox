@@ -25,8 +25,6 @@ const int DummyTimeoutCode = 801;
 const int DummyCancelCode = 802;
 const int DummyDisconnectCode = 803;
 
-// #define FILE_OPERATION_LOOP_TERMINAL FTerminal
-
 class TFileZillaImpl : public TFileZillaIntf
 {
 public:
@@ -4512,7 +4510,11 @@ bool TFTPFileSystem::HandleAsynchRequestNeedPass(
     }
     else
     {
-      if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
+      if (!FPasswordFailed && FTerminal->GetSessionData()->GetLoginType() == ltAnonymous)
+      {
+        RequestResult = TFileZillaIntf::REPLY_OK;
+      }
+      else if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
         LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
         RequestResult = TFileZillaIntf::REPLY_OK;

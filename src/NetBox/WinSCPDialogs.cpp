@@ -6,6 +6,7 @@
 #include "FarTexts.h"
 #include "FarDialog.h"
 #include "FarConfiguration.h"
+#include "FarInterface.h"
 
 #include <shellapi.h>
 #include <PuttyTools.h>
@@ -2957,7 +2958,7 @@ void TSessionDialog::UpdateControls()
     (FtpProtocol || FtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol);
   FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
   FtpEncryptionCombo->SetVisible(FtpEncryptionVisible);
-  PrivateKeyEdit->SetEnabled(SshProtocol);
+  PrivateKeyEdit->SetEnabled(SshProtocol || FtpsProtocol || HTTPSProtocol);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
@@ -3533,6 +3534,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetFtpDupFF(FtpDupFFCheck->GetChecked());
     SessionData->SetFtpUndupFF(FtpUndupFFCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
+    SessionData->SetTlsCertificateFile(PrivateKeyEdit->GetText()); // TODO: TlsCertificateFileEdit->GetText();
     std::unique_ptr<TStrings> PostLoginCommands2(new TStringList());
     for (intptr_t Index4 = 0; Index4 < static_cast<intptr_t>(_countof(PostLoginCommandsEdits)); ++Index4)
     {

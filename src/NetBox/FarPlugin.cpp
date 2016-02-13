@@ -2994,6 +2994,24 @@ UnicodeString TGlobalFunctions::GetStrVersionNumber() const
   return NETBOX_VERSION_NUMBER.c_str();
 }
 
+//bool InputBox(const UnicodeString & Title, const UnicodeString & Prompt,
+//  UnicodeString & Text, DWORD Flags, const UnicodeString & HistoryName = UnicodeString(),
+//  intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
+bool TGlobalFunctions::InputDialog(const UnicodeString & ACaption, const UnicodeString & APrompt,
+                                   UnicodeString & Value, const UnicodeString & HelpKeyword,
+                                   TStrings * History, bool PathInput,
+                                   TInputDialogInitializeEvent OnInitialize, bool Echo)
+{
+  DebugUsedParam(HelpKeyword);
+  DebugUsedParam(History);
+  DebugUsedParam(PathInput);
+  DebugUsedParam(OnInitialize);
+  DebugUsedParam(Echo);
+
+  TWinSCPPlugin * WinSCPPlugin = NB_STATIC_DOWNCAST(TWinSCPPlugin, FarPlugin);
+  return WinSCPPlugin->InputBox(ACaption, APrompt, Value, 0);
+}
+
 uintptr_t TGlobalFunctions::MoreMessageDialog(const UnicodeString & Message, TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams * Params)
 {
   TWinSCPPlugin * WinSCPPlugin = NB_STATIC_DOWNCAST(TWinSCPPlugin, FarPlugin);

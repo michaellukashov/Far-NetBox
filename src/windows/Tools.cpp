@@ -24,63 +24,10 @@ bool SaveDialog(const UnicodeString & ATitle, const UnicodeString & Filter,
   const UnicodeString & ADefaultExt, UnicodeString & AFileName)
 {
   bool Result = false;
-  #if 0
-  TFileSaveDialog * Dialog = new TFileSaveDialog(Application);
-  try
-  {
-    Dialog->Title = Title;
-    FilterToFileTypes(Filter, Dialog->FileTypes);
-    Dialog->DefaultExtension = DefaultExt;
-    Dialog->FileName = FileName;
-    UnicodeString DefaultFolder = ExtractFilePath(FileName);
-    if (!DefaultFolder.IsEmpty())
-    {
-      Dialog->DefaultFolder = DefaultFolder;
-    }
-    Dialog->Options = Dialog->Options << fdoOverWritePrompt << fdoForceFileSystem <<
-      fdoPathMustExist << fdoNoReadOnlyReturn;
-    Result = Dialog->Execute();
-    if (Result)
-    {
-      FileName = Dialog->FileName;
-    }
-  }
-  __finally
-  {
-    delete Dialog;
-  }
-  #else
-  ThrowNotImplemented(3300);
-  /* TODO: implement
-  TSaveDialog * Dialog = new TSaveDialog(Application);
-  try__finally
-  {
-    SCOPE_EXIT
-    {
-      delete Dialog;
-    };
-    Dialog->Title = Title;
-    Dialog->Filter = Filter;
-    Dialog->DefaultExt = DefaultExt;
-    Dialog->FileName = FileName;
-    UnicodeString InitialDir = ExtractFilePath(FileName);
-    if (!InitialDir.IsEmpty())
-    {
-      Dialog->InitialDir = InitialDir;
-    }
-    Dialog->Options = Dialog->Options << ofOverwritePrompt << ofPathMustExist <<
-      ofNoReadOnlyReturn;
-    Result = Dialog->Execute();
-    if (Result)
-    {
-      FileName = Dialog->FileName;
-    }
-  }
-  __finally
-  {
-    delete Dialog;
-  };*/
-  #endif
+  DebugUsedParam(Filter);
+  DebugUsedParam(ADefaultExt);
+
+  Result = InputDialog(ATitle, L""/*LoadStr(LOGIN_PRIVATE_KEY)*/, AFileName, L"", nullptr, true, nullptr, true);
   return Result;
 }
 

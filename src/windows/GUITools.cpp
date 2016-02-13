@@ -12,6 +12,7 @@
 #include <SessionData.h>
 #include <Interface.h>
 
+#if 0
 template<class TEditControl>
 void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int ForceDirectoryMasks)
 {
@@ -42,6 +43,7 @@ void ValidateMaskEdit(TFarEdit * Edit)
 {
   ValidateMaskEditT(Edit->GetText(), Edit, -1);
 }
+#endif
 
 bool FindFile(UnicodeString & APath)
 {

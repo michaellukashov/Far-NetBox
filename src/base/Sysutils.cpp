@@ -612,9 +612,9 @@ DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs)
   return Result;
 }
 
-bool CreateDir(const UnicodeString & ADir)
+bool CreateDir(const UnicodeString & ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
-  return ::CreateDirectory(ApiPath(ADir).c_str(), nullptr) != 0;
+  return ::CreateDirectory(ApiPath(ADir).c_str(), SecurityAttributes) != 0;
 }
 
 bool RemoveDir(const UnicodeString & ADir)
@@ -1168,7 +1168,13 @@ UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeStri
   if (FileName.RPos(L'.') > 1)
   {
     return ExtractDirectory(APath, Delimiter) +
-           FileName.SubString(1, FileName.RPos(L'.')) +
+           FileName.SubString(1, FileName.RPos(L'.') - 1) +
+           Ext;
+  }
+  else
+  {
+    return ExtractDirectory(APath, Delimiter) +
+           FileName +
            Ext;
   }
   else

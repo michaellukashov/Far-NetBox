@@ -12,7 +12,6 @@
 #define CSIDL_PERSONAL                  0x0005        // My Documents
 
 #include <FileMasks.H>
-#include <FarDialog.h>
 
 class TSessionData;
 
@@ -66,8 +65,10 @@ private:
   UnicodeString FLocalFileName;
 };
 
+#if 0
 void ValidateMaskEdit(TFarComboBox * Edit);
 void ValidateMaskEdit(TFarEdit * Edit);
+#endif
 
 #define PageantTool L"pageant.exe"
 #define PuttygenTool L"puttygen.exe"

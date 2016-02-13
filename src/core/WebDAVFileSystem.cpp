@@ -1148,7 +1148,6 @@ void TWebDAVFileSystem::ConfirmOverwrite(
   TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
   intptr_t Params,
-  bool AutoResume,
   OUT TOverwriteMode & OverwriteMode,
   OUT uintptr_t & Answer)
 {
@@ -1479,7 +1478,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
         uintptr_t Answer = 0;
         ConfirmOverwrite(AFileName, DestFileName, OperationProgress,
           &FileParams, CopyParam, Params,
-          false, OverwriteMode, Answer);
+          OverwriteMode, Answer);
       }
 
       DestFullName = TargetDir + DestFileName;
@@ -1633,9 +1632,6 @@ void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     FindOK =
       (FindFirstChecked(FindPath.c_str(), FindAttrs, SearchRec) == 0);
   });
-//  FILE_OPERATION_LOOP_END(FMTLOAD(LIST_DIR_ERROR, (DirectoryName)));
-
-  bool CreateDir = true;
 
   try__finally
   {
@@ -2089,7 +2085,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       uintptr_t Answer = 0;
       ConfirmOverwrite(AFileName, DestFileName, OperationProgress,
         &FileParams, CopyParam, AParams,
-        false, OverwriteMode, Answer);
+        OverwriteMode, Answer);
     }
 
     // Suppose same data size to transfer as to write

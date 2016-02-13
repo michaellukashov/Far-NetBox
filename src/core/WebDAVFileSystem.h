@@ -120,7 +120,6 @@ protected:
     TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
     intptr_t Params,
-    bool AutoResume,
     OUT TOverwriteMode & OverwriteMode,
     OUT uintptr_t & Answer);
   void CheckStatus(int NeonStatus);
