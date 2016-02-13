@@ -612,9 +612,9 @@ DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs)
   return Result;
 }
 
-bool CreateDir(const UnicodeString & ADir)
+bool CreateDir(const UnicodeString & ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
-  return ::CreateDirectory(ApiPath(ADir).c_str(), nullptr) != 0;
+  return ::CreateDirectory(ApiPath(ADir).c_str(), SecurityAttributes) != 0;
 }
 
 bool RemoveDir(const UnicodeString & ADir)
