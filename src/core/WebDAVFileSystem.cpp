@@ -1634,8 +1634,6 @@ void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
       (FindFirstChecked(FindPath.c_str(), FindAttrs, SearchRec) == 0);
   });
 
-  bool CreateDir = true;
-
   try__finally
   {
     SCOPE_EXIT
