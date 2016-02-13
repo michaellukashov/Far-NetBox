@@ -2,8 +2,8 @@ NetBox 2.1.45.426 09.02.2016
 --------------------
   * Allow environment variables in "Private key file" field
     (http://forum.farmanager.com/viewtopic.php?p=135588#p135588)
-  * WebDAV: fix AV in Win2000, WinXPSP2
-  * Plugin is functional under win2k
+  * WebDAV: fix AV in Win2k, WinXPSP2
+  * Plugin is functional under Win2k
   * Fix VS2015 build
   * Bugfix: WebDAV: fix AV
     (http://forum.farmanager.com/viewtopic.php?p=135432#p135432)
