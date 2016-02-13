@@ -2733,11 +2733,9 @@ UnicodeString TrimVersion(const UnicodeString & Version)
   return Result;
 }
 
-UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion)
+UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int Patch)
 {
-  return
-    TrimVersion(FORMAT(L"%d.%d.%d",
-      MajorVersion, MinorVersion, SubminorVersion));
+  return FORMAT(L"%d.%d.%d", MajorVersion, MinorVersion, Patch);
 }
 
 TFormatSettings GetEngFormatSettings()
