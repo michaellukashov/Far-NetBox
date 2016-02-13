@@ -1168,7 +1168,7 @@ UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeStri
   if (FileName.RPos(L'.') > 1)
   {
     return ExtractDirectory(APath, Delimiter) +
-           FileName.SubString(1, FileName.RPos(L'.')) +
+           FileName.SubString(1, FileName.RPos(L'.') - 1) +
            Ext;
   }
   else
