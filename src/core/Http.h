@@ -34,8 +34,8 @@ public:
   void SetURL(const UnicodeString & Value) { FURL = Value; }
   UnicodeString GetProxyHost() const { return FProxyHost; }
   void SetProxyHost(const UnicodeString & Value) { FProxyHost = Value; }
-  int GetProxyPort() const { return FProxyPort; }
-  void SetProxyPort(int Value) { FProxyPort = Value; }
+  intptr_t GetProxyPort() const { return FProxyPort; }
+  void SetProxyPort(intptr_t Value) { FProxyPort = Value; }
   UnicodeString GetResponse() const;
   RawByteString GetResponseRaw() const { return FResponse; }
   int64_t GetResponseLength() const;
@@ -47,7 +47,7 @@ public:
 private:
   UnicodeString FURL;
   UnicodeString FProxyHost;
-  int FProxyPort;
+  intptr_t FProxyPort;
   RawByteString FResponse;
   int64_t FResponseLimit;
   std::unique_ptr<Exception> FException;
