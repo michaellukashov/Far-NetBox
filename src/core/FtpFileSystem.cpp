@@ -58,7 +58,7 @@ protected:
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
   virtual bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
 
-  virtual void PreserveDownloadFileTime(HANDLE Handle, void * UserData);
+  virtual void PreserveDownloadFileTime(HANDLE AHandle, void * UserData);
   virtual bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
   virtual wchar_t * LastSysErrorMessage() const;
   virtual std::wstring GetClientString() const;
@@ -145,9 +145,9 @@ bool TFileZillaImpl::CheckError(intptr_t ReturnCode, const wchar_t * Context)
   return FFileSystem->CheckError(ReturnCode, Context);
 }
 
-void TFileZillaImpl::PreserveDownloadFileTime(HANDLE Handle, void * UserData)
+void TFileZillaImpl::PreserveDownloadFileTime(HANDLE AHandle, void * UserData)
 {
-  return FFileSystem->PreserveDownloadFileTime(Handle, UserData);
+  return FFileSystem->PreserveDownloadFileTime(AHandle, UserData);
 }
 
 bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time)
@@ -4840,11 +4840,11 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
   return (State == STATE_DONE);
 }
 
-void TFTPFileSystem::PreserveDownloadFileTime(HANDLE Handle, void * UserData)
+void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData)
 {
   TFileTransferData * Data = NB_STATIC_DOWNCAST(TFileTransferData, UserData);
   FILETIME WrTime = ::DateTimeToFileTime(Data->Modification, dstmUnix);
-  SetFileTime(Handle, nullptr, nullptr, &WrTime);
+  SetFileTime(AHandle, nullptr, nullptr, &WrTime);
 }
 
 bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time)
@@ -4853,16 +4853,16 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
   try
   {
     // error-handling-free and DST-mode-unaware copy of TTerminal::OpenLocalFile
-    HANDLE Handle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ,
+    HANDLE LocalFileHandle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ,
       FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, 0);
-    if (Handle == INVALID_HANDLE_VALUE)
+    if (LocalFileHandle == INVALID_HANDLE_VALUE)
     {
       Result = false;
     }
     else
     {
       FILETIME MTime;
-      if (!GetFileTime(Handle, nullptr, nullptr, &MTime))
+      if (!GetFileTime(LocalFileHandle, nullptr, nullptr, &MTime))
       {
         Result = false;
       }
@@ -4890,7 +4890,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
         Result = true;
       }
 
-      ::CloseHandle(Handle);
+      ::CloseHandle(LocalFileHandle);
     }
   }
   catch (...)
