@@ -28,7 +28,7 @@ class TStoredSessionList;
 class TConfiguration;
 class TTerminal;
 
-const int mpNeverAskAgainCheck =   0x01;
+const int mpNeverAskAgainCheck   = 0x01;
 const int mpAllowContinueOnError = 0x02;
 
 #define UPLOAD_IF_ANY_SWITCH L"UploadIfAny"
