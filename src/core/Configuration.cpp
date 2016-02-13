@@ -13,6 +13,8 @@
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
 
+#define BUILD_OFFICIAL
+
 const wchar_t * AutoSwitchNames = L"On;Off;Auto";
 const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
 

@@ -149,7 +149,7 @@ TStringList * TextToStringList(const UnicodeString & Text);
 UnicodeString StringsToText(TStrings * Strings);
 TStrings * CloneStrings(TStrings * Strings);
 UnicodeString TrimVersion(const UnicodeString & Version);
-UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
+UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int Patch);
 TFormatSettings GetEngFormatSettings();
 int ParseShortEngMonthName(const UnicodeString & MonthStr);
 // The defaults are equal to defaults of TStringList class (except for Sorted)
