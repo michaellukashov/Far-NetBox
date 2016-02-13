@@ -257,6 +257,18 @@ void hmacmd5_key(void *handle, void const *key, int len);
 void hmacmd5_do_hmac(void *handle, unsigned char const *blk, int len,
 		     unsigned char *hmac);
 
+#if 0
+#ifdef MPEXT
+// Resolve ambiguity with OpenSSL
+#define SHA_Init putty_SHA_Init
+#define SHA_Final putty_SHA_Final
+#define SHA256_Init putty_SHA256_Init
+#define SHA256_Final putty_SHA256_Final
+#define SHA512_Init putty_SHA512_Init
+#define SHA512_Final putty_SHA512_Final
+#endif
+#endif
+
 typedef struct {
     uint32 h[5];
     unsigned char block[64];
@@ -707,7 +719,7 @@ unsigned char *ssh2_userkey_loadpub(const Filename *filename, char **algorithm,
 				    int *pub_blob_len, char **commentptr,
 				    const char **errorstr);
 int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
-		      char *passphrase);
+					const char *passphrase);
 const struct ssh_signkey *find_pubkey_alg(const char *name);
 const struct ssh_signkey *find_pubkey_alg_len(int namelen, const char *name);
 

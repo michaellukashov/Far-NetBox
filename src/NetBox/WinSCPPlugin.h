@@ -1,30 +1,12 @@
 #pragma once
 
 #include <Interface.h>
+#include <WinInterface.h>
 #include <Option.h>
 #include "FarPlugin.h"
 
 class TWinSCPFileSystem;
 class TCopyParamType;
-
-struct TMessageParams : public TObject
-{
-NB_DISABLE_COPY(TMessageParams)
-public:
-  TMessageParams();
-  void Assign(const TMessageParams * AParams);
-
-  const TQueryButtonAlias * Aliases;
-  uintptr_t AliasesCount;
-  uintptr_t Flags;
-  uintptr_t Params;
-  uintptr_t Timer;
-  TQueryParamsTimerEvent TimerEvent;
-  UnicodeString TimerMessage;
-  uintptr_t TimerAnswers;
-  uintptr_t Timeout;
-  uintptr_t TimeoutAnswer;
-};
 
 class TWinSCPPlugin : public TCustomFarPlugin
 {

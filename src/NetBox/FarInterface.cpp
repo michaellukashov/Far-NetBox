@@ -15,9 +15,9 @@ TConfiguration * CreateConfiguration()
 
 void ShowExtendedException(Exception * E)
 {
-  assert(FarPlugin != nullptr);
+  DebugAssert(FarPlugin != nullptr);
   TWinSCPPlugin * WinSCPPlugin = NB_STATIC_DOWNCAST(TWinSCPPlugin, FarPlugin);
-  assert(WinSCPPlugin != nullptr);
+  DebugAssert(WinSCPPlugin != nullptr);
   WinSCPPlugin->ShowExtendedException(E);
 }
 
@@ -72,8 +72,8 @@ HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
     CreationFlags, ThreadId);
 }
 
-void CopyToClipboard(const UnicodeString & Text)
+void CopyToClipboard(const UnicodeString & AText)
 {
-  assert(FarPlugin != nullptr);
-  FarPlugin->FarCopyToClipboard(Text);
+  DebugAssert(FarPlugin != nullptr);
+  FarPlugin->FarCopyToClipboard(AText);
 }

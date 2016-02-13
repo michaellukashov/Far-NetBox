@@ -41,7 +41,6 @@ public:
   virtual ~TFTPFileSystem();
 
   virtual void Init(void *);
-  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes);
 
   virtual void Open();
   virtual void Close();
@@ -75,8 +74,7 @@ public:
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params,
-    TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
   virtual bool IsCapable(intptr_t Capability) const;
@@ -100,6 +98,9 @@ public:
   virtual bool GetStoredCredentialsTried() const;
   virtual UnicodeString FSGetUserName() const;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs);
+  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem);
 
 protected:
   // enum TOverwriteMode { omOverwrite, omResume, omComplete };
@@ -151,8 +152,7 @@ protected:
   bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uintptr_t Count);
   bool HandleTransferStatus(bool Valid, int64_t TransferSize,
-    int64_t Bytes, intptr_t Percent, intptr_t TimeElapsed, intptr_t TimeLeft, intptr_t TransferRate,
-    bool FileTransfer);
+    int64_t Bytes, bool FileTransfer);
   bool HandleReply(intptr_t Command, uintptr_t Reply);
   bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
   bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
@@ -195,7 +195,8 @@ protected:
     OUT TOverwriteMode & OverwriteMode);
   void ReadDirectoryProgress(int64_t Bytes);
   void ResetFileTransfer();
-  void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
+  virtual void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
+  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes);
   void ResetCaches();
   void CaptureOutput(const UnicodeString & Str);
   void DoReadDirectory(TRemoteFileList * FileList);
@@ -227,7 +228,6 @@ protected:
   void SendCommand(const UnicodeString & Command);
 
   static bool Unquote(UnicodeString & Str);
-  static UnicodeString ExtractStatusMessage(const UnicodeString & Status);
 
 private:
   enum TCommand
@@ -250,6 +250,7 @@ private:
   uintptr_t FCommandReply;
   TCommand FLastCommand;
   bool FPasswordFailed;
+  bool FStoredPasswordTried;
   bool FMultineResponse;
   intptr_t FLastCode;
   intptr_t FLastCodeClass;
@@ -275,7 +276,7 @@ private:
   {
     ftaNone,
     ftaSkip,
-    ftaCancel
+    ftaCancel,
   } FFileTransferAbort;
   bool FIgnoreFileList;
   bool FFileTransferCancelled;
@@ -297,11 +298,12 @@ private:
   std::unique_ptr<TStrings> FSupportedCommands;
   std::unique_ptr<TStrings> FSupportedSiteCommands;
   std::unique_ptr<TStrings> FHashAlgs;
-  //bool FSupportsSiteCopy;
-  //bool FSupportsSiteSymlink;
   bool FSupportsAnyChecksumFeature;
   UnicodeString FLastCommandSent;
+  X509 * FCertificate;
+  EVP_PKEY * FPrivateKey;
   bool FTransferActiveImmediately;
+  bool FWindowsServer;
   mutable UnicodeString FOptionScratch;
 };
 

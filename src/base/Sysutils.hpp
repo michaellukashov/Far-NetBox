@@ -6,6 +6,7 @@
 #define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
+#define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
 
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
@@ -73,8 +74,8 @@ intptr_t __cdecl debug_printf2(const char * format, ...);
 #ifndef NDEBUG
 #if defined(_MSC_VER)
 #if (_MSC_VER >= 1900)
-#define DEBUG_PRINTF(format, ...) do { ::debug_printf(L"Plugin: [%s:%d] %s: "format L"\n", ::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
-#define DEBUG_PRINTF2(format, ...) do { ::debug_printf2("Plugin: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
+#define DEBUG_PRINTF(format, ...) do { ::debug_printf(L"Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
+#define DEBUG_PRINTF2(format, ...) do { ::debug_printf2("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
 #else
 #define DEBUG_PRINTF(format, ...) do { ::debug_printf(L"Plugin: [%s:%d] %s: "NB_TEXT(format) L"\n", ::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
 #define DEBUG_PRINTF2(format, ...) do { ::debug_printf2("Plugin: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
@@ -211,7 +212,7 @@ void DecodeDate(const TDateTime & DateTime, uint16_t & Y,
 void DecodeTime(const TDateTime & DateTime, uint16_t & H,
   uint16_t & N, uint16_t & S, uint16_t & MS);
 
-UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTime);
+UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime);
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 
 TDateTime EncodeDate(int Year, int Month, int Day);
@@ -239,7 +240,13 @@ bool AnsiSameText(const UnicodeString & Str1, const UnicodeString & Str2);
 bool SameText(const UnicodeString & Str1, const UnicodeString & Str2);
 intptr_t AnsiCompareText(const UnicodeString & Str1, const UnicodeString & Str2);
 intptr_t AnsiCompareIC(const UnicodeString & Str1, const UnicodeString & Str2);
+bool AnsiSameStr(const UnicodeString & Str1, const UnicodeString & Str2);
 bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
+bool ContainsStr(const AnsiString & Str1, const AnsiString & Str2);
+bool ContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
+
+UnicodeString UTF8ToString(const RawByteString & Str);
+UnicodeString UTF8ToString(const char * Str, intptr_t Len);
 
 int StringCmp(const wchar_t * S1, const wchar_t * S2);
 int StringCmpI(const wchar_t * S1, const wchar_t * S2);
@@ -297,7 +304,8 @@ UnicodeString ExpandEnvVars(const UnicodeString & Str);
 
 UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len);
 
-UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt);
+UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt,
+  wchar_t Delimiter = L'/');
 UnicodeString ExtractFileExt(const UnicodeString & AFileName);
 UnicodeString ExpandUNCFileName(const UnicodeString & AFileName);
 
@@ -402,13 +410,28 @@ struct TVersionInfo
   DWORD Build;
 };
 
-#define MAKEVERSIONNUMBER(major,minor,revision) ( ((major)<<16) | ((minor)<<8) | (revision))
+#define MAKEVERSIONNUMBER(major, minor, revision) ( ((major)<<16) | ((minor)<<8) | (revision))
 uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr);
 UnicodeString VersionNumberToStr(uintptr_t VersionNumber);
 uintptr_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
 uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
 uintptr_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2,1,21); }
 uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobalFunctions()->GetStrVersionNumber()); }
+
+#if defined(__MINGW32__) && (__MINGW_GCC_VERSION < 50100)
+typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
+{
+  LONG       Bias;
+  WCHAR      StandardName[32];
+  SYSTEMTIME StandardDate;
+  LONG       StandardBias;
+  WCHAR      DaylightName[32];
+  SYSTEMTIME DaylightDate;
+  LONG       DaylightBias;
+  WCHAR      TimeZoneKeyName[128];
+  BOOLEAN    DynamicDaylightTimeDisabled;
+} DYNAMIC_TIME_ZONE_INFORMATION, *PDYNAMIC_TIME_ZONE_INFORMATION;
+#endif
 
 class ScopeExit
 {
@@ -425,4 +448,18 @@ private:
 #define SCOPE_EXIT \
   std::function<void()> SCOPE_EXIT_NAME(scope_exit_func_, __LINE__); \
   ScopeExit SCOPE_EXIT_NAME(scope_exit_, __LINE__) = SCOPE_EXIT_NAME(scope_exit_func_, __LINE__) = [&]() /* lambda body here */
+
+class NullFunc
+{
+public:
+  NullFunc(const std::function<void()> & f) { (void)(f); }
+  ~NullFunc() { }
+};
+
+#define try__catch (void)0;
+#define try__finally (void)0;
+
+#define __finally \
+  std::function<void()> SCOPE_EXIT_NAME(null_func_, __LINE__); \
+  NullFunc SCOPE_EXIT_NAME(null_, __LINE__) = SCOPE_EXIT_NAME(null_func_, __LINE__) = [&]() /* lambda body here */
 

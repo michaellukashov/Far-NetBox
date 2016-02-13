@@ -72,6 +72,9 @@ public:
   virtual bool GetStoredCredentialsTried() const;
   virtual UnicodeString FSGetUserName() const;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs);
+  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem);
 
 protected:
   TStrings * GetOutput() const { return FOutput; }
@@ -96,7 +99,7 @@ private:
   void ClearAlias(const UnicodeString & Alias);
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
-  static UnicodeString DelimitStr(const UnicodeString & Str);
+  static UnicodeString DelimitStr(const UnicodeString & AStr);
   void DetectReturnVar();
   bool IsLastLine(UnicodeString & Line);
   static bool IsTotalListingLine(const UnicodeString & Line);
@@ -109,7 +112,7 @@ private:
   void SCPDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, intptr_t Level);
-  inline void SCPError(const UnicodeString & Message, bool Fatal);
+  void SCPError(const UnicodeString & Message, bool Fatal);
   void SCPSendError(const UnicodeString & Message, bool Fatal);
   void SCPSink(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & TargetDir,

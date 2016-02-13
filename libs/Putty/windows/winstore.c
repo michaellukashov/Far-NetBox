@@ -496,6 +496,7 @@ int verify_host_key(const char *hostname, int port,
 	return 0;		       /* key matched OK in registry */
 }
 
+#ifndef MPEXT
 int have_ssh_host_key(const char *hostname, int port,
 		      const char *keytype)
 {
@@ -506,6 +507,7 @@ int have_ssh_host_key(const char *hostname, int port,
     char key[10];
     return retrieve_host_key(hostname, port, keytype, key, 1) != 1;
 }
+#endif
 
 void store_host_key(const char *hostname, int port,
 		    const char *keytype, const char *key)

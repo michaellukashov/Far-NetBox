@@ -60,8 +60,12 @@ class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
 
+//typedef void __fastcall (__closure * TQueueListUpdate)
+//  (TTerminalQueue * Queue);
 DEFINE_CALLBACK_TYPE1(TQueueListUpdateEvent, void,
   TTerminalQueue * /*Queue*/);
+//typedef void __fastcall (__closure * TQueueItemUpdateEvent)
+//  (TTerminalQueue * Queue, TQueueItem * Item);
 DEFINE_CALLBACK_TYPE2(TQueueItemUpdateEvent, void,
   TTerminalQueue * /*Queue*/, TQueueItem * /*Item*/);
 
@@ -72,9 +76,11 @@ enum TQueueEvent
   qePendingUserAction,
 };
 
+//typedef void __fastcall (__closure * TQueueEventEvent)
+//  (TTerminalQueue * Queue, TQueueEvent Event);
 DEFINE_CALLBACK_TYPE2(TQueueEventEvent, void,
   TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/);
-
+//---------------------------------------------------------------------------
 class TTerminalQueue : public TSignalThread
 {
 friend class TQueueItem;
@@ -89,7 +95,18 @@ public:
   TTerminalQueueStatus * CreateStatus(TTerminalQueueStatus * Current);
   void Idle();
 
-  bool GetIsEmpty();
+  /*__property bool IsEmpty = { read = GetIsEmpty };
+  __property int TransfersLimit = { read = FTransfersLimit, write = SetTransfersLimit };
+  __property int KeepDoneItemsFor = { read = FKeepDoneItemsFor, write = SetKeepDoneItemsFor };
+  __property bool Enabled = { read = FEnabled, write = SetEnabled };
+  __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
+  __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };
+  __property TExtendedExceptionEvent OnShowExtendedException = { read = FOnShowExtendedException, write = FOnShowExtendedException };
+  __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
+  __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };
+  __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };*/
+
+  bool GetIsEmpty() const;
   intptr_t GetTransfersLimit() const { return FTransfersLimit; }
   intptr_t GetKeepDoneItemsFor() const { return FKeepDoneItemsFor; }
   bool GetEnabled() const { return FEnabled; }
@@ -171,6 +188,7 @@ public:
   void SetIsEmpty(bool Value);
 };
 
+//---------------------------------------------------------------------------
 class TQueueItem : public TObject
 {
 friend class TTerminalQueue;
@@ -181,7 +199,7 @@ public:
   enum TStatus
   {
     qsPending, qsConnecting, qsProcessing, qsPrompt, qsQuery, qsError,
-    qsPaused, qsDone
+    qsPaused, qsDone,
   };
   struct TInfo : public TObject
   {
@@ -201,7 +219,10 @@ public:
 
   static bool IsUserActionStatus(TStatus Status);
 
-  TStatus GetStatus() const;
+/*
+  __property TStatus Status = { read = GetStatus };
+  __property HANDLE CompleteEvent = { read = FCompleteEvent, write = FCompleteEvent };
+*/
   HANDLE GetCompleteEvent() const { return FCompleteEvent; }
   void SetCompleteEvent(HANDLE Value) { FCompleteEvent = Value; }
 
@@ -222,6 +243,7 @@ protected:
 public:
   void SetMasks(const UnicodeString & Value);
   void SetStatus(TStatus Status);
+  TStatus GetStatus() const;
   void SetProgress(TFileOperationProgressType & ProgressData);
   void GetData(TQueueItemProxy * Proxy) const;
   void SetCPSLimit(uintptr_t CPSLimit);
@@ -255,18 +277,22 @@ public:
   bool SetCPSLimit(uintptr_t CPSLimit);
   bool GetCPSLimit(uintptr_t & CPSLimit) const;
 
+/*
+  __property TFileOperationProgressType * ProgressData = { read = GetProgressData };
+  __property __int64 TotalTransferred = { read = GetTotalTransferred };
+  __property TQueueItem::TInfo * Info = { read = FInfo };
+  __property TQueueItem::TStatus Status = { read = FStatus };
+  __property bool ProcessingUserAction = { read = FProcessingUserAction };
+  __property int Index = { read = GetIndex };
+  __property void * UserData = { read = FUserData, write = FUserData };
+*/
   TQueueItem::TInfo * GetInfo() const { return FInfo; }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
   bool GetProcessingUserAction() const { return FProcessingUserAction; }
   void * GetUserData() const { return FUserData; }
   void * GetUserData() { return FUserData; }
   void SetUserData(void * Value) { FUserData = Value; }
-
-public:
   void SetMasks(const UnicodeString & Value);
-  intptr_t GetIndex();
-  TFileOperationProgressType * GetProgressData();
-  int64_t GetTotalTransferred();
 
 private:
   TFileOperationProgressType * FProgressData;
@@ -280,6 +306,11 @@ private:
 
   explicit TQueueItemProxy(TTerminalQueue * Queue, TQueueItem * QueueItem);
   virtual ~TQueueItemProxy();
+
+public:
+  intptr_t GetIndex() const;
+  TFileOperationProgressType * GetProgressData();
+  int64_t GetTotalTransferred();
 };
 
 class TTerminalQueueStatus : public TObject
@@ -292,6 +323,13 @@ public:
 
   TQueueItemProxy * FindByQueueItem(TQueueItem * QueueItem);
 
+  /*__property int Count = { read = GetCount };
+  __property int DoneCount = { read = FDoneCount };
+  __property int ActiveCount = { read = GetActiveCount };
+  __property int DoneAndActiveCount = { read = GetDoneAndActiveCount };
+  __property int ActiveAndPendingCount = { read = GetActiveAndPendingCount };
+  __property TQueueItemProxy * Items[int Index] = { read = GetItem };*/
+
 protected:
   TTerminalQueueStatus();
 
@@ -299,21 +337,21 @@ protected:
   void Delete(TQueueItemProxy * ItemProxy);
   void ResetStats();
 
+private:
+  TList * FList;
+  intptr_t FDoneCount;
+  mutable intptr_t FActiveCount;
+
 public:
-  void SetMasks(const UnicodeString & Value);
   intptr_t GetCount() const;
   intptr_t GetDoneCount() const { return FDoneCount; }
   intptr_t GetActiveCount() const;
   intptr_t GetDoneAndActiveCount() const;
   intptr_t GetActiveAndPendingCount() const;
-  void SetDoneCount(intptr_t Value);
   TQueueItemProxy * GetItem(intptr_t Index) const;
   TQueueItemProxy * GetItem(intptr_t Index);
-
-private:
-  TList * FList;
-  intptr_t FDoneCount;
-  mutable intptr_t FActiveCount;
+  void SetMasks(const UnicodeString & Value);
+  void SetDoneCount(intptr_t Value);
 };
 
 class TLocatedQueueItem : public TQueueItem
@@ -387,6 +425,10 @@ public:
   void Cancel();
   void Idle();
 
+/*
+  __property TNotifyEvent OnIdle = { read = FOnIdle, write = FOnIdle };
+  __property bool Cancelling = { read = FCancel };
+*/
   TNotifyEvent & GetOnIdle() { return FOnIdle; }
   void SetOnIdle(TNotifyEvent Value) { FOnIdle = Value; }
   bool GetCancelling() const { return FCancel; }
@@ -434,7 +476,8 @@ private:
   void TerminalOpenEvent(TObject * Sender);
   void TerminalReopenEvent(TObject * Sender);
 
-  void TerminalInformation(TTerminal * Terminal, const UnicodeString & Str, bool Status, intptr_t Phase);
+  void TerminalInformation(
+    TTerminal * Terminal, const UnicodeString & Str, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject * Sender,
     const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
     const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);

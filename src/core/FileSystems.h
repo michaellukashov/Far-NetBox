@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Common.h>
+#include <Exceptions.h>
 
 #include "SessionInfo.h"
 
@@ -20,7 +21,8 @@ enum TFSCommand
   fsListFile, fsLookupUsersGroups, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,
   fsRenameFile, fsCreateDirectory, fsChangeMode, fsChangeGroup, fsChangeOwner,
   fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
-  fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile
+  fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile,
+  fsLock,
 };
 
 const int dfNoRecursive = 0x01;
@@ -200,6 +202,10 @@ public:
   virtual bool GetStoredCredentialsTried() const = 0;
   virtual UnicodeString FSGetUserName() const = 0;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs) = 0;
+  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) = 0;
+  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) = 0;
+  virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) = 0;
+
   virtual UnicodeString GetCurrDirectory() const = 0;
 
 protected:

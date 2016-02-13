@@ -1305,7 +1305,7 @@ void base64_encode(FILE *fp, const unsigned char *data, int datalen, int cpl)
 }
 
 int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
-		      char *passphrase)
+          const char *passphrase)
 {
     FILE *fp;
     unsigned char *pub_blob, *priv_blob, *priv_blob_encrypted;

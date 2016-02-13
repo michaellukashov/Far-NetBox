@@ -8,7 +8,7 @@ enum TOperationSide
 {
   osLocal,
   osRemote,
-  osCurrent
+  osCurrent,
 };
 
 enum TFileNameCase
@@ -17,7 +17,7 @@ enum TFileNameCase
   ncUpperCase,
   ncLowerCase,
   ncFirstUpperCase,
-  ncLowerCaseShort
+  ncLowerCaseShort,
 };
 
 // TScript::OptionProc depend on the order
@@ -25,14 +25,14 @@ enum TTransferMode
 {
   tmBinary,
   tmAscii,
-  tmAutomatic
+  tmAutomatic,
 };
 
 enum TResumeSupport
 {
   rsOn,
   rsSmart,
-  rsOff
+  rsOff,
 };
 
 class THierarchicalStorage;
@@ -47,7 +47,8 @@ const int cpaNoIgnorePermErrors = 0x80;
 const int cpaNoNewerOnly        = 0x100;
 const int cpaNoRemoveCtrlZ      = 0x200;
 const int cpaNoRemoveBOM        = 0x400;
-
+const int cpaNoPreserveTimeDirs = 0x800;
+//---------------------------------------------------------------------------
 struct TUsableCopyParamAttrs
 {
   int General;
@@ -58,6 +59,50 @@ struct TUsableCopyParamAttrs
 class TCopyParamType : public TObject
 {
 NB_DECLARE_CLASS(TCopyParamType)
+private:
+  TFileMasks FAsciiFileMask;
+  TFileNameCase FFileNameCase;
+  bool FPreserveReadOnly;
+  bool FPreserveTime;
+  bool FPreserveTimeDirs;
+  TRights FRights;
+  TTransferMode FTransferMode;
+  bool FAddXToDirectories;
+  bool FPreserveRights;
+  bool FIgnorePermErrors;
+  TResumeSupport FResumeSupport;
+  int64_t FResumeThreshold;
+  wchar_t FInvalidCharsReplacement;
+  UnicodeString FLocalInvalidChars;
+  UnicodeString FTokenizibleChars;
+  bool FCalculateSize;
+  UnicodeString FFileMask;
+  TFileMasks FIncludeFileMask;
+  std::unique_ptr<TStringList> FTransferSkipList;
+  UnicodeString FTransferResumeFile;
+  bool FClearArchive;
+  bool FRemoveCtrlZ;
+  bool FRemoveBOM;
+  uintptr_t FCPSLimit;
+  bool FNewerOnly;
+
+public:
+  static const wchar_t TokenPrefix = L'%';
+  static const wchar_t NoReplacement = wchar_t(0);
+  static const wchar_t TokenReplacement = wchar_t(1);
+
+public:
+  void SetLocalInvalidChars(const UnicodeString & Value);
+  bool GetReplaceInvalidChars() const;
+  void SetReplaceInvalidChars(bool Value);
+  UnicodeString RestoreChars(const UnicodeString & AFileName) const;
+  void DoGetInfoStr(const UnicodeString & Separator, intptr_t Attrs,
+    UnicodeString & Result, bool & SomeAttrIncluded) const;
+  TStrings * GetTransferSkipList() const;
+  void SetTransferSkipList(TStrings * Value);
+  UnicodeString GetTransferResumeFile() const { return FTransferResumeFile; }
+  void SetTransferResumeFile(const UnicodeString & Value) { FTransferResumeFile = Value; }
+
 public:
   TCopyParamType();
   TCopyParamType(const TCopyParamType & Source);
@@ -73,7 +118,7 @@ public:
     const TFileMasks::TParams & Params) const;
   bool AllowResume(int64_t Size) const;
   bool ResumeTransfer(const UnicodeString & AFileName) const;
-  inline UnicodeString ValidLocalFileName(const UnicodeString & AFileName) const;
+  UnicodeString ValidLocalFileName(const UnicodeString & AFileName) const;
   UnicodeString ValidLocalPath(const UnicodeString & APath) const;
   bool AllowAnyTransfer() const;
   bool AllowTransfer(const UnicodeString & AFileName, TOperationSide Side,
@@ -87,6 +132,32 @@ public:
 
   bool operator==(const TCopyParamType & rhp) const;
 
+  /*__property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
+  __property TFileNameCase FileNameCase = { read = FFileNameCase, write = FFileNameCase };
+  __property bool PreserveReadOnly = { read = FPreserveReadOnly, write = FPreserveReadOnly };
+  __property bool PreserveTime = { read = FPreserveTime, write = FPreserveTime };
+  __property bool PreserveTimeDirs = { read = FPreserveTimeDirs, write = FPreserveTimeDirs };
+  __property TRights Rights = { read = FRights, write = FRights };
+  __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
+  __property UnicodeString LogStr  = { read=GetLogStr };
+  __property bool AddXToDirectories  = { read=FAddXToDirectories, write=FAddXToDirectories };
+  __property bool PreserveRights = { read = FPreserveRights, write = FPreserveRights };
+  __property bool IgnorePermErrors = { read = FIgnorePermErrors, write = FIgnorePermErrors };
+  __property TResumeSupport ResumeSupport = { read = FResumeSupport, write = FResumeSupport };
+  __property __int64 ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
+  __property wchar_t InvalidCharsReplacement = { read = FInvalidCharsReplacement, write = FInvalidCharsReplacement };
+  __property bool ReplaceInvalidChars = { read = GetReplaceInvalidChars, write = SetReplaceInvalidChars };
+  __property UnicodeString LocalInvalidChars = { read = FLocalInvalidChars, write = SetLocalInvalidChars };
+  __property bool CalculateSize = { read = FCalculateSize, write = FCalculateSize };
+  __property UnicodeString FileMask = { read = FFileMask, write = FFileMask };
+  __property TFileMasks IncludeFileMask = { read = FIncludeFileMask, write = FIncludeFileMask };
+  __property TStrings * TransferSkipList = { read = GetTransferSkipList, write = SetTransferSkipList };
+  __property UnicodeString TransferResumeFile = { read = FTransferResumeFile, write = FTransferResumeFile };
+  __property bool ClearArchive = { read = FClearArchive, write = FClearArchive };
+  __property bool RemoveCtrlZ = { read = FRemoveCtrlZ, write = FRemoveCtrlZ };
+  __property bool RemoveBOM = { read = FRemoveBOM, write = FRemoveBOM };
+  __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
+  __property bool NewerOnly = { read = FNewerOnly, write = FNewerOnly };*/
   const TFileMasks & GetAsciiFileMask() const { return FAsciiFileMask; }
   TFileMasks & GetAsciiFileMask() { return FAsciiFileMask; }
   void SetAsciiFileMask(const TFileMasks & Value) { FAsciiFileMask = Value; }
@@ -96,6 +167,8 @@ public:
   void SetPreserveReadOnly(bool Value) { FPreserveReadOnly = Value; }
   bool GetPreserveTime() const { return FPreserveTime; }
   void SetPreserveTime(bool Value) { FPreserveTime = Value; }
+  bool GetPreserveTimeDirs() const { return FPreserveTimeDirs; }
+  void SetPreserveTimeDirs(bool Value) { FPreserveTimeDirs = Value; }
   const TRights & GetRights() const { return FRights; }
   TRights & GetRights() { return FRights; }
   void SetRights(const TRights & Value) { FRights.Assign(&Value); }
@@ -133,50 +206,8 @@ public:
   bool GetNewerOnly() const { return FNewerOnly; }
   void SetNewerOnly(bool Value) { FNewerOnly = Value; }
 
-public:
-  static const wchar_t TokenPrefix = L'%';
-  static const wchar_t NoReplacement = wchar_t(0);
-  static const wchar_t TokenReplacement = wchar_t(1);
-
-public:
-  void SetLocalInvalidChars(const UnicodeString & Value);
-  bool GetReplaceInvalidChars() const;
-  void SetReplaceInvalidChars(bool Value);
-  UnicodeString RestoreChars(const UnicodeString & AFileName) const;
-  void DoGetInfoStr(const UnicodeString & Separator, intptr_t Options,
-    UnicodeString & Result, bool & SomeAttrIncluded) const;
-  TStrings * GetTransferSkipList() const;
-  void SetTransferSkipList(TStrings * Value);
-  UnicodeString GetTransferResumeFile() const { return FTransferResumeFile; }
-  void SetTransferResumeFile(const UnicodeString & Value) { FTransferResumeFile = Value; }
-
-private:
-  TFileMasks FAsciiFileMask;
-  TFileNameCase FFileNameCase;
-  bool FPreserveReadOnly;
-  bool FPreserveTime;
-  TRights FRights;
-  TTransferMode FTransferMode;
-  bool FAddXToDirectories;
-  bool FPreserveRights;
-  bool FIgnorePermErrors;
-  TResumeSupport FResumeSupport;
-  int64_t FResumeThreshold;
-  wchar_t FInvalidCharsReplacement;
-  UnicodeString FLocalInvalidChars;
-  UnicodeString FTokenizibleChars;
-  bool FCalculateSize;
-  UnicodeString FFileMask;
-  TFileMasks FIncludeFileMask;
-  std::unique_ptr<TStringList> FTransferSkipList;
-  UnicodeString FTransferResumeFile;
-  bool FClearArchive;
-  bool FRemoveCtrlZ;
-  bool FRemoveBOM;
-  uintptr_t FCPSLimit;
-  bool FNewerOnly;
 };
 
 uintptr_t GetSpeedLimit(const UnicodeString & Text);
 UnicodeString SetSpeedLimit(uintptr_t Limit);
-
+void CopySpeedLimits(TStrings * Source, TStrings * Dest);

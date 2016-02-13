@@ -80,6 +80,7 @@ static void free_proxies(ne_session *sess)
 
 void ne_session_destroy(ne_session *sess) 
 {
+    NE_DEBUG_WINSCP_CONTEXT(sess);
     struct hook *hk;
 
     NE_DEBUG(NE_DBG_HTTP, "sess: Destroying session.\n");
@@ -233,6 +234,7 @@ void ne_session_socks_proxy(ne_session *sess, enum ne_sock_sversion vers,
 
 void ne_session_system_proxy(ne_session *sess, unsigned int flags)
 {
+    NE_DEBUG_WINSCP_CONTEXT(sess);
 #ifdef HAVE_LIBPROXY
     pxProxyFactory *pxf = px_proxy_factory_new();
     struct host_info *hi, **lasthi;
@@ -472,6 +474,7 @@ const char *ne_get_error(ne_session *sess)
 
 void ne_close_connection(ne_session *sess)
 {
+    NE_DEBUG_WINSCP_CONTEXT(sess);
     if (sess->connected) {
         struct hook *hk;
 

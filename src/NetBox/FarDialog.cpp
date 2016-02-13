@@ -1334,7 +1334,7 @@ intptr_t TFarDialogItem::FailItemProc(intptr_t Msg, void * Param)
 
 intptr_t TFarDialogItem::ItemProc(intptr_t Msg, void * Param)
 {
-  intptr_t Result = 0;
+  LONG_PTR Result = 0;
   bool Handled = false;
 
   if (Msg == DN_GOTFOCUS)
@@ -2285,7 +2285,7 @@ void TFarList::SetCurPos(intptr_t Position, intptr_t TopIndex)
   TFarDialog * Dlg = DialogItem->GetDialog();
   assert(Dlg);
   assert(Dlg->GetHandle());
-  USEDPARAM(Dlg);
+  DebugUsedParam(Dlg);
   FarListPos ListPos;
   ListPos.StructSize = sizeof(FarListPos);
   ListPos.SelectPos = Position;
@@ -2795,6 +2795,7 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
 
 NB_IMPLEMENT_CLASS(TFarDialog, NB_GET_CLASS_INFO(TObject), nullptr)
 NB_IMPLEMENT_CLASS(TFarDialogItem, NB_GET_CLASS_INFO(TObject), nullptr)
+NB_IMPLEMENT_CLASS(TFarCheckBox, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
 NB_IMPLEMENT_CLASS(TFarButton, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
 NB_IMPLEMENT_CLASS(TFarListBox, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)
 NB_IMPLEMENT_CLASS(TFarEdit, NB_GET_CLASS_INFO(TFarDialogItem), nullptr)

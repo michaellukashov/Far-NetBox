@@ -250,6 +250,7 @@
     <ClCompile Include="..\base\Common.cpp" />
     <ClCompile Include="..\base\Exceptions.cpp" />
     <ClCompile Include="..\base\FileBuffer.cpp" />
+    <ClCompile Include="..\base\Global.cpp" />
     <ClCompile Include="..\core\Bookmarks.cpp" />
     <ClCompile Include="..\core\Configuration.cpp" />
     <ClCompile Include="..\core\CopyParam.cpp" />
@@ -274,11 +275,14 @@
     <ClCompile Include="..\core\Terminal.cpp" />
     <ClCompile Include="..\core\WebDAVFileSystem.cpp" />
     <ClCompile Include="..\core\WinSCPSecurity.cpp" />
+    <ClCompile Include="..\core\Http.cpp" />
+    <ClCompile Include="..\core\NeonIntf.cpp" />
     <ClCompile Include="..\windows\GUIConfiguration.cpp" />
     <ClCompile Include="..\windows\GUITools.cpp" />
     <ClCompile Include="..\windows\ProgParams.cpp" />
     <ClCompile Include="..\windows\SynchronizeController.cpp" />
     <ClCompile Include="..\windows\Tools.cpp" />
+    <ClCompile Include="..\windows\WinInterface.cpp" />
     <ClCompile Include="Far3Storage.cpp" />
     <ClCompile Include="FarConfiguration.cpp" />
     <ClCompile Include="FarDialog.cpp" />
