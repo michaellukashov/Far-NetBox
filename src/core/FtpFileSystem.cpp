@@ -25,8 +25,6 @@ const int DummyTimeoutCode = 801;
 const int DummyCancelCode = 802;
 const int DummyDisconnectCode = 803;
 
-// #define FILE_OPERATION_LOOP_TERMINAL FTerminal
-
 class TFileZillaImpl : public TFileZillaIntf
 {
 public:

@@ -4925,7 +4925,6 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
   {
     WIN32_FIND_DATA FindData = {};
     HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-    // FILE_OPERATION_LOOP_BEGIN
     FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()), "",
     [&]()
     {
@@ -4935,7 +4934,6 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
         ::RaiseLastOSError();
       }
     });
-    // FILE_OPERATION_LOOP_END(FMTLOAD(FILE_NOT_EXISTS, (FileName)));
     ::FindClose(LocalFileHandle);
     bool Directory = FLAGSET(FindData.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
     TFileMasks::TParams Params;
