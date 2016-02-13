@@ -2960,7 +2960,7 @@ void TSessionDialog::UpdateControls()
     (FtpProtocol || FtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol);
   FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
   FtpEncryptionCombo->SetVisible(FtpEncryptionVisible);
-  PrivateKeyEdit->SetEnabled(SshProtocol);
+  PrivateKeyEdit->SetEnabled(SshProtocol || FtpsProtocol || HTTPSProtocol);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
