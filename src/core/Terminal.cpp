@@ -6348,7 +6348,7 @@ BOOL TTerminal::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWOR
   }
   else
   {
-    return ::SetFileAttributes(LocalFileName.c_str(), FileAttributes);
+    return ::FileSetAttr(LocalFileName, FileAttributes) != 0;
   }
 }
 
@@ -6372,7 +6372,7 @@ BOOL TTerminal::RemoveLocalDirectory(const UnicodeString & LocalDirName)
   }
   else
   {
-    return ::RemoveDirectory(LocalDirName.c_str()) != 0;
+    return ::RemoveDir(LocalDirName);
   }
 }
 
@@ -6384,7 +6384,7 @@ BOOL TTerminal::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECUR
   }
   else
   {
-    return ::CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != 0;
+    return ::CreateDir(LocalDirName, SecurityAttributes);
   }
 }
 
