@@ -130,7 +130,7 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
 bool TXmlStorage::DoKeyExists(const UnicodeString & SubKey, bool /*ForceAnsi*/)
 {
   UnicodeString K = PuttyMungeStr(SubKey);
-  const tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement(AnsiString(K).c_str());
+  const tinyxml2::XMLElement * Element = FindChildElement(ToStdString(K));
   bool Result = Element != nullptr;
   return Result;
 }
