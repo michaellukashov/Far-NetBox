@@ -1268,8 +1268,9 @@ bool InputDialog(const UnicodeString & ACaption,
   TStrings * History, bool PathInput,
   TInputDialogInitializeEvent OnInitialize, bool Echo)
 {
-  ThrowNotImplemented(3301);
-  bool Result = false;
+//  ThrowNotImplemented(3301);
+  bool Result = GetGlobalFunctions()->InputDialog(ACaption, APrompt, Value, HelpKeyword,
+                                                  History, PathInput, OnInitialize, Echo);
   return Result;
 }
 

@@ -153,18 +153,6 @@ int Execute();
 void GetLoginData(UnicodeString SessionName, TOptions * Options,
   TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession);
 
-// forms\InputDlg.cpp
-struct TInputDialogData
-{
-//  TCustomEdit * Edit;
-  void * Edit;
-};
-
-//typedef void (__closure *TInputDialogInitialize)
-//  (TObject * Sender, TInputDialogData * Data);
-DEFINE_CALLBACK_TYPE2(TInputDialogInitializeEvent, void,
-  TObject * /*Sender*/, TInputDialogData * /*Data*/);
-
 bool InputDialog(const UnicodeString & ACaption,
   const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword = HELP_NONE,
   TStrings * History = nullptr, bool PathInput = false,
