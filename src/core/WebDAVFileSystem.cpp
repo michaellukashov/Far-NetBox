@@ -4532,11 +4532,11 @@ windows_validate_certificate(
       CERT_CHAIN_PARA chain_para;
       // Retrieve the certificate chain of the certificate
       // (a certificate without a valid root does not have a chain).
-      ::ZeroMemory(&chain_para, sizeof(chain_para));
+      ClearStruct(chain_para);
       chain_para.cbSize = sizeof(chain_para);
 
       CERT_CHAIN_ENGINE_CONFIG chain_config;
-      ::ZeroMemory(&chain_config, sizeof(chain_config));
+      ClearStruct(chain_config);
       chain_config.cbSize = sizeof(CERT_CHAIN_ENGINE_CONFIG);
       chain_config.hRestrictedRoot = nullptr;
       chain_config.hRestrictedTrust = nullptr;
@@ -4558,9 +4558,9 @@ windows_validate_certificate(
               nullptr, &chain_context))
         {
           CERT_CHAIN_POLICY_PARA policy_para;
-          ::ZeroMemory(&policy_para, sizeof(policy_para));
+          ClearStruct(policy_para);
           CERT_CHAIN_POLICY_STATUS policy_status;
-          ::ZeroMemory(&policy_status, sizeof(policy_status));
+          ClearStruct(policy_status);
 
           policy_para.cbSize = sizeof(policy_para);
           policy_para.dwFlags = 0;
@@ -10490,7 +10490,7 @@ neon_get_props(
 
   // Initialize our baton.
   propfind_ctx_t pc;
-  ::ZeroMemory(&pc, sizeof(pc));
+  ClearStruct(pc);
   pc.pool = pool;
   pc.propbuffer = apr_hash_make(pool);
   pc.props = apr_hash_make(pool);

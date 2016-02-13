@@ -2,6 +2,11 @@
 
 #include <Classes.hpp>
 
+//#define EXCEPTION throw ExtException(nullptr, L"")
+#define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
+#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
+#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
+
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
 
@@ -10,6 +15,36 @@
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 #define SWAP(TYPE, FIRST, SECOND) \
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
+
+#if !defined(_MSC_VER)
+
+#define TODO(s)
+#define WARNING(s)
+#define PRAGMA_ERROR(s)
+
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
+
+#else
+
+#define STRING2(x) #x
+#define STRING(x) STRING2(x)
+#define FILE_LINE __FILE__ "(" STRING(__LINE__) "): "
+#ifdef HIDE_TODO
+#define TODO(s)
+#define WARNING(s)
+#else
+#define TODO(s) __pragma(message (FILE_LINE /*"warning: "*/ "TODO: " s))
+#define WARNING(s) __pragma(message (FILE_LINE /*"warning: "*/ "WARN: " s))
+#endif
+#define PRAGMA_ERROR(s) __pragma(message (FILE_LINE "error: " s))
+
+#endif
 
 #define PARENTDIRECTORY L".."
 #define THISDIRECTORY L"."
@@ -225,9 +260,9 @@ bool IsZero(double Value);
 
 TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime);
 
-int64_t FileRead(HANDLE Handle, void * Buffer, int64_t Count);
-int64_t FileWrite(HANDLE Handle, const void * Buffer, int64_t Count);
-int64_t FileSeek(HANDLE Handle, int64_t Offset, DWORD Origin);
+int64_t FileRead(HANDLE AHandle, void * Buffer, int64_t Count);
+int64_t FileWrite(HANDLE AHandle, const void * Buffer, int64_t Count);
+int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin);
 
 bool FileExists(const UnicodeString & AFileName);
 bool RenameFile(const UnicodeString & From, const UnicodeString & To);

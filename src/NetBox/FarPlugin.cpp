@@ -2066,7 +2066,6 @@ TFarPanelInfo ** TCustomFarFileSystem::GetPanelInfo(int Another)
       !bAnother ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
     if (!Res)
     {
-      ::ZeroMemory(Info, sizeof(PanelInfo));
       assert(false);
     }
     FPanelInfo[bAnother] = new TFarPanelInfo(Info, !bAnother ? this : nullptr);
@@ -2584,7 +2583,7 @@ TObjectList * TFarPanelInfo::GetItems()
       FItems->Clear();
     for (size_t Index = 0; Index < FPanelInfo->ItemsNumber; ++Index)
     {
-      // TODO: move to common function
+      TODO("move to common function");
       intptr_t Size = FOwner->FarControl(FCTL_GETPANELITEM, Index, 0);
       PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_calloc(1, Size));
       FarGetPluginPanelItem gppi;

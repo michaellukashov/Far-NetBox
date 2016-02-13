@@ -57,7 +57,7 @@ protected:
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
   virtual bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
 
-  virtual void PreserveDownloadFileTime(HANDLE Handle, void * UserData);
+  virtual void PreserveDownloadFileTime(HANDLE AHandle, void * UserData);
   virtual bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
   virtual wchar_t * LastSysErrorMessage() const;
 
@@ -145,9 +145,9 @@ bool TFileZillaImpl::CheckError(intptr_t ReturnCode, const wchar_t * Context)
   return FFileSystem->CheckError(ReturnCode, Context);
 }
 
-void TFileZillaImpl::PreserveDownloadFileTime(HANDLE Handle, void * UserData)
+void TFileZillaImpl::PreserveDownloadFileTime(HANDLE AHandle, void * UserData)
 {
-  return FFileSystem->PreserveDownloadFileTime(Handle, UserData);
+  return FFileSystem->PreserveDownloadFileTime(AHandle, UserData);
 }
 
 wchar_t * TFileZillaImpl::LastSysErrorMessage() const
@@ -420,7 +420,7 @@ void TFTPFileSystem::Open()
     FWelcomeMessage.Clear();
     FFileSystemInfoValid = false;
 
-    // TODO: the same for account? it ever used?
+    TODO("the same for account? it ever used?");
 
     // ask for username if it was not specified in advance, even on retry,
     // but keep previous one as default,
@@ -799,7 +799,7 @@ UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool 
 
 UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
-  // TODO: improve (handle .. etc.)
+  TODO("improve (handle .. etc.)");
   if (core::UnixIsAbsolutePath(APath))
   {
     return APath;
@@ -1189,7 +1189,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
             (File != nullptr ? File->GetFullFileName().c_str() : L""));
         FTerminal->CommandError(&E, Error);
         // Abort loop.
-        // TODO: retries? resume?
+        TODO("retries? resume?");
         Index1 = FileList->GetCount();
       }
     }
@@ -1927,14 +1927,14 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
     TDateTime Modification;
     // Inspired by ::FileAge
     WIN32_FIND_DATA FindData;
-    HANDLE Handle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
-    if (Handle != INVALID_HANDLE_VALUE)
+    HANDLE LocalFileHandle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
+    if (LocalFileHandle != INVALID_HANDLE_VALUE)
     {
       Modification =
         ::UnixToDateTime(
           ::ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
           dstmUnix);
-      ::FindClose(Handle);
+      ::FindClose(LocalFileHandle);
     }
 
     // Will we use ASCII of BINARY file transfer?
@@ -3292,7 +3292,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       FLAGSET(Reply, TFileZillaIntf::REPLY_ERROR) ||
       FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
 
-    // TODO: REPLY_CRITICALERROR ignored
+    TODO("REPLY_CRITICALERROR ignored");
 
     // REPLY_NOTCONNECTED happens if connection is closed between moment
     // when FZAPI interface method dispatches the command to FZAPI thread
@@ -4635,11 +4635,11 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
   return (State == STATE_DONE);
 }
 
-void TFTPFileSystem::PreserveDownloadFileTime(HANDLE Handle, void * UserData)
+void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData)
 {
   TFileTransferData * Data = NB_STATIC_DOWNCAST(TFileTransferData, UserData);
   FILETIME WrTime = ::DateTimeToFileTime(Data->Modification, dstmUnix);
-  SetFileTime(Handle, nullptr, nullptr, &WrTime);
+  SetFileTime(AHandle, nullptr, nullptr, &WrTime);
 }
 
 bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time)
@@ -4648,16 +4648,16 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
   try
   {
     // error-handling-free and DST-mode-unaware copy of TTerminal::OpenLocalFile
-    HANDLE Handle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ,
+    HANDLE LocalFileHandle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ,
       FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, 0);
-    if (Handle == INVALID_HANDLE_VALUE)
+    if (LocalFileHandle == INVALID_HANDLE_VALUE)
     {
       Result = false;
     }
     else
     {
       FILETIME MTime;
-      if (!GetFileTime(Handle, nullptr, nullptr, &MTime))
+      if (!GetFileTime(LocalFileHandle, nullptr, nullptr, &MTime))
       {
         Result = false;
       }
@@ -4685,7 +4685,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
         Result = true;
       }
 
-      ::CloseHandle(Handle);
+      ::CloseHandle(LocalFileHandle);
     }
   }
   catch (...)

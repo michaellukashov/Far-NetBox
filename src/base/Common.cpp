@@ -737,7 +737,7 @@ bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2)
 
 bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2)
 {
-  // TODO: ExpandUNCFileName
+  TODO("ExpandUNCFileName");
   return AnsiSameText(::IncludeTrailingBackslash(APath1), ::IncludeTrailingBackslash(APath2));
 }
 
@@ -2510,12 +2510,12 @@ bool IsDirectoryWriteable(const UnicodeString & APath)
   UnicodeString FileName =
     ::IncludeTrailingPathDelimiter(APath) +
     FORMAT(L"wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()).c_str(), int(GetCurrentProcessId()));
-  HANDLE Handle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+  HANDLE LocalFileHandle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
     CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, 0);
-  bool Result = (Handle != INVALID_HANDLE_VALUE);
+  bool Result = (LocalFileHandle != INVALID_HANDLE_VALUE);
   if (Result)
   {
-    ::CloseHandle(Handle);
+    ::CloseHandle(LocalFileHandle);
   }
   return Result;
 }

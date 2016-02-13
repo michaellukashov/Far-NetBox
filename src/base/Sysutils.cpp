@@ -109,7 +109,7 @@ Exception::Exception(const UnicodeString & Msg, int AHelpContext) :
   std::runtime_error(""),
   Message(Msg)
 {
-  // TODO: FHelpContext = AHelpContext
+  TODO("FHelpContext = AHelpContext");
   (void)AHelpContext;
 }
 
@@ -447,11 +447,11 @@ TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
   return Result;
 }
 
-int64_t FileRead(HANDLE Handle, void * Buffer, int64_t Count)
+int64_t FileRead(HANDLE AHandle, void * Buffer, int64_t Count)
 {
   int64_t Result = -1;
   DWORD Res = 0;
-  if (::ReadFile(Handle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &Res, nullptr))
+  if (::ReadFile(AHandle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &Res, nullptr))
   {
     Result = Res;
   }
@@ -462,11 +462,11 @@ int64_t FileRead(HANDLE Handle, void * Buffer, int64_t Count)
   return Result;
 }
 
-int64_t FileWrite(HANDLE Handle, const void * Buffer, int64_t Count)
+int64_t FileWrite(HANDLE AHandle, const void * Buffer, int64_t Count)
 {
   int64_t Result = -1;
   DWORD Res = 0;
-  if (::WriteFile(Handle, Buffer, static_cast<DWORD>(Count), &Res, nullptr))
+  if (::WriteFile(AHandle, Buffer, static_cast<DWORD>(Count), &Res, nullptr))
   {
     Result = Res;
   }
@@ -477,11 +477,11 @@ int64_t FileWrite(HANDLE Handle, const void * Buffer, int64_t Count)
   return Result;
 }
 
-int64_t FileSeek(HANDLE Handle, int64_t Offset, DWORD Origin)
+int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin)
 {
   LONG low = Offset & 0xFFFFFFFF;
   LONG high = Offset >> 32;
-  low = ::SetFilePointer(Handle, low, &high, Origin);
+  low = ::SetFilePointer(AHandle, low, &high, Origin);
   return ((int64_t)high << 32) + low;
 }
 
@@ -551,14 +551,14 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
 void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
 {
   WIN32_FIND_DATA FindData;
-  HANDLE Handle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
-  if (Handle != INVALID_HANDLE_VALUE)
+  HANDLE LocalFileHandle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
+  if (LocalFileHandle != INVALID_HANDLE_VALUE)
   {
     ATimestamp =
       UnixToDateTime(
         ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
         dstmUnix);
-    ::FindClose(Handle);
+    ::FindClose(LocalFileHandle);
   }
 }
 
