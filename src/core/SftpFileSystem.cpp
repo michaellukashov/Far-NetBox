@@ -1,9 +1,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <limits>
-#include <memory>
-
 #define CLEAN_SPACE_AVAILABLE
 
 #include <Common.h>

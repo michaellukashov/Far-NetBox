@@ -1,7 +1,6 @@
 #pragma once
 
 #include <registry.hpp>
-#include <memory>
 
 enum TStorage
 {

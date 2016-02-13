@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <Classes.hpp>
 
 struct ne_session_s;

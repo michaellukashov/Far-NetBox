@@ -11,7 +11,6 @@
 #include <math.h>
 #include <rdestl/map.h>
 #include <shlobj.h>
-#include <limits>
 #include <shlwapi.h>
 #include <openssl/pkcs12.h>
 #include <openssl/pem.h>
