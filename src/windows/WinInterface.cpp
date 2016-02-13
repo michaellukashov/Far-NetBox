@@ -1,6 +1,4 @@
 #include <Interface.h>
-#include <FarTexts.h>
-#include <FarDialog.h>
 #include <WinInterface.h>
 
 static bool IsPositiveAnswer(uintptr_t Answer)
@@ -57,6 +55,7 @@ inline void TMessageParams::Reset()
   CustomCaption = L"";
 }
 
+#if 0
 static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
 {
   TFarCheckBox * CheckBox = NB_STATIC_DOWNCAST(TFarCheckBox, Sender);
@@ -114,6 +113,7 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
     }
   }
 }
+#endif
 
 static TFarCheckBox * FindNeverAskAgainCheck(TFarDialog * Dialog)
 {

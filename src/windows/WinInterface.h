@@ -6,15 +6,6 @@
 #include <Interface.h>
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
-#include <FarDialog.h>
-
-enum TMsgDlgType
-{
-  mtConfirmation,
-  mtInformation,
-  mtError,
-  mtWarning,
-};
 
 #ifdef LOCALINTERFACE
 #include <LocalInterface.h>
@@ -100,14 +91,14 @@ class TProgramParams;
 bool CheckSafe(TProgramParams * Params);
 bool CheckXmlLogParam(TProgramParams * Params);
 
-/*
+#if 0
 UnicodeString GetToolbarsLayoutStr(TComponent * OwnerComponent);
 void LoadToolbarsLayoutStr(TComponent * OwnerComponent, UnicodeString LayoutStr);
 
 namespace Tb2item { class TTBCustomItem; }
 void AddMenuSeparator(Tb2item::TTBCustomItem * Menu);
 void AddMenuLabel(Tb2item::TTBCustomItem * Menu, const UnicodeString & Label);
-*/
+#endif
 
 // windows\WinHelp.cpp
 void InitializeWinHelp();
@@ -172,7 +163,7 @@ struct TRegistration
 };
 void DoAboutDialog(TConfiguration * Configuration,
   bool AllowLicense, TRegistration * Registration);
-void DoAboutDialog(TConfiguration *Configuration);
+void DoAboutDialog(TConfiguration * Configuration);
 
 // forms\Cleanup.cpp
 bool DoCleanupDialog(TStoredSessionList *SessionList,
@@ -373,18 +364,20 @@ bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
 // forms\Editor.cpp
 //typedef void (__closure *TFileClosedEvent)
 //  (TObject * Sender, bool Forced);
+#if 0
 DEFINE_CALLBACK_TYPE2(TFileClosedEvent, void,
-  TObject * /*Sender*/, bool /*Forced*/);
+  TObject * /*Sender* /, bool /*Forced*/);
 DEFINE_CALLBACK_TYPE2(TAnyModifiedEvent, void,
-  TObject * /*Sender*/, bool & /*Modified*/);
-/*TForm * ShowEditorForm(const UnicodeString FileName, TCustomForm * ParentForm,
+  TObject * /*Sender* /, bool & /*Modified*/);
+TForm * ShowEditorForm(const UnicodeString FileName, TCustomForm * ParentForm,
   TNotifyEvent OnFileChanged, TNotifyEvent OnFileReload, TFileClosedEvent OnClose,
   TNotifyEvent OnSaveAll, TAnyModifiedEvent OnAnyModified,
   const UnicodeString Caption, bool StandaloneEditor, TColor Color);
 void ReconfigureEditorForm(TForm * Form);
 void EditorFormFileUploadComplete(TForm * Form);
 void EditorFormFileSave(TForm * Form);
-bool IsEditorFormModified(TForm * Form);*/
+bool IsEditorFormModified(TForm * Form);
+#endif
 
 bool DoSymlinkDialog(UnicodeString & FileName, UnicodeString & PointTo,
   TOperationSide Side, bool & SymbolicLink, bool Edit, bool AllowSymbolic);
@@ -401,6 +394,8 @@ void DoFileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
   const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable);
 
+//moved to FarInterface.h
+#if 0
 // forms\MessageDlg.cpp
 void AnswerNameAndCaption(
   uintptr_t Answer, UnicodeString & Name, UnicodeString & Caption);
@@ -414,8 +409,9 @@ TFarDialog * CreateMoreMessageDialog(const UnicodeString & Msg,
 TFarDialog * CreateMoreMessageDialogEx(const UnicodeString & Message, TStrings * MoreMessages,
   TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params);
 uintptr_t ExecuteMessageDialog(TFarDialog * Dialog, uintptr_t Answers, const TMessageParams * Params);
-/*void InsertPanelToMessageDialog(TFarDialog * Form, TPanel * Panel);
-void NavigateMessageDialogToUrl(TFarDialog * Form, const UnicodeString & Url);*/
+void InsertPanelToMessageDialog(TFarDialog * Form, TPanel * Panel);
+void NavigateMessageDialogToUrl(TFarDialog * Form, const UnicodeString & Url);
+#endif
 
 // windows\Console.cpp
 enum TConsoleMode { cmNone, cmScripting, cmHelp, cmBatchSettings, cmKeyGen };
@@ -440,7 +436,7 @@ bool DoFileFindDialog(UnicodeString Directory,
 // forms\GenerateUrl.cpp
 void DoGenerateUrlDialog(TSessionData * Data, TStrings * Paths);
 
-/*
+#if 0
 void CopyParamListButton(TButton * Button);
 const int cplNone =             0x00;
 const int cplCustomize =        0x01;
@@ -486,13 +482,13 @@ bool IsApplicationMinimized();
 void ApplicationMinimize();
 void ApplicationRestore();
 bool HandleMinimizeSysCommand(TMessage & Message);
-*/
+#endif
 void WinInitialize();
 void WinFinalize();
 
 void ShowNotification(TTerminal * Terminal, const UnicodeString & Str,
   TQueryType Type);
-/*
+#if 0
 void InitializeShortCutCombo(TComboBox * ComboBox,
   const TShortCuts & ShortCuts);
 void SetShortCutCombo(TComboBox * ComboBox, TShortCut Value);
@@ -502,7 +498,7 @@ bool IsCustomShortCut(TShortCut ShortCut);
 class TAnimationsModule;
 TAnimationsModule * GetAnimationsModule();
 void ReleaseAnimationsModule();
-*/
+#endif
 #ifdef _DEBUG
 void ForceTracing();
 #endif
