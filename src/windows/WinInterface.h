@@ -116,7 +116,7 @@ void FinalizeWinHelp();
 // windows\WinInterface.cpp
 uintptr_t MessageDialog(const UnicodeString & Msg, TQueryType Type,
   uintptr_t Answers, const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
-uintptr_t MessageDialog(int Ident, TQueryType Type,
+uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
   uintptr_t Answers, const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 uintptr_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & MoreMessages = L"");
 
