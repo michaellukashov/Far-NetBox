@@ -75,58 +75,6 @@ void FileOperationLoopCustom(TTerminal * Terminal,
   while (DoRepeat);
 }
 
-void TTerminal::CommandErrorAri(
-  Exception & E,
-  const UnicodeString & Message,
-  const std::function<void()> & Repeat)
-{
-  uintptr_t Result = CommandError(&E, Message, qaRetry | qaSkip | qaAbort);
-  switch (Result)
-  {
-    case qaRetry:
-      Repeat();
-      break;
-    case qaAbort:
-      Abort();
-      break;
-  }
-}
-
-// Note that the action may already be canceled when RollbackAction is called
-void TTerminal::CommandErrorAriAction(
-  Exception & E,
-  const UnicodeString & Message,
-  const std::function<void()> & Repeat,
-  TSessionAction & Action)
-{
-  uintptr_t Result;
-  try
-  {
-    Result = CommandError(&E, Message, qaRetry | qaSkip | qaAbort);
-  }
-  catch (Exception & E2)
-  {
-    RollbackAction(Action, nullptr, &E2);
-    throw;
-  }
-  switch (Result)
-  {
-    case qaRetry:
-      Action.Cancel();
-      Repeat();
-      break;
-    case qaAbort:
-      RollbackAction(Action, nullptr, &E);
-      Abort();
-      break;
-    case qaSkip:
-      Action.Cancel();
-      break;
-    default:
-      DebugFail();
-  }
-}
-
 class TLoopDetector : public TObject
 {
 public:
@@ -3146,14 +3094,6 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Director
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAriAction(E, L"",
-      [&]()
-      {
-        FileList = ReadDirectoryListing(Directory, Mask);
-      },
-      Action);
-#endif
       RetryLoop.Error(E, Action);
     }
   }
@@ -3178,14 +3118,6 @@ TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAriAction(E, L"",
-      [&]()
-      {
-        File = ReadFileListing(APath);
-      },
-      Action);
-#endif
       RetryLoop.Error(E, Action);
     }
   }
@@ -3205,13 +3137,6 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Di
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAri(E, L"",
-      [&]()
-      {
-        FileList = CustomReadDirectoryListing(Directory, UseCache);
-      });
-#endif
       RetryLoop.Error(E);
     }
   }
@@ -3709,14 +3634,6 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAriAction(E, FMTLOAD(DELETE_FILE_ERROR, AFileName.c_str()),
-      [&]()
-      {
-        DoDeleteFile(AFileName, AFile, Params);
-      },
-      Action);
-#endif
       RetryLoop.Error(E, Action, FMTLOAD(DELETE_FILE_ERROR, AFileName.c_str()));
     }
   }
@@ -3810,13 +3727,6 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAri(E, FMTLOAD(CUSTOM_COMMAND_ERROR, Command.c_str(), AFileName.c_str()),
-      [&]()
-      {
-        DoCustomCommandOnFile(AFileName, AFile, Command, Params, OutputEvent);
-      });
-#endif
       RetryLoop.Error(E, FMTLOAD(CUSTOM_COMMAND_ERROR, Command.c_str(), AFileName.c_str()));
     }
   }
@@ -3932,14 +3842,6 @@ void TTerminal::DoChangeFileProperties(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAriAction(E, FMTLOAD(CHANGE_PROPERTIES_ERROR, AFileName.c_str()),
-      [&]()
-      {
-        DoChangeFileProperties(AFileName, AFile, Properties);
-      },
-      Action);
-#endif
       RetryLoop.Error(E, Action, FMTLOAD(CHANGE_PROPERTIES_ERROR, AFileName.c_str()));
     }
   }
@@ -4053,13 +3955,6 @@ void TTerminal::DoCalculateDirectorySize(const UnicodeString & AFileName,
     {
       if (!GetActive() || ((Params->Params & csIgnoreErrors) == 0))
       {
-#if 0
-        CommandErrorAri(E, FMTLOAD(CALCULATE_SIZE_ERROR, AFileName.c_str()),
-        [&]()
-        {
-          DoCalculateDirectorySize(AFileName, AFile, Params);
-        });
-#endif
         RetryLoop.Error(E, FMTLOAD(CALCULATE_SIZE_ERROR, AFileName.c_str()));
       }
     }
@@ -4164,15 +4059,6 @@ void TTerminal::DoRenameFile(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAriAction(E,
-      FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName.c_str(), ANewName.c_str()),
-      [&]()
-      {
-        DoRenameFile(AFileName, ANewName, Move);
-      },
-      Action);
-#endif
       UnicodeString Message = FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName.c_str(), ANewName.c_str());
       RetryLoop.Error(E, Action, Message);
     }
@@ -4318,13 +4204,6 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAri(E, FMTLOAD(COPY_FILE_ERROR, AFileName.c_str(), ANewName.c_str()),
-      [&]()
-      {
-        DoCopyFile(AFileName, ANewName);
-      });
-#endif
       RetryLoop.Error(E, FMTLOAD(COPY_FILE_ERROR, AFileName.c_str(), ANewName.c_str()));
     }
   }
@@ -4385,15 +4264,6 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName)
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAriAction(E,
-      FMTLOAD(CREATE_DIR_ERROR, ADirName.c_str()),
-      [&]()
-      {
-        DoCreateDirectory(ADirName);
-      },
-      Action);
-#endif
       RetryLoop.Error(E, Action, FMTLOAD(CREATE_DIR_ERROR, ADirName.c_str()));
     }
   }
@@ -4429,13 +4299,6 @@ void TTerminal::DoCreateLink(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-#if 0
-      CommandErrorAri(E, FMTLOAD(CREATE_LINK_ERROR, AFileName.c_str()),
-      [&]()
-      {
-        DoCreateLink(AFileName, PointTo, Symbolic);
-      });
-#endif
       RetryLoop.Error(E, FMTLOAD(CREATE_LINK_ERROR, AFileName.c_str()));
     }
   }
