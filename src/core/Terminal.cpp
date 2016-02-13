@@ -6320,11 +6320,11 @@ HANDLE TTerminal::CreateLocalFile(const UnicodeString & LocalFileName, DWORD Des
 {
   if (GetOnCreateLocalFile())
   {
-    return GetOnCreateLocalFile()(LocalFileName, DesiredAccess, ShareMode, CreationDisposition, FlagsAndAttributes);
+    return GetOnCreateLocalFile()(ApiPath(LocalFileName), DesiredAccess, ShareMode, CreationDisposition, FlagsAndAttributes);
   }
   else
   {
-    return ::CreateFile(LocalFileName.c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
+    return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
   }
 }
 
@@ -6332,7 +6332,7 @@ DWORD TTerminal::GetLocalFileAttributes(const UnicodeString & LocalFileName)
 {
   if (GetOnGetLocalFileAttributes())
   {
-    return GetOnGetLocalFileAttributes()(LocalFileName);
+    return GetOnGetLocalFileAttributes()(ApiPath(LocalFileName));
   }
   else
   {
@@ -6344,7 +6344,7 @@ BOOL TTerminal::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWOR
 {
   if (GetOnSetLocalFileAttributes())
   {
-    return GetOnSetLocalFileAttributes()(LocalFileName, FileAttributes);
+    return GetOnSetLocalFileAttributes()(ApiPath(LocalFileName), FileAttributes);
   }
   else
   {
@@ -6360,7 +6360,7 @@ BOOL TTerminal::MoveLocalFile(const UnicodeString & LocalFileName, const Unicode
   }
   else
   {
-    return ::MoveFileEx(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags) != 0;
+    return ::MoveFileEx(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), Flags) != 0;
   }
 }
 
