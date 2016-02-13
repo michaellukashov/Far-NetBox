@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Classes.hpp>
+
 class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
@@ -16,6 +18,15 @@ public:
   void ModifyAll(bool Modify);
   void Clear();
 
+/*  __property TBookmarkList * Bookmarks[UnicodeString Index] = { read = GetBookmarks, write = SetBookmarks };
+  __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };*/
+
+private:
+  TStringList * FBookmarkLists;
+  UnicodeString FSharedKey;
+  static UnicodeString Keys[];
+
+public:
   TBookmarkList * GetBookmarks(const UnicodeString & Index);
   void SetBookmarks(const UnicodeString & Index, TBookmarkList * Value);
   TBookmarkList * GetSharedBookmarks();
@@ -24,11 +35,6 @@ public:
 private:
   void LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
     intptr_t AIndex, TBookmarkList * BookmarkList);
-
-private:
-  TStringList * FBookmarkLists;
-  UnicodeString FSharedKey;
-  static UnicodeString Keys[];
 };
 
 class TBookmark;
@@ -55,15 +61,15 @@ public:
   void SaveOptions(THierarchicalStorage * Storage);
   void ShortCuts(TShortCuts & ShortCuts);
 
-  intptr_t GetCount() const;
-  TBookmark * GetBookmarks(intptr_t Index);
-  bool GetNodeOpened(const UnicodeString & Index);
-  void SetNodeOpened(const UnicodeString & Index, bool Value);
+/*  __property int Count = { read = GetCount };
+  __property TBookmark * Bookmarks[int Index] = { read = GetBookmarks };
+  __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };*/
 
 protected:
   intptr_t IndexOf(TBookmark * Bookmark);
   void KeyChanged(intptr_t Index);
 
+//  __property bool Modified = { read = FModified, write = FModified };
   bool GetModified() const { return FModified; }
   void SetModified(bool Value) { FModified = Value; }
 
@@ -71,6 +77,13 @@ private:
   TStringList * FBookmarks;
   TStringList * FOpenedNodes;
   bool FModified;
+
+public:
+
+  intptr_t GetCount() const;
+  TBookmark * GetBookmarks(intptr_t Index);
+  bool GetNodeOpened(const UnicodeString & Index);
+  void SetNodeOpened(const UnicodeString & Index, bool Value);
 };
 
 class TBookmark : public TPersistent
@@ -83,25 +96,17 @@ public:
 
   virtual void Assign(const TPersistent * Source);
 
-  UnicodeString GetName() const { return FName; }
-  void SetName(const UnicodeString & Value);
-  UnicodeString GetLocal() const { return FLocal; }
-  void SetLocal(const UnicodeString & Value);
-  UnicodeString GetRemote() const { return FRemote; }
-  void SetRemote(const UnicodeString & Value);
-  UnicodeString GetNode() const { return FNode; }
-  void SetNode(const UnicodeString & Value);
-  TShortCut GetShortCut() const { return FShortCut; }
-  void SetShortCut(const TShortCut & Value);
+/*  __property UnicodeString Name = { read = FName, write = SetName };
+  __property UnicodeString Local = { read = FLocal, write = SetLocal };
+  __property UnicodeString Remote = { read = FRemote, write = SetRemote };
+  __property UnicodeString Node = { read = FNode, write = SetNode };
+  __property TShortCut ShortCut = { read = FShortCut, write = SetShortCut };*/
 
 protected:
   TBookmarkList * FOwner;
 
   static UnicodeString BookmarkKey(const UnicodeString & Node, const UnicodeString & Name);
-
-private:
-  UnicodeString GetKey() const;
-  void Modify(intptr_t OldIndex);
+  // __property UnicodeString Key = { read = GetKey };
 
 private:
   UnicodeString FName;
@@ -109,5 +114,21 @@ private:
   UnicodeString FRemote;
   UnicodeString FNode;
   TShortCut FShortCut;
+
+public:
+  void SetName(const UnicodeString & Value);
+  UnicodeString GetName() const { return FName; }
+  void SetLocal(const UnicodeString & Value);
+  UnicodeString GetLocal() const { return FLocal; }
+  void SetRemote(const UnicodeString & Value);
+  UnicodeString GetRemote() const { return FRemote; }
+  void SetNode(const UnicodeString & Value);
+  UnicodeString GetNode() const { return FNode; }
+  void SetShortCut(const TShortCut & Value);
+  TShortCut GetShortCut() const { return FShortCut; }
+  UnicodeString GetKey() const;
+
+private:
+  void Modify(intptr_t OldIndex);
 };
 

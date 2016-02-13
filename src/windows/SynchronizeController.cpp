@@ -29,7 +29,7 @@ TSynchronizeController::TSynchronizeController(
 
 TSynchronizeController::~TSynchronizeController()
 {
-  assert(FSynchronizeMonitor == nullptr);
+  DebugAssert(FSynchronizeMonitor == nullptr);
 }
 
 void TSynchronizeController::StartStop(TObject * /*Sender*/,
@@ -44,7 +44,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
 
     try
     {
-      assert(OnSynchronizeLog != nullptr);
+      DebugAssert(OnSynchronizeLog != nullptr);
       FSynchronizeLog = OnSynchronizeLog;
 
       FOptions = Options;
@@ -59,7 +59,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
       FCopyParam = CopyParam;
       FSynchronizeParams = Params;
 
-      assert(OnAbort);
+      DebugAssert(OnAbort);
       FSynchronizeAbort = OnAbort;
 
       if (FLAGSET(FSynchronizeParams.Options, soRecurse))
@@ -67,7 +67,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
         SynchronizeLog(slScan,
           FMTLOAD(SYNCHRONIZE_SCAN, FSynchronizeParams.LocalDirectory.c_str()));
       }
-      Error(SNotImplemented, 256);
+      ThrowNotImplemented(256);
       /*
       // FIXME
       FSynchronizeMonitor = new TDiscMonitor(NB_STATIC_DOWNCAST(TComponent, Sender));
@@ -98,7 +98,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
     catch (...)
     {
       // FIXME SAFE_DESTROY(FSynchronizeMonitor);
-      Error(SNotImplemented, 257);
+      ThrowNotImplemented(257);
       throw;
     }
   }
@@ -121,7 +121,7 @@ void TSynchronizeController::SynchronizeChange(
 
     UnicodeString LocalDirectory = ::IncludeTrailingBackslash(Directory);
 
-    assert(LocalDirectory.SubString(1, RootLocalDirectory.Length()) ==
+    DebugAssert(LocalDirectory.SubString(1, RootLocalDirectory.Length()) ==
       RootLocalDirectory);
     RemoteDirectory = RemoteDirectory +
       core::ToUnixPath(LocalDirectory.SubString(RootLocalDirectory.Length() + 1,
@@ -146,7 +146,7 @@ void TSynchronizeController::SynchronizeChange(
         if (FLAGSET(FSynchronizeParams.Options, soRecurse))
         {
           SubdirsChanged = false;
-          assert(Checklist != nullptr);
+          DebugAssert(Checklist != nullptr);
           for (intptr_t Index = 0; Index < Checklist->GetCount(); ++Index)
           {
             const TChecklistItem * Item = Checklist->GetItem(Index);
@@ -162,7 +162,7 @@ void TSynchronizeController::SynchronizeChange(
               }
               else
               {
-                assert(false);
+                DebugAssert(false);
               }
             }
           }
@@ -185,9 +185,9 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
   if (FSynchronizeMonitor != nullptr)
   {
     // FIXME FSynchronizeMonitor->Close();
-    Error(SNotImplemented, 258);
+    ThrowNotImplemented(258);
   }
-  assert(FSynchronizeAbort);
+  DebugAssert(FSynchronizeAbort);
   FSynchronizeAbort(nullptr, Close);
 }
 
@@ -204,7 +204,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
       break;
 
     default:
-      assert(false);
+      DebugAssert(false);
       // fallthru
 
     case soUpload:

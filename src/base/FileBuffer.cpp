@@ -4,6 +4,8 @@
 #include <Common.h>
 #include <FileBuffer.h>
 
+const wchar_t * EOLTypeNames = L"LF;CRLF;CR";
+
 char * EOLToStr(TEOLType EOLType)
 {
   switch (EOLType)
@@ -15,7 +17,7 @@ char * EOLToStr(TEOLType EOLType)
     case eolCR:
       return (char *)"\r";
     default:
-      FAIL;
+      DebugFail();
       return (char *)"";
   }
 }
@@ -99,8 +101,8 @@ int64_t TFileBuffer::LoadStream(TStream * Stream, const int64_t Len, bool ForceL
 void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
   bool & Token)
 {
-  assert(strlen(Source) <= 2);
-  assert(strlen(Dest) <= 2);
+  DebugAssert(strlen(Source) <= 2);
+  DebugAssert(strlen(Dest) <= 2);
 
   const std::string Bom(CONST_BOM);
   if (FLAGSET(Params, cpRemoveBOM) && (GetSize() >= 3) &&
@@ -211,14 +213,14 @@ void TFileBuffer::Convert(TEOLType Source, char * Dest, intptr_t Params,
   Convert(EOLToStr(Source), Dest, Params, Token);
 }
 
-void TFileBuffer::Insert(int64_t Index, const char * Buf, size_t Len)
+void TFileBuffer::Insert(int64_t Index, const char * Buf, int64_t Len)
 {
   SetSize(GetSize() + Len);
   memmove(GetData() + Index + Len, GetData() + Index, static_cast<size_t>(GetSize() - Index - Len));
   memmove(GetData() + Index, Buf, Len);
 }
 
-void TFileBuffer::Delete(int64_t Index, size_t Len)
+void TFileBuffer::Delete(int64_t Index, int64_t Len)
 {
   memmove(GetData() + Index, GetData() + Index + Len, static_cast<size_t>(GetSize() - Index - Len));
   SetSize(GetSize() - Len);
@@ -226,7 +228,7 @@ void TFileBuffer::Delete(int64_t Index, size_t Len)
 
 void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
 {
-  assert(Stream);
+  DebugAssert(Stream);
   try
   {
     Stream->WriteBuffer(GetData() + GetPosition(), Len);

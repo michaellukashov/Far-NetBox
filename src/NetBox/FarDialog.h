@@ -65,7 +65,9 @@ public:
   intptr_t GetType(TFarDialogItem * Item) const;
   intptr_t GetItem(TFarDialogItem * Item) const;
   TFarDialogItem * GetItem(intptr_t Index) const;
+  TFarDialogItem * GetControl(intptr_t Index) const { return GetItem(Index); }
   intptr_t GetItemCount() const;
+  intptr_t GetControlCount() const { return GetItemCount(); }
   TItemPosition GetNextItemPosition() const { return FNextItemPosition; }
   void SetNextItemPosition(const TItemPosition Value) { FNextItemPosition = Value; }
   intptr_t GetDefaultGroup() const { return FDefaultGroup; }
@@ -226,6 +228,8 @@ public:
   void SetTag(intptr_t Value) { FTag = Value; }
   TFarDialog * GetDialog() const { return FDialog; }
   TFarDialog * GetDialog() { return FDialog; }
+  const TFarDialog * GetOwner() const { return FDialog; }
+  TFarDialog * GetOwner() { return FDialog; }
 
   TNotifyEvent & GetOnExit() { return FOnExit; }
   void SetOnExit(TNotifyEvent Value) { FOnExit = Value; }
@@ -362,6 +366,7 @@ public:
 
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
+  virtual intptr_t GetModalResult() const { return FResult; }
   virtual intptr_t GetResult() const { return FResult; }
   virtual void SetResult(intptr_t Value) { FResult = Value; }
   virtual UnicodeString GetData() const { return const_cast<TFarButton *>(this)->GetData(); }
@@ -391,6 +396,8 @@ DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void,
 
 class TFarCheckBox : public TFarDialogItem
 {
+NB_DISABLE_COPY(TFarCheckBox)
+NB_DECLARE_CLASS(TFarCheckBox)
 public:
   explicit TFarCheckBox(TFarDialog * ADialog);
 

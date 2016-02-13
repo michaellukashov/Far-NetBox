@@ -781,41 +781,6 @@ static int rsa2_pubkey_bits(const struct ssh_signkey *self,
     return ret;
 }
 
-static char *rsa2_fingerprint(void *key)
-{
-    struct RSAKey *rsa = (struct RSAKey *) key;
-    struct MD5Context md5c;
-    unsigned char digest[16], lenbuf[4];
-    char buffer[16 * 3 + 40];
-    char *ret;
-    int numlen, i;
-
-    MD5Init(&md5c);
-    MD5Update(&md5c, (unsigned char *)"\0\0\0\7ssh-rsa", 11);
-
-#define ADD_BIGNUM(bignum) \
-    numlen = (bignum_bitcount(bignum)+8)/8; \
-    PUT_32BIT(lenbuf, numlen); MD5Update(&md5c, lenbuf, 4); \
-    for (i = numlen; i-- ;) { \
-        unsigned char c = bignum_byte(bignum, i); \
-        MD5Update(&md5c, &c, 1); \
-    }
-    ADD_BIGNUM(rsa->exponent);
-    ADD_BIGNUM(rsa->modulus);
-#undef ADD_BIGNUM
-
-    MD5Final(digest, &md5c);
-
-    sprintf(buffer, "ssh-rsa %d ", bignum_bitcount(rsa->modulus));
-    for (i = 0; i < 16; i++)
-	sprintf(buffer + strlen(buffer), "%s%02x", i ? ":" : "",
-		digest[i]);
-    ret = snewn(strlen(buffer) + 1, char);
-    if (ret)
-	strcpy(ret, buffer);
-    return ret;
-}
-
 /*
  * This is the magic ASN.1/DER prefix that goes in the decoded
  * signature, between the string of FFs and the actual SHA hash

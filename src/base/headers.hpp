@@ -36,6 +36,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "disable_warnings_in_std_begin.hpp"
 #include <nbglobals.h>
 
+#include <memory>
 #include <new>
 #include <cstdlib>
 #include <cstdio>
@@ -118,13 +119,13 @@ template <class T>
 inline Word ToWord(const T & a) { return static_cast<Word>(a); }
 
 template<typename T>
-inline void ClearStruct(T & s) { memset(&s, 0, sizeof(s)); }
+inline void ClearStruct(T & s) { ::ZeroMemory(&s, sizeof(s)); }
 
 template<typename T>
 inline void ClearStruct(T * s) { T dont_instantiate_this_template_with_pointers = s; }
 
 template<typename T, size_t N>
-inline void ClearArray(T (&a)[N]) { memset(a, 0, sizeof(a[0]) * N); }
+inline void ClearArray(T (&a)[N]) { ::ZeroMemory(a, sizeof(a[0]) * N); }
 
 #ifdef __GNUC__
 #ifndef nullptr

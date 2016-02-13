@@ -12,10 +12,11 @@
 #include <SessionData.h>
 #include <Interface.h>
 
+#if 0
 template<class TEditControl>
 void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int ForceDirectoryMasks)
 {
-  assert(Edit != nullptr);
+  DebugAssert(Edit != nullptr);
   TFileMasks Masks(ForceDirectoryMasks);
   try
   {
@@ -42,6 +43,7 @@ void ValidateMaskEdit(TFarEdit * Edit)
 {
   ValidateMaskEditT(Edit->GetText(), Edit, -1);
 }
+#endif
 
 bool FindFile(UnicodeString & APath)
 {
@@ -117,14 +119,14 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
         {
           if (GetGUIConfiguration()->GetTelnetForFtpInPutty())
           {
-            ExportData->SetPuttyProtocol(PuttyTelnetProtocol);
+            ExportData->SetPuttyProtocol(PuttyTelnetProtocolStr);
             ExportData->SetPortNumber(TelnetPortNumber);
             // PuTTY  does not allow -pw for telnet
             Psw.Clear();
           }
           else
           {
-            ExportData->SetPuttyProtocol(PuttySshProtocol);
+            ExportData->SetPuttyProtocol(PuttySshProtocolStr);
             ExportData->SetPortNumber(SshPortNumber);
           }
         }
@@ -332,7 +334,7 @@ UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
 UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
   const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote)
 {
-  assert(AFiles != nullptr);
+  DebugAssert(AFiles != nullptr);
   UnicodeString Item;
   if (AFiles->GetCount() > 0)
   {

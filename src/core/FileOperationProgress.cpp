@@ -26,8 +26,8 @@ TFileOperationProgressType::TFileOperationProgressType(
 
 TFileOperationProgressType::~TFileOperationProgressType()
 {
-  assert(!InProgress || FReset);
-  assert(!Suspended || FReset);
+  DebugAssert(!InProgress || FReset);
+  DebugAssert(!Suspended || FReset);
 }
 
 void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationProgressType & Other)
@@ -143,7 +143,7 @@ void TFileOperationProgressType::Stop()
 
 void TFileOperationProgressType::Suspend()
 {
-  assert(!Suspended);
+  DebugAssert(!Suspended);
   Suspended = true;
   FSuspendTime = ::GetTickCount();
   DoProgress();
@@ -151,7 +151,7 @@ void TFileOperationProgressType::Suspend()
 
 void TFileOperationProgressType::Resume()
 {
-  assert(Suspended);
+  DebugAssert(Suspended);
   Suspended = false;
 
   // shift timestamps for CPS calculation in advance
@@ -169,7 +169,7 @@ void TFileOperationProgressType::Resume()
 
 intptr_t TFileOperationProgressType::OperationProgress() const
 {
-  assert(Count);
+  DebugAssert(Count);
   intptr_t Result = (FFilesFinished * 100)/Count;
   return Result;
 }
@@ -190,7 +190,7 @@ intptr_t TFileOperationProgressType::TransferProgress() const
 
 intptr_t TFileOperationProgressType::TotalTransferProgress() const
 {
-  assert(TotalSizeSet);
+  DebugAssert(TotalSizeSet);
   intptr_t Result = TotalSize > 0 ? static_cast<intptr_t>(((TotalTransfered + TotalSkipped) * 100) / TotalSize) : 0;
   return Result < 100 ? Result : 100;
 }
@@ -199,7 +199,7 @@ intptr_t TFileOperationProgressType::OverallProgress() const
 {
   if (TotalSizeSet)
   {
-    assert((Operation == foCopy) || (Operation == foMove));
+    DebugAssert((Operation == foCopy) || (Operation == foMove));
     return TotalTransferProgress();
   }
   else
@@ -222,7 +222,7 @@ void TFileOperationProgressType::DoProgress()
 void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
-  assert(InProgress);
+  DebugAssert(InProgress);
 
   FOnFinished(Operation, Side, Temp, AFileName,
     /* TODO : There wasn't 'Success' condition, was it by mistake or by purpose? */
@@ -250,7 +250,7 @@ void TFileOperationProgressType::SetFile(const UnicodeString & AFileName, bool A
 
 void TFileOperationProgressType::SetFileInProgress()
 {
-  assert(!FileInProgress);
+  DebugAssert(!FileInProgress);
   FileInProgress = true;
   DoProgress();
 }
@@ -273,8 +273,17 @@ void TFileOperationProgressType::AddLocallyUsed(int64_t ASize)
 
 bool TFileOperationProgressType::IsLocallyDone() const
 {
-  assert(LocallyUsed <= LocalSize);
+  DebugAssert(LocallyUsed <= LocalSize);
   return (LocallyUsed == LocalSize);
+}
+
+void TFileOperationProgressType::SetSpeedCounters()
+{
+  if ((CPSLimit > 0) && !FCounterSet)
+  {
+    FCounterSet = true;
+    // Configuration->Usage->Inc(L"SpeedLimitUses");
+  }
 }
 
 void TFileOperationProgressType::ThrottleToCPSLimit(
@@ -284,15 +293,6 @@ void TFileOperationProgressType::ThrottleToCPSLimit(
   while (Remaining > 0)
   {
     Remaining -= AdjustToCPSLimit(Remaining);
-  }
-}
-
-void TFileOperationProgressType::SetSpeedCounters()
-{
-  if ((CPSLimit > 0) && !FCounterSet)
-  {
-    FCounterSet = true;
-    // Configuration->Usage->Inc(L"SpeedLimitUses");
   }
 }
 
@@ -339,13 +339,13 @@ uintptr_t TFileOperationProgressType::AdjustToCPSLimit(
 
 uintptr_t TFileOperationProgressType::LocalBlockSize()
 {
-  int64_t Result = TRANSFER_BUF_SIZE;
-  if (LocallyUsed + Result > LocalSize)
+  uintptr_t Result = TRANSFER_BUF_SIZE;
+  if (LocallyUsed + (int64_t)Result > LocalSize)
   {
     Result = static_cast<uintptr_t>(LocalSize - LocallyUsed);
   }
-  Result = (int64_t)AdjustToCPSLimit((uintptr_t)Result);
-  return (uintptr_t)Result;
+  Result = AdjustToCPSLimit(Result);
+  return Result;
 }
 
 void TFileOperationProgressType::SetTotalSize(int64_t ASize)
@@ -376,9 +376,9 @@ void TFileOperationProgressType::ChangeTransferSize(int64_t ASize)
 void TFileOperationProgressType::RollbackTransfer()
 {
   TransferedSize -= SkippedSize;
-  assert(TransferedSize <= TotalTransfered);
+  DebugAssert(TransferedSize <= TotalTransfered);
   TotalTransfered -= TransferedSize;
-  assert(SkippedSize <= TotalSkipped);
+  DebugAssert(SkippedSize <= TotalSkipped);
   FTicks.clear();
   FTotalTransferredThen.clear();
   TotalSkipped -= SkippedSize;
@@ -456,7 +456,7 @@ uintptr_t TFileOperationProgressType::StaticBlockSize()
 
 bool TFileOperationProgressType::IsTransferDone() const
 {
-  assert(TransferedSize <= TransferSize);
+  DebugAssert(TransferedSize <= TransferSize);
   return (TransferedSize == TransferSize);
 }
 
@@ -520,7 +520,7 @@ TDateTime TFileOperationProgressType::TimeExpected() const
 
 TDateTime TFileOperationProgressType::TotalTimeExpected() const
 {
-  assert(TotalSizeSet);
+  DebugAssert(TotalSizeSet);
   uintptr_t CurCps = CPS();
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped))
@@ -536,7 +536,7 @@ TDateTime TFileOperationProgressType::TotalTimeExpected() const
 
 TDateTime TFileOperationProgressType::TotalTimeLeft() const
 {
-  assert(TotalSizeSet);
+  DebugAssert(TotalSizeSet);
   uintptr_t CurCps = CPS();
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped + TotalTransfered))

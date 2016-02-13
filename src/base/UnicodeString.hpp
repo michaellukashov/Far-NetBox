@@ -18,7 +18,8 @@ public:
   explicit UTF8String(const UnicodeString & Str);
   UTF8String(const wchar_t * Str);
   explicit UTF8String(const wchar_t * Str, intptr_t Size);
-  UTF8String(const char * Str, intptr_t Size);
+  explicit UTF8String(const char * Str, intptr_t Size) { Init(Str, Size); }
+  explicit UTF8String(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
 
   ~UTF8String() {}
 
@@ -33,6 +34,10 @@ public:
   UTF8String SubString(intptr_t Pos, intptr_t Len = -1) const;
 
   intptr_t Pos(char Ch) const;
+
+  int vprintf(const char * Format, va_list ArgList);
+
+  void Unique() {}
 
 public:
   UTF8String & operator=(const UnicodeString & StrCopy);
@@ -135,6 +140,8 @@ public:
   UnicodeString TrimLeft() const;
   UnicodeString TrimRight() const;
 
+  void Unique() {}
+
   void sprintf(const wchar_t * fmt, ...);
 
 public:
@@ -215,6 +222,7 @@ public:
   AnsiString & Insert(const char * Str, intptr_t Pos);
   AnsiString SubString(intptr_t Pos, intptr_t Len = -1) const;
 
+  intptr_t Pos(const AnsiString & Str) const;
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(const wchar_t * Str) const;
 
@@ -225,6 +233,8 @@ public:
   AnsiString & Append(const AnsiString & Str) { return Append(Str.c_str(), Str.GetLength()); }
   AnsiString & Append(const char * Str) { return Append(Str, strlen(Str ? Str : "")); }
   AnsiString & Append(const char Ch) { return Append(&Ch, 1); }
+
+  void Unique() {}
 
 public:
   AnsiString & operator=(const UnicodeString & strCopy);
@@ -302,6 +312,8 @@ public:
   intptr_t Pos(const wchar_t * Str) const;
   intptr_t Pos(const char Ch) const;
   intptr_t Pos(const char * Ch) const;
+
+  void Unique() {}
 
 public:
   RawByteString & operator=(const UnicodeString & strCopy);

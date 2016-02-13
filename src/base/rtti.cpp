@@ -1,4 +1,4 @@
-#include <Classes.hpp>
+#include <Global.h>
 #include "rtti.hpp"
 
 TClassInfo * TClassInfo::sm_first = nullptr;
@@ -70,10 +70,8 @@ const TClassInfo * TClassInfo::FindClass(int classId)
 
 void TClassInfo::Register()
 {
-#if _DEBUG
   // reentrance guard
   static int entry = 0;
-#endif
 
   THashTable * classTable;
 
@@ -86,11 +84,11 @@ void TClassInfo::Register()
   else
   {
     // guard against reentrance once the global has been created
-    assert(++entry == 1 || "TClassInfo::Register() reentrance");
+    DebugAssert(++entry == 1 || "TClassInfo::Register() reentrance");
     classTable = sm_classTable;
   }
 
-  assert(classTable->Get(m_classId) == nullptr);
+  DebugAssert(classTable->Get(m_classId) == nullptr);
 
   classTable->Put(m_classId, this);
 

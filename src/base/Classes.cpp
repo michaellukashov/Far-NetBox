@@ -14,7 +14,7 @@
 #if (_MSC_VER >= 1900)
 
 extern "C" {
-	FILE* __iob_func = nullptr;
+  FILE * __iob_func = nullptr;
 }
 #endif
 
@@ -23,18 +23,23 @@ void Abort()
   throw EAbort(L"");
 }
 
-void Error(int ErrorID, intptr_t data)
+void Error(intptr_t Id, intptr_t ErrorId)
 {
-  UnicodeString Msg = FMTLOAD(ErrorID, data);
+  UnicodeString Msg = FMTLOAD(Id, ErrorId);
   throw ExtException(static_cast<Exception *>(nullptr), Msg);
+}
+
+void ThrowNotImplemented(intptr_t ErrorId)
+{
+  Error(SNotImplemented, ErrorId);
 }
 
 bool TObject::IsKindOf(TObjectClassId ClassId) const
 {
-  assert(this != nullptr);
+  DebugAssert(this != nullptr);
 
   TClassInfo * thisInfo = this->GetClassInfo();
-  assert(thisInfo != nullptr);
+  DebugAssert(thisInfo != nullptr);
 
   const TClassInfo * classInfo = TClassInfo::FindClass(ClassId);
   return thisInfo->IsKindOf(classInfo);
@@ -266,7 +271,7 @@ void TList::Sort()
 {
   // if (FList.size() > 1)
     // QuickSort(FList, 0, GetCount() - 1, Compare);
-  Error(SNotImplemented, 15);
+  ThrowNotImplemented(15);
 }
 
 TObjectList::TObjectList() :
@@ -357,6 +362,7 @@ const intptr_t MinsPerHour = 60;
 const intptr_t SecsPerMin = 60;
 const intptr_t HoursPerDay = 24;
 const intptr_t MSecsPerSec = 1000;
+const intptr_t OneSecond = MSecsPerSec;
 const intptr_t SecsPerHour = MinsPerHour * SecsPerMin;
 const intptr_t MinsPerDay  = HoursPerDay * MinsPerHour;
 const intptr_t SecsPerDay  = MinsPerDay * SecsPerMin;
@@ -513,7 +519,7 @@ void TStrings::Assign(const TPersistent * Source)
       EndUpdate();
     };
     Clear();
-    assert(Strings);
+    DebugAssert(Strings);
     FQuoteChar = Strings->FQuoteChar;
     FDelimiter = Strings->FDelimiter;
     AddStrings(Strings);
@@ -690,7 +696,7 @@ const UnicodeString TStrings::GetName(intptr_t Index) const
 
 void TStrings::SetName(intptr_t /*Index*/, const UnicodeString & /*Value*/)
 {
-  Error(SNotImplemented, 2012);
+  ThrowNotImplemented(2012);
 }
 
 UnicodeString TStrings::ExtractName(const UnicodeString & S) const
@@ -759,7 +765,7 @@ void TStrings::Append(const UnicodeString & Value)
 
 void TStrings::SaveToStream(TStream * /*Stream*/) const
 {
-  Error(SNotImplemented, 12);
+  ThrowNotImplemented(12);
 }
 
 intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2)
@@ -785,7 +791,7 @@ void TStringList::Assign(const TPersistent * Source)
 
 intptr_t TStringList::GetCount() const
 {
-  assert(FStrings.size() == FObjects.size());
+  DebugAssert(FStrings.size() == FObjects.size());
   return static_cast<intptr_t>(FStrings.size());
 }
 
@@ -1491,7 +1497,7 @@ void TMemoryStream::SaveToFile(const UnicodeString & /*AFileName*/)
 {
   // TFileStream Stream(FileName, fmCreate);
   // SaveToStream(Stream);
-  Error(SNotImplemented, 1203);
+  ThrowNotImplemented(1203);
 }
 
 void TMemoryStream::Clear()
@@ -2089,7 +2095,7 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
 {
   (void)LCID;
   (void)FormatSettings;
-  Error(SNotImplemented, 1204);
+  ThrowNotImplemented(1204);
 }
 
 NB_IMPLEMENT_CLASS(TObject, nullptr, nullptr)

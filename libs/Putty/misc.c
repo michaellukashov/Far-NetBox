@@ -1106,3 +1106,14 @@ int strendswith(const char *s, const char *t)
     size_t slen = strlen(s), tlen = strlen(t);
     return slen >= tlen && !strcmp(s + (slen - tlen), t);
 }
+
+#ifdef MPEXT
+
+#include "version.h"
+
+const char * get_putty_version()
+{
+    return TEXTVER;
+}
+
+#endif

@@ -33,6 +33,7 @@ extern const intptr_t HoursPerDay;
 extern const intptr_t SecsPerDay;
 extern const intptr_t MSecsPerDay;
 extern const intptr_t MSecsPerSec;
+extern const intptr_t OneSecond;
 extern const intptr_t DateDelta;
 extern const intptr_t UnixDateDelta;
 
@@ -42,7 +43,8 @@ DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /*Sender*/);
 
 void Abort();
-void Error(int ErrorID, intptr_t data);
+void Error(intptr_t Id, intptr_t ErrorId);
+void ThrowNotImplemented(intptr_t ErrorId);
 
 class TObject
 {
@@ -666,6 +668,27 @@ inline double Trunc(double Value) { double intpart; modf(Value, &intpart); retur
 inline double Frac(double Value) { double intpart; return modf(Value, &intpart); }
 inline double Abs(double Value) { return fabs(Value); }
 
+// forms\InputDlg.cpp
+struct TInputDialogData
+{
+//  TCustomEdit * Edit;
+  void * Edit;
+};
+
+//typedef void (__closure *TInputDialogInitialize)
+//  (TObject * Sender, TInputDialogData * Data);
+DEFINE_CALLBACK_TYPE2(TInputDialogInitializeEvent, void,
+  TObject * /*Sender*/, TInputDialogData * /*Data*/);
+
+enum TQueryType
+{
+  qtConfirmation,
+  qtWarning,
+  qtError,
+  qtInformation,
+};
+struct TMessageParams;
+
 class TGlobalFunctionsIntf
 {
 public:
@@ -675,6 +698,13 @@ public:
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;
   virtual UnicodeString GetCurrDirectory() const = 0;
   virtual UnicodeString GetStrVersionNumber() const = 0;
+  virtual bool InputDialog(const UnicodeString & ACaption,
+    const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
+    TStrings * History, bool PathInput,
+    TInputDialogInitializeEvent OnInitialize, bool Echo) = 0;
+  virtual uintptr_t MoreMessageDialog(const UnicodeString & Message,
+    TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
+      const TMessageParams * Params) = 0;
 };
 
 TGlobalFunctionsIntf * GetGlobalFunctions();

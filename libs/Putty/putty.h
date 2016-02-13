@@ -279,9 +279,9 @@ enum {
      * three-way settings whose values are `always yes', `always
      * no', and `decide by some more complex automated means'. This
      * is true of line discipline options (local echo and line
-     * editing), proxy DNS, Close On Exit, and SSH server bug
-     * workarounds. Accordingly I supply a single enum here to deal
-     * with them all.
+     * editing), proxy DNS, proxy terminal logging, Close On Exit, and
+     * SSH server bug workarounds. Accordingly I supply a single enum
+     * here to deal with them all.
      */
     FORCE_ON, FORCE_OFF, AUTO
 };
@@ -681,6 +681,7 @@ void cleanup_exit(int);
     X(STR, NONE, proxy_username) \
     X(STR, NONE, proxy_password) \
     X(STR, NONE, proxy_telnet_command) \
+    X(INT, NONE, proxy_log_to_term) \
     /* SSH options */ \
     X(STR, NONE, remote_cmd) \
     X(STR, NONE, remote_cmd2) /* fallback if remote_cmd fails; never loaded or saved */ \
@@ -1077,13 +1078,13 @@ extern Backend ssh_backend;
 /*
  * Exports from ldisc.c.
  */
-/*
+#ifndef MPEXT
 void *ldisc_create(Conf *, Terminal *, Backend *, void *, void *);
 void ldisc_configure(void *, Conf *);
 void ldisc_free(void *);
 void ldisc_send(void *handle, const char *buf, int len, int interactive);
 void ldisc_echoedit_update(void *handle);
-*/
+#endif
 /*
  * Exports from ldiscucs.c.
  */
@@ -1215,7 +1216,11 @@ int verify_ssh_host_key(void *frontend, char *host, int port,
  * have_ssh_host_key() just returns true if a key of that type is
  * already chached and false otherwise.
  */
+#ifdef MPEXT
+int have_ssh_host_key(void *frontend, const char *host, int port, const char *keytype);
+#else
 int have_ssh_host_key(const char *host, int port, const char *keytype);
+#endif
 /*
  * askalg has the same set of return values as verify_ssh_host_key.
  */
@@ -1517,4 +1522,5 @@ void putty_finalize();
 // but known to get UTF-8 encoded component (currently private key path only)
 #define MPEXT_BOM "\xEF\xBB\xBF"
 #endif
+
 #endif

@@ -115,7 +115,7 @@
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\mfc.vs2015;..\..\libs\openssl\vs2015-x86;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libputty.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libtinyxml2.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libneon.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libapr.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libexpat.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\dlmalloc.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\rdestl.vs2015;</AdditionalLibraryDirectories>
       <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.vs2015.lib;libeay32.lib;ssleay32.lib;libputty.vs2015.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.vs2015.lib;rdestl.vs2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -140,7 +140,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\mfc.vs2015;..\..\libs\openssl\vs2015-x64;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libputty.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libtinyxml2.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libneon.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libapr.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libexpat.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\dlmalloc.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\rdestl.vs2015;</AdditionalLibraryDirectories>
       <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.vs2015.lib;libeay32.lib;ssleay32.lib;libputty.vs2015.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.vs2015.lib;rdestl.vs2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -178,7 +178,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
@@ -219,7 +219,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
@@ -250,6 +250,7 @@
     <ClCompile Include="..\base\Common.cpp" />
     <ClCompile Include="..\base\Exceptions.cpp" />
     <ClCompile Include="..\base\FileBuffer.cpp" />
+    <ClCompile Include="..\base\Global.cpp" />
     <ClCompile Include="..\core\Bookmarks.cpp" />
     <ClCompile Include="..\core\Configuration.cpp" />
     <ClCompile Include="..\core\CopyParam.cpp" />
@@ -274,11 +275,14 @@
     <ClCompile Include="..\core\Terminal.cpp" />
     <ClCompile Include="..\core\WebDAVFileSystem.cpp" />
     <ClCompile Include="..\core\WinSCPSecurity.cpp" />
+    <ClCompile Include="..\core\Http.cpp" />
+    <ClCompile Include="..\core\NeonIntf.cpp" />
     <ClCompile Include="..\windows\GUIConfiguration.cpp" />
     <ClCompile Include="..\windows\GUITools.cpp" />
     <ClCompile Include="..\windows\ProgParams.cpp" />
     <ClCompile Include="..\windows\SynchronizeController.cpp" />
     <ClCompile Include="..\windows\Tools.cpp" />
+    <ClCompile Include="..\windows\WinInterface.cpp" />
     <ClCompile Include="FarConfiguration.cpp" />
     <ClCompile Include="FarDialog.cpp" />
     <ClCompile Include="FarInterface.cpp" />

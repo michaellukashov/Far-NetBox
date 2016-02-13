@@ -390,12 +390,13 @@ void AES256EncyptWithMAC(const RawByteString & Input, const UnicodeString & Pass
   {
     Salt = AES256Salt();
   }
-  assert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
+  DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
     reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
     reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
+  Output.Unique();
   fcrypt_encrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
   Mac.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   fcrypt_end(reinterpret_cast<uint8_t *>(const_cast<char *>(Mac.c_str())), &aes);
@@ -415,7 +416,7 @@ bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   const RawByteString & Salt, RawByteString & Output, const RawByteString & Mac)
 {
   fcrypt_ctx aes;
-  assert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
+  DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
     reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
@@ -424,7 +425,7 @@ bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   fcrypt_decrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
   RawByteString Mac2;
   Mac2.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  assert(Mac.Length() == Mac2.Length());
+  DebugAssert(Mac.Length() == Mac2.Length());
   fcrypt_end(reinterpret_cast<uint8_t *>(const_cast<char *>(Mac2.c_str())), &aes);
   return (Mac2 == Mac);
 }
@@ -471,7 +472,7 @@ bool AES256Verify(const UnicodeString & Input, const RawByteString & Verifier)
   RawByteString Mac2;
   AES256EncyptWithMAC(Dummy, Input, Salt, Encrypted, Mac2);
 
-  assert(Mac2.Length() == Mac.Length());
+  DebugAssert(Mac2.Length() == Mac.Length());
 
   return (Mac == Mac2);
 }
@@ -568,7 +569,7 @@ bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Passwor
   }
   if (Result)
   {
-    Password = UTF8String(LocalScrambled.c_str(), LocalScrambled.Length());
+    Password = UTF8ToString(LocalScrambled);
   }
   else
   {

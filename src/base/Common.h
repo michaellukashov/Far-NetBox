@@ -1,6 +1,16 @@
 #pragma once
 
+#include <Global.h>
 #include <Exceptions.h>
+
+extern const wchar_t EngShortMonthNames[12][4];
+#define CONST_BOM "\xEF\xBB\xBF"
+extern const wchar_t TokenPrefix;
+extern const wchar_t NoReplacement;
+extern const wchar_t TokenReplacement;
+#define LOCAL_INVALID_CHARS "/\\:*?\"<>|"
+#define PASSWORD_MASK "***"
+#define sLineBreak L"\n"
 
 // Order of the values also define order of the buttons/answers on the prompts
 // MessageDlg relies on these to be <= 0x0000FFFF
@@ -28,22 +38,19 @@ const int qpFatalAbort           = 0x01;
 const int qpNeverAskAgainCheck   = 0x02;
 const int qpAllowContinueOnError = 0x04;
 const int qpIgnoreAbort          = 0x08;
-
-extern const wchar_t EngShortMonthNames[12][4];
-#define CONST_BOM "\xEF\xBB\xBF"
-extern const wchar_t TokenPrefix;
-extern const wchar_t NoReplacement;
-extern const wchar_t TokenReplacement;
-#define LOCAL_INVALID_CHARS "/\\:*?\"<>|"
-#define PASSWORD_MASK "***"
+const int qpWaitInBatch          = 0x10;
 
 inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
 
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B);
 UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);
+intptr_t PosFrom(const UnicodeString & SubStr, const UnicodeString & Str, intptr_t Index);
 void PackStr(UnicodeString & Str);
 void PackStr(RawByteString & Str);
+void PackStr(AnsiString & Str);
 void Shred(UnicodeString & Str);
+void Shred(UTF8String & Str);
+void Shred(AnsiString & Str);
 UnicodeString AnsiToString(const RawByteString & S);
 UnicodeString AnsiToString(const char * S, size_t Len);
 UnicodeString MakeValidFileName(const UnicodeString & AFileName);
@@ -52,41 +59,44 @@ UnicodeString BooleanToStr(bool B);
 UnicodeString BooleanToEngStr(bool B);
 UnicodeString DefaultStr(const UnicodeString & Str, const UnicodeString & Default);
 UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim);
-UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From,
-  const UnicodeString & Chs, bool Trim,
+UnicodeString CopyToChars(const UnicodeString & Str, intptr_t & From, const UnicodeString & Chs, bool Trim,
   wchar_t * Delimiter = nullptr, bool DoubleDelimiterEscapes = false);
 UnicodeString CopyToChar(const UnicodeString & Str, wchar_t Ch, bool Trim);
 UnicodeString DelimitStr(const UnicodeString & Str, const UnicodeString & Chars);
 UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote);
 UnicodeString ExceptionLogString(Exception * E);
 UnicodeString MainInstructions(const UnicodeString & S);
+bool HasParagraphs(const UnicodeString & S);
 UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S);
 bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions);
 UnicodeString RemoveMainInstructionsTag(const UnicodeString & S);
 UnicodeString UnformatMessage(const UnicodeString & S);
 UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S);
+UnicodeString RemoveEmptyLines(const UnicodeString & S);
 bool IsNumber(const UnicodeString & Str);
 UnicodeString GetSystemTemporaryDirectory();
 UnicodeString GetShellFolderPath(int CSIdl);
 UnicodeString StripPathQuotes(const UnicodeString & APath);
+UnicodeString AddQuotes(const UnicodeString & Str);
 UnicodeString AddPathQuotes(const UnicodeString & APath);
 void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   UnicodeString & Params, UnicodeString & Dir);
 UnicodeString ValidLocalFileName(const UnicodeString & AFileName);
 UnicodeString ValidLocalFileName(
-  const UnicodeString & AFileName, wchar_t InvalidCharsReplacement,
-  const UnicodeString & TokenizibleChars, const UnicodeString & LocalInvalidChars);
+  const UnicodeString & AFileName, wchar_t AInvalidCharsReplacement,
+  const UnicodeString & ATokenizibleChars, const UnicodeString & ALocalInvalidChars);
 UnicodeString ExtractProgram(const UnicodeString & Command);
 UnicodeString ExtractProgramName(const UnicodeString & Command);
-UnicodeString FormatCommand(const UnicodeString & Program, const UnicodeString & Params);
+UnicodeString FormatCommand(const UnicodeString & Program, const UnicodeString & AParams);
 UnicodeString ExpandFileNameCommand(const UnicodeString & Command,
   const UnicodeString & AFileName);
 void ReformatFileNameCommand(UnicodeString & Command);
-UnicodeString EscapePuttyCommandParam(const UnicodeString & Param);
+UnicodeString EscapeParam(const UnicodeString & AParam);
+UnicodeString EscapePuttyCommandParam(const UnicodeString & AParam);
 UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str);
 bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2);
 bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2);
-int CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2);
+intptr_t CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2);
 bool IsReservedName(const UnicodeString & AFileName);
 UnicodeString ApiPath(const UnicodeString & APath);
 UnicodeString DisplayableStr(const RawByteString & Str);
@@ -102,26 +112,31 @@ bool IsLetter(wchar_t Ch);
 bool IsDigit(wchar_t Ch);
 bool IsHex(wchar_t Ch);
 UnicodeString DecodeUrlChars(const UnicodeString & S);
-UnicodeString EncodeUrlChars(const UnicodeString & S);
 UnicodeString EncodeUrlString(const UnicodeString & S);
 UnicodeString EncodeUrlPath(const UnicodeString & S);
 UnicodeString AppendUrlParams(const UnicodeString & URL, const UnicodeString & Params);
 bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin);
+void RecursiveDeleteFileChecked(const UnicodeString & AFileName, bool ToRecycleBin);
 void DeleteFileChecked(const UnicodeString & AFileName);
 uintptr_t CancelAnswer(uintptr_t Answers);
 uintptr_t AbortAnswer(uintptr_t Answers);
 uintptr_t ContinueAnswer(uintptr_t Answers);
-UnicodeString LoadStr(intptr_t Ident, intptr_t MaxLength = 0);
+UnicodeString LoadStr(intptr_t Ident, uintptr_t MaxLength = 0);
 UnicodeString LoadStrPart(intptr_t Ident, intptr_t Part);
 UnicodeString EscapeHotkey(const UnicodeString & Caption);
-bool CutToken(UnicodeString & Str, UnicodeString & Token,
-  UnicodeString * RawToken = nullptr);
+bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
+  UnicodeString * ARawToken = nullptr, UnicodeString * ASeparator = nullptr);
 void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
 bool IsWinVista();
 bool IsWin7();
+bool IsWin8();
+bool IsWin10();
 bool IsWine();
+#ifndef _MSC_VER
+TLibModule * __fastcall FindModule(void * Instance);
+#endif
 int64_t Round(double Number);
-bool TryRelativeStrToDateTime(const UnicodeString & S, TDateTime & DateTime);
+bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime);
 LCID GetDefaultLCID();
 UnicodeString DefaultEncodingName();
 UnicodeString WindowsProductName();
@@ -131,14 +146,22 @@ UnicodeString FormatNumber(int64_t Size);
 UnicodeString FormatSize(int64_t Size);
 UnicodeString ExtractFileBaseName(const UnicodeString & APath);
 TStringList * TextToStringList(const UnicodeString & Text);
+UnicodeString StringsToText(TStrings * Strings);
 TStrings * CloneStrings(TStrings * Strings);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int SubminorVersion);
 TFormatSettings GetEngFormatSettings();
-//int ParseShortEngMonthName(const UnicodeString & MonthStr);
+int ParseShortEngMonthName(const UnicodeString & MonthStr);
 // The defaults are equal to defaults of TStringList class (except for Sorted)
 TStringList * CreateSortedStringList(bool CaseSensitive = false, TDuplicatesEnum Duplicates = dupIgnore);
 UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);
+void CheckCertificate(const UnicodeString & Path);
+typedef struct x509_st X509;
+typedef struct evp_pkey_st EVP_PKEY;
+void ParseCertificate(const UnicodeString & Path,
+  const UnicodeString & Passphrase, X509 *& Certificate, EVP_PKEY *& PrivateKey,
+  bool & WrongPassphrase);
+bool IsHttpUrl(const UnicodeString & S);
 
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /*FileName*/, const TSearchRec & /*Rec*/, void * /*Param*/);
@@ -150,21 +173,24 @@ struct TSearchRecChecked : public TSearchRec
 };
 
 DWORD FindCheck(DWORD Result, const UnicodeString & APath);
+DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked & F);
 DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked & F);
 DWORD FindNextChecked(TSearchRecChecked & F);
 void ProcessLocalDirectory(const UnicodeString & ADirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
 
+extern const wchar_t * DSTModeNames;
 enum TDSTMode
 {
   dstmWin  = 0, //
   dstmUnix = 1, // adjust UTC time to Windows "bug"
-  dstmKeep = 2
+  dstmKeep = 2,
 };
 
 bool UsesDaylightHack();
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day);
 TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
+double DSTDifferenceForTime(const TDateTime & DateTime);
 TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime);
 TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode);
 TDateTime ConvertTimestampToUTC(const TDateTime & DateTime);
@@ -189,65 +215,15 @@ intptr_t TimeToMSec(const TDateTime & T);
 intptr_t TimeToSeconds(const TDateTime & T);
 intptr_t TimeToMinutes(const TDateTime & T);
 
-class TGuard : public TObject
+#ifndef _MSC_VER
+template<class MethodT>
+MethodT __fastcall MakeMethod(void * Data, void * Code)
 {
-NB_DISABLE_COPY(TGuard)
-public:
-  explicit TGuard(const TCriticalSection & ACriticalSection);
-  ~TGuard();
-
-private:
-  const TCriticalSection & FCriticalSection;
-};
-
-class TUnguard : public TObject
-{
-NB_DISABLE_COPY(TUnguard)
-public:
-  explicit TUnguard(TCriticalSection & ACriticalSection);
-  ~TUnguard();
-
-private:
-  TCriticalSection & FCriticalSection;
-};
-
-#define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())
-//#define CALLSTACK
-//#define CCALLSTACK(TRACING)
-//#define TRACING
-//#undef TRACE
-//#define TRACE(MESSAGE)
-//#define TRACEFMT(MESSAGE, ...)
-//#define CTRACE(TRACING, MESSAGE)
-//#define CTRACEFMT(TRACING, MESSAGE, ...)
-
-#include <assert.h>
-//#define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
-#ifndef _DEBUG
-#undef assert
-#define assert(p)   ((void)0)
-#define CHECK(p) p
-#define FAIL
-//#define TRACE_EXCEPT_BEGIN
-//#define TRACE_EXCEPT_END
-//#define TRACE_CATCH_ALL catch (...)
-//#define CLEAN_INLINE
-//#define TRACEE_(E)
-//#define TRACEE
-//#define TRACE_EXCEPT
-#define ALWAYS_TRUE(p) p
-#define ALWAYS_FALSE(p) p
-#define NOT_NULL(P) P
-#else
-#define CHECK(p) { bool __CHECK_RESULT__ = (p); assert(__CHECK_RESULT__); }
-#define FAIL assert(false)
-#define ALWAYS_TRUE(p) (p)
-#define ALWAYS_FALSE(p) (p)
-#define NOT_NULL(P) P
-#define CLEAN_INLINE
-#endif
-#ifndef USEDPARAM
-#define USEDPARAM(p) (void)(p)
+  MethodT Method;
+  ((TMethod*)&Method)->Data = Data;
+  ((TMethod*)&Method)->Code = Code;
+  return Method;
+}
 #endif
 
 #pragma warning(push)
@@ -297,13 +273,13 @@ public:
   inline explicit TAutoNestingCounter(int & Target) :
     TValueRestorer<int>(Target)
   {
-    assert(Target >= 0);
+    DebugAssert(Target >= 0);
     ++Target;
   }
 
   inline ~TAutoNestingCounter()
   {
-    assert(!FArmed || (FTarget == (FValue + 1)));
+    DebugAssert(!FArmed || (FTarget == (FValue + 1)));
   }
 };
 
@@ -313,17 +289,61 @@ public:
   TAutoFlag(bool & Target) :
     TValueRestorer<bool>(Target)
   {
-    assert(!Target);
+    DebugAssert(!Target);
     Target = true;
   }
 
   ~TAutoFlag()
   {
-    assert(!FArmed || FTarget);
+    DebugAssert(!FArmed || FTarget);
   }
 };
-
 #pragma warning(pop)
+
+#include <rdestl/map.h>
+
+template<class T1, class T2>
+class BiDiMap
+{
+public:
+  typedef rde::map<T1, T2> TFirstToSecond;
+  typedef typename TFirstToSecond::const_iterator const_iterator;
+
+  void Add(const T1 & Value1, const T2 & Value2)
+  {
+    FFirstToSecond.insert(std::make_pair(Value1, Value2));
+    FSecondToFirst.insert(std::make_pair(Value2, Value1));
+  }
+
+  T1 LookupFirst(const T2 & Value2) const
+  {
+    TSecondToFirst::const_iterator Iterator = FSecondToFirst.find(Value2);
+    DebugAssert(Iterator != FSecondToFirst.end());
+    return Iterator->second;
+  }
+
+  T2 LookupSecond(const T1 & Value1) const
+  {
+    const_iterator Iterator = FFirstToSecond.find(Value1);
+    DebugAssert(Iterator != FFirstToSecond.end());
+    return Iterator->second;
+  }
+
+  const_iterator begin()
+  {
+    return FFirstToSecond.begin();
+  }
+
+  const_iterator end()
+  {
+    return FFirstToSecond.end();
+  }
+
+private:
+  TFirstToSecond FFirstToSecond;
+  typedef rde::map<T2, T1> TSecondToFirst;
+  TSecondToFirst FSecondToFirst;
+};
 
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 
@@ -333,5 +353,6 @@ namespace base {
 UnicodeString UnixExtractFileExt(const UnicodeString & APath);
 UnicodeString UnixExtractFileName(const UnicodeString & APath);
 UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix);
+UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName);
 
 } // namespace base

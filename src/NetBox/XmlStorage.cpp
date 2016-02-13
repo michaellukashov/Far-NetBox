@@ -102,7 +102,7 @@ bool TXmlStorage::WriteXml()
 
 bool TXmlStorage::Copy(TXmlStorage * /*Storage*/)
 {
-  Error(SNotImplemented, 3020);
+  ThrowNotImplemented(3020);
   bool Result = false;
   return Result;
 }
@@ -119,7 +119,7 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
     case smReadWrite:
     default:
       FXmlDoc->LinkEndChild(FXmlDoc->NewDeclaration());
-      assert(FCurrentElement == nullptr);
+      DebugAssert(FCurrentElement == nullptr);
       FCurrentElement = FXmlDoc->NewElement(CONST_ROOT_NODE);
       FCurrentElement->SetAttribute(CONST_VERSION_ATTR, CONST_XML_VERSION21);
       FXmlDoc->LinkEndChild(FCurrentElement);
@@ -129,9 +129,9 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
 
 bool TXmlStorage::DoKeyExists(const UnicodeString & SubKey, bool /*ForceAnsi*/)
 {
-  Error(SNotImplemented, 3024);
   UnicodeString K = PuttyMungeStr(SubKey);
-  bool Result = false; // FRegistry->KeyExists(K);
+  const tinyxml2::XMLElement * Element = FindChildElement(ToStdString(K));
+  bool Result = Element != nullptr;
   return Result;
 }
 
@@ -205,7 +205,7 @@ void TXmlStorage::GetSubKeyNames(TStrings * Strings)
 
 void TXmlStorage::GetValueNames(TStrings * /*Strings*/) const
 {
-  Error(SNotImplemented, 3022);
+  ThrowNotImplemented(3022);
   // FRegistry->GetValueNames(Strings);
 }
 
@@ -273,7 +273,7 @@ tinyxml2::XMLElement * TXmlStorage::FindElement(const UnicodeString & Name) cons
 tinyxml2::XMLElement * TXmlStorage::FindChildElement(const std::string & subKey) const
 {
   tinyxml2::XMLElement * Result = nullptr;
-  // assert(FCurrentElement);
+  // DebugAssert(FCurrentElement);
   if (FStoredSessionsOpened)
   {
     tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement(CONST_SESSION_NODE);
@@ -291,7 +291,7 @@ tinyxml2::XMLElement * TXmlStorage::FindChildElement(const std::string & subKey)
 
 UnicodeString TXmlStorage::GetValue(tinyxml2::XMLElement * Element) const
 {
-  assert(Element);
+  DebugAssert(Element);
   UnicodeString Result;
   if (FStoredSessionsOpened && Element->Attribute(CONST_NAME_ATTR))
   {
@@ -317,7 +317,7 @@ bool TXmlStorage::ValueExists(const UnicodeString & Value) const
 
 size_t TXmlStorage::BinaryDataSize(const UnicodeString & /*Name*/) const
 {
-  Error(SNotImplemented, 3026);
+  ThrowNotImplemented(3026);
   size_t Result = 0; // FRegistry->GetDataSize(Name);
   return Result;
 }
@@ -375,7 +375,7 @@ UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString & Name, const Unico
 size_t TXmlStorage::ReadBinaryData(const UnicodeString & /*Name*/,
   void * /*Buffer*/, size_t /*Size*/) const
 {
-  Error(SNotImplemented, 3028);
+  ThrowNotImplemented(3028);
   size_t Result = 0;
   return Result;
 }

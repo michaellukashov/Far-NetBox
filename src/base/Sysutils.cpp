@@ -385,9 +385,47 @@ intptr_t AnsiCompareIC(const UnicodeString & Str1, const UnicodeString & Str2)
   return AnsiCompareText(Str1, Str2);
 }
 
+bool AnsiSameStr(const UnicodeString & Str1, const UnicodeString & Str2)
+{
+  return AnsiCompareIC(Str1, Str2) == 0;
+}
+
 bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
 {
   return ::Pos(Str1, Str2) > 0;
+}
+
+bool ContainsStr(const AnsiString & Str1, const AnsiString & Str2)
+{
+  return Str1.Pos(Str2) > 0;
+}
+
+bool ContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
+{
+  return AnsiContainsText(Str1, Str2);
+}
+
+UnicodeString UTF8ToString(const RawByteString & Str)
+{
+  return MB2W(Str.c_str(), CP_UTF8);
+}
+
+UnicodeString UTF8ToString(const char * Str, intptr_t Len)
+{
+  if (!Str || !*Str || !Len)
+  {
+    return UnicodeString(L"");
+  }
+
+  intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Len), nullptr, 0);
+  UnicodeString Result;
+  if (reqLength)
+  {
+    Result.SetLength(reqLength);
+    ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Len), const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
+    Result.SetLength(Result.Length() - 1);  //remove NULL character
+  }
+  return Result;
 }
 
 void RaiseLastOSError(DWORD LastError)
@@ -574,9 +612,9 @@ DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs)
   return Result;
 }
 
-bool CreateDir(const UnicodeString & ADir)
+bool CreateDir(const UnicodeString & ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
-  return ::CreateDirectory(ApiPath(ADir).c_str(), nullptr) != 0;
+  return ::CreateDirectory(ApiPath(ADir).c_str(), SecurityAttributes) != 0;
 }
 
 bool RemoveDir(const UnicodeString & ADir)
@@ -891,9 +929,9 @@ void AppendPathDelimiterW(UnicodeString & Str)
 
 UnicodeString ExpandEnvVars(const UnicodeString & Str)
 {
-  wchar_t buf[32 * 1024];
-  intptr_t size = ::ExpandEnvironmentStringsW(Str.c_str(), buf, static_cast<DWORD>(32 * 1024 - 1));
-  UnicodeString Result = UnicodeString(buf, size - 1);
+  UnicodeString Buf(32 * 1024, 0);
+  intptr_t size = ::ExpandEnvironmentStringsW(Str.c_str(), (wchar_t *)Buf.c_str(), static_cast<DWORD>(32 * 1024 - 1));
+  UnicodeString Result = UnicodeString(Buf.c_str(), size - 1);
   return Result;
 }
 
@@ -910,15 +948,16 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
   return Result;
 }
 
-UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt)
+UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt,
+  wchar_t Delimiter)
 {
-  UnicodeString Result = ::ChangeFileExtension(AFileName, AExt);
+  UnicodeString Result = ::ChangeFileExtension(AFileName, AExt, Delimiter);
   return Result;
 }
 
 UnicodeString ExtractFileExt(const UnicodeString & AFileName)
 {
-  UnicodeString Result = ExtractFileExtension(AFileName, L'.');
+  UnicodeString Result = ::ExtractFileExtension(AFileName, L'.');
   return Result;
 }
 
@@ -1085,7 +1124,8 @@ UnicodeString ExtractShortPathName(const UnicodeString & APath)
 // "/foo/bar/baz.txt" --> "/foo/bar/"
 UnicodeString ExtractDirectory(const UnicodeString & APath, wchar_t Delimiter)
 {
-  return APath.SubString(1, APath.RPos(Delimiter) + 1);
+  UnicodeString Result = APath.SubString(1, APath.RPos(Delimiter));
+  return Result;
 }
 
 //
@@ -1125,9 +1165,18 @@ UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimite
 UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeString & Ext, wchar_t Delimiter)
 {
   UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
-  return ExtractDirectory(APath, Delimiter) +
-         FileName.SubString(1, FileName.RPos(L'.')) +
-         Ext;
+  if (FileName.RPos(L'.') > 1)
+  {
+    return ExtractDirectory(APath, Delimiter) +
+           FileName.SubString(1, FileName.RPos(L'.') - 1) +
+           Ext;
+  }
+  else
+  {
+    return ExtractDirectory(APath, Delimiter) +
+           FileName +
+           Ext;
+  }
 }
 
 UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str)
@@ -1420,7 +1469,7 @@ TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec)
 TDateTime StrToDateTime(const UnicodeString & Value)
 {
   (void)Value;
-  Error(SNotImplemented, 145);
+  ThrowNotImplemented(145);
   return TDateTime();
 }
 
@@ -1430,7 +1479,7 @@ bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value,
   (void)StrValue;
   (void)Value;
   (void)FormatSettings;
-  Error(SNotImplemented, 147);
+  ThrowNotImplemented(147);
   return false;
 }
 
@@ -1463,12 +1512,44 @@ TDateTime Date()
   return Result;
 }
 
-UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & DateTime)
+UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime)
 {
   (void)Fmt;
-  (void)DateTime;
   UnicodeString Result;
-  Error(SNotImplemented, 150);
+  if (Fmt == L"ddddd tt")
+  {
+    /*
+    return FormatDateTime(L"ddddd tt",
+        EncodeDateVerbose(
+            static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
+            static_cast<uint16_t>(ValidityTime.Day)) +
+        EncodeTimeVerbose(
+            static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
+            static_cast<uint16_t>(ValidityTime.Sec), 0));
+    */
+    uint16_t Year;
+    uint16_t Month;
+    uint16_t Day;
+    uint16_t Hour;
+    uint16_t Minutes;
+    uint16_t Seconds;
+    uint16_t Milliseconds;
+
+    ADateTime.DecodeDate(Year, Month, Day);
+    ADateTime.DecodeTime(Hour, Minutes, Seconds, Milliseconds);
+
+    uint16_t Y, M, D, H, Mm, S, MS;
+    TDateTime DateTime =
+        EncodeDateVerbose(Year, Month, Day) +
+        EncodeTimeVerbose(Hour, Minutes, Seconds, Milliseconds);
+    DateTime.DecodeDate(Y, M, D);
+    DateTime.DecodeTime(H, Mm, S, MS);
+    Result = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
+  }
+  else
+  {
+    ThrowNotImplemented(150);
+  }
   return Result;
 }
 
@@ -1618,7 +1699,7 @@ TCriticalSection::TCriticalSection() :
 
 TCriticalSection::~TCriticalSection()
 {
-  assert(FAcquired == 0);
+  DebugAssert(FAcquired == 0);
   DeleteCriticalSection(&FSection);
 }
 

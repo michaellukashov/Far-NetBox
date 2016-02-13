@@ -25,10 +25,6 @@ typedef struct SockAddr_tag *SockAddr;
 typedef struct socket_function_table **Socket;
 typedef struct plug_function_table **Plug;
 
-#ifndef OSSOCKET_DEFINED
-typedef void *OSSocket;
-#endif
-
 struct socket_function_table {
     Plug(*plug) (Socket s, Plug p);
     /* use a different plug (return the old one) */
@@ -62,6 +58,11 @@ struct plug_function_table {
      * 	  fatal error - we may well have other candidate addresses
      * 	  to fall back to. When it _is_ fatal, the closing()
      * 	  function will be called.
+     *  - type==2 means that error_msg contains a line of generic
+     *    logging information about setting up the connection. This
+     *    will typically be a wodge of standard-error output from a
+     *    proxy command, so the receiver should probably prefix it to
+     *    indicate this.
      */
     int (*closing)
      (Plug p, const char *error_msg, int error_code, int calling_back);
@@ -104,7 +105,8 @@ Socket new_connection(SockAddr addr, const char *hostname,
 Socket new_listener(const char *srcaddr, int port, Plug plug,
                     int local_host_only, Conf *conf, int addressfamily);
 SockAddr name_lookup(const char *host, int port, char **canonicalname,
-		     Conf *conf, int addressfamily);
+		     Conf *conf, int addressfamily, void *frontend_for_logging,
+                     const char *lookup_reason_for_logging);
 int proxy_for_destination (SockAddr addr, const char *hostname, int port,
                            Conf *conf);
 
@@ -150,8 +152,6 @@ Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
 Socket sk_newlistener(const char *srcaddr, int port, Plug plug,
                       int local_host_only, int address_family);
 
-Socket sk_register(OSSocket sock, Plug plug);
-
 #define sk_plug(s,p) (((*s)->plug) (s, p))
 #define sk_close(s) (((*s)->close) (s))
 #define sk_write(s,buf,len) (((*s)->write) (s, buf, len))
@@ -166,16 +166,6 @@ Socket sk_register(OSSocket sock, Plug plug);
 #define plug_sent(p,bufsize) (((*p)->sent) (p, bufsize))
 #define plug_accepting(p, constructor, ctx) (((*p)->accepting)(p, constructor, ctx))
 #endif
-
-/*
- * Each socket abstraction contains a `void *' private field in
- * which the client can keep state.
- *
- * This is perhaps unnecessary now that we have the notion of a plug,
- * but there is some existing code that uses it, so it stays.
- */
-#define sk_set_private_ptr(s, ptr) (((*s)->set_private_ptr) (s, ptr))
-#define sk_get_private_ptr(s) (((*s)->get_private_ptr) (s))
 
 /*
  * Special error values are returned from sk_namelookup and sk_new
@@ -232,40 +222,19 @@ char *get_hostname(void);
  */
 Socket new_error_socket(const char *errmsg, Plug plug);
 
-/********** SSL stuff **********/
-
-/*
- * This section is subject to change, but you get the general idea
- * of what it will eventually look like.
+/* ----------------------------------------------------------------------
+ * Functions defined outside the network code, which have to be
+ * declared in this header file rather than the main putty.h because
+ * they use types defined here.
  */
 
-typedef struct certificate *Certificate;
-typedef struct our_certificate *Our_Certificate;
-    /* to be defined somewhere else, somehow */
-
-typedef struct ssl_client_socket_function_table **SSL_Client_Socket;
-typedef struct ssl_client_plug_function_table **SSL_Client_Plug;
-
-struct ssl_client_socket_function_table {
-    struct socket_function_table base;
-    void (*renegotiate) (SSL_Client_Socket s);
-    /* renegotiate the cipher spec */
-};
-
-struct ssl_client_plug_function_table {
-    struct plug_function_table base;
-    int (*refuse_cert) (SSL_Client_Plug p, Certificate cert[]);
-    /* do we accept this certificate chain?  If not, why not? */
-    /* cert[0] is the server's certificate, cert[] is NULL-terminated */
-    /* the last certificate may or may not be the root certificate */
-     Our_Certificate(*client_cert) (SSL_Client_Plug p);
-    /* the server wants us to identify ourselves */
-    /* may return NULL if we want anonymity */
-};
-
-SSL_Client_Socket sk_ssl_client_over(Socket s,	/* pre-existing (tcp) connection */
-				     SSL_Client_Plug p);
-
-#define sk_renegotiate(s) (((*s)->renegotiate) (s))
+/*
+ * Exports from be_misc.c.
+ */
+void backend_socket_log(void *frontend, int type, SockAddr addr, int port,
+                        const char *error_msg, int error_code, Conf *conf,
+                        int session_started);
+typedef struct bufchain_tag bufchain;  /* rest of declaration in misc.c */
+void log_proxy_stderr(Plug plug, bufchain *buf, const void *vdata, int len);
 
 #endif

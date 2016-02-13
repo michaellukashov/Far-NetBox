@@ -57,7 +57,7 @@ static const char *const ssh2_disconnect_reasons[] = {
     "connection lost",
     "by application",
     "too many connections",
-    "auth canceled by user",
+    "auth cancelled by user",
     "no more auth methods available",
     "illegal user name",
 };
@@ -792,6 +792,7 @@ struct ssh_tag {
     int send_ok;
     int echoing, editing;
 
+    int session_started;
     void *frontend;
 
     int ospeed, ispeed;		       /* temporaries */
@@ -1592,7 +1593,7 @@ static struct Packet *ssh2_rdpkt(Ssh ssh, const unsigned char **data,
 	 * and when the MAC passes, see if the length we've got is
 	 * plausible.
          *
-         * This defense is unnecessary in OpenSSH ETM mode, because
+         * This defence is unnecessary in OpenSSH ETM mode, because
          * the whole point of ETM mode is that the attacker can't
          * tweak the ciphertext stream at all without the MAC
          * detecting it before we decrypt anything.
@@ -2457,7 +2458,7 @@ static void ssh2_pkt_queue(Ssh ssh, struct Packet *pkt)
 }
 
 /*
- * Either queue or send a packet, depending on whether queuing is
+ * Either queue or send a packet, depending on whether queueing is
  * set.
  */
 static void ssh2_pkt_send(Ssh ssh, struct Packet *pkt)
@@ -2469,7 +2470,7 @@ static void ssh2_pkt_send(Ssh ssh, struct Packet *pkt)
 }
 
 /*
- * Either queue or defer a packet, depending on whether queuing is
+ * Either queue or defer a packet, depending on whether queueing is
  * set.
  */
 static void ssh2_pkt_defer(Ssh ssh, struct Packet *pkt)
@@ -2486,8 +2487,8 @@ static void ssh2_pkt_defer(Ssh ssh, struct Packet *pkt)
  * 
  * The expected use of the defer mechanism is that you call
  * ssh2_pkt_defer() a few times, then call ssh_pkt_defersend(). If
- * not currently queuing, this simply sets up deferred_send_data
- * and then sends it. If we _are_ currently queuing, the calls to
+ * not currently queueing, this simply sets up deferred_send_data
+ * and then sends it. If we _are_ currently queueing, the calls to
  * ssh2_pkt_defer() put the deferred packets on to the queue
  * instead, and therefore ssh_pkt_defersend() has no deferred data
  * to send. Hence, there's no need to make it conditional on
@@ -3081,6 +3082,8 @@ static int do_ssh_init(Ssh ssh, unsigned char c)
 	crReturn(1);
     }
 
+    ssh->session_started = TRUE;
+
     s->vstrsize = sizeof(protoname) + 16;
     s->vstring = snewn(s->vstrsize, char);
     strcpy(s->vstring, protoname);
@@ -3153,14 +3156,14 @@ static int do_ssh_init(Ssh ssh, unsigned char c)
 	ssh->v_s[len] = 0;
 	    
 	/*
-	 * Initialize SSH-2 protocol.
+	 * Initialise SSH-2 protocol.
 	 */
 	ssh->protocol = ssh2_protocol;
 	ssh2_protocol_setup(ssh);
 	ssh->s_rdpkt = ssh2_rdpkt;
     } else {
 	/*
-	 * Initialize SSH-1 protocol.
+	 * Initialise SSH-1 protocol.
 	 */
 	ssh->protocol = ssh1_protocol;
 	ssh1_protocol_setup(ssh);
@@ -3269,7 +3272,7 @@ static int do_ssh_connection_init(Ssh ssh, unsigned char c)
     ssh_send_verstring(ssh, protoname, s->version);
 
     /*
-     * Initialize bare connection protocol.
+     * Initialise bare connection protocol.
      */
     ssh->protocol = ssh2_bare_connection_protocol;
     ssh2_bare_connection_protocol_setup(ssh);
@@ -3346,7 +3349,7 @@ static void ssh_gotdata(Ssh ssh, const unsigned char *data, int datalen)
 
     /*
      * To begin with, feed the characters one by one to the
-     * protocol initialization / selection function do_ssh_init().
+     * protocol initialisation / selection function do_ssh_init().
      * When that returns 0, we're done with the initial greeting
      * exchange and can move on to packet discipline.
      */
@@ -3463,34 +3466,20 @@ static void ssh_socket_log(Plug plug, int type, SockAddr addr, int port,
                            const char *error_msg, int error_code)
 {
     Ssh ssh = (Ssh) plug;
-    char addrbuf[256], *msg;
 
-    if (ssh->attempting_connshare) {
-        /*
-         * While we're attempting connection sharing, don't loudly log
-         * everything that happens. Real TCP connections need to be
-         * logged when we _start_ trying to connect, because it might
-         * be ages before they respond if something goes wrong; but
-         * connection sharing is local and quick to respond, and it's
-         * sufficient to simply wait and see whether it worked
-         * afterwards.
-         */
-    } else {
-        sk_getaddr(addr, addrbuf, lenof(addrbuf));
+    /*
+     * While we're attempting connection sharing, don't loudly log
+     * everything that happens. Real TCP connections need to be logged
+     * when we _start_ trying to connect, because it might be ages
+     * before they respond if something goes wrong; but connection
+     * sharing is local and quick to respond, and it's sufficient to
+     * simply wait and see whether it worked afterwards.
+     */
 
-        if (type == 0) {
-            if (sk_addr_needs_port(addr)) {
-                msg = dupprintf("Connecting to %s port %d", addrbuf, port);
-            } else {
-                msg = dupprintf("Connecting to %s", addrbuf);
-            }
-        } else {
-            msg = dupprintf("Failed to connect to %s: %s", addrbuf, error_msg);
-        }
-
-        logevent(msg);
-        sfree(msg);
-    }
+    if (!ssh->attempting_connshare)
+        backend_socket_log(ssh->frontend, type, addr, port,
+                           error_msg, error_code, ssh->conf,
+                           ssh->session_started);
 }
 
 void ssh_connshare_log(Ssh ssh, int event, const char *logtext,
@@ -3650,37 +3639,6 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
     char *loghost;
     int addressfamily, sshprot;
 
-#if 0    
-    loghost = conf_get_str(ssh->conf, CONF_loghost);
-    if (*loghost) {
-	char *tmphost;
-        char *colon;
-
-        tmphost = dupstr(loghost);
-	ssh->savedport = 22;	       /* default ssh port */
-
-	/*
-	 * A colon suffix on the hostname string also lets us affect
-	 * savedport. (Unless there are multiple colons, in which case
-	 * we assume this is an unbracketed IPv6 literal.)
-	 */
-	colon = host_strrchr(tmphost, ':');
-	if (colon && colon == host_strchr(tmphost, ':')) {
-	    *colon++ = '\0';
-	    if (*colon)
-		ssh->savedport = atoi(colon);
-	}
-
-        ssh->savedhost = host_strduptrim(tmphost);
-        sfree(tmphost);
-    } else {
-	ssh->savedhost = host_strduptrim(host);
-	if (port < 0)
-	    port = 22;		       /* default ssh port */
-	ssh->savedport = port;
-    }
-#endif
-
     ssh_hostport_setup(host, port, ssh->conf,
                        &ssh->savedhost, &ssh->savedport, &loghost);
 
@@ -3723,10 +3681,8 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
          * Try to find host.
          */
         addressfamily = conf_get_int(ssh->conf, CONF_addressfamily);
-        logeventf(ssh, "Looking up host \"%s\"%s", host,
-                  (addressfamily == ADDRTYPE_IPV4 ? " (IPv4)" :
-                   (addressfamily == ADDRTYPE_IPV6 ? " (IPv6)" : "")));
-        addr = name_lookup(host, port, realhost, ssh->conf, addressfamily);
+        addr = name_lookup(host, port, realhost, ssh->conf, addressfamily,
+                           ssh->frontend, "SSH connection");
         if ((err = sk_addr_error(addr)) != NULL) {
             sk_addr_free(addr);
             return err;
@@ -4240,7 +4196,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 		   &ssh_3des);
     ssh->v1_cipher_ctx = ssh->cipher->make_context();
     ssh->cipher->sesskey(ssh->v1_cipher_ctx, ssh->session_key);
-    logeventf(ssh, "Initialized %s encryption", ssh->cipher->text_name);
+    logeventf(ssh, "Initialised %s encryption", ssh->cipher->text_name);
 
     ssh->crcda_ctx = crcda_make_context();
     logevent("Installing CRC compensation attack detector");
@@ -4856,7 +4812,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 	     * 
 	     * A few servers can deal with neither SSH1_MSG_IGNORE
 	     * here _nor_ a padded password string.
-	     * For these servers we are left with no defenses
+	     * For these servers we are left with no defences
 	     * against password length sniffing.
 	     */
 	    if (!(ssh->remote_bugs & BUG_CHOKES_ON_SSH1_IGNORE) &&
@@ -5359,7 +5315,7 @@ static void ssh_setup_portfwd(Ssh ssh, Conf *conf)
 		message = msg2;
 	    }
 
-	    logeventf(ssh, "Canceling %s", message);
+	    logeventf(ssh, "Cancelling %s", message);
 	    sfree(message);
 
 	    /* epf->remote or epf->local may be NULL if setting up a
@@ -5933,7 +5889,7 @@ static void do_ssh1_connection(Ssh ssh, const unsigned char *in, int inlen,
         if (!ssh->x11disp) {
             /* FIXME: return an error message from x11_setup_display */
             logevent("X11 forwarding not enabled: unable to"
-                     " initialize X display");
+                     " initialise X display");
         } else {
             ssh->x11auth = x11_invent_fake_auth
                 (ssh->x11authtree, conf_get_int(ssh->conf, CONF_x11_auth));
@@ -6027,9 +5983,9 @@ static void do_ssh1_connection(Ssh ssh, const unsigned char *in, int inlen,
 	logevent("Started compression");
 	ssh->v1_compressing = TRUE;
 	ssh->cs_comp_ctx = zlib_compress_init();
-	logevent("Initialized zlib (RFC1950) compression");
+	logevent("Initialised zlib (RFC1950) compression");
 	ssh->sc_comp_ctx = zlib_decompress_init();
-	logevent("Initialized zlib (RFC1950) decompression");
+	logevent("Initialised zlib (RFC1950) decompression");
     }
 
     /*
@@ -6515,7 +6471,11 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 	     * for which we have a host key for this host.
              */
             for (i = 0; i < lenof(hostkey_algs); i++) {
-		if (have_ssh_host_key(ssh->savedhost, ssh->savedport,
+		if (have_ssh_host_key(
+#ifdef MPEXT
+				      ssh->frontend,
+#endif
+				      ssh->savedhost, ssh->savedport,
 				      hostkey_algs[i]->keytype)) {
 		    alg = ssh2_kexinit_addalg(s->kexlists[KEXLIST_HOSTKEY],
 					      hostkey_algs[i]->name);
@@ -6666,10 +6626,11 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 	s->guessok = FALSE;
 	for (i = 0; i < NKEXLIST; i++) {
 	    ssh_pkt_getstring(pktin, &str, &len);
-        if (!str) {
-            bombout(("KEXINIT packet was incomplete"));
-            crStopV;
-        }
+	    if (!str) {
+		bombout(("KEXINIT packet was incomplete"));
+		crStopV;
+	    }
+
             /* If we've already selected a cipher which requires a
              * particular MAC, then just select that, and don't even
              * bother looking through the server's KEXINIT string for
@@ -7325,26 +7286,16 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
         sfree(key);
     }
 
-    #ifdef _DEBUG
-	// To suppress CodeGuard warning
     if (ssh->cscipher)
-    logeventf(ssh, "Initialized %s client->server encryption",
-	      ssh->cscipher->text_name);
-    if (ssh->csmac)
-    logeventf(ssh, "Initialized %s client->server MAC algorithm",
-	      ssh->csmac->text_name);
-    #else
-    if (ssh->cscipher)
-    logeventf(ssh, "Initialized %.200s client->server encryption",
-	      ssh->cscipher->text_name);
+	logeventf(ssh, "Initialised %.200s client->server encryption",
+		  ssh->cscipher->text_name);
     if (ssh->csmac && ssh->cscipher)
     logeventf(ssh, "Initialized %.200s client->server MAC algorithm%s%s",
 	      ssh->csmac->text_name,
               ssh->csmac_etm ? " (in ETM mode)" : "",
               ssh->cscipher->required_mac ? " (required by cipher)" : "");
-    #endif
     if (ssh->cscomp->text_name)
-	logeventf(ssh, "Initialized %s compression",
+	logeventf(ssh, "Initialised %s compression",
 		  ssh->cscomp->text_name);
 
     /*
@@ -7416,26 +7367,16 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
         smemclr(key, ssh->scmac->keylen);
         sfree(key);
     }
-    #ifdef _DEBUG
-	// To suppress CodeGuard warning
     if (ssh->sccipher)
-    logeventf(ssh, "Initialized %s server->client encryption",
-	      ssh->sccipher->text_name);
-    if (ssh->scmac)
-    logeventf(ssh, "Initialized %s server->client MAC algorithm",
-	      ssh->scmac->text_name);
-    #else
-    if (ssh->sccipher)
-    logeventf(ssh, "Initialized %.200s server->client encryption",
+    logeventf(ssh, "Initialised %.200s server->client encryption",
 	      ssh->sccipher->text_name);
     if (ssh->scmac && ssh->sccipher)
-    logeventf(ssh, "Initialized %.200s server->client MAC algorithm%s%s",
+    logeventf(ssh, "Initialised %.200s server->client MAC algorithm%s%s",
 	      ssh->scmac->text_name,
               ssh->scmac_etm ? " (in ETM mode)" : "",
               ssh->sccipher->required_mac ? " (required by cipher)" : "");
-    #endif
     if (ssh->sccomp->text_name)
-	logeventf(ssh, "Initialized %s decompression",
+	logeventf(ssh, "Initialised %s decompression",
 		  ssh->sccomp->text_name);
 
     /*
@@ -8406,11 +8347,11 @@ static void ssh2_msg_channel_request(Ssh ssh, struct Packet *pktin)
     /*
      * Having got the channel number, we now look at
      * the request type string to see if it's something
-     * we recognize.
+     * we recognise.
      */
     if (c == ssh->mainchan) {
 	/*
-	 * We recognize "exit-status" and "exit-signal" on
+	 * We recognise "exit-status" and "exit-signal" on
 	 * the primary channel.
 	 */
 	if (typelen == 11 &&
@@ -8661,7 +8602,7 @@ static void ssh2_msg_channel_open(Ssh ssh, struct Packet *pktin)
             /*
              * If we are a connection-sharing upstream, then we should
              * initially present a very small window, adequate to take
-             * the X11 initial authorization packet but not much more.
+             * the X11 initial authorisation packet but not much more.
              * Downstream will then present us a larger window (by
              * fiat of the connection-sharing protocol) and we can
              * guarantee to send a positive-valued WINDOW_ADJUST.
@@ -11106,6 +11047,7 @@ static const char *ssh_init(void *frontend_handle, void **backend_handle,
     ssh->X11_fwd_enabled = FALSE;
     ssh->connshare = NULL;
     ssh->attempting_connshare = FALSE;
+    ssh->session_started = FALSE;
 
     *backend_handle = ssh;
 
@@ -11157,9 +11099,14 @@ static const char *ssh_init(void *frontend_handle, void **backend_handle,
 
     p = connect_to_host(ssh, host, port, realhost, nodelay, keepalive);
     if (p != NULL) {
-        //random_unref();
+#ifndef MPEXT
+        random_unref();
+#endif
 	return p;
     }
+#ifndef MPEXT
+    random_ref();
+#endif
 
     return NULL;
 }
@@ -11917,6 +11864,12 @@ void md5checksum(const char * buffer, int len, unsigned char output[16])
   MD5Init(&md5c);
   MD5Update(&md5c, buffer, len);
   MD5Final(output, &md5c);
+}
+
+const struct ssh_signkey ** get_hostkey_algs(int * count)
+{
+  *count = lenof(hostkey_algs);
+  return hostkey_algs;
 }
 
 #endif

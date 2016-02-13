@@ -7,7 +7,7 @@ enum TEncodeType
 { 
   etUSASCII,
   etUTF8,
-  etANSI
+  etANSI,
 };
 
-extern TEncodeType DetectUTF8Encoding(const RawByteString & S);
+TEncodeType DetectUTF8Encoding(const RawByteString & S);
