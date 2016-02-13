@@ -1177,12 +1177,6 @@ UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeStri
            FileName +
            Ext;
   }
-  else
-  {
-    return ExtractDirectory(APath, Delimiter) +
-           FileName +
-           Ext;
-  }
 }
 
 UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str)

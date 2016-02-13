@@ -4787,6 +4787,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
   if (GetLog()->GetLogging() || !CopyParam->AllowAnyTransfer())
   {
     WIN32_FIND_DATA FindData = {};
+    HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
     FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()), "",
     [&]()
     {
