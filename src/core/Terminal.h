@@ -361,10 +361,8 @@ public:
   void CloseTunnel();
   void DoInformation(const UnicodeString & Str, bool Status, intptr_t Phase = -1);
   bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    const UnicodeString & AName, const UnicodeString & Instructions, const UnicodeString & Prompt,
-    bool Echo,
-    intptr_t MaxLen,
-    OUT UnicodeString & AResult);
+    const UnicodeString & AName, const UnicodeString & Instructions, const UnicodeString & Prompt, bool Echo,
+    intptr_t MaxLen, OUT UnicodeString & AResult);
   void FileFind(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
   void DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params);
   bool DoCreateLocalFile(const UnicodeString & AFileName,
