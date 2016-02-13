@@ -115,12 +115,12 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
 }
 #endif
 
+#if 0
 static TFarCheckBox * FindNeverAskAgainCheck(TFarDialog * Dialog)
 {
   return nullptr; // DebugNotNull(NB_STATIC_DOWNCAST(TFarCheckBox, Dialog->FindComponent(L"NeverAskAgainCheck")));
 }
 
-#if 0
 TFarDialog * CreateMessageDialogEx(const UnicodeString & Msg,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const UnicodeString & HelpKeyword,
   const TMessageParams * Params, TFarButton *& TimeoutButton)
@@ -534,6 +534,8 @@ static TStrings * StackInfoListToStrings(
 }
 #endif
 
+#if 0
+//moved to FarInterface.cpp
 static TCriticalSection StackTraceCriticalSection;
 typedef rde::map<DWORD, TStrings *> TStackTraceMap;
 static TStackTraceMap StackTraceMap;
@@ -569,6 +571,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
   }
   return Result;
 }
+#endif
 
 uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
   const UnicodeString & MessageFormat, uintptr_t Answers, const UnicodeString & HelpKeyword,
