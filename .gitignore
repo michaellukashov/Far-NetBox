@@ -49,7 +49,6 @@ CMakeLists.txt.user
 cov-int/
 /src/NetBox/My */
 /src/NetBox/.idea/
-src/NetBox/NetBox.vs2015.VC.opendb
 
 *.VC.db
 *.VC.opendb
