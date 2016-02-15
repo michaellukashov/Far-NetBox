@@ -813,7 +813,7 @@ UnicodeString TConfiguration::GetOSVersionStr() const
   UnicodeString Result;
   OSVERSIONINFO OSVersionInfo;
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
-  if (GetVersionEx(&OSVersionInfo) != 0)
+  if (::GetVersionEx(&OSVersionInfo) != 0)
   {
     Result = FORMAT(L"%d.%d.%d", int(OSVersionInfo.dwMajorVersion),
       int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber));
