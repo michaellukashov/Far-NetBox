@@ -250,6 +250,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   {
     SPublicKeyFile = GetConfiguration()->GetDefaultKeyFile();
   }
+  // StripPathQuotes should not be needed as we do not feed quotes anymore
   SPublicKeyFile = StripPathQuotes(::ExpandEnvironmentVariables(SPublicKeyFile));
   Filename * KeyFileFileName = filename_from_str(UTF8String(SPublicKeyFile).c_str());
   conf_set_filename(conf, CONF_keyfile, KeyFileFileName);

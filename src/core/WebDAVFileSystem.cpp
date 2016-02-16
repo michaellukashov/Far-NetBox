@@ -247,6 +247,7 @@ void TWebDAVFileSystem::Init(void *)
 
 void TWebDAVFileSystem::FileTransferProgress(int64_t TransferSize, int64_t Bytes)
 {
+
 }
 
 TWebDAVFileSystem::~TWebDAVFileSystem()

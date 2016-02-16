@@ -1040,8 +1040,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       AddSeparator();
       ADF(L"NetBox %s (OS %s)", FConfiguration->GetProductVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
       std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateConfigStorage());
-       DebugAssert(Storage.get());
-    Storage->SetAccessMode(smRead);
+      DebugAssert(Storage.get());
+      Storage->SetAccessMode(smRead);
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
 
       if (0)

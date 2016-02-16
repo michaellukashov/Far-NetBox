@@ -4797,6 +4797,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
         ::RaiseLastOSError();
       }
     });
+    ::FindClose(LocalFileHandle);
     bool Directory = FLAGSET(FindData.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
     TFileMasks::TParams Params;
     // SearchRec.Size in C++B2010 is int64_t,

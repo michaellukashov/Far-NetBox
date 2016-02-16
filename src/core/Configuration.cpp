@@ -1388,6 +1388,7 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
 
 UnicodeString TConfiguration::GetRandomSeedFileName() const
 {
+  // StripPathQuotes should not be needed as we do not feed quotes anymore
   return StripPathQuotes(::ExpandEnvironmentVariables(FRandomSeedFile)).Trim();
 }
 
