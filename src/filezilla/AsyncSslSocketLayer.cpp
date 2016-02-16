@@ -640,7 +640,7 @@ BOOL CAsyncSslSocketLayer::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
   CAsyncSslSocketLayer* main, bool sessionreuse,
   int minTlsVersion, int maxTlsVersion,
-  void* pSslContext /*=0*/)
+  void * pSslContext /*=0*/)
 {
   if (m_bUseSSL)
     return 0;
@@ -746,7 +746,7 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
   SSL_ctrl(m_ssl, SSL_CTRL_OPTIONS, options, NULL);
 
   //Init SSL connection
-  void *ssl_sessionid = NULL;
+  void * ssl_sessionid = NULL;
   m_Main = main;
   m_sessionreuse = sessionreuse;
   if ((m_Main != NULL) && m_sessionreuse)

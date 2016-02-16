@@ -136,13 +136,13 @@ public:
   int InitSSLConnection(bool clientMode, 
     CAsyncSslSocketLayer * main,
     bool sessionreuse, int minTlsVersion, int maxTlsVersion,
-    void* pContext = 0);
+    void * pContext = 0);
 
   // Send raw text, useful to send a confirmation after the ssl connection
   // has been initialized
   int SendRaw(const void * lpBuf, int nBufLen, int nFlags = 0);
 
-  void* GetContext() { return m_ssl_ctx; }
+  void * GetContext() { return m_ssl_ctx; }
   
 private:
   virtual void Close();

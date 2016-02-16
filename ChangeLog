@@ -1,5 +1,8 @@
-NetBox 2.2.1.428 14.02.2016
+NetBox 2.2.1.429 16.02.2016
 --------------------
+  * SFTP: fix handle leaks
+  * Fix .lng files
+    (https://github.com/michaellukashov/Far-NetBox/issues/191)
 
 NetBox 2.2.0.427 14.02.2016
 --------------------

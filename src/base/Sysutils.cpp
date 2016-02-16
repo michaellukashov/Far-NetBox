@@ -1063,7 +1063,7 @@ void InitPlatformId()
 {
   OSVERSIONINFO OSVersionInfo;
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
-  if (GetVersionEx(&OSVersionInfo) != 0)
+  if (::GetVersionEx(&OSVersionInfo) != 0)
   {
     Win32Platform = OSVersionInfo.dwPlatformId;
     Win32MajorVersion = OSVersionInfo.dwMajorVersion;
