@@ -1,5 +1,7 @@
-NetBox 2.2.1.429 16.02.2016
+NetBox 2.2.1.430 17.02.2016
 --------------------
+  * Bugfix: Bookmarks are not preserved between FAR sessions
+    (https://github.com/michaellukashov/Far-NetBox/issues/174)
   * SFTP: fix handle leaks
   * Fix .lng files
     (https://github.com/michaellukashov/Far-NetBox/issues/191)
