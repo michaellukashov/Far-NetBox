@@ -2064,6 +2064,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
   bool Result = OpenDirectoryDialog(Add, Directory, BookmarkList.get());
 
   GetFarConfiguration()->SetBookmarks(SessionKey, BookmarkList.get());
+  GetConfiguration()->Save();
 
   if (Result)
   {
