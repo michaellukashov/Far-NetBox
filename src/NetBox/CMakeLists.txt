@@ -216,16 +216,6 @@ set(NETBOX_SOURCES ${NETBOX_SOURCES}
 endif(PROJECT_PLATFORM STREQUAL "x86")
 endif(MSVC)
 
-# add_library(libeay32 STATIC IMPORTED)
-# set_property(TARGET libeay32
-  # PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${PROJECT_PLATFORM}/libeay32.lib
-# )
-
-# add_library(ssleay32 STATIC IMPORTED)
-# set_property(TARGET ssleay32
-  # PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${PROJECT_PLATFORM}/ssleay32.lib
-# )
-
 #-------------------------------------------------------------------------------
 
 set(NETBOX_LIBRARIES
@@ -266,7 +256,9 @@ set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif(MSVC)
 
-add_library(NetBox SHARED ${NETBOX_SOURCES})
+add_library(NetBox SHARED
+  ${NETBOX_SOURCES}
+)
 
 if(MSVC)
 set_target_properties(NetBox
@@ -965,7 +957,7 @@ add_library(atlmfc STATIC
 )
 
 #-------------------------------------------------------------------------------
-set(ATLMFC_COMPILE_FLAGS "-D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_ -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE -D_AFX_NO_OLE_SUPPORT")
+set(ATLMFC_COMPILE_FLAGS "-D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_ -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE -D_AFX_NO_OLE_SUPPORT -D_AFX_NO_SOCKET_SUPPORT")
 
 if(MSVC)
 set_target_properties(atlmfc
@@ -973,6 +965,7 @@ set_target_properties(atlmfc
   COMPILE_FLAGS "${ATLMFC_COMPILE_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
   LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
+  LINK_FLAGS_DEBUG "${LINK_FLAGS_DEBUG}"
 )
 elseif(CMAKE_COMPILER_IS_MINGW)
 set_target_properties(atlmfc
