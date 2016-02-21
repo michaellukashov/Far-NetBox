@@ -3,12 +3,12 @@
 
 #include <Common.h>
 #include <Queue.h>
+#include <MsgIDs.h>
 
 #include "CoreMain.h"
 #include "FarConfiguration.h"
 #include "WinSCPPlugin.h"
 #include "FarDialog.h"
-#include "FarTexts.h"
 #include "FarInterface.h"
 
 TConfiguration * CreateConfiguration()

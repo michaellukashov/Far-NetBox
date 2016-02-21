@@ -3,7 +3,6 @@
 
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
-#include "FarTexts.h"
 #include "FarDialog.h"
 #include "FarConfiguration.h"
 #include "FarInterface.h"
@@ -19,6 +18,7 @@
 #include <Terminal.h>
 #include <Bookmarks.h>
 #include <Queue.h>
+#include <MsgIDs.h>
 #include <farkeys.hpp>
 #include <farcolor.hpp>
 #include "plugin_version.hpp"

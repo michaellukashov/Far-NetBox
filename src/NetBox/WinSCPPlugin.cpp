@@ -7,10 +7,10 @@
 #include <Terminal.h>
 #include <GUITools.h>
 #include <ProgParams.h>
+#include <MsgIDs.h>
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarConfiguration.h"
-#include "FarTexts.h"
 #include "FarDialog.h"
 #include "XmlStorage.h"
 

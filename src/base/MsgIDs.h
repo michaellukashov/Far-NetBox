@@ -1,5 +1,5 @@
 #pragma once
-enum PluginString {
+enum MsgIDs {
 
     PLUGIN_NAME,
     PLUGIN_TITLE,

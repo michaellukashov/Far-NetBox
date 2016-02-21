@@ -2,9 +2,9 @@
 #pragma hdrstop
 
 #include <Common.h>
+#include <MsgIDs.h>
 
 #include "FarUtil.h"
-#include "FarTexts.h"
 
 bool CNBFile::OpenWrite(const wchar_t *fileName)
 {
