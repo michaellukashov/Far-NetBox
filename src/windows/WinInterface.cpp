@@ -534,8 +534,6 @@ static TStrings * StackInfoListToStrings(
 }
 #endif
 
-#if 0
-//moved to FarInterface.cpp
 static TCriticalSection StackTraceCriticalSection;
 typedef rde::map<DWORD, TStrings *> TStackTraceMap;
 static TStackTraceMap StackTraceMap;
@@ -571,7 +569,6 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
   }
   return Result;
 }
-#endif
 
 uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
   const UnicodeString & MessageFormat, uintptr_t Answers, const UnicodeString & HelpKeyword,

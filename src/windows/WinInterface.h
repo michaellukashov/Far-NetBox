@@ -6,6 +6,7 @@
 #include <Interface.h>
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
+#include <MsgIDs.h>
 
 #ifdef LOCALINTERFACE
 #include <LocalInterface.h>
