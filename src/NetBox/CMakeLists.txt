@@ -69,7 +69,7 @@ elseif(CMAKE_COMPILER_IS_MINGW)
 
 set(NETBOX_CFLAGS "${NETBOX_CFLAGS} ${NETBOX_C_FLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wold-style-cast -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
 set(NETBOX_WARNING_FLAGS "-Wno-attributes -Wno-write-strings -Wno-unknown-pragmas")
-set(NETBOX_CXX_FLAGS "${NETBOX_CXX_FLAGS} -D_UNICODE -DUNICODE -D_AFXDLL -std=c++11 -Weffc++ -Woverloaded-virtual -Wnon-virtual-dtor")
+set(NETBOX_CXX_FLAGS "${NETBOX_CFLAGS} -D_UNICODE -DUNICODE -std=c++11 -Weffc++ -Woverloaded-virtual -Wnon-virtual-dtor")
 set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} ${NETBOX_CFLAGS}")
 set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} ${NETBOX_CFLAGS}")
 
@@ -1214,7 +1214,7 @@ endif()
 
 #-------------------------------------------------------------------------------
 
-add_library(zlib STATIC
+set(ZLIB_SOURCES
   ${LIBS_ROOT}/zlib/src/adler32.c
   ${LIBS_ROOT}/zlib/src/crc32.c
   ${LIBS_ROOT}/zlib/src/infback.c
@@ -1229,10 +1229,19 @@ add_library(zlib STATIC
   ${LIBS_ROOT}/zlib/src/deflate_medium.c
   ${LIBS_ROOT}/zlib/src/deflate_fast.c
   ${LIBS_ROOT}/zlib/src/arch/x86/crc_folding.c
-  ${LIBS_ROOT}/zlib/src/arch/x86/deflate_quick.c
   ${LIBS_ROOT}/zlib/src/arch/x86/fill_window_sse.c
   ${LIBS_ROOT}/zlib/src/arch/x86/insert_string_sse.c
   ${LIBS_ROOT}/zlib/src/arch/x86/x86.c
+)
+
+if(MSVC)
+set(ZLIB_SOURCES ${ZLIB_SOURCES}
+  ${LIBS_ROOT}/zlib/src/arch/x86/deflate_quick.c
+)
+endif()
+
+add_library(zlib STATIC
+  ${ZLIB_SOURCES}
 )
 
 set_target_properties(zlib
