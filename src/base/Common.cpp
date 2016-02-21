@@ -783,7 +783,13 @@ intptr_t CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2)
     return -1;
   }
   else
+  {
+#if defined(_MSC_VER)
     return ::StrCmpNCW(S1.c_str(), S2.c_str(), (int)S1.Length());
+#else
+    return S1.Compare(S2);
+#endif
+  }
 }
 
 bool IsReservedName(const UnicodeString & AFileName)
@@ -2314,27 +2320,6 @@ uintptr_t ContinueAnswer(uintptr_t Answers)
   }
   return Result;
 }
-
-#ifndef _MSC_VER
-TLibModule * FindModule(void * Instance)
-{
-  TLibModule * CurModule;
-  CurModule = reinterpret_cast<TLibModule*>(LibModuleList);
-
-  while (CurModule)
-  {
-    if (CurModule->Instance == (unsigned)Instance)
-    {
-      break;
-    }
-    else
-    {
-      CurModule = CurModule->Next;
-    }
-  }
-  return CurModule;
-}
-#endif
 
 UnicodeString LoadStr(intptr_t Ident, uintptr_t /*MaxLength*/)
 {

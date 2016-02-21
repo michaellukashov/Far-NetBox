@@ -132,9 +132,6 @@ bool IsWin7();
 bool IsWin8();
 bool IsWin10();
 bool IsWine();
-#ifndef _MSC_VER
-TLibModule * __fastcall FindModule(void * Instance);
-#endif
 int64_t Round(double Number);
 bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime);
 LCID GetDefaultLCID();
@@ -214,17 +211,6 @@ intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2);
 intptr_t TimeToMSec(const TDateTime & T);
 intptr_t TimeToSeconds(const TDateTime & T);
 intptr_t TimeToMinutes(const TDateTime & T);
-
-#ifndef _MSC_VER
-template<class MethodT>
-MethodT __fastcall MakeMethod(void * Data, void * Code)
-{
-  MethodT Method;
-  ((TMethod*)&Method)->Data = Data;
-  ((TMethod*)&Method)->Code = Code;
-  return Method;
-}
-#endif
 
 #pragma warning(push)
 #pragma warning(disable: 4512) // assignment operator could not be generated
@@ -317,7 +303,7 @@ public:
 
   T1 LookupFirst(const T2 & Value2) const
   {
-    TSecondToFirst::const_iterator Iterator = FSecondToFirst.find(Value2);
+    typename TSecondToFirst::const_iterator Iterator = FSecondToFirst.find(Value2);
     DebugAssert(Iterator != FSecondToFirst.end());
     return Iterator->second;
   }
