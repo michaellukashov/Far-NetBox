@@ -484,7 +484,7 @@ public:
     const UnicodeString & FileMask);
   void TerminalCopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /*const TMoveFileParams*/ void * Param);
-  bool CopyFiles(TStrings * AFileList, const UnicodeString & Target,
+  bool CopyFiles(const TStrings * AFileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
   bool CalculateFilesSize(const TStrings * AFileList, int64_t & Size,
     intptr_t Params, const TCopyParamType * CopyParam, bool AllowDirs,

@@ -306,7 +306,7 @@ public:
   void ReleaseRelativeDirectories();
 
 public:
-  explicit TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = nullptr);
+  explicit TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template = nullptr);
   virtual ~TRemoteDirectory();
   virtual void AddFile(TRemoteFile * AFile);
   virtual void DuplicateTo(TRemoteFileList * Copy) const;

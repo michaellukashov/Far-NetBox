@@ -1829,7 +1829,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     // as the option should not make session "connectable"
 
     UnicodeString Value;
-    if (Options->FindSwitch(SESSIONNAME_SWICH, Value))
+    if (Options->FindSwitch(SESSIONNAME_SWITCH, Value))
     {
       SetName(Value);
     }
@@ -2354,7 +2354,7 @@ void TSessionData::SetCipherList(const UnicodeString & Value)
   while (!Value2.IsEmpty() && (Index < CIPHER_COUNT))
   {
     CipherStr = CutToChar(Value2, L',', true);
-    for (int C = 0; C < CIPHER_COUNT; C++)
+    for (intptr_t C = 0; C < CIPHER_COUNT; C++)
     {
       if (!CipherStr.CompareIC(CipherNames[C]))
       {
@@ -2401,7 +2401,7 @@ TKex TSessionData::GetKex(intptr_t Index) const
 void TSessionData::SetKexList(const UnicodeString & Value)
 {
 /*bool Used[KEX_COUNT];
-  for (int K = 0; K < KEX_COUNT; K++)
+  for (intptr_t K = 0; K < KEX_COUNT; K++)
   {
     Used[K] = false;
   }
@@ -2412,7 +2412,7 @@ void TSessionData::SetKexList(const UnicodeString & Value)
   while (!Value2.IsEmpty() && (Index < KEX_COUNT))
   {
     KexStr = CutToChar(Value2, L',', true);
-    for (int K = 0; K < KEX_COUNT; K++)
+    for (intptr_t K = 0; K < KEX_COUNT; K++)
     {
       if (!KexStr.CompareIC(KexNames[K]))
       {
@@ -4477,15 +4477,15 @@ void TStoredSessionList::Cleanup()
 void TStoredSessionList::UpdateStaticUsage()
 {
 #if 0
-  int SCP = 0;
-  int SFTP = 0;
-  int FTP = 0;
-  int FTPS = 0;
-  int WebDAV = 0;
-  int WebDAVS = 0;
-  int Password = 0;
-  int Advanced = 0;
-  int Color = 0;
+  intptr_t SCP = 0;
+  intptr_t SFTP = 0;
+  intptr_t FTP = 0;
+  intptr_t FTPS = 0;
+  intptr_t WebDAV = 0;
+  intptr_t WebDAVS = 0;
+  intptr_t Password = 0;
+  intptr_t Advanced = 0;
+  intptr_t Color = 0;
   int Note = 0;
   int Tunnel = 0;
   bool Folders = false;

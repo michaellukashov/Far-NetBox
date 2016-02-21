@@ -52,8 +52,8 @@ public:
   virtual size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size) const = 0;
 
   virtual UnicodeString ReadString(const UnicodeString & Name, const UnicodeString & Default) const;
-  RawByteString ReadBinaryData(const UnicodeString & Name) const;
-  RawByteString ReadStringAsBinaryData(const UnicodeString & Name, const RawByteString & Default) const;
+  virtual RawByteString ReadBinaryData(const UnicodeString & Name) const;
+  virtual RawByteString ReadStringAsBinaryData(const UnicodeString & Name, const RawByteString & Default) const;
 
   virtual void WriteBool(const UnicodeString & Name, bool Value) = 0;
   virtual void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) = 0;
@@ -64,8 +64,8 @@ public:
   virtual void WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size) = 0;
 
   virtual void WriteString(const UnicodeString & Name, const UnicodeString & Value);
-  void WriteBinaryData(const UnicodeString & Name, const RawByteString & Value);
-  void WriteBinaryDataAsString(const UnicodeString & Name, const RawByteString & Value);
+  virtual void WriteBinaryData(const UnicodeString & Name, const RawByteString & Value);
+  virtual void WriteBinaryDataAsString(const UnicodeString & Name, const RawByteString & Value);
 
   virtual void Flush();
 

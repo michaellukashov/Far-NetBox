@@ -1630,7 +1630,7 @@ void TTerminal::DisplayBanner(const UnicodeString & Banner)
         FConfiguration->ShowBanner(GetSessionData()->GetSessionKey(), Banner))
     {
       bool NeverShowAgain = false;
-      int Options =
+      intptr_t Options =
         FLAGMASK(FConfiguration->GetForceBanners(), boDisableNeverShowAgain);
       TCallbackGuard Guard(this);
       GetOnDisplayBanner()(this, GetSessionData()->GetSessionName(), Banner,
@@ -1900,7 +1900,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
     TQueryParams Params(qpAllowContinueOnError | FLAGMASK(!AllowSkip, qpFatalAbort));
     Params.HelpKeyword = HelpKeyword;
     TQueryButtonAlias Aliases[2];
-    int AliasCount = 0;
+    intptr_t AliasCount = 0;
 
     if (FLAGSET(Answers, qaAll))
     {
@@ -2859,7 +2859,7 @@ void TTerminal::ReadCurrentDirectory()
       FLockDirectory = (GetSessionData()->GetLockInHome() ?
         FFileSystem->GetCurrDirectory() : UnicodeString(L""));
     }
-    // if (OldDirectory != FFileSystem->GetCurrentDirectory())
+    // if (OldDirectory != FFileSystem->GetCurrDirectory())
     {
       DoChangeDirectory();
     }
@@ -4119,14 +4119,14 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
           }
         }
 
-        if (PossiblyMoved && !FileExists(CurrentDirectory))
+        if (PossiblyMoved && !this->FileExists(CurrentDirectory))
         {
           UnicodeString NearestExisting = CurrentDirectory;
           do
           {
             NearestExisting = core::UnixExtractFileDir(NearestExisting);
           }
-          while (!core::IsUnixRootPath(NearestExisting) && !FileExists(NearestExisting));
+          while (!core::IsUnixRootPath(NearestExisting) && !this->FileExists(NearestExisting));
 
           ChangeDirectory(NearestExisting);
         }
@@ -4223,7 +4223,7 @@ void TTerminal::TerminalCopyFile(const UnicodeString & AFileName,
   ReactOnCommand(fsCopyFile);
 }
 
-bool TTerminal::CopyFiles(TStrings * AFileList, const UnicodeString & Target,
+bool TTerminal::CopyFiles(const TStrings * AFileList, const UnicodeString & Target,
   const UnicodeString & FileMask)
 {
   TMoveFileParams Params;
@@ -4524,7 +4524,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
       FCommandSession->TerminalSetCurrentDirectory(GetCurrDirectory());
       FCommandSession->FFileSystem->AnyCommand(ACommand, OutputEvent);
 
-      FCommandSession->FFileSystem->ReadCurrentDirectory();
+      FCommandSession->GetFileSystem()->ReadCurrentDirectory();
 
       // synchronize pwd (by purpose we lose transaction optimization here)
       ChangeDirectory(FCommandSession->GetCurrDirectory());
@@ -4955,7 +4955,7 @@ public:
   FILETIME LocalLastWriteTime;
 };
 
-const int sfFirstLevel = 0x01;
+const intptr_t sfFirstLevel = 0x01;
 struct TSynchronizeData : public TObject
 {
 NB_DECLARE_CLASS(TSynchronizeData)
@@ -5521,7 +5521,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
 
   Data.OnSynchronizeDirectory = OnSynchronizeDirectory;
 
-  int CopyParams =
+  intptr_t CopyParams =
     FLAGMASK(FLAGSET(Params, spNoConfirmation), cpNoConfirmation);
 
   TCopyParamType SyncCopyParam = *CopyParam;
@@ -5564,7 +5564,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
         L"params = 0x%x (%s)", CurrentLocalDirectory.c_str(), CurrentRemoteDirectory.c_str(),
         int(Params), SynchronizeParamsStr(Params).c_str()));
 
-      int Count = 0;
+      intptr_t Count = 0;
 
       while ((IIndex < Checklist->GetCount()) &&
              (Checklist->GetItem(IIndex)->Local.Directory == CurrentLocalDirectory) &&
