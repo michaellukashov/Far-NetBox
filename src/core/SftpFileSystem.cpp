@@ -5820,10 +5820,9 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           StandardTimestamp(AFile->GetModification()).c_str()));
         int SetFileTimeError = ERROR_SUCCESS;
         // FILE_FLAG_BACKUP_SEMANTICS is needed to "open" directory
-        HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-        if (!FTerminal->TerminalCreateFile(DestFullName, OperationProgress,
-              FLAGSET(Params, cpResume), FLAGSET(Params, cpNoConfirmation),
-              &LocalFileHandle))
+        HANDLE LocalFileHandle = FTerminal->CreateLocalFile(DestFullName, GENERIC_WRITE,
+              FILE_SHARE_WRITE, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS);
+        if (LocalFileHandle == INVALID_HANDLE_VALUE)
         {
           SetFileTimeError = ::GetLastError();
         }
