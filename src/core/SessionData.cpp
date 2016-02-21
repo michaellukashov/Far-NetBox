@@ -2649,7 +2649,7 @@ UnicodeString TSessionData::GetSessionName() const
 
 bool TSessionData::GetIsSecure() const
 {
-  bool Result;
+  bool Result = false;
   switch (GetFSProtocol())
   {
     case fsSCPonly:
