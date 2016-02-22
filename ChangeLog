@@ -33,7 +33,7 @@ NetBox 2.1.45.426 09.02.2016
 NetBox 2.1.44.415 04.11.2015
 --------------------
   * Update WinSCP sources to 5.7.6
-  * SFTP, SCP: Fix connection to remote server using ecdsa-sha2-nistp521 key exchange algorythm, used by default by dropbear_2015.67
+  * SFTP, SCP: Fix connection to remote server using ecdsa-sha2-nistp521 key exchange algorithm, used by default by dropbear_2015.67
   * Update Russian translation, thanks to DenVdmj
     (https://github.com/michaellukashov/Far-NetBox/pull/169)
   * SFTP, SCP: Fix remote command execution
