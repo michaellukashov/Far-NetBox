@@ -22,7 +22,7 @@
 #include "../src/mfc/afximpl.h"
 
 #include <afx.h>
-#include "wtypes.h"
+#include <wtypes.h>
 #include <afxmt.h>
 
 // STL includes
@@ -43,8 +43,11 @@ class CFileFix;
 #include <FzApiStructures.h>
 
 #include <oleauto.h>
+#include <atlconv.h>
 #include <afxdisp.h>
 #include <afxconv.h>
+
+#include <FileZillaApi.h>
 
 #define _strlwr strlwr
 
