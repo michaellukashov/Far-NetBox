@@ -2226,7 +2226,7 @@ void TTerminal::DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLink
   }
 }
 
-bool TTerminal::InTransaction()
+bool TTerminal::InTransaction() const
 {
   return (FInTransaction > 0) && !FSuspendTransaction;
 }
