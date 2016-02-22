@@ -4668,7 +4668,7 @@ bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
 }
 
 void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
-  uintptr_t Access,
+  DWORD Access,
   OUT HANDLE * AHandle, OUT uintptr_t * AAttrs, OUT int64_t * ACTime,
   OUT int64_t * AMTime, OUT int64_t * AATime, OUT int64_t * ASize,
   bool TryWriteReadOnly)
@@ -4702,7 +4702,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
     [&]()
     {
       DWORD Flags = FLAGMASK(FLAGSET(LocalFileAttrs, faDirectory), FILE_FLAG_BACKUP_SEMANTICS);
-      LocalFileHandle = this->TerminalCreateLocalFile(ApiPath(ATargetFileName).c_str(), static_cast<DWORD>(Access),
+      LocalFileHandle = this->TerminalCreateLocalFile(ApiPath(ATargetFileName).c_str(), Access,
         Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
         OPEN_EXISTING, Flags);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
