@@ -2638,7 +2638,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
     {
       if (NewTopIndex > 0)
       {
-        NewTopIndex--;
+        --NewTopIndex;
       }
       else
       {
@@ -2654,8 +2654,8 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
       }
       else
       {
-        long Tab = KEY_TAB;
-        SendDialogMessage(DM_KEY, 1, reinterpret_cast<intptr_t>(&Tab));
+        intptr_t Tab = KEY_TAB;
+        SendDialogMessage(DM_KEY, 1, reinterpret_cast<LONG_PTR>(&Tab));
       }
     }
     else if (Param == KEY_PGUP)
@@ -2719,7 +2719,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
       {
         if (NewTopIndex > 0)
         {
-          NewTopIndex--;
+          --NewTopIndex;
         }
       }
       else if (((P.x == GetWidth() - 1) && (P.y == static_cast<int>(GetHeight() - 1))) ||
