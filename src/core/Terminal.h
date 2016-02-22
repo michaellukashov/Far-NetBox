@@ -234,11 +234,11 @@ public:
     uintptr_t Answers, const UnicodeString & HelpKeyword = L"");
   UnicodeString GetCurrDirectory();
   bool GetExceptionOnFail() const;
-  const TRemoteTokenList * GetGroups() const { return static_cast<const TTerminal *>(this)->GetGroups(); }
+  const TRemoteTokenList * GetGroups() const { return const_cast<TTerminal *>(this)->GetGroups(); }
   TRemoteTokenList * GetGroups();
-  const TRemoteTokenList * GetUsers() const { return static_cast<const TTerminal *>(this)->GetUsers(); }
+  const TRemoteTokenList * GetUsers() const { return const_cast<TTerminal *>(this)->GetUsers(); }
   TRemoteTokenList * GetUsers();
-  const TRemoteTokenList * GetMembership() const { return static_cast<const TTerminal *>(this)->GetMembership(); }
+  const TRemoteTokenList * GetMembership() const { return const_cast<TTerminal *>(this)->GetMembership(); }
   TRemoteTokenList * GetMembership();
   void TerminalSetCurrentDirectory(const UnicodeString & AValue);
   void SetExceptionOnFail(bool Value);
