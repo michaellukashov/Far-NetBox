@@ -2118,7 +2118,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName.c_str()), "",
     [&]()
     {
-      HANDLE LocalFileHandle = FTerminal->CreateLocalFile(DestFullName,
+      HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName,
         GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
 //      if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress,
 //             &LocalHandle, FLAGSET(Params, cpNoConfirmation)))

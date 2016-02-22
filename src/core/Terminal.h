@@ -302,13 +302,14 @@ public:
   UnicodeString TranslateLockedPath(const UnicodeString & APath, bool Lock);
   void ReadDirectory(TRemoteFileList * AFileList);
   void CustomReadDirectory(TRemoteFileList * AFileList);
-  void DoCreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo,
-    bool Symbolic);
-  bool TerminalCreateFile(const UnicodeString & AFileName,
+  void DoCreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
+  bool TerminalCreateLocalFile(const UnicodeString & AFileName,
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,
     OUT HANDLE * AHandle);
+  HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
+    DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
   void OpenLocalFile(const UnicodeString & AFileName, uintptr_t Access,
     OUT HANDLE * AHandle, OUT uintptr_t * AAttrs, OUT int64_t * ACTime, OUT int64_t * AMTime,
     OUT int64_t * AATime, OUT int64_t * ASize, bool TryWriteReadOnly = true);
@@ -588,8 +589,6 @@ public:
     const TDateTime & Modification);
   void SetLocalFileTime(const UnicodeString & LocalFileName,
     FILETIME * AcTime, FILETIME * WrTime);
-  HANDLE CreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
-    DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
   DWORD GetLocalFileAttributes(const UnicodeString & LocalFileName);
   BOOL SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
   BOOL MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);

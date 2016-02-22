@@ -4564,7 +4564,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
   DWORD FlagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
   do
   {
-    *AHandle = CreateLocalFile(ApiPath(AFileName).c_str(), DesiredAccess, ShareMode,
+    *AHandle = TerminalCreateLocalFile(ApiPath(AFileName).c_str(), DesiredAccess, ShareMode,
       CreationDisposition, FlagsAndAttributes);
     Done = (*AHandle != INVALID_HANDLE_VALUE);
     if (!Done)
@@ -4648,7 +4648,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
   return Result;
 }
 
-bool TTerminal::TerminalCreateFile(const UnicodeString & ATargetFileName,
+bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
   TFileOperationProgressType * OperationProgress,
   bool Resume,
   bool NoConfirmation,
@@ -4702,7 +4702,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & ATargetFileName,
     [&]()
     {
       DWORD Flags = FLAGMASK(FLAGSET(LocalFileAttrs, faDirectory), FILE_FLAG_BACKUP_SEMANTICS);
-      LocalFileHandle = this->CreateLocalFile(ApiPath(ATargetFileName).c_str(), static_cast<DWORD>(Access),
+      LocalFileHandle = this->TerminalCreateLocalFile(ApiPath(ATargetFileName).c_str(), static_cast<DWORD>(Access),
         Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
         OPEN_EXISTING, Flags);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
@@ -6315,7 +6315,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   });
 }
 
-HANDLE TTerminal::CreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
+HANDLE TTerminal::TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
   DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   if (GetOnCreateLocalFile())

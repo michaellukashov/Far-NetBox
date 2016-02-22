@@ -4047,7 +4047,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
         switch (OverwriteMode)
         {
           case omOverwrite:
-            if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateFile(DestFullName, OperationProgress,
+            if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
               false, true,
               &LocalFileHandle))
             {
@@ -4068,7 +4068,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
             break;
 
           case omResume:
-            if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateFile(DestFullName, OperationProgress,
+            if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
               true, true,
               &LocalFileHandle))
             {
