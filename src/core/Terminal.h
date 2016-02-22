@@ -311,8 +311,8 @@ public:
   HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
     DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
   void OpenLocalFile(const UnicodeString & AFileName, uintptr_t Access,
-    OUT HANDLE * AHandle, OUT uintptr_t * AAttrs, OUT int64_t * ACTime, OUT int64_t * AMTime,
-    OUT int64_t * AATime, OUT int64_t * ASize, bool TryWriteReadOnly = true);
+    OUT OPTIONAL HANDLE * AHandle, OUT OPTIONAL uintptr_t * AAttrs, OUT OPTIONAL int64_t * ACTime, OUT OPTIONAL int64_t * AMTime,
+    OUT OPTIONAL int64_t * AATime, OUT OPTIONAL int64_t * ASize, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(const UnicodeString & AFileName,
     const TCopyParamType * CopyParam, TFileOperationProgressType * OperationProgress);
   bool HandleException(Exception * E);
