@@ -4766,7 +4766,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
   int64_t MTime = 0, ATime = 0;
   int64_t Size = 0;
 
-  FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
+  FTerminal->TerminalOpenLocalFile(AFileName, GENERIC_READ,
     &LocalFileHandle, &OpenParams.LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
@@ -5622,7 +5622,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
       TRemoteProperties Properties;
       Properties.Valid << vpModification;
 
-      FTerminal->OpenLocalFile(
+      FTerminal->TerminalOpenLocalFile(
         ExcludeTrailingBackslash(DirectoryName), GENERIC_READ, nullptr, nullptr, nullptr,
         &Properties.Modification, &Properties.LastAccess, nullptr);
 
@@ -5942,7 +5942,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
         if (::FileExists(ApiPath(DestPartialFullName)))
         {
           FTerminal->LogEvent("Partially transfered file exists.");
-          FTerminal->OpenLocalFile(DestPartialFullName, GENERIC_WRITE,
+          FTerminal->TerminalOpenLocalFile(DestPartialFullName, GENERIC_WRITE,
             &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, &ResumeOffset);
 
           bool PartialBiggerThanSource = (ResumeOffset > OperationProgress->TransferSize);
@@ -6047,7 +6047,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
       {
         int64_t DestFileSize = 0;
         int64_t MTime = 0;
-        FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
+        FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_WRITE,
           &LocalFileHandle, nullptr, nullptr, &MTime, nullptr, &DestFileSize, false);
 
         FTerminal->LogEvent("Confirming overwriting of file.");
@@ -6096,7 +6096,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           // probably fail anyway
           if (LocalFileHandle == INVALID_HANDLE_VALUE)
           {
-            FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
+            FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_WRITE,
               &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, nullptr);
           }
           ResumeAllowed = false;

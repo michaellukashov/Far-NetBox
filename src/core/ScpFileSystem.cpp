@@ -1707,7 +1707,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
           {
             int64_t MTime = 0;
             TOverwriteFileParams FileParams;
-            FTerminal->OpenLocalFile(FileName, GENERIC_READ,
+            FTerminal->TerminalOpenLocalFile(FileName, GENERIC_READ,
               nullptr, nullptr, nullptr, &MTime, nullptr,
               &FileParams.SourceSize);
             FileParams.SourceTimestamp = ::UnixToDateTime(MTime,
@@ -1866,7 +1866,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
   int64_t MTime, ATime;
   int64_t Size;
 
-  FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
+  FTerminal->TerminalOpenLocalFile(AFileName, GENERIC_READ,
     &LocalFileHandle, &LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
@@ -2742,7 +2742,7 @@ void TSCPFileSystem::SCPSink(
                   TOverwriteFileParams FileParams;
                   FileParams.SourceSize = OperationProgress->TransferSize;
                   FileParams.SourceTimestamp = SourceTimestamp;
-                  FTerminal->OpenLocalFile(DestFileName, GENERIC_READ,
+                  FTerminal->TerminalOpenLocalFile(DestFileName, GENERIC_READ,
                     nullptr, nullptr, nullptr, &MTime, nullptr,
                     &FileParams.DestSize);
                   FileParams.DestTimestamp = ::UnixToDateTime(MTime,

@@ -310,7 +310,7 @@ public:
     OUT HANDLE * AHandle);
   HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
     DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
-  void OpenLocalFile(const UnicodeString & AFileName, uintptr_t Access,
+  void TerminalOpenLocalFile(const UnicodeString & AFileName, uintptr_t Access,
     OUT OPTIONAL HANDLE * AHandle, OUT OPTIONAL uintptr_t * AAttrs, OUT OPTIONAL int64_t * ACTime, OUT OPTIONAL int64_t * AMTime,
     OUT OPTIONAL int64_t * AATime, OUT OPTIONAL int64_t * ASize, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(const UnicodeString & AFileName,

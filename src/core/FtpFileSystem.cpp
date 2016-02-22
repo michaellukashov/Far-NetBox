@@ -1973,7 +1973,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   int64_t MTime = 0, ATime = 0;
   int64_t Size = 0;
 
-  FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
+  FTerminal->TerminalOpenLocalFile(AFileName, GENERIC_READ,
     nullptr, &OpenParams->LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
   OperationProgress->SetFileInProgress();

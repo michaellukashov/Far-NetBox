@@ -1398,7 +1398,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
   int64_t Size;
   uintptr_t LocalFileAttrs = 0;
 
-  FTerminal->OpenLocalFile(RealFileName, GENERIC_READ, &File,
+  FTerminal->TerminalOpenLocalFile(RealFileName, GENERIC_READ, &File,
     &LocalFileAttrs, nullptr, nullptr, &MTime, &Size);
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
@@ -2073,7 +2073,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     {
       int64_t Size = 0;
       int64_t MTime = 0;
-      FTerminal->OpenLocalFile(DestFullName, GENERIC_READ, nullptr,
+      FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_READ, nullptr,
         nullptr, nullptr, &MTime, nullptr, &Size);
       TOverwriteFileParams FileParams;
 

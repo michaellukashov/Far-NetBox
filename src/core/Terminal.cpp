@@ -4667,7 +4667,7 @@ bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
   return Result;
 }
 
-void TTerminal::OpenLocalFile(const UnicodeString & ATargetFileName,
+void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
   uintptr_t Access,
   OUT HANDLE * AHandle, OUT uintptr_t * AAttrs, OUT int64_t * ACTime,
   OUT int64_t * AMTime, OUT int64_t * AATime, OUT int64_t * ASize,
@@ -6304,7 +6304,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   [&]()
   {
     HANDLE LocalFileHandle;
-    this->OpenLocalFile(LocalFileName, GENERIC_WRITE,
+    this->TerminalOpenLocalFile(LocalFileName, GENERIC_WRITE,
       &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, nullptr);
     bool Result = ::SetFileTime(LocalFileHandle, nullptr, AcTime, WrTime) > 0;
     ::CloseHandle(LocalFileHandle);
