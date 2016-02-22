@@ -2130,21 +2130,21 @@ UnicodeString TTerminal::PeekCurrentDirectory()
   return Result;
 }
 
-const TRemoteTokenList * TTerminal::GetGroups()
+TRemoteTokenList * TTerminal::GetGroups()
 {
   DebugAssert(FFileSystem);
   LookupUsersGroups();
   return &FGroups;
 }
 
-const TRemoteTokenList * TTerminal::GetUsers()
+TRemoteTokenList * TTerminal::GetUsers()
 {
   DebugAssert(FFileSystem);
   LookupUsersGroups();
   return &FUsers;
 }
 
-const TRemoteTokenList * TTerminal::GetMembership()
+TRemoteTokenList * TTerminal::GetMembership()
 {
   DebugAssert(FFileSystem);
   LookupUsersGroups();
