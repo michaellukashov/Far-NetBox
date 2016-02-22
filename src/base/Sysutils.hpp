@@ -435,11 +435,41 @@ private:
   std::function<void()> m_f;
 };
 
-#define _SCOPE_EXIT_NAME(name, suffix) name ## suffix
-#define SCOPE_EXIT_NAME(name, suffix) _SCOPE_EXIT_NAME(name, suffix)
+#define DETAIL_CONCATENATE_IMPL(s1, s2) s1 ## s2
+#define CONCATENATE(s1, s2) DETAIL_CONCATENATE_IMPL(s1, s2)
+
+#define ANONYMOUS_VARIABLE(str) CONCATENATE(str, __LINE__)
+
+#define SCOPED_ACTION(RAII_type) \
+const RAII_type ANONYMOUS_VARIABLE(scoped_object_)
+
+//#define STR(x) #x
+#define WSTR(x) L###x
+
+namespace detail
+{
+  template<typename F>
+  class scope_guard
+  {
+  public:
+    scope_guard(F&& f) : m_f(std::move(f)) {}
+    ~scope_guard() { m_f(); }
+
+  private:
+    const F m_f;
+  };
+
+  class make_scope_guard
+  {
+  public:
+    template<typename F>
+    scope_guard<F> operator << (F&& f) { return scope_guard<F>(std::move(f)); }
+  };
+
+};
+
 #define SCOPE_EXIT \
-  std::function<void()> SCOPE_EXIT_NAME(scope_exit_func_, __LINE__); \
-  ScopeExit SCOPE_EXIT_NAME(scope_exit_, __LINE__) = SCOPE_EXIT_NAME(scope_exit_func_, __LINE__) = [&]() /* lambda body here */
+  const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << [&]() /* lambda body here */
 
 class NullFunc
 {
@@ -452,6 +482,6 @@ public:
 #define try__finally (void)0;
 
 #define __finally \
-  std::function<void()> SCOPE_EXIT_NAME(null_func_, __LINE__); \
-  NullFunc SCOPE_EXIT_NAME(null_, __LINE__) = SCOPE_EXIT_NAME(null_func_, __LINE__) = [&]() /* lambda body here */
+  std::function<void()> CONCATENATE(null_func_, __LINE__); \
+  NullFunc ANONYMOUS_VARIABLE(null_) = CONCATENATE(null_func_, __LINE__) = [&]() /* lambda body here */
 
