@@ -582,6 +582,7 @@ public:
 
   const TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
   TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
+  void SetOperationProgress(TFileOperationProgressType * OperationProgress) { FOperationProgress = OperationProgress; }
 
   void SetLocalFileTime(const UnicodeString & LocalFileName,
     const TDateTime & Modification);
