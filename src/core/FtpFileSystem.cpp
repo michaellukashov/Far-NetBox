@@ -4264,7 +4264,7 @@ static bool IsIPAddress(const UnicodeString & HostName)
   bool IPv6 = true;
   bool AnyColon = false;
 
-  for (int Index = 1; Index <= HostName.Length(); Index++)
+  for (intptr_t Index = 1; Index <= HostName.Length(); Index++)
   {
     wchar_t C = HostName[Index];
     if (!IsDigit(C) && (C != L'.'))
