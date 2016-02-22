@@ -2068,7 +2068,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
 
   if (Result)
   {
-    FTerminal->ChangeDirectory(Directory);
+    FTerminal->RemoteChangeDirectory(Directory);
     if (UpdatePanel(true))
     {
       RedrawPanel();
@@ -2218,7 +2218,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
         };
         if (Dir == L"\\")
         {
-          FTerminal->ChangeDirectory(ROOTDIRECTORY);
+          FTerminal->RemoteChangeDirectory(ROOTDIRECTORY);
         }
         else if ((Dir == PARENTDIRECTORY) && (FTerminal->GetCurrDirectory() == ROOTDIRECTORY))
         {
@@ -2227,7 +2227,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
         }
         else
         {
-          FTerminal->ChangeDirectory(Dir);
+          FTerminal->RemoteChangeDirectory(Dir);
           FCurrentDirectoryWasChanged = true;
         }
       }

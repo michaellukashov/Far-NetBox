@@ -472,7 +472,7 @@ public:
     const TRemoteFile * AFile, void * AParams);
   void CustomCommandOnFiles(const UnicodeString & Command, intptr_t Params,
     TStrings * AFiles, TCaptureOutputEvent OutputEvent);
-  void ChangeDirectory(const UnicodeString & Directory);
+  void RemoteChangeDirectory(const UnicodeString & Directory);
   void EndTransaction();
   void HomeDirectory();
   void ChangeFileProperties(const UnicodeString & AFileName,

@@ -2093,7 +2093,7 @@ void TTerminal::TerminalSetCurrentDirectory(const UnicodeString & AValue)
   UnicodeString Value = TranslateLockedPath(AValue, false);
   if (Value != FFileSystem->GetCurrDirectory())
   {
-    ChangeDirectory(Value);
+    RemoteChangeDirectory(Value);
   }
 }
 
@@ -2815,7 +2815,7 @@ void TTerminal::DoStartup()
 
     if (!GetSessionData()->GetRemoteDirectory().IsEmpty())
     {
-      ChangeDirectory(GetSessionData()->GetRemoteDirectory());
+      RemoteChangeDirectory(GetSessionData()->GetRemoteDirectory());
     }
   }
   __finally
@@ -4128,7 +4128,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
           }
           while (!core::IsUnixRootPath(NearestExisting) && !this->FileExists(NearestExisting));
 
-          ChangeDirectory(NearestExisting);
+          RemoteChangeDirectory(NearestExisting);
         }
       }
       EndTransaction();
@@ -4172,7 +4172,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
         }
         while (!core::IsUnixRootPath(NearestExisting) && !FileExists(NearestExisting));
 
-        ChangeDirectory(NearestExisting);
+        RemoteChangeDirectory(NearestExisting);
       }
     }
     EndTransaction();
@@ -4320,7 +4320,7 @@ void TTerminal::HomeDirectory()
   }
 }
 
-void TTerminal::ChangeDirectory(const UnicodeString & Directory)
+void TTerminal::RemoteChangeDirectory(const UnicodeString & Directory)
 {
   UnicodeString DirectoryNormalized = core::ToUnixPath(Directory);
   DebugAssert(FFileSystem);
@@ -4527,7 +4527,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
       FCommandSession->GetFileSystem()->ReadCurrentDirectory();
 
       // synchronize pwd (by purpose we lose transaction optimization here)
-      ChangeDirectory(FCommandSession->GetCurrDirectory());
+      RemoteChangeDirectory(FCommandSession->GetCurrDirectory());
     }
     ReactOnCommand(fsAnyCommand);
   }
