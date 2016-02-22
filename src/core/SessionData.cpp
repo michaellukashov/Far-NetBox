@@ -64,6 +64,9 @@ const UnicodeString PassphraseOption(L"passphrase");
 const uintptr_t CONST_DEFAULT_CODEPAGE = CP_UTF8;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
 
+const intptr_t SFTPMinVersion = 0;
+const intptr_t SFTPMaxVersion = 6;
+
 static TDateTime SecToDateTime(intptr_t Sec)
 {
   return TDateTime(double(Sec) / SecsPerDay);

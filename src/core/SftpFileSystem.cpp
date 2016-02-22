@@ -156,8 +156,6 @@ static const intptr_t SFTP_MAX_PACKET_LEN   = 1000 * 1024;
 static const wchar_t OGQ_LIST_OWNERS = 0x01;
 static const wchar_t OGQ_LIST_GROUPS = 0x02;
 
-const intptr_t SFTPMinVersion = 0;
-const intptr_t SFTPMaxVersion = 6;
 static const uint32_t SFTPNoMessageNumber = static_cast<uint32_t>(-1);
 
 static const SSH_FX_TYPES asNo =            0;
