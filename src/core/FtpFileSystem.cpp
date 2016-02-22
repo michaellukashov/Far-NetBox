@@ -274,7 +274,10 @@ TFTPFileSystem::~TFTPFileSystem()
 {
   DebugAssert(FFileList == nullptr);
 
-  FFileZillaIntf->Destroying();
+  if (FFileZillaIntf)
+  {
+    FFileZillaIntf->Destroying();
+  }
 
   // to release memory associated with the messages
   DiscardMessages();
@@ -289,6 +292,8 @@ TFTPFileSystem::~TFTPFileSystem()
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
   SAFE_DESTROY(FServerCapabilities);
+  SAFE_DESTROY(FLastError);
+  SAFE_DESTROY(FFeatures);
 
   ResetCaches();
 }
@@ -1274,13 +1279,13 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
   TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
   Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
 
-  FTerminal->FOperationProgress = &Progress;
+  FTerminal->SetOperationProgress(&Progress);
 
   try__finally
   {
     SCOPE_EXIT
     {
-      FTerminal->FOperationProgress = nullptr;
+      FTerminal->SetOperationProgress(nullptr);
       Progress.Stop();
     };
     UnicodeString NormalizedAlg = FindIdent(FindIdent(Alg, FHashAlgs.get()), FChecksumAlgs.get());
@@ -1307,7 +1312,7 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
   }
   __finally
   {
-    FTerminal->FOperationProgress = nullptr;
+    FTerminal->SetOperationProgress(nullptr);
     Progress.Stop();
   };
 }
