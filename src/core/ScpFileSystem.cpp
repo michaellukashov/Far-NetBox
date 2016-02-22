@@ -122,14 +122,14 @@ const char FullTimeOption[] = "--full-time";
 TODO("remove 'mf' and 'cd, it is implemented in TTerminal already");
 const TCommandType DefaultCommandSet[ShellCommandCount] =
 {
-//                       min max mf cd ia  command
+  //                       min max mf cd ia  command
   /*Null*/                { -1, -1, F, F, F, "" },
   /*VarValue*/            { -1, -1, F, F, F, "echo \"$%s\"" /* variable */ },
   /*LastLine*/            { -1, -1, F, F, F, "echo \"%s" LastLineSeparator "%s\"" /* last line, return var */ },
   /*FirstLine*/           { -1, -1, F, F, F, "echo \"%s\"" /* first line */ },
   /*CurrentDirectory*/    {  1,  1, F, F, F, "pwd" },
   /*ChangeDirectory*/     {  0,  0, F, T, F, "cd %s" /* directory */ },
-// list directory can be empty on permission denied, this is handled in ReadDirectory
+  // list directory can be empty on permission denied, this is handled in ReadDirectory
   /*ListDirectory*/       { -1, -1, F, F, F, "%s %s \"%s\"" /* listing command, options, directory */ },
   /*ListCurrentDirectory*/{ -1, -1, F, F, F, "%s %s" /* listing command, options */ },
   /*ListFile*/            {  1,  1, F, F, F, "%s -d %s \"%s\"" /* listing command, options, file/directory */ },
