@@ -2611,19 +2611,19 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
       {
         if (Row == 0)
         {
-          Buf += static_cast<wchar_t>(0x25B2); // L'\x1E'; // ucUpScroll
+          Buf += static_cast<wchar_t>(0x25B2); // ucUpScroll
         }
         else if (Row == ScrollBarPos)
         {
-          Buf += static_cast<wchar_t>(0x2592); // L'\xB2'; // ucBox50
+          Buf += static_cast<wchar_t>(0x2592); // ucBox50
         }
         else if (Row == GetHeight() - 1)
         {
-          Buf += static_cast<wchar_t>(0x25BC); // L'\x1F'; // ucDnScroll
+          Buf += static_cast<wchar_t>(0x25BC); // ucDnScroll
         }
         else
         {
-          Buf += static_cast<wchar_t>(0x2591); // '\xB0'; // ucBox25
+          Buf += static_cast<wchar_t>(0x2591); // ucBox25
         }
       }
       Text(0, (int)Row, Color, Buf);
