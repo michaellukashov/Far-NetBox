@@ -2,7 +2,7 @@
 #pragma hdrstop
 
 #include <Common.h>
-#include <SysUtils.hpp>
+#include <Sysutils.hpp>
 #include <StrUtils.hpp>
 
 #include "RemoteFiles.h"

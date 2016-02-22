@@ -14,7 +14,7 @@
 #include <ScpFileSystem.h>
 #include <Bookmarks.h>
 #include <GUITools.h>
-#include <SysUtils.hpp>
+#include <Sysutils.hpp>
 #include <CompThread.hpp>
 #include "PuttyIntf.h"
 #include "XmlStorage.h"

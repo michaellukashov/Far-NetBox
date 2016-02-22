@@ -2002,7 +2002,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
     OperationProgress->TransferingFile = false;
 
     TDateTime Modification;
-    // Inspired by SysUtils::FileAge
+    // Inspired by Sysutils::FileAge
     WIN32_FIND_DATA FindData;
     HANDLE LocalFileHandle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
     if (LocalFileHandle != INVALID_HANDLE_VALUE)
@@ -4158,7 +4158,7 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & Val
       static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
       static_cast<uint16_t>(ValidityTime.Sec), 0));
   */
-  TODO("use SysUtils::FormatDateTime");
+  TODO("use Sysutils::FormatDateTime");
   uint16_t Y, M, D, H, Mm, S, MS;
   TDateTime DateTime =
     EncodeDateVerbose(

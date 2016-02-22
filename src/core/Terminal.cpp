@@ -4,7 +4,7 @@
 
 #include "Terminal.h"
 
-#include <SysUtils.hpp>
+#include <Sysutils.hpp>
 #include <FileCtrl.hpp>
 #include <Common.h>
 #include <FileBuffer.h>

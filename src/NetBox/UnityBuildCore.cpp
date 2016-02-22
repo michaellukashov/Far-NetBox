@@ -8,7 +8,7 @@
 #include "../base/UnicodeString.cpp"
 #include "../base/Classes.cpp"
 #include "../base/Masks.cpp"
-#include "../base/SysUtils.cpp"
+#include "../base/Sysutils.cpp"
 #include "../base/StrUtils.cpp"
 #include "../base/local.cpp"
 #include "../base/rtti.cpp"

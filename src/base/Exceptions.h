@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Classes.hpp>
-#include <SysUtils.hpp>
+#include <Sysutils.hpp>
 #include <SysInit.hpp>
 #include <System.hpp>
 

@@ -6,7 +6,7 @@
 #include <Common.h>
 #include <Global.h>
 #include <StrUtils.hpp>
-#include <SysUtils.hpp>
+#include <Sysutils.hpp>
 #include <DateUtils.hpp>
 #include <math.h>
 #include <rdestl/map.h>
