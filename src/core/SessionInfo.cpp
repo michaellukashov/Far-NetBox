@@ -986,7 +986,8 @@ UnicodeString TSessionLog::LogSensitive(const UnicodeString & Str)
 
 UnicodeString TSessionLog::GetCmdLineLog()
 {
-  UnicodeString Result = L""; // TODO: GetCmdLine();
+  TODO("GetCmdLine()");
+  UnicodeString Result = L"";
 
   if (!FConfiguration->GetLogSensitive())
   {

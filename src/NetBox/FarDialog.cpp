@@ -2576,7 +2576,7 @@ void TFarLister::SetItems(const TStrings * Value)
 void TFarLister::DoFocus()
 {
   TFarDialogItem::DoFocus();
-  // TODO: hide cursor
+  TODO("hide cursor");
 }
 
 LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)

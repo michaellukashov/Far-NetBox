@@ -133,9 +133,10 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
       {
         TGuard Guard(*DebugSection.get());
 
+        TODO("implement");
         /*if (FileSystems.size() == 1)
         {
-          TODO: implement FileSystem = *FileSystems.begin();
+          FileSystem = *FileSystems.begin();
         }*/
       }
 
@@ -584,7 +585,7 @@ UnicodeString TWebDAVFileSystem::FSGetUserName() const
 
 void TWebDAVFileSystem::Idle()
 {
-  // TODO: Keep session alive
+  TODO("Keep session alive");
   // noop
 }
 

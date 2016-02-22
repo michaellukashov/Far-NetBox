@@ -713,7 +713,8 @@ bool ProcessGUI(bool Force)
         (double(N) - double(LastGUIUpdate) > GUIUpdateIntervalFrac))
     {
       LastGUIUpdate = N;
-//      Application->ProcessMessages(); TODO: GetGlobalFunctions()->ProcessMessages()
+      TODO("GetGlobalFunctions()->ProcessMessages()");
+//      Application->ProcessMessages();
       Result = true;
     }
   }

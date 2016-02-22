@@ -2986,8 +2986,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     DebugAssert(FQueue == nullptr);
     DebugAssert(FQueueStatus == nullptr);
 
-    // TODO: Create instance of TKeepaliveThread here, once its implementation
-    // is complete
+    TODO("Create instance of TKeepaliveThread here, once its implementation is complete");
 
     Result = FTerminal->GetActive();
     if (!Result)

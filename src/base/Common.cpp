@@ -1973,7 +1973,8 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
 UnicodeString FormatTimeZone(intptr_t Sec)
 {
   UnicodeString Str;
-  /*TODO: implement class TTimeSpan
+  TODO("implement class TTimeSpan");
+  /*
   TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
   if ((Span.Seconds == 0) && (Span.Minutes == 0))
   {

@@ -1114,8 +1114,8 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
 
 TStrings * TSessionData::SaveToOptions(const TSessionData * Default)
 {
+  TODO("implement");
 #if 0
-  TODO: implement
   std::unique_ptr<TStringList> Options(new TStringList());
   std::unique_ptr<TOptionsStorage> OptionsStorage(new TOptionsStorage(Options.get(), true, false));
   DoSave(OptionsStorage.get(), false, Default, true);
@@ -2881,8 +2881,8 @@ UnicodeString TSessionData::GenerateOpenCommandArgs()
   {
     AddSwitch(Result, L"rawsettings");
 
+    TODO("implement");
 #if 0
-    // TODO: implement
     for (int Index = 0; Index < RawSettings->GetCount(); Index++)
     {
       UnicodeString Name = RawSettings->GetName(Index);
@@ -3209,8 +3209,8 @@ UnicodeString TSessionData::GenerateAssemblyCode(
   {
     Result += L"\n";
 
+    TODO("implement");
 #if 0
-    // TODO: implement
     for (int Index = 0; Index < RawSettings->Count; Index++)
     {
       UnicodeString Name = RawSettings->Names[Index];
@@ -3601,7 +3601,8 @@ void TSessionData::FromURI(const UnicodeString & ProxyURI,
     }
     else if (ProxyScheme == L"https")
     {
-      ProxyMethod = pmHTTP; // TODO: pmHTTPS
+      TODO("pmHTTPS");
+      ProxyMethod = pmHTTP;
     }
   }
   if (ProxyMethod == pmNone)

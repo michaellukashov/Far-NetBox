@@ -3537,7 +3537,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetFtpDupFF(FtpDupFFCheck->GetChecked());
     SessionData->SetFtpUndupFF(FtpUndupFFCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
-    SessionData->SetTlsCertificateFile(PrivateKeyEdit->GetText()); // TODO: TlsCertificateFileEdit->GetText();
+    TODO("TlsCertificateFileEdit->GetText()");
+    SessionData->SetTlsCertificateFile(PrivateKeyEdit->GetText());
     std::unique_ptr<TStrings> PostLoginCommands2(new TStringList());
     for (intptr_t Index4 = 0; Index4 < static_cast<intptr_t>(_countof(PostLoginCommandsEdits)); ++Index4)
     {
