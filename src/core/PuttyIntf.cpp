@@ -213,12 +213,12 @@ char * get_ttymode(void * /*frontend*/, const char * /*mode*/)
   return nullptr;
 }
 
-void logevent(void * frontend, const char * string)
+void logevent(void * frontend, const char * str)
 {
   // Frontend maybe NULL here
   if (frontend != nullptr)
   {
-    (NB_STATIC_DOWNCAST(TSecureShell, frontend))->PuttyLogEvent(string);
+    (NB_STATIC_DOWNCAST(TSecureShell, frontend))->PuttyLogEvent(str);
   }
 }
 
