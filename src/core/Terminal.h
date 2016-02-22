@@ -465,7 +465,7 @@ public:
   void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic, bool IsDirectory);
   void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile = nullptr, void * Params = nullptr);
-  bool DeleteFiles(TStrings * AFilesToDelete, intptr_t Params = 0);
+  bool RemoteDeleteFiles(TStrings * AFilesToDelete, intptr_t Params = 0);
   bool DeleteLocalFiles(TStrings * AFileList, intptr_t Params = 0);
   bool IsRecycledFile(const UnicodeString & AFileName);
   void CustomCommandOnFile(const UnicodeString & AFileName,

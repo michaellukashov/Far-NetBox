@@ -3640,7 +3640,7 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
   while (RetryLoop.Retry());
 }
 
-bool TTerminal::DeleteFiles(TStrings * AFilesToDelete, intptr_t Params)
+bool TTerminal::RemoteDeleteFiles(TStrings * AFilesToDelete, intptr_t Params)
 {
   TODO("avoid resolving symlinks while reading subdirectories.");
   // Resolving does not work anyway for relative symlinks in subdirectories
@@ -5669,7 +5669,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
           }
 
           if ((DeleteRemoteList->GetCount() > 0) &&
-              !DeleteFiles(DeleteRemoteList.get()))
+              !RemoteDeleteFiles(DeleteRemoteList.get()))
           {
             Abort();
           }

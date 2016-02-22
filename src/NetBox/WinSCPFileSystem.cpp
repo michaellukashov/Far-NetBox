@@ -2446,7 +2446,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
     if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
         (MoreMessageDialog(Query, nullptr, qtConfirmation, qaOK | qaCancel) == qaOK))
     {
-      FTerminal->DeleteFiles(FFileList);
+      FTerminal->RemoteDeleteFiles(FFileList);
     }
     return true;
   }
