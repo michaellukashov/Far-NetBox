@@ -1901,8 +1901,8 @@ public:
 private:
   TSFTPFileSystem * FFileSystem;
 };
-//===========================================================================
 
+//===========================================================================
 //===========================================================================
 TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
@@ -3370,7 +3370,7 @@ void TSFTPFileSystem::LookupUsersGroups()
   TSFTPPacket PacketGroups(SSH_FXP_EXTENDED, FCodePage);
 
   TSFTPPacket * Packets[] = { &PacketOwners, &PacketGroups };
-  TRemoteTokenList * Lists[] = { &FTerminal->FUsers, &FTerminal->FGroups };
+  TRemoteTokenList * Lists[] = { FTerminal->GetUsers(), FTerminal->GetGroups() };
   wchar_t ListTypes[] = { OGQ_LIST_OWNERS, OGQ_LIST_GROUPS };
 
   for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(Packets)); ++Index)
@@ -3403,9 +3403,9 @@ void TSFTPFileSystem::LookupUsersGroups()
       {
         TRemoteToken Token(Packet->GetString(FUtfStrings));
         List.Add(Token);
-        if (&List == &FTerminal->FGroups)
+        if (&List == FTerminal->GetGroups())
         {
-          FTerminal->FMembership.Add(Token);
+          FTerminal->GetMembership()->Add(Token);
         }
       }
     }
@@ -4048,7 +4048,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
     TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
     Progress.Start(foGetProperties, osRemote, AFileList->GetCount());
 
-    FTerminal->FOperationProgress = &Progress; //-V506
+    FTerminal->SetOperationProgress(&Progress); //-V506
 
     TSFTPLoadFilesPropertiesQueue Queue(this, FCodePage);
     try__finally
@@ -4056,7 +4056,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
       SCOPE_EXIT
       {
         Queue.DisposeSafe();
-        FTerminal->FOperationProgress = nullptr;
+        FTerminal->SetOperationProgress(nullptr);
         Progress.Stop();
       };
       static intptr_t LoadFilesPropertiesQueueLen = 5;
@@ -4274,13 +4274,13 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
     SftpAlg = NormalizedAlg;
   }
 
-  FTerminal->FOperationProgress = &Progress; //-V506
+  FTerminal->SetOperationProgress(&Progress); //-V506
   
   try__finally
   {
     SCOPE_EXIT
     {
-      FTerminal->FOperationProgress = nullptr;
+      FTerminal->SetOperationProgress(nullptr);
       Progress.Stop();
     };
     DoCalculateFilesChecksum(NormalizedAlg, SftpAlg, AFileList, Checksums, OnCalculatedChecksum,
