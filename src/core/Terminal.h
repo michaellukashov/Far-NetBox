@@ -425,6 +425,10 @@ public:
   void CommandSessionClose(TObject * Sender);
 
   // __property TFileOperationProgressType * OperationProgress = { read=FOperationProgress };
+  const TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
+  TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
+  void SetOperationProgress(TFileOperationProgressType * OperationProgress) { FOperationProgress = OperationProgress; }
+
 
 public:
   explicit TTerminal();
@@ -525,7 +529,7 @@ public:
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
-  void LogEvent(const UnicodeString & Str);
+  void inline LogEvent(const UnicodeString & Str);
   void GetSupportedChecksumAlgs(TStrings * Algs);
   UnicodeString ChangeFileName(const TCopyParamType * CopyParam,
     const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel);
@@ -579,10 +583,6 @@ public:
 #endif
 
   void SetMasks(const UnicodeString & Value);
-
-  const TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
-  TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
-  void SetOperationProgress(TFileOperationProgressType * OperationProgress) { FOperationProgress = OperationProgress; }
 
   void SetLocalFileTime(const UnicodeString & LocalFileName,
     const TDateTime & Modification);
@@ -715,7 +715,6 @@ private:
   TConfiguration * FConfiguration;
 
 public:
-  void SetMasks(const UnicodeString & Value);
   TTerminal * GetTerminal(intptr_t Index);
 };
 
