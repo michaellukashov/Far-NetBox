@@ -1003,7 +1003,9 @@ void TTerminal::Open()
       {
         DoInformation(L"", true, 0);
       };
-      InternalTryOpen();
+      {
+        InternalTryOpen();
+      }
     }
     catch (EFatal & E)
     {

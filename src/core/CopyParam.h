@@ -107,7 +107,7 @@ public:
   TCopyParamType();
   TCopyParamType(const TCopyParamType & Source);
   virtual ~TCopyParamType();
-  TCopyParamType & operator =(const TCopyParamType & rhp);
+  TCopyParamType & operator =(const TCopyParamType & rhs);
   virtual void Assign(const TCopyParamType * Source);
   virtual void Default();
   UnicodeString ChangeFileName(const UnicodeString & AFileName,
