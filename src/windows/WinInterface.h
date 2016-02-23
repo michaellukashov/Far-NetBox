@@ -483,9 +483,9 @@ bool IsApplicationMinimized();
 void ApplicationMinimize();
 void ApplicationRestore();
 bool HandleMinimizeSysCommand(TMessage & Message);
-#endif
 void WinInitialize();
 void WinFinalize();
+#endif
 
 void ShowNotification(TTerminal * Terminal, const UnicodeString & Str,
   TQueryType Type);
