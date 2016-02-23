@@ -90,7 +90,7 @@ public:
   intptr_t GetBytesCount() const { return (Length() + 1) * sizeof(wchar_t); }
   bool IsEmpty() const { return Length() == 0; }
   void SetLength(intptr_t nLength) { Data.resize(nLength); }
-  UnicodeString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
+  inline UnicodeString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
   UnicodeString & Clear() { Data.clear(); return *this; }
 
   UnicodeString & Lower(intptr_t nStartPos = 1, intptr_t nLength = -1);
@@ -210,14 +210,14 @@ public:
   explicit AnsiString(const UnicodeString & Str);
   explicit AnsiString(const UTF8String & Str);
   explicit AnsiString(const RawByteString & Str);
-  ~AnsiString() {}
+  inline ~AnsiString() {}
 
   const char * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.size(); }
   intptr_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
   void SetLength(intptr_t nLength) { Data.resize(nLength); }
-  AnsiString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
+  inline AnsiString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
   AnsiString & Clear() { Data.clear(); return *this; }
   AnsiString & Insert(const char * Str, intptr_t Pos);
   AnsiString SubString(intptr_t Pos, intptr_t Len = -1) const;
@@ -304,7 +304,7 @@ public:
   bool IsEmpty() const { return Length() == 0; }
   void SetLength(intptr_t nLength) { Data.resize(nLength); }
   RawByteString & Clear() { SetLength(0); return *this; }
-  RawByteString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
+  inline RawByteString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
   RawByteString & Insert(const char * Str, intptr_t Pos);
   RawByteString SubString(intptr_t Pos, intptr_t Len = -1) const;
 
