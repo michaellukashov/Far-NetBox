@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Classes.hpp>
+
 #define PWALG_SIMPLE 1
 #define PWALG_SIMPLE_MAGIC 0xA3
 #define PWALG_SIMPLE_STRING ((RawByteString)"0123456789ABCDEF")

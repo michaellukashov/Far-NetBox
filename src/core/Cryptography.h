@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Classes.hpp>
+
 void CryptographyInitialize();
 void CryptographyFinalize();
 RawByteString ScramblePassword(const UnicodeString & Password);

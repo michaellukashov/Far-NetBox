@@ -11,6 +11,10 @@
 #include "CoreMain.h"
 #include "TextsCore.h"
 
+extern "C"
+{
+#include <winstuff.h>
+}
 char sshver[50];
 const int platform_uses_x11_unix_by_default = TRUE;
 CRITICAL_SECTION putty_section;
@@ -20,10 +24,6 @@ const char * const appname = appname_;
 extern const int share_can_be_downstream = FALSE;
 extern const int share_can_be_upstream = FALSE;
 
-extern "C"
-{
-#include <winstuff.h>
-}
 const UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
 const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
 const UnicodeString OriginalPuttyExecutable("putty.exe");
@@ -534,7 +534,7 @@ long reg_close_winscp_key(HKEY Key)
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
   if (Storage != nullptr)
   {
-    SAFE_DESTROY(Storage);
+    SAFE_DESTROY_EX(THierarchicalStorage, Storage);
   }
 
   return ERROR_SUCCESS;

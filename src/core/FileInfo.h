@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Classes.hpp>
+
 struct TTranslation
 {
   Word Language, CharSet;
