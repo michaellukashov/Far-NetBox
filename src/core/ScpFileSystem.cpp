@@ -906,16 +906,16 @@ void TSCPFileSystem::SkipStartupMessage()
 void TSCPFileSystem::LookupUsersGroups()
 {
   ExecCommand(fsLookupUsersGroups, 0);
-  FTerminal->FUsers.Clear();
-  FTerminal->FGroups.Clear();
+  FTerminal->GetUsers()->Clear();
+  FTerminal->GetGroups()->Clear();
   if (FOutput->GetCount() > 0)
   {
     UnicodeString Groups = FOutput->GetString(0);
     while (!Groups.IsEmpty())
     {
       UnicodeString NewGroup = CutToChar(Groups, L' ', false);
-      FTerminal->FGroups.Add(TRemoteToken(NewGroup));
-      FTerminal->FMembership.Add(TRemoteToken(NewGroup));
+      FTerminal->GetGroups()->Add(TRemoteToken(NewGroup));
+      FTerminal->GetMembership()->Add(TRemoteToken(NewGroup));
     }
   }
 }
@@ -1150,7 +1150,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           // Empty file list -> probably "permission denied", we
           // at least get link to parent directory ("..")
           FTerminal->ReadFile(
-            core::UnixIncludeTrailingBackslash(FTerminal->FFiles->GetDirectory()) +
+            core::UnixIncludeTrailingBackslash(FTerminal->GetFiles()->GetDirectory()) +
               PARENTDIRECTORY, File);
           Empty = (File == nullptr);
           if (!Empty)
@@ -1593,7 +1593,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   Params &= ~(cpAppend | cpResume);
   UnicodeString Options;
   bool CheckExistence = core::UnixSamePath(TargetDir, FTerminal->GetCurrDirectory()) &&
-    (FTerminal->FFiles != nullptr) && FTerminal->FFiles->GetLoaded();
+    (FTerminal->GetFiles() != nullptr) && FTerminal->GetFiles()->GetLoaded();
   bool CopyBatchStarted = false;
   bool Failed = true;
   bool GotLastLine = false;
