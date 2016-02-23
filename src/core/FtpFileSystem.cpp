@@ -2480,6 +2480,10 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
         if (Result)
         {
+          if ((Path.Length() > 0) && (Path[1] != L'/'))
+          {
+            Path = L"/" + Path;
+          }
           FCurrentDirectory = core::AbsolutePath(ROOTDIRECTORY, core::UnixExcludeTrailingBackslash(Path));
           if (FCurrentDirectory.IsEmpty())
           {
