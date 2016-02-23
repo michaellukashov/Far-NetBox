@@ -13,6 +13,7 @@
 #include "../base/local.cpp"
 #include "../base/rtti.cpp"
 #include "../base/WideStrUtils.cpp"
+#include "../base/LibraryLoader.cpp"
 #include "../base/Common.cpp"
 #include "../base/Exceptions.cpp"
 #include "../base/FileBuffer.cpp"
