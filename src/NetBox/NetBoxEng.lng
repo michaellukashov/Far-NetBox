@@ -928,8 +928,8 @@
 "Operation cannot be completed because it would exceed the users storage quota."
 "Principal (%s) is unknown to the server."
 "Error copying file '%s' to '%s'."
-"Unterminated pattern '%s' starting at %d."
-"Unknown pattern '%s' starting at %d."
+"Unterminated pattern '%c' starting at %d."
+"Unknown pattern '%c' starting at %d."
 "Cannot combine file name pattern (starting at %d) with file list pattern (starting at %d)."
 
 "Cannot determine status of socket (%d)."
