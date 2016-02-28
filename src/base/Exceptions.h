@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Classes.hpp>
-#include <SysUtils.hpp>
+#include <Sysutils.hpp>
 #include <SysInit.hpp>
 #include <System.hpp>
 
@@ -35,7 +35,7 @@ public:
   explicit ExtException(const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
   virtual ~ExtException(void) noexcept;
   TStrings * GetMoreMessages() const { return FMoreMessages; }
-  UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
+  const UnicodeString & GetHelpKeyword() const { return FHelpKeyword; }
 
   explicit inline ExtException(const UnicodeString & Msg) : Exception(Msg), FMoreMessages(nullptr) {}
   explicit inline ExtException(int Ident) : Exception(Ident), FMoreMessages(nullptr) {}
@@ -46,7 +46,7 @@ public:
     FHelpKeyword = E.FHelpKeyword;
     AddMoreMessages(&E);
   }
-  ExtException & operator =(const ExtException &rhs)
+  ExtException & operator = (const ExtException & rhs)
   {
     FHelpKeyword = rhs.FHelpKeyword;
     Message = rhs.Message;

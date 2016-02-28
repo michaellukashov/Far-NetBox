@@ -133,9 +133,10 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
       {
         TGuard Guard(*DebugSection.get());
 
+        TODO("implement");
         /*if (FileSystems.size() == 1)
         {
-          TODO: implement FileSystem = *FileSystems.begin();
+          FileSystem = *FileSystems.begin();
         }*/
       }
 
@@ -584,7 +585,7 @@ UnicodeString TWebDAVFileSystem::FSGetUserName() const
 
 void TWebDAVFileSystem::Idle()
 {
-  // TODO: Keep session alive
+  TODO("Keep session alive");
   // noop
 }
 
@@ -1397,7 +1398,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
   int64_t Size;
   uintptr_t LocalFileAttrs = 0;
 
-  FTerminal->OpenLocalFile(RealFileName, GENERIC_READ, &File,
+  FTerminal->TerminalOpenLocalFile(RealFileName, GENERIC_READ, &File,
     &LocalFileAttrs, nullptr, nullptr, &MTime, &Size);
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
@@ -1543,7 +1544,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
             // changing getlastmodified.
             // The only server we found that supports this is TradeMicro SafeSync.
             // But it announces itself as "Server: Apache",
-            // so it's not reliably autodetect the support.
+            // so it's not reliable autodetect the support.
             TouchAction.Cancel();
           }
           else
@@ -2072,7 +2073,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     {
       int64_t Size = 0;
       int64_t MTime = 0;
-      FTerminal->OpenLocalFile(DestFullName, GENERIC_READ, nullptr,
+      FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_READ, nullptr,
         nullptr, nullptr, &MTime, nullptr, &Size);
       TOverwriteFileParams FileParams;
 
@@ -2117,7 +2118,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName.c_str()), "",
     [&]()
     {
-      HANDLE LocalFileHandle = FTerminal->CreateLocalFile(DestFullName,
+      HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName,
         GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
 //      if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress,
 //             &LocalHandle, FLAGSET(Params, cpNoConfirmation)))

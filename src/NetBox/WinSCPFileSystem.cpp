@@ -4,18 +4,18 @@
 #include "WinSCPFileSystem.h"
 #include "WinSCPPlugin.h"
 #include "FarDialog.h"
-#include "FarTexts.h"
 #include "FarConfiguration.h"
 #include <Common.h>
+#include <MsgIDs.h>
 #include <Exceptions.h>
 #include <SessionData.h>
 #include <CoreMain.h>
 #include <ScpFileSystem.h>
 #include <Bookmarks.h>
 #include <GUITools.h>
+#include <Sysutils.hpp>
 #include "guid.h"
 
-#include <SysUtils.hpp>
 #include <CompThread.hpp>
 #include "PuttyIntf.h"
 #include "XmlStorage.h"
@@ -1149,7 +1149,15 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(TStrings * AFileList, TCopyPara
 
 void TWinSCPFileSystem::ApplyCommand()
 {
-  std::unique_ptr<TStrings> FileList(CreateSelectedFileList(osRemote));
+  TFarPanelInfo ** PanelInfo = this->GetPanelInfo();
+  if (PanelInfo && *PanelInfo && (*PanelInfo)->GetSelectedCount(true) == 0)
+  {
+    MoreMessageDialog(GetMsg(MSG_NO_FILES_SELECTED), nullptr,
+      qtInformation, qaOK);
+    return;
+  }
+
+  std::unique_ptr<TStrings> FileList(CreateSelectedFileList(osRemote, PanelInfo));
   if (FileList.get() != nullptr)
   {
     TFarConfiguration * FarConfiguration = GetFarConfiguration();
@@ -2076,7 +2084,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
 
   if (Result)
   {
-    FTerminal->ChangeDirectory(Directory);
+    FTerminal->RemoteChangeDirectory(Directory);
     if (UpdatePanel(true))
     {
       RedrawPanel();
@@ -2229,7 +2237,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, OPERATION_MODE
         };
         if (Dir == L"\\")
         {
-          FTerminal->ChangeDirectory(ROOTDIRECTORY);
+          FTerminal->RemoteChangeDirectory(ROOTDIRECTORY);
         }
         else if ((Dir == PARENTDIRECTORY) && (FTerminal->GetCurrDirectory() == ROOTDIRECTORY))
         {
@@ -2238,7 +2246,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, OPERATION_MODE
         }
         else
         {
-          FTerminal->ChangeDirectory(Dir);
+          FTerminal->RemoteChangeDirectory(Dir);
           FCurrentDirectoryWasChanged = true;
         }
       }
@@ -2457,7 +2465,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES 
     if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
         (MoreMessageDialog(Query, nullptr, qtConfirmation, qaOK | qaCancel) == qaOK))
     {
-      FTerminal->DeleteFiles(FFileList);
+      FTerminal->RemoteDeleteFiles(FFileList);
     }
     return true;
   }
@@ -2868,11 +2876,7 @@ TStrings * TWinSCPFileSystem::CreateSelectedFileList(TOperationSide Side, TFarPa
   TStrings * Result;
   if (PanelInfo && *PanelInfo && (*PanelInfo)->GetSelectedCount() > 0)
   {
-    UnicodeString CurrDirectory = (*PanelInfo)->GetCurrDirectory();
-    if (*PanelInfo == nullptr)
-    {
-      PanelInfo = this->GetPanelInfo();
-    }
+    UnicodeString CurrDirectory = Connected() ? FTerminal->GetCurrDirectory() : (*PanelInfo)->GetCurrDirectory();
     Result = CreateFileList((*PanelInfo)->GetItems(), Side, true, CurrDirectory);
   }
   else
@@ -2997,8 +3001,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     DebugAssert(FQueue == nullptr);
     DebugAssert(FQueueStatus == nullptr);
 
-    // TODO: Create instance of TKeepaliveThread here, once its implementation
-    // is complete
+    TODO("Create instance of TKeepaliveThread here, once its implementation is complete");
 
     Result = FTerminal->GetActive();
     if (!Result)

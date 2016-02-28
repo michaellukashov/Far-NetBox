@@ -94,7 +94,7 @@ ne_session * CreateNeonSession(
         // Enable (only) the Negotiate scheme for proxy
         // authentication, if no username/password is
         // configured.
-        ne_add_proxy_auth(Session, NE_AUTH_NEGOTIATE, NULL, NULL);
+        ne_add_proxy_auth(Session, NE_AUTH_NEGOTIATE, nullptr, nullptr);
       }
     }
   }
@@ -109,7 +109,7 @@ void DestroyNeonSession(ne_session * Session)
 {
   TProxyAuthData * ProxyAuthData =
     static_cast<TProxyAuthData *>(ne_get_session_private(Session, SESSION_PROXY_AUTH_KEY));
-  if (ProxyAuthData != NULL)
+  if (ProxyAuthData != nullptr)
   {
     delete ProxyAuthData;
   }
@@ -223,7 +223,7 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 {
   TNeonTlsInit OnNeonTlsInit =
     reinterpret_cast<TNeonTlsInit>(ne_get_session_private(Session, SESSION_TLS_INIT_KEY));
-  if (DebugAlwaysTrue(OnNeonTlsInit != NULL))
+  if (DebugAlwaysTrue(OnNeonTlsInit != nullptr))
   {
     OnNeonTlsInit(Ssl, Session);
   }

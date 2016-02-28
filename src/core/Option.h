@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Classes.hpp>
+
 enum TOptionType
 {
   otParam,

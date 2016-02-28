@@ -13,13 +13,6 @@ enum TModificationFmt
 };
 
 #define SYMLINKSTR L" -> "
-#define PARENTDIRECTORY L".."
-#define THISDIRECTORY L"."
-#define ROOTDIRECTORY L"/"
-#define SLASH L"/"
-#define BACKSLASH L"\\"
-#define QUOTE L"\'"
-#define DOUBLEQUOTE L"\""
 #define FILETYPE_DEFAULT L'-'
 #define FILETYPE_SYMLINK L'L'
 #define FILETYPE_DIRECTORY L'D'
@@ -306,7 +299,7 @@ public:
   void ReleaseRelativeDirectories();
 
 public:
-  explicit TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = nullptr);
+  explicit TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template = nullptr);
   virtual ~TRemoteDirectory();
   virtual void AddFile(TRemoteFile * AFile);
   virtual void DuplicateTo(TRemoteFileList * Copy) const;

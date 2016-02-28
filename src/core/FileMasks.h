@@ -216,7 +216,7 @@ struct TCustomCommandData : public TObject
 //NB_DISABLE_COPY(TCustomCommandData)
 public:
   TCustomCommandData();
-  TCustomCommandData(const TCustomCommandData & Data);
+  explicit TCustomCommandData(const TCustomCommandData & Data);
   explicit TCustomCommandData(TTerminal * Terminal);
   explicit TCustomCommandData(
     TSessionData * SessionData, const UnicodeString & AUserName,

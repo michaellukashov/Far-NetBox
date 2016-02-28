@@ -64,6 +64,9 @@ const UnicodeString PassphraseOption(L"passphrase");
 const uintptr_t CONST_DEFAULT_CODEPAGE = CP_UTF8;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
 
+const intptr_t SFTPMinVersion = 0;
+const intptr_t SFTPMaxVersion = 6;
+
 static TDateTime SecToDateTime(intptr_t Sec)
 {
   return TDateTime(double(Sec) / SecsPerDay);
@@ -1114,8 +1117,8 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
 
 TStrings * TSessionData::SaveToOptions(const TSessionData * Default)
 {
+  TODO("implement");
 #if 0
-  TODO: implement
   std::unique_ptr<TStringList> Options(new TStringList());
   std::unique_ptr<TOptionsStorage> OptionsStorage(new TOptionsStorage(Options.get(), true, false));
   DoSave(OptionsStorage.get(), false, Default, true);
@@ -1520,6 +1523,11 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
   {
     // Remove "netbox:" prefix
     Url.Delete(1, 7);
+    if (Url.SubString(1, 2) == L"//")
+    {
+      // Remove "//"
+      Url.Delete(1, 2);
+    }
   }
   if (Url.SubString(1, 7).LowerCase() == L"webdav:")
   {
@@ -1829,7 +1837,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     // as the option should not make session "connectable"
 
     UnicodeString Value;
-    if (Options->FindSwitch(SESSIONNAME_SWICH, Value))
+    if (Options->FindSwitch(SESSIONNAME_SWITCH, Value))
     {
       SetName(Value);
     }
@@ -2262,7 +2270,7 @@ void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const Un
   rde::vector<AlgoT> NewList(Count);
 
   const AlgoT * WarnPtr = std::find(DefaultList, DefaultList + Count, WarnAlgo);
-  DebugAssert(WarnPtr != NULL);
+  DebugAssert(WarnPtr != nullptr);
   intptr_t WarnDefaultIndex = (WarnPtr - DefaultList);
 
   intptr_t Index = 0;
@@ -2354,7 +2362,7 @@ void TSessionData::SetCipherList(const UnicodeString & Value)
   while (!Value2.IsEmpty() && (Index < CIPHER_COUNT))
   {
     CipherStr = CutToChar(Value2, L',', true);
-    for (int C = 0; C < CIPHER_COUNT; C++)
+    for (intptr_t C = 0; C < CIPHER_COUNT; C++)
     {
       if (!CipherStr.CompareIC(CipherNames[C]))
       {
@@ -2401,7 +2409,7 @@ TKex TSessionData::GetKex(intptr_t Index) const
 void TSessionData::SetKexList(const UnicodeString & Value)
 {
 /*bool Used[KEX_COUNT];
-  for (int K = 0; K < KEX_COUNT; K++)
+  for (intptr_t K = 0; K < KEX_COUNT; K++)
   {
     Used[K] = false;
   }
@@ -2412,7 +2420,7 @@ void TSessionData::SetKexList(const UnicodeString & Value)
   while (!Value2.IsEmpty() && (Index < KEX_COUNT))
   {
     KexStr = CutToChar(Value2, L',', true);
-    for (int K = 0; K < KEX_COUNT; K++)
+    for (intptr_t K = 0; K < KEX_COUNT; K++)
     {
       if (!KexStr.CompareIC(KexNames[K]))
       {
@@ -2649,7 +2657,7 @@ UnicodeString TSessionData::GetSessionName() const
 
 bool TSessionData::GetIsSecure() const
 {
-  bool Result;
+  bool Result = false;
   switch (GetFSProtocol())
   {
     case fsSCPonly:
@@ -2881,8 +2889,8 @@ UnicodeString TSessionData::GenerateOpenCommandArgs()
   {
     AddSwitch(Result, L"rawsettings");
 
+    TODO("implement");
 #if 0
-    // TODO: implement
     for (int Index = 0; Index < RawSettings->GetCount(); Index++)
     {
       UnicodeString Name = RawSettings->GetName(Index);
@@ -3209,8 +3217,8 @@ UnicodeString TSessionData::GenerateAssemblyCode(
   {
     Result += L"\n";
 
+    TODO("implement");
 #if 0
-    // TODO: implement
     for (int Index = 0; Index < RawSettings->Count; Index++)
     {
       UnicodeString Name = RawSettings->Names[Index];
@@ -3601,7 +3609,8 @@ void TSessionData::FromURI(const UnicodeString & ProxyURI,
     }
     else if (ProxyScheme == L"https")
     {
-      ProxyMethod = pmHTTP; // TODO: pmHTTPS
+      TODO("pmHTTPS");
+      ProxyMethod = pmHTTP;
     }
   }
   if (ProxyMethod == pmNone)
@@ -4477,15 +4486,15 @@ void TStoredSessionList::Cleanup()
 void TStoredSessionList::UpdateStaticUsage()
 {
 #if 0
-  int SCP = 0;
-  int SFTP = 0;
-  int FTP = 0;
-  int FTPS = 0;
-  int WebDAV = 0;
-  int WebDAVS = 0;
-  int Password = 0;
-  int Advanced = 0;
-  int Color = 0;
+  intptr_t SCP = 0;
+  intptr_t SFTP = 0;
+  intptr_t FTP = 0;
+  intptr_t FTPS = 0;
+  intptr_t WebDAV = 0;
+  intptr_t WebDAVS = 0;
+  intptr_t Password = 0;
+  intptr_t Advanced = 0;
+  intptr_t Color = 0;
   int Note = 0;
   int Tunnel = 0;
   bool Folders = false;
@@ -5032,7 +5041,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
           break;
 
         case L'@':
-          if (SessionData != NULL)
+          if (SessionData != nullptr)
           {
             Replacement = MakeValidFileName(SessionData->GetHostNameExpanded());
           }
@@ -5043,7 +5052,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
           break;
 
         case L's':
-          if (SessionData != NULL)
+          if (SessionData != nullptr)
           {
             Replacement = MakeValidFileName(SessionData->GetSessionName());
           }

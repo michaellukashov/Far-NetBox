@@ -274,7 +274,10 @@ TFTPFileSystem::~TFTPFileSystem()
 {
   DebugAssert(FFileList == nullptr);
 
-  FFileZillaIntf->Destroying();
+  if (FFileZillaIntf)
+  {
+    FFileZillaIntf->Destroying();
+  }
 
   // to release memory associated with the messages
   DiscardMessages();
@@ -289,6 +292,8 @@ TFTPFileSystem::~TFTPFileSystem()
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
   SAFE_DESTROY(FServerCapabilities);
+  SAFE_DESTROY(FLastError);
+  SAFE_DESTROY(FFeatures);
 
   ResetCaches();
 }
@@ -911,7 +916,7 @@ void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
   }
   __finally
   {
-    FOnCaptureOutput = NULL;
+    FOnCaptureOutput = nullptr;
   };
 }
 
@@ -1274,13 +1279,13 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
   TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
   Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
 
-  FTerminal->FOperationProgress = &Progress;
+  FTerminal->SetOperationProgress(&Progress);
 
   try__finally
   {
     SCOPE_EXIT
     {
-      FTerminal->FOperationProgress = nullptr;
+      FTerminal->SetOperationProgress(nullptr);
       Progress.Stop();
     };
     UnicodeString NormalizedAlg = FindIdent(FindIdent(Alg, FHashAlgs.get()), FChecksumAlgs.get());
@@ -1307,7 +1312,7 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
   }
   __finally
   {
-    FTerminal->FOperationProgress = nullptr;
+    FTerminal->SetOperationProgress(nullptr);
     Progress.Stop();
   };
 }
@@ -1973,7 +1978,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   int64_t MTime = 0, ATime = 0;
   int64_t Size = 0;
 
-  FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
+  FTerminal->TerminalOpenLocalFile(AFileName, GENERIC_READ,
     nullptr, &OpenParams->LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
   OperationProgress->SetFileInProgress();
@@ -2002,7 +2007,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
     OperationProgress->TransferingFile = false;
 
     TDateTime Modification;
-    // Inspired by SysUtils::FileAge
+    // Inspired by Sysutils::FileAge
     WIN32_FIND_DATA FindData;
     HANDLE LocalFileHandle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
     if (LocalFileHandle != INVALID_HANDLE_VALUE)
@@ -2475,6 +2480,10 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
         if (Result)
         {
+          if ((Path.Length() > 0) && (Path[1] != L'/'))
+          {
+            Path = L"/" + Path;
+          }
           FCurrentDirectory = core::AbsolutePath(ROOTDIRECTORY, core::UnixExcludeTrailingBackslash(Path));
           if (FCurrentDirectory.IsEmpty())
           {
@@ -4047,7 +4056,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
         switch (OverwriteMode)
         {
           case omOverwrite:
-            if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateFile(DestFullName, OperationProgress,
+            if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
               false, true,
               &LocalFileHandle))
             {
@@ -4068,7 +4077,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
             break;
 
           case omResume:
-            if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateFile(DestFullName, OperationProgress,
+            if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
               true, true,
               &LocalFileHandle))
             {
@@ -4158,7 +4167,7 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & Val
       static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
       static_cast<uint16_t>(ValidityTime.Sec), 0));
   */
-  // TODO: use SysUtils::FormatDateTime
+  TODO("use Sysutils::FormatDateTime");
   uint16_t Y, M, D, H, Mm, S, MS;
   TDateTime DateTime =
     EncodeDateVerbose(
@@ -4259,7 +4268,7 @@ static bool IsIPAddress(const UnicodeString & HostName)
   bool IPv6 = true;
   bool AnyColon = false;
 
-  for (int Index = 1; Index <= HostName.Length(); Index++)
+  for (intptr_t Index = 1; Index <= HostName.Length(); Index++)
   {
     wchar_t C = HostName[Index];
     if (!IsDigit(C) && (C != L'.'))

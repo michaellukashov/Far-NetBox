@@ -11709,10 +11709,10 @@ static void ssh_provide_logctx(void *handle, void *logctx)
 static int ssh_return_exitcode(void *handle)
 {
     Ssh ssh = (Ssh) handle;
-    if (ssh->s != NULL)
+    if (ssh && ssh->s != NULL)
         return -1;
     else
-        return (ssh->exitcode >= 0 ? ssh->exitcode : INT_MAX);
+        return (ssh && ssh->exitcode >= 0 ? ssh->exitcode : INT_MAX);
 }
 
 /*

@@ -33,6 +33,19 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#define INCL_WINSOCK_API_TYPEDEFS 1
+#ifndef _WINSOCKAPI_
+#define _WINSOCKAPI_
+#endif
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+#define WIN32_LEAN_AND_MEAN
+#define VC_EXTRALEAN
+#define SECURITY_WIN32
+#include <windows.h>
+#include <tchar.h>
+
 #include "disable_warnings_in_std_begin.hpp"
 #include <nbglobals.h>
 
@@ -52,13 +65,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #  error Windows SDK v7.0 (or higher) required
 # endif
 #endif //_MSC_VER
-
-#define WIN32_LEAN_AND_MEAN
-#define VC_EXTRALEAN
-#define SECURITY_WIN32
-#include <windows.h>
-#include <winsock2.h>
-#include <Ws2tcpip.h>
 
 #include "disable_warnings_in_std_end.hpp"
 

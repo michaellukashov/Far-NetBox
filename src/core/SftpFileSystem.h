@@ -15,7 +15,6 @@ struct TSFTPSupport;
 class TSecureShell;
 
 //enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
-extern const intptr_t SFTPMaxVersion;
 
 class TSFTPFileSystem : public TCustomFileSystem
 {

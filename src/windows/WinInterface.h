@@ -6,6 +6,7 @@
 #include <Interface.h>
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
+#include <MsgIDs.h>
 
 #ifdef LOCALINTERFACE
 #include <LocalInterface.h>
@@ -482,9 +483,9 @@ bool IsApplicationMinimized();
 void ApplicationMinimize();
 void ApplicationRestore();
 bool HandleMinimizeSysCommand(TMessage & Message);
-#endif
 void WinInitialize();
 void WinFinalize();
+#endif
 
 void ShowNotification(TTerminal * Terminal, const UnicodeString & Str,
   TQueryType Type);

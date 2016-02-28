@@ -147,7 +147,7 @@ protected:
   UnicodeString GetNeonError() const;
   static void NeonQuotaResult(void * UserData, const ne_uri * Uri, const ne_prop_result_set_s * Results);
   static const char * GetProp(const ne_prop_result_set_s * Results,
-    const char * Name, const char * NameSpace = NULL);
+    const char * Name, const char * NameSpace = nullptr);
   static void LockResult(void * UserData, const struct ne_lock * Lock,
    const ne_uri * Uri, const ne_status * Status);
   void RequireLockStore();

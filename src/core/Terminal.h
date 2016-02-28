@@ -234,9 +234,12 @@ public:
     uintptr_t Answers, const UnicodeString & HelpKeyword = L"");
   UnicodeString GetCurrDirectory();
   bool GetExceptionOnFail() const;
-  const TRemoteTokenList * GetGroups();
-  const TRemoteTokenList * GetUsers();
-  const TRemoteTokenList * GetMembership();
+  const TRemoteTokenList * GetGroups() const { return const_cast<TTerminal *>(this)->GetGroups(); }
+  TRemoteTokenList * GetGroups();
+  const TRemoteTokenList * GetUsers() const { return const_cast<TTerminal *>(this)->GetUsers(); }
+  TRemoteTokenList * GetUsers();
+  const TRemoteTokenList * GetMembership() const { return const_cast<TTerminal *>(this)->GetMembership(); }
+  TRemoteTokenList * GetMembership();
   void TerminalSetCurrentDirectory(const UnicodeString & AValue);
   void SetExceptionOnFail(bool Value);
   void ReactOnCommand(intptr_t /*TFSCommand*/ Cmd);
@@ -252,7 +255,7 @@ public:
   UnicodeString GetRememberedPassword() const;
   UnicodeString GetRememberedTunnelPassword() const;
   bool GetStoredCredentialsTried() const;
-  inline bool InTransaction();
+  inline bool InTransaction() const;
   void SaveCapabilities(TFileSystemInfo & FileSystemInfo);
   static UnicodeString SynchronizeModeStr(TSynchronizeMode Mode);
   static UnicodeString SynchronizeParamsStr(intptr_t Params);
@@ -299,16 +302,17 @@ public:
   UnicodeString TranslateLockedPath(const UnicodeString & APath, bool Lock);
   void ReadDirectory(TRemoteFileList * AFileList);
   void CustomReadDirectory(TRemoteFileList * AFileList);
-  void DoCreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo,
-    bool Symbolic);
-  bool TerminalCreateFile(const UnicodeString & AFileName,
+  void DoCreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
+  bool TerminalCreateLocalFile(const UnicodeString & AFileName,
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,
     OUT HANDLE * AHandle);
-  void OpenLocalFile(const UnicodeString & AFileName, uintptr_t Access,
-    OUT HANDLE * AHandle, OUT uintptr_t * AAttrs, OUT int64_t * ACTime, OUT int64_t * AMTime,
-    OUT int64_t * AATime, OUT int64_t * ASize, bool TryWriteReadOnly = true);
+  HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
+    DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
+  void TerminalOpenLocalFile(const UnicodeString & AFileName, DWORD Access,
+    OUT OPTIONAL HANDLE * AHandle, OUT OPTIONAL uintptr_t * AAttrs, OUT OPTIONAL int64_t * ACTime, OUT OPTIONAL int64_t * AMTime,
+    OUT OPTIONAL int64_t * AATime, OUT OPTIONAL int64_t * ASize, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(const UnicodeString & AFileName,
     const TCopyParamType * CopyParam, TFileOperationProgressType * OperationProgress);
   bool HandleException(Exception * E);
@@ -422,6 +426,10 @@ public:
   void CommandSessionClose(TObject * Sender);
 
   // __property TFileOperationProgressType * OperationProgress = { read=FOperationProgress };
+  const TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
+  TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
+  void SetOperationProgress(TFileOperationProgressType * OperationProgress) { FOperationProgress = OperationProgress; }
+
 
 public:
   explicit TTerminal();
@@ -457,14 +465,14 @@ public:
   void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic, bool IsDirectory);
   void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile = nullptr, void * Params = nullptr);
-  bool DeleteFiles(TStrings * AFilesToDelete, intptr_t Params = 0);
+  bool RemoteDeleteFiles(TStrings * AFilesToDelete, intptr_t Params = 0);
   bool DeleteLocalFiles(TStrings * AFileList, intptr_t Params = 0);
   bool IsRecycledFile(const UnicodeString & AFileName);
   void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * AParams);
   void CustomCommandOnFiles(const UnicodeString & Command, intptr_t Params,
     TStrings * AFiles, TCaptureOutputEvent OutputEvent);
-  void ChangeDirectory(const UnicodeString & Directory);
+  void RemoteChangeDirectory(const UnicodeString & Directory);
   void EndTransaction();
   void HomeDirectory();
   void ChangeFileProperties(const UnicodeString & AFileName,
@@ -484,7 +492,7 @@ public:
     const UnicodeString & FileMask);
   void TerminalCopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /*const TMoveFileParams*/ void * Param);
-  bool CopyFiles(TStrings * AFileList, const UnicodeString & Target,
+  bool CopyFiles(const TStrings * AFileList, const UnicodeString & Target,
     const UnicodeString & FileMask);
   bool CalculateFilesSize(const TStrings * AFileList, int64_t & Size,
     intptr_t Params, const TCopyParamType * CopyParam, bool AllowDirs,
@@ -522,7 +530,7 @@ public:
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
-  void LogEvent(const UnicodeString & Str);
+  void inline LogEvent(const UnicodeString & Str);
   void GetSupportedChecksumAlgs(TStrings * Algs);
   UnicodeString ChangeFileName(const TCopyParamType * CopyParam,
     const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel);
@@ -577,15 +585,10 @@ public:
 
   void SetMasks(const UnicodeString & Value);
 
-  const TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
-  TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
-
   void SetLocalFileTime(const UnicodeString & LocalFileName,
     const TDateTime & Modification);
   void SetLocalFileTime(const UnicodeString & LocalFileName,
     FILETIME * AcTime, FILETIME * WrTime);
-  HANDLE CreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
-    DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
   DWORD GetLocalFileAttributes(const UnicodeString & LocalFileName);
   BOOL SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
   BOOL MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);
@@ -711,7 +714,6 @@ private:
   TConfiguration * FConfiguration;
 
 public:
-  void SetMasks(const UnicodeString & Value);
   TTerminal * GetTerminal(intptr_t Index);
 };
 

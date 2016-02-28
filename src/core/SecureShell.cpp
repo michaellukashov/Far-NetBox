@@ -1132,7 +1132,7 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
     }
     __finally
     {
-      OutPtr = NULL;
+      OutPtr = nullptr;
     };
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)

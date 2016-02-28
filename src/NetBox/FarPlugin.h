@@ -467,7 +467,7 @@ public:
   void SetFocusedItem(const TFarPanelItem * Value);
   intptr_t GetFocusedIndex() const;
   void SetFocusedIndex(intptr_t Value);
-  intptr_t GetSelectedCount() const;
+  intptr_t GetSelectedCount(bool CountCurrentItem = false) const;
   TRect GetBounds() const;
   TFarPanelType GetType() const;
   bool GetIsPlugin() const;

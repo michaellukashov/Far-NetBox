@@ -454,8 +454,8 @@ void TSignalThread::Terminate()
 //---------------------------------------------------------------------------
 // TTerminalQueue
 //---------------------------------------------------------------------------
-TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
-  TConfiguration * Configuration) :
+TTerminalQueue::TTerminalQueue(TTerminal * ATerminal,
+  TConfiguration * AConfiguration) :
   TSignalThread(),
   FOnQueryUser(nullptr),
   FOnPromptUser(nullptr),
@@ -463,8 +463,8 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   FOnQueueItemUpdate(nullptr),
   FOnListUpdate(nullptr),
   FOnEvent(nullptr),
-  FTerminal(Terminal),
-  FConfiguration(Configuration),
+  FTerminal(ATerminal),
+  FConfiguration(AConfiguration),
   FSessionData(new TSessionData(L"")),
   FItems(new TList()),
   FDoneItems(new TList()),
@@ -529,7 +529,7 @@ TTerminalQueue::~TTerminalQueue()
     FreeItemsList(FDoneItems);
   }
 
-  SAFE_DESTROY(FSessionData);
+  SAFE_DESTROY_EX(TSessionData, FSessionData);
 }
 
 void TTerminalQueue::FreeItemsList(TList *& List)

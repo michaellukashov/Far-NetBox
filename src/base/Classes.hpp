@@ -419,6 +419,13 @@ int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
 
 class TSHFileInfo : public TObject
 {
+  typedef DWORD_PTR (WINAPI * TGetFileInfo)(
+  _In_ LPCTSTR pszPath,
+  DWORD dwFileAttributes,
+  _Inout_ SHFILEINFO *psfi,
+  UINT cbFileInfo,
+  UINT uFlags);
+
 public:
   TSHFileInfo();
   virtual ~TSHFileInfo();
@@ -429,6 +436,9 @@ public:
 
   //get file type
   UnicodeString GetFileType(const UnicodeString & StrFileName);
+
+private:
+  TGetFileInfo FGetFileInfo;
 };
 
 enum TSeekOrigin
@@ -687,6 +697,7 @@ enum TQueryType
   qtError,
   qtInformation,
 };
+
 struct TMessageParams;
 
 class TGlobalFunctionsIntf

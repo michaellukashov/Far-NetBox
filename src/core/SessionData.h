@@ -143,6 +143,9 @@ extern const wchar_t UrlParamValueSeparator;
 #define UrlSaveParamName L"save"
 #define PassphraseOption L"passphrase"
 
+extern const intptr_t SFTPMinVersion;
+extern const intptr_t SFTPMaxVersion;
+
 struct TIEProxyConfig : public TObject
 {
   TIEProxyConfig() :

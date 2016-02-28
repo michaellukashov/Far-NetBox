@@ -6,6 +6,29 @@
 #include "FzApiStructures.h"
 #include "structures.h"
 #include "AsyncSslSocketLayer.h"
+#include "FileZillaIntern.h"
+#include "FileZillaOpt.h"
+
+#define DECL_WINDOWS_FUNCTION(linkage, rettype, name, params) \
+  typedef rettype (WINAPI *t_##name) params; \
+  linkage t_##name p_##name
+#define STR1(x) #x
+#define STR(x) STR1(x)
+#define GET_WINDOWS_FUNCTION_PP(module, name) \
+  (p_##name = module ? (t_##name) GetProcAddress(module, STR(name)) : NULL)
+#define GET_WINDOWS_FUNCTION(module, name) \
+  (p_##name = module ? (t_##name) GetProcAddress(module, #name) : NULL)
+
+#ifndef NO_IPV6
+DECL_WINDOWS_FUNCTION(static, int, getaddrinfo,
+  (const char *nodename, const char *servname,
+   const struct addrinfo *hints, struct addrinfo **res));
+DECL_WINDOWS_FUNCTION(static, void, freeaddrinfo, (struct addrinfo *res));
+DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
+  (const struct sockaddr FAR * sa, socklen_t salen,
+   char FAR * host, size_t hostlen, char FAR * serv,
+   size_t servlen, int flags));
+#endif
 
 // This structure holds the commands which will be processed by the api.
 // You don't have to fill this struct, you may use the command specific

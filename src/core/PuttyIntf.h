@@ -2,12 +2,12 @@
 #ifndef PuttyIntfH
 #define PuttyIntfH
 
+#include "PuttyTools.h"
+
 void PuttyInitialize();
 void PuttyFinalize();
 
 void DontSaveRandomSeed();
-
-#include "PuttyTools.h"
 
 #ifndef MPEXT
 #define MPEXT

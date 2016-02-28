@@ -6,7 +6,7 @@
 #include <Common.h>
 #include <Global.h>
 #include <StrUtils.hpp>
-#include <SysUtils.hpp>
+#include <Sysutils.hpp>
 #include <DateUtils.hpp>
 #include <math.h>
 #include <rdestl/map.h>
@@ -783,7 +783,13 @@ intptr_t CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2)
     return -1;
   }
   else
+  {
+#if defined(_MSC_VER)
     return ::StrCmpNCW(S1.c_str(), S2.c_str(), (int)S1.Length());
+#else
+    return S1.Compare(S2);
+#endif
+  }
 }
 
 bool IsReservedName(const UnicodeString & AFileName)
@@ -1008,42 +1014,42 @@ static UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
 
   if (!APath.IsEmpty())
   {
-      // Determine the type of the existing prefix
-      PATH_PREFIX_TYPE PrefixType;
-      GetOffsetAfterPathRoot(APath, PrefixType);
+    // Determine the type of the existing prefix
+    PATH_PREFIX_TYPE PrefixType;
+    GetOffsetAfterPathRoot(APath, PrefixType);
 
-      // Assume path to be without change
-      Result = APath;
+    // Assume path to be without change
+    Result = APath;
 
-      switch (PrefixType)
+    switch (PrefixType)
+    {
+      case PPT_ABSOLUTE:
       {
-        case PPT_ABSOLUTE:
+        // First we need to check if its an absolute path relative to the root
+        bool AddPrefix = true;
+        if ((APath.Length() >= 1) &&
+            ((APath[1] == L'\\') || (APath[1] == L'/')))
+        {
+          AddPrefix = FALSE;
+
+          // Get current root path
+          UnicodeString CurrentDir = GetCurrentDir();
+          PATH_PREFIX_TYPE PrefixType2; // unused
+          intptr_t Following = GetOffsetAfterPathRoot(CurrentDir, PrefixType2);
+          if (Following > 0)
           {
-            // First we need to check if its an absolute path relative to the root
-            bool AddPrefix = true;
-            if ((APath.Length() >= 1) &&
-                ((APath[1] == L'\\') || (APath[1] == L'/')))
-            {
-              AddPrefix = FALSE;
-
-              // Get current root path
-              UnicodeString CurrentDir = GetCurrentDir();
-              PATH_PREFIX_TYPE PrefixType2; // unused
-              intptr_t Following = GetOffsetAfterPathRoot(CurrentDir, PrefixType2);
-              if (Following > 0)
-              {
-                AddPrefix = true;
-                Result = CurrentDir.SubString(1, Following - 1) + Result.SubString(2, Result.Length() - 1);
-              }
-            }
-
-            if (AddPrefix)
-            {
-              // Add \\?\ prefix
-              Result = L"\\\\?\\" + Result;
-            }
+            AddPrefix = true;
+            Result = CurrentDir.SubString(1, Following - 1) + Result.SubString(2, Result.Length() - 1);
           }
-          break;
+        }
+
+        if (AddPrefix)
+        {
+          // Add \\?\ prefix
+          Result = L"\\\\?\\" + Result;
+        }
+      }
+      break;
 
       case PPT_UNC:
         // First we need to remove the opening slashes for UNC share
@@ -1967,7 +1973,8 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
 UnicodeString FormatTimeZone(intptr_t Sec)
 {
   UnicodeString Str;
-  /*TODO: implement class TTimeSpan
+  TODO("implement class TTimeSpan");
+  /*
   TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
   if ((Span.Seconds == 0) && (Span.Minutes == 0))
   {
@@ -2314,27 +2321,6 @@ uintptr_t ContinueAnswer(uintptr_t Answers)
   }
   return Result;
 }
-
-#ifndef _MSC_VER
-TLibModule * FindModule(void * Instance)
-{
-  TLibModule * CurModule;
-  CurModule = reinterpret_cast<TLibModule*>(LibModuleList);
-
-  while (CurModule)
-  {
-    if (CurModule->Instance == (unsigned)Instance)
-    {
-      break;
-    }
-    else
-    {
-      CurModule = CurModule->Next;
-    }
-  }
-  return CurModule;
-}
-#endif
 
 UnicodeString LoadStr(intptr_t Ident, uintptr_t /*MaxLength*/)
 {

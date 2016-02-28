@@ -4,7 +4,7 @@
 
 #include "Terminal.h"
 
-#include <SysUtils.hpp>
+#include <Sysutils.hpp>
 #include <FileCtrl.hpp>
 #include <Common.h>
 #include <FileBuffer.h>
@@ -1003,7 +1003,9 @@ void TTerminal::Open()
       {
         DoInformation(L"", true, 0);
       };
-      InternalTryOpen();
+      {
+        InternalTryOpen();
+      }
     }
     catch (EFatal & E)
     {
@@ -1630,7 +1632,7 @@ void TTerminal::DisplayBanner(const UnicodeString & Banner)
         FConfiguration->ShowBanner(GetSessionData()->GetSessionKey(), Banner))
     {
       bool NeverShowAgain = false;
-      int Options =
+      intptr_t Options =
         FLAGMASK(FConfiguration->GetForceBanners(), boDisableNeverShowAgain);
       TCallbackGuard Guard(this);
       GetOnDisplayBanner()(this, GetSessionData()->GetSessionName(), Banner,
@@ -1900,7 +1902,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
     TQueryParams Params(qpAllowContinueOnError | FLAGMASK(!AllowSkip, qpFatalAbort));
     Params.HelpKeyword = HelpKeyword;
     TQueryButtonAlias Aliases[2];
-    int AliasCount = 0;
+    intptr_t AliasCount = 0;
 
     if (FLAGSET(Answers, qaAll))
     {
@@ -2093,7 +2095,7 @@ void TTerminal::TerminalSetCurrentDirectory(const UnicodeString & AValue)
   UnicodeString Value = TranslateLockedPath(AValue, false);
   if (Value != FFileSystem->GetCurrDirectory())
   {
-    ChangeDirectory(Value);
+    RemoteChangeDirectory(Value);
   }
 }
 
@@ -2130,21 +2132,21 @@ UnicodeString TTerminal::PeekCurrentDirectory()
   return Result;
 }
 
-const TRemoteTokenList * TTerminal::GetGroups()
+TRemoteTokenList * TTerminal::GetGroups()
 {
   DebugAssert(FFileSystem);
   LookupUsersGroups();
   return &FGroups;
 }
 
-const TRemoteTokenList * TTerminal::GetUsers()
+TRemoteTokenList * TTerminal::GetUsers()
 {
   DebugAssert(FFileSystem);
   LookupUsersGroups();
   return &FUsers;
 }
 
-const TRemoteTokenList * TTerminal::GetMembership()
+TRemoteTokenList * TTerminal::GetMembership()
 {
   DebugAssert(FFileSystem);
   LookupUsersGroups();
@@ -2226,7 +2228,7 @@ void TTerminal::DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLink
   }
 }
 
-bool TTerminal::InTransaction()
+bool TTerminal::InTransaction() const
 {
   return (FInTransaction > 0) && !FSuspendTransaction;
 }
@@ -2815,7 +2817,7 @@ void TTerminal::DoStartup()
 
     if (!GetSessionData()->GetRemoteDirectory().IsEmpty())
     {
-      ChangeDirectory(GetSessionData()->GetRemoteDirectory());
+      RemoteChangeDirectory(GetSessionData()->GetRemoteDirectory());
     }
   }
   __finally
@@ -2859,7 +2861,7 @@ void TTerminal::ReadCurrentDirectory()
       FLockDirectory = (GetSessionData()->GetLockInHome() ?
         FFileSystem->GetCurrDirectory() : UnicodeString(L""));
     }
-    // if (OldDirectory != FFileSystem->GetCurrentDirectory())
+    // if (OldDirectory != FFileSystem->GetCurrDirectory())
     {
       DoChangeDirectory();
     }
@@ -3640,7 +3642,7 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
   while (RetryLoop.Retry());
 }
 
-bool TTerminal::DeleteFiles(TStrings * AFilesToDelete, intptr_t Params)
+bool TTerminal::RemoteDeleteFiles(TStrings * AFilesToDelete, intptr_t Params)
 {
   TODO("avoid resolving symlinks while reading subdirectories.");
   // Resolving does not work anyway for relative symlinks in subdirectories
@@ -4119,16 +4121,16 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
           }
         }
 
-        if (PossiblyMoved && !FileExists(CurrentDirectory))
+        if (PossiblyMoved && !this->FileExists(CurrentDirectory))
         {
           UnicodeString NearestExisting = CurrentDirectory;
           do
           {
             NearestExisting = core::UnixExtractFileDir(NearestExisting);
           }
-          while (!core::IsUnixRootPath(NearestExisting) && !FileExists(NearestExisting));
+          while (!core::IsUnixRootPath(NearestExisting) && !this->FileExists(NearestExisting));
 
-          ChangeDirectory(NearestExisting);
+          RemoteChangeDirectory(NearestExisting);
         }
       }
       EndTransaction();
@@ -4172,7 +4174,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
         }
         while (!core::IsUnixRootPath(NearestExisting) && !FileExists(NearestExisting));
 
-        ChangeDirectory(NearestExisting);
+        RemoteChangeDirectory(NearestExisting);
       }
     }
     EndTransaction();
@@ -4223,7 +4225,7 @@ void TTerminal::TerminalCopyFile(const UnicodeString & AFileName,
   ReactOnCommand(fsCopyFile);
 }
 
-bool TTerminal::CopyFiles(TStrings * AFileList, const UnicodeString & Target,
+bool TTerminal::CopyFiles(const TStrings * AFileList, const UnicodeString & Target,
   const UnicodeString & FileMask)
 {
   TMoveFileParams Params;
@@ -4320,7 +4322,7 @@ void TTerminal::HomeDirectory()
   }
 }
 
-void TTerminal::ChangeDirectory(const UnicodeString & Directory)
+void TTerminal::RemoteChangeDirectory(const UnicodeString & Directory)
 {
   UnicodeString DirectoryNormalized = core::ToUnixPath(Directory);
   DebugAssert(FFileSystem);
@@ -4524,10 +4526,10 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
       FCommandSession->TerminalSetCurrentDirectory(GetCurrDirectory());
       FCommandSession->FFileSystem->AnyCommand(ACommand, OutputEvent);
 
-      FCommandSession->FFileSystem->ReadCurrentDirectory();
+      FCommandSession->GetFileSystem()->ReadCurrentDirectory();
 
       // synchronize pwd (by purpose we lose transaction optimization here)
-      ChangeDirectory(FCommandSession->GetCurrDirectory());
+      RemoteChangeDirectory(FCommandSession->GetCurrDirectory());
     }
     ReactOnCommand(fsAnyCommand);
   }
@@ -4564,7 +4566,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
   DWORD FlagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
   do
   {
-    *AHandle = CreateLocalFile(ApiPath(AFileName).c_str(), DesiredAccess, ShareMode,
+    *AHandle = TerminalCreateLocalFile(ApiPath(AFileName).c_str(), DesiredAccess, ShareMode,
       CreationDisposition, FlagsAndAttributes);
     Done = (*AHandle != INVALID_HANDLE_VALUE);
     if (!Done)
@@ -4648,7 +4650,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
   return Result;
 }
 
-bool TTerminal::TerminalCreateFile(const UnicodeString & ATargetFileName,
+bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
   TFileOperationProgressType * OperationProgress,
   bool Resume,
   bool NoConfirmation,
@@ -4667,8 +4669,8 @@ bool TTerminal::TerminalCreateFile(const UnicodeString & ATargetFileName,
   return Result;
 }
 
-void TTerminal::OpenLocalFile(const UnicodeString & ATargetFileName,
-  uintptr_t Access,
+void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
+  DWORD Access,
   OUT HANDLE * AHandle, OUT uintptr_t * AAttrs, OUT int64_t * ACTime,
   OUT int64_t * AMTime, OUT int64_t * AATime, OUT int64_t * ASize,
   bool TryWriteReadOnly)
@@ -4702,7 +4704,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & ATargetFileName,
     [&]()
     {
       DWORD Flags = FLAGMASK(FLAGSET(LocalFileAttrs, faDirectory), FILE_FLAG_BACKUP_SEMANTICS);
-      LocalFileHandle = this->CreateLocalFile(ApiPath(ATargetFileName).c_str(), static_cast<DWORD>(Access),
+      LocalFileHandle = this->TerminalCreateLocalFile(ApiPath(ATargetFileName).c_str(), Access,
         Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
         OPEN_EXISTING, Flags);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
@@ -4955,7 +4957,7 @@ public:
   FILETIME LocalLastWriteTime;
 };
 
-const int sfFirstLevel = 0x01;
+const intptr_t sfFirstLevel = 0x01;
 struct TSynchronizeData : public TObject
 {
 NB_DECLARE_CLASS(TSynchronizeData)
@@ -5521,7 +5523,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
 
   Data.OnSynchronizeDirectory = OnSynchronizeDirectory;
 
-  int CopyParams =
+  intptr_t CopyParams =
     FLAGMASK(FLAGSET(Params, spNoConfirmation), cpNoConfirmation);
 
   TCopyParamType SyncCopyParam = *CopyParam;
@@ -5564,7 +5566,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
         L"params = 0x%x (%s)", CurrentLocalDirectory.c_str(), CurrentRemoteDirectory.c_str(),
         int(Params), SynchronizeParamsStr(Params).c_str()));
 
-      int Count = 0;
+      intptr_t Count = 0;
 
       while ((IIndex < Checklist->GetCount()) &&
              (Checklist->GetItem(IIndex)->Local.Directory == CurrentLocalDirectory) &&
@@ -5669,7 +5671,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
           }
 
           if ((DeleteRemoteList->GetCount() > 0) &&
-              !DeleteFiles(DeleteRemoteList.get()))
+              !RemoteDeleteFiles(DeleteRemoteList.get()))
           {
             Abort();
           }
@@ -6094,14 +6096,14 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
     }
     __finally
     {
-//      if (GetCollectingUsage())
+      /*if (GetCollectingUsage())
       {
-//        int CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
-//        Configuration->Usage->Inc(L"UploadTime", CounterTime);
-//        Configuration->Usage->SetMax(L"MaxUploadTime", CounterTime);
-      }
+        int CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
+        Configuration->Usage->Inc(L"UploadTime", CounterTime);
+        Configuration->Usage->SetMax(L"MaxUploadTime", CounterTime);
+      }*/
       OperationProgress.Stop();
-      FOperationProgress = NULL;
+      FOperationProgress = nullptr;
     };
   }
   catch (Exception & E)
@@ -6304,7 +6306,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   [&]()
   {
     HANDLE LocalFileHandle;
-    this->OpenLocalFile(LocalFileName, GENERIC_WRITE,
+    this->TerminalOpenLocalFile(LocalFileName, GENERIC_WRITE,
       &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, nullptr);
     bool Result = ::SetFileTime(LocalFileHandle, nullptr, AcTime, WrTime) > 0;
     ::CloseHandle(LocalFileHandle);
@@ -6315,7 +6317,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   });
 }
 
-HANDLE TTerminal::CreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
+HANDLE TTerminal::TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
   DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   if (GetOnCreateLocalFile())

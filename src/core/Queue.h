@@ -87,7 +87,7 @@ friend class TQueueItem;
 friend class TQueueItemProxy;
 NB_DISABLE_COPY(TTerminalQueue)
 public:
-  explicit TTerminalQueue(TTerminal * Terminal, TConfiguration * Configuration);
+  explicit TTerminalQueue(TTerminal * ATerminal, TConfiguration * AConfiguration);
   virtual ~TTerminalQueue();
 
   void Init();

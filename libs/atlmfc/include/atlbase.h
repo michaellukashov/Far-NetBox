@@ -3989,6 +3989,7 @@ public:
 		_Deref_out_ void** ppvObj);
 };
 
+#if 0
 #if !defined(__MINGW32__)
 __declspec(selectany) IAtlAutoThreadModule* _pAtlAutoThreadModule;
 #else
@@ -4140,6 +4141,7 @@ class CAtlAutoThreadModule :
 {
 public :
 };
+#endif
 
 #ifndef _ATL_NO_COMMODULE
 

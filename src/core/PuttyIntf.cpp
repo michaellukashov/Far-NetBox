@@ -11,6 +11,10 @@
 #include "CoreMain.h"
 #include "TextsCore.h"
 
+extern "C"
+{
+#include <winstuff.h>
+}
 char sshver[50];
 const int platform_uses_x11_unix_by_default = TRUE;
 CRITICAL_SECTION putty_section;
@@ -20,10 +24,6 @@ const char * const appname = appname_;
 extern const int share_can_be_downstream = FALSE;
 extern const int share_can_be_upstream = FALSE;
 
-extern "C"
-{
-#include <winstuff.h>
-}
 const UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
 const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
 const UnicodeString OriginalPuttyExecutable("putty.exe");
@@ -213,12 +213,12 @@ char * get_ttymode(void * /*frontend*/, const char * /*mode*/)
   return nullptr;
 }
 
-void logevent(void * frontend, const char * string)
+void logevent(void * frontend, const char * str)
 {
   // Frontend maybe NULL here
   if (frontend != nullptr)
   {
-    (NB_STATIC_DOWNCAST(TSecureShell, frontend))->PuttyLogEvent(string);
+    (NB_STATIC_DOWNCAST(TSecureShell, frontend))->PuttyLogEvent(str);
   }
 }
 
@@ -250,7 +250,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, const char * key
 int have_ssh_host_key(void * frontend, const char * hostname, int port,
   const char * keytype)
 {
-  DebugAssert(frontend != NULL);
+  DebugAssert(frontend != nullptr);
   return static_cast<TSecureShell *>(frontend)->HaveHostKey(hostname, port, keytype) ? 1 : 0;
 }
 
@@ -534,7 +534,7 @@ long reg_close_winscp_key(HKEY Key)
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
   if (Storage != nullptr)
   {
-    SAFE_DESTROY(Storage);
+    SAFE_DESTROY_EX(THierarchicalStorage, Storage);
   }
 
   return ERROR_SUCCESS;

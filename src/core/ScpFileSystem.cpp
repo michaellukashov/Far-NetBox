@@ -122,14 +122,14 @@ const char FullTimeOption[] = "--full-time";
 TODO("remove 'mf' and 'cd, it is implemented in TTerminal already");
 const TCommandType DefaultCommandSet[ShellCommandCount] =
 {
-//                       min max mf cd ia  command
+  //                       min max mf cd ia  command
   /*Null*/                { -1, -1, F, F, F, "" },
   /*VarValue*/            { -1, -1, F, F, F, "echo \"$%s\"" /* variable */ },
   /*LastLine*/            { -1, -1, F, F, F, "echo \"%s" LastLineSeparator "%s\"" /* last line, return var */ },
   /*FirstLine*/           { -1, -1, F, F, F, "echo \"%s\"" /* first line */ },
   /*CurrentDirectory*/    {  1,  1, F, F, F, "pwd" },
   /*ChangeDirectory*/     {  0,  0, F, T, F, "cd %s" /* directory */ },
-// list directory can be empty on permission denied, this is handled in ReadDirectory
+  // list directory can be empty on permission denied, this is handled in ReadDirectory
   /*ListDirectory*/       { -1, -1, F, F, F, "%s %s \"%s\"" /* listing command, options, directory */ },
   /*ListCurrentDirectory*/{ -1, -1, F, F, F, "%s %s" /* listing command, options */ },
   /*ListFile*/            {  1,  1, F, F, F, "%s -d %s \"%s\"" /* listing command, options, file/directory */ },
@@ -906,16 +906,16 @@ void TSCPFileSystem::SkipStartupMessage()
 void TSCPFileSystem::LookupUsersGroups()
 {
   ExecCommand(fsLookupUsersGroups, 0);
-  FTerminal->FUsers.Clear();
-  FTerminal->FGroups.Clear();
+  FTerminal->GetUsers()->Clear();
+  FTerminal->GetGroups()->Clear();
   if (FOutput->GetCount() > 0)
   {
     UnicodeString Groups = FOutput->GetString(0);
     while (!Groups.IsEmpty())
     {
       UnicodeString NewGroup = CutToChar(Groups, L' ', false);
-      FTerminal->FGroups.Add(TRemoteToken(NewGroup));
-      FTerminal->FMembership.Add(TRemoteToken(NewGroup));
+      FTerminal->GetGroups()->Add(TRemoteToken(NewGroup));
+      FTerminal->GetMembership()->Add(TRemoteToken(NewGroup));
     }
   }
 }
@@ -1150,7 +1150,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           // Empty file list -> probably "permission denied", we
           // at least get link to parent directory ("..")
           FTerminal->ReadFile(
-            core::UnixIncludeTrailingBackslash(FTerminal->FFiles->GetDirectory()) +
+            core::UnixIncludeTrailingBackslash(FTerminal->GetFiles()->GetDirectory()) +
               PARENTDIRECTORY, File);
           Empty = (File == nullptr);
           if (!Empty)
@@ -1593,7 +1593,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   Params &= ~(cpAppend | cpResume);
   UnicodeString Options;
   bool CheckExistence = core::UnixSamePath(TargetDir, FTerminal->GetCurrDirectory()) &&
-    (FTerminal->FFiles != nullptr) && FTerminal->FFiles->GetLoaded();
+    (FTerminal->GetFiles() != nullptr) && FTerminal->GetFiles()->GetLoaded();
   bool CopyBatchStarted = false;
   bool Failed = true;
   bool GotLastLine = false;
@@ -1707,7 +1707,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
           {
             int64_t MTime = 0;
             TOverwriteFileParams FileParams;
-            FTerminal->OpenLocalFile(FileName, GENERIC_READ,
+            FTerminal->TerminalOpenLocalFile(FileName, GENERIC_READ,
               nullptr, nullptr, nullptr, &MTime, nullptr,
               &FileParams.SourceSize);
             FileParams.SourceTimestamp = ::UnixToDateTime(MTime,
@@ -1866,7 +1866,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
   int64_t MTime, ATime;
   int64_t Size;
 
-  FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
+  FTerminal->TerminalOpenLocalFile(AFileName, GENERIC_READ,
     &LocalFileHandle, &LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
@@ -2742,7 +2742,7 @@ void TSCPFileSystem::SCPSink(
                   TOverwriteFileParams FileParams;
                   FileParams.SourceSize = OperationProgress->TransferSize;
                   FileParams.SourceTimestamp = SourceTimestamp;
-                  FTerminal->OpenLocalFile(DestFileName, GENERIC_READ,
+                  FTerminal->TerminalOpenLocalFile(DestFileName, GENERIC_READ,
                     nullptr, nullptr, nullptr, &MTime, nullptr,
                     &FileParams.DestSize);
                   FileParams.DestTimestamp = ::UnixToDateTime(MTime,
@@ -2765,7 +2765,7 @@ void TSCPFileSystem::SCPSink(
 
                 Action.Destination(DestFileName);
 
-                if (!FTerminal->TerminalCreateFile(DestFileName, OperationProgress,
+                if (!FTerminal->TerminalCreateLocalFile(DestFileName, OperationProgress,
                     FLAGSET(Params, cpResume), FLAGSET(Params, cpNoConfirmation),
                     &LocalFileHandle))
                 {

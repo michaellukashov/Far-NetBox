@@ -69,7 +69,7 @@ elseif(CMAKE_COMPILER_IS_MINGW)
 
 set(NETBOX_CFLAGS "${NETBOX_CFLAGS} ${NETBOX_C_FLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wold-style-cast -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
 set(NETBOX_WARNING_FLAGS "-Wno-attributes -Wno-write-strings -Wno-unknown-pragmas")
-set(NETBOX_CXX_FLAGS "${NETBOX_CXX_FLAGS} -D_UNICODE -DUNICODE -D_AFXDLL -std=c++11 -Weffc++ -Woverloaded-virtual -Wnon-virtual-dtor")
+set(NETBOX_CXX_FLAGS "${NETBOX_CFLAGS} -D_UNICODE -DUNICODE -std=c++11 -Weffc++ -Woverloaded-virtual -Wnon-virtual-dtor")
 set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} ${NETBOX_CFLAGS}")
 set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} ${NETBOX_CFLAGS}")
 
@@ -127,7 +127,7 @@ set(CMAKE_LINK_FLAGS
   /DELAYLOAD:gdi32.dll
   /MANIFEST:NO
   /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS /NOLOGO
-  /MAP /OPT:REF /OPT:ICF=6
+  /MAP
   /INCREMENTAL:NO
 "
 )
@@ -217,16 +217,6 @@ set(NETBOX_SOURCES ${NETBOX_SOURCES}
 endif(PROJECT_PLATFORM STREQUAL "x86")
 endif(MSVC)
 
-# add_library(libeay32 STATIC IMPORTED)
-# set_property(TARGET libeay32
-  # PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${PROJECT_PLATFORM}/libeay32.lib
-# )
-
-# add_library(ssleay32 STATIC IMPORTED)
-# set_property(TARGET ssleay32
-  # PROPERTY IMPORTED_LOCATION ${LIBS_ROOT}/openssl/${PROJECT_PLATFORM}/ssleay32.lib
-# )
-
 #-------------------------------------------------------------------------------
 
 set(NETBOX_LIBRARIES
@@ -267,7 +257,9 @@ set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif(MSVC)
 
-add_library(NetBox SHARED ${NETBOX_SOURCES})
+add_library(NetBox SHARED
+  ${NETBOX_SOURCES}
+)
 
 if(MSVC)
 set_target_properties(NetBox
@@ -966,7 +958,7 @@ add_library(atlmfc STATIC
 )
 
 #-------------------------------------------------------------------------------
-set(ATLMFC_COMPILE_FLAGS "-D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_ -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE -D_AFX_NO_OLE_SUPPORT")
+set(ATLMFC_COMPILE_FLAGS "-D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_ -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE -D_AFX_NO_OLE_SUPPORT -D_AFX_NO_SOCKET_SUPPORT")
 
 if(MSVC)
 set_target_properties(atlmfc
@@ -974,6 +966,7 @@ set_target_properties(atlmfc
   COMPILE_FLAGS "${ATLMFC_COMPILE_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
   LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
+  LINK_FLAGS_DEBUG "${LINK_FLAGS_DEBUG}"
 )
 elseif(CMAKE_COMPILER_IS_MINGW)
 set_target_properties(atlmfc
@@ -1222,7 +1215,7 @@ endif()
 
 #-------------------------------------------------------------------------------
 
-add_library(zlib STATIC
+set(ZLIB_SOURCES
   ${LIBS_ROOT}/zlib/src/adler32.c
   ${LIBS_ROOT}/zlib/src/crc32.c
   ${LIBS_ROOT}/zlib/src/infback.c
@@ -1237,10 +1230,19 @@ add_library(zlib STATIC
   ${LIBS_ROOT}/zlib/src/deflate_medium.c
   ${LIBS_ROOT}/zlib/src/deflate_fast.c
   ${LIBS_ROOT}/zlib/src/arch/x86/crc_folding.c
-  ${LIBS_ROOT}/zlib/src/arch/x86/deflate_quick.c
   ${LIBS_ROOT}/zlib/src/arch/x86/fill_window_sse.c
   ${LIBS_ROOT}/zlib/src/arch/x86/insert_string_sse.c
   ${LIBS_ROOT}/zlib/src/arch/x86/x86.c
+)
+
+if(MSVC)
+set(ZLIB_SOURCES ${ZLIB_SOURCES}
+  ${LIBS_ROOT}/zlib/src/arch/x86/deflate_quick.c
+)
+endif()
+
+add_library(zlib STATIC
+  ${ZLIB_SOURCES}
 )
 
 set_target_properties(zlib

@@ -14,12 +14,14 @@
 
 extern const wchar_t * AutoSwitchNames;
 extern const wchar_t * NotAutoSwitchNames;
+
 enum TAutoSwitch
 {
   asOn,
   asOff,
   asAuto,
 };
+
 enum TAssemblyLanguage { alCSharp, alVBNET, alPowerShell };
 
 enum TFtpEncryptionSwitch_219

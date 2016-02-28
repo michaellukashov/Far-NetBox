@@ -156,8 +156,6 @@ static const intptr_t SFTP_MAX_PACKET_LEN   = 1000 * 1024;
 static const wchar_t OGQ_LIST_OWNERS = 0x01;
 static const wchar_t OGQ_LIST_GROUPS = 0x02;
 
-const intptr_t SFTPMinVersion = 0;
-const intptr_t SFTPMaxVersion = 6;
 static const uint32_t SFTPNoMessageNumber = static_cast<uint32_t>(-1);
 
 static const SSH_FX_TYPES asNo =            0;
@@ -1901,8 +1899,8 @@ public:
 private:
   TSFTPFileSystem * FFileSystem;
 };
-//===========================================================================
 
+//===========================================================================
 //===========================================================================
 TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
@@ -3370,7 +3368,7 @@ void TSFTPFileSystem::LookupUsersGroups()
   TSFTPPacket PacketGroups(SSH_FXP_EXTENDED, FCodePage);
 
   TSFTPPacket * Packets[] = { &PacketOwners, &PacketGroups };
-  TRemoteTokenList * Lists[] = { &FTerminal->FUsers, &FTerminal->FGroups };
+  TRemoteTokenList * Lists[] = { FTerminal->GetUsers(), FTerminal->GetGroups() };
   wchar_t ListTypes[] = { OGQ_LIST_OWNERS, OGQ_LIST_GROUPS };
 
   for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(Packets)); ++Index)
@@ -3403,9 +3401,9 @@ void TSFTPFileSystem::LookupUsersGroups()
       {
         TRemoteToken Token(Packet->GetString(FUtfStrings));
         List.Add(Token);
-        if (&List == &FTerminal->FGroups)
+        if (&List == FTerminal->GetGroups())
         {
-          FTerminal->FMembership.Add(Token);
+          FTerminal->GetMembership()->Add(Token);
         }
       }
     }
@@ -4048,7 +4046,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
     TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
     Progress.Start(foGetProperties, osRemote, AFileList->GetCount());
 
-    FTerminal->FOperationProgress = &Progress; //-V506
+    FTerminal->SetOperationProgress(&Progress); //-V506
 
     TSFTPLoadFilesPropertiesQueue Queue(this, FCodePage);
     try__finally
@@ -4056,7 +4054,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
       SCOPE_EXIT
       {
         Queue.DisposeSafe();
-        FTerminal->FOperationProgress = nullptr;
+        FTerminal->SetOperationProgress(nullptr);
         Progress.Stop();
       };
       static intptr_t LoadFilesPropertiesQueueLen = 5;
@@ -4274,13 +4272,13 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
     SftpAlg = NormalizedAlg;
   }
 
-  FTerminal->FOperationProgress = &Progress; //-V506
+  FTerminal->SetOperationProgress(&Progress); //-V506
   
   try__finally
   {
     SCOPE_EXIT
     {
-      FTerminal->FOperationProgress = nullptr;
+      FTerminal->SetOperationProgress(nullptr);
       Progress.Stop();
     };
     DoCalculateFilesChecksum(NormalizedAlg, SftpAlg, AFileList, Checksums, OnCalculatedChecksum,
@@ -4766,7 +4764,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
   int64_t MTime = 0, ATime = 0;
   int64_t Size = 0;
 
-  FTerminal->OpenLocalFile(AFileName, GENERIC_READ,
+  FTerminal->TerminalOpenLocalFile(AFileName, GENERIC_READ,
     &LocalFileHandle, &OpenParams.LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
@@ -5622,7 +5620,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
       TRemoteProperties Properties;
       Properties.Valid << vpModification;
 
-      FTerminal->OpenLocalFile(
+      FTerminal->TerminalOpenLocalFile(
         ExcludeTrailingBackslash(DirectoryName), GENERIC_READ, nullptr, nullptr, nullptr,
         &Properties.Modification, &Properties.LastAccess, nullptr);
 
@@ -5820,9 +5818,8 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           StandardTimestamp(AFile->GetModification()).c_str()));
         int SetFileTimeError = ERROR_SUCCESS;
         // FILE_FLAG_BACKUP_SEMANTICS is needed to "open" directory
-        // TODO: FTerminal->TerminalCreateFile(LocalFileName, OperationProgress,
-        HANDLE LocalFileHandle = ::CreateFile(ApiPath(DestFullName).c_str(), GENERIC_WRITE,
-          FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
+        HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName, GENERIC_WRITE,
+              FILE_SHARE_WRITE, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS);
         if (LocalFileHandle == INVALID_HANDLE_VALUE)
         {
           SetFileTimeError = ::GetLastError();
@@ -5943,7 +5940,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
         if (::FileExists(ApiPath(DestPartialFullName)))
         {
           FTerminal->LogEvent("Partially transfered file exists.");
-          FTerminal->OpenLocalFile(DestPartialFullName, GENERIC_WRITE,
+          FTerminal->TerminalOpenLocalFile(DestPartialFullName, GENERIC_WRITE,
             &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, &ResumeOffset);
 
           bool PartialBiggerThanSource = (ResumeOffset > OperationProgress->TransferSize);
@@ -6048,7 +6045,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
       {
         int64_t DestFileSize = 0;
         int64_t MTime = 0;
-        FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
+        FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_WRITE,
           &LocalFileHandle, nullptr, nullptr, &MTime, nullptr, &DestFileSize, false);
 
         FTerminal->LogEvent("Confirming overwriting of file.");
@@ -6097,7 +6094,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           // probably fail anyway
           if (LocalFileHandle == INVALID_HANDLE_VALUE)
           {
-            FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
+            FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_WRITE,
               &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, nullptr);
           }
           ResumeAllowed = false;
@@ -6120,7 +6117,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
       // if not already opened (resume, append...), create new empty file
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
-        if (!FTerminal->TerminalCreateFile(LocalFileName, OperationProgress,
+        if (!FTerminal->TerminalCreateLocalFile(LocalFileName, OperationProgress,
               FLAGSET(Params, cpResume), FLAGSET(Params, cpNoConfirmation),
               &LocalFileHandle))
         {

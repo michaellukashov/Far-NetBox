@@ -15,16 +15,6 @@
 #pragma comment(lib, "uafxcwd.lib")
 #endif
 
-#ifndef NO_IPV6
-DECL_WINDOWS_FUNCTION(static, int, getaddrinfo,
-  (const char *nodename, const char *servname,
-   const struct addrinfo *hints, struct addrinfo **res));
-DECL_WINDOWS_FUNCTION(static, void, freeaddrinfo, (struct addrinfo *res));
-DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
-  (const struct sockaddr FAR * sa, socklen_t salen,
-   char FAR * host, size_t hostlen, char FAR * serv,
-   size_t servlen, int flags));
-#endif
 static HMODULE winsock_module = NULL;
 #ifndef NO_IPV6
 static HMODULE winsock2_module = NULL;

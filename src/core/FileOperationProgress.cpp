@@ -169,8 +169,8 @@ void TFileOperationProgressType::Resume()
 
 intptr_t TFileOperationProgressType::OperationProgress() const
 {
-  DebugAssert(Count);
-  intptr_t Result = (FFilesFinished * 100)/Count;
+  //DebugAssert(Count);
+  intptr_t Result = Count ? (FFilesFinished * 100) / Count : 0;
   return Result;
 }
 

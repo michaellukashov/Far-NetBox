@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "FtpListResult.h"
 #include "FileZillaApi.h"
+#include <WideStrUtils.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion

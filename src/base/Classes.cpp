@@ -6,6 +6,7 @@
 #include <Common.h>
 #include <Exceptions.h>
 #include <Sysutils.hpp>
+#include <LibraryLoader.hpp>
 #include <rtlconsts.h>
 #include <FileBuffer.h>
 
@@ -1230,12 +1231,21 @@ int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
   return MilliSecondsBetween(ANow, AThen);
 }
 
-TSHFileInfo::TSHFileInfo()
+static TLibraryLoader SHFileInfoLoader;
+
+TSHFileInfo::TSHFileInfo() :
+  FGetFileInfo(nullptr)
 {
+  SHFileInfoLoader.Load(L"Shell32.dll");
+  if (SHFileInfoLoader.Loaded())
+  {
+    FGetFileInfo = reinterpret_cast<TGetFileInfo>(SHFileInfoLoader.GetProcAddress("SHGetFileInfo"));
+  }
 }
 
 TSHFileInfo::~TSHFileInfo()
 {
+  SHFileInfoLoader.Unload();
 }
 
 int TSHFileInfo::GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmallIcon) const
@@ -1244,21 +1254,23 @@ int TSHFileInfo::GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmall
 
   if (bSmallIcon)
   {
-    ::SHGetFileInfo(
-      static_cast<LPCTSTR>(StrFileName.c_str()),
-      FILE_ATTRIBUTE_NORMAL,
-      &sfi,
-      sizeof(SHFILEINFO),
-      SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+    if (FGetFileInfo)
+      FGetFileInfo(
+        static_cast<LPCTSTR>(StrFileName.c_str()),
+        FILE_ATTRIBUTE_NORMAL,
+        &sfi,
+        sizeof(SHFILEINFO),
+        SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
   }
   else
   {
-    ::SHGetFileInfo(
-      static_cast<LPCTSTR>(StrFileName.c_str()),
-      FILE_ATTRIBUTE_NORMAL,
-      &sfi,
-      sizeof(SHFILEINFO),
-      SHGFI_SYSICONINDEX | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
+    if (FGetFileInfo)
+      FGetFileInfo(
+        static_cast<LPCTSTR>(StrFileName.c_str()),
+        FILE_ATTRIBUTE_NORMAL,
+        &sfi,
+        sizeof(SHFILEINFO),
+        SHGFI_SYSICONINDEX | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
   }
   return sfi.iIcon;
 }
@@ -1268,21 +1280,23 @@ int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon)
   SHFILEINFO sfi;
   if (bSmallIcon)
   {
-    ::SHGetFileInfo(
-      static_cast<LPCTSTR>(L"Doesn't matter"),
-      FILE_ATTRIBUTE_DIRECTORY,
-      &sfi,
-      sizeof(SHFILEINFO),
-      SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+    if (FGetFileInfo)
+      FGetFileInfo(
+        static_cast<LPCTSTR>(L"Doesn't matter"),
+        FILE_ATTRIBUTE_DIRECTORY,
+        &sfi,
+        sizeof(SHFILEINFO),
+        SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
   }
   else
   {
-    ::SHGetFileInfo(
-      static_cast<LPCTSTR>(L"Doesn't matter"),
-      FILE_ATTRIBUTE_DIRECTORY,
-      &sfi,
-      sizeof(SHFILEINFO),
-      SHGFI_SYSICONINDEX | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
+    if (FGetFileInfo)
+      FGetFileInfo(
+        static_cast<LPCTSTR>(L"Doesn't matter"),
+        FILE_ATTRIBUTE_DIRECTORY,
+        &sfi,
+        sizeof(SHFILEINFO),
+        SHGFI_SYSICONINDEX | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
   }
   return sfi.iIcon;
 }
@@ -1291,12 +1305,13 @@ UnicodeString TSHFileInfo::GetFileType(const UnicodeString & StrFileName)
 {
   SHFILEINFO sfi;
 
-  ::SHGetFileInfo(
-    reinterpret_cast<LPCTSTR>(StrFileName.c_str()),
-    FILE_ATTRIBUTE_NORMAL,
-    &sfi,
-    sizeof(SHFILEINFO),
-    SHGFI_TYPENAME | SHGFI_USEFILEATTRIBUTES);
+  if (FGetFileInfo)
+    FGetFileInfo(
+      reinterpret_cast<LPCTSTR>(StrFileName.c_str()),
+      FILE_ATTRIBUTE_NORMAL,
+      &sfi,
+      sizeof(SHFILEINFO),
+      SHGFI_TYPENAME | SHGFI_USEFILEATTRIBUTES);
 
   return sfi.szTypeName;
 }

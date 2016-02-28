@@ -8,9 +8,6 @@
 
 #include "stdafx.h"
 #include "AsyncSocketEx.h"
-#include "wtypes.h"
-#include "oleauto.h"
-#include "atlconv.h"
 
 #include "AsyncSocketExLayer.h"
 

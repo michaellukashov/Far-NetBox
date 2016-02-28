@@ -3,8 +3,8 @@
 
 #include <Common.h>
 #include <Sysutils.hpp>
+#include <MsgIDs.h>
 
-#include "FarTexts.h"
 #include "FarUtil.h"
 #include "resource.h"
 #include "plugin_version.hpp"
