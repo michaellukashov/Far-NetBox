@@ -1141,7 +1141,15 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(TStrings * AFileList, TCopyPara
 
 void TWinSCPFileSystem::ApplyCommand()
 {
-  std::unique_ptr<TStrings> FileList(CreateSelectedFileList(osRemote));
+  TFarPanelInfo ** PanelInfo = this->GetPanelInfo();
+  if (PanelInfo && *PanelInfo && (*PanelInfo)->GetSelectedCount(true) == 0)
+  {
+    MoreMessageDialog(GetMsg(MSG_NO_FILES_SELECTED), nullptr,
+      qtInformation, qaOK);
+    return;
+  }
+
+  std::unique_ptr<TStrings> FileList(CreateSelectedFileList(osRemote, PanelInfo));
   if (FileList.get() != nullptr)
   {
     TFarConfiguration * FarConfiguration = GetFarConfiguration();

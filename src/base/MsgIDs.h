@@ -1267,4 +1267,6 @@ enum MsgIDs {
   MSG_CONVERTKEY_SAVED, // "Private key was converted and saved to '%s'."
 
   MSG_STACK_TRACE, // "Stack trace:"
+
+  MSG_NO_FILES_SELECTED,
 };

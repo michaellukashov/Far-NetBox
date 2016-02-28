@@ -2499,11 +2499,11 @@ TRect TFarPanelInfo::GetBounds() const
   return TRect(rect.left, rect.top, rect.right, rect.bottom);
 }
 
-intptr_t TFarPanelInfo::GetSelectedCount() const
+intptr_t TFarPanelInfo::GetSelectedCount(bool CountCurrentItem) const
 {
   intptr_t Count = static_cast<intptr_t>(FPanelInfo->SelectedItemsNumber);
 
-  if ((Count == 1) && FOwner)
+  if ((Count == 1) && FOwner && !CountCurrentItem)
   {
     intptr_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, 0);
     PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_calloc(1, size));
