@@ -6096,12 +6096,12 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
     }
     __finally
     {
-//      if (GetCollectingUsage())
+      /*if (GetCollectingUsage())
       {
-//        int CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
-//        Configuration->Usage->Inc(L"UploadTime", CounterTime);
-//        Configuration->Usage->SetMax(L"MaxUploadTime", CounterTime);
-      }
+        int CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
+        Configuration->Usage->Inc(L"UploadTime", CounterTime);
+        Configuration->Usage->SetMax(L"MaxUploadTime", CounterTime);
+      }*/
       OperationProgress.Stop();
       FOperationProgress = nullptr;
     };
