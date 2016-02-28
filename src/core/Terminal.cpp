@@ -6103,7 +6103,7 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
 //        Configuration->Usage->SetMax(L"MaxUploadTime", CounterTime);
       }
       OperationProgress.Stop();
-      FOperationProgress = NULL;
+      FOperationProgress = nullptr;
     };
   }
   catch (Exception & E)

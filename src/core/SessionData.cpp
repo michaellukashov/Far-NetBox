@@ -2270,7 +2270,7 @@ void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const Un
   rde::vector<AlgoT> NewList(Count);
 
   const AlgoT * WarnPtr = std::find(DefaultList, DefaultList + Count, WarnAlgo);
-  DebugAssert(WarnPtr != NULL);
+  DebugAssert(WarnPtr != nullptr);
   intptr_t WarnDefaultIndex = (WarnPtr - DefaultList);
 
   intptr_t Index = 0;
@@ -5041,7 +5041,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
           break;
 
         case L'@':
-          if (SessionData != NULL)
+          if (SessionData != nullptr)
           {
             Replacement = MakeValidFileName(SessionData->GetHostNameExpanded());
           }
@@ -5052,7 +5052,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSession
           break;
 
         case L's':
-          if (SessionData != NULL)
+          if (SessionData != nullptr)
           {
             Replacement = MakeValidFileName(SessionData->GetSessionName());
           }

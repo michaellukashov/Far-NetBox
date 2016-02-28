@@ -916,7 +916,7 @@ void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
   }
   __finally
   {
-    FOnCaptureOutput = NULL;
+    FOnCaptureOutput = nullptr;
   };
 }
 

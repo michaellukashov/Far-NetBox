@@ -250,7 +250,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, const char * key
 int have_ssh_host_key(void * frontend, const char * hostname, int port,
   const char * keytype)
 {
-  DebugAssert(frontend != NULL);
+  DebugAssert(frontend != nullptr);
   return static_cast<TSecureShell *>(frontend)->HaveHostKey(hostname, port, keytype) ? 1 : 0;
 }
 
