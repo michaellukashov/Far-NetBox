@@ -1,5 +1,7 @@
-NetBox 2.2.1.431 28.02.2016
+NetBox 2.2.1.432 28.02.2016
 --------------------
+  * Bugfix: Issue #193: Crash when trying to enter !^! pattern into local custom command
+    (https://github.com/michaellukashov/Far-NetBox/issues/193)
   * Bugfix: Issue #194: Apply command does nothing when .. is selected
     (https://github.com/michaellukashov/Far-NetBox/issues/194)
   * Bugfix: Bookmarks are not preserved between FAR sessions
