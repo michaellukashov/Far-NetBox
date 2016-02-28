@@ -1523,6 +1523,11 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
   {
     // Remove "netbox:" prefix
     Url.Delete(1, 7);
+    if (Url.SubString(1, 2) == L"//")
+    {
+      // Remove "//"
+      Url.Delete(1, 2);
+    }
   }
   if (Url.SubString(1, 7).LowerCase() == L"webdav:")
   {
