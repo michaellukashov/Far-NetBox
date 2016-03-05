@@ -9,7 +9,7 @@
 #define NETBOX_VERSION_MAJOR         2
 #define NETBOX_VERSION_MINOR         2
 #define NETBOX_VERSION_PATCH         1
-#define NETBOX_VERSION_BUILD         432
+#define NETBOX_VERSION_BUILD         433
 
 static const std::wstring NETBOX_VERSION_NUMBER(L"2.2.1");
 

@@ -1,5 +1,6 @@
-NetBox 2.2.1.432 28.02.2016
+NetBox 2.2.1.433 05.03.2016
 --------------------
+  * Update openssl sources to 1.0.2g
   * Bugfix: Issue #193: Crash when trying to enter !^! pattern into local custom command
     (https://github.com/michaellukashov/Far-NetBox/issues/193)
   * Bugfix: Issue #194: Apply command does nothing when .. is selected
