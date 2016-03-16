@@ -8626,7 +8626,8 @@ static void ssh2_msg_channel_open(Ssh ssh, struct Packet *pktin)
 	peerport = ssh_pkt_getuint32(pktin);
 	realpf = find234(ssh->rportfwds, &pf, NULL);
 	logeventf(ssh, "Received remote port %s:%d open request "
-		  "from %s:%d", pf.shost, pf.sport, NULLTOEMPTY(peeraddr), peerport);
+		  "from %.*s:%d", pf.shost, pf.sport,
+                  peeraddrlen, NULLTOEMPTY(peeraddr), peerport);
         sfree(pf.shost);
 
 	if (realpf == NULL) {
