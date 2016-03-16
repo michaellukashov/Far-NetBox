@@ -32,3 +32,5 @@ UnicodeString GetFileInfoString(void * FileInfo,
 
 int CalculateCompoundVersion(int MajorVer,
   int MinorVer, int Release, int Build);
+
+int StrToCompoundVersion(const UnicodeString & S);

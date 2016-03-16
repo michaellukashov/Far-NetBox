@@ -2139,6 +2139,7 @@ bool TSFTPFileSystem::IsCapable(intptr_t Capability) const
     case fcRemoveBOMUpload:
     case fcMoveToQueue:
     case fcPreservingTimestampDirs:
+    case fcResumeSupport:
       return true;
 
     case fcRename:
@@ -3810,7 +3811,7 @@ void TSFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
 {
   uint8_t Type;
-  if (AFile && AFile->GetIsDirectory() && !AFile->GetIsSymLink())
+  if (AFile && AFile->GetIsDirectory() && FTerminal->CanRecurseToDirectory(AFile))
   {
     if (FLAGCLEAR(Params, dfNoRecursive))
     {
@@ -3995,7 +3996,7 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   {
     std::unique_ptr<TRemoteFile> FilePtr(File);
     DebugAssert(FilePtr.get());
-    if (FilePtr->GetIsDirectory() && !FilePtr->GetIsSymLink() && AProperties->Recursive)
+    if (FilePtr->GetIsDirectory() && FTerminal->CanRecurseToDirectory(FilePtr->get()) && AProperties->Recursive)
     {
       try
       {
@@ -4112,7 +4113,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
     {
       TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index1));
       DebugAssert(File != nullptr);
-      if (File && File->GetIsDirectory() && !File->GetIsSymLink() &&
+      if (File && File->GetIsDirectory() && FTerminal->CanRecurseToDirectory(File) &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
       {
         OperationProgress->SetFile(File->GetFileName());
@@ -5784,7 +5785,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
   if (AFile->GetIsDirectory())
   {
     Action.Cancel();
-    if (!AFile->GetIsSymLink())
+    if (FTerminal->CanRecurseToDirectory(AFile))
     {
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()), "",
       [&]()

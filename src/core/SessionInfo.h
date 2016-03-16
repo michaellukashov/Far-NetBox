@@ -46,7 +46,7 @@ enum TFSCapability
   fcCheckingSpaceAvailable, fcIgnorePermErrors, fcCalculatingChecksum,
   fcModeChangingUpload, fcPreservingTimestampUpload, fcShellAnyCommand,
   fcSecondaryShell, fcRemoveCtrlZUpload, fcRemoveBOMUpload, fcMoveToQueue,
-  fcLocking, fcPreservingTimestampDirs,
+  fcLocking, fcPreservingTimestampDirs, fcResumeSupport,
   fcCount,
 };
 

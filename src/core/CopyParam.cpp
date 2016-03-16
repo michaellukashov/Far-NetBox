@@ -6,6 +6,10 @@
 #include "CopyParam.h"
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
+#include "Interface.h"
+
+const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
+const int TransferModeNamesCount = _countof(TransferModeNames);
 
 TCopyParamType::TCopyParamType()
 {
@@ -56,7 +60,13 @@ UnicodeString TCopyParamType::GetInfoStr(
 {
   UnicodeString Result;
   bool SomeAttrIncluded;
-  DoGetInfoStr(Separator, Attrs, Result, SomeAttrIncluded);
+  UnicodeString ScriptArgs;
+  bool NoScriptArgs;
+  UnicodeString AssemblyCode;
+  bool NoCodeProperties;
+  DoGetInfoStr(
+    Separator, Attrs, Result, SomeAttrIncluded,
+    UnicodeString(), ScriptArgs, NoScriptArgs, /*TAssemblyLanguage(0), AssemblyCode, */NoCodeProperties);
   return Result;
 }
 
@@ -64,17 +74,40 @@ bool TCopyParamType::AnyUsableCopyParam(intptr_t Attrs) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded;
-  DoGetInfoStr(L";", Attrs, Result, SomeAttrIncluded);
+  UnicodeString ScriptArgs;
+  bool NoScriptArgs;
+  UnicodeString AssemblyCode;
+  bool NoCodeProperties;
+  DoGetInfoStr(
+    L";", Attrs, Result, SomeAttrIncluded,
+    UnicodeString(), ScriptArgs, NoScriptArgs, /*TAssemblyLanguage(0), AssemblyCode, */NoCodeProperties);
   return SomeAttrIncluded;
+}
+
+UnicodeString TCopyParamType::GenerateTransferCommandArgs(int Attrs, const UnicodeString & Link, bool & NoScriptArgs) const
+{
+  UnicodeString Result;
+  bool SomeAttrIncluded;
+  UnicodeString ScriptArgs;
+  UnicodeString AssemblyCode;
+  bool NoCodeProperties;
+  DoGetInfoStr(
+    L";", Attrs, Result, SomeAttrIncluded,
+    Link, ScriptArgs, NoScriptArgs, /*TAssemblyLanguage(0), AssemblyCode, */NoCodeProperties);
+  return ScriptArgs;
 }
 
 void TCopyParamType::DoGetInfoStr(
   const UnicodeString & Separator, intptr_t Options,
-  UnicodeString & Result, bool & SomeAttrIncluded) const
+  UnicodeString & Result, bool & SomeAttrIncluded,
+  const UnicodeString & Link, UnicodeString & ScriptArgs, bool & NoScriptArgs, /*TAssemblyLanguage Language, UnicodeString & AssemblyCode,*/
+  bool & NoCodeProperties) const
 {
   TCopyParamType Defaults;
 
   bool SomeAttrExcluded = false;
+  NoScriptArgs = false;
+  NoCodeProperties = false;
   SomeAttrIncluded = false;
   #define ADD(STR, EXCEPT) \
     if (FLAGCLEAR(Options, EXCEPT)) \
@@ -87,9 +120,8 @@ void TCopyParamType::DoGetInfoStr(
       SomeAttrExcluded = true; \
     }
 
-  bool TransferModeDiffers =
-    ((GetTransferMode() != Defaults.GetTransferMode()) ||
-     ((GetTransferMode() == tmAutomatic) && !(GetAsciiFileMask() == Defaults.GetAsciiFileMask())));
+  bool AsciiFileMaskDiffers = (TransferMode == tmAutomatic) && !(AsciiFileMask == Defaults.AsciiFileMask);
+  bool TransferModeDiffers = ((TransferMode != Defaults.TransferMode) || AsciiFileMaskDiffers);
 
   if (FLAGCLEAR(Options, cpaIncludeMaskOnly | cpaNoTransferMode))
   {
@@ -122,7 +154,17 @@ void TCopyParamType::DoGetInfoStr(
 
     if (TransferModeDiffers)
     {
-      ADD(L"", cpaIncludeMaskOnly | cpaNoTransferMode);
+      ADD("", cpaIncludeMaskOnly | cpaNoTransferMode);
+
+      ScriptArgs += RtfSwitchValue(TRANSFER_SWITCH, Link, TransferModeNames[TransferMode]);
+      const wchar_t * TransferModeMembers[] = { L"Binary", L"Ascii", L"Automatic" };
+      AssemblyCode += AssemblyProperty(
+        Language, TransferOptionsClassName, L"TransferMode", L"TransferMode", TransferModeMembers[TransferMode], false);
+      if (AsciiFileMaskDiffers)
+      {
+        NoScriptArgs = true;
+        NoCodeProperties = true;
+      }
     }
   }
   else
@@ -130,6 +172,8 @@ void TCopyParamType::DoGetInfoStr(
     if (TransferModeDiffers)
     {
       SomeAttrExcluded = true;
+      NoScriptArgs = true;
+      NoCodeProperties = true;
     }
   }
 
@@ -138,6 +182,9 @@ void TCopyParamType::DoGetInfoStr(
     ADD(FORMAT(LoadStrPart(COPY_INFO_FILENAME, 1).c_str(),
       LoadStrPart(COPY_INFO_FILENAME, GetFileNameCase() + 2).c_str()),
       cpaIncludeMaskOnly);
+
+    NoScriptArgs = true;
+    NoCodeProperties = true;
   }
 
   if ((GetInvalidCharsReplacement() == NoReplacement) !=
@@ -148,15 +195,17 @@ void TCopyParamType::DoGetInfoStr(
     {
       ADD(LoadStr(COPY_INFO_DONT_REPLACE_INV_CHARS).c_str(), cpaIncludeMaskOnly);
     }
+
+    NoScriptArgs = true;
+    NoCodeProperties = true;
   }
 
   if ((GetPreserveRights() != Defaults.GetPreserveRights()) ||
       (GetPreserveRights() &&
        ((GetRights() != Defaults.GetRights()) || (GetAddXToDirectories() != Defaults.GetAddXToDirectories()))))
   {
-    DebugAssert(GetPreserveRights());
-
-    if (GetPreserveRights())
+    const int Except = cpaIncludeMaskOnly | cpaNoRights;
+    if (DebugAlwaysTrue(GetPreserveRights()))
     {
       UnicodeString RightsStr = GetRights().GetText();
       if (GetAddXToDirectories())
@@ -164,73 +213,136 @@ void TCopyParamType::DoGetInfoStr(
         RightsStr += L", " + LoadStr(COPY_INFO_ADD_X_TO_DIRS);
       }
       ADD(FORMAT(LoadStr(COPY_INFO_PERMISSIONS).c_str(), RightsStr.c_str()),
-        cpaIncludeMaskOnly | cpaNoRights);
+        Except);
+      if (FLAGCLEAR(Options, Except))
+      {
+        ScriptArgs += RtfSwitchValue(PERMISSIONS_SWITCH, Link, Rights.Octal);
+
+        const UnicodeString FilePermissionsClassName = L"FilePermissions";
+        const bool Inline = true;
+        UnicodeString FilePermissions =
+          AssemblyNewClassInstanceStart(Language, FilePermissionsClassName, Inline) +
+          AssemblyProperty(Language, FilePermissionsClassName, L"Octal", Rights.Octal, Inline) +
+          AssemblyNewClassInstanceEnd(Language, Inline);
+
+        AssemblyCode += AssemblyPropertyRaw(Language, TransferOptionsClassName, L"FilePermissions", FilePermissions, false);
+      }
+    }
+
+    if ((AddXToDirectories != Defaults.AddXToDirectories) && FLAGCLEAR(Options, Except))
+    {
+      NoScriptArgs = true;
+      NoCodeProperties = true;
     }
   }
 
-  bool AddPreserveTime = (GetPreserveTime() != Defaults.GetPreserveTime());
-  bool APreserveTimeDirs = GetPreserveTime() && GetPreserveTimeDirs();
-  if (AddPreserveTime || (APreserveTimeDirs != Defaults.GetPreserveTimeDirs()))
+  bool APreserveTimeDirs = PreserveTime && PreserveTimeDirs;
+  if ((PreserveTime != Defaults.PreserveTime) || (APreserveTimeDirs != Defaults.PreserveTimeDirs))
   {
-    UnicodeString Str = LoadStr(GetPreserveTime() ? COPY_INFO_TIMESTAMP : COPY_INFO_DONT_PRESERVE_TIME);
+    bool AddPreserveTime = false;
+    UnicodeString Str = LoadStr(PreserveTime ? COPY_INFO_TIMESTAMP : COPY_INFO_DONT_PRESERVE_TIME);
 
-    if (APreserveTimeDirs != Defaults.GetPreserveTimeDirs())
+    const int ExceptDirs = cpaNoPreserveTimeDirs;
+    if (APreserveTimeDirs != Defaults.PreserveTimeDirs)
     {
-      if (DebugAlwaysTrue(GetPreserveTimeDirs()))
+      if (DebugAlwaysTrue(PreserveTimeDirs))
       {
-        if (FLAGCLEAR(Options, cpaNoPreserveTimeDirs))
+        if (FLAGCLEAR(Options, ExceptDirs))
         {
-          Str = FMTLOAD(COPY_INFO_PRESERVE_TIME_DIRS, Str.c_str());
+          Str = FMTLOAD(COPY_INFO_PRESERVE_TIME_DIRS, (Str));
           AddPreserveTime = true;
         }
       }
-      ADD("", cpaIncludeMaskOnly | cpaNoPreserveTime | cpaNoPreserveTimeDirs);
+      ADD("", ExceptDirs);
+    }
+
+    const int Except = cpaIncludeMaskOnly | cpaNoPreserveTime;
+    if (PreserveTime != Defaults.PreserveTime)
+    {
+      if (FLAGCLEAR(Options, Except))
+      {
+        AddPreserveTime = true;
+      }
+      ADD(L"", Except);
     }
 
     if (AddPreserveTime)
     {
-      ADD(Str, cpaIncludeMaskOnly | cpaNoPreserveTime);
+      AddToList(Result, Str, Separator);
+    }
+
+    if (FLAGCLEAR(Options, Except))
+    {
+      if (PreserveTime)
+      {
+        if (PreserveTimeDirs && FLAGCLEAR(Options, ExceptDirs))
+        {
+          ScriptArgs += RtfSwitchValue(PRESERVETIME_SWITCH, Link, PRESERVETIMEDIRS_SWITCH_VALUE);
+          NoCodeProperties = true;
+        }
+        else
+        {
+          DebugFail(); // should never get here
+          ScriptArgs += RtfSwitch(PRESERVETIME_SWITCH, Link);
+        }
+      }
+      else
+      {
+        ScriptArgs += RtfSwitch(NOPRESERVETIME_SWITCH, Link);
+        AssemblyCode += AssemblyProperty(Language, TransferOptionsClassName, L"PreserveTimestamp", false, false);
+      }
     }
   }
 
   if ((GetPreserveRights() || GetPreserveTime()) &&
       (GetIgnorePermErrors() != Defaults.GetIgnorePermErrors()))
   {
-    DebugAssert(GetIgnorePermErrors());
-
-    if (GetIgnorePermErrors())
+    if (DebugAlwaysTrue(IgnorePermErrors))
     {
-      ADD(LoadStr(COPY_INFO_IGNORE_PERM_ERRORS).c_str(),
-        cpaIncludeMaskOnly | cpaNoIgnorePermErrors);
+      const int Except = cpaIncludeMaskOnly | cpaNoIgnorePermErrors;
+      ADD(LoadStr(COPY_INFO_IGNORE_PERM_ERRORS), Except);
+      if (FLAGCLEAR(Options, Except))
+      {
+        NoScriptArgs = true;
+        NoCodeProperties = true;
+      }
     }
   }
 
   if (GetPreserveReadOnly() != Defaults.GetPreserveReadOnly())
   {
-    DebugAssert(GetPreserveReadOnly());
-    if (GetPreserveReadOnly())
+    if (DebugAlwaysTrue(PreserveReadOnly))
     {
-      ADD(LoadStr(COPY_INFO_PRESERVE_READONLY).c_str(),
-        cpaIncludeMaskOnly | cpaNoPreserveReadOnly);
+      const int Except = cpaIncludeMaskOnly | cpaNoPreserveReadOnly;
+      ADD(LoadStr(COPY_INFO_PRESERVE_READONLY), Except);
+      if (FLAGCLEAR(Options, Except))
+      {
+        NoScriptArgs = true;
+        NoCodeProperties = true;
+      }
     }
   }
 
   if (GetCalculateSize() != Defaults.GetCalculateSize())
   {
-    DebugAssert(!GetCalculateSize());
-    if (!GetCalculateSize())
+    if (DebugAlwaysTrue(!CalculateSize))
     {
-      ADD(LoadStr(COPY_INFO_DONT_CALCULATE_SIZE).c_str(), cpaIncludeMaskOnly);
+      ADD(LoadStr(COPY_INFO_DONT_CALCULATE_SIZE), cpaIncludeMaskOnly);
+      // Always false in scripting, in assembly controlled by use of FileTransferProgress
     }
   }
 
-  if (GetClearArchive() != Defaults.GetClearArchive())
+  if (ClearArchive != Defaults.ClearArchive)
   {
-    DebugAssert(GetClearArchive());
-    if (GetClearArchive())
+    if (DebugAlwaysTrue(ClearArchive))
     {
-      ADD(LoadStr(COPY_INFO_CLEAR_ARCHIVE),
-        cpaIncludeMaskOnly | cpaNoClearArchive);
+      const int Except = cpaIncludeMaskOnly | cpaNoClearArchive;
+      ADD(LoadStr(COPY_INFO_CLEAR_ARCHIVE), Except);
+      if (FLAGCLEAR(Options, Except))
+      {
+        NoScriptArgs = true;
+        NoCodeProperties = true;
+      }
     }
   }
 
@@ -240,8 +352,13 @@ void TCopyParamType::DoGetInfoStr(
     {
       if (DebugAlwaysTrue(GetRemoveBOM()))
       {
-        ADD(LoadStr(COPY_INFO_REMOVE_BOM),
-          cpaIncludeMaskOnly | cpaNoRemoveBOM | cpaNoTransferMode);
+        const int Except = cpaIncludeMaskOnly | cpaNoRemoveBOM | cpaNoTransferMode;
+        ADD(LoadStr(COPY_INFO_REMOVE_BOM), Except);
+        if (FLAGCLEAR(Options, Except))
+        {
+          NoScriptArgs = true;
+          NoCodeProperties = true;
+        }
       }
     }
 
@@ -249,8 +366,13 @@ void TCopyParamType::DoGetInfoStr(
     {
       if (DebugAlwaysTrue(GetRemoveCtrlZ()))
       {
-        ADD(LoadStr(COPY_INFO_REMOVE_CTRLZ),
-          cpaIncludeMaskOnly | cpaNoRemoveCtrlZ | cpaNoTransferMode);
+        const int Except = cpaIncludeMaskOnly | cpaNoRemoveCtrlZ | cpaNoTransferMode;
+        ADD(LoadStr(COPY_INFO_REMOVE_CTRLZ),Except);
+        if (FLAGCLEAR(Options, Except))
+        {
+          NoScriptArgs = true;
+          NoCodeProperties = true;
+        }
       }
     }
   }
@@ -259,6 +381,9 @@ void TCopyParamType::DoGetInfoStr(
   {
     ADD(FORMAT(LoadStr(COPY_INFO_FILE_MASK).c_str(), GetIncludeFileMask().GetMasks().c_str()),
       cpaNoIncludeMask);
+
+    ScriptArgs += RtfSwitch(FILEMASK_SWITCH, Link, IncludeFileMask.Masks);
+    AssemblyCode += AssemblyProperty(Language, TransferOptionsClassName, L"FileMask", IncludeFileMask.Masks, false);
   }
 
   DebugAssert(FTransferSkipList.get() == nullptr);
@@ -266,15 +391,67 @@ void TCopyParamType::DoGetInfoStr(
 
   if (GetCPSLimit() > 0)
   {
-    ADD(FMTLOAD(COPY_INFO_CPS_LIMIT2, static_cast<int>(GetCPSLimit() / 1024)).c_str(), cpaIncludeMaskOnly);
+    int LimitKB = int(CPSLimit / 1024);
+    ADD(FMTLOAD(COPY_INFO_CPS_LIMIT2, (LimitKB)), cpaIncludeMaskOnly);
+
+    ScriptArgs += RtfSwitch(SPEED_SWITCH, Link, LimitKB);
+    AssemblyCode += AssemblyProperty(Language, TransferOptionsClassName, L"Speed", LimitKB, false);
   }
 
   if (GetNewerOnly() != Defaults.GetNewerOnly())
   {
     if (DebugAlwaysTrue(GetNewerOnly()))
     {
-      ADD(StripHotkey(LoadStr(COPY_PARAM_NEWER_ONLY)), cpaIncludeMaskOnly | cpaNoNewerOnly);
+      const int Except = cpaIncludeMaskOnly | cpaNoNewerOnly;
+      ADD(StripHotkey(LoadStr(COPY_PARAM_NEWER_ONLY)), Except);
+      if (FLAGCLEAR(Options, Except))
+      {
+        ScriptArgs += RtfSwitch(NEWERONLY_SWICH, Link);
+        NoCodeProperties = true;
+      }
     }
+  }
+
+  bool ResumeThresholdDiffers = ((ResumeSupport == rsSmart) && (ResumeThreshold != Defaults.ResumeThreshold));
+  if (((ResumeSupport != Defaults.ResumeSupport) || ResumeThresholdDiffers) &&
+      (TransferMode != tmAscii) && FLAGCLEAR(Options, cpaNoResumeSupport))
+  {
+    UnicodeString Value;
+    UnicodeString CodeState;
+    int ResumeThresholdKB = (ResumeThreshold / 1024);
+    switch (ResumeSupport)
+    {
+      case rsOff:
+        Value = ToggleNames[ToggleOff];
+        CodeState = L"Off";
+        break;
+
+      case rsOn:
+        Value = ToggleNames[ToggleOn];
+        CodeState = L"On";
+        break;
+
+      case rsSmart:
+        Value = IntToStr(ResumeThresholdKB);
+        break;
+    }
+    ScriptArgs += RtfSwitchValue(RESUMESUPPORT_SWITCH, Link, Value);
+
+    const UnicodeString ResumeSupportClassName = L"TransferResumeSupport";
+    const bool Inline = true;
+    UnicodeString ResumeSupportCode =
+      AssemblyNewClassInstanceStart(Language, ResumeSupportClassName, Inline);
+    if (ResumeSupport == rsSmart)
+    {
+      ResumeSupportCode += AssemblyProperty(Language, ResumeSupportClassName, L"Threshold", ResumeThresholdKB, Inline);
+    }
+    else
+    {
+      ResumeSupportCode += AssemblyProperty(Language, ResumeSupportClassName, L"State", L"TransferResumeSupportState", CodeState, Inline);
+    }
+    ResumeSupportCode += AssemblyNewClassInstanceEnd(Language, Inline);
+
+    AssemblyCode += AssemblyPropertyRaw(Language, TransferOptionsClassName, L"ResumeSupport", ResumeSupportCode, false);
   }
 
   if (SomeAttrExcluded)

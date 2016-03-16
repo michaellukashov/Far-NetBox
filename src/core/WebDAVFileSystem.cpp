@@ -237,7 +237,10 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   FNeonLockStore(nullptr),
   FUploading(false),
   FDownloading(false),
-  FInitialHandshake(false)
+  FInitialHandshake(false),
+  FAuthenticationRequested(false),
+  FCapabilities(0),
+  FAuthenticationRetry(false)
 {
 }
 
@@ -1817,7 +1820,7 @@ void TWebDAVFileSystem::NeonPreSend(
   FileSystem->FAuthorizationProtocol = L"";
   UnicodeString HeaderBuf(StrFromNeon(AnsiString(Header->data, Header->used)));
   const UnicodeString AuthorizationHeaderName(L"Authorization:");
-  int P = HeaderBuf.Pos(AuthorizationHeaderName);
+  intptr_t P = HeaderBuf.Pos(AuthorizationHeaderName);
   if (P > 0)
   {
     P += AuthorizationHeaderName.Length();
@@ -2086,7 +2089,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   if (AFile->GetIsDirectory())
   {
     Action.Cancel();
-    if (DebugAlwaysTrue(FTerminal->CanRecurseToDirectory(AFile)))
+    if (DebugAlwaysTrue(FTerminal->GetCanRecurseToDirectory()(AFile)))
     {
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()), "",
       [&]()
@@ -2335,7 +2338,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
   {
     FTerminal->LogEvent(
       FORMAT(L"Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
-        (Data.Subject, Data.Fingerprint, Data.Failures)));
+        Data.Subject.c_str(), Data.Fingerprint.c_str(), Data.Failures));
 
     int Failures = Data.Failures;
 
@@ -2365,13 +2368,13 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
 
     UnicodeString ValidityTimeFormat = L"ddddd tt";
     FSessionInfo.Certificate =
-      FMTLOAD(CERT_TEXT, (
-        Data.Issuer + L"\n",
-        Data.Subject + L"\n",
-        FormatDateTime(ValidityTimeFormat, Data.ValidFrom),
-        FormatDateTime(ValidityTimeFormat, Data.ValidUntil),
-        Data.Fingerprint,
-        Summary));
+      FMTLOAD(CERT_TEXT,
+        UnicodeString(Data.Issuer + L"\n").c_str(),
+        UnicodeString(Data.Subject + L"\n").c_str(),
+        FormatDateTime(ValidityTimeFormat, Data.ValidFrom).c_str(),
+        FormatDateTime(ValidityTimeFormat, Data.ValidUntil).c_str(),
+        Data.Fingerprint.c_str(),
+        Summary.c_str());
 
     if (!Result)
     {

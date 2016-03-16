@@ -47,15 +47,10 @@ const UnicodeString ScpProtocol(L"scp");
 const UnicodeString FtpProtocol(L"ftp");
 const UnicodeString FtpsProtocol(L"ftps");
 const UnicodeString FtpesProtocol(L"ftpes");
-const UnicodeString WebDAVProtocol(L"http");
-const UnicodeString WebDAVSProtocol(L"https");
 const UnicodeString SshProtocol(L"ssh");
-const UnicodeString ProtocolSeparator(L"://");
 const UnicodeString WinSCPProtocolPrefix(L"winscp-");
-*/
 const wchar_t UrlParamSeparator = L';';
 const wchar_t UrlParamValueSeparator = L'=';
-/*
 const UnicodeString UrlHostKeyParamName(L"fingerprint");
 const UnicodeString UrlSaveParamName(L"save");
 const UnicodeString PassphraseOption(L"passphrase");
@@ -152,6 +147,7 @@ void TSessionData::Default()
   FNotUtf = asAuto;
   FIsWorkspace = false;
   SetHostKey(L"");
+  SetFingerprintScan(L"");
   FOverrideCachedHostKey = true;
   SetNote(L"");
   FOrigHostName.Clear();
@@ -190,6 +186,7 @@ void TSessionData::Default()
   SetPreserveDirectoryChanges(true);
   SetLockInHome(false);
   SetResolveSymlinks(true);
+  SetFollowDirectorySymlinks(true);
   SetDSTMode(dstmUnix);
   SetDeleteToRecycleBin(false);
   SetOverwrittenToRecycleBin(false);
@@ -316,6 +313,7 @@ void TSessionData::NonPersistant()
   PROPERTY(RekeyData); \
   PROPERTY(RekeyTime); \
   PROPERTY(HostKey); \
+  PROPERTY(FingerprintScan); \
   \
   PROPERTY(UpdateDirectories); \
   PROPERTY(CacheDirectories); \
@@ -323,6 +321,7 @@ void TSessionData::NonPersistant()
   PROPERTY(PreserveDirectoryChanges); \
   \
   PROPERTY(ResolveSymlinks); \
+  PROPERTY(FollowDirectorySymlinks); \
   PROPERTY(DSTMode); \
   PROPERTY(LockInHome); \
   PROPERTY(Special); \
@@ -632,6 +631,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetPreserveDirectoryChanges(Storage->ReadBool("PreserveDirectoryChanges", GetPreserveDirectoryChanges()));
 
   SetResolveSymlinks(Storage->ReadBool("ResolveSymlinks", GetResolveSymlinks()));
+  SetFollowDirectorySymlinks(Storage->ReadBool("FollowDirectorySymlinks", GetFollowDirectorySymlinks());
   SetDSTMode(static_cast<TDSTMode>(Storage->ReadInteger("ConsiderDST", GetDSTMode())));
   SetLockInHome(Storage->ReadBool("LockInHome", GetLockInHome()));
   SetSpecial(Storage->ReadBool("Special", GetSpecial()));
@@ -969,6 +969,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     WRITE_DATA(Bool, PreserveDirectoryChanges);
 
     WRITE_DATA(Bool, ResolveSymlinks);
+    WRITE_DATA(Bool, FollowDirectorySymlinks);
     WRITE_DATA_EX(Integer, "ConsiderDST", GetDSTMode(), );
     WRITE_DATA(Bool, LockInHome);
     // Special is never stored (if it would, login dialog must be modified not to
@@ -2790,10 +2791,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags)
   return Url;
 }
 
-void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Switch)
-{
-  Result += FORMAT(L" -%s", Switch.c_str());
-}
+//UnicodeString ScriptCommandOpenLink = ScriptCommandLink(L"open");
 
 void TSessionData::AddSwitchValue(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value)
 {
@@ -3345,6 +3343,11 @@ void TSessionData::SetPreserveDirectoryChanges(bool Value)
 void TSessionData::SetResolveSymlinks(bool Value)
 {
   SET_SESSION_PROPERTY(ResolveSymlinks);
+}
+
+void TSessionData::SetFollowDirectorySymlinks(bool Value)
+{
+  SET_SESSION_PROPERTY(FollowDirectorySymlinks);
 }
 
 void TSessionData::SetDSTMode(TDSTMode Value)

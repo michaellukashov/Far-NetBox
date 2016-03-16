@@ -1,8 +1,10 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
 #ifndef NO_FILEZILLA
 
+#include <list>
 #ifndef MPEXT
 #define MPEXT
 #endif
@@ -170,6 +172,7 @@ const UnicodeString CopySiteCommand(L"COPY");
 const UnicodeString HashCommand(L"HASH"); // Cerberos + FileZilla servers
 const UnicodeString AvblCommand(L"AVBL");
 const UnicodeString XQuotaCommand(L"XQUOTA");
+const UnicodeString DirectoryHasBytesPrefix(L"226-Directory has");
 
 class TFTPFileListHelper : public TObject
 {
@@ -259,6 +262,8 @@ void TFTPFileSystem::Init(void *)
   FSupportedSiteCommands.reset(CreateSortedStringList());
   FCertificate = nullptr;
   FPrivateKey = nullptr;
+  FBytesAvailable = -1;
+  FBytesAvailableSuppoted = false;
 
   FChecksumAlgs.reset(new TStringList());
   FChecksumCommands.reset(new TStringList());
@@ -446,7 +451,7 @@ void TFTPFileSystem::Open()
 
     // ask for username if it was not specified in advance, even on retry,
     // but keep previous one as default,
-    if (Data->GetUserNameExpanded().IsEmpty())
+    if (Data->GetUserNameExpanded().IsEmpty() && !FTerminal->GetSessionData()->GetFingerprintScan())
     {
       FTerminal->LogEvent("Username prompt (no username provided)");
 
@@ -1006,7 +1011,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
         AFile = File;
       }
 
-      if ((AFile != nullptr) && AFile->GetIsDirectory() && !AFile->GetIsSymLink() && Properties->Recursive)
+      if ((AFile != nullptr) && AFile->GetIsDirectory() && FTerminal->CanRecurseToDirectory(AFile) && Properties->Recursive)
       {
         try
         {
@@ -1180,7 +1185,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
 
     if (File->GetIsDirectory())
     {
-      if (!File->GetIsSymLink() &&
+      if (FTerminal->CanRecurseToDirectory(File) &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory() &&
           // recurse into subdirectories only if we have callback function
           (OnCalculatedChecksum != nullptr))
@@ -1691,7 +1696,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
   if (AFile->GetIsDirectory())
   {
     Action.Cancel();
-    if (!AFile->GetIsSymLink())
+    if (FTerminal->CanRecurseToDirectory(AFile))
     {
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()), "",
       [&]()
@@ -1778,6 +1783,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       FFileTransferPreserveTime = CopyParam->GetPreserveTime();
       // not used for downloads anyway
       FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
+      FFileTransferNoList = CanTransferSkipList(Params, Flags);
       UserData.FileName = DestFileName;
       UserData.Params = AParams;
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
@@ -1955,6 +1961,17 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & AFileName,
   while (RobustLoop.Retry());
 }
 
+bool TFTPFileSystem::CanTransferSkipList(intptr_t Params, uintptr_t Flags) const
+{
+  bool Result =
+    FLAGSET(Params, cpNoConfirmation) &&
+    // cpAppend is not supported with FTP
+    DebugAlwaysTrue(FLAGCLEAR(Params, cpAppend)) &&
+    FLAGCLEAR(Params, cpResume) &&
+    FLAGCLEAR(Flags, tfAutoResume);
+  return Result;
+}
+
 // Copy file to remote host
 void TFTPFileSystem::Source(const UnicodeString & AFileName,
   const TRemoteFile * AFile,
@@ -2054,6 +2071,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
       // not used for uploads anyway
       FFileTransferPreserveTime = CopyParam->GetPreserveTime();
       FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
+      FFileTransferNoList = CanTransferSkipList(Params, Flags);
       // not used for uploads, but we get new name (if any) back in this field
       UserData.FileName = DestFileName;
       UserData.Params = Params;
@@ -2079,6 +2097,17 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
          ((FServerCapabilities->GetCapability(mdtm_command) == yes))))
     {
       TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, Modification);
+
+      if (!FFileZillaIntf->UsingMlsd())
+      {
+        FUploadedTimes[DestFullName] = Modification;
+        if ((FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
+        {
+          FTerminal->LogEvent(
+            FORMAT(L"Remembering modification time of \"%s\" as [%s]",
+                   DestFullName.c_str(), StandardTimestamp(FUploadedTimes[DestFullName]).c_str()));
+        }
+      }
     }
 
     FTerminal->LogFileDone(OperationProgress);
@@ -2280,7 +2309,7 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
   UnicodeString FilePath = core::UnixExtractFilePath(FileName);
 
-  bool Dir = (AFile != nullptr) && AFile->GetIsDirectory() && !AFile->GetIsSymLink();
+  bool Dir = (AFile != nullptr) && AFile->GetIsDirectory() && FTerminal->CanRecurseToDirectory(AFile);
 
   if (Dir && FLAGCLEAR(Params, dfNoRecursive))
   {
@@ -2398,7 +2427,7 @@ bool TFTPFileSystem::IsCapable(intptr_t Capability) const
       return FSupportsAnyChecksumFeature;
 
     case fcCheckingSpaceAvailable:
-      return SupportsCommand(AvblCommand) || SupportsCommand(XQuotaCommand);
+      return FBytesAvailableSuppoted || SupportsCommand(AvblCommand) || SupportsCommand(XQuotaCommand);
 
     case fcModeChangingUpload:
     case fcLoadingAdditionalProperties:
@@ -2415,6 +2444,7 @@ bool TFTPFileSystem::IsCapable(intptr_t Capability) const
     case fcRemoveCtrlZUpload:
     case fcLocking:
     case fcPreservingTimestampDirs:
+    case fcResumeSupport:
       return false;
 
     default:
@@ -2511,6 +2541,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
 void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 {
+  FBytesAvailable = -1;
   FileList->Reset();
   // FZAPI does not list parent directory, add it
   FileList->AddFile(new TRemoteParentDirectory(FTerminal));
@@ -2529,7 +2560,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 
   AutoDetectTimeDifference(FileList);
 
-  if (FTimeDifference != 0) // optimization
+  if (FTimeDifference != 0) || !FUploadedTimes.empty())// optimization
   {
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
@@ -2546,6 +2577,37 @@ void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
     return;
   DebugAssert(File->GetModification() == File->GetLastAccess());
   File->ShiftTimeInSeconds(FTimeDifference);
+
+  if (File->ModificationFmt != mfFull)
+  {
+    TUploadedTimes::iterator Iterator = FUploadedTimes.find(File->FullFileName);
+    if (Iterator != FUploadedTimes.end())
+    {
+      TDateTime UploadModification = Iterator->second;
+      TDateTime UploadModificationReduced = ReduceDateTimePrecision(UploadModification, File->GetModificationFmt());
+      if (UploadModificationReduced == File->GetModification())
+      {
+        if ((FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
+        {
+          FTerminal->LogEvent(
+            FORMAT(L"Enriching modification time of \"%s\" from [%s] to [%s]",
+                   File->GetFullFileName().c_str(), StandardTimestamp(File->GetModification().c_str(), StandardTimestamp(UploadModification).c_str())));
+        }
+        // implicitly sets ModificationFmt to mfFull
+        File->Modification = UploadModification;
+      }
+      else
+      {
+        if ((FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
+        {
+          FTerminal->LogEvent(
+            FORMAT(L"Remembered modification time [%s]/[%s] of \"%s\" is obsolete, keeping [%s]",
+                   StandardTimestamp(UploadModification).c_str(), StandardTimestamp(UploadModificationReduced).c_str(), File->GetFullFileName().c_str(), StandardTimestamp(File->GetModification().c_str())));
+        }
+        FUploadedTimes.erase(Iterator);
+      }
+    }
+  }
 }
 
 void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
@@ -2586,6 +2648,9 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
 
         TDateTime UtcModification = UtcFilePtr->GetModification();
         UtcFilePtr.release();
+
+        // MDTM returns seconds, trim those
+        UtcModification = ReduceDateTimePrecision(UtcModification, File->ModificationFmt);
 
         // Time difference between timestamp retrieved using MDTM (UTC converted to local timezone)
         // and using LIST (no conversion, expecting the server uses the same timezone as the client).
@@ -2883,7 +2948,14 @@ TStrings * TFTPFileSystem::GetFixedPaths()
 void TFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
   TSpaceAvailable & ASpaceAvailable)
 {
-  if (SupportsCommand(XQuotaCommand))
+  if (FBytesAvailableSuppoted)
+  {
+    std::unique_ptr<TRemoteFileList> DummyFileList(new TRemoteFileList());
+    DummyFileList->Directory = Path;
+    ReadDirectory(DummyFileList.get());
+    ASpaceAvailable.UnusedBytesAvailableToUser = FBytesAvailable;
+  }
+  else if (SupportsCommand(XQuotaCommand))
   {
     // WS_FTP:
     // XQUOTA
@@ -3168,6 +3240,10 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
 
     case OPTION_MPEXT_NODELAY:
       Result = Data->GetTcpNoDelay();
+      break;
+
+    case OPTION_MPEXT_NOLIST:
+      Result = FFileTransferNoList ? TRUE : FALSE;
       break;
 
     default:
@@ -3718,6 +3794,21 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
     if (FMultineResponse || (Response.Length() >= Start))
     {
       StoreLastResponse(Response.SubString(Start, Response.Length() - Start + 1));
+    }
+  }
+
+
+  if (StartsStr(DirectoryHasBytesPrefix, Response))
+  {
+    UnicodeString Buf = Response;
+    Buf.Delete(1, DirectoryHasBytesPrefix.Length());
+    Buf = Buf.TrimLeft();
+    UnicodeString BytesStr = CutToChar(Buf, L' ', true);
+    BytesStr = ReplaceStr(BytesStr, L",", L"");
+    FBytesAvailable = StrToInt64Def(BytesStr, -1);
+    if (FBytesAvailable >= 0)
+    {
+      FBytesAvailableSuppoted = true;
     }
   }
 
@@ -4300,201 +4391,220 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     FSessionInfo.CertificateFingerprint =
       BytesToHex(RawByteString(reinterpret_cast<const char *>(Data.Hash), Data.HashLen), false, L':');
 
-    UnicodeString CertificateSubject = Data.Subject.Organization;
-    FTerminal->LogEvent(FORMAT(L"Verifying certificate for \"%s\" with fingerprint %s and %d failures", CertificateSubject.c_str(), FSessionInfo.CertificateFingerprint.c_str(), Data.VerificationResult));
-
-    bool VerificationResult = false;
-    bool TryWindowsSystemCertificateStore = false;
-    UnicodeString VerificationResultStr;
-    switch (Data.VerificationResult)
+    if (FTerminal->SessionData->FingerprintScan)
     {
-      case X509_V_OK:
-        VerificationResult = true;
-        break;
-      case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
-        VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_GET_ISSUER_CERT);
-        TryWindowsSystemCertificateStore = true;
-        break;
-      case X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE:
-        VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE);
-        break;
-      case X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY:
-        VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY);
-        break;
-      case X509_V_ERR_CERT_SIGNATURE_FAILURE:
-        VerificationResultStr = LoadStr(CERT_ERR_CERT_SIGNATURE_FAILURE);
-        break;
-      case X509_V_ERR_CERT_NOT_YET_VALID:
-        VerificationResultStr = LoadStr(CERT_ERR_CERT_NOT_YET_VALID);
-        break;
-      case X509_V_ERR_CERT_HAS_EXPIRED:
-        VerificationResultStr = LoadStr(CERT_ERR_CERT_HAS_EXPIRED);
-        break;
-      case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
-        VerificationResultStr = LoadStr(CERT_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD);
-        break;
-      case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
-        VerificationResultStr = LoadStr(CERT_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD);
-        break;
-      case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
-        VerificationResultStr = LoadStr(CERT_ERR_DEPTH_ZERO_SELF_SIGNED_CERT);
-        TryWindowsSystemCertificateStore = true;
-        break;
-      case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
-        VerificationResultStr = LoadStr(CERT_ERR_SELF_SIGNED_CERT_IN_CHAIN);
-        TryWindowsSystemCertificateStore = true;
-        break;
-      case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
-        VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY);
-        TryWindowsSystemCertificateStore = true;
-        break;
-      case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
-        VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE);
-        TryWindowsSystemCertificateStore = true;
-        break;
-      case X509_V_ERR_INVALID_CA:
-        VerificationResultStr = LoadStr(CERT_ERR_INVALID_CA);
-        break;
-      case X509_V_ERR_PATH_LENGTH_EXCEEDED:
-        VerificationResultStr = LoadStr(CERT_ERR_PATH_LENGTH_EXCEEDED);
-        break;
-      case X509_V_ERR_INVALID_PURPOSE:
-        VerificationResultStr = LoadStr(CERT_ERR_INVALID_PURPOSE);
-        break;
-      case X509_V_ERR_CERT_UNTRUSTED:
-        VerificationResultStr = LoadStr(CERT_ERR_CERT_UNTRUSTED);
-        TryWindowsSystemCertificateStore = true;
-        break;
-      case X509_V_ERR_CERT_REJECTED:
-        VerificationResultStr = LoadStr(CERT_ERR_CERT_REJECTED);
-        break;
-      case X509_V_ERR_KEYUSAGE_NO_CERTSIGN:
-        VerificationResultStr = LoadStr(CERT_ERR_KEYUSAGE_NO_CERTSIGN);
-        break;
-      case X509_V_ERR_CERT_CHAIN_TOO_LONG:
-        VerificationResultStr = LoadStr(CERT_ERR_CERT_CHAIN_TOO_LONG);
-        break;
-      default:
-        VerificationResultStr =
-          FORMAT(L"%s (%s)",
-            LoadStr(CERT_ERR_UNKNOWN).c_str(), UnicodeString(X509_verify_cert_error_string(Data.VerificationResult)).c_str());
-        break;
+      RequestResult = 0;
     }
-
-    // TryWindowsSystemCertificateStore is set for the same set of failures
-    // as trigger NE_SSL_UNTRUSTED flag in ne_openssl.c's verify_callback()
-    if (!VerificationResult && TryWindowsSystemCertificateStore)
+    else
     {
-      if (WindowsValidateCertificate(Data.Certificate, Data.CertificateLen))
+      UnicodeString CertificateSubject = Data.Subject.Organization;
+      FTerminal->LogEvent(FORMAT(L"Verifying certificate for \"%s\" with fingerprint %s and %d failures", CertificateSubject.c_str(), FSessionInfo.CertificateFingerprint.c_str(), Data.VerificationResult));
+
+      bool Trusted = false;
+      bool TryWindowsSystemCertificateStore = false;
+      UnicodeString VerificationResultStr;
+      switch (Data.VerificationResult)
       {
-        FTerminal->LogEvent("Certificate verified against Windows certificate store");
-        VerificationResult = true;
-      }
-    }
-
-    UnicodeString Summary;
-    if (!VerificationResult)
-    {
-      Summary = VerificationResultStr + L" " + FMTLOAD(CERT_ERRDEPTH, Data.VerificationDepth + 1);
-    }
-
-    if (IsIPAddress(FTerminal->GetSessionData()->GetHostNameExpanded()))
-    {
-      VerificationResult = false;
-      AddToList(Summary, FMTLOAD(CERT_IP_CANNOT_VERIFY, FTerminal->GetSessionData()->GetHostNameExpanded().c_str()), L"\n\n");
-    }
-    else if (!VerifyCertificateHostName(Data))
-    {
-      VerificationResult = false;
-      AddToList(Summary, FMTLOAD(CERT_NAME_MISMATCH, FTerminal->GetSessionData()->GetHostNameExpanded().c_str()), L"\n\n");
-    }
-
-    if (VerificationResult)
-    {
-      Summary = LoadStr(CERT_OK);
-    }
-
-    FSessionInfo.Certificate =
-      FMTLOAD(CERT_TEXT,
-        FormatContact(Data.Issuer).c_str(),
-        FormatContact(Data.Subject).c_str(),
-        FormatValidityTime(Data.ValidFrom).c_str(),
-        FormatValidityTime(Data.ValidUntil).c_str(),
-        FSessionInfo.CertificateFingerprint.c_str(),
-        Summary.c_str());
-
-    RequestResult = 0;
-
-    if (VerificationResult)
-    {
-      RequestResult = 1;
-    }
-
-    UnicodeString SiteKey = FTerminal->GetSessionData()->GetSiteKey();
-    if (RequestResult == 0)
-    {
-      if (FTerminal->VerifyCertificate(FtpsCertificateStorageKey, SiteKey,
-            FSessionInfo.CertificateFingerprint, CertificateSubject, Data.VerificationResult))
-      {
-        RequestResult = 1;
-      }
-    }
-
-    if (RequestResult == 0)
-    {
-      TClipboardHandler ClipboardHandler;
-      ClipboardHandler.Text = FSessionInfo.CertificateFingerprint;
-
-      TQueryButtonAlias Aliases[1];
-      Aliases[0].Button = qaRetry;
-      Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick = MAKE_CALLBACK(TClipboardHandler::Copy, &ClipboardHandler);
-
-      TQueryParams Params(qpWaitInBatch);
-      Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
-      Params.NoBatchAnswers = qaYes | qaRetry;
-      Params.Aliases = Aliases;
-      Params.AliasesCount = _countof(Aliases);
-      uintptr_t Answer = FTerminal->QueryUser(
-        FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate.c_str()),
-        nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
-
-      switch (Answer)
-      {
-        case qaYes:
-          // 2 = always, as used by FZ's VerifyCertDlg.cpp,
-          // however FZAPI takes all non-zero values equally
-          RequestResult = 2;
+        case X509_V_OK:
+          Trusted = true;
           break;
-
-        case qaNo:
-          RequestResult = 1;
+        case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
+          VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_GET_ISSUER_CERT);
+          TryWindowsSystemCertificateStore = true;
           break;
-
-        case qaCancel:
-          // FTerminal->Configuration->Usage->Inc(L"HostNotVerified");
-          RequestResult = 0;
+        case X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE:
+          VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE);
           break;
-
+        case X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY:
+          VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY);
+          break;
+        case X509_V_ERR_CERT_SIGNATURE_FAILURE:
+          VerificationResultStr = LoadStr(CERT_ERR_CERT_SIGNATURE_FAILURE);
+          break;
+        case X509_V_ERR_CERT_NOT_YET_VALID:
+          VerificationResultStr = LoadStr(CERT_ERR_CERT_NOT_YET_VALID);
+          break;
+        case X509_V_ERR_CERT_HAS_EXPIRED:
+          VerificationResultStr = LoadStr(CERT_ERR_CERT_HAS_EXPIRED);
+          break;
+        case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
+          VerificationResultStr = LoadStr(CERT_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD);
+          break;
+        case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
+          VerificationResultStr = LoadStr(CERT_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD);
+          break;
+        case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+          VerificationResultStr = LoadStr(CERT_ERR_DEPTH_ZERO_SELF_SIGNED_CERT);
+          TryWindowsSystemCertificateStore = true;
+          break;
+        case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+          VerificationResultStr = LoadStr(CERT_ERR_SELF_SIGNED_CERT_IN_CHAIN);
+          TryWindowsSystemCertificateStore = true;
+          break;
+        case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
+          VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY);
+          TryWindowsSystemCertificateStore = true;
+          break;
+        case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
+          VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE);
+          TryWindowsSystemCertificateStore = true;
+          break;
+        case X509_V_ERR_INVALID_CA:
+          VerificationResultStr = LoadStr(CERT_ERR_INVALID_CA);
+          break;
+        case X509_V_ERR_PATH_LENGTH_EXCEEDED:
+          VerificationResultStr = LoadStr(CERT_ERR_PATH_LENGTH_EXCEEDED);
+          break;
+        case X509_V_ERR_INVALID_PURPOSE:
+          VerificationResultStr = LoadStr(CERT_ERR_INVALID_PURPOSE);
+          break;
+        case X509_V_ERR_CERT_UNTRUSTED:
+          VerificationResultStr = LoadStr(CERT_ERR_CERT_UNTRUSTED);
+          TryWindowsSystemCertificateStore = true;
+          break;
+        case X509_V_ERR_CERT_REJECTED:
+          VerificationResultStr = LoadStr(CERT_ERR_CERT_REJECTED);
+          break;
+        case X509_V_ERR_KEYUSAGE_NO_CERTSIGN:
+          VerificationResultStr = LoadStr(CERT_ERR_KEYUSAGE_NO_CERTSIGN);
+          break;
+        case X509_V_ERR_CERT_CHAIN_TOO_LONG:
+          VerificationResultStr = LoadStr(CERT_ERR_CERT_CHAIN_TOO_LONG);
+          break;
         default:
-          DebugFail();
-          RequestResult = 0;
+          VerificationResultStr =
+            FORMAT(L"%s (%s)",
+              LoadStr(CERT_ERR_UNKNOWN).c_str(), UnicodeString(X509_verify_cert_error_string(Data.VerificationResult)).c_str());
           break;
       }
 
-      if (RequestResult == 2)
-      {
-        FTerminal->CacheCertificate(
-          FtpsCertificateStorageKey, SiteKey,
-          FSessionInfo.CertificateFingerprint, Data.VerificationResult);
-      }
-    }
+      bool IsHostNameIPAddress = IsIPAddress(FTerminal->SessionData->HostNameExpanded);
+      bool CertificateHostNameVerified = !IsHostNameIPAddress && VerifyCertificateHostName(Data);
 
-    // Cache only if the certificate was not automatically accepted
-    if (!VerificationResult && (RequestResult != 0))
-    {
-      FTerminal->GetConfiguration()->RememberLastFingerprint(
-        FTerminal->GetSessionData()->GetSiteKey(), TlsFingerprintType, FSessionInfo.CertificateFingerprint);
+      bool VerificationResult = Trusted;
+
+      if (IsHostNameIPAddress || !CertificateHostNameVerified)
+      {
+        VerificationResult = false;
+        TryWindowsSystemCertificateStore = false;
+      }
+
+      UnicodeString SiteKey = FTerminal->SessionData->SiteKey;
+
+      if (!VerificationResult)
+      {
+        if (FTerminal->VerifyCertificate(CertificateStorageKey, SiteKey,
+              FSessionInfo.CertificateFingerprint, CertificateSubject, Data.VerificationResult))
+        {
+          // certificate is trusted, but for not purposes of info dialog
+          VerificationResult = true;
+        }
+      }
+
+      // TryWindowsSystemCertificateStore is set for the same set of failures
+      // as trigger NE_SSL_UNTRUSTED flag in ne_openssl.c's verify_callback().
+      // Use WindowsValidateCertificate only as a last resort (after checking the cached fiungerprint)
+      // as it can take a very long time (up to 1 minute).
+      if (!VerificationResult && TryWindowsSystemCertificateStore)
+      {
+        if (WindowsValidateCertificate(Data.Certificate, Data.CertificateLen))
+        {
+          FTerminal->LogEvent("Certificate verified against Windows certificate store");
+          VerificationResult = true;
+          // certificate is trusted for all purposes
+          Trusted = true;
+        }
+      }
+
+      const UnicodeString SummarySeparator = L"\n\n";
+      UnicodeString Summary;
+      // even if the fingerprint is cached, the certificate is still not trusted for a purposes of the info dialog.
+      if (!Trusted)
+      {
+        AddToList(Summary, VerificationResultStr + L" " + FMTLOAD(CERT_ERRDEPTH, (Data.VerificationDepth + 1)), SummarySeparator);
+      }
+
+      if (IsHostNameIPAddress)
+      {
+        AddToList(Summary, FMTLOAD(CERT_IP_CANNOT_VERIFY, (FTerminal->SessionData->HostNameExpanded)), SummarySeparator);
+      }
+      else if (!CertificateHostNameVerified)
+      {
+        AddToList(Summary, FMTLOAD(CERT_NAME_MISMATCH, (FTerminal->SessionData->HostNameExpanded)), SummarySeparator);
+      }
+
+      if (Summary.IsEmpty())
+      {
+        Summary = LoadStr(CERT_OK);
+      }
+
+      FSessionInfo.Certificate =
+        FMTLOAD(CERT_TEXT,
+          FormatContact(Data.Issuer).c_str(),
+          FormatContact(Data.Subject).c_str(),
+          FormatValidityTime(Data.ValidFrom).c_str(),
+          FormatValidityTime(Data.ValidUntil).c_str(),
+          FSessionInfo.CertificateFingerprint.c_str(),
+          Summary.c_str());
+
+      RequestResult = VerificationResult ? 1 : 0;
+
+      if (RequestResult == 0)
+      {
+        TClipboardHandler ClipboardHandler;
+        ClipboardHandler.Text = FSessionInfo.CertificateFingerprint;
+
+        TQueryButtonAlias Aliases[1];
+        Aliases[0].Button = qaRetry;
+        Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
+        Aliases[0].OnClick = MAKE_CALLBACK(TClipboardHandler::Copy, &ClipboardHandler);
+
+        TQueryParams Params(qpWaitInBatch);
+        Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
+        Params.NoBatchAnswers = qaYes | qaRetry;
+        Params.Aliases = Aliases;
+        Params.AliasesCount = _countof(Aliases);
+        uintptr_t Answer = FTerminal->QueryUser(
+          FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate.c_str()),
+          nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
+
+        switch (Answer)
+        {
+          case qaYes:
+            // 2 = always, as used by FZ's VerifyCertDlg.cpp,
+            // however FZAPI takes all non-zero values equally
+            RequestResult = 2;
+            break;
+
+          case qaNo:
+            RequestResult = 1;
+            break;
+
+          case qaCancel:
+            // FTerminal->Configuration->Usage->Inc(L"HostNotVerified");
+            RequestResult = 0;
+            break;
+
+          default:
+            DebugFail();
+            RequestResult = 0;
+            break;
+        }
+
+        if (RequestResult == 2)
+        {
+          FTerminal->CacheCertificate(
+            CertificateStorageKey, SiteKey,
+            FSessionInfo.CertificateFingerprint, Data.VerificationResult);
+        }
+      }
+
+      // Cache only if the certificate was accepted manually
+      if (!VerificationResult && (RequestResult != 0))
+      {
+        FTerminal->Configuration->RememberLastFingerprint(
+          FTerminal->SessionData->SiteKey, TlsFingerprintType, FSessionInfo.CertificateFingerprint);
+      }
     }
 
     return true;

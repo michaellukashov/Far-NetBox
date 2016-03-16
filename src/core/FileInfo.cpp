@@ -277,3 +277,11 @@ int CalculateCompoundVersion(int MajorVer,
   return CompoundVer;
 }
 
+int StrToCompoundVersion(const UnicodeString & S)
+{
+  int MajorVer = Min(StrToInt(CutToChar(S, L'.', false)), 99);
+  int MinorVer = Min(StrToInt(CutToChar(S, L'.', false)), 99);
+  int Release = S.IsEmpty() ? 0 : Min(StrToInt(CutToChar(S, L'.', false)), 99);
+  int Build = S.IsEmpty() ? 0 : Min(StrToInt(CutToChar(S, L'.', false)), 9999);
+  return CalculateCompoundVersion(MajorVer, MinorVer, Release, Build);
+}

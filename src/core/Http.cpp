@@ -14,11 +14,15 @@ THttp::THttp() :
   FProxyPort(0),
   FOnDownload(nullptr),
   FResponseLimit(-1)
+  FRequestHeaders(nillptr),
+  FResponseHeaders(new TStringList())
 {
 }
 
 THttp::~THttp()
 {
+  delete FResponseHeaders;
+  delete FRequestHeaders;
 }
 
 void THttp::SendRequest(const char * Method, const UnicodeString & Request)
@@ -89,6 +93,15 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
         {
           ne_request_destroy(NeonRequest);
         };
+        if (FRequestHeaders != nullptr)
+        {
+          for (intptr_t Index = 0; Index < FRequestHeaders->GetCount(); Index++)
+          {
+            ne_add_request_header(
+              NeonRequest, StrToNeon(FRequestHeaders->GetName(Index)), StrToNeon(FRequestHeaders->GetValueFromIndex(Index)));
+          }
+        }
+
         UTF8String RequestUtf;
         if (!Request.IsEmpty())
         {
@@ -122,6 +135,14 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           if (NeonStatus->klass != 2)
           {
             throw Exception(FMTLOAD(HTTP_ERROR, NeonStatus->code, StrFromNeon(NeonStatus->reason_phrase).c_str(), FHostName.c_str()));
+          }
+
+          void * Cursor = NULL;
+          const char * HeaderName;
+          const char * HeaderValue;
+          while ((Cursor = ne_response_header_iterate(NeonRequest, Cursor, &HeaderName, &HeaderValue)) != nullptr)
+          {
+            FResponseHeaders->Values[StrFromNeon(HeaderName)] = StrFromNeon(HeaderValue);
           }
         }
       }

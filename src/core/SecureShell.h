@@ -145,6 +145,7 @@ public:
   void SendNull();
 
   const TSessionInfo & GetSessionInfo() const;
+  UnicodeString GetHostKeyFingerprint() const;
   bool SshFallbackCmd() const;
   uint32_t MinPacketSize() const;
   uint32_t MaxPacketSize() const;
