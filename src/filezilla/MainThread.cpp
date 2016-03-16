@@ -286,14 +286,14 @@ void CMainThread::SetCurrentPath(CServerPath path)
   return;
 }
 
-bool CMainThread::UsingMlsd()
+bool CMainThread::UsingMlsd() const
 {
   if (!IsConnected())
     return false;
   return m_pControlSocket->UsingMlsd();
 }
 
-bool CMainThread::UsingUtf8()
+bool CMainThread::UsingUtf8() const
 {
   if (!IsConnected())
     return false;

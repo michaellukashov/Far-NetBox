@@ -83,8 +83,8 @@ public:
   // Other servers return "550 No files found."
   bool IsMisleadingListResponse();
 
-  virtual bool UsingMlsd();
-  virtual bool UsingUtf8();
+  virtual bool UsingMlsd() const;
+  virtual bool UsingUtf8() const;
   virtual std::string GetTlsVersionStr();
   virtual std::string GetCipherName();
   bool HandleSize(int code, __int64 & size);

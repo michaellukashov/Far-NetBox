@@ -245,7 +245,7 @@ int CFileZillaApi::GetCurrentPath(CServerPath & path)
   return (m_pMainThread->GetCurrentPath(path) ? FZ_REPLY_OK : FZ_REPLY_NOTCONNECTED);
 }
 
-bool CFileZillaApi::UsingMlsd()
+bool CFileZillaApi::UsingMlsd() const
 {
   //Check if call allowed
   if (!m_bInitialized)
@@ -255,7 +255,7 @@ bool CFileZillaApi::UsingMlsd()
   return m_pMainThread->UsingMlsd();
 }
 
-bool CFileZillaApi::UsingUtf8()
+bool CFileZillaApi::UsingUtf8() const
 {
   //Check if call allowed
   if (!m_bInitialized)

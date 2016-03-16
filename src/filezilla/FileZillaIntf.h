@@ -165,8 +165,8 @@ public:
   bool SetCurrentPath(const wchar_t * Path);
   bool GetCurrentPath(wchar_t * Path, size_t MaxLen);
 
-  bool UsingMlsd();
-  bool UsingUtf8();
+  bool UsingMlsd() const;
+  bool UsingUtf8() const;
   std::string GetTlsVersionStr();
   std::string GetCipherName();
 
