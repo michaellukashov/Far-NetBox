@@ -147,7 +147,7 @@ void TSessionData::Default()
   FNotUtf = asAuto;
   FIsWorkspace = false;
   SetHostKey(L"");
-  SetFingerprintScan(L"");
+  SetFingerprintScan(false);
   FOverrideCachedHostKey = true;
   SetNote(L"");
   FOrigHostName.Clear();

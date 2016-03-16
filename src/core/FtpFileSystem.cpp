@@ -4,7 +4,7 @@
 
 #ifndef NO_FILEZILLA
 
-#include <list>
+#include <rdestl/list.h>
 #ifndef MPEXT
 #define MPEXT
 #endif

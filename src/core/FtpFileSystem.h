@@ -3,6 +3,7 @@
 #ifndef NO_FILEZILLA
 
 #include <time.h>
+#include <rdestl/map.h>
 #include <rdestl/vector.h>
 #include <FileSystems.h>
 
@@ -300,7 +301,7 @@ private:
   std::unique_ptr<TStrings> FSupportedCommands;
   std::unique_ptr<TStrings> FSupportedSiteCommands;
   std::unique_ptr<TStrings> FHashAlgs;
-  typedef std::map<UnicodeString, TDateTime> TUploadedTimes;
+  typedef rde::map<UnicodeString, TDateTime> TUploadedTimes;
   TUploadedTimes FUploadedTimes;
   bool FSupportsAnyChecksumFeature;
   UnicodeString FLastCommandSent;

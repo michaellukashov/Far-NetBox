@@ -439,6 +439,7 @@ public:
   virtual ~TTerminal();
   void Open();
   void Close();
+  UnicodeString FingerprintScan();
   void Reopen(intptr_t Params);
   virtual void DirectoryModified(const UnicodeString & APath, bool SubDirs);
   virtual void DirectoryLoaded(TRemoteFileList * FileList);

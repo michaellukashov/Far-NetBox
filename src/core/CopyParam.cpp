@@ -120,8 +120,8 @@ void TCopyParamType::DoGetInfoStr(
       SomeAttrExcluded = true; \
     }
 
-  bool AsciiFileMaskDiffers = (TransferMode == tmAutomatic) && !(AsciiFileMask == Defaults.AsciiFileMask);
-  bool TransferModeDiffers = ((TransferMode != Defaults.TransferMode) || AsciiFileMaskDiffers);
+  bool AsciiFileMaskDiffers = (GetTransferMode() == tmAutomatic) && !(AsciiFileMask == Defaults.AsciiFileMask);
+  bool TransferModeDiffers = ((GetTransferMode() != Defaults.TransferMode) || AsciiFileMaskDiffers);
 
   if (FLAGCLEAR(Options, cpaIncludeMaskOnly | cpaNoTransferMode))
   {
@@ -156,7 +156,7 @@ void TCopyParamType::DoGetInfoStr(
     {
       ADD("", cpaIncludeMaskOnly | cpaNoTransferMode);
 
-      ScriptArgs += RtfSwitchValue(TRANSFER_SWITCH, Link, TransferModeNames[TransferMode]);
+      /*ScriptArgs += RtfSwitchValue(TRANSFER_SWITCH, Link, TransferModeNames[TransferMode]);
       const wchar_t * TransferModeMembers[] = { L"Binary", L"Ascii", L"Automatic" };
       AssemblyCode += AssemblyProperty(
         Language, TransferOptionsClassName, L"TransferMode", L"TransferMode", TransferModeMembers[TransferMode], false);
@@ -164,7 +164,7 @@ void TCopyParamType::DoGetInfoStr(
       {
         NoScriptArgs = true;
         NoCodeProperties = true;
-      }
+      }*/
     }
   }
   else

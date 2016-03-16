@@ -453,7 +453,7 @@ public:
   void SetIsWorkspace(bool Value);
   void SetLink(const UnicodeString & Value);
   void SetHostKey(const UnicodeString & Value);
-  void SetFingerprintScan(const UnicodeString & Value);
+  void SetFingerprintScan(bool Value) { FFingerprintScan = Value; }
   void SetNote(const UnicodeString & Value);
   TDateTime GetTimeoutDT();
   void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport, bool DoNotEncryptPasswords);
@@ -817,7 +817,7 @@ public:
   bool GetIsWorkspace() const { return FIsWorkspace; }
   UnicodeString GetLink() const { return FLink; }
   UnicodeString GetHostKey() const { return FHostKey; }
-  UnicodeString GetFingerprintScan() const { return FFingerprintScan; }
+  bool GetFingerprintScan() const { return FFingerprintScan; }
   bool GetOverrideCachedHostKey() const { return FOverrideCachedHostKey; }
   UnicodeString GetOrigHostName() const { return FOrigHostName; }
   intptr_t GetOrigPortNumber() const { return FOrigPortNumber; }

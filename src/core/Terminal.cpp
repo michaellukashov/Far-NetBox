@@ -990,7 +990,7 @@ void TTerminal::ResetConnection()
 
 UnicodeString TTerminal::FingerprintScan()
 {
-  SessionData->FingerprintScan = true;
+  GetSessionData()->SetFingerprintScan(true);
   try
   {
     Open();
@@ -3938,7 +3938,7 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
   {
     if (AFile->GetIsDirectory())
     {
-      if (CanRecurseToDirectory(AFile);)
+      if (CanRecurseToDirectory(AFile))
       {
         if (!AParams->AllowDirs)
         {
@@ -5378,7 +5378,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & /*AFileName*/,
 
       bool Modified = false;
       bool New = false;
-      if (AFile->GetIsDirectory() && !CanRecurseToDirectory(File);)
+      if (AFile->GetIsDirectory() && !CanRecurseToDirectory(AFile))
       {
         LogEvent(FORMAT(L"Skipping symlink to directory \"%s\".", AFile->GetFileName().c_str()));
       }
