@@ -284,5 +284,5 @@ protected:
 
   void Destroy();
   int IsBusy();
-  int IsConnected();
+  int IsConnected() const;
 };

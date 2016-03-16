@@ -47,7 +47,7 @@ int CFileZillaApi::Init(TFileZillaIntern * Intern, CFileZillaTools * pTools)
   return FZ_REPLY_OK;
 }
 
-int CFileZillaApi::IsConnected()
+int CFileZillaApi::IsConnected() const
 {
   if (!m_bInitialized)
     return FZ_REPLY_NOTINITIALIZED;

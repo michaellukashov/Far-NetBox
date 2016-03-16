@@ -26,8 +26,8 @@ public:
   void SetWorkingDir(t_directory * pWorkingDir);
   BOOL GetWorkingDir(t_directory * pWorkingDir);
   void SendDirectoryListing(t_directory * pDirectoryToSend);
-  bool UsingMlsd() const;
-  bool UsingUtf8() const;
+  bool UsingMlsd();
+  bool UsingUtf8();
   std::string GetTlsVersionStr();
   std::string GetCipherName();
   t_command m_LastCommand;

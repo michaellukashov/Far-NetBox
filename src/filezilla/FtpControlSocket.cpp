@@ -1701,7 +1701,7 @@ void CFtpControlSocket::FtpCommand(LPCTSTR pCommand)
   Send(pCommand);
 }
 
-bool CFtpControlSocket::UsingMlsd() const
+bool CFtpControlSocket::UsingMlsd()
 {
   return
     // 0 = on, 1 = off, 2 = auto
@@ -1710,7 +1710,7 @@ bool CFtpControlSocket::UsingMlsd() const
      (m_serverCapabilities.GetCapability(mlsd_command) == yes));
 }
 
-bool CFtpControlSocket::UsingUtf8() const
+bool CFtpControlSocket::UsingUtf8()
 {
   return m_bUTF8;
 }
