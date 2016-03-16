@@ -269,7 +269,7 @@ bool DirectoryExists(const UnicodeString & ADir);
 UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList);
 void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp);
 
-DWORD FileGetAttr(const UnicodeString & AFileName);
+DWORD FileGetAttr(const UnicodeString & AFileName, bool FollowLink = true);
 DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs);
 
 bool ForceDirectories(const UnicodeString & ADir);
