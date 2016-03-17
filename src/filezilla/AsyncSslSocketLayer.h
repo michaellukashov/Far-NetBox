@@ -17,7 +17,7 @@ CAsyncSslSocketLayer to your socket and call InitClientSsl after creation of the
 
 This class only has a couple of public functions:
 - int InitSSLConnection(bool clientMode);
-  This functions establishes an SSL connection. The clientMode parameter specifies whether the SSL connection 
+  This functions establishes an SSL connection. The clientMode parameter specifies whether the SSL connection
   is in server or in client mode.
   Most likely you want to call this function right after calling Create for the socket.
   But sometimes, you'll need to call this function later. One example is for an FTP connection
@@ -27,7 +27,7 @@ This class only has a couple of public functions:
 - Is UsingSSL();
   Returns true if you've previously called InitClientSsl()
 - SetNotifyReply(SetNotifyReply(int nID, int nCode, int result);
-  You can call this function only after receiving a layerspecific callback with the SSL_VERIFY_CERT 
+  You can call this function only after receiving a layerspecific callback with the SSL_VERIFY_CERT
   id. Set result to 1 if you trust the certificate and 0 if you don't trust it.
   nID has to be the priv_data element of the t_SslCertData structure and nCode has to be SSL_VERIFY_CERT.
 
@@ -37,10 +37,10 @@ Valid notification IDs are:
 - SSL_INFO 0
   There are two possible values for param2:
   SSL_INFO_ESTABLISHED 0 - You'll get this notification if the SSL negotiation was successful
-  SSL_INFO_SHUTDOWNCOMPLETE 1 - You'll get this notification if the SSL connection has been shut 
+  SSL_INFO_SHUTDOWNCOMPLETE 1 - You'll get this notification if the SSL connection has been shut
                                   down successfully. See below for details.
 - SSL_FAILURE 1
-  This notification is sent if the SSL connection could not be established or if an existing 
+  This notification is sent if the SSL connection could not be established or if an existing
   connection failed. Valid values for param2 are:
   - SSL_FAILURE_NONE 0 - Everything OK
   - SSL_FAILURE_UNKNOWN 1 - Details may have been sent with a SSL_VERBOSE_* notification.
@@ -53,7 +53,7 @@ Valid notification IDs are:
   param2 is a pointer to a t_SslCertData structure which contains some information
   about the remote certificate.
   You have to set the reply to this message using the SetNotifyReply function.
-  
+
 Be careful with closing the connection after sending data, not all data may have been sent already.
 Before closing the connection, you should call Shutdown() and wait for the SSL_INFO_SHUTDOWNCOMPLETE
 notification. This assures that all encrypted data really has been sent.
@@ -133,7 +133,7 @@ public:
   void SetClientCertificate(X509 * Certificate, EVP_PKEY * PrivateKey);
 
   bool IsUsingSSL();
-  int InitSSLConnection(bool clientMode, 
+  int InitSSLConnection(bool clientMode,
     CAsyncSslSocketLayer * main,
     bool sessionreuse, int minTlsVersion, int maxTlsVersion,
     void * pContext = 0);
@@ -143,7 +143,7 @@ public:
   int SendRaw(const void * lpBuf, int nBufLen, int nFlags = 0);
 
   void * GetContext() { return m_ssl_ctx; }
-  
+
 private:
   virtual void Close();
   virtual BOOL Connect(LPCTSTR lpszHostAddress, UINT nHostPort);
@@ -155,7 +155,7 @@ private:
   virtual int Receive(void * lpBuf, int nBufLen, int nFlags = 0);
   virtual int Send(const void * lpBuf, int nBufLen, int nFlags = 0);
   virtual BOOL ShutDown( int nHow = sends );
-  
+
   void ResetSslSession();
   void PrintSessionInfo();
   BOOL ShutDownComplete();
@@ -189,7 +189,7 @@ private:
   CString m_CertStorage;
   int m_nVerificationResult;
   int m_nVerificationDepth;
-  
+
   static struct t_SslLayerList : public TObject
   {
     CAsyncSslSocketLayer * pLayer;

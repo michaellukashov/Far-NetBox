@@ -565,12 +565,12 @@ inline bool TFileZillaIntf::Check(intptr_t ReturnCode,
   }
 }
 
-bool TFileZillaIntf::UsingMlsd() const
+bool TFileZillaIntf::UsingMlsd()
 {
   return FFileZillaApi->UsingMlsd();
 }
 
-bool TFileZillaIntf::UsingUtf8() const
+bool TFileZillaIntf::UsingUtf8()
 {
   return FFileZillaApi->UsingUtf8();
 }

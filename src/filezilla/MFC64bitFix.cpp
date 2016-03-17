@@ -20,7 +20,7 @@ BOOL GetLength64(CString filename, _int64 &size)
   DebugCheck(FindClose(hFind));
 
   size=((_int64)findFileData.nFileSizeHigh<<32)+findFileData.nFileSizeLow;
-  
+
   return TRUE;
 }
 

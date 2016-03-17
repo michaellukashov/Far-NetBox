@@ -182,7 +182,7 @@ int CFileZillaApi::ListFile(const CString & FileName, const CServerPath & path)
     return FZ_REPLY_INVALIDPARAM;
   if (FileName=="")
     return FZ_REPLY_INVALIDPARAM;
-  
+
   if (m_pMainThread->IsBusy())
     return FZ_REPLY_BUSY;
   t_command command;
@@ -245,7 +245,7 @@ int CFileZillaApi::GetCurrentPath(CServerPath & path)
   return (m_pMainThread->GetCurrentPath(path) ? FZ_REPLY_OK : FZ_REPLY_NOTCONNECTED);
 }
 
-bool CFileZillaApi::UsingMlsd() const
+bool CFileZillaApi::UsingMlsd()
 {
   //Check if call allowed
   if (!m_bInitialized)
@@ -255,7 +255,7 @@ bool CFileZillaApi::UsingMlsd() const
   return m_pMainThread->UsingMlsd();
 }
 
-bool CFileZillaApi::UsingUtf8() const
+bool CFileZillaApi::UsingUtf8()
 {
   //Check if call allowed
   if (!m_bInitialized)

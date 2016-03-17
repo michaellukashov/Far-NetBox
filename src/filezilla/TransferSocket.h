@@ -56,7 +56,7 @@ protected:
   virtual void ConfigureSocket();
   bool Activate();
   void Start();
-  
+
   CFtpControlSocket * m_pOwner;
   CAsyncProxySocketLayer * m_pProxyLayer;
   CAsyncSslSocketLayer * m_pSslLayer;

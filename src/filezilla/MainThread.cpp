@@ -41,11 +41,11 @@ BOOL CMainThread::InitInstance()
 
   m_nTimerID=SetTimer(0,1,1000,0);
   m_pPostKeepAliveCommand=0;
-  
+
   // initialize Winsock library
   BOOL res=TRUE;
   WSADATA wsaData;
-  
+
   WORD wVersionRequested = MAKEWORD(1, 1);
   int nResult = ::WSAStartup(wVersionRequested, &wsaData);
   if (nResult != 0)
@@ -55,7 +55,7 @@ BOOL CMainThread::InitInstance()
     ::WSACleanup();
     res=FALSE;
   }
-  
+
   m_pControlSocket=new CFtpControlSocket(this, m_pTools);
   m_pControlSocket->InitIntern(GetIntern());
   return TRUE;
@@ -82,10 +82,10 @@ void CMainThread::OnTimer(WPARAM wParam, LPARAM lParam)
 {
   if (!m_pControlSocket)
     return;
-  
+
   if (wParam==m_nTimerID)
     m_pControlSocket->OnTimer();
-  
+
   return;
 }
 
@@ -183,7 +183,7 @@ BOOL CMainThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
   {
     OnTimer(wParam, lParam);
   }
-  
+
   return TRUE;
 }
 
@@ -254,7 +254,7 @@ CServerPath CMainThread::GetCurrentPath()
   bool res = GetCurrentPath(path);
   if (!res)
     return CServerPath();
-  
+
   return path;
 }
 

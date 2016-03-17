@@ -9,7 +9,6 @@
 #endif
 
 #define BUFSIZE 16384
-//#define BUFSIZE 128 * 1024 // 64 * 1024
 
 #define STATE_WAITING    0
 #define STATE_STARTING    1
@@ -41,12 +40,6 @@ CTransferSocket::CTransferSocket(CFtpControlSocket *pOwner, int nMode)
   m_bActivationPending = false;
 
   UpdateStatusBar(true);
-
-//  for (int i = 0; i < SPEED_SECONDS; i++)
-//  {
-//    m_Transfered[i] = 0;
-//    m_UsedForTransfer[i] = 0;
-//  }
 
   m_pProxyLayer = NULL;
   m_pSslLayer = NULL;
@@ -825,7 +818,7 @@ void CTransferSocket::OnSend(int nErrorCode)
           return;
         }
       }
-      else 
+      else
       {
         numread = 0;
       }
