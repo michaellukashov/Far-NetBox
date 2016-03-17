@@ -78,7 +78,7 @@ void CAsyncSocketExLayer::OnReceive(int nErrorCode)
   if (m_pPrevLayer)
   {
     m_pPrevLayer->OnReceive(nErrorCode);
-  }  
+  }
   else
   {
     if (m_pOwnerSocket->m_lEvent&FD_READ)
@@ -412,7 +412,6 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
       if (p_freeaddrinfo) p_freeaddrinfo(res0);
     }
 
-    
     if (INVALID_SOCKET == m_pOwnerSocket->GetSocketHandle())
       res = FALSE ;
   }
@@ -479,7 +478,7 @@ BOOL CAsyncSocketExLayer::GetPeerNameNext( CString& rPeerAddress, UINT& rPeerPor
         LPTSTR buf = Inet6AddrToString(((SOCKADDR_IN6*)sockAddr)->sin6_addr);
         rPeerAddress = buf;
         nb_free(buf);
-      } 
+      }
       else if (m_nFamily == AF_INET)
       {
         rPeerPort = ntohs(((SOCKADDR_IN*)sockAddr)->sin_port);
@@ -560,7 +559,7 @@ BOOL CAsyncSocketExLayer::GetSockNameNext( CString& rSockAddress, UINT& rSockPor
         LPTSTR buf = Inet6AddrToString(((SOCKADDR_IN6*)sockAddr)->sin6_addr);
         rSockAddress = buf;
         nb_free(buf);
-      } 
+      }
       else if (m_nFamily == AF_INET)
       {
         rSockPort = ntohs(((SOCKADDR_IN*)sockAddr)->sin_port);
@@ -731,7 +730,7 @@ BOOL CAsyncSocketExLayer::CreateNext(UINT nSocketPort, int nSocketType, long lEv
   BOOL res = FALSE;
 
   m_nFamily = nFamily;
-  
+
   if (m_pNextLayer)
     res = m_pNextLayer->Create(nSocketPort, nSocketType, lEvent, lpszSocketAddress, nFamily);
   else if (m_nFamily == AF_UNSPEC)
@@ -893,7 +892,7 @@ bool CAsyncSocketExLayer::SetFamily(int nFamily)
 {
   if (m_nFamily != AF_UNSPEC)
     return false;
-  
+
   m_nFamily = nFamily;
   return true;
 }
@@ -935,11 +934,11 @@ bool CAsyncSocketExLayer::TryNextProtocol()
     m_pOwnerSocket->m_SocketData.nFamily = m_nextAddr->ai_family;
     m_nFamily = m_nextAddr->ai_family;
     if (!m_pOwnerSocket->Bind(m_nSocketPort, m_lpszSocketAddress))
-    { 
+    {
       m_pOwnerSocket->DetachHandle(m_pOwnerSocket->m_SocketData.hSocket);
       closesocket(m_pOwnerSocket->m_SocketData.hSocket);
       m_pOwnerSocket->m_SocketData.hSocket = INVALID_SOCKET;
-      continue; 
+      continue;
     }
 
     if (connect(m_pOwnerSocket->GetSocketHandle(), m_nextAddr->ai_addr, m_nextAddr->ai_addrlen) == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK)

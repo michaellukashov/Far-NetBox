@@ -135,6 +135,11 @@ const TSessionInfo & TSecureShell::GetSessionInfo() const
   return FSessionInfo;
 }
 
+UnicodeString TSecureShell::GetHostKeyFingerprint() const
+{
+  return FSessionInfo.HostKeyFingerprint;
+}
+
 Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
 {
   Conf * conf = conf_new();
@@ -383,6 +388,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   {
     conf_set_int_int(conf, CONF_ssh_gsslist, Index, gsslibkeywords[Index].v);
   }
+  conf_set_int(conf, CONF_proxy_log_to_term, FORCE_OFF);
   return conf;
 }
 
@@ -2243,6 +2249,12 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
   GetRealHost(Host, Port);
 
   FSessionInfo.HostKeyFingerprint = Fingerprint;
+
+  if (FSessionData->GetFingerprintScan())
+  {
+    Abort();
+  }
+
   UnicodeString NormalizedFingerprint = NormalizeFingerprint(Fingerprint);
 
   bool Result = false;

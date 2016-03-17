@@ -226,6 +226,7 @@ private:
   bool FRememberedPasswordTried;
   bool FRememberedTunnelPasswordTried;
   int FNesting;
+  UnicodeString FFingerprintScanned;
   TRemoteDirectory * FOldFiles;
 
 public:
@@ -424,6 +425,7 @@ public:
   void StartOperationWithFile(
     const UnicodeString & AFileName, TFileOperation Operation1, TFileOperation Operation2 = foNone);
   void CommandSessionClose(TObject * Sender);
+  bool CanRecurseToDirectory(const TRemoteFile * AFile) const;
 
   // __property TFileOperationProgressType * OperationProgress = { read=FOperationProgress };
   const TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
@@ -437,6 +439,7 @@ public:
   virtual ~TTerminal();
   void Open();
   void Close();
+  UnicodeString FingerprintScan();
   void Reopen(intptr_t Params);
   virtual void DirectoryModified(const UnicodeString & APath, bool SubDirs);
   virtual void DirectoryLoaded(TRemoteFileList * FileList);

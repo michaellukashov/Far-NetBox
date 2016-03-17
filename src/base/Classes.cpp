@@ -746,6 +746,13 @@ void TStrings::SetValue(const UnicodeString & Name, const UnicodeString & Value)
   }
 }
 
+UnicodeString TStrings::GetValueFromIndex(intptr_t Index) const
+{
+  UnicodeString Name = GetName(Index);
+  UnicodeString Result = GetValue(Name);
+  return Result;
+}
+
 void TStrings::AddStrings(const TStrings * Strings)
 {
   BeginUpdate();

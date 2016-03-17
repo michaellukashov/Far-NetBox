@@ -269,11 +269,20 @@ UnicodeString GetFileInfoString(void * FileInfo,
   return Result;
 }
 
-int CalculateCompoundVersion(int MajorVer,
-  int MinorVer, int Release, int Build)
+intptr_t CalculateCompoundVersion(intptr_t MajorVer,
+  intptr_t MinorVer, intptr_t Release, intptr_t Build)
 {
-  int CompoundVer = Build + 10000 * (Release + 100 * (MinorVer +
+  intptr_t CompoundVer = Build + 10000 * (Release + 100 * (MinorVer +
     100 * MajorVer));
   return CompoundVer;
 }
 
+intptr_t StrToCompoundVersion(const UnicodeString & AStr)
+{
+  UnicodeString S(AStr);
+  int64_t MajorVer = StrToInt64(CutToChar(S, L'.', false));
+  int64_t MinorVer = StrToInt64(CutToChar(S, L'.', false));
+  int64_t Release = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
+  int64_t Build = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
+  return CalculateCompoundVersion(MajorVer, MinorVer, Release, Build);
+}

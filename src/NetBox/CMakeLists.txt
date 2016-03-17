@@ -1014,6 +1014,7 @@ add_library(putty STATIC
   ${LIBS_ROOT}/Putty/windows/winnojmp.c
   ${LIBS_ROOT}/Putty/windows/winpgntc.c
   ${LIBS_ROOT}/Putty/windows/winproxy.c
+  ${LIBS_ROOT}/Putty/windows/winsecur.c
   ${LIBS_ROOT}/Putty/windows/winstore.c
   ${LIBS_ROOT}/Putty/windows/wintime.c
   ${LIBS_ROOT}/Putty/windows/winhsock.c
@@ -1031,7 +1032,7 @@ add_library(putty STATIC
 #  ${LIBS_ROOT}/Putty/ldisc.c
 )
 
-set(PUTTY_COMPILE_FLAGS "-D_CRTIMP= -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -DNO_SECURITY")
+set(PUTTY_COMPILE_FLAGS "-D_CRTIMP= -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS")
 
 if(MSVC)
 set_target_properties(putty

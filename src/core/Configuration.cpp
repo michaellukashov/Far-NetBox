@@ -1445,6 +1445,7 @@ void TConfiguration::TemporaryActionsLogging(const UnicodeString & ALogFileName)
 void TConfiguration::TemporaryLogProtocol(intptr_t ALogProtocol)
 {
   FLogProtocol = ALogProtocol;
+  UpdateActualLogProtocol();
 }
 
 void TConfiguration::TemporaryLogSensitive(bool ALogSensitive)

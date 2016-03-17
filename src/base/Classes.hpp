@@ -260,6 +260,7 @@ public:
   void SetName(intptr_t Index, const UnicodeString & Value);
   const UnicodeString GetValue(const UnicodeString & Name) const;
   void SetValue(const UnicodeString & Name, const UnicodeString & Value);
+  UnicodeString GetValueFromIndex(intptr_t Index) const;
 
 protected:
   TDuplicatesEnum FDuplicates;

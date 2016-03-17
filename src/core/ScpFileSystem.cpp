@@ -531,6 +531,7 @@ bool TSCPFileSystem::IsCapable(intptr_t Capability) const
     case fcMoveToQueue:
     case fcLocking:
     case fcPreservingTimestampDirs:
+    case fcResumeSupport:
       return false;
 
     default:
@@ -1412,7 +1413,7 @@ void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   TCaptureOutputEvent OutputEvent)
 {
   DebugAssert(AFile);
-  bool Dir = AFile->GetIsDirectory() && !AFile->GetIsSymLink();
+  bool Dir = AFile->GetIsDirectory() && FTerminal->CanRecurseToDirectory(AFile);
   if (Dir && (Params & ccRecursive))
   {
     TCustomCommandParams AParams;

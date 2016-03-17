@@ -56,8 +56,9 @@ struct TWebDAVCertificateData
 };
 
 #define SESSION_FS_KEY "filesystem"
-static const char CertificateStorageKey[] = "HttpsCertificates";
-#define CONST_WEBDAV_PROTOCOL_BASE_NAME L"WebDAV"
+static const char HttpsCertificateStorageKey[] = "HttpsCertificates";
+static const UnicodeString CONST_WEBDAV_PROTOCOL_BASE_NAME = L"WebDAV";
+static const int HttpUnauthorized = 401;
 
 #define DAV_PROP_NAMESPACE "DAV:"
 #define MODDAV_PROP_NAMESPACE "http://apache.org/dav/props/"
@@ -236,7 +237,10 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   FNeonLockStore(nullptr),
   FUploading(false),
   FDownloading(false),
-  FInitialHandshake(false)
+  FInitialHandshake(false),
+  FAuthenticationRequested(false),
+  FCapabilities(0),
+  FAuthenticationRetry(false)
 {
 }
 
@@ -293,7 +297,7 @@ void TWebDAVFileSystem::Open()
 
   UnicodeString HostName = Data->GetHostNameExpanded();
   size_t Port = Data->GetPortNumber();
-  UnicodeString ProtocolName = (FTerminal->GetSessionData()->GetFtps() == ftpsNone) ? WebDAVProtocolStr : WebDAVSProtocolStr;
+  UnicodeString ProtocolName = (FTerminal->GetSessionData()->GetFtps() == ftpsNone) ? WebDAVProtocol : WebDAVSProtocol;
   UnicodeString Path = Data->GetRemoteDirectory();
   // PathToNeon is not used as we cannot call AbsolutePath here
   UnicodeString EscapedPath = StrFromNeon(PathEscape(StrToNeon(Path)).c_str());
@@ -415,12 +419,7 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
 
   ne_set_connect_timeout(FNeonSession, static_cast<int>(Data->GetTimeout()));
 
-  uintptr_t NeonAuthTypes = NE_AUTH_BASIC | NE_AUTH_DIGEST;
-  if (Ssl)
-  {
-    NeonAuthTypes |= NE_AUTH_NEGOTIATE;
-  }
-  ne_add_server_auth(FNeonSession, (unsigned int)NeonAuthTypes, NeonRequestAuth, this);
+  NeonAddAuthentiation(Ssl);
 
   if (Ssl)
   {
@@ -440,9 +439,20 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
   ne_hook_create_request(FNeonSession, NeonCreateRequest, this);
   ne_hook_pre_send(FNeonSession, NeonPreSend, this);
   ne_hook_post_send(FNeonSession, NeonPostSend, this);
+  ne_hook_post_headers(FNeonSession, NeonPostHeaders, this);
 
   TAutoFlag Flag(FInitialHandshake);
   ExchangeCapabilities(Path.c_str(), CorrectedUrl);
+}
+
+void TWebDAVFileSystem::NeonAddAuthentiation(bool UseNegotiate)
+{
+  unsigned int NeonAuthTypes = NE_AUTH_BASIC | NE_AUTH_DIGEST;
+  if (UseNegotiate)
+  {
+    NeonAuthTypes |= NE_AUTH_NEGOTIATE;
+  }
+  ne_add_server_auth(FNeonSession, NeonAuthTypes, NeonRequestAuth, this);
 }
 
 UnicodeString TWebDAVFileSystem::GetRedirectUrl()
@@ -455,7 +465,15 @@ UnicodeString TWebDAVFileSystem::GetRedirectUrl()
 void TWebDAVFileSystem::ExchangeCapabilities(const char * Path, UnicodeString & CorrectedUrl)
 {
   ClearNeonError();
-  int NeonStatus = ne_options2(FNeonSession, Path, &FCapabilities);
+
+  int NeonStatus;
+  FAuthenticationRetry = false;
+  do
+  {
+    NeonStatus = ne_options2(FNeonSession, Path, &FCapabilities);
+  }
+  while ((NeonStatus == NE_AUTH) && FAuthenticationRetry);
+
   if (NeonStatus == NE_REDIRECT)
   {
     CorrectedUrl = GetRedirectUrl();
@@ -657,6 +675,7 @@ bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
     case fcRemoveBOMUpload:
     case fcRemoteCopy:
     case fcPreservingTimestampDirs:
+    case fcResumeSupport:
       return false;
 
     case fcLocking:
@@ -1544,7 +1563,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
             // changing getlastmodified.
             // The only server we found that supports this is TradeMicro SafeSync.
             // But it announces itself as "Server: Apache",
-            // so it's not reliable autodetect the support.
+            // so it's not reliable to autodetect the support.
             TouchAction.Cancel();
           }
           else
@@ -1798,6 +1817,21 @@ void TWebDAVFileSystem::NeonPreSend(
 {
   TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
 
+  FileSystem->FAuthorizationProtocol = L"";
+  UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, Header->used)));
+  const UnicodeString AuthorizationHeaderName(L"Authorization:");
+  intptr_t P = HeaderBuf.Pos(AuthorizationHeaderName);
+  if (P > 0)
+  {
+    P += AuthorizationHeaderName.Length();
+    intptr_t P2 = PosEx(L"\n", HeaderBuf, P);
+    if (DebugAlwaysTrue(P2 > 0))
+    {
+      UnicodeString AuthorizationHeader = HeaderBuf.SubString(P, P2 - P).Trim();
+      FileSystem->FAuthorizationProtocol = CutToChar(AuthorizationHeader, L' ', false);
+    }
+  }
+
   if (FileSystem->FDownloading)
   {
     // Needed by IIS server to make it download source code, not code output,
@@ -1821,7 +1855,7 @@ void TWebDAVFileSystem::NeonPreSend(
     {
       // all neon request types that use ne_add_request_header
       // use XML content-type, so it's text-based
-      DebugAssert(::ContainsStr(AnsiString(Header->data, Header->used), "Content-Type: " NE_XML_MEDIA_TYPE));
+      DebugAssert(ContainsStr(AnsiString(HeaderBuf), AnsiString(L"Content-Type: " NE_XML_MEDIA_TYPE)));
       FileSystem->FTerminal->GetLog()->Add(llInput, UnicodeString(UTF8String(Buffer, Size)));
     }
   }
@@ -1844,6 +1878,35 @@ int TWebDAVFileSystem::NeonPostSend(ne_request * /*Req*/, void * UserData,
     FileSystem->FTerminal->GetLog()->Add(llOutput, FileSystem->FResponse);
   }
   return NE_OK;
+}
+
+bool TWebDAVFileSystem::IsNtlmAuthentication() const
+{
+  return
+    SameText(FAuthorizationProtocol, L"NTLM") ||
+    SameText(FAuthorizationProtocol, L"Negotiate");
+}
+
+void TWebDAVFileSystem::NeonPostHeaders(ne_request * /*Req*/, void * UserData, const ne_status * Status)
+{
+  TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
+  if (Status->code == HttpUnauthorized)
+  {
+    // NTLM/GSSAPI failed
+    if (FileSystem->IsNtlmAuthentication())
+    {
+      // Next time do not try Negotiate (NTLM/GSSAPI),
+      // otherwise we end up in an endless loop.
+      // If the server returns all other challenges in the response, removing the Negotiate
+      // protocol will itself ensure that other protocols are tried (we haven't seen this behaviour).
+      // IIS will return only Negotiate response in the request was Negotiate, so there's no fallback.
+      // We have to retry with a fresh request. That's what FAuthenticationRetry does.
+      FileSystem->FTerminal->LogEvent(FORMAT(L"%s challenge failed, will try different challenge", (FileSystem->FAuthorizationProtocol)));
+      ne_remove_server_auth(FileSystem->FNeonSession);
+      FileSystem->NeonAddAuthentiation(false);
+      FileSystem->FAuthenticationRetry = true;
+    }
+  }
 }
 
 ssize_t TWebDAVFileSystem::NeonUploadBodyProvider(void * UserData, char * /*Buffer*/, size_t /*BufLen*/)
@@ -1876,8 +1939,10 @@ int TWebDAVFileSystem::NeonBodyAccepter(void * UserData, ne_request * Request, c
   TWebDAVFileSystem * FileSystem =
     static_cast<TWebDAVFileSystem *>(ne_get_request_private(Request, SESSION_FS_KEY));
 
-  bool AuthenticationFailed = (Status->code == 401) && FileSystem->FAuthenticationRequested;
-  bool AuthenticationNeeded = (Status->code == 401) && !FileSystem->FAuthenticationRequested;
+  bool AuthenticationFailureCode = (Status->code == HttpUnauthorized);
+  bool PasswordAuthenticationFailed = AuthenticationFailureCode && FileSystem->FAuthenticationRequested;
+  bool AuthenticationFailed = PasswordAuthenticationFailed || (AuthenticationFailureCode && FileSystem->IsNtlmAuthentication());
+  bool AuthenticationNeeded = AuthenticationFailureCode && !AuthenticationFailed;
 
   if (FileSystem->FInitialHandshake)
   {
@@ -1926,7 +1991,7 @@ int TWebDAVFileSystem::NeonBodyAccepter(void * UserData, ne_request * Request, c
   // (note AuthenticationFailed vs. AuthenticationNeeded)
   // what likely fails, but we do not want to reset out password
   // (as it was not even tried yet for this request).
-  if (AuthenticationFailed)
+  if (PasswordAuthenticationFailed)
   {
     if (FileSystem->FIgnoreAuthenticationFailure == iafNo)
     {
@@ -2024,7 +2089,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   if (AFile->GetIsDirectory())
   {
     Action.Cancel();
-    if (DebugAlwaysTrue(!AFile->GetIsSymLink()))
+    if (DebugAlwaysTrue(FTerminal->CanRecurseToDirectory(AFile)))
     {
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()), "",
       [&]()
@@ -2262,48 +2327,54 @@ void TWebDAVFileSystem::SinkFile(const UnicodeString & AFileName,
 
 bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
 {
-  FTerminal->LogEvent(
-    FORMAT(L"Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
-      Data.Subject.c_str(), Data.Fingerprint.c_str(), Data.Failures));
+  FSessionInfo.CertificateFingerprint = Data.Fingerprint;
 
-  int Failures = Data.Failures;
-  if (NeonWindowsValidateCertificate(Failures, Data.AsciiCert))
+  bool Result;
+  if (FTerminal->GetSessionData()->GetFingerprintScan())
   {
-    FTerminal->LogEvent(L"Certificate verified against Windows certificate store");
-  }
-
-  UnicodeString Summary;
-
-  if (Failures == 0)
-  {
-    Summary = LoadStr(CERT_OK);
+    Result = false;
   }
   else
   {
-    Summary = NeonCertificateFailuresErrorStr(Failures, FHostName);
-  }
+    FTerminal->LogEvent(
+      FORMAT(L"Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
+        Data.Subject.c_str(), Data.Fingerprint.c_str(), Data.Failures));
 
-  UnicodeString ValidityTimeFormat = L"ddddd tt";
-  FSessionInfo.CertificateFingerprint = Data.Fingerprint;
-  FSessionInfo.Certificate =
-    FMTLOAD(CERT_TEXT,
-      UnicodeString(Data.Issuer + L"\n").c_str(),
-      UnicodeString(Data.Subject + L"\n").c_str(),
-      FormatDateTime(ValidityTimeFormat, Data.ValidFrom).c_str(),
-      FormatDateTime(ValidityTimeFormat, Data.ValidUntil).c_str(),
-      Data.Fingerprint.c_str(),
-      Summary.c_str());
+    int Failures = Data.Failures;
 
-  bool Result = (Failures == 0);
-
-  if (!Result)
-  {
     UnicodeString SiteKey = TSessionData::FormatSiteKey(FHostName, FPortNumber);
+    Result =
+      FTerminal->VerifyCertificate(HttpsCertificateStorageKey, SiteKey, Data.Fingerprint, Data.Subject, Failures);
+
     if (!Result)
     {
-      Result = FTerminal->VerifyCertificate(
-        CertificateStorageKey, SiteKey, Data.Fingerprint, Data.Subject, Failures);
+      if (NeonWindowsValidateCertificate(Failures, Data.AsciiCert))
+      {
+        FTerminal->LogEvent(L"Certificate verified against Windows certificate store");
+        // There can be also other flags, not just the NE_SSL_UNTRUSTED.
+        Result = (Failures == 0);
+      }
     }
+
+    UnicodeString Summary;
+    if (Failures == 0)
+    {
+      Summary = LoadStr(CERT_OK);
+    }
+    else
+    {
+      Summary = NeonCertificateFailuresErrorStr(Failures, FHostName);
+    }
+
+    UnicodeString ValidityTimeFormat = L"ddddd tt";
+    FSessionInfo.Certificate =
+      FMTLOAD(CERT_TEXT,
+        UnicodeString(Data.Issuer + L"\n").c_str(),
+        UnicodeString(Data.Subject + L"\n").c_str(),
+        FormatDateTime(ValidityTimeFormat, Data.ValidFrom).c_str(),
+        FormatDateTime(ValidityTimeFormat, Data.ValidUntil).c_str(),
+        Data.Fingerprint.c_str(),
+        Summary.c_str());
 
     if (!Result)
     {
@@ -2326,7 +2397,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
       switch (Answer)
       {
         case qaYes:
-          FTerminal->CacheCertificate(CertificateStorageKey, SiteKey, Data.Fingerprint, Failures);
+          FTerminal->CacheCertificate(HttpsCertificateStorageKey, SiteKey, Data.Fingerprint, Failures);
           Result = true;
           break;
 
@@ -2341,18 +2412,18 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
           Result = false;
           break;
       }
+
+      if (Result)
+      {
+        FTerminal->GetConfiguration()->RememberLastFingerprint(
+          FTerminal->GetSessionData()->GetSiteKey(), TlsFingerprintType, FSessionInfo.CertificateFingerprint);
+      }
     }
 
     if (Result)
     {
-      FTerminal->GetConfiguration()->RememberLastFingerprint(
-        FTerminal->GetSessionData()->GetSiteKey(), TlsFingerprintType, FSessionInfo.CertificateFingerprint);
+      CollectTLSSessionInfo();
     }
-  }
-
-  if (Result)
-  {
-    CollectTLSSessionInfo();
   }
 
   return Result;
@@ -2427,8 +2498,10 @@ void TWebDAVFileSystem::NeonProvideClientCert(void * UserData, ne_session * Sess
 }
 
 int TWebDAVFileSystem::NeonRequestAuth(
-  void * UserData, const char * /*Realm*/, int /*Attempt*/, char * UserName, char * Password)
+  void * UserData, const char * Realm, int Attempt, char * UserName, char * Password)
 {
+  DebugUsedParam(Realm);
+  DebugUsedParam(Attempt);
   TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
 
   TTerminal * Terminal = FileSystem->FTerminal;

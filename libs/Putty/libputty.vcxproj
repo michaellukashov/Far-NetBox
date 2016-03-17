@@ -93,7 +93,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <AdditionalIncludeDirectories>.;.\windows;../../src/base;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEBUG;WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;NO_SECURITY;MPEXT;USE_DLMALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;MPEXT;USE_DLMALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
@@ -109,7 +109,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <AdditionalIncludeDirectories>.;.\windows;../../src/base;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEBUG;WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;NO_SECURITY;MPEXT;USE_DLMALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;MPEXT;USE_DLMALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
@@ -127,7 +127,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <AdditionalIncludeDirectories>.;.\windows;../../src/base;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;NO_SECURITY;MPEXT;USE_DLMALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;MPEXT;USE_DLMALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -158,7 +158,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>.;.\windows;../../src/base;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;NO_SECURITY;MPEXT;USE_DLMALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;MPEXT;USE_DLMALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -221,6 +221,7 @@
     <ClCompile Include=".\windows\WINNOJMP.c" />
     <ClCompile Include=".\windows\WINPGNTC.c" />
     <ClCompile Include=".\windows\WINPROXY.c" />
+    <ClCompile Include=".\windows\winsecur.c" />
     <ClCompile Include=".\windows\WINSTORE.c" />
     <ClCompile Include=".\windows\WINTIME.c" />
     <ClCompile Include=".\windows\winhsock.c" />

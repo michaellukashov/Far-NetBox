@@ -1037,7 +1037,7 @@
 "When connecting using an IP address, it is not possible to verify if the certificate was issued for the server. Use a hostname instead of the IP address."
 "Expected host key was not configured, use -hostkey switch."
 "Redirected to an unencrypted URL."
-"Received response %d %s from %s"
+"Received response %d '%s' from %s"
 "FileZilla site manager file not found (%s)."
 "No sites found in FileZilla site manager file (%s)."
 "FileZilla site '%s' was not found."

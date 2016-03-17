@@ -195,7 +195,7 @@ public:
     if (message>=WM_SOCKETEX_NOTIFY)
     {
       DebugAssert(pWnd);
-      
+
       if (message<static_cast<UINT>(WM_SOCKETEX_NOTIFY+pWnd->m_nWindowDataSize)) //Index is within socket storage
       {
         //Lookup socket and verify if it's valid
@@ -207,7 +207,7 @@ public:
           return 0;
         if (pSocket->m_SocketData.hSocket != hSocket)
           return 0;
-        
+
         int nEvent=lParam&0xFFFF;
         int nErrorCode=lParam>>16;
 
@@ -233,7 +233,7 @@ public:
             // Ignore further FD_READ events after FD_CLOSE has been received
             if (pSocket->m_SocketData.onCloseCalled)
               break;
-            
+
             if (pSocket->m_lEvent & FD_READ)
             {
               DWORD nBytes = 0;
@@ -327,7 +327,7 @@ public:
             if (pSocket->GetState() != connected && pSocket->GetState() != attached)
               break;
 
-            // If there are still bytes left to read, call OnReceive instead of 
+            // If there are still bytes left to read, call OnReceive instead of
             // OnClose and trigger a new OnClose
             DWORD nBytes = 0;
             if (!nErrorCode && pSocket->IOCtl(FIONREAD, &nBytes))
@@ -336,7 +336,7 @@ public:
               {
                 // Just repeat message.
                 PostMessage(hWnd, message, wParam, lParam);
-                pSocket->m_SocketData.onCloseCalled = true;                
+                pSocket->m_SocketData.onCloseCalled = true;
                 pSocket->OnReceive(WSAESHUTDOWN);
                 break;
               }
@@ -363,7 +363,7 @@ public:
           }
           else if (nEvent == FD_CLOSE)
           {
-            // If there are still bytes left to read, call OnReceive instead of 
+            // If there are still bytes left to read, call OnReceive instead of
             // OnClose and trigger a new OnClose
             DWORD nBytes = 0;
             if (!nErrorCode && pSocket->IOCtl(FIONREAD, &nBytes))
@@ -390,12 +390,12 @@ public:
     else if (message == WM_USER) //Notification event sent by a layer
     {
       DebugAssert(pWnd);
-      
+
       if (wParam >= static_cast<UINT>(pWnd->m_nWindowDataSize)) //Index is within socket storage
       {
         return 0;
       }
-      
+
       CAsyncSocketEx *pSocket=pWnd->m_pAsyncSocketExWindowData[wParam].m_pSocket;
       CAsyncSocketExLayer::t_LayerNotifyMsg *pMsg=(CAsyncSocketExLayer::t_LayerNotifyMsg *)lParam;
       if (!pMsg || !pSocket || pSocket->m_SocketData.hSocket != pMsg->hSocket)
@@ -405,7 +405,7 @@ public:
       }
       int nEvent=pMsg->lEvent&0xFFFF;
       int nErrorCode=pMsg->lEvent>>16;
-      
+
       //Dispatch to layer
       if (pMsg->pLayer)
       {
@@ -569,11 +569,11 @@ public:
       DebugAssert(pWnd);
       if (wParam >= static_cast<UINT>(pWnd->m_nWindowDataSize)) //Index is within socket storage
         return 0;
-      
+
       CAsyncSocketEx *pSocket = pWnd->m_pAsyncSocketExWindowData[wParam].m_pSocket;
       if (!pSocket)
         return 0;
-      
+
       // Process pending callbacks
       rde::list<t_callbackMsg> tmp;
       rde::swap(tmp, pSocket->m_pendingCallbacks);
@@ -691,7 +691,7 @@ BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STR
       m_lEvent = lEvent;
 
       m_nSocketPort = nSocketPort;
-    
+
       nb_free(m_lpszSocketAddress);
       if (lpszSocketAddress && *lpszSocketAddress)
       {
@@ -710,7 +710,7 @@ BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STR
         return FALSE;
       m_SocketData.hSocket = hSocket;
       AttachHandle(hSocket);
-    
+
       if (m_pFirstLayer)
       {
         m_lEvent = lEvent;
@@ -736,7 +736,7 @@ BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STR
       }
 
       SetState(unconnected);
-    
+
       return TRUE;
     }
   }
@@ -778,9 +778,9 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
     return TRUE;
 
   USES_CONVERSION;
-  
+
   LPSTR lpszAscii = (lpszSocketAddress && *lpszSocketAddress) ? T2A((LPTSTR)lpszSocketAddress) : 0;
-  
+
   if ((m_SocketData.nFamily == AF_INET6 || m_SocketData.nFamily == AF_INET) && lpszAscii)
   {
     addrinfo hints, *res0, *res;
@@ -1163,12 +1163,12 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
       {
         m_SocketData.nFamily = m_SocketData.nextAddr->ai_family;
         if (!Bind(m_nSocketPort, m_lpszSocketAddress))
-        { 
+        {
           m_SocketData.nFamily = AF_UNSPEC;
           DetachHandle(m_SocketData.hSocket);
           closesocket(m_SocketData.hSocket);
           m_SocketData.hSocket = INVALID_SOCKET;
-          continue; 
+          continue;
         }
       }
 
@@ -1234,7 +1234,7 @@ BOOL CAsyncSocketEx::GetPeerName( CString& rPeerAddress, UINT& rPeerPort )
   {
     sockAddr = (SOCKADDR*)new SOCKADDR_IN6;
     nSockAddrLen = sizeof(SOCKADDR_IN6);
-  } 
+  }
   else if (m_SocketData.nFamily == AF_INET)
   {
     sockAddr = (SOCKADDR*)new SOCKADDR_IN;
@@ -1379,7 +1379,7 @@ BOOL CAsyncSocketEx::Attach(SOCKET hSocket, long lEvent /*= FD_READ | FD_WRITE |
   else
   {
     return AsyncSelect(lEvent);
-  }    
+  }
 }
 
 BOOL CAsyncSocketEx::AsyncSelect( long lEvent /*= FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE*/ )
@@ -1603,7 +1603,7 @@ bool CAsyncSocketEx::SetFamily(int nFamily)
     return false;
 
   m_SocketData.nFamily = nFamily;
-  return true;  
+  return true;
 }
 
 bool CAsyncSocketEx::TryNextProtocol()
@@ -1642,11 +1642,11 @@ bool CAsyncSocketEx::TryNextProtocol()
     }
 
     if (!Bind(m_nSocketPort, m_lpszSocketAddress))
-    { 
+    {
       DetachHandle(m_SocketData.hSocket);
       closesocket(m_SocketData.hSocket);
       m_SocketData.hSocket = INVALID_SOCKET;
-      continue; 
+      continue;
     }
 
     ret = CAsyncSocketEx::Connect(m_SocketData.nextAddr->ai_addr, m_SocketData.nextAddr->ai_addrlen);

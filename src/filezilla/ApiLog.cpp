@@ -39,12 +39,12 @@ void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
     return;
 
   va_list ap;
-    
+
   va_start(ap, pMsgFormat);
   CString text;
   text.FormatV(pMsgFormat, ap);
   va_end(ap);
-  
+
   if (nMessageType>=FZ_LOG_DEBUG)
     return;
   SendLogMessage(nMessageType, text);
@@ -65,7 +65,7 @@ void CApiLog::SendLogMessage(int nMessageType, LPCTSTR pMsg) const
 {
   if (!LoggingMessageType(nMessageType))
     return;
-  //Displays a message in the message log  
+  //Displays a message in the message log
   t_ffam_statusmessage *pStatus = new t_ffam_statusmessage();
   pStatus->post = TRUE;
   pStatus->status = pMsg;

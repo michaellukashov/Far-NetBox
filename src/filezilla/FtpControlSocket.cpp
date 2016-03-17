@@ -4450,7 +4450,8 @@ bool CFtpControlSocket::HandleMdtm(int code, t_directory::t_direntry::t_date & d
     CString line = GetReply();
     if ( line.GetLength()>4  &&  line.Left(4) == L"213 " )
     {
-      int y=0, M=0, d=0, h=0, m=0;
+      int y=0, M=0, d=0, h=0, m=0, s=0;
+      bool hasseconds = false;
       line=line.Mid(4);
       y=_ttoi(line.Left(4));
       if (y && line.GetLength()>4)
@@ -4472,10 +4473,12 @@ bool CFtpControlSocket::HandleMdtm(int code, t_directory::t_direntry::t_date & d
               if (m && line.GetLength()>2)
               {
                 line=line.Mid(2);
+                s=_ttoi(line.Left(2));
+                hasseconds = true;
               }
             }
           }
-          if (M>0 && M<=12 && d>0 && d<=31 && h>=0 && h<24 && m>=0 && m<60)
+          if (M>0 && M<=12 && d>0 && d<=31 && h>=0 && h<24 && m>=0 && m<60 && s>=0 && s<60)
           {
             result = true;
             date.year = y;
@@ -4483,9 +4486,9 @@ bool CFtpControlSocket::HandleMdtm(int code, t_directory::t_direntry::t_date & d
             date.day = d;
             date.hour = h;
             date.minute = m;
-            date.second = 0;
+            date.second = s;
             date.hastime = true;
-            date.hasseconds = false;
+            date.hasseconds = hasseconds;
             date.hasdate = true;
             date.utc = true;
           }
@@ -6221,6 +6224,20 @@ void CFtpControlSocket::DiscardLine(CStringA line)
   {
     m_ListFile = line;
   }
+}
+
+int CFtpControlSocket::FileTransferListState(bool get)
+{
+  int Result;
+  if (GetOptionVal(OPTION_MPEXT_NOLIST) && !get)
+  {
+    Result = FILETRANSFER_TYPE;
+  }
+  else
+  {
+    Result = NeedModeCommand() ? FILETRANSFER_LIST_MODE : (NeedOptsCommand() ? FILETRANSFER_LIST_OPTS : FILETRANSFER_LIST_TYPE);
+  }
+  return Result;
 }
 
 bool CFtpControlSocket::NeedModeCommand()
