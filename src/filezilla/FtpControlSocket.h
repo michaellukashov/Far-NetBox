@@ -63,18 +63,17 @@ public:
   virtual void MakeDir(const CServerPath & path);
   virtual void RemoveDir(const CString & dirname, const CServerPath & path);
   virtual void Chmod(const CString & filename, const CServerPath & path, int nValue);
-    
+
   virtual void ProcessReply();
   virtual void TransferEnd(int nMode);
   virtual void Cancel(BOOL bQuit = FALSE);
 
   virtual void SetAsyncRequestResult(int nAction, CAsyncRequestData * pData);
   
-  
   int CheckOverwriteFile();
   virtual BOOL Create();
   void TransfersocketListenFinished(unsigned int ip, unsigned short port);
-  
+
   BOOL m_bKeepAliveActive;
   BOOL m_bDidRejectCertificate;
 
@@ -128,12 +127,13 @@ protected:
   CString GetReply();
   void LogOnToServer(BOOL bSkipReply = FALSE);
   BOOL Send(CString str);
-  
+
   BOOL ParsePwdReply(CString & rawpwd);
   BOOL ParsePwdReply(CString & rawpwd, CServerPath & realPath);
   BOOL SendAuthSsl();
 
   void DiscardLine(CStringA line);
+  int FileTransferListState(bool get);
   bool NeedModeCommand();
   bool NeedOptsCommand();
   CString GetListingCmd();
@@ -179,7 +179,7 @@ protected:
   CTransferSocket * m_pTransferSocket;
   CStringA m_MultiLine;
   CTime m_LastSendTime;
-  
+
   CString m_ServerName;
   rde::list<CStringA> m_RecvBuffer;
   CTime m_LastRecvTime;

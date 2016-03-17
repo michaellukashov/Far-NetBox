@@ -48,6 +48,7 @@ const int cpaNoNewerOnly        = 0x100;
 const int cpaNoRemoveCtrlZ      = 0x200;
 const int cpaNoRemoveBOM        = 0x400;
 const int cpaNoPreserveTimeDirs = 0x800;
+const int cpaNoResumeSupport    = 0x1000;
 //---------------------------------------------------------------------------
 struct TUsableCopyParamAttrs
 {
@@ -97,7 +98,9 @@ public:
   void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(const UnicodeString & AFileName) const;
   void DoGetInfoStr(const UnicodeString & Separator, intptr_t Attrs,
-    UnicodeString & Result, bool & SomeAttrIncluded) const;
+    UnicodeString & Result, bool & SomeAttrIncluded,
+    const UnicodeString & Link, UnicodeString & ScriptArgs, bool & NoScriptArgs,
+    /*TAssemblyLanguage Language, UnicodeString & AssemblyCode, */bool & NoCodeProperties) const;
   TStrings * GetTransferSkipList() const;
   void SetTransferSkipList(TStrings * Value);
   UnicodeString GetTransferResumeFile() const { return FTransferResumeFile; }
@@ -129,6 +132,9 @@ public:
   void Save(THierarchicalStorage * Storage) const;
   UnicodeString GetInfoStr(const UnicodeString & Separator, intptr_t Options) const;
   bool AnyUsableCopyParam(intptr_t Attrs) const;
+  UnicodeString GenerateTransferCommandArgs(
+    int Attrs, const UnicodeString & Link, bool & NoScriptArgs) const;
+  //UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs, bool & NoCodeProperties) const;
 
   bool operator==(const TCopyParamType & rhp) const;
 

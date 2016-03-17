@@ -44,7 +44,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   __int64 size;
   t_server server;
   int nType;
-  void *nUserData;
+  void * nUserData;
 };
 
 

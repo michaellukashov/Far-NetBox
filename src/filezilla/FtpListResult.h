@@ -20,7 +20,7 @@ CII-MANUAL.TEX;1  213/216  29-JAN-1996 03:33:12  [ANONYMOU,ANONYMOUS]   (RWED,RW
 07-18-00  10:16AM       <DIR>          pub\r\n
 04-14-00  03:47PM                  589 readme.htm\r\n
 
-Multiple spaces are ignored (except within filenames), a single LF character at the end is also supported as well as multiple 
+Multiple spaces are ignored (except within filenames), a single LF character at the end is also supported as well as multiple
 CRLF pairs and other variants.
 */
 

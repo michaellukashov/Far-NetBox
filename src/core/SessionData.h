@@ -125,23 +125,23 @@ extern const intptr_t HTTPPortNumber;
 extern const intptr_t HTTPSPortNumber;
 extern const intptr_t TelnetPortNumber;
 extern const intptr_t ProxyPortNumber;
-#define PuttySshProtocolStr L"ssh"
-#define PuttyTelnetProtocolStr L"telnet"
-#define SftpProtocolStr L"sftp"
-#define ScpProtocolStr L"scp"
-#define FtpProtocolStr L"ftp"
-#define FtpsProtocolStr L"ftps"
-#define FtpesProtocolStr L"ftpes"
-#define WebDAVProtocolStr L"http"
-#define WebDAVSProtocolStr L"https"
-#define SshProtocolStr L"ssh"
-#define ProtocolSeparator L"://"
-#define WinSCPProtocolPrefix L"winscp-"
+extern const UnicodeString PuttySshProtocol;
+extern const UnicodeString PuttyTelnetProtocol;
+extern const UnicodeString SftpProtocol;
+extern const UnicodeString ScpProtocol;
+extern const UnicodeString FtpProtocol;
+extern const UnicodeString FtpsProtocol;
+extern const UnicodeString FtpesProtocol;
+#define WebDAVProtocol HttpProtocol
+#define WebDAVSProtocol HttpsProtocol
+extern const UnicodeString SshProtocol;
+//#define ProtocolSeparator L"://"
+//#define WinSCPProtocolPrefix L"winscp-"
 extern const wchar_t UrlParamSeparator;
 extern const wchar_t UrlParamValueSeparator;
-#define UrlHostKeyParamName L"fingerprint"
-#define UrlSaveParamName L"save"
-#define PassphraseOption L"passphrase"
+//#define UrlHostKeyParamName L"fingerprint"
+//#define UrlSaveParamName L"save"
+//#define PassphraseOption L"passphrase"
 
 extern const intptr_t SFTPMinVersion;
 extern const intptr_t SFTPMaxVersion;
@@ -236,6 +236,7 @@ private:
   UnicodeString FCustomParam1;
   UnicodeString FCustomParam2;
   bool FResolveSymlinks;
+  bool FFollowDirectorySymlinks;
   TDateTime FTimeDifference;
   bool FTimeDifferenceAuto;
   intptr_t FSFTPDownloadQueue;
@@ -284,6 +285,7 @@ private:
   bool FIsWorkspace;
   UnicodeString FLink;
   UnicodeString FHostKey;
+  bool FFingerprintScan;
   bool FOverrideCachedHostKey;
   UnicodeString FNote;
 
@@ -398,6 +400,7 @@ public:
   void SetCustomParam1(const UnicodeString & Value);
   void SetCustomParam2(const UnicodeString & Value);
   void SetResolveSymlinks(bool Value);
+  void SetFollowDirectorySymlinks(bool Value);
   void SetSFTPDownloadQueue(intptr_t Value);
   void SetSFTPUploadQueue(intptr_t Value);
   void SetSFTPListingQueue(intptr_t Value);
@@ -450,6 +453,7 @@ public:
   void SetIsWorkspace(bool Value);
   void SetLink(const UnicodeString & Value);
   void SetHostKey(const UnicodeString & Value);
+  void SetFingerprintScan(bool Value) { FFingerprintScan = Value; }
   void SetNote(const UnicodeString & Value);
   TDateTime GetTimeoutDT();
   void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport, bool DoNotEncryptPasswords);
@@ -474,11 +478,11 @@ public:
   static RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   static bool DoIsProtocolUrl(const UnicodeString & Url, const UnicodeString & Protocol, intptr_t & ProtocolLen);
   static bool IsProtocolUrl(const UnicodeString & Url, const UnicodeString & Protocol, intptr_t & ProtocolLen);
-  static void AddSwitch(UnicodeString & Result, const UnicodeString & Switch);
   static void AddSwitchValue(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value);
+  static void AddSwitch(UnicodeString & Result, const UnicodeString & Switch);
   static void AddSwitch(UnicodeString & Result, const UnicodeString & AName, const UnicodeString & Value);
   static void AddSwitch(UnicodeString & Result, const UnicodeString & AName, intptr_t Value);
-  static UnicodeString AssemblyString(TAssemblyLanguage Language, const UnicodeString & S);
+  /*static UnicodeString AssemblyString(TAssemblyLanguage Language, const UnicodeString & S);
   static void AddAssemblyPropertyRaw(
     UnicodeString & Result, TAssemblyLanguage Language,
     const UnicodeString & AName, const UnicodeString & Value);
@@ -494,7 +498,7 @@ public:
     const UnicodeString & AName, intptr_t Value);
   void AddAssemblyProperty(
     UnicodeString & Result, TAssemblyLanguage Language,
-    const UnicodeString & AName, bool Value);
+    const UnicodeString & AName, bool Value);*/
   TStrings * SaveToOptions(const TSessionData * Default);
   template<class AlgoT>
   void SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
@@ -538,7 +542,7 @@ public:
   bool IsInFolderOrWorkspace(const UnicodeString & Name) const;
   UnicodeString GenerateSessionUrl(uintptr_t Flags);
   UnicodeString GenerateOpenCommandArgs();
-  UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language);
+//  UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language);
   void LookupLastFingerprint();
   bool GetIsSecure() const;
   static void ValidatePath(const UnicodeString & APath);
@@ -633,6 +637,7 @@ public:
   __property UnicodeString CustomParam2 = { read = FCustomParam2, write = SetCustomParam2 };
   __property UnicodeString SessionKey = { read = GetSessionKey };
   __property bool ResolveSymlinks = { read = FResolveSymlinks, write = SetResolveSymlinks };
+  __property bool FollowDirectorySymlinks = { read = FFollowDirectorySymlinks, write = SetFollowDirectorySymlinks };
   __property int SFTPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
   __property int SFTPUploadQueue = { read = FSFTPUploadQueue, write = SetSFTPUploadQueue };
   __property int SFTPListingQueue = { read = FSFTPListingQueue, write = SetSFTPListingQueue };
@@ -678,6 +683,7 @@ public:
   __property bool IsWorkspace = { read = FIsWorkspace, write = SetIsWorkspace };
   __property UnicodeString Link = { read = FLink, write = SetLink };
   __property UnicodeString HostKey = { read = FHostKey, write = SetHostKey };
+  __property bool FingerprintScan = { read = FFingerprintScan, write = FFingerprintScan };
   __property bool OverrideCachedHostKey = { read = FOverrideCachedHostKey };
   __property UnicodeString Note = { read = FNote, write = SetNote };
   __property UnicodeString StorageKey = { read = GetStorageKey };
@@ -762,6 +768,7 @@ public:
   UnicodeString GetCustomParam1() const { return FCustomParam1; }
   UnicodeString GetCustomParam2() const { return FCustomParam2; }
   bool GetResolveSymlinks() const { return FResolveSymlinks; }
+  bool GetFollowDirectorySymlinks() const { return FFollowDirectorySymlinks; }
   intptr_t GetSFTPDownloadQueue() const { return FSFTPDownloadQueue; }
   intptr_t GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
   intptr_t GetSFTPListingQueue() const { return FSFTPListingQueue; }
@@ -811,6 +818,7 @@ public:
   bool GetIsWorkspace() const { return FIsWorkspace; }
   UnicodeString GetLink() const { return FLink; }
   UnicodeString GetHostKey() const { return FHostKey; }
+  bool GetFingerprintScan() const { return FFingerprintScan; }
   bool GetOverrideCachedHostKey() const { return FOverrideCachedHostKey; }
   UnicodeString GetOrigHostName() const { return FOrigHostName; }
   intptr_t GetOrigPortNumber() const { return FOrigPortNumber; }

@@ -133,7 +133,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           int port = 0;
           memcpy(&ip,&m_pRecvBuffer[4],4);
           if (!ip)
-          { 
+          {
             //No IP return, use the IP of the proxy server
             SOCKADDR SockAddr;
             memset(&SockAddr,0,sizeof(SockAddr));
@@ -207,10 +207,10 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           return;
         }
         if (m_pRecvBuffer[1])
-        { 
+        {
           //Auth needed
           if (m_pRecvBuffer[1]!=2)
-          { 
+          {
             //Unknown auth type
             DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYERROR_AUTHTYPEUNKNOWN, 0);
             if (m_nProxyOpID==PROXYOP_CONNECT)
@@ -387,7 +387,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           return;
         }
         if (m_nRecvBufferLen==5)
-        { 
+        {
           //Check which kind of address the response contains
           if (m_pRecvBuffer[3]==1)
             m_nRecvBufferLen=10;
@@ -451,7 +451,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       }
     }
   }
-  if (m_ProxyData.nProxyType==PROXYTYPE_HTTP11)
+  else if (m_ProxyData.nProxyType==PROXYTYPE_HTTP11)
   {
     DebugAssert(m_nProxyOpID==PROXYOP_CONNECT);
     char buffer[9];
@@ -553,7 +553,7 @@ BOOL CAsyncProxySocketLayer::Connect( LPCTSTR lpszHostAddress, UINT nHostPort )
   if (m_ProxyData.nProxyType != PROXYTYPE_SOCKS4)
   {
     // We can send hostname to proxy, no need to resolve it
-    
+
     //Connect to proxy server
     BOOL res = ConnectNext(A2CT(m_ProxyData.pProxyHost), m_ProxyData.nProxyPort);
     if (!res)

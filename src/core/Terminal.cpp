@@ -988,6 +988,27 @@ void TTerminal::ResetConnection()
   // as they can still be referenced in the GUI atm
 }
 
+UnicodeString TTerminal::FingerprintScan()
+{
+  GetSessionData()->SetFingerprintScan(true);
+  try
+  {
+    Open();
+    // we should never get here
+    Abort();
+  }
+  catch (...)
+  {
+    if (!FFingerprintScanned.IsEmpty())
+    {
+      return FFingerprintScanned;
+    }
+    throw;
+  }
+  DebugFail();
+  return UnicodeString();
+}
+
 void TTerminal::Open()
 {
   TAutoNestingCounter OpeningCounter(FOpening);
@@ -1085,6 +1106,11 @@ void TTerminal::InternalTryOpen()
     if (FDirectoryChangesCache != nullptr)
     {
       SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
+    }
+    if (GetSessionData()->GetFingerprintScan() && (FFileSystem != nullptr) &&
+        DebugAlwaysTrue(GetSessionData()->GetFtps() != ftpsNone))
+    {
+      FFingerprintScanned = FFileSystem->GetSessionInfo().CertificateFingerprint;
     }
     throw;
   }
@@ -1189,6 +1215,10 @@ void TTerminal::InitFileSystem()
         catch (Exception & E)
         {
           DebugAssert(!FSecureShell->GetActive());
+          if (FSessionData->GetFingerprintScan())
+          {
+            FFingerprintScanned = FSecureShell->GetHostKeyFingerprint();
+          }
           if (!FSecureShell->GetActive() && !FTunnelError.IsEmpty())
           {
             // the only case where we expect this to happen
@@ -3507,7 +3537,8 @@ TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(intptr_t Params)
     FLAGMASK(!GetIsCapable(fcModeChangingUpload), cpaNoRights) |
     FLAGMASK(!GetIsCapable(fcRemoveCtrlZUpload), cpaNoRemoveCtrlZ) |
     FLAGMASK(!GetIsCapable(fcRemoveBOMUpload), cpaNoRemoveBOM) |
-    FLAGMASK(!GetIsCapable(fcPreservingTimestampDirs), cpaNoPreserveTimeDirs);
+    FLAGMASK(!GetIsCapable(fcPreservingTimestampDirs), cpaNoPreserveTimeDirs) |
+    FLAGMASK(!GetIsCapable(fcResumeSupport), cpaNoResumeSupport);
   Result.Download = Result.General | cpaNoClearArchive |
     cpaNoIgnorePermErrors |
     // May be already set in General flags, but it's unconditional here
@@ -3752,7 +3783,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
     for (intptr_t Index = 0; Index < AFiles->GetCount(); ++Index)
     {
       TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFiles->GetObj(Index));
-      bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
+      bool Dir = File->GetIsDirectory() && CanRecurseToDirectory(File);
 
       if (!Dir || FLAGSET(Params, ccApplyToDirectories))
       {
@@ -3907,7 +3938,7 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
   {
     if (AFile->GetIsDirectory())
     {
-      if (!AFile->GetIsSymLink())
+      if (CanRecurseToDirectory(AFile))
       {
         if (!AParams->AllowDirs)
         {
@@ -5347,7 +5378,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & /*AFileName*/,
 
       bool Modified = false;
       bool New = false;
-      if (AFile->GetIsDirectory() && AFile->GetIsSymLink())
+      if (AFile->GetIsDirectory() && !CanRecurseToDirectory(AFile))
       {
         LogEvent(FORMAT(L"Skipping symlink to directory \"%s\".", AFile->GetFileName().c_str()));
       }
@@ -6338,7 +6369,7 @@ DWORD TTerminal::GetLocalFileAttributes(const UnicodeString & LocalFileName)
   }
   else
   {
-    return ::FileGetAttr(LocalFileName);
+    return ::FileGetAttrFix(LocalFileName);
   }
 }
 
@@ -6641,6 +6672,11 @@ UnicodeString TTerminal::ChangeFileName(const TCopyParamType * CopyParam,
   UnicodeString FileName = GetBaseFileName(AFileName);
   FileName = CopyParam->ChangeFileName(FileName, Side, FirstLevel);
   return FileName;
+}
+
+bool TTerminal::CanRecurseToDirectory(const TRemoteFile * AFile) const
+{
+  return !AFile->GetIsSymLink() || FSessionData->GetFollowDirectorySymlinks();
 }
 
 TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :

@@ -9,7 +9,7 @@ build-CMakeLists.txt-*
 /Far3_x86/
 /Far3_x64/
 res.txt
-libs/
+#libs/
 ipch/
 *.tmp
 *.opensdf

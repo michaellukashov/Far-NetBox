@@ -22,8 +22,6 @@ enum TAutoSwitch
   asAuto,
 };
 
-enum TAssemblyLanguage { alCSharp, alVBNET, alPowerShell };
-
 enum TFtpEncryptionSwitch_219
 {
   fesPlainFTP,

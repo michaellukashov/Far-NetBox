@@ -47,7 +47,7 @@ int CFileZillaApi::Init(TFileZillaIntern * Intern, CFileZillaTools * pTools)
   return FZ_REPLY_OK;
 }
 
-int CFileZillaApi::IsConnected()
+int CFileZillaApi::IsConnected() const
 {
   if (!m_bInitialized)
     return FZ_REPLY_NOTINITIALIZED;
@@ -182,7 +182,7 @@ int CFileZillaApi::ListFile(const CString & FileName, const CServerPath & path)
     return FZ_REPLY_INVALIDPARAM;
   if (FileName=="")
     return FZ_REPLY_INVALIDPARAM;
-  
+
   if (m_pMainThread->IsBusy())
     return FZ_REPLY_BUSY;
   t_command command;

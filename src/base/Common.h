@@ -42,9 +42,12 @@ const int qpWaitInBatch          = 0x10;
 
 inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
 
+extern const UnicodeString HttpProtocol;
+extern const UnicodeString HttpsProtocol;
+extern const UnicodeString ProtocolSeparator;
+
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B);
 UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);
-intptr_t PosFrom(const UnicodeString & SubStr, const UnicodeString & Str, intptr_t Index);
 void PackStr(UnicodeString & Str);
 void PackStr(RawByteString & Str);
 void PackStr(AnsiString & Str);
@@ -115,6 +118,7 @@ UnicodeString DecodeUrlChars(const UnicodeString & S);
 UnicodeString EncodeUrlString(const UnicodeString & S);
 UnicodeString EncodeUrlPath(const UnicodeString & S);
 UnicodeString AppendUrlParams(const UnicodeString & URL, const UnicodeString & Params);
+UnicodeString ExtractFileNameFromUrl(const UnicodeString & Url);
 bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin);
 void RecursiveDeleteFileChecked(const UnicodeString & AFileName, bool ToRecycleBin);
 void DeleteFileChecked(const UnicodeString & AFileName);
@@ -159,6 +163,9 @@ void ParseCertificate(const UnicodeString & Path,
   const UnicodeString & Passphrase, X509 *& Certificate, EVP_PKEY *& PrivateKey,
   bool & WrongPassphrase);
 bool IsHttpUrl(const UnicodeString & S);
+bool IsHttpOrHttpsUrl(const UnicodeString & S);
+UnicodeString ChangeUrlProtocol(const UnicodeString & S, const UnicodeString & Protocol);
+void LoadScriptFromFile(const UnicodeString & FileName, TStrings * Lines);
 
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /*FileName*/, const TSearchRec & /*Rec*/, void * /*Param*/);
@@ -175,6 +182,7 @@ DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearc
 DWORD FindNextChecked(TSearchRecChecked & F);
 void ProcessLocalDirectory(const UnicodeString & ADirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
+DWORD FileGetAttrFix(const UnicodeString & AFileName);
 
 extern const wchar_t * DSTModeNames;
 enum TDSTMode

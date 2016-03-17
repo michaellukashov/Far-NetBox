@@ -3227,7 +3227,7 @@ inline DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeStri
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::FileGetAttr(LocalFileName);
+    return ::FileGetAttrFix(LocalFileName);
   }
   else
   {

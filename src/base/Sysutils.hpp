@@ -236,6 +236,8 @@ bool AnsiSameStr(const UnicodeString & Str1, const UnicodeString & Str2);
 bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
 bool ContainsStr(const AnsiString & Str1, const AnsiString & Str2);
 bool ContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
+UnicodeString RightStr(const UnicodeString & Str, intptr_t ACount);
+intptr_t PosEx(const UnicodeString & SubStr, const UnicodeString & Str, intptr_t Offset = 1);
 
 UnicodeString UTF8ToString(const RawByteString & Str);
 UnicodeString UTF8ToString(const char * Str, intptr_t Len);
@@ -269,7 +271,7 @@ bool DirectoryExists(const UnicodeString & ADir);
 UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList);
 void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp);
 
-DWORD FileGetAttr(const UnicodeString & AFileName);
+DWORD FileGetAttr(const UnicodeString & AFileName, bool FollowLink = true);
 DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs);
 
 bool ForceDirectories(const UnicodeString & ADir);

@@ -51,17 +51,6 @@ UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C)
   return Result;
 }
 
-intptr_t PosFrom(const UnicodeString & SubStr, const UnicodeString & Str, intptr_t Index)
-{
-  UnicodeString S = Str.SubString(Index, Str.Length() - Index + 1);
-  intptr_t Result = S.Pos(SubStr);
-  if (Result > 0)
-  {
-    Result += Index - 1;
-  }
-  return Result;
-}
-
 template<typename T>
 void DoPackStr(T & Str)
 {
@@ -1069,6 +1058,7 @@ static UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
         // nothing to do
         break;
     }
+
   }
 
   return Result;
@@ -1328,6 +1318,19 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
     }
     while (FindNextChecked(SearchRec) == 0);
   }
+}
+
+DWORD FileGetAttrFix(const UnicodeString & FileName)
+{
+  // The default for FileGetAttr is to follow links
+  bool FollowLink = true;
+  // But the FileGetAttr whe called for link with FollowLink set will always fail
+  // as its calls InternalGetFileNameFromSymLink, which test for CheckWin32Version(6, 0)
+  if (!IsWinVista())
+  {
+    FollowLink = false;
+  }
+  return ::FileGetAttr(FileName, FollowLink);
 }
 
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
@@ -2452,6 +2455,22 @@ UnicodeString AppendUrlParams(const UnicodeString & AURL, const UnicodeString & 
   return Result;
 }
 
+UnicodeString ExtractFileNameFromUrl(const UnicodeString & Url)
+{
+  UnicodeString Result = Url;
+  intptr_t P = Result.Pos(L"?");
+  if (P > 0)
+  {
+    Result.SetLength(P - 1);
+  }
+  P = Result.LastDelimiter("/");
+  if (DebugAlwaysTrue(P > 0))
+  {
+    Result.Delete(1, P);
+  }
+  return Result;
+}
+
 UnicodeString EscapeHotkey(const UnicodeString & Caption)
 {
   return ReplaceStr(Caption, L"&", L"&&");
@@ -3035,9 +3054,27 @@ void CheckCertificate(const UnicodeString & Path)
   }
 }
 //---------------------------------------------------------------------------
+const UnicodeString HttpProtocol(L"http");
+const UnicodeString HttpsProtocol(L"https");
+const UnicodeString ProtocolSeparator(L"://");
+//---------------------------------------------------------------------------
 bool IsHttpUrl(const UnicodeString & S)
 {
-  return SameText(S.SubString(1, 4), L"http");
+  return StartsText(HttpProtocol + ProtocolSeparator, S);
+}
+
+bool IsHttpOrHttpsUrl(const UnicodeString & S)
+{
+  return
+    IsHttpUrl(S) ||
+    StartsText(HttpsProtocol + ProtocolSeparator, S);
+}
+//---------------------------------------------------------------------------
+UnicodeString ChangeUrlProtocol(const UnicodeString & S, const UnicodeString & Protocol)
+{
+  intptr_t P = S.Pos(ProtocolSeparator);
+  DebugAssert(P > 0);
+  return Protocol + ProtocolSeparator + RightStr(S, S.Length() - P - ProtocolSeparator.Length() + 1);
 }
 
 const UnicodeString RtfPara = L"\\par\n";

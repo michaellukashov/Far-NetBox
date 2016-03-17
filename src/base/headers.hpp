@@ -32,8 +32,9 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
+#ifndef INCL_WINSOCK_API_TYPEDEFS
 #define INCL_WINSOCK_API_TYPEDEFS 1
+#endif
 #ifndef _WINSOCKAPI_
 #define _WINSOCKAPI_
 #endif
@@ -107,22 +108,22 @@ typedef WORD Word;
 #define NullToEmpty(s) (s ? s : L"")
 
 template <class T>
-inline const T & Min(const T & a, const T & b) { return a < b ? a : b; }
+inline const T Min(const T a, const T b) { return a < b ? a : b; }
 
 template <class T>
-inline const T & Max(const T & a, const T & b) { return a > b ? a : b; }
+inline const T Max(const T a, const T b) { return a > b ? a : b; }
 
 template <class T>
-inline const T Round(const T & a, const T & b) { return a / b + (a % b * 2 > b ? 1 : 0); }
+inline const T Round(const T a, const T b) { return a / b + (a % b * 2 > b ? 1 : 0); }
 
 template <class T>
-inline void * ToPtr(const T & a) { return reinterpret_cast<void *>(a); }
+inline void * ToPtr(const T a) { return reinterpret_cast<void *>(a); }
 
 template <class T>
-inline double ToDouble(const T & a) { return static_cast<double>(a); }
+inline double ToDouble(const T a) { return static_cast<double>(a); }
 
 template <class T>
-inline Word ToWord(const T & a) { return static_cast<Word>(a); }
+inline Word ToWord(const T a) { return static_cast<Word>(a); }
 
 template<typename T>
 inline void ClearStruct(T & s) { ::ZeroMemory(&s, sizeof(s)); }

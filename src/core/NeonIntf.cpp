@@ -33,7 +33,7 @@ void NeonParseUrl(const UnicodeString & Url, ne_uri & uri)
 
 bool IsTlsUri(const ne_uri & uri)
 {
-  return SameText(StrFromNeon(uri.scheme), WebDAVSProtocolStr);
+  return SameText(StrFromNeon(uri.scheme), WebDAVSProtocol);
 }
 
 struct TProxyAuthData

@@ -3,6 +3,7 @@
 #ifndef NO_FILEZILLA
 
 #include <time.h>
+#include <rdestl/map.h>
 #include <rdestl/vector.h>
 #include <FileSystems.h>
 
@@ -226,6 +227,7 @@ protected:
   bool SupportsCommand(const UnicodeString & Command) const;
   void RegisterChecksumAlgCommand(const UnicodeString & Alg, const UnicodeString & Command);
   void SendCommand(const UnicodeString & Command);
+  bool CanTransferSkipList(intptr_t Params, uintptr_t Flags) const;
 
   static bool Unquote(UnicodeString & Str);
 
@@ -283,6 +285,7 @@ private:
   int64_t FFileTransferResumed;
   bool FFileTransferPreserveTime;
   bool FFileTransferRemoveBOM;
+  bool FFileTransferNoList;
   uintptr_t FFileTransferCPSLimit;
   bool FAwaitingProgress;
   TCaptureOutputEvent FOnCaptureOutput;
@@ -298,12 +301,16 @@ private:
   std::unique_ptr<TStrings> FSupportedCommands;
   std::unique_ptr<TStrings> FSupportedSiteCommands;
   std::unique_ptr<TStrings> FHashAlgs;
+  typedef rde::map<UnicodeString, TDateTime> TUploadedTimes;
+  TUploadedTimes FUploadedTimes;
   bool FSupportsAnyChecksumFeature;
   UnicodeString FLastCommandSent;
   X509 * FCertificate;
   EVP_PKEY * FPrivateKey;
   bool FTransferActiveImmediately;
   bool FWindowsServer;
+  int64_t FBytesAvailable;
+  bool FBytesAvailableSupported;
   mutable UnicodeString FOptionScratch;
 };
 
