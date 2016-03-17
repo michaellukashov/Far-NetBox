@@ -405,6 +405,19 @@ bool ContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
   return AnsiContainsText(Str1, Str2);
 }
 
+UnicodeString RightStr(const UnicodeString & Str, intptr_t ACount)
+{
+  UnicodeString Result = Str.SubString(Str.Length() - ACount, ACount);
+  return Result;
+}
+
+intptr_t PosEx(const UnicodeString & SubStr, const UnicodeString & Str, intptr_t Offset)
+{
+  UnicodeString S = Str.SubString(Offset);
+  intptr_t Result = S.Pos(SubStr);
+  return Result;
+}
+
 UnicodeString UTF8ToString(const RawByteString & Str)
 {
   return MB2W(Str.c_str(), CP_UTF8);
