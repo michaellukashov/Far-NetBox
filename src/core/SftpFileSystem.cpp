@@ -3996,7 +3996,7 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   {
     std::unique_ptr<TRemoteFile> FilePtr(File);
     DebugAssert(FilePtr.get());
-    if (FilePtr->GetIsDirectory() && FTerminal->CanRecurseToDirectory(FilePtr->get()) && AProperties->Recursive)
+    if (FilePtr->GetIsDirectory() && FTerminal->CanRecurseToDirectory(FilePtr.get()) && AProperties->Recursive)
     {
       try
       {

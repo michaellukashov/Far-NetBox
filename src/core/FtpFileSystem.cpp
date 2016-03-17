@@ -263,7 +263,7 @@ void TFTPFileSystem::Init(void *)
   FCertificate = nullptr;
   FPrivateKey = nullptr;
   FBytesAvailable = -1;
-  FBytesAvailableSuppoted = false;
+  FBytesAvailableSupported = false;
 
   FChecksumAlgs.reset(new TStringList());
   FChecksumCommands.reset(new TStringList());
@@ -1783,7 +1783,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       FFileTransferPreserveTime = CopyParam->GetPreserveTime();
       // not used for downloads anyway
       FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
-      FFileTransferNoList = CanTransferSkipList(Params, Flags);
+      FFileTransferNoList = CanTransferSkipList(AParams, Flags);
       UserData.FileName = DestFileName;
       UserData.Params = AParams;
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
@@ -2427,7 +2427,7 @@ bool TFTPFileSystem::IsCapable(intptr_t Capability) const
       return FSupportsAnyChecksumFeature;
 
     case fcCheckingSpaceAvailable:
-      return FBytesAvailableSuppoted || SupportsCommand(AvblCommand) || SupportsCommand(XQuotaCommand);
+      return FBytesAvailableSupported || SupportsCommand(AvblCommand) || SupportsCommand(XQuotaCommand);
 
     case fcModeChangingUpload:
     case fcLoadingAdditionalProperties:
@@ -2560,7 +2560,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 
   AutoDetectTimeDifference(FileList);
 
-  if (FTimeDifference != 0) || !FUploadedTimes.empty())// optimization
+  if ((FTimeDifference != 0) || !FUploadedTimes.empty())// optimization
   {
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
@@ -2578,23 +2578,23 @@ void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
   DebugAssert(File->GetModification() == File->GetLastAccess());
   File->ShiftTimeInSeconds(FTimeDifference);
 
-  if (File->ModificationFmt != mfFull)
+  if (File->GetModificationFmt() != mfFull)
   {
-    TUploadedTimes::iterator Iterator = FUploadedTimes.find(File->FullFileName);
+    TUploadedTimes::iterator Iterator = FUploadedTimes.find(File->GetFullFileName());
     if (Iterator != FUploadedTimes.end())
     {
       TDateTime UploadModification = Iterator->second;
-      TDateTime UploadModificationReduced = ReduceDateTimePrecision(UploadModification, File->GetModificationFmt());
+      TDateTime UploadModificationReduced = core::ReduceDateTimePrecision(UploadModification, File->GetModificationFmt());
       if (UploadModificationReduced == File->GetModification())
       {
         if ((FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
         {
           FTerminal->LogEvent(
             FORMAT(L"Enriching modification time of \"%s\" from [%s] to [%s]",
-                   File->GetFullFileName().c_str(), StandardTimestamp(File->GetModification().c_str(), StandardTimestamp(UploadModification).c_str())));
+                   File->GetFullFileName().c_str(), StandardTimestamp(File->GetModification()).c_str(), StandardTimestamp(UploadModification).c_str()));
         }
         // implicitly sets ModificationFmt to mfFull
-        File->Modification = UploadModification;
+        File->SetModification(UploadModification);
       }
       else
       {
@@ -2602,9 +2602,9 @@ void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
         {
           FTerminal->LogEvent(
             FORMAT(L"Remembered modification time [%s]/[%s] of \"%s\" is obsolete, keeping [%s]",
-                   StandardTimestamp(UploadModification).c_str(), StandardTimestamp(UploadModificationReduced).c_str(), File->GetFullFileName().c_str(), StandardTimestamp(File->GetModification().c_str())));
+                   StandardTimestamp(UploadModification).c_str(), StandardTimestamp(UploadModificationReduced).c_str(), File->GetFullFileName().c_str(), StandardTimestamp(File->GetModification()).c_str()));
         }
-        FUploadedTimes.erase(Iterator);
+        FUploadedTimes.erase(File->GetFullFileName());
       }
     }
   }
@@ -2650,7 +2650,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
         UtcFilePtr.release();
 
         // MDTM returns seconds, trim those
-        UtcModification = ReduceDateTimePrecision(UtcModification, File->ModificationFmt);
+        UtcModification = core::ReduceDateTimePrecision(UtcModification, File->GetModificationFmt());
 
         // Time difference between timestamp retrieved using MDTM (UTC converted to local timezone)
         // and using LIST (no conversion, expecting the server uses the same timezone as the client).
@@ -2945,13 +2945,13 @@ TStrings * TFTPFileSystem::GetFixedPaths()
   return nullptr;
 }
 
-void TFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
+void TFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
   TSpaceAvailable & ASpaceAvailable)
 {
-  if (FBytesAvailableSuppoted)
+  if (FBytesAvailableSupported)
   {
     std::unique_ptr<TRemoteFileList> DummyFileList(new TRemoteFileList());
-    DummyFileList->Directory = Path;
+    DummyFileList->SetDirectory(APath);
     ReadDirectory(DummyFileList.get());
     ASpaceAvailable.UnusedBytesAvailableToUser = FBytesAvailable;
   }
@@ -2998,7 +2998,7 @@ void TFTPFileSystem::SpaceAvailable(const UnicodeString & Path,
   {
     // draft-peterson-streamlined-ftp-command-extensions-10
     // Implemented by Serv-U.
-    UnicodeString Command = FORMAT(L"%s %s", AvblCommand.c_str(), Path.c_str());
+    UnicodeString Command = FORMAT(L"%s %s", AvblCommand.c_str(), APath.c_str());
     SendCommand(Command);
     UnicodeString Response = GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_SINGLE_LINE);
     ASpaceAvailable.UnusedBytesAvailableToUser = StrToInt64(Response);
@@ -3808,7 +3808,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
     FBytesAvailable = StrToInt64Def(BytesStr, -1);
     if (FBytesAvailable >= 0)
     {
-      FBytesAvailableSuppoted = true;
+      FBytesAvailableSupported = true;
     }
   }
 
@@ -4391,7 +4391,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     FSessionInfo.CertificateFingerprint =
       BytesToHex(RawByteString(reinterpret_cast<const char *>(Data.Hash), Data.HashLen), false, L':');
 
-    if (FTerminal->SessionData->FingerprintScan)
+    if (FTerminal->GetSessionData()->GetFingerprintScan())
     {
       RequestResult = 0;
     }
@@ -4478,7 +4478,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
           break;
       }
 
-      bool IsHostNameIPAddress = IsIPAddress(FTerminal->SessionData->HostNameExpanded);
+      bool IsHostNameIPAddress = IsIPAddress(FTerminal->GetSessionData()->GetHostNameExpanded());
       bool CertificateHostNameVerified = !IsHostNameIPAddress && VerifyCertificateHostName(Data);
 
       bool VerificationResult = Trusted;
@@ -4489,11 +4489,11 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         TryWindowsSystemCertificateStore = false;
       }
 
-      UnicodeString SiteKey = FTerminal->SessionData->SiteKey;
+      UnicodeString SiteKey = FTerminal->GetSessionData()->GetSiteKey();
 
       if (!VerificationResult)
       {
-        if (FTerminal->VerifyCertificate(CertificateStorageKey, SiteKey,
+        if (FTerminal->VerifyCertificate(FtpsCertificateStorageKey, SiteKey,
               FSessionInfo.CertificateFingerprint, CertificateSubject, Data.VerificationResult))
         {
           // certificate is trusted, but for not purposes of info dialog
@@ -4526,11 +4526,11 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       if (IsHostNameIPAddress)
       {
-        AddToList(Summary, FMTLOAD(CERT_IP_CANNOT_VERIFY, (FTerminal->SessionData->HostNameExpanded)), SummarySeparator);
+        AddToList(Summary, FMTLOAD(CERT_IP_CANNOT_VERIFY, FTerminal->GetSessionData()->GetHostNameExpanded().c_str()), SummarySeparator);
       }
       else if (!CertificateHostNameVerified)
       {
-        AddToList(Summary, FMTLOAD(CERT_NAME_MISMATCH, (FTerminal->SessionData->HostNameExpanded)), SummarySeparator);
+        AddToList(Summary, FMTLOAD(CERT_NAME_MISMATCH, FTerminal->GetSessionData()->GetHostNameExpanded().c_str()), SummarySeparator);
       }
 
       if (Summary.IsEmpty())
@@ -4594,7 +4594,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         if (RequestResult == 2)
         {
           FTerminal->CacheCertificate(
-            CertificateStorageKey, SiteKey,
+            FtpsCertificateStorageKey, SiteKey,
             FSessionInfo.CertificateFingerprint, Data.VerificationResult);
         }
       }
@@ -4602,8 +4602,8 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       // Cache only if the certificate was accepted manually
       if (!VerificationResult && (RequestResult != 0))
       {
-        FTerminal->Configuration->RememberLastFingerprint(
-          FTerminal->SessionData->SiteKey, TlsFingerprintType, FSessionInfo.CertificateFingerprint);
+        FTerminal->GetConfiguration()->RememberLastFingerprint(
+          FTerminal->GetSessionData()->GetSiteKey(), TlsFingerprintType, FSessionInfo.CertificateFingerprint);
       }
     }
 

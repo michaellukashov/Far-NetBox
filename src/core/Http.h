@@ -40,10 +40,8 @@ public:
   void SetProxyPort(intptr_t Value) { FProxyPort = Value; }
   TStrings * GetRequestHeaders() const { return FRequestHeaders; }
   void SetRequestHeaders(TStrings * Value) { FRequestHeaders = Value; }
-  UnicodeString GetResponse() const;
   RawByteString GetResponseRaw() const { return FResponse; }
   TStrings * GetResponseHeaders() const { return FResponseHeaders; }
-  int64_t GetResponseLength() const;
   int64_t GetResponseLimit() const { return FResponseLimit; }
   void SetResponseLimit(int64_t Value) { FResponseLimit = Value; }
   THttpDownloadEvent GetOnDownload() const { return FOnDownload; }
@@ -66,7 +64,7 @@ private:
   int NeonBodyReaderImpl(const char * Buf, size_t Len);
   void SendRequest(const char * Method, const UnicodeString & Request);
   UnicodeString GetResponse() const;
-  __int64 GetResponseLength() const;
+  int64_t GetResponseLength() const;
   static void InitSslSession(ssl_st * Ssl, ne_session_s * Session);
   static int NeonServerSSLCallback(void * UserData, int Failures, const ne_ssl_certificate_s * Certificate);
   int NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate_s * Certificate);

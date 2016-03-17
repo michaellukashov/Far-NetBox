@@ -56,7 +56,7 @@ struct TWebDAVCertificateData
 };
 
 #define SESSION_FS_KEY "filesystem"
-static const char CertificateStorageKey[] = "HttpsCertificates";
+static const char HttpsCertificateStorageKey[] = "HttpsCertificates";
 static const UnicodeString CONST_WEBDAV_PROTOCOL_BASE_NAME = L"WebDAV";
 static const int HttpUnauthorized = 401;
 
@@ -297,7 +297,7 @@ void TWebDAVFileSystem::Open()
 
   UnicodeString HostName = Data->GetHostNameExpanded();
   size_t Port = Data->GetPortNumber();
-  UnicodeString ProtocolName = (FTerminal->GetSessionData()->GetFtps() == ftpsNone) ? WebDAVProtocolStr : WebDAVSProtocolStr;
+  UnicodeString ProtocolName = (FTerminal->GetSessionData()->GetFtps() == ftpsNone) ? WebDAVProtocol : WebDAVSProtocol;
   UnicodeString Path = Data->GetRemoteDirectory();
   // PathToNeon is not used as we cannot call AbsolutePath here
   UnicodeString EscapedPath = StrFromNeon(PathEscape(StrToNeon(Path)).c_str());
@@ -1818,13 +1818,13 @@ void TWebDAVFileSystem::NeonPreSend(
   TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
 
   FileSystem->FAuthorizationProtocol = L"";
-  UnicodeString HeaderBuf(StrFromNeon(AnsiString(Header->data, Header->used)));
+  UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, Header->used)));
   const UnicodeString AuthorizationHeaderName(L"Authorization:");
   intptr_t P = HeaderBuf.Pos(AuthorizationHeaderName);
   if (P > 0)
   {
     P += AuthorizationHeaderName.Length();
-    int P2 = PosEx(L"\n", HeaderBuf, P);
+    intptr_t P2 = PosEx(L"\n", HeaderBuf, P);
     if (DebugAlwaysTrue(P2 > 0))
     {
       UnicodeString AuthorizationHeader = HeaderBuf.SubString(P, P2 - P).Trim();
@@ -1855,8 +1855,8 @@ void TWebDAVFileSystem::NeonPreSend(
     {
       // all neon request types that use ne_add_request_header
       // use XML content-type, so it's text-based
-      DebugAssert(ContainsStr(HeaderBuf, L"Content-Type: " NE_XML_MEDIA_TYPE));
-      FileSystem->FTerminal->Log->Add(llInput, UnicodeString(UTF8String(Buffer, Size)));
+      DebugAssert(ContainsStr(AnsiString(HeaderBuf), AnsiString(L"Content-Type: " NE_XML_MEDIA_TYPE)));
+      FileSystem->FTerminal->GetLog()->Add(llInput, UnicodeString(UTF8String(Buffer, Size)));
     }
   }
 
@@ -2089,7 +2089,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   if (AFile->GetIsDirectory())
   {
     Action.Cancel();
-    if (DebugAlwaysTrue(FTerminal->GetCanRecurseToDirectory()(AFile)))
+    if (DebugAlwaysTrue(FTerminal->CanRecurseToDirectory(AFile)))
     {
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()), "",
       [&]()
@@ -2330,7 +2330,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
   FSessionInfo.CertificateFingerprint = Data.Fingerprint;
 
   bool Result;
-  if (FTerminal->SessionData->FingerprintScan)
+  if (FTerminal->GetSessionData()->GetFingerprintScan())
   {
     Result = false;
   }
@@ -2344,7 +2344,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
 
     UnicodeString SiteKey = TSessionData::FormatSiteKey(FHostName, FPortNumber);
     Result =
-      FTerminal->VerifyCertificate(CertificateStorageKey, SiteKey, Data.Fingerprint, Data.Subject, Failures);
+      FTerminal->VerifyCertificate(HttpsCertificateStorageKey, SiteKey, Data.Fingerprint, Data.Subject, Failures);
 
     if (!Result)
     {
@@ -2397,7 +2397,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
       switch (Answer)
       {
         case qaYes:
-          FTerminal->CacheCertificate(CertificateStorageKey, SiteKey, Data.Fingerprint, Failures);
+          FTerminal->CacheCertificate(HttpsCertificateStorageKey, SiteKey, Data.Fingerprint, Failures);
           Result = true;
           break;
 
@@ -2415,8 +2415,8 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
 
       if (Result)
       {
-        FTerminal->Configuration->RememberLastFingerprint(
-          FTerminal->SessionData->SiteKey, TlsFingerprintType, FSessionInfo.CertificateFingerprint);
+        FTerminal->GetConfiguration()->RememberLastFingerprint(
+          FTerminal->GetSessionData()->GetSiteKey(), TlsFingerprintType, FSessionInfo.CertificateFingerprint);
       }
     }
 

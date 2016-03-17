@@ -37,7 +37,7 @@ const intptr_t HTTPSPortNumber = 443;
 const intptr_t TelnetPortNumber = 23;
 const intptr_t DefaultSendBuf = 256 * 1024;
 const intptr_t ProxyPortNumber = 80;
-/*
+
 const UnicodeString AnonymousUserName(L"anonymous");
 const UnicodeString AnonymousPassword(L"anonymous@example.com");
 const UnicodeString PuttySshProtocol(L"ssh");
@@ -54,7 +54,7 @@ const wchar_t UrlParamValueSeparator = L'=';
 const UnicodeString UrlHostKeyParamName(L"fingerprint");
 const UnicodeString UrlSaveParamName(L"save");
 const UnicodeString PassphraseOption(L"passphrase");
-*/
+
 
 const uintptr_t CONST_DEFAULT_CODEPAGE = CP_UTF8;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
@@ -631,7 +631,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetPreserveDirectoryChanges(Storage->ReadBool("PreserveDirectoryChanges", GetPreserveDirectoryChanges()));
 
   SetResolveSymlinks(Storage->ReadBool("ResolveSymlinks", GetResolveSymlinks()));
-  SetFollowDirectorySymlinks(Storage->ReadBool("FollowDirectorySymlinks", GetFollowDirectorySymlinks());
+  SetFollowDirectorySymlinks(Storage->ReadBool("FollowDirectorySymlinks", GetFollowDirectorySymlinks()));
   SetDSTMode(static_cast<TDSTMode>(Storage->ReadInteger("ConsiderDST", GetDSTMode())));
   SetLockInHome(Storage->ReadBool("LockInHome", GetLockInHome()));
   SetSpecial(Storage->ReadBool("Special", GetSpecial()));
@@ -1538,21 +1538,21 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     Url.Delete(1, 7);
     ProtocolDefined = true;
   }
-  if (IsProtocolUrl(Url, ScpProtocolStr, ProtocolLen))
+  if (IsProtocolUrl(Url, ScpProtocol, ProtocolLen))
   {
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
     MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, SftpProtocolStr, ProtocolLen))
+  else if (IsProtocolUrl(Url, SftpProtocol, ProtocolLen))
   {
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
     MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, FtpProtocolStr, ProtocolLen))
+  else if (IsProtocolUrl(Url, FtpProtocol, ProtocolLen))
   {
     AFSProtocol = fsFTP;
     SetFtps(ftpsNone);
@@ -1560,7 +1560,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, FtpsProtocolStr, ProtocolLen))
+  else if (IsProtocolUrl(Url, FtpsProtocol, ProtocolLen))
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
@@ -1568,7 +1568,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, FtpesProtocolStr, ProtocolLen))
+  else if (IsProtocolUrl(Url, FtpesProtocol, ProtocolLen))
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsExplicitTls;
@@ -1576,7 +1576,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, WebDAVProtocolStr, ProtocolLen))
+  else if (IsProtocolUrl(Url, WebDAVProtocol, ProtocolLen))
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsNone;
@@ -1584,7 +1584,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, WebDAVSProtocolStr, ProtocolLen))
+  else if (IsProtocolUrl(Url, WebDAVSProtocol, ProtocolLen))
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsImplicit;
@@ -1592,12 +1592,12 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, SshProtocolStr, ProtocolLen))
+  else if (IsProtocolUrl(Url, SshProtocol, ProtocolLen))
   {
     // For most uses, handling ssh:// the same way as sftp://
     // The only place where a difference is made is GetLoginData() in WinMain.cpp
     AFSProtocol = fsSFTPonly;
-    SetPuttyProtocol(PuttySshProtocolStr);
+    SetPuttyProtocol(PuttySshProtocol);
     APortNumber = SshPortNumber;
     MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
@@ -2562,7 +2562,7 @@ void TSessionData::SetPuttyProtocol(const UnicodeString & Value)
 
 UnicodeString TSessionData::GetNormalizedPuttyProtocol() const
 {
-  return DefaultStr(GetPuttyProtocol(), PuttySshProtocolStr);
+  return DefaultStr(GetPuttyProtocol(), PuttySshProtocol);
 }
 
 void TSessionData::SetPingIntervalDT(const TDateTime & Value)
@@ -2685,7 +2685,7 @@ UnicodeString TSessionData::GetProtocolUrl() const
   switch (GetFSProtocol())
   {
     case fsSCPonly:
-      Url = ScpProtocolStr;
+      Url = ScpProtocol;
       break;
 
     default:
@@ -2693,32 +2693,32 @@ UnicodeString TSessionData::GetProtocolUrl() const
       // fallback
     case fsSFTP:
     case fsSFTPonly:
-      Url = SftpProtocolStr;
+      Url = SftpProtocol;
       break;
 
     case fsFTP:
       if (GetFtps() == ftpsImplicit)
       {
-        Url = FtpsProtocolStr;
+        Url = FtpsProtocol;
       }
       else if ((GetFtps() == ftpsExplicitTls) || (GetFtps() == ftpsExplicitSsl))
       {
-        Url = FtpesProtocolStr;
+        Url = FtpesProtocol;
       }
       else
       {
-        Url = FtpProtocolStr;
+        Url = FtpProtocol;
       }
       break;
 
     case fsWebDAV:
       if (GetFtps() == ftpsImplicit)
       {
-        Url = WebDAVSProtocolStr;
+        Url = WebDAVSProtocol;
       }
       else
       {
-        Url = WebDAVProtocolStr;
+        Url = WebDAVProtocol;
       }
       break;
   }
@@ -2796,6 +2796,11 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags)
 void TSessionData::AddSwitchValue(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value)
 {
   AddSwitch(Result, FORMAT(L"%s=%s", Name.c_str(), Value.c_str()));
+}
+
+void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Switch)
+{
+  Result += FORMAT(L" -%s", Switch.c_str());
 }
 
 void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value)
@@ -2906,6 +2911,7 @@ UnicodeString TSessionData::GenerateOpenCommandArgs()
   return Result;
 }
 
+/*
 void TSessionData::AddAssemblyProperty(
   UnicodeString & Result, TAssemblyLanguage Language,
   const UnicodeString & Name, const UnicodeString & Type,
@@ -3294,7 +3300,7 @@ UnicodeString TSessionData::GenerateAssemblyCode(
 
   return Result;
 }
-
+*/
 void TSessionData::SetTimeDifference(const TDateTime & Value)
 {
   SET_SESSION_PROPERTY(TimeDifference);
@@ -4028,12 +4034,12 @@ void TSessionData::AdjustHostName(UnicodeString & HostName, const UnicodeString 
 
 void TSessionData::RemoveProtocolPrefix(UnicodeString & HostName) const
 {
-  AdjustHostName(HostName, ScpProtocolStr);
-  AdjustHostName(HostName, SftpProtocolStr);
-  AdjustHostName(HostName, FtpProtocolStr);
-  AdjustHostName(HostName, FtpsProtocolStr);
-  AdjustHostName(HostName, WebDAVProtocolStr);
-  AdjustHostName(HostName, WebDAVSProtocolStr);
+  AdjustHostName(HostName, ScpProtocol);
+  AdjustHostName(HostName, SftpProtocol);
+  AdjustHostName(HostName, FtpProtocol);
+  AdjustHostName(HostName, FtpsProtocol);
+  AdjustHostName(HostName, WebDAVProtocol);
+  AdjustHostName(HostName, WebDAVSProtocol);
 }
 
 TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t FSProtocol)
@@ -4453,7 +4459,7 @@ void TStoredSessionList::SelectSessionsToImport(
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
     GetSession(Index)->SetSelected(
-      (!SSHOnly || (GetSession(Index)->GetNormalizedPuttyProtocol() == PuttySshProtocolStr)) &&
+      (!SSHOnly || (GetSession(Index)->GetNormalizedPuttyProtocol() == PuttySshProtocol)) &&
       !Dest->FindByName(GetSession(Index)->GetName()));
   }
 }

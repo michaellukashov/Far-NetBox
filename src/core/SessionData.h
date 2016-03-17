@@ -125,23 +125,23 @@ extern const intptr_t HTTPPortNumber;
 extern const intptr_t HTTPSPortNumber;
 extern const intptr_t TelnetPortNumber;
 extern const intptr_t ProxyPortNumber;
-#define PuttySshProtocolStr L"ssh"
-#define PuttyTelnetProtocolStr L"telnet"
-#define SftpProtocolStr L"sftp"
-#define ScpProtocolStr L"scp"
-#define FtpProtocolStr L"ftp"
-#define FtpsProtocolStr L"ftps"
-#define FtpesProtocolStr L"ftpes"
+extern const UnicodeString PuttySshProtocol;
+extern const UnicodeString PuttyTelnetProtocol;
+extern const UnicodeString SftpProtocol;
+extern const UnicodeString ScpProtocol;
+extern const UnicodeString FtpProtocol;
+extern const UnicodeString FtpsProtocol;
+extern const UnicodeString FtpesProtocol;
 #define WebDAVProtocol HttpProtocol
 #define WebDAVSProtocol HttpsProtocol
-#define SshProtocolStr L"ssh"
+extern const UnicodeString SshProtocol;
 //#define ProtocolSeparator L"://"
-#define WinSCPProtocolPrefix L"winscp-"
+//#define WinSCPProtocolPrefix L"winscp-"
 extern const wchar_t UrlParamSeparator;
 extern const wchar_t UrlParamValueSeparator;
-#define UrlHostKeyParamName L"fingerprint"
-#define UrlSaveParamName L"save"
-#define PassphraseOption L"passphrase"
+//#define UrlHostKeyParamName L"fingerprint"
+//#define UrlSaveParamName L"save"
+//#define PassphraseOption L"passphrase"
 
 extern const intptr_t SFTPMinVersion;
 extern const intptr_t SFTPMaxVersion;
@@ -478,7 +478,8 @@ public:
   static RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   static bool DoIsProtocolUrl(const UnicodeString & Url, const UnicodeString & Protocol, intptr_t & ProtocolLen);
   static bool IsProtocolUrl(const UnicodeString & Url, const UnicodeString & Protocol, intptr_t & ProtocolLen);
-  static void AddSwitch(UnicodeString & Result, const UnicodeString & AName);
+  static void AddSwitchValue(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value);
+  static void AddSwitch(UnicodeString & Result, const UnicodeString & Switch);
   static void AddSwitch(UnicodeString & Result, const UnicodeString & AName, const UnicodeString & Value);
   static void AddSwitch(UnicodeString & Result, const UnicodeString & AName, intptr_t Value);
   /*static UnicodeString AssemblyString(TAssemblyLanguage Language, const UnicodeString & S);

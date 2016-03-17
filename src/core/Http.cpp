@@ -13,8 +13,8 @@
 THttp::THttp() :
   FProxyPort(0),
   FOnDownload(nullptr),
-  FResponseLimit(-1)
-  FRequestHeaders(nillptr),
+  FResponseLimit(-1),
+  FRequestHeaders(nullptr),
   FResponseHeaders(new TStringList())
 {
 }
@@ -142,7 +142,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           const char * HeaderValue;
           while ((Cursor = ne_response_header_iterate(NeonRequest, Cursor, &HeaderName, &HeaderValue)) != nullptr)
           {
-            FResponseHeaders->Values[StrFromNeon(HeaderName)] = StrFromNeon(HeaderValue);
+            FResponseHeaders->SetValue(StrFromNeon(HeaderName), StrFromNeon(HeaderValue));
           }
         }
       }

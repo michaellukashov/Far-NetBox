@@ -30,7 +30,7 @@ UnicodeString GetLanguage(Word Language);
 UnicodeString GetFileInfoString(void * FileInfo,
   TTranslation Translation, const UnicodeString & StringName, bool AllowEmpty);
 
-int CalculateCompoundVersion(int MajorVer,
-  int MinorVer, int Release, int Build);
+intptr_t CalculateCompoundVersion(intptr_t MajorVer,
+  intptr_t MinorVer, intptr_t Release, intptr_t Build);
 
-int StrToCompoundVersion(const UnicodeString & S);
+intptr_t StrToCompoundVersion(const UnicodeString & AStr);
