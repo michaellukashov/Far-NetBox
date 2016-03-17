@@ -1202,7 +1202,7 @@
 
 "CORE_VARIABLE"
 "SSH and SCP code based on PuTTY %s"
-"0.66"
+"0.67"
 "Copyright © 1997-2016 Simon Tatham"
 "http://www.chiark.greenend.org.uk/~sgtatham/putty/"
 "FTP code based on FileZilla"
@@ -1224,7 +1224,7 @@
 "$$"
 
 "WinSCP"
-"5.8.1"
+"5.8.2"
 "1.6.2"
 "Based on WinSCP: SFTP/FTP/SCP client for FAR"
 " Version %s"
