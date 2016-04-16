@@ -229,6 +229,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) :
   FFileTransferResumed(0),
   FFileTransferPreserveTime(false),
   FFileTransferRemoveBOM(false),
+  FFileTransferNoList(false),
   FFileTransferCPSLimit(0),
   FAwaitingProgress(false),
   FOnCaptureOutput(nullptr),
@@ -242,7 +243,9 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) :
   FCertificate(nullptr),
   FPrivateKey(nullptr),
   FTransferActiveImmediately(false),
-  FWindowsServer(false)
+  FWindowsServer(false),
+  FBytesAvailable(0),
+  FBytesAvailableSupported(false)
 {
 }
 

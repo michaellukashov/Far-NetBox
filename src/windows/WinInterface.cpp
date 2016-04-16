@@ -15,7 +15,10 @@ TMessageParams::TMessageParams(uintptr_t AParams) :
   TimerEvent(nullptr),
   TimerAnswers(0),
   Timeout(0),
-  TimeoutAnswer(0)
+  TimeoutAnswer(0),
+  NeverAskAgainAnswer(0),
+  NeverAskAgainCheckedInitially(false),
+  AllowHelp(false)
 {
 }
 
