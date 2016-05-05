@@ -10,6 +10,9 @@ build-CMakeLists.txt-*
 /Far3_x64/
 res.txt
 #libs/
+libs/openssl/tmp32/
+libs/openssl/crypto/buildinf.h
+libs/openssl/NUL
 ipch/
 *.tmp
 *.opensdf
