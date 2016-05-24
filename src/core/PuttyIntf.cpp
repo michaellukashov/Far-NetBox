@@ -62,6 +62,7 @@ void PuttyFinalize()
   sk_cleanup();
   win_misc_cleanup();
   win_secur_cleanup();
+  ec_cleanup();
   DeleteCriticalSection(&putty_section);
 }
 
@@ -262,6 +263,12 @@ int askalg(void * frontend, const char * algtype, const char * algname,
   (NB_STATIC_DOWNCAST(TSecureShell, frontend))->AskAlg(algtype, algname);
 
   // We should return 0 when alg was not confirmed, we throw exception instead.
+  return 1;
+}
+
+int askhk(void * /*frontend*/, const char * /*algname*/, const char * /*betteralgs*/,
+  void (*/*callback*/)(void *ctx, int result), void * /*ctx*/)
+{
   return 1;
 }
 
@@ -723,11 +730,13 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
 
 static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & KeyType)
 {
-  int Count = 0;
   const wchar_t NormalizedSeparator = L'-';
+  const int MaxCount = 10;
+  const ssh_signkey * SignKeys[MaxCount];
+  int Count = _countof(SignKeys);
   // We may use find_pubkey_alg, but it gets complicated with normalized fingerprint
   // as the names have different number of dashes
-  const ssh_signkey ** SignKeys = get_hostkey_algs(&Count);
+  get_hostkey_algs(&Count, SignKeys);
 
   for (intptr_t Index = 0; Index < Count; Index++)
   {

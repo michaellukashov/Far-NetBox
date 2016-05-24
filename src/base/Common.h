@@ -166,6 +166,7 @@ bool IsHttpUrl(const UnicodeString & S);
 bool IsHttpOrHttpsUrl(const UnicodeString & S);
 UnicodeString ChangeUrlProtocol(const UnicodeString & S, const UnicodeString & Protocol);
 void LoadScriptFromFile(const UnicodeString & FileName, TStrings * Lines);
+UnicodeString StripEllipsis(const UnicodeString & S);
 
 DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
   const UnicodeString & /*FileName*/, const TSearchRec & /*Rec*/, void * /*Param*/);
@@ -338,6 +339,8 @@ private:
   typedef rde::map<T2, T1> TSecondToFirst;
   TSecondToFirst FSecondToFirst;
 };
+
+typedef std::vector<UnicodeString> TUnicodeStringVector;
 
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 

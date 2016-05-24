@@ -2,10 +2,28 @@
 #pragma hdrstop
 
 #include <Common.h>
+#include <StrUtils.hpp>
 
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "rtlconsts.h"
+
+static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(new TCriticalSection());
+typedef std::set<UnicodeString> TIgnoredExceptions;
+static TIgnoredExceptions IgnoredExceptions;
+
+static UnicodeString NormalizeClassName(const UnicodeString & ClassName)
+{
+  return ReplaceStr(ClassName, L".", L"::").LowerCase();
+}
+
+void IgnoreException(const std::type_info & ExceptionType)
+{
+  TGuard Guard(IgnoredExceptionsCriticalSection.get());
+  // We should better use type_index as a key, instead of a class name,
+  // but type_index is not available in 32-bit version of STL in XE6.
+  IgnoredExceptions.insert(NormalizeClassName(UnicodeString(AnsiString(ExceptionType.name()))));
+}
 
 static bool WellKnownException(
   const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)
@@ -14,10 +32,23 @@ static bool WellKnownException(
   const wchar_t * CounterName = nullptr;
   std::unique_ptr<Exception> Clone;
 
-  bool Result = true;
 
+  bool Result = true;
+  bool IgnoreException = false;
+
+  if (!IgnoredExceptions.empty())
+  {
+    TGuard Guard(IgnoredExceptionsCriticalSection.get());
+    UnicodeString ClassName = NormalizeClassName(E->QualifiedClassName());
+    IgnoreException = (IgnoredExceptions.find(ClassName) != IgnoredExceptions.end());
+  }
+
+  if (IgnoreException)
+  {
+    Result = false;
+  }
   // EAccessViolation is EExternal
-  if (NB_STATIC_DOWNCAST_CONST(EAccessViolation, E) != nullptr)
+  else if (NB_STATIC_DOWNCAST_CONST(EAccessViolation, E) != nullptr)
   {
     if (Rethrow)
     {
@@ -29,12 +60,14 @@ static bool WellKnownException(
   }
   /*
   // EIntError and EMathError are EExternal
+  // EClassNotFound is EFilerError
   else if ((NB_STATIC_DOWNCAST(EListError, E) != nullptr) ||
            (NB_STATIC_DOWNCAST(EStringListError, E) != nullptr) ||
            (NB_STATIC_DOWNCAST(EIntError, E) != nullptr) ||
            (NB_STATIC_DOWNCAST(EMathError, E) != nullptr) ||
            (NB_STATIC_DOWNCAST(EVariantError, E) != nullptr) ||
            (NB_STATIC_DOWNCAST(EInvalidOperation, E) != nullptr))
+           (dynamic_cast<EFilerError*>(E) != NULL))
   {
     if (Rethrow)
     {
@@ -127,6 +160,9 @@ static bool ExceptionMessage(const Exception * E, bool /*Count*/,
   if (Count && (CounterName != nullptr) && (Configuration->Usage != nullptr))
   {
     Configuration->Usage->Inc(CounterName);
+    UnicodeString ExceptionDebugInfo =
+      E->ClassName() + L":" + GetExceptionDebugInfo();
+    Configuration->Usage->Set(L"LastInternalException", ExceptionDebugInfo);
   }
 */
   return Result;

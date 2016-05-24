@@ -216,6 +216,10 @@ protected:
   bool SupportsReadingFile() const;
   void AutoDetectTimeDifference(TRemoteFileList * FileList);
   void ApplyTimeDifference(TRemoteFile * File);
+  void ApplyTimeDifference(
+    const UnicodeString & FileName, TDateTime & Modification, TModificationFmt & ModificationFmt);
+  bool LookupUploadModificationTime(
+    const UnicodeString & FileName, TDateTime & Modification, TModificationFmt ModificationFmt);
   UnicodeString DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString & Alg, TRemoteFile * File);
   void DoCalculateFilesChecksum(bool UsingHashCommand, const UnicodeString & Alg,
     TStrings * FileList, TStrings * Checksums,
@@ -227,7 +231,7 @@ protected:
   bool SupportsCommand(const UnicodeString & Command) const;
   void RegisterChecksumAlgCommand(const UnicodeString & Alg, const UnicodeString & Command);
   void SendCommand(const UnicodeString & Command);
-  bool CanTransferSkipList(intptr_t Params, uintptr_t Flags) const;
+  bool CanTransferSkipList(intptr_t Params, uintptr_t Flags, const TCopyParamType * CopyParam) const;
 
   static bool Unquote(UnicodeString & Str);
 
