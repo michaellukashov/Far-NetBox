@@ -66,6 +66,10 @@ typedef struct bufchain_tag {
     struct bufchain_granule *head, *tail;
     int buffersize;		       /* current amount of buffered data */
 } bufchain;
+#ifndef BUFCHAIN_TYPEDEF
+typedef struct bufchain_tag bufchain;  /* rest of declaration in misc.c */
+#define BUFCHAIN_TYPEDEF
+#endif
 
 void bufchain_init(bufchain *ch);
 void bufchain_clear(bufchain *ch);
