@@ -156,6 +156,8 @@ public:
   bool GetIsTimeShiftingApplicable() const;
   void Complete();
 
+  static bool GetIsTimeShiftingApplicable(TModificationFmt ModificationFmt);
+  static void ShiftTimeInSeconds(TDateTime & DateTime, TModificationFmt ModificationFmt, int64_t Seconds);
 /*
   __property int Attr = { read = GetAttr };
   __property bool BrokenLink = { read = GetBrokenLink };

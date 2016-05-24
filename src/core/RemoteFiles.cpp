@@ -1039,19 +1039,32 @@ bool TRemoteFile::GetBrokenLink() const
   // "!FLinkTo.IsEmpty()" removed because it does not work with SFTP
 }
 
-bool TRemoteFile::GetIsTimeShiftingApplicable() const
+bool TRemoteFile::GetIsTimeShiftingApplicable()
 {
-  return (GetModificationFmt() == mfMDHM) || (GetModificationFmt() == mfFull);
+  return IsTimeShiftingApplicable(ModificationFmt);
+}
+
+bool TRemoteFile::GetIsTimeShiftingApplicable(TModificationFmt ModificationFmt) const
+{
+  return (ModificationFmt == mfMDHM) || (ModificationFmt == mfFull);
 }
 
 void TRemoteFile::ShiftTimeInSeconds(int64_t Seconds)
 {
-  if ((Seconds != 0) && GetIsTimeShiftingApplicable())
+  ShiftTimeInSeconds(FModification, ModificationFmt, Seconds);
+  ShiftTimeInSeconds(FLastAccess, ModificationFmt, Seconds);
+}
+
+void TRemoteFile::ShiftTimeInSeconds(TDateTime & DateTime, TModificationFmt ModificationFmt, int64_t Seconds)
+{
+  if ((Seconds != 0) && GetIsTimeShiftingApplicable(ModificationFmt))
   {
-    DebugAssert(int(FModification) != 0);
+    /*DebugAssert(int(FModification) != 0);
     FModification = IncSecond(FModification, Seconds);
     DebugAssert(int(FLastAccess) != 0);
-    FLastAccess = IncSecond(FLastAccess, Seconds);
+    FLastAccess = IncSecond(FLastAccess, Seconds);*/
+    DebugAssert(int(DateTime) != 0);
+    DateTime = IncSecond(DateTime, Seconds);
   }
 }
 
