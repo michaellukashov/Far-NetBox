@@ -15,6 +15,12 @@
 #ifndef AUTO_WINSOCK
 #include <winsock2.h>
 #endif
+//#include <ws2ipdef.h>
+
+#ifndef SIO_IDEAL_SEND_BACKLOG_QUERY
+#define SIO_IDEAL_SEND_BACKLOG_QUERY   _IOR('t', 123, ULONG)
+#define SIO_IDEAL_SEND_BACKLOG_CHANGE   _IO('t', 122)
+#endif
 
 #define MAX_BUFSIZE 128 * 1024
 

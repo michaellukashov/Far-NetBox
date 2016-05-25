@@ -1,6 +1,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <rdestl/set.h>
 #include <Common.h>
 #include <StrUtils.hpp>
 
@@ -9,7 +10,7 @@
 #include "rtlconsts.h"
 
 static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(new TCriticalSection());
-typedef std::set<UnicodeString> TIgnoredExceptions;
+typedef rde::set<UnicodeString> TIgnoredExceptions;
 static TIgnoredExceptions IgnoredExceptions;
 
 static UnicodeString NormalizeClassName(const UnicodeString & ClassName)
@@ -19,7 +20,7 @@ static UnicodeString NormalizeClassName(const UnicodeString & ClassName)
 
 void IgnoreException(const std::type_info & ExceptionType)
 {
-  TGuard Guard(IgnoredExceptionsCriticalSection.get());
+  TGuard Guard(*IgnoredExceptionsCriticalSection.get());
   // We should better use type_index as a key, instead of a class name,
   // but type_index is not available in 32-bit version of STL in XE6.
   IgnoredExceptions.insert(NormalizeClassName(UnicodeString(AnsiString(ExceptionType.name()))));
@@ -38,8 +39,8 @@ static bool WellKnownException(
 
   if (!IgnoredExceptions.empty())
   {
-    TGuard Guard(IgnoredExceptionsCriticalSection.get());
-    UnicodeString ClassName = NormalizeClassName(E->QualifiedClassName());
+    TGuard Guard(*IgnoredExceptionsCriticalSection.get());
+    UnicodeString ClassName = ""; // NormalizeClassName(E->QualifiedClassName());
     IgnoreException = (IgnoredExceptions.find(ClassName) != IgnoredExceptions.end());
   }
 

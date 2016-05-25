@@ -1251,7 +1251,7 @@ bool TFileCustomCommand::PatternReplacement(
 
 void TFileCustomCommand::Validate(const UnicodeString & Command)
 {
-  int Found[2] = { 0, 0 };
+  intptr_t Found[2] = { 0, 0 };
   CustomValidate(Command, &Found);
   if ((Found[0] > 0) && (Found[1] > 0))
   {
@@ -1263,7 +1263,7 @@ void TFileCustomCommand::Validate(const UnicodeString & Command)
 void TFileCustomCommand::ValidatePattern(const UnicodeString & Command,
   intptr_t Index, intptr_t /*Len*/, wchar_t PatternCmd, void * Arg)
 {
-  int * Found = static_cast<int *>(Arg);
+  intptr_t * Found = static_cast<intptr_t *>(Arg);
 
   DebugAssert(Index > 0);
 
@@ -1273,7 +1273,7 @@ void TFileCustomCommand::ValidatePattern(const UnicodeString & Command,
   }
   else if ((PatternCmd != TEXT_TOKEN) && (PatternLen(Command, Index) == 1))
   {
-    Found[1] = static_cast<int>(Index);
+    Found[1] = Index;
   }
 }
 

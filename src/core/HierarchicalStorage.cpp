@@ -540,7 +540,7 @@ bool TRegistryStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate
   {
     FRegistry->CloseKey();
   }
-  UnicodeString Key = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
+  UnicodeString Key = ::ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
   return FRegistry->OpenKey(Key, CanCreate);
 }
 

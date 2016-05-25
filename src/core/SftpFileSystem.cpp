@@ -4851,7 +4851,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
           if (DestFileExists)
           {
             FTerminal->LogEvent(FORMAT(L"File exists: %s", FTerminal->GetRemoteFileInfo(File).c_str()));
-            OpenParams.DestFileSize = File->Size;
+            OpenParams.DestFileSize = File->GetSize();
             FileParams.DestSize = OpenParams.DestFileSize;
             FileParams.DestTimestamp = File->GetModification();
             DestRights = *File->GetRights();
@@ -4878,11 +4878,11 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
             // as deleting and recreating the file would change ownership.
             // This won't for work for SFTP-3 (OpenSSH) as it does not provide
             // owner name (only UID) and we know only logged in user name (not UID)
-            else if (!File->GetOwner()->GetName().IsEmpty() && !SameUserName(File->GetOwner()->GetName(), FTerminal->TerminalGetUserName()))
+            else if (!File->GetFileOwner().GetName().IsEmpty() && !SameUserName(File->GetFileOwner().GetName(), FTerminal->TerminalGetUserName()))
             {
               ResumeAllowed = false;
               FTerminal->LogEvent(
-                FORMAT(L"Existing file is owned by another user [%s], not doing resumable transfer.", File->GetOwner().GetName().c_str()));
+                FORMAT(L"Existing file is owned by another user [%s], not doing resumable transfer.", File->GetFileOwner().GetName().c_str()));
             }
 
             SAFE_DESTROY(File);
@@ -5633,7 +5633,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
       Properties.Valid << vpModification;
 
       FTerminal->TerminalOpenLocalFile(
-        ExcludeTrailingBackslash(DirectoryName), GENERIC_READ, nullptr, nullptr, nullptr,
+        ::ExcludeTrailingBackslash(DirectoryName), GENERIC_READ, nullptr, nullptr, nullptr,
         &Properties.Modification, &Properties.LastAccess, nullptr);
 
       FTerminal->ChangeFileProperties(DestFullName, nullptr, &Properties);

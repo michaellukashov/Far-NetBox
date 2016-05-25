@@ -267,7 +267,7 @@ int askalg(void * frontend, const char * algtype, const char * algname,
 }
 
 int askhk(void * /*frontend*/, const char * /*algname*/, const char * /*betteralgs*/,
-  void (*/*callback*/)(void *ctx, int result), void * /*ctx*/)
+  void (* /*callback*/)(void *ctx, int result), void * /*ctx*/)
 {
   return 1;
 }

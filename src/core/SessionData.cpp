@@ -2050,9 +2050,9 @@ bool TSessionData::GetCanLogin() const
 UnicodeString TSessionData::GetSessionKey() const
 {
   UnicodeString Result = FORMAT(L"%s@%s", SessionGetUserName().c_str(), GetHostName().c_str());
-  if (GetPortNumber() != GetDefaultPort(FSProtocol, Ftps))
+  if (GetPortNumber() != GetDefaultPort(GetFSProtocol(), GetFtps()))
   {
-    Result += FORMAT(L":%d", PortNumber);
+    Result += FORMAT(L":%d", GetPortNumber());
   }
   return Result;
 }

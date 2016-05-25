@@ -3003,7 +3003,7 @@ UnicodeString TTerminal::GetRemoteFileInfo(TRemoteFile * File)
   return
     FORMAT(L"%s;%c;%lld;%s;%d;%s;%s;%s;%d",
       File->GetFileName().c_str(), File->GetType(), File->GetSize(), StandardTimestamp(File->GetModification()).c_str(), int(File->GetModificationFmt()),
-       File->GetOwner()->GetLogText().c_str(), File->GetGroup().GetLogText().c_str(), File->GetRights()->GetText().c_str(),
+       File->GetFileOwner().GetLogText().c_str(), File->GetFileGroup().GetLogText().c_str(), File->GetRights()->GetText().c_str(),
        File->GetAttr());
 }
 
@@ -3012,7 +3012,7 @@ void TTerminal::LogRemoteFile(TRemoteFile * AFile)
   // optimization
   if (GetLog()->GetLogging() && AFile)
   {
-    LogEvent(GetRemoteFileInfo(File));
+    LogEvent(GetRemoteFileInfo(AFile));
   }
 }
 
@@ -5828,25 +5828,25 @@ void TTerminal::FileFind(const UnicodeString & AFileName,
         }
         else
         {
-          RealDirectory = ::AbsolutePath(AParams->RealDirectory, File->ÏóåLinkTo());
+          RealDirectory = core::AbsolutePath(AParams->RealDirectory, AFile->GetLinkTo());
         }
 
-        if (!AParams->LoopDetector.IsUnvisitedDirectory(AFile))
+        if (!AParams->LoopDetector.IsUnvisitedDirectory(RealDirectory))
         {
           LogEvent(FORMAT(L"Already searched \"%s\" directory, link loop detected", FullFileName.c_str()));
         }
         else
         {
-          DoFilesFind(FullFileName, *AParams);
+          DoFilesFind(FullFileName, *AParams, RealDirectory);
         }
       }
     }
   }
 }
 
-void TTerminal::DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params)
+void TTerminal::DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params, const UnicodeString & RealDirectory)
 {
-  LogEvent(FORMAT(L"Searching directory \"%s\" (real path \"%s\")", Directory.c_str(), GetRealDirectory().c_str()));
+  LogEvent(FORMAT(L"Searching directory \"%s\" (real path \"%s\")", Directory.c_str(), RealDirectory.c_str()));
   Params.OnFindingFile(this, Directory, Params.Cancel);
   if (!Params.Cancel)
   {

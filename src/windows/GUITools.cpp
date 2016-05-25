@@ -471,18 +471,25 @@ intptr_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, intptr_t
   return Len;
 }
 
-bool TLocalCustomCommand::PatternReplacement(const UnicodeString & Pattern,
-  UnicodeString & Replacement, bool & Delimit) const
+bool TLocalCustomCommand::PatternReplacement(
+  intptr_t Index, const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit) const
 {
   bool Result = false;
-  if (Pattern == L"!^!")
+  if (Pattern == L"!\\")
+  {
+    // When used as "!\" in an argument to PowerShell, the trailing \ would escpae the ",
+    // so we exclude it
+    Replacement = ::ExcludeTrailingBackslash(FLocalPath);
+    Result = true;
+  }
+  else if (Pattern == L"!^!")
   {
     Replacement = FLocalFileName;
     Result = true;
   }
   else
   {
-    Result = TFileCustomCommand::PatternReplacement(Pattern, Replacement, Delimit);
+    Result = TFileCustomCommand::PatternReplacement(Index, Pattern, Replacement, Delimit);
   }
   return Result;
 }

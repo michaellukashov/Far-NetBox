@@ -1969,7 +1969,7 @@ bool TFTPFileSystem::CanTransferSkipList(intptr_t Params, uintptr_t Flags, const
     DebugAlwaysTrue(FLAGCLEAR(Params, cpAppend)) &&
     FLAGCLEAR(Params, cpResume) &&
     FLAGCLEAR(Flags, tfAutoResume) &&
-    !CopyParam->NewerOnly;
+    !CopyParam->GetNewerOnly();
   return Result;
 }
 

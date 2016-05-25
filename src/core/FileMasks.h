@@ -185,10 +185,9 @@ protected:
     intptr_t Index, intptr_t Len, wchar_t PatternCmd, void * Arg);
 
   virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) const = 0;
-  virtual bool PatternReplacement(const UnicodeString & Pattern,
-    UnicodeString & Replacement, bool & Delimit) const = 0;
   virtual void PatternHint(intptr_t Index, const UnicodeString & Pattern);
   virtual bool PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
+    UnicodeString & Replacement, bool & Delimit) const = 0;
   virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 };
 
@@ -208,7 +207,7 @@ protected:
     UnicodeString & Replacement, bool & Delimit) const;
   void ParsePromptPattern(
     const UnicodeString & Pattern, UnicodeString & Prompt, UnicodeString & Default, bool & Delimit);
-  bool IsPromptPattern(const UnicodeString & Pattern);
+  bool IsPromptPattern(const UnicodeString & Pattern) const;
 
 private:
   TCustomCommand * FChildCustomCommand;

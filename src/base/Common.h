@@ -340,7 +340,7 @@ private:
   TSecondToFirst FSecondToFirst;
 };
 
-typedef std::vector<UnicodeString> TUnicodeStringVector;
+typedef rde::vector<UnicodeString> TUnicodeStringVector;
 
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 

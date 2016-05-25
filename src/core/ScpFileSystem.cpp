@@ -1133,7 +1133,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
           for (intptr_t Index = 0; Index < OutputCopy->GetCount(); ++Index)
           {
-            UnicodeString OutputLine = OutputCopy->GetString[Index];
+            UnicodeString OutputLine = OutputCopy->GetString(Index);
             if (!OutputLine.IsEmpty())
             {
               TRemoteFile * File = CreateRemoteFile(OutputLine);
