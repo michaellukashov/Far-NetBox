@@ -1052,7 +1052,7 @@ bool TInteractiveCustomCommand::IsPromptPattern(const UnicodeString & Pattern) c
 }
 
 void TInteractiveCustomCommand::ParsePromptPattern(
-  const UnicodeString & Pattern, UnicodeString & Prompt, UnicodeString & Default, bool & Delimit)
+  const UnicodeString & Pattern, UnicodeString & Prompt, UnicodeString & Default, bool & Delimit) const
 {
   intptr_t Pos = Pattern.SubString(3, Pattern.Length() - 2).Pos(L"?");
   if (Pos > 0)

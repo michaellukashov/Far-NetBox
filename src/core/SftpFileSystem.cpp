@@ -4878,7 +4878,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
             // as deleting and recreating the file would change ownership.
             // This won't for work for SFTP-3 (OpenSSH) as it does not provide
             // owner name (only UID) and we know only logged in user name (not UID)
-            else if (!File->GetFileOwner().GetName().IsEmpty() && !SameUserName(File->GetFileOwner().GetName(), FTerminal->TerminalGetUserName()))
+            else if (!File->GetFileOwner().GetName().IsEmpty() && !core::SameUserName(File->GetFileOwner().GetName(), FTerminal->TerminalGetUserName()))
             {
               ResumeAllowed = false;
               FTerminal->LogEvent(

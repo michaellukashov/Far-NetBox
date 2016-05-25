@@ -206,7 +206,7 @@ protected:
   virtual bool PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
     UnicodeString & Replacement, bool & Delimit) const;
   void ParsePromptPattern(
-    const UnicodeString & Pattern, UnicodeString & Prompt, UnicodeString & Default, bool & Delimit);
+    const UnicodeString & Pattern, UnicodeString & Prompt, UnicodeString & Default, bool & Delimit) const;
   bool IsPromptPattern(const UnicodeString & Pattern) const;
 
 private:

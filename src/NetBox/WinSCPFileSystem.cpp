@@ -1224,7 +1224,7 @@ void TWinSCPFileSystem::ApplyCommand()
       else
       {
         TCustomCommandData Data1(GetTerminal());
-        TLocalCustomCommand LocalCustomCommand(Data1, GetTerminal()->GetCurrDirectory());
+        TLocalCustomCommand LocalCustomCommand(Data1, GetTerminal()->GetCurrDirectory(), L"");
         TFarInteractiveCustomCommand InteractiveCustomCommand(GetWinSCPPlugin(),
             &LocalCustomCommand);
 
@@ -1302,7 +1302,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
                 TCustomCommandData Data2(FTerminal);
                 TLocalCustomCommand CustomCommand(Data2,
-                  GetTerminal()->GetCurrDirectory(), L"", LocalFile, FileList2);
+                  GetTerminal()->GetCurrDirectory(), L"", L"", LocalFile, FileList2);
                 ExecuteShellAndWait(GetWinSCPPlugin()->GetHandle(), CustomCommand.Complete(Command, true),
                   TProcessMessagesEvent());
               }

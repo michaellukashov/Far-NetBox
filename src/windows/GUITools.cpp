@@ -444,17 +444,19 @@ TLocalCustomCommand::TLocalCustomCommand()
 }
 
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-  const UnicodeString & APath) :
-  TFileCustomCommand(Data, APath)
+  const UnicodeString & RemotePath, const UnicodeString & LocalPath) :
+  TFileCustomCommand(Data, RemotePath)
 {
+  FLocalPath = LocalPath;
 }
 
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-  const UnicodeString & APath, const UnicodeString & AFileName,
-  const UnicodeString & LocalFileName, const UnicodeString & FileList) :
-  TFileCustomCommand(Data, APath, AFileName, FileList),
-  FLocalFileName(LocalFileName)
+  const UnicodeString & RemotePath, const UnicodeString & LocalPath,
+  const UnicodeString & AFileName, const UnicodeString & LocalFileName, const UnicodeString & FileList) :
+  TFileCustomCommand(Data, RemotePath, AFileName, FileList)
 {
+  FLocalPath = LocalPath;
+  FLocalFileName = LocalFileName;
 }
 
 intptr_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index) const
