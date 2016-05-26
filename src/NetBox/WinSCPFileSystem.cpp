@@ -1317,7 +1317,7 @@ void TWinSCPFileSystem::ApplyCommand()
                     UnicodeString FileName = RemoteFileList->GetString(Index);
                     TCustomCommandData Data3(FTerminal);
                     TLocalCustomCommand CustomCommand(Data3,
-                      GetTerminal()->GetCurrDirectory(), FileName, LocalFile, L"");
+                      GetTerminal()->GetCurrDirectory(), FileName, L"", LocalFile, L"");
                     ExecuteShellAndWait(GetWinSCPPlugin()->GetHandle(),
                       CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                   }
@@ -1331,7 +1331,7 @@ void TWinSCPFileSystem::ApplyCommand()
                     TCustomCommandData Data4(FTerminal);
                     TLocalCustomCommand CustomCommand(
                       Data4, GetTerminal()->GetCurrDirectory(),
-                      FileName, LocalFileList->GetString(Index), L"");
+                      L"", FileName, LocalFileList->GetString(Index), L"");
                     ExecuteShellAndWait(GetWinSCPPlugin()->GetHandle(),
                       CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                   }
@@ -1349,7 +1349,7 @@ void TWinSCPFileSystem::ApplyCommand()
                     TCustomCommandData Data5(FTerminal);
                     TLocalCustomCommand CustomCommand(
                       Data5, GetTerminal()->GetCurrDirectory(),
-                      FileName, LocalFileList->GetString(Index), L"");
+                      L"", FileName, LocalFileList->GetString(Index), L"");
                     ExecuteShellAndWait(GetWinSCPPlugin()->GetHandle(),
                       CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                   }
@@ -1361,7 +1361,7 @@ void TWinSCPFileSystem::ApplyCommand()
                 {
                   TCustomCommandData Data6(FTerminal);
                   TLocalCustomCommand CustomCommand(Data6,
-                    GetTerminal()->GetCurrDirectory(), RemoteFileList->GetString(Index), L"", L"");
+                    GetTerminal()->GetCurrDirectory(), L"", RemoteFileList->GetString(Index), L"", L"");
                   ExecuteShellAndWait(GetWinSCPPlugin()->GetHandle(),
                     CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                 }
