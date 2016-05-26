@@ -845,6 +845,11 @@ void TCustomCommand::GetToken(
   }
 }
 
+void TCustomCommand::PatternHint(intptr_t /*Index*/, const UnicodeString & /*Pattern*/)
+{
+  // noop
+}
+
 UnicodeString TCustomCommand::Complete(const UnicodeString & Command,
   bool LastPass)
 {
