@@ -155,6 +155,7 @@ protected:
   static void InitSslSession(ssl_st * Ssl, ne_session * Session);
   void InitSslSessionImpl(ssl_st * Ssl);
   void NeonAddAuthentiation(bool UseNegotiate);
+  void HttpAuthenticationFailed();
 
 private:
   TFileSystemInfo FFileSystemInfo;
@@ -182,6 +183,7 @@ private:
   enum TIgnoreAuthenticationFailure { iafNo, iafWaiting, iafPasswordFailed } FIgnoreAuthenticationFailure;
   UnicodeString FAuthorizationProtocol;
   bool FAuthenticationRetry;
+  bool FNtlmAuthenticationFailed;
 
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);

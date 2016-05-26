@@ -8,6 +8,11 @@
 #include "AsyncGssSocketLayer.h"
 #endif
 
+#ifndef SIO_IDEAL_SEND_BACKLOG_QUERY
+#define SIO_IDEAL_SEND_BACKLOG_QUERY   _IOR('t', 123, ULONG)
+#define SIO_IDEAL_SEND_BACKLOG_CHANGE   _IO('t', 122)
+#endif
+
 #define BUFSIZE 16384
 
 #define STATE_WAITING    0
@@ -38,6 +43,7 @@ CTransferSocket::CTransferSocket(CFtpControlSocket *pOwner, int nMode)
   m_transferdata.transferleft = 0;
   m_nNotifyWaiting = 0;
   m_bActivationPending = false;
+  m_LastSendBufferUpdate = 0;
 
   UpdateStatusBar(true);
 
@@ -305,20 +311,19 @@ void CTransferSocket::SetBuffers()
   /* Set internal socket send buffer
    * this should fix the speed problems some users have reported
    */
-  DWORD value = 0;
-  int len = sizeof(value);
-  GetSockOpt(SO_SNDBUF, &value, &len);
-  int sndbuf = GetOptionVal(OPTION_MPEXT_SNDBUF);
-  if (value < sndbuf)
+  m_SendBuf = GetOptionVal(OPTION_MPEXT_SNDBUF);
+  if (m_SendBuf > 0)
   {
-    value = sndbuf;
-    SetSockOpt(SO_SNDBUF, &value, sizeof(value));
-  }
+    DWORD value;
+    int len = sizeof(value);
+    GetSockOpt(SO_SNDBUF, &value, &len);
+    if (value < m_SendBuf)
+    {
+      SetSockOpt(SO_SNDBUF, &m_SendBuf, sizeof(m_SendBuf));
+    }
 
-  // For now we increase receive buffer, whenever send buffer is set.
-  // The size is not configurable. The constant taken from FZ.
-  if (sndbuf > 0)
-  {
+    // For now we increase receive buffer, whenever send buffer is set.
+    // The size is not configurable. The constant taken from FZ.
     value = 0;
     len = sizeof(value);
     GetSockOpt(SO_RCVBUF, &value, &len);
@@ -329,13 +334,6 @@ void CTransferSocket::SetBuffers()
       SetSockOpt(SO_RCVBUF, &value, sizeof(value));
     }
   }
-  value = 1;
-  // From Filezilla 3 sources:
-  // Enable TCP_NODELAY, speeds things up a bit.
-  // Enable SO_KEEPALIVE, lots of clueless users have broken routers and
-  // firewalls which terminate the control connection on long transfers.
-  // SetSockOpt(TCP_NODELAY, &value, sizeof(value), IPPROTO_TCP);
-  SetSockOpt(SO_KEEPALIVE, &value, sizeof(value));
 }
 
 void CTransferSocket::OnAccept(int nErrorCode)
@@ -545,6 +543,27 @@ void CTransferSocket::OnSend(int nErrorCode)
   if (m_nTransferState == STATE_STARTING)
   {
     OnConnect(0);
+  }
+
+  if (m_SendBuf > 0)
+  {
+    unsigned int Ticks = GetTickCount();
+    if (Ticks - m_LastSendBufferUpdate >= 1000)
+    {
+      DWORD BufferLen = 0;
+      DWORD OutLen = 0;
+      if (WSAIoctl(m_SocketData.hSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, NULL, 0, &BufferLen, sizeof(BufferLen), &OutLen, 0, 0) == 0)
+      {
+        DebugAssert(OutLen == sizeof(BufferLen));
+        if (m_SendBuf < BufferLen)
+        {
+          LogMessage(FZ_LOG_PROGRESS, L"Increasing send buffer from %d to %d", m_SendBuf, BufferLen);
+          m_SendBuf = BufferLen;
+          SetSockOpt(SO_SNDBUF, &m_SendBuf, sizeof(m_SendBuf));
+        }
+      }
+      m_LastSendBufferUpdate = Ticks;
+    }
   }
 
 #ifndef MPEXT_NO_ZLIB

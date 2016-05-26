@@ -1811,6 +1811,7 @@ void TWebDAVFileSystem::NeonCreateRequest(
   TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
   ne_set_request_private(Request, SESSION_FS_KEY, FileSystem);
   ne_add_response_body_reader(Request, NeonBodyAccepter, NeonBodyReader, Request);
+  FileSystem->FNtlmAuthenticationFailed = false;
 }
 
 void TWebDAVFileSystem::NeonPreSend(
@@ -1888,25 +1889,38 @@ bool TWebDAVFileSystem::IsNtlmAuthentication() const
     SameText(FAuthorizationProtocol, L"Negotiate");
 }
 
-void TWebDAVFileSystem::NeonPostHeaders(ne_request * /*Req*/, void * UserData, const ne_status * Status)
+void TWebDAVFileSystem::HttpAuthenticationFailed()
 {
-  TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
-  if (Status->code == HttpUnauthorized)
+  // NTLM/GSSAPI failed
+  if (IsNtlmAuthentication())
   {
-    // NTLM/GSSAPI failed
-    if (FileSystem->IsNtlmAuthentication())
+    if (FNtlmAuthenticationFailed)
     {
       // Next time do not try Negotiate (NTLM/GSSAPI),
       // otherwise we end up in an endless loop.
       // If the server returns all other challenges in the response, removing the Negotiate
       // protocol will itself ensure that other protocols are tried (we haven't seen this behaviour).
-      // IIS will return only Negotiate response in the request was Negotiate, so there's no fallback.
+      // IIS will return only Negotiate response if the request was Negotiate, so there's no fallback.
       // We have to retry with a fresh request. That's what FAuthenticationRetry does.
-      FileSystem->FTerminal->LogEvent(FORMAT(L"%s challenge failed, will try different challenge", (FileSystem->FAuthorizationProtocol)));
-      ne_remove_server_auth(FileSystem->FNeonSession);
-      FileSystem->NeonAddAuthentiation(false);
-      FileSystem->FAuthenticationRetry = true;
+      FTerminal->LogEvent(FORMAT(L"%s challenge failed, will try different challenge", FAuthorizationProtocol.c_str()));
+      ne_remove_server_auth(FNeonSession);
+      NeonAddAuthentiation(false);
+      FAuthenticationRetry = true;
     }
+    else
+    {
+      // The first 401 is expected, the server is using it to send WWW-Authenticate header with data.
+      FNtlmAuthenticationFailed = true;
+    }
+  }
+}
+
+void TWebDAVFileSystem::NeonPostHeaders(ne_request * /*Req*/, void * UserData, const ne_status * Status)
+{
+  TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
+  if (Status->code == HttpUnauthorized)
+  {
+    FileSystem->HttpAuthenticationFailed();
   }
 }
 

@@ -3343,10 +3343,10 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     case ssh1only:
       SshProt1onlyButton->SetChecked(true);
       break;
-    case ssh1:
+    case ssh1deprecated:
       SshProt1Button->SetChecked(true);
       break;
-    case ssh2:
+    case ssh2deprecated:
       SshProt2Button->SetChecked(true);
       break;
     case ssh2only:
@@ -3690,11 +3690,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     }
     else if (SshProt1Button->GetChecked())
     {
-      SessionData->SetSshProt(ssh1);
+      SessionData->SetSshProt(ssh1deprecated);
     }
     else if (SshProt2Button->GetChecked())
     {
-      SessionData->SetSshProt(ssh2);
+      SessionData->SetSshProt(ssh2deprecated);
     }
     else
     {

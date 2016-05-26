@@ -1786,7 +1786,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       FFileTransferPreserveTime = CopyParam->GetPreserveTime();
       // not used for downloads anyway
       FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
-      FFileTransferNoList = CanTransferSkipList(AParams, Flags);
+      FFileTransferNoList = CanTransferSkipList(AParams, Flags, CopyParam);
       UserData.FileName = DestFileName;
       UserData.Params = AParams;
       UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
@@ -1964,14 +1964,15 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & AFileName,
   while (RobustLoop.Retry());
 }
 
-bool TFTPFileSystem::CanTransferSkipList(intptr_t Params, uintptr_t Flags) const
+bool TFTPFileSystem::CanTransferSkipList(intptr_t Params, uintptr_t Flags, const TCopyParamType * CopyParam) const
 {
   bool Result =
     FLAGSET(Params, cpNoConfirmation) &&
     // cpAppend is not supported with FTP
     DebugAlwaysTrue(FLAGCLEAR(Params, cpAppend)) &&
     FLAGCLEAR(Params, cpResume) &&
-    FLAGCLEAR(Flags, tfAutoResume);
+    FLAGCLEAR(Flags, tfAutoResume) &&
+    !CopyParam->GetNewerOnly();
   return Result;
 }
 
@@ -2074,7 +2075,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
       // not used for uploads anyway
       FFileTransferPreserveTime = CopyParam->GetPreserveTime();
       FFileTransferRemoveBOM = CopyParam->GetRemoveBOM();
-      FFileTransferNoList = CanTransferSkipList(Params, Flags);
+      FFileTransferNoList = CanTransferSkipList(Params, Flags, CopyParam);
       // not used for uploads, but we get new name (if any) back in this field
       UserData.FileName = DestFileName;
       UserData.Params = Params;

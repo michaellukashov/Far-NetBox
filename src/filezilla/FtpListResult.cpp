@@ -2026,12 +2026,24 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   {
     //stimeyear has delimiter, so it's a time
     direntry.date.hour = static_cast<int>(strntoi64(stimeyear, strpos - stimeyear));
-    direntry.date.minute = static_cast<int>(strntoi64(strpos + 1, stimeyearlen - (strpos - stimeyear) - 1));
+    int stimeyearrem = stimeyearlen - (strpos - stimeyear) - 1;
+    const char *strpos2 = strnchr(strpos + 1, stimeyearrem, ':');
+    if (strpos2 == NULL)
+    {
+      direntry.date.minute = static_cast<int>(strntoi64(strpos + 1, stimeyearrem));
+    }
+    else
+    {
+      direntry.date.minute = static_cast<int>(strntoi64(strpos + 1, strpos2 - strpos - 1));
+      direntry.date.second = static_cast<int>(strntoi64(strpos2 + 1, stimeyearlen - (strpos2 - stimeyear) - 1));
+      direntry.date.hasseconds = TRUE;
+    }
     direntry.date.hastime = TRUE;
 
     //Problem: Some servers use times only for files newer than 6 months,
-    //others use one year as limit. So there is no support for files with time
-    //dated in the near future. Under normal conditions there should not be such files
+    //others use one year as limit. IIS shows time for files from the current year (jan-dec).
+    //So there is no support for files with time
+    //dated in the near future. Under normal conditions there should not be such files.
     if (!direntry.date.year)
     {
       CTime curtime = CTime::GetCurrentTime();

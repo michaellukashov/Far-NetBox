@@ -80,7 +80,7 @@ class TLoopDetector : public TObject
 public:
   TLoopDetector();
   void RecordVisitedDirectory(const UnicodeString & Directory);
-  bool IsUnvisitedDirectory(const TRemoteFile * AFile);
+  bool IsUnvisitedDirectory(const UnicodeString & Directory);
 
 private:
   std::unique_ptr<TStringList> FVisitedDirectories;
@@ -97,21 +97,9 @@ void TLoopDetector::RecordVisitedDirectory(const UnicodeString & Directory)
   FVisitedDirectories->Add(VisitedDirectory);
 }
 
-bool TLoopDetector::IsUnvisitedDirectory(const TRemoteFile * AFile)
+bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString & Directory)
 {
-  DebugAssert(AFile->GetIsDirectory());
-  UnicodeString Directory = core::UnixExcludeTrailingBackslash(AFile->GetFullFileName());
   bool Result = (FVisitedDirectories->IndexOf(Directory) < 0);
-  if (Result)
-  {
-    if (AFile->GetIsSymLink())
-    {
-      UnicodeString BaseDirectory = core::UnixExtractFileDir(Directory);
-      UnicodeString SymlinkDirectory =
-        core::UnixExcludeTrailingBackslash(core::AbsolutePath(BaseDirectory, AFile->GetLinkTo()));
-      Result = (FVisitedDirectories->IndexOf(SymlinkDirectory) < 0);
-    }
-  }
 
   if (Result)
   {
@@ -144,6 +132,7 @@ public:
   TFindingFileEvent OnFindingFile;
   bool Cancel;
   TLoopDetector LoopDetector;
+  UnicodeString RealDirectory;
 };
 
 TCalculateSizeStats::TCalculateSizeStats() :
@@ -3009,15 +2998,21 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
   }
 }
 
+UnicodeString TTerminal::GetRemoteFileInfo(TRemoteFile * File)
+{
+  return
+    FORMAT(L"%s;%c;%lld;%s;%d;%s;%s;%s;%d",
+      File->GetFileName().c_str(), File->GetType(), File->GetSize(), StandardTimestamp(File->GetModification()).c_str(), int(File->GetModificationFmt()),
+       File->GetFileOwner().GetLogText().c_str(), File->GetFileGroup().GetLogText().c_str(), File->GetRights()->GetText().c_str(),
+       File->GetAttr());
+}
+
 void TTerminal::LogRemoteFile(TRemoteFile * AFile)
 {
   // optimization
   if (GetLog()->GetLogging() && AFile)
   {
-    LogEvent(FORMAT(L"%s;%c;%lld;%s;%d;%s;%s;%s;%d",
-      AFile->GetFileName().c_str(), AFile->GetType(), AFile->GetSize(), StandardTimestamp(AFile->GetModification()).c_str(), int(AFile->GetModificationFmt()),
-      AFile->GetFileOwner().GetLogText().c_str(), AFile->GetFileGroup().GetLogText().c_str(), AFile->GetRights()->GetText().c_str(),
-      AFile->GetAttr()));
+    LogEvent(GetRemoteFileInfo(AFile));
   }
 }
 
@@ -3675,6 +3670,9 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
 
 bool TTerminal::RemoteDeleteFiles(TStrings * AFilesToDelete, intptr_t Params)
 {
+  TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor);
+  FUseBusyCursor = false;
+
   TODO("avoid resolving symlinks while reading subdirectories.");
   // Resolving does not work anyway for relative symlinks in subdirectories
   // (at least for SFTP).
@@ -3884,6 +3882,9 @@ void TTerminal::DoChangeFileProperties(const UnicodeString & AFileName,
 void TTerminal::ChangeFilesProperties(TStrings * AFileList,
   const TRemoteProperties * Properties)
 {
+  TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor);
+  FUseBusyCursor = false;
+
   AnnounceFileListOperation();
   ProcessFiles(AFileList, foSetProperties, MAKE_CALLBACK(TTerminal::ChangeFileProperties, this), const_cast<void *>(static_cast<const void *>(Properties)));
 }
@@ -5820,21 +5821,32 @@ void TTerminal::FileFind(const UnicodeString & AFileName,
 
       if (AFile->GetIsDirectory())
       {
-        if (!AParams->LoopDetector.IsUnvisitedDirectory(AFile))
+        UnicodeString RealDirectory;
+        if (!AFile->GetIsSymLink() || AFile->GetLinkTo().IsEmpty())
+        {
+          RealDirectory = core::UnixIncludeTrailingBackslash(AParams->RealDirectory) + AFile->GetFileName();
+        }
+        else
+        {
+          RealDirectory = core::AbsolutePath(AParams->RealDirectory, AFile->GetLinkTo());
+        }
+
+        if (!AParams->LoopDetector.IsUnvisitedDirectory(RealDirectory))
         {
           LogEvent(FORMAT(L"Already searched \"%s\" directory, link loop detected", FullFileName.c_str()));
         }
         else
         {
-          DoFilesFind(FullFileName, *AParams);
+          DoFilesFind(FullFileName, *AParams, RealDirectory);
         }
       }
     }
   }
 }
 
-void TTerminal::DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params)
+void TTerminal::DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params, const UnicodeString & RealDirectory)
 {
+  LogEvent(FORMAT(L"Searching directory \"%s\" (real path \"%s\")", Directory.c_str(), RealDirectory.c_str()));
   Params.OnFindingFile(this, Directory, Params.Cancel);
   if (!Params.Cancel)
   {
@@ -5843,16 +5855,20 @@ void TTerminal::DoFilesFind(const UnicodeString & Directory, TFilesFindParams & 
     // of the directory listing, so we at least reset the handler in
     // FileFind
     FOnFindingFile = Params.OnFindingFile;
+    UnicodeString PrevRealDirectory = Params.RealDirectory;
     try__finally
     {
       SCOPE_EXIT
       {
+        Params.RealDirectory = PrevRealDirectory;
         FOnFindingFile = nullptr;
       };
+      Params.RealDirectory = RealDirectory;
       ProcessDirectory(Directory, MAKE_CALLBACK(TTerminal::FileFind, this), &Params, false, true);
     }
     __finally
     {
+      Params.RealDirectory = PrevRealDirectory;
       FOnFindingFile = nullptr;
     };
   }
@@ -5869,7 +5885,7 @@ void TTerminal::FilesFind(const UnicodeString & Directory, const TFileMasks & Fi
 
   Params.LoopDetector.RecordVisitedDirectory(Directory);
 
-  DoFilesFind(Directory, Params);
+  DoFilesFind(Directory, Params, Directory);
 }
 
 void TTerminal::SpaceAvailable(const UnicodeString & APath,

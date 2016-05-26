@@ -343,7 +343,9 @@ void sk_cleanup(void)
     }
 
     if (p_WSACleanup)
+    {
 	p_WSACleanup();
+    }
     if (winsock_module)
 	FreeLibrary(winsock_module);
 #ifndef NO_IPV6
@@ -1141,6 +1143,7 @@ static DWORD try_connect(Actual_Socket sock,
         }
     }
 #endif
+
     if ((
 #ifndef NO_IPV6
 	    p_connect(s,
@@ -1179,6 +1182,7 @@ static DWORD try_connect(Actual_Socket sock,
     {
         p_setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (void *) &rcvtimeo, sizeof(rcvtimeo));
     }
+
     // MP: Calling EventSelect only after connect makes sure we receive FD_CLOSE.
     /* Set up a select mechanism. This could be an AsyncSelect on a
      * window, or an EventSelect on an event object. */

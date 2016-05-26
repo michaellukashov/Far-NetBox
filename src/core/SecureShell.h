@@ -78,6 +78,8 @@ private:
   UnicodeString FLastTunnelError;
   UnicodeString FUserName;
   bool FUtfStrings;
+  DWORD FLastSendBufferUpdate;
+  int FSendBuf;
 
 public:
   static TCipher FuncToSsh1Cipher(const void * Cipher);

@@ -56,7 +56,7 @@ enum TProxyMethod
 
 enum TSshProt
 {
-  ssh1only, ssh1, ssh2, ssh2only,
+  ssh1only, ssh1deprecated, ssh2deprecated, ssh2only,
 };
 
 enum TKex

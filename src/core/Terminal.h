@@ -369,7 +369,7 @@ public:
     const UnicodeString & AName, const UnicodeString & Instructions, const UnicodeString & Prompt, bool Echo,
     intptr_t MaxLen, OUT UnicodeString & AResult);
   void FileFind(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
-  void DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params);
+  void DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params, const UnicodeString & RealDirectory);
   bool DoCreateLocalFile(const UnicodeString & AFileName,
     TFileOperationProgressType * OperationProgress,
     bool Resume,
@@ -405,6 +405,7 @@ public:
   TRemoteFileList * DoReadDirectoryListing(const UnicodeString & ADirectory, bool UseCache);
   RawByteString EncryptPassword(const UnicodeString & APassword) const;
   UnicodeString DecryptPassword(const RawByteString & APassword) const;
+  UnicodeString GetRemoteFileInfo(TRemoteFile * AFile);
   void LogRemoteFile(TRemoteFile * AFile);
   UnicodeString FormatFileDetailsForLog(const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size);
   void LogFileDetails(const UnicodeString & AFileName, const TDateTime & Modification, int64_t Size);
