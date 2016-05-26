@@ -618,7 +618,7 @@ bool TRobustOperationLoop::Retry()
 class TRetryOperationLoop
 {
 public:
-  TRetryOperationLoop(TTerminal * Terminal);
+  explicit TRetryOperationLoop(TTerminal * Terminal);
 
   void Error(Exception & E);
   void Error(Exception & E, TSessionAction & Action);

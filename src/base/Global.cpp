@@ -187,7 +187,7 @@ void TraceDumpToFile()
       #else
       WriteFile(TraceFile, i->Message.c_str(), i->Message.Length(), &Written, nullptr);
       #endif
-      i++;
+      ++i;
     }
     TracesInMemory.clear();
 
