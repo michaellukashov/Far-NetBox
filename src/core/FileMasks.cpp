@@ -845,12 +845,41 @@ void TCustomCommand::GetToken(
   }
 }
 
+void TCustomCommand::PatternHint(intptr_t /*Index*/, const UnicodeString & /*Pattern*/)
+{
+  // noop
+}
+
 UnicodeString TCustomCommand::Complete(const UnicodeString & Command,
   bool LastPass)
 {
-  UnicodeString Result;
   intptr_t Index = 1;
+  intptr_t PatternIndex = 0;
+  while (Index <= Command.Length())
+  {
+    intptr_t Len;
+    wchar_t PatternCmd;
+    GetToken(Command, Index, Len, PatternCmd);
 
+    if (PatternCmd == TEXT_TOKEN)
+    {
+    }
+    else if (PatternCmd == L'!')
+    {
+    }
+    else
+    {
+      UnicodeString Pattern = Command.SubString(Index, Len);
+      PatternHint(PatternIndex, Pattern);
+      PatternIndex++;
+    }
+
+    Index += Len;
+  }
+
+  UnicodeString Result;
+  Index = 1;
+  PatternIndex = 0;
   while (Index <= Command.Length())
   {
     intptr_t Len;
@@ -886,7 +915,7 @@ UnicodeString TCustomCommand::Complete(const UnicodeString & Command,
       UnicodeString Pattern = Command.SubString(Index, Len);
       UnicodeString Replacement;
       bool Delimit = true;
-      if (PatternReplacement(Pattern, Replacement, Delimit))
+      if (PatternReplacement(PatternIndex, Pattern, Replacement, Delimit))
       {
         if (!LastPass)
         {
@@ -902,6 +931,8 @@ UnicodeString TCustomCommand::Complete(const UnicodeString & Command,
       {
         Result += Pattern;
       }
+
+      PatternIndex++;
     }
 
     Index += Len;
@@ -972,7 +1003,7 @@ TInteractiveCustomCommand::TInteractiveCustomCommand(
 }
 
 void TInteractiveCustomCommand::Prompt(
-  const UnicodeString & /*Prompt*/, UnicodeString & Value) const
+  intptr_t /*Index*/, const UnicodeString & /*Prompt*/, UnicodeString & Value) const
 {
   Value.Clear();
 }
@@ -1020,30 +1051,44 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, in
   return Len;
 }
 
-bool TInteractiveCustomCommand::PatternReplacement(const UnicodeString & Pattern,
+bool TInteractiveCustomCommand::IsPromptPattern(const UnicodeString & Pattern) const
+{
+  return (Pattern.Length() >= 3) && (Pattern[2] == L'?');
+}
+
+void TInteractiveCustomCommand::ParsePromptPattern(
+  const UnicodeString & Pattern, UnicodeString & Prompt, UnicodeString & Default, bool & Delimit) const
+{
+  intptr_t Pos = Pattern.SubString(3, Pattern.Length() - 2).Pos(L"?");
+  if (Pos > 0)
+  {
+    Default = Pattern.SubString(3 + Pos, Pattern.Length() - 3 - Pos);
+    if ((Pos > 1) && (Pattern[3 + Pos - 2] == L'\\'))
+    {
+      Delimit = false;
+      Pos--;
+    }
+    Prompt = Pattern.SubString(3, Pos - 1);
+  }
+  else
+  {
+    Prompt = Pattern.SubString(3, Pattern.Length() - 3);
+  }
+}
+
+bool TInteractiveCustomCommand::PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
   UnicodeString & Replacement, bool & Delimit) const
 {
   bool Result;
-  if ((Pattern.Length() >= 3) && (Pattern[2] == L'?'))
+  if (IsPromptPattern(Pattern))
   {
     UnicodeString PromptStr;
-    intptr_t Pos = Pattern.SubString(3, Pattern.Length() - 2).Pos(L"?");
-    if (Pos > 0)
-    {
-      Replacement = Pattern.SubString(3 + Pos, Pattern.Length() - 3 - Pos);
-      if ((Pos > 1) && (Pattern[3 + Pos - 2] == L'\\'))
-      {
-        Delimit = false;
-        Pos--;
-      }
-      PromptStr = Pattern.SubString(3, Pos - 1);
-    }
-    else
-    {
-      PromptStr = Pattern.SubString(3, Pattern.Length() - 3);
-    }
+    // The PromptStr and Replacement are actually never used
+    // as the only implementation (TWinInteractiveCustomCommand) uses
+    // prompts and defaults from PatternHint.
+    ParsePromptPattern(Pattern, PromptStr, Replacement, Delimit);
 
-    Prompt(PromptStr, Replacement);
+    Prompt(Index, PromptStr, Replacement);
 
     Result = true;
   }
@@ -1160,7 +1205,7 @@ intptr_t TFileCustomCommand::PatternLen(const UnicodeString & Command, intptr_t 
 }
 
 bool TFileCustomCommand::PatternReplacement(
-  const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit) const
+  intptr_t /*Index*/, const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit) const
 {
   // keep consistent with TSessionLog::OpenLogFile
 
@@ -1211,7 +1256,7 @@ bool TFileCustomCommand::PatternReplacement(
 
 void TFileCustomCommand::Validate(const UnicodeString & Command)
 {
-  int Found[2] = { 0, 0 };
+  intptr_t Found[2] = { 0, 0 };
   CustomValidate(Command, &Found);
   if ((Found[0] > 0) && (Found[1] > 0))
   {
@@ -1223,7 +1268,7 @@ void TFileCustomCommand::Validate(const UnicodeString & Command)
 void TFileCustomCommand::ValidatePattern(const UnicodeString & Command,
   intptr_t Index, intptr_t /*Len*/, wchar_t PatternCmd, void * Arg)
 {
-  int * Found = static_cast<int *>(Arg);
+  intptr_t * Found = static_cast<intptr_t *>(Arg);
 
   DebugAssert(Index > 0);
 
@@ -1233,7 +1278,7 @@ void TFileCustomCommand::ValidatePattern(const UnicodeString & Command,
   }
   else if ((PatternCmd != TEXT_TOKEN) && (PatternLen(Command, Index) == 1))
   {
-    Found[1] = static_cast<int>(Index);
+    Found[1] = Index;
   }
 }
 

@@ -15,6 +15,12 @@
 #ifndef AUTO_WINSOCK
 #include <winsock2.h>
 #endif
+//#include <ws2ipdef.h>
+
+#ifndef SIO_IDEAL_SEND_BACKLOG_QUERY
+#define SIO_IDEAL_SEND_BACKLOG_QUERY   _IOR('t', 123, ULONG)
+#define SIO_IDEAL_SEND_BACKLOG_CHANGE   _IO('t', 122)
+#endif
 
 #define MAX_BUFSIZE 128 * 1024
 
@@ -149,8 +155,8 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
 #define CONF_ssh_cipherlist_MAX CIPHER_MAX
 #define CONF_DEF_INT_NONE(KEY) conf_set_int(conf, KEY, 0);
 #define CONF_DEF_STR_NONE(KEY) conf_set_str(conf, KEY, "");
-  // noop, used only for these and we set the first three explicitly below and latter two are not used in our code
-#define CONF_DEF_INT_INT(KEY) DebugAssert((KEY == CONF_ssh_cipherlist) || (KEY == CONF_ssh_kexlist) || (KEY == CONF_ssh_gsslist) || (KEY == CONF_colours) || (KEY == CONF_wordness));
+  // noop, used only for these and we set the first four explicitly below and latter two are not used in our code
+#define CONF_DEF_INT_INT(KEY) DebugAssert((KEY == CONF_ssh_cipherlist) || (KEY == CONF_ssh_kexlist) || (KEY == CONF_ssh_gsslist) || (KEY == CONF_ssh_hklist) || (KEY == CONF_colours) || (KEY == CONF_wordness));
   // noop, used only for these three and they all can handle undef value
 #define CONF_DEF_STR_STR(KEY) DebugAssert((KEY == CONF_ttymodes) || (KEY == CONF_portfwd) || (KEY == CONF_environmt) || (KEY == CONF_ssh_manual_hostkeys));
   // noop, not used in our code
@@ -389,6 +395,14 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
     conf_set_int_int(conf, CONF_ssh_gsslist, Index, gsslibkeywords[Index].v);
   }
   conf_set_int(conf, CONF_proxy_log_to_term, FORCE_OFF);
+
+  conf_set_int_int(conf, CONF_ssh_hklist, 0, HK_ED25519);
+  conf_set_int_int(conf, CONF_ssh_hklist, 1, HK_ECDSA);
+  conf_set_int_int(conf, CONF_ssh_hklist, 2, HK_RSA);
+  conf_set_int_int(conf, CONF_ssh_hklist, 3, HK_DSA);
+  conf_set_int_int(conf, CONF_ssh_hklist, 4, HK_WARN);
+  DebugAssert(HK_MAX == 5);
+
   return conf;
 }
 
@@ -399,6 +413,8 @@ void TSecureShell::Open()
 
   FAuthenticating = false;
   FAuthenticated = false;
+  FLastSendBufferUpdate = 0;
+  FSendBuf = 0;
 
   // do not use UTF-8 until decided otherwise (see TSCPFileSystem::DetectUtf())
   FUtfStrings = false;
@@ -415,6 +431,7 @@ void TSecureShell::Open()
     FreeBackend(); // in case we are reconnecting
     const char * InitError = nullptr;
     Conf * conf = StoreToConfig(FSessionData, GetSimple());
+    FSendBuf = FSessionData->GetSendBuf();
     try__finally
     {
       SCOPE_EXIT
@@ -2047,6 +2064,23 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
         MSec -= Ticks;
       }
     }
+
+    if ((FSendBuf > 0) && (TicksAfter - FLastSendBufferUpdate >= 1000))
+    {
+      DWORD BufferLen = 0;
+      DWORD OutLen = 0;
+      if (WSAIoctl(FSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, NULL, 0, &BufferLen, sizeof(BufferLen), &OutLen, 0, 0) == 0)
+      {
+        DebugAssert(OutLen == sizeof(BufferLen));
+        if (FSendBuf < static_cast<int>(BufferLen))
+        {
+          LogEvent(FORMAT(L"Increasing send buffer from %d to %d", FSendBuf, static_cast<int>(BufferLen)));
+          FSendBuf = BufferLen;
+          setsockopt(FSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&BufferLen), sizeof(BufferLen));
+        }
+      }
+      FLastSendBufferUpdate = TicksAfter;
+    }
   }
   while (ReadEventRequired && (MSec > 0) && !Result);
 
@@ -2474,6 +2508,11 @@ void TSecureShell::AskAlg(const UnicodeString & AlgType,
     Msg = FMTLOAD(KEX_BELOW_TRESHOLD, AlgName.c_str());
     Error = FMTLOAD(KEX_NOT_VERIFIED, AlgName.c_str());
   }
+  else if (AlgType == L"hostkey type")
+  {
+    // noop as we do not allow host key algorithm configuration,
+    // so no algorithm can get below WARN level
+  }
   else
   {
     int CipherType = 0;
@@ -2492,15 +2531,22 @@ void TSecureShell::AskAlg(const UnicodeString & AlgType,
     else
     {
       DebugFail();
+      CipherType = 0;
     }
 
-    Msg = FMTLOAD(CIPHER_BELOW_TRESHOLD, LoadStr(CipherType).c_str(), AlgName.c_str());
-    Error = FMTLOAD(CIPHER_NOT_VERIFIED, AlgName.c_str());
+    if (CipherType != 0)
+    {
+      Msg = FMTLOAD(CIPHER_BELOW_TRESHOLD, LoadStr(CipherType).c_str(), AlgName.c_str());
+      Error = FMTLOAD(CIPHER_NOT_VERIFIED, AlgName.c_str());
+    }
   }
 
-  if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, nullptr, qtWarning) == qaNo)
+  if (!Msg.IsEmpty())
   {
-    FUI->FatalError(nullptr, Error);
+    if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, nullptr, qtWarning) == qaNo)
+    {
+      FUI->FatalError(nullptr, Error);
+    }
   }
 }
 

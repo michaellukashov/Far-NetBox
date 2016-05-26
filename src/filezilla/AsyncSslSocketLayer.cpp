@@ -1120,6 +1120,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
             SSL_alert_type_string_long(ret),
             desc);
         pLayer->LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+        pLayer->PrintLastErrorMsg();
         nb_free(buffer);
       }
     }
@@ -1134,6 +1135,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
           str,
           SSL_state_string_long(s));
       pLayer->LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+      pLayer->PrintLastErrorMsg();
       nb_free(buffer);
       if (!pLayer->m_bFailureSent)
       {
@@ -1633,13 +1635,16 @@ void CAsyncSslSocketLayer::PrintSessionInfo()
      * otherwise we should print their lengths too */
   }
 
-  char *buffer = static_cast<char *>(nb_calloc(1, 4 * 1024));
+  const int buffer_size = 4 * 1024;
+  char *buffer = static_cast<char *>(nb_calloc(1, buffer_size));
+  char *buffer2 = static_cast<char *>(nb_calloc(1, buffer_size));
   // see also ne_ssl_get_version and ne_ssl_get_cipher
   m_TlsVersionStr = SSL_get_version(m_ssl);
-  sprintf(buffer, "%s: %s, %s",
+  sprintf(buffer, "%s: %s, %s, %s",
       SSL_CIPHER_get_version(ciph),
       SSL_CIPHER_get_name(ciph),
-      enc);
+      enc,
+      SSL_CIPHER_description(ciph, buffer2, buffer_size));
   m_CipherName = buffer;
   // see TWebDAVFileSystem::CollectTLSSessionInfo()
   sprintf(buffer, "Using %s, cipher %s",
@@ -1647,6 +1652,7 @@ void CAsyncSslSocketLayer::PrintSessionInfo()
       m_CipherName.c_str());
   USES_CONVERSION;
   LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+  nb_free(buffer2);
   nb_free(buffer);
 }
 
@@ -1802,10 +1808,12 @@ void CAsyncSslSocketLayer::PrintLastErrorMsg()
   while (err)
   {
     char *buffer = static_cast<char *>(nb_calloc(1, 512));
+    const char *reason = ERR_reason_error_string(err);
     ERR_error_string(err, buffer);
     err = ERR_get_error();
     USES_CONVERSION;
-    LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+    LogSocketMessageRaw(FZ_LOG_PROGRESS, A2T(buffer));
+    LogSocketMessageRaw(FZ_LOG_WARNING, A2T(reason));
     nb_free(buffer);
   }
 }

@@ -439,7 +439,7 @@ void TCopyParamType::DoGetInfoStr(
 //    ScriptArgs += RtfSwitchValue(RESUMESUPPORT_SWITCH, Link, Value);
 
     const UnicodeString ResumeSupportClassName = L"TransferResumeSupport";
-    const bool Inline = true;
+//    const bool Inline = true;
 //    UnicodeString ResumeSupportCode =
 //      AssemblyNewClassInstanceStart(Language, ResumeSupportClassName, Inline);
     if (GetResumeSupport() == rsSmart)

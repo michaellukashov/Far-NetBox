@@ -22,12 +22,11 @@ const wchar_t * ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
 const wchar_t * DefaultName = L"Default Settings";
 const UnicodeString CipherNames[CIPHER_COUNT] = { L"WARN", L"3des", L"blowfish", L"aes", L"des", L"arcfour", L"chacha20" };
 const UnicodeString KexNames[KEX_COUNT] = { L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-gex-sha1", L"rsa", L"ecdh" };
-const wchar_t SshProtList[][10] = {L"1 only", L"1", L"2", L"2 only"};
+const wchar_t SshProtList[][10] = {L"1", L"1>2", L"2>1", L"2"};
 const TCipher DefaultCipherList[CIPHER_COUNT] =
-  // Contrary to PuTTY, we put chacha below AES, as we want to field-test it before promoting it
-  { cipAES, cipBlowfish, cipChaCha20, cip3DES, cipWarn, cipArcfour, cipDES };
+  { cipAES, cipChaCha20, cipBlowfish, cip3DES, cipWarn, cipArcfour, cipDES };
 const TKex DefaultKexList[KEX_COUNT] =
-  { kexECDH, kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
+  { kexECDH, kexDHGEx, kexDHGroup14, kexRSA, kexWarn, kexDHGroup1 };
 const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][16] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"WebDAV" };
 const intptr_t SshPortNumber = 22;
 const intptr_t FtpPortNumber = 21;
@@ -603,7 +602,17 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetGSSAPIServerRealm(Storage->ReadString("GSSAPIServerRealm", Storage->ReadString("KerbPrincipal", GetGSSAPIServerRealm())));
   SetChangeUsername(Storage->ReadBool("ChangeUsername", GetChangeUsername()));
   SetCompression(Storage->ReadBool("Compression", GetCompression()));
-  SetSshProt(static_cast<TSshProt>(Storage->ReadInteger("SshProt", GetSshProt())));
+  TSshProt ASshProt = static_cast<TSshProt>(Storage->ReadInteger(L"SshProt", GetSshProt()));
+  // Old sessions may contain the values correponding to the fallbacks we used to allow; migrate them
+  if (ASshProt == ssh2deprecated)
+  {
+    ASshProt = ssh2only;
+  }
+  else if (ASshProt == ssh1deprecated)
+  {
+    ASshProt = ssh1only;
+  }
+  SetSshProt(ASshProt);
   SetSsh2DES(Storage->ReadBool("Ssh2DES", GetSsh2DES()));
   SetSshNoUserAuth(Storage->ReadBool("SshNoUserAuth", GetSshNoUserAuth()));
   SetCipherList(Storage->ReadString("Cipher", GetCipherList()));
@@ -2040,11 +2049,18 @@ bool TSessionData::GetCanLogin() const
 
 UnicodeString TSessionData::GetSessionKey() const
 {
-  return FORMAT(L"%s@%s", SessionGetUserName().c_str(), GetHostName().c_str());
+  UnicodeString Result = FORMAT(L"%s@%s", SessionGetUserName().c_str(), GetHostName().c_str());
+  if (GetPortNumber() != GetDefaultPort(GetFSProtocol(), GetFtps()))
+  {
+    Result += FORMAT(L":%d", GetPortNumber());
+  }
+  return Result;
 }
 
 UnicodeString TSessionData::GetInternalStorageKey() const
 {
+  // This is probably useless remnant of previous use of this method from OpenSessionInPutty
+  // that needs the method to return something even for ad-hoc sessions
   if (GetName().IsEmpty())
   {
     return GetSessionKey();

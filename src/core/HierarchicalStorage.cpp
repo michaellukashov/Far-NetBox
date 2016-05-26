@@ -540,7 +540,7 @@ bool TRegistryStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate
   {
     FRegistry->CloseKey();
   }
-  UnicodeString Key = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
+  UnicodeString Key = ::ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
   return FRegistry->OpenKey(Key, CanCreate);
 }
 
@@ -1116,7 +1116,7 @@ size_t __fastcall TCustomIniFileStorage::ReadBinaryData(const UnicodeString Name
   size_t Len;
   if (HandleReadByMasterStorage(Name))
   {
-    Len = FMasterStorage->ReadBinaryData(Name, Buffer, Size);
+    FMasterStorage->ReadBinaryData(Name, Buffer, Size);
   }
   else
   {

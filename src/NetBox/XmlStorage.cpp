@@ -13,7 +13,7 @@ static const char * CONST_NAME_ATTR = "name";
 
 TXmlStorage::TXmlStorage(const UnicodeString & AStorage,
                          const UnicodeString & StoredSessionsSubKey) :
-  THierarchicalStorage(ExcludeTrailingBackslash(AStorage)),
+  THierarchicalStorage(::ExcludeTrailingBackslash(AStorage)),
   FXmlDoc(nullptr),
   FCurrentElement(nullptr),
   FStoredSessionsSubKey(StoredSessionsSubKey),

@@ -1251,11 +1251,14 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         {
           ADF(L"Transfer active immediately: %s", EnumName(Data->GetFtpTransferActiveImmediately(), AutoSwitchNames).c_str());
         }
-        ADF(L"FTP: FTPS: %s; [Client certificate: %s]; Passive: %s [Force IP: %s]; MLSD: %s  [List all: %s]",
-           Ftps.c_str(), LogSensitive(Data->GetTlsCertificateFile()).c_str(), BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
+        ADF(L"FTPS: %s; [Client certificate: %s]",
+           Ftps.c_str(), LogSensitive(Data->GetTlsCertificateFile()).c_str());
+        ADF(L"FTP: Passive: %s [Force IP: %s]; MLSD: %s  [List all: %s]; HOST: %s",
+           BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
            EnumName(Data->GetFtpForcePasvIp(), AutoSwitchNames).c_str(),
            EnumName(Data->GetFtpUseMlsd(), AutoSwitchNames).c_str(),
-           EnumName(Data->GetFtpListAll(), AutoSwitchNames).c_str());
+           EnumName(Data->GetFtpListAll(), AutoSwitchNames).c_str(),
+           EnumName(Data->GetFtpHost(), AutoSwitchNames).c_str());
       }
       if (Data->GetFSProtocol() == fsWebDAV)
       {
@@ -1296,7 +1299,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
       {
         intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
-        AddToList(TimeInfo, FORMAT(L"Timezone offset: %dh %dm", (TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour)), L";");
+        AddToList(TimeInfo, FORMAT(L"Timezone offset: %dh %dm", TimeDifferenceMin / MinsPerHour, TimeDifferenceMin % MinsPerHour), L";");
       }
       ADSTR(TimeInfo);
 

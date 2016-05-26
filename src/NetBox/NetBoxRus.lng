@@ -1041,7 +1041,7 @@
 "FileZilla site manager file not found (%s)."
 "No sites found in FileZilla site manager file (%s)."
 "FileZilla site '%s' was not found."
-"You cannot connect to an SFTP server using an FTP protocol. Please selec the correct protocol."
+"You cannot connect to an SFTP server using an FTP protocol. Please select the correct protocol."
 
 "CORE_CONFIRMATION"
 "Host is not communicating for %d seconds.\n\nWait for another %d seconds?"
@@ -1224,7 +1224,7 @@
 "$$"
 
 "WinSCP"
-"5.8.2"
+"5.8.3"
 "1.6.2"
 "Based on WinSCP: SFTP/FTP/SCP client for FAR"
 " Version %s"

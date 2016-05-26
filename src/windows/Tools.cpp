@@ -209,7 +209,7 @@ static bool DoVerifyKey(
         if (!TypeOnly)
         {
           if ((Type == ktSSH1) !=
-                ((SshProt == ssh1only) || (SshProt == ssh1)))
+                ((SshProt == ssh1only) || (SshProt == ssh1deprecated)))
           {
             Message =
               MainInstructions(

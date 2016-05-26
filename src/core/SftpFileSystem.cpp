@@ -4850,28 +4850,39 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
 
           if (DestFileExists)
           {
+            FTerminal->LogEvent(FORMAT(L"File exists: %s", FTerminal->GetRemoteFileInfo(File).c_str()));
             OpenParams.DestFileSize = File->GetSize();
             FileParams.DestSize = OpenParams.DestFileSize;
             FileParams.DestTimestamp = File->GetModification();
             DestRights = *File->GetRights();
-            // - If destination file is symlink, never do resumable transfer,
+            // If destination file is symlink, never do resumable transfer,
             // as it would delete the symlink.
-            // - Also bit of heuristics to detect symlink on SFTP-3 and older
+            if (File->GetIsSymLink())
+            {
+              ResumeAllowed = false;
+              FTerminal->LogEvent(L"Existing file is symbolic link, not doing resumable transfer.");
+            }
+            // Also bit of heuristics to detect symlink on SFTP-3 and older
             // (which does not indicate symlink in SSH_FXP_ATTRS).
             // if file has all permissions and is small, then it is likely symlink.
             // also it is not likely that such a small file (if it is not symlink)
             // gets overwritten by large file (that would trigger resumable transfer).
-            // - Also never do resumable transfer for file owned by other user
+            else if ((FVersion < 4) &&
+                     ((*File->GetRights() & static_cast<uint16_t>(TRights::rfAll)) == static_cast<uint16_t>(TRights::rfAll)) &&
+                     (File->GetSize() < 100))
+            {
+              ResumeAllowed = false;
+              FTerminal->LogEvent(L"Existing file looks like a symbolic link, not doing resumable transfer.");
+            }
+            // Also never do resumable transfer for file owned by other user
             // as deleting and recreating the file would change ownership.
             // This won't for work for SFTP-3 (OpenSSH) as it does not provide
             // owner name (only UID) and we know only logged in user name (not UID)
-            if (File->GetIsSymLink() ||
-                ((FVersion < 4) &&
-                 ((*File->GetRights() & static_cast<uint16_t>(TRights::rfAll)) == static_cast<uint16_t>(TRights::rfAll)) &&
-                 (File->GetSize() < 100)) ||
-                (!File->GetFileOwner().GetName().IsEmpty() && !core::SameUserName(File->GetFileOwner().GetName(), FTerminal->TerminalGetUserName())))
+            else if (!File->GetFileOwner().GetName().IsEmpty() && !core::SameUserName(File->GetFileOwner().GetName(), FTerminal->TerminalGetUserName()))
             {
               ResumeAllowed = false;
+              FTerminal->LogEvent(
+                FORMAT(L"Existing file is owned by another user [%s], not doing resumable transfer.", File->GetFileOwner().GetName().c_str()));
             }
 
             SAFE_DESTROY(File);
@@ -5622,7 +5633,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
       Properties.Valid << vpModification;
 
       FTerminal->TerminalOpenLocalFile(
-        ExcludeTrailingBackslash(DirectoryName), GENERIC_READ, nullptr, nullptr, nullptr,
+        ::ExcludeTrailingBackslash(DirectoryName), GENERIC_READ, nullptr, nullptr, nullptr,
         &Properties.Modification, &Properties.LastAccess, nullptr);
 
       FTerminal->ChangeFileProperties(DestFullName, nullptr, &Properties);
