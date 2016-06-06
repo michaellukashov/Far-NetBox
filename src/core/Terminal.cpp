@@ -3277,6 +3277,8 @@ void TTerminal::ProcessDirectory(const UnicodeString & ADirName,
 
 void TTerminal::ReadDirectory(TRemoteFileList * AFileList)
 {
+  DebugAssert(AFileList);
+
   try
   {
     CustomReadDirectory(AFileList);
