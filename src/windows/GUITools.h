@@ -20,7 +20,8 @@ DEFINE_CALLBACK_TYPE0(TProcessMessagesEvent, void);
 bool FindFile(UnicodeString & APath);
 bool FindTool(const UnicodeString & Name, UnicodeString & APath);
 bool FileExistsEx(const UnicodeString & APath);
-bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params);
+bool _ExecuteShell(const UnicodeString Path, const UnicodeString Params, bool ChangeWorkingDirectory = false);
+bool _ExecuteShell(const UnicodeString & Command);
 bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
   HANDLE & Handle);
 bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & APath,
