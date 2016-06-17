@@ -118,7 +118,7 @@ bool GetExternalEncryptedPassword(const RawByteString & AEncrypted, RawByteStrin
   return Result;
 }
 
-bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len)
+bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, UnicodeString & Error)
 {
   bool Result = false;
 
@@ -172,6 +172,10 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len)
         {
           // Windows thinks the certificate is valid.
           Result = (PolicyStatus.dwError == S_OK);
+          if (!Result)
+          {
+            Error = FORMAT(L"Error: %x, Chain index: %d, Element index: %d", PolicyStatus.dwError, PolicyStatus.lChainIndex, PolicyStatus.lElementIndex);
+          }
         }
 
         CertFreeCertificateChain(ChainContext);
