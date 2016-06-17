@@ -787,6 +787,25 @@ void TFTPFileSystem::CollectUsage()
   }*/
 }
 
+void TFTPFileSystem::DummyReadDirectory(const UnicodeString & Directory)
+{
+  std::unique_ptr<TRemoteDirectory> Files(new TRemoteDirectory(FTerminal));
+  try
+  {
+    Files->SetDirectory(GetCurrDirectory());
+    DoReadDirectory(Files.get());
+  }
+  catch (...)
+  {
+    // ignore non-fatal errors
+    // (i.e. current directory may not exist anymore)
+    if (!FTerminal->GetActive())
+    {
+      throw;
+    }
+  }
+}
+
 void TFTPFileSystem::Idle()
 {
   if (FActive && !FWaitingForReply)
@@ -798,30 +817,9 @@ void TFTPFileSystem::Idle()
         ((Now() - FLastDataSent).GetValue() > FTerminal->GetSessionData()->GetFtpPingIntervalDT().GetValue() * 4))
     {
       FTerminal->LogEvent("Dummy directory read to keep session alive.");
-      FLastDataSent = Now();
+      FLastDataSent = Now(); // probably redundant to the same statement in DoReadDirectory
 
-      std::unique_ptr<TRemoteDirectory> Files(new TRemoteDirectory(FTerminal));
-      try__finally
-      {
-        try
-        {
-          Files->SetDirectory(GetCurrDirectory());
-          DoReadDirectory(Files.get());
-        }
-        catch (...)
-        {
-          // ignore non-fatal errors
-          // (i.e. current directory may not exist anymore)
-          if (!FTerminal->GetActive())
-          {
-            throw;
-          }
-        }
-      }
-      __finally
-      {
-//        delete Files;
-      };
+      DummyReadDirectory(GetCurrDirectory());
     }
   }
 }
@@ -1742,6 +1740,8 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
   }
   else
   {
+    AutoDetectTimeDifference(UnixExtractFileDir(FileName), CopyParam, Params);
+
     FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", AFileName.c_str()));
 
     // Will we use ASCII of BINARY file transfer?
@@ -1869,6 +1869,8 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   TOnceDoneOperation & OnceDoneOperation)
 {
   DebugAssert((AFilesToCopy != nullptr) && (OperationProgress != nullptr));
+
+  AutoDetectTimeDifference(ATargetDir, CopyParam, Params);
 
   Params &= ~cpAppend;
   UnicodeString FileName, FileNameOnly;
@@ -2149,6 +2151,8 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
       base::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false),
       osLocal, FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = core::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
+
+  AutoDetectTimeDifference(TargetDir, CopyParam, Params);
 
   OperationProgress->SetFile(DirectoryName);
 
@@ -2564,41 +2568,63 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 
   AutoDetectTimeDifference(FileList);
 
-  if ((FTimeDifference != 0) || !FUploadedTimes.empty())// optimization
+  if (!IsEmptyFileList(FileList))
   {
-    for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
+    CheckTimeDifference();
+
+    if ((FTimeDifference != 0) || !FUploadedTimes.empty())// optimization
     {
-      ApplyTimeDifference(FileList->GetFile(Index));
+      for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
+      {
+        ApplyTimeDifference(FileList->GetFile(Index));
+      }
     }
   }
 
   FLastDataSent = Now();
 }
 
-void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
+void TFTPFileSystem::CheckTimeDifference()
 {
-  if (!File)
-    return;
-  DebugAssert(File->GetModification() == File->GetLastAccess());
-  File->ShiftTimeInSeconds(FTimeDifference);
-
-  if (File->GetModificationFmt() != mfFull)
+  if (NeedAutoDetectTimeDifference())
   {
-    TUploadedTimes::iterator Iterator = FUploadedTimes.find(File->GetFullFileName());
+    FTerminal->LogEvent("Warning: Timezone difference was not detected yet, timestamps may be incorrect");
+  }
+}
+
+void TFTPFileSystem::ApplyTimeDifference(
+  const UnicodeString & FileName, TDateTime & Modification, TModificationFmt & ModificationFmt)
+{
+  CheckTimeDifference();
+  TRemoteFile::ShiftTimeInSeconds(Modification, ModificationFmt, FTimeDifference);
+
+  if (LookupUploadModificationTime(FileName, Modification, ModificationFmt))
+  {
+    ModificationFmt = mfFull;
+  }
+}
+
+bool TFTPFileSystem::LookupUploadModificationTime(
+  const UnicodeString & FileName, TDateTime & Modification, TModificationFmt ModificationFmt)
+{
+  bool Result = false;
+  if (ModificationFmt != mfFull)
+  {
+    TUploadedTimes::iterator Iterator = FUploadedTimes.find(GetAbsolutePath(FileName, false));
     if (Iterator != FUploadedTimes.end())
     {
       TDateTime UploadModification = Iterator->second;
-      TDateTime UploadModificationReduced = core::ReduceDateTimePrecision(UploadModification, File->GetModificationFmt());
-      if (UploadModificationReduced == File->GetModification())
+      TDateTime UploadModificationReduced = core::ReduceDateTimePrecision(UploadModification, ModificationFmt);
+      if (UploadModificationReduced == Modification)
       {
         if ((FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
         {
           FTerminal->LogEvent(
             FORMAT(L"Enriching modification time of \"%s\" from [%s] to [%s]",
-                   File->GetFullFileName().c_str(), StandardTimestamp(File->GetModification()).c_str(), StandardTimestamp(UploadModification).c_str()));
+                   FileName.c_str(), StandardTimestamp(Modification).c_str(), StandardTimestamp(UploadModification).c_str()));
         }
-        // implicitly sets ModificationFmt to mfFull
-        File->SetModification(UploadModification);
+        Modification = UploadModification;
+        Result = true;
       }
       else
       {
@@ -2606,19 +2632,36 @@ void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
         {
           FTerminal->LogEvent(
             FORMAT(L"Remembered modification time [%s]/[%s] of \"%s\" is obsolete, keeping [%s]",
-                   StandardTimestamp(UploadModification).c_str(), StandardTimestamp(UploadModificationReduced).c_str(), File->GetFullFileName().c_str(), StandardTimestamp(File->GetModification()).c_str()));
+                   StandardTimestamp(UploadModification).c_str(), StandardTimestamp(UploadModificationReduced).c_str(), FileName.c_str(), StandardTimestamp(Modification).c_str()));
         }
-        FUploadedTimes.erase(File->GetFullFileName());
+        FUploadedTimes.erase(FileName);
       }
     }
   }
+
+  return Result;
+}
+
+bool TFTPFileSystem::NeedAutoDetectTimeDifference()
+{
+  return
+    FDetectTimeDifference &&
+    // Does not support MLST/MLSD, but supports MDTM at least
+    !FFileZillaIntf->UsingMlsd() && SupportsReadingFile();
+}
+
+bool TFTPFileSystem::IsEmptyFileList(TRemoteFileList * FileList)
+{
+  return
+    // (note that it's actually never empty here, there's always at least parent directory,
+    // added explicitly by DoReadDirectory)
+    (FileList->GetCount() == 0) ||
+    ((FileList->GetCount() == 1) && FileList->GetFile(0)->GetIsParentDirectory());
 }
 
 void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
 {
-  if (FDetectTimeDifference &&
-      // Does not support MLST/MLSD, but supports MDTM at least
-      !FFileZillaIntf->UsingMlsd() && SupportsReadingFile())
+  if (NeedAutoDetectTimeDifference())
   {
     FTerminal->LogEvent(L"Detecting timezone difference...");
 
@@ -2683,6 +2726,20 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
   }
 }
 
+void TFTPFileSystem::AutoDetectTimeDifference(
+  const UnicodeString & Directory, const TCopyParamType * CopyParam, intptr_t Params)
+{
+  if (NeedAutoDetectTimeDifference() &&
+      // do we need FTimeDifference for the operation?
+      // (tmAutomatic - AsciiFileMask can theoretically include time constraints, while it is unlikely)
+      (!FLAGSET(Params, cpNoConfirmation) ||
+       CopyParam->NewerOnly || (!CopyParam->TransferMode == tmAutomatic) || !CopyParam->IncludeFileMask.Masks.IsEmpty()))
+  {
+    FTerminal->LogEvent(L"Retrieving listing to detect timezone difference");
+    DummyReadDirectory(Directory);
+  }
+}
+
 void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   // whole below "-a" logic is for LIST,
@@ -2714,10 +2771,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         else if (FListAll == asAuto)
         {
           // some servers take "-a" as a mask and return empty directory listing
-          // (note that it's actually never empty here, there's always at least parent directory,
-          // added explicitly by DoReadDirectory)
-          if ((FileList->GetCount() == 0) ||
-              ((FileList->GetCount() == 1) && FileList->GetFile(0)->GetIsParentDirectory()))
+          if (IsEmptyFileList(FileList))
           {
             Repeat = true;
             FListAll = asOff;
@@ -4511,12 +4565,18 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       // as it can take a very long time (up to 1 minute).
       if (!VerificationResult && TryWindowsSystemCertificateStore)
       {
-        if (WindowsValidateCertificate(Data.Certificate, Data.CertificateLen))
+        UnicodeString WindowsCertificateError;
+        if (WindowsValidateCertificate(Data.Certificate, Data.CertificateLen, WindowsCertificateError))
         {
           FTerminal->LogEvent("Certificate verified against Windows certificate store");
           VerificationResult = true;
           // certificate is trusted for all purposes
           Trusted = true;
+        }
+        else
+        {
+          FTerminal->LogEvent(
+            FORMAT(L"Certificate failed to verify against Windows certificate store: %s", DefaultStr(WindowsCertificateError, L"no details").c_str()));
         }
       }
 
