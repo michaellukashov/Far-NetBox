@@ -34,3 +34,5 @@ intptr_t CalculateCompoundVersion(intptr_t MajorVer,
   intptr_t MinorVer, intptr_t Release, intptr_t Build);
 
 intptr_t StrToCompoundVersion(const UnicodeString & AStr);
+
+intptr_t CompareVersion(const UnicodeString & V1, const UnicodeString & V2);

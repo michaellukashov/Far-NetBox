@@ -588,7 +588,7 @@ void TFileMasks::CreateMask(
 
       TDateTime Modification;
       if (TryStrToDateTime(PartStr, Modification, FormatSettings) ||
-          TryRelativeStrToDateTime(PartStr, Modification))
+          TryRelativeStrToDateTime(PartStr, Modification, false))
       {
         TMask::TMaskBoundary & ModificationMask =
           (Low ? Mask.LowModificationMask : Mask.HighModificationMask);

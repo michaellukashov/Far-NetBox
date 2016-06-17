@@ -808,29 +808,6 @@ RawByteString TConfiguration::StronglyRecryptPassword(const RawByteString & Pass
   return Password;
 }
 
-UnicodeString TConfiguration::GetOSVersionStr() const
-{
-  UnicodeString Result;
-  OSVERSIONINFO OSVersionInfo;
-  OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
-  if (::GetVersionEx(&OSVersionInfo) != 0)
-  {
-    Result = FORMAT(L"%d.%d.%d", int(OSVersionInfo.dwMajorVersion),
-      int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber));
-    UnicodeString CSDVersion = OSVersionInfo.szCSDVersion;
-    if (!CSDVersion.IsEmpty())
-    {
-      Result += L" " + CSDVersion;
-    }
-    UnicodeString ProductName = WindowsProductName();
-    if (!ProductName.IsEmpty())
-    {
-      Result += L" - " + ProductName;
-    }
-  }
-  return Result;
-}
-
 TVSFixedFileInfo * TConfiguration::GetFixedApplicationInfo() const
 {
   return GetFixedFileInfo(GetApplicationInfo());

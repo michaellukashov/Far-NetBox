@@ -286,3 +286,15 @@ intptr_t StrToCompoundVersion(const UnicodeString & AStr)
   int64_t Build = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
   return CalculateCompoundVersion(MajorVer, MinorVer, Release, Build);
 }
+
+intptr_t CompareVersion(UnicodeString V1, UnicodeString V2)
+{
+  intptr_t Result = 0;
+  while ((Result == 0) && (!V1.IsEmpty() || !V2.IsEmpty()))
+  {
+    int C1 = StrToIntDef(CutToChar(V1, L'.', false), 0);
+    int C2 = StrToIntDef(CutToChar(V2, L'.', false), 0);
+    Result = CompareValue(C1, C2);
+  }
+  return Result;
+}

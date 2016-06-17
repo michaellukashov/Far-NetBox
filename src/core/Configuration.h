@@ -89,7 +89,6 @@ private:
 
 public:
 
-  UnicodeString GetOSVersionStr() const;
   TVSFixedFileInfo * GetFixedApplicationInfo() const;
   void * GetApplicationInfo() const;
   virtual UnicodeString GetProductVersionStr() const;
@@ -269,7 +268,6 @@ public:
   __property UnicodeString ProductVersion = { read=GetProductVersion };
   __property UnicodeString ProductName = { read=GetProductName };
   __property UnicodeString CompanyName = { read=GetCompanyName };
-  __property UnicodeString OSVersionStr = { read = GetOSVersionStr };
   __property bool IsUnofficial = { read = GetIsUnofficial };
   __property bool Logging  = { read=FLogging, write=SetLogging };
   __property UnicodeString LogFileName  = { read=FLogFileName, write=SetLogFileName };

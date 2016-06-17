@@ -215,9 +215,14 @@ protected:
   bool VerifyCertificateHostName(const TFtpsCertificateData & Data);
   bool SupportsReadingFile() const;
   void AutoDetectTimeDifference(TRemoteFileList * FileList);
+  void AutoDetectTimeDifference(const UnicodeString & Directory, const TCopyParamType * CopyParam, intptr_t Params);
   void ApplyTimeDifference(TRemoteFile * File);
   void ApplyTimeDifference(
     const UnicodeString & FileName, TDateTime & Modification, TModificationFmt & ModificationFmt);
+  void DummyReadDirectory(const UnicodeString & Directory);
+  bool IsEmptyFileList(TRemoteFileList * FileList);
+  void CheckTimeDifference();
+  inline bool NeedAutoDetectTimeDifference();
   bool LookupUploadModificationTime(
     const UnicodeString & FileName, TDateTime & Modification, TModificationFmt ModificationFmt);
   UnicodeString DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString & Alg, TRemoteFile * File);
