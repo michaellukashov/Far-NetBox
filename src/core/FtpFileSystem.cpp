@@ -1740,7 +1740,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
   }
   else
   {
-    AutoDetectTimeDifference(UnixExtractFileDir(FileName), CopyParam, Params);
+    AutoDetectTimeDifference(core::UnixExtractFileDir(AFileName), CopyParam, AParams);
 
     FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", AFileName.c_str()));
 
@@ -2592,6 +2592,19 @@ void TFTPFileSystem::CheckTimeDifference()
   }
 }
 
+void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
+{
+  DebugAssert(File->GetModification() == File->GetLastAccess());
+  File->ShiftTimeInSeconds(FTimeDifference);
+
+  TDateTime Modification = File->GetModification();
+  if (LookupUploadModificationTime(File->GetFullFileName(), Modification, File->GetModificationFmt()))
+  {
+    // implicitly sets ModificationFmt to mfFull
+    File->SetModification(Modification);
+  }
+}
+
 void TFTPFileSystem::ApplyTimeDifference(
   const UnicodeString & FileName, TDateTime & Modification, TModificationFmt & ModificationFmt)
 {
@@ -2733,7 +2746,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(
       // do we need FTimeDifference for the operation?
       // (tmAutomatic - AsciiFileMask can theoretically include time constraints, while it is unlikely)
       (!FLAGSET(Params, cpNoConfirmation) ||
-       CopyParam->NewerOnly || (!CopyParam->TransferMode == tmAutomatic) || !CopyParam->IncludeFileMask.Masks.IsEmpty()))
+       CopyParam->GetNewerOnly() || (!(CopyParam->GetTransferMode() == tmAutomatic)) || !CopyParam->GetIncludeFileMask().GetMasks().IsEmpty()))
   {
     FTerminal->LogEvent(L"Retrieving listing to detect timezone difference");
     DummyReadDirectory(Directory);

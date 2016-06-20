@@ -45,7 +45,7 @@ int Win32Platform = 0;
 int Win32MajorVersion = 0;
 int Win32MinorVersion = 0;
 int Win32BuildNumber = 0;
-// int Win32CSDVersion = 0;
+wchar_t Win32CSDVersion[128] = {};
 
 const wchar_t * __cdecl FarStrStrI(const wchar_t *str1, const wchar_t *str2)
 {

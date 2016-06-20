@@ -294,7 +294,17 @@ intptr_t CompareVersion(UnicodeString V1, UnicodeString V2)
   {
     int C1 = StrToIntDef(CutToChar(V1, L'.', false), 0);
     int C2 = StrToIntDef(CutToChar(V2, L'.', false), 0);
-    Result = CompareValue(C1, C2);
+    // Result = CompareValue(C1, C2);
+    if (C1 < C2)
+    {
+      Result = -1;
+    }
+    else if (C1 > C2)
+    {
+      Result = 1;
+    }
+    else
+      Result = 0;
   }
   return Result;
 }

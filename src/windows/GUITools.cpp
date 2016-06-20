@@ -184,7 +184,7 @@ bool FindTool(const UnicodeString & Name, UnicodeString & APath)
 
 static bool _CopyShellCommandToClipboard(const UnicodeString & Path, const UnicodeString & Params)
 {
-  bool Result = UseAlternativeFunction() && IsKeyPressed(VK_CONTROL);
+  bool Result = false; // UseAlternativeFunction() && IsKeyPressed(VK_CONTROL);
   if (Result)
   {
     TInstantOperationVisualizer Visualizer;
@@ -193,16 +193,16 @@ static bool _CopyShellCommandToClipboard(const UnicodeString & Path, const Unico
   return Result;
 }
 
-bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params, bool ChangeWorkingDirectory)
+bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams, bool ChangeWorkingDirectory)
 {
   bool Result = true;
-  if (!CopyShellCommandToClipboard(Path, Params))
+  if (!_CopyShellCommandToClipboard(APath, AParams))
   {
-    UnicodeString Directory = ExtractFilePath(Path);
+    UnicodeString Directory = ExtractFilePath(APath);
     const wchar_t * PDirectory = (ChangeWorkingDirectory ? Directory.c_str() : nullptr);
     Result =
       ((intptr_t)::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(APath.data()),
-        const_cast<wchar_t *>(Params.data()), PDirectory, SW_SHOWNORMAL) > 32);
+        const_cast<wchar_t *>(AParams.data()), PDirectory, SW_SHOWNORMAL) > 32);
   }
   return Result;
 }
