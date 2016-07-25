@@ -201,6 +201,7 @@ Socket platform_new_connection(SockAddr addr, const char *hostname,
                 ("Unable to create pipes for proxy command", plug);
             sfree(cmd);
             CloseHandle(us_from_cmd);
+            CloseHandle(cmd_from_us);
             CloseHandle(cmd_to_us);
             return ret;
         }
