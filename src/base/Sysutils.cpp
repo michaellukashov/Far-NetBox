@@ -1083,7 +1083,7 @@ void InitPlatformId()
     Win32MajorVersion = OSVersionInfo.dwMajorVersion;
     Win32MinorVersion = OSVersionInfo.dwMinorVersion;
     Win32BuildNumber = OSVersionInfo.dwBuildNumber;
-    wmemcpy(Win32CSDVersion, OSVersionInfo.szCSDVersion, sizeof(OSVersionInfo.szCSDVersion));
+    memcpy(Win32CSDVersion, OSVersionInfo.szCSDVersion, sizeof(OSVersionInfo.szCSDVersion));
   }
 }
 
