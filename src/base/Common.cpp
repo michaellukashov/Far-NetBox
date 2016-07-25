@@ -2847,7 +2847,7 @@ UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents)
 
 static UnicodeString GetTlsErrorStr(int Err)
 {
-  char * Buffer = new char[512];
+  char Buffer[512];
   ERR_error_string(Err, Buffer);
   // not sure about the UTF8
   return UnicodeString(UTF8String(Buffer));
