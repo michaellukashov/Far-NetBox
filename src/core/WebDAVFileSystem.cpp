@@ -2201,7 +2201,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName,
         GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
 //      if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress,
-//             &LocalHandle, FLAGSET(Params, cpNoConfirmation)))
+//             &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
         ThrowSkipFileNull();
@@ -2222,7 +2222,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
           }
           else
           {
-            CloseHandle(LocalHandle);
+            CloseHandle(LocalFileHandle);
           }
 
           if (DeleteLocalFile)
@@ -2266,7 +2266,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
         }
         else
         {
-          CloseHandle(LocalHandle);
+          CloseHandle(LocalFileHandle);
         }
 
         if (DeleteLocalFile)
