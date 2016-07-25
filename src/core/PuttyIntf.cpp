@@ -637,7 +637,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
   {
     throw Exception(LoadStr(AUTH_TRANSL_WRONG_PASSPHRASE));
   }
-
+  filename_free(KeyFile);
   return reinterpret_cast<TPrivateKey *>(Ssh2Key);
 }
 
