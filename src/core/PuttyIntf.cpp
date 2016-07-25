@@ -593,7 +593,7 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeStr
     }
     sfree(CommentStr);
   }
-
+  filename_free(KeyFile);
   return Result;
 }
 
@@ -671,6 +671,7 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
       DebugFail();
       break;
   }
+  filename_free(KeyFile);
 }
 
 void FreeKey(TPrivateKey * PrivateKey)
