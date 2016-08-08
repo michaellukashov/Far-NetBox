@@ -817,28 +817,20 @@ const TRemoteToken * TRemoteTokenList::Token(intptr_t Index) const
 TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
   TPersistent(),
   FDirectory(nullptr),
+  FModificationFmt(mfFull),
+  FLinkedFile(nullptr),
+  FLinkedByFile(ALinkedByFile),
+  FRights(new TRights()),
+  FTerminal(nullptr),
   FSize(0),
   FINodeBlocks(0),
-  FIconIndex(0),
-  FIsSymLink(false),
-  FLinkedFile(nullptr),
-  FLinkedByFile(nullptr),
-  FRights(nullptr),
-  FTerminal(nullptr),
+  FIconIndex(-1),
+  FIsHidden(-1),
   FType(0),
+  FIsSymLink(false),
   FSelected(false),
-  FCyclicLink(false),
-  FIsHidden(0)
+  FCyclicLink(false)
 {
-  FLinkedFile = nullptr;
-  FRights = new TRights();
-  FIconIndex = -1;
-  FCyclicLink = false;
-  FModificationFmt = mfFull;
-  FLinkedByFile = ALinkedByFile;
-  FTerminal = nullptr;
-  FDirectory = nullptr;
-  FIsHidden = -1;
 }
 
 TRemoteFile::~TRemoteFile()

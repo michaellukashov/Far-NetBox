@@ -12,8 +12,8 @@
 
 THttp::THttp() :
   FProxyPort(0),
-  FOnDownload(nullptr),
   FResponseLimit(-1),
+  FOnDownload(nullptr),
   FRequestHeaders(nullptr),
   FResponseHeaders(new TStringList())
 {

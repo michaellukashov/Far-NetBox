@@ -228,8 +228,6 @@ UnicodeString ExpatVersion()
 
 TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
-  FPortNumber(0),
-  FIgnoreAuthenticationFailure(iafNo),
   FActive(false),
   FHasTrailingSlash(false),
   FCancelled(false),
@@ -241,7 +239,10 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   FInitialHandshake(false),
   FAuthenticationRequested(false),
   FCapabilities(0),
-  FAuthenticationRetry(false)
+  FPortNumber(0),
+  FIgnoreAuthenticationFailure(iafNo),
+  FAuthenticationRetry(false),
+  FNtlmAuthenticationFailed(false)
 {
 }
 

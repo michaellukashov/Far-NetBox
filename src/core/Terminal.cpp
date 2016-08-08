@@ -707,9 +707,6 @@ bool TRetryOperationLoop::Retry()
 TTerminal::TTerminal() :
   TObject(),
   TSessionUI(),
-  FReadCurrentDirectoryPending(false),
-  FReadDirectoryPending(false),
-  FTunnelOpening(false),
   FSessionData(nullptr),
   FLog(nullptr),
   FActionLog(nullptr),
@@ -735,7 +732,6 @@ TTerminal::TTerminal() :
   FUseBusyCursor(false),
   FDirectoryCache(nullptr),
   FDirectoryChangesCache(nullptr),
-  FFileSystem(nullptr),
   FSecureShell(nullptr),
   FFSProtocol(cfsUnknown),
   FCommandSession(nullptr),
@@ -755,7 +751,11 @@ TTerminal::TTerminal() :
   FCollectFileSystemUsage(false),
   FRememberedPasswordTried(false),
   FRememberedTunnelPasswordTried(false),
-  FNesting(0)
+  FNesting(0),
+  FReadCurrentDirectoryPending(false),
+  FReadDirectoryPending(false),
+  FTunnelOpening(false),
+  FFileSystem(nullptr)
 {
   FOldFiles = new TRemoteDirectory(this);
 }

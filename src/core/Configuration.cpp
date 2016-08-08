@@ -58,14 +58,14 @@ TConfiguration::TConfiguration() :
   FTunnelLocalPortNumberLow(0),
   FTunnelLocalPortNumberHigh(0),
   FCacheDirectoryChangesMaxSize(0),
+  FSessionReopenAutoMaximumNumberOfRetries(0),
   FShowFtpWelcomeMessage(false),
   FTryFtpWhenSshFails(false),
   FScripting(false),
   FDisablePasswordStoring(false),
   FForceBanners(false),
   FDisableAcceptingHostKeys(false),
-  FDefaultCollectUsage(false),
-  FSessionReopenAutoMaximumNumberOfRetries(0)
+  FDefaultCollectUsage(false)
 {
   FUpdating = 0;
   FStorage = stRegistry;
