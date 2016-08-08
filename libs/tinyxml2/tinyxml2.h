@@ -40,6 +40,7 @@ distribution.
 #   include <cstdlib>
 #   include <cstring>
 #endif
+#include <stdint.h>
 
 /*
    TODO: intern strings instead of allocation.
@@ -95,9 +96,9 @@ distribution.
 /* Versioning, past 1.0.14:
 	http://semver.org/
 */
-static const int TIXML2_MAJOR_VERSION = 3;
+static const int TIXML2_MAJOR_VERSION = 4;
 static const int TIXML2_MINOR_VERSION = 0;
-static const int TIXML2_PATCH_VERSION = 0;
+static const int TIXML2_PATCH_VERSION = 1;
 
 namespace tinyxml2
 {
@@ -577,6 +578,7 @@ public:
     static void ToStr( bool v, char* buffer, int bufferSize );
     static void ToStr( float v, char* buffer, int bufferSize );
     static void ToStr( double v, char* buffer, int bufferSize );
+	static void ToStr(int64_t v, char* buffer, int bufferSize);
 
     // converts strings to primitive types
     static bool	ToInt( const char* str, int* value );
@@ -584,6 +586,7 @@ public:
     static bool	ToBool( const char* str, bool* value );
     static bool	ToFloat( const char* str, float* value );
     static bool ToDouble( const char* str, double* value );
+	static bool ToInt64(const char* str, int64_t* value);
 };
 
 
@@ -854,6 +857,20 @@ public:
     */
     virtual bool Accept( XMLVisitor* visitor ) const = 0;
 
+	/** 
+		Set user data into the XMLNode. TinyXML-2 in 
+		no way processes or interprets user data.
+		It is initially 0.
+	*/
+	void SetUserData(void* userData)	{ _userData = userData; }
+
+	/**
+		Get user data set into the XMLNode. TinyXML-2 in
+		no way processes or interprets user data.
+		It is initially 0.
+	*/
+	void* GetUserData() const			{ return _userData; }
+
 protected:
     XMLNode( XMLDocument* );
     virtual ~XMLNode();
@@ -869,6 +886,8 @@ protected:
 
     XMLNode*		_prev;
     XMLNode*		_next;
+
+	void*			_userData;
 
 private:
     MemPool*		_memPool;
@@ -1061,11 +1080,18 @@ public:
         If the value isn't an integer, 0 will be returned. There is no error checking;
     	use QueryIntValue() if you need error checking.
     */
-    int		 IntValue() const				{
-        int i=0;
-        QueryIntValue( &i );
-        return i;
-    }
+	int	IntValue() const {
+		int i = 0;
+		QueryIntValue(&i);
+		return i;
+	}
+
+	int64_t Int64Value() const {
+		int64_t i = 0;
+		QueryInt64Value(&i);
+		return i;
+	}
+
     /// Query as an unsigned integer. See IntValue()
     unsigned UnsignedValue() const			{
         unsigned i=0;
@@ -1098,7 +1124,9 @@ public:
     XMLError QueryIntValue( int* value ) const;
     /// See QueryIntValue
     XMLError QueryUnsignedValue( unsigned int* value ) const;
-    /// See QueryIntValue
+	/// See QueryIntValue
+	XMLError QueryInt64Value(int64_t* value) const;
+	/// See QueryIntValue
     XMLError QueryBoolValue( bool* value ) const;
     /// See QueryIntValue
     XMLError QueryDoubleValue( double* value ) const;
@@ -1111,7 +1139,9 @@ public:
     void SetAttribute( int value );
     /// Set the attribute to value.
     void SetAttribute( unsigned value );
-    /// Set the attribute to value.
+	/// Set the attribute to value.
+	void SetAttribute(int64_t value);
+	/// Set the attribute to value.
     void SetAttribute( bool value );
     /// Set the attribute to value.
     void SetAttribute( double value );
@@ -1197,26 +1227,35 @@ public:
         QueryIntAttribute( name, &i );
         return i;
     }
+
     /// See IntAttribute()
     unsigned UnsignedAttribute( const char* name ) const {
         unsigned i=0;
         QueryUnsignedAttribute( name, &i );
         return i;
     }
-    /// See IntAttribute()
-    bool	 BoolAttribute( const char* name ) const	{
+
+	/// See IntAttribute()
+	int64_t Int64Attribute(const char* name) const {
+		int64_t i = 0;
+		QueryInt64Attribute(name, &i);
+		return i;
+	}
+
+	/// See IntAttribute()
+    bool BoolAttribute( const char* name ) const	{
         bool b=false;
         QueryBoolAttribute( name, &b );
         return b;
     }
     /// See IntAttribute()
-    double 	 DoubleAttribute( const char* name ) const	{
+    double DoubleAttribute( const char* name ) const	{
         double d=0;
         QueryDoubleAttribute( name, &d );
         return d;
     }
     /// See IntAttribute()
-    float	 FloatAttribute( const char* name ) const	{
+    float FloatAttribute( const char* name ) const	{
         float f=0;
         QueryFloatAttribute( name, &f );
         return f;
@@ -1242,7 +1281,8 @@ public:
         }
         return a->QueryIntValue( value );
     }
-    /// See QueryIntAttribute()
+
+	/// See QueryIntAttribute()
     XMLError QueryUnsignedAttribute( const char* name, unsigned int* value ) const	{
         const XMLAttribute* a = FindAttribute( name );
         if ( !a ) {
@@ -1250,7 +1290,17 @@ public:
         }
         return a->QueryUnsignedValue( value );
     }
-    /// See QueryIntAttribute()
+
+	/// See QueryIntAttribute()
+	XMLError QueryInt64Attribute(const char* name, int64_t* value) const {
+		const XMLAttribute* a = FindAttribute(name);
+		if (!a) {
+			return XML_NO_ATTRIBUTE;
+		}
+		return a->QueryInt64Value(value);
+	}
+
+	/// See QueryIntAttribute()
     XMLError QueryBoolAttribute( const char* name, bool* value ) const				{
         const XMLAttribute* a = FindAttribute( name );
         if ( !a ) {
@@ -1301,6 +1351,10 @@ public:
 		return QueryUnsignedAttribute( name, value );
 	}
 
+	int QueryAttribute(const char* name, int64_t* value) const {
+		return QueryInt64Attribute(name, value);
+	}
+
 	int QueryAttribute( const char* name, bool* value ) const {
 		return QueryBoolAttribute( name, value );
 	}
@@ -1328,7 +1382,14 @@ public:
         XMLAttribute* a = FindOrCreateAttribute( name );
         a->SetAttribute( value );
     }
-    /// Sets the named attribute to value.
+
+	/// Sets the named attribute to value.
+	void SetAttribute(const char* name, int64_t value) {
+		XMLAttribute* a = FindOrCreateAttribute(name);
+		a->SetAttribute(value);
+	}
+
+	/// Sets the named attribute to value.
     void SetAttribute( const char* name, bool value )			{
         XMLAttribute* a = FindOrCreateAttribute( name );
         a->SetAttribute( value );
@@ -1425,7 +1486,9 @@ public:
     void SetText( int value );
     /// Convenience method for setting text inside an element. See SetText() for important limitations.
     void SetText( unsigned value );  
-    /// Convenience method for setting text inside an element. See SetText() for important limitations.
+	/// Convenience method for setting text inside an element. See SetText() for important limitations.
+	void SetText(int64_t value);
+	/// Convenience method for setting text inside an element. See SetText() for important limitations.
     void SetText( bool value );  
     /// Convenience method for setting text inside an element. See SetText() for important limitations.
     void SetText( double value );  
@@ -1461,7 +1524,9 @@ public:
     XMLError QueryIntText( int* ival ) const;
     /// See QueryIntText()
     XMLError QueryUnsignedText( unsigned* uval ) const;
-    /// See QueryIntText()
+	/// See QueryIntText()
+	XMLError QueryInt64Text(int64_t* uval) const;
+	/// See QueryIntText()
     XMLError QueryBoolText( bool* bval ) const;
     /// See QueryIntText()
     XMLError QueryDoubleText( double* dval ) const;
@@ -1998,7 +2063,8 @@ public:
     void PushAttribute( const char* name, const char* value );
     void PushAttribute( const char* name, int value );
     void PushAttribute( const char* name, unsigned value );
-    void PushAttribute( const char* name, bool value );
+	void PushAttribute( const char* name, int64_t value);
+	void PushAttribute( const char* name, bool value );
     void PushAttribute( const char* name, double value );
     /// If streaming, close the Element.
     virtual void CloseElement( bool compactMode=false );
@@ -2009,7 +2075,9 @@ public:
     void PushText( int value );
     /// Add a text node from an unsigned.
     void PushText( unsigned value );
-    /// Add a text node from a bool.
+	/// Add a text node from an unsigned.
+	void PushText(int64_t value);
+	/// Add a text node from a bool.
     void PushText( bool value );
     /// Add a text node from a float.
     void PushText( float value );
