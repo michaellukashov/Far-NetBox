@@ -14,6 +14,7 @@ TMessageParams::TMessageParams(uintptr_t AParams) :
   Timer(0),
   TimerEvent(nullptr),
   TimerAnswers(0),
+  TimerQueryType(qtConfirmation),
   Timeout(0),
   TimeoutAnswer(0),
   NeverAskAgainAnswer(0),
