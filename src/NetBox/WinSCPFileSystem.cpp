@@ -1067,7 +1067,8 @@ void TWinSCPFileSystem::CreateLink()
   {
     File = NB_STATIC_DOWNCAST(TRemoteFile, (*PanelInfo)->GetFocusedItem()->GetUserData());
 
-    Edit = File->GetIsSymLink() && GetTerminal()->GetSessionData()->GetResolveSymlinks();
+    if (File)
+      Edit = File->GetIsSymLink() && GetTerminal()->GetSessionData()->GetResolveSymlinks();
     if (Edit)
     {
       FileName = File->GetFileName();
@@ -1095,7 +1096,8 @@ void TWinSCPFileSystem::CreateLink()
         GetTerminal()->RemoteDeleteFile(L"", File, &Params);
       }
     }
-    GetTerminal()->CreateLink(FileName, PointTo, SymbolicLink, File->GetIsDirectory());
+    if (File)
+      GetTerminal()->CreateLink(FileName, PointTo, SymbolicLink, File->GetIsDirectory());
     if (UpdatePanel())
     {
       RedrawPanel();
