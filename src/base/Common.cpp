@@ -2691,7 +2691,7 @@ UnicodeString WindowsVersion()
   // on Windows 10 due to some hacking in InitPlatformId, the Win32BuildNumber is lost
   if (GetVersionEx(&OSVersionInfo) != 0)
   {
-    Result = FORMAT(L"%d.%d.%d", (int(OSVersionInfo.dwMajorVersion), int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber)));
+    Result = FORMAT(L"%d.%d.%d", int(OSVersionInfo.dwMajorVersion), int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber));
   }
   return Result;
 }
