@@ -739,7 +739,7 @@ XMLNode::~XMLNode()
 
 const char* XMLNode::Value() const 
 {
-    // Catch an edge case: XMLDocuments don't have a a Value. Carefully return nullptr.
+    // Edge case: XMLDocuments don't have a Value. Return null.
     if ( this->ToDocument() )
         return 0;
     return _value.GetStr();
@@ -991,7 +991,7 @@ char* XMLNode::ParseDeep( char* p, StrPair* parentEnd )
                 // Set error, if document already has children.
                 if ( !_document->NoChildren() ) {
                         _document->SetError( XML_ERROR_PARSING_DECLARATION, decl->Value(), 0);
-                        DeleteNode( decl );
+                        DeleteNode( node );
                         break;
                 }
         }
