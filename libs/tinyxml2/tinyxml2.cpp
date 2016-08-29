@@ -538,7 +538,7 @@ void XMLUtil::ToStr( unsigned v, char* buffer, int bufferSize )
 
 void XMLUtil::ToStr( bool v, char* buffer, int bufferSize )
 {
-    TIXML_SNPRINTF( buffer, bufferSize, "%d", v ? 1 : 0 );
+    TIXML_SNPRINTF( buffer, bufferSize, "%s", v ? "true" : "false" );
 }
 
 /*
@@ -760,11 +760,7 @@ void XMLNode::DeleteChildren()
 {
     while( _firstChild ) {
         TIXMLASSERT( _lastChild );
-        TIXMLASSERT( _firstChild->_document == _document );
-        XMLNode* node = _firstChild;
-        Unlink( node );
-
-        DeleteNode( node );
+        DeleteChild( _firstChild );
     }
     _firstChild = _lastChild = 0;
 }
