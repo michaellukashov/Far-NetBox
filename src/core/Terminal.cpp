@@ -1313,6 +1313,8 @@ void TTerminal::OpenTunnel()
     FTunnelData->SetTunnelPortFwd(FORMAT(L"L%d\t%s:%d",
       FTunnelLocalPortNumber, FSessionData->GetHostNameExpanded().c_str(), FSessionData->GetPortNumber()));
     FTunnelData->SetHostKey(FSessionData->GetTunnelHostKey());
+
+    // inherit proxy options on the main session
     FTunnelData->SetProxyMethod(FSessionData->GetProxyMethod());
     FTunnelData->SetProxyHost(FSessionData->GetProxyHost());
     FTunnelData->SetProxyPort(FSessionData->GetProxyPort());
@@ -1322,6 +1324,25 @@ void TTerminal::OpenTunnel()
     FTunnelData->SetProxyLocalCommand(FSessionData->GetProxyLocalCommand());
     FTunnelData->SetProxyDNS(FSessionData->GetProxyDNS());
     FTunnelData->SetProxyLocalhost(FSessionData->GetProxyLocalhost());
+
+    // inherit most SSH options of the main session (except for private key and bugs)
+    FTunnelData->SetCompression(FSessionData->GetCompression());
+    FTunnelData->SetSshProt(FSessionData->GetSshProt());
+    FTunnelData->SetCipherList(FSessionData->GetCipherList());
+    FTunnelData->SetSsh2DES(FSessionData->GetSsh2DES());
+
+    FTunnelData->SetKexList(FSessionData->GetKexList());
+    FTunnelData->SetRekeyData(FSessionData->GetRekeyData());
+    FTunnelData->SetRekeyTime(FSessionData->GetRekeyTime());
+
+    FTunnelData->SetSshNoUserAuth(FSessionData->GetSshNoUserAuth());
+    FTunnelData->SetAuthGSSAPI(FSessionData->GetAuthGSSAPI());
+    FTunnelData->SetGSSAPIFwdTGT(FSessionData->GetGSSAPIFwdTGT());
+    FTunnelData->SetTryAgent(FSessionData->GetTryAgent());
+    FTunnelData->SetAgentFwd(FSessionData->GetAgentFwd());
+    FTunnelData->SetAuthTIS(FSessionData->GetAuthTIS());
+    FTunnelData->SetAuthKI(FSessionData->GetAuthKI());
+    FTunnelData->SetAuthKIPassword(FSessionData->GetAuthKIPassword());
 
     FTunnelLog = new TSessionLog(this, FTunnelData, FConfiguration);
     FTunnelLog->SetParent(FLog);
@@ -6695,6 +6716,13 @@ UnicodeString TTerminal::ChangeFileName(const TCopyParamType * CopyParam,
 bool TTerminal::CanRecurseToDirectory(const TRemoteFile * AFile) const
 {
   return !AFile->GetIsSymLink() || FSessionData->GetFollowDirectorySymlinks();
+}
+
+bool TTerminal::IsThisOrChild(TTerminal * Terminal) const
+{
+  return
+    (this == Terminal) ||
+    ((FCommandSession != nullptr) && (FCommandSession == Terminal));
 }
 
 TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :

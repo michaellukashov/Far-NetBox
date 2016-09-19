@@ -475,7 +475,7 @@ int FakeFileImageIndex(const UnicodeString & /*AFileName*/, uint32_t /*Attrs*/,
   }
   // this should be somewhere else, probably in TUnixDirView,
   // as the "partial" overlay is added there too
-  if (AnsiSameText(base::UnixExtractFileExt(FileName), PARTIAL_EXT))
+  if (::SameText(base::UnixExtractFileExt(FileName), PARTIAL_EXT))
   {
     static const size_t PartialExtLen = _countof(PARTIAL_EXT) - 1;
     FileName.SetLength(FileName.Length() - PartialExtLen);
@@ -511,7 +511,7 @@ bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserNam
   // Bitvise reports file owner as "user@host", but we login with "user" only.
   UnicodeString AUserName1 = CopyToChar(UserName1, L'@', true);
   UnicodeString AUserName2 = CopyToChar(UserName2, L'@', true);
-  return SameText(AUserName1, AUserName2);
+  return ::SameText(AUserName1, AUserName2);
 }
 
 UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, bool Unix)
@@ -1176,15 +1176,24 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     {
       FGroup.SetName(FGroup.GetName() + Col);
       GetCol();
-      DebugAssert(!Col.IsEmpty());
-      // for devices etc.. there is additional column ending by comma, we ignore it
-      if (Col[Col.Length()] == L',')
-        GetCol();
-      ASize = ::StrToInt64Def(Col, -1);
-      // if it's not a number (file size) we take it as part of group name
-      // (at least on CygWin, there can be group with space in its name)
-      if (ASize < 0)
-        Col = L" " + Col;
+      // SSH FS link like
+      // d????????? ? ? ? ? ? name
+      if ((FGroup.GetName() == L"?") && (Col == L"?"))
+      {
+        ASize = 0;
+      }
+      else
+      {
+        DebugAssert(!Col.IsEmpty());
+        // for devices etc.. there is additional column ending by comma, we ignore it
+        if (Col[Col.Length()] == L',')
+          GetCol();
+        ASize = ::StrToInt64Def(Col, -1);
+        // if it's not a number (file size) we take it as part of group name
+        // (at least on CygWin, there can be group with space in its name)
+        if (ASize < 0)
+          Col = L" " + Col;
+      }
     }
     while (ASize < 0);
 
@@ -1193,188 +1202,183 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     {
       FSize = ASize;
 
+      bool FullTime = false;
       bool DayMonthFormat = false;
       Word Year = 0, Month = 0, Day = 0, Hour = 0, Min = 0, Sec = 0;
       Word CurrYear = 0, CurrMonth = 0, CurrDay = 0;
       ::DecodeDate(::Date(), CurrYear, CurrMonth, CurrDay);
 
       GetCol();
-      // format dd mmm or mmm dd ?
-      Day = ::ToWord(::StrToIntDef(Col, 0));
-      if (Day > 0)
+      // SSH FS link, see above
+      if (Col == L"?")
       {
-        DayMonthFormat = true;
         GetCol();
-      }
-      Month = 0;
-      auto Col2Month = [&]()
-      {
-        for (Word IMonth = 0; IMonth < 12; IMonth++)
-          if (!Col.CompareIC(EngShortMonthNames[IMonth]))
-          {
-            Month = IMonth;
-            Month++;
-            break;
-          }
-      };
-
-      Col2Month();
-      // if the column is not known month name, it may have been "yyyy-mm-dd"
-      // for --full-time format
-      if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
-      {
-        Year = ToWord(Col.SubString(1, 4).ToInt());
-        Month = ToWord(Col.SubString(6, 2).ToInt());
-        Day = ToWord(Col.SubString(9, 2).ToInt());
-        GetCol();
-        Hour = ToWord(Col.SubString(1, 2).ToInt());
-        Min = ToWord(Col.SubString(4, 2).ToInt());
-        if (Col.Length() >= 8)
-        {
-          Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
-        }
-        else
-        {
-          Sec = 0;
-        }
-        FModificationFmt = mfFull;
-        // skip TZ (TODO)
-        // do not trim leading space of filename
-        GetNCol();
-      }
-      else if ((Month == 0) && (Col.Length() == 3))
-      {
-        // drwxr-xr-x   4 root  wheel   512  2 mmm 13:00 .'.
-        Month = CurrMonth;
-        GetCol();
-        Hour = ToWord(Col.SubString(1, 2).ToInt());
-        Min = ToWord(Col.SubString(4, 2).ToInt());
-        if (Col.Length() >= 8)
-        {
-          Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
-        }
-        else
-        {
-          Sec = 0;
-        }
+        FModificationFmt = mfNone;
+        FModification = 0;
+        FLastAccess = 0;
       }
       else
       {
-        bool FullTime = false;
-        // or it may have been day name for another format of --full-time
-        if (Month == 0)
+        // format dd mmm or mmm dd ?
+        Day = ::ToWord(::StrToIntDef(Col, 0));
+        if (Day > 0)
         {
+          DayMonthFormat = true;
           GetCol();
-          Col2Month();
-          // neither standard, not --full-time format
-          if (Month == 0)
+        }
+        Month = 0;
+        auto Col2Month = [&]()
+        {
+          for (Word IMonth = 0; IMonth < 12; IMonth++)
+            if (!Col.CompareIC(EngShortMonthNames[IMonth]))
+            {
+              Month = IMonth;
+              Month++;
+              break;
+            }
+        };
+
+        Col2Month();
+        // if the column is not known month name, it may have been "yyyy-mm-dd"
+        // for --full-time format
+        if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
+        {
+          Year = ToWord(Col.SubString(1, 4).ToInt());
+          Month = ToWord(Col.SubString(6, 2).ToInt());
+          Day = ToWord(Col.SubString(9, 2).ToInt());
+          GetCol();
+          Hour = ToWord(Col.SubString(1, 2).ToInt());
+          Min = ToWord(Col.SubString(4, 2).ToInt());
+          if (Col.Length() >= 8)
           {
-            Abort();
+            Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
           }
           else
           {
-            FullTime = true;
+            Sec = 0;
           }
-        }
-
-        if (Day == 0)
-        {
-          GetNCol();
-          Day = ToWord(::StrToInt64(Col));
-        }
-        if ((Day < 1) || (Day > 31))
-        {
-          Abort();
-        }
-
-        // second full-time format
-        // ddd mmm dd hh:nn:ss yyyy
-        if (FullTime)
-        {
-          GetCol();
-          if (Col.Length() != 8)
-          {
-            Abort();
-          }
-          Hour = ToWord(::StrToInt64(Col.SubString(1, 2)));
-          Min = ToWord(::StrToInt64(Col.SubString(4, 2)));
-          Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
           FModificationFmt = mfFull;
+          // skip TZ (TODO)
           // do not trim leading space of filename
           GetNCol();
-          Year = ToWord(::StrToInt64(Col));
         }
         else
         {
-          // for format dd mmm the below description seems not to be true,
-          // the year is not aligned to 5 characters
-          if (DayMonthFormat)
+          // or it may have been day name for another format of --full-time
+          if (Month == 0)
           {
             GetCol();
-          }
-          else
-          {
-            // Time/Year indicator is always 5 characters long (???), on most
-            // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
-            // we must ensure that trailing space is also deleted, so real
-            // separator space is not treated as part of file name
-            Col = ListingStr.SubString(1, 6).Trim();
-            ListingStr.Delete(1, 6);
-          }
-          // GetNCol(); // We don't want to trim input strings (name with space at beginning???)
-          // Check if we got time (contains :) or year
-          intptr_t P;
-          if ((P = ToWord(Col.Pos(L':'))) > 0)
-          {
-            Hour = ToWord(::StrToInt64(Col.SubString(1, P - 1)));
-            Min = ToWord(::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
-            if ((Hour > 23) || (Min > 59))
-              Abort();
-            // When we don't got year, we assume current year
-            // with exception that the date would be in future
-            // in this case we assume last year.
-            ::DecodeDate(::Date(), Year, CurrMonth, CurrDay);
-            if ((Month > CurrMonth) ||
-                (Month == CurrMonth && Day > CurrDay))
+            Col2Month();
+            // neither standard, not --full-time format
+            if (Month == 0)
             {
-              Year--;
+              Abort();
             }
-            Sec = 0;
-            FModificationFmt = mfMDHM;
+            else
+            {
+              FullTime = true;
+            }
+          }
+
+          if (Day == 0)
+          {
+            GetNCol();
+            Day = ToWord(::StrToInt64(Col));
+          }
+          if ((Day < 1) || (Day > 31))
+          {
+            Abort();
+          }
+
+          // second full-time format
+          // ddd mmm dd hh:nn:ss yyyy
+          if (FullTime)
+          {
+            GetCol();
+            if (Col.Length() != 8)
+            {
+              Abort();
+            }
+            Hour = ToWord(::StrToInt64(Col.SubString(1, 2)));
+            Min = ToWord(::StrToInt64(Col.SubString(4, 2)));
+            Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
+            FModificationFmt = mfFull;
+            // do not trim leading space of filename
+            GetNCol();
+            Year = ToWord(::StrToInt64(Col));
           }
           else
           {
-            Year = ToWord(::StrToInt64(Col));
-            if (Year > 10000)
-              Abort();
-            // When we don't got time we assume midnight
-            Hour = 0;
-            Min = 0;
-            Sec = 0;
-            FModificationFmt = mfMDY;
+            // for format dd mmm the below description seems not to be true,
+            // the year is not aligned to 5 characters
+            if (DayMonthFormat)
+            {
+              GetCol();
+            }
+            else
+            {
+              // Time/Year indicator is always 5 characters long (???), on most
+              // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
+              // we must ensure that trailing space is also deleted, so real
+              // separator space is not treated as part of file name
+              Col = ListingStr.SubString(1, 6).Trim();
+              ListingStr.Delete(1, 6);
+            }
+            // GetNCol(); // We don't want to trim input strings (name with space at beginning???)
+            // Check if we got time (contains :) or year
+            intptr_t P;
+            if ((P = ToWord(Col.Pos(L':'))) > 0)
+            {
+              Hour = ToWord(::StrToInt64(Col.SubString(1, P - 1)));
+              Min = ToWord(::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
+              if ((Hour > 23) || (Min > 59))
+                Abort();
+              // When we don't got year, we assume current year
+              // with exception that the date would be in future
+              // in this case we assume last year.
+              ::DecodeDate(::Date(), Year, CurrMonth, CurrDay);
+              if ((Month > CurrMonth) ||
+                  (Month == CurrMonth && Day > CurrDay))
+              {
+                Year--;
+              }
+              Sec = 0;
+              FModificationFmt = mfMDHM;
+            }
+            else
+            {
+              Year = ToWord(::StrToInt64(Col));
+              if (Year > 10000)
+                Abort();
+              // When we don't got time we assume midnight
+              Hour = 0;
+              Min = 0;
+              Sec = 0;
+              FModificationFmt = mfMDY;
+            }
           }
         }
-      }
 
-      if (Year == 0)
-        Year = CurrYear;
-      if (Month == 0)
-        Month = CurrMonth;
-      if (Day == 0)
-        Day = CurrDay;
-      FModification = EncodeDateVerbose(Year, Month, Day) + EncodeTimeVerbose(Hour, Min, Sec, 0);
-      // adjust only when time is known,
-      // adjusting default "midnight" time makes no sense
-      if ((FModificationFmt == mfMDHM) || (FModificationFmt == mfFull))
-      {
-        DebugAssert(GetTerminal() != nullptr);
-        FModification = ::AdjustDateTimeFromUnix(FModification,
-          GetTerminal()->GetSessionData()->GetDSTMode());
-      }
+        if (Year == 0)
+          Year = CurrYear;
+        if (Month == 0)
+          Month = CurrMonth;
+        if (Day == 0)
+          Day = CurrDay;
+        FModification = EncodeDateVerbose(Year, Month, Day) + EncodeTimeVerbose(Hour, Min, Sec, 0);
+        // adjust only when time is known,
+        // adjusting default "midnight" time makes no sense
+        if ((FModificationFmt == mfMDHM) || (FModificationFmt == mfFull))
+        {
+          DebugAssert(GetTerminal() != nullptr);
+          FModification = ::AdjustDateTimeFromUnix(FModification,
+            GetTerminal()->GetSessionData()->GetDSTMode());
+        }
 
-      if (::IsZero(FLastAccess.GetValue()))
-      {
-        FLastAccess = FModification;
+        if (::IsZero(FLastAccess.GetValue()))
+        {
+          FLastAccess = FModification;
+        }
       }
 
       // separating space is already deleted, other spaces are treated as part of name

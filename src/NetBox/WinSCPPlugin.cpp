@@ -300,7 +300,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
       }
       UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", L""));
       std::unique_ptr<TSessionData> Session(new TSessionData(SessionName));
-      Session->Load(ImportStorage.get());
+      Session->Load(ImportStorage.get(), false);
       Session->SetModified(true);
       if (!Session->GetCanLogin())
       {

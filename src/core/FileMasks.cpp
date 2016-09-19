@@ -792,6 +792,11 @@ void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
 const wchar_t TCustomCommand::NoQuote = L'\0';
 #define CONST_QUOTES L"\"'"
 
+UnicodeString TCustomCommand::Escape(const UnicodeString & S)
+{
+  return ReplaceStr(S, L"!", L"!!");
+}
+
 TCustomCommand::TCustomCommand()
 {
 }
@@ -919,7 +924,7 @@ UnicodeString TCustomCommand::Complete(const UnicodeString & Command,
       {
         if (!LastPass)
         {
-          Replacement = ReplaceStr(Replacement, L"!", L"!!");
+          Replacement = Escape(Replacement);
         }
         if (Delimit)
         {
@@ -978,8 +983,9 @@ bool TCustomCommand::FindPattern(const UnicodeString & Command,
     intptr_t Len;
     wchar_t APatternCmd;
     GetToken(Command, Index, Len, APatternCmd);
-    if (((PatternCmd != L'!') && (PatternCmd == APatternCmd)) ||
-        ((PatternCmd == L'!') && (Len == 1) && (APatternCmd != TEXT_TOKEN)))
+    if (((PatternCmd != L'!') && (tolower(PatternCmd) == tolower(APatternCmd))) ||
+        ((PatternCmd == L'!') && (Len == 1) && (APatternCmd != TEXT_TOKEN)) ||
+        ((PatternCmd == L'\0') && (APatternCmd != TEXT_TOKEN)))
     {
       Result = true;
     }
@@ -988,6 +994,11 @@ bool TCustomCommand::FindPattern(const UnicodeString & Command,
   }
 
   return Result;
+}
+
+bool TCustomCommand::HasAnyPatterns(const UnicodeString & Command) const
+{
+  return FindPattern(Command, L'\0');
 }
 
 void TCustomCommand::ValidatePattern(const UnicodeString & /*Command*/,
@@ -1183,17 +1194,17 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
 intptr_t TFileCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index) const
 {
   intptr_t Len;
-  wchar_t PatternCmd = (Index < Command.Length()) ? Command[Index + 1] : L'\0';
+  wchar_t PatternCmd = (Index < Command.Length()) ? tolower(Command[Index + 1]) : L'\0';
   switch (PatternCmd)
   {
-    case L'S':
+    case L's':
     case L'@':
-    case L'U':
-    case L'P':
+    case L'u':
+    case L'p':
     case L'#':
     case L'/':
     case L'&':
-    case L'N':
+    case L'n':
       Len = 2;
       break;
 
@@ -1211,7 +1222,7 @@ bool TFileCustomCommand::PatternReplacement(
 
   TSessionData * SessionData = FData.GetSessionData();
 
-  if (AnsiSameText(Pattern, L"!s"))
+  if (::SameText(Pattern, L"!s"))
   {
     Replacement = SessionData->GenerateSessionUrl(sufComplete);
   }
@@ -1219,15 +1230,15 @@ bool TFileCustomCommand::PatternReplacement(
   {
     Replacement = SessionData->GetHostNameExpanded();
   }
-  else if (::AnsiSameText(Pattern, L"!u"))
+  else if (::SameText(Pattern, L"!u"))
   {
     Replacement = SessionData->SessionGetUserName();
   }
-  else if (::AnsiSameText(Pattern, L"!p"))
+  else if (::SameText(Pattern, L"!p"))
   {
     Replacement = SessionData->GetPassword();
   }
-  else if (::AnsiSameText(Pattern, L"!#"))
+  else if (::SameText(Pattern, L"!#"))
   {
     Replacement = IntToStr(SessionData->GetPortNumber());
   }
@@ -1241,7 +1252,7 @@ bool TFileCustomCommand::PatternReplacement(
     // already delimited
     Delimit = false;
   }
-  else if (AnsiSameText(Pattern, L"!n"))
+  else if (::SameText(Pattern, L"!n"))
   {
     Replacement = SessionData->GetSessionName();
   }

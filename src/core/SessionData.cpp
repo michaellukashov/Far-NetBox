@@ -123,7 +123,6 @@ void TSessionData::Default()
   SetAuthKIPassword(true);
   SetAuthGSSAPI(false);
   SetGSSAPIFwdTGT(false);
-  SetGSSAPIServerRealm(L"");
   SetChangeUsername(false);
   SetCompression(false);
   SetSshProt(ssh2only);
@@ -346,7 +345,6 @@ void TSessionData::NonPersistant()
   PROPERTY(AuthKIPassword); \
   PROPERTY(AuthGSSAPI); \
   PROPERTY(GSSAPIFwdTGT); \
-  PROPERTY(GSSAPIServerRealm); \
   PROPERTY(DeleteToRecycleBin); \
   PROPERTY(OverwrittenToRecycleBin); \
   PROPERTY(RecycleBinPath); \
@@ -548,7 +546,7 @@ bool TSessionData::IsInFolderOrWorkspace(const UnicodeString & AFolder) const
   return ::StartsText(core::UnixIncludeTrailingBackslash(AFolder), GetName());
 }
 
-void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword)
+void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool & RewritePassword)
 {
   SetSessionVersion(::StrToVersionNumber(Storage->ReadString("Version", L"")));
   // Make sure we only ever use methods supported by TOptionsStorage
@@ -599,7 +597,6 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   // Both vaclav tomec and official putty use AuthGSSAPI
   SetAuthGSSAPI(Storage->ReadBool("AuthGSSAPI", Storage->ReadBool("AuthSSPI", GetAuthGSSAPI())));
   SetGSSAPIFwdTGT(Storage->ReadBool("GSSAPIFwdTGT", Storage->ReadBool("GssapiFwd", Storage->ReadBool("SSPIFwdTGT", GetGSSAPIFwdTGT()))));
-  SetGSSAPIServerRealm(Storage->ReadString("GSSAPIServerRealm", Storage->ReadString("KerbPrincipal", GetGSSAPIServerRealm())));
   SetChangeUsername(Storage->ReadBool("ChangeUsername", GetChangeUsername()));
   SetCompression(Storage->ReadBool("Compression", GetCompression()));
   TSshProt ASshProt = static_cast<TSshProt>(Storage->ReadInteger(L"SshProt", GetSshProt()));
@@ -665,7 +662,11 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
   SetTrimVMSVersions(Storage->ReadBool("TrimVMSVersions", GetTrimVMSVersions()));
   SetNotUtf(static_cast<TAutoSwitch>(Storage->ReadInteger("Utf", Storage->ReadInteger("SFTPUtfBug", GetNotUtf()))));
 
-  SetTcpNoDelay(Storage->ReadBool("TcpNoDelay", GetTcpNoDelay()));
+  // PuTTY defaults to TcpNoDelay, but the psftp/pscp ignores this preference, and always set this to off (what is our default too)
+  if (!PuttyImport)
+  {
+    SetTcpNoDelay(Storage->ReadBool("TcpNoDelay", GetTcpNoDelay()));
+  }
   SetSendBuf(Storage->ReadInteger("SendBuf", Storage->ReadInteger("SshSendBuf", GetSendBuf())));
   SetSshSimple(Storage->ReadBool("SshSimple", GetSshSimple()));
 
@@ -800,34 +801,34 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
 
 #ifdef TEST
   #define KEX_TEST(VALUE, EXPECTED) KexList = VALUE; DebugAssert(KexList == EXPECTED);
-  #define KEX_DEFAULT L"ecdh,dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN"
+  #define KEX_DEFAULT L"ecdh,dh-gex-sha1,dh-group14-sha1,rsa,WARN,dh-group1-sha1"
   // Empty source should result in default list
   KEX_TEST(L"", KEX_DEFAULT);
-  // Default of pre 5.8.1 should result in new default
-  KEX_TEST(L"dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN", KEX_DEFAULT);
-  // Missing first two priority algos, and last non-priority algo => default
+  // Default of pre 5.8.1
+  KEX_TEST(L"dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN", L"ecdh,dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN");
+  // Missing first two priority algos, and last non-priority algo
   KEX_TEST(L"dh-group14-sha1,dh-group1-sha1,WARN", L"ecdh,dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN");
-  // Missing first two priority algos, last non-priority algo and WARN => default
+  // Missing first two priority algos, last non-priority algo and WARN
   KEX_TEST(L"dh-group14-sha1,dh-group1-sha1", L"ecdh,dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN");
   // Old algos, with all but the first below WARN
   KEX_TEST(L"dh-gex-sha1,WARN,dh-group14-sha1,dh-group1-sha1,rsa", L"ecdh,dh-gex-sha1,WARN,dh-group14-sha1,dh-group1-sha1,rsa");
   // Unknown algo at front
-  KEX_TEST(L"unknown,ecdh,dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN", KEX_DEFAULT);
+  KEX_TEST(L"unknown,ecdh,dh-gex-sha1,dh-group14-sha1,rsa,WARN,dh-group1-sha1", KEX_DEFAULT);
   // Unknown algo at back
-  KEX_TEST(L"ecdh,dh-gex-sha1,dh-group14-sha1,dh-group1-sha1,rsa,WARN,unknown", KEX_DEFAULT);
+  KEX_TEST(L"ecdh,dh-gex-sha1,dh-group14-sha1,rsa,WARN,dh-group1-sha1,unknown", KEX_DEFAULT);
   // Unknown algo in the middle
-  KEX_TEST(L"ecdh,dh-gex-sha1,dh-group14-sha1,unknown,dh-group1-sha1,rsa,WARN", KEX_DEFAULT);
+  KEX_TEST(L"ecdh,dh-gex-sha1,dh-group14-sha1,unknown,rsa,WARN,dh-group1-sha1", KEX_DEFAULT);
   #undef KEX_DEFAULT
   #undef KEX_TEST
 
   #define CIPHER_TEST(VALUE, EXPECTED) CipherList = VALUE; DebugAssert(CipherList == EXPECTED);
-  #define CIPHER_DEFAULT L"aes,blowfish,chacha20,3des,WARN,arcfour,des"
+  #define CIPHER_DEFAULT L"aes,chacha20,blowfish,3des,WARN,arcfour,des"
   // Empty source should result in default list
   CIPHER_TEST(L"", CIPHER_DEFAULT);
   // Default of pre 5.8.1
   CIPHER_TEST(L"aes,blowfish,3des,WARN,arcfour,des", L"aes,blowfish,3des,chacha20,WARN,arcfour,des");
   // Missing priority algo
-  CIPHER_TEST(L"blowfish,chacha20,3des,WARN,arcfour,des", CIPHER_DEFAULT);
+  CIPHER_TEST(L"chacha20,blowfish,3des,WARN,arcfour,des", CIPHER_DEFAULT);
   // Missing non-priority algo
   CIPHER_TEST(L"aes,chacha20,3des,WARN,arcfour,des", L"aes,chacha20,3des,blowfish,WARN,arcfour,des");
   // Missing last warn algo
@@ -839,7 +840,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool & RewritePassword
 #endif
 }
 
-void TSessionData::Load(THierarchicalStorage * Storage)
+void TSessionData::Load(THierarchicalStorage * Storage, bool PuttyImport)
 {
   bool RewritePassword = false;
   if (Storage->OpenSubKey(GetInternalStorageKey(), False))
@@ -852,7 +853,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     ClearSessionPasswords();
     SetProxyPassword(L"");
 
-    DoLoad(Storage, RewritePassword);
+    DoLoad(Storage, PuttyImport, RewritePassword);
 
     Storage->CloseSubKey();
   }
@@ -928,7 +929,6 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
 
   WRITE_DATA(Bool, AuthGSSAPI);
   WRITE_DATA(Bool, GSSAPIFwdTGT);
-  WRITE_DATA(String, GSSAPIServerRealm);
   Storage->DeleteValue("TryGSSKEX");
   Storage->DeleteValue("UserNameFromEnvironment");
   Storage->DeleteValue("GSSAPIServerChoosesUserName");
@@ -938,7 +938,6 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     // duplicate kerberos setting with keys of the vintela quest putty
     WRITE_DATA_EX(Bool, "AuthSSPI", GetAuthGSSAPI(), );
     WRITE_DATA_EX(Bool, "SSPIFwdTGT", GetGSSAPIFwdTGT(), );
-    WRITE_DATA_EX(String, "KerbPrincipal", GetGSSAPIServerRealm(), );
     // duplicate kerberos setting with keys of the official putty
     WRITE_DATA_EX(Bool, "GssapiFwd", GetGSSAPIFwdTGT(), );
   }
@@ -1517,7 +1516,7 @@ bool TSessionData::IsProtocolUrl(
 
 bool TSessionData::IsSensitiveOption(const UnicodeString & Option)
 {
-  return AnsiSameText(Option, PassphraseOption);
+  return ::SameText(Option, PassphraseOption);
 }
 
 bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
@@ -1764,7 +1763,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       {
         UnicodeString ConnectionParam = CutToChar(ConnectionParams, UrlParamSeparator, false);
         UnicodeString ConnectionParamName = CutToChar(ConnectionParam, UrlParamValueSeparator, false);
-        if (::AnsiSameText(ConnectionParamName, UrlHostKeyParamName))
+        if (::SameText(ConnectionParamName, UrlHostKeyParamName))
         {
           SetHostKey(ConnectionParam);
           FOverrideCachedHostKey = false;
@@ -1788,7 +1787,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       {
         UnicodeString SessionParam = CutToChar(SessionParams, UrlParamSeparator, false);
         UnicodeString SessionParamName = CutToChar(SessionParam, UrlParamValueSeparator, false);
-        if (::AnsiSameText(SessionParamName, UrlSaveParamName))
+        if (::SameText(SessionParamName, UrlSaveParamName))
         {
           FSaveOnly = (::StrToIntDef(SessionParam, 1) != 0);
         }
@@ -1966,7 +1965,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
 void TSessionData::ApplyRawSettings(THierarchicalStorage * Storage)
 {
   bool Dummy;
-  DoLoad(Storage, Dummy);
+  DoLoad(Storage, false, Dummy);
 }
 
 void TSessionData::ConfigureTunnel(intptr_t APortNumber)
@@ -1980,6 +1979,7 @@ void TSessionData::ConfigureTunnel(intptr_t APortNumber)
   // proxy settings is used for tunnel
   SetProxyMethod(::pmNone);
   FTunnelConfigured = true;
+  FLogicalHostName = FOrigHostName;
 }
 
 void TSessionData::RollbackTunnel()
@@ -1989,6 +1989,7 @@ void TSessionData::RollbackTunnel()
     SetHostName(FOrigHostName);
     SetPortNumber(FOrigPortNumber);
     SetProxyMethod(FOrigProxyMethod);
+    SetLogicalHostName(L"");
     FTunnelConfigured = false;
   }
 }
@@ -2225,11 +2226,6 @@ void TSessionData::SetAuthGSSAPI(bool Value)
 void TSessionData::SetGSSAPIFwdTGT(bool Value)
 {
   SET_SESSION_PROPERTY(GSSAPIFwdTGT);
-}
-
-void TSessionData::SetGSSAPIServerRealm(const UnicodeString & Value)
-{
-  SET_SESSION_PROPERTY(GSSAPIServerRealm);
 }
 
 void TSessionData::SetChangeUsername(bool Value)
@@ -4160,7 +4156,7 @@ TStoredSessionList::~TStoredSessionList()
 }
 
 void TStoredSessionList::Load(THierarchicalStorage * Storage,
-  bool AsModified, bool UseDefaults)
+  bool AsModified, bool UseDefaults, bool PuttyImport)
 {
   std::unique_ptr<TStringList> SubKeys(new TStringList());
   std::unique_ptr<TList> Loaded(new TList());
@@ -4227,7 +4223,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
             Add(SessionData);
           }
           Loaded->Add(SessionData);
-          SessionData->Load(Storage);
+          SessionData->Load(Storage, PuttyImport);
           if (AsModified)
           {
             SessionData->SetModified(true);

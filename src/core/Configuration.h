@@ -57,6 +57,7 @@ private:
   intptr_t FActualLogProtocol;
   bool FLogActions;
   bool FPermanentLogActions;
+  bool FLogActionsRequired;
   UnicodeString FActionsLogFileName;
   UnicodeString FPermanentActionsLogFileName;
   bool FConfirmOverwriting;
@@ -118,6 +119,7 @@ public:
   void SetLogSensitive(bool Value);
   void SetLogProtocol(intptr_t Value);
   void SetLogActions(bool Value);
+  void SetLogActionsRequired(bool Value);
   void SetActionsLogFileName(const UnicodeString & Value);
   UnicodeString GetDefaultLogFileName() const;
   UnicodeString GetTimeFormat() const;
@@ -277,6 +279,7 @@ public:
   __property int LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
   __property int ActualLogProtocol  = { read=FActualLogProtocol };
   __property bool LogActions  = { read=FLogActions, write=SetLogActions };
+  __property bool LogActionsRequired  = { read=FLogActionsRequired, write=FLogActionsRequired };
   __property UnicodeString ActionsLogFileName  = { read=FActionsLogFileName, write=SetActionsLogFileName };
   __property int LogWindowLines  = { read=FLogWindowLines, write=SetLogWindowLines };
   __property bool LogWindowComplete  = { read=GetLogWindowComplete, write=SetLogWindowComplete };
@@ -322,6 +325,7 @@ public:
   intptr_t GetLogProtocol() const { return FLogProtocol; }
   intptr_t GetActualLogProtocol() const { return FActualLogProtocol; }
   bool GetLogActions() const { return FLogActions; }
+  bool GetLogActionsRequired() const { return FLogActionsRequired; }
   UnicodeString GetActionsLogFileName() const { return FActionsLogFileName; }
   intptr_t GetLogWindowLines() const { return FLogWindowLines; }
   TNotifyEvent & GetOnChange() { return FOnChange; }

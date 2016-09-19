@@ -2238,7 +2238,8 @@ static bool DoRecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycl
 bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin)
 {
   UnicodeString ErrorPath; // unused
-  return DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath);
+  bool Result = DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath);
+  return Result;
 }
 
 void RecursiveDeleteFileChecked(const UnicodeString & AFileName, bool ToRecycleBin)

@@ -320,6 +320,7 @@ private:
   bool FWindowsServer;
   int64_t FBytesAvailable;
   bool FBytesAvailableSupported;
+  bool FMVS;
   mutable UnicodeString FOptionScratch;
 };
 
