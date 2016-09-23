@@ -209,7 +209,6 @@ foreach(src vc_crt_fix)
 endforeach(src)
 
 set(NETBOX_SOURCES ${NETBOX_SOURCES}
-  ${SRC_ROOT}/NetBox/vc_crt_fix_ulink.cpp
   ${SRC_ROOT}/NetBox/vc_crt_fix_impl.cpp
   ${ASM_OBJECTS}
 )

@@ -58,14 +58,14 @@ TConfiguration::TConfiguration() :
   FTunnelLocalPortNumberLow(0),
   FTunnelLocalPortNumberHigh(0),
   FCacheDirectoryChangesMaxSize(0),
+  FSessionReopenAutoMaximumNumberOfRetries(0),
   FShowFtpWelcomeMessage(false),
   FTryFtpWhenSshFails(false),
   FScripting(false),
   FDisablePasswordStoring(false),
   FForceBanners(false),
   FDisableAcceptingHostKeys(false),
-  FDefaultCollectUsage(false),
-  FSessionReopenAutoMaximumNumberOfRetries(0)
+  FDefaultCollectUsage(false)
 {
   FUpdating = 0;
   FStorage = stRegistry;
@@ -146,6 +146,7 @@ void TConfiguration::Default()
   UpdateActualLogProtocol();
   FLogActions = false;
   FPermanentLogActions = false;
+  FLogActionsRequired = false;
   FActionsLogFileName = "%TEMP%\\&S.xml";
   FPermanentActionsLogFileName = FActionsLogFileName;
   FProgramIniPathWrittable = -1;
@@ -806,29 +807,6 @@ UnicodeString TConfiguration::DecryptPassword(const RawByteString & Password, co
 RawByteString TConfiguration::StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & /*Key*/)
 {
   return Password;
-}
-
-UnicodeString TConfiguration::GetOSVersionStr() const
-{
-  UnicodeString Result;
-  OSVERSIONINFO OSVersionInfo;
-  OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
-  if (::GetVersionEx(&OSVersionInfo) != 0)
-  {
-    Result = FORMAT(L"%d.%d.%d", int(OSVersionInfo.dwMajorVersion),
-      int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber));
-    UnicodeString CSDVersion = OSVersionInfo.szCSDVersion;
-    if (!CSDVersion.IsEmpty())
-    {
-      Result += L" " + CSDVersion;
-    }
-    UnicodeString ProductName = WindowsProductName();
-    if (!ProductName.IsEmpty())
-    {
-      Result += L" - " + ProductName;
-    }
-  }
-  return Result;
 }
 
 TVSFixedFileInfo * TConfiguration::GetFixedApplicationInfo() const

@@ -130,6 +130,8 @@ UnicodeString LoadStrPart(intptr_t Ident, intptr_t Part);
 UnicodeString EscapeHotkey(const UnicodeString & Caption);
 bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
   UnicodeString * ARawToken = nullptr, UnicodeString * ASeparator = nullptr);
+bool CutTokenEx(UnicodeString & Str, UnicodeString & Token,
+  UnicodeString * RawToken = nullptr, UnicodeString * Separator = nullptr);
 void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
 bool IsWinVista();
 bool IsWin7();
@@ -137,11 +139,13 @@ bool IsWin8();
 bool IsWin10();
 bool IsWine();
 int64_t Round(double Number);
-bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime);
+bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, bool Add);
 LCID GetDefaultLCID();
 UnicodeString DefaultEncodingName();
 UnicodeString WindowsProductName();
 bool GetWindowsProductType(DWORD & Type);
+UnicodeString WindowsVersion();
+UnicodeString WindowsVersionLong();
 bool IsDirectoryWriteable(const UnicodeString & APath);
 UnicodeString FormatNumber(int64_t Size);
 UnicodeString FormatSize(int64_t Size);

@@ -173,6 +173,9 @@ public:
 
   UnicodeString Complete(const UnicodeString & Command, bool LastPass);
   virtual void Validate(const UnicodeString & Command);
+  bool HasAnyPatterns(const UnicodeString & Command) const;
+
+  static UnicodeString Escape(const UnicodeString & S);
 
 protected:
   static const wchar_t NoQuote;

@@ -7,9 +7,9 @@
 #include <string>
 
 #define NETBOX_VERSION_MAJOR         2
-#define NETBOX_VERSION_MINOR         3
+#define NETBOX_VERSION_MINOR         4
 #define NETBOX_VERSION_PATCH         0
-#define NETBOX_VERSION_BUILD         436
+#define NETBOX_VERSION_BUILD         438
 
-static const std::wstring NETBOX_VERSION_NUMBER(L"2.3.0");
+static const std::wstring NETBOX_VERSION_NUMBER(L"2.4.0");
 

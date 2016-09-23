@@ -1039,7 +1039,9 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     if (Data == nullptr)
     {
       AddSeparator();
-      ADF(L"NetBox %s (OS %s)", FConfiguration->GetProductVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
+      UnicodeString OS = WindowsVersionLong();
+      AddToList(OS, WindowsProductName(), L" - ");
+      ADF(L"NetBox %s (OS %s)", FConfiguration->GetProductVersionStr().c_str(), OS.c_str());
       std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateConfigStorage());
       DebugAssert(Storage.get());
       Storage->SetAccessMode(smRead);
@@ -1184,8 +1186,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
            BooleanToEngStr(Data->GetAuthKI()).c_str(), BooleanToEngStr(Data->GetAuthGSSAPI()).c_str());
         if (Data->GetAuthGSSAPI())
         {
-          ADF(L"GSSAPI: Forwarding: %s; Server realm: %s",
-            BooleanToEngStr(Data->GetGSSAPIFwdTGT()).c_str(), Data->GetGSSAPIServerRealm().c_str());
+          ADF(L"GSSAPI: Forwarding: %s",
+            BooleanToEngStr(Data->GetGSSAPIFwdTGT()).c_str());
         }
         ADF(L"Ciphers: %s; Ssh2DES: %s",
           Data->GetCipherList().c_str(), BooleanToEngStr(Data->GetSsh2DES()).c_str());
@@ -1426,6 +1428,7 @@ TActionLog::TActionLog(TSessionUI * UI, TSessionData * SessionData,
   FUI(UI),
   FSessionData(SessionData),
   FPendingActions(new TList()),
+  FFailed(false),
   FClosed(false),
   FInGroup(false),
   FEnabled(true),
@@ -1455,6 +1458,7 @@ void TActionLog::Init(TSessionUI * UI, TSessionData * SessionData,
   FCurrentFileName.Clear();
   FLogging = false;
   FClosed = false;
+  FFailed = false;
   FPendingActions = new TList();
   FIndent = L"  ";
   FInGroup = false;
@@ -1475,34 +1479,58 @@ void TActionLog::Add(const UnicodeString & Line)
   DebugAssert(FConfiguration);
   if (FLogging)
   {
-    try
+    TGuard Guard(FCriticalSection);
+    if (FFile == nullptr)
     {
-      TGuard Guard(FCriticalSection);
-      if (FFile == nullptr)
-      {
-        OpenLogFile();
-      }
-
-      if (FFile != nullptr)
-      {
-        UTF8String UtfLine = UTF8String(Line);
-        fwrite(UtfLine.c_str(), 1, UtfLine.Length(), static_cast<FILE *>(FFile));
-        fwrite("\n", 1, 1, static_cast<FILE *>(FFile));
-      }
+      OpenLogFile();
     }
-    catch (Exception & E)
+
+    if (FFile != nullptr)
     {
-      // We failed logging, turn it off and notify user.
-      FConfiguration->SetLogActions(false);
       try
       {
-        throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
+        UTF8String UtfLine = UTF8String(Line);
+        size_t Written =
+          fwrite(UtfLine.c_str(), 1, UtfLine.Length(), static_cast<FILE *>(FFile));
+        if (Written != static_cast<size_t>(UtfLine.Length()))
+        {
+          throw ECRTExtException(L"");
+        }
+        Written =
+          fwrite("\n", 1, 1, static_cast<FILE *>(FFile));
+        if (Written != 1)
+        {
+          throw ECRTExtException(L"");
+        }
       }
       catch (Exception & E)
       {
-        if (FUI != nullptr)
+        // FCriticalSection.Release();
+
+        // avoid endless loop when trying to close tags when closing log, when logging has failed
+        if (!FFailed)
         {
-          FUI->HandleExtendedException(&E);
+          FFailed = true;
+          // We failed logging, turn it off and notify user.
+          FConfiguration->SetLogActions(false);
+          if (FConfiguration->GetLogActionsRequired())
+          {
+            throw EFatal(&E, LoadStr(LOG_FATAL_ERROR));
+          }
+          else
+          {
+            try
+            {
+              throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
+            }
+            catch (Exception & E)
+            {
+              if (FUI != nullptr)
+              {
+                FUI->HandleExtendedException(&E);
+              }
+            }
+          }
         }
       }
     }
@@ -1607,15 +1635,22 @@ void TActionLog::OpenLogFile()
     FCurrentLogFileName.Clear();
     FCurrentFileName.Clear();
     FConfiguration->SetLogActions(false);
-    try
+    if (FConfiguration->GetLogActionsRequired())
     {
-      throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
+      throw EFatal(&E, LoadStr(LOG_FATAL_ERROR));
     }
-    catch (Exception & E)
+    else
     {
-      if (FUI != nullptr)
+      try
       {
-        FUI->HandleExtendedException(&E);
+        throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
+      }
+      catch (Exception & E)
+      {
+        if (FUI != nullptr)
+        {
+          FUI->HandleExtendedException(&E);
+        }
       }
     }
   }

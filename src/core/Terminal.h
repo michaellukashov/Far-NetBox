@@ -531,6 +531,7 @@ public:
   void FatalAbort();
   void ReflectSettings();
   void CollectUsage();
+  bool IsThisOrChild(TTerminal * Terminal) const;
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);

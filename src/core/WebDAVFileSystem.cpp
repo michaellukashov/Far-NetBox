@@ -116,7 +116,7 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
     UTFMessage.vprintf(Format, Args);
     va_end(Args);
 
-    UnicodeString Message(UTFMessage);
+    UnicodeString Message(TrimRight(UnicodeString(UTFMessage)));
 
     if (DoLog)
     {
@@ -228,8 +228,6 @@ UnicodeString ExpatVersion()
 
 TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal),
-  FPortNumber(0),
-  FIgnoreAuthenticationFailure(iafNo),
   FActive(false),
   FHasTrailingSlash(false),
   FCancelled(false),
@@ -241,7 +239,10 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
   FInitialHandshake(false),
   FAuthenticationRequested(false),
   FCapabilities(0),
-  FAuthenticationRetry(false)
+  FPortNumber(0),
+  FIgnoreAuthenticationFailure(iafNo),
+  FAuthenticationRetry(false),
+  FNtlmAuthenticationFailed(false)
 {
 }
 
@@ -2201,7 +2202,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName,
         GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
 //      if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress,
-//             &LocalHandle, FLAGSET(Params, cpNoConfirmation)))
+//             &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
         ThrowSkipFileNull();
@@ -2222,7 +2223,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
           }
           else
           {
-            CloseHandle(LocalHandle);
+            CloseHandle(LocalFileHandle);
           }
 
           if (DeleteLocalFile)
@@ -2266,7 +2267,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
         }
         else
         {
-          CloseHandle(LocalHandle);
+          CloseHandle(LocalFileHandle);
         }
 
         if (DeleteLocalFile)
@@ -2363,11 +2364,17 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
 
     if (!Result)
     {
-      if (NeonWindowsValidateCertificate(Failures, Data.AsciiCert))
+      UnicodeString WindowsCertificateError;
+      if (NeonWindowsValidateCertificate(Failures, Data.AsciiCert, WindowsCertificateError))
       {
         FTerminal->LogEvent(L"Certificate verified against Windows certificate store");
         // There can be also other flags, not just the NE_SSL_UNTRUSTED.
         Result = (Failures == 0);
+      }
+      else
+      {
+        FTerminal->LogEvent(
+          FORMAT(L"Certificate failed to verify against Windows certificate store: %s", DefaultStr(WindowsCertificateError, L"no details").c_str()));
       }
     }
 

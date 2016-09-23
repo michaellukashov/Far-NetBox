@@ -184,8 +184,7 @@ private:
   bool FAuthKI;
   bool FAuthKIPassword;
   bool FAuthGSSAPI;
-  bool FGSSAPIFwdTGT; // not supported anymore
-  UnicodeString FGSSAPIServerRealm; // not supported anymore
+  bool FGSSAPIFwdTGT;
   bool FChangeUsername;
   bool FCompression;
   TSshProt FSshProt;
@@ -295,6 +294,7 @@ private:
   bool FTunnelConfigured;
   TSessionSource FSource;
   bool FSaveOnly;
+  UnicodeString FLogicalHostName;
   UnicodeString FCodePage;
   mutable uintptr_t FCodePageAsNumber;
   bool FFtpAllowEmptyPassword;
@@ -320,7 +320,6 @@ public:
   void SetAuthKIPassword(bool Value);
   void SetAuthGSSAPI(bool Value);
   void SetGSSAPIFwdTGT(bool Value);
-  void SetGSSAPIServerRealm(const UnicodeString & Value);
   void SetChangeUsername(bool Value);
   void SetCompression(bool Value);
   void SetSshProt(TSshProt Value);
@@ -462,7 +461,7 @@ public:
   void Modify();
   UnicodeString GetSource() const;
   bool GetSaveOnly() const { return FSaveOnly; }
-  void DoLoad(THierarchicalStorage * Storage, bool & RewritePassword);
+  void DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool & RewritePassword);
   void DoSave(THierarchicalStorage * Storage,
     bool PuttyExport, const TSessionData * Default, bool DoNotEncryptPasswords);
   /*UnicodeString ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
@@ -512,7 +511,7 @@ public:
   TSessionData * Clone();
   void Default();
   void NonPersistant();
-  void Load(THierarchicalStorage * Storage);
+  void Load(THierarchicalStorage * Storage, bool PuttyImport);
   void ApplyRawSettings(THierarchicalStorage * Storage);
   // void ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & APath);
   void Save(THierarchicalStorage * Storage, bool PuttyExport,
@@ -569,7 +568,6 @@ public:
   __property bool AuthKIPassword  = { read=FAuthKIPassword, write=SetAuthKIPassword };
   __property bool AuthGSSAPI  = { read=FAuthGSSAPI, write=SetAuthGSSAPI };
   __property bool GSSAPIFwdTGT = { read=FGSSAPIFwdTGT, write=SetGSSAPIFwdTGT };
-  __property UnicodeString GSSAPIServerRealm = { read=FGSSAPIServerRealm, write=SetGSSAPIServerRealm };
   __property bool ChangeUsername  = { read=FChangeUsername, write=SetChangeUsername };
   __property bool Compression  = { read=FCompression, write=SetCompression };
   __property TSshProt SshProt  = { read=FSshProt, write=SetSshProt };
@@ -689,6 +687,7 @@ public:
   __property UnicodeString StorageKey = { read = GetStorageKey };
   __property UnicodeString SiteKey = { read = GetSiteKey };
   __property UnicodeString OrigHostName = { read = FOrigHostName };
+  __property UnicodeString LogicalHostName = { read = FLogicalHostName };
   __property int OrigPortNumber = { read = FOrigPortNumber };
   __property UnicodeString LocalName = { read = GetLocalName };
   __property UnicodeString FolderName = { read = GetFolderName };
@@ -714,7 +713,6 @@ public:
   bool GetAuthKIPassword() const { return FAuthKIPassword; }
   bool GetAuthGSSAPI() const { return FAuthGSSAPI; }
   bool GetGSSAPIFwdTGT() const { return FGSSAPIFwdTGT; }
-  const UnicodeString GetGSSAPIServerRealm() const { return FGSSAPIServerRealm; }
   bool GetChangeUsername() const { return FChangeUsername; }
   bool GetCompression() const { return FCompression; }
   TSshProt GetSshProt() const { return FSshProt; }
@@ -821,6 +819,8 @@ public:
   bool GetFingerprintScan() const { return FFingerprintScan; }
   bool GetOverrideCachedHostKey() const { return FOverrideCachedHostKey; }
   UnicodeString GetOrigHostName() const { return FOrigHostName; }
+  UnicodeString GetLogicalHostName() const { return FLogicalHostName; }
+  void SetLogicalHostName(const UnicodeString & Value) { FLogicalHostName = Value; }
   intptr_t GetOrigPortNumber() const { return FOrigPortNumber; }
   void SetPasswordless(bool Value);
 
@@ -858,7 +858,7 @@ public:
   void ImportFromFilezilla(const UnicodeString & AFileName);
   void Export(const UnicodeString & AFileName);
   void Load(THierarchicalStorage * Storage, bool AsModified = false,
-    bool UseDefaults = false);
+    bool UseDefaults = false, bool PuttyImport = false);
   void Save(THierarchicalStorage * Storage, bool All = false);
   void SelectAll(bool Select);
   void Import(TStoredSessionList * From, bool OnlySelected, TList * Imported);

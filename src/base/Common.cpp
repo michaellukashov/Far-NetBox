@@ -1646,7 +1646,7 @@ int64_t Round(double Number)
   return static_cast<int64_t>(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
 }
 
-bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime)
+bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, bool Add)
 {
   UnicodeString S = AStr.Trim();
   intptr_t Index = 1;
@@ -1659,29 +1659,33 @@ bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime)
   bool Result = TryStrToInt(NumberStr, Number);
   if (Result)
   {
+    if (!Add)
+    {
+      Number = -Number;
+    }
     S.Delete(1, Index - 1);
     S = S.Trim().UpperCase();
     DateTime = Now();
     // These may not overlap with ParseSize (K, M and G)
     if (S == "S")
     {
-      DateTime = IncSecond(DateTime, -Number);
+      DateTime = IncSecond(DateTime, Number);
     }
     else if (S == "N")
     {
-      DateTime = IncMinute(DateTime, -Number);
+      DateTime = IncMinute(DateTime, Number);
     }
     else if (S == "H")
     {
-      DateTime = IncHour(DateTime, -Number);
+      DateTime = IncHour(DateTime, Number);
     }
     else if (S == "D")
     {
-      DateTime = IncDay(DateTime, -Number);
+      DateTime = IncDay(DateTime, Number);
     }
     else if (S == "Y")
     {
-      DateTime = IncYear(DateTime, -Number);
+      DateTime = IncYear(DateTime, Number);
     }
     else
     {
@@ -2234,7 +2238,8 @@ static bool DoRecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycl
 bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin)
 {
   UnicodeString ErrorPath; // unused
-  return DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath);
+  bool Result = DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath);
+  return Result;
 }
 
 void RecursiveDeleteFileChecked(const UnicodeString & AFileName, bool ToRecycleBin)
@@ -2477,8 +2482,8 @@ UnicodeString EscapeHotkey(const UnicodeString & Caption)
 }
 
 // duplicated in console's Main.cpp
-bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
-  UnicodeString * ARawToken, UnicodeString * ASeparator)
+static bool DoCutToken(UnicodeString & AStr, UnicodeString & AToken,
+  UnicodeString * ARawToken, UnicodeString * ASeparator, bool EscapeQuotesInQuotesOnly)
 {
   bool Result;
 
@@ -2502,11 +2507,10 @@ bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
       {
         break;
       }
-      // We should escape quotes only within quotes
+      // With EscapeQuotesInQuotesOnly we escape quotes only within quotes
       // otherwise the "" means " (quote), but it should mean empty string.
-      // Or have a special case for bare "".
       else if ((AStr[Index] == L'"') && (Index + 1 <= AStr.Length()) &&
-        (AStr[Index + 1] == L'"'))
+        (AStr[Index + 1] == L'"') && (!EscapeQuotesInQuotesOnly || Quoting))
       {
         Index += 2;
         AToken += L'"';
@@ -2555,6 +2559,18 @@ bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
   }
 
   return Result;
+}
+
+bool CutToken(UnicodeString & Str, UnicodeString & Token,
+  UnicodeString * RawToken, UnicodeString * Separator)
+{
+  return DoCutToken(Str, Token, RawToken, Separator, false);
+}
+
+bool CutTokenEx(UnicodeString & Str, UnicodeString & Token,
+  UnicodeString * RawToken, UnicodeString * Separator)
+{
+  return DoCutToken(Str, Token, RawToken, Separator, true);
 }
 
 void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter)
@@ -2663,6 +2679,27 @@ UnicodeString WindowsProductName()
   catch (...)
   {
   }
+  return Result;
+}
+
+UnicodeString WindowsVersion()
+{
+  UnicodeString Result;
+  OSVERSIONINFO OSVersionInfo;
+  OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
+  // Cannot use the VCL Win32MajorVersion+Win32MinorVersion+Win32BuildNumber as
+  // on Windows 10 due to some hacking in InitPlatformId, the Win32BuildNumber is lost
+  if (GetVersionEx(&OSVersionInfo) != 0)
+  {
+    Result = FORMAT(L"%d.%d.%d", (int(OSVersionInfo.dwMajorVersion), int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber)));
+  }
+  return Result;
+}
+
+UnicodeString WindowsVersionLong()
+{
+  UnicodeString Result = WindowsVersion();
+  AddToList(Result, Win32CSDVersion, L" ");
   return Result;
 }
 
@@ -2811,7 +2848,7 @@ UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents)
 
 static UnicodeString GetTlsErrorStr(int Err)
 {
-  char * Buffer = new char[512];
+  char Buffer[512];
   ERR_error_string(Err, Buffer);
   // not sure about the UTF8
   return UnicodeString(UTF8String(Buffer));

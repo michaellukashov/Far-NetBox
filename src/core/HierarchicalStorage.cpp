@@ -1293,7 +1293,7 @@ void __fastcall TIniFileStorage::ApplyOverrides()
   {
     UnicodeString Section = FSections->Strings[i];
 
-    if (AnsiSameText(OverridesKey,
+    if (::SameText(OverridesKey,
           Section.SubString(1, OverridesKey.Length())))
     {
       UnicodeString SubKey = Section.SubString(OverridesKey.Length() + 1,
@@ -1396,7 +1396,7 @@ UnicodeString __fastcall TOptionsIniFile::ReadString(const UnicodeString Section
     Name += PathDelim;
   }
   UnicodeString Value;
-  if (!SameText(Name.SubString(1, FRootKey.Length()), FRootKey))
+  if (!::SameText(Name.SubString(1, FRootKey.Length()), FRootKey))
   {
     Value = Default;
   }
@@ -1437,7 +1437,7 @@ void __fastcall TOptionsIniFile::ReadSection(const UnicodeString Section, TStrin
     SectionPrefix += PathDelim;
   }
 
-  if (SameText(SectionPrefix.SubString(1, FRootKey.Length()), FRootKey))
+  if (::SameText(SectionPrefix.SubString(1, FRootKey.Length()), FRootKey))
   {
     SectionPrefix.Delete(1, FRootKey.Length());
 
@@ -1447,7 +1447,7 @@ void __fastcall TOptionsIniFile::ReadSection(const UnicodeString Section, TStrin
       for (int Index = 0; Index < FOptions->Count; Index++)
       {
         UnicodeString Name = FOptions->Names[Index];
-        if (SameText(Name.SubString(1, SectionPrefix.Length()), SectionPrefix) &&
+        if (::SameText(Name.SubString(1, SectionPrefix.Length()), SectionPrefix) &&
             (LastDelimiter(PathDelim, Name) <= SectionPrefix.Length()))
         {
           Strings->Add(Name.SubString(SectionPrefix.Length() + 1, Name.Length() - SectionPrefix.Length()));

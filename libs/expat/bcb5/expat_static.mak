@@ -35,11 +35,11 @@ PATHRC = .;
 LINKER = TLib
 DEBUGLIBPATH = $(BCB)\lib\debug
 RELEASELIBPATH = $(BCB)\lib\release
-USERDEFINES = _WINDOWS;WIN32;NDEBUG;_LIB;COMPILED_FROM_DSP;XML_STATIC
+USERDEFINES = _WINDOWS;WIN32;NDEBUG;_LIB;XML_STATIC
 SYSDEFINES = _NO_VCL;_ASSERTE;NO_STRICT;_RTLDLL
 INCLUDEPATH = ..\lib;$(BCB)\include
 LIBPATH = ..\lib;$(BCB)\lib;$(RELEASELIBPATH)
-WARNINGS = -w-rch -w-par -w-8027 -w-8026 -w-ccc
+WARNINGS = -w-rch -w-par -w-8027 -w-8026 -w-ccc -w-8012
 LISTFILE = 
 # ---------------------------------------------------------------------------
 CFLAG1 = -O2 -X- -a8 -b -k- -vi -q -tWM -c
@@ -154,7 +154,7 @@ COMMA = ,
 !endif
 
 $(PROJECT): $(IDLGENFILES) $(OBJFILES) $(RESDEPEN) $(DEFFILE)
-    $(BCB)\BIN\$(LINKER) /u $@ @&&!
+    $(BCB)\BIN\$(LINKER) /a $@ @&&!
     $(LFLAGS) $? $(COMMA) $(LISTFILE)
 
 !

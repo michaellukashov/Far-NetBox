@@ -400,6 +400,7 @@ private:
   TSessionUI * FUI;
   TSessionData * FSessionData;
   TList * FPendingActions;
+  bool FFailed;
   bool FClosed;
   bool FInGroup;
   UnicodeString FIndent;
