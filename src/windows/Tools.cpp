@@ -176,7 +176,7 @@ static bool DoVerifyKey(
       case ktOpenSSHNew:
       case ktSSHCom:
         {
-          UnicodeString TypeName = (Type == ktOpenSSHAuto) ? L"OpenSSH SSH-2" : L"ssh.com SSH-2";
+          UnicodeString TypeName = ((Type == ktOpenSSHPEM) || (Type == ktOpenSSHNew)) ? L"OpenSSH" : L"ssh.com";
           Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName.c_str(), TypeName.c_str());
 
           if (Convert)

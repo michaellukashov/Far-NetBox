@@ -2072,7 +2072,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 
 bool TSFTPFileSystem::TemporaryTransferFile(const UnicodeString & AFileName)
 {
-  return ::AnsiSameText(base::UnixExtractFileExt(AFileName), PARTIAL_EXT);
+  return ::SameText(base::UnixExtractFileExt(AFileName), PARTIAL_EXT);
 }
 
 bool TSFTPFileSystem::GetStoredCredentialsTried() const

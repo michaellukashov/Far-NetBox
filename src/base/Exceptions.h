@@ -8,6 +8,7 @@
 bool ShouldDisplayException(Exception * E);
 bool ExceptionMessage(const Exception * E, UnicodeString & Message);
 bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message);
+bool ExceptionFullMessage(Exception * E, UnicodeString & Message);
 UnicodeString SysErrorMessageForError(int LastError);
 UnicodeString LastSysErrorMessage();
 TStrings * ExceptionToMoreMessages(Exception * E);

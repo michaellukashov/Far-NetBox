@@ -593,7 +593,7 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeStr
     }
     sfree(CommentStr);
   }
-
+  filename_free(KeyFile);
   return Result;
 }
 
@@ -637,7 +637,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
   {
     throw Exception(LoadStr(AUTH_TRANSL_WRONG_PASSPHRASE));
   }
-
+  filename_free(KeyFile);
   return reinterpret_cast<TPrivateKey *>(Ssh2Key);
 }
 
@@ -671,6 +671,7 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
       DebugFail();
       break;
   }
+  filename_free(KeyFile);
 }
 
 void FreeKey(TPrivateKey * PrivateKey)

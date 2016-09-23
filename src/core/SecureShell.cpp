@@ -403,6 +403,8 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_int_int(conf, CONF_ssh_hklist, 4, HK_WARN);
   DebugAssert(HK_MAX == 5);
 
+  conf_set_str(conf, CONF_loghost, AnsiString(Data->GetLogicalHostName()).c_str());
+
   return conf;
 }
 
@@ -871,7 +873,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     TranslatePuttyMessage(InstructionTranslation, 1, Instructions);
   }
 
-  // some servers add leading blank line to make the prompt look prettier
+  // some servers add leading or trailing blank line to make the prompt look prettier
   // on terminal console
   Instructions = Instructions.Trim();
 
@@ -2250,6 +2252,7 @@ void TSecureShell::GetRealHost(UnicodeString & Host, intptr_t & Port)
 {
   if (FSessionData->GetTunnel())
   {
+    // Now that we set the CONF_loghost, the hostname is correct already
     Host = FSessionData->GetOrigHostName();
     Port = FSessionData->GetOrigPortNumber();
   }

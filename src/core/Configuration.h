@@ -57,6 +57,7 @@ private:
   intptr_t FActualLogProtocol;
   bool FLogActions;
   bool FPermanentLogActions;
+  bool FLogActionsRequired;
   UnicodeString FActionsLogFileName;
   UnicodeString FPermanentActionsLogFileName;
   bool FConfirmOverwriting;
@@ -89,7 +90,6 @@ private:
 
 public:
 
-  UnicodeString GetOSVersionStr() const;
   TVSFixedFileInfo * GetFixedApplicationInfo() const;
   void * GetApplicationInfo() const;
   virtual UnicodeString GetProductVersionStr() const;
@@ -119,6 +119,7 @@ public:
   void SetLogSensitive(bool Value);
   void SetLogProtocol(intptr_t Value);
   void SetLogActions(bool Value);
+  void SetLogActionsRequired(bool Value);
   void SetActionsLogFileName(const UnicodeString & Value);
   UnicodeString GetDefaultLogFileName() const;
   UnicodeString GetTimeFormat() const;
@@ -269,7 +270,6 @@ public:
   __property UnicodeString ProductVersion = { read=GetProductVersion };
   __property UnicodeString ProductName = { read=GetProductName };
   __property UnicodeString CompanyName = { read=GetCompanyName };
-  __property UnicodeString OSVersionStr = { read = GetOSVersionStr };
   __property bool IsUnofficial = { read = GetIsUnofficial };
   __property bool Logging  = { read=FLogging, write=SetLogging };
   __property UnicodeString LogFileName  = { read=FLogFileName, write=SetLogFileName };
@@ -279,6 +279,7 @@ public:
   __property int LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
   __property int ActualLogProtocol  = { read=FActualLogProtocol };
   __property bool LogActions  = { read=FLogActions, write=SetLogActions };
+  __property bool LogActionsRequired  = { read=FLogActionsRequired, write=FLogActionsRequired };
   __property UnicodeString ActionsLogFileName  = { read=FActionsLogFileName, write=SetActionsLogFileName };
   __property int LogWindowLines  = { read=FLogWindowLines, write=SetLogWindowLines };
   __property bool LogWindowComplete  = { read=GetLogWindowComplete, write=SetLogWindowComplete };
@@ -324,6 +325,7 @@ public:
   intptr_t GetLogProtocol() const { return FLogProtocol; }
   intptr_t GetActualLogProtocol() const { return FActualLogProtocol; }
   bool GetLogActions() const { return FLogActions; }
+  bool GetLogActionsRequired() const { return FLogActionsRequired; }
   UnicodeString GetActionsLogFileName() const { return FActionsLogFileName; }
   intptr_t GetLogWindowLines() const { return FLogWindowLines; }
   TNotifyEvent & GetOnChange() { return FOnChange; }

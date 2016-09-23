@@ -149,6 +149,8 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
     Params += FORMAT(L"-P %d ", SessionData->GetPortNumber());
     Params += FORMAT(L"%s ", EscapePuttyCommandParam(SessionData->GetHostNameExpanded()).c_str());
 
+    // PuTTY is started in its binary directory to allow relative paths in private key,
+    // when opening PuTTY's own stored session.
     if (!ExecuteShell(Program, Params))
     {
       throw Exception(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
@@ -180,10 +182,29 @@ bool FindTool(const UnicodeString & Name, UnicodeString & APath)
   return Result;
 }
 
-bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params)
+static bool _CopyShellCommandToClipboard(const UnicodeString & Path, const UnicodeString & Params)
 {
-  return ((intptr_t)::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(APath.data()),
-    const_cast<wchar_t *>(Params.data()), nullptr, SW_SHOWNORMAL) > 32);
+  bool Result = false; // UseAlternativeFunction() && IsKeyPressed(VK_CONTROL);
+  if (Result)
+  {
+    TInstantOperationVisualizer Visualizer;
+    CopyToClipboard(FormatCommand(Path, Params));
+  }
+  return Result;
+}
+
+bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams, bool ChangeWorkingDirectory)
+{
+  bool Result = true;
+  if (!_CopyShellCommandToClipboard(APath, AParams))
+  {
+    UnicodeString Directory = ExtractFilePath(APath);
+    const wchar_t * PDirectory = (ChangeWorkingDirectory ? Directory.c_str() : nullptr);
+    Result =
+      ((intptr_t)::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(APath.data()),
+        const_cast<wchar_t *>(AParams.data()), PDirectory, SW_SHOWNORMAL) > 32);
+  }
+  return Result;
 }
 
 bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,

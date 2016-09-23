@@ -1257,7 +1257,7 @@ TSHFileInfo::~TSHFileInfo()
 
 int TSHFileInfo::GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmallIcon) const
 {
-  SHFILEINFO sfi;
+  SHFILEINFO sfi = {};
 
   if (bSmallIcon)
   {
@@ -1284,7 +1284,7 @@ int TSHFileInfo::GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmall
 
 int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon)
 {
-  SHFILEINFO sfi;
+  SHFILEINFO sfi = {};
   if (bSmallIcon)
   {
     if (FGetFileInfo)

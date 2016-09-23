@@ -49,7 +49,7 @@ extern int Win32Platform;
 extern int Win32MajorVersion;
 extern int Win32MinorVersion;
 extern int Win32BuildNumber;
-// extern int Win32CSDVersion;
+extern wchar_t Win32CSDVersion[128];
 
 inline intptr_t __cdecl StrLength(const wchar_t * str) { return wcslen(str ? str : L""); }
 

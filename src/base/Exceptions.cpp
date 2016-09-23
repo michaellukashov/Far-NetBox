@@ -163,7 +163,7 @@ static bool ExceptionMessage(const Exception * E, bool /*Count*/,
     Configuration->Usage->Inc(CounterName);
     UnicodeString ExceptionDebugInfo =
       E->ClassName() + L":" + GetExceptionDebugInfo();
-    Configuration->Usage->Set(L"LastInternalException", ExceptionDebugInfo);
+    Configuration->Usage->Set(LastInternalExceptionCounter, ExceptionDebugInfo);
   }
 */
   return Result;
@@ -205,6 +205,21 @@ TStrings * ExceptionToMoreMessages(Exception * E)
     if ((ExtE != nullptr) && (ExtE->GetMoreMessages() != nullptr))
     {
       Result->AddStrings(ExtE->GetMoreMessages());
+    }
+  }
+  return Result;
+}
+
+bool ExceptionFullMessage(Exception * E, UnicodeString & Message)
+{
+  bool Result = ExceptionMessage(E, Message);
+  if (Result)
+  {
+    Message += L"\n";
+    ExtException * EE = NB_STATIC_DOWNCAST(ExtException, E);
+    if ((EE != nullptr) && (EE->GetMoreMessages() != nullptr))
+    {
+      Message += EE->GetMoreMessages()->GetText() + L"\n";
     }
   }
   return Result;
