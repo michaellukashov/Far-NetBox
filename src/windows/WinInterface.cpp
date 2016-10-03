@@ -18,7 +18,8 @@ TMessageParams::TMessageParams(uintptr_t AParams) :
   TimeoutAnswer(0),
   NeverAskAgainAnswer(0),
   NeverAskAgainCheckedInitially(false),
-  AllowHelp(false)
+  AllowHelp(false),
+  MoreMessagesSize(0)
 {
 }
 
