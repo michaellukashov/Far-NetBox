@@ -556,7 +556,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
     if (MoreMessages == nullptr)
     {
       OwnedMoreMessages.reset(new TStringList());
-      MoreMessages = OwnedMoreMessages.get();
+      MoreMessages = OwnedMoreMessages.release();
       Result = true;
     }
     if (!MoreMessages->GetText().IsEmpty())
