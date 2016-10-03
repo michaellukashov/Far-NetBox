@@ -47,6 +47,7 @@ TConfiguration::TConfiguration() :
   FActualLogProtocol(0),
   FLogActions(false),
   FPermanentLogActions(false),
+  FLogActionsRequired(false),
   FConfirmOverwriting(false),
   FConfirmResume(false),
   FAutoReadDirectoryAfterOp(false),
