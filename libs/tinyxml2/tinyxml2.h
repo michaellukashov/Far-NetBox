@@ -30,6 +30,9 @@ distribution.
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
+#	if defined(__PS3__)
+#		include <stddef.h>
+#	endif
 #else
 #   include <cctype>
 #   include <climits>
@@ -171,7 +174,6 @@ private:
         NEEDS_DELETE = 0x200
     };
 
-    // After parsing, if *_end != 0, it can be set to zero.
     int     _flags;
     char*   _start;
     char*   _end;
@@ -498,7 +500,6 @@ public:
 // WARNING: must match XMLDocument::_errorNames[]
 enum XMLError {
     XML_SUCCESS = 0,
-    XML_NO_ERROR = 0,
     XML_NO_ATTRIBUTE,
     XML_WRONG_ATTRIBUTE_TYPE,
     XML_ERROR_FILE_NOT_FOUND,
@@ -924,7 +925,6 @@ private:
 */
 class TINYXML2_LIB XMLText : public XMLNode
 {
-    friend class XMLBase;
     friend class XMLDocument;
 public:
     virtual bool Accept( XMLVisitor* visitor ) const;
@@ -1129,7 +1129,7 @@ public:
     }
 
     /** QueryIntValue interprets the attribute as an integer, and returns the value
-    	in the provided parameter. The function will return XML_NO_ERROR on success,
+    	in the provided parameter. The function will return XML_SUCCESS on success,
     	and XML_WRONG_ATTRIBUTE_TYPE if the conversion is not successful.
     */
     XMLError QueryIntValue( int* value ) const;
@@ -1184,7 +1184,6 @@ private:
 */
 class TINYXML2_LIB XMLElement : public XMLNode
 {
-    friend class XMLBase;
     friend class XMLDocument;
 public:
     /// Get the name of an element (which is the Value() of the node.)
@@ -1274,7 +1273,7 @@ public:
     }
 
     /** Given an attribute name, QueryIntAttribute() returns
-    	XML_NO_ERROR, XML_WRONG_ATTRIBUTE_TYPE if the conversion
+    	XML_SUCCESS, XML_WRONG_ATTRIBUTE_TYPE if the conversion
     	can't be performed, or XML_NO_ATTRIBUTE if the attribute
     	doesn't exist. If successful, the result of the conversion
     	will be written to 'value'. If not successful, nothing will
@@ -1339,7 +1338,7 @@ public:
 
 	
     /** Given an attribute name, QueryAttribute() returns
-    	XML_NO_ERROR, XML_WRONG_ATTRIBUTE_TYPE if the conversion
+    	XML_SUCCESS, XML_WRONG_ATTRIBUTE_TYPE if the conversion
     	can't be performed, or XML_NO_ATTRIBUTE if the attribute
     	doesn't exist. It is overloaded for the primitive types,
 		and is a generally more convenient replacement of
@@ -1494,17 +1493,17 @@ public:
     	@endverbatim
     */
 	void SetText( const char* inText );
-    /// Convenience method for setting text inside and element. See SetText() for important limitations.
-    void SetText( int value );
-    /// Convenience method for setting text inside and element. See SetText() for important limitations.
-    void SetText( unsigned value );  
-    /// Convenience method for setting text inside and element. See SetText() for important limitations.
-    void SetText(int64_t value);
     /// Convenience method for setting text inside an element. See SetText() for important limitations.
+    void SetText( int value );
+    /// Convenience method for setting text inside an element. See SetText() for important limitations.
+    void SetText( unsigned value );  
+	/// Convenience method for setting text inside an element. See SetText() for important limitations.
+	void SetText(int64_t value);
+	/// Convenience method for setting text inside an element. See SetText() for important limitations.
     void SetText( bool value );  
-    /// Convenience method for setting text inside and element. See SetText() for important limitations.
+    /// Convenience method for setting text inside an element. See SetText() for important limitations.
     void SetText( double value );  
-    /// Convenience method for setting text inside and element. See SetText() for important limitations.
+    /// Convenience method for setting text inside an element. See SetText() for important limitations.
     void SetText( float value );  
 
     /**
@@ -1613,7 +1612,7 @@ public:
 
     /**
     	Parse an XML file from a character string.
-    	Returns XML_NO_ERROR (0) on success, or
+    	Returns XML_SUCCESS (0) on success, or
     	an errorID.
 
     	You may optionally pass in the 'nBytes', which is
@@ -1625,7 +1624,7 @@ public:
 
     /**
     	Load an XML file from disk.
-    	Returns XML_NO_ERROR (0) on success, or
+    	Returns XML_SUCCESS (0) on success, or
     	an errorID.
     */
     XMLError LoadFile( const char* filename );
@@ -1638,14 +1637,14 @@ public:
         not text in order for TinyXML-2 to correctly
         do newline normalization.
 
-    	Returns XML_NO_ERROR (0) on success, or
+    	Returns XML_SUCCESS (0) on success, or
     	an errorID.
     */
     XMLError LoadFile( std::FILE* );
 
     /**
     	Save the XML file to disk.
-    	Returns XML_NO_ERROR (0) on success, or
+    	Returns XML_SUCCESS (0) on success, or
     	an errorID.
     */
     XMLError SaveFile( const char* filename, bool compact = false );
@@ -1654,7 +1653,7 @@ public:
     	Save the XML file to disk. You are responsible
     	for providing and closing the FILE*.
 
-    	Returns XML_NO_ERROR (0) on success, or
+    	Returns XML_SUCCESS (0) on success, or
     	an errorID.
     */
     XMLError SaveFile( std::FILE* fp, bool compact = false );
@@ -1752,7 +1751,7 @@ public:
 
     /// Return true if there was an error parsing the document.
     bool Error() const {
-        return _errorID != XML_NO_ERROR;
+        return _errorID != XML_SUCCESS;
     }
     /// Return the errorID.
     XMLError  ErrorID() const {
@@ -2075,7 +2074,7 @@ public:
     void PushAttribute( const char* name, const char* value );
     void PushAttribute( const char* name, int value );
     void PushAttribute( const char* name, unsigned value );
-	void PushAttribute( const char* name, int64_t value);
+	void PushAttribute( const char* name, int64_t value );
 	void PushAttribute( const char* name, bool value );
     void PushAttribute( const char* name, double value );
     /// If streaming, close the Element.
