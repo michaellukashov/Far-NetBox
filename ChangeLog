@@ -1,5 +1,6 @@
-NetBox 2.4.1.439 28.09.2016
+NetBox 2.4.1.440 07.10.2016
 --------------------
+  * Update neon sources to 0.30.2
   * Update openssl sources to 1.0.2j
 
 NetBox 2.4.0.438 23.09.2016
