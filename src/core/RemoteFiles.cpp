@@ -1202,7 +1202,6 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     {
       FSize = ASize;
 
-      bool DayMonthFormat = false;
       Word Year = 0, Month = 0, Day = 0, Hour = 0, Min = 0, Sec = 0;
       Word CurrYear = 0, CurrMonth = 0, CurrDay = 0;
       ::DecodeDate(::Date(), CurrYear, CurrMonth, CurrDay);
@@ -1218,6 +1217,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       }
       else
       {
+        bool DayMonthFormat = false;
         // format dd mmm or mmm dd ?
         Day = ::ToWord(::StrToIntDef(Col, 0));
         if (Day > 0)
