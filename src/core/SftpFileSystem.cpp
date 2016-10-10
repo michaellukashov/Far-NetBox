@@ -5380,7 +5380,7 @@ intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           std::unique_ptr<TRemoteFile> FilePtr(File);
           DebugAssert(FilePtr.get());
           OpenParams->DestFileSize = FilePtr->GetSize();
-          if (OpenParams->FileParams != nullptr)
+          if (OpenParams->FileParams != nullptr && File != nullptr)
           {
             OpenParams->FileParams->DestTimestamp = File->GetModification();
             OpenParams->FileParams->DestSize = OpenParams->DestFileSize;
