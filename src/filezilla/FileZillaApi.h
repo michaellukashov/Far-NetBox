@@ -36,6 +36,7 @@ DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
 // See below for a list of supported commands and their parameters.
 struct t_command : public TObject
 {
+  t_command() : id(0), param4(0) {}
   int id; // Type of command, see below
   CString param1; // Parameters for this command
   CString param2;
