@@ -2621,7 +2621,7 @@ void TSCPFileSystem::SCPSink(
             return;
 
           case L'T':
-            uint32_t MTime, ATime;
+            unsigned long MTime, ATime;
             if (swscanf(Line.c_str(), L"%ld %*d %ld %*d", &MTime, &ATime) == 2)
             {
               const TSessionData * Data = FTerminal->GetSessionData();
