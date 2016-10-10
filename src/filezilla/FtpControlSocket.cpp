@@ -23,6 +23,8 @@ public:
   CFileTransferData()
   {
     pDirectoryListing=0;
+    port=0;
+    bPasv=FALSE;
     nGotTransferEndReply=0;
     nWaitNextOpState=0;
     nMKDOpState=-1;
@@ -86,6 +88,9 @@ public:
     pDirectoryListing = 0;
     bTriedPortPasvOnce = FALSE;
     lastCmdSentCDUP = false;
+    bPasv = FALSE;
+    port = 0;
+    nFinish = 0;
   }
   virtual ~CListData()
   {
