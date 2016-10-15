@@ -897,11 +897,9 @@ XMLNode* XMLNode::InsertAfterChild( XMLNode* afterThis, XMLNode* addThis )
 const XMLElement* XMLNode::FirstChildElement( const char* name ) const
 {
     for( const XMLNode* node = _firstChild; node; node = node->_next ) {
-        const XMLElement* element = node->ToElement();
+        const XMLElement* element = node->ToElementWithName( name );
         if ( element ) {
-            if ( !name || XMLUtil::StringEqual( element->Name(), name ) ) {
-                return element;
-            }
+            return element;
         }
     }
     return 0;
@@ -911,11 +909,9 @@ const XMLElement* XMLNode::FirstChildElement( const char* name ) const
 const XMLElement* XMLNode::LastChildElement( const char* name ) const
 {
     for( const XMLNode* node = _lastChild; node; node = node->_prev ) {
-        const XMLElement* element = node->ToElement();
+        const XMLElement* element = node->ToElementWithName( name );
         if ( element ) {
-            if ( !name || XMLUtil::StringEqual( element->Name(), name ) ) {
-                return element;
-            }
+            return element;
         }
     }
     return 0;
@@ -925,9 +921,8 @@ const XMLElement* XMLNode::LastChildElement( const char* name ) const
 const XMLElement* XMLNode::NextSiblingElement( const char* name ) const
 {
     for( const XMLNode* node = _next; node; node = node->_next ) {
-        const XMLElement* element = node->ToElement();
-        if ( element
-                && (!name || XMLUtil::StringEqual( name, element->Name() ))) {
+        const XMLElement* element = node->ToElementWithName( name );
+        if ( element ) {
             return element;
         }
     }
@@ -938,9 +933,8 @@ const XMLElement* XMLNode::NextSiblingElement( const char* name ) const
 const XMLElement* XMLNode::PreviousSiblingElement( const char* name ) const
 {
     for( const XMLNode* node = _prev; node; node = node->_prev ) {
-        const XMLElement* element = node->ToElement();
-        if ( element
-                && (!name || XMLUtil::StringEqual( name, element->Name() ))) {
+        const XMLElement* element = node->ToElementWithName( name );
+        if ( element ) {
             return element;
         }
     }
@@ -1054,6 +1048,21 @@ void XMLNode::InsertChildPreamble( XMLNode* insertThis ) const
         insertThis->_parent->Unlink( insertThis );
     else
         insertThis->_memPool->SetTracked();
+}
+
+const XMLElement* XMLNode::ToElementWithName( const char* name ) const
+{
+    const XMLElement* element = this->ToElement();
+    if ( element == 0 ) {
+        return 0;
+    }
+    if ( name == 0 ) {
+        return element;
+    }
+    if ( XMLUtil::StringEqual( element->Name(), name ) ) {
+       return element;
+    }
+    return 0;
 }
 
 // --------- XMLText ---------- //
@@ -2183,7 +2192,8 @@ XMLPrinter::XMLPrinter( FILE* file, bool compact, int depth ) :
     }
     for( int i=0; i<NUM_ENTITIES; ++i ) {
         const char entityValue = entities[i].value;
-        TIXMLASSERT( 0 <= entityValue && entityValue < ENTITY_RANGE );
+        // cast to explicit signed because char may be unsigned (on PowerPC)
+        TIXMLASSERT( 0 <= static_cast<signed char>(entityValue) && entityValue < ENTITY_RANGE );
         _entityFlag[ (unsigned char)entityValue ] = true;
     }
     _restrictedEntityFlag[(unsigned char)'&'] = true;

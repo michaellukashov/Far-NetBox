@@ -570,6 +570,9 @@ public:
         if ( p == q ) {
             return true;
         }
+        TIXMLASSERT( p );
+        TIXMLASSERT( q );
+        TIXMLASSERT( nChar >= 0 );
         return strncmp( p, q, nChar ) == 0;
     }
     
@@ -905,6 +908,7 @@ private:
     void Unlink( XMLNode* child );
     static void DeleteNode( XMLNode* node );
     void InsertChildPreamble( XMLNode* insertThis ) const;
+    const XMLElement* ToElementWithName( const char* name ) const;
 
     XMLNode( const XMLNode& );	// not supported
     XMLNode& operator=( const XMLNode& );	// not supported
