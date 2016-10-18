@@ -2621,8 +2621,8 @@ void TSCPFileSystem::SCPSink(
             return;
 
           case L'T':
-            unsigned long MTime, ATime;
-            if (swscanf(Line.c_str(), L"%ld %*d %ld %*d", &MTime, &ATime) == 2)
+            int64_t MTime, ATime;
+            if (swscanf(Line.c_str(), L"%l64d %*d %l64d %*d", &MTime, &ATime) == 2)
             {
               const TSessionData * Data = FTerminal->GetSessionData();
               FileData.AcTime = ::DateTimeToFileTime(::UnixToDateTime(ATime,
