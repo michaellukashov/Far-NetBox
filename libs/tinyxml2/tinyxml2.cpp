@@ -2192,7 +2192,7 @@ XMLPrinter::XMLPrinter( FILE* file, bool compact, int depth ) :
     }
     for( int i=0; i<NUM_ENTITIES; ++i ) {
         const char entityValue = entities[i].value;
-        // cast to explicit signed because char may be unsigned (on PowerPC)
+        TIXMLASSERT( ((unsigned char)entityValue) < ENTITY_RANGE );
         TIXMLASSERT( 0 <= static_cast<signed char>(entityValue) && entityValue < ENTITY_RANGE );
         _entityFlag[ (unsigned char)entityValue ] = true;
     }
