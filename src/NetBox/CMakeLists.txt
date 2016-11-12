@@ -174,12 +174,12 @@ include_directories(
 # target NetBox
 
 set(NETBOX_SOURCES
-  ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
+  UnityBuildCore.cpp
+  UnityBuildMain.cpp
+  UnityBuildFilezilla.cpp
   ${SRC_ROOT}/resource/TextsFileZilla.rc
-  ${SRC_ROOT}/NetBox/NetBox.rc
-  ${SRC_ROOT}/NetBox/NetBox.def
+  NetBox.rc
+  NetBox.def
 )
 
 add_custom_target(NETBOX_SOURCES SOURCES
