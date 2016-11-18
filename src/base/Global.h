@@ -95,7 +95,7 @@ inline bool DoAlwaysFalse(bool Value, const wchar_t * Message, const wchar_t * F
 }
 
 template<typename T>
-inline typename T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
+inline T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
 {
   if (p == nullptr)
   {
