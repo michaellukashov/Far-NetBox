@@ -140,12 +140,13 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
     ClearStruct(ChainConfig);
     /*const size_t ChainConfigSize =
       reinterpret_cast<const char *>(&ChainConfig.CycleDetectionModulus) + sizeof(ChainConfig.CycleDetectionModulus) -
-      reinterpret_cast<const char *>(&ChainConfig);*/
+      reinterpret_cast<const char *>(&ChainConfig);
     // The hExclusiveRoot and hExclusiveTrustedPeople were added in Windows 7.
     // The CertGetCertificateChain fails with E_INVALIDARG when we include them to ChainConfig.cbSize.
     // DebugAssert(ChainConfigSize == 40);
     // DebugAssert(ChainConfigSize == sizeof(CERT_CHAIN_ENGINE_CONFIG) - sizeof(ChainConfig.hExclusiveRoot) - sizeof(ChainConfig.hExclusiveTrustedPeople));
-    ChainConfig.cbSize = ChainConfigSize;
+    ChainConfig.cbSize = ChainConfigSize;*/
+    ChainConfig.cbSize = sizeof(CERT_CHAIN_ENGINE_CONFIG);
     ChainConfig.hRestrictedRoot = nullptr;
     ChainConfig.hRestrictedTrust = nullptr;
     ChainConfig.hRestrictedOther = nullptr;
