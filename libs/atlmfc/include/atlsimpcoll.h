@@ -510,7 +510,7 @@ public:
 
 #pragma pop_macro("new")
 
-};  // namespace ATL
+}  // namespace ATL
 #pragma pack(pop)
 
 #pragma warning(pop)

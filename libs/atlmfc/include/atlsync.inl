@@ -334,6 +334,6 @@ inline void CMutexLock::Unlock() throw()
 	m_bLocked = false;
 }
 
-};  // namespace ATL
+}  // namespace ATL
 
 #endif  // __ATLSYNC_INL__
