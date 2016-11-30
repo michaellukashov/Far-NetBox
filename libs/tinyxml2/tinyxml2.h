@@ -1563,6 +1563,7 @@ private:
     //void LinkAttribute( XMLAttribute* attrib );
     char* ParseAttributes( char* p );
     static void DeleteAttribute( XMLAttribute* attribute );
+    XMLAttribute* CreateAttribute();
 
     enum { BUF_SIZE = 200 };
     int _closingType;
@@ -1739,6 +1740,10 @@ public:
     void DeleteNode( XMLNode* node );
 
     void SetError( XMLError error, const char* str1, const char* str2 );
+
+    void ClearError() {
+        SetError(XML_SUCCESS, 0, 0);
+    }
 
     /// Return true if there was an error parsing the document.
     bool Error() const {
