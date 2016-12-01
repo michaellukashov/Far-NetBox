@@ -4762,11 +4762,11 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
 #endif
 
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-  int64_t MTime = 0, ATime = 0;
+  int64_t MTime = 0;
   int64_t Size = 0;
 
   FTerminal->TerminalOpenLocalFile(AFileName, GENERIC_READ,
-    &LocalFileHandle, &OpenParams.LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
+    &LocalFileHandle, &OpenParams.LocalFileAttrs, nullptr, &MTime, nullptr, &Size);
 
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
 
@@ -5000,8 +5000,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
         PropertiesRequest.AddProperties(
           SetRights ? &RightsNumber : nullptr, nullptr, nullptr,
           CopyParam->GetPreserveTime() ? &MTime : nullptr,
-          CopyParam->GetPreserveTime() ? &ATime : nullptr,
-          nullptr, false, FVersion, FUtfStrings);
+          nullptr, nullptr, false, FVersion, FUtfStrings);
       }
 
       bool TransferFinished = false;
