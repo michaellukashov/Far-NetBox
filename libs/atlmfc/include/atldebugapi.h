@@ -219,7 +219,7 @@ void __stdcall AtlTraceGetCategoryInfo(
 #ifdef __cplusplus
 };
 
-};  // namespace ATL
+}  // namespace ATL
 #pragma pack(pop)
 #endif
 

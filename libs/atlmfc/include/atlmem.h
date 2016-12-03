@@ -252,7 +252,7 @@ public:
 	}
 };
 
-};  // namespace ATL
+}  // namespace ATL
 #pragma pack(pop)
 
 #ifdef _OBJBASE_H_

@@ -5879,7 +5879,7 @@ ATLINLINE ATLAPIINL AtlRegisterTypeLib(
 		OLECHAR szDirBuffer[MAX_PATH];
 		CComBSTR bstrHelpFile;
 		hr = pTypeLib->GetDocumentation(-1, NULL, NULL, NULL, &bstrHelpFile);
-		if (SUCCEEDED(hr) && bstrHelpFile != NULL)
+		if (SUCCEEDED(hr) && bstrHelpFile != 0)
 		{
 			Checked::wcsncpy_s(szDirBuffer, MAX_PATH, bstrHelpFile.m_str, bstrHelpFile.Length());
 			szDirBuffer[MAX_PATH - 1] = 0;

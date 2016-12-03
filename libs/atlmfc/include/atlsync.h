@@ -161,7 +161,7 @@ private:
 	CMutexLock& operator=(_In_ const CMutexLock&) throw();
 };
 
-};  // namespace ATL
+}  // namespace ATL
 
 
 #include <atlsync.inl>
