@@ -102,9 +102,9 @@ public:
   intptr_t Compare(const UnicodeString & Str) const;
   intptr_t CompareIC(const UnicodeString & Str) const;
   intptr_t ToInt() const;
-  intptr_t FindFirstOf(const wchar_t Ch) const { return Data.find_first_of(Ch, 0); }
-  intptr_t FindFirstOf(const wchar_t * Str, size_t Offset = 0) const { return Data.find_first_of(Str, Offset); }
-  intptr_t FindFirstNotOf(const wchar_t * Str) const { return Data.find_first_not_of(Str); }
+  intptr_t FindFirstOf(const wchar_t Ch) const { return (intptr_t)Data.find_first_of(Ch, 0); }
+  intptr_t FindFirstOf(const wchar_t * Str, size_t Offset = 0) const { return (intptr_t)Data.find_first_of(Str, Offset); }
+  intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }
 
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen);
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
@@ -127,7 +127,7 @@ public:
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(const UnicodeString & Str) const;
 
-  intptr_t RPos(wchar_t Ch) const { return Data.find_last_of(Ch) + 1; }
+  intptr_t RPos(wchar_t Ch) const { return (intptr_t)Data.find_last_of(Ch) + 1; }
   bool RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
 
   UnicodeString SubStr(intptr_t Pos, intptr_t Len = -1) const;

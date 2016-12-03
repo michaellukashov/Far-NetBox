@@ -14,6 +14,7 @@ THttp::THttp() :
   FProxyPort(0),
   FResponseLimit(-1),
   FOnDownload(nullptr),
+  FOnError(nullptr),
   FRequestHeaders(nullptr),
   FResponseHeaders(new TStringList())
 {
@@ -134,7 +135,13 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           const ne_status * NeonStatus = ne_get_status(NeonRequest);
           if (NeonStatus->klass != 2)
           {
-            throw Exception(FMTLOAD(HTTP_ERROR2, NeonStatus->code, StrFromNeon(NeonStatus->reason_phrase).c_str(), FHostName.c_str()));
+            int Status = NeonStatus->code;
+            UnicodeString Message = StrFromNeon(NeonStatus->reason_phrase);
+            if (GetOnError() != nullptr)
+            {
+              GetOnError()(this, Status, Message);
+            }
+            throw Exception(FMTLOAD(HTTP_ERROR2, Status, Message.c_str(), FHostName.c_str()));
           }
 
           void * Cursor = NULL;

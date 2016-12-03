@@ -3099,7 +3099,7 @@ public:
 #pragma pop_macro("FormatMessage")
 #endif
 
-};  // namespace ATL
+}  // namespace ATL
 
 
 

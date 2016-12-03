@@ -98,4 +98,4 @@ HINSTANCE CAtlBaseModule::GetHInstanceAt(int i) throw()
 
 // #pragma init_seg( lib )
 
-};  // namespace ATL
+}  // namespace ATL

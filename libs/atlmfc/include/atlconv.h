@@ -527,7 +527,7 @@ typedef CW2AEX<> CW2A;
 #define CT2COLE CT2CW
 #define CT2COLEEX CT2CWEX
 
-};  // namespace ATL
+}  // namespace ATL
 #pragma pack(pop)
 
 #pragma pack(push,8)

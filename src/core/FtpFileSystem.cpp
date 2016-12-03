@@ -286,10 +286,9 @@ TFTPFileSystem::~TFTPFileSystem()
   if (FFileZillaIntf)
   {
     FFileZillaIntf->Destroying();
+    // to release memory associated with the messages
+    DiscardMessages();
   }
-
-  // to release memory associated with the messages
-  DiscardMessages();
 
   SAFE_DESTROY(FFileZillaIntf);
 

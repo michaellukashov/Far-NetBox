@@ -191,6 +191,7 @@ void StrPair::SetStr( const char* str, int flags )
 
 char* StrPair::ParseText( char* p, const char* endTag, int strFlags )
 {
+    TIXMLASSERT( p );
     TIXMLASSERT( endTag && *endTag );
 
     char* start = p;
@@ -204,6 +205,7 @@ char* StrPair::ParseText( char* p, const char* endTag, int strFlags )
             return p + length;
         }
         ++p;
+        TIXMLASSERT( p );
     }
     return 0;
 }
@@ -895,11 +897,9 @@ XMLNode* XMLNode::InsertAfterChild( XMLNode* afterThis, XMLNode* addThis )
 const XMLElement* XMLNode::FirstChildElement( const char* name ) const
 {
     for( const XMLNode* node = _firstChild; node; node = node->_next ) {
-        const XMLElement* element = node->ToElement();
+        const XMLElement* element = node->ToElementWithName( name );
         if ( element ) {
-            if ( !name || XMLUtil::StringEqual( element->Name(), name ) ) {
-                return element;
-            }
+            return element;
         }
     }
     return 0;
@@ -909,11 +909,9 @@ const XMLElement* XMLNode::FirstChildElement( const char* name ) const
 const XMLElement* XMLNode::LastChildElement( const char* name ) const
 {
     for( const XMLNode* node = _lastChild; node; node = node->_prev ) {
-        const XMLElement* element = node->ToElement();
+        const XMLElement* element = node->ToElementWithName( name );
         if ( element ) {
-            if ( !name || XMLUtil::StringEqual( element->Name(), name ) ) {
-                return element;
-            }
+            return element;
         }
     }
     return 0;
@@ -923,9 +921,8 @@ const XMLElement* XMLNode::LastChildElement( const char* name ) const
 const XMLElement* XMLNode::NextSiblingElement( const char* name ) const
 {
     for( const XMLNode* node = _next; node; node = node->_next ) {
-        const XMLElement* element = node->ToElement();
-        if ( element
-                && (!name || XMLUtil::StringEqual( name, element->Name() ))) {
+        const XMLElement* element = node->ToElementWithName( name );
+        if ( element ) {
             return element;
         }
     }
@@ -936,9 +933,8 @@ const XMLElement* XMLNode::NextSiblingElement( const char* name ) const
 const XMLElement* XMLNode::PreviousSiblingElement( const char* name ) const
 {
     for( const XMLNode* node = _prev; node; node = node->_prev ) {
-        const XMLElement* element = node->ToElement();
-        if ( element
-                && (!name || XMLUtil::StringEqual( name, element->Name() ))) {
+        const XMLElement* element = node->ToElementWithName( name );
+        if ( element ) {
             return element;
         }
     }
@@ -969,6 +965,7 @@ char* XMLNode::ParseDeep( char* p, StrPair* parentEnd )
         XMLNode* node = 0;
 
         p = _document->Identify( p, &node );
+        TIXMLASSERT( p );
         if ( node == 0 ) {
             break;
         }
@@ -985,13 +982,23 @@ char* XMLNode::ParseDeep( char* p, StrPair* parentEnd )
 
         XMLDeclaration* decl = node->ToDeclaration();
         if ( decl ) {
-                // A declaration can only be the first child of a document.
-                // Set error, if document already has children.
-                if ( !_document->NoChildren() ) {
-                        _document->SetError( XML_ERROR_PARSING_DECLARATION, decl->Value(), 0);
-                        DeleteNode( node );
+            // Declarations are only allowed at document level
+            bool wellLocated = ( ToDocument() != 0 );
+            if ( wellLocated ) {
+                // Multiple declarations are allowed but all declarations
+                // must occur before anything else
+                for ( const XMLNode* existingNode = _document->FirstChild(); existingNode; existingNode = existingNode->NextSibling() ) {
+                    if ( !existingNode->ToDeclaration() ) {
+                        wellLocated = false;
                         break;
+                    }
                 }
+            }
+            if ( !wellLocated ) {
+                _document->SetError( XML_ERROR_PARSING_DECLARATION, decl->Value(), 0 );
+                DeleteNode( node );
+                break;
+            }
         }
 
         XMLElement* ele = node->ToElement();
@@ -1052,6 +1059,21 @@ void XMLNode::InsertChildPreamble( XMLNode* insertThis ) const
         insertThis->_parent->Unlink( insertThis );
     else
         insertThis->_memPool->SetTracked();
+}
+
+const XMLElement* XMLNode::ToElementWithName( const char* name ) const
+{
+    const XMLElement* element = this->ToElement();
+    if ( element == 0 ) {
+        return 0;
+    }
+    if ( name == 0 ) {
+        return element;
+    }
+    if ( XMLUtil::StringEqual( element->Name(), name ) ) {
+       return element;
+    }
+    return 0;
 }
 
 // --------- XMLText ---------- //
@@ -1450,6 +1472,47 @@ const char* XMLElement::Attribute( const char* name, const char* value ) const
     return 0;
 }
 
+int XMLElement::IntAttribute(const char* name, int defaultValue) const 
+{
+	int i = defaultValue;
+	QueryIntAttribute(name, &i);
+	return i;
+}
+
+unsigned XMLElement::UnsignedAttribute(const char* name, unsigned defaultValue) const 
+{
+	unsigned i = defaultValue;
+	QueryUnsignedAttribute(name, &i);
+	return i;
+}
+
+int64_t XMLElement::Int64Attribute(const char* name, int64_t defaultValue) const 
+{
+	int64_t i = defaultValue;
+	QueryInt64Attribute(name, &i);
+	return i;
+}
+
+bool XMLElement::BoolAttribute(const char* name, bool defaultValue) const 
+{
+	bool b = defaultValue;
+	QueryBoolAttribute(name, &b);
+	return b;
+}
+
+double XMLElement::DoubleAttribute(const char* name, double defaultValue) const 
+{
+	double d = defaultValue;
+	QueryDoubleAttribute(name, &d);
+	return d;
+}
+
+float XMLElement::FloatAttribute(const char* name, float defaultValue) const 
+{
+	float f = defaultValue;
+	QueryFloatAttribute(name, &f);
+	return f;
+}
 
 const char* XMLElement::GetText() const
 {
@@ -1596,6 +1659,47 @@ XMLError XMLElement::QueryFloatText( float* fval ) const
     return XML_NO_TEXT_NODE;
 }
 
+int XMLElement::IntText(int defaultValue) const
+{
+	int i = defaultValue;
+	QueryIntText(&i);
+	return i;
+}
+
+unsigned XMLElement::UnsignedText(unsigned defaultValue) const
+{
+	unsigned i = defaultValue;
+	QueryUnsignedText(&i);
+	return i;
+}
+
+int64_t XMLElement::Int64Text(int64_t defaultValue) const
+{
+	int64_t i = defaultValue;
+	QueryInt64Text(&i);
+	return i;
+}
+
+bool XMLElement::BoolText(bool defaultValue) const
+{
+	bool b = defaultValue;
+	QueryBoolText(&b);
+	return b;
+}
+
+double XMLElement::DoubleText(double defaultValue) const
+{
+	double d = defaultValue;
+	QueryDoubleText(&d);
+	return d;
+}
+
+float XMLElement::FloatText(float defaultValue) const
+{
+	float f = defaultValue;
+	QueryFloatText(&f);
+	return f;
+}
 
 
 XMLAttribute* XMLElement::FindOrCreateAttribute( const char* name )
@@ -1610,9 +1714,8 @@ XMLAttribute* XMLElement::FindOrCreateAttribute( const char* name )
         }
     }
     if ( !attrib ) {
-        TIXMLASSERT( sizeof( XMLAttribute ) == _document->_attributePool.ItemSize() );
-        attrib = new (_document->_attributePool.Alloc() ) XMLAttribute();
-        attrib->_memPool = &_document->_attributePool;
+        attrib = CreateAttribute();
+        TIXMLASSERT( attrib );
         if ( last ) {
             last->_next = attrib;
         }
@@ -1620,7 +1723,6 @@ XMLAttribute* XMLElement::FindOrCreateAttribute( const char* name )
             _rootAttribute = attrib;
         }
         attrib->SetName( name );
-        attrib->_memPool->SetTracked(); // always created and linked.
     }
     return attrib;
 }
@@ -1660,10 +1762,8 @@ char* XMLElement::ParseAttributes( char* p )
 
         // attribute.
         if (XMLUtil::IsNameStartChar( *p ) ) {
-            TIXMLASSERT( sizeof( XMLAttribute ) == _document->_attributePool.ItemSize() );
-            XMLAttribute* attrib = new (_document->_attributePool.Alloc() ) XMLAttribute();
-            attrib->_memPool = &_document->_attributePool;
-			attrib->_memPool->SetTracked();
+            XMLAttribute* attrib = CreateAttribute();
+            TIXMLASSERT( attrib );
 
             p = attrib->ParseDeep( p, _document->ProcessEntities() );
             if ( !p || Attribute( attrib->Name() ) ) {
@@ -1710,6 +1810,15 @@ void XMLElement::DeleteAttribute( XMLAttribute* attribute )
     MemPool* pool = attribute->_memPool;
     attribute->~XMLAttribute();
     pool->Free( attribute );
+}
+
+XMLAttribute* XMLElement::CreateAttribute()
+{
+    TIXMLASSERT( sizeof( XMLAttribute ) == _document->_attributePool.ItemSize() );
+    XMLAttribute* attrib = new (_document->_attributePool.Alloc() ) XMLAttribute();
+    attrib->_memPool = &_document->_attributePool;
+    attrib->_memPool->SetTracked();
+    return attrib;
 }
 
 //
@@ -1851,9 +1960,7 @@ void XMLDocument::Clear()
 #ifdef DEBUG
     const bool hadError = Error();
 #endif
-    _errorID = XML_SUCCESS;
-	_errorStr1.Reset();
-	_errorStr2.Reset();
+    ClearError();
 
     delete [] _charBuffer;
     _charBuffer = 0;
@@ -2058,7 +2165,7 @@ XMLError XMLDocument::SaveFile( FILE* fp, bool compact )
 {
     // Clear any error from the last save, otherwise it will get reported
     // for *this* call.
-	SetError(XML_SUCCESS, 0, 0);
+    ClearError();
     XMLPrinter stream( fp, compact );
     Print( &stream );
     return _errorID;
@@ -2181,7 +2288,7 @@ XMLPrinter::XMLPrinter( FILE* file, bool compact, int depth ) :
     }
     for( int i=0; i<NUM_ENTITIES; ++i ) {
         const char entityValue = entities[i].value;
-        TIXMLASSERT( 0 <= entityValue && entityValue < ENTITY_RANGE );
+        TIXMLASSERT( ((unsigned char)entityValue) < ENTITY_RANGE );
         _entityFlag[ (unsigned char)entityValue ] = true;
     }
     _restrictedEntityFlag[(unsigned char)'&'] = true;

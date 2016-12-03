@@ -1202,8 +1202,6 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     {
       FSize = ASize;
 
-      bool FullTime = false;
-      bool DayMonthFormat = false;
       Word Year = 0, Month = 0, Day = 0, Hour = 0, Min = 0, Sec = 0;
       Word CurrYear = 0, CurrMonth = 0, CurrDay = 0;
       ::DecodeDate(::Date(), CurrYear, CurrMonth, CurrDay);
@@ -1219,6 +1217,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       }
       else
       {
+        bool DayMonthFormat = false;
         // format dd mmm or mmm dd ?
         Day = ::ToWord(::StrToIntDef(Col, 0));
         if (Day > 0)
@@ -1264,6 +1263,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         }
         else
         {
+          bool FullTime = false;
           // or it may have been day name for another format of --full-time
           if (Month == 0)
           {
@@ -1652,6 +1652,17 @@ void TRemoteFileList::AddFiles(const TRemoteFileList * AFileList)
   {
     AddFile(AFileList->GetFile(Index));
   }
+}
+
+TStrings * TRemoteFileList::CloneStrings(TStrings * List)
+{
+  std::unique_ptr<TStringList> Result(new TStringList());
+  for (intptr_t Index = 0; Index < List->GetCount(); Index++)
+  {
+    TRemoteFile * File = static_cast<TRemoteFile *>(List->GetObj(Index));
+    Result->AddObject(List->GetString(Index), File);
+  }
+  return Result.release();
 }
 
 void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy) const

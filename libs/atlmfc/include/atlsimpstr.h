@@ -1030,7 +1030,7 @@ typedef CStrBufT< TCHAR > CStrBuf;
 typedef CStrBufT< char > CStrBufA;
 typedef CStrBufT< wchar_t > CStrBufW;
 
-};  // namespace ATL
+}  // namespace ATL
 #pragma pack(pop)
 
 #endif  // __ATLSIMPSTR_H__

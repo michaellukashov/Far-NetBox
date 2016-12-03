@@ -23,4 +23,4 @@ namespace ATL
 
 #endif
 
-};  // namespace ATL
+}  // namespace ATL

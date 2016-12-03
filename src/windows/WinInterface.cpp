@@ -14,11 +14,13 @@ TMessageParams::TMessageParams(uintptr_t AParams) :
   Timer(0),
   TimerEvent(nullptr),
   TimerAnswers(0),
+  TimerQueryType(qtConfirmation),
   Timeout(0),
   TimeoutAnswer(0),
   NeverAskAgainAnswer(0),
   NeverAskAgainCheckedInitially(false),
-  AllowHelp(false)
+  AllowHelp(false),
+  MoreMessagesSize(0)
 {
 }
 
@@ -555,7 +557,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
     if (MoreMessages == nullptr)
     {
       OwnedMoreMessages.reset(new TStringList());
-      MoreMessages = OwnedMoreMessages.get();
+      MoreMessages = OwnedMoreMessages.release();
       Result = true;
     }
     if (!MoreMessages->GetText().IsEmpty())
