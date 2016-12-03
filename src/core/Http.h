@@ -11,6 +11,9 @@ class THttp;
 //typedef void (__closure * THttpDownloadEvent)(THttp * Sender, int64_t Size, bool & Cancel);
 DEFINE_CALLBACK_TYPE3(THttpDownloadEvent, void,
   THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/);
+//typedef void (__closure * THttpErrorEvent)(THttp * Sender, int Status, const UnicodeString & Message);
+DEFINE_CALLBACK_TYPE3(THttpErrorEvent, void,
+  THttp * /*Sender*/, int /*Status*/, const UnicodeString & /*Message*/);
 
 class THttp : public TObject
 {
@@ -31,7 +34,8 @@ public:
   __property TStrings * ResponseHeaders = { read = FResponseHeaders };
   __property __int64 ResponseLength = { read = GetResponseLength };
   __property __int64 ResponseLimit = { read = FResponseLimit, write = FResponseLimit };
-  __property THttpDownloadEvent OnDownload = { read = FOnDownload, write = FOnDownload};*/
+  __property THttpDownloadEvent OnDownload = { read = FOnDownload, write = FOnDownload};
+  __property THttpErrorEvent OnError = { read = FOnError, write = FOnError };*/
 
   UnicodeString GetURL() const { return FURL; }
   void SetURL(const UnicodeString & Value) { FURL = Value; }
@@ -47,6 +51,8 @@ public:
   void SetResponseLimit(int64_t Value) { FResponseLimit = Value; }
   THttpDownloadEvent GetOnDownload() const { return FOnDownload; }
   void SetOnDownload(THttpDownloadEvent Value) { FOnDownload = Value; }
+  THttpErrorEvent GetOnError() const { return FOnError; }
+  void SetOnError(THttpErrorEvent Value) { FOnError = Value; }
 
 private:
   UnicodeString FURL;
@@ -56,6 +62,7 @@ private:
   int64_t FResponseLimit;
   std::unique_ptr<Exception> FException;
   THttpDownloadEvent FOnDownload;
+  THttpErrorEvent FOnError;
   UnicodeString FHostName;
   UnicodeString FCertificateError;
   TStrings * FRequestHeaders;

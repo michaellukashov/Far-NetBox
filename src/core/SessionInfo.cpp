@@ -884,6 +884,8 @@ void TSessionLog::OpenLogFile()
     catch (Exception & E)
     {
       AddException(&E);
+      // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
+      TUnguard Unguard(FCriticalSection);
       FUI->HandleExtendedException(&E);
     }
   }
@@ -1026,8 +1028,6 @@ UnicodeString EnumName(T Value, const UnicodeString & ANames)
 
 void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
-  TGuard Guard(FCriticalSection);
-
   BeginUpdate();
   try__finally
   {
@@ -1107,9 +1107,9 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Host name: %s (Port: %d)", Data->GetHostNameExpanded().c_str(), Data->GetPortNumber());
       if (0)
       {
-        ADF(L"User name: %s (Password: %s, Key file: %s)",
-          Data->GetUserNameExpanded().c_str(), BooleanToEngStr(!Data->GetPassword().IsEmpty()).c_str(),
-           BooleanToEngStr(!Data->GetPublicKeyFile().IsEmpty()).c_str())
+        ADF(L"User name: %s (Password: %s, Key file: %s, Passphrase: %s)",
+          Data->GetUserNameExpanded().c_str(), LogSensitive(Data->GetPassword()).c_str(),
+           LogSensitive(Data->GetPublicKeyFile()).c_str(), LogSensitive(Data->GetPassphrase()).c_str())
       }
       if (Data->GetUsesSsh())
       {
@@ -1648,6 +1648,8 @@ void TActionLog::OpenLogFile()
       {
         if (FUI != nullptr)
         {
+          // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
+          TUnguard Unguard(FCriticalSection);
           FUI->HandleExtendedException(&E);
         }
       }
