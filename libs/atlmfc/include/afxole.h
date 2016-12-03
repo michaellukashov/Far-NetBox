@@ -62,9 +62,6 @@
 
 // Classes declared in this file
 
-//CControlBar
-	class COleResizeBar;            // implements in-place resizing
-
 //CFile
 	class COleStreamFile;           // CFile wrapper for IStream interface
 		class CMonikerFile;         // bound to via IMoniker

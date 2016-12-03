@@ -456,7 +456,7 @@ public:
 		_CIP<IUnknown, &IID_IUnknown>::operator=(pUnknown);
 		return pUnknown != NULL ? S_OK : E_NOINTERFACE;
 	}
-}  // CIP<IUnknown, &IID_IUnknown>
+};  // CIP<IUnknown, &IID_IUnknown>
 
 #define IPTR(x) CIP<x, &IID_##x>
 #define DEFINE_IPTR(x) typedef IPTR(x) x##Ptr;
