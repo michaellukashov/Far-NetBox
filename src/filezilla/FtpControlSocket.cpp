@@ -33,6 +33,9 @@ public:
     bUseAbsolutePaths = FALSE;
     bTriedPortPasvOnce = FALSE;
     askOnResumeFail = false;
+#ifndef MPEXT_NO_ZLIB
+    newZlibLevel = 0;
+#endif
   };
   ~CFileTransferData()
   {
@@ -91,6 +94,9 @@ public:
     bPasv = FALSE;
     port = 0;
     nFinish = 0;
+#ifndef MPEXT_NO_ZLIB
+    newZlibLevel = 0;
+#endif
   }
   virtual ~CListData()
   {
