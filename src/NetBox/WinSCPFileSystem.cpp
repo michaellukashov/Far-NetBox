@@ -1068,15 +1068,17 @@ void TWinSCPFileSystem::CreateLink()
     File = NB_STATIC_DOWNCAST(TRemoteFile, (*PanelInfo)->GetFocusedItem()->GetUserData());
 
     if (File)
+    {
       Edit = File->GetIsSymLink() && GetTerminal()->GetSessionData()->GetResolveSymlinks();
-    if (Edit)
-    {
-      FileName = File->GetFileName();
-      PointTo = File->GetLinkTo();
-    }
-    else
-    {
-      PointTo = File->GetFileName();
+      if (Edit)
+      {
+        FileName = File->GetFileName();
+        PointTo = File->GetLinkTo();
+      }
+      else
+      {
+        PointTo = File->GetFileName();
+      }
     }
   }
 
