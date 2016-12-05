@@ -43,6 +43,8 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   FAuthenticating = false;
   FAuthenticated = false;
   FUtfStrings = false;
+  FLastSendBufferUpdate = 0;
+  FSendBuf = 0;
   FActive = false;
   FSessionInfoValid = false;
   FBackend = nullptr;
