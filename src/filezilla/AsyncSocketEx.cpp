@@ -1241,9 +1241,13 @@ BOOL CAsyncSocketEx::GetPeerName( CString& rPeerAddress, UINT& rPeerPort )
     nSockAddrLen = sizeof(SOCKADDR_IN);
   }
 
-  memset(sockAddr, 0, nSockAddrLen);
+  BOOL bResult = FALSE;
+  if (sockAddr)
+  {
+    memset(sockAddr, 0, nSockAddrLen);
 
-  BOOL bResult = GetPeerName(sockAddr, &nSockAddrLen);
+    bResult = GetPeerName(sockAddr, &nSockAddrLen);
+  }
 
   if (bResult)
   {
