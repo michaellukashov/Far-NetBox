@@ -242,8 +242,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           sprintf((char *)buffer, "  %s %s", lpszAsciiUser?lpszAsciiUser:"", lpszAsciiPass?lpszAsciiPass:"");
           buffer[0]=1;
           buffer[1]=static_cast<uint8_t>(strlen(lpszAsciiUser));
-          buffer[2+strlen(lpszAsciiUser)]=static_cast<uint8_t>(strlen(lpszAsciiPass));
-          intptr_t len=3+strlen(lpszAsciiUser)+strlen(lpszAsciiPass);
+          buffer[2+strlen(lpszAsciiUser)]=static_cast<uint8_t>(strlen(lpszAsciiPass?lpszAsciiPass:""));
+          intptr_t len=3+strlen(lpszAsciiUser)+strlen(lpszAsciiPass?lpszAsciiPass:"");
           int res=SendNext(buffer,len);
           nb_free(buffer);
           if (res==SOCKET_ERROR || res<len)
