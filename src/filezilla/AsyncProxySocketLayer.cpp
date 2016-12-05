@@ -687,7 +687,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
       if (!m_nProxyPeerIp || m_ProxyData.nProxyType==PROXYTYPE_SOCKS4A)
       {
         DebugAssert(m_ProxyData.nProxyType==PROXYTYPE_SOCKS4A);
-        DebugAssert(strcmp(lpszAscii, ""));
+        DebugAssert(0 != strcmp(lpszAscii, ""));
         //Set the IP to 0.0.0.x (x is nonzero)
         command[4]=0;
         command[5]=0;
