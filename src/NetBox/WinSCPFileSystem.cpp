@@ -292,6 +292,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FTerminal(nullptr),
   FQueue(nullptr),
   FQueueStatus(nullptr),
+  FQueueEvent(qeEmpty),
   FProgressSaveScreenHandle(0),
   FSynchronizationSaveScreenHandle(0),
   FAuthenticationSaveScreenHandle(0),
