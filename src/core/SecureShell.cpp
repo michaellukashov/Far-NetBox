@@ -1052,8 +1052,11 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Len
           FatalError(L"Out of memory");
         }
       }
-      memmove(Pending + PendLen, p, Len);
-      PendLen += Len;
+      if (Pending)
+      {
+        memmove(Pending + PendLen, p, Len);
+        PendLen += Len;
+      }
     }
 
     if (FOnReceive != nullptr)
