@@ -1301,9 +1301,13 @@ BOOL CAsyncSocketEx::GetSockName(CString& rSocketAddress, UINT& rSocketPort)
     nSockAddrLen = sizeof(SOCKADDR_IN);
   }
 
-  memset(sockAddr, 0, nSockAddrLen);
+  BOOL bResult = FALSE;
+  if (sockAddr)
+  {
+    memset(sockAddr, 0, nSockAddrLen);
 
-  BOOL bResult = GetSockName(sockAddr, &nSockAddrLen);
+    bResult = GetSockName(sockAddr, &nSockAddrLen);
+  }
 
   if (bResult)
   {
