@@ -81,6 +81,21 @@ struct t_SslCertData
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 
+  t_SslCertData()
+  {
+    ClearStruct(subject);
+    ClearStruct(issuer);
+    ClearStruct(validFrom);
+    ClearStruct(validUntil);
+    ClearArray(subjectAltName);
+    ClearArray(hash);
+    certificate = 0;
+    certificateLen = 0;
+    verificationResult = 0;
+    verificationDepth = 0;
+    priv_data = 0;
+  }
+
   ~t_SslCertData()
   {
     nb_free(certificate);
