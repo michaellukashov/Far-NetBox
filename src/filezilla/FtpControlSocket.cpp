@@ -36,14 +36,14 @@ public:
 #ifndef MPEXT_NO_ZLIB
     newZlibLevel = 0;
 #endif
-  };
+  }
   ~CFileTransferData()
   {
     if (pDirectoryListing)
       delete pDirectoryListing;
     pDirectoryListing=0;
     nb_free(pFileSize);
-  };
+  }
   CString rawpwd;
   t_transferfile transferfile;
   t_transferdata transferdata;
