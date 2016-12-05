@@ -4664,6 +4664,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString & DestFileName,
     {
       case qaNeverAskAgain:
         FTerminal->GetConfiguration()->SetConfirmResume(false);
+        //FALLTHROU
       case qaYes:
         ResumeTransfer = true;
         break;
