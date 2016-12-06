@@ -293,6 +293,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FTerminal(nullptr),
   FQueue(nullptr),
   FQueueStatus(nullptr),
+  FQueueEvent(qeEmpty),
   FProgressSaveScreenHandle(0),
   FSynchronizationSaveScreenHandle(0),
   FAuthenticationSaveScreenHandle(0),
@@ -1076,15 +1077,17 @@ void TWinSCPFileSystem::CreateLink()
     File = NB_STATIC_DOWNCAST(TRemoteFile, (*PanelInfo)->GetFocusedItem()->GetUserData());
 
     if (File)
+    {
       Edit = File->GetIsSymLink() && GetTerminal()->GetSessionData()->GetResolveSymlinks();
-    if (Edit)
-    {
-      FileName = File->GetFileName();
-      PointTo = File->GetLinkTo();
-    }
-    else
-    {
-      PointTo = File->GetFileName();
+      if (Edit)
+      {
+        FileName = File->GetFileName();
+        PointTo = File->GetLinkTo();
+      }
+      else
+      {
+        PointTo = File->GetFileName();
+      }
     }
   }
 

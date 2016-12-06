@@ -1711,7 +1711,10 @@ int ne_sock_accept_ssl(ne_socket *sock, ne_ssl_context *ctx)
 
 #if defined(HAVE_OPENSSL)
     ssl = SSL_new(ctx->ctx);
-    
+    if (!ssl) {
+        return error_ossl(sock, -1);
+    }
+
     SSL_set_fd(ssl, sock->fd);
 
     sock->ssl = ssl;

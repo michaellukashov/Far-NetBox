@@ -242,8 +242,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           sprintf((char *)buffer, "  %s %s", lpszAsciiUser?lpszAsciiUser:"", lpszAsciiPass?lpszAsciiPass:"");
           buffer[0]=1;
           buffer[1]=static_cast<uint8_t>(strlen(lpszAsciiUser));
-          buffer[2+strlen(lpszAsciiUser)]=static_cast<uint8_t>(strlen(lpszAsciiPass));
-          intptr_t len=3+strlen(lpszAsciiUser)+strlen(lpszAsciiPass);
+          buffer[2+strlen(lpszAsciiUser)]=static_cast<uint8_t>(strlen(lpszAsciiPass?lpszAsciiPass:""));
+          intptr_t len=3+strlen(lpszAsciiUser)+strlen(lpszAsciiPass?lpszAsciiPass:"");
           int res=SendNext(buffer,len);
           nb_free(buffer);
           if (res==SOCKET_ERROR || res<len)
@@ -687,7 +687,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
       if (!m_nProxyPeerIp || m_ProxyData.nProxyType==PROXYTYPE_SOCKS4A)
       {
         DebugAssert(m_ProxyData.nProxyType==PROXYTYPE_SOCKS4A);
-        DebugAssert(strcmp(lpszAscii, ""));
+        DebugAssert(0 != strcmp(lpszAscii, ""));
         //Set the IP to 0.0.0.x (x is nonzero)
         command[4]=0;
         command[5]=0;

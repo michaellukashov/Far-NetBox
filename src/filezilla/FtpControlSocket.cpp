@@ -33,14 +33,17 @@ public:
     bUseAbsolutePaths = FALSE;
     bTriedPortPasvOnce = FALSE;
     askOnResumeFail = false;
-  };
+#ifndef MPEXT_NO_ZLIB
+    newZlibLevel = 0;
+#endif
+  }
   ~CFileTransferData()
   {
     if (pDirectoryListing)
       delete pDirectoryListing;
     pDirectoryListing=0;
     nb_free(pFileSize);
-  };
+  }
   CString rawpwd;
   t_transferfile transferfile;
   t_transferdata transferdata;
@@ -91,6 +94,9 @@ public:
     bPasv = FALSE;
     port = 0;
     nFinish = 0;
+#ifndef MPEXT_NO_ZLIB
+    newZlibLevel = 0;
+#endif
   }
   virtual ~CListData()
   {
@@ -6011,7 +6017,8 @@ _int64 CFtpControlSocket::GetAbleToUDSize( bool & beenWaiting, CTime & curTime, 
       ableToRead = 0;
 
     curLimit = GetSpeedLimit(direction, curTime);
-    __int64 nMax = curLimit / m_InstanceList[direction].size();
+    int sz = m_InstanceList[direction].size();
+    __int64 nMax = curLimit / (sz ? sz : 0);
     _int64 nLeft = 0;
     int nCount = 0;
     rde::list<t_ActiveList>::iterator iter2;

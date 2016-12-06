@@ -44,6 +44,7 @@ CTransferSocket::CTransferSocket(CFtpControlSocket *pOwner, int nMode)
   m_nNotifyWaiting = 0;
   m_bActivationPending = false;
   m_LastSendBufferUpdate = 0;
+  m_SendBuf = 0;
 
   UpdateStatusBar(true);
 
