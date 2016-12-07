@@ -221,12 +221,12 @@ HMODULE load_system32_dll(const char *libname)
 	do {
 	    size = 3*size/2 + 512;
 	    sysdir = sresize(sysdir, size, char);
-	    len = GetSystemDirectory(sysdir, size);
+	    len = GetSystemDirectoryA(sysdir, size);
 	} while (len >= size);
     }
 
     fullpath = dupcat(sysdir, "\\", libname, NULL);
-    ret = LoadLibrary(fullpath);
+    ret = LoadLibraryA(fullpath);
     sfree(fullpath);
     return ret;
 }
