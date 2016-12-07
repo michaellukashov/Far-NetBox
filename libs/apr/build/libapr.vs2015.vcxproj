@@ -95,6 +95,7 @@
     <ProjectGuid>{74BFD665-A62B-4745-8A2A-EE1A2A63CD08}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>libapr</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
