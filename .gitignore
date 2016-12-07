@@ -52,6 +52,7 @@ CMakeLists.txt.user
 cov-int/
 /src/NetBox/My */
 /src/NetBox/.idea/
+/src/NetBox/#Verone/
 
 .vs/
 *.VC.db
