@@ -139,7 +139,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PreprocessorDefinitions>WIN64;_DEBUG;_WINDOWS;_LIB;COMPILED_FROM_DSP;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_WINDOWS;_LIB;COMPILED_FROM_DSP;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
       <PrecompiledHeaderOutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.pch</PrecompiledHeaderOutputFile>
@@ -199,7 +199,7 @@
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN64;_WINDOWS;NDEBUG;_LIB;COMPILED_FROM_DSP;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;NDEBUG;_LIB;COMPILED_FROM_DSP;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
