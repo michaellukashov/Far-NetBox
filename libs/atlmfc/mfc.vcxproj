@@ -133,7 +133,7 @@
     <ClCompile>
       <WarningLevel>Level1</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;UNICODE;_UNICODE;_WIN32_WINNT=0x0501;_ATL_NO_DEBUG_CRT;_ATL_NO_UUIDOF;_ATL_NO_CONNECTION_POINTS;_ATL_NO_DATETIME_RESOURCES_;_ATL_NO_DEFAULT_LIBS;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;_AFX_PORTABLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;UNICODE;_UNICODE;_WIN32_WINNT=0x0501;_ATL_NO_DEBUG_CRT;_ATL_NO_UUIDOF;_ATL_NO_CONNECTION_POINTS;_ATL_NO_DATETIME_RESOURCES_;_ATL_NO_DEFAULT_LIBS;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;_AFX_PORTABLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -170,7 +170,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level1</WarningLevel>
-      <PreprocessorDefinitions>WIN32;NDEBUG;UNICODE;_UNICODE;_WIN32_WINNT=0x0501;_ATL_NO_DEBUG_CRT;_ATL_NO_UUIDOF;_ATL_NO_CONNECTION_POINTS;_ATL_NO_DATETIME_RESOURCES_;_ATL_NO_DEFAULT_LIBS;_ATL_NO_PERF_SUPPORT;_AFX_PORTABLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;UNICODE;_UNICODE;_WIN32_WINNT=0x0501;_ATL_NO_DEBUG_CRT;_ATL_NO_UUIDOF;_ATL_NO_CONNECTION_POINTS;_ATL_NO_DATETIME_RESOURCES_;_ATL_NO_DEFAULT_LIBS;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;_AFX_PORTABLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -204,7 +204,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level1</WarningLevel>
-      <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;UNICODE;_UNICODE;_WIN32_WINNT=0x0501;_ATL_NO_DEBUG_CRT;_ATL_NO_UUIDOF;_ATL_NO_CONNECTION_POINTS;_ATL_NO_DEFAULT_LIBS;_ATL_NO_PERF_SUPPORT;_ATL_NO_COMMODULE;_ATL_NO_DATETIME_RESOURCES_;_AFX_PORTABLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;UNICODE;_UNICODE;_WIN32_WINNT=0x0501;_ATL_NO_DEBUG_CRT;_ATL_NO_UUIDOF;_ATL_NO_CONNECTION_POINTS;_ATL_NO_DEFAULT_LIBS;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;_AFX_PORTABLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
