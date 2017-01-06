@@ -42,9 +42,8 @@ public:
   explicit inline ExtException(int Ident) : Exception(Ident), FMoreMessages(nullptr) {}
   explicit inline ExtException(const UnicodeString & Msg, int AHelpContext) : Exception(Msg, AHelpContext), FMoreMessages(nullptr) {}
 
-  ExtException(const ExtException & E) : Exception(L""), FMoreMessages(nullptr)
+  ExtException(const ExtException & E) : Exception(L""), FMoreMessages(nullptr), FHelpKeyword(E.FHelpKeyword)
   {
-    FHelpKeyword = E.FHelpKeyword;
     AddMoreMessages(&E);
   }
   ExtException & operator = (const ExtException & rhs)
