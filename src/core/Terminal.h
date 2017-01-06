@@ -713,15 +713,13 @@ public:
   void RecryptPasswords();
 
   // __property TTerminal * Terminals[int Index]  = { read=GetTerminal };
+  TTerminal * GetTerminal(intptr_t Index);
 
 protected:
   virtual TTerminal * CreateTerminal(TSessionData * Data);
 
 private:
   TConfiguration * FConfiguration;
-
-public:
-  TTerminal * GetTerminal(intptr_t Index);
 };
 
 struct TCustomCommandParams : public TObject
