@@ -166,8 +166,9 @@ include_directories(
   ${LIBS_ROOT}/apr/include/arch/unix
   ${LIBS_ROOT}/rdestl
 
-  ${LIBS_ROOT}/openssl/${PROJECT_PLATFORM}/inc32
+  ${LIBS_ROOT}/openssl/${PROJECT_PLATFORM}/include
   ${LIBS_ROOT}/openssl
+#  ${LIBS_ROOT}/openssl/include
   ${LIBS_ROOT}/openssl/crypto
   ${LIBS_ROOT}/openssl/crypto/asn1
   ${LIBS_ROOT}/openssl/crypto/modes
@@ -323,13 +324,11 @@ endif()
 
 #-------------------------------------------------------------------------------
 add_library(openssl STATIC
-  ${LIBS_ROOT}/openssl/ssl/t1_trce.c
-  ${LIBS_ROOT}/openssl/ssl/t1_reneg.c
-  ${LIBS_ROOT}/openssl/ssl/kssl.c
+#  ${LIBS_ROOT}/openssl/ssl/kssl.c
   ${LIBS_ROOT}/openssl/ssl/ssl_err.c
   ${LIBS_ROOT}/openssl/ssl/bio_ssl.c
   ${LIBS_ROOT}/openssl/ssl/ssl_conf.c
-  ${LIBS_ROOT}/openssl/ssl/ssl_algs.c
+#  ${LIBS_ROOT}/openssl/ssl/ssl_algs.c
   ${LIBS_ROOT}/openssl/ssl/ssl_txt.c
   ${LIBS_ROOT}/openssl/ssl/ssl_asn1.c
   ${LIBS_ROOT}/openssl/ssl/ssl_rsa.c
@@ -337,51 +336,53 @@ add_library(openssl STATIC
   ${LIBS_ROOT}/openssl/ssl/ssl_ciph.c
   ${LIBS_ROOT}/openssl/ssl/ssl_sess.c
   ${LIBS_ROOT}/openssl/ssl/ssl_cert.c
-  ${LIBS_ROOT}/openssl/ssl/ssl_err2.c
+#  ${LIBS_ROOT}/openssl/ssl/ssl_err2.c
   ${LIBS_ROOT}/openssl/ssl/ssl_lib.c
   ${LIBS_ROOT}/openssl/ssl/d1_srtp.c
-  ${LIBS_ROOT}/openssl/ssl/d1_both.c
-  ${LIBS_ROOT}/openssl/ssl/d1_pkt.c
+#  ${LIBS_ROOT}/openssl/ssl/d1_both.c
+#  ${LIBS_ROOT}/openssl/ssl/d1_pkt.c
   ${LIBS_ROOT}/openssl/ssl/d1_lib.c
-  ${LIBS_ROOT}/openssl/ssl/d1_clnt.c
-  ${LIBS_ROOT}/openssl/ssl/d1_srvr.c
-  ${LIBS_ROOT}/openssl/ssl/d1_meth.c
+#  ${LIBS_ROOT}/openssl/ssl/d1_clnt.c
+#  ${LIBS_ROOT}/openssl/ssl/d1_srvr.c
+#  ${LIBS_ROOT}/openssl/ssl/d1_meth.c
   ${LIBS_ROOT}/openssl/ssl/t1_ext.c
   ${LIBS_ROOT}/openssl/ssl/t1_enc.c
   ${LIBS_ROOT}/openssl/ssl/t1_lib.c
-  ${LIBS_ROOT}/openssl/ssl/t1_clnt.c
-  ${LIBS_ROOT}/openssl/ssl/t1_srvr.c
-  ${LIBS_ROOT}/openssl/ssl/t1_meth.c
-  ${LIBS_ROOT}/openssl/ssl/s23_pkt.c
-  ${LIBS_ROOT}/openssl/ssl/s23_lib.c
-  ${LIBS_ROOT}/openssl/ssl/s23_clnt.c
-  ${LIBS_ROOT}/openssl/ssl/s23_srvr.c
-  ${LIBS_ROOT}/openssl/ssl/s23_meth.c
+#  ${LIBS_ROOT}/openssl/ssl/t1_clnt.c
+#  ${LIBS_ROOT}/openssl/ssl/t1_srvr.c
+#  ${LIBS_ROOT}/openssl/ssl/t1_meth.c
+  ${LIBS_ROOT}/openssl/ssl/t1_trce.c
+  ${LIBS_ROOT}/openssl/ssl/t1_reneg.c
+#  ${LIBS_ROOT}/openssl/ssl/s23_pkt.c
+#  ${LIBS_ROOT}/openssl/ssl/s23_lib.c
+#  ${LIBS_ROOT}/openssl/ssl/s23_clnt.c
+#  ${LIBS_ROOT}/openssl/ssl/s23_srvr.c
+#  ${LIBS_ROOT}/openssl/ssl/s23_meth.c
   ${LIBS_ROOT}/openssl/ssl/s3_cbc.c
-  ${LIBS_ROOT}/openssl/ssl/s3_both.c
-  ${LIBS_ROOT}/openssl/ssl/s3_pkt.c
+#  ${LIBS_ROOT}/openssl/ssl/s3_both.c
+#  ${LIBS_ROOT}/openssl/ssl/s3_pkt.c
   ${LIBS_ROOT}/openssl/ssl/s3_enc.c
   ${LIBS_ROOT}/openssl/ssl/s3_lib.c
-  ${LIBS_ROOT}/openssl/ssl/s3_clnt.c
-  ${LIBS_ROOT}/openssl/ssl/s3_srvr.c
-  ${LIBS_ROOT}/openssl/ssl/s3_meth.c
-  ${LIBS_ROOT}/openssl/ssl/s2_pkt.c
-  ${LIBS_ROOT}/openssl/ssl/s2_enc.c
-  ${LIBS_ROOT}/openssl/ssl/s2_lib.c
-  ${LIBS_ROOT}/openssl/ssl/s2_clnt.c
-  ${LIBS_ROOT}/openssl/ssl/s2_srvr.c
-  ${LIBS_ROOT}/openssl/ssl/s2_meth.c
+#  ${LIBS_ROOT}/openssl/ssl/s3_clnt.c
+#  ${LIBS_ROOT}/openssl/ssl/s3_srvr.c
+#  ${LIBS_ROOT}/openssl/ssl/s3_meth.c
+#  ${LIBS_ROOT}/openssl/ssl/s2_pkt.c
+#  ${LIBS_ROOT}/openssl/ssl/s2_enc.c
+#  ${LIBS_ROOT}/openssl/ssl/s2_lib.c
+#  ${LIBS_ROOT}/openssl/ssl/s2_clnt.c
+#  ${LIBS_ROOT}/openssl/ssl/s2_srvr.c
+#  ${LIBS_ROOT}/openssl/ssl/s2_meth.c
   ${LIBS_ROOT}/openssl/engines/e_capi.c
   ${LIBS_ROOT}/openssl/engines/e_padlock.c
-  ${LIBS_ROOT}/openssl/engines/e_ubsec.c
+#  ${LIBS_ROOT}/openssl/engines/e_ubsec.c
   ${LIBS_ROOT}/openssl/engines/e_sureware.c
-  ${LIBS_ROOT}/openssl/engines/e_nuron.c
+#  ${LIBS_ROOT}/openssl/engines/e_nuron.c
   ${LIBS_ROOT}/openssl/engines/e_chil.c
-  ${LIBS_ROOT}/openssl/engines/e_gmp.c
-  ${LIBS_ROOT}/openssl/engines/e_cswift.c
-  ${LIBS_ROOT}/openssl/engines/e_atalla.c
-  ${LIBS_ROOT}/openssl/engines/e_aep.c
-  ${LIBS_ROOT}/openssl/engines/e_4758cca.c
+#  ${LIBS_ROOT}/openssl/engines/e_gmp.c
+#  ${LIBS_ROOT}/openssl/engines/e_cswift.c
+#  ${LIBS_ROOT}/openssl/engines/e_atalla.c
+#  ${LIBS_ROOT}/openssl/engines/e_aep.c
+#  ${LIBS_ROOT}/openssl/engines/e_4758cca.c
   ${LIBS_ROOT}/openssl/crypto/ts/ts_asn1.c
   ${LIBS_ROOT}/openssl/crypto/ts/ts_conf.c
   ${LIBS_ROOT}/openssl/crypto/ts/ts_lib.c
@@ -394,8 +395,8 @@ add_library(openssl STATIC
   ${LIBS_ROOT}/openssl/crypto/ts/ts_req_utils.c
   ${LIBS_ROOT}/openssl/crypto/ts/ts_err.c
   ${LIBS_ROOT}/openssl/crypto/pqueue/pqueue.c
-  ${LIBS_ROOT}/openssl/crypto/krb5/krb5_asn.c
-  ${LIBS_ROOT}/openssl/crypto/ui/ui_compat.c
+#  ${LIBS_ROOT}/openssl/crypto/krb5/krb5_asn.c
+#  ${LIBS_ROOT}/openssl/crypto/ui/ui_compat.c
   ${LIBS_ROOT}/openssl/crypto/ui/ui_util.c
   ${LIBS_ROOT}/openssl/crypto/ui/ui_openssl.c
   ${LIBS_ROOT}/openssl/crypto/ui/ui_lib.c
