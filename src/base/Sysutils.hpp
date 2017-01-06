@@ -430,7 +430,7 @@ typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
 class ScopeExit
 {
 public:
-  ScopeExit(const std::function<void()> & f) : m_f(f) {}
+  explicit ScopeExit(const std::function<void()> & f) : m_f(f) {}
   ~ScopeExit() { m_f(); }
 
 private:
@@ -454,7 +454,7 @@ namespace detail
   class scope_guard
   {
   public:
-    scope_guard(F&& f) : m_f(std::move(f)) {}
+    explicit scope_guard(F&& f) : m_f(std::move(f)) {}
     ~scope_guard() { m_f(); }
 
   private:
