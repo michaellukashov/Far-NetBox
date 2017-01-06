@@ -27,14 +27,17 @@
 #include <string.h>
 #endif
 
+#include <windows.h>
 #include <stdio.h>
 
+#include <openssl/crypto.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
 #include <openssl/x509v3.h>
 #include <openssl/rand.h>
 #include <openssl/opensslv.h>
+#include <openssl/crypto/evp/evp.h>
 
 #ifdef NE_HAVE_TS_SSL
 #include <stdlib.h> /* for abort() */
