@@ -468,7 +468,7 @@ namespace detail
     scope_guard<F> operator << (F&& f) { return scope_guard<F>(std::move(f)); }
   };
 
-};
+} // namespace detail
 
 #define SCOPE_EXIT \
   const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << [&]() /* lambda body here */
