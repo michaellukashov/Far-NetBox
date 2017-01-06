@@ -25,19 +25,12 @@
 
 #include "tree234.h"
 
-#ifndef MPEXT
 #include "winhelp.h"
-#endif
 
 struct Filename {
     char *path;
 };
-#ifdef MPEXT
-FILE * mp_wfopen(const char *filename, const char *mode);
-#define f_open(filename, mode, isprivate) ( mp_wfopen((filename)->path, (mode)) )
-#else
 #define f_open(filename, mode, isprivate) ( fopen((filename)->path, (mode)) )
-#endif
 
 struct FontSpec {
     char *name;
@@ -305,9 +298,7 @@ struct ctlpos {
  * Exports from winutils.c.
  */
 typedef struct filereq_tag filereq; /* cwd for file requester */
-#ifndef MPEXT
 BOOL request_file(filereq *state, OPENFILENAME *of, int preserve, int save);
-#endif
 filereq *filereq_new(void);
 void filereq_free(filereq *state);
 int message_box(LPCTSTR text, LPCTSTR caption, DWORD style, DWORD helpctxid);
@@ -487,6 +478,7 @@ void show_help(HWND hwnd);
  * Exports from winmisc.c.
  */
 extern OSVERSIONINFO osVersion;
+void dll_hijacking_protection(void);
 BOOL init_winver(void);
 HMODULE load_system32_dll(const char *libname);
 const char *win_strerror(int error);
@@ -520,11 +512,7 @@ int handle_write(struct handle *h, const void *data, int len);
 void handle_write_eof(struct handle *h);
 HANDLE *handle_get_events(int *nevents);
 void handle_free(struct handle *h);
-#ifdef MPEXT
-int handle_got_event(HANDLE event);
-#else
 void handle_got_event(HANDLE event);
-#endif
 void handle_unthrottle(struct handle *h, int backlog);
 int handle_backlog(struct handle *h);
 void *handle_get_privdata(struct handle *h);
@@ -544,14 +532,6 @@ void agent_schedule_callback(void (*callback)(void *, void *, int),
 #define FLAG_SYNCAGENT 0x1000
 
 /*
- * winpgntc.c also exports these two functions which are used by the
- * server side of Pageant as well, to get the user SID for comparing
- * with clients'.
- */
-int init_advapi(void);  /* initialises everything needed by get_user_sid */
-PSID get_user_sid(void);
-
-/*
  * Exports from winser.c.
  */
 extern Backend serial_backend;
@@ -563,6 +543,7 @@ extern Backend serial_backend;
 void add_session_to_jumplist(const char * const sessionname);
 void remove_session_from_jumplist(const char * const sessionname);
 void clear_jumplist(void);
+BOOL set_explicit_app_user_model_id();
 
 /*
  * Extra functions in winstore.c over and above the interface in

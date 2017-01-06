@@ -3,7 +3,7 @@
  *
  * The way this works is: a back end can choose to open any number
  * of sockets - including zero, which might be necessary in some.
- * It can register a bunch of callbacks (most notably for when
+ * It can register a bunch of callbacks (most notably for when 
  * data is received) for each socket, and it can call the networking
  * abstraction to send data without having to worry about blocking.
  * The stuff behind the abstraction takes care of selects and
@@ -141,13 +141,8 @@ SockAddr sk_addr_dup(SockAddr addr);
 
 /* NB, control of 'addr' is passed via sk_new, which takes responsibility
  * for freeing it, as for new_connection() */
-Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
-        int nodelay, int keepalive, Plug p,
-#ifdef MPEXT
-              int timeout,
-              int sndbuf
-#endif
-	      );
+Socket sk_new(SockAddr addr, int port, int privport, int oobinline,
+	      int nodelay, int keepalive, Plug p);
 
 Socket sk_newlistener(const char *srcaddr, int port, Plug plug,
                       int local_host_only, int address_family);
@@ -180,13 +175,13 @@ const char *sk_addr_error(SockAddr addr);
  * which all READABLE notifications are ignored, so that data is
  * not accepted from the peer until the socket is unfrozen. This
  * exists for two purposes:
- *
+ * 
  *  - Port forwarding: when a local listening port receives a
  *    connection, we do not want to receive data from the new
  *    socket until we have somewhere to send it. Hence, we freeze
  *    the socket until its associated SSH channel is ready; then we
  *    unfreeze it and pending data is delivered.
- *
+ * 
  *  - Socket buffering: if an SSH channel (or the whole connection)
  *    backs up or presents a zero window, we must freeze the
  *    associated local socket in order to avoid unbounded buffer

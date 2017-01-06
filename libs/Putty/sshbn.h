@@ -67,7 +67,7 @@
   #define BIGNUM_INT_BITS 64
   #define DEFINE_BIGNUMDBLINT typedef __uint128_t BignumDblInt
 
-#elif defined _MSC_VER && (_MSC_VER > 1600) && defined _M_AMD64
+#elif defined _MSC_VER && defined _M_AMD64
 
   /*
    * 64-bit BignumInt, using Visual Studio x86-64 compiler intrinsics.
@@ -122,7 +122,7 @@
   #define BIGNUM_INT_BITS 32
   #define DEFINE_BIGNUMDBLINT typedef unsigned long long BignumDblInt
 
-#elif (defined _MSC_VER && defined _M_IX86) || defined(MPEXT)
+#elif defined _MSC_VER && defined _M_IX86
 
   /* 32-bit BignumInt, using Visual Studio __int64 as BignumDblInt */
 

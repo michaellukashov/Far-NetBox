@@ -301,16 +301,16 @@ enum {
  * Coroutine mechanics for the sillier bits of the code. If these
  * macros look impenetrable to you, you might find it helpful to
  * read
- *
+ * 
  *   http://www.chiark.greenend.org.uk/~sgtatham/coroutines.html
- *
+ * 
  * which explains the theory behind these macros.
- *
+ * 
  * In particular, if you are getting `case expression not constant'
  * errors when building with MS Visual Studio, this is because MS's
  * Edit and Continue debugging feature causes their compiler to
  * violate ANSI C. To disable Edit and Continue debugging:
- *
+ * 
  *  - right-click ssh.c in the FileView
  *  - click Settings
  *  - select the C/C++ tab and the General category
@@ -376,20 +376,20 @@ static void ssh2_msg_something_unimplemented(Ssh ssh, struct Packet *pktin);
 /*
  * Buffer management constants. There are several of these for
  * various different purposes:
- *
+ * 
  *  - SSH1_BUFFER_LIMIT is the amount of backlog that must build up
  *    on a local data stream before we throttle the whole SSH
  *    connection (in SSH-1 only). Throttling the whole connection is
  *    pretty drastic so we set this high in the hope it won't
  *    happen very often.
- *
+ * 
  *  - SSH_MAX_BACKLOG is the amount of backlog that must build up
  *    on the SSH connection itself before we defensively throttle
  *    _all_ local data streams. This is pretty drastic too (though
  *    thankfully unlikely in SSH-2 since the window mechanism should
  *    ensure that the server never has any need to throttle its end
  *    of the connection), so we set this high as well.
- *
+ * 
  *  - OUR_V2_WINSIZE is the default window size we present on SSH-2
  *    channels.
  *
@@ -509,12 +509,12 @@ struct ssh_channel {
     int halfopen;
     /*
      * In SSH-1, this value contains four bits:
-     *
+     * 
      *   1   We have sent SSH1_MSG_CHANNEL_CLOSE.
      *   2   We have sent SSH1_MSG_CHANNEL_CLOSE_CONFIRMATION.
      *   4   We have received SSH1_MSG_CHANNEL_CLOSE.
      *   8   We have received SSH1_MSG_CHANNEL_CLOSE_CONFIRMATION.
-     *
+     * 
      * A channel is completely finished with when all four bits are set.
      *
      * In SSH-2, the four bits mean:
@@ -595,7 +595,7 @@ struct ssh_channel {
  * 2-3-4 tree storing remote->local port forwardings. SSH-1 and SSH-2
  * use this structure in different ways, reflecting SSH-2's
  * altogether saner approach to port forwarding.
- *
+ * 
  * In SSH-1, you arrange a remote forwarding by sending the server
  * the remote port number, and the local destination host:port.
  * When a connection comes in, the server sends you back that
@@ -607,14 +607,14 @@ struct ssh_channel {
  * through it to a dodgy SSH server. Hence, we must store a list of
  * host:port pairs we _are_ trying to forward to, and reject a
  * connection request from the server if it's not in the list.
- *
+ * 
  * In SSH-2, each side of the connection minds its own business and
  * doesn't send unnecessary information to the other. You arrange a
  * remote forwarding by sending the server just the remote port
  * number. When a connection comes in, the server tells you which
  * of its ports was connected to; and _you_ have to remember what
  * local host:port pair went with that port number.
- *
+ * 
  * Hence, in SSH-1 this structure is indexed by destination
  * host:port pair, whereas in SSH-2 it is indexed by source port.
  */
@@ -1201,11 +1201,7 @@ static void c_write(Ssh ssh, const char *buf, int len)
     if (flags & FLAG_STDERR)
 	c_write_stderr(1, buf, len);
     else
-#ifdef MPEXT
-	from_backend(ssh->frontend, -1, buf, len);
-#else
 	from_backend(ssh->frontend, 1, buf, len);
-#endif
 }
 
 static void c_write_untrusted(Ssh ssh, const char *buf, int len)
@@ -1419,7 +1415,6 @@ static struct Packet *ssh1_rdpkt(Ssh ssh, const unsigned char **data,
     }
 
     st->pktin->body = st->pktin->data + st->pad + 1;
-    st->pktin->savedpos = 0;
 
     if (ssh->v1_compressing) {
 	unsigned char *decompblk;
@@ -1582,7 +1577,7 @@ static void ssh2_log_outgoing_packet(Ssh ssh, struct Packet *pkt)
         pkt->savedpos = 0;
         ssh_pkt_getuint32(pkt);
         ssh_pkt_getstring(pkt, &str, &slen);
-        if (slen == 7 && !memcmp(str, "x11-req", 7)) {
+        if (slen == 7 && !memcmp(str, "x11-req", 0)) {
             ssh2_pkt_getbool(pkt);
             ssh2_pkt_getbool(pkt);
             ssh_pkt_getstring(pkt, &str, &slen);
@@ -1694,7 +1689,7 @@ static struct Packet *ssh2_rdpkt(Ssh ssh, const unsigned char **data,
 		bombout(("No valid incoming packet found"));
 		ssh_free_packet(st->pktin);
 		crStop(NULL);
-	    }
+	    }	    
 	}
 	st->pktin->maxlen = st->packetlen + st->maclen;
 	st->pktin->data = sresize(st->pktin->data,
@@ -2043,9 +2038,7 @@ static void s_wrpkt(Ssh ssh, struct Packet *pkt)
     len = s_wrpkt_prepare(ssh, pkt, &offset);
     backlog = s_write(ssh, pkt->data + offset, len);
     if (backlog > SSH_MAX_BACKLOG)
-	{
 	ssh_throttle_all(ssh, 1, backlog);
-	}
     ssh_free_packet(pkt);
 }
 
@@ -2395,23 +2388,23 @@ static int ssh2_pkt_construct(Ssh ssh, struct Packet *pkt)
  * Routines called from the main SSH code to send packets. There
  * are quite a few of these, because we have two separate
  * mechanisms for delaying the sending of packets:
- *
+ * 
  *  - In order to send an IGNORE message and a password message in
  *    a single fixed-length blob, we require the ability to
  *    concatenate the encrypted forms of those two packets _into_ a
  *    single blob and then pass it to our <network.h> transport
  *    layer in one go. Hence, there's a deferment mechanism which
  *    works after packet encryption.
- *
+ * 
  *  - In order to avoid sending any connection-layer messages
  *    during repeat key exchange, we have to queue up any such
  *    outgoing messages _before_ they are encrypted (and in
  *    particular before they're allocated sequence numbers), and
  *    then send them once we've finished.
- *
+ * 
  * I call these mechanisms `defer' and `queue' respectively, so as
  * to distinguish them reasonably easily.
- *
+ * 
  * The functions send_noqueue() and defer_noqueue() free the packet
  * structure they are passed. Every outgoing packet goes through
  * precisely one of these functions in its life; packets passed to
@@ -2447,9 +2440,7 @@ static void ssh2_pkt_send_noqueue(Ssh ssh, struct Packet *pkt)
     len = ssh2_pkt_construct(ssh, pkt);
     backlog = s_write(ssh, pkt->body, len);
     if (backlog > SSH_MAX_BACKLOG)
-	{
 	ssh_throttle_all(ssh, 1, backlog);
-	}
 
     ssh->outgoing_data_size += pkt->encrypted_len;
     if (!ssh->kex_in_progress &&
@@ -2533,7 +2524,7 @@ static void ssh2_pkt_defer(Ssh ssh, struct Packet *pkt)
 /*
  * Send the whole deferred data block constructed by
  * ssh2_pkt_defer() or SSH-1's defer_packet().
- *
+ * 
  * The expected use of the defer mechanism is that you call
  * ssh2_pkt_defer() a few times, then call ssh_pkt_defersend(). If
  * not currently queueing, this simply sets up deferred_send_data
@@ -2551,9 +2542,7 @@ static void ssh_pkt_defersend(Ssh ssh)
     sfree(ssh->deferred_send_data);
     ssh->deferred_send_data = NULL;
     if (backlog > SSH_MAX_BACKLOG)
-	{
 	ssh_throttle_all(ssh, 1, backlog);
-	}
 
     if (ssh->version == 2) {
 	ssh->outgoing_data_size += ssh->deferred_data_size;
@@ -2578,7 +2567,7 @@ static void ssh2_pkt_send_with_padding(Ssh ssh, struct Packet *pkt,
 	/*
 	 * The simplest way to do this is to adjust the
 	 * variable-length padding field in the outgoing packet.
-	 *
+	 * 
 	 * Currently compiled out, because some Cisco SSH servers
 	 * don't like excessively padded packets (bah, why's it
 	 * always Cisco?)
@@ -2732,7 +2721,7 @@ static int ssh1_pkt_getrsakey(struct Packet *pkt, struct RSAKey *key,
 
     if (j < 0)
 	return FALSE;
-
+    
     pkt->savedpos += j;
     assert(pkt->savedpos < pkt->length);
 
@@ -3116,7 +3105,7 @@ static int do_ssh_init(Ssh ssh, unsigned char c)
 	int proto1, proto2;
     };
     crState(do_ssh_init_state);
-
+    
     crBeginState;
 
     /* Search for a line beginning with the protocol name prefix in
@@ -3211,7 +3200,7 @@ static int do_ssh_init(Ssh ssh, unsigned char c)
 	ssh->v_s = snewn(len + 1, char);
 	memcpy(ssh->v_s, s->vstring, len);
 	ssh->v_s[len] = 0;
-
+	    
 	/*
 	 * Initialise SSH-2 protocol.
 	 */
@@ -3261,7 +3250,7 @@ static int do_ssh_connection_init(Ssh ssh, unsigned char c)
 	int i;
     };
     crState(do_ssh_connection_init_state);
-
+    
     crBeginState;
 
     /* Search for a line beginning with the protocol name prefix in
@@ -3609,9 +3598,7 @@ static void ssh_sent(Plug plug, int bufsize)
      * should unthrottle the whole world if it was throttled.
      */
     if (bufsize < SSH_MAX_BACKLOG)
-	{
 	ssh_throttle_all(ssh, 0, bufsize);
-	}
 }
 
 static void ssh_hostport_setup(const char *host, int port, Conf *conf,
@@ -3690,11 +3677,6 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
 
     ssh_hostport_setup(host, port, ssh->conf,
                        &ssh->savedhost, &ssh->savedport, &loghost);
-
-    #ifdef MPEXT
-    // make sure the field is initialized, in case lookup below fails
-    ssh->fullhostname = NULL;
-    #endif
 
     ssh->fn = &fn_table;               /* make 'ssh' usable as a Plug */
 
@@ -4025,7 +4007,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
     memcpy(cookie, ptr, 8);
 
     if (!ssh1_pkt_getrsakey(pktin, &s->servkey, &s->keystr1) ||
-	!ssh1_pkt_getrsakey(pktin, &s->hostkey, &s->keystr2)) {
+	!ssh1_pkt_getrsakey(pktin, &s->hostkey, &s->keystr2)) {	
 	bombout(("Failed to read SSH-1 public keys from public key packet"));
 	crStop(0);
     }
@@ -4145,7 +4127,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
     }
     if (!ret) {
 	bombout(("SSH-1 public key encryptions failed due to bad formatting"));
-	crStop(0);
+	crStop(0);	
     }
 
     logevent("Encrypted session key");
@@ -4298,7 +4280,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 
 	send_packet(ssh, SSH1_CMSG_USER, PKT_STR, ssh->username, PKT_END);
 	{
-	    char *userlog = dupprintf(MPEXT_BOM "Sent username \"%s\"", ssh->username);
+	    char *userlog = dupprintf("Sent username \"%s\"", ssh->username);
 	    logevent(userlog);
 	    if (flags & FLAG_INTERACTIVE &&
 		(!((flags & FLAG_STDERR) && (flags & FLAG_VERBOSE)))) {
@@ -4324,7 +4306,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
     s->keyfile = conf_get_filename(ssh->conf, CONF_keyfile);
     if (!filename_is_null(s->keyfile)) {
 	int keytype;
-	logeventf(ssh, MPEXT_BOM "Reading key file \"%.150s\"",
+	logeventf(ssh, "Reading key file \"%.150s\"",
 		  filename_to_str(s->keyfile));
 	keytype = key_type(s->keyfile);
 	if (keytype == SSH_KEYTYPE_SSH1 ||
@@ -4341,7 +4323,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 	    } else {
 		char *msgbuf;
 		logeventf(ssh, "Unable to load key (%s)", error);
-		msgbuf = dupprintf(MPEXT_BOM "Unable to load key file "
+		msgbuf = dupprintf("Unable to load key file "
 				   "\"%.150s\" (%s)\r\n",
 				   filename_to_str(s->keyfile),
 				   error);
@@ -4353,7 +4335,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 	    char *msgbuf;
 	    logeventf(ssh, "Unable to use this key file (%s)",
 		      key_type_to_str(keytype));
-	    msgbuf = dupprintf(MPEXT_BOM "Unable to use key file \"%.150s\""
+	    msgbuf = dupprintf("Unable to use key file \"%.150s\""
 			       " (%s)\r\n",
 			       filename_to_str(s->keyfile),
 			       key_type_to_str(keytype));
@@ -4559,7 +4541,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 	    if (flags & FLAG_VERBOSE)
 		c_write_str(ssh, "Trying public key authentication.\r\n");
 	    s->keyfile = conf_get_filename(ssh->conf, CONF_keyfile);
-	    logeventf(ssh, MPEXT_BOM "Trying public key \"%s\"",
+	    logeventf(ssh, "Trying public key \"%s\"",
 		      filename_to_str(s->keyfile));
 	    s->tried_publickey = 1;
 	    got_passphrase = FALSE;
@@ -4612,7 +4594,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 		    /* Correct passphrase. */
 		    got_passphrase = TRUE;
 		} else if (ret == 0) {
-		    c_write_str(ssh, MPEXT_BOM "Couldn't load private key from ");
+		    c_write_str(ssh, "Couldn't load private key from ");
 		    c_write_str(ssh, filename_to_str(s->keyfile));
 		    c_write_str(ssh, " (");
 		    c_write_str(ssh, error);
@@ -4753,7 +4735,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 		continue;
 	    } else {
 		char *challenge;
-		int challengelen = 0;
+		int challengelen;
 		char *instr_suf, *prompt;
 
 		ssh_pkt_getstring(pktin, &challenge, &challengelen);
@@ -4830,29 +4812,29 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 	     * SSH1_MSG_IGNORE packets. This way a passive
 	     * listener can't tell which is the password, and
 	     * hence can't deduce the password length.
-	     *
+	     * 
 	     * Anybody with a password length greater than 16
 	     * bytes is going to have enough entropy in their
 	     * password that a listener won't find it _that_
 	     * much help to know how long it is. So what we'll
 	     * do is:
-	     *
+	     * 
 	     *  - if password length < 16, we send 15 packets
 	     *    containing string lengths 1 through 15
-	     *
+	     * 
 	     *  - otherwise, we let N be the nearest multiple
 	     *    of 8 below the password length, and send 8
 	     *    packets containing string lengths N through
 	     *    N+7. This won't obscure the order of
 	     *    magnitude of the password length, but it will
 	     *    introduce a bit of extra uncertainty.
-	     *
+	     * 
 	     * A few servers can't deal with SSH1_MSG_IGNORE, at
 	     * least in this context. For these servers, we need
 	     * an alternative defence. We make use of the fact
 	     * that the password is interpreted as a C string:
 	     * so we can append a NUL, then some random data.
-	     *
+	     * 
 	     * A few servers can deal with neither SSH1_MSG_IGNORE
 	     * here _nor_ a padded password string.
 	     * For these servers we are left with no defences
@@ -4899,7 +4881,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 		logevent("Sending password with camouflage packets");
 		ssh_pkt_defersend(ssh);
 		sfree(randomstr);
-	    }
+	    } 
 	    else if (!(ssh->remote_bugs & BUG_NEEDS_SSH1_PLAIN_PASSWORD)) {
 		/*
 		 * The server can't deal with SSH1_MSG_IGNORE
@@ -5494,7 +5476,7 @@ static void ssh_setup_portfwd(Ssh ssh, Conf *conf)
 static void ssh1_smsg_stdout_stderr_data(Ssh ssh, struct Packet *pktin)
 {
     char *string;
-    int stringlen = 0, bufsize = 0;
+    int stringlen, bufsize;
 
     ssh_pkt_getstring(pktin, &string, &stringlen);
     if (string == NULL) {
@@ -5815,7 +5797,7 @@ static void do_ssh1_connection(Ssh ssh, const unsigned char *in, int inlen,
 {
     crBegin(ssh->do_ssh1_connection_crstate);
 
-    ssh->packet_dispatch[SSH1_SMSG_STDOUT_DATA] =
+    ssh->packet_dispatch[SSH1_SMSG_STDOUT_DATA] = 
 	ssh->packet_dispatch[SSH1_SMSG_STDERR_DATA] =
 	ssh1_smsg_stdout_stderr_data;
 
@@ -5956,14 +5938,14 @@ static void do_ssh1_connection(Ssh ssh, const unsigned char *in, int inlen,
 
     /*
      * Start the shell or command.
-     *
+     * 
      * Special case: if the first-choice command is an SSH-2
      * subsystem (hence not usable here) and the second choice
      * exists, we fall straight back to that.
      */
     {
 	char *cmd = conf_get_str(ssh->conf, CONF_remote_cmd);
-
+	
 	if (conf_get_int(ssh->conf, CONF_ssh_subsys) &&
 	    conf_get_str(ssh->conf, CONF_remote_cmd2)) {
 	    cmd = conf_get_str(ssh->conf, CONF_remote_cmd2);
@@ -5982,8 +5964,8 @@ static void do_ssh1_connection(Ssh ssh, const unsigned char *in, int inlen,
     if (ssh->eof_needed)
 	ssh_special(ssh, TS_EOF);
 
-    //if (ssh->ldisc)
-	//ldisc_echoedit_update(ssh->ldisc);  /* cause ldisc to notice changes */
+    if (ssh->ldisc)
+	ldisc_echoedit_update(ssh->ldisc);  /* cause ldisc to notice changes */
     ssh->send_ok = 1;
     ssh->channels = newtree234(ssh_channelcmp);
     while (1) {
@@ -6471,11 +6453,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
                 for (j = 0; j < lenof(hostkey_algs); j++) {
                     if (hostkey_algs[j].id != s->preferred_hk[i])
                         continue;
-                    if (have_ssh_host_key(
-#ifdef MPEXT
-                                          ssh->frontend,
-#endif
-                                          ssh->savedhost, ssh->savedport,
+                    if (have_ssh_host_key(ssh->savedhost, ssh->savedport,
                                           hostkey_algs[j].alg->keytype)) {
                         alg = ssh2_kexinit_addalg(s->kexlists[KEXLIST_HOSTKEY],
                                                   hostkey_algs[j].alg->name);
@@ -6603,7 +6581,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 
     s->our_kexinitlen = s->pktout->length - 5;
     s->our_kexinit = snewn(s->our_kexinitlen, unsigned char);
-    memcpy(s->our_kexinit, s->pktout->data + 5, s->our_kexinitlen);
+    memcpy(s->our_kexinit, s->pktout->data + 5, s->our_kexinitlen); 
 
     ssh2_pkt_send_noqueue(ssh, s->pktout);
 
@@ -6616,7 +6594,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
      */
     {
 	char *str;
-	int i, j, len = 0;
+	int i, j, len;
 
 	if (pktin->type != SSH2_MSG_KEXINIT) {
 	    bombout(("expected key exchange packet from server"));
@@ -6725,11 +6703,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
                     if (hostkey_algs[j].alg != ssh->hostkey &&
                         in_commasep_string(hostkey_algs[j].alg->name,
                                            str, len) &&
-                        !have_ssh_host_key(
-#ifdef MPEXT
-                                           ssh->frontend,
-#endif
-                                           ssh->savedhost, ssh->savedport,
+                        !have_ssh_host_key(ssh->savedhost, ssh->savedport,
                                            hostkey_algs[j].alg->keytype)) {
                         ssh->uncert_hostkeys[ssh->n_uncert_hostkeys++] = j;
                     }
@@ -7448,7 +7422,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
     if (ssh->cscipher)
 	logeventf(ssh, "Initialised %.200s client->server encryption",
 		  ssh->cscipher->text_name);
-    if (ssh->csmac && ssh->cscipher)
+    if (ssh->csmac)
 	logeventf(ssh, "Initialised %.200s client->server MAC algorithm%s%s",
 		  ssh->csmac->text_name,
 		  ssh->csmac_etm ? " (in ETM mode)" : "",
@@ -7529,7 +7503,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
     if (ssh->sccipher)
 	logeventf(ssh, "Initialised %.200s server->client encryption",
 		  ssh->sccipher->text_name);
-    if (ssh->scmac && ssh->sccipher)
+    if (ssh->scmac)
 	logeventf(ssh, "Initialised %.200s server->client MAC algorithm%s%s",
 		  ssh->scmac->text_name,
 		  ssh->scmac_etm ? " (in ETM mode)" : "",
@@ -7574,7 +7548,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
      * function so that other things can run on top of the
      * transport. If we ever see a KEXINIT, we must go back to the
      * start.
-     *
+     * 
      * We _also_ go back to the start if we see pktin==NULL and
      * inlen negative, because this is a special signal meaning
      * `initiate client-driven rekey', and `in' contains a message
@@ -7600,7 +7574,7 @@ static void do_ssh2_transport(Ssh ssh, const void *vin, int inlen,
 	logevent("Server initiated key re-exchange");
     } else {
 	if (inlen == -2) {
-	    /*
+	    /* 
 	     * authconn has seen a USERAUTH_SUCCEEDED. Time to enable
 	     * delayed compression, if it's available.
 	     *
@@ -8393,7 +8367,6 @@ static void ssh2_msg_channel_open_confirmation(Ssh ssh, struct Packet *pktin)
          * server's id to put in the close message.
          */
         ssh2_channel_check_close(c);
-        c = NULL;
     } else {
         /*
          * We never expect to receive OPEN_CONFIRMATION for any
@@ -8409,7 +8382,7 @@ static void ssh2_msg_channel_open_confirmation(Ssh ssh, struct Packet *pktin)
         assert(!"Funny channel type in ssh2_msg_channel_open_confirmation");
     }
 
-    if (c && c->pending_eof)
+    if (c->pending_eof)
         ssh_channel_try_eof(c);        /* in case we had a pending EOF */
 }
 
@@ -8710,7 +8683,7 @@ static void ssh2_msg_channel_open(Ssh ssh, struct Packet *pktin)
     char *type;
     int typelen;
     char *peeraddr;
-    int peeraddrlen = 0;
+    int peeraddrlen;
     int peerport;
     const char *error = NULL;
     struct ssh_channel *c;
@@ -9056,7 +9029,7 @@ static void ssh2_setup_env(struct ssh_channel *c, struct Packet *pktin,
 
     /*
      * Send environment variables.
-     *
+     * 
      * Simplest thing here is to send all the requests at once, and
      * then wait for a whole bunch of successes or failures.
      */
@@ -9200,7 +9173,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
     ssh->packet_dispatch[SSH2_MSG_CHANNEL_EXTENDED_DATA] = ssh2_msg_authconn;
     ssh->packet_dispatch[SSH2_MSG_CHANNEL_EOF] = ssh2_msg_authconn;
     ssh->packet_dispatch[SSH2_MSG_CHANNEL_CLOSE] = ssh2_msg_authconn;
-
+    
     s->done_service_req = FALSE;
     s->we_are_in = s->userauth_success = FALSE;
     s->agent_response = NULL;
@@ -9258,14 +9231,8 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 	s->keyfile = conf_get_filename(ssh->conf, CONF_keyfile);
 	if (!filename_is_null(s->keyfile)) {
 	    int keytype;
-	    #ifdef _DEBUG
-	    // To suppress CodeGuard warning
-	    logeventf(ssh, MPEXT_BOM "Reading key file \"%s\"",
+	    logeventf(ssh, "Reading key file \"%.150s\"",
 		      filename_to_str(s->keyfile));
-	    #else
-	    logeventf(ssh, MPEXT_BOM "Reading key file \"%.150s\"",
-		      filename_to_str(s->keyfile));
-	    #endif
 	    keytype = key_type(s->keyfile);
 	    if (keytype == SSH_KEYTYPE_SSH2 ||
                 keytype == SSH_KEYTYPE_SSH2_PUBLIC_RFC4716 ||
@@ -9274,7 +9241,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		s->publickey_blob =
 		    ssh2_userkey_loadpub(s->keyfile,
 					 &s->publickey_algorithm,
-					 &s->publickey_bloblen,
+					 &s->publickey_bloblen, 
 					 &s->publickey_comment, &error);
 		if (s->publickey_blob) {
 		    s->privatekey_available = (keytype == SSH_KEYTYPE_SSH2);
@@ -9284,9 +9251,9 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 			ssh2_userkey_encrypted(s->keyfile, NULL);
 		} else {
 		    char *msgbuf;
-		    logeventf(ssh, "Unable to load key (%s)",
+		    logeventf(ssh, "Unable to load key (%s)", 
 			      error);
-		    msgbuf = dupprintf(MPEXT_BOM "Unable to load key file "
+		    msgbuf = dupprintf("Unable to load key file "
 				       "\"%.150s\" (%s)\r\n",
 				       filename_to_str(s->keyfile),
 				       error);
@@ -9297,7 +9264,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		char *msgbuf;
 		logeventf(ssh, "Unable to use this key file (%s)",
 			  key_type_to_str(keytype));
-		msgbuf = dupprintf(MPEXT_BOM "Unable to use key file \"%.150s\""
+		msgbuf = dupprintf("Unable to use key file \"%.150s\""
 				   " (%s)\r\n",
 				   filename_to_str(s->keyfile),
 				   key_type_to_str(keytype));
@@ -9421,16 +9388,16 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
      * beginning to try another username, if this is configured on.
      * (If they specify a username in the config, they are never
      * asked, even if they do give a wrong password.)
-     *
+     * 
      * I think this best serves the needs of
-     *
+     * 
      *  - the people who have no configuration, no keys, and just
      *    want to try repeated (username,password) pairs until they
      *    type both correctly
-     *
+     * 
      *  - people who have keys and configuration but occasionally
      *    need to fall back to passwords
-     *
+     * 
      *  - people with a key held in Pageant, who might not have
      *    logged in to a particular machine before; so they want to
      *    type a username, and then _either_ their key will be
@@ -9454,7 +9421,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 	    s->cur_prompt = new_prompts(ssh->frontend);
 	    s->cur_prompt->to_server = TRUE;
 	    s->cur_prompt->name = dupstr("SSH login name");
-	    add_prompt(s->cur_prompt, dupstr("login as: "), TRUE);
+	    add_prompt(s->cur_prompt, dupstr("login as: "), TRUE); 
 	    ret = get_userpass_input(s->cur_prompt, NULL, 0);
 	    while (ret < 0) {
 		ssh->send_ok = 1;
@@ -9476,7 +9443,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 	} else {
 	    char *stuff;
 	    if ((flags & FLAG_VERBOSE) || (flags & FLAG_INTERACTIVE)) {
-		stuff = dupprintf(MPEXT_BOM "Using username \"%s\".\r\n", ssh->username);
+		stuff = dupprintf("Using username \"%s\".\r\n", ssh->username);
 		c_write_str(ssh, stuff);
 		sfree(stuff);
 	    }
@@ -9541,9 +9508,6 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		if (size && (flags & (FLAG_VERBOSE | FLAG_INTERACTIVE))) {
 		    char *banner = snewn(size, char);
 		    bufchain_fetch(&ssh->banner, banner, size);
-#ifdef MPEXT
-		    display_banner(ssh->frontend, banner, size);
-#endif
 		    c_write_untrusted(ssh, banner, size);
 		    sfree(banner);
 		}
@@ -9591,7 +9555,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		     * Additionally, if we'd just tried password
 		     * authentication, we should break out of this
 		     * whole loop so as to go back to the username
-		     * prompt (if we're configured to allow
+		     * prompt (iff we're configured to allow
 		     * username change attempts).
 		     */
 		    if (s->type == AUTH_TYPE_NONE) {
@@ -9636,9 +9600,6 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		    logevent("Further authentication required");
 		}
 
-#ifdef MPEXT	
-		logeventf(ssh, "Server offered these authentication methods: %s", methods);
-#endif
 		s->can_pubkey =
 		    in_commasep_string("publickey", methods, methlen);
 		s->can_passwd =
@@ -9710,7 +9671,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		    s->gotit = TRUE;
 
 		} else {
-
+		    
 		    void *vret;
 
 		    if (flags & FLAG_VERBOSE) {
@@ -9796,9 +9757,6 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 					     GET_32BIT(s->ret + 5));
 			    ssh2_pkt_send(ssh, s->pktout);
 			    s->type = AUTH_TYPE_PUBLICKEY;
-			    #ifdef MPEXT
-			    sfree(s->ret);
-			    #endif
 			} else {
 			    /* FIXME: less drastic response */
 			    bombout(("Pageant failed to answer challenge"));
@@ -10005,10 +9963,6 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		int micoffset, len;
 		char *data;
 		Ssh_gss_buf mic;
-#ifdef MPEXT
-		const char * fullhostname;
-		char *loghost;
-#endif
 		s->type = AUTH_TYPE_GSSAPI;
 		s->tried_gssapi = TRUE;
 		s->gotit = TRUE;
@@ -10088,20 +10042,8 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		}
 
 		/* now start running */
-#ifdef MPEXT
-		fullhostname = ssh->fullhostname;
-		loghost = conf_get_str(ssh->conf, CONF_loghost);
-		if (loghost[0] != '\0')
-		{
-		  fullhostname = loghost;
-		}
-#endif
 		s->gss_stat = s->gsslib->import_name(s->gsslib,
-#ifdef MPEXT
-						     fullhostname,
-#else
 						     ssh->fullhostname,
-#endif
 						     &s->gss_srv_name);
 		if (s->gss_stat != SSH_GSS_OK) {
 		    if (s->gss_stat == SSH_GSS_BAD_HOST_NAME)
@@ -10225,7 +10167,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		ssh2_pkt_addstring(s->pktout, "");	/* lang */
 		ssh2_pkt_addstring(s->pktout, "");	/* submethods */
 		ssh2_pkt_send(ssh, s->pktout);
-
+                
                 logevent("Attempting keyboard-interactive authentication");
 
 		crWaitUntilV(pktin);
@@ -10377,12 +10319,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		s->cur_prompt = new_prompts(ssh->frontend);
 		s->cur_prompt->to_server = TRUE;
 		s->cur_prompt->name = dupstr("SSH password");
-		#ifdef _DEBUG
-		// To suppress CodeGuard warning
 		add_prompt(s->cur_prompt, dupprintf("%s@%s's password: ",
-		#else
-		add_prompt(s->cur_prompt, dupprintf("%.90s@%.90s's password: ",
-		#endif
 						    ssh->username,
 						    ssh->savedhost),
 			   FALSE);
@@ -10442,7 +10379,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 
 		while (pktin->type == SSH2_MSG_USERAUTH_PASSWD_CHANGEREQ) {
 
-		    /*
+		    /* 
 		     * We're being asked for a new password
 		     * (perhaps not for the first time).
 		     * Loop until the server accepts it.
@@ -10451,7 +10388,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		    int got_new = FALSE; /* not live over crReturn */
 		    char *prompt;   /* not live over crReturn */
 		    int prompt_len; /* not live over crReturn */
-
+		    
 		    {
 			const char *msg;
 			if (changereq_first_time)
@@ -10561,7 +10498,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		    free_prompts(s->cur_prompt);
 		    ssh2_pkt_send_with_padding(ssh, s->pktout, 256);
 		    logevent("Sent new password");
-
+		    
 		    /*
 		     * Now see what the server has to say about it.
 		     * (If it's CHANGEREQ again, it's not happy with the
@@ -10820,13 +10757,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		 * back to it before complaining.
 		 */
 		if (!ssh->fallback_cmd &&
-		    (*conf_get_str(ssh->conf, CONF_remote_cmd2)
-#ifdef MPEXT
-		    ||
-		    conf_get_int(ssh->conf, CONF_force_remote_cmd2)
-#endif
-        )
-        ) {
+		    *conf_get_str(ssh->conf, CONF_remote_cmd2)) {
 		    logevent("Primary command failed; attempting fallback");
 		    ssh->fallback_cmd = TRUE;
 		    continue;
@@ -10851,8 +10782,8 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
     /*
      * Transfer data!
      */
-    //if (ssh->ldisc)
-	//ldisc_echoedit_update(ssh->ldisc);  /* cause ldisc to notice changes */
+    if (ssh->ldisc)
+	ldisc_echoedit_update(ssh->ldisc);  /* cause ldisc to notice changes */
     if (ssh->mainchan)
 	ssh->send_ok = 1;
     while (1) {
@@ -11066,12 +10997,7 @@ static void ssh2_timer(void *ctx, unsigned long now)
 
     if (!ssh->kex_in_progress && !ssh->bare_connection &&
         conf_get_int(ssh->conf, CONF_ssh_rekey_time) != 0 &&
-#ifdef MPEXT
-// our call from call_ssh_timer() does not guarantee the `now` to be exactly as scheduled
-	(now >= ssh->next_rekey)) {
-#else
 	now == ssh->next_rekey) {
-#endif
 	do_ssh2_transport(ssh, "timeout", -1, NULL);
     }
 }
@@ -11209,12 +11135,6 @@ static const char *ssh_init(void *frontend_handle, void **backend_handle,
 
     *backend_handle = ssh;
 
-#ifdef MPEXT
-    // random_unref is always called from ssh_free,
-    // so we must call random_ref also always, even if we fail, to match it
-    random_ref();
-#endif
-
 #ifdef MSCRYPTOAPI
     if (crypto_startup() == 0)
 	return "Microsoft high encryption pack not installed!";
@@ -11251,20 +11171,13 @@ static const char *ssh_init(void *frontend_handle, void **backend_handle,
     ssh->gsslibs = NULL;
 #endif
 
-#ifndef MPEXT
     random_ref(); /* do this now - may be needed by sharing setup code */
-#endif
 
     p = connect_to_host(ssh, host, port, realhost, nodelay, keepalive);
     if (p != NULL) {
-#ifndef MPEXT
         random_unref();
-#endif
 	return p;
     }
-#ifndef MPEXT
-    random_ref();
-#endif
 
     return NULL;
 }
@@ -11882,10 +11795,10 @@ static void ssh_provide_logctx(void *handle, void *logctx)
 static int ssh_return_exitcode(void *handle)
 {
     Ssh ssh = (Ssh) handle;
-    if (ssh && ssh->s != NULL)
+    if (ssh->s != NULL)
         return -1;
     else
-        return (ssh && ssh->exitcode >= 0 ? ssh->exitcode : INT_MAX);
+        return (ssh->exitcode >= 0 ? ssh->exitcode : INT_MAX);
 }
 
 /*
@@ -11937,117 +11850,3 @@ Backend ssh_backend = {
     PROT_SSH,
     22
 };
-
-#ifdef MPEXT
-
-#include "puttyexp.h"
-
-void ssh_close(void * handle)
-{
-  ssh_do_close((Ssh)handle, FALSE);
-}
-
-int is_ssh(void * handle)
-{
-  Plug fn = (Plug)handle;
-  return (*fn)->closing == ssh_closing;
-}
-
-void call_ssh_timer(void * handle)
-{
-  if (((Ssh)handle)->version == 2)
-  {
-    ssh2_timer(handle, GETTICKCOUNT());
-  }
-}
-
-int get_ssh_version(void * handle)
-{
-  return ((Ssh)handle)->version;
-}
-
-void * get_ssh_frontend(void * handle)
-{
-  return ((Ssh)handle)->frontend;
-}
-
-int get_ssh1_compressing(void * handle)
-{
-  return ((Ssh)handle)->v1_compressing;
-}
-
-const struct ssh_cipher * get_cipher(void * handle)
-{
-  return ((Ssh)handle)->cipher;
-}
-
-const struct ssh2_cipher * get_cscipher(void * handle)
-{
-  return ((Ssh)handle)->cscipher;
-}
-
-const struct ssh2_cipher * get_sccipher(void * handle)
-{
-  return ((Ssh)handle)->sccipher;
-}
-
-const struct ssh_compress * get_cscomp(void * handle)
-{
-  return ((Ssh)handle)->cscomp;
-}
-
-const struct ssh_compress * get_sccomp(void * handle)
-{
-  return ((Ssh)handle)->sccomp;
-}
-
-int get_ssh_state(void * handle)
-{
-  return ((Ssh)handle)->state;
-}
-
-int get_ssh_state_closed(void * handle)
-{
-  return ((Ssh)handle)->state == SSH_STATE_CLOSED;
-}
-
-int get_ssh_state_session(void * handle)
-{
-  return ((Ssh)handle)->state == SSH_STATE_SESSION;
-}
-
-int get_ssh_exitcode(void * handle)
-{
-  return ssh_return_exitcode(handle);
-}
-
-const unsigned int * ssh2_remmaxpkt(void * handle)
-{
-  return &((Ssh)handle)->mainchan->v.v2.remmaxpkt;
-}
-
-const unsigned int * ssh2_remwindow(void * handle)
-{
-  return &((Ssh)handle)->mainchan->v.v2.remwindow;
-}
-
-void md5checksum(const char * buffer, int len, unsigned char output[16])
-{
-  struct MD5Context md5c;
-  MD5Init(&md5c);
-  MD5Update(&md5c, buffer, len);
-  MD5Final(output, &md5c);
-}
-
-void get_hostkey_algs(int * count, cp_ssh_signkey * SignKeys)
-{
-  int i;
-  assert(lenof(hostkey_algs) <= *count);
-  *count = lenof(hostkey_algs);
-  for (i = 0; i < *count; i++)
-  {
-    *(SignKeys + i) = hostkey_algs[i].alg;
-  }
-}
-
-#endif

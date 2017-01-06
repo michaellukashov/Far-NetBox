@@ -650,32 +650,3 @@ void pfd_confirm(struct PortForwarding *pf)
 	pf->buffer = NULL;
     }
 }
-
-#ifdef MPEXT
-
-#include "puttyexp.h"
-
-int is_pfwd(void * handle)
-{
-  Plug fn = (Plug)handle;
-  return
-    ((*fn)->closing == pfd_closing) ||
-    ((*fn)->closing == pfl_closing);
-}
-
-void * get_pfwd_backend(void * handle)
-{
-  void * backend = NULL;
-  Plug fn = (Plug)handle;
-  if ((*fn)->closing == pfl_closing)
-  {
-    backend = ((struct PortListener *)handle)->backhandle;
-  }
-  else if ((*fn)->closing == pfd_closing)
-  {
-    backend = ((struct PortForwarding *)handle)->backhandle;
-  }
-  return backend;
-}
-
-#endif

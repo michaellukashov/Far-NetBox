@@ -93,13 +93,13 @@ void SHA256_Block(SHA256_State *s, uint32 *block) {
 
 #define BLKSIZE 64
 
-void putty_SHA256_Init(SHA256_State *s) {
+void SHA256_Init(SHA256_State *s) {
     SHA256_Core_Init(s);
     s->blkused = 0;
     s->lenhi = s->lenlo = 0;
 }
 
-void putty_SHA256_Bytes(SHA256_State *s, const void *p, int len) {
+void SHA256_Bytes(SHA256_State *s, const void *p, int len) {
     unsigned char *q = (unsigned char *)p;
     uint32 wordblock[16];
     uint32 lenw = len;
@@ -141,7 +141,7 @@ void putty_SHA256_Bytes(SHA256_State *s, const void *p, int len) {
     }
 }
 
-void putty_SHA256_Final(SHA256_State *s, unsigned char *digest) {
+void SHA256_Final(SHA256_State *s, unsigned char *digest) {
     int i;
     int pad;
     unsigned char c[64];
@@ -157,7 +157,7 @@ void putty_SHA256_Final(SHA256_State *s, unsigned char *digest) {
 
     memset(c, 0, pad);
     c[0] = 0x80;
-    putty_SHA256_Bytes(s, &c, pad);
+    SHA256_Bytes(s, &c, pad);
 
     c[0] = (lenhi >> 24) & 0xFF;
     c[1] = (lenhi >> 16) & 0xFF;
@@ -168,7 +168,7 @@ void putty_SHA256_Final(SHA256_State *s, unsigned char *digest) {
     c[6] = (lenlo >>  8) & 0xFF;
     c[7] = (lenlo >>  0) & 0xFF;
 
-    putty_SHA256_Bytes(s, &c, 8);
+    SHA256_Bytes(s, &c, 8);
 
     for (i = 0; i < 8; i++) {
 	digest[i*4+0] = (s->h[i] >> 24) & 0xFF;
@@ -178,12 +178,12 @@ void putty_SHA256_Final(SHA256_State *s, unsigned char *digest) {
     }
 }
 
-void putty_SHA256_Simple(const void *p, int len, unsigned char *output) {
+void SHA256_Simple(const void *p, int len, unsigned char *output) {
     SHA256_State s;
 
-    putty_SHA256_Init(&s);
-    putty_SHA256_Bytes(&s, p, len);
-    putty_SHA256_Final(&s, output);
+    SHA256_Init(&s);
+    SHA256_Bytes(&s, p, len);
+    SHA256_Final(&s, output);
     smemclr(&s, sizeof(s));
 }
 
@@ -196,7 +196,7 @@ static void *sha256_init(void)
     SHA256_State *s;
 
     s = snew(SHA256_State);
-    putty_SHA256_Init(s);
+    SHA256_Init(s);
     return s;
 }
 
@@ -222,14 +222,14 @@ static void sha256_bytes(void *handle, const void *p, int len)
 {
     SHA256_State *s = handle;
 
-    putty_SHA256_Bytes(s, p, len);
+    SHA256_Bytes(s, p, len);
 }
 
 static void sha256_final(void *handle, unsigned char *output)
 {
     SHA256_State *s = handle;
 
-    putty_SHA256_Final(s, output);
+    SHA256_Final(s, output);
     sha256_free(s);
 }
 
@@ -263,14 +263,14 @@ static void sha256_key_internal(void *handle, unsigned char *key, int len)
     memset(foo, 0x36, 64);
     for (i = 0; i < len && i < 64; i++)
 	foo[i] ^= key[i];
-    putty_SHA256_Init(&keys[0]);
-    putty_SHA256_Bytes(&keys[0], foo, 64);
+    SHA256_Init(&keys[0]);
+    SHA256_Bytes(&keys[0], foo, 64);
 
     memset(foo, 0x5C, 64);
     for (i = 0; i < len && i < 64; i++)
 	foo[i] ^= key[i];
-    putty_SHA256_Init(&keys[1]);
-    putty_SHA256_Bytes(&keys[1], foo, 64);
+    SHA256_Init(&keys[1]);
+    SHA256_Bytes(&keys[1], foo, 64);
 
     smemclr(foo, 64);		       /* burn the evidence */
 }
@@ -290,7 +290,7 @@ static void hmacsha256_start(void *handle)
 static void hmacsha256_bytes(void *handle, unsigned char const *blk, int len)
 {
     SHA256_State *keys = (SHA256_State *)handle;
-    putty_SHA256_Bytes(&keys[2], (void *)blk, len);
+    SHA256_Bytes(&keys[2], (void *)blk, len);
 }
 
 static void hmacsha256_genresult(void *handle, unsigned char *hmac)
@@ -300,10 +300,10 @@ static void hmacsha256_genresult(void *handle, unsigned char *hmac)
     unsigned char intermediate[32];
 
     s = keys[2];		       /* structure copy */
-    putty_SHA256_Final(&s, intermediate);
+    SHA256_Final(&s, intermediate);
     s = keys[1];		       /* structure copy */
-    putty_SHA256_Bytes(&s, intermediate, 32);
-    putty_SHA256_Final(&s, hmac);
+    SHA256_Bytes(&s, intermediate, 32);
+    SHA256_Final(&s, hmac);
 }
 
 static void sha256_do_hmac(void *handle, unsigned char *blk, int len,
@@ -380,7 +380,7 @@ int main(void) {
     errors = 0;
 
     for (i = 0; i < sizeof(tests) / sizeof(*tests); i++) {
-	putty_SHA256_Simple(tests[i].teststring,
+	SHA256_Simple(tests[i].teststring,
 		      strlen(tests[i].teststring), digest);
 	for (j = 0; j < 32; j++) {
 	    if (digest[j] != tests[i].digest[j]) {

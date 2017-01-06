@@ -9,9 +9,6 @@
 #define SECURITY_WIN32
 #endif
 #include <security.h>
-#ifdef MPEXT
-#include <assert.h>
-#endif
 
 OSVERSIONINFO osVersion;
 
@@ -80,40 +77,6 @@ char filename_char_sanitise(char c)
         return '.';
     return c;
 }
-
-#ifdef MPEXT
-
-FILE * mp_wfopen(const char *filename, const char *mode)
-{
-    size_t len = strlen(filename);
-    wchar_t * wfilename = snewn(len * 10, wchar_t);
-    size_t wlen = MultiByteToWideChar(CP_UTF8, 0, filename, -1, wfilename, len * 10);
-    FILE * file;
-    if (wlen <= 0)
-    {
-        file = NULL;
-    }
-    else
-    {
-        wchar_t wmode[3];
-        memset(wmode, 0, sizeof(wmode));
-        wmode[0] = (wchar_t)mode[0];
-        if (mode[0] != '\0')
-        {
-            wmode[1] = (wchar_t)mode[1];
-            if (mode[1] != '\0')
-            {
-                assert(mode[2] == '\0');
-            }
-        }
-
-        file = _wfopen(wfilename, wmode);
-    }
-    sfree(wfilename);
-    return file;
-}
-
-#endif
 
 #ifndef NO_SECUREZEROMEMORY
 /*
@@ -186,21 +149,44 @@ char *get_username(void)
     return got_username ? user : NULL;
 }
 
+void dll_hijacking_protection(void)
+{
+    /*
+     * If the OS provides it, call SetDefaultDllDirectories() to
+     * prevent DLLs from being loaded from the directory containing
+     * our own binary, and instead only load from system32.
+     *
+     * This is a protection against hijacking attacks, if someone runs
+     * PuTTY directly from their web browser's download directory
+     * having previously been enticed into clicking on an unwise link
+     * that downloaded a malicious DLL to the same directory under one
+     * of various magic names that seem to be things that standard
+     * Windows DLLs delegate to.
+     *
+     * It shouldn't break deliberate loading of user-provided DLLs
+     * such as GSSAPI providers, because those are specified by their
+     * full pathname by the user-provided configuration.
+     */
+    static HMODULE kernel32_module;
+    DECL_WINDOWS_FUNCTION(static, BOOL, SetDefaultDllDirectories, (DWORD));
+
+    if (!kernel32_module) {
+        kernel32_module = load_system32_dll("kernel32.dll");
+        GET_WINDOWS_FUNCTION(kernel32_module, SetDefaultDllDirectories);
+    }
+
+    if (p_SetDefaultDllDirectories) {
+        /* LOAD_LIBRARY_SEARCH_SYSTEM32 only */
+        p_SetDefaultDllDirectories(0x800);
+    }
+}
+
 BOOL init_winver(void)
 {
     ZeroMemory(&osVersion, sizeof(osVersion));
     osVersion.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
     return GetVersionEx ( (OSVERSIONINFO *) &osVersion);
 }
-
-#ifdef MPEXT
-static char *sysdir = NULL;
-
-void win_misc_cleanup()
-{
-  sfree(sysdir);
-}
-#endif
 
 HMODULE load_system32_dll(const char *libname)
 {
@@ -210,9 +196,7 @@ HMODULE load_system32_dll(const char *libname)
      * attack is possible by placing a substitute DLL earlier on that
      * path.)
      */
-#ifndef MPEXT
     static char *sysdir = NULL;
-#endif
     char *fullpath;
     HMODULE ret;
 
@@ -221,12 +205,12 @@ HMODULE load_system32_dll(const char *libname)
 	do {
 	    size = 3*size/2 + 512;
 	    sysdir = sresize(sysdir, size, char);
-	    len = GetSystemDirectoryA(sysdir, size);
+	    len = GetSystemDirectory(sysdir, size);
 	} while (len >= size);
     }
 
     fullpath = dupcat(sysdir, "\\", libname, NULL);
-    ret = LoadLibraryA(fullpath);
+    ret = LoadLibrary(fullpath);
     sfree(fullpath);
     return ret;
 }
@@ -268,26 +252,23 @@ const char *win_strerror(int error)
     es = find234(errstrings, &error, errstring_find);
 
     if (!es) {
-        int bufsize;
+        char msgtext[65536]; /* maximum size for FormatMessage is 64K */
 
         es = snew(struct errstring);
         es->error = error;
-        /* maximum size for FormatMessage is 64K */
-        bufsize = 65535;
-        es->text = snewn(bufsize+1, char);
         if (!FormatMessage((FORMAT_MESSAGE_FROM_SYSTEM |
                             FORMAT_MESSAGE_IGNORE_INSERTS), NULL, error,
                            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                           es->text, bufsize, NULL)) {
-            sprintf(es->text,
-                    "Windows error code %d (and FormatMessage returned %d)", 
-                    error, GetLastError());
+                           msgtext, lenof(msgtext)-1, NULL)) {
+            sprintf(msgtext,
+                    "(unable to format: FormatMessage returned %u)",
+                    (unsigned int)GetLastError());
         } else {
-            int len = strlen(es->text);
-            if (len > 0 && es->text[len-1] == '\n')
-                es->text[len-1] = '\0';
+            int len = strlen(msgtext);
+            if (len > 0 && msgtext[len-1] == '\n')
+                msgtext[len-1] = '\0';
         }
-        es->text = sresize(es->text, strlen(es->text) + 1, char);
+        es->text = dupprintf("Error %d: %s", error, msgtext);
         add234(errstrings, es);
     }
 

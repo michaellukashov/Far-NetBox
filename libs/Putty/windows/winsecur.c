@@ -15,16 +15,6 @@
 /* Initialised once, then kept around to reuse forever */
 static PSID worldsid, networksid, usersid;
 
-#ifdef MPEXT
-void win_secur_cleanup(void)
-{
-    if (usersid)
-    {
-        sfree(usersid);
-        usersid = NULL;
-    }
-}
-#endif
 
 int got_advapi(void)
 {

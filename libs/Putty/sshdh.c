@@ -210,10 +210,7 @@ Bignum dh_create_e(void *handle, int nbits)
 	 * with qmask.
 	 */
 	if (ctx->x)
-	{
-		freebn(ctx->x);
-		ctx->x = NULL;
-	}
+	    freebn(ctx->x);
 	if (nbits == 0 || nbits > bignum_bitcount(ctx->qmask)) {
 	    ssh1_write_bignum(buf, ctx->qmask);
 	    for (i = 2; i < nbytes; i++)
@@ -233,15 +230,14 @@ Bignum dh_create_e(void *handle, int nbits)
 		nb--;
 	    }
 	}
-	} while (ctx->x && (bignum_cmp(ctx->x, One) <= 0 || bignum_cmp(ctx->x, ctx->q) >= 0));
+    } while (bignum_cmp(ctx->x, One) <= 0 || bignum_cmp(ctx->x, ctx->q) >= 0);
 
     sfree(buf);
 
     /*
      * Done. Now compute e = g^x mod p.
      */
-    if (ctx->x)
-      ctx->e = modpow(ctx->g, ctx->x, ctx->p);
+    ctx->e = modpow(ctx->g, ctx->x, ctx->p);
 
     return ctx->e;
 }

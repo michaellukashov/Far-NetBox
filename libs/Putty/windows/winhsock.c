@@ -14,10 +14,6 @@
 
 typedef struct Socket_handle_tag *Handle_Socket;
 
-#ifdef MPEXT
-extern char *do_select(Plug plug, SOCKET skt, int startup);
-#endif
-
 struct Socket_handle_tag {
     const struct socket_function_table *fn;
     /* the above variable absolutely *must* be the first in this structure */
@@ -111,11 +107,6 @@ static Plug sk_handle_plug(Socket s, Plug p)
 static void sk_handle_close(Socket s)
 {
     Handle_Socket ps = (Handle_Socket) s;
-
-    #ifdef MPEXT
-    // WinSCP core uses do_select as signalization of connection up/down
-    do_select(ps->plug, INVALID_SOCKET, 0);
-    #endif
 
     handle_free(ps->send_h);
     handle_free(ps->recv_h);
@@ -316,11 +307,6 @@ Socket make_handle_socket(HANDLE send_H, HANDLE recv_H, HANDLE stderr_H,
     if (ret->stderr_H)
         ret->stderr_h = handle_input_new(ret->stderr_H, handle_stderr,
                                          ret, flags);
-
-    #ifdef MPEXT
-    // WinSCP core uses do_select as signalization of connection up/down
-    do_select(plug, INVALID_SOCKET, 1);
-    #endif
 
     return (Socket) ret;
 }

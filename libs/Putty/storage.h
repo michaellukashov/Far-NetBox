@@ -25,7 +25,7 @@
  * A given key will be written at most once while saving a session.
  * Keys may be up to 255 characters long.  String values have no length
  * limit.
- *
+ * 
  * Any returned error message must be freed after use.
  */
 void *open_settings_w(const char *sessionname, char **errmsg);
@@ -40,12 +40,12 @@ void close_settings_w(void *handle);
  * open_setting_r() to get a `void *' handle, then pass that to a
  * number of calls to read_setting_s() and read_setting_i(), and
  * then close it using close_settings_r().
- *
+ * 
  * read_setting_s() returns a dynamically allocated string which the
  * caller must free. read_setting_filename() and
  * read_setting_fontspec() likewise return dynamically allocated
  * structures.
- *
+ * 
  * If a particular string setting is not present in the session,
  * read_setting_s() can return NULL, in which case the caller
  * should invent a sensible default. If an integer setting is not
@@ -74,10 +74,6 @@ void enum_settings_finish(void *handle);
  * Functions to access PuTTY's host key database.
  */
 
-#ifdef MPEXT
-int retrieve_host_key(const char *hostname, int port,
-		    const char *keytype, char *key, int maxlen);
-#else
 /*
  * See if a host key matches the database entry. Return values can
  * be 0 (entry matches database), 1 (entry is absent in database),
@@ -85,7 +81,6 @@ int retrieve_host_key(const char *hostname, int port,
  */
 int verify_host_key(const char *hostname, int port,
 		    const char *keytype, const char *key);
-#endif
 
 /*
  * Write a host key into the database, overwriting any previous

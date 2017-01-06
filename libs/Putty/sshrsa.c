@@ -105,10 +105,10 @@ static void sha512_mpint(SHA512_State * s, Bignum b)
     int len;
     len = (bignum_bitcount(b) + 8) / 8;
     PUT_32BIT(lenbuf, len);
-    putty_SHA512_Bytes(s, lenbuf, 4);
+    SHA512_Bytes(s, lenbuf, 4);
     while (len-- > 0) {
 	lenbuf[0] = bignum_byte(b, len);
-	putty_SHA512_Bytes(s, lenbuf, 1);
+	SHA512_Bytes(s, lenbuf, 1);
     }
     smemclr(lenbuf, sizeof(lenbuf));
 }
@@ -239,21 +239,21 @@ static Bignum rsa_privkey_op(Bignum input, struct RSAKey *key)
 		if (digestused >= lenof(digest512)) {
 		    unsigned char seqbuf[4];
 		    PUT_32BIT(seqbuf, hashseq);
-		    putty_SHA512_Init(&ss);
-		    putty_SHA512_Bytes(&ss, "RSA deterministic blinding", 26);
-		    putty_SHA512_Bytes(&ss, seqbuf, sizeof(seqbuf));
+		    SHA512_Init(&ss);
+		    SHA512_Bytes(&ss, "RSA deterministic blinding", 26);
+		    SHA512_Bytes(&ss, seqbuf, sizeof(seqbuf));
 		    sha512_mpint(&ss, key->private_exponent);
-		    putty_SHA512_Final(&ss, digest512);
+		    SHA512_Final(&ss, digest512);
 		    hashseq++;
 
 		    /*
 		     * Now hash that digest plus the signature
 		     * input.
 		     */
-		    putty_SHA512_Init(&ss);
-		    putty_SHA512_Bytes(&ss, digest512, sizeof(digest512));
+		    SHA512_Init(&ss);
+		    SHA512_Bytes(&ss, digest512, sizeof(digest512));
 		    sha512_mpint(&ss, input);
-		    putty_SHA512_Final(&ss, digest512);
+		    SHA512_Final(&ss, digest512);
 
 		    digestused = 0;
 		}
@@ -852,7 +852,7 @@ static int rsa2_verifysig(void *key, const char *sig, int siglen,
 	    ret = 0;
     }
     /* Finally, we expect to see the SHA-1 hash of the signed data. */
-    putty_SHA_Simple(data, datalen, hash);
+    SHA_Simple(data, datalen, hash);
     for (i = 19, j = 0; i >= 0; i--, j++) {
 	if (bignum_byte(out, i) != hash[j])
 	    ret = 0;
@@ -872,7 +872,7 @@ static unsigned char *rsa2_sign(void *key, const char *data, int datalen,
     Bignum in, out;
     int i, j;
 
-    putty_SHA_Simple(data, datalen, hash);
+    SHA_Simple(data, datalen, hash);
 
     nbytes = (bignum_bitcount(rsa->modulus) - 1) / 8;
     assert(1 <= nbytes - 20 - ASN1_LEN);

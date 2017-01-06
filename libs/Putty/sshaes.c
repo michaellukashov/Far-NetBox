@@ -695,7 +695,6 @@ static void aes_encrypt_nb_4(AESContext * ctx, word32 * block)
 	MOVEWORD(1);
 	MOVEWORD(2);
 	MOVEWORD(3);
-  //memmove(block, newstate, sizeof(newstate));
     }
     ADD_ROUND_KEY_4;
     LASTWORD(0);
@@ -1240,34 +1239,3 @@ const struct ssh2_ciphers ssh2_aes = {
     sizeof(aes_list) / sizeof(*aes_list),
     aes_list
 };
-
-#ifdef MPEXT
-
-#include "puttyexp.h"
-
-void * call_aes_make_context()
-{
-  return aes_make_context();
-}
-
-void call_aes_free_context(void * handle)
-{
-  aes_free_context(handle);
-}
-
-void call_aes_setup(void * ctx, int blocklen, unsigned char * key, int keylen)
-{
-  aes_setup((AESContext *)ctx, blocklen, key, keylen);
-}
-
-void call_aes_encrypt(void * ctx, unsigned int * block)
-{
-  aes_encrypt((AESContext *)ctx, block);
-}
-
-void call_aes_decrypt(void * ctx, unsigned int * block)
-{
-  aes_decrypt((AESContext *)ctx, block);
-}
-
-#endif

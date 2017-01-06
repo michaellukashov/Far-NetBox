@@ -345,7 +345,7 @@ static unsigned share_find_unused_id
     while (high - low > 1) {
 	mid = (high + low) / 2;
 	cs = index234(sharestate->connections, mid);
-	if (cs && cs->id == first + (mid - low_orig))
+	if (cs->id == first + (mid - low_orig))
 	    low = mid;		       /* this one is still in the sequence */
 	else
 	    high = mid;		       /* this one is past the end */
@@ -2123,10 +2123,10 @@ Socket ssh_connection_sharing_init(const char *host, int port,
 
     if (!conf_get_int(conf, CONF_ssh_connection_sharing))
         return NULL;                   /* do not share anything */
-    can_upstream = 0; // share_can_be_upstream &&
-        // conf_get_int(conf, CONF_ssh_connection_sharing_upstream);
-    can_downstream = 0; // share_can_be_downstream &&
-        // conf_get_int(conf, CONF_ssh_connection_sharing_downstream);
+    can_upstream = share_can_be_upstream &&
+        conf_get_int(conf, CONF_ssh_connection_sharing_upstream);
+    can_downstream = share_can_be_downstream &&
+        conf_get_int(conf, CONF_ssh_connection_sharing_downstream);
     if (!can_upstream && !can_downstream)
         return NULL;
 

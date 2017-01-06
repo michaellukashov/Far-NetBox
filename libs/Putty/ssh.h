@@ -258,28 +258,16 @@ void hmacmd5_key(void *handle, void const *key, int len);
 void hmacmd5_do_hmac(void *handle, unsigned char const *blk, int len,
 		     unsigned char *hmac);
 
-#if 0
-#ifdef MPEXT
-// Resolve ambiguity with OpenSSL
-#define SHA_Init putty_SHA_Init
-#define SHA_Final putty_SHA_Final
-#define SHA256_Init putty_SHA256_Init
-#define SHA256_Final putty_SHA256_Final
-#define SHA512_Init putty_SHA512_Init
-#define SHA512_Final putty_SHA512_Final
-#endif
-#endif
-
 typedef struct {
     uint32 h[5];
     unsigned char block[64];
     int blkused;
     uint32 lenhi, lenlo;
 } SHA_State;
-void putty_SHA_Init(SHA_State * s);
-void putty_SHA_Bytes(SHA_State * s, const void *p, int len);
-void putty_SHA_Final(SHA_State * s, unsigned char *output);
-void putty_SHA_Simple(const void *p, int len, unsigned char *output);
+void SHA_Init(SHA_State * s);
+void SHA_Bytes(SHA_State * s, const void *p, int len);
+void SHA_Final(SHA_State * s, unsigned char *output);
+void SHA_Simple(const void *p, int len, unsigned char *output);
 
 void hmac_sha1_simple(void *key, int keylen, void *data, int datalen,
 		      unsigned char *output);
@@ -289,10 +277,10 @@ typedef struct {
     int blkused;
     uint32 lenhi, lenlo;
 } SHA256_State;
-void putty_SHA256_Init(SHA256_State * s);
-void putty_SHA256_Bytes(SHA256_State * s, const void *p, int len);
-void putty_SHA256_Final(SHA256_State * s, unsigned char *output);
-void putty_SHA256_Simple(const void *p, int len, unsigned char *output);
+void SHA256_Init(SHA256_State * s);
+void SHA256_Bytes(SHA256_State * s, const void *p, int len);
+void SHA256_Final(SHA256_State * s, unsigned char *output);
+void SHA256_Simple(const void *p, int len, unsigned char *output);
 
 typedef struct {
     uint64 h[8];
@@ -300,15 +288,15 @@ typedef struct {
     int blkused;
     uint32 len[4];
 } SHA512_State;
-#define putty_SHA384_State SHA512_State
-void putty_SHA512_Init(SHA512_State * s);
-void putty_SHA512_Bytes(SHA512_State * s, const void *p, int len);
-void putty_SHA512_Final(SHA512_State * s, unsigned char *output);
-void putty_SHA512_Simple(const void *p, int len, unsigned char *output);
-void putty_SHA384_Init(putty_SHA384_State * s);
-#define putty_SHA384_Bytes(s, p, len) putty_SHA512_Bytes(s, p, len)
-void putty_SHA384_Final(putty_SHA384_State * s, unsigned char *output);
-void putty_SHA384_Simple(const void *p, int len, unsigned char *output);
+#define SHA384_State SHA512_State
+void SHA512_Init(SHA512_State * s);
+void SHA512_Bytes(SHA512_State * s, const void *p, int len);
+void SHA512_Final(SHA512_State * s, unsigned char *output);
+void SHA512_Simple(const void *p, int len, unsigned char *output);
+void SHA384_Init(SHA384_State * s);
+#define SHA384_Bytes(s, p, len) SHA512_Bytes(s, p, len)
+void SHA384_Final(SHA384_State * s, unsigned char *output);
+void SHA384_Simple(const void *p, int len, unsigned char *output);
 
 struct ssh_mac;
 struct ssh_cipher {
@@ -385,7 +373,7 @@ struct ssh_hash {
     void (*free)(void *);
     int hlen; /* output length in bytes */
     const char *text_name;
-};
+};   
 
 struct ssh_kex {
     const char *name, *groupname;
@@ -499,9 +487,9 @@ void aes_ssh2_encrypt_blk(void *handle, unsigned char *blk, int len);
 void aes_ssh2_decrypt_blk(void *handle, unsigned char *blk, int len);
 
 /*
- * PuTTY version number formatted as an SSH version string.
+ * PuTTY version number formatted as an SSH version string. 
  */
-extern char sshver[50];
+extern const char sshver[];
 
 /*
  * Gross hack: pscp will try to start SFTP but fall back to scp1 if
@@ -720,7 +708,7 @@ unsigned char *ssh2_userkey_loadpub(const Filename *filename, char **algorithm,
 				    int *pub_blob_len, char **commentptr,
 				    const char **errorstr);
 int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
-					const char *passphrase);
+		      char *passphrase);
 const struct ssh_signkey *find_pubkey_alg(const char *name);
 const struct ssh_signkey *find_pubkey_alg_len(int namelen, const char *name);
 

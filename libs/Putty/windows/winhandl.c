@@ -114,7 +114,7 @@ static DWORD WINAPI handle_input_threadfunc(void *param)
 {
     struct handle_input *ctx = (struct handle_input *) param;
     OVERLAPPED ovl, *povl;
-    HANDLE oev = 0;
+    HANDLE oev;
     int readret, readlen, finished;
 
     if (ctx->flags & HANDLE_FLAG_OVERLAPPED) {
@@ -612,11 +612,7 @@ void handle_free(struct handle *h)
     }
 }
 
-#ifdef MPEXT
-int handle_got_event(HANDLE event)
-#else
 void handle_got_event(HANDLE event)
-#endif
 {
     struct handle *h;
 
@@ -631,11 +627,7 @@ void handle_got_event(HANDLE event)
 	 * an event notification here for a handle which is already
 	 * deceased. In that situation we simply do nothing.
 	 */
-    #ifdef MPEXT
-    return 0;
-    #else
 	return;
-    #endif
     }
 
     if (h->u.g.moribund) {
@@ -654,11 +646,7 @@ void handle_got_event(HANDLE event)
 	    h->u.g.busy = TRUE;
 	    SetEvent(h->u.g.ev_from_main);
 	}
-    #ifdef MPEXT
-    return 0;
-    #else
 	return;
-    #endif
     }
 
     switch (h->type) {
@@ -680,11 +668,7 @@ void handle_got_event(HANDLE event)
 	    backlog = h->u.i.gotdata(h, h->u.i.buffer, h->u.i.len);
 	    handle_throttle(&h->u.i, backlog);
 	}
-    #ifdef MPEXT
-        return 1;
-    #else
         break;
-    #endif
 
       case HT_OUTPUT:
 	h->u.o.busy = FALSE;
@@ -707,24 +691,13 @@ void handle_got_event(HANDLE event)
 	    h->u.o.sentdata(h, bufchain_size(&h->u.o.queued_data));
 	    handle_try_output(&h->u.o);
 	}
-    #ifdef MPEXT
-        return 0;
-    #else
         break;
-    #endif
 
       case HT_FOREIGN:
         /* Just call the callback. */
         h->u.f.callback(h->u.f.ctx);
-    #ifdef MPEXT
-        return 0;
-    #else
         break;
-    #endif
     }
-#ifdef MPEXT
-    return 0;
-#endif
 }
 
 void handle_unthrottle(struct handle *h, int backlog)
