@@ -74,8 +74,7 @@ public:
 		RDE_ASSERT(invariant());
 		bool found(true);
 		iterator it = lower_bound(val.first);
-		RDE_ASSERT(it == end() || !m_compare(*it, val));
-		if (it == end() || m_compare(*it, val))
+		if (it == end() || m_compare(val, *it))
 		{
 			it = Base::insert(it, val);
 			found = false;
