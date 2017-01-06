@@ -22,6 +22,7 @@ class TWebDAVFileSystem : public TCustomFileSystem
 NB_DISABLE_COPY(TWebDAVFileSystem)
 NB_DECLARE_CLASS(TWebDAVFileSystem)
 public:
+  TWebDAVFileSystem() { Init(nullptr); }
   explicit TWebDAVFileSystem(TTerminal * ATerminal);
   virtual ~TWebDAVFileSystem();
 

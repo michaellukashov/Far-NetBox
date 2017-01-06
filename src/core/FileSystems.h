@@ -143,6 +143,7 @@ class TCustomFileSystem : public TObject, public TFileSystemIntf
 NB_DISABLE_COPY(TCustomFileSystem)
 NB_DECLARE_CLASS(TCustomFileSystem)
 public:
+  TCustomFileSystem() : FTerminal(nullptr) {}
   virtual ~TCustomFileSystem();
 
   virtual void Open() = 0;
