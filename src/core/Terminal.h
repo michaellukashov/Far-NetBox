@@ -676,6 +676,7 @@ class TSecondaryTerminal : public TTerminal
 {
 NB_DISABLE_COPY(TSecondaryTerminal)
 public:
+  TSecondaryTerminal() : FMainTerminal(nullptr) {}
   explicit TSecondaryTerminal(TTerminal * MainTerminal);
   virtual ~TSecondaryTerminal() {}
   void Init(TSessionData * SessionData, TConfiguration * Configuration,
@@ -701,6 +702,7 @@ class TTerminalList : public TObjectList
 {
 NB_DISABLE_COPY(TTerminalList)
 public:
+  TTerminalList() : FConfiguration(nullptr) {}
   explicit TTerminalList(TConfiguration * AConfiguration);
   virtual ~TTerminalList();
 
@@ -711,15 +713,13 @@ public:
   void RecryptPasswords();
 
   // __property TTerminal * Terminals[int Index]  = { read=GetTerminal };
+  TTerminal * GetTerminal(intptr_t Index);
 
 protected:
   virtual TTerminal * CreateTerminal(TSessionData * Data);
 
 private:
   TConfiguration * FConfiguration;
-
-public:
-  TTerminal * GetTerminal(intptr_t Index);
 };
 
 struct TCustomCommandParams : public TObject

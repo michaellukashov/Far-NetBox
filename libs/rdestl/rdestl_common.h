@@ -24,6 +24,9 @@
 
 #	define RDE_ASSERT	assert
 
+// NOOB
+#include <cstdint>
+
 	namespace rde 
 	{ 
 		// # Meh. MSVC doesnt seem to have <stdint.h>
@@ -41,15 +44,15 @@
 		{
 			RDE_FORCEINLINE void MemCpy(void* to, const void* from, size_t bytes)
 			{
-				memcpy(to, from, bytes);
+				std::memcpy(to, from, bytes);
 			}
 			RDE_FORCEINLINE void MemMove(void* to, const void* from, size_t bytes)
 			{
-				memmove(to, from, bytes);
+				std::memmove(to, from, bytes);
 			}
 			RDE_FORCEINLINE void MemSet(void* buf, unsigned char value, size_t bytes)
 			{
-				memset(buf, value, bytes);
+				std::memset(buf, value, bytes);
 			}
 		} // sys
 	}
