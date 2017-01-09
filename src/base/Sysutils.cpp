@@ -644,7 +644,7 @@ bool ForceDirectories(const UnicodeString & ADir)
     return false;
   }
   UnicodeString Dir = ::ExcludeTrailingBackslash(ADir);
-  if ((Dir.Length() < 3 + 4) || ::DirectoryExists(Dir)) // \\?\C:\
+  if ((Dir.Length() < 3 + 4) || ::DirectoryExists(Dir)) // \\?\C:
   {
     return Result;
   }
