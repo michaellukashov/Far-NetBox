@@ -643,16 +643,16 @@ bool ForceDirectories(const UnicodeString & ADir)
   {
     return false;
   }
-  UnicodeString Dir2 = ::ExcludeTrailingBackslash(ADir);
-  if ((Dir2.Length() < 3) || ::DirectoryExists(Dir2))
+  UnicodeString Dir = ::ExcludeTrailingBackslash(ADir);
+  if ((Dir.Length() < 3 + 4) || ::DirectoryExists(Dir)) // \\?\C:
   {
     return Result;
   }
-  if (::ExtractFilePath(Dir2).IsEmpty())
+  if (::ExtractFilePath(Dir).IsEmpty())
   {
-    return ::CreateDir(Dir2);
+    return ::CreateDir(Dir);
   }
-  Result = ::ForceDirectories(::ExtractFilePath(Dir2)) && CreateDir(Dir2);
+  Result = ::ForceDirectories(::ExtractFilePath(Dir)) && CreateDir(Dir);
   return Result;
 }
 

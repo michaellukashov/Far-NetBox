@@ -250,7 +250,7 @@ bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert
   // We can accept only unknown certificate authority.
   if (FLAGSET(Failures, NE_SSL_UNTRUSTED))
   {
-    unsigned char * Certificate;
+    unsigned char * Certificate = nullptr;
     size_t CertificateLen = ne_unbase64(AsciiCert.c_str(), &Certificate);
 
     if (CertificateLen > 0)

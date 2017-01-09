@@ -2459,7 +2459,9 @@ void TWebDAVFileSystem::CollectTLSSessionInfo()
   FTlsVersionStr = StrFromNeon(ne_ssl_get_version(FNeonSession));
   AddToList(FSessionInfo.SecurityProtocolName, FTlsVersionStr, L", ");
 
-  UnicodeString Cipher = StrFromNeon(ne_ssl_get_cipher(FNeonSession));
+  char * cipher = ne_ssl_get_cipher(FNeonSession);
+  UnicodeString Cipher = StrFromNeon(cipher);
+  ne_free(cipher);
   FSessionInfo.CSCipher = Cipher;
   FSessionInfo.SCCipher = Cipher;
 
@@ -2818,6 +2820,10 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & FileName, const TRemote
         Unlock = Lock2;
       }
       CheckStatus(ne_unlock(FNeonSession, Unlock));
+      if (Lock2 == nullptr)
+      {
+        ne_lock_free(Unlock);
+      }
 
       DiscardLock(Path);
     }
