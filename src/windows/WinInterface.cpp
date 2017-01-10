@@ -570,7 +570,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
     delete Iterator->second;
     StackTraceMap.erase(Id);
 
-    OwnedMoreMessages.release();
+    OwnedMoreMessages.reset();
   }
   return Result;
 }
