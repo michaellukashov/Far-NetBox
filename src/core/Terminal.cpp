@@ -3751,7 +3751,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
       if (GetIsCapable(fcAnyCommand))
       {
         DebugAssert(FFileSystem);
-        DebugAssert(fcShellAnyCommand);
+        DebugAssert(GetIsCapable(fcShellAnyCommand));
         FFileSystem->CustomCommandOnFile(AFileName, AFile, Command, Params, OutputEvent);
       }
       else
