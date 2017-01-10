@@ -236,8 +236,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           //Send authentication
           LPCSTR lpszAsciiUser = m_ProxyData.pProxyUser;
           LPCSTR lpszAsciiPass = m_ProxyData.pProxyPass;
-          DebugAssert(strlen(lpszAsciiUser)<=255);
-          DebugAssert(strlen(lpszAsciiPass)<=255);
+          DebugAssert(strlen(lpszAsciiUser?lpszAsciiUser:"")<=255);
+          DebugAssert(strlen(lpszAsciiPass?lpszAsciiPass:"")<=255);
           uint8_t *buffer = static_cast<uint8_t *>(nb_calloc(1, 3 + (lpszAsciiUser?strlen(lpszAsciiUser):0) + (lpszAsciiPass?strlen(lpszAsciiPass):0) + 1));
           sprintf((char *)buffer, "  %s %s", lpszAsciiUser?lpszAsciiUser:"", lpszAsciiPass?lpszAsciiPass:"");
           buffer[0]=1;

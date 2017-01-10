@@ -2716,7 +2716,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
         }
 
         TDateTime UtcModification = UtcFilePtr->GetModification();
-        UtcFilePtr.release();
+        UtcFilePtr.reset();
 
         // MDTM returns seconds, trim those
         UtcModification = core::ReduceDateTimePrecision(UtcModification, File->GetModificationFmt());

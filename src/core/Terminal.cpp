@@ -3751,7 +3751,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
       if (GetIsCapable(fcAnyCommand))
       {
         DebugAssert(FFileSystem);
-        DebugAssert(fcShellAnyCommand);
+        DebugAssert(GetIsCapable(fcShellAnyCommand));
         FFileSystem->CustomCommandOnFile(AFileName, AFile, Command, Params, OutputEvent);
       }
       else
@@ -3999,7 +3999,7 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
 }
 
 void TTerminal::DoCalculateDirectorySize(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, TCalculateSizeParams * Params)
+  const TRemoteFile * /*AFile*/, TCalculateSizeParams * Params)
 {
   TRetryOperationLoop RetryLoop(this);
   do

@@ -66,15 +66,15 @@ intptr_t __cdecl debug_printf2(const char * format, ...);
 #ifndef NDEBUG
 #if defined(_MSC_VER)
 #if (_MSC_VER >= 1900)
-#define DEBUG_PRINTF(format, ...) do { ::debug_printf(L"Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
-#define DEBUG_PRINTF2(format, ...) do { ::debug_printf2("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
+#define DEBUG_PRINTF(format, ...) ::debug_printf(L"Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__)
+#define DEBUG_PRINTF2(format, ...) ::debug_printf2("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__)
 #else
-#define DEBUG_PRINTF(format, ...) do { ::debug_printf(L"Plugin: [%s:%d] %s: "NB_TEXT(format) L"\n", ::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__); } while (0)
-#define DEBUG_PRINTF2(format, ...) do { ::debug_printf2("Plugin: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
+#define DEBUG_PRINTF(format, ...) ::debug_printf(L"Plugin: [%s:%d] %s: "NB_TEXT(format) L"\n", ::ExtractFilename(__FILEW__, L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__)
+#define DEBUG_PRINTF2(format, ...) ::debug_printf2("Plugin: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(__FILEW__, '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__)
 #endif
 #else
-#define DEBUG_PRINTF(format, ...) do { ::debug_printf(L"Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), ##__VA_ARGS__); } while (0)
-#define DEBUG_PRINTF2(format, ...) do { ::debug_printf2("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, ##__VA_ARGS__); } while (0)
+#define DEBUG_PRINTF(format, ...) ::debug_printf(L"Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), ##__VA_ARGS__)
+#define DEBUG_PRINTF2(format, ...) ::debug_printf2("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, ##__VA_ARGS__)
 #endif
 #else
 #define DEBUG_PRINTF(format, ...)
@@ -96,8 +96,8 @@ public:
   explicit Exception(Exception * E);
   explicit Exception(std::exception * E);
   explicit Exception(const UnicodeString & Msg, int AHelpContext);
-  explicit Exception(Exception * E, int Ident);
-  explicit Exception(int Ident);
+  explicit Exception(Exception * E, intptr_t Ident);
+  explicit Exception(intptr_t Ident);
   ~Exception() throw() {}
 
 public:
@@ -458,6 +458,7 @@ namespace detail
     ~scope_guard() { m_f(); }
 
   private:
+    scope_guard & operator=(const scope_guard &);
     const F m_f;
   };
 
@@ -465,7 +466,7 @@ namespace detail
   {
   public:
     template<typename F>
-    scope_guard<F> operator << (F&& f) { return scope_guard<F>(std::move(f)); }
+    scope_guard<F> operator << (F && f) { return scope_guard<F>(std::move(f)); }
   };
 
 } // namespace detail

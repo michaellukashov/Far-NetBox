@@ -394,7 +394,7 @@ void TStrings::SetTextStr(const UnicodeString & Text)
   };
   Clear();
   const wchar_t * P = Text.c_str();
-  if (P != nullptr)
+  // if (P != nullptr)
   {
     while (*P != 0x00)
     {

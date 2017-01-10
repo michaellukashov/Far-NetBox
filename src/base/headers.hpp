@@ -105,6 +105,7 @@ typedef WORD Word;
 #define HIDESBASE
 #endif
 
+#define NullToEmptyA(s) (s ? s : "")
 #define NullToEmpty(s) (s ? s : L"")
 
 template <class T>

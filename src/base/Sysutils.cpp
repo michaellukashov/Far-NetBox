@@ -113,13 +113,13 @@ Exception::Exception(const UnicodeString & Msg, int AHelpContext) :
   (void)AHelpContext;
 }
 
-Exception::Exception(Exception * E, int Ident) :
+Exception::Exception(Exception * E, intptr_t Ident) :
   std::runtime_error(E ? E->what() : "")
 {
   Message = FMTLOAD(Ident);
 }
 
-Exception::Exception(int Ident) :
+Exception::Exception(intptr_t Ident) :
   std::runtime_error("")
 {
   Message = FMTLOAD(Ident);
