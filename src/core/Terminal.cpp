@@ -3999,7 +3999,7 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
 }
 
 void TTerminal::DoCalculateDirectorySize(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, TCalculateSizeParams * Params)
+  const TRemoteFile * /*AFile*/, TCalculateSizeParams * Params)
 {
   TRetryOperationLoop RetryLoop(this);
   do
