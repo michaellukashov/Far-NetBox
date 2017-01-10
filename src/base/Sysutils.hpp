@@ -96,8 +96,8 @@ public:
   explicit Exception(Exception * E);
   explicit Exception(std::exception * E);
   explicit Exception(const UnicodeString & Msg, int AHelpContext);
-  explicit Exception(Exception * E, int Ident);
-  explicit Exception(int Ident);
+  explicit Exception(Exception * E, intptr_t Ident);
+  explicit Exception(intptr_t Ident);
   ~Exception() throw() {}
 
 public:
