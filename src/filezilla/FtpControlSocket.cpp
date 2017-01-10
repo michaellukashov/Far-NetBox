@@ -202,6 +202,7 @@ CFtpControlSocket::CFtpControlSocket(CMainThread *pMainThread, CFileZillaTools *
   m_serverCapabilities.Clear();
   m_ListFile = "";
 
+  m_ListFileSize = 0;
   m_isFileZilla = false;
   m_awaitsReply = false;
   m_skipReply = false;
