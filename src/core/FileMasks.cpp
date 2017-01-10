@@ -1285,7 +1285,7 @@ void TFileCustomCommand::ValidatePattern(const UnicodeString & Command,
 
   if (PatternCmd == L'&')
   {
-    Found[0] = static_cast<int>(Index);
+    Found[0] = Index;
   }
   else if ((PatternCmd != TEXT_TOKEN) && (PatternLen(Command, Index) == 1))
   {
