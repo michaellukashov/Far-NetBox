@@ -466,7 +466,7 @@ namespace detail
   {
   public:
     template<typename F>
-    scope_guard<F> operator << (F&& f) { return scope_guard<F>(std::move(f)); }
+    scope_guard<F> operator << (F && f) { return scope_guard<F>(std::move(f)); }
   };
 
 } // namespace detail
