@@ -458,6 +458,7 @@ namespace detail
     ~scope_guard() { m_f(); }
 
   private:
+    scope_guard & operator=(const scope_guard &);
     const F m_f;
   };
 
