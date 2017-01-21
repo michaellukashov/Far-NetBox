@@ -1018,7 +1018,7 @@ local void lm_init(deflate_state *s) {
     s->ins_h = 0;
 }
 
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
 /* ===========================================================================
  * Check that the match at match_start is indeed a match.
  */
@@ -1040,7 +1040,7 @@ void check_match(deflate_state *s, IPos start, IPos match, int length) {
 }
 #else
 #  define check_match(s, start, match, length)
-#endif /* DEBUG */
+#endif /* ZLIB_DEBUG */
 
 /* ===========================================================================
  * Fill the window when the lookahead becomes insufficient.

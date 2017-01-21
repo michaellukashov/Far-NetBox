@@ -258,7 +258,7 @@ typedef struct internal_state {
     unsigned int matches;         /* number of string matches in current block */
     unsigned int insert;          /* bytes at end of window left to insert */
 
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
     unsigned long compressed_len; /* total bit length of compressed file mod 2^32 */
     unsigned long bits_sent;      /* bit length of compressed data sent mod 2^32 */
 #endif
@@ -334,22 +334,25 @@ typedef enum {
         /* in trees.c */
 void ZLIB_INTERNAL _tr_init(deflate_state *s);
 int ZLIB_INTERNAL _tr_tally(deflate_state *s, unsigned dist, unsigned lc);
-void ZLIB_INTERNAL _tr_flush_block(deflate_state *s, char *buf, unsigned long stored_len, int last);
+void ZLIB_INTERNAL _tr_flush_block(deflate_state *s, char *buf,
+                        unsigned long stored_len, int last);
 void ZLIB_INTERNAL _tr_flush_bits(deflate_state *s);
 void ZLIB_INTERNAL _tr_align(deflate_state *s);
-void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf, unsigned long stored_len, int last);
+void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf,
+                        unsigned long stored_len, int last);
 void ZLIB_INTERNAL bi_windup(deflate_state *s);
 
-#define d_code(dist) ((dist) < 256 ? _dist_code[dist] : _dist_code[256+((dist)>>7)])
+#define d_code(dist) \
+   ((dist) < 256 ? _dist_code[dist] : _dist_code[256+((dist)>>7)])
 /* Mapping from a distance to a distance code. dist is the distance - 1 and
  * must not have side effects. _dist_code[256] and _dist_code[257] are never
  * used.
  */
 
-#ifndef DEBUG
+#ifndef ZLIB_DEBUG
 /* Inline versions of _tr_tally for speed: */
 
-# if defined(GEN_TREES_H)
+#if defined(GEN_TREES_H) || !defined(STDC)
     extern unsigned char ZLIB_INTERNAL _length_code[];
     extern unsigned char ZLIB_INTERNAL _dist_code[];
 # else
@@ -365,8 +368,8 @@ void ZLIB_INTERNAL bi_windup(deflate_state *s);
     flush = (s->last_lit == s->lit_bufsize-1); \
   }
 # define _tr_tally_dist(s, distance, length, flush) \
-  { unsigned char len = (length); \
-    uint16_t dist = (distance); \
+  { unsigned char len = (unsigned char)(length); \
+    uint16_t dist = (uint16_t)(distance); \
     s->d_buf[s->last_lit] = dist; \
     s->l_buf[s->last_lit++] = len; \
     dist--; \
@@ -403,11 +406,11 @@ void ZLIB_INTERNAL bi_windup(deflate_state *s);
 #   define UPDATE_HASH(s, h, i) (h = (((h) << s->hash_shift) ^ (s->window[i + (MIN_MATCH-1)])) & s->hash_mask)
 #endif
 
-#ifndef DEBUG
+#ifndef ZLIB_DEBUG
 #  define send_code(s, c, tree) send_bits(s, tree[c].Code, tree[c].Len)
 /* Send a code of the given tree. c and tree must not have side effects */
 
-#else /* DEBUG */
+#else /* ZLIB_DEBUG */
 #  define send_code(s, c, tree) \
     {  if (z_verbose > 2) { \
            fprintf(stderr, "\ncd %3d ", (c)); \
@@ -416,7 +419,7 @@ void ZLIB_INTERNAL bi_windup(deflate_state *s);
      }
 #endif
 
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
 /* ===========================================================================
  * Send a value on a given number of bits.
  * IN assertion: length <= 16 and value fits in length bits.
