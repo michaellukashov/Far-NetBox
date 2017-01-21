@@ -113,8 +113,6 @@ typedef struct z_stream_s {
     unsigned long         reserved;   /* reserved for future use */
 } z_stream;
 
-//typedef z_stream *z_streamp;  // Obsolete type, retained for compatability only
-
 /*
     gzip header information passed to and from zlib routines.  See RFC 1952
   for more details on the meanings of these fields.
