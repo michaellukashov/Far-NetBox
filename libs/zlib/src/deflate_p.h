@@ -77,20 +77,20 @@ local inline void bulk_insert_str(deflate_state *const s, Pos startpos, uInt cou
  * IN assertion: strstart is set to the end of the current match.
  */
 #define FLUSH_BLOCK_ONLY(s, last) { \
-    _tr_flush_block(s, (s->block_start >= 0L ? \
+   _tr_flush_block(s, (s->block_start >= 0L ? \
                    (char *)&s->window[(unsigned)s->block_start] : \
                    (char *)Z_NULL), \
-                   (ulg)((long)s->strstart - s->block_start), \
-                   (last)); \
-    s->block_start = s->strstart; \
-    flush_pending(s->strm); \
-    Tracev((stderr, "[FLUSH]")); \
+                (unsigned long)((long)s->strstart - s->block_start), \
+                (last)); \
+   s->block_start = s->strstart; \
+   flush_pending(s->strm); \
+   Tracev((stderr,"[FLUSH]")); \
 }
 
 /* Same but force premature exit if necessary. */
 #define FLUSH_BLOCK(s, last) { \
-    FLUSH_BLOCK_ONLY(s, last); \
-    if (s->strm->avail_out == 0) return (last) ? finish_started : need_more; \
+   FLUSH_BLOCK_ONLY(s, last); \
+   if (s->strm->avail_out == 0) return (last) ? finish_started : need_more; \
 }
 
 #endif

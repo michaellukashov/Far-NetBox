@@ -1,7 +1,5 @@
-#ifndef DEFLATE_H_
-#define DEFLATE_H_
 /* deflate.h -- internal compression state
- * Copyright (C) 1995-2012 Jean-loup Gailly
+ * Copyright (C) 1995-2016 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -11,6 +9,9 @@
  */
 
 /* @(#) $Id$ */
+
+#ifndef DEFLATE_H
+#define DEFLATE_H
 
 #include "zutil.h"
 
@@ -57,13 +58,16 @@
 #define END_BLOCK 256
 /* end of block literal code */
 
-#define INIT_STATE    42
-#define EXTRA_STATE   69
-#define NAME_STATE    73
-#define COMMENT_STATE 91
-#define HCRC_STATE   103
-#define BUSY_STATE   113
-#define FINISH_STATE 666
+#define INIT_STATE    42    /* zlib header -> BUSY_STATE */
+#ifdef GZIP
+#  define GZIP_STATE  57    /* gzip header -> BUSY_STATE | EXTRA_STATE */
+#endif
+#define EXTRA_STATE   69    /* gzip extra block -> NAME_STATE */
+#define NAME_STATE    73    /* gzip file name -> COMMENT_STATE */
+#define COMMENT_STATE 91    /* gzip comment -> HCRC_STATE */
+#define HCRC_STATE   103    /* gzip header CRC -> BUSY_STATE */
+#define BUSY_STATE   113    /* deflate -> FINISH_STATE */
+#define FINISH_STATE 666    /* stream complete */
 /* Stream status */
 
 
@@ -105,10 +109,10 @@ typedef struct internal_state {
     unsigned char *pending_buf;      /* output still pending */
     unsigned long pending_buf_size;  /* size of pending_buf */
     unsigned char *pending_out;      /* next pending byte to output to the stream */
-    unsigned int  pending;           /* nb of bytes in the pending buffer */
+    unsigned long pending;           /* nb of bytes in the pending buffer */
     int           wrap;              /* bit 0 true for zlib, bit 1 true for gzip */
     gz_headerp    gzhead;            /* gzip header information to write */
-    unsigned int  gzindex;           /* where in extra, name, or comment */
+    unsigned long gzindex;           /* where in extra, name, or comment */
     unsigned char method;            /* can only be DEFLATED */
     int           last_flush;        /* value of flush param for previous deflate call */
 
@@ -290,7 +294,7 @@ typedef enum {
 /* Output a byte on the stream.
  * IN assertion: there is enough room in pending_buf.
  */
-#define put_byte(s, c) {s->pending_buf[s->pending++] = (c);}
+#define put_byte(s, c) {s->pending_buf[s->pending++] = (unsigned char)(c);}
 
 /* ===========================================================================
  * Output a short LSB first on the stream.

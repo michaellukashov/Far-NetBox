@@ -240,7 +240,6 @@ int ZEXPORT inflatePrime(z_stream *strm, int bits, int value)
 {
     struct inflate_state *state;
 
-    state->strm = strm;
     if (inflateStateCheck(strm))
        return Z_STREAM_ERROR;
     state = (struct inflate_state *)strm->state;
@@ -412,7 +411,7 @@ local int updatewindow(z_stream *strm, const unsigned char *end, uint32_t copy)
 
     /* copy state->wsize or less output bytes into the circular window */
     if (copy >= state->wsize) {
-        memcpy(state->window, end - state->wsize, state->wsize);
+        zmemcpy(state->window, end - state->wsize, state->wsize);
         state->wnext = 0;
         state->whave = state->wsize;
     }
@@ -420,10 +419,10 @@ local int updatewindow(z_stream *strm, const unsigned char *end, uint32_t copy)
         dist = state->wsize - state->wnext;
         if (dist > copy)
             dist = copy;
-        memcpy(state->window + state->wnext, end - copy, dist);
+        zmemcpy(state->window + state->wnext, end - copy, dist);
         copy -= dist;
         if (copy) {
-            memcpy(state->window, end - copy, copy);
+            zmemcpy(state->window, end - copy, copy);
             state->wnext = copy;
             state->whave = state->wsize;
         }
