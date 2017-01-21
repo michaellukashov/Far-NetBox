@@ -144,7 +144,7 @@ uint32_t ZEXPORT adler32_z(uint32_t adler, const unsigned char *buf, uint32_t le
 }
 
 /* ========================================================================= */
-unsigned long ZEXPORT adler32(uint32_t adler, const unsigned char *buf, unsigned int len)
+uint32_t ZEXPORT adler32(uint32_t adler, const unsigned char *buf, uint32_t len)
 {
     return adler32_z(adler, buf, len);
 }
