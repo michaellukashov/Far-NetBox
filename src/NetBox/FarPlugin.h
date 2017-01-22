@@ -289,7 +289,7 @@ protected:
   bool UpdatePanel(bool ClearSelection = false, bool Another = false);
   void RedrawPanel(bool Another = false);
   void ClosePlugin();
-  UnicodeString GetMsg(int MsgId);
+  UnicodeString GetMsg(intptr_t MsgId) const;
   TCustomFarFileSystem * GetOppositeFileSystem();
   bool IsActiveFileSystem();
   bool IsLeft();

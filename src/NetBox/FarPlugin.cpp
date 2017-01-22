@@ -2055,7 +2055,7 @@ void TCustomFarFileSystem::ClosePlugin()
   FarControl(FCTL_CLOSEPLUGIN, 0, 0);
 }
 
-UnicodeString TCustomFarFileSystem::GetMsg(int MsgId)
+UnicodeString TCustomFarFileSystem::GetMsg(intptr_t MsgId) const
 {
   return FPlugin->GetMsg(MsgId);
 }
