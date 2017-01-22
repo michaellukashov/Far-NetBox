@@ -297,7 +297,7 @@ protected:
 
   virtual void Detach();
   void DialogResized();
-  LONG_PTR SendMessage(int Msg, LONG_PTR Param);
+  LONG_PTR SendDialogMessage(int Msg, LONG_PTR Param);
   LONG_PTR SendDialogMessage(int Msg, intptr_t Param1, LONG_PTR Param2);
   virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
   LONG_PTR DefaultItemProc(int Msg, LONG_PTR Param);
