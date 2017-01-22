@@ -5,7 +5,6 @@ set FAR_VERSION=Far2
 set PROJECT_ROOT=%~dp0..\..\..
 
 set PROJECT_BUILD_TYPE=Release
-set PROJECT_BUILD=Build
 
 if "%1" == "" goto x86
 if "%1" == "x64" goto x64
