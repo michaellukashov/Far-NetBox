@@ -1,5 +1,5 @@
 /* inffast.c -- fast decoding
- * Copyright (C) 1995-2008, 2010, 2013 Mark Adler
+ * Copyright (C) 1995-2017 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -47,7 +47,7 @@
       requires strm->avail_out >= 258 for each loop to avoid checking for
       output space.
  */
-void ZLIB_INTERNAL inflate_fast(z_stream *strm, unsigned long start)
+void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
 {
     /* start: inflate()'s starting value for strm->avail_out */
     struct inflate_state *state;

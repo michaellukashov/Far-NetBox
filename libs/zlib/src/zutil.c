@@ -20,7 +20,7 @@ const char * const z_errmsg[10] = {
 ""};
 
 const char zlibng_string[] =
-   " zlib-ng 1.9.9 forked from zlib 1.2.8 ";
+   " zlib-ng 1.9.9 forked from zlib 1.2.11 ";
 
 const char * ZEXPORT zlibVersion(void)
 {
@@ -77,6 +77,33 @@ unsigned long ZEXPORT zlibCompileFlags(void)
 #ifdef PKZIP_BUG_WORKAROUND
     flags += 1L << 20;
 #endif
+#ifdef FASTEST
+    flags += 1L << 21;
+#endif
+#if defined(STDC) || defined(Z_HAVE_STDARG_H)
+#  ifdef NO_vsnprintf
+    flags += 1L << 25;
+#    ifdef HAS_vsprintf_void
+    flags += 1L << 26;
+#    endif
+#  else
+#    ifdef HAS_vsnprintf_void
+    flags += 1L << 26;
+#    endif
+#  endif
+#else
+    flags += 1L << 24;
+#  ifdef NO_snprintf
+    flags += 1L << 25;
+#    ifdef HAS_sprintf_void
+    flags += 1L << 26;
+#    endif
+#  else
+#    ifdef HAS_snprintf_void
+    flags += 1L << 26;
+#    endif
+#  endif
+#endif
     return flags;
 }
 
@@ -105,7 +132,7 @@ const char * ZEXPORT zError(int err)
 
 #ifndef MY_ZCALLOC /* Any system without a special alloc function */
 
-void ZLIB_INTERNAL *zcalloc (void *opaque, unsigned items, unsigned size)
+void ZLIB_INTERNAL *zcalloc (void *opaque, uint32_t items, uint32_t size)
 {
     (void)opaque;
     return sizeof(unsigned int) > 2 ? (void *)malloc(items * size) :

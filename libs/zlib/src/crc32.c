@@ -108,7 +108,8 @@ static void write_table(FILE *, const uint32_t *);
   allow for word-at-a-time CRC calculation for both big-endian and little-
   endian machines, where a word is four bytes.
 */
-static void make_crc_table() {
+static void make_crc_table()
+{
     uint32_t c;
     int n, k;
     uint32_t poly;                       /* polynomial exclusive-or pattern */
@@ -122,7 +123,7 @@ static void make_crc_table() {
     if (first) {
         first = 0;
 
-        /* make exclusive-or pattern from polynomial (0xedb88320) */
+        /* make exclusive-or pattern from polynomial (0xedb88320UL) */
         poly = 0;
         for (n = 0; n < (int)(sizeof(p)/sizeof(unsigned char)); n++)
             poly |= (uint32_t)1 << (31 - p[n]);
@@ -148,10 +149,11 @@ static void make_crc_table() {
         }
 
         crc_table_empty = 0;
-    } else {      /* not first */
+    }
+    else {      /* not first */
         /* wait for the other guy to finish (not efficient, but rare) */
         while (crc_table_empty)
-            {}
+            ;
     }
 
 #ifdef MAKECRCH
@@ -177,7 +179,8 @@ static void make_crc_table() {
 }
 
 #ifdef MAKECRCH
-static void write_table(FILE *out, const uint32_t *table) {
+static void write_table(FILE *out, const uint32_t *table)
+{
     int n;
 
     for (n = 0; n < 256; n++)
@@ -197,7 +200,8 @@ static void write_table(FILE *out, const uint32_t *table) {
 /* =========================================================================
  * This function can be used by asm versions of crc32()
  */
-const uint32_t * ZEXPORT get_crc_table(void) {
+const uint32_t * ZEXPORT get_crc_table(void)
+{
 #ifdef DYNAMIC_CRC_TABLE
     if (crc_table_empty)
         make_crc_table();
@@ -379,7 +383,8 @@ static void gf2_matrix_square(uint32_t *square, uint32_t *mat)
 }
 
 /* ========================================================================= */
-static uint32_t crc32_combine_(uint32_t crc1, uint32_t crc2, z_off64_t len2) {
+static uint32_t crc32_combine_(uint32_t crc1, uint32_t crc2, z_off64_t len2)
+{
     int n;
     uint32_t row;
     uint32_t even[GF2_DIM];    /* even-power-of-two zeros operator */
@@ -390,7 +395,7 @@ static uint32_t crc32_combine_(uint32_t crc1, uint32_t crc2, z_off64_t len2) {
         return crc1;
 
     /* put operator for one zero bit in odd */
-    odd[0] = 0xedb88320;          /* CRC-32 polynomial */
+    odd[0] = 0xedb88320UL;          /* CRC-32 polynomial */
     row = 1;
     for (n = 1; n < GF2_DIM; n++) {
         odd[n] = row;

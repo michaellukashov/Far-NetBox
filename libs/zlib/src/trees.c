@@ -155,6 +155,67 @@ local void bi_flush       (deflate_state *s);
 local void gen_trees_header(void);
 #endif
 
+#if 0
+/* ===========================================================================
+ * Output a short LSB first on the stream.
+ * IN assertion: there is enough room in pendingBuf.
+ */
+#define put_short(s, w) { \
+    put_byte(s, (unsigned char)((w) & 0xff)); \
+    put_byte(s, (unsigned char)((uint16_t)(w) >> 8)); \
+}
+
+/* ===========================================================================
+ * Send a value on a given number of bits.
+ * IN assertion: length <= 16 and value fits in length bits.
+ */
+#ifdef ZLIB_DEBUG
+local void send_bits      OF((deflate_state *s, int value, int length));
+
+local void send_bits(s, value, length)
+    deflate_state *s;
+    int value;  /* value to send */
+    int length; /* number of bits */
+{
+    Tracevv((stderr," l %2d v %4x ", length, value));
+    Assert(length > 0 && length <= 15, "invalid length");
+    s->bits_sent += (unsigned long)length;
+
+    /* If not enough room in bi_buf, use (valid) bits from bi_buf and
+     * (16 - bi_valid) bits from value, leaving (width - (16-bi_valid))
+     * unused bits in value.
+     */
+    if (s->bi_valid > (int)Buf_size - length) {
+        s->bi_buf |= (uint16_t)value << s->bi_valid;
+        put_short(s, s->bi_buf);
+        s->bi_buf = (uint16_t)value >> (Buf_size - s->bi_valid);
+        s->bi_valid += length - Buf_size;
+    } else {
+        s->bi_buf |= (uint16_t)value << s->bi_valid;
+        s->bi_valid += length;
+    }
+}
+#else /* !ZLIB_DEBUG */
+
+#define send_bits(s, value, length) \
+{ int len = length;\
+  if (s->bi_valid > (int)Buf_size - len) {\
+    int val = (int)value;\
+    s->bi_buf |= (uint16_t)val << s->bi_valid;\
+    put_short(s, s->bi_buf);\
+    s->bi_buf = (uint16_t)val >> (Buf_size - s->bi_valid);\
+    s->bi_valid += len - Buf_size;\
+  } else {\
+    s->bi_buf |= (uint16_t)(value) << s->bi_valid;\
+    s->bi_valid += len;\
+  }\
+}
+#endif /* ZLIB_DEBUG */
+
+#endif
+
+/* the arguments must not have side effects */
+
 /* ===========================================================================
  * Initialize the various 'constant' tables.
  */
@@ -424,10 +485,10 @@ local void gen_bitlen(deflate_state *s, tree_desc *desc)
     const ct_data *stree    = desc->stat_desc->static_tree;
     const int *extra        = desc->stat_desc->extra_bits;
     int base                = desc->stat_desc->extra_base;
-    unsigned int max_length = desc->stat_desc->max_length;
+    uint32_t max_length     = desc->stat_desc->max_length;
     int h;              /* heap index */
     int n, m;           /* iterate over the tree elements */
-    unsigned int bits;  /* bit length */
+    uint32_t bits;  /* bit length */
     int xbits;          /* extra bits */
     uint16_t f;         /* frequency */
     int overflow = 0;   /* number of elements with bit length too large */
@@ -443,8 +504,10 @@ local void gen_bitlen(deflate_state *s, tree_desc *desc)
     for (h = s->heap_max+1; h < HEAP_SIZE; h++) {
         n = s->heap[h];
         bits = tree[tree[n].Dad].Len + 1;
-        if (bits > max_length)
-            bits = max_length, overflow++;
+        if (bits > max_length) {
+            bits = max_length;
+            overflow++;
+        }
         tree[n].Len = (uint16_t)bits;
         /* We overwrite tree[n].Dad which is no longer needed */
 
@@ -491,7 +554,7 @@ local void gen_bitlen(deflate_state *s, tree_desc *desc)
             m = s->heap[--h];
             if (m > max_code)
                 continue;
-            if (tree[m].Len != (unsigned)bits) {
+            if ((uint32_t)tree[m].Len != (unsigned)bits) {
                 Trace((stderr, "code %d bits %d->%u\n", m, tree[m].Len, bits));
                 s->opt_len += ((unsigned long)bits - tree[m].Len) * tree[m].Freq;
                 tree[m].Len = (uint16_t)bits;
@@ -515,7 +578,7 @@ local void gen_codes(ct_data *tree, int max_code, uint16_t *bl_count)
     /* max_code: largest code with non zero frequency */
     /* bl_count: number of codes at each bit length */
     uint16_t next_code[MAX_BITS+1];  /* next code value for each bit length */
-    uint16_t code = 0;               /* running code value */
+    uint32_t code = 0;               /* running code value */
     int bits;                        /* bit index */
     int n;                           /* code index */
 
@@ -655,8 +718,10 @@ local void scan_tree(deflate_state *s, ct_data *tree, int max_code)
     int max_count = 7;         /* max repeat count */
     int min_count = 4;         /* min repeat count */
 
-    if (nextlen == 0)
-         max_count = 138, min_count = 3;
+    if (nextlen == 0) {
+         max_count = 138;
+         min_count = 3;
+    }
 
     tree[max_code+1].Len = (uint16_t)0xffff; /* guard */
 
@@ -705,8 +770,10 @@ local void send_tree(deflate_state *s, ct_data *tree, int max_code)
     int min_count = 4;         /* min repeat count */
 
     /* tree[max_code+1].Len = -1; */  /* guard already set */
-    if (nextlen == 0)
-        max_count = 138, min_count = 3;
+    if (nextlen == 0) {
+        max_count = 138;
+        min_count = 3;
+    }
 
     for (n = 0; n <= max_code; n++) {
         curlen = nextlen;
@@ -961,7 +1028,7 @@ void ZLIB_INTERNAL _tr_flush_block(deflate_state *s, char *buf, unsigned long st
  * Save the match info and tally the frequency counts. Return true if
  * the current block must be flushed.
  */
-int ZLIB_INTERNAL _tr_tally(deflate_state *s, unsigned dist, unsigned lc)
+int ZLIB_INTERNAL _tr_tally(deflate_state *s, uint32_t dist, uint32_t lc)
 {
     /* dist: distance of matched string */
     /* lc: match length-MIN_MATCH or unmatched char (if dist==0) */
@@ -1050,7 +1117,8 @@ local void compress_block(deflate_state *s, const ct_data *ltree, const ct_data 
             } /* literal or match pair ? */
 
             /* Check that the overlay between pending_buf and d_buf+l_buf is ok: */
-            Assert((unsigned int)(s->pending) < s->lit_bufsize + 2*lx, "pendingBuf overflow");
+            Assert((unsigned int)(s->pending) < s->lit_bufsize + 2*lx,
+                   "pendingBuf overflow");
         } while (lx < s->last_lit);
     }
 
@@ -1103,7 +1171,7 @@ local int detect_data_type(deflate_state *s)
  * method would use a table)
  * IN assertion: 1 <= len <= 15
  */
-local unsigned bi_reverse(unsigned code, int len)
+local unsigned bi_reverse(uint32_t code, int len)
 {
     /* code: the value to invert */
     /* len: its bit length */

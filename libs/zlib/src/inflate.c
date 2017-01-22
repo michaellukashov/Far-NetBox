@@ -736,9 +736,9 @@ int ZEXPORT inflate(z_stream *strm, int flush)
         case EXLEN:
             if (state->flags & 0x0400) {
                 NEEDBITS(16);
-                state->length = (uint16_t)hold;
+                state->length = (uint32_t)hold;
                 if (state->head != Z_NULL)
-                    state->head->extra_len = (uint16_t)hold;
+                    state->head->extra_len = (uint32_t)hold;
                 if ((state->flags & 0x0200) && (state->wrap & 4))
                     CRC2(state->check, hold);
                 INITBITS();
@@ -1110,7 +1110,7 @@ int ZEXPORT inflate(z_stream *strm, int flush)
         case DIST:
             for (;;) {
                 here = state->distcode[BITS(state->distbits)];
-                if (here.bits <= bits)
+                if ((uint32_t)here.bits <= bits)
                     break;
                 PULLBYTE();
             }
@@ -1119,7 +1119,7 @@ int ZEXPORT inflate(z_stream *strm, int flush)
                 for (;;) {
                     here = state->distcode[last.val +
                             (BITS(last.bits + last.op) >> last.bits)];
-                    if ((unsigned)last.bits + (unsigned)here.bits <= bits)
+                    if ((uint32_t)last.bits + (uint32_t)here.bits <= bits)
                         break;
                     PULLBYTE();
                 }
