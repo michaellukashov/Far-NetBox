@@ -327,7 +327,7 @@ private:
 #define PANEL_MODES_COUNT 10
 class TFarPanelModes : public TObject
 {
-  friend class TCustomFarFileSystem;
+friend class TCustomFarFileSystem;
 public:
   TFarPanelModes();
   virtual ~TFarPanelModes();

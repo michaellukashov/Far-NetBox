@@ -1205,7 +1205,7 @@ bool TTerminalQueue::GetIsEmpty() const
 
 class TBackgroundTerminal : public TSecondaryTerminal
 {
-  friend class TTerminalItem;
+friend class TTerminalItem;
 public:
   explicit TBackgroundTerminal(TTerminal * MainTerminal);
   virtual ~TBackgroundTerminal() {}
