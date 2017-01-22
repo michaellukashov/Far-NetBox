@@ -2065,18 +2065,18 @@ TCustomFarFileSystem * TCustomFarFileSystem::GetOppositeFileSystem()
   return FPlugin->GetPanelFileSystem(true, this);
 }
 
-bool TCustomFarFileSystem::IsActiveFileSystem()
+bool TCustomFarFileSystem::IsActiveFileSystem() const
 {
   // Cannot use PanelInfo::Focus as it occasionally does not work from editor;
   return (this == FPlugin->GetPanelFileSystem());
 }
 
-bool TCustomFarFileSystem::IsLeft()
+bool TCustomFarFileSystem::IsLeft() const
 {
   return ((*GetPanelInfo(0))->GetBounds().Left <= 0);
 }
 
-bool TCustomFarFileSystem::IsRight()
+bool TCustomFarFileSystem::IsRight() const
 {
   return !IsLeft();
 }

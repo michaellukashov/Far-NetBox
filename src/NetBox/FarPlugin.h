@@ -291,9 +291,9 @@ protected:
   void ClosePlugin();
   UnicodeString GetMsg(intptr_t MsgId) const;
   TCustomFarFileSystem * GetOppositeFileSystem();
-  bool IsActiveFileSystem();
-  bool IsLeft();
-  bool IsRight();
+  bool IsActiveFileSystem() const;
+  bool IsLeft() const;
+  bool IsRight() const;
 
   virtual void HandleException(Exception * E, int OpMode = 0);
 
