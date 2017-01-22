@@ -743,10 +743,10 @@ add_library(openssl STATIC
   ${LIBS_ROOT}/openssl/crypto/ec/ec_oct.c
   ${LIBS_ROOT}/openssl/crypto/ec/ec2_oct.c
   ${LIBS_ROOT}/openssl/crypto/ec/ecp_oct.c
-  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistputil.c
-  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp521.c
-  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp256.c
-  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp224.c
+#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistputil.c
+#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp521.c
+#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp256.c
+#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp224.c
   ${LIBS_ROOT}/openssl/crypto/ec/eck_prn.c
   ${LIBS_ROOT}/openssl/crypto/ec/ec_pmeth.c
   ${LIBS_ROOT}/openssl/crypto/ec/ec_ameth.c
