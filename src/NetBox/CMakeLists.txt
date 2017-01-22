@@ -1,10 +1,12 @@
-project(NetBox)
-cmake_minimum_required(VERSION 2.8)
+message(STATUS "CMake version: ${CMAKE_VERSION}")
+cmake_minimum_required(VERSION 2.8.12)
 
-if(NOT DEFINED CMAKE_BUILD_TYPE)
+project(NetBox)
+
+if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug" FORCE)
 endif()
-message("Build type -- ${CMAKE_BUILD_TYPE}")
+message(STATUS "Build type -- ${CMAKE_BUILD_TYPE}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far2)
