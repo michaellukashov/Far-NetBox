@@ -309,9 +309,13 @@ string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 add_custom_command(TARGET NetBox
   POST_BUILD
   COMMAND if not exist "${NETBOX_PLUGIN_DIR}" ( ${CMAKE_COMMAND} -E make_directory "${NETBOX_PLUGIN_DIR}" )
-  COMMAND ${CMAKE_COMMAND} -E copy NetBox.dll ${NETBOX_PLUGIN_DIR}
+  COMMAND if exist NetBox.dll ${CMAKE_COMMAND} -E copy NetBox.dll ${NETBOX_PLUGIN_DIR}
   COMMAND if exist NetBox.pdb ( ${CMAKE_COMMAND} -E copy NetBox.pdb ${NETBOX_PLUGIN_DIR} )
   COMMAND if exist NetBox.map ( ${CMAKE_COMMAND} -E copy NetBox.map ${NETBOX_PLUGIN_DIR} )
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_CURRENT_SOURCE_DIR}/NetBoxRus.lng
+    ${CMAKE_CURRENT_SOURCE_DIR}/NetBoxEng.lng
+    ${NETBOX_PLUGIN_DIR}
   WORKING_DIRECTORY ${BUILD_DIR}
   VERBATIM
 )
