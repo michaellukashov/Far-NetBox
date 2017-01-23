@@ -133,10 +133,8 @@ nb_replace_compiler_option(CMAKE_CXX_FLAGS "/GR-?" "/GR-")
 nb_replace_compiler_option(CMAKE_CXX_FLAGS "/EH[-cs]+" "")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 
-set(NETBOX_DLL_LINK_FLAGS_RELEASE "")
-
 set(NETBOX_DLL_LINK_FLAGS
-  "/DEBUG
+  "
   /NODEFAULTLIB:MSVCURT.LIB
   /NODEFAULTLIB:MSVCURTD.LIB
   /NODEFAULTLIB:MSVCPRT.LIB
@@ -178,9 +176,13 @@ set(NETBOX_DLL_LINK_FLAGS
 "
 )
 
+set(NETBOX_DLL_LINK_FLAGS_RELEASE "/OPT:REF ${NETBOX_DLL_LINK_FLAGS}")
+set(NETBOX_DLL_LINK_FLAGS_DEBUG "/DEBUG ${NETBOX_DLL_LINK_FLAGS}")
+
 elseif(CMAKE_COMPILER_IS_MINGW)
 set(NETBOX_DLL_LINK_FLAGS "")
-set(NETBOX_DLL_LINK_FLAGS_RELEASE "")
+set(NETBOX_DLL_LINK_FLAGS_RELEASE "${NETBOX_DLL_LINK_FLAGS}")
+set(NETBOX_DLL_LINK_FLAGS_DEBUG "${NETBOX_DLL_LINK_FLAGS}")
 endif()
 
 #-------------------------------------------------------
@@ -386,6 +388,7 @@ set_target_properties(NetBox
   PROPERTIES
   LINK_FLAGS "${NETBOX_DLL_LINK_FLAGS}"
   LINK_FLAGS_RELEASE "${NETBOX_DLL_LINK_FLAGS_RELEASE}"
+  LINK_FLAGS_DEBUG "${NETBOX_DLL_LINK_FLAGS_DEBUG}"
 )
 
 #-------------------------------------------------------------------------------
