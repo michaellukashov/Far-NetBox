@@ -223,7 +223,75 @@ set(NETBOX_SOURCES
   UnityBuildCore.cpp
   UnityBuildMain.cpp
   UnityBuildFilezilla.cpp
-  ${SRC_ROOT}/resource/TextsFileZilla.rc
+
+  FarPlugin.h
+  WinSCPPlugin.h
+  FarDialog.h
+  resource.h
+  WinSCPFileSystem.h
+  FarInterface.h
+  FarConfiguration.h
+  XmlStorage.h
+  FarUtil.h
+  FarPluginStrings.h
+
+  ../base/nbglobals.h
+  ../base/Exceptions.h
+  ../base/MsgIDs.h
+  ../base/Global.h
+  ../base/Common.h
+  ../base/vcl.h
+  ../base/FileBuffer.h
+  ../base/FastDelegateBind.h
+  ../base/FastDelegate.h
+
+  ../core/WebDAVFileSystem.h
+  ../core/Queue.h
+  ../core/Terminal.h
+  ../core/FileSystems.h
+  ../core/SessionInfo.h
+  ../core/SessionData.h
+  ../core/RemoteFiles.h
+  ../core/Http.h
+  ../core/FtpFileSystem.h
+  ../core/FileMasks.h
+  ../core/Configuration.h
+  ../core/WinSCPSecurity.h
+  ../core/SecureShell.h
+  ../core/ScpFileSystem.h
+  ../core/NeonIntf.h
+  ../core/Interface.h
+  ../core/FileInfo.h
+  ../core/CopyParam.h
+  ../core/SftpFileSystem.h
+  ../core/PuttyIntf.h
+  ../core/Option.h
+  ../core/HierarchicalStorage.h
+  ../core/Cryptography.h
+  ../core/PuttyTools.h
+  ../core/NamedObjs.h
+  ../core/FileOperationProgress.h
+  ../core/Bookmarks.h
+  ../core/CoreMain.h
+
+  ../windows/WinInterface.h
+  ../windows/GUITools.h
+  ../windows/GUIConfiguration.h
+  ../windows/Tools.h
+  ../windows/ProgParams.h
+  ../windows/SynchronizeController.h
+
+  ../resource/TextsCore.h
+  ../resource/rtlconsts.h
+  ../resource/HelpCore.h
+  ../resource/TextsFileZilla.h
+  ../resource/TestTexts.h
+
+  ../PluginSDK/Far2/plugin.hpp
+  ../PluginSDK/Far2/farcolor.hpp
+  ../PluginSDK/Far2/farkeys.hpp
+
+  ../resource/TextsFileZilla.rc
   NetBox.rc
   NetBox.def
 )
@@ -1211,9 +1279,9 @@ add_library(expat STATIC
 #  ${LIBS_ROOT}/expat/lib/xmltok_ns.c
 )
 
-#target_compile_options(expat
-#  PRIVATE ${NETBOX_C_FLAGS}
-#)
+target_compile_options(expat
+  PRIVATE
+)
 
 #-------------------------------------------------------------------------------
 
