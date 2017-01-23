@@ -1,19 +1,32 @@
-project(NetBox)
-cmake_minimum_required(VERSION 2.8)
+message(STATUS "CMake version: ${CMAKE_VERSION}")
+cmake_minimum_required(VERSION 2.8.12)
 
-if(NOT DEFINED CMAKE_BUILD_TYPE)
+option(OPT_COMPILE_TESTS "Build tests" OFF)
+
+project(NetBox)
+
+if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug" FORCE)
 endif()
-message("Build type -- ${CMAKE_BUILD_TYPE}")
+message(STATUS "Build type -- ${CMAKE_BUILD_TYPE}")
+message(STATUS "CMAKE_CL_64 -- ${CMAKE_CL_64}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far3)
 endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(x64 1)
   set(PROJECT_PLATFORM "x64")
 else()
+  set(x64 0)
   set(PROJECT_PLATFORM "x86")
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(BUILD_DEBUG 1)
+else()
+  set(BUILD_DEBUG 0)
 endif()
 
 if(NOT DEFINED PROJECT_ROOT OR PROJECT_ROOT STREQUAL "")
@@ -29,8 +42,8 @@ endif()
 
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 include(CMakeDetermineCXXCompiler)
-message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
-message("MSVC_VERSION: ${MSVC_VERSION}")
+message(STATUS "System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
+message(STATUS "MSVC_VERSION: ${MSVC_VERSION}")
 
 set(LIBS_ROOT ${PROJECT_ROOT}/libs)
 set(SRC_ROOT ${PROJECT_ROOT}/src)
@@ -40,61 +53,90 @@ set(SRC_ROOT ${PROJECT_ROOT}/src)
 set(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB") #" -DUSE_GETADDRINFO")
 set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
 set(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
-set(NETBOX_C_FLAGS "-D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501 -D_SCL_SECURE_NO_WARNINGS -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} -DMPEXT -DWINSCP -DSTRICT -DNOCRYPT ${DLMALLOC_DEFS}")
-#-D_WINDLL -D_USRDLL
-set(NETBOX_C_FLAGS "-DCOM_NO_WINDOWS_H ${NETBOX_C_FLAGS}")
+set(NETBOX_DEFS "-DMPEXT -DWINSCP -DSTRICT -DNOCRYPT")
 if (MSVC_VERSION GREATER 1899)
-set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} /Zc:threadSafeInit- /bigobj")
+set(NETBOX_DEFS "${NETBOX_DEFS} /Zc:threadSafeInit- /bigobj")
 endif()
 
-if(PROJECT_PLATFORM STREQUAL "x64")
-set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} -DWIN64")
+set(NETBOX_C_FLAGS "-D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501 -D_SCL_SECURE_NO_WARNINGS -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} ${DLMALLOC_DEFS}")
+#-D_WINDLL -D_USRDLL
+
+if(x64)
+set(NETBOX_PLATFORM_FLAGS "${NETBOX_PLATFORM_FLAGS} -DWIN64")
 else()
 if (MSVC_VERSION GREATER 1699)
-set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} /arch:IA32")
+set(NETBOX_PLATFORM_FLAGS "${NETBOX_PLATFORM_FLAGS} /arch:IA32")
 endif()
+endif()
+
+if(MSVC)
+set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} /TC")
+elseif(CMAKE_COMPILER_IS_MINGW)
+set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} -x c --std=c99")
 endif()
 
 set(NETBOX_FLAGS_RELEASE "-U_DEBUG -DNDEBUG")
 set(NETBOX_FLAGS_DEBUG "-D_DEBUG -DDEBUG")
 
+set(NETBOX_UNICODE_FLAGS -D_UNICODE -DUNICODE)
+set(NETBOX_UNICODE_FLAGS_STRING "-D_UNICODE -DUNICODE")
+
 if(MSVC)
 
-set(NETBOX_CFLAGS "")
 set(NETBOX_C_WARNING_FLAGS "")
 set(NETBOX_CXX_WARNING_FLAGS "")
-set(NETBOX_CXX_FLAGS "${NETBOX_C_FLAGS} /GR- /EHsc /MP2 /Zi -D_UNICODE -DUNICODE ")
+set(NETBOX_CXX_FLAGS "/MP2 /Zi")
 set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} /Gm- /MT -Ox -Ob1 -Oi -Os -GF -GS- -Gy /fp:fast")
 set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} /Gm- /Od /MTd /GS /RTC1")
 
 elseif(CMAKE_COMPILER_IS_MINGW)
 
-set(NETBOX_CFLAGS "${NETBOX_CFLAGS} ${NETBOX_C_FLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
 set(NETBOX_C_WARNING_FLAGS "")
 set(NETBOX_CXX_WARNING_FLAGS "-Wno-attributes -Wno-write-strings -Wno-unknown-pragmas -Wno-old-style-cast -Wno-effc++ -Wno-unknown-pragmas -Wno-unused-value")
-set(NETBOX_CXX_FLAGS "${NETBOX_CFLAGS} -D_UNICODE -DUNICODE -std=c++11 -Woverloaded-virtual -Wnon-virtual-dtor")
+set(NETBOX_CXX_FLAGS "${NETBOX_CXX_FLAGS} -std=c++11 -Woverloaded-virtual -Wnon-virtual-dtor")
+set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
 #-Weffc++
-set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} ${NETBOX_CFLAGS}")
-set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} ${NETBOX_CFLAGS}")
+set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
+set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
 
 endif()
 
-set(CMAKE_C_FLAGS "${NETBOX_C_FLAGS} ${NETBOX_C_WARNING_FLAGS}")
-set(CMAKE_CXX_FLAGS "${NETBOX_CXX_FLAGS} ${NETBOX_CXX_WARNING_FLAGS}")
+set(NETBOX_C_FLAGS "${NETBOX_DEFS} ${NETBOX_C_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_C_WARNING_FLAGS}")
+set(NETBOX_CXX_FLAGS "${NETBOX_DEFS} ${NETBOX_CXX_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_CXX_WARNING_FLAGS} ${NETBOX_UNICODE_FLAGS_STRING}")
 
-set(CMAKE_CXX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
-set(CMAKE_C_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
-set(CMAKE_CXX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
-set(CMAKE_C_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
+set(CMAKE_CXX_FLAGS_RELEASE "${NETBOX_CXX_FLAGS} ${NETBOX_FLAGS_RELEASE}")
+set(CMAKE_C_FLAGS_RELEASE "${NETBOX_C_FLAGS} ${NETBOX_FLAGS_RELEASE}")
+set(CMAKE_CXX_FLAGS_DEBUG "${NETBOX_CXX_FLAGS} ${NETBOX_FLAGS_DEBUG}")
+set(CMAKE_C_FLAGS_DEBUG "${NETBOX_C_FLAGS} ${NETBOX_FLAGS_DEBUG}")
+
+function(nb_replace_compiler_option var old new)
+  # Replaces a compiler option or switch `old' in `var' by `new'.
+  # If `old' is not in `var', appends `new' to `var'.
+  # Example: nb_replace_compiler_option(CMAKE_CXX_FLAGS_RELEASE "-O3" "-O2")
+  # If the option already is on the variable, don't add it:
+  if( "${${var}}" MATCHES "(^| )${new}($| )" )
+    set(n "")
+  else()
+    set(n "${new}")
+  endif()
+  if( "${${var}}" MATCHES "(^| )${old}($| )" )
+    string( REGEX REPLACE "(^| )${old}($| )" " ${n} " ${var} "${${var}}" )
+  else()
+    set( ${var} "${${var}} ${n}" )
+  endif()
+  set( ${var} "${${var}}" PARENT_SCOPE )
+endfunction(nb_replace_compiler_option)
 
 if(MSVC)
 
-set(LINK_FLAGS_RELEASE
-  ""
-)
+nb_replace_compiler_option(CMAKE_CXX_FLAGS "/GR-?" "/GR-")
+#nb_replace_compiler_option(CMAKE_CXX_FLAGS "/MD[d]?" "")
+nb_replace_compiler_option(CMAKE_CXX_FLAGS "/EH[-cs]+" "")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+#string(REPLACE "/MD" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-set(CMAKE_LINK_FLAGS
-  "/DEBUG
+set(NETBOX_DLL_LINK_FLAGS
+  "
   /NODEFAULTLIB:MSVCURT.LIB
   /NODEFAULTLIB:MSVCURTD.LIB
   /NODEFAULTLIB:MSVCPRT.LIB
@@ -136,9 +178,13 @@ set(CMAKE_LINK_FLAGS
 "
 )
 
+set(NETBOX_DLL_LINK_FLAGS_RELEASE "/OPT:REF ${NETBOX_DLL_LINK_FLAGS}")
+set(NETBOX_DLL_LINK_FLAGS_DEBUG "/DEBUG ${NETBOX_DLL_LINK_FLAGS}")
+
 elseif(CMAKE_COMPILER_IS_MINGW)
-set(CMAKE_LINK_FLAGS "")
-set(LINK_FLAGS_RELEASE "")
+set(NETBOX_DLL_LINK_FLAGS "")
+set(NETBOX_DLL_LINK_FLAGS_RELEASE "${NETBOX_DLL_LINK_FLAGS}")
+set(NETBOX_DLL_LINK_FLAGS_DEBUG "${NETBOX_DLL_LINK_FLAGS}")
 endif()
 
 #-------------------------------------------------------
@@ -182,7 +228,75 @@ set(NETBOX_SOURCES
   UnityBuildCore.cpp
   UnityBuildMain.cpp
   UnityBuildFilezilla.cpp
-  ${SRC_ROOT}/resource/TextsFileZilla.rc
+
+  FarPlugin.h
+  WinSCPPlugin.h
+  FarDialog.h
+  resource.h
+  WinSCPFileSystem.h
+  FarInterface.h
+  FarConfiguration.h
+  XmlStorage.h
+  FarUtil.h
+  FarPluginStrings.h
+
+  ../base/nbglobals.h
+  ../base/Exceptions.h
+  ../base/MsgIDs.h
+  ../base/Global.h
+  ../base/Common.h
+  ../base/vcl.h
+  ../base/FileBuffer.h
+  ../base/FastDelegateBind.h
+  ../base/FastDelegate.h
+
+  ../core/WebDAVFileSystem.h
+  ../core/Queue.h
+  ../core/Terminal.h
+  ../core/FileSystems.h
+  ../core/SessionInfo.h
+  ../core/SessionData.h
+  ../core/RemoteFiles.h
+  ../core/Http.h
+  ../core/FtpFileSystem.h
+  ../core/FileMasks.h
+  ../core/Configuration.h
+  ../core/WinSCPSecurity.h
+  ../core/SecureShell.h
+  ../core/ScpFileSystem.h
+  ../core/NeonIntf.h
+  ../core/Interface.h
+  ../core/FileInfo.h
+  ../core/CopyParam.h
+  ../core/SftpFileSystem.h
+  ../core/PuttyIntf.h
+  ../core/Option.h
+  ../core/HierarchicalStorage.h
+  ../core/Cryptography.h
+  ../core/PuttyTools.h
+  ../core/NamedObjs.h
+  ../core/FileOperationProgress.h
+  ../core/Bookmarks.h
+  ../core/CoreMain.h
+
+  ../windows/WinInterface.h
+  ../windows/GUITools.h
+  ../windows/GUIConfiguration.h
+  ../windows/Tools.h
+  ../windows/ProgParams.h
+  ../windows/SynchronizeController.h
+
+  ../resource/TextsCore.h
+  ../resource/rtlconsts.h
+  ../resource/HelpCore.h
+  ../resource/TextsFileZilla.h
+  ../resource/TestTexts.h
+
+  ../PluginSDK/Far3/plugin.hpp
+  ../PluginSDK/Far3/farcolor.hpp
+  ../PluginSDK/Far3/PluginSettings.hpp
+
+  ../resource/TextsFileZilla.rc
   NetBox.rc
   NetBox.def
 )
@@ -195,7 +309,7 @@ add_custom_target(NETBOX_SOURCES SOURCES
 )
 
 if(MSVC)
-if(PROJECT_PLATFORM STREQUAL "x86")
+if(NOT x64)
 
 find_program(MASM_EXECUTABLE ml)
 # message("masm: ${MASM_EXECUTABLE}")
@@ -217,7 +331,7 @@ set(NETBOX_SOURCES ${NETBOX_SOURCES}
   ${ASM_OBJECTS}
 )
 
-endif(PROJECT_PLATFORM STREQUAL "x86")
+endif(NOT x64)
 endif(MSVC)
 
 #-------------------------------------------------------------------------------
@@ -247,7 +361,7 @@ set(NETBOX_LIBRARIES
 )
 
 if(MSVC)
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(BUILD_DEBUG)
 set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
   libcmtd.lib
   libcpmtd.lib
@@ -257,27 +371,28 @@ set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
   libcmt.lib
   libcpmt.lib
 )
-endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+endif(BUILD_DEBUG)
 endif(MSVC)
 
 add_library(NetBox SHARED
   ${NETBOX_SOURCES}
 )
 
-if(MSVC)
+set(NETBOX_DLL_CXX_FLAGS )
+if(CMAKE_COMPILER_IS_MINGW)
+  set(NETBOX_DLL_CXX_FLAGS -fpermissive)
+endif()
+
+target_compile_options(NetBox
+  PRIVATE ${NETBOX_DLL_CXX_FLAGS} -D_WINSOCK_DEPRECATED_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS
+)
+
 set_target_properties(NetBox
   PROPERTIES
-  COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
+  LINK_FLAGS "${NETBOX_DLL_LINK_FLAGS}"
+  LINK_FLAGS_RELEASE "${NETBOX_DLL_LINK_FLAGS_RELEASE}"
+  LINK_FLAGS_DEBUG "${NETBOX_DLL_LINK_FLAGS_DEBUG}"
 )
-elseif(CMAKE_COMPILER_IS_MINGW)
-set_target_properties(NetBox
-  PROPERTIES
-  COMPILE_FLAGS "-fpermissive ${CMAKE_CXX_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-)
-endif(MSVC)
 
 #-------------------------------------------------------------------------------
 
@@ -305,9 +420,13 @@ string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 add_custom_command(TARGET NetBox
   POST_BUILD
   COMMAND if not exist "${NETBOX_PLUGIN_DIR}" ( ${CMAKE_COMMAND} -E make_directory "${NETBOX_PLUGIN_DIR}" )
-  COMMAND ${CMAKE_COMMAND} -E copy NetBox.dll ${NETBOX_PLUGIN_DIR}
+  COMMAND if exist NetBox.dll ${CMAKE_COMMAND} -E copy NetBox.dll ${NETBOX_PLUGIN_DIR}
   COMMAND if exist NetBox.pdb ( ${CMAKE_COMMAND} -E copy NetBox.pdb ${NETBOX_PLUGIN_DIR} )
   COMMAND if exist NetBox.map ( ${CMAKE_COMMAND} -E copy NetBox.map ${NETBOX_PLUGIN_DIR} )
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_CURRENT_SOURCE_DIR}/NetBoxRus.lng
+    ${CMAKE_CURRENT_SOURCE_DIR}/NetBoxEng.lng
+    ${NETBOX_PLUGIN_DIR}
   WORKING_DIRECTORY ${BUILD_DIR}
   VERBATIM
 )
@@ -744,10 +863,10 @@ add_library(openssl STATIC
   ${LIBS_ROOT}/openssl/crypto/ec/ec_oct.c
   ${LIBS_ROOT}/openssl/crypto/ec/ec2_oct.c
   ${LIBS_ROOT}/openssl/crypto/ec/ecp_oct.c
-  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistputil.c
-  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp521.c
-  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp256.c
-  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp224.c
+#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistputil.c
+#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp521.c
+#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp256.c
+#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp224.c
   ${LIBS_ROOT}/openssl/crypto/ec/eck_prn.c
   ${LIBS_ROOT}/openssl/crypto/ec/ec_pmeth.c
   ${LIBS_ROOT}/openssl/crypto/ec/ec_ameth.c
@@ -930,23 +1049,23 @@ add_library(openssl STATIC
   ${LIBS_ROOT}/openssl/crypto/cryptlib.c
 )
 
-if(MSVC)
-set(OPENSSL_COMPILE_FLAGS "/TC")
-elseif(CMAKE_COMPILER_IS_MINGW)
-set(OPENSSL_COMPILE_FLAGS "")
-endif()
-if(PROJECT_PLATFORM STREQUAL "x64")
-set(OPENSSL_COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS} -DOPENSSL_SYSNAME_WIN32 -DOPENSSL_SYSNAME_WIN64")
+if(x64)
+set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
+  -DOPENSSL_SYSNAME_WIN32 -DOPENSSL_SYSNAME_WIN64
+  -DMK1MF_PLATFORM_VC_WIN64A)
 else()
-set(OPENSSL_COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS} -DOPENSSL_SYSNAME_WIN32")
+set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
+  -DOPENSSL_SYSNAME_WIN32
+  -DMK1MF_PLATFORM_VC_WIN32)
 endif()
-set(OPENSSL_COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS} -DMK1MF_BUILD -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DSECURITY_WIN32 -DOPENSSL_NO_CAPIENG -DNO_CHMOD -DOPENSSL_NO_DGRAM -DOPENSSL_NO_RIJNDAEL -DDSO_WIN32")
+set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
+  -DMK1MF_BUILD -DWIN32_LEAN_AND_MEAN
+  -DVC_EXTRALEAN -DSECURITY_WIN32 -DOPENSSL_NO_CAPIENG -DNO_CHMOD -DOPENSSL_NO_DGRAM
+  -DOPENSSL_NO_RIJNDAEL -DDSO_WIN32
+  -D_CRT_SECURE_NO_WARNINGS) #-DOPENSSL_NO_OBJECT
 
-set_target_properties(openssl
-  PROPERTIES
-  COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
+target_compile_options(openssl
+  PRIVATE ${OPENSSL_COMPILE_FLAGS}
 )
 
 #-------------------------------------------------------------------------------
@@ -961,23 +1080,21 @@ add_library(atlmfc STATIC
 )
 
 #-------------------------------------------------------------------------------
-set(ATLMFC_COMPILE_FLAGS "-D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_ -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE -D_AFX_NO_OLE_SUPPORT -D_AFX_NO_SOCKET_SUPPORT")
+set(ATLMFC_COMPILE_FLAGS
+  -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
+  -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
+  -D_AFX_NO_OLE_SUPPORT -D_AFX_NO_SOCKET_SUPPORT -DCOM_NO_WINDOWS_H
+)
 
-if(MSVC)
-set_target_properties(atlmfc
-  PROPERTIES
-  COMPILE_FLAGS "${ATLMFC_COMPILE_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
-  LINK_FLAGS_DEBUG "${LINK_FLAGS_DEBUG}"
-)
-elseif(CMAKE_COMPILER_IS_MINGW)
-set_target_properties(atlmfc
-  PROPERTIES
-  COMPILE_FLAGS "-Wno-int-to-pointer-cast -Wno-pragmas -fpermissive ${ATLMFC_COMPILE_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-)
+if(CMAKE_COMPILER_IS_MINGW)
+  set(ATLMFC_COMPILE_FLAGS ${ATLMFC_COMPILE_FLAGS}
+    -Wno-int-to-pointer-cast -Wno-pragmas -fpermissive
+  )
 endif()
+
+target_compile_options(atlmfc
+  PRIVATE ${ATLMFC_COMPILE_FLAGS}
+)
 
 #-------------------------------------------------------------------------------
 
@@ -1036,21 +1153,11 @@ add_library(putty STATIC
 #  ${LIBS_ROOT}/Putty/ldisc.c
 )
 
-set(PUTTY_COMPILE_FLAGS "-D_CRTIMP= -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS")
+set(PUTTY_COMPILE_FLAGS -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS)
 
-if(MSVC)
-set_target_properties(putty
-  PROPERTIES
-  COMPILE_FLAGS "${PUTTY_COMPILE_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
+target_compile_options(putty
+  PRIVATE ${PUTTY_COMPILE_FLAGS}
 )
-elseif(CMAKE_COMPILER_IS_MINGW)
-set_target_properties(putty
-  PROPERTIES
-  COMPILE_FLAGS "-x c --std=c99 ${PUTTY_COMPILE_FLAGS}"
-)
-endif()
 
 #-------------------------------------------------------------------------------
 
@@ -1088,22 +1195,11 @@ add_library(neon STATIC
   ${LIBS_ROOT}/neon/src/ne_openssl.c
 )
 
-set(NEON_COMPILE_FLAGS "-D_CRTIMP= -D_LIB -DNOCRYPT ${LIBNEON_DEFS} ${LIBEXPAT_DEFS}")
+set(NEON_COMPILE_FLAGS )
 
-if(MSVC)
-set_target_properties(neon
-  PROPERTIES
-  COMPILE_FLAGS "/TC ${NEON_COMPILE_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
+target_compile_options(neon
+  PRIVATE ${NEON_COMPILE_FLAGS} ${NETBOX_UNICODE_FLAGS}
 )
-elseif(CMAKE_COMPILER_IS_MINGW)
-set_target_properties(neon
-  PROPERTIES
-  COMPILE_FLAGS "-x c --std=c99 ${NEON_COMPILE_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-)
-endif()
 
 #-------------------------------------------------------------------------------
 
@@ -1183,11 +1279,8 @@ add_library(apr STATIC
   ${LIBS_ROOT}/apr/user/win32/userinfo.c
 )
 
-set_target_properties(apr
-  PROPERTIES
-  COMPILE_FLAGS "-D_CRTIMP= -D_LIB -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES -U_UNICODE -UUNICODE"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
+target_compile_options(apr
+  PRIVATE -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES -U_UNICODE -UUNICODE
 )
 
 #-------------------------------------------------------------------------------
@@ -1200,22 +1293,9 @@ add_library(expat STATIC
 #  ${LIBS_ROOT}/expat/lib/xmltok_ns.c
 )
 
-set(EXPAT_COMPILE_FLAGS "-D_CRTIMP= -D_LIB ${LIBEXPAT_DEFS}")
-
-if(MSVC)
-set_target_properties(expat
-  PROPERTIES
-  COMPILE_FLAGS "/TC ${EXPAT_COMPILE_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
+target_compile_options(expat
+  PRIVATE
 )
-elseif(CMAKE_COMPILER_IS_MINGW)
-set_target_properties(expat
-  PROPERTIES
-  COMPILE_FLAGS "-x c --std=c99 ${EXPAT_COMPILE_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-)
-endif()
 
 #-------------------------------------------------------------------------------
 
@@ -1233,11 +1313,18 @@ set(ZLIB_SOURCES
   ${LIBS_ROOT}/zlib/src/deflate_slow.c
   ${LIBS_ROOT}/zlib/src/deflate_medium.c
   ${LIBS_ROOT}/zlib/src/deflate_fast.c
+)
+
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+
+set(ZLIB_SOURCES ${ZLIB_SOURCES}
   ${LIBS_ROOT}/zlib/src/arch/x86/crc_folding.c
   ${LIBS_ROOT}/zlib/src/arch/x86/fill_window_sse.c
   ${LIBS_ROOT}/zlib/src/arch/x86/insert_string_sse.c
   ${LIBS_ROOT}/zlib/src/arch/x86/x86.c
 )
+
+endif()
 
 if(MSVC)
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
@@ -1249,11 +1336,8 @@ add_library(zlib STATIC
   ${ZLIB_SOURCES}
 )
 
-set_target_properties(zlib
-  PROPERTIES
-  COMPILE_FLAGS "-D_CRTIMP= -D_LIB"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
+target_compile_options(zlib
+  PRIVATE ${NETBOX_UNICODE_FLAGS}
 )
 
 #-------------------------------------------------------------------------------
@@ -1263,11 +1347,8 @@ add_library(dlmalloc STATIC
   ${LIBS_ROOT}/dlmalloc/malloc-2.8.6.h
 )
 
-set_target_properties(dlmalloc
-  PROPERTIES
-  COMPILE_FLAGS "-D_CRTIMP= -D_LIB ${DLMALLOC_DEFS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
+target_compile_options(dlmalloc
+  PRIVATE ${NETBOX_UNICODE_FLAGS}
 )
 
 #-------------------------------------------------------------------------------
@@ -1318,17 +1399,9 @@ add_library(rdestl STATIC
   ${LIBS_ROOT}/rdestl/iterator.h
 )
 
-set_target_properties(rdestl
-  PROPERTIES
-  COMPILE_FLAGS ""
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
-)
-
 #-------------------------------------------------------------------------------
 
-if(DEFINED OPT_COMPILE_TESTS)
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(OPT_COMPILE_TESTS)
 
 set(TESTS_ROOT ${SRC_ROOT}/tests)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_DISABLE_ASSERTS")
@@ -1337,7 +1410,7 @@ include_directories(
   ${LIBS_ROOT}/boost
 )
 
-if(PROJECT_PLATFORM STREQUAL "x64")
+if(x64)
 set(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage/x64)
 else()
 set(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage)
@@ -1366,7 +1439,7 @@ add_executable(testnetbox_01 ${TESTNETBOX_01_SOURCES})
 
 set_target_properties(testnetbox_01
   PROPERTIES
-  COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
+  COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
 
@@ -1397,7 +1470,7 @@ add_executable(testnetbox_02 ${TESTNETBOX_02_SOURCES})
 
 set_target_properties(testnetbox_02
   PROPERTIES
-  COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
+  COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
 )
 
@@ -1431,7 +1504,7 @@ add_executable(testnetbox_03 ${TESTNETBOX_03_SOURCES})
 
 set_target_properties(testnetbox_03
   PROPERTIES
-  COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
+  COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
 
@@ -1464,7 +1537,7 @@ add_executable(testnetbox_04 ${TESTNETBOX_04_SOURCES})
 
 set_target_properties(testnetbox_04
   PROPERTIES
-  COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
+  COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
 )
 
@@ -1475,5 +1548,4 @@ add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
 target_link_libraries(testnetbox_04 ${NETBOX_LIBRARIES}
 )
 
-endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-endif(DEFINED OPT_COMPILE_TESTS)
+endif(OPT_COMPILE_TESTS)

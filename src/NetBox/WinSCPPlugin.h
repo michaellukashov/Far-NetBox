@@ -10,7 +10,7 @@ class TCopyParamType;
 
 class TWinSCPPlugin : public TCustomFarPlugin
 {
-friend TWinSCPFileSystem;
+friend class TWinSCPFileSystem;
 NB_DECLARE_CLASS(TWinSCPPlugin)
 public:
   explicit TWinSCPPlugin(HINSTANCE HInst);

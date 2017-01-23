@@ -10,6 +10,6 @@
    subject to change. Applications should only use zlib.h.
  */
 
-void ZLIB_INTERNAL inflate_fast(z_stream *strm, unsigned long start);
+void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start);
 
 #endif /* INFFAST_H_ */

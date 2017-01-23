@@ -299,11 +299,11 @@ protected:
   bool UpdatePanel(bool ClearSelection = false, bool Another = false);
   void RedrawPanel(bool Another = false);
   void ClosePanel();
-  UnicodeString GetMsg(int MsgId);
+  UnicodeString GetMsg(intptr_t MsgId) const;
   TCustomFarFileSystem * GetOppositeFileSystem();
-  bool IsActiveFileSystem();
-  bool IsLeft();
-  bool IsRight();
+  bool IsActiveFileSystem() const;
+  bool IsLeft() const;
+  bool IsRight() const;
 
   virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0);
 
@@ -337,7 +337,7 @@ private:
 #define PANEL_MODES_COUNT 10
 class TFarPanelModes : public TObject
 {
-  friend class TCustomFarFileSystem;
+friend class TCustomFarFileSystem;
 public:
   TFarPanelModes();
   virtual ~TFarPanelModes();

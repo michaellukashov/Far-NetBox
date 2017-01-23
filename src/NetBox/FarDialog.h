@@ -30,10 +30,10 @@ DEFINE_CALLBACK_TYPE2(TFarProcessGroupEvent, void,
 
 class TFarDialog : public TObject
 {
-friend TFarDialogItem;
-friend TFarDialogContainer;
-friend TFarButton;
-friend TFarList;
+friend class TFarDialogItem;
+friend class TFarDialogContainer;
+friend class TFarButton;
+friend class TFarList;
 friend class TFarListBox;
 NB_DISABLE_COPY(TFarDialog)
 NB_DECLARE_CLASS(TFarDialog)
@@ -152,8 +152,8 @@ private:
 
 class TFarDialogContainer : public TObject
 {
-friend TFarDialog;
-friend TFarDialogItem;
+friend class TFarDialog;
+friend class TFarDialogItem;
 NB_DISABLE_COPY(TFarDialogContainer)
 NB_DECLARE_CLASS(TFarDialogContainer)
 public:
@@ -190,10 +190,10 @@ private:
 
 class TFarDialogItem : public TObject
 {
-friend TFarDialog;
-friend TFarMessageDialog;
-friend TFarDialogContainer;
-friend TFarList;
+friend class TFarDialog;
+friend class TFarMessageDialog;
+friend class TFarDialogContainer;
+friend class TFarList;
 NB_DISABLE_COPY(TFarDialogItem)
 NB_DECLARE_CLASS(TFarDialogItem)
 public:
@@ -300,7 +300,7 @@ protected:
 
   virtual void Detach();
   void DialogResized();
-  intptr_t SendMessage(intptr_t Msg, void * Param);
+  intptr_t SendDialogMessage(intptr_t Msg, void * Param);
   intptr_t SendDialogMessage(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual intptr_t ItemProc(intptr_t Msg, void * Param);
   intptr_t DefaultItemProc(intptr_t Msg, void * Param);
@@ -516,9 +516,9 @@ class TFarLister;
 
 class TFarList : public TStringList
 {
-friend TFarListBox;
-friend TFarLister;
-friend TFarComboBox;
+friend class TFarListBox;
+friend class TFarLister;
+friend class TFarComboBox;
 NB_DISABLE_COPY(TFarList)
 NB_DECLARE_CLASS(TFarList)
 public:

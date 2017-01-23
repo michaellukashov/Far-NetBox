@@ -1094,7 +1094,7 @@ void TFarDialogItem::UpdateBounds()
     Rect.Top = static_cast<short int>(B.Top);
     Rect.Right = static_cast<short int>(B.Right);
     Rect.Bottom = static_cast<short int>(B.Bottom);
-    SendMessage(DM_SETITEMPOSITION, reinterpret_cast<void *>(&Rect));
+    SendDialogMessage(DM_SETITEMPOSITION, reinterpret_cast<void *>(&Rect));
   }
 }
 
@@ -1151,7 +1151,7 @@ void TFarDialogItem::SetDataInternal(const UnicodeString & Value)
   UnicodeString FarData = Value.c_str();
   if (GetDialog()->GetHandle())
   {
-    SendMessage(DM_SETTEXTPTR, static_cast<void *>(const_cast<wchar_t *>(FarData.c_str())));
+    SendDialogMessage(DM_SETTEXTPTR, static_cast<void *>(const_cast<wchar_t *>(FarData.c_str())));
   }
   nb_free((void*)GetDialogItem()->Data);
   GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(FarData, /*AllowEmpty=*/true);
@@ -1250,21 +1250,21 @@ void TFarDialogItem::SetFlag(FARDIALOGITEMFLAGS Index, bool Value)
       case DIF_DISABLE:
         if (GetDialog()->GetHandle())
         {
-          SendMessage(DM_ENABLE, reinterpret_cast<void *>(!Value));
+          SendDialogMessage(DM_ENABLE, reinterpret_cast<void *>(!Value));
         }
         break;
 
       case DIF_HIDDEN:
         if (GetDialog()->GetHandle())
         {
-          SendMessage(DM_SHOWITEM, reinterpret_cast<void *>(!Value));
+          SendDialogMessage(DM_SHOWITEM, reinterpret_cast<void *>(!Value));
         }
         break;
 
       case DIF_3STATE:
         if (GetDialog()->GetHandle())
         {
-          SendMessage(DM_SET3STATE, reinterpret_cast<void *>(Value));
+          SendDialogMessage(DM_SET3STATE, reinterpret_cast<void *>(Value));
         }
         break;
     }
@@ -1452,7 +1452,7 @@ intptr_t TFarDialogItem::SendDialogMessage(intptr_t Msg, intptr_t Param1, void *
   return GetDialog()->SendDlgMessage(Msg, Param1, Param2);
 }
 
-intptr_t TFarDialogItem::SendMessage(intptr_t Msg, void * Param)
+intptr_t TFarDialogItem::SendDialogMessage(intptr_t Msg, void * Param)
 {
   return GetDialog()->SendDlgMessage(Msg, GetItem(), Param);
 }
@@ -1463,7 +1463,7 @@ void TFarDialogItem::SetSelected(intptr_t Value)
   {
     if (GetDialog()->GetHandle())
     {
-      SendMessage(DM_SETCHECK, reinterpret_cast<void *>(Value));
+      SendDialogMessage(DM_SETCHECK, reinterpret_cast<void *>(Value));
     }
     UpdateSelected(Value);
   }
@@ -1608,7 +1608,7 @@ void TFarDialogItem::SetFocus()
   {
     if (GetDialog()->GetHandle())
     {
-      SendMessage(DM_SETFOCUS, nullptr);
+      SendDialogMessage(DM_SETFOCUS, nullptr);
     }
     else
     {
@@ -1630,7 +1630,7 @@ void TFarDialogItem::Init()
     ClearStruct(Rect);
 
     // at least for "text" item, returned item size is not correct (on 1.70 final)
-    SendMessage(DM_GETITEMPOSITION, reinterpret_cast<void *>(&Rect));
+    SendDialogMessage(DM_GETITEMPOSITION, reinterpret_cast<void *>(&Rect));
 
     TRect B = GetBounds();
     B.Left = Rect.Left;
@@ -2156,7 +2156,7 @@ void TFarList::UpdateItem(intptr_t Index)
     ListUpdate.StructSize = sizeof(FarListUpdate);
   ListUpdate.Index = static_cast<int>(Index);
   ListUpdate.Item = *ListItem;
-  GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<void *>(&ListUpdate));
+  GetDialogItem()->SendDialogMessage(DM_LISTUPDATE, reinterpret_cast<void *>(&ListUpdate));
 }
 
 void TFarList::Put(intptr_t Index, const UnicodeString & Str)
@@ -2232,7 +2232,7 @@ void TFarList::Changed()
       {
         GetDialogItem()->GetDialog()->UnlockChanges();
       };
-      GetDialogItem()->SendMessage(DM_LISTSET, reinterpret_cast<void *>(FListItems));
+      GetDialogItem()->SendDialogMessage(DM_LISTSET, reinterpret_cast<void *>(FListItems));
       if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
       {
         PrevTopIndex = GetCount() > GetDialogItem()->GetHeight() ? GetCount() - GetDialogItem()->GetHeight() : 0;
@@ -2290,7 +2290,7 @@ void TFarList::SetCurPos(intptr_t Position, intptr_t TopIndex)
   ListPos.StructSize = sizeof(FarListPos);
   ListPos.SelectPos = Position;
   ListPos.TopPos = TopIndex;
-  DialogItem->SendMessage(DM_LISTSETCURPOS, reinterpret_cast<void *>(&ListPos));
+  DialogItem->SendDialogMessage(DM_LISTSETCURPOS, reinterpret_cast<void *>(&ListPos));
 }
 
 void TFarList::SetTopIndex(intptr_t Value)
@@ -2305,7 +2305,7 @@ intptr_t TFarList::GetPosition() const
 {
   TFarDialogItem * DialogItem = GetDialogItem();
   assert(DialogItem != nullptr);
-  return DialogItem->SendMessage(DM_LISTGETCURPOS, 0);
+  return DialogItem->SendDialogMessage(DM_LISTGETCURPOS, 0);
 }
 
 intptr_t TFarList::GetTopIndex() const
@@ -2319,7 +2319,7 @@ intptr_t TFarList::GetTopIndex() const
     TFarDialogItem * DialogItem = GetDialogItem();
     ListPos.StructSize = sizeof(FarListPos);
     assert(DialogItem != nullptr);
-    DialogItem->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<void *>(&ListPos));
+    DialogItem->SendDialogMessage(DM_LISTGETCURPOS, reinterpret_cast<void *>(&ListPos));
     Result = static_cast<intptr_t>(ListPos.TopPos);
   }
   return Result;
@@ -2492,7 +2492,7 @@ void TFarListBox::SetAutoSelect(TFarListBoxAutoSelect Value)
 
 void TFarListBox::UpdateMouseReaction()
 {
-  SendMessage(DIF_LISTTRACKMOUSE, reinterpret_cast<void *>(GetAutoSelect()));
+  SendDialogMessage(DIF_LISTTRACKMOUSE, reinterpret_cast<void *>(GetAutoSelect()));
 }
 
 void TFarListBox::SetItems(TStrings * Value)
