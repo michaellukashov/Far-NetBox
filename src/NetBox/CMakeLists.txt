@@ -240,6 +240,8 @@ set(NETBOX_SOURCES
   FarUtil.h
   FarPluginStrings.h
 
+  Far3Storage.h
+
   ../base/nbglobals.h
   ../base/Exceptions.h
   ../base/MsgIDs.h
