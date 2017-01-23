@@ -60,7 +60,8 @@ static uint32_t adler32_combine_(uint32_t adler1, uint32_t adler2, z_off64_t len
 #endif
 
 /* ========================================================================= */
-uint32_t ZEXPORT adler32(uint32_t adler, const unsigned char *buf, uint32_t len) {
+uint32_t ZEXPORT adler32_z(uint32_t adler, const unsigned char *buf, uint32_t len)
+{
     uint32_t sum2;
     unsigned n;
 
@@ -143,14 +144,21 @@ uint32_t ZEXPORT adler32(uint32_t adler, const unsigned char *buf, uint32_t len)
 }
 
 /* ========================================================================= */
-static uint32_t adler32_combine_(uint32_t adler1, uint32_t adler2, z_off64_t len2) {
+uint32_t ZEXPORT adler32(uint32_t adler, const unsigned char *buf, uint32_t len)
+{
+    return adler32_z(adler, buf, len);
+}
+
+/* ========================================================================= */
+static uint32_t adler32_combine_(uint32_t adler1, uint32_t adler2, z_off64_t len2)
+{
     uint32_t sum1;
     uint32_t sum2;
     unsigned rem;
 
     /* for negative len, return invalid adler32 as a clue for debugging */
     if (len2 < 0)
-        return 0xffffffff;
+        return 0xffffffffUL;
 
     /* the derivation of this formula is left as an exercise for the reader */
     MOD63(len2);                /* assumes len2 >= 0 */
@@ -168,10 +176,12 @@ static uint32_t adler32_combine_(uint32_t adler1, uint32_t adler2, z_off64_t len
 }
 
 /* ========================================================================= */
-uint32_t ZEXPORT adler32_combine(uint32_t adler1, uint32_t adler2, z_off_t len2) {
+uint32_t ZEXPORT adler32_combine(uint32_t adler1, uint32_t adler2, z_off_t len2)
+{
     return adler32_combine_(adler1, adler2, len2);
 }
 
-uint32_t ZEXPORT adler32_combine64(uint32_t adler1, uint32_t adler2, z_off64_t len2) {
+uint32_t ZEXPORT adler32_combine64(uint32_t adler1, uint32_t adler2, z_off64_t len2)
+{
     return adler32_combine_(adler1, adler2, len2);
 }

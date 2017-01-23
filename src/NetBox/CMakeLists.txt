@@ -1312,11 +1312,18 @@ set(ZLIB_SOURCES
   ${LIBS_ROOT}/zlib/src/deflate_slow.c
   ${LIBS_ROOT}/zlib/src/deflate_medium.c
   ${LIBS_ROOT}/zlib/src/deflate_fast.c
+)
+
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+
+set(ZLIB_SOURCES ${ZLIB_SOURCES}
   ${LIBS_ROOT}/zlib/src/arch/x86/crc_folding.c
   ${LIBS_ROOT}/zlib/src/arch/x86/fill_window_sse.c
   ${LIBS_ROOT}/zlib/src/arch/x86/insert_string_sse.c
   ${LIBS_ROOT}/zlib/src/arch/x86/x86.c
 )
+
+endif()
 
 if(MSVC)
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
