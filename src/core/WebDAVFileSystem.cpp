@@ -911,7 +911,7 @@ void TWebDAVFileSystem::NeonPropsResult(
   }
 }
 
-const char * TWebDAVFileSystem::GetProp(
+const char * TWebDAVFileSystem::GetNeonProp(
   const ne_prop_result_set * Results, const char * Name, const char * NameSpace)
 {
   ne_propname Prop;
@@ -928,14 +928,14 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
   // It seems that all servers actually use the trailing slash, including IIS, mod_Dav, IT Hit, OpenDrive, etc.
   bool Collection = (AFile->GetFullFileName() != APath);
   AFile->SetFileName(base::UnixExtractFileName(AFile->GetFullFileName()));
-  const char * ContentLength = GetProp(Results, PROP_CONTENT_LENGTH);
+  const char * ContentLength = GetNeonProp(Results, PROP_CONTENT_LENGTH);
   // some servers, for example iFiles, do not provide "getcontentlength" for folders
   if (ContentLength != nullptr)
   {
     AFile->SetSize(StrToInt64Def(ContentLength, 0));
   }
-  const char * LastModified = GetProp(Results, PROP_LAST_MODIFIED);
-  const char * CreationDate = GetProp(Results, PROP_CREATIONDATE);
+  const char * LastModified = GetNeonProp(Results, PROP_LAST_MODIFIED);
+  const char * CreationDate = GetNeonProp(Results, PROP_CREATIONDATE);
   const char * Modified = LastModified ? LastModified : CreationDate;
   if (DebugAlwaysTrue(Modified != nullptr))
   {
@@ -969,7 +969,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
   {
     // This is possibly redundant code as all servers we know (see a comment above)
     // indicate the folder by trailing slash too
-    const char * ResourceType = GetProp(Results, PROP_RESOURCE_TYPE);
+    const char * ResourceType = GetNeonProp(Results, PROP_RESOURCE_TYPE);
     if (ResourceType != nullptr)
     {
       // property has XML value
@@ -984,13 +984,13 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
 
   AFile->SetType(Collection ? FILETYPE_DIRECTORY : FILETYPE_DEFAULT);
   // this is MS extension (draft-hopmann-collection-props-00)
-  const char * IsHidden = GetProp(Results, PROP_HIDDEN);
+  const char * IsHidden = GetNeonProp(Results, PROP_HIDDEN);
   if (IsHidden != nullptr)
   {
     AFile->SetIsHidden(StrToIntDef(IsHidden, 0) != 0);
   }
 
-  const char * Owner = GetProp(Results, PROP_OWNER);
+  const char * Owner = GetNeonProp(Results, PROP_OWNER);
   if (Owner != nullptr)
   {
     AFile->GetFileOwner().SetName(Owner);
@@ -1001,7 +1001,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
 
   // Proprietary property of mod_dav
   // http://www.webdav.org/mod_dav/#imp
-  const char * Executable = GetProp(Results, PROP_EXECUTABLE, MODDAV_PROP_NAMESPACE);
+  const char * Executable = GetNeonProp(Results, PROP_EXECUTABLE, MODDAV_PROP_NAMESPACE);
   if (Executable != nullptr)
   {
     if (strcmp(Executable, "T") == 0)
@@ -1244,12 +1244,12 @@ void TWebDAVFileSystem::NeonQuotaResult(
 {
   TSpaceAvailable & SpaceAvailable = *static_cast<TSpaceAvailable *>(UserData);
 
-  const char * Value = GetProp(Results, PROP_QUOTA_AVAILABLE);
+  const char * Value = GetNeonProp(Results, PROP_QUOTA_AVAILABLE);
   if (Value != nullptr)
   {
     SpaceAvailable.UnusedBytesAvailableToUser = StrToInt64(StrFromNeon(Value));
 
-    const char * Value2 = GetProp(Results, PROP_QUOTA_USED);
+    const char * Value2 = GetNeonProp(Results, PROP_QUOTA_USED);
     if (Value2 != nullptr)
     {
       SpaceAvailable.BytesAvailableToUser =
