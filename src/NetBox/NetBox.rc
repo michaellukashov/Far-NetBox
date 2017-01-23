@@ -12,7 +12,7 @@ FILETYPE 0x2
             VALUE "FileDescription", "NetBox: SFTP/FTP/FTPS/SCP/WebDAV client for FAR2\0"
             VALUE "FileVersion", "2.4.2.443\0"
             VALUE "InternalName", "FarNetBox\0"
-            VALUE "LegalCopyright", "(c) 2011, 2016 Michael Lukashov\0"
+            VALUE "LegalCopyright", "(c) 2011, 2017 Michael Lukashov\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "NetBox.dll\0"
             VALUE "ProductName", "NetBox\0"
