@@ -85,6 +85,10 @@ class TTerminalQueue : public TSignalThread
 {
 friend class TQueueItem;
 friend class TQueueItemProxy;
+friend class TTerminalItem;
+friend class TQueryUserAction;
+friend class TPromptUserAction;
+friend class TShowExtendedExceptionAction;
 NB_DISABLE_COPY(TTerminalQueue)
 public:
   explicit TTerminalQueue(TTerminal * ATerminal, TConfiguration * AConfiguration);
@@ -124,11 +128,6 @@ public:
   void SetOnEvent(TQueueEventEvent Value) { FOnEvent = Value; }
 
 protected:
-  friend class TTerminalItem;
-  friend class TQueryUserAction;
-  friend class TPromptUserAction;
-  friend class TShowExtendedExceptionAction;
-
   TQueryUserEvent FOnQueryUser;
   TPromptUserEvent FOnPromptUser;
   TExtendedExceptionEvent FOnShowExtendedException;

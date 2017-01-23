@@ -1321,7 +1321,7 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
   }
 }
 
-DWORD FileGetAttrFix(const UnicodeString & FileName)
+DWORD FileGetAttrFix(const UnicodeString & AFileName)
 {
   // The default for FileGetAttr is to follow links
   bool FollowLink = true;
@@ -1331,7 +1331,7 @@ DWORD FileGetAttrFix(const UnicodeString & FileName)
   {
     FollowLink = false;
   }
-  return ::FileGetAttr(FileName, FollowLink);
+  return ::FileGetAttr(AFileName, FollowLink);
 }
 
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)

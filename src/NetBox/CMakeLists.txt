@@ -1,18 +1,23 @@
-project(NetBox)
-cmake_minimum_required(VERSION 2.8)
+message(STATUS "CMake version: ${CMAKE_VERSION}")
+cmake_minimum_required(VERSION 2.8.12)
 
-if(NOT DEFINED CMAKE_BUILD_TYPE)
+project(NetBox)
+
+if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug" FORCE)
 endif()
-message("Build type -- ${CMAKE_BUILD_TYPE}")
+message(STATUS "Build type -- ${CMAKE_BUILD_TYPE}")
+message(STATUS "CMAKE_CL_64 -- ${CMAKE_CL_64}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far2)
 endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(x64 1)
   set(PROJECT_PLATFORM "x64")
 else()
+  set(x64 0)
   set(PROJECT_PLATFORM "x86")
 endif()
 
@@ -29,8 +34,8 @@ endif()
 
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 include(CMakeDetermineCXXCompiler)
-message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
-message("MSVC_VERSION: ${MSVC_VERSION}")
+message(STATUS "System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
+message(STATUS "MSVC_VERSION: ${MSVC_VERSION}")
 
 set(LIBS_ROOT ${PROJECT_ROOT}/libs)
 set(SRC_ROOT ${PROJECT_ROOT}/src)
@@ -47,7 +52,7 @@ if (MSVC_VERSION GREATER 1899)
 set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} /Zc:threadSafeInit- /bigobj")
 endif()
 
-if(PROJECT_PLATFORM STREQUAL "x64")
+if(x64)
 set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} -DWIN64")
 else()
 if (MSVC_VERSION GREATER 1699)
@@ -194,7 +199,7 @@ add_custom_target(NETBOX_SOURCES SOURCES
 )
 
 if(MSVC)
-if(PROJECT_PLATFORM STREQUAL "x86")
+if(NOT x64)
 
 find_program(MASM_EXECUTABLE ml)
 # message("masm: ${MASM_EXECUTABLE}")
@@ -216,7 +221,7 @@ set(NETBOX_SOURCES ${NETBOX_SOURCES}
   ${ASM_OBJECTS}
 )
 
-endif(PROJECT_PLATFORM STREQUAL "x86")
+endif(NOT x64)
 endif(MSVC)
 
 #-------------------------------------------------------------------------------
@@ -743,10 +748,10 @@ add_library(openssl STATIC
   ${LIBS_ROOT}/openssl/crypto/ec/ec_oct.c
   ${LIBS_ROOT}/openssl/crypto/ec/ec2_oct.c
   ${LIBS_ROOT}/openssl/crypto/ec/ecp_oct.c
-  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistputil.c
-  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp521.c
-  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp256.c
-  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp224.c
+#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistputil.c
+#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp521.c
+#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp256.c
+#  ${LIBS_ROOT}/openssl/crypto/ec/ecp_nistp224.c
   ${LIBS_ROOT}/openssl/crypto/ec/eck_prn.c
   ${LIBS_ROOT}/openssl/crypto/ec/ec_pmeth.c
   ${LIBS_ROOT}/openssl/crypto/ec/ec_ameth.c
@@ -934,7 +939,7 @@ set(OPENSSL_COMPILE_FLAGS "/TC")
 elseif(CMAKE_COMPILER_IS_MINGW)
 set(OPENSSL_COMPILE_FLAGS "")
 endif()
-if(PROJECT_PLATFORM STREQUAL "x64")
+if(x64)
 set(OPENSSL_COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS} -DOPENSSL_SYSNAME_WIN32 -DOPENSSL_SYSNAME_WIN64 -DMK1MF_PLATFORM_VC_WIN64A")
 else()
 set(OPENSSL_COMPILE_FLAGS "${OPENSSL_COMPILE_FLAGS} -DOPENSSL_SYSNAME_WIN32 -DMK1MF_PLATFORM_VC_WIN32")
@@ -1343,7 +1348,7 @@ include_directories(
   ${LIBS_ROOT}/boost
 )
 
-if(PROJECT_PLATFORM STREQUAL "x64")
+if(x64)
 set(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage/x64)
 else()
 set(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage)
