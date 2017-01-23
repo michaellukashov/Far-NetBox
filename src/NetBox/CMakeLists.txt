@@ -129,11 +129,9 @@ endfunction(nb_replace_compiler_option)
 
 if(MSVC)
 
-#string(REGEX REPLACE "(^| ) */EH[-cs]+ *( |$)" "\\1 \\2" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-#string(REGEX REPLACE "(^| ) */GR-? *( |$)" "\\1 \\2" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-#set(CMAKE_CXX_FLAGS "/GR- /EHsc ${CMAKE_CXX_FLAGS}")
 nb_replace_compiler_option(CMAKE_CXX_FLAGS "/GR-?" "/GR-")
-nb_replace_compiler_option(CMAKE_CXX_FLAGS "/EH[-cs]+" "/EHsc")
+nb_replace_compiler_option(CMAKE_CXX_FLAGS "/EH[-cs]+" "")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 
 set(NETBOX_DLL_LINK_FLAGS_RELEASE "")
 
