@@ -1,6 +1,8 @@
 message(STATUS "CMake version: ${CMAKE_VERSION}")
 cmake_minimum_required(VERSION 2.8.12)
 
+option(OPT_COMPILE_TESTS "Build tests" OFF)
+
 project(NetBox)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -1286,7 +1288,7 @@ add_library(rdestl STATIC
 
 #-------------------------------------------------------------------------------
 
-if(DEFINED OPT_COMPILE_TESTS)
+if(OPT_COMPILE_TESTS)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 set(TESTS_ROOT ${SRC_ROOT}/tests)
@@ -1435,4 +1437,4 @@ target_link_libraries(testnetbox_04 ${NETBOX_LIBRARIES}
 )
 
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-endif(DEFINED OPT_COMPILE_TESTS)
+endif(OPT_COMPILE_TESTS)
