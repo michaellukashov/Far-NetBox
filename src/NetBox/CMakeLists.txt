@@ -23,6 +23,12 @@ else()
   set(PROJECT_PLATFORM "x86")
 endif()
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(BUILD_DEBUG 1)
+else()
+  set(BUILD_DEBUG 0)
+endif()
+
 if(NOT DEFINED PROJECT_ROOT OR PROJECT_ROOT STREQUAL "")
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 endif()
@@ -264,7 +270,7 @@ set(NETBOX_LIBRARIES
 )
 
 if(MSVC)
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(BUILD_DEBUG)
 set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
   libcmtd.lib
   libcpmtd.lib
@@ -274,7 +280,7 @@ set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
   libcmt.lib
   libcpmt.lib
 )
-endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+endif(BUILD_DEBUG)
 endif(MSVC)
 
 add_library(NetBox SHARED
@@ -1289,7 +1295,6 @@ add_library(rdestl STATIC
 #-------------------------------------------------------------------------------
 
 if(OPT_COMPILE_TESTS)
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 set(TESTS_ROOT ${SRC_ROOT}/tests)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_DISABLE_ASSERTS")
@@ -1436,5 +1441,4 @@ add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
 target_link_libraries(testnetbox_04 ${NETBOX_LIBRARIES}
 )
 
-endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif(OPT_COMPILE_TESTS)
