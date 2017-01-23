@@ -81,23 +81,23 @@ set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} /Gm- /Od /MTd /GS /RTC1")
 
 elseif(CMAKE_COMPILER_IS_MINGW)
 
-set(NETBOX_CFLAGS "${NETBOX_CFLAGS} ${NETBOX_C_FLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
-set(NETBOX_C_WARNING_FLAGS "")
-set(NETBOX_CXX_WARNING_FLAGS "-Wno-attributes -Wno-write-strings -Wno-unknown-pragmas -Wno-old-style-cast -Wno-effc++ -Wno-unknown-pragmas -Wno-unused-value")
-set(NETBOX_CXX_FLAGS "${NETBOX_CFLAGS} -D_UNICODE -DUNICODE -std=c++11 -Woverloaded-virtual -Wnon-virtual-dtor")
+set(NETBOX_CFLAGS ${NETBOX_CFLAGS} ${NETBOX_C_FLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code)
+set(NETBOX_C_WARNING_FLAGS )
+set(NETBOX_CXX_WARNING_FLAGS -Wno-attributes -Wno-write-strings -Wno-unknown-pragmas -Wno-old-style-cast -Wno-effc++ -Wno-unknown-pragmas -Wno-unused-value)
+set(NETBOX_CXX_FLAGS ${NETBOX_CFLAGS} -D_UNICODE -DUNICODE -std=c++11 -Woverloaded-virtual -Wnon-virtual-dtor)
 #-Weffc++
-set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} ${NETBOX_CFLAGS}")
-set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} ${NETBOX_CFLAGS}")
+set(NETBOX_FLAGS_RELEASE ${NETBOX_FLAGS_RELEASE} ${NETBOX_CFLAGS})
+set(NETBOX_FLAGS_DEBUG ${NETBOX_FLAGS_DEBUG} ${NETBOX_CFLAGS})
 
 endif()
 
-set(CMAKE_C_FLAGS "${NETBOX_C_FLAGS} ${NETBOX_C_WARNING_FLAGS}")
-set(CMAKE_CXX_FLAGS "${NETBOX_CXX_FLAGS} ${NETBOX_CXX_WARNING_FLAGS}")
+set(CMAKE_C_FLAGS ${NETBOX_C_FLAGS} ${NETBOX_C_WARNING_FLAGS})
+set(CMAKE_CXX_FLAGS ${NETBOX_CXX_FLAGS} ${NETBOX_CXX_WARNING_FLAGS})
 
-set(CMAKE_CXX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
-set(CMAKE_C_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
-set(CMAKE_CXX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
-set(CMAKE_C_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
+#set(CMAKE_CXX_FLAGS_RELEASE ${NETBOX_FLAGS_RELEASE})
+#set(CMAKE_C_FLAGS_RELEASE ${NETBOX_FLAGS_RELEASE})
+#set(CMAKE_CXX_FLAGS_DEBUG ${NETBOX_FLAGS_DEBUG})
+#set(CMAKE_C_FLAGS_DEBUG ${NETBOX_FLAGS_DEBUG})
 
 if(MSVC)
 
@@ -275,20 +275,13 @@ add_library(NetBox SHARED
   ${NETBOX_SOURCES}
 )
 
-if(MSVC)
-set_target_properties(NetBox
-  PROPERTIES
-  COMPILE_FLAGS "${CMAKE_CXX_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-  LINK_FLAGS_RELEASE "${LINK_FLAGS_RELEASE}"
+if(CMAKE_COMPILER_IS_MINGW)
+  set(NETBOX_CXX_FLAGS ${NETBOX_CXX_FLAGS} -fpermissive)
+endif()
+
+target_compile_options(NetBox
+  PRIVATE ${NETBOX_CXX_FLAGS}
 )
-elseif(CMAKE_COMPILER_IS_MINGW)
-set_target_properties(NetBox
-  PROPERTIES
-  COMPILE_FLAGS "-fpermissive ${CMAKE_CXX_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-)
-endif(MSVC)
 
 #-------------------------------------------------------------------------------
 
