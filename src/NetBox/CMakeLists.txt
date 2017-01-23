@@ -109,11 +109,31 @@ set(CMAKE_C_FLAGS_RELEASE "${NETBOX_C_FLAGS} ${NETBOX_FLAGS_RELEASE}")
 set(CMAKE_CXX_FLAGS_DEBUG "${NETBOX_CXX_FLAGS} ${NETBOX_FLAGS_DEBUG}")
 set(CMAKE_C_FLAGS_DEBUG "${NETBOX_C_FLAGS} ${NETBOX_FLAGS_DEBUG}")
 
+function(nb_replace_compiler_option var old new)
+  # Replaces a compiler option or switch `old' in `var' by `new'.
+  # If `old' is not in `var', appends `new' to `var'.
+  # Example: nb_replace_compiler_option(CMAKE_CXX_FLAGS_RELEASE "-O3" "-O2")
+  # If the option already is on the variable, don't add it:
+  if( "${${var}}" MATCHES "(^| )${new}($| )" )
+    set(n "")
+  else()
+    set(n "${new}")
+  endif()
+  if( "${${var}}" MATCHES "(^| )${old}($| )" )
+    string( REGEX REPLACE "(^| )${old}($| )" " ${n} " ${var} "${${var}}" )
+  else()
+    set( ${var} "${${var}} ${n}" )
+  endif()
+  set( ${var} "${${var}}" PARENT_SCOPE )
+endfunction(nb_replace_compiler_option)
+
 if(MSVC)
 
-string(REGEX REPLACE "(^| ) */EH[-cs]+ *( |$)" "\\1 \\2" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-string(REGEX REPLACE "(^| ) */GR-? *( |$)" "\\1 \\2" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS "/GR- /EHsc ${CMAKE_CXX_FLAGS}")
+#string(REGEX REPLACE "(^| ) */EH[-cs]+ *( |$)" "\\1 \\2" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+#string(REGEX REPLACE "(^| ) */GR-? *( |$)" "\\1 \\2" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+#set(CMAKE_CXX_FLAGS "/GR- /EHsc ${CMAKE_CXX_FLAGS}")
+nb_replace_compiler_option(CMAKE_CXX_FLAGS "/GR-?" "/GR-")
+nb_replace_compiler_option(CMAKE_CXX_FLAGS "/EH[-cs]+" "/EHsc")
 
 set(NETBOX_DLL_LINK_FLAGS_RELEASE "")
 
@@ -293,7 +313,7 @@ if(CMAKE_COMPILER_IS_MINGW)
 endif()
 
 target_compile_options(NetBox
-  PRIVATE ${NETBOX_DLL_CXX_FLAGS}
+  PRIVATE ${NETBOX_DLL_CXX_FLAGS} -D_WINSOCK_DEPRECATED_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS
 )
 
 set_target_properties(NetBox
