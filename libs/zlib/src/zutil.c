@@ -130,7 +130,42 @@ const char * ZEXPORT zError(int err)
     return ERR_MSG(err);
 }
 
+#ifndef HAVE_MEMCPY
+
+void ZLIB_INTERNAL zmemcpy(unsigned char* dest, const unsigned char* source, unsigned int len)
+{
+    if (len == 0) return;
+    do {
+        *dest++ = *source++; /* ??? to be unrolled */
+    } while (--len != 0);
+}
+
+int ZLIB_INTERNAL zmemcmp(const unsigned char* s1, const unsigned char* s2, unsigned int len)
+{
+    uInt j;
+
+    for (j = 0; j < len; j++) {
+        if (s1[j] != s2[j]) return 2*(s1[j] > s2[j])-1;
+    }
+    return 0;
+}
+
+void ZLIB_INTERNAL zmemzero(unsigned char* dest, unsigned int len)
+{
+    if (len == 0) return;
+    do {
+        *dest++ = 0;  /* ??? to be unrolled */
+    } while (--len != 0);
+}
+#endif
+
 #ifndef MY_ZCALLOC /* Any system without a special alloc function */
+
+#ifndef STDC
+extern voidp  malloc (unsigned int size);
+extern voidp  calloc (unsigned int items, unsigned int size);
+extern void   free   (void * ptr);
+#endif
 
 void ZLIB_INTERNAL *zcalloc (void *opaque, uint32_t items, uint32_t size)
 {
@@ -146,3 +181,5 @@ void ZLIB_INTERNAL zcfree (void *opaque, void *ptr)
 }
 
 #endif /* MY_ZCALLOC */
+
+

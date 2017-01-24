@@ -1155,7 +1155,7 @@ add_library(putty STATIC
 #  ${LIBS_ROOT}/Putty/ldisc.c
 )
 
-set(PUTTY_COMPILE_FLAGS -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS)
+set(PUTTY_COMPILE_FLAGS -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -D_CRT_SECURE_NO_WARNINGS)
 
 target_compile_options(putty
   PRIVATE ${PUTTY_COMPILE_FLAGS}
@@ -1197,7 +1197,7 @@ add_library(neon STATIC
   ${LIBS_ROOT}/neon/src/ne_openssl.c
 )
 
-set(NEON_COMPILE_FLAGS )
+set(NEON_COMPILE_FLAGS -D_CRT_SECURE_NO_WARNINGS)
 
 target_compile_options(neon
   PRIVATE ${NEON_COMPILE_FLAGS} ${NETBOX_UNICODE_FLAGS}
