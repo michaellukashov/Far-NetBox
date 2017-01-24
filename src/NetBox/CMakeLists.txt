@@ -346,6 +346,7 @@ set(NETBOX_LIBRARIES
   expat
   dlmalloc
   rdestl
+  fmt
   Ws2_32.lib
   kernel32.lib
   user32.lib
@@ -411,6 +412,7 @@ add_dependencies(NetBox
   expat
   dlmalloc
   rdestl
+  fmt
 )
 
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
@@ -1396,6 +1398,17 @@ add_library(rdestl STATIC
   ${LIBS_ROOT}/rdestl/rdestl.h
   ${LIBS_ROOT}/rdestl/set.h
   ${LIBS_ROOT}/rdestl/iterator.h
+)
+
+#-------------------------------------------------------------------------------
+
+add_library(fmt STATIC
+  ${LIBS_ROOT}/fmt/format.cc
+  ${LIBS_ROOT}/fmt/format.h
+)
+
+target_compile_options(fmt
+  PRIVATE ${NETBOX_UNICODE_FLAGS}
 )
 
 #-------------------------------------------------------------------------------
