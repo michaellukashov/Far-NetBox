@@ -101,7 +101,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test1")
     TStringList MessageLines;
     int MaxMessageWidth = 20;
     FarWrapText(Message, &MessageLines, MaxMessageWidth);
-    INFO("MessageLines = " << MessageLines.GetText());
+    INFO("MessageLines = " << MessageLines.GetText().c_str());
     REQUIRE_EQUAL(4, MessageLines.GetCount());
     REQUIRE_EQUAL("long long long", W2MB(MessageLines.GetString(0).c_str()).c_str());
     REQUIRE_EQUAL("long long long", W2MB(MessageLines.GetString(1).c_str()).c_str());
