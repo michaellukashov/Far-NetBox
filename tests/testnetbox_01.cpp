@@ -14,22 +14,16 @@
 #include <iostream>
 #include <fstream>
 
-#include "boostdefines.hpp"
-#define BOOST_TEST_MODULE "testnetbox_01"
-#define BOOST_TEST_MAIN
-#include <boost/test/unit_test.hpp>
-// #include <boost/type_traits/is_base_of.hpp>
+#define CATCH_CONFIG_MAIN
+#include <catch/catch.hpp>
 
 #include <FileBuffer.h>
 
-#include "TestTexts.h"
 #include "Common.h"
 #include "FarPlugin.h"
 #include "testutils.h"
 #include "FastDelegate.h"
 #include "CppProperties.h"
-
-using namespace boost::unit_test;
 
 //------------------------------------------------------------------------------
 // stub
