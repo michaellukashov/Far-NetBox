@@ -1312,7 +1312,7 @@ set(ZLIB_SOURCES
   ${LIBS_ROOT}/zlib/src/deflate_fast.c
 )
 
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+if(NOT x64)
 
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
   ${LIBS_ROOT}/zlib/src/arch/x86/crc_folding.c
@@ -1321,13 +1321,13 @@ set(ZLIB_SOURCES ${ZLIB_SOURCES}
   ${LIBS_ROOT}/zlib/src/arch/x86/x86.c
 )
 
-endif()
-
 if(MSVC)
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
   ${LIBS_ROOT}/zlib/src/arch/x86/deflate_quick.c
 )
-endif()
+endif(MSVC)
+
+endif(NOT x64)
 
 add_library(zlib STATIC
   ${ZLIB_SOURCES}
