@@ -289,8 +289,6 @@ set(NETBOX_SOURCES
   ../resource/rtlconsts.h
   ../resource/HelpCore.h
   ../resource/TextsFileZilla.h
-  ../resource/TestTexts.h
-
   ../PluginSDK/Far2/plugin.hpp
   ../PluginSDK/Far2/farcolor.hpp
   ../PluginSDK/Far2/farkeys.hpp
@@ -1402,8 +1400,8 @@ add_library(rdestl STATIC
 
 if(OPT_COMPILE_TESTS)
 
-set(TESTS_ROOT {PROJECT_ROOT}/tests)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_DISABLE_ASSERTS")
+set(TESTS_ROOT ${PROJECT_ROOT}/tests)
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 #-------------------------------------------------------
 # target testnetbox_01
