@@ -5,6 +5,10 @@
 #ifndef PUTTY_WINSTUFF_H
 #define PUTTY_WINSTUFF_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* C++ */
+
 #ifndef AUTO_WINSOCK
 #include <winsock2.h>
 #endif
@@ -586,5 +590,9 @@ int remove_from_jumplist_registry(const char *item);
  * sequence of NUL-terminated strings in memory, terminated with an
  * empty one. */
 char *get_jumplist_registry_entries(void);
+
+#ifdef __cplusplus
+}
+#endif /* C++ */
 
 #endif
