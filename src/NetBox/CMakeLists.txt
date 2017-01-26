@@ -1409,10 +1409,14 @@ set(TESTS_ROOT ${PROJECT_ROOT}/tests)
 set(TESTNETBOX_01_DIR ${TESTS_ROOT})
 
 set(TESTNETBOX_01_SOURCES
+  ${SRC_ROOT}/base/rtti.cpp
+  ${SRC_ROOT}/base/Global.cpp
+  ${SRC_ROOT}/base/local.cpp
+  ${SRC_ROOT}/base/LibraryLoader.cpp
   ${SRC_ROOT}/base/Classes.cpp
   ${SRC_ROOT}/base/Sysutils.cpp
+  ${SRC_ROOT}/base/StrUtils.cpp
   ${SRC_ROOT}/base/UnicodeString.cpp
-  ${SRC_ROOT}/base/local.cpp
   ${SRC_ROOT}/base/Common.cpp
   ${SRC_ROOT}/base/Exceptions.cpp
   ${SRC_ROOT}/base/FileBuffer.cpp
