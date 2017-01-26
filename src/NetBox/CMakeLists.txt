@@ -1402,19 +1402,8 @@ add_library(rdestl STATIC
 
 if(OPT_COMPILE_TESTS)
 
-set(TESTS_ROOT ${SRC_ROOT}/tests)
+set(TESTS_ROOT {PROJECT_ROOT}/tests)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_DISABLE_ASSERTS")
-
-include_directories(
-  ${LIBS_ROOT}/boost
-)
-
-if(x64)
-set(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage/x64)
-else()
-set(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage)
-endif()
-link_directories(${BOOST_LINK_DIR})
 
 #-------------------------------------------------------
 # target testnetbox_01
@@ -1430,8 +1419,6 @@ set(TESTNETBOX_01_SOURCES
   ${SRC_ROOT}/base/Exceptions.cpp
   ${SRC_ROOT}/base/FileBuffer.cpp
   ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
-  ${SRC_ROOT}/resource/TextsCore1.rc
-  ${SRC_ROOT}/resource/rtlconsts.rc
 )
 
 add_executable(testnetbox_01 ${TESTNETBOX_01_SOURCES})
@@ -1461,8 +1448,6 @@ set(TESTNETBOX_02_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
   ${TESTNETBOX_02_DIR}/testnetbox_02.rc
   ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
-  ${SRC_ROOT}/resource/TextsCore1.rc
-  ${SRC_ROOT}/resource/rtlconsts.rc
 )
 
 add_executable(testnetbox_02 ${TESTNETBOX_02_SOURCES})
@@ -1495,8 +1480,6 @@ set(TESTNETBOX_03_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
   ${TESTNETBOX_03_DIR}/testnetbox_03.cpp
-  ${SRC_ROOT}/resource/TextsCore1.rc
-  ${SRC_ROOT}/resource/rtlconsts.rc
 )
 
 add_executable(testnetbox_03 ${TESTNETBOX_03_SOURCES})
@@ -1528,8 +1511,6 @@ set(TESTNETBOX_04_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
   ${TESTNETBOX_04_DIR}/testnetbox_04.cpp
-  ${SRC_ROOT}/resource/TextsCore1.rc
-  ${SRC_ROOT}/resource/rtlconsts.rc
 )
 
 add_executable(testnetbox_04 ${TESTNETBOX_04_SOURCES})
