@@ -12,10 +12,17 @@
 #include "Cryptography.h"
 #include "WinSCPSecurity.h"
 
+#define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_CPP11_NO_SHUFFLE
+#include <catch/catch.hpp>
+
 //------------------------------------------------------------------------------
 
 #define TEST_CASE_TODO(exp) \
     std::cerr << "TODO: " << #exp << std::endl
+
+#define REQUIRE_EQUAL(exp1, exp2) \
+  REQUIRE(exp1 == exp2)
 
 //------------------------------------------------------------------------------
 class TStubFarPlugin : public TCustomFarPlugin

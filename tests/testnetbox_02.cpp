@@ -10,12 +10,6 @@
 #include <iostream>
 #include <fstream>
 
-#include "boostdefines.hpp"
-#define BOOST_TEST_MODULE "testnetbox_02"
-#define BOOST_TEST_MAIN
-// #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
-
 #include "winstuff.h"
 #include "puttyexp.h"
 #include "FarUtil.h"
