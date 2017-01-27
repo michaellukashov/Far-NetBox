@@ -1,5 +1,6 @@
-NetBox 2.4.2.443 23.01.2017
+NetBox 2.4.2.444 27.01.2017
 --------------------
+  * Update openssl sources to 1.0.2k
   * Update zlib sources to 1.2.11
   * Bugfix: Issue #218: cannot copy to root folder
     (https://github.com/michaellukashov/Far-NetBox/issues/218)
