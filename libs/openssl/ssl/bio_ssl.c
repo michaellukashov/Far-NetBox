@@ -73,7 +73,7 @@ static int ssl_free(BIO *a)
     if (a == NULL)
         return (0);
     bs = BIO_get_data(a);
-    if (bs->ssl != NULL)
+    if (bs && bs->ssl != NULL)
         SSL_shutdown(bs->ssl);
     if (BIO_get_shutdown(a)) {
         if (BIO_get_init(a))
