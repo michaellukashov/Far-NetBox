@@ -972,7 +972,7 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
 
     *(p++) = (s->version >> 8);
     /*
-     * Some servers hang if iniatial client hello is larger than 256 bytes
+     * Some servers hang if initial client hello is larger than 256 bytes
      * and record version number > TLS 1.0
      */
     if (s->state == SSL3_ST_CW_CLNT_HELLO_B

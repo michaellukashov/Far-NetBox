@@ -489,7 +489,7 @@ static void load_builtin_compressions(void)
                     comp->method = COMP_zlib();
                     if (comp->method && comp->method->type == NID_undef)
                         OPENSSL_free(comp);
-                    else {
+                    else if(comp->method) {
                         comp->id = SSL_COMP_ZLIB_IDX;
                         comp->name = comp->method->name;
                         sk_SSL_COMP_push(ssl_comp_methods, comp);
