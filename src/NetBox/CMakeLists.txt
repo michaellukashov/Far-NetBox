@@ -1425,10 +1425,8 @@ set(TESTNETBOX_01_SOURCES
 
 add_executable(testnetbox_01 ${TESTNETBOX_01_SOURCES})
 
-set_target_properties(testnetbox_01
-  PROPERTIES
-  COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
+target_compile_options(testnetbox_01
+  PRIVATE -D_CRT_SECURE_NO_WARNINGS
 )
 
 add_dependencies(testnetbox_01
