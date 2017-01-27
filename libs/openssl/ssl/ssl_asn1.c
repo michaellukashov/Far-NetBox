@@ -489,10 +489,9 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
         ret->key_arg_length = SSL_MAX_KEY_ARG_LENGTH;
     else
         ret->key_arg_length = os.length;
-    if (os.data != NULL) {
-        memcpy(ret->key_arg, os.data, ret->key_arg_length);
+    memcpy(ret->key_arg, os.data, ret->key_arg_length);
+    if (os.data != NULL)
         OPENSSL_free(os.data);
-    }
 
     ai.length = 0;
     M_ASN1_D2I_get_EXP_opt(aip, d2i_ASN1_INTEGER, 1);
