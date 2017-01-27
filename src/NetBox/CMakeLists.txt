@@ -1472,6 +1472,7 @@ add_dependencies(testnetbox_02
 
 target_link_libraries(testnetbox_02 ${NETBOX_LIBRARIES})
 
+if(0)
 #-------------------------------------------------------
 # target testnetbox_03
 
@@ -1529,5 +1530,5 @@ add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
 
 target_link_libraries(testnetbox_04 ${NETBOX_LIBRARIES}
 )
-
+endif(0)
 endif(OPT_COMPILE_TESTS)
