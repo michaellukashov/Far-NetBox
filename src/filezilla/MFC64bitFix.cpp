@@ -17,7 +17,7 @@ BOOL GetLength64(CString filename, _int64 &size)
   HANDLE hFind = FindFirstFile(filename, &findFileData);
   if (hFind == INVALID_HANDLE_VALUE)
     return FALSE;
-  DebugCheck(FindClose(hFind));
+  DebugCheck(FindClose(hFind) != FALSE);
 
   size=((_int64)findFileData.nFileSizeHigh<<32)+findFileData.nFileSizeLow;
 
@@ -32,7 +32,7 @@ BOOL PASCAL GetStatus64(LPCTSTR lpszFileName, CFileStatus64& rStatus)
   {
     return FALSE;
   }
-  DebugCheck(FindClose(hFind));
+  DebugCheck(FindClose(hFind) != FALSE);
 
   // strip attribute of NORMAL bit, our API doesn't have a "normal" bit.
   rStatus.m_attribute = (BYTE)

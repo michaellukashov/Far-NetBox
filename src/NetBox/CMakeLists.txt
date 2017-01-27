@@ -1,8 +1,6 @@
 message(STATUS "CMake version: ${CMAKE_VERSION}")
 cmake_minimum_required(VERSION 2.8.12)
 
-option(OPT_COMPILE_TESTS "Build tests" OFF)
-
 project(NetBox)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -292,7 +290,6 @@ set(NETBOX_SOURCES
   ../resource/rtlconsts.h
   ../resource/HelpCore.h
   ../resource/TextsFileZilla.h
-  ../resource/TestTexts.h
 
   ../PluginSDK/Far3/plugin.hpp
   ../PluginSDK/Far3/farcolor.hpp
@@ -1317,7 +1314,7 @@ set(ZLIB_SOURCES
   ${LIBS_ROOT}/zlib/src/deflate_fast.c
 )
 
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+if(NOT x64)
 
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
   ${LIBS_ROOT}/zlib/src/arch/x86/crc_folding.c
@@ -1326,13 +1323,13 @@ set(ZLIB_SOURCES ${ZLIB_SOURCES}
   ${LIBS_ROOT}/zlib/src/arch/x86/x86.c
 )
 
-endif()
-
 if(MSVC)
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
   ${LIBS_ROOT}/zlib/src/arch/x86/deflate_quick.c
 )
-endif()
+endif(MSVC)
+
+endif(NOT x64)
 
 add_library(zlib STATIC
   ${ZLIB_SOURCES}
@@ -1400,154 +1397,3 @@ add_library(rdestl STATIC
   ${LIBS_ROOT}/rdestl/set.h
   ${LIBS_ROOT}/rdestl/iterator.h
 )
-
-#-------------------------------------------------------------------------------
-
-if(OPT_COMPILE_TESTS)
-
-set(TESTS_ROOT ${SRC_ROOT}/tests)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_DISABLE_ASSERTS")
-
-include_directories(
-  ${LIBS_ROOT}/boost
-)
-
-if(x64)
-set(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage/x64)
-else()
-set(BOOST_LINK_DIR ${LIBS_ROOT}/boost/stage)
-endif()
-link_directories(${BOOST_LINK_DIR})
-
-#-------------------------------------------------------
-# target testnetbox_01
-
-set(TESTNETBOX_01_DIR ${TESTS_ROOT})
-
-set(TESTNETBOX_01_SOURCES
-  ${SRC_ROOT}/base/Classes.cpp
-  ${SRC_ROOT}/base/Sysutils.cpp
-  ${SRC_ROOT}/base/UnicodeString.cpp
-  ${SRC_ROOT}/base/local.cpp
-  ${SRC_ROOT}/base/Common.cpp
-  ${SRC_ROOT}/base/Exceptions.cpp
-  ${SRC_ROOT}/base/FileBuffer.cpp
-  ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
-  ${SRC_ROOT}/resource/TextsCore1.rc
-  ${SRC_ROOT}/resource/rtlconsts.rc
-)
-
-add_executable(testnetbox_01 ${TESTNETBOX_01_SOURCES})
-
-set_target_properties(testnetbox_01
-  PROPERTIES
-  COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-)
-
-add_dependencies(testnetbox_01
-  atlmfc
-  putty
-  tinyxml2
-)
-
-target_link_libraries(testnetbox_01 ${NETBOX_LIBRARIES})
-
-#-------------------------------------------------------
-# target testnetbox_02
-
-set(TESTNETBOX_02_DIR ${TESTS_ROOT})
-
-set(TESTNETBOX_02_SOURCES
-  ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
-  ${TESTNETBOX_02_DIR}/testnetbox_02.rc
-  ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
-  ${SRC_ROOT}/resource/TextsCore1.rc
-  ${SRC_ROOT}/resource/rtlconsts.rc
-)
-
-add_executable(testnetbox_02 ${TESTNETBOX_02_SOURCES})
-
-set_target_properties(testnetbox_02
-  PROPERTIES
-  COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
-)
-
-add_dependencies(testnetbox_02
-  atlmfc
-  putty
-  tinyxml2
-  neon
-  apr
-  expat
-  zlib
-)
-
-target_link_libraries(testnetbox_02 ${NETBOX_LIBRARIES})
-
-#-------------------------------------------------------
-# target testnetbox_03
-
-set(TESTNETBOX_03_DIR ${TESTS_ROOT})
-
-set(TESTNETBOX_03_SOURCES
-  ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
-  ${TESTNETBOX_03_DIR}/testnetbox_03.cpp
-  ${SRC_ROOT}/resource/TextsCore1.rc
-  ${SRC_ROOT}/resource/rtlconsts.rc
-)
-
-add_executable(testnetbox_03 ${TESTNETBOX_03_SOURCES})
-
-set_target_properties(testnetbox_03
-  PROPERTIES
-  COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
-)
-
-add_dependencies(testnetbox_03
-  putty
-  tinyxml2
-  neon
-  apr
-  expat
-  zlib
-)
-
-target_link_libraries(testnetbox_03 ${NETBOX_LIBRARIES})
-
-#-------------------------------------------------------
-# target testnetbox_04
-
-set(TESTNETBOX_04_DIR ${TESTS_ROOT})
-
-set(TESTNETBOX_04_SOURCES
-  ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
-  ${TESTNETBOX_04_DIR}/testnetbox_04.cpp
-  ${SRC_ROOT}/resource/TextsCore1.rc
-  ${SRC_ROOT}/resource/rtlconsts.rc
-)
-
-add_executable(testnetbox_04 ${TESTNETBOX_04_SOURCES})
-
-set_target_properties(testnetbox_04
-  PROPERTIES
-  COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
-)
-
-add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
-  calculator_dll
-)
-
-target_link_libraries(testnetbox_04 ${NETBOX_LIBRARIES}
-)
-
-endif(OPT_COMPILE_TESTS)
