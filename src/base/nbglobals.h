@@ -128,6 +128,9 @@ inline void operator_delete(void * p)
 
 #if defined(__cplusplus)
 
+#pragma warning(push)
+#pragma warning(disable: 4100) // unreferenced formal parameter
+
 namespace nballoc
 {
   inline void destruct(char *) {}
@@ -135,6 +138,8 @@ namespace nballoc
   template <typename T>
   inline void destruct(T * t) { t->~T(); }
 } // namespace nballoc
+
+#pragma warning(pop)
 
 template <typename T> struct custom_nballocator_t;
 

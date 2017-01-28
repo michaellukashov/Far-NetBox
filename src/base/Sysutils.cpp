@@ -113,13 +113,13 @@ Exception::Exception(const UnicodeString & Msg, int AHelpContext) :
   (void)AHelpContext;
 }
 
-Exception::Exception(Exception * E, int Ident) :
+Exception::Exception(Exception * E, intptr_t Ident) :
   std::runtime_error(E ? E->what() : "")
 {
   Message = FMTLOAD(Ident);
 }
 
-Exception::Exception(int Ident) :
+Exception::Exception(intptr_t Ident) :
   std::runtime_error("")
 {
   Message = FMTLOAD(Ident);
@@ -643,16 +643,16 @@ bool ForceDirectories(const UnicodeString & ADir)
   {
     return false;
   }
-  UnicodeString Dir2 = ::ExcludeTrailingBackslash(ADir);
-  if ((Dir2.Length() < 3) || ::DirectoryExists(Dir2))
+  UnicodeString Dir = ::ExcludeTrailingBackslash(ADir);
+  if ((Dir.Length() < 3 + 4) || ::DirectoryExists(Dir)) // \\?\C:
   {
     return Result;
   }
-  if (::ExtractFilePath(Dir2).IsEmpty())
+  if (::ExtractFilePath(Dir).IsEmpty())
   {
-    return ::CreateDir(Dir2);
+    return ::CreateDir(Dir);
   }
-  Result = ::ForceDirectories(::ExtractFilePath(Dir2)) && CreateDir(Dir2);
+  Result = ::ForceDirectories(::ExtractFilePath(Dir)) && CreateDir(Dir);
   return Result;
 }
 

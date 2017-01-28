@@ -1,5 +1,5 @@
 /* zconf.h -- configuration of the zlib compression library
- * Copyright (C) 1995-2013 Jean-loup Gailly.
+ * Copyright (C) 1995-2016 Jean-loup Gailly, Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -18,11 +18,57 @@
 #endif
 
 #ifdef __STDC_VERSION__
+#  ifndef STDC
+#    define STDC
+#  endif
 #  if __STDC_VERSION__ >= 199901L
 #    ifndef STDC99
 #      define STDC99
 #    endif
 #  endif
+#endif
+#if !defined(STDC) && (defined(__STDC__) || defined(__cplusplus))
+#  define STDC
+#endif
+#if !defined(STDC) && (defined(__GNUC__) || defined(__BORLANDC__))
+#  define STDC
+#endif
+#if !defined(STDC) && (defined(MSDOS) || defined(WINDOWS) || defined(WIN32))
+#  define STDC
+#endif
+#if !defined(STDC) && (defined(OS2) || defined(__HOS_AIX__))
+#  define STDC
+#endif
+
+#if defined(__OS400__) && !defined(STDC)    /* iSeries (formerly AS/400). */
+#  define STDC
+#endif
+
+#ifndef STDC
+#  ifndef const /* cannot use !defined(STDC) && !defined(const) on Mac */
+#    define const       /* note: need a more gentle solution here */
+#  endif
+#endif
+
+#if defined(ZLIB_CONST) && !defined(z_const)
+#  define z_const const
+#else
+#  define z_const
+#endif
+
+#ifdef Z_SOLO
+   typedef unsigned long z_size_t;
+#else
+#  define z_longlong long long
+#  if defined(NO_SIZE_T)
+     typedef unsigned NO_SIZE_T z_size_t;
+#  elif defined(STDC)
+#    include <stddef.h>
+     typedef size_t z_size_t;
+#  else
+     typedef unsigned long z_size_t;
+#  endif
+#  undef z_longlong
 #endif
 
 /* Maximum value for memLevel in deflateInit2 */
@@ -48,7 +94,7 @@
  Of course this will generally degrade compression (there's no free lunch).
 
    The memory requirements for inflate are (in bytes) 1 << windowBits
- that is, 32K for windowBits=15 (default value) plus a few kilobytes
+ that is, 32K for windowBits=15 (default value) plus about 7 kilobytes
  for small objects.
 */
 

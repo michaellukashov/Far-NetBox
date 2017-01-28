@@ -1,5 +1,5 @@
 /* zutil.c -- target dependent utility functions for the compression library
- * Copyright (C) 1995-2005, 2010, 2011, 2012 Jean-loup Gailly.
+ * Copyright (C) 1995-2017 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -20,7 +20,7 @@ const char * const z_errmsg[10] = {
 ""};
 
 const char zlibng_string[] =
-   " zlib-ng 1.9.9 forked from zlib 1.2.8 ";
+   " zlib-ng 1.9.9 forked from zlib 1.2.11 ";
 
 const char * ZEXPORT zlibVersion(void)
 {
@@ -56,7 +56,7 @@ unsigned long ZEXPORT zlibCompileFlags(void)
     case 8:     flags += 2 << 6;        break;
     default:    flags += 3 << 6;
     }
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
     flags += 1 << 8;
 #endif
 #ifdef ZLIB_WINAPI
@@ -77,11 +77,38 @@ unsigned long ZEXPORT zlibCompileFlags(void)
 #ifdef PKZIP_BUG_WORKAROUND
     flags += 1L << 20;
 #endif
+#ifdef FASTEST
+    flags += 1L << 21;
+#endif
+#if defined(STDC) || defined(Z_HAVE_STDARG_H)
+#  ifdef NO_vsnprintf
+    flags += 1L << 25;
+#    ifdef HAS_vsprintf_void
+    flags += 1L << 26;
+#    endif
+#  else
+#    ifdef HAS_vsnprintf_void
+    flags += 1L << 26;
+#    endif
+#  endif
+#else
+    flags += 1L << 24;
+#  ifdef NO_snprintf
+    flags += 1L << 25;
+#    ifdef HAS_sprintf_void
+    flags += 1L << 26;
+#    endif
+#  else
+#    ifdef HAS_snprintf_void
+    flags += 1L << 26;
+#    endif
+#  endif
+#endif
     return flags;
 }
 
-#ifdef DEBUG
-
+#ifdef ZLIB_DEBUG
+#include <stdlib.h>
 #  ifndef verbose
 #    define verbose 0
 #  endif
@@ -103,9 +130,44 @@ const char * ZEXPORT zError(int err)
     return ERR_MSG(err);
 }
 
+#ifndef HAVE_MEMCPY
+
+void ZLIB_INTERNAL zmemcpy(unsigned char* dest, const unsigned char* source, unsigned int len)
+{
+    if (len == 0) return;
+    do {
+        *dest++ = *source++; /* ??? to be unrolled */
+    } while (--len != 0);
+}
+
+int ZLIB_INTERNAL zmemcmp(const unsigned char* s1, const unsigned char* s2, unsigned int len)
+{
+    uInt j;
+
+    for (j = 0; j < len; j++) {
+        if (s1[j] != s2[j]) return 2*(s1[j] > s2[j])-1;
+    }
+    return 0;
+}
+
+void ZLIB_INTERNAL zmemzero(unsigned char* dest, unsigned int len)
+{
+    if (len == 0) return;
+    do {
+        *dest++ = 0;  /* ??? to be unrolled */
+    } while (--len != 0);
+}
+#endif
+
 #ifndef MY_ZCALLOC /* Any system without a special alloc function */
 
-void ZLIB_INTERNAL *zcalloc (void *opaque, unsigned items, unsigned size)
+#ifndef STDC
+extern voidp  malloc (unsigned int size);
+extern voidp  calloc (unsigned int items, unsigned int size);
+extern void   free   (void * ptr);
+#endif
+
+void ZLIB_INTERNAL *zcalloc (void *opaque, uint32_t items, uint32_t size)
 {
     (void)opaque;
     return sizeof(unsigned int) > 2 ? (void *)malloc(items * size) :
@@ -119,3 +181,5 @@ void ZLIB_INTERNAL zcfree (void *opaque, void *ptr)
 }
 
 #endif /* MY_ZCALLOC */
+
+

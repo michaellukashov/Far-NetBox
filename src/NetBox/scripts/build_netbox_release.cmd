@@ -4,16 +4,21 @@
 set FAR_VERSION=Far2
 set PROJECT_ROOT=%~dp0..\..\..
 
-set PROJECT_CONFIG=Release
-set PROJECT_BUILD=Build
+set PROJECT_BUILD_TYPE=Release
 
 if "%1" == "" goto x86
 if "%1" == "x64" goto x64
+if "%1" == "vs2015-x86" goto vs2015-x86
+if "%1" == "vs2015-x64" goto vs2015-x64
 goto x86
+
+:vs2015-x64
+set PROJECT_COMNTOOLS=%VS140COMNTOOLS%
+set PROJECT_KIT=vs2015
 
 :x64
 set PROJECT_PLATFORM=x64
-set PROJECT_GEN=NMake Makefiles
+set PROJECT_GENERATOR=NMake Makefiles
 set PROJECT_VARS=x86_amd64
 
 call %~dp0\build_netbox.cmd
@@ -21,9 +26,13 @@ call %~dp0\build_netbox.cmd
 
 goto end
 
+:vs2015-x86
+set PROJECT_COMNTOOLS=%VS140COMNTOOLS%
+set PROJECT_KIT=vs2015
+
 :x86
 set PROJECT_PLATFORM=x86
-set PROJECT_GEN=NMake Makefiles
+set PROJECT_GENERATOR=NMake Makefiles
 set PROJECT_VARS=x86
 
 call %~dp0\build_netbox.cmd

@@ -152,7 +152,11 @@ AnsiString & AnsiString::operator=(const char * lpszData)
 {
   if (lpszData)
   {
-    Init(lpszData, strlen(lpszData ? lpszData : ""));
+    Init(lpszData, strlen(NullToEmptyA(lpszData)));
+  }
+  else
+  {
+    Data.clear();
   }
   return *this;
 }
@@ -327,7 +331,11 @@ RawByteString & RawByteString::operator=(const char * lpszData)
 {
   if (lpszData)
   {
-    Init(lpszData, strlen(lpszData ? lpszData : ""));
+    Init(lpszData, strlen(NullToEmptyA(lpszData)));
+  }
+  else
+  {
+    Data.clear();
   }
   return *this;
 }
@@ -464,7 +472,11 @@ UTF8String & UTF8String::operator=(const char * lpszData)
 {
   if (lpszData)
   {
-    Init(lpszData, strlen(lpszData ? lpszData : ""));
+    Init(lpszData, strlen(NullToEmptyA(lpszData)));
+  }
+  else
+  {
+    Data.clear();
   }
   return *this;
 }
@@ -689,6 +701,10 @@ UnicodeString & UnicodeString::operator=(const char * lpszData)
   if (lpszData)
   {
     Init(lpszData, strlen(lpszData ? lpszData : ""));
+  }
+  else
+  {
+    Data.clear();
   }
   return *this;
 }

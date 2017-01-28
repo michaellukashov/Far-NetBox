@@ -1,7 +1,5 @@
-#ifndef ZUTIL_H_
-#define ZUTIL_H_
 /* zutil.h -- internal interface and configuration of the compression library
- * Copyright (C) 1995-2013 Jean-loup Gailly.
+ * Copyright (C) 1995-2016 Jean-loup Gailly, Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -11,6 +9,9 @@
  */
 
 /* @(#) $Id$ */
+
+#ifndef ZUTIL_H
+#define ZUTIL_H
 
 #if defined(HAVE_INTERNAL)
 #  define ZLIB_INTERNAL __attribute__((visibility ("internal")))
@@ -29,7 +30,9 @@
 #ifndef local
 #  define local static
 #endif
-/* compile with -Dlocal if your debugger can't find static symbols */
+/* since "static" is used to mean two completely different things in C, we
+   define "local" for the non-static meaning of "static", for readability
+   (compile with -Dlocal if your debugger can't find static symbols) */
 
 typedef unsigned char uch; /* Included for compatibility with external code only */
 typedef uint16_t ush;      /* Included for compatibility with external code only */
@@ -40,7 +43,8 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 
 #define ERR_MSG(err) z_errmsg[Z_NEED_DICT-(err)]
 
-#define ERR_RETURN(strm, err) return (strm->msg = ERR_MSG(err), (err))
+#define ERR_RETURN(strm, err) \
+  return (strm->msg = ERR_MSG(err), (err))
 /* To be used only when the state is known to be valid */
 
         /* common constants */
@@ -104,8 +108,34 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 
          /* functions */
 
+#if defined(SMALL_MEDIUM) && !defined(_MSC_VER) && !defined(__SC__)
+ /* Use our own functions for small and medium model with MSC <= 5.0.
+  * You may have to use the same strategy for Borland C (untested).
+  * The __SC__ check is for Symantec.
+  */
+#  define NO_MEMCPY
+#endif
+#if defined(STDC) && !defined(HAVE_MEMCPY) && !defined(NO_MEMCPY)
+#  define HAVE_MEMCPY
+#endif
+#ifdef HAVE_MEMCPY
+#  ifdef SMALL_MEDIUM /* MSDOS small or medium model */
+#    define zmemcpy _fmemcpy
+#    define zmemcmp _fmemcmp
+#    define zmemzero(dest, len) _fmemset(dest, 0, len)
+#  else
+#    define zmemcpy memcpy
+#    define zmemcmp memcmp
+#    define zmemzero(dest, len) memset(dest, 0, len)
+#  endif
+#else
+   void ZLIB_INTERNAL zmemcpy(unsigned char *dest, const unsigned char* source, unsigned int len);
+   int ZLIB_INTERNAL zmemcmp(const unsigned char* s1, const unsigned char* s2, unsigned int len);
+   void ZLIB_INTERNAL zmemzero(unsigned char* dest, unsigned int len);
+#endif
+
 /* Diagnostic functions */
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
 #   include <stdio.h>
     extern int ZLIB_INTERNAL z_verbose;
     extern void ZLIB_INTERNAL z_error(char *m);
@@ -127,8 +157,9 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 void ZLIB_INTERNAL *zcalloc(void *opaque, unsigned items, unsigned size);
 void ZLIB_INTERNAL   zcfree(void *opaque, void *ptr);
 
-#define ZALLOC(strm, items, size) (*((strm)->zalloc))((strm)->opaque, (items), (size))
-#define ZFREE(strm, addr)         (*((strm)->zfree))((strm)->opaque, (void *)(addr))
+#define ZALLOC(strm, items, size) \
+           (*((strm)->zalloc))((strm)->opaque, (items), (size))
+#define ZFREE(strm, addr)  (*((strm)->zfree))((strm)->opaque, (void *)(addr))
 #define TRY_FREE(s, p) {if (p) ZFREE(s, p);}
 
 /* Reverse the bytes in a 32-bit value. Use compiler intrinsics when

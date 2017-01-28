@@ -346,7 +346,7 @@ BOOL CServerPath::SetPath(CString &newpath, BOOL bIsFile /*=FALSE*/)
       path.TrimRight( L"\\" );
       while (path.Replace( L"\\\\", L"\\" ));
       int pos=path.Find( L":\\" );
-      if (pos==-1 || pos!=1)
+      if ((pos==-1) || (pos!=1))
         return FALSE;
       else
       {

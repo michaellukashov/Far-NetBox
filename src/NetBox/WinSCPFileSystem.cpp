@@ -1088,7 +1088,7 @@ void TWinSCPFileSystem::CreateLink()
   {
     if (Edit)
     {
-      DebugAssert(File->GetFileName() == FileName);
+      DebugAssert(!File || (File->GetFileName() == FileName));
       intptr_t Params = dfNoRecursive;
       GetTerminal()->SetExceptionOnFail(true);
       {

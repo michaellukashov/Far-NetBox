@@ -1721,7 +1721,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()), "",
       [&]()
       {
-        THROWOSIFFALSE(::ForceDirectories(DestFullName));
+        THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFullName)));
       });
 
       TSinkFileParams SinkFileParams;
@@ -2716,7 +2716,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
         }
 
         TDateTime UtcModification = UtcFilePtr->GetModification();
-        UtcFilePtr.release();
+        UtcFilePtr.reset();
 
         // MDTM returns seconds, trim those
         UtcModification = core::ReduceDateTimePrecision(UtcModification, File->GetModificationFmt());

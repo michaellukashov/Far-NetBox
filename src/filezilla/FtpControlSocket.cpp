@@ -202,6 +202,7 @@ CFtpControlSocket::CFtpControlSocket(CMainThread *pMainThread, CFileZillaTools *
   m_serverCapabilities.Clear();
   m_ListFile = "";
 
+  m_ListFileSize = 0;
   m_isFileZilla = false;
   m_awaitsReply = false;
   m_skipReply = false;
@@ -6018,7 +6019,7 @@ _int64 CFtpControlSocket::GetAbleToUDSize( bool & beenWaiting, CTime & curTime, 
 
     curLimit = GetSpeedLimit(direction, curTime);
     int sz = m_InstanceList[direction].size();
-    __int64 nMax = curLimit / (sz ? sz : 0);
+    __int64 nMax = curLimit / (sz ? sz : 1);
     _int64 nLeft = 0;
     int nCount = 0;
     rde::list<t_ActiveList>::iterator iter2;
