@@ -523,7 +523,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         if (Status != NULL)
         {
           Result = HandleTransferStatus(
-            true, Status->transfersize, Status->bytes, Status->bFileTransfer);
+            true, Status->transfersize, Status->bytes, Status->bFileTransfer != FALSE);
           delete Status;
         }
         else
