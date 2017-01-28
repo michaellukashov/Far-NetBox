@@ -8,6 +8,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "Build type -- ${CMAKE_BUILD_TYPE}")
 message(STATUS "CMAKE_CL_64 -- ${CMAKE_CL_64}")
+message(STATUS "MSVC10 -- ${MSVC10}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far2)
@@ -20,6 +21,16 @@ else()
   set(x64 0)
   set(PROJECT_PLATFORM "x86")
 endif()
+
+if(MSVC)
+  if(MSVC14)
+    set(OPENSSL_INC_DIR "vs2015-${PROJECT_PLATFORM}")
+  else()
+    set(OPENSSL_INC_DIR "${PROJECT_PLATFORM}")
+  endif()
+else()
+  set(OPENSSL_INC_DIR "${PROJECT_PLATFORM}")
+endif(MSVC)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(BUILD_DEBUG 1)
@@ -51,7 +62,7 @@ set(SRC_ROOT ${PROJECT_ROOT}/src)
 set(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB") #" -DUSE_GETADDRINFO")
 set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
 set(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
-set(NETBOX_DEFS "-DMPEXT -DWINSCP -DSTRICT -DNOCRYPT")
+set(NETBOX_DEFS "-DMPEXT -DWINSCP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
 if (MSVC_VERSION GREATER 1899)
 set(NETBOX_DEFS "${NETBOX_DEFS} /Zc:threadSafeInit- /bigobj")
 endif()
@@ -210,14 +221,16 @@ include_directories(
   ${LIBS_ROOT}/apr/include/arch/unix
   ${LIBS_ROOT}/rdestl
 
-  ${LIBS_ROOT}/openssl/${PROJECT_PLATFORM}/include
-  ${LIBS_ROOT}/openssl
-#  ${LIBS_ROOT}/openssl/include
-  ${LIBS_ROOT}/openssl/crypto
-  ${LIBS_ROOT}/openssl/crypto/asn1
-  ${LIBS_ROOT}/openssl/crypto/modes
-  ${LIBS_ROOT}/openssl/crypto/evp
+  ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
 )
+
+#-------------------------------------------------------------------------------
+add_library (libcrypto STATIC IMPORTED)
+set_property(TARGET libcrypto
+    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_INC_DIR}/libcrypto.lib)
+add_library (libssl STATIC IMPORTED)
+set_property(TARGET libssl
+    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_INC_DIR}/libssl.lib)
 
 #-------------------------------------------------------------------------------
 # target NetBox
@@ -338,7 +351,7 @@ set(NETBOX_LIBRARIES
   putty
   zlib
   tinyxml2
-  openssl
+  libssl libcrypto
   neon
   apr
   expat
@@ -437,13 +450,6 @@ add_custom_command(TARGET NetBox
   VERBATIM
 )
 endif()
-
-add_library (libcrypto SHARED IMPORTED)
-set_property(TARGET libcrypto
-    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/libcrypto.lib)
-add_library (libssl ST IMPORTED)
-set_property(TARGET libssl
-    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/libssl.libb)
 
 #-------------------------------------------------------------------------------
 
