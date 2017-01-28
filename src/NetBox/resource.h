@@ -12,5 +12,5 @@
 #define PUTTY_VERSION_WTXT          L"0.67"
 #define FILEZILLA_VERSION_WTXT      L"2.2.32"
 #define ZLIB_VERSION_WTXT           L"1.2.11"
-#define OPENSSL_VERSION_WTXT        L"1.0.2k"
+#define OPENSSL_VERSION_WTXT        L"1.1.0d"
 #define WINSCP_VERSION_WTXT         L"5.9.3"
