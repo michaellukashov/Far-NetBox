@@ -4,7 +4,7 @@
 @rem 
 rm -rf out32dll tmp32dll tmp32 inc32 out32
 
-set CONF_PARAMS=no-unit-test no-cast no-err no-bf no-sctp no-asm enable-static-engine no-shared no-hw no-camellia no-seed no-rc4 no-rc5 no-whirlpool no-srp no-gost no-idea -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy -DNDEBUG;OPENSSL_NO_CAPIENG;NO_CHMOD;OPENSSL_NO_DGRAM;OPENSSL_NO_RIJNDAEL;DSO_WIN32;OPENSSL_NO_CT
+set CONF_PARAMS=no-unit-test no-cast no-err no-bf no-sctp no-asm enable-static-engine no-shared no-hw no-camellia no-seed no-rc4 no-rc5 no-whirlpool no-srp no-gost no-idea -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy -DNDEBUG;OPENSSL_NO_CAPIENG;NO_CHMOD;OPENSSL_NO_DGRAM;OPENSSL_NO_RIJNDAEL;DSO_WIN32;OPENSSL_NO_CT;OPENSSL_NO_LOCKING
 
 if "%1" == "" goto vs2010-x86
 if "%1" == "x86" goto vs2010-x86
