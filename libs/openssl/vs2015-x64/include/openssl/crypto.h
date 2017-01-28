@@ -77,6 +77,74 @@ int CRYPTO_THREAD_write_lock(CRYPTO_RWLOCK *lock);
 int CRYPTO_THREAD_unlock(CRYPTO_RWLOCK *lock);
 void CRYPTO_THREAD_lock_free(CRYPTO_RWLOCK *lock);
 
+# define CRYPTO_LOCK_ERR                 1
+# define CRYPTO_LOCK_EX_DATA             2
+# define CRYPTO_LOCK_X509                3
+# define CRYPTO_LOCK_X509_INFO           4
+# define CRYPTO_LOCK_X509_PKEY           5
+# define CRYPTO_LOCK_X509_CRL            6
+# define CRYPTO_LOCK_X509_REQ            7
+# define CRYPTO_LOCK_DSA                 8
+# define CRYPTO_LOCK_RSA                 9
+# define CRYPTO_LOCK_EVP_PKEY            10
+# define CRYPTO_LOCK_X509_STORE          11
+# define CRYPTO_LOCK_SSL_CTX             12
+# define CRYPTO_LOCK_SSL_CERT            13
+# define CRYPTO_LOCK_SSL_SESSION         14
+# define CRYPTO_LOCK_SSL_SESS_CERT       15
+# define CRYPTO_LOCK_SSL                 16
+# define CRYPTO_LOCK_SSL_METHOD          17
+# define CRYPTO_LOCK_RAND                18
+# define CRYPTO_LOCK_RAND2               19
+# define CRYPTO_LOCK_MALLOC              20
+# define CRYPTO_LOCK_BIO                 21
+# define CRYPTO_LOCK_GETHOSTBYNAME       22
+# define CRYPTO_LOCK_GETSERVBYNAME       23
+# define CRYPTO_LOCK_READDIR             24
+# define CRYPTO_LOCK_RSA_BLINDING        25
+# define CRYPTO_LOCK_DH                  26
+# define CRYPTO_LOCK_MALLOC2             27
+# define CRYPTO_LOCK_DSO                 28
+# define CRYPTO_LOCK_DYNLOCK             29
+# define CRYPTO_LOCK_ENGINE              30
+# define CRYPTO_LOCK_UI                  31
+# define CRYPTO_LOCK_ECDSA               32
+# define CRYPTO_LOCK_EC                  33
+# define CRYPTO_LOCK_ECDH                34
+# define CRYPTO_LOCK_BN                  35
+# define CRYPTO_LOCK_EC_PRE_COMP         36
+# define CRYPTO_LOCK_STORE               37
+# define CRYPTO_LOCK_COMP                38
+# define CRYPTO_LOCK_FIPS                39
+# define CRYPTO_LOCK_FIPS2               40
+# define CRYPTO_NUM_LOCKS                41
+
+# define CRYPTO_LOCK             1
+# define CRYPTO_UNLOCK           2
+# define CRYPTO_READ             4
+# define CRYPTO_WRITE            8
+
+# ifndef OPENSSL_NO_LOCKING
+#  ifndef CRYPTO_w_lock
+#   define CRYPTO_w_lock(type)     \
+        CRYPTO_lock(CRYPTO_LOCK|CRYPTO_WRITE,type,__FILE__,__LINE__)
+#   define CRYPTO_w_unlock(type)   \
+        CRYPTO_lock(CRYPTO_UNLOCK|CRYPTO_WRITE,type,__FILE__,__LINE__)
+#   define CRYPTO_r_lock(type)     \
+        CRYPTO_lock(CRYPTO_LOCK|CRYPTO_READ,type,__FILE__,__LINE__)
+#   define CRYPTO_r_unlock(type)   \
+        CRYPTO_lock(CRYPTO_UNLOCK|CRYPTO_READ,type,__FILE__,__LINE__)
+#   define CRYPTO_add(addr,amount,type)    \
+        CRYPTO_add_lock(addr,amount,type,__FILE__,__LINE__)
+#  endif
+# else
+#  define CRYPTO_w_lock(a)
+#  define CRYPTO_w_unlock(a)
+#  define CRYPTO_r_lock(a)
+#  define CRYPTO_r_unlock(a)
+#  define CRYPTO_add(a,b,c)       ((*(a))+=(b))
+# endif
+
 int CRYPTO_atomic_add(int *val, int amount, int *ret, CRYPTO_RWLOCK *lock);
 
 /*
@@ -250,6 +318,10 @@ typedef struct crypto_threadid_st {
 #   define CRYPTO_get_id_callback()                     (NULL)
 #   define CRYPTO_thread_id()                           (0UL)
 #  endif /* OPENSSL_API_COMPAT < 0x10000000L */
+
+const char *CRYPTO_get_lock_name(int type);
+int CRYPTO_add_lock(int *pointer, int amount, int type, const char *file,
+                    int line);
 
 #  define CRYPTO_set_dynlock_create_callback(dyn_create_function)
 #  define CRYPTO_set_dynlock_lock_callback(dyn_lock_function)
