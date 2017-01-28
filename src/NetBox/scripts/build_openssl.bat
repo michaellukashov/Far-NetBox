@@ -20,11 +20,12 @@ rm -rf x64
 call "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
 perl Configure VC-WIN64A %CONF_PARAMS%
 call ms\do_win64a
-nmake -f ms\nt.mak
+nmake clean
+nmake 
 mkdir x64
-cp out32/ssleay32.lib out32/libeay32.lib x64
-cp tmp32/lib.pdb x64
-cp -R inc32 x64
+cp libssl.lib libcrypto.lib x64
+cp ossl_static.pdb x64
+cp -R include x64
 goto end
 
 :vs2015-x64
@@ -32,11 +33,12 @@ rm -rf vs2015-x64
 call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
 perl Configure VC-WIN64A %CONF_PARAMS%
 call ms\do_win64a
-nmake -f ms\nt.mak
+nmake clean
+nmake 
 mkdir vs2015-x64
-cp out32/ssleay32.lib out32/libeay32.lib vs2015-x64
-cp tmp32/lib.pdb vs2015-x64
-cp -R inc32 vs2015-x64
+cp libssl.lib libcrypto.lib vs2015-x64
+cp ossl_static.pdb vs2015-x64
+cp -R include vs2015-x64
 goto end
 
 :vs2010-x86
@@ -46,8 +48,8 @@ call "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
 perl Configure VC-WIN32 %CONF_PARAMS%
 rem call ms\do_nasm
 call ms\do_ms
-nmake -f ms\nt.mak
-nmake -f makefile || exit 1
+nmake clean
+nmake
 mkdir x86
 cp libcrypto.lib libssl.lib x86
 cp app.pdb ossl_static.pdb x86
@@ -60,11 +62,12 @@ call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
 perl Configure VC-WIN32 %CONF_PARAMS%
 rem call ms\do_nasm
 call ms\do_ms
-nmake -f ms\nt.mak
+nmake clean
+nmake
 mkdir vs2015-x86
-cp out32/ssleay32.lib out32/libeay32.lib vs2015-x86
-cp tmp32/lib.pdb vs2015-x86
-cp -R inc32 vs2015-x86
+cp libcrypto.lib libssl.lib vs2015-x86
+cp app.pdb ossl_static.pdb vs2015-x86
+cp -R include vs2015-x86
 goto end
 
 :end
