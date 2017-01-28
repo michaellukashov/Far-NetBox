@@ -3376,7 +3376,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
           break;
         }
 
-        DebugCheck(m_pTransferSocket->AsyncSelect());
+        DebugCheck(m_pTransferSocket->AsyncSelect() != FALSE);
       }
       m_Operation.nOpState=FILETRANSFER_LIST_LIST;
       break;
@@ -3656,7 +3656,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
             break;
           }
 
-          DebugCheck(m_pTransferSocket->AsyncSelect());
+          DebugCheck(m_pTransferSocket->AsyncSelect() != FALSE);
         }
 
         if (pData->transferdata.bResume)

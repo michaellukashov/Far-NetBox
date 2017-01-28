@@ -840,7 +840,7 @@ BOOL CAsyncSocketExLayer::AcceptNext( CAsyncSocketEx& rConnectedSocket, SOCKADDR
 
     if (hTemp == INVALID_SOCKET)
       return FALSE;
-    DebugCheck(rConnectedSocket.InitAsyncSocketExInstance());
+    DebugCheck(rConnectedSocket.InitAsyncSocketExInstance() != FALSE);
     rConnectedSocket.m_SocketData.hSocket=hTemp;
     rConnectedSocket.AttachHandle(hTemp);
     rConnectedSocket.SetFamily(GetFamily());
