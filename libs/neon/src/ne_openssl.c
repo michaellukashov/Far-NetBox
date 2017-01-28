@@ -37,7 +37,6 @@
 #include <openssl/x509v3.h>
 #include <openssl/rand.h>
 #include <openssl/opensslv.h>
-#include <openssl/crypto/evp/evp.h>
 
 #ifdef NE_HAVE_TS_SSL
 #include <stdlib.h> /* for abort() */
