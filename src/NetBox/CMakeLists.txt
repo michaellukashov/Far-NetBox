@@ -418,6 +418,7 @@ add_dependencies(NetBox
   putty
   zlib
   tinyxml2
+  libssl libcrypto
   neon
   apr
   expat
