@@ -463,10 +463,10 @@ char *dupprintf(const char *fmt, ...)
     return ret;
 }
 
-struct strbuf {
+typedef struct strbuf_st {
     char *s;
     int len, size;
-};
+} strbuf;
 strbuf *strbuf_new(void)
 {
     strbuf *buf = snew(strbuf);
@@ -1216,7 +1216,7 @@ char *buildinfo(const char *newline)
     strbuf_catf(buf, "%sBuild option: DEBUG", newline);
 #endif
 
-    strbuf_catf(buf, "%sSource commit: %s", newline, commitid);
+//    strbuf_catf(buf, "%sSource commit: %s", newline, commitid);
 
     return strbuf_to_str(buf);
 }
