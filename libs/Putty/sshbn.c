@@ -1463,6 +1463,7 @@ Bignum bignum_from_decimal(const char *decimal)
 
         tmp = bigmul(result, Ten);
         tmp2 = bignum_from_long(*decimal - '0');
+        freebn(result);
         result = bigadd(tmp, tmp2);
         freebn(tmp);
         freebn(tmp2);
