@@ -2113,12 +2113,7 @@ static void *ed25519_openssh_createkey(const struct ssh_signkey *self,
     }
 
     getstring((const char**)blob, len, &q, &qlen);
-    if (!q)
-    {
-        ecdsa_freekey(ec);
-        return NULL;
-    }
-    if (qlen != 64)
+    if (!q || qlen != 64) {
     {
         ecdsa_freekey(ec);
         return NULL;
