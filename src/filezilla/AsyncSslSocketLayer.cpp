@@ -708,7 +708,7 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
     STACK_OF(SSL_CIPHER) * ciphers = SSL_get_ciphers(m_ssl);
     for (int i = 0; i < sk_SSL_CIPHER_num(ciphers); i++)
     {
-      SSL_CIPHER * cipher = sk_SSL_CIPHER_value(ciphers, i);
+      const SSL_CIPHER * cipher = sk_SSL_CIPHER_value(ciphers, i);
       LogSocketMessageRaw(FZ_LOG_INFO, A2CT(cipher->name));
     }
   }
@@ -1305,7 +1305,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
 #endif
         }
         nb_free(unicode);
-        CRYPTO_free(out);
+        OPENSSL_free(out);
       }
 
       switch(OBJ_obj2nid(pObject))
@@ -1414,7 +1414,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
 #endif
         }
         nb_free(unicode);
-        CRYPTO_free(out);
+        OPENSSL_free(out);
       }
 
       switch(OBJ_obj2nid(pObject))

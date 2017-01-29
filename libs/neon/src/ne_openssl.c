@@ -27,8 +27,10 @@
 #include <string.h>
 #endif
 
+#include <windows.h>
 #include <stdio.h>
 
+#include <openssl/crypto.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/pkcs12.h>
