@@ -3,6 +3,7 @@
 #include <string>
 #include <hash_map.h>
 #include "nbglobals.h"
+//#include "Global.h"
 
 class TObject;
 class THashTable;
@@ -225,6 +226,12 @@ public:                                       \
 
 #define NB_DECLARE_CLASS(name)          \
   NB_DECLARE_RUNTIME_CLASS(name)        \
+public:                                 \
+  TObjectClassId GetKind() const { return OBJECT_CLASS_##name; } \
+  static bool classof(const TObject * Obj) \
+  { \
+     return Obj->GetKind() == OBJECT_CLASS_##name; \
+  }
 
 #define NB_GET_CLASS_INFO(name)         \
   &name::FClassInfo
@@ -239,8 +246,8 @@ public:                                       \
 const TObject * NbStaticDownCastConst(TObjectClassId ClassId, const TObject * Object);
 TObject * NbStaticDownCast(TObjectClassId ClassId, TObject * Object);
 
-#define NB_STATIC_DOWNCAST_CONST(class_name, object) (static_cast<const class_name *>(NbStaticDownCastConst(OBJECT_CLASS_##class_name, static_cast<const TObject *>(object))))
-#define NB_STATIC_DOWNCAST(class_name, object) (static_cast<class_name *>(NbStaticDownCast(OBJECT_CLASS_##class_name, static_cast<TObject *>(object))))
+#define NB_STATIC_DOWNCAST_CONST(class_name, object) (rtti::dyn_cast_or_null<class_name>(object))
+#define NB_STATIC_DOWNCAST(class_name, object) (rtti::dyn_cast_or_null<class_name>(object))
 
 class THashTable : public rde::hash_map<int, const TClassInfo *>
 {
