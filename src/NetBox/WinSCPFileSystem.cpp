@@ -1066,7 +1066,7 @@ void TWinSCPFileSystem::CreateLink()
   TFarPanelInfo * const * PanelInfo = GetPanelInfo();
   if (PanelInfo && *PanelInfo && (*PanelInfo)->GetFocusedItem() && (*PanelInfo)->GetFocusedItem()->GetUserData())
   {
-    File = NB_STATIC_DOWNCAST(TRemoteFile, as_object((*PanelInfo)->GetFocusedItem()->GetUserData()));
+    File = NB_STATIC_DOWNCAST(TRemoteFile, (*PanelInfo)->GetFocusedItem()->GetUserData());
 
     if (File)
     {
@@ -2900,7 +2900,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
       FileName = PanelItem->GetFileName();
       if (Side == osRemote)
       {
-        Data = NB_STATIC_DOWNCAST(TRemoteFile, as_object(PanelItem->GetUserData()));
+        Data = NB_STATIC_DOWNCAST(TRemoteFile, PanelItem->GetUserData());
         DebugAssert(Data);
       }
       if (Side == osLocal)

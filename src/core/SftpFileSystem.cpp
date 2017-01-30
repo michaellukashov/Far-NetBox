@@ -1731,7 +1731,7 @@ public:
   {
     void * Token;
     bool Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_ATTRS, asAll, &Token);
-    File = NB_STATIC_DOWNCAST(TRemoteFile, as_object(Token));
+    File = NB_STATIC_DOWNCAST(TRemoteFile, Token);
     return Result;
   }
 
@@ -1819,13 +1819,13 @@ public:
     {
       SCOPE_EXIT
       {
-        File = NB_STATIC_DOWNCAST(TRemoteFile, as_object(Token));
+        File = NB_STATIC_DOWNCAST(TRemoteFile, Token);
       };
       Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_EXTENDED_REPLY, asNo, &Token);
     }
     __finally
     {
-      File = NB_STATIC_DOWNCAST(TRemoteFile, as_object(Token));
+      File = NB_STATIC_DOWNCAST(TRemoteFile, Token);
     };
     return Result;
   }
@@ -5322,7 +5322,7 @@ RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
 
 intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
 {
-  TOpenRemoteFileParams * OpenParams = NB_STATIC_DOWNCAST(TOpenRemoteFileParams, as_object(AOpenParams));
+  TOpenRemoteFileParams * OpenParams = NB_STATIC_DOWNCAST(TOpenRemoteFileParams, AOpenParams);
   DebugAssert(OpenParams);
   TFileOperationProgressType * OperationProgress = OpenParams->OperationProgress;
 
