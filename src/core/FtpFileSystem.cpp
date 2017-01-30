@@ -4181,7 +4181,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     UnicodeString DestFullName = Path1;
     ::AppendPathDelimiterW(DestFullName);
     DestFullName += FileName1;
-    TFileTransferData & UserData = *(NB_STATIC_DOWNCAST(TFileTransferData, AUserData));
+    TFileTransferData & UserData = *(NB_STATIC_DOWNCAST(TFileTransferData, as_object(AUserData)));
     if (UserData.OverwriteResult >= 0)
     {
       // on retry, use the same answer as on the first attempt
@@ -5050,7 +5050,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
 
 void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData)
 {
-  TFileTransferData * Data = NB_STATIC_DOWNCAST(TFileTransferData, UserData);
+  TFileTransferData * Data = NB_STATIC_DOWNCAST(TFileTransferData, as_object(UserData));
   FILETIME WrTime = ::DateTimeToFileTime(Data->Modification, dstmUnix);
   SetFileTime(AHandle, nullptr, nullptr, &WrTime);
 }

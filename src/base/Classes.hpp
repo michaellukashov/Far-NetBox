@@ -56,7 +56,16 @@ public:
   virtual void Changed() {}
 
   bool IsKindOf(TObjectClassId ClassId) const;
+//  TObjectClassId GetKind() const { return OBJECT_CLASS_TObject; }
+//  static bool classof(const TObject * Obj)
+//  {
+//     return Obj->GetKind() >= OBJECT_CLASS_TObject &&
+//            Obj->GetKind() <= OBJECT_CLASS_TFarCheckBox;
+//  }
 };
+
+template<typename T>
+inline TObject * as_object(T * p) { return static_cast<TObject *>(p); }
 
 struct TPoint
 {

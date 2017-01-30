@@ -287,12 +287,12 @@ TObjectList::~TObjectList()
 
 TObject * TObjectList::operator [](intptr_t Index) const
 {
-  return static_cast<TObject *>(TList::operator[](Index));
+  return as_object(TList::operator[](Index));
 }
 
 TObject * TObjectList::GetObj(intptr_t Index) const
 {
-  return static_cast<TObject *>(TList::GetItem(Index));
+  return as_object(TList::GetItem(Index));
 }
 
 void TObjectList::SetItem(intptr_t Index, TObject * Value)
