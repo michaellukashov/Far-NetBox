@@ -219,8 +219,8 @@ void TCopyParamRule::SetData(const TCopyParamRuleData & Value)
 }
 
 TCopyParamList::TCopyParamList() :
-  FRules(new TList()),
-  FCopyParams(new TList()),
+  FRules(new TObjectList()),
+  FCopyParams(new TObjectList()),
   FNames(new TStringList()),
   FNameList(nullptr),
   FModified(false)
@@ -228,8 +228,8 @@ TCopyParamList::TCopyParamList() :
 }
 
 TCopyParamList::TCopyParamList(const TCopyParamList & other) :
-  FRules(new TList()),
-  FCopyParams(new TList()),
+  FRules(new TObjectList()),
+  FCopyParams(new TObjectList()),
   FNames(new TStringList()),
   FNameList(nullptr),
   FModified(false)
@@ -462,12 +462,12 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
 
 const TCopyParamRule * TCopyParamList::GetRule(intptr_t Index) const
 {
-  return NB_STATIC_DOWNCAST(TCopyParamRule, FRules->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TCopyParamRule, FRules->GetObj(Index));
 }
 
 const TCopyParamType * TCopyParamList::GetCopyParam(intptr_t Index) const
 {
-  return NB_STATIC_DOWNCAST(TCopyParamType, FCopyParams->GetItem(Index));
+  return NB_STATIC_DOWNCAST(TCopyParamType, FCopyParams->GetObj(Index));
 }
 
 UnicodeString TCopyParamList::GetName(intptr_t Index) const

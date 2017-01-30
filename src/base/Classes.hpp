@@ -159,6 +159,7 @@ public:
   void * operator [](intptr_t Index) const;
   virtual void * GetItem(intptr_t Index) const { return FList[Index]; }
   virtual void * GetItem(intptr_t Index) { return FList[Index]; }
+//  virtual TObject * GetObjItem(intptr_t Index) const { return static_cast<TObject *>(FList[Index]); }
   void SetItem(intptr_t Index, void * Item);
   intptr_t Add(void * Value);
   void * Extract(void * Item);

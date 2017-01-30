@@ -103,7 +103,7 @@ protected:
   UnicodeString FDirectoryToChangeTo;
   UnicodeString FHomeDirectory;
   AnsiString FEOL;
-  TList * FPacketReservations;
+  TObjectList * FPacketReservations;
   rde::vector<uintptr_t> FPacketNumbers;
   SSH_FXP_TYPES FPreviousLoggedPacket;
   int FNotLoggedPackets;
