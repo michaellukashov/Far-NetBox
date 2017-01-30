@@ -157,8 +157,8 @@ public:
   bool GetAnyRule() const;
 
 private:
-  TObjectList * FRules;
-  TObjectList * FCopyParams;
+  TList * FRules;
+  TList * FCopyParams;
   TStrings * FNames;
   mutable TStrings * FNameList;
   bool FModified;

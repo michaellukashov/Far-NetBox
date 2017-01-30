@@ -1191,8 +1191,8 @@ class TSFTPQueue : public TObject
 NB_DISABLE_COPY(TSFTPQueue)
 public:
   explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
-    FRequests(new TObjectList()),
-    FResponses(new TObjectList()),
+    FRequests(new TList()),
+    FResponses(new TList()),
     FFileSystem(AFileSystem),
     FCodePage(CodePage)
   {
@@ -1204,11 +1204,11 @@ public:
     DebugAssert(FResponses->GetCount() == FRequests->GetCount());
     for (intptr_t Index = 0; Index < FRequests->GetCount(); ++Index)
     {
-      TSFTPQueuePacket * Request = NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetObj(Index));
+      TSFTPQueuePacket * Request = NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetItem(Index));
       DebugAssert(Request);
       SAFE_DESTROY(Request);
 
-      TSFTPPacket * Response = NB_STATIC_DOWNCAST(TSFTPPacket, FResponses->GetObj(Index));
+      TSFTPPacket * Response = NB_STATIC_DOWNCAST(TSFTPPacket, FResponses->GetItem(Index));
       DebugAssert(Response);
       SAFE_DESTROY(Response);
     }
@@ -1229,10 +1229,10 @@ public:
     {
       DebugAssert(FResponses->GetCount());
 
-      TSFTPQueuePacket * Request = NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetObj(0));
+      TSFTPQueuePacket * Request = NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetItem(0));
       DebugAssert(Request);
 
-      TSFTPPacket * Response = NB_STATIC_DOWNCAST(TSFTPPacket, FResponses->GetObj(0));
+      TSFTPPacket * Response = NB_STATIC_DOWNCAST(TSFTPPacket, FResponses->GetItem(0));
       DebugAssert(Response);
 
       try
@@ -1273,7 +1273,7 @@ public:
   {
     DebugAssert(FRequests->GetCount());
     bool Result = false;
-    std::unique_ptr<TSFTPQueuePacket> Request(NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetObj(0)));
+    std::unique_ptr<TSFTPQueuePacket> Request(NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetItem(0)));
     try__finally
     {
       FRequests->Delete(0);
@@ -1283,7 +1283,7 @@ public:
         *Token = Request->Token;
       }
 
-      std::unique_ptr<TSFTPPacket> Response(NB_STATIC_DOWNCAST(TSFTPPacket, FResponses->GetObj(0)));
+      std::unique_ptr<TSFTPPacket> Response(NB_STATIC_DOWNCAST(TSFTPPacket, FResponses->GetItem(0)));
       FResponses->Delete(0);
       DebugAssert(Response.get());
 
@@ -1326,8 +1326,8 @@ public:
   }
 
 protected:
-  TObjectList * FRequests;
-  TObjectList * FResponses;
+  TList * FRequests;
+  TList * FResponses;
   TSFTPFileSystem * FFileSystem;
   uintptr_t FCodePage;
 
@@ -1932,7 +1932,7 @@ void TSFTPFileSystem::Init(void * Data)
   DebugAssert(FSecureShell);
   FFileSystemInfoValid = false;
   FVersion = NPOS;
-  FPacketReservations = new TObjectList();
+  FPacketReservations = new TList();
   FPacketNumbers.clear();
   FPreviousLoggedPacket = 0;
   FNotLoggedPackets = 0;
@@ -2114,7 +2114,7 @@ void TSFTPFileSystem::ResetConnection()
   for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
   {
     DebugAssert(FPacketReservations->GetItem(Index) == nullptr);
-    TSFTPPacket * Item = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetObj(Index));
+    TSFTPPacket * Item = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Index));
     SAFE_DESTROY(Item);
   }
   FPacketReservations->Clear();
@@ -2545,7 +2545,7 @@ void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
   {
     FPacketNumbers[Index - 1] = FPacketNumbers[Index];
   }
-  TSFTPPacket * Packet = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetObj(Reservation));
+  TSFTPPacket * Packet = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Reservation));
   if (Packet)
   {
     DebugAssert((Packet->GetReservedBy() == nullptr) || (Packet->GetReservedBy() == this));
@@ -2660,7 +2660,7 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
             uint32_t MessageNumber = static_cast<uint32_t>(FPacketNumbers[Index]);
             if (MessageNumber == Packet->GetMessageNumber())
             {
-              ReservedPacket = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetObj(Index));
+              ReservedPacket = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Index));
               IsReserved = true;
               if (ReservedPacket)
               {
