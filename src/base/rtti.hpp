@@ -226,12 +226,6 @@ public:                                       \
 
 #define NB_DECLARE_CLASS(name)          \
   NB_DECLARE_RUNTIME_CLASS(name)        \
-public:                                 \
-  TObjectClassId GetKind() const { return OBJECT_CLASS_##name; } \
-  static bool classof(const TObject * Obj) \
-  { \
-     return Obj->GetKind() == OBJECT_CLASS_##name; \
-  }
 
 #define NB_GET_CLASS_INFO(name)         \
   &name::FClassInfo
