@@ -170,6 +170,12 @@ friend class TStoredSessionList;
 NB_DISABLE_COPY(TSessionData)
 NB_DECLARE_CLASS(TSessionData)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSessionData; }
+  static bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSessionData;
+  }
 private:
   UnicodeString FHostName;
   intptr_t FPortNumber;
