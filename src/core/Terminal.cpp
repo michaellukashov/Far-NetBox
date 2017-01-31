@@ -236,7 +236,7 @@ TSynchronizeChecklist::~TSynchronizeChecklist()
 {
   for (intptr_t Index = 0; Index < FList.GetCount(); ++Index)
   {
-    TChecklistItem * Item = NB_STATIC_DOWNCAST(TChecklistItem, static_cast<void *>(FList.GetItem(Index)));
+    TChecklistItem * Item = dyn_cast<TChecklistItem>(static_cast<void *>(FList.GetItem(Index)));
     SAFE_DESTROY(Item);
   }
 }
@@ -282,7 +282,7 @@ intptr_t TSynchronizeChecklist::GetCount() const
 
 const TChecklistItem * TSynchronizeChecklist::GetItem(intptr_t Index) const
 {
-  return NB_STATIC_DOWNCAST(TChecklistItem, FList.GetItem(Index));
+  return dyn_cast<TChecklistItem>(FList.GetItem(Index));
 }
 
 void TSynchronizeChecklist::Update(const TChecklistItem * Item, bool Check, TChecklistAction Action)
@@ -563,7 +563,7 @@ void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const 
   // make sure we do not bother about getting back the silent abort exception
   // we issued ourselves. this may happen when there is an exception handler
   // that converts any exception to fatal one (such as in TTerminal::Open).
-  if (NB_STATIC_DOWNCAST(ECallbackGuardAbort, E) == nullptr)
+  if (dyn_cast<ECallbackGuardAbort>(E) == nullptr)
   {
     SAFE_DESTROY(FFatalError);
     FFatalError = new ExtException(E, Msg, HelpKeyword);
@@ -1652,7 +1652,7 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
         MoreMessages->Add(UnformatMessage(ExMessage));
       }
 
-      ExtException * EE = NB_STATIC_DOWNCAST(ExtException, E);
+      ExtException * EE = dyn_cast<ExtException>(E);
       if ((EE != nullptr) && (EE->GetMoreMessages() != nullptr))
       {
         MoreMessages->AddStrings(EE->GetMoreMessages());
@@ -1862,7 +1862,7 @@ void TTerminal::TerminalError(
 
 bool TTerminal::DoQueryReopen(Exception * E)
 {
-  EFatal * Fatal = NB_STATIC_DOWNCAST(EFatal, E);
+  EFatal * Fatal = dyn_cast<EFatal>(E);
   DebugAssert(Fatal != nullptr);
   bool Result = false;
   if ((Fatal != nullptr) && Fatal->GetReopenQueried())
@@ -2437,11 +2437,11 @@ uintptr_t TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
   // from within OnShowExtendedException handler
   DebugAssert(FCallbackGuard == nullptr);
   uintptr_t Result = 0;
-  if (E && (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
+  if (E && (dyn_cast<EFatal>(E) != nullptr))
   {
     FatalError(E, Msg, HelpKeyword);
   }
-  else if (E && (NB_STATIC_DOWNCAST(EAbort, E) != nullptr))
+  else if (E && (dyn_cast<EAbort>(E) != nullptr))
   {
     // resent EAbort exception
     Abort();
@@ -2844,7 +2844,7 @@ void TTerminal::RollbackAction(TSessionAction & Action,
   // and we do not want to record skipped actions.
   // But ESkipFile with "cancel" is abort and we want to record that.
   // Note that TSCPFileSystem modifies the logic of RollbackAction little bit.
-  if ((NB_STATIC_DOWNCAST(ESkipFile, E) != nullptr) &&
+  if ((dyn_cast<ESkipFile>(E) != nullptr) &&
       ((OperationProgress == nullptr) ||
        (OperationProgress->Cancel == csContinue)))
   {
@@ -3474,7 +3474,7 @@ bool TTerminal::ProcessFiles(const TStrings * AFileList,
               };
               if (!Ex)
               {
-                TRemoteFile * RemoteFile = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index));
+                TRemoteFile * RemoteFile = dyn_cast<TRemoteFile>(AFileList->GetObj(Index));
                 ProcessFile(FileName, RemoteFile, Param);
               }
               else
@@ -3745,7 +3745,7 @@ bool TTerminal::DeleteLocalFiles(TStrings * AFileList, intptr_t Params)
 void TTerminal::CustomCommandOnFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * AParams)
 {
-  TCustomCommandParams * Params = NB_STATIC_DOWNCAST(TCustomCommandParams, AParams);
+  TCustomCommandParams * Params = dyn_cast<TCustomCommandParams>(AParams);
   UnicodeString LocalFileName = AFileName;
   if (AFileName.IsEmpty() && AFile)
   {
@@ -3824,7 +3824,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
     UnicodeString FileList;
     for (intptr_t Index = 0; Index < AFiles->GetCount(); ++Index)
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFiles->GetObj(Index));
+      TRemoteFile * File = dyn_cast<TRemoteFile>(AFiles->GetObj(Index));
       bool Dir = File->GetIsDirectory() && CanRecurseToDirectory(File);
 
       if (!Dir || FLAGSET(Params, ccApplyToDirectories))
@@ -3849,7 +3849,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
 void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
   const TRemoteFile * AFile, /*const TRemoteProperties*/ void * Properties)
 {
-  TRemoteProperties * RProperties = NB_STATIC_DOWNCAST(TRemoteProperties, Properties);
+  TRemoteProperties * RProperties = dyn_cast<TRemoteProperties>(Properties);
   DebugAssert(RProperties && !RProperties->Valid.Empty());
   UnicodeString LocalFileName = AFileName;
   if (AFileName.IsEmpty() && AFile)
@@ -3941,7 +3941,7 @@ bool TTerminal::LoadFilesProperties(TStrings * AFileList)
     FFileSystem->LoadFilesProperties(AFileList);
   if (Result && GetSessionData()->GetCacheDirectories() &&
       (AFileList->GetCount() > 0) &&
-      (NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(0))->GetDirectory() == FFiles))
+      (dyn_cast<TRemoteFile>(AFileList->GetObj(0))->GetDirectory() == FFiles))
   {
     AddCachedFileList(FFiles);
   }
@@ -3953,7 +3953,7 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
 {
   DebugAssert(Param);
   DebugAssert(AFile);
-  TCalculateSizeParams * AParams = NB_STATIC_DOWNCAST(TCalculateSizeParams, Param);
+  TCalculateSizeParams * AParams = dyn_cast<TCalculateSizeParams>(Param);
   UnicodeString LocalFileName = AFileName;
   if (AFileName.IsEmpty())
   {
@@ -4615,7 +4615,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
     {
       RollbackAction(*Action, nullptr, &E);
     }
-    if (GetExceptionOnFail() || (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr))
+    if (GetExceptionOnFail() || (dyn_cast<EFatal>(&E) != nullptr))
     {
       throw;
     }
@@ -4907,7 +4907,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
 void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
   const TSearchRec & Rec, void * Param)
 {
-  TMakeLocalFileListParams & Params = *NB_STATIC_DOWNCAST(TMakeLocalFileListParams, Param);
+  TMakeLocalFileListParams & Params = *dyn_cast<TMakeLocalFileListParams>(Param);
 
   bool Directory = FLAGSET(Rec.Attr, faDirectory);
   if (Directory && Params.Recursive)
@@ -4929,7 +4929,7 @@ void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
 void TTerminal::CalculateLocalFileSize(const UnicodeString & AFileName,
   const TSearchRec & Rec, /*int64_t*/ void * Params)
 {
-  TCalculateSizeParams * AParams = NB_STATIC_DOWNCAST(TCalculateSizeParams, Params);
+  TCalculateSizeParams * AParams = dyn_cast<TCalculateSizeParams>(Params);
 
   bool Dir = FLAGSET(Rec.Attr, faDirectory);
 
@@ -5069,8 +5069,8 @@ public:
     {
       for (intptr_t Index = 0; Index < LocalFileList->GetCount(); ++Index)
       {
-        TSynchronizeFileData * FileData = NB_STATIC_DOWNCAST(TSynchronizeFileData,
-          LocalFileList->GetObj(Index));
+        TSynchronizeFileData * FileData = dyn_cast<TSynchronizeFileData>
+          (LocalFileList->GetObj(Index));
         SAFE_DESTROY(FileData);
       }
       SAFE_DESTROY(LocalFileList);
@@ -5287,7 +5287,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
       TSynchronizeFileData * FileData;
       for (intptr_t Index = 0; Index < Data.LocalFileList->GetCount(); ++Index)
       {
-        FileData = NB_STATIC_DOWNCAST(TSynchronizeFileData,
+        FileData = dyn_cast<TSynchronizeFileData>(
           Data.LocalFileList->GetObj(Index));
         // add local file either if we are going to upload it
         // (i.e. if it is updated or we want to upload even new files)
@@ -5404,7 +5404,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & AFileName,
 void TTerminal::DoSynchronizeCollectFile(const UnicodeString & /*AFileName*/,
   const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param)
 {
-  TSynchronizeData * Data = NB_STATIC_DOWNCAST(TSynchronizeData, Param);
+  TSynchronizeData * Data = dyn_cast<TSynchronizeData>(Param);
 
   TFileMasks::TParams MaskParams;
   MaskParams.Size = AFile->GetSize();
@@ -5448,7 +5448,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & /*AFileName*/,
         if (!New)
         {
           TSynchronizeFileData * LocalData =
-            NB_STATIC_DOWNCAST(TSynchronizeFileData, Data->LocalFileList->GetObj(LocalIndex));
+            dyn_cast<TSynchronizeFileData>(Data->LocalFileList->GetObj(LocalIndex));
 
           LocalData->New = false;
 
@@ -5852,7 +5852,7 @@ void TTerminal::FileFind(const UnicodeString & AFileName,
 
   DebugAssert(Param);
   DebugAssert(AFile);
-  TFilesFindParams * AParams = NB_STATIC_DOWNCAST(TFilesFindParams, Param);
+  TFilesFindParams * AParams = dyn_cast<TFilesFindParams>(Param);
 
   if (!AParams->Cancel)
   {
@@ -6848,7 +6848,7 @@ void TTerminalList::FreeAndNullTerminal(TTerminal *& Terminal)
 
 TTerminal * TTerminalList::GetTerminal(intptr_t Index)
 {
-  return NB_STATIC_DOWNCAST(TTerminal, GetObj(Index));
+  return dyn_cast<TTerminal>(GetObj(Index));
 }
 
 void TTerminalList::Idle()

@@ -62,12 +62,12 @@ static bool WellKnownException(
   /*
   // EIntError and EMathError are EExternal
   // EClassNotFound is EFilerError
-  else if ((NB_STATIC_DOWNCAST(EListError, E) != nullptr) ||
-           (NB_STATIC_DOWNCAST(EStringListError, E) != nullptr) ||
-           (NB_STATIC_DOWNCAST(EIntError, E) != nullptr) ||
-           (NB_STATIC_DOWNCAST(EMathError, E) != nullptr) ||
-           (NB_STATIC_DOWNCAST(EVariantError, E) != nullptr) ||
-           (NB_STATIC_DOWNCAST(EInvalidOperation, E) != nullptr))
+  else if ((dyn_cast<EListError>(E) != nullptr) ||
+           (dyn_cast<EStringListError>(E) != nullptr) ||
+           (dyn_cast<EIntError>(E) != nullptr) ||
+           (dyn_cast<EMathError>(E) != nullptr) ||
+           (dyn_cast<EVariantError>(E) != nullptr) ||
+           (dyn_cast<EInvalidOperation>(E) != nullptr))
            (dynamic_cast<EFilerError*>(E) != NULL))
   {
     if (Rethrow)
@@ -78,7 +78,7 @@ static bool WellKnownException(
     CounterName = L"InternalExceptions";
     Clone.reset(new EIntError(E->Message));
   }
-  else if (NB_STATIC_DOWNCAST(EExternal, E) != nullptr)
+  else if (dyn_cast<EExternal>(E) != nullptr)
   {
     if (Rethrow)
     {
@@ -88,7 +88,7 @@ static bool WellKnownException(
     CounterName = L"ExternalExceptions";
     Clone.reset(new EExternal(E->Message));
   }
-  else if (NB_STATIC_DOWNCAST(EHeapException, E) != nullptr)
+  else if (dyn_cast<EHeapException>(E) != nullptr)
   {
     if (Rethrow)
     {
@@ -201,7 +201,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   {
     Result = new TStringList();
     Result->Add(Message);
-    ExtException * ExtE = NB_STATIC_DOWNCAST(ExtException, E);
+    ExtException * ExtE = dyn_cast<ExtException>(E);
     if ((ExtE != nullptr) && (ExtE->GetMoreMessages() != nullptr))
     {
       Result->AddStrings(ExtE->GetMoreMessages());
@@ -216,7 +216,7 @@ bool ExceptionFullMessage(Exception * E, UnicodeString & Message)
   if (Result)
   {
     Message += L"\n";
-    ExtException * EE = NB_STATIC_DOWNCAST(ExtException, E);
+    ExtException * EE = dyn_cast<ExtException>(E);
     if ((EE != nullptr) && (EE->GetMoreMessages() != nullptr))
     {
       Message += EE->GetMoreMessages()->GetText() + L"\n";
@@ -468,16 +468,16 @@ Exception * CloneException(Exception * E)
 {
   Exception * Result;
   // this list has to be in sync with ExceptionMessage
-  ExtException * Ext = NB_STATIC_DOWNCAST(ExtException, E);
+  ExtException * Ext = dyn_cast<ExtException>(E);
   if (Ext != nullptr)
   {
     Result = Ext->Clone();
   }
-  else if (NB_STATIC_DOWNCAST(ECallbackGuardAbort, E) != nullptr)
+  else if (dyn_cast<ECallbackGuardAbort>(E) != nullptr)
   {
     Result = new ECallbackGuardAbort();
   }
-  else if (NB_STATIC_DOWNCAST(EAbort, E) != nullptr)
+  else if (dyn_cast<EAbort>(E) != nullptr)
   {
     Result = new EAbort(E->Message);
   }
@@ -504,15 +504,15 @@ Exception * CloneException(Exception * E)
 void RethrowException(Exception * E)
 {
   // this list has to be in sync with ExceptionMessage
-  if (NB_STATIC_DOWNCAST(EFatal, E) != nullptr)
+  if (dyn_cast<EFatal>(E) != nullptr)
   {
     throw EFatal(E, L"");
   }
-  else if (NB_STATIC_DOWNCAST(ECallbackGuardAbort, E) != nullptr)
+  else if (dyn_cast<ECallbackGuardAbort>(E) != nullptr)
   {
     throw ECallbackGuardAbort();
   }
-  else if (NB_STATIC_DOWNCAST(EAbort, E) != nullptr)
+  else if (dyn_cast<EAbort>(E) != nullptr)
   {
     throw EAbort(E->Message);
   }

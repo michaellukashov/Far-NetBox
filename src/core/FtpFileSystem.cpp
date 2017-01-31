@@ -1844,7 +1844,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
 void TFTPFileSystem::SinkFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * Param)
 {
-  TSinkFileParams * Params = NB_STATIC_DOWNCAST(TSinkFileParams, Param);
+  TSinkFileParams * Params = dyn_cast<TSinkFileParams>(Param);
   DebugAssert(Params->OperationProgress);
   try
   {
@@ -1890,7 +1890,7 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   {
     bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
+    TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = base::ExtractFileName(RealFileName, false);
 
@@ -4181,7 +4181,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     UnicodeString DestFullName = Path1;
     ::AppendPathDelimiterW(DestFullName);
     DestFullName += FileName1;
-    TFileTransferData & UserData = *(NB_STATIC_DOWNCAST(TFileTransferData, AUserData));
+    TFileTransferData & UserData = *(dyn_cast<TFileTransferData>(AUserData));
     if (UserData.OverwriteResult >= 0)
     {
       // on retry, use the same answer as on the first attempt
@@ -5050,7 +5050,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
 
 void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData)
 {
-  TFileTransferData * Data = NB_STATIC_DOWNCAST(TFileTransferData, UserData);
+  TFileTransferData * Data = dyn_cast<TFileTransferData>(UserData);
   FILETIME WrTime = ::DateTimeToFileTime(Data->Modification, dstmUnix);
   SetFileTime(AHandle, nullptr, nullptr, &WrTime);
 }

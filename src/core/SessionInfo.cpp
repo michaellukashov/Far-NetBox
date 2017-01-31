@@ -1672,7 +1672,7 @@ void TActionLog::AddPendingAction(TSessionActionRecord * Action)
 void TActionLog::RecordPendingActions()
 {
   while ((FPendingActions->GetCount() > 0) &&
-         NB_STATIC_DOWNCAST(TSessionActionRecord, FPendingActions->GetItem(0))->Record())
+         dyn_cast<TSessionActionRecord>(FPendingActions->GetItem(0))->Record())
   {
     FPendingActions->Delete(0);
   }

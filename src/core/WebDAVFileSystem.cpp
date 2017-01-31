@@ -1312,7 +1312,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   intptr_t Index = 0;
   while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
+    TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index));
     bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
@@ -2313,7 +2313,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 void TWebDAVFileSystem::SinkFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * Param)
 {
-  TSinkFileParams * Params = NB_STATIC_DOWNCAST(TSinkFileParams, Param);
+  TSinkFileParams * Params = dyn_cast<TSinkFileParams>(Param);
   DebugAssert(Params->OperationProgress);
   try
   {
@@ -2836,7 +2836,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & FileName, const TRemote
 
 void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem * AMainFileSystem)
 {
-  TWebDAVFileSystem * MainFileSystem = NB_STATIC_DOWNCAST(TWebDAVFileSystem, AMainFileSystem);
+  TWebDAVFileSystem * MainFileSystem = dyn_cast<TWebDAVFileSystem>(AMainFileSystem);
   if (DebugAlwaysTrue(MainFileSystem != nullptr))
   {
     TGuard Guard(FNeonLockStoreSection);

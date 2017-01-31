@@ -1477,7 +1477,7 @@ void TRemoteFile::FindLinkedFile()
     }
     catch (Exception & E)
     {
-      if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
+      if (dyn_cast<EFatal>(&E) != nullptr)
       {
         throw;
       }
@@ -1695,7 +1695,7 @@ UnicodeString TRemoteFileList::GetFullDirectory() const
 
 TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
-  return NB_STATIC_DOWNCAST(TRemoteFile, GetObj(Index));
+  return dyn_cast<TRemoteFile>(GetObj(Index));
 }
 
 Boolean TRemoteFileList::GetIsRoot() const
@@ -1901,7 +1901,7 @@ void TRemoteDirectoryCache::Clear()
     };
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
-      TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
+      TRemoteFileList * List = dyn_cast<TRemoteFileList>(GetObj(Index));
       SAFE_DESTROY(List);
       SetObj(Index, nullptr);
     }
@@ -1935,7 +1935,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   intptr_t Index = IndexOf(core::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
-    TRemoteFileList * FileList = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
+    TRemoteFileList * FileList = dyn_cast<TRemoteFileList>(GetObj(Index));
     if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
@@ -1954,7 +1954,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   if (Result)
   {
     DebugAssert(GetObj(Index) != nullptr);
-    NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index))->DuplicateTo(FileList);
+    dyn_cast<TRemoteFileList>(GetObj(Index))->DuplicateTo(FileList);
   }
   return Result;
 }
@@ -2008,7 +2008,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
 
 void TRemoteDirectoryCache::Delete(intptr_t Index)
 {
-  TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
+  TRemoteFileList * List = dyn_cast<TRemoteFileList>(GetObj(Index));
   SAFE_DESTROY(List);
   TStringList::Delete(Index);
 }
@@ -2808,7 +2808,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
   TRemoteProperties CommonProperties;
   for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
   {
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index));
+    TRemoteFile * File = dyn_cast<TRemoteFile>(AFileList->GetObj(Index));
     DebugAssert(File);
     if (!Index)
     {

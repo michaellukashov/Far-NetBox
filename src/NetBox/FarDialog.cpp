@@ -261,7 +261,7 @@ TFarDialogItem * TFarDialog::GetItem(intptr_t Index) const
   if (GetItemCount())
   {
     DebugAssert(Index >= 0 && Index < FItems->GetCount());
-    DialogItem = NB_STATIC_DOWNCAST(TFarDialogItem, (*GetItems())[Index]);
+    DialogItem = dyn_cast<TFarDialogItem>(FItems->GetObj(Index));
     DebugAssert(DialogItem);
   }
   else
@@ -451,7 +451,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
         if (!Result && (Msg == DN_KEY) &&
             (Param2 == KEY_ENTER) &&
             ((Param1 < 0) ||
-             ((NB_STATIC_DOWNCAST(TFarButton, GetItem(Param1)) == nullptr))) &&
+             ((dyn_cast<TFarButton>(GetItem(Param1)) == nullptr))) &&
             GetDefaultButton()->GetEnabled() &&
             (GetDefaultButton()->GetOnClick()))
         {
@@ -496,7 +496,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
           Result = 1;
           if (Param1 >= 0)
           {
-            TFarButton * Button = NB_STATIC_DOWNCAST(TFarButton, GetItem(Param1));
+            TFarButton * Button = dyn_cast<TFarButton>(GetItem(Param1));
             // FAR WORKAROUND
             // FAR 1.70 alpha 6 calls DN_CLOSE even for non-button dialog items
             // (list boxes in particular), while FAR 1.70 beta 5 used ID of
@@ -505,7 +505,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
             // flag DIF_LISTNOCLOSE.
             if (Button == nullptr)
             {
-              DebugAssert(NB_STATIC_DOWNCAST(TFarListBox, GetItem(Param1)) != nullptr);
+              DebugAssert(dyn_cast<TFarListBox>(GetItem(Param1)) != nullptr);
               Result = static_cast<intptr_t>(false);
             }
             else
@@ -737,7 +737,7 @@ intptr_t TFarDialog::ShowModal()
 
     if (BResult >= 0)
     {
-      TFarButton * Button = NB_STATIC_DOWNCAST(TFarButton, GetItem(BResult));
+      TFarButton * Button = dyn_cast<TFarButton>(GetItem(BResult));
       DebugAssert(Button);
       // correct result should be already set by TFarButton
       DebugAssert(FResult == Button->GetResult());
@@ -798,7 +798,7 @@ void TFarDialog::Change()
 
     for (intptr_t Index = 0; Index < NotifiedContainers->GetCount(); ++Index)
     {
-      NB_STATIC_DOWNCAST(TFarDialogContainer, (*NotifiedContainers)[Index])->Change();
+      dyn_cast<TFarDialogContainer>((*NotifiedContainers)[Index])->Change();
     }
   }
 }
@@ -969,7 +969,7 @@ void TFarDialogContainer::SetPosition(intptr_t AIndex, intptr_t Value)
     Position = Value;
     for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
     {
-      NB_STATIC_DOWNCAST(TFarDialogItem, (*FItems)[Index])->DialogResized();
+      dyn_cast<TFarDialogItem>((*FItems)[Index])->DialogResized();
     }
   }
 }
@@ -985,7 +985,7 @@ void TFarDialogContainer::SetEnabled(bool Value)
     FEnabled = true;
     for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
     {
-      NB_STATIC_DOWNCAST(TFarDialogItem, (*FItems)[Index])->UpdateEnabled();
+      dyn_cast<TFarDialogItem>((*FItems)[Index])->UpdateEnabled();
     }
   }
 }

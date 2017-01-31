@@ -902,9 +902,9 @@ UnicodeString TranslateExceptionMessage(Exception * E)
 {
   if (E)
   {
-    if (NB_STATIC_DOWNCAST(Exception, E) != nullptr)
+    if (dyn_cast<Exception>(E) != nullptr)
     {
-      return NB_STATIC_DOWNCAST(Exception, E)->Message;
+      return dyn_cast<Exception>(E)->Message;
     }
     else
     {

@@ -462,12 +462,12 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
 
 const TCopyParamRule * TCopyParamList::GetRule(intptr_t Index) const
 {
-  return NB_STATIC_DOWNCAST(TCopyParamRule, FRules->GetItem(Index));
+  return dyn_cast<TCopyParamRule>(FRules->GetItem(Index));
 }
 
 const TCopyParamType * TCopyParamList::GetCopyParam(intptr_t Index) const
 {
-  return NB_STATIC_DOWNCAST(TCopyParamType, FCopyParams->GetItem(Index));
+  return dyn_cast<TCopyParamType>(FCopyParams->GetItem(Index));
 }
 
 UnicodeString TCopyParamList::GetName(intptr_t Index) const
@@ -1137,7 +1137,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
 
   TSessionData * PuttySessionData =
-    NB_STATIC_DOWNCAST(TSessionData, ImportSessionList->FindByName(GetPuttySession()));
+    dyn_cast<TSessionData>(ImportSessionList->FindByName(GetPuttySession()));
   if (PuttySessionData != nullptr)
   {
     ImportSessionList->Remove(PuttySessionData);
@@ -1248,7 +1248,7 @@ void TGUIConfiguration::SetChecksumAlg(const UnicodeString & Value)
 
 TGUIConfiguration * GetGUIConfiguration()
 {
-  return NB_STATIC_DOWNCAST(TGUIConfiguration, GetConfiguration());
+  return dyn_cast<TGUIConfiguration>(GetConfiguration());
 }
 
 NB_IMPLEMENT_CLASS(TGUICopyParamType, NB_GET_CLASS_INFO(TCopyParamType), nullptr)

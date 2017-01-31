@@ -415,7 +415,7 @@ void TSessionData::Assign(const TPersistent * Source)
 {
   if (Source && (dyn_cast<TSessionData>(Source) != nullptr))
   {
-    TSessionData * SourceData = NB_STATIC_DOWNCAST(TSessionData, const_cast<TPersistent *>(Source));
+    TSessionData * SourceData = dyn_cast<TSessionData>(const_cast<TPersistent *>(Source));
     CopyData(SourceData);
     FSource = SourceData->FSource;
   }
@@ -1636,7 +1636,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
        // this can be optimized as the list is sorted
       for (Integer Index = 0; Index < AStoredSessions->GetCountIncludingHidden(); ++Index)
       {
-        TSessionData * AData = NB_STATIC_DOWNCAST(TSessionData, AStoredSessions->GetObj(Index));
+        TSessionData * AData = dyn_cast<TSessionData>(AStoredSessions->GetObj(Index));
         if (!AData->GetIsWorkspace())
         {
           bool Match = false;
@@ -4206,7 +4206,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
           }
           else
           {
-            SessionData = NB_STATIC_DOWNCAST(TSessionData, FindByName(SessionName));
+            SessionData = dyn_cast<TSessionData>(FindByName(SessionName));
           }
         }
 
@@ -4296,7 +4296,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults.get());
     for (intptr_t Index = 0; Index < GetCountIncludingHidden(); ++Index)
     {
-      TSessionData * SessionData = NB_STATIC_DOWNCAST(TSessionData, GetObj(Index));
+      TSessionData * SessionData = dyn_cast<TSessionData>(GetObj(Index));
       try
       {
         DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
@@ -4364,7 +4364,7 @@ void TStoredSessionList::Saved()
   FDefaultSettings->SetModified(false);
   for (intptr_t Index = 0; Index < GetCountIncludingHidden(); ++Index)
   {
-    (NB_STATIC_DOWNCAST(TSessionData, GetObj(Index))->SetModified(false));
+    (dyn_cast<TSessionData>(GetObj(Index))->SetModified(false));
   }
 }
 
@@ -4665,7 +4665,7 @@ intptr_t TStoredSessionList::IndexOf(TSessionData * Data) const
 TSessionData * TStoredSessionList::NewSession(
   const UnicodeString & SessionName, TSessionData * Session)
 {
-  TSessionData * DuplicateSession = NB_STATIC_DOWNCAST(TSessionData, FindByName(SessionName));
+  TSessionData * DuplicateSession = dyn_cast<TSessionData>(FindByName(SessionName));
   if (!DuplicateSession)
   {
     DuplicateSession = new TSessionData(L"");
@@ -4900,7 +4900,7 @@ void TStoredSessionList::NewWorkspace(
 
   for (intptr_t Index = 0; Index < DataList->GetCount(); ++Index)
   {
-    TSessionData * Data = NB_STATIC_DOWNCAST(TSessionData, DataList->GetItem(Index));
+    TSessionData * Data = dyn_cast<TSessionData>(DataList->GetItem(Index));
 
     TSessionData * Data2 = new TSessionData(L"");
     Data2->Assign(Data);
@@ -4952,7 +4952,7 @@ TSessionData * TStoredSessionList::ResolveWorkspaceData(TSessionData * Data)
 {
   if (!Data->GetLink().IsEmpty())
   {
-    Data = NB_STATIC_DOWNCAST(TSessionData, FindByName(Data->GetLink()));
+    Data = dyn_cast<TSessionData>(FindByName(Data->GetLink()));
     if (Data != nullptr)
     {
       Data = ResolveWorkspaceData(Data);

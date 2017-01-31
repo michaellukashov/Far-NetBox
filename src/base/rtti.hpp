@@ -268,8 +268,6 @@ public:                                       \
 const TObject * NbStaticDownCastConst(TObjectClassId ClassId, const TObject * Object);
 TObject * NbStaticDownCast(TObjectClassId ClassId, TObject * Object);
 
-#define NB_STATIC_DOWNCAST(class_name, obj) (rtti::dyn_cast_or_null<class_name>(as_object(obj)))
-
 class THashTable : public rde::hash_map<int, const TClassInfo *>
 {
 CUSTOM_MEM_ALLOCATION_IMPL

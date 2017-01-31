@@ -901,7 +901,7 @@ public:
   __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
 */
   const TSessionData * GetSession(intptr_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
-  TSessionData * GetSession(intptr_t Index) { return NB_STATIC_DOWNCAST(TSessionData, AtObject(Index)); }
+  TSessionData * GetSession(intptr_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
   const TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
   TSessionData * GetDefaultSettings() { return FDefaultSettings; }
   const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;
