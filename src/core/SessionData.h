@@ -171,12 +171,9 @@ NB_DISABLE_COPY(TSessionData)
 NB_DECLARE_CLASS(TSessionData)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSessionData; }
-  static inline bool classof(const TNamedObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TSessionData; }
   static inline bool classof(const TObject * Obj)
   {
-    return Obj->GetKind() == OBJECT_CLASS_TSessionData ||
-        Obj->GetKind() == OBJECT_CLASS_TNamedObject ||
-        Obj->GetKind() == OBJECT_CLASS_TPersistent;
+    return Obj->GetKind() == OBJECT_CLASS_TSessionData;
   }
 private:
   UnicodeString FHostName;

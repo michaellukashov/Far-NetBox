@@ -133,8 +133,12 @@ public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TPersistent; }
   static inline bool classof(const TObject * Obj) 
   {
-    return Obj->GetKind() == OBJECT_CLASS_TNamedObject ||
-      Obj->GetKind() == OBJECT_CLASS_TStrings;
+    return
+      Obj->GetKind() == OBJECT_CLASS_TStrings ||
+      Obj->GetKind() == OBJECT_CLASS_TNamedObject ||
+      Obj->GetKind() == OBJECT_CLASS_TBookmarkList ||
+      Obj->GetKind() == OBJECT_CLASS_TBookmark ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFile;
   }
 public:
   TPersistent();

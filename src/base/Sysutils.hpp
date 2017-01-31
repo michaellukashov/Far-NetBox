@@ -91,6 +91,18 @@ class Exception : public std::runtime_error, public TObject
 {
 NB_DECLARE_CLASS(Exception)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_Exception; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_Exception ||
+      Obj->GetKind() == OBJECT_CLASS_ExtException ||
+      Obj->GetKind() == OBJECT_CLASS_EAbort ||
+      Obj->GetKind() == OBJECT_CLASS_EAccessViolation ||
+      Obj->GetKind() == OBJECT_CLASS_EFileNotFoundError ||
+      Obj->GetKind() == OBJECT_CLASS_EOSError;
+  }
+public:
   explicit Exception(const wchar_t * Msg);
   explicit Exception(const UnicodeString & Msg);
   explicit Exception(Exception * E);
@@ -110,6 +122,9 @@ protected:
 class EAbort : public Exception
 {
 NB_DECLARE_CLASS(EAbort)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EAbort; }
+  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_EAbort || Obj->GetKind() == OBJECT_CLASS_ECallbackGuardAbort; }
 public:
   explicit EAbort(const UnicodeString & what) : Exception(what)
   {}
