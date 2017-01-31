@@ -125,7 +125,6 @@ class TTerminal : public TObject, public TSessionUI
 {
 NB_DISABLE_COPY(TTerminal)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TTerminal; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -443,7 +442,8 @@ public:
 
 
 public:
-  explicit TTerminal();
+  TTerminal();
+  explicit TTerminal(TObjectClassId Kind);
   void Init(TSessionData * SessionData, TConfiguration * Configuration);
   virtual ~TTerminal();
   void Open();
@@ -684,7 +684,6 @@ class TSecondaryTerminal : public TTerminal
 {
 NB_DISABLE_COPY(TSecondaryTerminal)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TSecondaryTerminal; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -692,8 +691,8 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
   }
 public:
-  TSecondaryTerminal() : FMainTerminal(nullptr) {}
-  explicit TSecondaryTerminal(TTerminal * MainTerminal);
+  TSecondaryTerminal() : TTerminal(OBJECT_CLASS_TSecondaryTerminal), FMainTerminal(nullptr) {}
+  explicit TSecondaryTerminal(TObjectClassId Kind, TTerminal * MainTerminal);
   virtual ~TSecondaryTerminal() {}
   void Init(TSessionData * SessionData, TConfiguration * Configuration,
     const UnicodeString & Name);
@@ -741,13 +740,13 @@ private:
 struct TCustomCommandParams : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomCommandParams; }
   static inline bool classof(const TObject * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_TCustomCommandParams;
   }
 public:
+  TCustomCommandParams() : TObject(OBJECT_CLASS_TCustomCommandParams) {}
   UnicodeString Command;
   intptr_t Params;
   TCaptureOutputEvent OutputEvent;
@@ -765,13 +764,13 @@ struct TCalculateSizeStats : public TObject
 struct TCalculateSizeParams : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TCalculateSizeParams; }
   static inline bool classof(const TObject * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_TCalculateSizeParams;
   }
 public:
+  TCalculateSizeParams() : TObject(OBJECT_CLASS_TCalculateSizeParams) {}
   int64_t Size;
   intptr_t Params;
   const TCopyParamType * CopyParam;
@@ -785,13 +784,13 @@ typedef rde::vector<TDateTime> TDateTimes;
 struct TMakeLocalFileListParams : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TMakeLocalFileListParams; }
   static inline bool classof(const TObject * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_TMakeLocalFileListParams;
   }
 public:
+  TMakeLocalFileListParams() : TObject(OBJECT_CLASS_TMakeLocalFileListParams) {}
   TStrings * FileList;
   TDateTimes * FileTimes;
   bool IncludeDirs;
@@ -828,7 +827,6 @@ class TChecklistItem : public TObject
 friend class TTerminal;
 NB_DISABLE_COPY(TChecklistItem)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TChecklistItem; }
   static inline bool classof(const TObject * Obj)
   {
     return

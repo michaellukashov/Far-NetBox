@@ -20,7 +20,7 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 }
 
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :
-  TCustomFarPlugin(HInst),
+  TCustomFarPlugin(OBJECT_CLASS_TWinSCPPlugin, HInst),
   FInitialized(false)
 {
 }
@@ -541,7 +541,6 @@ struct TFarMessageData : public TObject
 {
 NB_DISABLE_COPY(TFarMessageData)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TFarMessageData; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -549,6 +548,7 @@ public:
   }
 public:
   TFarMessageData() :
+    TObject(OBJECT_CLASS_TFarMessageData),
     Params(nullptr),
     ButtonCount(0)
   {

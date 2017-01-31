@@ -222,7 +222,6 @@ public:
 class TSFTPPacket : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPPacket; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -230,29 +229,34 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TSFTPQueuePacket;
   }
 public:
-  explicit TSFTPPacket(uintptr_t codePage)
+  explicit TSFTPPacket(TObjectClassId Kind, uintptr_t codePage) :
+    TObject(Kind)
   {
     Init(codePage);
   }
 
-  explicit TSFTPPacket(const TSFTPPacket & other)
+  explicit TSFTPPacket(const TSFTPPacket & other) :
+    TObject(OBJECT_CLASS_TSFTPPacket)
   {
     this->operator=(other);
   }
 
-  explicit TSFTPPacket(const TSFTPPacket & Source, uintptr_t codePage)
+  explicit TSFTPPacket(const TSFTPPacket & Source, uintptr_t codePage) :
+    TObject(OBJECT_CLASS_TSFTPPacket)
   {
     Init(codePage);
     *this = Source;
   }
 
-  explicit TSFTPPacket(SSH_FXP_TYPES AType, uintptr_t codePage)
+  explicit TSFTPPacket(SSH_FXP_TYPES AType, uintptr_t codePage) :
+    TObject(OBJECT_CLASS_TSFTPPacket)
   {
     Init(codePage);
     ChangeType(AType);
   }
 
-  explicit TSFTPPacket(const uint8_t * Source, uintptr_t Len, uintptr_t codePage)
+  explicit TSFTPPacket(const uint8_t * Source, uintptr_t Len, uintptr_t codePage) :
+    TObject(OBJECT_CLASS_TSFTPPacket)
   {
     Init(codePage);
     FLength = Len;
@@ -260,7 +264,8 @@ public:
     memmove(GetData(), Source, Len);
   }
 
-  explicit TSFTPPacket(const RawByteString & Source, uintptr_t codePage)
+  explicit TSFTPPacket(const RawByteString & Source, uintptr_t codePage) :
+    TObject(OBJECT_CLASS_TSFTPPacket)
   {
     Init(codePage);
     FLength = static_cast<uintptr_t>(Source.Length());
@@ -1183,7 +1188,6 @@ class TSFTPQueuePacket : public TSFTPPacket
 {
 NB_DISABLE_COPY(TSFTPQueuePacket)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPQueuePacket; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -1191,7 +1195,7 @@ public:
   }
 public:
   explicit TSFTPQueuePacket(uintptr_t CodePage) :
-    TSFTPPacket(CodePage),
+    TSFTPPacket(OBJECT_CLASS_TSFTPQueuePacket, CodePage),
     Token(nullptr)
   {
   }
@@ -1203,7 +1207,6 @@ class TSFTPQueue : public TObject
 {
 NB_DISABLE_COPY(TSFTPQueue)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPQueue; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -1211,6 +1214,7 @@ public:
   }
 public:
   explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
+    TObject(OBJECT_CLASS_TSFTPQueue),
     FRequests(new TList()),
     FResponses(new TList()),
     FFileSystem(AFileSystem),
@@ -1923,7 +1927,7 @@ private:
 //===========================================================================
 //===========================================================================
 TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
-  TCustomFileSystem(ATerminal),
+  TCustomFileSystem(OBJECT_CLASS_TSFTPFileSystem, ATerminal),
   FSecureShell(nullptr),
   FFileSystemInfoValid(false),
   FVersion(0),

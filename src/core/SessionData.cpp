@@ -68,7 +68,7 @@ static TDateTime SecToDateTime(intptr_t Sec)
 
 //--- TSessionData ----------------------------------------------------
 TSessionData::TSessionData(const UnicodeString & AName) :
-  TNamedObject(AName),
+  TNamedObject(OBJECT_CLASS_TSessionData, AName),
   FIEProxyConfig(nullptr)
 {
   Default();
@@ -4137,7 +4137,7 @@ TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption) const
 
 //=== TStoredSessionList ----------------------------------------------
 TStoredSessionList::TStoredSessionList(bool AReadOnly) :
-  TNamedObjectList(),
+  TNamedObjectList(OBJECT_CLASS_TStoredSessionList),
   FDefaultSettings(new TSessionData(DefaultName)),
   FReadOnly(AReadOnly)
 {

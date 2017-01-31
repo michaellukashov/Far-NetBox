@@ -336,7 +336,7 @@ TStrings * TCommandSet::CreateCommandList()
 }
 //===========================================================================
 TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) :
-  TCustomFileSystem(ATerminal),
+  TCustomFileSystem(OBJECT_CLASS_TSCPFileSystem, ATerminal),
   FSecureShell(nullptr),
   FCommandSet(nullptr),
   FOutput(nullptr),

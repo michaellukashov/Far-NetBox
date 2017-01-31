@@ -227,7 +227,7 @@ UnicodeString ExpatVersion()
 
 
 TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
-  TCustomFileSystem(ATerminal),
+  TCustomFileSystem(OBJECT_CLASS_TWebDAVFileSystem, ATerminal),
   FActive(false),
   FHasTrailingSlash(false),
   FCancelled(false),

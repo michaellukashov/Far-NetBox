@@ -34,7 +34,8 @@ struct TPuttyTranslation
 };
 
 TSecureShell::TSecureShell(TSessionUI * UI,
-  TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration)
+  TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration) :
+  TObject(OBJECT_CLASS_TSecureShell)
 {
   FUI = UI;
   FSessionData = SessionData;

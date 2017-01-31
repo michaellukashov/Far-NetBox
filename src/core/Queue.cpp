@@ -254,7 +254,6 @@ friend class TQueueItem;
 friend class TBackgroundTerminal;
 NB_DISABLE_COPY(TTerminalItem)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TTerminalItem; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -320,7 +319,8 @@ int TSimpleThread::ThreadProc(void * Thread)
   return 0;
 }
 
-TSimpleThread::TSimpleThread() :
+TSimpleThread::TSimpleThread(TObjectClassId Kind) :
+  TObject(Kind),
   FThread(nullptr),
   FThreadId(0),
   FFinished(true)
@@ -376,7 +376,7 @@ void TSimpleThread::WaitFor(uint32_t Milliseconds)
 // TSignalThread
 //---------------------------------------------------------------------------
 TSignalThread::TSignalThread() :
-  TSimpleThread(),
+  TSimpleThread(OBJECT_CLASS_TSignalThread),
   FEvent(nullptr),
   FTerminated(true)
 {
@@ -1213,7 +1213,6 @@ class TBackgroundTerminal : public TSecondaryTerminal
 {
 friend class TTerminalItem;
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TBackgroundTerminal; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -1234,7 +1233,7 @@ private:
 };
 
 TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal) :
-  TSecondaryTerminal(MainTerminal),
+  TSecondaryTerminal(OBJECT_CLASS_TBackgroundTerminal, MainTerminal),
   FItem(nullptr)
 {
 }
@@ -1265,7 +1264,7 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
 // TTerminalItem
 
 TTerminalItem::TTerminalItem(TTerminalQueue * Queue) :
-  TSignalThread(), FQueue(Queue), FTerminal(nullptr), FItem(nullptr),
+  TSignalThread(OBJECT_CLASS_TTerminalItem), FQueue(Queue), FTerminal(nullptr), FItem(nullptr),
   FUserAction(nullptr), FCancel(false), FPause(false)
 {
 }
@@ -2035,7 +2034,7 @@ TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
 // TLocatedQueueItem
 
 TLocatedQueueItem::TLocatedQueueItem(TTerminal * Terminal) :
-  TQueueItem()
+  TQueueItem(OBJECT_CLASS_TLocatedQueueItem)
 {
   DebugAssert(Terminal != nullptr);
   FCurrentDir = Terminal->GetCurrDirectory();

@@ -124,7 +124,6 @@ private:
 class TTabButton : public TFarButton
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TTabButton; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -269,7 +268,7 @@ bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 }
 
 TTabButton::TTabButton(TTabbedDialog * Dialog) :
-  TFarButton(Dialog),
+  TFarButton(OBJECT_CLASS_TTabButton, Dialog),
   FTab(0)
 {
   SetCenterGroup(true);
@@ -4269,7 +4268,6 @@ class TRightsContainer : public TFarDialogContainer
 {
 NB_DISABLE_COPY(TRightsContainer)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TRightsContainer; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -4306,7 +4304,7 @@ public:
 TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   bool AAnyDirectories, bool ShowButtons,
   bool ShowSpecials, TFarDialogItem * EnabledDependency) :
-  TFarDialogContainer(ADialog),
+  TFarDialogContainer(OBJECT_CLASS_TRightsContainer, ADialog),
   FAnyDirectories(AAnyDirectories),
   FOctalEdit(nullptr),
   FDirectoriesXCheck(nullptr)
@@ -4936,7 +4934,6 @@ bool TWinSCPFileSystem::PropertiesDialog(TStrings * AFileList,
 class TCopyParamsContainer : public TFarDialogContainer
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TCopyParamsContainer; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -4985,7 +4982,7 @@ private:
 
 TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   intptr_t Options, intptr_t CopyParamAttrs) :
-  TFarDialogContainer(ADialog),
+  TFarDialogContainer(OBJECT_CLASS_TCopyParamsContainer, ADialog),
   TMTextButton(nullptr),
   TMBinaryButton(nullptr),
   TMAutomaticButton(nullptr),
@@ -5911,7 +5908,6 @@ private:
 class TLabelList : public TList
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TLabelList; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -5920,9 +5916,11 @@ public:
   }
 public:
   explicit TLabelList() :
-    TList(), MaxLen(0)
-  {
-  }
+    TList(OBJECT_CLASS_TLabelList), MaxLen(0)
+  {}
+  explicit TLabelList(TObjectClassId Kind) :
+    TList(Kind), MaxLen(0)
+  {}
 
   intptr_t MaxLen;
 };

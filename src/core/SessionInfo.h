@@ -61,10 +61,9 @@ struct TFileSystemInfo : public TObject
   bool IsCapable[fcCount];
 };
 
-class TSessionUI
+class TSessionUI : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TSessionUI; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -74,7 +73,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
   }
 public:
-  explicit TSessionUI() {}
+  explicit TSessionUI(TObjectClassId Kind) : TObject(Kind) {}
   virtual ~TSessionUI() {}
   virtual void Information(const UnicodeString & Str, bool Status) = 0;
   virtual uintptr_t QueryUser(const UnicodeString & Query,

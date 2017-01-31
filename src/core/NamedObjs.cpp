@@ -11,8 +11,8 @@ static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
   return dyn_cast<TNamedObject>(Item1)->Compare(dyn_cast<TNamedObject>(Item2));
 }
 //--- TNamedObject ----------------------------------------------------------
-TNamedObject::TNamedObject(const UnicodeString & AName) :
-  TPersistent(OBJECT_CLASS_TNamedObject),
+TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString & AName) :
+  TPersistent(Kind),
   FHidden(false)
 {
   SetName(AName);
@@ -77,7 +77,15 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
 }
 //--- TNamedObjectList ------------------------------------------------------
 TNamedObjectList::TNamedObjectList() :
-  TObjectList(),
+  TObjectList(OBJECT_CLASS_TNamedObjectList),
+  FHiddenCount(0),
+  FControlledAdd(false),
+  AutoSort(true)
+{
+}
+
+TNamedObjectList::TNamedObjectList(TObjectClassId Kind) :
+  TObjectList(Kind),
   FHiddenCount(0),
   FControlledAdd(false),
   AutoSort(true)

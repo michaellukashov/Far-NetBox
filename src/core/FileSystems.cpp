@@ -7,7 +7,8 @@
 #include "RemoteFiles.h"
 #include "CopyParam.h"
 
-TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal) :
+TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal) :
+  TObject(Kind),
   FTerminal(ATerminal)
 {
   DebugAssert(FTerminal);

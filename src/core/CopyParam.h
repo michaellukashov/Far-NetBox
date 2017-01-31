@@ -60,7 +60,6 @@ struct TUsableCopyParamAttrs
 class TCopyParamType : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TCopyParamType; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -115,7 +114,7 @@ public:
 
 public:
   TCopyParamType();
-  TCopyParamType(const TCopyParamType & Source);
+  TCopyParamType(TObjectClassId Kind, const TCopyParamType & Source);
   virtual ~TCopyParamType();
   TCopyParamType & operator =(const TCopyParamType & rhs);
   virtual void Assign(const TCopyParamType * Source);

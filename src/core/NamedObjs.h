@@ -9,7 +9,6 @@ class TNamedObjectList;
 class TNamedObject : public TPersistent
 {
 public:
-  // TObjectClassId GetKind() const { return OBJECT_CLASS_TNamedObject; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -24,11 +23,12 @@ public:
   bool GetHidden() const { return FHidden; }
 
   TNamedObject() : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}
+  explicit TNamedObject(TObjectClassId Kind) : TPersistent(Kind), FHidden(false) {}
+  explicit TNamedObject(TObjectClassId Kind, const UnicodeString & AName);
   virtual ~TNamedObject() {}
 
   bool IsSameName(const UnicodeString & Name) const;
   virtual intptr_t Compare(const TNamedObject * Other) const;
-  explicit TNamedObject(const UnicodeString & AName);
   void MakeUniqueIn(TNamedObjectList * List);
 private:
   UnicodeString FName;
@@ -38,7 +38,6 @@ private:
 class TNamedObjectList : public TObjectList
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TNamedObjectList; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -59,6 +58,7 @@ public:
   bool AutoSort;
 
   TNamedObjectList();
+  explicit TNamedObjectList(TObjectClassId Kind);
   void AlphaSort();
   intptr_t Add(TObject * AObject);
   virtual const TNamedObject * AtObject(intptr_t Index) const;

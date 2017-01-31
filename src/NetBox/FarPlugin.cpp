@@ -29,8 +29,8 @@ TFarMessageParams::TFarMessageParams() :
 {
 }
 
-TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
-  TObject(),
+TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) :
+  TObject(Kind),
   FOpenedPlugins(new TObjectList()),
   FTopDialog(nullptr),
   FSavedTitles(new TStringList())
@@ -1419,7 +1419,6 @@ void TCustomFarPlugin::SaveTerminalScreen()
 class TConsoleTitleParam : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TConsoleTitleParam; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -1427,6 +1426,7 @@ public:
   }
 public:
   explicit TConsoleTitleParam() :
+    TObject(OBJECT_CLASS_TConsoleTitleParam),
     Progress(0),
     Own(0)
   {}
@@ -1746,8 +1746,8 @@ void TCustomFarPlugin::RunTests()
 
 uintptr_t TCustomFarFileSystem::FInstances = 0;
 
-TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin * APlugin) :
-  TObject(),
+TCustomFarFileSystem::TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin * APlugin) :
+  TObject(Kind),
   FPlugin(APlugin),
   FClosed(false),
   FOpenPluginInfoValid(false)
@@ -2384,7 +2384,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
 }
 
 TFarPanelItem::TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem) :
-  TCustomFarPanelItem(),
+  TCustomFarPanelItem(OBJECT_CLASS_TFarPanelItem),
   FPanelItem(APanelItem),
   FOwnsItem(OwnsItem)
 {
@@ -2682,7 +2682,7 @@ UnicodeString TFarPanelInfo::GetCurrDirectory() const
 }
 
 TFarMenuItems::TFarMenuItems() :
-  TStringList(),
+  TStringList(OBJECT_CLASS_TFarMenuItems),
   FItemFocused(NPOS)
 {
 }

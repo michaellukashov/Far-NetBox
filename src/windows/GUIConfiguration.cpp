@@ -19,19 +19,19 @@ static const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
 #define ADDITIONAL_LANGUAGE_PREFIX L"XX"
 
 TGUICopyParamType::TGUICopyParamType()
-  : TCopyParamType()
+  : TCopyParamType(OBJECT_CLASS_TGUICopyParamType)
 {
   GUIDefault();
 }
 
 TGUICopyParamType::TGUICopyParamType(const TCopyParamType & Source)
-  : TCopyParamType(Source)
+  : TCopyParamType(OBJECT_CLASS_TGUICopyParamType, Source)
 {
   GUIDefault();
 }
 
 TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source)
-  : TCopyParamType(Source)
+  : TCopyParamType(OBJECT_CLASS_TGUICopyParamType, Source)
 {
   GUIAssign(&Source);
 }
@@ -107,16 +107,19 @@ void TCopyParamRuleData::Default()
   LocalDirectory.Clear();
 }
 
-TCopyParamRule::TCopyParamRule()
+TCopyParamRule::TCopyParamRule() :
+  TObject(OBJECT_CLASS_TCopyParamRule)
 {
 }
 
 TCopyParamRule::TCopyParamRule(const TCopyParamRuleData & Data) :
+  TObject(OBJECT_CLASS_TCopyParamRule),
   FData(Data)
 {
 }
 
-TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source)
+TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source) :
+  TObject(OBJECT_CLASS_TCopyParamRule)
 {
   FData.HostName = Source.FData.HostName;
   FData.UserName = Source.FData.UserName;

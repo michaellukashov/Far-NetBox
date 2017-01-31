@@ -814,8 +814,8 @@ const TRemoteToken * TRemoteTokenList::Token(intptr_t Index) const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
-  TPersistent(),
+TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile) :
+  TPersistent(Kind),
   FDirectory(nullptr),
   FModificationFmt(mfFull),
   FLinkedFile(nullptr),
@@ -1611,7 +1611,19 @@ void TRemoteFile::SetFullFileName(const UnicodeString & Value)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
+TRemoteDirectoryFile::TRemoteDirectoryFile() :
+  TRemoteFile(OBJECT_CLASS_TRemoteDirectoryFile)
+{
+  Init();
+}
+
+TRemoteDirectoryFile::TRemoteDirectoryFile(TObjectClassId Kind) :
+  TRemoteFile(Kind)
+{
+  Init();
+}
+
+void TRemoteDirectoryFile::Init()
 {
   SetModification(TDateTime(0.0));
   SetModificationFmt(mfNone);
@@ -1622,14 +1634,21 @@ TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal)
-  : TRemoteDirectoryFile()
+  : TRemoteDirectoryFile(OBJECT_CLASS_TRemoteParentDirectory)
 {
   SetFileName(PARENTDIRECTORY);
   SetTerminal(ATerminal);
 }
 //=== TRemoteFileList ------------------------------------------------------
 TRemoteFileList::TRemoteFileList() :
-  TObjectList(),
+  TObjectList(OBJECT_CLASS_TRemoteFileList),
+  FTimestamp(Now())
+{
+  SetOwnsObjects(true);
+}
+
+TRemoteFileList::TRemoteFileList(TObjectClassId Kind) :
+  TObjectList(Kind),
   FTimestamp(Now())
 {
   SetOwnsObjects(true);
@@ -1733,8 +1752,8 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
   return nullptr;
 }
 //=== TRemoteDirectory ------------------------------------------------------
-TRemoteDirectory::TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template) :
-  TRemoteFileList(),
+TRemoteDirectory::TRemoteDirectory(TObjectClassId Kind, TTerminal * aTerminal, TRemoteDirectory * Template) :
+  TRemoteFileList(Kind),
   FIncludeParentDirectory(false),
   FIncludeThisDirectory(false),
   FTerminal(aTerminal),
@@ -2748,12 +2767,14 @@ TRights::operator uint32_t() const
   return GetNumber();
 }
 
-TRemoteProperties::TRemoteProperties()
+TRemoteProperties::TRemoteProperties() :
+  TObject(OBJECT_CLASS_TRemoteProperties)
 {
   Default();
 }
 
 TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhp) :
+  TObject(OBJECT_CLASS_TRemoteProperties)
   Valid(rhp.Valid),
   Recursive(rhp.Recursive),
   Rights(rhp.Rights),

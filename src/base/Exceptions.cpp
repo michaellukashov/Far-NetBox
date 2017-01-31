@@ -264,38 +264,38 @@ bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword)
     (HelpKeyword == HELP_INTERNAL_ERROR);
 }
 
-ExtException::ExtException(Exception * E) :
-  Exception(L""),
+ExtException::ExtException(TObjectClassId Kind, Exception * E) :
+  Exception(Kind, L""),
   FMoreMessages(nullptr)
 {
   AddMoreMessages(E);
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
 
-ExtException::ExtException(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
-  Exception(Msg),
+ExtException::ExtException(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
+  Exception(Kind, Msg),
   FMoreMessages(nullptr)
 {
   AddMoreMessages(E);
   FHelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
 }
-/*ExtException::ExtException(ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
-  Exception(Msg),
+/*ExtException::ExtException(TObjectClassId Kind, ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
+  Exception(Kind, Msg),
   FMoreMessages(nullptr),
   FHelpKeyword()
 {
   AddMoreMessages(E);
 }*/
 
-ExtException::ExtException(Exception * E, int Ident) :
-  Exception(E, Ident),
+ExtException::ExtException(TObjectClassId Kind, Exception * E, int Ident) :
+  Exception(Kind, E, Ident),
   FMoreMessages(nullptr),
   FHelpKeyword()
 {
 }
 
-ExtException::ExtException(const UnicodeString & Msg, const Exception * E, const UnicodeString & HelpKeyword) :
-  Exception(L""),
+ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E, const UnicodeString & HelpKeyword) :
+  Exception(Kind, L""),
   FMoreMessages(nullptr)
 {
   // "copy exception"
@@ -319,9 +319,9 @@ ExtException::ExtException(const UnicodeString & Msg, const Exception * E, const
   FHelpKeyword = MergeHelpKeyword(GetExceptionHelpKeyword(E), HelpKeyword);
 }
 
-ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages,
+ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages,
   const UnicodeString & HelpKeyword) :
-  Exception(Msg),
+  Exception(Kind, Msg),
   FMoreMessages(nullptr),
   FHelpKeyword(HelpKeyword)
 {
@@ -331,9 +331,9 @@ ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & More
   }
 }
 
-ExtException::ExtException(const UnicodeString & Msg, TStrings * MoreMessages,
+ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, TStrings * MoreMessages,
   bool Own, const UnicodeString & HelpKeyword) :
-  Exception(Msg),
+  Exception(Kind, Msg),
   FMoreMessages(nullptr),
   FHelpKeyword(HelpKeyword)
 {
@@ -424,18 +424,23 @@ UnicodeString LastSysErrorMessage()
   return SysErrorMessageForError(GetLastError());
 }
 
-EOSExtException::EOSExtException(const UnicodeString & Msg) :
-  ExtException(Msg, LastSysErrorMessage())
+EOSExtException::EOSExtException() :
+  ExtException(OBJECT_CLASS_EOSExtException, "", 0)
 {
 }
 
-EOSExtException::EOSExtException(const UnicodeString & Msg, int LastError) :
-  ExtException(Msg, SysErrorMessageForError(LastError))
+EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg) :
+  ExtException(Kind, Msg, LastSysErrorMessage())
 {
 }
 
-EFatal::EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
-  ExtException(Msg, E, HelpKeyword),
+EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg, int LastError) :
+  ExtException(Kind, Msg, SysErrorMessageForError(LastError))
+{
+}
+
+EFatal::EFatal(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
+  ExtException(Kind, Msg, E, HelpKeyword),
   FReopenQueried(false)
 {
   const EFatal * F = dyn_cast<EFatal>(E);
@@ -446,7 +451,7 @@ EFatal::EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeStri
 }
 
 ECRTExtException::ECRTExtException(const UnicodeString & Msg) :
-  EOSExtException(Msg, errno)
+  EOSExtException(OBJECT_CLASS_ECRTExtException, Msg, errno)
 {
 }
 
@@ -460,7 +465,7 @@ ExtException * ESshTerminate::Clone() const
   return new ESshTerminate(this, L"", Operation);
 }
 
-ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(L"callback abort")
+ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(OBJECT_CLASS_ECallbackGuardAbort, L"callback abort")
 {
 }
 

@@ -38,7 +38,6 @@ friend class TFileZillaImpl;
 friend class TFTPFileListHelper;
 NB_DISABLE_COPY(TFTPFileSystem)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TFTPFileSystem; }
   static inline bool classof(const TObject * Obj)
   {
     return

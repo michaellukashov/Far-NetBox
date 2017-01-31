@@ -92,7 +92,6 @@ class TRemoteFile : public TPersistent
 {
 NB_DISABLE_COPY(TRemoteFile)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteFile; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -157,7 +156,7 @@ protected:
   void FindLinkedFile();
 
 public:
-  explicit TRemoteFile(TRemoteFile * ALinkedByFile = nullptr);
+  explicit TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile = nullptr);
   virtual ~TRemoteFile();
   TRemoteFile * Duplicate(bool Standalone = true) const;
 
@@ -238,7 +237,6 @@ private:
 class TRemoteDirectoryFile : public TRemoteFile
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteDirectoryFile; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -247,13 +245,14 @@ public:
   }
 public:
   TRemoteDirectoryFile();
+  TRemoteDirectoryFile(TObjectClassId Kind);
+  void Init();
   virtual ~TRemoteDirectoryFile() {}
 };
 
 class TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteParentDirectory; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -271,7 +270,6 @@ friend class TSFTPFileSystem;
 friend class TFTPFileSystem;
 friend class TWebDAVFileSystem;
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteFileList; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -293,6 +291,7 @@ public:
 
 public:
   TRemoteFileList();
+  explicit TRemoteFileList(TObjectClassId Kind);
   virtual ~TRemoteFileList() { Reset(); }
   virtual void Reset();
   TRemoteFile * FindFile(const UnicodeString & AFileName) const;
@@ -320,7 +319,6 @@ friend class TSFTPFileSystem;
 friend class TWebDAVFileSystem;
 NB_DISABLE_COPY(TRemoteDirectory)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteDirectory; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -343,7 +341,7 @@ public:
   void ReleaseRelativeDirectories();
 
 public:
-  explicit TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template = nullptr);
+  explicit TRemoteDirectory(TObjectClassId Kind, TTerminal * ATerminal, TRemoteDirectory * Template = nullptr);
   virtual ~TRemoteDirectory();
   virtual void AddFile(TRemoteFile * AFile);
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
@@ -592,7 +590,6 @@ private:
 class TRemoteProperties : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteProperties; }
   static inline bool classof(const TObject * Obj)
   {
     return

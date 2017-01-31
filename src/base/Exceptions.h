@@ -25,7 +25,6 @@ enum TOnceDoneOperation
 class ExtException : public Exception
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_ExtException; }
   static bool classof(const TObject * Obj)
   {
     TObjectClassId Kind = Obj->GetKind();
@@ -41,23 +40,23 @@ public:
       Kind == OBJECT_CLASS_EFileSkipped;
   }
 public:
-  explicit ExtException(Exception * E);
-  explicit ExtException(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(TObjectClassId Kind, Exception * E);
+  explicit ExtException(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   // explicit ExtException(const ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(Exception * E, int Ident);
   // "copy the exception", just append message to the end
-  explicit ExtException(const UnicodeString & Msg, const Exception * E, const UnicodeString & HelpKeyword = L"");
-  explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
-  explicit ExtException(const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
   virtual ~ExtException(void) noexcept;
   TStrings * GetMoreMessages() const { return FMoreMessages; }
   const UnicodeString & GetHelpKeyword() const { return FHelpKeyword; }
 
-  explicit inline ExtException(const UnicodeString & Msg) : Exception(Msg), FMoreMessages(nullptr) {}
-  explicit inline ExtException(int Ident) : Exception(Ident), FMoreMessages(nullptr) {}
-  explicit inline ExtException(const UnicodeString & Msg, int AHelpContext) : Exception(Msg, AHelpContext), FMoreMessages(nullptr) {}
+  explicit inline ExtException(TObjectClassId Kind, const UnicodeString & Msg) : Exception(Kind, Msg), FMoreMessages(nullptr) {}
+  explicit inline ExtException(TObjectClassId Kind, intptr_t Ident) : Exception(Kind, Ident), FMoreMessages(nullptr) {}
+  explicit inline ExtException(TObjectClassId Kind, const UnicodeString & Msg, int AHelpContext) : Exception(Kind, Msg, AHelpContext), FMoreMessages(nullptr) {}
 
-  ExtException(const ExtException & E) : Exception(L""), FMoreMessages(nullptr), FHelpKeyword(E.FHelpKeyword)
+  ExtException(const ExtException & E) : Exception(OBJECT_CLASS_ExtException, L""), FMoreMessages(nullptr), FHelpKeyword(E.FHelpKeyword)
   {
     AddMoreMessages(&E);
   }
@@ -85,11 +84,9 @@ private:
   class NAME : public BASE \
   { \
   public: \
-    TObjectClassId GetKind() const { return OBJECT_CLASS_##NAME; } \
-  public: \
-    explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
+    explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
+    explicit inline NAME(const UnicodeString & Msg, int AHelpContext) : BASE(OBJECT_CLASS_##NAME, Msg, AHelpContext) {} \
     virtual inline ~NAME(void) noexcept {} \
-    explicit inline NAME(const UnicodeString & Msg, int AHelpContext) : BASE(Msg, AHelpContext) {} \
     virtual ExtException * Clone() const { return new NAME(this, L""); } \
   };
 
@@ -103,7 +100,6 @@ DERIVE_EXT_EXCEPTION(EFileSkipped, ESkipFile)
 class EOSExtException : public ExtException
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_EOSExtException; }
   static bool classof(const TObject * Obj)
   {
     TObjectClassId Kind = Obj->GetKind();
@@ -113,14 +109,13 @@ public:
   }
 public:
   explicit EOSExtException();
-  explicit EOSExtException(const UnicodeString & Msg);
-  explicit EOSExtException(const UnicodeString & Msg, int LastError);
+  explicit EOSExtException(TObjectClassId Kind, const UnicodeString & Msg);
+  explicit EOSExtException(TObjectClassId Kind, const UnicodeString & Msg, int LastError);
 };
 
 class ECRTExtException : public EOSExtException
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_ECRTExtException; }
   static bool classof(const TObject * Obj)
   {
     TObjectClassId Kind = Obj->GetKind();
@@ -135,7 +130,6 @@ public:
 class EFatal : public ExtException
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_EFatal; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -145,7 +139,7 @@ public:
   }
 public:
   // fatal errors are always copied, new message is only appended
-  explicit EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  explicit EFatal(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
 
   bool GetReopenQueried() const { return FReopenQueried; }
   void SetReopenQueried(bool Value) { FReopenQueried = Value; }
@@ -160,9 +154,7 @@ private:
   class NAME : public BASE \
   { \
   public: \
-    TObjectClassId GetKind() const { return OBJECT_CLASS_##NAME; } \
-  public: \
-    explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
+    explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
     virtual ExtException * Clone() const { return new NAME(this, L""); } \
   };
 
@@ -173,7 +165,6 @@ DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
 class ESshTerminate : public EFatal
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_ESshTerminate; }
   static inline bool classof(const TObject * Obj)
   {
    return
@@ -181,7 +172,7 @@ public:
   }
 public:
   explicit inline ESshTerminate(const Exception * E, const UnicodeString & Msg, TOnceDoneOperation AOperation) :
-    EFatal(E, Msg),
+    EFatal(OBJECT_CLASS_ESshTerminate, E, Msg),
     Operation(AOperation)
   {
   }
@@ -194,7 +185,6 @@ public:
 class ECallbackGuardAbort : public EAbort
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_ECallbackGuardAbort; }
   static inline bool classof(const TObject * Obj)
   {
     return

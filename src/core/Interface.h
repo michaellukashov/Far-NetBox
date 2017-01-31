@@ -159,14 +159,6 @@ struct TClipboardHandler
 {
 NB_DISABLE_COPY(TClipboardHandler)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TClipboardHandler; }
-  static bool classof(const TObject * Obj)
-  {
-    TObjectClassId Kind = Obj->GetKind();
-    return
-      Kind == OBJECT_CLASS_TClipboardHandler;
-  }
-public:
   TClipboardHandler() {}
 
   UnicodeString Text;

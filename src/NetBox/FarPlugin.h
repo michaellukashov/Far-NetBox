@@ -73,7 +73,6 @@ friend class TFarMessageDialog;
 friend class TFarPluginGuard;
 NB_DISABLE_COPY(TCustomFarPlugin)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomFarPlugin; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -81,7 +80,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TWinSCPPlugin;
   }
 public:
-  explicit TCustomFarPlugin(HINSTANCE HInst);
+  explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst);
   virtual ~TCustomFarPlugin();
   virtual intptr_t GetMinFarVersion() const;
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info);
@@ -244,7 +243,6 @@ friend class TFarPanelInfo;
 friend class TCustomFarPlugin;
 NB_DISABLE_COPY(TCustomFarFileSystem)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomFarFileSystem; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -252,7 +250,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TWinSCPFileSystem;
   }
 public:
-  explicit TCustomFarFileSystem(TCustomFarPlugin * APlugin);
+  explicit TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin * APlugin);
   void Init();
   virtual ~TCustomFarFileSystem();
 
@@ -386,7 +384,6 @@ class TCustomFarPanelItem : public TObject
 {
 friend class TCustomFarFileSystem;
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomFarPanelItem; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -398,6 +395,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TRemoteFilePanelItem;
   }
 protected:
+  explicit TCustomFarPanelItem(TObjectClassId Kind) : TObject(Kind) {}
   virtual ~TCustomFarPanelItem()
   {}
   virtual void GetData(
@@ -415,7 +413,6 @@ class TFarPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TFarPanelItem)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TFarPanelItem; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -507,7 +504,6 @@ private:
 class TFarMenuItems : public TStringList
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TFarMenuItems; }
   static inline bool classof(const TObject * Obj)
   {
     return

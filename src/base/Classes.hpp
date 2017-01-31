@@ -129,7 +129,6 @@ struct TRect
 class TPersistent : public TObject
 {
 public:
-  //TObjectClassId GetKind() const { return OBJECT_CLASS_TPersistent; }
   static bool classof(const TObject * Obj)
   {
     TObjectClassId Kind = Obj->GetKind();
@@ -146,7 +145,7 @@ public:
   }
 public:
   TPersistent() : TObject(OBJECT_CLASS_TPersistent) {}
-  TPersistent(TObjectClassId Kind);
+  explicit TPersistent(TObjectClassId Kind);
   virtual ~TPersistent();
   virtual void Assign(const TPersistent * Source);
   virtual TPersistent * GetOwner();
@@ -168,7 +167,6 @@ typedef intptr_t (CompareFunc)(const void * Item1, const void * Item2);
 class TList : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TList; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -182,6 +180,7 @@ public:
   }
 public:
   TList();
+  explicit TList(TObjectClassId Kind);
   virtual ~TList();
   void * operator [](intptr_t Index) const;
   virtual void * GetItem(intptr_t Index) const { return FList[Index]; }
@@ -209,7 +208,6 @@ private:
 class TObjectList : public TList
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TObjectList; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -221,6 +219,7 @@ public:
   }
 public:
   TObjectList();
+  explicit TObjectList(TObjectClassId Kind);
   virtual ~TObjectList();
 
   TObject * operator [](intptr_t Index) const;
@@ -255,7 +254,6 @@ class TStream;
 class TStrings : public TPersistent
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TStrings; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -265,6 +263,7 @@ public:
   }
 public:
   TStrings();
+  explicit TStrings(TObjectClassId Kind);
   virtual ~TStrings();
   intptr_t Add(const UnicodeString & S, TObject * AObject = nullptr);
   virtual void Delete(intptr_t Index) = 0;
@@ -330,7 +329,6 @@ class TStringList : public TStrings
 {
 friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TStringList; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -340,6 +338,7 @@ public:
   }
 public:
   TStringList();
+  explicit TStringList(TObjectClassId Kind);
   virtual ~TStringList();
 
   intptr_t Add(const UnicodeString & S);

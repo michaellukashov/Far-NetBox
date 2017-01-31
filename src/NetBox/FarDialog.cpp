@@ -18,7 +18,7 @@ inline TRect Rect(int Left, int Top, int Right, int Bottom)
 }
 
 TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
-  TObject(),
+  TObject(OBJECT_CLASS_TFarDialog),
   FFarPlugin(AFarPlugin),
   FBounds(-1, -1, 40, 10),
   FFlags(0),
@@ -918,8 +918,8 @@ bool TFarDialog::ChangesLocked()
   return (FChangesLocked > 0);
 }
 
-TFarDialogContainer::TFarDialogContainer(TFarDialog * ADialog) :
-  TObject(),
+TFarDialogContainer::TFarDialogContainer(TObjectClassId Kind, TFarDialog * ADialog) :
+  TObject(Kind),
   FLeft(0),
   FTop(0),
   FItems(new TObjectList()),
@@ -995,8 +995,8 @@ intptr_t TFarDialogContainer::GetItemCount() const
   return FItems->GetCount();
 }
 
-TFarDialogItem::TFarDialogItem(TFarDialog * ADialog, uintptr_t AType) :
-  TObject(),
+TFarDialogItem::TFarDialogItem(TObjectClassId Kind, TFarDialog * ADialog, uintptr_t AType) :
+  TObject(Kind),
   FDefaultType(AType),
   FGroup(0),
   FTag(0),
@@ -1712,8 +1712,8 @@ TFarBox::TFarBox(TFarDialog * ADialog) :
 {
 }
 
-TFarButton::TFarButton(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_BUTTON),
+TFarButton::TFarButton(TObjectClassId Kind, TFarDialog * ADialog) :
+  TFarDialogItem(Kind, ADialog, DI_BUTTON),
   FResult(0),
   FOnClick(nullptr),
   FBrackets(brNormal)
@@ -1951,7 +1951,7 @@ void TFarRadioButton::SetData(const UnicodeString & Value)
 }
 
 TFarEdit::TFarEdit(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_EDIT)
+  TFarDialogItem(OBJECT_CLASS_TFarEdit, ADialog, DI_EDIT)
 {
   SetAutoSelect(false);
 }
@@ -2076,7 +2076,7 @@ int TFarSeparator::GetPosition()
 }
 
 TFarText::TFarText(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_TEXT)
+  TFarDialogItem(OBJECT_CLASS_TFarText, ADialog, DI_TEXT)
 {
 }
 
@@ -2090,7 +2090,7 @@ void TFarText::SetData(const UnicodeString & Value)
 }
 
 TFarList::TFarList(TFarDialogItem * ADialogItem) :
-  TStringList(),
+  TStringList(OBJECT_CLASS_TFarList),
   FDialogItem(ADialogItem),
   FNoDialogUpdate(false)
 {
@@ -2408,7 +2408,7 @@ LONG_PTR TFarList::ItemProc(int Msg, LONG_PTR Param)
 }
 
 TFarListBox::TFarListBox(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_LISTBOX),
+  TFarDialogItem(OBJECT_CLASS_TFarListBox, ADialog, DI_LISTBOX),
   FAutoSelect(asOnlyFocus),
   FDenyClose(false)
 {

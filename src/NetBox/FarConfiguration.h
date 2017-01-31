@@ -10,7 +10,6 @@ class TFarConfiguration : public TGUIConfiguration
 {
 NB_DISABLE_COPY(TFarConfiguration)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TFarConfiguration; }
   static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TFarConfiguration; }
 public:
   explicit TFarConfiguration(TCustomFarPlugin * APlugin);

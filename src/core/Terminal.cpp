@@ -112,13 +112,13 @@ bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString & Directory)
 struct TMoveFileParams : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TMoveFileParams; }
   static inline bool classof(const TObject * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_TMoveFileParams;
   }
 public:
+  TMoveFileParams() : TObject(OBJECT_CLASS_TMoveFileParams) {}
   UnicodeString Target;
   UnicodeString FileMask;
 };
@@ -126,7 +126,6 @@ public:
 struct TFilesFindParams : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TFilesFindParams; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -134,6 +133,7 @@ public:
   }
 public:
   TFilesFindParams() :
+    TObject(OBJECT_CLASS_TFilesFindParams),
     OnFileFound(nullptr),
     OnFindingFile(nullptr),
     Cancel(false)
@@ -192,6 +192,7 @@ TSpaceAvailable::TSpaceAvailable() :
 }
 
 TChecklistItem::TChecklistItem() :
+  TObject(OBJECT_CLASS_TChecklistItem),
   Action(saNone),
   IsDirectory(false),
   ImageIndex(-1),
@@ -327,7 +328,6 @@ class TTunnelThread : public TSimpleThread
 {
 NB_DISABLE_COPY(TTunnelThread)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TTunnelThread; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -349,7 +349,7 @@ private:
 };
 
 TTunnelThread::TTunnelThread(TSecureShell * SecureShell) :
-  TSimpleThread(),
+  TSimpleThread(OBJECT_CLASS_TTunnelThread),
   FSecureShell(SecureShell),
   FTerminated(false)
 {
@@ -724,7 +724,12 @@ bool TRetryOperationLoop::Retry()
 
 
 TTerminal::TTerminal() :
-  TObject(),
+  TObject(OBJECT_CLASS_TTerminal)
+{
+}
+
+TTerminal::TTerminal(TObjectClassId Kind) :
+  TObject(Kind),
   TSessionUI(),
   FSessionData(nullptr),
   FLog(nullptr),
@@ -5020,13 +5025,13 @@ bool TTerminal::CalculateLocalFilesSize(const TStrings * AFileList,
 struct TSynchronizeFileData : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TSynchronizeFileData; }
   static inline bool classof(const TObject * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_TSynchronizeFileData;
   }
 public:
+  TSynchronizeFileData() : TObject(OBJECT_CLASS_TSynchronizeFileData) {}
   bool Modified;
   bool New;
   bool IsDirectory;
@@ -5041,13 +5046,13 @@ const intptr_t sfFirstLevel = 0x01;
 struct TSynchronizeData : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TSynchronizeData; }
   static inline bool classof(const TObject * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_TSynchronizeData;
   }
 public:
+  TSynchronizeData() : TObject(OBJECT_CLASS_TSynchronizeData) {}
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;
   TTerminal::TSynchronizeMode Mode;
@@ -6756,8 +6761,8 @@ bool TTerminal::IsThisOrChild(TTerminal * Terminal) const
     ((FCommandSession != nullptr) && (FCommandSession == Terminal));
 }
 
-TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :
-  TTerminal(),
+TSecondaryTerminal::TSecondaryTerminal(TObjectClassId Kind, TTerminal * MainTerminal) :
+  TTerminal(Kind),
   FMainTerminal(MainTerminal)
 {
 }

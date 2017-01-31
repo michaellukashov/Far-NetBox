@@ -288,7 +288,7 @@ void TKeepaliveThread::Execute()
 }
 
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
-  TCustomFarFileSystem(APlugin),
+  TCustomFarFileSystem(OBJECT_CLASS_TWinSCPFileSystem, APlugin),
   FTerminal(nullptr),
   FQueue(nullptr),
   FQueueStatus(nullptr),

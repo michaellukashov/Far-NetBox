@@ -6,7 +6,6 @@
 class CApiLog : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_CApiLog; }
   static bool classof(const TObject * Obj)
   {
     TObjectClassId Kind = Obj->GetKind();

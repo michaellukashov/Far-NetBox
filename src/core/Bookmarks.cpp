@@ -271,7 +271,7 @@ void TBookmarks::SetSharedBookmarks(TBookmarkList * Value)
 }
 
 TBookmarkList::TBookmarkList() :
-  TPersistent(),
+  TPersistent(OBJECT_CLASS_TBookmarkList),
   FBookmarks(new TStringList()),
   FOpenedNodes(CreateSortedStringList()),
   FModified(false)
@@ -473,6 +473,7 @@ void TBookmarkList::ShortCuts(TShortCuts & ShortCuts)
 
 
 TBookmark::TBookmark() :
+  TPersistent(OBJECT_CLASS_TBookmark),
   FOwner(nullptr)
 {
 }

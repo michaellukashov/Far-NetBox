@@ -34,7 +34,6 @@ const int soContinueOnError = 0x08;
 class TGUICopyParamType : public TCopyParamType
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TGUICopyParamType; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -89,7 +88,6 @@ struct TCopyParamRuleData : public TObject
 class TCopyParamRule : public TObject
 {
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TCopyParamRule; }
   static inline bool classof(const TObject * Obj)
   {
     return
