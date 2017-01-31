@@ -91,7 +91,6 @@ private:
 class TRemoteFile : public TPersistent
 {
 NB_DISABLE_COPY(TRemoteFile)
-NB_DECLARE_CLASS(TRemoteFile)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteFile; }
   static inline bool classof(const TObject * Obj)
@@ -271,7 +270,6 @@ friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TFTPFileSystem;
 friend class TWebDAVFileSystem;
-NB_DECLARE_CLASS(TRemoteFileList)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteFileList; }
   static inline bool classof(const TObject * Obj)
@@ -593,7 +591,6 @@ private:
 
 class TRemoteProperties : public TObject
 {
-NB_DECLARE_CLASS(TRemoteProperties)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteProperties; }
   static inline bool classof(const TObject * Obj)

@@ -11,7 +11,6 @@ class TCopyParamType;
 class TWinSCPPlugin : public TCustomFarPlugin
 {
 friend class TWinSCPFileSystem;
-NB_DECLARE_CLASS(TWinSCPPlugin)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TWinSCPPlugin; }
   static inline bool classof(const TObject * Obj)

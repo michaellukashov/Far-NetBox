@@ -59,7 +59,6 @@ struct TUsableCopyParamAttrs
 
 class TCopyParamType : public TObject
 {
-NB_DECLARE_CLASS(TCopyParamType)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCopyParamType; }
   static inline bool classof(const TObject * Obj)

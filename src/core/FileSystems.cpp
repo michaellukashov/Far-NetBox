@@ -37,10 +37,3 @@ TCustomFileSystem::~TCustomFileSystem()
 #endif
 }
 
-NB_IMPLEMENT_CLASS(TCustomFileSystem, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TSinkFileParams, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TFileTransferData, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TOpenRemoteFileParams, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TOverwriteFileParams, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TClipboardHandler, NB_GET_CLASS_INFO(TObject), nullptr)
-

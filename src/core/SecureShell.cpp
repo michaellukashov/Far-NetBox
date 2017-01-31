@@ -2665,5 +2665,3 @@ void TSecureShell::CollectUsage()
   }*/
 }
 
-NB_IMPLEMENT_CLASS(TSecureShell, NB_GET_CLASS_INFO(TObject), nullptr)
-

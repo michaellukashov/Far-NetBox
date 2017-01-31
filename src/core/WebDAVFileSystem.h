@@ -20,7 +20,6 @@ struct ne_lock;
 class TWebDAVFileSystem : public TCustomFileSystem
 {
 NB_DISABLE_COPY(TWebDAVFileSystem)
-NB_DECLARE_CLASS(TWebDAVFileSystem)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TWebDAVFileSystem; }
   static inline bool classof(const TObject * Obj)

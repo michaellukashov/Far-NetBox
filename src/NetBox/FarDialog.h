@@ -33,7 +33,14 @@ friend class TFarButton;
 friend class TFarList;
 friend class TFarListBox;
 NB_DISABLE_COPY(TFarDialog)
-NB_DECLARE_CLASS(TFarDialog)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarDialog; }
+  static bool classof(const TObject * Obj)
+  {
+    TObjectClassId Kind = Obj->GetKind();
+    return
+      Kind == OBJECT_CLASS_TFarDialog;
+  }
 public:
   explicit TFarDialog(TCustomFarPlugin * AFarPlugin);
   virtual ~TFarDialog();
@@ -152,7 +159,6 @@ class TFarDialogContainer : public TObject
 friend class TFarDialog;
 friend class TFarDialogItem;
 NB_DISABLE_COPY(TFarDialogContainer)
-NB_DECLARE_CLASS(TFarDialogContainer)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarDialogContainer; }
   static inline bool classof(const TObject * Obj)
@@ -201,7 +207,6 @@ friend class TFarMessageDialog;
 friend class TFarDialogContainer;
 friend class TFarList;
 NB_DISABLE_COPY(TFarDialogItem)
-NB_DECLARE_CLASS(TFarDialogItem)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarDialogItem; }
   static bool classof(const TObject * Obj)
@@ -386,7 +391,6 @@ enum TFarButtonBrackets
 
 class TFarButton : public TFarDialogItem
 {
-NB_DECLARE_CLASS(TFarButton)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarButton; }
   static inline bool classof(const TObject * Obj)
@@ -432,7 +436,6 @@ DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void,
 class TFarCheckBox : public TFarDialogItem
 {
 NB_DISABLE_COPY(TFarCheckBox)
-NB_DECLARE_CLASS(TFarCheckBox)
 public:
   explicit TFarCheckBox(TFarDialog * ADialog);
 
@@ -475,7 +478,6 @@ protected:
 
 class TFarEdit : public TFarDialogItem
 {
-NB_DECLARE_CLASS(TFarEdit)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarEdit; }
   static inline bool classof(const TObject * Obj)
@@ -532,7 +534,6 @@ protected:
 
 class TFarText : public TFarDialogItem
 {
-NB_DECLARE_CLASS(TFarText)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarText; }
   static inline bool classof(const TObject * Obj)
@@ -564,7 +565,6 @@ friend class TFarListBox;
 friend class TFarLister;
 friend class TFarComboBox;
 NB_DISABLE_COPY(TFarList)
-NB_DECLARE_CLASS(TFarList)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarList; }
   static inline bool classof(const TObject * Obj)
@@ -625,7 +625,6 @@ enum TFarListBoxAutoSelect
 class TFarListBox : public TFarDialogItem
 {
 NB_DISABLE_COPY(TFarListBox)
-NB_DECLARE_CLASS(TFarListBox)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarListBox; }
   static inline bool classof(const TObject * Obj)

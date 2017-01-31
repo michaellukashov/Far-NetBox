@@ -539,7 +539,6 @@ void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
 
 struct TFarMessageData : public TObject
 {
-NB_DECLARE_CLASS(TFarMessageData)
 NB_DISABLE_COPY(TFarMessageData)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarMessageData; }
@@ -806,7 +805,4 @@ void TWinSCPPlugin::CoreInitializeOnce()
     FInitialized = true;
   }
 }
-
-NB_IMPLEMENT_CLASS(TWinSCPPlugin, NB_GET_CLASS_INFO(TCustomFarPlugin), nullptr)
-NB_IMPLEMENT_CLASS(TFarMessageData, NB_GET_CLASS_INFO(TObject), nullptr)
 

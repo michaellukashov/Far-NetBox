@@ -86,5 +86,3 @@ int CApiLog::GetOptionVal(int OptionID) const
   return FIntern->GetOptionVal(OptionID);
 }
 
-NB_IMPLEMENT_CLASS(CApiLog, NB_GET_CLASS_INFO(TObject), nullptr)
-

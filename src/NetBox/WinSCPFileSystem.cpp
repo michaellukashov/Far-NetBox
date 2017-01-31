@@ -4173,5 +4173,3 @@ UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString & AFileName
   return BytesToHex(Result);
 }
 
-NB_IMPLEMENT_CLASS(TWinSCPFileSystem, NB_GET_CLASS_INFO(TCustomFarFileSystem), nullptr)
-

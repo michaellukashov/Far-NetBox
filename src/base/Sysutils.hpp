@@ -89,7 +89,6 @@ extern const TDayTable MonthDays[];
 
 class Exception : public std::runtime_error, public TObject
 {
-NB_DECLARE_CLASS(Exception)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_Exception; }
   static bool classof(const TObject * Obj)
@@ -128,7 +127,6 @@ protected:
 
 class EAbort : public Exception
 {
-NB_DECLARE_CLASS(EAbort)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EAbort; }
   static inline bool classof(const TObject * Obj)
@@ -144,7 +142,6 @@ public:
 
 class EAccessViolation : public Exception
 {
-NB_DECLARE_CLASS(EAccessViolation)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EAccessViolation; }
   static inline bool classof(const TObject * Obj)
@@ -159,7 +156,6 @@ public:
 
 class EFileNotFoundError : public Exception
 {
-NB_DECLARE_CLASS(EFileNotFoundError)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EFileNotFoundError; }
   static inline bool classof(const TObject * Obj)
@@ -174,7 +170,6 @@ public:
 
 class EOSError : public Exception
 {
-NB_DECLARE_CLASS(EOSError)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EOSError; }
   static inline bool classof(const TObject * Obj)

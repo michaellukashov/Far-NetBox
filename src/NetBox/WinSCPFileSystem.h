@@ -88,7 +88,6 @@ friend class TNetBoxPlugin;
 friend class TKeepaliveThread;
 friend class TQueueDialog;
 NB_DISABLE_COPY(TWinSCPFileSystem)
-NB_DECLARE_CLASS(TWinSCPFileSystem)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TWinSCPFileSystem; }
   static inline bool classof(const TObject * Obj)

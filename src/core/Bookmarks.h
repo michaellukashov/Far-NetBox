@@ -43,7 +43,6 @@ class TBookmarkList : public TPersistent
 friend class TBookmarks;
 friend class TBookmark;
 NB_DISABLE_COPY(TBookmarkList)
-NB_DECLARE_CLASS(TBookmarkList)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TBookmarkList; }
   static inline bool classof(const TObject * Obj)
@@ -97,7 +96,6 @@ class TBookmark : public TPersistent
 {
 friend class TBookmarkList;
 NB_DISABLE_COPY(TBookmark)
-NB_DECLARE_CLASS(TBookmark)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TBookmark; }
   static inline bool classof(const TObject * Obj)

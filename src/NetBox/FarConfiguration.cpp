@@ -248,5 +248,3 @@ TFarConfiguration * GetFarConfiguration()
   return dyn_cast<TFarConfiguration>(GetConfiguration());
 }
 
-NB_IMPLEMENT_CLASS(TFarConfiguration, NB_GET_CLASS_INFO(TGUIConfiguration), nullptr)
-

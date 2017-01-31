@@ -24,7 +24,6 @@ enum TOnceDoneOperation
 
 class ExtException : public Exception
 {
-NB_DECLARE_CLASS(ExtException)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_ExtException; }
   static bool classof(const TObject * Obj)
@@ -85,7 +84,6 @@ private:
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \
   class NAME : public BASE \
   { \
-  NB_DECLARE_CLASS(NAME) \
   public: \
     virtual TObjectClassId GetKind() const { return OBJECT_CLASS_##NAME; } \
   public: \
@@ -104,7 +102,15 @@ DERIVE_EXT_EXCEPTION(EFileSkipped, ESkipFile)
 
 class EOSExtException : public ExtException
 {
-NB_DECLARE_CLASS(EOSExtException)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EOSExtException; }
+  static bool classof(const TObject * Obj)
+  {
+    TObjectClassId Kind = Obj->GetKind();
+    return
+      Kind == OBJECT_CLASS_EOSExtException ||
+      Kind == OBJECT_CLASS_ECRTExtException;
+  }
 public:
   explicit EOSExtException();
   explicit EOSExtException(const UnicodeString & Msg);
@@ -114,13 +120,20 @@ public:
 class ECRTExtException : public EOSExtException
 {
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_ECRTExtException; }
+  static bool classof(const TObject * Obj)
+  {
+    TObjectClassId Kind = Obj->GetKind();
+    return
+      Kind == OBJECT_CLASS_ECRTExtException;
+  }
+public:
   ECRTExtException();
   explicit ECRTExtException(const UnicodeString & Msg);
 };
 
 class EFatal : public ExtException
 {
-NB_DECLARE_CLASS(EFatal)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EFatal; }
   static inline bool classof(const TObject * Obj)
@@ -146,7 +159,8 @@ private:
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
   class NAME : public BASE \
   { \
-  NB_DECLARE_CLASS(NAME) \
+  public: \
+    virtual TObjectClassId GetKind() const { return OBJECT_CLASS_##NAME; } \
   public: \
     explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
     virtual ExtException * Clone() const { return new NAME(this, L""); } \
@@ -158,7 +172,6 @@ DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
 // = close on completion
 class ESshTerminate : public EFatal
 {
-NB_DECLARE_CLASS(ESshTerminate)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_ESshTerminate; }
   static inline bool classof(const TObject * Obj)
@@ -180,7 +193,6 @@ public:
 
 class ECallbackGuardAbort : public EAbort
 {
-NB_DECLARE_CLASS(ECallbackGuardAbort)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_ECallbackGuardAbort; }
   static inline bool classof(const TObject * Obj)

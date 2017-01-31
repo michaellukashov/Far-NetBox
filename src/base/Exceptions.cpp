@@ -526,16 +526,3 @@ void RethrowException(Exception * E)
   }
 }
 
-NB_IMPLEMENT_CLASS(ExtException, NB_GET_CLASS_INFO(Exception), nullptr)
-NB_IMPLEMENT_CLASS(EFatal, NB_GET_CLASS_INFO(ExtException), nullptr)
-NB_IMPLEMENT_CLASS(ESshFatal, NB_GET_CLASS_INFO(EFatal), nullptr)
-NB_IMPLEMENT_CLASS(EOSExtException, NB_GET_CLASS_INFO(ExtException), nullptr)
-NB_IMPLEMENT_CLASS(ESshTerminate, NB_GET_CLASS_INFO(EFatal), nullptr)
-NB_IMPLEMENT_CLASS(ECallbackGuardAbort, NB_GET_CLASS_INFO(EAbort), nullptr)
-NB_IMPLEMENT_CLASS(ESsh, NB_GET_CLASS_INFO(ExtException), nullptr)
-NB_IMPLEMENT_CLASS(ETerminal, NB_GET_CLASS_INFO(ExtException), nullptr)
-NB_IMPLEMENT_CLASS(ECommand, NB_GET_CLASS_INFO(ExtException), nullptr)
-NB_IMPLEMENT_CLASS(EScp, NB_GET_CLASS_INFO(ExtException), nullptr)
-NB_IMPLEMENT_CLASS(ESkipFile, NB_GET_CLASS_INFO(ExtException), nullptr)
-NB_IMPLEMENT_CLASS(EFileSkipped, NB_GET_CLASS_INFO(ESkipFile), nullptr)
-

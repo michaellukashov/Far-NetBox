@@ -1681,4 +1681,3 @@ bool TShortCuts::Has(const TShortCut & ShortCut) const
   return (it != FShortCuts.end());
 }
 
-NB_IMPLEMENT_CLASS(TConfiguration, NB_GET_CLASS_INFO(TObject), nullptr)

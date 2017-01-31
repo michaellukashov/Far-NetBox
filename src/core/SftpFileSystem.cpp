@@ -221,7 +221,6 @@ public:
 
 class TSFTPPacket : public TObject
 {
-NB_DECLARE_CLASS(TSFTPPacket)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPPacket; }
   static inline bool classof(const TObject * Obj)
@@ -1183,7 +1182,6 @@ uint32_t TSFTPPacket::FMessageCounter = 0;
 class TSFTPQueuePacket : public TSFTPPacket
 {
 NB_DISABLE_COPY(TSFTPQueuePacket)
-NB_DECLARE_CLASS(TSFTPQueuePacket)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPQueuePacket; }
   static inline bool classof(const TObject * Obj)
@@ -6461,7 +6459,4 @@ void TSFTPFileSystem::UpdateFromMain(TCustomFileSystem * /*MainFileSystem*/)
 {
   // noop
 }
-
-NB_IMPLEMENT_CLASS(TSFTPPacket, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TSFTPQueuePacket, NB_GET_CLASS_INFO(TSFTPPacket), nullptr)
 

@@ -111,7 +111,6 @@ bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString & Directory)
 
 struct TMoveFileParams : public TObject
 {
-NB_DECLARE_CLASS(TMoveFileParams)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TMoveFileParams; }
   static inline bool classof(const TObject * Obj)
@@ -126,7 +125,6 @@ public:
 
 struct TFilesFindParams : public TObject
 {
-NB_DECLARE_CLASS(TFilesFindParams)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFilesFindParams; }
   static inline bool classof(const TObject * Obj)
@@ -5021,7 +5019,6 @@ bool TTerminal::CalculateLocalFilesSize(const TStrings * AFileList,
 
 struct TSynchronizeFileData : public TObject
 {
-NB_DECLARE_CLASS(TSynchronizeFileData)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSynchronizeFileData; }
   static inline bool classof(const TObject * Obj)
@@ -5043,7 +5040,6 @@ public:
 const intptr_t sfFirstLevel = 0x01;
 struct TSynchronizeData : public TObject
 {
-NB_DECLARE_CLASS(TSynchronizeData)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSynchronizeData; }
   static inline bool classof(const TObject * Obj)
@@ -6890,14 +6886,4 @@ UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName)
   }
   return Result;
 }
-
-NB_IMPLEMENT_CLASS(TTerminal, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TChecklistItem, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TSynchronizeData, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TCalculateSizeParams, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TMakeLocalFileListParams, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TFilesFindParams, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TCustomCommandParams, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TMoveFileParams, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TSynchronizeFileData, NB_GET_CLASS_INFO(TObject), nullptr)
 

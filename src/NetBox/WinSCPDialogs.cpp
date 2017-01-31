@@ -123,7 +123,6 @@ private:
 
 class TTabButton : public TFarButton
 {
-NB_DECLARE_CLASS(TTabButton)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TTabButton; }
   static inline bool classof(const TObject * Obj)
@@ -5911,7 +5910,6 @@ private:
 
 class TLabelList : public TList
 {
-NB_DECLARE_CLASS(TLabelList)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TLabelList; }
   static inline bool classof(const TObject * Obj)
@@ -8809,7 +8807,4 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
   }
   return Result;
 }
-
-NB_IMPLEMENT_CLASS(TTabButton, NB_GET_CLASS_INFO(TFarButton), nullptr)
-NB_IMPLEMENT_CLASS(TLabelList, NB_GET_CLASS_INFO(TList), nullptr)
 

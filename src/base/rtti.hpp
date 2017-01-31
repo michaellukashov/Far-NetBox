@@ -22,6 +22,7 @@ enum TObjectClassId
   OBJECT_CLASS_ESkipFile,
   OBJECT_CLASS_EFileSkipped,
   OBJECT_CLASS_EOSExtException,
+  OBJECT_CLASS_ECRTExtException,
   OBJECT_CLASS_EFatal,
   OBJECT_CLASS_ESshFatal,
   OBJECT_CLASS_ESshTerminate,
@@ -194,104 +195,6 @@ enum TObjectClassId
   OBJECT_CLASS_TFarSeparator,
   OBJECT_CLASS_TFarLister,
 
-};
-
-class TClassInfo
-{
-CUSTOM_MEM_ALLOCATION_IMPL
-public:
-  TClassInfo(int classId,
-             const TClassInfo * baseInfo1,
-             const TClassInfo * baseInfo2);
-  ~TClassInfo();
-
-  int GetClassId() const { return m_classId; }
-  int GetBaseClassId1() const
-  { return m_baseInfo1 ? m_baseInfo1->GetClassId() : 0; }
-  int GetBaseClassId2() const
-  { return m_baseInfo2 ? m_baseInfo2->GetClassId() : 0; }
-  const TClassInfo * GetBaseClassInfo1() const { return m_baseInfo1; }
-  const TClassInfo * GetBaseClassInfo2() const { return m_baseInfo2; }
-
-  static const TClassInfo * GetFirst() { return sm_first; }
-  const TClassInfo * GetNext() const { return m_next; }
-  static const TClassInfo * FindClass(int classId);
-
-  // Climb upwards through inheritance hierarchy.
-  bool IsKindOf(const TClassInfo * info) const;
-
-private:
-  int m_classId;
-
-  const TClassInfo * m_baseInfo1;
-  const TClassInfo * m_baseInfo2;
-
-  // class info object live in a linked list:
-  // pointers to its head and the next element in it
-  static TClassInfo * sm_first;
-  TClassInfo * m_next;
-
-  static THashTable * sm_classTable;
-
-protected:
-  // registers the class
-  void Register();
-  void Unregister();
-
-private:
-  TClassInfo(const TClassInfo &);
-  TClassInfo & operator=(const TClassInfo &);
-};
-
-#define NB_DECLARE_RUNTIME_CLASS(name)        \
-public:                                       \
-  static TClassInfo FClassInfo;               \
-  virtual TClassInfo * GetClassInfo() const;
-
-#define NB_DECLARE_CLASS(name)          \
-  NB_DECLARE_RUNTIME_CLASS(name)        \
-
-//public: \
-//  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_##name; }
-//static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_##name; }
-
-#define NB_GET_CLASS_INFO(name)         \
-  &name::FClassInfo
-
-#define NB_IMPLEMENT_CLASS(name, baseclassinfo1, baseclassinfo2) \
-  TClassInfo name::FClassInfo(OBJECT_CLASS_##name,    \
-    baseclassinfo1,                                   \
-    baseclassinfo2);                                  \
-  TClassInfo * name::GetClassInfo() const             \
-  { return &name::FClassInfo; }
-
-const TObject * NbStaticDownCastConst(TObjectClassId ClassId, const TObject * Object);
-TObject * NbStaticDownCast(TObjectClassId ClassId, TObject * Object);
-
-class THashTable : public rde::hash_map<int, const TClassInfo *>
-{
-CUSTOM_MEM_ALLOCATION_IMPL
-typedef rde::hash_map<int, const TClassInfo *> ancestor;
-public:
-  ancestor::mapped_type Get(const ancestor::key_type & key) const
-  {
-    ancestor::const_iterator it = ancestor::find(key);
-    if (it != ancestor::end())
-      return it->second;
-    else
-      return nullptr;
-  }
-  void Put(const ancestor::key_type & key, ancestor::mapped_type value)
-  {
-    ancestor::insert(ancestor::value_type(key, value));
-  }
-  void Delete(const ancestor::key_type & key)
-  {
-    ancestor::iterator it = ancestor::find(key);
-    if (it != ancestor::end())
-      ancestor::erase(it);
-  }
-  size_t GetCount() const { return ancestor::size(); }
 };
 
 //===-- from llvm/Support/Casting.h - Allow flexible, checked, casts

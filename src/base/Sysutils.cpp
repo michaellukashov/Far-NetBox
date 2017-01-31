@@ -1791,8 +1791,3 @@ TFormatSettings::TFormatSettings(int) :
 {
 }
 
-NB_IMPLEMENT_CLASS(Exception, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(EAccessViolation, NB_GET_CLASS_INFO(Exception), nullptr)
-NB_IMPLEMENT_CLASS(EAbort, NB_GET_CLASS_INFO(Exception), nullptr)
-NB_IMPLEMENT_CLASS(EFileNotFoundError, NB_GET_CLASS_INFO(Exception), nullptr)
-NB_IMPLEMENT_CLASS(EOSError, NB_GET_CLASS_INFO(Exception), nullptr)

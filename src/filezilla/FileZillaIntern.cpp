@@ -55,5 +55,3 @@ void TFileZillaIntern::SetDebugLevel(int DebugLevel)
   FDebugLevel = DebugLevel;
 }
 
-NB_IMPLEMENT_CLASS(TFileZillaIntern, NB_GET_CLASS_INFO(TObject), nullptr)
-

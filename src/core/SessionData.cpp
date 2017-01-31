@@ -5154,5 +5154,3 @@ intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps)
   return Result;
 }
 
-NB_IMPLEMENT_CLASS(TSessionData, NB_GET_CLASS_INFO(TNamedObject), nullptr)
-

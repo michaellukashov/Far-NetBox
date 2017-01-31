@@ -34,7 +34,6 @@ class TStoredSessionList;
 
 class TConfiguration : public TObject
 {
-NB_DECLARE_CLASS(TConfiguration)
 NB_DISABLE_COPY(TConfiguration)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TConfiguration; }

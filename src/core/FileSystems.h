@@ -43,7 +43,6 @@ const int tfNewDirectory = 0x04;
 
 struct TSinkFileParams : public TObject
 {
-NB_DECLARE_CLASS(TSinkFileParams)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSinkFileParams; }
   static inline bool classof(const TObject * Obj)
@@ -63,7 +62,6 @@ public:
 struct TFileTransferData : public TObject
 {
 NB_DISABLE_COPY(TFileTransferData)
-NB_DECLARE_CLASS(TFileTransferData)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFileTransferData; }
   static inline bool classof(const TObject * Obj)
@@ -91,7 +89,14 @@ public:
 
 struct TOverwriteFileParams : public TObject
 {
-NB_DECLARE_CLASS(TOverwriteFileParams)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TOverwriteFileParams; }
+  static bool classof(const TObject * Obj)
+  {
+    TObjectClassId Kind = Obj->GetKind();
+    return
+      Kind == OBJECT_CLASS_TOverwriteFileParams;
+  }
 public:
   TOverwriteFileParams() :
     SourceSize(0),
@@ -111,7 +116,6 @@ public:
 struct TOpenRemoteFileParams : public TObject
 {
 NB_DISABLE_COPY(TOpenRemoteFileParams)
-NB_DECLARE_CLASS(TOpenRemoteFileParams)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TOpenRemoteFileParams; }
   static inline bool classof(const TObject * Obj)
@@ -162,7 +166,6 @@ public:
 class TCustomFileSystem : public TObject, public TFileSystemIntf
 {
 NB_DISABLE_COPY(TCustomFileSystem)
-NB_DECLARE_CLASS(TCustomFileSystem)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomFileSystem; }
   static inline bool classof(const TObject * Obj)

@@ -965,5 +965,4 @@ void CopySpeedLimits(TStrings * Source, TStrings * Dest)
   Dest->Assign(Temp.get());
 }
 
-NB_IMPLEMENT_CLASS(TCopyParamType, NB_GET_CLASS_INFO(TObject), nullptr)
 

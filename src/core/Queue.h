@@ -7,7 +7,6 @@ class TTerminalItem;
 class TSimpleThread : public TObject
 {
 NB_DISABLE_COPY(TSimpleThread)
-NB_DECLARE_CLASS(TSimpleThread)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSimpleThread; }
   static inline bool classof(const TObject * Obj)
@@ -45,7 +44,6 @@ public:
 class TSignalThread : public TSimpleThread
 {
 NB_DISABLE_COPY(TSignalThread)
-NB_DECLARE_CLASS(TSignalThread)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSignalThread; }
   static inline bool classof(const TObject * Obj)
@@ -212,7 +210,6 @@ class TQueueItem : public TObject
 friend class TTerminalQueue;
 friend class TTerminalItem;
 NB_DISABLE_COPY(TQueueItem)
-NB_DECLARE_CLASS(TQueueItem)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TQueueItem; }
   static inline bool classof(const TObject * Obj)
@@ -290,7 +287,6 @@ friend class TQueueItem;
 friend class TTerminalQueueStatus;
 friend class TTerminalQueue;
 NB_DISABLE_COPY(TQueueItemProxy)
-NB_DECLARE_CLASS(TQueueItemProxy)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TQueueItemProxy; }
   static inline bool classof(const TObject * Obj)

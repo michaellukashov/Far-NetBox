@@ -73,7 +73,6 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 
 class TSessionActionRecord : public TObject
 {
-NB_DECLARE_CLASS(TSessionActionRecord)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSessionActionRecord; }
   static inline bool classof(const TObject * Obj)
@@ -1710,6 +1709,4 @@ void TActionLog::SetEnabled(bool Value)
     ReflectSettings();
   }
 }
-
-NB_IMPLEMENT_CLASS(TSessionActionRecord, NB_GET_CLASS_INFO(TObject), nullptr)
 

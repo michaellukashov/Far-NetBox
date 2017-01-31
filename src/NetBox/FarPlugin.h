@@ -72,7 +72,6 @@ friend class TFarDialogItem;
 friend class TFarMessageDialog;
 friend class TFarPluginGuard;
 NB_DISABLE_COPY(TCustomFarPlugin)
-NB_DECLARE_CLASS(TCustomFarPlugin)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomFarPlugin; }
   static inline bool classof(const TObject * Obj)
@@ -244,7 +243,6 @@ class TCustomFarFileSystem : public TObject
 friend class TFarPanelInfo;
 friend class TCustomFarPlugin;
 NB_DISABLE_COPY(TCustomFarFileSystem)
-NB_DECLARE_CLASS(TCustomFarFileSystem)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomFarFileSystem; }
   static inline bool classof(const TObject * Obj)
@@ -387,7 +385,6 @@ private:
 class TCustomFarPanelItem : public TObject
 {
 friend class TCustomFarFileSystem;
-NB_DECLARE_CLASS(TCustomFarPanelItem)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomFarPanelItem; }
   static inline bool classof(const TObject * Obj)
@@ -417,7 +414,6 @@ protected:
 class TFarPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TFarPanelItem)
-NB_DECLARE_CLASS(TFarPanelItem)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarPanelItem; }
   static inline bool classof(const TObject * Obj)

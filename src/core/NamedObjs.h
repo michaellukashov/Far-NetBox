@@ -8,7 +8,6 @@
 class TNamedObjectList;
 class TNamedObject : public TPersistent
 {
-NB_DECLARE_CLASS(TNamedObject)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TNamedObject; }
   static inline bool classof(const TObject * Obj)

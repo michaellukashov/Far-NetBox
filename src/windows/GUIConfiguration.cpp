@@ -1251,7 +1251,3 @@ TGUIConfiguration * GetGUIConfiguration()
   return dyn_cast<TGUIConfiguration>(GetConfiguration());
 }
 
-NB_IMPLEMENT_CLASS(TGUICopyParamType, NB_GET_CLASS_INFO(TCopyParamType), nullptr)
-NB_IMPLEMENT_CLASS(TGUIConfiguration, NB_GET_CLASS_INFO(TConfiguration), nullptr)
-NB_IMPLEMENT_CLASS(TCopyParamRule, NB_GET_CLASS_INFO(TObject), nullptr)
-

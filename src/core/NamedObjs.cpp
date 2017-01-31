@@ -190,5 +190,4 @@ intptr_t TNamedObjectList::GetCountIncludingHidden() const
   return TObjectList::GetCount();
 }
 
-NB_IMPLEMENT_CLASS(TNamedObject, NB_GET_CLASS_INFO(TPersistent), nullptr)
 

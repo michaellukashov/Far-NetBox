@@ -49,7 +49,6 @@ void ThrowNotImplemented(intptr_t ErrorId);
 class TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-NB_DECLARE_CLASS(TObject)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TObject; }
   static inline bool classof(const TObject * /*Obj*/) { return true; }
@@ -57,8 +56,6 @@ public:
   TObject() {}
   virtual ~TObject() {}
   virtual void Changed() {}
-
-  bool IsKindOf(TObjectClassId ClassId) const;
 };
 
 template<typename T>
@@ -128,7 +125,6 @@ struct TRect
 
 class TPersistent : public TObject
 {
-NB_DECLARE_CLASS(TPersistent)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TPersistent; }
   static bool classof(const TObject * Obj)
@@ -167,7 +163,6 @@ typedef intptr_t (CompareFunc)(const void * Item1, const void * Item2);
 
 class TList : public TObject
 {
-NB_DECLARE_CLASS(TList)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TList; }
   static inline bool classof(const TObject * Obj)
@@ -175,7 +170,11 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TList ||
       Obj->GetKind() == OBJECT_CLASS_TLabelList ||
-      Obj->GetKind() == OBJECT_CLASS_TObjectList;
+      Obj->GetKind() == OBJECT_CLASS_TObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
+      Obj->GetKind() == OBJECT_CLASS_TTerminalList ||
+      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
   }
 public:
   TList();
@@ -205,7 +204,6 @@ private:
 
 class TObjectList : public TList
 {
-NB_DECLARE_CLASS(TObjectList)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TObjectList; }
   static inline bool classof(const TObject * Obj)
@@ -214,7 +212,8 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TObjectList ||
       Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
       Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
-      Obj->GetKind() == OBJECT_CLASS_TTerminalList;
+      Obj->GetKind() == OBJECT_CLASS_TTerminalList ||
+      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
   }
 public:
   TObjectList();
@@ -251,7 +250,6 @@ class TStream;
 
 class TStrings : public TPersistent
 {
-NB_DECLARE_CLASS(TStrings)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TStrings; }
   static inline bool classof(const TObject * Obj)
@@ -327,7 +325,6 @@ typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, i
 class TStringList : public TStrings
 {
 friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
-NB_DECLARE_CLASS(TStringList)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TStringList; }
   static inline bool classof(const TObject * Obj)

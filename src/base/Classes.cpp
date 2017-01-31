@@ -35,17 +35,6 @@ void ThrowNotImplemented(intptr_t ErrorId)
   Error(SNotImplemented, ErrorId);
 }
 
-bool TObject::IsKindOf(TObjectClassId ClassId) const
-{
-  DebugAssert(this != nullptr);
-
-  TClassInfo * thisInfo = this->GetClassInfo();
-  DebugAssert(thisInfo != nullptr);
-
-  const TClassInfo * classInfo = TClassInfo::FindClass(ClassId);
-  return thisInfo->IsKindOf(classInfo);
-}
-
 TPersistent::TPersistent()
 {}
 
@@ -2119,11 +2108,4 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
   (void)FormatSettings;
   ThrowNotImplemented(1204);
 }
-
-NB_IMPLEMENT_CLASS(TObject, nullptr, nullptr)
-NB_IMPLEMENT_CLASS(TPersistent, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TList, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TObjectList, NB_GET_CLASS_INFO(TList), nullptr)
-NB_IMPLEMENT_CLASS(TStrings, NB_GET_CLASS_INFO(TPersistent), nullptr)
-NB_IMPLEMENT_CLASS(TStringList, NB_GET_CLASS_INFO(TStrings), nullptr)
 

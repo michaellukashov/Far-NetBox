@@ -33,7 +33,6 @@ const int soContinueOnError = 0x08;
 
 class TGUICopyParamType : public TCopyParamType
 {
-NB_DECLARE_CLASS(TGUICopyParamType)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TGUICopyParamType; }
   static inline bool classof(const TObject * Obj)
@@ -89,7 +88,6 @@ struct TCopyParamRuleData : public TObject
 
 class TCopyParamRule : public TObject
 {
-NB_DECLARE_CLASS(TCopyParamRule)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCopyParamRule; }
   static inline bool classof(const TObject * Obj)
@@ -186,7 +184,6 @@ private:
 class TGUIConfiguration : public TConfiguration
 {
 NB_DISABLE_COPY(TGUIConfiguration)
-NB_DECLARE_CLASS(TGUIConfiguration)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TGUIConfiguration; }
   static inline bool classof(const TObject * Obj)

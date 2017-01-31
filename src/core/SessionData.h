@@ -168,7 +168,6 @@ class TSessionData : public TNamedObject
 {
 friend class TStoredSessionList;
 NB_DISABLE_COPY(TSessionData)
-NB_DECLARE_CLASS(TSessionData)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSessionData; }
   static inline bool classof(const TObject * Obj)

@@ -1418,7 +1418,6 @@ void TCustomFarPlugin::SaveTerminalScreen()
 
 class TConsoleTitleParam : public TObject
 {
-NB_DECLARE_CLASS(TConsoleTitleParam)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TConsoleTitleParam; }
   static inline bool classof(const TObject * Obj)
@@ -2963,10 +2962,4 @@ uintptr_t TGlobalFunctions::MoreMessageDialog(const UnicodeString & Message, TSt
   TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
   return WinSCPPlugin->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);
 }
-
-NB_IMPLEMENT_CLASS(TCustomFarFileSystem, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TCustomFarPlugin, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TConsoleTitleParam, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TCustomFarPanelItem, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TFarPanelItem, NB_GET_CLASS_INFO(TCustomFarPanelItem), nullptr)
 

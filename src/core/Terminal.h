@@ -124,7 +124,6 @@ const int boDisableNeverShowAgain = 0x01;
 class TTerminal : public TObject, public TSessionUI
 {
 NB_DISABLE_COPY(TTerminal)
-NB_DECLARE_CLASS(TTerminal)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TTerminal; }
   static inline bool classof(const TObject * Obj)
@@ -741,7 +740,6 @@ private:
 
 struct TCustomCommandParams : public TObject
 {
-NB_DECLARE_CLASS(TCustomCommandParams)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomCommandParams; }
   static inline bool classof(const TObject * Obj)
@@ -766,7 +764,6 @@ struct TCalculateSizeStats : public TObject
 
 struct TCalculateSizeParams : public TObject
 {
-NB_DECLARE_CLASS(TCalculateSizeParams)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCalculateSizeParams; }
   static inline bool classof(const TObject * Obj)
@@ -787,7 +784,6 @@ typedef rde::vector<TDateTime> TDateTimes;
 
 struct TMakeLocalFileListParams : public TObject
 {
-NB_DECLARE_CLASS(TMakeLocalFileListParams)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TMakeLocalFileListParams; }
   static inline bool classof(const TObject * Obj)
@@ -830,7 +826,6 @@ enum TChecklistAction
 class TChecklistItem : public TObject
 {
 friend class TTerminal;
-NB_DECLARE_CLASS(TChecklistItem)
 NB_DISABLE_COPY(TChecklistItem)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TChecklistItem; }
