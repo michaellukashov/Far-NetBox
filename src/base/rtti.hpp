@@ -161,6 +161,7 @@ enum TObjectClassId
   OBJECT_CLASS_TFarButton,
   OBJECT_CLASS_TTabButton,
   OBJECT_CLASS_TFarList,
+  OBJECT_CLASS_TFarMenuItems,
   OBJECT_CLASS_TWinSCPPlugin,
   OBJECT_CLASS_TWinSCPFileSystem,
   OBJECT_CLASS_TFarPanelModes,

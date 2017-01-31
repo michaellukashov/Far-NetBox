@@ -113,6 +113,13 @@ struct TMoveFileParams : public TObject
 {
 NB_DECLARE_CLASS(TMoveFileParams)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TMoveFileParams; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TMoveFileParams;
+  }
+public:
   UnicodeString Target;
   UnicodeString FileMask;
 };

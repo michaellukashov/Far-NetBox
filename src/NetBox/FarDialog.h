@@ -565,6 +565,13 @@ friend class TFarComboBox;
 NB_DISABLE_COPY(TFarList)
 NB_DECLARE_CLASS(TFarList)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarList; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFarList;
+  }
+public:
   explicit TFarList(TFarDialogItem * ADialogItem = nullptr);
   virtual ~TFarList();
 

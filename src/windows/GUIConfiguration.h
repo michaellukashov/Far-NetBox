@@ -35,6 +35,13 @@ class TGUICopyParamType : public TCopyParamType
 {
 NB_DECLARE_CLASS(TGUICopyParamType)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TGUICopyParamType; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TGUICopyParamType;
+  }
+public:
   TGUICopyParamType();
   TGUICopyParamType(const TCopyParamType & Source);
   explicit TGUICopyParamType(const TGUICopyParamType & Source);

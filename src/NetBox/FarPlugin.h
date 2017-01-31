@@ -511,6 +511,13 @@ private:
 class TFarMenuItems : public TStringList
 {
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarMenuItems; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
+  }
+public:
   explicit TFarMenuItems();
   virtual ~TFarMenuItems() {}
   void AddSeparator(bool Visible = true);

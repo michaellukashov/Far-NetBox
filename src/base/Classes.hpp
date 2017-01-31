@@ -254,7 +254,13 @@ class TStrings : public TPersistent
 NB_DECLARE_CLASS(TStrings)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TStrings; }
-  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TStringList; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TStrings ||
+      Obj->GetKind() == OBJECT_CLASS_TStringList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarList;
+  }
 public:
   TStrings();
   virtual ~TStrings();
@@ -326,7 +332,10 @@ public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TStringList; }
   static inline bool classof(const TObject * Obj)
   {
-    return Obj->GetKind() == OBJECT_CLASS_TStringList; 
+    return
+      Obj->GetKind() == OBJECT_CLASS_TStringList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
   }
 public:
   TStringList();
