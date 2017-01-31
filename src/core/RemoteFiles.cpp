@@ -1659,8 +1659,8 @@ void TRemoteDirectoryFile::Init()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal)
-  : TRemoteDirectoryFile(OBJECT_CLASS_TRemoteParentDirectory)
+TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal) :
+  TRemoteDirectoryFile(OBJECT_CLASS_TRemoteParentDirectory)
 {
   SetFileName(PARENTDIRECTORY);
   SetTerminal(ATerminal);
