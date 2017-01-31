@@ -608,3 +608,16 @@ dyn_cast_or_null(Y *Val) {
 }
 
 } // namespace rtti
+
+template <class X, class Y>
+inline const X * dyn_cast(const Y * Val)
+{
+  return rtti::dyn_cast_or_null<X>(as_object(Val));
+}
+
+template <class X, class Y>
+inline X * dyn_cast(Y * Val)
+{
+  return rtti::dyn_cast_or_null<X>(as_object(Val));
+}
+
