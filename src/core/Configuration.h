@@ -36,7 +36,7 @@ class TConfiguration : public TObject
 {
 NB_DISABLE_COPY(TConfiguration)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TConfiguration; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TConfiguration; }
   static inline bool classof(const TObject * Obj)
   {
     return

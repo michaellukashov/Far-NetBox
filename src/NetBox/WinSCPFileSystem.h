@@ -89,7 +89,7 @@ friend class TKeepaliveThread;
 friend class TQueueDialog;
 NB_DISABLE_COPY(TWinSCPFileSystem)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TWinSCPFileSystem; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TWinSCPFileSystem; }
   static inline bool classof(const TObject * Obj)
   {
     return

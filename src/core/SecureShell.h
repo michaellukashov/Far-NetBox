@@ -33,7 +33,7 @@ class TSecureShell : public TObject
 friend class TPoolForDataEvent;
 NB_DISABLE_COPY(TSecureShell)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSecureShell; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TSecureShell; }
   static inline bool classof(const TObject * Obj)
   {
     return

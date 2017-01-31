@@ -164,7 +164,7 @@ typedef intptr_t (CompareFunc)(const void * Item1, const void * Item2);
 class TList : public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TList; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TList; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -205,7 +205,7 @@ private:
 class TObjectList : public TList
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TObjectList; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TObjectList; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -251,7 +251,7 @@ class TStream;
 class TStrings : public TPersistent
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TStrings; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TStrings; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -326,7 +326,7 @@ class TStringList : public TStrings
 {
 friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TStringList; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TStringList; }
   static inline bool classof(const TObject * Obj)
   {
     return

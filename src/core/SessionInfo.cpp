@@ -74,7 +74,7 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 class TSessionActionRecord : public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSessionActionRecord; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TSessionActionRecord; }
   static inline bool classof(const TObject * Obj)
   {
     return

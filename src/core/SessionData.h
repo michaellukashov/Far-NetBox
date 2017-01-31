@@ -169,7 +169,7 @@ class TSessionData : public TNamedObject
 friend class TStoredSessionList;
 NB_DISABLE_COPY(TSessionData)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSessionData; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TSessionData; }
   static inline bool classof(const TObject * Obj)
   {
     return Obj->GetKind() == OBJECT_CLASS_TSessionData;
@@ -854,7 +854,7 @@ class TStoredSessionList : public TNamedObjectList
 {
 NB_DISABLE_COPY(TStoredSessionList)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TStoredSessionList; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TStoredSessionList; }
   static inline bool classof(const TObject * Obj)
   {
     return

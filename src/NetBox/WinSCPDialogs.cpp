@@ -124,7 +124,7 @@ private:
 class TTabButton : public TFarButton
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TTabButton; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TTabButton; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -4269,7 +4269,7 @@ class TRightsContainer : public TFarDialogContainer
 {
 NB_DISABLE_COPY(TRightsContainer)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRightsContainer; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TRightsContainer; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -4936,7 +4936,7 @@ bool TWinSCPFileSystem::PropertiesDialog(TStrings * AFileList,
 class TCopyParamsContainer : public TFarDialogContainer
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCopyParamsContainer; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TCopyParamsContainer; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -5911,7 +5911,7 @@ private:
 class TLabelList : public TList
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TLabelList; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TLabelList; }
   static inline bool classof(const TObject * Obj)
   {
     return

@@ -38,7 +38,7 @@ private:
 class TNamedObjectList : public TObjectList
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TNamedObjectList; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TNamedObjectList; }
   static inline bool classof(const TObject * Obj)
   {
     return

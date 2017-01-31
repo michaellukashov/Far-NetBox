@@ -254,7 +254,7 @@ friend class TQueueItem;
 friend class TBackgroundTerminal;
 NB_DISABLE_COPY(TTerminalItem)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TTerminalItem; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TTerminalItem; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -1213,7 +1213,7 @@ class TBackgroundTerminal : public TSecondaryTerminal
 {
 friend class TTerminalItem;
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TBackgroundTerminal; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TBackgroundTerminal; }
   static inline bool classof(const TObject * Obj)
   {
     return

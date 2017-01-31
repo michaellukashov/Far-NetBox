@@ -10,7 +10,7 @@ class TSCPFileSystem : public TCustomFileSystem
 {
 NB_DISABLE_COPY(TSCPFileSystem)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSCPFileSystem; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TSCPFileSystem; }
   static inline bool classof(const TObject * Obj)
   {
     return

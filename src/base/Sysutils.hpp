@@ -90,7 +90,7 @@ extern const TDayTable MonthDays[];
 class Exception : public std::runtime_error, public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_Exception; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_Exception; }
   static bool classof(const TObject * Obj)
   {
     TObjectClassId Kind = Obj->GetKind();
@@ -128,7 +128,7 @@ protected:
 class EAbort : public Exception
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EAbort; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_EAbort; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -143,7 +143,7 @@ public:
 class EAccessViolation : public Exception
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EAccessViolation; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_EAccessViolation; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -157,7 +157,7 @@ public:
 class EFileNotFoundError : public Exception
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EFileNotFoundError; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_EFileNotFoundError; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -171,7 +171,7 @@ public:
 class EOSError : public Exception
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EOSError; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_EOSError; }
   static inline bool classof(const TObject * Obj)
   {
     return

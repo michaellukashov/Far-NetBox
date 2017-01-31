@@ -125,7 +125,7 @@ class TTerminal : public TObject, public TSessionUI
 {
 NB_DISABLE_COPY(TTerminal)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TTerminal; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TTerminal; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -684,7 +684,7 @@ class TSecondaryTerminal : public TTerminal
 {
 NB_DISABLE_COPY(TSecondaryTerminal)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSecondaryTerminal; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TSecondaryTerminal; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -741,7 +741,7 @@ private:
 struct TCustomCommandParams : public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomCommandParams; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomCommandParams; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -765,7 +765,7 @@ struct TCalculateSizeStats : public TObject
 struct TCalculateSizeParams : public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCalculateSizeParams; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TCalculateSizeParams; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -785,7 +785,7 @@ typedef rde::vector<TDateTime> TDateTimes;
 struct TMakeLocalFileListParams : public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TMakeLocalFileListParams; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TMakeLocalFileListParams; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -828,7 +828,7 @@ class TChecklistItem : public TObject
 friend class TTerminal;
 NB_DISABLE_COPY(TChecklistItem)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TChecklistItem; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TChecklistItem; }
   static inline bool classof(const TObject * Obj)
   {
     return

@@ -64,7 +64,7 @@ struct TFileSystemInfo : public TObject
 class TSessionUI
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSessionUI; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TSessionUI; }
   static inline bool classof(const TObject * Obj)
   {
     return

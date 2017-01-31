@@ -28,7 +28,7 @@ friend class TSFTPLoadFilesPropertiesQueue;
 friend class TSFTPCalculateFilesChecksumQueue;
 friend class TSFTPBusy;
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPFileSystem; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPFileSystem; }
   static inline bool classof(const TObject * Obj)
   {
     return

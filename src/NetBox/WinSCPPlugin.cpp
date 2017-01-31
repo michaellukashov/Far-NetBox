@@ -541,7 +541,7 @@ struct TFarMessageData : public TObject
 {
 NB_DISABLE_COPY(TFarMessageData)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarMessageData; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TFarMessageData; }
   static inline bool classof(const TObject * Obj)
   {
     return

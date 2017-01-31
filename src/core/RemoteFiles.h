@@ -92,7 +92,7 @@ class TRemoteFile : public TPersistent
 {
 NB_DISABLE_COPY(TRemoteFile)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteFile; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteFile; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -238,7 +238,7 @@ private:
 class TRemoteDirectoryFile : public TRemoteFile
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteDirectoryFile; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteDirectoryFile; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -253,7 +253,7 @@ public:
 class TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteParentDirectory; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteParentDirectory; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -271,7 +271,7 @@ friend class TSFTPFileSystem;
 friend class TFTPFileSystem;
 friend class TWebDAVFileSystem;
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteFileList; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteFileList; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -320,7 +320,7 @@ friend class TSFTPFileSystem;
 friend class TWebDAVFileSystem;
 NB_DISABLE_COPY(TRemoteDirectory)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteDirectory; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteDirectory; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -592,7 +592,7 @@ private:
 class TRemoteProperties : public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteProperties; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteProperties; }
   static inline bool classof(const TObject * Obj)
   {
     return

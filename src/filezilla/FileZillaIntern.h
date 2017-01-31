@@ -8,7 +8,7 @@ class TFileZillaIntern : public TObject
 {
 NB_DISABLE_COPY(TFileZillaIntern)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFileZillaIntern; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TFileZillaIntern; }
   static bool classof(const TObject * Obj)
   {
     TObjectClassId Kind = Obj->GetKind();

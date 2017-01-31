@@ -1419,7 +1419,7 @@ void TCustomFarPlugin::SaveTerminalScreen()
 class TConsoleTitleParam : public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TConsoleTitleParam; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TConsoleTitleParam; }
   static inline bool classof(const TObject * Obj)
   {
     return

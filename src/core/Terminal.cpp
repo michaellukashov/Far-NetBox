@@ -112,7 +112,7 @@ bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString & Directory)
 struct TMoveFileParams : public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TMoveFileParams; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TMoveFileParams; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -126,7 +126,7 @@ public:
 struct TFilesFindParams : public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFilesFindParams; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TFilesFindParams; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -327,7 +327,7 @@ class TTunnelThread : public TSimpleThread
 {
 NB_DISABLE_COPY(TTunnelThread)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TTunnelThread; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TTunnelThread; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -5020,7 +5020,7 @@ bool TTerminal::CalculateLocalFilesSize(const TStrings * AFileList,
 struct TSynchronizeFileData : public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSynchronizeFileData; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TSynchronizeFileData; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -5041,7 +5041,7 @@ const intptr_t sfFirstLevel = 0x01;
 struct TSynchronizeData : public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSynchronizeData; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TSynchronizeData; }
   static inline bool classof(const TObject * Obj)
   {
     return

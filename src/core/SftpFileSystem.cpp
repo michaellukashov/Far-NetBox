@@ -222,7 +222,7 @@ public:
 class TSFTPPacket : public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPPacket; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPPacket; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -1183,7 +1183,7 @@ class TSFTPQueuePacket : public TSFTPPacket
 {
 NB_DISABLE_COPY(TSFTPQueuePacket)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPQueuePacket; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPQueuePacket; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -1203,7 +1203,7 @@ class TSFTPQueue : public TObject
 {
 NB_DISABLE_COPY(TSFTPQueue)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPQueue; }
+  TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPQueue; }
   static inline bool classof(const TObject * Obj)
   {
     return
