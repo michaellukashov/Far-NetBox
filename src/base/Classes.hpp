@@ -54,7 +54,7 @@ public:
   static inline bool classof(const TObject * /*Obj*/) { return true; }
 public:
   TObject() : FKind(OBJECT_CLASS_TObject) {}
-  TObject(TObjectClassId Kind) : FKind(Kind) {}
+  explicit TObject(TObjectClassId Kind) : FKind(Kind) {}
   virtual ~TObject() {}
   virtual void Changed() {}
 private:
