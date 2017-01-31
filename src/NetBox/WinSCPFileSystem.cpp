@@ -478,6 +478,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
       for (intptr_t Index = 0; Index < GetTerminal()->GetFiles()->GetCount(); ++Index)
       {
         TRemoteFile * File = GetTerminal()->GetFiles()->GetFile(Index);
+        DebugAssert(File);
         if (ResolveSymlinks && File->GetIsSymLink())
         {
           if (FarPlugin->CheckForEsc())
