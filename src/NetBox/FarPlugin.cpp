@@ -1420,9 +1420,6 @@ class TConsoleTitleParam : public TObject
 {
 NB_DECLARE_CLASS(TConsoleTitleParam)
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TConsoleTitleParam; }
-  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TConsoleTitleParam; }
-public:
   explicit TConsoleTitleParam() :
     Progress(0),
     Own(0)
