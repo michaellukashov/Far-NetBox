@@ -226,9 +226,10 @@ public:                                       \
 
 #define NB_DECLARE_CLASS(name)          \
   NB_DECLARE_RUNTIME_CLASS(name)        \
-public: \
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_##name; } \
-  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_##name; }
+
+//public: \
+//  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_##name; }
+//static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_##name; }
 
 #define NB_GET_CLASS_INFO(name)         \
   &name::FClassInfo
@@ -243,7 +244,7 @@ public: \
 const TObject * NbStaticDownCastConst(TObjectClassId ClassId, const TObject * Object);
 TObject * NbStaticDownCast(TObjectClassId ClassId, TObject * Object);
 
-#define NB_STATIC_DOWNCAST_CONST(class_name, obj) (rtti::dyn_cast_or_null<class_name>(as_object(obj)))
+#define NB_STATIC_DOWNCAST_CONST(class_name, obj) (rtti::dyn_cast_or_null<const class_name>(as_object(obj)))
 #define NB_STATIC_DOWNCAST(class_name, obj) (rtti::dyn_cast_or_null<class_name>(as_object(obj)))
 
 class THashTable : public rde::hash_map<int, const TClassInfo *>
