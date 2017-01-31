@@ -220,6 +220,7 @@ public:
       Kind == OBJECT_CLASS_TFarSeparator ||
       Kind == OBJECT_CLASS_TFarText ||
       Kind == OBJECT_CLASS_TFarListBox ||
+      Kind == OBJECT_CLASS_TFarComboBox ||
       Kind == OBJECT_CLASS_TFarLister;
   }
 public:
