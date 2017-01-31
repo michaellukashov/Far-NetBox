@@ -820,7 +820,7 @@ TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile) :
   FModificationFmt(mfFull),
   FLinkedFile(nullptr),
   FLinkedByFile(ALinkedByFile),
-  FRights(new TRights()),
+  FRights(nullptr),
   FTerminal(nullptr),
   FSize(0),
   FINodeBlocks(0),
@@ -831,6 +831,14 @@ TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile) :
   FSelected(false),
   FCyclicLink(false)
 {
+  Init();
+  FLinkedByFile = ALinkedByFile;
+}
+
+TRemoteFile::TRemoteFile() :
+  TPersistent(OBJECT_CLASS_TRemoteFile)
+{
+  Init();
 }
 
 TRemoteFile::~TRemoteFile()
@@ -898,6 +906,24 @@ void TRemoteFile::LoadTypeInfo() const
   UnicodeString DumbFileName = (GetIsSymLink() && !GetLinkTo().IsEmpty() ? GetLinkTo() : GetFileName());
 
   FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);*/
+}
+
+void TRemoteFile::Init()
+{
+  FDirectory = nullptr;
+  FModificationFmt = mfFull;
+  FLinkedFile = nullptr;
+  FLinkedByFile = nullptr;
+  FRights = new TRights();
+  FTerminal = nullptr;
+  FSize = 0;
+  FINodeBlocks = 0;
+  FIconIndex = -1;
+  FIsHidden = -1;
+  FType = 0;
+  FIsSymLink = false;
+  FSelected = false;
+  FCyclicLink = false;
 }
 
 int64_t TRemoteFile::GetSize() const
@@ -2774,7 +2800,7 @@ TRemoteProperties::TRemoteProperties() :
 }
 
 TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhp) :
-  TObject(OBJECT_CLASS_TRemoteProperties)
+  TObject(OBJECT_CLASS_TRemoteProperties),
   Valid(rhp.Valid),
   Recursive(rhp.Recursive),
   Rights(rhp.Rights),

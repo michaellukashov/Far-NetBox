@@ -18,20 +18,20 @@ const intptr_t ccSet = 0x80000000;
 static const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
 #define ADDITIONAL_LANGUAGE_PREFIX L"XX"
 
-TGUICopyParamType::TGUICopyParamType()
-  : TCopyParamType(OBJECT_CLASS_TGUICopyParamType)
+TGUICopyParamType::TGUICopyParamType() :
+  TCopyParamType(OBJECT_CLASS_TGUICopyParamType)
 {
   GUIDefault();
 }
 
-TGUICopyParamType::TGUICopyParamType(const TCopyParamType & Source)
-  : TCopyParamType(OBJECT_CLASS_TGUICopyParamType, Source)
+TGUICopyParamType::TGUICopyParamType(const TCopyParamType & Source) :
+  TCopyParamType(Source)
 {
   GUIDefault();
 }
 
-TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source)
-  : TCopyParamType(OBJECT_CLASS_TGUICopyParamType, Source)
+TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source) :
+  TCopyParamType(Source)
 {
   GUIAssign(&Source);
 }
@@ -414,7 +414,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
   {
     UnicodeString Name = ::IntToStr(Index);
     std::unique_ptr<TCopyParamRule> Rule;
-    std::unique_ptr<TCopyParamType> CopyParam(new TCopyParamType());
+    std::unique_ptr<TCopyParamType> CopyParam(new TCopyParamType(OBJECT_CLASS_TCopyParamType));
     if (Storage->OpenSubKey(Name, false))
     {
       SCOPE_EXIT

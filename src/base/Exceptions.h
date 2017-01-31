@@ -9,7 +9,7 @@ bool ShouldDisplayException(Exception * E);
 bool ExceptionMessage(const Exception * E, UnicodeString & Message);
 bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message);
 bool ExceptionFullMessage(Exception * E, UnicodeString & Message);
-UnicodeString SysErrorMessageForError(int LastError);
+UnicodeString SysErrorMessageForError(intptr_t LastError);
 UnicodeString LastSysErrorMessage();
 TStrings * ExceptionToMoreMessages(Exception * E);
 bool IsInternalException(const Exception * E);
@@ -43,7 +43,7 @@ public:
   explicit ExtException(TObjectClassId Kind, Exception * E);
   explicit ExtException(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   // explicit ExtException(const ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
-  explicit ExtException(Exception * E, int Ident);
+  explicit ExtException(TObjectClassId Kind, Exception * E, intptr_t Ident);
   // "copy the exception", just append message to the end
   explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
@@ -54,7 +54,7 @@ public:
 
   explicit inline ExtException(TObjectClassId Kind, const UnicodeString & Msg) : Exception(Kind, Msg), FMoreMessages(nullptr) {}
   explicit inline ExtException(TObjectClassId Kind, intptr_t Ident) : Exception(Kind, Ident), FMoreMessages(nullptr) {}
-  explicit inline ExtException(TObjectClassId Kind, const UnicodeString & Msg, int AHelpContext) : Exception(Kind, Msg, AHelpContext), FMoreMessages(nullptr) {}
+  explicit inline ExtException(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AHelpContext) : Exception(Kind, Msg, AHelpContext), FMoreMessages(nullptr) {}
 
   ExtException(const ExtException & E) : Exception(OBJECT_CLASS_ExtException, L""), FMoreMessages(nullptr), FHelpKeyword(E.FHelpKeyword)
   {
@@ -84,8 +84,10 @@ private:
   class NAME : public BASE \
   { \
   public: \
+    explicit inline NAME(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(Kind, E, Msg, HelpKeyword) {} \
     explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
-    explicit inline NAME(const UnicodeString & Msg, int AHelpContext) : BASE(OBJECT_CLASS_##NAME, Msg, AHelpContext) {} \
+    explicit inline NAME(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AHelpContext) : BASE(Kind, Msg, AHelpContext) {} \
+    explicit inline NAME(const UnicodeString & Msg, intptr_t AHelpContext) : BASE(OBJECT_CLASS_##NAME, Msg, AHelpContext) {} \
     virtual inline ~NAME(void) noexcept {} \
     virtual ExtException * Clone() const { return new NAME(this, L""); } \
   };
@@ -110,7 +112,7 @@ public:
 public:
   explicit EOSExtException();
   explicit EOSExtException(TObjectClassId Kind, const UnicodeString & Msg);
-  explicit EOSExtException(TObjectClassId Kind, const UnicodeString & Msg, int LastError);
+  explicit EOSExtException(TObjectClassId Kind, const UnicodeString & Msg, intptr_t LastError);
 };
 
 class ECRTExtException : public EOSExtException

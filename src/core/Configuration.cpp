@@ -711,7 +711,7 @@ void TConfiguration::CleanupConfiguration()
   }
   catch (Exception & E)
   {
-    throw ExtException(&E, LoadStr(CLEANUP_CONFIG_ERROR));
+    throw ExtException(OBJECT_CLASS_ExtException, &E, LoadStr(CLEANUP_CONFIG_ERROR));
   }
 }
 
@@ -736,7 +736,7 @@ void TConfiguration::CleanupHostKeys()
   }
   catch (Exception & E)
   {
-    throw ExtException(&E, LoadStr(CLEANUP_HOSTKEYS_ERROR));
+    throw ExtException(OBJECT_CLASS_ExtException, &E, LoadStr(CLEANUP_HOSTKEYS_ERROR));
   }
 }
 
@@ -752,7 +752,7 @@ void TConfiguration::CleanupRandomSeedFile()
   }
   catch (Exception & E)
   {
-    throw ExtException(&E, LoadStr(CLEANUP_SEEDFILE_ERROR));
+    throw ExtException(OBJECT_CLASS_ExtException, &E, LoadStr(CLEANUP_SEEDFILE_ERROR));
   }
 }
 
@@ -972,7 +972,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
   }
   catch (Exception & E)
   {
-    throw ExtException(&E, "Can't get application version");
+    throw ExtException(OBJECT_CLASS_ExtException, &E, "Can't get application version");
   }
   return Result;
 }
@@ -1010,7 +1010,7 @@ UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info)
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, L"Can't get file version");
+    throw ExtException(OBJECT_CLASS_ExtException, &E, L"Can't get file version");
   }
 }
 
@@ -1031,7 +1031,7 @@ UnicodeString TConfiguration::GetProductVersion() const
   }
   catch (Exception & E)
   {
-    throw ExtException(&E, "Can't get application version");
+    throw ExtException(OBJECT_CLASS_ExtException, &E, "Can't get application version");
   }
   return Result;
 }

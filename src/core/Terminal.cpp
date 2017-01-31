@@ -419,9 +419,10 @@ private:
   uint32_t FTerminalThread;
 };
 
-TTunnelUI::TTunnelUI(TTerminal * Terminal)
+TTunnelUI::TTunnelUI(TTerminal * Terminal) :
+  TSessionUI(OBJECT_CLASS_TTunnelUI),
+  FTerminal(Terminal)
 {
-  FTerminal = Terminal;
   FTerminalThread = GetCurrentThreadId();
 }
 
@@ -564,7 +565,7 @@ void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const 
   if (dyn_cast<ECallbackGuardAbort>(E) == nullptr)
   {
     SAFE_DESTROY(FFatalError);
-    FFatalError = new ExtException(E, Msg, HelpKeyword);
+    FFatalError = new ExtException(OBJECT_CLASS_ExtException, E, Msg, HelpKeyword);
   }
 
   // silently abort what we are doing.
@@ -724,13 +725,12 @@ bool TRetryOperationLoop::Retry()
 
 
 TTerminal::TTerminal() :
-  TObject(OBJECT_CLASS_TTerminal)
+  TSessionUI(OBJECT_CLASS_TTerminal)
 {
 }
 
 TTerminal::TTerminal(TObjectClassId Kind) :
-  TObject(Kind),
-  TSessionUI(),
+  TSessionUI(Kind),
   FSessionData(nullptr),
   FLog(nullptr),
   FActionLog(nullptr),
@@ -781,7 +781,7 @@ TTerminal::TTerminal(TObjectClassId Kind) :
   FTunnelOpening(false),
   FFileSystem(nullptr)
 {
-  FOldFiles = new TRemoteDirectory(this);
+  FOldFiles = new TRemoteDirectory(OBJECT_CLASS_TRemoteDirectory, this);
 }
 
 TTerminal::~TTerminal()
@@ -824,7 +824,7 @@ void TTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration)
   FSessionData->Assign(SessionData);
   FLog = new TSessionLog(this, FSessionData, FConfiguration);
   FActionLog = new TActionLog(this, FSessionData, FConfiguration);
-  FFiles = new TRemoteDirectory(this);
+  FFiles = new TRemoteDirectory(OBJECT_CLASS_TRemoteDirectory, this);
   FExceptionOnFail = 0;
   FInTransaction = 0;
   FReadCurrentDirectoryPending = false;
@@ -2019,7 +2019,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
     else
     {
       // this can happen only during file transfer with SCP
-      throw ExtException(&E, Message);
+      throw ExtException(OBJECT_CLASS_ExtException, &E, Message);
     }
   }
 
@@ -2982,7 +2982,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 
     try
     {
-      TRemoteDirectory * Files = new TRemoteDirectory(this, FFiles);
+      TRemoteDirectory * Files = new TRemoteDirectory(OBJECT_CLASS_TRemoteDirectory, this, FFiles);
       try__finally
       {
         SCOPE_EXIT
@@ -4493,7 +4493,7 @@ TTerminal * TTerminal::GetCommandSession()
 
     try__catch
     {
-      std::unique_ptr<TSecondaryTerminal> CommandSession(new TSecondaryTerminal(this));
+      std::unique_ptr<TSecondaryTerminal> CommandSession(new TSecondaryTerminal(OBJECT_CLASS_TSecondaryTerminal, this));
       CommandSession->Init(GetSessionData(), FConfiguration, L"Shell");
 
       CommandSession->SetAutoReadDirectory(false);

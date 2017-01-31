@@ -156,6 +156,7 @@ protected:
   void FindLinkedFile();
 
 public:
+  TRemoteFile();
   explicit TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile = nullptr);
   virtual ~TRemoteFile();
   TRemoteFile * Duplicate(bool Standalone = true) const;
@@ -232,6 +233,7 @@ public:
 
 private:
   void LoadTypeInfo() const;
+  void Init();
 };
 
 class TRemoteDirectoryFile : public TRemoteFile

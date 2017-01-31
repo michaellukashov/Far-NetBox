@@ -800,7 +800,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
       FConfiguration->SetLogging(false);
       try
       {
-        throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
+        throw ExtException(OBJECT_CLASS_ExtException, &E, LoadStr(LOG_GEN_ERROR));
       }
       catch (Exception & E)
       {
@@ -885,7 +885,7 @@ void TSessionLog::OpenLogFile()
     FConfiguration->SetLogFileName(UnicodeString());
     try
     {
-      throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
+      throw ExtException(OBJECT_CLASS_ExtException, &E, LoadStr(LOG_GEN_ERROR));
     }
     catch (Exception & E)
     {
@@ -1520,13 +1520,13 @@ void TActionLog::Add(const UnicodeString & Line)
           FConfiguration->SetLogActions(false);
           if (FConfiguration->GetLogActionsRequired())
           {
-            throw EFatal(&E, LoadStr(LOG_FATAL_ERROR));
+            throw EFatal(OBJECT_CLASS_EFatal, &E, LoadStr(LOG_FATAL_ERROR));
           }
           else
           {
             try
             {
-              throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
+              throw ExtException(OBJECT_CLASS_ExtException, &E, LoadStr(LOG_GEN_ERROR));
             }
             catch (Exception & E)
             {
@@ -1642,13 +1642,13 @@ void TActionLog::OpenLogFile()
     FConfiguration->SetLogActions(false);
     if (FConfiguration->GetLogActionsRequired())
     {
-      throw EFatal(&E, LoadStr(LOG_FATAL_ERROR));
+      throw EFatal(OBJECT_CLASS_EFatal, &E, LoadStr(LOG_FATAL_ERROR));
     }
     else
     {
       try
       {
-        throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
+        throw ExtException(OBJECT_CLASS_ExtException, &E, LoadStr(LOG_GEN_ERROR));
       }
       catch (Exception & E)
       {

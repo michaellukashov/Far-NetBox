@@ -48,7 +48,8 @@ public:
   {
     return
       Obj->GetKind() == OBJECT_CLASS_TSignalThread ||
-      Obj->GetKind() == OBJECT_CLASS_TTerminalItem;
+      Obj->GetKind() == OBJECT_CLASS_TTerminalItem ||
+      Obj->GetKind() == OBJECT_CLASS_TTerminalQueue;
   }
 public:
   void Init(bool LowPriority);
@@ -60,7 +61,7 @@ protected:
   HANDLE FEvent;
   bool FTerminated;
 
-  explicit TSignalThread();
+  explicit TSignalThread(TObjectClassId Kind);
   virtual ~TSignalThread();
 
   virtual bool WaitForEvent();
@@ -216,7 +217,6 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TLocatedQueueItem;
   }
 public:
-  TQueueItem() : TObject(OBJECT_CLASS_TQueueItem) {}
   explicit TQueueItem(TObjectClassId Kind) : TObject(Kind) {}
 
   enum TStatus

@@ -21,7 +21,8 @@ TSynchronizeController::TSynchronizeController(
   FSynchronizeAbort(nullptr),
   FOnSynchronizeInvalid(AOnSynchronizeInvalid),
   FOnTooManyDirectories(AOnTooManyDirectories),
-  FSynchronizeLog(nullptr)
+  FSynchronizeLog(nullptr),
+  FCopyParam(OBJECT_CLASS_TCopyParamType)
 {
   FSynchronizeParams.Params = 0;
   FSynchronizeParams.Options = 0;

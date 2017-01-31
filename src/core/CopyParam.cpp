@@ -18,8 +18,14 @@ TCopyParamType::TCopyParamType() :
   Default();
 }
 
-TCopyParamType::TCopyParamType(TObjectClassId Kind, const TCopyParamType & Source) :
+TCopyParamType::TCopyParamType(TObjectClassId Kind) :
   TObject(Kind)
+{
+  Default();
+}
+
+TCopyParamType::TCopyParamType(const TCopyParamType & Source) :
+  TObject(OBJECT_CLASS_TCopyParamType)
 {
   Assign(&Source);
 }

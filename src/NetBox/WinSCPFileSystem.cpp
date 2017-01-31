@@ -20,7 +20,7 @@
 #include "XmlStorage.h"
 
 TSessionPanelItem::TSessionPanelItem(const TSessionData * ASessionData) :
-  TCustomFarPanelItem()
+  TCustomFarPanelItem(OBJECT_CLASS_TSessionPanelItem)
 {
   DebugAssert(ASessionData);
   FSessionData = ASessionData;
@@ -62,7 +62,7 @@ void TSessionPanelItem::GetData(
 }
 
 TSessionFolderPanelItem::TSessionFolderPanelItem(const UnicodeString & Folder) :
-  TCustomFarPanelItem(),
+  TCustomFarPanelItem(OBJECT_CLASS_TSessionFolderPanelItem),
   FFolder(Folder)
 {
 }
@@ -79,7 +79,7 @@ void TSessionFolderPanelItem::GetData(
 }
 
 TRemoteFilePanelItem::TRemoteFilePanelItem(TRemoteFile * ARemoteFile) :
-  TCustomFarPanelItem()
+  TCustomFarPanelItem(OBJECT_CLASS_TRemoteFilePanelItem)
 {
   DebugAssert(ARemoteFile);
   FRemoteFile = ARemoteFile;
@@ -253,7 +253,7 @@ private:
 
 TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
   const TDateTime & Interval) :
-  TSimpleThread(),
+  TSimpleThread(OBJECT_CLASS_TKeepAliveThread),
   FFileSystem(FileSystem),
   FInterval(Interval),
   FEvent(0)

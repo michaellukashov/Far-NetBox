@@ -1392,7 +1392,7 @@ protected:
 
     if (Request.get() != nullptr)
     {
-      TSFTPPacket * Response = new TSFTPPacket(FCodePage);
+      TSFTPPacket * Response = new TSFTPPacket(OBJECT_CLASS_TSFTPPacket, FCodePage);
       FRequests->Add(Request.get());
       FResponses->Add(Response);
 
@@ -2634,7 +2634,7 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
       {
         // Reset packet in case it was filled by previous out-of-order
         // reserved packet
-        *Packet = TSFTPPacket(FCodePage);
+        *Packet = TSFTPPacket(OBJECT_CLASS_TSFTPPacket, FCodePage);
       }
       else
       {
@@ -2798,7 +2798,7 @@ SSH_FX_TYPES TSFTPFileSystem::ReceiveResponse(
   {
     if (!AResponse)
     {
-      Response.reset(new TSFTPPacket(FCodePage));
+      Response.reset(new TSFTPPacket(OBJECT_CLASS_TSFTPPacket, FCodePage));
       AResponse = Response.get();
     }
     Result = ReceivePacket(AResponse, ExpectedType, AllowStatus, TryOnly);
@@ -2887,7 +2887,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath)
   {
     if (FTerminal->GetActive())
     {
-      throw ExtException(&E, FMTLOAD(SFTP_REALPATH_ERROR, APath.c_str()));
+      throw ExtException(OBJECT_CLASS_ExtException, &E, FMTLOAD(SFTP_REALPATH_ERROR, APath.c_str()));
     }
     else
     {
@@ -3035,7 +3035,7 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
   TRemoteFile * ALinkedByFile, const UnicodeString & AFileName,
   TRemoteFileList * TempFileList, bool Complete)
 {
-  std::unique_ptr<TRemoteFile> File(new TRemoteFile(ALinkedByFile));
+  std::unique_ptr<TRemoteFile> File(new TRemoteFile(OBJECT_CLASS_TRemoteFile, ALinkedByFile));
   try__catch
   {
     File->SetTerminal(FTerminal);
@@ -3535,7 +3535,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
     throw;
   }
 
-  TSFTPPacket Response(FCodePage);
+  TSFTPPacket Response(OBJECT_CLASS_TSFTPPacket, FCodePage);
   try__finally
   {
     SCOPE_EXIT
@@ -3684,7 +3684,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
       if (Failure)
       {
-        throw ExtException(
+        throw ExtException(OBJECT_CLASS_ExtException,
           nullptr, FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()),
           HELP_EMPTY_DIRECTORY);
       }
@@ -4086,7 +4086,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
       if (Queue.Init(LoadFilesPropertiesQueueLen, AFileList))
       {
         TRemoteFile * File = nullptr;
-        TSFTPPacket Packet(FCodePage);
+        TSFTPPacket Packet(OBJECT_CLASS_TSFTPPacket, FCodePage);
         bool Next;
         do
         {
@@ -4199,7 +4199,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
     };
     if (Queue.Init(CalculateFilesChecksumQueueLen, Alg, AFileList))
     {
-      TSFTPPacket Packet(FCodePage);
+      TSFTPPacket Packet(OBJECT_CLASS_TSFTPPacket, FCodePage);
       bool Next = false;
       do
       {
@@ -4999,11 +4999,11 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
 
       Action.Destination(DestFullName);
 
-      TSFTPPacket CloseRequest(FCodePage);
+      TSFTPPacket CloseRequest(OBJECT_CLASS_TSFTPPacket, FCodePage);
       bool SetRights = ((DoResume && DestFileExists) || CopyParam->GetPreserveRights());
       bool SetProperties = (CopyParam->GetPreserveTime() || SetRights);
       TSFTPPacket PropertiesRequest(SSH_FXP_SETSTAT, FCodePage);
-      TSFTPPacket PropertiesResponse(FCodePage);
+      TSFTPPacket PropertiesResponse(OBJECT_CLASS_TSFTPPacket, FCodePage);
       TRights Rights;
       if (SetProperties)
       {
@@ -5207,7 +5207,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
           {
             try
             {
-              TSFTPPacket DummyResponse(FCodePage);
+              TSFTPPacket DummyResponse(OBJECT_CLASS_TSFTPPacket, FCodePage);
               TSFTPPacket * Response = &PropertiesResponse;
               if (Resend)
               {
@@ -5525,7 +5525,7 @@ void TSFTPFileSystem::SFTPCloseRemote(const RawByteString & Handle,
   {
     try
     {
-      TSFTPPacket CloseRequest(FCodePage);
+      TSFTPPacket CloseRequest(OBJECT_CLASS_TSFTPPacket, FCodePage);
       TSFTPPacket * P = (Packet == nullptr ? &CloseRequest : Packet);
 
       if (Request)
@@ -6175,7 +6175,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           {
             Queue.DisposeSafe();
           };
-          TSFTPPacket DataPacket(FCodePage);
+          TSFTPPacket DataPacket(OBJECT_CLASS_TSFTPPacket, FCodePage);
 
           uintptr_t BlSize = DownloadBlockSize(OperationProgress);
           intptr_t QueueLen = static_cast<intptr_t>(AFile->GetSize() / (BlSize != 0 ? BlSize : 1)) + 1;

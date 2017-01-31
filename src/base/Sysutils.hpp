@@ -109,7 +109,9 @@ public:
   }
 public:
   explicit Exception(TObjectClassId Kind, const wchar_t * Msg);
-  explicit Exception(TObjectClassId Kind,const UnicodeString & Msg);
+  explicit Exception(const wchar_t * Msg);
+  explicit Exception(TObjectClassId Kind, const UnicodeString & Msg);
+  explicit Exception(const UnicodeString & Msg);
   explicit Exception(TObjectClassId Kind, Exception * E);
   explicit Exception(TObjectClassId Kind, std::exception * E);
   explicit Exception(TObjectClassId Kind, const UnicodeString & Msg, int AHelpContext);
@@ -398,7 +400,7 @@ class EConvertError : public Exception
 {
 public:
   explicit EConvertError(const UnicodeString & Msg) :
-    Exception(Msg)
+    Exception(OBJECT_CLASS_EConvertError, Msg)
   {}
 };
 

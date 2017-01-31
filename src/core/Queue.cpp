@@ -375,8 +375,8 @@ void TSimpleThread::WaitFor(uint32_t Milliseconds)
 //---------------------------------------------------------------------------
 // TSignalThread
 //---------------------------------------------------------------------------
-TSignalThread::TSignalThread() :
-  TSimpleThread(OBJECT_CLASS_TSignalThread),
+TSignalThread::TSignalThread(TObjectClassId Kind) :
+  TSimpleThread(Kind),
   FEvent(nullptr),
   FTerminated(true)
 {
@@ -462,7 +462,7 @@ void TSignalThread::Terminate()
 //---------------------------------------------------------------------------
 TTerminalQueue::TTerminalQueue(TTerminal * ATerminal,
   TConfiguration * AConfiguration) :
-  TSignalThread(),
+  TSignalThread(OBJECT_CLASS_TTerminalQueue),
   FOnQueryUser(nullptr),
   FOnPromptUser(nullptr),
   FOnShowExtendedException(nullptr),
@@ -1651,6 +1651,7 @@ bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus)
 // TQueueItem
 
 TQueueItem::TQueueItem() :
+  TObject(OBJECT_CLASS_TQueueItem),
   FStatus(qsPending), FTerminalItem(nullptr), FProgressData(nullptr),
   FInfo(new TInfo()),
   FQueue(nullptr), FCompleteEvent(INVALID_HANDLE_VALUE),
@@ -2207,7 +2208,7 @@ void TDownloadQueueItem::DoExecute(TTerminal * Terminal)
 // TTerminalThread
 
 TTerminalThread::TTerminalThread(TTerminal * Terminal) :
-  TSignalThread(), FTerminal(Terminal),
+  TSignalThread(OBJECT_CLASS_TTerminalThread), FTerminal(Terminal),
   FOnInformation(nullptr),
   FOnQueryUser(nullptr),
   FOnPromptUser(nullptr),

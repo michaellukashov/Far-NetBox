@@ -662,8 +662,8 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
     case ktSSH2:
       if (!ssh2_save_userkey(KeyFile, Ssh2Key, PassphrasePtr))
       {
-        int Error = errno;
-        throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, FileName.c_str()), Error);
+        intptr_t Error = errno;
+        throw EOSExtException(OBJECT_CLASS_EOSExtException, FMTLOAD(KEY_SAVE_ERROR, FileName.c_str()), Error);
       }
       break;
 

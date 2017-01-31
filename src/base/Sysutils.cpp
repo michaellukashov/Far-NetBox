@@ -89,9 +89,9 @@ Exception::Exception(TObjectClassId Kind, Exception * E) :
 {
 }
 
-Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg) :
+Exception::Exception(const UnicodeString & Msg) :
   std::runtime_error(""),
-  TObject(Kind),
+  TObject(OBJECT_CLASS_Exception),
   Message(Msg)
 {
 }
@@ -101,15 +101,30 @@ Exception::Exception(TObjectClassId Kind, const wchar_t * Msg) :
   TObject(Kind),
   Message(Msg)
 {
+
+}
+
+Exception::Exception(const wchar_t * Msg) :
+  std::runtime_error(""),
+  TObject(OBJECT_CLASS_Exception),
+  Message(Msg)
+{
+}
+
+Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg) :
+  std::runtime_error(""),
+  TObject(Kind),
+  Message(Msg)
+{
 }
 
 Exception::Exception(TObjectClassId Kind, std::exception * E) :
-  std::runtime_error(E ? E->what() : "")
+  std::runtime_error(E ? E->what() : ""),
   TObject(Kind)
 {
 }
 
-Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg, int AHelpContext) :
+Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AHelpContext) :
   std::runtime_error(""),
   TObject(Kind),
   Message(Msg)

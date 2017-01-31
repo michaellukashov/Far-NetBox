@@ -1173,7 +1173,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
         if (Empty)
         {
-          throw ExtException(
+          throw ExtException(OBJECT_CLASS_ExtException,
             nullptr, FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()),
             HELP_EMPTY_DIRECTORY);
         }
@@ -1230,7 +1230,7 @@ void TSCPFileSystem::ReadFile(const UnicodeString & AFileName,
 TRemoteFile * TSCPFileSystem::CreateRemoteFile(
   const UnicodeString & ListingStr, TRemoteFile * LinkedByFile)
 {
-  std::unique_ptr<TRemoteFile> File(new TRemoteFile(LinkedByFile));
+  std::unique_ptr<TRemoteFile> File(new TRemoteFile(OBJECT_CLASS_TRemoteFile, LinkedByFile));
   try__catch
   {
     File->SetTerminal(FTerminal);

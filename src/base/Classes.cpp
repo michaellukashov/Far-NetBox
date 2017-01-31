@@ -27,7 +27,7 @@ void Abort()
 void Error(intptr_t Id, intptr_t ErrorId)
 {
   UnicodeString Msg = FMTLOAD(Id, ErrorId);
-  throw ExtException(static_cast<Exception *>(nullptr), Msg);
+  throw ExtException(OBJECT_CLASS_ExtException, static_cast<Exception *>(nullptr), Msg);
 }
 
 void ThrowNotImplemented(intptr_t ErrorId)
@@ -66,7 +66,7 @@ TPersistent * TPersistent::GetOwner()
 void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
-  throw Exception(L"Cannot assign");
+  throw Exception(OBJECT_CLASS_Exception, L"Cannot assign");
 }
 
 TList::TList() :
@@ -1350,7 +1350,7 @@ class EStreamError : public ExtException
 {
 public:
   explicit EStreamError(const UnicodeString & Msg) :
-    ExtException((Exception * )nullptr, Msg)
+    ExtException(OBJECT_CLASS_EStreamError, (Exception * )nullptr, Msg)
   {}
 };
 

@@ -2463,7 +2463,7 @@ bool TFarPanelItem::GetIsFile() const
 }
 
 THintPanelItem::THintPanelItem(const UnicodeString & AHint) :
-  TCustomFarPanelItem(),
+  TCustomFarPanelItem(OBJECT_CLASS_THintPanelItem),
   FHint(AHint)
 {
 }

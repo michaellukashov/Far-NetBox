@@ -1708,7 +1708,15 @@ bool TFarDialogItem::HotKey(char /*HotKey*/)
 }
 
 TFarBox::TFarBox(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_SINGLEBOX)
+  TFarDialogItem(OBJECT_CLASS_TFarBox, ADialog, DI_SINGLEBOX)
+{
+}
+
+TFarButton::TFarButton(TFarDialog * ADialog) :
+  TFarDialogItem(OBJECT_CLASS_TFarButton, ADialog, DI_BUTTON),
+  FResult(0),
+  FOnClick(nullptr),
+  FBrackets(brNormal)
 {
 }
 
@@ -1866,7 +1874,7 @@ bool TFarButton::HotKey(char HotKey)
 }
 
 TFarCheckBox::TFarCheckBox(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_CHECKBOX),
+  TFarDialogItem(OBJECT_CLASS_TFarCheckBox, ADialog, DI_CHECKBOX),
   FOnAllowChange(nullptr)
 {
 }
@@ -1907,7 +1915,7 @@ void TFarCheckBox::SetData(const UnicodeString & Value)
 }
 
 TFarRadioButton::TFarRadioButton(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_RADIOBUTTON),
+  TFarDialogItem(OBJECT_CLASS_TFarRadioButton, ADialog, DI_RADIOBUTTON),
   FOnAllowChange(nullptr)
 {
 }
@@ -2032,7 +2040,7 @@ intptr_t TFarEdit::GetAsInteger()
 }
 
 TFarSeparator::TFarSeparator(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_TEXT)
+  TFarDialogItem(OBJECT_CLASS_TFarSeparator, ADialog, DI_TEXT)
 {
   SetLeft(-1);
   SetFlag(DIF_SEPARATOR, true);
@@ -2481,7 +2489,7 @@ bool TFarListBox::CloseQuery()
 }
 
 TFarComboBox::TFarComboBox(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_COMBOBOX),
+  TFarDialogItem(OBJECT_CLASS_TFarComboBox, ADialog, DI_COMBOBOX),
   FList(nullptr)
 {
   FList = new TFarList(this);
@@ -2525,7 +2533,7 @@ void TFarComboBox::Init()
 }
 
 TFarLister::TFarLister(TFarDialog * ADialog) :
-  TFarDialogItem(ADialog, DI_USERCONTROL),
+  TFarDialogItem(OBJECT_CLASS_TFarLister, ADialog, DI_USERCONTROL),
   FItems(new TStringList()),
   FTopIndex(0)
 {

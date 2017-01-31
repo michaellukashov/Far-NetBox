@@ -287,7 +287,7 @@ ExtException::ExtException(TObjectClassId Kind, const Exception * E, const Unico
   AddMoreMessages(E);
 }*/
 
-ExtException::ExtException(TObjectClassId Kind, Exception * E, int Ident) :
+ExtException::ExtException(TObjectClassId Kind, Exception * E, intptr_t Ident) :
   Exception(Kind, E, Ident),
   FMoreMessages(nullptr),
   FHelpKeyword()
@@ -400,7 +400,7 @@ ExtException::~ExtException() noexcept
 
 ExtException * ExtException::CloneFrom(const Exception * E)
 {
-  return new ExtException(E, L"");
+  return new ExtException(OBJECT_CLASS_ExtException, E, L"");
 }
 
 ExtException * ExtException::Clone() const
@@ -408,7 +408,7 @@ ExtException * ExtException::Clone() const
   return CloneFrom(this);
 }
 
-UnicodeString SysErrorMessageForError(int LastError)
+UnicodeString SysErrorMessageForError(intptr_t LastError)
 {
   UnicodeString Result;
   if (LastError != 0)
@@ -434,7 +434,7 @@ EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg)
 {
 }
 
-EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg, int LastError) :
+EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg, intptr_t LastError) :
   ExtException(Kind, Msg, SysErrorMessageForError(LastError))
 {
 }
@@ -457,7 +457,7 @@ ECRTExtException::ECRTExtException(const UnicodeString & Msg) :
 
 ExtException * EFatal::Clone() const
 {
-  return new EFatal(this, L"");
+  return new EFatal(OBJECT_CLASS_EFatal, this, L"");
 }
 
 ExtException * ESshTerminate::Clone() const
@@ -511,7 +511,7 @@ void RethrowException(Exception * E)
   // this list has to be in sync with ExceptionMessage
   if (dyn_cast<EFatal>(E) != nullptr)
   {
-    throw EFatal(E, L"");
+    throw EFatal(OBJECT_CLASS_EFatal, E, L"");
   }
   else if (dyn_cast<ECallbackGuardAbort>(E) != nullptr)
   {
@@ -527,7 +527,7 @@ void RethrowException(Exception * E)
   }
   else
   {
-    throw ExtException(E, L"");
+    throw ExtException(OBJECT_CLASS_ExtException, E, L"");
   }
 }
 

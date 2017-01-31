@@ -798,7 +798,7 @@ void TFTPFileSystem::CollectUsage()
 
 void TFTPFileSystem::DummyReadDirectory(const UnicodeString & Directory)
 {
-  std::unique_ptr<TRemoteDirectory> Files(new TRemoteDirectory(FTerminal));
+  std::unique_ptr<TRemoteDirectory> Files(new TRemoteDirectory(OBJECT_CLASS_TRemoteDirectory, FTerminal));
   try
   {
     Files->SetDirectory(GetCurrDirectory());
@@ -2964,7 +2964,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   // (involves opening TCPIP connection for retrieving "directory listing").
   // Moreover FZAPI does not support that anyway.
   // Though nowadays we could use MLST to read the symlink.
-  std::unique_ptr<TRemoteFile> File(new TRemoteFile(SymlinkFile));
+  std::unique_ptr<TRemoteFile> File(new TRemoteFile(OBJECT_CLASS_TRemoteFile, SymlinkFile));
   try__catch
   {
     File->SetTerminal(FTerminal);
@@ -3723,7 +3723,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       {
         // for fatal error, it is essential that there is some message
         DebugAssert(!ErrorStr.IsEmpty());
-        std::unique_ptr<ExtException> E(new ExtException(ErrorStr, MoreMessages.release(), true));
+        std::unique_ptr<ExtException> E(new ExtException(OBJECT_CLASS_ExtException, ErrorStr, MoreMessages.release(), true));
         try__finally
         {
           FTerminal->FatalError(E.get(), L"");
@@ -3735,7 +3735,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       }
       else
       {
-        throw ExtException(ErrorStr, MoreMessages.release(), true, UnicodeString(HelpKeyword));
+        throw ExtException(OBJECT_CLASS_ExtException, ErrorStr, MoreMessages.release(), true, UnicodeString(HelpKeyword));
       }
     }
 

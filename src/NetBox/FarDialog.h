@@ -396,6 +396,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TTabButton;
   }
 public:
+  explicit TFarButton(TFarDialog * ADialog);
   explicit TFarButton(TObjectClassId Kind, TFarDialog * ADialog);
   virtual ~TFarButton() {}
 
