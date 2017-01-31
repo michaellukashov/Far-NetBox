@@ -9,7 +9,7 @@
 #include "CoreMain.h"
 
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
-  TGUIConfiguration(),
+  TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin),
   FBookmarks(new TBookmarks()),
   FFarConfirmations(-1)

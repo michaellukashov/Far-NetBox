@@ -185,7 +185,6 @@ class TGUIConfiguration : public TConfiguration
 {
 NB_DISABLE_COPY(TGUIConfiguration)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TGUIConfiguration; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -225,7 +224,7 @@ public:
   void SetQueueKeepDoneItemsFor(intptr_t Value);
 
 public:
-  explicit TGUIConfiguration();
+  TGUIConfiguration(TObjectClassId Kind);
   virtual ~TGUIConfiguration();
   virtual void Default();
   virtual void UpdateStaticUsage();

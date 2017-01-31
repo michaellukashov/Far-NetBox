@@ -31,7 +31,8 @@ const UnicodeString Crc32ChecksumAlg(L"crc32");
 const UnicodeString SshFingerprintType(L"ssh");
 const UnicodeString TlsFingerprintType(L"tls");
 
-TConfiguration::TConfiguration() :
+TConfiguration::TConfiguration(TObjectClassId Kind) :
+  TObject(Kind),
   FDontSave(false),
   FChanged(false),
   FUpdating(0),

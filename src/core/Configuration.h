@@ -36,7 +36,6 @@ class TConfiguration : public TObject
 {
 NB_DISABLE_COPY(TConfiguration)
 public:
-  TObjectClassId GetKind() const { return OBJECT_CLASS_TConfiguration; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -217,7 +216,8 @@ public:
   bool GetPermanentLogSensitive() const { return FPermanentLogSensitive; }
 
 public:
-  TConfiguration();
+  TConfiguration() : TObject(OBJECT_CLASS_TConfiguration) {}
+  TConfiguration(TObjectClassId Kind);
   virtual ~TConfiguration();
   virtual void Default();
   virtual void UpdateStaticUsage();
