@@ -248,8 +248,8 @@ void TSynchronizeChecklist::Add(TChecklistItem * Item)
 
 intptr_t TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2)
 {
-  const TChecklistItem * Item1 = NB_STATIC_DOWNCAST_CONST(TChecklistItem, AItem1);
-  const TChecklistItem * Item2 = NB_STATIC_DOWNCAST_CONST(TChecklistItem, AItem2);
+  const TChecklistItem * Item1 = dyn_cast<TChecklistItem>(AItem1);
+  const TChecklistItem * Item2 = dyn_cast<TChecklistItem>(AItem2);
 
   intptr_t Result;
   if (!Item1->Local.Directory.IsEmpty())
@@ -4149,7 +4149,7 @@ void TTerminal::TerminalMoveFile(const UnicodeString & AFileName,
 {
   StartOperationWithFile(AFileName, foRemoteMove, foDelete);
   DebugAssert(Param != nullptr);
-  const TMoveFileParams & Params = *NB_STATIC_DOWNCAST_CONST(TMoveFileParams, Param);
+  const TMoveFileParams & Params = *dyn_cast<TMoveFileParams>(Param);
   UnicodeString NewName = core::UnixIncludeTrailingBackslash(Params.Target) +
     MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask);
   LogEvent(FORMAT(L"Moving file \"%s\" to \"%s\".", AFileName.c_str(), NewName.c_str()));
@@ -4182,7 +4182,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
         for (intptr_t Index = 0; !PossiblyMoved && (Index < AFileList->GetCount()); ++Index)
         {
           const TRemoteFile * File =
-            NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFileList->GetObj(Index));
+            dyn_cast<TRemoteFile>(AFileList->GetObj(Index));
           // File can be nullptr, and filename may not be full path,
           // but currently this is the only way we can move (at least in GUI)
           // current directory
@@ -4226,7 +4226,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
       for (intptr_t Index = 0; !PossiblyMoved && (Index < AFileList->GetCount()); ++Index)
       {
         const TRemoteFile * File =
-          NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFileList->GetObj(Index));
+          dyn_cast<TRemoteFile>(AFileList->GetObj(Index));
         // File can be nullptr, and filename may not be full path,
         // but currently this is the only way we can move (at least in GUI)
         // current directory
@@ -4293,7 +4293,7 @@ void TTerminal::TerminalCopyFile(const UnicodeString & AFileName,
 {
   StartOperationWithFile(AFileName, foRemoteCopy);
   DebugAssert(Param != nullptr);
-  const TMoveFileParams & Params = *NB_STATIC_DOWNCAST_CONST(TMoveFileParams, Param);
+  const TMoveFileParams & Params = *dyn_cast<TMoveFileParams>(Param);
   UnicodeString NewName = core::UnixIncludeTrailingBackslash(Params.Target) +
     MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask);
   LogEvent(FORMAT(L"Copying file \"%s\" to \"%s\".", AFileName.c_str(), NewName.c_str()));

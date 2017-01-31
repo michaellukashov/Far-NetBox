@@ -131,7 +131,7 @@ static bool ExceptionMessage(const Exception * E, bool /*Count*/,
   InternalError = false; // see also IsInternalException
 
   // this list has to be in sync with CloneException
-  if (NB_STATIC_DOWNCAST_CONST(EAbort, E) != nullptr)
+  if (dyn_cast<EAbort>(E) != nullptr)
   {
     Result = false;
   }
@@ -228,7 +228,7 @@ bool ExceptionFullMessage(Exception * E, UnicodeString & Message)
 UnicodeString GetExceptionHelpKeyword(const Exception * E)
 {
   UnicodeString HelpKeyword;
-  const ExtException * ExtE = NB_STATIC_DOWNCAST_CONST(ExtException, E);
+  const ExtException * ExtE = dyn_cast<ExtException>(E);
   UnicodeString Message; // not used
   bool InternalError = false;
   if (ExtE != nullptr)
@@ -357,7 +357,7 @@ void ExtException::AddMoreMessages(const Exception * E)
       FMoreMessages = new TStringList();
     }
 
-    const ExtException * ExtE = NB_STATIC_DOWNCAST_CONST(ExtException, E);
+    const ExtException * ExtE = dyn_cast<ExtException>(E);
     if (ExtE != nullptr)
     {
       if (ExtE->GetMoreMessages() != nullptr)
@@ -438,7 +438,7 @@ EFatal::EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeStri
   ExtException(Msg, E, HelpKeyword),
   FReopenQueried(false)
 {
-  const EFatal * F = NB_STATIC_DOWNCAST_CONST(EFatal, E);
+  const EFatal * F = dyn_cast<EFatal>(E);
   if (F != nullptr)
   {
     FReopenQueried = F->GetReopenQueried();

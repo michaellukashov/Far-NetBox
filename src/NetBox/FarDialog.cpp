@@ -2113,7 +2113,7 @@ void TFarList::Assign(const TPersistent * Source)
 {
   TStringList::Assign(Source);
 
-  const TFarList * FarList = NB_STATIC_DOWNCAST_CONST(TFarList, Source);
+  const TFarList * FarList = dyn_cast<TFarList>(Source);
   if (FarList != nullptr)
   {
     for (intptr_t Index = 0; Index < FarList->GetCount(); ++Index)

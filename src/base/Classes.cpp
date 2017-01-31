@@ -511,7 +511,7 @@ intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString 
 
 void TStrings::Assign(const TPersistent * Source)
 {
-  const TStrings * Strings = NB_STATIC_DOWNCAST_CONST(TStrings, Source);
+  const TStrings * Strings = dyn_cast<TStrings>(Source);
   if (Strings != nullptr)
   {
     BeginUpdate();

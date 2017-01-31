@@ -413,7 +413,7 @@ void TSessionData::NonPersistant()
 
 void TSessionData::Assign(const TPersistent * Source)
 {
-  if (Source && (NB_STATIC_DOWNCAST_CONST(TSessionData, Source) != nullptr))
+  if (Source && (dyn_cast<TSessionData>(Source) != nullptr))
   {
     TSessionData * SourceData = NB_STATIC_DOWNCAST(TSessionData, const_cast<TPersistent *>(Source));
     CopyData(SourceData);
@@ -4645,7 +4645,7 @@ const TSessionData * TStoredSessionList::FindSame(TSessionData * Data) const
   else
   {
     const TNamedObject * Obj = FindByName(Data->GetName());
-    Result = NB_STATIC_DOWNCAST_CONST(TSessionData, Obj);
+    Result = dyn_cast<TSessionData>(Obj);
   }
   return Result;
 }

@@ -299,7 +299,7 @@ void TBookmarkList::Clear()
 
 void TBookmarkList::Assign(const TPersistent * Source)
 {
-  const TBookmarkList * SourceList = NB_STATIC_DOWNCAST_CONST(TBookmarkList, Source);
+  const TBookmarkList * SourceList = dyn_cast<TBookmarkList>(Source);
   if (SourceList)
   {
     Clear();
@@ -479,7 +479,7 @@ TBookmark::TBookmark() :
 
 void TBookmark::Assign(const TPersistent * Source)
 {
-  const TBookmark * SourceBookmark = NB_STATIC_DOWNCAST_CONST(TBookmark, Source);
+  const TBookmark * SourceBookmark = dyn_cast<TBookmark>(Source);
   if (SourceBookmark)
   {
     SetName(SourceBookmark->GetName());
