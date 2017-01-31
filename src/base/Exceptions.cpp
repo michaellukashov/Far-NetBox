@@ -49,7 +49,7 @@ static bool WellKnownException(
     Result = false;
   }
   // EAccessViolation is EExternal
-  else if (NB_STATIC_DOWNCAST_CONST(EAccessViolation, E) != nullptr)
+  else if (dyn_cast<EAccessViolation>(E) != nullptr)
   {
     if (Rethrow)
     {
