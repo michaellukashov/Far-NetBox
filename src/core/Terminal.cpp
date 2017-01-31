@@ -724,11 +724,6 @@ bool TRetryOperationLoop::Retry()
 }
 
 
-TTerminal::TTerminal() :
-  TSessionUI(OBJECT_CLASS_TTerminal)
-{
-}
-
 TTerminal::TTerminal(TObjectClassId Kind) :
   TSessionUI(Kind),
   FSessionData(nullptr),
@@ -6822,7 +6817,7 @@ TTerminalList::~TTerminalList()
 
 TTerminal * TTerminalList::CreateTerminal(TSessionData * Data)
 {
-  TTerminal * Result = new TTerminal();
+  TTerminal * Result = new TTerminal(OBJECT_CLASS_TTerminal);
   Result->Init(Data, FConfiguration);
   return Result;
 }
