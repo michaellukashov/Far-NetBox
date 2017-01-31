@@ -11,12 +11,12 @@ class TNamedObject : public TPersistent
 NB_DECLARE_CLASS(TNamedObject)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TNamedObject; }
-  static bool classof(const TObject * Obj)
+  static inline bool classof(const TObject * Obj)
   {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TNamedObject ||
-      Obj->GetKind() == OBJECT_CLASS_TSessionData;
+    return Obj->GetKind() == OBJECT_CLASS_TNamedObject ||
+        Obj->GetKind() == OBJECT_CLASS_TPersistent;
   }
+public:
   /*__property UnicodeString Name = { read = FName, write = SetName };
   __property bool Hidden = { read = FHidden };*/
   UnicodeString GetName() const { return FName; }

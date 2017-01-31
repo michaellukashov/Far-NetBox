@@ -51,19 +51,14 @@ class TObject
 CUSTOM_MEM_ALLOCATION_IMPL
 NB_DECLARE_CLASS(TObject)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TObject; }
+  static inline bool classof(const TObject * /*Obj*/) { return true; }
+public:
   TObject() {}
   virtual ~TObject() {}
   virtual void Changed() {}
 
   bool IsKindOf(TObjectClassId ClassId) const;
-public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TObject; }
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() >= OBJECT_CLASS_TObject &&
-      Obj->GetKind() <= OBJECT_CLASS_TFarCheckBox;
-  }
 };
 
 template<typename T>
@@ -136,13 +131,7 @@ class TPersistent : public TObject
 NB_DECLARE_CLASS(TPersistent)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TPersistent; }
-  static bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TPersistent ||
-      Obj->GetKind() == OBJECT_CLASS_TNamedObject ||
-      Obj->GetKind() == OBJECT_CLASS_TSessionData;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TPersistent; }
 public:
   TPersistent();
   virtual ~TPersistent();
@@ -231,6 +220,9 @@ class TStream;
 class TStrings : public TPersistent
 {
 NB_DECLARE_CLASS(TStrings)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TStrings; }
+  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TStrings || Obj->GetKind() == OBJECT_CLASS_TPersistent; }
 public:
   TStrings();
   virtual ~TStrings();
