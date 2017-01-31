@@ -131,14 +131,19 @@ class TPersistent : public TObject
 NB_DECLARE_CLASS(TPersistent)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TPersistent; }
-  static inline bool classof(const TObject * Obj) 
+  static bool classof(const TObject * Obj)
   {
+    TObjectClassId Kind = Obj->GetKind();
     return
-      Obj->GetKind() == OBJECT_CLASS_TStrings ||
-      Obj->GetKind() == OBJECT_CLASS_TNamedObject ||
-      Obj->GetKind() == OBJECT_CLASS_TBookmarkList ||
-      Obj->GetKind() == OBJECT_CLASS_TBookmark ||
-      Obj->GetKind() == OBJECT_CLASS_TRemoteFile;
+      Kind == OBJECT_CLASS_TStrings ||
+      Kind == OBJECT_CLASS_TNamedObject ||
+      Kind == OBJECT_CLASS_TSessionData ||
+      Kind == OBJECT_CLASS_TBookmarkList ||
+      Kind == OBJECT_CLASS_TBookmark ||
+      Kind == OBJECT_CLASS_TRemoteFile ||
+      Kind == OBJECT_CLASS_TRemoteDirectoryFile ||
+      Kind == OBJECT_CLASS_TRemoteDirectory ||
+      Kind == OBJECT_CLASS_TRemoteParentDirectory;
   }
 public:
   TPersistent();
@@ -163,6 +168,15 @@ typedef intptr_t (CompareFunc)(const void * Item1, const void * Item2);
 class TList : public TObject
 {
 NB_DECLARE_CLASS(TList)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TList; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TList ||
+      Obj->GetKind() == OBJECT_CLASS_TLabelList ||
+      Obj->GetKind() == OBJECT_CLASS_TObjectList;
+  }
 public:
   TList();
   virtual ~TList();
@@ -192,6 +206,16 @@ private:
 class TObjectList : public TList
 {
 NB_DECLARE_CLASS(TObjectList)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TObjectList; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
+      Obj->GetKind() == OBJECT_CLASS_TTerminalList;
+  }
 public:
   TObjectList();
   virtual ~TObjectList();

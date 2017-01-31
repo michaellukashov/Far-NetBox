@@ -255,6 +255,13 @@ friend class TBackgroundTerminal;
 NB_DISABLE_COPY(TTerminalItem)
 NB_DECLARE_CLASS(TTerminalItem)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TTerminalItem; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TTerminalItem;
+  }
+public:
   explicit TTerminalItem(TTerminalQueue * Queue);
   virtual ~TTerminalItem();
   virtual void Init(intptr_t Index);
@@ -1206,6 +1213,13 @@ bool TTerminalQueue::GetIsEmpty() const
 class TBackgroundTerminal : public TSecondaryTerminal
 {
 friend class TTerminalItem;
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TBackgroundTerminal; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
+  }
 public:
   explicit TBackgroundTerminal(TTerminal * MainTerminal);
   virtual ~TBackgroundTerminal() {}

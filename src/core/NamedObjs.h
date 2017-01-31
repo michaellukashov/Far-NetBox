@@ -13,7 +13,9 @@ public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TNamedObject; }
   static inline bool classof(const TObject * Obj)
   {
-    return Obj->GetKind() == OBJECT_CLASS_TSessionData; 
+    return
+      Obj->GetKind() == OBJECT_CLASS_TNamedObject ||
+      Obj->GetKind() == OBJECT_CLASS_TSessionData;
   }
 public:
   /*__property UnicodeString Name = { read = FName, write = SetName };
@@ -36,6 +38,14 @@ private:
 
 class TNamedObjectList : public TObjectList
 {
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TNamedObjectList; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
+  }
 public:
   intptr_t GetCount() const;
   intptr_t GetCountIncludingHidden() const;

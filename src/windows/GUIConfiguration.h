@@ -84,6 +84,13 @@ class TCopyParamRule : public TObject
 {
 NB_DECLARE_CLASS(TCopyParamRule)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCopyParamRule; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCopyParamRule;
+  }
+public:
   explicit TCopyParamRule();
   explicit TCopyParamRule(const TCopyParamRuleData & Data);
   explicit TCopyParamRule(const TCopyParamRule & Source);

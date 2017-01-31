@@ -22,6 +22,13 @@ class TWebDAVFileSystem : public TCustomFileSystem
 NB_DISABLE_COPY(TWebDAVFileSystem)
 NB_DECLARE_CLASS(TWebDAVFileSystem)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TWebDAVFileSystem; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TWebDAVFileSystem;
+  }
+public:
   TWebDAVFileSystem() { Init(nullptr); }
   explicit TWebDAVFileSystem(TTerminal * ATerminal);
   virtual ~TWebDAVFileSystem();

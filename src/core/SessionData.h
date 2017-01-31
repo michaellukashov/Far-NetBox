@@ -855,6 +855,13 @@ class TStoredSessionList : public TNamedObjectList
 {
 NB_DISABLE_COPY(TStoredSessionList)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TStoredSessionList; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
+  }
+public:
   explicit TStoredSessionList(bool AReadOnly = false);
   void Load(const UnicodeString & AKey, bool UseDefaults);
   void Load();

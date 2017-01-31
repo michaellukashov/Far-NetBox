@@ -126,6 +126,15 @@ class TTerminal : public TObject, public TSessionUI
 NB_DISABLE_COPY(TTerminal)
 NB_DECLARE_CLASS(TTerminal)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TTerminal; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TTerminal ||
+      Obj->GetKind() == OBJECT_CLASS_TSecondaryTerminal ||
+      Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
+  }
+public:
   // TScript::SynchronizeProc relies on the order
   enum TSynchronizeMode
   {
@@ -676,6 +685,14 @@ class TSecondaryTerminal : public TTerminal
 {
 NB_DISABLE_COPY(TSecondaryTerminal)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSecondaryTerminal; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSecondaryTerminal ||
+      Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
+  }
+public:
   TSecondaryTerminal() : FMainTerminal(nullptr) {}
   explicit TSecondaryTerminal(TTerminal * MainTerminal);
   virtual ~TSecondaryTerminal() {}
@@ -726,6 +743,13 @@ struct TCustomCommandParams : public TObject
 {
 NB_DECLARE_CLASS(TCustomCommandParams)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomCommandParams; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCustomCommandParams;
+  }
+public:
   UnicodeString Command;
   intptr_t Params;
   TCaptureOutputEvent OutputEvent;
@@ -744,6 +768,13 @@ struct TCalculateSizeParams : public TObject
 {
 NB_DECLARE_CLASS(TCalculateSizeParams)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCalculateSizeParams; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCalculateSizeParams;
+  }
+public:
   int64_t Size;
   intptr_t Params;
   const TCopyParamType * CopyParam;
@@ -757,6 +788,13 @@ typedef rde::vector<TDateTime> TDateTimes;
 struct TMakeLocalFileListParams : public TObject
 {
 NB_DECLARE_CLASS(TMakeLocalFileListParams)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TMakeLocalFileListParams; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TMakeLocalFileListParams;
+  }
 public:
   TStrings * FileList;
   TDateTimes * FileTimes;
@@ -794,6 +832,13 @@ class TChecklistItem : public TObject
 friend class TTerminal;
 NB_DECLARE_CLASS(TChecklistItem)
 NB_DISABLE_COPY(TChecklistItem)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TChecklistItem; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TChecklistItem;
+  }
 public:
   struct TFileInfo : public TObject
   {

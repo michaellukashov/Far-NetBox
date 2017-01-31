@@ -99,7 +99,8 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TRemoteFile ||
       Obj->GetKind() == OBJECT_CLASS_TRemoteDirectoryFile ||
-      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory;
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteParentDirectory;
   }
 private:
   TRemoteFileList * FDirectory;
@@ -242,7 +243,8 @@ public:
   static inline bool classof(const TObject * Obj)
   {
     return
-      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectoryFile;
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectoryFile ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteParentDirectory;
   }
 public:
   TRemoteDirectoryFile();
@@ -251,6 +253,13 @@ public:
 
 class TRemoteParentDirectory : public TRemoteDirectoryFile
 {
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteParentDirectory; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TRemoteParentDirectory;
+  }
 public:
   explicit TRemoteParentDirectory(TTerminal * Terminal);
   virtual ~TRemoteParentDirectory() {}
@@ -263,6 +272,14 @@ friend class TSFTPFileSystem;
 friend class TFTPFileSystem;
 friend class TWebDAVFileSystem;
 NB_DECLARE_CLASS(TRemoteFileList)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteFileList; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory;
+  }
 protected:
   UnicodeString FDirectory;
   TDateTime FTimestamp;
@@ -309,7 +326,8 @@ public:
   static inline bool classof(const TObject * Obj)
   {
     return
-      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory;
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteParentDirectory;
   }
 private:
   TTerminal * FTerminal;
@@ -576,6 +594,13 @@ private:
 class TRemoteProperties : public TObject
 {
 NB_DECLARE_CLASS(TRemoteProperties)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteProperties; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TRemoteProperties;
+  }
 public:
   TValidProperties Valid;
   TRights Rights;

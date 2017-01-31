@@ -65,6 +65,16 @@ class TSessionUI
 {
 //NB_DECLARE_CLASS(TSessionUI)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSessionUI; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSessionUI ||
+      Obj->GetKind() == OBJECT_CLASS_TTerminal ||
+      Obj->GetKind() == OBJECT_CLASS_TSecondaryTerminal ||
+      Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
+  }
+public:
   explicit TSessionUI() {}
   virtual ~TSessionUI() {}
   virtual void Information(const UnicodeString & Str, bool Status) = 0;

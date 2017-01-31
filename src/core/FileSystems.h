@@ -45,6 +45,13 @@ struct TSinkFileParams : public TObject
 {
 NB_DECLARE_CLASS(TSinkFileParams)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSinkFileParams; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSinkFileParams;
+  }
+public:
   UnicodeString TargetDir;
   const TCopyParamType * CopyParam;
   TFileOperationProgressType * OperationProgress;
@@ -57,6 +64,13 @@ struct TFileTransferData : public TObject
 {
 NB_DISABLE_COPY(TFileTransferData)
 NB_DECLARE_CLASS(TFileTransferData)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFileTransferData; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFileTransferData;
+  }
 public:
   TFileTransferData() :
     CopyParam(nullptr),
@@ -98,6 +112,13 @@ struct TOpenRemoteFileParams : public TObject
 {
 NB_DISABLE_COPY(TOpenRemoteFileParams)
 NB_DECLARE_CLASS(TOpenRemoteFileParams)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TOpenRemoteFileParams; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TOpenRemoteFileParams;
+  }
 public:
   TOpenRemoteFileParams() :
     LocalFileAttrs(0),
@@ -142,6 +163,17 @@ class TCustomFileSystem : public TObject, public TFileSystemIntf
 {
 NB_DISABLE_COPY(TCustomFileSystem)
 NB_DECLARE_CLASS(TCustomFileSystem)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomFileSystem; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCustomFileSystem ||
+      Obj->GetKind() == OBJECT_CLASS_TFTPFileSystem ||
+      Obj->GetKind() == OBJECT_CLASS_TSCPFileSystem ||
+      Obj->GetKind() == OBJECT_CLASS_TSFTPFileSystem ||
+      Obj->GetKind() == OBJECT_CLASS_TWebDAVFileSystem;
+  }
 public:
   TCustomFileSystem() : FTerminal(nullptr) {}
   virtual ~TCustomFileSystem();

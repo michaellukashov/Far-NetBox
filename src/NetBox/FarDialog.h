@@ -483,13 +483,6 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TFarEdit;
   }
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarEdit; }
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TFarEdit;
-  }
-public:
   explicit TFarEdit(TFarDialog * ADialog);
 
   virtual UnicodeString GetText() const { return GetData(); }
@@ -539,6 +532,13 @@ protected:
 class TFarText : public TFarDialogItem
 {
 NB_DECLARE_CLASS(TFarText)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarText; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFarText;
+  }
 public:
   explicit TFarText(TFarDialog * ADialog);
 

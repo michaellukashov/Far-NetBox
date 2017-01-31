@@ -16,7 +16,8 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TSimpleThread ||
       Obj->GetKind() == OBJECT_CLASS_TKeepAliveThread ||
       Obj->GetKind() == OBJECT_CLASS_TSignalThread ||
-      Obj->GetKind() == OBJECT_CLASS_TTunnelThread;
+      Obj->GetKind() == OBJECT_CLASS_TTunnelThread ||
+      Obj->GetKind() == OBJECT_CLASS_TTerminalItem;
   }
 public:
   explicit TSimpleThread();
@@ -50,7 +51,8 @@ public:
   static inline bool classof(const TObject * Obj)
   {
     return
-      Obj->GetKind() == OBJECT_CLASS_TSignalThread;
+      Obj->GetKind() == OBJECT_CLASS_TSignalThread ||
+      Obj->GetKind() == OBJECT_CLASS_TTerminalItem;
   }
 public:
   void Init(bool LowPriority);
@@ -212,6 +214,14 @@ friend class TTerminalItem;
 NB_DISABLE_COPY(TQueueItem)
 NB_DECLARE_CLASS(TQueueItem)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TQueueItem; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TQueueItem ||
+      Obj->GetKind() == OBJECT_CLASS_TLocatedQueueItem;
+  }
+public:
   enum TStatus
   {
     qsPending, qsConnecting, qsProcessing, qsPrompt, qsQuery, qsError,
@@ -281,6 +291,13 @@ friend class TTerminalQueueStatus;
 friend class TTerminalQueue;
 NB_DISABLE_COPY(TQueueItemProxy)
 NB_DECLARE_CLASS(TQueueItemProxy)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TQueueItemProxy; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TQueueItemProxy;
+  }
 public:
   bool Update();
   bool ProcessUserAction();
@@ -372,6 +389,13 @@ public:
 
 class TLocatedQueueItem : public TQueueItem
 {
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TLocatedQueueItem; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TLocatedQueueItem;
+  }
 protected:
   explicit TLocatedQueueItem(TTerminal * Terminal);
   virtual ~TLocatedQueueItem() {}

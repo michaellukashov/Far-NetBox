@@ -27,7 +27,20 @@ class ExtException : public Exception
 NB_DECLARE_CLASS(ExtException)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_ExtException; }
-  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_ExtException || Obj->GetKind() == OBJECT_CLASS_EFatal; }
+  static bool classof(const TObject * Obj)
+  {
+    TObjectClassId Kind = Obj->GetKind();
+    return
+      Kind == OBJECT_CLASS_ExtException ||
+      Kind == OBJECT_CLASS_EFatal ||
+      Kind == OBJECT_CLASS_ESshTerminate ||
+      Kind == OBJECT_CLASS_ESsh ||
+      Kind == OBJECT_CLASS_ETerminal ||
+      Kind == OBJECT_CLASS_ECommand ||
+      Kind == OBJECT_CLASS_EScp ||
+      Kind == OBJECT_CLASS_ESkipFile ||
+      Kind == OBJECT_CLASS_EFileSkipped;
+  }
 public:
   explicit ExtException(Exception * E);
   explicit ExtException(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
@@ -74,6 +87,8 @@ private:
   { \
   NB_DECLARE_CLASS(NAME) \
   public: \
+    virtual TObjectClassId GetKind() const { return OBJECT_CLASS_##NAME; } \
+  public: \
     explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(E, Msg, HelpKeyword) {} \
     virtual inline ~NAME(void) noexcept {} \
     explicit inline NAME(const UnicodeString & Msg, int AHelpContext) : BASE(Msg, AHelpContext) {} \
@@ -108,7 +123,13 @@ class EFatal : public ExtException
 NB_DECLARE_CLASS(EFatal)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EFatal; }
-  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_EFatal; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EFatal ||
+      Obj->GetKind() == OBJECT_CLASS_ESshFatal ||
+      Obj->GetKind() == OBJECT_CLASS_ESshTerminate;
+  }
 public:
   // fatal errors are always copied, new message is only appended
   explicit EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
@@ -139,6 +160,13 @@ class ESshTerminate : public EFatal
 {
 NB_DECLARE_CLASS(ESshTerminate)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_ESshTerminate; }
+  static inline bool classof(const TObject * Obj)
+  {
+   return
+     Obj->GetKind() == OBJECT_CLASS_ESshTerminate;
+  }
+public:
   explicit inline ESshTerminate(const Exception * E, const UnicodeString & Msg, TOnceDoneOperation AOperation) :
     EFatal(E, Msg),
     Operation(AOperation)
@@ -155,7 +183,11 @@ class ECallbackGuardAbort : public EAbort
 NB_DECLARE_CLASS(ECallbackGuardAbort)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_ECallbackGuardAbort; }
-  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_ECallbackGuardAbort; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_ECallbackGuardAbort;
+  }
 public:
   ECallbackGuardAbort();
 };

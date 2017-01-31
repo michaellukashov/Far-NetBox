@@ -121,6 +121,13 @@ struct TFilesFindParams : public TObject
 {
 NB_DECLARE_CLASS(TFilesFindParams)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFilesFindParams; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFilesFindParams;
+  }
+public:
   TFilesFindParams() :
     OnFileFound(nullptr),
     OnFindingFile(nullptr),
@@ -5009,6 +5016,13 @@ struct TSynchronizeFileData : public TObject
 {
 NB_DECLARE_CLASS(TSynchronizeFileData)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSynchronizeFileData; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSynchronizeFileData;
+  }
+public:
   bool Modified;
   bool New;
   bool IsDirectory;
@@ -5023,6 +5037,13 @@ const intptr_t sfFirstLevel = 0x01;
 struct TSynchronizeData : public TObject
 {
 NB_DECLARE_CLASS(TSynchronizeData)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSynchronizeData; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSynchronizeData;
+  }
 public:
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;

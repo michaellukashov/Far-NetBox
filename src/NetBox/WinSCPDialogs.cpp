@@ -5913,6 +5913,14 @@ class TLabelList : public TList
 {
 NB_DECLARE_CLASS(TLabelList)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TLabelList; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TLabelList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarConfiguration;
+  }
+public:
   explicit TLabelList() :
     TList(), MaxLen(0)
   {

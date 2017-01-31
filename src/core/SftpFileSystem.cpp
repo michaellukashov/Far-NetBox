@@ -223,6 +223,14 @@ class TSFTPPacket : public TObject
 {
 NB_DECLARE_CLASS(TSFTPPacket)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPPacket; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSFTPPacket ||
+      Obj->GetKind() == OBJECT_CLASS_TSFTPQueuePacket;
+  }
+public:
   explicit TSFTPPacket(uintptr_t codePage)
   {
     Init(codePage);
@@ -1177,6 +1185,13 @@ class TSFTPQueuePacket : public TSFTPPacket
 NB_DISABLE_COPY(TSFTPQueuePacket)
 NB_DECLARE_CLASS(TSFTPQueuePacket)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPQueuePacket; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSFTPQueuePacket;
+  }
+public:
   explicit TSFTPQueuePacket(uintptr_t CodePage) :
     TSFTPPacket(CodePage),
     Token(nullptr)
@@ -1189,6 +1204,13 @@ public:
 class TSFTPQueue : public TObject
 {
 NB_DISABLE_COPY(TSFTPQueue)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSFTPQueue; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSFTPQueue;
+  }
 public:
   explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
     FRequests(new TList()),

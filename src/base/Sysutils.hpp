@@ -92,15 +92,22 @@ class Exception : public std::runtime_error, public TObject
 NB_DECLARE_CLASS(Exception)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_Exception; }
-  static inline bool classof(const TObject * Obj)
+  static bool classof(const TObject * Obj)
   {
+    TObjectClassId Kind = Obj->GetKind();
     return
-      Obj->GetKind() == OBJECT_CLASS_Exception ||
-      Obj->GetKind() == OBJECT_CLASS_ExtException ||
-      Obj->GetKind() == OBJECT_CLASS_EAbort ||
-      Obj->GetKind() == OBJECT_CLASS_EAccessViolation ||
-      Obj->GetKind() == OBJECT_CLASS_EFileNotFoundError ||
-      Obj->GetKind() == OBJECT_CLASS_EOSError;
+      Kind == OBJECT_CLASS_Exception ||
+      Kind == OBJECT_CLASS_ExtException ||
+      Kind == OBJECT_CLASS_EAbort ||
+      Kind == OBJECT_CLASS_EAccessViolation ||
+      Kind == OBJECT_CLASS_EFileNotFoundError ||
+      Kind == OBJECT_CLASS_EOSError ||
+      Kind == OBJECT_CLASS_EFatal ||
+      Kind == OBJECT_CLASS_ESshFatal ||
+      Kind == OBJECT_CLASS_ESshTerminate ||
+      Kind == OBJECT_CLASS_ECallbackGuardAbort ||
+      Kind == OBJECT_CLASS_EFileSkipped ||
+      Kind == OBJECT_CLASS_ESkipFile;
   }
 public:
   explicit Exception(const wchar_t * Msg);
@@ -124,7 +131,12 @@ class EAbort : public Exception
 NB_DECLARE_CLASS(EAbort)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EAbort; }
-  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_EAbort || Obj->GetKind() == OBJECT_CLASS_ECallbackGuardAbort; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EAbort ||
+      Obj->GetKind() == OBJECT_CLASS_ECallbackGuardAbort;
+  }
 public:
   explicit EAbort(const UnicodeString & what) : Exception(what)
   {}
@@ -134,6 +146,13 @@ class EAccessViolation : public Exception
 {
 NB_DECLARE_CLASS(EAccessViolation)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EAccessViolation; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EAccessViolation;
+  }
+public:
   explicit EAccessViolation(const UnicodeString & what) : Exception(what)
   {}
 };
@@ -142,6 +161,13 @@ class EFileNotFoundError : public Exception
 {
 NB_DECLARE_CLASS(EFileNotFoundError)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EFileNotFoundError; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EFileNotFoundError;
+  }
+public:
   EFileNotFoundError() : Exception(L"")
   {}
 };
@@ -149,6 +175,13 @@ public:
 class EOSError : public Exception
 {
 NB_DECLARE_CLASS(EOSError)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_EOSError; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EOSError;
+  }
 public:
   explicit EOSError(const UnicodeString & Msg, DWORD code) : Exception(Msg),
     ErrorCode(code)
