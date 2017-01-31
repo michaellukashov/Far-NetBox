@@ -131,7 +131,11 @@ class TPersistent : public TObject
 NB_DECLARE_CLASS(TPersistent)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TPersistent; }
-  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TPersistent; }
+  static inline bool classof(const TObject * Obj) 
+  {
+    return Obj->GetKind() == OBJECT_CLASS_TNamedObject ||
+      Obj->GetKind() == OBJECT_CLASS_TStrings;
+  }
 public:
   TPersistent();
   virtual ~TPersistent();
@@ -222,7 +226,7 @@ class TStrings : public TPersistent
 NB_DECLARE_CLASS(TStrings)
 public:
   virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TStrings; }
-  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TStrings || Obj->GetKind() == OBJECT_CLASS_TPersistent; }
+  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TStringList; }
 public:
   TStrings();
   virtual ~TStrings();
@@ -290,6 +294,12 @@ class TStringList : public TStrings
 {
 friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
 NB_DECLARE_CLASS(TStringList)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TStringList; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return Obj->GetKind() == OBJECT_CLASS_TStringList; 
+  }
 public:
   TStringList();
   virtual ~TStringList();
