@@ -50,12 +50,15 @@ class TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TObject; }
+  TObjectClassId GetKind() const { return FKind; }
   static inline bool classof(const TObject * /*Obj*/) { return true; }
 public:
-  TObject() {}
+  TObject() : FKind(OBJECT_CLASS_TObject) {}
+  TObject(TObjectClassId Kind) : FKind(Kind) {}
   virtual ~TObject() {}
   virtual void Changed() {}
+private:
+  TObjectClassId FKind;
 };
 
 template<typename T>
@@ -126,7 +129,7 @@ struct TRect
 class TPersistent : public TObject
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TPersistent; }
+  //TObjectClassId GetKind() const { return OBJECT_CLASS_TPersistent; }
   static bool classof(const TObject * Obj)
   {
     TObjectClassId Kind = Obj->GetKind();
@@ -142,7 +145,8 @@ public:
       Kind == OBJECT_CLASS_TRemoteParentDirectory;
   }
 public:
-  TPersistent();
+  TPersistent() : TObject(OBJECT_CLASS_TPersistent) {}
+  TPersistent(TObjectClassId Kind);
   virtual ~TPersistent();
   virtual void Assign(const TPersistent * Source);
   virtual TPersistent * GetOwner();

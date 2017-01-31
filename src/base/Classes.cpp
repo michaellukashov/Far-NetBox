@@ -35,7 +35,7 @@ void ThrowNotImplemented(intptr_t ErrorId)
   Error(SNotImplemented, ErrorId);
 }
 
-TPersistent::TPersistent()
+TPersistent::TPersistent(TObjectClassId Kind) : TObject(Kind)
 {}
 
 TPersistent::~TPersistent()

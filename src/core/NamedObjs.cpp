@@ -8,10 +8,11 @@
 
 static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
-  return static_cast<const TNamedObject *>(Item1)->Compare(static_cast<const TNamedObject *>(Item2));
+  return dyn_cast<TNamedObject>(Item1)->Compare(dyn_cast<TNamedObject>(Item2));
 }
 //--- TNamedObject ----------------------------------------------------------
 TNamedObject::TNamedObject(const UnicodeString & AName) :
+  TPersistent(OBJECT_CLASS_TNamedObject),
   FHidden(false)
 {
   SetName(AName);

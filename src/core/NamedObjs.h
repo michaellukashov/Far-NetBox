@@ -9,7 +9,7 @@ class TNamedObjectList;
 class TNamedObject : public TPersistent
 {
 public:
-  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TNamedObject; }
+  // TObjectClassId GetKind() const { return OBJECT_CLASS_TNamedObject; }
   static inline bool classof(const TObject * Obj)
   {
     return
@@ -23,7 +23,7 @@ public:
   void SetName(const UnicodeString & Value);
   bool GetHidden() const { return FHidden; }
 
-  explicit TNamedObject() : TPersistent(), FHidden(false) {}
+  TNamedObject() : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}
   virtual ~TNamedObject() {}
 
   bool IsSameName(const UnicodeString & Name) const;
