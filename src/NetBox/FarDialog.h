@@ -211,6 +211,7 @@ public:
       Kind == OBJECT_CLASS_TFarDialogItem ||
       Kind == OBJECT_CLASS_TFarBox ||
       Kind == OBJECT_CLASS_TFarButton ||
+      Kind == OBJECT_CLASS_TTabButton ||
       Kind == OBJECT_CLASS_TFarCheckBox ||
       Kind == OBJECT_CLASS_TFarRadioButton ||
       Kind == OBJECT_CLASS_TFarEdit ||
