@@ -15,7 +15,9 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TKeepAliveThread ||
       Obj->GetKind() == OBJECT_CLASS_TSignalThread ||
       Obj->GetKind() == OBJECT_CLASS_TTunnelThread ||
-      Obj->GetKind() == OBJECT_CLASS_TTerminalItem;
+      Obj->GetKind() == OBJECT_CLASS_TTerminalItem ||
+      Obj->GetKind() == OBJECT_CLASS_TTerminalQueue ||
+      Obj->GetKind() == OBJECT_CLASS_TTerminalThread;
   }
 public:
   explicit TSimpleThread(TObjectClassId Kind);
