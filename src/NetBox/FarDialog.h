@@ -35,6 +35,9 @@ friend class TFarListBox;
 NB_DISABLE_COPY(TFarDialog)
 NB_DECLARE_CLASS(TFarDialog)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarDialog; }
+  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TFarDialog; }
+public:
   explicit TFarDialog(TCustomFarPlugin * AFarPlugin);
   virtual ~TFarDialog();
 
@@ -154,6 +157,9 @@ friend class TFarDialogItem;
 NB_DISABLE_COPY(TFarDialogContainer)
 NB_DECLARE_CLASS(TFarDialogContainer)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarDialogContainer; }
+  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TFarDialogContainer; }
+public:
   intptr_t GetLeft() const { return FLeft; }
   void SetLeft(intptr_t Value) { SetPosition(0, Value); }
   intptr_t GetTop() const { return FTop; }
@@ -193,6 +199,9 @@ friend class TFarDialogContainer;
 friend class TFarList;
 NB_DISABLE_COPY(TFarDialogItem)
 NB_DECLARE_CLASS(TFarDialogItem)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarDialogItem; }
+  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TFarDialogItem; }
 public:
   TRect GetBounds() const { return FBounds; }
   TRect GetActualBounds() const;

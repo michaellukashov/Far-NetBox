@@ -47,6 +47,9 @@ struct TFarMessageParams : public TObject
 {
 NB_DISABLE_COPY(TFarMessageParams)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarMessageParams; }
+  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TFarMessageParams; }
+public:
   TFarMessageParams();
 
   TStrings * MoreMessages;
@@ -73,6 +76,9 @@ friend class TFarMessageDialog;
 friend class TFarPluginGuard;
 NB_DISABLE_COPY(TCustomFarPlugin)
 NB_DECLARE_CLASS(TCustomFarPlugin)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomFarPlugin; }
+  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TCustomFarPlugin; }
 public:
   explicit TCustomFarPlugin(HINSTANCE HInst);
   virtual ~TCustomFarPlugin();
