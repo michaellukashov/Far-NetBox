@@ -74,6 +74,14 @@ friend class TFarPluginGuard;
 NB_DISABLE_COPY(TCustomFarPlugin)
 NB_DECLARE_CLASS(TCustomFarPlugin)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomFarPlugin; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCustomFarPlugin ||
+      Obj->GetKind() == OBJECT_CLASS_TWinSCPPlugin;
+  }
+public:
   explicit TCustomFarPlugin(HINSTANCE HInst);
   virtual ~TCustomFarPlugin();
   virtual intptr_t GetMinFarVersion() const;
@@ -238,6 +246,14 @@ friend class TCustomFarPlugin;
 NB_DISABLE_COPY(TCustomFarFileSystem)
 NB_DECLARE_CLASS(TCustomFarFileSystem)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomFarFileSystem; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCustomFarFileSystem ||
+      Obj->GetKind() == OBJECT_CLASS_TWinSCPFileSystem;
+  }
+public:
   explicit TCustomFarFileSystem(TCustomFarPlugin * APlugin);
   void Init();
   virtual ~TCustomFarFileSystem();
@@ -372,6 +388,18 @@ class TCustomFarPanelItem : public TObject
 {
 friend class TCustomFarFileSystem;
 NB_DECLARE_CLASS(TCustomFarPanelItem)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCustomFarPanelItem; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCustomFarPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_TFarPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_THintPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_TSessionPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_TSessionFolderPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFilePanelItem;
+  }
 protected:
   virtual ~TCustomFarPanelItem()
   {}
@@ -390,6 +418,13 @@ class TFarPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TFarPanelItem)
 NB_DECLARE_CLASS(TFarPanelItem)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TFarPanelItem; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFarPanelItem;
+  }
 public:
   explicit TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem);
   virtual ~TFarPanelItem();

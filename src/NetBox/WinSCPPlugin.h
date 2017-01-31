@@ -13,6 +13,13 @@ class TWinSCPPlugin : public TCustomFarPlugin
 friend class TWinSCPFileSystem;
 NB_DECLARE_CLASS(TWinSCPPlugin)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TWinSCPPlugin; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TWinSCPPlugin;
+  }
+public:
   explicit TWinSCPPlugin(HINSTANCE HInst);
   virtual ~TWinSCPPlugin();
   virtual intptr_t GetMinFarVersion() const;

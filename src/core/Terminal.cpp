@@ -315,6 +315,13 @@ class TTunnelThread : public TSimpleThread
 {
 NB_DISABLE_COPY(TTunnelThread)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TTunnelThread; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TTunnelThread;
+  }
+public:
   explicit TTunnelThread(TSecureShell * SecureShell);
   virtual ~TTunnelThread();
 

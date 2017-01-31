@@ -174,6 +174,14 @@ class TGUIConfiguration : public TConfiguration
 NB_DISABLE_COPY(TGUIConfiguration)
 NB_DECLARE_CLASS(TGUIConfiguration)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TGUIConfiguration; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TGUIConfiguration ||
+      Obj->GetKind() == OBJECT_CLASS_TFarConfiguration;
+  }
+public:
   virtual void SaveData(THierarchicalStorage * Storage, bool All);
   virtual void LoadData(THierarchicalStorage * Storage);
   virtual LCID GetLocale() const;

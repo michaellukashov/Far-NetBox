@@ -90,6 +90,13 @@ friend class TQueueDialog;
 NB_DISABLE_COPY(TWinSCPFileSystem)
 NB_DECLARE_CLASS(TWinSCPFileSystem)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TWinSCPFileSystem; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TWinSCPFileSystem;
+  }
+public:
   explicit TWinSCPFileSystem(TCustomFarPlugin * APlugin);
   void Init(TSecureShell * SecureShell);
   virtual ~TWinSCPFileSystem();

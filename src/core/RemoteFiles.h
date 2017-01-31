@@ -92,6 +92,15 @@ class TRemoteFile : public TPersistent
 {
 NB_DISABLE_COPY(TRemoteFile)
 NB_DECLARE_CLASS(TRemoteFile)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteFile; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFile ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectoryFile ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory;
+  }
 private:
   TRemoteFileList * FDirectory;
   TRemoteToken FOwner;
@@ -229,6 +238,13 @@ private:
 class TRemoteDirectoryFile : public TRemoteFile
 {
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteDirectoryFile; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectoryFile;
+  }
+public:
   TRemoteDirectoryFile();
   virtual ~TRemoteDirectoryFile() {}
 };
@@ -288,6 +304,13 @@ friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TWebDAVFileSystem;
 NB_DISABLE_COPY(TRemoteDirectory)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRemoteDirectory; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory;
+  }
 private:
   TTerminal * FTerminal;
   mutable TStrings * FSelectedFiles;

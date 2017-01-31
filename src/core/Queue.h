@@ -9,6 +9,16 @@ class TSimpleThread : public TObject
 NB_DISABLE_COPY(TSimpleThread)
 NB_DECLARE_CLASS(TSimpleThread)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSimpleThread; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSimpleThread ||
+      Obj->GetKind() == OBJECT_CLASS_TKeepAliveThread ||
+      Obj->GetKind() == OBJECT_CLASS_TSignalThread ||
+      Obj->GetKind() == OBJECT_CLASS_TTunnelThread;
+  }
+public:
   explicit TSimpleThread();
   virtual ~TSimpleThread();
   void Init();
@@ -35,6 +45,13 @@ class TSignalThread : public TSimpleThread
 {
 NB_DISABLE_COPY(TSignalThread)
 NB_DECLARE_CLASS(TSignalThread)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TSignalThread; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSignalThread;
+  }
 public:
   void Init(bool LowPriority);
   virtual void Start();

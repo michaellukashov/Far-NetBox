@@ -125,6 +125,13 @@ class TTabButton : public TFarButton
 {
 NB_DECLARE_CLASS(TTabButton)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TTabButton; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TTabButton;
+  }
+public:
   explicit TTabButton(TTabbedDialog * Dialog);
 
   intptr_t GetTab() const { return FTab; }
@@ -4263,6 +4270,13 @@ class TRightsContainer : public TFarDialogContainer
 {
 NB_DISABLE_COPY(TRightsContainer)
 public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TRightsContainer; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TRightsContainer;
+  }
+public:
   explicit TRightsContainer(TFarDialog * ADialog, bool AAnyDirectories,
     bool ShowButtons, bool ShowSpecials,
     TFarDialogItem * EnabledDependency);
@@ -4922,6 +4936,13 @@ bool TWinSCPFileSystem::PropertiesDialog(TStrings * AFileList,
 
 class TCopyParamsContainer : public TFarDialogContainer
 {
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TCopyParamsContainer; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCopyParamsContainer;
+  }
 public:
   explicit TCopyParamsContainer(TFarDialog * ADialog,
     intptr_t Options, intptr_t CopyParamAttrs);

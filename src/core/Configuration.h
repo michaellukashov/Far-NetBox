@@ -36,6 +36,15 @@ class TConfiguration : public TObject
 {
 NB_DECLARE_CLASS(TConfiguration)
 NB_DISABLE_COPY(TConfiguration)
+public:
+  virtual TObjectClassId GetKind() const { return OBJECT_CLASS_TConfiguration; }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TConfiguration ||
+      Obj->GetKind() == OBJECT_CLASS_TGUIConfiguration ||
+      Obj->GetKind() == OBJECT_CLASS_TFarConfiguration;
+  }
 private:
   bool FDontSave;
   bool FChanged;
