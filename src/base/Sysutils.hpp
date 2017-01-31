@@ -114,7 +114,7 @@ public:
   explicit Exception(const UnicodeString & Msg);
   explicit Exception(TObjectClassId Kind, Exception * E);
   explicit Exception(TObjectClassId Kind, std::exception * E);
-  explicit Exception(TObjectClassId Kind, const UnicodeString & Msg, int AHelpContext);
+  explicit Exception(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AHelpContext);
   explicit Exception(TObjectClassId Kind, Exception * E, intptr_t Ident);
   explicit Exception(TObjectClassId Kind, intptr_t Ident);
   ~Exception() throw() {}

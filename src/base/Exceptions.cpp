@@ -425,7 +425,7 @@ UnicodeString LastSysErrorMessage()
 }
 
 EOSExtException::EOSExtException() :
-  ExtException(OBJECT_CLASS_EOSExtException, "", 0)
+  ExtException(OBJECT_CLASS_EOSExtException, nullptr, 0)
 {
 }
 
