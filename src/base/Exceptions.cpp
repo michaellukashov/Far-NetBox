@@ -264,12 +264,28 @@ bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword)
     (HelpKeyword == HELP_INTERNAL_ERROR);
 }
 
+ExtException::ExtException(Exception * E) :
+  Exception(OBJECT_CLASS_ExtException, L""),
+  FMoreMessages(nullptr)
+{
+  AddMoreMessages(E);
+  FHelpKeyword = GetExceptionHelpKeyword(E);
+}
+
 ExtException::ExtException(TObjectClassId Kind, Exception * E) :
   Exception(Kind, L""),
   FMoreMessages(nullptr)
 {
   AddMoreMessages(E);
   FHelpKeyword = GetExceptionHelpKeyword(E);
+}
+
+ExtException::ExtException(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
+  Exception(OBJECT_CLASS_ExtException, Msg),
+  FMoreMessages(nullptr)
+{
+  AddMoreMessages(E);
+  FHelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
 }
 
 ExtException::ExtException(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
@@ -317,6 +333,18 @@ ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, const
     }
   }
   FHelpKeyword = MergeHelpKeyword(GetExceptionHelpKeyword(E), HelpKeyword);
+}
+
+ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages,
+  const UnicodeString & HelpKeyword) :
+  Exception(OBJECT_CLASS_ExtException, Msg),
+  FMoreMessages(nullptr),
+  FHelpKeyword(HelpKeyword)
+{
+  if (!MoreMessages.IsEmpty())
+  {
+    FMoreMessages = TextToStringList(MoreMessages);
+  }
 }
 
 ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages,

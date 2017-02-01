@@ -40,12 +40,15 @@ public:
       Kind == OBJECT_CLASS_EFileSkipped;
   }
 public:
+  explicit ExtException(Exception * E);
   explicit ExtException(TObjectClassId Kind, Exception * E);
+  explicit ExtException(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   // explicit ExtException(const ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, Exception * E, intptr_t Ident);
   // "copy the exception", just append message to the end
   explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
   virtual ~ExtException(void) noexcept;
