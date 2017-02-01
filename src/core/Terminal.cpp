@@ -5065,8 +5065,7 @@ public:
     {
       for (intptr_t Index = 0; Index < LocalFileList->GetCount(); ++Index)
       {
-        TSynchronizeFileData * FileData = dyn_cast<TSynchronizeFileData>
-          (LocalFileList->GetObj(Index));
+        TSynchronizeFileData * FileData = dyn_cast<TSynchronizeFileData>(LocalFileList->GetObj(Index));
         SAFE_DESTROY(FileData);
       }
       SAFE_DESTROY(LocalFileList);
@@ -5283,8 +5282,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
       TSynchronizeFileData * FileData;
       for (intptr_t Index = 0; Index < Data.LocalFileList->GetCount(); ++Index)
       {
-        FileData = dyn_cast<TSynchronizeFileData>(
-          Data.LocalFileList->GetObj(Index));
+        FileData = dyn_cast<TSynchronizeFileData>(Data.LocalFileList->GetObj(Index));
         // add local file either if we are going to upload it
         // (i.e. if it is updated or we want to upload even new files)
         // or if we are going to delete it (i.e. all "new"=obsolete files)
