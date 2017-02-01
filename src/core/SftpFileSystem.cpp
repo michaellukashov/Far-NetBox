@@ -229,6 +229,11 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TSFTPQueuePacket;
   }
 public:
+  explicit TSFTPPacket(uintptr_t codePage) :
+    TObject(OBJECT_CLASS_TSFTPPacket)
+  {
+    Init(codePage);
+  }
   explicit TSFTPPacket(TObjectClassId Kind, uintptr_t codePage) :
     TObject(Kind)
   {
@@ -273,7 +278,7 @@ public:
     memmove(GetData(), Source.c_str(), Source.Length());
   }
 
-  ~TSFTPPacket()
+  virtual ~TSFTPPacket()
   {
     if (FData != nullptr)
     {
@@ -1392,7 +1397,7 @@ protected:
 
     if (Request.get() != nullptr)
     {
-      TSFTPPacket * Response = new TSFTPPacket(OBJECT_CLASS_TSFTPPacket, FCodePage);
+      TSFTPPacket * Response = new TSFTPPacket(FCodePage);
       FRequests->Add(Request.get());
       FResponses->Add(Response);
 
@@ -2634,7 +2639,7 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
       {
         // Reset packet in case it was filled by previous out-of-order
         // reserved packet
-        *Packet = TSFTPPacket(OBJECT_CLASS_TSFTPPacket, FCodePage);
+        *Packet = TSFTPPacket(FCodePage);
       }
       else
       {
@@ -2798,7 +2803,7 @@ SSH_FX_TYPES TSFTPFileSystem::ReceiveResponse(
   {
     if (!AResponse)
     {
-      Response.reset(new TSFTPPacket(OBJECT_CLASS_TSFTPPacket, FCodePage));
+      Response.reset(new TSFTPPacket(FCodePage));
       AResponse = Response.get();
     }
     Result = ReceivePacket(AResponse, ExpectedType, AllowStatus, TryOnly);
@@ -3535,7 +3540,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
     throw;
   }
 
-  TSFTPPacket Response(OBJECT_CLASS_TSFTPPacket, FCodePage);
+  TSFTPPacket Response(FCodePage);
   try__finally
   {
     SCOPE_EXIT
@@ -4086,7 +4091,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
       if (Queue.Init(LoadFilesPropertiesQueueLen, AFileList))
       {
         TRemoteFile * File = nullptr;
-        TSFTPPacket Packet(OBJECT_CLASS_TSFTPPacket, FCodePage);
+        TSFTPPacket Packet(FCodePage);
         bool Next;
         do
         {
@@ -4199,7 +4204,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
     };
     if (Queue.Init(CalculateFilesChecksumQueueLen, Alg, AFileList))
     {
-      TSFTPPacket Packet(OBJECT_CLASS_TSFTPPacket, FCodePage);
+      TSFTPPacket Packet(FCodePage);
       bool Next = false;
       do
       {
@@ -4999,11 +5004,11 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
 
       Action.Destination(DestFullName);
 
-      TSFTPPacket CloseRequest(OBJECT_CLASS_TSFTPPacket, FCodePage);
+      TSFTPPacket CloseRequest(FCodePage);
       bool SetRights = ((DoResume && DestFileExists) || CopyParam->GetPreserveRights());
       bool SetProperties = (CopyParam->GetPreserveTime() || SetRights);
       TSFTPPacket PropertiesRequest(SSH_FXP_SETSTAT, FCodePage);
-      TSFTPPacket PropertiesResponse(OBJECT_CLASS_TSFTPPacket, FCodePage);
+      TSFTPPacket PropertiesResponse(FCodePage);
       TRights Rights;
       if (SetProperties)
       {
@@ -5207,7 +5212,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
           {
             try
             {
-              TSFTPPacket DummyResponse(OBJECT_CLASS_TSFTPPacket, FCodePage);
+              TSFTPPacket DummyResponse(FCodePage);
               TSFTPPacket * Response = &PropertiesResponse;
               if (Resend)
               {
@@ -5525,7 +5530,7 @@ void TSFTPFileSystem::SFTPCloseRemote(const RawByteString & Handle,
   {
     try
     {
-      TSFTPPacket CloseRequest(OBJECT_CLASS_TSFTPPacket, FCodePage);
+      TSFTPPacket CloseRequest(FCodePage);
       TSFTPPacket * P = (Packet == nullptr ? &CloseRequest : Packet);
 
       if (Request)
@@ -6175,7 +6180,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           {
             Queue.DisposeSafe();
           };
-          TSFTPPacket DataPacket(OBJECT_CLASS_TSFTPPacket, FCodePage);
+          TSFTPPacket DataPacket(FCodePage);
 
           uintptr_t BlSize = DownloadBlockSize(OperationProgress);
           intptr_t QueueLen = static_cast<intptr_t>(AFile->GetSize() / (BlSize != 0 ? BlSize : 1)) + 1;
