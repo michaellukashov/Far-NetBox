@@ -4488,7 +4488,7 @@ TTerminal * TTerminal::GetCommandSession()
 
     try__catch
     {
-      std::unique_ptr<TSecondaryTerminal> CommandSession(new TSecondaryTerminal(OBJECT_CLASS_TSecondaryTerminal, this));
+      std::unique_ptr<TSecondaryTerminal> CommandSession(new TSecondaryTerminal(this));
       CommandSession->Init(GetSessionData(), FConfiguration, L"Shell");
 
       CommandSession->SetAutoReadDirectory(false);
@@ -6754,6 +6754,13 @@ bool TTerminal::IsThisOrChild(TTerminal * Terminal) const
   return
     (this == Terminal) ||
     ((FCommandSession != nullptr) && (FCommandSession == Terminal));
+}
+
+TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :
+  TTerminal(OBJECT_CLASS_TSecondaryTerminal),
+  FMainTerminal(MainTerminal)
+{
+
 }
 
 TSecondaryTerminal::TSecondaryTerminal(TObjectClassId Kind, TTerminal * MainTerminal) :

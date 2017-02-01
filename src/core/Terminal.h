@@ -691,6 +691,7 @@ public:
   }
 public:
   TSecondaryTerminal() : TTerminal(OBJECT_CLASS_TSecondaryTerminal), FMainTerminal(nullptr) {}
+  explicit TSecondaryTerminal(TTerminal * MainTerminal);
   explicit TSecondaryTerminal(TObjectClassId Kind, TTerminal * MainTerminal);
   virtual ~TSecondaryTerminal() {}
   void Init(TSessionData * SessionData, TConfiguration * Configuration,
