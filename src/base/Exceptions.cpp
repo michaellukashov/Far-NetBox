@@ -457,8 +457,13 @@ EOSExtException::EOSExtException() :
 {
 }
 
-EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg) :
-  ExtException(Kind, Msg, LastSysErrorMessage())
+EOSExtException::EOSExtException(const UnicodeString & Msg) :
+  ExtException(OBJECT_CLASS_EOSExtException, Msg, LastSysErrorMessage())
+{
+}
+
+EOSExtException::EOSExtException(const UnicodeString & Msg, intptr_t LastError) :
+  ExtException(OBJECT_CLASS_EOSExtException, Msg, SysErrorMessageForError(LastError))
 {
 }
 

@@ -663,7 +663,7 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
       if (!ssh2_save_userkey(KeyFile, Ssh2Key, PassphrasePtr))
       {
         intptr_t Error = errno;
-        throw EOSExtException(OBJECT_CLASS_EOSExtException, FMTLOAD(KEY_SAVE_ERROR, FileName.c_str()), Error);
+        throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, FileName.c_str()), Error);
       }
       break;
 

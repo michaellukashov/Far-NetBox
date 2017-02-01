@@ -1247,7 +1247,7 @@ DWORD FindCheck(DWORD Result, const UnicodeString & APath)
       (Result != ERROR_FILE_NOT_FOUND) &&
       (Result != ERROR_NO_MORE_FILES))
   {
-    throw EOSExtException(OBJECT_CLASS_EOSExtException, FMTLOAD(FIND_FILE_ERROR, APath.c_str()), Result);
+    throw EOSExtException(FMTLOAD(FIND_FILE_ERROR, APath.c_str()), Result);
   }
   return Result;
 }
@@ -2248,7 +2248,7 @@ void RecursiveDeleteFileChecked(const UnicodeString & AFileName, bool ToRecycleB
   UnicodeString ErrorPath;
   if (!DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath))
   {
-    throw EOSExtException(OBJECT_CLASS_EOSExtException, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, ErrorPath.c_str()));
+    throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, ErrorPath.c_str()));
   }
 }
 
@@ -2256,7 +2256,7 @@ void DeleteFileChecked(const UnicodeString & AFileName)
 {
   if (!::RemoveFile(AFileName))
   {
-    throw EOSExtException(OBJECT_CLASS_EOSExtException, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()));
+    throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()));
   }
 }
 
@@ -2861,7 +2861,7 @@ static FILE * OpenCertificate(const UnicodeString & Path)
   if (Result == nullptr)
   {
     int Error = errno;
-    throw EOSExtException(OBJECT_CLASS_EOSExtException, MainInstructions(FMTLOAD(CERTIFICATE_OPEN_ERROR, Path.c_str())), Error);
+    throw EOSExtException(MainInstructions(FMTLOAD(CERTIFICATE_OPEN_ERROR, Path.c_str())), Error);
   }
 
   return Result;

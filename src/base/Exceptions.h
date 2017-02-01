@@ -117,7 +117,8 @@ public:
   }
 public:
   explicit EOSExtException();
-  explicit EOSExtException(TObjectClassId Kind, const UnicodeString & Msg);
+  explicit EOSExtException(const UnicodeString & Msg);
+  explicit EOSExtException(const UnicodeString & Msg, intptr_t LastError);
   explicit EOSExtException(TObjectClassId Kind, const UnicodeString & Msg, intptr_t LastError);
 };
 
