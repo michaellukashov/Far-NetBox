@@ -359,9 +359,9 @@ ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, const
   }
 }
 
-ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, TStrings * MoreMessages,
+ExtException::ExtException(const UnicodeString & Msg, TStrings * MoreMessages,
   bool Own, const UnicodeString & HelpKeyword) :
-  Exception(Kind, Msg),
+  Exception(OBJECT_CLASS_ExtException, Msg),
   FMoreMessages(nullptr),
   FHelpKeyword(HelpKeyword)
 {
@@ -428,7 +428,7 @@ ExtException::~ExtException() noexcept
 
 ExtException * ExtException::CloneFrom(const Exception * E)
 {
-  return new ExtException(OBJECT_CLASS_ExtException, E, L"");
+  return new ExtException(E, L"");
 }
 
 ExtException * ExtException::Clone() const
@@ -555,7 +555,7 @@ void RethrowException(Exception * E)
   }
   else
   {
-    throw ExtException(OBJECT_CLASS_ExtException, E, L"");
+    throw ExtException(E, L"");
   }
 }
 

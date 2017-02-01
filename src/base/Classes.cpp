@@ -27,7 +27,7 @@ void Abort()
 void Error(intptr_t Id, intptr_t ErrorId)
 {
   UnicodeString Msg = FMTLOAD(Id, ErrorId);
-  throw ExtException(OBJECT_CLASS_ExtException, static_cast<Exception *>(nullptr), Msg);
+  throw ExtException(static_cast<Exception *>(nullptr), Msg);
 }
 
 void ThrowNotImplemented(intptr_t ErrorId)

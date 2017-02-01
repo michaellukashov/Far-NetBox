@@ -2887,7 +2887,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath)
   {
     if (FTerminal->GetActive())
     {
-      throw ExtException(OBJECT_CLASS_ExtException, &E, FMTLOAD(SFTP_REALPATH_ERROR, APath.c_str()));
+      throw ExtException(&E, FMTLOAD(SFTP_REALPATH_ERROR, APath.c_str()));
     }
     else
     {
@@ -3684,7 +3684,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
       if (Failure)
       {
-        throw ExtException(OBJECT_CLASS_ExtException,
+        throw ExtException(
           nullptr, FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()),
           HELP_EMPTY_DIRECTORY);
       }

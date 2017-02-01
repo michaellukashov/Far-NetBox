@@ -565,7 +565,7 @@ void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const 
   if (isa<ECallbackGuardAbort>(E))
   {
     SAFE_DESTROY(FFatalError);
-    FFatalError = new ExtException(OBJECT_CLASS_ExtException, E, Msg, HelpKeyword);
+    FFatalError = new ExtException(E, Msg, HelpKeyword);
   }
 
   // silently abort what we are doing.
@@ -2014,7 +2014,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
     else
     {
       // this can happen only during file transfer with SCP
-      throw ExtException(OBJECT_CLASS_ExtException, &E, Message);
+      throw ExtException(&E, Message);
     }
   }
 

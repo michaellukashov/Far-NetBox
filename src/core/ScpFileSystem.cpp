@@ -1173,7 +1173,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
         if (Empty)
         {
-          throw ExtException(OBJECT_CLASS_ExtException,
+          throw ExtException(
             nullptr, FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()),
             HELP_EMPTY_DIRECTORY);
         }

@@ -40,7 +40,7 @@ const int qpAllowContinueOnError = 0x04;
 const int qpIgnoreAbort          = 0x08;
 const int qpWaitInBatch          = 0x10;
 
-inline void ThrowExtException() { throw ExtException(OBJECT_CLASS_ExtException, static_cast<Exception *>(nullptr), UnicodeString(L"")); }
+inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
 
 extern const UnicodeString HttpProtocol;
 extern const UnicodeString HttpsProtocol;

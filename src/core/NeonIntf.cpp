@@ -184,7 +184,7 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
       }
     }
 
-    throw ExtException(OBJECT_CLASS_ExtException, Error, NeonError);
+    throw ExtException(Error, NeonError);
   }
 }
 

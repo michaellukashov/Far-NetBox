@@ -50,11 +50,12 @@ public:
   explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
-  explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
   virtual ~ExtException(void) noexcept;
   TStrings * GetMoreMessages() const { return FMoreMessages; }
   const UnicodeString & GetHelpKeyword() const { return FHelpKeyword; }
 
+  explicit inline ExtException(const UnicodeString & Msg) : Exception(OBJECT_CLASS_ExtException, Msg), FMoreMessages(nullptr) {}
   explicit inline ExtException(TObjectClassId Kind, const UnicodeString & Msg) : Exception(Kind, Msg), FMoreMessages(nullptr) {}
   explicit inline ExtException(TObjectClassId Kind, intptr_t Ident) : Exception(Kind, Ident), FMoreMessages(nullptr) {}
   explicit inline ExtException(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AHelpContext) : Exception(Kind, Msg, AHelpContext), FMoreMessages(nullptr) {}

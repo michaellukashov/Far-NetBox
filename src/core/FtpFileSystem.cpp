@@ -3723,7 +3723,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       {
         // for fatal error, it is essential that there is some message
         DebugAssert(!ErrorStr.IsEmpty());
-        std::unique_ptr<ExtException> E(new ExtException(OBJECT_CLASS_ExtException, ErrorStr, MoreMessages.release(), true));
+        std::unique_ptr<ExtException> E(new ExtException(ErrorStr, MoreMessages.release(), true));
         try__finally
         {
           FTerminal->FatalError(E.get(), L"");
@@ -3735,7 +3735,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       }
       else
       {
-        throw ExtException(OBJECT_CLASS_ExtException, ErrorStr, MoreMessages.release(), true, UnicodeString(HelpKeyword));
+        throw ExtException(ErrorStr, MoreMessages.release(), true, UnicodeString(HelpKeyword));
       }
     }
 

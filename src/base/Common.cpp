@@ -2903,7 +2903,7 @@ static void ThrowTlsCertificateErrorIgnorePassphraseErrors(const UnicodeString &
   int Error = ERR_get_error();
   if (!IsTlsPassphraseError(Error, HasPassphrase))
   {
-    throw ExtException(OBJECT_CLASS_ExtException, MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, Path.c_str())), GetTlsErrorStr(Error));
+    throw ExtException(MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, Path.c_str())), GetTlsErrorStr(Error));
   }
 }
 //---------------------------------------------------------------------------
@@ -3055,7 +3055,7 @@ void ParseCertificate(const UnicodeString & Path,
                 UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, CertificatePath.c_str()));
                 UnicodeString MoreMessages =
                   FORMAT(L"Base64: %s\nDER: %s", GetTlsErrorStr(Base64Error).c_str(), GetTlsErrorStr(DERError).c_str());
-                throw ExtException(OBJECT_CLASS_ExtException, Message, MoreMessages);
+                throw ExtException(Message, MoreMessages);
               }
             }
           }
