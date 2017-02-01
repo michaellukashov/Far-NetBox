@@ -121,7 +121,7 @@ const int ropNoReadDirectory = 0x02;
 
 const int boDisableNeverShowAgain = 0x01;
 
-class TTerminal : public TSessionUI // public TObject,
+class TTerminal : public TSessionUI
 {
 NB_DISABLE_COPY(TTerminal)
 public:
