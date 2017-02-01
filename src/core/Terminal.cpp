@@ -776,7 +776,7 @@ TTerminal::TTerminal(TObjectClassId Kind) :
   FTunnelOpening(false),
   FFileSystem(nullptr)
 {
-  FOldFiles = new TRemoteDirectory(OBJECT_CLASS_TRemoteDirectory, this);
+  FOldFiles = new TRemoteDirectory(this);
 }
 
 TTerminal::~TTerminal()
@@ -819,7 +819,7 @@ void TTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration)
   FSessionData->Assign(SessionData);
   FLog = new TSessionLog(this, FSessionData, FConfiguration);
   FActionLog = new TActionLog(this, FSessionData, FConfiguration);
-  FFiles = new TRemoteDirectory(OBJECT_CLASS_TRemoteDirectory, this);
+  FFiles = new TRemoteDirectory(this);
   FExceptionOnFail = 0;
   FInTransaction = 0;
   FReadCurrentDirectoryPending = false;
@@ -2977,7 +2977,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 
     try
     {
-      TRemoteDirectory * Files = new TRemoteDirectory(OBJECT_CLASS_TRemoteDirectory, this, FFiles);
+      TRemoteDirectory * Files = new TRemoteDirectory(this, FFiles);
       try__finally
       {
         SCOPE_EXIT

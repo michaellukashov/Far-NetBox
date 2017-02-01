@@ -1779,8 +1779,8 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
   return nullptr;
 }
 //=== TRemoteDirectory ------------------------------------------------------
-TRemoteDirectory::TRemoteDirectory(TObjectClassId Kind, TTerminal * aTerminal, TRemoteDirectory * Template) :
-  TRemoteFileList(Kind),
+TRemoteDirectory::TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template) :
+  TRemoteFileList(OBJECT_CLASS_TRemoteDirectory),
   FIncludeParentDirectory(false),
   FIncludeThisDirectory(false),
   FTerminal(aTerminal),

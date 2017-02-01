@@ -325,8 +325,7 @@ public:
   static inline bool classof(const TObject * Obj)
   {
     return
-      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory ||
-      Obj->GetKind() == OBJECT_CLASS_TRemoteParentDirectory;
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory;
   }
 private:
   TTerminal * FTerminal;
@@ -344,7 +343,7 @@ public:
   void ReleaseRelativeDirectories();
 
 public:
-  explicit TRemoteDirectory(TObjectClassId Kind, TTerminal * ATerminal, TRemoteDirectory * Template = nullptr);
+  explicit TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template = nullptr);
   virtual ~TRemoteDirectory();
   virtual void AddFile(TRemoteFile * AFile);
   virtual void DuplicateTo(TRemoteFileList * Copy) const;

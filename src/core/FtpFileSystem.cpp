@@ -796,9 +796,9 @@ void TFTPFileSystem::CollectUsage()
   }*/
 }
 
-void TFTPFileSystem::DummyReadDirectory(const UnicodeString & Directory)
+void TFTPFileSystem::DummyReadDirectory(const UnicodeString & /*Directory*/)
 {
-  std::unique_ptr<TRemoteDirectory> Files(new TRemoteDirectory(OBJECT_CLASS_TRemoteDirectory, FTerminal));
+  std::unique_ptr<TRemoteDirectory> Files(new TRemoteDirectory(FTerminal));
   try
   {
     Files->SetDirectory(GetCurrDirectory());
