@@ -539,3 +539,8 @@ inline X * dyn_cast(void * Val)
   return rtti::dyn_cast_or_null<X>(as_object(Val));
 }
 
+template <class X, class Y>
+inline bool isa(const Y * Val)
+{
+  return rtti::isa<X>(Val);
+}
