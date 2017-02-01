@@ -562,7 +562,7 @@ void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const 
   // make sure we do not bother about getting back the silent abort exception
   // we issued ourselves. this may happen when there is an exception handler
   // that converts any exception to fatal one (such as in TTerminal::Open).
-  if (dyn_cast<ECallbackGuardAbort>(E) == nullptr)
+  if (isa<ECallbackGuardAbort>(E))
   {
     SAFE_DESTROY(FFatalError);
     FFatalError = new ExtException(OBJECT_CLASS_ExtException, E, Msg, HelpKeyword);
