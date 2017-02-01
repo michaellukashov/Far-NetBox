@@ -37,7 +37,8 @@ public:
       Kind == OBJECT_CLASS_ECommand ||
       Kind == OBJECT_CLASS_EScp ||
       Kind == OBJECT_CLASS_ESkipFile ||
-      Kind == OBJECT_CLASS_EFileSkipped;
+      Kind == OBJECT_CLASS_EFileSkipped ||
+      Kind == OBJECT_CLASS_EStreamError;
   }
 public:
   explicit ExtException(Exception * E);

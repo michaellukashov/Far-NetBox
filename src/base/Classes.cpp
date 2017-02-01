@@ -67,7 +67,7 @@ TPersistent * TPersistent::GetOwner()
 void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
-  throw Exception(OBJECT_CLASS_Exception, L"Cannot assign");
+  throw Exception(L"Cannot assign");
 }
 
 TList::TList() :

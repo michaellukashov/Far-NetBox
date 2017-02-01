@@ -101,7 +101,6 @@ Exception::Exception(TObjectClassId Kind, const wchar_t * Msg) :
   TObject(Kind),
   Message(Msg)
 {
-
 }
 
 Exception::Exception(const wchar_t * Msg) :
