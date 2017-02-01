@@ -1230,7 +1230,7 @@ void TSCPFileSystem::ReadFile(const UnicodeString & AFileName,
 TRemoteFile * TSCPFileSystem::CreateRemoteFile(
   const UnicodeString & ListingStr, TRemoteFile * LinkedByFile)
 {
-  std::unique_ptr<TRemoteFile> File(new TRemoteFile(OBJECT_CLASS_TRemoteFile, LinkedByFile));
+  std::unique_ptr<TRemoteFile> File(new TRemoteFile(LinkedByFile));
   try__catch
   {
     File->SetTerminal(FTerminal);

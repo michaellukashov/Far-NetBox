@@ -835,10 +835,11 @@ TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile) :
   FLinkedByFile = ALinkedByFile;
 }
 
-TRemoteFile::TRemoteFile() :
+TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
   TPersistent(OBJECT_CLASS_TRemoteFile)
 {
   Init();
+  FLinkedByFile = ALinkedByFile;
 }
 
 TRemoteFile::~TRemoteFile()

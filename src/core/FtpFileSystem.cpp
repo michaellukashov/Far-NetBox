@@ -2964,7 +2964,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   // (involves opening TCPIP connection for retrieving "directory listing").
   // Moreover FZAPI does not support that anyway.
   // Though nowadays we could use MLST to read the symlink.
-  std::unique_ptr<TRemoteFile> File(new TRemoteFile(OBJECT_CLASS_TRemoteFile, SymlinkFile));
+  std::unique_ptr<TRemoteFile> File(new TRemoteFile(SymlinkFile));
   try__catch
   {
     File->SetTerminal(FTerminal);

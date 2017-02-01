@@ -156,7 +156,7 @@ protected:
   void FindLinkedFile();
 
 public:
-  TRemoteFile();
+  explicit TRemoteFile(TRemoteFile * ALinkedByFile = nullptr);
   explicit TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile = nullptr);
   virtual ~TRemoteFile();
   TRemoteFile * Duplicate(bool Standalone = true) const;
@@ -276,7 +276,8 @@ public:
   {
     return
       Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
-      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory;
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteParentDirectory;
   }
 protected:
   UnicodeString FDirectory;
