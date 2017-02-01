@@ -3035,7 +3035,7 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
   TRemoteFile * ALinkedByFile, const UnicodeString & AFileName,
   TRemoteFileList * TempFileList, bool Complete)
 {
-  std::unique_ptr<TRemoteFile> File(new TRemoteFile(OBJECT_CLASS_TRemoteFile, ALinkedByFile));
+  std::unique_ptr<TRemoteFile> File(new TRemoteFile(ALinkedByFile));
   try__catch
   {
     File->SetTerminal(FTerminal);
