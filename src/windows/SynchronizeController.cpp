@@ -177,7 +177,7 @@ void TSynchronizeController::SynchronizeChange(
   }
   catch (Exception & E)
   {
-    SynchronizeAbort(dyn_cast<EFatal>(&E) != nullptr);
+    SynchronizeAbort(isa<EFatal>(&E));
   }
 }
 

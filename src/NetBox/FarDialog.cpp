@@ -505,7 +505,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
             // flag DIF_LISTNOCLOSE.
             if (Button == nullptr)
             {
-              DebugAssert(dyn_cast<TFarListBox>(GetItem(Param1)) != nullptr);
+              DebugAssert(isa<TFarListBox>(GetItem(Param1)));
               Result = static_cast<intptr_t>(false);
             }
             else

@@ -923,7 +923,7 @@ UnicodeString TranslateExceptionMessage(Exception * E)
 {
   if (E)
   {
-    if (dyn_cast<Exception>(E) != nullptr)
+    if (isa<Exception>(E))
     {
       return dyn_cast<Exception>(E)->Message;
     }
