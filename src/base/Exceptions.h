@@ -88,6 +88,8 @@ private:
   class NAME : public BASE \
   { \
   public: \
+    static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_##NAME; } \
+  public: \
     explicit inline NAME(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(Kind, E, Msg, HelpKeyword) {} \
     explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
     explicit inline NAME(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AHelpContext) : BASE(Kind, Msg, AHelpContext) {} \
@@ -159,6 +161,8 @@ private:
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
   class NAME : public BASE \
   { \
+  public: \
+    static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_##NAME; } \
   public: \
     explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
     virtual ExtException * Clone() const { return new NAME(this, L""); } \
