@@ -1520,7 +1520,7 @@ void TActionLog::Add(const UnicodeString & Line)
           FConfiguration->SetLogActions(false);
           if (FConfiguration->GetLogActionsRequired())
           {
-            throw EFatal(OBJECT_CLASS_EFatal, &E, LoadStr(LOG_FATAL_ERROR));
+            throw EFatal(&E, LoadStr(LOG_FATAL_ERROR));
           }
           else
           {
@@ -1642,7 +1642,7 @@ void TActionLog::OpenLogFile()
     FConfiguration->SetLogActions(false);
     if (FConfiguration->GetLogActionsRequired())
     {
-      throw EFatal(OBJECT_CLASS_EFatal, &E, LoadStr(LOG_FATAL_ERROR));
+      throw EFatal(&E, LoadStr(LOG_FATAL_ERROR));
     }
     else
     {

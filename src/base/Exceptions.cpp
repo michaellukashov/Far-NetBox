@@ -467,9 +467,26 @@ EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg,
 {
 }
 
+EFatal::EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
+  ExtException(OBJECT_CLASS_EFatal, Msg, E, HelpKeyword),
+  FReopenQueried(false)
+{
+  Init(E);
+}
+
 EFatal::EFatal(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   ExtException(Kind, Msg, E, HelpKeyword),
   FReopenQueried(false)
+{
+  Init(E);
+}
+
+ExtException * EFatal::Clone() const
+{
+  return new EFatal(OBJECT_CLASS_EFatal, this, L"");
+}
+
+void EFatal::Init(const Exception * E)
 {
   const EFatal * F = dyn_cast<EFatal>(E);
   if (F != nullptr)
@@ -481,11 +498,6 @@ EFatal::EFatal(TObjectClassId Kind, const Exception * E, const UnicodeString & M
 ECRTExtException::ECRTExtException(const UnicodeString & Msg) :
   EOSExtException(OBJECT_CLASS_ECRTExtException, Msg, errno)
 {
-}
-
-ExtException * EFatal::Clone() const
-{
-  return new EFatal(OBJECT_CLASS_EFatal, this, L"");
 }
 
 ExtException * ESshTerminate::Clone() const
@@ -539,7 +551,7 @@ void RethrowException(Exception * E)
   // this list has to be in sync with ExceptionMessage
   if (dyn_cast<EFatal>(E) != nullptr)
   {
-    throw EFatal(OBJECT_CLASS_EFatal, E, L"");
+    throw EFatal(E, L"");
   }
   else if (dyn_cast<ECallbackGuardAbort>(E) != nullptr)
   {

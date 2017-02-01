@@ -147,6 +147,7 @@ public:
   }
 public:
   // fatal errors are always copied, new message is only appended
+  explicit EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   explicit EFatal(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
 
   bool GetReopenQueried() const { return FReopenQueried; }
@@ -155,6 +156,7 @@ public:
   virtual ExtException * Clone() const;
 
 private:
+  void Init(const Exception * E);
   bool FReopenQueried;
 };
 
