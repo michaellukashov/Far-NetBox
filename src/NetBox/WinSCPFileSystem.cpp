@@ -1797,7 +1797,7 @@ void TWinSCPFileSystem::RenameFile()
   {
     RequireCapability(fcRename);
 
-    TRemoteFile * File = dyn_cast<TRemoteFile>(as_object(PanelItem->GetUserData()));
+    TRemoteFile * File = dyn_cast<TRemoteFile>(PanelItem->GetUserData());
     UnicodeString NewName = File->GetFileName();
     if (RenameFileDialog(File, NewName))
     {

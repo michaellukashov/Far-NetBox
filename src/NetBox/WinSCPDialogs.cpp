@@ -5911,15 +5911,11 @@ public:
   static inline bool classof(const TObject * Obj)
   {
     return
-      Obj->GetKind() == OBJECT_CLASS_TLabelList ||
-      Obj->GetKind() == OBJECT_CLASS_TFarConfiguration;
+      Obj->GetKind() == OBJECT_CLASS_TLabelList;
   }
 public:
   explicit TLabelList() :
     TList(OBJECT_CLASS_TLabelList), MaxLen(0)
-  {}
-  explicit TLabelList(TObjectClassId Kind) :
-    TList(Kind), MaxLen(0)
   {}
 
   intptr_t MaxLen;
