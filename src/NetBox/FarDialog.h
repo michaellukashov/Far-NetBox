@@ -435,6 +435,12 @@ class TFarCheckBox : public TFarDialogItem
 {
 NB_DISABLE_COPY(TFarCheckBox)
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFarCheckBox;
+  }
+public:
   explicit TFarCheckBox(TFarDialog * ADialog);
 
   virtual UnicodeString GetCaption() const { return GetData(); }
