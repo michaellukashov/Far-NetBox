@@ -50,7 +50,7 @@ class TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  TObjectClassId GetKind() const { return FKind; }
+  inline TObjectClassId GetKind() const { return FKind; }
   static inline bool classof(const TObject * /*Obj*/) { return true; }
 public:
   TObject() : FKind(OBJECT_CLASS_TObject) {}
