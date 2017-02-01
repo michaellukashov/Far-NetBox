@@ -291,11 +291,11 @@ UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote)
 UnicodeString ExceptionLogString(Exception * E)
 {
   DebugAssert(E);
-  if (dyn_cast<Exception>(E) != nullptr)
+  if (isa<Exception>(E))
   {
     UnicodeString Msg;
     Msg = FORMAT(L"%s", UnicodeString(E->what()).c_str());
-    if (dyn_cast<ExtException>(E) != nullptr)
+    if (isa<ExtException>(E))
     {
       TStrings * MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
       if (MoreMessages)

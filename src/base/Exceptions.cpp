@@ -49,7 +49,7 @@ static bool WellKnownException(
     Result = false;
   }
   // EAccessViolation is EExternal
-  else if (dyn_cast<EAccessViolation>(E) != nullptr)
+  else if (isa<EAccessViolation>(E))
   {
     if (Rethrow)
     {
@@ -131,7 +131,7 @@ static bool ExceptionMessage(const Exception * E, bool /*Count*/,
   InternalError = false; // see also IsInternalException
 
   // this list has to be in sync with CloneException
-  if (dyn_cast<EAbort>(E) != nullptr)
+  if (isa<EAbort>(E))
   {
     Result = false;
   }
@@ -523,11 +523,11 @@ Exception * CloneException(Exception * E)
   {
     Result = Ext->Clone();
   }
-  else if (dyn_cast<ECallbackGuardAbort>(E) != nullptr)
+  else if (isa<ECallbackGuardAbort>(E))
   {
     Result = new ECallbackGuardAbort();
   }
-  else if (dyn_cast<EAbort>(E) != nullptr)
+  else if (isa<EAbort>(E))
   {
     Result = new EAbort(E->Message);
   }
@@ -554,15 +554,15 @@ Exception * CloneException(Exception * E)
 void RethrowException(Exception * E)
 {
   // this list has to be in sync with ExceptionMessage
-  if (dyn_cast<EFatal>(E) != nullptr)
+  if (isa<EFatal>(E))
   {
     throw EFatal(E, L"");
   }
-  else if (dyn_cast<ECallbackGuardAbort>(E) != nullptr)
+  else if (isa<ECallbackGuardAbort>(E))
   {
     throw ECallbackGuardAbort();
   }
-  else if (dyn_cast<EAbort>(E) != nullptr)
+  else if (isa<EAbort>(E))
   {
     throw EAbort(E->Message);
   }
