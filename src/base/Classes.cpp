@@ -35,7 +35,8 @@ void ThrowNotImplemented(intptr_t ErrorId)
   Error(SNotImplemented, ErrorId);
 }
 
-TPersistent::TPersistent(TObjectClassId Kind) : TObject(Kind)
+TPersistent::TPersistent(TObjectClassId Kind) :
+  TObject(Kind)
 {}
 
 TPersistent::~TPersistent()
@@ -274,7 +275,6 @@ TObjectList::TObjectList() :
   TList(OBJECT_CLASS_TObjectList),
   FOwnsObjects(true)
 {
-
 }
 
 TObjectList::TObjectList(TObjectClassId Kind) :
