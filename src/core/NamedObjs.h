@@ -22,7 +22,7 @@ public:
   void SetName(const UnicodeString & Value);
   bool GetHidden() const { return FHidden; }
 
-  TNamedObject() : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}
+  explicit TNamedObject() : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}
   explicit TNamedObject(TObjectClassId Kind) : TPersistent(Kind), FHidden(false) {}
   explicit TNamedObject(TObjectClassId Kind, const UnicodeString & AName);
   virtual ~TNamedObject() {}

@@ -216,8 +216,8 @@ public:
   bool GetPermanentLogSensitive() const { return FPermanentLogSensitive; }
 
 public:
-  TConfiguration() : TObject(OBJECT_CLASS_TConfiguration) {}
-  TConfiguration(TObjectClassId Kind);
+  // TConfiguration() : TObject(OBJECT_CLASS_TConfiguration) {}
+  explicit TConfiguration(TObjectClassId Kind);
   virtual ~TConfiguration();
   virtual void Default();
   virtual void UpdateStaticUsage();

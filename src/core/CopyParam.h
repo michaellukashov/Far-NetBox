@@ -114,7 +114,7 @@ public:
 
 public:
   TCopyParamType();
-  TCopyParamType(TObjectClassId Kind);
+  explicit TCopyParamType(TObjectClassId Kind);
   TCopyParamType(const TCopyParamType & Source);
   virtual ~TCopyParamType();
   TCopyParamType & operator =(const TCopyParamType & rhs);

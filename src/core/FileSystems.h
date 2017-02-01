@@ -177,7 +177,6 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TWebDAVFileSystem;
   }
 public:
-  explicit TCustomFileSystem(TObjectClassId Kind) : TObject(Kind), FTerminal(nullptr) {}
   virtual ~TCustomFileSystem();
 
   virtual void Open() = 0;
@@ -246,6 +245,7 @@ public:
 protected:
   TTerminal * FTerminal;
 
+  explicit TCustomFileSystem(TObjectClassId Kind) : TObject(Kind), FTerminal(nullptr) {}
   explicit TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal);
 
   UnicodeString CreateTargetDirectory(
