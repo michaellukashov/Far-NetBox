@@ -1504,7 +1504,7 @@ void TRemoteFile::FindLinkedFile()
     }
     catch (Exception & E)
     {
-      if (dyn_cast<EFatal>(&E) != nullptr)
+      if (isa<EFatal>(&E))
       {
         throw;
       }

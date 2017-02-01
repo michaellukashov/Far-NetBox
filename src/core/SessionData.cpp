@@ -413,7 +413,7 @@ void TSessionData::NonPersistant()
 
 void TSessionData::Assign(const TPersistent * Source)
 {
-  if (Source && (dyn_cast<TSessionData>(Source) != nullptr))
+  if (Source && isa<TSessionData>(Source))
   {
     TSessionData * SourceData = dyn_cast<TSessionData>(const_cast<TPersistent *>(Source));
     CopyData(SourceData);
