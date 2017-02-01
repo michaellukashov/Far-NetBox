@@ -6224,7 +6224,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       FLastFeededControl = AControl;
     }
 
-    if (dyn_cast<TLabelList>(AControl) == nullptr)
+    if (isa<TLabelList>(AControl))
     {
       UnicodeString LabelStr;
       if (Control == HostKeyFingerprintEdit)
@@ -6255,7 +6255,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
     }
     else
     {
-      DebugAssert(dyn_cast<TLabelList>(AControl) != nullptr);
+      DebugAssert(isa<TLabelList>(AControl));
       UnicodeString LabelStr = GetMsg(Label);
       if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == L':'))
       {

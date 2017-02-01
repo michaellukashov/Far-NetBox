@@ -451,7 +451,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
         if (!Result && (Msg == DN_KEY) &&
             (Param2 == KEY_ENTER) &&
             ((Param1 < 0) ||
-             ((dyn_cast<TFarButton>(GetItem(Param1)) == nullptr))) &&
+             !isa<TFarButton>(GetItem(Param1))) &&
             GetDefaultButton()->GetEnabled() &&
             (GetDefaultButton()->GetOnClick()))
         {

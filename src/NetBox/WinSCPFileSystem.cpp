@@ -337,7 +337,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
 
 void TWinSCPFileSystem::HandleException(Exception * E, int OpMode)
 {
-  if ((GetTerminal() != nullptr) && (dyn_cast<EFatal>(E) != nullptr))
+  if ((GetTerminal() != nullptr) && isa<EFatal>(E))
   {
     bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
     if (Reopen)

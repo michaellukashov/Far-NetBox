@@ -512,14 +512,13 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
-    if (dyn_cast<EAbort>(E) == nullptr)
+    if (isa<EAbort>(E))
     {
       TQueryType Type;
-      Type = dyn_cast<ESshTerminate>(E) != nullptr ?
-        qtInformation : qtError;
+      Type = isa<ESshTerminate>(E) ? qtInformation : qtError;
 
       TStrings * MoreMessages = nullptr;
-      if (dyn_cast<ExtException>(E) != nullptr)
+      if (isa<ExtException>(E))
       {
         MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
       }
@@ -531,7 +530,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 
 void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
 {
-  if (((OpMode & OPM_FIND) == 0) || (dyn_cast<EFatal>(E) != nullptr))
+  if (((OpMode & OPM_FIND) == 0) || isa<EFatal>(E))
   {
     ShowExtendedException(E);
   }
