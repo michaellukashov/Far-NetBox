@@ -220,7 +220,7 @@ void logevent(void * frontend, const char * str)
   // Frontend maybe NULL here
   if (frontend != nullptr)
   {
-    (dyn_cast<TSecureShell>(frontend))->PuttyLogEvent(str);
+    dyn_cast<TSecureShell>(frontend)->PuttyLogEvent(str);
   }
 }
 
@@ -235,7 +235,7 @@ void connection_fatal(void * frontend, const char * fmt, ...)
   va_end(Param);
 
   DebugAssert(frontend != nullptr);
-  (dyn_cast<TSecureShell>(frontend))->PuttyFatalError(UnicodeString(Buf.c_str()));
+  dyn_cast<TSecureShell>(frontend)->PuttyFatalError(UnicodeString(Buf.c_str()));
 }
 
 int verify_ssh_host_key(void * frontend, char * host, int port, const char * keytype,
@@ -243,7 +243,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, const char * key
   void * /*ctx*/)
 {
   DebugAssert(frontend != nullptr);
-  (dyn_cast<TSecureShell>(frontend))->VerifyHostKey(UnicodeString(host), port, keytype, keystr, fingerprint);
+  dyn_cast<TSecureShell>(frontend)->VerifyHostKey(UnicodeString(host), port, keytype, keystr, fingerprint);
 
   // We should return 0 when key was not confirmed, we throw exception instead.
   return 1;
@@ -260,7 +260,7 @@ int askalg(void * frontend, const char * algtype, const char * algname,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   DebugAssert(frontend != nullptr);
-  (dyn_cast<TSecureShell>(frontend))->AskAlg(algtype, algname);
+  dyn_cast<TSecureShell>(frontend)->AskAlg(algtype, algname);
 
   // We should return 0 when alg was not confirmed, we throw exception instead.
   return 1;
@@ -281,7 +281,7 @@ void display_banner(void * frontend, const char * banner, int size)
 {
   DebugAssert(frontend);
   UnicodeString Banner(banner, size);
-  (dyn_cast<TSecureShell>(frontend))->DisplayBanner(Banner);
+  dyn_cast<TSecureShell>(frontend)->DisplayBanner(Banner);
 }
 
 static void SSHFatalError(const char * Format, va_list Param)
