@@ -291,13 +291,13 @@ UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote)
 UnicodeString ExceptionLogString(Exception * E)
 {
   DebugAssert(E);
-  if (NB_STATIC_DOWNCAST(Exception, E) != nullptr)
+  if (isa<Exception>(E))
   {
     UnicodeString Msg;
     Msg = FORMAT(L"%s", UnicodeString(E->what()).c_str());
-    if (NB_STATIC_DOWNCAST(ExtException, E) != nullptr)
+    if (isa<ExtException>(E))
     {
-      TStrings * MoreMessages = NB_STATIC_DOWNCAST(ExtException, E)->GetMoreMessages();
+      TStrings * MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +

@@ -814,13 +814,13 @@ const TRemoteToken * TRemoteTokenList::Token(intptr_t Index) const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
-  TPersistent(),
+TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile) :
+  TPersistent(Kind),
   FDirectory(nullptr),
   FModificationFmt(mfFull),
   FLinkedFile(nullptr),
   FLinkedByFile(ALinkedByFile),
-  FRights(new TRights()),
+  FRights(nullptr),
   FTerminal(nullptr),
   FSize(0),
   FINodeBlocks(0),
@@ -831,6 +831,15 @@ TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
   FSelected(false),
   FCyclicLink(false)
 {
+  Init();
+  FLinkedByFile = ALinkedByFile;
+}
+
+TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
+  TPersistent(OBJECT_CLASS_TRemoteFile)
+{
+  Init();
+  FLinkedByFile = ALinkedByFile;
 }
 
 TRemoteFile::~TRemoteFile()
@@ -898,6 +907,24 @@ void TRemoteFile::LoadTypeInfo() const
   UnicodeString DumbFileName = (GetIsSymLink() && !GetLinkTo().IsEmpty() ? GetLinkTo() : GetFileName());
 
   FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);*/
+}
+
+void TRemoteFile::Init()
+{
+  FDirectory = nullptr;
+  FModificationFmt = mfFull;
+  FLinkedFile = nullptr;
+  FLinkedByFile = nullptr;
+  FRights = new TRights();
+  FTerminal = nullptr;
+  FSize = 0;
+  FINodeBlocks = 0;
+  FIconIndex = -1;
+  FIsHidden = -1;
+  FType = 0;
+  FIsSymLink = false;
+  FSelected = false;
+  FCyclicLink = false;
 }
 
 int64_t TRemoteFile::GetSize() const
@@ -1477,7 +1504,7 @@ void TRemoteFile::FindLinkedFile()
     }
     catch (Exception & E)
     {
-      if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
+      if (isa<EFatal>(&E))
       {
         throw;
       }
@@ -1611,7 +1638,19 @@ void TRemoteFile::SetFullFileName(const UnicodeString & Value)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
+TRemoteDirectoryFile::TRemoteDirectoryFile() :
+  TRemoteFile(OBJECT_CLASS_TRemoteDirectoryFile)
+{
+  Init();
+}
+
+TRemoteDirectoryFile::TRemoteDirectoryFile(TObjectClassId Kind) :
+  TRemoteFile(Kind)
+{
+  Init();
+}
+
+void TRemoteDirectoryFile::Init()
 {
   SetModification(TDateTime(0.0));
   SetModificationFmt(mfNone);
@@ -1621,15 +1660,22 @@ TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal)
-  : TRemoteDirectoryFile()
+TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal) :
+  TRemoteDirectoryFile(OBJECT_CLASS_TRemoteParentDirectory)
 {
   SetFileName(PARENTDIRECTORY);
   SetTerminal(ATerminal);
 }
 //=== TRemoteFileList ------------------------------------------------------
 TRemoteFileList::TRemoteFileList() :
-  TObjectList(),
+  TObjectList(OBJECT_CLASS_TRemoteFileList),
+  FTimestamp(Now())
+{
+  SetOwnsObjects(true);
+}
+
+TRemoteFileList::TRemoteFileList(TObjectClassId Kind) :
+  TObjectList(Kind),
   FTimestamp(Now())
 {
   SetOwnsObjects(true);
@@ -1695,7 +1741,7 @@ UnicodeString TRemoteFileList::GetFullDirectory() const
 
 TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
-  return NB_STATIC_DOWNCAST(TRemoteFile, GetObj(Index));
+  return dyn_cast<TRemoteFile>(GetObj(Index));
 }
 
 Boolean TRemoteFileList::GetIsRoot() const
@@ -1734,7 +1780,7 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
 }
 //=== TRemoteDirectory ------------------------------------------------------
 TRemoteDirectory::TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template) :
-  TRemoteFileList(),
+  TRemoteFileList(OBJECT_CLASS_TRemoteDirectory),
   FIncludeParentDirectory(false),
   FIncludeThisDirectory(false),
   FTerminal(aTerminal),
@@ -1901,7 +1947,7 @@ void TRemoteDirectoryCache::Clear()
     };
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
-      TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
+      TRemoteFileList * List = dyn_cast<TRemoteFileList>(GetObj(Index));
       SAFE_DESTROY(List);
       SetObj(Index, nullptr);
     }
@@ -1935,7 +1981,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   intptr_t Index = IndexOf(core::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
-    TRemoteFileList * FileList = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
+    TRemoteFileList * FileList = dyn_cast<TRemoteFileList>(GetObj(Index));
     if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
@@ -1954,7 +2000,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   if (Result)
   {
     DebugAssert(GetObj(Index) != nullptr);
-    NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index))->DuplicateTo(FileList);
+    dyn_cast<TRemoteFileList>(GetObj(Index))->DuplicateTo(FileList);
   }
   return Result;
 }
@@ -2008,7 +2054,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
 
 void TRemoteDirectoryCache::Delete(intptr_t Index)
 {
-  TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
+  TRemoteFileList * List = dyn_cast<TRemoteFileList>(GetObj(Index));
   SAFE_DESTROY(List);
   TStringList::Delete(Index);
 }
@@ -2748,12 +2794,14 @@ TRights::operator uint32_t() const
   return GetNumber();
 }
 
-TRemoteProperties::TRemoteProperties()
+TRemoteProperties::TRemoteProperties() :
+  TObject(OBJECT_CLASS_TRemoteProperties)
 {
   Default();
 }
 
 TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhp) :
+  TObject(OBJECT_CLASS_TRemoteProperties),
   Valid(rhp.Valid),
   Recursive(rhp.Recursive),
   Rights(rhp.Rights),
@@ -2808,7 +2856,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
   TRemoteProperties CommonProperties;
   for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
   {
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index));
+    TRemoteFile * File = dyn_cast<TRemoteFile>(AFileList->GetObj(Index));
     DebugAssert(File);
     if (!Index)
     {
@@ -2917,8 +2965,4 @@ void TRemoteProperties::Save(THierarchicalStorage * Storage) const
 
   // TODO
 }
-
-NB_IMPLEMENT_CLASS(TRemoteFile, NB_GET_CLASS_INFO(TPersistent), nullptr)
-NB_IMPLEMENT_CLASS(TRemoteFileList, NB_GET_CLASS_INFO(TObjectList), nullptr)
-NB_IMPLEMENT_CLASS(TRemoteProperties, NB_GET_CLASS_INFO(TObject), nullptr)
 

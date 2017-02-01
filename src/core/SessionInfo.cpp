@@ -73,9 +73,15 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 
 class TSessionActionRecord : public TObject
 {
-NB_DECLARE_CLASS(TSessionActionRecord)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSessionActionRecord;
+  }
 public:
   explicit TSessionActionRecord(TActionLog * Log, TLogAction Action) :
+    TObject(OBJECT_CLASS_TSessionActionRecord),
     FLog(Log),
     FAction(Action),
     FState(Opened),
@@ -1666,7 +1672,7 @@ void TActionLog::AddPendingAction(TSessionActionRecord * Action)
 void TActionLog::RecordPendingActions()
 {
   while ((FPendingActions->GetCount() > 0) &&
-         NB_STATIC_DOWNCAST(TSessionActionRecord, FPendingActions->GetItem(0))->Record())
+         dyn_cast<TSessionActionRecord>(FPendingActions->GetItem(0))->Record())
   {
     FPendingActions->Delete(0);
   }
@@ -1704,6 +1710,4 @@ void TActionLog::SetEnabled(bool Value)
     ReflectSettings();
   }
 }
-
-NB_IMPLEMENT_CLASS(TSessionActionRecord, NB_GET_CLASS_INFO(TObject), nullptr)
 

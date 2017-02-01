@@ -11,7 +11,12 @@ class TCopyParamType;
 class TWinSCPPlugin : public TCustomFarPlugin
 {
 friend class TWinSCPFileSystem;
-NB_DECLARE_CLASS(TWinSCPPlugin)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TWinSCPPlugin;
+  }
 public:
   explicit TWinSCPPlugin(HINSTANCE HInst);
   virtual ~TWinSCPPlugin();

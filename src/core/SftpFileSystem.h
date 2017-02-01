@@ -28,6 +28,12 @@ friend class TSFTPLoadFilesPropertiesQueue;
 friend class TSFTPCalculateFilesChecksumQueue;
 friend class TSFTPBusy;
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSFTPFileSystem;
+  }
+public:
   explicit TSFTPFileSystem(TTerminal * ATermina);
   virtual ~TSFTPFileSystem();
 

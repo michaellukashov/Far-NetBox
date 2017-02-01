@@ -21,7 +21,7 @@
 #include "XmlStorage.h"
 
 TSessionPanelItem::TSessionPanelItem(const TSessionData * ASessionData) :
-  TCustomFarPanelItem()
+  TCustomFarPanelItem(OBJECT_CLASS_TSessionPanelItem)
 {
   DebugAssert(ASessionData);
   FSessionData = ASessionData;
@@ -63,7 +63,7 @@ void TSessionPanelItem::GetData(
 }
 
 TSessionFolderPanelItem::TSessionFolderPanelItem(const UnicodeString & Folder) :
-  TCustomFarPanelItem(),
+  TCustomFarPanelItem(OBJECT_CLASS_TSessionFolderPanelItem),
   FFolder(Folder)
 {
 }
@@ -80,7 +80,7 @@ void TSessionFolderPanelItem::GetData(
 }
 
 TRemoteFilePanelItem::TRemoteFilePanelItem(TRemoteFile * ARemoteFile) :
-  TCustomFarPanelItem()
+  TCustomFarPanelItem(OBJECT_CLASS_TRemoteFilePanelItem)
 {
   DebugAssert(ARemoteFile);
   FRemoteFile = ARemoteFile;
@@ -254,7 +254,7 @@ private:
 
 TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
   const TDateTime & Interval) :
-  TSimpleThread(),
+  TSimpleThread(OBJECT_CLASS_TKeepAliveThread),
   FFileSystem(FileSystem),
   FInterval(Interval),
   FEvent(0)
@@ -289,7 +289,7 @@ void TKeepaliveThread::Execute()
 }
 
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
-  TCustomFarFileSystem(APlugin),
+  TCustomFarFileSystem(OBJECT_CLASS_TWinSCPFileSystem, APlugin),
   FTerminal(nullptr),
   FQueue(nullptr),
   FQueueStatus(nullptr),
@@ -338,7 +338,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
 
 void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
-  if ((GetTerminal() != nullptr) && (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
+  if ((GetTerminal() != nullptr) && isa<EFatal>(E))
   {
     bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
     if (Reopen)
@@ -384,7 +384,7 @@ bool TWinSCPFileSystem::Connected() const
 
 TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin()
 {
-  return NB_STATIC_DOWNCAST(TWinSCPPlugin, FPlugin);
+  return dyn_cast<TWinSCPPlugin>(FPlugin);
 }
 
 void TWinSCPFileSystem::Close()
@@ -479,6 +479,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
       for (intptr_t Index = 0; Index < GetTerminal()->GetFiles()->GetCount(); ++Index)
       {
         TRemoteFile * File = GetTerminal()->GetFiles()->GetFile(Index);
+        DebugAssert(File);
         if (ResolveSymlinks && File->GetIsSymLink())
         {
           if (FarPlugin->CheckForEsc())
@@ -556,7 +557,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
     }
 
     TWinSCPFileSystem * OppositeFileSystem =
-      NB_STATIC_DOWNCAST(TWinSCPFileSystem, GetOppositeFileSystem());
+      dyn_cast<TWinSCPFileSystem>(GetOppositeFileSystem());
     if ((OppositeFileSystem != nullptr) && !OppositeFileSystem->Connected() &&
         !OppositeFileSystem->FLoadingSessionList)
     {
@@ -925,7 +926,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
     TSessionData * Data = nullptr;
     if ((Focused != nullptr) && Focused->GetIsFile() && Focused->GetUserData())
     {
-      Data = NB_STATIC_DOWNCAST(TSessionData, Focused->GetUserData());
+      Data = dyn_cast<TSessionData>(Focused->GetUserData());
     }
 
     if ((Key == 'F') && (ControlState & CTRLMASK))
@@ -1074,7 +1075,7 @@ void TWinSCPFileSystem::CreateLink()
   TFarPanelInfo * const * PanelInfo = GetPanelInfo();
   if (PanelInfo && *PanelInfo && (*PanelInfo)->GetFocusedItem() && (*PanelInfo)->GetFocusedItem()->GetUserData())
   {
-    File = NB_STATIC_DOWNCAST(TRemoteFile, (*PanelInfo)->GetFocusedItem()->GetUserData());
+    File = dyn_cast<TRemoteFile>((*PanelInfo)->GetFocusedItem()->GetUserData());
 
     if (File)
     {
@@ -1804,7 +1805,7 @@ void TWinSCPFileSystem::RenameFile()
   {
     RequireCapability(fcRename);
 
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, PanelItem->GetUserData());
+    TRemoteFile * File = dyn_cast<TRemoteFile>(PanelItem->GetUserData());
     UnicodeString NewName = File->GetFileName();
     if (RenameFileDialog(File, NewName))
     {
@@ -1904,7 +1905,7 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 
   if (Focused != nullptr)
   {
-    TSessionData * SessionData = NB_STATIC_DOWNCAST(TSessionData, Focused->GetUserData());
+    TSessionData * SessionData = dyn_cast<TSessionData>(Focused->GetUserData());
     UnicodeString Name;
     if (SessionData != nullptr)
     {
@@ -2403,13 +2404,13 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
 {
   for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(Index));
+    TFarPanelItem * PanelItem = dyn_cast<TFarPanelItem>(PanelItems->GetObj(Index));
     DebugAssert(PanelItem);
     if (PanelItem->GetIsFile())
     {
       if (PanelItem->GetUserData() != nullptr)
       {
-        ProcessSession(NB_STATIC_DOWNCAST(TSessionData, PanelItem->GetUserData()), Param);
+        ProcessSession(dyn_cast<TSessionData>(PanelItem->GetUserData()), Param);
         PanelItem->SetSelected(false);
       }
       else
@@ -2464,7 +2465,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES 
     else
     {
       Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILE_CONFIRM : DELETE_FILE_CONFIRM).c_str(),
-        NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(0))->GetFileName().c_str());
+        dyn_cast<TFarPanelItem>(PanelItems->GetObj(0))->GetFileName().c_str());
     }
 
     if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
@@ -2521,7 +2522,7 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     if (PanelItems->GetCount() == 1)
     {
       Prompt = FORMAT(GetMsg(EXPORT_SESSION_PROMPT).c_str(),
-        NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(0))->GetFileName().c_str());
+        dyn_cast<TFarPanelItem>(PanelItems->GetObj(0))->GetFileName().c_str());
     }
     else
     {
@@ -2816,7 +2817,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
     TFarPanelItem * PanelItem;
     for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
-      PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(Index));
+      PanelItem = dyn_cast<TFarPanelItem>(PanelItems->GetObj(Index));
       bool AnyData = false;
       FileName = PanelItem->GetFileName();
       if (PanelItem->GetIsFile())
@@ -2903,7 +2904,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   TObject * Data = nullptr;
   for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {
-    PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(Index));
+    PanelItem = dyn_cast<TFarPanelItem>(PanelItems->GetObj(Index));
     DebugAssert(PanelItem);
     if ((!SelectedOnly || PanelItem->GetSelected()) &&
         !PanelItem->GetIsParentDirectory())
@@ -2911,7 +2912,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
       FileName = PanelItem->GetFileName();
       if (Side == osRemote)
       {
-        Data = NB_STATIC_DOWNCAST(TRemoteFile, PanelItem->GetUserData());
+        Data = dyn_cast<TRemoteFile>(PanelItem->GetUserData());
         DebugAssert(Data);
       }
       if (Side == osLocal)
@@ -2953,7 +2954,7 @@ void TWinSCPFileSystem::SaveSession()
   {
     GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrDirectory());
 
-    TSessionData * Data = NB_STATIC_DOWNCAST(TSessionData, StoredSessions->FindByName(GetSessionData()->GetName()));
+    TSessionData * Data = dyn_cast<TSessionData>(StoredSessions->FindByName(GetSessionData()->GetName()));
     if (Data)
     {
       bool Changed = false;
@@ -2976,7 +2977,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 {
   bool Result = false;
   DebugAssert(!FTerminal);
-  FTerminal = new TTerminal();
+  FTerminal = new TTerminal(OBJECT_CLASS_TTerminal);
   FTerminal->Init(Data, GetConfiguration());
   try
   {
@@ -3016,7 +3017,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
   }
   catch (Exception & E)
   {
-    EFatal * Fatal = NB_STATIC_DOWNCAST(EFatal, &E);
+    EFatal * Fatal = dyn_cast<EFatal>(&E);
     if ((Fatal == nullptr) || !Fatal->GetReopenQueried())
     {
       FTerminal->ShowExtendedException(&E);
@@ -3415,9 +3416,9 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       TObjectList * PanelItems = (*GetPanelInfo())->GetItems();
       for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
       {
-        if ((NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(Index)))->GetFileName() == AFileName)
+        if ((dyn_cast<TFarPanelItem>(PanelItems->GetObj(Index)))->GetFileName() == AFileName)
         {
-          PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, PanelItems->GetObj(Index));
+          PanelItem = dyn_cast<TFarPanelItem>(PanelItems->GetObj(Index));
           break;
         }
       }
@@ -3428,7 +3429,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       DebugAssert(FPanelItems->GetCount() == FFileList->GetCount());
       intptr_t Index = FFileList->IndexOf(AFileName.c_str());
       DebugAssert(Index >= 0);
-      PanelItem = NB_STATIC_DOWNCAST(TFarPanelItem, FPanelItems->GetItem(Index));
+      PanelItem = dyn_cast<TFarPanelItem>(FPanelItems->GetItem(Index));
     }
 
     DebugAssert(PanelItem && PanelItem->GetFileName() ==
@@ -4026,7 +4027,7 @@ void TWinSCPFileSystem::MultipleEdit()
     if ((FileList.get() != nullptr) && (FileList->GetCount() == 1))
     {
       MultipleEdit(FTerminal->GetCurrDirectory(), FileList->GetString(0),
-        NB_STATIC_DOWNCAST(TRemoteFile, FileList->GetObj(0)));
+        dyn_cast<TRemoteFile>(FileList->GetObj(0)));
     }
   }
 }
@@ -4228,6 +4229,4 @@ UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString & AFileName
     reinterpret_cast<uint8_t *>(const_cast<char *>(Result.c_str())));
   return BytesToHex(Result);
 }
-
-NB_IMPLEMENT_CLASS(TWinSCPFileSystem, NB_GET_CLASS_INFO(TCustomFarFileSystem), nullptr)
 

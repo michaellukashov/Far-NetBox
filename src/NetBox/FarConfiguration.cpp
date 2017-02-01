@@ -25,7 +25,7 @@ enum NetBoxConfirmationsSettings
 };
 
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
-  TGUIConfiguration(),
+  TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin),
   FBookmarks(new TBookmarks()),
   FFarConfirmations(-1)
@@ -319,8 +319,6 @@ TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
 
 TFarConfiguration * GetFarConfiguration()
 {
-  return NB_STATIC_DOWNCAST(TFarConfiguration, GetConfiguration());
+  return dyn_cast<TFarConfiguration>(GetConfiguration());
 }
-
-NB_IMPLEMENT_CLASS(TFarConfiguration, NB_GET_CLASS_INFO(TGUIConfiguration), nullptr)
 

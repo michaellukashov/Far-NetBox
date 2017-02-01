@@ -20,7 +20,7 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 }
 
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :
-  TCustomFarPlugin(HInst),
+  TCustomFarPlugin(OBJECT_CLASS_TWinSCPPlugin, HInst),
   FInitialized(false)
 {
 }
@@ -196,7 +196,7 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo
   {
     for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
-      TWinSCPFileSystem * FileSystem = NB_STATIC_DOWNCAST(TWinSCPFileSystem, FOpenedPlugins->GetObj(Index));
+      TWinSCPFileSystem * FileSystem = dyn_cast<TWinSCPFileSystem>(FOpenedPlugins->GetObj(Index));
       FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
     }
   }
@@ -268,7 +268,8 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
 
         TWinSCPFileSystem * PanelSystem;
         bool Another = !(Flags & FOSF_ACTIVE);
-        PanelSystem = NB_STATIC_DOWNCAST(TWinSCPFileSystem, GetPanelFileSystem(Another));
+        PanelSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem(Another));
+
         if (PanelSystem && PanelSystem->Connected() &&
             PanelSystem->GetTerminal()->GetSessionData()->GenerateSessionUrl(sufComplete) == CommandLine)
         {
@@ -376,8 +377,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   std::unique_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
   TWinSCPFileSystem * FileSystem;
   TWinSCPFileSystem * AnotherFileSystem;
-  FileSystem = NB_STATIC_DOWNCAST(TWinSCPFileSystem, GetPanelFileSystem());
-  AnotherFileSystem = NB_STATIC_DOWNCAST(TWinSCPFileSystem, GetPanelFileSystem(true));
+  FileSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
+  AnotherFileSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem(true));
   bool FSConnected = (FileSystem != nullptr) && FileSystem->Connected();
   bool AnotherFSConnected = (AnotherFileSystem != nullptr) && AnotherFileSystem->Connected();
   bool FSVisible = FSConnected && FromFileSystem;
@@ -530,16 +531,15 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
-    if (NB_STATIC_DOWNCAST(EAbort, E) == nullptr)
+    if (isa<EAbort>(E))
     {
       TQueryType Type;
-      Type = NB_STATIC_DOWNCAST(ESshTerminate, E) != nullptr ?
-        qtInformation : qtError;
+      Type = isa<ESshTerminate>(E) ? qtInformation : qtError;
 
       TStrings * MoreMessages = nullptr;
-      if (NB_STATIC_DOWNCAST(ExtException, E) != nullptr)
+      if (isa<ExtException>(E))
       {
-        MoreMessages = NB_STATIC_DOWNCAST(ExtException, E)->GetMoreMessages();
+        MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
       }
       UnicodeString Message = TranslateExceptionMessage(E);
       MoreMessageDialog(Message, MoreMessages, Type, qaOK);
@@ -549,7 +549,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 
 void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
-  if (((OpMode & OPM_FIND) == 0) || (NB_STATIC_DOWNCAST(EFatal, E) != nullptr))
+  if (((OpMode & OPM_FIND) == 0) || isa<EFatal>(E))
   {
     ShowExtendedException(E);
   }
@@ -557,10 +557,16 @@ void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
 
 struct TFarMessageData : public TObject
 {
-NB_DECLARE_CLASS(TFarMessageData)
 NB_DISABLE_COPY(TFarMessageData)
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFarMessageData;
+  }
+public:
   TFarMessageData() :
+    TObject(OBJECT_CLASS_TFarMessageData),
     Params(nullptr),
     ButtonCount(0)
   {
@@ -575,7 +581,7 @@ public:
 void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
 {
   DebugAssert(Token);
-  TFarMessageData & Data = *NB_STATIC_DOWNCAST(TFarMessageData, Token);
+  TFarMessageData & Data = *dyn_cast<TFarMessageData>(Token);
 
   DebugAssert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
 
@@ -854,7 +860,4 @@ void TWinSCPPlugin::CoreInitializeOnce()
     FInitialized = true;
   }
 }
-
-NB_IMPLEMENT_CLASS(TWinSCPPlugin, NB_GET_CLASS_INFO(TCustomFarPlugin), nullptr)
-NB_IMPLEMENT_CLASS(TFarMessageData, NB_GET_CLASS_INFO(TObject), nullptr)
 

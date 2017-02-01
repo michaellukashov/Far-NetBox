@@ -253,7 +253,12 @@ class TTerminalItem : public TSignalThread
 friend class TQueueItem;
 friend class TBackgroundTerminal;
 NB_DISABLE_COPY(TTerminalItem)
-NB_DECLARE_CLASS(TTerminalItem)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TTerminalItem;
+  }
 public:
   explicit TTerminalItem(TTerminalQueue * Queue);
   virtual ~TTerminalItem();
@@ -298,7 +303,7 @@ protected:
 
 int TSimpleThread::ThreadProc(void * Thread)
 {
-  TSimpleThread * SimpleThread = NB_STATIC_DOWNCAST(TSimpleThread, Thread);
+  TSimpleThread * SimpleThread = dyn_cast<TSimpleThread>(Thread);
   DebugAssert(SimpleThread != nullptr);
   try
   {
@@ -314,7 +319,8 @@ int TSimpleThread::ThreadProc(void * Thread)
   return 0;
 }
 
-TSimpleThread::TSimpleThread() :
+TSimpleThread::TSimpleThread(TObjectClassId Kind) :
+  TObject(Kind),
   FThread(nullptr),
   FThreadId(0),
   FFinished(true)
@@ -369,8 +375,8 @@ void TSimpleThread::WaitFor(uint32_t Milliseconds)
 //---------------------------------------------------------------------------
 // TSignalThread
 //---------------------------------------------------------------------------
-TSignalThread::TSignalThread() :
-  TSimpleThread(),
+TSignalThread::TSignalThread(TObjectClassId Kind) :
+  TSimpleThread(Kind),
   FEvent(nullptr),
   FTerminated(true)
 {
@@ -456,7 +462,7 @@ void TSignalThread::Terminate()
 //---------------------------------------------------------------------------
 TTerminalQueue::TTerminalQueue(TTerminal * ATerminal,
   TConfiguration * AConfiguration) :
-  TSignalThread(),
+  TSignalThread(OBJECT_CLASS_TTerminalQueue),
   FOnQueryUser(nullptr),
   FOnPromptUser(nullptr),
   FOnShowExtendedException(nullptr),
@@ -516,7 +522,7 @@ TTerminalQueue::~TTerminalQueue()
 
     while (FTerminals->GetCount() > 0)
     {
-      TTerminalItem * TerminalItem = NB_STATIC_DOWNCAST(TTerminalItem, FTerminals->GetItem(0));
+      TTerminalItem * TerminalItem = dyn_cast<TTerminalItem>(FTerminals->GetItem(0));
       FTerminals->Delete(0);
       TerminalItem->Terminate();
       TerminalItem->WaitFor();
@@ -695,12 +701,12 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
 //---------------------------------------------------------------------------
 TQueueItem * TTerminalQueue::GetItem(TList * List, intptr_t Index)
 {
-  return NB_STATIC_DOWNCAST(TQueueItem, List->GetItem(Index));
+  return dyn_cast<TQueueItem>(List->GetItem(Index));
 }
 
 TQueueItem * TTerminalQueue::GetItem(intptr_t Index)
 {
-  return NB_STATIC_DOWNCAST(TQueueItem, FItems->GetItem(Index));
+  return dyn_cast<TQueueItem>(FItems->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::UpdateStatusForList(
@@ -1027,7 +1033,7 @@ void TTerminalQueue::Idle()
       {
         // take the last free terminal, because TerminalFree() puts it to the
         // front, this ensures we cycle thru all free terminals
-        TerminalItem = NB_STATIC_DOWNCAST(TTerminalItem, FTerminals->GetItem(FFreeTerminals - 1));
+        TerminalItem = dyn_cast<TTerminalItem>(FTerminals->GetItem(FFreeTerminals - 1));
         FTerminals->Move(FFreeTerminals - 1, FTerminals->GetCount() - 1);
         FFreeTerminals--;
       }
@@ -1098,7 +1104,7 @@ void TTerminalQueue::ProcessEvent()
           }
           else if (FFreeTerminals > 0)
           {
-            TerminalItem = NB_STATIC_DOWNCAST(TTerminalItem, FTerminals->GetItem(0));
+            TerminalItem = dyn_cast<TTerminalItem>(FTerminals->GetItem(0));
             FTerminals->Move(0, FTerminals->GetCount() - 1);
             FFreeTerminals--;
           }
@@ -1201,11 +1207,17 @@ bool TTerminalQueue::GetIsEmpty() const
   return (FItems->GetCount() == 0);
 }
 
-// TBackgroundItem
+// TBackgroundTerminal
 
 class TBackgroundTerminal : public TSecondaryTerminal
 {
 friend class TTerminalItem;
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
+  }
 public:
   explicit TBackgroundTerminal(TTerminal * MainTerminal);
   virtual ~TBackgroundTerminal() {}
@@ -1221,7 +1233,7 @@ private:
 };
 
 TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal) :
-  TSecondaryTerminal(MainTerminal),
+  TSecondaryTerminal(OBJECT_CLASS_TBackgroundTerminal, MainTerminal),
   FItem(nullptr)
 {
 }
@@ -1252,7 +1264,7 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
 // TTerminalItem
 
 TTerminalItem::TTerminalItem(TTerminalQueue * Queue) :
-  TSignalThread(), FQueue(Queue), FTerminal(nullptr), FItem(nullptr),
+  TSignalThread(OBJECT_CLASS_TTerminalItem), FQueue(Queue), FTerminal(nullptr), FItem(nullptr),
   FUserAction(nullptr), FCancel(false), FPause(false)
 {
 }
@@ -1639,6 +1651,7 @@ bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus)
 // TQueueItem
 
 TQueueItem::TQueueItem() :
+  TObject(OBJECT_CLASS_TQueueItem),
   FStatus(qsPending), FTerminalItem(nullptr), FProgressData(nullptr),
   FInfo(new TInfo()),
   FQueue(nullptr), FCompleteEvent(INVALID_HANDLE_VALUE),
@@ -2002,7 +2015,7 @@ TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index) const
 
 TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index)
 {
-  return NB_STATIC_DOWNCAST(TQueueItemProxy, FList->GetItem(Index));
+  return dyn_cast<TQueueItemProxy>(FList->GetItem(Index));
 }
 
 TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
@@ -2022,7 +2035,7 @@ TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
 // TLocatedQueueItem
 
 TLocatedQueueItem::TLocatedQueueItem(TTerminal * Terminal) :
-  TQueueItem()
+  TQueueItem(OBJECT_CLASS_TLocatedQueueItem)
 {
   DebugAssert(Terminal != nullptr);
   FCurrentDir = Terminal->GetCurrDirectory();
@@ -2057,7 +2070,7 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   {
     FFilesToCopy->AddObject(AFilesToCopy->GetString(Index),
       ((AFilesToCopy->GetObj(Index) == nullptr) || (Side == osLocal)) ? nullptr :
-        NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index))->Duplicate());
+        dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index))->Duplicate());
   }
 
   FTargetDir = TargetDir;
@@ -2195,7 +2208,7 @@ void TDownloadQueueItem::DoExecute(TTerminal * Terminal)
 // TTerminalThread
 
 TTerminalThread::TTerminalThread(TTerminal * Terminal) :
-  TSignalThread(), FTerminal(Terminal),
+  TSignalThread(OBJECT_CLASS_TTerminalThread), FTerminal(Terminal),
   FOnInformation(nullptr),
   FOnQueryUser(nullptr),
   FOnPromptUser(nullptr),
@@ -2705,10 +2718,4 @@ void TTerminalThread::TerminalReadDirectoryProgress(
 
   Cancel = Action.Cancel;
 }
-
-NB_IMPLEMENT_CLASS(TSimpleThread, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TQueueItem, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TQueueItemProxy, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TSignalThread, NB_GET_CLASS_INFO(TSimpleThread), nullptr)
-NB_IMPLEMENT_CLASS(TTerminalItem, NB_GET_CLASS_INFO(TSignalThread), nullptr)
 
