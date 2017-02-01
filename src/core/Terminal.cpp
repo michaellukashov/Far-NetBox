@@ -2435,11 +2435,11 @@ uintptr_t TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
   // from within OnShowExtendedException handler
   DebugAssert(FCallbackGuard == nullptr);
   uintptr_t Result = 0;
-  if (E && (dyn_cast<EFatal>(E) != nullptr))
+  if (E && isa<EFatal>(E))
   {
     FatalError(E, Msg, HelpKeyword);
   }
-  else if (E && (dyn_cast<EAbort>(E) != nullptr))
+  else if (E && isa<EAbort>(E))
   {
     // resent EAbort exception
     Abort();
@@ -2842,7 +2842,7 @@ void TTerminal::RollbackAction(TSessionAction & Action,
   // and we do not want to record skipped actions.
   // But ESkipFile with "cancel" is abort and we want to record that.
   // Note that TSCPFileSystem modifies the logic of RollbackAction little bit.
-  if ((dyn_cast<ESkipFile>(E) != nullptr) &&
+  if (isa<ESkipFile>(E) &&
       ((OperationProgress == nullptr) ||
        (OperationProgress->Cancel == csContinue)))
   {
@@ -4613,7 +4613,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
     {
       RollbackAction(*Action, nullptr, &E);
     }
-    if (GetExceptionOnFail() || (dyn_cast<EFatal>(&E) != nullptr))
+    if (GetExceptionOnFail() || isa<EFatal>(&E))
     {
       throw;
     }
