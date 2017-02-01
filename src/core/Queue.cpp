@@ -1207,7 +1207,7 @@ bool TTerminalQueue::GetIsEmpty() const
   return (FItems->GetCount() == 0);
 }
 
-// TBackgroundItem
+// TBackgroundTerminal
 
 class TBackgroundTerminal : public TSecondaryTerminal
 {
