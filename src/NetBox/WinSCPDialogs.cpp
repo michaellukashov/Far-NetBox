@@ -8258,6 +8258,8 @@ protected:
 
 private:
   void OperationButtonClick(TFarButton * Sender, bool & Close);
+  TFarList * GetQueueItems() const { return QueueListBox->GetItems(); }
+  TFarList * GetQueueItems() { return QueueListBox->GetItems(); }
 
 private:
   TTerminalQueueStatus * FStatus;
@@ -8346,10 +8348,10 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
 void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   bool & /*Close*/)
 {
-  if (QueueListBox->GetItems()->GetSelected() != NPOS)
+  if (GetQueueItems()->GetSelected() != NPOS)
   {
     TQueueItemProxy * QueueItem = dyn_cast<TQueueItemProxy>(
-      QueueListBox->GetItems()->GetObj(QueueListBox->GetItems()->GetSelected()));
+      GetQueueItems()->GetObj(GetQueueItems()->GetSelected()));
 
     if (Sender == ExecuteButton)
     {
@@ -8436,10 +8438,10 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 void TQueueDialog::UpdateControls()
 {
   TQueueItemProxy * QueueItem = nullptr;
-  if (QueueListBox->GetItems()->GetSelected() >= 0)
+  if (GetQueueItems()->GetSelected() >= 0)
   {
     QueueItem = dyn_cast<TQueueItemProxy>(
-      QueueListBox->GetItems()->GetObj(QueueListBox->GetItems()->GetSelected()));
+      GetQueueItems()->GetObj(GetQueueItems()->GetSelected()));
   }
 
   if ((QueueItem != nullptr) && (QueueItem->GetStatus() == TQueueItem::qsProcessing))
@@ -8525,16 +8527,16 @@ void TQueueDialog::Change()
 
 void TQueueDialog::RefreshQueue()
 {
-  if (QueueListBox->GetItems()->GetCount() > 0)
+  if (GetQueueItems()->GetCount() > 0)
   {
     bool Change = false;
-    intptr_t TopIndex = QueueListBox->GetItems()->GetTopIndex();
+    intptr_t TopIndex = GetQueueItems()->GetTopIndex();
     intptr_t Index = TopIndex;
 
     intptr_t ILine = 0;
     while ((Index > ILine) &&
-           (QueueListBox->GetItems()->GetObj(Index) ==
-            QueueListBox->GetItems()->GetObj(Index - ILine - 1)))
+           (GetQueueItems()->GetObj(Index) ==
+            GetQueueItems()->GetObj(Index - ILine - 1)))
     {
       ILine++;
     }
@@ -8542,11 +8544,11 @@ void TQueueDialog::RefreshQueue()
     TQueueItemProxy * PrevQueueItem = nullptr;
     TQueueItemProxy * QueueItem = nullptr;
     UnicodeString Line;
-    while ((Index < QueueListBox->GetItems()->GetCount()) &&
+    while ((Index < GetQueueItems()->GetCount()) &&
            (Index < TopIndex + QueueListBox->GetHeight()))
     {
       QueueItem = dyn_cast<TQueueItemProxy>(
-        QueueListBox->GetItems()->GetObj(Index));
+        GetQueueItems()->GetObj(Index));
       DebugAssert(QueueItem != nullptr);
       if ((PrevQueueItem != nullptr) && (QueueItem != PrevQueueItem))
       {
@@ -8557,10 +8559,10 @@ void TQueueDialog::RefreshQueue()
           !QueueItem->GetProcessingUserAction())
       {
         FillQueueItemLine(Line, QueueItem, ILine);
-        if (QueueListBox->GetItems()->GetString(Index) != Line)
+        if (GetQueueItems()->GetString(Index) != Line)
         {
           Change = true;
-          QueueListBox->GetItems()->SetString(Index, Line);
+          GetQueueItems()->SetString(Index, Line);
         }
       }
 
