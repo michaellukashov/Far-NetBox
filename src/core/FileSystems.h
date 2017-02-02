@@ -50,7 +50,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TSinkFileParams;
   }
 public:
-  TSinkFileParams() : TObject(OBJECT_CLASS_TSinkFileParams) {}
+  TSinkFileParams() : TObject(OBJECT_CLASS_TSinkFileParams), CopyParam(nullptr), OperationProgress(nullptr), Params(0), Flags(0), Skipped(false) {}
   UnicodeString TargetDir;
   const TCopyParamType * CopyParam;
   TFileOperationProgressType * OperationProgress;
