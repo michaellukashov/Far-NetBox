@@ -2025,6 +2025,7 @@ TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
   for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
   {
     TQueueItemProxy * Item = GetItem(Index);
+    DebugAssert(Item);
     if (Item->FQueueItem == QueueItem)
     {
       return Item;
