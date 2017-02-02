@@ -598,7 +598,6 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
       !Storage->OpenSubKey("Banners", false) ||
       !Storage->ValueExists(SessionKey) ||
       (Storage->ReadString(SessionKey, L"") != BannerHash(Banner));
-    return Result;
   }
   __finally
   {

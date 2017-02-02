@@ -9,22 +9,22 @@
 #include "HelpCore.h"
 #include "rtlconsts.h"
 
-static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(new TCriticalSection());
-typedef rde::set<UnicodeString> TIgnoredExceptions;
-static TIgnoredExceptions IgnoredExceptions;
+//static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(new TCriticalSection());
+//typedef rde::set<UnicodeString> TIgnoredExceptions;
+//static TIgnoredExceptions IgnoredExceptions;
 
 static UnicodeString NormalizeClassName(const UnicodeString & ClassName)
 {
   return ReplaceStr(ClassName, L".", L"::").LowerCase();
 }
 
-void IgnoreException(const std::type_info & ExceptionType)
-{
-  TGuard Guard(*IgnoredExceptionsCriticalSection.get());
-  // We should better use type_index as a key, instead of a class name,
-  // but type_index is not available in 32-bit version of STL in XE6.
-  IgnoredExceptions.insert(NormalizeClassName(UnicodeString(AnsiString(ExceptionType.name()))));
-}
+//void IgnoreException(const std::type_info & ExceptionType)
+//{
+//  TGuard Guard(*IgnoredExceptionsCriticalSection.get());
+//  // We should better use type_index as a key, instead of a class name,
+//  // but type_index is not available in 32-bit version of STL in XE6.
+//  IgnoredExceptions.insert(NormalizeClassName(UnicodeString(AnsiString(ExceptionType.name()))));
+//}
 
 static bool WellKnownException(
   const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)
@@ -37,12 +37,12 @@ static bool WellKnownException(
   bool Result = true;
   bool IgnoreException = false;
 
-  if (!IgnoredExceptions.empty())
-  {
-    TGuard Guard(*IgnoredExceptionsCriticalSection.get());
-    UnicodeString ClassName = ""; // NormalizeClassName(E->QualifiedClassName());
-    IgnoreException = (IgnoredExceptions.find(ClassName) != IgnoredExceptions.end());
-  }
+//  if (!IgnoredExceptions.empty())
+//  {
+//    TGuard Guard(*IgnoredExceptionsCriticalSection.get());
+//    UnicodeString ClassName = ""; // NormalizeClassName(E->QualifiedClassName());
+//    IgnoreException = (IgnoredExceptions.find(ClassName) != IgnoredExceptions.end());
+//  }
 
   if (IgnoreException)
   {

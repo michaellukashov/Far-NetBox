@@ -746,7 +746,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TCustomCommandParams;
   }
 public:
-  TCustomCommandParams() : TObject(OBJECT_CLASS_TCustomCommandParams) {}
+  TCustomCommandParams() : TObject(OBJECT_CLASS_TCustomCommandParams), Params(0) {}
   UnicodeString Command;
   intptr_t Params;
   TCaptureOutputEvent OutputEvent;
@@ -770,7 +770,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TCalculateSizeParams;
   }
 public:
-  TCalculateSizeParams() : TObject(OBJECT_CLASS_TCalculateSizeParams) {}
+  TCalculateSizeParams() : TObject(OBJECT_CLASS_TCalculateSizeParams), Size(0), Params(0), CopyParam(nullptr), Stats(nullptr), AllowDirs(false), Result(false) {}
   int64_t Size;
   intptr_t Params;
   const TCopyParamType * CopyParam;
@@ -790,7 +790,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TMakeLocalFileListParams;
   }
 public:
-  TMakeLocalFileListParams() : TObject(OBJECT_CLASS_TMakeLocalFileListParams) {}
+  TMakeLocalFileListParams() : TObject(OBJECT_CLASS_TMakeLocalFileListParams), FileList(nullptr), FileTimes(nullptr), IncludeDirs(false), Recursive(false) {}
   TStrings * FileList;
   TDateTimes * FileTimes;
   bool IncludeDirs;

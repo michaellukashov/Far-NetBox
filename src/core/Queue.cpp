@@ -1650,8 +1650,8 @@ bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus)
 
 // TQueueItem
 
-TQueueItem::TQueueItem() :
-  TObject(OBJECT_CLASS_TQueueItem),
+TQueueItem::TQueueItem(TObjectClassId Kind) :
+  TObject(Kind),
   FStatus(qsPending), FTerminalItem(nullptr), FProgressData(nullptr),
   FInfo(new TInfo()),
   FQueue(nullptr), FCompleteEvent(INVALID_HANDLE_VALUE),
@@ -1802,6 +1802,7 @@ uintptr_t TQueueItem::GetCPSLimit() const
 
 TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
   TQueueItem * QueueItem) :
+  TObject(OBJECT_CLASS_TQueueItemProxy),
   FProgressData(new TFileOperationProgressType()), FStatus(TQueueItem::qsPending), FQueue(Queue), FQueueItem(QueueItem),
   FQueueStatus(nullptr), FInfo(new TQueueItem::TInfo()),
   FProcessingUserAction(false), FUserData(nullptr)
@@ -2024,6 +2025,7 @@ TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
   for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
   {
     TQueueItemProxy * Item = GetItem(Index);
+    DebugAssert(Item);
     if (Item->FQueueItem == QueueItem)
     {
       return Item;
@@ -2034,8 +2036,8 @@ TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
 
 // TLocatedQueueItem
 
-TLocatedQueueItem::TLocatedQueueItem(TTerminal * Terminal) :
-  TQueueItem(OBJECT_CLASS_TLocatedQueueItem)
+TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, TTerminal * Terminal) :
+  TQueueItem(Kind)
 {
   DebugAssert(Terminal != nullptr);
   FCurrentDir = Terminal->GetCurrDirectory();
@@ -2055,11 +2057,11 @@ void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 
 // TTransferQueueItem
 
-TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
+TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * Terminal,
   const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
   bool SingleFile) :
-  TLocatedQueueItem(Terminal), FFilesToCopy(new TStringList()), FCopyParam(nullptr)
+  TLocatedQueueItem(Kind, Terminal), FFilesToCopy(new TStringList()), FCopyParam(nullptr)
 {
   FInfo->Operation = (Params & cpDelete) ? foMove : foCopy;
   FInfo->Side = Side;
@@ -2102,7 +2104,7 @@ uintptr_t TTransferQueueItem::DefaultCPSLimit() const
 TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile) :
-  TTransferQueueItem(Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile)
+  TTransferQueueItem(OBJECT_CLASS_TUploadQueueItem, Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile)
 {
   if (AFilesToCopy->GetCount() > 1)
   {
@@ -2155,7 +2157,7 @@ void TUploadQueueItem::DoExecute(TTerminal * Terminal)
 TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile) :
-  TTransferQueueItem(Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile)
+  TTransferQueueItem(OBJECT_CLASS_TDownloadQueueItem, Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile)
 {
   if (AFilesToCopy->GetCount() > 1)
   {

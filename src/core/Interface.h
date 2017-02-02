@@ -34,8 +34,8 @@ TOptions * GetGlobalOptions();
 
 void ShowExtendedException(Exception * E);
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
-void IgnoreException(const std::type_info & ExceptionType);
-UnicodeString GetExceptionDebugInfo();
+//void IgnoreException(const std::type_info & ExceptionType);
+//UnicodeString GetExceptionDebugInfo();
 
 UnicodeString GetCompanyRegistryKey();
 UnicodeString GetRegistryKey();
