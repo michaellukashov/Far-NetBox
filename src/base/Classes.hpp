@@ -129,19 +129,23 @@ struct TRect
 class TPersistent : public TObject
 {
 public:
-  static bool classof(const TObject * Obj)
+  static inline bool classof(const TObject * Obj)
   {
-    TObjectClassId Kind = Obj->GetKind();
-    return
-      Kind == OBJECT_CLASS_TStrings ||
-      Kind == OBJECT_CLASS_TNamedObject ||
-      Kind == OBJECT_CLASS_TSessionData ||
-      Kind == OBJECT_CLASS_TBookmarkList ||
-      Kind == OBJECT_CLASS_TBookmark ||
-      Kind == OBJECT_CLASS_TRemoteFile ||
-      Kind == OBJECT_CLASS_TRemoteDirectoryFile ||
-      Kind == OBJECT_CLASS_TRemoteDirectory ||
-      Kind == OBJECT_CLASS_TRemoteParentDirectory;
+    switch(Obj->GetKind()) {
+      case OBJECT_CLASS_TStrings:
+      case OBJECT_CLASS_TNamedObject:
+      case OBJECT_CLASS_TSessionData:
+      case OBJECT_CLASS_TBookmarkList:
+      case OBJECT_CLASS_TBookmark:
+      case OBJECT_CLASS_TRemoteFile:
+      case OBJECT_CLASS_TRemoteDirectoryFile:
+      case OBJECT_CLASS_TRemoteDirectory:
+      case OBJECT_CLASS_TRemoteParentDirectory:
+        return true;
+    default:
+        return false;
+    }
+    return false;
   }
 public:
   TPersistent() : TObject(OBJECT_CLASS_TPersistent) {}
