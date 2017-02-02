@@ -216,10 +216,12 @@ public:
   {
     return
       Obj->GetKind() == OBJECT_CLASS_TQueueItem ||
-      Obj->GetKind() == OBJECT_CLASS_TLocatedQueueItem;
+      Obj->GetKind() == OBJECT_CLASS_TLocatedQueueItem ||
+      Obj->GetKind() == OBJECT_CLASS_TTransferQueueItem ||
+      Obj->GetKind() == OBJECT_CLASS_TUploadQueueItem ||
+      Obj->GetKind() == OBJECT_CLASS_TDownloadQueueItem;
   }
 public:
-  explicit TQueueItem(TObjectClassId Kind) : TObject(Kind) {}
 
   enum TStatus
   {
@@ -262,7 +264,7 @@ protected:
   uintptr_t FCPSLimit;
   TDateTime FDoneAt;
 
-  explicit TQueueItem();
+  explicit TQueueItem(TObjectClassId Kind);
   virtual ~TQueueItem();
 
 public:
@@ -296,7 +298,6 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TQueueItemProxy;
   }
 public:
-  TQueueItemProxy() : TObject(OBJECT_CLASS_TQueueItemProxy) {}
   bool Update();
   bool ProcessUserAction();
   bool Move(bool Sooner);
@@ -391,10 +392,13 @@ public:
   static inline bool classof(const TObject * Obj)
   {
     return
-      Obj->GetKind() == OBJECT_CLASS_TLocatedQueueItem;
+      Obj->GetKind() == OBJECT_CLASS_TLocatedQueueItem ||
+      Obj->GetKind() == OBJECT_CLASS_TTransferQueueItem ||
+      Obj->GetKind() == OBJECT_CLASS_TUploadQueueItem ||
+      Obj->GetKind() == OBJECT_CLASS_TDownloadQueueItem;
   }
 protected:
-  explicit TLocatedQueueItem(TTerminal * Terminal);
+  explicit TLocatedQueueItem(TObjectClassId Kind, TTerminal * Terminal);
   virtual ~TLocatedQueueItem() {}
 
   virtual void DoExecute(TTerminal * Terminal);
@@ -408,7 +412,15 @@ class TTransferQueueItem : public TLocatedQueueItem
 {
 NB_DISABLE_COPY(TTransferQueueItem)
 public:
-  explicit TTransferQueueItem(TTerminal * Terminal,
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TTransferQueueItem ||
+      Obj->GetKind() == OBJECT_CLASS_TUploadQueueItem ||
+      Obj->GetKind() == OBJECT_CLASS_TDownloadQueueItem;
+  }
+public:
+  explicit TTransferQueueItem(TObjectClassId Kind, TTerminal * Terminal,
     const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
     bool SingleFile);
@@ -426,6 +438,12 @@ protected:
 class TUploadQueueItem : public TTransferQueueItem
 {
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TUploadQueueItem;
+  }
+public:
   explicit TUploadQueueItem(TTerminal * Terminal,
     const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile);
@@ -437,6 +455,12 @@ protected:
 
 class TDownloadQueueItem : public TTransferQueueItem
 {
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TDownloadQueueItem;
+  }
 public:
   explicit TDownloadQueueItem(TTerminal * Terminal,
     const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
