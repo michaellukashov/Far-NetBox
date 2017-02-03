@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include <BaseDefs.hpp>
 #include <Classes.hpp>
 #include "Configuration.h"
 #include "SessionData.h"
