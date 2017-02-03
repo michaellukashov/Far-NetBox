@@ -19,6 +19,15 @@
 
 namespace nb {
   using fastdelegate::bind;
+  using fastdelegate::FastDelegate0;
+  using fastdelegate::FastDelegate1;
+  using fastdelegate::FastDelegate2;
+  using fastdelegate::FastDelegate3;
+  using fastdelegate::FastDelegate4;
+  using fastdelegate::FastDelegate5;
+  using fastdelegate::FastDelegate6;
+  using fastdelegate::FastDelegate7;
+  using fastdelegate::FastDelegate8;
 } // namespace nb
 
 typedef HANDLE THandle;
@@ -41,9 +50,9 @@ extern const intptr_t DateDelta;
 extern const intptr_t UnixDateDelta;
 
 class TObject;
-DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 
-DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /*Sender*/);
+typedef nb::FastDelegate0<void> TThreadMethod;
+typedef nb::FastDelegate1<void, TObject * /*Sender*/> TNotifyEvent;
 
 void Abort();
 void Error(intptr_t Id, intptr_t ErrorId);
