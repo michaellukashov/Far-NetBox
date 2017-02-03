@@ -328,7 +328,7 @@ void CTransferSocket::SetBuffers()
     value = 0;
     len = sizeof(value);
     GetSockOpt(SO_RCVBUF, &value, &len);
-    int rcvbuf = 4 * 1024 * 1024;
+    DWORD rcvbuf = 4 * 1024 * 1024;
     if (value < rcvbuf)
     {
       value = rcvbuf;
