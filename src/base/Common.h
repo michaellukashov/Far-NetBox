@@ -172,9 +172,9 @@ UnicodeString ChangeUrlProtocol(const UnicodeString & S, const UnicodeString & P
 void LoadScriptFromFile(const UnicodeString & FileName, TStrings * Lines);
 UnicodeString StripEllipsis(const UnicodeString & S);
 
-DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
+typedef nb::FastDelegate3<void,
   const UnicodeString & /*FileName*/, const TSearchRec & /*Rec*/, void * /*Param*/);
-bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec);
+bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec> TProcessLocalFileEvent;
 
 struct TSearchRecChecked : public TSearchRec
 {

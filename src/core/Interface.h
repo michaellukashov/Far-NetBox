@@ -67,8 +67,7 @@ struct TQueryButtonAlias : public TObject
 };
 
 // typedef void __fastcall (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
-DEFINE_CALLBACK_TYPE1(TQueryParamsTimerEvent, void,
-  intptr_t & /*Result*/);
+typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TQueryParamsTimerEvent;
 
 struct TQueryParams : public TObject
 {
@@ -123,14 +122,14 @@ bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
 //typedef void __fastcall (__closure *TFileFoundEvent)
 //  (TTerminal * Terminal, const UnicodeString FileName, const TRemoteFile * File,
 //   bool & Cancel);
-DEFINE_CALLBACK_TYPE4(TFileFoundEvent, void,
+typedef nb::FastDelegate4<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*FileName*/,
   const TRemoteFile * /*File*/,
-  bool & /*Cancel*/);
+  bool & /*Cancel*/> TFileFoundEvent;
 //typedef void __fastcall (__closure *TFindingFileEvent)
 //  (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
-DEFINE_CALLBACK_TYPE3(TFindingFileEvent, void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool & /*Cancel*/);
+typedef nb::FastDelegate3<void,
+  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool & /*Cancel*/> TFindingFileEvent;
 
 class TOperationVisualizer
 {

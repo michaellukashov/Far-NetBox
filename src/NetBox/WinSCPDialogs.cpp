@@ -5839,8 +5839,8 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
   return Result;
 }
 
-DEFINE_CALLBACK_TYPE3(TFeedFileSystemDataEvent, void,
-  TObject * /*Control*/, int /*Label*/, const UnicodeString & /*Value*/);
+typedef nb::FastDelegate3<void,
+  TObject * /*Control*/, int /*Label*/, const UnicodeString & /*Value*/> TFeedFileSystemDataEvent;
 
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog

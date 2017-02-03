@@ -765,8 +765,8 @@ struct TInputDialogData
 
 //typedef void (__closure *TInputDialogInitialize)
 //  (TObject * Sender, TInputDialogData * Data);
-DEFINE_CALLBACK_TYPE2(TInputDialogInitializeEvent, void,
-  TObject * /*Sender*/, TInputDialogData * /*Data*/);
+typedef nb::FastDelegate2<void,
+  TObject * /*Sender*/, TInputDialogData * /*Data*/> TInputDialogInitializeEvent;
 
 enum TQueryType
 {
