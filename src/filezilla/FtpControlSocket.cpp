@@ -3489,7 +3489,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         if (HandleSize(code, size))
         {
           DebugAssert(!pData->pFileSize);
-          pData->pFileSize=new _int64;
+          pData->pFileSize=static_cast<_int64*>(nb_calloc(1, sizeof(_int64)));
           *pData->pFileSize=size;
         }
       }
