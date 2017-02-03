@@ -43,9 +43,14 @@ class TBookmarkList : public TPersistent
 friend class TBookmarks;
 friend class TBookmark;
 NB_DISABLE_COPY(TBookmarkList)
-NB_DECLARE_CLASS(TBookmarkList)
 public:
-  TBookmarkList();
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TBookmarkList;
+  }
+public:
+  explicit TBookmarkList();
   virtual ~TBookmarkList();
 
   void Clear();
@@ -90,7 +95,12 @@ class TBookmark : public TPersistent
 {
 friend class TBookmarkList;
 NB_DISABLE_COPY(TBookmark)
-NB_DECLARE_CLASS(TBookmark)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TBookmark;
+  }
 public:
   TBookmark();
 

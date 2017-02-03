@@ -242,10 +242,12 @@ class TCustomCommandType;
 class TShortCuts;
 enum TCustomCommandsMode { ccmAdd, ccmEdit, ccmAdHoc };
 const int ccoDisableRemote = 0x01;
+
 //typedef void (__closure *TCustomCommandValidate)
 //  (const TCustomCommandType & Command);
-DEFINE_CALLBACK_TYPE1(TCustomCommandValidateEvent, void,
-  const TCustomCommandType & /*Command*/);
+typedef nb::FastDelegate1<void,
+  const TCustomCommandType & /*Command*/> TCustomCommandValidateEvent;
+
 bool DoCustomCommandDialog(TCustomCommandType & Command,
   const TCustomCommandList * CustomCommandList,
   TCustomCommandsMode Mode, int Options, TCustomCommandValidateEvent OnValidate,
@@ -272,19 +274,22 @@ const int cpGroup = 0x04;
 //typedef void (__closure *TCalculateSizeEvent)
 //  (TStrings * FileList, __int64 & Size, TCalculateSizeStats & Stats,
 //   bool & Close);
-DEFINE_CALLBACK_TYPE4(TCalculateSizeEvent, void,
+typedef nb::FastDelegate4<void,
   TStrings * /*FileList*/, int64_t & /*Size*/, TCalculateSizeStats & /*Stats*/,
-  bool & /*Close*/);
+  bool & /*Close*/> TCalculateSizeEvent;
 //typedef void (__closure *TCalculatedChecksumCallbackEvent)(
 //  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
-DEFINE_CALLBACK_TYPE3(TCalculatedChecksumCallbackEvent, void,
-  const UnicodeString & /*FileName*/, const UnicodeString & /*Alg*/, const UnicodeString & /*Hash*/);
+typedef nb::FastDelegate3<void,
+  const UnicodeString & /*FileName*/, const UnicodeString & /*Alg*/,
+  const UnicodeString & /*Hash*/> TCalculatedChecksumCallbackEvent;
 //typedef void (__closure *TCalculateChecksumEvent)
 //  (const UnicodeString & Alg, TStrings * FileList,
 //   TCalculatedChecksumCallbackEvent OnCalculatedChecksum, bool & Close);
-DEFINE_CALLBACK_TYPE4(TCalculateChecksumEvent, void,
+typedef nb::FastDelegate4<void,
   const UnicodeString & /*Alg*/, TStrings * /*FileList*/,
-  TCalculatedChecksumCallbackEvent /*OnCalculatedChecksum*/, bool & /*Close*/);
+  TCalculatedChecksumCallbackEvent /*OnCalculatedChecksum*/,
+  bool & /*Close*/> TCalculateChecksumEvent;
+
 bool DoPropertiesDialog(TStrings * FileList,
     const UnicodeString & Directory, const TRemoteTokenList * GroupList,
     const TRemoteTokenList * UserList, TStrings * ChecksumAlgs,
@@ -323,16 +328,19 @@ const int spMirror = 0x1000;
 const int soDoNotUsePresets =  0x01;
 const int soNoMinimize =       0x02;
 const int soAllowSelectedOnly = 0x04;
+
 //typedef void (__closure *TGetSynchronizeOptionsEvent)
 //  (int Params, TSynchronizeOptions & Options);
-DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
-  intptr_t /*Params*/, TSynchronizeOptions & /*Options*/);
+typedef nb::FastDelegate2<void,
+  intptr_t /*Params*/,
+  TSynchronizeOptions & /*Options*/> TGetSynchronizeOptionsEvent;
 //typedef void (__closure *TFeedSynchronizeError)
 //  (const UnicodeString & Message, TStrings * MoreMessages, TQueryType Type,
 //   const UnicodeString & HelpKeyword);
-DEFINE_CALLBACK_TYPE4(TFeedSynchronizeErrorEvent, void,
+typedef nb::FastDelegate4<void,
   const UnicodeString & /*Message*/, TStrings * /*MoreMessages*/, TQueryType /*Type*/,
-  const UnicodeString & /*HelpKeyword*/);
+  const UnicodeString & /*HelpKeyword*/> TFeedSynchronizeErrorEvent;
+
 bool DoSynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
   bool & SaveSettings, int Options, int CopyParamAttrs,
@@ -346,6 +354,7 @@ enum TSynchronizeMode { smRemote, smLocal, smBoth };
 const int fsoDisableTimestamp = 0x01;
 const int fsoDoNotUsePresets =  0x02;
 const int fsoAllowSelectedOnly = 0x04;
+
 bool DoFullSynchronizeDialog(TSynchronizeMode & Mode, intptr_t & Params,
   UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
   TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode,
@@ -355,8 +364,10 @@ bool DoFullSynchronizeDialog(TSynchronizeMode & Mode, intptr_t & Params,
 class TSynchronizeChecklist;
 //typedef void (__closure *TCustomCommandMenuEvent)
 //  (TAction * Action, TStrings * LocalFileList, TStrings * RemoteFileList);
-DEFINE_CALLBACK_TYPE3(TCustomCommandMenuEvent, void,
-  void * /*Action*/, TStrings * /*LocalFileList*/, TStrings * /*RemoteFileList*/);
+typedef nb::FastDelegate3<void,
+  void * /*Action*/, TStrings * /*LocalFileList*/,
+  TStrings * /*RemoteFileList*/> TCustomCommandMenuEvent;
+
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
   TSynchronizeMode Mode, intptr_t Params,
   const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
@@ -366,9 +377,9 @@ bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
 //typedef void (__closure *TFileClosedEvent)
 //  (TObject * Sender, bool Forced);
 #if 0
-DEFINE_CALLBACK_TYPE2(TFileClosedEvent, void,
+typedef nb::FastDelegate2(TFileClosedEvent, void,
   TObject * /*Sender* /, bool /*Forced*/);
-DEFINE_CALLBACK_TYPE2(TAnyModifiedEvent, void,
+typedef nb::FastDelegate2(TAnyModifiedEvent, void,
   TObject * /*Sender* /, bool & /*Modified*/);
 TForm * ShowEditorForm(const UnicodeString FileName, TCustomForm * ParentForm,
   TNotifyEvent OnFileChanged, TNotifyEvent OnFileReload, TFileClosedEvent OnClose,
@@ -389,8 +400,10 @@ struct TFileSystemInfo;
 struct TSessionInfo;
 //typedef void (__closure *TGetSpaceAvailable)
 //  (const UnicodeString Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
-DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
-  const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/, bool & /*Close*/);
+typedef nb::FastDelegate3<void,
+  const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
+  bool & /*Close*/> TGetSpaceAvailableEvent;
+
 void DoFileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
   const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable);
@@ -428,9 +441,11 @@ bool DoEditorPreferencesDialog(TEditorData * Editor,
 //typedef void (__closure *TFindEvent)
 //  (UnicodeString Directory, const TFileMasks & FileMask,
 //   TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
-DEFINE_CALLBACK_TYPE4(TFindEvent, void,
+typedef nb::FastDelegate4<void,
   const UnicodeString & /*Directory*/, const TFileMasks & /*FileMask*/,
-  TFileFoundEvent /*OnFileFound*/, TFindingFileEvent /*OnFindingFile*/);
+  TFileFoundEvent /*OnFileFound*/,
+  TFindingFileEvent /*OnFindingFile*/> TFindEvent;
+
 bool DoFileFindDialog(UnicodeString Directory,
   TFindEvent OnFind, UnicodeString & Path);
 

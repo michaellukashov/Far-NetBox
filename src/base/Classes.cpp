@@ -35,18 +35,8 @@ void ThrowNotImplemented(intptr_t ErrorId)
   Error(SNotImplemented, ErrorId);
 }
 
-bool TObject::IsKindOf(TObjectClassId ClassId) const
-{
-  DebugAssert(this != nullptr);
-
-  TClassInfo * thisInfo = this->GetClassInfo();
-  DebugAssert(thisInfo != nullptr);
-
-  const TClassInfo * classInfo = TClassInfo::FindClass(ClassId);
-  return thisInfo->IsKindOf(classInfo);
-}
-
-TPersistent::TPersistent()
+TPersistent::TPersistent(TObjectClassId Kind) :
+  TObject(Kind)
 {}
 
 TPersistent::~TPersistent()
@@ -80,7 +70,13 @@ void TPersistent::AssignError(const TPersistent * Source)
   throw Exception(L"Cannot assign");
 }
 
-TList::TList()
+TList::TList() :
+  TObject(OBJECT_CLASS_TList)
+{
+}
+
+TList::TList(TObjectClassId Kind) :
+  TObject(Kind)
 {
 }
 
@@ -276,6 +272,13 @@ void TList::Sort()
 }
 
 TObjectList::TObjectList() :
+  TList(OBJECT_CLASS_TObjectList),
+  FOwnsObjects(true)
+{
+}
+
+TObjectList::TObjectList(TObjectClassId Kind) :
+  TList(Kind),
   FOwnsObjects(true)
 {
 }
@@ -287,12 +290,12 @@ TObjectList::~TObjectList()
 
 TObject * TObjectList::operator [](intptr_t Index) const
 {
-  return static_cast<TObject *>(TList::operator[](Index));
+  return as_object(TList::operator[](Index));
 }
 
 TObject * TObjectList::GetObj(intptr_t Index) const
 {
-  return static_cast<TObject *>(TList::GetItem(Index));
+  return as_object(TList::GetItem(Index));
 }
 
 void TObjectList::SetItem(intptr_t Index, TObject * Value)
@@ -374,11 +377,22 @@ const intptr_t UnixDateDelta = 25569;
 static const int MemoryDelta = 0x2000;
 
 TStrings::TStrings() :
+  TPersistent(OBJECT_CLASS_TStrings),
   FDuplicates(dupAccept),
   FDelimiter(L','),
   FQuoteChar(L'"'),
   FUpdateCount(0)
 {
+}
+
+TStrings::TStrings(TObjectClassId Kind) :
+  TPersistent(Kind),
+  FDuplicates(dupAccept),
+  FDelimiter(L','),
+  FQuoteChar(L'"'),
+  FUpdateCount(0)
+{
+
 }
 
 TStrings::~TStrings()
@@ -511,7 +525,7 @@ intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString 
 
 void TStrings::Assign(const TPersistent * Source)
 {
-  const TStrings * Strings = NB_STATIC_DOWNCAST_CONST(TStrings, Source);
+  const TStrings * Strings = dyn_cast<TStrings>(Source);
   if (Strings != nullptr)
   {
     BeginUpdate();
@@ -784,6 +798,15 @@ intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t 
 }
 
 TStringList::TStringList() :
+  TStrings(OBJECT_CLASS_TStringList),
+  FSorted(false),
+  FCaseSensitive(false)
+{
+
+}
+
+TStringList::TStringList(TObjectClassId Kind) :
+  TStrings(Kind),
   FSorted(false),
   FCaseSensitive(false)
 {
@@ -1327,7 +1350,7 @@ class EStreamError : public ExtException
 {
 public:
   explicit EStreamError(const UnicodeString & Msg) :
-    ExtException((Exception * )nullptr, Msg)
+    ExtException(OBJECT_CLASS_EStreamError, (Exception * )nullptr, Msg)
   {}
 };
 
@@ -2119,11 +2142,4 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
   (void)FormatSettings;
   ThrowNotImplemented(1204);
 }
-
-NB_IMPLEMENT_CLASS(TObject, nullptr, nullptr)
-NB_IMPLEMENT_CLASS(TPersistent, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TList, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TObjectList, NB_GET_CLASS_INFO(TList), nullptr)
-NB_IMPLEMENT_CLASS(TStrings, NB_GET_CLASS_INFO(TPersistent), nullptr)
-NB_IMPLEMENT_CLASS(TStringList, NB_GET_CLASS_INFO(TStrings), nullptr)
 

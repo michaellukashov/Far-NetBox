@@ -336,7 +336,7 @@ TStrings * TCommandSet::CreateCommandList()
 }
 //===========================================================================
 TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) :
-  TCustomFileSystem(ATerminal),
+  TCustomFileSystem(OBJECT_CLASS_TSCPFileSystem, ATerminal),
   FSecureShell(nullptr),
   FCommandSet(nullptr),
   FOutput(nullptr),
@@ -350,7 +350,7 @@ TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) :
 
 void TSCPFileSystem::Init(void * Data)
 {
-  FSecureShell = NB_STATIC_DOWNCAST(TSecureShell, Data);
+  FSecureShell = dyn_cast<TSecureShell>(Data);
   DebugAssert(FSecureShell);
   FCommandSet = new TCommandSet(FTerminal->GetSessionData());
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
@@ -1426,7 +1426,7 @@ void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
     AParams.Command = Command;
     AParams.Params = Params;
     AParams.OutputEvent = OutputEvent;
-    FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::CustomCommandOnFile, FTerminal),
+    FTerminal->ProcessDirectory(AFileName, nb::bind(&TTerminal::CustomCommandOnFile, FTerminal),
       &AParams);
   }
 
@@ -1462,7 +1462,7 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
   DebugAssert(!FSecureShell->GetOnCaptureOutput());
   if (OutputEvent)
   {
-    FSecureShell->SetOnCaptureOutput(MAKE_CALLBACK(TSCPFileSystem::CaptureOutput, this));
+    FSecureShell->SetOnCaptureOutput(nb::bind(&TSCPFileSystem::CaptureOutput, this));
     FOnCaptureOutput = OutputEvent;
   }
 
@@ -1698,7 +1698,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
       !OperationProgress->Cancel; ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
-      TRemoteFile * File1 = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(IFile));
+      TRemoteFile * File1 = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(IFile));
       UnicodeString RealFileName = File1 ? File1->GetFileName() : FileName;
       bool CanProceed = false;
 
@@ -2111,7 +2111,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
       {
         // EScpFileSkipped is derived from ESkipFile,
         // but is does not indicate file skipped by user here
-        if (NB_STATIC_DOWNCAST(EFileSkipped, &E) != nullptr)
+        if (isa<EFileSkipped>(&E))
         {
           Action.Rollback(&E);
         }
@@ -2382,7 +2382,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       !OperationProgress->Cancel; ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(IFile));
+      TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(IFile));
       DebugAssert(File);
 
       // Filename is used for error messaging and excluding files only

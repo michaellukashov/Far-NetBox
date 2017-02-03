@@ -8,10 +8,11 @@
 
 static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
-  return static_cast<const TNamedObject *>(Item1)->Compare(static_cast<const TNamedObject *>(Item2));
+  return dyn_cast<TNamedObject>(Item1)->Compare(dyn_cast<TNamedObject>(Item2));
 }
 //--- TNamedObject ----------------------------------------------------------
-TNamedObject::TNamedObject(const UnicodeString & AName) :
+TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString & AName) :
+  TPersistent(Kind),
   FHidden(false)
 {
   SetName(AName);
@@ -76,7 +77,15 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
 }
 //--- TNamedObjectList ------------------------------------------------------
 TNamedObjectList::TNamedObjectList() :
-  TObjectList(),
+  TObjectList(OBJECT_CLASS_TNamedObjectList),
+  FHiddenCount(0),
+  FControlledAdd(false),
+  AutoSort(true)
+{
+}
+
+TNamedObjectList::TNamedObjectList(TObjectClassId Kind) :
+  TObjectList(Kind),
   FHiddenCount(0),
   FControlledAdd(false),
   AutoSort(true)
@@ -90,13 +99,13 @@ const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const
 //---------------------------------------------------------------------------
 TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
-  return NB_STATIC_DOWNCAST(TNamedObject, GetObj(Index + FHiddenCount));
+  return dyn_cast<TNamedObject>(GetObj(Index + FHiddenCount));
 }
 //---------------------------------------------------------------------------
 void TNamedObjectList::Recount()
 {
   intptr_t Index = 0;
-  while ((Index < TObjectList::GetCount()) && (NB_STATIC_DOWNCAST(TNamedObject, GetObj(Index))->GetHidden()))
+  while ((Index < TObjectList::GetCount()) && (dyn_cast<TNamedObject>(GetObj(Index))->GetHidden()))
   {
     ++Index;
   }
@@ -190,5 +199,4 @@ intptr_t TNamedObjectList::GetCountIncludingHidden() const
   return TObjectList::GetCount();
 }
 
-NB_IMPLEMENT_CLASS(TNamedObject, NB_GET_CLASS_INFO(TPersistent), nullptr)
 

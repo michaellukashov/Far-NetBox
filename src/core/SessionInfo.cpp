@@ -73,9 +73,15 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 
 class TSessionActionRecord : public TObject
 {
-NB_DECLARE_CLASS(TSessionActionRecord)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSessionActionRecord;
+  }
 public:
   explicit TSessionActionRecord(TActionLog * Log, TLogAction Action) :
+    TObject(OBJECT_CLASS_TSessionActionRecord),
     FLog(Log),
     FAction(Action),
     FState(Opened),
@@ -762,7 +768,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
     {
       if (FParent != nullptr)
       {
-        DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToParent, this));
+        DoAdd(Type, Line, nb::bind(&TSessionLog::DoAddToParent, this));
       }
       else
       {
@@ -778,7 +784,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
 
             EndUpdate();
           };
-          DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
+          DoAdd(Type, Line, nb::bind(&TSessionLog::DoAddToSelf, this));
         }
         __finally
         {
@@ -1023,8 +1029,8 @@ UnicodeString EnumName(T Value, const UnicodeString & ANames)
   return L"(unknown)";
 }
 
-#define ADSTR(S) DoAdd(llMessage, S, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
-#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
+#define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this));
+#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), nb::bind(&TSessionLog::DoAddToSelf, this));
 
 void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
@@ -1329,7 +1335,7 @@ void TSessionLog::AddOption(const UnicodeString & LogStr)
 
 void TSessionLog::AddOptions(TOptions * Options)
 {
-  Options->LogOptions(MAKE_CALLBACK(TSessionLog::AddOption, this));
+  Options->LogOptions(nb::bind(&TSessionLog::AddOption, this));
 }
 
 #undef ADF
@@ -1665,7 +1671,7 @@ void TActionLog::AddPendingAction(TSessionActionRecord * Action)
 void TActionLog::RecordPendingActions()
 {
   while ((FPendingActions->GetCount() > 0) &&
-         NB_STATIC_DOWNCAST(TSessionActionRecord, FPendingActions->GetItem(0))->Record())
+         dyn_cast<TSessionActionRecord>(FPendingActions->GetItem(0))->Record())
   {
     FPendingActions->Delete(0);
   }
@@ -1703,6 +1709,4 @@ void TActionLog::SetEnabled(bool Value)
     ReflectSettings();
   }
 }
-
-NB_IMPLEMENT_CLASS(TSessionActionRecord, NB_GET_CLASS_INFO(TObject), nullptr)
 

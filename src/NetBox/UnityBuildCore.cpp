@@ -11,7 +11,6 @@
 #include "../base/Sysutils.cpp"
 #include "../base/StrUtils.cpp"
 #include "../base/local.cpp"
-#include "../base/rtti.cpp"
 #include "../base/WideStrUtils.cpp"
 #include "../base/LibraryLoader.cpp"
 #include "../base/Common.cpp"

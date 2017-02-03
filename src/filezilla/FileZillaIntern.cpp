@@ -5,6 +5,7 @@
 #include "FileZillaIntf.h"
 
 TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
+  TObject(OBJECT_CLASS_TFileZillaIntern),
   FOwner(AOwner)
 {
   FDebugLevel = 0;
@@ -54,6 +55,4 @@ void TFileZillaIntern::SetDebugLevel(int DebugLevel)
 {
   FDebugLevel = DebugLevel;
 }
-
-NB_IMPLEMENT_CLASS(TFileZillaIntern, NB_GET_CLASS_INFO(TObject), nullptr)
 

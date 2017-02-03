@@ -6,7 +6,8 @@
 // Konstruktion/Destruktion
 //////////////////////////////////////////////////////////////////////
 
-CApiLog::CApiLog()
+CApiLog::CApiLog() :
+  TObject(OBJECT_CLASS_CApiLog)
 {
   FIntern = NULL;
 }
@@ -85,6 +86,4 @@ int CApiLog::GetOptionVal(int OptionID) const
   DebugAssert(FIntern != NULL);
   return FIntern->GetOptionVal(OptionID);
 }
-
-NB_IMPLEMENT_CLASS(CApiLog, NB_GET_CLASS_INFO(TObject), nullptr)
 

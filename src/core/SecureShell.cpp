@@ -34,7 +34,8 @@ struct TPuttyTranslation
 };
 
 TSecureShell::TSecureShell(TSessionUI * UI,
-  TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration)
+  TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration) :
+  TObject(OBJECT_CLASS_TSecureShell)
 {
   FUI = UI;
   FSessionData = SessionData;
@@ -1325,7 +1326,7 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent("Waiting for dispatching send buffer timed out, asking user what to do.");
-      uintptr_t Answer = TimeoutPrompt(MAKE_CALLBACK(TSecureShell::SendBuffer, this));
+      uintptr_t Answer = TimeoutPrompt(nb::bind(&TSecureShell::SendBuffer, this));
       switch (Answer)
       {
         case qaRetry:
@@ -1829,7 +1830,7 @@ void TSecureShell::WaitForData()
       TPoolForDataEvent Event(this, Events);
 
       LogEvent("Waiting for data timed out, asking user what to do.");
-      uintptr_t Answer = TimeoutPrompt(MAKE_CALLBACK(TPoolForDataEvent::PoolForData, &Event));
+      uintptr_t Answer = TimeoutPrompt(nb::bind(&TPoolForDataEvent::PoolForData, &Event));
       switch (Answer)
       {
         case qaRetry:
@@ -2390,7 +2391,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
       TQueryButtonAlias Aliases[3];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick = MAKE_CALLBACK(TClipboardHandler::Copy, &ClipboardHandler);
+      Aliases[0].OnClick = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
       Answers = qaYes | qaCancel | qaRetry;
       AliasesCount = 1;
       if (!Unknown)
@@ -2664,6 +2665,4 @@ void TSecureShell::CollectUsage()
     Configuration->Usage->Inc(L"OpenedSessionsSSHOther");
   }*/
 }
-
-NB_IMPLEMENT_CLASS(TSecureShell, NB_GET_CLASS_INFO(TObject), nullptr)
 

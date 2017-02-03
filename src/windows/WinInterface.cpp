@@ -63,9 +63,9 @@ inline void TMessageParams::Reset()
 #if 0
 static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
 {
-  TFarCheckBox * CheckBox = NB_STATIC_DOWNCAST(TFarCheckBox, Sender);
+  TFarCheckBox * CheckBox = dyn_cast<TFarCheckBox>(Sender);
   DebugAssert(CheckBox != nullptr);
-  TFarDialog * Dialog = NB_STATIC_DOWNCAST(TFarDialog, CheckBox->GetOwner());
+  TFarDialog * Dialog = dyn_cast<TFarDialog>(CheckBox->GetOwner());
   DebugAssert(Dialog != nullptr);
 
   uintptr_t PositiveAnswer = 0;
@@ -80,7 +80,7 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
     {
       for (int ii = 0; ii < Dialog->GetControlCount(); ii++)
       {
-        TFarButton * Button = NB_STATIC_DOWNCAST(TFarButton, Dialog->GetControl(ii));
+        TFarButton * Button = dyn_cast<TFarButton>(Dialog->GetControl(ii));
         if (Button != nullptr)
         {
           if (IsPositiveAnswer(Button->GetModalResult()))
@@ -97,7 +97,7 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
 
   for (int ii = 0; ii < Dialog->GetControlCount(); ii++)
   {
-    TFarButton * Button = NB_STATIC_DOWNCAST(TFarButton, Dialog->GetControl(ii));
+    TFarButton * Button = dyn_cast<TFarButton>(Dialog->GetControl(ii));
     if (Button != nullptr)
     {
       if ((Button->GetModalResult() != 0) && (Button->GetModalResult() != static_cast<intptr_t>(qaCancel)))
@@ -123,7 +123,7 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
 #if 0
 static TFarCheckBox * FindNeverAskAgainCheck(TFarDialog * Dialog)
 {
-  return nullptr; // DebugNotNull(NB_STATIC_DOWNCAST(TFarCheckBox, Dialog->FindComponent(L"NeverAskAgainCheck")));
+  return nullptr; // DebugNotNull(dyn_cast<TFarCheckBox>(Dialog->FindComponent(L"NeverAskAgainCheck")));
 }
 
 TFarDialog * CreateMessageDialogEx(const UnicodeString & Msg,

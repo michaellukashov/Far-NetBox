@@ -89,15 +89,34 @@ extern const TDayTable MonthDays[];
 
 class Exception : public std::runtime_error, public TObject
 {
-NB_DECLARE_CLASS(Exception)
 public:
+  static bool classof(const TObject * Obj)
+  {
+    TObjectClassId Kind = Obj->GetKind();
+    return
+      Kind == OBJECT_CLASS_Exception ||
+      Kind == OBJECT_CLASS_ExtException ||
+      Kind == OBJECT_CLASS_EAbort ||
+      Kind == OBJECT_CLASS_EAccessViolation ||
+      Kind == OBJECT_CLASS_EFileNotFoundError ||
+      Kind == OBJECT_CLASS_EOSError ||
+      Kind == OBJECT_CLASS_EFatal ||
+      Kind == OBJECT_CLASS_ESshFatal ||
+      Kind == OBJECT_CLASS_ESshTerminate ||
+      Kind == OBJECT_CLASS_ECallbackGuardAbort ||
+      Kind == OBJECT_CLASS_EFileSkipped ||
+      Kind == OBJECT_CLASS_ESkipFile;
+  }
+public:
+  explicit Exception(TObjectClassId Kind, const wchar_t * Msg);
   explicit Exception(const wchar_t * Msg);
+  explicit Exception(TObjectClassId Kind, const UnicodeString & Msg);
   explicit Exception(const UnicodeString & Msg);
-  explicit Exception(Exception * E);
-  explicit Exception(std::exception * E);
-  explicit Exception(const UnicodeString & Msg, int AHelpContext);
-  explicit Exception(Exception * E, intptr_t Ident);
-  explicit Exception(intptr_t Ident);
+  explicit Exception(TObjectClassId Kind, Exception * E);
+  explicit Exception(TObjectClassId Kind, std::exception * E);
+  explicit Exception(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AHelpContext);
+  explicit Exception(TObjectClassId Kind, Exception * E, intptr_t Ident);
+  explicit Exception(TObjectClassId Kind, intptr_t Ident);
   ~Exception() throw() {}
 
 public:
@@ -109,33 +128,57 @@ protected:
 
 class EAbort : public Exception
 {
-NB_DECLARE_CLASS(EAbort)
 public:
-  explicit EAbort(const UnicodeString & what) : Exception(what)
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EAbort ||
+      Obj->GetKind() == OBJECT_CLASS_ECallbackGuardAbort;
+  }
+public:
+  explicit EAbort(const UnicodeString & what) : Exception(OBJECT_CLASS_EAbort, what)
+  {}
+  explicit EAbort(TObjectClassId Kind, const UnicodeString & what) : Exception(Kind, what)
   {}
 };
 
 class EAccessViolation : public Exception
 {
-NB_DECLARE_CLASS(EAccessViolation)
 public:
-  explicit EAccessViolation(const UnicodeString & what) : Exception(what)
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EAccessViolation;
+  }
+public:
+  explicit EAccessViolation(const UnicodeString & what) : Exception(OBJECT_CLASS_EAccessViolation, what)
   {}
 };
 
 class EFileNotFoundError : public Exception
 {
-NB_DECLARE_CLASS(EFileNotFoundError)
 public:
-  EFileNotFoundError() : Exception(L"")
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EFileNotFoundError;
+  }
+public:
+  EFileNotFoundError() : Exception(OBJECT_CLASS_EFileNotFoundError, L"")
   {}
 };
 
 class EOSError : public Exception
 {
-NB_DECLARE_CLASS(EOSError)
 public:
-  explicit EOSError(const UnicodeString & Msg, DWORD code) : Exception(Msg),
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EOSError;
+  }
+public:
+  explicit EOSError(const UnicodeString & Msg, DWORD code) :
+    Exception(OBJECT_CLASS_EOSError, Msg),
     ErrorCode(code)
   {
   }
@@ -357,7 +400,7 @@ class EConvertError : public Exception
 {
 public:
   explicit EConvertError(const UnicodeString & Msg) :
-    Exception(Msg)
+    Exception(OBJECT_CLASS_EConvertError, Msg)
   {}
 };
 

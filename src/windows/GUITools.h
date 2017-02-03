@@ -1,6 +1,7 @@
 #pragma once
 
-#include <BaseDefs.hpp>
+#include <Classes.hpp>
+#include <FileMasks.H>
 
 // from shlobj.h
 #define CSIDL_DESKTOP                   0x0000        // <desktop>
@@ -11,11 +12,9 @@
 #define CSIDL_PROGRAM_FILES             0x0026        // C:\Program Files
 #define CSIDL_PERSONAL                  0x0005        // My Documents
 
-#include <FileMasks.H>
-
 class TSessionData;
 
-DEFINE_CALLBACK_TYPE0(TProcessMessagesEvent, void);
+typedef nb::FastDelegate0<void> TProcessMessagesEvent;
 
 bool FindFile(UnicodeString & APath);
 bool FindTool(const UnicodeString & Name, UnicodeString & APath);

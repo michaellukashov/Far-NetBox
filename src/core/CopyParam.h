@@ -59,7 +59,13 @@ struct TUsableCopyParamAttrs
 
 class TCopyParamType : public TObject
 {
-NB_DECLARE_CLASS(TCopyParamType)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCopyParamType ||
+      Obj->GetKind() == OBJECT_CLASS_TGUICopyParamType;
+  }
 private:
   TFileMasks FAsciiFileMask;
   TFileNameCase FFileNameCase;
@@ -108,6 +114,7 @@ public:
 
 public:
   TCopyParamType();
+  explicit TCopyParamType(TObjectClassId Kind);
   TCopyParamType(const TCopyParamType & Source);
   virtual ~TCopyParamType();
   TCopyParamType & operator =(const TCopyParamType & rhs);

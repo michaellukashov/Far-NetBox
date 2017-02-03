@@ -57,11 +57,11 @@ enum TSessionActionEnum
   saConnect
 };
 
-//DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
-//  intptr_t /*Params*/, TSynchronizeOptions & /*Options*/);
-DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
+//typedef nb::FastDelegate2<void,
+//  intptr_t /*Params*/, TSynchronizeOptions & /*Options*/> TGetSynchronizeOptionsEvent;
+typedef nb::FastDelegate3<void,
   const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
-  bool & /*Close*/);
+  bool & /*Close*/>TGetSpaceAvailableEvent;
 
 struct TMultipleEdit : public TObject
 {
@@ -79,7 +79,7 @@ struct TEditHistory : public TObject
   bool operator==(const TEditHistory & rh) const { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
 
-DEFINE_CALLBACK_TYPE2(TProcessSessionEvent, void, TSessionData * /*Data*/, void * /*Param*/);
+typedef nb::FastDelegate2<void, TSessionData * /*Data*/, void * /*Param*/> TProcessSessionEvent;
 
 class TWinSCPFileSystem : public TCustomFarFileSystem
 {
@@ -88,7 +88,12 @@ friend class TNetBoxPlugin;
 friend class TKeepaliveThread;
 friend class TQueueDialog;
 NB_DISABLE_COPY(TWinSCPFileSystem)
-NB_DECLARE_CLASS(TWinSCPFileSystem)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TWinSCPFileSystem;
+  }
 public:
   explicit TWinSCPFileSystem(TCustomFarPlugin * APlugin);
   void Init(TSecureShell * SecureShell);

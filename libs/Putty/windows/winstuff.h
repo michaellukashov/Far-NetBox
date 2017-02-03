@@ -33,6 +33,8 @@ extern "C" {
 #include "winhelp.h"
 #endif
 
+#define BUILDINFO_PLATFORM "Windows"
+
 struct Filename {
     char *path;
 };

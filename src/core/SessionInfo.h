@@ -61,11 +61,19 @@ struct TFileSystemInfo : public TObject
   bool IsCapable[fcCount];
 };
 
-class TSessionUI
+class TSessionUI : public TObject
 {
-//NB_DECLARE_CLASS(TSessionUI)
 public:
-  explicit TSessionUI() {}
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSessionUI ||
+      Obj->GetKind() == OBJECT_CLASS_TTerminal ||
+      Obj->GetKind() == OBJECT_CLASS_TSecondaryTerminal ||
+      Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
+  }
+public:
+  explicit TSessionUI(TObjectClassId Kind) : TObject(Kind) {}
   virtual ~TSessionUI() {}
   virtual void Information(const UnicodeString & Str, bool Status) = 0;
   virtual uintptr_t QueryUser(const UnicodeString & Query,
@@ -119,13 +127,13 @@ enum TCaptureOutputType
 
 //typedef void (__closure *TCaptureOutputEvent)(
 //  const UnicodeString & Str, TCaptureOutputType OutputType);
-DEFINE_CALLBACK_TYPE2(TCaptureOutputEvent, void,
-  const UnicodeString & /*Str*/, TCaptureOutputType /*OutputType*/);
+typedef nb::FastDelegate2<void,
+  const UnicodeString & /*Str*/, TCaptureOutputType /*OutputType*/> TCaptureOutputEvent;
 //typedef void (__closure *TCalculatedChecksumEvent)(
 //  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
-DEFINE_CALLBACK_TYPE3(TCalculatedChecksumEvent, void,
+typedef nb::FastDelegate3<void,
   const UnicodeString & /*FileName*/, const UnicodeString & /*Alg*/,
-  const UnicodeString & /*Hash*/);
+  const UnicodeString & /*Hash*/> TCalculatedChecksumEvent;
 
 class TSessionActionRecord;
 class TActionLog;
@@ -259,8 +267,8 @@ public:
 };
 
 // void (__closure *f)(TLogLineType Type, const UnicodeString & Line));
-DEFINE_CALLBACK_TYPE2(TDoAddLogEvent, void,
-  TLogLineType /*Type*/, const UnicodeString & /*Line*/);
+typedef nb::FastDelegate2<void,
+  TLogLineType /*Type*/, const UnicodeString & /*Line*/> TDoAddLogEvent;
 
 class TSessionLog : protected TStringList
 {

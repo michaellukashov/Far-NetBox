@@ -159,9 +159,9 @@ UnicodeString DelimitFileNameMask(const UnicodeString & AMask);
 //typedef void __fastcall (__closure * TCustomCommandPatternEvent)
 //  (int Index, const UnicodeString Pattern, void * Arg, UnicodeString & Replacement,
 //   bool & LastPass);
-DEFINE_CALLBACK_TYPE5(TCustomCommandPatternEvent, void,
+typedef nb::FastDelegate5<void,
   int /*Index*/, const UnicodeString & /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
-  bool & /*LastPass*/);
+  bool & /*LastPass*/> TCustomCommandPatternEvent;
 
 class TCustomCommand : public TObject
 {
