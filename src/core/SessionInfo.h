@@ -127,13 +127,13 @@ enum TCaptureOutputType
 
 //typedef void (__closure *TCaptureOutputEvent)(
 //  const UnicodeString & Str, TCaptureOutputType OutputType);
-DEFINE_CALLBACK_TYPE2(TCaptureOutputEvent, void,
-  const UnicodeString & /*Str*/, TCaptureOutputType /*OutputType*/);
+typedef nb::FastDelegate2<void,
+  const UnicodeString & /*Str*/, TCaptureOutputType /*OutputType*/> TCaptureOutputEvent;
 //typedef void (__closure *TCalculatedChecksumEvent)(
 //  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
-DEFINE_CALLBACK_TYPE3(TCalculatedChecksumEvent, void,
+typedef nb::FastDelegate3<void,
   const UnicodeString & /*FileName*/, const UnicodeString & /*Alg*/,
-  const UnicodeString & /*Hash*/);
+  const UnicodeString & /*Hash*/> TCalculatedChecksumEvent;
 
 class TSessionActionRecord;
 class TActionLog;
@@ -267,8 +267,8 @@ public:
 };
 
 // void (__closure *f)(TLogLineType Type, const UnicodeString & Line));
-DEFINE_CALLBACK_TYPE2(TDoAddLogEvent, void,
-  TLogLineType /*Type*/, const UnicodeString & /*Line*/);
+typedef nb::FastDelegate2<void,
+  TLogLineType /*Type*/, const UnicodeString & /*Line*/> TDoAddLogEvent;
 
 class TSessionLog : protected TStringList
 {

@@ -14,7 +14,7 @@
 
 class TSessionData;
 
-DEFINE_CALLBACK_TYPE0(TProcessMessagesEvent, void);
+typedef nb::FastDelegate0<void> TProcessMessagesEvent;
 
 bool FindFile(UnicodeString & APath);
 bool FindTool(const UnicodeString & Name, UnicodeString & APath);

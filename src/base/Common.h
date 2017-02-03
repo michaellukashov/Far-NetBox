@@ -173,8 +173,10 @@ void LoadScriptFromFile(const UnicodeString & FileName, TStrings * Lines);
 UnicodeString StripEllipsis(const UnicodeString & S);
 
 typedef nb::FastDelegate3<void,
-  const UnicodeString & /*FileName*/, const TSearchRec & /*Rec*/, void * /*Param*/);
-bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec> TProcessLocalFileEvent;
+  const UnicodeString & /*FileName*/, const TSearchRec & /*Rec*/,
+  void * /*Param*/> TProcessLocalFileEvent;
+
+bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec);
 
 struct TSearchRecChecked : public TSearchRec
 {

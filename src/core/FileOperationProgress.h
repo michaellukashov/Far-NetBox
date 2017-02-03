@@ -35,14 +35,15 @@ enum TBatchOverwrite
 
 /*typedef void __fastcall (__closure *TFileOperationProgressEvent)
   (TFileOperationProgressType & ProgressData);*/
-DEFINE_CALLBACK_TYPE1(TFileOperationProgressEvent, void,
-  TFileOperationProgressType & /*ProgressData*/);
+typedef nb::FastDelegate1<void,
+  TFileOperationProgressType & /*ProgressData*/> TFileOperationProgressEvent;
 /*typedef void __fastcall (__closure *TFileOperationFinished)
   (TFileOperation Operation, TOperationSide Side, bool Temp,
     const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);*/
-DEFINE_CALLBACK_TYPE6(TFileOperationFinishedEvent, void,
+typedef nb::FastDelegate6<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
-  const UnicodeString & /*FileName*/, bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/);
+  const UnicodeString & /*FileName*/, bool /*Success*/,
+  TOnceDoneOperation & /*OnceDoneOperation*/> TFileOperationFinishedEvent;
 //---------------------------------------------------------------------------
 class TFileOperationProgressType : public TObject
 {

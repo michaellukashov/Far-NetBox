@@ -18,12 +18,12 @@ enum TItemPosition
   ipRight
 };
 
-DEFINE_CALLBACK_TYPE4(TFarKeyEvent, void,
-  TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/);
-DEFINE_CALLBACK_TYPE2(TFarMouseClickEvent, void,
-  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/);
-DEFINE_CALLBACK_TYPE2(TFarProcessGroupEvent, void,
-  TFarDialogItem * /*Item*/, void * /*Arg*/);
+typedef nb::FastDelegate4<void,
+  TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/> TFarKeyEvent;
+typedef nb::FastDelegate2<void,
+  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/> TFarMouseClickEvent;
+typedef nb::FastDelegate2<void,
+  TFarDialogItem * /*Item*/, void * /*Arg*/> TFarProcessGroupEvent;
 
 class TFarDialog : public TObject
 {
@@ -377,8 +377,8 @@ public:
   virtual void SetDouble(bool Value) { SetAlterType(DI_DOUBLEBOX, Value); }
 };
 
-DEFINE_CALLBACK_TYPE2(TFarButtonClickEvent, void,
-  TFarButton * /*Sender*/, bool & /*Close*/);
+typedef nb::FastDelegate2<void,
+  TFarButton * /*Sender*/, bool & /*Close*/> TFarButtonClickEvent;
 enum TFarButtonBrackets
 {
   brNone,
@@ -428,8 +428,8 @@ private:
   TFarButtonBrackets FBrackets;
 };
 
-DEFINE_CALLBACK_TYPE3(TFarAllowChangeEvent, void,
-  TFarDialogItem * /*Sender*/, intptr_t /*NewState*/, bool & /*AllowChange*/);
+typedef nb::FastDelegate3<void,
+  TFarDialogItem * /*Sender*/, intptr_t /*NewState*/, bool & /*AllowChange*/> TFarAllowChangeEvent;
 
 class TFarCheckBox : public TFarDialogItem
 {

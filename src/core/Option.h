@@ -9,7 +9,7 @@ enum TOptionType
 };
 
 // typedef void (__closure *TLogOptionEvent)(const UnicodeString & LogStr);
-DEFINE_CALLBACK_TYPE1(TLogOptionEvent, void, const UnicodeString & /*LogStr*/);
+typedef nb::FastDelegate1<void, const UnicodeString & /*LogStr*/> TLogOptionEvent;
 
 class TOptions : public TObject
 {
