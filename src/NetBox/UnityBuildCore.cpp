@@ -2,8 +2,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NON_CONFORMING_SWPRINTFS
 
-#pragma warning(push)
-#pragma warning(disable: 4100) // unreferenced formal parameter
+#include <disable_warnings_in_std_begin.hpp>
 
 #include "../base/UnicodeString.cpp"
 #include "../base/Classes.cpp"
@@ -50,4 +49,4 @@
 #include "../windows/Tools.cpp"
 #include "../windows/ProgParams.cpp"
 
-#pragma warning(pop)
+#include <disable_warnings_in_std_end.hpp>

@@ -120,7 +120,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
     if (m_nTransferState == STATE_STARTING)
       OnConnect(0);
 
-    char *buffer = static_cast<char *>(nb_calloc(1, BUFSIZE));
+    char *buffer = nb::chcalloc(BUFSIZE);
     int numread = CAsyncSocketEx::Receive(buffer, BUFSIZE);
     if (numread != SOCKET_ERROR && numread)
     {
@@ -131,14 +131,14 @@ void CTransferSocket::OnReceive(int nErrorCode)
       {
         m_zlibStream.next_in = (Bytef *)buffer;
         m_zlibStream.avail_in = numread;
-        char *out = static_cast<char *>(nb_calloc(1, BUFSIZE));
+        char *out = nb::calloc(BUFSIZE);
         m_zlibStream.next_out = (Bytef *)out;
         m_zlibStream.avail_out = BUFSIZE;
         int res = inflate(&m_zlibStream, 0);
         while (res == Z_OK)
         {
           m_pListResult->AddData(out, BUFSIZE - m_zlibStream.avail_out);
-          out = static_cast<char *>(nb_calloc(1, BUFSIZE));
+          out = nb::calloc(BUFSIZE);
           m_zlibStream.next_out = (Bytef *)out;
           m_zlibStream.avail_out = BUFSIZE;
           res = inflate(&m_zlibStream, 0);
@@ -212,7 +212,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
     }
 
     if (!m_pBuffer)
-      m_pBuffer = static_cast<char *>(nb_calloc(1, BUFSIZE));
+      m_pBuffer = nb::chcalloc(BUFSIZE);
 
     int numread = CAsyncSocketEx::Receive(m_pBuffer, static_cast<int>(ableToRead));
     if (numread!=SOCKET_ERROR)
@@ -257,7 +257,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
       if (m_useZlib)
       {
         if (!m_pBuffer2)
-          m_pBuffer2 = static_cast<char *>(nb_calloc(1, BUFSIZE));
+          m_pBuffer2 = nb::calloc(BUFSIZE);
 
         m_zlibStream.next_in = (Bytef *)m_pBuffer;
         m_zlibStream.avail_in = numread;
@@ -293,7 +293,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
     }
     CATCH(CFileException,e)
     {
-      LPTSTR msg = static_cast<TCHAR *>(nb_calloc(BUFSIZE, sizeof(TCHAR)));
+      LPTSTR msg = nb::wchcalloc(BUFSIZE * sizeof(TCHAR));
       if (e->GetErrorMessage(msg, BUFSIZE))
         m_pOwner->ShowStatus(msg, FZ_LOG_ERROR);
       nb_free(msg);
@@ -328,7 +328,7 @@ void CTransferSocket::SetBuffers()
     value = 0;
     len = sizeof(value);
     GetSockOpt(SO_RCVBUF, &value, &len);
-    int rcvbuf = 4 * 1024 * 1024;
+    DWORD rcvbuf = 4 * 1024 * 1024;
     if (value < rcvbuf)
     {
       value = rcvbuf;
@@ -420,7 +420,7 @@ void CTransferSocket::Start()
   {
     AddLayer(m_pSslLayer);
     int res = m_pSslLayer->InitSSLConnection(true, m_pOwner->m_pSslLayer,
-      GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
+      GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE) != FALSE,
       GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
       GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
     if (res == SSL_FAILURE_INITSSL)
@@ -572,7 +572,7 @@ void CTransferSocket::OnSend(int nErrorCode)
   {
     if (!m_pBuffer)
     {
-      m_pBuffer = static_cast<char *>(nb_calloc(1, BUFSIZE));
+      m_pBuffer = nb::calloc(BUFSIZE);
       m_bufferpos = 0;
 
       m_zlibStream.next_out = (Bytef *)m_pBuffer;
@@ -580,7 +580,7 @@ void CTransferSocket::OnSend(int nErrorCode)
     }
     if (!m_pBuffer2)
     {
-      m_pBuffer2 = static_cast<char *>(nb_calloc(1, BUFSIZE));
+      m_pBuffer2 = nb::calloc(BUFSIZE);
 
       m_zlibStream.next_in = (Bytef *)m_pBuffer2;
     }
@@ -703,7 +703,7 @@ void CTransferSocket::OnSend(int nErrorCode)
       return;
     }
     if (!m_pBuffer)
-      m_pBuffer = static_cast<char *>(nb_calloc(1, BUFSIZE));
+      m_pBuffer = nb::chcalloc(BUFSIZE);
 
     int numread;
 
@@ -900,7 +900,7 @@ BOOL CTransferSocket::Create(BOOL bUseSsl)
     m_pProxyLayer = new CAsyncProxySocketLayer;
     m_pProxyLayer->SetProxy(
       nProxyType, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT),
-      GetOptionVal(OPTION_PROXYUSELOGON), T2CA(GetOption(OPTION_PROXYUSER)), T2CA(GetOption(OPTION_PROXYPASS)));
+      GetOptionVal(OPTION_PROXYUSELOGON) != FALSE, T2CA(GetOption(OPTION_PROXYUSER)), T2CA(GetOption(OPTION_PROXYPASS)));
     AddLayer(m_pProxyLayer);
   }
 

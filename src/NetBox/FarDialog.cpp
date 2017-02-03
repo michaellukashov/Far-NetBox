@@ -278,8 +278,7 @@ void TFarDialog::Add(TFarDialogItem * DialogItem)
   {
     int DialogItemsDelta = 10;
     FarDialogItem * NewDialogItems;
-    NewDialogItems = static_cast<FarDialogItem *>(
-      nb_malloc(sizeof(FarDialogItem) * (GetItems()->GetCount() + DialogItemsDelta)));
+    NewDialogItems = nb::calloc<FarDialogItem *>(sizeof(FarDialogItem) * (GetItems()->GetCount() + DialogItemsDelta));
     if (FDialogItems)
     {
       memmove(NewDialogItems, FDialogItems, FDialogItemsCapacity * sizeof(FarDialogItem));
@@ -2125,7 +2124,7 @@ TFarList::TFarList(TFarDialogItem * ADialogItem) :
 {
   assert((ADialogItem == nullptr) ||
     (ADialogItem->GetType() == DI_COMBOBOX) || (ADialogItem->GetType() == DI_LISTBOX));
-  FListItems = static_cast<FarList *>(nb_calloc(1, sizeof(FarList)));
+  FListItems = nb::calloc<FarList *>(sizeof(FarList));
   FListItems->StructSize = sizeof(FarList);
 }
 
@@ -2208,8 +2207,7 @@ void TFarList::Changed()
       intptr_t ItemsNumber = FListItems->ItemsNumber;
       if (Count)
       {
-        FListItems->Items = static_cast<FarListItem *>(
-          nb_calloc(1, sizeof(FarListItem) * Count));
+        FListItems->Items = nb::calloc<FarListItem*>(sizeof(FarListItem) * Count);
         for (size_t Index = 0; Index < Count; ++Index)
         {
           if (Index < FListItems->ItemsNumber)

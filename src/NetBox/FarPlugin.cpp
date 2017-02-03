@@ -152,7 +152,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     #define COMPOSESTRINGARRAY(NAME) \
         if (NAME.GetCount()) \
         { \
-          wchar_t ** StringArray = static_cast<wchar_t **>(nb_calloc(1, sizeof(wchar_t *) * (1 + NAME.GetCount()))); \
+          wchar_t ** StringArray = nb::calloc<wchar_t **>(sizeof(wchar_t *) * (1 + NAME.GetCount())); \
           GUID *Guids = static_cast<GUID *>(nb_malloc(sizeof(GUID) * NAME.GetCount())); \
           FPluginInfo.NAME.Guids = Guids; \
           FPluginInfo.NAME.Strings = StringArray; \
@@ -225,8 +225,7 @@ wchar_t * TCustomFarPlugin::DuplicateStr(const UnicodeString & Str, bool AllowEm
   else
   {
     const size_t sz = Str.Length() + 1;
-    wchar_t * Result = static_cast<wchar_t *>(
-      nb_calloc(1, sizeof(wchar_t) * (1 + sz)));
+    wchar_t * Result = nb::wchcalloc(sizeof(wchar_t) * (1 + sz));
     wcscpy_s(Result, sz, Str.c_str());
     return Result;
   }
@@ -1069,8 +1068,7 @@ intptr_t TCustomFarPlugin::FarMessage(uintptr_t Flags,
     MessageLines->Add(Buttons->GetString(Index));
   }
 
-  Items = static_cast<wchar_t **>(
-    nb_calloc(1, sizeof(wchar_t *) * (1 + MessageLines->GetCount())));
+  Items = nb::calloc<wchar_t **>(sizeof(wchar_t *) * (1 + MessageLines->GetCount()));
   for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
   {
     UnicodeString S = MessageLines->GetString(Index);
@@ -1142,8 +1140,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
 {
   DebugAssert(Items && Items->GetCount());
   intptr_t Result = 0;
-  FarMenuItem * MenuItems = static_cast<FarMenuItem *>(
-    nb_calloc(1, sizeof(FarMenuItem) * (1 + Items->GetCount())));
+  FarMenuItem * MenuItems = nb::calloc<FarMenuItem*>(sizeof(FarMenuItem) * (1 + Items->GetCount()));
   SCOPE_EXIT
   {
     nb_free(MenuItems);
@@ -1705,8 +1702,7 @@ intptr_t TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, int
 TFarEditorInfo * TCustomFarPlugin::EditorInfo()
 {
   TFarEditorInfo * Result;
-  ::EditorInfo * Info = static_cast< ::EditorInfo *>(
-    nb_malloc(sizeof(::EditorInfo)));
+  ::EditorInfo * Info = nb::calloc<::EditorInfo *>(sizeof(::EditorInfo));
   memset(Info, 0, sizeof(::EditorInfo));
   Info->StructSize = sizeof(::EditorInfo);
   try
@@ -1913,8 +1909,7 @@ intptr_t TCustomFarFileSystem::GetFindData(struct GetFindDataInfo * Info)
   bool Result = !FClosed && GetFindDataEx(PanelItems.get(), Info->OpMode);
   if (Result && PanelItems->GetCount())
   {
-    Info->PanelItem = static_cast<PluginPanelItem *>(
-    nb_calloc(1, sizeof(PluginPanelItem) * PanelItems->GetCount()));
+    Info->PanelItem = nb::calloc<PluginPanelItem *>(sizeof(PluginPanelItem) * PanelItems->GetCount());
     memset(Info->PanelItem, 0, sizeof(PluginPanelItem) * PanelItems->GetCount());
     Info->ItemsNumber = PanelItems->GetCount();
     for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
@@ -2066,8 +2061,7 @@ TFarPanelInfo ** TCustomFarFileSystem::GetPanelInfo(int Another)
   bool bAnother = Another != 0;
   if (FPanelInfo[bAnother] == nullptr)
   {
-    PanelInfo * Info = static_cast<PanelInfo *>(
-      nb_calloc(1, sizeof(PanelInfo)));
+    PanelInfo * Info = nb::calloc<PanelInfo*>(sizeof(PanelInfo));
     Info->StructSize = sizeof(PanelInfo);
     bool Res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<void *>(Info),
       !bAnother ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
@@ -2217,8 +2211,7 @@ void TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString & ColumnTypes
   DebugAssert(!ColumnTitles || (ColumnTitles->GetCount() == ColumnTypesCount));
 
   ClearPanelMode(FPanelModes[Mode]);
-  wchar_t ** Titles = static_cast<wchar_t **>(
-    nb_calloc(1, sizeof(wchar_t *) * (1 + ColumnTypesCount)));
+  wchar_t ** Titles = nb::calloc<wchar_t **>(sizeof(wchar_t *) * (1 + ColumnTypesCount));
   FPanelModes[Mode].ColumnTypes = TCustomFarPlugin::DuplicateStr(ColumnTypes);
   FPanelModes[Mode].ColumnWidths = TCustomFarPlugin::DuplicateStr(ColumnWidths);
   if (ColumnTitles)
@@ -2281,7 +2274,7 @@ void TFarPanelModes::FillOpenPanelInfo(struct OpenPanelInfo * Info)
 {
   DebugAssert(Info);
   Info->PanelModesNumber = _countof(FPanelModes);
-  PanelMode * PanelModesArray = static_cast<PanelMode *>(nb_calloc(1, sizeof(PanelMode) * _countof(FPanelModes)));
+  PanelMode * PanelModesArray = nb::calloc<PanelMode*>(sizeof(PanelMode) * _countof(FPanelModes));
   memmove(PanelModesArray, &FPanelModes, sizeof(FPanelModes));
   Info->PanelModesArray = PanelModesArray;
   FReferenced = true;
@@ -2385,8 +2378,7 @@ void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 void TFarKeyBarTitles::FillOpenPanelInfo(struct OpenPanelInfo * Info)
 {
   DebugAssert(Info);
-  KeyBarTitles * KeyBar = static_cast<KeyBarTitles *>(
-    nb_malloc(sizeof(KeyBarTitles)));
+  KeyBarTitles * KeyBar = nb::calloc<KeyBarTitles *>(sizeof(KeyBarTitles));
   Info->KeyBar = KeyBar;
   memmove(KeyBar, &FKeyBarTitles, sizeof(FKeyBarTitles));
   FReferenced = true;
@@ -2426,8 +2418,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->AlternateFileName = wcscpy(new wchar_t[FileName.Length() + 1], FileName.c_str());
   PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
   PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
-  wchar_t ** CustomColumnData = static_cast<wchar_t **>(
-    nb_calloc(1, sizeof(wchar_t *) * (1 + PanelItem->CustomColumnNumber)));
+  wchar_t ** CustomColumnData = nb::calloc<wchar_t **>(sizeof(wchar_t *) * (1 + PanelItem->CustomColumnNumber));
   for (size_t Index = 0; Index < PanelItem->CustomColumnNumber; ++Index)
   {
     CustomColumnData[Index] =
@@ -2565,7 +2556,7 @@ intptr_t TFarPanelInfo::GetSelectedCount(bool CountCurrentItem) const
   if ((Count == 1) && FOwner && !CountCurrentItem)
   {
     intptr_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, 0);
-    PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_calloc(1, size));
+    PluginPanelItem * ppi = nb::calloc<PluginPanelItem *>(size);
     FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, reinterpret_cast<void *>(ppi));
     if ((ppi->Flags & PPIF_SELECTED) == 0)
     {
@@ -2592,7 +2583,7 @@ TObjectList * TFarPanelInfo::GetItems()
     {
       TODO("move to common function");
       intptr_t Size = FOwner->FarControl(FCTL_GETPANELITEM, Index, 0);
-      PluginPanelItem * ppi = static_cast<PluginPanelItem *>(nb_calloc(1, Size));
+      PluginPanelItem * ppi = nb_calloc<PluginPanelItem *>(Size);
       FarGetPluginPanelItem gppi;
       gppi.StructSize = sizeof(FarGetPluginPanelItem);
       gppi.Size = Size;

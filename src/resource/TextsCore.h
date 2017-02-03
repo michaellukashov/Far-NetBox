@@ -469,7 +469,7 @@
 #define FILEZILLA_URL           608
 #define OPENSSL_BASED_ON        609
 #define OPENSSL_COPYRIGHT2       610
-#define OPENSSL_VERSION         611
+#define OPENSSL_VERSION2         611
 #define OPENSSL_URL             612
 #define NEON_BASED_ON           613
 #define NEON_COPYRIGHT          614

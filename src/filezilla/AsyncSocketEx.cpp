@@ -32,7 +32,7 @@ public:
   CAsyncSocketExHelperWindow(CAsyncSocketEx::t_AsyncSocketExThreadData* pThreadData)
   {
     //Initialize data
-    m_pAsyncSocketExWindowData = static_cast<t_AsyncSocketExWindowData *>(nb_calloc(512, sizeof(t_AsyncSocketExWindowData))); //Reserve space for 512 active sockets
+    m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(512 * sizeof(t_AsyncSocketExWindowData)); //Reserve space for 512 active sockets
     memset(m_pAsyncSocketExWindowData, 0, 512*sizeof(t_AsyncSocketExWindowData));
     m_nWindowDataSize=512;
     m_nSocketCount=0;
@@ -88,7 +88,7 @@ public:
     {
       DebugAssert(!m_nSocketCount);
       m_nWindowDataSize=512;
-      m_pAsyncSocketExWindowData=static_cast<t_AsyncSocketExWindowData *>(nb_calloc(512, sizeof(t_AsyncSocketExWindowData))); //Reserve space for 512 active sockets
+      m_pAsyncSocketExWindowData=nb::calloc<t_AsyncSocketExWindowData*>(512 * sizeof(t_AsyncSocketExWindowData)); //Reserve space for 512 active sockets
       memset(m_pAsyncSocketExWindowData, 0, 512*sizeof(t_AsyncSocketExWindowData));
     }
 
@@ -110,7 +110,7 @@ public:
       if (m_nWindowDataSize>MAX_SOCKETS)
         m_nWindowDataSize=MAX_SOCKETS;
       t_AsyncSocketExWindowData *tmp=m_pAsyncSocketExWindowData;
-      m_pAsyncSocketExWindowData = static_cast<t_AsyncSocketExWindowData *>(nb_calloc(m_nWindowDataSize, sizeof(t_AsyncSocketExWindowData)));
+      m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(m_nWindowDataSize * sizeof(t_AsyncSocketExWindowData));
       memcpy(m_pAsyncSocketExWindowData, tmp, nOldWindowDataSize * sizeof(t_AsyncSocketExWindowData));
       memset(m_pAsyncSocketExWindowData+nOldWindowDataSize, 0, (m_nWindowDataSize-nOldWindowDataSize)*sizeof(t_AsyncSocketExWindowData));
       nb_free(tmp);
@@ -695,7 +695,7 @@ BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STR
       nb_free(m_lpszSocketAddress);
       if (lpszSocketAddress && *lpszSocketAddress)
       {
-        m_lpszSocketAddress = static_cast<TCHAR *>(nb_calloc(_tcslen(lpszSocketAddress) + 1, sizeof(TCHAR)));
+        m_lpszSocketAddress = nb::wchcalloc(_tcslen(lpszSocketAddress) + 1 * sizeof(TCHAR));
         _tcscpy(m_lpszSocketAddress, lpszSocketAddress);
       }
       else
@@ -767,7 +767,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
   nb_free(m_lpszSocketAddress);
   if (lpszSocketAddress && *lpszSocketAddress)
   {
-    m_lpszSocketAddress = static_cast<TCHAR *>(nb_calloc(_tcslen(lpszSocketAddress) + 1, sizeof(TCHAR)));
+    m_lpszSocketAddress = nb::wchcalloc(_tcslen(lpszSocketAddress) + 1 * sizeof(TCHAR));
     _tcscpy(m_lpszSocketAddress, lpszSocketAddress);
   }
   else
@@ -1074,7 +1074,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
     {
       if (m_pAsyncGetHostByNameBuffer)
         nb_free(m_pAsyncGetHostByNameBuffer);
-      m_pAsyncGetHostByNameBuffer=static_cast<char *>(nb_calloc(1, MAXGETHOSTSTRUCT));
+      m_pAsyncGetHostByNameBuffer = nb::chcalloc(MAXGETHOSTSTRUCT);
 
       m_nAsyncGetHostByNamePort=nHostPort;
 
