@@ -17,6 +17,10 @@
 
 #pragma warning(pop)
 
+namespace nb {
+  using fastdelegate::bind;
+} // namespace nb
+
 #define NPOS static_cast<intptr_t>(-1)
 
 typedef HANDLE THandle;
