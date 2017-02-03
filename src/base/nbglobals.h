@@ -47,6 +47,15 @@
 
 #if defined(__cplusplus)
 
+namespace nb {
+
+template<typename T>
+inline T * calloc(size_t size) { return static_cast<T *>(nb_calloc(1, size)); }
+
+//#define nb_malloc(size) dlcalloc(1, size)
+//#define nb_calloc(count, size) dlcalloc(count, size)
+//#define nb_realloc(ptr, size) dlrealloc(ptr, size)
+
 inline void * operator_new(size_t size)
 {
   void * p = nb_malloc(size);
@@ -63,6 +72,8 @@ inline void operator_delete(void * p)
   nb_free(p);
 }
 
+} // namespace nb
+
 #endif // if defined(__cplusplus)
 
 #ifdef USE_DLMALLOC
@@ -71,19 +82,19 @@ inline void operator_delete(void * p)
   public:                                         \
   void * operator new(size_t sz)                  \
   {                                               \
-    return operator_new(sz);                      \
+    return nb::operator_new(sz);                  \
   }                                               \
   void operator delete(void * p, size_t)          \
   {                                               \
-    operator_delete(p);                           \
+    nb::operator_delete(p);                       \
   }                                               \
   void * operator new[](size_t sz)                \
   {                                               \
-    return operator_new(sz);                      \
+    return nb::operator_new(sz);                  \
   }                                               \
   void operator delete[](void * p, size_t)        \
   {                                               \
-    operator_delete(p);                           \
+    nb::operator_delete(p);                       \
   }                                               \
   void * operator new(size_t, void * p)           \
   {                                               \
@@ -104,19 +115,19 @@ inline void operator_delete(void * p)
 #define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL \
   void * operator new(size_t sz, const char * /*lpszFileName*/, int /*nLine*/) \
   { \
-    return operator_new(sz); \
+    return nb::operator_new(sz); \
   } \
   void * operator new[](size_t sz, const char * /*lpszFileName*/, int /*nLine*/) \
   { \
-    return operator_new(sz); \
+    return nb::operator_new(sz); \
   } \
   void operator delete(void * p, const char * /*lpszFileName*/, int /*nLine*/) \
   { \
-    operator_delete(p); \
+    nb::operator_delete(p); \
   } \
   void operator delete[](void * p, const char * /*lpszFileName*/, int /*nLine*/) \
   { \
-    operator_delete(p); \
+    nb::operator_delete(p); \
   }
 #else
 #define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL
