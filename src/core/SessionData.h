@@ -168,8 +168,11 @@ class TSessionData : public TNamedObject
 {
 friend class TStoredSessionList;
 NB_DISABLE_COPY(TSessionData)
-NB_DECLARE_CLASS(TSessionData)
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return Obj->GetKind() == OBJECT_CLASS_TSessionData;
+  }
 private:
   UnicodeString FHostName;
   intptr_t FPortNumber;
@@ -850,6 +853,12 @@ class TStoredSessionList : public TNamedObjectList
 {
 NB_DISABLE_COPY(TStoredSessionList)
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
+  }
+public:
   explicit TStoredSessionList(bool AReadOnly = false);
   void Load(const UnicodeString & AKey, bool UseDefaults);
   void Load();
@@ -888,8 +897,8 @@ public:
   __property TSessionData * Sessions[int Index]  = { read=AtSession };
   __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
 */
-  const TSessionData * GetSession(intptr_t Index) const { return NB_STATIC_DOWNCAST_CONST(TSessionData, AtObject(Index)); }
-  TSessionData * GetSession(intptr_t Index) { return NB_STATIC_DOWNCAST(TSessionData, AtObject(Index)); }
+  const TSessionData * GetSession(intptr_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
+  TSessionData * GetSession(intptr_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
   const TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
   TSessionData * GetDefaultSettings() { return FDefaultSettings; }
   const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;

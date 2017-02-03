@@ -221,31 +221,47 @@ public:
 
 class TSFTPPacket : public TObject
 {
-NB_DECLARE_CLASS(TSFTPPacket)
 public:
-  explicit TSFTPPacket(uintptr_t codePage)
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSFTPPacket ||
+      Obj->GetKind() == OBJECT_CLASS_TSFTPQueuePacket;
+  }
+public:
+  explicit TSFTPPacket(uintptr_t codePage) :
+    TObject(OBJECT_CLASS_TSFTPPacket)
+  {
+    Init(codePage);
+  }
+  explicit TSFTPPacket(TObjectClassId Kind, uintptr_t codePage) :
+    TObject(Kind)
   {
     Init(codePage);
   }
 
-  explicit TSFTPPacket(const TSFTPPacket & other)
+  explicit TSFTPPacket(const TSFTPPacket & other) :
+    TObject(OBJECT_CLASS_TSFTPPacket)
   {
     this->operator=(other);
   }
 
-  explicit TSFTPPacket(const TSFTPPacket & Source, uintptr_t codePage)
+  explicit TSFTPPacket(const TSFTPPacket & Source, uintptr_t codePage) :
+    TObject(OBJECT_CLASS_TSFTPPacket)
   {
     Init(codePage);
     *this = Source;
   }
 
-  explicit TSFTPPacket(SSH_FXP_TYPES AType, uintptr_t codePage)
+  explicit TSFTPPacket(SSH_FXP_TYPES AType, uintptr_t codePage) :
+    TObject(OBJECT_CLASS_TSFTPPacket)
   {
     Init(codePage);
     ChangeType(AType);
   }
 
-  explicit TSFTPPacket(const uint8_t * Source, uintptr_t Len, uintptr_t codePage)
+  explicit TSFTPPacket(const uint8_t * Source, uintptr_t Len, uintptr_t codePage) :
+    TObject(OBJECT_CLASS_TSFTPPacket)
   {
     Init(codePage);
     FLength = Len;
@@ -253,7 +269,8 @@ public:
     memmove(GetData(), Source, Len);
   }
 
-  explicit TSFTPPacket(const RawByteString & Source, uintptr_t codePage)
+  explicit TSFTPPacket(const RawByteString & Source, uintptr_t codePage) :
+    TObject(OBJECT_CLASS_TSFTPPacket)
   {
     Init(codePage);
     FLength = static_cast<uintptr_t>(Source.Length());
@@ -261,7 +278,7 @@ public:
     memmove(GetData(), Source.c_str(), Source.Length());
   }
 
-  ~TSFTPPacket()
+  virtual ~TSFTPPacket()
   {
     if (FData != nullptr)
     {
@@ -1175,10 +1192,15 @@ uint32_t TSFTPPacket::FMessageCounter = 0;
 class TSFTPQueuePacket : public TSFTPPacket
 {
 NB_DISABLE_COPY(TSFTPQueuePacket)
-NB_DECLARE_CLASS(TSFTPQueuePacket)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSFTPQueuePacket;
+  }
 public:
   explicit TSFTPQueuePacket(uintptr_t CodePage) :
-    TSFTPPacket(CodePage),
+    TSFTPPacket(OBJECT_CLASS_TSFTPQueuePacket, CodePage),
     Token(nullptr)
   {
   }
@@ -1190,7 +1212,14 @@ class TSFTPQueue : public TObject
 {
 NB_DISABLE_COPY(TSFTPQueue)
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSFTPQueue;
+  }
+public:
   explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
+    TObject(OBJECT_CLASS_TSFTPQueue),
     FRequests(new TList()),
     FResponses(new TList()),
     FFileSystem(AFileSystem),
@@ -1204,11 +1233,11 @@ public:
     DebugAssert(FResponses->GetCount() == FRequests->GetCount());
     for (intptr_t Index = 0; Index < FRequests->GetCount(); ++Index)
     {
-      TSFTPQueuePacket * Request = NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetItem(Index));
+      TSFTPQueuePacket * Request = dyn_cast<TSFTPQueuePacket>(FRequests->GetItem(Index));
       DebugAssert(Request);
       SAFE_DESTROY(Request);
 
-      TSFTPPacket * Response = NB_STATIC_DOWNCAST(TSFTPPacket, FResponses->GetItem(Index));
+      TSFTPPacket * Response = dyn_cast<TSFTPPacket>(FResponses->GetItem(Index));
       DebugAssert(Response);
       SAFE_DESTROY(Response);
     }
@@ -1229,10 +1258,10 @@ public:
     {
       DebugAssert(FResponses->GetCount());
 
-      TSFTPQueuePacket * Request = NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetItem(0));
+      TSFTPQueuePacket * Request = dyn_cast<TSFTPQueuePacket>(FRequests->GetItem(0));
       DebugAssert(Request);
 
-      TSFTPPacket * Response = NB_STATIC_DOWNCAST(TSFTPPacket, FResponses->GetItem(0));
+      TSFTPPacket * Response = dyn_cast<TSFTPPacket>(FResponses->GetItem(0));
       DebugAssert(Response);
 
       try
@@ -1273,7 +1302,7 @@ public:
   {
     DebugAssert(FRequests->GetCount());
     bool Result = false;
-    std::unique_ptr<TSFTPQueuePacket> Request(NB_STATIC_DOWNCAST(TSFTPQueuePacket, FRequests->GetItem(0)));
+    std::unique_ptr<TSFTPQueuePacket> Request(dyn_cast<TSFTPQueuePacket>(FRequests->GetItem(0)));
     try__finally
     {
       FRequests->Delete(0);
@@ -1283,7 +1312,7 @@ public:
         *Token = Request->Token;
       }
 
-      std::unique_ptr<TSFTPPacket> Response(NB_STATIC_DOWNCAST(TSFTPPacket, FResponses->GetItem(0)));
+      std::unique_ptr<TSFTPPacket> Response(dyn_cast<TSFTPPacket>(FResponses->GetItem(0)));
       FResponses->Delete(0);
       DebugAssert(Response.get());
 
@@ -1731,7 +1760,7 @@ public:
   {
     void * Token;
     bool Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_ATTRS, asAll, &Token);
-    File = NB_STATIC_DOWNCAST(TRemoteFile, Token);
+    File = dyn_cast<TRemoteFile>(Token);
     return Result;
   }
 
@@ -1741,7 +1770,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FFileList->GetObj(FIndex));
+      TRemoteFile * File = dyn_cast<TRemoteFile>(FFileList->GetObj(FIndex));
       ++FIndex;
 
       bool MissingRights =
@@ -1819,13 +1848,13 @@ public:
     {
       SCOPE_EXIT
       {
-        File = NB_STATIC_DOWNCAST(TRemoteFile, Token);
+        File = dyn_cast<TRemoteFile>(Token);
       };
       Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_EXTENDED_REPLY, asNo, &Token);
     }
     __finally
     {
-      File = NB_STATIC_DOWNCAST(TRemoteFile, Token);
+      File = dyn_cast<TRemoteFile>(Token);
     };
     return Result;
   }
@@ -1836,7 +1865,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, FFileList->GetObj(FIndex));
+      TRemoteFile * File = dyn_cast<TRemoteFile>(FFileList->GetObj(FIndex));
       DebugAssert(File != nullptr);
       ++FIndex;
 
@@ -1903,7 +1932,7 @@ private:
 //===========================================================================
 //===========================================================================
 TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
-  TCustomFileSystem(ATerminal),
+  TCustomFileSystem(OBJECT_CLASS_TSFTPFileSystem, ATerminal),
   FSecureShell(nullptr),
   FFileSystemInfoValid(false),
   FVersion(0),
@@ -1928,7 +1957,7 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
 
 void TSFTPFileSystem::Init(void * Data)
 {
-  FSecureShell = NB_STATIC_DOWNCAST(TSecureShell, Data);
+  FSecureShell = dyn_cast<TSecureShell>(Data);
   DebugAssert(FSecureShell);
   FFileSystemInfoValid = false;
   FVersion = NPOS;
@@ -2114,7 +2143,7 @@ void TSFTPFileSystem::ResetConnection()
   for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
   {
     DebugAssert(FPacketReservations->GetItem(Index) == nullptr);
-    TSFTPPacket * Item = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Index));
+    TSFTPPacket * Item = dyn_cast<TSFTPPacket>(FPacketReservations->GetItem(Index));
     SAFE_DESTROY(Item);
   }
   FPacketReservations->Clear();
@@ -2545,7 +2574,7 @@ void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
   {
     FPacketNumbers[Index - 1] = FPacketNumbers[Index];
   }
-  TSFTPPacket * Packet = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Reservation));
+  TSFTPPacket * Packet = dyn_cast<TSFTPPacket>(FPacketReservations->GetItem(Reservation));
   if (Packet)
   {
     DebugAssert((Packet->GetReservedBy() == nullptr) || (Packet->GetReservedBy() == this));
@@ -2660,7 +2689,7 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
             uint32_t MessageNumber = static_cast<uint32_t>(FPacketNumbers[Index]);
             if (MessageNumber == Packet->GetMessageNumber())
             {
-              ReservedPacket = NB_STATIC_DOWNCAST(TSFTPPacket, FPacketReservations->GetItem(Index));
+              ReservedPacket = dyn_cast<TSFTPPacket>(FPacketReservations->GetItem(Index));
               IsReserved = true;
               if (ReservedPacket)
               {
@@ -3637,7 +3666,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         }
         catch (Exception & E)
         {
-          if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
+          if (isa<EFatal>(&E))
           {
             throw;
           }
@@ -4111,7 +4140,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
   {
     for (intptr_t Index1 = 0; Index1 < AFileList->GetCount(); ++Index1)
     {
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index1));
+      TRemoteFile * File = dyn_cast<TRemoteFile>(AFileList->GetObj(Index1));
       DebugAssert(File != nullptr);
       if (File && File->GetIsDirectory() && FTerminal->CanRecurseToDirectory(File) &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -4422,7 +4451,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   {
     bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
+    TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = base::ExtractFileName(RealFileName, false);
     DebugAssert(!FAvoidBusy);
@@ -5322,7 +5351,7 @@ RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
 
 intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
 {
-  TOpenRemoteFileParams * OpenParams = NB_STATIC_DOWNCAST(TOpenRemoteFileParams, AOpenParams);
+  TOpenRemoteFileParams * OpenParams = dyn_cast<TOpenRemoteFileParams>(AOpenParams);
   DebugAssert(OpenParams);
   TFileOperationProgressType * OperationProgress = OpenParams->OperationProgress;
 
@@ -5668,7 +5697,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   {
     bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
+    const TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index));
 
     DebugAssert(!FAvoidBusy);
     FAvoidBusy = true;
@@ -6386,7 +6415,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
 void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * Param)
 {
-  TSinkFileParams * Params = NB_STATIC_DOWNCAST(TSinkFileParams, Param);
+  TSinkFileParams * Params = dyn_cast<TSinkFileParams>(Param);
   DebugAssert(Params->OperationProgress);
   try
   {
@@ -6439,7 +6468,4 @@ void TSFTPFileSystem::UpdateFromMain(TCustomFileSystem * /*MainFileSystem*/)
 {
   // noop
 }
-
-NB_IMPLEMENT_CLASS(TSFTPPacket, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TSFTPQueuePacket, NB_GET_CLASS_INFO(TSFTPPacket), nullptr)
 

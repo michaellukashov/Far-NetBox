@@ -121,10 +121,17 @@ const int ropNoReadDirectory = 0x02;
 
 const int boDisableNeverShowAgain = 0x01;
 
-class TTerminal : public TObject, public TSessionUI
+class TTerminal : public TSessionUI
 {
 NB_DISABLE_COPY(TTerminal)
-NB_DECLARE_CLASS(TTerminal)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TTerminal ||
+      Obj->GetKind() == OBJECT_CLASS_TSecondaryTerminal ||
+      Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
+  }
 public:
   // TScript::SynchronizeProc relies on the order
   enum TSynchronizeMode
@@ -435,7 +442,7 @@ public:
 
 
 public:
-  explicit TTerminal();
+  explicit TTerminal(TObjectClassId Kind);
   void Init(TSessionData * SessionData, TConfiguration * Configuration);
   virtual ~TTerminal();
   void Open();
@@ -676,8 +683,16 @@ class TSecondaryTerminal : public TTerminal
 {
 NB_DISABLE_COPY(TSecondaryTerminal)
 public:
-  TSecondaryTerminal() : FMainTerminal(nullptr) {}
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSecondaryTerminal ||
+      Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
+  }
+public:
+  TSecondaryTerminal() : TTerminal(OBJECT_CLASS_TSecondaryTerminal), FMainTerminal(nullptr) {}
   explicit TSecondaryTerminal(TTerminal * MainTerminal);
+  explicit TSecondaryTerminal(TObjectClassId Kind, TTerminal * MainTerminal);
   virtual ~TSecondaryTerminal() {}
   void Init(TSessionData * SessionData, TConfiguration * Configuration,
     const UnicodeString & Name);
@@ -724,8 +739,14 @@ private:
 
 struct TCustomCommandParams : public TObject
 {
-NB_DECLARE_CLASS(TCustomCommandParams)
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCustomCommandParams;
+  }
+public:
+  TCustomCommandParams() : TObject(OBJECT_CLASS_TCustomCommandParams), Params(0) {}
   UnicodeString Command;
   intptr_t Params;
   TCaptureOutputEvent OutputEvent;
@@ -742,8 +763,14 @@ struct TCalculateSizeStats : public TObject
 
 struct TCalculateSizeParams : public TObject
 {
-NB_DECLARE_CLASS(TCalculateSizeParams)
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCalculateSizeParams;
+  }
+public:
+  TCalculateSizeParams() : TObject(OBJECT_CLASS_TCalculateSizeParams), Size(0), Params(0), CopyParam(nullptr), Stats(nullptr), AllowDirs(false), Result(false) {}
   int64_t Size;
   intptr_t Params;
   const TCopyParamType * CopyParam;
@@ -756,8 +783,14 @@ typedef rde::vector<TDateTime> TDateTimes;
 
 struct TMakeLocalFileListParams : public TObject
 {
-NB_DECLARE_CLASS(TMakeLocalFileListParams)
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TMakeLocalFileListParams;
+  }
+public:
+  TMakeLocalFileListParams() : TObject(OBJECT_CLASS_TMakeLocalFileListParams), FileList(nullptr), FileTimes(nullptr), IncludeDirs(false), Recursive(false) {}
   TStrings * FileList;
   TDateTimes * FileTimes;
   bool IncludeDirs;
@@ -792,8 +825,13 @@ enum TChecklistAction
 class TChecklistItem : public TObject
 {
 friend class TTerminal;
-NB_DECLARE_CLASS(TChecklistItem)
 NB_DISABLE_COPY(TChecklistItem)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TChecklistItem;
+  }
 public:
   struct TFileInfo : public TObject
   {

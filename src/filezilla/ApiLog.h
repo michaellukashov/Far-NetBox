@@ -5,7 +5,13 @@
 
 class CApiLog : public TObject
 {
-NB_DECLARE_CLASS(CApiLog)
+public:
+  static bool classof(const TObject * Obj)
+  {
+    TObjectClassId Kind = Obj->GetKind();
+    return
+      Kind == OBJECT_CLASS_CApiLog;
+  }
 public:
   CApiLog();
   virtual ~CApiLog();

@@ -34,8 +34,8 @@ TOptions * GetGlobalOptions();
 
 void ShowExtendedException(Exception * E);
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
-void IgnoreException(const std::type_info & ExceptionType);
-UnicodeString GetExceptionDebugInfo();
+//void IgnoreException(const std::type_info & ExceptionType);
+//UnicodeString GetExceptionDebugInfo();
 
 UnicodeString GetCompanyRegistryKey();
 UnicodeString GetRegistryKey();
@@ -157,7 +157,6 @@ private:
 
 struct TClipboardHandler
 {
-NB_DECLARE_CLASS(TClipboardHandler)
 NB_DISABLE_COPY(TClipboardHandler)
 public:
   TClipboardHandler() {}

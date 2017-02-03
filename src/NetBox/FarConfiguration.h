@@ -9,7 +9,8 @@ class TBookmarkList;
 class TFarConfiguration : public TGUIConfiguration
 {
 NB_DISABLE_COPY(TFarConfiguration)
-NB_DECLARE_CLASS(TFarConfiguration)
+public:
+  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TFarConfiguration; }
 public:
   explicit TFarConfiguration(TCustomFarPlugin * APlugin);
   virtual ~TFarConfiguration();

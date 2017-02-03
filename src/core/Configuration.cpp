@@ -31,7 +31,8 @@ const UnicodeString Crc32ChecksumAlg(L"crc32");
 const UnicodeString SshFingerprintType(L"ssh");
 const UnicodeString TlsFingerprintType(L"tls");
 
-TConfiguration::TConfiguration() :
+TConfiguration::TConfiguration(TObjectClassId Kind) :
+  TObject(Kind),
   FDontSave(false),
   FChanged(false),
   FUpdating(0),
@@ -597,7 +598,6 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
       !Storage->OpenSubKey("Banners", false) ||
       !Storage->ValueExists(SessionKey) ||
       (Storage->ReadString(SessionKey, L"") != BannerHash(Banner));
-    return Result;
   }
   __finally
   {
@@ -1681,4 +1681,3 @@ bool TShortCuts::Has(const TShortCut & ShortCut) const
   return (it != FShortCuts.end());
 }
 
-NB_IMPLEMENT_CLASS(TConfiguration, NB_GET_CLASS_INFO(TObject), nullptr)
