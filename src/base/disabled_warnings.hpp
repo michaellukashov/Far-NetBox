@@ -29,6 +29,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // some warnings are not exist in older VC versions, no sense to care about them
 #pragma warning(disable: 4616) // https://msdn.microsoft.com/en-us/library/t7ab6xtd.aspx #pragma warning : warning number 'number' not a valid compiler warning
 #pragma warning(disable: 4619) // https://msdn.microsoft.com/en-us/library/tacee08d.aspx #pragma warning : there is no warning number 'number'
+#pragma warning(disable: 4290) // C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+#pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
 
 #ifdef DISABLE_WARNINGS_IN_STD_HEADERS
 // these warnings are triggered in the standard headers ONLY
@@ -36,7 +38,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma warning(disable: 4265) // https://msdn.microsoft.com/en-us/library/wzxffy8c.aspx 'class' : class has virtual functions, but destructor is not virtual
 #pragma warning(disable: 4668) // https://msdn.microsoft.com/en-us/library/4dt9kyhy.aspx 'symbol' is not defined as a preprocessor macro, replacing with '0' for 'directives'
 #pragma warning(disable: 4917) // https://msdn.microsoft.com/en-us/library/3w98z1xh.aspx 'declarator' : a GUID can only be associated with a class, interface or namespace
-#pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
 #else
 // these in the rest of the code as well
 #pragma warning(disable: 4054) // https://msdn.microsoft.com/en-us/library/07d15ax5.aspx 'conversion' : from function pointer 'type1' to data pointer 'type2'

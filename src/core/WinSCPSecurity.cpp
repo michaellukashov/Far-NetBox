@@ -158,7 +158,7 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
     ChainConfig.CycleDetectionModulus = 0;
 
     HCERTCHAINENGINE ChainEngine;
-    bool ChainEngineResult = CertCreateCertificateChainEngine(&ChainConfig, &ChainEngine);
+    bool ChainEngineResult = CertCreateCertificateChainEngine(&ChainConfig, &ChainEngine) != FALSE;
     if (ChainEngineResult)
     {
       const CERT_CHAIN_CONTEXT * ChainContext = nullptr;

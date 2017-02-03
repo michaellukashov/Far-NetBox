@@ -438,7 +438,7 @@ bool CFtpControlSocket::InitConnect()
     m_pProxyLayer = new CAsyncProxySocketLayer;
     m_pProxyLayer->SetProxy(
       nProxyType, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT),
-      GetOptionVal(OPTION_PROXYUSELOGON), T2CA(GetOption(OPTION_PROXYUSER)), T2CA(GetOption(OPTION_PROXYPASS)));
+      GetOptionVal(OPTION_PROXYUSELOGON) != FALSE, T2CA(GetOption(OPTION_PROXYUSER)), T2CA(GetOption(OPTION_PROXYPASS)));
     AddLayer(m_pProxyLayer);
   }
 
@@ -538,7 +538,7 @@ void CFtpControlSocket::Connect(t_server &server)
       return;
     }
     int res = m_pSslLayer->InitSSLConnection(true, NULL,
-      GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
+      GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE) != FALSE,
       GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
       GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
     if (res == SSL_FAILURE_INITSSL)
@@ -664,7 +664,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         return;
       }
       int res = m_pSslLayer->InitSSLConnection(true, NULL,
-        GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
+        GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE) != FALSE,
         GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
         GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
       if (res == SSL_FAILURE_INITSSL)
@@ -1215,7 +1215,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
     ShowStatus(str, FZ_LOG_PROGRESS);
     m_pOwner->SetConnected(TRUE);
   }
-  char *buffer = static_cast<char *>(nb_calloc(1, BUFFERSIZE));
+  char *buffer = nb::chcalloc(BUFFERSIZE);
   int numread = Receive(buffer, BUFFERSIZE);
 
   if (numread == SOCKET_ERROR)
@@ -1254,7 +1254,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
     nb_free(buffer);
     buffer = NULL;
     numread = Buf.GetLength();
-    buffer = static_cast<char *>(nb_calloc(1, numread));
+    buffer = nb::chcalloc(numread);
     memcpy(buffer, Buf.GetBuffer(), numread);
   }
 
@@ -1285,7 +1285,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
               m_RecvBuffer.back() = "";
             else
             {
-              LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
+              LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
               MultiByteToWideChar(CP_UTF8, 0, utf8, -1 , (LPWSTR)p1, len + 1);
               ShowStatus(W2CT(p1), FZ_LOG_REPLY);
               nb_free(p1);
@@ -1300,7 +1300,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
             m_RecvBuffer.back() = "";
           else
           {
-            LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
+            LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
             MultiByteToWideChar(m_nCodePage, 0, str, -1 , (LPWSTR)p1, len + 1);
             ShowStatus(W2CT(p1), FZ_LOG_REPLY);
             nb_free(p1);
@@ -1495,7 +1495,7 @@ BOOL CFtpControlSocket::Send(CString str)
       DoClose();
       return FALSE;
     }
-    char* utf8 = static_cast<char *>(nb_calloc(1, len + 1));
+    char* utf8 = nb::chcalloc(len + 1);
     WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf8, len + 1, 0, 0);
 
     int sendLen = strlen(utf8);
@@ -1516,13 +1516,13 @@ BOOL CFtpControlSocket::Send(CString str)
         res = 0;
       if (!m_sendBuffer)
       {
-        m_sendBuffer = static_cast<char *>(nb_calloc(1, sendLen - res));
+        m_sendBuffer = nb::chcalloc(sendLen - res);
         memcpy(m_sendBuffer, utf8 + res, sendLen - res);
         m_sendBufferLen = sendLen - res;
       }
       else
       {
-        char* tmp = static_cast<char *>(nb_calloc(1, m_sendBufferLen + sendLen - res));
+        char* tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
         memcpy(tmp, m_sendBuffer, m_sendBufferLen);
         memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
         nb_free(m_sendBuffer);
@@ -1542,7 +1542,7 @@ BOOL CFtpControlSocket::Send(CString str)
       DoClose();
       return FALSE;
     }
-    char* utf8 = static_cast<char *>(nb_calloc(1, len + 1));
+    char* utf8 = nb::chcalloc(len + 1);
     WideCharToMultiByte(m_nCodePage, 0, unicode, -1, utf8, len + 1, 0, 0);
 
     int sendLen = strlen(utf8);
@@ -1563,13 +1563,13 @@ BOOL CFtpControlSocket::Send(CString str)
         res = 0;
       if (!m_sendBuffer)
       {
-        m_sendBuffer = static_cast<char *>(nb_calloc(1, sendLen - res));
+        m_sendBuffer = nb::chcalloc(sendLen - res);
         memcpy(m_sendBuffer, utf8 + res, sendLen - res);
         m_sendBufferLen = sendLen - res;
       }
       else
       {
-        char* tmp = static_cast<char *>(nb_calloc(1, m_sendBufferLen + sendLen - res));
+        char* tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
         memcpy(tmp, m_sendBuffer, m_sendBufferLen);
         memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
         nb_free(m_sendBuffer);
@@ -1600,13 +1600,13 @@ BOOL CFtpControlSocket::Send(CString str)
         res = 0;
       if (!m_sendBuffer)
       {
-        m_sendBuffer = static_cast<char *>(nb_calloc(1, sendLen - res));
+        m_sendBuffer = nb::chcalloc(sendLen - res);
         memcpy(m_sendBuffer, lpszAsciiSend, sendLen - res);
         m_sendBufferLen = sendLen - res;
       }
       else
       {
-        char* tmp = static_cast<char *>(nb_calloc(1, m_sendBufferLen + sendLen - res));
+        char* tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
         memcpy(tmp, m_sendBuffer, m_sendBufferLen);
         memcpy(tmp + m_sendBufferLen, lpszAsciiSend + res, sendLen - res);
         nb_free(m_sendBuffer);
@@ -2504,7 +2504,7 @@ void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & p
     {
       USES_CONVERSION;
       int size = m_ListFile.GetLength();
-      char *buffer = static_cast<char *>(nb_calloc(1, size + 1));
+      char *buffer = nb::chcalloc(size + 1);
       memmove(buffer, (LPCSTR)m_ListFile, m_ListFile.GetLength());
       CFtpListResult * pListResult = new CFtpListResult(m_CurrentServer, &m_bUTF8, &m_nCodePage);
       pListResult->InitIntern(GetIntern());
@@ -3489,7 +3489,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         if (HandleSize(code, size))
         {
           DebugAssert(!pData->pFileSize);
-          pData->pFileSize=static_cast<_int64*>(nb_calloc(1, sizeof(_int64)));
+          pData->pFileSize=nb::calloc<_int64*>(sizeof(_int64));
           *pData->pFileSize=size;
         }
       }
@@ -6128,7 +6128,7 @@ CString CFtpControlSocket::ConvertDomainName(CString domain)
 
   LPCWSTR buffer = T2CW(domain);
 
-  char *utf8 = static_cast<char *>(nb_calloc(1, wcslen(buffer) * 2 + 2));
+  char *utf8 = nb::chcalloc(wcslen(buffer) * 2 + 2);
   if (!WideCharToMultiByte(CP_UTF8, 0, buffer, -1, utf8, wcslen(buffer) * 2 + 2, 0, 0))
   {
     nb_free(utf8);
@@ -6344,7 +6344,7 @@ CString CFtpControlSocket::GetReply()
     }
     else
     {
-      LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
+      LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
       MultiByteToWideChar(CP_UTF8, 0, line, -1 , (LPWSTR)p1, len + 1);
       CString reply = W2CT(p1);
       nb_free(p1);
@@ -6364,7 +6364,7 @@ CString CFtpControlSocket::GetReply()
     }
     else
     {
-      LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
+      LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
       MultiByteToWideChar(m_nCodePage, 0, line, -1 , (LPWSTR)p1, len + 1);
       CString reply = W2CT(p1);
       nb_free(p1);
@@ -6407,7 +6407,7 @@ void CFtpControlSocket::OnSend(int nErrorCode)
   }
   else
   {
-    char* tmp = static_cast<char *>(nb_calloc(1, m_sendBufferLen - res));
+    char* tmp = nb::chcalloc(m_sendBufferLen - res);
     memcpy(tmp, m_sendBuffer + res, m_sendBufferLen - res);
     nb_free(m_sendBuffer);
     m_sendBuffer = tmp;
