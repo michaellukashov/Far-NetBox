@@ -50,11 +50,12 @@
 namespace nb {
 
 template<typename T>
-inline T * calloc(size_t size) { return static_cast<T *>(nb_calloc(1, size)); }
+inline T calloc(size_t size) { return static_cast<T>(nb_calloc(1, size)); }
+template<typename T>
+inline T realloc(T ptr, size_t size) { return static_cast<T>(nb_realloc(ptr, size)); }
 
-//#define nb_malloc(size) dlcalloc(1, size)
-//#define nb_calloc(count, size) dlcalloc(count, size)
-//#define nb_realloc(ptr, size) dlrealloc(ptr, size)
+inline char* chcalloc(size_t size) { return calloc<char*>(size); }
+inline wchar_t* wchcalloc(size_t size) { return calloc<wchar_t*>(size); }
 
 inline void * operator_new(size_t size)
 {
@@ -191,7 +192,7 @@ struct custom_nballocator_t
   {
     if (0 == s)
       return nullptr;
-    pointer temp = reinterpret_cast<pointer>(nb_malloc(s * sizeof(T)));
+    pointer temp = reinterpret_cast<pointer>(nb::calloc<pointer>(s * sizeof(T)));
 #if !defined(__MINGW32__)
     if (temp == nullptr)
       throw std::bad_alloc();

@@ -505,7 +505,7 @@ RawByteString ScramblePassword(const UnicodeString & Password)
 #define SCRAMBLE_LENGTH_EXTENSION 50
   UTF8String UtfPassword = UTF8String(Password);
   intptr_t Len = UtfPassword.Length();
-  char * Buf = static_cast<char *>(nb_malloc(Len + SCRAMBLE_LENGTH_EXTENSION));
+  char * Buf = nb::chcalloc(Len + SCRAMBLE_LENGTH_EXTENSION);
   intptr_t Padding = (((Len + 3) / 17) * 17 + 17) - 3 - Len;
   for (intptr_t Index = 0; Index < Padding; ++Index)
   {
@@ -581,7 +581,7 @@ bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Passwor
 void CryptographyInitialize()
 {
   ScrambleTable = SScrambleTable;
-  UnscrambleTable = static_cast<uint8_t *>(nb_malloc(256));
+  UnscrambleTable = nb::calloc<uint8_t *>(256);
   for (intptr_t Index = 0; Index < 256; ++Index)
   {
     UnscrambleTable[SScrambleTable[Index]] = (uint8_t)Index;
