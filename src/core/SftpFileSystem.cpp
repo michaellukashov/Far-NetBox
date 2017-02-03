@@ -1450,7 +1450,7 @@ class TSFTPAsynchronousQueue : public TSFTPQueue
 public:
   explicit TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) : TSFTPQueue(AFileSystem, CodePage)
   {
-    FFileSystem->FSecureShell->RegisterReceiveHandler(MAKE_CALLBACK(TSFTPAsynchronousQueue::ReceiveHandler, this));
+    FFileSystem->FSecureShell->RegisterReceiveHandler(nb::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this));
     FReceiveHandlerRegistered = true;
   }
 
@@ -1507,7 +1507,7 @@ protected:
     if (FReceiveHandlerRegistered)
     {
       FReceiveHandlerRegistered = false;
-      FFileSystem->FSecureShell->UnregisterReceiveHandler(MAKE_CALLBACK(TSFTPAsynchronousQueue::ReceiveHandler, this));
+      FFileSystem->FSecureShell->UnregisterReceiveHandler(nb::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this));
     }
   }
 
@@ -3846,7 +3846,7 @@ void TSFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
     {
       try
       {
-        FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::RemoteDeleteFile, FTerminal), &Params);
+        FTerminal->ProcessDirectory(AFileName, nb::bind(&TTerminal::RemoteDeleteFile, FTerminal), &Params);
       }
       catch (...)
       {
@@ -4029,7 +4029,7 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
     {
       try
       {
-        FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::ChangeFileProperties, FTerminal),
+        FTerminal->ProcessDirectory(AFileName, nb::bind(&TTerminal::ChangeFileProperties, FTerminal),
           static_cast<void *>(const_cast<TRemoteProperties *>(AProperties)));
       }
       catch (...)
@@ -4073,7 +4073,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
   // without knowledge of server's capabilities, this all make no sense
   if (FSupport->Loaded || (FSecureShell->GetSshImplementation() == sshiBitvise))
   {
-    TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
+    TFileOperationProgressType Progress(nb::bind(&TTerminal::DoProgress, FTerminal), nb::bind(&TTerminal::DoFinished, FTerminal));
     Progress.Start(foGetProperties, osRemote, AFileList->GetCount());
 
     FTerminal->SetOperationProgress(&Progress); //-V506
@@ -4286,7 +4286,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
   TStrings * AFileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
-  TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
+  TFileOperationProgressType Progress(nb::bind(&TTerminal::DoProgress, FTerminal), nb::bind(&TTerminal::DoFinished, FTerminal));
   Progress.Start(foCalculateChecksum, osRemote, AFileList->GetCount());
 
   UnicodeString NormalizedAlg = FindIdent(Alg, FChecksumAlgs.get());
@@ -4987,7 +4987,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
       OpenParams.Confirmed = false;
 
       FTerminal->LogEvent("Opening remote file.");
-      FTerminal->FileOperationLoop(MAKE_CALLBACK(TSFTPFileSystem::SFTPOpenRemote, this), OperationProgress, true,
+      FTerminal->FileOperationLoop(nb::bind(&TSFTPFileSystem::SFTPOpenRemote, this), OperationProgress, true,
         FMTLOAD(SFTP_CREATE_FILE_ERROR, OpenParams.RemoteFileName.c_str()),
         &OpenParams);
       OperationProgress->Progress();
@@ -5851,7 +5851,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~tfFirstLevel;
 
-      FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TSFTPFileSystem::SFTPSinkFile, this), &SinkFileParams);
+      FTerminal->ProcessDirectory(AFileName, nb::bind(&TSFTPFileSystem::SFTPSinkFile, this), &SinkFileParams);
 
       if (CopyParam->GetPreserveTime() && CopyParam->GetPreserveTimeDirs())
       {

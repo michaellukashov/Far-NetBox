@@ -1279,11 +1279,11 @@ void TTerminalItem::Init(intptr_t Index)
     Terminal->Init(FQueue->FSessionData, FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
     Terminal->SetUseBusyCursor(false);
 
-    Terminal->SetOnQueryUser(MAKE_CALLBACK(TTerminalItem::TerminalQueryUser, this));
-    Terminal->SetOnPromptUser(MAKE_CALLBACK(TTerminalItem::TerminalPromptUser, this));
-    Terminal->SetOnShowExtendedException(MAKE_CALLBACK(TTerminalItem::TerminalShowExtendedException, this));
-    Terminal->SetOnProgress(MAKE_CALLBACK(TTerminalItem::OperationProgress, this));
-    Terminal->SetOnFinished(MAKE_CALLBACK(TTerminalItem::OperationFinished, this));
+    Terminal->SetOnQueryUser(nb::bind(&TTerminalItem::TerminalQueryUser, this));
+    Terminal->SetOnPromptUser(nb::bind(&TTerminalItem::TerminalPromptUser, this));
+    Terminal->SetOnShowExtendedException(nb::bind(&TTerminalItem::TerminalShowExtendedException, this));
+    Terminal->SetOnProgress(nb::bind(&TTerminalItem::OperationProgress, this));
+    Terminal->SetOnFinished(nb::bind(&TTerminalItem::OperationFinished, this));
     FTerminal = Terminal.release();
   }
   /*catch(...)
@@ -2251,16 +2251,16 @@ void TTerminalThread::Init()
   FOnReadDirectoryProgress = FTerminal->GetOnReadDirectoryProgress();
   FOnInitializeLog = FTerminal->GetOnInitializeLog();
 
-  FTerminal->SetOnInformation(MAKE_CALLBACK(TTerminalThread::TerminalInformation, this));
-  FTerminal->SetOnQueryUser(MAKE_CALLBACK(TTerminalThread::TerminalQueryUser, this));
-  FTerminal->SetOnPromptUser(MAKE_CALLBACK(TTerminalThread::TerminalPromptUser, this));
-  FTerminal->SetOnShowExtendedException(MAKE_CALLBACK(TTerminalThread::TerminalShowExtendedException, this));
-  FTerminal->SetOnDisplayBanner(MAKE_CALLBACK(TTerminalThread::TerminalDisplayBanner, this));
-  FTerminal->SetOnChangeDirectory(MAKE_CALLBACK(TTerminalThread::TerminalChangeDirectory, this));
-  FTerminal->SetOnReadDirectory(MAKE_CALLBACK(TTerminalThread::TerminalReadDirectory, this));
-  FTerminal->SetOnStartReadDirectory(MAKE_CALLBACK(TTerminalThread::TerminalStartReadDirectory, this));
-  FTerminal->SetOnReadDirectoryProgress(MAKE_CALLBACK(TTerminalThread::TerminalReadDirectoryProgress, this));
-  FTerminal->SetOnInitializeLog(MAKE_CALLBACK(TTerminalThread::TerminalInitializeLog, this));
+  FTerminal->SetOnInformation(nb::bind(&TTerminalThread::TerminalInformation, this));
+  FTerminal->SetOnQueryUser(nb::bind(&TTerminalThread::TerminalQueryUser, this));
+  FTerminal->SetOnPromptUser(nb::bind(&TTerminalThread::TerminalPromptUser, this));
+  FTerminal->SetOnShowExtendedException(nb::bind(&TTerminalThread::TerminalShowExtendedException, this));
+  FTerminal->SetOnDisplayBanner(nb::bind(&TTerminalThread::TerminalDisplayBanner, this));
+  FTerminal->SetOnChangeDirectory(nb::bind(&TTerminalThread::TerminalChangeDirectory, this));
+  FTerminal->SetOnReadDirectory(nb::bind(&TTerminalThread::TerminalReadDirectory, this));
+  FTerminal->SetOnStartReadDirectory(nb::bind(&TTerminalThread::TerminalStartReadDirectory, this));
+  FTerminal->SetOnReadDirectoryProgress(nb::bind(&TTerminalThread::TerminalReadDirectoryProgress, this));
+  FTerminal->SetOnInitializeLog(nb::bind(&TTerminalThread::TerminalInitializeLog, this));
 
   Start();
 }
@@ -2271,16 +2271,16 @@ TTerminalThread::~TTerminalThread()
 
   ::CloseHandle(FActionEvent);
 
-  DebugAssert(FTerminal->GetOnInformation() == MAKE_CALLBACK(TTerminalThread::TerminalInformation, this));
-  DebugAssert(FTerminal->GetOnQueryUser() == MAKE_CALLBACK(TTerminalThread::TerminalQueryUser, this));
-  DebugAssert(FTerminal->GetOnPromptUser() == MAKE_CALLBACK(TTerminalThread::TerminalPromptUser, this));
-  DebugAssert(FTerminal->GetOnShowExtendedException() == MAKE_CALLBACK(TTerminalThread::TerminalShowExtendedException, this));
-  DebugAssert(FTerminal->GetOnDisplayBanner() == MAKE_CALLBACK(TTerminalThread::TerminalDisplayBanner, this));
-  DebugAssert(FTerminal->GetOnChangeDirectory() == MAKE_CALLBACK(TTerminalThread::TerminalChangeDirectory, this));
-  DebugAssert(FTerminal->GetOnReadDirectory() == MAKE_CALLBACK(TTerminalThread::TerminalReadDirectory, this));
-  DebugAssert(FTerminal->GetOnStartReadDirectory() == MAKE_CALLBACK(TTerminalThread::TerminalStartReadDirectory, this));
-  DebugAssert(FTerminal->GetOnReadDirectoryProgress() == MAKE_CALLBACK(TTerminalThread::TerminalReadDirectoryProgress, this));
-  DebugAssert(FTerminal->GetOnInitializeLog() == MAKE_CALLBACK(TTerminalThread::TerminalInitializeLog, this));
+  DebugAssert(FTerminal->GetOnInformation() == nb::bind(&TTerminalThread::TerminalInformation, this));
+  DebugAssert(FTerminal->GetOnQueryUser() == nb::bind(&TTerminalThread::TerminalQueryUser, this));
+  DebugAssert(FTerminal->GetOnPromptUser() == nb::bind(&TTerminalThread::TerminalPromptUser, this));
+  DebugAssert(FTerminal->GetOnShowExtendedException() == nb::bind(&TTerminalThread::TerminalShowExtendedException, this));
+  DebugAssert(FTerminal->GetOnDisplayBanner() == nb::bind(&TTerminalThread::TerminalDisplayBanner, this));
+  DebugAssert(FTerminal->GetOnChangeDirectory() == nb::bind(&TTerminalThread::TerminalChangeDirectory, this));
+  DebugAssert(FTerminal->GetOnReadDirectory() == nb::bind(&TTerminalThread::TerminalReadDirectory, this));
+  DebugAssert(FTerminal->GetOnStartReadDirectory() == nb::bind(&TTerminalThread::TerminalStartReadDirectory, this));
+  DebugAssert(FTerminal->GetOnReadDirectoryProgress() == nb::bind(&TTerminalThread::TerminalReadDirectoryProgress, this));
+  DebugAssert(FTerminal->GetOnInitializeLog() == nb::bind(&TTerminalThread::TerminalInitializeLog, this));
 
   FTerminal->SetOnInformation(FOnInformation);
   FTerminal->SetOnQueryUser(FOnQueryUser);
@@ -2315,12 +2315,12 @@ void TTerminalThread::Idle()
 
 void TTerminalThread::TerminalOpen()
 {
-  RunAction(MAKE_CALLBACK(TTerminalThread::TerminalOpenEvent, this));
+  RunAction(nb::bind(&TTerminalThread::TerminalOpenEvent, this));
 }
 
 void TTerminalThread::TerminalReopen()
 {
-  RunAction(MAKE_CALLBACK(TTerminalThread::TerminalReopenEvent, this));
+  RunAction(nb::bind(&TTerminalThread::TerminalReopenEvent, this));
 }
 
 void TTerminalThread::RunAction(TNotifyEvent Action)

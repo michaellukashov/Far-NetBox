@@ -272,7 +272,7 @@ TTabButton::TTabButton(TTabbedDialog * Dialog) :
   FTab(0)
 {
   SetCenterGroup(true);
-  SetOnClick(MAKE_CALLBACK(TTabbedDialog::TabButtonClick, Dialog));
+  SetOnClick(nb::bind(&TTabbedDialog::TabButtonClick, Dialog));
 }
 
 void TTabButton::SetTabName(const UnicodeString & Value)
@@ -1114,12 +1114,12 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCaption(GetMsg(ABOUT_URL));
   // FIXME Text->SetColor(static_cast<int>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
   Text->SetCenterGroup(true);
-  Text->SetOnMouseClick(MAKE_CALLBACK(TAboutDialog::UrlTextClick, this));
+  Text->SetOnMouseClick(nb::bind(&TAboutDialog::UrlTextClick, this));
 
   Button = new TFarButton(this);
   Button->Move(0, 1);
   Button->SetCaption(GetMsg(ABOUT_HOMEPAGE));
-  Button->SetOnClick(MAKE_CALLBACK(TAboutDialog::UrlButtonClick, this));
+  Button->SetOnClick(nb::bind(&TAboutDialog::UrlButtonClick, this));
   Button->SetTag(1);
   Button->SetCenterGroup(true);
 
@@ -1127,7 +1127,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(ABOUT_FORUM));
-  Button->SetOnClick(MAKE_CALLBACK(TAboutDialog::UrlButtonClick, this));
+  Button->SetOnClick(nb::bind(&TAboutDialog::UrlButtonClick, this));
   Button->SetTag(2);
   Button->SetCenterGroup(true);
   SetNextItemPosition(ipNewLine);
@@ -1266,7 +1266,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   {
     Button = new TFarButton(this);
     Button->SetCaption(GetMsg(PASSWORD_SHOW_PROMPT));
-    Button->SetOnClick(MAKE_CALLBACK(TPasswordDialog::ShowPromptClick, this));
+    Button->SetOnClick(nb::bind(&TPasswordDialog::ShowPromptClick, this));
     Button->SetCenterGroup(true);
   }
 
@@ -1735,13 +1735,13 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   PrevTab->SetTabName(UnicodeString('\x11'));
   PrevTab->SetBrackets(brNone);
   PrevTab->SetCenterGroup(false);
-  PrevTab->SetOnClick(MAKE_CALLBACK(TSessionDialog::PrevTabClick, this));
+  PrevTab->SetOnClick(nb::bind(&TSessionDialog::PrevTabClick, this));
 
   NextTab = new TTabButton(this);
   NextTab->SetTabName(UnicodeString('\x10'));
   NextTab->SetBrackets(brNone);
   NextTab->SetCenterGroup(false);
-  NextTab->SetOnClick(MAKE_CALLBACK(TSessionDialog::NextTabClick, this));
+  NextTab->SetOnClick(nb::bind(&TSessionDialog::NextTabClick, this));
 
   intptr_t PWidth = PrevTab->GetWidth();
   intptr_t NWidth = NextTab->GetWidth();
@@ -1972,14 +1972,14 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(LOGIN_ENVIRONMENT_UNIX));
-  Button->SetOnClick(MAKE_CALLBACK(TSessionDialog::UnixEnvironmentButtonClick, this));
+  Button->SetOnClick(nb::bind(&TSessionDialog::UnixEnvironmentButtonClick, this));
   Button->SetCenterGroup(true);
 
   SetNextItemPosition(ipRight);
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(LOGIN_ENVIRONMENT_WINDOWS));
-  Button->SetOnClick(MAKE_CALLBACK(TSessionDialog::WindowsEnvironmentButtonClick, this));
+  Button->SetOnClick(nb::bind(&TSessionDialog::WindowsEnvironmentButtonClick, this));
   Button->SetCenterGroup(true);
 
   SetNextItemPosition(ipNewLine);
@@ -2602,14 +2602,14 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   CipherUpButton->SetCaption(GetMsg(LOGIN_UP));
   CipherUpButton->Move(0, 1);
   CipherUpButton->SetResult(-1);
-  CipherUpButton->SetOnClick(MAKE_CALLBACK(TSessionDialog::CipherButtonClick, this));
+  CipherUpButton->SetOnClick(nb::bind(&TSessionDialog::CipherButtonClick, this));
 
   SetNextItemPosition(ipBelow);
 
   CipherDownButton = new TFarButton(this);
   CipherDownButton->SetCaption(GetMsg(LOGIN_DOWN));
   CipherDownButton->SetResult(1);
-  CipherDownButton->SetOnClick(MAKE_CALLBACK(TSessionDialog::CipherButtonClick, this));
+  CipherDownButton->SetOnClick(nb::bind(&TSessionDialog::CipherButtonClick, this));
 
   SetNextItemPosition(ipNewLine);
 
@@ -2676,14 +2676,14 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   KexUpButton->SetCaption(GetMsg(LOGIN_UP));
   KexUpButton->Move(0, 1);
   KexUpButton->SetResult(-1);
-  KexUpButton->SetOnClick(MAKE_CALLBACK(TSessionDialog::KexButtonClick, this));
+  KexUpButton->SetOnClick(nb::bind(&TSessionDialog::KexButtonClick, this));
 
   SetNextItemPosition(ipBelow);
 
   KexDownButton = new TFarButton(this);
   KexDownButton->SetCaption(GetMsg(LOGIN_DOWN));
   KexDownButton->SetResult(1);
-  KexDownButton->SetOnClick(MAKE_CALLBACK(TSessionDialog::KexButtonClick, this));
+  KexDownButton->SetOnClick(nb::bind(&TSessionDialog::KexButtonClick, this));
 
   SetNextItemPosition(ipNewLine);
 
@@ -2725,7 +2725,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   AuthGSSAPICheck3 = new TFarCheckBox(this);
   AuthGSSAPICheck3->SetCaption(GetMsg(LOGIN_AUTH_ATTEMPT_GSSAPI_AUTHENTICATION));
-  AuthGSSAPICheck3->SetOnAllowChange(MAKE_CALLBACK(TSessionDialog::AuthGSSAPICheckAllowChange, this));
+  AuthGSSAPICheck3->SetOnAllowChange(nb::bind(&TSessionDialog::AuthGSSAPICheckAllowChange, this));
 
   GSSAPIFwdTGTCheck = new TFarCheckBox(this);
   GSSAPIFwdTGTCheck->SetCaption(GetMsg(LOGIN_AUTH_ALLOW_GSSAPI_CREDENTIAL_DELEGATION));
@@ -4385,7 +4385,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   FOctalEdit->SetEnabledDependency(EnabledDependency);
   FOctalEdit->SetWidth(5);
   FOctalEdit->SetMask(L"9999");
-  FOctalEdit->SetOnExit(MAKE_CALLBACK(TRightsContainer::OctalEditExit, this));
+  FOctalEdit->SetOnExit(nb::bind(&TRightsContainer::OctalEditExit, this));
 
   if (ShowButtons)
   {
@@ -4396,21 +4396,21 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
     Button->SetEnabledDependency(EnabledDependency);
     Button->SetCaption(GetMsg(PROPERTIES_NONE_RIGHTS));
     Button->SetTag(TRights::rfNo);
-    Button->SetOnClick(MAKE_CALLBACK(TRightsContainer::RightsButtonClick, this));
+    Button->SetOnClick(nb::bind(&TRightsContainer::RightsButtonClick, this));
 
     Button = new TFarButton(GetDialog());
     Add(Button);
     Button->SetEnabledDependency(EnabledDependency);
     Button->SetCaption(GetMsg(PROPERTIES_DEFAULT_RIGHTS));
     Button->SetTag(TRights::rfDefault);
-    Button->SetOnClick(MAKE_CALLBACK(TRightsContainer::RightsButtonClick, this));
+    Button->SetOnClick(nb::bind(&TRightsContainer::RightsButtonClick, this));
 
     Button = new TFarButton(GetDialog());
     Add(Button);
     Button->SetEnabledDependency(EnabledDependency);
     Button->SetCaption(GetMsg(PROPERTIES_ALL_RIGHTS));
     Button->SetTag(TRights::rfAll);
-    Button->SetOnClick(MAKE_CALLBACK(TRightsContainer::RightsButtonClick, this));
+    Button->SetOnClick(nb::bind(&TRightsContainer::RightsButtonClick, this));
   }
 
   GetDialog()->SetNextItemPosition(ipNewLine);
@@ -5065,7 +5065,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   AsciiFileMaskEdit->SetEnabledDependency(TMAutomaticButton);
   AsciiFileMaskEdit->SetWidth(TMWidth);
   AsciiFileMaskEdit->SetHistory(ASCII_MASK_HISTORY);
-  AsciiFileMaskEdit->SetOnExit(MAKE_CALLBACK(TCopyParamsContainer::ValidateMaskComboExit, this));
+  AsciiFileMaskEdit->SetOnExit(nb::bind(&TCopyParamsContainer::ValidateMaskComboExit, this));
 
   Box = new TFarBox(GetDialog());
   Box->SetLeft(0);
@@ -5201,7 +5201,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Add(FileMaskEdit);
   FileMaskEdit->SetWidth(TMWidth);
   FileMaskEdit->SetHistory(WINSCP_FILE_MASK_HISTORY);
-  FileMaskEdit->SetOnExit(MAKE_CALLBACK(TCopyParamsContainer::ValidateMaskComboExit, this));
+  FileMaskEdit->SetOnExit(nb::bind(&TCopyParamsContainer::ValidateMaskComboExit, this));
   FileMaskEdit->SetEnabled(true);
 
   GetDialog()->SetNextItemPosition(ipNewLine);
@@ -5222,7 +5222,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
     SpeedCombo->GetItems()->Add(::IntToStr(Speed));
     Speed = Speed / 2;
   }
-  SpeedCombo->SetOnExit(MAKE_CALLBACK(TCopyParamsContainer::ValidateSpeedComboExit, this));
+  SpeedCombo->SetOnExit(nb::bind(&TCopyParamsContainer::ValidateSpeedComboExit, this));
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
@@ -5492,7 +5492,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   CopyParamLister->SetHeight(3);
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
-  CopyParamLister->SetOnMouseClick(MAKE_CALLBACK(TCopyDialog::CopyParamListerClick, this));
+  CopyParamLister->SetOnMouseClick(nb::bind(&TCopyDialog::CopyParamListerClick, this));
 
   new TFarSeparator(this);
 
@@ -5527,7 +5527,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCaption(GetMsg(TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
-  Button->SetOnClick(MAKE_CALLBACK(TCopyDialog::TransferSettingsButtonClick, this));
+  Button->SetOnClick(nb::bind(&TCopyDialog::TransferSettingsButtonClick, this));
 
   SetNextItemPosition(ipRight);
 
@@ -5839,8 +5839,8 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
   return Result;
 }
 
-DEFINE_CALLBACK_TYPE3(TFeedFileSystemDataEvent, void,
-  TObject * /*Control*/, int /*Label*/, const UnicodeString & /*Value*/);
+typedef nb::FastDelegate3<void,
+  TObject * /*Control*/, int /*Label*/, const UnicodeString & /*Value*/> TFeedFileSystemDataEvent;
 
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog
@@ -6008,7 +6008,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(SPACE_AVAILABLE_CHECK_SPACE));
   Button->SetEnabledDependency(SpaceAvailablePathEdit);
-  Button->SetOnClick(MAKE_CALLBACK(TFileSystemInfoDialog::SpaceAvailableButtonClick, this));
+  Button->SetOnClick(nb::bind(&TFileSystemInfoDialog::SpaceAvailableButtonClick, this));
 
   SetNextItemPosition(ipNewLine);
 
@@ -6025,7 +6025,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(SERVER_PROTOCOL_COPY_CLIPBOARD));
-  Button->SetOnClick(MAKE_CALLBACK(TFileSystemInfoDialog::ClipboardButtonClick, this));
+  Button->SetOnClick(nb::bind(&TFileSystemInfoDialog::ClipboardButtonClick, this));
   Button->SetCenterGroup(true);
 
   SetNextItemPosition(ipRight);
@@ -6265,7 +6265,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
 void TFileSystemInfoDialog::FeedControls()
 {
   FLastFeededControl = nullptr;
-  Feed(MAKE_CALLBACK(TFileSystemInfoDialog::ControlsAddItem, this));
+  Feed(nb::bind(&TFileSystemInfoDialog::ControlsAddItem, this));
   InfoLister->SetRight(GetBorderBox()->GetRight() - (InfoLister->GetScrollBar() ? 0 : 1));
 }
 
@@ -6294,7 +6294,7 @@ void TFileSystemInfoDialog::Execute(
   SpaceAvailablePathEdit->SetText(SpaceAvailablePath);
   UpdateControls();
 
-  Feed(MAKE_CALLBACK(TFileSystemInfoDialog::CalculateMaxLenAddItem, this));
+  Feed(nb::bind(&TFileSystemInfoDialog::CalculateMaxLenAddItem, this));
   FeedControls();
   HideTabs();
   SelectTab(tabProtocol);
@@ -6338,7 +6338,7 @@ void TFileSystemInfoDialog::ClipboardButtonClick(TFarButton * /*Sender*/,
   NeedSpaceAvailable();
   FLastFeededControl = nullptr;
   FClipboard.Clear();
-  Feed(MAKE_CALLBACK(TFileSystemInfoDialog::ClipboardAddItem, this));
+  Feed(nb::bind(&TFileSystemInfoDialog::ClipboardAddItem, this));
   FarPlugin->FarCopyToClipboard(FClipboard);
   Close = false;
 }
@@ -6878,7 +6878,7 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   CopyParamLister->SetHeight(3);
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
-  CopyParamLister->SetOnMouseClick(MAKE_CALLBACK(TFullSynchronizeDialog::CopyParamListerClick, this));
+  CopyParamLister->SetOnMouseClick(nb::bind(&TFullSynchronizeDialog::CopyParamListerClick, this));
   CopyParamLister->SetGroup(1);
   // Right edge is adjusted in Change
 
@@ -6890,7 +6890,7 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   Button->SetCaption(GetMsg(TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
-  Button->SetOnClick(MAKE_CALLBACK(TFullSynchronizeDialog::TransferSettingsButtonClick, this));
+  Button->SetOnClick(nb::bind(&TFullSynchronizeDialog::TransferSettingsButtonClick, this));
 
   SetNextItemPosition(ipRight);
 
@@ -7212,7 +7212,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   ListBox->SetNoBox(true);
   // align list with bottom of the window
   ListBox->SetBottom(-5);
-  ListBox->SetOnMouseClick(MAKE_CALLBACK(TSynchronizeChecklistDialog::ListBoxClick, this));
+  ListBox->SetOnMouseClick(nb::bind(&TSynchronizeChecklistDialog::ListBoxClick, this));
 
   UnicodeString Actions = GetMsg(CHECKLIST_ACTIONS);
   size_t Action = 0;
@@ -7230,18 +7230,18 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   CheckAllButton = new TFarButton(this);
   CheckAllButton->SetCaption(GetMsg(CHECKLIST_CHECK_ALL));
   CheckAllButton->SetCenterGroup(true);
-  CheckAllButton->SetOnClick(MAKE_CALLBACK(TSynchronizeChecklistDialog::CheckAllButtonClick, this));
+  CheckAllButton->SetOnClick(nb::bind(&TSynchronizeChecklistDialog::CheckAllButtonClick, this));
 
   SetNextItemPosition(ipRight);
 
   UncheckAllButton = new TFarButton(this);
   UncheckAllButton->SetCaption(GetMsg(CHECKLIST_UNCHECK_ALL));
   UncheckAllButton->SetCenterGroup(true);
-  UncheckAllButton->SetOnClick(MAKE_CALLBACK(TSynchronizeChecklistDialog::CheckAllButtonClick, this));
+  UncheckAllButton->SetOnClick(nb::bind(&TSynchronizeChecklistDialog::CheckAllButtonClick, this));
 
   VideoModeButton = new TFarButton(this);
   VideoModeButton->SetCenterGroup(true);
-  VideoModeButton->SetOnClick(MAKE_CALLBACK(TSynchronizeChecklistDialog::VideoModeButtonClick, this));
+  VideoModeButton->SetOnClick(nb::bind(&TSynchronizeChecklistDialog::VideoModeButtonClick, this));
 
   AddStandardButtons(0, true);
 
@@ -7888,7 +7888,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   CopyParamLister->SetHeight(3);
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
-  CopyParamLister->SetOnMouseClick(MAKE_CALLBACK(TSynchronizeDialog::CopyParamListerClick, this));
+  CopyParamLister->SetOnMouseClick(nb::bind(&TSynchronizeDialog::CopyParamListerClick, this));
   // Right edge is adjusted in Change
 
   SetDefaultGroup(0);
@@ -7901,7 +7901,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCaption(GetMsg(TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
-  Button->SetOnClick(MAKE_CALLBACK(TSynchronizeDialog::TransferSettingsButtonClick, this));
+  Button->SetOnClick(nb::bind(&TSynchronizeDialog::TransferSettingsButtonClick, this));
 
   SetNextItemPosition(ipRight);
 
@@ -7909,12 +7909,12 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   StartButton->SetCaption(GetMsg(SYNCHRONIZE_START_BUTTON));
   StartButton->SetDefault(true);
   StartButton->SetCenterGroup(true);
-  StartButton->SetOnClick(MAKE_CALLBACK(TSynchronizeDialog::StartButtonClick, this));
+  StartButton->SetOnClick(nb::bind(&TSynchronizeDialog::StartButtonClick, this));
 
   StopButton = new TFarButton(this);
   StopButton->SetCaption(GetMsg(SYNCHRONIZE_STOP_BUTTON));
   StopButton->SetCenterGroup(true);
-  StopButton->SetOnClick(MAKE_CALLBACK(TSynchronizeDialog::StopButtonClick, this));
+  StopButton->SetOnClick(nb::bind(&TSynchronizeDialog::StopButtonClick, this));
 
   SetNextItemPosition(ipRight);
 
@@ -8017,9 +8017,9 @@ void TSynchronizeDialog::DoStartStop(bool Start, bool Synchronize)
       FOnGetOptions(SParams.Params, *FSynchronizeOptions);
     }
     FOnStartStop(this, Start, SParams, GetCopyParams(), FSynchronizeOptions,
-      MAKE_CALLBACK(TSynchronizeDialog::DoAbort, this),
-      MAKE_CALLBACK(TSynchronizeDialog::DoSynchronizeThreads, this),
-      MAKE_CALLBACK(TSynchronizeDialog::DoLog, this));
+      nb::bind(&TSynchronizeDialog::DoAbort, this),
+      nb::bind(&TSynchronizeDialog::DoSynchronizeThreads, this),
+      nb::bind(&TSynchronizeDialog::DoLog, this));
   }
 }
 
@@ -8310,24 +8310,24 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
 
   ExecuteButton = new TFarButton(this);
   ExecuteButton->SetCaption(GetMsg(QUEUE_EXECUTE));
-  ExecuteButton->SetOnClick(MAKE_CALLBACK(TQueueDialog::OperationButtonClick, this));
+  ExecuteButton->SetOnClick(nb::bind(&TQueueDialog::OperationButtonClick, this));
   ExecuteButton->SetCenterGroup(true);
 
   SetNextItemPosition(ipRight);
 
   DeleteButton = new TFarButton(this);
   DeleteButton->SetCaption(GetMsg(QUEUE_DELETE));
-  DeleteButton->SetOnClick(MAKE_CALLBACK(TQueueDialog::OperationButtonClick, this));
+  DeleteButton->SetOnClick(nb::bind(&TQueueDialog::OperationButtonClick, this));
   DeleteButton->SetCenterGroup(true);
 
   MoveUpButton = new TFarButton(this);
   MoveUpButton->SetCaption(GetMsg(QUEUE_MOVE_UP));
-  MoveUpButton->SetOnClick(MAKE_CALLBACK(TQueueDialog::OperationButtonClick, this));
+  MoveUpButton->SetOnClick(nb::bind(&TQueueDialog::OperationButtonClick, this));
   MoveUpButton->SetCenterGroup(true);
 
   MoveDownButton = new TFarButton(this);
   MoveDownButton->SetCaption(GetMsg(QUEUE_MOVE_DOWN));
-  MoveDownButton->SetOnClick(MAKE_CALLBACK(TQueueDialog::OperationButtonClick, this));
+  MoveDownButton->SetOnClick(nb::bind(&TQueueDialog::OperationButtonClick, this));
   MoveDownButton->SetCenterGroup(true);
 
   CloseButton = new TFarButton(this);

@@ -1025,7 +1025,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
       {
         try
         {
-          FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::ChangeFileProperties, FTerminal),
+          FTerminal->ProcessDirectory(AFileName, nb::bind(&TTerminal::ChangeFileProperties, FTerminal),
             static_cast<void *>(const_cast<TRemoteProperties *>(Properties)));
         }
         catch (...)
@@ -1291,7 +1291,7 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
   TStrings * FileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
-  TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
+  TFileOperationProgressType Progress(nb::bind(&TTerminal::DoProgress, FTerminal), nb::bind(&TTerminal::DoFinished, FTerminal));
   Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
 
   FTerminal->SetOperationProgress(&Progress);
@@ -1732,7 +1732,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
 
-      FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TFTPFileSystem::SinkFile, this), &SinkFileParams);
+      FTerminal->ProcessDirectory(AFileName, nb::bind(&TFTPFileSystem::SinkFile, this), &SinkFileParams);
 
       // Do not delete directory if some of its files were skipped.
       // Throw "skip file" for the directory to avoid attempt to deletion
@@ -2332,7 +2332,7 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   {
     try
     {
-      FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TTerminal::RemoteDeleteFile, FTerminal), &Params);
+      FTerminal->ProcessDirectory(FileName, nb::bind(&TTerminal::RemoteDeleteFile, FTerminal), &Params);
     }
     catch (...)
     {
@@ -4648,7 +4648,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         TQueryButtonAlias Aliases[1];
         Aliases[0].Button = qaRetry;
         Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-        Aliases[0].OnClick = MAKE_CALLBACK(TClipboardHandler::Copy, &ClipboardHandler);
+        Aliases[0].OnClick = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
 
         TQueryParams Params(qpWaitInBatch);
         Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
