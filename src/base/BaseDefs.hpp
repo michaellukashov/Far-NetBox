@@ -22,9 +22,6 @@
 #define DEFINE_CALLBACK_TYPE8(EVENT,  R, T1, T2, T3, T4, T5, T6, T7, T8) \
   typedef fastdelegate::FastDelegate8<R, T1, T2, T3, T4, T5, T6, T7, T8> EVENT
 
-#define MAKE_CALLBACK(METHOD, OBJECT) \
-  fastdelegate::bind(&METHOD, OBJECT)
-
 #define TShellExecuteInfoW _SHELLEXECUTEINFOW
 #define TSHFileInfoW SHFILEINFOW
 #define TVSFixedFileInfo VS_FIXEDFILEINFO
