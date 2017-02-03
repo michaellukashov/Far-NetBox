@@ -438,7 +438,7 @@ bool CFtpControlSocket::InitConnect()
     m_pProxyLayer = new CAsyncProxySocketLayer;
     m_pProxyLayer->SetProxy(
       nProxyType, T2CA(GetOption(OPTION_PROXYHOST)), GetOptionVal(OPTION_PROXYPORT),
-      GetOptionVal(OPTION_PROXYUSELOGON), T2CA(GetOption(OPTION_PROXYUSER)), T2CA(GetOption(OPTION_PROXYPASS)));
+      GetOptionVal(OPTION_PROXYUSELOGON) != FALSE, T2CA(GetOption(OPTION_PROXYUSER)), T2CA(GetOption(OPTION_PROXYPASS)));
     AddLayer(m_pProxyLayer);
   }
 
@@ -538,7 +538,7 @@ void CFtpControlSocket::Connect(t_server &server)
       return;
     }
     int res = m_pSslLayer->InitSSLConnection(true, NULL,
-      GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
+      GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE) != FALSE,
       GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
       GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
     if (res == SSL_FAILURE_INITSSL)
@@ -664,7 +664,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         return;
       }
       int res = m_pSslLayer->InitSSLConnection(true, NULL,
-        GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE),
+        GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE) != FALSE,
         GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
         GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
       if (res == SSL_FAILURE_INITSSL)
