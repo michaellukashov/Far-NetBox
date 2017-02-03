@@ -736,7 +736,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
 
   FarParams.Token = &Data;
   FarParams.DefaultButton = DefaultButtonIndex;
-  FarParams.ClickEvent = MAKE_CALLBACK(TWinSCPPlugin::MessageClick, this);
+  FarParams.ClickEvent = nb::bind(&TWinSCPPlugin::MessageClick, this);
 
   if (MoreMessages && (MoreMessages->GetCount() > 0))
   {

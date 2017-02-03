@@ -826,12 +826,12 @@ void TFarDialog::Redraw()
 
 void TFarDialog::ShowGroup(intptr_t Group, bool Show)
 {
-  ProcessGroup(Group, MAKE_CALLBACK(TFarDialog::ShowItem, this), &Show);
+  ProcessGroup(Group, nb::bind(&TFarDialog::ShowItem, this), &Show);
 }
 
 void TFarDialog::EnableGroup(intptr_t Group, bool Enable)
 {
-  ProcessGroup(Group, MAKE_CALLBACK(TFarDialog::EnableItem, this), &Enable);
+  ProcessGroup(Group, nb::bind(&TFarDialog::EnableItem, this), &Enable);
 }
 
 void TFarDialog::ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback,
@@ -2537,7 +2537,7 @@ TFarLister::TFarLister(TFarDialog * ADialog) :
   FItems(new TStringList()),
   FTopIndex(0)
 {
-  FItems->SetOnChange(MAKE_CALLBACK(TFarLister::ItemsChange, this));
+  FItems->SetOnChange(nb::bind(&TFarLister::ItemsChange, this));
 }
 
 TFarLister::~TFarLister()

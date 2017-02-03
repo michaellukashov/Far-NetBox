@@ -2131,7 +2131,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~tfFirstLevel;
 
-      FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TWebDAVFileSystem::SinkFile, this), &SinkFileParams);
+      FTerminal->ProcessDirectory(AFileName, nb::bind(&TWebDAVFileSystem::SinkFile, this), &SinkFileParams);
 
       // Do not delete directory if some of its files were skip.
       // Throw "skip file" for the directory to avoid attempt to deletion
@@ -2406,7 +2406,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
       TQueryButtonAlias Aliases[1];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick = MAKE_CALLBACK(TClipboardHandler::Copy, &ClipboardHandler);
+      Aliases[0].OnClick = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
 
       TQueryParams Params;
       Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
