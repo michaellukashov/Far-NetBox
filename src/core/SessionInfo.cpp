@@ -768,7 +768,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
     {
       if (FParent != nullptr)
       {
-        DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToParent, this));
+        DoAdd(Type, Line, nb::bind(&TSessionLog::DoAddToParent, this));
       }
       else
       {
@@ -784,7 +784,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
 
             EndUpdate();
           };
-          DoAdd(Type, Line, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
+          DoAdd(Type, Line, nb::bind(&TSessionLog::DoAddToSelf, this));
         }
         __finally
         {
@@ -1029,8 +1029,8 @@ UnicodeString EnumName(T Value, const UnicodeString & ANames)
   return L"(unknown)";
 }
 
-#define ADSTR(S) DoAdd(llMessage, S, MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
-#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), MAKE_CALLBACK(TSessionLog::DoAddToSelf, this));
+#define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this));
+#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), nb::bind(&TSessionLog::DoAddToSelf, this));
 
 void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
@@ -1336,7 +1336,7 @@ void TSessionLog::AddOption(const UnicodeString & LogStr)
 
 void TSessionLog::AddOptions(TOptions * Options)
 {
-  Options->LogOptions(MAKE_CALLBACK(TSessionLog::AddOption, this));
+  Options->LogOptions(nb::bind(&TSessionLog::AddOption, this));
 }
 
 #undef ADF

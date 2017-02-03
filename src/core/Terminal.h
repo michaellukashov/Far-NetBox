@@ -28,59 +28,63 @@ struct TFilesFindParams;
 class TTunnelUI;
 class TCallbackGuard;
 
-DEFINE_CALLBACK_TYPE8(TQueryUserEvent, void,
+typedef nb::FastDelegate8<void,
   TObject * /*Sender*/, const UnicodeString & /*Query*/, TStrings * /*MoreMessages*/ ,
   uintptr_t /*Answers*/,
   const TQueryParams * /*Params*/, uintptr_t & /*Answer*/,
-  TQueryType /*QueryType*/, void * /*Arg*/);
-DEFINE_CALLBACK_TYPE8(TPromptUserEvent, void,
+  TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
+typedef nb::FastDelegate8<void,
   TTerminal * /*Terminal*/, TPromptKind /*Kind*/, const UnicodeString & /*Name*/,
   const UnicodeString & /*Instructions*/,
-  TStrings * /*Prompts*/, TStrings * /*Results*/, bool & /*Result*/, void * /*Arg*/);
-DEFINE_CALLBACK_TYPE5(TDisplayBannerEvent, void,
+  TStrings * /*Prompts*/, TStrings * /*Results*/,
+  bool & /*Result*/, void * /*Arg*/> TPromptUserEvent;
+typedef nb::FastDelegate5<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*SessionName*/,
   const UnicodeString & /*Banner*/,
-  bool & /*NeverShowAgain*/, intptr_t /*Options*/);
-DEFINE_CALLBACK_TYPE3(TExtendedExceptionEvent, void,
-  TTerminal * /*Terminal*/, Exception * /*E*/, void * /*Arg*/);
-DEFINE_CALLBACK_TYPE2(TReadDirectoryEvent, void, TObject * /*Sender*/,
-  Boolean /*ReloadOnly*/);
-DEFINE_CALLBACK_TYPE4(TReadDirectoryProgressEvent, void,
+  bool & /*NeverShowAgain*/, intptr_t /*Options*/> TDisplayBannerEvent;
+typedef nb::FastDelegate3<void,
+  TTerminal * /*Terminal*/, Exception * /*E*/, void * /*Arg*/ > TExtendedExceptionEvent;
+typedef nb::FastDelegate2<void, TObject * /*Sender*/,
+  Boolean /*ReloadOnly*/> TReadDirectoryEvent;
+typedef nb::FastDelegate4<void,
   TObject * /*Sender*/, intptr_t /*Progress*/, intptr_t /*ResolvedLinks*/,
-  bool & /*Cancel*/);
-DEFINE_CALLBACK_TYPE3(TProcessFileEvent, void,
+  bool & /*Cancel*/> TReadDirectoryProgressEvent;
+typedef nb::FastDelegate3<void,
   const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
-  void * /*Param*/);
-DEFINE_CALLBACK_TYPE4(TProcessFileEventEx, void,
+  void * /*Param*/> TProcessFileEvent;
+typedef nb::FastDelegate4<void,
   const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
-  void * /*Param*/, intptr_t /*Index*/);
-DEFINE_CALLBACK_TYPE2(TFileOperationEvent, intptr_t,
-  void * /*Param1*/, void * /*Param2*/);
-DEFINE_CALLBACK_TYPE4(TSynchronizeDirectoryEvent, void,
+  void * /*Param*/, intptr_t /*Index*/> TProcessFileEventEx;
+typedef nb::FastDelegate2<intptr_t,
+  void * /*Param1*/, void * /*Param2*/> TFileOperationEvent;
+typedef nb::FastDelegate4<void,
   const UnicodeString & /*LocalDirectory*/, const UnicodeString & /*RemoteDirectory*/,
-  bool & /*Continue*/, bool /*Collect*/);
-DEFINE_CALLBACK_TYPE2(TDeleteLocalFileEvent, void,
-  const UnicodeString & /*FileName*/, bool /*Alternative*/);
-DEFINE_CALLBACK_TYPE3(TDirectoryModifiedEvent, int,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool /*SubDirs*/);
-DEFINE_CALLBACK_TYPE4(TInformationEvent, void,
+  bool & /*Continue*/, bool /*Collect*/> TSynchronizeDirectoryEvent;
+typedef nb::FastDelegate2<void,
+  const UnicodeString & /*FileName*/, bool /*Alternative*/> TDeleteLocalFileEvent;
+typedef nb::FastDelegate3<int,
+  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/,
+  bool /*SubDirs*/> TDirectoryModifiedEvent;
+typedef nb::FastDelegate4<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Str*/, bool /*Status*/,
-  intptr_t /*Phase*/);
-DEFINE_CALLBACK_TYPE5(TCreateLocalFileEvent, HANDLE,
+  intptr_t /*Phase*/> TInformationEvent;
+typedef nb::FastDelegate5<HANDLE,
   const UnicodeString & /*FileName*/, DWORD /*DesiredAccess*/,
-  DWORD /*ShareMode*/, DWORD /*CreationDisposition*/, DWORD /*FlagsAndAttributes*/);
-DEFINE_CALLBACK_TYPE1(TGetLocalFileAttributesEvent, DWORD,
-  const UnicodeString & /*FileName*/);
-DEFINE_CALLBACK_TYPE2(TSetLocalFileAttributesEvent, BOOL,
-  const UnicodeString & /*FileName*/, DWORD /*FileAttributes*/);
-DEFINE_CALLBACK_TYPE3(TMoveLocalFileEvent, BOOL,
+  DWORD /*ShareMode*/, DWORD /*CreationDisposition*/,
+  DWORD /*FlagsAndAttributes*/> TCreateLocalFileEvent;
+typedef nb::FastDelegate1<DWORD,
+  const UnicodeString & /*FileName*/> TGetLocalFileAttributesEvent;
+typedef nb::FastDelegate2<BOOL,
+  const UnicodeString & /*FileName*/, DWORD /*FileAttributes*/> TSetLocalFileAttributesEvent;
+typedef nb::FastDelegate3<BOOL,
   const UnicodeString & /*FileName*/, const UnicodeString & /*NewFileName*/,
-  DWORD /*Flags*/);
-DEFINE_CALLBACK_TYPE1(TRemoveLocalDirectoryEvent, BOOL,
-  const UnicodeString & /*LocalDirName*/);
-DEFINE_CALLBACK_TYPE2(TCreateLocalDirectoryEvent, BOOL,
-  const UnicodeString & /*LocalDirName*/, LPSECURITY_ATTRIBUTES /*SecurityAttributes*/);
-DEFINE_CALLBACK_TYPE0(TCheckForEscEvent, bool);
+  DWORD /*Flags*/> TMoveLocalFileEvent;
+typedef nb::FastDelegate1<BOOL,
+  const UnicodeString & /*LocalDirName*/> TRemoveLocalDirectoryEvent;
+typedef nb::FastDelegate2<BOOL,
+  const UnicodeString & /*LocalDirName*/,
+  LPSECURITY_ATTRIBUTES /*SecurityAttributes*/> TCreateLocalDirectoryEvent;
+typedef nb::FastDelegate0<bool> TCheckForEscEvent;
 
 inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 {

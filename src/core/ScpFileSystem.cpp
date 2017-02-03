@@ -1426,7 +1426,7 @@ void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
     AParams.Command = Command;
     AParams.Params = Params;
     AParams.OutputEvent = OutputEvent;
-    FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::CustomCommandOnFile, FTerminal),
+    FTerminal->ProcessDirectory(AFileName, nb::bind(&TTerminal::CustomCommandOnFile, FTerminal),
       &AParams);
   }
 
@@ -1462,7 +1462,7 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
   DebugAssert(!FSecureShell->GetOnCaptureOutput());
   if (OutputEvent)
   {
-    FSecureShell->SetOnCaptureOutput(MAKE_CALLBACK(TSCPFileSystem::CaptureOutput, this));
+    FSecureShell->SetOnCaptureOutput(nb::bind(&TSCPFileSystem::CaptureOutput, this));
     FOnCaptureOutput = OutputEvent;
   }
 

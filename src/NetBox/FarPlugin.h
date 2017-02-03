@@ -43,11 +43,11 @@ enum THandlesFunction
   hfProcessHostFile,
   hfProcessPanelEvent
 };
-DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString & /*Text*/);
+typedef nb::FastDelegate1<void, UnicodeString & /*Text*/> TFarInputBoxValidateEvent;
 
-DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, intptr_t & /*Result*/);
-DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void * /*Token*/,
-  uintptr_t /*Result*/, bool & /*Close*/);
+typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TFarMessageTimerEvent;
+typedef nb::FastDelegate3<void, void * /*Token*/,
+  uintptr_t /*Result*/, bool & /*Close*/> TFarMessageClickEvent;
 
 struct TFarMessageParams : public TObject
 {

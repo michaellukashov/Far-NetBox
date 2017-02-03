@@ -13,10 +13,12 @@ struct TSynchronizeParamType : public TObject
 class TSynchronizeController;
 struct TSynchronizeOptions;
 class TSynchronizeChecklist;
-DEFINE_CALLBACK_TYPE2(TSynchronizeAbortEvent, void,
-  TObject * /*Sender*/, bool /*Close*/);
-DEFINE_CALLBACK_TYPE2(TSynchronizeThreadsEvent, void,
-  TObject * /*Sender*/, TThreadMethod /*Method*/);
+
+typedef nb::FastDelegate2<void,
+  TObject * /*Sender*/, bool /*Close*/> TSynchronizeAbortEvent;
+typedef nb::FastDelegate2<void,
+  TObject * /*Sender*/, TThreadMethod /*Method*/> TSynchronizeThreadsEvent;
+
 enum TSynchronizeLogEntry
 {
   slScan,
@@ -27,24 +29,25 @@ enum TSynchronizeLogEntry
   slDirChange
 };
 
-DEFINE_CALLBACK_TYPE3(TSynchronizeLogEvent, void,
+typedef nb::FastDelegate3<void,
   TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/,
-  const UnicodeString & /*Message*/);
-DEFINE_CALLBACK_TYPE8(TSynchronizeStartStopEvent, void,
+  const UnicodeString & /*Message*/> TSynchronizeLogEvent;
+typedef nb::FastDelegate8<void,
   TObject * /*Sender*/, bool /*Start*/, const TSynchronizeParamType & /*Params*/,
   const TCopyParamType & /*CopyParam*/, TSynchronizeOptions * /*Options*/,
   TSynchronizeAbortEvent /*OnAbort*/, TSynchronizeThreadsEvent /*OnSynchronizeThreads*/,
-  TSynchronizeLogEvent /*OnSynchronizeLog*/);
-DEFINE_CALLBACK_TYPE8(TSynchronizeEvent, void,
+  TSynchronizeLogEvent /*OnSynchronizeLog*/> TSynchronizeStartStopEvent;
+typedef nb::FastDelegate8<void,
   TSynchronizeController * /*Sender*/, const UnicodeString & /*LocalDirectory*/,
   const UnicodeString & /*RemoteDirectory*/, const TCopyParamType & /*CopyParam*/,
   const TSynchronizeParamType & /*Params*/, TSynchronizeChecklist ** /*Checklist*/,
-  TSynchronizeOptions * /*Options*/, bool /*Full*/);
-DEFINE_CALLBACK_TYPE3(TSynchronizeInvalidEvent, void,
+  TSynchronizeOptions * /*Options*/, bool /*Full*/> TSynchronizeEvent;
+typedef nb::FastDelegate3<void,
   TSynchronizeController * /*Sender*/, const UnicodeString & /*Directory*/,
-  const UnicodeString & /*ErrorStr*/);
-DEFINE_CALLBACK_TYPE2(TSynchronizeTooManyDirectoriesEvent, void,
-  TSynchronizeController * /*Sender*/, intptr_t & /*MaxDirectories*/);
+  const UnicodeString & /*ErrorStr*/> TSynchronizeInvalidEvent;
+typedef nb::FastDelegate2<void,
+  TSynchronizeController * /*Sender*/,
+  intptr_t & /*MaxDirectories*/> TSynchronizeTooManyDirectoriesEvent;
 
 namespace Discmon {
 class TDiscMonitor;

@@ -172,6 +172,13 @@ private: \
   static_assert(bool(Condition), Message)
 
 #define NB_MAX_PATH 32 * 1024
+#define NPOS static_cast<intptr_t>(-1)
 
 #include "UnicodeString.hpp"
 #include "local.hpp"
+
+#define TShellExecuteInfoW _SHELLEXECUTEINFOW
+#define TSHFileInfoW SHFILEINFOW
+#define TVSFixedFileInfo VS_FIXEDFILEINFO
+#define PVSFixedFileInfo VS_FIXEDFILEINFO*
+

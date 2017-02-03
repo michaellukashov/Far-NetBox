@@ -6,7 +6,9 @@
 #include <math.h>
 #include <rdestl/vector.h>
 #include <rdestl/pair.h>
-#include <BaseDefs.hpp>
+
+#include <FastDelegate.h>
+#include <FastDelegateBind.h>
 
 #pragma warning(push, 1)
 
@@ -16,7 +18,18 @@
 
 #pragma warning(pop)
 
-#define NPOS static_cast<intptr_t>(-1)
+namespace nb {
+  using fastdelegate::bind;
+  using fastdelegate::FastDelegate0;
+  using fastdelegate::FastDelegate1;
+  using fastdelegate::FastDelegate2;
+  using fastdelegate::FastDelegate3;
+  using fastdelegate::FastDelegate4;
+  using fastdelegate::FastDelegate5;
+  using fastdelegate::FastDelegate6;
+  using fastdelegate::FastDelegate7;
+  using fastdelegate::FastDelegate8;
+} // namespace nb
 
 typedef HANDLE THandle;
 typedef DWORD TThreadID;
@@ -38,9 +51,9 @@ extern const intptr_t DateDelta;
 extern const intptr_t UnixDateDelta;
 
 class TObject;
-DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 
-DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /*Sender*/);
+typedef nb::FastDelegate0<void> TThreadMethod;
+typedef nb::FastDelegate1<void, TObject * /*Sender*/> TNotifyEvent;
 
 void Abort();
 void Error(intptr_t Id, intptr_t ErrorId);
@@ -753,8 +766,8 @@ struct TInputDialogData
 
 //typedef void (__closure *TInputDialogInitialize)
 //  (TObject * Sender, TInputDialogData * Data);
-DEFINE_CALLBACK_TYPE2(TInputDialogInitializeEvent, void,
-  TObject * /*Sender*/, TInputDialogData * /*Data*/);
+typedef nb::FastDelegate2<void,
+  TObject * /*Sender*/, TInputDialogData * /*Data*/> TInputDialogInitializeEvent;
 
 enum TQueryType
 {

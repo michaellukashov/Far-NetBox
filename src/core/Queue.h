@@ -80,12 +80,12 @@ class TTerminalQueueStatus;
 
 //typedef void __fastcall (__closure * TQueueListUpdate)
 //  (TTerminalQueue * Queue);
-DEFINE_CALLBACK_TYPE1(TQueueListUpdateEvent, void,
-  TTerminalQueue * /*Queue*/);
+typedef nb::FastDelegate1<void,
+  TTerminalQueue * /*Queue*/> TQueueListUpdateEvent;
 //typedef void __fastcall (__closure * TQueueItemUpdateEvent)
 //  (TTerminalQueue * Queue, TQueueItem * Item);
-DEFINE_CALLBACK_TYPE2(TQueueItemUpdateEvent, void,
-  TTerminalQueue * /*Queue*/, TQueueItem * /*Item*/);
+typedef nb::FastDelegate2<void,
+  TTerminalQueue * /*Queue*/, TQueueItem * /*Item*/> TQueueItemUpdateEvent;
 
 enum TQueueEvent
 {
@@ -96,8 +96,8 @@ enum TQueueEvent
 
 //typedef void __fastcall (__closure * TQueueEventEvent)
 //  (TTerminalQueue * Queue, TQueueEvent Event);
-DEFINE_CALLBACK_TYPE2(TQueueEventEvent, void,
-  TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/);
+typedef nb::FastDelegate2<void,
+  TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/> TQueueEventEvent;
 //---------------------------------------------------------------------------
 class TTerminalQueue : public TSignalThread
 {

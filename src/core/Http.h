@@ -9,11 +9,11 @@ struct ssl_st;
 
 class THttp;
 //typedef void (__closure * THttpDownloadEvent)(THttp * Sender, int64_t Size, bool & Cancel);
-DEFINE_CALLBACK_TYPE3(THttpDownloadEvent, void,
-  THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/);
+typedef nb::FastDelegate3<void,
+  THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/> THttpDownloadEvent;
 //typedef void (__closure * THttpErrorEvent)(THttp * Sender, int Status, const UnicodeString & Message);
-DEFINE_CALLBACK_TYPE3(THttpErrorEvent, void,
-  THttp * /*Sender*/, int /*Status*/, const UnicodeString & /*Message*/);
+typedef nb::FastDelegate3<void,
+  THttp * /*Sender*/, int /*Status*/, const UnicodeString & /*Message*/> THttpErrorEvent;
 
 class THttp : public TObject
 {
