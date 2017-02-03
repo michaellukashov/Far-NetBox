@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Classes.hpp>
+#include <FileMasks.H>
 
 // from shlobj.h
 #define CSIDL_DESKTOP                   0x0000        // <desktop>
@@ -10,8 +11,6 @@
 #define CSIDL_APPDATA                   0x001a        // <user name>\Application Data
 #define CSIDL_PROGRAM_FILES             0x0026        // C:\Program Files
 #define CSIDL_PERSONAL                  0x0005        // My Documents
-
-#include <FileMasks.H>
 
 class TSessionData;
 
