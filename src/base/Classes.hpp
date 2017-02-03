@@ -6,6 +6,7 @@
 #include <math.h>
 #include <rdestl/vector.h>
 #include <rdestl/pair.h>
+
 #include <BaseDefs.hpp>
 
 #pragma warning(push, 1)
