@@ -7,7 +7,8 @@
 #include <rdestl/vector.h>
 #include <rdestl/pair.h>
 
-#include <BaseDefs.hpp>
+#include <FastDelegate.h>
+#include <FastDelegateBind.h>
 
 #pragma warning(push, 1)
 
