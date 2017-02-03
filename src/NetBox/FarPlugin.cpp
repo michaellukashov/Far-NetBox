@@ -2583,7 +2583,7 @@ TObjectList * TFarPanelInfo::GetItems()
     {
       TODO("move to common function");
       intptr_t Size = FOwner->FarControl(FCTL_GETPANELITEM, Index, 0);
-      PluginPanelItem * ppi = nb_calloc<PluginPanelItem *>(Size);
+      PluginPanelItem * ppi = nb::calloc<PluginPanelItem *>(Size);
       FarGetPluginPanelItem gppi;
       gppi.StructSize = sizeof(FarGetPluginPanelItem);
       gppi.Size = Size;
