@@ -239,7 +239,7 @@ set_property(TARGET libssl
 #-------------------------------------------------------------------------------
 # target NetBox
 
-set(USE_UNITY_BUILD 0)
+set(USE_UNITY_BUILD 1)
 
 if(USE_UNITY_BUILD)
 
