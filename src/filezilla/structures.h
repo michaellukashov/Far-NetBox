@@ -1,7 +1,8 @@
 #pragma once
 
 //#include <Classes.hpp>
-#include <nbglobals.h>
+//#include <nbglobals.h>
+#include <headers.hpp>
 
 class CServerPath;
 
