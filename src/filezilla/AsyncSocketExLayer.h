@@ -71,8 +71,8 @@ class CAsyncSocketEx;
 class CAsyncSocketExLayer // : public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-  friend CAsyncSocketEx;
-  friend CAsyncSocketExHelperWindow;
+  friend class CAsyncSocketEx;
+  friend class CAsyncSocketExHelperWindow;
 protected:
   // Protected constructor so that CAsyncSocketExLayer can't be instantiated
   CAsyncSocketExLayer();
@@ -162,8 +162,9 @@ private:
   CAsyncSocketExLayer * m_pNextLayer;
   CAsyncSocketExLayer * m_pPrevLayer;
 
-  struct t_LayerNotifyMsg : public TObject
+  struct t_LayerNotifyMsg // : public TObject
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     SOCKET hSocket;
     CAsyncSocketExLayer * pLayer;
     long lEvent;

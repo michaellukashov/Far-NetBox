@@ -68,6 +68,7 @@ to tim.kosse@gmx.de
 
 #include <winsock2.h>
 #include <Ws2tcpip.h>
+#include <headers.hpp>
 
 class CAsyncSocketExHelperWindow;
 class CAsyncSocketExLayer;
@@ -75,6 +76,7 @@ class CCriticalSectionWrapper;
 
 struct t_callbackMsg
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   CAsyncSocketExLayer* pLayer;
   int nType;
   intptr_t nParam1;
@@ -267,7 +269,7 @@ protected:
   CAsyncSocketExLayer * m_pFirstLayer;
   CAsyncSocketExLayer * m_pLastLayer;
 
-  friend CAsyncSocketExLayer;
+  friend class CAsyncSocketExLayer;
 
   // Called by the layers to notify application of some events
   virtual int OnLayerCallback(rde::list<t_callbackMsg> & callbacks);

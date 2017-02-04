@@ -43,7 +43,7 @@ struct t_transferdata
 
 class CFtpControlSocket : public CAsyncSocketEx, public CApiLog
 {
-  friend CTransferSocket;
+  friend class CTransferSocket;
 
 public:
   CFtpControlSocket(CMainThread * pMainThread, CFileZillaTools * pTools);
