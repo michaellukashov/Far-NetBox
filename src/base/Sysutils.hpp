@@ -420,22 +420,6 @@ TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSec
 
 Boolean IsLeapYear(Word Year);
 
-class TCriticalSection : public TObject
-{
-public:
-  TCriticalSection();
-  ~TCriticalSection();
-
-  void Enter() const;
-  void Leave() const;
-
-  int GetAcquired() const { return FAcquired; }
-
-private:
-  mutable CRITICAL_SECTION FSection;
-  mutable int FAcquired;
-};
-
 UnicodeString StripHotkey(const UnicodeString & AText);
 bool StartsText(const UnicodeString & ASubText, const UnicodeString & AText);
 
