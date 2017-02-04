@@ -9,7 +9,6 @@
 #include "../base/Masks.cpp"
 #include "../base/Sysutils.cpp"
 #include "../base/StrUtils.cpp"
-#include "../base/local.cpp"
 #include "../base/WideStrUtils.cpp"
 #include "../base/LibraryLoader.cpp"
 #include "../base/Common.cpp"
