@@ -260,7 +260,7 @@ enum ftp_capability_names_t
 
 class TFTPServerCapabilities //: public TObject
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   TFTPServerCapabilities(){}
   ftp_capabilities_t GetCapability(ftp_capability_names_t Name);

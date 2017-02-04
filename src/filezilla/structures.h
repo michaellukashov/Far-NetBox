@@ -7,7 +7,7 @@ class CServerPath;
 
 class t_directory //: public TObject
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   t_directory();
   t_directory(const t_directory &a);

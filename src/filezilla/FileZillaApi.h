@@ -38,7 +38,7 @@ DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
 // See below for a list of supported commands and their parameters.
 struct t_command //: public TObject
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
   t_command() : id(0), param4(0) {}
   int id; // Type of command, see below
   CString param1; // Parameters for this command
@@ -114,7 +114,7 @@ struct t_command //: public TObject
 
 class CAsyncRequestData // : public TObject
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CAsyncRequestData();
   virtual ~CAsyncRequestData();
@@ -243,7 +243,7 @@ class CFileZillaTools;
 
 class CFileZillaApi //: public TObject
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CFileZillaApi();
   virtual ~CFileZillaApi();

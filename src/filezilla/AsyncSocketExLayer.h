@@ -70,7 +70,7 @@ class CAsyncSocketEx;
 
 class CAsyncSocketExLayer // : public TObject
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
   friend CAsyncSocketEx;
   friend CAsyncSocketExHelperWindow;
 protected:

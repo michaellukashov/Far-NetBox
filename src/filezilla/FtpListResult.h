@@ -65,7 +65,7 @@ private:
   int pos;
   struct t_list // : public TObject
   {
-    CUSTOM_MEM_ALLOCATION_IMPL
+  CUSTOM_MEM_ALLOCATION_IMPL
     char * buffer;
     int len;
     t_list * next;

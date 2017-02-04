@@ -7,8 +7,8 @@ class TFileZillaIntf;
 
 class TFileZillaIntern // : public TObject
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
-//NB_DISABLE_COPY(TFileZillaIntern)
+CUSTOM_MEM_ALLOCATION_IMPL
+NB_DISABLE_COPY(TFileZillaIntern)
 public:
   static bool classof(const TObject * Obj)
   {
@@ -31,9 +31,6 @@ public:
 protected:
   TFileZillaIntf * FOwner;
   int FDebugLevel;
-private: \
-  TFileZillaIntern(const TFileZillaIntern &);
-  TFileZillaIntern &operator=(const TFileZillaIntern &);
 };
 
 #endif // FileZillaInternH
