@@ -1,7 +1,6 @@
 
 #pragma once
 
-//#include <nbglobals.h>
 #include <headers.hpp>
 #include <openssl/pkcs12.h>
 

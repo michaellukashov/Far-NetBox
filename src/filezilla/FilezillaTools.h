@@ -3,8 +3,6 @@
 #define FileZillaToolsH
 
 #include <ctime>
-//#include <Classes.hpp>
-//#include <nbglobals.h>
 #include <headers.hpp>
 
 class CFileZillaTools //: public TObject

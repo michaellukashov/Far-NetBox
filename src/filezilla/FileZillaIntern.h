@@ -1,7 +1,6 @@
 #ifndef FileZillaInternH
 #define FileZillaInternH
 
-//#include <nbglobals.h>
 #include <headers.hpp>
 
 class TFileZillaIntf;
