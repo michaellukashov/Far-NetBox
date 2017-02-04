@@ -446,7 +446,7 @@ public:
 
 
 public:
-  explicit TTerminal(TObjectClassId Kind);
+  explicit TTerminal(TObjectClassId Kind = OBJECT_CLASS_TTerminal);
   void Init(TSessionData * SessionData, TConfiguration * Configuration);
   virtual ~TTerminal();
   void Open();
@@ -721,7 +721,6 @@ class TTerminalList : public TObjectList
 {
 NB_DISABLE_COPY(TTerminalList)
 public:
-  TTerminalList() : FConfiguration(nullptr) {}
   explicit TTerminalList(TConfiguration * AConfiguration);
   virtual ~TTerminalList();
 

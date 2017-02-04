@@ -142,7 +142,7 @@ void ZLIB_INTERNAL zmemcpy(unsigned char* dest, const unsigned char* source, uns
 
 int ZLIB_INTERNAL zmemcmp(const unsigned char* s1, const unsigned char* s2, unsigned int len)
 {
-    uInt j;
+    uint32_t j;
 
     for (j = 0; j < len; j++) {
         if (s1[j] != s2[j]) return 2*(s1[j] > s2[j])-1;

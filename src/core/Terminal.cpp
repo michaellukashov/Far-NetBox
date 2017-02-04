@@ -6809,7 +6809,7 @@ TTerminal * TSecondaryTerminal::GetPasswordSource()
 }
 
 TTerminalList::TTerminalList(TConfiguration * AConfiguration) :
-  TObjectList(),
+  TObjectList(OBJECT_CLASS_TTerminalList),
   FConfiguration(AConfiguration)
 {
   DebugAssert(FConfiguration);
@@ -6822,7 +6822,7 @@ TTerminalList::~TTerminalList()
 
 TTerminal * TTerminalList::CreateTerminal(TSessionData * Data)
 {
-  TTerminal * Result = new TTerminal(OBJECT_CLASS_TTerminal);
+  TTerminal * Result = new TTerminal();
   Result->Init(Data, FConfiguration);
   return Result;
 }

@@ -75,20 +75,13 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
       SetName(Name + L" (" + ::Int64ToStr(N+1) + L")");
     }
 }
-//--- TNamedObjectList ------------------------------------------------------
-TNamedObjectList::TNamedObjectList() :
-  TObjectList(OBJECT_CLASS_TNamedObjectList),
-  FHiddenCount(0),
-  FControlledAdd(false),
-  AutoSort(true)
-{
-}
 
+//--- TNamedObjectList ------------------------------------------------------
 TNamedObjectList::TNamedObjectList(TObjectClassId Kind) :
   TObjectList(Kind),
   FHiddenCount(0),
-  FControlledAdd(false),
-  AutoSort(true)
+  FAutoSort(true),
+  FControlledAdd(false)
 {
 }
 //---------------------------------------------------------------------------
@@ -125,7 +118,7 @@ intptr_t TNamedObjectList::Add(TObject * AObject)
   TNamedObject * NamedObject = static_cast<TNamedObject *>(AObject);
   // If temporarily not auto-sorting (when loading session list),
   // keep the hidden objects in front, so that HiddenCount is correct
-  if (!AutoSort && NamedObject->GetHidden())
+  if (!FAutoSort && NamedObject->GetHidden())
   {
     Result = 0;
     Insert(Result, AObject);
@@ -155,7 +148,7 @@ void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
     {
       FHiddenCount = -1;
     }
-    if (AutoSort)
+    if (FAutoSort)
     {
       AlphaSort();
     }
