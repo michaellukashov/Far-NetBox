@@ -13,8 +13,8 @@
 #include <MFC64bitFix.h>
 #include <TextsFileZilla.h>
 #include <FileZillaOpt.h>
-#include <Common.h>
-#include <WideStrUtils.hpp>
+//#include <Common.h>
+//#include <WideStrUtils.hpp>
 
 class CFtpControlSocket::CFileTransferData : public CFtpControlSocket::t_operation::COpData
 {
