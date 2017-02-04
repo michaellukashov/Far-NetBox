@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Global.h>
 #include <Classes.hpp>
 
 //#define EXCEPTION throw ExtException(nullptr, L"")
