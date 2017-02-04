@@ -19,6 +19,8 @@
 
 #include "TextsCore.h"
 
+#pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
+
 int Win32Platform = 0;
 int Win32MajorVersion = 0;
 int Win32MinorVersion = 0;
