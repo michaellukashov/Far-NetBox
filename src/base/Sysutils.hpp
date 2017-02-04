@@ -515,3 +515,6 @@ public:
   std::function<void()> CONCATENATE(null_func_, __LINE__); \
   NullFunc ANONYMOUS_VARIABLE(null_) = CONCATENATE(null_func_, __LINE__) = [&]() /* lambda body here */
 
+
+void ShowExtendedException(Exception * E);
+bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
