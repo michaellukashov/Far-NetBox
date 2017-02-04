@@ -271,11 +271,6 @@ void TList::Sort()
   ThrowNotImplemented(15);
 }
 
-TObjectList::TObjectList() :
-  TList(OBJECT_CLASS_TObjectList),
-  FOwnsObjects(true)
-{
-}
 
 TObjectList::TObjectList(TObjectClassId Kind) :
   TList(Kind),

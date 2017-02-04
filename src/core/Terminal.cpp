@@ -6809,7 +6809,7 @@ TTerminal * TSecondaryTerminal::GetPasswordSource()
 }
 
 TTerminalList::TTerminalList(TConfiguration * AConfiguration) :
-  TObjectList(),
+  TObjectList(OBJECT_CLASS_TTerminalList),
   FConfiguration(AConfiguration)
 {
   DebugAssert(FConfiguration);

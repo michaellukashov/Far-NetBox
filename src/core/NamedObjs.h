@@ -57,8 +57,7 @@ protected:
 public:
   bool AutoSort;
 
-  TNamedObjectList();
-  explicit TNamedObjectList(TObjectClassId Kind);
+  explicit TNamedObjectList(TObjectClassId Kind = OBJECT_CLASS_TNamedObjectList);
   void AlphaSort();
   intptr_t Add(TObject * AObject);
   virtual const TNamedObject * AtObject(intptr_t Index) const;

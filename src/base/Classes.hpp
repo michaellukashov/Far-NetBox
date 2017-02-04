@@ -235,8 +235,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
   }
 public:
-  TObjectList();
-  explicit TObjectList(TObjectClassId Kind);
+  explicit TObjectList(TObjectClassId Kind = OBJECT_CLASS_TObjectList);
   virtual ~TObjectList();
 
   TObject * operator [](intptr_t Index) const;

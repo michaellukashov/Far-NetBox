@@ -75,15 +75,8 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
       SetName(Name + L" (" + ::Int64ToStr(N+1) + L")");
     }
 }
-//--- TNamedObjectList ------------------------------------------------------
-TNamedObjectList::TNamedObjectList() :
-  TObjectList(OBJECT_CLASS_TNamedObjectList),
-  FHiddenCount(0),
-  FControlledAdd(false),
-  AutoSort(true)
-{
-}
 
+//--- TNamedObjectList ------------------------------------------------------
 TNamedObjectList::TNamedObjectList(TObjectClassId Kind) :
   TObjectList(Kind),
   FHiddenCount(0),
