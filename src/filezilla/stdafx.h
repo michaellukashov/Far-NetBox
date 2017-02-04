@@ -35,7 +35,8 @@
 class CFileFix;
 #define CFile CFileFix
 
-#include <Global.h>
+//#include <Global.h>
+#include <headers.hpp>
 // these create conflict with afxwin.h
 #undef BEGIN_MESSAGE_MAP
 #undef END_MESSAGE_MAP
@@ -48,7 +49,7 @@ class CFileFix;
 #include <afxconv.h>
 
 #include "FileZillaApi.h"
-#include "afxdll.h"
+//#include "afxdll.h"
 
 #define _strlwr strlwr
 
