@@ -205,8 +205,9 @@ private:
   int m_nVerificationResult;
   int m_nVerificationDepth;
 
-  static struct t_SslLayerList : public TObject
+  static struct t_SslLayerList //: public TObject
   {
+    CUSTOM_MEM_ALLOCATION_IMPL
     CAsyncSslSocketLayer * pLayer;
     t_SslLayerList * pNext;
   } * m_pSslLayerList;

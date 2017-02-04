@@ -26,8 +26,9 @@ CAsyncSocketEx::t_AsyncSocketExThreadDataList *CAsyncSocketEx::m_spAsyncSocketEx
 #define WM_SOCKETEX_NOTIFY (WM_USER+3)
 #define MAX_SOCKETS (0xBFFF-WM_SOCKETEX_NOTIFY+1)
 
-class CAsyncSocketExHelperWindow : public TObject
+class CAsyncSocketExHelperWindow // : public TObject
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CAsyncSocketExHelperWindow(CAsyncSocketEx::t_AsyncSocketExThreadData* pThreadData)
   {

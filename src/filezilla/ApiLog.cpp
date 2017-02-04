@@ -6,8 +6,8 @@
 // Konstruktion/Destruktion
 //////////////////////////////////////////////////////////////////////
 
-CApiLog::CApiLog() :
-  TObject(OBJECT_CLASS_CApiLog)
+CApiLog::CApiLog()
+  // TObject(OBJECT_CLASS_CApiLog)
 {
   FIntern = NULL;
 }

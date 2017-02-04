@@ -3,8 +3,9 @@
 
 #include "FileZillaIntern.h"
 
-class CApiLog : public TObject
+class CApiLog //: public TObject
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   static bool classof(const TObject * Obj)
   {

@@ -13,7 +13,6 @@
 #include <MFC64bitFix.h>
 #include <TextsFileZilla.h>
 #include <FileZillaOpt.h>
-#include <Classes.hpp>
 #include <Common.h>
 #include <WideStrUtils.hpp>
 

@@ -5,7 +5,7 @@
 #include "FileZillaIntf.h"
 
 TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
-  TObject(OBJECT_CLASS_TFileZillaIntern),
+  // TObject(OBJECT_CLASS_TFileZillaIntern),
   FOwner(AOwner)
 {
   FDebugLevel = 0;

@@ -1,7 +1,8 @@
 
 #pragma once
 
-#include <Classes.hpp>
+//#include <Classes.hpp>
+#include <nbglobals.h>
 
 #include "FzApiStructures.h"
 #include "structures.h"
@@ -35,8 +36,9 @@ DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
 // You don't have to fill this struct, you may use the command specific
 // functions which is easier.
 // See below for a list of supported commands and their parameters.
-struct t_command : public TObject
+struct t_command //: public TObject
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
   t_command() : id(0), param4(0) {}
   int id; // Type of command, see below
   CString param1; // Parameters for this command
@@ -110,8 +112,9 @@ struct t_command : public TObject
 #endif
 #define FZ_ASYNCREQUEST_NEEDPASS 10
 
-class CAsyncRequestData : public TObject
+class CAsyncRequestData // : public TObject
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CAsyncRequestData();
   virtual ~CAsyncRequestData();
@@ -238,8 +241,9 @@ public:
 class CMainThread;
 class CFileZillaTools;
 
-class CFileZillaApi : public TObject
+class CFileZillaApi //: public TObject
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CFileZillaApi();
   virtual ~CFileZillaApi();
