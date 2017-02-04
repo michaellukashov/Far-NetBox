@@ -8,6 +8,7 @@
 #include "AsyncSslSocketLayer.h"
 #include "FileZillaIntern.h"
 #include "FileZillaOpt.h"
+#include "ApiLog.h"
 
 #define DECL_WINDOWS_FUNCTION(linkage, rettype, name, params) \
   typedef rettype (WINAPI *t_##name) params; \

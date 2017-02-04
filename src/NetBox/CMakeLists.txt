@@ -288,7 +288,7 @@ set(NETBOX_SOURCES
   ../windows/ProgParams.cpp
 
 #  UnityBuildFilezilla.cpp
-  ../filezilla/stdafx.cpp
+#  ../filezilla/stdafx.cpp
   ../filezilla/afxdll.cpp
   ../filezilla/FileZillaIntf.cpp
   ../filezilla/FileZillaIntern.cpp
