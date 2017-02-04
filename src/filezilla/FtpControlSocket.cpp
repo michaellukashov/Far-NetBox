@@ -1268,7 +1268,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
         {
           // convert from UTF-8 to ANSI
           LPCSTR utf8 = (LPCSTR)m_RecvBuffer.back();
-          if (DetectUTF8Encoding(utf8, strlen(utf8)) == etANSI)
+          if (DetectUTF8Encoding((const uint8_t *)utf8, strlen(utf8)) == etANSI)
           {
             if (m_CurrentServer.nUTF8 != 1)
             {
@@ -6322,7 +6322,7 @@ CString CFtpControlSocket::GetReply()
   if (m_bUTF8)
   {
     // convert from UTF-8 to ANSI
-    if (DetectUTF8Encoding(line, strlen(line)) == etANSI)
+    if (DetectUTF8Encoding((const uint8_t *)line, strlen(line)) == etANSI)
     {
       if (m_CurrentServer.nUTF8 != 1)
       {
