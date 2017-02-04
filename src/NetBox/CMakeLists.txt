@@ -239,10 +239,102 @@ set_property(TARGET libssl
 #-------------------------------------------------------------------------------
 # target NetBox
 
+if(BUILD_DEBUG)
+
+set(NETBOX_SOURCES
+#  UnityBuildCore.cpp
+  ../base/UnicodeString.cpp
+  ../base/Classes.cpp
+  ../base/Masks.cpp
+  ../base/Sysutils.cpp
+  ../base/StrUtils.cpp
+  ../base/WideStrUtils.cpp
+  ../base/LibraryLoader.cpp
+  ../base/Common.cpp
+  ../base/Exceptions.cpp
+  ../base/FileBuffer.cpp
+  ../base/Global.cpp
+
+  ../core/RemoteFiles.cpp
+  ../core/Terminal.cpp
+  ../core/FileOperationProgress.cpp
+  ../core/Queue.cpp
+  ../core/SecureShell.cpp
+  ../core/SessionInfo.cpp
+  ../core/CoreMain.cpp
+  ../core/FileMasks.cpp
+  ../core/CopyParam.cpp
+  ../core/SessionData.cpp
+  ../core/Configuration.cpp
+  ../core/ScpFileSystem.cpp
+  ../core/FtpFileSystem.cpp
+  ../core/SftpFileSystem.cpp
+  ../core/WebDAVFileSystem.cpp
+  ../core/PuttyIntf.cpp
+  ../core/Cryptography.cpp
+  ../core/NamedObjs.cpp
+  ../core/HierarchicalStorage.cpp
+  ../core/Option.cpp
+  ../core/FileInfo.cpp
+  ../core/FileSystems.cpp
+  ../core/Bookmarks.cpp
+  ../core/WinSCPSecurity.cpp
+  ../core/Http.cpp
+  ../core/NeonIntf.cpp
+  ../windows/SynchronizeController.cpp
+  ../windows/GUITools.cpp
+  ../windows/GUIConfiguration.cpp
+  ../windows/Tools.cpp
+  ../windows/ProgParams.cpp
+
+#  UnityBuildFilezilla.cpp
+  ../filezilla/stdafx.cpp
+  ../filezilla/afxdll.cpp
+  ../filezilla/FileZillaIntf.cpp
+  ../filezilla/FileZillaIntern.cpp
+  ../filezilla/ApiLog.cpp
+  ../filezilla/ServerPath.cpp
+  ../filezilla/AsyncSslSocketLayer.cpp
+  ../filezilla/AsyncSocketExLayer.cpp
+  ../filezilla/AsyncSocketEx.cpp
+  ../filezilla/FileZillaApi.cpp
+  ../filezilla/FzApiStructures.cpp
+  ../filezilla/FtpControlSocket.cpp
+  ../filezilla/MainThread.cpp
+  ../filezilla/TransferSocket.cpp
+  ../filezilla/FtpListResult.cpp
+  ../filezilla/AsyncProxySocketLayer.cpp
+  ../filezilla/structures.cpp
+  ../filezilla/MFC64bitFix.cpp
+  ../filezilla/misc/CBase64Coding.cpp
+
+#  UnityBuildMain.cpp
+  NetBox.cpp
+  FarDialog.cpp
+  FarPlugin.cpp
+  FarUtil.cpp
+  WinSCPFileSystem.cpp
+  WinSCPDialogs.cpp
+  WinSCPPlugin.cpp
+  FarConfiguration.cpp
+  FarInterface.cpp
+  XmlStorage.cpp
+  FarPluginStrings.cpp
+  ../windows/WinInterface.cpp
+)
+
+else(BUILD_DEBUG)
+
 set(NETBOX_SOURCES
   UnityBuildCore.cpp
   UnityBuildMain.cpp
   UnityBuildFilezilla.cpp
+)
+
+endif(BUILD_DEBUG)
+
+set(NETBOX_SOURCES
+  ${NETBOX_SOURCES}
 
   FarPlugin.h
   WinSCPPlugin.h
