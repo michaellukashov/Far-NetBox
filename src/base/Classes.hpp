@@ -494,7 +494,7 @@ TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
 double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
 int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
 int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
-
+/*
 class TSHFileInfo : public TObject
 {
   typedef DWORD_PTR (WINAPI * TGetFileInfo)(
@@ -517,8 +517,9 @@ public:
 
 private:
   TGetFileInfo FGetFileInfo;
+  TLibraryLoader FSHFileInfoLoader;
 };
-
+*/
 enum TSeekOrigin
 {
   soFromBeginning = 0,
