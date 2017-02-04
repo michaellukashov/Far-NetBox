@@ -51,12 +51,12 @@ public:
   void SetCount(intptr_t Value);
 protected:
   intptr_t FHiddenCount;
+  bool FAutoSort;
   bool FControlledAdd;
+
   void Recount();
 
 public:
-  bool AutoSort;
-
   explicit TNamedObjectList(TObjectClassId Kind = OBJECT_CLASS_TNamedObjectList);
   void AlphaSort();
   intptr_t Add(TObject * AObject);
@@ -66,7 +66,6 @@ public:
   TNamedObject * FindByName(const UnicodeString & Name);
   /*__property int Count = { read = GetCount, write = SetCount };
   __property int CountIncludingHidden = { read = GetCountIncludingHidden };*/
-private:
 };
 
 int NamedObjectSortProc(void * Item1, void * Item2);
