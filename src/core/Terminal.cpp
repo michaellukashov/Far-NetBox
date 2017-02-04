@@ -1523,7 +1523,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   std::unique_ptr<TStrings> Results(new TStringList());
   try__finally
   {
-    Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(FLAGMASK(Echo, pupEcho)));
+    Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(FLAGMASK(Echo, (void*)pupEcho)));
     Results->AddObject(AResult, reinterpret_cast<TObject *>(MaxLen));
     Result = PromptUser(Data, Kind, AName, Instructions, Prompts.get(), Results.get());
     AResult = Results->GetString(0);
