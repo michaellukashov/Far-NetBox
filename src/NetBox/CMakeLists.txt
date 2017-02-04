@@ -327,8 +327,8 @@ else(BUILD_DEBUG)
 
 set(NETBOX_SOURCES
   UnityBuildCore.cpp
-  UnityBuildMain.cpp
   UnityBuildFilezilla.cpp
+  UnityBuildMain.cpp
 )
 
 endif(BUILD_DEBUG)
