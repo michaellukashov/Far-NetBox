@@ -2,6 +2,8 @@
 
 #include <rdestl/vector.h>
 #include <rdestl/map.h>
+
+#include <Global.h>
 #include <Sysutils.hpp>
 
 enum TModificationFmt
