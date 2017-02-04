@@ -7,11 +7,10 @@ class CApiLog //: public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  static bool classof(const TObject * Obj)
+  static bool classof(const CApiLog * Obj)
   {
-    TObjectClassId Kind = Obj->GetKind();
     return
-      Kind == OBJECT_CLASS_CApiLog;
+      Obj->GetKind() == OBJECT_CLASS_CApiLog;
   }
 public:
   CApiLog();

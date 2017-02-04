@@ -10,11 +10,10 @@ class TFileZillaIntern // : public TObject
 CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TFileZillaIntern)
 public:
-  static bool classof(const TObject * Obj)
+  static bool classof(const TFileZillaIntern * Obj)
   {
-    TObjectClassId Kind = Obj->GetKind();
     return
-      Kind == OBJECT_CLASS_TFileZillaIntern;
+      Obj->GetKind() == OBJECT_CLASS_TFileZillaIntern;
   }
 public:
   explicit TFileZillaIntern(TFileZillaIntf * AOwner);
