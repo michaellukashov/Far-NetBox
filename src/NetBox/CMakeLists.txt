@@ -480,7 +480,7 @@ if(CMAKE_COMPILER_IS_MINGW)
 endif()
 
 target_compile_options(atlmfc
-  PRIVATE ${ATLMFC_COMPILE_FLAGS} -wd4995 -wd4101 -wd4290
+  PRIVATE ${ATLMFC_COMPILE_FLAGS} -wd4995 -wd4996 -wd4101 -wd4290
 )
 
 #-------------------------------------------------------------------------------
