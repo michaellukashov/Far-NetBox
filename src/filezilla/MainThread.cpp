@@ -1,5 +1,6 @@
 
 #include "stdafx.h"
+#include "afxdll.h"
 #include "MainThread.h"
 
 #define ECS m_CriticalSection.Lock()
