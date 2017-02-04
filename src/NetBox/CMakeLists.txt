@@ -239,7 +239,17 @@ set_property(TARGET libssl
 #-------------------------------------------------------------------------------
 # target NetBox
 
-if(BUILD_DEBUG)
+set(USE_UNITY_BUILD 1)
+
+if(USE_UNITY_BUILD)
+
+set(NETBOX_SOURCES
+  UnityBuildCore.cpp
+  UnityBuildFilezilla.cpp
+  UnityBuildMain.cpp
+)
+
+else(USE_UNITY_BUILD)
 
 set(NETBOX_SOURCES
 #  UnityBuildCore.cpp
@@ -323,15 +333,7 @@ set(NETBOX_SOURCES
   ../windows/WinInterface.cpp
 )
 
-else(BUILD_DEBUG)
-
-set(NETBOX_SOURCES
-  UnityBuildCore.cpp
-  UnityBuildFilezilla.cpp
-  UnityBuildMain.cpp
-)
-
-endif(BUILD_DEBUG)
+endif(USE_UNITY_BUILD)
 
 set(NETBOX_SOURCES
   ${NETBOX_SOURCES}
