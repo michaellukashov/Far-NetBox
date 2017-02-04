@@ -2,8 +2,6 @@
 
 #include <tchar.h>
 #include <assert.h>
-//#include <Classes.hpp>
-//#include <Sysutils.hpp>
 #include <headers.hpp>
 
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
