@@ -129,7 +129,30 @@ public:
 		return *this;
 	}
 
-	int compare(const value_type* str) const
+  basic_string& erase(size_type iIndex = 0, size_type nCount = npos)
+  {
+    size_type nLength = length();
+    if (nLength < iIndex)
+      RDE_ASSERT(!"erase");
+    if (nCount + iIndex > nLength)
+      nCount = nLength - iIndex;
+
+    if (nCount > 0)
+    {
+      size_type nNewLength = nLength - nCount;
+      size_type nCharsToCopy = nLength - (iIndex + nCount) + 1;
+      const value_type* pszBuffer = this->c_str();
+#if _MSC_VER >= 1400
+      memmove_s(pszBuffer + iIndex, nCharsToCopy*sizeof(E), pszBuffer + iIndex + nCount, nCharsToCopy*sizeof(E));
+#else
+      memmove(pszBuffer+iIndex, pszBuffer+iIndex+nCount, nCharsToCopy*sizeof(E));
+#endif
+      this->resize(nNewLength);
+    }
+    return *this;
+  }
+
+  int compare(const value_type* str) const
 	{
 		const size_type thisLen = length();
 		const size_type strLen = strlen(str);
