@@ -19,6 +19,12 @@
 
 #include "TextsCore.h"
 
+int Win32Platform = 0;
+int Win32MajorVersion = 0;
+int Win32MinorVersion = 0;
+int Win32BuildNumber = 0;
+wchar_t Win32CSDVersion[128] = {};
+
 const wchar_t * DSTModeNames = L"Win;Unix;Keep";
 
 const wchar_t EngShortMonthNames[12][4] =

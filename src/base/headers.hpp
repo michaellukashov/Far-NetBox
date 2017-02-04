@@ -175,7 +175,6 @@ private: \
 #define NPOS static_cast<intptr_t>(-1)
 
 #include "UnicodeString.hpp"
-#include "local.hpp"
 
 #define TShellExecuteInfoW _SHELLEXECUTEINFOW
 #define TSHFileInfoW SHFILEINFOW

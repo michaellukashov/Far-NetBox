@@ -39,18 +39,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // #include <sspi.h>
 // #include <secext.h>
 #include <WinUser.h>
-
-extern const wchar_t DOS_EOL_fmt[];
-extern const wchar_t UNIX_EOL_fmt[];
-extern const wchar_t MAC_EOL_fmt[];
-extern const wchar_t WIN_EOL_fmt[];
-
-extern int Win32Platform;
-extern int Win32MajorVersion;
-extern int Win32MinorVersion;
-extern int Win32BuildNumber;
-extern wchar_t Win32CSDVersion[128];
-
+/*
 inline intptr_t __cdecl StrLength(const wchar_t * str) { return wcslen(str ? str : L""); }
 
 inline wchar_t __cdecl Upper(wchar_t Ch) { CharUpperBuff(&Ch, 1); return Ch; }
@@ -63,4 +52,4 @@ inline int __cdecl StrLIComp(const wchar_t * s1, const wchar_t * s2, int n) { re
 inline int __cdecl FarStrCmpI(const wchar_t * s1, const wchar_t * s2) { return CompareString(0, NORM_IGNORECASE|SORT_STRINGSORT, s1,-1, s2, -1) - 2; }
 
 inline int __cdecl StrCmpNN(const wchar_t * s1, int n1, const wchar_t * s2, int n2) { return CompareString(0, NORM_STOP_ON_NULL|SORT_STRINGSORT, s1, n1, s2, n2) - 2; }
-
+*/
