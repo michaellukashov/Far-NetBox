@@ -582,7 +582,7 @@ add_library(neon STATIC
   ${LIBS_ROOT}/neon/src/ne_openssl.c
 )
 
-set(NEON_COMPILE_FLAGS -D_CRT_SECURE_NO_WARNINGS)
+set(NEON_COMPILE_FLAGS -D_CRT_SECURE_NO_WARNINGS -wd4996)
 
 target_compile_options(neon
   PRIVATE ${NEON_COMPILE_FLAGS} ${NETBOX_UNICODE_FLAGS}
