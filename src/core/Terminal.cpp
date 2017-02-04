@@ -6822,7 +6822,7 @@ TTerminalList::~TTerminalList()
 
 TTerminal * TTerminalList::CreateTerminal(TSessionData * Data)
 {
-  TTerminal * Result = new TTerminal(OBJECT_CLASS_TTerminal);
+  TTerminal * Result = new TTerminal();
   Result->Init(Data, FConfiguration);
   return Result;
 }

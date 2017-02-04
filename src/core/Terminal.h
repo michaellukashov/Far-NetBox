@@ -446,7 +446,7 @@ public:
 
 
 public:
-  explicit TTerminal(TObjectClassId Kind);
+  explicit TTerminal(TObjectClassId Kind = OBJECT_CLASS_TTerminal);
   void Init(TSessionData * SessionData, TConfiguration * Configuration);
   virtual ~TTerminal();
   void Open();
