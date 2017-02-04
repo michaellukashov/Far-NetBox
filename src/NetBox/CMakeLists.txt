@@ -480,7 +480,7 @@ if(CMAKE_COMPILER_IS_MINGW)
 endif()
 
 target_compile_options(atlmfc
-  PRIVATE ${ATLMFC_COMPILE_FLAGS}
+  PRIVATE ${ATLMFC_COMPILE_FLAGS} -wd4995 -wd4101 -wd4290
 )
 
 #-------------------------------------------------------------------------------
@@ -540,7 +540,7 @@ add_library(putty STATIC
 #  ${LIBS_ROOT}/Putty/ldisc.c
 )
 
-set(PUTTY_COMPILE_FLAGS -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -D_CRT_SECURE_NO_WARNINGS)
+set(PUTTY_COMPILE_FLAGS -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -D_CRT_SECURE_NO_WARNINGS -wd4996)
 
 target_compile_options(putty
   PRIVATE ${PUTTY_COMPILE_FLAGS}
@@ -582,7 +582,7 @@ add_library(neon STATIC
   ${LIBS_ROOT}/neon/src/ne_openssl.c
 )
 
-set(NEON_COMPILE_FLAGS -D_CRT_SECURE_NO_WARNINGS)
+set(NEON_COMPILE_FLAGS -D_CRT_SECURE_NO_WARNINGS -wd4996)
 
 target_compile_options(neon
   PRIVATE ${NEON_COMPILE_FLAGS} ${NETBOX_UNICODE_FLAGS}
