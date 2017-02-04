@@ -401,7 +401,7 @@ static char *dupvprintf_inner(char *buf, int oldlen, int oldsize,
 
     size = oldsize - oldlen;
     if (size == 0) {
-    size = 512;
+        size = 512;
         buf = sresize(buf, oldlen + size, char);
     }
 
@@ -485,7 +485,7 @@ char *strbuf_to_str(strbuf *buf)
     char *ret = buf->s;
     sfree(buf);
     return ret;
-    }
+}
 void strbuf_catfv(strbuf *buf, const char *fmt, va_list ap)
 {
     buf->s = dupvprintf_inner(buf->s, buf->len, buf->size, fmt, ap);
