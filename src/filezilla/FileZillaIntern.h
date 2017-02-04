@@ -19,7 +19,7 @@ public:
 public:
   explicit TFileZillaIntern(TFileZillaIntf * AOwner);
 
-  bool PostMessage(WPARAM wParam, LPARAM lParam) const;
+  bool FZPostMessage(WPARAM wParam, LPARAM lParam) const;
   CString GetOption(int OptionID) const;
   int GetOptionVal(int OptionID) const;
 

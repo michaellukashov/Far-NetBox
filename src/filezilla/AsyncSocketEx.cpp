@@ -181,7 +181,7 @@ public:
 
     for (rde::list<MSG>::iterator iter = msgList.begin(); iter != msgList.end(); iter++)
     {
-      PostMessage(m_hWnd, iter->message, iter->wParam, iter->lParam);
+      ::PostMessage(m_hWnd, iter->message, iter->wParam, iter->lParam);
     }
   }
 
@@ -336,7 +336,7 @@ public:
               if (nBytes > 0)
               {
                 // Just repeat message.
-                PostMessage(hWnd, message, wParam, lParam);
+                ::PostMessage(hWnd, message, wParam, lParam);
                 pSocket->m_SocketData.onCloseCalled = true;
                 pSocket->OnReceive(WSAESHUTDOWN);
                 break;
@@ -596,7 +596,7 @@ public:
       if (pWnd->m_pThreadData->layerCloseNotify.empty())
         KillTimer(hWnd, 1);
 
-      PostMessage(hWnd, socket->m_SocketData.nSocketIndex + WM_SOCKETEX_NOTIFY, socket->m_SocketData.hSocket, FD_CLOSE);
+      ::PostMessage(hWnd, socket->m_SocketData.nSocketIndex + WM_SOCKETEX_NOTIFY, socket->m_SocketData.hSocket, FD_CLOSE);
       return 0;
     }
     return DefWindowProc(hWnd, message, wParam, lParam);
@@ -1471,14 +1471,14 @@ BOOL CAsyncSocketEx::TriggerEvent(long lEvent)
     pMsg->hSocket = m_SocketData.hSocket;
     pMsg->lEvent=lEvent%0xFFFF;
     pMsg->pLayer=0;
-    BOOL res=PostMessage(GetHelperWindowHandle(), WM_USER, (WPARAM)m_SocketData.nSocketIndex, (LPARAM)pMsg);
+    BOOL res=::PostMessage(GetHelperWindowHandle(), WM_USER, (WPARAM)m_SocketData.nSocketIndex, (LPARAM)pMsg);
     if (!res)
       delete pMsg;
     return res;
   }
   else
   {
-    return PostMessage(GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, m_SocketData.hSocket, lEvent%0xFFFF);
+    return ::PostMessage(GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, m_SocketData.hSocket, lEvent%0xFFFF);
   }
 
 }
@@ -1693,7 +1693,7 @@ void CAsyncSocketEx::AddCallbackNotification(const t_callbackMsg& msg)
 
   if(m_pendingCallbacks.size() == 1 && m_SocketData.nSocketIndex != -1)
   {
-    PostMessage(GetHelperWindowHandle(), WM_USER + 2, (WPARAM)m_SocketData.nSocketIndex, 0);
+    ::PostMessage(GetHelperWindowHandle(), WM_USER + 2, (WPARAM)m_SocketData.nSocketIndex, 0);
   }
 }
 

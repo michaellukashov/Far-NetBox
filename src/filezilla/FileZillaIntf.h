@@ -202,7 +202,7 @@ public:
   bool HandleMessage(WPARAM wParam, LPARAM lParam);
 
 protected:
-  bool PostMessage(WPARAM wParam, LPARAM lParam);
+  bool FZPostMessage(WPARAM wParam, LPARAM lParam);
   virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) = 0;
 
   virtual bool HandleStatus(const wchar_t * Status, int Type) = 0;
