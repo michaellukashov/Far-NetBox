@@ -4,6 +4,7 @@
 
 #include <disable_warnings_in_std_begin.hpp>
 
+#include "../base/GlobalUtils.cpp"
 #include "../base/UnicodeString.cpp"
 #include "../base/Classes.cpp"
 #include "../base/Masks.cpp"

@@ -253,6 +253,7 @@ else(USE_UNITY_BUILD)
 
 set(NETBOX_SOURCES
 #  UnityBuildCore.cpp
+  ../base/GlobalUtils.cpp
   ../base/UnicodeString.cpp
   ../base/Classes.cpp
   ../base/Masks.cpp
