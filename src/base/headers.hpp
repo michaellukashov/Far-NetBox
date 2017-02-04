@@ -69,6 +69,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "disable_warnings_in_std_end.hpp"
 
+#include <nbglobals.h>
+
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0501
 #endif  //_WIN32_WINNT
