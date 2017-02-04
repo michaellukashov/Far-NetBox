@@ -2567,7 +2567,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
   if (m_bUTF8 && *m_bUTF8)
   {
     // convert from UTF-8 to ANSI
-    if (DetectUTF8Encoding(RawByteString(p, len)) == etANSI)
+    if (DetectUTF8Encoding(p, len) == etANSI)
     {
       if (mayInvalidateUTF8 && m_server.nUTF8 != 1)
       {
