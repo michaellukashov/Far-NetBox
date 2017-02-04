@@ -40,7 +40,7 @@ inline bool operator!=(const allocator & lhs, const allocator & rhs)
 inline void * allocator::allocate(size_t bytes, int)
 {
 	// return operator new(bytes);
-	return nb_malloc(bytes);
+	return nb::operator_new(bytes);
 }
 
 inline void allocator::deallocate(void * ptr, size_t)
