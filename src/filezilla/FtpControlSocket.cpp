@@ -4828,7 +4828,7 @@ void CFtpControlSocket::Delete(const CString & filename, const CServerPath & pat
 {
   class CDeleteData : public CFtpControlSocket::t_operation::COpData
   {
-public:
+  public:
     CDeleteData() {}
     virtual ~CDeleteData() {}
     CString m_FileName;
@@ -4928,7 +4928,7 @@ void CFtpControlSocket::RemoveDir(const CString & dirname, const CServerPath & p
 
   class CRemoveDirData : public CFtpControlSocket::t_operation::COpData
   {
-public:
+  public:
     CRemoveDirData() {}
     virtual ~CRemoveDirData() {}
     CString m_DirName;

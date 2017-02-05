@@ -36,7 +36,6 @@ class CFileFix;
 #define CFile CFileFix
 
 #include <Global.h>
-//#include <headers.hpp>
 // these create conflict with afxwin.h
 #undef BEGIN_MESSAGE_MAP
 #undef END_MESSAGE_MAP

@@ -1,8 +1,6 @@
 
 #include "stdafx.h"
 
-//#include <Common.h>
-
 #include "FileZillaIntf.h"
 #include "FileZillaIntern.h"
 #include "FzApiStructures.h"
