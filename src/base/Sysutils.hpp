@@ -88,10 +88,12 @@ AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
 typedef int TDayTable[12];
 extern const TDayTable MonthDays[];
 
-class Exception : public std::runtime_error, public TObject
+class Exception : public std::runtime_error//, public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  static bool classof(const TObject * Obj)
+  inline TObjectClassId GetKind() const { return FKind; }
+  static bool classof(const Exception * Obj)
   {
     TObjectClassId Kind = Obj->GetKind();
     return
@@ -125,12 +127,14 @@ public:
 
 protected:
   // UnicodeString FHelpKeyword;
+private:
+  TObjectClassId FKind;
 };
 
 class EAbort : public Exception
 {
 public:
-  static inline bool classof(const TObject * Obj)
+  static inline bool classof(const Exception * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_EAbort ||
@@ -146,7 +150,7 @@ public:
 class EAccessViolation : public Exception
 {
 public:
-  static inline bool classof(const TObject * Obj)
+  static inline bool classof(const Exception * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_EAccessViolation;
@@ -159,7 +163,7 @@ public:
 class EFileNotFoundError : public Exception
 {
 public:
-  static inline bool classof(const TObject * Obj)
+  static inline bool classof(const Exception * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_EFileNotFoundError;
@@ -172,7 +176,7 @@ public:
 class EOSError : public Exception
 {
 public:
-  static inline bool classof(const TObject * Obj)
+  static inline bool classof(const Exception * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_EOSError;

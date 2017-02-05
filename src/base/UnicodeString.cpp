@@ -188,7 +188,7 @@ AnsiString & AnsiString::operator +=(const char * rhs)
 void AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
 {
   if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
-    throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
+    throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
 void RawByteString::Init(const wchar_t * Str, intptr_t Length)
@@ -761,7 +761,7 @@ wchar_t &UnicodeString::operator [](intptr_t Idx)
 void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
 {
   if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
-    throw std::runtime_error("Index is out of range"); // ERangeError(Sysconst_SRangeError);
+    throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
 UnicodeString operator +(const wchar_t lhs, const UnicodeString & rhs)
