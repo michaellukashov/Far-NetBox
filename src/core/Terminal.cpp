@@ -552,7 +552,7 @@ TCallbackGuard::~TCallbackGuard()
     FTerminal->FCallbackGuard = nullptr;
   }
 
-  delete FFatalError;
+  SAFE_DESTROY_EX(Exception, FFatalError);
 }
 
 void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
@@ -564,7 +564,7 @@ void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const 
   // that converts any exception to fatal one (such as in TTerminal::Open).
   if (isa<ECallbackGuardAbort>(E))
   {
-    delete FFatalError;
+    SAFE_DESTROY_EX(Exception, FFatalError);
     FFatalError = new ExtException(E, Msg, HelpKeyword);
   }
 

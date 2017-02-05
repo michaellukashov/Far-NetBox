@@ -2339,8 +2339,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       SCOPE_EXIT
       {
         FAction = nullptr;
-        delete FException;
-        FException = nullptr;
+        SAFE_DESTROY_EX(Exception, FException);
       };
       TriggerEvent();
 
@@ -2390,8 +2389,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
     __finally
     {
       FAction = nullptr;
-      delete FException;
-      FException = nullptr;
+      SAFE_DESTROY_EX(Exception, FException);
     };
   }
   catch (...)
@@ -2445,15 +2443,13 @@ void TTerminalThread::Rethrow(Exception *& AException)
     {
       SCOPE_EXIT
       {
-        delete AException;
-        AException = nullptr;
+        SAFE_DESTROY_EX(Exception, AException);
       };
       RethrowException(AException);
     }
     __finally
     {
-      delete AException;
-      AException = nullptr;
+      SAFE_DESTROY_EX(Exception, AException);
     };
   }
 }
@@ -2512,8 +2508,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
       SCOPE_EXIT
       {
         FUserAction = PrevUserAction;
-        delete FException;
-        FException = nullptr;
+        SAFE_DESTROY_EX(Exception, FException);
       };
       FUserAction = UserAction;
 
@@ -2545,8 +2540,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
         int WaitResult = WaitForEvent(1000);
         if (WaitResult == 0)
         {
-          delete FIdleException;
-          FIdleException = nullptr;
+          SAFE_DESTROY_EX(Exception, FIdleException);
           FatalAbort();
         }
         else if (WaitResult > 0)
@@ -2569,8 +2563,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     __finally
     {
       FUserAction = PrevUserAction;
-      delete FException;
-      FException = nullptr;
+      SAFE_DESTROY_EX(Exception, FException);
     };
 
     // Contrary to a call before, this is unconditional,
