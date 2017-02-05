@@ -835,10 +835,10 @@ target_compile_options(libcrypto
 )
 
 target_include_directories(libcrypto SYSTEM BEFORE PRIVATE
-  ../../libs/openssl/crypto/include
   ../../libs/openssl
   ../../libs/openssl/include
   ../../libs/openssl/crypto
+  ../../libs/openssl/crypto/include
   ../../libs/openssl/crypto/modes
 )
 
@@ -888,9 +888,13 @@ target_compile_options(libssl
   PRIVATE ${OPENSSL_COMPILE_FLAGS}
 )
 
-#target_include_directories(libssl BEFORE
-#  PRIVATE ../../libs/openssl/crypto/include
-#)
+target_include_directories(libssl SYSTEM BEFORE PRIVATE
+#  ../../libs/openssl
+  ../../libs/openssl/include
+#  ../../libs/openssl/crypto
+#  ../../libs/openssl/crypto/include
+#  ../../libs/openssl/crypto/modes
+)
 
 else(COMPILE_OPENSSL)
 
