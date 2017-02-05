@@ -5,7 +5,6 @@
 
 #include <nbglobals.h>
 #include <nbstring.h>
-//#include <nbstring.inl>
 
 __inline intptr_t __cdecl StrLength(const wchar_t * str) { return wcslen(str ? str : L""); }
 
