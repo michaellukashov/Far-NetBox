@@ -69,7 +69,7 @@ extern "C" {
 
 typedef struct DSA_SIG_st DSA_SIG;
 
-#if 0
+#ifndef NB_COMPILE_OPENSSL
 
 typedef struct DSA_SIG_st {
     BIGNUM *r;
@@ -127,7 +127,7 @@ struct dsa_st {
     ENGINE *engine;
 };
 
-#endif
+#endif // #ifndef NB_COMPILE_OPENSSL
 
 # define d2i_DSAparams_fp(fp,x) (DSA *)ASN1_d2i_fp((char *(*)())DSA_new, \
                 (char *(*)())d2i_DSAparams,(fp),(unsigned char **)(x))
