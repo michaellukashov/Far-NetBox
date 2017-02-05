@@ -32,7 +32,7 @@ NB_CORE_DLL(CMStringData*) nbstr_allocate(int nChars, int nCharSize)
 	size_t nDataBytes = nCharSize * nChars;
 	size_t nTotalSize = nDataBytes + sizeof(CMStringData);
 
-	CMStringData *pData = static_cast<CMStringData*>(malloc(nTotalSize));
+	CMStringData *pData = static_cast<CMStringData*>(nbcore_alloc(nTotalSize));
 	if (pData == NULL)
 		return NULL;
 
@@ -44,7 +44,7 @@ NB_CORE_DLL(CMStringData*) nbstr_allocate(int nChars, int nCharSize)
 
 NB_CORE_DLL(void) nbstr_free(CMStringData *pData)
 {
-	free(pData);
+	nbcore_free(pData);
 }
 
 NB_CORE_DLL(CMStringData*) nbstr_realloc(CMStringData* pData, int nChars, int nCharSize)
@@ -53,7 +53,7 @@ NB_CORE_DLL(CMStringData*) nbstr_realloc(CMStringData* pData, int nChars, int nC
 	ULONG nDataBytes = nCharSize * nChars;
 	ULONG nTotalSize = nDataBytes + sizeof(CMStringData);
 
-	CMStringData *pNewData = static_cast<CMStringData*>(realloc(pData, nTotalSize));
+	CMStringData *pNewData = static_cast<CMStringData*>(nbcore_realloc(pData, nTotalSize));
 	if (pNewData == NULL)
 		return NULL;
 
