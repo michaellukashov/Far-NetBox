@@ -84,48 +84,48 @@ const TDayTable MonthDays[] =
 
 Exception::Exception(TObjectClassId Kind, Exception * E) :
   std::runtime_error(E ? E->what() : ""),
-  TObject(Kind),
+  FKind(Kind),
   Message(E ? E->Message : L"")
 {
 }
 
 Exception::Exception(const UnicodeString & Msg) :
   std::runtime_error(""),
-  TObject(OBJECT_CLASS_Exception),
+  FKind(OBJECT_CLASS_Exception),
   Message(Msg)
 {
 }
 
 Exception::Exception(TObjectClassId Kind, const wchar_t * Msg) :
   std::runtime_error(""),
-  TObject(Kind),
+  FKind(Kind),
   Message(Msg)
 {
 }
 
 Exception::Exception(const wchar_t * Msg) :
   std::runtime_error(""),
-  TObject(OBJECT_CLASS_Exception),
+  FKind(OBJECT_CLASS_Exception),
   Message(Msg)
 {
 }
 
 Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg) :
   std::runtime_error(""),
-  TObject(Kind),
+  FKind(Kind),
   Message(Msg)
 {
 }
 
 Exception::Exception(TObjectClassId Kind, std::exception * E) :
   std::runtime_error(E ? E->what() : ""),
-  TObject(Kind)
+  FKind(Kind)
 {
 }
 
 Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AHelpContext) :
   std::runtime_error(""),
-  TObject(Kind),
+  FKind(Kind),
   Message(Msg)
 {
   TODO("FHelpContext = AHelpContext");
@@ -134,14 +134,14 @@ Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AH
 
 Exception::Exception(TObjectClassId Kind, Exception * E, intptr_t Ident) :
   std::runtime_error(E ? E->what() : ""),
-  TObject(Kind)
+  FKind(Kind)
 {
   Message = FMTLOAD(Ident);
 }
 
 Exception::Exception(TObjectClassId Kind, intptr_t Ident) :
   std::runtime_error(""),
-  TObject(Kind)
+  FKind(Kind)
 {
   Message = FMTLOAD(Ident);
 }

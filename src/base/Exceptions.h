@@ -25,7 +25,7 @@ enum TOnceDoneOperation
 class ExtException : public Exception
 {
 public:
-  static bool classof(const TObject * Obj)
+  static bool classof(const Exception * Obj)
   {
     TObjectClassId Kind = Obj->GetKind();
     return
@@ -89,7 +89,7 @@ private:
   class NAME : public BASE \
   { \
   public: \
-    static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_##NAME; } \
+    static inline bool classof(const Exception * Obj) { return Obj->GetKind() == OBJECT_CLASS_##NAME; } \
   public: \
     explicit inline NAME(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(Kind, E, Msg, HelpKeyword) {} \
     explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
@@ -109,7 +109,7 @@ DERIVE_EXT_EXCEPTION(EFileSkipped, ESkipFile)
 class EOSExtException : public ExtException
 {
 public:
-  static bool classof(const TObject * Obj)
+  static bool classof(const Exception * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_EOSExtException ||
@@ -125,7 +125,7 @@ public:
 class ECRTExtException : public EOSExtException
 {
 public:
-  static bool classof(const TObject * Obj)
+  static bool classof(const Exception * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_ECRTExtException;
@@ -138,7 +138,7 @@ public:
 class EFatal : public ExtException
 {
 public:
-  static inline bool classof(const TObject * Obj)
+  static inline bool classof(const Exception * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_EFatal ||
@@ -164,7 +164,7 @@ private:
   class NAME : public BASE \
   { \
   public: \
-    static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_##NAME; } \
+    static inline bool classof(const Exception * Obj) { return Obj->GetKind() == OBJECT_CLASS_##NAME; } \
   public: \
     explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
     virtual ExtException * Clone() const { return new NAME(this, L""); } \
@@ -177,7 +177,7 @@ DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
 class ESshTerminate : public EFatal
 {
 public:
-  static inline bool classof(const TObject * Obj)
+  static inline bool classof(const Exception * Obj)
   {
    return
      Obj->GetKind() == OBJECT_CLASS_ESshTerminate;
@@ -197,7 +197,7 @@ public:
 class ECallbackGuardAbort : public EAbort
 {
 public:
-  static inline bool classof(const TObject * Obj)
+  static inline bool classof(const Exception * Obj)
   {
     return
       Obj->GetKind() == OBJECT_CLASS_ECallbackGuardAbort;
