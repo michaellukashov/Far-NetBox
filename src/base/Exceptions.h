@@ -73,7 +73,7 @@ public:
     return *this;
   }
 
-  static ExtException * CloneFrom(const Exception* E);
+  static ExtException * CloneFrom(const Exception * E);
 
   virtual ExtException * Clone() const;
 
