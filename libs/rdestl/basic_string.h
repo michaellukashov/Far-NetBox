@@ -152,6 +152,17 @@ public:
     return *this;
   }
 
+  size_type find_first_of(const E *_Ptr, size_type _Off = 0) const
+  {	// look for one of [_Ptr, <null>) at or after _Off
+    _DEBUG_POINTER(_Ptr);
+    return (find_first_of(_Ptr, _Off, _Traits::length(_Ptr)));
+  }
+
+  size_type find_first_of(E _Ch, size_type _Off = 0) const
+  {	// look for _Ch at or after _Off
+    return (find((const E *)&_Ch, _Off, 1));
+  }
+
   int compare(const value_type* str) const
 	{
 		const size_type thisLen = length();
