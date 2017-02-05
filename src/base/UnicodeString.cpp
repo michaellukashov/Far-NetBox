@@ -525,7 +525,7 @@ bool operator !=(const UTF8String & lhs, const UTF8String & rhs)
 
 void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
 {
-  Data.resize(Length);
+  Data.Preallocate(Length);
   if (Length > 0)
   {
     wmemmove(const_cast<wchar_t *>(Data.c_str()), Str, Length);
@@ -536,7 +536,7 @@ void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
 void UnicodeString::Init(const char * Str, intptr_t Length)
 {
   intptr_t Size = ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0);
-  Data.resize(Size + 1);
+  Data.Preallocate(Size + 1);
   if (Size > 0)
   {
     ::MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), static_cast<int>(Size));
