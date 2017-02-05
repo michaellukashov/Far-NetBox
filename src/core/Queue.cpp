@@ -2339,7 +2339,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       SCOPE_EXIT
       {
         FAction = nullptr;
-        SAFE_DESTROY(FException);
+        SAFE_DESTROY_EX(Exception, FException);
       };
       TriggerEvent();
 
@@ -2389,7 +2389,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
     __finally
     {
       FAction = nullptr;
-      SAFE_DESTROY(FException);
+      SAFE_DESTROY_EX(Exception, FException);
     };
   }
   catch (...)
@@ -2435,21 +2435,21 @@ void TTerminalThread::ProcessEvent()
   ::SetEvent(FActionEvent);
 }
 
-void TTerminalThread::Rethrow(Exception *& Exception)
+void TTerminalThread::Rethrow(Exception *& AException)
 {
-  if (Exception != nullptr)
+  if (AException != nullptr)
   {
     try__finally
     {
       SCOPE_EXIT
       {
-        SAFE_DESTROY(Exception);
+        SAFE_DESTROY_EX(Exception, AException);
       };
-      RethrowException(Exception);
+      RethrowException(AException);
     }
     __finally
     {
-      SAFE_DESTROY(Exception);
+      SAFE_DESTROY_EX(Exception, AException);
     };
   }
 }
@@ -2508,7 +2508,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
       SCOPE_EXIT
       {
         FUserAction = PrevUserAction;
-        SAFE_DESTROY(FException);
+        SAFE_DESTROY_EX(Exception, FException);
       };
       FUserAction = UserAction;
 
@@ -2540,7 +2540,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
         int WaitResult = WaitForEvent(1000);
         if (WaitResult == 0)
         {
-          SAFE_DESTROY(FIdleException);
+          SAFE_DESTROY_EX(Exception, FIdleException);
           FatalAbort();
         }
         else if (WaitResult > 0)
@@ -2563,7 +2563,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     __finally
     {
       FUserAction = PrevUserAction;
-      SAFE_DESTROY(FException);
+      SAFE_DESTROY_EX(Exception, FException);
     };
 
     // Contrary to a call before, this is unconditional,
