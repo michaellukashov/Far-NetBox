@@ -8,7 +8,7 @@
 // See these sources for detailed information regarding the
 // Active Template Library product.
 
-#include <wtypes.h>
+//#include <wtypes.h>
 #include <atlconv.h>
 #include <tchar.h>
 

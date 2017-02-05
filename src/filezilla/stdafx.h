@@ -8,7 +8,7 @@
 #define _AFX_NOFORCE_LIBS
 
 #ifndef LENOF
-#define LENOF(x) (_countof(X))
+#define LENOF(x) (_countof(x))
 #endif
 
 #define _ATL_MIN_CRT
@@ -20,7 +20,7 @@
 #include "../src/mfc/afximpl.h"
 
 #include <afx.h>
-#include <wtypes.h>
+//#include <wtypes.h>
 #include <afxmt.h>
 
 // STL includes
