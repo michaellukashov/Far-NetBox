@@ -63,8 +63,9 @@ private:
   bool parseMlsdDateTime(const CString value, t_directory::t_direntry::t_date & date) const;
 
   int pos;
-  struct t_list : public TObject
+  struct t_list // : public TObject
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     char * buffer;
     int len;
     t_list * next;

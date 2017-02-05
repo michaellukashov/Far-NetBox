@@ -43,7 +43,7 @@ struct t_transferdata
 
 class CFtpControlSocket : public CAsyncSocketEx, public CApiLog
 {
-  friend CTransferSocket;
+  friend class CTransferSocket;
 
 public:
   CFtpControlSocket(CMainThread * pMainThread, CFileZillaTools * pTools);
@@ -220,8 +220,9 @@ protected:
   {
     int nOpMode;
     int nOpState;
-    class COpData : public TObject //Base class which will store operation specific parameters.
+    class COpData //: public TObject //Base class which will store operation specific parameters.
     {
+    CUSTOM_MEM_ALLOCATION_IMPL
     public:
       COpData() {};
       virtual ~COpData() {};

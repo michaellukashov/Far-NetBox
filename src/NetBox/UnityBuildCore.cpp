@@ -4,12 +4,12 @@
 
 #include <disable_warnings_in_std_begin.hpp>
 
+#include "../base/GlobalUtils.cpp"
 #include "../base/UnicodeString.cpp"
 #include "../base/Classes.cpp"
 #include "../base/Masks.cpp"
 #include "../base/Sysutils.cpp"
 #include "../base/StrUtils.cpp"
-#include "../base/local.cpp"
 #include "../base/WideStrUtils.cpp"
 #include "../base/LibraryLoader.cpp"
 #include "../base/Common.cpp"

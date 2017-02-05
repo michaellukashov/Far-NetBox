@@ -13,9 +13,6 @@
 #include <MFC64bitFix.h>
 #include <TextsFileZilla.h>
 #include <FileZillaOpt.h>
-#include <Classes.hpp>
-#include <Common.h>
-#include <WideStrUtils.hpp>
 
 class CFtpControlSocket::CFileTransferData : public CFtpControlSocket::t_operation::COpData
 {
@@ -805,7 +802,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         }
       }
     }
-    GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_CAPABILITIES, 0), (LPARAM)&m_serverCapabilities);
+    GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_CAPABILITIES, 0), (LPARAM)&m_serverCapabilities);
     if (!m_bAnnouncesUTF8 && !m_CurrentServer.nUTF8)
       m_bUTF8 = false;
     if (m_bUTF8 && m_hasClntCmd && !m_isFileZilla)
@@ -955,7 +952,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
       CAsyncRequestData *pData=new CAsyncRequestData;
       pData->nRequestType=FZ_ASYNCREQUEST_GSS_AUTHFAILED;
       pData->nRequestID=m_pOwner->GetNextAsyncRequestID();
-      if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_GSS_AUTHFAILED), (LPARAM)pData))
+      if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_GSS_AUTHFAILED), (LPARAM)pData))
       {
         delete pData;
       }
@@ -980,7 +977,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
       CAsyncRequestData *pData=new CAsyncRequestData;
       pData->nRequestType = FZ_ASYNCREQUEST_GSS_AUTHFAILED;
       pData->nRequestID = m_pOwner->GetNextAsyncRequestID();
-      if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_GSS_AUTHFAILED), (LPARAM)pData))
+      if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_GSS_AUTHFAILED), (LPARAM)pData))
       {
         delete pData;
       }
@@ -1057,7 +1054,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         pData->nRequestID = m_pOwner->GetNextAsyncRequestID();
         pData->nOldOpState = m_Operation.nOpState;
         m_Operation.nOpState = CONNECT_GSS_NEEDUSER;
-        if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_GSS_NEEDUSER), (LPARAM)pData))
+        if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_GSS_NEEDUSER), (LPARAM)pData))
         {
           delete pData;
         }
@@ -1074,7 +1071,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
       pData->nRequestID=m_pOwner->GetNextAsyncRequestID();
       pData->nOldOpState = m_Operation.nOpState;
       m_Operation.nOpState = CONNECT_GSS_NEEDPASS;
-      if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_GSS_NEEDPASS), (LPARAM)pData))
+      if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_GSS_NEEDPASS), (LPARAM)pData))
       {
         delete pData;
       }
@@ -1101,7 +1098,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         pNeedPassRequestData->nRequestID = m_pOwner->GetNextAsyncRequestID();
         pNeedPassRequestData->nOldOpState = m_Operation.nOpState;
         m_Operation.nOpState = CONNECT_NEEDPASS;
-        if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_NEEDPASS), (LPARAM)pNeedPassRequestData))
+        if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_NEEDPASS), (LPARAM)pNeedPassRequestData))
         {
           delete pNeedPassRequestData;
           ResetOperation(FZ_REPLY_ERROR);
@@ -1156,7 +1153,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         pNeedPassRequestData->nRequestID = m_pOwner->GetNextAsyncRequestID();
         pNeedPassRequestData->nOldOpState = m_Operation.nOpState;
         m_Operation.nOpState = CONNECT_NEEDPASS;
-        if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_NEEDPASS), (LPARAM)pNeedPassRequestData))
+        if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_NEEDPASS), (LPARAM)pNeedPassRequestData))
         {
           delete pNeedPassRequestData;
           ResetOperation(FZ_REPLY_ERROR);
@@ -1269,7 +1266,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
         {
           // convert from UTF-8 to ANSI
           LPCSTR utf8 = (LPCSTR)m_RecvBuffer.back();
-          if (DetectUTF8Encoding(RawByteString(utf8)) == etANSI)
+          if (DetectUTF8Encoding((const uint8_t *)utf8, strlen(utf8)) == etANSI)
           {
             if (m_CurrentServer.nUTF8 != 1)
             {
@@ -4815,9 +4812,9 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
     m_pOwner->SetWorkingDir(0); //Disconnected, reset working dir
 
   if (m_Operation.nOpMode)
-    GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_REPLY, m_pOwner->m_LastCommand.id), nSuccessful);
+    GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_REPLY, m_pOwner->m_LastCommand.id), nSuccessful);
   else
-    GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_REPLY, 0), nSuccessful);
+    GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_REPLY, 0), nSuccessful);
 
   m_Operation.nOpMode=0;
   m_Operation.nOpState=-1;
@@ -5156,7 +5153,7 @@ int CFtpControlSocket::CheckOverwriteFile()
         pOverwriteData->localtime = localtime;
         pOverwriteData->remotetime = remotetime;
         pOverwriteData->nRequestID = m_pOwner->GetNextAsyncRequestID();
-        if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_OVERWRITE), (LPARAM)pOverwriteData))
+        if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_OVERWRITE), (LPARAM)pOverwriteData))
         {
           delete pOverwriteData;
           nReplyError = FZ_REPLY_ERROR;
@@ -5901,7 +5898,7 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
 
             pRequestData->pCertData = pData;
 
-            if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_VERIFYCERT), (LPARAM)pRequestData))
+            if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_VERIFYCERT), (LPARAM)pRequestData))
             {
               delete pRequestData->pCertData;
               delete pRequestData;
@@ -6323,7 +6320,7 @@ CString CFtpControlSocket::GetReply()
   if (m_bUTF8)
   {
     // convert from UTF-8 to ANSI
-    if (DetectUTF8Encoding(RawByteString(line)) == etANSI)
+    if (DetectUTF8Encoding((const uint8_t *)line, strlen(line)) == etANSI)
     {
       if (m_CurrentServer.nUTF8 != 1)
       {

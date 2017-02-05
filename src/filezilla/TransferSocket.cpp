@@ -75,7 +75,7 @@ CTransferSocket::~CTransferSocket()
 #ifndef MPEXT_NO_ZLIB
   nb_free(m_pBuffer2);
 #endif
-  GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_TRANSFERSTATUS, 0), 0);
+  GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_TRANSFERSTATUS, 0), 0);
   Close();
   RemoveAllLayers();
   delete m_pProxyLayer;
@@ -163,7 +163,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
       status->bFileTransfer = FALSE;
       status->transfersize = -1;
       status->bytes = m_transferdata.transfersize;
-      GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_TRANSFERSTATUS, 0), (LPARAM)status);
+      GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_TRANSFERSTATUS, 0), (LPARAM)status);
     }
     else
       nb_free(buffer);
@@ -881,7 +881,7 @@ void CTransferSocket::UpdateStatusBar(bool forceUpdate)
   status->transfersize = m_transferdata.transfersize;
   status->bytes=m_transferdata.transfersize-m_transferdata.transferleft;
 
-  GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_TRANSFERSTATUS, 0), (LPARAM)status);
+  GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_TRANSFERSTATUS, 0), (LPARAM)status);
 }
 
 BOOL CTransferSocket::Create(BOOL bUseSsl)

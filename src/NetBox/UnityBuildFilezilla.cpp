@@ -3,7 +3,7 @@
 
 #include <disable_warnings_in_std_begin.hpp>
 
-#include "../filezilla/stdafx.cpp"
+//#include "../filezilla/stdafx.cpp"
 #include "../filezilla/afxdll.cpp"
 #include "../filezilla/FileZillaIntf.cpp"
 #include "../filezilla/FileZillaIntern.cpp"

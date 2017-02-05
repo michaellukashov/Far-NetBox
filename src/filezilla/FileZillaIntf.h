@@ -202,7 +202,7 @@ public:
   bool HandleMessage(WPARAM wParam, LPARAM lParam);
 
 protected:
-  bool PostMessage(WPARAM wParam, LPARAM lParam);
+  bool FZPostMessage(WPARAM wParam, LPARAM lParam);
   virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) = 0;
 
   virtual bool HandleStatus(const wchar_t * Status, int Type) = 0;
@@ -258,9 +258,9 @@ enum ftp_capability_names_t
   rest_stream, // supports REST+STOR in addition to APPE
 };
 
-class TFTPServerCapabilities : public TObject
+class TFTPServerCapabilities //: public TObject
 {
-NB_DISABLE_COPY(TFTPServerCapabilities)
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   TFTPServerCapabilities(){}
   ftp_capabilities_t GetCapability(ftp_capability_names_t Name);
@@ -294,6 +294,9 @@ protected:
   };
 
   rde::map<ftp_capability_names_t, t_cap> FCapabilityMap;
+private: \
+  TFTPServerCapabilities(const TFTPServerCapabilities &);
+  TFTPServerCapabilities &operator=(const TFTPServerCapabilities &);
 };
 
 #endif // FileZillaIntfH
