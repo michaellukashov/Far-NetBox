@@ -67,7 +67,7 @@ struct CMStringData
 };
 
 template< typename BaseType = char >
-class ChTraitsBase
+class NBChTraitsBase
 {
 public:
 	typedef char XCHAR;
@@ -79,7 +79,7 @@ public:
 };
 
 template<>
-class ChTraitsBase< wchar_t >
+class NBChTraitsBase< wchar_t >
 {
 public:
 	typedef wchar_t XCHAR;
@@ -94,12 +94,12 @@ template< typename BaseType >
 class CMSimpleStringT
 {
 public:
-	typedef typename ChTraitsBase< BaseType >::XCHAR XCHAR;
-	typedef typename ChTraitsBase< BaseType >::PXSTR PXSTR;
-	typedef typename ChTraitsBase< BaseType >::PCXSTR PCXSTR;
-	typedef typename ChTraitsBase< BaseType >::YCHAR YCHAR;
-	typedef typename ChTraitsBase< BaseType >::PYSTR PYSTR;
-	typedef typename ChTraitsBase< BaseType >::PCYSTR PCYSTR;
+  typedef typename NBChTraitsBase< BaseType >::XCHAR XCHAR;
+  typedef typename NBChTraitsBase< BaseType >::PXSTR PXSTR;
+  typedef typename NBChTraitsBase< BaseType >::PCXSTR PCXSTR;
+  typedef typename NBChTraitsBase< BaseType >::YCHAR YCHAR;
+  typedef typename NBChTraitsBase< BaseType >::PYSTR PYSTR;
+  typedef typename NBChTraitsBase< BaseType >::PCYSTR PCYSTR;
 
 public:
 	explicit CMSimpleStringT();
@@ -249,7 +249,7 @@ private:
 
 
 template< typename _CharType = char >
-class ChTraitsCRT : public ChTraitsBase < _CharType >
+class NBChTraitsCRT : public NBChTraitsBase < _CharType >
 {
 public:
 	static char* __stdcall CharNext(const char* p)
@@ -472,7 +472,7 @@ public:
 
 // specialization for wchar_t
 template<>
-class ChTraitsCRT< wchar_t > : public ChTraitsBase< wchar_t >
+class NBChTraitsCRT< wchar_t > : public NBChTraitsBase< wchar_t >
 {
 	static uint32_t __stdcall _GetEnvironmentVariableW(LPCWSTR pszName, LPWSTR pszBuffer, uint32_t nSize)
 	{
@@ -935,8 +935,8 @@ NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator + (wchar_t ch
 template< typename BaseType, class StringTraits >
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(char ch1, const CMStringT<BaseType, StringTraits>& str2);
 
-typedef CMStringT< wchar_t, ChTraitsCRT< wchar_t > > CMStringW;
-typedef CMStringT< char, ChTraitsCRT< char > > CMStringA;
+typedef CMStringT< wchar_t, NBChTraitsCRT< wchar_t > > CMStringW;
+typedef CMStringT< char, NBChTraitsCRT< char > > CMStringA;
 
 #ifdef _UNICODE
 	typedef CMStringW CMString;
