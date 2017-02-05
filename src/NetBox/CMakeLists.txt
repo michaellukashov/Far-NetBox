@@ -1227,16 +1227,6 @@ endif()
 
 #-------------------------------------------------------------------------------
 
-add_library(atlmfc STATIC
-  ${LIBS_ROOT}/atlmfc/mfc1.cpp
-  ${LIBS_ROOT}/atlmfc/mfc2.cpp
-  ${LIBS_ROOT}/atlmfc/mfc3.cpp
-  ${LIBS_ROOT}/atlmfc/mfc4.cpp
-  ${LIBS_ROOT}/atlmfc/mfc5.cpp
-  ${LIBS_ROOT}/atlmfc/src/mfc/thrdcore.cpp
-)
-
-#-------------------------------------------------------------------------------
 set(ATLMFC_COMPILE_FLAGS
   -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
   -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
@@ -1249,8 +1239,21 @@ if(CMAKE_COMPILER_IS_MINGW)
   )
 endif()
 
+add_library(atlmfc STATIC
+  ${LIBS_ROOT}/atlmfc/mfc1.cpp
+  ${LIBS_ROOT}/atlmfc/mfc2.cpp
+  ${LIBS_ROOT}/atlmfc/mfc3.cpp
+  ${LIBS_ROOT}/atlmfc/mfc4.cpp
+  ${LIBS_ROOT}/atlmfc/mfc5.cpp
+  ${LIBS_ROOT}/atlmfc/src/mfc/thrdcore.cpp
+)
+
 target_compile_options(atlmfc
   PRIVATE ${ATLMFC_COMPILE_FLAGS} -wd4995 -wd4996 -wd4101 -wd4290
+)
+
+target_include_directories(atlmfc PRIVATE
+  ${LIBS_ROOT}/atlmfc/include
 )
 
 #-------------------------------------------------------------------------------
