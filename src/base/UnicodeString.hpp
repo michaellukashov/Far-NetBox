@@ -1,10 +1,23 @@
 #pragma once
 
 #include <string>
+#include <WinUser.h>
 
 #include <nbglobals.h>
-#include <rdestl/basic_string.h>
-#include "local.hpp"
+#include <nbstring.h>
+
+__inline intptr_t __cdecl StrLength(const wchar_t * str) { return wcslen(str ? str : L""); }
+
+__inline wchar_t __cdecl Upper(wchar_t Ch) { ::CharUpperBuff(&Ch, 1); return Ch; }
+
+__inline wchar_t __cdecl Lower(wchar_t Ch) { ::CharLowerBuff(&Ch, 1); return Ch; }
+
+__inline int __cdecl StrCmpNNI(const wchar_t * s1, int n1, const wchar_t * s2, int n2) { return ::CompareString(0, NORM_IGNORECASE|NORM_STOP_ON_NULL|SORT_STRINGSORT, s1, n1, s2, n2) - 2; }
+__inline int __cdecl StrLIComp(const wchar_t * s1, const wchar_t * s2, int n) { return StrCmpNNI(s1, n, s2, n); }
+
+__inline int __cdecl FarStrCmpI(const wchar_t * s1, const wchar_t * s2) { return ::CompareString(0, NORM_IGNORECASE|SORT_STRINGSORT, s1,-1, s2, -1) - 2; }
+
+__inline int __cdecl StrCmpNN(const wchar_t * s1, int n1, const wchar_t * s2, int n2) { return ::CompareString(0, NORM_STOP_ON_NULL|SORT_STRINGSORT, s1, n1, s2, n2) - 2; }
 
 class RawByteString;
 class UnicodeString;
@@ -12,7 +25,7 @@ class AnsiString;
 
 class UTF8String
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UTF8String() {}
   UTF8String(const UTF8String & rht);
@@ -68,7 +81,7 @@ private:
 
 class UnicodeString
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UnicodeString() {}
   UnicodeString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
@@ -76,7 +89,7 @@ public:
   UnicodeString(const wchar_t Src) { Init(&Src, 1); }
   UnicodeString(const char * Str, intptr_t Size) { Init(Str, Size); }
   UnicodeString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
-  UnicodeString(intptr_t Size, wchar_t Ch) : Data(Size, Ch) {}
+  UnicodeString(intptr_t Size, wchar_t Ch) : Data(Ch, Size) {}
 
   UnicodeString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
   explicit UnicodeString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
@@ -86,13 +99,13 @@ public:
 
   const wchar_t * c_str() const { return Data.c_str(); }
   const wchar_t * data() const { return Data.c_str(); }
-  intptr_t Length() const { return Data.size(); }
+  intptr_t Length() const { return Data.GetLength(); }
   intptr_t GetLength() const { return Length(); }
   intptr_t GetBytesCount() const { return (Length() + 1) * sizeof(wchar_t); }
   bool IsEmpty() const { return Length() == 0; }
-  void SetLength(intptr_t nLength) { Data.resize(nLength); }
-  inline UnicodeString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
-  UnicodeString & Clear() { Data.clear(); return *this; }
+  void SetLength(intptr_t nLength) { Data.Preallocate(nLength); }
+  inline UnicodeString & Delete(intptr_t Index, intptr_t Count) { Data.Delete(Index - 1, Count); return *this; }
+  UnicodeString & Clear() { Data.Empty(); return *this; }
 
   UnicodeString & Lower(intptr_t nStartPos = 1, intptr_t nLength = -1);
   UnicodeString & Upper(intptr_t nStartPos = 1, intptr_t nLength = -1);
@@ -103,9 +116,9 @@ public:
   intptr_t Compare(const UnicodeString & Str) const;
   intptr_t CompareIC(const UnicodeString & Str) const;
   intptr_t ToInt() const;
-  //intptr_t FindFirstOf(const wchar_t Ch) const { return (intptr_t)Data.find_first_of(Ch, 0); }
-  //intptr_t FindFirstOf(const wchar_t * Str, size_t Offset = 0) const { return (intptr_t)Data.find_first_of(Str, Offset); }
-  //intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }
+  intptr_t FindFirstOf(const wchar_t Ch) const { return (intptr_t)Data.Find(Ch, 0); }
+  intptr_t FindFirstOf(const wchar_t * Str, size_t Offset = 0) const { return (intptr_t)Data.Find(Str, Offset); }
+//  intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }
 
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen);
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
@@ -128,7 +141,7 @@ public:
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(const UnicodeString & Str) const;
 
-  intptr_t RPos(wchar_t Ch) const { return (intptr_t)Data.find_last_of(Ch) + 1; }
+  intptr_t RPos(wchar_t Ch) const { return (intptr_t)Data.ReverseFind(Ch) + 1; }
   bool RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
 
   UnicodeString SubStr(intptr_t Pos, intptr_t Len = -1) const;
@@ -189,7 +202,7 @@ private:
   void Init(const char * Str, intptr_t Length);
   void ThrowIfOutOfRange(intptr_t Idx) const;
 
-  //typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, custom_nballocator_t<wchar_t> > wstring_t;
+  typedef CMStringW wstring_t;
   typedef rde::basic_string<wchar_t, custom_nballocator_t<wchar_t> > wstring_t;
   wstring_t Data;
 };
@@ -198,7 +211,7 @@ class RawByteString;
 
 class AnsiString
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   AnsiString() {}
   AnsiString(const AnsiString & rht);
@@ -283,7 +296,7 @@ private:
 
 class RawByteString
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   RawByteString() {}
   explicit RawByteString(const wchar_t * Str);

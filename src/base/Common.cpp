@@ -19,6 +19,14 @@
 
 #include "TextsCore.h"
 
+#pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
+
+int Win32Platform = 0;
+int Win32MajorVersion = 0;
+int Win32MinorVersion = 0;
+int Win32BuildNumber = 0;
+wchar_t Win32CSDVersion[128] = {};
+
 const wchar_t * DSTModeNames = L"Win;Unix;Keep";
 
 const wchar_t EngShortMonthNames[12][4] =

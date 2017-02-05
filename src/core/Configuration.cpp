@@ -1007,7 +1007,7 @@ UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info)
         HIWORD(Info->dwFileVersionLS));
     return Result;
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     throw ExtException(&E, L"Can't get file version");
   }

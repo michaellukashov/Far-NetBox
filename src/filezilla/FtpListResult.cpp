@@ -2,7 +2,6 @@
 #include "stdafx.h"
 #include "FtpListResult.h"
 #include "FileZillaApi.h"
-#include <WideStrUtils.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
@@ -654,7 +653,7 @@ void CFtpListResult::SendToMessageLog()
     pStatus->post = TRUE;
     pStatus->status = L"<Empty directory listing>";
     pStatus->type = FZ_LOG_INFO;
-    GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus);
+    GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus);
   }
   while (line)
   {
@@ -666,7 +665,7 @@ void CFtpListResult::SendToMessageLog()
     pStatus->post = TRUE;
     pStatus->status = status;
     pStatus->type = FZ_LOG_INFO;
-    if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
+    if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
       delete pStatus;
 
     line = GetLine();
@@ -2567,7 +2566,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
   if (m_bUTF8 && *m_bUTF8)
   {
     // convert from UTF-8 to ANSI
-    if (DetectUTF8Encoding(RawByteString(p, len)) == etANSI)
+    if (DetectUTF8Encoding((const uint8_t *)p, len) == etANSI)
     {
       if (mayInvalidateUTF8 && m_server.nUTF8 != 1)
       {

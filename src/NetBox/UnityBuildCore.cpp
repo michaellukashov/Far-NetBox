@@ -1,15 +1,20 @@
 #define PUTTY_DO_GLOBALS
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
+#endif
 #define _CRT_NON_CONFORMING_SWPRINTFS
 
 #include <disable_warnings_in_std_begin.hpp>
 
+#include "../nbcore/nbcore_memory.cpp"
+#include "../nbcore/nbcore_string.cpp"
+
+#include "../base/GlobalUtils.cpp"
 #include "../base/UnicodeString.cpp"
 #include "../base/Classes.cpp"
 #include "../base/Masks.cpp"
 #include "../base/Sysutils.cpp"
 #include "../base/StrUtils.cpp"
-#include "../base/local.cpp"
 #include "../base/WideStrUtils.cpp"
 #include "../base/LibraryLoader.cpp"
 #include "../base/Common.cpp"

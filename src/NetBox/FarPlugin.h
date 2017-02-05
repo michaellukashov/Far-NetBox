@@ -37,6 +37,7 @@ enum THandlesFunction
   hfProcessHostFile,
   hfProcessEvent
 };
+
 typedef nb::FastDelegate1<void, UnicodeString & /*Text*/> TFarInputBoxValidateEvent;
 
 typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TFarMessageTimerEvent;
@@ -549,15 +550,19 @@ private:
   EditorInfo * FEditorInfo;
 };
 
-class TFarEnvGuard : public TObject
+class TFarEnvGuard // : public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
+NB_DISABLE_COPY(TFarEnvGuard)
 public:
   TFarEnvGuard();
   ~TFarEnvGuard();
 };
 
-class TFarPluginEnvGuard : public TObject
+class TFarPluginEnvGuard // : public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
+NB_DISABLE_COPY(TFarPluginEnvGuard)
 public:
   TFarPluginEnvGuard();
   ~TFarPluginEnvGuard();

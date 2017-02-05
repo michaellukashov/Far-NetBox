@@ -113,8 +113,7 @@ public:
   void SetTransferResumeFile(const UnicodeString & Value) { FTransferResumeFile = Value; }
 
 public:
-  TCopyParamType();
-  explicit TCopyParamType(TObjectClassId Kind);
+  explicit TCopyParamType(TObjectClassId Kind = OBJECT_CLASS_TCopyParamType);
   TCopyParamType(const TCopyParamType & Source);
   virtual ~TCopyParamType();
   TCopyParamType & operator =(const TCopyParamType & rhs);

@@ -12,12 +12,6 @@ const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
 const int TransferModeNamesCount = _countof(TransferModeNames);
 const wchar_t * ToggleNames[] = { L"off", L"on" };
 
-TCopyParamType::TCopyParamType() :
-  TObject(OBJECT_CLASS_TCopyParamType)
-{
-  Default();
-}
-
 TCopyParamType::TCopyParamType(TObjectClassId Kind) :
   TObject(Kind)
 {

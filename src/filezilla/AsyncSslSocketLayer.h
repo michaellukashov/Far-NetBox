@@ -79,7 +79,7 @@ for use in the OpenSSL Toolkit. (http://www.openssl.org/)
 // Details of SSL certificate, can be used by app to verify if certificate is valid
 struct t_SslCertData
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 
   t_SslCertData()
   {
@@ -205,8 +205,9 @@ private:
   int m_nVerificationResult;
   int m_nVerificationDepth;
 
-  static struct t_SslLayerList : public TObject
+  static struct t_SslLayerList //: public TObject
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     CAsyncSslSocketLayer * pLayer;
     t_SslLayerList * pNext;
   } * m_pSslLayerList;

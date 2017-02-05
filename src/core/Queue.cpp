@@ -2339,7 +2339,8 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       SCOPE_EXIT
       {
         FAction = nullptr;
-        SAFE_DESTROY(FException);
+        delete FException;
+        FException = nullptr;
       };
       TriggerEvent();
 
@@ -2389,7 +2390,8 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
     __finally
     {
       FAction = nullptr;
-      SAFE_DESTROY(FException);
+      delete FException;
+      FException = nullptr;
     };
   }
   catch (...)
@@ -2435,21 +2437,23 @@ void TTerminalThread::ProcessEvent()
   ::SetEvent(FActionEvent);
 }
 
-void TTerminalThread::Rethrow(Exception *& Exception)
+void TTerminalThread::Rethrow(Exception *& AException)
 {
-  if (Exception != nullptr)
+  if (AException != nullptr)
   {
     try__finally
     {
       SCOPE_EXIT
       {
-        SAFE_DESTROY(Exception);
+        delete AException;
+        AException = nullptr;
       };
-      RethrowException(Exception);
+      RethrowException(AException);
     }
     __finally
     {
-      SAFE_DESTROY(Exception);
+      delete AException;
+      AException = nullptr;
     };
   }
 }
@@ -2508,7 +2512,8 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
       SCOPE_EXIT
       {
         FUserAction = PrevUserAction;
-        SAFE_DESTROY(FException);
+        delete FException;
+        FException = nullptr;
       };
       FUserAction = UserAction;
 
@@ -2540,7 +2545,8 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
         int WaitResult = WaitForEvent(1000);
         if (WaitResult == 0)
         {
-          SAFE_DESTROY(FIdleException);
+          delete FIdleException;
+          FIdleException = nullptr;
           FatalAbort();
         }
         else if (WaitResult > 0)
@@ -2563,7 +2569,8 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     __finally
     {
       FUserAction = PrevUserAction;
-      SAFE_DESTROY(FException);
+      delete FException;
+      FException = nullptr;
     };
 
     // Contrary to a call before, this is unconditional,

@@ -530,7 +530,7 @@ private:
   void RunAction(TNotifyEvent Action);
 
   static void SaveException(Exception & E, Exception *& Exception);
-  static void Rethrow(Exception *& Exception);
+  static void Rethrow(Exception *& AException);
   void FatalAbort();
   void CheckCancel();
 
