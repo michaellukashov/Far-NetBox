@@ -525,12 +525,7 @@ bool operator !=(const UTF8String & lhs, const UTF8String & rhs)
 
 void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
 {
-  Data.Preallocate(Length);
-  if (Length > 0)
-  {
-    wmemmove(const_cast<wchar_t *>(Data.c_str()), Str, Length);
-  }
-  Data = Data.c_str();
+  Data = wstring_t(Str, Length);
 }
 
 void UnicodeString::Init(const char * Str, intptr_t Length)
