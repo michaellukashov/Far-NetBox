@@ -203,12 +203,6 @@ set(NETBOX_DLL_LINK_FLAGS_RELEASE "${NETBOX_DLL_LINK_FLAGS}")
 set(NETBOX_DLL_LINK_FLAGS_DEBUG "${NETBOX_DLL_LINK_FLAGS}")
 endif()
 
-#-------------------------------------------------------
-
-include_directories(
-  ${LIBS_ROOT}
-)
-
 #-------------------------------------------------------------------------------
 if(OPT_COMPILE_OPENSSL)
 
