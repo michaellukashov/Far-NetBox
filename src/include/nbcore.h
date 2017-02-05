@@ -7,9 +7,9 @@
 #include <nbtypes.h>
 
 #ifdef NB_CORE_EXPORTS
-#define NB_CORE_EXPORT __declspec(dllexport)
+#define NB_CORE_EXPORT // __declspec(dllexport)
 #else
-#define NB_CORE_EXPORT __declspec(dllimport)
+#define NB_CORE_EXPORT // __declspec(dllimport)
 #endif
 
 #define NB_CORE_DLL(T) NB_CORE_EXPORT T __stdcall
