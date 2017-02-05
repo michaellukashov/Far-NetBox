@@ -217,15 +217,15 @@ include_directories(
   ${LIBS_ROOT}/zlib/src
   ${LIBS_ROOT}/expat/lib
   ${LIBS_ROOT}/apr/include
-  ${LIBS_ROOT}/apr/include/arch/win32
-  ${LIBS_ROOT}/apr/include/arch/unix
+#  ${LIBS_ROOT}/apr/include/arch/win32
+#  ${LIBS_ROOT}/apr/include/arch/unix
   ${LIBS_ROOT}/rdestl
 
   ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
 )
 
 #-------------------------------------------------------------------------------
-set(COMPILE_OPENSSL 1)
+set(COMPILE_OPENSSL 0)
 
 if(COMPILE_OPENSSL)
 
@@ -1440,6 +1440,11 @@ add_library(apr STATIC
 
 target_compile_options(apr
   PRIVATE -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES -U_UNICODE -UUNICODE
+)
+
+target_include_directories(apr PRIVATE
+  ${LIBS_ROOT}/apr/include/arch/win32
+  ${LIBS_ROOT}/apr/include/arch/unix
 )
 
 #-------------------------------------------------------------------------------
