@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #define INCL_WINSOCK_API_TYPEDEFS 1
 #define _WINSOCKAPI_
 #include <winsock2.h>
@@ -8,8 +8,8 @@
 #define VC_EXTRALEAN
 #define SECURITY_WIN32
 #include <windows.h>
+*/
 #include <tchar.h>
-
 //#include <malloc.h>
 //#include <stdio.h>
 //#include <time.h>
