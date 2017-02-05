@@ -203,7 +203,6 @@ private:
   void Init(const char * Str, intptr_t Length);
   void ThrowIfOutOfRange(intptr_t Idx) const;
 
-//  typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, custom_nballocator_t<wchar_t> > wstring_t;
   typedef CMStringW wstring_t;
   wstring_t Data;
 };
