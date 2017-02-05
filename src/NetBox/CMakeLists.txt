@@ -889,11 +889,8 @@ target_compile_options(libssl
 )
 
 target_include_directories(libssl SYSTEM BEFORE PRIVATE
-#  ../../libs/openssl
+  ../../libs/openssl
   ../../libs/openssl/include
-#  ../../libs/openssl/crypto
-#  ../../libs/openssl/crypto/include
-#  ../../libs/openssl/crypto/modes
 )
 
 else(COMPILE_OPENSSL)
