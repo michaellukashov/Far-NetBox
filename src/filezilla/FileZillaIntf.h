@@ -13,6 +13,7 @@ class TFileZillaIntern;
 
 struct TRemoteFileTime
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   WORD Year;
   WORD Month;
   WORD Day;
@@ -27,6 +28,7 @@ struct TRemoteFileTime
 
 struct TListDataEntry
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   TRemoteFileTime Time;
   __int64 Size;
   const wchar_t * LinkTarget;
@@ -40,8 +42,10 @@ struct TListDataEntry
 
 struct TFtpsCertificateData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   struct TContact
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     const wchar_t * Organization;
     const wchar_t * Unit;
     const wchar_t * CommonName;
@@ -57,6 +61,7 @@ struct TFtpsCertificateData
 
   struct TValidityTime
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     int Year;
     int Month;
     int Day;
@@ -82,6 +87,7 @@ struct TFtpsCertificateData
 
 struct TNeedPassRequestData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   wchar_t * Password;
 };
 
@@ -284,6 +290,7 @@ public:
 protected:
   struct t_cap
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     t_cap() :
       cap(unknown),
       option(),

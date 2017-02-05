@@ -31,6 +31,7 @@ class CMainThread;
 
 struct t_transferdata
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   t_transferdata() :
     transfersize(0), transferleft(0),
     localFileHandle(INVALID_HANDLE_VALUE),
@@ -159,6 +160,7 @@ protected:
 
   struct t_ActiveList
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     CFtpControlSocket * pOwner;
     __int64 nBytesAvailable;
     __int64 nBytesTransferred;
@@ -218,6 +220,7 @@ protected:
 
   struct t_operation
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     int nOpMode;
     int nOpState;
     class COpData //: public TObject //Base class which will store operation specific parameters.
@@ -228,7 +231,6 @@ protected:
       virtual ~COpData() {}
     };
     COpData * pData;
-  public:
   };
 
   t_operation m_Operation;

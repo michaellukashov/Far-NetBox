@@ -611,6 +611,7 @@ private:
   HWND m_hWnd;
   struct t_AsyncSocketExWindowData
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     CAsyncSocketEx *m_pSocket;
   } *m_pAsyncSocketExWindowData;
   int m_nWindowDataSize;
