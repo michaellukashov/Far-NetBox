@@ -1136,7 +1136,7 @@ if(CMAKE_COMPILER_IS_MINGW)
 endif()
 
 target_compile_options(NetBox
-  PRIVATE ${NETBOX_DLL_CXX_FLAGS} -D_WINSOCK_DEPRECATED_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS
+  PRIVATE ${NETBOX_DLL_CXX_FLAGS} -D_WINSOCK_DEPRECATED_NO_WARNINGS -DNB_CORE_EXPORTS
 )
 
 target_include_directories(NetBox PRIVATE
@@ -1165,8 +1165,6 @@ set_target_properties(NetBox
   LINK_FLAGS_RELEASE "${NETBOX_DLL_LINK_FLAGS_RELEASE}"
   LINK_FLAGS_DEBUG "${NETBOX_DLL_LINK_FLAGS_DEBUG}"
 )
-
-#-------------------------------------------------------------------------------
 
 #TODO: COMMAND create_ver.py
 
