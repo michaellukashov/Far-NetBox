@@ -1154,7 +1154,7 @@ target_include_directories(NetBox PRIVATE
   ${SRC_ROOT}/core
   ${SRC_ROOT}/windows
   ${SRC_ROOT}/resource
-#  ${SRC_ROOT}/include
+  ${SRC_ROOT}/include
   ${SRC_ROOT}/NetBox
 )
 
