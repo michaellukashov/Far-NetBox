@@ -92,9 +92,8 @@ struct TOverwriteFileParams : public TObject
 public:
   static bool classof(const TObject * Obj)
   {
-    TObjectClassId Kind = Obj->GetKind();
     return
-      Kind == OBJECT_CLASS_TOverwriteFileParams;
+      Obj->GetKind() == OBJECT_CLASS_TOverwriteFileParams;
   }
 public:
   TOverwriteFileParams() :

@@ -59,7 +59,7 @@ inline wchar_t* wchcalloc(size_t size) { return calloc<wchar_t*>(size); }
 
 inline void * operator_new(size_t size)
 {
-  void * p = nb_malloc(size);
+  void * p = nb_calloc(1, size);
   /*if (!p)
   {
     static std::bad_alloc badalloc;
@@ -192,7 +192,7 @@ struct custom_nballocator_t
   {
     if (0 == s)
       return nullptr;
-    pointer temp = reinterpret_cast<pointer>(nb::calloc<pointer>(s * sizeof(T)));
+    pointer temp = nb::calloc<pointer>(s * sizeof(T));
 #if !defined(__MINGW32__)
     if (temp == nullptr)
       throw std::bad_alloc();

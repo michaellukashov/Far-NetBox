@@ -57,6 +57,8 @@
 extern "C" {
 #endif
 
+#ifndef NB_COMPILE_OPENSSL
+
 /*
  * Type needs to be a bit field Sub-type needs to be for variations on the
  * method, as in, can it do arbitrary encryption....
@@ -91,10 +93,7 @@ struct evp_pkey_st {
 # define EVP_PKEY_MO_ENCRYPT     0x0004
 # define EVP_PKEY_MO_DECRYPT     0x0008
 
-# define EVP_PKEY_MO_SIGN        0x0001
-# define EVP_PKEY_MO_VERIFY      0x0002
-# define EVP_PKEY_MO_ENCRYPT     0x0004
-# define EVP_PKEY_MO_DECRYPT     0x0008
+#endif // #ifndef NB_COMPILE_OPENSSL
 
 # ifndef EVP_MD
 EVP_MD *EVP_MD_meth_new(int md_type, int pkey_type);

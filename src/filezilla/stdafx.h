@@ -48,7 +48,6 @@ class CFileFix;
 #include <afxconv.h>
 
 #include "FileZillaApi.h"
-#include "afxdll.h"
 
 #define _strlwr strlwr
 

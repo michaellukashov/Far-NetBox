@@ -671,6 +671,7 @@ enum {
     BUSY_CPU	    /* Locally busy (e.g. crypto); user interaction suspended */
 };
 void set_busy_status(void *frontend, int status);
+int frontend_is_utf8(void *frontend);
 
 void cleanup_exit(int);
 
@@ -1577,6 +1578,7 @@ void putty_finalize();
 // Only for messages that are certain not to ever get ansi-encoded component,
 // but known to get UTF-8 encoded component (currently private key path only)
 #define MPEXT_BOM "\xEF\xBB\xBF"
+#define AGENT_MAX_MSGLEN  8192
 #endif
 
 #endif

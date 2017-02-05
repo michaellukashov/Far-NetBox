@@ -5408,7 +5408,7 @@ int TCopyParamsContainer::GetHeight()
 
 class TCopyDialog : TFarDialog
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TCopyDialog(TCustomFarPlugin * AFarPlugin,
     bool ToRemote, bool Move, const TStrings * AFileList, intptr_t Options, intptr_t CopyParamAttrs);
@@ -5733,7 +5733,7 @@ bool TWinSCPPlugin::CopyParamCustomDialog(TCopyParamType & CopyParam,
 
 class TLinkDialog : TFarDialog
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TLinkDialog(TCustomFarPlugin * AFarPlugin,
     bool Edit, bool AllowSymbolic);
@@ -5842,7 +5842,7 @@ typedef nb::FastDelegate3<void,
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   enum
   {
@@ -7756,7 +7756,7 @@ bool TWinSCPFileSystem::SynchronizeChecklistDialog(
 
 class TSynchronizeDialog : TFarDialog
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
     TSynchronizeStartStopEvent OnStartStop,

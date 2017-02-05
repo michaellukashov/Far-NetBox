@@ -26,7 +26,7 @@ class CBase64Coding
       // Don't allow canonical behavior (i.e. don't allow this class
       // to be passed by value)
 
-      CBase64Coding( const CBase64Coding& ) {};
+      CBase64Coding( const CBase64Coding& ) {}
       CBase64Coding& operator=( const CBase64Coding& ) { return( *this ); }
 
    public:

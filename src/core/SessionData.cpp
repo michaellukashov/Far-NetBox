@@ -4164,12 +4164,12 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   {
     SCOPE_EXIT
     {
-      AutoSort = true;
+      FAutoSort = true;
       AlphaSort();
     };
 
-    DebugAssert(AutoSort);
-    AutoSort = false;
+    DebugAssert(FAutoSort);
+    FAutoSort = false;
     bool WasEmpty = (GetCount() == 0);
 
     Storage->GetSubKeyNames(SubKeys.get());

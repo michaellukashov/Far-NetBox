@@ -1,4 +1,6 @@
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
+#endif
 #define _CRT_NON_CONFORMING_SWPRINTFS
 
 #include <disable_warnings_in_std_begin.hpp>

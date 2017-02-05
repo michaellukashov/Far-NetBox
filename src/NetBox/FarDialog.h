@@ -39,9 +39,8 @@ NB_DISABLE_COPY(TFarDialog)
 public:
   static bool classof(const TObject * Obj)
   {
-    TObjectClassId Kind = Obj->GetKind();
     return
-      Kind == OBJECT_CLASS_TFarDialog;
+      Obj->GetKind() == OBJECT_CLASS_TFarDialog;
   }
 public:
   explicit TFarDialog(TCustomFarPlugin * AFarPlugin);

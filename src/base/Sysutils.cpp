@@ -84,48 +84,48 @@ const TDayTable MonthDays[] =
 
 Exception::Exception(TObjectClassId Kind, Exception * E) :
   std::runtime_error(E ? E->what() : ""),
-  TObject(Kind),
+  FKind(Kind),
   Message(E ? E->Message : L"")
 {
 }
 
 Exception::Exception(const UnicodeString & Msg) :
   std::runtime_error(""),
-  TObject(OBJECT_CLASS_Exception),
+  FKind(OBJECT_CLASS_Exception),
   Message(Msg)
 {
 }
 
 Exception::Exception(TObjectClassId Kind, const wchar_t * Msg) :
   std::runtime_error(""),
-  TObject(Kind),
+  FKind(Kind),
   Message(Msg)
 {
 }
 
 Exception::Exception(const wchar_t * Msg) :
   std::runtime_error(""),
-  TObject(OBJECT_CLASS_Exception),
+  FKind(OBJECT_CLASS_Exception),
   Message(Msg)
 {
 }
 
 Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg) :
   std::runtime_error(""),
-  TObject(Kind),
+  FKind(Kind),
   Message(Msg)
 {
 }
 
 Exception::Exception(TObjectClassId Kind, std::exception * E) :
   std::runtime_error(E ? E->what() : ""),
-  TObject(Kind)
+  FKind(Kind)
 {
 }
 
 Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AHelpContext) :
   std::runtime_error(""),
-  TObject(Kind),
+  FKind(Kind),
   Message(Msg)
 {
   TODO("FHelpContext = AHelpContext");
@@ -134,14 +134,14 @@ Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AH
 
 Exception::Exception(TObjectClassId Kind, Exception * E, intptr_t Ident) :
   std::runtime_error(E ? E->what() : ""),
-  TObject(Kind)
+  FKind(Kind)
 {
   Message = FMTLOAD(Ident);
 }
 
 Exception::Exception(TObjectClassId Kind, intptr_t Ident) :
   std::runtime_error(""),
-  TObject(Kind)
+  FKind(Kind)
 {
   Message = FMTLOAD(Ident);
 }
@@ -1722,32 +1722,6 @@ TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSec
 Boolean IsLeapYear(Word Year)
 {
   return (Year % 4 == 0) && ((Year % 100 != 0) || (Year % 400 == 0));
-}
-
-// TCriticalSection
-
-TCriticalSection::TCriticalSection() :
-  FAcquired(0)
-{
-  InitializeCriticalSection(&FSection);
-}
-
-TCriticalSection::~TCriticalSection()
-{
-  DebugAssert(FAcquired == 0);
-  DeleteCriticalSection(&FSection);
-}
-
-void TCriticalSection::Enter() const
-{
-  ::EnterCriticalSection(&FSection);
-  FAcquired++;
-}
-
-void TCriticalSection::Leave() const
-{
-  FAcquired--;
-  ::LeaveCriticalSection(&FSection);
 }
 
 UnicodeString StripHotkey(const UnicodeString & AText)
