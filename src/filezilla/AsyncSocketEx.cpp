@@ -63,7 +63,7 @@ public:
     m_hWnd=CreateWindow(L"CAsyncSocketEx Helper Window", L"CAsyncSocketEx Helper Window", 0, 0, 0, 0, 0, 0, 0, GetModuleHandle(0), 0);
     DebugAssert(m_hWnd);
     SetWindowLongPtr(m_hWnd, GWL_USERDATA, (LONG_PTR)this);
-  };
+  }
 
   virtual ~CAsyncSocketExHelperWindow()
   {

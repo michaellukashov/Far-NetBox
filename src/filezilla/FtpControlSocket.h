@@ -224,8 +224,8 @@ protected:
     {
     CUSTOM_MEM_ALLOCATION_IMPL
     public:
-      COpData() {};
-      virtual ~COpData() {};
+      COpData() {}
+      virtual ~COpData() {}
     };
     COpData * pData;
   public:
