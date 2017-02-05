@@ -3,6 +3,7 @@
 #include <string>
 
 #include <nbglobals.h>
+#include <rdestl/basic_string.h>
 #include "local.hpp"
 
 class RawByteString;
@@ -102,9 +103,9 @@ public:
   intptr_t Compare(const UnicodeString & Str) const;
   intptr_t CompareIC(const UnicodeString & Str) const;
   intptr_t ToInt() const;
-  intptr_t FindFirstOf(const wchar_t Ch) const { return (intptr_t)Data.find_first_of(Ch, 0); }
-  intptr_t FindFirstOf(const wchar_t * Str, size_t Offset = 0) const { return (intptr_t)Data.find_first_of(Str, Offset); }
-  intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }
+  //intptr_t FindFirstOf(const wchar_t Ch) const { return (intptr_t)Data.find_first_of(Ch, 0); }
+  //intptr_t FindFirstOf(const wchar_t * Str, size_t Offset = 0) const { return (intptr_t)Data.find_first_of(Str, Offset); }
+  //intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }
 
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen);
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
@@ -188,7 +189,8 @@ private:
   void Init(const char * Str, intptr_t Length);
   void ThrowIfOutOfRange(intptr_t Idx) const;
 
-  typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, custom_nballocator_t<wchar_t> > wstring_t;
+  //typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, custom_nballocator_t<wchar_t> > wstring_t;
+  typedef rde::basic_string<wchar_t, custom_nballocator_t<wchar_t> > wstring_t;
   wstring_t Data;
 };
 
