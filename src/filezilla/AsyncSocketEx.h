@@ -278,7 +278,7 @@ protected:
   UINT m_nSocketPort;
   LPTSTR m_lpszSocketAddress;
 
-  friend CAsyncSocketExHelperWindow;
+  friend class CAsyncSocketExHelperWindow;
 
   // Pending callbacks
   rde::list<t_callbackMsg> m_pendingCallbacks;
