@@ -652,7 +652,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
   {
     //This should not happen
     return;
-  };
+  }
 
   if (nErrorCode)
   { //Can't connect to proxy

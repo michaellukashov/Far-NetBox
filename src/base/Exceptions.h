@@ -111,10 +111,9 @@ class EOSExtException : public ExtException
 public:
   static bool classof(const TObject * Obj)
   {
-    TObjectClassId Kind = Obj->GetKind();
     return
-      Kind == OBJECT_CLASS_EOSExtException ||
-      Kind == OBJECT_CLASS_ECRTExtException;
+      Obj->GetKind() == OBJECT_CLASS_EOSExtException ||
+      Obj->GetKind() == OBJECT_CLASS_ECRTExtException;
   }
 public:
   explicit EOSExtException();
@@ -128,9 +127,8 @@ class ECRTExtException : public EOSExtException
 public:
   static bool classof(const TObject * Obj)
   {
-    TObjectClassId Kind = Obj->GetKind();
     return
-      Kind == OBJECT_CLASS_ECRTExtException;
+      Obj->GetKind() == OBJECT_CLASS_ECRTExtException;
   }
 public:
   ECRTExtException();

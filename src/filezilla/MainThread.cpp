@@ -1,5 +1,6 @@
 
 #include "stdafx.h"
+#include "afxdll.h"
 #include "MainThread.h"
 
 #define ECS m_CriticalSection.Lock()
@@ -356,7 +357,7 @@ void CMainThread::SetWorkingDir(t_directory *pWorkingDir)
 
 void CMainThread::SendDirectoryListing(t_directory * pDirectoryToSend)
 {
-  if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_LISTDATA, 0), (LPARAM)pDirectoryToSend))
+  if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_LISTDATA, 0), (LPARAM)pDirectoryToSend))
   {
     delete pDirectoryToSend;
   }

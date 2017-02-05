@@ -1,23 +1,18 @@
-
 #ifndef FileZillaInternH
 #define FileZillaInternH
 
+#include <headers.hpp>
+
 class TFileZillaIntf;
 
-class TFileZillaIntern : public TObject
+class TFileZillaIntern // : public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TFileZillaIntern)
-public:
-  static bool classof(const TObject * Obj)
-  {
-    TObjectClassId Kind = Obj->GetKind();
-    return
-      Kind == OBJECT_CLASS_TFileZillaIntern;
-  }
 public:
   explicit TFileZillaIntern(TFileZillaIntf * AOwner);
 
-  bool PostMessage(WPARAM wParam, LPARAM lParam) const;
+  bool FZPostMessage(WPARAM wParam, LPARAM lParam) const;
   CString GetOption(int OptionID) const;
   int GetOptionVal(int OptionID) const;
 

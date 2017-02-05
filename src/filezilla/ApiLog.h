@@ -3,15 +3,9 @@
 
 #include "FileZillaIntern.h"
 
-class CApiLog : public TObject
+class CApiLog //: public TObject
 {
-public:
-  static bool classof(const TObject * Obj)
-  {
-    TObjectClassId Kind = Obj->GetKind();
-    return
-      Kind == OBJECT_CLASS_CApiLog;
-  }
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CApiLog();
   virtual ~CApiLog();

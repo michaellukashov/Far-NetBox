@@ -1256,21 +1256,20 @@ int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
   return MilliSecondsBetween(ANow, AThen);
 }
 
-static TLibraryLoader SHFileInfoLoader;
-
+/*
 TSHFileInfo::TSHFileInfo() :
   FGetFileInfo(nullptr)
 {
-  SHFileInfoLoader.Load(L"Shell32.dll");
-  if (SHFileInfoLoader.Loaded())
+  FSHFileInfoLoader.Load(L"Shell32.dll");
+  if (FSHFileInfoLoader.Loaded())
   {
-    FGetFileInfo = reinterpret_cast<TGetFileInfo>(SHFileInfoLoader.GetProcAddress("SHGetFileInfo"));
+    FGetFileInfo = reinterpret_cast<TGetFileInfo>(FSHFileInfoLoader.GetProcAddress("SHGetFileInfo"));
   }
 }
 
 TSHFileInfo::~TSHFileInfo()
 {
-  SHFileInfoLoader.Unload();
+  FSHFileInfoLoader.Unload();
 }
 
 int TSHFileInfo::GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmallIcon) const
@@ -1340,6 +1339,7 @@ UnicodeString TSHFileInfo::GetFileType(const UnicodeString & StrFileName)
 
   return sfi.szTypeName;
 }
+*/
 
 class EStreamError : public ExtException
 {
