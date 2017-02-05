@@ -1,6 +1,9 @@
 message(STATUS "CMake version: ${CMAKE_VERSION}")
 cmake_minimum_required(VERSION 2.8.12)
 
+set(OPT_COMPILE_OPENSSL ON CACHE STRING "Default build openSSL")
+set(OPT_USE_UNITY_BUILD ON CACHE STRING "Default use unity build")
+
 project(NetBox)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -207,9 +210,7 @@ include_directories(
 )
 
 #-------------------------------------------------------------------------------
-set(COMPILE_OPENSSL 0)
-
-if(COMPILE_OPENSSL)
+if(OPT_COMPILE_OPENSSL)
 
 if(x64)
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
@@ -875,7 +876,7 @@ target_include_directories(libssl SYSTEM BEFORE PRIVATE
   ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
 )
 
-else(COMPILE_OPENSSL)
+else(OPT_COMPILE_OPENSSL)
 
 add_library (libcrypto STATIC IMPORTED)
 set_property(TARGET libcrypto
@@ -884,14 +885,12 @@ add_library (libssl STATIC IMPORTED)
 set_property(TARGET libssl
     PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_INC_DIR}/libssl.lib)
 
-endif(COMPILE_OPENSSL)
+endif(OPT_COMPILE_OPENSSL)
 
 #-------------------------------------------------------------------------------
 # target NetBox
 
-set(USE_UNITY_BUILD 1)
-
-if(USE_UNITY_BUILD)
+if(OPT_USE_UNITY_BUILD)
 
 set(NETBOX_SOURCES
   UnityBuildCore.cpp
@@ -899,7 +898,7 @@ set(NETBOX_SOURCES
   UnityBuildMain.cpp
 )
 
-else(USE_UNITY_BUILD)
+else(OPT_USE_UNITY_BUILD)
 
 set(NETBOX_SOURCES
 #  UnityBuildCore.cpp
@@ -984,7 +983,7 @@ set(NETBOX_SOURCES
   ../windows/WinInterface.cpp
 )
 
-endif(USE_UNITY_BUILD)
+endif(OPT_USE_UNITY_BUILD)
 
 set(NETBOX_SOURCES
   ${NETBOX_SOURCES}
