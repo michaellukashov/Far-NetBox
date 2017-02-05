@@ -882,6 +882,373 @@ set_property(TARGET libssl
 endif(OPT_COMPILE_OPENSSL)
 
 #-------------------------------------------------------------------------------
+#atlmfc
+
+set(ATLMFC_COMPILE_FLAGS
+  -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
+  -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
+  -D_AFX_NO_OLE_SUPPORT -D_AFX_NO_SOCKET_SUPPORT -DCOM_NO_WINDOWS_H
+)
+
+if(CMAKE_COMPILER_IS_MINGW)
+  set(ATLMFC_COMPILE_FLAGS ${ATLMFC_COMPILE_FLAGS}
+    -Wno-int-to-pointer-cast -Wno-pragmas -fpermissive
+  )
+endif()
+
+add_library(atlmfc STATIC
+  ${LIBS_ROOT}/atlmfc/mfc1.cpp
+  ${LIBS_ROOT}/atlmfc/mfc2.cpp
+  ${LIBS_ROOT}/atlmfc/mfc3.cpp
+  ${LIBS_ROOT}/atlmfc/mfc4.cpp
+  ${LIBS_ROOT}/atlmfc/mfc5.cpp
+  ${LIBS_ROOT}/atlmfc/src/mfc/thrdcore.cpp
+)
+
+target_compile_options(atlmfc
+  PRIVATE ${ATLMFC_COMPILE_FLAGS} -wd4995 -wd4996 -wd4101 -wd4290
+)
+
+target_include_directories(atlmfc PRIVATE
+  ${LIBS_ROOT}/atlmfc/include
+  ${SRC_ROOT}/base
+)
+
+#-------------------------------------------------------------------------------
+#putty
+
+add_library(putty STATIC
+  ${LIBS_ROOT}/Putty/cproxy.c
+  ${LIBS_ROOT}/Putty/int64.c
+  ${LIBS_ROOT}/Putty/logging.c
+  ${LIBS_ROOT}/Putty/misc.c
+  ${LIBS_ROOT}/Putty/pgssapi.c
+  ${LIBS_ROOT}/Putty/portfwd.c
+  ${LIBS_ROOT}/Putty/proxy.c
+  ${LIBS_ROOT}/Putty/ssh.c
+  ${LIBS_ROOT}/Putty/sshaes.c
+  ${LIBS_ROOT}/Putty/ssharcf.c
+  ${LIBS_ROOT}/Putty/sshblowf.c
+  ${LIBS_ROOT}/Putty/sshbn.c
+  ${LIBS_ROOT}/Putty/sshcrc.c
+  ${LIBS_ROOT}/Putty/sshcrcda.c
+  ${LIBS_ROOT}/Putty/sshdes.c
+  ${LIBS_ROOT}/Putty/sshdh.c
+  ${LIBS_ROOT}/Putty/sshdss.c
+  ${LIBS_ROOT}/Putty/sshgssc.c
+  ${LIBS_ROOT}/Putty/sshmd5.c
+  ${LIBS_ROOT}/Putty/sshpubk.c
+  ${LIBS_ROOT}/Putty/sshrand.c
+  ${LIBS_ROOT}/Putty/sshrsa.c
+  ${LIBS_ROOT}/Putty/sshsh256.c
+  ${LIBS_ROOT}/Putty/sshsh512.c
+  ${LIBS_ROOT}/Putty/sshsha.c
+  ${LIBS_ROOT}/Putty/sshzlib.c
+  ${LIBS_ROOT}/Putty/tree234.c
+  ${LIBS_ROOT}/Putty/wildcard.c
+  ${LIBS_ROOT}/Putty/windows/wingss.c
+  ${LIBS_ROOT}/Putty/windows/winhandl.c
+  ${LIBS_ROOT}/Putty/windows/winmisc.c
+  ${LIBS_ROOT}/Putty/windows/winnet.c
+  ${LIBS_ROOT}/Putty/windows/winnoise.c
+  ${LIBS_ROOT}/Putty/windows/winnojmp.c
+  ${LIBS_ROOT}/Putty/windows/winpgntc.c
+  ${LIBS_ROOT}/Putty/windows/winproxy.c
+  ${LIBS_ROOT}/Putty/windows/winsecur.c
+  ${LIBS_ROOT}/Putty/windows/winstore.c
+  ${LIBS_ROOT}/Putty/windows/wintime.c
+  ${LIBS_ROOT}/Putty/windows/winhsock.c
+  ${LIBS_ROOT}/Putty/x11fwd.c
+  ${LIBS_ROOT}/Putty/conf.c
+  ${LIBS_ROOT}/Putty/callback.c
+  ${LIBS_ROOT}/Putty/sshshare.c
+  ${LIBS_ROOT}/Putty/noshare.c
+  ${LIBS_ROOT}/Putty/errsock.c
+  ${LIBS_ROOT}/Putty/sshecc.c
+  ${LIBS_ROOT}/Putty/sshccp.c
+  ${LIBS_ROOT}/Putty/import.c
+  ${LIBS_ROOT}/Putty/be_misc.c
+  ${LIBS_ROOT}/Putty/sshbcrypt.c
+#  ${LIBS_ROOT}/Putty/ldisc.c
+)
+
+set(PUTTY_COMPILE_FLAGS -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -wd4996)
+
+target_compile_options(putty
+  PRIVATE ${PUTTY_COMPILE_FLAGS}
+)
+
+target_include_directories(putty PRIVATE
+  ${LIBS_ROOT}/Putty
+  ${LIBS_ROOT}/Putty/windows
+)
+
+#-------------------------------------------------------------------------------
+
+add_library(tinyxml2 STATIC
+  ${LIBS_ROOT}/tinyxml2/tinyxml2.cpp
+)
+
+#-------------------------------------------------------------------------------
+#neon
+
+add_library(neon STATIC
+  ${LIBS_ROOT}/neon/src/ne_alloc.c
+  ${LIBS_ROOT}/neon/src/ne_auth.c
+  ${LIBS_ROOT}/neon/src/ne_basic.c
+  ${LIBS_ROOT}/neon/src/ne_compress.c
+  ${LIBS_ROOT}/neon/src/ne_dates.c
+  ${LIBS_ROOT}/neon/src/ne_i18n.c
+  ${LIBS_ROOT}/neon/src/ne_md5.c
+  ${LIBS_ROOT}/neon/src/ne_pkcs11.c
+  ${LIBS_ROOT}/neon/src/ne_redirect.c
+  ${LIBS_ROOT}/neon/src/ne_request.c
+  ${LIBS_ROOT}/neon/src/ne_session.c
+  ${LIBS_ROOT}/neon/src/ne_socket.c
+  ${LIBS_ROOT}/neon/src/ne_socks.c
+  ${LIBS_ROOT}/neon/src/ne_sspi.c
+  ${LIBS_ROOT}/neon/src/ne_string.c
+  ${LIBS_ROOT}/neon/src/ne_uri.c
+  ${LIBS_ROOT}/neon/src/ne_utils.c
+  ${LIBS_ROOT}/neon/src/ne_207.c
+  ${LIBS_ROOT}/neon/src/ne_xml.c
+  ${LIBS_ROOT}/neon/src/ne_xmlreq.c
+  ${LIBS_ROOT}/neon/src/ne_oldacl.c
+  ${LIBS_ROOT}/neon/src/ne_acl3744.c
+  ${LIBS_ROOT}/neon/src/ne_props.c
+  ${LIBS_ROOT}/neon/src/ne_locks.c
+  ${LIBS_ROOT}/neon/src/ne_openssl.c
+)
+
+set(NEON_COMPILE_FLAGS -wd4996)
+
+target_compile_options(neon
+  PRIVATE ${NEON_COMPILE_FLAGS} ${NETBOX_UNICODE_FLAGS}
+)
+
+target_include_directories(neon PRIVATE
+  ${LIBS_ROOT}/zlib/src
+  ${LIBS_ROOT}/expat/lib
+  ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
+)
+
+#-------------------------------------------------------------------------------
+#apr
+
+add_library(apr STATIC
+  ${LIBS_ROOT}/apr/atomic/win32/apr_atomic.c
+#  ${LIBS_ROOT}/apr/dso/win32/dso.c
+  ${LIBS_ROOT}/apr/file_io/win32/buffer.c
+#  ${LIBS_ROOT}/apr/file_io/unix/copy.c
+  ${LIBS_ROOT}/apr/file_io/win32/dir.c
+  ${LIBS_ROOT}/apr/file_io/unix/fileacc.c
+  ${LIBS_ROOT}/apr/file_io/win32/filedup.c
+  ${LIBS_ROOT}/apr/file_io/win32/filepath.c
+  ${LIBS_ROOT}/apr/file_io/unix/filepath_util.c
+  ${LIBS_ROOT}/apr/file_io/win32/filestat.c
+  ${LIBS_ROOT}/apr/file_io/win32/filesys.c
+  ${LIBS_ROOT}/apr/file_io/win32/flock.c
+  ${LIBS_ROOT}/apr/file_io/unix/fullrw.c
+  ${LIBS_ROOT}/apr/file_io/unix/mktemp.c
+  ${LIBS_ROOT}/apr/file_io/win32/open.c
+  ${LIBS_ROOT}/apr/file_io/win32/pipe.c
+  ${LIBS_ROOT}/apr/file_io/win32/readwrite.c
+  ${LIBS_ROOT}/apr/file_io/win32/seek.c
+#  ${LIBS_ROOT}/apr/file_io/unix/tempdir.c
+  ${LIBS_ROOT}/apr/locks/win32/proc_mutex.c
+  ${LIBS_ROOT}/apr/locks/win32/thread_cond.c
+  ${LIBS_ROOT}/apr/locks/win32/thread_mutex.c
+  ${LIBS_ROOT}/apr/locks/win32/thread_rwlock.c
+  ${LIBS_ROOT}/apr/memory/unix/apr_pools.c
+  ${LIBS_ROOT}/apr/misc/win32/apr_app.c
+  ${LIBS_ROOT}/apr/misc/win32/charset.c
+#  ${LIBS_ROOT}/apr/misc/win32/env.c
+  ${LIBS_ROOT}/apr/misc/unix/errorcodes.c
+#  ${LIBS_ROOT}/apr/misc/unix/getopt.c
+  ${LIBS_ROOT}/apr/misc/win32/internal.c
+  ${LIBS_ROOT}/apr/misc/win32/misc.c
+#  ${LIBS_ROOT}/apr/misc/unix/otherchild.c
+  ${LIBS_ROOT}/apr/misc/win32/rand.c
+  ${LIBS_ROOT}/apr/misc/win32/start.c
+  ${LIBS_ROOT}/apr/misc/win32/utf8.c
+#  ${LIBS_ROOT}/apr/misc/unix/version.c
+  ${LIBS_ROOT}/apr/mmap/unix/common.c
+#  ${LIBS_ROOT}/apr/mmap/win32/mmap.c
+  ${LIBS_ROOT}/apr/network_io/unix/inet_ntop.c
+  ${LIBS_ROOT}/apr/network_io/unix/inet_pton.c
+#  ${LIBS_ROOT}/apr/network_io/unix/multicast.c
+  ${LIBS_ROOT}/apr/network_io/win32/sendrecv.c
+  ${LIBS_ROOT}/apr/network_io/unix/sockaddr.c
+  ${LIBS_ROOT}/apr/network_io/win32/sockets.c
+  ${LIBS_ROOT}/apr/network_io/unix/socket_util.c
+  ${LIBS_ROOT}/apr/network_io/win32/sockopt.c
+#  ${LIBS_ROOT}/apr/passwd/apr_getpass.c
+#  ${LIBS_ROOT}/apr/poll/unix/poll.c
+#  ${LIBS_ROOT}/apr/poll/unix/pollcb.c
+#  ${LIBS_ROOT}/apr/poll/unix/pollset.c
+#  ${LIBS_ROOT}/apr/poll/unix/select.c
+#  ${LIBS_ROOT}/apr/poll/unix/z_asio.c
+  ${LIBS_ROOT}/apr/random/unix/apr_random.c
+#  ${LIBS_ROOT}/apr/random/unix/sha2.c
+#  ${LIBS_ROOT}/apr/random/unix/sha2_glue.c
+#  ${LIBS_ROOT}/apr/shmem/win32/shm.c
+  ${LIBS_ROOT}/apr/strings/apr_cpystrn.c
+  ${LIBS_ROOT}/apr/strings/apr_fnmatch.c
+  ${LIBS_ROOT}/apr/strings/apr_snprintf.c
+  ${LIBS_ROOT}/apr/strings/apr_strings.c
+  ${LIBS_ROOT}/apr/strings/apr_strnatcmp.c
+  ${LIBS_ROOT}/apr/strings/apr_strtok.c
+  ${LIBS_ROOT}/apr/tables/apr_hash.c
+  ${LIBS_ROOT}/apr/tables/apr_tables.c
+#  ${LIBS_ROOT}/apr/tables/apr_skiplist.c
+  ${LIBS_ROOT}/apr/threadproc/win32/proc.c
+  ${LIBS_ROOT}/apr/threadproc/win32/signals.c
+  ${LIBS_ROOT}/apr/threadproc/win32/thread.c
+  ${LIBS_ROOT}/apr/threadproc/win32/threadpriv.c
+  ${LIBS_ROOT}/apr/time/win32/time.c
+  ${LIBS_ROOT}/apr/time/win32/timestr.c
+#  ${LIBS_ROOT}/apr/user/win32/groupinfo.c
+  ${LIBS_ROOT}/apr/user/win32/userinfo.c
+)
+
+target_compile_options(apr
+  PRIVATE -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES -U_UNICODE -UUNICODE
+)
+
+target_include_directories(apr PRIVATE
+  ${LIBS_ROOT}/apr/include
+  ${LIBS_ROOT}/apr/include/arch/win32
+  ${LIBS_ROOT}/apr/include/arch/unix
+)
+
+#-------------------------------------------------------------------------------
+#expat
+
+add_library(expat STATIC
+  ${LIBS_ROOT}/expat/lib/xmlparse.c
+  ${LIBS_ROOT}/expat/lib/xmlrole.c
+  ${LIBS_ROOT}/expat/lib/xmltok.c
+  ${LIBS_ROOT}/expat/lib/xmltok_impl.c
+#  ${LIBS_ROOT}/expat/lib/xmltok_ns.c
+)
+
+target_compile_options(expat
+  PRIVATE
+)
+
+#-------------------------------------------------------------------------------
+#zlib
+
+set(ZLIB_SOURCES
+  ${LIBS_ROOT}/zlib/src/adler32.c
+  ${LIBS_ROOT}/zlib/src/crc32.c
+  ${LIBS_ROOT}/zlib/src/infback.c
+  ${LIBS_ROOT}/zlib/src/inffast.c
+  ${LIBS_ROOT}/zlib/src/inflate.c
+  ${LIBS_ROOT}/zlib/src/inftrees.c
+  ${LIBS_ROOT}/zlib/src/trees.c
+  ${LIBS_ROOT}/zlib/src/zutil.c
+  ${LIBS_ROOT}/zlib/src/match.c
+  ${LIBS_ROOT}/zlib/src/deflate.c
+  ${LIBS_ROOT}/zlib/src/deflate_slow.c
+  ${LIBS_ROOT}/zlib/src/deflate_medium.c
+  ${LIBS_ROOT}/zlib/src/deflate_fast.c
+)
+
+if(NOT x64)
+
+set(ZLIB_SOURCES ${ZLIB_SOURCES}
+  ${LIBS_ROOT}/zlib/src/arch/x86/crc_folding.c
+  ${LIBS_ROOT}/zlib/src/arch/x86/fill_window_sse.c
+  ${LIBS_ROOT}/zlib/src/arch/x86/insert_string_sse.c
+  ${LIBS_ROOT}/zlib/src/arch/x86/x86.c
+)
+
+if(MSVC)
+set(ZLIB_SOURCES ${ZLIB_SOURCES}
+  ${LIBS_ROOT}/zlib/src/arch/x86/deflate_quick.c
+)
+endif(MSVC)
+
+endif(NOT x64)
+
+add_library(zlib STATIC
+  ${ZLIB_SOURCES}
+)
+
+target_compile_options(zlib
+  PRIVATE ${NETBOX_UNICODE_FLAGS}
+)
+
+target_include_directories(zlib PRIVATE
+  ${LIBS_ROOT}/zlib/src
+)
+
+#-------------------------------------------------------------------------------
+
+add_library(dlmalloc STATIC
+  ${LIBS_ROOT}/dlmalloc/malloc.c
+  ${LIBS_ROOT}/dlmalloc/malloc-2.8.6.h
+)
+
+target_compile_options(dlmalloc
+  PRIVATE ${NETBOX_UNICODE_FLAGS}
+)
+
+#-------------------------------------------------------------------------------
+#rdestl
+
+add_library(rdestl STATIC
+  ${LIBS_ROOT}/rdestl/allocator.cpp
+  ${LIBS_ROOT}/rdestl/intrusive_list.cpp
+  ${LIBS_ROOT}/rdestl/list.cpp
+#  ${LIBS_ROOT}/rdestl/intrusive_slist.cpp
+#  ${LIBS_ROOT}/rdestl/slist.cpp
+  ${LIBS_ROOT}/rdestl/sort.h
+  ${LIBS_ROOT}/rdestl/string_utils.h
+#  ${LIBS_ROOT}/rdestl/intrusive_list.h
+  ${LIBS_ROOT}/rdestl/sorted_vector.h
+  ${LIBS_ROOT}/rdestl/allocator.h
+  ${LIBS_ROOT}/rdestl/hash_map.h
+  ${LIBS_ROOT}/rdestl/map.h
+  ${LIBS_ROOT}/rdestl/basic_string.h
+  ${LIBS_ROOT}/rdestl/list.h
+  ${LIBS_ROOT}/rdestl/type_traits.h
+#  ${LIBS_ROOT}/rdestl/intrusive_slist.h
+  ${LIBS_ROOT}/rdestl/radix_sorter.h
+  ${LIBS_ROOT}/rdestl/stack_allocator.h
+  ${LIBS_ROOT}/rdestl/utility.h
+  ${LIBS_ROOT}/rdestl/vector.h
+#  ${LIBS_ROOT}/rdestl/slist.h
+  ${LIBS_ROOT}/rdestl/fixed_array.h
+  ${LIBS_ROOT}/rdestl/pair.h
+  ${LIBS_ROOT}/rdestl/algorithm.h
+  ${LIBS_ROOT}/rdestl/fixed_list.h
+  ${LIBS_ROOT}/rdestl/hash.h
+  ${LIBS_ROOT}/rdestl/alignment.h
+  ${LIBS_ROOT}/rdestl/fixed_vector.h
+  ${LIBS_ROOT}/rdestl/rb_tree.h
+  ${LIBS_ROOT}/rdestl/buffer_allocator.h
+  ${LIBS_ROOT}/rdestl/sstream.h
+  ${LIBS_ROOT}/rdestl/rdestl_common.h
+  ${LIBS_ROOT}/rdestl/stack.h
+  ${LIBS_ROOT}/rdestl/cow_string_storage.h
+  ${LIBS_ROOT}/rdestl/fixed_sorted_vector.h
+  ${LIBS_ROOT}/rdestl/functional.h
+  ${LIBS_ROOT}/rdestl/simple_string_storage.h
+  ${LIBS_ROOT}/rdestl/fixed_substring.h
+  ${LIBS_ROOT}/rdestl/int_to_type.h
+  ${LIBS_ROOT}/rdestl/rde_string.h
+  ${LIBS_ROOT}/rdestl/rdestl.h
+  ${LIBS_ROOT}/rdestl/set.h
+  ${LIBS_ROOT}/rdestl/iterator.h
+)
+
+target_include_directories(rdestl PRIVATE
+  ${SRC_ROOT}/base
+)
+
+#-------------------------------------------------------------------------------
 # target NetBox
 
 if(OPT_USE_UNITY_BUILD)
@@ -1086,8 +1453,6 @@ set(NETBOX_SOURCES ${NETBOX_SOURCES}
 endif(NOT x64)
 endif(MSVC)
 
-#-------------------------------------------------------------------------------
-
 set(NETBOX_LIBRARIES
   atlmfc
   putty
@@ -1212,362 +1577,3 @@ add_custom_command(TARGET NetBox
 )
 endif()
 
-#-------------------------------------------------------------------------------
-
-set(ATLMFC_COMPILE_FLAGS
-  -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
-  -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
-  -D_AFX_NO_OLE_SUPPORT -D_AFX_NO_SOCKET_SUPPORT -DCOM_NO_WINDOWS_H
-)
-
-if(CMAKE_COMPILER_IS_MINGW)
-  set(ATLMFC_COMPILE_FLAGS ${ATLMFC_COMPILE_FLAGS}
-    -Wno-int-to-pointer-cast -Wno-pragmas -fpermissive
-  )
-endif()
-
-add_library(atlmfc STATIC
-  ${LIBS_ROOT}/atlmfc/mfc1.cpp
-  ${LIBS_ROOT}/atlmfc/mfc2.cpp
-  ${LIBS_ROOT}/atlmfc/mfc3.cpp
-  ${LIBS_ROOT}/atlmfc/mfc4.cpp
-  ${LIBS_ROOT}/atlmfc/mfc5.cpp
-  ${LIBS_ROOT}/atlmfc/src/mfc/thrdcore.cpp
-)
-
-target_compile_options(atlmfc
-  PRIVATE ${ATLMFC_COMPILE_FLAGS} -wd4995 -wd4996 -wd4101 -wd4290
-)
-
-target_include_directories(atlmfc PRIVATE
-  ${LIBS_ROOT}/atlmfc/include
-  ${SRC_ROOT}/base
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(putty STATIC
-  ${LIBS_ROOT}/Putty/cproxy.c
-  ${LIBS_ROOT}/Putty/int64.c
-  ${LIBS_ROOT}/Putty/logging.c
-  ${LIBS_ROOT}/Putty/misc.c
-  ${LIBS_ROOT}/Putty/pgssapi.c
-  ${LIBS_ROOT}/Putty/portfwd.c
-  ${LIBS_ROOT}/Putty/proxy.c
-  ${LIBS_ROOT}/Putty/ssh.c
-  ${LIBS_ROOT}/Putty/sshaes.c
-  ${LIBS_ROOT}/Putty/ssharcf.c
-  ${LIBS_ROOT}/Putty/sshblowf.c
-  ${LIBS_ROOT}/Putty/sshbn.c
-  ${LIBS_ROOT}/Putty/sshcrc.c
-  ${LIBS_ROOT}/Putty/sshcrcda.c
-  ${LIBS_ROOT}/Putty/sshdes.c
-  ${LIBS_ROOT}/Putty/sshdh.c
-  ${LIBS_ROOT}/Putty/sshdss.c
-  ${LIBS_ROOT}/Putty/sshgssc.c
-  ${LIBS_ROOT}/Putty/sshmd5.c
-  ${LIBS_ROOT}/Putty/sshpubk.c
-  ${LIBS_ROOT}/Putty/sshrand.c
-  ${LIBS_ROOT}/Putty/sshrsa.c
-  ${LIBS_ROOT}/Putty/sshsh256.c
-  ${LIBS_ROOT}/Putty/sshsh512.c
-  ${LIBS_ROOT}/Putty/sshsha.c
-  ${LIBS_ROOT}/Putty/sshzlib.c
-  ${LIBS_ROOT}/Putty/tree234.c
-  ${LIBS_ROOT}/Putty/wildcard.c
-  ${LIBS_ROOT}/Putty/windows/wingss.c
-  ${LIBS_ROOT}/Putty/windows/winhandl.c
-  ${LIBS_ROOT}/Putty/windows/winmisc.c
-  ${LIBS_ROOT}/Putty/windows/winnet.c
-  ${LIBS_ROOT}/Putty/windows/winnoise.c
-  ${LIBS_ROOT}/Putty/windows/winnojmp.c
-  ${LIBS_ROOT}/Putty/windows/winpgntc.c
-  ${LIBS_ROOT}/Putty/windows/winproxy.c
-  ${LIBS_ROOT}/Putty/windows/winsecur.c
-  ${LIBS_ROOT}/Putty/windows/winstore.c
-  ${LIBS_ROOT}/Putty/windows/wintime.c
-  ${LIBS_ROOT}/Putty/windows/winhsock.c
-  ${LIBS_ROOT}/Putty/x11fwd.c
-  ${LIBS_ROOT}/Putty/conf.c
-  ${LIBS_ROOT}/Putty/callback.c
-  ${LIBS_ROOT}/Putty/sshshare.c
-  ${LIBS_ROOT}/Putty/noshare.c
-  ${LIBS_ROOT}/Putty/errsock.c
-  ${LIBS_ROOT}/Putty/sshecc.c
-  ${LIBS_ROOT}/Putty/sshccp.c
-  ${LIBS_ROOT}/Putty/import.c
-  ${LIBS_ROOT}/Putty/be_misc.c
-  ${LIBS_ROOT}/Putty/sshbcrypt.c
-#  ${LIBS_ROOT}/Putty/ldisc.c
-)
-
-set(PUTTY_COMPILE_FLAGS -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -wd4996)
-
-target_compile_options(putty
-  PRIVATE ${PUTTY_COMPILE_FLAGS}
-)
-
-target_include_directories(putty PRIVATE
-  ${LIBS_ROOT}/Putty
-  ${LIBS_ROOT}/Putty/windows
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(tinyxml2 STATIC
-  ${LIBS_ROOT}/tinyxml2/tinyxml2.cpp
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(neon STATIC
-  ${LIBS_ROOT}/neon/src/ne_alloc.c
-  ${LIBS_ROOT}/neon/src/ne_auth.c
-  ${LIBS_ROOT}/neon/src/ne_basic.c
-  ${LIBS_ROOT}/neon/src/ne_compress.c
-  ${LIBS_ROOT}/neon/src/ne_dates.c
-  ${LIBS_ROOT}/neon/src/ne_i18n.c
-  ${LIBS_ROOT}/neon/src/ne_md5.c
-  ${LIBS_ROOT}/neon/src/ne_pkcs11.c
-  ${LIBS_ROOT}/neon/src/ne_redirect.c
-  ${LIBS_ROOT}/neon/src/ne_request.c
-  ${LIBS_ROOT}/neon/src/ne_session.c
-  ${LIBS_ROOT}/neon/src/ne_socket.c
-  ${LIBS_ROOT}/neon/src/ne_socks.c
-  ${LIBS_ROOT}/neon/src/ne_sspi.c
-  ${LIBS_ROOT}/neon/src/ne_string.c
-  ${LIBS_ROOT}/neon/src/ne_uri.c
-  ${LIBS_ROOT}/neon/src/ne_utils.c
-  ${LIBS_ROOT}/neon/src/ne_207.c
-  ${LIBS_ROOT}/neon/src/ne_xml.c
-  ${LIBS_ROOT}/neon/src/ne_xmlreq.c
-  ${LIBS_ROOT}/neon/src/ne_oldacl.c
-  ${LIBS_ROOT}/neon/src/ne_acl3744.c
-  ${LIBS_ROOT}/neon/src/ne_props.c
-  ${LIBS_ROOT}/neon/src/ne_locks.c
-  ${LIBS_ROOT}/neon/src/ne_openssl.c
-)
-
-set(NEON_COMPILE_FLAGS -wd4996)
-
-target_compile_options(neon
-  PRIVATE ${NEON_COMPILE_FLAGS} ${NETBOX_UNICODE_FLAGS}
-)
-
-target_include_directories(neon PRIVATE
-  ${LIBS_ROOT}/zlib/src
-  ${LIBS_ROOT}/expat/lib
-  ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(apr STATIC
-  ${LIBS_ROOT}/apr/atomic/win32/apr_atomic.c
-#  ${LIBS_ROOT}/apr/dso/win32/dso.c
-  ${LIBS_ROOT}/apr/file_io/win32/buffer.c
-#  ${LIBS_ROOT}/apr/file_io/unix/copy.c
-  ${LIBS_ROOT}/apr/file_io/win32/dir.c
-  ${LIBS_ROOT}/apr/file_io/unix/fileacc.c
-  ${LIBS_ROOT}/apr/file_io/win32/filedup.c
-  ${LIBS_ROOT}/apr/file_io/win32/filepath.c
-  ${LIBS_ROOT}/apr/file_io/unix/filepath_util.c
-  ${LIBS_ROOT}/apr/file_io/win32/filestat.c
-  ${LIBS_ROOT}/apr/file_io/win32/filesys.c
-  ${LIBS_ROOT}/apr/file_io/win32/flock.c
-  ${LIBS_ROOT}/apr/file_io/unix/fullrw.c
-  ${LIBS_ROOT}/apr/file_io/unix/mktemp.c
-  ${LIBS_ROOT}/apr/file_io/win32/open.c
-  ${LIBS_ROOT}/apr/file_io/win32/pipe.c
-  ${LIBS_ROOT}/apr/file_io/win32/readwrite.c
-  ${LIBS_ROOT}/apr/file_io/win32/seek.c
-#  ${LIBS_ROOT}/apr/file_io/unix/tempdir.c
-  ${LIBS_ROOT}/apr/locks/win32/proc_mutex.c
-  ${LIBS_ROOT}/apr/locks/win32/thread_cond.c
-  ${LIBS_ROOT}/apr/locks/win32/thread_mutex.c
-  ${LIBS_ROOT}/apr/locks/win32/thread_rwlock.c
-  ${LIBS_ROOT}/apr/memory/unix/apr_pools.c
-  ${LIBS_ROOT}/apr/misc/win32/apr_app.c
-  ${LIBS_ROOT}/apr/misc/win32/charset.c
-#  ${LIBS_ROOT}/apr/misc/win32/env.c
-  ${LIBS_ROOT}/apr/misc/unix/errorcodes.c
-#  ${LIBS_ROOT}/apr/misc/unix/getopt.c
-  ${LIBS_ROOT}/apr/misc/win32/internal.c
-  ${LIBS_ROOT}/apr/misc/win32/misc.c
-#  ${LIBS_ROOT}/apr/misc/unix/otherchild.c
-  ${LIBS_ROOT}/apr/misc/win32/rand.c
-  ${LIBS_ROOT}/apr/misc/win32/start.c
-  ${LIBS_ROOT}/apr/misc/win32/utf8.c
-#  ${LIBS_ROOT}/apr/misc/unix/version.c
-  ${LIBS_ROOT}/apr/mmap/unix/common.c
-#  ${LIBS_ROOT}/apr/mmap/win32/mmap.c
-  ${LIBS_ROOT}/apr/network_io/unix/inet_ntop.c
-  ${LIBS_ROOT}/apr/network_io/unix/inet_pton.c
-#  ${LIBS_ROOT}/apr/network_io/unix/multicast.c
-  ${LIBS_ROOT}/apr/network_io/win32/sendrecv.c
-  ${LIBS_ROOT}/apr/network_io/unix/sockaddr.c
-  ${LIBS_ROOT}/apr/network_io/win32/sockets.c
-  ${LIBS_ROOT}/apr/network_io/unix/socket_util.c
-  ${LIBS_ROOT}/apr/network_io/win32/sockopt.c
-#  ${LIBS_ROOT}/apr/passwd/apr_getpass.c
-#  ${LIBS_ROOT}/apr/poll/unix/poll.c
-#  ${LIBS_ROOT}/apr/poll/unix/pollcb.c
-#  ${LIBS_ROOT}/apr/poll/unix/pollset.c
-#  ${LIBS_ROOT}/apr/poll/unix/select.c
-#  ${LIBS_ROOT}/apr/poll/unix/z_asio.c
-  ${LIBS_ROOT}/apr/random/unix/apr_random.c
-#  ${LIBS_ROOT}/apr/random/unix/sha2.c
-#  ${LIBS_ROOT}/apr/random/unix/sha2_glue.c
-#  ${LIBS_ROOT}/apr/shmem/win32/shm.c
-  ${LIBS_ROOT}/apr/strings/apr_cpystrn.c
-  ${LIBS_ROOT}/apr/strings/apr_fnmatch.c
-  ${LIBS_ROOT}/apr/strings/apr_snprintf.c
-  ${LIBS_ROOT}/apr/strings/apr_strings.c
-  ${LIBS_ROOT}/apr/strings/apr_strnatcmp.c
-  ${LIBS_ROOT}/apr/strings/apr_strtok.c
-  ${LIBS_ROOT}/apr/tables/apr_hash.c
-  ${LIBS_ROOT}/apr/tables/apr_tables.c
-#  ${LIBS_ROOT}/apr/tables/apr_skiplist.c
-  ${LIBS_ROOT}/apr/threadproc/win32/proc.c
-  ${LIBS_ROOT}/apr/threadproc/win32/signals.c
-  ${LIBS_ROOT}/apr/threadproc/win32/thread.c
-  ${LIBS_ROOT}/apr/threadproc/win32/threadpriv.c
-  ${LIBS_ROOT}/apr/time/win32/time.c
-  ${LIBS_ROOT}/apr/time/win32/timestr.c
-#  ${LIBS_ROOT}/apr/user/win32/groupinfo.c
-  ${LIBS_ROOT}/apr/user/win32/userinfo.c
-)
-
-target_compile_options(apr
-  PRIVATE -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES -U_UNICODE -UUNICODE
-)
-
-target_include_directories(apr PRIVATE
-  ${LIBS_ROOT}/apr/include
-  ${LIBS_ROOT}/apr/include/arch/win32
-  ${LIBS_ROOT}/apr/include/arch/unix
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(expat STATIC
-  ${LIBS_ROOT}/expat/lib/xmlparse.c
-  ${LIBS_ROOT}/expat/lib/xmlrole.c
-  ${LIBS_ROOT}/expat/lib/xmltok.c
-  ${LIBS_ROOT}/expat/lib/xmltok_impl.c
-#  ${LIBS_ROOT}/expat/lib/xmltok_ns.c
-)
-
-target_compile_options(expat
-  PRIVATE
-)
-
-#-------------------------------------------------------------------------------
-
-set(ZLIB_SOURCES
-  ${LIBS_ROOT}/zlib/src/adler32.c
-  ${LIBS_ROOT}/zlib/src/crc32.c
-  ${LIBS_ROOT}/zlib/src/infback.c
-  ${LIBS_ROOT}/zlib/src/inffast.c
-  ${LIBS_ROOT}/zlib/src/inflate.c
-  ${LIBS_ROOT}/zlib/src/inftrees.c
-  ${LIBS_ROOT}/zlib/src/trees.c
-  ${LIBS_ROOT}/zlib/src/zutil.c
-  ${LIBS_ROOT}/zlib/src/match.c
-  ${LIBS_ROOT}/zlib/src/deflate.c
-  ${LIBS_ROOT}/zlib/src/deflate_slow.c
-  ${LIBS_ROOT}/zlib/src/deflate_medium.c
-  ${LIBS_ROOT}/zlib/src/deflate_fast.c
-)
-
-if(NOT x64)
-
-set(ZLIB_SOURCES ${ZLIB_SOURCES}
-  ${LIBS_ROOT}/zlib/src/arch/x86/crc_folding.c
-  ${LIBS_ROOT}/zlib/src/arch/x86/fill_window_sse.c
-  ${LIBS_ROOT}/zlib/src/arch/x86/insert_string_sse.c
-  ${LIBS_ROOT}/zlib/src/arch/x86/x86.c
-)
-
-if(MSVC)
-set(ZLIB_SOURCES ${ZLIB_SOURCES}
-  ${LIBS_ROOT}/zlib/src/arch/x86/deflate_quick.c
-)
-endif(MSVC)
-
-endif(NOT x64)
-
-add_library(zlib STATIC
-  ${ZLIB_SOURCES}
-)
-
-target_compile_options(zlib
-  PRIVATE ${NETBOX_UNICODE_FLAGS}
-)
-
-target_include_directories(zlib PRIVATE
-  ${LIBS_ROOT}/zlib/src
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(dlmalloc STATIC
-  ${LIBS_ROOT}/dlmalloc/malloc.c
-  ${LIBS_ROOT}/dlmalloc/malloc-2.8.6.h
-)
-
-target_compile_options(dlmalloc
-  PRIVATE ${NETBOX_UNICODE_FLAGS}
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(rdestl STATIC
-  ${LIBS_ROOT}/rdestl/allocator.cpp
-  ${LIBS_ROOT}/rdestl/intrusive_list.cpp
-  ${LIBS_ROOT}/rdestl/list.cpp
-#  ${LIBS_ROOT}/rdestl/intrusive_slist.cpp
-#  ${LIBS_ROOT}/rdestl/slist.cpp
-  ${LIBS_ROOT}/rdestl/sort.h
-  ${LIBS_ROOT}/rdestl/string_utils.h
-#  ${LIBS_ROOT}/rdestl/intrusive_list.h
-  ${LIBS_ROOT}/rdestl/sorted_vector.h
-  ${LIBS_ROOT}/rdestl/allocator.h
-  ${LIBS_ROOT}/rdestl/hash_map.h
-  ${LIBS_ROOT}/rdestl/map.h
-  ${LIBS_ROOT}/rdestl/basic_string.h
-  ${LIBS_ROOT}/rdestl/list.h
-  ${LIBS_ROOT}/rdestl/type_traits.h
-#  ${LIBS_ROOT}/rdestl/intrusive_slist.h
-  ${LIBS_ROOT}/rdestl/radix_sorter.h
-  ${LIBS_ROOT}/rdestl/stack_allocator.h
-  ${LIBS_ROOT}/rdestl/utility.h
-  ${LIBS_ROOT}/rdestl/vector.h
-#  ${LIBS_ROOT}/rdestl/slist.h
-  ${LIBS_ROOT}/rdestl/fixed_array.h
-  ${LIBS_ROOT}/rdestl/pair.h
-  ${LIBS_ROOT}/rdestl/algorithm.h
-  ${LIBS_ROOT}/rdestl/fixed_list.h
-  ${LIBS_ROOT}/rdestl/hash.h
-  ${LIBS_ROOT}/rdestl/alignment.h
-  ${LIBS_ROOT}/rdestl/fixed_vector.h
-  ${LIBS_ROOT}/rdestl/rb_tree.h
-  ${LIBS_ROOT}/rdestl/buffer_allocator.h
-  ${LIBS_ROOT}/rdestl/sstream.h
-  ${LIBS_ROOT}/rdestl/rdestl_common.h
-  ${LIBS_ROOT}/rdestl/stack.h
-  ${LIBS_ROOT}/rdestl/cow_string_storage.h
-  ${LIBS_ROOT}/rdestl/fixed_sorted_vector.h
-  ${LIBS_ROOT}/rdestl/functional.h
-  ${LIBS_ROOT}/rdestl/simple_string_storage.h
-  ${LIBS_ROOT}/rdestl/fixed_substring.h
-  ${LIBS_ROOT}/rdestl/int_to_type.h
-  ${LIBS_ROOT}/rdestl/rde_string.h
-  ${LIBS_ROOT}/rdestl/rdestl.h
-  ${LIBS_ROOT}/rdestl/set.h
-  ${LIBS_ROOT}/rdestl/iterator.h
-)
-
-target_include_directories(rdestl PRIVATE
-  ${SRC_ROOT}/base
-)
