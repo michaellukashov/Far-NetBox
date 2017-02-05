@@ -37,6 +37,7 @@ enum THandlesFunction
   hfProcessHostFile,
   hfProcessEvent
 };
+
 typedef nb::FastDelegate1<void, UnicodeString & /*Text*/> TFarInputBoxValidateEvent;
 
 typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TFarMessageTimerEvent;

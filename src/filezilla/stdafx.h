@@ -1,6 +1,4 @@
-
 #pragma once
-
 
 #define _int64 __int64
 
