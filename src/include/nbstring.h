@@ -464,7 +464,7 @@ public:
 		return ::GetEnvironmentVariableA(pszVar, pszBuffer, dwSize);
 	}
 
-	static char* MirCopy(const char *pstrString, size_t size)
+  static char* NBCopy(const char *pstrString, size_t size)
 	{
     return nbcore_strndup(pstrString, size);
 	}
@@ -697,7 +697,7 @@ public:
 	{
 	}
 
-	static LPWSTR MirCopy(LPCWSTR pstrString, size_t size)
+  static LPWSTR NBCopy(LPCWSTR pstrString, size_t size)
 	{
     return nbcore_wstrndup(pstrString, size);
 	}
@@ -944,4 +944,4 @@ typedef CMStringT< char, NBChTraitsCRT< char > > CMStringA;
 	typedef CMStringA CMString;
 #endif
 
-#include "nbstring.inl"
+//#include "nbstring.inl"

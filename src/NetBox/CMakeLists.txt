@@ -1263,6 +1263,9 @@ else(OPT_USE_UNITY_BUILD)
 
 set(NETBOX_SOURCES
 #  UnityBuildCore.cpp
+  ../nbcore/nbcore_string.cpp
+  ../nbcore/nbcore_memory.cpp
+
   ../base/GlobalUtils.cpp
   ../base/UnicodeString.cpp
   ../base/Classes.cpp
