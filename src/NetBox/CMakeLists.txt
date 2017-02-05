@@ -253,6 +253,7 @@ set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   -wd4090
   -D_CRT_SECURE_NO_WARNINGS
   -DOPENSSLDIR="" -DENGINESDIR=""
+  -DNB_COMPILE_OPENSSL
 )
 #-DOPENSSL_NO_CT
 #-DOPENSSL_NO_SOCK -D_WINSOCK2API_
@@ -903,6 +904,7 @@ set_property(TARGET libssl
     PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_INC_DIR}/libssl.lib)
 
 endif(COMPILE_OPENSSL)
+
 #-------------------------------------------------------------------------------
 # target NetBox
 
