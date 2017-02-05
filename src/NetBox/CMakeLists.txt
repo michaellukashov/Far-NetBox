@@ -203,25 +203,7 @@ endif()
 #-------------------------------------------------------
 
 include_directories(
-  ${SRC_ROOT}/NetBox
-  ${SRC_ROOT}/PluginSDK/${FAR_VERSION}
-  ${SRC_ROOT}/include
-  ${SRC_ROOT}/base
-  ${SRC_ROOT}/core
-  ${SRC_ROOT}/windows
-  ${SRC_ROOT}/resource
   ${LIBS_ROOT}
-  ${LIBS_ROOT}/Putty
-  ${LIBS_ROOT}/Putty/windows
-  ${LIBS_ROOT}/tinyxml2
-  ${LIBS_ROOT}/zlib/src
-  ${LIBS_ROOT}/expat/lib
-  ${LIBS_ROOT}/apr/include
-#  ${LIBS_ROOT}/apr/include/arch/win32
-#  ${LIBS_ROOT}/apr/include/arch/unix
-  ${LIBS_ROOT}/rdestl
-
-  ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
 )
 
 #-------------------------------------------------------------------------------
@@ -838,6 +820,7 @@ target_include_directories(libcrypto SYSTEM BEFORE PRIVATE
   ../../libs/openssl/crypto
   ../../libs/openssl/crypto/include
   ../../libs/openssl/crypto/modes
+  ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
 )
 
 add_library(libssl STATIC
@@ -889,6 +872,7 @@ target_compile_options(libssl
 target_include_directories(libssl SYSTEM BEFORE PRIVATE
   ../../libs/openssl
   ../../libs/openssl/include
+  ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
 )
 
 else(COMPILE_OPENSSL)
@@ -1163,10 +1147,22 @@ target_compile_options(NetBox
 )
 
 target_include_directories(NetBox PRIVATE
-#  ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
+  ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
+  ${LIBS_ROOT}/Putty
+  ${LIBS_ROOT}/Putty/windows
+  ${LIBS_ROOT}/apr/include
+  ${LIBS_ROOT}/tinyxml2
+  ${LIBS_ROOT}/rdestl
+  ${LIBS_ROOT}/atlmfc/include
   ${SRC_ROOT}/filezilla
   ${SRC_ROOT}/filezilla/misc
-  ${LIBS_ROOT}/atlmfc/include
+  ${SRC_ROOT}/PluginSDK/${FAR_VERSION}
+  ${SRC_ROOT}/base
+  ${SRC_ROOT}/core
+  ${SRC_ROOT}/windows
+  ${SRC_ROOT}/resource
+#  ${SRC_ROOT}/include
+  ${SRC_ROOT}/NetBox
 )
 
 set_target_properties(NetBox
@@ -1253,6 +1249,7 @@ target_compile_options(atlmfc
 
 target_include_directories(atlmfc PRIVATE
   ${LIBS_ROOT}/atlmfc/include
+  ${SRC_ROOT}/base
 )
 
 #-------------------------------------------------------------------------------
@@ -1318,6 +1315,11 @@ target_compile_options(putty
   PRIVATE ${PUTTY_COMPILE_FLAGS}
 )
 
+target_include_directories(putty PRIVATE
+  ${LIBS_ROOT}/Putty
+  ${LIBS_ROOT}/Putty/windows
+)
+
 #-------------------------------------------------------------------------------
 
 add_library(tinyxml2 STATIC
@@ -1358,6 +1360,12 @@ set(NEON_COMPILE_FLAGS -D_CRT_SECURE_NO_WARNINGS -wd4996)
 
 target_compile_options(neon
   PRIVATE ${NEON_COMPILE_FLAGS} ${NETBOX_UNICODE_FLAGS}
+)
+
+target_include_directories(neon PRIVATE
+  ${LIBS_ROOT}/zlib/src
+  ${LIBS_ROOT}/expat/lib
+  ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
 )
 
 #-------------------------------------------------------------------------------
@@ -1443,6 +1451,7 @@ target_compile_options(apr
 )
 
 target_include_directories(apr PRIVATE
+  ${LIBS_ROOT}/apr/include
   ${LIBS_ROOT}/apr/include/arch/win32
   ${LIBS_ROOT}/apr/include/arch/unix
 )
@@ -1504,6 +1513,10 @@ target_compile_options(zlib
   PRIVATE ${NETBOX_UNICODE_FLAGS}
 )
 
+target_include_directories(zlib PRIVATE
+  ${LIBS_ROOT}/zlib/src
+)
+
 #-------------------------------------------------------------------------------
 
 add_library(dlmalloc STATIC
@@ -1561,4 +1574,8 @@ add_library(rdestl STATIC
   ${LIBS_ROOT}/rdestl/rdestl.h
   ${LIBS_ROOT}/rdestl/set.h
   ${LIBS_ROOT}/rdestl/iterator.h
+)
+
+target_include_directories(rdestl PRIVATE
+  ${SRC_ROOT}/base
 )
