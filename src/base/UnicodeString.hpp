@@ -203,7 +203,6 @@ private:
   void ThrowIfOutOfRange(intptr_t Idx) const;
 
   typedef CMStringW wstring_t;
-  typedef rde::basic_string<wchar_t, custom_nballocator_t<wchar_t> > wstring_t;
   wstring_t Data;
 };
 
