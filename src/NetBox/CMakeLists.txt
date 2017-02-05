@@ -1139,6 +1139,7 @@ target_compile_options(NetBox
 )
 
 target_include_directories(NetBox PRIVATE
+  ${LIBS_ROOT}
   ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
   ${LIBS_ROOT}/Putty
   ${LIBS_ROOT}/Putty/windows
