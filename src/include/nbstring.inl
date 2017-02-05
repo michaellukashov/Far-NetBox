@@ -5,7 +5,7 @@
 template<typename BaseType>
 CMSimpleStringT<BaseType>::CMSimpleStringT()
 {
-  CMStringData* pData = mirstr_getNil();
+  CMStringData* pData = nbstr_getNil();
   Attach(pData);
 }
 
@@ -21,7 +21,7 @@ template<typename BaseType>
 CMSimpleStringT<BaseType>::CMSimpleStringT(PCXSTR pszSrc)
 {
   int nLength = StringLength(pszSrc);
-  CMStringData* pData = mirstr_allocate(nLength, sizeof(XCHAR));
+  CMStringData* pData = nbstr_allocate(nLength, sizeof(XCHAR));
   if (pData != NULL) {
     Attach(pData);
     SetLength(nLength);
@@ -32,7 +32,7 @@ CMSimpleStringT<BaseType>::CMSimpleStringT(PCXSTR pszSrc)
 template<typename BaseType>
 CMSimpleStringT<BaseType>::CMSimpleStringT(const XCHAR* pchSrc, int nLength)
 {
-  CMStringData* pData = mirstr_allocate(nLength, sizeof(XCHAR));
+  CMStringData* pData = nbstr_allocate(nLength, sizeof(XCHAR));
   if (pData != NULL) {
     Attach(pData);
     SetLength(nLength);
@@ -127,7 +127,7 @@ void CMSimpleStringT<BaseType>::Empty()
   }
   else {
     pOldData->Release();
-    CMStringData* pNewData = mirstr_getNil();
+    CMStringData* pNewData = nbstr_getNil();
     Attach(pNewData);
   }
 }
@@ -141,7 +141,7 @@ void CMSimpleStringT<BaseType>::FreeExtra()
     return;
 
   if (!pOldData->IsLocked()) { // Don't reallocate a locked buffer that's shrinking
-    CMStringData* pNewData = mirstr_allocate(nLength, sizeof(XCHAR));
+    CMStringData* pNewData = nbstr_allocate(nLength, sizeof(XCHAR));
     if (pNewData == NULL) {
       SetLength(nLength);
       return;
@@ -357,7 +357,7 @@ void CMSimpleStringT<BaseType>::Fork(int nLength)
 {
   CMStringData* pOldData = GetData();
   int nOldLength = pOldData->nDataLength;
-  CMStringData* pNewData = mirstr_allocate(nLength, sizeof(XCHAR));
+  CMStringData* pNewData = nbstr_allocate(nLength, sizeof(XCHAR));
   if (pNewData != NULL) {
     int nCharsToCopy = ((nOldLength < nLength) ? nOldLength : nLength) + 1;  // Copy '\0'
     CopyChars(PXSTR(pNewData->data()), nCharsToCopy, PCXSTR(pOldData->data()), nCharsToCopy);
@@ -411,7 +411,7 @@ void CMSimpleStringT<BaseType>::Reallocate(int nLength)
   if (pOldData->nAllocLength >= nLength || nLength <= 0)
     return;
 
-  CMStringData* pNewData = mirstr_realloc(pOldData, nLength, sizeof(XCHAR));
+  CMStringData* pNewData = nbstr_realloc(pOldData, nLength, sizeof(XCHAR));
   if (pNewData != NULL)
     Attach(pNewData);
 }
@@ -1376,7 +1376,7 @@ BOOL CMStringT<BaseType, StringTraits>::GetEnvironmentVariable(PCXSTR pszVar)
 template< typename BaseType, class StringTraits >
 typename CMStringT<BaseType, StringTraits>::PXSTR CMStringT<BaseType, StringTraits>::Detach() const
 {
-  return StringTraits::MirCopy(CMStringT<BaseType, StringTraits>::GetString(), GetLength());
+  return StringTraits::NBCopy(CMStringT<BaseType, StringTraits>::GetString(), GetLength());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

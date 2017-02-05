@@ -943,3 +943,5 @@ typedef CMStringT< char, NBChTraitsCRT< char > > CMStringA;
 #else
 	typedef CMStringA CMString;
 #endif
+
+#include "nbstring.inl"
