@@ -69,6 +69,8 @@ extern "C" {
 
 typedef struct DSA_SIG_st DSA_SIG;
 
+#ifndef NB_COMPILE_OPENSSL
+
 typedef struct DSA_SIG_st {
     BIGNUM *r;
     BIGNUM *s;
@@ -124,6 +126,8 @@ struct dsa_st {
     /* functional reference if 'meth' is ENGINE-provided */
     ENGINE *engine;
 };
+
+#endif // #ifndef NB_COMPILE_OPENSSL
 
 # define d2i_DSAparams_fp(fp,x) (DSA *)ASN1_d2i_fp((char *(*)())DSA_new, \
                 (char *(*)())d2i_DSAparams,(fp),(unsigned char **)(x))
