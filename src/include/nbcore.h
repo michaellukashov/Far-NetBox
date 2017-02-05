@@ -14,7 +14,7 @@
 #define NB_CORE_DLL(T) NB_CORE_EXPORT T __stdcall
 #define NB_C_CORE_DLL(T) NB_CORE_EXPORT T __cdecl
 
-#pragma warning(disable:4201 4127 4706)
+#pragma warning(disable: 4201 4127 4706)
 
 #if defined(__cplusplus)
 extern "C"
