@@ -261,6 +261,7 @@ enum ftp_capability_names_t
 class TFTPServerCapabilities //: public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
+NB_DISABLE_COPY(TFTPServerCapabilities)
 public:
   TFTPServerCapabilities(){}
   ftp_capabilities_t GetCapability(ftp_capability_names_t Name);
@@ -294,9 +295,6 @@ protected:
   };
 
   rde::map<ftp_capability_names_t, t_cap> FCapabilityMap;
-private: \
-  TFTPServerCapabilities(const TFTPServerCapabilities &);
-  TFTPServerCapabilities &operator=(const TFTPServerCapabilities &);
 };
 
 #endif // FileZillaIntfH
