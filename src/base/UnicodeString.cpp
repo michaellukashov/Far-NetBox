@@ -568,8 +568,8 @@ intptr_t UnicodeString::ToInt() const
 UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen)
 {
   wstring_t NewData = Data;
-  NewData.Delete(Pos, Len);
-  NewData.Insert(Pos, wstring_t(Str, DataLen).c_str());
+  NewData.Delete(Pos - 1, Len);
+  NewData.Insert(Pos - 1, wstring_t(Str, DataLen).c_str());
   Data = NewData;
   return *this;
 }
