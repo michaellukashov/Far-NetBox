@@ -570,6 +570,7 @@ UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t
   wstring_t NewData = Data;
   NewData.Delete(Pos, Len);
   NewData.Insert(Pos, wstring_t(Str, DataLen).c_str());
+  Data = NewData;
   return *this;
 }
 
