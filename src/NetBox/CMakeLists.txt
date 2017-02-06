@@ -1434,7 +1434,7 @@ find_program(MASM_EXECUTABLE ml)
 # message("masm: ${MASM_EXECUTABLE}")
 set(ASM_OBJECTS)
 foreach(src vc_crt_fix)
-  set(ASM_SOURCE ${SRC_ROOT}/NetBox/${src}.asm)
+  set(ASM_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/${src}.asm)
   set(ASM_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${src}.obj)
   set(ASM_OBJECTS ${ASM_OBJECTS} ${ASM_OBJECT})
   add_custom_command(
@@ -1446,7 +1446,7 @@ foreach(src vc_crt_fix)
 endforeach(src)
 
 set(NETBOX_SOURCES ${NETBOX_SOURCES}
-  ${SRC_ROOT}/NetBox/vc_crt_fix_impl.cpp
+  vc_crt_fix_impl.cpp
   ${ASM_OBJECTS}
 )
 
@@ -1501,27 +1501,29 @@ if(CMAKE_COMPILER_IS_MINGW)
 endif()
 
 target_compile_options(NetBox
-  PRIVATE ${NETBOX_DLL_CXX_FLAGS} -D_WINSOCK_DEPRECATED_NO_WARNINGS -DNB_CORE_EXPORTS
+  PRIVATE ${NETBOX_DLL_CXX_FLAGS}
+  -D_WINSOCK_DEPRECATED_NO_WARNINGS
+  -DNB_CORE_EXPORTS
 )
 
 target_include_directories(NetBox PRIVATE
-  ${LIBS_ROOT}
-  ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
-  ${LIBS_ROOT}/Putty
-  ${LIBS_ROOT}/Putty/windows
-  ${LIBS_ROOT}/apr/include
-  ${LIBS_ROOT}/tinyxml2
-  ${LIBS_ROOT}/rdestl
-  ${LIBS_ROOT}/atlmfc/include
-  ${SRC_ROOT}/filezilla
-  ${SRC_ROOT}/filezilla/misc
-  ${SRC_ROOT}/PluginSDK/${FAR_VERSION}
-  ${SRC_ROOT}/base
-  ${SRC_ROOT}/core
-  ${SRC_ROOT}/windows
-  ${SRC_ROOT}/resource
-  ${SRC_ROOT}/include
-  ${SRC_ROOT}/NetBox
+  ../../libs
+  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+  ../../libs/Putty
+  ../../libs/Putty/windows
+  ../../libs/apr/include
+  ../../libs/tinyxml2
+  ../../libs/rdestl
+  ../../libs/atlmfc/include
+  ../filezilla
+  ../filezilla/misc
+  ../PluginSDK/${FAR_VERSION}
+  ../base
+  ../core
+  ../windows
+  ../resource
+  ../include
+  ../NetBox
 )
 
 set_target_properties(NetBox
@@ -1572,7 +1574,7 @@ add_custom_command(TARGET NetBox
   POST_BUILD
   DEPENDS ${BUILD_DIR}\\NetBox.dll
   COMMAND scripts\\make_dist.cmd ${FAR_VERSION} ${PROJECT_PLATFORM}
-  WORKING_DIRECTORY ${SRC_ROOT}/NetBox
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   VERBATIM
 )
 endif()
