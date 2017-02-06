@@ -103,7 +103,7 @@ public:
   intptr_t GetLength() const { return Length(); }
   intptr_t GetBytesCount() const { return (Length() + 1) * sizeof(wchar_t); }
   bool IsEmpty() const { return Length() == 0; }
-  void SetLength(intptr_t nLength) { Data.Preallocate(nLength); }
+  void SetLength(intptr_t nLength) { Data.GetBufferSetLength(nLength); }
   inline UnicodeString & Delete(intptr_t Index, intptr_t Count) { Data.Delete(Index - 1, Count); return *this; }
   UnicodeString & Clear() { Data.Empty(); return *this; }
 
