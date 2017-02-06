@@ -62,9 +62,10 @@ message(STATUS "MSVC_VERSION: ${MSVC_VERSION}")
 set(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB") #" -DUSE_GETADDRINFO")
 set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
 set(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
-set(NETBOX_DEFS "-DMPEXT -DWINSCP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING -D_CRT_SECURE_NO_WARNINGS")
+set(NETBOX_DEFS "-DMPEXT -DWINSCP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
-set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES")
+set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS")
+set(NETBOX_DEFS "${NETBOX_DEFS} -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES")
 set(NETBOX_DEFS "${NETBOX_DEFS} ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} ${DLMALLOC_DEFS}")
 #-D_WINDLL -D_USRDLL
 if (MSVC_VERSION GREATER 1899)
@@ -878,6 +879,373 @@ set_property(TARGET libssl
 endif(OPT_COMPILE_OPENSSL)
 
 #-------------------------------------------------------------------------------
+#atlmfc
+
+set(ATLMFC_COMPILE_FLAGS
+  -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
+  -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
+  -D_AFX_NO_OLE_SUPPORT -D_AFX_NO_SOCKET_SUPPORT -DCOM_NO_WINDOWS_H
+)
+
+if(CMAKE_COMPILER_IS_MINGW)
+  set(ATLMFC_COMPILE_FLAGS ${ATLMFC_COMPILE_FLAGS}
+    -Wno-int-to-pointer-cast -Wno-pragmas -fpermissive
+  )
+endif()
+
+add_library(atlmfc STATIC
+  ../../libs/atlmfc/mfc1.cpp
+  ../../libs/atlmfc/mfc2.cpp
+  ../../libs/atlmfc/mfc3.cpp
+  ../../libs/atlmfc/mfc4.cpp
+  ../../libs/atlmfc/mfc5.cpp
+  ../../libs/atlmfc/src/mfc/thrdcore.cpp
+)
+
+target_compile_options(atlmfc
+  PRIVATE ${ATLMFC_COMPILE_FLAGS} -wd4995 -wd4996 -wd4101 -wd4290
+)
+
+target_include_directories(atlmfc PRIVATE
+  ../../libs/atlmfc/include
+  ../base
+)
+
+#-------------------------------------------------------------------------------
+#putty
+
+add_library(putty STATIC
+  ../../libs/Putty/cproxy.c
+  ../../libs/Putty/int64.c
+  ../../libs/Putty/logging.c
+  ../../libs/Putty/misc.c
+  ../../libs/Putty/pgssapi.c
+  ../../libs/Putty/portfwd.c
+  ../../libs/Putty/proxy.c
+  ../../libs/Putty/ssh.c
+  ../../libs/Putty/sshaes.c
+  ../../libs/Putty/ssharcf.c
+  ../../libs/Putty/sshblowf.c
+  ../../libs/Putty/sshbn.c
+  ../../libs/Putty/sshcrc.c
+  ../../libs/Putty/sshcrcda.c
+  ../../libs/Putty/sshdes.c
+  ../../libs/Putty/sshdh.c
+  ../../libs/Putty/sshdss.c
+  ../../libs/Putty/sshgssc.c
+  ../../libs/Putty/sshmd5.c
+  ../../libs/Putty/sshpubk.c
+  ../../libs/Putty/sshrand.c
+  ../../libs/Putty/sshrsa.c
+  ../../libs/Putty/sshsh256.c
+  ../../libs/Putty/sshsh512.c
+  ../../libs/Putty/sshsha.c
+  ../../libs/Putty/sshzlib.c
+  ../../libs/Putty/tree234.c
+  ../../libs/Putty/wildcard.c
+  ../../libs/Putty/windows/wingss.c
+  ../../libs/Putty/windows/winhandl.c
+  ../../libs/Putty/windows/winmisc.c
+  ../../libs/Putty/windows/winnet.c
+  ../../libs/Putty/windows/winnoise.c
+  ../../libs/Putty/windows/winnojmp.c
+  ../../libs/Putty/windows/winpgntc.c
+  ../../libs/Putty/windows/winproxy.c
+  ../../libs/Putty/windows/winsecur.c
+  ../../libs/Putty/windows/winstore.c
+  ../../libs/Putty/windows/wintime.c
+  ../../libs/Putty/windows/winhsock.c
+  ../../libs/Putty/x11fwd.c
+  ../../libs/Putty/conf.c
+  ../../libs/Putty/callback.c
+  ../../libs/Putty/sshshare.c
+  ../../libs/Putty/noshare.c
+  ../../libs/Putty/errsock.c
+  ../../libs/Putty/sshecc.c
+  ../../libs/Putty/sshccp.c
+  ../../libs/Putty/import.c
+  ../../libs/Putty/be_misc.c
+  ../../libs/Putty/sshbcrypt.c
+#  ../../libs/Putty/ldisc.c
+)
+
+set(PUTTY_COMPILE_FLAGS -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -wd4996)
+
+target_compile_options(putty
+  PRIVATE ${PUTTY_COMPILE_FLAGS}
+)
+
+target_include_directories(putty PRIVATE
+  ../../libs/Putty
+  ../../libs/Putty/windows
+)
+
+#-------------------------------------------------------------------------------
+
+add_library(tinyxml2 STATIC
+  ../../libs/tinyxml2/tinyxml2.cpp
+)
+
+#-------------------------------------------------------------------------------
+#neon
+
+add_library(neon STATIC
+  ../../libs/neon/src/ne_alloc.c
+  ../../libs/neon/src/ne_auth.c
+  ../../libs/neon/src/ne_basic.c
+  ../../libs/neon/src/ne_compress.c
+  ../../libs/neon/src/ne_dates.c
+  ../../libs/neon/src/ne_i18n.c
+  ../../libs/neon/src/ne_md5.c
+  ../../libs/neon/src/ne_pkcs11.c
+  ../../libs/neon/src/ne_redirect.c
+  ../../libs/neon/src/ne_request.c
+  ../../libs/neon/src/ne_session.c
+  ../../libs/neon/src/ne_socket.c
+  ../../libs/neon/src/ne_socks.c
+  ../../libs/neon/src/ne_sspi.c
+  ../../libs/neon/src/ne_string.c
+  ../../libs/neon/src/ne_uri.c
+  ../../libs/neon/src/ne_utils.c
+  ../../libs/neon/src/ne_207.c
+  ../../libs/neon/src/ne_xml.c
+  ../../libs/neon/src/ne_xmlreq.c
+  ../../libs/neon/src/ne_oldacl.c
+  ../../libs/neon/src/ne_acl3744.c
+  ../../libs/neon/src/ne_props.c
+  ../../libs/neon/src/ne_locks.c
+  ../../libs/neon/src/ne_openssl.c
+)
+
+set(NEON_COMPILE_FLAGS -wd4996)
+
+target_compile_options(neon
+  PRIVATE ${NEON_COMPILE_FLAGS} ${NETBOX_UNICODE_FLAGS}
+)
+
+target_include_directories(neon PRIVATE
+  ../../libs/zlib/src
+  ../../libs/expat/lib
+  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+)
+
+#-------------------------------------------------------------------------------
+#apr
+
+add_library(apr STATIC
+  ../../libs/apr/atomic/win32/apr_atomic.c
+#  ../../libs/apr/dso/win32/dso.c
+  ../../libs/apr/file_io/win32/buffer.c
+#  ../../libs/apr/file_io/unix/copy.c
+  ../../libs/apr/file_io/win32/dir.c
+  ../../libs/apr/file_io/unix/fileacc.c
+  ../../libs/apr/file_io/win32/filedup.c
+  ../../libs/apr/file_io/win32/filepath.c
+  ../../libs/apr/file_io/unix/filepath_util.c
+  ../../libs/apr/file_io/win32/filestat.c
+  ../../libs/apr/file_io/win32/filesys.c
+  ../../libs/apr/file_io/win32/flock.c
+  ../../libs/apr/file_io/unix/fullrw.c
+  ../../libs/apr/file_io/unix/mktemp.c
+  ../../libs/apr/file_io/win32/open.c
+  ../../libs/apr/file_io/win32/pipe.c
+  ../../libs/apr/file_io/win32/readwrite.c
+  ../../libs/apr/file_io/win32/seek.c
+#  ../../libs/apr/file_io/unix/tempdir.c
+  ../../libs/apr/locks/win32/proc_mutex.c
+  ../../libs/apr/locks/win32/thread_cond.c
+  ../../libs/apr/locks/win32/thread_mutex.c
+  ../../libs/apr/locks/win32/thread_rwlock.c
+  ../../libs/apr/memory/unix/apr_pools.c
+  ../../libs/apr/misc/win32/apr_app.c
+  ../../libs/apr/misc/win32/charset.c
+#  ../../libs/apr/misc/win32/env.c
+  ../../libs/apr/misc/unix/errorcodes.c
+#  ../../libs/apr/misc/unix/getopt.c
+  ../../libs/apr/misc/win32/internal.c
+  ../../libs/apr/misc/win32/misc.c
+#  ../../libs/apr/misc/unix/otherchild.c
+  ../../libs/apr/misc/win32/rand.c
+  ../../libs/apr/misc/win32/start.c
+  ../../libs/apr/misc/win32/utf8.c
+#  ../../libs/apr/misc/unix/version.c
+  ../../libs/apr/mmap/unix/common.c
+#  ../../libs/apr/mmap/win32/mmap.c
+  ../../libs/apr/network_io/unix/inet_ntop.c
+  ../../libs/apr/network_io/unix/inet_pton.c
+#  ../../libs/apr/network_io/unix/multicast.c
+  ../../libs/apr/network_io/win32/sendrecv.c
+  ../../libs/apr/network_io/unix/sockaddr.c
+  ../../libs/apr/network_io/win32/sockets.c
+  ../../libs/apr/network_io/unix/socket_util.c
+  ../../libs/apr/network_io/win32/sockopt.c
+#  ../../libs/apr/passwd/apr_getpass.c
+#  ../../libs/apr/poll/unix/poll.c
+#  ../../libs/apr/poll/unix/pollcb.c
+#  ../../libs/apr/poll/unix/pollset.c
+#  ../../libs/apr/poll/unix/select.c
+#  ../../libs/apr/poll/unix/z_asio.c
+  ../../libs/apr/random/unix/apr_random.c
+#  ../../libs/apr/random/unix/sha2.c
+#  ../../libs/apr/random/unix/sha2_glue.c
+#  ../../libs/apr/shmem/win32/shm.c
+  ../../libs/apr/strings/apr_cpystrn.c
+  ../../libs/apr/strings/apr_fnmatch.c
+  ../../libs/apr/strings/apr_snprintf.c
+  ../../libs/apr/strings/apr_strings.c
+  ../../libs/apr/strings/apr_strnatcmp.c
+  ../../libs/apr/strings/apr_strtok.c
+  ../../libs/apr/tables/apr_hash.c
+  ../../libs/apr/tables/apr_tables.c
+#  ../../libs/apr/tables/apr_skiplist.c
+  ../../libs/apr/threadproc/win32/proc.c
+  ../../libs/apr/threadproc/win32/signals.c
+  ../../libs/apr/threadproc/win32/thread.c
+  ../../libs/apr/threadproc/win32/threadpriv.c
+  ../../libs/apr/time/win32/time.c
+  ../../libs/apr/time/win32/timestr.c
+#  ../../libs/apr/user/win32/groupinfo.c
+  ../../libs/apr/user/win32/userinfo.c
+)
+
+target_compile_options(apr
+  PRIVATE -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES -U_UNICODE -UUNICODE
+)
+
+target_include_directories(apr PRIVATE
+  ../../libs/apr/include
+  ../../libs/apr/include/arch/win32
+  ../../libs/apr/include/arch/unix
+)
+
+#-------------------------------------------------------------------------------
+#expat
+
+add_library(expat STATIC
+  ../../libs/expat/lib/xmlparse.c
+  ../../libs/expat/lib/xmlrole.c
+  ../../libs/expat/lib/xmltok.c
+  ../../libs/expat/lib/xmltok_impl.c
+#  ../../libs/expat/lib/xmltok_ns.c
+)
+
+target_compile_options(expat
+  PRIVATE
+)
+
+#-------------------------------------------------------------------------------
+#zlib
+
+set(ZLIB_SOURCES
+  ../../libs/zlib/src/adler32.c
+  ../../libs/zlib/src/crc32.c
+  ../../libs/zlib/src/infback.c
+  ../../libs/zlib/src/inffast.c
+  ../../libs/zlib/src/inflate.c
+  ../../libs/zlib/src/inftrees.c
+  ../../libs/zlib/src/trees.c
+  ../../libs/zlib/src/zutil.c
+  ../../libs/zlib/src/match.c
+  ../../libs/zlib/src/deflate.c
+  ../../libs/zlib/src/deflate_slow.c
+  ../../libs/zlib/src/deflate_medium.c
+  ../../libs/zlib/src/deflate_fast.c
+)
+
+if(NOT x64)
+
+set(ZLIB_SOURCES ${ZLIB_SOURCES}
+  ../../libs/zlib/src/arch/x86/crc_folding.c
+  ../../libs/zlib/src/arch/x86/fill_window_sse.c
+  ../../libs/zlib/src/arch/x86/insert_string_sse.c
+  ../../libs/zlib/src/arch/x86/x86.c
+)
+
+if(MSVC)
+set(ZLIB_SOURCES ${ZLIB_SOURCES}
+  ../../libs/zlib/src/arch/x86/deflate_quick.c
+)
+endif(MSVC)
+
+endif(NOT x64)
+
+add_library(zlib STATIC
+  ${ZLIB_SOURCES}
+)
+
+target_compile_options(zlib
+  PRIVATE ${NETBOX_UNICODE_FLAGS}
+)
+
+target_include_directories(zlib PRIVATE
+  ../../libs/zlib/src
+)
+
+#-------------------------------------------------------------------------------
+
+add_library(dlmalloc STATIC
+  ../../libs/dlmalloc/malloc.c
+  ../../libs/dlmalloc/malloc-2.8.6.h
+)
+
+target_compile_options(dlmalloc
+  PRIVATE ${NETBOX_UNICODE_FLAGS}
+)
+
+#-------------------------------------------------------------------------------
+#rdestl
+
+add_library(rdestl STATIC
+  ../../libs/rdestl/allocator.cpp
+  ../../libs/rdestl/intrusive_list.cpp
+  ../../libs/rdestl/list.cpp
+#  ../../libs/rdestl/intrusive_slist.cpp
+#  ../../libs/rdestl/slist.cpp
+  ../../libs/rdestl/sort.h
+  ../../libs/rdestl/string_utils.h
+#  ../../libs/rdestl/intrusive_list.h
+  ../../libs/rdestl/sorted_vector.h
+  ../../libs/rdestl/allocator.h
+  ../../libs/rdestl/hash_map.h
+  ../../libs/rdestl/map.h
+  ../../libs/rdestl/basic_string.h
+  ../../libs/rdestl/list.h
+  ../../libs/rdestl/type_traits.h
+#  ../../libs/rdestl/intrusive_slist.h
+  ../../libs/rdestl/radix_sorter.h
+  ../../libs/rdestl/stack_allocator.h
+  ../../libs/rdestl/utility.h
+  ../../libs/rdestl/vector.h
+#  ../../libs/rdestl/slist.h
+  ../../libs/rdestl/fixed_array.h
+  ../../libs/rdestl/pair.h
+  ../../libs/rdestl/algorithm.h
+  ../../libs/rdestl/fixed_list.h
+  ../../libs/rdestl/hash.h
+  ../../libs/rdestl/alignment.h
+  ../../libs/rdestl/fixed_vector.h
+  ../../libs/rdestl/rb_tree.h
+  ../../libs/rdestl/buffer_allocator.h
+  ../../libs/rdestl/sstream.h
+  ../../libs/rdestl/rdestl_common.h
+  ../../libs/rdestl/stack.h
+  ../../libs/rdestl/cow_string_storage.h
+  ../../libs/rdestl/fixed_sorted_vector.h
+  ../../libs/rdestl/functional.h
+  ../../libs/rdestl/simple_string_storage.h
+  ../../libs/rdestl/fixed_substring.h
+  ../../libs/rdestl/int_to_type.h
+  ../../libs/rdestl/rde_string.h
+  ../../libs/rdestl/rdestl.h
+  ../../libs/rdestl/set.h
+  ../../libs/rdestl/iterator.h
+)
+
+target_include_directories(rdestl PRIVATE
+  ../base
+)
+
+#-------------------------------------------------------------------------------
 # target NetBox
 
 if(OPT_USE_UNITY_BUILD)
@@ -1082,8 +1450,6 @@ set(NETBOX_SOURCES ${NETBOX_SOURCES}
 endif(NOT x64)
 endif(MSVC)
 
-#-------------------------------------------------------------------------------
-
 set(NETBOX_LIBRARIES
   atlmfc
   putty
@@ -1132,7 +1498,7 @@ if(CMAKE_COMPILER_IS_MINGW)
 endif()
 
 target_compile_options(NetBox
-  PRIVATE ${NETBOX_DLL_CXX_FLAGS} -D_WINSOCK_DEPRECATED_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS
+  PRIVATE ${NETBOX_DLL_CXX_FLAGS} -D_WINSOCK_DEPRECATED_NO_WARNINGS
 )
 
 target_include_directories(NetBox PRIVATE
@@ -1161,8 +1527,6 @@ set_target_properties(NetBox
   LINK_FLAGS_RELEASE "${NETBOX_DLL_LINK_FLAGS_RELEASE}"
   LINK_FLAGS_DEBUG "${NETBOX_DLL_LINK_FLAGS_DEBUG}"
 )
-
-#-------------------------------------------------------------------------------
 
 #TODO: COMMAND create_ver.py
 
@@ -1210,362 +1574,3 @@ add_custom_command(TARGET NetBox
 )
 endif()
 
-#-------------------------------------------------------------------------------
-
-set(ATLMFC_COMPILE_FLAGS
-  -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
-  -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
-  -D_AFX_NO_OLE_SUPPORT -D_AFX_NO_SOCKET_SUPPORT -DCOM_NO_WINDOWS_H
-)
-
-if(CMAKE_COMPILER_IS_MINGW)
-  set(ATLMFC_COMPILE_FLAGS ${ATLMFC_COMPILE_FLAGS}
-    -Wno-int-to-pointer-cast -Wno-pragmas -fpermissive
-  )
-endif()
-
-add_library(atlmfc STATIC
-  ../../libs/atlmfc/mfc1.cpp
-  ../../libs/atlmfc/mfc2.cpp
-  ../../libs/atlmfc/mfc3.cpp
-  ../../libs/atlmfc/mfc4.cpp
-  ../../libs/atlmfc/mfc5.cpp
-  ../../libs/atlmfc/src/mfc/thrdcore.cpp
-)
-
-target_compile_options(atlmfc
-  PRIVATE ${ATLMFC_COMPILE_FLAGS} -wd4995 -wd4996 -wd4101 -wd4290
-)
-
-target_include_directories(atlmfc PRIVATE
-  ../../libs/atlmfc/include
-  ../base
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(putty STATIC
-  ../../libs/Putty/cproxy.c
-  ../../libs/Putty/int64.c
-  ../../libs/Putty/logging.c
-  ../../libs/Putty/misc.c
-  ../../libs/Putty/pgssapi.c
-  ../../libs/Putty/portfwd.c
-  ../../libs/Putty/proxy.c
-  ../../libs/Putty/ssh.c
-  ../../libs/Putty/sshaes.c
-  ../../libs/Putty/ssharcf.c
-  ../../libs/Putty/sshblowf.c
-  ../../libs/Putty/sshbn.c
-  ../../libs/Putty/sshcrc.c
-  ../../libs/Putty/sshcrcda.c
-  ../../libs/Putty/sshdes.c
-  ../../libs/Putty/sshdh.c
-  ../../libs/Putty/sshdss.c
-  ../../libs/Putty/sshgssc.c
-  ../../libs/Putty/sshmd5.c
-  ../../libs/Putty/sshpubk.c
-  ../../libs/Putty/sshrand.c
-  ../../libs/Putty/sshrsa.c
-  ../../libs/Putty/sshsh256.c
-  ../../libs/Putty/sshsh512.c
-  ../../libs/Putty/sshsha.c
-  ../../libs/Putty/sshzlib.c
-  ../../libs/Putty/tree234.c
-  ../../libs/Putty/wildcard.c
-  ../../libs/Putty/windows/wingss.c
-  ../../libs/Putty/windows/winhandl.c
-  ../../libs/Putty/windows/winmisc.c
-  ../../libs/Putty/windows/winnet.c
-  ../../libs/Putty/windows/winnoise.c
-  ../../libs/Putty/windows/winnojmp.c
-  ../../libs/Putty/windows/winpgntc.c
-  ../../libs/Putty/windows/winproxy.c
-  ../../libs/Putty/windows/winsecur.c
-  ../../libs/Putty/windows/winstore.c
-  ../../libs/Putty/windows/wintime.c
-  ../../libs/Putty/windows/winhsock.c
-  ../../libs/Putty/x11fwd.c
-  ../../libs/Putty/conf.c
-  ../../libs/Putty/callback.c
-  ../../libs/Putty/sshshare.c
-  ../../libs/Putty/noshare.c
-  ../../libs/Putty/errsock.c
-  ../../libs/Putty/sshecc.c
-  ../../libs/Putty/sshccp.c
-  ../../libs/Putty/import.c
-  ../../libs/Putty/be_misc.c
-  ../../libs/Putty/sshbcrypt.c
-#  ../../libs/Putty/ldisc.c
-)
-
-set(PUTTY_COMPILE_FLAGS -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -wd4996)
-
-target_compile_options(putty
-  PRIVATE ${PUTTY_COMPILE_FLAGS}
-)
-
-target_include_directories(putty PRIVATE
-  ../../libs/Putty
-  ../../libs/Putty/windows
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(tinyxml2 STATIC
-  ../../libs/tinyxml2/tinyxml2.cpp
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(neon STATIC
-  ../../libs/neon/src/ne_alloc.c
-  ../../libs/neon/src/ne_auth.c
-  ../../libs/neon/src/ne_basic.c
-  ../../libs/neon/src/ne_compress.c
-  ../../libs/neon/src/ne_dates.c
-  ../../libs/neon/src/ne_i18n.c
-  ../../libs/neon/src/ne_md5.c
-  ../../libs/neon/src/ne_pkcs11.c
-  ../../libs/neon/src/ne_redirect.c
-  ../../libs/neon/src/ne_request.c
-  ../../libs/neon/src/ne_session.c
-  ../../libs/neon/src/ne_socket.c
-  ../../libs/neon/src/ne_socks.c
-  ../../libs/neon/src/ne_sspi.c
-  ../../libs/neon/src/ne_string.c
-  ../../libs/neon/src/ne_uri.c
-  ../../libs/neon/src/ne_utils.c
-  ../../libs/neon/src/ne_207.c
-  ../../libs/neon/src/ne_xml.c
-  ../../libs/neon/src/ne_xmlreq.c
-  ../../libs/neon/src/ne_oldacl.c
-  ../../libs/neon/src/ne_acl3744.c
-  ../../libs/neon/src/ne_props.c
-  ../../libs/neon/src/ne_locks.c
-  ../../libs/neon/src/ne_openssl.c
-)
-
-set(NEON_COMPILE_FLAGS -wd4996)
-
-target_compile_options(neon
-  PRIVATE ${NEON_COMPILE_FLAGS} ${NETBOX_UNICODE_FLAGS}
-)
-
-target_include_directories(neon PRIVATE
-  ../../libs/zlib/src
-  ../../libs/expat/lib
-  ../../libs/openssl/${OPENSSL_INC_DIR}/include
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(apr STATIC
-  ../../libs/apr/atomic/win32/apr_atomic.c
-#  ../../libs/apr/dso/win32/dso.c
-  ../../libs/apr/file_io/win32/buffer.c
-#  ../../libs/apr/file_io/unix/copy.c
-  ../../libs/apr/file_io/win32/dir.c
-  ../../libs/apr/file_io/unix/fileacc.c
-  ../../libs/apr/file_io/win32/filedup.c
-  ../../libs/apr/file_io/win32/filepath.c
-  ../../libs/apr/file_io/unix/filepath_util.c
-  ../../libs/apr/file_io/win32/filestat.c
-  ../../libs/apr/file_io/win32/filesys.c
-  ../../libs/apr/file_io/win32/flock.c
-  ../../libs/apr/file_io/unix/fullrw.c
-  ../../libs/apr/file_io/unix/mktemp.c
-  ../../libs/apr/file_io/win32/open.c
-  ../../libs/apr/file_io/win32/pipe.c
-  ../../libs/apr/file_io/win32/readwrite.c
-  ../../libs/apr/file_io/win32/seek.c
-#  ../../libs/apr/file_io/unix/tempdir.c
-  ../../libs/apr/locks/win32/proc_mutex.c
-  ../../libs/apr/locks/win32/thread_cond.c
-  ../../libs/apr/locks/win32/thread_mutex.c
-  ../../libs/apr/locks/win32/thread_rwlock.c
-  ../../libs/apr/memory/unix/apr_pools.c
-  ../../libs/apr/misc/win32/apr_app.c
-  ../../libs/apr/misc/win32/charset.c
-#  ../../libs/apr/misc/win32/env.c
-  ../../libs/apr/misc/unix/errorcodes.c
-#  ../../libs/apr/misc/unix/getopt.c
-  ../../libs/apr/misc/win32/internal.c
-  ../../libs/apr/misc/win32/misc.c
-#  ../../libs/apr/misc/unix/otherchild.c
-  ../../libs/apr/misc/win32/rand.c
-  ../../libs/apr/misc/win32/start.c
-  ../../libs/apr/misc/win32/utf8.c
-#  ../../libs/apr/misc/unix/version.c
-  ../../libs/apr/mmap/unix/common.c
-#  ../../libs/apr/mmap/win32/mmap.c
-  ../../libs/apr/network_io/unix/inet_ntop.c
-  ../../libs/apr/network_io/unix/inet_pton.c
-#  ../../libs/apr/network_io/unix/multicast.c
-  ../../libs/apr/network_io/win32/sendrecv.c
-  ../../libs/apr/network_io/unix/sockaddr.c
-  ../../libs/apr/network_io/win32/sockets.c
-  ../../libs/apr/network_io/unix/socket_util.c
-  ../../libs/apr/network_io/win32/sockopt.c
-#  ../../libs/apr/passwd/apr_getpass.c
-#  ../../libs/apr/poll/unix/poll.c
-#  ../../libs/apr/poll/unix/pollcb.c
-#  ../../libs/apr/poll/unix/pollset.c
-#  ../../libs/apr/poll/unix/select.c
-#  ../../libs/apr/poll/unix/z_asio.c
-  ../../libs/apr/random/unix/apr_random.c
-#  ../../libs/apr/random/unix/sha2.c
-#  ../../libs/apr/random/unix/sha2_glue.c
-#  ../../libs/apr/shmem/win32/shm.c
-  ../../libs/apr/strings/apr_cpystrn.c
-  ../../libs/apr/strings/apr_fnmatch.c
-  ../../libs/apr/strings/apr_snprintf.c
-  ../../libs/apr/strings/apr_strings.c
-  ../../libs/apr/strings/apr_strnatcmp.c
-  ../../libs/apr/strings/apr_strtok.c
-  ../../libs/apr/tables/apr_hash.c
-  ../../libs/apr/tables/apr_tables.c
-#  ../../libs/apr/tables/apr_skiplist.c
-  ../../libs/apr/threadproc/win32/proc.c
-  ../../libs/apr/threadproc/win32/signals.c
-  ../../libs/apr/threadproc/win32/thread.c
-  ../../libs/apr/threadproc/win32/threadpriv.c
-  ../../libs/apr/time/win32/time.c
-  ../../libs/apr/time/win32/timestr.c
-#  ../../libs/apr/user/win32/groupinfo.c
-  ../../libs/apr/user/win32/userinfo.c
-)
-
-target_compile_options(apr
-  PRIVATE -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES -U_UNICODE -UUNICODE
-)
-
-target_include_directories(apr PRIVATE
-  ../../libs/apr/include
-  ../../libs/apr/include/arch/win32
-  ../../libs/apr/include/arch/unix
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(expat STATIC
-  ../../libs/expat/lib/xmlparse.c
-  ../../libs/expat/lib/xmlrole.c
-  ../../libs/expat/lib/xmltok.c
-  ../../libs/expat/lib/xmltok_impl.c
-#  ../../libs/expat/lib/xmltok_ns.c
-)
-
-target_compile_options(expat
-  PRIVATE
-)
-
-#-------------------------------------------------------------------------------
-
-set(ZLIB_SOURCES
-  ../../libs/zlib/src/adler32.c
-  ../../libs/zlib/src/crc32.c
-  ../../libs/zlib/src/infback.c
-  ../../libs/zlib/src/inffast.c
-  ../../libs/zlib/src/inflate.c
-  ../../libs/zlib/src/inftrees.c
-  ../../libs/zlib/src/trees.c
-  ../../libs/zlib/src/zutil.c
-  ../../libs/zlib/src/match.c
-  ../../libs/zlib/src/deflate.c
-  ../../libs/zlib/src/deflate_slow.c
-  ../../libs/zlib/src/deflate_medium.c
-  ../../libs/zlib/src/deflate_fast.c
-)
-
-if(NOT x64)
-
-set(ZLIB_SOURCES ${ZLIB_SOURCES}
-  ../../libs/zlib/src/arch/x86/crc_folding.c
-  ../../libs/zlib/src/arch/x86/fill_window_sse.c
-  ../../libs/zlib/src/arch/x86/insert_string_sse.c
-  ../../libs/zlib/src/arch/x86/x86.c
-)
-
-if(MSVC)
-set(ZLIB_SOURCES ${ZLIB_SOURCES}
-  ../../libs/zlib/src/arch/x86/deflate_quick.c
-)
-endif(MSVC)
-
-endif(NOT x64)
-
-add_library(zlib STATIC
-  ${ZLIB_SOURCES}
-)
-
-target_compile_options(zlib
-  PRIVATE ${NETBOX_UNICODE_FLAGS}
-)
-
-target_include_directories(zlib PRIVATE
-  ../../libs/zlib/src
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(dlmalloc STATIC
-  ../../libs/dlmalloc/malloc.c
-  ../../libs/dlmalloc/malloc-2.8.6.h
-)
-
-target_compile_options(dlmalloc
-  PRIVATE ${NETBOX_UNICODE_FLAGS}
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(rdestl STATIC
-  ../../libs/rdestl/allocator.cpp
-  ../../libs/rdestl/intrusive_list.cpp
-  ../../libs/rdestl/list.cpp
-#  ../../libs/rdestl/intrusive_slist.cpp
-#  ../../libs/rdestl/slist.cpp
-  ../../libs/rdestl/sort.h
-  ../../libs/rdestl/string_utils.h
-#  ../../libs/rdestl/intrusive_list.h
-  ../../libs/rdestl/sorted_vector.h
-  ../../libs/rdestl/allocator.h
-  ../../libs/rdestl/hash_map.h
-  ../../libs/rdestl/map.h
-  ../../libs/rdestl/basic_string.h
-  ../../libs/rdestl/list.h
-  ../../libs/rdestl/type_traits.h
-#  ../../libs/rdestl/intrusive_slist.h
-  ../../libs/rdestl/radix_sorter.h
-  ../../libs/rdestl/stack_allocator.h
-  ../../libs/rdestl/utility.h
-  ../../libs/rdestl/vector.h
-#  ../../libs/rdestl/slist.h
-  ../../libs/rdestl/fixed_array.h
-  ../../libs/rdestl/pair.h
-  ../../libs/rdestl/algorithm.h
-  ../../libs/rdestl/fixed_list.h
-  ../../libs/rdestl/hash.h
-  ../../libs/rdestl/alignment.h
-  ../../libs/rdestl/fixed_vector.h
-  ../../libs/rdestl/rb_tree.h
-  ../../libs/rdestl/buffer_allocator.h
-  ../../libs/rdestl/sstream.h
-  ../../libs/rdestl/rdestl_common.h
-  ../../libs/rdestl/stack.h
-  ../../libs/rdestl/cow_string_storage.h
-  ../../libs/rdestl/fixed_sorted_vector.h
-  ../../libs/rdestl/functional.h
-  ../../libs/rdestl/simple_string_storage.h
-  ../../libs/rdestl/fixed_substring.h
-  ../../libs/rdestl/int_to_type.h
-  ../../libs/rdestl/rde_string.h
-  ../../libs/rdestl/rdestl.h
-  ../../libs/rdestl/set.h
-  ../../libs/rdestl/iterator.h
-)
-
-target_include_directories(rdestl PRIVATE
-  ../base
-)
