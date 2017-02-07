@@ -523,7 +523,15 @@ void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
 
 void UnicodeString::Init(const char * Str, intptr_t Length)
 {
-  Data = wstring_t(Str, Length);
+  // Data = wstring_t(Str, Length);
+  intptr_t Size = ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0);
+  Data.GetBufferSetLength(Size + 1);
+  if (Size > 0)
+  {
+    ::MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), static_cast<int>(Size));
+    Data.GetBuffer()[Size] = 0;
+  }
+  Data = Data.c_str();
 }
 
 UnicodeString::UnicodeString(const AnsiString & Str)
@@ -740,10 +748,10 @@ wchar_t UnicodeString::operator [](intptr_t Idx) const
   return Data.operator [](Idx-1);
 }
 
-wchar_t &UnicodeString::operator [](intptr_t Idx)
+wchar_t & UnicodeString::operator [](intptr_t Idx)
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.GetBuffer(Idx)[Idx-1];
+  return Data.GetBuffer()[Idx-1];
 }
 
 void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const

@@ -92,7 +92,8 @@ public:
   UnicodeString(intptr_t Size, wchar_t Ch) : Data(Ch, Size) {}
 
   UnicodeString(const UnicodeString & Str) { Data = Str.Data; }
-  explicit UnicodeString(const UTF8String & Str) { Data = wstring_t(Str.c_str(), Str.GetLength()); }
+  // explicit UnicodeString(const UTF8String & Str) { Data = wstring_t(Str.c_str(), Str.GetLength()); }
+  explicit UnicodeString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
   explicit UnicodeString(const AnsiString & Str);
 
   ~UnicodeString() {}
