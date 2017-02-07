@@ -150,14 +150,7 @@ AnsiString & AnsiString::operator=(const UTF8String & StrCopy)
 
 AnsiString & AnsiString::operator=(const char * lpszData)
 {
-  if (lpszData)
-  {
-    Init(lpszData, strlen(NullToEmptyA(lpszData)));
-  }
-  else
-  {
-    Data.clear();
-  }
+  Init(lpszData, strlen(NullToEmptyA(lpszData)));
   return *this;
 }
 
@@ -257,7 +250,7 @@ RawByteString::RawByteString(const wchar_t * Str, intptr_t Size)
 
 RawByteString::RawByteString(const char * Str)
 {
-  Init(Str, Str ? strlen(Str) : 0);
+  Init(Str, NullToEmptyA(Str));
 }
 
 RawByteString::RawByteString(const char * Str, intptr_t Size)
@@ -267,7 +260,7 @@ RawByteString::RawByteString(const char * Str, intptr_t Size)
 
 RawByteString::RawByteString(const uint8_t * Str)
 {
-  Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0);
+  Init(Str, NullToEmptyA(Str)); // ? strlen(reinterpret_cast<const char *>(Str)) : 0);
 }
 
 RawByteString::RawByteString(const UnicodeString & Str)
@@ -700,14 +693,7 @@ UnicodeString & UnicodeString::operator=(const wchar_t Ch)
 
 UnicodeString & UnicodeString::operator=(const char * lpszData)
 {
-  if (lpszData)
-  {
-    Init(lpszData, strlen(lpszData ? lpszData : ""));
-  }
-  else
-  {
-    Data.Empty();
-  }
+  Init(lpszData, strlen(NullToEmptyA(lpszData));
   return *this;
 }
 
