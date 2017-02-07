@@ -760,7 +760,7 @@ UnicodeString TWebDAVFileSystem::DirectoryPath(const UnicodeString & Path) const
   return Result;
 }
 
-UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile * AFile)
+UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile * AFile) const
 {
   UnicodeString Result = AFile->GetFullFileName();
   if (AFile->GetIsDirectory())
