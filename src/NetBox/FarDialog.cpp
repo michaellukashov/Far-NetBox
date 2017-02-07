@@ -1353,7 +1353,7 @@ LONG_PTR TFarDialogItem::ItemProc(int Msg, LONG_PTR Param)
 
   if (Msg == DN_CTLCOLORDLGITEM && FColorMask)
   {
-    Result &= ~FColorMask;
+    Result &= ~(LONG_PTR)FColorMask;
     Result |= (FColors & FColorMask);
   }
   return Result;
