@@ -18,9 +18,9 @@ AnsiString::AnsiString(const wchar_t * Str, intptr_t Size)
   Init(Str, Size);
 }
 
-AnsiString::AnsiString(const char* Str)
+AnsiString::AnsiString(const char * Str)
 {
-  Init(Str, Str ? strlen(Str) : 0);
+  Init(Str, strlen(NullToEmptyA(Str)));
 }
 
 AnsiString::AnsiString(const char * Str, intptr_t Size)

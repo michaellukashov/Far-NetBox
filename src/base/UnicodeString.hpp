@@ -6,7 +6,7 @@
 #include <nbglobals.h>
 #include <nbstring.h>
 
-__inline intptr_t __cdecl StrLength(const wchar_t * str) { return wcslen(str ? str : L""); }
+__inline intptr_t __cdecl StrLength(const wchar_t * str) { return wcslen(NullToEmpty(str)); }
 
 __inline wchar_t __cdecl Upper(wchar_t Ch) { ::CharUpperBuff(&Ch, 1); return Ch; }
 
@@ -33,7 +33,7 @@ public:
   UTF8String(const wchar_t * Str);
   explicit UTF8String(const wchar_t * Str, intptr_t Size);
   explicit UTF8String(const char * Str, intptr_t Size) { Init(Str, Size); }
-  explicit UTF8String(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
+  explicit UTF8String(const char * Str) { Init(Str, strlen(NullToEmptyA(Str))); }
 
   ~UTF8String() {}
 
@@ -88,11 +88,11 @@ public:
   UnicodeString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   UnicodeString(const wchar_t Src) { Init(&Src, 1); }
   UnicodeString(const char * Str, intptr_t Size) { Init(Str, Size); }
-  UnicodeString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
+  UnicodeString(const char * Str) { Init(Str, strlen(NullToEmptyA(Str))); }
   UnicodeString(intptr_t Size, wchar_t Ch) : Data(Ch, Size) {}
 
   UnicodeString(const UnicodeString & Str) { Data = Str.Data; }
-  explicit UnicodeString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
+  explicit UnicodeString(const UTF8String & Str) { Data = wstring_t(Str.c_str(), Str.GetLength()); }
   explicit UnicodeString(const AnsiString & Str);
 
   ~UnicodeString() {}
@@ -247,7 +247,7 @@ public:
 
   AnsiString & Append(const char * Str, intptr_t StrLen) { Data.append(Str, StrLen); return *this; }
   AnsiString & Append(const AnsiString & Str) { return Append(Str.c_str(), Str.GetLength()); }
-  AnsiString & Append(const char * Str) { return Append(Str, strlen(Str ? Str : "")); }
+  AnsiString & Append(const char * Str) { return Append(Str, strlen(NullToEmptyA(Str))); }
   AnsiString & Append(const char Ch) { return Append(&Ch, 1); }
 
   void Unique() {}
