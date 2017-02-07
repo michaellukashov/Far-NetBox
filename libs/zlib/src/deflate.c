@@ -481,11 +481,12 @@ int ZEXPORT deflateSetDictionary(z_stream *strm, const unsigned char *dictionary
 int ZEXPORT deflateGetDictionary(z_stream *strm, unsigned char *dictionary, unsigned int *dictLength)
 {
     deflate_state *s;
+    uint32_t len;
 
     if (deflateStateCheck(strm))
         return Z_STREAM_ERROR;
     s = strm->state;
-    uint32_t len = s->strstart + s->lookahead;
+    len = s->strstart + s->lookahead;
     if (len > s->w_size)
         len = s->w_size;
     if (dictionary != Z_NULL && len)
