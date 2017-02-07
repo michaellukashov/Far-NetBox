@@ -113,6 +113,8 @@ typedef struct z_stream_s {
     unsigned long         reserved;   /* reserved for future use */
 } z_stream;
 
+//typedef z_stream *z_streamp;  // Obsolete type, retained for compatability only
+
 /*
     gzip header information passed to and from zlib routines.  See RFC 1952
   for more details on the meanings of these fields.
@@ -153,15 +155,6 @@ typedef gz_header *gz_headerp;
    thread safe.  In that case, zlib is thread-safe.  When zalloc and zfree are
    Z_NULL on entry to the initialization function, they are set to internal
    routines that use the standard library functions malloc() and free().
-
-     On 16-bit systems, the functions zalloc and zfree must be able to allocate
-   exactly 65536 bytes, but will not be required to allocate more than this if
-   the symbol MAXSEG_64K is defined (see zconf.h).  WARNING: On MSDOS, pointers
-   returned by zalloc for objects of exactly 65536 bytes *must* have their
-   offset normalized to zero.  The default allocation function provided by this
-   library ensures this (see zutil.c).  To reduce memory requirements and avoid
-   any allocation of 64K objects, at the expense of compression ratio, compile
-   the library with -DMAX_WBITS=14 (see zconf.h).
 
      The fields total_in and total_out can be used for statistics or progress
    reports.  After compression, total_in holds the total size of the
@@ -215,7 +208,7 @@ typedef gz_header *gz_headerp;
 #define Z_DEFLATED   8
 /* The deflate compression method (the only one supported in this version) */
 
-#define Z_NULL  0  /* for initializing zalloc, zfree, opaque */
+#define Z_NULL  NULL  /* for compatibility with zlib, was for initializing zalloc, zfree, opaque */
 
 #define zlib_version zlibVersion()
 /* for compatibility with versions < 1.0.2 */
@@ -415,7 +408,7 @@ ZEXTERN int ZEXPORT inflate(z_stream *strm, int flush);
 
   - Decompress more input starting at next_in and update next_in and avail_in
     accordingly.  If not all input can be processed (because there is not
-    enough room in the output buffer), then next_in and avail_in are updated
+    enough room in the output buffer), then next_in and avail_on are updated
     accordingly, and processing will resume at this point for the next call of
     inflate().
 
@@ -514,7 +507,7 @@ ZEXTERN int ZEXPORT inflate(z_stream *strm, int flush);
   error), Z_STREAM_ERROR if the stream structure was inconsistent (for example
   next_in or next_out was Z_NULL, or the state was inadvertently written over
   by the application), Z_MEM_ERROR if there was not enough memory, Z_BUF_ERROR
-  if no progress was possible or if there was not enough room in the output
+  if no progress is possible or if there was not enough room in the output
   buffer when Z_FINISH is used.  Note that Z_BUF_ERROR is not fatal, and
   inflate() can be called again with more input and more output space to
   continue decompressing.  If Z_DATA_ERROR is returned, the application may
@@ -718,11 +711,10 @@ ZEXTERN int ZEXPORT deflateParams(z_stream *strm,
    used to switch between compression and straight copy of the input data, or
    to switch to a different kind of input data requiring a different strategy.
    If the compression approach (which is a function of the level) or the
-   strategy is changed, and if any input has been consumed in a previous
-   deflate() call, then the input available so far is compressed with the old
-   level and strategy using deflate(strm, Z_BLOCK).  There are three approaches
-   for the compression levels 0, 1..3, and 4..9 respectively.  The new level
-   and strategy will take effect at the next call of deflate().
+   strategy is changed, then the input available so far is compressed with the
+   old level and strategy using deflate(strm, Z_BLOCK).  There are three
+   approaches for the compression levels 0, 1..3, and 4..9 respectively.  The
+   new level and strategy will take effect at the next call of deflate().
 
      If a deflate(strm, Z_BLOCK) is performed by deflateParams(), and it does
    not have enough output space to complete, then the parameter change will not
@@ -1235,7 +1227,7 @@ ZEXTERN int ZEXPORT compress(unsigned char *dest, size_t *destLen,
    the byte length of the source buffer.  Upon entry, destLen is the total size
    of the destination buffer, which must be at least the value returned by
    compressBound(sourceLen).  Upon exit, destLen is the actual size of the
-   compressed data.  compress() is equivalent to compress2() with a level
+   compressed buffer.  compress() is equivalent to compress2() with a level
    parameter of Z_DEFAULT_COMPRESSION.
 
      compress returns Z_OK if success, Z_MEM_ERROR if there was not
@@ -1252,7 +1244,7 @@ ZEXTERN int ZEXPORT compress2(unsigned char *dest, size_t *destLen,
    length of the source buffer.  Upon entry, destLen is the total size of the
    destination buffer, which must be at least the value returned by
    compressBound(sourceLen).  Upon exit, destLen is the actual size of the
-   compressed data.
+   compressed buffer.
 
      compress2 returns Z_OK if success, Z_MEM_ERROR if there was not enough
    memory, Z_BUF_ERROR if there was not enough room in the output buffer,
@@ -1291,6 +1283,7 @@ ZEXTERN int ZEXPORT uncompress2(unsigned char *dest,   unsigned long * destLen,
    length of the source is *sourceLen.  On return, *sourceLen is the number of
    source bytes consumed.
 */
+
 
 #ifdef WITH_GZFILEOP
                         /* gzip file access functions */
@@ -1427,20 +1420,18 @@ ZEXTERN z_size_t ZEXPORT gzfread ((voidp buf, z_size_t size, z_size_t nitems,
 /*
      Read up to nitems items of size size from file to buf, otherwise operating
    as gzread() does.  This duplicates the interface of stdio's fread(), with
-   size_t request and return types.  If the library defines size_t, then
-   z_size_t is identical to size_t.  If not, then z_size_t is an unsigned
-   integer type that can contain a pointer.
+   size_t request and return types.
 
      gzfread() returns the number of full items read of size size, or zero if
    the end of the file was reached and a full item could not be read, or if
    there was an error.  gzerror() must be consulted if zero is returned in
    order to determine if there was an error.  If the multiplication of size and
-   nitems overflows, i.e. the product does not fit in a z_size_t, then nothing
+   nitems overflows, i.e. the product does not fit in a size_t, then nothing
    is read, zero is returned, and the error state is set to Z_STREAM_ERROR.
 
      In the event that the end of file is reached and only a partial item is
    available at the end, i.e. the remaining uncompressed data length is not a
-   multiple of size, then the final partial item is nevetheless read into buf
+   multiple of size, then the final partial item is nevertheless read into buf
    and the end-of-file flag is set.  The length of the partial item read is not
    provided, but could be inferred from the result of gztell().  This behavior
    is the same as the behavior of fread() implementations in common libraries,
@@ -1459,13 +1450,11 @@ ZEXTERN z_size_t ZEXPORT gzfwrite ((voidpc buf, z_size_t size,
                                       z_size_t nitems, gzFile file));
 /*
      gzfwrite() writes nitems items of size size from buf to file, duplicating
-   the interface of stdio's fwrite(), with size_t request and return types.  If
-   the library defines size_t, then z_size_t is identical to size_t.  If not,
-   then z_size_t is an unsigned integer type that can contain a pointer.
+   the interface of stdio's fwrite(), with size_t request and return types.
 
      gzfwrite() returns the number of full items written of size size, or zero
    if there was an error.  If the multiplication of size and nitems overflows,
-   i.e. the product does not fit in a z_size_t, then nothing is written, zero
+   i.e. the product does not fit in a size_t, then nothing is written, zero
    is returned, and the error state is set to Z_STREAM_ERROR.
 */
 
@@ -1541,7 +1530,7 @@ ZEXTERN int ZEXPORT gzflush(gzFile file, int flush);
      If the flush parameter is Z_FINISH, the remaining data is written and the
    gzip stream is completed in the output.  If gzwrite() is called again, a new
    gzip stream will be started in the output.  gzread() is able to read such
-   concatented gzip streams.
+   concatenated gzip streams.
 
      gzflush should be called only when strictly necessary because it will
    degrade compression if called too often.
@@ -1782,7 +1771,7 @@ struct gzFile_s {
     z_off64_t pos;
 };
 ZEXTERN int ZEXPORT gzgetc_(gzFile file);  /* backward compatibility */
-#  define gzgetc(g) ((g)->have ? ((g)->have--, (g)->pos++, *((g)->next)++) : gzgetc(g))
+#  define gzgetc(g) ((g)->have ? ((g)->have--, (g)->pos++, *((g)->next)++) : (gzgetc)(g))
 
 /* provide 64-bit offset functions if _LARGEFILE64_SOURCE defined, and/or
  * change the regular functions to 64 bits if _FILE_OFFSET_BITS is 64 (if
