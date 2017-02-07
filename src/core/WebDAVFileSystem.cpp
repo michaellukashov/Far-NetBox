@@ -165,7 +165,7 @@ static AnsiString PathEscape(const char * Path)
 static UTF8String PathUnescape(const char * Path)
 {
   char * UnescapedPath = ne_path_unescape(Path);
-  UTF8String Result(UnescapedPath, UnescapedPath ? strlen(UnescapedPath) : 0);
+  UTF8String Result(UnescapedPath, strlen(NullToEmptyA(UnescapedPath)));
   ne_free(UnescapedPath);
   return Result;
 }
