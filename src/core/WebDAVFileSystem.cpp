@@ -750,13 +750,14 @@ void TWebDAVFileSystem::HomeDirectory()
   ChangeDirectory(L"/");
 }
 
-UnicodeString TWebDAVFileSystem::DirectoryPath(UnicodeString Path)
+UnicodeString TWebDAVFileSystem::DirectoryPath(const UnicodeString & Path) const
 {
+  UnicodeString Result = Path;
   if (FHasTrailingSlash)
   {
-    Path = core::UnixIncludeTrailingBackslash(Path);
+    Result = core::UnixIncludeTrailingBackslash(Result);
   }
-  return Path;
+  return Result;
 }
 
 UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile * AFile)
