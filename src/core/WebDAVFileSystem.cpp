@@ -802,6 +802,7 @@ void TWebDAVFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 
 struct TReadFileData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   TWebDAVFileSystem * FileSystem;
   TRemoteFile * File;
   TRemoteFileList * FileList;
