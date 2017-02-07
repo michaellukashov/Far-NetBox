@@ -27,7 +27,6 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TWebDAVFileSystem;
   }
 public:
-  TWebDAVFileSystem() : TCustomFileSystem(OBJECT_CLASS_TWebDAVFileSystem) { Init(nullptr); }
   explicit TWebDAVFileSystem(TTerminal * ATerminal);
   virtual ~TWebDAVFileSystem();
 
