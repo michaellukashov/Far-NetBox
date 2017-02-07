@@ -27,7 +27,6 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TWebDAVFileSystem;
   }
 public:
-  TWebDAVFileSystem() : TCustomFileSystem(OBJECT_CLASS_TWebDAVFileSystem) { Init(nullptr); }
   explicit TWebDAVFileSystem(TTerminal * ATerminal);
   virtual ~TWebDAVFileSystem();
 
@@ -206,8 +205,8 @@ private:
   int ReadDirectoryInternal(const UnicodeString & Path, TRemoteFileList * FileList);
   int RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
   bool IsValidRedirect(int NeonStatus, UnicodeString & Path);
-  UnicodeString DirectoryPath(UnicodeString Path);
-  UnicodeString FilePath(const TRemoteFile * File);
+  UnicodeString DirectoryPath(const UnicodeString & Path) const;
+  UnicodeString FilePath(const TRemoteFile * File) const;
   struct ne_lock * FindLock(const RawByteString & Path);
   void DiscardLock(const RawByteString & Path);
   bool IsNtlmAuthentication() const;
