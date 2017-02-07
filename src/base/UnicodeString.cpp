@@ -609,9 +609,20 @@ UnicodeString UnicodeString::SubStr(intptr_t Pos, intptr_t Len) const
   return UnicodeString(Str.c_str(), Str.GetLength());
 }
 
+UnicodeString UnicodeString::SubStr(intptr_t Pos) const
+{
+  wstring_t Str(Data.Mid(Pos - 1));
+  return UnicodeString(Str.c_str(), Str.GetLength());
+}
+
 UnicodeString UnicodeString::SubString(intptr_t Pos, intptr_t Len) const
 {
   return SubStr(Pos, Len);
+}
+
+UnicodeString UnicodeString::SubString(intptr_t Pos) const
+{
+  return SubStr(Pos);
 }
 
 bool UnicodeString::IsDelimiter(const UnicodeString & Chars, intptr_t Pos) const

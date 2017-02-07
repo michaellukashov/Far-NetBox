@@ -144,8 +144,10 @@ public:
   intptr_t RPos(wchar_t Ch) const { return (intptr_t)Data.ReverseFind(Ch) + 1; }
   bool RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
 
-  UnicodeString SubStr(intptr_t Pos, intptr_t Len = -1) const;
-  UnicodeString SubString(intptr_t Pos, intptr_t Len = -1) const;
+  UnicodeString SubStr(intptr_t Pos, intptr_t Len) const;
+  UnicodeString SubStr(intptr_t Pos) const;
+  UnicodeString SubString(intptr_t Pos, intptr_t Len) const;
+  UnicodeString SubString(intptr_t Pos) const;
 
   bool IsDelimiter(const UnicodeString & Chars, intptr_t Pos) const;
   intptr_t LastDelimiter(const UnicodeString & Delimiters) const;
