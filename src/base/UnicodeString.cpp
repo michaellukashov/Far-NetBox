@@ -250,7 +250,7 @@ RawByteString::RawByteString(const wchar_t * Str, intptr_t Size)
 
 RawByteString::RawByteString(const char * Str)
 {
-  Init(Str, NullToEmptyA(Str));
+  Init(Str, strlen(NullToEmptyA(Str)));
 }
 
 RawByteString::RawByteString(const char * Str, intptr_t Size)
@@ -260,7 +260,7 @@ RawByteString::RawByteString(const char * Str, intptr_t Size)
 
 RawByteString::RawByteString(const uint8_t * Str)
 {
-  Init(Str, NullToEmptyA(Str)); // ? strlen(reinterpret_cast<const char *>(Str)) : 0);
+  Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0);
 }
 
 RawByteString::RawByteString(const UnicodeString & Str)
@@ -693,7 +693,7 @@ UnicodeString & UnicodeString::operator=(const wchar_t Ch)
 
 UnicodeString & UnicodeString::operator=(const char * lpszData)
 {
-  Init(lpszData, strlen(NullToEmptyA(lpszData));
+  Init(lpszData, strlen(NullToEmptyA(lpszData)));
   return *this;
 }
 
