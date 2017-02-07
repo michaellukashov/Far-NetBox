@@ -181,5 +181,3 @@ void ZLIB_INTERNAL zcfree (void *opaque, void *ptr)
 }
 
 #endif /* MY_ZCALLOC */
-
-
