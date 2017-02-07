@@ -192,7 +192,7 @@ static const config configuration_table[10] = {
  */
 static void slide_hash(deflate_state *s)
 {
-    unsigned n, m;
+    unsigned n;
     Pos *p;
     unsigned int wsize = s->w_size;
 
@@ -200,7 +200,7 @@ static void slide_hash(deflate_state *s)
     p = &s->head[n];
 #ifdef NOT_TWEAK_COMPILER
     do {
-                unsigned m;
+        uint32_t m;
         m = *--p;
         *p = (Pos)(m >= wsize ? m - wsize : NIL);
     } while (--n);
