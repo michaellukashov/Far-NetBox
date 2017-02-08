@@ -1,8 +1,8 @@
 #pragma once
 
 #include <headers.hpp>
-#include <nbglobals.h>
-#include <wtypes.h>
+//#include <nbglobals.h>
+//#include <wtypes.h>
 
 //#define FALSE 0
 //#define TRUE  1
