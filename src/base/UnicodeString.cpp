@@ -532,12 +532,12 @@ void UnicodeString::Init(const char * Str, intptr_t Length, int Codepage)
 
 UnicodeString::UnicodeString(const char * Str, intptr_t Size)
 {
-  Init(Str, Size, CP_THREAD_ACP);
+  Init(Str, Size, CP_UTF8);
 }
 
 UnicodeString::UnicodeString(const char * Str)
 {
-  Init(Str, wstring_t::StringLength(Str), CP_THREAD_ACP);
+  Init(Str, wstring_t::StringLength(Str), CP_UTF8);
 }
 
 UnicodeString::UnicodeString(const UTF8String & Str)
@@ -547,7 +547,7 @@ UnicodeString::UnicodeString(const UTF8String & Str)
 
 UnicodeString::UnicodeString(const AnsiString & Str)
 {
-  Init(Str.c_str(), Str.GetLength(), CP_THREAD_ACP);
+  Init(Str.c_str(), Str.GetLength(), CP_UTF8);
 }
 
 UnicodeString & UnicodeString::Lower(intptr_t nStartPos, intptr_t nLength)
@@ -687,7 +687,7 @@ UnicodeString & UnicodeString::operator=(const RawByteString & StrCopy)
 
 UnicodeString & UnicodeString::operator=(const AnsiString & StrCopy)
 {
-  Init(StrCopy.c_str(), StrCopy.Length(), CP_THREAD_ACP);
+  Init(StrCopy.c_str(), StrCopy.Length(), CP_UTF8);
   // Data = StrCopy.Data;
   return *this;
 }
@@ -712,14 +712,15 @@ UnicodeString & UnicodeString::operator=(const wchar_t Ch)
 
 UnicodeString & UnicodeString::operator=(const char * lpszData)
 {
-  Init(lpszData, strlen(NullToEmptyA(lpszData)), CP_THREAD_ACP);
+  Init(lpszData, strlen(NullToEmptyA(lpszData)), CP_UTF8);
   return *this;
 }
 
 UnicodeString UnicodeString::operator +(const UnicodeString & rhs) const
 {
-  wstring_t Result = Data + rhs.Data;
-  return UnicodeString(Result.c_str(), Result.GetLength());
+  wstring_t Result(Data);
+  Result += rhs.Data;
+  return UnicodeString(Result);
 }
 
 UnicodeString & UnicodeString::operator +=(const UnicodeString & rhs)
