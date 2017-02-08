@@ -365,24 +365,28 @@ UTF8String::UTF8String(const UTF8String & rht)
 
 void UTF8String::Init(const wchar_t * Str, intptr_t Length)
 {
-  intptr_t Size = ::WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
-  Data.resize(Size + 1);
-  if (Size > 0)
+  if (Str == nullptr || Length == 0)
   {
-    ::WideCharToMultiByte(CP_UTF8, 0, Str, -1, const_cast<char *>(Data.c_str()), static_cast<int>(Size), nullptr, nullptr);
-    Data[Size] = 0;
+    Data.Empty();
+    return;
   }
-  Data = Data.c_str();
+  int Size = ::WideCharToMultiByte(CP_UTF8, 0, Str, -1, nullptr, 0, nullptr, nullptr);
+  char * Buffer = Data.GetBufferSetLength(Size + 1);
+  if (Buffer != nullptr)
+  {
+    ::WideCharToMultiByte(CP_UTF8, 0, Str, -1, Buffer, Size, nullptr, nullptr);
+    Buffer[Size] = 0;
+  }
+  Data.Truncate(Length);
 }
 
 void UTF8String::Init(const char * Str, intptr_t Length)
 {
-  Data.resize(Length);
+  char * Buffer = Data.GetBufferSetLength(Length);
   if (Length > 0)
   {
-    memmove(const_cast<char *>(Data.c_str()), Str, Length);
+    memmove(Buffer, Str, Length);
   }
-  Data = Data.c_str();
 }
 
 UTF8String::UTF8String(const UnicodeString & Str)
@@ -402,31 +406,38 @@ UTF8String::UTF8String(const wchar_t * Str, intptr_t Size)
 
 UTF8String &UTF8String::Delete(intptr_t Index, intptr_t Count)
 {
-  Data.erase(Index - 1, Count);
+  Data.Delete(Index - 1, Count);
   return *this;
 }
 
 intptr_t UTF8String::Pos(char Ch) const
 {
-  return Data.find(Ch) + 1;
+  return Data.Find(Ch) + 1;
 }
 
 int UTF8String::vprintf(const char * Format, va_list ArgList)
 {
   SetLength(32 * 1024);
-  return vsnprintf_s((char *)Data.c_str(), Data.size(), _TRUNCATE, Format, ArgList);
+  return vsnprintf_s((char *)Data.c_str(), Data.GetLength(), _TRUNCATE, Format, ArgList);
 }
 
 UTF8String & UTF8String::Insert(const wchar_t * Str, intptr_t Pos)
 {
   UTF8String UTF8(Str);
-  Data.insert(Pos - 1, UTF8);
+  Data.Insert(Pos - 1, UTF8.c_str());
   return *this;
+}
+
+UTF8String UTF8String::SubString(intptr_t Pos) const
+{
+  string_t Str(Data.Mid(Pos - 1));
+  return UTF8String(Str.c_str(), Str.GetLength());
 }
 
 UTF8String UTF8String::SubString(intptr_t Pos, intptr_t Len) const
 {
-  return UTF8String(Data.substr(Pos - 1, Len).c_str());
+  string_t Str(Data.Mid(Pos - 1), Len);
+  return UTF8String(Str.c_str(), Str.GetLength());
 }
 
 UTF8String & UTF8String::operator=(const UnicodeString & StrCopy)
@@ -449,46 +460,40 @@ UTF8String & UTF8String::operator=(const RawByteString & StrCopy)
 
 UTF8String & UTF8String::operator=(const char * lpszData)
 {
-  if (lpszData)
-  {
-    Init(lpszData, strlen(NullToEmptyA(lpszData)));
-  }
-  else
-  {
-    Data.clear();
-  }
+  Init(lpszData, string_t::StringLength(lpszData));
   return *this;
 }
 
 UTF8String & UTF8String::operator=(const wchar_t * lpwszData)
 {
-  Init(lpwszData, wcslen(NullToEmpty(lpwszData)));
+  Init(lpwszData, string_t::StringLength(lpwszData));
   return *this;
 }
 
 UTF8String UTF8String::operator +(const UTF8String & rhs) const
 {
-  string_t Result = Data + rhs.Data;
-  return UTF8String(Result.c_str(), Result.size());
+  string_t Result(Data);
+  Result += rhs.Data;
+  return UTF8String(Result);
 }
 
 UTF8String & UTF8String::operator +=(const UTF8String & rhs)
 {
-  Data.append(rhs.Data.c_str(), rhs.Length());
+  Data.Append(rhs.Data.c_str(), rhs.Length());
   return *this;
 }
 
 UTF8String & UTF8String::operator +=(const RawByteString & rhs)
 {
   UTF8String s(rhs.c_str(), rhs.Length());
-  Data.append(s.Data.c_str(), s.Length());
+  Data.Append(s.Data.c_str(), s.Length());
   return *this;
 }
 
 UTF8String & UTF8String::operator +=(const char Ch)
 {
-  uint8_t ch(static_cast<uint8_t>(Ch));
-  Data.append(1, ch);
+  uint8_t Ch(static_cast<uint8_t>(Ch));
+  Data.Append(Ch, 1);
   return *this;
 }
 

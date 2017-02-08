@@ -39,13 +39,14 @@ public:
 
   operator const char * () const { return c_str(); }
   const char * c_str() const { return Data.c_str(); }
-  intptr_t Length() const { return Data.size(); }
+  intptr_t Length() const { return Data.GetLength(); }
   intptr_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
-  void SetLength(intptr_t nLength) { Data.resize(nLength); }
+  void SetLength(intptr_t nLength) { Data.GetBufferSetLength(nLength); }
   UTF8String & Delete(intptr_t Index, intptr_t Count);
   UTF8String & Insert(const wchar_t * Str, intptr_t Pos);
-  UTF8String SubString(intptr_t Pos, intptr_t Len = -1) const;
+  UTF8String SubString(intptr_t Pos) const;
+  UTF8String SubString(intptr_t Pos, intptr_t Len) const;
 
   intptr_t Pos(char Ch) const;
 
