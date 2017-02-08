@@ -75,7 +75,8 @@ private:
   void Init(const wchar_t * Str, intptr_t Length);
   void Init(const char * Str, intptr_t Length);
 
-  typedef std::basic_string<char, std::char_traits<char>, custom_nballocator_t<char> > string_t;
+  // typedef std::basic_string<char, std::char_traits<char>, custom_nballocator_t<char> > string_t;
+  typedef CMStringA string_t;
   string_t Data;
 };
 
