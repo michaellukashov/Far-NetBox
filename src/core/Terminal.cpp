@@ -4925,13 +4925,13 @@ void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
 }
 
 void TTerminal::CalculateLocalFileSize(const UnicodeString & AFileName,
-  const TSearchRec & Rec, /*int64_t*/ void * Params)
+  const TSearchRec & Rec, /*int64_t*/ void * AParams)
 {
-  TCalculateSizeParams * AParams = dyn_cast<TCalculateSizeParams>(Params);
+  TCalculateSizeParams * Params = dyn_cast<TCalculateSizeParams>(AParams);
 
   bool Dir = FLAGSET(Rec.Attr, faDirectory);
 
-  bool AllowTransfer = (AParams->CopyParam == nullptr);
+  bool AllowTransfer = (Params->CopyParam == nullptr);
   // SearchRec.Size in C++B2010 is int64_t,
   // so we should be able to use it instead of FindData.nFileSize*
   int64_t Size =
@@ -4944,18 +4944,18 @@ void TTerminal::CalculateLocalFileSize(const UnicodeString & AFileName,
     MaskParams.Modification = ::FileTimeToDateTime(Rec.FindData.ftLastWriteTime);
 
     UnicodeString BaseFileName = GetBaseFileName(AFileName);
-    AllowTransfer = AParams->CopyParam->AllowTransfer(BaseFileName, osLocal, Dir, MaskParams);
+    AllowTransfer = Params->CopyParam->AllowTransfer(BaseFileName, osLocal, Dir, MaskParams);
   }
 
   if (AllowTransfer)
   {
     if (!Dir)
     {
-      AParams->Size += Size;
+      Params->Size += Size;
     }
     else
     {
-      ProcessLocalDirectory(AFileName, nb::bind(&TTerminal::CalculateLocalFileSize, this), Params);
+      ProcessLocalDirectory(AFileName, nb::bind(&TTerminal::CalculateLocalFileSize, this), AParams);
     }
   }
 

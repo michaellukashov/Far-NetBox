@@ -1,5 +1,7 @@
 #pragma once
 
+#include <headers.hpp>
+
 #include <stdexcept>
 #include <limits>
 #include <stdarg.h>
@@ -13,7 +15,6 @@
 #pragma warning(push, 1)
 
 #include <rtlconsts.h>
-#include <headers.hpp>
 #include <UnicodeString.hpp>
 #include <rtti.hpp>
 

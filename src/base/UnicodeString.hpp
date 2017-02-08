@@ -4,8 +4,9 @@
 #include <WinUser.h>
 
 #include <nbglobals.h>
+#include <nbstring.h>
 
-__inline intptr_t __cdecl StrLength(const wchar_t * str) { return wcslen(str ? str : L""); }
+__inline intptr_t __cdecl StrLength(const wchar_t * str) { return wcslen(NullToEmpty(str)); }
 
 __inline wchar_t __cdecl Upper(wchar_t Ch) { ::CharUpperBuff(&Ch, 1); return Ch; }
 
@@ -32,7 +33,7 @@ public:
   UTF8String(const wchar_t * Str);
   explicit UTF8String(const wchar_t * Str, intptr_t Size);
   explicit UTF8String(const char * Str, intptr_t Size) { Init(Str, Size); }
-  explicit UTF8String(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
+  explicit UTF8String(const char * Str) { Init(Str, strlen(NullToEmptyA(Str))); }
 
   ~UTF8String() {}
 
@@ -86,25 +87,25 @@ public:
   UnicodeString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
   UnicodeString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   UnicodeString(const wchar_t Src) { Init(&Src, 1); }
-  UnicodeString(const char * Str, intptr_t Size) { Init(Str, Size); }
-  UnicodeString(const char * Str) { Init(Str, Str ? strlen(Str) : 0); }
-  UnicodeString(intptr_t Size, wchar_t Ch) : Data(Size, Ch) {}
+  UnicodeString(const char * Str, intptr_t Size);
+  UnicodeString(const char * Str);
+  UnicodeString(intptr_t Size, wchar_t Ch) : Data(Ch, Size) {}
 
-  UnicodeString(const UnicodeString & Str) { Init(Str.c_str(), Str.GetLength()); }
-  explicit UnicodeString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
+  UnicodeString(const UnicodeString & Str) { Data = Str.Data; }
+  explicit UnicodeString(const UTF8String & Str);
   explicit UnicodeString(const AnsiString & Str);
 
   ~UnicodeString() {}
 
   const wchar_t * c_str() const { return Data.c_str(); }
   const wchar_t * data() const { return Data.c_str(); }
-  intptr_t Length() const { return Data.size(); }
+  intptr_t Length() const { return Data.GetLength(); }
   intptr_t GetLength() const { return Length(); }
   intptr_t GetBytesCount() const { return (Length() + 1) * sizeof(wchar_t); }
   bool IsEmpty() const { return Length() == 0; }
-  void SetLength(intptr_t nLength) { Data.resize(nLength); }
-  inline UnicodeString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
-  UnicodeString & Clear() { Data.clear(); return *this; }
+  void SetLength(intptr_t nLength) { Data.GetBufferSetLength(nLength); }
+  inline UnicodeString & Delete(intptr_t Index, intptr_t Count) { Data.Delete(Index - 1, Count); return *this; }
+  UnicodeString & Clear() { Data.Empty(); return *this; }
 
   UnicodeString & Lower(intptr_t nStartPos = 1, intptr_t nLength = -1);
   UnicodeString & Upper(intptr_t nStartPos = 1, intptr_t nLength = -1);
@@ -115,9 +116,9 @@ public:
   intptr_t Compare(const UnicodeString & Str) const;
   intptr_t CompareIC(const UnicodeString & Str) const;
   intptr_t ToInt() const;
-  intptr_t FindFirstOf(const wchar_t Ch) const { return (intptr_t)Data.find_first_of(Ch, 0); }
-  intptr_t FindFirstOf(const wchar_t * Str, size_t Offset = 0) const { return (intptr_t)Data.find_first_of(Str, Offset); }
-  intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }
+  intptr_t FindFirstOf(const wchar_t Ch) const { return (intptr_t)Data.Find(Ch, 0); }
+  intptr_t FindFirstOf(const wchar_t * Str, size_t Offset = 0) const { return (intptr_t)Data.Find(Str, Offset); }
+//  intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }
 
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen);
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
@@ -140,11 +141,13 @@ public:
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(const UnicodeString & Str) const;
 
-  intptr_t RPos(wchar_t Ch) const { return (intptr_t)Data.find_last_of(Ch) + 1; }
+  intptr_t RPos(wchar_t Ch) const { return (intptr_t)Data.ReverseFind(Ch) + 1; }
   bool RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
 
-  UnicodeString SubStr(intptr_t Pos, intptr_t Len = -1) const;
-  UnicodeString SubString(intptr_t Pos, intptr_t Len = -1) const;
+  UnicodeString SubStr(intptr_t Pos, intptr_t Len) const;
+  UnicodeString SubStr(intptr_t Pos) const;
+  UnicodeString SubString(intptr_t Pos, intptr_t Len) const;
+  UnicodeString SubString(intptr_t Pos) const;
 
   bool IsDelimiter(const UnicodeString & Chars, intptr_t Pos) const;
   intptr_t LastDelimiter(const UnicodeString & Delimiters) const;
@@ -198,10 +201,10 @@ public:
 
 private:
   void Init(const wchar_t * Str, intptr_t Length);
-  void Init(const char * Str, intptr_t Length);
+  void Init(const char * Str, intptr_t Length, int Codepage);
   void ThrowIfOutOfRange(intptr_t Idx) const;
 
-  typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, custom_nballocator_t<wchar_t> > wstring_t;
+  typedef CMStringW wstring_t;
   wstring_t Data;
 };
 
@@ -244,7 +247,7 @@ public:
 
   AnsiString & Append(const char * Str, intptr_t StrLen) { Data.append(Str, StrLen); return *this; }
   AnsiString & Append(const AnsiString & Str) { return Append(Str.c_str(), Str.GetLength()); }
-  AnsiString & Append(const char * Str) { return Append(Str, strlen(Str ? Str : "")); }
+  AnsiString & Append(const char * Str) { return Append(Str, strlen(NullToEmptyA(Str))); }
   AnsiString & Append(const char Ch) { return Append(&Ch, 1); }
 
   void Unique() {}
