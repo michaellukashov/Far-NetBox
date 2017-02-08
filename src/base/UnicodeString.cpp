@@ -528,6 +528,7 @@ void UnicodeString::Init(const char * Str, intptr_t Length, int Codepage)
     ::MultiByteToWideChar(Codepage, 0, Str, -1, Buffer, Size);
     Buffer[Size] = 0;
   }
+  Data.Truncate(Length);
 }
 
 UnicodeString::UnicodeString(const char * Str, intptr_t Size)
