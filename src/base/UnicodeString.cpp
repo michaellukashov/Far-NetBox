@@ -708,7 +708,7 @@ UnicodeString & UnicodeString::operator=(const wchar_t Ch)
 
 UnicodeString & UnicodeString::operator=(const char * lpszData)
 {
-  Init(lpszData, strlen(NullToEmptyA(lpszData)), CP_UTF8);
+  Init(lpszData, wstring_t::StringLength(lpszData), CP_UTF8);
   return *this;
 }
 
