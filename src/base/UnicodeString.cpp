@@ -683,7 +683,7 @@ UnicodeString & UnicodeString::operator=(const RawByteString & StrCopy)
 
 UnicodeString & UnicodeString::operator=(const AnsiString & StrCopy)
 {
-  Init(StrCopy.c_str(), StrCopy.Length(), CP_UTF8);
+  Init(StrCopy.c_str(), StrCopy.Length(), CP_THREAD_ACP);
   // Data = StrCopy.Data;
   return *this;
 }
