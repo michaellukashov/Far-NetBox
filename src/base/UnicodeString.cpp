@@ -513,22 +513,35 @@ void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
   Data = wstring_t(Str, Length);
 }
 
-void UnicodeString::Init(const char * Str, intptr_t Length)
+void UnicodeString::Init(const char * Str, intptr_t Length, int Codepage)
 {
-  // Data = wstring_t(Str, Length);
-  intptr_t Size = ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0);
-  Data.GetBufferSetLength(Size + 1);
-  if (Size > 0)
+  int Size = ::MultiByteToWideChar(Codepage, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0);
+  wchar_t * Buffer = Data.GetBufferSetLength(Size + 1);
+  if (Buffer != nullptr)
   {
-    ::MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), static_cast<int>(Size));
-    Data.GetBuffer()[Size] = 0;
+    ::MultiByteToWideChar(Codepage, 0, Str, -1, Buffer, Size);
+    Buffer[Size] = 0;
   }
-  Data = Data.c_str();
+}
+
+UnicodeString::UnicodeString(const char * Str, intptr_t Size)
+{
+  Init(Str, Size, CP_THREAD_ACP);
+}
+
+UnicodeString::UnicodeString(const char * Str)
+{
+  Init(Str, StringLength(Str), CP_THREAD_ACP);
+}
+
+UnicodeString::UnicodeString(const UTF8String & Str)
+{
+  Init(Str.c_str(), Str.GetLength(), CP_UTF8);
 }
 
 UnicodeString::UnicodeString(const AnsiString & Str)
 {
-  Init(Str.c_str(), Str.GetLength());
+  Init(Str.c_str(), Str.GetLength(), CP_THREAD_ACP);
 }
 
 UnicodeString & UnicodeString::Lower(intptr_t nStartPos, intptr_t nLength)
@@ -662,20 +675,20 @@ UnicodeString & UnicodeString::operator=(const UnicodeString & StrCopy)
 
 UnicodeString & UnicodeString::operator=(const RawByteString & StrCopy)
 {
-  Init(StrCopy.c_str(), StrCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length(), CP_UTF8);
   return *this;
 }
 
 UnicodeString & UnicodeString::operator=(const AnsiString & StrCopy)
 {
-  Init(StrCopy.c_str(), StrCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length(), CP_THREAD_ACP);
   // Data = StrCopy.Data;
   return *this;
 }
 
 UnicodeString & UnicodeString::operator=(const UTF8String & StrCopy)
 {
-  Init(StrCopy.c_str(), StrCopy.Length());
+  Init(StrCopy.c_str(), StrCopy.Length(), CP_UTF8);
   return *this;
 }
 
@@ -693,7 +706,7 @@ UnicodeString & UnicodeString::operator=(const wchar_t Ch)
 
 UnicodeString & UnicodeString::operator=(const char * lpszData)
 {
-  Init(lpszData, strlen(NullToEmptyA(lpszData)));
+  Init(lpszData, strlen(NullToEmptyA(lpszData)), CP_THREAD_ACP);
   return *this;
 }
 

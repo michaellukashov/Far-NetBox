@@ -87,13 +87,12 @@ public:
   UnicodeString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
   UnicodeString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   UnicodeString(const wchar_t Src) { Init(&Src, 1); }
-  UnicodeString(const char * Str, intptr_t Size) { Init(Str, Size); }
-  UnicodeString(const char * Str) { Init(Str, strlen(NullToEmptyA(Str))); }
+  UnicodeString(const char * Str, intptr_t Size);
+  UnicodeString(const char * Str);
   UnicodeString(intptr_t Size, wchar_t Ch) : Data(Ch, Size) {}
 
   UnicodeString(const UnicodeString & Str) { Data = Str.Data; }
-  // explicit UnicodeString(const UTF8String & Str) { Data = wstring_t(Str.c_str(), Str.GetLength()); }
-  explicit UnicodeString(const UTF8String & Str) { Init(Str.c_str(), Str.GetLength()); }
+  explicit UnicodeString(const UTF8String & Str);
   explicit UnicodeString(const AnsiString & Str);
 
   ~UnicodeString() {}
@@ -202,7 +201,7 @@ public:
 
 private:
   void Init(const wchar_t * Str, intptr_t Length);
-  void Init(const char * Str, intptr_t Length);
+  void Init(const char * Str, intptr_t Length, int Codepage);
   void ThrowIfOutOfRange(intptr_t Idx) const;
 
   typedef CMStringW wstring_t;
