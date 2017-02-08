@@ -1341,6 +1341,7 @@ set(NETBOX_SOURCES
   FarConfiguration.cpp
   FarInterface.cpp
   XmlStorage.cpp
+  Far3Storage.cpp
   FarPluginStrings.cpp
   ../windows/WinInterface.cpp
 )
@@ -1358,6 +1359,7 @@ set(NETBOX_SOURCES
   FarInterface.h
   FarConfiguration.h
   XmlStorage.h
+  Far3Storage.h
   FarUtil.h
   FarPluginStrings.h
 
@@ -1412,9 +1414,9 @@ set(NETBOX_SOURCES
   ../resource/HelpCore.h
   ../resource/TextsFileZilla.h
 
-  ../PluginSDK/Far2/plugin.hpp
-  ../PluginSDK/Far2/farcolor.hpp
-  ../PluginSDK/Far2/farkeys.hpp
+  ../PluginSDK/Far3/plugin.hpp
+  ../PluginSDK/Far3/farcolor.hpp
+  ../PluginSDK/Far3/PluginSettings.hpp
 
   ../resource/TextsFileZilla.rc
   NetBox.rc
