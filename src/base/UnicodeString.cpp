@@ -531,7 +531,7 @@ UnicodeString::UnicodeString(const char * Str, intptr_t Size)
 
 UnicodeString::UnicodeString(const char * Str)
 {
-  Init(Str, StringLength(Str), CP_THREAD_ACP);
+  Init(Str, wstring_t::StringLength(Str), CP_THREAD_ACP);
 }
 
 UnicodeString::UnicodeString(const UTF8String & Str)
