@@ -365,12 +365,6 @@ UTF8String::UTF8String(const UTF8String & rht)
 
 void UTF8String::Init(const wchar_t * Str, intptr_t Length)
 {
-//  Data.resize(Length);
-//  if (Length > 0)
-//  {
-//    wmemmove(const_cast<wchar_t *>(Data.c_str()), Str, Length);
-//  }
-//  Data = Data.c_str();
   intptr_t Size = ::WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
   Data.resize(Size + 1);
   if (Size > 0)
