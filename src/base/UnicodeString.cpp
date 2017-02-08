@@ -525,24 +525,24 @@ void UnicodeString::Init(const char * Str, intptr_t Length, int Codepage)
   Data.Truncate(Length);
 }
 
-UnicodeString::UnicodeString(const char * Str, intptr_t Size)
-{
-  Init(Str, Size, CP_UTF8);
-}
-
-UnicodeString::UnicodeString(const char * Str)
-{
-  Init(Str, wstring_t::StringLength(Str), CP_UTF8);
-}
-
 UnicodeString::UnicodeString(const UTF8String & Str)
 {
   Init(Str.c_str(), Str.GetLength(), CP_UTF8);
 }
 
+UnicodeString::UnicodeString(const char * Str, intptr_t Size)
+{
+  Init(Str, Size, CP_THREAD_ACP);
+}
+
+UnicodeString::UnicodeString(const char * Str)
+{
+  Init(Str, wstring_t::StringLength(Str), CP_THREAD_ACP);
+}
+
 UnicodeString::UnicodeString(const AnsiString & Str)
 {
-  Init(Str.c_str(), Str.GetLength(), CP_UTF8);
+  Init(Str.c_str(), Str.GetLength(), CP_THREAD_ACP);
 }
 
 UnicodeString & UnicodeString::Lower(intptr_t nStartPos, intptr_t nLength)
@@ -583,6 +583,7 @@ UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t
 
 UnicodeString & UnicodeString::Append(const char * lpszAdd, UINT CodePage)
 {
+  //UTF8String Str(lpszAdd);
   Data.Append(wstring_t(lpszAdd)); // , CodePage));
   return *this;
 }
