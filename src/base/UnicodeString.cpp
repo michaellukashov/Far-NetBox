@@ -515,7 +515,7 @@ void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
 
 void UnicodeString::Init(const char * Str, intptr_t Length, int Codepage)
 {
-  int Size = ::MultiByteToWideChar(Codepage, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0);
+  int Size = ::MultiByteToWideChar(Codepage, 0, Str, -1, nullptr, 0);
   wchar_t * Buffer = Data.GetBufferSetLength(Size + 1);
   if (Buffer != nullptr)
   {
