@@ -66,7 +66,7 @@ public:
   UTF8String operator +(const RawByteString & rhs) const;
   UTF8String & operator +=(const UTF8String & rhs);
   UTF8String & operator +=(const RawByteString & rhs);
-  UTF8String & operator +=(const char rhs);
+  UTF8String & operator +=(const char Ch);
   UTF8String & operator +=(const char * rhs);
 
   friend bool operator ==(const UTF8String & lhs, const UTF8String & rhs);

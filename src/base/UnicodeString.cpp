@@ -492,8 +492,7 @@ UTF8String & UTF8String::operator +=(const RawByteString & rhs)
 
 UTF8String & UTF8String::operator +=(const char Ch)
 {
-  uint8_t Ch(static_cast<uint8_t>(Ch));
-  Data.Append(Ch, 1);
+  Data.AppendChar(Ch);
   return *this;
 }
 
