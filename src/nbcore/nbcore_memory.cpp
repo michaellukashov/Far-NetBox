@@ -219,12 +219,12 @@ NB_CORE_DLL(wchar_t*) nbcore_a2u_cp(const char* src, int codepage)
   if (src == NULL)
     return NULL;
 
-  int cbLen = MultiByteToWideChar(codepage, 0, src, -1, NULL, 0);
+  int cbLen = ::MultiByteToWideChar(codepage, 0, src, -1, NULL, 0);
   wchar_t* result = (wchar_t*)nbcore_alloc(sizeof(wchar_t)*(cbLen+1));
   if (result == NULL)
     return NULL;
 
-  MultiByteToWideChar(codepage, 0, src, -1, result, cbLen);
+  ::MultiByteToWideChar(codepage, 0, src, -1, result, cbLen);
   result[cbLen] = 0;
   return result;
 }
