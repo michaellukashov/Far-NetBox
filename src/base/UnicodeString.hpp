@@ -6,6 +6,8 @@
 #include <nbglobals.h>
 #include <nbstring.h>
 
+namespace nb {
+
 __inline intptr_t __cdecl StrLength(const wchar_t * str) { return wcslen(NullToEmpty(str)); }
 
 __inline wchar_t __cdecl Upper(wchar_t Ch) { ::CharUpperBuff(&Ch, 1); return Ch; }
@@ -18,6 +20,8 @@ __inline int __cdecl StrLIComp(const wchar_t * s1, const wchar_t * s2, int n) { 
 __inline int __cdecl FarStrCmpI(const wchar_t * s1, const wchar_t * s2) { return ::CompareString(0, NORM_IGNORECASE|SORT_STRINGSORT, s1,-1, s2, -1) - 2; }
 
 __inline int __cdecl StrCmpNN(const wchar_t * s1, int n1, const wchar_t * s2, int n2) { return ::CompareString(0, NORM_STOP_ON_NULL|SORT_STRINGSORT, s1, n1, s2, n2) - 2; }
+
+} // namespace nb
 
 class RawByteString;
 class UnicodeString;
@@ -42,7 +46,7 @@ public:
   intptr_t Length() const { return Data.GetLength(); }
   intptr_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
-  void SetLength(intptr_t nLength) { Data.GetBufferSetLength(nLength); }
+  void SetLength(intptr_t nLength);
   UTF8String & Delete(intptr_t Index, intptr_t Count);
   UTF8String & Insert(const wchar_t * Str, intptr_t Pos);
   UTF8String SubString(intptr_t Pos) const;
@@ -86,7 +90,7 @@ class UnicodeString
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UnicodeString() {}
-  UnicodeString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
+  UnicodeString(const wchar_t * Str);
   UnicodeString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
   UnicodeString(const wchar_t Src) { Init(&Src, 1); }
   UnicodeString(const char * Str, intptr_t Size);
@@ -105,7 +109,7 @@ public:
   intptr_t GetLength() const { return Length(); }
   intptr_t GetBytesCount() const { return (Length() + 1) * sizeof(wchar_t); }
   bool IsEmpty() const { return Length() == 0; }
-  void SetLength(intptr_t nLength) { Data.GetBufferSetLength(nLength); }
+  void SetLength(intptr_t nLength);
   inline UnicodeString & Delete(intptr_t Index, intptr_t Count) { Data.Delete(Index - 1, Count); return *this; }
   UnicodeString & Clear() { Data.Empty(); return *this; }
 
@@ -124,13 +128,13 @@ public:
 
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen);
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
-  UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str) { return Replace(Pos, Len, Str, ::StrLength(NullToEmpty(Str))); }
+  UnicodeString & Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str);
   UnicodeString & Replace(intptr_t Pos, intptr_t Len, wchar_t Ch) { return Replace(Pos, Len, &Ch, 1); }
   UnicodeString & Replace(intptr_t Pos, wchar_t Ch) { return Replace(Pos, 1, &Ch, 1); }
 
   UnicodeString & Append(const wchar_t * Str, intptr_t StrLen) { return Replace(GetLength(), 0, Str, StrLen); }
   UnicodeString & Append(const UnicodeString & Str) { return Append(Str.c_str(), Str.GetLength()); }
-  UnicodeString & Append(const wchar_t * Str) { return Append(Str, ::StrLength(NullToEmpty(Str))); }
+  UnicodeString & Append(const wchar_t * Str);
   UnicodeString & Append(const wchar_t Ch) { return Append(&Ch, 1); }
   UnicodeString & Append(const char * lpszAdd, UINT CodePage=CP_OEMCP);
 
@@ -218,7 +222,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 public:
   AnsiString() {}
   AnsiString(const AnsiString & rht);
-  AnsiString(intptr_t Size, char Ch) : Data(Size, Ch) {}
+  AnsiString(intptr_t Size, char Ch) : Data(Ch, Size) {}
   explicit AnsiString(const wchar_t * Str);
   explicit AnsiString(const wchar_t * Str, intptr_t Size);
   AnsiString(const char * Str);
@@ -231,14 +235,15 @@ public:
   inline ~AnsiString() {}
 
   const char * c_str() const { return Data.c_str(); }
-  intptr_t Length() const { return Data.size(); }
+  intptr_t Length() const { return Data.GetLength(); }
   intptr_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
-  void SetLength(intptr_t nLength) { Data.resize(nLength); }
-  inline AnsiString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
-  AnsiString & Clear() { Data.clear(); return *this; }
+  void SetLength(intptr_t nLength);
+  inline AnsiString & Delete(intptr_t Index, intptr_t Count);
+  AnsiString & Clear();
   AnsiString & Insert(const char * Str, intptr_t Pos);
-  AnsiString SubString(intptr_t Pos, intptr_t Len = -1) const;
+  AnsiString SubString(intptr_t Pos) const;
+  AnsiString SubString(intptr_t Pos, intptr_t Len) const;
 
   intptr_t Pos(const AnsiString & Str) const;
   intptr_t Pos(wchar_t Ch) const;
@@ -247,7 +252,7 @@ public:
   char operator [](intptr_t Idx) const;
   char & operator [](intptr_t Idx);
 
-  AnsiString & Append(const char * Str, intptr_t StrLen) { Data.append(Str, StrLen); return *this; }
+  AnsiString & Append(const char * Str, intptr_t StrLen);
   AnsiString & Append(const AnsiString & Str) { return Append(Str.c_str(), Str.GetLength()); }
   AnsiString & Append(const char * Str) { return Append(Str, strlen(NullToEmptyA(Str))); }
   AnsiString & Append(const char Ch) { return Append(&Ch, 1); }
@@ -293,7 +298,8 @@ private:
   void Init(const uint8_t * Str, intptr_t Length);
   void ThrowIfOutOfRange(intptr_t Idx) const;
 
-  typedef std::basic_string<char, std::char_traits<char>, custom_nballocator_t<char> > string_t;
+  //typedef std::basic_string<char, std::char_traits<char>, custom_nballocator_t<char> > string_t;
+  typedef CMStringA string_t;
   string_t Data;
 };
 
@@ -314,17 +320,18 @@ public:
   RawByteString(const UTF8String & Str);
   ~RawByteString() {}
 
-  operator const char * () const { return reinterpret_cast<const char *>(Data.c_str()); }
+  operator const char * () const { return Data.c_str(); }
   operator UnicodeString() const;
-  const char * c_str() const { return reinterpret_cast<const char *>(Data.c_str()); }
-  intptr_t Length() const { return Data.size(); }
+  const char * c_str() const { return Data.c_str(); }
+  intptr_t Length() const { return Data.GetLength(); }
   intptr_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
-  void SetLength(intptr_t nLength) { Data.resize(nLength); }
+  void SetLength(intptr_t nLength);
   RawByteString & Clear() { SetLength(0); return *this; }
-  inline RawByteString & Delete(intptr_t Index, intptr_t Count) { Data.erase(Index - 1, Count); return *this; }
+  inline RawByteString & Delete(intptr_t Index, intptr_t Count);
   RawByteString & Insert(const char * Str, intptr_t Pos);
-  RawByteString SubString(intptr_t Pos, intptr_t Len = -1) const;
+  RawByteString SubString(intptr_t Pos) const;
+  RawByteString SubString(intptr_t Pos, intptr_t Len) const;
 
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(const wchar_t * Str) const;
@@ -359,7 +366,8 @@ private:
   void Init(const char * Str, intptr_t Length);
   void Init(const uint8_t * Str, intptr_t Length);
 
-  typedef std::basic_string<uint8_t, std::char_traits<uint8_t>, custom_nballocator_t<uint8_t> > rawstring_t;
+  // typedef std::basic_string<uint8_t, std::char_traits<uint8_t>, custom_nballocator_t<uint8_t> > rawstring_t;
+  typedef CMStringT< uint8_t, NBChTraitsCRT< uint8_t > > rawstring_t;
   rawstring_t Data;
 };
 

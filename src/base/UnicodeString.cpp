@@ -10,7 +10,7 @@ AnsiString::AnsiString(const AnsiString & rht)
 
 AnsiString::AnsiString(const wchar_t * Str)
 {
-  Init(Str, ::StrLength(Str));
+  Init(Str, string_t::StringLength(Str));
 }
 
 AnsiString::AnsiString(const wchar_t * Str, intptr_t Size)
@@ -50,81 +50,107 @@ AnsiString::AnsiString(const UTF8String & Str)
 
 AnsiString::AnsiString(const RawByteString & Str)
 {
-   Init(Str.c_str(), Str.GetLength());
+  Init(Str.c_str(), Str.GetLength());
+}
+
+void AnsiString::SetLength(intptr_t nLength)
+{
+  Data.GetBufferSetLength(nLength);
+}
+
+AnsiString & AnsiString::Delete(intptr_t Index, intptr_t Count)
+{
+  Data.Delete(Index - 1, Count);
+  return *this;
+}
+
+AnsiString & AnsiString::Clear()
+{
+  Data.Empty();
+  return *this;
 }
 
 void AnsiString::Init(const wchar_t * Str, intptr_t Length)
 {
-  intptr_t Size = ::WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
-  if (Length > 0)
+  if (Str == nullptr || Length == 0)
   {
-    Data.resize(Size + 1);
-    ::WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1),
-      reinterpret_cast<LPSTR>(const_cast<char *>(Data.c_str())), static_cast<int>(Size), nullptr, nullptr);
-    Data[Size] = 0;
-    Data = Data.c_str();
+    Data.Empty();
+    return;
   }
-  else
+  int Size = ::WideCharToMultiByte(CP_UTF8, 0, Str, -1, nullptr, 0, nullptr, nullptr);
+  char * Buffer = Data.GetBufferSetLength(Size + 1);
+  if (Buffer != nullptr)
   {
-    Data.clear();
+    ::WideCharToMultiByte(CP_UTF8, 0, Str, -1, Buffer, Size, nullptr, nullptr);
+    Buffer[Size] = 0;
   }
+  Data.Truncate(Length);
 }
 
 void AnsiString::Init(const char * Str, intptr_t Length)
 {
-  Data.resize(Length);
-  if (Length > 0)
+  char * Buffer = Data.GetBufferSetLength(Length);
+  if (Buffer != nullptr)
   {
-    memmove(const_cast<char *>(Data.c_str()), Str, Length);
+    memmove(Buffer, Str, Length);
   }
-  Data = Data.c_str();
+  Data.Truncate(Length);
 }
 
 void AnsiString::Init(const uint8_t * Str, intptr_t Length)
 {
-  Data.resize(Length);
-  if (Length > 0)
+  char * Buffer = Data.GetBufferSetLength(Length);
+  if (Buffer != nullptr)
   {
     memmove(const_cast<char *>(Data.c_str()), Str, Length);
   }
-  Data = Data.c_str();
+  Data.Truncate(Length);
 }
 
 intptr_t AnsiString::Pos(const AnsiString & Str) const
 {
-  return static_cast<intptr_t>(Data.find(Str.c_str(), 0, 1)) + 1;
+  return Data.Find(Str.c_str()) + 1;
 }
 
 intptr_t AnsiString::Pos(wchar_t Ch) const
 {
-  AnsiString Str(&Ch, 1);
-  return static_cast<intptr_t>(Data.find(Str.c_str(), 0, 1)) + 1;
+  return Data.Find(Ch) + 1;
 }
 
 char AnsiString::operator [](intptr_t Idx) const
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data[Idx-1];
+  return Data.operator [](Idx-1);
 }
 
-char &AnsiString::operator [](intptr_t Idx)
+char & AnsiString::operator [](intptr_t Idx)
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data[Idx-1];
+  return Data.GetBuffer()[Idx-1];
+}
+
+AnsiString &AnsiString::Append(const char * Str, intptr_t StrLen)
+{
+  Data.Append(Str, StrLen);
+  return *this;
 }
 
 AnsiString & AnsiString::Insert(const char * Str, intptr_t Pos)
 {
-  Data.insert(Pos - 1, Str);
+  Data.Insert(Pos - 1, Str);
   return *this;
+}
+
+AnsiString AnsiString::SubString(intptr_t Pos) const
+{
+  string_t Str(Data.Mid(Pos - 1));
+  return AnsiString(Str.c_str(), Str.GetLength());
 }
 
 AnsiString AnsiString::SubString(intptr_t Pos, intptr_t Len) const
 {
-  // std::string S = std::string(Data.substr(Pos - 1, Len).c_str(), Len);
-  // AnsiString Result(S.c_str(), S.size());
-  AnsiString Result(Data.substr(Pos - 1, Len).c_str(), Len);
-  return Result;
+  string_t Str(Data.Mid(Pos - 1), Len);
+  return AnsiString(Str.c_str(), Str.GetLength());
 }
 
 AnsiString & AnsiString::operator=(const UnicodeString & StrCopy)
@@ -162,19 +188,19 @@ AnsiString & AnsiString::operator=(const wchar_t * lpwszData)
 
 AnsiString & AnsiString::operator +=(const AnsiString & rhs)
 {
-  Data.append(rhs.c_str(), rhs.Length());
+  Data.Append(rhs.c_str(), rhs.Length());
   return *this;
 }
 
 AnsiString & AnsiString::operator +=(const char Ch)
 {
-  Data.append(1, Ch);
+  Data.AppendChar(Ch);
   return *this;
 }
 
 AnsiString & AnsiString::operator +=(const char * rhs)
 {
-  Data.append(rhs);
+  Data.Append(rhs);
   return *this;
 }
 
@@ -186,61 +212,62 @@ void AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
 
 void RawByteString::Init(const wchar_t * Str, intptr_t Length)
 {
-  intptr_t Size = ::WideCharToMultiByte(CP_ACP, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
-  if (Length > 0)
+  if (Str == nullptr || Length == 0)
   {
-    Data.resize(Size + 1);
-    ::WideCharToMultiByte(CP_ACP, 0, Str, static_cast<int>(Length > 0 ? Length : -1),
-      reinterpret_cast<LPSTR>(const_cast<uint8_t *>(Data.c_str())), static_cast<int>(Size), nullptr, nullptr);
-    Data[Size] = 0;
+    Data.Empty();
+    return;
   }
-  else
+  int Size = ::WideCharToMultiByte(CP_ACP, 0, Str, -1, nullptr, 0, nullptr, nullptr);
+  char * Buffer = Data.GetBufferSetLength(Length);
+  if (Buffer != nullptr)
   {
-    Data.clear();
+    ::WideCharToMultiByte(CP_ACP, 0, Str, -1, Buffer, Size, nullptr, nullptr);
+    Buffer[Size] = 0;
   }
+  Data.Truncate(Length);
 }
 
 void RawByteString::Init(const char * Str, intptr_t Length)
 {
-  Data.resize(Length);
+  uint8_t * Buffer = Data.GetBufferSetLength(Length);
   if (Length > 0)
   {
-    memmove(const_cast<uint8_t *>(Data.c_str()), Str, Length);
+    memmove(Buffer, Str, Length);
   }
 }
 
 void RawByteString::Init(const uint8_t * Str, intptr_t Length)
 {
-  Data.resize(Length);
+  uint8_t * Buffer = Data.GetBufferSetLength(Length);
   if (Length > 0)
   {
-    memmove(const_cast<uint8_t *>(Data.c_str()), Str, Length);
+    memmove(Buffer, Str, Length);
   }
 }
 
 RawByteString::operator UnicodeString() const
 {
-  return UnicodeString(reinterpret_cast<const char *>(Data.c_str()), Data.size());
+  return UnicodeString(reinterpret_cast<const char *>(Data.c_str()), Data.GetLength());
 }
 
 intptr_t RawByteString::Pos(wchar_t Ch) const
 {
-  return Data.find(static_cast<uint8_t>(Ch)) + 1;
+  return Data.Find(static_cast<uint8_t>(Ch)) + 1;
 }
 
 intptr_t RawByteString::Pos(const char Ch) const
 {
-  return Data.find(static_cast<uint8_t>(Ch)) + 1;
+  return Data.Find(static_cast<uint8_t>(Ch)) + 1;
 }
 
 intptr_t RawByteString::Pos(const char * Str) const
 {
-  return Data.find(reinterpret_cast<const uint8_t *>(Str)) + 1;
+  return Data.Find(reinterpret_cast<const uint8_t *>(Str)) + 1;
 }
 
 RawByteString::RawByteString(const wchar_t * Str)
 {
-  Init(Str, ::StrLength(Str));
+  Init(Str, string_t::StringLength(Str));
 }
 
 RawByteString::RawByteString(const wchar_t * Str, intptr_t Size)
@@ -250,7 +277,7 @@ RawByteString::RawByteString(const wchar_t * Str, intptr_t Size)
 
 RawByteString::RawByteString(const char * Str)
 {
-  Init(Str, strlen(NullToEmptyA(Str)));
+  Init(Str, string_t::StringLength(Str));
 }
 
 RawByteString::RawByteString(const char * Str, intptr_t Size)
@@ -283,16 +310,33 @@ RawByteString::RawByteString(const UTF8String & Str)
   Init(Str.c_str(), Str.GetLength());
 }
 
+void RawByteString::SetLength(intptr_t nLength)
+{
+  Data.GetBufferSetLength(nLength);
+}
+
+RawByteString & RawByteString::Delete(intptr_t Index, intptr_t Count)
+{
+  Data.Delete(Index - 1, Count);
+  return *this;
+}
+
 RawByteString & RawByteString::Insert(const char * Str, intptr_t Pos)
 {
-  Data.insert(Pos - 1, reinterpret_cast<const uint8_t *>(Str));
+  Data.Insert(Pos - 1, reinterpret_cast<const uint8_t *>(Str));
   return *this;
+}
+
+RawByteString RawByteString::SubString(intptr_t Pos) const
+{
+  RawByteString Result(Data.Substr(Pos - 1, rawstring_t::StringLength(Da).c_str(), Len);
+  return Result;
 }
 
 RawByteString RawByteString::SubString(intptr_t Pos, intptr_t Len) const
 {
-  rawstring_t s = Data.substr(Pos - 1, Len);
-  RawByteString Result(s.c_str(), s.size());
+  rawstring_t s = Data.SubStr(Pos - 1, Len);
+  RawByteString Result(s.c_str(), s.GetLength());
   return Result;
 }
 
@@ -396,12 +440,17 @@ UTF8String::UTF8String(const UnicodeString & Str)
 
 UTF8String::UTF8String(const wchar_t * Str)
 {
-  Init(Str, ::StrLength(Str));
+  Init(Str, string_t::StringLength(Str));
 }
 
 UTF8String::UTF8String(const wchar_t * Str, intptr_t Size)
 {
   Init(Str, Size);
+}
+
+void UTF8String::SetLength(intptr_t nLength)
+{
+  Data.GetBufferSetLength(nLength);
 }
 
 UTF8String &UTF8String::Delete(intptr_t Index, intptr_t Count)
@@ -534,6 +583,11 @@ UnicodeString::UnicodeString(const UTF8String & Str)
   Init(Str.c_str(), Str.GetLength(), CP_UTF8);
 }
 
+UnicodeString::UnicodeString(const wchar_t * Str)
+{
+  Init(Str, wstring_t::StringLength(Str));
+}
+
 UnicodeString::UnicodeString(const char * Str, intptr_t Size)
 {
   Init(Str, Size, CP_THREAD_ACP);
@@ -547,6 +601,11 @@ UnicodeString::UnicodeString(const char * Str)
 UnicodeString::UnicodeString(const AnsiString & Str)
 {
   Init(Str.c_str(), Str.GetLength(), CP_THREAD_ACP);
+}
+
+void UnicodeString::SetLength(intptr_t nLength)
+{
+  Data.GetBufferSetLength(nLength);
 }
 
 UnicodeString & UnicodeString::Lower(intptr_t nStartPos, intptr_t nLength)
@@ -583,6 +642,16 @@ UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t
   NewData.Insert(Pos - 1, wstring_t(Str, DataLen).c_str());
   Data = NewData;
   return *this;
+}
+
+UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str)
+{
+  return Replace(Pos, Len, Str, wstring_t::StringLength(Str));
+}
+
+UnicodeString & UnicodeString::Append(const wchar_t * Str)
+{
+  return Append(Str, wstring_t::StringLength(Str));
 }
 
 UnicodeString & UnicodeString::Append(const char * lpszAdd, UINT CodePage)
