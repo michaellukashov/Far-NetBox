@@ -372,12 +372,6 @@ UTF8String::UTF8String(const UTF8String & rht)
 
 void UTF8String::Init(const wchar_t * Str, intptr_t Length)
 {
-//  Data.resize(Length);
-//  if (Length > 0)
-//  {
-//    wmemmove(const_cast<wchar_t *>(Data.c_str()), Str, Length);
-//  }
-//  Data = Data.c_str();
   intptr_t Size = ::WideCharToMultiByte(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0, nullptr, nullptr);
   Data.resize(Size + 1);
   if (Size > 0)
@@ -390,14 +384,6 @@ void UTF8String::Init(const wchar_t * Str, intptr_t Length)
 
 void UTF8String::Init(const char * Str, intptr_t Length)
 {
-//  intptr_t Size = ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Length > 0 ? Length : -1), nullptr, 0);
-//  Data.resize(Size + 1);
-//  if (Size > 0)
-//  {
-//    ::MultiByteToWideChar(CP_UTF8, 0, Str, -1, const_cast<wchar_t *>(Data.c_str()), static_cast<int>(Size));
-//    Data[Size] = 0;
-//  }
-//  Data = Data.c_str();
   Data.resize(Length);
   if (Length > 0)
   {
