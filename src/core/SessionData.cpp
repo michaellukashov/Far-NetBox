@@ -1650,7 +1650,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
           else if ((AData->GetName().Length() < DecodedUrl.Length()) &&
                    (DecodedUrl[AData->GetName().Length() + 1] == L'/') &&
                    // StrLIComp is an equivalent of SameText
-                   (StrLIComp(AData->GetName().c_str(), DecodedUrl.c_str(), (int)AData->GetName().Length()) == 0))
+                   (nb::StrLIComp(AData->GetName().c_str(), DecodedUrl.c_str(), (int)AData->GetName().Length()) == 0))
           {
             Match = true;
           }
