@@ -129,9 +129,25 @@ char & AnsiString::operator [](intptr_t Idx)
   return Data.GetBuffer()[Idx-1];
 }
 
-AnsiString &AnsiString::Append(const char * Str, intptr_t StrLen)
+AnsiString & AnsiString::Append(const char * Str, intptr_t StrLen)
 {
   Data.Append(Str, StrLen);
+  return *this;
+}
+
+AnsiString & AnsiString::Append(const AnsiString & Str)
+{
+  return Append(Str.c_str(), Str.GetLength());
+}
+
+AnsiString & AnsiString::Append(const char * Str)
+{
+  return Append(Str, string_t::StringLength(Str));
+}
+
+AnsiString & AnsiString::Append(const char Ch)
+{
+  Data.AppendChar(Ch);
   return *this;
 }
 
@@ -384,13 +400,13 @@ RawByteString RawByteString::operator +(const RawByteString & rhs) const
 
 RawByteString & RawByteString::operator +=(const RawByteString & rhs)
 {
-  Data.Append(reinterpret_cast<const uint8_t *>(rhs.c_str()), rhs.Length());
+  Data.Append(rhs.c_str(), rhs.Length());
   return *this;
 }
 
 RawByteString & RawByteString::operator +=(const char Ch)
 {
-  Data.AppendChar(ch);
+  Data.AppendChar(Ch);
   return *this;
 }
 
@@ -440,12 +456,22 @@ UTF8String::UTF8String(const wchar_t * Str, intptr_t Size)
   Init(Str, Size);
 }
 
+UTF8String::UTF8String(const char * Str, intptr_t Size)
+{
+  Init(Str, Size);
+}
+
+UTF8String::UTF8String(const char * Str)
+{
+  Init(Str, string_t::StringLength(Str));
+}
+
 void UTF8String::SetLength(intptr_t nLength)
 {
   Data.GetBufferSetLength(nLength);
 }
 
-UTF8String &UTF8String::Delete(intptr_t Index, intptr_t Count)
+UTF8String & UTF8String::Delete(intptr_t Index, intptr_t Count)
 {
   Data.Delete(Index - 1, Count);
   return *this;
@@ -459,7 +485,9 @@ intptr_t UTF8String::Pos(char Ch) const
 int UTF8String::vprintf(const char * Format, va_list ArgList)
 {
   SetLength(32 * 1024);
-  return vsnprintf_s((char *)Data.c_str(), Data.GetLength(), _TRUNCATE, Format, ArgList);
+  int Size = vsnprintf_s((char *)Data.c_str(), Data.GetLength(), _TRUNCATE, Format, ArgList);
+  Data.Truncate(Size);
+  return Size;
 }
 
 UTF8String & UTF8String::Insert(const wchar_t * Str, intptr_t Pos)
@@ -598,6 +626,12 @@ UnicodeString::UnicodeString(const AnsiString & Str)
 void UnicodeString::SetLength(intptr_t nLength)
 {
   Data.GetBufferSetLength(nLength);
+}
+
+UnicodeString & UnicodeString::Delete(intptr_t Index, intptr_t Count)
+{
+  Data.Delete(Index - 1, Count);
+  return *this;
 }
 
 UnicodeString & UnicodeString::Lower(intptr_t nStartPos, intptr_t nLength)

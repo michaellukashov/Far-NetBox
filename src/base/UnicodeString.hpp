@@ -36,8 +36,8 @@ public:
   explicit UTF8String(const UnicodeString & Str);
   UTF8String(const wchar_t * Str);
   explicit UTF8String(const wchar_t * Str, intptr_t Size);
-  explicit UTF8String(const char * Str, intptr_t Size) { Init(Str, Size); }
-  explicit UTF8String(const char * Str) { Init(Str, strlen(NullToEmptyA(Str))); }
+  explicit UTF8String(const char * Str, intptr_t Size);
+  explicit UTF8String(const char * Str);
 
   ~UTF8String() {}
 
@@ -110,7 +110,7 @@ public:
   intptr_t GetBytesCount() const { return (Length() + 1) * sizeof(wchar_t); }
   bool IsEmpty() const { return Length() == 0; }
   void SetLength(intptr_t nLength);
-  inline UnicodeString & Delete(intptr_t Index, intptr_t Count) { Data.Delete(Index - 1, Count); return *this; }
+  UnicodeString & Delete(intptr_t Index, intptr_t Count);
   UnicodeString & Clear() { Data.Empty(); return *this; }
 
   UnicodeString & Lower(intptr_t nStartPos = 1, intptr_t nLength = -1);
@@ -253,9 +253,9 @@ public:
   char & operator [](intptr_t Idx);
 
   AnsiString & Append(const char * Str, intptr_t StrLen);
-  AnsiString & Append(const AnsiString & Str) { return Append(Str.c_str(), Str.GetLength()); }
-  AnsiString & Append(const char * Str) { return Append(Str, strlen(NullToEmptyA(Str))); }
-  AnsiString & Append(const char Ch) { return Append(&Ch, 1); }
+  AnsiString & Append(const AnsiString & Str);
+  AnsiString & Append(const char * Str);
+  AnsiString & Append(const char Ch);
 
   void Unique() {}
 
