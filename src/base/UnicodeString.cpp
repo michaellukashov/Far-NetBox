@@ -1,8 +1,7 @@
-#include <WinUser.h>
-
 #include <Sysutils.hpp>
-
 #include "UnicodeString.hpp"
+
+#include <WinUser.h>
 #pragma hdrstop
 
 namespace nb {
