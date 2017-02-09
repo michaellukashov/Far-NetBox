@@ -229,7 +229,7 @@ void RawByteString::Init(const wchar_t * Str, intptr_t Length)
 
 void RawByteString::Init(const char * Str, intptr_t Length)
 {
-  uint8_t * Buffer = Data.GetBufferSetLength(Length);
+  char * Buffer = Data.GetBufferSetLength(Length);
   if (Length > 0)
   {
     memmove(Buffer, Str, Length);
@@ -238,7 +238,7 @@ void RawByteString::Init(const char * Str, intptr_t Length)
 
 void RawByteString::Init(const uint8_t * Str, intptr_t Length)
 {
-  uint8_t * Buffer = Data.GetBufferSetLength(Length);
+  char * Buffer = Data.GetBufferSetLength(Length);
   if (Length > 0)
   {
     memmove(Buffer, Str, Length);
@@ -262,12 +262,12 @@ intptr_t RawByteString::Pos(const char Ch) const
 
 intptr_t RawByteString::Pos(const char * Str) const
 {
-  return Data.Find(reinterpret_cast<const uint8_t *>(Str)) + 1;
+  return Data.Find(reinterpret_cast<const char *>(Str)) + 1;
 }
 
 RawByteString::RawByteString(const wchar_t * Str)
 {
-  Init(Str, string_t::StringLength(Str));
+  Init(Str, rawstring_t::StringLength(Str));
 }
 
 RawByteString::RawByteString(const wchar_t * Str, intptr_t Size)
@@ -277,7 +277,7 @@ RawByteString::RawByteString(const wchar_t * Str, intptr_t Size)
 
 RawByteString::RawByteString(const char * Str)
 {
-  Init(Str, string_t::StringLength(Str));
+  Init(Str, rawstring_t::StringLength(Str));
 }
 
 RawByteString::RawByteString(const char * Str, intptr_t Size)
@@ -287,7 +287,7 @@ RawByteString::RawByteString(const char * Str, intptr_t Size)
 
 RawByteString::RawByteString(const uint8_t * Str)
 {
-  Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0);
+  Init(Str, rawstring_t::StringLength((char *)Str));
 }
 
 RawByteString::RawByteString(const UnicodeString & Str)
@@ -323,19 +323,19 @@ RawByteString & RawByteString::Delete(intptr_t Index, intptr_t Count)
 
 RawByteString & RawByteString::Insert(const char * Str, intptr_t Pos)
 {
-  Data.Insert(Pos - 1, reinterpret_cast<const uint8_t *>(Str));
+  Data.Insert(Pos - 1, static_cast<const char *>(Str));
   return *this;
 }
 
 RawByteString RawByteString::SubString(intptr_t Pos) const
 {
-  RawByteString Result(Data.Substr(Pos - 1, rawstring_t::StringLength(Da).c_str(), Len);
-  return Result;
+  rawstring_t Str(Data.Mid(Pos - 1));
+  return UTF8String(Str.c_str(), Str.GetLength());
 }
 
 RawByteString RawByteString::SubString(intptr_t Pos, intptr_t Len) const
 {
-  rawstring_t s = Data.SubStr(Pos - 1, Len);
+  rawstring_t s = Data.Mid(Pos - 1, Len);
   RawByteString Result(s.c_str(), s.GetLength());
   return Result;
 }
@@ -366,14 +366,7 @@ RawByteString & RawByteString::operator=(const UTF8String & StrCopy)
 
 RawByteString & RawByteString::operator=(const char * lpszData)
 {
-  if (lpszData)
-  {
-    Init(lpszData, strlen(NullToEmptyA(lpszData)));
-  }
-  else
-  {
-    Data.clear();
-  }
+  Init(lpszData, rawstring_t::StringLength(lpszData));
   return *this;
 }
 
@@ -386,19 +379,18 @@ RawByteString & RawByteString::operator=(const wchar_t * lpwszData)
 RawByteString RawByteString::operator +(const RawByteString & rhs) const
 {
   rawstring_t Result = Data + rhs.Data;
-  return RawByteString(reinterpret_cast<const char *>(Result.c_str()), Result.size());
+  return RawByteString(reinterpret_cast<const char *>(Result.c_str()), Result.GetLength());
 }
 
 RawByteString & RawByteString::operator +=(const RawByteString & rhs)
 {
-  Data.append(reinterpret_cast<const uint8_t *>(rhs.c_str()), rhs.Length());
+  Data.Append(reinterpret_cast<const uint8_t *>(rhs.c_str()), rhs.Length());
   return *this;
 }
 
 RawByteString & RawByteString::operator +=(const char Ch)
 {
-  uint8_t ch(static_cast<uint8_t>(Ch));
-  Data.append(1, ch);
+  Data.AppendChar(ch);
   return *this;
 }
 
