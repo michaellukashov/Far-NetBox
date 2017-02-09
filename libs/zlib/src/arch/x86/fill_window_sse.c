@@ -45,7 +45,7 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
          * move the upper half to the lower one to make room in the upper half.
          */
         if (s->strstart >= wsize+MAX_DIST(s)) {
-            zmemcpy(s->window, s->window+wsize, (unsigned)wsize);
+            memcpy(s->window, s->window+wsize, (unsigned)wsize);
             s->match_start -= wsize;
             s->strstart    -= wsize; /* we now have strstart >= MAX_DIST */
             s->block_start -= (long) wsize;
@@ -145,7 +145,7 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
             init = s->window_size - curr;
             if (init > WIN_INIT)
                 init = WIN_INIT;
-            zmemzero(s->window + curr, (unsigned)init);
+            memset(s->window + curr, 0, (unsigned)init);
             s->high_water = curr + init;
         } else if (s->high_water < (unsigned long)curr + WIN_INIT) {
             /* High water mark at or above current data, but below current data
@@ -155,7 +155,7 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
             init = (unsigned long)curr + WIN_INIT - s->high_water;
             if (init > s->window_size - s->high_water)
                 init = s->window_size - s->high_water;
-            zmemzero(s->window + s->high_water, (unsigned)init);
+            memset(s->window + s->high_water, 0, (unsigned)init);
             s->high_water += init;
         }
     }

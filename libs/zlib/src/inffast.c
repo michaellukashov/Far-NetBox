@@ -1,5 +1,5 @@
 /* inffast.c -- fast decoding
- * Copyright (C) 1995-2017 Mark Adler
+ * Copyright (C) 1995-2008, 2010, 2013 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -8,9 +8,16 @@
 #include "inflate.h"
 #include "inffast.h"
 
-#ifdef ASMINF
-#  pragma message("Assembler code may have bugs -- use at your own risk")
-#else
+/* Return the low n bits of the bit accumulator (n < 16) */
+#define BITS(n) \
+    (hold & ((1U << (n)) - 1))
+
+/* Remove n bits from the bit accumulator */
+#define DROPBITS(n) \
+    do { \
+        hold >>= (n); \
+        bits -= (unsigned)(n); \
+    } while (0)
 
 /*
    Decode literal, length, and distance codes and write out the resulting
@@ -47,8 +54,7 @@
       requires strm->avail_out >= 258 for each loop to avoid checking for
       output space.
  */
-void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
-{
+void ZLIB_INTERNAL inflate_fast(z_stream *strm, unsigned long start) {
     /* start: inflate()'s starting value for strm->avail_out */
     struct inflate_state *state;
     const unsigned char *in;    /* local strm->next_in */
@@ -101,60 +107,54 @@ void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
        input data or output space */
     do {
         if (bits < 15) {
-            hold += (unsigned long)(*in++) << bits;
+            hold += (uint32_t)(*in++) << bits;
             bits += 8;
-            hold += (unsigned long)(*in++) << bits;
+            hold += (uint32_t)(*in++) << bits;
             bits += 8;
         }
         here = lcode[hold & lmask];
       dolen:
-        op = (unsigned)(here.bits);
-        hold >>= op;
-        bits -= op;
-        op = (unsigned)(here.op);
+        DROPBITS(here.bits);
+        op = here.op;
         if (op == 0) {                          /* literal */
             Tracevv((stderr, here.val >= 0x20 && here.val < 0x7f ?
                     "inflate:         literal '%c'\n" :
                     "inflate:         literal 0x%02x\n", here.val));
             *out++ = (unsigned char)(here.val);
-        }
-        else if (op & 16) {                     /* length base */
-            len = (unsigned)(here.val);
+        } else if (op & 16) {                     /* length base */
+            len = here.val;
             op &= 15;                           /* number of extra bits */
             if (op) {
                 if (bits < op) {
-                    hold += (unsigned long)(*in++) << bits;
+                    hold += (uint32_t)(*in++) << bits;
                     bits += 8;
                 }
-                len += (unsigned)hold & ((1U << op) - 1);
-                hold >>= op;
-                bits -= op;
+                len += BITS(op);
+                DROPBITS(op);
             }
             Tracevv((stderr, "inflate:         length %u\n", len));
             if (bits < 15) {
-                hold += (unsigned long)(*in++) << bits;
+                hold += (uint32_t)(*in++) << bits;
                 bits += 8;
-                hold += (unsigned long)(*in++) << bits;
+                hold += (uint32_t)(*in++) << bits;
                 bits += 8;
             }
             here = dcode[hold & dmask];
           dodist:
-            op = (unsigned)(here.bits);
-            hold >>= op;
-            bits -= op;
-            op = (unsigned)(here.op);
+            DROPBITS(here.bits);
+            op = here.op;
             if (op & 16) {                      /* distance base */
-                dist = (unsigned)(here.val);
+                dist = here.val;
                 op &= 15;                       /* number of extra bits */
                 if (bits < op) {
-                    hold += (unsigned long)(*in++) << bits;
+                    hold += (uint32_t)(*in++) << bits;
                     bits += 8;
                     if (bits < op) {
-                        hold += (unsigned long)(*in++) << bits;
+                        hold += (uint32_t)(*in++) << bits;
                         bits += 8;
                     }
                 }
-                dist += (unsigned)hold & ((1U << op) - 1);
+                dist += BITS(op);
 #ifdef INFLATE_STRICT
                 if (dist > dmax) {
                     strm->msg = (char *)"invalid distance too far back";
@@ -162,16 +162,14 @@ void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
                     break;
                 }
 #endif
-                hold >>= op;
-                bits -= op;
+                DROPBITS(op);
                 Tracevv((stderr, "inflate:         distance %u\n", dist));
                 op = (unsigned)(out - beg);     /* max distance in output */
                 if (dist > op) {                /* see if copy from window */
                     op = dist - op;             /* distance back in window */
                     if (op > whave) {
                         if (state->sane) {
-                            strm->msg =
-                                (char *)"invalid distance too far back";
+                            strm->msg = (char *)"invalid distance too far back";
                             state->mode = BAD;
                             break;
                         }
@@ -205,8 +203,7 @@ void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
                             } while (--op);
                             from = out - dist;  /* rest from output */
                         }
-                    }
-                    else if (wnext < op) {      /* wrap around window */
+                    } else if (wnext < op) {      /* wrap around window */
                         from += wsize + wnext - op;
                         op -= wnext;
                         if (op < len) {         /* some from end of window */
@@ -224,8 +221,7 @@ void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
                                 from = out - dist;      /* rest from output */
                             }
                         }
-                    }
-                    else {                      /* contiguous in window */
+                    } else {                      /* contiguous in window */
                         from += wnext - op;
                         if (op < len) {         /* some from window */
                             len -= op;
@@ -246,8 +242,7 @@ void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
                         if (len > 1)
                             *out++ = *from++;
                     }
-                    }
-                else {
+                } else {
                     from = out - dist;          /* copy direct from output */
                     do {                        /* minimum length is three */
                         *out++ = *from++;
@@ -260,28 +255,23 @@ void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
                         if (len > 1)
                             *out++ = *from++;
                     }
-                    }
                 }
-            else if ((op & 64) == 0) {          /* 2nd level distance code */
-                here = dcode[here.val + (hold & ((1U << op) - 1))];
+            } else if ((op & 64) == 0) {          /* 2nd level distance code */
+                here = dcode[here.val + BITS(op)];
                 goto dodist;
-            }
-            else {
+            } else {
                 strm->msg = (char *)"invalid distance code";
                 state->mode = BAD;
                 break;
             }
-        }
-        else if ((op & 64) == 0) {              /* 2nd level length code */
-            here = lcode[here.val + (hold & ((1U << op) - 1))];
+        } else if ((op & 64) == 0) {              /* 2nd level length code */
+            here = lcode[here.val + BITS(op)];
             goto dolen;
-        }
-        else if (op & 32) {                     /* end-of-block */
+        } else if (op & 32) {                     /* end-of-block */
             Tracevv((stderr, "inflate:         end of block\n"));
             state->mode = TYPE;
             break;
-        }
-        else {
+        } else {
             strm->msg = (char *)"invalid literal/length code";
             state->mode = BAD;
             break;
@@ -298,8 +288,7 @@ void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
     strm->next_in = in;
     strm->next_out = out;
     strm->avail_in = (unsigned)(in < last ? 5 + (last - in) : 5 - (in - last));
-    strm->avail_out = (unsigned)(out < end ?
-                                 257 + (end - out) : 257 - (out - end));
+    strm->avail_out = (unsigned)(out < end ? 257 + (end - out) : 257 - (out - end));
     state->hold = hold;
     state->bits = bits;
     return;
@@ -318,5 +307,3 @@ void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
    - Larger unrolled copy loops (three is about right)
    - Moving len -= 3 statement into middle of loop
  */
-
-#endif /* !ASMINF */

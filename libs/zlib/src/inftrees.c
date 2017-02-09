@@ -1,5 +1,5 @@
 /* inftrees.c -- generate Huffman trees for efficient decoding
- * Copyright (C) 1995-2017 Mark Adler
+ * Copyright (C) 1995-2013 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -8,8 +8,7 @@
 
 #define MAXBITS 15
 
-const char inflate_copyright[] =
-   " inflate 1.2.11.f Copyright 1995-2017 Mark Adler ";
+const char inflate_copyright[] = " inflate 1.2.8.f Copyright 1995-2013 Mark Adler ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
@@ -29,9 +28,8 @@ const char inflate_copyright[] =
    table index bits.  It will differ if the request is greater than the
    longest code or if it is less than the shortest code.
  */
-int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
-                                code * *table, uint32_t *bits, uint16_t  *work)
-{
+int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, unsigned codes,
+                                code * *table, unsigned *bits, uint16_t  *work) {
     unsigned len;               /* a code's length in bits */
     unsigned sym;               /* index of code symbols */
     unsigned min, max;          /* minimum and maximum code lengths */
@@ -49,7 +47,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
     code *next;                 /* next available space in table */
     const uint16_t *base;       /* base value table to use */
     const uint16_t *extra;      /* extra bits table to use */
-    unsigned match;              /* use base and extra for symbol > match */
+    unsigned match;             /* use base and extra for symbol >= match */
     uint16_t count[MAXBITS+1];  /* number of codes of each length */
     uint16_t offs[MAXBITS+1];   /* offsets in table for each length */
     static const uint16_t lbase[31] = { /* Length codes 257..285 base */
@@ -57,7 +55,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
         35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0};
     static const uint16_t lext[31] = { /* Length codes 257..285 extra */
         16, 16, 16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18,
-        19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 16, 77, 202};
+        19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 16, 72, 78};
     static const uint16_t dbase[32] = { /* Distance codes 0..29 base */
         1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
         257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
@@ -183,7 +181,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
         extra = lext;
         match = 257;
         break;
-    default:            /* DISTS */
+    default:    /* DISTS */
         base = dbase;
         extra = dext;
         match = 0;
@@ -212,12 +210,10 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
         if (work[sym] + 1U < match) {
             here.op = (unsigned char)0;
             here.val = work[sym];
-        }
-        else if (work[sym] >= match) {
+        } else if (work[sym] >= match) {
             here.op = (unsigned char)(extra[work[sym] - match]);
             here.val = base[work[sym] - match];
-        }
-        else {
+        } else {
             here.op = (unsigned char)(32 + 64);         /* end of block */
             here.val = 0;
         }
@@ -238,8 +234,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
         if (incr != 0) {
             huff &= incr - 1;
             huff += incr;
-        }
-        else {
+        } else {
             huff = 0;
         }
 
@@ -273,8 +268,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
 
             /* check for enough space */
             used += 1U << curr;
-            if ((type == LENS && used > ENOUGH_LENS) ||
-                (type == DISTS && used > ENOUGH_DISTS))
+            if ((type == LENS && used > ENOUGH_LENS) || (type == DISTS && used > ENOUGH_DISTS))
                 return 1;
 
             /* point entry in root table to sub-table */

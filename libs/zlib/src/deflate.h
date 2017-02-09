@@ -1,5 +1,7 @@
+#ifndef DEFLATE_H_
+#define DEFLATE_H_
 /* deflate.h -- internal compression state
- * Copyright (C) 1995-2016 Jean-loup Gailly
+ * Copyright (C) 1995-2012 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -9,9 +11,6 @@
  */
 
 /* @(#) $Id$ */
-
-#ifndef DEFLATE_H
-#define DEFLATE_H
 
 #include "zutil.h"
 
@@ -91,8 +90,8 @@ typedef struct ct_data_s {
 typedef struct static_tree_desc_s  static_tree_desc;
 
 typedef struct tree_desc_s {
-    ct_data *dyn_tree;           /* the dynamic tree */
-    int     max_code;            /* largest code with non zero frequency */
+    ct_data                *dyn_tree;  /* the dynamic tree */
+    int                    max_code;   /* largest code with non zero frequency */
     const static_tree_desc *stat_desc; /* the corresponding static tree */
 } tree_desc;
 
@@ -109,10 +108,10 @@ typedef struct internal_state {
     unsigned char *pending_buf;      /* output still pending */
     unsigned long pending_buf_size;  /* size of pending_buf */
     unsigned char *pending_out;      /* next pending byte to output to the stream */
-    unsigned long pending;           /* nb of bytes in the pending buffer */
+    uint32_t      pending;           /* nb of bytes in the pending buffer */
     int           wrap;              /* bit 0 true for zlib, bit 1 true for gzip */
     gz_headerp    gzhead;            /* gzip header information to write */
-    unsigned long gzindex;           /* where in extra, name, or comment */
+    uint32_t      gzindex;           /* where in extra, name, or comment */
     unsigned char method;            /* can only be DEFLATED */
     int           last_flush;        /* value of flush param for previous deflate call */
 
@@ -338,16 +337,13 @@ typedef enum {
         /* in trees.c */
 void ZLIB_INTERNAL _tr_init(deflate_state *s);
 int ZLIB_INTERNAL _tr_tally(deflate_state *s, unsigned dist, unsigned lc);
-void ZLIB_INTERNAL _tr_flush_block(deflate_state *s, char *buf,
-                        unsigned long stored_len, int last);
+void ZLIB_INTERNAL _tr_flush_block(deflate_state *s, char *buf, unsigned long stored_len, int last);
 void ZLIB_INTERNAL _tr_flush_bits(deflate_state *s);
 void ZLIB_INTERNAL _tr_align(deflate_state *s);
-void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf,
-                        unsigned long stored_len, int last);
+void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf, unsigned long stored_len, int last);
 void ZLIB_INTERNAL bi_windup(deflate_state *s);
 
-#define d_code(dist) \
-   ((dist) < 256 ? _dist_code[dist] : _dist_code[256+((dist)>>7)])
+#define d_code(dist) ((dist) < 256 ? _dist_code[dist] : _dist_code[256+((dist)>>7)])
 /* Mapping from a distance to a distance code. dist is the distance - 1 and
  * must not have side effects. _dist_code[256] and _dist_code[257] are never
  * used.
@@ -356,7 +352,7 @@ void ZLIB_INTERNAL bi_windup(deflate_state *s);
 #ifndef ZLIB_DEBUG
 /* Inline versions of _tr_tally for speed: */
 
-#if defined(GEN_TREES_H) || !defined(STDC)
+# if defined(GEN_TREES_H)
     extern unsigned char ZLIB_INTERNAL _length_code[];
     extern unsigned char ZLIB_INTERNAL _dist_code[];
 # else
@@ -431,29 +427,7 @@ void ZLIB_INTERNAL bi_windup(deflate_state *s);
 #endif
 
 #ifdef ZLIB_DEBUG
-/* ===========================================================================
- * Send a value on a given number of bits.
- * IN assertion: length <= 16 and value fits in length bits.
- */
-local void send_bits(deflate_state *s, int value, int length) {
-    Tracevv((stderr, " l %2d v %4x ", length, value));
-    Assert(length > 0 && length <= 15, "invalid length");
-    s->bits_sent += (unsigned long)length;
-
-    /* If not enough room in bi_buf, use (valid) bits from bi_buf and
-     * (16 - bi_valid) bits from value, leaving (width - (16-bi_valid))
-     * unused bits in value.
-     */
-    if (s->bi_valid > (int)Buf_size - length) {
-        s->bi_buf |= (uint16_t)value << s->bi_valid;
-        put_short(s, s->bi_buf);
-        s->bi_buf = (uint16_t)value >> (Buf_size - s->bi_valid);
-        s->bi_valid += length - Buf_size;
-    } else {
-        s->bi_buf |= (uint16_t)value << s->bi_valid;
-        s->bi_valid += length;
-    }
-}
+void send_bits(deflate_state *s, int value, int length);
 #else
 #define send_bits(s, value, length) \
 { int len = length;\
