@@ -72,7 +72,6 @@ private:
   void Init(const wchar_t * Str, intptr_t Length);
   void Init(const char * Str, intptr_t Length);
 
-  // typedef std::basic_string<char, std::char_traits<char>, custom_nballocator_t<char> > string_t;
   typedef CMStringA string_t;
   string_t Data;
 };
@@ -267,9 +266,6 @@ public:
   AnsiString & operator +=(const char Ch);
   AnsiString & operator +=(const char * rhs);
 
-  // bool operator ==(const AnsiString & Str) const { return Data == Str.Data; }
-  // bool operator !=(const AnsiString & Str) const { return Data != Str.Data; }
-
   inline friend bool operator ==(const AnsiString & lhs, const AnsiString & rhs)
   { return strcmp(lhs.Data.c_str(), rhs.Data.c_str()) == 0; }
   inline friend bool operator !=(const AnsiString & lhs, const AnsiString & rhs)
@@ -357,7 +353,6 @@ private:
   void Init(const char * Str, intptr_t Length);
   void Init(const uint8_t * Str, intptr_t Length);
 
-  // typedef std::basic_string<uint8_t, std::char_traits<uint8_t>, custom_nballocator_t<uint8_t> > rawstring_t;
   typedef CMStringT< uint8_t, NBChTraitsCRT< uint8_t > > rawstring_t;
   rawstring_t Data;
 };
