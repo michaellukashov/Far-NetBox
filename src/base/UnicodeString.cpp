@@ -39,7 +39,7 @@ AnsiString::AnsiString(const wchar_t * Str, intptr_t Size)
 
 AnsiString::AnsiString(const char * Str)
 {
-  Init(Str, strlen(NullToEmptyA(Str)));
+  Init(Str, string_t::StringLength(Str));
 }
 
 AnsiString::AnsiString(const char * Str, intptr_t Size)
@@ -213,13 +213,13 @@ AnsiString & AnsiString::operator=(const UTF8String & StrCopy)
 
 AnsiString & AnsiString::operator=(const char * lpszData)
 {
-  Init(lpszData, strlen(NullToEmptyA(lpszData)));
+  Init(lpszData, string_t::StringLength(lpszData));
   return *this;
 }
 
 AnsiString & AnsiString::operator=(const wchar_t * lpwszData)
 {
-  Init(lpwszData, wcslen(NullToEmpty(lpwszData)));
+  Init(lpwszData, CMStringW::StringLength(lpwszData));
   return *this;
 }
 
@@ -411,7 +411,7 @@ RawByteString & RawByteString::operator=(const char * lpszData)
 
 RawByteString & RawByteString::operator=(const wchar_t * lpwszData)
 {
-  Init(lpwszData, wcslen(NullToEmpty(lpwszData)));
+  Init(lpwszData, CMStringW::StringLength(lpwszData));
   return *this;
 }
 
@@ -729,6 +729,11 @@ UnicodeString & UnicodeString::Insert(intptr_t Pos, const wchar_t * Str, intptr_
   return *this;
 }
 
+UnicodeString &UnicodeString::Insert(const wchar_t * Str, intptr_t Pos)
+{
+  return Insert(Pos, Str, wstring_t::StringLength(Str));
+}
+
 intptr_t UnicodeString::Pos(wchar_t Ch) const
 {
   return Data.Find(Ch) + 1;
@@ -831,7 +836,7 @@ UnicodeString & UnicodeString::operator=(const UTF8String & StrCopy)
 
 UnicodeString & UnicodeString::operator=(const wchar_t * Str)
 {
-  Init(Str, wcslen(NullToEmpty(Str)));
+  Init(Str, wstring_t::StringLength(Str));
   return *this;
 }
 

@@ -133,7 +133,7 @@ public:
 
   UnicodeString & Insert(intptr_t Pos, const wchar_t * Str, intptr_t StrLen);
   UnicodeString & Insert(intptr_t Pos, const UnicodeString & Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
-  UnicodeString & Insert(const wchar_t * Str, intptr_t Pos) { return Insert(Pos, Str, wcslen(NullToEmpty(Str))); }
+  UnicodeString & Insert(const wchar_t * Str, intptr_t Pos);
   UnicodeString & Insert(const wchar_t Ch, intptr_t Pos) { return Insert(Pos, &Ch, 1); }
   UnicodeString & Insert(const UnicodeString & Str, intptr_t Pos) { return Insert(Pos, Str); }
 
