@@ -45,7 +45,7 @@ UnicodeString UnMungeStr(const UnicodeString & Str)
   // Str should contain ASCII characters only
   RawByteString Source = Str;
   RawByteString Dest;
-  char * Buffer = Dest.SetLength(Source.Length());
+  char * Buffer = Dest.SetLength(Source.GetLength());
   putty_unmungestr(Source.c_str(), Buffer, static_cast<int>(Source.GetLength()));
   // Cut the string at null character
   PackStr(Dest);
