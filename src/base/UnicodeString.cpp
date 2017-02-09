@@ -72,9 +72,9 @@ AnsiString::AnsiString(const RawByteString & Str)
   Init(Str.c_str(), Str.GetLength());
 }
 
-void AnsiString::SetLength(intptr_t nLength)
+char * AnsiString::SetLength(intptr_t nLength)
 {
-  Data.GetBufferSetLength(nLength);
+  return Data.GetBufferSetLength(nLength);
 }
 
 AnsiString & AnsiString::Delete(intptr_t Index, intptr_t Count)
@@ -490,9 +490,9 @@ UTF8String::UTF8String(const char * Str)
   Init(Str, string_t::StringLength(Str));
 }
 
-void UTF8String::SetLength(intptr_t nLength)
+char * UTF8String::SetLength(intptr_t nLength)
 {
-  Data.GetBufferSetLength(nLength);
+  return Data.GetBufferSetLength(nLength);
 }
 
 UTF8String & UTF8String::Delete(intptr_t Index, intptr_t Count)
@@ -647,9 +647,9 @@ UnicodeString::UnicodeString(const AnsiString & Str)
   Init(Str.c_str(), Str.GetLength(), CP_THREAD_ACP);
 }
 
-void UnicodeString::SetLength(intptr_t nLength)
+wchar_t * UnicodeString::SetLength(intptr_t nLength)
 {
-  Data.GetBufferSetLength(nLength);
+  return Data.GetBufferSetLength(nLength);
 }
 
 UnicodeString & UnicodeString::Delete(intptr_t Index, intptr_t Count)

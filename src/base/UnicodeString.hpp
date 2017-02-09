@@ -38,7 +38,7 @@ public:
   intptr_t Length() const { return Data.GetLength(); }
   intptr_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
-  void SetLength(intptr_t nLength);
+  char * SetLength(intptr_t nLength);
   UTF8String & Delete(intptr_t Index, intptr_t Count);
   UTF8String & Insert(const wchar_t * Str, intptr_t Pos);
   UTF8String SubString(intptr_t Pos) const;
@@ -100,7 +100,7 @@ public:
   intptr_t GetLength() const { return Length(); }
   intptr_t GetBytesCount() const { return (Length() + 1) * sizeof(wchar_t); }
   bool IsEmpty() const { return Length() == 0; }
-  void SetLength(intptr_t nLength);
+  wchar_t * SetLength(intptr_t nLength);
   UnicodeString & Delete(intptr_t Index, intptr_t Count);
   UnicodeString & Clear() { Data.Empty(); return *this; }
 
@@ -229,7 +229,7 @@ public:
   intptr_t Length() const { return Data.GetLength(); }
   intptr_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
-  void SetLength(intptr_t nLength);
+  char * SetLength(intptr_t nLength);
   inline AnsiString & Delete(intptr_t Index, intptr_t Count);
   AnsiString & Clear();
   AnsiString & Insert(const char * Str, intptr_t Pos);
