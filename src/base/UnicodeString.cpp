@@ -255,7 +255,7 @@ void RawByteString::Init(const wchar_t * Str, intptr_t Length)
     return;
   }
   int Size = ::WideCharToMultiByte(CP_ACP, 0, Str, -1, nullptr, 0, nullptr, nullptr);
-  char * Buffer = Data.GetBufferSetLength(Length);
+  char * Buffer = Data.GetBufferSetLength(Length + 1);
   if (Buffer != nullptr)
   {
     ::WideCharToMultiByte(CP_ACP, 0, Str, -1, Buffer, Size, nullptr, nullptr);
