@@ -34,8 +34,8 @@ UnicodeString MungeStr(const UnicodeString & Str, bool ForceAnsi)
   }
   // should contain ASCII characters only
   RawByteString Dest;
-  Dest.SetLength(Source.Length() * 3 + 1);
-  putty_mungestr(Source.c_str(), const_cast<char *>(Dest.c_str()));
+  char * Buffer = Dest.SetLength(Source.Length() * 3 + 1);
+  putty_mungestr(Source.c_str(), Buffer);
   PackStr(Dest);
   return UnicodeString(Dest.c_str(), Dest.Length());
 }
@@ -45,7 +45,7 @@ UnicodeString UnMungeStr(const UnicodeString & Str)
   // Str should contain ASCII characters only
   RawByteString Source = Str;
   RawByteString Dest;
-  char * Buffer = Dest.SetLength(Source.Length() + 1);
+  char * Buffer = Dest.SetLength(Source.Length());
   putty_unmungestr(Source.c_str(), Buffer, static_cast<int>(Source.GetLength()));
   // Cut the string at null character
   PackStr(Dest);
