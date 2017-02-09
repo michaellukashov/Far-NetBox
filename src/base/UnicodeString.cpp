@@ -103,7 +103,7 @@ void AnsiString::Init(const wchar_t * Str, intptr_t Length)
     ::WideCharToMultiByte(CP_UTF8, 0, Str, -1, Buffer, Size, nullptr, nullptr);
     Buffer[Size] = 0;
   }
-  Data.Truncate(Size);
+  Data.Truncate(Length);
 }
 
 void AnsiString::Init(const char * Str, intptr_t Length)
@@ -255,13 +255,13 @@ void RawByteString::Init(const wchar_t * Str, intptr_t Length)
     return;
   }
   int Size = ::WideCharToMultiByte(CP_ACP, 0, Str, -1, nullptr, 0, nullptr, nullptr);
-  char * Buffer = Data.GetBufferSetLength(Length + 1);
+  char * Buffer = Data.GetBufferSetLength(Size + 1);
   if (Buffer != nullptr)
   {
     ::WideCharToMultiByte(CP_ACP, 0, Str, -1, Buffer, Size, nullptr, nullptr);
     Buffer[Size] = 0;
   }
-  Data.Truncate(Size);
+  Data.Truncate(Length);
 }
 
 void RawByteString::Init(const char * Str, intptr_t Length)
@@ -452,7 +452,7 @@ void UTF8String::Init(const wchar_t * Str, intptr_t Length)
     ::WideCharToMultiByte(CP_UTF8, 0, Str, -1, Buffer, Size, nullptr, nullptr);
     Buffer[Size] = 0;
   }
-  Data.Truncate(Size);
+  Data.Truncate(Length);
 }
 
 void UTF8String::Init(const char * Str, intptr_t Length)
