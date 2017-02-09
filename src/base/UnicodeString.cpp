@@ -345,9 +345,9 @@ RawByteString::RawByteString(const UTF8String & Str)
   Init(Str.c_str(), Str.GetLength());
 }
 
-void RawByteString::SetLength(intptr_t nLength)
+char * RawByteString::SetLength(intptr_t nLength)
 {
-  Data.GetBufferSetLength(nLength);
+  return Data.GetBufferSetLength(nLength);
 }
 
 RawByteString & RawByteString::Delete(intptr_t Index, intptr_t Count)

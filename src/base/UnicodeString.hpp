@@ -313,7 +313,7 @@ public:
   intptr_t Length() const { return Data.GetLength(); }
   intptr_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
-  void SetLength(intptr_t nLength);
+  char * SetLength(intptr_t nLength);
   RawByteString & Clear() { SetLength(0); return *this; }
   RawByteString & Delete(intptr_t Index, intptr_t Count);
   RawByteString & Insert(const char * Str, intptr_t Pos);
