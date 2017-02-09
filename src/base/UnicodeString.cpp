@@ -108,22 +108,24 @@ void AnsiString::Init(const wchar_t * Str, intptr_t Length)
 
 void AnsiString::Init(const char * Str, intptr_t Length)
 {
-  char * Buffer = Data.GetBufferSetLength(Length);
-  if (Buffer != nullptr)
-  {
-    memmove(Buffer, Str, Length);
-  }
-  Data.Truncate(Length);
+  //char * Buffer = Data.GetBufferSetLength(Length);
+  //if (Buffer != nullptr)
+  //{
+  //  memmove(Buffer, Str, Length);
+  //}
+  //Data.Truncate(Length);
+  Data = string_t(Str, Length);
 }
 
 void AnsiString::Init(const uint8_t * Str, intptr_t Length)
 {
-  char * Buffer = Data.GetBufferSetLength(Length);
-  if (Buffer != nullptr)
-  {
-    memmove(const_cast<char *>(Data.c_str()), Str, Length);
-  }
-  Data.Truncate(Length);
+  //char * Buffer = Data.GetBufferSetLength(Length);
+  //if (Buffer != nullptr)
+  //{
+  //  memmove(const_cast<char *>(Data.c_str()), Str, Length);
+  //}
+  //Data.Truncate(Length);
+  Data = string_t(reinterpret_cast<const char *>(Str), Length);
 }
 
 intptr_t AnsiString::Pos(const AnsiString & Str) const
@@ -264,20 +266,22 @@ void RawByteString::Init(const wchar_t * Str, intptr_t Length)
 
 void RawByteString::Init(const char * Str, intptr_t Length)
 {
-  char * Buffer = Data.GetBufferSetLength(Length);
-  if (Length > 0)
-  {
-    memmove(Buffer, Str, Length);
-  }
+  //char * Buffer = Data.GetBufferSetLength(Length);
+  //if (Length > 0)
+  //{
+  //  memmove(Buffer, Str, Length);
+  //}
+  Data = rawstring_t(Str, Length);
 }
 
 void RawByteString::Init(const uint8_t * Str, intptr_t Length)
 {
-  char * Buffer = Data.GetBufferSetLength(Length);
-  if (Length > 0)
-  {
-    memmove(Buffer, Str, Length);
-  }
+  //char * Buffer = Data.GetBufferSetLength(Length);
+  //if (Length > 0)
+  //{
+  //  memmove(Buffer, Str, Length);
+  //}
+  Data = rawstring_t(reinterpret_cast<const char *>(Str), Length);
 }
 
 RawByteString::operator UnicodeString() const
@@ -453,11 +457,12 @@ void UTF8String::Init(const wchar_t * Str, intptr_t Length)
 
 void UTF8String::Init(const char * Str, intptr_t Length)
 {
-  char * Buffer = Data.GetBufferSetLength(Length);
-  if (Length > 0)
-  {
-    memmove(Buffer, Str, Length);
-  }
+  //char * Buffer = Data.GetBufferSetLength(Length);
+  //if (Length > 0)
+  //{
+  //  memmove(Buffer, Str, Length);
+  //}
+  Data = string_t(Str, Length);
 }
 
 UTF8String::UTF8String(const UnicodeString & Str)
