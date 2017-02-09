@@ -1828,7 +1828,8 @@ static block_state deflate_stored(deflate_state *s, int flush)
 
     /* If flushing and all input has been consumed, then done. */
     if (flush != Z_NO_FLUSH && flush != Z_FINISH &&
-        s->strm->avail_in == 0 && (long)s->strstart == s->block_start)
+        s->strm->avail_in == 0 && 
+        (long)s->strstart == s->block_start)
         return block_done;
 
     /* Fill the window with any remaining input. */
