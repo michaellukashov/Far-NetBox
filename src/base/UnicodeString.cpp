@@ -658,9 +658,21 @@ UnicodeString & UnicodeString::Delete(intptr_t Index, intptr_t Count)
   return *this;
 }
 
+UnicodeString & UnicodeString::Lower(intptr_t nStartPos)
+{
+  Data = ::LowerCase(SubString(nStartPos)).c_str();
+  return *this;
+}
+
 UnicodeString & UnicodeString::Lower(intptr_t nStartPos, intptr_t nLength)
 {
   Data = ::LowerCase(SubString(nStartPos, nLength)).c_str();
+  return *this;
+}
+
+UnicodeString & UnicodeString::Upper(intptr_t nStartPos)
+{
+  Data = ::UpperCase(SubString(nStartPos)).c_str();
   return *this;
 }
 
