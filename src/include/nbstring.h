@@ -22,7 +22,8 @@ __inline size_t wcsnlen(const wchar_t *string, size_t maxlen)
 }
 
 /* FIXME: This may be wrong assumption about Langpack_GetDefaultCodePage */
-#define Langpack_GetDefaultCodePage() CP_THREAD_ACP
+#define Langpack_GetDefaultCodePage() CP_UTF8
+//CP_THREAD_ACP
 /* FIXME: This is unsafe */
 #define memcpy_s(dest,size,src,count) memcpy(dest,src,count)
 /* FIXME: This is quite silly implementation of _mbsstr */
@@ -31,7 +32,8 @@ __inline size_t wcsnlen(const wchar_t *string, size_t maxlen)
 #endif /* __MINGW32__ */
 
 /* FIXME: This may be wrong assumption about Langpack_GetDefaultCodePage */
-#define Langpack_GetDefaultCodePage() CP_THREAD_ACP
+#define Langpack_GetDefaultCodePage() CP_UTF8
+//CP_THREAD_ACP
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
