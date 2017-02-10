@@ -37,7 +37,7 @@ AnsiString::AnsiString(const wchar_t * Str) :
 AnsiString::AnsiString(const wchar_t * Str, intptr_t Length) :
   Data(Str, Length)
 {
-//  Init(Str, Size);
+//  Init(Str, Length);
 }
 
 AnsiString::AnsiString(const char * Str) :
@@ -49,7 +49,7 @@ AnsiString::AnsiString(const char * Str) :
 AnsiString::AnsiString(const char * Str, intptr_t Length) :
   Data(Str, Length)
 {
-//  Init(Str, Size);
+//  Init(Str, Length);
 }
 
 AnsiString::AnsiString(const unsigned char * Str) :
@@ -61,7 +61,7 @@ AnsiString::AnsiString(const unsigned char * Str) :
 AnsiString::AnsiString(const unsigned char * Str, intptr_t Length) :
   Data(reinterpret_cast<const char *>(Str), Length)
 {
-//  Init(Str, Size);
+//  Init(Str, Length);
 }
 
 AnsiString::AnsiString(const UnicodeString & Str) :
@@ -325,7 +325,7 @@ RawByteString::RawByteString(const wchar_t * Str) :
 RawByteString::RawByteString(const wchar_t * Str, intptr_t Length) :
   Data(Str, Length)
 {
-//  Init(Str, Size);
+//  Init(Str, Length);
 }
 
 RawByteString::RawByteString(const char * Str) :
@@ -337,13 +337,19 @@ RawByteString::RawByteString(const char * Str) :
 RawByteString::RawByteString(const char * Str, intptr_t Length) :
   Data(Str, Length)
 {
-//  Init(Str, Size);
+//  Init(Str, Length);
 }
 
 RawByteString::RawByteString(const unsigned char * Str) :
   Data(reinterpret_cast<const char *>(Str), rawstring_t::StringLength(reinterpret_cast<const char *>(Str)))
 {
-//  Init(Str, rawstring_t::StringLength((char *)Str));
+  //  Init(Str, rawstring_t::StringLength((char *)Str));
+}
+
+RawByteString::RawByteString(const unsigned char * Str, intptr_t Length) :
+  Data(static_cast<const char *>(Str), Length)
+{
+//  Init(Str, Length);
 }
 
 RawByteString::RawByteString(const UnicodeString & Str) :
@@ -503,13 +509,13 @@ UTF8String::UTF8String(const wchar_t * Str) :
 UTF8String::UTF8String(const wchar_t * Str, intptr_t Length) :
   Data(Str, Length)
 {
-  //Init(Str, Size);
+  //Init(Str, Length);
 }
 
 UTF8String::UTF8String(const char * Str, intptr_t Length) :
   Data(Str, Length)
 {
-//  Init(Str, Size);
+//  Init(Str, Length);
 }
 
 UTF8String::UTF8String(const char * Str) :
@@ -664,13 +670,19 @@ UnicodeString::UnicodeString(const wchar_t * Str)
 UnicodeString::UnicodeString(const wchar_t * Str, intptr_t Length) :
   Data(Str, Length)
 {
-//  Init(Str, Size);
+  //  Init(Str, Length);
+}
+
+UnicodeString::UnicodeString(const wchar_t Src) :
+  Data(&Str, 1)
+{
+//  Init(&Src, 1);
 }
 
 UnicodeString::UnicodeString(const char * Str, intptr_t Length) :
   Data(Str, Length)
 {
-//  Init(Str, Size, CP_THREAD_ACP);
+//  Init(Str, Length, CP_THREAD_ACP);
 }
 
 UnicodeString::UnicodeString(const char * Str) :

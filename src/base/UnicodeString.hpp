@@ -83,10 +83,10 @@ public:
   UnicodeString() {}
   UnicodeString(const wchar_t * Str);
   UnicodeString(const wchar_t * Str, intptr_t Length);
-  UnicodeString(const wchar_t Src) { Init(&Src, 1); }
+  UnicodeString(const wchar_t Src);
   UnicodeString(const char * Str, intptr_t Length);
   UnicodeString(const char * Str);
-  UnicodeString(intptr_t Size, wchar_t Ch) : Data(Ch, Size) {}
+  UnicodeString(intptr_t Length, wchar_t Ch) : Data(Ch, Length) {}
 
   UnicodeString(const UnicodeString & Str) { Data = Str.Data; }
   explicit UnicodeString(const UTF8String & Str);
@@ -215,7 +215,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 public:
   AnsiString() {}
   AnsiString(const AnsiString & rhs);
-  AnsiString(intptr_t Size, char Ch) : Data(Ch, Size) {}
+  AnsiString(intptr_t Length, char Ch) : Data(Ch, Length) {}
   explicit AnsiString(const wchar_t * Str);
   explicit AnsiString(const wchar_t * Str, intptr_t Length);
   AnsiString(const char * Str);
@@ -302,7 +302,7 @@ public:
   RawByteString(const char * Str);
   explicit RawByteString(const char * Str, intptr_t Length);
   explicit RawByteString(const unsigned char * Str);
-  explicit RawByteString(const unsigned char * Str, intptr_t Size) { Init(Str, Size); }
+  explicit RawByteString(const unsigned char * Str, intptr_t Length);
   RawByteString(const UnicodeString & Str);
   RawByteString(const RawByteString & Str);
   RawByteString(const AnsiString & Str);
