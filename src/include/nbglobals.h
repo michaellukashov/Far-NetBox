@@ -293,8 +293,3 @@ private: \
 #define nullptr NULL
 #endif
 
-#define TShellExecuteInfoW _SHELLEXECUTEINFOW
-#define TSHFileInfoW SHFILEINFOW
-#define TVSFixedFileInfo VS_FIXEDFILEINFO
-#define PVSFixedFileInfo VS_FIXEDFILEINFO*
-
