@@ -758,6 +758,7 @@ public:
 
 	CMStringT(const XCHAR* pch, int nLength);
 	CMStringT(const YCHAR* pch, int nLength);
+	CMStringT(const YCHAR* pch, int nLength, int CodePage);
 
 	// Destructor
 	~CMStringT();
