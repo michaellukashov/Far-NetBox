@@ -695,7 +695,6 @@ static void aes_encrypt_nb_4(AESContext * ctx, word32 * block)
 	MOVEWORD(1);
 	MOVEWORD(2);
 	MOVEWORD(3);
-  //memmove(block, newstate, sizeof(newstate));
     }
     ADD_ROUND_KEY_4;
     LASTWORD(0);

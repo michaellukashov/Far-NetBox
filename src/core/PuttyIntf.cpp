@@ -11,8 +11,7 @@
 #include "CoreMain.h"
 #include "TextsCore.h"
 
-extern "C"
-{
+extern "C" {
 #include <winstuff.h>
 }
 char sshver[50];
@@ -21,8 +20,8 @@ CRITICAL_SECTION putty_section;
 bool SaveRandomSeed;
 char appname_[50];
 const char * const appname = appname_;
-extern const int share_can_be_downstream = FALSE;
-extern const int share_can_be_upstream = FALSE;
+extern "C" const int share_can_be_downstream = FALSE;
+extern "C" const int share_can_be_upstream = FALSE;
 
 const UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
 const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
