@@ -1269,7 +1269,6 @@ set(NETBOX_SOURCES
   ../nbcore/nbcore_memory.cpp
   ../nbcore/nbcore_utils.cpp
 
-  ../base/GlobalUtils.cpp
   ../base/UnicodeString.cpp
   ../base/Classes.cpp
   ../base/Masks.cpp
