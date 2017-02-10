@@ -97,13 +97,13 @@ void AnsiString::Init(const wchar_t * Str, intptr_t Length)
     return;
   }
   int Size = ::WideCharToMultiByte(CP_UTF8, 0, Str, -1, nullptr, 0, nullptr, nullptr);
-  char * Buffer = Data.GetBufferSetLength(Size);
+  char * Buffer = Data.GetBufferSetLength(Size+1);
   if (Buffer != nullptr)
   {
     ::WideCharToMultiByte(CP_UTF8, 0, Str, -1, Buffer, Size, nullptr, nullptr);
     Buffer[Size] = 0;
   }
-  //Data.Truncate(Size);
+  Data.Truncate(Size);
 }
 
 void AnsiString::Init(const char * Str, intptr_t Length)
@@ -255,13 +255,13 @@ void RawByteString::Init(const wchar_t * Str, intptr_t Length)
     return;
   }
   int Size = ::WideCharToMultiByte(CP_ACP, 0, Str, -1, nullptr, 0, nullptr, nullptr);
-  char * Buffer = Data.GetBufferSetLength(Size);
+  char * Buffer = Data.GetBufferSetLength(Size+1);
   if (Buffer != nullptr)
   {
     ::WideCharToMultiByte(CP_ACP, 0, Str, -1, Buffer, Size, nullptr, nullptr);
     Buffer[Size] = 0;
   }
-  //Data.Truncate(Size);
+  Data.Truncate(Size);
 }
 
 void RawByteString::Init(const char * Str, intptr_t Length)
@@ -446,13 +446,13 @@ void UTF8String::Init(const wchar_t * Str, intptr_t Length)
     return;
   }
   int Size = ::WideCharToMultiByte(CP_UTF8, 0, Str, -1, nullptr, 0, nullptr, nullptr);
-  char * Buffer = Data.GetBufferSetLength(Size);
+  char * Buffer = Data.GetBufferSetLength(Size+1);
   if (Buffer != nullptr)
   {
     ::WideCharToMultiByte(CP_UTF8, 0, Str, -1, Buffer, Size, nullptr, nullptr);
     Buffer[Size] = 0;
   }
-  //Data.Truncate(Size);
+  Data.Truncate(Size);
 }
 
 void UTF8String::Init(const char * Str, intptr_t Length)
@@ -613,13 +613,13 @@ void UnicodeString::Init(const char * Str, intptr_t Length, int Codepage)
   }
   // int Len = static_cast<int>(Length > 0 ? Length : -1);
   int Size = ::MultiByteToWideChar(Codepage, 0, Str, -1, nullptr, 0);
-  wchar_t * Buffer = Data.GetBufferSetLength(Size);
+  wchar_t * Buffer = Data.GetBufferSetLength(Size+1);
   if (Buffer != nullptr)
   {
     ::MultiByteToWideChar(Codepage, 0, Str, -1, Buffer, Size);
     Buffer[Size] = 0;
   }
-  //Data.Truncate(Size);
+  Data.Truncate(Length);
 }
 
 UnicodeString::UnicodeString(const UTF8String & Str)
