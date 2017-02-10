@@ -53,7 +53,7 @@
 #include "deflate_p.h"
 #include "match.h"
 
-const char deflate_copyright[] = " deflate 1.2.8.f Copyright 1995-2016 Jean-loup Gailly and Mark Adler ";
+const char deflate_copyright[] = " deflate 1.2.11.f Copyright 1995-2016 Jean-loup Gailly and Mark Adler ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
@@ -330,6 +330,7 @@ int ZEXPORT deflateInit2_(z_stream *strm, int level, int method, int windowBits,
     s->level = level;
     s->strategy = strategy;
     s->method = (unsigned char)method;
+    s->block_open = 0;
 
     return deflateReset(strm);
 }
@@ -539,7 +540,8 @@ int ZEXPORT deflateParams(z_stream *strm, int level, int strategy) {
     }
     func = configuration_table[s->level].func;
 
-    if ((strategy != s->strategy || func != configuration_table[level].func)) {
+    if ((strategy != s->strategy || func != configuration_table[level].func) &&
+        s->high_water) {
         /* Flush the last buffer: */
         int err = deflate(strm, Z_BLOCK);
         if (err == Z_STREAM_ERROR)
@@ -981,7 +983,6 @@ int ZEXPORT deflate(z_stream *strm, int flush) {
             }
         }
     }
-    Assert(strm->avail_out > 0, "bug2");
 
     if (flush != Z_FINISH)
         return Z_OK;
@@ -1330,37 +1331,37 @@ static block_state deflate_stored(deflate_state *s, int flush) {
      * possible. If flushing, copy the remaining available input to next_out as
      * stored blocks, if there is enough space.
      */
-    unsigned len, left, have, last;
+    unsigned len, left, have, last = 0;
     unsigned used = s->strm->avail_in;
-    for (;;) {
+    do {
         /* Set len to the maximum size block that we can copy directly with the
          * available input data and output space. Set left to how much of that
          * would be copied from what's left in the window.
          */
         len = MAX_STORED;       /* maximum deflate stored block length */
         have = (s->bi_valid + 42) >> 3;         /* number of header bytes */
+        if (s->strm->avail_out < have)          /* need room for header */
+            break;
             /* maximum stored block length that will fit in avail_out: */
-        have = s->strm->avail_out > have ? s->strm->avail_out - have : 0;
+        have = s->strm->avail_out - have;
         left = s->strstart - s->block_start;    /* bytes left in window */
         if (len > (ulg)left + s->strm->avail_in)
             len = left + s->strm->avail_in;     /* limit len to the input */
         if (len > have)
             len = have;                         /* limit len to the output */
-        if (left > len)
-            left = len;                         /* limit window pull to len */
 
         /* If the stored block would be less than min_block in length, or if
          * unable to copy all of the available input when flushing, then try
          * copying to the window and the pending buffer instead. Also don't
          * write an empty block when flushing -- deflate() does that.
          */
-        if (len < min_block && (len == 0 || flush == Z_NO_FLUSH || len - left != s->strm->avail_in))
+        if (len < min_block && ((len == 0 && flush != Z_FINISH) || flush == Z_NO_FLUSH || len != left + s->strm->avail_in))
             break;
 
         /* Make a dummy stored block in pending to get the header bytes,
          * including any pending bits. This also updates the debugging counts.
          */
-        last = flush == Z_FINISH && len - left == s->strm->avail_in ? 1 : 0;
+        last = flush == Z_FINISH && len == left + s->strm->avail_in ? 1 : 0;
         _tr_stored_block(s, (char *)0, 0L, last);
 
         /* Replace the lengths in the dummy stored block with len. */
@@ -1372,14 +1373,16 @@ static block_state deflate_stored(deflate_state *s, int flush) {
         /* Write the stored block header bytes. */
         flush_pending(s->strm);
 
-        /* Update debugging counts for the data about to be copied. */
 #ifdef ZLIB_DEBUG
+        /* Update debugging counts for the data about to be copied. */
         s->compressed_len += len << 3;
         s->bits_sent += len << 3;
 #endif
 
         /* Copy uncompressed bytes from the window to next_out. */
         if (left) {
+            if (left > len)
+                left = len;
             memcpy(s->strm->next_out, s->window + s->block_start, left);
             s->strm->next_out += left;
             s->strm->avail_out -= left;
@@ -1397,7 +1400,7 @@ static block_state deflate_stored(deflate_state *s, int flush) {
             s->strm->avail_out -= len;
             s->strm->total_out += len;
         }
-    }
+    } while (last == 0);
 
     /* Update the sliding window with the last s->w_size bytes of the copied
      * data, or append all of the copied data to the existing window if less
@@ -1429,14 +1432,17 @@ static block_state deflate_stored(deflate_state *s, int flush) {
         s->block_start = s->strstart;
         s->insert += MIN(used, s->w_size - s->insert);
     }
+    if (s->high_water < s->strstart)
+        s->high_water = s->strstart;
 
-    /* If flushing or finishing and all input has been consumed, then done. If
-     * the code above couldn't write a complete block to next_out, then the
-     * code following this won't be able to either.
-     */
-    if (flush != Z_NO_FLUSH && s->strm->avail_in == 0 &&
-        (long)s->strstart == s->block_start)
-        return flush == Z_FINISH ? finish_done : block_done;
+    /* If the last block was written to next_out, then done. */
+    if (last)
+        return finish_done;
+
+    /* If flushing and all input has been consumed, then done. */
+    if (flush != Z_NO_FLUSH && flush != Z_FINISH &&
+        s->strm->avail_in == 0 && (long)s->strstart == s->block_start)
+        return block_done;
 
     /* Fill the window with any remaining input. */
     have = s->window_size - s->strstart - 1;
@@ -1455,6 +1461,8 @@ static block_state deflate_stored(deflate_state *s, int flush) {
         read_buf(s->strm, s->window + s->strstart, have);
         s->strstart += have;
     }
+    if (s->high_water < s->strstart)
+        s->high_water = s->strstart;
 
     /* There was not enough avail_out to write a complete worthy or flushed
      * stored block to next_out. Write a stored block to pending instead, if we
@@ -1467,20 +1475,18 @@ static block_state deflate_stored(deflate_state *s, int flush) {
     min_block = MIN(have, s->w_size);
     left = s->strstart - s->block_start;
     if (left >= min_block ||
-        (left && flush != Z_NO_FLUSH && s->strm->avail_in == 0 &&
-         left <= have)) {
+        ((left || flush == Z_FINISH) && flush != Z_NO_FLUSH &&
+         s->strm->avail_in == 0 && left <= have)) {
         len = MIN(left, have);
         last = flush == Z_FINISH && s->strm->avail_in == 0 &&
                len == left ? 1 : 0;
         _tr_stored_block(s, (charf *)s->window + s->block_start, len, last);
         s->block_start += len;
         flush_pending(s->strm);
-        if (last)
-            return finish_started;
     }
 
     /* We've done all we can with the available input and output. */
-    return need_more;
+    return last ? finish_started : need_more;
 }
 
 

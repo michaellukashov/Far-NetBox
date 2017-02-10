@@ -1,7 +1,7 @@
 #ifndef DEFLATE_H_
 #define DEFLATE_H_
 /* deflate.h -- internal compression state
- * Copyright (C) 1995-2012 Jean-loup Gailly
+ * Copyright (C) 1995-2016 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -281,6 +281,12 @@ typedef struct internal_state {
      * longest match routines access bytes past the input.  This is then
      * updated to the new high water mark.
      */
+    int block_open;
+    /* Whether or not a block is currently open for the QUICK deflation scheme.
+     * This is set to 1 if there is an active block, or 0 if the block was just
+     * closed.
+     */
+
 } deflate_state;
 
 typedef enum {
