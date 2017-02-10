@@ -24,7 +24,7 @@ class UTF8String
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UTF8String() {}
-  UTF8String(const UTF8String & rht);
+  UTF8String(const UTF8String & rhs);
   explicit UTF8String(const UnicodeString & Str);
   UTF8String(const wchar_t * Str);
   explicit UTF8String(const wchar_t * Str, intptr_t Size);
@@ -214,10 +214,10 @@ class AnsiString
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
   AnsiString() {}
-  AnsiString(const AnsiString & rht);
+  AnsiString(const AnsiString & rhs);
   AnsiString(intptr_t Size, char Ch) : Data(Ch, Size) {}
   explicit AnsiString(const wchar_t * Str);
-  explicit AnsiString(const wchar_t * Str, intptr_t Size);
+  explicit AnsiString(const wchar_t * Str, intptr_t Length);
   AnsiString(const char * Str);
   explicit AnsiString(const char * Str, intptr_t Size);
   explicit AnsiString(const uint8_t * Str);

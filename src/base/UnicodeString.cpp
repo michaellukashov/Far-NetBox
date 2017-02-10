@@ -22,54 +22,64 @@ int __cdecl StrCmpNN(const wchar_t * s1, int n1, const wchar_t * s2, int n2) { r
 } // namespace nb
 
 
-AnsiString::AnsiString(const AnsiString & rht)
+AnsiString::AnsiString(const AnsiString & rhs) :
+  Data(rhs.c_str(), rhs.Length())
 {
-  Init(rht.c_str(), rht.Length());
+//  Init(rhs.c_str(), rhs.Length());
 }
 
-AnsiString::AnsiString(const wchar_t * Str)
+AnsiString::AnsiString(const wchar_t * Str) :
+  Data(Str, string_t::StringLength(Str))
 {
-  Init(Str, string_t::StringLength(Str));
+//  Init(Str, string_t::StringLength(Str));
 }
 
-AnsiString::AnsiString(const wchar_t * Str, intptr_t Size)
+AnsiString::AnsiString(const wchar_t * Str, intptr_t Length) :
+  Data(Str, Length)
 {
-  Init(Str, Size);
+//  Init(Str, Size);
 }
 
-AnsiString::AnsiString(const char * Str)
+AnsiString::AnsiString(const char * Str) :
+  Data(Str, string_t::StringLength(Str))
 {
-  Init(Str, string_t::StringLength(Str));
+//  Init(Str, string_t::StringLength(Str));
 }
 
-AnsiString::AnsiString(const char * Str, intptr_t Size)
+AnsiString::AnsiString(const char * Str, intptr_t Length) :
+  Data(Str, Length)
 {
-  Init(Str, Size);
+//  Init(Str, Size);
 }
 
-AnsiString::AnsiString(const uint8_t * Str)
+AnsiString::AnsiString(const unsigned char * Str) :
+  Data(reinterpret_cast<const char *>(Str), string_t::StringLength(reinterpret_cast<const char *>(Str)))
 {
-  Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0);
+//  Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0);
 }
 
-AnsiString::AnsiString(const uint8_t * Str, intptr_t Size)
+AnsiString::AnsiString(const unsigned char * Str, intptr_t Length) :
+  Data(reinterpret_cast<const char *>(Str), Length)
 {
-  Init(Str, Size);
+//  Init(Str, Size);
 }
 
-AnsiString::AnsiString(const UnicodeString & Str)
+AnsiString::AnsiString(const UnicodeString & Str) :
+  Data(Str.c_str(), Str.Length())
 {
-  Init(Str.c_str(), Str.GetLength());
+  // Init(Str.c_str(), Str.GetLength());
 }
 
-AnsiString::AnsiString(const UTF8String & Str)
+AnsiString::AnsiString(const UTF8String & Str) :
+  Data(Str.c_str(), Str.Length())
 {
-  Init(Str.c_str(), Str.GetLength());
+//  Init(Str.c_str(), Str.GetLength());
 }
 
-AnsiString::AnsiString(const RawByteString & Str)
+AnsiString::AnsiString(const RawByteString & Str) :
+  Data(Str.c_str(), Str.Length())
 {
-  Init(Str.c_str(), Str.GetLength());
+//  Init(Str.c_str(), Str.GetLength());
 }
 
 char * AnsiString::SetLength(intptr_t nLength)
@@ -435,9 +445,9 @@ RawByteString & RawByteString::operator +=(const char Ch)
   return *this;
 }
 
-UTF8String::UTF8String(const UTF8String & rht)
+UTF8String::UTF8String(const UTF8String & rhs)
 {
-  Init(rht.c_str(), rht.Length());
+  Init(rhs.c_str(), rhs.Length());
 }
 
 void UTF8String::Init(const wchar_t * Str, intptr_t Length)
