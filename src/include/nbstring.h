@@ -51,6 +51,7 @@ enum CMStringDataFormat { FORMAT };
 
 struct CMStringData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 	int nDataLength;   // Length of currently used data in XCHARs (not including terminating null)
 	int nAllocLength;  // Length of allocated data in XCHARs (not including terminating null)
 	long nRefs;        // Reference count: negative == locked
@@ -92,6 +93,7 @@ public:
 template< typename BaseType >
 class CMSimpleStringT
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   typedef typename NBChTraitsBase< BaseType >::XCHAR XCHAR;
   typedef typename NBChTraitsBase< BaseType >::PXSTR PXSTR;
