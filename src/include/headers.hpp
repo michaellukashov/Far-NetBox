@@ -49,6 +49,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "disable_warnings_in_std_begin.hpp"
 #include <nbglobals.h>
+#include <nbtypes.h>
 
 #include <memory>
 #include <new>
