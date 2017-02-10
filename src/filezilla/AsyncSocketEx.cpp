@@ -697,7 +697,7 @@ BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STR
       nb_free(m_lpszSocketAddress);
       if (lpszSocketAddress && *lpszSocketAddress)
       {
-        m_lpszSocketAddress = nb::wchcalloc(_tcslen(lpszSocketAddress) + 1 * sizeof(TCHAR));
+        m_lpszSocketAddress = nb::wchcalloc((_tcslen(lpszSocketAddress) + 1) * sizeof(TCHAR));
         _tcscpy(m_lpszSocketAddress, lpszSocketAddress);
       }
       else
@@ -769,7 +769,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
   nb_free(m_lpszSocketAddress);
   if (lpszSocketAddress && *lpszSocketAddress)
   {
-    m_lpszSocketAddress = nb::wchcalloc(_tcslen(lpszSocketAddress) + 1 * sizeof(TCHAR));
+    m_lpszSocketAddress = nb::wchcalloc((_tcslen(lpszSocketAddress) + 1) * sizeof(TCHAR));
     _tcscpy(m_lpszSocketAddress, lpszSocketAddress);
   }
   else
