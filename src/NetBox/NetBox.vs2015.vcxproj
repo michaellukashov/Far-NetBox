@@ -248,7 +248,6 @@
     <ClCompile Include="..\base\LibraryLoader.cpp" />
     <ClCompile Include="..\base\StrUtils.cpp" />
     <ClCompile Include="..\base\Sysutils.cpp" />
-    <ClCompile Include="..\base\GlobalUtils.cpp" />
     <ClCompile Include="..\base\UnicodeString.cpp" />
     <ClCompile Include="..\base\Common.cpp" />
     <ClCompile Include="..\base\Exceptions.cpp" />

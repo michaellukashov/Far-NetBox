@@ -10,7 +10,6 @@
 #include "../nbcore/nbcore_string.cpp"
 #include "../nbcore/nbcore_utils.cpp"
 
-#include "../base/GlobalUtils.cpp"
 #include "../base/UnicodeString.cpp"
 #include "../base/Classes.cpp"
 #include "../base/Masks.cpp"
