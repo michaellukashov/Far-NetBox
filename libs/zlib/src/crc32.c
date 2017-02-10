@@ -1,5 +1,5 @@
 /* crc32.c -- compute the CRC-32 of a data stream
- * Copyright (C) 1995-2006, 2010, 2011, 2012 Mark Adler
+ * Copyright (C) 1995-2006, 2010, 2011, 2012, 2016 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  *
  * Thanks to Rodney Brown <rbrown64@csc.com.au> for his contribution of faster
@@ -64,9 +64,9 @@
 #include "deflate.h"
 
 #if BYTE_ORDER == LITTLE_ENDIAN
-static uint32_t crc32_little(uint32_t, const unsigned char *, z_off64_t);
+static uint32_t crc32_little(uint32_t, const unsigned char *, size_t);
 #elif BYTE_ORDER == BIG_ENDIAN
-static uint32_t crc32_big(uint32_t, const unsigned char *, z_off64_t);
+static uint32_t crc32_big(uint32_t, const unsigned char *, size_t);
 #endif
 
 /* Local functions for crc concatenation */
