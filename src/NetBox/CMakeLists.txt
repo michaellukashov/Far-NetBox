@@ -1523,7 +1523,7 @@ target_include_directories(NetBox PRIVATE
   ../windows
   ../resource
   ../include
-  ../NetBox
+  ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 set_target_properties(NetBox
