@@ -409,6 +409,12 @@ public:
 		::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSrc, nSrcLength, pszDest, nDestLength, NULL, NULL);
 	}
 
+  static void __stdcall ConvertToBaseType(LPSTR pszDest, int nDestLength, LPCWSTR pszSrc, int nSrcLength, int CodePage)
+  {
+    // nLen is in XCHARs
+    ::WideCharToMultiByte(CodePage, 0, pszSrc, nSrcLength, pszDest, nDestLength, NULL, NULL);
+  }
+
 	static void ConvertToOem(_CharType* pstrString)
 	{
 		BOOL fSuccess = ::CharToOemA(pstrString, pstrString);
@@ -644,6 +650,12 @@ public:
 		// nLen is in wchar_ts
 		::MultiByteToWideChar(CP_ACP, 0, pszSrc, nSrcLength, pszDest, nDestLength);
 	}
+
+  static void __stdcall ConvertToBaseType(LPWSTR pszDest, int nDestLength, LPCSTR pszSrc, int nSrcLength, int CodePage)
+  {
+    // nLen is in wchar_ts
+    ::MultiByteToWideChar(CodePage, 0, pszSrc, nSrcLength, pszDest, nDestLength);
+  }
 
 	static void __stdcall ConvertToBaseType(LPWSTR pszDest, int nDestLength, LPCWSTR pszSrc, int nSrcLength = -1)
 	{
