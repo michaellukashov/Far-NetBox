@@ -3987,45 +3987,6 @@ static void ssh_agentf_try_forward(struct ssh_channel *c)
      * and respond appropriately.
      */
     if (c->closes & CLOSES_RCVD_EOF)
-            sshfwd_write_eof(c);
-            return;
-        }
-
-        if (lengthfield > datalen - 4)
-            break;          /* a whole message is not yet available */
-
-        messagelen = lengthfield + 4;
-
-        message = snewn(messagelen, unsigned char);
-        bufchain_fetch(&c->u.a.inbuffer, message, messagelen);
-        bufchain_consume(&c->u.a.inbuffer, messagelen);
-        c->u.a.pending = agent_query(
-            message, messagelen, &reply, &replylen, ssh_agentf_callback, c);
-        sfree(message);
-
-        if (c->u.a.pending)
-            return;   /* agent_query promised to reply in due course */
-
-        /*
-         * If the agent gave us an answer immediately, pass it
-         * straight on and go round this loop again.
-         */
-        ssh_agentf_got_response(c, reply, replylen);
-    }
-
-    /*
-     * If we get here (i.e. we left the above while loop via 'break'
-     * rather than 'return'), that means we've determined that the
-     * input buffer for the agent forwarding connection doesn't
-     * contain a complete request.
-     *
-     * So if there's potentially more data to come, we can return now,
-     * and wait for the remote client to send it. But if the remote
-     * has sent EOF, it would be a mistake to do that, because we'd be
-     * waiting a long time. So this is the moment to check for EOF,
-     * and respond appropriately.
-     */
-    if (c->closes & CLOSES_RCVD_EOF)
         sshfwd_write_eof(c);
 }
 

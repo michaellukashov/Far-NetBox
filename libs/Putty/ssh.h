@@ -385,7 +385,7 @@ struct ssh_hash {
     void (*free)(void *);
     int hlen; /* output length in bytes */
     const char *text_name;
-};   
+};
 
 struct ssh_kex {
     const char *name, *groupname;

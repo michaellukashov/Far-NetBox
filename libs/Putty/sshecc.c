@@ -3049,3 +3049,19 @@ int ec_ed_alg_and_curve_by_bits(int bits,
     *curve = ((struct ecsign_extra *)(*alg)->extra)->curve();
     return TRUE;
 }
+
+#ifdef MPEXT
+
+void ec_cleanup(void)
+{
+  ec_curve_cleanup = 1;
+  ec_p256();
+  ec_p384();
+  ec_p521();
+  ec_curve25519();
+  ec_ed25519();
+  // in case we want to restart (unlikely)
+  ec_curve_cleanup = 0;
+}
+
+#endif
