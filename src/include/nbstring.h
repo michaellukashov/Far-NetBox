@@ -390,6 +390,12 @@ public:
 		return ::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSource, nLength, NULL, 0, NULL, NULL);
 	}
 
+  static int __stdcall GetBaseTypeLength(LPCWSTR pszSource, int nLength, int CodePage)
+  {
+    // Returns required buffer length in XCHARs
+    return ::WideCharToMultiByte(CodePage, 0, pszSource, nLength, NULL, 0, NULL, NULL);
+  }
+
 	static void __stdcall ConvertToBaseType(LPSTR pszDest, int nDestLength, LPCSTR pszSrc, int nSrcLength = -1)
 	{
 		if (nSrcLength == -1) { nSrcLength = 1 + GetBaseTypeLength(pszSrc); }
