@@ -53,13 +53,13 @@ AnsiString::AnsiString(const char * Str, intptr_t Length) :
 }
 
 AnsiString::AnsiString(const unsigned char * Str) :
-  Data(static_cast<const char *>(Str), string_t::StringLength(Str))
+  Data(reinterpret_cast<const char *>(Str), string_t::StringLength(reinterpret_cast<const char *>(Str)))
 {
 //  Init(Str, Str ? strlen(reinterpret_cast<const char *>(Str)) : 0);
 }
 
 AnsiString::AnsiString(const unsigned char * Str, intptr_t Length) :
-  Data(Str, Length)
+  Data(reinterpret_cast<const char *>(Str), Length)
 {
 //  Init(Str, Size);
 }
@@ -130,7 +130,7 @@ void AnsiString::Init(const char * Str, intptr_t Length)
 
 void AnsiString::Init(const unsigned char * Str, intptr_t Length)
 {
-  Data = string_t(Str, Length);
+  Data = string_t(reinterpret_cast<const char *>(Str), Length);
   //char * Buffer = Data.GetBufferSetLength(Length);
   //if (Buffer != nullptr)
   //{
@@ -293,12 +293,12 @@ void RawByteString::Init(const unsigned char * Str, intptr_t Length)
   //{
   //  memmove(Buffer, Str, Length);
   //}
-  Data = rawstring_t(Str, Length);
+  Data = rawstring_t(reinterpret_cast<const char *>(Str), Length);
 }
 
 RawByteString::operator UnicodeString() const
 {
-  return UnicodeString(Data.c_str(), Data.GetLength());
+  return UnicodeString(reinterpret_cast<const char *>(Data.c_str()), Data.GetLength());
 }
 
 intptr_t RawByteString::Pos(wchar_t Ch) const
@@ -313,7 +313,7 @@ intptr_t RawByteString::Pos(const char Ch) const
 
 intptr_t RawByteString::Pos(const char * Str) const
 {
-  return Data.Find(Str) + 1;
+  return Data.Find(reinterpret_cast<const char *>(Str)) + 1;
 }
 
 RawByteString::RawByteString(const wchar_t * Str)
