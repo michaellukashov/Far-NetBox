@@ -128,15 +128,15 @@ void AnsiString::Init(const char * Str, intptr_t Length)
   Data = string_t(Str, Length);
 }
 
-void AnsiString::Init(const uint8_t * Str, intptr_t Length)
+void AnsiString::Init(const unsigned char * Str, intptr_t Length)
 {
+  Data = string_t(reinterpret_cast<const char *>(Str), Length);
   //char * Buffer = Data.GetBufferSetLength(Length);
   //if (Buffer != nullptr)
   //{
   //  memmove(const_cast<char *>(Data.c_str()), Str, Length);
   //}
   //Data.Truncate(Length);
-  Data = string_t(reinterpret_cast<const char *>(Str), Length);
 }
 
 intptr_t AnsiString::Pos(const AnsiString & Str) const
@@ -286,7 +286,7 @@ void RawByteString::Init(const char * Str, intptr_t Length)
   Data = rawstring_t(Str, Length);
 }
 
-void RawByteString::Init(const uint8_t * Str, intptr_t Length)
+void RawByteString::Init(const unsigned char * Str, intptr_t Length)
 {
   //char * Buffer = Data.GetBufferSetLength(Length);
   //if (Length > 0)
@@ -303,12 +303,12 @@ RawByteString::operator UnicodeString() const
 
 intptr_t RawByteString::Pos(wchar_t Ch) const
 {
-  return Data.Find(static_cast<uint8_t>(Ch)) + 1;
+  return Data.Find(static_cast<unsigned char>(Ch)) + 1;
 }
 
 intptr_t RawByteString::Pos(const char Ch) const
 {
-  return Data.Find(static_cast<uint8_t>(Ch)) + 1;
+  return Data.Find(static_cast<unsigned char>(Ch)) + 1;
 }
 
 intptr_t RawByteString::Pos(const char * Str) const
@@ -336,7 +336,7 @@ RawByteString::RawByteString(const char * Str, intptr_t Size)
   Init(Str, Size);
 }
 
-RawByteString::RawByteString(const uint8_t * Str)
+RawByteString::RawByteString(const unsigned char * Str)
 {
   Init(Str, rawstring_t::StringLength((char *)Str));
 }
@@ -430,7 +430,7 @@ RawByteString & RawByteString::operator=(const wchar_t * lpwszData)
 RawByteString RawByteString::operator +(const RawByteString & rhs) const
 {
   rawstring_t Result = Data + rhs.Data;
-  return RawByteString(reinterpret_cast<const char *>(Result.c_str()), Result.GetLength());
+  return RawByteString(Result.c_str(), Result.GetLength());
 }
 
 RawByteString & RawByteString::operator +=(const RawByteString & rhs)

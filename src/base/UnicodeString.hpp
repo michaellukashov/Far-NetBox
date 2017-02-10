@@ -219,9 +219,9 @@ public:
   explicit AnsiString(const wchar_t * Str);
   explicit AnsiString(const wchar_t * Str, intptr_t Length);
   AnsiString(const char * Str);
-  explicit AnsiString(const char * Str, intptr_t Size);
-  explicit AnsiString(const uint8_t * Str);
-  explicit AnsiString(const uint8_t * Str, intptr_t Size);
+  explicit AnsiString(const char * Str, intptr_t Length);
+  explicit AnsiString(const unsigned char * Str);
+  explicit AnsiString(const unsigned char * Str, intptr_t Length);
   explicit AnsiString(const UnicodeString & Str);
   explicit AnsiString(const UTF8String & Str);
   explicit AnsiString(const RawByteString & Str);
@@ -285,7 +285,7 @@ public:
 private:
   void Init(const wchar_t * Str, intptr_t Length);
   void Init(const char * Str, intptr_t Length);
-  void Init(const uint8_t * Str, intptr_t Length);
+  void Init(const unsigned char * Str, intptr_t Length);
   void ThrowIfOutOfRange(intptr_t Idx) const;
 
   typedef CMStringA string_t;
@@ -301,8 +301,8 @@ public:
   explicit RawByteString(const wchar_t * Str, intptr_t Size);
   RawByteString(const char * Str);
   explicit RawByteString(const char * Str, intptr_t Size);
-  explicit RawByteString(const uint8_t * Str);
-  explicit RawByteString(const uint8_t * Str, intptr_t Size) { Init(Str, Size); }
+  explicit RawByteString(const unsigned char * Str);
+  explicit RawByteString(const unsigned char * Str, intptr_t Size) { Init(Str, Size); }
   RawByteString(const UnicodeString & Str);
   RawByteString(const RawByteString & Str);
   RawByteString(const AnsiString & Str);
@@ -353,9 +353,9 @@ public:
 private:
   void Init(const wchar_t * Str, intptr_t Length);
   void Init(const char * Str, intptr_t Length);
-  void Init(const uint8_t * Str, intptr_t Length);
+  void Init(const unsigned char * Str, intptr_t Length);
 
-  typedef CMStringT< uint8_t, NBChTraitsCRT< uint8_t > > rawstring_t;
+  typedef CMStringT< unsigned char, NBChTraitsCRT< unsigned char > > rawstring_t;
   rawstring_t Data;
 };
 
