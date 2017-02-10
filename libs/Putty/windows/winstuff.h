@@ -25,8 +25,6 @@
 
 #include "tree234.h"
 
-#include "winhelp.h"
-
 #define BUILDINFO_PLATFORM "Windows"
 
 struct Filename {
