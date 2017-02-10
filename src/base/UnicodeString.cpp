@@ -495,7 +495,7 @@ void UTF8String::Init(const char * Str, intptr_t Length)
 }
 
 UTF8String::UTF8String(const UnicodeString & Str) :
-  Data(Str.c_str(), Str.Length())
+  Data(Str.c_str(), Str.Length(), CP_UTF8)
 {
   // Init(Str.c_str(), Str.GetLength());
 }
@@ -638,9 +638,9 @@ void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
   Data = wstring_t(Str, Length);
 }
 
-void UnicodeString::Init(const char * Str, intptr_t Length, int Codepage)
+void UnicodeString::Init(const char * Str, intptr_t Length, int CodePage)
 {
-  Data = wstring_t(Str, Length);
+  Data = wstring_t(Str, Length, CodePage);
   //if (Str == nullptr || Length == 0)
   //{
   //  Data.Empty();
@@ -657,14 +657,16 @@ void UnicodeString::Init(const char * Str, intptr_t Length, int Codepage)
   //Data.Truncate(Length);
 }
 
-UnicodeString::UnicodeString(const UTF8String & Str)
+UnicodeString::UnicodeString(const UTF8String & Str) :
+  Data(Str.c_str(), Str.GetLength(), CP_UTF8)
 {
-  Init(Str.c_str(), Str.GetLength(), CP_UTF8);
+//  Init(Str.c_str(), Str.GetLength(), CP_UTF8);
 }
 
-UnicodeString::UnicodeString(const wchar_t * Str)
+UnicodeString::UnicodeString(const wchar_t * Str) :
+  Data(Str, wstring_t::StringLength(Str))
 {
-  Init(Str, wstring_t::StringLength(Str));
+//  Init(Str, wstring_t::StringLength(Str));
 }
 
 UnicodeString::UnicodeString(const wchar_t * Str, intptr_t Length) :

@@ -200,7 +200,7 @@ public:
 
 private:
   void Init(const wchar_t * Str, intptr_t Length);
-  void Init(const char * Str, intptr_t Length, int Codepage);
+  void Init(const char * Str, intptr_t Length, int CodePage);
   void ThrowIfOutOfRange(intptr_t Idx) const;
 
   typedef CMStringW wstring_t;
