@@ -201,6 +201,10 @@ set(NETBOX_DLL_LINK_FLAGS_RELEASE "${NETBOX_DLL_LINK_FLAGS}")
 set(NETBOX_DLL_LINK_FLAGS_DEBUG "${NETBOX_DLL_LINK_FLAGS}")
 endif()
 
+include_directories(
+  ../../libs
+)
+
 #-------------------------------------------------------------------------------
 if(OPT_COMPILE_OPENSSL)
 
@@ -1502,7 +1506,6 @@ target_compile_options(NetBox
 )
 
 target_include_directories(NetBox PRIVATE
-  ../../libs
   ../../libs/openssl/${OPENSSL_INC_DIR}/include
   ../../libs/Putty
   ../../libs/Putty/windows
@@ -1518,7 +1521,7 @@ target_include_directories(NetBox PRIVATE
   ../windows
   ../resource
 #  ../include
-  ../NetBox
+  ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 set_target_properties(NetBox
