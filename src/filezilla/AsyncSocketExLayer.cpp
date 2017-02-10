@@ -739,7 +739,7 @@ BOOL CAsyncSocketExLayer::CreateNext(UINT nSocketPort, int nSocketType, long lEv
     nb_free(m_lpszSocketAddress);
     if (lpszSocketAddress && *lpszSocketAddress)
     {
-      m_lpszSocketAddress = nb::wchcalloc((_tcslen(lpszSocketAddress) + 1)  * sizeof(TCHAR));
+      m_lpszSocketAddress = nb::wchcalloc(_tcslen(lpszSocketAddress) + 1);
       _tcscpy(m_lpszSocketAddress, lpszSocketAddress);
     }
     else
