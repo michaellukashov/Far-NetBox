@@ -1,12 +1,9 @@
 #pragma once
 
 #include <string>
-//#include <hash_map.h>
 #include "nbglobals.h"
-//#include "Global.h"
 
 class TObject;
-class THashTable;
 
 enum TObjectClassId
 {
