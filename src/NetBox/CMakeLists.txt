@@ -1372,6 +1372,8 @@ set(NETBOX_SOURCES
   ../include/nbstring.h
   ../include/nbstring.inl
   ../include/nbutils.h
+  ../include/FastDelegateBind.h
+  ../include/FastDelegate.h
 
   ../base/Exceptions.h
   ../base/MsgIDs.h
@@ -1379,8 +1381,6 @@ set(NETBOX_SOURCES
   ../base/Common.h
   ../base/vcl.h
   ../base/FileBuffer.h
-  ../base/FastDelegateBind.h
-  ../base/FastDelegate.h
 
   ../core/WebDAVFileSystem.h
   ../core/Queue.h
