@@ -347,7 +347,7 @@ RawByteString::RawByteString(const unsigned char * Str) :
 }
 
 RawByteString::RawByteString(const unsigned char * Str, intptr_t Length) :
-  Data(static_cast<const char *>(Str), Length)
+  Data(reinterpret_cast<const char *>(Str), Length)
 {
 //  Init(Str, Length);
 }
@@ -674,7 +674,7 @@ UnicodeString::UnicodeString(const wchar_t * Str, intptr_t Length) :
 }
 
 UnicodeString::UnicodeString(const wchar_t Src) :
-  Data(&Str, 1)
+  Data(&Src, 1)
 {
 //  Init(&Src, 1);
 }
