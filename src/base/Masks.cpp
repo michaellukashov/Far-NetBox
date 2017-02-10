@@ -1,4 +1,5 @@
 #include <Masks.hpp>
+#include <nbutils.h>
 
 namespace Masks {
 

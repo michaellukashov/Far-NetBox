@@ -9,6 +9,7 @@
 #include <Exceptions.h>
 #include <FileBuffer.h>
 #include <StrUtils.hpp>
+#include <nbutils.h>
 
 #include "SessionData.h"
 #include "CoreMain.h"
