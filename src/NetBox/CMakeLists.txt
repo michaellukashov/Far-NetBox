@@ -203,6 +203,7 @@ endif()
 
 include_directories(
   ../../libs
+  ../include
 )
 
 #-------------------------------------------------------------------------------
@@ -1365,13 +1366,14 @@ set(NETBOX_SOURCES
   FarUtil.h
   FarPluginStrings.h
 
+  ../include/nbglobals.h
+  ../include/headers.hpp
   ../include/nbcore.h
   ../include/nbtypes.h
   ../include/nbstring.h
   ../include/nbstring.inl
   ../include/nbutils.h
 
-  ../base/nbglobals.h
   ../base/Exceptions.h
   ../base/MsgIDs.h
   ../base/Global.h
