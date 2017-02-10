@@ -27,8 +27,8 @@ public:
   UTF8String(const UTF8String & rhs);
   explicit UTF8String(const UnicodeString & Str);
   UTF8String(const wchar_t * Str);
-  explicit UTF8String(const wchar_t * Str, intptr_t Size);
-  explicit UTF8String(const char * Str, intptr_t Size);
+  explicit UTF8String(const wchar_t * Str, intptr_t Length);
+  explicit UTF8String(const char * Str, intptr_t Length);
   explicit UTF8String(const char * Str);
 
   ~UTF8String() {}
@@ -82,9 +82,9 @@ CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UnicodeString() {}
   UnicodeString(const wchar_t * Str);
-  UnicodeString(const wchar_t * Str, intptr_t Size) { Init(Str, Size); }
+  UnicodeString(const wchar_t * Str, intptr_t Length);
   UnicodeString(const wchar_t Src) { Init(&Src, 1); }
-  UnicodeString(const char * Str, intptr_t Size);
+  UnicodeString(const char * Str, intptr_t Length);
   UnicodeString(const char * Str);
   UnicodeString(intptr_t Size, wchar_t Ch) : Data(Ch, Size) {}
 
@@ -298,9 +298,9 @@ CUSTOM_MEM_ALLOCATION_IMPL
 public:
   RawByteString() {}
   explicit RawByteString(const wchar_t * Str);
-  explicit RawByteString(const wchar_t * Str, intptr_t Size);
+  explicit RawByteString(const wchar_t * Str, intptr_t Length);
   RawByteString(const char * Str);
-  explicit RawByteString(const char * Str, intptr_t Size);
+  explicit RawByteString(const char * Str, intptr_t Length);
   explicit RawByteString(const unsigned char * Str);
   explicit RawByteString(const unsigned char * Str, intptr_t Size) { Init(Str, Size); }
   RawByteString(const UnicodeString & Str);
