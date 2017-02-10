@@ -204,40 +204,6 @@ void AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
     throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
-void RawByteString::Init(const wchar_t * Str, intptr_t Length)
-{
-  Data = rawstring_t(Str, Length);
-}
-
-void RawByteString::Init(const char * Str, intptr_t Length)
-{
-  Data = rawstring_t(Str, Length);
-}
-
-void RawByteString::Init(const unsigned char * Str, intptr_t Length)
-{
-  Data = rawstring_t(reinterpret_cast<const char *>(Str), Length);
-}
-
-RawByteString::operator UnicodeString() const
-{
-  return UnicodeString(reinterpret_cast<const char *>(Data.c_str()), Data.GetLength());
-}
-
-intptr_t RawByteString::Pos(wchar_t Ch) const
-{
-  return Data.Find(static_cast<unsigned char>(Ch)) + 1;
-}
-
-intptr_t RawByteString::Pos(const char Ch) const
-{
-  return Data.Find(static_cast<unsigned char>(Ch)) + 1;
-}
-
-intptr_t RawByteString::Pos(const char * Str) const
-{
-  return Data.Find(reinterpret_cast<const char *>(Str)) + 1;
-}
 
 RawByteString::RawByteString(const wchar_t * Str) :
   Data(Str, rawstring_t::StringLength(Str))
@@ -287,6 +253,41 @@ RawByteString::RawByteString(const AnsiString & Str) :
 RawByteString::RawByteString(const UTF8String & Str) :
   Data(Str.c_str(), Str.Length())
 {
+}
+
+void RawByteString::Init(const wchar_t * Str, intptr_t Length)
+{
+  Data = rawstring_t(Str, Length);
+}
+
+void RawByteString::Init(const char * Str, intptr_t Length)
+{
+  Data = rawstring_t(Str, Length);
+}
+
+void RawByteString::Init(const unsigned char * Str, intptr_t Length)
+{
+  Data = rawstring_t(reinterpret_cast<const char *>(Str), Length);
+}
+
+RawByteString::operator UnicodeString() const
+{
+  return UnicodeString(reinterpret_cast<const char *>(Data.c_str()), Data.GetLength());
+}
+
+intptr_t RawByteString::Pos(wchar_t Ch) const
+{
+  return Data.Find(static_cast<unsigned char>(Ch)) + 1;
+}
+
+intptr_t RawByteString::Pos(const char Ch) const
+{
+  return Data.Find(static_cast<unsigned char>(Ch)) + 1;
+}
+
+intptr_t RawByteString::Pos(const char * Str) const
+{
+  return Data.Find(reinterpret_cast<const char *>(Str)) + 1;
 }
 
 char * RawByteString::SetLength(intptr_t nLength)
@@ -373,19 +374,10 @@ RawByteString & RawByteString::operator +=(const char Ch)
   return *this;
 }
 
+
 UTF8String::UTF8String(const UTF8String & rhs) :
   Data(rhs.c_str(), rhs.Length())
 {
-}
-
-void UTF8String::Init(const wchar_t * Str, intptr_t Length)
-{
-  Data = string_t(Str, Length);
-}
-
-void UTF8String::Init(const char * Str, intptr_t Length)
-{
-  Data = string_t(Str, Length);
 }
 
 UTF8String::UTF8String(const UnicodeString & Str) :
@@ -411,6 +403,16 @@ UTF8String::UTF8String(const char * Str, intptr_t Length) :
 UTF8String::UTF8String(const char * Str) :
   Data(Str, string_t::StringLength(Str))
 {
+}
+
+void UTF8String::Init(const wchar_t * Str, intptr_t Length)
+{
+  Data = string_t(Str, Length);
+}
+
+void UTF8String::Init(const char * Str, intptr_t Length)
+{
+  Data = string_t(Str, Length);
 }
 
 char * UTF8String::SetLength(intptr_t nLength)
@@ -522,15 +524,6 @@ bool operator !=(const UTF8String & lhs, const UTF8String & rhs)
   return lhs.Data != rhs.Data;
 }
 
-void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
-{
-  Data = wstring_t(Str, Length);
-}
-
-void UnicodeString::Init(const char * Str, intptr_t Length, int CodePage)
-{
-  Data = wstring_t(Str, Length, CodePage);
-}
 
 UnicodeString::UnicodeString(const UTF8String & Str) :
   Data(Str.c_str(), Str.GetLength(), CP_UTF8)
@@ -565,6 +558,16 @@ UnicodeString::UnicodeString(const char * Str) :
 UnicodeString::UnicodeString(const AnsiString & Str) :
   Data(Str.c_str(), Str.Length())
 {
+}
+
+void UnicodeString::Init(const wchar_t * Str, intptr_t Length)
+{
+  Data = wstring_t(Str, Length);
+}
+
+void UnicodeString::Init(const char * Str, intptr_t Length, int CodePage)
+{
+  Data = wstring_t(Str, Length, CodePage);
 }
 
 wchar_t * UnicodeString::SetLength(intptr_t nLength)
