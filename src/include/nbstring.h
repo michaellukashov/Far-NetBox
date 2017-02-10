@@ -620,6 +620,12 @@ public:
 		return ::MultiByteToWideChar(CP_ACP, 0, pszSrc, nLength, NULL, 0);
 	}
 
+  static int __stdcall GetBaseTypeLength(LPCSTR pszSrc, int nLength, int CodePage)
+  {
+    // Returns required buffer size in wchar_ts
+    return ::MultiByteToWideChar(CodePage, 0, pszSrc, nLength, NULL, 0);
+  }
+
 	static int __stdcall GetBaseTypeLength(LPCWSTR pszSrc)
 	{
 		// Returns required buffer size in wchar_ts
