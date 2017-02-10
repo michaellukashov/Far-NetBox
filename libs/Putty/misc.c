@@ -504,6 +504,61 @@ void strbuf_catf(strbuf *buf, const char *fmt, ...)
     va_end(ap);
 }
 
+char *dupvprintf(const char *fmt, va_list ap)
+{
+    return dupvprintf_inner(NULL, 0, 0, fmt, ap);
+}
+char *dupprintf(const char *fmt, ...)
+{
+    char *ret;
+    va_list ap;
+    va_start(ap, fmt);
+    ret = dupvprintf(fmt, ap);
+    va_end(ap);
+    return ret;
+}
+
+struct strbuf {
+    char *s;
+    int len, size;
+};
+strbuf *strbuf_new(void)
+{
+    strbuf *buf = snew(strbuf);
+    buf->len = 0;
+    buf->size = 512;
+    buf->s = snewn(buf->size, char);
+    *buf->s = '\0';
+    return buf;
+}
+void strbuf_free(strbuf *buf)
+{
+    sfree(buf->s);
+    sfree(buf);
+}
+char *strbuf_str(strbuf *buf)
+{
+    return buf->s;
+}
+char *strbuf_to_str(strbuf *buf)
+{
+    char *ret = buf->s;
+    sfree(buf);
+    return ret;
+}
+void strbuf_catfv(strbuf *buf, const char *fmt, va_list ap)
+{
+    buf->s = dupvprintf_inner(buf->s, buf->len, buf->size, fmt, ap);
+    buf->len += strlen(buf->s + buf->len);
+}
+void strbuf_catf(strbuf *buf, const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    strbuf_catfv(buf, fmt, ap);
+    va_end(ap);
+}
+
 /*
  * Read an entire line of text from a file. Return a buffer
  * malloced to be as big as necessary (caller must free).
@@ -1230,4 +1285,32 @@ const char * get_putty_version()
     return TEXTVER;
 }
 
+#ifdef NO_SECURITY
+    strbuf_catf(buf, "%sBuild option: NO_SECURITY", newline);
 #endif
+#ifdef NO_SECUREZEROMEMORY
+    strbuf_catf(buf, "%sBuild option: NO_SECUREZEROMEMORY", newline);
+#endif
+#ifdef NO_IPV6
+    strbuf_catf(buf, "%sBuild option: NO_IPV6", newline);
+#endif
+#ifdef NO_GSSAPI
+    strbuf_catf(buf, "%sBuild option: NO_GSSAPI", newline);
+#endif
+#ifdef STATIC_GSSAPI
+    strbuf_catf(buf, "%sBuild option: STATIC_GSSAPI", newline);
+#endif
+#ifdef UNPROTECT
+    strbuf_catf(buf, "%sBuild option: UNPROTECT", newline);
+#endif
+#ifdef FUZZING
+    strbuf_catf(buf, "%sBuild option: FUZZING", newline);
+#endif
+#ifdef DEBUG
+    strbuf_catf(buf, "%sBuild option: DEBUG", newline);
+#endif
+
+    strbuf_catf(buf, "%sSource commit: %s", newline, commitid);
+
+    return strbuf_to_str(buf);
+}

@@ -156,12 +156,12 @@ const struct ssh_signkey *ec_alg_by_oid(int len, const void *oid,
                                         const struct ec_curve **curve);
 const unsigned char *ec_alg_oid(const struct ssh_signkey *alg, int *oidlen);
 extern const int ec_nist_curve_lengths[], n_ec_nist_curve_lengths;
-const int ec_nist_alg_and_curve_by_bits(int bits,
-                                        const struct ec_curve **curve,
-                                        const struct ssh_signkey **alg);
-const int ec_ed_alg_and_curve_by_bits(int bits,
-                                      const struct ec_curve **curve,
-                                      const struct ssh_signkey **alg);
+int ec_nist_alg_and_curve_by_bits(int bits,
+                                  const struct ec_curve **curve,
+                                  const struct ssh_signkey **alg);
+int ec_ed_alg_and_curve_by_bits(int bits,
+                                const struct ec_curve **curve,
+                                const struct ssh_signkey **alg);
 
 struct ssh_signkey;
 
@@ -385,7 +385,7 @@ struct ssh_hash {
     void (*free)(void *);
     int hlen; /* output length in bytes */
     const char *text_name;
-};
+};   
 
 struct ssh_kex {
     const char *name, *groupname;
@@ -499,7 +499,7 @@ void aes_ssh2_encrypt_blk(void *handle, unsigned char *blk, int len);
 void aes_ssh2_decrypt_blk(void *handle, unsigned char *blk, int len);
 
 /*
- * PuTTY version number formatted as an SSH version string.
+ * PuTTY version number formatted as an SSH version string. 
  */
 extern char sshver[50];
 

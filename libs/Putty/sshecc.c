@@ -3024,9 +3024,9 @@ const unsigned char *ec_alg_oid(const struct ssh_signkey *alg,
 const int ec_nist_curve_lengths[] = { 256, 384, 521 };
 const int n_ec_nist_curve_lengths = lenof(ec_nist_curve_lengths);
 
-const int ec_nist_alg_and_curve_by_bits(int bits,
-                                        const struct ec_curve **curve,
-                                        const struct ssh_signkey **alg)
+int ec_nist_alg_and_curve_by_bits(int bits,
+                                  const struct ec_curve **curve,
+                                  const struct ssh_signkey **alg)
 {
     switch (bits) {
       case 256: *alg = &ssh_ecdsa_nistp256; break;
@@ -3038,9 +3038,9 @@ const int ec_nist_alg_and_curve_by_bits(int bits,
     return TRUE;
 }
 
-const int ec_ed_alg_and_curve_by_bits(int bits,
-                                      const struct ec_curve **curve,
-                                      const struct ssh_signkey **alg)
+int ec_ed_alg_and_curve_by_bits(int bits,
+                                const struct ec_curve **curve,
+                                const struct ssh_signkey **alg)
 {
     switch (bits) {
       case 256: *alg = &ssh_ecdsa_ed25519; break;
@@ -3049,19 +3049,3 @@ const int ec_ed_alg_and_curve_by_bits(int bits,
     *curve = ((struct ecsign_extra *)(*alg)->extra)->curve();
     return TRUE;
 }
-
-#ifdef MPEXT
-
-void ec_cleanup(void)
-{
-  ec_curve_cleanup = 1;
-  ec_p256();
-  ec_p384();
-  ec_p521();
-  ec_curve25519();
-  ec_ed25519();
-  // in case we want to restart (unlikely)
-  ec_curve_cleanup = 0;
-}
-
-#endif

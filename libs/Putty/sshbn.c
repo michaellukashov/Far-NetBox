@@ -45,8 +45,6 @@ static Bignum newbn(int length)
     assert(length >= 0 && length < INT_MAX / BIGNUM_INT_BITS);
 
     b = snewn(length + 1, BignumInt);
-    if (!b)
-	abort();		       /* FIXME */
     memset(b, 0, (length + 1) * sizeof(*b));
     b[0] = length;
     return b;
