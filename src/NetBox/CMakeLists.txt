@@ -1266,6 +1266,7 @@ set(NETBOX_SOURCES
 #  UnityBuildCore.cpp
   ../nbcore/nbcore_string.cpp
   ../nbcore/nbcore_memory.cpp
+  ../nbcore/nbcore_utils.cpp
 
   ../base/GlobalUtils.cpp
   ../base/UnicodeString.cpp
@@ -1363,6 +1364,12 @@ set(NETBOX_SOURCES
   XmlStorage.h
   FarUtil.h
   FarPluginStrings.h
+
+  ../include/nbcore.h
+  ../include/nbtypes.h
+  ../include/nbstring.h
+  ../include/nbstring.inl
+  ../include/nbutils.h
 
   ../base/nbglobals.h
   ../base/Exceptions.h

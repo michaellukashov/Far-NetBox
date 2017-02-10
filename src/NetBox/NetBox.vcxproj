@@ -232,6 +232,7 @@
   <ItemGroup>
     <ClCompile Include="..\nbcore\nbcore_string.cpp" />
     <ClCompile Include="..\nbcore\nbcore_memory.cpp" />
+    <ClCompile Include="..\nbcore\nbcore_utils.cpp" />
     <ClCompile Include="..\base\Classes.cpp" />
     <ClCompile Include="..\base\Masks.cpp" />
     <ClCompile Include="..\base\WideStrUtils.cpp" />

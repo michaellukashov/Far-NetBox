@@ -31,5 +31,6 @@
 //#include "nbcore_nbcore.h"
 
 #include <nbstring.inl>
+#include <nbutils.h>
 
 //void GetDefaultLang();
