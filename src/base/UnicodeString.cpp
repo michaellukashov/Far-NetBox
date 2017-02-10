@@ -770,8 +770,7 @@ UnicodeString & UnicodeString::Append(const wchar_t * Str)
 
 UnicodeString & UnicodeString::Append(const char * lpszAdd, UINT CodePage)
 {
-  //UTF8String Str(lpszAdd);
-  Data.Append(wstring_t(lpszAdd)); // , CodePage));
+  Data.Append(wstring_t(lpszAdd, wstring_t::StringLength(lpszAdd), CodePage));
   return *this;
 }
 
