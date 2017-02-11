@@ -1365,6 +1365,10 @@ set(NETBOX_SOURCES
   FarUtil.h
   FarPluginStrings.h
 
+  ../include/FastDelegateBind.h
+  ../include/FastDelegate.h
+  ../include/type_traits.h
+  ../include/rtti.hpp
   ../include/nbglobals.h
   ../include/headers.hpp
   ../include/nbcore.h
@@ -1372,15 +1376,17 @@ set(NETBOX_SOURCES
   ../include/nbstring.h
   ../include/nbstring.inl
   ../include/nbutils.h
-  ../include/FastDelegateBind.h
-  ../include/FastDelegate.h
 
-  ../base/Exceptions.h
-  ../base/MsgIDs.h
   ../base/Global.h
   ../base/Common.h
+  ../base/UnicodeString.hpp
+  ../base/Exceptions.h
+  ../base/Sysutils.hpp
+  ../base/StrUtils.hpp
+  ../base/MsgIDs.h
   ../base/vcl.h
   ../base/FileBuffer.h
+  ../base/ObjIDs.h
 
   ../core/WebDAVFileSystem.h
   ../core/Queue.h
