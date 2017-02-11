@@ -887,6 +887,7 @@ UnicodeString TFTPFileSystem::ActualCurrentDirectory()
   {
     Result = ROOTDIRECTORY;
   }
+  PackStr(Result);
   return Result;
 }
 
