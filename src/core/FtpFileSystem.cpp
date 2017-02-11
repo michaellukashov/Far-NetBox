@@ -875,7 +875,7 @@ UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool 
   }
 }
 
-UnicodeString TFTPFileSystem::ActualCurrentDirectory()
+UnicodeString TFTPFileSystem::GetActualCurrentDirectory()
 {
   UnicodeString CurrentPath(NB_MAX_PATH, 0);
   UnicodeString Result;
@@ -902,7 +902,7 @@ void TFTPFileSystem::EnsureLocation()
     // 1) We did cached directory change
     // 2) Listing was requested for non-current directory, which
     // makes FZAPI change its current directory (and not restoring it back afterwards)
-    if (!core::UnixSamePath(ActualCurrentDirectory(), FCurrentDirectory))
+    if (!core::UnixSamePath(GetActualCurrentDirectory(), FCurrentDirectory))
     {
       FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
         FCurrentDirectory.c_str()));
@@ -2357,7 +2357,7 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
       // EnsureLocation should reset actual current directory to user's working directory.
       // If user's working directory is still below deleted directory, it is
       // perfectly correct to report an error.
-      if (core::UnixIsChildPath(ActualCurrentDirectory(), FileName))
+      if (core::UnixIsChildPath(GetActualCurrentDirectory(), FileName))
       {
         EnsureLocation();
       }
