@@ -2912,16 +2912,17 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 UnicodeString TGlobalFunctions::GetCurrDirectory() const
 {
   UnicodeString Result;
-  UnicodeString Path(32 * 1014, 0);
+  UnicodeString Path(32 * 1024, 0);
+  int Length = 0;
   if (FarPlugin)
   {
-    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
+    Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
   }
   else
   {
-    ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
+    Length = ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
   }
-  Result = Path;
+  Result = UnicodeString(Path.c_str(), Length - 1);
   return Result;
 }
 
