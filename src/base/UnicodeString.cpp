@@ -651,7 +651,7 @@ UnicodeString & UnicodeString::Insert(intptr_t Pos, const wchar_t * Str, intptr_
   return *this;
 }
 
-UnicodeString &UnicodeString::Insert(const wchar_t * Str, intptr_t Pos)
+UnicodeString & UnicodeString::Insert(const wchar_t * Str, intptr_t Pos)
 {
   return Insert(Pos, Str, wstring_t::StringLength(Str));
 }
