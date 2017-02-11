@@ -9,12 +9,12 @@ AnsiString::AnsiString(const AnsiString & rhs) :
 }
 
 AnsiString::AnsiString(const wchar_t * Str) :
-  Data(Str, string_t::StringLength(Str))
+  Data(Str, string_t::StringLength(Str), CP_UTF8)
 {
 }
 
 AnsiString::AnsiString(const wchar_t * Str, intptr_t Length) :
-  Data(Str, Length)
+  Data(Str, Length, CP_UTF8)
 {
 }
 
