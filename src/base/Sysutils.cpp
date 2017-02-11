@@ -964,7 +964,7 @@ void AppendPathDelimiterW(UnicodeString & Str)
 
 UnicodeString ExpandEnvVars(const UnicodeString & Str)
 {
-  UnicodeString Buf(32 * 1024, 0);
+  UnicodeString Buf(NB_MAX_PATH, 0);
   intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), (wchar_t *)Buf.c_str(), static_cast<DWORD>(32 * 1024 - 1));
   UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;

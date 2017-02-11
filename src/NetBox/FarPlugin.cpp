@@ -1704,7 +1704,7 @@ UnicodeString TCustomFarPlugin::FormatFarVersion(intptr_t Version) const
 
 UnicodeString TCustomFarPlugin::GetTemporaryDir() const
 {
-  UnicodeString Result(4096, 0);
+  UnicodeString Result(NB_MAX_PATH, 0);
   TFarEnvGuard Guard;
   FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), (DWORD)Result.Length(), nullptr);
   PackStr(Result);
@@ -2912,7 +2912,7 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 UnicodeString TGlobalFunctions::GetCurrDirectory() const
 {
   UnicodeString Result;
-  UnicodeString Path(32 * 1024, 0);
+  UnicodeString Path(NB_MAX_PATH, 0);
   int Length = 0;
   if (FarPlugin)
   {

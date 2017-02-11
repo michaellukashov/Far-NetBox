@@ -877,7 +877,7 @@ UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool 
 
 UnicodeString TFTPFileSystem::ActualCurrentDirectory()
 {
-  UnicodeString CurrentPath(1024, 0);
+  UnicodeString CurrentPath(NB_MAX_PATH, 0);
   UnicodeString Result;
   if (FFileZillaIntf->GetCurrentPath(const_cast<wchar_t *>(CurrentPath.c_str()), CurrentPath.Length()))
   {
