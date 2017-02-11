@@ -167,7 +167,7 @@ protected:
   void PreserveDownloadFileTime(HANDLE AHandle, void * UserData);
   bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
   void EnsureLocation();
-  UnicodeString ActualCurrentDirectory();
+  UnicodeString GetActualCurrentDirectory();
   void Discard();
   void DoChangeDirectory(const UnicodeString & Directory);
 
