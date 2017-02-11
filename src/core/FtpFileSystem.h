@@ -167,7 +167,7 @@ protected:
   void PreserveDownloadFileTime(HANDLE AHandle, void * UserData);
   bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
   void EnsureLocation();
-  UnicodeString GetActualCurrentDirectory();
+  UnicodeString GetActualCurrentDirectory() const;
   void Discard();
   void DoChangeDirectory(const UnicodeString & Directory);
 
@@ -256,7 +256,7 @@ private:
     FEAT
   };
 
-  TFileZillaIntf * FFileZillaIntf;
+  mutable TFileZillaIntf * FFileZillaIntf;
   TCriticalSection FQueueCriticalSection;
   TCriticalSection FTransferStatusCriticalSection;
   TMessageQueue FQueue;
