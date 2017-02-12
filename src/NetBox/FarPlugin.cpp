@@ -2874,7 +2874,7 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidt
 
 TGlobalFunctionsIntf * GetGlobalFunctions()
 {
-  static TGlobalFunctions * GlobalFunctions = nullptr;
+  static TGlobalFunctionsIntf * GlobalFunctions = nullptr;
   if (!GlobalFunctions)
   {
     GlobalFunctions = new TGlobalFunctions();
