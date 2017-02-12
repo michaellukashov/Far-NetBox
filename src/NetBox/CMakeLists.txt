@@ -1671,7 +1671,6 @@ add_dependencies(testnetbox_02
 
 target_link_libraries(testnetbox_02 ${NETBOX_LIBRARIES})
 
-if(0)
 #-------------------------------------------------------
 # target testnetbox_03
 
@@ -1683,6 +1682,10 @@ set(TESTNETBOX_03_SOURCES
 )
 
 add_executable(testnetbox_03 ${TESTNETBOX_03_SOURCES})
+
+target_include_directories(testnetbox_03 PRIVATE
+  ${test_includes}
+)
 
 set_target_properties(testnetbox_03
   PROPERTIES
@@ -1701,6 +1704,7 @@ add_dependencies(testnetbox_03
 
 target_link_libraries(testnetbox_03 ${NETBOX_LIBRARIES})
 
+if(0)
 #-------------------------------------------------------
 # target testnetbox_04
 
