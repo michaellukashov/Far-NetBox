@@ -61,6 +61,12 @@ int WINAPI ConfigureW(int item)
 
 HANDLE WINAPI OpenPluginW(int openFrom, intptr_t item)
 {
+  SELF_TEST(
+    UnicodeString Text = L"text, text text, text text1\ntext text text, text text2\n";
+    TStringList Lines;
+    Lines.SetCommaText(Text);
+    assert(Lines.GetCount() == 5);
+  )
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
   return FarPlugin->OpenPlugin(openFrom, item);
