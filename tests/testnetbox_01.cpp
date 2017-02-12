@@ -74,14 +74,12 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 }
 
 //------------------------------------------------------------------------------
-//TEST_CASE_METHOD(base_fixture_t, "base tests", "netbox")
-
-TEST_CASE("base tests", "netbox")
-{
-
 base_fixture_t fixture;
 
-SECTION("test1")
+//TEST_CASE("base tests", "netbox")
+//SECTION("")
+
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test1")
 {
 
   TList list;
@@ -136,7 +134,7 @@ SECTION("test1")
   }
 }
 
-SECTION("test2")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test2")
 {
   UnicodeString str;
   if (1)
@@ -194,7 +192,7 @@ SECTION("test2")
   }
 }
 
-SECTION("test3")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test3")
 {
   UnicodeString Text = L"text text text text text1\ntext text text text text2\n";
   TStringList Lines;
@@ -206,11 +204,12 @@ SECTION("test3")
   REQUIRE("text text text text text2" == W2MB(Lines.GetString(1).c_str()).c_str());
 }
 
-SECTION("test4")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test4")
 {
   UnicodeString Text = L"text, text text, text text1\ntext text text, text text2\n";
   TStringList Lines;
   Lines.SetCommaText(Text);
+  INFO("Lines = '" << Lines.GetText() << "'");
   REQUIRE(5 == Lines.GetCount());
   REQUIRE(0 == wcscmp(L"text", Lines.GetString(0).c_str()));
   REQUIRE(0 == wcscmp(L" text text", Lines.GetString(1).c_str()));
@@ -222,7 +221,7 @@ SECTION("test4")
   REQUIRE(0 == wcscmp(L"\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\"", Text2.c_str()));
 }
 
-SECTION("test5")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test5")
 {
   TStringList Lines;
   TObject obj1;
@@ -230,7 +229,7 @@ SECTION("test5")
   REQUIRE(&obj1 == Lines.GetObj(0));
 }
 
-SECTION("test6")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test6")
 {
   TStringList Lines;
   Lines.Add(L"bbb");
@@ -255,7 +254,7 @@ SECTION("test6")
   }
 }
 
-SECTION("test7")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test7")
 {
   TStringList Lines;
   {
@@ -347,7 +346,7 @@ SECTION("test7")
   }
 }
 
-SECTION("test8")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test8")
 {
   UnicodeString ProgramsFolder;
   UnicodeString DefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
@@ -355,7 +354,7 @@ SECTION("test8")
   REQUIRE(L"" == ::ExcludeTrailingBackslash(::IncludeTrailingBackslash(ProgramsFolder)));
 }
 
-SECTION("test9")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test9")
 {
   UnicodeString Folder = L"C:\\Program Files\\Putty";
   INFO("ExtractFileDir = " << ::ExtractFileDir(Folder).c_str());
@@ -366,7 +365,7 @@ SECTION("test9")
   REQUIRE(::DirectoryExists(::GetCurrentDir()));
 }
 
-SECTION("test10")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test10")
 {
   TDateTime dt1(23, 58, 59, 102);
   INFO("dt1 = " << dt1);
@@ -379,7 +378,7 @@ SECTION("test10")
   REQUIRE(MS == 102);
 }
 
-SECTION("test11")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test11")
 {
   TDateTime dt1 = EncodeDateVerbose(2009, 12, 29);
   INFO("dt1 = " << dt1);
@@ -395,7 +394,7 @@ SECTION("test11")
   REQUIRE(3 == DOW);
 }
 
-SECTION("test12")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test12")
 {
 //  INFO("Is2000 = " << Is2000());
   INFO("IsWin7 = " << IsWin7());
@@ -406,7 +405,7 @@ SECTION("test12")
   INFO("ft.dwHighDateTime = " << ft.dwHighDateTime);
 }
 
-SECTION("test13")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test13")
 {
   UnicodeString str_value = ::IntToStr(1234);
   INFO("str_value = " << str_value.c_str());
@@ -416,7 +415,7 @@ SECTION("test13")
   REQUIRE(int_value == 1234);
 }
 
-SECTION("test14")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test14")
 {
   TStringList Strings1;
   TStringList Strings2;
@@ -428,14 +427,14 @@ SECTION("test14")
   REQUIRE(L"lalalla" == Strings1.GetString(0));
 }
 
-SECTION("test15")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test15")
 {
   UnicodeString res = ::IntToHex(10, 2);
   INFO("res = " << res.c_str());
   REQUIRE(res == L"0A");
 }
 
-SECTION("test16")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test16")
 {
   {
     UnicodeString Name1 = L"1";
@@ -464,7 +463,7 @@ SECTION("test16")
   }
 }
 
-SECTION("test17")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test17")
 {
   TStringList List1;
   List1.SetText(L"123\n456");
@@ -480,7 +479,7 @@ SECTION("test17")
   REQUIRE("123" == W2MB(List1.GetString(1).c_str()));
 }
 
-SECTION("test18")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test18")
 {
   {
     UnicodeString Key = L"Interface";
@@ -496,14 +495,14 @@ SECTION("test18")
   }
 }
 
-SECTION("test19")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test19")
 {
   TStringList Strings1;
   Strings1.Add(L"Name1=Value1");
   REQUIRE(0 == Strings1.IndexOfName(L"Name1"));
 }
 
-SECTION("test20")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test20")
 {
   TDateTime DateTime = Now();
   unsigned short H, M, S, MS;
@@ -514,7 +513,7 @@ SECTION("test20")
   // REQUIRE(str == L"20:20:20");
 }
 
-SECTION("test21")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test21")
 {
   UnicodeString str = ::FormatFloat(L"#,##0", 23.456);
   INFO("str = " << str.c_str());
@@ -522,7 +521,7 @@ SECTION("test21")
   REQUIRE("23.46" == W2MB(str.c_str()));
 }
 
-SECTION("test22")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test22")
 {
   UnicodeString FileName = L"testfile";
   ::DeleteFile(FileName.c_str());
@@ -572,7 +571,7 @@ SECTION("test22")
   }
 }
 
-SECTION("test23")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test23")
 {
   UnicodeString Dir1 = L"subdir1";
   UnicodeString Dir2 = L"subdir1/subdir2";
@@ -589,14 +588,14 @@ SECTION("test23")
   REQUIRE(!::DirectoryExists(Dir1));
 }
 
-SECTION("test24")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test24")
 {
   TDateTime now = Now();
   INFO("now = " << (double)now);
   REQUIRE(now > 0.0);
 }
 
-SECTION("test25")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test25")
 {
 #if 0
   GC_find_leak = 1;
@@ -635,7 +634,7 @@ public:
   }
 };
 
-SECTION("test26")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test26")
 {
   typedef nb::FastDelegate2<int, int, char *> TEvent;
   TEvent sig;
@@ -647,7 +646,7 @@ SECTION("test26")
   REQUIRE(Result == -1);
 }
 //------------------------------------------------------------------------------
-SECTION("test27")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test27")
 {
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG ProxyConfig = {0};
     if (!WinHttpGetIEProxyConfigForCurrentUser(&ProxyConfig))
@@ -688,7 +687,7 @@ SECTION("test27")
     }
 }
 //------------------------------------------------------------------------------
-SECTION("test28")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test28")
 {
   DEBUG_PRINTF(L"1");
   if (1)
@@ -779,7 +778,7 @@ private:
 };
 
 
-SECTION("test29")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test29")
 {
   Foo* f=new Foo(100);
   Foo* b=new Bar(200);
@@ -789,7 +788,7 @@ SECTION("test29")
 }
 #endif
 //------------------------------------------------------------------------------
-SECTION("test30")
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test30")
 {
   UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
   INFO("Instructions = " << Instructions.c_str());
@@ -802,5 +801,3 @@ SECTION("test30")
   REQUIRE(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
 }
 //------------------------------------------------------------------------------
-
-}
