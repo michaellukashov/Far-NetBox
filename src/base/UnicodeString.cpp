@@ -563,6 +563,11 @@ intptr_t UnicodeString::ToInt() const
   return ::StrToIntDef(*this, 0);
 }
 
+intptr_t UnicodeString::FindFirstOf(const wchar_t Ch) const
+{
+  return (intptr_t)Data.find_first_of(Ch, 0) + 1;
+}
+
 UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen)
 {
   Data.replace(Pos - 1, Len, wstring_t(Str, DataLen));
