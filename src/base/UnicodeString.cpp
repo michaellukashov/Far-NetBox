@@ -630,12 +630,10 @@ intptr_t UnicodeString::FindFirstOf(const wchar_t * Str, size_t Offset) const
   if (!Str || !*Str)
     return NPOS;
   int Length = wstring_t::StringLength(Str);
-  for (intptr_t Index = 0; Index < Length; ++Index)
-  {
-    int Idx = Data.Find(Str[Index], (int)Offset);
-    if (Idx != -1)
-      return Idx + 1;
-  }
+  wstring_t str = Data.Mid(Offset);
+  int Res = str.FindOneOf(Str);
+  if (Res != -1)
+    return Res + Offset;
   return NPOS;
 }
 
