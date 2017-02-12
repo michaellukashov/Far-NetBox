@@ -8,11 +8,6 @@
 #include <iostream>
 #include <fstream>
 
-#include "boostdefines.hpp"
-#define BOOST_TEST_MODULE "testnetbox_04"
-#define BOOST_TEST_MAIN
-#include <boost/test/unit_test.hpp>
-
 #include <Common.h>
 #include <FileBuffer.h>
 
@@ -20,15 +15,15 @@
 #include "FarPlugin.h"
 #include "testutils.h"
 
-#include "ne_session.h"
-#include "ne_request.h"
+#include "neon/src/ne_session.h"
+#include "neon/src/ne_request.h"
 
 // #include "dl/include.hpp"
 
 #include "calculator.hpp"
 #include "DynamicQueue.hpp"
 
-using namespace boost::unit_test;
+#include "testutils.h"
 
 /*******************************************************************************
             test suite
@@ -57,11 +52,8 @@ protected:
 
 //------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE(netbox)
-
-BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test1")
 {
-#if 0
   WSADATA wsaData;
   WSAStartup(MAKEWORD(2, 2), &wsaData);
 
@@ -70,35 +62,34 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
   std::vector<unsigned char> vec;
   // ne_add_response_body_reader(req, ne_accept_2xx, read_block, &vec);
   int rv = ne_request_dispatch(req);
-  BOOST_TEST_MESSAGE("rv = " << rv);
+  INFO("rv = " << rv);
   if (rv)
   {
-    BOOST_FAIL("Request failed: " << ne_get_error(sess));
+    FAIL("Request failed: " << ne_get_error(sess));
   }
-  BOOST_CHECK(rv == 0);
+  REQUIRE(rv == 0);
   const ne_status * statstruct = ne_get_status(req);
-  BOOST_TEST_MESSAGE("statstruct->code = " << statstruct->code);
-  BOOST_TEST_MESSAGE("statstruct->reason_phrase = " << statstruct->reason_phrase);
+  INFO("statstruct->code = " << statstruct->code);
+  INFO("statstruct->reason_phrase = " << statstruct->reason_phrase);
   if (vec.size() > 0)
   {
-    BOOST_TEST_MESSAGE("response = " << (char *)&vec[0]);
+    INFO("response = " << (char *)&vec[0]);
   }
   ne_request_destroy(req);
   ne_session_destroy(sess);
   
   WSACleanup();
-#endif
 }
 
-/*BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
+/*TEST_CASE_METHOD(base_fixture_t, "netbox", "test2")
 {
   team::calculator calc("calculator_dll.dll");
-  BOOST_TEST_MESSAGE("sum = " << calc.sum(10, 20));
-  BOOST_TEST_MESSAGE("mul = " << calc.mul(10, 20));
-  BOOST_TEST_MESSAGE("sqrt = " << calc.sqrt(25));
+  INFO("sum = " << calc.sum(10, 20));
+  INFO("mul = " << calc.mul(10, 20));
+  INFO("sqrt = " << calc.sqrt(25));
 }*/
 
-BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
+TEST_CASE_METHOD(base_fixture_t, "netbox", "test3")
 {
   DynamicQueue<int> q;
   q.Reserve(10);
@@ -106,14 +97,12 @@ BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
   q.Put(2);
   q.Put(3);
   int val = q.Get();
-  BOOST_TEST_MESSAGE("val = " << val);
-  BOOST_CHECK(val == 1);
+  INFO("val = " << val);
+  REQUIRE(val == 1);
   val = q.Get();
-  BOOST_TEST_MESSAGE("val = " << val);
-  BOOST_CHECK(val == 2);
+  INFO("val = " << val);
+  REQUIRE(val == 2);
   val = q.Get();
-  BOOST_TEST_MESSAGE("val = " << val);
-  BOOST_CHECK(val == 3);
+  INFO("val = " << val);
+  REQUIRE(val == 3);
 }
-
-BOOST_AUTO_TEST_SUITE_END()

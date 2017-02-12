@@ -1704,7 +1704,6 @@ add_dependencies(testnetbox_03
 
 target_link_libraries(testnetbox_03 ${NETBOX_LIBRARIES})
 
-if(0)
 #-------------------------------------------------------
 # target testnetbox_04
 
@@ -1719,17 +1718,21 @@ set(TESTNETBOX_04_SOURCES
 
 add_executable(testnetbox_04 ${TESTNETBOX_04_SOURCES})
 
+target_include_directories(testnetbox_04 PRIVATE
+  ${test_includes}
+)
+
 set_target_properties(testnetbox_04
   PROPERTIES
   COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
 )
 
-add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
-  calculator_dll
-)
+#add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
+#  calculator_dll
+#)
 
 target_link_libraries(testnetbox_04 ${NETBOX_LIBRARIES}
 )
-endif(0)
+
 endif(OPT_COMPILE_TESTS)
