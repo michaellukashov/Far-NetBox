@@ -5,7 +5,8 @@
 #include <stdint.h>
 
 #ifdef USE_DLMALLOC
-#include "../../libs/dlmalloc/malloc-2.8.6.h"
+
+#include <dlmalloc/malloc-2.8.6.h>
 
 #define nb_malloc(size) dlcalloc(1, size)
 #define nb_calloc(count, size) dlcalloc(count, size)
@@ -59,7 +60,7 @@ inline wchar_t* wchcalloc(size_t size) { return calloc<wchar_t*>(size); }
 
 inline void * operator_new(size_t size)
 {
-  void * p = nb_malloc(size);
+  void * p = nb_calloc(1, size);
   /*if (!p)
   {
     static std::bad_alloc badalloc;
@@ -192,7 +193,7 @@ struct custom_nballocator_t
   {
     if (0 == s)
       return nullptr;
-    pointer temp = reinterpret_cast<pointer>(nb::calloc<pointer>(s * sizeof(T)));
+    pointer temp = nb::calloc<pointer>(s * sizeof(T));
 #if !defined(__MINGW32__)
     if (temp == nullptr)
       throw std::bad_alloc();
@@ -234,4 +235,66 @@ inline bool operator!=(const custom_nballocator_t<T> &, const custom_nballocator
   return false;
 }
 
+template <typename T>
+bool CheckNullOrStructSize(const T * s) { return !s || (s->StructSize >= sizeof(T)); }
+template <typename T>
+bool CheckStructSize(const T * s) { return s && (s->StructSize >= sizeof(T)); }
+
+#ifdef _DEBUG
+#define SELF_TEST(code) \
+  namespace { \
+    struct SelfTest { \
+      SelfTest() { \
+        code; \
+      } \
+    } _SelfTest; \
+  }
+#else
+#define SELF_TEST(code)
+#endif
+
+#define NB_DISABLE_COPY(Class) \
+private: \
+  Class(const Class &); \
+  Class &operator=(const Class &);
+
+#define NB_STATIC_ASSERT(Condition, Message) \
+  static_assert(bool(Condition), Message)
+
+#define NB_MAX_PATH 32 * 1024
+#define NPOS static_cast<intptr_t>(-1)
+
 #endif // if defined(__cplusplus)
+
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#endif  //_WIN32_WINNT
+
+#ifndef _WIN32_IE
+#define _WIN32_IE 0x0501
+#endif  //_WIN32_IE
+
+// winnls.h
+#ifndef NORM_STOP_ON_NULL
+#define NORM_STOP_ON_NULL 0x10000000
+#endif
+
+#ifndef HIDESBASE
+#define HIDESBASE
+#endif
+
+#ifdef __GNUC__
+#ifndef nullptr
+#define nullptr NULL
+#endif
+#endif
+
+#if defined(_MSC_VER) && _MSC_VER<1600
+#define nullptr NULL
+#endif
+
+#define TShellExecuteInfoW _SHELLEXECUTEINFOW
+#define TSHFileInfoW SHFILEINFOW
+#define TVSFixedFileInfo VS_FIXEDFILEINFO
+#define PVSFixedFileInfo VS_FIXEDFILEINFO*
+

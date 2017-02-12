@@ -1,5 +1,5 @@
 /* zutil.c -- target dependent utility functions for the compression library
- * Copyright (C) 1995-2017 Jean-loup Gailly
+ * Copyright (C) 1995-2016 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -142,7 +142,7 @@ void ZLIB_INTERNAL zmemcpy(unsigned char* dest, const unsigned char* source, uns
 
 int ZLIB_INTERNAL zmemcmp(const unsigned char* s1, const unsigned char* s2, unsigned int len)
 {
-    uInt j;
+    uint32_t j;
 
     for (j = 0; j < len; j++) {
         if (s1[j] != s2[j]) return 2*(s1[j] > s2[j])-1;
@@ -181,5 +181,3 @@ void ZLIB_INTERNAL zcfree (void *opaque, void *ptr)
 }
 
 #endif /* MY_ZCALLOC */
-
-

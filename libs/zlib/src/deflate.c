@@ -1,5 +1,5 @@
 /* deflate.c -- compress data using the deflation algorithm
- * Copyright (C) 1995-2017 Jean-loup Gailly and Mark Adler
+ * Copyright (C) 1995-2016 Jean-loup Gailly and Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -54,7 +54,7 @@
 #include "match.h"
 
 const char deflate_copyright[] =
-   " deflate 1.2.11.f Copyright 1995-2017 Jean-loup Gailly and Mark Adler ";
+   " deflate 1.2.11.f Copyright 1995-2016 Jean-loup Gailly and Mark Adler ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
@@ -69,18 +69,19 @@ const char deflate_copyright[] =
 typedef block_state (*compress_func) (deflate_state *s, int flush);
 /* Compression function. Returns the block state after the call. */
 
-local int deflateStateCheck      (z_stream *strm);
-local void slide_hash            (deflate_state *s);
+static int deflateStateCheck      (z_stream *strm);
+static void slide_hash            (deflate_state *s);
 void fill_window                 (deflate_state *s);
-local block_state deflate_stored (deflate_state *s, int flush);
+static block_state deflate_stored (deflate_state *s, int flush);
 block_state deflate_fast         (deflate_state *s, int flush);
+block_state deflate_quick        (deflate_state *s, int flush);
 #ifndef FASTEST
 block_state deflate_slow         (deflate_state *s, int flush);
 #endif
-local block_state deflate_rle    (deflate_state *s, int flush);
-local block_state deflate_huff   (deflate_state *s, int flush);
-local void lm_init               (deflate_state *s);
-local void putShortMSB           (deflate_state *s, uint16_t b);
+static block_state deflate_rle    (deflate_state *s, int flush);
+static block_state deflate_huff   (deflate_state *s, int flush);
+static void lm_init               (deflate_state *s);
+static void putShortMSB           (deflate_state *s, uint16_t b);
 ZLIB_INTERNAL void flush_pending (z_stream *strm);
 ZLIB_INTERNAL unsigned int read_buf       (z_stream *strm, unsigned char *buf, unsigned size);
 
@@ -89,7 +90,7 @@ extern void crc_finalize(deflate_state *const s);
 extern void copy_with_crc(z_stream *strm, unsigned char *dst, long size);
 
 #ifdef ZLIB_DEBUG
-local  void check_match (deflate_state *s, IPos start, IPos match,
+static  void check_match (deflate_state *s, IPos start, IPos match,
                             int length);
 #endif
 
@@ -118,26 +119,33 @@ typedef struct config_s {
     compress_func func;
 } config;
 
-#ifdef FASTEST
-local const config configuration_table[2] = {
+static const config configuration_table[10] = {
 /*      good lazy nice chain */
 /* 0 */ {0,    0,  0,    0, deflate_stored},  /* store only */
-/* 1 */ {4,    4,  8,    4, deflate_fast}}; /* max speed, no lazy matches */
+
+#ifdef X86_QUICK_STRATEGY
+/* 1 */ {4,    4,  8,    4, deflate_quick},
+/* 2 */ {4,    4,  8,    4, deflate_fast}, /* max speed, no lazy matches */
 #else
-local const config configuration_table[10] = {
-/*      good lazy nice chain */
-/* 0 */ {0,    0,  0,    0, deflate_stored},  /* store only */
 /* 1 */ {4,    4,  8,    4, deflate_fast}, /* max speed, no lazy matches */
 /* 2 */ {4,    5, 16,    8, deflate_fast},
+#endif
+
 /* 3 */ {4,    6, 32,   32, deflate_fast},
 
+#ifdef MEDIUM_STRATEGY
+/* 4 */ {4,    4, 16,   16, deflate_medium},  /* lazy matches */
+/* 5 */ {8,   16, 32,   32, deflate_medium},
+/* 6 */ {8,   16, 128, 128, deflate_medium},
+#else
 /* 4 */ {4,    4, 16,   16, deflate_slow},  /* lazy matches */
 /* 5 */ {8,   16, 32,   32, deflate_slow},
 /* 6 */ {8,   16, 128, 128, deflate_slow},
+#endif
+
 /* 7 */ {8,   32, 128, 256, deflate_slow},
 /* 8 */ {32, 128, 258, 1024, deflate_slow},
 /* 9 */ {32, 258, 258, 4096, deflate_slow}}; /* max compression */
-#endif
 
 /* Note: the deflate() code requires max_lazy >= MIN_MATCH and max_chain >= 4
  * For deflate_fast() (levels <= 3) good is ignored and lazy has a different
@@ -182,29 +190,64 @@ local const config configuration_table[10] = {
  * bit values at the expense of memory usage). We slide even when level == 0 to
  * keep the hash table consistent if we switch back to level > 0 later.
  */
-local void slide_hash(deflate_state *s)
+static void slide_hash(deflate_state *s)
 {
-    unsigned n, m;
+    unsigned n;
     Pos *p;
     unsigned int wsize = s->w_size;
 
     n = s->hash_size;
     p = &s->head[n];
+#ifdef NOT_TWEAK_COMPILER
     do {
+        uint32_t m;
         m = *--p;
         *p = (Pos)(m >= wsize ? m - wsize : NIL);
     } while (--n);
+#else
+            /* As of I make this change, gcc (4.8.*) isn't able to vectorize
+             * this hot loop using saturated-subtraction on x86-64 architecture.
+             * To avoid this defect, we can change the loop such that
+             *    o. the pointer advance forward, and
+             *    o. demote the variable 'm' to be local to the loop, and
+             *       choose type "Pos" (instead of 'unsigned int') for the
+             *       variable to avoid unncessary zero-extension.
+             */
+            {
+                unsigned int i;
+                Pos *q = p - n;
+                for (i = 0; i < n; i++) {
+                    Pos m = *q;
+                    Pos t = wsize;
+                    *q++ = (Pos)(m >= t ? m-t: NIL);
+                }
+            }
+
+#endif /* NOT_TWEAK_COMPILER */
     n = wsize;
 #ifndef FASTEST
     p = &s->prev[n];
+#ifdef NOT_TWEAK_COMPILER
     do {
+        uint32_t m;
         m = *--p;
         *p = (Pos)(m >= wsize ? m - wsize : NIL);
         /* If n is not on any hash chain, prev[n] is garbage but
          * its value will never be used.
          */
     } while (--n);
-#endif
+#else
+            {
+                unsigned int i;
+                Pos *q = p - n;
+                for (i = 0; i < n; i++) {
+                    Pos m = *q;
+                    Pos t = wsize;
+                    *q++ = (Pos)(m >= t ? m-t: NIL);
+                }
+            }
+#endif /* NOT_TWEAK_COMPILER */
+#endif // FASTEST
 }
 
 /* ========================================================================= */
@@ -279,12 +322,14 @@ int ZEXPORT deflateInit2_(z_stream *strm, int level, int method, int windowBits,
         strategy < 0 || strategy > Z_FIXED || (windowBits == 8 && wrap != 1)) {
         return Z_STREAM_ERROR;
     }
+    if (windowBits == 8)
+        windowBits = 9;  /* until 256-byte window bug fixed */
+
 #ifdef X86_QUICK_STRATEGY
     if (level == 1)
         windowBits = 13;
 #endif
-    if (windowBits == 8)
-        windowBits = 9;  /* until 256-byte window bug fixed */
+
     s = (deflate_state *) ZALLOC(strm, 1, sizeof(deflate_state));
     if (s == Z_NULL)
         return Z_MEM_ERROR;
@@ -300,7 +345,7 @@ int ZEXPORT deflateInit2_(z_stream *strm, int level, int method, int windowBits,
 
 #ifdef X86_SSE4_2_CRC_HASH
     if (x86_cpu_has_sse42)
-        s->hash_bits = 15;
+        s->hash_bits = (uint32_t)15;
     else
 #endif
         s->hash_bits = (unsigned int)memLevel + 7;
@@ -338,6 +383,7 @@ int ZEXPORT deflateInit2_(z_stream *strm, int level, int method, int windowBits,
     s->level = level;
     s->strategy = strategy;
     s->method = (unsigned char)method;
+    s->block_open = 0;
 
     return deflateReset(strm);
 }
@@ -345,7 +391,7 @@ int ZEXPORT deflateInit2_(z_stream *strm, int level, int method, int windowBits,
 /* =========================================================================
  * Check for a valid deflate stream state. Return 0 if ok, 1 if not.
  */
-local int deflateStateCheck (z_stream *strm)
+static int deflateStateCheck (z_stream *strm)
 {
     deflate_state *s;
     if (strm == Z_NULL ||
@@ -436,7 +482,7 @@ int ZEXPORT deflateSetDictionary(z_stream *strm, const unsigned char *dictionary
 int ZEXPORT deflateGetDictionary(z_stream *strm, unsigned char *dictionary, unsigned int *dictLength)
 {
     deflate_state *s;
-    uInt len;
+    uint32_t len;
 
     if (deflateStateCheck(strm))
         return Z_STREAM_ERROR;
@@ -549,7 +595,6 @@ int ZEXPORT deflateParams(z_stream *strm, int level, int strategy)
 {
     deflate_state *s;
     compress_func func;
-    int err = Z_OK;
 
     if (deflateStateCheck(strm))
         return Z_STREAM_ERROR;
@@ -558,7 +603,8 @@ int ZEXPORT deflateParams(z_stream *strm, int level, int strategy)
 #ifdef FASTEST
     if (level != 0) level = 1;
 #else
-    if (level == Z_DEFAULT_COMPRESSION) level = 6;
+    if (level == Z_DEFAULT_COMPRESSION)
+        level = 6;
 #endif
     if (level < 0 || level > 9 || strategy < 0 || strategy > Z_FIXED) {
         return Z_STREAM_ERROR;
@@ -628,7 +674,6 @@ unsigned long ZEXPORT deflateBound(z_stream *strm, unsigned long sourceLen)
 {
     deflate_state *s;
     unsigned long complen, wraplen;
-    unsigned char *str;
 
     /* conservative upper bound for compressed data */
     complen = sourceLen +
@@ -651,6 +696,7 @@ unsigned long ZEXPORT deflateBound(z_stream *strm, unsigned long sourceLen)
     case 2:                                 /* gzip wrapper */
         wraplen = 18;
         if (s->gzhead != Z_NULL) {          /* user-supplied gzip header */
+            unsigned char *str;
             if (s->gzhead->extra != Z_NULL) {
                 wraplen += 2 + s->gzhead->extra_len;
             }
@@ -689,7 +735,7 @@ unsigned long ZEXPORT deflateBound(z_stream *strm, unsigned long sourceLen)
  * IN assertion: the stream state is correct and there is enough room in
  * pending_buf.
  */
-local void putShortMSB(deflate_state *s, uint16_t b)
+static void putShortMSB(deflate_state *s, uint16_t b)
 {
     put_byte(s, (unsigned char)(b >> 8));
     put_byte(s, (unsigned char)(b & 0xff));
@@ -750,7 +796,8 @@ int ZEXPORT deflate(z_stream *strm, int flush)
         (s->status == FINISH_STATE && flush != Z_FINISH)) {
         ERR_RETURN(strm, Z_STREAM_ERROR);
     }
-    if (strm->avail_out == 0) ERR_RETURN(strm, Z_BUF_ERROR);
+    if (strm->avail_out == 0)
+        ERR_RETURN(strm, Z_BUF_ERROR);
 
     s->strm = strm; /* just in case */
     old_flush = s->last_flush;
@@ -787,8 +834,8 @@ int ZEXPORT deflate(z_stream *strm, int flush)
     /* Write the header */
     if (s->status == INIT_STATE) {
         /* zlib header */
-        uInt header = (Z_DEFLATED + ((s->w_bits-8)<<4)) << 8;
-        uInt level_flags;
+        uint32_t header = (Z_DEFLATED + ((s->w_bits-8)<<4)) << 8;
+        uint32_t level_flags;
 
         if (s->strategy >= Z_HUFFMAN_ONLY || s->level < 2)
             level_flags = 0;
@@ -806,8 +853,8 @@ int ZEXPORT deflate(z_stream *strm, int flush)
 
         /* Save the adler32 of the preset dictionary: */
         if (s->strstart != 0) {
-            putShortMSB(s, (uInt)(strm->adler >> 16));
-            putShortMSB(s, (uInt)(strm->adler & 0xffff));
+            putShortMSB(s, (uint16_t)(strm->adler >> 16));
+            putShortMSB(s, (uint16_t)(strm->adler));
         }
         strm->adler = adler32(0L, Z_NULL, 0);
         s->status = BUSY_STATE;
@@ -822,7 +869,7 @@ int ZEXPORT deflate(z_stream *strm, int flush)
 #ifdef GZIP
     if (s->status == GZIP_STATE) {
         /* gzip header */
-        strm->adler = crc32(0L, Z_NULL, 0);
+        crc_reset(s);
             put_byte(s, 31);
             put_byte(s, 139);
             put_byte(s, 8);
@@ -833,8 +880,7 @@ int ZEXPORT deflate(z_stream *strm, int flush)
                 put_byte(s, 0);
                 put_byte(s, 0);
                 put_byte(s, s->level == 9 ? 2 :
-                            (s->strategy >= Z_HUFFMAN_ONLY || s->level < 2 ?
-                            4 : 0));
+                     (s->strategy >= Z_HUFFMAN_ONLY || s->level < 2 ? 4 : 0));
                 put_byte(s, OS_CODE);
                 s->status = BUSY_STATE;
 
@@ -873,10 +919,11 @@ int ZEXPORT deflate(z_stream *strm, int flush)
     }
     if (s->status == EXTRA_STATE) {
         if (s->gzhead->extra != Z_NULL) {
-            ulg beg = s->pending;   /* start of bytes to update crc */
-            uInt left = (s->gzhead->extra_len & 0xffff) - s->gzindex;
+            uint32_t beg = s->pending;   /* start of bytes to update crc */
+            uint32_t left = (s->gzhead->extra_len & 0xffff) - s->gzindex;
+
             while (s->pending + left > s->pending_buf_size) {
-                uInt copy = s->pending_buf_size - s->pending;
+                uint32_t copy = s->pending_buf_size - s->pending;
                 zmemcpy(s->pending_buf + s->pending,
                         s->gzhead->extra + s->gzindex, copy);
                 s->pending = s->pending_buf_size;
@@ -900,8 +947,9 @@ int ZEXPORT deflate(z_stream *strm, int flush)
         }
     if (s->status == NAME_STATE) {
         if (s->gzhead->name != Z_NULL) {
-            ulg beg = s->pending;   /* start of bytes to update crc */
+            uint32_t beg = s->pending;   /* start of bytes to update crc */
             int val;
+
             do {
                 if (s->pending == s->pending_buf_size) {
                     HCRC_UPDATE(beg);
@@ -922,8 +970,9 @@ int ZEXPORT deflate(z_stream *strm, int flush)
         }
     if (s->status == COMMENT_STATE) {
         if (s->gzhead->comment != Z_NULL) {
-            ulg beg = s->pending;   /* start of bytes to update crc */
+            uint32_t beg = s->pending;   /* start of bytes to update crc */
             int val;
+
             do {
                 if (s->pending == s->pending_buf_size) {
                     HCRC_UPDATE(beg);
@@ -950,9 +999,9 @@ int ZEXPORT deflate(z_stream *strm, int flush)
                     return Z_OK;
             }
         }
-            put_byte(s, (Byte)(strm->adler & 0xff));
-            put_byte(s, (Byte)((strm->adler >> 8) & 0xff));
-            strm->adler = crc32(0L, Z_NULL, 0);
+            put_byte(s, (unsigned char)(strm->adler & 0xff));
+            put_byte(s, (unsigned char)((strm->adler >> 8) & 0xff));
+            crc_reset(s);
     }
         s->status = BUSY_STATE;
 
@@ -1074,14 +1123,9 @@ int ZEXPORT deflateEnd(z_stream *strm)
 
 /* =========================================================================
  * Copy the source state to the destination state.
- * To simplify the source, this is not supported for 16-bit MSDOS (which
- * doesn't have enough memory anyway to duplicate compression states).
  */
 int ZEXPORT deflateCopy(z_stream *dest, z_stream *source)
 {
-#ifdef MAXSEG_64K
-    return Z_STREAM_ERROR;
-#else
     deflate_state *ds;
     deflate_state *ss;
     uint16_t *overlay;
@@ -1113,7 +1157,7 @@ int ZEXPORT deflateCopy(z_stream *dest, z_stream *source)
         deflateEnd(dest);
         return Z_MEM_ERROR;
     }
-    /* following zmemcpy do not work for 16-bit MSDOS */
+
     zmemcpy(ds->window, ss->window, ds->w_size * 2 * sizeof(unsigned char));
     zmemcpy((void *)ds->prev, (void *)ss->prev, ds->w_size * sizeof(Pos));
     zmemcpy((void *)ds->head, (void *)ss->head, ds->hash_size * sizeof(Pos));
@@ -1128,7 +1172,6 @@ int ZEXPORT deflateCopy(z_stream *dest, z_stream *source)
     ds->bl_desc.dyn_tree = ds->bl_tree;
 
     return Z_OK;
-#endif /* MAXSEG_64K */
 }
 
 /* ===========================================================================
@@ -1138,7 +1181,7 @@ int ZEXPORT deflateCopy(z_stream *dest, z_stream *source)
  * allocating a large strm->next_in buffer and copying from it.
  * (See also flush_pending()).
  */
-ZLIB_INTERNAL unsigned int read_buf(z_stream *strm, unsigned char *buf, unsigned size)
+ZLIB_INTERNAL uint32_t read_buf(z_stream *strm, unsigned char *buf, unsigned size)
 {
     uint32_t len = strm->avail_in;
 
@@ -1167,7 +1210,7 @@ ZLIB_INTERNAL unsigned int read_buf(z_stream *strm, unsigned char *buf, unsigned
 /* ===========================================================================
  * Initialize the "longest match" routines for a new zlib stream
  */
-local void lm_init(deflate_state *s)
+static void lm_init(deflate_state *s)
 {
     s->window_size = (unsigned long)2L*s->w_size;
 
@@ -1208,7 +1251,7 @@ local void lm_init(deflate_state *s)
 /* For 80x86 and 680x0, an optimized version will be provided in match.asm or
  * match.S. The code will be functionally equivalent.
  */
-local uInt longest_match(s, cur_match)
+static uint32_t longest_match(s, cur_match)
     deflate_state *s;
     IPos cur_match;                             /* current match */
 {
@@ -1347,7 +1390,7 @@ local uInt longest_match(s, cur_match)
     } while ((cur_match = prev[cur_match & wmask]) > limit
              && --chain_length != 0);
 
-    if ((uInt)best_len <= s->lookahead) return (uInt)best_len;
+    if ((uint32_t)best_len <= s->lookahead) return (uint32_t)best_len;
     return s->lookahead;
 }
 #endif /* ASMV */
@@ -1357,7 +1400,7 @@ local uInt longest_match(s, cur_match)
 /* ---------------------------------------------------------------------------
  * Optimized version for FASTEST only
  */
-local uInt longest_match(s, cur_match)
+static uint32_t longest_match(s, cur_match)
     deflate_state *s;
     IPos cur_match;                             /* current match */
 {
@@ -1371,7 +1414,7 @@ local uInt longest_match(s, cur_match)
      */
     Assert(s->hash_bits >= 8 && MAX_MATCH == 258, "Code too clever");
 
-    Assert((ulg)s->strstart <= s->window_size-MIN_LOOKAHEAD, "need lookahead");
+    Assert((uint32_t)s->strstart <= s->window_size-MIN_LOOKAHEAD, "need lookahead");
 
     Assert(cur_match < s->strstart, "no future");
 
@@ -1407,7 +1450,7 @@ local uInt longest_match(s, cur_match)
     if (len < MIN_MATCH) return MIN_MATCH - 1;
 
     s->match_start = cur_match;
-    return (uInt)len <= s->lookahead ? (uInt)len : s->lookahead;
+    return (uint32_t)len <= s->lookahead ? (uint32_t)len : s->lookahead;
 }
 
 #endif /* FASTEST */
@@ -1516,7 +1559,7 @@ void fill_window_c(deflate_state *s)
              * this hot loop using saturated-subtraction on x86-64 architecture.
              * To avoid this defect, we can change the loop such that
              *    o. the pointer advance forward, and
-             *    o. demote the variable 'm' to be local to the loop, and
+             *    o. demote the variable 'm' to be static to the loop, and
              *       choose type "Pos" (instead of 'unsigned int') for the
              *       variable to avoid unncessary zero-extension.
              */
@@ -1660,7 +1703,7 @@ void fill_window_c(deflate_state *s)
  * copied. It is most efficient with large input and output buffers, which
  * maximizes the opportunites to have a single copy from next_in to next_out.
  */
-local block_state deflate_stored(deflate_state *s, int flush)
+static block_state deflate_stored(deflate_state *s, int flush)
 {
     /* Smallest worthy block size when not flushing or finishing. By default
      * this is 32K. This can be as small as 507 bytes for memLevel == 1. For
@@ -1686,10 +1729,12 @@ local block_state deflate_stored(deflate_state *s, int flush)
             /* maximum stored block length that will fit in avail_out: */
         have = s->strm->avail_out - have;
         left = s->strstart - s->block_start;    /* bytes left in window */
-        if (len > (ulg)left + s->strm->avail_in)
+        if (len > (uint32_t)left + s->strm->avail_in)
             len = left + s->strm->avail_in;     /* limit len to the input */
         if (len > have)
             len = have;                         /* limit len to the output */
+        if (left > len)
+            left = len;                         /* limit window pull to len */
 
         /* If the stored block would be less than min_block in length, or if
          * unable to copy all of the available input when flushing, then try
@@ -1784,7 +1829,8 @@ local block_state deflate_stored(deflate_state *s, int flush)
 
     /* If flushing and all input has been consumed, then done. */
     if (flush != Z_NO_FLUSH && flush != Z_FINISH &&
-        s->strm->avail_in == 0 && (long)s->strstart == s->block_start)
+        s->strm->avail_in == 0 && 
+        (long)s->strstart == s->block_start)
         return block_done;
 
     /* Fill the window with any remaining input. */
@@ -1826,6 +1872,8 @@ local block_state deflate_stored(deflate_state *s, int flush)
         _tr_stored_block(s, (charf *)s->window + s->block_start, len, last);
         s->block_start += len;
         flush_pending(s->strm);
+        if (last)
+            return finish_started;
     }
 
     /* We've done all we can with the available input and output. */
@@ -1839,7 +1887,7 @@ local block_state deflate_stored(deflate_state *s, int flush)
  * new strings in the dictionary only for unmatched strings or for short
  * matches. It is used only for the fast compression options.
  */
-local block_state deflate_fast(s, flush)
+static block_state deflate_fast(s, flush)
     deflate_state *s;
     int flush;
 {
@@ -1955,7 +2003,7 @@ local block_state deflate_fast(s, flush)
  * evaluation for matches: a match is finally adopted only if there is
  * no better match at the next window position.
  */
-local block_state deflate_slow(deflate_state *s, int flush)
+static block_state deflate_slow(deflate_state *s, int flush)
 {
     IPos hash_head;          /* head of hash chain */
     int bflush;              /* set if current block must be flushed */
@@ -2014,7 +2062,7 @@ local block_state deflate_slow(deflate_state *s, int flush)
          * match is not better, output the previous match:
          */
         if (s->prev_length >= MIN_MATCH && s->match_length <= s->prev_length) {
-            uInt max_insert = s->strstart + s->lookahead - MIN_MATCH;
+            uint32_t max_insert = s->strstart + s->lookahead - MIN_MATCH;
             /* Do not insert strings in hash table beyond this. */
 
             check_match(s, s->strstart-1, s->prev_match, s->prev_length);
@@ -2084,7 +2132,7 @@ local block_state deflate_slow(deflate_state *s, int flush)
  * one.  Do not maintain a hash table.  (It will be regenerated if this run of
  * deflate switches away from Z_RLE.)
  */
-local block_state deflate_rle(deflate_state *s, int flush)
+static block_state deflate_rle(deflate_state *s, int flush)
 {
     int bflush;                     /* set if current block must be flushed */
     unsigned int prev;              /* byte at distance one to match */
@@ -2157,7 +2205,7 @@ local block_state deflate_rle(deflate_state *s, int flush)
  * For Z_HUFFMAN_ONLY, do not look for matches.  Do not maintain a hash table.
  * (It will be regenerated if this run of deflate switches away from Huffman.)
  */
-local block_state deflate_huff(deflate_state *s, int flush)
+static block_state deflate_huff(deflate_state *s, int flush)
 {
     int bflush;             /* set if current block must be flushed */
 

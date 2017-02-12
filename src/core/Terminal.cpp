@@ -552,7 +552,7 @@ TCallbackGuard::~TCallbackGuard()
     FTerminal->FCallbackGuard = nullptr;
   }
 
-  SAFE_DESTROY(FFatalError);
+  SAFE_DESTROY_EX(Exception, FFatalError);
 }
 
 void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
@@ -564,7 +564,7 @@ void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const 
   // that converts any exception to fatal one (such as in TTerminal::Open).
   if (isa<ECallbackGuardAbort>(E))
   {
-    SAFE_DESTROY(FFatalError);
+    SAFE_DESTROY_EX(Exception, FFatalError);
     FFatalError = new ExtException(E, Msg, HelpKeyword);
   }
 
@@ -1523,7 +1523,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   std::unique_ptr<TStrings> Results(new TStringList());
   try__finally
   {
-    Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(FLAGMASK(Echo, pupEcho)));
+    Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(FLAGMASK(Echo, (void*)pupEcho)));
     Results->AddObject(AResult, reinterpret_cast<TObject *>(MaxLen));
     Result = PromptUser(Data, Kind, AName, Instructions, Prompts.get(), Results.get());
     AResult = Results->GetString(0);
@@ -4925,13 +4925,13 @@ void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
 }
 
 void TTerminal::CalculateLocalFileSize(const UnicodeString & AFileName,
-  const TSearchRec & Rec, /*int64_t*/ void * Params)
+  const TSearchRec & Rec, /*int64_t*/ void * AParams)
 {
-  TCalculateSizeParams * AParams = dyn_cast<TCalculateSizeParams>(Params);
+  TCalculateSizeParams * Params = dyn_cast<TCalculateSizeParams>(AParams);
 
   bool Dir = FLAGSET(Rec.Attr, faDirectory);
 
-  bool AllowTransfer = (AParams->CopyParam == nullptr);
+  bool AllowTransfer = (Params->CopyParam == nullptr);
   // SearchRec.Size in C++B2010 is int64_t,
   // so we should be able to use it instead of FindData.nFileSize*
   int64_t Size =
@@ -4944,18 +4944,18 @@ void TTerminal::CalculateLocalFileSize(const UnicodeString & AFileName,
     MaskParams.Modification = ::FileTimeToDateTime(Rec.FindData.ftLastWriteTime);
 
     UnicodeString BaseFileName = GetBaseFileName(AFileName);
-    AllowTransfer = AParams->CopyParam->AllowTransfer(BaseFileName, osLocal, Dir, MaskParams);
+    AllowTransfer = Params->CopyParam->AllowTransfer(BaseFileName, osLocal, Dir, MaskParams);
   }
 
   if (AllowTransfer)
   {
     if (!Dir)
     {
-      AParams->Size += Size;
+      Params->Size += Size;
     }
     else
     {
-      ProcessLocalDirectory(AFileName, nb::bind(&TTerminal::CalculateLocalFileSize, this), Params);
+      ProcessLocalDirectory(AFileName, nb::bind(&TTerminal::CalculateLocalFileSize, this), AParams);
     }
   }
 
@@ -6809,7 +6809,7 @@ TTerminal * TSecondaryTerminal::GetPasswordSource()
 }
 
 TTerminalList::TTerminalList(TConfiguration * AConfiguration) :
-  TObjectList(),
+  TObjectList(OBJECT_CLASS_TTerminalList),
   FConfiguration(AConfiguration)
 {
   DebugAssert(FConfiguration);
@@ -6822,7 +6822,7 @@ TTerminalList::~TTerminalList()
 
 TTerminal * TTerminalList::CreateTerminal(TSessionData * Data)
 {
-  TTerminal * Result = new TTerminal(OBJECT_CLASS_TTerminal);
+  TTerminal * Result = new TTerminal();
   Result->Init(Data, FConfiguration);
   return Result;
 }

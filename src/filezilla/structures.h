@@ -1,11 +1,12 @@
 #pragma once
 
-#include <Classes.hpp>
+#include <headers.hpp>
 
 class CServerPath;
 
-class t_directory : public TObject
+class t_directory //: public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   t_directory();
   t_directory(const t_directory &a);
@@ -13,8 +14,9 @@ public:
   t_server server;
   CServerPath path;
   int num;
-  class t_direntry : public TObject
+  class t_direntry // : public TObject
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
   public:
     t_direntry();
     CString linkTarget;
@@ -26,8 +28,9 @@ public:
     bool bUnsure; // Set by CFtpControlSocket::FileTransfer when uploads fail after sending STOR/APPE
     bool dir;
     bool bLink;
-    class t_date : public TObject
+    class t_date // : public TObject
     {
+    CUSTOM_MEM_ALLOCATION_IMPL
     public:
       t_date();
       int year,month,day,hour,minute,second;

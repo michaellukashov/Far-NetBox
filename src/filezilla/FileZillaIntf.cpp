@@ -1,8 +1,6 @@
 
 #include "stdafx.h"
 
-#include <Common.h>
-
 #include "FileZillaIntf.h"
 #include "FileZillaIntern.h"
 #include "FzApiStructures.h"
@@ -303,7 +301,7 @@ void TFileZillaIntf::SetDebugLevel(TLogLevel Level)
   FIntern->SetDebugLevel(Level - LOG_APIERROR + 1);
 }
 
-bool TFileZillaIntf::PostMessage(WPARAM wParam, LPARAM lParam)
+bool TFileZillaIntf::FZPostMessage(WPARAM wParam, LPARAM lParam)
 {
   unsigned int MessageID = FZ_MSG_ID(wParam);
   TMessageType Type;

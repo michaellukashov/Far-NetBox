@@ -290,7 +290,8 @@ TFTPFileSystem::~TFTPFileSystem()
     DiscardMessages();
   }
 
-  SAFE_DESTROY(FFileZillaIntf);
+  delete FFileZillaIntf;
+  FFileZillaIntf = nullptr;
 
   ::CloseHandle(FQueueEvent);
   FQueueEvent = nullptr;
@@ -299,7 +300,8 @@ TFTPFileSystem::~TFTPFileSystem()
   SAFE_DESTROY(FLastErrorResponse);
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
-  SAFE_DESTROY(FServerCapabilities);
+  delete FServerCapabilities;
+  FServerCapabilities = nullptr;
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
 
@@ -873,9 +875,9 @@ UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool 
   }
 }
 
-UnicodeString TFTPFileSystem::ActualCurrentDirectory()
+UnicodeString TFTPFileSystem::GetActualCurrentDirectory() const
 {
-  UnicodeString CurrentPath(1024, 0);
+  UnicodeString CurrentPath(NB_MAX_PATH, 0);
   UnicodeString Result;
   if (FFileZillaIntf->GetCurrentPath(const_cast<wchar_t *>(CurrentPath.c_str()), CurrentPath.Length()))
   {
@@ -885,6 +887,7 @@ UnicodeString TFTPFileSystem::ActualCurrentDirectory()
   {
     Result = ROOTDIRECTORY;
   }
+  PackStr(Result);
   return Result;
 }
 
@@ -899,7 +902,7 @@ void TFTPFileSystem::EnsureLocation()
     // 1) We did cached directory change
     // 2) Listing was requested for non-current directory, which
     // makes FZAPI change its current directory (and not restoring it back afterwards)
-    if (!core::UnixSamePath(ActualCurrentDirectory(), FCurrentDirectory))
+    if (!core::UnixSamePath(GetActualCurrentDirectory(), FCurrentDirectory))
     {
       FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
         FCurrentDirectory.c_str()));
@@ -2354,7 +2357,7 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
       // EnsureLocation should reset actual current directory to user's working directory.
       // If user's working directory is still below deleted directory, it is
       // perfectly correct to report an error.
-      if (core::UnixIsChildPath(ActualCurrentDirectory(), FileName))
+      if (core::UnixIsChildPath(GetActualCurrentDirectory(), FileName))
       {
         EnsureLocation();
       }

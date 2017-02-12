@@ -211,7 +211,7 @@ Bignum dh_create_e(void *handle, int nbits)
 	 */
 	if (ctx->x)
 	{
-		freebn(ctx->x);
+	    freebn(ctx->x);
 		ctx->x = NULL;
 	}
 	if (nbits == 0 || nbits > bignum_bitcount(ctx->qmask)) {
@@ -241,7 +241,7 @@ Bignum dh_create_e(void *handle, int nbits)
      * Done. Now compute e = g^x mod p.
      */
     if (ctx->x)
-      ctx->e = modpow(ctx->g, ctx->x, ctx->p);
+    ctx->e = modpow(ctx->g, ctx->x, ctx->p);
 
     return ctx->e;
 }

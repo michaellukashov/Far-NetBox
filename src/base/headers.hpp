@@ -69,19 +69,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "disable_warnings_in_std_end.hpp"
 
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
-#endif  //_WIN32_WINNT
-
-#ifndef _WIN32_IE
-#define _WIN32_IE 0x0501
-#endif  //_WIN32_IE
-
-// winnls.h
-#ifndef NORM_STOP_ON_NULL
-#define NORM_STOP_ON_NULL 0x10000000
-#endif
-
 #ifndef True
 #define True true
 #endif
@@ -99,10 +86,6 @@ typedef bool Boolean;
 #endif
 #ifndef Word
 typedef WORD Word;
-#endif
-
-#ifndef HIDESBASE
-#define HIDESBASE
 #endif
 
 #define NullToEmptyA(s) (s ? s : "")
@@ -135,50 +118,5 @@ inline void ClearStruct(T * s) { T dont_instantiate_this_template_with_pointers 
 template<typename T, size_t N>
 inline void ClearArray(T (&a)[N]) { ::ZeroMemory(a, sizeof(a[0]) * N); }
 
-#ifdef __GNUC__
-#ifndef nullptr
-#define nullptr NULL
-#endif
-#endif
-
-#if defined(_MSC_VER) && _MSC_VER<1600
-#define nullptr NULL
-#endif
-
-template <typename T>
-bool CheckNullOrStructSize(const T * s) { return !s || (s->StructSize >= sizeof(T)); }
-template <typename T>
-bool CheckStructSize(const T * s) { return s && (s->StructSize >= sizeof(T)); }
-
-#ifdef _DEBUG
-#define SELF_TEST(code) \
-  namespace { \
-    struct SelfTest { \
-      SelfTest() { \
-        code; \
-      } \
-    } _SelfTest; \
-  }
-#else
-#define SELF_TEST(code)
-#endif
-
-#define NB_DISABLE_COPY(Class) \
-private: \
-  Class(const Class &); \
-  Class &operator=(const Class &);
-
-#define NB_STATIC_ASSERT(Condition, Message) \
-  static_assert(bool(Condition), Message)
-
-#define NB_MAX_PATH 32 * 1024
-#define NPOS static_cast<intptr_t>(-1)
-
-#include "UnicodeString.hpp"
-#include "local.hpp"
-
-#define TShellExecuteInfoW _SHELLEXECUTEINFOW
-#define TSHFileInfoW SHFILEINFOW
-#define TVSFixedFileInfo VS_FIXEDFILEINFO
-#define PVSFixedFileInfo VS_FIXEDFILEINFO*
+#include "GlobalUtils.hpp"
 

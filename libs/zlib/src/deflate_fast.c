@@ -39,7 +39,7 @@ block_state deflate_fast(deflate_state *s, int flush) {
          */
         hash_head = NIL;
         if (s->lookahead >= MIN_MATCH) {
-            hash_head = insert_string(s, s->strstart);
+            hash_head = insert_string(s, s->strstart, 1);
         }
 
         /* Find the longest match, discarding those <= prev_length.

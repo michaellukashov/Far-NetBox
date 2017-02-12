@@ -3,6 +3,12 @@
 #include <Global.h>
 #include <Exceptions.h>
 
+extern int Win32Platform;
+extern int Win32MajorVersion;
+extern int Win32MinorVersion;
+extern int Win32BuildNumber;
+extern wchar_t Win32CSDVersion[128];
+
 extern const wchar_t EngShortMonthNames[12][4];
 #define CONST_BOM "\xEF\xBB\xBF"
 extern const wchar_t TokenPrefix;

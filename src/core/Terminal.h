@@ -333,7 +333,7 @@ public:
   void DoCalculateDirectorySize(const UnicodeString & AFileName,
     const TRemoteFile * AFile, TCalculateSizeParams * Params);
   void CalculateLocalFileSize(const UnicodeString & AFileName,
-    const TSearchRec & Rec, /*int64_t*/ void * Params);
+    const TSearchRec & Rec, /*int64_t*/ void * AParams);
   bool CalculateLocalFilesSize(const TStrings * AFileList,
     const TCopyParamType * CopyParam, bool AllowDirs,
     OUT int64_t & Size);
@@ -446,7 +446,7 @@ public:
 
 
 public:
-  explicit TTerminal(TObjectClassId Kind);
+  explicit TTerminal(TObjectClassId Kind = OBJECT_CLASS_TTerminal);
   void Init(TSessionData * SessionData, TConfiguration * Configuration);
   virtual ~TTerminal();
   void Open();
@@ -721,7 +721,6 @@ class TTerminalList : public TObjectList
 {
 NB_DISABLE_COPY(TTerminalList)
 public:
-  TTerminalList() : FConfiguration(nullptr) {}
   explicit TTerminalList(TConfiguration * AConfiguration);
   virtual ~TTerminalList();
 

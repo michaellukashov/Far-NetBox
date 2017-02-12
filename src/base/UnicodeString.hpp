@@ -1,9 +1,22 @@
 #pragma once
 
 #include <string>
+#include <WinUser.h>
 
 #include <nbglobals.h>
-#include "local.hpp"
+
+__inline intptr_t __cdecl StrLength(const wchar_t * str) { return wcslen(str ? str : L""); }
+
+__inline wchar_t __cdecl Upper(wchar_t Ch) { ::CharUpperBuff(&Ch, 1); return Ch; }
+
+__inline wchar_t __cdecl Lower(wchar_t Ch) { ::CharLowerBuff(&Ch, 1); return Ch; }
+
+__inline int __cdecl StrCmpNNI(const wchar_t * s1, int n1, const wchar_t * s2, int n2) { return ::CompareString(0, NORM_IGNORECASE|NORM_STOP_ON_NULL|SORT_STRINGSORT, s1, n1, s2, n2) - 2; }
+__inline int __cdecl StrLIComp(const wchar_t * s1, const wchar_t * s2, int n) { return StrCmpNNI(s1, n, s2, n); }
+
+__inline int __cdecl FarStrCmpI(const wchar_t * s1, const wchar_t * s2) { return ::CompareString(0, NORM_IGNORECASE|SORT_STRINGSORT, s1,-1, s2, -1) - 2; }
+
+__inline int __cdecl StrCmpNN(const wchar_t * s1, int n1, const wchar_t * s2, int n2) { return ::CompareString(0, NORM_STOP_ON_NULL|SORT_STRINGSORT, s1, n1, s2, n2) - 2; }
 
 class RawByteString;
 class UnicodeString;
@@ -11,7 +24,7 @@ class AnsiString;
 
 class UTF8String
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UTF8String() {}
   UTF8String(const UTF8String & rht);
@@ -67,7 +80,7 @@ private:
 
 class UnicodeString
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UnicodeString() {}
   UnicodeString(const wchar_t * Str) { Init(Str, ::StrLength(Str)); }
@@ -196,7 +209,7 @@ class RawByteString;
 
 class AnsiString
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   AnsiString() {}
   AnsiString(const AnsiString & rht);
@@ -281,7 +294,7 @@ private:
 
 class RawByteString
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   RawByteString() {}
   explicit RawByteString(const wchar_t * Str);

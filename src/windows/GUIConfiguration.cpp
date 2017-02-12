@@ -414,7 +414,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
   {
     UnicodeString Name = ::IntToStr(Index);
     std::unique_ptr<TCopyParamRule> Rule;
-    std::unique_ptr<TCopyParamType> CopyParam(new TCopyParamType(OBJECT_CLASS_TCopyParamType));
+    std::unique_ptr<TCopyParamType> CopyParam(new TCopyParamType());
     if (Storage->OpenSubKey(Name, false))
     {
       SCOPE_EXIT
