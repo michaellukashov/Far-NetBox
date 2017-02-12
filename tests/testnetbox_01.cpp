@@ -198,10 +198,10 @@ TEST_CASE_METHOD(base_fixture_t, "test3", "netbox")
   TStringList Lines;
   Lines.SetText(Text);
   REQUIRE(2 == Lines.GetCount());
-  INFO("Lines 0 = " << Lines.GetString(0).c_str());
-  INFO("Lines 1 = " << Lines.GetString(1).c_str());
-  REQUIRE("text text text text text1" == W2MB(Lines.GetString(0).c_str()).c_str());
-  REQUIRE("text text text text text2" == W2MB(Lines.GetString(1).c_str()).c_str());
+  INFO("Lines 0 = " << Lines.GetString(0));
+  INFO("Lines 1 = " << Lines.GetString(1));
+  REQUIRE("text text text text text1" == W2MB(Lines.GetString(0).c_str()));
+  REQUIRE("text text text text text2" == W2MB(Lines.GetString(1).c_str()));
 }
 
 TEST_CASE_METHOD(base_fixture_t, "test4", "netbox")
@@ -210,15 +210,15 @@ TEST_CASE_METHOD(base_fixture_t, "test4", "netbox")
   TStringList Lines;
   Lines.SetCommaText(Text);
   INFO("Lines = '" << Lines.GetText() << "'");
-  REQUIRE(5 == Lines.GetCount());
-  REQUIRE(0 == wcscmp(L"text", Lines.GetString(0).c_str()));
-  REQUIRE(0 == wcscmp(L" text text", Lines.GetString(1).c_str()));
-  REQUIRE(0 == wcscmp(L" text text1", Lines.GetString(2).c_str()));
-  REQUIRE(0 == wcscmp(L"text text text", Lines.GetString(3).c_str()));
-  REQUIRE(0 == wcscmp(L" text text2", Lines.GetString(4).c_str()));
+  CHECK(5 == Lines.GetCount());
+  CHECK(0 == wcscmp(L"text", Lines.GetString(0).c_str()));
+  CHECK(0 == wcscmp(L" text text", Lines.GetString(1).c_str()));
+  CHECK(0 == wcscmp(L" text text1", Lines.GetString(2).c_str()));
+  CHECK(0 == wcscmp(L"text text text", Lines.GetString(3).c_str()));
+  CHECK(0 == wcscmp(L" text text2", Lines.GetString(4).c_str()));
   UnicodeString Text2 = Lines.GetCommaText();
-  INFO("Text2 = '" << Text2.c_str() << "'");
-  REQUIRE(0 == wcscmp(L"\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\"", Text2.c_str()));
+  INFO("Text2 = '" << Text2 << "'");
+  CHECK(0 == wcscmp(L"\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\"", Text2.c_str()));
 }
 
 TEST_CASE_METHOD(base_fixture_t, "test5", "netbox")
