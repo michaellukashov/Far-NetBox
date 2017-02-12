@@ -1588,6 +1588,7 @@ set(test_includes
   ../../libs/openssl/${OPENSSL_INC_DIR}/include
   ../../libs/putty
   ../../libs/putty/windows
+  ../../libs/apr/include
   ../base
   ../core
   ../resource
