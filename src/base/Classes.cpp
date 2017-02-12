@@ -1080,7 +1080,7 @@ void TStringList::Changed()
   }
 }
 
-void TStringList::Insert(intptr_t Index, const UnicodeString & S, TObject* AObject)
+void TStringList::Insert(intptr_t Index, const UnicodeString & S, TObject * AObject)
 {
   InsertItem(Index, S, AObject);
 }
