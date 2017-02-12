@@ -435,7 +435,7 @@ UnicodeString RightStr(const UnicodeString & Str, intptr_t ACount)
 intptr_t PosEx(const UnicodeString & SubStr, const UnicodeString & Str, intptr_t Offset)
 {
   UnicodeString S = Str.SubString(Offset);
-  intptr_t Result = S.Pos(SubStr);
+  intptr_t Result = S.Pos(SubStr) + Offset;
   return Result;
 }
 
