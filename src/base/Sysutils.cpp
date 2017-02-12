@@ -58,20 +58,21 @@ UnicodeString MB2W(const char * src, const UINT cp)
 
 AnsiString W2MB(const wchar_t * src, const UINT cp)
 {
-  if (!src || !*src)
-  {
-    return AnsiString("");
-  }
+//  if (!src || !*src)
+//  {
+//    return AnsiString("");
+//  }
 
-  intptr_t reqLength = ::WideCharToMultiByte(cp, 0, src, -1, 0, 0, nullptr, nullptr);
-  AnsiString Result;
-  if (reqLength)
-  {
-    Result.SetLength(reqLength);
-    ::WideCharToMultiByte(cp, 0, src, -1, const_cast<LPSTR>(Result.c_str()),
-      static_cast<int>(reqLength), nullptr, nullptr);
-    Result.SetLength(Result.Length() - 1);  //remove NULL character
-  }
+  AnsiString Result(src, NBChTraitsCRT<wchar_t>::SafeStringLen(src), cp);
+//  intptr_t reqLength = ::WideCharToMultiByte(cp, 0, src, -1, 0, 0, nullptr, nullptr);
+//  AnsiString Result;
+//  if (reqLength)
+//  {
+//    Result.SetLength(reqLength);
+//    ::WideCharToMultiByte(cp, 0, src, -1, const_cast<LPSTR>(Result.c_str()),
+//      static_cast<int>(reqLength), nullptr, nullptr);
+//    Result.SetLength(Result.Length() - 1);  //remove NULL character
+//  }
   return Result;
 }
 
