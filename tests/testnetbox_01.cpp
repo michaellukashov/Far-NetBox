@@ -23,7 +23,7 @@
 
 //------------------------------------------------------------------------------
 // stub
-TCustomFarPlugin * FarPlugin = NULL;
+TCustomFarPlugin * FarPlugin = nullptr;
 //------------------------------------------------------------------------------
 
 void FreeIEConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG* ie_config)
@@ -182,7 +182,7 @@ TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
     str = strings.GetText();
     INFO(L"str = " << str.c_str());
     REQUIRE(W2MB(str.c_str()).c_str() == "line 0\r\nline 1\r\nline 2\r\n");
-    strings.SetObj(0, NULL);
+    strings.SetObj(0, nullptr);
     UnicodeString str = strings.GetString(0);
     REQUIRE(W2MB(str.c_str()) == "line 0");
   }
@@ -323,9 +323,9 @@ TEST_CASE_METHOD(base_fixture_t, "test7", "netbox")
         Lines1->EndUpdate();
         cnt1--;
         delete Lines1;
-        Lines1 = NULL;
+        Lines1 = nullptr;
         delete Lines2;
-        Lines2 = NULL;
+        Lines2 = nullptr;
       };
       REQUIRE(1 == cnt);
       REQUIRE(1 == cnt1);
@@ -336,14 +336,14 @@ TEST_CASE_METHOD(base_fixture_t, "test7", "netbox")
     catch (const std::exception & ex)
     {
       INFO("in catch block");
-      REQUIRE(NULL == Lines1);
-      REQUIRE(NULL == Lines2);
+      REQUIRE(nullptr == Lines1);
+      REQUIRE(nullptr == Lines2);
     }
     INFO("after block");
     REQUIRE(0 == cnt);
     REQUIRE(0 == cnt1);
-    REQUIRE(NULL == Lines1);
-    REQUIRE(NULL == Lines2);
+    REQUIRE(nullptr == Lines1);
+    REQUIRE(nullptr == Lines2);
   }
 }
 
@@ -530,7 +530,7 @@ TEST_CASE_METHOD(base_fixture_t, "test22", "netbox")
   {
     unsigned int CreateAttrs = FILE_ATTRIBUTE_NORMAL;
     HANDLE FileHandle = ::CreateFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
-                               NULL, CREATE_ALWAYS, CreateAttrs, 0);
+                               nullptr, CREATE_ALWAYS, CreateAttrs, 0);
     REQUIRE(FileHandle != 0);
     TStream * FileStream = new TSafeHandleStream(FileHandle);
     TFileBuffer * BlockBuf = new TFileBuffer();
@@ -540,8 +540,8 @@ TEST_CASE_METHOD(base_fixture_t, "test22", "netbox")
     INFO("BlockBuf->GetSize = " << BlockBuf->GetSize());
     REQUIRE(BlockBuf->GetSize() == str.size());
     BlockBuf->WriteToStream(FileStream, BlockBuf->GetSize());
-    delete FileStream; FileStream = NULL;
-    delete BlockBuf; BlockBuf = NULL;
+    delete FileStream; FileStream = nullptr;
+    delete BlockBuf; BlockBuf = nullptr;
     ::CloseHandle(FileHandle);
     INFO("FileName1 = " << FileName.c_str());
     REQUIRE(::FileExists(FileName));
@@ -556,18 +556,18 @@ TEST_CASE_METHOD(base_fixture_t, "test22", "netbox")
                     FileName.c_str(),
                     GENERIC_READ,
                     0, // FILE_SHARE_READ,
-                    NULL,
+                    nullptr,
                     OPEN_ALWAYS, // OPEN_EXISTING,
                     0, // FILE_ATTRIBUTE_NORMAL, // 0,
-                    NULL);
+                    nullptr);
     DEBUG_PRINTF(L"File = %d", File);
     TStream * FileStream = new TSafeHandleStream(File);
     TFileBuffer * BlockBuf = new TFileBuffer();
     BlockBuf->ReadStream(FileStream, str.size(), true);
     INFO("BlockBuf->GetSize = " << BlockBuf->GetSize());
     REQUIRE(BlockBuf->GetSize() == str.size());
-    delete FileStream; FileStream = NULL;
-    delete BlockBuf; BlockBuf = NULL;
+    delete FileStream; FileStream = nullptr;
+    delete BlockBuf; BlockBuf = nullptr;
     ::CloseHandle(File);
   }
 }
@@ -672,15 +672,15 @@ TEST_CASE_METHOD(base_fixture_t, "test27", "netbox")
     {
         //no error so check the proxy settings and free any strings
         INFO("AutoConfigDetect is: " << ProxyConfig.fAutoDetect);
-        if (NULL != ProxyConfig.lpszAutoConfigUrl)
+        if (nullptr != ProxyConfig.lpszAutoConfigUrl)
         {
             INFO("AutoConfigURL is: " << ProxyConfig.lpszAutoConfigUrl);
         }
-        if (NULL != ProxyConfig.lpszProxy)
+        if (nullptr != ProxyConfig.lpszProxy)
         {
             INFO("AutoConfigProxy is: " << ProxyConfig.lpszProxy);
         }
-        if (NULL != ProxyConfig.lpszProxyBypass)
+        if (nullptr != ProxyConfig.lpszProxyBypass)
         {
             INFO("AutoConfigBypass is: " << ProxyConfig.lpszProxyBypass);
         }
