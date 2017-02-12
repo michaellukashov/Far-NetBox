@@ -1589,9 +1589,15 @@ set(test_includes
   ../../libs/putty
   ../../libs/putty/windows
   ../../libs/apr/include
+  ../../libs/tinyxml2
+  ../../libs/rdestl
+  ../../libs/atlmfc/include
+  ../filezilla
+  ../filezilla/misc
   ../base
   ../core
   ../resource
+  ../windows
   ../PluginSDK/${FAR_VERSION}
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
