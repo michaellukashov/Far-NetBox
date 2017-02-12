@@ -14,8 +14,8 @@ void DontSaveRandomSeed();
 #endif
 extern "C"
 {
-#include <putty/putty.h>
-#include <putty/puttyexp.h>
+#include <putty.h>
+#include <puttyexp.h>
 #include <ssh.h>
 #include <proxy.h>
 #include <storage.h>
