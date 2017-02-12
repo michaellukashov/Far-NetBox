@@ -2874,7 +2874,7 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidt
 
 TGlobalFunctionsIntf * GetGlobalFunctions()
 {
-  static TGlobalFunctions * GlobalFunctions = nullptr;
+  static TGlobalFunctionsIntf * GlobalFunctions = nullptr;
   if (!GlobalFunctions)
   {
     GlobalFunctions = new TGlobalFunctions();
@@ -2916,13 +2916,13 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   int Length = 0;
   if (FarPlugin)
   {
-    Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
+    Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str()) - 1;
   }
   else
   {
     Length = ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
   }
-  Result = UnicodeString(Path.c_str(), Length - 1);
+  Result = UnicodeString(Path.c_str(), Length);
   return Result;
 }
 

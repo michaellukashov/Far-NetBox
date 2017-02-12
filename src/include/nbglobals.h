@@ -242,13 +242,11 @@ bool CheckStructSize(const T * s) { return s && (s->StructSize >= sizeof(T)); }
 
 #ifdef _DEBUG
 #define SELF_TEST(code) \
-  namespace { \
-    struct SelfTest { \
-      SelfTest() { \
-        code; \
-      } \
-    } _SelfTest; \
-  }
+struct SelfTest {       \
+  SelfTest() {          \
+  code;                 \
+}                       \
+} _SelfTest;
 #else
 #define SELF_TEST(code)
 #endif
@@ -292,4 +290,3 @@ private: \
 #if defined(_MSC_VER) && _MSC_VER<1600
 #define nullptr NULL
 #endif
-
