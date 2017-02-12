@@ -114,10 +114,10 @@ uintptr_t TTestGlobalFunctions::MoreMessageDialog(const UnicodeString & Message,
 
 TGlobalFunctionsIntf * GetGlobalFunctions()
 {
-  static TGlobalFunctions * GlobalFunctions = nullptr;
+  static TGlobalFunctionsIntf * GlobalFunctions = nullptr;
   if (!GlobalFunctions)
   {
-//    GlobalFunctions = new TGlobalFunctions();
+    GlobalFunctions = new TTestGlobalFunctions();
   }
   return GlobalFunctions;
 }
@@ -293,7 +293,7 @@ TEST_CASE_METHOD(base_fixture_t, "test6", "netbox")
   {
     Lines.SetSorted(true);
     // INFO("Lines = " << W2MB(Lines.Text.c_str()).c_str());
-    REQUIRE("aaa" == W2MB(Lines.GetString(0).c_str()).c_str());
+    REQUIRE("aaa" == W2MB(Lines.GetString(0).c_str()));
     REQUIRE(2 == Lines.GetCount());
   }
   {
@@ -303,9 +303,9 @@ TEST_CASE_METHOD(base_fixture_t, "test6", "netbox")
     Lines.SetSorted(true);
     REQUIRE(3 == Lines.GetCount());
     // INFO("Lines = " << W2MB(Lines.Text.c_str()).c_str());
-    REQUIRE("aaa" == W2MB(Lines.GetString(0).c_str()).c_str());
-    REQUIRE("Aaa" == W2MB(Lines.GetString(1).c_str()).c_str());
-    REQUIRE("bbb" == W2MB(Lines.GetString(2).c_str()).c_str());
+    REQUIRE("aaa" == W2MB(Lines.GetString(0).c_str()));
+    REQUIRE("Aaa" == W2MB(Lines.GetString(1).c_str()));
+    REQUIRE("bbb" == W2MB(Lines.GetString(2).c_str()));
   }
 }
 
@@ -414,10 +414,15 @@ TEST_CASE_METHOD(base_fixture_t, "test9", "netbox")
   UnicodeString Folder = L"C:\\Program Files\\Putty";
   INFO("ExtractFileDir = " << ::ExtractFileDir(Folder));
   CHECK(L"C:\\Program Files\\" == ::ExtractFileDir(Folder));
+  INFO("1");
   CHECK(L"C:\\Program Files\\" == ::ExtractFilePath(Folder));
+  INFO("2");
   INFO("GetCurrentDir = " << ::GetCurrentDir());
+  INFO("3");
   CHECK(::GetCurrentDir().Length() > 0);
+  INFO("4");
   CHECK(::DirectoryExists(::GetCurrentDir()));
+  INFO("5");
 }
 
 TEST_CASE_METHOD(base_fixture_t, "test10", "netbox")
@@ -846,13 +851,14 @@ TEST_CASE_METHOD(base_fixture_t, "test29", "netbox")
 TEST_CASE_METHOD(base_fixture_t, "test30", "netbox")
 {
   UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
-  INFO("Instructions = " << Instructions.c_str());
+  INFO("Instructions = " << Instructions);
   UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions, L"\x0A\x0D", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions, L"\x0A", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions, L"\x0D", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
-  INFO("Instructions2 = " << Instructions2.c_str());
-  REQUIRE(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
+  INFO("Instructions2 = " << Instructions2);
+  CHECK(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
 }
 //------------------------------------------------------------------------------
+
