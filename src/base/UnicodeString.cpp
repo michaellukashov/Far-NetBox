@@ -550,6 +550,11 @@ UnicodeString::UnicodeString(const char * Str, intptr_t Length) :
 {
 }
 
+UnicodeString::UnicodeString(const char * Str, intptr_t Length, int CodePage) :
+  Data(Str, Length, CodePage)
+{
+}
+
 UnicodeString::UnicodeString(const char * Str) :
   Data(Str, wstring_t::StringLength(Str))
 {
