@@ -468,18 +468,18 @@ UnicodeString TStrings::GetDelimitedText() const
 static void tokenize(const UnicodeString & str, rde::vector<UnicodeString> & tokens,
   const UnicodeString & delimiters = L" ", const bool trimEmpty = false)
 {
-  intptr_t lastPos = 0;
+  intptr_t lastPos = 1;
   while (true)
   {
     intptr_t pos = str.FindFirstOf(delimiters.c_str(), lastPos);
     if (pos == NPOS)
     {
-       pos = str.Length();
+       intptr_t len = str.Length();
 
-       if (pos != lastPos || !trimEmpty)
+       if (len != lastPos || !trimEmpty)
        {
          tokens.push_back(
-           UnicodeString(str.data() + lastPos, pos - lastPos));
+           UnicodeString(str.data() + lastPos - 1, len - lastPos));
        }
        break;
     }
@@ -488,7 +488,7 @@ static void tokenize(const UnicodeString & str, rde::vector<UnicodeString> & tok
       if (pos != lastPos || !trimEmpty)
       {
         tokens.push_back(
-          UnicodeString(str.data() + lastPos, pos - lastPos));
+          UnicodeString(str.data() + lastPos - 1, pos - lastPos));
       }
     }
 
