@@ -1640,7 +1640,7 @@ set(TESTNETBOX_02_SOURCES
 
 add_executable(testnetbox_02 ${TESTNETBOX_02_SOURCES})
 
-target_include_directories(testnetbox_01 PRIVATE
+target_include_directories(testnetbox_02 PRIVATE
   ${test_includes}
 )
 
