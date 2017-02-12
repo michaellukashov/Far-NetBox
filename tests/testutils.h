@@ -30,7 +30,7 @@ class TStubFarPlugin : public TCustomFarPlugin
 {
 public:
     explicit TStubFarPlugin() :
-        TCustomFarPlugin(GetModuleHandle(0))
+        TCustomFarPlugin(OBJECT_CLASS_TCustomFarPlugin, GetModuleHandle(0))
     {
         CryptographyInitialize();
     }

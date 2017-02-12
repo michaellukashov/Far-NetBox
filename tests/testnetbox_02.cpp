@@ -12,7 +12,6 @@
 #include "puttyexp.h"
 #include "FarUtil.h"
 
-#include "testutils.h"
 #include "TestTexts.h"
 #include "Common.h"
 #include "StrUtils.hpp"
@@ -24,6 +23,8 @@
 #include "FileOperationProgress.h"
 #include "HierarchicalStorage.h"
 #include "CoreMain.h"
+
+#include "testutils.h"
 
 /*******************************************************************************
             test suite
@@ -136,7 +137,7 @@ private:
 };
 
 class TClass2;
-DEFINE_CALLBACK_TYPE2(TClickEvent, void, TClass2 *, int);
+typedef nb::FastDelegate2<void, TClass2 *, int> TClickEvent;
 
 class TClass2
 {
@@ -194,7 +195,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test2")
   {
     TClass2 cl2;
     TClass3 cl3;
-    cl2.SetOnClick(MAKE_CALLBACK(TClass3::ClickEventHandler, &cl3));
+    cl2.SetOnClick(nb::bind(&TClass3::ClickEventHandler, &cl3));
     REQUIRE(!cl2.GetOnClick().empty());
     cl2.Click();
     REQUIRE_EQUAL(true, cl2.OnClickTriggered);
@@ -208,7 +209,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test3")
   {
     TClass1 cl1;
     REQUIRE_EQUAL(false, cl1.OnChangeNotifyEventTriggered);
-    cl1.SetOnChange(MAKE_CALLBACK(base_fixture_t::OnChangeNotifyEvent, this));
+    cl1.SetOnChange(nb::bind(&base_fixture_t::OnChangeNotifyEvent, this));
     cl1.Change(L"line 1");
     REQUIRE_EQUAL(true, cl1.OnChangeNotifyEventTriggered);
   }
@@ -219,7 +220,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test4")
   if (1)
   {
     TStringList strings;
-    strings.SetOnChange(MAKE_CALLBACK(base_fixture_t::onStringListChange, this));
+    strings.SetOnChange(nb::bind(&base_fixture_t::onStringListChange, this));
     strings.Add(L"line 1");
     // REQUIRE_EQUAL(true, OnChangeNotifyEventTriggered);
     REQUIRE_EQUAL(true, onStringListChangeTriggered);

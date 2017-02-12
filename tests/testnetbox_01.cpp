@@ -14,11 +14,12 @@
 
 #include <FileBuffer.h>
 
-#include "Common.h"
-#include "FarPlugin.h"
+#include <Common.h>
+#include <FarPlugin.h>
+#include <FastDelegate.h>
+#include <CppProperties.h>
+
 #include "testutils.h"
-#include "FastDelegate.h"
-#include "CppProperties.h"
 
 //------------------------------------------------------------------------------
 // stub
@@ -636,11 +637,11 @@ public:
 
 SECTION("test26")
 {
-  DEFINE_CALLBACK_TYPE2(TEvent, int, int, char *);
+  typedef nb::FastDelegate2<int, int, char *> TEvent;
   TEvent sig;
 
   CBaseClass a("Base A");
-  sig = fastdelegate::MakeDelegate(&a, &CBaseClass::SimpleMemberFunctionReturnsInt);
+  sig = nb::bind(&CBaseClass::SimpleMemberFunctionReturnsInt, &a);
   int Result = sig(10, "abc");
   INFO("Result = " << Result);
   REQUIRE(Result == -1);
