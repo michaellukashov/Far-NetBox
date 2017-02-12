@@ -51,7 +51,7 @@ protected:
 };
 
 //------------------------------------------------------------------------------
-
+#if 0
 TEST_CASE_METHOD(base_fixture_t, "test1", "netbox")
 {
   WSADATA wsaData;
@@ -80,7 +80,7 @@ TEST_CASE_METHOD(base_fixture_t, "test1", "netbox")
   
   WSACleanup();
 }
-
+#endif
 /*TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
 {
   team::calculator calc("calculator_dll.dll");
