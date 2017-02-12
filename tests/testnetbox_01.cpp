@@ -167,7 +167,7 @@ SECTION("test2")
     REQUIRE(0 == strings.GetCount());
     strings.Add(L"line 1");
     str = strings.GetText();
-    INFO("str = " << str.c_str());
+    INFO("str = " << str);
     // DEBUG_PRINTF(L"str = %s", BytesToHex(RawByteString(str.c_str(),  str.Length()), true, L',').c_str());
     INFO("str = " << BytesToHex(RawByteString(str.c_str(),  str.Length()), true, L',').c_str());
     REQUIRE(_wcsicmp(str.c_str(), L"line 1\x0D\x0A") == 0);
