@@ -42,13 +42,15 @@ class TStubFarPlugin : public TCustomFarPlugin
 {
 public:
     explicit TStubFarPlugin() :
-        TCustomFarPlugin(OBJECT_CLASS_TCustomFarPlugin, GetModuleHandle(0))
+        TCustomFarPlugin(OBJECT_CLASS_TCustomFarPlugin, 0) // GetModuleHandle(0))
     {
-        CryptographyInitialize();
+      INFO("TStubFarPlugin()");
+//      CryptographyInitialize();
     }
     ~TStubFarPlugin()
     {
-        CryptographyFinalize();
+      INFO("~TStubFarPlugin()");
+//      CryptographyFinalize();
     }
 protected:
     virtual void GetPluginInfoEx(DWORD &Flags,
@@ -81,9 +83,9 @@ protected:
 
 //------------------------------------------------------------------------------
 
-static TCustomFarPlugin *CreateStub()
+static TCustomFarPlugin * CreateStub()
 {
-    return new TStubFarPlugin();
+  return new TStubFarPlugin();
 }
 
 //------------------------------------------------------------------------------
