@@ -142,8 +142,9 @@ function(nb_replace_compiler_option var old new)
 endfunction(nb_replace_compiler_option)
 
 if(MSVC)
-
+if(NOT OPT_COMPILE_TESTS)
 nb_replace_compiler_option(CMAKE_CXX_FLAGS "/GR-?" "/GR-")
+endif()
 #nb_replace_compiler_option(CMAKE_CXX_FLAGS "/MD[d]?" "")
 nb_replace_compiler_option(CMAKE_CXX_FLAGS "/EH[-cs]+" "")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
@@ -800,7 +801,6 @@ set(TESTS_ROOT ${PROJECT_ROOT}/tests)
 set(TESTNETBOX_01_DIR ${TESTS_ROOT})
 
 set(TESTNETBOX_01_SOURCES
-  ${SRC_ROOT}/base/rtti.cpp
   ${SRC_ROOT}/base/Global.cpp
   ${SRC_ROOT}/base/local.cpp
   ${SRC_ROOT}/base/LibraryLoader.cpp
@@ -811,7 +811,7 @@ set(TESTNETBOX_01_SOURCES
   ${SRC_ROOT}/base/Common.cpp
   ${SRC_ROOT}/base/Exceptions.cpp
   ${SRC_ROOT}/base/FileBuffer.cpp
-  ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
+  ../../tests/testnetbox_01.cpp
 )
 
 add_executable(testnetbox_01 ${TESTNETBOX_01_SOURCES})
@@ -837,8 +837,8 @@ set(TESTNETBOX_02_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
   ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
-  ${TESTNETBOX_02_DIR}/testnetbox_02.rc
-  ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
+  ../../tests/testnetbox_02.rc
+  ../../tests/testnetbox_02.cpp
 )
 
 add_executable(testnetbox_02 ${TESTNETBOX_02_SOURCES})
@@ -871,7 +871,7 @@ set(TESTNETBOX_03_SOURCES
   ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
   ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
   ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
-  ${TESTNETBOX_03_DIR}/testnetbox_03.cpp
+  ../../tests/testnetbox_03.cpp
 )
 
 add_executable(testnetbox_03 ${TESTNETBOX_03_SOURCES})
