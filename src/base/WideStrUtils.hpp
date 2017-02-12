@@ -1,6 +1,6 @@
 #pragma once
 
 #include <Classes.hpp>
-#include "GlobalUtils.hpp"
+#include <nbutils.h>
 
-TEncodeType DetectUTF8Encoding(const RawByteString & S);
+nb::TEncodeType DetectUTF8Encoding(const RawByteString & S);

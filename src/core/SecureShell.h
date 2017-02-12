@@ -84,7 +84,7 @@ private:
   UnicodeString FUserName;
   bool FUtfStrings;
   DWORD FLastSendBufferUpdate;
-  int FSendBuf;
+  intptr_t FSendBuf;
 
 public:
   static TCipher FuncToSsh1Cipher(const void * Cipher);

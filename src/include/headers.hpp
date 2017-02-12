@@ -49,6 +49,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "disable_warnings_in_std_begin.hpp"
 #include <nbglobals.h>
+#include <nbtypes.h>
 
 #include <memory>
 #include <new>
@@ -117,6 +118,3 @@ inline void ClearStruct(T * s) { T dont_instantiate_this_template_with_pointers 
 
 template<typename T, size_t N>
 inline void ClearArray(T (&a)[N]) { ::ZeroMemory(a, sizeof(a[0]) * N); }
-
-#include "GlobalUtils.hpp"
-

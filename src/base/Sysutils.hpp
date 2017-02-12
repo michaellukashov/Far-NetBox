@@ -9,12 +9,6 @@
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
 #define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
 
-#define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
-#define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
-
-#define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
-#define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
-#define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 #define SWAP(TYPE, FIRST, SECOND) \
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
 

@@ -1,8 +1,9 @@
 #pragma once
 
+#include <headers.hpp>
+
 #include <tchar.h>
 #include <assert.h>
-#include <headers.hpp>
 
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
@@ -131,3 +132,9 @@ inline T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filena
 #define DebugUsedParam(p) (void)(p)
 
 #define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())
+
+#define TShellExecuteInfoW _SHELLEXECUTEINFOW
+#define TSHFileInfoW SHFILEINFOW
+#define TVSFixedFileInfo VS_FIXEDFILEINFO
+#define PVSFixedFileInfo VS_FIXEDFILEINFO*
+

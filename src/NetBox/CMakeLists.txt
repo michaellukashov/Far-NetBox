@@ -205,6 +205,7 @@ endif()
 
 include_directories(
   ../../libs
+  ../include
 )
 
 #-------------------------------------------------------------------------------
@@ -1266,7 +1267,10 @@ else(OPT_USE_UNITY_BUILD)
 
 set(NETBOX_SOURCES
 #  UnityBuildCore.cpp
-  ../base/GlobalUtils.cpp
+  ../nbcore/nbstring.cpp
+  ../nbcore/nbmemory.cpp
+  ../nbcore/nbutils.cpp
+
   ../base/UnicodeString.cpp
   ../base/Classes.cpp
   ../base/Masks.cpp
@@ -1363,15 +1367,28 @@ set(NETBOX_SOURCES
   FarUtil.h
   FarPluginStrings.h
 
-  ../base/nbglobals.h
-  ../base/Exceptions.h
-  ../base/MsgIDs.h
+  ../include/FastDelegateBind.h
+  ../include/FastDelegate.h
+  ../include/type_traits.h
+  ../include/rtti.hpp
+  ../include/nbglobals.h
+  ../include/headers.hpp
+  ../include/nbcore.h
+  ../include/nbtypes.h
+  ../include/nbstring.h
+  ../include/nbstring.inl
+  ../include/nbutils.h
+
   ../base/Global.h
   ../base/Common.h
+  ../base/UnicodeString.hpp
+  ../base/Exceptions.h
+  ../base/Sysutils.hpp
+  ../base/StrUtils.hpp
+  ../base/MsgIDs.h
   ../base/vcl.h
   ../base/FileBuffer.h
-  ../base/FastDelegateBind.h
-  ../base/FastDelegate.h
+  ../base/ObjIDs.h
 
   ../core/WebDAVFileSystem.h
   ../core/Queue.h
@@ -1503,7 +1520,9 @@ if(CMAKE_COMPILER_IS_MINGW)
 endif()
 
 target_compile_options(NetBox
-  PRIVATE ${NETBOX_DLL_CXX_FLAGS} -D_WINSOCK_DEPRECATED_NO_WARNINGS
+  PRIVATE ${NETBOX_DLL_CXX_FLAGS}
+  -D_WINSOCK_DEPRECATED_NO_WARNINGS
+  -DNB_CORE_EXPORTS
 )
 
 target_include_directories(NetBox PRIVATE
@@ -1521,7 +1540,7 @@ target_include_directories(NetBox PRIVATE
   ../core
   ../windows
   ../resource
-#  ../include
+  ../include
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

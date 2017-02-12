@@ -13,10 +13,10 @@
 //typedef rde::set<UnicodeString> TIgnoredExceptions;
 //static TIgnoredExceptions IgnoredExceptions;
 
-static UnicodeString NormalizeClassName(const UnicodeString & ClassName)
-{
-  return ReplaceStr(ClassName, L".", L"::").LowerCase();
-}
+//static UnicodeString NormalizeClassName(const UnicodeString & ClassName)
+//{
+//  return ReplaceStr(ClassName, L".", L"::").LowerCase();
+//}
 
 //void IgnoreException(const std::type_info & ExceptionType)
 //{
