@@ -18,6 +18,11 @@ AnsiString::AnsiString(const wchar_t * Str, intptr_t Length) :
 {
 }
 
+AnsiString::AnsiString(const wchar_t * Str, intptr_t Length, int CodePage) :
+  Data(Str, Length, CodePage)
+{
+}
+
 AnsiString::AnsiString(const char * Str) :
   Data(Str, string_t::StringLength(Str))
 {
@@ -547,6 +552,11 @@ UnicodeString::UnicodeString(const wchar_t Src) :
 
 UnicodeString::UnicodeString(const char * Str, intptr_t Length) :
   Data(Str, Length)
+{
+}
+
+UnicodeString::UnicodeString(const char * Str, intptr_t Length, int CodePage) :
+  Data(Str, Length, CodePage)
 {
 }
 

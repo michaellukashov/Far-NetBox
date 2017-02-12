@@ -73,6 +73,7 @@ public:
   UnicodeString(const wchar_t * Str, intptr_t Length);
   UnicodeString(const wchar_t Src);
   UnicodeString(const char * Str, intptr_t Length);
+  UnicodeString(const char * Str, intptr_t Length, int CodePage);
   UnicodeString(const char * Str);
   UnicodeString(intptr_t Length, wchar_t Ch) : Data(Ch, Length) {}
 
@@ -206,6 +207,7 @@ public:
   AnsiString(intptr_t Length, char Ch) : Data(Ch, Length) {}
   explicit AnsiString(const wchar_t * Str);
   explicit AnsiString(const wchar_t * Str, intptr_t Length);
+  explicit AnsiString(const wchar_t * Str, intptr_t Length, int CodePage);
   AnsiString(const char * Str);
   explicit AnsiString(const char * Str, intptr_t Length);
   explicit AnsiString(const unsigned char * Str);
