@@ -1625,6 +1625,9 @@ set(test_includes
 # target testnetbox_01
 
 set(TESTNETBOX_01_SOURCES
+  ../nbcore/nbutils.cpp
+  ../nbcore/nbstring.cpp
+  ../nbcore/nbmemory.cpp
   ../base/Global.cpp
   ../base/LibraryLoader.cpp
   ../base/Classes.cpp
@@ -1675,7 +1678,7 @@ target_include_directories(testnetbox_02 PRIVATE
 set_target_properties(testnetbox_02
   PROPERTIES
   COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
+  LINK_FLAGS "${CMAKE_LINK_FLAGS} /ignore:4099 /verbose:lib"
 )
 
 add_dependencies(testnetbox_02
@@ -1709,7 +1712,7 @@ target_include_directories(testnetbox_03 PRIVATE
 set_target_properties(testnetbox_03
   PROPERTIES
   COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS}"
+  LINK_FLAGS "${CMAKE_LINK_FLAGS} /ignore:4099"
 )
 
 add_dependencies(testnetbox_03
@@ -1725,8 +1728,6 @@ target_link_libraries(testnetbox_03 ${NETBOX_LIBRARIES})
 
 #-------------------------------------------------------
 # target testnetbox_04
-
-set(TESTNETBOX_04_DIR ${TESTS_ROOT})
 
 set(TESTNETBOX_04_SOURCES
   UnityBuildCore.cpp
@@ -1744,7 +1745,7 @@ target_include_directories(testnetbox_04 PRIVATE
 set_target_properties(testnetbox_04
   PROPERTIES
   COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS} /verbose:lib"
+  LINK_FLAGS "${CMAKE_LINK_FLAGS} /ignore:4099 /verbose:lib"
 )
 
 #add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
