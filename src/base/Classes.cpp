@@ -471,7 +471,7 @@ static void tokenize(const UnicodeString & str, rde::vector<UnicodeString> & tok
   intptr_t lastPos = 0;
   while (true)
   {
-    intptr_t pos = str.FindFirstOf(delimiters.c_str(), lastPos);
+    intptr_t pos = str.FindFirstOf(delimiters.c_str(), lastPos) - 1;
     if (pos == NPOS)
     {
        pos = str.Length();
