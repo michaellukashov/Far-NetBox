@@ -25,6 +25,18 @@
 #define REQUIRE_EQUAL(exp1, exp2) \
   REQUIRE(exp1 == exp2)
 
+std::ostringstream& operator << (std::ostringstream& os, const AnsiString& value)
+{
+  os << std::string(value.c_str());
+  return os;
+}
+
+std::ostringstream& operator << (std::ostringstream& os, const UnicodeString& value)
+{
+  os << std::string(W2MB(value.c_str()).c_str());
+  return os;
+}
+
 //------------------------------------------------------------------------------
 class TStubFarPlugin : public TCustomFarPlugin
 {
