@@ -1583,29 +1583,37 @@ endif()
 
 if(OPT_COMPILE_TESTS)
 
-set(TESTS_ROOT ${PROJECT_ROOT}/tests)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+set(test_includes
+  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+  ../base
+  ../core
+  ../resource
+  ../PluginSDK/${FAR_VERSION}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 #-------------------------------------------------------
 # target testnetbox_01
 
-set(TESTNETBOX_01_DIR ${TESTS_ROOT})
-
 set(TESTNETBOX_01_SOURCES
-  ${SRC_ROOT}/base/Global.cpp
-  ${SRC_ROOT}/base/local.cpp
-  ${SRC_ROOT}/base/LibraryLoader.cpp
-  ${SRC_ROOT}/base/Classes.cpp
-  ${SRC_ROOT}/base/Sysutils.cpp
-  ${SRC_ROOT}/base/StrUtils.cpp
-  ${SRC_ROOT}/base/UnicodeString.cpp
-  ${SRC_ROOT}/base/Common.cpp
-  ${SRC_ROOT}/base/Exceptions.cpp
-  ${SRC_ROOT}/base/FileBuffer.cpp
+  ../base/Global.cpp
+  ../base/LibraryLoader.cpp
+  ../base/Classes.cpp
+  ../base/Sysutils.cpp
+  ../base/StrUtils.cpp
+  ../base/UnicodeString.cpp
+  ../base/Common.cpp
+  ../base/Exceptions.cpp
+  ../base/FileBuffer.cpp
   ../../tests/testnetbox_01.cpp
 )
 
 add_executable(testnetbox_01 ${TESTNETBOX_01_SOURCES})
+
+target_include_directories(testnetbox_01 PRIVATE
+  ${test_includes}
+)
 
 target_compile_options(testnetbox_01
   PRIVATE -D_CRT_SECURE_NO_WARNINGS
@@ -1622,17 +1630,19 @@ target_link_libraries(testnetbox_01 ${NETBOX_LIBRARIES})
 #-------------------------------------------------------
 # target testnetbox_02
 
-set(TESTNETBOX_02_DIR ${TESTS_ROOT})
-
 set(TESTNETBOX_02_SOURCES
-  ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
+  UnityBuildCore.cpp
+  UnityBuildMain.cpp
+  UnityBuildFilezilla.cpp
   ../../tests/testnetbox_02.rc
   ../../tests/testnetbox_02.cpp
 )
 
 add_executable(testnetbox_02 ${TESTNETBOX_02_SOURCES})
+
+target_include_directories(testnetbox_01 PRIVATE
+  ${test_includes}
+)
 
 set_target_properties(testnetbox_02
   PROPERTIES
@@ -1656,12 +1666,10 @@ if(0)
 #-------------------------------------------------------
 # target testnetbox_03
 
-set(TESTNETBOX_03_DIR ${TESTS_ROOT})
-
 set(TESTNETBOX_03_SOURCES
-  ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
+  UnityBuildCore.cpp
+  UnityBuildMain.cpp
+  UnityBuildFilezilla.cpp
   ../../tests/testnetbox_03.cpp
 )
 
@@ -1690,10 +1698,10 @@ target_link_libraries(testnetbox_03 ${NETBOX_LIBRARIES})
 set(TESTNETBOX_04_DIR ${TESTS_ROOT})
 
 set(TESTNETBOX_04_SOURCES
-  ${SRC_ROOT}/NetBox/UnityBuildCore.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildMain.cpp
-  ${SRC_ROOT}/NetBox/UnityBuildFilezilla.cpp
-  ${TESTNETBOX_04_DIR}/testnetbox_04.cpp
+  UnityBuildCore.cpp
+  UnityBuildMain.cpp
+  UnityBuildFilezilla.cpp
+  ../../tests/testnetbox_04.cpp
 )
 
 add_executable(testnetbox_04 ${TESTNETBOX_04_SOURCES})
