@@ -854,8 +854,8 @@ TEST_CASE_METHOD(base_fixture_t, "test30", "netbox")
   INFO("Instructions = " << Instructions);
   UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions, L"\x0A\x0D", L"\x01");
-  Instructions2 = ReplaceStrAll(Instructions, L"\x0A", L"\x01");
-  Instructions2 = ReplaceStrAll(Instructions, L"\x0D", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
   INFO("Instructions2 = " << Instructions2);
   CHECK(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
