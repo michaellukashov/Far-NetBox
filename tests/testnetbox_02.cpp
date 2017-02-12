@@ -175,7 +175,7 @@ public:
   }
   void ClickEventHandler(TClass2 * Sender, int Data)
   {
-    INFO("TClass3: ClickEventHandler triggered");
+//    INFO("TClass3: ClickEventHandler triggered");
     ClickEventHandlerTriggered = true;
   }
 public:
