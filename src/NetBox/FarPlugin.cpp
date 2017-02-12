@@ -2916,13 +2916,13 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   int Length = 0;
   if (FarPlugin)
   {
-    Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
+    Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str()) - 1;
   }
   else
   {
     Length = ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
   }
-  Result = UnicodeString(Path.c_str(), Length - 1);
+  Result = UnicodeString(Path.c_str(), Length);
   return Result;
 }
 
