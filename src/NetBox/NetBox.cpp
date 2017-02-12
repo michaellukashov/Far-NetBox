@@ -8,6 +8,8 @@
 #include "FarUtil.h"
 #include "resource.h"
 
+extern void InitExtensionModule(HINSTANCE HInst);
+extern void TermExtensionModule();
 extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 
 class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
