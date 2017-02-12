@@ -40,19 +40,19 @@ intptr_t __cdecl debug_printf2(const char * format, ...)
 
 UnicodeString MB2W(const char * src, const UINT cp)
 {
-  if (!src || !*src)
-  {
-    return UnicodeString(L"");
-  }
+//  if (!src || !*src)
+//  {
+//    return UnicodeString(L"");
+//  }
 
-  intptr_t reqLength = ::MultiByteToWideChar(cp, 0, src, -1, nullptr, 0);
-  UnicodeString Result;
-  if (reqLength)
-  {
-    Result.SetLength(reqLength);
-    ::MultiByteToWideChar(cp, 0, src, -1, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
-    Result.SetLength(Result.Length() - 1);  //remove NULL character
-  }
+  UnicodeString Result(src, NBChTraitsCRT<char>::SafeStringLen(src), cp);
+//  intptr_t reqLength = ::MultiByteToWideChar(cp, 0, src, -1, nullptr, 0);
+//  if (reqLength)
+//  {
+//    Result.SetLength(reqLength);
+//    ::MultiByteToWideChar(cp, 0, src, -1, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
+//    Result.SetLength(Result.Length() - 1);  //remove NULL character
+//  }
   return Result;
 }
 
