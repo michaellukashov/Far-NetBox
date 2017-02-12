@@ -620,6 +620,23 @@ intptr_t UnicodeString::ToInt() const
   return ::StrToIntDef(*this, 0);
 }
 
+intptr_t UnicodeString::FindFirstOf(const wchar_t Ch) const
+{
+  return (intptr_t)Data.Find(Ch, 0) + 1;
+}
+
+intptr_t UnicodeString::FindFirstOf(const wchar_t * Str, size_t Offset) const
+{
+  if (!Str || !*Str)
+    return NPOS;
+  int Length = wstring_t::StringLength(Str);
+  wstring_t str = Data.Mid(Offset);
+  int Res = str.FindOneOf(Str);
+  if (Res != -1)
+    return Res + Offset;
+  return NPOS;
+}
+
 UnicodeString & UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t * Str, intptr_t DataLen)
 {
   wstring_t NewData = Data;
