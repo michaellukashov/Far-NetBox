@@ -629,8 +629,8 @@ intptr_t UnicodeString::FindFirstOf(const wchar_t * Str, size_t Offset) const
 {
   if (!Str || !*Str)
     return NPOS;
-  int Length = wstring_t::StringLength(Str);
-  wstring_t str = Data.Mid(Offset);
+//  ThrowIfOutOfRange(Offset);   // Should Range-checking be optional to avoid overhead ??
+  wstring_t str = Data.Mid(Offset - 1);
   int Res = str.FindOneOf(Str);
   if (Res != -1)
     return Res + Offset;
