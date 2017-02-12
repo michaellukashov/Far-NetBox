@@ -175,13 +175,13 @@ TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
     strings.Add(L"line 2");
     REQUIRE(2 == strings.GetCount());
     str = strings.GetText();
-    INFO(L"str = " << str.c_str());
-    REQUIRE(W2MB(str.c_str()).c_str() == "line 1\r\nline 2\r\n");
+    INFO(L"str = " << str);
+    REQUIRE(W2MB(str.c_str()) == "line 1\r\nline 2\r\n");
     strings.Insert(0, L"line 0");
     REQUIRE(3 == strings.GetCount());
     str = strings.GetText();
-    INFO(L"str = " << str.c_str());
-    REQUIRE(W2MB(str.c_str()).c_str() == "line 0\r\nline 1\r\nline 2\r\n");
+    INFO(L"str = " << str);
+    CHECK(W2MB(str.c_str()) == "line 0\r\nline 1\r\nline 2\r\n");
     strings.SetObj(0, nullptr);
     UnicodeString str = strings.GetString(0);
     REQUIRE(W2MB(str.c_str()) == "line 0");
@@ -358,12 +358,12 @@ TEST_CASE_METHOD(base_fixture_t, "test8", "netbox")
 TEST_CASE_METHOD(base_fixture_t, "test9", "netbox")
 {
   UnicodeString Folder = L"C:\\Program Files\\Putty";
-  INFO("ExtractFileDir = " << ::ExtractFileDir(Folder).c_str());
-  REQUIRE(L"C:\\Program Files\\" == ::ExtractFileDir(Folder));
-  REQUIRE(L"C:\\Program Files\\" == ::ExtractFilePath(Folder));
-  INFO("GetCurrentDir = " << ::GetCurrentDir().c_str());
-  REQUIRE(::GetCurrentDir().Length() > 0);
-  REQUIRE(::DirectoryExists(::GetCurrentDir()));
+  INFO("ExtractFileDir = " << ::ExtractFileDir(Folder));
+  CHECK(L"C:\\Program Files\\" == ::ExtractFileDir(Folder));
+  CHECK(L"C:\\Program Files\\" == ::ExtractFilePath(Folder));
+  INFO("GetCurrentDir = " << ::GetCurrentDir());
+  CHECK(::GetCurrentDir().Length() > 0);
+  CHECK(::DirectoryExists(::GetCurrentDir()));
 }
 
 TEST_CASE_METHOD(base_fixture_t, "test10", "netbox")
@@ -531,7 +531,7 @@ TEST_CASE_METHOD(base_fixture_t, "test22", "netbox")
     unsigned int CreateAttrs = FILE_ATTRIBUTE_NORMAL;
     HANDLE FileHandle = ::CreateFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
                                nullptr, CREATE_ALWAYS, CreateAttrs, 0);
-    REQUIRE(FileHandle != 0);
+    REQUIRE(FileHandle != INVALID_HANDLE_VALUE);
     TStream * FileStream = new TSafeHandleStream(FileHandle);
     TFileBuffer * BlockBuf = new TFileBuffer();
     // BlockBuf->SetSize(1024);
