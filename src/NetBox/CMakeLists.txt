@@ -1,7 +1,7 @@
 message(STATUS "CMake version: ${CMAKE_VERSION}")
 cmake_minimum_required(VERSION 2.8.12)
 
-option(OPT_COMPILE_TESTS "Build tests" OFF)
+set(OPT_COMPILE_TESTS OFF CACHE STRING "Build tests using Catch")
 
 project(NetBox)
 
