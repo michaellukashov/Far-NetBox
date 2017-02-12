@@ -261,6 +261,7 @@ TEST_CASE_METHOD(base_fixture_t, "test3", "netbox")
 TEST_CASE_METHOD(base_fixture_t, "test4", "netbox")
 {
   UnicodeString Text = L"text, text text, text text1\ntext text text, text text2\n";
+  INFO("Text = '" << Text << "'");
   TStringList Lines;
   Lines.SetCommaText(Text);
   INFO("Lines = '" << Lines.GetText() << "'");
