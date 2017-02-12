@@ -87,7 +87,7 @@ TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 
 //------------------------------------------------------------------------------
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test1")
+TEST_CASE_METHOD(base_fixture_t, "test1", "netbox")
 {
   if (1)
   {
@@ -182,7 +182,7 @@ public:
   bool ClickEventHandlerTriggered;
 };
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test2")
+TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
 {
   if (1)
   {
@@ -203,7 +203,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test2")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test3")
+TEST_CASE_METHOD(base_fixture_t, "test3", "netbox")
 {
   if (1)
   {
@@ -215,7 +215,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test3")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test4")
+TEST_CASE_METHOD(base_fixture_t, "test4", "netbox")
 {
   if (1)
   {
@@ -227,7 +227,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test4")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test5")
+TEST_CASE_METHOD(base_fixture_t, "test5", "netbox")
 {
   if (1)
   {
@@ -235,12 +235,12 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test5")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test6")
+TEST_CASE_METHOD(base_fixture_t, "test6", "netbox")
 {
   REQUIRE_THROWS_AS(Error(SListIndexError, 0), ExtException);
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test7")
+TEST_CASE_METHOD(base_fixture_t, "test7", "netbox")
 {
   TStringList Lines;
   Lines.SetSorted(true);
@@ -274,7 +274,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test7")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test8")
+TEST_CASE_METHOD(base_fixture_t, "test8", "netbox")
 {
   UnicodeString RootKey = L"Software\\Michael Lukashov\\TestNetBox";
   TRegistryStorage Storage(RootKey);
@@ -295,14 +295,14 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test8")
   REQUIRE(1234 == res);
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test9")
+TEST_CASE_METHOD(base_fixture_t, "test9", "netbox")
 {
   UnicodeString path = L"C:\\test";
   AppendPathDelimiterW(path);
   REQUIRE(path == L"C:\\test\\");
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test10")
+TEST_CASE_METHOD(base_fixture_t, "test10", "netbox")
 {
 #if 0
   Config cfg; //  = new Config();
@@ -331,7 +331,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test10")
 #endif
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test11")
+TEST_CASE_METHOD(base_fixture_t, "test11", "netbox")
 {
   // Тесты на ::FmtLoadStr FMTLOAD ::Format ::LoadStr ::LoadStrPart ::CutToChar ::TrimLeft ::TrimRight
   {
@@ -417,7 +417,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test11")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test12")
+TEST_CASE_METHOD(base_fixture_t, "test12", "netbox")
 {
   std::string host = "localhost";
   int port = 2222;
@@ -444,7 +444,7 @@ public:
   {}
 };
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test13")
+TEST_CASE_METHOD(base_fixture_t, "test13", "netbox")
 {
   TBaseClass1 E1;
   TDerivedClass1 E2;
@@ -457,7 +457,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test13")
   // REQUIRE(!(::InheritsFrom<TBaseClass1, TBaseClass2>(E3)));
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test14")
+TEST_CASE_METHOD(base_fixture_t, "test14", "netbox")
 {
   {
     UnicodeString str = ::ReplaceStr(L"AA", L"A", L"B");
@@ -490,7 +490,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test14")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test15")
+TEST_CASE_METHOD(base_fixture_t, "test15", "netbox")
 {
   if (1)
   {
@@ -517,7 +517,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test15")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test16")
+TEST_CASE_METHOD(base_fixture_t, "test16", "netbox")
 {
   if (1)
   {
@@ -531,7 +531,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test16")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test17")
+TEST_CASE_METHOD(base_fixture_t, "test17", "netbox")
 {
   if (1)
   {
@@ -545,7 +545,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test17")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test18")
+TEST_CASE_METHOD(base_fixture_t, "test18", "netbox")
 {
   TGUICopyParamType DefaultCopyParam;
   TCopyParamType * CopyParam = new TCopyParamType(DefaultCopyParam);
@@ -560,7 +560,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test18")
   // INFO("CopyParamList.GetCount() = " << CopyParamList.GetCount());
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test19")
+TEST_CASE_METHOD(base_fixture_t, "test19", "netbox")
 {
   UnicodeString ProgramsFolder;
   ::SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
@@ -568,13 +568,13 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test19")
   REQUIRE(ProgramsFolder.Length() > 0);
 }
 
-// TEST_CASE_METHOD(base_fixture_t, "netbox", "test20")
+// TEST_CASE_METHOD(base_fixture_t, "test20", "netbox")
 // {
 // random_ref();
 // random_unref();
 // }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test21")
+TEST_CASE_METHOD(base_fixture_t, "test21", "netbox")
 {
   INFO("RAND_MAX = " << RAND_MAX);
   for (int i = 0; i < 10; i++)
@@ -589,7 +589,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test21")
   REQUIRE(dec == L"1234ABC");
 }
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test22")
+TEST_CASE_METHOD(base_fixture_t, "test22", "netbox")
 {
   // FarPlugin->RunTests();
 }

@@ -52,7 +52,7 @@ protected:
 
 //------------------------------------------------------------------------------
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test1")
+TEST_CASE_METHOD(base_fixture_t, "test1", "netbox")
 {
   WSADATA wsaData;
   WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -81,7 +81,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test1")
   WSACleanup();
 }
 
-/*TEST_CASE_METHOD(base_fixture_t, "netbox", "test2")
+/*TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
 {
   team::calculator calc("calculator_dll.dll");
   INFO("sum = " << calc.sum(10, 20));
@@ -89,7 +89,7 @@ TEST_CASE_METHOD(base_fixture_t, "netbox", "test1")
   INFO("sqrt = " << calc.sqrt(25));
 }*/
 
-TEST_CASE_METHOD(base_fixture_t, "netbox", "test3")
+TEST_CASE_METHOD(base_fixture_t, "test3", "netbox")
 {
   DynamicQueue<int> q;
   q.Reserve(10);
