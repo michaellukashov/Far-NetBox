@@ -18,6 +18,11 @@ AnsiString::AnsiString(const wchar_t * Str, intptr_t Length) :
 {
 }
 
+AnsiString::AnsiString(const wchar_t * Str, intptr_t Length, int CodePage) :
+  Data(Str, Length, CodePage)
+{
+}
+
 AnsiString::AnsiString(const char * Str) :
   Data(Str, string_t::StringLength(Str))
 {

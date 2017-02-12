@@ -207,6 +207,7 @@ public:
   AnsiString(intptr_t Length, char Ch) : Data(Ch, Length) {}
   explicit AnsiString(const wchar_t * Str);
   explicit AnsiString(const wchar_t * Str, intptr_t Length);
+  explicit AnsiString(const wchar_t * Str, intptr_t Length, int CodePage);
   AnsiString(const char * Str);
   explicit AnsiString(const char * Str, intptr_t Length);
   explicit AnsiString(const unsigned char * Str);
