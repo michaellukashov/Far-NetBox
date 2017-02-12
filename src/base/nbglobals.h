@@ -292,9 +292,3 @@ private: \
 #if defined(_MSC_VER) && _MSC_VER<1600
 #define nullptr NULL
 #endif
-
-#define TShellExecuteInfoW _SHELLEXECUTEINFOW
-#define TSHFileInfoW SHFILEINFOW
-#define TVSFixedFileInfo VS_FIXEDFILEINFO
-#define PVSFixedFileInfo VS_FIXEDFILEINFO*
-
