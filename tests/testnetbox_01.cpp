@@ -221,7 +221,7 @@ TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
     str = strings.GetText();
     INFO("str = " << str);
     // DEBUG_PRINTF(L"str = %s", BytesToHex(RawByteString(str.c_str(),  str.Length()), true, L',').c_str());
-    INFO("str = " << BytesToHex(RawByteString(str.c_str(),  str.Length()), true, L',').c_str());
+    INFO("str = " << BytesToHex(RawByteString(str.c_str(),  str.Length()), true, L','));
     REQUIRE(_wcsicmp(str.c_str(), L"line 1\x0D\x0A") == 0);
   }
   if (1)
@@ -229,12 +229,12 @@ TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
     strings.Add(L"line 2");
     REQUIRE(2 == strings.GetCount());
     str = strings.GetText();
-    INFO(L"str = " << str);
+//    INFO(L"str = " << str);
     REQUIRE(W2MB(str.c_str()) == "line 1\r\nline 2\r\n");
     strings.Insert(0, L"line 0");
     REQUIRE(3 == strings.GetCount());
     str = strings.GetText();
-    INFO(L"str = " << str);
+//    INFO(L"str = " << str);
     CHECK(W2MB(str.c_str()) == "line 0\r\nline 1\r\nline 2\r\n");
     strings.SetObj(0, nullptr);
     UnicodeString str = strings.GetString(0);
@@ -469,7 +469,7 @@ TEST_CASE_METHOD(base_fixture_t, "test12", "netbox")
 TEST_CASE_METHOD(base_fixture_t, "test13", "netbox")
 {
   UnicodeString str_value = ::IntToStr(1234);
-  INFO("str_value = " << str_value.c_str());
+  INFO("str_value = " << str_value);
   REQUIRE(W2MB(str_value.c_str()) == "1234");
   int int_value = ::StrToInt(L"1234");
   INFO("int_value = " << int_value);
@@ -491,7 +491,7 @@ TEST_CASE_METHOD(base_fixture_t, "test14", "netbox")
 TEST_CASE_METHOD(base_fixture_t, "test15", "netbox")
 {
   UnicodeString res = ::IntToHex(10, 2);
-  INFO("res = " << res.c_str());
+  INFO("res = " << res);
   REQUIRE(res == L"0A");
 }
 
@@ -529,14 +529,14 @@ TEST_CASE_METHOD(base_fixture_t, "test17", "netbox")
   TStringList List1;
   List1.SetText(L"123\n456");
   REQUIRE(2 == List1.GetCount());
-  INFO("List1.GetString(0] = " << List1.GetString(0).c_str());
+  INFO("List1.GetString(0] = " << List1.GetString(0));
   REQUIRE("123" == W2MB(List1.GetString(0).c_str()));
-  INFO("List1.GetString(1] = " << List1.GetString(1).c_str());
+  INFO("List1.GetString(1] = " << List1.GetString(1));
   REQUIRE("456" == W2MB(List1.GetString(1).c_str()));
   List1.Move(0, 1);
-  INFO("List1.GetString(0] = " << List1.GetString(0).c_str());
+  INFO("List1.GetString(0] = " << List1.GetString(0));
   REQUIRE("456" == W2MB(List1.GetString(0).c_str()));
-  INFO("List1.GetString(1] = " << List1.GetString(1).c_str());
+  INFO("List1.GetString(1] = " << List1.GetString(1));
   REQUIRE("123" == W2MB(List1.GetString(1).c_str()));
 }
 
@@ -577,7 +577,7 @@ TEST_CASE_METHOD(base_fixture_t, "test20", "netbox")
 TEST_CASE_METHOD(base_fixture_t, "test21", "netbox")
 {
   UnicodeString str = ::FormatFloat(L"#,##0", 23.456);
-  INFO("str = " << str.c_str());
+  INFO("str = " << str);
   // REQUIRE(str.c_str() == L"23.46");
   REQUIRE("23.46" == W2MB(str.c_str()));
 }
@@ -603,11 +603,11 @@ TEST_CASE_METHOD(base_fixture_t, "test22", "netbox")
     delete FileStream; FileStream = nullptr;
     delete BlockBuf; BlockBuf = nullptr;
     ::CloseHandle(FileHandle);
-    INFO("FileName1 = " << FileName.c_str());
+    INFO("FileName1 = " << FileName);
     REQUIRE(::FileExists(FileName));
   }
   {
-    INFO("FileName2 = " << FileName.c_str());
+    INFO("FileName2 = " << FileName);
     TSearchRec Rec;
     REQUIRE(FileSearchRec(FileName, Rec));
   }
@@ -766,7 +766,7 @@ TEST_CASE_METHOD(base_fixture_t, "test28", "netbox")
       AsciiBuf.GetSize(),
       DestFileName.c_str());
     DEBUG_PRINTF(L"3");
-    INFO("Buf1 = " << Buf.c_str());
+    INFO("Buf1 = " << Buf);
     DEBUG_PRINTF(L"Buf = %s", Buf.c_str());
     REQUIRE(Buf.GetLength() > 0);
   }
@@ -781,7 +781,7 @@ TEST_CASE_METHOD(base_fixture_t, "test28", "netbox")
       L"",
       AsciiBuf.GetSize(),
       DestFileName.c_str());
-    INFO("Buf2 = " << Buf.c_str());
+    INFO("Buf2 = " << Buf);
     REQUIRE(AnsiString(Buf) == "C 0 FileName");
     REQUIRE("C 0 FileName" == AnsiString(Buf));
     REQUIRE(AnsiString(Buf) == AnsiString("C 0 FileName"));
@@ -810,7 +810,7 @@ TEST_CASE_METHOD(base_fixture_t, "test28", "netbox")
     // swprintf_s(codeNum, sizeof(codeNum), L"[0x%08X]", errCode);  // Causes AV x64
     swprintf(codeNum, L"[0x%08X]", errCode);
     DEBUG_PRINTF(L"7");
-    INFO("codeNum = " << codeNum);
+    INFO("codeNum = " << W2MB(codeNum));
     DEBUG_PRINTF(L"8");
     REQUIRE(AnsiString(codeNum) == AnsiString("[0x000000FF]")); // Causes AV x64
     // REQUIRE(AnsiString(codeNum) == AnsiString(""));
