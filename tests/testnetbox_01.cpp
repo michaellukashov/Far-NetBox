@@ -210,11 +210,12 @@ TEST_CASE_METHOD(base_fixture_t, "test4", "netbox")
   TStringList Lines;
   Lines.SetCommaText(Text);
   INFO("Lines = '" << Lines.GetText() << "'");
-  CHECK(5 == Lines.GetCount());
   CHECK(0 == wcscmp(L"text", Lines.GetString(0).c_str()));
   CHECK(0 == wcscmp(L" text text", Lines.GetString(1).c_str()));
+  INFO("Lines[2] = '" << Lines.GetString(2) << "'");
   CHECK(0 == wcscmp(L" text text1", Lines.GetString(2).c_str()));
   CHECK(0 == wcscmp(L"text text text", Lines.GetString(3).c_str()));
+  REQUIRE_EQUAL(5, Lines.GetCount());
   CHECK(0 == wcscmp(L" text text2", Lines.GetString(4).c_str()));
   UnicodeString Text2 = Lines.GetCommaText();
   INFO("Text2 = '" << Text2 << "'");
