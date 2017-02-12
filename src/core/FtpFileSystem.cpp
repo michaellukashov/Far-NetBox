@@ -290,8 +290,7 @@ TFTPFileSystem::~TFTPFileSystem()
     DiscardMessages();
   }
 
-  delete FFileZillaIntf;
-  FFileZillaIntf = nullptr;
+  SAFE_DESTROY_EX(CFileZillaTools, FFileZillaIntf);
 
   ::CloseHandle(FQueueEvent);
   FQueueEvent = nullptr;
@@ -300,8 +299,7 @@ TFTPFileSystem::~TFTPFileSystem()
   SAFE_DESTROY(FLastErrorResponse);
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
-  delete FServerCapabilities;
-  FServerCapabilities = nullptr;
+  SAFE_DESTROY_EX(TFTPServerCapabilities, FServerCapabilities);
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
 
