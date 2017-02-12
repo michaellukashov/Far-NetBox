@@ -1647,7 +1647,7 @@ target_include_directories(testnetbox_01 PRIVATE
 )
 
 target_compile_options(testnetbox_01
-  PRIVATE -D_CRT_SECURE_NO_WARNINGS
+  PRIVATE -D_CRT_SECURE_NO_WARNINGS -D_CRT_NON_CONFORMING_SWPRINTFS
 )
 
 add_dependencies(testnetbox_01
@@ -1673,6 +1673,10 @@ add_executable(testnetbox_02 ${TESTNETBOX_02_SOURCES})
 
 target_include_directories(testnetbox_02 PRIVATE
   ${test_includes}
+)
+
+target_compile_options(testnetbox_02
+  PRIVATE -D_CRT_SECURE_NO_WARNINGS -D_CRT_NON_CONFORMING_SWPRINTFS
 )
 
 set_target_properties(testnetbox_02
