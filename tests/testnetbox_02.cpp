@@ -92,7 +92,7 @@ TEST_CASE_METHOD(base_fixture_t, "test1", "netbox")
   if (1)
   {
     UnicodeString Text = ::StringOfChar(' ', 4);
-    REQUIRE_EQUAL("    ", W2MB(Text.c_str()).c_str());
+    REQUIRE_EQUAL(L"    ", Text);
   }
   if (1)
   {
@@ -102,10 +102,10 @@ TEST_CASE_METHOD(base_fixture_t, "test1", "netbox")
     FarWrapText(Message, &MessageLines, MaxMessageWidth);
     INFO("MessageLines = " << MessageLines.GetText().c_str());
     REQUIRE_EQUAL(4, MessageLines.GetCount());
-    REQUIRE_EQUAL("long long long", W2MB(MessageLines.GetString(0).c_str()).c_str());
-    REQUIRE_EQUAL("long long long", W2MB(MessageLines.GetString(1).c_str()).c_str());
-    REQUIRE_EQUAL("long long long", W2MB(MessageLines.GetString(2).c_str()).c_str());
-    REQUIRE_EQUAL("text", W2MB(MessageLines.GetString(3).c_str()).c_str());
+    REQUIRE_EQUAL(L"long long long", MessageLines.GetString(0));
+    REQUIRE_EQUAL(L"long long long", MessageLines.GetString(1));
+    REQUIRE_EQUAL("long long long", W2MB(MessageLines.GetString(2).c_str()));
+    REQUIRE_EQUAL("text", W2MB(MessageLines.GetString(3).c_str()));
   }
 }
 
@@ -184,6 +184,7 @@ public:
 
 TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
 {
+  INFO("1");
   if (1)
   {
     TClass2 cl2;
@@ -191,6 +192,7 @@ TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
     cl2.Click();
     REQUIRE_EQUAL(true, cl2.OnClickTriggered);
   }
+  INFO("2");
   if (1)
   {
     TClass2 cl2;

@@ -133,7 +133,7 @@ TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
     strings.Add(L"line 1");
     str = strings.GetText();
     DEBUG_PRINTF(L"str = '%s'", str.c_str());
-    REQUIRE_EQUAL(W2MB(str.c_str()).c_str(), "line 1\r\n");
+    REQUIRE_EQUAL(W2MB(str.c_str()), "line 1\r\n");
   }
   if (1)
   {
@@ -141,11 +141,11 @@ TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
     REQUIRE_EQUAL(2, strings.GetCount());
     str = strings.GetText();
     // DEBUG_PRINTF(L"str = %s", str.c_str());
-    REQUIRE_EQUAL(W2MB(str.c_str()).c_str(), "line 1\r\nline 2\r\n");
+    REQUIRE_EQUAL(W2MB(str.c_str()), "line 1\r\nline 2\r\n");
     strings.Insert(0, L"line 0");
     REQUIRE_EQUAL(3, strings.GetCount());
     str = strings.GetText();
-    REQUIRE_EQUAL(W2MB(str.c_str()).c_str(), "line 0\r\nline 1\r\nline 2\r\n");
+    REQUIRE_EQUAL(W2MB(str.c_str()), "line 0\r\nline 1\r\nline 2\r\n");
     strings.SetObj(0, NULL);
     UnicodeString str = strings.GetString(0);
     REQUIRE_EQUAL(W2MB(str.c_str()), "line 0");
@@ -160,8 +160,8 @@ TEST_CASE_METHOD(base_fixture_t, "test3", "netbox")
   REQUIRE_EQUAL(2, Lines.GetCount());
   INFO("Lines 0 = " << W2MB(Lines.GetString(0).c_str()));
   INFO("Lines 1 = " << W2MB(Lines.GetString(1).c_str()));
-  REQUIRE_EQUAL("text text text text text1", W2MB(Lines.GetString(0).c_str()).c_str());
-  REQUIRE_EQUAL("text text text text text2", W2MB(Lines.GetString(1).c_str()).c_str());
+  REQUIRE_EQUAL("text text text text text1", W2MB(Lines.GetString(0).c_str()));
+  REQUIRE_EQUAL("text text text text text2", W2MB(Lines.GetString(1).c_str()));
 }
 
 TEST_CASE_METHOD(base_fixture_t, "test4", "netbox")
@@ -170,14 +170,14 @@ TEST_CASE_METHOD(base_fixture_t, "test4", "netbox")
   TStringList Lines;
   Lines.SetCommaText(Text);
   REQUIRE_EQUAL(5, Lines.GetCount());
-  REQUIRE_EQUAL("text", W2MB(Lines.GetString(0).c_str()).c_str());
-  REQUIRE_EQUAL(" text text", W2MB(Lines.GetString(1).c_str()).c_str());
-  REQUIRE_EQUAL(" text text1", W2MB(Lines.GetString(2).c_str()).c_str());
-  REQUIRE_EQUAL("text text text", W2MB(Lines.GetString(3).c_str()).c_str());
-  REQUIRE_EQUAL(" text text2", W2MB(Lines.GetString(4).c_str()).c_str());
+  REQUIRE_EQUAL(L"text", Lines.GetString(0));
+  REQUIRE_EQUAL(" text text", W2MB(Lines.GetString(1).c_str()));
+  REQUIRE_EQUAL(" text text1", W2MB(Lines.GetString(2).c_str()));
+  REQUIRE_EQUAL("text text text", W2MB(Lines.GetString(3).c_str()));
+  REQUIRE_EQUAL(" text text2", W2MB(Lines.GetString(4).c_str()));
   UnicodeString Text2 = Lines.GetCommaText();
   INFO("Text2 = " << W2MB(Text2.c_str()));
-  REQUIRE_EQUAL("\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\"", W2MB(Text2.c_str()).c_str());
+  REQUIRE_EQUAL("\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\"", W2MB(Text2.c_str()));
 }
 
 TEST_CASE_METHOD(base_fixture_t, "test5", "netbox")
@@ -197,7 +197,7 @@ TEST_CASE_METHOD(base_fixture_t, "test6", "netbox")
   {
     Lines.SetSorted(true);
     // INFO("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
-    REQUIRE_EQUAL("aaa", W2MB(Lines.GetString(0).c_str()).c_str());
+    REQUIRE_EQUAL("aaa", W2MB(Lines.GetString(0).c_str()));
     REQUIRE_EQUAL(2, Lines.GetCount());
   }
   {
@@ -206,10 +206,10 @@ TEST_CASE_METHOD(base_fixture_t, "test6", "netbox")
     Lines.SetCaseSensitive(true);
     Lines.SetSorted(true);
     REQUIRE_EQUAL(3, Lines.GetCount());
-    // INFO("Lines = " << W2MB(Lines.GetText().c_str()).c_str());
-    REQUIRE_EQUAL("aaa", W2MB(Lines.GetString(0).c_str()).c_str());
-    REQUIRE_EQUAL("Aaa", W2MB(Lines.GetString(1).c_str()).c_str());
-    REQUIRE_EQUAL("bbb", W2MB(Lines.GetString(2).c_str()).c_str());
+    INFO("Lines = " << W2MB(Lines.GetText().c_str()));
+    REQUIRE_EQUAL("aaa", W2MB(Lines.GetString(0).c_str()));
+    REQUIRE_EQUAL("Aaa", W2MB(Lines.GetString(1).c_str()));
+    REQUIRE_EQUAL("bbb", W2MB(Lines.GetString(2).c_str()));
   }
 }
 
