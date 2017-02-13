@@ -758,11 +758,11 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
 static const wchar_t *
 NextWord(const wchar_t * Input)
 {
-  static wchar_t buffer[1024];
+  static UnicodeString buffer(1024, 0);
   static const wchar_t * text = nullptr;
 
-  wchar_t * endOfBuffer = buffer + _countof(buffer) - 1;
-  wchar_t * pBuffer = buffer;
+  wchar_t * endOfBuffer = (wchar_t *)buffer.c_str() + buffer.GetLength() - 1;
+  wchar_t * pBuffer = (wchar_t *)buffer.c_str();
 
   if (Input)
   {
@@ -786,7 +786,7 @@ NextWord(const wchar_t * Input)
 
   *pBuffer = 0;
 
-  return buffer;
+  return buffer.c_str();
 }
 
 UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
