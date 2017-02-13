@@ -118,5 +118,3 @@ inline void ClearStruct(T * s) { T dont_instantiate_this_template_with_pointers 
 template<typename T, size_t N>
 inline void ClearArray(T (&a)[N]) { ::ZeroMemory(a, sizeof(a[0]) * N); }
 
-#include "GlobalUtils.hpp"
-
