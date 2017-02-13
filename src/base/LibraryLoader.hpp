@@ -8,10 +8,11 @@
 
 class TLibraryLoader : public TObject
 {
+NB_DISABLE_COPY(TLibraryLoader)
 public:
   explicit TLibraryLoader(const UnicodeString & libraryName, bool AllowFailure = false);
   explicit TLibraryLoader();
-  ~TLibraryLoader();
+  virtual ~TLibraryLoader();
 
   void Load(const UnicodeString & LibraryName, bool AllowFailure = false);
   void Unload();
@@ -21,10 +22,6 @@ public:
 
 private:
   HMODULE FHModule;
-
-private:
-  TLibraryLoader(const TLibraryLoader &);
-  TLibraryLoader & operator = (const TLibraryLoader &);
 };
 
 
