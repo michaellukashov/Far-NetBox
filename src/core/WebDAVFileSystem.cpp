@@ -1236,7 +1236,7 @@ void TWebDAVFileSystem::AnyCommand(const UnicodeString & /*Command*/,
   ThrowNotImplemented(1008);
 }
 
-TStrings * TWebDAVFileSystem::GetFixedPaths()
+TStrings * TWebDAVFileSystem::GetFixedPaths() const
 {
   return nullptr;
 }

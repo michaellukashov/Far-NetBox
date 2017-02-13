@@ -4638,12 +4638,8 @@ void TStoredSessionList::UpdateStaticUsage()
 
 const TSessionData * TStoredSessionList::FindSame(TSessionData * Data) const
 {
-  const TSessionData * Result;
-  if (Data->GetHidden() || Data->GetName().IsEmpty()) // || Data->GetIsWorkspace())
-  {
-    Result = nullptr;
-  }
-  else
+  const TSessionData * Result = nullptr;
+  if (!(Data->GetHidden() || Data->GetName().IsEmpty())) // || Data->GetIsWorkspace())
   {
     const TNamedObject * Obj = FindByName(Data->GetName());
     Result = dyn_cast<TSessionData>(Obj);

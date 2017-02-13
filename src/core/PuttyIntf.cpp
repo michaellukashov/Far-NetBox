@@ -399,14 +399,10 @@ void platform_get_x11_auth(struct X11Display * /*display*/, Conf * /*conf*/)
 char * get_remote_username(Conf * conf)
 {
   char * username = conf_get_str(conf, CONF_username);
-  char * result;
+  char * result = nullptr;
   if (*username)
   {
     result = dupstr(username);
-  }
-  else
-  {
-    result = nullptr;
   }
   return result;
 }

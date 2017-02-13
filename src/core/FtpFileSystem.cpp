@@ -290,8 +290,7 @@ TFTPFileSystem::~TFTPFileSystem()
     DiscardMessages();
   }
 
-  delete FFileZillaIntf;
-  FFileZillaIntf = nullptr;
+  SAFE_DESTROY_EX(CFileZillaTools, FFileZillaIntf);
 
   ::CloseHandle(FQueueEvent);
   FQueueEvent = nullptr;
@@ -300,8 +299,7 @@ TFTPFileSystem::~TFTPFileSystem()
   SAFE_DESTROY(FLastErrorResponse);
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
-  delete FServerCapabilities;
-  FServerCapabilities = nullptr;
+  SAFE_DESTROY_EX(TFTPServerCapabilities, FServerCapabilities);
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
 
@@ -1204,19 +1202,19 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
           (OnCalculatedChecksum != nullptr))
       {
         OperationProgress->SetFile(File->GetFileName());
-        TRemoteFileList * SubFiles =
-          FTerminal->CustomReadDirectoryListing(File->GetFullFileName(), false);
+        std::unique_ptr<TRemoteFileList> SubFiles(
+          FTerminal->CustomReadDirectoryListing(File->GetFullFileName(), false));
 
         if (SubFiles != nullptr)
         {
-          TStrings * SubFileList = new TStringList();
+          std::unique_ptr<TStrings> SubFileList(new TStringList());
           bool Success = false;
           try__finally
           {
             SCOPE_EXIT
             {
-              delete SubFiles;
-              delete SubFileList;
+//              delete SubFiles;
+//              delete SubFileList;
 
               if (FirstLevel)
               {
@@ -1234,15 +1232,15 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
 
             // do not collect checksums for files in subdirectories,
             // only send back checksums via callback
-            DoCalculateFilesChecksum(UsingHashCommand, Alg, SubFileList, nullptr,
+            DoCalculateFilesChecksum(UsingHashCommand, Alg, SubFileList.get(), nullptr,
               OnCalculatedChecksum, OperationProgress, false);
 
             Success = true;
           }
           __finally
           {
-            delete SubFiles;
-            delete SubFileList;
+//            delete SubFiles;
+//            delete SubFileList;
 
             if (FirstLevel)
             {
@@ -3023,7 +3021,7 @@ void TFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 
-TStrings * TFTPFileSystem::GetFixedPaths()
+TStrings * TFTPFileSystem::GetFixedPaths() const
 {
   return nullptr;
 }

@@ -97,7 +97,7 @@ public:
     const UnicodeString & ANewName);
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName);
-  virtual TStrings * GetFixedPaths();
+  virtual TStrings * GetFixedPaths() const;
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;

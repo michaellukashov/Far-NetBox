@@ -1382,20 +1382,20 @@ void TWinSCPFileSystem::ApplyCommand()
 
 void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
   const UnicodeString & RemoteDirectory, TTerminal::TSynchronizeMode Mode,
-  const TCopyParamType & CopyParam, intptr_t Params, TSynchronizeChecklist ** Checklist,
+  const TCopyParamType & CopyParam, intptr_t Params, TSynchronizeChecklist ** AChecklist,
   TSynchronizeOptions * Options)
 {
-  TSynchronizeChecklist * AChecklist = nullptr;
+  TSynchronizeChecklist * Checklist = nullptr;
   {
     SCOPE_EXIT
     {
-      if (Checklist == nullptr)
+      if (AChecklist == nullptr)
       {
-        SAFE_DESTROY(AChecklist);
+        SAFE_DESTROY(Checklist);
       }
       else
       {
-        *Checklist = AChecklist;
+        *AChecklist = Checklist;
       }
     };
     GetWinSCPPlugin()->SaveScreen(FSynchronizationSaveScreenHandle);
@@ -1409,7 +1409,7 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
         GetWinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
       };
       {
-        AChecklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
+        Checklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
           Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
           nb::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this), Options);
       }
@@ -1425,7 +1425,7 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
         GetWinSCPPlugin()->ClearConsoleTitle();
         GetWinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
       };
-      FTerminal->SynchronizeApply(AChecklist, LocalDirectory, RemoteDirectory,
+      FTerminal->SynchronizeApply(Checklist, LocalDirectory, RemoteDirectory,
         &CopyParam, Params | TTerminal::spNoConfirmation,
         nb::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this));
     }
@@ -2840,13 +2840,9 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(TOperationSide Side, TFarPan
     PanelInfo = this->GetPanelInfo();
   }
 
-  TStrings * Result;
+  TStrings * Result = nullptr;
   const TFarPanelItem * PanelItem = (*PanelInfo)->GetFocusedItem();
-  if (PanelItem->GetIsParentDirectory())
-  {
-    Result = nullptr;
-  }
-  else
+  if (!PanelItem->GetIsParentDirectory())
   {
     Result = new TStringList();
     DebugAssert((Side == osLocal) || PanelItem->GetUserData());
