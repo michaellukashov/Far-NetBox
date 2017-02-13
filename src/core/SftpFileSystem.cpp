@@ -1169,8 +1169,8 @@ private:
 
     if (Utf == asAuto)
     {
-      TEncodeType EncodeType = ::DetectUTF8Encoding(S);
-      if (EncodeType == etANSI)
+      nb::TEncodeType EncodeType = DetectUTF8Encoding(S);
+      if (EncodeType == nb::etANSI)
       {
         Utf = asOff;
         Result = AnsiToString(S);

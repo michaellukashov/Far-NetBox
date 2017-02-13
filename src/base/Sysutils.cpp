@@ -40,38 +40,13 @@ intptr_t __cdecl debug_printf2(const char * format, ...)
 
 UnicodeString MB2W(const char * src, const UINT cp)
 {
-  if (!src || !*src)
-  {
-    return UnicodeString(L"");
-  }
-
-  intptr_t reqLength = ::MultiByteToWideChar(cp, 0, src, -1, nullptr, 0);
-  UnicodeString Result;
-  if (reqLength)
-  {
-    Result.SetLength(reqLength);
-    ::MultiByteToWideChar(cp, 0, src, -1, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
-    Result.SetLength(Result.Length() - 1);  //remove NULL character
-  }
+  UnicodeString Result(src, NBChTraitsCRT<char>::SafeStringLen(src), cp);
   return Result;
 }
 
 AnsiString W2MB(const wchar_t * src, const UINT cp)
 {
-  if (!src || !*src)
-  {
-    return AnsiString("");
-  }
-
-  intptr_t reqLength = ::WideCharToMultiByte(cp, 0, src, -1, 0, 0, nullptr, nullptr);
-  AnsiString Result;
-  if (reqLength)
-  {
-    Result.SetLength(reqLength);
-    ::WideCharToMultiByte(cp, 0, src, -1, const_cast<LPSTR>(Result.c_str()),
-      static_cast<int>(reqLength), nullptr, nullptr);
-    Result.SetLength(Result.Length() - 1);  //remove NULL character
-  }
+  AnsiString Result(src, NBChTraitsCRT<wchar_t>::SafeStringLen(src), cp);
   return Result;
 }
 
@@ -219,7 +194,7 @@ int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal)
 
 bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value)
 {
-  bool Result = !StrValue.IsEmpty() && (StrValue.FindFirstNotOf(L"+-0123456789") == -1);
+  bool Result = !StrValue.IsEmpty(); // && (StrValue.FindFirstNotOf(L"+-0123456789") == -1);
   if (Result)
   {
     errno = 0;
@@ -1117,12 +1092,12 @@ bool Win32Check(bool RetVal)
   return RetVal;
 }
 
-UnicodeString SysErrorMessage(int ErrorCode)
+UnicodeString SysErrorMessage(intptr_t ErrorCode)
 {
   UnicodeString Result;
   wchar_t Buffer[255];
   intptr_t Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
-    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, ErrorCode, 0,
+    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, (int)ErrorCode, 0,
     static_cast<LPTSTR>(Buffer),
     sizeof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
