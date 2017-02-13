@@ -3,7 +3,6 @@
 #include <nbutils.h>
 #include "FtpListResult.h"
 #include "FileZillaApi.h"
-#include <GlobalUtils.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
