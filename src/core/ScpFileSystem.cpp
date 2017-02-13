@@ -1479,7 +1479,7 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
   };
 }
 
-TStrings * TSCPFileSystem::GetFixedPaths()
+TStrings * TSCPFileSystem::GetFixedPaths() const
 {
   return nullptr;
 }

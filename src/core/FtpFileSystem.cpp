@@ -3021,7 +3021,7 @@ void TFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 
-TStrings * TFTPFileSystem::GetFixedPaths()
+TStrings * TFTPFileSystem::GetFixedPaths() const
 {
   return nullptr;
 }

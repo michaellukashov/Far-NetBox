@@ -4333,7 +4333,7 @@ void TSFTPFileSystem::AnyCommand(const UnicodeString & /*Command*/,
   DebugFail();
 }
 
-TStrings * TSFTPFileSystem::GetFixedPaths()
+TStrings * TSFTPFileSystem::GetFixedPaths() const
 {
   return FFixedPaths;
 }

@@ -3547,7 +3547,7 @@ bool TTerminal::ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
 }
 #endif
 
-TStrings * TTerminal::GetFixedPaths()
+TStrings * TTerminal::GetFixedPaths() const
 {
   DebugAssert(FFileSystem != nullptr);
   return FFileSystem->GetFixedPaths();
