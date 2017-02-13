@@ -1092,12 +1092,12 @@ bool Win32Check(bool RetVal)
   return RetVal;
 }
 
-UnicodeString SysErrorMessage(int ErrorCode)
+UnicodeString SysErrorMessage(intptr_t ErrorCode)
 {
   UnicodeString Result;
   wchar_t Buffer[255];
   intptr_t Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
-    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, ErrorCode, 0,
+    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, (int)ErrorCode, 0,
     static_cast<LPTSTR>(Buffer),
     sizeof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
