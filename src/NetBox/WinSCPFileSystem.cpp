@@ -2840,13 +2840,9 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(TOperationSide Side, TFarPan
     PanelInfo = this->GetPanelInfo();
   }
 
-  TStrings * Result;
+  TStrings * Result = nullptr;
   const TFarPanelItem * PanelItem = (*PanelInfo)->GetFocusedItem();
-  if (PanelItem->GetIsParentDirectory())
-  {
-    Result = nullptr;
-  }
-  else
+  if (!PanelItem->GetIsParentDirectory())
   {
     Result = new TStringList();
     DebugAssert((Side == osLocal) || PanelItem->GetUserData());

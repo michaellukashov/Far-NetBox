@@ -885,7 +885,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
 {
   if (GetLocale() != Value)
   {
-    HINSTANCE Module;
+    HINSTANCE Module = nullptr;
 
     try
     {

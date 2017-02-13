@@ -1150,7 +1150,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        bool Empty;
+        bool Empty = true;
         if (ListCurrentDirectory)
         {
           TRemoteFile * File = nullptr;
@@ -1165,10 +1165,6 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             DebugAssert(File->GetIsParentDirectory());
             FileList->AddFile(File);
           }
-        }
-        else
-        {
-          Empty = true;
         }
 
         if (Empty)
