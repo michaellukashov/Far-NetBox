@@ -1150,10 +1150,10 @@ UnicodeString DisplayableStr(const RawByteString & Str)
 
 UnicodeString ByteToHex(uint8_t B, bool UpperCase)
 {
-  static wchar_t UpperDigits[] = L"0123456789ABCDEF";
-  static wchar_t LowerDigits[] = L"0123456789abcdef";
+  UnicodeString UpperDigits = "0123456789ABCDEF";
+  UnicodeString LowerDigits = "0123456789abcdef";
 
-  const wchar_t * Digits = (UpperCase ? UpperDigits : LowerDigits);
+  const wchar_t * Digits = (UpperCase ? UpperDigits.c_str() : LowerDigits.c_str());
   UnicodeString Result;
   Result.SetLength(2);
   Result[1] = Digits[(B & 0xF0) >> 4];
@@ -1212,7 +1212,7 @@ RawByteString HexToBytes(const UnicodeString & Hex)
 
 uint8_t HexToByte(const UnicodeString & Hex)
 {
-  static UnicodeString Digits = "0123456789ABCDEF";
+  UnicodeString Digits = "0123456789ABCDEF";
   DebugAssert(Hex.Length() == 2);
   intptr_t P1 = Digits.Pos(::UpCase(Hex[1]));
   intptr_t P2 = Digits.Pos(::UpCase(Hex[2]));
