@@ -540,6 +540,18 @@ CMStringT<BaseType, StringTraits>::CMStringT(const YCHAR* pch, int nLength) :
   }
 }
 
+template< typename BaseType, class StringTraits >
+CMStringT<BaseType, StringTraits>::CMStringT(const YCHAR* pch, int nLength, int CodePage) :
+  CThisSimpleString()
+{
+  if (nLength > 0) {
+    int nDestLength = StringTraits::GetBaseTypeLength(pch, nLength, CodePage);
+    PXSTR pszBuffer = this->GetBuffer(nDestLength);
+    StringTraits::ConvertToBaseType(pszBuffer, nDestLength, pch, nLength, CodePage);
+    this->ReleaseBufferSetLength(nDestLength);
+  }
+}
+
 // Destructor
 template< typename BaseType, class StringTraits >
 CMStringT<BaseType, StringTraits>::~CMStringT()

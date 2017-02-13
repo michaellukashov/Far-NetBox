@@ -1701,7 +1701,7 @@ intptr_t TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, int
 
 TFarEditorInfo * TCustomFarPlugin::EditorInfo()
 {
-  TFarEditorInfo * Result;
+  TFarEditorInfo * Result = nullptr;
   ::EditorInfo * Info = nb::calloc<::EditorInfo *>(sizeof(::EditorInfo));
   memset(Info, 0, sizeof(::EditorInfo));
   Info->StructSize = sizeof(::EditorInfo);
@@ -1714,7 +1714,6 @@ TFarEditorInfo * TCustomFarPlugin::EditorInfo()
     else
     {
       nb_free(Info);
-      Result = nullptr;
     }
   }
   catch (...)
@@ -1741,7 +1740,7 @@ UnicodeString TCustomFarPlugin::FormatFarVersion(VersionInfo &Info) const
 
 UnicodeString TCustomFarPlugin::GetTemporaryDir() const
 {
-  UnicodeString Result(4096, 0);
+  UnicodeString Result(NB_MAX_PATH, 0);
   TFarEnvGuard Guard;
   FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), (DWORD)Result.Length(), nullptr);
   PackStr(Result);
@@ -2935,7 +2934,7 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidt
 
 TGlobalFunctionsIntf * GetGlobalFunctions()
 {
-  static TGlobalFunctions * GlobalFunctions = nullptr;
+  static TGlobalFunctionsIntf * GlobalFunctions = nullptr;
   if (!GlobalFunctions)
   {
     GlobalFunctions = new TGlobalFunctions();
@@ -2973,16 +2972,17 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 UnicodeString TGlobalFunctions::GetCurrDirectory() const
 {
   UnicodeString Result;
-  UnicodeString Path(32 * 1014, 0);
+  UnicodeString Path(NB_MAX_PATH, 0);
+  int Length = 0;
   if (FarPlugin)
   {
-    FarPlugin->GetFarStandardFunctions().GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
+    Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str()) - 1;
   }
   else
   {
-    ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
+    Length = ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
   }
-  Result = Path;
+  Result = UnicodeString(Path.c_str(), Length);
   return Result;
 }
 

@@ -67,6 +67,20 @@ intptr_t WINAPI ConfigureW(const struct ConfigureInfo * Info)
 {
   if (Info->StructSize < sizeof(ConfigureInfo))
     return FALSE;
+  SELF_TEST(
+    UnicodeString Text = L"text, text text, text text1\ntext text text, text text2\n";
+    TStringList Lines;
+    Lines.SetCommaText(Text);
+    assert(Lines.GetCount() == 5);
+
+    UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
+    UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
+    Instructions2 = ReplaceStrAll(Instructions, L"\x0A\x0D", L"\x01");
+    Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
+    Instructions2 = ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
+    Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
+    assert(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
+  )
   TFarPluginGuard Guard;
   return FarPlugin->Configure(Info);
 }

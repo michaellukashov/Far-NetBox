@@ -3370,7 +3370,7 @@ void TTerminal::ReadFile(const UnicodeString & AFileName,
 
 bool TTerminal::FileExists(const UnicodeString & AFileName, TRemoteFile ** AFile)
 {
-  bool Result;
+  bool Result = false;
   TRemoteFile * File = nullptr;
   try
   {
@@ -3547,7 +3547,7 @@ bool TTerminal::ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
 }
 #endif
 
-TStrings * TTerminal::GetFixedPaths()
+TStrings * TTerminal::GetFixedPaths() const
 {
   DebugAssert(FFileSystem != nullptr);
   return FFileSystem->GetFixedPaths();

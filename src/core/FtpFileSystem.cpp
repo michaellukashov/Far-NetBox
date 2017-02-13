@@ -290,8 +290,7 @@ TFTPFileSystem::~TFTPFileSystem()
     DiscardMessages();
   }
 
-  delete FFileZillaIntf;
-  FFileZillaIntf = nullptr;
+  SAFE_DESTROY_EX(CFileZillaTools, FFileZillaIntf);
 
   ::CloseHandle(FQueueEvent);
   FQueueEvent = nullptr;
@@ -300,8 +299,7 @@ TFTPFileSystem::~TFTPFileSystem()
   SAFE_DESTROY(FLastErrorResponse);
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
-  delete FServerCapabilities;
-  FServerCapabilities = nullptr;
+  SAFE_DESTROY_EX(TFTPServerCapabilities, FServerCapabilities);
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
 
@@ -875,9 +873,9 @@ UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool 
   }
 }
 
-UnicodeString TFTPFileSystem::ActualCurrentDirectory()
+UnicodeString TFTPFileSystem::GetActualCurrentDirectory() const
 {
-  UnicodeString CurrentPath(1024, 0);
+  UnicodeString CurrentPath(NB_MAX_PATH, 0);
   UnicodeString Result;
   if (FFileZillaIntf->GetCurrentPath(const_cast<wchar_t *>(CurrentPath.c_str()), CurrentPath.Length()))
   {
@@ -887,6 +885,7 @@ UnicodeString TFTPFileSystem::ActualCurrentDirectory()
   {
     Result = ROOTDIRECTORY;
   }
+  PackStr(Result);
   return Result;
 }
 
@@ -901,7 +900,7 @@ void TFTPFileSystem::EnsureLocation()
     // 1) We did cached directory change
     // 2) Listing was requested for non-current directory, which
     // makes FZAPI change its current directory (and not restoring it back afterwards)
-    if (!core::UnixSamePath(ActualCurrentDirectory(), FCurrentDirectory))
+    if (!core::UnixSamePath(GetActualCurrentDirectory(), FCurrentDirectory))
     {
       FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
         FCurrentDirectory.c_str()));
@@ -1203,19 +1202,19 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
           (OnCalculatedChecksum != nullptr))
       {
         OperationProgress->SetFile(File->GetFileName());
-        TRemoteFileList * SubFiles =
-          FTerminal->CustomReadDirectoryListing(File->GetFullFileName(), false);
+        std::unique_ptr<TRemoteFileList> SubFiles(
+          FTerminal->CustomReadDirectoryListing(File->GetFullFileName(), false));
 
         if (SubFiles != nullptr)
         {
-          TStrings * SubFileList = new TStringList();
+          std::unique_ptr<TStrings> SubFileList(new TStringList());
           bool Success = false;
           try__finally
           {
             SCOPE_EXIT
             {
-              delete SubFiles;
-              delete SubFileList;
+//              delete SubFiles;
+//              delete SubFileList;
 
               if (FirstLevel)
               {
@@ -1233,15 +1232,15 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
 
             // do not collect checksums for files in subdirectories,
             // only send back checksums via callback
-            DoCalculateFilesChecksum(UsingHashCommand, Alg, SubFileList, nullptr,
+            DoCalculateFilesChecksum(UsingHashCommand, Alg, SubFileList.get(), nullptr,
               OnCalculatedChecksum, OperationProgress, false);
 
             Success = true;
           }
           __finally
           {
-            delete SubFiles;
-            delete SubFileList;
+//            delete SubFiles;
+//            delete SubFileList;
 
             if (FirstLevel)
             {
@@ -2356,7 +2355,7 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
       // EnsureLocation should reset actual current directory to user's working directory.
       // If user's working directory is still below deleted directory, it is
       // perfectly correct to report an error.
-      if (core::UnixIsChildPath(ActualCurrentDirectory(), FileName))
+      if (core::UnixIsChildPath(GetActualCurrentDirectory(), FileName))
       {
         EnsureLocation();
       }
@@ -3022,7 +3021,7 @@ void TFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 
-TStrings * TFTPFileSystem::GetFixedPaths()
+TStrings * TFTPFileSystem::GetFixedPaths() const
 {
   return nullptr;
 }

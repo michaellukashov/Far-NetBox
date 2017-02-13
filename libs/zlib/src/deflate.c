@@ -1,5 +1,5 @@
 /* deflate.c -- compress data using the deflation algorithm
- * Copyright (C) 1995-2017 Jean-loup Gailly and Mark Adler
+ * Copyright (C) 1995-2016 Jean-loup Gailly and Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -54,7 +54,7 @@
 #include "match.h"
 
 const char deflate_copyright[] =
-   " deflate 1.2.11.f Copyright 1995-2017 Jean-loup Gailly and Mark Adler ";
+   " deflate 1.2.11.f Copyright 1995-2016 Jean-loup Gailly and Mark Adler ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
@@ -383,6 +383,7 @@ int ZEXPORT deflateInit2_(z_stream *strm, int level, int method, int windowBits,
     s->level = level;
     s->strategy = strategy;
     s->method = (unsigned char)method;
+    s->block_open = 0;
 
     return deflateReset(strm);
 }
@@ -610,8 +611,7 @@ int ZEXPORT deflateParams(z_stream *strm, int level, int strategy)
     }
     func = configuration_table[s->level].func;
 
-    if ((strategy != s->strategy || func != configuration_table[level].func) &&
-        s->high_water) {
+    if ((strategy != s->strategy || func != configuration_table[level].func) && s->high_water) {
         /* Flush the last buffer: */
         int err = deflate(strm, Z_BLOCK);
         if (err == Z_STREAM_ERROR)
@@ -1760,8 +1760,8 @@ static block_state deflate_stored(deflate_state *s, int flush)
         /* Write the stored block header bytes. */
         flush_pending(s->strm);
 
-        /* Update debugging counts for the data about to be copied. */
 #ifdef ZLIB_DEBUG
+        /* Update debugging counts for the data about to be copied. */
         s->compressed_len += len << 3;
         s->bits_sent += len << 3;
 #endif
@@ -1828,7 +1828,8 @@ static block_state deflate_stored(deflate_state *s, int flush)
 
     /* If flushing and all input has been consumed, then done. */
     if (flush != Z_NO_FLUSH && flush != Z_FINISH &&
-        s->strm->avail_in == 0 && (long)s->strstart == s->block_start)
+        s->strm->avail_in == 0 && 
+        (long)s->strstart == s->block_start)
         return block_done;
 
     /* Fill the window with any remaining input. */

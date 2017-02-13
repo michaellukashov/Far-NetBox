@@ -132,3 +132,9 @@ inline T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filena
 #define DebugUsedParam(p) (void)(p)
 
 #define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())
+
+#define TShellExecuteInfoW _SHELLEXECUTEINFOW
+#define TSHFileInfoW SHFILEINFOW
+#define TVSFixedFileInfo VS_FIXEDFILEINFO
+#define PVSFixedFileInfo VS_FIXEDFILEINFO*
+

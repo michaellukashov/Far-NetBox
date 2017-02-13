@@ -463,10 +463,10 @@ char *dupprintf(const char *fmt, ...)
     return ret;
 }
 
-typedef struct strbuf {
+struct strbuf {
     char *s;
     int len, size;
-} strbuf;
+};
 strbuf *strbuf_new(void)
 {
     strbuf *buf = snew(strbuf);

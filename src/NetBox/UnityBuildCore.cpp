@@ -6,10 +6,10 @@
 
 #include <disable_warnings_in_std_begin.hpp>
 
-#include "../nbcore/nbcore_memory.cpp"
-#include "../nbcore/nbcore_string.cpp"
+#include "../nbcore/nbmemory.cpp"
+#include "../nbcore/nbstring.cpp"
+#include "../nbcore/nbutils.cpp"
 
-#include "../base/GlobalUtils.cpp"
 #include "../base/UnicodeString.cpp"
 #include "../base/Classes.cpp"
 #include "../base/Masks.cpp"

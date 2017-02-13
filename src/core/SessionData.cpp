@@ -9,6 +9,7 @@
 #include <Exceptions.h>
 #include <FileBuffer.h>
 #include <StrUtils.hpp>
+#include <nbutils.h>
 
 #include "SessionData.h"
 #include "CoreMain.h"
@@ -1650,7 +1651,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
           else if ((AData->GetName().Length() < DecodedUrl.Length()) &&
                    (DecodedUrl[AData->GetName().Length() + 1] == L'/') &&
                    // StrLIComp is an equivalent of SameText
-                   (StrLIComp(AData->GetName().c_str(), DecodedUrl.c_str(), (int)AData->GetName().Length()) == 0))
+                   (nb::StrLIComp(AData->GetName().c_str(), DecodedUrl.c_str(), (int)AData->GetName().Length()) == 0))
           {
             Match = true;
           }
@@ -4637,12 +4638,8 @@ void TStoredSessionList::UpdateStaticUsage()
 
 const TSessionData * TStoredSessionList::FindSame(TSessionData * Data) const
 {
-  const TSessionData * Result;
-  if (Data->GetHidden() || Data->GetName().IsEmpty()) // || Data->GetIsWorkspace())
-  {
-    Result = nullptr;
-  }
-  else
+  const TSessionData * Result = nullptr;
+  if (!(Data->GetHidden() || Data->GetName().IsEmpty())) // || Data->GetIsWorkspace())
   {
     const TNamedObject * Obj = FindByName(Data->GetName());
     Result = dyn_cast<TSessionData>(Obj);

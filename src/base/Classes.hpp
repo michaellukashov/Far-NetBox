@@ -15,6 +15,7 @@
 #pragma warning(push, 1)
 
 #include <rtlconsts.h>
+#include <ObjIDs.h>
 #include <UnicodeString.hpp>
 #include <rtti.hpp>
 

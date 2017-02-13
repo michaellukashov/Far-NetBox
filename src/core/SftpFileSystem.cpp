@@ -1169,8 +1169,8 @@ private:
 
     if (Utf == asAuto)
     {
-      TEncodeType EncodeType = ::DetectUTF8Encoding(S);
-      if (EncodeType == etANSI)
+      nb::TEncodeType EncodeType = DetectUTF8Encoding(S);
+      if (EncodeType == nb::etANSI)
       {
         Utf = asOff;
         Result = AnsiToString(S);
@@ -4333,7 +4333,7 @@ void TSFTPFileSystem::AnyCommand(const UnicodeString & /*Command*/,
   DebugFail();
 }
 
-TStrings * TSFTPFileSystem::GetFixedPaths()
+TStrings * TSFTPFileSystem::GetFixedPaths() const
 {
   return FFixedPaths;
 }

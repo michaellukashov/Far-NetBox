@@ -40,38 +40,13 @@ intptr_t __cdecl debug_printf2(const char * format, ...)
 
 UnicodeString MB2W(const char * src, const UINT cp)
 {
-  if (!src || !*src)
-  {
-    return UnicodeString(L"");
-  }
-
-  intptr_t reqLength = ::MultiByteToWideChar(cp, 0, src, -1, nullptr, 0);
-  UnicodeString Result;
-  if (reqLength)
-  {
-    Result.SetLength(reqLength);
-    ::MultiByteToWideChar(cp, 0, src, -1, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
-    Result.SetLength(Result.Length() - 1);  //remove NULL character
-  }
+  UnicodeString Result(src, NBChTraitsCRT<char>::SafeStringLen(src), cp);
   return Result;
 }
 
 AnsiString W2MB(const wchar_t * src, const UINT cp)
 {
-  if (!src || !*src)
-  {
-    return AnsiString("");
-  }
-
-  intptr_t reqLength = ::WideCharToMultiByte(cp, 0, src, -1, 0, 0, nullptr, nullptr);
-  AnsiString Result;
-  if (reqLength)
-  {
-    Result.SetLength(reqLength);
-    ::WideCharToMultiByte(cp, 0, src, -1, const_cast<LPSTR>(Result.c_str()),
-      static_cast<int>(reqLength), nullptr, nullptr);
-    Result.SetLength(Result.Length() - 1);  //remove NULL character
-  }
+  AnsiString Result(src, NBChTraitsCRT<wchar_t>::SafeStringLen(src), cp);
   return Result;
 }
 
@@ -758,11 +733,11 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
 static const wchar_t *
 NextWord(const wchar_t * Input)
 {
-  static wchar_t buffer[1024];
+  static UnicodeString buffer(1024, 0);
   static const wchar_t * text = nullptr;
 
-  wchar_t * endOfBuffer = buffer + _countof(buffer) - 1;
-  wchar_t * pBuffer = buffer;
+  wchar_t * endOfBuffer = (wchar_t *)buffer.c_str() + buffer.GetLength() - 1;
+  wchar_t * pBuffer = (wchar_t *)buffer.c_str();
 
   if (Input)
   {
@@ -786,7 +761,7 @@ NextWord(const wchar_t * Input)
 
   *pBuffer = 0;
 
-  return buffer;
+  return buffer.c_str();
 }
 
 UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
@@ -964,9 +939,9 @@ void AppendPathDelimiterW(UnicodeString & Str)
 
 UnicodeString ExpandEnvVars(const UnicodeString & Str)
 {
-  UnicodeString Buf(32 * 1024, 0);
-  intptr_t size = ::ExpandEnvironmentStringsW(Str.c_str(), (wchar_t *)Buf.c_str(), static_cast<DWORD>(32 * 1024 - 1));
-  UnicodeString Result = UnicodeString(Buf.c_str(), size - 1);
+  UnicodeString Buf(NB_MAX_PATH, 0);
+  intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), (wchar_t *)Buf.c_str(), static_cast<DWORD>(32 * 1024 - 1));
+  UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
 
@@ -1117,12 +1092,12 @@ bool Win32Check(bool RetVal)
   return RetVal;
 }
 
-UnicodeString SysErrorMessage(int ErrorCode)
+UnicodeString SysErrorMessage(intptr_t ErrorCode)
 {
   UnicodeString Result;
   wchar_t Buffer[255];
   intptr_t Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
-    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, ErrorCode, 0,
+    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, (int)ErrorCode, 0,
     static_cast<LPTSTR>(Buffer),
     sizeof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&

@@ -2080,14 +2080,14 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       if (WSAIoctl(FSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, NULL, 0, &BufferLen, sizeof(BufferLen), &OutLen, 0, 0) == 0)
       {
         DebugAssert(OutLen == sizeof(BufferLen));
-        if (FSendBuf < static_cast<int>(BufferLen))
+        if (FSendBuf < static_cast<intptr_t>(BufferLen))
         {
           LogEvent(FORMAT(L"Increasing send buffer from %d to %d", FSendBuf, static_cast<int>(BufferLen)));
           FSendBuf = BufferLen;
           setsockopt(FSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&BufferLen), sizeof(BufferLen));
         }
       }
-      FLastSendBufferUpdate = TicksAfter;
+      FLastSendBufferUpdate = (DWORD)TicksAfter;
     }
   }
   while (ReadEventRequired && (MSec > 0) && !Result);

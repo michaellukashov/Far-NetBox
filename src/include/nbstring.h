@@ -3,7 +3,7 @@
 //#include <stdio.h>
 //#include <string.h>
 #include <mbstring.h>
-//#include <wchar.h>
+#include <wchar.h>
 
 #include <nbcore.h>
 
@@ -21,8 +21,6 @@ __inline size_t wcsnlen(const wchar_t *string, size_t maxlen)
 	return end ? (size_t) (end - string) : maxlen;
 }
 
-/* FIXME: This may be wrong assumption about Langpack_GetDefaultCodePage */
-#define Langpack_GetDefaultCodePage() CP_THREAD_ACP
 /* FIXME: This is unsafe */
 #define memcpy_s(dest,size,src,count) memcpy(dest,src,count)
 /* FIXME: This is quite silly implementation of _mbsstr */
@@ -31,7 +29,8 @@ __inline size_t wcsnlen(const wchar_t *string, size_t maxlen)
 #endif /* __MINGW32__ */
 
 /* FIXME: This may be wrong assumption about Langpack_GetDefaultCodePage */
-#define Langpack_GetDefaultCodePage() CP_THREAD_ACP
+#define Langpack_GetDefaultCodePage() CP_UTF8
+//CP_THREAD_ACP
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,6 +51,7 @@ enum CMStringDataFormat { FORMAT };
 
 struct CMStringData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 	int nDataLength;   // Length of currently used data in XCHARs (not including terminating null)
 	int nAllocLength;  // Length of allocated data in XCHARs (not including terminating null)
 	long nRefs;        // Reference count: negative == locked
@@ -93,6 +93,7 @@ public:
 template< typename BaseType >
 class CMSimpleStringT
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   typedef typename NBChTraitsBase< BaseType >::XCHAR XCHAR;
   typedef typename NBChTraitsBase< BaseType >::PXSTR PXSTR;
@@ -388,6 +389,12 @@ public:
 		return ::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSource, nLength, NULL, 0, NULL, NULL);
 	}
 
+  static int __stdcall GetBaseTypeLength(LPCWSTR pszSource, int nLength, int CodePage)
+  {
+    // Returns required buffer length in XCHARs
+    return ::WideCharToMultiByte(CodePage, 0, pszSource, nLength, NULL, 0, NULL, NULL);
+  }
+
 	static void __stdcall ConvertToBaseType(LPSTR pszDest, int nDestLength, LPCSTR pszSrc, int nSrcLength = -1)
 	{
 		if (nSrcLength == -1) { nSrcLength = 1 + GetBaseTypeLength(pszSrc); }
@@ -400,6 +407,12 @@ public:
 		// nLen is in XCHARs
 		::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSrc, nSrcLength, pszDest, nDestLength, NULL, NULL);
 	}
+
+  static void __stdcall ConvertToBaseType(LPSTR pszDest, int nDestLength, LPCWSTR pszSrc, int nSrcLength, int CodePage)
+  {
+    // nLen is in XCHARs
+    ::WideCharToMultiByte(CodePage, 0, pszSrc, nSrcLength, pszDest, nDestLength, NULL, NULL);
+  }
 
 	static void ConvertToOem(_CharType* pstrString)
 	{
@@ -612,6 +625,12 @@ public:
 		return ::MultiByteToWideChar(CP_ACP, 0, pszSrc, nLength, NULL, 0);
 	}
 
+  static int __stdcall GetBaseTypeLength(LPCSTR pszSrc, int nLength, int CodePage)
+  {
+    // Returns required buffer size in wchar_ts
+    return ::MultiByteToWideChar(CodePage, 0, pszSrc, nLength, NULL, 0);
+  }
+
 	static int __stdcall GetBaseTypeLength(LPCWSTR pszSrc)
 	{
 		// Returns required buffer size in wchar_ts
@@ -630,6 +649,12 @@ public:
 		// nLen is in wchar_ts
 		::MultiByteToWideChar(CP_ACP, 0, pszSrc, nSrcLength, pszDest, nDestLength);
 	}
+
+  static void __stdcall ConvertToBaseType(LPWSTR pszDest, int nDestLength, LPCSTR pszSrc, int nSrcLength, int CodePage)
+  {
+    // nLen is in wchar_ts
+    ::MultiByteToWideChar(CodePage, 0, pszSrc, nSrcLength, pszDest, nDestLength);
+  }
 
 	static void __stdcall ConvertToBaseType(LPWSTR pszDest, int nDestLength, LPCWSTR pszSrc, int nSrcLength = -1)
 	{
@@ -732,6 +757,7 @@ public:
 
 	CMStringT(const XCHAR* pch, int nLength);
 	CMStringT(const YCHAR* pch, int nLength);
+	CMStringT(const YCHAR* pch, int nLength, int CodePage);
 
 	// Destructor
 	~CMStringT();

@@ -213,7 +213,7 @@ protected:
     intptr_t & MaxDirectories);
   void Synchronize(const UnicodeString & LocalDirectory,
     const UnicodeString & RemoteDirectory, TTerminal::TSynchronizeMode Mode,
-    const TCopyParamType & CopyParam, intptr_t Params, TSynchronizeChecklist ** Checklist,
+    const TCopyParamType & CopyParam, intptr_t Params, TSynchronizeChecklist ** AChecklist,
     TSynchronizeOptions * Options);
   bool SynchronizeAllowSelectedOnly();
   void GetSynchronizeOptions(intptr_t Params, TSynchronizeOptions & Options);

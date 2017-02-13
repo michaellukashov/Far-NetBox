@@ -423,7 +423,6 @@ void ExtException::AddMoreMessages(const Exception * E)
 ExtException::~ExtException() noexcept
 {
   SAFE_DESTROY(FMoreMessages);
-  FMoreMessages = nullptr;
 }
 
 ExtException * ExtException::CloneFrom(const Exception * E)

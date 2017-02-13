@@ -5,6 +5,10 @@
 #ifndef PUTTY_WINSTUFF_H
 #define PUTTY_WINSTUFF_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* C++ */
+
 #ifndef AUTO_WINSOCK
 #include <winsock2.h>
 #endif
@@ -99,6 +103,11 @@ struct FontSpec *fontspec_new(const char *name,
 #ifndef NO_SECUREZEROMEMORY
 #define PLATFORM_HAS_SMEMCLR /* inhibit cross-platform one in misc.c */
 #endif
+
+/* Up-to-date Windows headers warn that the unprefixed versions of
+ * these names are deprecated. */
+#define stricmp _stricmp
+#define strnicmp _strnicmp
 
 #define BROKEN_PIPE_ERROR_CODE ERROR_BROKEN_PIPE   /* used in sshshare.c */
 
@@ -489,6 +498,7 @@ void show_help(HWND hwnd);
  * Exports from winmisc.c.
  */
 extern OSVERSIONINFO osVersion;
+void dll_hijacking_protection(void);
 BOOL init_winver(void);
 HMODULE load_system32_dll(const char *libname);
 const char *win_strerror(int error);
@@ -567,6 +577,7 @@ extern Backend serial_backend;
 void add_session_to_jumplist(const char * const sessionname);
 void remove_session_from_jumplist(const char * const sessionname);
 void clear_jumplist(void);
+BOOL set_explicit_app_user_model_id();
 
 /*
  * Extra functions in winstore.c over and above the interface in
@@ -590,5 +601,9 @@ int remove_from_jumplist_registry(const char *item);
  * sequence of NUL-terminated strings in memory, terminated with an
  * empty one. */
 char *get_jumplist_registry_entries(void);
+
+#ifdef __cplusplus
+}
+#endif /* C++ */
 
 #endif
