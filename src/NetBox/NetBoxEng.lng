@@ -1216,7 +1216,7 @@
 "1.1.0d"
 "http://www.openssl.org/"
 "WebDAV code based on neon library %s"
-"Copyright В© 1999-2014 Joe Orton"
+"Copyright В© 1999-2016 Joe Orton"
 "http://www.webdav.org/neon/"
 "eXpat library %s"
 "Copyright В© 1998-2012 Expat maintainers"
