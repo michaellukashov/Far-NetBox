@@ -3503,6 +3503,7 @@ void TSessionData::PrepareProxyData() const
   {
     FIEProxyConfig = new TIEProxyConfig;
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyConfig;
+    ClearStruct(IEProxyConfig);
     if (!WinHttpGetIEProxyConfigForCurrentUser(&IEProxyConfig))
     {
       DWORD Err = ::GetLastError();
