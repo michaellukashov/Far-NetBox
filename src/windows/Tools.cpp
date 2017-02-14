@@ -291,17 +291,12 @@ void VerifyCertificate(const UnicodeString & AFileName)
 }
 
 
-// Code from http://gentoo.osuosl.org/distfiles/cl331.zip/io/
-
-// this was moved to global scope in past in some attempt to fix crashes,
-// not sure it really helped
-WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyInfo;
-
 static bool GetProxyUrlFromIE(UnicodeString & Proxy)
 {
   bool Result = false;
+  // Code from http://gentoo.osuosl.org/distfiles/cl331.zip/io/
+  WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyInfo;
   ClearStruct(IEProxyInfo);
-//  if (WinHttpGetIEProxyConfigForCurrentUser(&IEProxyInfo))
   TLibraryLoader LibraryLoader(L"winhttp.dll", true);
   if (LibraryLoader.Loaded())
   {
