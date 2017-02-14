@@ -81,7 +81,6 @@ TSessionData::~TSessionData()
   if (nullptr != FIEProxyConfig)
   {
     SAFE_DESTROY(FIEProxyConfig);
-    FIEProxyConfig = nullptr;
   }
 }
 
