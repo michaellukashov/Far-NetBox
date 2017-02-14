@@ -1,5 +1,5 @@
 message(STATUS "CMake version: ${CMAKE_VERSION}")
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 2.8)
 
 set(OPT_COMPILE_OPENSSL ON CACHE STRING "Default build openSSL")
 set(OPT_USE_UNITY_BUILD ON CACHE STRING "Default use unity build")
