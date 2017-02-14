@@ -203,6 +203,7 @@ endif()
 
 include_directories(
   ../../libs
+  ../include
 )
 
 #-------------------------------------------------------------------------------
@@ -919,58 +920,58 @@ target_include_directories(atlmfc PRIVATE
 #putty
 
 add_library(putty STATIC
-  ../../libs/Putty/cproxy.c
-  ../../libs/Putty/int64.c
-  ../../libs/Putty/logging.c
-  ../../libs/Putty/misc.c
-  ../../libs/Putty/pgssapi.c
-  ../../libs/Putty/portfwd.c
-  ../../libs/Putty/proxy.c
-  ../../libs/Putty/ssh.c
-  ../../libs/Putty/sshaes.c
-  ../../libs/Putty/ssharcf.c
-  ../../libs/Putty/sshblowf.c
-  ../../libs/Putty/sshbn.c
-  ../../libs/Putty/sshcrc.c
-  ../../libs/Putty/sshcrcda.c
-  ../../libs/Putty/sshdes.c
-  ../../libs/Putty/sshdh.c
-  ../../libs/Putty/sshdss.c
-  ../../libs/Putty/sshgssc.c
-  ../../libs/Putty/sshmd5.c
-  ../../libs/Putty/sshpubk.c
-  ../../libs/Putty/sshrand.c
-  ../../libs/Putty/sshrsa.c
-  ../../libs/Putty/sshsh256.c
-  ../../libs/Putty/sshsh512.c
-  ../../libs/Putty/sshsha.c
-  ../../libs/Putty/sshzlib.c
-  ../../libs/Putty/tree234.c
-  ../../libs/Putty/wildcard.c
-  ../../libs/Putty/windows/wingss.c
-  ../../libs/Putty/windows/winhandl.c
-  ../../libs/Putty/windows/winmisc.c
-  ../../libs/Putty/windows/winnet.c
-  ../../libs/Putty/windows/winnoise.c
-  ../../libs/Putty/windows/winnojmp.c
-  ../../libs/Putty/windows/winpgntc.c
-  ../../libs/Putty/windows/winproxy.c
-  ../../libs/Putty/windows/winsecur.c
-  ../../libs/Putty/windows/winstore.c
-  ../../libs/Putty/windows/wintime.c
-  ../../libs/Putty/windows/winhsock.c
-  ../../libs/Putty/x11fwd.c
-  ../../libs/Putty/conf.c
-  ../../libs/Putty/callback.c
-  ../../libs/Putty/sshshare.c
-  ../../libs/Putty/noshare.c
-  ../../libs/Putty/errsock.c
-  ../../libs/Putty/sshecc.c
-  ../../libs/Putty/sshccp.c
-  ../../libs/Putty/import.c
-  ../../libs/Putty/be_misc.c
-  ../../libs/Putty/sshbcrypt.c
-#  ../../libs/Putty/ldisc.c
+  ../../libs/putty/cproxy.c
+  ../../libs/putty/int64.c
+  ../../libs/putty/logging.c
+  ../../libs/putty/misc.c
+  ../../libs/putty/pgssapi.c
+  ../../libs/putty/portfwd.c
+  ../../libs/putty/proxy.c
+  ../../libs/putty/ssh.c
+  ../../libs/putty/sshaes.c
+  ../../libs/putty/ssharcf.c
+  ../../libs/putty/sshblowf.c
+  ../../libs/putty/sshbn.c
+  ../../libs/putty/sshcrc.c
+  ../../libs/putty/sshcrcda.c
+  ../../libs/putty/sshdes.c
+  ../../libs/putty/sshdh.c
+  ../../libs/putty/sshdss.c
+  ../../libs/putty/sshgssc.c
+  ../../libs/putty/sshmd5.c
+  ../../libs/putty/sshpubk.c
+  ../../libs/putty/sshrand.c
+  ../../libs/putty/sshrsa.c
+  ../../libs/putty/sshsh256.c
+  ../../libs/putty/sshsh512.c
+  ../../libs/putty/sshsha.c
+  ../../libs/putty/sshzlib.c
+  ../../libs/putty/tree234.c
+  ../../libs/putty/wildcard.c
+  ../../libs/putty/windows/wingss.c
+  ../../libs/putty/windows/winhandl.c
+  ../../libs/putty/windows/winmisc.c
+  ../../libs/putty/windows/winnet.c
+  ../../libs/putty/windows/winnoise.c
+  ../../libs/putty/windows/winnojmp.c
+  ../../libs/putty/windows/winpgntc.c
+  ../../libs/putty/windows/winproxy.c
+  ../../libs/putty/windows/winsecur.c
+  ../../libs/putty/windows/winstore.c
+  ../../libs/putty/windows/wintime.c
+  ../../libs/putty/windows/winhsock.c
+  ../../libs/putty/x11fwd.c
+  ../../libs/putty/conf.c
+  ../../libs/putty/callback.c
+  ../../libs/putty/sshshare.c
+  ../../libs/putty/noshare.c
+  ../../libs/putty/errsock.c
+  ../../libs/putty/sshecc.c
+  ../../libs/putty/sshccp.c
+  ../../libs/putty/import.c
+  ../../libs/putty/be_misc.c
+  ../../libs/putty/sshbcrypt.c
+#  ../../libs/putty/ldisc.c
 )
 
 set(PUTTY_COMPILE_FLAGS -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -wd4996)
@@ -980,8 +981,8 @@ target_compile_options(putty
 )
 
 target_include_directories(putty PRIVATE
-  ../../libs/Putty
-  ../../libs/Putty/windows
+  ../../libs/putty
+  ../../libs/putty/windows
 )
 
 #-------------------------------------------------------------------------------
@@ -1264,7 +1265,10 @@ else(OPT_USE_UNITY_BUILD)
 
 set(NETBOX_SOURCES
 #  UnityBuildCore.cpp
-  ../base/GlobalUtils.cpp
+  ../nbcore/nbstring.cpp
+  ../nbcore/nbmemory.cpp
+  ../nbcore/nbutils.cpp
+
   ../base/UnicodeString.cpp
   ../base/Classes.cpp
   ../base/Masks.cpp
@@ -1361,15 +1365,28 @@ set(NETBOX_SOURCES
   FarUtil.h
   FarPluginStrings.h
 
-  ../base/nbglobals.h
-  ../base/Exceptions.h
-  ../base/MsgIDs.h
+  ../include/FastDelegateBind.h
+  ../include/FastDelegate.h
+  ../include/type_traits.h
+  ../include/rtti.hpp
+  ../include/nbglobals.h
+  ../include/headers.hpp
+  ../include/nbcore.h
+  ../include/nbtypes.h
+  ../include/nbstring.h
+  ../include/nbstring.inl
+  ../include/nbutils.h
+
   ../base/Global.h
   ../base/Common.h
+  ../base/UnicodeString.hpp
+  ../base/Exceptions.h
+  ../base/Sysutils.hpp
+  ../base/StrUtils.hpp
+  ../base/MsgIDs.h
   ../base/vcl.h
   ../base/FileBuffer.h
-  ../base/FastDelegateBind.h
-  ../base/FastDelegate.h
+  ../base/ObjIDs.h
 
   ../core/WebDAVFileSystem.h
   ../core/Queue.h
@@ -1502,13 +1519,15 @@ if(CMAKE_COMPILER_IS_MINGW)
 endif()
 
 target_compile_options(NetBox
-  PRIVATE ${NETBOX_DLL_CXX_FLAGS} -D_WINSOCK_DEPRECATED_NO_WARNINGS
+  PRIVATE ${NETBOX_DLL_CXX_FLAGS}
+  -D_WINSOCK_DEPRECATED_NO_WARNINGS
+  -DNB_CORE_EXPORTS
 )
 
 target_include_directories(NetBox PRIVATE
   ../../libs/openssl/${OPENSSL_INC_DIR}/include
-  ../../libs/Putty
-  ../../libs/Putty/windows
+  ../../libs/putty
+  ../../libs/putty/windows
   ../../libs/apr/include
   ../../libs/tinyxml2
   ../../libs/rdestl
@@ -1520,7 +1539,7 @@ target_include_directories(NetBox PRIVATE
   ../core
   ../windows
   ../resource
-#  ../include
+  ../include
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
