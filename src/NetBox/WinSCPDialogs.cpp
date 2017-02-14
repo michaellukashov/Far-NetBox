@@ -8729,13 +8729,15 @@ bool TQueueDialog::Execute(TTerminalQueueStatus * Status)
 {
   FStatus = Status;
 
+  SCOPE_EXIT
+  {
+    FStatus = nullptr;
+  };
+
   UpdateQueue();
   LoadQueue();
 
   bool Result = (ShowModal() != brCancel);
-
-  FStatus = nullptr;
-
   return Result;
 }
 
