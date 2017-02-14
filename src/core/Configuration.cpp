@@ -895,7 +895,7 @@ UnicodeString TConfiguration::GetFileProductVersion() const
 
 UnicodeString TConfiguration::GetReleaseType() const
 {
-  return GetFileInfoString(L"ReleaseType");
+  return GetFileInfoString("ReleaseType");
 }
 
 bool TConfiguration::GetIsUnofficial() const
