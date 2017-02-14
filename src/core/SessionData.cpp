@@ -9,6 +9,7 @@
 #include <Exceptions.h>
 #include <FileBuffer.h>
 #include <StrUtils.hpp>
+#include <LibraryLoader.hpp>
 #include <nbutils.h>
 
 #include "SessionData.h"
@@ -3503,29 +3504,38 @@ void TSessionData::PrepareProxyData() const
     FIEProxyConfig = new TIEProxyConfig;
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyConfig;
     ClearStruct(IEProxyConfig);
-    if (!WinHttpGetIEProxyConfigForCurrentUser(&IEProxyConfig))
+    TLibraryLoader LibraryLoader(L"winhttp.dll", true);
+    if (LibraryLoader.Loaded())
     {
-      DWORD Err = ::GetLastError();
-      DEBUG_PRINTF("Error reading system proxy configuration, code: %x", Err);
-      DebugUsedParam(Err);
-    }
-    else
-    {
-      FIEProxyConfig->AutoDetect = !!IEProxyConfig.fAutoDetect;
-      if (nullptr != IEProxyConfig.lpszAutoConfigUrl)
+      typedef BOOL (WINAPI *FWinHttpGetIEProxyConfigForCurrentUser)(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *);
+      FWinHttpGetIEProxyConfigForCurrentUser GetIEProxyConfig = reinterpret_cast<FWinHttpGetIEProxyConfigForCurrentUser>(
+            LibraryLoader.GetProcAddress("WinHttpGetIEProxyConfigForCurrentUser"));
+      if (!GetIEProxyConfig)
+        return;
+      if (!GetIEProxyConfig(&IEProxyConfig))
       {
-        FIEProxyConfig->AutoConfigUrl = IEProxyConfig.lpszAutoConfigUrl;
+        DWORD Err = ::GetLastError();
+        DEBUG_PRINTF("Error reading system proxy configuration, code: %x", Err);
+        DebugUsedParam(Err);
       }
-      if (nullptr != IEProxyConfig.lpszProxy)
+      else
       {
-        FIEProxyConfig->Proxy = IEProxyConfig.lpszProxy;
+        FIEProxyConfig->AutoDetect = !!IEProxyConfig.fAutoDetect;
+        if (nullptr != IEProxyConfig.lpszAutoConfigUrl)
+        {
+          FIEProxyConfig->AutoConfigUrl = IEProxyConfig.lpszAutoConfigUrl;
+        }
+        if (nullptr != IEProxyConfig.lpszProxy)
+        {
+          FIEProxyConfig->Proxy = IEProxyConfig.lpszProxy;
+        }
+        if (nullptr != IEProxyConfig.lpszProxyBypass)
+        {
+          FIEProxyConfig->ProxyBypass = IEProxyConfig.lpszProxyBypass;
+        }
+        FreeIEProxyConfig(&IEProxyConfig);
+        ParseIEProxyConfig();
       }
-      if (nullptr != IEProxyConfig.lpszProxyBypass)
-      {
-        FIEProxyConfig->ProxyBypass = IEProxyConfig.lpszProxyBypass;
-      }
-      FreeIEProxyConfig(&IEProxyConfig);
-      ParseIEProxyConfig();
     }
   }
 }
