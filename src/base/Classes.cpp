@@ -730,7 +730,7 @@ const UnicodeString TStrings::GetValue(const UnicodeString & Name) const
   intptr_t Index = IndexOfName(Name);
   if (Index >= 0)
   {
-    Result = GetString(Index).SubStr(Name.Length() + 2, -1);
+    Result = GetString(Index).SubStr(Name.Length() + 2);
   }
   return Result;
 }

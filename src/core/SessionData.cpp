@@ -3617,14 +3617,14 @@ void TSessionData::FromURI(const UnicodeString & ProxyURI,
   if (Pos > 0)
   {
     ProxyUrl = ProxyURI.SubString(1, Pos - 1).Trim();
-    ProxyPort = ProxyURI.SubString(Pos + 1, -1).Trim().ToInt();
+    ProxyPort = ProxyURI.SubString(Pos + 1).Trim().ToInt();
   }
   // remove scheme from Url e.g. "socks5://" "https://"
   Pos = ProxyUrl.Pos(L"://");
   if (Pos > 0)
   {
     UnicodeString ProxyScheme = ProxyUrl.SubString(1, Pos - 1);
-    ProxyUrl = ProxyUrl.SubString(Pos + 3, -1);
+    ProxyUrl = ProxyUrl.SubString(Pos + 3);
     if (ProxyScheme == L"socks4")
     {
       ProxyMethod = pmSocks4;
