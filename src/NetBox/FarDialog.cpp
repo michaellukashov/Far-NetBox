@@ -876,7 +876,7 @@ void TFarDialog::SetItemFocused(TFarDialogItem * Value)
   }
 }
 
-UnicodeString TFarDialog::GetMsg(intptr_t MsgId)
+UnicodeString TFarDialog::GetMsg(intptr_t MsgId) const
 {
   return FFarPlugin->GetMsg(MsgId);
 }
@@ -940,7 +940,7 @@ TFarDialogContainer::~TFarDialogContainer()
   SAFE_DESTROY(FItems);
 }
 
-UnicodeString TFarDialogContainer::GetMsg(int MsgId)
+UnicodeString TFarDialogContainer::GetMsg(intptr_t  MsgId) const
 {
   return GetDialog()->GetMsg(MsgId);
 }

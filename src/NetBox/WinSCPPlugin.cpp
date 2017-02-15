@@ -358,12 +358,12 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
     while ((Index < CmdLine.Length()) && (CmdLine[Index] != L' '))
       ++Index;
   }
-  CmdLine = CmdLine.SubString(Index, -1);
+  CmdLine = CmdLine.SubString(Index);
   // Parse params
   intptr_t Pos = ::FirstDelimiter(Options->GetSwitchMarks(), CmdLine);
   UnicodeString CommandLineParams;
   if (Pos > 0)
-    CommandLineParams = CmdLine.SubString(Pos, -1);
+    CommandLineParams = CmdLine.SubString(Pos);
   if (!CommandLineParams.IsEmpty())
   {
     TODO("implement Options->ParseParams(CommandLineParams)");

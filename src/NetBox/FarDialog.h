@@ -112,7 +112,7 @@ protected:
   virtual void Change();
   virtual void Init();
   virtual bool CloseQuery();
-  UnicodeString GetMsg(intptr_t MsgId);
+  UnicodeString GetMsg(intptr_t MsgId) const;
   void GetNextItemPosition(intptr_t & Left, intptr_t & Top);
   void RefreshBounds();
   virtual void Idle();
@@ -130,7 +130,7 @@ protected:
   virtual void SetBounds(const TRect & Value);
 
 private:
-  TCustomFarPlugin * FFarPlugin;
+  mutable TCustomFarPlugin * FFarPlugin;
   TRect FBounds;
   FARDIALOGITEMFLAGS FFlags;
   UnicodeString FHelpTopic;
@@ -188,7 +188,7 @@ protected:
   void Add(TFarDialogItem * Item);
   void Remove(TFarDialogItem * Item);
   virtual void Change();
-  UnicodeString GetMsg(int MsgId);
+  UnicodeString GetMsg(intptr_t MsgId) const;
 
 private:
   intptr_t FLeft;
