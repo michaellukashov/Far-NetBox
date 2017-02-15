@@ -1,5 +1,6 @@
-NetBox 2.4.2.455 14.02.2017
+NetBox 2.4.2.456 15.02.2017
 --------------------
+  * Bugfix: can't change directory if option [] Cache directories is set
   * Update openssl sources to 1.1.0d
   * Update zlib sources to 1.2.11
   * Bugfix: Issue #218: cannot copy to root folder
