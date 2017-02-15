@@ -328,9 +328,9 @@ public:
   virtual void SetText(const UnicodeString & Text);
   virtual const UnicodeString & GetString(intptr_t Index) const = 0;
   virtual void SetString(intptr_t Index, const UnicodeString & S) = 0;
-  const UnicodeString GetName(intptr_t Index) const;
+  UnicodeString GetName(intptr_t Index) const;
   void SetName(intptr_t Index, const UnicodeString & Value);
-  const UnicodeString GetValue(const UnicodeString & Name) const;
+  UnicodeString GetValue(const UnicodeString & Name) const;
   void SetValue(const UnicodeString & Name, const UnicodeString & Value);
   UnicodeString GetValueFromIndex(intptr_t Index) const;
 

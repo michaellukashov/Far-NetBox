@@ -699,7 +699,7 @@ intptr_t TStrings::IndexOfName(const UnicodeString & Name) const
   return NPOS;
 }
 
-const UnicodeString TStrings::GetName(intptr_t Index) const
+UnicodeString TStrings::GetName(intptr_t Index) const
 {
   return ExtractName(GetString(Index));
 }
@@ -724,7 +724,7 @@ UnicodeString TStrings::ExtractName(const UnicodeString & S) const
   return Result;
 }
 
-const UnicodeString TStrings::GetValue(const UnicodeString & Name) const
+UnicodeString TStrings::GetValue(const UnicodeString & Name) const
 {
   UnicodeString Result;
   intptr_t Index = IndexOfName(Name);
