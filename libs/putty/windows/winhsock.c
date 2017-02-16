@@ -61,7 +61,7 @@ static int handle_gotdata(struct handle *h, void *data, int len)
     } else if (len == 0) {
 	return plug_closing(ps->plug, NULL, 0, 0);
     } else {
-        assert(ps->frozen != FREEZING && ps->frozen != THAWING);
+        assert(ps->frozen != FROZEN && ps->frozen != THAWING);
         if (ps->frozen == FREEZING) {
             /*
              * If we've received data while this socket is supposed to
@@ -70,6 +70,7 @@ static int handle_gotdata(struct handle *h, void *data, int len)
              * the data for when we unfreeze.
              */
             bufchain_add(&ps->inputdata, data, len);
+            ps->frozen = FROZEN;
 
             /*
              * And return a very large backlog, to prevent further
@@ -180,6 +181,7 @@ static void handle_socket_unfreeze(void *psv)
      * Hand it off to the plug.
      */
     new_backlog = plug_receive(ps->plug, 0, data, len);
+    bufchain_consume(&ps->inputdata, len);
 
     if (bufchain_size(&ps->inputdata) > 0) {
         /*
