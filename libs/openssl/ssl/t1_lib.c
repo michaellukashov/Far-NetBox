@@ -711,7 +711,7 @@ static const unsigned char suiteb_sigalgs[] = {
         tlsext_sigalg_ecdsa(TLSEXT_hash_sha384)
 };
 #endif
-size_t tls12_get_psigalgs(SSL *s, const unsigned char **psigs)
+size_t tls12_get_psigalgs(SSL *s, int sent, const unsigned char **psigs)
 {
     /*
      * If Suite B mode use Suite B sigalgs only, ignore any other
@@ -733,7 +733,7 @@ size_t tls12_get_psigalgs(SSL *s, const unsigned char **psigs)
     }
 #endif
     /* If server use client authentication sigalgs if not NULL */
-    if (s->server && s->cert->client_sigalgs) {
+    if (s->server == sent && s->cert->client_sigalgs) {
         *psigs = s->cert->client_sigalgs;
         return s->cert->client_sigalgslen;
     } else if (s->cert->conf_sigalgs) {
@@ -797,7 +797,7 @@ int tls12_check_peer_sigalg(const EVP_MD **pmd, SSL *s,
 #endif
 
     /* Check signature matches a type we sent */
-    sent_sigslen = tls12_get_psigalgs(s, &sent_sigs);
+    sent_sigslen = tls12_get_psigalgs(s, 1, &sent_sigs);
     for (i = 0; i < sent_sigslen; i += 2, sent_sigs += 2) {
         if (sig[0] == sent_sigs[0] && sig[1] == sent_sigs[1])
             break;
@@ -1189,7 +1189,7 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf,
         size_t salglen;
         const unsigned char *salg;
         unsigned char *etmp;
-        salglen = tls12_get_psigalgs(s, &salg);
+        salglen = tls12_get_psigalgs(s, 1, &salg);
 
         /*-
          * check for enough space.
@@ -1674,7 +1674,7 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *buf,
 #endif
     if (!custom_ext_add(s, 1, &ret, limit, al))
         return NULL;
-    if (s->s3->flags & TLS1_FLAGS_ENCRYPT_THEN_MAC) {
+    if (s->tlsext_use_etm) {
         /*
          * Don't use encrypt_then_mac if AEAD or RC4 might want to disable
          * for other cases too.
@@ -1683,7 +1683,7 @@ unsigned char *ssl_add_serverhello_tlsext(SSL *s, unsigned char *buf,
             || s->s3->tmp.new_cipher->algorithm_enc == SSL_RC4
             || s->s3->tmp.new_cipher->algorithm_enc == SSL_eGOST2814789CNT
             || s->s3->tmp.new_cipher->algorithm_enc == SSL_eGOST2814789CNT12)
-            s->s3->flags &= ~TLS1_FLAGS_ENCRYPT_THEN_MAC;
+            s->tlsext_use_etm = 0;
         else {
             /*-
              * check for enough space.
@@ -1916,7 +1916,7 @@ static int ssl_scan_clienthello_tlsext(SSL *s, PACKET *pkt, int *al)
     /* Clear any signature algorithms extension received */
     OPENSSL_free(s->s3->tmp.peer_sigalgs);
     s->s3->tmp.peer_sigalgs = NULL;
-    s->s3->flags &= ~TLS1_FLAGS_ENCRYPT_THEN_MAC;
+    s->tlsext_use_etm = 0;
 
 #ifndef OPENSSL_NO_SRP
     OPENSSL_free(s->srp_ctx.login);
@@ -2264,7 +2264,7 @@ static int ssl_scan_clienthello_tlsext(SSL *s, PACKET *pkt, int *al)
         }
 #endif
         else if (type == TLSEXT_TYPE_encrypt_then_mac)
-            s->s3->flags |= TLS1_FLAGS_ENCRYPT_THEN_MAC;
+            s->tlsext_use_etm = 1;
         /*
          * Note: extended master secret extension handled in
          * tls_check_serverhello_tlsext_early()
@@ -2366,7 +2366,7 @@ static int ssl_scan_serverhello_tlsext(SSL *s, PACKET *pkt, int *al)
                              SSL_DTLSEXT_HB_DONT_SEND_REQUESTS);
 #endif
 
-    s->s3->flags &= ~TLS1_FLAGS_ENCRYPT_THEN_MAC;
+    s->tlsext_use_etm = 0;
 
     s->s3->flags &= ~TLS1_FLAGS_RECEIVED_EXTMS;
 
@@ -2585,7 +2585,7 @@ static int ssl_scan_serverhello_tlsext(SSL *s, PACKET *pkt, int *al)
             /* Ignore if inappropriate ciphersuite */
             if (s->s3->tmp.new_cipher->algorithm_mac != SSL_AEAD
                 && s->s3->tmp.new_cipher->algorithm_enc != SSL_RC4)
-                s->s3->flags |= TLS1_FLAGS_ENCRYPT_THEN_MAC;
+                s->tlsext_use_etm = 1;
         } else if (type == TLSEXT_TYPE_extended_master_secret) {
             s->s3->flags |= TLS1_FLAGS_RECEIVED_EXTMS;
             if (!s->hit)
@@ -2684,12 +2684,12 @@ static int ssl_check_clienthello_tlsext_early(SSL *s)
         ret =
             s->ctx->tlsext_servername_callback(s, &al,
                                                s->ctx->tlsext_servername_arg);
-    else if (s->initial_ctx != NULL
-             && s->initial_ctx->tlsext_servername_callback != 0)
+    else if (s->session_ctx != NULL
+             && s->session_ctx->tlsext_servername_callback != 0)
         ret =
-            s->initial_ctx->tlsext_servername_callback(s, &al,
+            s->session_ctx->tlsext_servername_callback(s, &al,
                                                        s->
-                                                       initial_ctx->tlsext_servername_arg);
+                                                       session_ctx->tlsext_servername_arg);
 
     switch (ret) {
     case SSL_TLSEXT_ERR_ALERT_FATAL:
@@ -2863,12 +2863,12 @@ int ssl_check_serverhello_tlsext(SSL *s)
         ret =
             s->ctx->tlsext_servername_callback(s, &al,
                                                s->ctx->tlsext_servername_arg);
-    else if (s->initial_ctx != NULL
-             && s->initial_ctx->tlsext_servername_callback != 0)
+    else if (s->session_ctx != NULL
+             && s->session_ctx->tlsext_servername_callback != 0)
         ret =
-            s->initial_ctx->tlsext_servername_callback(s, &al,
+            s->session_ctx->tlsext_servername_callback(s, &al,
                                                        s->
-                                                       initial_ctx->tlsext_servername_arg);
+                                                       session_ctx->tlsext_servername_arg);
 
     /*
      * Ensure we get sensible values passed to tlsext_status_cb in the event
@@ -3084,7 +3084,7 @@ static int tls_decrypt_ticket(SSL *s, const unsigned char *etick,
     unsigned char tick_hmac[EVP_MAX_MD_SIZE];
     HMAC_CTX *hctx = NULL;
     EVP_CIPHER_CTX *ctx;
-    SSL_CTX *tctx = s->initial_ctx;
+    SSL_CTX *tctx = s->session_ctx;
 
     /* Initialize session ticket encryption and HMAC contexts */
     hctx = HMAC_CTX_new();
@@ -3151,8 +3151,8 @@ static int tls_decrypt_ticket(SSL *s, const unsigned char *etick,
     }
     /* Attempt to decrypt session data */
     /* Move p after IV to start of encrypted ticket, update length */
-    p = etick + 16 + EVP_CIPHER_CTX_iv_length(ctx);
-    eticklen -= 16 + EVP_CIPHER_CTX_iv_length(ctx);
+    p = etick + TLSEXT_KEYNAME_LENGTH + EVP_CIPHER_CTX_iv_length(ctx);
+    eticklen -= TLSEXT_KEYNAME_LENGTH + EVP_CIPHER_CTX_iv_length(ctx);
     sdec = OPENSSL_malloc(eticklen);
     if (sdec == NULL || EVP_DecryptUpdate(ctx, sdec, &slen, p, eticklen) <= 0) {
         EVP_CIPHER_CTX_free(ctx);
@@ -3396,7 +3396,7 @@ void ssl_set_sig_mask(uint32_t *pmask_a, SSL *s, int op)
      * RSA, DSA, ECDSA. Do this for all versions not just TLS 1.2. To keep
      * down calls to security callback only check if we have to.
      */
-    sigalgslen = tls12_get_psigalgs(s, &sigalgs);
+    sigalgslen = tls12_get_psigalgs(s, 1, &sigalgs);
     for (i = 0; i < sigalgslen; i += 2, sigalgs += 2) {
         switch (sigalgs[1]) {
 #ifndef OPENSSL_NO_RSA
@@ -3491,7 +3491,7 @@ static int tls1_set_shared_sigalgs(SSL *s)
         conf = c->conf_sigalgs;
         conflen = c->conf_sigalgslen;
     } else
-        conflen = tls12_get_psigalgs(s, &conf);
+        conflen = tls12_get_psigalgs(s, 0, &conf);
     if (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE || is_suiteb) {
         pref = conf;
         preflen = conflen;
