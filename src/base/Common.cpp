@@ -821,7 +821,7 @@ bool IsReservedName(const UnicodeString & AFileName)
 
 // ApiPath support functions
 // Inspired by
-// http://stackoverflow.com/questions/18580945/need-clarification-for-converting-paths-into-long-unicode-paths-or-the-ones-star
+// http://stackoverflow.com/q/18580945/850848
 // This can be reimplemented using PathCchCanonicalizeEx on Windows 8 and later
 enum PATH_PREFIX_TYPE
 {

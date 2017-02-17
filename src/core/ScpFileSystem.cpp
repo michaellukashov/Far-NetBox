@@ -1298,7 +1298,7 @@ void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
     if (FTerminal->GetActive())
     {
       // The -T is GNU switch and may not be available on all platforms.
-      // http://lists.gnu.org/archive/html/bug-coreutils/2004-07/msg00000.html
+      // https://lists.gnu.org/archive/html/bug-coreutils/2004-07/msg00000.html
       FTerminal->LogEvent(FORMAT(L"Attempt with %s failed, trying without", AdditionalSwitches.c_str()));
       ExecCommand(fsCopyFile, 0, L"", DelimitedFileName.c_str(), DelimitedNewName.c_str());
     }
