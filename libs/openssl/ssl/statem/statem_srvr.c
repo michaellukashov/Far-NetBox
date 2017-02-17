@@ -2002,7 +2002,7 @@ int tls_construct_certificate_request(SSL *s)
     if (SSL_USE_SIGALGS(s)) {
         const unsigned char *psigs;
         unsigned char *etmp = p;
-        nl = tls12_get_psigalgs(s, &psigs);
+        nl = tls12_get_psigalgs(s, 1, &psigs);
         /* Skip over length for now */
         p += 2;
         nl = tls12_copy_sigalgs(s, p, psigs, nl);
@@ -2715,6 +2715,11 @@ MSG_PROCESS_RETURN tls_process_cert_verify(SSL *s, PACKET *pkt)
 
     peer = s->session->peer;
     pkey = X509_get0_pubkey(peer);
+    if (pkey == NULL) {
+        al = SSL_AD_INTERNAL_ERROR;
+        goto f_err;
+    }
+
     type = X509_certificate_type(peer, pkey);
 
     if (!(type & EVP_PKT_SIGN)) {
@@ -2992,7 +2997,7 @@ int tls_construct_new_session_ticket(SSL *s)
     int len, slen_full, slen;
     SSL_SESSION *sess;
     unsigned int hlen;
-    SSL_CTX *tctx = s->initial_ctx;
+    SSL_CTX *tctx = s->session_ctx;
     unsigned char iv[EVP_MAX_IV_LENGTH];
     unsigned char key_name[TLSEXT_KEYNAME_LENGTH];
     int iv_len;
@@ -3292,7 +3297,7 @@ STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s,
                     || (leadbyte != 0
                         && !PACKET_forward(&sslv2ciphers, TLS_CIPHER_LEN))) {
                 *al = SSL_AD_INTERNAL_ERROR;
-                OPENSSL_free(raw);
+                OPENSSL_free(s->s3->tmp.ciphers_raw);
                 s->s3->tmp.ciphers_raw = NULL;
                 s->s3->tmp.ciphers_rawlen = 0;
                 goto err;

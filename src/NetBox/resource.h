@@ -1,6 +1,6 @@
 #pragma once
 
-#define PLUGIN_VERSION_NUM 2,4,2,456
+#define PLUGIN_VERSION_NUM 2,4,2,457
 #define PLUGIN_VERSION_TXT "2.4.2"
 #define PLUGIN_VERSION_WTXT L"2.4.2"
 
@@ -12,5 +12,5 @@
 #define PUTTY_VERSION_WTXT          L"0.67"
 #define FILEZILLA_VERSION_WTXT      L"2.2.32"
 #define ZLIB_VERSION_WTXT           L"1.2.11"
-#define OPENSSL_VERSION_WTXT        L"1.1.0d"
+#define OPENSSL_VERSION_WTXT        L"1.1.0e"
 #define WINSCP_VERSION_WTXT         L"5.9.3"
