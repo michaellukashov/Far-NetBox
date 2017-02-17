@@ -543,6 +543,7 @@ public:
   void ReflectSettings();
   void CollectUsage();
   bool IsThisOrChild(TTerminal * Terminal) const;
+  void __fastcall FillSessionDataForCode(TSessionData * Data);
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);

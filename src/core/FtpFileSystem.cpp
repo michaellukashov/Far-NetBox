@@ -714,7 +714,7 @@ void TFTPFileSystem::CollectUsage()
   {
     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPWSFTP");
   }
-  // 220 Welcome to the most popular FTP hosting service! Save on hardware, software, hosting and admin. Share files/folders with read-write permission. Visit http://www.drivehq.com/ftp/;
+  // 220 Welcome to the most popular FTP hosting service! Save on hardware, software, hosting and admin. Share files/folders with read-write permission. Visit http://www.drivehq.com/ftp/
   // ...
   // SYST
   // 215 UNIX emulated by DriveHQ FTP Server.
@@ -1078,7 +1078,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(
   bool UsingHashCommand, const UnicodeString & Alg, TRemoteFile * File)
 {
   // Overview of server supporting various hash commands is at:
-  // https://tools.ietf.org/html/draft-ietf-ftpext2-hash-03#appendix-B
+  // https://tools.ietf.org/html/draft-bryan-ftpext-hash-02#appendix-B
 
   UnicodeString CommandName;
 
