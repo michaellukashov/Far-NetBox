@@ -4473,10 +4473,10 @@ bool TTerminal::GetCommandSessionOpened() const
     (FCommandSession->GetStatus() == ssOpened);
 }
 
-void __fastcall TTerminal::FillSessionDataForCode(TSessionData * Data)
+void TTerminal::FillSessionDataForCode(TSessionData * Data)
 {
   const TSessionInfo & SessionInfo = GetSessionInfo();
-  Data->HostKey = SessionInfo.HostKeyFingerprint;
+  Data->SetHostKey(SessionInfo.HostKeyFingerprint);
 }
 
 TTerminal * TTerminal::GetCommandSession()
@@ -5179,7 +5179,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
 
   LogEvent(FORMAT(L"Collecting synchronization list for local directory '%s' and remote directory '%s', "
    L"mode = %s, params = 0x%x (%s), file mask = '%s'", LocalDirectory.c_str(), ARemoteDirectory.c_str(),
-    SynchronizeModeStr(Mode).c_str(), int(Params), SynchronizeParamsStr(Params).c_str(), , CopyParam->IncludeFileMask.Masks)));
+    SynchronizeModeStr(Mode).c_str(), int(Params), SynchronizeParamsStr(Params).c_str(), CopyParam->GetIncludeFileMask().GetMasks().c_str()));
 
   if (FLAGCLEAR(Params, spDelayProgress))
   {
