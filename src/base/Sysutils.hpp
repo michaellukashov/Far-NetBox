@@ -232,7 +232,7 @@ UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
 char HexToChar(const UnicodeString & Hex, uintptr_t MinChars = 0);
 
 UnicodeString ReplaceStrAll(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);
-UnicodeString SysErrorMessage(int Code);
+UnicodeString SysErrorMessage(intptr_t Code);
 
 bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,

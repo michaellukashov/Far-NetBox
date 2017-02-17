@@ -1666,7 +1666,7 @@ intptr_t TCustomFarPlugin::FarEditorControl(uintptr_t Command, void * Param)
 
 TFarEditorInfo * TCustomFarPlugin::EditorInfo()
 {
-  TFarEditorInfo * Result;
+  TFarEditorInfo * Result = nullptr;
   ::EditorInfo * Info = nb::calloc<::EditorInfo *>(sizeof(::EditorInfo));
   try
   {
@@ -1677,7 +1677,6 @@ TFarEditorInfo * TCustomFarPlugin::EditorInfo()
     else
     {
       nb_free(Info);
-      Result = nullptr;
     }
   }
   catch (...)

@@ -1024,18 +1024,18 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   TFarText * Text;
   TFarButton * Button;
 
-  // UnicodeString ProductName = GetConfiguration()->GetFileInfoString(L"ProductName");
+  // UnicodeString ProductName = GetConfiguration()->GetFileInfoString("ProductName");
   UnicodeString ProductName = LoadStr(WINSCPFAR_NAME);
   UnicodeString Comments;
   try
   {
-    Comments = GetConfiguration()->GetFileInfoString(L"Comments");
+    Comments = GetConfiguration()->GetFileInfoString("Comments");
   }
   catch (...)
   {
     Comments.Clear();
   }
-  UnicodeString LegalCopyright; // = GetConfiguration()->GetFileInfoString(L"LegalCopyright");
+  UnicodeString LegalCopyright; // = GetConfiguration()->GetFileInfoString("LegalCopyright");
 
   int Height = 15;
 #ifndef NO_FILEZILLA
@@ -1058,7 +1058,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_ABOUT)).c_str()));
   Text = new TFarText(this);
-  Text->SetCaption(GetConfiguration()->GetFileInfoString(L"FileDescription"));
+  Text->SetCaption(GetConfiguration()->GetFileInfoString("FileDescription"));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
@@ -1102,7 +1102,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Text = new TFarText(this);
     Text->Move(0, 1);
-    Text->SetCaption(GetConfiguration()->GetFileInfoString(L"LegalCopyright"));
+    Text->SetCaption(GetConfiguration()->GetFileInfoString("LegalCopyright"));
     Text->SetCenterGroup(true);
   }
 
@@ -8729,13 +8729,15 @@ bool TQueueDialog::Execute(TTerminalQueueStatus * Status)
 {
   FStatus = Status;
 
+  SCOPE_EXIT
+  {
+    FStatus = nullptr;
+  };
+
   UpdateQueue();
   LoadQueue();
 
   bool Result = (ShowModal() != brCancel);
-
-  FStatus = nullptr;
-
   return Result;
 }
 

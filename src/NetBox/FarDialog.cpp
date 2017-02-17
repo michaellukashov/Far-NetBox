@@ -257,16 +257,12 @@ intptr_t TFarDialog::GetItem(TFarDialogItem * Item) const
 
 TFarDialogItem * TFarDialog::GetItem(intptr_t Index) const
 {
-  TFarDialogItem * DialogItem;
+  TFarDialogItem * DialogItem = nullptr;
   if (GetItemCount())
   {
     DebugAssert(Index >= 0 && Index < FItems->GetCount());
     DialogItem = dyn_cast<TFarDialogItem>(FItems->GetObj(Index));
     DebugAssert(DialogItem);
-  }
-  else
-  {
-    DialogItem = nullptr;
   }
   return DialogItem;
 }
@@ -872,7 +868,7 @@ void TFarDialog::SetItemFocused(TFarDialogItem * Value)
   }
 }
 
-UnicodeString TFarDialog::GetMsg(intptr_t MsgId)
+UnicodeString TFarDialog::GetMsg(intptr_t MsgId) const
 {
   return FFarPlugin->GetMsg(MsgId);
 }
@@ -936,7 +932,7 @@ TFarDialogContainer::~TFarDialogContainer()
   SAFE_DESTROY(FItems);
 }
 
-UnicodeString TFarDialogContainer::GetMsg(int MsgId)
+UnicodeString TFarDialogContainer::GetMsg(intptr_t  MsgId) const
 {
   return GetDialog()->GetMsg(MsgId);
 }

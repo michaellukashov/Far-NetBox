@@ -760,14 +760,10 @@ bool TRemoteTokenList::Exists(const UnicodeString & Name) const
 const TRemoteToken * TRemoteTokenList::Find(uintptr_t ID) const
 {
   TIDMap::const_iterator it = FIDMap.find(ID);
-  const TRemoteToken * Result;
+  const TRemoteToken * Result = nullptr;
   if (it != FIDMap.end())
   {
     Result = &FTokens[(*it).second];
-  }
-  else
-  {
-    Result = nullptr;
   }
   return Result;
 }
@@ -775,14 +771,10 @@ const TRemoteToken * TRemoteTokenList::Find(uintptr_t ID) const
 const TRemoteToken * TRemoteTokenList::Find(const UnicodeString & Name) const
 {
   TNameMap::const_iterator it = FNameMap.find(Name);
-  const TRemoteToken * Result;
+  const TRemoteToken * Result = nullptr;
   if (it != FNameMap.end())
   {
     Result = &FTokens[(*it).second];
-  }
-  else
-  {
-    Result = nullptr;
   }
   return Result;
 }

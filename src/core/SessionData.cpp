@@ -9,6 +9,7 @@
 #include <Exceptions.h>
 #include <FileBuffer.h>
 #include <StrUtils.hpp>
+#include <LibraryLoader.hpp>
 #include <nbutils.h>
 
 #include "SessionData.h"
@@ -81,7 +82,6 @@ TSessionData::~TSessionData()
   if (nullptr != FIEProxyConfig)
   {
     SAFE_DESTROY(FIEProxyConfig);
-    FIEProxyConfig = nullptr;
   }
 }
 
@@ -3503,29 +3503,39 @@ void TSessionData::PrepareProxyData() const
   {
     FIEProxyConfig = new TIEProxyConfig;
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyConfig;
-    if (!WinHttpGetIEProxyConfigForCurrentUser(&IEProxyConfig))
+    ClearStruct(IEProxyConfig);
+    TLibraryLoader LibraryLoader(L"winhttp.dll", true);
+    if (LibraryLoader.Loaded())
     {
-      DWORD Err = ::GetLastError();
-      DEBUG_PRINTF("Error reading system proxy configuration, code: %x", Err);
-      DebugUsedParam(Err);
-    }
-    else
-    {
-      FIEProxyConfig->AutoDetect = !!IEProxyConfig.fAutoDetect;
-      if (nullptr != IEProxyConfig.lpszAutoConfigUrl)
+      typedef BOOL (WINAPI *FWinHttpGetIEProxyConfigForCurrentUser)(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *);
+      FWinHttpGetIEProxyConfigForCurrentUser GetIEProxyConfig = reinterpret_cast<FWinHttpGetIEProxyConfigForCurrentUser>(
+            LibraryLoader.GetProcAddress("WinHttpGetIEProxyConfigForCurrentUser"));
+      if (!GetIEProxyConfig)
+        return;
+      if (!GetIEProxyConfig(&IEProxyConfig))
       {
-        FIEProxyConfig->AutoConfigUrl = IEProxyConfig.lpszAutoConfigUrl;
+        DWORD Err = ::GetLastError();
+        DEBUG_PRINTF("Error reading system proxy configuration, code: %x", Err);
+        DebugUsedParam(Err);
       }
-      if (nullptr != IEProxyConfig.lpszProxy)
+      else
       {
-        FIEProxyConfig->Proxy = IEProxyConfig.lpszProxy;
+        FIEProxyConfig->AutoDetect = !!IEProxyConfig.fAutoDetect;
+        if (nullptr != IEProxyConfig.lpszAutoConfigUrl)
+        {
+          FIEProxyConfig->AutoConfigUrl = IEProxyConfig.lpszAutoConfigUrl;
+        }
+        if (nullptr != IEProxyConfig.lpszProxy)
+        {
+          FIEProxyConfig->Proxy = IEProxyConfig.lpszProxy;
+        }
+        if (nullptr != IEProxyConfig.lpszProxyBypass)
+        {
+          FIEProxyConfig->ProxyBypass = IEProxyConfig.lpszProxyBypass;
+        }
+        FreeIEProxyConfig(&IEProxyConfig);
+        ParseIEProxyConfig();
       }
-      if (nullptr != IEProxyConfig.lpszProxyBypass)
-      {
-        FIEProxyConfig->ProxyBypass = IEProxyConfig.lpszProxyBypass;
-      }
-      FreeIEProxyConfig(&IEProxyConfig);
-      ParseIEProxyConfig();
     }
   }
 }
@@ -3607,14 +3617,14 @@ void TSessionData::FromURI(const UnicodeString & ProxyURI,
   if (Pos > 0)
   {
     ProxyUrl = ProxyURI.SubString(1, Pos - 1).Trim();
-    ProxyPort = ProxyURI.SubString(Pos + 1, -1).Trim().ToInt();
+    ProxyPort = ProxyURI.SubString(Pos + 1).Trim().ToInt();
   }
   // remove scheme from Url e.g. "socks5://" "https://"
   Pos = ProxyUrl.Pos(L"://");
   if (Pos > 0)
   {
     UnicodeString ProxyScheme = ProxyUrl.SubString(1, Pos - 1);
-    ProxyUrl = ProxyUrl.SubString(Pos + 3, -1);
+    ProxyUrl = ProxyUrl.SubString(Pos + 3);
     if (ProxyScheme == L"socks4")
     {
       ProxyMethod = pmSocks4;
@@ -4638,12 +4648,8 @@ void TStoredSessionList::UpdateStaticUsage()
 
 const TSessionData * TStoredSessionList::FindSame(TSessionData * Data) const
 {
-  const TSessionData * Result;
-  if (Data->GetHidden() || Data->GetName().IsEmpty()) // || Data->GetIsWorkspace())
-  {
-    Result = nullptr;
-  }
-  else
+  const TSessionData * Result = nullptr;
+  if (!(Data->GetHidden() || Data->GetName().IsEmpty())) // || Data->GetIsWorkspace())
   {
     const TNamedObject * Obj = FindByName(Data->GetName());
     Result = dyn_cast<TSessionData>(Obj);

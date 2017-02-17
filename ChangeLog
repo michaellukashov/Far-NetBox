@@ -1,12 +1,13 @@
-NetBox 2.4.2.453 11.02.2017
+NetBox 2.4.2.458 17.02.2017
 --------------------
-  * Update openssl sources to 1.1.0d
+  * Update WinSCP sources to 5.9.4
+  * Update openssl sources to 1.1.0e
+  * Bugfix: can't change directory if option [] Cache directories is set
   * Update zlib sources to 1.2.11
   * Bugfix: Issue #218: cannot copy to root folder
     (https://github.com/michaellukashov/Far-NetBox/issues/218)
   * Bugfix: SCP: cannot copy file
     (http://forum.farmanager.com/viewtopic.php?p=141891#p141891)
-  * Update WinSCP sources to 5.9.3
 
 NetBox 2.4.1.440 07.10.2016
 --------------------

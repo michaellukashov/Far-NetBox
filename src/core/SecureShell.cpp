@@ -2087,7 +2087,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
           setsockopt(FSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&BufferLen), sizeof(BufferLen));
         }
       }
-      FLastSendBufferUpdate = TicksAfter;
+      FLastSendBufferUpdate = (DWORD)TicksAfter;
     }
   }
   while (ReadEventRequired && (MSec > 0) && !Result);

@@ -226,7 +226,7 @@ public:
     const UnicodeString & ANewName) = 0;
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName) = 0;
-  virtual TStrings * GetFixedPaths() = 0;
+  virtual TStrings * GetFixedPaths() const = 0;
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable) = 0;
   virtual const TSessionInfo & GetSessionInfo() const = 0;

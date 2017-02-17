@@ -715,14 +715,10 @@ void TTerminalQueue::UpdateStatusForList(
   for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
   {
     TQueueItem * Item = GetItem(List, Index);
-    TQueueItemProxy * ItemProxy;
+    TQueueItemProxy * ItemProxy = nullptr;
     if (Current)
     {
       ItemProxy = Current->FindByQueueItem(Item);
-    }
-    else
-    {
-      ItemProxy = nullptr;
     }
 
     if (Current && ItemProxy)

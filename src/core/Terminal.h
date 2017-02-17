@@ -365,7 +365,7 @@ public:
   void DeleteLocalFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * Param);
   void RecycleFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
-  TStrings * GetFixedPaths();
+  TStrings * GetFixedPaths() const;
   void DoStartup();
   virtual bool DoQueryReopen(Exception * E);
   virtual void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
@@ -543,6 +543,7 @@ public:
   void ReflectSettings();
   void CollectUsage();
   bool IsThisOrChild(TTerminal * Terminal) const;
+  void FillSessionDataForCode(TSessionData * Data);
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);

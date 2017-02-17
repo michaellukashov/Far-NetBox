@@ -980,11 +980,7 @@ void TTerminal::ResetConnection()
   FTunnelError.Clear();
 
   FRememberedPasswordTried = false;
-  // Particularly to prevent reusing a wrong client certificate passphrase
-  // from a previous login attempt
-  FRememberedPassword = UnicodeString();
   FRememberedTunnelPasswordTried = false;
-  FRememberedTunnelPassword = UnicodeString();
 
   if (FDirectoryChangesCache != nullptr)
   {
@@ -1259,6 +1255,10 @@ void TTerminal::InitFileSystem()
           FSecureShell = nullptr; // ownership passed
           LogEvent("Using SFTP protocol.");
         }
+        // Particularly to prevent reusing a wrong client certificate passphrase
+        // in the next login attempt
+        FRememberedPassword = UnicodeString();
+        FRememberedTunnelPassword = UnicodeString();
       }
     }
   }
@@ -3370,7 +3370,7 @@ void TTerminal::ReadFile(const UnicodeString & AFileName,
 
 bool TTerminal::FileExists(const UnicodeString & AFileName, TRemoteFile ** AFile)
 {
-  bool Result;
+  bool Result = false;
   TRemoteFile * File = nullptr;
   try
   {
@@ -3547,7 +3547,7 @@ bool TTerminal::ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
 }
 #endif
 
-TStrings * TTerminal::GetFixedPaths()
+TStrings * TTerminal::GetFixedPaths() const
 {
   DebugAssert(FFileSystem != nullptr);
   return FFileSystem->GetFixedPaths();
@@ -4473,6 +4473,12 @@ bool TTerminal::GetCommandSessionOpened() const
     (FCommandSession->GetStatus() == ssOpened);
 }
 
+void TTerminal::FillSessionDataForCode(TSessionData * Data)
+{
+  const TSessionInfo & SessionInfo = GetSessionInfo();
+  Data->SetHostKey(SessionInfo.HostKeyFingerprint);
+}
+
 TTerminal * TTerminal::GetCommandSession()
 {
   if ((FCommandSession != nullptr) && !FCommandSession->GetActive())
@@ -5172,8 +5178,8 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
   Data.Checklist = Checklist;
 
   LogEvent(FORMAT(L"Collecting synchronization list for local directory '%s' and remote directory '%s', "
-   L"mode = %s, params = 0x%x (%s)", LocalDirectory.c_str(), ARemoteDirectory.c_str(),
-    SynchronizeModeStr(Mode).c_str(), int(Params), SynchronizeParamsStr(Params).c_str()));
+   L"mode = %s, params = 0x%x (%s), file mask = '%s'", LocalDirectory.c_str(), ARemoteDirectory.c_str(),
+    SynchronizeModeStr(Mode).c_str(), int(Params), SynchronizeParamsStr(Params).c_str(), CopyParam->GetIncludeFileMask().GetMasks().c_str()));
 
   if (FLAGCLEAR(Params, spDelayProgress))
   {
