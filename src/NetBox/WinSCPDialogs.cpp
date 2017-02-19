@@ -7466,7 +7466,8 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
 
   intptr_t Action = static_cast<intptr_t>(ChecklistItem->Action - 1);
   DebugAssert((Action != NPOS) && (Action < static_cast<intptr_t>(_countof(FActions))));
-  AddColumn(Line, FActions[Action], 4);
+  if ((Action != NPOS) && (Action < static_cast<intptr_t>(_countof(FActions))))
+    AddColumn(Line, FActions[Action], 4);
 
   if (ChecklistItem->Action == saDeleteLocal)
   {
