@@ -85,8 +85,10 @@ ZLIB_INTERNAL void flush_pending (z_stream *strm);
 ZLIB_INTERNAL unsigned read_buf  (z_stream *strm, unsigned char *buf, unsigned size);
 
 extern void crc_reset(deflate_state *const s);
+#ifdef X86_PCLMULQDQ_CRC
 extern void crc_finalize(deflate_state *const s);
-extern void copy_with_crc(z_stream *strm, unsigned char *dst, long size);
+#endif
+extern void copy_with_crc(z_stream *strm, unsigned char *dst, unsigned long size);
 
 /* ===========================================================================
  * Local data
@@ -161,7 +163,7 @@ static const config configuration_table[10] = {
 static void slide_hash(deflate_state *s) {
     unsigned n;
     Pos *p;
-    uInt wsize = s->w_size;
+    unsigned int wsize = s->w_size;
 
     n = s->hash_size;
     p = &s->head[n];
@@ -234,7 +236,7 @@ int ZEXPORT deflateInit2_(z_stream *strm, int level, int method, int windowBits,
      * output size for (length,distance) codes is <= 24 bits.
      */
 
-#if defined(X86_SSE2_FILL_WINDOW) || defined(X86_SSE4_2_CRC_HASH)
+#ifdef X86_CPUID
     x86_check_features();
 #endif
 
@@ -299,7 +301,9 @@ int ZEXPORT deflateInit2_(z_stream *strm, int level, int method, int windowBits,
 
     s->hash_size = 1 << s->hash_bits;
     s->hash_mask = s->hash_size - 1;
+#if !defined(__x86_64) && !defined(__i386_)
     s->hash_shift =  ((s->hash_bits+MIN_MATCH-1)/MIN_MATCH);
+#endif
 
 #ifdef X86_PCLMULQDQ_CRC
     window_padding = 8;
@@ -550,10 +554,11 @@ int ZEXPORT deflateParams(z_stream *strm, int level, int strategy) {
     }
     if (s->level != level) {
         if (s->level == 0 && s->matches != 0) {
-            if (s->matches == 1)
+            if (s->matches == 1) {
                 slide_hash(s);
-            else
+            } else {
                 CLEAR_HASH(s);
+            }
             s->matches = 0;
         }
         s->level = level;
@@ -834,7 +839,7 @@ int ZEXPORT deflate(z_stream *strm, int flush) {
         }
     }
     if (s->status == EXTRA_STATE) {
-        if (s->gzhead->extra != Z_NULL) {
+        if (s->gzhead->extra != NULL) {
             uint32_t beg = s->pending;   /* start of bytes to update crc */
             uint32_t left = (s->gzhead->extra_len & 0xffff) - s->gzindex;
 
@@ -933,14 +938,13 @@ int ZEXPORT deflate(z_stream *strm, int flush) {
     if (strm->avail_in != 0 || s->lookahead != 0 || (flush != Z_NO_FLUSH && s->status != FINISH_STATE)) {
         block_state bstate;
 
+        bstate = s->level == 0 ? deflate_stored(s, flush) :
+                 s->strategy == Z_HUFFMAN_ONLY ? deflate_huff(s, flush) :
+                 s->strategy == Z_RLE ? deflate_rle(s, flush) :
 #ifdef X86_QUICK_STRATEGY
-        if (s->level == 1 && !x86_cpu_has_sse42)
-            bstate = s->strategy == Z_HUFFMAN_ONLY ? deflate_huff(s, flush) :
-                    (s->strategy == Z_RLE ? deflate_rle(s, flush) : deflate_fast(s, flush));
-        else
+                 (s->level == 1 && !x86_cpu_has_sse42) ? deflate_fast(s, flush) :
 #endif
-            bstate = s->strategy == Z_HUFFMAN_ONLY ? deflate_huff(s, flush) :
-                    (s->strategy == Z_RLE ? deflate_rle(s, flush) : (*(configuration_table[s->level].func))(s, flush));
+                 (*(configuration_table[s->level].func))(s, flush);
 
         if (bstate == finish_started || bstate == finish_done) {
             s->status = FINISH_STATE;
@@ -991,7 +995,9 @@ int ZEXPORT deflate(z_stream *strm, int flush) {
     /* Write the trailer */
 #ifdef GZIP
     if (s->wrap == 2) {
+#  ifdef X86_PCLMULQDQ_CRC
         crc_finalize(s);
+#  endif
         put_byte(s, (unsigned char)(strm->adler & 0xff));
         put_byte(s, (unsigned char)((strm->adler >> 8) & 0xff));
         put_byte(s, (unsigned char)((strm->adler >> 16) & 0xff));
@@ -1248,14 +1254,12 @@ void fill_window_c(deflate_state *s) {
             unsigned int str = s->strstart - s->insert;
             s->ins_h = s->window[str];
             if (str >= 1)
-                UPDATE_HASH(s, s->ins_h, str + 1 - (MIN_MATCH-1));
+                insert_string(s, str + 2 - MIN_MATCH, 1);
 #if MIN_MATCH != 3
-            Call UPDATE_HASH() MIN_MATCH-3 more times
+#warning    Call insert_string() MIN_MATCH-3 more times
 #endif
             while (s->insert) {
-                UPDATE_HASH(s, s->ins_h, str);
-                s->prev[str & s->w_mask] = s->head[s->ins_h];
-                s->head[s->ins_h] = (Pos)str;
+                insert_string(s, str, 1);
                 str++;
                 s->insert--;
                 if (s->lookahead + s->insert < MIN_MATCH)
@@ -1344,7 +1348,7 @@ static block_state deflate_stored(deflate_state *s, int flush) {
             /* maximum stored block length that will fit in avail_out: */
         have = s->strm->avail_out - have;
         left = s->strstart - s->block_start;    /* bytes left in window */
-        if (len > (ulg)left + s->strm->avail_in)
+        if (len > (unsigned long)left + s->strm->avail_in)
             len = left + s->strm->avail_in;     /* limit len to the input */
         if (len > have)
             len = have;                         /* limit len to the output */
@@ -1479,7 +1483,7 @@ static block_state deflate_stored(deflate_state *s, int flush) {
         len = MIN(left, have);
         last = flush == Z_FINISH && s->strm->avail_in == 0 &&
                len == left ? 1 : 0;
-        _tr_stored_block(s, (charf *)s->window + s->block_start, len, last);
+        _tr_stored_block(s, (char *)s->window + s->block_start, len, last);
         s->block_start += len;
         flush_pending(s->strm);
     }

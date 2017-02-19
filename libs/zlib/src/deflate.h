@@ -153,7 +153,9 @@ typedef struct internal_state {
     unsigned int  hash_bits;         /* log2(hash_size) */
     unsigned int  hash_mask;         /* hash_size-1 */
 
+    #if !defined(__x86_64) && !defined(__i386_)
     unsigned int  hash_shift;
+    #endif
     /* Number of bits by which ins_h must be shifted at each input
      * step. It must be such that after MIN_MATCH steps, the oldest
      * byte no longer takes part in the hash key, that is:
@@ -305,7 +307,7 @@ typedef enum {
  * Output a short LSB first on the stream.
  * IN assertion: there is enough room in pendingBuf.
  */
-#if defined(__x86_64) || defined(__i386_)
+#ifdef UNALIGNED_OK
 /* Compared to the else-clause's implementation, there are few advantages:
  *  - s->pending is loaded only once (else-clause's implementation needs to
  *    load s->pending twice due to the alias between s->pending and
@@ -402,7 +404,7 @@ void ZLIB_INTERNAL bi_windup(deflate_state *s);
 #define TRIGGER_LEVEL 5
 #endif
 
-#ifdef X86_SSE4_2_CRC_HASH
+#if defined(__x86_64) || defined(__i386_)
 #define UPDATE_HASH(s, h, i) \
     do {\
         if (s->level < TRIGGER_LEVEL) \
