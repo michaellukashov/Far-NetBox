@@ -2825,6 +2825,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & FileName, const TRemote
       if (Lock2 == nullptr)
       {
         ne_lock_free(Unlock);
+        ne_lock_destroy(Unlock);
       }
 
       DiscardLock(Path);

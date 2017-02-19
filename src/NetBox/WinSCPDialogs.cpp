@@ -237,7 +237,8 @@ void TTabbedDialog::TabButtonClick(TFarButton * Sender, bool & Close)
   DebugAssert(Tab != nullptr);
 
   // HideTabs();
-  SelectTab(Tab->GetTab());
+  if (Tab)
+    SelectTab(Tab->GetTab());
 
   Close = false;
 }
@@ -6176,7 +6177,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
   {
     TLabelList * List = dyn_cast<TLabelList>(Control);
     DebugAssert(List != nullptr);
-    if (!Value.IsEmpty())
+    if (!Value.IsEmpty() && List)
     {
       TFarText * Text = dyn_cast<TFarText>(List->GetItem(FLastListItem));
       FLastListItem++;
@@ -7465,7 +7466,8 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
 
   intptr_t Action = static_cast<intptr_t>(ChecklistItem->Action - 1);
   DebugAssert((Action != NPOS) && (Action < static_cast<intptr_t>(_countof(FActions))));
-  AddColumn(Line, FActions[Action], 4);
+  if ((Action != NPOS) && (Action < static_cast<intptr_t>(_countof(FActions))))
+    AddColumn(Line, FActions[Action], 4);
 
   if (ChecklistItem->Action == saDeleteLocal)
   {

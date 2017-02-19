@@ -648,7 +648,7 @@ bool ForceDirectories(const UnicodeString & ADir)
   {
     return ::CreateDir(Dir);
   }
-  Result = ::ForceDirectories(::ExtractFilePath(Dir)) && CreateDir(Dir);
+  Result = ::ForceDirectories(::ExtractFilePath(Dir)) && ::CreateDir(Dir);
   return Result;
 }
 
