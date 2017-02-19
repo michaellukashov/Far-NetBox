@@ -52,7 +52,7 @@ public:
   explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
-  virtual ~ExtException(void) noexcept;
+  virtual ~ExtException(void);
   TStrings * GetMoreMessages() const { return FMoreMessages; }
   const UnicodeString & GetHelpKeyword() const { return FHelpKeyword; }
 
@@ -95,7 +95,7 @@ private:
     explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
     explicit inline NAME(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AHelpContext) : BASE(Kind, Msg, AHelpContext) {} \
     explicit inline NAME(const UnicodeString & Msg, intptr_t AHelpContext) : BASE(OBJECT_CLASS_##NAME, Msg, AHelpContext) {} \
-    virtual inline ~NAME(void) noexcept {} \
+    virtual inline ~NAME(void) {} \
     virtual ExtException * Clone() const { return new NAME(this, L""); } \
   };
 
