@@ -564,6 +564,7 @@ dtls1_reassemble_fragment(SSL *s, const struct hm_header_st *msg_hdr, int *ok)
                 goto err;
             frag_len -= i;
         }
+        if (item == NULL) dtls1_hm_fragment_free(frag);
         return DTLS1_HM_FRAGMENT_RETRY;
     }
 
