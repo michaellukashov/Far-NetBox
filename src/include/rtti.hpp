@@ -343,3 +343,9 @@ inline bool isa(const Y * Val)
 {
   return Val && rtti::isa<X>(Val);
 }
+
+template <class X, class Y>
+inline X * cast_or_null(void * Val)
+{
+  return rtti::cast_or_null<X>(static_cast<Y *>(Val));
+}
