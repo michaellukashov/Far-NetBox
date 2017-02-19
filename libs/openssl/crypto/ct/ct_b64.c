@@ -138,6 +138,7 @@ int CTLOG_new_from_base64(CTLOG **ct_log, const char *pkey_base64, const char *n
 
     if (ct_log == NULL) {
         CTerr(CT_F_CTLOG_NEW_FROM_BASE64, ERR_R_PASSED_INVALID_ARGUMENT);
+        if (pkey_der) OPENSSL_free(pkey_der);
         return 0;
     }
 
