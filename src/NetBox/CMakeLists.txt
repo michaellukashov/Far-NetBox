@@ -703,22 +703,13 @@ set(ZLIB_SOURCES
   ${LIBS_ROOT}/zlib/src/deflate_fast.c
 )
 
-if(NOT x64)
-
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
   ${LIBS_ROOT}/zlib/src/arch/x86/crc_folding.c
   ${LIBS_ROOT}/zlib/src/arch/x86/fill_window_sse.c
   ${LIBS_ROOT}/zlib/src/arch/x86/insert_string_sse.c
+  ${LIBS_ROOT}/zlib/src/arch/x86/deflate_quick.c
   ${LIBS_ROOT}/zlib/src/arch/x86/x86.c
 )
-
-if(MSVC)
-set(ZLIB_SOURCES ${ZLIB_SOURCES}
-  ${LIBS_ROOT}/zlib/src/arch/x86/deflate_quick.c
-)
-endif(MSVC)
-
-endif(NOT x64)
 
 add_library(zlib STATIC
   ${ZLIB_SOURCES}
