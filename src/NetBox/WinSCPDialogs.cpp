@@ -6176,7 +6176,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
   {
     TLabelList * List = dyn_cast<TLabelList>(Control);
     DebugAssert(List != nullptr);
-    if (!Value.IsEmpty())
+    if (!Value.IsEmpty() && List)
     {
       TFarText * Text = dyn_cast<TFarText>(List->GetItem(FLastListItem));
       FLastListItem++;
