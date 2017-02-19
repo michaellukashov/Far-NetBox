@@ -36,7 +36,8 @@ void flush_pending(z_stream *strm);
 extern Pos insert_string_sse(deflate_state *const s, const Pos str, unsigned int count);
 #endif
 
-static inline Pos insert_string_c(deflate_state *const s, const Pos str, unsigned int count) {
+static inline Pos insert_string_c(deflate_state *const s, const Pos str, unsigned int count)
+{
     Pos ret = 0;
     unsigned int idx;
 
@@ -51,7 +52,8 @@ static inline Pos insert_string_c(deflate_state *const s, const Pos str, unsigne
     return ret;
 }
 
-static inline Pos insert_string(deflate_state *const s, const Pos str, unsigned int count) {
+static inline Pos insert_string(deflate_state *const s, const Pos str, unsigned int count)
+{
 #ifdef X86_SSE4_2_CRC_HASH
     if (x86_cpu_has_sse42)
         return insert_string_sse(s, str, count);

@@ -354,7 +354,9 @@ int ZEXPORT deflateInit2_(z_stream *strm, int level, int method, int windowBits,
 
     s->hash_size = 1 << s->hash_bits;
     s->hash_mask = s->hash_size - 1;
+#if !defined(__x86_64) && !defined(__i386_)
     s->hash_shift =  ((s->hash_bits+MIN_MATCH-1)/MIN_MATCH);
+#endif
 
 #ifdef X86_PCLMULQDQ_CRC
     window_padding = 8;
@@ -1025,6 +1027,9 @@ int ZEXPORT deflate(z_stream *strm, int flush)
         bstate = s->level == 0 ? deflate_stored(s, flush) :
                  s->strategy == Z_HUFFMAN_ONLY ? deflate_huff(s, flush) :
                  s->strategy == Z_RLE ? deflate_rle(s, flush) :
+#ifdef X86_QUICK_STRATEGY
+                 (s->level == 1 && !x86_cpu_has_sse42) ? deflate_fast(s, flush) :
+#endif
                  (*(configuration_table[s->level].func))(s, flush);
 
         if (bstate == finish_started || bstate == finish_done) {
@@ -1731,7 +1736,7 @@ static block_state deflate_stored(deflate_state *s, int flush)
             /* maximum stored block length that will fit in avail_out: */
         have = s->strm->avail_out - have;
         left = s->strstart - s->block_start;    /* bytes left in window */
-        if (len > (uint32_t)left + s->strm->avail_in)
+        if (len > (unsigned long)left + s->strm->avail_in)
             len = left + s->strm->avail_in;     /* limit len to the input */
         if (len > have)
             len = have;                         /* limit len to the output */
