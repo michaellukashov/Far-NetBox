@@ -823,7 +823,7 @@ static int read_response_block(ne_request *req, struct ne_response *resp,
 
             /* Read the chunk size line into a temporary buffer. */
             SOCK_ERR(req,
-                     ne_sock_readline(sock, req->respbuf, sizeof req->respbuf),
+                     ne_sock_readline(sock, req->respbuf, sizeof(req->respbuf) - 1),
                      _("Could not read chunk size"));
             NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "[chunk] < %s", req->respbuf);
             chunk_len = strtoul(req->respbuf, &ptr, 16);
