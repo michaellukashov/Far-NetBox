@@ -341,5 +341,5 @@ inline X * dyn_cast(void * Val)
 template <class X, class Y>
 inline bool isa(const Y * Val)
 {
-  return rtti::isa<X>(Val);
+  return Val && rtti::isa<X>(Val);
 }
