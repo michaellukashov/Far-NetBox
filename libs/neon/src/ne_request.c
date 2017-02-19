@@ -1035,7 +1035,7 @@ static int discard_headers(ne_request *req)
     NE_DEBUG_WINSCP_CONTEXT(req->session);
     do {
 	SOCK_ERR(req, ne_sock_readline(req->session->socket, req->respbuf, 
-				       sizeof req->respbuf),
+							 sizeof(req->respbuf) - 1),
 		 _("Could not read interim response headers"));
 	NE_DEBUG(NE_DBG_HTTP, "[discard] < %s", req->respbuf);
     } while (strcmp(req->respbuf, EOL) != 0);
