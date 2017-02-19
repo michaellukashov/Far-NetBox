@@ -211,7 +211,7 @@ const uint32_t * ZEXPORT get_crc_table(void)
     return (const uint32_t *)crc_table;
 }
 
-uint32_t ZEXPORT crc32_z(uint32_t crc, const unsigned char *buf, z_off64_t len)
+uint32_t ZEXPORT crc32_z(uint32_t crc, const unsigned char *buf, size_t len)
 {
     if (buf == Z_NULL)
         return 0;
@@ -261,7 +261,7 @@ ZLIB_INTERNAL uint32_t crc32_generic(uint32_t crc, const unsigned char *buf, z_o
 }
 
 /* ========================================================================= */
-uint32_t ZEXPORT crc32(uint32_t crc, const unsigned char *buf, z_off64_t len)
+uint32_t ZEXPORT crc32(uint32_t crc, const unsigned char *buf, size_t len)
 {
     return crc32_z(crc, buf, len);
 }

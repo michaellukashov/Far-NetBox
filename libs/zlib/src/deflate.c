@@ -1027,8 +1027,9 @@ int ZEXPORT deflate(z_stream *strm, int flush)
         bstate = s->level == 0 ? deflate_stored(s, flush) :
                  s->strategy == Z_HUFFMAN_ONLY ? deflate_huff(s, flush) :
                  s->strategy == Z_RLE ? deflate_rle(s, flush) :
-                 (*(configuration_table[s->level].func))(s, flush);
+#ifdef X86_QUICK_STRATEGY
                  (s->level == 1 && !x86_cpu_has_sse42) ? deflate_fast(s, flush) :
+#endif
                  (*(configuration_table[s->level].func))(s, flush);
 
         if (bstate == finish_started || bstate == finish_done) {
