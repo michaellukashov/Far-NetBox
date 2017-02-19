@@ -237,7 +237,8 @@ void TTabbedDialog::TabButtonClick(TFarButton * Sender, bool & Close)
   DebugAssert(Tab != nullptr);
 
   // HideTabs();
-  SelectTab(Tab->GetTab());
+  if (Tab)
+    SelectTab(Tab->GetTab());
 
   Close = false;
 }
