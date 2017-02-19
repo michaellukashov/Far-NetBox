@@ -740,6 +740,7 @@ int ne__negotiate_ssl(ne_session *sess)
 
     if (chain == NULL || sk_X509_num(chain) == 0) {
 	ne_set_error(sess, _("SSL server did not present certificate"));
+	if (freechain) sk_X509_free(chain); /* no longer need the chain */
 	return NE_ERROR;
     }
 
