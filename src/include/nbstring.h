@@ -565,25 +565,25 @@ public:
 
 	static LPWSTR __stdcall StringUppercase(LPWSTR psz)
 	{
-		CharUpperBuffW(psz, (uint32_t)wcslen(psz));
+		::CharUpperBuffW(psz, (uint32_t)wcslen(psz));
 		return psz;
 	}
 
 	static LPWSTR __stdcall StringLowercase(LPWSTR psz)
 	{
-		CharLowerBuffW(psz, (uint32_t)wcslen(psz));
+		::CharLowerBuffW(psz, (uint32_t)wcslen(psz));
 		return psz;
 	}
 
 	static LPWSTR __stdcall StringUppercase(LPWSTR psz, size_t len)
 	{
-		CharUpperBuffW(psz, (uint32_t)len);
+		::CharUpperBuffW(psz, (uint32_t)len);
 		return psz;
 	}
 
 	static LPWSTR __stdcall StringLowercase(LPWSTR psz, size_t len)
 	{
-		CharLowerBuffW(psz, (uint32_t)len);
+		::CharLowerBuffW(psz, (uint32_t)len);
 		return psz;
 	}
 
