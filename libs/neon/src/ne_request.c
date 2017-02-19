@@ -1210,7 +1210,7 @@ static int read_response_headers(ne_request *req)
     char hdr[MAX_HEADER_LEN];
     int ret, count = 0;
     
-    while ((ret = read_message_header(req, hdr, sizeof hdr)) == NE_RETRY 
+    while ((ret = read_message_header(req, hdr, sizeof(hdr) - 1)) == NE_RETRY
 	   && ++count < MAX_HEADER_FIELDS) {
 	char *pnt;
 	unsigned int hash = 0;
