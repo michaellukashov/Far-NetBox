@@ -3,14 +3,16 @@
 #ifndef M_STRING_INL__
 
 template<typename BaseType>
-CMSimpleStringT<BaseType>::CMSimpleStringT()
+CMSimpleStringT<BaseType>::CMSimpleStringT() :
+  m_pszData(NULL)
 {
   CMStringData* pData = nbstr_getNil();
   Attach(pData);
 }
 
 template<typename BaseType>
-CMSimpleStringT<BaseType>::CMSimpleStringT(const CMSimpleStringT& strSrc)
+CMSimpleStringT<BaseType>::CMSimpleStringT(const CMSimpleStringT& strSrc) :
+  m_pszData(NULL)
 {
   CMStringData* pSrcData = strSrc.GetData();
   CMStringData* pNewData = CloneData(pSrcData);
@@ -18,7 +20,8 @@ CMSimpleStringT<BaseType>::CMSimpleStringT(const CMSimpleStringT& strSrc)
 }
 
 template<typename BaseType>
-CMSimpleStringT<BaseType>::CMSimpleStringT(PCXSTR pszSrc)
+CMSimpleStringT<BaseType>::CMSimpleStringT(PCXSTR pszSrc) :
+  m_pszData(NULL)
 {
   int nLength = StringLength(pszSrc);
   CMStringData* pData = nbstr_allocate(nLength, sizeof(XCHAR));
@@ -30,7 +33,8 @@ CMSimpleStringT<BaseType>::CMSimpleStringT(PCXSTR pszSrc)
 }
 
 template<typename BaseType>
-CMSimpleStringT<BaseType>::CMSimpleStringT(const XCHAR* pchSrc, int nLength)
+CMSimpleStringT<BaseType>::CMSimpleStringT(const XCHAR* pchSrc, int nLength) :
+  m_pszData(NULL)
 {
   CMStringData* pData = nbstr_allocate(nLength, sizeof(XCHAR));
   if (pData != NULL) {
