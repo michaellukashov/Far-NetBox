@@ -89,8 +89,10 @@ TFileZillaIntf::~TFileZillaIntf()
 {
   DebugAssert(FFileZillaApi == NULL);
 
-  SAFE_DESTROY_EX(TFileZillaIntern, FIntern);
-  SAFE_DESTROY_EX(t_server, FServer);
+  delete FIntern;
+  FIntern = NULL;
+  delete FServer;
+  FServer = NULL;
 }
 
 bool TFileZillaIntf::Init()
@@ -115,7 +117,8 @@ void TFileZillaIntf::Destroying()
   // need to close FZAPI before calling destructor as it in turn post messages
   // back while being destroyed, what may result in calling virtual methods
   // of already destroyed descendants
-  SAFE_DESTROY_EX(CFileZillaApi, FFileZillaApi);
+  delete FFileZillaApi;
+  FFileZillaApi = NULL;
 }
 
 bool TFileZillaIntf::SetCurrentPath(const wchar_t * APath)
