@@ -1713,7 +1713,7 @@ ZEXTERN uint32_t ZEXPORT adler32_combine(uint32_t adler1, uint32_t adler2, z_off
    negative, the result has no meaning or utility.
 */
 
-ZEXTERN uint32_t ZEXPORT crc32(uint32_t crc, const unsigned char *buf, uint32_t len);
+ZEXTERN uint32_t ZEXPORT crc32(uint32_t crc, const unsigned char *buf, size_t len);
 /*
      Update a running CRC-32 with the bytes buf[0..len-1] and return the
    updated CRC-32.  If buf is Z_NULL, this function returns the required

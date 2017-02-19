@@ -41,9 +41,7 @@ else()
   set(BUILD_DEBUG 0)
 endif()
 
-if(NOT DEFINED PROJECT_ROOT OR PROJECT_ROOT STREQUAL "")
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
-endif()
 string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 
 if(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
@@ -62,10 +60,11 @@ message(STATUS "MSVC_VERSION: ${MSVC_VERSION}")
 set(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB") #" -DUSE_GETADDRINFO")
 set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
 set(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
+set(APR_DEFS "-DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES")
 set(NETBOX_DEFS "-DMPEXT -DWINSCP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
-set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS")
-set(NETBOX_DEFS "${NETBOX_DEFS} -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES")
+set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS")
+set(NETBOX_DEFS "${NETBOX_DEFS} ${APR_DEFS}")
 set(NETBOX_DEFS "${NETBOX_DEFS} ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} ${DLMALLOC_DEFS}")
 #-D_WINDLL -D_USRDLL
 if (MSVC_VERSION GREATER 1899)
@@ -170,9 +169,9 @@ set(NETBOX_DLL_LINK_FLAGS
   /NODEFAULTLIB:UAFXCWD.LIB
   /NODEFAULTLIB:LIBCPMT.LIB
   /NODEFAULTLIB:LIBCPMTD.LIB
-  /NODEFAULTLIB:LIBEAY32.LIB
-  /NODEFAULTLIB:SSLEAY32.LIB
-  /NODEFAULTLIB:LIBPUTTY.LIB
+  /NODEFAULTLIB:LIBCRYPTO.LIB
+  /NODEFAULTLIB:LIBSSL.LIB
+  /NODEFAULTLIB:PUTTY.LIB
   /NODEFAULTLIB:KERNEL32.LIB
   /NODEFAULTLIB:USER32.LIB
   /NODEFAULTLIB:VERSION.LIB
@@ -192,8 +191,8 @@ set(NETBOX_DLL_LINK_FLAGS
 )
 #/DELAYLOAD:gdi32.dll
 
-set(NETBOX_DLL_LINK_FLAGS_RELEASE "/OPT:REF ${NETBOX_DLL_LINK_FLAGS}")
-set(NETBOX_DLL_LINK_FLAGS_DEBUG "/DEBUG ${NETBOX_DLL_LINK_FLAGS}")
+set(NETBOX_DLL_LINK_FLAGS_RELEASE "/OPT:REF")
+set(NETBOX_DLL_LINK_FLAGS_DEBUG "/DEBUG")
 
 elseif(CMAKE_COMPILER_IS_MINGW)
 set(NETBOX_DLL_LINK_FLAGS "")
@@ -207,6 +206,8 @@ include_directories(
 )
 
 #-------------------------------------------------------------------------------
+#openssl
+
 if(OPT_COMPILE_OPENSSL)
 
 if(x64)
@@ -227,7 +228,7 @@ set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
 )
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   /Zi /Zl -DOPENSSL_THREADS -DOPENSSL_NO_DYNAMIC_ENGINE
-  -DOPENSSL_PIC -DOPENSSL_NO_ERR -D_WINSOCK_DEPRECATED_NO_WARNINGS
+  -DOPENSSL_PIC -DOPENSSL_NO_ERR
 )
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   -wd4090
@@ -1115,7 +1116,7 @@ add_library(apr STATIC
 )
 
 target_compile_options(apr
-  PRIVATE -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES -U_UNICODE -UUNICODE
+  PRIVATE -U_UNICODE -UUNICODE
 )
 
 target_include_directories(apr PRIVATE
@@ -1158,22 +1159,13 @@ set(ZLIB_SOURCES
   ../../libs/zlib/src/deflate_fast.c
 )
 
-if(NOT x64)
-
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
   ../../libs/zlib/src/arch/x86/crc_folding.c
   ../../libs/zlib/src/arch/x86/fill_window_sse.c
   ../../libs/zlib/src/arch/x86/insert_string_sse.c
+  ../../libs/zlib/src/arch/x86/deflate_quick.c
   ../../libs/zlib/src/arch/x86/x86.c
 )
-
-if(MSVC)
-set(ZLIB_SOURCES ${ZLIB_SOURCES}
-  ../../libs/zlib/src/arch/x86/deflate_quick.c
-)
-endif(MSVC)
-
-endif(NOT x64)
 
 add_library(zlib STATIC
   ${ZLIB_SOURCES}
@@ -1188,6 +1180,7 @@ target_include_directories(zlib PRIVATE
 )
 
 #-------------------------------------------------------------------------------
+#dlmalloc
 
 add_library(dlmalloc STATIC
   ../../libs/dlmalloc/malloc.c
@@ -1475,8 +1468,8 @@ endif(NOT x64)
 endif(MSVC)
 
 set(NETBOX_LIBRARIES
-  atlmfc
   putty
+  atlmfc
   zlib
   tinyxml2
   libssl libcrypto
@@ -1516,17 +1509,6 @@ add_library(NetBox SHARED
   ${NETBOX_SOURCES}
 )
 
-set(NETBOX_DLL_CXX_FLAGS )
-if(CMAKE_COMPILER_IS_MINGW)
-  set(NETBOX_DLL_CXX_FLAGS -fpermissive)
-endif()
-
-target_compile_options(NetBox
-  PRIVATE ${NETBOX_DLL_CXX_FLAGS}
-  -D_WINSOCK_DEPRECATED_NO_WARNINGS
-  -DNB_CORE_EXPORTS
-)
-
 target_include_directories(NetBox PRIVATE
   ../../libs/openssl/${OPENSSL_INC_DIR}/include
   ../../libs/putty
@@ -1537,13 +1519,13 @@ target_include_directories(NetBox PRIVATE
   ../../libs/atlmfc/include
   ../filezilla
   ../filezilla/misc
-  ../PluginSDK/${FAR_VERSION}
   ../base
   ../core
   ../windows
   ../resource
   ../include
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ../PluginSDK/${FAR_VERSION}
 )
 
 set_target_properties(NetBox
@@ -1555,21 +1537,8 @@ set_target_properties(NetBox
 
 #TODO: COMMAND create_ver.py
 
-target_link_libraries(NetBox
+target_link_libraries(NetBox PRIVATE
   ${NETBOX_LIBRARIES}
-)
-
-add_dependencies(NetBox
-  atlmfc
-  putty
-  zlib
-  tinyxml2
-  libssl libcrypto
-  neon
-  apr
-  expat
-  dlmalloc
-  rdestl
 )
 
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
@@ -1598,4 +1567,3 @@ add_custom_command(TARGET NetBox
   VERBATIM
 )
 endif()
-

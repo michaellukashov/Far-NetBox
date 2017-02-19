@@ -329,7 +329,7 @@ ZLIB_INTERNAL uint32_t crc32_little(uint32_t crc, const unsigned char *buf, size
 #define DOBIG32 DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4
 
 /* ========================================================================= */
-ZLIB_INTERNAL uint32_t crc32_big(uint32_t crc, const unsigned char *buf, size_t len) {
+ZLIB_INTERNAL uint32_t crc32_big(uint32_t crc, const unsigned char *buf, size_t len)
 {
     register uint32_t c;
     register const uint32_t *buf4;

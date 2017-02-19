@@ -540,12 +540,12 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 // Window subclassing
 
-NB_CORE_DLL(void)    nbcore_subclassWindow(HWND hWnd, WNDPROC wndProc);
-NB_CORE_DLL(void)    nbcore_subclassWindowFull(HWND hWnd, WNDPROC wndProc, WNDPROC oldWndProc);
-NB_CORE_DLL(LRESULT) nbcore_callNextSubclass(HWND hWnd, WNDPROC wndProc, UINT uMsg, WPARAM wParam, LPARAM lParam);
-NB_CORE_DLL(void)    nbcore_unsubclassWindow(HWND hWnd, WNDPROC wndProc);
+//NB_CORE_DLL(void)    nbcore_subclassWindow(HWND hWnd, WNDPROC wndProc);
+//NB_CORE_DLL(void)    nbcore_subclassWindowFull(HWND hWnd, WNDPROC wndProc, WNDPROC oldWndProc);
+//NB_CORE_DLL(LRESULT) nbcore_callNextSubclass(HWND hWnd, WNDPROC wndProc, UINT uMsg, WPARAM wParam, LPARAM lParam);
+//NB_CORE_DLL(void)    nbcore_unsubclassWindow(HWND hWnd, WNDPROC wndProc);
 
-NB_CORE_DLL(void)    KillModuleSubclassing(HMODULE hInst);
+//NB_CORE_DLL(void)    KillModuleSubclassing(HMODULE hInst);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Windows utilities
