@@ -999,7 +999,7 @@ static int read_status_line(ne_request *req, ne_status *status, int retry)
     char *buffer = req->respbuf;
     ssize_t ret;
 
-    ret = ne_sock_readline(req->session->socket, buffer, sizeof req->respbuf);
+    ret = ne_sock_readline(req->session->socket, buffer, sizeof(req->respbuf) - 1);
     if (ret <= 0) {
 	int aret = aborted(req, _("Could not read status line"), ret);
 	return RETRY_RET(retry, ret, aret);
