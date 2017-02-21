@@ -793,6 +793,8 @@ static int ipv4_is_local_addr(struct in_addr addr)
 	SOCKET s = p_socket(AF_INET, SOCK_DGRAM, 0);
 	DWORD retbytes;
 
+	SetHandleInformation((HANDLE)s, HANDLE_FLAG_INHERIT, 0);
+
 	if (p_WSAIoctl &&
 	    p_WSAIoctl(s, SIO_GET_INTERFACE_LIST, NULL, 0,
 		       local_interfaces, sizeof(local_interfaces),
@@ -1060,6 +1062,8 @@ static DWORD try_connect(Actual_Socket sock,
 	sock->error = winsock_error_string(err);
 	goto ret;
     }
+
+	SetHandleInformation((HANDLE)s, HANDLE_FLAG_INHERIT, 0);
 
     if (sock->oobinline) {
 	BOOL b = TRUE;
@@ -1403,6 +1407,8 @@ Socket sk_newlistener(const char *srcaddr, int port, Plug plug,
 	ret->error = winsock_error_string(err);
 	return (Socket) ret;
     }
+
+	SetHandleInformation((HANDLE)s, HANDLE_FLAG_INHERIT, 0);
 
     ret->oobinline = 0;
 

@@ -145,5 +145,14 @@ def main():
             break
     return
 
+def getscriptpath():
+    return os.path.dirname(sys.argv[0])
+
 if __name__ == '__main__':
-    main()
+    cwd = os.getcwd()
+    os.chdir(os.path.join(getscriptpath(), '../'))
+    try:
+      main()
+    finally:
+      os.chdir(cwd)
+

@@ -1,6 +1,8 @@
 @rem @echo off
 @setlocal
 
+pushd %~dp0..\..\..\libs\openssl
+
 @rem 
 rm -rf out32dll tmp32dll tmp32 inc32 out32
 
@@ -71,4 +73,5 @@ cp -R include vs2015-x86
 goto end
 
 :end
+popd
 @endlocal
