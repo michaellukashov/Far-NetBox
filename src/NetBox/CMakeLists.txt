@@ -1541,16 +1541,27 @@ target_link_libraries(NetBox PRIVATE
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
 string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 
-add_custom_command(TARGET NetBox
-  POST_BUILD
+add_custom_target(create_plugin_dir)
+add_custom_command(TARGET create_plugin_dir POST_BUILD
   COMMAND if not exist "${NETBOX_PLUGIN_DIR}" ( ${CMAKE_COMMAND} -E make_directory "${NETBOX_PLUGIN_DIR}" )
-  COMMAND if exist NetBox.dll ${CMAKE_COMMAND} -E copy NetBox.dll ${NETBOX_PLUGIN_DIR}
-  COMMAND if exist NetBox.pdb ( ${CMAKE_COMMAND} -E copy NetBox.pdb ${NETBOX_PLUGIN_DIR} )
-  COMMAND if exist NetBox.map ( ${CMAKE_COMMAND} -E copy NetBox.map ${NETBOX_PLUGIN_DIR} )
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    ${CMAKE_CURRENT_SOURCE_DIR}/NetBoxRus.lng
-    ${CMAKE_CURRENT_SOURCE_DIR}/NetBoxEng.lng
-    ${NETBOX_PLUGIN_DIR}
   WORKING_DIRECTORY ${BUILD_DIR}
   VERBATIM
 )
+
+file(GLOB DIST_FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/*.lng
+  ${BUILD_DIR}/*.dll
+  ${BUILD_DIR}/*.pdb
+  ${BUILD_DIR}/*.map
+)
+
+add_custom_target(copy_to_plugin_dir)
+foreach(DIST_FILE ${DIST_FILES})
+  add_custom_command(TARGET copy_to_plugin_dir POST_BUILD
+#    COMMAND echo DIST_FILE: ${DIST_FILE}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}
+  )
+endforeach()
+
+add_dependencies(NetBox create_plugin_dir copy_to_plugin_dir)
+
