@@ -1554,13 +1554,3 @@ add_custom_command(TARGET NetBox
   WORKING_DIRECTORY ${BUILD_DIR}
   VERBATIM
 )
-
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-add_custom_command(TARGET NetBox
-  POST_BUILD
-  DEPENDS ${BUILD_DIR}\\NetBox.dll
-  COMMAND scripts\\make_dist.cmd ${FAR_VERSION} ${PROJECT_PLATFORM}
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  VERBATIM
-)
-endif()
