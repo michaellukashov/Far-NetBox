@@ -2729,7 +2729,7 @@ UnicodeString TFarPanelInfo::GetCurrDirectory() const
     Result = pfpd->Name;
     nb_free(pfpd);
   }
-  return Result.c_str();
+  return Result;
 }
 
 TFarMenuItems::TFarMenuItems() :
