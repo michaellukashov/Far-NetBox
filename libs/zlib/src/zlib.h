@@ -1416,7 +1416,7 @@ ZEXTERN int ZEXPORT gzread(gzFile file, void *buf, unsigned len);
    Z_STREAM_ERROR.
 */
 
-ZEXTERN z_size_t ZEXPORT gzfread ((voidp buf, z_size_t size, z_size_t nitems,
+ZEXTERN z_size_t ZEXPORT gzfread ((void * buf, z_size_t size, z_size_t nitems,
                                      gzFile file));
 /*
      Read up to nitems items of size size from file to buf, otherwise operating
@@ -1447,7 +1447,7 @@ ZEXTERN int ZEXPORT gzwrite(gzFile file, void const *buf, unsigned len);
    error.
 */
 
-ZEXTERN z_size_t ZEXPORT gzfwrite ((voidpc buf, z_size_t size,
+ZEXTERN z_size_t ZEXPORT gzfwrite ((void const * buf, z_size_t size,
                                       z_size_t nitems, gzFile file));
 /*
      gzfwrite() writes nitems items of size size from buf to file, duplicating

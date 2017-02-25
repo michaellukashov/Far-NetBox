@@ -162,8 +162,8 @@ void ZLIB_INTERNAL zmemzero(unsigned char* dest, unsigned int len)
 #ifndef MY_ZCALLOC /* Any system without a special alloc function */
 
 #ifndef STDC
-extern voidp  malloc (unsigned int size);
-extern voidp  calloc (unsigned int items, unsigned int size);
+extern void *  malloc (unsigned int size);
+extern void *  calloc (unsigned int items, unsigned int size);
 extern void   free   (void * ptr);
 #endif
 
