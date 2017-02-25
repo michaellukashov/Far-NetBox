@@ -77,10 +77,8 @@ private:
   TObjectClassId FKind;
 };
 
-template<typename T>
-inline TObject * as_object(T * p) { return static_cast<TObject *>(p); }
-template<typename T>
-inline const TObject * as_object(const T * p) { return static_cast<const TObject *>(p); }
+inline TObject * as_object(void * p) { return static_cast<TObject *>(p); }
+inline const TObject * as_object(const void * p) { return static_cast<const TObject *>(p); }
 
 struct TPoint
 {
