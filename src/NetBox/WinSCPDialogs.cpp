@@ -5868,9 +5868,9 @@ protected:
   UnicodeString CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
   UnicodeString SpaceStr(int64_t Bytes);
-  void ControlsAddItem(TObject * Control, int Label, const UnicodeString & Value);
-  void CalculateMaxLenAddItem(TObject * Control, int Label, const UnicodeString & Value);
-  void ClipboardAddItem(TObject * Control, int Label, const UnicodeString & Value);
+  void ControlsAddItem(TObject * AControl, int Label, const UnicodeString & Value);
+  void CalculateMaxLenAddItem(TObject * AControl, int Label, const UnicodeString & Value);
+  void ClipboardAddItem(TObject * AControl, int Label, const UnicodeString & Value);
   void FeedControls();
   void UpdateControls();
   TLabelList * CreateLabelArray(intptr_t Count);
@@ -6140,16 +6140,16 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
   AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_PER_ALLOCATION_UNIT, SpaceStr(FSpaceAvailable.BytesPerAllocationUnit));
 }
 
-void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
+void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
   int Label, const UnicodeString & Value)
 {
-  if (FLastFeededControl != Control)
+  if (FLastFeededControl != AControl)
   {
-    FLastFeededControl = Control;
+    FLastFeededControl = AControl;
     FLastListItem = 0;
   }
 
-  if (Control == HostKeyFingerprintEdit)
+  if (AControl == HostKeyFingerprintEdit)
   {
     HostKeyFingerprintEdit->SetText(Value);
     HostKeyFingerprintEdit->SetEnabled(!Value.IsEmpty());
@@ -6161,7 +6161,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
       HostKeyFingerprintLabel->SetGroup(0);
     }
   }
-  else if (Control == InfoLister)
+  else if (AControl == InfoLister)
   {
     InfoLister->GetItems()->SetText(Value);
     InfoLister->SetEnabled(!Value.IsEmpty());
@@ -6175,7 +6175,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
   }
   else
   {
-    TLabelList * List = dyn_cast<TLabelList>(Control);
+    TLabelList * List = dyn_cast<TLabelList>(AControl);
     DebugAssert(List != nullptr);
     if (!Value.IsEmpty() && List)
     {
@@ -6187,10 +6187,10 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
   }
 }
 
-void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * Control,
+void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * AControl,
   int Label, const UnicodeString & )
 {
-  TLabelList * List = dyn_cast<TLabelList>(Control);
+  TLabelList * List = dyn_cast<TLabelList>(AControl);
   if (List != nullptr)
   {
     UnicodeString S = GetMsg(Label);
