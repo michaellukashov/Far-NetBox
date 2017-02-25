@@ -1703,7 +1703,6 @@ TFarEditorInfo * TCustomFarPlugin::EditorInfo()
 {
   TFarEditorInfo * Result = nullptr;
   ::EditorInfo * Info = nb::calloc<::EditorInfo *>(sizeof(::EditorInfo));
-  memset(Info, 0, sizeof(::EditorInfo));
   Info->StructSize = sizeof(::EditorInfo);
   try
   {
@@ -1909,7 +1908,6 @@ intptr_t TCustomFarFileSystem::GetFindData(struct GetFindDataInfo * Info)
   if (Result && PanelItems->GetCount())
   {
     Info->PanelItem = nb::calloc<PluginPanelItem *>(sizeof(PluginPanelItem) * PanelItems->GetCount());
-    memset(Info->PanelItem, 0, sizeof(PluginPanelItem) * PanelItems->GetCount());
     Info->ItemsNumber = PanelItems->GetCount();
     for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
@@ -2295,7 +2293,7 @@ intptr_t TFarPanelModes::CommaCount(const UnicodeString & ColumnTypes)
 TFarKeyBarTitles::TFarKeyBarTitles() :
   FReferenced(false)
 {
-  ::ZeroMemory(&FKeyBarTitles, sizeof(FKeyBarTitles));
+  ClearStruct(FKeyBarTitles);
   FKeyBarTitles.CountLabels = 7 * 12;
   FKeyBarTitles.Labels = static_cast<KeyBarLabel *>(
     nb_malloc(sizeof(KeyBarLabel) * 7 * 12));
