@@ -2,7 +2,6 @@
 
 #include <string>
 #include "type_traits.h"
-#include "nbglobals.h"
 
 //===-- from llvm/Support/Casting.h - Allow flexible, checked, casts
 //
