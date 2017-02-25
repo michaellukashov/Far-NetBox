@@ -2584,6 +2584,7 @@ TObjectList * TFarPanelInfo::GetItems()
       intptr_t Size = FOwner->FarControl(FCTL_GETPANELITEM, Index, 0);
       PluginPanelItem * ppi = nb::calloc<PluginPanelItem *>(Size);
       FarGetPluginPanelItem gppi;
+      ClearStruct(gppi);
       gppi.StructSize = sizeof(FarGetPluginPanelItem);
       gppi.Size = Size;
       gppi.Item = ppi;
@@ -2677,6 +2678,7 @@ void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
     DebugAssert(Value != NPOS && Value < (intptr_t)FPanelInfo->ItemsNumber);
     FPanelInfo->CurrentItem = static_cast<int>(Value);
     PanelRedrawInfo PanelInfo;
+    ClearStruct(PanelInfo);
     PanelInfo.StructSize = sizeof(PanelRedrawInfo);
     PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
     PanelInfo.TopPanelItem = FPanelInfo->TopPanelItem;
