@@ -145,7 +145,9 @@ class TPersistent : public TObject
 public:
   static inline bool classof(const TObject * Obj)
   {
-    switch(Obj->GetKind()) {
+    switch(Obj->GetKind())
+    {
+      case OBJECT_CLASS_TPersistent:
       case OBJECT_CLASS_TStrings:
       case OBJECT_CLASS_TNamedObject:
       case OBJECT_CLASS_TSessionData:
