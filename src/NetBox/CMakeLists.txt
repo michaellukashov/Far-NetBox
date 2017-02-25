@@ -1425,9 +1425,9 @@ set(NETBOX_SOURCES
   ../resource/HelpCore.h
   ../resource/TextsFileZilla.h
 
-  ../PluginSDK/Far3/plugin.hpp
-  ../PluginSDK/Far3/farcolor.hpp
-  ../PluginSDK/Far3/PluginSettings.hpp
+  ../PluginSDK/${FAR_VERSION}/plugin.hpp
+  ../PluginSDK/${FAR_VERSION}/farcolor.hpp
+  ../PluginSDK/${FAR_VERSION}/PluginSettings.hpp
 
   ../resource/TextsFileZilla.rc
   NetBox.rc
