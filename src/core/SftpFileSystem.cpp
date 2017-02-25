@@ -616,7 +616,7 @@ public:
     // cannot happen anyway as Need() would raise exception
     DebugAssert(Len < SFTP_MAX_PACKET_LEN);
     Result.SetLength(Len);
-    memmove(reinterpret_cast<void *>(const_cast<char *>(Result.c_str())), FData + FPosition, Len);
+    memmove(ToPtr(const_cast<char *>(Result.c_str())), FData + FPosition, Len);
     DataConsumed(Len);
     return Result;
   }
