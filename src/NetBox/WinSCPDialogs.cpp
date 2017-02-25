@@ -2799,13 +2799,13 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 void TSessionDialog::FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
 {
   FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    static_cast<TObject *>(ToPtr(ProxyType)));
+    as_object(ToPtr(ProxyType)));
 }
 
 void TSessionDialog::SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
 {
   SshProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    static_cast<TObject *>(ToPtr(ProxyType)));
+    as_object(ToPtr(ProxyType)));
 }
 
 TSessionDialog::~TSessionDialog()
@@ -3372,7 +3372,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     DebugAssert(CIPHER_NAME_WARN + CIPHER_COUNT - 1 == CIPHER_NAME_CHACHA20);
     for (intptr_t Index2 = 0; Index2 < CIPHER_COUNT; ++Index2)
     {
-      TObject * Obj = static_cast<TObject *>(ToPtr(SessionData->GetCipher(Index2)));
+      TObject * Obj = as_object(ToPtr(SessionData->GetCipher(Index2)));
       CipherListBox->GetItems()->AddObject(
         GetMsg(CIPHER_NAME_WARN + static_cast<intptr_t>(SessionData->GetCipher(Index2))),
         Obj);
@@ -3396,7 +3396,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     {
       KexListBox->GetItems()->AddObject(
         GetMsg(KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index3))),
-        static_cast<TObject *>(ToPtr(SessionData->GetKex(Index3))));
+        as_object(ToPtr(SessionData->GetKex(Index3))));
     }
   }
 
@@ -3711,7 +3711,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (intptr_t Index5 = 0; Index5 < CIPHER_COUNT; ++Index5)
     {
-      TObject * Obj = static_cast<TObject *>(CipherListBox->GetItems()->GetObj(Index5));
+      TObject * Obj = as_object(CipherListBox->GetItems()->GetObj(Index5));
       SessionData->SetCipher(Index5, static_cast<TCipher>(reinterpret_cast<intptr_t>(Obj)));
     }
 
@@ -3844,7 +3844,7 @@ intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList *
 {
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TObject * Obj = static_cast<TObject *>(Items->GetObj(Index));
+    TObject * Obj = as_object(Items->GetObj(Index));
     TProxyMethod Method = static_cast<TProxyMethod>(reinterpret_cast<intptr_t>(Obj));
     if (Method == ProxyMethod)
       return Index;
@@ -3857,7 +3857,7 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items
   TProxyMethod Result = pmNone;
   if (Index >= 0 && Index < Items->GetCount())
   {
-    TObject * Obj = static_cast<TObject *>(Items->GetObj(Index));
+    TObject * Obj = as_object(Items->GetObj(Index));
     Result = static_cast<TProxyMethod>(reinterpret_cast<intptr_t>(Obj));
   }
   return Result;
@@ -4227,7 +4227,7 @@ void TSessionDialog::FillCodePageEdit()
 {
   // CodePageEditAdd(CP_UTF8);
   CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
-    static_cast<TObject *>(ToPtr(65001)));
+    as_object(ToPtr(65001)));
   CodePageEditAdd(CP_ACP);
   CodePageEditAdd(CP_OEMCP);
   CodePageEditAdd(20866); // KOI8-r
@@ -4240,7 +4240,7 @@ void TSessionDialog::CodePageEditAdd(uint32_t Cp)
   if (::GetCodePageInfo(Cp, cpInfoEx))
   {
     CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
-      static_cast<TObject *>(ToPtr(cpInfoEx.CodePage)));
+      as_object(ToPtr(cpInfoEx.CodePage)));
   }
 }
 

@@ -349,7 +349,7 @@ void TObjectList::Notify(void * Ptr, TListNotification Action)
   {
     if (Action == lnDeleted)
     {
-      delete static_cast<TObject *>(Ptr);
+      delete as_object(Ptr);
     }
   }
   TList::Notify(Ptr, Action);
