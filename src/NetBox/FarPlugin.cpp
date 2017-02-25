@@ -2235,7 +2235,7 @@ intptr_t TFarPanelModes::CommaCount(const UnicodeString & ColumnTypes)
 TFarKeyBarTitles::TFarKeyBarTitles() :
   FReferenced(false)
 {
-  ::ZeroMemory(&FKeyBarTitles, sizeof(FKeyBarTitles));
+  ClearStruct(FKeyBarTitles);
 }
 
 TFarKeyBarTitles::~TFarKeyBarTitles()
@@ -2620,6 +2620,7 @@ void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
     DebugAssert(Value != NPOS && Value < (intptr_t)FPanelInfo->ItemsNumber);
     FPanelInfo->CurrentItem = static_cast<int>(Value);
     PanelRedrawInfo PanelInfo;
+    ClearStruct(PanelInfo);
     PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
     PanelInfo.TopPanelItem = FPanelInfo->TopPanelItem;
     FOwner->FarControl(FCTL_REDRAWPANEL, 0, reinterpret_cast<intptr_t>(&PanelInfo));
