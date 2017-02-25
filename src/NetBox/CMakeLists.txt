@@ -1583,8 +1583,8 @@ endforeach()
 
 add_custom_command(TARGET NetBox POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.dll ${NETBOX_PLUGIN_DIR}
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.pdb ${NETBOX_PLUGIN_DIR}
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.map ${NETBOX_PLUGIN_DIR}
+  COMMAND if exist ${BUILD_DIR}/NetBox.pdb ( ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.pdb ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist ${BUILD_DIR}/NetBox.map ( ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.map ${NETBOX_PLUGIN_DIR} )
 )
 
 add_dependencies(NetBox create_plugin_dir copy_to_plugin_dir)

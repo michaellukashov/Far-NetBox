@@ -346,7 +346,7 @@ void TCustomFarPlugin::ClosePanel(void * Plugin)
   try
   {
     ResetCachedInfo();
-    TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(Plugin);
+    TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Plugin));
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
     {
       SCOPE_EXIT
@@ -392,7 +392,7 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo * Info)
 {
   if (!Info)
     return;
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Info->hPanel));
   if (!FOpenedPlugins || !FarFileSystem)
     return;
   try
@@ -411,7 +411,7 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo * Info)
 
 intptr_t TCustomFarPlugin::GetFindData(struct GetFindDataInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Info->hPanel));
   try
   {
     ResetCachedInfo();
@@ -432,7 +432,7 @@ intptr_t TCustomFarPlugin::GetFindData(struct GetFindDataInfo * Info)
 
 void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Info->hPanel));
   try
   {
     ResetCachedInfo();
@@ -452,7 +452,7 @@ void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo * Info)
 
 intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Info->hPanel));
   try
   {
     ResetCachedInfo();
@@ -480,7 +480,7 @@ intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo * In
 
 intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Info->hPanel));
   try
   {
     ResetCachedInfo();
@@ -510,7 +510,7 @@ intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo 
 
 intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Info->hPanel));
   try
   {
     ResetCachedInfo();
@@ -544,7 +544,7 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
 
 intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Info->hPanel));
   DebugAssert(FarFileSystem);
   if (!FarFileSystem)
   {
@@ -588,7 +588,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
 
 intptr_t TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Info->hPanel));
   try
   {
     ResetCachedInfo();
@@ -609,7 +609,7 @@ intptr_t TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo * Info)
 
 intptr_t TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Info->hPanel));
   try
   {
     ResetCachedInfo();
@@ -630,7 +630,7 @@ intptr_t TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo * Info)
 
 intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Info->hPanel));
   try
   {
     ResetCachedInfo();
@@ -652,7 +652,7 @@ intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo * Info)
 
 intptr_t TCustomFarPlugin::PutFiles(const struct PutFilesInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Info->hPanel));
   try
   {
     ResetCachedInfo();

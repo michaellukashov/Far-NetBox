@@ -303,7 +303,7 @@ protected:
 
 int TSimpleThread::ThreadProc(void * Thread)
 {
-  TSimpleThread * SimpleThread = dyn_cast<TSimpleThread>(Thread);
+  TSimpleThread * SimpleThread = dyn_cast<TSimpleThread>(as_object(Thread));
   DebugAssert(SimpleThread != nullptr);
   try
   {
@@ -522,7 +522,7 @@ TTerminalQueue::~TTerminalQueue()
 
     while (FTerminals->GetCount() > 0)
     {
-      TTerminalItem * TerminalItem = dyn_cast<TTerminalItem>(FTerminals->GetItem(0));
+      TTerminalItem * TerminalItem = dyn_cast<TTerminalItem>(as_object(FTerminals->GetItem(0)));
       FTerminals->Delete(0);
       TerminalItem->Terminate();
       TerminalItem->WaitFor();
@@ -701,12 +701,12 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
 //---------------------------------------------------------------------------
 TQueueItem * TTerminalQueue::GetItem(TList * List, intptr_t Index)
 {
-  return dyn_cast<TQueueItem>(List->GetItem(Index));
+  return dyn_cast<TQueueItem>(as_object(List->GetItem(Index)));
 }
 
 TQueueItem * TTerminalQueue::GetItem(intptr_t Index)
 {
-  return dyn_cast<TQueueItem>(FItems->GetItem(Index));
+  return dyn_cast<TQueueItem>(as_object(FItems->GetItem(Index)));
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::UpdateStatusForList(
@@ -1029,7 +1029,7 @@ void TTerminalQueue::Idle()
       {
         // take the last free terminal, because TerminalFree() puts it to the
         // front, this ensures we cycle thru all free terminals
-        TerminalItem = dyn_cast<TTerminalItem>(FTerminals->GetItem(FFreeTerminals - 1));
+        TerminalItem = dyn_cast<TTerminalItem>(as_object(FTerminals->GetItem(FFreeTerminals - 1)));
         FTerminals->Move(FFreeTerminals - 1, FTerminals->GetCount() - 1);
         FFreeTerminals--;
       }
@@ -1100,7 +1100,7 @@ void TTerminalQueue::ProcessEvent()
           }
           else if (FFreeTerminals > 0)
           {
-            TerminalItem = dyn_cast<TTerminalItem>(FTerminals->GetItem(0));
+            TerminalItem = dyn_cast<TTerminalItem>(as_object(FTerminals->GetItem(0)));
             FTerminals->Move(0, FTerminals->GetCount() - 1);
             FFreeTerminals--;
           }
@@ -2012,7 +2012,7 @@ TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index) const
 
 TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index)
 {
-  return dyn_cast<TQueueItemProxy>(FList->GetItem(Index));
+  return dyn_cast<TQueueItemProxy>(as_object(FList->GetItem(Index)));
 }
 
 TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(

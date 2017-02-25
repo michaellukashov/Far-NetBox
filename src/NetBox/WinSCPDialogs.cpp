@@ -1368,7 +1368,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
 {
   for (intptr_t Index = 0; Index < FEdits->GetCount(); ++Index)
   {
-    dyn_cast<TFarEdit>(FEdits->GetItem(Index))->SetText(Results->GetString(Index));
+    dyn_cast<TFarEdit>(as_object(FEdits->GetItem(Index)))->SetText(Results->GetString(Index));
   }
 
   bool Result = (ShowModal() != brCancel);
@@ -1376,7 +1376,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
   {
     for (intptr_t Index = 0; Index < FEdits->GetCount(); ++Index)
     {
-      UnicodeString Text = dyn_cast<TFarEdit>(FEdits->GetItem(Index))->GetText();
+      UnicodeString Text = dyn_cast<TFarEdit>(as_object(FEdits->GetItem(Index)))->GetText();
       Results->SetString(Index, Text);
     }
 
@@ -2796,13 +2796,13 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 void TSessionDialog::FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
 {
   FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    static_cast<TObject *>(ToPtr(ProxyType)));
+    as_object(ToPtr(ProxyType)));
 }
 
 void TSessionDialog::SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
 {
   SshProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    static_cast<TObject *>(ToPtr(ProxyType)));
+    as_object(ToPtr(ProxyType)));
 }
 
 TSessionDialog::~TSessionDialog()
@@ -3369,7 +3369,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     DebugAssert(CIPHER_NAME_WARN + CIPHER_COUNT - 1 == CIPHER_NAME_CHACHA20);
     for (intptr_t Index2 = 0; Index2 < CIPHER_COUNT; ++Index2)
     {
-      TObject * Obj = static_cast<TObject *>(ToPtr(SessionData->GetCipher(Index2)));
+      TObject * Obj = as_object(ToPtr(SessionData->GetCipher(Index2)));
       CipherListBox->GetItems()->AddObject(
         GetMsg(CIPHER_NAME_WARN + static_cast<intptr_t>(SessionData->GetCipher(Index2))),
         Obj);
@@ -3393,7 +3393,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     {
       KexListBox->GetItems()->AddObject(
         GetMsg(KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index3))),
-        static_cast<TObject *>(ToPtr(SessionData->GetKex(Index3))));
+        as_object(ToPtr(SessionData->GetKex(Index3))));
     }
   }
 
@@ -3708,7 +3708,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (intptr_t Index5 = 0; Index5 < CIPHER_COUNT; ++Index5)
     {
-      TObject * Obj = static_cast<TObject *>(CipherListBox->GetItems()->GetObj(Index5));
+      TObject * Obj = as_object(CipherListBox->GetItems()->GetObj(Index5));
       SessionData->SetCipher(Index5, static_cast<TCipher>(reinterpret_cast<intptr_t>(Obj)));
     }
 
@@ -3841,7 +3841,7 @@ intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList *
 {
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TObject * Obj = static_cast<TObject *>(Items->GetObj(Index));
+    TObject * Obj = as_object(Items->GetObj(Index));
     TProxyMethod Method = static_cast<TProxyMethod>(reinterpret_cast<intptr_t>(Obj));
     if (Method == ProxyMethod)
       return Index;
@@ -3854,7 +3854,7 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items
   TProxyMethod Result = pmNone;
   if (Index >= 0 && Index < Items->GetCount())
   {
-    TObject * Obj = static_cast<TObject *>(Items->GetObj(Index));
+    TObject * Obj = as_object(Items->GetObj(Index));
     Result = static_cast<TProxyMethod>(reinterpret_cast<intptr_t>(Obj));
   }
   return Result;
@@ -4224,7 +4224,7 @@ void TSessionDialog::FillCodePageEdit()
 {
   // CodePageEditAdd(CP_UTF8);
   CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
-    static_cast<TObject *>(ToPtr(65001)));
+    as_object(ToPtr(65001)));
   CodePageEditAdd(CP_ACP);
   CodePageEditAdd(CP_OEMCP);
   CodePageEditAdd(20866); // KOI8-r
@@ -4237,7 +4237,7 @@ void TSessionDialog::CodePageEditAdd(uint32_t Cp)
   if (::GetCodePageInfo(Cp, cpInfoEx))
   {
     CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
-      static_cast<TObject *>(ToPtr(cpInfoEx.CodePage)));
+      as_object(ToPtr(cpInfoEx.CodePage)));
   }
 }
 
@@ -5865,9 +5865,9 @@ protected:
   UnicodeString CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
   UnicodeString SpaceStr(int64_t Bytes);
-  void ControlsAddItem(TObject * Control, int Label, const UnicodeString & Value);
-  void CalculateMaxLenAddItem(TObject * Control, int Label, const UnicodeString & Value);
-  void ClipboardAddItem(TObject * Control, int Label, const UnicodeString & Value);
+  void ControlsAddItem(TObject * AControl, int Label, const UnicodeString & Value);
+  void CalculateMaxLenAddItem(TObject * AControl, int Label, const UnicodeString & Value);
+  void ClipboardAddItem(TObject * AControl, int Label, const UnicodeString & Value);
   void FeedControls();
   void UpdateControls();
   TLabelList * CreateLabelArray(intptr_t Count);
@@ -6137,16 +6137,16 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
   AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_PER_ALLOCATION_UNIT, SpaceStr(FSpaceAvailable.BytesPerAllocationUnit));
 }
 
-void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
+void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
   int Label, const UnicodeString & Value)
 {
-  if (FLastFeededControl != Control)
+  if (FLastFeededControl != AControl)
   {
-    FLastFeededControl = Control;
+    FLastFeededControl = AControl;
     FLastListItem = 0;
   }
 
-  if (Control == HostKeyFingerprintEdit)
+  if (AControl == HostKeyFingerprintEdit)
   {
     HostKeyFingerprintEdit->SetText(Value);
     HostKeyFingerprintEdit->SetEnabled(!Value.IsEmpty());
@@ -6158,7 +6158,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
       HostKeyFingerprintLabel->SetGroup(0);
     }
   }
-  else if (Control == InfoLister)
+  else if (AControl == InfoLister)
   {
     InfoLister->GetItems()->SetText(Value);
     InfoLister->SetEnabled(!Value.IsEmpty());
@@ -6172,11 +6172,11 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
   }
   else
   {
-    TLabelList * List = dyn_cast<TLabelList>(Control);
+    TLabelList * List = dyn_cast<TLabelList>(AControl);
     DebugAssert(List != nullptr);
     if (!Value.IsEmpty() && List)
     {
-      TFarText * Text = dyn_cast<TFarText>(List->GetItem(FLastListItem));
+      TFarText * Text = dyn_cast<TFarText>(as_object(List->GetItem(FLastListItem)));
       FLastListItem++;
 
       Text->SetCaption(FORMAT(L"%d-%s  %s", List->MaxLen, GetMsg(Label).c_str(), Value.c_str()));
@@ -6184,10 +6184,10 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
   }
 }
 
-void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * Control,
+void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * AControl,
   int Label, const UnicodeString & )
 {
-  TLabelList * List = dyn_cast<TLabelList>(Control);
+  TLabelList * List = dyn_cast<TLabelList>(AControl);
   if (List != nullptr)
   {
     UnicodeString S = GetMsg(Label);
@@ -6513,7 +6513,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         DebugAssert(ItemFocused >= 0);
         if (ItemFocused >= BookmarksOffset)
         {
-          TBookmark * Bookmark = dyn_cast<TBookmark>(Bookmarks->GetItem(ItemFocused - BookmarksOffset));
+          TBookmark * Bookmark = dyn_cast<TBookmark>(as_object(Bookmarks->GetItem(ItemFocused - BookmarksOffset)));
           BookmarkList->Delete(Bookmark);
         }
         else
