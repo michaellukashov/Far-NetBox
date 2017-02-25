@@ -2721,6 +2721,7 @@ UnicodeString TFarPanelInfo::GetCurrDirectory() const
   if (Size)
   {
     FarPanelDirectory * pfpd = static_cast<FarPanelDirectory *>(nb_malloc(Size));
+    pfpd->StructSize = sizeof(FarPanelDirectory);
 
     FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
       Size,
