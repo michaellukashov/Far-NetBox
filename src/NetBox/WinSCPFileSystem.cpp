@@ -3655,7 +3655,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
 
     if (QueueItem != nullptr)
     {
-      QueueItem->SetUserData(ToPtr(1));
+      QueueItem->SetUserData(ToPtr(1LL));
       FQueueItemInvalidated = true;
     }
   }
