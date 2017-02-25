@@ -2315,7 +2315,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 void TWebDAVFileSystem::SinkFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * Param)
 {
-  TSinkFileParams * Params = dyn_cast<TSinkFileParams>(Param);
+  TSinkFileParams * Params = dyn_cast<TSinkFileParams>(as_object(Param));
   DebugAssert(Params->OperationProgress);
   try
   {
