@@ -9,9 +9,9 @@ project(NetBox)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug" FORCE)
 endif()
-message(STATUS "Build type -- ${CMAKE_BUILD_TYPE}")
-message(STATUS "CMAKE_CL_64 -- ${CMAKE_CL_64}")
-message(STATUS "MSVC10 -- ${MSVC10}")
+message("Build type: ${CMAKE_BUILD_TYPE}")
+message("CMAKE_CL_64: ${CMAKE_CL_64}")
+message("MSVC10: ${MSVC10}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far3)
@@ -51,9 +51,10 @@ endif()
 #-------------------------------------------------------------------------------
 
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
-include(CMakeDetermineCXXCompiler)
-message(STATUS "System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
-message(STATUS "MSVC_VERSION: ${MSVC_VERSION}")
+#include(CMakeDetermineCXXCompiler)
+message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
+message("MSVC_VERSION: ${MSVC_VERSION}")
+message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 #-------------------------------------------------------------------------------
 
@@ -91,7 +92,6 @@ set(NETBOX_FLAGS_RELEASE "-U_DEBUG -DNDEBUG")
 set(NETBOX_FLAGS_DEBUG "-D_DEBUG -DDEBUG")
 
 set(NETBOX_UNICODE_FLAGS -D_UNICODE -DUNICODE)
-set(NETBOX_UNICODE_FLAGS_STRING "-D_UNICODE -DUNICODE")
 
 if(MSVC)
 
@@ -114,7 +114,7 @@ set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
 endif()
 
 set(NETBOX_C_FLAGS "${NETBOX_DEFS} ${NETBOX_C_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_C_WARNING_FLAGS}")
-set(NETBOX_CXX_FLAGS "${NETBOX_DEFS} ${NETBOX_CXX_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_CXX_WARNING_FLAGS} ${NETBOX_UNICODE_FLAGS_STRING}")
+set(NETBOX_CXX_FLAGS "${NETBOX_DEFS} ${NETBOX_CXX_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_CXX_WARNING_FLAGS}")
 
 set(CMAKE_CXX_FLAGS_RELEASE "${NETBOX_CXX_FLAGS} ${NETBOX_FLAGS_RELEASE}")
 set(CMAKE_C_FLAGS_RELEASE "${NETBOX_C_FLAGS} ${NETBOX_FLAGS_RELEASE}")
@@ -891,14 +891,16 @@ endif(OPT_COMPILE_OPENSSL)
 set(ATLMFC_COMPILE_FLAGS
   -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
   -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
-  -D_AFX_NO_OLE_SUPPORT -D_AFX_NO_SOCKET_SUPPORT -DCOM_NO_WINDOWS_H
+  -D_AFX_NO_SOCKET_SUPPORT -DCOM_NO_WINDOWS_H
 )
 
 if(CMAKE_COMPILER_IS_MINGW)
+
   set(ATLMFC_COMPILE_FLAGS ${ATLMFC_COMPILE_FLAGS}
     -Wno-int-to-pointer-cast -Wno-pragmas -fpermissive
   )
-endif()
+
+endif(CMAKE_COMPILER_IS_MINGW)
 
 add_library(atlmfc STATIC
   ../../libs/atlmfc/mfc1.cpp
@@ -909,8 +911,10 @@ add_library(atlmfc STATIC
   ../../libs/atlmfc/src/mfc/thrdcore.cpp
 )
 
-target_compile_options(atlmfc
-  PRIVATE ${ATLMFC_COMPILE_FLAGS} -wd4995 -wd4996 -wd4101 -wd4290
+target_compile_options(atlmfc PRIVATE 
+  -wd4995 -wd4996 -wd4101 -wd4290
+  ${ATLMFC_COMPILE_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 target_include_directories(atlmfc PRIVATE
@@ -976,10 +980,12 @@ add_library(putty STATIC
 #  ../../libs/putty/ldisc.c
 )
 
-set(PUTTY_COMPILE_FLAGS -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -wd4996)
+set(PUTTY_COMPILE_FLAGS
+  -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -wd4996
+)
 
-target_compile_options(putty
-  PRIVATE ${PUTTY_COMPILE_FLAGS}
+target_compile_options(putty PRIVATE
+  ${PUTTY_COMPILE_FLAGS}
 )
 
 target_include_directories(putty PRIVATE
@@ -988,6 +994,7 @@ target_include_directories(putty PRIVATE
 )
 
 #-------------------------------------------------------------------------------
+#tinyxml2
 
 add_library(tinyxml2 STATIC
   ../../libs/tinyxml2/tinyxml2.cpp
@@ -1026,8 +1033,9 @@ add_library(neon STATIC
 
 set(NEON_COMPILE_FLAGS -wd4996)
 
-target_compile_options(neon
-  PRIVATE ${NEON_COMPILE_FLAGS} ${NETBOX_UNICODE_FLAGS}
+target_compile_options(neon PRIVATE
+  ${NEON_COMPILE_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 target_include_directories(neon PRIVATE
@@ -1115,8 +1123,8 @@ add_library(apr STATIC
   ../../libs/apr/user/win32/userinfo.c
 )
 
-target_compile_options(apr
-  PRIVATE -U_UNICODE -UUNICODE
+target_compile_options(apr PRIVATE
+  -U_UNICODE -UUNICODE
 )
 
 target_include_directories(apr PRIVATE
@@ -1136,8 +1144,8 @@ add_library(expat STATIC
 #  ../../libs/expat/lib/xmltok_ns.c
 )
 
-target_compile_options(expat
-  PRIVATE
+target_compile_options(expat PRIVATE
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 #-------------------------------------------------------------------------------
@@ -1171,8 +1179,8 @@ add_library(zlib STATIC
   ${ZLIB_SOURCES}
 )
 
-target_compile_options(zlib
-  PRIVATE ${NETBOX_UNICODE_FLAGS}
+target_compile_options(zlib PRIVATE
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 target_include_directories(zlib PRIVATE
@@ -1187,8 +1195,8 @@ add_library(dlmalloc STATIC
   ../../libs/dlmalloc/malloc-2.8.6.h
 )
 
-target_compile_options(dlmalloc
-  PRIVATE ${NETBOX_UNICODE_FLAGS}
+target_compile_options(dlmalloc PRIVATE
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 #-------------------------------------------------------------------------------
@@ -1245,7 +1253,7 @@ target_include_directories(rdestl PRIVATE
 )
 
 #-------------------------------------------------------------------------------
-# target NetBox
+#NetBox
 
 if(OPT_USE_UNITY_BUILD)
 
@@ -1493,12 +1501,14 @@ set(NETBOX_LIBRARIES
 
 if(MSVC)
 if(BUILD_DEBUG)
-set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+set(NETBOX_LIBRARIES PRIVATE
+  ${NETBOX_LIBRARIES}
   libcmtd.lib
   libcpmtd.lib
 )
 else()
-set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+set(NETBOX_LIBRARIES PRIVATE
+  ${NETBOX_LIBRARIES}
   libcmt.lib
   libcpmt.lib
 )
@@ -1541,29 +1551,41 @@ target_link_libraries(NetBox PRIVATE
   ${NETBOX_LIBRARIES}
 )
 
+target_compile_options(NetBox PRIVATE
+#  -wd4251 -wd4275 -wd4661
+  ${NETBOX_UNICODE_FLAGS}
+)
+
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
 string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 
-add_custom_command(TARGET NetBox
-  POST_BUILD
+add_custom_target(create_plugin_dir)
+add_custom_command(TARGET create_plugin_dir POST_BUILD
   COMMAND if not exist "${NETBOX_PLUGIN_DIR}" ( ${CMAKE_COMMAND} -E make_directory "${NETBOX_PLUGIN_DIR}" )
-  COMMAND if exist NetBox.dll ${CMAKE_COMMAND} -E copy NetBox.dll ${NETBOX_PLUGIN_DIR}
-  COMMAND if exist NetBox.pdb ( ${CMAKE_COMMAND} -E copy NetBox.pdb ${NETBOX_PLUGIN_DIR} )
-  COMMAND if exist NetBox.map ( ${CMAKE_COMMAND} -E copy NetBox.map ${NETBOX_PLUGIN_DIR} )
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    ${CMAKE_CURRENT_SOURCE_DIR}/NetBoxRus.lng
-    ${CMAKE_CURRENT_SOURCE_DIR}/NetBoxEng.lng
-    ${NETBOX_PLUGIN_DIR}
   WORKING_DIRECTORY ${BUILD_DIR}
   VERBATIM
 )
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-add_custom_command(TARGET NetBox
-  POST_BUILD
-  DEPENDS ${BUILD_DIR}\\NetBox.dll
-  COMMAND scripts\\make_dist.cmd ${FAR_VERSION} ${PROJECT_PLATFORM}
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  VERBATIM
+file(GLOB DIST_FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/*.lng
+#  ${BUILD_DIR}/*.dll
+#  ${BUILD_DIR}/*.pdb
+#  ${BUILD_DIR}/*.map
 )
-endif()
+
+add_custom_target(copy_to_plugin_dir)
+foreach(DIST_FILE ${DIST_FILES})
+  add_custom_command(TARGET copy_to_plugin_dir POST_BUILD
+#    COMMAND echo DIST_FILE: ${DIST_FILE}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}
+  )
+endforeach()
+
+add_custom_command(TARGET NetBox POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.dll ${NETBOX_PLUGIN_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.pdb ${NETBOX_PLUGIN_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.map ${NETBOX_PLUGIN_DIR}
+)
+
+add_dependencies(NetBox create_plugin_dir copy_to_plugin_dir)
+
