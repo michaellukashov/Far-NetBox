@@ -999,6 +999,9 @@ add_library(tinyxml2 STATIC
   ../../libs/tinyxml2/tinyxml2.cpp
 )
 
+target_compile_options(tinyxml2 PRIVATE
+)
+
 #-------------------------------------------------------------------------------
 #neon
 
@@ -1249,6 +1252,9 @@ add_library(rdestl STATIC
 
 target_include_directories(rdestl PRIVATE
   ../base
+)
+
+target_compile_options(rdestl PRIVATE
 )
 
 #-------------------------------------------------------------------------------
