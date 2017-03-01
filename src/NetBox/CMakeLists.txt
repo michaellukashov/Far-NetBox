@@ -1642,8 +1642,9 @@ target_include_directories(testnetbox_01 PRIVATE
   ${test_includes}
 )
 
-target_compile_options(testnetbox_01
-  PRIVATE -D_CRT_SECURE_NO_WARNINGS -D_CRT_NON_CONFORMING_SWPRINTFS
+target_compile_options(testnetbox_01 PRIVATE
+  -D_CRT_SECURE_NO_WARNINGS -D_CRT_NON_CONFORMING_SWPRINTFS
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 add_dependencies(testnetbox_01
@@ -1671,8 +1672,9 @@ target_include_directories(testnetbox_02 PRIVATE
   ${test_includes}
 )
 
-target_compile_options(testnetbox_02
-  PRIVATE -D_CRT_SECURE_NO_WARNINGS -D_CRT_NON_CONFORMING_SWPRINTFS
+target_compile_options(testnetbox_02 PRIVATE
+  -D_CRT_SECURE_NO_WARNINGS -D_CRT_NON_CONFORMING_SWPRINTFS
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 set_target_properties(testnetbox_02
@@ -1715,6 +1717,11 @@ set_target_properties(testnetbox_03
   LINK_FLAGS "${CMAKE_LINK_FLAGS} /ignore:4099"
 )
 
+target_compile_options(testnetbox_03 PRIVATE
+  -D_CRT_SECURE_NO_WARNINGS -D_CRT_NON_CONFORMING_SWPRINTFS
+  ${NETBOX_UNICODE_FLAGS}
+)
+
 add_dependencies(testnetbox_03
   putty
   tinyxml2
@@ -1746,6 +1753,11 @@ set_target_properties(testnetbox_04
   PROPERTIES
   COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
   LINK_FLAGS "${CMAKE_LINK_FLAGS} /ignore:4099 /verbose:lib"
+)
+
+target_compile_options(testnetbox_04 PRIVATE
+  -D_CRT_SECURE_NO_WARNINGS -D_CRT_NON_CONFORMING_SWPRINTFS
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 #add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
