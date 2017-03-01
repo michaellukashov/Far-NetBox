@@ -1,6 +1,5 @@
 #pragma once
 
-#include <nbglobals.h>
 #include <nbstring.h>
 
 class RawByteString;

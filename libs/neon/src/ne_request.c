@@ -823,7 +823,7 @@ static int read_response_block(ne_request *req, struct ne_response *resp,
 
             /* Read the chunk size line into a temporary buffer. */
             SOCK_ERR(req,
-                     ne_sock_readline(sock, req->respbuf, sizeof req->respbuf),
+                     ne_sock_readline(sock, req->respbuf, sizeof(req->respbuf) - 1),
                      _("Could not read chunk size"));
             NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "[chunk] < %s", req->respbuf);
             chunk_len = strtoul(req->respbuf, &ptr, 16);
@@ -999,7 +999,7 @@ static int read_status_line(ne_request *req, ne_status *status, int retry)
     char *buffer = req->respbuf;
     ssize_t ret;
 
-    ret = ne_sock_readline(req->session->socket, buffer, sizeof req->respbuf);
+    ret = ne_sock_readline(req->session->socket, buffer, sizeof(req->respbuf) - 1);
     if (ret <= 0) {
 	int aret = aborted(req, _("Could not read status line"), ret);
 	return RETRY_RET(retry, ret, aret);
@@ -1035,7 +1035,7 @@ static int discard_headers(ne_request *req)
     NE_DEBUG_WINSCP_CONTEXT(req->session);
     do {
 	SOCK_ERR(req, ne_sock_readline(req->session->socket, req->respbuf, 
-				       sizeof req->respbuf),
+							 sizeof(req->respbuf) - 1),
 		 _("Could not read interim response headers"));
 	NE_DEBUG(NE_DBG_HTTP, "[discard] < %s", req->respbuf);
     } while (strcmp(req->respbuf, EOL) != 0);
@@ -1210,7 +1210,7 @@ static int read_response_headers(ne_request *req)
     char hdr[MAX_HEADER_LEN];
     int ret, count = 0;
     
-    while ((ret = read_message_header(req, hdr, sizeof hdr)) == NE_RETRY 
+    while ((ret = read_message_header(req, hdr, sizeof(hdr) - 1)) == NE_RETRY
 	   && ++count < MAX_HEADER_FIELDS) {
 	char *pnt;
 	unsigned int hash = 0;

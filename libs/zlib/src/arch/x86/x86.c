@@ -10,10 +10,6 @@
 
 #include "x86.h"
 
-ZLIB_INTERNAL int x86_cpu_has_sse2;
-ZLIB_INTERNAL int x86_cpu_has_sse42;
-ZLIB_INTERNAL int x86_cpu_has_pclmulqdq;
-
 #ifdef _MSC_VER
 #include <intrin.h>
 #else
@@ -21,7 +17,11 @@ ZLIB_INTERNAL int x86_cpu_has_pclmulqdq;
 #include <cpuid.h>
 #endif
 
+ZLIB_INTERNAL int x86_cpu_has_sse2;
+ZLIB_INTERNAL int x86_cpu_has_sse42;
+ZLIB_INTERNAL int x86_cpu_has_pclmulqdq;
 ZLIB_INTERNAL int x86_cpu_has_tzcnt;
+
 static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx) {
 #ifdef _MSC_VER
 	unsigned int registers[4];

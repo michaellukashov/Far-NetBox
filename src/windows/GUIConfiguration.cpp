@@ -465,12 +465,12 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
 
 const TCopyParamRule * TCopyParamList::GetRule(intptr_t Index) const
 {
-  return dyn_cast<TCopyParamRule>(FRules->GetItem(Index));
+  return dyn_cast<TCopyParamRule>(as_object(FRules->GetItem(Index)));
 }
 
 const TCopyParamType * TCopyParamList::GetCopyParam(intptr_t Index) const
 {
-  return dyn_cast<TCopyParamType>(FCopyParams->GetItem(Index));
+  return dyn_cast<TCopyParamType>(as_object(FCopyParams->GetItem(Index)));
 }
 
 UnicodeString TCopyParamList::GetName(intptr_t Index) const

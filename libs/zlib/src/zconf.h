@@ -165,7 +165,7 @@ typedef void       *voidp;
 #include <stdarg.h>         /* for va_list */
 
 #ifdef _WIN32
-#  include <stddef.h>         /* for wchar_t */
+#  include <stddef.h>         /* for wchar_t and NULL */
 #endif
 
 /* a little trick to accommodate both "#define _LARGEFILE64_SOURCE" and
@@ -210,7 +210,9 @@ typedef void       *voidp;
 #if !defined(_WIN32) && defined(Z_LARGE64)
 #  define z_off64_t off64_t
 #else
-#  if (defined(_WIN32) || defined(WIN32)) && !defined(__GNUC__)
+#  if defined(__MSYS__)
+#    define z_off64_t _off64_t
+#  elif (defined(_WIN32) || defined(WIN32)) && !defined(__GNUC__)
 #    define z_off64_t __int64
 #  else
 #    define z_off64_t z_off_t

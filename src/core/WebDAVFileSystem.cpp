@@ -2315,7 +2315,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 void TWebDAVFileSystem::SinkFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * Param)
 {
-  TSinkFileParams * Params = dyn_cast<TSinkFileParams>(Param);
+  TSinkFileParams * Params = dyn_cast<TSinkFileParams>(as_object(Param));
   DebugAssert(Params->OperationProgress);
   try
   {
@@ -2825,6 +2825,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & FileName, const TRemote
       if (Lock2 == nullptr)
       {
         ne_lock_free(Unlock);
+        ne_lock_destroy(Unlock);
       }
 
       DiscardLock(Path);

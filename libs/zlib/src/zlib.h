@@ -1416,7 +1416,7 @@ ZEXTERN int ZEXPORT gzread(gzFile file, void *buf, unsigned len);
    Z_STREAM_ERROR.
 */
 
-ZEXTERN z_size_t ZEXPORT gzfread ((voidp buf, z_size_t size, z_size_t nitems,
+ZEXTERN z_size_t ZEXPORT gzfread ((void * buf, z_size_t size, z_size_t nitems,
                                      gzFile file));
 /*
      Read up to nitems items of size size from file to buf, otherwise operating
@@ -1447,7 +1447,7 @@ ZEXTERN int ZEXPORT gzwrite(gzFile file, void const *buf, unsigned len);
    error.
 */
 
-ZEXTERN z_size_t ZEXPORT gzfwrite ((voidpc buf, z_size_t size,
+ZEXTERN z_size_t ZEXPORT gzfwrite ((void const * buf, z_size_t size,
                                       z_size_t nitems, gzFile file));
 /*
      gzfwrite() writes nitems items of size size from buf to file, duplicating
@@ -1713,7 +1713,7 @@ ZEXTERN uint32_t ZEXPORT adler32_combine(uint32_t adler1, uint32_t adler2, z_off
    negative, the result has no meaning or utility.
 */
 
-ZEXTERN uint32_t ZEXPORT crc32(uint32_t crc, const unsigned char *buf, uint32_t len);
+ZEXTERN uint32_t ZEXPORT crc32(uint32_t crc, const unsigned char *buf, size_t len);
 /*
      Update a running CRC-32 with the bytes buf[0..len-1] and return the
    updated CRC-32.  If buf is Z_NULL, this function returns the required

@@ -77,7 +77,7 @@ static int ssl_free(BIO *a)
         SSL_shutdown(bs->ssl);
     if (BIO_get_shutdown(a)) {
         if (BIO_get_init(a))
-            SSL_free(bs->ssl);
+            if (bs) SSL_free(bs->ssl);
         /* Clear all flags */
         BIO_clear_flags(a, ~0);
         BIO_set_init(a, 0);
