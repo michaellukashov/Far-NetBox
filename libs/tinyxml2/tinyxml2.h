@@ -549,7 +549,7 @@ public:
     // Anything in the high order range of UTF-8 is assumed to not be whitespace. This isn't
     // correct, but simple, and usually works.
     static bool IsWhiteSpace( char p )					{
-        return !IsUTF8Continuation(p) && std::isspace( static_cast<unsigned char>(p) );
+        return !IsUTF8Continuation(p) && isspace( static_cast<unsigned char>(p) );
     }
     
     inline static bool IsNameStartChar( unsigned char ch ) {
@@ -565,7 +565,7 @@ public:
     
     inline static bool IsNameChar( unsigned char ch ) {
         return IsNameStartChar( ch )
-               || std::isdigit( ch )
+               || isdigit( ch )
                || ch == '.'
                || ch == '-';
     }
@@ -1646,7 +1646,7 @@ public:
 
     /**
     	Load an XML file from disk. You are responsible
-    	for providing and closing the FILE*.
+    	for providing and closing the FILE*. 
      
         NOTE: The file should be opened as binary ("rb")
         not text in order for TinyXML-2 to correctly
@@ -1655,7 +1655,7 @@ public:
     	Returns XML_SUCCESS (0) on success, or
     	an errorID.
     */
-    XMLError LoadFile( std::FILE* );
+    XMLError LoadFile( FILE* );
 
     /**
     	Save the XML file to disk.
@@ -1671,7 +1671,7 @@ public:
     	Returns XML_SUCCESS (0) on success, or
     	an errorID.
     */
-    XMLError SaveFile( std::FILE* fp, bool compact = false );
+    XMLError SaveFile( FILE* fp, bool compact = false );
 
     bool ProcessEntities() const		{
         return _processEntities;
@@ -1794,7 +1794,7 @@ public:
     }
     /// If there is an error, print it to stdout.
     void PrintError() const;
-
+    
     /// Clear the document, resetting it to the initial state.
     void Clear();
 
@@ -1830,8 +1830,21 @@ private:
 	static const char* _errorNames[XML_ERROR_COUNT];
 
     void Parse();
+
+    template<class NodeType, int PoolElementSize>
+    NodeType* CreateUnlinkedNode( MemPoolT<PoolElementSize>& pool );
 };
 
+template<class NodeType, int PoolElementSize>
+inline NodeType* XMLDocument::CreateUnlinkedNode( MemPoolT<PoolElementSize>& pool )
+{
+    TIXMLASSERT( sizeof( NodeType ) == PoolElementSize );
+    TIXMLASSERT( sizeof( NodeType ) == pool.ItemSize() );
+    NodeType* returnNode = new (pool.Alloc()) NodeType( this );
+    TIXMLASSERT( returnNode );
+    returnNode->_memPool = &pool;
+    return returnNode;
+}
 
 /**
 	A XMLHandle is a class that wraps a node pointer with null checks; this is
@@ -2088,7 +2101,7 @@ public:
     	If 'compact' is set to true, then output is created
     	with only required whitespace and newlines.
     */
-    XMLPrinter( std::FILE* file=0, bool compact = false, int depth = 0 );
+    XMLPrinter( FILE* file=0, bool compact = false, int depth = 0 );
     virtual ~XMLPrinter()	{}
 
     /** If streaming, write the BOM and declaration. */
@@ -2101,7 +2114,7 @@ public:
     void PushAttribute( const char* name, const char* value );
     void PushAttribute( const char* name, int value );
     void PushAttribute( const char* name, unsigned value );
-	void PushAttribute( const char* name, int64_t value );
+	void PushAttribute(const char* name, int64_t value);
 	void PushAttribute( const char* name, bool value );
     void PushAttribute( const char* name, double value );
     /// If streaming, close the Element.
@@ -2182,7 +2195,7 @@ private:
     void PrintString( const char*, bool restrictedEntitySet );	// prints out, after detecting entities.
 
     bool _firstElement;
-    std::FILE* _fp;
+    FILE* _fp;
     int _depth;
     int _textDepth;
     bool _processEntities;
