@@ -818,7 +818,7 @@ target_include_directories(libcrypto SYSTEM BEFORE PRIVATE
   ../../libs/openssl/crypto
   ../../libs/openssl/crypto/include
   ../../libs/openssl/crypto/modes
-  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+  ../../libs/openssl/include
 )
 
 add_library(libssl STATIC
@@ -870,7 +870,7 @@ target_compile_options(libssl
 target_include_directories(libssl SYSTEM BEFORE PRIVATE
   ../../libs/openssl
   ../../libs/openssl/include
-  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+  ../../libs/openssl/include
 )
 
 else(OPT_COMPILE_OPENSSL)
@@ -1043,7 +1043,7 @@ target_compile_options(neon PRIVATE
 target_include_directories(neon PRIVATE
   ../../libs/zlib/src
   ../../libs/expat/lib
-  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+  ../../libs/openssl/include
 )
 
 #-------------------------------------------------------------------------------
@@ -1523,7 +1523,7 @@ add_library(NetBox SHARED
 )
 
 target_include_directories(NetBox PRIVATE
-  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+  ../../libs/openssl/include
   ../../libs/putty
   ../../libs/putty/windows
   ../../libs/apr/include
