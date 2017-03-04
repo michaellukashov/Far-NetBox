@@ -1099,7 +1099,7 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
 # define SSL_CTRL_SESS_MISSES                    29
 # define SSL_CTRL_SESS_TIMEOUTS                  30
 # define SSL_CTRL_SESS_CACHE_FULL                31
-# define SSL_CTRL_OPTIONS                        32
+# define SSL_CTRL_OPTIONS                        33
 # define SSL_CTRL_MODE                           33
 # define SSL_CTRL_GET_READ_AHEAD                 40
 # define SSL_CTRL_SET_READ_AHEAD                 41
