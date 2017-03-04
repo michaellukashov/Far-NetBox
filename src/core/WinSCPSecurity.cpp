@@ -9,6 +9,10 @@
 #define PWALG_SIMPLE_INTERNAL 0x00
 #define PWALG_SIMPLE_EXTERNAL 0x01
 
+#define PWALG_SIMPLE_STRING ((RawByteString)"0123456789ABCDEF")
+#define PWALG_SIMPLE_MAXLEN 50
+#define PWALG_SIMPLE_FLAG 0xFF
+
 static int random(int range)
 {
   return static_cast<int>(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
@@ -158,7 +162,7 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
     ChainConfig.CycleDetectionModulus = 0;
 
     HCERTCHAINENGINE ChainEngine;
-    bool ChainEngineResult = CertCreateCertificateChainEngine(&ChainConfig, &ChainEngine);
+    bool ChainEngineResult = CertCreateCertificateChainEngine(&ChainConfig, &ChainEngine) != FALSE;
     if (ChainEngineResult)
     {
       const CERT_CHAIN_CONTEXT * ChainContext = nullptr;

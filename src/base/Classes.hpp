@@ -1,22 +1,38 @@
 #pragma once
 
+#include <headers.hpp>
+
 #include <stdexcept>
 #include <limits>
 #include <stdarg.h>
 #include <math.h>
 #include <rdestl/vector.h>
 #include <rdestl/pair.h>
-#include <BaseDefs.hpp>
+
+#include <FastDelegate.h>
+#include <FastDelegateBind.h>
 
 #pragma warning(push, 1)
 
 #include <rtlconsts.h>
-#include <headers.hpp>
+#include <ObjIDs.h>
+#include <UnicodeString.hpp>
 #include <rtti.hpp>
 
 #pragma warning(pop)
 
-#define NPOS static_cast<intptr_t>(-1)
+namespace nb {
+  using fastdelegate::bind;
+  using fastdelegate::FastDelegate0;
+  using fastdelegate::FastDelegate1;
+  using fastdelegate::FastDelegate2;
+  using fastdelegate::FastDelegate3;
+  using fastdelegate::FastDelegate4;
+  using fastdelegate::FastDelegate5;
+  using fastdelegate::FastDelegate6;
+  using fastdelegate::FastDelegate7;
+  using fastdelegate::FastDelegate8;
+} // namespace nb
 
 typedef HANDLE THandle;
 typedef DWORD TThreadID;
@@ -38,9 +54,9 @@ extern const intptr_t DateDelta;
 extern const intptr_t UnixDateDelta;
 
 class TObject;
-DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 
-DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /*Sender*/);
+typedef nb::FastDelegate0<void> TThreadMethod;
+typedef nb::FastDelegate1<void, TObject * /*Sender*/> TNotifyEvent;
 
 void Abort();
 void Error(intptr_t Id, intptr_t ErrorId);
@@ -49,14 +65,20 @@ void ThrowNotImplemented(intptr_t ErrorId);
 class TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-NB_DECLARE_CLASS(TObject)
 public:
-  TObject() {}
+  inline TObjectClassId GetKind() const { return FKind; }
+  static inline bool classof(const TObject * /*Obj*/) { return true; }
+public:
+  TObject() : FKind(OBJECT_CLASS_TObject) {}
+  explicit TObject(TObjectClassId Kind) : FKind(Kind) {}
   virtual ~TObject() {}
   virtual void Changed() {}
-
-  bool IsKindOf(TObjectClassId ClassId) const;
+private:
+  TObjectClassId FKind;
 };
+
+inline TObject * as_object(void * p) { return static_cast<TObject *>(p); }
+inline const TObject * as_object(const void * p) { return static_cast<const TObject *>(p); }
 
 struct TPoint
 {
@@ -120,9 +142,30 @@ struct TRect
 
 class TPersistent : public TObject
 {
-NB_DECLARE_CLASS(TPersistent)
 public:
-  TPersistent();
+  static inline bool classof(const TObject * Obj)
+  {
+    switch(Obj->GetKind())
+    {
+      case OBJECT_CLASS_TPersistent:
+      case OBJECT_CLASS_TStrings:
+      case OBJECT_CLASS_TNamedObject:
+      case OBJECT_CLASS_TSessionData:
+      case OBJECT_CLASS_TBookmarkList:
+      case OBJECT_CLASS_TBookmark:
+      case OBJECT_CLASS_TRemoteFile:
+      case OBJECT_CLASS_TRemoteDirectoryFile:
+      case OBJECT_CLASS_TRemoteDirectory:
+      case OBJECT_CLASS_TRemoteParentDirectory:
+        return true;
+    default:
+        return false;
+    }
+    return false;
+  }
+public:
+  TPersistent() : TObject(OBJECT_CLASS_TPersistent) {}
+  explicit TPersistent(TObjectClassId Kind);
   virtual ~TPersistent();
   virtual void Assign(const TPersistent * Source);
   virtual TPersistent * GetOwner();
@@ -143,9 +186,21 @@ typedef intptr_t (CompareFunc)(const void * Item1, const void * Item2);
 
 class TList : public TObject
 {
-NB_DECLARE_CLASS(TList)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TList ||
+      Obj->GetKind() == OBJECT_CLASS_TLabelList ||
+      Obj->GetKind() == OBJECT_CLASS_TObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
+      Obj->GetKind() == OBJECT_CLASS_TTerminalList ||
+      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
+  }
 public:
   TList();
+  explicit TList(TObjectClassId Kind);
   virtual ~TList();
   void * operator [](intptr_t Index) const;
   virtual void * GetItem(intptr_t Index) const { return FList[Index]; }
@@ -172,9 +227,18 @@ private:
 
 class TObjectList : public TList
 {
-NB_DECLARE_CLASS(TObjectList)
 public:
-  TObjectList();
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
+      Obj->GetKind() == OBJECT_CLASS_TTerminalList ||
+      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
+  }
+public:
+  explicit TObjectList(TObjectClassId Kind = OBJECT_CLASS_TObjectList);
   virtual ~TObjectList();
 
   TObject * operator [](intptr_t Index) const;
@@ -208,9 +272,17 @@ class TStream;
 
 class TStrings : public TPersistent
 {
-NB_DECLARE_CLASS(TStrings)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TStrings ||
+      Obj->GetKind() == OBJECT_CLASS_TStringList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarList;
+  }
 public:
   TStrings();
+  explicit TStrings(TObjectClassId Kind);
   virtual ~TStrings();
   intptr_t Add(const UnicodeString & S, TObject * AObject = nullptr);
   virtual void Delete(intptr_t Index) = 0;
@@ -256,9 +328,9 @@ public:
   virtual void SetText(const UnicodeString & Text);
   virtual const UnicodeString & GetString(intptr_t Index) const = 0;
   virtual void SetString(intptr_t Index, const UnicodeString & S) = 0;
-  const UnicodeString GetName(intptr_t Index) const;
+  UnicodeString GetName(intptr_t Index) const;
   void SetName(intptr_t Index, const UnicodeString & Value);
-  const UnicodeString GetValue(const UnicodeString & Name) const;
+  UnicodeString GetValue(const UnicodeString & Name) const;
   void SetValue(const UnicodeString & Name, const UnicodeString & Value);
   UnicodeString GetValueFromIndex(intptr_t Index) const;
 
@@ -275,9 +347,17 @@ typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, i
 class TStringList : public TStrings
 {
 friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
-NB_DECLARE_CLASS(TStringList)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TStringList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
+  }
 public:
   TStringList();
+  explicit TStringList(TObjectClassId Kind);
   virtual ~TStringList();
 
   intptr_t Add(const UnicodeString & S);
@@ -417,7 +497,7 @@ TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
 double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
 int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
 int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
-
+/*
 class TSHFileInfo : public TObject
 {
   typedef DWORD_PTR (WINAPI * TGetFileInfo)(
@@ -440,8 +520,9 @@ public:
 
 private:
   TGetFileInfo FGetFileInfo;
+  TLibraryLoader FSHFileInfoLoader;
 };
-
+*/
 enum TSeekOrigin
 {
   soFromBeginning = 0,
@@ -688,8 +769,8 @@ struct TInputDialogData
 
 //typedef void (__closure *TInputDialogInitialize)
 //  (TObject * Sender, TInputDialogData * Data);
-DEFINE_CALLBACK_TYPE2(TInputDialogInitializeEvent, void,
-  TObject * /*Sender*/, TInputDialogData * /*Data*/);
+typedef nb::FastDelegate2<void,
+  TObject * /*Sender*/, TInputDialogData * /*Data*/> TInputDialogInitializeEvent;
 
 enum TQueryType
 {

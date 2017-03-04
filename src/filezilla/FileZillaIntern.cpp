@@ -5,12 +5,13 @@
 #include "FileZillaIntf.h"
 
 TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
+  // TObject(OBJECT_CLASS_TFileZillaIntern),
   FOwner(AOwner)
 {
   FDebugLevel = 0;
 }
 
-bool TFileZillaIntern::PostMessage(WPARAM wParam, LPARAM lParam) const
+bool TFileZillaIntern::FZPostMessage(WPARAM wParam, LPARAM lParam) const
 {
   bool Result;
   unsigned int MessageID = FZ_MSG_ID(wParam);
@@ -23,7 +24,7 @@ bool TFileZillaIntern::PostMessage(WPARAM wParam, LPARAM lParam) const
     case FZ_MSG_TRANSFERSTATUS:
     case FZ_MSG_REPLY:
     case FZ_MSG_CAPABILITIES:
-      Result = FOwner->PostMessage(wParam, lParam);
+      Result = FOwner->FZPostMessage(wParam, lParam);
       break;
 
     default:
@@ -54,6 +55,4 @@ void TFileZillaIntern::SetDebugLevel(int DebugLevel)
 {
   FDebugLevel = DebugLevel;
 }
-
-NB_IMPLEMENT_CLASS(TFileZillaIntern, NB_GET_CLASS_INFO(TObject), nullptr)
 

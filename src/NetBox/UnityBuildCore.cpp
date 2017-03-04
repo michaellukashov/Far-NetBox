@@ -1,17 +1,20 @@
 #define PUTTY_DO_GLOBALS
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
+#endif
 #define _CRT_NON_CONFORMING_SWPRINTFS
 
-#pragma warning(push)
-#pragma warning(disable: 4100) // unreferenced formal parameter
+#include <disable_warnings_in_std_begin.hpp>
+
+#include "../nbcore/nbmemory.cpp"
+#include "../nbcore/nbstring.cpp"
+#include "../nbcore/nbutils.cpp"
 
 #include "../base/UnicodeString.cpp"
 #include "../base/Classes.cpp"
 #include "../base/Masks.cpp"
 #include "../base/Sysutils.cpp"
 #include "../base/StrUtils.cpp"
-#include "../base/local.cpp"
-#include "../base/rtti.cpp"
 #include "../base/WideStrUtils.cpp"
 #include "../base/LibraryLoader.cpp"
 #include "../base/Common.cpp"
@@ -51,4 +54,4 @@
 #include "../windows/Tools.cpp"
 #include "../windows/ProgParams.cpp"
 
-#pragma warning(pop)
+#include <disable_warnings_in_std_end.hpp>

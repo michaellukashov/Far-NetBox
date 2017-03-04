@@ -18,20 +18,20 @@ const intptr_t ccSet = 0x80000000;
 static const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
 #define ADDITIONAL_LANGUAGE_PREFIX L"XX"
 
-TGUICopyParamType::TGUICopyParamType()
-  : TCopyParamType()
+TGUICopyParamType::TGUICopyParamType() :
+  TCopyParamType(OBJECT_CLASS_TGUICopyParamType)
 {
   GUIDefault();
 }
 
-TGUICopyParamType::TGUICopyParamType(const TCopyParamType & Source)
-  : TCopyParamType(Source)
+TGUICopyParamType::TGUICopyParamType(const TCopyParamType & Source) :
+  TCopyParamType(Source)
 {
   GUIDefault();
 }
 
-TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source)
-  : TCopyParamType(Source)
+TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source) :
+  TCopyParamType(Source)
 {
   GUIAssign(&Source);
 }
@@ -41,7 +41,7 @@ void TGUICopyParamType::Assign(const TCopyParamType * Source)
   TCopyParamType::Assign(Source);
 
   const TGUICopyParamType * GUISource;
-  GUISource = NB_STATIC_DOWNCAST_CONST(TGUICopyParamType, Source);
+  GUISource = dyn_cast<TGUICopyParamType>(Source);
   if (GUISource != nullptr)
   {
     GUIAssign(GUISource);
@@ -107,16 +107,19 @@ void TCopyParamRuleData::Default()
   LocalDirectory.Clear();
 }
 
-TCopyParamRule::TCopyParamRule()
+TCopyParamRule::TCopyParamRule() :
+  TObject(OBJECT_CLASS_TCopyParamRule)
 {
 }
 
 TCopyParamRule::TCopyParamRule(const TCopyParamRuleData & Data) :
+  TObject(OBJECT_CLASS_TCopyParamRule),
   FData(Data)
 {
 }
 
-TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source)
+TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source) :
+  TObject(OBJECT_CLASS_TCopyParamRule)
 {
   FData.HostName = Source.FData.HostName;
   FData.UserName = Source.FData.UserName;
@@ -462,12 +465,12 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
 
 const TCopyParamRule * TCopyParamList::GetRule(intptr_t Index) const
 {
-  return NB_STATIC_DOWNCAST(TCopyParamRule, FRules->GetItem(Index));
+  return dyn_cast<TCopyParamRule>(as_object(FRules->GetItem(Index)));
 }
 
 const TCopyParamType * TCopyParamList::GetCopyParam(intptr_t Index) const
 {
-  return NB_STATIC_DOWNCAST(TCopyParamType, FCopyParams->GetItem(Index));
+  return dyn_cast<TCopyParamType>(as_object(FCopyParams->GetItem(Index)));
 }
 
 UnicodeString TCopyParamList::GetName(intptr_t Index) const
@@ -501,7 +504,8 @@ bool TCopyParamList::GetAnyRule() const
   return Result;
 }
 
-TGUIConfiguration::TGUIConfiguration() : TConfiguration(),
+TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) :
+  TConfiguration(Kind),
   FLocale(0),
   FLocales(CreateSortedStringList()),
   FLastLocalesExts(L"*"),
@@ -881,7 +885,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
 {
   if (GetLocale() != Value)
   {
-    HINSTANCE Module;
+    HINSTANCE Module = nullptr;
 
     try
     {
@@ -1137,7 +1141,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
 
   TSessionData * PuttySessionData =
-    NB_STATIC_DOWNCAST(TSessionData, ImportSessionList->FindByName(GetPuttySession()));
+    dyn_cast<TSessionData>(ImportSessionList->FindByName(GetPuttySession()));
   if (PuttySessionData != nullptr)
   {
     ImportSessionList->Remove(PuttySessionData);
@@ -1248,10 +1252,6 @@ void TGUIConfiguration::SetChecksumAlg(const UnicodeString & Value)
 
 TGUIConfiguration * GetGUIConfiguration()
 {
-  return NB_STATIC_DOWNCAST(TGUIConfiguration, GetConfiguration());
+  return dyn_cast<TGUIConfiguration>(GetConfiguration());
 }
-
-NB_IMPLEMENT_CLASS(TGUICopyParamType, NB_GET_CLASS_INFO(TCopyParamType), nullptr)
-NB_IMPLEMENT_CLASS(TGUIConfiguration, NB_GET_CLASS_INFO(TConfiguration), nullptr)
-NB_IMPLEMENT_CLASS(TCopyParamRule, NB_GET_CLASS_INFO(TObject), nullptr)
 

@@ -7,6 +7,7 @@
 //////////////////////////////////////////////////////////////////////
 
 CApiLog::CApiLog()
+  // TObject(OBJECT_CLASS_CApiLog)
 {
   FIntern = NULL;
 }
@@ -70,7 +71,7 @@ void CApiLog::SendLogMessage(int nMessageType, LPCTSTR pMsg) const
   pStatus->post = TRUE;
   pStatus->status = pMsg;
   pStatus->type = nMessageType;
-  if (!FIntern->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
+  if (!FIntern->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
     delete pStatus;
 }
 
@@ -85,6 +86,4 @@ int CApiLog::GetOptionVal(int OptionID) const
   DebugAssert(FIntern != NULL);
   return FIntern->GetOptionVal(OptionID);
 }
-
-NB_IMPLEMENT_CLASS(CApiLog, NB_GET_CLASS_INFO(TObject), nullptr)
 

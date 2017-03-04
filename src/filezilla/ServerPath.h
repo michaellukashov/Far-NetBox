@@ -1,8 +1,10 @@
 
 #pragma once
+#include "stdafx.h"
 
 class CServerPath
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   BOOL AddSubdir(CString subdir);
   CString GetSafePath() const;

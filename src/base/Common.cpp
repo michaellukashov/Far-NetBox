@@ -19,6 +19,14 @@
 
 #include "TextsCore.h"
 
+#pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
+
+int Win32Platform = 0;
+int Win32MajorVersion = 0;
+int Win32MinorVersion = 0;
+int Win32BuildNumber = 0;
+wchar_t Win32CSDVersion[128] = {};
+
 const wchar_t * DSTModeNames = L"Win;Unix;Keep";
 
 const wchar_t EngShortMonthNames[12][4] =
@@ -291,13 +299,13 @@ UnicodeString ShellDelimitStr(const UnicodeString & Str, wchar_t Quote)
 UnicodeString ExceptionLogString(Exception * E)
 {
   DebugAssert(E);
-  if (NB_STATIC_DOWNCAST(Exception, E) != nullptr)
+  if (isa<Exception>(E))
   {
     UnicodeString Msg;
     Msg = FORMAT(L"%s", UnicodeString(E->what()).c_str());
-    if (NB_STATIC_DOWNCAST(ExtException, E) != nullptr)
+    if (isa<ExtException>(E))
     {
-      TStrings * MoreMessages = NB_STATIC_DOWNCAST(ExtException, E)->GetMoreMessages();
+      TStrings * MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +
@@ -813,7 +821,7 @@ bool IsReservedName(const UnicodeString & AFileName)
 
 // ApiPath support functions
 // Inspired by
-// http://stackoverflow.com/questions/18580945/need-clarification-for-converting-paths-into-long-unicode-paths-or-the-ones-star
+// http://stackoverflow.com/q/18580945/850848
 // This can be reimplemented using PathCchCanonicalizeEx on Windows 8 and later
 enum PATH_PREFIX_TYPE
 {
@@ -1142,10 +1150,10 @@ UnicodeString DisplayableStr(const RawByteString & Str)
 
 UnicodeString ByteToHex(uint8_t B, bool UpperCase)
 {
-  static wchar_t UpperDigits[] = L"0123456789ABCDEF";
-  static wchar_t LowerDigits[] = L"0123456789abcdef";
+  UnicodeString UpperDigits = "0123456789ABCDEF";
+  UnicodeString LowerDigits = "0123456789abcdef";
 
-  const wchar_t * Digits = (UpperCase ? UpperDigits : LowerDigits);
+  const wchar_t * Digits = (UpperCase ? UpperDigits.c_str() : LowerDigits.c_str());
   UnicodeString Result;
   Result.SetLength(2);
   Result[1] = Digits[(B & 0xF0) >> 4];
@@ -1204,7 +1212,7 @@ RawByteString HexToBytes(const UnicodeString & Hex)
 
 uint8_t HexToByte(const UnicodeString & Hex)
 {
-  static UnicodeString Digits = "0123456789ABCDEF";
+  UnicodeString Digits = "0123456789ABCDEF";
   DebugAssert(Hex.Length() == 2);
   intptr_t P1 = Digits.Pos(::UpCase(Hex[1]));
   intptr_t P2 = Digits.Pos(::UpCase(Hex[2]));

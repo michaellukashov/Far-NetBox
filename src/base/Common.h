@@ -3,6 +3,12 @@
 #include <Global.h>
 #include <Exceptions.h>
 
+extern int Win32Platform;
+extern int Win32MajorVersion;
+extern int Win32MinorVersion;
+extern int Win32BuildNumber;
+extern wchar_t Win32CSDVersion[128];
+
 extern const wchar_t EngShortMonthNames[12][4];
 #define CONST_BOM "\xEF\xBB\xBF"
 extern const wchar_t TokenPrefix;
@@ -172,8 +178,10 @@ UnicodeString ChangeUrlProtocol(const UnicodeString & S, const UnicodeString & P
 void LoadScriptFromFile(const UnicodeString & FileName, TStrings * Lines);
 UnicodeString StripEllipsis(const UnicodeString & S);
 
-DEFINE_CALLBACK_TYPE3(TProcessLocalFileEvent, void,
-  const UnicodeString & /*FileName*/, const TSearchRec & /*Rec*/, void * /*Param*/);
+typedef nb::FastDelegate3<void,
+  const UnicodeString & /*FileName*/, const TSearchRec & /*Rec*/,
+  void * /*Param*/> TProcessLocalFileEvent;
+
 bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec);
 
 struct TSearchRecChecked : public TSearchRec

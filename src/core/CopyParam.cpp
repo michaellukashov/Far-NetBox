@@ -12,12 +12,14 @@ const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
 const int TransferModeNamesCount = _countof(TransferModeNames);
 const wchar_t * ToggleNames[] = { L"off", L"on" };
 
-TCopyParamType::TCopyParamType()
+TCopyParamType::TCopyParamType(TObjectClassId Kind) :
+  TObject(Kind)
 {
   Default();
 }
 
-TCopyParamType::TCopyParamType(const TCopyParamType & Source)
+TCopyParamType::TCopyParamType(const TCopyParamType & Source) :
+  TObject(OBJECT_CLASS_TCopyParamType)
 {
   Assign(&Source);
 }
@@ -965,5 +967,4 @@ void CopySpeedLimits(TStrings * Source, TStrings * Dest)
   Dest->Assign(Temp.get());
 }
 
-NB_IMPLEMENT_CLASS(TCopyParamType, NB_GET_CLASS_INFO(TObject), nullptr)
 

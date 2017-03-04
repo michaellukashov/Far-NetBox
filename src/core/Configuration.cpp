@@ -18,7 +18,7 @@
 const wchar_t * AutoSwitchNames = L"On;Off;Auto";
 const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
 
-// See http://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
+// See https://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
 const UnicodeString Sha1ChecksumAlg(L"sha-1");
 const UnicodeString Sha224ChecksumAlg(L"sha-224");
 const UnicodeString Sha256ChecksumAlg(L"sha-256");
@@ -31,7 +31,8 @@ const UnicodeString Crc32ChecksumAlg(L"crc32");
 const UnicodeString SshFingerprintType(L"ssh");
 const UnicodeString TlsFingerprintType(L"tls");
 
-TConfiguration::TConfiguration() :
+TConfiguration::TConfiguration(TObjectClassId Kind) :
+  TObject(Kind),
   FDontSave(false),
   FChanged(false),
   FUpdating(0),
@@ -597,7 +598,6 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
       !Storage->OpenSubKey("Banners", false) ||
       !Storage->ValueExists(SessionKey) ||
       (Storage->ReadString(SessionKey, L"") != BannerHash(Banner));
-    return Result;
   }
   __finally
   {
@@ -895,7 +895,7 @@ UnicodeString TConfiguration::GetFileProductVersion() const
 
 UnicodeString TConfiguration::GetReleaseType() const
 {
-  return GetFileInfoString(L"ReleaseType");
+  return GetFileInfoString("ReleaseType");
 }
 
 bool TConfiguration::GetIsUnofficial() const
@@ -1007,7 +1007,7 @@ UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info)
         HIWORD(Info->dwFileVersionLS));
     return Result;
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     throw ExtException(&E, L"Can't get file version");
   }
@@ -1681,4 +1681,3 @@ bool TShortCuts::Has(const TShortCut & ShortCut) const
   return (it != FShortCuts.end());
 }
 
-NB_IMPLEMENT_CLASS(TConfiguration, NB_GET_CLASS_INFO(TObject), nullptr)

@@ -20,9 +20,13 @@ struct ne_lock;
 class TWebDAVFileSystem : public TCustomFileSystem
 {
 NB_DISABLE_COPY(TWebDAVFileSystem)
-NB_DECLARE_CLASS(TWebDAVFileSystem)
 public:
-  TWebDAVFileSystem() { Init(nullptr); }
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TWebDAVFileSystem;
+  }
+public:
   explicit TWebDAVFileSystem(TTerminal * ATerminal);
   virtual ~TWebDAVFileSystem();
 
@@ -76,7 +80,7 @@ public:
     const UnicodeString & ANewName);
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName);
-  virtual TStrings * GetFixedPaths();
+  virtual TStrings * GetFixedPaths() const;
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;
@@ -201,8 +205,8 @@ private:
   int ReadDirectoryInternal(const UnicodeString & Path, TRemoteFileList * FileList);
   int RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
   bool IsValidRedirect(int NeonStatus, UnicodeString & Path);
-  UnicodeString DirectoryPath(UnicodeString Path);
-  UnicodeString FilePath(const TRemoteFile * File);
+  UnicodeString DirectoryPath(const UnicodeString & Path) const;
+  UnicodeString FilePath(const TRemoteFile * File) const;
   struct ne_lock * FindLock(const RawByteString & Path);
   void DiscardLock(const RawByteString & Path);
   bool IsNtlmAuthentication() const;

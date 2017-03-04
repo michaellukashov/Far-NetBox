@@ -35,18 +35,8 @@ void ThrowNotImplemented(intptr_t ErrorId)
   Error(SNotImplemented, ErrorId);
 }
 
-bool TObject::IsKindOf(TObjectClassId ClassId) const
-{
-  DebugAssert(this != nullptr);
-
-  TClassInfo * thisInfo = this->GetClassInfo();
-  DebugAssert(thisInfo != nullptr);
-
-  const TClassInfo * classInfo = TClassInfo::FindClass(ClassId);
-  return thisInfo->IsKindOf(classInfo);
-}
-
-TPersistent::TPersistent()
+TPersistent::TPersistent(TObjectClassId Kind) :
+  TObject(Kind)
 {}
 
 TPersistent::~TPersistent()
@@ -80,7 +70,13 @@ void TPersistent::AssignError(const TPersistent * Source)
   throw Exception(L"Cannot assign");
 }
 
-TList::TList()
+TList::TList() :
+  TObject(OBJECT_CLASS_TList)
+{
+}
+
+TList::TList(TObjectClassId Kind) :
+  TObject(Kind)
 {
 }
 
@@ -275,7 +271,9 @@ void TList::Sort()
   ThrowNotImplemented(15);
 }
 
-TObjectList::TObjectList() :
+
+TObjectList::TObjectList(TObjectClassId Kind) :
+  TList(Kind),
   FOwnsObjects(true)
 {
 }
@@ -287,12 +285,12 @@ TObjectList::~TObjectList()
 
 TObject * TObjectList::operator [](intptr_t Index) const
 {
-  return static_cast<TObject *>(TList::operator[](Index));
+  return as_object(TList::operator[](Index));
 }
 
 TObject * TObjectList::GetObj(intptr_t Index) const
 {
-  return static_cast<TObject *>(TList::GetItem(Index));
+  return as_object(TList::GetItem(Index));
 }
 
 void TObjectList::SetItem(intptr_t Index, TObject * Value)
@@ -351,7 +349,7 @@ void TObjectList::Notify(void * Ptr, TListNotification Action)
   {
     if (Action == lnDeleted)
     {
-      delete static_cast<TObject *>(Ptr);
+      delete as_object(Ptr);
     }
   }
   TList::Notify(Ptr, Action);
@@ -374,11 +372,22 @@ const intptr_t UnixDateDelta = 25569;
 static const int MemoryDelta = 0x2000;
 
 TStrings::TStrings() :
+  TPersistent(OBJECT_CLASS_TStrings),
   FDuplicates(dupAccept),
   FDelimiter(L','),
   FQuoteChar(L'"'),
   FUpdateCount(0)
 {
+}
+
+TStrings::TStrings(TObjectClassId Kind) :
+  TPersistent(Kind),
+  FDuplicates(dupAccept),
+  FDelimiter(L','),
+  FQuoteChar(L'"'),
+  FUpdateCount(0)
+{
+
 }
 
 TStrings::~TStrings()
@@ -511,7 +520,7 @@ intptr_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString 
 
 void TStrings::Assign(const TPersistent * Source)
 {
-  const TStrings * Strings = NB_STATIC_DOWNCAST_CONST(TStrings, Source);
+  const TStrings * Strings = dyn_cast<TStrings>(Source);
   if (Strings != nullptr)
   {
     BeginUpdate();
@@ -690,7 +699,7 @@ intptr_t TStrings::IndexOfName(const UnicodeString & Name) const
   return NPOS;
 }
 
-const UnicodeString TStrings::GetName(intptr_t Index) const
+UnicodeString TStrings::GetName(intptr_t Index) const
 {
   return ExtractName(GetString(Index));
 }
@@ -715,13 +724,13 @@ UnicodeString TStrings::ExtractName(const UnicodeString & S) const
   return Result;
 }
 
-const UnicodeString TStrings::GetValue(const UnicodeString & Name) const
+UnicodeString TStrings::GetValue(const UnicodeString & Name) const
 {
   UnicodeString Result;
   intptr_t Index = IndexOfName(Name);
   if (Index >= 0)
   {
-    Result = GetString(Index).SubStr(Name.Length() + 2, -1);
+    Result = GetString(Index).SubStr(Name.Length() + 2);
   }
   return Result;
 }
@@ -784,6 +793,15 @@ intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t 
 }
 
 TStringList::TStringList() :
+  TStrings(OBJECT_CLASS_TStringList),
+  FSorted(false),
+  FCaseSensitive(false)
+{
+
+}
+
+TStringList::TStringList(TObjectClassId Kind) :
+  TStrings(Kind),
   FSorted(false),
   FCaseSensitive(false)
 {
@@ -1062,7 +1080,7 @@ void TStringList::Changed()
   }
 }
 
-void TStringList::Insert(intptr_t Index, const UnicodeString & S, TObject* AObject)
+void TStringList::Insert(intptr_t Index, const UnicodeString & S, TObject * AObject)
 {
   InsertItem(Index, S, AObject);
 }
@@ -1238,21 +1256,20 @@ int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
   return MilliSecondsBetween(ANow, AThen);
 }
 
-static TLibraryLoader SHFileInfoLoader;
-
+/*
 TSHFileInfo::TSHFileInfo() :
   FGetFileInfo(nullptr)
 {
-  SHFileInfoLoader.Load(L"Shell32.dll");
-  if (SHFileInfoLoader.Loaded())
+  FSHFileInfoLoader.Load(L"Shell32.dll");
+  if (FSHFileInfoLoader.Loaded())
   {
-    FGetFileInfo = reinterpret_cast<TGetFileInfo>(SHFileInfoLoader.GetProcAddress("SHGetFileInfo"));
+    FGetFileInfo = reinterpret_cast<TGetFileInfo>(FSHFileInfoLoader.GetProcAddress("SHGetFileInfo"));
   }
 }
 
 TSHFileInfo::~TSHFileInfo()
 {
-  SHFileInfoLoader.Unload();
+  FSHFileInfoLoader.Unload();
 }
 
 int TSHFileInfo::GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmallIcon) const
@@ -1322,12 +1339,13 @@ UnicodeString TSHFileInfo::GetFileType(const UnicodeString & StrFileName)
 
   return sfi.szTypeName;
 }
+*/
 
 class EStreamError : public ExtException
 {
 public:
   explicit EStreamError(const UnicodeString & Msg) :
-    ExtException((Exception * )nullptr, Msg)
+    ExtException(OBJECT_CLASS_EStreamError, (Exception * )nullptr, Msg)
   {}
 };
 
@@ -1565,11 +1583,11 @@ void * TMemoryStream::Realloc(int64_t & NewCapacity)
     {
       if (FCapacity == 0)
       {
-        Result = nb_malloc(static_cast<size_t>(NewCapacity));
+        Result = nb::calloc<void*>(static_cast<size_t>(NewCapacity));
       }
       else
       {
-        Result = nb_realloc(FMemory, static_cast<size_t>(NewCapacity));
+        Result = nb::realloc<void*>(FMemory, static_cast<size_t>(NewCapacity));
       }
       if (Result == nullptr)
       {
@@ -2119,11 +2137,4 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
   (void)FormatSettings;
   ThrowNotImplemented(1204);
 }
-
-NB_IMPLEMENT_CLASS(TObject, nullptr, nullptr)
-NB_IMPLEMENT_CLASS(TPersistent, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TList, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(TObjectList, NB_GET_CLASS_INFO(TList), nullptr)
-NB_IMPLEMENT_CLASS(TStrings, NB_GET_CLASS_INFO(TPersistent), nullptr)
-NB_IMPLEMENT_CLASS(TStringList, NB_GET_CLASS_INFO(TStrings), nullptr)
 

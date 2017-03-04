@@ -154,7 +154,9 @@ typedef struct internal_state {
     unsigned int  hash_bits;         /* log2(hash_size) */
     unsigned int  hash_mask;         /* hash_size-1 */
 
+    #if !defined(__x86_64) && !defined(__i386_)
     unsigned int  hash_shift;
+    #endif
     /* Number of bits by which ins_h must be shifted at each input
      * step. It must be such that after MIN_MATCH steps, the oldest
      * byte no longer takes part in the hash key, that is:
@@ -282,6 +284,12 @@ typedef struct internal_state {
      * longest match routines access bytes past the input.  This is then
      * updated to the new high water mark.
      */
+    int block_open;
+    /* Whether or not a block is currently open for the QUICK deflation scheme.
+     * This is set to 1 if there is an active block, or 0 if the block was just
+     * closed.
+     */
+
 } deflate_state;
 
 typedef enum {
@@ -300,7 +308,7 @@ typedef enum {
  * Output a short LSB first on the stream.
  * IN assertion: there is enough room in pendingBuf.
  */
-#if defined(__x86_64) || defined(__i386_)
+#ifdef UNALIGNED_OK
 /* Compared to the else-clause's implementation, there are few advantages:
  *  - s->pending is loaded only once (else-clause's implementation needs to
  *    load s->pending twice due to the alias between s->pending and
@@ -393,10 +401,17 @@ void ZLIB_INTERNAL bi_windup(deflate_state *s);
  *    input characters, so that a running hash key can be computed from the
  *    previous key instead of complete recalculation each time.
  */
-#ifdef X86_SSE4_2_CRC_HASH
+
+#ifdef NOT_TWEAK_COMPILER
+#define TRIGGER_LEVEL 6
+#else
+#define TRIGGER_LEVEL 5
+#endif
+
+#if defined(__x86_64) || defined(__i386_)
 #define UPDATE_HASH(s, h, i) \
     do {\
-        if (s->level < 6) \
+        if (s->level < TRIGGER_LEVEL) \
             h = (3483 * (s->window[i]) +\
                  23081* (s->window[i+1]) +\
                  6954 * (s->window[i+2]) +\
@@ -451,7 +466,7 @@ local void send_bits(deflate_state *s, int value, int length) {
 #define send_bits(s, value, length) \
 { int len = length;\
   if (s->bi_valid > (int)Buf_size - len) {\
-    int val = value;\
+    int val = (int)value;\
     s->bi_buf |= (uint16_t)val << s->bi_valid;\
     put_short(s, s->bi_buf);\
     s->bi_buf = (uint16_t)val >> (Buf_size - s->bi_valid);\

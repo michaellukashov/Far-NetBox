@@ -176,7 +176,7 @@ BOOL CAsyncSocketExLayer::TriggerEvent(long lEvent, int nErrorCode, BOOL bPassTh
   pMsg->hSocket = m_pOwnerSocket->m_SocketData.hSocket;
   pMsg->lEvent = ( lEvent % 0xffff ) + ( nErrorCode << 16);
   pMsg->pLayer=bPassThrough?m_pPrevLayer:this;
-  BOOL res=PostMessage(m_pOwnerSocket->GetHelperWindowHandle(), WM_USER, (WPARAM)m_pOwnerSocket->m_SocketData.nSocketIndex, (LPARAM)pMsg);
+  BOOL res=::PostMessage(m_pOwnerSocket->GetHelperWindowHandle(), WM_USER, (WPARAM)m_pOwnerSocket->m_SocketData.nSocketIndex, (LPARAM)pMsg);
   if (!res)
   {
     delete pMsg;
@@ -368,7 +368,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
           }
         }
         if (m_pOwnerSocket->m_pendingCallbacks.size())
-          PostMessage(m_pOwnerSocket->GetHelperWindowHandle(), WM_USER + 2, (WPARAM)m_pOwnerSocket->m_SocketData.nSocketIndex, 0);
+          ::PostMessage(m_pOwnerSocket->GetHelperWindowHandle(), WM_USER + 2, (WPARAM)m_pOwnerSocket->m_SocketData.nSocketIndex, 0);
       }
 
       if (m_nFamily == AF_UNSPEC)
@@ -739,7 +739,7 @@ BOOL CAsyncSocketExLayer::CreateNext(UINT nSocketPort, int nSocketType, long lEv
     nb_free(m_lpszSocketAddress);
     if (lpszSocketAddress && *lpszSocketAddress)
     {
-      m_lpszSocketAddress = static_cast<TCHAR *>(nb_calloc(_tcslen(lpszSocketAddress) + 1, sizeof(TCHAR)));
+      m_lpszSocketAddress = nb::wchcalloc(_tcslen(lpszSocketAddress) + 1);
       _tcscpy(m_lpszSocketAddress, lpszSocketAddress);
     }
     else
@@ -840,7 +840,7 @@ BOOL CAsyncSocketExLayer::AcceptNext( CAsyncSocketEx& rConnectedSocket, SOCKADDR
 
     if (hTemp == INVALID_SOCKET)
       return FALSE;
-    DebugCheck(rConnectedSocket.InitAsyncSocketExInstance());
+    DebugCheck(rConnectedSocket.InitAsyncSocketExInstance() != FALSE);
     rConnectedSocket.m_SocketData.hSocket=hTemp;
     rConnectedSocket.AttachHandle(hTemp);
     rConnectedSocket.SetFamily(GetFamily());

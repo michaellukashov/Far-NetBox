@@ -1,8 +1,8 @@
 
 #include "stdafx.h"
+#include <nbutils.h>
 #include "FtpListResult.h"
 #include "FileZillaApi.h"
-#include <WideStrUtils.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
@@ -10,7 +10,7 @@
 //#define LISTDEBUG
 #ifdef LISTDEBUG
   //It's the normal UNIX format (or even another nonstandard format)
-  //Some samples are from http://cr.yp.to/ftpparse/ftpparse.c
+  //Some samples are from https://cr.yp.to/ftpparse/ftpparse.c
   /* UNIX-style listing, without inum and without blocks */
 
   static char data[][110]={
@@ -369,7 +369,7 @@ CFtpListResult::CFtpListResult(t_server server, bool *bUTF8, int *nCodePage)
   int i=-1;
   while (*data[++i])
   {
-    char *pData=static_cast<char *>(nb_calloc(1, strlen(data[i])+3));
+    char *pData=nb::calloc(strlen(data[i])+3);
     sprintf(pData, "%s\r\n", data[i]);
     AddData(pData, strlen(pData));
   }
@@ -405,7 +405,7 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, bool mlst)
   while (line)
   {
     int tmp;
-    char *tmpline = static_cast<char *>(nb_calloc(1, strlen(line) + 1));
+    char *tmpline = nb::chcalloc(strlen(line) + 1);
     strcpy(tmpline, line);
     t_directory::t_direntry direntry;
     if (parseLine(tmpline, strlen(tmpline), direntry, tmp, mlst))
@@ -443,7 +443,7 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, bool mlst)
         }
         else
         {
-          line=static_cast<char *>(nb_calloc(1, strlen(m_prevline)+strlen(m_curline)+2));
+          line=nb::chcalloc(strlen(m_prevline)+strlen(m_curline)+2);
           sprintf(line, "%s %s", m_prevline, m_curline);
         }
       }
@@ -583,7 +583,7 @@ void CFtpListResult::AddData(char *data, int size)
       break;
     }
     int tmp;
-    char *tmpline = static_cast<char *>(nb_calloc(1, strlen(line) + 1));
+    char *tmpline = nb::chcalloc(strlen(line) + 1);
     strcpy(tmpline, line);
     if (parseLine(tmpline, (const int)strlen(tmpline), direntry, tmp, false))
     {
@@ -620,7 +620,7 @@ void CFtpListResult::AddData(char *data, int size)
         }
         else
         {
-          line=static_cast<char *>(nb_calloc(1, strlen(m_prevline)+strlen(m_curline)+2));
+          line=nb::chcalloc(strlen(m_prevline)+strlen(m_curline)+2);
           sprintf(line, "%s %s", m_prevline, m_curline);
         }
       }
@@ -654,7 +654,7 @@ void CFtpListResult::SendToMessageLog()
     pStatus->post = TRUE;
     pStatus->status = L"<Empty directory listing>";
     pStatus->type = FZ_LOG_INFO;
-    GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus);
+    GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus);
   }
   while (line)
   {
@@ -666,7 +666,7 @@ void CFtpListResult::SendToMessageLog()
     pStatus->post = TRUE;
     pStatus->status = status;
     pStatus->type = FZ_LOG_INFO;
-    if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
+    if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
       delete pStatus;
 
     line = GetLine();
@@ -719,7 +719,7 @@ char * CFtpListResult::GetLine()
     }
   }
 
-  char *res = static_cast<char *>(nb_calloc(1, reslen+1));
+  char *res = nb::chcalloc(reslen+1);
   res[reslen]=0;
   int respos=0;
   while (startptr!=curpos && reslen)
@@ -875,7 +875,7 @@ bool CFtpListResult::ParseShortDate(const char *str, int len, t_directory::t_dir
 
   if (!numeric)
   {
-    char *tmpstr = static_cast<char *>(nb_calloc(1, i + 1));
+    char *tmpstr = nb::chcalloc(i + 1);
     strncpy(tmpstr, str, i);
     tmpstr[i] = 0;
     strlwr(tmpstr);
@@ -1268,7 +1268,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
   #ifdef _DEBUG
   USES_CONVERSION;
   #endif
-  // MLSD format as described here: http://www.ietf.org/internet-drafts/draft-ietf-ftpext-mlst-16.txt
+  // MLSD format as described here: https://tools.ietf.org/html/rfc3659
   // Parsing is done strict, abort on slightest error.
 
   // If we ever add some detection that entry is symlink,
@@ -1330,7 +1330,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
       // http://www.proftpd.org/docs/modules/mod_facts.html
       // They claim it's the correct one.
       // See also
-      // http://www.rfc-editor.org/errata_search.php?rfc=3659&eid=1500
+      // https://www.rfc-editor.org/errata_search.php?rfc=3659&eid=1500
       else if (!value.Left(15).CompareNoCase(L"OS.unix=symlink"))
       {
         direntry.dir = TRUE;
@@ -1372,7 +1372,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
     {
       direntry.size = 0;
 
-      for (unsigned int i = 0; i < value.GetLength(); ++i)
+      for (int i = 0; i < value.GetLength(); ++i)
       {
         if (value[i] < '0' || value[i] > '9')
         {
@@ -1612,7 +1612,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   {
     //Maybe the server has left no space between the group and the size
     //because of stupid alignment
-    char *tmpstr = static_cast<char *>(nb_calloc(1, tokenlen + 1));
+    char *tmpstr = nb::chcalloc(tokenlen + 1);
     strncpy(tmpstr, str, tokenlen);
     tmpstr[tokenlen] = 0;
     strlwr(tmpstr);
@@ -1952,7 +1952,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
     return FALSE;
   }
 
-  char *lwr = static_cast<char *>(nb_calloc(1, smonthlen + 1));
+  char *lwr = nb::chcalloc(smonthlen + 1);
   memcpy(lwr, smonth, smonthlen);
   lwr[smonthlen] = 0;
   _strlwr(lwr);
@@ -2203,7 +2203,7 @@ BOOL CFtpListResult::parseAsDos(const char *line, const int linelen, t_directory
   }
   else
   {
-    char * buffer = static_cast<char *>(nb_calloc(1, tokenlen));
+    char * buffer = nb::chcalloc(tokenlen);
     int i, j;
     for (i = 0, j = 0; i < tokenlen; i++)
     {
@@ -2561,13 +2561,13 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
 {
   USES_CONVERSION;
 
-  char *p = static_cast<char *>(nb_calloc(1, len + 1));
+  char *p = nb::chcalloc(len + 1);
   memcpy(p, source, len);
   p[len] = '\0';
   if (m_bUTF8 && *m_bUTF8)
   {
     // convert from UTF-8 to ANSI
-    if (DetectUTF8Encoding(RawByteString(p, len)) == etANSI)
+    if (nb::DetectUTF8Encoding((const uint8_t *)p, len) == nb::etANSI)
     {
       if (mayInvalidateUTF8 && m_server.nUTF8 != 1)
       {
@@ -2582,7 +2582,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
       int len = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1, NULL, 0);
       if (len != 0)
       {
-        LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
+        LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
         MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1 , (LPWSTR)p1, len + 1);
         target = target.Left(pos) + W2CT(p1);
         nb_free(p1);
@@ -2597,7 +2597,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
     int len = MultiByteToWideChar(*m_nCodePage, 0, (LPCSTR)p, -1, NULL, 0);
     if (len != 0)
     {
-      LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
+      LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
       MultiByteToWideChar(*m_nCodePage, 0, (LPCSTR)p, -1 , (LPWSTR)p1, len + 1);
       target = target.Left(pos) + W2CT(p1);
       nb_free(p1);

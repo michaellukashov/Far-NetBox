@@ -336,7 +336,7 @@ TStrings * TCommandSet::CreateCommandList()
 }
 //===========================================================================
 TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) :
-  TCustomFileSystem(ATerminal),
+  TCustomFileSystem(OBJECT_CLASS_TSCPFileSystem, ATerminal),
   FSecureShell(nullptr),
   FCommandSet(nullptr),
   FOutput(nullptr),
@@ -350,7 +350,7 @@ TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) :
 
 void TSCPFileSystem::Init(void * Data)
 {
-  FSecureShell = NB_STATIC_DOWNCAST(TSecureShell, Data);
+  FSecureShell = dyn_cast<TSecureShell>(as_object(Data));
   DebugAssert(FSecureShell);
   FCommandSet = new TCommandSet(FTerminal->GetSessionData());
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
@@ -1150,7 +1150,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        bool Empty;
+        bool Empty = true;
         if (ListCurrentDirectory)
         {
           TRemoteFile * File = nullptr;
@@ -1165,10 +1165,6 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             DebugAssert(File->GetIsParentDirectory());
             FileList->AddFile(File);
           }
-        }
-        else
-        {
-          Empty = true;
         }
 
         if (Empty)
@@ -1302,7 +1298,7 @@ void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
     if (FTerminal->GetActive())
     {
       // The -T is GNU switch and may not be available on all platforms.
-      // http://lists.gnu.org/archive/html/bug-coreutils/2004-07/msg00000.html
+      // https://lists.gnu.org/archive/html/bug-coreutils/2004-07/msg00000.html
       FTerminal->LogEvent(FORMAT(L"Attempt with %s failed, trying without", AdditionalSwitches.c_str()));
       ExecCommand(fsCopyFile, 0, L"", DelimitedFileName.c_str(), DelimitedNewName.c_str());
     }
@@ -1426,7 +1422,7 @@ void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
     AParams.Command = Command;
     AParams.Params = Params;
     AParams.OutputEvent = OutputEvent;
-    FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::CustomCommandOnFile, FTerminal),
+    FTerminal->ProcessDirectory(AFileName, nb::bind(&TTerminal::CustomCommandOnFile, FTerminal),
       &AParams);
   }
 
@@ -1462,7 +1458,7 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
   DebugAssert(!FSecureShell->GetOnCaptureOutput());
   if (OutputEvent)
   {
-    FSecureShell->SetOnCaptureOutput(MAKE_CALLBACK(TSCPFileSystem::CaptureOutput, this));
+    FSecureShell->SetOnCaptureOutput(nb::bind(&TSCPFileSystem::CaptureOutput, this));
     FOnCaptureOutput = OutputEvent;
   }
 
@@ -1483,7 +1479,7 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
   };
 }
 
-TStrings * TSCPFileSystem::GetFixedPaths()
+TStrings * TSCPFileSystem::GetFixedPaths() const
 {
   return nullptr;
 }
@@ -1698,7 +1694,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
       !OperationProgress->Cancel; ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
-      TRemoteFile * File1 = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(IFile));
+      TRemoteFile * File1 = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(IFile));
       UnicodeString RealFileName = File1 ? File1->GetFileName() : FileName;
       bool CanProceed = false;
 
@@ -2111,7 +2107,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
       {
         // EScpFileSkipped is derived from ESkipFile,
         // but is does not indicate file skipped by user here
-        if (NB_STATIC_DOWNCAST(EFileSkipped, &E) != nullptr)
+        if (isa<EFileSkipped>(&E))
         {
           Action.Rollback(&E);
         }
@@ -2382,7 +2378,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       !OperationProgress->Cancel; ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
-      TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(IFile));
+      TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(IFile));
       DebugAssert(File);
 
       // Filename is used for error messaging and excluding files only

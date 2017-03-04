@@ -282,7 +282,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
         {
           char * tmp = m_pNetworkSendBuffer;
           m_nNetworkSendBufferMaxLen = static_cast<int>((m_nNetworkSendBufferLen + numread - numsent) * 1.5);
-          m_pNetworkSendBuffer = static_cast<char *>(nb_calloc(1, m_nNetworkSendBufferMaxLen));
+          m_pNetworkSendBuffer = nb::chcalloc(m_nNetworkSendBufferMaxLen);
           if (tmp)
           {
             memcpy(m_pNetworkSendBuffer, tmp, m_nNetworkSendBufferLen);
@@ -400,7 +400,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
       ::SetLastError(WSAEWOULDBLOCK);
     }
 
-    m_pRetrySendBuffer = static_cast<char *>(nb_calloc(1, nBufLen));
+    m_pRetrySendBuffer = nb::chcalloc(nBufLen);
     m_nRetrySendBufferLen = nBufLen;
     memcpy(m_pRetrySendBuffer, lpBuf, nBufLen);
 
@@ -1091,7 +1091,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     {
       debug = reinterpret_cast<char*>(ret);
     }
-    char *buffer = static_cast<char *>(nb_calloc(1, 4096 + ((debug != NULL) ? strlen(debug) : 0)));
+    char *buffer = nb::chcalloc(4096 + ((debug != NULL) ? strlen(debug) : 0));
     sprintf(buffer, "%s: %s",
         str,
         SSL_state_string_long(s));
@@ -1114,7 +1114,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     {
       if (strcmp(desc, "close notify"))
       {
-        char *buffer = static_cast<char *>(nb_calloc(1, 4 * 1024));
+        char *buffer = nb::chcalloc(4 * 1024);
         sprintf(buffer, "SSL3 alert %s: %s: %s",
             str,
             SSL_alert_type_string_long(ret),
@@ -1130,7 +1130,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
   {
     if (ret == 0)
     {
-      char *buffer = static_cast<char *>(nb_calloc(1, 4 * 1024));
+      char *buffer = nb::chcalloc(4 * 1024);
       sprintf(buffer, "%s: failed in %s",
           str,
           SSL_state_string_long(s));
@@ -1148,7 +1148,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
       int error = SSL_get_error(s,ret);
       if (error != SSL_ERROR_WANT_READ && error != SSL_ERROR_WANT_WRITE)
       {
-        char *buffer = static_cast<char *>(nb_calloc(1, 4 * 1024));
+        char *buffer = nb::chcalloc(4 * 1024);
         sprintf(buffer, "%s: error in %s",
             str,
             SSL_state_string_long(s));
@@ -1287,7 +1287,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
       if (len > 0)
       {
         // Keep it huge
-        LPWSTR unicode = static_cast<WCHAR *>(nb_calloc(len * 10, sizeof(WCHAR)));
+        LPWSTR unicode = nb::wchcalloc(len * 10 * sizeof(WCHAR));
         memset(unicode, 0, sizeof(WCHAR) * len * 10);
         int unicodeLen = MultiByteToWideChar(CP_UTF8, 0, (const char *)out, len, unicode, len * 10);
         if (unicodeLen > 0)
@@ -1295,7 +1295,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
 #ifdef _UNICODE
           str = unicode;
 #else
-          LPSTR ansi = static_cast<CHAR *>(nb_calloc(len * 10, sizeof(CHAR)));
+          LPSTR ansi = nb::calloc(len * 10 * sizeof(CHAR));
           memset(ansi, 0, sizeof(CHAR) * len * 10);
           int ansiLen = WideCharToMultiByte(CP_ACP, 0, unicode, unicodeLen, ansi, len * 10, 0, 0);
           if (ansiLen > 0)
@@ -1396,7 +1396,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
       if (len > 0)
       {
         // Keep it huge
-        LPWSTR unicode = static_cast<WCHAR *>(nb_calloc(len * 10, sizeof(WCHAR)));
+        LPWSTR unicode = nb::wchcalloc(len * 10 * sizeof(WCHAR));
         memset(unicode, 0, sizeof(WCHAR) * len * 10);
         int unicodeLen = MultiByteToWideChar(CP_UTF8, 0, (const char *)out, len, unicode, len * 10);
         if (unicodeLen > 0)
@@ -1404,7 +1404,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
 #ifdef _UNICODE
           str = unicode;
 #else
-          LPSTR ansi = static_cast<CHAR *>(nb_calloc(len * 10, sizeof(CHAR)));
+          LPSTR ansi = nb::calloc(len * 10 * sizeof(CHAR));
           memset(ansi, 0, sizeof(CHAR) * len * 10);
           int ansiLen = WideCharToMultiByte(CP_ACP, 0, unicode, unicodeLen, ansi, len * 10, 0, 0);
           if (ansiLen > 0)
@@ -1530,7 +1530,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
       USES_CONVERSION;
       u_char *data;
       int len = BIO_get_mem_data(subjectAltNameBio, &data);
-      char * buf = static_cast<char *>(nb_calloc(1, len + 1));
+      char * buf = nb::chcalloc(len + 1);
 
       memcpy(buf, data, len);
       buf[len] = '\0';
@@ -1548,7 +1548,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
   // Inspired by ne_ssl_cert_export()
   // Find the length of the DER encoding.
   SslCertData.certificateLen = i2d_X509(pX509, NULL);
-  SslCertData.certificate = static_cast<unsigned char *>(nb_calloc(1, SslCertData.certificateLen));
+  SslCertData.certificate = nb::calloc<uint8_t *>(SslCertData.certificateLen);
   unsigned char * p = SslCertData.certificate;
   i2d_X509(pX509, &p);
 
@@ -1636,8 +1636,8 @@ void CAsyncSslSocketLayer::PrintSessionInfo()
   }
 
   const int buffer_size = 4 * 1024;
-  char *buffer = static_cast<char *>(nb_calloc(1, buffer_size));
-  char *buffer2 = static_cast<char *>(nb_calloc(1, buffer_size));
+  char *buffer = nb::chcalloc(buffer_size);
+  char *buffer2 = nb::chcalloc(buffer_size);
   // see also ne_ssl_get_version and ne_ssl_get_cipher
   m_TlsVersionStr = SSL_get_version(m_ssl);
   sprintf(buffer, "%s: %s, %s, %s",
@@ -1749,7 +1749,7 @@ int CAsyncSslSocketLayer::ProvideClientCert(
   USES_CONVERSION;
   CString Message;
   Message.LoadString(NEED_CLIENT_CERTIFICATE);
-  char * Buffer = static_cast<char *>(nb_calloc(1, Message.GetLength() + 1));
+  char * Buffer = nb::chcalloc(Message.GetLength() + 1);
   strcpy(Buffer, T2A(Message));
 
   int Level;
@@ -1807,7 +1807,7 @@ void CAsyncSslSocketLayer::PrintLastErrorMsg()
   int err = ERR_get_error();
   while (err)
   {
-    char *buffer = static_cast<char *>(nb_calloc(1, 512));
+    char *buffer = nb::chcalloc(512);
     const char *reason = ERR_reason_error_string(err);
     ERR_error_string(err, buffer);
     err = ERR_get_error();

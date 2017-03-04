@@ -32,7 +32,12 @@ class TSecureShell : public TObject
 {
 friend class TPoolForDataEvent;
 NB_DISABLE_COPY(TSecureShell)
-NB_DECLARE_CLASS(TSecureShell)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSecureShell;
+  }
 private:
   SOCKET FSocket;
   HANDLE FSocketEvent;
@@ -79,7 +84,7 @@ private:
   UnicodeString FUserName;
   bool FUtfStrings;
   DWORD FLastSendBufferUpdate;
-  int FSendBuf;
+  intptr_t FSendBuf;
 
 public:
   static TCipher FuncToSsh1Cipher(const void * Cipher);

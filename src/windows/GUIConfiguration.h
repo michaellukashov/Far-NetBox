@@ -33,7 +33,12 @@ const int soContinueOnError = 0x08;
 
 class TGUICopyParamType : public TCopyParamType
 {
-NB_DECLARE_CLASS(TGUICopyParamType)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TGUICopyParamType;
+  }
 public:
   TGUICopyParamType();
   TGUICopyParamType(const TCopyParamType & Source);
@@ -82,7 +87,12 @@ struct TCopyParamRuleData : public TObject
 
 class TCopyParamRule : public TObject
 {
-NB_DECLARE_CLASS(TCopyParamRule)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCopyParamRule;
+  }
 public:
   explicit TCopyParamRule();
   explicit TCopyParamRule(const TCopyParamRuleData & Data);
@@ -172,7 +182,13 @@ private:
 class TGUIConfiguration : public TConfiguration
 {
 NB_DISABLE_COPY(TGUIConfiguration)
-NB_DECLARE_CLASS(TGUIConfiguration)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TGUIConfiguration ||
+      Obj->GetKind() == OBJECT_CLASS_TFarConfiguration;
+  }
 public:
   virtual void SaveData(THierarchicalStorage * Storage, bool All);
   virtual void LoadData(THierarchicalStorage * Storage);
@@ -206,7 +222,7 @@ public:
   void SetQueueKeepDoneItemsFor(intptr_t Value);
 
 public:
-  explicit TGUIConfiguration();
+  TGUIConfiguration(TObjectClassId Kind);
   virtual ~TGUIConfiguration();
   virtual void Default();
   virtual void UpdateStaticUsage();

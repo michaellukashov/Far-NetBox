@@ -2,6 +2,7 @@
 
 #include <rdestl/vector.h>
 #include <rdestl/map.h>
+
 #include <Sysutils.hpp>
 
 enum TModificationFmt
@@ -91,7 +92,15 @@ private:
 class TRemoteFile : public TPersistent
 {
 NB_DISABLE_COPY(TRemoteFile)
-NB_DECLARE_CLASS(TRemoteFile)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFile ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectoryFile ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteParentDirectory;
+  }
 private:
   TRemoteFileList * FDirectory;
   TRemoteToken FOwner;
@@ -149,6 +158,7 @@ protected:
 
 public:
   explicit TRemoteFile(TRemoteFile * ALinkedByFile = nullptr);
+  explicit TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile = nullptr);
   virtual ~TRemoteFile();
   TRemoteFile * Duplicate(bool Standalone = true) const;
 
@@ -224,17 +234,33 @@ public:
 
 private:
   void LoadTypeInfo() const;
+  void Init();
 };
 
 class TRemoteDirectoryFile : public TRemoteFile
 {
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectoryFile ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteParentDirectory;
+  }
+public:
   TRemoteDirectoryFile();
+  TRemoteDirectoryFile(TObjectClassId Kind);
+  void Init();
   virtual ~TRemoteDirectoryFile() {}
 };
 
 class TRemoteParentDirectory : public TRemoteDirectoryFile
 {
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TRemoteParentDirectory;
+  }
 public:
   explicit TRemoteParentDirectory(TTerminal * Terminal);
   virtual ~TRemoteParentDirectory() {}
@@ -246,7 +272,14 @@ friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TFTPFileSystem;
 friend class TWebDAVFileSystem;
-NB_DECLARE_CLASS(TRemoteFileList)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteParentDirectory;
+  }
 protected:
   UnicodeString FDirectory;
   TDateTime FTimestamp;
@@ -262,6 +295,7 @@ public:
 
 public:
   TRemoteFileList();
+  explicit TRemoteFileList(TObjectClassId Kind);
   virtual ~TRemoteFileList() { Reset(); }
   virtual void Reset();
   TRemoteFile * FindFile(const UnicodeString & AFileName) const;
@@ -288,6 +322,12 @@ friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TWebDAVFileSystem;
 NB_DISABLE_COPY(TRemoteDirectory)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TRemoteDirectory;
+  }
 private:
   TTerminal * FTerminal;
   mutable TStrings * FSelectedFiles;
@@ -353,7 +393,7 @@ private:
 
 class TRemoteDirectoryChangesCache : private TStringList
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TRemoteDirectoryChangesCache(intptr_t MaxSize);
   virtual ~TRemoteDirectoryChangesCache(){}
@@ -552,7 +592,12 @@ private:
 
 class TRemoteProperties : public TObject
 {
-NB_DECLARE_CLASS(TRemoteProperties)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TRemoteProperties;
+  }
 public:
   TValidProperties Valid;
   TRights Rights;

@@ -1,5 +1,5 @@
 /* crc32.c -- compute the CRC-32 of a data stream
- * Copyright (C) 1995-2006, 2010, 2011, 2012 Mark Adler
+ * Copyright (C) 1995-2006, 2010, 2011, 2012, 2016 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  *
  * Thanks to Rodney Brown <rbrown64@csc.com.au> for his contribution of faster
@@ -63,10 +63,12 @@
 
 #include "deflate.h"
 
+ZLIB_INTERNAL uint32_t crc32_generic(uint32_t, const unsigned char *, z_off64_t);
+
 #if BYTE_ORDER == LITTLE_ENDIAN
-static uint32_t crc32_little(uint32_t, const unsigned char *, z_off64_t);
+ZLIB_INTERNAL uint32_t crc32_little(uint32_t, const unsigned char *, size_t);
 #elif BYTE_ORDER == BIG_ENDIAN
-static uint32_t crc32_big(uint32_t, const unsigned char *, z_off64_t);
+ZLIB_INTERNAL uint32_t crc32_big(uint32_t, const unsigned char *, size_t);
 #endif
 
 /* Local functions for crc concatenation */
@@ -209,13 +211,7 @@ const uint32_t * ZEXPORT get_crc_table(void)
     return (const uint32_t *)crc_table;
 }
 
-/* ========================================================================= */
-#define DO1 crc = crc_table[0][((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8)
-#define DO8 DO1; DO1; DO1; DO1; DO1; DO1; DO1; DO1
-#define DO4 DO1; DO1; DO1; DO1
-
-/* ========================================================================= */
-uint32_t ZEXPORT crc32_z(uint32_t crc, const unsigned char *buf, z_off64_t len)
+uint32_t ZEXPORT crc32_z(uint32_t crc, const unsigned char *buf, size_t len)
 {
     if (buf == Z_NULL)
         return 0;
@@ -232,6 +228,18 @@ uint32_t ZEXPORT crc32_z(uint32_t crc, const unsigned char *buf, z_off64_t len)
         return crc32_big(crc, buf, len);
 #endif
     }
+
+    return crc32_generic(crc, buf, len);
+}
+
+/* ========================================================================= */
+#define DO1 crc = crc_table[0][((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8)
+#define DO8 DO1; DO1; DO1; DO1; DO1; DO1; DO1; DO1
+#define DO4 DO1; DO1; DO1; DO1
+
+/* ========================================================================= */
+ZLIB_INTERNAL uint32_t crc32_generic(uint32_t crc, const unsigned char *buf, z_off64_t len)
+{
     crc = crc ^ 0xffffffff;
 
 #ifdef UNROLL_LESS
@@ -253,7 +261,7 @@ uint32_t ZEXPORT crc32_z(uint32_t crc, const unsigned char *buf, z_off64_t len)
 }
 
 /* ========================================================================= */
-uint32_t ZEXPORT crc32(uint32_t crc, const unsigned char *buf, z_off64_t len)
+uint32_t ZEXPORT crc32(uint32_t crc, const unsigned char *buf, size_t len)
 {
     return crc32_z(crc, buf, len);
 }
@@ -278,7 +286,7 @@ uint32_t ZEXPORT crc32(uint32_t crc, const unsigned char *buf, z_off64_t len)
 #define DOLIT32 DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4
 
 /* ========================================================================= */
-static uint32_t crc32_little(uint32_t crc, const unsigned char *buf, z_off64_t len)
+ZLIB_INTERNAL uint32_t crc32_little(uint32_t crc, const unsigned char *buf, size_t len)
 {
     register uint32_t c;
     register const uint32_t *buf4;
@@ -321,7 +329,7 @@ static uint32_t crc32_little(uint32_t crc, const unsigned char *buf, z_off64_t l
 #define DOBIG32 DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4
 
 /* ========================================================================= */
-static uint32_t crc32_big(uint32_t crc, const unsigned char *buf, z_off64_t len)
+ZLIB_INTERNAL uint32_t crc32_big(uint32_t crc, const unsigned char *buf, size_t len)
 {
     register uint32_t c;
     register const uint32_t *buf4;
@@ -355,6 +363,7 @@ static uint32_t crc32_big(uint32_t crc, const unsigned char *buf, z_off64_t len)
     return ZSWAP32(c);
 }
 #endif /* BYTE_ORDER == BIG_ENDIAN */
+
 
 #define GF2_DIM 32      /* dimension of GF(2) vectors (length of CRC) */
 
@@ -446,40 +455,14 @@ uint32_t ZEXPORT crc32_combine64(uint32_t crc1, uint32_t crc2, z_off64_t len2)
     return crc32_combine_(crc1, crc2, len2);
 }
 
-
-#ifdef X86_PCLMULQDQ_CRC
-#include "arch/x86/x86.h"
-extern void ZLIB_INTERNAL crc_fold_init(deflate_state *const s);
-extern void ZLIB_INTERNAL crc_fold_copy(deflate_state *const s,
-    unsigned char *dst, const unsigned char *src, long len);
-extern uint32_t ZLIB_INTERNAL crc_fold_512to32(deflate_state *const s);
-#endif
-
+#ifndef X86_PCLMULQDQ_CRC
 ZLIB_INTERNAL void crc_reset(deflate_state *const s) {
-#ifdef X86_PCLMULQDQ_CRC
-    if (x86_cpu_has_pclmulqdq) {
-        crc_fold_init(s);
-        return;
-    }
-#endif
-    s->strm->adler = crc32(0L, Z_NULL, 0);
+    s->strm->adler = crc32(0L, NULL, 0);
 }
 
-ZLIB_INTERNAL void crc_finalize(deflate_state *const s) {
-#ifdef X86_PCLMULQDQ_CRC
-    if (x86_cpu_has_pclmulqdq)
-        s->strm->adler = crc_fold_512to32(s);
-#endif
-}
-
-ZLIB_INTERNAL void copy_with_crc(z_stream *strm, unsigned char *dst, long size) {
-#ifdef X86_PCLMULQDQ_CRC
-    if (x86_cpu_has_pclmulqdq) {
-        crc_fold_copy(strm->state, dst, strm->next_in, size);
-        return;
-    }
-#endif
+ZLIB_INTERNAL void copy_with_crc(z_stream *strm, unsigned char *dst, unsigned long size) {
     zmemcpy(dst, strm->next_in, size);
     strm->adler = crc32(strm->adler, dst, size);
 }
+#endif
 

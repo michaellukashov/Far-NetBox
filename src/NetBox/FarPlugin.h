@@ -37,11 +37,12 @@ enum THandlesFunction
   hfProcessHostFile,
   hfProcessEvent
 };
-DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString & /*Text*/);
 
-DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, intptr_t & /*Result*/);
-DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void * /*Token*/,
-  uintptr_t /*Result*/, bool & /*Close*/);
+typedef nb::FastDelegate1<void, UnicodeString & /*Text*/> TFarInputBoxValidateEvent;
+
+typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TFarMessageTimerEvent;
+typedef nb::FastDelegate3<void, void * /*Token*/,
+  uintptr_t /*Result*/, bool & /*Close*/> TFarMessageClickEvent;
 
 struct TFarMessageParams : public TObject
 {
@@ -72,9 +73,15 @@ friend class TFarDialogItem;
 friend class TFarMessageDialog;
 friend class TFarPluginGuard;
 NB_DISABLE_COPY(TCustomFarPlugin)
-NB_DECLARE_CLASS(TCustomFarPlugin)
 public:
-  explicit TCustomFarPlugin(HINSTANCE HInst);
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCustomFarPlugin ||
+      Obj->GetKind() == OBJECT_CLASS_TWinSCPPlugin;
+  }
+public:
+  explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst);
   virtual ~TCustomFarPlugin();
   virtual intptr_t GetMinFarVersion() const;
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info);
@@ -236,9 +243,15 @@ class TCustomFarFileSystem : public TObject
 friend class TFarPanelInfo;
 friend class TCustomFarPlugin;
 NB_DISABLE_COPY(TCustomFarFileSystem)
-NB_DECLARE_CLASS(TCustomFarFileSystem)
 public:
-  explicit TCustomFarFileSystem(TCustomFarPlugin * APlugin);
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCustomFarFileSystem ||
+      Obj->GetKind() == OBJECT_CLASS_TWinSCPFileSystem;
+  }
+public:
+  explicit TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin * APlugin);
   void Init();
   virtual ~TCustomFarFileSystem();
 
@@ -371,8 +384,19 @@ private:
 class TCustomFarPanelItem : public TObject
 {
 friend class TCustomFarFileSystem;
-NB_DECLARE_CLASS(TCustomFarPanelItem)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCustomFarPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_TFarPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_THintPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_TSessionPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_TSessionFolderPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFilePanelItem;
+  }
 protected:
+  explicit TCustomFarPanelItem(TObjectClassId Kind) : TObject(Kind) {}
   virtual ~TCustomFarPanelItem()
   {}
   virtual void GetData(
@@ -389,7 +413,12 @@ protected:
 class TFarPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TFarPanelItem)
-NB_DECLARE_CLASS(TFarPanelItem)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFarPanelItem;
+  }
 public:
   explicit TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem);
   virtual ~TFarPanelItem();
@@ -476,6 +505,12 @@ private:
 class TFarMenuItems : public TStringList
 {
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
+  }
+public:
   explicit TFarMenuItems();
   virtual ~TFarMenuItems() {}
   void AddSeparator(bool Visible = true);
@@ -515,15 +550,19 @@ private:
   EditorInfo * FEditorInfo;
 };
 
-class TFarEnvGuard : public TObject
+class TFarEnvGuard // : public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
+NB_DISABLE_COPY(TFarEnvGuard)
 public:
   TFarEnvGuard();
   ~TFarEnvGuard();
 };
 
-class TFarPluginEnvGuard : public TObject
+class TFarPluginEnvGuard // : public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
+NB_DISABLE_COPY(TFarPluginEnvGuard)
 public:
   TFarPluginEnvGuard();
   ~TFarPluginEnvGuard();

@@ -18,6 +18,7 @@ struct TRemoteFileTime;
 
 struct message_t
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   message_t() : wparam(0), lparam(0)
   {}
   message_t(WPARAM w, LPARAM l) : wparam(w), lparam(l)
@@ -37,6 +38,12 @@ class TFTPFileSystem : public TCustomFileSystem
 friend class TFileZillaImpl;
 friend class TFTPFileListHelper;
 NB_DISABLE_COPY(TFTPFileSystem)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFTPFileSystem;
+  }
 public:
   explicit TFTPFileSystem(TTerminal * ATerminal);
   virtual ~TFTPFileSystem();
@@ -90,7 +97,7 @@ public:
     const UnicodeString & ANewName);
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName);
-  virtual TStrings * GetFixedPaths();
+  virtual TStrings * GetFixedPaths() const;
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;
@@ -160,7 +167,7 @@ protected:
   void PreserveDownloadFileTime(HANDLE AHandle, void * UserData);
   bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
   void EnsureLocation();
-  UnicodeString ActualCurrentDirectory();
+  UnicodeString GetActualCurrentDirectory() const;
   void Discard();
   void DoChangeDirectory(const UnicodeString & Directory);
 
@@ -249,7 +256,7 @@ private:
     FEAT
   };
 
-  TFileZillaIntf * FFileZillaIntf;
+  mutable TFileZillaIntf * FFileZillaIntf;
   TCriticalSection FQueueCriticalSection;
   TCriticalSection FTransferStatusCriticalSection;
   TMessageQueue FQueue;

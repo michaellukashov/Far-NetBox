@@ -28,6 +28,12 @@ friend class TSFTPLoadFilesPropertiesQueue;
 friend class TSFTPCalculateFilesChecksumQueue;
 friend class TSFTPBusy;
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSFTPFileSystem;
+  }
+public:
   explicit TSFTPFileSystem(TTerminal * ATermina);
   virtual ~TSFTPFileSystem();
 
@@ -81,7 +87,7 @@ public:
     const UnicodeString & ANewName);
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName);
-  virtual TStrings * GetFixedPaths();
+  virtual TStrings * GetFixedPaths() const;
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;

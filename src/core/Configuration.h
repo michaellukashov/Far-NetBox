@@ -34,8 +34,15 @@ class TStoredSessionList;
 
 class TConfiguration : public TObject
 {
-NB_DECLARE_CLASS(TConfiguration)
 NB_DISABLE_COPY(TConfiguration)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TConfiguration ||
+      Obj->GetKind() == OBJECT_CLASS_TGUIConfiguration ||
+      Obj->GetKind() == OBJECT_CLASS_TFarConfiguration;
+  }
 private:
   bool FDontSave;
   bool FChanged;
@@ -209,7 +216,8 @@ public:
   bool GetPermanentLogSensitive() const { return FPermanentLogSensitive; }
 
 public:
-  TConfiguration();
+  // TConfiguration() : TObject(OBJECT_CLASS_TConfiguration) {}
+  explicit TConfiguration(TObjectClassId Kind);
   virtual ~TConfiguration();
   virtual void Default();
   virtual void UpdateStaticUsage();

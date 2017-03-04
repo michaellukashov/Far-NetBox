@@ -1,9 +1,9 @@
 #pragma once
 
+#include <headers.hpp>
+
 #include <tchar.h>
 #include <assert.h>
-#include <Classes.hpp>
-#include <Sysutils.hpp>
 
 #define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
 #define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
@@ -14,11 +14,28 @@
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 
-void ShowExtendedException(Exception * E);
-bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
-
-class TGuard : public TObject
+class TCriticalSection // : public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
+NB_DISABLE_COPY(TCriticalSection)
+public:
+  TCriticalSection();
+  ~TCriticalSection();
+
+  void Enter() const;
+  void Leave() const;
+
+  int GetAcquired() const { return FAcquired; }
+
+private:
+  mutable CRITICAL_SECTION FSection;
+  mutable int FAcquired;
+};
+
+
+class TGuard // : public TObject
+{
+CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TGuard)
 public:
   explicit TGuard(const TCriticalSection & ACriticalSection);
@@ -28,8 +45,10 @@ private:
   const TCriticalSection & FCriticalSection;
 };
 
-class TUnguard : public TObject
+
+class TUnguard // : public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TUnguard)
 public:
   explicit TUnguard(TCriticalSection & ACriticalSection);
@@ -113,3 +132,9 @@ inline T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filena
 #define DebugUsedParam(p) (void)(p)
 
 #define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())
+
+#define TShellExecuteInfoW _SHELLEXECUTEINFOW
+#define TSHFileInfoW SHFILEINFOW
+#define TVSFixedFileInfo VS_FIXEDFILEINFO
+#define PVSFixedFileInfo VS_FIXEDFILEINFO*
+

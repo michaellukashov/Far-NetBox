@@ -10,6 +10,12 @@ class TSCPFileSystem : public TCustomFileSystem
 {
 NB_DISABLE_COPY(TSCPFileSystem)
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSCPFileSystem;
+  }
+public:
   explicit TSCPFileSystem(TTerminal * ATerminal);
   virtual ~TSCPFileSystem();
 
@@ -63,7 +69,7 @@ public:
     const UnicodeString & ANewName);
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName);
-  virtual TStrings * GetFixedPaths();
+  virtual TStrings * GetFixedPaths() const;
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;

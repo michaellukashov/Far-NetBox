@@ -260,8 +260,9 @@ bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert
         Failures &= ~NE_SSL_UNTRUSTED;
         Result = true;
       }
-      ne_free(Certificate);
     }
+    if (Certificate)
+      ne_free(Certificate);
   }
   return Result;
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Global.h>
 #include <Classes.hpp>
 
 //#define EXCEPTION throw ExtException(nullptr, L"")
@@ -8,12 +9,6 @@
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
 #define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
 
-#define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
-#define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
-
-#define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
-#define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
-#define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 #define SWAP(TYPE, FIRST, SECOND) \
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
 
@@ -87,55 +82,102 @@ AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
 typedef int TDayTable[12];
 extern const TDayTable MonthDays[];
 
-class Exception : public std::runtime_error, public TObject
+class Exception : public std::runtime_error//, public TObject
 {
-NB_DECLARE_CLASS(Exception)
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
+  inline TObjectClassId GetKind() const { return FKind; }
+  static bool classof(const Exception * Obj)
+  {
+    TObjectClassId Kind = Obj->GetKind();
+    return
+      Kind == OBJECT_CLASS_Exception ||
+      Kind == OBJECT_CLASS_ExtException ||
+      Kind == OBJECT_CLASS_EAbort ||
+      Kind == OBJECT_CLASS_EAccessViolation ||
+      Kind == OBJECT_CLASS_EFileNotFoundError ||
+      Kind == OBJECT_CLASS_EOSError ||
+      Kind == OBJECT_CLASS_EFatal ||
+      Kind == OBJECT_CLASS_ESshFatal ||
+      Kind == OBJECT_CLASS_ESshTerminate ||
+      Kind == OBJECT_CLASS_ECallbackGuardAbort ||
+      Kind == OBJECT_CLASS_EFileSkipped ||
+      Kind == OBJECT_CLASS_ESkipFile;
+  }
+public:
+  explicit Exception(TObjectClassId Kind, const wchar_t * Msg);
   explicit Exception(const wchar_t * Msg);
+  explicit Exception(TObjectClassId Kind, const UnicodeString & Msg);
   explicit Exception(const UnicodeString & Msg);
-  explicit Exception(Exception * E);
-  explicit Exception(std::exception * E);
-  explicit Exception(const UnicodeString & Msg, int AHelpContext);
-  explicit Exception(Exception * E, intptr_t Ident);
-  explicit Exception(intptr_t Ident);
-  ~Exception() throw() {}
+  explicit Exception(TObjectClassId Kind, Exception * E);
+  explicit Exception(TObjectClassId Kind, std::exception * E);
+  explicit Exception(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AHelpContext);
+  explicit Exception(TObjectClassId Kind, Exception * E, intptr_t Ident);
+  explicit Exception(TObjectClassId Kind, intptr_t Ident);
+  ~Exception() {}
 
 public:
   UnicodeString Message;
 
 protected:
   // UnicodeString FHelpKeyword;
+private:
+  TObjectClassId FKind;
 };
 
 class EAbort : public Exception
 {
-NB_DECLARE_CLASS(EAbort)
 public:
-  explicit EAbort(const UnicodeString & what) : Exception(what)
+  static inline bool classof(const Exception * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EAbort ||
+      Obj->GetKind() == OBJECT_CLASS_ECallbackGuardAbort;
+  }
+public:
+  explicit EAbort(const UnicodeString & what) : Exception(OBJECT_CLASS_EAbort, what)
+  {}
+  explicit EAbort(TObjectClassId Kind, const UnicodeString & what) : Exception(Kind, what)
   {}
 };
 
 class EAccessViolation : public Exception
 {
-NB_DECLARE_CLASS(EAccessViolation)
 public:
-  explicit EAccessViolation(const UnicodeString & what) : Exception(what)
+  static inline bool classof(const Exception * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EAccessViolation;
+  }
+public:
+  explicit EAccessViolation(const UnicodeString & what) : Exception(OBJECT_CLASS_EAccessViolation, what)
   {}
 };
 
 class EFileNotFoundError : public Exception
 {
-NB_DECLARE_CLASS(EFileNotFoundError)
 public:
-  EFileNotFoundError() : Exception(L"")
+  static inline bool classof(const Exception * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EFileNotFoundError;
+  }
+public:
+  EFileNotFoundError() : Exception(OBJECT_CLASS_EFileNotFoundError, L"")
   {}
 };
 
 class EOSError : public Exception
 {
-NB_DECLARE_CLASS(EOSError)
 public:
-  explicit EOSError(const UnicodeString & Msg, DWORD code) : Exception(Msg),
+  static inline bool classof(const Exception * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EOSError;
+  }
+public:
+  explicit EOSError(const UnicodeString & Msg, DWORD code) :
+    Exception(OBJECT_CLASS_EOSError, Msg),
     ErrorCode(code)
   {
   }
@@ -190,7 +232,7 @@ UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
 char HexToChar(const UnicodeString & Hex, uintptr_t MinChars = 0);
 
 UnicodeString ReplaceStrAll(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);
-UnicodeString SysErrorMessage(int Code);
+UnicodeString SysErrorMessage(intptr_t Code);
 
 bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
@@ -357,7 +399,7 @@ class EConvertError : public Exception
 {
 public:
   explicit EConvertError(const UnicodeString & Msg) :
-    Exception(Msg)
+    Exception(OBJECT_CLASS_EConvertError, Msg)
   {}
 };
 
@@ -376,22 +418,6 @@ TDateTime IncSecond(const TDateTime & AValue, const Int64 ANumberOfSeconds = 1);
 TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSeconds = 1);
 
 Boolean IsLeapYear(Word Year);
-
-class TCriticalSection : public TObject
-{
-public:
-  TCriticalSection();
-  ~TCriticalSection();
-
-  void Enter() const;
-  void Leave() const;
-
-  int GetAcquired() const { return FAcquired; }
-
-private:
-  mutable CRITICAL_SECTION FSection;
-  mutable int FAcquired;
-};
 
 UnicodeString StripHotkey(const UnicodeString & AText);
 bool StartsText(const UnicodeString & ASubText, const UnicodeString & AText);
@@ -488,3 +514,6 @@ public:
   std::function<void()> CONCATENATE(null_func_, __LINE__); \
   NullFunc ANONYMOUS_VARIABLE(null_) = CONCATENATE(null_func_, __LINE__) = [&]() /* lambda body here */
 
+
+void ShowExtendedException(Exception * E);
+bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);

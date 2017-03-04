@@ -165,7 +165,7 @@ static AnsiString PathEscape(const char * Path)
 static UTF8String PathUnescape(const char * Path)
 {
   char * UnescapedPath = ne_path_unescape(Path);
-  UTF8String Result(UnescapedPath, UnescapedPath ? strlen(UnescapedPath) : 0);
+  UTF8String Result(UnescapedPath, strlen(NullToEmptyA(UnescapedPath)));
   ne_free(UnescapedPath);
   return Result;
 }
@@ -227,7 +227,7 @@ UnicodeString ExpatVersion()
 
 
 TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
-  TCustomFileSystem(ATerminal),
+  TCustomFileSystem(OBJECT_CLASS_TWebDAVFileSystem, ATerminal),
   FActive(false),
   FHasTrailingSlash(false),
   FCancelled(false),
@@ -750,16 +750,17 @@ void TWebDAVFileSystem::HomeDirectory()
   ChangeDirectory(L"/");
 }
 
-UnicodeString TWebDAVFileSystem::DirectoryPath(UnicodeString Path)
+UnicodeString TWebDAVFileSystem::DirectoryPath(const UnicodeString & Path) const
 {
+  UnicodeString Result = Path;
   if (FHasTrailingSlash)
   {
-    Path = core::UnixIncludeTrailingBackslash(Path);
+    Result = core::UnixIncludeTrailingBackslash(Result);
   }
-  return Path;
+  return Result;
 }
 
-UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile * AFile)
+UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile * AFile) const
 {
   UnicodeString Result = AFile->GetFullFileName();
   if (AFile->GetIsDirectory())
@@ -801,6 +802,7 @@ void TWebDAVFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 
 struct TReadFileData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   TWebDAVFileSystem * FileSystem;
   TRemoteFile * File;
   TRemoteFileList * FileList;
@@ -900,7 +902,7 @@ void TWebDAVFileSystem::NeonPropsResult(
     {
       Path = core::UnixIncludeTrailingBackslash(core::UnixIncludeTrailingBackslash(Path) + L"..");
     }
-    std::unique_ptr<TRemoteFile> File(new TRemoteFile(nullptr));
+    std::unique_ptr<TRemoteFile> File(new TRemoteFile());
     File->SetTerminal(Data.FileSystem->FTerminal);
     Data.FileSystem->ParsePropResultSet(File.get(), Path, Results);
     Data.FileList->AddFile(File.release());
@@ -1234,7 +1236,7 @@ void TWebDAVFileSystem::AnyCommand(const UnicodeString & /*Command*/,
   ThrowNotImplemented(1008);
 }
 
-TStrings * TWebDAVFileSystem::GetFixedPaths()
+TStrings * TWebDAVFileSystem::GetFixedPaths() const
 {
   return nullptr;
 }
@@ -1261,7 +1263,7 @@ void TWebDAVFileSystem::NeonQuotaResult(
 void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & APath,
   TSpaceAvailable & ASpaceAvailable)
 {
-  // RFC4331: http://tools.ietf.org/html/rfc4331
+  // RFC4331: https://tools.ietf.org/html/rfc4331
 
   // This is known to be supported by:
 
@@ -1312,7 +1314,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   intptr_t Index = 0;
   while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
+    TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index));
     bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
@@ -1728,7 +1730,7 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     UnicodeString FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObj(Index));
+    const TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index));
     bool Success = false;
     try__finally
     {
@@ -1840,8 +1842,8 @@ void TWebDAVFileSystem::NeonPreSend(
     // Needed by IIS server to make it download source code, not code output,
     // and mainly to even allow downloading file with unregistered extensions.
     // Without it files like .001 return 404 (Not found) HTTP code.
-    // http://msdn.microsoft.com/en-us/library/cc250098.aspx
-    // http://msdn.microsoft.com/en-us/library/cc250216.aspx
+    // https://msdn.microsoft.com/en-us/library/cc250098.aspx
+    // https://msdn.microsoft.com/en-us/library/cc250216.aspx
     // http://lists.manyfish.co.uk/pipermail/neon/2012-April/001452.html
     // It's also supported by Oracle server:
     // https://docs.oracle.com/cd/E19146-01/821-1828/gczya/index.html
@@ -2131,7 +2133,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~tfFirstLevel;
 
-      FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TWebDAVFileSystem::SinkFile, this), &SinkFileParams);
+      FTerminal->ProcessDirectory(AFileName, nb::bind(&TWebDAVFileSystem::SinkFile, this), &SinkFileParams);
 
       // Do not delete directory if some of its files were skip.
       // Throw "skip file" for the directory to avoid attempt to deletion
@@ -2313,7 +2315,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 void TWebDAVFileSystem::SinkFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * Param)
 {
-  TSinkFileParams * Params = NB_STATIC_DOWNCAST(TSinkFileParams, Param);
+  TSinkFileParams * Params = dyn_cast<TSinkFileParams>(as_object(Param));
   DebugAssert(Params->OperationProgress);
   try
   {
@@ -2406,7 +2408,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
       TQueryButtonAlias Aliases[1];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick = MAKE_CALLBACK(TClipboardHandler::Copy, &ClipboardHandler);
+      Aliases[0].OnClick = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
 
       TQueryParams Params;
       Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
@@ -2554,7 +2556,7 @@ int TWebDAVFileSystem::NeonRequestAuth(
   UnicodeString APassword;
   if (Result)
   {
-    // Some servers (Gallery2 on https://g2.pixi.me/w/webdav/)
+    // Some servers (Gallery2 on discontinued g2.pixi.me)
     // return authentication error (401) on PROPFIND request for
     // non-existing files.
     // When we already tried password before, do not try anymore.
@@ -2823,6 +2825,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & FileName, const TRemote
       if (Lock2 == nullptr)
       {
         ne_lock_free(Unlock);
+        ne_lock_destroy(Unlock);
       }
 
       DiscardLock(Path);
@@ -2836,7 +2839,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & FileName, const TRemote
 
 void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem * AMainFileSystem)
 {
-  TWebDAVFileSystem * MainFileSystem = NB_STATIC_DOWNCAST(TWebDAVFileSystem, AMainFileSystem);
+  TWebDAVFileSystem * MainFileSystem = dyn_cast<TWebDAVFileSystem>(AMainFileSystem);
   if (DebugAlwaysTrue(MainFileSystem != nullptr))
   {
     TGuard Guard(FNeonLockStoreSection);
@@ -2863,6 +2866,4 @@ void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem * AMainFileSystem)
     }
   }
 }
-
-NB_IMPLEMENT_CLASS(TWebDAVFileSystem, NB_GET_CLASS_INFO(TCustomFileSystem), nullptr)
 

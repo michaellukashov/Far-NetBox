@@ -9,6 +9,8 @@
 #include <Exceptions.h>
 #include <FileBuffer.h>
 #include <StrUtils.hpp>
+#include <LibraryLoader.hpp>
+#include <nbutils.h>
 
 #include "SessionData.h"
 #include "CoreMain.h"
@@ -68,7 +70,7 @@ static TDateTime SecToDateTime(intptr_t Sec)
 
 //--- TSessionData ----------------------------------------------------
 TSessionData::TSessionData(const UnicodeString & AName) :
-  TNamedObject(AName),
+  TNamedObject(OBJECT_CLASS_TSessionData, AName),
   FIEProxyConfig(nullptr)
 {
   Default();
@@ -80,7 +82,6 @@ TSessionData::~TSessionData()
   if (nullptr != FIEProxyConfig)
   {
     SAFE_DESTROY(FIEProxyConfig);
-    FIEProxyConfig = nullptr;
   }
 }
 
@@ -413,9 +414,9 @@ void TSessionData::NonPersistant()
 
 void TSessionData::Assign(const TPersistent * Source)
 {
-  if (Source && (NB_STATIC_DOWNCAST_CONST(TSessionData, Source) != nullptr))
+  if (Source && isa<TSessionData>(Source))
   {
-    TSessionData * SourceData = NB_STATIC_DOWNCAST(TSessionData, const_cast<TPersistent *>(Source));
+    TSessionData * SourceData = dyn_cast<TSessionData>(const_cast<TPersistent *>(Source));
     CopyData(SourceData);
     FSource = SourceData->FSource;
   }
@@ -1636,7 +1637,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
        // this can be optimized as the list is sorted
       for (Integer Index = 0; Index < AStoredSessions->GetCountIncludingHidden(); ++Index)
       {
-        TSessionData * AData = NB_STATIC_DOWNCAST(TSessionData, AStoredSessions->GetObj(Index));
+        TSessionData * AData = dyn_cast<TSessionData>(AStoredSessions->GetObj(Index));
         if (!AData->GetIsWorkspace())
         {
           bool Match = false;
@@ -1650,7 +1651,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
           else if ((AData->GetName().Length() < DecodedUrl.Length()) &&
                    (DecodedUrl[AData->GetName().Length() + 1] == L'/') &&
                    // StrLIComp is an equivalent of SameText
-                   (StrLIComp(AData->GetName().c_str(), DecodedUrl.c_str(), (int)AData->GetName().Length()) == 0))
+                   (nb::StrLIComp(AData->GetName().c_str(), DecodedUrl.c_str(), (int)AData->GetName().Length()) == 0))
           {
             Match = true;
           }
@@ -3502,29 +3503,39 @@ void TSessionData::PrepareProxyData() const
   {
     FIEProxyConfig = new TIEProxyConfig;
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyConfig;
-    if (!WinHttpGetIEProxyConfigForCurrentUser(&IEProxyConfig))
+    ClearStruct(IEProxyConfig);
+    TLibraryLoader LibraryLoader(L"winhttp.dll", true);
+    if (LibraryLoader.Loaded())
     {
-      DWORD Err = ::GetLastError();
-      DEBUG_PRINTF("Error reading system proxy configuration, code: %x", Err);
-      DebugUsedParam(Err);
-    }
-    else
-    {
-      FIEProxyConfig->AutoDetect = !!IEProxyConfig.fAutoDetect;
-      if (nullptr != IEProxyConfig.lpszAutoConfigUrl)
+      typedef BOOL (WINAPI *FWinHttpGetIEProxyConfigForCurrentUser)(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *);
+      FWinHttpGetIEProxyConfigForCurrentUser GetIEProxyConfig = reinterpret_cast<FWinHttpGetIEProxyConfigForCurrentUser>(
+            LibraryLoader.GetProcAddress("WinHttpGetIEProxyConfigForCurrentUser"));
+      if (!GetIEProxyConfig)
+        return;
+      if (!GetIEProxyConfig(&IEProxyConfig))
       {
-        FIEProxyConfig->AutoConfigUrl = IEProxyConfig.lpszAutoConfigUrl;
+        DWORD Err = ::GetLastError();
+        DEBUG_PRINTF("Error reading system proxy configuration, code: %x", Err);
+        DebugUsedParam(Err);
       }
-      if (nullptr != IEProxyConfig.lpszProxy)
+      else
       {
-        FIEProxyConfig->Proxy = IEProxyConfig.lpszProxy;
+        FIEProxyConfig->AutoDetect = !!IEProxyConfig.fAutoDetect;
+        if (nullptr != IEProxyConfig.lpszAutoConfigUrl)
+        {
+          FIEProxyConfig->AutoConfigUrl = IEProxyConfig.lpszAutoConfigUrl;
+        }
+        if (nullptr != IEProxyConfig.lpszProxy)
+        {
+          FIEProxyConfig->Proxy = IEProxyConfig.lpszProxy;
+        }
+        if (nullptr != IEProxyConfig.lpszProxyBypass)
+        {
+          FIEProxyConfig->ProxyBypass = IEProxyConfig.lpszProxyBypass;
+        }
+        FreeIEProxyConfig(&IEProxyConfig);
+        ParseIEProxyConfig();
       }
-      if (nullptr != IEProxyConfig.lpszProxyBypass)
-      {
-        FIEProxyConfig->ProxyBypass = IEProxyConfig.lpszProxyBypass;
-      }
-      FreeIEProxyConfig(&IEProxyConfig);
-      ParseIEProxyConfig();
     }
   }
 }
@@ -3606,14 +3617,14 @@ void TSessionData::FromURI(const UnicodeString & ProxyURI,
   if (Pos > 0)
   {
     ProxyUrl = ProxyURI.SubString(1, Pos - 1).Trim();
-    ProxyPort = ProxyURI.SubString(Pos + 1, -1).Trim().ToInt();
+    ProxyPort = ProxyURI.SubString(Pos + 1).Trim().ToInt();
   }
   // remove scheme from Url e.g. "socks5://" "https://"
   Pos = ProxyUrl.Pos(L"://");
   if (Pos > 0)
   {
     UnicodeString ProxyScheme = ProxyUrl.SubString(1, Pos - 1);
-    ProxyUrl = ProxyUrl.SubString(Pos + 3, -1);
+    ProxyUrl = ProxyUrl.SubString(Pos + 3);
     if (ProxyScheme == L"socks4")
     {
       ProxyMethod = pmSocks4;
@@ -4137,7 +4148,7 @@ TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption) const
 
 //=== TStoredSessionList ----------------------------------------------
 TStoredSessionList::TStoredSessionList(bool AReadOnly) :
-  TNamedObjectList(),
+  TNamedObjectList(OBJECT_CLASS_TStoredSessionList),
   FDefaultSettings(new TSessionData(DefaultName)),
   FReadOnly(AReadOnly)
 {
@@ -4164,12 +4175,12 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   {
     SCOPE_EXIT
     {
-      AutoSort = true;
+      FAutoSort = true;
       AlphaSort();
     };
 
-    DebugAssert(AutoSort);
-    AutoSort = false;
+    DebugAssert(FAutoSort);
+    FAutoSort = false;
     bool WasEmpty = (GetCount() == 0);
 
     Storage->GetSubKeyNames(SubKeys.get());
@@ -4206,7 +4217,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
           }
           else
           {
-            SessionData = NB_STATIC_DOWNCAST(TSessionData, FindByName(SessionName));
+            SessionData = dyn_cast<TSessionData>(FindByName(SessionName));
           }
         }
 
@@ -4296,7 +4307,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults.get());
     for (intptr_t Index = 0; Index < GetCountIncludingHidden(); ++Index)
     {
-      TSessionData * SessionData = NB_STATIC_DOWNCAST(TSessionData, GetObj(Index));
+      TSessionData * SessionData = dyn_cast<TSessionData>(GetObj(Index));
       try
       {
         DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
@@ -4364,7 +4375,7 @@ void TStoredSessionList::Saved()
   FDefaultSettings->SetModified(false);
   for (intptr_t Index = 0; Index < GetCountIncludingHidden(); ++Index)
   {
-    (NB_STATIC_DOWNCAST(TSessionData, GetObj(Index))->SetModified(false));
+    (dyn_cast<TSessionData>(GetObj(Index))->SetModified(false));
   }
 }
 
@@ -4637,15 +4648,11 @@ void TStoredSessionList::UpdateStaticUsage()
 
 const TSessionData * TStoredSessionList::FindSame(TSessionData * Data) const
 {
-  const TSessionData * Result;
-  if (Data->GetHidden() || Data->GetName().IsEmpty()) // || Data->GetIsWorkspace())
-  {
-    Result = nullptr;
-  }
-  else
+  const TSessionData * Result = nullptr;
+  if (!(Data->GetHidden() || Data->GetName().IsEmpty())) // || Data->GetIsWorkspace())
   {
     const TNamedObject * Obj = FindByName(Data->GetName());
-    Result = NB_STATIC_DOWNCAST_CONST(TSessionData, Obj);
+    Result = dyn_cast<TSessionData>(Obj);
   }
   return Result;
 }
@@ -4665,7 +4672,7 @@ intptr_t TStoredSessionList::IndexOf(TSessionData * Data) const
 TSessionData * TStoredSessionList::NewSession(
   const UnicodeString & SessionName, TSessionData * Session)
 {
-  TSessionData * DuplicateSession = NB_STATIC_DOWNCAST(TSessionData, FindByName(SessionName));
+  TSessionData * DuplicateSession = dyn_cast<TSessionData>(FindByName(SessionName));
   if (!DuplicateSession)
   {
     DuplicateSession = new TSessionData(L"");
@@ -4900,7 +4907,7 @@ void TStoredSessionList::NewWorkspace(
 
   for (intptr_t Index = 0; Index < DataList->GetCount(); ++Index)
   {
-    TSessionData * Data = NB_STATIC_DOWNCAST(TSessionData, DataList->GetItem(Index));
+    TSessionData * Data = dyn_cast<TSessionData>(as_object(DataList->GetItem(Index)));
 
     TSessionData * Data2 = new TSessionData(L"");
     Data2->Assign(Data);
@@ -4952,7 +4959,7 @@ TSessionData * TStoredSessionList::ResolveWorkspaceData(TSessionData * Data)
 {
   if (!Data->GetLink().IsEmpty())
   {
-    Data = NB_STATIC_DOWNCAST(TSessionData, FindByName(Data->GetLink()));
+    Data = dyn_cast<TSessionData>(FindByName(Data->GetLink()));
     if (Data != nullptr)
     {
       Data = ResolveWorkspaceData(Data);
@@ -5153,6 +5160,4 @@ intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps)
   }
   return Result;
 }
-
-NB_IMPLEMENT_CLASS(TSessionData, NB_GET_CLASS_INFO(TNamedObject), nullptr)
 

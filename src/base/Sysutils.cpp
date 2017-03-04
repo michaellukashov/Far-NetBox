@@ -40,38 +40,13 @@ intptr_t __cdecl debug_printf2(const char * format, ...)
 
 UnicodeString MB2W(const char * src, const UINT cp)
 {
-  if (!src || !*src)
-  {
-    return UnicodeString(L"");
-  }
-
-  intptr_t reqLength = ::MultiByteToWideChar(cp, 0, src, -1, nullptr, 0);
-  UnicodeString Result;
-  if (reqLength)
-  {
-    Result.SetLength(reqLength);
-    ::MultiByteToWideChar(cp, 0, src, -1, const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
-    Result.SetLength(Result.Length() - 1);  //remove NULL character
-  }
+  UnicodeString Result(src, NBChTraitsCRT<char>::SafeStringLen(src), cp);
   return Result;
 }
 
 AnsiString W2MB(const wchar_t * src, const UINT cp)
 {
-  if (!src || !*src)
-  {
-    return AnsiString("");
-  }
-
-  intptr_t reqLength = ::WideCharToMultiByte(cp, 0, src, -1, 0, 0, nullptr, nullptr);
-  AnsiString Result;
-  if (reqLength)
-  {
-    Result.SetLength(reqLength);
-    ::WideCharToMultiByte(cp, 0, src, -1, const_cast<LPSTR>(Result.c_str()),
-      static_cast<int>(reqLength), nullptr, nullptr);
-    Result.SetLength(Result.Length() - 1);  //remove NULL character
-  }
+  AnsiString Result(src, NBChTraitsCRT<wchar_t>::SafeStringLen(src), cp);
   return Result;
 }
 
@@ -82,45 +57,66 @@ const TDayTable MonthDays[] =
   { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
 };
 
-Exception::Exception(Exception * E) :
+Exception::Exception(TObjectClassId Kind, Exception * E) :
   std::runtime_error(E ? E->what() : ""),
+  FKind(Kind),
   Message(E ? E->Message : L"")
 {
 }
 
 Exception::Exception(const UnicodeString & Msg) :
   std::runtime_error(""),
+  FKind(OBJECT_CLASS_Exception),
+  Message(Msg)
+{
+}
+
+Exception::Exception(TObjectClassId Kind, const wchar_t * Msg) :
+  std::runtime_error(""),
+  FKind(Kind),
   Message(Msg)
 {
 }
 
 Exception::Exception(const wchar_t * Msg) :
   std::runtime_error(""),
+  FKind(OBJECT_CLASS_Exception),
   Message(Msg)
 {
 }
 
-Exception::Exception(std::exception * E) :
-  std::runtime_error(E ? E->what() : "")
+Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg) :
+  std::runtime_error(""),
+  FKind(Kind),
+  Message(Msg)
 {
 }
 
-Exception::Exception(const UnicodeString & Msg, int AHelpContext) :
+Exception::Exception(TObjectClassId Kind, std::exception * E) :
+  std::runtime_error(E ? E->what() : ""),
+  FKind(Kind)
+{
+}
+
+Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AHelpContext) :
   std::runtime_error(""),
+  FKind(Kind),
   Message(Msg)
 {
   TODO("FHelpContext = AHelpContext");
   (void)AHelpContext;
 }
 
-Exception::Exception(Exception * E, intptr_t Ident) :
-  std::runtime_error(E ? E->what() : "")
+Exception::Exception(TObjectClassId Kind, Exception * E, intptr_t Ident) :
+  std::runtime_error(E ? E->what() : ""),
+  FKind(Kind)
 {
   Message = FMTLOAD(Ident);
 }
 
-Exception::Exception(intptr_t Ident) :
-  std::runtime_error("")
+Exception::Exception(TObjectClassId Kind, intptr_t Ident) :
+  std::runtime_error(""),
+  FKind(Kind)
 {
   Message = FMTLOAD(Ident);
 }
@@ -198,7 +194,7 @@ int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal)
 
 bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value)
 {
-  bool Result = !StrValue.IsEmpty() && (StrValue.FindFirstNotOf(L"+-0123456789") == -1);
+  bool Result = !StrValue.IsEmpty(); // && (StrValue.FindFirstNotOf(L"+-0123456789") == -1);
   if (Result)
   {
     errno = 0;
@@ -414,7 +410,7 @@ UnicodeString RightStr(const UnicodeString & Str, intptr_t ACount)
 intptr_t PosEx(const UnicodeString & SubStr, const UnicodeString & Str, intptr_t Offset)
 {
   UnicodeString S = Str.SubString(Offset);
-  intptr_t Result = S.Pos(SubStr);
+  intptr_t Result = S.Pos(SubStr) + Offset;
   return Result;
 }
 
@@ -652,7 +648,7 @@ bool ForceDirectories(const UnicodeString & ADir)
   {
     return ::CreateDir(Dir);
   }
-  Result = ::ForceDirectories(::ExtractFilePath(Dir)) && CreateDir(Dir);
+  Result = ::ForceDirectories(::ExtractFilePath(Dir)) && ::CreateDir(Dir);
   return Result;
 }
 
@@ -737,11 +733,11 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
 static const wchar_t *
 NextWord(const wchar_t * Input)
 {
-  static wchar_t buffer[1024];
+  static UnicodeString buffer(1024, 0);
   static const wchar_t * text = nullptr;
 
-  wchar_t * endOfBuffer = buffer + _countof(buffer) - 1;
-  wchar_t * pBuffer = buffer;
+  wchar_t * endOfBuffer = (wchar_t *)buffer.c_str() + buffer.GetLength() - 1;
+  wchar_t * pBuffer = (wchar_t *)buffer.c_str();
 
   if (Input)
   {
@@ -765,7 +761,7 @@ NextWord(const wchar_t * Input)
 
   *pBuffer = 0;
 
-  return buffer;
+  return buffer.c_str();
 }
 
 UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
@@ -902,9 +898,9 @@ UnicodeString TranslateExceptionMessage(Exception * E)
 {
   if (E)
   {
-    if (NB_STATIC_DOWNCAST(Exception, E) != nullptr)
+    if (isa<Exception>(E))
     {
-      return NB_STATIC_DOWNCAST(Exception, E)->Message;
+      return dyn_cast<Exception>(E)->Message;
     }
     else
     {
@@ -943,9 +939,9 @@ void AppendPathDelimiterW(UnicodeString & Str)
 
 UnicodeString ExpandEnvVars(const UnicodeString & Str)
 {
-  UnicodeString Buf(32 * 1024, 0);
-  intptr_t size = ::ExpandEnvironmentStringsW(Str.c_str(), (wchar_t *)Buf.c_str(), static_cast<DWORD>(32 * 1024 - 1));
-  UnicodeString Result = UnicodeString(Buf.c_str(), size - 1);
+  UnicodeString Buf(NB_MAX_PATH, 0);
+  intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), (wchar_t *)Buf.c_str(), static_cast<DWORD>(32 * 1024 - 1));
+  UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
 
@@ -1096,12 +1092,12 @@ bool Win32Check(bool RetVal)
   return RetVal;
 }
 
-UnicodeString SysErrorMessage(int ErrorCode)
+UnicodeString SysErrorMessage(intptr_t ErrorCode)
 {
   UnicodeString Result;
   wchar_t Buffer[255];
   intptr_t Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
-    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, ErrorCode, 0,
+    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, (int)ErrorCode, 0,
     static_cast<LPTSTR>(Buffer),
     sizeof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
@@ -1703,32 +1699,6 @@ Boolean IsLeapYear(Word Year)
   return (Year % 4 == 0) && ((Year % 100 != 0) || (Year % 400 == 0));
 }
 
-// TCriticalSection
-
-TCriticalSection::TCriticalSection() :
-  FAcquired(0)
-{
-  InitializeCriticalSection(&FSection);
-}
-
-TCriticalSection::~TCriticalSection()
-{
-  DebugAssert(FAcquired == 0);
-  DeleteCriticalSection(&FSection);
-}
-
-void TCriticalSection::Enter() const
-{
-  ::EnterCriticalSection(&FSection);
-  FAcquired++;
-}
-
-void TCriticalSection::Leave() const
-{
-  FAcquired--;
-  ::LeaveCriticalSection(&FSection);
-}
-
 UnicodeString StripHotkey(const UnicodeString & AText)
 {
   UnicodeString Result = AText;
@@ -1791,8 +1761,3 @@ TFormatSettings::TFormatSettings(int) :
 {
 }
 
-NB_IMPLEMENT_CLASS(Exception, NB_GET_CLASS_INFO(TObject), nullptr)
-NB_IMPLEMENT_CLASS(EAccessViolation, NB_GET_CLASS_INFO(Exception), nullptr)
-NB_IMPLEMENT_CLASS(EAbort, NB_GET_CLASS_INFO(Exception), nullptr)
-NB_IMPLEMENT_CLASS(EFileNotFoundError, NB_GET_CLASS_INFO(Exception), nullptr)
-NB_IMPLEMENT_CLASS(EOSError, NB_GET_CLASS_INFO(Exception), nullptr)

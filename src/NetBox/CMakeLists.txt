@@ -1,14 +1,17 @@
 message(STATUS "CMake version: ${CMAKE_VERSION}")
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 2.8)
+
+set(OPT_COMPILE_OPENSSL ON CACHE STRING "Default build openSSL")
+set(OPT_USE_UNITY_BUILD ON CACHE STRING "Default use unity build")
 
 project(NetBox)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug" FORCE)
 endif()
-message(STATUS "Build type -- ${CMAKE_BUILD_TYPE}")
-message(STATUS "CMAKE_CL_64 -- ${CMAKE_CL_64}")
-message(STATUS "MSVC10 -- ${MSVC10}")
+message("Build type: ${CMAKE_BUILD_TYPE}")
+message("CMAKE_CL_64: ${CMAKE_CL_64}")
+message("MSVC10: ${MSVC10}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far2)
@@ -38,9 +41,7 @@ else()
   set(BUILD_DEBUG 0)
 endif()
 
-if(NOT DEFINED PROJECT_ROOT OR PROJECT_ROOT STREQUAL "")
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
-endif()
 string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 
 if(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
@@ -50,25 +51,28 @@ endif()
 #-------------------------------------------------------------------------------
 
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
-include(CMakeDetermineCXXCompiler)
-message(STATUS "System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
-message(STATUS "MSVC_VERSION: ${MSVC_VERSION}")
-
-set(LIBS_ROOT ${PROJECT_ROOT}/libs)
-set(SRC_ROOT ${PROJECT_ROOT}/src)
+#include(CMakeDetermineCXXCompiler)
+message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
+message("MSVC_VERSION: ${MSVC_VERSION}")
+message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 #-------------------------------------------------------------------------------
 
 set(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB") #" -DUSE_GETADDRINFO")
 set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
 set(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
+set(APR_DEFS "-DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES")
 set(NETBOX_DEFS "-DMPEXT -DWINSCP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
+set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
+set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS")
+set(NETBOX_DEFS "${NETBOX_DEFS} ${APR_DEFS}")
+set(NETBOX_DEFS "${NETBOX_DEFS} ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} ${DLMALLOC_DEFS}")
+#-D_WINDLL -D_USRDLL
 if (MSVC_VERSION GREATER 1899)
 set(NETBOX_DEFS "${NETBOX_DEFS} /Zc:threadSafeInit- /bigobj")
 endif()
 
-set(NETBOX_C_FLAGS "-D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501 -D_SCL_SECURE_NO_WARNINGS -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} ${DLMALLOC_DEFS}")
-#-D_WINDLL -D_USRDLL
+set(NETBOX_C_FLAGS "")
 
 if(x64)
 set(NETBOX_PLATFORM_FLAGS "${NETBOX_PLATFORM_FLAGS} -DWIN64")
@@ -88,7 +92,6 @@ set(NETBOX_FLAGS_RELEASE "-U_DEBUG -DNDEBUG")
 set(NETBOX_FLAGS_DEBUG "-D_DEBUG -DDEBUG")
 
 set(NETBOX_UNICODE_FLAGS -D_UNICODE -DUNICODE)
-set(NETBOX_UNICODE_FLAGS_STRING "-D_UNICODE -DUNICODE")
 
 if(MSVC)
 
@@ -111,7 +114,7 @@ set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
 endif()
 
 set(NETBOX_C_FLAGS "${NETBOX_DEFS} ${NETBOX_C_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_C_WARNING_FLAGS}")
-set(NETBOX_CXX_FLAGS "${NETBOX_DEFS} ${NETBOX_CXX_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_CXX_WARNING_FLAGS} ${NETBOX_UNICODE_FLAGS_STRING}")
+set(NETBOX_CXX_FLAGS "${NETBOX_DEFS} ${NETBOX_CXX_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_CXX_WARNING_FLAGS}")
 
 set(CMAKE_CXX_FLAGS_RELEASE "${NETBOX_CXX_FLAGS} ${NETBOX_FLAGS_RELEASE}")
 set(CMAKE_C_FLAGS_RELEASE "${NETBOX_C_FLAGS} ${NETBOX_FLAGS_RELEASE}")
@@ -166,9 +169,9 @@ set(NETBOX_DLL_LINK_FLAGS
   /NODEFAULTLIB:UAFXCWD.LIB
   /NODEFAULTLIB:LIBCPMT.LIB
   /NODEFAULTLIB:LIBCPMTD.LIB
-  /NODEFAULTLIB:LIBEAY32.LIB
-  /NODEFAULTLIB:SSLEAY32.LIB
-  /NODEFAULTLIB:LIBPUTTY.LIB
+  /NODEFAULTLIB:LIBCRYPTO.LIB
+  /NODEFAULTLIB:LIBSSL.LIB
+  /NODEFAULTLIB:PUTTY.LIB
   /NODEFAULTLIB:KERNEL32.LIB
   /NODEFAULTLIB:USER32.LIB
   /NODEFAULTLIB:VERSION.LIB
@@ -179,16 +182,17 @@ set(NETBOX_DLL_LINK_FLAGS
   /DELAYLOAD:shell32.dll
   /DELAYLOAD:shlwapi.dll
   /DELAYLOAD:crypt32.dll
-  /DELAYLOAD:gdi32.dll
   /MANIFEST:NO
   /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS /NOLOGO
   /MAP
   /INCREMENTAL:NO
+  /ignore:4099
 "
 )
+#/DELAYLOAD:gdi32.dll
 
-set(NETBOX_DLL_LINK_FLAGS_RELEASE "/OPT:REF ${NETBOX_DLL_LINK_FLAGS}")
-set(NETBOX_DLL_LINK_FLAGS_DEBUG "/DEBUG ${NETBOX_DLL_LINK_FLAGS}")
+set(NETBOX_DLL_LINK_FLAGS_RELEASE "/OPT:REF")
+set(NETBOX_DLL_LINK_FLAGS_DEBUG "/DEBUG")
 
 elseif(CMAKE_COMPILER_IS_MINGW)
 set(NETBOX_DLL_LINK_FLAGS "")
@@ -196,35 +200,681 @@ set(NETBOX_DLL_LINK_FLAGS_RELEASE "${NETBOX_DLL_LINK_FLAGS}")
 set(NETBOX_DLL_LINK_FLAGS_DEBUG "${NETBOX_DLL_LINK_FLAGS}")
 endif()
 
-#-------------------------------------------------------
-
 include_directories(
-  ${SRC_ROOT}/NetBox
-  ${SRC_ROOT}/PluginSDK/${FAR_VERSION}
-  ${SRC_ROOT}/include
-  ${SRC_ROOT}/base
-  ${SRC_ROOT}/core
-  ${SRC_ROOT}/windows
-  ${SRC_ROOT}/resource
-  ${SRC_ROOT}/Common
-  ${SRC_ROOT}/filezilla
-  ${SRC_ROOT}/filezilla/misc
-  ${LIBS_ROOT}
-  ${LIBS_ROOT}/atlmfc/include
-  ${LIBS_ROOT}/Putty
-  ${LIBS_ROOT}/Putty/windows
-  ${LIBS_ROOT}/tinyxml2
-  ${LIBS_ROOT}/zlib/src
-  ${LIBS_ROOT}/expat/lib
-  ${LIBS_ROOT}/apr/include
-  ${LIBS_ROOT}/apr/include/arch/win32
-  ${LIBS_ROOT}/apr/include/arch/unix
-  ${LIBS_ROOT}/rdestl
-
-  ${LIBS_ROOT}/openssl/${OPENSSL_INC_DIR}/include
+  ../../libs
+  ../include
 )
 
 #-------------------------------------------------------------------------------
+#openssl
+
+if(OPT_COMPILE_OPENSSL)
+
+if(x64)
+set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
+  -DOPENSSL_SYSNAME_WIN32 -DOPENSSL_SYSNAME_WIN64
+  -DMK1MF_PLATFORM_VC_WIN64A
+)
+else()
+set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
+  -DOPENSSL_SYSNAME_WIN32
+  -DMK1MF_PLATFORM_VC_WIN32
+)
+endif()
+set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
+  -DMK1MF_BUILD -DWIN32_LEAN_AND_MEAN
+  -DVC_EXTRALEAN -DSECURITY_WIN32 -DOPENSSL_NO_CAPIENG -DNO_CHMOD -DOPENSSL_NO_DGRAM -DOPENSSL_NO_RIJNDAEL
+  -DDSO_WIN32
+)
+set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
+  /Zi /Zl -DOPENSSL_THREADS -DOPENSSL_NO_DYNAMIC_ENGINE
+  -DOPENSSL_PIC -DOPENSSL_NO_ERR
+)
+set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
+  -wd4090
+  -DOPENSSLDIR="" -DENGINESDIR=""
+  -DNB_COMPILE_OPENSSL
+)
+
+add_library(libcrypto STATIC
+  ../../libs/openssl/crypto/aes/aes_cbc.c
+  ../../libs/openssl/crypto/aes/aes_cfb.c
+  ../../libs/openssl/crypto/aes/aes_core.c
+  ../../libs/openssl/crypto/aes/aes_ecb.c
+  ../../libs/openssl/crypto/aes/aes_ige.c
+  ../../libs/openssl/crypto/aes/aes_misc.c
+  ../../libs/openssl/crypto/aes/aes_ofb.c
+  ../../libs/openssl/crypto/aes/aes_wrap.c
+  ../../libs/openssl/crypto/asn1/a_bitstr.c
+  ../../libs/openssl/crypto/asn1/a_d2i_fp.c
+  ../../libs/openssl/crypto/asn1/a_digest.c
+  ../../libs/openssl/crypto/asn1/a_dup.c
+  ../../libs/openssl/crypto/asn1/a_gentm.c
+  ../../libs/openssl/crypto/asn1/a_i2d_fp.c
+  ../../libs/openssl/crypto/asn1/a_int.c
+  ../../libs/openssl/crypto/asn1/a_mbstr.c
+  ../../libs/openssl/crypto/asn1/a_object.c
+  ../../libs/openssl/crypto/asn1/a_octet.c
+  ../../libs/openssl/crypto/asn1/a_print.c
+  ../../libs/openssl/crypto/asn1/a_sign.c
+  ../../libs/openssl/crypto/asn1/a_strex.c
+  ../../libs/openssl/crypto/asn1/a_strnid.c
+  ../../libs/openssl/crypto/asn1/a_time.c
+  ../../libs/openssl/crypto/asn1/a_type.c
+  ../../libs/openssl/crypto/asn1/a_utctm.c
+  ../../libs/openssl/crypto/asn1/a_utf8.c
+  ../../libs/openssl/crypto/asn1/a_verify.c
+  ../../libs/openssl/crypto/asn1/ameth_lib.c
+  ../../libs/openssl/crypto/asn1/asn1_err.c
+  ../../libs/openssl/crypto/asn1/asn1_gen.c
+  ../../libs/openssl/crypto/asn1/asn1_lib.c
+  ../../libs/openssl/crypto/asn1/asn1_par.c
+  ../../libs/openssl/crypto/asn1/asn_mime.c
+  ../../libs/openssl/crypto/asn1/asn_moid.c
+  ../../libs/openssl/crypto/asn1/asn_mstbl.c
+  ../../libs/openssl/crypto/asn1/asn_pack.c
+  ../../libs/openssl/crypto/asn1/bio_asn1.c
+  ../../libs/openssl/crypto/asn1/bio_ndef.c
+  ../../libs/openssl/crypto/asn1/d2i_pr.c
+  ../../libs/openssl/crypto/asn1/d2i_pu.c
+  ../../libs/openssl/crypto/asn1/evp_asn1.c
+  ../../libs/openssl/crypto/asn1/f_int.c
+  ../../libs/openssl/crypto/asn1/f_string.c
+  ../../libs/openssl/crypto/asn1/i2d_pr.c
+  ../../libs/openssl/crypto/asn1/i2d_pu.c
+  ../../libs/openssl/crypto/asn1/n_pkey.c
+  ../../libs/openssl/crypto/asn1/nsseq.c
+  ../../libs/openssl/crypto/asn1/p5_pbe.c
+  ../../libs/openssl/crypto/asn1/p5_pbev2.c
+  ../../libs/openssl/crypto/asn1/p5_scrypt.c
+  ../../libs/openssl/crypto/asn1/p8_pkey.c
+  ../../libs/openssl/crypto/asn1/t_bitst.c
+  ../../libs/openssl/crypto/asn1/t_pkey.c
+  ../../libs/openssl/crypto/asn1/t_spki.c
+  ../../libs/openssl/crypto/asn1/tasn_dec.c
+  ../../libs/openssl/crypto/asn1/tasn_enc.c
+  ../../libs/openssl/crypto/asn1/tasn_fre.c
+  ../../libs/openssl/crypto/asn1/tasn_new.c
+  ../../libs/openssl/crypto/asn1/tasn_prn.c
+  ../../libs/openssl/crypto/asn1/tasn_scn.c
+  ../../libs/openssl/crypto/asn1/tasn_typ.c
+  ../../libs/openssl/crypto/asn1/tasn_utl.c
+  ../../libs/openssl/crypto/asn1/x_algor.c
+  ../../libs/openssl/crypto/asn1/x_bignum.c
+  ../../libs/openssl/crypto/asn1/x_info.c
+  ../../libs/openssl/crypto/asn1/x_long.c
+  ../../libs/openssl/crypto/asn1/x_pkey.c
+  ../../libs/openssl/crypto/asn1/x_sig.c
+  ../../libs/openssl/crypto/asn1/x_spki.c
+  ../../libs/openssl/crypto/asn1/x_val.c
+  ../../libs/openssl/crypto/async/arch/async_null.c
+  ../../libs/openssl/crypto/async/arch/async_posix.c
+  ../../libs/openssl/crypto/async/arch/async_win.c
+  ../../libs/openssl/crypto/async/async.c
+  ../../libs/openssl/crypto/async/async_err.c
+  ../../libs/openssl/crypto/async/async_wait.c
+  ../../libs/openssl/crypto/bio/b_addr.c
+  ../../libs/openssl/crypto/bio/b_dump.c
+  ../../libs/openssl/crypto/bio/b_print.c
+  ../../libs/openssl/crypto/bio/b_sock.c
+  ../../libs/openssl/crypto/bio/b_sock2.c
+  ../../libs/openssl/crypto/bio/bf_buff.c
+  ../../libs/openssl/crypto/bio/bf_lbuf.c
+  ../../libs/openssl/crypto/bio/bf_nbio.c
+  ../../libs/openssl/crypto/bio/bf_null.c
+  ../../libs/openssl/crypto/bio/bio_cb.c
+  ../../libs/openssl/crypto/bio/bio_err.c
+  ../../libs/openssl/crypto/bio/bio_lib.c
+  ../../libs/openssl/crypto/bio/bio_meth.c
+  ../../libs/openssl/crypto/bio/bss_acpt.c
+  ../../libs/openssl/crypto/bio/bss_bio.c
+  ../../libs/openssl/crypto/bio/bss_conn.c
+  ../../libs/openssl/crypto/bio/bss_dgram.c
+  ../../libs/openssl/crypto/bio/bss_fd.c
+  ../../libs/openssl/crypto/bio/bss_file.c
+  ../../libs/openssl/crypto/bio/bss_log.c
+  ../../libs/openssl/crypto/bio/bss_mem.c
+  ../../libs/openssl/crypto/bio/bss_null.c
+  ../../libs/openssl/crypto/bio/bss_sock.c
+  ../../libs/openssl/crypto/blake2/blake2b.c
+  ../../libs/openssl/crypto/blake2/blake2s.c
+  ../../libs/openssl/crypto/blake2/m_blake2b.c
+  ../../libs/openssl/crypto/blake2/m_blake2s.c
+  ../../libs/openssl/crypto/bn/bn_add.c
+  ../../libs/openssl/crypto/bn/bn_asm.c
+  ../../libs/openssl/crypto/bn/bn_blind.c
+  ../../libs/openssl/crypto/bn/bn_const.c
+  ../../libs/openssl/crypto/bn/bn_ctx.c
+  ../../libs/openssl/crypto/bn/bn_depr.c
+  ../../libs/openssl/crypto/bn/bn_dh.c
+  ../../libs/openssl/crypto/bn/bn_div.c
+  ../../libs/openssl/crypto/bn/bn_err.c
+  ../../libs/openssl/crypto/bn/bn_exp.c
+  ../../libs/openssl/crypto/bn/bn_exp2.c
+  ../../libs/openssl/crypto/bn/bn_gcd.c
+  ../../libs/openssl/crypto/bn/bn_gf2m.c
+  ../../libs/openssl/crypto/bn/bn_intern.c
+  ../../libs/openssl/crypto/bn/bn_kron.c
+  ../../libs/openssl/crypto/bn/bn_lib.c
+  ../../libs/openssl/crypto/bn/bn_mod.c
+  ../../libs/openssl/crypto/bn/bn_mont.c
+  ../../libs/openssl/crypto/bn/bn_mpi.c
+  ../../libs/openssl/crypto/bn/bn_mul.c
+  ../../libs/openssl/crypto/bn/bn_nist.c
+  ../../libs/openssl/crypto/bn/bn_prime.c
+  ../../libs/openssl/crypto/bn/bn_print.c
+  ../../libs/openssl/crypto/bn/bn_rand.c
+  ../../libs/openssl/crypto/bn/bn_recp.c
+  ../../libs/openssl/crypto/bn/bn_shift.c
+  ../../libs/openssl/crypto/bn/bn_sqr.c
+  ../../libs/openssl/crypto/bn/bn_sqrt.c
+  ../../libs/openssl/crypto/bn/bn_srp.c
+  ../../libs/openssl/crypto/bn/bn_word.c
+  ../../libs/openssl/crypto/bn/bn_x931p.c
+  ../../libs/openssl/crypto/buffer/buf_err.c
+  ../../libs/openssl/crypto/buffer/buffer.c
+  ../../libs/openssl/crypto/chacha/chacha_enc.c
+  ../../libs/openssl/crypto/cmac/cm_ameth.c
+  ../../libs/openssl/crypto/cmac/cm_pmeth.c
+  ../../libs/openssl/crypto/cmac/cmac.c
+  ../../libs/openssl/crypto/cms/cms_asn1.c
+  ../../libs/openssl/crypto/cms/cms_att.c
+  ../../libs/openssl/crypto/cms/cms_cd.c
+  ../../libs/openssl/crypto/cms/cms_dd.c
+  ../../libs/openssl/crypto/cms/cms_enc.c
+  ../../libs/openssl/crypto/cms/cms_env.c
+  ../../libs/openssl/crypto/cms/cms_err.c
+  ../../libs/openssl/crypto/cms/cms_ess.c
+  ../../libs/openssl/crypto/cms/cms_io.c
+  ../../libs/openssl/crypto/cms/cms_kari.c
+  ../../libs/openssl/crypto/cms/cms_lib.c
+  ../../libs/openssl/crypto/cms/cms_pwri.c
+  ../../libs/openssl/crypto/cms/cms_sd.c
+  ../../libs/openssl/crypto/cms/cms_smime.c
+  ../../libs/openssl/crypto/comp/c_zlib.c
+  ../../libs/openssl/crypto/comp/comp_err.c
+  ../../libs/openssl/crypto/comp/comp_lib.c
+  ../../libs/openssl/crypto/conf/conf_api.c
+  ../../libs/openssl/crypto/conf/conf_def.c
+  ../../libs/openssl/crypto/conf/conf_err.c
+  ../../libs/openssl/crypto/conf/conf_lib.c
+  ../../libs/openssl/crypto/conf/conf_mall.c
+  ../../libs/openssl/crypto/conf/conf_mod.c
+  ../../libs/openssl/crypto/conf/conf_sap.c
+  ../../libs/openssl/crypto/cpt_err.c
+  ../../libs/openssl/crypto/cryptlib.c
+  ../../libs/openssl/crypto/ct/ct_b64.c
+  ../../libs/openssl/crypto/ct/ct_err.c
+  ../../libs/openssl/crypto/ct/ct_log.c
+  ../../libs/openssl/crypto/ct/ct_oct.c
+  ../../libs/openssl/crypto/ct/ct_policy.c
+  ../../libs/openssl/crypto/ct/ct_prn.c
+  ../../libs/openssl/crypto/ct/ct_sct.c
+  ../../libs/openssl/crypto/ct/ct_sct_ctx.c
+  ../../libs/openssl/crypto/ct/ct_vfy.c
+  ../../libs/openssl/crypto/ct/ct_x509v3.c
+  ../../libs/openssl/crypto/cversion.c
+  ../../libs/openssl/crypto/des/cbc_cksm.c
+  ../../libs/openssl/crypto/des/cbc_enc.c
+  ../../libs/openssl/crypto/des/cfb64ede.c
+  ../../libs/openssl/crypto/des/cfb64enc.c
+  ../../libs/openssl/crypto/des/cfb_enc.c
+  ../../libs/openssl/crypto/des/des_enc.c
+  ../../libs/openssl/crypto/des/ecb3_enc.c
+  ../../libs/openssl/crypto/des/ecb_enc.c
+  ../../libs/openssl/crypto/des/fcrypt.c
+  ../../libs/openssl/crypto/des/fcrypt_b.c
+  ../../libs/openssl/crypto/des/ofb64ede.c
+  ../../libs/openssl/crypto/des/ofb64enc.c
+  ../../libs/openssl/crypto/des/ofb_enc.c
+  ../../libs/openssl/crypto/des/pcbc_enc.c
+  ../../libs/openssl/crypto/des/qud_cksm.c
+  ../../libs/openssl/crypto/des/rand_key.c
+  ../../libs/openssl/crypto/des/rpc_enc.c
+  ../../libs/openssl/crypto/des/set_key.c
+  ../../libs/openssl/crypto/des/str2key.c
+  ../../libs/openssl/crypto/des/xcbc_enc.c
+  ../../libs/openssl/crypto/dh/dh_ameth.c
+  ../../libs/openssl/crypto/dh/dh_asn1.c
+  ../../libs/openssl/crypto/dh/dh_check.c
+  ../../libs/openssl/crypto/dh/dh_depr.c
+  ../../libs/openssl/crypto/dh/dh_err.c
+  ../../libs/openssl/crypto/dh/dh_gen.c
+  ../../libs/openssl/crypto/dh/dh_kdf.c
+  ../../libs/openssl/crypto/dh/dh_key.c
+  ../../libs/openssl/crypto/dh/dh_lib.c
+  ../../libs/openssl/crypto/dh/dh_meth.c
+  ../../libs/openssl/crypto/dh/dh_pmeth.c
+  ../../libs/openssl/crypto/dh/dh_prn.c
+  ../../libs/openssl/crypto/dh/dh_rfc5114.c
+  ../../libs/openssl/crypto/dsa/dsa_ameth.c
+  ../../libs/openssl/crypto/dsa/dsa_asn1.c
+  ../../libs/openssl/crypto/dsa/dsa_depr.c
+  ../../libs/openssl/crypto/dsa/dsa_err.c
+  ../../libs/openssl/crypto/dsa/dsa_gen.c
+  ../../libs/openssl/crypto/dsa/dsa_key.c
+  ../../libs/openssl/crypto/dsa/dsa_lib.c
+  ../../libs/openssl/crypto/dsa/dsa_meth.c
+  ../../libs/openssl/crypto/dsa/dsa_ossl.c
+  ../../libs/openssl/crypto/dsa/dsa_pmeth.c
+  ../../libs/openssl/crypto/dsa/dsa_prn.c
+  ../../libs/openssl/crypto/dsa/dsa_sign.c
+  ../../libs/openssl/crypto/dsa/dsa_vrf.c
+  ../../libs/openssl/crypto/dso/dso_dl.c
+  ../../libs/openssl/crypto/dso/dso_dlfcn.c
+  ../../libs/openssl/crypto/dso/dso_err.c
+  ../../libs/openssl/crypto/dso/dso_lib.c
+  ../../libs/openssl/crypto/dso/dso_openssl.c
+  ../../libs/openssl/crypto/dso/dso_vms.c
+  ../../libs/openssl/crypto/dso/dso_win32.c
+  ../../libs/openssl/crypto/ebcdic.c
+  ../../libs/openssl/crypto/ec/curve25519.c
+  ../../libs/openssl/crypto/ec/ec2_mult.c
+  ../../libs/openssl/crypto/ec/ec2_oct.c
+  ../../libs/openssl/crypto/ec/ec2_smpl.c
+  ../../libs/openssl/crypto/ec/ec_ameth.c
+  ../../libs/openssl/crypto/ec/ec_asn1.c
+  ../../libs/openssl/crypto/ec/ec_check.c
+  ../../libs/openssl/crypto/ec/ec_curve.c
+  ../../libs/openssl/crypto/ec/ec_cvt.c
+  ../../libs/openssl/crypto/ec/ec_err.c
+  ../../libs/openssl/crypto/ec/ec_key.c
+  ../../libs/openssl/crypto/ec/ec_kmeth.c
+  ../../libs/openssl/crypto/ec/ec_lib.c
+  ../../libs/openssl/crypto/ec/ec_mult.c
+  ../../libs/openssl/crypto/ec/ec_oct.c
+  ../../libs/openssl/crypto/ec/ec_pmeth.c
+  ../../libs/openssl/crypto/ec/ec_print.c
+  ../../libs/openssl/crypto/ec/ecdh_kdf.c
+  ../../libs/openssl/crypto/ec/ecdh_ossl.c
+  ../../libs/openssl/crypto/ec/ecdsa_ossl.c
+  ../../libs/openssl/crypto/ec/ecdsa_sign.c
+  ../../libs/openssl/crypto/ec/ecdsa_vrf.c
+  ../../libs/openssl/crypto/ec/eck_prn.c
+  ../../libs/openssl/crypto/ec/ecp_mont.c
+  ../../libs/openssl/crypto/ec/ecp_nist.c
+  ../../libs/openssl/crypto/ec/ecp_nistp224.c
+  ../../libs/openssl/crypto/ec/ecp_nistp256.c
+  ../../libs/openssl/crypto/ec/ecp_nistp521.c
+  ../../libs/openssl/crypto/ec/ecp_nistputil.c
+  ../../libs/openssl/crypto/ec/ecp_oct.c
+  ../../libs/openssl/crypto/ec/ecp_smpl.c
+  ../../libs/openssl/crypto/ec/ecx_meth.c
+  ../../libs/openssl/crypto/engine/eng_all.c
+  ../../libs/openssl/crypto/engine/eng_cnf.c
+  ../../libs/openssl/crypto/engine/eng_cryptodev.c
+  ../../libs/openssl/crypto/engine/eng_ctrl.c
+  ../../libs/openssl/crypto/engine/eng_dyn.c
+  ../../libs/openssl/crypto/engine/eng_err.c
+  ../../libs/openssl/crypto/engine/eng_fat.c
+  ../../libs/openssl/crypto/engine/eng_init.c
+  ../../libs/openssl/crypto/engine/eng_lib.c
+  ../../libs/openssl/crypto/engine/eng_list.c
+  ../../libs/openssl/crypto/engine/eng_openssl.c
+  ../../libs/openssl/crypto/engine/eng_pkey.c
+  ../../libs/openssl/crypto/engine/eng_rdrand.c
+  ../../libs/openssl/crypto/engine/eng_table.c
+  ../../libs/openssl/crypto/engine/tb_asnmth.c
+  ../../libs/openssl/crypto/engine/tb_cipher.c
+  ../../libs/openssl/crypto/engine/tb_dh.c
+  ../../libs/openssl/crypto/engine/tb_digest.c
+  ../../libs/openssl/crypto/engine/tb_dsa.c
+  ../../libs/openssl/crypto/engine/tb_eckey.c
+  ../../libs/openssl/crypto/engine/tb_pkmeth.c
+  ../../libs/openssl/crypto/engine/tb_rand.c
+  ../../libs/openssl/crypto/engine/tb_rsa.c
+  ../../libs/openssl/crypto/err/err.c
+  ../../libs/openssl/crypto/err/err_all.c
+  ../../libs/openssl/crypto/err/err_prn.c
+  ../../libs/openssl/crypto/evp/bio_b64.c
+  ../../libs/openssl/crypto/evp/bio_enc.c
+  ../../libs/openssl/crypto/evp/bio_md.c
+  ../../libs/openssl/crypto/evp/bio_ok.c
+  ../../libs/openssl/crypto/evp/c_allc.c
+  ../../libs/openssl/crypto/evp/c_alld.c
+  ../../libs/openssl/crypto/evp/cmeth_lib.c
+  ../../libs/openssl/crypto/evp/digest.c
+  ../../libs/openssl/crypto/evp/e_aes.c
+  ../../libs/openssl/crypto/evp/e_aes_cbc_hmac_sha1.c
+  ../../libs/openssl/crypto/evp/e_aes_cbc_hmac_sha256.c
+  ../../libs/openssl/crypto/evp/e_bf.c
+  ../../libs/openssl/crypto/evp/e_camellia.c
+  ../../libs/openssl/crypto/evp/e_cast.c
+  ../../libs/openssl/crypto/evp/e_chacha20_poly1305.c
+  ../../libs/openssl/crypto/evp/e_des.c
+  ../../libs/openssl/crypto/evp/e_des3.c
+  ../../libs/openssl/crypto/evp/e_idea.c
+  ../../libs/openssl/crypto/evp/e_null.c
+  ../../libs/openssl/crypto/evp/e_old.c
+  ../../libs/openssl/crypto/evp/e_rc2.c
+  ../../libs/openssl/crypto/evp/e_rc4.c
+  ../../libs/openssl/crypto/evp/e_rc4_hmac_md5.c
+  ../../libs/openssl/crypto/evp/e_rc5.c
+  ../../libs/openssl/crypto/evp/e_seed.c
+  ../../libs/openssl/crypto/evp/e_xcbc_d.c
+  ../../libs/openssl/crypto/evp/encode.c
+  ../../libs/openssl/crypto/evp/evp_cnf.c
+  ../../libs/openssl/crypto/evp/evp_enc.c
+  ../../libs/openssl/crypto/evp/evp_err.c
+  ../../libs/openssl/crypto/evp/evp_key.c
+  ../../libs/openssl/crypto/evp/evp_lib.c
+  ../../libs/openssl/crypto/evp/evp_pbe.c
+  ../../libs/openssl/crypto/evp/evp_pkey.c
+  ../../libs/openssl/crypto/evp/m_md2.c
+  ../../libs/openssl/crypto/evp/m_md4.c
+  ../../libs/openssl/crypto/evp/m_md5.c
+  ../../libs/openssl/crypto/evp/m_md5_sha1.c
+  ../../libs/openssl/crypto/evp/m_mdc2.c
+  ../../libs/openssl/crypto/evp/m_null.c
+  ../../libs/openssl/crypto/evp/m_ripemd.c
+  ../../libs/openssl/crypto/evp/m_sha1.c
+  ../../libs/openssl/crypto/evp/m_sigver.c
+  ../../libs/openssl/crypto/evp/m_wp.c
+  ../../libs/openssl/crypto/evp/names.c
+  ../../libs/openssl/crypto/evp/p5_crpt.c
+  ../../libs/openssl/crypto/evp/p5_crpt2.c
+  ../../libs/openssl/crypto/evp/p_dec.c
+  ../../libs/openssl/crypto/evp/p_enc.c
+  ../../libs/openssl/crypto/evp/p_lib.c
+  ../../libs/openssl/crypto/evp/p_open.c
+  ../../libs/openssl/crypto/evp/p_seal.c
+  ../../libs/openssl/crypto/evp/p_sign.c
+  ../../libs/openssl/crypto/evp/p_verify.c
+  ../../libs/openssl/crypto/evp/pmeth_fn.c
+  ../../libs/openssl/crypto/evp/pmeth_gn.c
+  ../../libs/openssl/crypto/evp/pmeth_lib.c
+  ../../libs/openssl/crypto/evp/scrypt.c
+  ../../libs/openssl/crypto/ex_data.c
+  ../../libs/openssl/crypto/hmac/hm_ameth.c
+  ../../libs/openssl/crypto/hmac/hm_pmeth.c
+  ../../libs/openssl/crypto/hmac/hmac.c
+  ../../libs/openssl/crypto/init.c
+  ../../libs/openssl/crypto/kdf/hkdf.c
+  ../../libs/openssl/crypto/kdf/kdf_err.c
+  ../../libs/openssl/crypto/kdf/tls1_prf.c
+  ../../libs/openssl/crypto/lhash/lh_stats.c
+  ../../libs/openssl/crypto/lhash/lhash.c
+  ../../libs/openssl/crypto/md4/md4_dgst.c
+  ../../libs/openssl/crypto/md4/md4_one.c
+  ../../libs/openssl/crypto/md5/md5_dgst.c
+  ../../libs/openssl/crypto/md5/md5_one.c
+  ../../libs/openssl/crypto/mdc2/mdc2_one.c
+  ../../libs/openssl/crypto/mdc2/mdc2dgst.c
+  ../../libs/openssl/crypto/mem.c
+  ../../libs/openssl/crypto/mem_clr.c
+  ../../libs/openssl/crypto/mem_dbg.c
+  ../../libs/openssl/crypto/mem_sec.c
+  ../../libs/openssl/crypto/modes/cbc128.c
+  ../../libs/openssl/crypto/modes/ccm128.c
+  ../../libs/openssl/crypto/modes/cfb128.c
+  ../../libs/openssl/crypto/modes/ctr128.c
+  ../../libs/openssl/crypto/modes/cts128.c
+  ../../libs/openssl/crypto/modes/gcm128.c
+  ../../libs/openssl/crypto/modes/ocb128.c
+  ../../libs/openssl/crypto/modes/ofb128.c
+  ../../libs/openssl/crypto/modes/wrap128.c
+  ../../libs/openssl/crypto/modes/xts128.c
+  ../../libs/openssl/crypto/o_dir.c
+  ../../libs/openssl/crypto/o_fips.c
+  ../../libs/openssl/crypto/o_fopen.c
+  ../../libs/openssl/crypto/o_init.c
+  ../../libs/openssl/crypto/o_str.c
+  ../../libs/openssl/crypto/o_time.c
+  ../../libs/openssl/crypto/objects/o_names.c
+  ../../libs/openssl/crypto/objects/obj_dat.c
+  ../../libs/openssl/crypto/objects/obj_err.c
+  ../../libs/openssl/crypto/objects/obj_lib.c
+  ../../libs/openssl/crypto/objects/obj_xref.c
+  ../../libs/openssl/crypto/ocsp/ocsp_asn.c
+  ../../libs/openssl/crypto/ocsp/ocsp_cl.c
+  ../../libs/openssl/crypto/ocsp/ocsp_err.c
+  ../../libs/openssl/crypto/ocsp/ocsp_ext.c
+  ../../libs/openssl/crypto/ocsp/ocsp_ht.c
+  ../../libs/openssl/crypto/ocsp/ocsp_lib.c
+  ../../libs/openssl/crypto/ocsp/ocsp_prn.c
+  ../../libs/openssl/crypto/ocsp/ocsp_srv.c
+  ../../libs/openssl/crypto/ocsp/ocsp_vfy.c
+  ../../libs/openssl/crypto/ocsp/v3_ocsp.c
+  ../../libs/openssl/crypto/pem/pem_all.c
+  ../../libs/openssl/crypto/pem/pem_err.c
+  ../../libs/openssl/crypto/pem/pem_info.c
+  ../../libs/openssl/crypto/pem/pem_lib.c
+  ../../libs/openssl/crypto/pem/pem_oth.c
+  ../../libs/openssl/crypto/pem/pem_pk8.c
+  ../../libs/openssl/crypto/pem/pem_pkey.c
+  ../../libs/openssl/crypto/pem/pem_sign.c
+  ../../libs/openssl/crypto/pem/pem_x509.c
+  ../../libs/openssl/crypto/pem/pem_xaux.c
+  ../../libs/openssl/crypto/pem/pvkfmt.c
+  ../../libs/openssl/crypto/pkcs12/p12_add.c
+  ../../libs/openssl/crypto/pkcs12/p12_asn.c
+  ../../libs/openssl/crypto/pkcs12/p12_attr.c
+  ../../libs/openssl/crypto/pkcs12/p12_crpt.c
+  ../../libs/openssl/crypto/pkcs12/p12_crt.c
+  ../../libs/openssl/crypto/pkcs12/p12_decr.c
+  ../../libs/openssl/crypto/pkcs12/p12_init.c
+  ../../libs/openssl/crypto/pkcs12/p12_key.c
+  ../../libs/openssl/crypto/pkcs12/p12_kiss.c
+  ../../libs/openssl/crypto/pkcs12/p12_mutl.c
+  ../../libs/openssl/crypto/pkcs12/p12_npas.c
+  ../../libs/openssl/crypto/pkcs12/p12_p8d.c
+  ../../libs/openssl/crypto/pkcs12/p12_p8e.c
+  ../../libs/openssl/crypto/pkcs12/p12_sbag.c
+  ../../libs/openssl/crypto/pkcs12/p12_utl.c
+  ../../libs/openssl/crypto/pkcs12/pk12err.c
+  ../../libs/openssl/crypto/pkcs7/bio_pk7.c
+  ../../libs/openssl/crypto/pkcs7/pk7_asn1.c
+  ../../libs/openssl/crypto/pkcs7/pk7_attr.c
+  ../../libs/openssl/crypto/pkcs7/pk7_doit.c
+  ../../libs/openssl/crypto/pkcs7/pk7_lib.c
+  ../../libs/openssl/crypto/pkcs7/pk7_mime.c
+  ../../libs/openssl/crypto/pkcs7/pk7_smime.c
+  ../../libs/openssl/crypto/pkcs7/pkcs7err.c
+  ../../libs/openssl/crypto/poly1305/poly1305.c
+  ../../libs/openssl/crypto/rand/md_rand.c
+  ../../libs/openssl/crypto/rand/rand_egd.c
+  ../../libs/openssl/crypto/rand/rand_err.c
+  ../../libs/openssl/crypto/rand/rand_lib.c
+  ../../libs/openssl/crypto/rand/rand_unix.c
+  ../../libs/openssl/crypto/rand/rand_vms.c
+  ../../libs/openssl/crypto/rand/rand_win.c
+  ../../libs/openssl/crypto/rand/randfile.c
+  ../../libs/openssl/crypto/rc2/rc2_cbc.c
+  ../../libs/openssl/crypto/rc2/rc2_ecb.c
+  ../../libs/openssl/crypto/rc2/rc2_skey.c
+  ../../libs/openssl/crypto/rc2/rc2cfb64.c
+  ../../libs/openssl/crypto/rc2/rc2ofb64.c
+  ../../libs/openssl/crypto/ripemd/rmd_dgst.c
+  ../../libs/openssl/crypto/ripemd/rmd_one.c
+  ../../libs/openssl/crypto/rsa/rsa_ameth.c
+  ../../libs/openssl/crypto/rsa/rsa_asn1.c
+  ../../libs/openssl/crypto/rsa/rsa_chk.c
+  ../../libs/openssl/crypto/rsa/rsa_crpt.c
+  ../../libs/openssl/crypto/rsa/rsa_depr.c
+  ../../libs/openssl/crypto/rsa/rsa_err.c
+  ../../libs/openssl/crypto/rsa/rsa_gen.c
+  ../../libs/openssl/crypto/rsa/rsa_lib.c
+  ../../libs/openssl/crypto/rsa/rsa_meth.c
+  ../../libs/openssl/crypto/rsa/rsa_none.c
+  ../../libs/openssl/crypto/rsa/rsa_null.c
+  ../../libs/openssl/crypto/rsa/rsa_oaep.c
+  ../../libs/openssl/crypto/rsa/rsa_ossl.c
+  ../../libs/openssl/crypto/rsa/rsa_pk1.c
+  ../../libs/openssl/crypto/rsa/rsa_pmeth.c
+  ../../libs/openssl/crypto/rsa/rsa_prn.c
+  ../../libs/openssl/crypto/rsa/rsa_pss.c
+  ../../libs/openssl/crypto/rsa/rsa_saos.c
+  ../../libs/openssl/crypto/rsa/rsa_sign.c
+  ../../libs/openssl/crypto/rsa/rsa_ssl.c
+  ../../libs/openssl/crypto/rsa/rsa_x931.c
+  ../../libs/openssl/crypto/rsa/rsa_x931g.c
+  ../../libs/openssl/crypto/sha/sha1_one.c
+  ../../libs/openssl/crypto/sha/sha1dgst.c
+  ../../libs/openssl/crypto/sha/sha256.c
+  ../../libs/openssl/crypto/sha/sha512.c
+  ../../libs/openssl/crypto/stack/stack.c
+  ../../libs/openssl/crypto/threads_none.c
+  ../../libs/openssl/crypto/threads_pthread.c
+  ../../libs/openssl/crypto/threads_win.c
+  ../../libs/openssl/crypto/ts/ts_asn1.c
+  ../../libs/openssl/crypto/ts/ts_conf.c
+  ../../libs/openssl/crypto/ts/ts_err.c
+  ../../libs/openssl/crypto/ts/ts_lib.c
+  ../../libs/openssl/crypto/ts/ts_req_print.c
+  ../../libs/openssl/crypto/ts/ts_req_utils.c
+  ../../libs/openssl/crypto/ts/ts_rsp_print.c
+  ../../libs/openssl/crypto/ts/ts_rsp_sign.c
+  ../../libs/openssl/crypto/ts/ts_rsp_utils.c
+  ../../libs/openssl/crypto/ts/ts_rsp_verify.c
+  ../../libs/openssl/crypto/ts/ts_verify_ctx.c
+  ../../libs/openssl/crypto/txt_db/txt_db.c
+  ../../libs/openssl/crypto/ui/ui_err.c
+  ../../libs/openssl/crypto/ui/ui_lib.c
+  ../../libs/openssl/crypto/ui/ui_openssl.c
+  ../../libs/openssl/crypto/ui/ui_util.c
+  ../../libs/openssl/crypto/uid.c
+  ../../libs/openssl/crypto/x509/by_dir.c
+  ../../libs/openssl/crypto/x509/by_file.c
+  ../../libs/openssl/crypto/x509/t_crl.c
+  ../../libs/openssl/crypto/x509/t_req.c
+  ../../libs/openssl/crypto/x509/t_x509.c
+  ../../libs/openssl/crypto/x509/x509_att.c
+  ../../libs/openssl/crypto/x509/x509_cmp.c
+  ../../libs/openssl/crypto/x509/x509_d2.c
+  ../../libs/openssl/crypto/x509/x509_def.c
+  ../../libs/openssl/crypto/x509/x509_err.c
+  ../../libs/openssl/crypto/x509/x509_ext.c
+  ../../libs/openssl/crypto/x509/x509_lu.c
+  ../../libs/openssl/crypto/x509/x509_obj.c
+  ../../libs/openssl/crypto/x509/x509_r2x.c
+  ../../libs/openssl/crypto/x509/x509_req.c
+  ../../libs/openssl/crypto/x509/x509_set.c
+  ../../libs/openssl/crypto/x509/x509_trs.c
+  ../../libs/openssl/crypto/x509/x509_txt.c
+  ../../libs/openssl/crypto/x509/x509_v3.c
+  ../../libs/openssl/crypto/x509/x509_vfy.c
+  ../../libs/openssl/crypto/x509/x509_vpm.c
+  ../../libs/openssl/crypto/x509/x509cset.c
+  ../../libs/openssl/crypto/x509/x509name.c
+  ../../libs/openssl/crypto/x509/x509rset.c
+  ../../libs/openssl/crypto/x509/x509spki.c
+  ../../libs/openssl/crypto/x509/x509type.c
+  ../../libs/openssl/crypto/x509/x_all.c
+  ../../libs/openssl/crypto/x509/x_attrib.c
+  ../../libs/openssl/crypto/x509/x_crl.c
+  ../../libs/openssl/crypto/x509/x_exten.c
+  ../../libs/openssl/crypto/x509/x_name.c
+  ../../libs/openssl/crypto/x509/x_pubkey.c
+  ../../libs/openssl/crypto/x509/x_req.c
+  ../../libs/openssl/crypto/x509/x_x509.c
+  ../../libs/openssl/crypto/x509/x_x509a.c
+  ../../libs/openssl/crypto/x509v3/pcy_cache.c
+  ../../libs/openssl/crypto/x509v3/pcy_data.c
+  ../../libs/openssl/crypto/x509v3/pcy_lib.c
+  ../../libs/openssl/crypto/x509v3/pcy_map.c
+  ../../libs/openssl/crypto/x509v3/pcy_node.c
+  ../../libs/openssl/crypto/x509v3/pcy_tree.c
+  ../../libs/openssl/crypto/x509v3/v3_addr.c
+  ../../libs/openssl/crypto/x509v3/v3_akey.c
+  ../../libs/openssl/crypto/x509v3/v3_akeya.c
+  ../../libs/openssl/crypto/x509v3/v3_alt.c
+  ../../libs/openssl/crypto/x509v3/v3_asid.c
+  ../../libs/openssl/crypto/x509v3/v3_bcons.c
+  ../../libs/openssl/crypto/x509v3/v3_bitst.c
+  ../../libs/openssl/crypto/x509v3/v3_conf.c
+  ../../libs/openssl/crypto/x509v3/v3_cpols.c
+  ../../libs/openssl/crypto/x509v3/v3_crld.c
+  ../../libs/openssl/crypto/x509v3/v3_enum.c
+  ../../libs/openssl/crypto/x509v3/v3_extku.c
+  ../../libs/openssl/crypto/x509v3/v3_genn.c
+  ../../libs/openssl/crypto/x509v3/v3_ia5.c
+  ../../libs/openssl/crypto/x509v3/v3_info.c
+  ../../libs/openssl/crypto/x509v3/v3_int.c
+  ../../libs/openssl/crypto/x509v3/v3_lib.c
+  ../../libs/openssl/crypto/x509v3/v3_ncons.c
+  ../../libs/openssl/crypto/x509v3/v3_pci.c
+  ../../libs/openssl/crypto/x509v3/v3_pcia.c
+  ../../libs/openssl/crypto/x509v3/v3_pcons.c
+  ../../libs/openssl/crypto/x509v3/v3_pku.c
+  ../../libs/openssl/crypto/x509v3/v3_pmaps.c
+  ../../libs/openssl/crypto/x509v3/v3_prn.c
+  ../../libs/openssl/crypto/x509v3/v3_purp.c
+  ../../libs/openssl/crypto/x509v3/v3_skey.c
+  ../../libs/openssl/crypto/x509v3/v3_sxnet.c
+  ../../libs/openssl/crypto/x509v3/v3_tlsf.c
+  ../../libs/openssl/crypto/x509v3/v3_utl.c
+  ../../libs/openssl/crypto/x509v3/v3err.c
+  ../../libs/openssl/engines/e_capi.c
+  ../../libs/openssl/engines/e_padlock.c
+)
+
+target_compile_options(libcrypto
+  PRIVATE ${OPENSSL_COMPILE_FLAGS}
+)
+
+target_include_directories(libcrypto SYSTEM BEFORE PRIVATE
+  ../../libs/openssl
+  ../../libs/openssl/include
+  ../../libs/openssl/crypto
+  ../../libs/openssl/crypto/include
+  ../../libs/openssl/crypto/modes
+  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+)
+
+add_library(libssl STATIC
+  ../../libs/openssl/ssl/bio_ssl.c
+  ../../libs/openssl/ssl/d1_lib.c
+  ../../libs/openssl/ssl/d1_msg.c
+  ../../libs/openssl/ssl/d1_srtp.c
+  ../../libs/openssl/ssl/methods.c
+  ../../libs/openssl/ssl/pqueue.c
+  ../../libs/openssl/ssl/record/dtls1_bitmap.c
+  ../../libs/openssl/ssl/record/rec_layer_d1.c
+  ../../libs/openssl/ssl/record/rec_layer_s3.c
+  ../../libs/openssl/ssl/record/ssl3_buffer.c
+  ../../libs/openssl/ssl/record/ssl3_record.c
+  ../../libs/openssl/ssl/s3_cbc.c
+  ../../libs/openssl/ssl/s3_enc.c
+  ../../libs/openssl/ssl/s3_lib.c
+  ../../libs/openssl/ssl/s3_msg.c
+  ../../libs/openssl/ssl/ssl_asn1.c
+  ../../libs/openssl/ssl/ssl_cert.c
+  ../../libs/openssl/ssl/ssl_ciph.c
+  ../../libs/openssl/ssl/ssl_conf.c
+  ../../libs/openssl/ssl/ssl_err.c
+  ../../libs/openssl/ssl/ssl_init.c
+  ../../libs/openssl/ssl/ssl_lib.c
+  ../../libs/openssl/ssl/ssl_mcnf.c
+  ../../libs/openssl/ssl/ssl_rsa.c
+  ../../libs/openssl/ssl/ssl_sess.c
+  ../../libs/openssl/ssl/ssl_stat.c
+  ../../libs/openssl/ssl/ssl_txt.c
+  ../../libs/openssl/ssl/ssl_utst.c
+  ../../libs/openssl/ssl/statem/statem.c
+  ../../libs/openssl/ssl/statem/statem_clnt.c
+  ../../libs/openssl/ssl/statem/statem_dtls.c
+  ../../libs/openssl/ssl/statem/statem_lib.c
+  ../../libs/openssl/ssl/statem/statem_srvr.c
+  ../../libs/openssl/ssl/t1_enc.c
+  ../../libs/openssl/ssl/t1_ext.c
+  ../../libs/openssl/ssl/t1_lib.c
+  ../../libs/openssl/ssl/t1_reneg.c
+  ../../libs/openssl/ssl/t1_trce.c
+  ../../libs/openssl/ssl/tls_srp.c
+)
+
+target_compile_options(libssl
+  PRIVATE ${OPENSSL_COMPILE_FLAGS}
+)
+
+target_include_directories(libssl SYSTEM BEFORE PRIVATE
+  ../../libs/openssl
+  ../../libs/openssl/include
+  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+)
+
+else(OPT_COMPILE_OPENSSL)
+
 add_library (libcrypto STATIC IMPORTED)
 set_property(TARGET libcrypto
     PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_INC_DIR}/libcrypto.lib)
@@ -232,13 +882,484 @@ add_library (libssl STATIC IMPORTED)
 set_property(TARGET libssl
     PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_INC_DIR}/libssl.lib)
 
+endif(OPT_COMPILE_OPENSSL)
+
 #-------------------------------------------------------------------------------
-# target NetBox
+#atlmfc
+
+set(ATLMFC_COMPILE_FLAGS
+  -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
+  -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
+  -D_AFX_NO_SOCKET_SUPPORT -DCOM_NO_WINDOWS_H
+)
+
+if(CMAKE_COMPILER_IS_MINGW)
+
+  set(ATLMFC_COMPILE_FLAGS ${ATLMFC_COMPILE_FLAGS}
+    -Wno-int-to-pointer-cast -Wno-pragmas -fpermissive
+  )
+
+endif(CMAKE_COMPILER_IS_MINGW)
+
+add_library(atlmfc STATIC
+  ../../libs/atlmfc/mfc1.cpp
+  ../../libs/atlmfc/mfc2.cpp
+  ../../libs/atlmfc/mfc3.cpp
+  ../../libs/atlmfc/mfc4.cpp
+  ../../libs/atlmfc/mfc5.cpp
+  ../../libs/atlmfc/src/mfc/thrdcore.cpp
+)
+
+target_compile_options(atlmfc PRIVATE 
+  -wd4995 -wd4996 -wd4101 -wd4290
+  ${ATLMFC_COMPILE_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+target_include_directories(atlmfc PRIVATE
+  ../../libs/atlmfc/include
+  ../base
+)
+
+#-------------------------------------------------------------------------------
+#putty
+
+add_library(putty STATIC
+  ../../libs/putty/cproxy.c
+  ../../libs/putty/int64.c
+  ../../libs/putty/logging.c
+  ../../libs/putty/misc.c
+  ../../libs/putty/pgssapi.c
+  ../../libs/putty/portfwd.c
+  ../../libs/putty/proxy.c
+  ../../libs/putty/ssh.c
+  ../../libs/putty/sshaes.c
+  ../../libs/putty/ssharcf.c
+  ../../libs/putty/sshblowf.c
+  ../../libs/putty/sshbn.c
+  ../../libs/putty/sshcrc.c
+  ../../libs/putty/sshcrcda.c
+  ../../libs/putty/sshdes.c
+  ../../libs/putty/sshdh.c
+  ../../libs/putty/sshdss.c
+  ../../libs/putty/sshgssc.c
+  ../../libs/putty/sshmd5.c
+  ../../libs/putty/sshpubk.c
+  ../../libs/putty/sshrand.c
+  ../../libs/putty/sshrsa.c
+  ../../libs/putty/sshsh256.c
+  ../../libs/putty/sshsh512.c
+  ../../libs/putty/sshsha.c
+  ../../libs/putty/sshzlib.c
+  ../../libs/putty/tree234.c
+  ../../libs/putty/wildcard.c
+  ../../libs/putty/windows/wingss.c
+  ../../libs/putty/windows/winhandl.c
+  ../../libs/putty/windows/winmisc.c
+  ../../libs/putty/windows/winnet.c
+  ../../libs/putty/windows/winnoise.c
+  ../../libs/putty/windows/winnojmp.c
+  ../../libs/putty/windows/winpgntc.c
+  ../../libs/putty/windows/winproxy.c
+  ../../libs/putty/windows/winsecur.c
+  ../../libs/putty/windows/winstore.c
+  ../../libs/putty/windows/wintime.c
+  ../../libs/putty/windows/winhsock.c
+  ../../libs/putty/x11fwd.c
+  ../../libs/putty/conf.c
+  ../../libs/putty/callback.c
+  ../../libs/putty/sshshare.c
+  ../../libs/putty/noshare.c
+  ../../libs/putty/errsock.c
+  ../../libs/putty/sshecc.c
+  ../../libs/putty/sshccp.c
+  ../../libs/putty/import.c
+  ../../libs/putty/be_misc.c
+  ../../libs/putty/sshbcrypt.c
+#  ../../libs/putty/ldisc.c
+)
+
+set(PUTTY_COMPILE_FLAGS
+  -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -wd4996
+)
+
+target_compile_options(putty PRIVATE
+  ${PUTTY_COMPILE_FLAGS}
+)
+
+target_include_directories(putty PRIVATE
+  ../../libs/putty
+  ../../libs/putty/windows
+)
+
+#-------------------------------------------------------------------------------
+#tinyxml2
+
+add_library(tinyxml2 STATIC
+  ../../libs/tinyxml2/tinyxml2.cpp
+)
+
+target_compile_options(tinyxml2 PRIVATE
+)
+
+#-------------------------------------------------------------------------------
+#neon
+
+add_library(neon STATIC
+  ../../libs/neon/src/ne_alloc.c
+  ../../libs/neon/src/ne_auth.c
+  ../../libs/neon/src/ne_basic.c
+  ../../libs/neon/src/ne_compress.c
+  ../../libs/neon/src/ne_dates.c
+  ../../libs/neon/src/ne_i18n.c
+  ../../libs/neon/src/ne_md5.c
+  ../../libs/neon/src/ne_pkcs11.c
+  ../../libs/neon/src/ne_redirect.c
+  ../../libs/neon/src/ne_request.c
+  ../../libs/neon/src/ne_session.c
+  ../../libs/neon/src/ne_socket.c
+  ../../libs/neon/src/ne_socks.c
+  ../../libs/neon/src/ne_sspi.c
+  ../../libs/neon/src/ne_string.c
+  ../../libs/neon/src/ne_uri.c
+  ../../libs/neon/src/ne_utils.c
+  ../../libs/neon/src/ne_207.c
+  ../../libs/neon/src/ne_xml.c
+  ../../libs/neon/src/ne_xmlreq.c
+  ../../libs/neon/src/ne_oldacl.c
+  ../../libs/neon/src/ne_acl3744.c
+  ../../libs/neon/src/ne_props.c
+  ../../libs/neon/src/ne_locks.c
+  ../../libs/neon/src/ne_openssl.c
+)
+
+set(NEON_COMPILE_FLAGS -wd4996)
+
+target_compile_options(neon PRIVATE
+  ${NEON_COMPILE_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+target_include_directories(neon PRIVATE
+  ../../libs/zlib/src
+  ../../libs/expat/lib
+  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+)
+
+#-------------------------------------------------------------------------------
+#apr
+
+add_library(apr STATIC
+  ../../libs/apr/atomic/win32/apr_atomic.c
+#  ../../libs/apr/dso/win32/dso.c
+  ../../libs/apr/file_io/win32/buffer.c
+#  ../../libs/apr/file_io/unix/copy.c
+  ../../libs/apr/file_io/win32/dir.c
+  ../../libs/apr/file_io/unix/fileacc.c
+  ../../libs/apr/file_io/win32/filedup.c
+  ../../libs/apr/file_io/win32/filepath.c
+  ../../libs/apr/file_io/unix/filepath_util.c
+  ../../libs/apr/file_io/win32/filestat.c
+  ../../libs/apr/file_io/win32/filesys.c
+  ../../libs/apr/file_io/win32/flock.c
+  ../../libs/apr/file_io/unix/fullrw.c
+  ../../libs/apr/file_io/unix/mktemp.c
+  ../../libs/apr/file_io/win32/open.c
+  ../../libs/apr/file_io/win32/pipe.c
+  ../../libs/apr/file_io/win32/readwrite.c
+  ../../libs/apr/file_io/win32/seek.c
+#  ../../libs/apr/file_io/unix/tempdir.c
+  ../../libs/apr/locks/win32/proc_mutex.c
+  ../../libs/apr/locks/win32/thread_cond.c
+  ../../libs/apr/locks/win32/thread_mutex.c
+  ../../libs/apr/locks/win32/thread_rwlock.c
+  ../../libs/apr/memory/unix/apr_pools.c
+  ../../libs/apr/misc/win32/apr_app.c
+  ../../libs/apr/misc/win32/charset.c
+#  ../../libs/apr/misc/win32/env.c
+  ../../libs/apr/misc/unix/errorcodes.c
+#  ../../libs/apr/misc/unix/getopt.c
+  ../../libs/apr/misc/win32/internal.c
+  ../../libs/apr/misc/win32/misc.c
+#  ../../libs/apr/misc/unix/otherchild.c
+  ../../libs/apr/misc/win32/rand.c
+  ../../libs/apr/misc/win32/start.c
+  ../../libs/apr/misc/win32/utf8.c
+#  ../../libs/apr/misc/unix/version.c
+  ../../libs/apr/mmap/unix/common.c
+#  ../../libs/apr/mmap/win32/mmap.c
+  ../../libs/apr/network_io/unix/inet_ntop.c
+  ../../libs/apr/network_io/unix/inet_pton.c
+#  ../../libs/apr/network_io/unix/multicast.c
+  ../../libs/apr/network_io/win32/sendrecv.c
+  ../../libs/apr/network_io/unix/sockaddr.c
+  ../../libs/apr/network_io/win32/sockets.c
+  ../../libs/apr/network_io/unix/socket_util.c
+  ../../libs/apr/network_io/win32/sockopt.c
+#  ../../libs/apr/passwd/apr_getpass.c
+#  ../../libs/apr/poll/unix/poll.c
+#  ../../libs/apr/poll/unix/pollcb.c
+#  ../../libs/apr/poll/unix/pollset.c
+#  ../../libs/apr/poll/unix/select.c
+#  ../../libs/apr/poll/unix/z_asio.c
+  ../../libs/apr/random/unix/apr_random.c
+#  ../../libs/apr/random/unix/sha2.c
+#  ../../libs/apr/random/unix/sha2_glue.c
+#  ../../libs/apr/shmem/win32/shm.c
+  ../../libs/apr/strings/apr_cpystrn.c
+  ../../libs/apr/strings/apr_fnmatch.c
+  ../../libs/apr/strings/apr_snprintf.c
+  ../../libs/apr/strings/apr_strings.c
+  ../../libs/apr/strings/apr_strnatcmp.c
+  ../../libs/apr/strings/apr_strtok.c
+  ../../libs/apr/tables/apr_hash.c
+  ../../libs/apr/tables/apr_tables.c
+#  ../../libs/apr/tables/apr_skiplist.c
+  ../../libs/apr/threadproc/win32/proc.c
+  ../../libs/apr/threadproc/win32/signals.c
+  ../../libs/apr/threadproc/win32/thread.c
+  ../../libs/apr/threadproc/win32/threadpriv.c
+  ../../libs/apr/time/win32/time.c
+  ../../libs/apr/time/win32/timestr.c
+#  ../../libs/apr/user/win32/groupinfo.c
+  ../../libs/apr/user/win32/userinfo.c
+)
+
+target_compile_options(apr PRIVATE
+  -U_UNICODE -UUNICODE
+)
+
+target_include_directories(apr PRIVATE
+  ../../libs/apr/include
+  ../../libs/apr/include/arch/win32
+  ../../libs/apr/include/arch/unix
+)
+
+#-------------------------------------------------------------------------------
+#expat
+
+add_library(expat STATIC
+  ../../libs/expat/lib/xmlparse.c
+  ../../libs/expat/lib/xmlrole.c
+  ../../libs/expat/lib/xmltok.c
+  ../../libs/expat/lib/xmltok_impl.c
+#  ../../libs/expat/lib/xmltok_ns.c
+)
+
+target_compile_options(expat PRIVATE
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+#-------------------------------------------------------------------------------
+#zlib
+
+set(ZLIB_SOURCES
+  ../../libs/zlib/src/adler32.c
+  ../../libs/zlib/src/crc32.c
+  ../../libs/zlib/src/infback.c
+  ../../libs/zlib/src/inffast.c
+  ../../libs/zlib/src/inflate.c
+  ../../libs/zlib/src/inftrees.c
+  ../../libs/zlib/src/trees.c
+  ../../libs/zlib/src/zutil.c
+  ../../libs/zlib/src/match.c
+  ../../libs/zlib/src/deflate.c
+  ../../libs/zlib/src/deflate_slow.c
+  ../../libs/zlib/src/deflate_medium.c
+  ../../libs/zlib/src/deflate_fast.c
+)
+
+set(ZLIB_SOURCES ${ZLIB_SOURCES}
+  ../../libs/zlib/src/arch/x86/crc_folding.c
+  ../../libs/zlib/src/arch/x86/fill_window_sse.c
+  ../../libs/zlib/src/arch/x86/insert_string_sse.c
+  ../../libs/zlib/src/arch/x86/deflate_quick.c
+  ../../libs/zlib/src/arch/x86/x86.c
+)
+
+add_library(zlib STATIC
+  ${ZLIB_SOURCES}
+)
+
+target_compile_options(zlib PRIVATE
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+target_include_directories(zlib PRIVATE
+  ../../libs/zlib/src
+)
+
+#-------------------------------------------------------------------------------
+#dlmalloc
+
+add_library(dlmalloc STATIC
+  ../../libs/dlmalloc/malloc.c
+  ../../libs/dlmalloc/malloc-2.8.6.h
+)
+
+target_compile_options(dlmalloc PRIVATE
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+#-------------------------------------------------------------------------------
+#rdestl
+
+add_library(rdestl STATIC
+  ../../libs/rdestl/allocator.cpp
+  ../../libs/rdestl/intrusive_list.cpp
+  ../../libs/rdestl/list.cpp
+#  ../../libs/rdestl/intrusive_slist.cpp
+#  ../../libs/rdestl/slist.cpp
+  ../../libs/rdestl/sort.h
+  ../../libs/rdestl/string_utils.h
+#  ../../libs/rdestl/intrusive_list.h
+  ../../libs/rdestl/sorted_vector.h
+  ../../libs/rdestl/allocator.h
+  ../../libs/rdestl/hash_map.h
+  ../../libs/rdestl/map.h
+  ../../libs/rdestl/basic_string.h
+  ../../libs/rdestl/list.h
+  ../../libs/rdestl/type_traits.h
+#  ../../libs/rdestl/intrusive_slist.h
+  ../../libs/rdestl/radix_sorter.h
+  ../../libs/rdestl/stack_allocator.h
+  ../../libs/rdestl/utility.h
+  ../../libs/rdestl/vector.h
+#  ../../libs/rdestl/slist.h
+  ../../libs/rdestl/fixed_array.h
+  ../../libs/rdestl/pair.h
+  ../../libs/rdestl/algorithm.h
+  ../../libs/rdestl/fixed_list.h
+  ../../libs/rdestl/hash.h
+  ../../libs/rdestl/alignment.h
+  ../../libs/rdestl/fixed_vector.h
+  ../../libs/rdestl/rb_tree.h
+  ../../libs/rdestl/buffer_allocator.h
+  ../../libs/rdestl/sstream.h
+  ../../libs/rdestl/rdestl_common.h
+  ../../libs/rdestl/stack.h
+  ../../libs/rdestl/cow_string_storage.h
+  ../../libs/rdestl/fixed_sorted_vector.h
+  ../../libs/rdestl/functional.h
+  ../../libs/rdestl/simple_string_storage.h
+  ../../libs/rdestl/fixed_substring.h
+  ../../libs/rdestl/int_to_type.h
+  ../../libs/rdestl/rde_string.h
+  ../../libs/rdestl/rdestl.h
+  ../../libs/rdestl/set.h
+  ../../libs/rdestl/iterator.h
+)
+
+target_include_directories(rdestl PRIVATE
+  ../base
+)
+
+target_compile_options(rdestl PRIVATE
+)
+
+#-------------------------------------------------------------------------------
+#NetBox
+
+if(OPT_USE_UNITY_BUILD)
 
 set(NETBOX_SOURCES
   UnityBuildCore.cpp
-  UnityBuildMain.cpp
   UnityBuildFilezilla.cpp
+  UnityBuildMain.cpp
+)
+
+else(OPT_USE_UNITY_BUILD)
+
+set(NETBOX_SOURCES
+#  UnityBuildCore.cpp
+  ../nbcore/nbstring.cpp
+  ../nbcore/nbmemory.cpp
+  ../nbcore/nbutils.cpp
+
+  ../base/UnicodeString.cpp
+  ../base/Classes.cpp
+  ../base/Masks.cpp
+  ../base/Sysutils.cpp
+  ../base/StrUtils.cpp
+  ../base/WideStrUtils.cpp
+  ../base/LibraryLoader.cpp
+  ../base/Common.cpp
+  ../base/Exceptions.cpp
+  ../base/FileBuffer.cpp
+  ../base/Global.cpp
+
+  ../core/RemoteFiles.cpp
+  ../core/Terminal.cpp
+  ../core/FileOperationProgress.cpp
+  ../core/Queue.cpp
+  ../core/SecureShell.cpp
+  ../core/SessionInfo.cpp
+  ../core/CoreMain.cpp
+  ../core/FileMasks.cpp
+  ../core/CopyParam.cpp
+  ../core/SessionData.cpp
+  ../core/Configuration.cpp
+  ../core/ScpFileSystem.cpp
+  ../core/FtpFileSystem.cpp
+  ../core/SftpFileSystem.cpp
+  ../core/WebDAVFileSystem.cpp
+  ../core/PuttyIntf.cpp
+  ../core/Cryptography.cpp
+  ../core/NamedObjs.cpp
+  ../core/HierarchicalStorage.cpp
+  ../core/Option.cpp
+  ../core/FileInfo.cpp
+  ../core/FileSystems.cpp
+  ../core/Bookmarks.cpp
+  ../core/WinSCPSecurity.cpp
+  ../core/Http.cpp
+  ../core/NeonIntf.cpp
+  ../windows/SynchronizeController.cpp
+  ../windows/GUITools.cpp
+  ../windows/GUIConfiguration.cpp
+  ../windows/Tools.cpp
+  ../windows/ProgParams.cpp
+
+#  UnityBuildFilezilla.cpp
+#  ../filezilla/stdafx.cpp
+  ../filezilla/afxdll.cpp
+  ../filezilla/FileZillaIntf.cpp
+  ../filezilla/FileZillaIntern.cpp
+  ../filezilla/ApiLog.cpp
+  ../filezilla/ServerPath.cpp
+  ../filezilla/AsyncSslSocketLayer.cpp
+  ../filezilla/AsyncSocketExLayer.cpp
+  ../filezilla/AsyncSocketEx.cpp
+  ../filezilla/FileZillaApi.cpp
+  ../filezilla/FzApiStructures.cpp
+  ../filezilla/FtpControlSocket.cpp
+  ../filezilla/MainThread.cpp
+  ../filezilla/TransferSocket.cpp
+  ../filezilla/FtpListResult.cpp
+  ../filezilla/AsyncProxySocketLayer.cpp
+  ../filezilla/structures.cpp
+  ../filezilla/MFC64bitFix.cpp
+  ../filezilla/misc/CBase64Coding.cpp
+
+#  UnityBuildMain.cpp
+  NetBox.cpp
+  FarDialog.cpp
+  FarPlugin.cpp
+  FarUtil.cpp
+  WinSCPFileSystem.cpp
+  WinSCPDialogs.cpp
+  WinSCPPlugin.cpp
+  FarConfiguration.cpp
+  FarInterface.cpp
+  XmlStorage.cpp
+  FarPluginStrings.cpp
+  ../windows/WinInterface.cpp
+)
+
+endif(OPT_USE_UNITY_BUILD)
+
+set(NETBOX_SOURCES
+  ${NETBOX_SOURCES}
 
   FarPlugin.h
   WinSCPPlugin.h
@@ -251,15 +1372,28 @@ set(NETBOX_SOURCES
   FarUtil.h
   FarPluginStrings.h
 
-  ../base/nbglobals.h
-  ../base/Exceptions.h
-  ../base/MsgIDs.h
+  ../include/FastDelegateBind.h
+  ../include/FastDelegate.h
+  ../include/type_traits.h
+  ../include/rtti.hpp
+  ../include/nbglobals.h
+  ../include/headers.hpp
+  ../include/nbcore.h
+  ../include/nbtypes.h
+  ../include/nbstring.h
+  ../include/nbstring.inl
+  ../include/nbutils.h
+
   ../base/Global.h
   ../base/Common.h
+  ../base/UnicodeString.hpp
+  ../base/Exceptions.h
+  ../base/Sysutils.hpp
+  ../base/StrUtils.hpp
+  ../base/MsgIDs.h
   ../base/vcl.h
   ../base/FileBuffer.h
-  ../base/FastDelegateBind.h
-  ../base/FastDelegate.h
+  ../base/ObjIDs.h
 
   ../core/WebDAVFileSystem.h
   ../core/Queue.h
@@ -325,7 +1459,7 @@ find_program(MASM_EXECUTABLE ml)
 # message("masm: ${MASM_EXECUTABLE}")
 set(ASM_OBJECTS)
 foreach(src vc_crt_fix)
-  set(ASM_SOURCE ${SRC_ROOT}/NetBox/${src}.asm)
+  set(ASM_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/${src}.asm)
   set(ASM_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${src}.obj)
   set(ASM_OBJECTS ${ASM_OBJECTS} ${ASM_OBJECT})
   add_custom_command(
@@ -337,18 +1471,16 @@ foreach(src vc_crt_fix)
 endforeach(src)
 
 set(NETBOX_SOURCES ${NETBOX_SOURCES}
-  ${SRC_ROOT}/NetBox/vc_crt_fix_impl.cpp
+  vc_crt_fix_impl.cpp
   ${ASM_OBJECTS}
 )
 
 endif(NOT x64)
 endif(MSVC)
 
-#-------------------------------------------------------------------------------
-
 set(NETBOX_LIBRARIES
-  atlmfc
   putty
+  atlmfc
   zlib
   tinyxml2
   libssl libcrypto
@@ -372,12 +1504,14 @@ set(NETBOX_LIBRARIES
 
 if(MSVC)
 if(BUILD_DEBUG)
-set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+set(NETBOX_LIBRARIES PRIVATE
+  ${NETBOX_LIBRARIES}
   libcmtd.lib
   libcpmtd.lib
 )
 else()
-set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+set(NETBOX_LIBRARIES PRIVATE
+  ${NETBOX_LIBRARIES}
   libcmt.lib
   libcpmt.lib
 )
@@ -388,13 +1522,23 @@ add_library(NetBox SHARED
   ${NETBOX_SOURCES}
 )
 
-set(NETBOX_DLL_CXX_FLAGS )
-if(CMAKE_COMPILER_IS_MINGW)
-  set(NETBOX_DLL_CXX_FLAGS -fpermissive)
-endif()
-
-target_compile_options(NetBox
-  PRIVATE ${NETBOX_DLL_CXX_FLAGS} -D_WINSOCK_DEPRECATED_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS
+target_include_directories(NetBox PRIVATE
+  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+  ../../libs/putty
+  ../../libs/putty/windows
+  ../../libs/apr/include
+  ../../libs/tinyxml2
+  ../../libs/rdestl
+  ../../libs/atlmfc/include
+  ../filezilla
+  ../filezilla/misc
+  ../base
+  ../core
+  ../windows
+  ../resource
+  ../include
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ../PluginSDK/${FAR_VERSION}
 )
 
 set_target_properties(NetBox
@@ -404,380 +1548,47 @@ set_target_properties(NetBox
   LINK_FLAGS_DEBUG "${NETBOX_DLL_LINK_FLAGS_DEBUG}"
 )
 
-#-------------------------------------------------------------------------------
-
 #TODO: COMMAND create_ver.py
 
-target_link_libraries(NetBox
+target_link_libraries(NetBox PRIVATE
   ${NETBOX_LIBRARIES}
 )
 
-add_dependencies(NetBox
-  atlmfc
-  putty
-  zlib
-  tinyxml2
-  neon
-  apr
-  expat
-  dlmalloc
-  rdestl
+target_compile_options(NetBox PRIVATE
+#  -wd4251 -wd4275 -wd4661
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
 string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 
-add_custom_command(TARGET NetBox
-  POST_BUILD
+add_custom_target(create_plugin_dir)
+add_custom_command(TARGET create_plugin_dir POST_BUILD
   COMMAND if not exist "${NETBOX_PLUGIN_DIR}" ( ${CMAKE_COMMAND} -E make_directory "${NETBOX_PLUGIN_DIR}" )
-  COMMAND if exist NetBox.dll ${CMAKE_COMMAND} -E copy NetBox.dll ${NETBOX_PLUGIN_DIR}
-  COMMAND if exist NetBox.pdb ( ${CMAKE_COMMAND} -E copy NetBox.pdb ${NETBOX_PLUGIN_DIR} )
-  COMMAND if exist NetBox.map ( ${CMAKE_COMMAND} -E copy NetBox.map ${NETBOX_PLUGIN_DIR} )
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    ${CMAKE_CURRENT_SOURCE_DIR}/NetBoxRus.lng
-    ${CMAKE_CURRENT_SOURCE_DIR}/NetBoxEng.lng
-    ${NETBOX_PLUGIN_DIR}
   WORKING_DIRECTORY ${BUILD_DIR}
   VERBATIM
 )
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-add_custom_command(TARGET NetBox
-  POST_BUILD
-  DEPENDS ${BUILD_DIR}\\NetBox.dll
-  COMMAND scripts\\make_dist.cmd ${FAR_VERSION} ${PROJECT_PLATFORM}
-  WORKING_DIRECTORY ${SRC_ROOT}/NetBox
-  VERBATIM
-)
-endif()
-
-#-------------------------------------------------------------------------------
-
-add_library(atlmfc STATIC
-  ${LIBS_ROOT}/atlmfc/mfc1.cpp
-  ${LIBS_ROOT}/atlmfc/mfc2.cpp
-  ${LIBS_ROOT}/atlmfc/mfc3.cpp
-  ${LIBS_ROOT}/atlmfc/mfc4.cpp
-  ${LIBS_ROOT}/atlmfc/mfc5.cpp
-  ${LIBS_ROOT}/atlmfc/src/mfc/thrdcore.cpp
+file(GLOB DIST_FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/*.lng
+#  ${BUILD_DIR}/*.dll
+#  ${BUILD_DIR}/*.pdb
+#  ${BUILD_DIR}/*.map
 )
 
-#-------------------------------------------------------------------------------
-set(ATLMFC_COMPILE_FLAGS
-  -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
-  -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
-  -D_AFX_NO_OLE_SUPPORT -D_AFX_NO_SOCKET_SUPPORT -DCOM_NO_WINDOWS_H
-)
-
-if(CMAKE_COMPILER_IS_MINGW)
-  set(ATLMFC_COMPILE_FLAGS ${ATLMFC_COMPILE_FLAGS}
-    -Wno-int-to-pointer-cast -Wno-pragmas -fpermissive
+add_custom_target(copy_to_plugin_dir)
+foreach(DIST_FILE ${DIST_FILES})
+  add_custom_command(TARGET copy_to_plugin_dir POST_BUILD
+#    COMMAND echo DIST_FILE: ${DIST_FILE}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}
   )
-endif()
+endforeach()
 
-target_compile_options(atlmfc
-  PRIVATE ${ATLMFC_COMPILE_FLAGS}
+add_custom_command(TARGET NetBox POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.dll ${NETBOX_PLUGIN_DIR}
+  COMMAND if exist ${BUILD_DIR}/NetBox.pdb ( ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.pdb ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist ${BUILD_DIR}/NetBox.map ( ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.map ${NETBOX_PLUGIN_DIR} )
 )
 
-#-------------------------------------------------------------------------------
+add_dependencies(NetBox create_plugin_dir copy_to_plugin_dir)
 
-add_library(putty STATIC
-  ${LIBS_ROOT}/Putty/cproxy.c
-  ${LIBS_ROOT}/Putty/int64.c
-  ${LIBS_ROOT}/Putty/logging.c
-  ${LIBS_ROOT}/Putty/misc.c
-  ${LIBS_ROOT}/Putty/pgssapi.c
-  ${LIBS_ROOT}/Putty/portfwd.c
-  ${LIBS_ROOT}/Putty/proxy.c
-  ${LIBS_ROOT}/Putty/ssh.c
-  ${LIBS_ROOT}/Putty/sshaes.c
-  ${LIBS_ROOT}/Putty/ssharcf.c
-  ${LIBS_ROOT}/Putty/sshblowf.c
-  ${LIBS_ROOT}/Putty/sshbn.c
-  ${LIBS_ROOT}/Putty/sshcrc.c
-  ${LIBS_ROOT}/Putty/sshcrcda.c
-  ${LIBS_ROOT}/Putty/sshdes.c
-  ${LIBS_ROOT}/Putty/sshdh.c
-  ${LIBS_ROOT}/Putty/sshdss.c
-  ${LIBS_ROOT}/Putty/sshgssc.c
-  ${LIBS_ROOT}/Putty/sshmd5.c
-  ${LIBS_ROOT}/Putty/sshpubk.c
-  ${LIBS_ROOT}/Putty/sshrand.c
-  ${LIBS_ROOT}/Putty/sshrsa.c
-  ${LIBS_ROOT}/Putty/sshsh256.c
-  ${LIBS_ROOT}/Putty/sshsh512.c
-  ${LIBS_ROOT}/Putty/sshsha.c
-  ${LIBS_ROOT}/Putty/sshzlib.c
-  ${LIBS_ROOT}/Putty/tree234.c
-  ${LIBS_ROOT}/Putty/wildcard.c
-  ${LIBS_ROOT}/Putty/windows/wingss.c
-  ${LIBS_ROOT}/Putty/windows/winhandl.c
-  ${LIBS_ROOT}/Putty/windows/winmisc.c
-  ${LIBS_ROOT}/Putty/windows/winnet.c
-  ${LIBS_ROOT}/Putty/windows/winnoise.c
-  ${LIBS_ROOT}/Putty/windows/winnojmp.c
-  ${LIBS_ROOT}/Putty/windows/winpgntc.c
-  ${LIBS_ROOT}/Putty/windows/winproxy.c
-  ${LIBS_ROOT}/Putty/windows/winsecur.c
-  ${LIBS_ROOT}/Putty/windows/winstore.c
-  ${LIBS_ROOT}/Putty/windows/wintime.c
-  ${LIBS_ROOT}/Putty/windows/winhsock.c
-  ${LIBS_ROOT}/Putty/x11fwd.c
-  ${LIBS_ROOT}/Putty/conf.c
-  ${LIBS_ROOT}/Putty/callback.c
-  ${LIBS_ROOT}/Putty/sshshare.c
-  ${LIBS_ROOT}/Putty/noshare.c
-  ${LIBS_ROOT}/Putty/errsock.c
-  ${LIBS_ROOT}/Putty/sshecc.c
-  ${LIBS_ROOT}/Putty/sshccp.c
-  ${LIBS_ROOT}/Putty/import.c
-  ${LIBS_ROOT}/Putty/be_misc.c
-  ${LIBS_ROOT}/Putty/sshbcrypt.c
-#  ${LIBS_ROOT}/Putty/ldisc.c
-)
-
-set(PUTTY_COMPILE_FLAGS -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -D_CRT_SECURE_NO_WARNINGS)
-
-target_compile_options(putty
-  PRIVATE ${PUTTY_COMPILE_FLAGS}
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(tinyxml2 STATIC
-  ${LIBS_ROOT}/tinyxml2/tinyxml2.cpp
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(neon STATIC
-  ${LIBS_ROOT}/neon/src/ne_alloc.c
-  ${LIBS_ROOT}/neon/src/ne_auth.c
-  ${LIBS_ROOT}/neon/src/ne_basic.c
-  ${LIBS_ROOT}/neon/src/ne_compress.c
-  ${LIBS_ROOT}/neon/src/ne_dates.c
-  ${LIBS_ROOT}/neon/src/ne_i18n.c
-  ${LIBS_ROOT}/neon/src/ne_md5.c
-  ${LIBS_ROOT}/neon/src/ne_pkcs11.c
-  ${LIBS_ROOT}/neon/src/ne_redirect.c
-  ${LIBS_ROOT}/neon/src/ne_request.c
-  ${LIBS_ROOT}/neon/src/ne_session.c
-  ${LIBS_ROOT}/neon/src/ne_socket.c
-  ${LIBS_ROOT}/neon/src/ne_socks.c
-  ${LIBS_ROOT}/neon/src/ne_sspi.c
-  ${LIBS_ROOT}/neon/src/ne_string.c
-  ${LIBS_ROOT}/neon/src/ne_uri.c
-  ${LIBS_ROOT}/neon/src/ne_utils.c
-  ${LIBS_ROOT}/neon/src/ne_207.c
-  ${LIBS_ROOT}/neon/src/ne_xml.c
-  ${LIBS_ROOT}/neon/src/ne_xmlreq.c
-  ${LIBS_ROOT}/neon/src/ne_oldacl.c
-  ${LIBS_ROOT}/neon/src/ne_acl3744.c
-  ${LIBS_ROOT}/neon/src/ne_props.c
-  ${LIBS_ROOT}/neon/src/ne_locks.c
-  ${LIBS_ROOT}/neon/src/ne_openssl.c
-)
-
-set(NEON_COMPILE_FLAGS -D_CRT_SECURE_NO_WARNINGS)
-
-target_compile_options(neon
-  PRIVATE ${NEON_COMPILE_FLAGS} ${NETBOX_UNICODE_FLAGS}
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(apr STATIC
-  ${LIBS_ROOT}/apr/atomic/win32/apr_atomic.c
-#  ${LIBS_ROOT}/apr/dso/win32/dso.c
-  ${LIBS_ROOT}/apr/file_io/win32/buffer.c
-#  ${LIBS_ROOT}/apr/file_io/unix/copy.c
-  ${LIBS_ROOT}/apr/file_io/win32/dir.c
-  ${LIBS_ROOT}/apr/file_io/unix/fileacc.c
-  ${LIBS_ROOT}/apr/file_io/win32/filedup.c
-  ${LIBS_ROOT}/apr/file_io/win32/filepath.c
-  ${LIBS_ROOT}/apr/file_io/unix/filepath_util.c
-  ${LIBS_ROOT}/apr/file_io/win32/filestat.c
-  ${LIBS_ROOT}/apr/file_io/win32/filesys.c
-  ${LIBS_ROOT}/apr/file_io/win32/flock.c
-  ${LIBS_ROOT}/apr/file_io/unix/fullrw.c
-  ${LIBS_ROOT}/apr/file_io/unix/mktemp.c
-  ${LIBS_ROOT}/apr/file_io/win32/open.c
-  ${LIBS_ROOT}/apr/file_io/win32/pipe.c
-  ${LIBS_ROOT}/apr/file_io/win32/readwrite.c
-  ${LIBS_ROOT}/apr/file_io/win32/seek.c
-#  ${LIBS_ROOT}/apr/file_io/unix/tempdir.c
-  ${LIBS_ROOT}/apr/locks/win32/proc_mutex.c
-  ${LIBS_ROOT}/apr/locks/win32/thread_cond.c
-  ${LIBS_ROOT}/apr/locks/win32/thread_mutex.c
-  ${LIBS_ROOT}/apr/locks/win32/thread_rwlock.c
-  ${LIBS_ROOT}/apr/memory/unix/apr_pools.c
-  ${LIBS_ROOT}/apr/misc/win32/apr_app.c
-  ${LIBS_ROOT}/apr/misc/win32/charset.c
-#  ${LIBS_ROOT}/apr/misc/win32/env.c
-  ${LIBS_ROOT}/apr/misc/unix/errorcodes.c
-#  ${LIBS_ROOT}/apr/misc/unix/getopt.c
-  ${LIBS_ROOT}/apr/misc/win32/internal.c
-  ${LIBS_ROOT}/apr/misc/win32/misc.c
-#  ${LIBS_ROOT}/apr/misc/unix/otherchild.c
-  ${LIBS_ROOT}/apr/misc/win32/rand.c
-  ${LIBS_ROOT}/apr/misc/win32/start.c
-  ${LIBS_ROOT}/apr/misc/win32/utf8.c
-#  ${LIBS_ROOT}/apr/misc/unix/version.c
-  ${LIBS_ROOT}/apr/mmap/unix/common.c
-#  ${LIBS_ROOT}/apr/mmap/win32/mmap.c
-  ${LIBS_ROOT}/apr/network_io/unix/inet_ntop.c
-  ${LIBS_ROOT}/apr/network_io/unix/inet_pton.c
-#  ${LIBS_ROOT}/apr/network_io/unix/multicast.c
-  ${LIBS_ROOT}/apr/network_io/win32/sendrecv.c
-  ${LIBS_ROOT}/apr/network_io/unix/sockaddr.c
-  ${LIBS_ROOT}/apr/network_io/win32/sockets.c
-  ${LIBS_ROOT}/apr/network_io/unix/socket_util.c
-  ${LIBS_ROOT}/apr/network_io/win32/sockopt.c
-#  ${LIBS_ROOT}/apr/passwd/apr_getpass.c
-#  ${LIBS_ROOT}/apr/poll/unix/poll.c
-#  ${LIBS_ROOT}/apr/poll/unix/pollcb.c
-#  ${LIBS_ROOT}/apr/poll/unix/pollset.c
-#  ${LIBS_ROOT}/apr/poll/unix/select.c
-#  ${LIBS_ROOT}/apr/poll/unix/z_asio.c
-  ${LIBS_ROOT}/apr/random/unix/apr_random.c
-#  ${LIBS_ROOT}/apr/random/unix/sha2.c
-#  ${LIBS_ROOT}/apr/random/unix/sha2_glue.c
-#  ${LIBS_ROOT}/apr/shmem/win32/shm.c
-  ${LIBS_ROOT}/apr/strings/apr_cpystrn.c
-  ${LIBS_ROOT}/apr/strings/apr_fnmatch.c
-  ${LIBS_ROOT}/apr/strings/apr_snprintf.c
-  ${LIBS_ROOT}/apr/strings/apr_strings.c
-  ${LIBS_ROOT}/apr/strings/apr_strnatcmp.c
-  ${LIBS_ROOT}/apr/strings/apr_strtok.c
-  ${LIBS_ROOT}/apr/tables/apr_hash.c
-  ${LIBS_ROOT}/apr/tables/apr_tables.c
-#  ${LIBS_ROOT}/apr/tables/apr_skiplist.c
-  ${LIBS_ROOT}/apr/threadproc/win32/proc.c
-  ${LIBS_ROOT}/apr/threadproc/win32/signals.c
-  ${LIBS_ROOT}/apr/threadproc/win32/thread.c
-  ${LIBS_ROOT}/apr/threadproc/win32/threadpriv.c
-  ${LIBS_ROOT}/apr/time/win32/time.c
-  ${LIBS_ROOT}/apr/time/win32/timestr.c
-#  ${LIBS_ROOT}/apr/user/win32/groupinfo.c
-  ${LIBS_ROOT}/apr/user/win32/userinfo.c
-)
-
-target_compile_options(apr
-  PRIVATE -DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES -U_UNICODE -UUNICODE
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(expat STATIC
-  ${LIBS_ROOT}/expat/lib/xmlparse.c
-  ${LIBS_ROOT}/expat/lib/xmlrole.c
-  ${LIBS_ROOT}/expat/lib/xmltok.c
-  ${LIBS_ROOT}/expat/lib/xmltok_impl.c
-#  ${LIBS_ROOT}/expat/lib/xmltok_ns.c
-)
-
-target_compile_options(expat
-  PRIVATE
-)
-
-#-------------------------------------------------------------------------------
-
-set(ZLIB_SOURCES
-  ${LIBS_ROOT}/zlib/src/adler32.c
-  ${LIBS_ROOT}/zlib/src/crc32.c
-  ${LIBS_ROOT}/zlib/src/infback.c
-  ${LIBS_ROOT}/zlib/src/inffast.c
-  ${LIBS_ROOT}/zlib/src/inflate.c
-  ${LIBS_ROOT}/zlib/src/inftrees.c
-  ${LIBS_ROOT}/zlib/src/trees.c
-  ${LIBS_ROOT}/zlib/src/zutil.c
-  ${LIBS_ROOT}/zlib/src/match.c
-  ${LIBS_ROOT}/zlib/src/deflate.c
-  ${LIBS_ROOT}/zlib/src/deflate_slow.c
-  ${LIBS_ROOT}/zlib/src/deflate_medium.c
-  ${LIBS_ROOT}/zlib/src/deflate_fast.c
-)
-
-if(NOT x64)
-
-set(ZLIB_SOURCES ${ZLIB_SOURCES}
-  ${LIBS_ROOT}/zlib/src/arch/x86/crc_folding.c
-  ${LIBS_ROOT}/zlib/src/arch/x86/fill_window_sse.c
-  ${LIBS_ROOT}/zlib/src/arch/x86/insert_string_sse.c
-  ${LIBS_ROOT}/zlib/src/arch/x86/x86.c
-)
-
-if(MSVC)
-set(ZLIB_SOURCES ${ZLIB_SOURCES}
-  ${LIBS_ROOT}/zlib/src/arch/x86/deflate_quick.c
-)
-endif(MSVC)
-
-endif(NOT x64)
-
-add_library(zlib STATIC
-  ${ZLIB_SOURCES}
-)
-
-target_compile_options(zlib
-  PRIVATE ${NETBOX_UNICODE_FLAGS}
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(dlmalloc STATIC
-  ${LIBS_ROOT}/dlmalloc/malloc.c
-  ${LIBS_ROOT}/dlmalloc/malloc-2.8.6.h
-)
-
-target_compile_options(dlmalloc
-  PRIVATE ${NETBOX_UNICODE_FLAGS}
-)
-
-#-------------------------------------------------------------------------------
-
-add_library(rdestl STATIC
-  ${LIBS_ROOT}/rdestl/allocator.cpp
-  ${LIBS_ROOT}/rdestl/intrusive_list.cpp
-  ${LIBS_ROOT}/rdestl/list.cpp
-#  ${LIBS_ROOT}/rdestl/intrusive_slist.cpp
-#  ${LIBS_ROOT}/rdestl/slist.cpp
-  ${LIBS_ROOT}/rdestl/sort.h
-  ${LIBS_ROOT}/rdestl/string_utils.h
-#  ${LIBS_ROOT}/rdestl/intrusive_list.h
-  ${LIBS_ROOT}/rdestl/sorted_vector.h
-  ${LIBS_ROOT}/rdestl/allocator.h
-  ${LIBS_ROOT}/rdestl/hash_map.h
-  ${LIBS_ROOT}/rdestl/map.h
-  ${LIBS_ROOT}/rdestl/basic_string.h
-  ${LIBS_ROOT}/rdestl/list.h
-  ${LIBS_ROOT}/rdestl/type_traits.h
-#  ${LIBS_ROOT}/rdestl/intrusive_slist.h
-  ${LIBS_ROOT}/rdestl/radix_sorter.h
-  ${LIBS_ROOT}/rdestl/stack_allocator.h
-  ${LIBS_ROOT}/rdestl/utility.h
-  ${LIBS_ROOT}/rdestl/vector.h
-#  ${LIBS_ROOT}/rdestl/slist.h
-  ${LIBS_ROOT}/rdestl/fixed_array.h
-  ${LIBS_ROOT}/rdestl/pair.h
-  ${LIBS_ROOT}/rdestl/algorithm.h
-  ${LIBS_ROOT}/rdestl/fixed_list.h
-  ${LIBS_ROOT}/rdestl/hash.h
-  ${LIBS_ROOT}/rdestl/alignment.h
-  ${LIBS_ROOT}/rdestl/fixed_vector.h
-  ${LIBS_ROOT}/rdestl/rb_tree.h
-  ${LIBS_ROOT}/rdestl/buffer_allocator.h
-  ${LIBS_ROOT}/rdestl/sstream.h
-  ${LIBS_ROOT}/rdestl/rdestl_common.h
-  ${LIBS_ROOT}/rdestl/stack.h
-  ${LIBS_ROOT}/rdestl/cow_string_storage.h
-  ${LIBS_ROOT}/rdestl/fixed_sorted_vector.h
-  ${LIBS_ROOT}/rdestl/functional.h
-  ${LIBS_ROOT}/rdestl/simple_string_storage.h
-  ${LIBS_ROOT}/rdestl/fixed_substring.h
-  ${LIBS_ROOT}/rdestl/int_to_type.h
-  ${LIBS_ROOT}/rdestl/rde_string.h
-  ${LIBS_ROOT}/rdestl/rdestl.h
-  ${LIBS_ROOT}/rdestl/set.h
-  ${LIBS_ROOT}/rdestl/iterator.h
-)

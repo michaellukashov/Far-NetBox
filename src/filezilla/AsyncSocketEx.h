@@ -68,6 +68,7 @@ to tim.kosse@gmx.de
 
 #include <winsock2.h>
 #include <Ws2tcpip.h>
+#include <headers.hpp>
 
 class CAsyncSocketExHelperWindow;
 class CAsyncSocketExLayer;
@@ -75,6 +76,7 @@ class CCriticalSectionWrapper;
 
 struct t_callbackMsg
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   CAsyncSocketExLayer* pLayer;
   int nType;
   intptr_t nParam1;
@@ -267,7 +269,7 @@ protected:
   CAsyncSocketExLayer * m_pFirstLayer;
   CAsyncSocketExLayer * m_pLastLayer;
 
-  friend CAsyncSocketExLayer;
+  friend class CAsyncSocketExLayer;
 
   // Called by the layers to notify application of some events
   virtual int OnLayerCallback(rde::list<t_callbackMsg> & callbacks);
@@ -276,14 +278,14 @@ protected:
   UINT m_nSocketPort;
   LPTSTR m_lpszSocketAddress;
 
-  friend CAsyncSocketExHelperWindow;
+  friend class CAsyncSocketExHelperWindow;
 
   // Pending callbacks
   rde::list<t_callbackMsg> m_pendingCallbacks;
 
-  virtual void LogSocketMessageRaw(int nMessageType, LPCTSTR pMsg) {};
-  virtual bool LoggingSocketMessage(int nMessageType) { return true; };
-  virtual void ConfigureSocket() {};
+  virtual void LogSocketMessageRaw(int nMessageType, LPCTSTR pMsg) {}
+  virtual bool LoggingSocketMessage(int nMessageType) { return true; }
+  virtual void ConfigureSocket() {}
 };
 
 #define LAYERCALLBACK_STATECHANGE 0
@@ -303,7 +305,7 @@ enum SocketState
 
 inline TCHAR * Inet6AddrToString(in6_addr & addr)
 {
-  LPTSTR buf = static_cast<TCHAR *>(nb_calloc(512, sizeof(TCHAR)));
+  LPTSTR buf = nb::wchcalloc(512 * sizeof(TCHAR));
 
   _sntprintf(buf, 512, L"%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
        addr.s6_bytes[0], addr.s6_bytes[1], addr.s6_bytes[2], addr.s6_bytes[3],

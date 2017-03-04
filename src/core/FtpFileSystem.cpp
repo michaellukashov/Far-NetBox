@@ -201,7 +201,7 @@ private:
 };
 
 TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) :
-  TCustomFileSystem(ATerminal),
+  TCustomFileSystem(OBJECT_CLASS_TFTPFileSystem, ATerminal),
   FFileZillaIntf(nullptr),
   FQueueEvent(::CreateEvent(nullptr, true, false, nullptr)),
   FFileSystemInfoValid(false),
@@ -290,7 +290,7 @@ TFTPFileSystem::~TFTPFileSystem()
     DiscardMessages();
   }
 
-  SAFE_DESTROY(FFileZillaIntf);
+  SAFE_DESTROY_EX(CFileZillaTools, FFileZillaIntf);
 
   ::CloseHandle(FQueueEvent);
   FQueueEvent = nullptr;
@@ -299,7 +299,7 @@ TFTPFileSystem::~TFTPFileSystem()
   SAFE_DESTROY(FLastErrorResponse);
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
-  SAFE_DESTROY(FServerCapabilities);
+  SAFE_DESTROY_EX(TFTPServerCapabilities, FServerCapabilities);
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
 
@@ -714,7 +714,7 @@ void TFTPFileSystem::CollectUsage()
   {
     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPWSFTP");
   }
-  // 220 Welcome to the most popular FTP hosting service! Save on hardware, software, hosting and admin. Share files/folders with read-write permission. Visit http://www.drivehq.com/ftp/;
+  // 220 Welcome to the most popular FTP hosting service! Save on hardware, software, hosting and admin. Share files/folders with read-write permission. Visit http://www.drivehq.com/ftp/
   // ...
   // SYST
   // 215 UNIX emulated by DriveHQ FTP Server.
@@ -796,7 +796,7 @@ void TFTPFileSystem::CollectUsage()
   }*/
 }
 
-void TFTPFileSystem::DummyReadDirectory(const UnicodeString & Directory)
+void TFTPFileSystem::DummyReadDirectory(const UnicodeString & /*Directory*/)
 {
   std::unique_ptr<TRemoteDirectory> Files(new TRemoteDirectory(FTerminal));
   try
@@ -873,9 +873,9 @@ UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool 
   }
 }
 
-UnicodeString TFTPFileSystem::ActualCurrentDirectory()
+UnicodeString TFTPFileSystem::GetActualCurrentDirectory() const
 {
-  UnicodeString CurrentPath(1024, 0);
+  UnicodeString CurrentPath(NB_MAX_PATH, 0);
   UnicodeString Result;
   if (FFileZillaIntf->GetCurrentPath(const_cast<wchar_t *>(CurrentPath.c_str()), CurrentPath.Length()))
   {
@@ -885,6 +885,7 @@ UnicodeString TFTPFileSystem::ActualCurrentDirectory()
   {
     Result = ROOTDIRECTORY;
   }
+  PackStr(Result);
   return Result;
 }
 
@@ -899,7 +900,7 @@ void TFTPFileSystem::EnsureLocation()
     // 1) We did cached directory change
     // 2) Listing was requested for non-current directory, which
     // makes FZAPI change its current directory (and not restoring it back afterwards)
-    if (!core::UnixSamePath(ActualCurrentDirectory(), FCurrentDirectory))
+    if (!core::UnixSamePath(GetActualCurrentDirectory(), FCurrentDirectory))
     {
       FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
         FCurrentDirectory.c_str()));
@@ -1025,7 +1026,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
       {
         try
         {
-          FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TTerminal::ChangeFileProperties, FTerminal),
+          FTerminal->ProcessDirectory(AFileName, nb::bind(&TTerminal::ChangeFileProperties, FTerminal),
             static_cast<void *>(const_cast<TRemoteProperties *>(Properties)));
         }
         catch (...)
@@ -1077,7 +1078,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(
   bool UsingHashCommand, const UnicodeString & Alg, TRemoteFile * File)
 {
   // Overview of server supporting various hash commands is at:
-  // https://tools.ietf.org/html/draft-ietf-ftpext2-hash-03#appendix-B
+  // https://tools.ietf.org/html/draft-bryan-ftpext-hash-02#appendix-B
 
   UnicodeString CommandName;
 
@@ -1201,19 +1202,19 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
           (OnCalculatedChecksum != nullptr))
       {
         OperationProgress->SetFile(File->GetFileName());
-        TRemoteFileList * SubFiles =
-          FTerminal->CustomReadDirectoryListing(File->GetFullFileName(), false);
+        std::unique_ptr<TRemoteFileList> SubFiles(
+          FTerminal->CustomReadDirectoryListing(File->GetFullFileName(), false));
 
         if (SubFiles != nullptr)
         {
-          TStrings * SubFileList = new TStringList();
+          std::unique_ptr<TStrings> SubFileList(new TStringList());
           bool Success = false;
           try__finally
           {
             SCOPE_EXIT
             {
-              delete SubFiles;
-              delete SubFileList;
+//              delete SubFiles;
+//              delete SubFileList;
 
               if (FirstLevel)
               {
@@ -1231,15 +1232,15 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
 
             // do not collect checksums for files in subdirectories,
             // only send back checksums via callback
-            DoCalculateFilesChecksum(UsingHashCommand, Alg, SubFileList, nullptr,
+            DoCalculateFilesChecksum(UsingHashCommand, Alg, SubFileList.get(), nullptr,
               OnCalculatedChecksum, OperationProgress, false);
 
             Success = true;
           }
           __finally
           {
-            delete SubFiles;
-            delete SubFileList;
+//            delete SubFiles;
+//            delete SubFileList;
 
             if (FirstLevel)
             {
@@ -1291,7 +1292,7 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
   TStrings * FileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
-  TFileOperationProgressType Progress(MAKE_CALLBACK(TTerminal::DoProgress, FTerminal), MAKE_CALLBACK(TTerminal::DoFinished, FTerminal));
+  TFileOperationProgressType Progress(nb::bind(&TTerminal::DoProgress, FTerminal), nb::bind(&TTerminal::DoFinished, FTerminal));
   Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
 
   FTerminal->SetOperationProgress(&Progress);
@@ -1589,7 +1590,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     UnicodeString FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = NB_STATIC_DOWNCAST_CONST(TRemoteFile, AFilesToCopy->GetObj(Index));
+    const TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index));
 
     bool Success = false;
     try__finally
@@ -1732,7 +1733,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
 
-      FTerminal->ProcessDirectory(AFileName, MAKE_CALLBACK(TFTPFileSystem::SinkFile, this), &SinkFileParams);
+      FTerminal->ProcessDirectory(AFileName, nb::bind(&TFTPFileSystem::SinkFile, this), &SinkFileParams);
 
       // Do not delete directory if some of its files were skipped.
       // Throw "skip file" for the directory to avoid attempt to deletion
@@ -1844,7 +1845,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
 void TFTPFileSystem::SinkFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * Param)
 {
-  TSinkFileParams * Params = NB_STATIC_DOWNCAST(TSinkFileParams, Param);
+  TSinkFileParams * Params = dyn_cast<TSinkFileParams>(as_object(Param));
   DebugAssert(Params->OperationProgress);
   try
   {
@@ -1890,7 +1891,7 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   {
     bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFilesToCopy->GetObj(Index));
+    TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index));
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = base::ExtractFileName(RealFileName, false);
 
@@ -2332,7 +2333,7 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   {
     try
     {
-      FTerminal->ProcessDirectory(FileName, MAKE_CALLBACK(TTerminal::RemoteDeleteFile, FTerminal), &Params);
+      FTerminal->ProcessDirectory(FileName, nb::bind(&TTerminal::RemoteDeleteFile, FTerminal), &Params);
     }
     catch (...)
     {
@@ -2354,7 +2355,7 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
       // EnsureLocation should reset actual current directory to user's working directory.
       // If user's working directory is still below deleted directory, it is
       // perfectly correct to report an error.
-      if (core::UnixIsChildPath(ActualCurrentDirectory(), FileName))
+      if (core::UnixIsChildPath(GetActualCurrentDirectory(), FileName))
       {
         EnsureLocation();
       }
@@ -3020,7 +3021,7 @@ void TFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 
-TStrings * TFTPFileSystem::GetFixedPaths()
+TStrings * TFTPFileSystem::GetFixedPaths() const
 {
   return nullptr;
 }
@@ -4181,7 +4182,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     UnicodeString DestFullName = Path1;
     ::AppendPathDelimiterW(DestFullName);
     DestFullName += FileName1;
-    TFileTransferData & UserData = *(NB_STATIC_DOWNCAST(TFileTransferData, AUserData));
+    TFileTransferData & UserData = *(dyn_cast<TFileTransferData>(as_object(AUserData)));
     if (UserData.OverwriteResult >= 0)
     {
       // on retry, use the same answer as on the first attempt
@@ -4648,7 +4649,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         TQueryButtonAlias Aliases[1];
         Aliases[0].Button = qaRetry;
         Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-        Aliases[0].OnClick = MAKE_CALLBACK(TClipboardHandler::Copy, &ClipboardHandler);
+        Aliases[0].OnClick = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
 
         TQueryParams Params(qpWaitInBatch);
         Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
@@ -5050,7 +5051,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
 
 void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData)
 {
-  TFileTransferData * Data = NB_STATIC_DOWNCAST(TFileTransferData, UserData);
+  TFileTransferData * Data = dyn_cast<TFileTransferData>(as_object(UserData));
   FILETIME WrTime = ::DateTimeToFileTime(Data->Modification, dstmUnix);
   SetFileTime(AHandle, nullptr, nullptr, &WrTime);
 }

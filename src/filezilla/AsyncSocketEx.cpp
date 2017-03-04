@@ -26,13 +26,14 @@ CAsyncSocketEx::t_AsyncSocketExThreadDataList *CAsyncSocketEx::m_spAsyncSocketEx
 #define WM_SOCKETEX_NOTIFY (WM_USER+3)
 #define MAX_SOCKETS (0xBFFF-WM_SOCKETEX_NOTIFY+1)
 
-class CAsyncSocketExHelperWindow : public TObject
+class CAsyncSocketExHelperWindow // : public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CAsyncSocketExHelperWindow(CAsyncSocketEx::t_AsyncSocketExThreadData* pThreadData)
   {
     //Initialize data
-    m_pAsyncSocketExWindowData = static_cast<t_AsyncSocketExWindowData *>(nb_calloc(512, sizeof(t_AsyncSocketExWindowData))); //Reserve space for 512 active sockets
+    m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(512 * sizeof(t_AsyncSocketExWindowData)); //Reserve space for 512 active sockets
     memset(m_pAsyncSocketExWindowData, 0, 512*sizeof(t_AsyncSocketExWindowData));
     m_nWindowDataSize=512;
     m_nSocketCount=0;
@@ -62,7 +63,7 @@ public:
     m_hWnd=CreateWindow(L"CAsyncSocketEx Helper Window", L"CAsyncSocketEx Helper Window", 0, 0, 0, 0, 0, 0, 0, GetModuleHandle(0), 0);
     DebugAssert(m_hWnd);
     SetWindowLongPtr(m_hWnd, GWL_USERDATA, (LONG_PTR)this);
-  };
+  }
 
   virtual ~CAsyncSocketExHelperWindow()
   {
@@ -88,7 +89,7 @@ public:
     {
       DebugAssert(!m_nSocketCount);
       m_nWindowDataSize=512;
-      m_pAsyncSocketExWindowData=static_cast<t_AsyncSocketExWindowData *>(nb_calloc(512, sizeof(t_AsyncSocketExWindowData))); //Reserve space for 512 active sockets
+      m_pAsyncSocketExWindowData=nb::calloc<t_AsyncSocketExWindowData*>(512 * sizeof(t_AsyncSocketExWindowData)); //Reserve space for 512 active sockets
       memset(m_pAsyncSocketExWindowData, 0, 512*sizeof(t_AsyncSocketExWindowData));
     }
 
@@ -110,7 +111,7 @@ public:
       if (m_nWindowDataSize>MAX_SOCKETS)
         m_nWindowDataSize=MAX_SOCKETS;
       t_AsyncSocketExWindowData *tmp=m_pAsyncSocketExWindowData;
-      m_pAsyncSocketExWindowData = static_cast<t_AsyncSocketExWindowData *>(nb_calloc(m_nWindowDataSize, sizeof(t_AsyncSocketExWindowData)));
+      m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(m_nWindowDataSize * sizeof(t_AsyncSocketExWindowData));
       memcpy(m_pAsyncSocketExWindowData, tmp, nOldWindowDataSize * sizeof(t_AsyncSocketExWindowData));
       memset(m_pAsyncSocketExWindowData+nOldWindowDataSize, 0, (m_nWindowDataSize-nOldWindowDataSize)*sizeof(t_AsyncSocketExWindowData));
       nb_free(tmp);
@@ -180,7 +181,7 @@ public:
 
     for (rde::list<MSG>::iterator iter = msgList.begin(); iter != msgList.end(); iter++)
     {
-      PostMessage(m_hWnd, iter->message, iter->wParam, iter->lParam);
+      ::PostMessage(m_hWnd, iter->message, iter->wParam, iter->lParam);
     }
   }
 
@@ -335,7 +336,7 @@ public:
               if (nBytes > 0)
               {
                 // Just repeat message.
-                PostMessage(hWnd, message, wParam, lParam);
+                ::PostMessage(hWnd, message, wParam, lParam);
                 pSocket->m_SocketData.onCloseCalled = true;
                 pSocket->OnReceive(WSAESHUTDOWN);
                 break;
@@ -595,7 +596,7 @@ public:
       if (pWnd->m_pThreadData->layerCloseNotify.empty())
         KillTimer(hWnd, 1);
 
-      PostMessage(hWnd, socket->m_SocketData.nSocketIndex + WM_SOCKETEX_NOTIFY, socket->m_SocketData.hSocket, FD_CLOSE);
+      ::PostMessage(hWnd, socket->m_SocketData.nSocketIndex + WM_SOCKETEX_NOTIFY, socket->m_SocketData.hSocket, FD_CLOSE);
       return 0;
     }
     return DefWindowProc(hWnd, message, wParam, lParam);
@@ -610,6 +611,7 @@ private:
   HWND m_hWnd;
   struct t_AsyncSocketExWindowData
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     CAsyncSocketEx *m_pSocket;
   } *m_pAsyncSocketExWindowData;
   int m_nWindowDataSize;
@@ -695,7 +697,7 @@ BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STR
       nb_free(m_lpszSocketAddress);
       if (lpszSocketAddress && *lpszSocketAddress)
       {
-        m_lpszSocketAddress = static_cast<TCHAR *>(nb_calloc(_tcslen(lpszSocketAddress) + 1, sizeof(TCHAR)));
+        m_lpszSocketAddress = nb::wchcalloc(_tcslen(lpszSocketAddress) + 1);
         _tcscpy(m_lpszSocketAddress, lpszSocketAddress);
       }
       else
@@ -767,7 +769,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
   nb_free(m_lpszSocketAddress);
   if (lpszSocketAddress && *lpszSocketAddress)
   {
-    m_lpszSocketAddress = static_cast<TCHAR *>(nb_calloc(_tcslen(lpszSocketAddress) + 1, sizeof(TCHAR)));
+    m_lpszSocketAddress = nb::wchcalloc(_tcslen(lpszSocketAddress) + 1);
     _tcscpy(m_lpszSocketAddress, lpszSocketAddress);
   }
   else
@@ -846,7 +848,7 @@ BOOL CAsyncSocketEx::Bind(const SOCKADDR* lpSockAddr, int nSockAddrLen)
 void CAsyncSocketEx::AttachHandle(SOCKET hSocket)
 {
   DebugAssert(m_pLocalAsyncSocketExThreadData);
-  DebugCheck(m_pLocalAsyncSocketExThreadData->m_pHelperWindow->AddSocket(this, m_SocketData.nSocketIndex));
+  DebugCheck(m_pLocalAsyncSocketExThreadData->m_pHelperWindow->AddSocket(this, m_SocketData.nSocketIndex) != FALSE);
   SetState(attached);
 }
 
@@ -858,7 +860,7 @@ void CAsyncSocketEx::DetachHandle(SOCKET hSocket)
   DebugAssert(m_pLocalAsyncSocketExThreadData->m_pHelperWindow);
   if (!m_pLocalAsyncSocketExThreadData->m_pHelperWindow)
     return;
-  DebugCheck(m_pLocalAsyncSocketExThreadData->m_pHelperWindow->RemoveSocket(this, m_SocketData.nSocketIndex));
+  DebugCheck(m_pLocalAsyncSocketExThreadData->m_pHelperWindow->RemoveSocket(this, m_SocketData.nSocketIndex) != FALSE);
   SetState(notsock);
 }
 
@@ -1074,7 +1076,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
     {
       if (m_pAsyncGetHostByNameBuffer)
         nb_free(m_pAsyncGetHostByNameBuffer);
-      m_pAsyncGetHostByNameBuffer=static_cast<char *>(nb_calloc(1, MAXGETHOSTSTRUCT));
+      m_pAsyncGetHostByNameBuffer = nb::chcalloc(MAXGETHOSTSTRUCT);
 
       m_nAsyncGetHostByNamePort=nHostPort;
 
@@ -1375,7 +1377,7 @@ BOOL CAsyncSocketEx::Attach(SOCKET hSocket, long lEvent /*= FD_READ | FD_WRITE |
   if (hSocket==INVALID_SOCKET || !hSocket)
     return FALSE;
 
-  DebugCheck(InitAsyncSocketExInstance());
+  DebugCheck(InitAsyncSocketExInstance() != FALSE);
   m_SocketData.hSocket=hSocket;
   AttachHandle(hSocket);
 
@@ -1436,7 +1438,7 @@ BOOL CAsyncSocketEx::Accept( CAsyncSocketEx& rConnectedSocket, SOCKADDR* lpSockA
 
     if (hTemp == INVALID_SOCKET)
       return FALSE;
-    DebugCheck(rConnectedSocket.InitAsyncSocketExInstance());
+    DebugCheck(rConnectedSocket.InitAsyncSocketExInstance() != FALSE);
     rConnectedSocket.m_SocketData.hSocket=hTemp;
     rConnectedSocket.AttachHandle(hTemp);
     rConnectedSocket.SetFamily(GetFamily());
@@ -1470,14 +1472,14 @@ BOOL CAsyncSocketEx::TriggerEvent(long lEvent)
     pMsg->hSocket = m_SocketData.hSocket;
     pMsg->lEvent=lEvent%0xFFFF;
     pMsg->pLayer=0;
-    BOOL res=PostMessage(GetHelperWindowHandle(), WM_USER, (WPARAM)m_SocketData.nSocketIndex, (LPARAM)pMsg);
+    BOOL res=::PostMessage(GetHelperWindowHandle(), WM_USER, (WPARAM)m_SocketData.nSocketIndex, (LPARAM)pMsg);
     if (!res)
       delete pMsg;
     return res;
   }
   else
   {
-    return PostMessage(GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, m_SocketData.hSocket, lEvent%0xFFFF);
+    return ::PostMessage(GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, m_SocketData.hSocket, lEvent%0xFFFF);
   }
 
 }
@@ -1692,7 +1694,7 @@ void CAsyncSocketEx::AddCallbackNotification(const t_callbackMsg& msg)
 
   if(m_pendingCallbacks.size() == 1 && m_SocketData.nSocketIndex != -1)
   {
-    PostMessage(GetHelperWindowHandle(), WM_USER + 2, (WPARAM)m_SocketData.nSocketIndex, 0);
+    ::PostMessage(GetHelperWindowHandle(), WM_USER + 2, (WPARAM)m_SocketData.nSocketIndex, 0);
   }
 }
 

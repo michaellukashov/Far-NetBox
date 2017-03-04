@@ -11,8 +11,7 @@
 #include "CoreMain.h"
 #include "TextsCore.h"
 
-extern "C"
-{
+extern "C" {
 #include <winstuff.h>
 }
 char sshver[50];
@@ -21,8 +20,8 @@ CRITICAL_SECTION putty_section;
 bool SaveRandomSeed;
 char appname_[50];
 const char * const appname = appname_;
-extern const int share_can_be_downstream = FALSE;
-extern const int share_can_be_upstream = FALSE;
+extern "C" const int share_can_be_downstream = FALSE;
+extern "C" const int share_can_be_upstream = FALSE;
 
 const UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
 const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
@@ -92,7 +91,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
   frontend = get_ssh_frontend(plug);
   DebugAssert(frontend);
 
-  TSecureShell * SecureShell = NB_STATIC_DOWNCAST(TSecureShell, frontend);
+  TSecureShell * SecureShell = dyn_cast<TSecureShell>(as_object(frontend));
   if (!pfwd)
   {
     SecureShell->UpdateSocket(skt, startup != 0);
@@ -108,15 +107,17 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
 int from_backend(void * frontend, int is_stderr, const char * data, int datalen)
 {
   DebugAssert(frontend);
+  TSecureShell * SecureShell = dyn_cast<TSecureShell>(as_object(frontend));
+  DebugAssert(SecureShell);
   if (is_stderr >= 0)
   {
     DebugAssert((is_stderr == 0) || (is_stderr == 1));
-    (NB_STATIC_DOWNCAST(TSecureShell, frontend))->FromBackend((is_stderr == 1), reinterpret_cast<const uint8_t *>(data), datalen);
+    SecureShell->FromBackend((is_stderr == 1), reinterpret_cast<const uint8_t *>(data), datalen);
   }
   else
   {
     DebugAssert(is_stderr == -1);
-    (NB_STATIC_DOWNCAST(TSecureShell, frontend))->CWrite(data, datalen);
+    SecureShell->CWrite(data, datalen);
   }
   return 0;
 }
@@ -143,7 +144,7 @@ int get_userpass_input(prompts_t * p, const uint8_t * in, int inlen)
 int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
 {
   DebugAssert(p != nullptr);
-  TSecureShell * SecureShell = NB_STATIC_DOWNCAST(TSecureShell, p->frontend);
+  TSecureShell * SecureShell = dyn_cast<TSecureShell>(as_object(p->frontend));
   DebugAssert(SecureShell != nullptr);
 
   int Result;
@@ -220,7 +221,7 @@ void logevent(void * frontend, const char * str)
   // Frontend maybe NULL here
   if (frontend != nullptr)
   {
-    (NB_STATIC_DOWNCAST(TSecureShell, frontend))->PuttyLogEvent(str);
+    dyn_cast<TSecureShell>(as_object(frontend))->PuttyLogEvent(str);
   }
 }
 
@@ -235,7 +236,7 @@ void connection_fatal(void * frontend, const char * fmt, ...)
   va_end(Param);
 
   DebugAssert(frontend != nullptr);
-  (NB_STATIC_DOWNCAST(TSecureShell, frontend))->PuttyFatalError(UnicodeString(Buf.c_str()));
+  dyn_cast<TSecureShell>(as_object(frontend))->PuttyFatalError(UnicodeString(Buf.c_str()));
 }
 
 int verify_ssh_host_key(void * frontend, char * host, int port, const char * keytype,
@@ -243,7 +244,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, const char * key
   void * /*ctx*/)
 {
   DebugAssert(frontend != nullptr);
-  (NB_STATIC_DOWNCAST(TSecureShell, frontend))->VerifyHostKey(UnicodeString(host), port, keytype, keystr, fingerprint);
+  dyn_cast<TSecureShell>(as_object(frontend))->VerifyHostKey(UnicodeString(host), port, keytype, keystr, fingerprint);
 
   // We should return 0 when key was not confirmed, we throw exception instead.
   return 1;
@@ -260,7 +261,7 @@ int askalg(void * frontend, const char * algtype, const char * algname,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   DebugAssert(frontend != nullptr);
-  (NB_STATIC_DOWNCAST(TSecureShell, frontend))->AskAlg(algtype, algname);
+  dyn_cast<TSecureShell>(as_object(frontend))->AskAlg(algtype, algname);
 
   // We should return 0 when alg was not confirmed, we throw exception instead.
   return 1;
@@ -281,7 +282,7 @@ void display_banner(void * frontend, const char * banner, int size)
 {
   DebugAssert(frontend);
   UnicodeString Banner(banner, size);
-  (NB_STATIC_DOWNCAST(TSecureShell, frontend))->DisplayBanner(Banner);
+  dyn_cast<TSecureShell>(as_object(frontend))->DisplayBanner(Banner);
 }
 
 static void SSHFatalError(const char * Format, va_list Param)
@@ -400,14 +401,10 @@ void platform_get_x11_auth(struct X11Display * /*display*/, Conf * /*conf*/)
 char * get_remote_username(Conf * conf)
 {
   char * username = conf_get_str(conf, CONF_username);
-  char * result;
+  char * result = nullptr;
   if (*username)
   {
     result = dupstr(username);
-  }
-  else
-  {
-    result = nullptr;
   }
   return result;
 }
@@ -662,7 +659,7 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
     case ktSSH2:
       if (!ssh2_save_userkey(KeyFile, Ssh2Key, PassphrasePtr))
       {
-        int Error = errno;
+        intptr_t Error = errno;
         throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, FileName.c_str()), Error);
       }
       break;
