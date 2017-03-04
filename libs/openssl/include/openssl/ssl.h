@@ -265,6 +265,30 @@ typedef int (*custom_ext_parse_cb) (SSL *s, unsigned int ext_type,
 /* Typedef for verification callback */
 typedef int (*SSL_verify_cb)(int preverify_ok, X509_STORE_CTX *x509_ctx);
 
+#ifndef NB_COMPILE_OPENSSL
+
+/* used to hold info on the particular ciphers used */
+struct ssl_cipher_st {
+    int valid;
+    const char *name;           /* text name */
+    unsigned long id;           /* id, 4 bytes, first is version */
+    /*
+     * changed in 0.9.9: these four used to be portions of a single value
+     * 'algorithms'
+     */
+    unsigned long algorithm_mkey; /* key exchange algorithm */
+    unsigned long algorithm_auth; /* server authentication */
+    unsigned long algorithm_enc; /* symmetric encryption */
+    unsigned long algorithm_mac; /* symmetric authentication */
+    unsigned long algorithm_ssl; /* (major) protocol version */
+    unsigned long algo_strength; /* strength and export flags */
+    unsigned long algorithm2;   /* Extra flags */
+    int strength_bits;          /* Number of bits really used */
+    int alg_bits;               /* Number of bits for algorithm */
+};
+
+#endif // #ifndef NB_COMPILE_OPENSSL
+
 /* Allow initial connection to servers that don't support RI */
 # define SSL_OP_LEGACY_SERVER_CONNECT                    0x00000004U
 # define SSL_OP_TLSEXT_PADDING                           0x00000010U
@@ -1073,6 +1097,7 @@ DECLARE_PEM_rw(SSL_SESSION, SSL_SESSION)
 # define SSL_CTRL_SESS_MISSES                    29
 # define SSL_CTRL_SESS_TIMEOUTS                  30
 # define SSL_CTRL_SESS_CACHE_FULL                31
+# define SSL_CTRL_OPTIONS                        32
 # define SSL_CTRL_MODE                           33
 # define SSL_CTRL_GET_READ_AHEAD                 40
 # define SSL_CTRL_SET_READ_AHEAD                 41
