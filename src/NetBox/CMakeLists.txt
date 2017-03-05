@@ -27,12 +27,12 @@ endif()
 
 if(MSVC)
   if(MSVC14)
-    set(OPENSSL_INC_DIR "vs2015-${PROJECT_PLATFORM}")
+    set(OPENSSL_LIB_DIR "vs2015-${PROJECT_PLATFORM}")
   else()
-    set(OPENSSL_INC_DIR "${PROJECT_PLATFORM}")
+    set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}")
   endif()
 else()
-  set(OPENSSL_INC_DIR "${PROJECT_PLATFORM}")
+  set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}")
 endif(MSVC)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -818,7 +818,7 @@ target_include_directories(libcrypto SYSTEM BEFORE PRIVATE
   ../../libs/openssl/crypto
   ../../libs/openssl/crypto/include
   ../../libs/openssl/crypto/modes
-  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+  ../../libs/openssl/include
 )
 
 add_library(libssl STATIC
@@ -870,17 +870,17 @@ target_compile_options(libssl
 target_include_directories(libssl SYSTEM BEFORE PRIVATE
   ../../libs/openssl
   ../../libs/openssl/include
-  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+  ../../libs/openssl/include
 )
 
 else(OPT_COMPILE_OPENSSL)
 
 add_library (libcrypto STATIC IMPORTED)
 set_property(TARGET libcrypto
-    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_INC_DIR}/libcrypto.lib)
+    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_LIB_DIR}/libcrypto.lib)
 add_library (libssl STATIC IMPORTED)
 set_property(TARGET libssl
-    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_INC_DIR}/libssl.lib)
+    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_LIB_DIR}/libssl.lib)
 
 endif(OPT_COMPILE_OPENSSL)
 
@@ -1000,6 +1000,9 @@ add_library(tinyxml2 STATIC
   ../../libs/tinyxml2/tinyxml2.cpp
 )
 
+target_compile_options(tinyxml2 PRIVATE
+)
+
 #-------------------------------------------------------------------------------
 #neon
 
@@ -1041,7 +1044,7 @@ target_compile_options(neon PRIVATE
 target_include_directories(neon PRIVATE
   ../../libs/zlib/src
   ../../libs/expat/lib
-  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+  ../../libs/openssl/include
 )
 
 #-------------------------------------------------------------------------------
@@ -1250,6 +1253,9 @@ add_library(rdestl STATIC
 
 target_include_directories(rdestl PRIVATE
   ../base
+)
+
+target_compile_options(rdestl PRIVATE
 )
 
 #-------------------------------------------------------------------------------
@@ -1520,7 +1526,7 @@ add_library(NetBox SHARED
 )
 
 target_include_directories(NetBox PRIVATE
-  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+  ../../libs/openssl/include
   ../../libs/putty
   ../../libs/putty/windows
   ../../libs/apr/include
