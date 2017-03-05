@@ -1,5 +1,6 @@
 platform:
   - Win64
+  - Win32
 
 configuration:
   - Debug
