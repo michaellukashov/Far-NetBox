@@ -41,7 +41,8 @@ const wchar_t TokenReplacement = wchar_t(1);
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
-  for (wchar_t * Ch = const_cast<wchar_t *>(Result.c_str()); Ch && *Ch; ++Ch)
+  wchar_t * Buffer = const_cast<wchar_t *>(Result.c_str());
+  for (wchar_t * Ch = Buffer; Ch && *Ch; ++Ch)
     if (*Ch == A)
     {
       *Ch = B;
@@ -538,8 +539,7 @@ UnicodeString ValidLocalFileName(
   {
     bool ATokenReplacement = (AInvalidCharsReplacement == TokenReplacement);
     UnicodeString CharsStr = ATokenReplacement ? ATokenizibleChars : ALocalInvalidChars;
-    const wchar_t * Chars =
-      CharsStr.c_str();
+    const wchar_t * Chars = CharsStr.c_str();
     wchar_t * InvalidChar = const_cast<wchar_t *>(Result.c_str());
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != nullptr)
     {
@@ -3199,8 +3199,8 @@ UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName)
   intptr_t Len = ::GetEnvironmentVariable(L"PATH", nullptr, 0);
   if (Len > 0)
   {
-    Result.SetLength(Len - 1);
-    ::GetEnvironmentVariable(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), static_cast<DWORD>(Len));
+    wchar_t * Buffer = Result.SetLength(Len - 1);
+    ::GetEnvironmentVariable(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), static_cast<DWORD>(Len));
   }
   return Result;
 }

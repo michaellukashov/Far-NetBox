@@ -310,6 +310,7 @@
     <ResourceCompile Include="..\resource\TextsFileZilla.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\base\MsgIDs.h" />
     <ProjectReference Include="..\..\libs\dlmalloc\dlmalloc.vcxproj">
       <Project>{5423dd5f-c5f6-40a0-ba13-4b0deb51d38e}</Project>
     </ProjectReference>

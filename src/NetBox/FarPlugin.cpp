@@ -2848,8 +2848,8 @@ UnicodeString TFarEditorInfo::GetFileName()
   intptr_t BuffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, 0);
   if (BuffLen)
   {
-    Result.SetLength(BuffLen + 1);
-    FarPlugin->FarEditorControl(ECTL_GETFILENAME, BuffLen, const_cast<wchar_t *>(Result.c_str()));
+    wchar_t * Buffer = Result.SetLength(BuffLen + 1);
+    FarPlugin->FarEditorControl(ECTL_GETFILENAME, BuffLen, Buffer);
   }
   return Result.c_str();
 }

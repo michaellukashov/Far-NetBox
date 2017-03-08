@@ -410,7 +410,7 @@ void TWinSCPFileSystem::Close()
 }
 
 void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
-  UnicodeString & /*HostFile*/, UnicodeString & CurDir, UnicodeString & Format,
+  UnicodeString & /*HostFile*/, UnicodeString & CurDir, UnicodeString & AFormat,
   UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & /*StartPanelMode*/,
   OPENPANELINFO_SORTMODES & /*StartSortMode*/, bool & /*StartSortOrder*/, TFarKeyBarTitles * KeyBarTitles,
   UnicodeString & ShortcutData)
@@ -424,16 +424,16 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
     // (vandyke: c:/windows/system) are displayed correctly on command-line, but
     // leaved subdirectory is not focused, when entering parent directory.
     CurDir = FTerminal->GetCurrDirectory();
-    Format = GetSessionData()->GetSessionName();
+    AFormat = FORMAT(L"netbox:%s", GetSessionData()->GetSessionName().c_str());
     if (GetFarConfiguration()->GetHostNameInTitle())
     {
-      PanelTitle = FORMAT(L" %s:%s ", Format.c_str(), CurDir.c_str());
+      PanelTitle = FORMAT(L" %s:%s ", AFormat.c_str(), CurDir.c_str());
     }
     else
     {
       PanelTitle = FORMAT(L" %s ", CurDir.c_str());
     }
-    ShortcutData = FORMAT(L"%s\1%s", GetSessionData()->GenerateSessionUrl(sufComplete).c_str(), CurDir.c_str());
+    ShortcutData = FORMAT(L"netbox:%s\1%s", GetSessionData()->GenerateSessionUrl(sufComplete).c_str(), CurDir.c_str());
 
     TRemoteFilePanelItem::SetPanelModes(PanelModes);
     TRemoteFilePanelItem::SetKeyBarTitles(KeyBarTitles);
@@ -441,7 +441,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
   else
   {
     CurDir = FSessionsFolder;
-    Format = L"netbox";
+    AFormat = L"netbox";
     Flags = !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING | OPIF_USEATTRHIGHLIGHTING |
       OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE | OPIF_SHORTCUT;
 

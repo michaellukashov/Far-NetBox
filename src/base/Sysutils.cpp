@@ -673,8 +673,8 @@ UnicodeString FormatV(const wchar_t * Format, va_list Args)
   if (Format && *Format)
   {
     intptr_t Len = _vscwprintf(Format, Args);
-    Result.SetLength(Len + 1);
-    vswprintf(const_cast<wchar_t *>(Result.c_str()), Len + 1, Format, Args);
+    wchar_t * Buffer = Result.SetLength(Len + 1);
+    vswprintf(Buffer, Len + 1, Format, Args);
   }
   return Result.c_str();
 }
@@ -786,17 +786,17 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
   while (Result.Length() == 0)
   {
     intptr_t LineCount = 0;
+    wchar_t * w = nullptr;
 
     if (LenBuffer)
     {
       /* second pass, so create the wrapped buffer */
-      Result.SetLength(LenBuffer + 1);
+      w = Result.SetLength(LenBuffer + 1);
       if (Result.Length() == 0)
       {
         break;
       }
     }
-    wchar_t * w = const_cast<wchar_t *>(Result.c_str());
 
     /* for each Word in Text
          if Width(Word) > SpaceLeft

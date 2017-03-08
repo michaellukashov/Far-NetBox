@@ -1643,15 +1643,16 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
           bool Match = false;
           // Comparison optimizations as this is called many times
           // e.g. when updating jumplist
-          if ((AData->GetName().Length() == DecodedUrl.Length()) &&
-              SameText(AData->GetName(), DecodedUrl))
+          UnicodeString Name = AData->GetName();
+          if ((Name.Length() == DecodedUrl.Length()) &&
+              SameText(Name, DecodedUrl))
           {
             Match = true;
           }
-          else if ((AData->GetName().Length() < DecodedUrl.Length()) &&
-                   (DecodedUrl[AData->GetName().Length() + 1] == L'/') &&
+          else if ((Name.Length() < DecodedUrl.Length()) &&
+                   // (DecodedUrl[Name.Length() + 1] == L'/') &&
                    // StrLIComp is an equivalent of SameText
-                   (nb::StrLIComp(AData->GetName().c_str(), DecodedUrl.c_str(), (int)AData->GetName().Length()) == 0))
+                   (nb::StrLIComp(Name.c_str(), DecodedUrl.c_str(), (int)Name.Length()) == 0))
           {
             Match = true;
           }
@@ -1670,13 +1671,9 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     if (Data != nullptr)
     {
       Assign(Data);
-      intptr_t P = 1;
-      while (!::AnsiSameText(DecodeUrlChars(Url.SubString(1, P)), Data->GetName()))
-      {
-        P++;
-        DebugAssert(P <= Url.Length());
-      }
-      RemoteDirectory = Url.SubString(P + 1, Url.Length() - P);
+      RemoteDirectory = Url.SubString(Data->GetName().Length() + 1);
+      if (RemoteDirectory.Length() > 0 && RemoteDirectory[1] == ':')
+        RemoteDirectory.Delete(1, 1);
 
       if (Data->GetHidden())
       {
@@ -3458,6 +3455,11 @@ TProxyMethod TSessionData::GetSystemProxyMethod() const
   if ((GetProxyMethod() == pmSystem) && (nullptr != FIEProxyConfig))
     return FIEProxyConfig->ProxyMethod;
   return pmNone;
+}
+
+TProxyMethod TSessionData::GetActualProxyMethod() const
+{
+  return GetProxyMethod() == pmSystem ? GetSystemProxyMethod() : GetProxyMethod();
 }
 
 UnicodeString TSessionData::GetProxyHost() const

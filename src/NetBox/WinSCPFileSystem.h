@@ -107,7 +107,7 @@ protected:
   void SaveSession();
 
   virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
-    UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & Format,
+    UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & AFormat,
     UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & StartPanelMode,
     OPENPANELINFO_SORTMODES &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
     UnicodeString & ShortcutData);
@@ -366,7 +366,6 @@ class TSessionPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TSessionPanelItem)
 public:
-  explicit TSessionPanelItem(const UnicodeString & APath);
   explicit TSessionPanelItem(const TSessionData * ASessionData);
   static void SetPanelModes(TFarPanelModes * PanelModes);
   static void SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles);

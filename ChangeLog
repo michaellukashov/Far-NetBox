@@ -1,5 +1,8 @@
-NetBox 2.4.2.464 05.03.2017
+NetBox 2.4.2.466 08.03.2017
 --------------------
+  * Bugfix: Can't open remote directory stored in Folders history
+    (http://forum.farmanager.com/viewtopic.php?t=6317&p=142882#p142882)
+    (http://bugs.farmanager.com/view.php?id=3402)
   * Bugfix: Synchronized browsing is not working
     (http://forum.farmanager.com/viewtopic.php?t=6317&p=142746#p142746)
   * Update putty sources to 0.68

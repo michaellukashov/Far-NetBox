@@ -754,10 +754,7 @@ public:
   intptr_t GetSendBuf() const { return FSendBuf; }
   bool GetSshSimple() const { return FSshSimple; }
   TProxyMethod GetProxyMethod() const { return FProxyMethod; }
-  TProxyMethod GetActualProxyMethod() const
-  {
-    return GetProxyMethod() == pmSystem ? GetSystemProxyMethod() : GetProxyMethod();
-  }
+  TProxyMethod GetActualProxyMethod() const;
   UnicodeString GetProxyHost() const;
   intptr_t GetProxyPort() const;
   UnicodeString GetProxyUsername() const;
