@@ -107,7 +107,7 @@ protected:
   void SaveSession();
 
   virtual void GetOpenPluginInfoEx(DWORD & Flags,
-    UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & Format,
+    UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & AFormat,
     UnicodeString & PanelTitle, TFarPanelModes * PanelModes, int & StartPanelMode,
     int & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
     UnicodeString & ShortcutData);
