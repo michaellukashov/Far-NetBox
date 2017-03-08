@@ -41,7 +41,8 @@ const wchar_t TokenReplacement = wchar_t(1);
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
-  for (wchar_t * Ch = const_cast<wchar_t *>(Result.c_str()); Ch && *Ch; ++Ch)
+  wchar_t * Buffer = const_cast<wchar_t *>(Result.c_str());
+  for (wchar_t * Ch = Buffer; Ch && *Ch; ++Ch)
     if (*Ch == A)
     {
       *Ch = B;
