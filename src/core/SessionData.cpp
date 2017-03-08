@@ -3460,6 +3460,11 @@ TProxyMethod TSessionData::GetSystemProxyMethod() const
   return pmNone;
 }
 
+TProxyMethod TSessionData::GetActualProxyMethod() const
+{
+  return GetProxyMethod() == pmSystem ? GetSystemProxyMethod() : GetProxyMethod();
+}
+
 UnicodeString TSessionData::GetProxyHost() const
 {
   PrepareProxyData();
