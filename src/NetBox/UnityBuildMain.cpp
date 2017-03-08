@@ -15,6 +15,7 @@
 #include "FarConfiguration.cpp"
 #include "FarInterface.cpp"
 #include "XmlStorage.cpp"
+#include "Far3Storage.cpp"
 #include "FarPluginStrings.cpp"
 #include "../windows/WinInterface.cpp"
 

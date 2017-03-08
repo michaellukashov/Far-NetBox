@@ -1049,7 +1049,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       AddToList(OS, WindowsProductName(), L" - ");
       ADF(L"NetBox %s (OS %s)", FConfiguration->GetProductVersionStr().c_str(), OS.c_str());
       std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateConfigStorage());
-       DebugAssert(Storage.get());
+      DebugAssert(Storage.get());
+      Storage->SetAccessMode(smRead);
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
 
       if (0)

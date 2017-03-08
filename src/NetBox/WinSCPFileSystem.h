@@ -106,24 +106,24 @@ protected:
   void Disconnect();
   void SaveSession();
 
-  virtual void GetOpenPluginInfoEx(DWORD & Flags,
+  virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
     UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & AFormat,
-    UnicodeString & PanelTitle, TFarPanelModes * PanelModes, int & StartPanelMode,
-    int & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
+    UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & StartPanelMode,
+    OPENPANELINFO_SORTMODES &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
     UnicodeString & ShortcutData);
-  virtual bool GetFindDataEx(TObjectList * PanelItems, int OpMode);
+  virtual bool GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES OpMode);
   virtual bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState);
-  virtual bool SetDirectoryEx(const UnicodeString & Dir, int OpMode);
-  virtual intptr_t MakeDirectoryEx(UnicodeString & Name, int OpMode);
-  virtual bool DeleteFilesEx(TObjectList * PanelItems, int OpMode);
+  virtual bool SetDirectoryEx(const UnicodeString & Dir, OPERATION_MODES OpMode);
+  virtual intptr_t MakeDirectoryEx(UnicodeString & Name, OPERATION_MODES OpMode);
+  virtual bool DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES OpMode);
   virtual intptr_t GetFilesEx(TObjectList * PanelItems, bool Move,
-    UnicodeString & DestPath, int OpMode);
-  virtual intptr_t PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
-  virtual bool ProcessEventEx(intptr_t Event, void * Param);
+    UnicodeString & DestPath, OPERATION_MODES OpMode);
+  virtual intptr_t PutFilesEx(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode);
+  virtual bool ProcessPanelEventEx(intptr_t Event, void *Param);
 
   void ProcessEditorEvent(intptr_t Event, void * Param);
 
-  virtual void HandleException(Exception * E, int OpMode = 0);
+  virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0);
   void KeepaliveThreadCallback();
 
   inline bool IsSessionList() const;
@@ -141,7 +141,7 @@ protected:
   void ProcessSessions(TObjectList * PanelItems,
     TProcessSessionEvent ProcessSession, void * Param);
   void ExportSession(TSessionData * Data, void * Param);
-  bool ImportSessions(TObjectList * PanelItems, bool Move, int OpMode);
+  bool ImportSessions(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode);
   void FileProperties();
   void CreateLink();
   void TransferFiles(bool Move);
@@ -228,7 +228,7 @@ protected:
   void ConnectTerminal(TTerminal * Terminal);
   void TemporarilyDownloadFiles(TStrings * AFileList,
     TCopyParamType & CopyParam, UnicodeString & TempDir);
-  intptr_t UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString & DestPath);
+  intptr_t UploadFiles(bool Move, OPERATION_MODES OpMode, bool Edit, UnicodeString & DestPath);
   void UploadOnSave(bool NoReload);
   void UploadFromEditor(bool NoReload, const UnicodeString & AFileName,
     const UnicodeString & RealFileName, UnicodeString & DestPath);
@@ -306,7 +306,7 @@ private:
   void QueueAddItem(TQueueItem * Item);
   UnicodeString GetFileNameHash(const UnicodeString & AFileName) const;
   intptr_t GetFilesRemote(TObjectList * PanelItems, bool Move,
-    UnicodeString & DestPath, int OpMode);
+    UnicodeString & DestPath, OPERATION_MODES OpMode);
 
 private:
   TTerminalQueue * GetQueue();
@@ -375,11 +375,11 @@ protected:
   const TSessionData * FSessionData;
 
   virtual void GetData(
-    DWORD & Flags, UnicodeString & AFileName, int64_t & Size,
-    DWORD & FileAttributes,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
+    uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
-    DWORD & NumberOfLinks, UnicodeString & Description,
-    UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
+    uintptr_t & NumberOfLinks, UnicodeString & Description,
+    UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
 };
 
 class TSessionFolderPanelItem : public TCustomFarPanelItem
@@ -391,11 +391,11 @@ protected:
   UnicodeString FFolder;
 
   virtual void GetData(
-    DWORD & Flags, UnicodeString & AFileName, int64_t & Size,
-    DWORD & FileAttributes,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
+    uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
-    DWORD & NumberOfLinks, UnicodeString & Description,
-    UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
+    uintptr_t & NumberOfLinks, UnicodeString & Description,
+    UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
 };
 
 class TRemoteFilePanelItem : public TCustomFarPanelItem
@@ -410,11 +410,11 @@ protected:
   TRemoteFile * FRemoteFile;
 
   virtual void GetData(
-    DWORD & Flags, UnicodeString & AFileName, int64_t & Size,
-    DWORD & FileAttributes,
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
+    uintptr_t & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
-    DWORD & NumberOfLinks, UnicodeString & Description,
-    UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
+    uintptr_t & NumberOfLinks, UnicodeString & Description,
+    UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber);
   virtual UnicodeString GetCustomColumnData(size_t Column);
   static void TranslateColumnTypes(UnicodeString & AColumnTypes,
     TStrings * ColumnTitles);

@@ -29,19 +29,19 @@ TWinSCPPlugin::~TWinSCPPlugin()
 {
   if (FInitialized)
   {
-    GetFarConfiguration()->SetPlugin(nullptr);
+    // GetFarConfiguration()->SetPlugin(nullptr);
     CoreFinalize();
   }
 }
 
 bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function) const
 {
-  return (Function == hfProcessKey || Function == hfProcessEvent);
+  return (Function == hfProcessKey || Function == hfProcessPanelEvent);
 }
 
-intptr_t TWinSCPPlugin::GetMinFarVersion() const
+VersionInfo TWinSCPPlugin::GetMinFarVersion() const
 {
-  return MAKEFARVERSION(2, 0, 1667);
+  return MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
 }
 
 void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
@@ -56,7 +56,7 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
   }
 }
 
-void TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
+void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS & Flags,
   TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
@@ -66,21 +66,24 @@ void TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
   if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
-      reinterpret_cast<TObject *>(static_cast<size_t>(FarConfiguration->GetDisksMenuHotKey())));
+      reinterpret_cast<TObject *>(const_cast<GUID *>(&DisksMenuGuid)));
   }
   if (FarConfiguration->GetPluginsMenu())
   {
-    PluginMenuStrings->Add(GetMsg(PLUGIN_NAME));
+    PluginMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
+          reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuGuid)));
   }
   if (FarConfiguration->GetPluginsMenuCommands())
   {
-    PluginMenuStrings->Add(GetMsg(MENU_COMMANDS));
+    PluginMenuStrings->AddObject(GetMsg(MENU_COMMANDS),
+      reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuCommandsGuid)));
   }
-  PluginConfigStrings->Add(GetMsg(PLUGIN_NAME));
+  PluginConfigStrings->AddObject(GetMsg(PLUGIN_NAME),
+      reinterpret_cast<TObject *>(const_cast<GUID *>(&PluginConfigGuid)));
   CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 
-bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
+bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
 {
   bool Change = false;
 
@@ -185,16 +188,16 @@ bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
   return Change;
 }
 
-intptr_t TWinSCPPlugin::ProcessEditorEventEx(intptr_t Event, void * Param)
+intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo * Info)
 {
   // for performance reasons, do not pass the event to file systems on redraw
-  if ((Event != EE_REDRAW) || GetFarConfiguration()->GetEditorUploadOnSave() ||
+  if ((Info->Event != EE_REDRAW) || GetFarConfiguration()->GetEditorUploadOnSave() ||
       GetFarConfiguration()->GetEditorMultiple())
   {
     for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
       TWinSCPFileSystem * FileSystem = dyn_cast<TWinSCPFileSystem>(FOpenedPlugins->GetObj(Index));
-      FileSystem->ProcessEditorEvent(Event, Param);
+      FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
     }
   }
 
@@ -206,10 +209,9 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
   intptr_t Result = 0;
   if ((Rec->EventType == KEY_EVENT) &&
       Rec->Event.KeyEvent.bKeyDown &&
-      (Rec->Event.KeyEvent.uChar.AsciiChar == 'W') &&
-      (FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, LEFT_ALT_PRESSED) ||
-       FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, RIGHT_ALT_PRESSED)) &&
-       FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, SHIFT_PRESSED))
+     (Rec->Event.KeyEvent.uChar.AsciiChar == 'W') &&
+     (FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, ALTMASK)) &&
+     (FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, SHIFTMASK)))
   {
     CommandsMenu(false);
     Result = 1;
@@ -218,7 +220,7 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
   return Result;
 }
 
-TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t Item)
+TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t Item)
 {
   std::unique_ptr<TWinSCPFileSystem> FileSystem;
   CoreInitializeOnce();
@@ -233,7 +235,8 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
     FileSystem.reset(new TWinSCPFileSystem(this));
     FileSystem->Init(nullptr);
 
-    if (OpenFrom == OPEN_DISKMENU || OpenFrom == OPEN_PLUGINSMENU ||
+    if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
+        OpenFrom == OPEN_PLUGINSMENU ||
         OpenFrom == OPEN_FINDLIST)
     {
       // nothing
@@ -241,7 +244,19 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
     else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
     {
       UnicodeString Directory;
-      UnicodeString CommandLine = reinterpret_cast<wchar_t *>(Item);
+      UnicodeString CommandLine;
+      FAROPENSHORTCUTFLAGS Flags = FOSF_NONE;
+      if (OpenFrom == OPEN_SHORTCUT)
+      {
+        OpenShortcutInfo * Info = reinterpret_cast<OpenShortcutInfo *>(Item);
+        CommandLine = Info->ShortcutData;
+        Flags = Info->Flags;
+      }
+      else
+      {
+        OpenCommandLineInfo * Info = reinterpret_cast<OpenCommandLineInfo *>(Item);
+        CommandLine = Info->CommandLine;
+      }
       if (OpenFrom == OPEN_SHORTCUT)
       {
         intptr_t P = CommandLine.Pos(L"\1");
@@ -252,14 +267,16 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
         }
 
         TWinSCPFileSystem * PanelSystem;
-        PanelSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
+        bool Another = !(Flags & FOSF_ACTIVE);
+        PanelSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem(Another));
+
         if (PanelSystem && PanelSystem->Connected() &&
             PanelSystem->GetTerminal()->GetSessionData()->GenerateSessionUrl(sufComplete) == CommandLine)
         {
           PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
-          if (PanelSystem->UpdatePanel())
+          if (PanelSystem->UpdatePanel(false, Another))
           {
-            PanelSystem->RedrawPanel();
+            PanelSystem->RedrawPanel(Another);
           }
           Abort();
         }
@@ -288,8 +305,10 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
     }
     else if (OpenFrom == OPEN_ANALYSE)
     {
-      const wchar_t * XmlFileName = reinterpret_cast<const wchar_t *>(Item);
+      OpenAnalyseInfo *Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
+      const wchar_t * XmlFileName = Info->Info->FileName;
       std::unique_ptr<THierarchicalStorage> ImportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+
       ImportStorage->Init();
       ImportStorage->SetAccessMode(smRead);
       if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
@@ -528,7 +547,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
   }
 }
 
-void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
+void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || isa<EFatal>(E))
   {
@@ -769,6 +788,43 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   }
 
   return Result;
+}
+
+void TWinSCPPlugin::DeleteLocalFile(const UnicodeString & LocalFileName)
+{
+  GetSystemFunctions()->DeleteFile(LocalFileName.c_str());
+}
+
+HANDLE TWinSCPPlugin::CreateLocalFile(const UnicodeString & LocalFileName,
+  DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
+{
+  return GetSystemFunctions()->CreateFile(LocalFileName.c_str(), DesiredAccess,
+    ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
+}
+
+DWORD TWinSCPPlugin::GetLocalFileAttributes(const UnicodeString & LocalFileName)
+{
+  return GetSystemFunctions()->GetFileAttributes(LocalFileName.c_str());
+}
+
+BOOL TWinSCPPlugin::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
+{
+  return GetSystemFunctions()->SetFileAttributes(LocalFileName.c_str(), FileAttributes);
+}
+
+BOOL TWinSCPPlugin::MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
+{
+  return GetSystemFunctions()->MoveFileEx(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags);
+}
+
+BOOL TWinSCPPlugin::RemoveLocalDirectory(const UnicodeString & LocalDirName)
+{
+  return GetSystemFunctions()->RemoveDirectory(LocalDirName.c_str());
+}
+
+BOOL TWinSCPPlugin::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+{
+  return GetSystemFunctions()->CreateDirectory(LocalDirName.c_str(), SecurityAttributes);
 }
 
 void TWinSCPPlugin::CleanupConfiguration()

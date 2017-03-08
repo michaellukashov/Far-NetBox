@@ -3,7 +3,7 @@
 set PLUGINNAME=NetBox
 
 set FARVER=%1
-if "%FARVER%" == "" set FARVER=Far2
+if "%FARVER%" == "" set FARVER=Far3
 set PLUGINARCH=%2
 if "%PLUGINARCH%" == "" set PLUGINARCH=x86
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <plugin.hpp>
 #include "GUIConfiguration.h"
 
 class TCustomFarPlugin;
@@ -86,6 +87,11 @@ protected:
 
   virtual UnicodeString ModuleFileName() const;
   virtual void Saved();
+
+private:
+    __int64 GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t * Name) const;
+    __int64 GetConfirmationsSetting(HANDLE & Settings, const wchar_t * Name) const;
+    __int64 GetConfirmationsSettings() const;
 
 private:
   TCustomFarPlugin * FFarPlugin;

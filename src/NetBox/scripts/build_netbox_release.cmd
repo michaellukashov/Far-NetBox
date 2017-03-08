@@ -1,7 +1,7 @@
 @echo off
 @setlocal
 
-set FAR_VERSION=Far2
+set FAR_VERSION=Far3
 set PROJECT_ROOT=%~dp0..\..\..
 
 set PROJECT_BUILD_TYPE=Release

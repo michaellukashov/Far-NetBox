@@ -96,19 +96,19 @@ struct TPoint
 
 struct TRect
 {
-  int Left;
-  int Top;
-  int Right;
-  int Bottom;
-  int Width() const { return Right - Left; }
-  int Height() const { return Bottom - Top; }
+  intptr_t Left;
+  intptr_t Top;
+  intptr_t Right;
+  intptr_t Bottom;
+  intptr_t Width() const { return Right - Left; }
+  intptr_t Height() const { return Bottom - Top; }
   TRect() :
     Left(0),
     Top(0),
     Right(0),
     Bottom(0)
   {}
-  TRect(int left, int top, int right, int bottom) :
+  TRect(intptr_t left, intptr_t top, intptr_t right, intptr_t bottom) :
     Left(left),
     Top(top),
     Right(right),

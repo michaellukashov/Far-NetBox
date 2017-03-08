@@ -1,7 +1,7 @@
 @echo off
 @setlocal
 
-if "s%FAR_VERSION%"=="s" set FAR_VERSION=Far2
+if "s%FAR_VERSION%"=="s" set FAR_VERSION=Far3
 if "s%PROJECT_ROOT%"=="s" set PROJECT_ROOT=%~dp0..\..\..
 
 if "s%PROJECT_BUILD_TYPE%"=="s" set PROJECT_BUILD_TYPE=Debug
