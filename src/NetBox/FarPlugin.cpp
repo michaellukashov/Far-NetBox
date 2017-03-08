@@ -1932,9 +1932,10 @@ void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo * Info)
     DebugAssert(Info->ItemsNumber > 0);
     for (size_t Index = 0; Index < Info->ItemsNumber; ++Index)
     {
-      // nb_free((void*)Info->PanelItem[Index].FileName);
-      delete[] Info->PanelItem[Index].FileName;
-      delete[] Info->PanelItem[Index].AlternateFileName;
+      //delete[] Info->PanelItem[Index].FileName;
+      //delete[] Info->PanelItem[Index].AlternateFileName;
+      nb_free((void*)Info->PanelItem[Index].FileName);
+      nb_free((void*)Info->PanelItem[Index].AlternateFileName);
       nb_free((void*)Info->PanelItem[Index].Description);
       nb_free((void*)Info->PanelItem[Index].Owner);
       for (size_t CustomIndex = 0; CustomIndex < Info->PanelItem[Index].CustomColumnNumber; ++CustomIndex)
@@ -2410,9 +2411,10 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->LastWriteTime = FileTime;
   PanelItem->FileSize = Size;
 
-  // PanelItem->FileName = TCustomFarPlugin::DuplicateStr(FileName);
-  PanelItem->FileName = wcscpy(new wchar_t[FileName.Length() + 1], FileName.c_str());
-  PanelItem->AlternateFileName = wcscpy(new wchar_t[FileName.Length() + 1], FileName.c_str());
+  // PanelItem->FileName = wcscpy(new wchar_t[FileName.Length() + 1], FileName.c_str());
+  // PanelItem->AlternateFileName = wcscpy(new wchar_t[FileName.Length() + 1], FileName.c_str());
+  PanelItem->FileName = TCustomFarPlugin::DuplicateStr(FileName);
+  PanelItem->AlternateFileName = TCustomFarPlugin::DuplicateStr(FileName);
   PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
   PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
   wchar_t ** CustomColumnData = nb::calloc<wchar_t **>(sizeof(wchar_t *) * (1 + PanelItem->CustomColumnNumber));
