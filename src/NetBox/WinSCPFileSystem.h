@@ -366,7 +366,6 @@ class TSessionPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TSessionPanelItem)
 public:
-  explicit TSessionPanelItem(const UnicodeString & APath);
   explicit TSessionPanelItem(const TSessionData * ASessionData);
   static void SetPanelModes(TFarPanelModes * PanelModes);
   static void SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles);
