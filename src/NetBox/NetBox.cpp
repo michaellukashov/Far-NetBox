@@ -36,6 +36,7 @@ void WINAPI GetGlobalInfoW(struct GlobalInfo * Info)
   Info->Title = L"NetBox";
   Info->Description = PLUGIN_DESCR;
   Info->Author = PLUGIN_AUTHOR;
+  Info->Instance = FarPlugin;
 }
 
 void WINAPI SetStartupInfoW(const struct PluginStartupInfo * Info)
