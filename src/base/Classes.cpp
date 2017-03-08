@@ -562,8 +562,8 @@ UnicodeString TStrings::GetTextStr() const
   {
     Size += GetString(Index).Length() + LB.Length();
   }
-  Result.SetLength(Size);
-  wchar_t * P = const_cast<wchar_t *>(Result.c_str());
+  wchar_t * Buffer = Result.SetLength(Size);
+  wchar_t * P = Buffer;
   for (intptr_t Index = 0; Index < Count; ++Index)
   {
     UnicodeString S = GetString(Index);
@@ -1953,8 +1953,8 @@ UnicodeString TRegistry::ReadString(const UnicodeString & Name)
   if (Len > 0)
   {
     TRegDataType RegData = rdUnknown;
-    Result.SetLength(Len);
-    GetData(Name, static_cast<void *>(const_cast<wchar_t *>(Result.c_str())), Len, RegData);
+    wchar_t * Buffer = Result.SetLength(Len);
+    GetData(Name, static_cast<void *>(Buffer), Len, RegData);
     if ((RegData == rdString) || (RegData == rdExpandString))
     {
       PackStr(Result);
