@@ -309,6 +309,7 @@
     <ResourceCompile Include="..\resource\TextsFileZilla.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\base\MsgIDs.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
