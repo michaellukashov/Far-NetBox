@@ -751,6 +751,11 @@ UnicodeString UnicodeString::TrimRight() const
   return ::TrimRight(*this);
 }
 
+void UnicodeString::Unique()
+{
+  Init(Data.c_str(), Data.GetLength());
+}
+
 void UnicodeString::sprintf(const wchar_t * fmt, ...)
 {
   va_list args;

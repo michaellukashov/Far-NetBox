@@ -143,7 +143,7 @@ public:
   UnicodeString TrimLeft() const;
   UnicodeString TrimRight() const;
 
-  void Unique() {}
+  void Unique();
 
   void sprintf(const wchar_t * fmt, ...);
 
