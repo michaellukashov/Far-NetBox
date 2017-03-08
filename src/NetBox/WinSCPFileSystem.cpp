@@ -410,7 +410,7 @@ void TWinSCPFileSystem::Close()
 }
 
 void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
-  UnicodeString & /*HostFile*/, UnicodeString & CurDir, UnicodeString & AFormat,
+  UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & AFormat,
   UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & /*StartPanelMode*/,
   OPENPANELINFO_SORTMODES & /*StartSortMode*/, bool & /*StartSortOrder*/, TFarKeyBarTitles * KeyBarTitles,
   UnicodeString & ShortcutData)
@@ -423,6 +423,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
     // When slash is added to the end of path, windows style paths
     // (vandyke: c:/windows/system) are displayed correctly on command-line, but
     // leaved subdirectory is not focused, when entering parent directory.
+    HostFile = GetSessionData()->GetHostName(); // GenerateSessionUrl(sufHostKey); // GetSessionData()->GetSessionName();
     CurDir = FTerminal->GetCurrDirectory();
     AFormat = FORMAT(L"netbox:%s", GetSessionData()->GetSessionName().c_str());
     if (GetFarConfiguration()->GetHostNameInTitle())
