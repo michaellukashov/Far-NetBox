@@ -761,10 +761,7 @@ void UnicodeString::sprintf(const wchar_t * fmt, ...)
 
 UnicodeString & UnicodeString::operator=(const UnicodeString & StrCopy)
 {
-  if (*this != StrCopy)
-  {
-    Data = StrCopy.Data;
-  }
+  Init(StrCopy.c_str(), StrCopy.GetLength());
   return *this;
 }
 
