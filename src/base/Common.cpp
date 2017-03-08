@@ -539,8 +539,7 @@ UnicodeString ValidLocalFileName(
   {
     bool ATokenReplacement = (AInvalidCharsReplacement == TokenReplacement);
     UnicodeString CharsStr = ATokenReplacement ? ATokenizibleChars : ALocalInvalidChars;
-    const wchar_t * Chars =
-      CharsStr.c_str();
+    const wchar_t * Chars = CharsStr.c_str();
     wchar_t * InvalidChar = const_cast<wchar_t *>(Result.c_str());
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != nullptr)
     {
