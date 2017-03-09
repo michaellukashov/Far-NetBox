@@ -1570,7 +1570,7 @@ add_custom_command(TARGET create_plugin_dir POST_BUILD
 )
 
 file(GLOB DIST_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/*.lng
+  ${CMAKE_CURRENT_SOURCE_DIR}/*.lng
 #  ${BUILD_DIR}/*.dll
 #  ${BUILD_DIR}/*.pdb
 #  ${BUILD_DIR}/*.map
@@ -1590,5 +1590,6 @@ add_custom_command(TARGET NetBox POST_BUILD
   COMMAND if exist ${BUILD_DIR}/NetBox.map ( ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.map ${NETBOX_PLUGIN_DIR} )
 )
 
-add_dependencies(NetBox create_plugin_dir copy_to_plugin_dir)
+add_dependencies(copy_to_plugin_dir create_plugin_dir )
+add_dependencies(NetBox copy_to_plugin_dir)
 
