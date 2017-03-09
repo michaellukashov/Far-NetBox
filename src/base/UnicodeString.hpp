@@ -76,7 +76,7 @@ public:
   UnicodeString(const char * Str);
   UnicodeString(intptr_t Length, wchar_t Ch) : Data(Ch, Length) {}
 
-  UnicodeString(const UnicodeString & Str) { Data = Str.Data; }
+  UnicodeString(const UnicodeString & Str);
   explicit UnicodeString(const UTF8String & Str);
   explicit UnicodeString(const AnsiString & Str);
 
@@ -143,7 +143,7 @@ public:
   UnicodeString TrimLeft() const;
   UnicodeString TrimRight() const;
 
-  void Unique() {}
+  void Unique();
 
   void sprintf(const wchar_t * fmt, ...);
 

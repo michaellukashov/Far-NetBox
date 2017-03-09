@@ -1613,7 +1613,7 @@ class TINYXML2_LIB XMLDocument : public XMLNode
     friend class XMLElement;
 public:
     /// constructor
-    XMLDocument( bool processEntities = true, Whitespace = PRESERVE_WHITESPACE );
+    XMLDocument( bool processEntities = true, Whitespace whitespaceMode = PRESERVE_WHITESPACE );
     ~XMLDocument();
 
     virtual XMLDocument* ToDocument()				{
@@ -1677,7 +1677,7 @@ public:
         return _processEntities;
     }
     Whitespace WhitespaceMode() const	{
-        return _whitespace;
+        return _whitespaceMode;
     }
 
     /**
@@ -1815,7 +1815,7 @@ private:
     bool			_writeBOM;
     bool			_processEntities;
     XMLError		_errorID;
-    Whitespace		_whitespace;
+    Whitespace		_whitespaceMode;
     mutable StrPair	_errorStr1;
     mutable StrPair	_errorStr2;
     int             _errorLineNum;
@@ -1830,8 +1830,21 @@ private:
 	static const char* _errorNames[XML_ERROR_COUNT];
 
     void Parse();
+
+    template<class NodeType, int PoolElementSize>
+    NodeType* CreateUnlinkedNode( MemPoolT<PoolElementSize>& pool );
 };
 
+template<class NodeType, int PoolElementSize>
+inline NodeType* XMLDocument::CreateUnlinkedNode( MemPoolT<PoolElementSize>& pool )
+{
+    TIXMLASSERT( sizeof( NodeType ) == PoolElementSize );
+    TIXMLASSERT( sizeof( NodeType ) == pool.ItemSize() );
+    NodeType* returnNode = new (pool.Alloc()) NodeType( this );
+    TIXMLASSERT( returnNode );
+    returnNode->_memPool = &pool;
+    return returnNode;
+}
 
 /**
 	A XMLHandle is a class that wraps a node pointer with null checks; this is
