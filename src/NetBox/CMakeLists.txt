@@ -818,7 +818,6 @@ target_include_directories(libcrypto SYSTEM BEFORE PRIVATE
   ../../libs/openssl/crypto
   ../../libs/openssl/crypto/include
   ../../libs/openssl/crypto/modes
-  ../../libs/openssl/include
 )
 
 add_library(libssl STATIC
@@ -869,7 +868,6 @@ target_compile_options(libssl
 
 target_include_directories(libssl SYSTEM BEFORE PRIVATE
   ../../libs/openssl
-  ../../libs/openssl/include
   ../../libs/openssl/include
 )
 
