@@ -197,7 +197,7 @@ void TSessionData::Default()
   SetReturnVar(L"");
   SetLookupUserGroups(asAuto);
   SetEOLType(eolLF);
-  SetTrimVMSVersions(false),
+  SetTrimVMSVersions(false);
   SetShell(L""); //default shell
   SetReturnVar(L"");
   SetClearAliases(true);
