@@ -347,25 +347,25 @@ public:
 
   static LPSTR __stdcall StringUppercase(LPSTR psz)
   {
-    CharUpperBuffA(psz, (uint32_t)strlen(psz));
+    ::CharUpperBuffA(psz, (uint32_t)strlen(psz));
     return psz;
   }
 
   static LPSTR __stdcall StringLowercase(LPSTR psz)
   {
-    CharLowerBuffA(psz, (uint32_t)strlen(psz));
+    ::CharLowerBuffA(psz, (uint32_t)strlen(psz));
     return psz;
   }
 
   static LPSTR __stdcall StringUppercase(LPSTR psz, size_t size)
   {
-    CharUpperBuffA(psz, (uint32_t)size);
+    ::CharUpperBuffA(psz, (uint32_t)size);
     return psz;
   }
 
   static LPSTR __stdcall StringLowercase(LPSTR psz, size_t size)
   {
-    CharLowerBuffA(psz, (uint32_t)size);
+    ::CharLowerBuffA(psz, (uint32_t)size);
     return psz;
   }
 
@@ -460,7 +460,9 @@ public:
   static void ConvertToAnsi(_CharType* pstrString, size_t size)
   {
     if (size > UINT_MAX)
+    {
       return;
+    }
 
     uint32_t dwSize = static_cast<uint32_t>(size);
     ::OemToCharBuffA(pstrString, pstrString, dwSize);
