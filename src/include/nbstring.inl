@@ -61,7 +61,9 @@ CMSimpleStringT<BaseType>& CMSimpleStringT<BaseType>::operator=(const CMSimpleSt
   if (pSrcData != pOldData)
   {
     if (pOldData->IsLocked())
+    {
       SetString(strSrc.GetString(), strSrc.GetLength());
+    }
     else
     {
       CMStringData* pNewData = CloneData(pSrcData);
@@ -248,7 +250,9 @@ template<typename BaseType>
 void CMSimpleStringT<BaseType>::SetString(PCXSTR pszSrc, int nLength)
 {
   if (nLength == 0)
+  {
     Empty();
+  }
   else
   {
     UINT nOldLength = GetLength();
@@ -531,7 +535,9 @@ CMStringT<BaseType, StringTraits>::CMStringT(wchar_t ch, int nLength = 1) :
     //allocate enough characters in String and flood (replicate) with the (converted character)*nLength
     PXSTR pszBuffer = this->GetBuffer(nLength*nBaseTypeCharLen);
     if (nBaseTypeCharLen == 1)  //Optimization for a common case - wide char translates to 1 ansi/wide char.
+    {
       StringTraits::FloodCharacters(buffBaseTypeChar[0], nLength, pszBuffer);
+    }
     else
     {
       XCHAR* p = pszBuffer;
@@ -613,7 +619,10 @@ CMStringT<BaseType, StringTraits>& CMStringT<BaseType, StringTraits>::operator=(
     StringTraits::ConvertToBaseType(pszBuffer, nDestLength, pszSrc);
     this->ReleaseBufferSetLength(nDestLength);
   }
-  else this->Empty();
+  else
+  {
+    this->Empty();
+  }
 
   return *this;
 }
@@ -1095,7 +1104,10 @@ CMStringT<BaseType, StringTraits>& CMStringT<BaseType, StringTraits>::TrimRight(
       if (pszLast == nullptr)
         pszLast = psz;
     }
-    else pszLast = nullptr;
+    else
+    {
+      pszLast = nullptr;
+    }
 
     psz = StringTraits::CharNext(psz);
   }
@@ -1174,9 +1186,14 @@ CMStringT<BaseType, StringTraits>& CMStringT<BaseType, StringTraits>::TrimRight(
     if (*psz == chTarget)
     {
       if (pszLast == nullptr)
+      {
         pszLast = psz;
+      }
     }
-    else pszLast = nullptr;
+    else
+    {
+      pszLast = nullptr;
+    }
 
     psz = StringTraits::CharNext(psz);
   }
@@ -1439,7 +1456,9 @@ BOOL CMStringT<BaseType, StringTraits>::GetEnvironmentVariable(PCXSTR pszVar)
   BOOL bRetVal = FALSE;
 
   if (nLength == 0)
+  {
     this->Empty();
+  }
   else
   {
     PXSTR pszBuffer = this->GetBuffer(nLength);
