@@ -2336,10 +2336,10 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
   if (!Result && !FSessionData->GetHostKey().IsEmpty() &&
       (StoredKeys.IsEmpty() || FSessionData->GetOverrideCachedHostKey()))
   {
-    UnicodeString Buf = FSessionData->GetHostKey();
-    while (!Result && !Buf.IsEmpty())
+    UnicodeString HostKeyBuf = FSessionData->GetHostKey();
+    while (!Result && !HostKeyBuf.IsEmpty())
     {
-      UnicodeString ExpectedKey = CutToChar(Buf, HostKeyDelimiter, false);
+      UnicodeString ExpectedKey = CutToChar(HostKeyBuf, HostKeyDelimiter, false);
       UnicodeString NormalizedExpectedKey = NormalizeFingerprint(ExpectedKey);
       if (ExpectedKey == L"*")
       {
