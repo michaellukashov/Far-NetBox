@@ -248,7 +248,7 @@ public:
   static int  __stdcall StringLengthN(const char* psz, size_t sizeInXChar);
   static int  __stdcall StringLengthN(const wchar_t* psz, size_t sizeInXChar);
   static void __stdcall Concatenate(CMSimpleStringT& strResult, PCXSTR psz1, int nLength1, PCXSTR psz2, int nLength2);
-  
+
   // Implementation
 private:
   __forceinline CMStringData* GetData() const
@@ -273,6 +273,7 @@ template< typename _CharType = char >
 class NBChTraitsCRT : public NBChTraitsBase < _CharType >
 {
 public:
+
   static char* __stdcall CharNext(const char* p)
   {
     return reinterpret_cast<char*>(_mbsinc(reinterpret_cast<const unsigned char*>(p)));
@@ -347,25 +348,25 @@ public:
 
   static LPSTR __stdcall StringUppercase(LPSTR psz)
   {
-    ::CharUpperBuffA(psz, (uint32_t)strlen(psz));
+    ::CharUpperBuffA(psz, (DWORD)strlen(psz));
     return psz;
   }
 
   static LPSTR __stdcall StringLowercase(LPSTR psz)
   {
-    ::CharLowerBuffA(psz, (uint32_t)strlen(psz));
+    ::CharLowerBuffA(psz, (DWORD)strlen(psz));
     return psz;
   }
 
   static LPSTR __stdcall StringUppercase(LPSTR psz, size_t size)
   {
-    ::CharUpperBuffA(psz, (uint32_t)size);
+    ::CharUpperBuffA(psz, (DWORD)size);
     return psz;
   }
 
   static LPSTR __stdcall StringLowercase(LPSTR psz, size_t size)
   {
-    ::CharLowerBuffA(psz, (uint32_t)size);
+    ::CharLowerBuffA(psz, (DWORD)size);
     return psz;
   }
 
@@ -498,7 +499,7 @@ public:
     return int(_mbclen(reinterpret_cast<const unsigned char*>(pch)));
   }
 
-  static uint32_t __stdcall GetEnvironmentVariable(LPCSTR pszVar, LPSTR pszBuffer, uint32_t dwSize)
+  static DWORD __stdcall GetEnvironmentVariable(LPCSTR pszVar, LPSTR pszBuffer, uint32_t dwSize)
   {
     return ::GetEnvironmentVariableA(pszVar, pszBuffer, dwSize);
   }
@@ -513,7 +514,7 @@ public:
 template<>
 class NBChTraitsCRT< wchar_t > : public NBChTraitsBase< wchar_t >
 {
-  static uint32_t __stdcall _GetEnvironmentVariableW(LPCWSTR pszName, LPWSTR pszBuffer, uint32_t nSize)
+  static DWORD __stdcall _GetEnvironmentVariableW(LPCWSTR pszName, LPWSTR pszBuffer, uint32_t nSize)
   {
     return ::GetEnvironmentVariableW(pszName, pszBuffer, nSize);
   }
@@ -591,25 +592,25 @@ public:
 
   static LPWSTR __stdcall StringUppercase(LPWSTR psz)
   {
-    ::CharUpperBuffW(psz, (uint32_t)wcslen(psz));
+    ::CharUpperBuffW(psz, (DWORD)wcslen(psz));
     return psz;
   }
 
   static LPWSTR __stdcall StringLowercase(LPWSTR psz)
   {
-    ::CharLowerBuffW(psz, (uint32_t)wcslen(psz));
+    ::CharLowerBuffW(psz, (DWORD)wcslen(psz));
     return psz;
   }
 
   static LPWSTR __stdcall StringUppercase(LPWSTR psz, size_t len)
   {
-    ::CharUpperBuffW(psz, (uint32_t)len);
+    ::CharUpperBuffW(psz, (DWORD)len);
     return psz;
   }
 
   static LPWSTR __stdcall StringLowercase(LPWSTR psz, size_t len)
   {
-    ::CharLowerBuffW(psz, (uint32_t)len);
+    ::CharLowerBuffW(psz, (DWORD)len);
     return psz;
   }
 
@@ -798,7 +799,7 @@ public:
   CMStringT& operator=(const unsigned char* pszSrc);
   CMStringT& operator=(char ch);
   CMStringT& operator=(wchar_t ch);
-  
+
   CMStringT& operator+=(const CMStringT& str);
   CMStringT& operator+=(const CThisSimpleString& str);
   CMStringT& operator+=(PCXSTR pszSrc);
