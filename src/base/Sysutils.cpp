@@ -817,7 +817,7 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
         }
         else
         {
-          *(w++) = *s;
+          if (w) *(w++) = *s;
         }
         --SpaceLeft;
         ++s;
@@ -845,7 +845,7 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
           }
           else
           {
-            *(w++) = *s;
+            if (w) *(w++) = *s;
           }
           --SpaceLeft;
           ++s;
@@ -869,7 +869,7 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
         }
         else
         {
-          *(w++) = L'\n';
+          if (w) *(w++) = L'\n';
         }
         // Skip whitespace before first word on new line
         while (iswspace(*s))
