@@ -111,87 +111,106 @@ public:
   ~CMSimpleStringT();
 
   __forceinline operator CMSimpleStringT<BaseType>&()
-  {  return *(CMSimpleStringT<BaseType>*)this;
+  {
+    return *(CMSimpleStringT<BaseType>*)this;
   }
 
   CMSimpleStringT& operator=(const CMSimpleStringT& strSrc);
 
   __forceinline CMSimpleStringT& operator=(PCXSTR pszSrc)
-  {  SetString(pszSrc);
+  {
+    SetString(pszSrc);
     return *this;
   }
 
   __forceinline CMSimpleStringT& operator+=(const CMSimpleStringT& strSrc)
-  {  Append(strSrc);
+  {
+    Append(strSrc);
     return *this;
   }
 
   __forceinline CMSimpleStringT& operator+=(PCXSTR pszSrc)
-  {  Append(pszSrc);
+  {
+    Append(pszSrc);
     return *this;
   }
 
   __forceinline CMSimpleStringT& operator+=(char ch)
-  {  AppendChar(XCHAR(ch));
+  {
+    AppendChar(XCHAR(ch));
     return *this;
   }
 
   __forceinline CMSimpleStringT& operator+=(unsigned char ch)
-  {  AppendChar(XCHAR(ch));
+  {
+    AppendChar(XCHAR(ch));
     return *this;
   }
 
   __forceinline CMSimpleStringT& operator+=(wchar_t ch)
-  {  AppendChar(XCHAR(ch));
+  {
+    AppendChar(XCHAR(ch));
     return *this;
   }
 
   __forceinline XCHAR operator[](int iChar) const 
-  {  return m_pszData[iChar];
+  {
+    return m_pszData[iChar];
   }
 
   __forceinline operator PCXSTR() const
-  {  return m_pszData;
+  {
+    return m_pszData;
   }
 
   __forceinline PCXSTR c_str() const
-  {  return m_pszData;
+  {
+    return m_pszData;
   }
 
   __forceinline int GetAllocLength() const
-  {  return GetData()->nAllocLength;
+  {
+    return GetData()->nAllocLength;
   }
 
   __forceinline XCHAR GetAt(int iChar) const
-  {  return m_pszData[iChar];
+  {
+    return m_pszData[iChar];
   }
 
   __forceinline PXSTR GetBuffer(int nMinBufferLength)
-  {  return PrepareWrite(nMinBufferLength);
+  {
+    return PrepareWrite(nMinBufferLength);
   }
 
   __forceinline int GetLength() const
-  {  return GetData()->nDataLength;
+  {
+    return GetData()->nDataLength;
   }
 
   __forceinline PCXSTR GetString() const
-  {  return m_pszData;
+  {
+    return m_pszData;
   }
 
   __forceinline PCXSTR GetTail() const
-  {  return m_pszData + GetData()->nDataLength;
+  {
+    return m_pszData + GetData()->nDataLength;
   }
 
   __forceinline bool IsEmpty() const
-  {  return GetLength() == 0;
+  {
+    return GetLength() == 0;
   }
 
   __forceinline void Preallocate(int nLength)
-  {  PrepareWrite(nLength);
+  {
+    PrepareWrite(nLength);
   }
 
   __forceinline void ReleaseBufferSetLength(int nNewLength)
-  {  SetLength(nNewLength);
+  {
+    SetLength(nNewLength);
   }
 
   void   Append(PCXSTR pszSrc);
@@ -233,7 +252,8 @@ public:
   // Implementation
 private:
   __forceinline CMStringData* GetData() const
-  {  return (reinterpret_cast<CMStringData *>(m_pszData)-1);
+  {
+    return (reinterpret_cast<CMStringData *>(m_pszData)-1);
   }
 
   void Attach(CMStringData* pData);
