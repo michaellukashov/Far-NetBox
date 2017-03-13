@@ -2900,7 +2900,7 @@ static bool IsTlsPassphraseError(int Error, bool HasPassphrase)
      (ErrorReason == PKCS12_R_MAC_VERIFY_FAILURE)) ||
     ((ErrorLib == ERR_LIB_PEM) &&
      (ErrorReason == PEM_R_BAD_PASSWORD_READ)) ||
-    (HasPassphrase && (ERR_LIB_EVP == ERR_LIB_EVP) &&
+    (HasPassphrase && (ErrorLib == ERR_LIB_EVP) &&
      ((ErrorReason == PEM_R_BAD_DECRYPT) || (ErrorReason == PEM_R_BAD_BASE64_DECODE)));
 
   return Result;
