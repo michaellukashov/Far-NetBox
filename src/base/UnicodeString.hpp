@@ -99,6 +99,8 @@ public:
 
   UnicodeString & LowerCase() { return Lower(); }
   UnicodeString & UpperCase() { return Upper(); }
+  UnicodeString & MakeUpper() { Data.MakeUpper(); return *this; }
+  UnicodeString & MakeLower() { Data.MakeLower(); return *this; }
 
   intptr_t Compare(const UnicodeString & Str) const;
   intptr_t CompareIC(const UnicodeString & Str) const;
