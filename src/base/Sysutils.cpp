@@ -1097,7 +1097,7 @@ UnicodeString SysErrorMessage(intptr_t ErrorCode)
   intptr_t Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
     FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, (int)ErrorCode, 0,
     static_cast<LPTSTR>(Buffer),
-    sizeof(Buffer), nullptr);
+    _countof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
     ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == L'.'))))
   {
