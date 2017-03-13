@@ -1973,7 +1973,8 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       {
         sfree(Handles);
       };
-      Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
+      size_t n = static_cast<size_t>(HandleCount + 1);
+      Handles = sresize(Handles, n, HANDLE);
       Handles[HandleCount] = FSocketEvent;
       intptr_t Timeout = static_cast<intptr_t>(MSec);
       if (toplevel_callback_pending())
