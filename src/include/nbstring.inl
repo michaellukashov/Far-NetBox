@@ -94,7 +94,7 @@ void CMSimpleStringT<BaseType>::Append(PCXSTR pszSrc, int nLength)
     nOldLength = 0;
   }
 
-  //Make sure we don't read pass end of the terminating nullptr
+  //Make sure we don't read pass end of the terminating NULL
   int nSrcLength = StringLength(pszSrc);
   nLength = nLength > nSrcLength ? nSrcLength : nLength;
 
@@ -854,7 +854,7 @@ int CMStringT<BaseType, StringTraits>::Replace(XCHAR chOld, XCHAR chNew)
 template< typename BaseType, class StringTraits >
 int CMStringT<BaseType, StringTraits>::Replace(PCXSTR pszOld, PCXSTR pszNew)
 {
-  // can't have empty or nullptr lpszOld
+  // can't have empty or NULL lpszOld
 
   // nSourceLen is in XCHARs
   int nSourceLen = StringTraits::SafeStringLen(pszOld);
