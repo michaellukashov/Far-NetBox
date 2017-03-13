@@ -5194,14 +5194,14 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
   int nReplyError = 0;
   switch (nAction)
   {
-  case FILEEXISTS_SKIP:
+  case TFileZillaIntf::FILEEXISTS_SKIP:
     nReplyError = FZ_REPLY_OK;
     break;
-  case FILEEXISTS_OVERWRITE:
+  case TFileZillaIntf::FILEEXISTS_OVERWRITE:
     pTransferData->nWaitNextOpState = FILETRANSFER_TYPE;
     pTransferData->transferdata.localFileHandle = pData->localFileHandle;
     break;
-  case FILEEXISTS_RENAME:
+  case TFileZillaIntf::FILEEXISTS_RENAME:
     if (pTransferData->transferfile.get)
     {
       CFileStatus64 status;
@@ -5243,7 +5243,7 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
       }
     }
     break;
-  case FILEEXISTS_RESUME:
+  case TFileZillaIntf::FILEEXISTS_RESUME:
     if (pData->size1 >= 0)
     {
       pTransferData->transferdata.bResume = TRUE;
@@ -5251,7 +5251,7 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
     pTransferData->nWaitNextOpState = FILETRANSFER_TYPE;
     pTransferData->transferdata.localFileHandle = pData->localFileHandle;
     break;
-  case FILEEXISTS_COMPLETE:
+  case TFileZillaIntf::FILEEXISTS_COMPLETE:
     // Simulating transfer finish
     m_Operation.nOpState=FILETRANSFER_WAITFINISH;
     TransferFinished(true);
