@@ -380,19 +380,19 @@ public:
 	static int __stdcall GetBaseTypeLength(LPCWSTR pszSource)
 	{
 		// Returns required buffer length in XCHARs
-		return ::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSource, -1, NULL, 0, NULL, NULL) - 1;
+		return ::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSource, -1, nullptr, 0, nullptr, nullptr) - 1;
 	}
 
 	static int __stdcall GetBaseTypeLength(LPCWSTR pszSource, int nLength)
 	{
 		// Returns required buffer length in XCHARs
-		return ::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSource, nLength, NULL, 0, NULL, NULL);
+		return ::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSource, nLength, nullptr, 0, nullptr, nullptr);
 	}
 
   static int __stdcall GetBaseTypeLength(LPCWSTR pszSource, int nLength, int CodePage)
   {
     // Returns required buffer length in XCHARs
-    return ::WideCharToMultiByte(CodePage, 0, pszSource, nLength, NULL, 0, NULL, NULL);
+    return ::WideCharToMultiByte(CodePage, 0, pszSource, nLength, nullptr, 0, nullptr, nullptr);
   }
 
 	static void __stdcall ConvertToBaseType(LPSTR pszDest, int nDestLength, LPCSTR pszSrc, int nSrcLength = -1)
@@ -405,13 +405,13 @@ public:
 	static void __stdcall ConvertToBaseType(LPSTR pszDest, int nDestLength, LPCWSTR pszSrc, int nSrcLength = -1)
 	{
 		// nLen is in XCHARs
-		::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSrc, nSrcLength, pszDest, nDestLength, NULL, NULL);
+		::WideCharToMultiByte(Langpack_GetDefaultCodePage(), 0, pszSrc, nSrcLength, pszDest, nDestLength, nullptr, nullptr);
 	}
 
   static void __stdcall ConvertToBaseType(LPSTR pszDest, int nDestLength, LPCWSTR pszSrc, int nSrcLength, int CodePage)
   {
     // nLen is in XCHARs
-    ::WideCharToMultiByte(CodePage, 0, pszSrc, nSrcLength, pszDest, nDestLength, NULL, NULL);
+    ::WideCharToMultiByte(CodePage, 0, pszSrc, nSrcLength, pszDest, nDestLength, nullptr, nullptr);
   }
 
 	static void ConvertToOem(_CharType* pstrString)
@@ -451,13 +451,13 @@ public:
 	static int __stdcall SafeStringLen(LPCSTR psz)
 	{
 		// returns length in bytes
-		return (psz != NULL) ? int(strlen(psz)) : 0;
+		return (psz != nullptr) ? int(strlen(psz)) : 0;
 	}
 
 	static int __stdcall SafeStringLen(LPCWSTR psz)
 	{
 		// returns length in wchar_ts
-		return (psz != NULL) ? int(wcslen(psz)) : 0;
+		return (psz != nullptr) ? int(wcslen(psz)) : 0;
 	}
 
 	static int __stdcall GetCharLen(const wchar_t* pch)
@@ -616,19 +616,19 @@ public:
 	static int __stdcall GetBaseTypeLength(LPCSTR pszSrc)
 	{
 		// Returns required buffer size in wchar_ts
-		return ::MultiByteToWideChar(CP_ACP, 0, pszSrc, -1, NULL, 0)-1;
+		return ::MultiByteToWideChar(CP_ACP, 0, pszSrc, -1, nullptr, 0)-1;
 	}
 
 	static int __stdcall GetBaseTypeLength(LPCSTR pszSrc, int nLength)
 	{
 		// Returns required buffer size in wchar_ts
-		return ::MultiByteToWideChar(CP_ACP, 0, pszSrc, nLength, NULL, 0);
+		return ::MultiByteToWideChar(CP_ACP, 0, pszSrc, nLength, nullptr, 0);
 	}
 
   static int __stdcall GetBaseTypeLength(LPCSTR pszSrc, int nLength, int CodePage)
   {
     // Returns required buffer size in wchar_ts
-    return ::MultiByteToWideChar(CodePage, 0, pszSrc, nLength, NULL, 0);
+    return ::MultiByteToWideChar(CodePage, 0, pszSrc, nLength, nullptr, 0);
   }
 
 	static int __stdcall GetBaseTypeLength(LPCWSTR pszSrc)
@@ -679,13 +679,13 @@ public:
 	static int __stdcall SafeStringLen(LPCSTR psz)
 	{
 		// returns length in bytes
-		return (psz != NULL) ? (int)strlen(psz) : 0;
+		return (psz != nullptr) ? (int)strlen(psz) : 0;
 	}
 
 	static int __stdcall SafeStringLen(LPCWSTR psz)
 	{
 		// returns length in wchar_ts
-		return (psz != NULL) ? (int)wcslen(psz) : 0;
+		return (psz != nullptr) ? (int)wcslen(psz) : 0;
 	}
 
 	static int __stdcall GetCharLen(const wchar_t* pch)

@@ -108,7 +108,7 @@ NB_CORE_DLL(unsigned int) nbcore_hash(const void * key, unsigned int len);
 #pragma optimize("gt", on)
 __forceinline unsigned int nbcore_hashstr(const char * key)
 {
-  if (key == NULL) return 0;
+  if (key == nullptr) return 0;
   else
   {
     unsigned int len = (unsigned int)strlen((const char*)key);
@@ -118,7 +118,7 @@ __forceinline unsigned int nbcore_hashstr(const char * key)
 
 __forceinline unsigned int nbcore_hashstrW(const wchar_t * key)
 {
-  if (key == NULL) return 0;
+  if (key == nullptr) return 0;
   else
   {
     unsigned int len = (unsigned int)wcslen((const wchar_t*)key);
@@ -438,7 +438,7 @@ typedef unsigned (__stdcall *pThreadFuncEx)(void*);
 typedef unsigned (__cdecl *pThreadFuncOwner)(void *owner, void* param);
 
 #if defined( __cplusplus )
-NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void* pOwner=NULL);
+NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void* pOwner=nullptr);
 #else
 NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void* pOwner);
 #endif
@@ -455,12 +455,12 @@ __forceinline HANDLE nbcore_forkthread(pThreadFunc aFunc, void* arg)
 
 __forceinline HANDLE nbcore_forkthreadex(pThreadFuncEx aFunc, void* arg, unsigned* pThreadID)
 {
-  return (HANDLE)forkthreadex(NULL, 0, aFunc, NULL, arg, pThreadID);
+  return (HANDLE)forkthreadex(nullptr, 0, aFunc, nullptr, arg, pThreadID);
 }
 
 __forceinline HANDLE nbcore_forkthreadowner(pThreadFuncOwner aFunc, void* owner, void* arg, unsigned* pThreadID)
 {
-  return (HANDLE)forkthreadex(NULL, 0, (pThreadFuncEx)aFunc, owner, arg, pThreadID);
+  return (HANDLE)forkthreadex(nullptr, 0, (pThreadFuncEx)aFunc, owner, arg, pThreadID);
 }
 
 NB_CORE_DLL(void) Thread_SetName(const char *szThreadName);
@@ -497,7 +497,7 @@ NB_CORE_DLL(BOOL)  Utf8CheckString(const char* str);
 __forceinline char* nbcore_utf8decodeA(const char* src)
 {
   char* tmp = nbcore_strdup(src);
-  nbcore_utf8decode(tmp, NULL);
+  nbcore_utf8decode(tmp, nullptr);
   return tmp;
 }
 
@@ -522,7 +522,7 @@ public:
 
   __forceinline char* detach()
   {
-    char *res = m_str; m_str = NULL;
+    char *res = m_str; m_str = nullptr;
     return res;
   }
 
