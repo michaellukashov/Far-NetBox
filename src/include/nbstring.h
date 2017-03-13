@@ -684,7 +684,7 @@ public:
   {
     if (nSrcLength == -1)
     {
-      nSrcLength=1 + GetBaseTypeLength(pszSrc);
+      nSrcLength = 1 + GetBaseTypeLength(pszSrc);
     }
     // nLen is in wchar_ts
     #if _MSC_VER >= 1400
