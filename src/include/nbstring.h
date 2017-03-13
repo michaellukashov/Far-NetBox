@@ -417,7 +417,10 @@ public:
 
   static void __stdcall ConvertToBaseType(LPSTR pszDest, int nDestLength, LPCSTR pszSrc, int nSrcLength = -1)
   {
-    if (nSrcLength == -1) { nSrcLength = 1 + GetBaseTypeLength(pszSrc); }
+    if (nSrcLength == -1)
+    {
+      nSrcLength = 1 + GetBaseTypeLength(pszSrc);
+    }
     // nLen is in XCHARs
     memcpy_s(pszDest, nDestLength*sizeof(char), pszSrc, nSrcLength*sizeof(char));
   }
@@ -446,7 +449,8 @@ public:
 
   static void ConvertToOem(_CharType* pstrString, size_t size)
   {
-    if (size > UINT_MAX) {
+    if (size > UINT_MAX)
+    {
       return;
     }
     uint32_t dwSize = static_cast<uint32_t>(size);
@@ -678,7 +682,10 @@ public:
 
   static void __stdcall ConvertToBaseType(LPWSTR pszDest, int nDestLength, LPCWSTR pszSrc, int nSrcLength = -1)
   {
-    if (nSrcLength == -1) { nSrcLength=1 + GetBaseTypeLength(pszSrc); }
+    if (nSrcLength == -1)
+    {
+      nSrcLength=1 + GetBaseTypeLength(pszSrc);
+    }
     // nLen is in wchar_ts
     #if _MSC_VER >= 1400
       wmemcpy_s(pszDest, nDestLength, pszSrc, nSrcLength);

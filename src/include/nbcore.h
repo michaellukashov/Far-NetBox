@@ -108,7 +108,10 @@ NB_CORE_DLL(unsigned int) nbcore_hash(const void * key, unsigned int len);
 #pragma optimize("gt", on)
 __forceinline unsigned int nbcore_hashstr(const char * key)
 {
-  if (key == nullptr) return 0;
+  if (key == nullptr)
+  {
+    return 0;
+  }
   else
   {
     unsigned int len = (unsigned int)strlen((const char*)key);
@@ -118,7 +121,10 @@ __forceinline unsigned int nbcore_hashstr(const char * key)
 
 __forceinline unsigned int nbcore_hashstrW(const wchar_t * key)
 {
-  if (key == nullptr) return 0;
+  if (key == nullptr)
+  {
+    return 0;
+  }
   else
   {
     unsigned int len = (unsigned int)wcslen((const wchar_t*)key);
