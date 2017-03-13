@@ -327,8 +327,8 @@ NB_CORE_DLL(int) wildcmpiw(const wchar_t *name, const wchar_t *mask);
 NB_CORE_DLL(char*)  bin2hex(const void *pData, size_t len, char *dest);
 NB_CORE_DLL(wchar_t*) bin2hexW(const void *pData, size_t len, wchar_t *dest);
 
-__forceinline char* lrtrim(char *str) { return ltrim(rtrim(str)); };
-__forceinline char* lrtrimp(char *str) { return ltrimp(rtrim(str)); };
+__forceinline char* lrtrim(char *str) { return ltrim(rtrim(str)); }
+__forceinline char* lrtrimp(char *str) { return ltrimp(rtrim(str)); }
 
 #if defined( __cplusplus )
 NB_CORE_DLL(char*) replaceStr(char* &dest, const char *src);
