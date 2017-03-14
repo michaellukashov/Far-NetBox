@@ -1973,7 +1973,8 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       {
         sfree(Handles);
       };
-      Handles = sresize(Handles, static_cast<size_t>(HandleCount + 1), HANDLE);
+      size_t n = static_cast<size_t>(HandleCount + 1);
+      Handles = sresize(Handles, n, HANDLE);
       Handles[HandleCount] = FSocketEvent;
       intptr_t Timeout = static_cast<intptr_t>(MSec);
       if (toplevel_callback_pending())
@@ -2279,11 +2280,11 @@ UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, intptr_t
 }
 
 void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
-  const UnicodeString & AKeyType, const UnicodeString & AKeyStr, const UnicodeString & Fingerprint)
+  const UnicodeString & AKeyType, const UnicodeString & AKeyStr, const UnicodeString & AFingerprint)
 {
   UnicodeString Host = AHost;
   UnicodeString KeyStr = AKeyStr;
-  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", AKeyType.c_str(), FormatKeyStr(KeyStr).c_str(), Fingerprint.c_str()));
+  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", AKeyType.c_str(), FormatKeyStr(KeyStr).c_str(), AFingerprint.c_str()));
 
   GotHostKey();
 
@@ -2291,14 +2292,14 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
 
   GetRealHost(Host, Port);
 
-  FSessionInfo.HostKeyFingerprint = Fingerprint;
+  FSessionInfo.HostKeyFingerprint = AFingerprint;
 
   if (FSessionData->GetFingerprintScan())
   {
     Abort();
   }
 
-  UnicodeString NormalizedFingerprint = NormalizeFingerprint(Fingerprint);
+  UnicodeString NormalizedFingerprint = NormalizeFingerprint(AFingerprint);
 
   bool Result = false;
 
@@ -2335,10 +2336,10 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
   if (!Result && !FSessionData->GetHostKey().IsEmpty() &&
       (StoredKeys.IsEmpty() || FSessionData->GetOverrideCachedHostKey()))
   {
-    UnicodeString Buf = FSessionData->GetHostKey();
-    while (!Result && !Buf.IsEmpty())
+    UnicodeString HostKeyBuf = FSessionData->GetHostKey();
+    while (!Result && !HostKeyBuf.IsEmpty())
     {
-      UnicodeString ExpectedKey = CutToChar(Buf, HostKeyDelimiter, false);
+      UnicodeString ExpectedKey = CutToChar(HostKeyBuf, HostKeyDelimiter, false);
       UnicodeString NormalizedExpectedKey = NormalizeFingerprint(ExpectedKey);
       if (ExpectedKey == L"*")
       {
@@ -2382,7 +2383,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
       // but as scripting mode is handled earlier and in GUI it hardly happens,
       // it's a small issue.
       TClipboardHandler ClipboardHandler;
-      ClipboardHandler.Text = Fingerprint;
+      ClipboardHandler.Text = AFingerprint;
 
       bool Unknown = StoredKeys.IsEmpty();
 
@@ -2414,7 +2415,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
 
-      UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY3 : DIFFERENT_KEY4), AKeyType.c_str(), Fingerprint.c_str());
+      UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY3 : DIFFERENT_KEY4), AKeyType.c_str(), AFingerprint.c_str());
       if (GetConfiguration()->GetScripting())
       {
         AddToList(Message, LoadStr(SCRIPTING_USE_HOSTKEY), L"\n");
@@ -2466,7 +2467,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
       std::unique_ptr<Exception> E(new Exception(MainInstructions(Message)));
       try__finally
       {
-        FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, Fingerprint.c_str()));
+        FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, AFingerprint.c_str()));
       }
       __finally
       {
@@ -2475,7 +2476,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
     }
   }
 
-  GetConfiguration()->RememberLastFingerprint(FSessionData->GetSiteKey(), SshFingerprintType, Fingerprint);
+  GetConfiguration()->RememberLastFingerprint(FSessionData->GetSiteKey(), SshFingerprintType, AFingerprint);
 }
 
 bool TSecureShell::HaveHostKey(const UnicodeString & AHost, intptr_t Port, const UnicodeString & KeyType)

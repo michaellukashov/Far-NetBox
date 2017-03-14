@@ -176,7 +176,7 @@ public:
   void CWrite(const char * Data, intptr_t Length);
   const UnicodeString & GetStdError() const;
   void VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
-    const UnicodeString & AKeyType, const UnicodeString & AKeyStr, const UnicodeString & Fingerprint);
+    const UnicodeString & AKeyType, const UnicodeString & AKeyStr, const UnicodeString & AFingerprint);
   bool HaveHostKey(const UnicodeString & AHost, intptr_t Port, const UnicodeString & KeyType);
   void AskAlg(const UnicodeString & AlgType, const UnicodeString & AlgName);
   void DisplayBanner(const UnicodeString & Banner);

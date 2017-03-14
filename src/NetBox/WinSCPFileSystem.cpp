@@ -687,7 +687,8 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
           {
             Name = core::UnixIncludeTrailingBackslash(FSessionsFolder);
           }
-          Name += Data->GetSessionName();
+          if (Data)
+            Name += Data->GetSessionName();
           if (GetWinSCPPlugin()->InputBox(GetMsg(NEW_SESSION_NAME_TITLE),
                                 GetMsg(NEW_SESSION_NAME_PROMPT), Name, 0) &&
               !Name.IsEmpty())

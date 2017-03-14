@@ -239,15 +239,13 @@ UnicodeString TrimRight(const UnicodeString & Str)
 UnicodeString UpperCase(const UnicodeString & Str)
 {
   UnicodeString Result(Str);
-  ::CharUpperBuff(const_cast<LPWSTR>(Result.c_str()), (DWORD)Result.Length());
-  return Result;
+  return Result.MakeUpper();
 }
 
 UnicodeString LowerCase(const UnicodeString & Str)
 {
   UnicodeString Result(Str);
-  ::CharLowerBuff(const_cast<LPWSTR>(Result.c_str()), (DWORD)Result.Length());
-  return Result;
+  return Result.MakeLower();
 }
 
 wchar_t UpCase(const wchar_t Ch)
@@ -819,7 +817,7 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
         }
         else
         {
-          *(w++) = *s;
+          if (w) *(w++) = *s;
         }
         --SpaceLeft;
         ++s;
@@ -847,7 +845,7 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
           }
           else
           {
-            *(w++) = *s;
+            if (w) *(w++) = *s;
           }
           --SpaceLeft;
           ++s;
@@ -871,7 +869,7 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth)
         }
         else
         {
-          *(w++) = L'\n';
+          if (w) *(w++) = L'\n';
         }
         // Skip whitespace before first word on new line
         while (iswspace(*s))
@@ -1099,7 +1097,7 @@ UnicodeString SysErrorMessage(intptr_t ErrorCode)
   intptr_t Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
     FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, (int)ErrorCode, 0,
     static_cast<LPTSTR>(Buffer),
-    sizeof(Buffer), nullptr);
+    _countof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
     ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == L'.'))))
   {

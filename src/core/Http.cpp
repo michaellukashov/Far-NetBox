@@ -135,13 +135,13 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           const ne_status * NeonStatus = ne_get_status(NeonRequest);
           if (NeonStatus->klass != 2)
           {
-            int Status = NeonStatus->code;
+            int StatusCode = NeonStatus->code;
             UnicodeString Message = StrFromNeon(NeonStatus->reason_phrase);
             if (GetOnError() != nullptr)
             {
-              GetOnError()(this, Status, Message);
+              GetOnError()(this, StatusCode, Message);
             }
-            throw Exception(FMTLOAD(HTTP_ERROR2, Status, Message.c_str(), FHostName.c_str()));
+            throw Exception(FMTLOAD(HTTP_ERROR2, StatusCode, Message.c_str(), FHostName.c_str()));
           }
 
           void * Cursor = NULL;

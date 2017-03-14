@@ -180,9 +180,9 @@ void TSessionData::Default()
   SetRemoteDirectory(L"");
   SetSynchronizeBrowsing(false);
   SetUpdateDirectories(true);
-  SetCacheDirectories(true);
-  SetCacheDirectoryChanges(true);
-  SetPreserveDirectoryChanges(true);
+  SetCacheDirectories(false);
+  SetCacheDirectoryChanges(false);
+  SetPreserveDirectoryChanges(false);
   SetLockInHome(false);
   SetResolveSymlinks(true);
   SetFollowDirectorySymlinks(true);
@@ -197,7 +197,7 @@ void TSessionData::Default()
   SetReturnVar(L"");
   SetLookupUserGroups(asAuto);
   SetEOLType(eolLF);
-  SetTrimVMSVersions(false),
+  SetTrimVMSVersions(false);
   SetShell(L""); //default shell
   SetReturnVar(L"");
   SetClearAliases(true);
