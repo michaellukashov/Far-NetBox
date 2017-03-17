@@ -639,7 +639,7 @@ static int error_ossl(ne_socket *sock, int sret)
         } else {
             /* Other socket error. */
             errnum = ne_errno;
-            set_strerror(sock, errnum);
+            if (errnum) set_strerror(sock, errnum);
             return MAP_ERR(errnum);
         }
     }
