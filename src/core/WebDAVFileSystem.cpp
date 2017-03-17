@@ -1130,7 +1130,7 @@ void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString & /*AFileName*/,
   const UnicodeString & /*ANewName*/)
 {
   DebugFail();
-  ThrowNotImplemented(1012);
+  // ThrowNotImplemented(1012);
 }
 
 void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
@@ -1144,7 +1144,7 @@ void TWebDAVFileSystem::CreateLink(const UnicodeString & /*AFileName*/,
   const UnicodeString & /*PointTo*/, bool /*Symbolic*/)
 {
   DebugFail();
-  ThrowNotImplemented(1014);
+  // ThrowNotImplemented(1014);
 }
 
 void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & /*AFileName*/,
@@ -1152,7 +1152,7 @@ void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & /*AFileName*/
   TChmodSessionAction & /*Action*/)
 {
   DebugFail();
-  ThrowNotImplemented(1006);
+  // ThrowNotImplemented(1006);
 }
 
 bool TWebDAVFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
@@ -1233,7 +1233,7 @@ void TWebDAVFileSystem::AnyCommand(const UnicodeString & /*Command*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
-  ThrowNotImplemented(1008);
+  // ThrowNotImplemented(1008);
 }
 
 TStrings * TWebDAVFileSystem::GetFixedPaths() const
