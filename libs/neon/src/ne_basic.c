@@ -269,11 +269,11 @@ int ne_get_content_type(ne_request *req, ne_content_type *ct)
     
     stype = strchr(ct->value, '/');
 
-    *stype++ = '\0';
+    if (stype) *stype++ = '\0';
     ct->type = ct->value;
     ct->charset = NULL;
     
-    sep = strchr(stype, ';');
+    if (stype) sep = strchr(stype, ';');
 
     if (sep) {
 	char *tok;
