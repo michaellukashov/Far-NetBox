@@ -704,7 +704,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
             }
           }
         }
-        else if (FillInConnect)
+        else if (FillInConnect && OrigData)
         {
           UnicodeString OrigName = OrigData->GetName();
           OrigData->Assign(Data);
