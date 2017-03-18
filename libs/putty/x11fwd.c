@@ -1064,7 +1064,7 @@ void *x11_make_greeting(int endian, int protomajor, int protominor,
 
         authdata = realauthdata;
         authdatalen = 24;
-        memset(realauthdata, 0, authdatalen);
+        memset(realauthdata, 0, sizeof(realauthdata));
         memcpy(realauthdata, auth_data, 8);
         PUT_32BIT_MSB_FIRST(realauthdata+8, peer_ip);
         PUT_16BIT_MSB_FIRST(realauthdata+12, peer_port);
