@@ -61,7 +61,8 @@ Links
 ========================
 
 * Project main page: [https://github.com/michaellukashov/Far-NetBox/](https://github.com/michaellukashov/Far-NetBox/)
-* Download page: [http://plugring.farmanager.com/plugin.php?pid=859&l=en](http://plugring.farmanager.com/plugin.php?pid=859&l=en)
+* Download page:
+[https://github.com/michaellukashov/Far-NetBox/releases](https://github.com/michaellukashov/Far-NetBox/releases) [http://plugring.farmanager.com/plugin.php?pid=859&l=en](http://plugring.farmanager.com/plugin.php?pid=859&l=en)
 * Far Manager forum: [http://forum.farmanager.com/](http://forum.farmanager.com/)
 * NetBox discussions (in Russian): [http://forum.farmanager.com/viewtopic.php?f=5&t=6317](http://forum.farmanager.com/viewtopic.php?f=5&t=6317)
 * NetBox discussions (in English): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39&t=6638)
