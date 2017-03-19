@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
-#include <openssl/ssl.h>
 #include <wincrypt.h>
 #include <rdestl/set.h>
 
@@ -40,6 +39,7 @@
 #include "Security.h"
 #include <StrUtils.hpp>
 #include <NeonIntf.h>
+#include <openssl/ssl.h>
 
 struct TWebDAVCertificateData
 {
@@ -2382,7 +2382,7 @@ void TWebDAVFileSystem::SinkFile(const UnicodeString & AFileName,
   }
 }
 
-bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
+bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data, bool Aux)
 {
   FSessionInfo.CertificateFingerprint = Data.Fingerprint;
 
@@ -2476,14 +2476,14 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
           break;
       }
 
-      if (Result)
+      if (Result && !Aux)
       {
         FTerminal->GetConfiguration()->RememberLastFingerprint(
           FTerminal->GetSessionData()->GetSiteKey(), TlsFingerprintType, FSessionInfo.CertificateFingerprint);
       }
     }
 
-    if (Result)
+    if (Result && !Aux)
     {
       CollectTLSSessionInfo();
     }
@@ -2513,7 +2513,7 @@ void TWebDAVFileSystem::CollectTLSSessionInfo()
 // A neon-session callback to validate the SSL certificate when the CA
 // is unknown (e.g. a self-signed cert), or there are other SSL
 // certificate problems.
-int TWebDAVFileSystem::NeonServerSSLCallback(void * UserData, int Failures, const ne_ssl_certificate * Certificate)
+int TWebDAVFileSystem::DoNeonServerSSLCallback(void * UserData, int Failures, const ne_ssl_certificate * Certificate, bool Aux)
 {
   TWebDAVCertificateData Data;
 
@@ -2542,7 +2542,17 @@ int TWebDAVFileSystem::NeonServerSSLCallback(void * UserData, int Failures, cons
 
   TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
 
-  return FileSystem->VerifyCertificate(Data) ? NE_OK : NE_ERROR;
+  return FileSystem->VerifyCertificate(Data, Aux) ? NE_OK : NE_ERROR;
+}
+
+int TWebDAVFileSystem::NeonServerSSLCallbackMain(void * UserData, int Failures, const ne_ssl_certificate * Certificate)
+{
+  return DoNeonServerSSLCallback(UserData, Failures, Certificate, false);
+}
+
+int TWebDAVFileSystem::NeonServerSSLCallbackAux(void * UserData, int Failures, const ne_ssl_certificate * Certificate)
+{
+  return DoNeonServerSSLCallback(UserData, Failures, Certificate, true);
 }
 
 void TWebDAVFileSystem::NeonProvideClientCert(void * UserData, ne_session * Sess,
