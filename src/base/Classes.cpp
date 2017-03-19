@@ -71,12 +71,12 @@ void TPersistent::AssignError(const TPersistent * Source)
 }
 
 TList::TList() :
-  TObject(OBJECT_CLASS_TList)
+  TPersistent(OBJECT_CLASS_TList)
 {
 }
 
 TList::TList(TObjectClassId Kind) :
-  TObject(Kind)
+  TPersistent(Kind)
 {
 }
 

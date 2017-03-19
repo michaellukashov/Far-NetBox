@@ -148,7 +148,17 @@ public:
     switch(Obj->GetKind())
     {
       case OBJECT_CLASS_TPersistent:
+      case OBJECT_CLASS_TList:
+      case OBJECT_CLASS_TLabelList:
+      case OBJECT_CLASS_TObjectList:
+      case OBJECT_CLASS_TNamedObjectList:
+      case OBJECT_CLASS_TRemoteFileList:
+      case OBJECT_CLASS_TTerminalList:
+      case OBJECT_CLASS_TStoredSessionList:
       case OBJECT_CLASS_TStrings:
+      case OBJECT_CLASS_TStringList:
+      case OBJECT_CLASS_TFarList:
+      case OBJECT_CLASS_TFarMenuItems:
       case OBJECT_CLASS_TNamedObject:
       case OBJECT_CLASS_TSessionData:
       case OBJECT_CLASS_TBookmarkList:
@@ -184,7 +194,7 @@ enum TListNotification
 
 typedef intptr_t (CompareFunc)(const void * Item1, const void * Item2);
 
-class TList : public TObject
+class TList : public TPersistent
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -196,6 +206,10 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
       Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
       Obj->GetKind() == OBJECT_CLASS_TTerminalList ||
+      Obj->GetKind() == OBJECT_CLASS_TStrings ||
+      Obj->GetKind() == OBJECT_CLASS_TStringList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems ||
       Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
   }
 public:
@@ -232,6 +246,10 @@ public:
   {
     return
       Obj->GetKind() == OBJECT_CLASS_TObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TStrings ||
+      Obj->GetKind() == OBJECT_CLASS_TStringList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems ||
       Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
       Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
       Obj->GetKind() == OBJECT_CLASS_TTerminalList ||
