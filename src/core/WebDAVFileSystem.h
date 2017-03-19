@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <apr_pools.h>
+//#include <apr_pools.h>
 #include <neon/src/ne_uri.h>
 #include <neon/src/ne_utils.h>
 #include <neon/src/ne_string.h>
@@ -146,7 +146,9 @@ protected:
   static int NeonPostSend(ne_request * Req, void * UserData, const ne_status * Status);
   static void NeonPostHeaders(ne_request * Req, void * UserData, const ne_status * Status);
   void ExchangeCapabilities(const char * Path, UnicodeString & CorrectedUrl);
-  static int NeonServerSSLCallback(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
+  static int DoNeonServerSSLCallback(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
+  static int NeonServerSSLCallbackMain(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
+  static int NeonServerSSLCallbackAux(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
   static void NeonProvideClientCert(void * UserData, ne_session * Sess, const ne_ssl_dname * const * DNames, int DNCount);
   void CloseNeonSession();
   bool CancelTransfer();
@@ -170,10 +172,12 @@ private:
   UnicodeString FUserName;
   bool FActive;
   bool FHasTrailingSlash;
+  bool FSkipped;
   bool FCancelled;
   bool FStoredPasswordTried;
   bool FUploading;
   bool FDownloading;
+  UnicodeString FUploadMimeType;
   ne_session_s * FNeonSession;
   ne_lock_store_s * FNeonLockStore;
   TCriticalSection FNeonLockStoreSection;
@@ -187,6 +191,7 @@ private:
   int FPortNumber;
   enum TIgnoreAuthenticationFailure { iafNo, iafWaiting, iafPasswordFailed } FIgnoreAuthenticationFailure;
   UnicodeString FAuthorizationProtocol;
+  UnicodeString FLastAuthorizationProtocol;
   bool FAuthenticationRetry;
   bool FNtlmAuthenticationFailed;
 
@@ -196,20 +201,23 @@ private:
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
   void RegisterForDebug();
   void UnregisterFromDebug();
-  bool VerifyCertificate(
-    const TWebDAVCertificateData & Data);
+  bool VerifyCertificate(const TWebDAVCertificateData & Data, bool Aux);
   void OpenUrl(const UnicodeString & Url);
   void CollectTLSSessionInfo();
   UnicodeString GetRedirectUrl();
   UnicodeString ParsePathFromUrl(const UnicodeString & Url);
   int ReadDirectoryInternal(const UnicodeString & Path, TRemoteFileList * FileList);
   int RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
+  int CopyFileInternal(const UnicodeString & FileName, const UnicodeString & NewName);
   bool IsValidRedirect(int NeonStatus, UnicodeString & Path);
   UnicodeString DirectoryPath(const UnicodeString & Path) const;
   UnicodeString FilePath(const TRemoteFile * File) const;
   struct ne_lock * FindLock(const RawByteString & Path);
   void DiscardLock(const RawByteString & Path);
   bool IsNtlmAuthentication() const;
+  static void NeonAuxRequestInit(ne_session_s * Session, ne_request * Request, void * UserData);
+  void SetSessionTls(ne_session_s * Session, bool Aux);
+  void InitSession(ne_session_s * Session);
 };
 
 void NeonInitialize();
