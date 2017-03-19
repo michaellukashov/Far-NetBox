@@ -71,12 +71,12 @@ void TPersistent::AssignError(const TPersistent * Source)
 }
 
 TList::TList() :
-  TObject(OBJECT_CLASS_TList)
+  TPersistent(OBJECT_CLASS_TList)
 {
 }
 
 TList::TList(TObjectClassId Kind) :
-  TObject(Kind)
+  TPersistent(Kind)
 {
 }
 
@@ -372,7 +372,7 @@ const intptr_t UnixDateDelta = 25569;
 static const int MemoryDelta = 0x2000;
 
 TStrings::TStrings() :
-  TPersistent(OBJECT_CLASS_TStrings),
+  TObjectList(OBJECT_CLASS_TStrings),
   FDuplicates(dupAccept),
   FDelimiter(L','),
   FQuoteChar(L'"'),
@@ -381,7 +381,7 @@ TStrings::TStrings() :
 }
 
 TStrings::TStrings(TObjectClassId Kind) :
-  TPersistent(Kind),
+  TObjectList(Kind),
   FDuplicates(dupAccept),
   FDelimiter(L','),
   FQuoteChar(L'"'),
@@ -536,7 +536,7 @@ void TStrings::Assign(const TPersistent * Source)
   }
   else
   {
-    TPersistent::Assign(Source);
+    TObjectList::Assign(Source);
   }
 }
 

@@ -142,9 +142,6 @@ typedef struct in_addr ne_inet_addr;
 #include "ne_socket.h"
 #include "ne_alloc.h"
 #include "ne_sspi.h"
-#ifdef WINSCP
-#include "ne_session.h" /* for ne_init_ssl_session */
-#endif
 
 #if defined(__BEOS__) && !defined(BONE_VERSION)
 /* pre-BONE */
@@ -639,7 +636,7 @@ static int error_ossl(ne_socket *sock, int sret)
         } else {
             /* Other socket error. */
             errnum = ne_errno;
-            set_strerror(sock, errnum);
+            if (errnum) set_strerror(sock, errnum);
             return MAP_ERR(errnum);
         }
     }

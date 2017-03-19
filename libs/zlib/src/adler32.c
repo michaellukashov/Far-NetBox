@@ -70,7 +70,7 @@ uint32_t ZEXPORT adler32_z(uint32_t adler, const unsigned char *buf, size_t len)
     adler &= 0xffff;
 
     /* in case user likes doing a byte at a time, keep it fast */
-    if (len == 1) {
+    if (len == 1 && buf) {
         adler += buf[0];
         if (adler >= BASE)
             adler -= BASE;

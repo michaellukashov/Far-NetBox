@@ -38,6 +38,9 @@
 # ifdef _MSC_VER
 typedef __int64 off64_t;
 # endif
+# ifdef __BORLANDC__
+typedef __int64 off64_t;
+# endif
 typedef off64_t ne_off_t;
 #else
 typedef off_t ne_off_t;

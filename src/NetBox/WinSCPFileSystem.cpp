@@ -666,7 +666,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool NewData, bool FillInConnect)
 {
   TSessionData * OrigData = Data;
-  if (FillInConnect)
+  if (FillInConnect && Data)
   {
     Data->Assign(OrigData);
     Data->SetName(L"");
@@ -707,7 +707,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
             }
           }
         }
-        else if (FillInConnect)
+        else if (FillInConnect && OrigData)
         {
           UnicodeString OrigName = OrigData->GetName();
           OrigData->Assign(Data);

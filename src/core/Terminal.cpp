@@ -4431,7 +4431,7 @@ void TTerminal::RemoteChangeDirectory(const UnicodeString & Directory)
 
 void TTerminal::LookupUsersGroups()
 {
-  if (!FUsersGroupsLookedup && GetSessionData()->GetLookupUserGroups() &&
+  if (!FUsersGroupsLookedup && (GetSessionData()->GetLookupUserGroups() != asOff) &&
       GetIsCapable(fcUserGroupListing))
   {
     DebugAssert(FFileSystem);

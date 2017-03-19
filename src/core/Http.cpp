@@ -2,7 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <neon/src/ne_request.h>
+#include <ne_request.h>
 #include <openssl/ssl.h>
 
 #include "Http.h"
@@ -65,11 +65,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
     FCertificateError.SetLength(0);
     FException.reset(nullptr);
 
-    TProxyMethod ProxyMethod = GetProxyHost().IsEmpty() ? ::pmNone : pmHTTP;
-
-    ne_session_s * NeonSession =
-      CreateNeonSession(
-        uri, ProxyMethod, GetProxyHost(), GetProxyPort(), UnicodeString(), UnicodeString());
+    ne_session_s * NeonSession = CreateNeonSession(uri);
 
     try__finally
     {
@@ -78,6 +74,10 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
         DestroyNeonSession(NeonSession);
         ne_uri_free(&uri);
       };
+
+      TProxyMethod ProxyMethod = GetProxyHost().IsEmpty() ? ::pmNone : pmHTTP;
+      InitNeonSession(NeonSession, ProxyMethod, GetProxyHost(), GetProxyPort(), UnicodeString(), UnicodeString());
+
       if (IsTls)
       {
         SetNeonTlsInit(NeonSession, InitSslSession);
@@ -94,6 +94,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
         {
           ne_request_destroy(NeonRequest);
         };
+
         if (FRequestHeaders != nullptr)
         {
           for (intptr_t Index = 0; Index < FRequestHeaders->GetCount(); Index++)

@@ -2,8 +2,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <neon/src/ne_auth.h>
-#include <neon/src/ne_redirect.h>
+#include <ne_auth.h>
+#include <ne_redirect.h>
 
 #include "NeonIntf.h"
 #include "Interface.h"
@@ -64,12 +64,14 @@ static int NeonProxyAuth(
   return Result;
 }
 
-ne_session * CreateNeonSession(
-  const ne_uri & uri, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
+ne_session * CreateNeonSession(const ne_uri & uri)
+{
+  return ne_session_create(uri.scheme, uri.host, uri.port);
+}
+
+void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
   int ProxyPort, const UnicodeString & ProxyUsername, const UnicodeString & ProxyPassword)
 {
-  ne_session * Session = ne_session_create(uri.scheme, uri.host, uri.port);
-
   if (ProxyMethod != ::pmNone)
   {
     if ((ProxyMethod == pmSocks4) || (ProxyMethod == pmSocks5))
@@ -101,8 +103,6 @@ ne_session * CreateNeonSession(
 
   ne_redirect_register(Session);
   ne_set_useragent(Session, StrToNeon(FORMAT(L"%s/%s", GetAppNameString().c_str(), GetConfiguration()->GetVersion().c_str())));
-
-  return Session;
 }
 
 void DestroyNeonSession(ne_session * Session)
@@ -122,7 +122,7 @@ UnicodeString GetNeonError(ne_session * Session)
 }
 
 void CheckNeonStatus(ne_session * Session, int NeonStatus,
-  const UnicodeString & HostName, const UnicodeString & CustomError)
+  const UnicodeString & AHostName, const UnicodeString & CustomError)
 {
   if (NeonStatus == NE_OK)
   {
@@ -148,7 +148,7 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
           break;
 
         case NE_LOOKUP:
-          Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), L"%HOST%", HostName);
+          Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), L"%HOST%", AHostName);
           break;
 
         case NE_AUTH:
@@ -164,7 +164,7 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
           break;
 
         case NE_TIMEOUT:
-          Error = ReplaceStr(LoadStr(NET_TRANSL_TIMEOUT2), L"%HOST%", HostName);
+          Error = ReplaceStr(LoadStr(NET_TRANSL_TIMEOUT2), L"%HOST%", AHostName);
           break;
 
         case NE_REDIRECT:

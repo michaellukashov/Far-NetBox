@@ -1,5 +1,7 @@
-NetBox 2.4.2.468 13.03.2017
+NetBox 2.4.2.471 19.03.2017
 --------------------
+  * Bugfix: WebDAV: plugin shows error "Cannot change properties of file" after creating directory on remote server
+    (http://forum.farmanager.com/viewtopic.php?p=142479#p142479)
   * Bugfix: Can't open remote directory stored in Folders history
     (http://forum.farmanager.com/viewtopic.php?t=6317&p=142882#p142882)
     (http://bugs.farmanager.com/view.php?id=3402)
