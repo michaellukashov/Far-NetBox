@@ -204,12 +204,12 @@ private:
   bool VerifyCertificate(const TWebDAVCertificateData & Data, bool Aux);
   void OpenUrl(const UnicodeString & Url);
   void CollectTLSSessionInfo();
-  UnicodeString GetRedirectUrl();
-  UnicodeString ParsePathFromUrl(const UnicodeString & Url);
+  UnicodeString GetRedirectUrl() const;
+  UnicodeString ParsePathFromUrl(const UnicodeString & Url) const;
   int ReadDirectoryInternal(const UnicodeString & Path, TRemoteFileList * FileList);
   int RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
   int CopyFileInternal(const UnicodeString & FileName, const UnicodeString & NewName);
-  bool IsValidRedirect(int NeonStatus, UnicodeString & Path);
+  bool IsValidRedirect(int NeonStatus, UnicodeString & APath) const;
   UnicodeString DirectoryPath(const UnicodeString & APath) const;
   UnicodeString FilePath(const TRemoteFile * File) const;
   struct ne_lock * FindLock(const RawByteString & Path);

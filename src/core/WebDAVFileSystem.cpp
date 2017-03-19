@@ -321,7 +321,7 @@ void TWebDAVFileSystem::Open()
   FActive = true;
 }
 
-UnicodeString TWebDAVFileSystem::ParsePathFromUrl(const UnicodeString & Url)
+UnicodeString TWebDAVFileSystem::ParsePathFromUrl(const UnicodeString & Url) const
 {
   UnicodeString Result;
   ne_uri ParsedUri;
@@ -496,7 +496,7 @@ void TWebDAVFileSystem::NeonAddAuthentiation(bool UseNegotiate)
   ne_add_server_auth(FNeonSession, NeonAuthTypes, NeonRequestAuth, this);
 }
 
-UnicodeString TWebDAVFileSystem::GetRedirectUrl()
+UnicodeString TWebDAVFileSystem::GetRedirectUrl() const
 {
   UnicodeString Result = GetNeonRedirectUrl(FNeonSession);
   FTerminal->LogEvent(FORMAT(L"Redirected to \"%s\".", Result.c_str()));
@@ -875,13 +875,13 @@ int TWebDAVFileSystem::ReadDirectoryInternal(
   return Result;
 }
 
-bool TWebDAVFileSystem::IsValidRedirect(int NeonStatus, UnicodeString & Path)
+bool TWebDAVFileSystem::IsValidRedirect(int NeonStatus, UnicodeString & APath) const
 {
   bool Result = (NeonStatus == NE_REDIRECT);
   if (Result)
   {
     // What PathToNeon does
-    UnicodeString OriginalPath = GetAbsolutePath(Path, false);
+    UnicodeString OriginalPath = GetAbsolutePath(APath, false);
     // Handle one-step redirect
     // (for more steps we would have to implement loop detection).
     // This is mainly to handle "folder" => "folder/" redirects of Apache/mod_dav.
@@ -895,7 +895,7 @@ bool TWebDAVFileSystem::IsValidRedirect(int NeonStatus, UnicodeString & Path)
 
     if (Result)
     {
-      Path = RedirectPath;
+      APath = RedirectPath;
     }
   }
 
