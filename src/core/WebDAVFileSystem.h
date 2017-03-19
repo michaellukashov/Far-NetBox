@@ -206,7 +206,7 @@ private:
   void CollectTLSSessionInfo();
   UnicodeString GetRedirectUrl() const;
   UnicodeString ParsePathFromUrl(const UnicodeString & Url) const;
-  int ReadDirectoryInternal(const UnicodeString & Path, TRemoteFileList * FileList);
+  int ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList * AFileList);
   int RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
   int CopyFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
   bool IsValidRedirect(int NeonStatus, UnicodeString & APath) const;

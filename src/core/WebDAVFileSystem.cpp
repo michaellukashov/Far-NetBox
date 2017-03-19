@@ -847,15 +847,14 @@ CUSTOM_MEM_ALLOCATION_IMPL
   TRemoteFileList * FileList;
 };
 
-int TWebDAVFileSystem::ReadDirectoryInternal(
-  const UnicodeString & Path, TRemoteFileList * FileList)
+int TWebDAVFileSystem::ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList * AFileList)
 {
   TReadFileData Data;
   Data.FileSystem = this;
   Data.File = nullptr;
-  Data.FileList = FileList;
+  Data.FileList = AFileList;
   ClearNeonError();
-  ne_propfind_handler * PropFindHandler = ne_propfind_create(FNeonSession, PathToNeon(Path), NE_DEPTH_ONE);
+  ne_propfind_handler * PropFindHandler = ne_propfind_create(FNeonSession, PathToNeon(APath), NE_DEPTH_ONE);
   void * DiscoveryContext = ne_lock_register_discovery(PropFindHandler);
   int Result;
   try__finally
