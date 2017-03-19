@@ -212,7 +212,7 @@ private:
   bool IsValidRedirect(int NeonStatus, UnicodeString & APath) const;
   UnicodeString DirectoryPath(const UnicodeString & APath) const;
   UnicodeString FilePath(const TRemoteFile * File) const;
-  struct ne_lock * FindLock(const RawByteString & Path);
+  struct ne_lock * FindLock(const RawByteString & APath) const;
   void DiscardLock(const RawByteString & Path);
   bool IsNtlmAuthentication() const;
   static void NeonAuxRequestInit(ne_session_s * Session, ne_request * Request, void * UserData);

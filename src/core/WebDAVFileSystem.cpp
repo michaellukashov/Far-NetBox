@@ -2801,10 +2801,10 @@ void TWebDAVFileSystem::LockResult(void * UserData, const struct ne_lock * Lock,
   }
 }
 
-struct ne_lock * TWebDAVFileSystem::FindLock(const RawByteString & Path)
+struct ne_lock * TWebDAVFileSystem::FindLock(const RawByteString & APath) const
 {
   ne_uri Uri = {0};
-  Uri.path = const_cast<char *>(Path.c_str());
+  Uri.path = const_cast<char *>(APath.c_str());
   return ne_lockstore_findbyuri(FNeonLockStore, &Uri);
 }
 
