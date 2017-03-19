@@ -24,7 +24,7 @@
 #include <ne_redirect.h>
 #include <ne_xmlreq.h>
 #include <ne_locks.h>
-#include <expat/lib/expat.h>
+#include <expat.h>
 
 #include "WebDAVFileSystem.h"
 

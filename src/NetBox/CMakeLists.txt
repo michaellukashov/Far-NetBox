@@ -1528,6 +1528,7 @@ target_include_directories(NetBox PRIVATE
   ../../libs/neon/src
   ../../libs/tinyxml2
   ../../libs/rdestl
+  ../../libs/expat/lib
   ../../libs/atlmfc/include
   ../filezilla
   ../base
