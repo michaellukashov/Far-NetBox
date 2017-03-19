@@ -71,11 +71,11 @@ public:
   virtual bool IsCapable(intptr_t Capability) const;
   virtual void LookupUsersGroups();
   virtual void ReadCurrentDirectory();
-  virtual void ReadDirectory(TRemoteFileList * FileList);
+  virtual void ReadDirectory(TRemoteFileList * AFileList);
   virtual void ReadFile(const UnicodeString & AFileName,
-    TRemoteFile *& File);
+    TRemoteFile *& AFile);
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
-    TRemoteFile *& File);
+    TRemoteFile *& AFile);
   virtual void RemoteRenameFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName);
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
@@ -145,7 +145,7 @@ protected:
   static ssize_t NeonUploadBodyProvider(void * UserData, char * Buffer, size_t BufLen);
   static int NeonPostSend(ne_request * Req, void * UserData, const ne_status * Status);
   static void NeonPostHeaders(ne_request * Req, void * UserData, const ne_status * Status);
-  void ExchangeCapabilities(const char * Path, UnicodeString & CorrectedUrl);
+  void ExchangeCapabilities(const char * APath, UnicodeString & CorrectedUrl);
   static int DoNeonServerSSLCallback(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate, bool Aux);
   static int NeonServerSSLCallbackMain(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
   static int NeonServerSSLCallbackAux(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
@@ -196,9 +196,9 @@ private:
   bool FNtlmAuthenticationFailed;
 
   void CustomReadFile(const UnicodeString & AFileName,
-    TRemoteFile *& File, TRemoteFile * ALinkedByFile);
+    TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
   int CustomReadFileInternal(const UnicodeString & AFileName,
-    TRemoteFile *& File, TRemoteFile * ALinkedByFile);
+    TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
   void RegisterForDebug();
   void UnregisterFromDebug();
   bool VerifyCertificate(const TWebDAVCertificateData & Data, bool Aux);
@@ -211,7 +211,7 @@ private:
   int CopyFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
   bool IsValidRedirect(int NeonStatus, UnicodeString & APath) const;
   UnicodeString DirectoryPath(const UnicodeString & APath) const;
-  UnicodeString FilePath(const TRemoteFile * File) const;
+  UnicodeString FilePath(const TRemoteFile * AFile) const;
   struct ne_lock * FindLock(const RawByteString & APath) const;
   void DiscardLock(const RawByteString & APath);
   bool IsNtlmAuthentication() const;

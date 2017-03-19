@@ -503,7 +503,7 @@ UnicodeString TWebDAVFileSystem::GetRedirectUrl() const
   return Result;
 }
 
-void TWebDAVFileSystem::ExchangeCapabilities(const char * Path, UnicodeString & CorrectedUrl)
+void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString & CorrectedUrl)
 {
   ClearNeonError();
 
@@ -511,7 +511,7 @@ void TWebDAVFileSystem::ExchangeCapabilities(const char * Path, UnicodeString & 
   FAuthenticationRetry = false;
   do
   {
-    NeonStatus = ne_options2(FNeonSession, Path, &FCapabilities);
+    NeonStatus = ne_options2(FNeonSession, APath, &FCapabilities);
   }
   while ((NeonStatus == NE_AUTH) && FAuthenticationRetry);
 
@@ -901,30 +901,30 @@ bool TWebDAVFileSystem::IsValidRedirect(int NeonStatus, UnicodeString & APath) c
   return Result;
 }
 
-void TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
+void TWebDAVFileSystem::ReadDirectory(TRemoteFileList * AFileList)
 {
-  UnicodeString Path = DirectoryPath(FileList->GetDirectory());
+  UnicodeString Path = DirectoryPath(AFileList->GetDirectory());
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
 
-  int NeonStatus = ReadDirectoryInternal(Path, FileList);
+  int NeonStatus = ReadDirectoryInternal(Path, AFileList);
   if (IsValidRedirect(NeonStatus, Path))
   {
-    NeonStatus = ReadDirectoryInternal(Path, FileList);
+    NeonStatus = ReadDirectoryInternal(Path, AFileList);
   }
   CheckStatus(NeonStatus);
 }
 
 void TWebDAVFileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
-  TRemoteFile *& /*File*/)
+  TRemoteFile *& /*AFile*/)
 {
   // we never set SymLink flag, so we should never get here
   DebugFail();
 }
 
 void TWebDAVFileSystem::ReadFile(const UnicodeString & AFileName,
-  TRemoteFile *& File)
+  TRemoteFile *& AFile)
 {
-  CustomReadFile(AFileName, File, nullptr);
+  CustomReadFile(AFileName, AFile, nullptr);
 }
 
 void TWebDAVFileSystem::NeonPropsResult(
