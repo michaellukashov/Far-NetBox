@@ -923,7 +923,7 @@ void TFarMessageDialog::Idle()
 
   if (FParams->Timer > 0)
   {
-    size_t SinceLastTimer = static_cast<size_t>((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
+    uintptr_t SinceLastTimer = static_cast<uintptr_t>((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
     if (SinceLastTimer >= FParams->Timeout)
     {
       DebugAssert(FParams->TimerEvent);
