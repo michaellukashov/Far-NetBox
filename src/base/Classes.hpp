@@ -288,7 +288,7 @@ enum TDuplicatesEnum
 
 class TStream;
 
-class TStrings : public TPersistent
+class TStrings : public TObjectList
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -296,7 +296,8 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TStrings ||
       Obj->GetKind() == OBJECT_CLASS_TStringList ||
-      Obj->GetKind() == OBJECT_CLASS_TFarList;
+      Obj->GetKind() == OBJECT_CLASS_TFarList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
   }
 public:
   TStrings();
