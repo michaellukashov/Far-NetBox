@@ -1530,7 +1530,6 @@ target_include_directories(NetBox PRIVATE
   ../../libs/rdestl
   ../../libs/atlmfc/include
   ../filezilla
-  ../filezilla/misc
   ../base
   ../core
   ../windows
