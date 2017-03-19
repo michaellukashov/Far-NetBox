@@ -1695,10 +1695,11 @@ void TRemoteFileList::AddFiles(const TRemoteFileList * AFileList)
 TStrings * TRemoteFileList::CloneStrings(TStrings * List)
 {
   std::unique_ptr<TStringList> Result(new TStringList());
+  Result->SetOwnsObjects(true);
   for (intptr_t Index = 0; Index < List->GetCount(); Index++)
   {
     TRemoteFile * File = static_cast<TRemoteFile *>(List->GetObj(Index));
-    Result->AddObject(List->GetString(Index), File);
+    Result->AddObject(List->GetString(Index), File->Duplicate(true));
   }
   return Result.release();
 }
