@@ -2485,6 +2485,9 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data, b
 
         default:
           DebugFail();
+          Result = false;
+          break;
+
         case qaCancel:
 //          FTerminal->GetConfiguration()->GetUsage()->Inc(L"HostNotVerified");
           Result = false;
