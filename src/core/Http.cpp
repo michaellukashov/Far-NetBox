@@ -2,7 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <neon/src/ne_request.h>
+#include <ne_request.h>
 #include <openssl/ssl.h>
 
 #include "Http.h"

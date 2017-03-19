@@ -14,16 +14,16 @@
 #ifndef WINSCP
 #define WINSCP
 #endif
-#include <neon/src/ne_basic.h>
-#include <neon/src/ne_auth.h>
-#include <neon/src/ne_props.h>
-#include <neon/src/ne_uri.h>
-#include <neon/src/ne_session.h>
-#include <neon/src/ne_request.h>
-#include <neon/src/ne_xml.h>
-#include <neon/src/ne_redirect.h>
-#include <neon/src/ne_xmlreq.h>
-#include <neon/src/ne_locks.h>
+#include <ne_basic.h>
+#include <ne_auth.h>
+#include <ne_props.h>
+#include <ne_uri.h>
+#include <ne_session.h>
+#include <ne_request.h>
+#include <ne_xml.h>
+#include <ne_redirect.h>
+#include <ne_xmlreq.h>
+#include <ne_locks.h>
 #include <expat/lib/expat.h>
 
 #include "WebDAVFileSystem.h"

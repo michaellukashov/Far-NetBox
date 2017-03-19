@@ -2,10 +2,10 @@
 #pragma once
 
 //#include <apr_pools.h>
-#include <neon/src/ne_uri.h>
-#include <neon/src/ne_utils.h>
-#include <neon/src/ne_string.h>
-#include <neon/src/ne_request.h>
+#include <ne_uri.h>
+#include <ne_utils.h>
+#include <ne_string.h>
+#include <ne_request.h>
 #include <FileSystems.h>
 
 struct TWebDAVCertificateData;

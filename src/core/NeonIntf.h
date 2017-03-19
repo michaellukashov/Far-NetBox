@@ -2,8 +2,8 @@
 #ifndef NeonIntfH
 #define NeonIntfH
 
-#include <neon/src/ne_uri.h>
-#include <neon/src/ne_session.h>
+#include <ne_uri.h>
+#include <ne_session.h>
 #include <SessionData.h>
 
 #define StrToNeon(S) UTF8String(S).c_str()
