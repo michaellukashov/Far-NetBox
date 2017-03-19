@@ -210,7 +210,7 @@ private:
   int RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
   int CopyFileInternal(const UnicodeString & FileName, const UnicodeString & NewName);
   bool IsValidRedirect(int NeonStatus, UnicodeString & Path);
-  UnicodeString DirectoryPath(const UnicodeString & Path) const;
+  UnicodeString DirectoryPath(const UnicodeString & APath) const;
   UnicodeString FilePath(const TRemoteFile * File) const;
   struct ne_lock * FindLock(const RawByteString & Path);
   void DiscardLock(const RawByteString & Path);
