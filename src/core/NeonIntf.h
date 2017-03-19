@@ -17,7 +17,7 @@ void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const Unico
 void DestroyNeonSession(ne_session * Session);
 UnicodeString GetNeonError(ne_session * Session);
 void CheckNeonStatus(ne_session * Session, int NeonStatus,
-  const UnicodeString & HostName, const UnicodeString & CustomError = L"");
+  const UnicodeString & AHostName, const UnicodeString & CustomError = L"");
 UnicodeString GetNeonRedirectUrl(ne_session * Session);
 void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls);
 typedef void (*TNeonTlsInit)(struct ssl_st * Ssl, ne_session * Session);

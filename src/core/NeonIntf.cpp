@@ -122,7 +122,7 @@ UnicodeString GetNeonError(ne_session * Session)
 }
 
 void CheckNeonStatus(ne_session * Session, int NeonStatus,
-  const UnicodeString & HostName, const UnicodeString & CustomError)
+  const UnicodeString & AHostName, const UnicodeString & CustomError)
 {
   if (NeonStatus == NE_OK)
   {
@@ -148,7 +148,7 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
           break;
 
         case NE_LOOKUP:
-          Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), L"%HOST%", HostName);
+          Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), L"%HOST%", AHostName);
           break;
 
         case NE_AUTH:
@@ -164,7 +164,7 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
           break;
 
         case NE_TIMEOUT:
-          Error = ReplaceStr(LoadStr(NET_TRANSL_TIMEOUT2), L"%HOST%", HostName);
+          Error = ReplaceStr(LoadStr(NET_TRANSL_TIMEOUT2), L"%HOST%", AHostName);
           break;
 
         case NE_REDIRECT:
