@@ -208,7 +208,7 @@ private:
   UnicodeString ParsePathFromUrl(const UnicodeString & Url) const;
   int ReadDirectoryInternal(const UnicodeString & Path, TRemoteFileList * FileList);
   int RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
-  int CopyFileInternal(const UnicodeString & FileName, const UnicodeString & NewName);
+  int CopyFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
   bool IsValidRedirect(int NeonStatus, UnicodeString & APath) const;
   UnicodeString DirectoryPath(const UnicodeString & APath) const;
   UnicodeString FilePath(const TRemoteFile * File) const;

@@ -1165,11 +1165,27 @@ void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   DiscardLock(PathToNeon(Path));
 }
 
-void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString & /*AFileName*/,
-  const UnicodeString & /*ANewName*/)
+int TWebDAVFileSystem::CopyFileInternal(const UnicodeString & AFileName,
+  const UnicodeString & ANewName)
 {
-  DebugFail();
-  // ThrowNotImplemented(1012);
+  // 0 = no overwrite
+  return ne_copy(FNeonSession, 0, NE_DEPTH_INFINITE, PathToNeon(AFileName), PathToNeon(ANewName));
+}
+
+void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
+  const UnicodeString & ANewName)
+{
+  // TraceCallstack();
+  ClearNeonError();
+  TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
+
+  UnicodeString Path = AFileName;
+  int NeonStatus = CopyFileInternal(Path, ANewName);
+  if (IsValidRedirect(NeonStatus, Path))
+  {
+    NeonStatus = CopyFileInternal(Path, ANewName);
+  }
+  CheckStatus(NeonStatus);
 }
 
 void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
