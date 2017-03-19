@@ -1525,6 +1525,7 @@ target_include_directories(NetBox PRIVATE
   ../../libs/putty
   ../../libs/putty/windows
   ../../libs/apr/include
+  ../../libs/neon/src
   ../../libs/tinyxml2
   ../../libs/rdestl
   ../../libs/atlmfc/include
