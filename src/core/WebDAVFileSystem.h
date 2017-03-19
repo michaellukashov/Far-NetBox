@@ -213,7 +213,7 @@ private:
   UnicodeString DirectoryPath(const UnicodeString & APath) const;
   UnicodeString FilePath(const TRemoteFile * File) const;
   struct ne_lock * FindLock(const RawByteString & APath) const;
-  void DiscardLock(const RawByteString & Path);
+  void DiscardLock(const RawByteString & APath);
   bool IsNtlmAuthentication() const;
   static void NeonAuxRequestInit(ne_session_s * Session, ne_request * Request, void * UserData);
   void SetSessionTls(ne_session_s * Session, bool Aux);

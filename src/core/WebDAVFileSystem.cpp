@@ -2808,12 +2808,12 @@ struct ne_lock * TWebDAVFileSystem::FindLock(const RawByteString & APath) const
   return ne_lockstore_findbyuri(FNeonLockStore, &Uri);
 }
 
-void TWebDAVFileSystem::DiscardLock(const RawByteString & Path)
+void TWebDAVFileSystem::DiscardLock(const RawByteString & APath)
 {
   TGuard Guard(FNeonLockStoreSection);
   if (FNeonLockStore != nullptr)
   {
-    struct ne_lock * Lock = FindLock(Path);
+    struct ne_lock * Lock = FindLock(APath);
     if (Lock != nullptr)
     {
       ne_lockstore_remove(FNeonLockStore, Lock);
