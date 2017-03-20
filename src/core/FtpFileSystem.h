@@ -4,7 +4,7 @@
 
 #include <time.h>
 #include <rdestl/map.h>
-#include <rdestl/vector.h>
+#include <rdestl/list.h>
 #include <FileSystems.h>
 
 class TFileZillaIntf;
@@ -27,7 +27,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   LPARAM lparam;
 };
 
-class TMessageQueue : public TObject, public rde::vector<message_t>
+class TMessageQueue : public TObject, public rde::list<message_t>
 {
 public:
   typedef message_t value_type;

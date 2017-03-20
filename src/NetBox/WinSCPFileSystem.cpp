@@ -1075,9 +1075,10 @@ void TWinSCPFileSystem::CreateLink()
   bool SymbolicLink = true;
 
   TFarPanelInfo * const * PanelInfo = GetPanelInfo();
-  if (PanelInfo && *PanelInfo && (*PanelInfo)->GetFocusedItem() && (*PanelInfo)->GetFocusedItem()->GetUserData())
+  const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
+  if (Focused && Focused->GetUserData())
   {
-    File = dyn_cast<TRemoteFile>(as_object((*PanelInfo)->GetFocusedItem()->GetUserData()));
+    File = dyn_cast<TRemoteFile>(as_object(Focused->GetUserData()));
 
     if (File)
     {
@@ -1800,14 +1801,15 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
 
 void TWinSCPFileSystem::RenameFile()
 {
-  const TFarPanelItem * PanelItem = (*GetPanelInfo())->GetFocusedItem();
-  DebugAssert(PanelItem != nullptr);
+  TFarPanelInfo * const * PanelInfo = GetPanelInfo();
+  const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
+  DebugAssert(Focused != nullptr);
 
-  if (!PanelItem->GetIsParentDirectory())
+  if (Focused && !Focused->GetIsParentDirectory())
   {
     RequireCapability(fcRename);
 
-    TRemoteFile * File = dyn_cast<TRemoteFile>(as_object(PanelItem->GetUserData()));
+    TRemoteFile * File = dyn_cast<TRemoteFile>(as_object(Focused->GetUserData()));
     UnicodeString NewName = File->GetFileName();
     if (RenameFileDialog(File, NewName))
     {
@@ -1903,7 +1905,8 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString & Token, bo
 
 void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 {
-  const TFarPanelItem * Focused = (*GetPanelInfo())->GetFocusedItem();
+  TFarPanelInfo * const * PanelInfo = GetPanelInfo();
+  const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
 
   if (Focused != nullptr)
   {
@@ -1927,7 +1930,8 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 
 void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
 {
-  const TFarPanelItem * Focused = (*GetPanelInfo())->GetFocusedItem();
+  TFarPanelInfo * const * PanelInfo = GetPanelInfo();
+  const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
 
   if (Focused != nullptr)
   {
@@ -1991,8 +1995,9 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   else
   {
     TFarPanelInfo * const * PanelInfo = GetPanelInfo();
+    const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
     if (PanelInfo && *PanelInfo && ((*PanelInfo)->GetSelectedCount() == 0) &&
-        (*PanelInfo)->GetFocusedItem()->GetIsParentDirectory())
+        Focused->GetIsParentDirectory())
     {
       FileNames->Add(core::UnixIncludeTrailingBackslash(FTerminal->GetCurrDirectory()));
     }
@@ -2854,17 +2859,17 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(TOperationSide Side, TFarPan
   }
 
   TStrings * Result = nullptr;
-  const TFarPanelItem * PanelItem = (*PanelInfo)->GetFocusedItem();
-  if (!PanelItem->GetIsParentDirectory())
+  const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
+  if (!Focused->GetIsParentDirectory())
   {
     Result = new TStringList();
-    DebugAssert((Side == osLocal) || PanelItem->GetUserData());
-    UnicodeString FileName = PanelItem->GetFileName();
+    DebugAssert((Side == osLocal) || Focused->GetUserData());
+    UnicodeString FileName = Focused->GetFileName();
     if (Side == osLocal)
     {
       FileName = ::IncludeTrailingBackslash((*PanelInfo)->GetCurrDirectory()) + FileName;
     }
-    Result->AddObject(FileName, as_object(PanelItem->GetUserData()));
+    Result->AddObject(FileName, as_object(Focused->GetUserData()));
   }
   return Result;
 }
@@ -4014,9 +4019,9 @@ void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
 
 void TWinSCPFileSystem::MultipleEdit()
 {
-  const TFarPanelItem * Focused = (*GetPanelInfo())->GetFocusedItem();
-  if ((Focused != nullptr) &&
-      Focused->GetIsFile() &&
+  TFarPanelInfo * const * PanelInfo = GetPanelInfo();
+  const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
+  if ((Focused != nullptr) && Focused->GetIsFile() &&
       (Focused->GetUserData() != nullptr))
   {
     std::unique_ptr<TStrings> FileList(CreateFocusedFileList(osRemote));

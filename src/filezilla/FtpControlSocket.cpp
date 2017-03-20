@@ -2951,16 +2951,18 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         m_Operation.nOpState=FILETRANSFER_TYPE;
         CString remotefile=pData->transferfile.remotefile;
         int i;
+        t_directory::t_direntry * entry = m_pDirectoryListing->direntry;
         for (i=0; i<m_pDirectoryListing->num; i++)
         {
-          if (m_pDirectoryListing->direntry[i].name==remotefile &&
-            ( m_pDirectoryListing->direntry[i].bUnsure || m_pDirectoryListing->direntry[i].size==-1 ))
+          if (entry->name==remotefile &&
+            ( entry->bUnsure || entry->size==-1 ))
           {
             delete m_pDirectoryListing;
             m_pDirectoryListing=0;
             m_Operation.nOpState = NeedModeCommand() ? FILETRANSFER_LIST_MODE : (NeedOptsCommand() ? FILETRANSFER_LIST_OPTS : FILETRANSFER_LIST_TYPE);
             break;
           }
+          ++entry;
         }
         if (m_pDirectoryListing && i==m_pDirectoryListing->num)
         {
@@ -3741,15 +3743,19 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
           pData->transferdata.transfersize=-1;
           CString remotefile=pData->transferfile.remotefile;
           if (m_pDirectoryListing)
+          {
+            t_directory::t_direntry * entry = m_pDirectoryListing->direntry;
             for (int i=0; i<m_pDirectoryListing->num; i++)
             {
-              if (m_pDirectoryListing->direntry[i].name==remotefile)
+              if (entry->name==remotefile)
               {
-                  pData->hasRemoteDate = true;
-                  pData->remoteDate = m_pDirectoryListing->direntry[i].date;
-                pData->transferdata.transfersize=m_pDirectoryListing->direntry[i].size;
+                pData->hasRemoteDate = true;
+                pData->remoteDate = entry->date;
+                pData->transferdata.transfersize=entry->size;
               }
+              ++entry;
             }
+          }
           else if (pData->pFileSize)
             pData->transferdata.transfersize=*pData->pFileSize;
           pData->transferdata.transferleft=pData->transferdata.transfersize;
