@@ -1505,7 +1505,7 @@ private:
   void WindowsEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void UpdateControls();
   void TransferProtocolComboChange();
-  void LoginTypeComboChange();
+  //void LoginTypeComboChange();
   void FillCodePageEdit();
   void CodePageEditAdd(uint32_t Cp);
   void FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
@@ -7184,7 +7184,7 @@ private:
   intptr_t FChecked;
 
   void AdaptSize();
-  int ColumnWidth(intptr_t Index);
+  //int ColumnWidth(intptr_t Index);
   void LoadChecklist();
   void RefreshChecklist(bool Scroll);
   void UpdateControls();

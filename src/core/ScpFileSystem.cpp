@@ -71,7 +71,7 @@ private:
   UnicodeString FReturnVar;
 
 public:
-  void SetMasks(const UnicodeString & Value);
+  //void SetMasks(const UnicodeString & Value);
   int GetMaxLines(TFSCommand Cmd) const;
   int GetMinLines(TFSCommand Cmd) const;
   bool GetModifiesFiles(TFSCommand Cmd) const;
