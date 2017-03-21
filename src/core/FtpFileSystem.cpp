@@ -19,7 +19,6 @@
 #include "HelpCore.h"
 #include "WinSCPSecurity.h"
 #include <StrUtils.hpp>
-#include <DateUtils.hpp>
 #include <openssl/x509_vfy.h>
 
 const int DummyCodeClass = 8;
@@ -5063,7 +5062,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
   {
     // error-handling-free and DST-mode-unaware copy of TTerminal::OpenLocalFile
     HANDLE LocalFileHandle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ,
-      FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, 0);
+      FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
     if (LocalFileHandle == INVALID_HANDLE_VALUE)
     {
       Result = false;

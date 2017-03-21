@@ -114,8 +114,8 @@ public:
   uintptr_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
   bool TryFtp();
   UnicodeString ConvertInput(const RawByteString & Input, uintptr_t CodePage = CP_ACP) const;
-  void GetRealHost(UnicodeString & Host, intptr_t & Port);
-  UnicodeString RetrieveHostKey(const UnicodeString & Host, intptr_t Port, const UnicodeString & KeyType);
+  void GetRealHost(UnicodeString & Host, intptr_t & Port) const;
+  UnicodeString RetrieveHostKey(const UnicodeString & Host, intptr_t Port, const UnicodeString & KeyType) const;
 
 protected:
   TCaptureOutputEvent FOnCaptureOutput;

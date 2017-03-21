@@ -3,7 +3,6 @@
 
 #include <Common.h>
 #include <Queue.h>
-#include <MsgIDs.h>
 
 #include "CoreMain.h"
 #include "FarConfiguration.h"

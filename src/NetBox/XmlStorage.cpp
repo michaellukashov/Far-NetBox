@@ -2,7 +2,6 @@
 #include <Classes.hpp>
 #include <Common.h>
 #include "XmlStorage.h"
-#include "TextsCore.h"
 #include "FarUtil.h"
 
 static const char * CONST_XML_VERSION21 = "2.1";

@@ -3,7 +3,6 @@
 
 #include "WinSCPFileSystem.h"
 #include "WinSCPPlugin.h"
-#include "FarDialog.h"
 #include "FarConfiguration.h"
 #include <Common.h>
 #include <MsgIDs.h>
@@ -16,7 +15,6 @@
 #include <Sysutils.hpp>
 #include "guid.h"
 
-#include <CompThread.hpp>
 #include "PuttyIntf.h"
 #include "XmlStorage.h"
 
@@ -59,7 +57,7 @@ void TSessionPanelItem::GetData(
   UnicodeString & /*Owner*/, void *& UserData, size_t & /*CustomColumnNumber*/)
 {
   AFileName = base::UnixExtractFileName(FSessionData->GetName());
-  UserData = (void *)FSessionData;
+  UserData = static_cast<void *>(const_cast<TSessionData *>(FSessionData));
 }
 
 TSessionFolderPanelItem::TSessionFolderPanelItem(const UnicodeString & Folder) :
@@ -257,7 +255,7 @@ TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
   TSimpleThread(OBJECT_CLASS_TKeepAliveThread),
   FFileSystem(FileSystem),
   FInterval(Interval),
-  FEvent(0)
+  FEvent(nullptr)
 {
 }
 
@@ -294,9 +292,9 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FQueue(nullptr),
   FQueueStatus(nullptr),
   FQueueEvent(qeEmpty),
-  FProgressSaveScreenHandle(0),
-  FSynchronizationSaveScreenHandle(0),
-  FAuthenticationSaveScreenHandle(0),
+  FProgressSaveScreenHandle(nullptr),
+  FSynchronizationSaveScreenHandle(nullptr),
+  FAuthenticationSaveScreenHandle(nullptr),
   FSynchronizationCompare(false),
   FFileList(nullptr),
   FPanelItems(nullptr),
@@ -2041,7 +2039,7 @@ void TWinSCPFileSystem::ShowInformation()
     OnGetSpaceAvailable);
 }
 
-bool TWinSCPFileSystem::AreCachesEmpty()
+bool TWinSCPFileSystem::AreCachesEmpty() const
 {
   DebugAssert(Connected());
   return FTerminal->GetAreCachesEmpty();
@@ -3224,7 +3222,7 @@ HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFil
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
+    return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
   }
   else
   {
@@ -3409,7 +3407,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
   if ((Operation != foCalculateSize) &&
       (Operation != foGetProperties) &&
       (Operation != foCalculateChecksum) &&
-      (FSynchronizationSaveScreenHandle == 0) &&
+      (FSynchronizationSaveScreenHandle == nullptr) &&
       !FNoProgress && !FNoProgressFinish)
   {
     TFarPanelItem * PanelItem = nullptr;

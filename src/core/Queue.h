@@ -22,7 +22,7 @@ public:
 public:
   explicit TSimpleThread(TObjectClassId Kind);
   virtual ~TSimpleThread();
-  void Init();
+  virtual void Init();
 
   virtual void Start();
   void WaitFor(uint32_t Milliseconds = INFINITE);

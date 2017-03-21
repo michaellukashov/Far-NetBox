@@ -7,7 +7,6 @@
 #include <Global.h>
 #include <StrUtils.hpp>
 #include <Sysutils.hpp>
-#include <DateUtils.hpp>
 #include <math.h>
 #include <rdestl/map.h>
 #include <rdestl/vector.h>
@@ -1028,7 +1027,7 @@ static UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
         if ((APath.Length() >= 1) &&
             ((APath[1] == L'\\') || (APath[1] == L'/')))
         {
-          AddPrefix = FALSE;
+          AddPrefix = false;
 
           // Get current root path
           UnicodeString CurrentDir = GetCurrentDir();

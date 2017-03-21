@@ -5,14 +5,14 @@
 #include <Common.h>
 #include <TextsCore.h>
 #include <Exceptions.h>
-#include <FileMasks.h>
-#include <CoreMain.h>
+//#include <FileMasks.h>
+//#include <CoreMain.h>
 #include <RemoteFiles.h>
 #include <Interface.h>
 #include <LibraryLoader.hpp>
 
 #include "WinInterface.h"
-#include "GUITools.h"
+//#include "GUITools.h"
 #include "PuttyTools.h"
 #include "Tools.h"
 

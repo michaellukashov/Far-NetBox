@@ -26,7 +26,7 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
   HMODULE Module = ::GetModuleHandle(FileName);
   if (Module == nullptr)
   {
-    Module = ::LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE);
+    Module = ::LoadLibraryEx(FileName, nullptr, LOAD_LIBRARY_AS_DATAFILE);
     NeedFree = true;
   }
   if (Module == nullptr)

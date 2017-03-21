@@ -2,8 +2,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <ne_auth.h>
 #include <ne_redirect.h>
+#include <ne_auth.h>
 
 #include "NeonIntf.h"
 #include "Interface.h"

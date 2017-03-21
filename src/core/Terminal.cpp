@@ -5,11 +5,8 @@
 #include "Terminal.h"
 
 #include <Sysutils.hpp>
-#include <FileCtrl.hpp>
 #include <Common.h>
-#include <FileBuffer.h>
 
-#include "PuttyTools.h"
 #include "Interface.h"
 #include "RemoteFiles.h"
 #include "SecureShell.h"
@@ -4671,7 +4668,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
               TSuspendFileOperationProgress Suspend(OperationProgress);
               Answer = QueryUser(
                 MainInstructions(FMTLOAD(READ_ONLY_OVERWRITE, AFileName.c_str())), nullptr,
-                qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, 0);
+                qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, nullptr);
             }
 
             switch (Answer)
@@ -6431,7 +6428,7 @@ HANDLE TTerminal::TerminalCreateLocalFile(const UnicodeString & LocalFileName, D
   }
   else
   {
-    return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
+    return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
   }
 }
 
@@ -6495,7 +6492,7 @@ BOOL TTerminal::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECUR
   }
 }
 
-void TTerminal::ReflectSettings()
+void TTerminal::ReflectSettings() const
 {
   DebugAssert(FLog != nullptr);
   FLog->ReflectSettings();
@@ -6725,7 +6722,7 @@ bool TTerminal::LoadTlsCertificate(X509 *& Certificate, EVP_PKEY *& PrivateKey)
   return Result;
 }
 
-UnicodeString TTerminal::GetBaseFileName(const UnicodeString & AFileName)
+UnicodeString TTerminal::GetBaseFileName(const UnicodeString & AFileName) const
 {
   UnicodeString FileName = AFileName;
 

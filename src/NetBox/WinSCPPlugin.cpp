@@ -11,7 +11,6 @@
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarConfiguration.h"
-#include "FarDialog.h"
 #include "XmlStorage.h"
 
 TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)

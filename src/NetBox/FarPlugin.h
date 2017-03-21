@@ -130,8 +130,8 @@ public:
   intptr_t Message(uintptr_t Flags, const UnicodeString & Title,
     const UnicodeString & Message, TStrings * Buttons = nullptr,
     TFarMessageParams * Params = nullptr);
-  intptr_t MaxMessageLines();
-  intptr_t MaxMenuItemLength();
+  intptr_t MaxMessageLines() const;
+  intptr_t MaxMenuItemLength() const;
   intptr_t Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
     const UnicodeString & Bottom, TStrings * Items,
     const FarKey * BreakKeys,
@@ -213,7 +213,7 @@ protected:
   virtual void HandleFileSystemException(TCustomFarFileSystem * FarFileSystem,
     Exception * E, OPERATION_MODES OpMode = 0);
   void ResetCachedInfo();
-  intptr_t MaxLength(TStrings * Strings);
+  intptr_t MaxLength(TStrings * Strings) const;
   intptr_t FarMessage(uintptr_t Flags,
     const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
     TFarMessageParams * Params);

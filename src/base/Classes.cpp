@@ -1,6 +1,4 @@
 #include <iostream>
-#include <string>
-#include <sstream>
 
 #include <Classes.hpp>
 #include <Common.h>
@@ -9,8 +7,6 @@
 #include <LibraryLoader.hpp>
 #include <rtlconsts.h>
 #include <FileBuffer.h>
-
-#include <shellapi.h>
 
 #if (_MSC_VER >= 1900)
 
