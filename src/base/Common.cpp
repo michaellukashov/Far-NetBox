@@ -1027,7 +1027,7 @@ static UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
         if ((APath.Length() >= 1) &&
             ((APath[1] == L'\\') || (APath[1] == L'/')))
         {
-          AddPrefix = FALSE;
+          AddPrefix = false;
 
           // Get current root path
           UnicodeString CurrentDir = GetCurrentDir();
