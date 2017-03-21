@@ -2077,7 +2077,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     {
       DWORD BufferLen = 0;
       DWORD OutBuffLen = 0;
-      if (WSAIoctl(FSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, NULL, 0, &BufferLen, sizeof(BufferLen), &OutBuffLen, 0, 0) == 0)
+      if (WSAIoctl(FSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, nullptr, 0, &BufferLen, sizeof(BufferLen), &OutBuffLen, nullptr, nullptr) == 0)
       {
         DebugAssert(OutBuffLen == sizeof(BufferLen));
         if (FSendBuf < static_cast<intptr_t>(BufferLen))

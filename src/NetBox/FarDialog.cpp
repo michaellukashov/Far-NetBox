@@ -26,7 +26,7 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   FVisible(false),
   FItems(new TObjectList()),
   FContainers(new TObjectList()),
-  FHandle(0),
+  FHandle(nullptr),
   FDefaultButton(nullptr),
   FBorderBox(nullptr),
   FNextItemPosition(ipNewLine),

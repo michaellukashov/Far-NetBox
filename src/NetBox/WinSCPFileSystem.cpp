@@ -253,7 +253,7 @@ TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
   TSimpleThread(OBJECT_CLASS_TKeepAliveThread),
   FFileSystem(FileSystem),
   FInterval(Interval),
-  FEvent(0)
+  FEvent(nullptr)
 {
 }
 
@@ -290,9 +290,9 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FQueue(nullptr),
   FQueueStatus(nullptr),
   FQueueEvent(qeEmpty),
-  FProgressSaveScreenHandle(0),
-  FSynchronizationSaveScreenHandle(0),
-  FAuthenticationSaveScreenHandle(0),
+  FProgressSaveScreenHandle(nullptr),
+  FSynchronizationSaveScreenHandle(nullptr),
+  FAuthenticationSaveScreenHandle(nullptr),
   FSynchronizationCompare(false),
   FFileList(nullptr),
   FPanelItems(nullptr),
@@ -3201,7 +3201,7 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & AFileName,
 HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
-  return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
+  return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
 }
 
 inline DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName)
@@ -3351,7 +3351,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
   if ((Operation != foCalculateSize) &&
       (Operation != foGetProperties) &&
       (Operation != foCalculateChecksum) &&
-      (FSynchronizationSaveScreenHandle == 0) &&
+      (FSynchronizationSaveScreenHandle == nullptr) &&
       !FNoProgress && !FNoProgressFinish)
   {
     TFarPanelItem * PanelItem = nullptr;
@@ -4066,7 +4066,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
           if (FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW,
             ToPtr(Pos)) != 0)
           {
-            FarPlugin->FarAdvControl(ACTL_COMMIT, 0);
+            FarPlugin->FarAdvControl(ACTL_COMMIT, nullptr);
           }
           break;
         }

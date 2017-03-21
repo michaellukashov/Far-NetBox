@@ -777,7 +777,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   UnicodeString * AFileName)
 {
   UnicodeString LibraryFileName;
-  HINSTANCE NewInstance = 0;
+  HINSTANCE NewInstance = nullptr;
   bool Internal = (ALocale == InternalLocale());
   if (!Internal)
   {
@@ -800,12 +800,12 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
     Module = ::ChangeFileExt(Module, UnicodeString(L".") + LocaleName);
     // Look for a potential language/country translation
-    NewInstance = ::LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
+    NewInstance = ::LoadLibraryEx(Module.c_str(), nullptr, LOAD_LIBRARY_AS_DATAFILE);
     if (!NewInstance)
     {
       // Finally look for a language only translation
       Module.SetLength(Module.Length() - 1);
-      NewInstance = ::LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
+      NewInstance = ::LoadLibraryEx(Module.c_str(), nullptr, LOAD_LIBRARY_AS_DATAFILE);
       if (NewInstance)
       {
         LibraryFileName = Module;

@@ -26,7 +26,7 @@ void TLibraryLoader::Load(const UnicodeString & LibraryName, bool AllowFailure)
 
   if (!AllowFailure)
   {
-    DebugAssert(FHModule != 0);
+    DebugAssert(FHModule != nullptr);
   }
 }
 
@@ -48,7 +48,7 @@ FARPROC TLibraryLoader::GetProcAddress(const AnsiString & ProcedureName)
 // Get procedure address from loaded library by ordinal value
 FARPROC TLibraryLoader::GetProcAddress(intptr_t ProcedureOrdinal)
 {
-  return ::GetProcAddress(FHModule, (LPCSTR)0 + ProcedureOrdinal);
+  return ::GetProcAddress(FHModule, (LPCSTR)nullptr + ProcedureOrdinal);
 }
 
 

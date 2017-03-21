@@ -4668,7 +4668,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
               TSuspendFileOperationProgress Suspend(OperationProgress);
               Answer = QueryUser(
                 MainInstructions(FMTLOAD(READ_ONLY_OVERWRITE, AFileName.c_str())), nullptr,
-                qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, 0);
+                qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, nullptr);
             }
 
             switch (Answer)
@@ -6428,7 +6428,7 @@ HANDLE TTerminal::TerminalCreateLocalFile(const UnicodeString & LocalFileName, D
   }
   else
   {
-    return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
+    return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
   }
 }
 
