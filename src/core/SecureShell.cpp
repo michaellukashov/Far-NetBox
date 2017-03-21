@@ -2254,7 +2254,7 @@ UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & AKeyStr) const
   return KeyStr;
 }
 
-void TSecureShell::GetRealHost(UnicodeString & Host, intptr_t & Port)
+void TSecureShell::GetRealHost(UnicodeString & Host, intptr_t & Port) const
 {
   if (FSessionData->GetTunnel())
   {
@@ -2264,7 +2264,7 @@ void TSecureShell::GetRealHost(UnicodeString & Host, intptr_t & Port)
   }
 }
 
-UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, intptr_t Port, const UnicodeString & KeyType)
+UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, intptr_t Port, const UnicodeString & KeyType) const
 {
   AnsiString AnsiStoredKeys;
   AnsiStoredKeys.SetLength(10 * 1024);

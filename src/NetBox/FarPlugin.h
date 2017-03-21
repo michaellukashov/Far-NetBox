@@ -117,8 +117,8 @@ public:
   intptr_t Message(DWORD Flags, const UnicodeString & Title,
     const UnicodeString & Message, TStrings * Buttons = nullptr,
     TFarMessageParams * Params = nullptr);
-  intptr_t MaxMessageLines();
-  intptr_t MaxMenuItemLength();
+  intptr_t MaxMessageLines() const;
+  intptr_t MaxMenuItemLength() const;
   intptr_t Menu(DWORD Flags, const UnicodeString & Title,
     const UnicodeString & Bottom, TStrings * Items, const int * BreakKeys,
     int & BreakCode);
@@ -199,7 +199,7 @@ protected:
   virtual void HandleFileSystemException(TCustomFarFileSystem * FarFileSystem,
     Exception * E, int OpMode = 0);
   void ResetCachedInfo();
-  intptr_t MaxLength(TStrings * Strings);
+  intptr_t MaxLength(TStrings * Strings) const;
   intptr_t FarMessage(DWORD Flags,
     const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
     TFarMessageParams * Params);

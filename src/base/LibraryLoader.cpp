@@ -40,13 +40,13 @@ void TLibraryLoader::Unload()
 }
 
 // Get procedure address from loaded library by name
-FARPROC TLibraryLoader::GetProcAddress(const AnsiString & ProcedureName)
+FARPROC TLibraryLoader::GetProcAddress(const AnsiString & ProcedureName) const
 {
   return ::GetProcAddress(FHModule, ProcedureName.c_str());
 }
 
 // Get procedure address from loaded library by ordinal value
-FARPROC TLibraryLoader::GetProcAddress(intptr_t ProcedureOrdinal)
+FARPROC TLibraryLoader::GetProcAddress(intptr_t ProcedureOrdinal) const
 {
   return ::GetProcAddress(FHModule, (LPCSTR)nullptr + ProcedureOrdinal);
 }

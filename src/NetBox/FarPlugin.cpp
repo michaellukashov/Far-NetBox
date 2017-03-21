@@ -702,18 +702,18 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const INPUT_RECORD * Rec)
   }
 }
 
-intptr_t TCustomFarPlugin::MaxMessageLines()
+intptr_t TCustomFarPlugin::MaxMessageLines() const
 {
   return static_cast<intptr_t>(TerminalInfo().y - 5);
 }
 
-intptr_t TCustomFarPlugin::MaxMenuItemLength()
+intptr_t TCustomFarPlugin::MaxMenuItemLength() const
 {
   // got from maximal length of path in FAR's folders history
   return static_cast<intptr_t>(TerminalInfo().x - 13);
 }
 
-intptr_t TCustomFarPlugin::MaxLength(TStrings * Strings)
+intptr_t TCustomFarPlugin::MaxLength(TStrings * Strings) const
 {
   intptr_t Result = 0;
   for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)

@@ -2288,7 +2288,7 @@ inline void TSFTPFileSystem::BusyEnd()
 uint32_t TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
   TFileOperationProgressType * OperationProgress,
   uint32_t MinPacketSize,
-  uint32_t MaxPacketSize)
+  uint32_t MaxPacketSize) const
 {
   const uint32_t minPacketSize = MinPacketSize ? MinPacketSize : 32 * 1024;
 
@@ -2349,7 +2349,7 @@ uint32_t TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
 }
 
 uint32_t TSFTPFileSystem::UploadBlockSize(const RawByteString & Handle,
-  TFileOperationProgressType * OperationProgress)
+  TFileOperationProgressType * OperationProgress) const
 {
   // handle length + offset + data size
   const uintptr_t UploadPacketOverhead =
@@ -2360,7 +2360,7 @@ uint32_t TSFTPFileSystem::UploadBlockSize(const RawByteString & Handle,
 }
 
 uint32_t TSFTPFileSystem::DownloadBlockSize(
-  TFileOperationProgressType * OperationProgress)
+  TFileOperationProgressType * OperationProgress) const
 {
   uint32_t Result = TransferBlockSize(sizeof(uint32_t), OperationProgress,
     static_cast<uint32_t>(GetSessionData()->GetSFTPMinPacketSize()),

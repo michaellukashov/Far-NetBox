@@ -540,7 +540,7 @@ public:
     TFileOperationProgressType * OperationProgress);
   UnicodeString PeekCurrentDirectory();
   void FatalAbort();
-  void ReflectSettings();
+  void ReflectSettings() const;
   void CollectUsage();
   bool IsThisOrChild(TTerminal * Terminal) const;
   void FillSessionDataForCode(TSessionData * Data);
@@ -551,7 +551,7 @@ public:
   void GetSupportedChecksumAlgs(TStrings * Algs);
   UnicodeString ChangeFileName(const TCopyParamType * CopyParam,
     const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel);
-  UnicodeString GetBaseFileName(const UnicodeString & AFileName);
+  UnicodeString GetBaseFileName(const UnicodeString & AFileName) const;
 
   static UnicodeString ExpandFileName(const UnicodeString & APath,
     const UnicodeString & BasePath);

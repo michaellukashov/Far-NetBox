@@ -2029,7 +2029,7 @@ void TWinSCPFileSystem::ShowInformation()
     OnGetSpaceAvailable);
 }
 
-bool TWinSCPFileSystem::AreCachesEmpty()
+bool TWinSCPFileSystem::AreCachesEmpty() const
 {
   DebugAssert(Connected());
   return FTerminal->GetAreCachesEmpty();

@@ -6492,7 +6492,7 @@ BOOL TTerminal::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECUR
   }
 }
 
-void TTerminal::ReflectSettings()
+void TTerminal::ReflectSettings() const
 {
   DebugAssert(FLog != nullptr);
   FLog->ReflectSettings();
@@ -6722,7 +6722,7 @@ bool TTerminal::LoadTlsCertificate(X509 *& Certificate, EVP_PKEY *& PrivateKey)
   return Result;
 }
 
-UnicodeString TTerminal::GetBaseFileName(const UnicodeString & AFileName)
+UnicodeString TTerminal::GetBaseFileName(const UnicodeString & AFileName) const
 {
   UnicodeString FileName = AFileName;
 

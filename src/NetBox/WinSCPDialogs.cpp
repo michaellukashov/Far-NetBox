@@ -5867,7 +5867,7 @@ protected:
   UnicodeString CapabilityStr(TFSCapability Capability);
   UnicodeString CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
-  UnicodeString SpaceStr(int64_t Bytes);
+  UnicodeString SpaceStr(int64_t Bytes) const;
   void ControlsAddItem(TObject * AControl, int Label, const UnicodeString & Value);
   void CalculateMaxLenAddItem(TObject * AControl, int Label, const UnicodeString & Value);
   void ClipboardAddItem(TObject * AControl, int Label, const UnicodeString & Value);
@@ -5880,7 +5880,7 @@ protected:
   void ClipboardButtonClick(TFarButton * Sender, bool & Close);
   void CheckSpaceAvailable();
   void NeedSpaceAvailable();
-  bool SpaceAvailableSupported();
+  bool SpaceAvailableSupported() const;
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
 
 private:
@@ -6066,7 +6066,7 @@ UnicodeString TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability1,
   return FORMAT(L"%s/%s", CapabilityStr(Capability1).c_str(), CapabilityStr(Capability2).c_str());
 }
 
-UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes)
+UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes) const
 {
   UnicodeString Result;
   if (Bytes == 0)
@@ -6377,7 +6377,7 @@ void TFileSystemInfoDialog::NeedSpaceAvailable()
   }
 }
 
-bool TFileSystemInfoDialog::SpaceAvailableSupported()
+bool TFileSystemInfoDialog::SpaceAvailableSupported() const
 {
   return (FOnGetSpaceAvailable);
 }
@@ -6712,7 +6712,7 @@ bool TApplyCommandDialog::Execute(UnicodeString & Command, intptr_t & Params)
 }
 
 bool TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
-  intptr_t & Params)
+  intptr_t & Params) const
 {
   std::unique_ptr<TApplyCommandDialog> Dialog(new TApplyCommandDialog(FPlugin));
   bool Result = Dialog->Execute(Command, Params);
@@ -6737,7 +6737,7 @@ protected:
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
   void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
 
-  intptr_t ActualCopyParamAttrs();
+  intptr_t ActualCopyParamAttrs() const;
   void CustomCopyParam();
   void AdaptSize();
 
@@ -7009,7 +7009,7 @@ void TFullSynchronizeDialog::Change()
   }
 }
 
-intptr_t TFullSynchronizeDialog::ActualCopyParamAttrs()
+intptr_t TFullSynchronizeDialog::ActualCopyParamAttrs() const
 {
   intptr_t Result = -1;
   if (SynchronizeTimestampsButton->GetChecked())
@@ -7141,7 +7141,7 @@ bool TFullSynchronizeDialog::Execute(TTerminal::TSynchronizeMode & Mode,
 bool TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode,
   intptr_t & Params, UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
   TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, intptr_t Options,
-  const TUsableCopyParamAttrs & CopyParamAttrs)
+  const TUsableCopyParamAttrs & CopyParamAttrs) const
 {
   std::unique_ptr<TFullSynchronizeDialog> Dialog(new TFullSynchronizeDialog(
     FPlugin, Options, CopyParamAttrs));

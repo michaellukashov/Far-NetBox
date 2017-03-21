@@ -210,14 +210,14 @@ protected:
   char * GetEOL() const;
   inline void BusyStart();
   inline void BusyEnd();
-  inline uint32_t TransferBlockSize(uint32_t Overhead,
+  uint32_t TransferBlockSize(uint32_t Overhead,
     TFileOperationProgressType * OperationProgress,
     uint32_t MinPacketSize = 0,
-    uint32_t MaxPacketSize = 0);
-  inline uint32_t UploadBlockSize(const RawByteString & Handle,
-    TFileOperationProgressType * OperationProgress);
-  inline uint32_t DownloadBlockSize(
-    TFileOperationProgressType * OperationProgress);
+    uint32_t MaxPacketSize = 0) const;
+  uint32_t UploadBlockSize(const RawByteString & Handle,
+    TFileOperationProgressType * OperationProgress) const;
+  uint32_t DownloadBlockSize(
+    TFileOperationProgressType * OperationProgress) const;
   inline intptr_t PacketLength(uint8_t * LenBuf, SSH_FXP_TYPES ExpectedType);
   void Progress(TFileOperationProgressType * OperationProgress);
 
