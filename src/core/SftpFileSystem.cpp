@@ -7,7 +7,6 @@
 #include <WideStrUtils.hpp>
 
 #include "SftpFileSystem.h"
-#include "PuttyTools.h"
 #include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"

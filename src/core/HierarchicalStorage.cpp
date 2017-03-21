@@ -4,7 +4,6 @@
 #include <rdestl/vector.h>
 #include <Common.h>
 #include <Exceptions.h>
-#include <TextsCore.h>
 #include <StrUtils.hpp>
 
 #include "PuttyIntf.h"

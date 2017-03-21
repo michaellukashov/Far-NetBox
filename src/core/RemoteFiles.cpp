@@ -6,7 +6,6 @@
 #include <StrUtils.hpp>
 
 #include "RemoteFiles.h"
-#include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"
 #include "HelpCore.h"

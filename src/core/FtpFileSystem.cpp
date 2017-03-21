@@ -19,7 +19,6 @@
 #include "HelpCore.h"
 #include "WinSCPSecurity.h"
 #include <StrUtils.hpp>
-#include <DateUtils.hpp>
 #include <openssl/x509_vfy.h>
 
 const int DummyCodeClass = 8;

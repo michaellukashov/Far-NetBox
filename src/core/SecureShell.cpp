@@ -3,7 +3,6 @@
 
 #include <Common.h>
 #include <StrUtils.hpp>
-#include <Exceptions.h>
 
 #include "PuttyIntf.h"
 #include "Interface.h"

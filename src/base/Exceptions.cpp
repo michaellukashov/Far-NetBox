@@ -1,7 +1,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <rdestl/set.h>
 #include <Common.h>
 #include <StrUtils.hpp>
 

@@ -6,7 +6,6 @@
 #include "WinSCPPlugin.h"
 #include "FarPluginStrings.h"
 #include "FarDialog.h"
-#include "TextsCore.h"
 #include "FileMasks.h"
 #include "RemoteFiles.h"
 #include "puttyexp.h"

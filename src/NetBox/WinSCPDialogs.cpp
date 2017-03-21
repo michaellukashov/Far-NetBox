@@ -20,7 +20,7 @@
 #include <Queue.h>
 #include <MsgIDs.h>
 #include <farkeys.hpp>
-#include <farcolor.hpp>
+//#include <farcolor.hpp>
 #include "plugin_version.hpp"
 
 enum TButtonResult

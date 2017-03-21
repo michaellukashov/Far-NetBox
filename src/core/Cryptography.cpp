@@ -46,8 +46,6 @@
 
 */
 
-#include <memory.h>
-
 #define sha1_ctx                  SHA_State
 #define sha1_begin(ctx)           putty_SHA_Init(ctx)
 #define sha1_hash(buf, len, ctx)  putty_SHA_Bytes(ctx, buf, len)

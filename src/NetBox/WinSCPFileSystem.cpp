@@ -3,9 +3,7 @@
 
 #include "WinSCPFileSystem.h"
 #include "WinSCPPlugin.h"
-#include "FarDialog.h"
 #include "FarConfiguration.h"
-#include "farkeys.hpp"
 #include <Common.h>
 #include <MsgIDs.h>
 #include <Exceptions.h>
@@ -15,7 +13,6 @@
 #include <Bookmarks.h>
 #include <GUITools.h>
 #include <Sysutils.hpp>
-#include <CompThread.hpp>
 #include "PuttyIntf.h"
 #include "XmlStorage.h"
 

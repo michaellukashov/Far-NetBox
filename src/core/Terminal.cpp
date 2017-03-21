@@ -5,11 +5,8 @@
 #include "Terminal.h"
 
 #include <Sysutils.hpp>
-#include <FileCtrl.hpp>
 #include <Common.h>
-#include <FileBuffer.h>
 
-#include "PuttyTools.h"
 #include "Interface.h"
 #include "RemoteFiles.h"
 #include "SecureShell.h"

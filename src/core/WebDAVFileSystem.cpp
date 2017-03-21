@@ -37,7 +37,6 @@
 #include "HelpCore.h"
 #include "CoreMain.h"
 #include "Security.h"
-#include <StrUtils.hpp>
 #include <NeonIntf.h>
 #include <openssl/ssl.h>
 

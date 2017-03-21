@@ -3,10 +3,8 @@
 
 #include <Common.h>
 #include <Sysutils.hpp>
-#include <MsgIDs.h>
 
 #include "FarUtil.h"
-#include "resource.h"
 
 extern void InitExtensionModule(HINSTANCE HInst);
 extern void TermExtensionModule();

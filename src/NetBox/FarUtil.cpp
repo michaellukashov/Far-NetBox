@@ -2,7 +2,6 @@
 #pragma hdrstop
 
 #include <Common.h>
-#include <MsgIDs.h>
 
 #include "FarUtil.h"
 
