@@ -676,7 +676,7 @@ intptr_t TCustomFarPlugin::ProcessEditorEvent(const struct ProcessEditorEventInf
   {
     ResetCachedInfo();
 
-   return ProcessEditorEventEx(Info);
+    return ProcessEditorEventEx(Info);
   }
   catch (Exception & E)
   {
@@ -1435,12 +1435,15 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TConsoleTitleParam;
   }
+
 public:
   explicit TConsoleTitleParam() :
     TObject(OBJECT_CLASS_TConsoleTitleParam),
     Progress(0),
     Own(0)
-  {}
+  {
+  }
+
   short Progress;
   short Own;
 };
@@ -2340,9 +2343,10 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   DebugAssert(shift >= 0 && shift < 7);
   KeyBarLabel *Labels = &FKeyBarTitles.Labels[shift * 12];
   if (Labels[FunctionKey-1].Key.VirtualKeyCode)
+  if (Labels[FunctionKey - 1].Key.VirtualKeyCode)
   {
-    nb_free((void*)Labels[FunctionKey-1].Text);
-    nb_free((void*)Labels[FunctionKey-1].LongText);
+    nb_free((void*)Labels[FunctionKey - 1].Text);
+    nb_free((void*)Labels[FunctionKey - 1].LongText);
   }
   static WORD FKeys[] =
   {
@@ -2357,7 +2361,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   Labels[FunctionKey - 1].Key.VirtualKeyCode = VK_F1 + FunctionKey - 1;
   Labels[FunctionKey - 1].Key.ControlKeyState = FKeys[shift];
   Labels[FunctionKey - 1].Text = TCustomFarPlugin::DuplicateStr(Title, /*AllowEmpty=*/true);
-  Labels[FunctionKey-1].LongText = nullptr;
+  Labels[FunctionKey - 1].LongText = nullptr;
 }
 
 void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
