@@ -2245,9 +2245,9 @@ const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
 const wchar_t TRights::ModeGroups[] = L"ugo";
 
 TRights::TRights() :
-  FAllowUndef(false),
   FSet(0),
   FUnset(0),
+  FAllowUndef(false),
   FUnknown(true)
 {
   SetNumber(0);
