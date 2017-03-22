@@ -493,8 +493,8 @@ public:
     FValue = Value;
     return *this;
   }
-  bool operator == (const TDateTime & rhs);
-  bool operator != (const TDateTime & rhs)
+  bool operator == (const TDateTime & rhs) const;
+  bool operator != (const TDateTime & rhs) const
   {
     return !(operator == (rhs));
   }

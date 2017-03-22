@@ -1167,7 +1167,7 @@ TDateTime::TDateTime(uint16_t Hour,
   FValue = ::EncodeTimeVerbose(Hour, Min, Sec, MSec);
 }
 
-bool TDateTime::operator ==(const TDateTime & rhs)
+bool TDateTime::operator ==(const TDateTime & rhs) const
 {
   return ::IsZero(FValue - rhs.FValue);
 }
