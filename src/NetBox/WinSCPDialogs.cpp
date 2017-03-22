@@ -7049,7 +7049,7 @@ bool TFullSynchronizeDialog::CloseQuery()
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
 
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(SAVE_SYNCHRONIZE_MODE), nullptr,
-              qtConfirmation, qaYes | qaNo | qaCancel, 0))
+              qtConfirmation, qaYes | qaNo | qaCancel, nullptr))
     {
       case qaYes:
         FSaveMode = true;
