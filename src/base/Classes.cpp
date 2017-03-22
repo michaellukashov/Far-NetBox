@@ -1685,8 +1685,8 @@ class ERegistryException : public std::exception
 };
 
 TRegistry::TRegistry() :
-  FCurrentKey(0),
-  FRootKey(0),
+  FCurrentKey(nullptr),
+  FRootKey(nullptr),
   FCloseRootKey(false),
   FAccess(KEY_ALL_ACCESS)
 {
