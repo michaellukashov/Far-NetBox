@@ -252,7 +252,7 @@ public:
   virtual RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
-  UnicodeString GetFileDescription(const UnicodeString & AFileName);
+  UnicodeString GetFileDescription(const UnicodeString & AFileName) const;
   UnicodeString GetFileVersion(const UnicodeString & AFileName);
 
   TStoredSessionList * SelectFilezillaSessionsForImport(
