@@ -153,7 +153,7 @@ TCalculateSizeStats::TCalculateSizeStats() :
 }
 
 TSynchronizeOptions::TSynchronizeOptions() :
-  Filter(0)
+  Filter(nullptr)
 {
 //  memset(this, 0, sizeof(*this));
 }
