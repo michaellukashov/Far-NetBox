@@ -160,7 +160,7 @@ protected:
    const ne_uri * Uri, const ne_status * Status);
   void RequireLockStore();
   static void InitSslSession(ssl_st * Ssl, ne_session * Session);
-  void InitSslSessionImpl(ssl_st * Ssl);
+  void InitSslSessionImpl(ssl_st * Ssl) const;
   void NeonAddAuthentiation(bool UseNegotiate);
   void HttpAuthenticationFailed();
 

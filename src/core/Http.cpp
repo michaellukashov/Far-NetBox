@@ -145,7 +145,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
             throw Exception(FMTLOAD(HTTP_ERROR2, StatusCode, Message.c_str(), FHostName.c_str()));
           }
 
-          void * Cursor = NULL;
+          void * Cursor = nullptr;
           const char * HeaderName;
           const char * HeaderValue;
           while ((Cursor = ne_response_header_iterate(NeonRequest, Cursor, &HeaderName, &HeaderValue)) != nullptr)

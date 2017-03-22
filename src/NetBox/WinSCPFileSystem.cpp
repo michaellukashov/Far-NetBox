@@ -380,6 +380,11 @@ bool TWinSCPFileSystem::Connected() const
   return !IsSessionList() && FTerminal->GetActive();
 }
 
+const TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin() const
+{
+  return dyn_cast<const TWinSCPPlugin>(FPlugin);
+}
+
 TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin()
 {
   return dyn_cast<TWinSCPPlugin>(FPlugin);
@@ -3217,6 +3222,7 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & AFileName,
     GetWinSCPPlugin()->DeleteLocalFile(AFileName);
   }
 }
+
 HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
@@ -3230,7 +3236,8 @@ HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFil
       ShareMode, CreationDisposition, FlagsAndAttributes);
   }
 }
-inline DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName)
+
+inline DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName) const
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
@@ -3241,6 +3248,7 @@ inline DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeStri
     return GetWinSCPPlugin()->GetLocalFileAttributes(LocalFileName);
   }
 }
+
 inline BOOL TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
@@ -3252,6 +3260,7 @@ inline BOOL TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeStrin
     return GetWinSCPPlugin()->SetLocalFileAttributes(LocalFileName, FileAttributes);
   }
 }
+
 BOOL TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
@@ -3263,6 +3272,7 @@ BOOL TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString & LocalFileNam
     return GetWinSCPPlugin()->MoveLocalFile(LocalFileName, NewLocalFileName, Flags);
   }
 }
+
 BOOL TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName)
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
@@ -3285,6 +3295,7 @@ BOOL TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & Local
     return GetWinSCPPlugin()->CreateLocalDirectory(LocalDirName, SecurityAttributes);
   }
 }
+
 uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams * AParams)
 {

@@ -153,7 +153,7 @@ TCalculateSizeStats::TCalculateSizeStats() :
 }
 
 TSynchronizeOptions::TSynchronizeOptions() :
-  Filter(0)
+  Filter(nullptr)
 {
 //  memset(this, 0, sizeof(*this));
 }
@@ -163,7 +163,7 @@ TSynchronizeOptions::~TSynchronizeOptions()
   SAFE_DESTROY(Filter);
 }
 
-bool TSynchronizeOptions::MatchesFilter(const UnicodeString & AFileName)
+bool TSynchronizeOptions::MatchesFilter(const UnicodeString & AFileName) const
 {
   bool Result = false;
   if (Filter == nullptr)
@@ -2513,7 +2513,7 @@ void TTerminal::CloseOnCompletion(TOnceDoneOperation Operation, const UnicodeStr
 }
 
 TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
-  const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special)
+  const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special) const
 {
   TBatchOverwrite Result;
   if (Special &&
@@ -2551,7 +2551,7 @@ TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
 }
 
 bool TTerminal::CheckRemoteFile(
-   const UnicodeString & AFileName, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress)
+   const UnicodeString & AFileName, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress) const
 {
   return (EffectiveBatchOverwrite(AFileName, CopyParam, Params, OperationProgress, true) != boAll);
 }
@@ -3035,7 +3035,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
   }
 }
 
-UnicodeString TTerminal::GetRemoteFileInfo(TRemoteFile * File)
+UnicodeString TTerminal::GetRemoteFileInfo(TRemoteFile * File) const
 {
   return
     FORMAT(L"%s;%c;%lld;%s;%d;%s;%s;%s;%d",
@@ -6738,10 +6738,11 @@ UnicodeString TTerminal::GetBaseFileName(const UnicodeString & AFileName) const
 }
 
 UnicodeString TTerminal::ChangeFileName(const TCopyParamType * CopyParam,
-  const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel)
+  const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel) const
 {
   UnicodeString FileName = GetBaseFileName(AFileName);
-  FileName = CopyParam->ChangeFileName(FileName, Side, FirstLevel);
+  if (CopyParam)
+    FileName = CopyParam->ChangeFileName(FileName, Side, FirstLevel);
   return FileName;
 }
 

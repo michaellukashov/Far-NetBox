@@ -90,7 +90,7 @@ public:
   void CopyFrom(TCommandSet * Source);
   UnicodeString Command(TFSCommand Cmd, ...) const;
   UnicodeString Command(TFSCommand Cmd, va_list args) const;
-  TStrings * CreateCommandList();
+  TStrings * CreateCommandList() const;
   UnicodeString FullCommand(TFSCommand Cmd, ...) const;
   UnicodeString FullCommand(TFSCommand Cmd, va_list args) const;
   static UnicodeString ExtractCommand(const UnicodeString & ACommand);
@@ -319,7 +319,7 @@ UnicodeString TCommandSet::ExtractCommand(const UnicodeString & ACommand)
   return Command;
 }
 
-TStrings * TCommandSet::CreateCommandList()
+TStrings * TCommandSet::CreateCommandList() const
 {
   TStrings * CommandList = new TStringList();
   for (intptr_t Index = 0; Index < ShellCommandCount; ++Index)

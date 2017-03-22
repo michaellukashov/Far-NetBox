@@ -214,7 +214,7 @@ bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
   ClearStruct(ExecuteInfo);
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
   ExecuteInfo.lpFile = const_cast<wchar_t *>(APath.data());
   ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
@@ -234,7 +234,7 @@ bool ExecuteShellAndWait(HINSTANCE /*Handle*/, const UnicodeString & APath,
   ClearStruct(ExecuteInfo);
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
   ExecuteInfo.lpFile = const_cast<wchar_t *>(APath.data());
   ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;

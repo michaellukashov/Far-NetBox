@@ -4289,10 +4289,10 @@ public:
   TRights GetRights();
   void SetRights(const TRights & Value);
   void SetAddXToDirectories(bool Value);
-  bool GetAddXToDirectories();
+  bool GetAddXToDirectories() const;
   TFarCheckBox * GetChecks(TRights::TRight Right);
   TRights::TState GetStates(TRights::TRight Right);
-  bool GetAllowUndef();
+  bool GetAllowUndef() const;
   void SetAllowUndef(bool Value);
   void SetStates(TRights::TRight Flag, TRights::TState Value);
   void OctalEditExit(TObject * Sender);
@@ -4566,7 +4566,7 @@ void TRightsContainer::SetRights(const TRights & Value)
   }
 }
 
-bool TRightsContainer::GetAddXToDirectories()
+bool TRightsContainer::GetAddXToDirectories() const
 {
   return FDirectoriesXCheck ? FDirectoriesXCheck->GetChecked() : false;
 }
@@ -4579,7 +4579,7 @@ void TRightsContainer::SetAddXToDirectories(bool Value)
   }
 }
 
-bool TRightsContainer::GetAllowUndef()
+bool TRightsContainer::GetAllowUndef() const
 {
   DebugAssert(FCheckBoxes[_countof(FCheckBoxes) - 1] != nullptr);
   return FCheckBoxes[_countof(FCheckBoxes) - 1]->GetAllowGrayed();
@@ -4610,7 +4610,7 @@ public:
 
 protected:
   virtual void Change();
-  void UpdateProperties(TRemoteProperties & Properties);
+  void UpdateProperties(TRemoteProperties & Properties) const;
 
 private:
   bool FAnyDirectories;
@@ -4848,7 +4848,7 @@ void TPropertiesDialog::Change()
   }
 }
 
-void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties)
+void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties) const
 {
   if (FAllowedChanges & cpMode)
   {
@@ -4942,8 +4942,8 @@ public:
     intptr_t Options, intptr_t CopyParamAttrs);
 
   void SetParams(const TCopyParamType & Value);
-  TCopyParamType GetParams();
-  int GetHeight();
+  TCopyParamType GetParams() const;
+  intptr_t GetHeight() const;
 
 protected:
   TFarRadioButton * TMTextButton;
@@ -5321,7 +5321,7 @@ void TCopyParamsContainer::SetParams(const TCopyParamType & Value)
   FParams = Value;
 }
 
-TCopyParamType TCopyParamsContainer::GetParams()
+TCopyParamType TCopyParamsContainer::GetParams() const
 {
   TCopyParamType Result = FParams;
 
@@ -5402,7 +5402,7 @@ void TCopyParamsContainer::ValidateSpeedComboExit(TObject * /*Sender*/)
   }
 }
 
-int TCopyParamsContainer::GetHeight()
+intptr_t TCopyParamsContainer::GetHeight() const
 {
   return 16;
 }
@@ -5838,7 +5838,7 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
 }
 
 typedef nb::FastDelegate3<void,
-  TObject * /*Control*/, int /*Label*/, const UnicodeString & /*Value*/> TFeedFileSystemDataEvent;
+  TObject * /*Control*/, intptr_t /*Label*/, const UnicodeString & /*Value*/> TFeedFileSystemDataEvent;
 
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog
@@ -5865,9 +5865,9 @@ protected:
   UnicodeString CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
   UnicodeString SpaceStr(int64_t Bytes) const;
-  void ControlsAddItem(TObject * AControl, int Label, const UnicodeString & Value);
-  void CalculateMaxLenAddItem(TObject * AControl, int Label, const UnicodeString & Value);
-  void ClipboardAddItem(TObject * AControl, int Label, const UnicodeString & Value);
+  void ControlsAddItem(TObject * AControl, intptr_t Label, const UnicodeString & Value);
+  void CalculateMaxLenAddItem(TObject * AControl, intptr_t Label, const UnicodeString & Value) const;
+  void ClipboardAddItem(TObject * AControl, intptr_t Label, const UnicodeString & Value);
   void FeedControls();
   void UpdateControls();
   TLabelList * CreateLabelArray(intptr_t Count);
@@ -6138,7 +6138,7 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
 }
 
 void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
-  int Label, const UnicodeString & Value)
+  intptr_t Label, const UnicodeString & Value)
 {
   if (FLastFeededControl != AControl)
   {
@@ -6185,7 +6185,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
 }
 
 void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * AControl,
-  int Label, const UnicodeString & )
+  intptr_t Label, const UnicodeString & ) const
 {
   TLabelList * List = dyn_cast<TLabelList>(AControl);
   if (List != nullptr)
@@ -6199,7 +6199,7 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * AControl,
 }
 
 void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
-  int Label, const UnicodeString & Value)
+  intptr_t Label, const UnicodeString & Value)
 {
   TFarDialogItem * Control = dyn_cast<TFarDialogItem>(AControl);
   // check for Enabled instead of Visible, as Visible is false
@@ -7049,7 +7049,7 @@ bool TFullSynchronizeDialog::CloseQuery()
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
 
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(SAVE_SYNCHRONIZE_MODE), nullptr,
-              qtConfirmation, qaYes | qaNo | qaCancel, 0))
+              qtConfirmation, qaYes | qaNo | qaCancel, nullptr))
     {
       case qaYes:
         FSaveMode = true;
@@ -7777,7 +7777,7 @@ protected:
   void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
   void Stop();
   void DoStartStop(bool Start, bool Synchronize);
-  TSynchronizeParamType GetParams();
+  TSynchronizeParamType GetParams() const;
   void DoAbort(TObject * Sender, bool Close);
   void DoLog(TSynchronizeController * Controller,
     TSynchronizeLogEntry Entry, const UnicodeString & Message);
@@ -7785,8 +7785,8 @@ protected:
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual bool CloseQuery();
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
-  TCopyParamType GetCopyParams();
-  intptr_t ActualCopyParamAttrs();
+  TCopyParamType GetCopyParams() const;
+  intptr_t ActualCopyParamAttrs() const;
   void CustomCopyParam();
 
 private:
@@ -7988,7 +7988,7 @@ bool TSynchronizeDialog::Execute(TSynchronizeParamType & Params,
   return true;
 }
 
-TSynchronizeParamType TSynchronizeDialog::GetParams()
+TSynchronizeParamType TSynchronizeDialog::GetParams() const
 {
   TSynchronizeParamType Result = FParams;
   Result.RemoteDirectory = RemoteDirectoryEdit->GetText();
@@ -8191,14 +8191,14 @@ void TSynchronizeDialog::UpdateControls()
     !FSynchronizing && FLAGSET(FOptions, soAllowSelectedOnly));
 }
 
-TCopyParamType TSynchronizeDialog::GetCopyParams()
+TCopyParamType TSynchronizeDialog::GetCopyParams() const
 {
   TCopyParamType Result = FCopyParams;
   Result.SetPreserveTime(true);
   return Result;
 }
 
-intptr_t TSynchronizeDialog::ActualCopyParamAttrs()
+intptr_t TSynchronizeDialog::ActualCopyParamAttrs() const
 {
   return FCopyParamAttrs | cpaNoPreserveTime;
 }

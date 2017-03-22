@@ -25,10 +25,10 @@ public:
   virtual void Init();
 
   virtual void Start();
-  void WaitFor(uint32_t Milliseconds = INFINITE);
+  void WaitFor(uint32_t Milliseconds = INFINITE) const;
   virtual void Terminate() {}
   void Close();
-  bool IsFinished();
+  bool IsFinished() const;
 
 protected:
   HANDLE FThread;
@@ -57,7 +57,7 @@ public:
   void Init(bool LowPriority);
   virtual void Start();
   virtual void Terminate();
-  void TriggerEvent();
+  void TriggerEvent() const;
 
 protected:
   HANDLE FEvent;
@@ -67,7 +67,7 @@ protected:
   virtual ~TSignalThread();
 
   virtual bool WaitForEvent();
-  int WaitForEvent(uint32_t Timeout);
+  int WaitForEvent(uint32_t Timeout) const;
   virtual void Execute();
   virtual void ProcessEvent() = 0;
 };
@@ -173,7 +173,7 @@ protected:
 public:
   inline static TQueueItem * GetItem(TList * List, intptr_t Index);
   inline TQueueItem * GetItem(intptr_t Index);
-  void FreeItemsList(TList *& List);
+  void FreeItemsList(TList *& List) const;
   void UpdateStatusForList(
     TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current);
   bool ItemGetData(TQueueItem * Item, TQueueItemProxy * Proxy);
@@ -342,7 +342,7 @@ private:
 public:
   intptr_t GetIndex() const;
   TFileOperationProgressType * GetProgressData();
-  int64_t GetTotalTransferred();
+  int64_t GetTotalTransferred() const;
 };
 
 class TTerminalQueueStatus : public TObject

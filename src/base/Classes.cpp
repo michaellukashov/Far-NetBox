@@ -563,16 +563,16 @@ UnicodeString TStrings::GetTextStr() const
   for (intptr_t Index = 0; Index < Count; ++Index)
   {
     UnicodeString S = GetString(Index);
-    intptr_t L = S.Length() * sizeof(wchar_t);
+    size_t L = S.Length() * sizeof(wchar_t);
     if (L != 0)
     {
-      memmove(P, S.c_str(), (size_t)L);
+      memmove(P, S.c_str(), L);
       P += S.Length();
     }
     L = LB.Length() * sizeof(wchar_t);
     if (L != 0)
     {
-      memmove(P, LB.c_str(), (size_t)L);
+      memmove(P, LB.c_str(), L);
       P += LB.Length();
     }
   }
@@ -1022,7 +1022,7 @@ void TStringList::SetSorted(bool Value)
 
 void TStringList::LoadFromFile(const UnicodeString & AFileName)
 {
-  HANDLE FileHandle = ::CreateFile(AFileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, 0);
+  HANDLE FileHandle = ::CreateFile(AFileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
   if (FileHandle != INVALID_HANDLE_VALUE)
   {
     TSafeHandleStream Stream(FileHandle);
@@ -1167,7 +1167,7 @@ TDateTime::TDateTime(uint16_t Hour,
   FValue = ::EncodeTimeVerbose(Hour, Min, Sec, MSec);
 }
 
-bool TDateTime::operator ==(const TDateTime & rhs)
+bool TDateTime::operator ==(const TDateTime & rhs) const
 {
   return ::IsZero(FValue - rhs.FValue);
 }
@@ -1685,8 +1685,8 @@ class ERegistryException : public std::exception
 };
 
 TRegistry::TRegistry() :
-  FCurrentKey(0),
-  FRootKey(0),
+  FCurrentKey(nullptr),
+  FRootKey(nullptr),
   FCloseRootKey(false),
   FAccess(KEY_ALL_ACCESS)
 {
@@ -1757,10 +1757,10 @@ HKEY TRegistry::GetRootKey() const { return FRootKey; }
 
 void TRegistry::CloseKey()
 {
-  if (GetCurrentKey() != 0)
+  if (GetCurrentKey() != nullptr)
   {
     ::RegCloseKey(GetCurrentKey());
-    FCurrentKey = 0;
+    FCurrentKey = nullptr;
     FCurrentPath.Clear();
   }
 }
@@ -1771,7 +1771,7 @@ bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
   UnicodeString S = Key;
   bool Relative = IsRelative(S);
 
-  HKEY TempKey = 0;
+  HKEY TempKey = nullptr;
   if (!CanCreate || S.IsEmpty())
   {
     Result = ::RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0,
@@ -1784,7 +1784,7 @@ bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
   }
   if (Result)
   {
-    if ((GetCurrentKey() != 0) && Relative)
+    if ((GetCurrentKey() != nullptr) && Relative)
     {
       S = FCurrentPath + L'\\' + S;
     }
@@ -1800,7 +1800,7 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
   bool Relative = IsRelative(S);
   HKEY OldKey = GetCurrentKey();
   HKEY DeleteKey = GetKey(Key);
-  if (DeleteKey != 0)
+  if (DeleteKey != nullptr)
   {
     SCOPE_EXIT
     {
@@ -1844,11 +1844,11 @@ bool TRegistry::KeyExists(const UnicodeString & Key) const
   };
   FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
   HKEY TempKey = GetKey(Key);
-  if (TempKey != 0)
+  if (TempKey != nullptr)
   {
     ::RegCloseKey(TempKey);
   }
-  Result = TempKey != 0;
+  Result = TempKey != nullptr;
   return Result;
 }
 
@@ -1899,13 +1899,13 @@ DWORD TRegistry::GetDataSize(const UnicodeString & ValueName) const
   return Result;
 }
 
-bool TRegistry::ReadBool(const UnicodeString & Name)
+bool TRegistry::ReadBool(const UnicodeString & Name) const
 {
   bool Result = ReadInteger(Name) != 0;
   return Result;
 }
 
-TDateTime TRegistry::ReadDateTime(const UnicodeString & Name)
+TDateTime TRegistry::ReadDateTime(const UnicodeString & Name) const
 {
   TDateTime Result = TDateTime(ReadFloat(Name));
   return Result;
@@ -1935,14 +1935,14 @@ intptr_t TRegistry::ReadInteger(const UnicodeString & Name) const
   return Result;
 }
 
-int64_t TRegistry::ReadInt64(const UnicodeString & Name)
+int64_t TRegistry::ReadInt64(const UnicodeString & Name) const
 {
   int64_t Result = 0;
   ReadBinaryData(Name, &Result, sizeof(Result));
   return Result;
 }
 
-UnicodeString TRegistry::ReadString(const UnicodeString & Name)
+UnicodeString TRegistry::ReadString(const UnicodeString & Name) const
 {
   UnicodeString Result;
   intptr_t Len = GetDataSize(Name);
@@ -1967,7 +1967,7 @@ UnicodeString TRegistry::ReadString(const UnicodeString & Name)
   return Result;
 }
 
-UnicodeString TRegistry::ReadStringRaw(const UnicodeString & Name)
+UnicodeString TRegistry::ReadStringRaw(const UnicodeString & Name) const
 {
   UnicodeString Result = ReadString(Name);
   return Result;
@@ -2076,8 +2076,8 @@ void TRegistry::ChangeKey(HKEY Value, const UnicodeString & APath)
 
 HKEY TRegistry::GetBaseKey(bool Relative) const
 {
-  HKEY Result = 0;
-  if ((FCurrentKey == 0) || !Relative)
+  HKEY Result = nullptr;
+  if ((FCurrentKey == nullptr) || !Relative)
   {
     Result = GetRootKey();
   }
@@ -2092,11 +2092,11 @@ HKEY TRegistry::GetKey(const UnicodeString & Key) const
 {
   UnicodeString S = Key;
   bool Relative = IsRelative(S);
-  HKEY Result = 0;
+  HKEY Result = nullptr;
   if (::RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result) == ERROR_SUCCESS)
     return Result;
   else
-    return 0;
+    return nullptr;
 }
 
 bool TRegistry::GetKeyInfo(TRegKeyInfo & Value) const

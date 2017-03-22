@@ -2664,7 +2664,7 @@ bool TFTPFileSystem::LookupUploadModificationTime(
   return Result;
 }
 
-bool TFTPFileSystem::NeedAutoDetectTimeDifference()
+bool TFTPFileSystem::NeedAutoDetectTimeDifference() const
 {
   return
     FDetectTimeDifference &&
@@ -2672,7 +2672,7 @@ bool TFTPFileSystem::NeedAutoDetectTimeDifference()
     !FFileZillaIntf->UsingMlsd() && SupportsReadingFile();
 }
 
-bool TFTPFileSystem::IsEmptyFileList(TRemoteFileList * FileList)
+bool TFTPFileSystem::IsEmptyFileList(TRemoteFileList * FileList) const
 {
   return
     // (note that it's actually never empty here, there's always at least parent directory,
@@ -3430,7 +3430,9 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
     };
     // discard up to one reply
     // (it should not happen here that two replies are posted anyway)
-    while (ProcessMessage() && (FReply == 0));
+    while (ProcessMessage() && (FReply == 0))
+    {
+    }
     Reply = FReply;
   }
   __finally
@@ -4747,7 +4749,7 @@ bool TFTPFileSystem::HandleAsynchRequestNeedPass(
   }
 }
 
-void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source, TDateTime & DateTime, TModificationFmt & ModificationFmt)
+void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source, TDateTime & DateTime, TModificationFmt & ModificationFmt) const
 {
   // ModificationFmt must be set after Modification
   if (Source.HasDate)
@@ -5048,7 +5050,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
   return (State == STATE_DONE);
 }
 
-void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData)
+void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const
 {
   TFileTransferData * Data = dyn_cast<TFileTransferData>(as_object(UserData));
   FILETIME WrTime = ::DateTimeToFileTime(Data->Modification, dstmUnix);

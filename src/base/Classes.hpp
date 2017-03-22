@@ -493,8 +493,8 @@ public:
     FValue = Value;
     return *this;
   }
-  bool operator == (const TDateTime & rhs);
-  bool operator != (const TDateTime & rhs)
+  bool operator == (const TDateTime & rhs) const;
+  bool operator != (const TDateTime & rhs) const
   {
     return !(operator == (rhs));
   }
@@ -699,13 +699,13 @@ public:
   bool GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const;
   TRegDataType GetDataType(const UnicodeString & ValueName) const;
   DWORD GetDataSize(const UnicodeString & Name) const;
-  bool ReadBool(const UnicodeString & Name);
-  TDateTime ReadDateTime(const UnicodeString & Name);
+  bool ReadBool(const UnicodeString & Name) const;
+  TDateTime ReadDateTime(const UnicodeString & Name) const;
   double ReadFloat(const UnicodeString & Name) const;
   intptr_t ReadInteger(const UnicodeString & Name) const;
-  int64_t ReadInt64(const UnicodeString & Name);
-  UnicodeString ReadString(const UnicodeString & Name);
-  UnicodeString ReadStringRaw(const UnicodeString & Name);
+  int64_t ReadInt64(const UnicodeString & Name) const;
+  UnicodeString ReadString(const UnicodeString & Name) const;
+  UnicodeString ReadStringRaw(const UnicodeString & Name) const;
   size_t ReadBinaryData(const UnicodeString & Name,
     void * Buffer, size_t Size) const;
 

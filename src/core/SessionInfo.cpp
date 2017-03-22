@@ -961,7 +961,7 @@ void TSessionLog::AddStartupInfo(bool System)
   }
 }
 
-UnicodeString TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion)
+UnicodeString TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion) const
 {
   switch (TlsVersion)
   {
@@ -992,7 +992,7 @@ UnicodeString TSessionLog::LogSensitive(const UnicodeString & Str)
   }
 }
 
-UnicodeString TSessionLog::GetCmdLineLog()
+UnicodeString TSessionLog::GetCmdLineLog() const
 {
   TODO("GetCmdLine()");
   UnicodeString Result = L"";
@@ -1366,7 +1366,7 @@ void TSessionLog::Clear()
   TStringList::Clear();
 }
 
-TSessionLog * TSessionLog::GetParent()
+TSessionLog * TSessionLog::GetParent() const
 {
   return FParent;
 }

@@ -41,10 +41,10 @@ void TMessageParams::Assign(const TMessageParams * AParams)
 inline void TMessageParams::Reset()
 {
   Params = 0;
-  Aliases = NULL;
+  Aliases = nullptr;
   AliasesCount = 0;
   Timer = 0;
-  TimerEvent = NULL;
+  TimerEvent = nullptr;
   TimerMessage = L"";
   TimerAnswers = 0;
   TimerQueryType = static_cast<TQueryType>(-1);

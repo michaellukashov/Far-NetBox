@@ -218,7 +218,7 @@ protected:
     TFileOperationProgressType * OperationProgress) const;
   uint32_t DownloadBlockSize(
     TFileOperationProgressType * OperationProgress) const;
-  inline intptr_t PacketLength(uint8_t * LenBuf, SSH_FXP_TYPES ExpectedType);
+  intptr_t PacketLength(uint8_t * LenBuf, SSH_FXP_TYPES ExpectedType) const;
   void Progress(TFileOperationProgressType * OperationProgress);
 
 private:

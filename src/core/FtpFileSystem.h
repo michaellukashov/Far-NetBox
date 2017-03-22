@@ -164,7 +164,7 @@ protected:
   bool HandleReply(intptr_t Command, uintptr_t Reply);
   bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
   bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
-  void PreserveDownloadFileTime(HANDLE AHandle, void * UserData);
+  void PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const;
   bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
   void EnsureLocation();
   UnicodeString GetActualCurrentDirectory() const;
@@ -215,7 +215,7 @@ protected:
     TFileOperationProgressType * OperationProgress);
   TDateTime ConvertLocalTimestamp(time_t Time);
   void RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source,
-    TDateTime & DateTime, TModificationFmt & ModificationFmt);
+    TDateTime & DateTime, TModificationFmt & ModificationFmt) const;
   void SetLastCode(intptr_t Code);
   void StoreLastResponse(const UnicodeString & Text);
   void SetCPSLimit(TFileOperationProgressType * OperationProgress);
@@ -227,9 +227,9 @@ protected:
   void ApplyTimeDifference(
     const UnicodeString & FileName, TDateTime & Modification, TModificationFmt & ModificationFmt);
   void DummyReadDirectory(const UnicodeString & Directory);
-  bool IsEmptyFileList(TRemoteFileList * FileList);
+  bool IsEmptyFileList(TRemoteFileList * FileList) const;
   void CheckTimeDifference();
-  inline bool NeedAutoDetectTimeDifference();
+  inline bool NeedAutoDetectTimeDifference() const;
   bool LookupUploadModificationTime(
     const UnicodeString & FileName, TDateTime & Modification, TModificationFmt ModificationFmt);
   UnicodeString DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString & Alg, TRemoteFile * File);

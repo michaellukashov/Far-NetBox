@@ -101,7 +101,7 @@ intptr_t TSessionData::Compare(const TNamedObject * Other) const
   return Result;
 }
 
-TSessionData * TSessionData::Clone()
+TSessionData * TSessionData::Clone() const
 {
   std::unique_ptr<TSessionData> Data(new TSessionData(L""));
   Data->Assign(this);
@@ -2512,7 +2512,7 @@ void TSessionData::SetTrimVMSVersions(bool Value)
   SET_SESSION_PROPERTY(TrimVMSVersions);
 }
 
-TDateTime TSessionData::GetTimeoutDT()
+TDateTime TSessionData::GetTimeoutDT() const
 {
   return SecToDateTime(GetTimeout());
 }
@@ -2754,7 +2754,7 @@ static bool IsIPv6Literal(const UnicodeString & HostName)
   return Result;
 }
 
-UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags)
+UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
 {
   UnicodeString Url;
 
@@ -2843,7 +2843,7 @@ void TSessionData::LookupLastFingerprint()
   }
 }
 
-UnicodeString TSessionData::GenerateOpenCommandArgs()
+UnicodeString TSessionData::GenerateOpenCommandArgs() const
 {
   std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   std::unique_ptr<TSessionData> SessionData(new TSessionData(L""));
@@ -3823,7 +3823,7 @@ void TSessionData::SetTunnelLocalPortNumber(intptr_t Value)
   SET_SESSION_PROPERTY(TunnelLocalPortNumber);
 }
 
-bool TSessionData::GetTunnelAutoassignLocalPortNumber()
+bool TSessionData::GetTunnelAutoassignLocalPortNumber() const
 {
   return (FTunnelLocalPortNumber <= 0);
 }

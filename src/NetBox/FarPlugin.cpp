@@ -190,7 +190,7 @@ UnicodeString TCustomFarPlugin::GetModuleName() const
   return FStartupInfo.ModuleName;
 }
 
-void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
+void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info) const
 {
   if (Info.StructSize)
   {
@@ -1200,7 +1200,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
   {
     UnicodeString DestText;
     DestText.SetLength(MaxLen + 1);
-    HANDLE ScreenHandle = 0;
+    HANDLE ScreenHandle = nullptr;
     SaveScreen(ScreenHandle);
     {
       TFarEnvGuard Guard;
@@ -1552,7 +1552,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
   DebugAssert(Screen);
   TFarEnvGuard Guard;
   FStartupInfo.RestoreScreen(Screen);
-  Screen = 0;
+  Screen = nullptr;
 }
 
 void TCustomFarPlugin::HandleException(Exception * E, OPERATION_MODES /*OpMode*/)

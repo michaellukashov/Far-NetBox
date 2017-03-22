@@ -339,10 +339,10 @@ public:
     OUT int64_t & Size);
   TBatchOverwrite EffectiveBatchOverwrite(
     const UnicodeString & AFileName, const TCopyParamType * CopyParam, intptr_t Params,
-    TFileOperationProgressType * OperationProgress, bool Special);
+    TFileOperationProgressType * OperationProgress, bool Special) const;
   bool CheckRemoteFile(
     const UnicodeString & AFileName, const TCopyParamType * CopyParam,
-    intptr_t Params, TFileOperationProgressType * OperationProgress);
+    intptr_t Params, TFileOperationProgressType * OperationProgress) const;
   uintptr_t ConfirmFileOverwrite(
     const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
     const TOverwriteFileParams * FileParams, uintptr_t Answers, TQueryParams * QueryParams,
@@ -416,7 +416,7 @@ public:
   TRemoteFileList * DoReadDirectoryListing(const UnicodeString & ADirectory, bool UseCache);
   RawByteString EncryptPassword(const UnicodeString & APassword) const;
   UnicodeString DecryptPassword(const RawByteString & APassword) const;
-  UnicodeString GetRemoteFileInfo(TRemoteFile * AFile);
+  UnicodeString GetRemoteFileInfo(TRemoteFile * AFile) const;
   void LogRemoteFile(TRemoteFile * AFile);
   UnicodeString FormatFileDetailsForLog(const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size);
   void LogFileDetails(const UnicodeString & AFileName, const TDateTime & Modification, int64_t Size);
@@ -550,7 +550,7 @@ public:
   void inline LogEvent(const UnicodeString & Str);
   void GetSupportedChecksumAlgs(TStrings * Algs);
   UnicodeString ChangeFileName(const TCopyParamType * CopyParam,
-    const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel);
+    const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel) const;
   UnicodeString GetBaseFileName(const UnicodeString & AFileName) const;
 
   static UnicodeString ExpandFileName(const UnicodeString & APath,
@@ -810,8 +810,8 @@ public:
 
   TStringList * Filter;
 
-  bool FilterFind(const UnicodeString & AFileName);
-  bool MatchesFilter(const UnicodeString & AFileName);
+  //bool FilterFind(const UnicodeString & AFileName) const;
+  bool MatchesFilter(const UnicodeString & AFileName) const;
 };
 
 enum TChecklistAction

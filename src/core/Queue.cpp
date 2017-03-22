@@ -342,7 +342,7 @@ TSimpleThread::~TSimpleThread()
   }
 }
 
-bool TSimpleThread::IsFinished()
+bool TSimpleThread::IsFinished() const
 {
   return FFinished;
 }
@@ -368,7 +368,7 @@ void TSimpleThread::Close()
   }
 }
 
-void TSimpleThread::WaitFor(uint32_t Milliseconds)
+void TSimpleThread::WaitFor(uint32_t Milliseconds) const
 {
   ::WaitForSingleObject(FThread, Milliseconds);
 }
@@ -412,7 +412,7 @@ void TSignalThread::Start()
   TSimpleThread::Start();
 }
 
-void TSignalThread::TriggerEvent()
+void TSignalThread::TriggerEvent() const
 {
   if (FEvent && FEvent != INVALID_HANDLE_VALUE)
   {
@@ -426,19 +426,17 @@ bool TSignalThread::WaitForEvent()
   return WaitForEvent(INFINITE) > 0;
 }
 
-int TSignalThread::WaitForEvent(uint32_t Timeout)
+int TSignalThread::WaitForEvent(uint32_t Timeout) const
 {
   uint32_t Result = ::WaitForSingleObject(FEvent, Timeout);
-  int Return;
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
-    Return = -1;
+    return -1;
   }
   else
   {
-    Return = ((Result == WAIT_OBJECT_0) && !FTerminated) ? 1 : 0;
+    return ((Result == WAIT_OBJECT_0) && !FTerminated) ? 1 : 0;
   }
-  return Return;
 }
 
 void TSignalThread::Execute()
@@ -538,7 +536,7 @@ TTerminalQueue::~TTerminalQueue()
   SAFE_DESTROY_EX(TSessionData, FSessionData);
 }
 
-void TTerminalQueue::FreeItemsList(TList *& List)
+void TTerminalQueue::FreeItemsList(TList *& List) const
 {
   for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
   {
@@ -1817,7 +1815,7 @@ TFileOperationProgressType * TQueueItemProxy::GetProgressData()
   return (FProgressData->Operation == foNone) ? nullptr : FProgressData;
 }
 
-int64_t TQueueItemProxy::GetTotalTransferred()
+int64_t TQueueItemProxy::GetTotalTransferred() const
 {
   // want to show total transferred also for "completed" items,
   // for which GetProgressData() is NULL

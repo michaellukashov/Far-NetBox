@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
-#include <wincrypt.h>
 #include <rdestl/set.h>
 
 #ifndef NE_LFS
@@ -21,7 +20,6 @@
 #include <ne_session.h>
 #include <ne_request.h>
 #include <ne_xml.h>
-#include <ne_redirect.h>
 #include <ne_xmlreq.h>
 #include <ne_locks.h>
 #include <expat.h>
@@ -2738,7 +2736,7 @@ void TWebDAVFileSystem::InitSslSession(ssl_st * Ssl, ne_session * Session)
   FileSystem->InitSslSessionImpl(Ssl);
 }
 
-void TWebDAVFileSystem::InitSslSessionImpl(ssl_st * Ssl)
+void TWebDAVFileSystem::InitSslSessionImpl(ssl_st * Ssl) const
 {
   // See also CAsyncSslSocketLayer::InitSSLConnection
   TSessionData * Data = FTerminal->GetSessionData();

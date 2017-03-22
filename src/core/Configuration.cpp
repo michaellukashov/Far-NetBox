@@ -883,7 +883,7 @@ UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString & AFileN
   return TrimVersion(GetFileFileInfoString(L"ProductVersion", AFileName));
 }
 
-UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName)
+UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName) const
 {
   return GetFileFileInfoString(L"FileDescription", AFileName);
 }
