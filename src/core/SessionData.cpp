@@ -101,7 +101,7 @@ intptr_t TSessionData::Compare(const TNamedObject * Other) const
   return Result;
 }
 
-TSessionData * TSessionData::Clone()
+TSessionData * TSessionData::Clone() const
 {
   std::unique_ptr<TSessionData> Data(new TSessionData(L""));
   Data->Assign(this);

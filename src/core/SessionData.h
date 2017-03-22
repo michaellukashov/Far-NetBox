@@ -511,7 +511,7 @@ public:
 public:
   explicit TSessionData(const UnicodeString & AName);
   virtual ~TSessionData();
-  TSessionData * Clone();
+  TSessionData * Clone() const;
   void Default();
   void NonPersistant();
   void Load(THierarchicalStorage * Storage, bool PuttyImport);
