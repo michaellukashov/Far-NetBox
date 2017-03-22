@@ -4946,7 +4946,7 @@ public:
 
   void SetParams(const TCopyParamType & Value);
   TCopyParamType GetParams() const;
-  int GetHeight() const;
+  intptr_t GetHeight() const;
 
 protected:
   TFarRadioButton * TMTextButton;
@@ -5405,7 +5405,7 @@ void TCopyParamsContainer::ValidateSpeedComboExit(TObject * /*Sender*/)
   }
 }
 
-int TCopyParamsContainer::GetHeight() const
+intptr_t TCopyParamsContainer::GetHeight() const
 {
   return 16;
 }
