@@ -699,8 +699,8 @@ public:
   bool GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const;
   TRegDataType GetDataType(const UnicodeString & ValueName) const;
   DWORD GetDataSize(const UnicodeString & Name) const;
-  bool ReadBool(const UnicodeString & Name);
-  TDateTime ReadDateTime(const UnicodeString & Name);
+  bool ReadBool(const UnicodeString & Name) const;
+  TDateTime ReadDateTime(const UnicodeString & Name) const;
   double ReadFloat(const UnicodeString & Name) const;
   intptr_t ReadInteger(const UnicodeString & Name) const;
   int64_t ReadInt64(const UnicodeString & Name);

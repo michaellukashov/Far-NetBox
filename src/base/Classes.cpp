@@ -1899,13 +1899,13 @@ DWORD TRegistry::GetDataSize(const UnicodeString & ValueName) const
   return Result;
 }
 
-bool TRegistry::ReadBool(const UnicodeString & Name)
+bool TRegistry::ReadBool(const UnicodeString & Name) const
 {
   bool Result = ReadInteger(Name) != 0;
   return Result;
 }
 
-TDateTime TRegistry::ReadDateTime(const UnicodeString & Name)
+TDateTime TRegistry::ReadDateTime(const UnicodeString & Name) const
 {
   TDateTime Result = TDateTime(ReadFloat(Name));
   return Result;
