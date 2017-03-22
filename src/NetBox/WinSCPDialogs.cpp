@@ -5868,8 +5868,8 @@ protected:
   UnicodeString CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
   UnicodeString SpaceStr(int64_t Bytes) const;
-  void ControlsAddItem(TObject * AControl, int Label, const UnicodeString & Value);
-  void CalculateMaxLenAddItem(TObject * AControl, int Label, const UnicodeString & Value) const;
+  void ControlsAddItem(TObject * AControl, intptr_t Label, const UnicodeString & Value);
+  void CalculateMaxLenAddItem(TObject * AControl, intptr_t Label, const UnicodeString & Value) const;
   void ClipboardAddItem(TObject * AControl, int Label, const UnicodeString & Value);
   void FeedControls();
   void UpdateControls();
@@ -6141,7 +6141,7 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
 }
 
 void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
-  int Label, const UnicodeString & Value)
+  intptr_t Label, const UnicodeString & Value)
 {
   if (FLastFeededControl != AControl)
   {
@@ -6188,7 +6188,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
 }
 
 void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * AControl,
-  int Label, const UnicodeString & ) const
+  intptr_t Label, const UnicodeString & ) const
 {
   TLabelList * List = dyn_cast<TLabelList>(AControl);
   if (List != nullptr)
