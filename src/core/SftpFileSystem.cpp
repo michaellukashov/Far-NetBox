@@ -1560,7 +1560,7 @@ protected:
   }
 
   void InitRequest(TSFTPPacket * Request, int64_t Offset,
-    uint32_t Size)
+    uint32_t Size) const
   {
     Request->ChangeType(SSH_FXP_READ);
     Request->AddString(FHandle);
@@ -1712,7 +1712,7 @@ protected:
     return Result;
   }
 
-  inline intptr_t GetBlockSize()
+  inline intptr_t GetBlockSize() const
   {
     return FFileSystem->UploadBlockSize(FHandle, OperationProgress);
   }
@@ -2581,7 +2581,7 @@ void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
   FPacketReservations->Delete(Reservation);
 }
 
-intptr_t TSFTPFileSystem::PacketLength(uint8_t * LenBuf, SSH_FXP_TYPES ExpectedType)
+intptr_t TSFTPFileSystem::PacketLength(uint8_t * LenBuf, SSH_FXP_TYPES ExpectedType) const
 {
   intptr_t Length = GET_32BIT(LenBuf);
   if (Length > SFTP_MAX_PACKET_LEN)
