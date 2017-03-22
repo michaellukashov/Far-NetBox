@@ -2076,8 +2076,8 @@ void TRegistry::ChangeKey(HKEY Value, const UnicodeString & APath)
 
 HKEY TRegistry::GetBaseKey(bool Relative) const
 {
-  HKEY Result = 0;
-  if ((FCurrentKey == 0) || !Relative)
+  HKEY Result = nullptr;
+  if ((FCurrentKey == nullptr) || !Relative)
   {
     Result = GetRootKey();
   }
@@ -2092,11 +2092,11 @@ HKEY TRegistry::GetKey(const UnicodeString & Key) const
 {
   UnicodeString S = Key;
   bool Relative = IsRelative(S);
-  HKEY Result = 0;
+  HKEY Result = nullptr;
   if (::RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result) == ERROR_SUCCESS)
     return Result;
   else
-    return 0;
+    return nullptr;
 }
 
 bool TRegistry::GetKeyInfo(TRegKeyInfo & Value) const
