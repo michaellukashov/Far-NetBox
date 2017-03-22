@@ -7782,8 +7782,8 @@ protected:
   virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
   virtual bool CloseQuery();
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
-  TCopyParamType GetCopyParams();
-  intptr_t ActualCopyParamAttrs();
+  TCopyParamType GetCopyParams() const;
+  intptr_t ActualCopyParamAttrs() const;
   void CustomCopyParam();
 
 private:
@@ -8186,14 +8186,14 @@ void TSynchronizeDialog::UpdateControls()
     !FSynchronizing && FLAGSET(FOptions, soAllowSelectedOnly));
 }
 
-TCopyParamType TSynchronizeDialog::GetCopyParams()
+TCopyParamType TSynchronizeDialog::GetCopyParams() const
 {
   TCopyParamType Result = FCopyParams;
   Result.SetPreserveTime(true);
   return Result;
 }
 
-intptr_t TSynchronizeDialog::ActualCopyParamAttrs()
+intptr_t TSynchronizeDialog::ActualCopyParamAttrs() const
 {
   return FCopyParamAttrs | cpaNoPreserveTime;
 }
