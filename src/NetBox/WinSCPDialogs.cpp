@@ -5841,7 +5841,7 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
 }
 
 typedef nb::FastDelegate3<void,
-  TObject * /*Control*/, int /*Label*/, const UnicodeString & /*Value*/> TFeedFileSystemDataEvent;
+  TObject * /*Control*/, intptr_t /*Label*/, const UnicodeString & /*Value*/> TFeedFileSystemDataEvent;
 
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog
@@ -5870,7 +5870,7 @@ protected:
   UnicodeString SpaceStr(int64_t Bytes) const;
   void ControlsAddItem(TObject * AControl, intptr_t Label, const UnicodeString & Value);
   void CalculateMaxLenAddItem(TObject * AControl, intptr_t Label, const UnicodeString & Value) const;
-  void ClipboardAddItem(TObject * AControl, int Label, const UnicodeString & Value);
+  void ClipboardAddItem(TObject * AControl, intptr_t Label, const UnicodeString & Value);
   void FeedControls();
   void UpdateControls();
   TLabelList * CreateLabelArray(intptr_t Count);
@@ -6202,7 +6202,7 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * AControl,
 }
 
 void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
-  int Label, const UnicodeString & Value)
+  intptr_t Label, const UnicodeString & Value)
 {
   TFarDialogItem * Control = dyn_cast<TFarDialogItem>(AControl);
   // check for Enabled instead of Visible, as Visible is false
