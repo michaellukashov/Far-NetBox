@@ -439,7 +439,7 @@ public:
   void SetTunnelPublicKeyFile(const UnicodeString & Value);
   void SetTunnelPortFwd(const UnicodeString & Value);
   void SetTunnelLocalPortNumber(intptr_t Value);
-  bool GetTunnelAutoassignLocalPortNumber();
+  bool GetTunnelAutoassignLocalPortNumber() const;
   void SetTunnelHostKey(const UnicodeString & Value);
   void SetFtpPasvMode(bool Value);
   void SetFtpForcePasvIp(TAutoSwitch Value);
@@ -457,7 +457,7 @@ public:
   void SetHostKey(const UnicodeString & Value);
   void SetFingerprintScan(bool Value) { FFingerprintScan = Value; }
   void SetNote(const UnicodeString & Value);
-  TDateTime GetTimeoutDT();
+  TDateTime GetTimeoutDT() const;
   void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport, bool DoNotEncryptPasswords);
   UnicodeString GetLocalName() const;
   UnicodeString GetFolderName() const;
@@ -542,8 +542,8 @@ public:
   bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const;
   bool IsSameSite(const TSessionData * Default) const;
   bool IsInFolderOrWorkspace(const UnicodeString & Name) const;
-  UnicodeString GenerateSessionUrl(uintptr_t Flags);
-  UnicodeString GenerateOpenCommandArgs();
+  UnicodeString GenerateSessionUrl(uintptr_t Flags) const;
+  UnicodeString GenerateOpenCommandArgs() const;
 //  UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language);
   void LookupLastFingerprint();
   bool GetIsSecure() const;
