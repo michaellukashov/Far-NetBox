@@ -4292,10 +4292,10 @@ public:
   TRights GetRights();
   void SetRights(const TRights & Value);
   void SetAddXToDirectories(bool Value);
-  bool GetAddXToDirectories();
+  bool GetAddXToDirectories() const;
   TFarCheckBox * GetChecks(TRights::TRight Right);
   TRights::TState GetStates(TRights::TRight Right);
-  bool GetAllowUndef();
+  bool GetAllowUndef() const;
   void SetAllowUndef(bool Value);
   void SetStates(TRights::TRight Flag, TRights::TState Value);
   void OctalEditExit(TObject * Sender);
@@ -4569,7 +4569,7 @@ void TRightsContainer::SetRights(const TRights & Value)
   }
 }
 
-bool TRightsContainer::GetAddXToDirectories()
+bool TRightsContainer::GetAddXToDirectories() const
 {
   return FDirectoriesXCheck ? FDirectoriesXCheck->GetChecked() : false;
 }
@@ -4582,7 +4582,7 @@ void TRightsContainer::SetAddXToDirectories(bool Value)
   }
 }
 
-bool TRightsContainer::GetAllowUndef()
+bool TRightsContainer::GetAllowUndef() const
 {
   DebugAssert(FCheckBoxes[_countof(FCheckBoxes) - 1] != nullptr);
   return FCheckBoxes[_countof(FCheckBoxes) - 1]->GetAllowGrayed();
@@ -4946,7 +4946,7 @@ public:
 
   void SetParams(const TCopyParamType & Value);
   TCopyParamType GetParams() const;
-  int GetHeight();
+  int GetHeight() const;
 
 protected:
   TFarRadioButton * TMTextButton;
@@ -5405,7 +5405,7 @@ void TCopyParamsContainer::ValidateSpeedComboExit(TObject * /*Sender*/)
   }
 }
 
-int TCopyParamsContainer::GetHeight()
+int TCopyParamsContainer::GetHeight() const
 {
   return 16;
 }
