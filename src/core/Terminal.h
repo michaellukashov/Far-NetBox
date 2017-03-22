@@ -550,7 +550,7 @@ public:
   void inline LogEvent(const UnicodeString & Str);
   void GetSupportedChecksumAlgs(TStrings * Algs);
   UnicodeString ChangeFileName(const TCopyParamType * CopyParam,
-    const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel);
+    const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel) const;
   UnicodeString GetBaseFileName(const UnicodeString & AFileName) const;
 
   static UnicodeString ExpandFileName(const UnicodeString & APath,
