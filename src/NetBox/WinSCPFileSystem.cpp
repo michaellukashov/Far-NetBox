@@ -3204,7 +3204,7 @@ HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & LocalFil
   return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
 }
 
-inline DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName)
+inline DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName) const
 {
   return ::FileGetAttrFix(LocalFileName);
 }
