@@ -164,7 +164,7 @@ protected:
   bool HandleReply(intptr_t Command, uintptr_t Reply);
   bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
   bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
-  void PreserveDownloadFileTime(HANDLE AHandle, void * UserData);
+  void PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const;
   bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
   void EnsureLocation();
   UnicodeString GetActualCurrentDirectory() const;

@@ -5048,7 +5048,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
   return (State == STATE_DONE);
 }
 
-void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData)
+void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const
 {
   TFileTransferData * Data = dyn_cast<TFileTransferData>(as_object(UserData));
   FILETIME WrTime = ::DateTimeToFileTime(Data->Modification, dstmUnix);
