@@ -1935,14 +1935,14 @@ intptr_t TRegistry::ReadInteger(const UnicodeString & Name) const
   return Result;
 }
 
-int64_t TRegistry::ReadInt64(const UnicodeString & Name)
+int64_t TRegistry::ReadInt64(const UnicodeString & Name) const
 {
   int64_t Result = 0;
   ReadBinaryData(Name, &Result, sizeof(Result));
   return Result;
 }
 
-UnicodeString TRegistry::ReadString(const UnicodeString & Name)
+UnicodeString TRegistry::ReadString(const UnicodeString & Name) const
 {
   UnicodeString Result;
   intptr_t Len = GetDataSize(Name);
@@ -1967,7 +1967,7 @@ UnicodeString TRegistry::ReadString(const UnicodeString & Name)
   return Result;
 }
 
-UnicodeString TRegistry::ReadStringRaw(const UnicodeString & Name)
+UnicodeString TRegistry::ReadStringRaw(const UnicodeString & Name) const
 {
   UnicodeString Result = ReadString(Name);
   return Result;
