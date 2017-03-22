@@ -563,16 +563,16 @@ UnicodeString TStrings::GetTextStr() const
   for (intptr_t Index = 0; Index < Count; ++Index)
   {
     UnicodeString S = GetString(Index);
-    intptr_t L = S.Length() * sizeof(wchar_t);
+    size_t L = S.Length() * sizeof(wchar_t);
     if (L != 0)
     {
-      memmove(P, S.c_str(), (size_t)L);
+      memmove(P, S.c_str(), L);
       P += S.Length();
     }
     L = LB.Length() * sizeof(wchar_t);
     if (L != 0)
     {
-      memmove(P, LB.c_str(), (size_t)L);
+      memmove(P, LB.c_str(), L);
       P += LB.Length();
     }
   }
