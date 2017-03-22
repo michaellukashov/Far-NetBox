@@ -187,7 +187,7 @@ UnicodeString TCustomFarPlugin::GetModuleName() const
   return FStartupInfo.ModuleName;
 }
 
-void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
+void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info) const
 {
   if (Info.StructSize)
   {

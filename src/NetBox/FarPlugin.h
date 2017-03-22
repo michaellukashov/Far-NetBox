@@ -223,7 +223,7 @@ private:
   UnicodeString FCurrentTitle;
   short FCurrentProgress;
 
-  void ClearPluginInfo(PluginInfo & Info);
+  void ClearPluginInfo(PluginInfo & Info) const;
   void UpdateCurrentConsoleTitle();
   UnicodeString FormatConsoleTitle();
   HWND GetConsoleWindow() const;
