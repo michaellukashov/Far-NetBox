@@ -429,16 +429,14 @@ bool TSignalThread::WaitForEvent()
 int TSignalThread::WaitForEvent(uint32_t Timeout) const
 {
   uint32_t Result = ::WaitForSingleObject(FEvent, Timeout);
-  int Return;
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
-    Return = -1;
+    return -1;
   }
   else
   {
-    Return = ((Result == WAIT_OBJECT_0) && !FTerminated) ? 1 : 0;
+    return ((Result == WAIT_OBJECT_0) && !FTerminated) ? 1 : 0;
   }
-  return Return;
 }
 
 void TSignalThread::Execute()
