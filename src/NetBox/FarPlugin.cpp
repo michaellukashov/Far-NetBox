@@ -1191,7 +1191,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
   {
     UnicodeString DestText;
     DestText.SetLength(MaxLen + 1);
-    HANDLE ScreenHandle = 0;
+    HANDLE ScreenHandle = nullptr;
     SaveScreen(ScreenHandle);
     {
       TFarEnvGuard Guard;
@@ -1536,7 +1536,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
   DebugAssert(Screen);
   TFarEnvGuard Guard;
   FStartupInfo.RestoreScreen(Screen);
-  Screen = 0;
+  Screen = nullptr;
 }
 
 void TCustomFarPlugin::HandleException(Exception * E, int /*OpMode*/)
@@ -2044,7 +2044,7 @@ bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
 
 void TCustomFarFileSystem::RedrawPanel(bool Another)
 {
-  FPlugin->FarControl(FCTL_REDRAWPANEL, 0, reinterpret_cast<intptr_t>(static_cast<void *>(0)), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+  FPlugin->FarControl(FCTL_REDRAWPANEL, 0, reinterpret_cast<intptr_t>(static_cast<void *>(nullptr)), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
 }
 
 void TCustomFarFileSystem::ClosePlugin()
