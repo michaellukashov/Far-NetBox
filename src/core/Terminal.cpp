@@ -6741,7 +6741,8 @@ UnicodeString TTerminal::ChangeFileName(const TCopyParamType * CopyParam,
   const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel)
 {
   UnicodeString FileName = GetBaseFileName(AFileName);
-  FileName = CopyParam->ChangeFileName(FileName, Side, FirstLevel);
+  if (CopyParam)
+    FileName = CopyParam->ChangeFileName(FileName, Side, FirstLevel);
   return FileName;
 }
 
