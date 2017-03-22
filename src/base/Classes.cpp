@@ -1757,10 +1757,10 @@ HKEY TRegistry::GetRootKey() const { return FRootKey; }
 
 void TRegistry::CloseKey()
 {
-  if (GetCurrentKey() != 0)
+  if (GetCurrentKey() != nullptr)
   {
     ::RegCloseKey(GetCurrentKey());
-    FCurrentKey = 0;
+    FCurrentKey = nullptr;
     FCurrentPath.Clear();
   }
 }
@@ -1771,7 +1771,7 @@ bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
   UnicodeString S = Key;
   bool Relative = IsRelative(S);
 
-  HKEY TempKey = 0;
+  HKEY TempKey = nullptr;
   if (!CanCreate || S.IsEmpty())
   {
     Result = ::RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0,
@@ -1784,7 +1784,7 @@ bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
   }
   if (Result)
   {
-    if ((GetCurrentKey() != 0) && Relative)
+    if ((GetCurrentKey() != nullptr) && Relative)
     {
       S = FCurrentPath + L'\\' + S;
     }
@@ -1800,7 +1800,7 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
   bool Relative = IsRelative(S);
   HKEY OldKey = GetCurrentKey();
   HKEY DeleteKey = GetKey(Key);
-  if (DeleteKey != 0)
+  if (DeleteKey != nullptr)
   {
     SCOPE_EXIT
     {
@@ -1844,11 +1844,11 @@ bool TRegistry::KeyExists(const UnicodeString & Key) const
   };
   FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
   HKEY TempKey = GetKey(Key);
-  if (TempKey != 0)
+  if (TempKey != nullptr)
   {
     ::RegCloseKey(TempKey);
   }
-  Result = TempKey != 0;
+  Result = TempKey != nullptr;
   return Result;
 }
 
