@@ -215,7 +215,7 @@ protected:
     TFileOperationProgressType * OperationProgress);
   TDateTime ConvertLocalTimestamp(time_t Time);
   void RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source,
-    TDateTime & DateTime, TModificationFmt & ModificationFmt);
+    TDateTime & DateTime, TModificationFmt & ModificationFmt) const;
   void SetLastCode(intptr_t Code);
   void StoreLastResponse(const UnicodeString & Text);
   void SetCPSLimit(TFileOperationProgressType * OperationProgress);
