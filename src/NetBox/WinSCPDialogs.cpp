@@ -4613,7 +4613,7 @@ public:
 
 protected:
   virtual void Change();
-  void UpdateProperties(TRemoteProperties & Properties);
+  void UpdateProperties(TRemoteProperties & Properties) const;
 
 private:
   bool FAnyDirectories;
@@ -4851,7 +4851,7 @@ void TPropertiesDialog::Change()
   }
 }
 
-void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties)
+void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties) const
 {
   if (FAllowedChanges & cpMode)
   {
@@ -4945,7 +4945,7 @@ public:
     intptr_t Options, intptr_t CopyParamAttrs);
 
   void SetParams(const TCopyParamType & Value);
-  TCopyParamType GetParams();
+  TCopyParamType GetParams() const;
   int GetHeight();
 
 protected:
@@ -5324,7 +5324,7 @@ void TCopyParamsContainer::SetParams(const TCopyParamType & Value)
   FParams = Value;
 }
 
-TCopyParamType TCopyParamsContainer::GetParams()
+TCopyParamType TCopyParamsContainer::GetParams() const
 {
   TCopyParamType Result = FParams;
 
