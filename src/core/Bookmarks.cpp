@@ -323,7 +323,7 @@ void TBookmarkList::LoadOptions(THierarchicalStorage * Storage)
   FOpenedNodes->SetCommaText(Storage->ReadString("OpenedNodes", L""));
 }
 
-void TBookmarkList::SaveOptions(THierarchicalStorage * Storage)
+void TBookmarkList::SaveOptions(THierarchicalStorage * Storage) const
 {
   Storage->WriteString("OpenedNodes", FOpenedNodes->GetCommaText());
 }
@@ -388,7 +388,7 @@ void TBookmarkList::Delete(TBookmark *& Bookmark)
   SAFE_DESTROY(Bookmark);
 }
 
-intptr_t TBookmarkList::IndexOf(TBookmark * Bookmark)
+intptr_t TBookmarkList::IndexOf(TBookmark * Bookmark) const
 {
   return FBookmarks->IndexOf(Bookmark->GetKey().c_str());
 }
@@ -405,7 +405,7 @@ void TBookmarkList::KeyChanged(intptr_t Index)
   FBookmarks->SetString(Index, Bookmark->GetKey());
 }
 
-TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, const UnicodeString & Name)
+TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, const UnicodeString & Name) const
 {
   intptr_t Index = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
   TBookmark * Bookmark = ((Index >= 0) ? dyn_cast<TBookmark>(FBookmarks->GetObj(Index)) : nullptr);
@@ -437,7 +437,7 @@ TBookmark * TBookmarkList::GetBookmarks(intptr_t Index)
   return Bookmark;
 }
 
-bool TBookmarkList::GetNodeOpened(const UnicodeString & Index)
+bool TBookmarkList::GetNodeOpened(const UnicodeString & Index) const
 {
   return (FOpenedNodes->IndexOf(Index.c_str()) >= 0);
 }
