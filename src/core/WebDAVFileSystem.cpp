@@ -2736,7 +2736,7 @@ void TWebDAVFileSystem::InitSslSession(ssl_st * Ssl, ne_session * Session)
   FileSystem->InitSslSessionImpl(Ssl);
 }
 
-void TWebDAVFileSystem::InitSslSessionImpl(ssl_st * Ssl)
+void TWebDAVFileSystem::InitSslSessionImpl(ssl_st * Ssl) const
 {
   // See also CAsyncSslSocketLayer::InitSSLConnection
   TSessionData * Data = FTerminal->GetSessionData();
