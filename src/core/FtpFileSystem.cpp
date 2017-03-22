@@ -3430,7 +3430,9 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
     };
     // discard up to one reply
     // (it should not happen here that two replies are posted anyway)
-    while (ProcessMessage() && (FReply == 0));
+    while (ProcessMessage() && (FReply == 0))
+    {
+    }
     Reply = FReply;
   }
   __finally
