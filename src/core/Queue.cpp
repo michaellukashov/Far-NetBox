@@ -536,7 +536,7 @@ TTerminalQueue::~TTerminalQueue()
   SAFE_DESTROY_EX(TSessionData, FSessionData);
 }
 
-void TTerminalQueue::FreeItemsList(TList *& List)
+void TTerminalQueue::FreeItemsList(TList *& List) const
 {
   for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
   {
@@ -1815,7 +1815,7 @@ TFileOperationProgressType * TQueueItemProxy::GetProgressData()
   return (FProgressData->Operation == foNone) ? nullptr : FProgressData;
 }
 
-int64_t TQueueItemProxy::GetTotalTransferred()
+int64_t TQueueItemProxy::GetTotalTransferred() const
 {
   // want to show total transferred also for "completed" items,
   // for which GetProgressData() is NULL

@@ -173,7 +173,7 @@ protected:
 public:
   inline static TQueueItem * GetItem(TList * List, intptr_t Index);
   inline TQueueItem * GetItem(intptr_t Index);
-  void FreeItemsList(TList *& List);
+  void FreeItemsList(TList *& List) const;
   void UpdateStatusForList(
     TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current);
   bool ItemGetData(TQueueItem * Item, TQueueItemProxy * Proxy);
@@ -342,7 +342,7 @@ private:
 public:
   intptr_t GetIndex() const;
   TFileOperationProgressType * GetProgressData();
-  int64_t GetTotalTransferred();
+  int64_t GetTotalTransferred() const;
 };
 
 class TTerminalQueueStatus : public TObject
