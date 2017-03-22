@@ -306,7 +306,7 @@ public:
   __property UnicodeString Name = { read = FName, write = FName };
   __property Count;
 */
-  TSessionLog * GetParent();
+  TSessionLog * GetParent() const;
   void SetParent(TSessionLog * Value);
   bool GetLogging() const;
   TNotifyEvent & GetOnChange();
@@ -357,11 +357,11 @@ private:
   void DoAddToSelf(TLogLineType AType, const UnicodeString & ALine);
   void AddStartupInfo(bool System);
   void DoAddStartupInfo(TSessionData * Data);
-  UnicodeString GetTlsVersionName(TTlsVersion TlsVersion);
+  UnicodeString GetTlsVersionName(TTlsVersion TlsVersion) const;
   UnicodeString LogSensitive(const UnicodeString & Str);
   void AddOption(const UnicodeString & LogStr);
   void AddOptions(TOptions * Options);
-  UnicodeString GetCmdLineLog();
+  UnicodeString GetCmdLineLog() const;
 };
 
 class TActionLog : public TObject
