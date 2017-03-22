@@ -2664,7 +2664,7 @@ bool TFTPFileSystem::LookupUploadModificationTime(
   return Result;
 }
 
-bool TFTPFileSystem::NeedAutoDetectTimeDifference()
+bool TFTPFileSystem::NeedAutoDetectTimeDifference() const
 {
   return
     FDetectTimeDifference &&
@@ -2672,7 +2672,7 @@ bool TFTPFileSystem::NeedAutoDetectTimeDifference()
     !FFileZillaIntf->UsingMlsd() && SupportsReadingFile();
 }
 
-bool TFTPFileSystem::IsEmptyFileList(TRemoteFileList * FileList)
+bool TFTPFileSystem::IsEmptyFileList(TRemoteFileList * FileList) const
 {
   return
     // (note that it's actually never empty here, there's always at least parent directory,

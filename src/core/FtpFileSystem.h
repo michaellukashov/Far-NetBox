@@ -227,9 +227,9 @@ protected:
   void ApplyTimeDifference(
     const UnicodeString & FileName, TDateTime & Modification, TModificationFmt & ModificationFmt);
   void DummyReadDirectory(const UnicodeString & Directory);
-  bool IsEmptyFileList(TRemoteFileList * FileList);
+  bool IsEmptyFileList(TRemoteFileList * FileList) const;
   void CheckTimeDifference();
-  inline bool NeedAutoDetectTimeDifference();
+  inline bool NeedAutoDetectTimeDifference() const;
   bool LookupUploadModificationTime(
     const UnicodeString & FileName, TDateTime & Modification, TModificationFmt ModificationFmt);
   UnicodeString DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString & Alg, TRemoteFile * File);
