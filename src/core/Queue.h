@@ -25,10 +25,10 @@ public:
   virtual void Init();
 
   virtual void Start();
-  void WaitFor(uint32_t Milliseconds = INFINITE);
+  void WaitFor(uint32_t Milliseconds = INFINITE) const;
   virtual void Terminate() {}
   void Close();
-  bool IsFinished();
+  bool IsFinished() const;
 
 protected:
   HANDLE FThread;
@@ -57,7 +57,7 @@ public:
   void Init(bool LowPriority);
   virtual void Start();
   virtual void Terminate();
-  void TriggerEvent();
+  void TriggerEvent() const;
 
 protected:
   HANDLE FEvent;
@@ -67,7 +67,7 @@ protected:
   virtual ~TSignalThread();
 
   virtual bool WaitForEvent();
-  int WaitForEvent(uint32_t Timeout);
+  int WaitForEvent(uint32_t Timeout) const;
   virtual void Execute();
   virtual void ProcessEvent() = 0;
 };

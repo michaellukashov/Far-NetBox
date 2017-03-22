@@ -342,7 +342,7 @@ TSimpleThread::~TSimpleThread()
   }
 }
 
-bool TSimpleThread::IsFinished()
+bool TSimpleThread::IsFinished() const
 {
   return FFinished;
 }
@@ -368,7 +368,7 @@ void TSimpleThread::Close()
   }
 }
 
-void TSimpleThread::WaitFor(uint32_t Milliseconds)
+void TSimpleThread::WaitFor(uint32_t Milliseconds) const
 {
   ::WaitForSingleObject(FThread, Milliseconds);
 }
@@ -412,7 +412,7 @@ void TSignalThread::Start()
   TSimpleThread::Start();
 }
 
-void TSignalThread::TriggerEvent()
+void TSignalThread::TriggerEvent() const
 {
   if (FEvent && FEvent != INVALID_HANDLE_VALUE)
   {
@@ -426,7 +426,7 @@ bool TSignalThread::WaitForEvent()
   return WaitForEvent(INFINITE) > 0;
 }
 
-int TSignalThread::WaitForEvent(uint32_t Timeout)
+int TSignalThread::WaitForEvent(uint32_t Timeout) const
 {
   uint32_t Result = ::WaitForSingleObject(FEvent, Timeout);
   int Return;
