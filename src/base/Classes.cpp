@@ -1747,7 +1747,7 @@ void TRegistry::GetKeyNames(TStrings * Strings) const
     {
       DWORD Len = Info.MaxSubKeyLen + 1;
       RegEnumKeyEx(GetCurrentKey(), static_cast<DWORD>(Index), &S[1], &Len, nullptr, nullptr, nullptr, nullptr);
-      Strings->Add(S.c_str());
+      Strings->Add(S);
     }
   }
 }
