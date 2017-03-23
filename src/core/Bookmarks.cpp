@@ -232,7 +232,7 @@ void TBookmarks::ModifyAll(bool Modify)
 
 TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & AIndex)
 {
-  intptr_t Index = FBookmarkLists->IndexOf(AIndex.c_str());
+  intptr_t Index = FBookmarkLists->IndexOf(AIndex);
   if (Index >= 0)
   {
     return FBookmarkLists->GetAs<TBookmarkList>(Index);
