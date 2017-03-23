@@ -245,7 +245,7 @@ TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & AIndex)
 
 void TBookmarks::SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Value)
 {
-  intptr_t Index = FBookmarkLists->IndexOf(AIndex.c_str());
+  intptr_t Index = FBookmarkLists->IndexOf(AIndex);
   if (Index >= 0)
   {
     TBookmarkList * BookmarkList;
