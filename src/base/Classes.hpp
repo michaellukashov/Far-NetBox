@@ -267,11 +267,8 @@ public:
   intptr_t Add(TObject * Value);
   intptr_t Remove(TObject * Value);
   void Extract(TObject * Value);
-  virtual void Move(intptr_t Index, intptr_t To);
-  virtual void Delete(intptr_t Index);
   void Insert(intptr_t Index, TObject * Value);
   intptr_t IndexOf(const TObject * Value) const;
-  virtual void Clear();
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
   virtual void Sort(CompareFunc func);
@@ -306,7 +303,6 @@ public:
   explicit TStrings(TObjectClassId Kind);
   virtual ~TStrings();
   intptr_t Add(const UnicodeString & S, TObject * AObject = nullptr);
-  // virtual void Delete(intptr_t Index) = 0;
   virtual UnicodeString GetTextStr() const;
   virtual void SetTextStr(const UnicodeString & Text);
   virtual void BeginUpdate();
@@ -315,8 +311,7 @@ public:
   virtual intptr_t AddObject(const UnicodeString & S, TObject * AObject);
   virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
   bool Equals(const TStrings * Value) const;
-  // virtual void Clear() = 0;
-  void Move(intptr_t CurIndex, intptr_t NewIndex);
+  virtual void Move(intptr_t CurIndex, intptr_t NewIndex);
   virtual intptr_t IndexOf(const UnicodeString & S) const;
   virtual intptr_t IndexOfName(const UnicodeString & Name) const;
   UnicodeString ExtractName(const UnicodeString & S) const;
@@ -391,7 +386,6 @@ public:
   void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
   virtual void Assign(const TPersistent * Source);
-  virtual void Clear();
   virtual bool Find(const UnicodeString & S, intptr_t & Index) const;
   virtual intptr_t IndexOf(const UnicodeString & S) const;
   virtual void Delete(intptr_t Index);

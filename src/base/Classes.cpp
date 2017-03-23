@@ -313,16 +313,6 @@ void TObjectList::Extract(TObject * Value)
   TList::Extract(Value);
 }
 
-void TObjectList::Move(intptr_t Index, intptr_t To)
-{
-  TList::Move(Index, To);
-}
-
-void TObjectList::Delete(intptr_t Index)
-{
-  TList::Delete(Index);
-}
-
 void TObjectList::Insert(intptr_t Index, TObject * Value)
 {
   TList::Insert(Index, Value);
@@ -331,11 +321,6 @@ void TObjectList::Insert(intptr_t Index, TObject * Value)
 intptr_t TObjectList::IndexOf(const TObject * Value) const
 {
   return TList::IndexOf(Value);
-}
-
-void TObjectList::Clear()
-{
-  TList::Clear();
 }
 
 void TObjectList::Sort(CompareFunc func)
@@ -822,12 +807,6 @@ intptr_t TStringList::GetCount() const
 {
   DebugAssert(FStrings.size() == TObjectList::GetCount());
   return static_cast<intptr_t>(FStrings.size());
-}
-
-void TStringList::Clear()
-{
-  // FStrings.clear();
-  TObjectList::Clear();
 }
 
 intptr_t TStringList::Add(const UnicodeString & S)
