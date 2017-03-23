@@ -306,7 +306,7 @@ public:
   explicit TStrings(TObjectClassId Kind);
   virtual ~TStrings();
   intptr_t Add(const UnicodeString & S, TObject * AObject = nullptr);
-  virtual void Delete(intptr_t Index) = 0;
+  // virtual void Delete(intptr_t Index) = 0;
   virtual UnicodeString GetTextStr() const;
   virtual void SetTextStr(const UnicodeString & Text);
   virtual void BeginUpdate();
@@ -315,7 +315,7 @@ public:
   virtual intptr_t AddObject(const UnicodeString & S, TObject * AObject);
   virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
   bool Equals(const TStrings * Value) const;
-  virtual void Clear() = 0;
+  // virtual void Clear() = 0;
   void Move(intptr_t CurIndex, intptr_t NewIndex);
   virtual intptr_t IndexOf(const UnicodeString & S) const;
   virtual intptr_t IndexOfName(const UnicodeString & Name) const;
@@ -407,9 +407,6 @@ public:
   virtual intptr_t GetCount() const;
 
 public:
-  template<class T>
-  T * GetAs(intptr_t Index) const { return dyn_cast<T>(GetObj(Index)); }
-  virtual TObject * GetObj(intptr_t Index) const;
   virtual void SetObj(intptr_t Index, TObject * AObject);
   virtual bool GetSorted() const { return FSorted; }
   virtual void SetSorted(bool Value);
@@ -422,7 +419,6 @@ private:
   TNotifyEvent FOnChange;
   TNotifyEvent FOnChanging;
   rde::vector<UnicodeString> FStrings;
-  rde::vector<TObject *> FObjects;
   bool FSorted;
   bool FCaseSensitive;
 
