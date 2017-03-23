@@ -1706,8 +1706,7 @@ protected:
       // Try only: We cannot read from the socket here as we are already called
       // from TSecureShell::HandleNetworkEvents as it would cause a recursion
       // that would potentially make PuTTY code process the SSH packets in wrong order.
-     ReceivePacket(nullptr, SSH_FXP_STATUS, -1, nullptr, true);
-
+      ReceivePacket(nullptr, SSH_FXP_STATUS, -1, nullptr, true);
     }
     return Result;
   }
@@ -1745,7 +1744,10 @@ public:
     FIndex(0)
   {
   }
-  virtual ~TSFTPLoadFilesPropertiesQueue() {}
+
+  virtual ~TSFTPLoadFilesPropertiesQueue()
+  {
+  }
 
   bool Init(uintptr_t QueueLen, TStrings * AFileList)
   {
@@ -1828,7 +1830,10 @@ public:
     FIndex(0)
   {
   }
-  virtual ~TSFTPCalculateFilesChecksumQueue() {}
+
+  virtual ~TSFTPCalculateFilesChecksumQueue()
+  {
+  }
 
   bool Init(intptr_t QueueLen, const UnicodeString & Alg, TStrings * AFileList)
   {
@@ -2119,7 +2124,7 @@ void TSFTPFileSystem::Idle()
       ((Now() - FSecureShell->GetLastDataSent()) > GetSessionData()->GetPingIntervalDT()))
   {
     if ((GetSessionData()->GetPingType() == ptDummyCommand) &&
-        FSecureShell->GetReady())
+      FSecureShell->GetReady())
     {
       FTerminal->LogEvent("Sending dummy command to keep session alive.");
       TSFTPPacket Packet(SSH_FXP_REALPATH, FCodePage);
@@ -2601,7 +2606,7 @@ intptr_t TSFTPFileSystem::PacketLength(uint8_t * LenBuf, SSH_FXP_TYPES ExpectedT
 
 const TSessionData * TSFTPFileSystem::GetSessionData() const
 {
-   return FTerminal->GetSessionData();
+  return FTerminal->GetSessionData();
 }
 
 bool TSFTPFileSystem::PeekPacket()
