@@ -1589,7 +1589,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     UnicodeString FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index));
+    const TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
 
     bool Success = false;
     try__finally
@@ -1890,7 +1890,7 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   {
     bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index));
+    TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = base::ExtractFileName(RealFileName, false);
 

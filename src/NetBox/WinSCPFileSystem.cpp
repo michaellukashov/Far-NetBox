@@ -2396,7 +2396,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
 {
   for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = dyn_cast<TFarPanelItem>(PanelItems->GetObj(Index));
+    TFarPanelItem * PanelItem = PanelItems->GetAs<TFarPanelItem>(Index);
     DebugAssert(PanelItem);
     if (PanelItem->GetIsFile())
     {
@@ -2457,7 +2457,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
     else
     {
       Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILE_CONFIRM : DELETE_FILE_CONFIRM).c_str(),
-        dyn_cast<TFarPanelItem>(PanelItems->GetObj(0))->GetFileName().c_str());
+        PanelItems->GetAs<TFarPanelItem>(0)->GetFileName().c_str());
     }
 
     if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
@@ -2514,7 +2514,7 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     if (PanelItems->GetCount() == 1)
     {
       Prompt = FORMAT(GetMsg(EXPORT_SESSION_PROMPT).c_str(),
-        dyn_cast<TFarPanelItem>(PanelItems->GetObj(0))->GetFileName().c_str());
+        PanelItems->GetAs<TFarPanelItem>(0)->GetFileName().c_str());
     }
     else
     {
@@ -2809,7 +2809,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
     TFarPanelItem * PanelItem;
     for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
-      PanelItem = dyn_cast<TFarPanelItem>(PanelItems->GetObj(Index));
+      PanelItem = PanelItems->GetAs<TFarPanelItem>(Index);
       bool AnyData = false;
       FileName = PanelItem->GetFileName();
       if (PanelItem->GetIsFile())
@@ -2892,7 +2892,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   TObject * Data = nullptr;
   for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {
-    PanelItem = dyn_cast<TFarPanelItem>(PanelItems->GetObj(Index));
+    PanelItem = PanelItems->GetAs<TFarPanelItem>(Index);
     DebugAssert(PanelItem);
     if ((!SelectedOnly || PanelItem->GetSelected()) &&
         !PanelItem->GetIsParentDirectory())
@@ -3361,9 +3361,9 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       TObjectList * PanelItems = (*GetPanelInfo())->GetItems();
       for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
       {
-        if ((dyn_cast<TFarPanelItem>(PanelItems->GetObj(Index)))->GetFileName() == AFileName)
+        if (PanelItems->GetAs<TFarPanelItem>(Index)->GetFileName() == AFileName)
         {
-          PanelItem = dyn_cast<TFarPanelItem>(PanelItems->GetObj(Index));
+          PanelItem = PanelItems->GetAs<TFarPanelItem>(Index);
           break;
         }
       }
@@ -3969,7 +3969,7 @@ void TWinSCPFileSystem::MultipleEdit()
     if ((FileList.get() != nullptr) && (FileList->GetCount() == 1))
     {
       MultipleEdit(FTerminal->GetCurrDirectory(), FileList->GetString(0),
-        dyn_cast<TRemoteFile>(FileList->GetObj(0)));
+        FileList->GetAs<TRemoteFile>(0));
     }
   }
 }

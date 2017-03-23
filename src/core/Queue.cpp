@@ -2066,7 +2066,7 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * Terminal
   {
     FFilesToCopy->AddObject(AFilesToCopy->GetString(Index),
       ((AFilesToCopy->GetObj(Index) == nullptr) || (Side == osLocal)) ? nullptr :
-        dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index))->Duplicate());
+        AFilesToCopy->GetAs<TRemoteFile>(Index)->Duplicate());
   }
 
   FTargetDir = TargetDir;

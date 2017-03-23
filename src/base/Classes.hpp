@@ -259,6 +259,8 @@ public:
   explicit TObjectList(TObjectClassId Kind = OBJECT_CLASS_TObjectList);
   virtual ~TObjectList();
 
+  template<class T>
+  T * GetAs(intptr_t Index) const { return dyn_cast<T>(GetObj(Index)); }
   TObject * operator [](intptr_t Index) const;
   TObject * GetObj(intptr_t Index) const;
   void SetItem(intptr_t Index, TObject * Value);
@@ -334,7 +336,6 @@ public:
   virtual intptr_t GetCount() const = 0;
 
 public:
-  virtual TObject * GetObj(intptr_t Index) const = 0;
   virtual void SetObj(intptr_t Index, TObject * AObject) = 0;
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
@@ -406,6 +407,8 @@ public:
   virtual intptr_t GetCount() const;
 
 public:
+  template<class T>
+  T * GetAs(intptr_t Index) const { return dyn_cast<T>(GetObj(Index)); }
   virtual TObject * GetObj(intptr_t Index) const;
   virtual void SetObj(intptr_t Index, TObject * AObject);
   virtual bool GetSorted() const { return FSorted; }

@@ -1637,7 +1637,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
        // this can be optimized as the list is sorted
       for (Integer Index = 0; Index < AStoredSessions->GetCountIncludingHidden(); ++Index)
       {
-        TSessionData * AData = dyn_cast<TSessionData>(AStoredSessions->GetObj(Index));
+        TSessionData * AData = AStoredSessions->GetAs<TSessionData>(Index);
         if (!AData->GetIsWorkspace())
         {
           bool Match = false;
@@ -4309,7 +4309,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults.get());
     for (intptr_t Index = 0; Index < GetCountIncludingHidden(); ++Index)
     {
-      TSessionData * SessionData = dyn_cast<TSessionData>(GetObj(Index));
+      TSessionData * SessionData = GetAs<TSessionData>(Index);
       try
       {
         DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
@@ -4377,7 +4377,7 @@ void TStoredSessionList::Saved()
   FDefaultSettings->SetModified(false);
   for (intptr_t Index = 0; Index < GetCountIncludingHidden(); ++Index)
   {
-    (dyn_cast<TSessionData>(GetObj(Index))->SetModified(false));
+    GetAs<TSessionData>(Index)->SetModified(false);
   }
 }
 

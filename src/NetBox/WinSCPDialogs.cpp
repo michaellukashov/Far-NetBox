@@ -4076,7 +4076,7 @@ void TSessionDialog::SelectTab(intptr_t Tab)
   }*/
   for (Index = 0; Index < FTabs->GetCount(); ++Index)
   {
-    TTabButton * TabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index));
+    TTabButton * TabBtn = (FTabs->GetAs<TTabButton>(Index));
     if (TabBtn == SelectedTabBtn)
     {
       break;
@@ -4112,13 +4112,13 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   // Change visibility
   for (intptr_t Index = 0; Index < FirstVisibleTabIndex; ++Index)
   {
-    TTabButton * TabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index));
+    TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
     TabBtn->SetVisible(false);
   }
   intptr_t LeftPos = GetBorderBox()->GetLeft() + 2;
   for (intptr_t Index = FirstVisibleTabIndex; Index <= LastVisibleTabIndex; ++Index)
   {
-    TTabButton * TabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index));
+    TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
     intptr_t Width = TabBtn->GetWidth();
     TabBtn->SetLeft(LeftPos);
     TabBtn->SetWidth(Width);
@@ -4127,7 +4127,7 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   }
   for (intptr_t Index = LastVisibleTabIndex + 1; Index < FTabs->GetCount(); ++Index)
   {
-    TTabButton * TabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index));
+    TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
     TabBtn->SetVisible(false);
   }
 }
@@ -4143,9 +4143,9 @@ intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward) co
   {
     for (intptr_t Index = TabIndex; Index < FTabs->GetCount() - 1; ++Index)
     {
-      TTabButton * TabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index));
+      TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * NextTabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index + 1));
+      TTabButton * NextTabBtn = FTabs->GetAs<TTabButton>(Index + 1);
       intptr_t NextTabWidth = NextTabBtn->GetWidth() + 1;
       if (TabsWidth + NextTabWidth >= DialogWidth)
         break;
@@ -4156,9 +4156,9 @@ intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward) co
   {
     for (intptr_t Index = TabIndex; Index >= 1; Index--)
     {
-      TTabButton * TabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index));
+      TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * PrevTabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index - 1));
+      TTabButton * PrevTabBtn = FTabs->GetAs<TTabButton>(Index - 1);
       intptr_t PrevTabWidth = PrevTabBtn->GetWidth() + 1;
       if (TabsWidth + PrevTabWidth >= DialogWidth)
         break;
@@ -4642,7 +4642,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   OkButton(nullptr)
 {
   DebugAssert(AFileList->GetCount() > 0);
-  TRemoteFile * OnlyFile = dyn_cast<TRemoteFile>(AFileList->GetObj(0));
+  TRemoteFile * OnlyFile = AFileList->GetAs<TRemoteFile>(0);
   DebugUsedParam(OnlyFile);
   DebugAssert(OnlyFile);
   FMultiple = (AFileList->GetCount() > 1);
@@ -4666,7 +4666,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     intptr_t Directories = 0;
     for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = dyn_cast<TRemoteFile>(AFileList->GetObj(Index));
+      TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
       DebugAssert(File);
       if (UsedGroupList.get() && !File->GetFileGroup().GetName().IsEmpty())
       {
@@ -4708,7 +4708,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     {
       Text->SetCaption(core::MinimizeName(AFileList->GetString(0), static_cast<intptr_t>(GetClientSize().x), true));
     }
-    TRemoteFile * File = dyn_cast<TRemoteFile>(AFileList->GetObj(0));
+    TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
     if (!File->GetLinkTo().IsEmpty())
     {
       Text = new TFarText(this);
@@ -7565,8 +7565,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
     {
       if (!Scroll || (List->GetString(Index).LastDelimiter(L"{}") > 0))
       {
-        const TChecklistItem * ChecklistItem =
-          dyn_cast<TChecklistItem>(List->GetObj(Index));
+        const TChecklistItem * ChecklistItem = List->GetAs<TChecklistItem>(Index);
 
         List->SetString(Index, ItemLine(ChecklistItem));
       }
@@ -7734,8 +7733,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
     intptr_t Count = List->GetCount();
     for (intptr_t Index = 0; Index < Count; ++Index)
     {
-      TChecklistItem * ChecklistItem =
-        dyn_cast<TChecklistItem>(List->GetObj(Index));
+      TChecklistItem * ChecklistItem = List->GetAs<TChecklistItem>(Index);
       ChecklistItem->Checked = List->GetChecked(Index);
     }
   }

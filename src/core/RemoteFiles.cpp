@@ -1733,7 +1733,7 @@ UnicodeString TRemoteFileList::GetFullDirectory() const
 
 TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
-  return dyn_cast<TRemoteFile>(GetObj(Index));
+  return GetAs<TRemoteFile>(Index);
 }
 
 Boolean TRemoteFileList::GetIsRoot() const
@@ -1939,7 +1939,7 @@ void TRemoteDirectoryCache::Clear()
     };
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
-      TRemoteFileList * List = dyn_cast<TRemoteFileList>(GetObj(Index));
+      TRemoteFileList * List = GetAs<TRemoteFileList>(Index);
       SAFE_DESTROY(List);
       SetObj(Index, nullptr);
     }
@@ -1973,7 +1973,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   intptr_t Index = IndexOf(core::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
-    TRemoteFileList * FileList = dyn_cast<TRemoteFileList>(GetObj(Index));
+    TRemoteFileList * FileList = GetAs<TRemoteFileList>(Index);
     if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
@@ -1992,7 +1992,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   if (Result)
   {
     DebugAssert(GetObj(Index) != nullptr);
-    dyn_cast<TRemoteFileList>(GetObj(Index))->DuplicateTo(FileList);
+    GetAs<TRemoteFileList>(Index)->DuplicateTo(FileList);
   }
   return Result;
 }
@@ -2046,7 +2046,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
 
 void TRemoteDirectoryCache::Delete(intptr_t Index)
 {
-  TRemoteFileList * List = dyn_cast<TRemoteFileList>(GetObj(Index));
+  TRemoteFileList * List = GetAs<TRemoteFileList>(Index);
   SAFE_DESTROY(List);
   TStringList::Delete(Index);
 }
@@ -2848,7 +2848,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
   TRemoteProperties CommonProperties;
   for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
   {
-    TRemoteFile * File = dyn_cast<TRemoteFile>(AFileList->GetObj(Index));
+    TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
     DebugAssert(File);
     if (!Index)
     {
