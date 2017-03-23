@@ -92,13 +92,13 @@ const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const
 //---------------------------------------------------------------------------
 TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
-  return dyn_cast<TNamedObject>(GetObj(Index + FHiddenCount));
+  return GetAs<TNamedObject>(Index + FHiddenCount);
 }
 //---------------------------------------------------------------------------
 void TNamedObjectList::Recount()
 {
   intptr_t Index = 0;
-  while ((Index < TObjectList::GetCount()) && (dyn_cast<TNamedObject>(GetObj(Index))->GetHidden()))
+  while ((Index < TObjectList::GetCount()) && GetAs<TNamedObject>(Index)->GetHidden())
   {
     ++Index;
   }

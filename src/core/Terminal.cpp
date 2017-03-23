@@ -211,7 +211,7 @@ TChecklistItem::~TChecklistItem()
   SAFE_DESTROY(RemoteFile);
 }
 
-const UnicodeString TChecklistItem::GetFileName() const
+UnicodeString TChecklistItem::GetFileName() const
 {
   if (!Remote.FileName.IsEmpty())
   {
@@ -3469,7 +3469,7 @@ bool TTerminal::ProcessFiles(const TStrings * AFileList,
               };
               if (!Ex)
               {
-                TRemoteFile * RemoteFile = dyn_cast<TRemoteFile>(AFileList->GetObj(Index));
+                TRemoteFile * RemoteFile = AFileList->GetAs<TRemoteFile>(Index);
                 ProcessFile(FileName, RemoteFile, Param);
               }
               else
@@ -3819,7 +3819,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
     UnicodeString FileList;
     for (intptr_t Index = 0; Index < AFiles->GetCount(); ++Index)
     {
-      TRemoteFile * File = dyn_cast<TRemoteFile>(AFiles->GetObj(Index));
+      TRemoteFile * File = AFiles->GetAs<TRemoteFile>(Index);
       bool Dir = File->GetIsDirectory() && CanRecurseToDirectory(File);
 
       if (!Dir || FLAGSET(Params, ccApplyToDirectories))
@@ -3936,7 +3936,7 @@ bool TTerminal::LoadFilesProperties(TStrings * AFileList)
     FFileSystem->LoadFilesProperties(AFileList);
   if (Result && GetSessionData()->GetCacheDirectories() &&
       (AFileList->GetCount() > 0) &&
-      (dyn_cast<TRemoteFile>(AFileList->GetObj(0))->GetDirectory() == FFiles))
+      (AFileList->GetAs<TRemoteFile>(0)->GetDirectory() == FFiles))
   {
     AddCachedFileList(FFiles);
   }
@@ -4176,8 +4176,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
         UnicodeString CurrentDirectory = this->GetCurrDirectory();
         for (intptr_t Index = 0; !PossiblyMoved && (Index < AFileList->GetCount()); ++Index)
         {
-          const TRemoteFile * File =
-            dyn_cast<TRemoteFile>(AFileList->GetObj(Index));
+          const TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
           // File can be nullptr, and filename may not be full path,
           // but currently this is the only way we can move (at least in GUI)
           // current directory
@@ -4220,8 +4219,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
       UnicodeString CurrentDirectory = this->GetCurrDirectory();
       for (intptr_t Index = 0; !PossiblyMoved && (Index < AFileList->GetCount()); ++Index)
       {
-        const TRemoteFile * File =
-          dyn_cast<TRemoteFile>(AFileList->GetObj(Index));
+        const TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
         // File can be nullptr, and filename may not be full path,
         // but currently this is the only way we can move (at least in GUI)
         // current directory
@@ -5068,7 +5066,7 @@ public:
     {
       for (intptr_t Index = 0; Index < LocalFileList->GetCount(); ++Index)
       {
-        TSynchronizeFileData * FileData = dyn_cast<TSynchronizeFileData>(LocalFileList->GetObj(Index));
+        TSynchronizeFileData * FileData = LocalFileList->GetAs<TSynchronizeFileData>(Index);
         SAFE_DESTROY(FileData);
       }
       SAFE_DESTROY(LocalFileList);
@@ -5285,7 +5283,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
       TSynchronizeFileData * FileData;
       for (intptr_t Index = 0; Index < Data.LocalFileList->GetCount(); ++Index)
       {
-        FileData = dyn_cast<TSynchronizeFileData>(Data.LocalFileList->GetObj(Index));
+        FileData = Data.LocalFileList->GetAs<TSynchronizeFileData>(Index);
         // add local file either if we are going to upload it
         // (i.e. if it is updated or we want to upload even new files)
         // or if we are going to delete it (i.e. all "new"=obsolete files)
@@ -5445,7 +5443,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & /*AFileName*/,
         if (!New)
         {
           TSynchronizeFileData * LocalData =
-            dyn_cast<TSynchronizeFileData>(Data->LocalFileList->GetObj(LocalIndex));
+            Data->LocalFileList->GetAs<TSynchronizeFileData>(LocalIndex);
 
           LocalData->New = false;
 
@@ -6853,7 +6851,7 @@ void TTerminalList::FreeAndNullTerminal(TTerminal *& Terminal)
 
 TTerminal * TTerminalList::GetTerminal(intptr_t Index)
 {
-  return dyn_cast<TTerminal>(GetObj(Index));
+  return GetAs<TTerminal>(Index);
 }
 
 void TTerminalList::Idle()

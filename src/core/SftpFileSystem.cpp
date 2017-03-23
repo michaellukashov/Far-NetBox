@@ -1706,8 +1706,7 @@ protected:
       // Try only: We cannot read from the socket here as we are already called
       // from TSecureShell::HandleNetworkEvents as it would cause a recursion
       // that would potentially make PuTTY code process the SSH packets in wrong order.
-     ReceivePacket(nullptr, SSH_FXP_STATUS, -1, nullptr, true);
-
+      ReceivePacket(nullptr, SSH_FXP_STATUS, -1, nullptr, true);
     }
     return Result;
   }
@@ -1745,7 +1744,10 @@ public:
     FIndex(0)
   {
   }
-  virtual ~TSFTPLoadFilesPropertiesQueue() {}
+
+  virtual ~TSFTPLoadFilesPropertiesQueue()
+  {
+  }
 
   bool Init(uintptr_t QueueLen, TStrings * AFileList)
   {
@@ -1768,7 +1770,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = dyn_cast<TRemoteFile>(FFileList->GetObj(FIndex));
+      TRemoteFile * File = FFileList->GetAs<TRemoteFile>(FIndex);
       ++FIndex;
 
       bool MissingRights =
@@ -1828,7 +1830,10 @@ public:
     FIndex(0)
   {
   }
-  virtual ~TSFTPCalculateFilesChecksumQueue() {}
+
+  virtual ~TSFTPCalculateFilesChecksumQueue()
+  {
+  }
 
   bool Init(intptr_t QueueLen, const UnicodeString & Alg, TStrings * AFileList)
   {
@@ -1863,7 +1868,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = dyn_cast<TRemoteFile>(FFileList->GetObj(FIndex));
+      TRemoteFile * File = FFileList->GetAs<TRemoteFile>(FIndex);
       DebugAssert(File != nullptr);
       ++FIndex;
 
@@ -2119,7 +2124,7 @@ void TSFTPFileSystem::Idle()
       ((Now() - FSecureShell->GetLastDataSent()) > GetSessionData()->GetPingIntervalDT()))
   {
     if ((GetSessionData()->GetPingType() == ptDummyCommand) &&
-        FSecureShell->GetReady())
+      FSecureShell->GetReady())
     {
       FTerminal->LogEvent("Sending dummy command to keep session alive.");
       TSFTPPacket Packet(SSH_FXP_REALPATH, FCodePage);
@@ -2601,7 +2606,7 @@ intptr_t TSFTPFileSystem::PacketLength(uint8_t * LenBuf, SSH_FXP_TYPES ExpectedT
 
 const TSessionData * TSFTPFileSystem::GetSessionData() const
 {
-   return FTerminal->GetSessionData();
+  return FTerminal->GetSessionData();
 }
 
 bool TSFTPFileSystem::PeekPacket()
@@ -4138,7 +4143,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
   {
     for (intptr_t Index1 = 0; Index1 < AFileList->GetCount(); ++Index1)
     {
-      TRemoteFile * File = dyn_cast<TRemoteFile>(AFileList->GetObj(Index1));
+      TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index1);
       DebugAssert(File != nullptr);
       if (File && File->GetIsDirectory() && FTerminal->CanRecurseToDirectory(File) &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -4449,7 +4454,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   {
     bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index));
+    TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     FileNameOnly = base::ExtractFileName(RealFileName, false);
     DebugAssert(!FAvoidBusy);
@@ -5695,7 +5700,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   {
     bool Success = false;
     FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(Index));
+    const TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
 
     DebugAssert(!FAvoidBusy);
     FAvoidBusy = true;

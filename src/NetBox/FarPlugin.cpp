@@ -257,7 +257,7 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
   intptr_t Index = 0;
   while (!Result && (Index < FOpenedPlugins->GetCount()))
   {
-    FarFileSystem = dyn_cast<TCustomFarFileSystem>(FOpenedPlugins->GetObj(Index));
+    FarFileSystem = FOpenedPlugins->GetAs<TCustomFarFileSystem>(Index);
     DebugAssert(FarFileSystem);
     RECT Bounds = GetPanelBounds(FarFileSystem);
     if (Another && CompareRects(Bounds, PassivePanelBounds))
@@ -278,7 +278,7 @@ void TCustomFarPlugin::InvalidateOpenPanelInfo()
   for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
   {
     TCustomFarFileSystem * FarFileSystem =
-      dyn_cast<TCustomFarFileSystem>(FOpenedPlugins->GetObj(Index));
+      FOpenedPlugins->GetAs<TCustomFarFileSystem>(Index);
     FarFileSystem->InvalidateOpenPanelInfo();
   }
 }
@@ -1913,7 +1913,7 @@ intptr_t TCustomFarFileSystem::GetFindData(struct GetFindDataInfo * Info)
     Info->ItemsNumber = PanelItems->GetCount();
     for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
-      dyn_cast<TCustomFarPanelItem>(PanelItems->GetObj(Index))->FillPanelItem(
+      PanelItems->GetAs<TCustomFarPanelItem>(Index)->FillPanelItem(
         &(Info->PanelItem[Index]));
     }
   }
@@ -2605,7 +2605,7 @@ TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & AFileName) con
     Items = GetItems();
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = dyn_cast<TFarPanelItem>(Items->GetObj(Index));
+    TFarPanelItem * PanelItem = Items->GetAs<TFarPanelItem>(Index);
     if (PanelItem->GetFileName() == AFileName)
     {
       return PanelItem;
@@ -2624,7 +2624,7 @@ TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData)
   TObjectList * Items = GetItems();
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = dyn_cast<TFarPanelItem>(Items->GetObj(Index));
+    TFarPanelItem * PanelItem = Items->GetAs<TFarPanelItem>(Index);
     if (PanelItem->GetUserData() == UserData)
     {
       return PanelItem;
@@ -2649,7 +2649,7 @@ TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
   if (Items->GetCount() > 0)
   {
     DebugAssert(Index < Items->GetCount());
-    return dyn_cast<TFarPanelItem>(Items->GetObj(Index));
+    return Items->GetAs<TFarPanelItem>(Index);
   }
   else
   {

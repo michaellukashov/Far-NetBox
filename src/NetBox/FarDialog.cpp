@@ -256,7 +256,7 @@ TFarDialogItem * TFarDialog::GetItem(intptr_t Index) const
   if (GetItemCount())
   {
     assert(Index >= 0 && Index < FItems->GetCount());
-    DialogItem = dyn_cast<TFarDialogItem>(FItems->GetObj(Index));
+    DialogItem = FItems->GetAs<TFarDialogItem>(Index);
     assert(DialogItem);
   }
   return DialogItem;

@@ -195,7 +195,7 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo
   {
     for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
-      TWinSCPFileSystem * FileSystem = dyn_cast<TWinSCPFileSystem>(FOpenedPlugins->GetObj(Index));
+      TWinSCPFileSystem * FileSystem = FOpenedPlugins->GetAs<TWinSCPFileSystem>(Index);
       FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
     }
   }

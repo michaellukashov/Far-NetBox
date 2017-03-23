@@ -1694,7 +1694,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
       !OperationProgress->Cancel; ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
-      TRemoteFile * File1 = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(IFile));
+      TRemoteFile * File1 = AFilesToCopy->GetAs<TRemoteFile>(IFile);
       UnicodeString RealFileName = File1 ? File1->GetFileName() : FileName;
       bool CanProceed = false;
 
@@ -2378,7 +2378,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       !OperationProgress->Cancel; ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
-      TRemoteFile * File = dyn_cast<TRemoteFile>(AFilesToCopy->GetObj(IFile));
+      TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(IFile);
       DebugAssert(File);
 
       // Filename is used for error messaging and excluding files only
