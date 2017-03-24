@@ -28,46 +28,6 @@ struct TFilesFindParams;
 class TTunnelUI;
 class TCallbackGuard;
 
-typedef nb::FastDelegate8<void,
-  TObject * /*Sender*/, const UnicodeString & /*Query*/, TStrings * /*MoreMessages*/ ,
-  uintptr_t /*Answers*/,
-  const TQueryParams * /*Params*/, uintptr_t & /*Answer*/,
-  TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
-typedef nb::FastDelegate8<void,
-  TTerminal * /*Terminal*/, TPromptKind /*Kind*/, const UnicodeString & /*Name*/,
-  const UnicodeString & /*Instructions*/,
-  TStrings * /*Prompts*/, TStrings * /*Results*/,
-  bool & /*Result*/, void * /*Arg*/> TPromptUserEvent;
-typedef nb::FastDelegate5<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*SessionName*/,
-  const UnicodeString & /*Banner*/,
-  bool & /*NeverShowAgain*/, intptr_t /*Options*/> TDisplayBannerEvent;
-typedef nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, Exception * /*E*/, void * /*Arg*/ > TExtendedExceptionEvent;
-typedef nb::FastDelegate2<void, TObject * /*Sender*/,
-  Boolean /*ReloadOnly*/> TReadDirectoryEvent;
-typedef nb::FastDelegate4<void,
-  TObject * /*Sender*/, intptr_t /*Progress*/, intptr_t /*ResolvedLinks*/,
-  bool & /*Cancel*/> TReadDirectoryProgressEvent;
-typedef nb::FastDelegate3<void,
-  const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
-  void * /*Param*/> TProcessFileEvent;
-typedef nb::FastDelegate4<void,
-  const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
-  void * /*Param*/, intptr_t /*Index*/> TProcessFileEventEx;
-typedef nb::FastDelegate2<intptr_t,
-  void * /*Param1*/, void * /*Param2*/> TFileOperationEvent;
-typedef nb::FastDelegate4<void,
-  const UnicodeString & /*LocalDirectory*/, const UnicodeString & /*RemoteDirectory*/,
-  bool & /*Continue*/, bool /*Collect*/> TSynchronizeDirectoryEvent;
-typedef nb::FastDelegate2<void,
-  const UnicodeString & /*FileName*/, bool /*Alternative*/> TDeleteLocalFileEvent;
-typedef nb::FastDelegate3<int,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/,
-  bool /*SubDirs*/> TDirectoryModifiedEvent;
-typedef nb::FastDelegate4<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Str*/, bool /*Status*/,
-  intptr_t /*Phase*/> TInformationEvent;
 typedef nb::FastDelegate5<HANDLE,
   const UnicodeString & /*FileName*/, DWORD /*DesiredAccess*/,
   DWORD /*ShareMode*/, DWORD /*CreationDisposition*/,
@@ -85,6 +45,90 @@ typedef nb::FastDelegate2<BOOL,
   const UnicodeString & /*LocalDirName*/,
   LPSECURITY_ATTRIBUTES /*SecurityAttributes*/> TCreateLocalDirectoryEvent;
 typedef nb::FastDelegate0<bool> TCheckForEscEvent;
+
+/*
+typedef void __fastcall (__closure *TQueryUserEvent)
+  (TObject * Sender, const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
+   const TQueryParams * Params, unsigned int & Answer, TQueryType QueryType, void * Arg);
+*/
+typedef nb::FastDelegate8<void,
+  TObject * /*Sender*/, const UnicodeString & /*Query*/, TStrings * /*MoreMessages*/ ,
+  uintptr_t /*Answers*/,
+  const TQueryParams * /*Params*/, uintptr_t & /*Answer*/,
+  TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
+/*
+typedef void __fastcall (__closure *TPromptUserEvent)
+  (TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
+   TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
+*/
+typedef nb::FastDelegate8<void,
+  TTerminal * /*Terminal*/, TPromptKind /*Kind*/, const UnicodeString & /*Name*/,
+  const UnicodeString & /*Instructions*/,
+  TStrings * /*Prompts*/, TStrings * /*Results*/,
+  bool & /*Result*/, void * /*Arg*/> TPromptUserEvent;
+/*
+typedef void __fastcall (__closure *TDisplayBannerEvent)
+  (TTerminal * Terminal, UnicodeString SessionName, const UnicodeString & Banner,
+   bool & NeverShowAgain, int Options);
+*/
+typedef nb::FastDelegate5<void,
+  TTerminal * /*Terminal*/, const UnicodeString & /*SessionName*/,
+  const UnicodeString & /*Banner*/,
+  bool & /*NeverShowAgain*/, intptr_t /*Options*/> TDisplayBannerEvent;
+/*
+typedef void __fastcall (__closure *TExtendedExceptionEvent)
+  (TTerminal * Terminal, Exception * E, void * Arg);
+*/
+typedef nb::FastDelegate3<void,
+  TTerminal * /*Terminal*/, Exception * /*E*/, void * /*Arg*/ > TExtendedExceptionEvent;
+typedef nb::FastDelegate2<void, TObject * /*Sender*/,
+  Boolean /*ReloadOnly*/> TReadDirectoryEvent;
+typedef nb::FastDelegate4<void,
+  TObject * /*Sender*/, intptr_t /*Progress*/, intptr_t /*ResolvedLinks*/,
+  bool & /*Cancel*/> TReadDirectoryProgressEvent;
+typedef nb::FastDelegate3<void,
+  const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
+  void * /*Param*/> TProcessFileEvent;
+typedef nb::FastDelegate4<void,
+  const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
+  void * /*Param*/, intptr_t /*Index*/> TProcessFileEventEx;
+typedef nb::FastDelegate2<intptr_t,
+  void * /*Param1*/, void * /*Param2*/> TFileOperationEvent;
+/*
+typedef void __fastcall (__closure *TSynchronizeDirectory)
+  (const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+   bool & Continue, bool Collect);
+*/
+typedef nb::FastDelegate4<void,
+  const UnicodeString & /*LocalDirectory*/, const UnicodeString & /*RemoteDirectory*/,
+  bool & /*Continue*/, bool /*Collect*/> TSynchronizeDirectoryEvent;
+/*
+typedef void (__closure *TDeleteLocalFileEvent)(
+  const UnicodeString FileName, bool Alternative);
+*/
+typedef nb::FastDelegate2<void,
+  const UnicodeString & /*FileName*/, bool /*Alternative*/> TDeleteLocalFileEvent;
+/*
+typedef int (__closure *TDirectoryModifiedEvent)
+  (TTerminal * Terminal, const UnicodeString Directory, bool SubDirs);
+*/
+typedef nb::FastDelegate3<int,
+  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/,
+  bool /*SubDirs*/> TDirectoryModifiedEvent;
+/*
+typedef void (__closure *TInformationEvent)
+  (TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
+*/
+typedef nb::FastDelegate4<void,
+  TTerminal * /*Terminal*/, const UnicodeString & /*Str*/, bool /*Status*/,
+  intptr_t /*Phase*/> TInformationEvent;
+/*
+typedef void (__closure *TCustomCommandEvent)
+  (TTerminal * Terminal, const UnicodeString & Command, bool & Handled);
+*/
+typedef nb::FastDelegate3<void,
+  TTerminal * /*Terminal*/, const UnicodeString & /*Command*/,
+  bool & /*Handled*/> TCustomCommandEvent;
 
 inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 {
