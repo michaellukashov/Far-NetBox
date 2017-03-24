@@ -179,7 +179,7 @@ private:
   TConfiguration * FConfiguration;
   UnicodeString FCurrentDirectory;
   UnicodeString FLockDirectory;
-  Integer FExceptionOnFail;
+  intptr_t FExceptionOnFail;
   TRemoteDirectory * FFiles;
   intptr_t FInTransaction;
   bool FSuspendTransaction;

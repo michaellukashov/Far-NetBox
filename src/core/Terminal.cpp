@@ -1067,6 +1067,7 @@ void TTerminal::InternalTryOpen()
     ResetConnection();
     FStatus = ssOpening;
 
+    try__finally
     {
       SCOPE_EXIT
       {
@@ -1201,6 +1202,7 @@ void TTerminal::InitFileSystem()
     else
     {
       DebugAssert(FSecureShell == nullptr);
+      try__finally
       {
         SCOPE_EXIT
         {
@@ -1452,7 +1454,7 @@ void TTerminal::Reopen(intptr_t Params)
   // here used to be a check for FExceptionOnFail being 0
   // but it can happen, e.g. when we are downloading file to execute it.
   // however I'm not sure why we mind having exception-on-fail enabled here
-  Integer PrevExceptionOnFail = FExceptionOnFail;
+  intptr_t PrevExceptionOnFail = FExceptionOnFail;
   try__finally
   {
     SCOPE_EXIT
