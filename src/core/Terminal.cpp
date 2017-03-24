@@ -1014,12 +1014,10 @@ void TTerminal::Open()
 {
   TAutoNestingCounter OpeningCounter(FOpening);
   ReflectSettings();
-  bool Reopen = false;
-  do
+  try
   {
-    Reopen = false;
     DoInformation(L"", true, 1);
-    try
+    try__finally
     {
       SCOPE_EXIT
       {
@@ -1029,34 +1027,21 @@ void TTerminal::Open()
         InternalTryOpen();
       }
     }
-    catch (EFatal & E)
+    __finally
     {
-      Reopen = DoQueryReopen(&E);
-      if (Reopen)
-      {
-        SAFE_DESTROY(FFileSystem);
-        SAFE_DESTROY(FSecureShell);
-        SAFE_DESTROY(FTunnelData);
-        FStatus = ssClosed;
-        SAFE_DESTROY(FTunnel);
-      }
-      else
-      {
-        throw;
-      }
-    }
-    /*catch (EFatal &)
-    {
-      throw;
-    }*/
-    catch (Exception & E)
-    {
-      LogEvent(FORMAT(L"Got error: \"%s\"", E.Message.c_str()));
-      // any exception while opening session is fatal
-      FatalError(&E, L"");
-    }
+      // DoInformation(L"", true, 0);
+    };
   }
-  while (Reopen);
+  catch (EFatal &)
+  {
+    throw;
+  }
+  catch (Exception & E)
+  {
+    LogEvent(FORMAT(L"Got error: \"%s\"", E.Message.c_str()));
+    // any exception while opening session is fatal
+    FatalError(&E, L"");
+  }
   FSessionData->SetNumberOfRetries(0);
 }
 
@@ -1503,6 +1488,7 @@ void TTerminal::Reopen(intptr_t Params)
   }
   __finally
   {
+/*
     GetSessionData()->SetRemoteDirectory(PrevRemoteDirectory);
     GetSessionData()->SetFSProtocol(OrigFSProtocol);
     FAutoReadDirectory = PrevAutoReadDirectory;
@@ -1510,6 +1496,7 @@ void TTerminal::Reopen(intptr_t Params)
     FReadDirectoryPending = PrevReadDirectoryPending;
     FSuspendTransaction = false;
     FExceptionOnFail = PrevExceptionOnFail;
+*/
   };
 }
 
