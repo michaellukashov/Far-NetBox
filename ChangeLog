@@ -1,5 +1,7 @@
-NetBox 2.4.2.474 22.03.2017
+NetBox 2.4.2.475 24.03.2017
 --------------------
+  * Bugfix: Mantis-3412: Access Violation when connection is reopened
+    (http://bugs.farmanager.com/view.php?id=3412)
   * Bugfix: WebDAV: plugin shows error "Cannot change properties of file" after creating directory on remote server
     (http://forum.farmanager.com/viewtopic.php?p=142479#p142479)
   * Bugfix: Can't open remote directory stored in Folders history

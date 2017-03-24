@@ -114,8 +114,12 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TMoveFileParams;
   }
+
 public:
-  TMoveFileParams() : TObject(OBJECT_CLASS_TMoveFileParams) {}
+  TMoveFileParams() : TObject(OBJECT_CLASS_TMoveFileParams)
+  {
+  }
+
   UnicodeString Target;
   UnicodeString FileMask;
 };
@@ -128,6 +132,7 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TFilesFindParams;
   }
+
 public:
   TFilesFindParams() :
     TObject(OBJECT_CLASS_TFilesFindParams),
@@ -136,6 +141,7 @@ public:
     Cancel(false)
   {
   }
+
   TFileMasks FileMask;
   TFileFoundEvent OnFileFound;
   TFindingFileEvent OnFindingFile;
@@ -295,28 +301,28 @@ TChecklistAction TSynchronizeChecklist::Reverse(TChecklistAction Action)
 {
   switch (Action)
   {
-    case saUploadNew:
-      return saDeleteLocal;
+  case saUploadNew:
+    return saDeleteLocal;
 
-    case saDownloadNew:
-      return saDeleteRemote;
+  case saDownloadNew:
+    return saDeleteRemote;
 
-    case saUploadUpdate:
-      return saDownloadUpdate;
+  case saUploadUpdate:
+    return saDownloadUpdate;
 
-    case saDownloadUpdate:
-      return saUploadUpdate;
+  case saDownloadUpdate:
+    return saUploadUpdate;
 
-    case saDeleteRemote:
-      return saDownloadNew;
+  case saDeleteRemote:
+    return saDownloadNew;
 
-    case saDeleteLocal:
-      return saUploadNew;
+  case saDeleteLocal:
+    return saUploadNew;
 
-    default:
-    case saNone:
-      DebugFail();
-      return saNone;
+  default:
+  case saNone:
+    DebugFail();
+    return saNone;
   }
 }
 
@@ -1014,12 +1020,10 @@ void TTerminal::Open()
 {
   TAutoNestingCounter OpeningCounter(FOpening);
   ReflectSettings();
-  bool Reopen = false;
-  do
+  try
   {
-    Reopen = false;
     DoInformation(L"", true, 1);
-    try
+    try__finally
     {
       SCOPE_EXIT
       {
@@ -1029,34 +1033,21 @@ void TTerminal::Open()
         InternalTryOpen();
       }
     }
-    catch (EFatal & E)
+    __finally
     {
-      Reopen = DoQueryReopen(&E);
-      if (Reopen)
-      {
-        SAFE_DESTROY(FFileSystem);
-        SAFE_DESTROY(FSecureShell);
-        SAFE_DESTROY(FTunnelData);
-        FStatus = ssClosed;
-        SAFE_DESTROY(FTunnel);
-      }
-      else
-      {
-        throw;
-      }
-    }
-    /*catch (EFatal &)
-    {
-      throw;
-    }*/
-    catch (Exception & E)
-    {
-      LogEvent(FORMAT(L"Got error: \"%s\"", E.Message.c_str()));
-      // any exception while opening session is fatal
-      FatalError(&E, L"");
-    }
+      // DoInformation(L"", true, 0);
+    };
   }
-  while (Reopen);
+  catch (EFatal &)
+  {
+    throw;
+  }
+  catch (Exception & E)
+  {
+    LogEvent(FORMAT(L"Got error: \"%s\"", E.Message.c_str()));
+    // any exception while opening session is fatal
+    FatalError(&E, L"");
+  }
   FSessionData->SetNumberOfRetries(0);
 }
 
@@ -1067,6 +1058,7 @@ void TTerminal::InternalTryOpen()
     ResetConnection();
     FStatus = ssOpening;
 
+    try__finally
     {
       SCOPE_EXIT
       {
@@ -1201,6 +1193,7 @@ void TTerminal::InitFileSystem()
     else
     {
       DebugAssert(FSecureShell == nullptr);
+      try__finally
       {
         SCOPE_EXIT
         {
@@ -1452,7 +1445,8 @@ void TTerminal::Reopen(intptr_t Params)
   // here used to be a check for FExceptionOnFail being 0
   // but it can happen, e.g. when we are downloading file to execute it.
   // however I'm not sure why we mind having exception-on-fail enabled here
-  Integer PrevExceptionOnFail = FExceptionOnFail;
+  intptr_t PrevExceptionOnFail = FExceptionOnFail;
+  try__finally
   {
     SCOPE_EXIT
     {
@@ -1500,6 +1494,7 @@ void TTerminal::Reopen(intptr_t Params)
   }
   __finally
   {
+/*
     GetSessionData()->SetRemoteDirectory(PrevRemoteDirectory);
     GetSessionData()->SetFSProtocol(OrigFSProtocol);
     FAutoReadDirectory = PrevAutoReadDirectory;
@@ -1507,6 +1502,7 @@ void TTerminal::Reopen(intptr_t Params)
     FReadDirectoryPending = PrevReadDirectoryPending;
     FSuspendTransaction = false;
     FExceptionOnFail = PrevExceptionOnFail;
+*/
   };
 }
 
@@ -1787,29 +1783,29 @@ void TTerminal::ReactOnCommand(intptr_t Cmd)
 
   switch (static_cast<TFSCommand>(Cmd))
   {
-    case fsChangeDirectory:
-    case fsHomeDirectory:
-      ChangesDirectory = true;
-      break;
+  case fsChangeDirectory:
+  case fsHomeDirectory:
+    ChangesDirectory = true;
+    break;
 
-    case fsCopyToRemote:
-    case fsDeleteFile:
-    case fsRenameFile:
-    case fsMoveFile:
-    case fsCopyFile:
-    case fsCreateDirectory:
-    case fsChangeMode:
-    case fsChangeGroup:
-    case fsChangeOwner:
-    case fsChangeProperties:
-    case fsLock:
-      ModifiesFiles = true;
-      break;
+  case fsCopyToRemote:
+  case fsDeleteFile:
+  case fsRenameFile:
+  case fsMoveFile:
+  case fsCopyFile:
+  case fsCreateDirectory:
+  case fsChangeMode:
+  case fsChangeGroup:
+  case fsChangeOwner:
+  case fsChangeProperties:
+  case fsLock:
+    ModifiesFiles = true;
+    break;
 
-    case fsAnyCommand:
-      ChangesDirectory = true;
-      ModifiesFiles = true;
-      break;
+  case fsAnyCommand:
+    ChangesDirectory = true;
+    ModifiesFiles = true;
+    break;
   }
 
   if (ChangesDirectory)
@@ -2572,17 +2568,17 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & ASourceFullFileN
   bool Applicable = true;
   switch (BatchOverwrite)
   {
-    case boOlder:
-      Applicable = (FileParams != nullptr);
-      break;
+  case boOlder:
+    Applicable = (FileParams != nullptr);
+    break;
 
-    case boAlternateResume:
-      Applicable = CanAlternateResume;
-      break;
+  case boAlternateResume:
+    Applicable = CanAlternateResume;
+    break;
 
-    case boResume:
-      Applicable = CanAlternateResume;
-      break;
+  case boResume:
+    Applicable = CanAlternateResume;
+    break;
   }
 
   if (!Applicable)
@@ -2615,22 +2611,22 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & ASourceFullFileN
     Result = QueryUser(Message, nullptr, Answers, QueryParams);
     switch (Result)
     {
-      case qaNeverAskAgain:
-        FConfiguration->SetConfirmOverwriting(false);
-        Result = qaYes;
-        break;
+    case qaNeverAskAgain:
+      FConfiguration->SetConfirmOverwriting(false);
+      Result = qaYes;
+      break;
 
-      case qaYesToAll:
-        BatchOverwrite = boAll;
-        break;
+    case qaYesToAll:
+      BatchOverwrite = boAll;
+      break;
 
-      case qaAll:
-        BatchOverwrite = boOlder;
-        break;
+    case qaAll:
+      BatchOverwrite = boOlder;
+      break;
 
-      case qaNoToAll:
-        BatchOverwrite = boNone;
-        break;
+    case qaNoToAll:
+      BatchOverwrite = boNone;
+      break;
     }
 
     // we user has not selected another batch overwrite mode,
@@ -4548,15 +4544,15 @@ public:
     // FAction.AddOutput(Str, StdError);
     switch (OutputType)
     {
-      case cotOutput:
-        FAction.AddOutput(Str, false);
-        break;
-      case cotError:
-        FAction.AddOutput(Str, true);
-        break;
-      case cotExitCode:
-        FAction.ExitCode((int)::StrToInt64(Str));
-        break;
+    case cotOutput:
+      FAction.AddOutput(Str, false);
+      break;
+    case cotError:
+      FAction.AddOutput(Str, true);
+      break;
+    case cotExitCode:
+      FAction.ExitCode((int)::StrToInt64(Str));
+      break;
     }
 
     if (FOutputEvent != nullptr)
@@ -4671,20 +4667,20 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
 
             switch (Answer)
             {
-              case qaYesToAll:
-                OperationProgress->BatchOverwrite = boAll;
-                break;
-              case qaCancel:
-                OperationProgress->Cancel = csCancel; // continue on next case
-                Result = false;
-                break;
-              case qaNoToAll:
-                OperationProgress->BatchOverwrite = boNone;
-                Result = false;
-                break;
-              case qaNo:
-                Result = false;
-                break;
+            case qaYesToAll:
+              OperationProgress->BatchOverwrite = boAll;
+              break;
+            case qaCancel:
+              OperationProgress->Cancel = csCancel; // continue on next case
+              Result = false;
+              break;
+            case qaNoToAll:
+              OperationProgress->BatchOverwrite = boNone;
+              Result = false;
+              break;
+            case qaNo:
+              Result = false;
+              break;
             }
           }
         }
@@ -5026,8 +5022,12 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TSynchronizeFileData;
   }
+
 public:
-  TSynchronizeFileData() : TObject(OBJECT_CLASS_TSynchronizeFileData) {}
+  TSynchronizeFileData() : TObject(OBJECT_CLASS_TSynchronizeFileData)
+  {
+  }
+
   bool Modified;
   bool New;
   bool IsDirectory;
@@ -5039,6 +5039,7 @@ public:
 };
 
 const intptr_t sfFirstLevel = 0x01;
+
 struct TSynchronizeData : public TObject
 {
 public:
@@ -5047,8 +5048,12 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TSynchronizeData;
   }
+
 public:
-  TSynchronizeData() : TObject(OBJECT_CLASS_TSynchronizeData) {}
+  TSynchronizeData() : TObject(OBJECT_CLASS_TSynchronizeData)
+  {
+  }
+
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;
   TTerminal::TSynchronizeMode Mode;
@@ -5113,18 +5118,18 @@ UnicodeString TTerminal::SynchronizeModeStr(TSynchronizeMode Mode)
   UnicodeString ModeStr;
   switch (Mode)
   {
-    case smRemote:
-      ModeStr = L"Remote";
-      break;
-    case smLocal:
-      ModeStr = L"Local";
-      break;
-    case smBoth:
-      ModeStr = L"Both";
-      break;
-    default:
-      ModeStr = L"Unknown";
-      break;
+  case smRemote:
+    ModeStr = L"Remote";
+    break;
+  case smLocal:
+    ModeStr = L"Local";
+    break;
+  case smBoth:
+    ModeStr = L"Both";
+    break;
+  default:
+    ModeStr = L"Unknown";
+    break;
   }
   return ModeStr;
 }

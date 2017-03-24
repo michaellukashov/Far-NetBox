@@ -795,7 +795,6 @@ TStringList::TStringList(TObjectClassId Kind) :
 
 TStringList::~TStringList()
 {
-  
 }
 
 void TStringList::Assign(const TPersistent * Source)
