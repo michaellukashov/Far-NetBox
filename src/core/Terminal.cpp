@@ -1453,6 +1453,7 @@ void TTerminal::Reopen(intptr_t Params)
   // but it can happen, e.g. when we are downloading file to execute it.
   // however I'm not sure why we mind having exception-on-fail enabled here
   Integer PrevExceptionOnFail = FExceptionOnFail;
+  try__finally
   {
     SCOPE_EXIT
     {
