@@ -1231,11 +1231,11 @@ public:
     DebugAssert(FResponses->GetCount() == FRequests->GetCount());
     for (intptr_t Index = 0; Index < FRequests->GetCount(); ++Index)
     {
-      TSFTPQueuePacket * Request = dyn_cast<TSFTPQueuePacket>(as_object(FRequests->GetItem(Index)));
+      TSFTPQueuePacket * Request = FRequests->GetAs<TSFTPQueuePacket>(Index);
       DebugAssert(Request);
       SAFE_DESTROY(Request);
 
-      TSFTPPacket * Response = dyn_cast<TSFTPPacket>(as_object(FResponses->GetItem(Index)));
+      TSFTPPacket * Response = FResponses->GetAs<TSFTPPacket>(Index);
       DebugAssert(Response);
       SAFE_DESTROY(Response);
     }
@@ -1256,10 +1256,10 @@ public:
     {
       DebugAssert(FResponses->GetCount());
 
-      TSFTPQueuePacket * Request = dyn_cast<TSFTPQueuePacket>(as_object(FRequests->GetItem(0)));
+      TSFTPQueuePacket * Request = FRequests->GetAs<TSFTPQueuePacket>(0);
       DebugAssert(Request);
 
-      TSFTPPacket * Response = dyn_cast<TSFTPPacket>(as_object(FResponses->GetItem(0)));
+      TSFTPPacket * Response = FResponses->GetAs<TSFTPPacket>(0);
       DebugAssert(Response);
 
       try
@@ -1300,7 +1300,7 @@ public:
   {
     DebugAssert(FRequests->GetCount());
     bool Result = false;
-    std::unique_ptr<TSFTPQueuePacket> Request(dyn_cast<TSFTPQueuePacket>(as_object(FRequests->GetItem(0))));
+    std::unique_ptr<TSFTPQueuePacket> Request(FRequests->GetAs<TSFTPQueuePacket>(0));
     try__finally
     {
       FRequests->Delete(0);
@@ -1310,7 +1310,7 @@ public:
         *Token = Request->Token;
       }
 
-      std::unique_ptr<TSFTPPacket> Response(dyn_cast<TSFTPPacket>(as_object(FResponses->GetItem(0))));
+      std::unique_ptr<TSFTPPacket> Response(FResponses->GetAs<TSFTPPacket>(0));
       FResponses->Delete(0);
       DebugAssert(Response.get());
 
@@ -2148,7 +2148,7 @@ void TSFTPFileSystem::ResetConnection()
   for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
   {
     DebugAssert(FPacketReservations->GetItem(Index) == nullptr);
-    TSFTPPacket * Item = dyn_cast<TSFTPPacket>(as_object(FPacketReservations->GetItem(Index)));
+    TSFTPPacket * Item = FPacketReservations->GetAs<TSFTPPacket>(Index);
     SAFE_DESTROY(Item);
   }
   FPacketReservations->Clear();
@@ -2579,7 +2579,7 @@ void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
   {
     FPacketNumbers[Index - 1] = FPacketNumbers[Index];
   }
-  TSFTPPacket * Packet = dyn_cast<TSFTPPacket>(as_object(FPacketReservations->GetItem(Reservation)));
+  TSFTPPacket * Packet = FPacketReservations->GetAs<TSFTPPacket>(Reservation);
   if (Packet)
   {
     DebugAssert((Packet->GetReservedBy() == nullptr) || (Packet->GetReservedBy() == this));
@@ -2694,7 +2694,7 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
             uint32_t MessageNumber = static_cast<uint32_t>(FPacketNumbers[Index]);
             if (MessageNumber == Packet->GetMessageNumber())
             {
-              ReservedPacket = dyn_cast<TSFTPPacket>(as_object(FPacketReservations->GetItem(Index)));
+              ReservedPacket = FPacketReservations->GetAs<TSFTPPacket>(Index);
               IsReserved = true;
               if (ReservedPacket)
               {

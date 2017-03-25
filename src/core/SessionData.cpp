@@ -4909,7 +4909,7 @@ void TStoredSessionList::NewWorkspace(
 
   for (intptr_t Index = 0; Index < DataList->GetCount(); ++Index)
   {
-    TSessionData * Data = dyn_cast<TSessionData>(as_object(DataList->GetItem(Index)));
+    TSessionData * Data = DataList->GetAs<TSessionData>(Index);
 
     TSessionData * Data2 = new TSessionData(L"");
     Data2->Assign(Data);

@@ -238,7 +238,7 @@ TSynchronizeChecklist::~TSynchronizeChecklist()
 {
   for (intptr_t Index = 0; Index < FList.GetCount(); ++Index)
   {
-    TChecklistItem * Item = dyn_cast<TChecklistItem>(as_object(FList.GetItem(Index)));
+    TChecklistItem * Item = FList.GetAs<TChecklistItem>(Index);
     SAFE_DESTROY(Item);
   }
 }
@@ -284,7 +284,7 @@ intptr_t TSynchronizeChecklist::GetCount() const
 
 const TChecklistItem * TSynchronizeChecklist::GetItem(intptr_t Index) const
 {
-  return dyn_cast<TChecklistItem>(as_object(FList.GetItem(Index)));
+  return FList.GetAs<TChecklistItem>(Index);
 }
 
 void TSynchronizeChecklist::Update(const TChecklistItem * Item, bool Check, TChecklistAction Action)

@@ -793,7 +793,7 @@ void TFarDialog::Change()
 
     for (intptr_t Index = 0; Index < NotifiedContainers->GetCount(); ++Index)
     {
-      dyn_cast<TFarDialogContainer>(as_object((*NotifiedContainers)[Index]))->Change();
+      NotifiedContainers->GetAs<TFarDialogContainer>(Index)->Change();
     }
   }
 }
