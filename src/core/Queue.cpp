@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -15,7 +16,7 @@ public:
   explicit TUserAction() {}
   virtual ~TUserAction() {}
   virtual void Execute(void * Arg) = 0;
-  virtual bool Force() { return false; }
+  virtual bool Force() const { return false; }
 };
 
 class TNotifyAction : public TUserAction
@@ -23,6 +24,7 @@ class TNotifyAction : public TUserAction
 NB_DISABLE_COPY(TNotifyAction)
 public:
   explicit TNotifyAction(TNotifyEvent AOnNotify) :
+    TUserAction(),
     OnNotify(AOnNotify),
     Sender(nullptr)
   {
@@ -60,7 +62,7 @@ public:
     }
   }
 
-  virtual bool Force()
+  virtual bool Force() const
   {
     // we need to propagate mainly the end-phase event even, when user cancels
     // the connection, so that authentication window is closed
@@ -375,7 +377,7 @@ void TSimpleThread::WaitFor(uint32_t Milliseconds) const
 //---------------------------------------------------------------------------
 // TSignalThread
 //---------------------------------------------------------------------------
-TSignalThread::TSignalThread(TObjectClassId Kind) :
+TSignalThread::TSignalThread(TObjectClassId Kind, bool LowPriority) :
   TSimpleThread(Kind),
   FEvent(nullptr),
   FTerminated(true)
