@@ -1,7 +1,6 @@
 
 #pragma once
 
-//#include <apr_pools.h>
 #include <ne_uri.h>
 #include <ne_utils.h>
 #include <ne_string.h>
