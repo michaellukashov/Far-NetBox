@@ -1,5 +1,7 @@
 #pragma once
 
+#include <rdestl/map.h>
+
 #include <Global.h>
 #include <Exceptions.h>
 
@@ -306,8 +308,6 @@ public:
   }
 };
 #pragma warning(pop)
-
-#include <rdestl/map.h>
 
 template<class T1, class T2>
 class BiDiMap
