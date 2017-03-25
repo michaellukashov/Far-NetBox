@@ -869,7 +869,7 @@ enum TChecklistAction
   saDeleteLocal,
 };
 
-//---------------------------------------------------------------------------
+
 class TChecklistItem : public TObject
 {
 friend class TTerminal;

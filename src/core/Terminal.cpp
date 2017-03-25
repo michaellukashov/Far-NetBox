@@ -4205,6 +4205,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
   }
   __finally
   {
+/*
     if (GetActive())
     {
       UnicodeString WithTrailing = core::UnixIncludeTrailingBackslash(this->GetCurrDirectory());
@@ -4243,6 +4244,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
       }
     }
     EndTransaction();
+*/
   };
   return Result;
 }
