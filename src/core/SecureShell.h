@@ -64,7 +64,7 @@ private:
   bool FSimple;
   bool FNoConnectionResponse;
   bool FCollectPrivateKeyUsage;
-  int FWaitingForData;
+  intptr_t FWaitingForData;
   TSshImplementation FSshImplementation;
 
   intptr_t PendLen;

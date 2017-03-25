@@ -1368,7 +1368,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
 {
   for (intptr_t Index = 0; Index < FEdits->GetCount(); ++Index)
   {
-    dyn_cast<TFarEdit>(as_object(FEdits->GetItem(Index)))->SetText(Results->GetString(Index));
+    FEdits->GetAs<TFarEdit>(Index)->SetText(Results->GetString(Index));
   }
 
   bool Result = (ShowModal() != brCancel);
@@ -1376,7 +1376,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
   {
     for (intptr_t Index = 0; Index < FEdits->GetCount(); ++Index)
     {
-      UnicodeString Text = dyn_cast<TFarEdit>(as_object(FEdits->GetItem(Index)))->GetText();
+      UnicodeString Text = FEdits->GetAs<TFarEdit>(Index)->GetText();
       Results->SetString(Index, Text);
     }
 
@@ -6176,7 +6176,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
     DebugAssert(List != nullptr);
     if (!Value.IsEmpty() && List)
     {
-      TFarText * Text = dyn_cast<TFarText>(as_object(List->GetItem(FLastListItem)));
+      TFarText * Text = List->GetAs<TFarText>(FLastListItem);
       FLastListItem++;
 
       Text->SetCaption(FORMAT(L"%d-%s  %s", List->MaxLen, GetMsg(Label).c_str(), Value.c_str()));
@@ -6513,7 +6513,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         DebugAssert(ItemFocused >= 0);
         if (ItemFocused >= BookmarksOffset)
         {
-          TBookmark * Bookmark = dyn_cast<TBookmark>(as_object(Bookmarks->GetItem(ItemFocused - BookmarksOffset)));
+          TBookmark * Bookmark = Bookmarks->GetAs<TBookmark>(ItemFocused - BookmarksOffset);
           BookmarkList->Delete(Bookmark);
         }
         else

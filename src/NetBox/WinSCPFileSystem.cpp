@@ -931,7 +931,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
     TSessionData * Data = nullptr;
     if ((Focused != nullptr) && Focused->GetIsFile() && Focused->GetUserData())
     {
-      Data = dyn_cast<TSessionData>(as_object(Focused->GetUserData()));
+      Data = get_as<TSessionData>(Focused->GetUserData());
     }
 
     if ((Key == 'F') && (ControlState & CTRLMASK))
@@ -1081,7 +1081,7 @@ void TWinSCPFileSystem::CreateLink()
   const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
   if (Focused && Focused->GetUserData())
   {
-    File = dyn_cast<TRemoteFile>(as_object(Focused->GetUserData()));
+    File = get_as<TRemoteFile>(Focused->GetUserData());
 
     if (File)
     {
@@ -1812,7 +1812,7 @@ void TWinSCPFileSystem::RenameFile()
   {
     RequireCapability(fcRename);
 
-    TRemoteFile * File = dyn_cast<TRemoteFile>(as_object(Focused->GetUserData()));
+    TRemoteFile * File = get_as<TRemoteFile>(Focused->GetUserData());
     UnicodeString NewName = File->GetFileName();
     if (RenameFileDialog(File, NewName))
     {
@@ -1913,7 +1913,7 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 
   if (Focused != nullptr)
   {
-    TSessionData * SessionData = dyn_cast<TSessionData>(as_object(Focused->GetUserData()));
+    TSessionData * SessionData = get_as<TSessionData>(Focused->GetUserData());
     UnicodeString Name;
     if (SessionData != nullptr)
     {
@@ -2420,7 +2420,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
     {
       if (PanelItem->GetUserData() != nullptr)
       {
-        ProcessSession(dyn_cast<TSessionData>(as_object(PanelItem->GetUserData())), Param);
+        ProcessSession(get_as<TSessionData>(PanelItem->GetUserData()), Param);
         PanelItem->SetSelected(false);
       }
       else
@@ -2918,7 +2918,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
       FileName = PanelItem->GetFileName();
       if (Side == osRemote)
       {
-        Data = dyn_cast<TRemoteFile>(as_object(PanelItem->GetUserData()));
+        Data = get_as<TRemoteFile>(PanelItem->GetUserData());
         DebugAssert(Data);
       }
       if (Side == osLocal)
@@ -3441,7 +3441,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       DebugAssert(FPanelItems->GetCount() == FFileList->GetCount());
       intptr_t Index = FFileList->IndexOf(AFileName.c_str());
       DebugAssert(Index >= 0);
-      PanelItem = dyn_cast<TFarPanelItem>(as_object(FPanelItems->GetItem(Index)));
+      PanelItem = get_as<TFarPanelItem>(FPanelItems->GetItem(Index));
     }
 
     DebugAssert(PanelItem && PanelItem->GetFileName() ==

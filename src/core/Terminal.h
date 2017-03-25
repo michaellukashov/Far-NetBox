@@ -57,7 +57,7 @@ typedef nb::FastDelegate8<void,
   const TQueryParams * /*Params*/, uintptr_t & /*Answer*/,
   TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
 /*
-typedef void __fastcall (__closure *TPromptUserEvent)
+typedef void (__closure *TPromptUserEvent)
   (TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
    TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
 */
@@ -67,7 +67,7 @@ typedef nb::FastDelegate8<void,
   TStrings * /*Prompts*/, TStrings * /*Results*/,
   bool & /*Result*/, void * /*Arg*/> TPromptUserEvent;
 /*
-typedef void __fastcall (__closure *TDisplayBannerEvent)
+typedef void (__closure *TDisplayBannerEvent)
   (TTerminal * Terminal, UnicodeString SessionName, const UnicodeString & Banner,
    bool & NeverShowAgain, int Options);
 */
@@ -76,26 +76,45 @@ typedef nb::FastDelegate5<void,
   const UnicodeString & /*Banner*/,
   bool & /*NeverShowAgain*/, intptr_t /*Options*/> TDisplayBannerEvent;
 /*
-typedef void __fastcall (__closure *TExtendedExceptionEvent)
+typedef void (__closure *TExtendedExceptionEvent)
   (TTerminal * Terminal, Exception * E, void * Arg);
 */
 typedef nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, Exception * /*E*/, void * /*Arg*/ > TExtendedExceptionEvent;
+/*
+typedef void (__closure *TReadDirectoryEvent)(System::TObject * Sender, Boolean ReloadOnly);
+*/
 typedef nb::FastDelegate2<void, TObject * /*Sender*/,
   Boolean /*ReloadOnly*/> TReadDirectoryEvent;
+/*
+typedef void (__closure *TReadDirectoryProgressEvent)(
+  System::TObject* Sender, int Progress, int ResolvedLinks, bool & Cancel);
+*/
 typedef nb::FastDelegate4<void,
   TObject * /*Sender*/, intptr_t /*Progress*/, intptr_t /*ResolvedLinks*/,
   bool & /*Cancel*/> TReadDirectoryProgressEvent;
+/*
+typedef void (__closure *TProcessFileEvent)
+  (const UnicodeString FileName, const TRemoteFile * File, void * Param);
+*/
 typedef nb::FastDelegate3<void,
   const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
   void * /*Param*/> TProcessFileEvent;
+/*
+typedef void (__closure *TProcessFileEventEx)
+  (const UnicodeString FileName, const TRemoteFile * File, void * Param, int Index);
+*/
 typedef nb::FastDelegate4<void,
   const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
   void * /*Param*/, intptr_t /*Index*/> TProcessFileEventEx;
+/*
+typedef int (__closure *TFileOperationEvent)
+  (void * Param1, void * Param2);
+*/
 typedef nb::FastDelegate2<intptr_t,
   void * /*Param1*/, void * /*Param2*/> TFileOperationEvent;
 /*
-typedef void __fastcall (__closure *TSynchronizeDirectory)
+typedef void (__closure *TSynchronizeDirectory)
   (const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
    bool & Continue, bool Collect);
 */
@@ -122,13 +141,6 @@ typedef void (__closure *TInformationEvent)
 typedef nb::FastDelegate4<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Str*/, bool /*Status*/,
   intptr_t /*Phase*/> TInformationEvent;
-/*
-typedef void (__closure *TCustomCommandEvent)
-  (TTerminal * Terminal, const UnicodeString & Command, bool & Handled);
-*/
-typedef nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Command*/,
-  bool & /*Handled*/> TCustomCommandEvent;
 
 inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 {
@@ -182,6 +194,7 @@ public:
   }
 public:
   // TScript::SynchronizeProc relies on the order
+  // enum TSynchronizeMode { smRemote, smLocal, smBoth };
   enum TSynchronizeMode
   {
     smRemote,
@@ -257,7 +270,7 @@ private:
   bool FReadingCurrentDirectory;
   bool * FClosedOnCompletion;
   TSessionStatus FStatus;
-  int FOpening;
+  intptr_t FOpening;
   RawByteString FRememberedPassword;
   RawByteString FRememberedTunnelPassword;
   TTunnelThread * FTunnelThread;
@@ -280,7 +293,7 @@ private:
   bool FCollectFileSystemUsage;
   bool FRememberedPasswordTried;
   bool FRememberedTunnelPasswordTried;
-  int FNesting;
+  intptr_t FNesting;
   UnicodeString FFingerprintScanned;
   TRemoteDirectory * FOldFiles;
 
@@ -774,8 +787,9 @@ public:
   void FreeAndNullTerminal(TTerminal *& Terminal);
   virtual void Idle();
   void RecryptPasswords();
-
-  // __property TTerminal * Terminals[int Index]  = { read=GetTerminal };
+/*
+  __property TTerminal * Terminals[int Index]  = { read=GetTerminal };
+*/
   TTerminal * GetTerminal(intptr_t Index);
 
 protected:
@@ -869,7 +883,7 @@ enum TChecklistAction
   saDeleteLocal,
 };
 
-//---------------------------------------------------------------------------
+
 class TChecklistItem : public TObject
 {
 friend class TTerminal;

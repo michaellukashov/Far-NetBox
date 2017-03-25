@@ -79,6 +79,8 @@ private:
 
 inline TObject * as_object(void * p) { return static_cast<TObject *>(p); }
 inline const TObject * as_object(const void * p) { return static_cast<const TObject *>(p); }
+template<class T> inline T * get_as(void * p) { return dyn_cast<T>(as_object(p)); }
+template<class T> inline const T * get_as(const void * p) { return dyn_cast<T>(as_object(p)); }
 
 struct TPoint
 {
@@ -216,6 +218,9 @@ public:
   TList();
   explicit TList(TObjectClassId Kind);
   virtual ~TList();
+
+  template<class T>
+  T * GetAs(intptr_t Index) const { return get_as<T>(GetItem(Index)); }
   void * operator [](intptr_t Index) const;
   virtual void * GetItem(intptr_t Index) const { return FList[Index]; }
   virtual void * GetItem(intptr_t Index) { return FList[Index]; }
