@@ -1035,7 +1035,9 @@ void TTerminal::Open()
     }
     __finally
     {
-      // DoInformation(L"", true, 0);
+/*
+      DoInformation(L"", true, 0);
+*/
     };
   }
   catch (EFatal &)
@@ -1069,6 +1071,15 @@ void TTerminal::InternalTryOpen()
       };
       InternalDoTryOpen();
     }
+    __finally
+    {
+/*
+      if (FSessionData->Tunnel)
+      {
+        FSessionData->RollbackTunnel();
+      }
+*/
+    };
 
     if (GetSessionData()->GetCacheDirectoryChanges())
     {
@@ -1105,6 +1116,10 @@ void TTerminal::InternalTryOpen()
     {
       FFingerprintScanned = FFileSystem->GetSessionInfo().CertificateFingerprint;
     }
+    // Particularly to prevent reusing a wrong client certificate passphrase
+    // in the next login attempt
+    FRememberedPassword = UnicodeString();
+    FRememberedTunnelPassword = UnicodeString();
     throw;
   }
 }
@@ -1150,117 +1165,107 @@ void TTerminal::InternalDoTryOpen()
 void TTerminal::InitFileSystem()
 {
   DebugAssert(FFileSystem == nullptr);
-  try
+  TFSProtocol FSProtocol = GetSessionData()->GetFSProtocol();
+  if ((FSProtocol == fsFTP) && (GetSessionData()->GetFtps() == ftpsNone))
   {
-    TFSProtocol FSProtocol = GetSessionData()->GetFSProtocol();
-    if ((FSProtocol == fsFTP) && (GetSessionData()->GetFtps() == ftpsNone))
-    {
 #ifdef NO_FILEZILLA
-      LogEvent("FTP protocol is not supported by this build.");
-      FatalError(nullptr, LoadStr(FTP_UNSUPPORTED));
+    LogEvent("FTP protocol is not supported by this build.");
+    FatalError(nullptr, LoadStr(FTP_UNSUPPORTED));
 #else
-      FFSProtocol = cfsFTP;
-      FFileSystem = new TFTPFileSystem(this);
-      FFileSystem->Init(nullptr);
-      FFileSystem->Open();
-      GetLog()->AddSeparator();
-      LogEvent("Using FTP protocol.");
+    FFSProtocol = cfsFTP;
+    FFileSystem = new TFTPFileSystem(this);
+    FFileSystem->Init(nullptr);
+    FFileSystem->Open();
+    GetLog()->AddSeparator();
+    LogEvent("Using FTP protocol.");
 #endif
-    }
-    else if ((FSProtocol == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
-    {
+  }
+  else if ((FSProtocol == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
+  {
 #if defined(NO_FILEZILLA) && defined(MPEXT_NO_SSLDLL)
-      LogEvent("FTPS protocol is not supported by this build.");
-      FatalError(nullptr, LoadStr(FTPS_UNSUPPORTED));
+    LogEvent("FTPS protocol is not supported by this build.");
+    FatalError(nullptr, LoadStr(FTPS_UNSUPPORTED));
 #else
-      FFSProtocol = cfsFTPS;
-      FFileSystem = new TFTPFileSystem(this);
-      FFileSystem->Init(nullptr);
-      FFileSystem->Open();
-      GetLog()->AddSeparator();
-      LogEvent("Using FTPS protocol.");
+    FFSProtocol = cfsFTPS;
+    FFileSystem = new TFTPFileSystem(this);
+    FFileSystem->Init(nullptr);
+    FFileSystem->Open();
+    GetLog()->AddSeparator();
+    LogEvent("Using FTPS protocol.");
 #endif
-    }
-    else if (FSProtocol == fsWebDAV)
+  }
+  else if (FSProtocol == fsWebDAV)
+  {
+    FFSProtocol = cfsWebDAV;
+    FFileSystem = new TWebDAVFileSystem(this);
+    FFileSystem->Init(nullptr);
+    FFileSystem->Open();
+    GetLog()->AddSeparator();
+    LogEvent("Using WebDAV protocol.");
+  }
+  else
+  {
+    DebugAssert(FSecureShell == nullptr);
+    try__finally
     {
-      FFSProtocol = cfsWebDAV;
-      FFileSystem = new TWebDAVFileSystem(this);
-      FFileSystem->Init(nullptr);
-      FFileSystem->Open();
-      GetLog()->AddSeparator();
-      LogEvent("Using WebDAV protocol.");
-    }
-    else
-    {
-      DebugAssert(FSecureShell == nullptr);
-      try__finally
+      SCOPE_EXIT
       {
-        SCOPE_EXIT
+        SAFE_DESTROY(FSecureShell);
+      };
+      FSecureShell = new TSecureShell(this, FSessionData, GetLog(), FConfiguration);
+      try
+      {
+        // there will be only one channel in this session
+        FSecureShell->SetSimple(true);
+        FSecureShell->Open();
+      }
+      catch (Exception & E)
+      {
+        DebugAssert(!FSecureShell->GetActive());
+        if (FSessionData->GetFingerprintScan())
         {
-          SAFE_DESTROY(FSecureShell);
-        };
-        FSecureShell = new TSecureShell(this, FSessionData, GetLog(), FConfiguration);
-        try
-        {
-          // there will be only one channel in this session
-          FSecureShell->SetSimple(true);
-          FSecureShell->Open();
+          FFingerprintScanned = FSecureShell->GetHostKeyFingerprint();
         }
-        catch (Exception & E)
+        if (!FSecureShell->GetActive() && !FTunnelError.IsEmpty())
         {
-          DebugAssert(!FSecureShell->GetActive());
-          if (FSessionData->GetFingerprintScan())
-          {
-            FFingerprintScanned = FSecureShell->GetHostKeyFingerprint();
-          }
-          if (!FSecureShell->GetActive() && !FTunnelError.IsEmpty())
-          {
-            // the only case where we expect this to happen
-            UnicodeString ErrorMessage = LoadStr(UNEXPECTED_CLOSE_ERROR);
-            DebugAssert(E.Message == ErrorMessage);
-            FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
-          }
-          else
-          {
-            throw;
-          }
-        }
-
-        GetLog()->AddSeparator();
-
-        if ((FSProtocol == fsSCPonly) ||
-            (FSProtocol == fsSFTP && FSecureShell->SshFallbackCmd()))
-        {
-          FFSProtocol = cfsSCP;
-          FFileSystem= new TSCPFileSystem(this);
-          FFileSystem->Init(FSecureShell);
-          FSecureShell = nullptr; // ownership passed
-          LogEvent("Using SCP protocol.");
+          // the only case where we expect this to happen
+          UnicodeString ErrorMessage = LoadStr(UNEXPECTED_CLOSE_ERROR);
+          DebugAssert(E.Message == ErrorMessage);
+          FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
         }
         else
         {
-          FFSProtocol = cfsSFTP;
-          FFileSystem = new TSFTPFileSystem(this);
-          FFileSystem->Init(FSecureShell);
-          FSecureShell = nullptr; // ownership passed
-          LogEvent("Using SFTP protocol.");
+          throw;
         }
-        // Particularly to prevent reusing a wrong client certificate passphrase
-        // in the next login attempt
-        FRememberedPassword = UnicodeString();
-        FRememberedTunnelPassword = UnicodeString();
+      }
+
+      GetLog()->AddSeparator();
+
+      if ((FSProtocol == fsSCPonly) ||
+          (FSProtocol == fsSFTP && FSecureShell->SshFallbackCmd()))
+      {
+        FFSProtocol = cfsSCP;
+        FFileSystem= new TSCPFileSystem(this);
+        FFileSystem->Init(FSecureShell);
+        FSecureShell = nullptr; // ownership passed
+        LogEvent("Using SCP protocol.");
+      }
+      else
+      {
+        FFSProtocol = cfsSFTP;
+        FFileSystem = new TSFTPFileSystem(this);
+        FFileSystem->Init(FSecureShell);
+        FSecureShell = nullptr; // ownership passed
+        LogEvent("Using SFTP protocol.");
       }
     }
-  }
-  catch (EFatal &)
-  {
-    SAFE_DESTROY(FFileSystem);
-    throw;
-  }
-  catch (Exception & E)
-  {
-    // any exception while opening session is fatal
-    FatalError(&E, L"");
+    __finally
+    {
+/*
+      delete FSecureShell;
+      FSecureShell = nullptr;
+*/
+    };
   }
 }
 
@@ -1371,7 +1376,7 @@ void TTerminal::OpenTunnel()
     }
     __finally
     {
-      FTunnelOpening = false;
+//      FTunnelOpening = false;
     };
 
     FTunnelThread = new TTunnelThread(FTunnel);
