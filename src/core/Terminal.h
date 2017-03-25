@@ -293,7 +293,7 @@ private:
   bool FCollectFileSystemUsage;
   bool FRememberedPasswordTried;
   bool FRememberedTunnelPasswordTried;
-  int FNesting;
+  intptr_t FNesting;
   UnicodeString FFingerprintScanned;
   TRemoteDirectory * FOldFiles;
 

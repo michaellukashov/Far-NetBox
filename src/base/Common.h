@@ -274,11 +274,11 @@ protected:
   bool FArmed;
 };
 
-class TAutoNestingCounter : TValueRestorer<int>
+class TAutoNestingCounter : TValueRestorer<intptr_t>
 {
 public:
-  inline explicit TAutoNestingCounter(int & Target) :
-    TValueRestorer<int>(Target)
+  inline explicit TAutoNestingCounter(intptr_t & Target) :
+    TValueRestorer<intptr_t>(Target)
   {
     DebugAssert(Target >= 0);
     ++Target;
