@@ -374,10 +374,10 @@ void TSimpleThread::WaitFor(uint32_t Milliseconds) const
 {
   ::WaitForSingleObject(FThread, Milliseconds);
 }
-//---------------------------------------------------------------------------
+
 // TSignalThread
-//---------------------------------------------------------------------------
-TSignalThread::TSignalThread(TObjectClassId Kind, bool LowPriority) :
+
+TSignalThread::TSignalThread(TObjectClassId Kind, bool /*LowPriority*/) :
   TSimpleThread(Kind),
   FEvent(nullptr),
   FTerminated(true)
@@ -457,12 +457,12 @@ void TSignalThread::Terminate()
   FTerminated = true;
   TriggerEvent();
 }
-//---------------------------------------------------------------------------
+
 // TTerminalQueue
-//---------------------------------------------------------------------------
+
 TTerminalQueue::TTerminalQueue(TTerminal * ATerminal,
   TConfiguration * AConfiguration) :
-  TSignalThread(OBJECT_CLASS_TTerminalQueue),
+  TSignalThread(OBJECT_CLASS_TTerminalQueue, true),
   FOnQueryUser(nullptr),
   FOnPromptUser(nullptr),
   FOnShowExtendedException(nullptr),
@@ -501,10 +501,14 @@ void TTerminalQueue::Init()
   DebugAssert(FTerminal != nullptr);
   FSessionData->Assign(FTerminal->GetSessionData());
 
-  /*FItems = new TList();
+/*
+  FItems = new TList();
   FDoneItems = new TList();
   FTerminals = new TList();
-  FForcedItems = new TList();*/
+  FForcedItems = new TList();
+
+  FItemsSection = new TCriticalSection();
+*/
   DebugAssert(FItems);
   DebugAssert(FDoneItems);
   DebugAssert(FTerminals);
@@ -522,7 +526,7 @@ TTerminalQueue::~TTerminalQueue()
 
     while (FTerminals->GetCount() > 0)
     {
-      TTerminalItem * TerminalItem = dyn_cast<TTerminalItem>(as_object(FTerminals->GetItem(0)));
+      TTerminalItem * TerminalItem = FTerminals->GetAs<TTerminalItem>(0);
       FTerminals->Delete(0);
       TerminalItem->Terminate();
       TerminalItem->WaitFor();
@@ -698,17 +702,17 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 TQueueItem * TTerminalQueue::GetItem(TList * List, intptr_t Index)
 {
-  return dyn_cast<TQueueItem>(as_object(List->GetItem(Index)));
+  return List->GetAs<TQueueItem>(Index);
 }
 
 TQueueItem * TTerminalQueue::GetItem(intptr_t Index)
 {
-  return dyn_cast<TQueueItem>(as_object(FItems->GetItem(Index)));
+  return FItems->GetAs<TQueueItem>(Index);
 }
-//---------------------------------------------------------------------------
+
 void TTerminalQueue::UpdateStatusForList(
   TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current)
 {
@@ -739,16 +743,16 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
   std::unique_ptr<TTerminalQueueStatus> Status(new TTerminalQueueStatus());
   try__catch
   {
-    SCOPE_EXIT
-    {
-      if (Current != nullptr)
-      {
-        SAFE_DESTROY(Current);
-      }
-    };
-
     try__finally
     {
+      SCOPE_EXIT
+      {
+        if (Current != nullptr)
+        {
+          SAFE_DESTROY(Current);
+        }
+      };
+
       TGuard Guard(FItemsSection);
 
       UpdateStatusForList(Status.get(), FDoneItems, Current);
@@ -757,18 +761,21 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
     }
     __finally
     {
+/*
       if (Current != nullptr)
       {
-//        delete Current;
+        delete Current;
       }
+*/
     };
   }
-  /*catch (...)
+/*
+  catch (...)
   {
     delete Status;
     throw;
-  }*/
-
+  }
+*/
   return Status.release();
 }
 
@@ -1029,7 +1036,7 @@ void TTerminalQueue::Idle()
       {
         // take the last free terminal, because TerminalFree() puts it to the
         // front, this ensures we cycle thru all free terminals
-        TerminalItem = dyn_cast<TTerminalItem>(as_object(FTerminals->GetItem(FFreeTerminals - 1)));
+        TerminalItem = FTerminals->GetAs<TTerminalItem>(FFreeTerminals - 1);
         FTerminals->Move(FFreeTerminals - 1, FTerminals->GetCount() - 1);
         FFreeTerminals--;
       }
@@ -1100,7 +1107,7 @@ void TTerminalQueue::ProcessEvent()
           }
           else if (FFreeTerminals > 0)
           {
-            TerminalItem = dyn_cast<TTerminalItem>(as_object(FTerminals->GetItem(0)));
+            TerminalItem = FTerminals->GetAs<TTerminalItem>(0);
             FTerminals->Move(0, FTerminals->GetCount() - 1);
             FFreeTerminals--;
           }
@@ -1260,7 +1267,7 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
 // TTerminalItem
 
 TTerminalItem::TTerminalItem(TTerminalQueue * Queue) :
-  TSignalThread(OBJECT_CLASS_TTerminalItem), FQueue(Queue), FTerminal(nullptr), FItem(nullptr),
+  TSignalThread(OBJECT_CLASS_TTerminalItem, true), FQueue(Queue), FTerminal(nullptr), FItem(nullptr),
   FUserAction(nullptr), FCancel(false), FPause(false)
 {
 }
@@ -1280,13 +1287,16 @@ void TTerminalItem::Init(intptr_t Index)
     Terminal->SetOnShowExtendedException(nb::bind(&TTerminalItem::TerminalShowExtendedException, this));
     Terminal->SetOnProgress(nb::bind(&TTerminalItem::OperationProgress, this));
     Terminal->SetOnFinished(nb::bind(&TTerminalItem::OperationFinished, this));
+
     FTerminal = Terminal.release();
   }
-  /*catch(...)
+/*
+  catch(...)
   {
     delete FTerminal;
     throw;
-  }*/
+  }
+*/
 
   Start();
 }
@@ -1483,8 +1493,10 @@ bool TTerminalItem::WaitForUserAction(
   }
   __finally
   {
+/*
     FUserAction = nullptr;
     FItem->SetStatus(PrevStatus);
+*/
   };
 
   return Result;
@@ -1612,8 +1624,10 @@ void TTerminalItem::OperationProgress(
     }
     __finally
     {
+/*
       FItem->SetStatus(PrevStatus);
       ProgressData.Resume();
+*/
     };
   }
 
@@ -1820,7 +1834,7 @@ TFileOperationProgressType * TQueueItemProxy::GetProgressData()
 int64_t TQueueItemProxy::GetTotalTransferred() const
 {
   // want to show total transferred also for "completed" items,
-  // for which GetProgressData() is NULL
+  // for which GetProgressData() is nullptr
   return
     (FProgressData->Operation == GetInfo()->Operation) || (GetStatus() == TQueueItem::qsDone) ?
       FProgressData->TotalTransfered : -1;
@@ -1904,7 +1918,9 @@ bool TQueueItemProxy::ProcessUserAction()
   }
   __finally
   {
+/*
     FProcessingUserAction = false;
+*/
   };
   return Result;
 }
@@ -2012,7 +2028,7 @@ TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index) const
 
 TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index)
 {
-  return dyn_cast<TQueueItemProxy>(as_object(FList->GetItem(Index)));
+  return FList->GetAs<TQueueItemProxy>(Index);
 }
 
 TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
@@ -2206,7 +2222,7 @@ void TDownloadQueueItem::DoExecute(TTerminal * Terminal)
 // TTerminalThread
 
 TTerminalThread::TTerminalThread(TTerminal * Terminal) :
-  TSignalThread(OBJECT_CLASS_TTerminalThread), FTerminal(Terminal),
+  TSignalThread(OBJECT_CLASS_TTerminalThread, false), FTerminal(Terminal),
   FOnInformation(nullptr),
   FOnQueryUser(nullptr),
   FOnPromptUser(nullptr),
@@ -2384,8 +2400,10 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
     }
     __finally
     {
+/*
       FAction = nullptr;
       SAFE_DESTROY_EX(Exception, FException);
+*/
     };
   }
   catch (...)
@@ -2445,7 +2463,9 @@ void TTerminalThread::Rethrow(Exception *& AException)
     }
     __finally
     {
+/*
       SAFE_DESTROY_EX(Exception, AException);
+*/
     };
   }
 }
@@ -2558,8 +2578,10 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     }
     __finally
     {
+/*
       FUserAction = PrevUserAction;
       SAFE_DESTROY_EX(Exception, FException);
+*/
     };
 
     // Contrary to a call before, this is unconditional,

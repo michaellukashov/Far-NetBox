@@ -66,7 +66,9 @@ struct TQueryButtonAlias : public TObject
   bool ElevationRequired;
 };
 
-// typedef void __fastcall (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
+/*
+typedef void (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
+*/
 typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TQueryParamsTimerEvent;
 
 struct TQueryParams : public TObject
@@ -118,16 +120,20 @@ enum TPromptUserParam
 bool IsAuthenticationPrompt(TPromptKind Kind);
 bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
 bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
-//---------------------------------------------------------------------------
-//typedef void __fastcall (__closure *TFileFoundEvent)
-//  (TTerminal * Terminal, const UnicodeString FileName, const TRemoteFile * File,
-//   bool & Cancel);
+
+/*
+typedef void (__closure *TFileFoundEvent)
+  (TTerminal * Terminal, const UnicodeString FileName, const TRemoteFile * File,
+   bool & Cancel);
+*/
 typedef nb::FastDelegate4<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*FileName*/,
   const TRemoteFile * /*File*/,
   bool & /*Cancel*/> TFileFoundEvent;
-//typedef void __fastcall (__closure *TFindingFileEvent)
-//  (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
+/*
+typedef void (__closure *TFindingFileEvent)
+  (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
+*/
 typedef nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool & /*Cancel*/> TFindingFileEvent;
 
