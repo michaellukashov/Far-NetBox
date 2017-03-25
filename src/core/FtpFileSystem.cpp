@@ -1844,7 +1844,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
 void TFTPFileSystem::SinkFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * Param)
 {
-  TSinkFileParams * Params = dyn_cast<TSinkFileParams>(as_object(Param));
+  TSinkFileParams * Params = get_as<TSinkFileParams>(Param);
   DebugAssert(Params->OperationProgress);
   try
   {
@@ -4183,7 +4183,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     UnicodeString DestFullName = Path1;
     ::AppendPathDelimiterW(DestFullName);
     DestFullName += FileName1;
-    TFileTransferData & UserData = *(dyn_cast<TFileTransferData>(as_object(AUserData)));
+    TFileTransferData & UserData = *get_as<TFileTransferData>(AUserData);
     if (UserData.OverwriteResult >= 0)
     {
       // on retry, use the same answer as on the first attempt
@@ -5052,7 +5052,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
 
 void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const
 {
-  TFileTransferData * Data = dyn_cast<TFileTransferData>(as_object(UserData));
+  TFileTransferData * Data = get_as<TFileTransferData>(UserData);
   FILETIME WrTime = ::DateTimeToFileTime(Data->Modification, dstmUnix);
   SetFileTime(AHandle, nullptr, nullptr, &WrTime);
 }

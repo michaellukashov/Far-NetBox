@@ -305,7 +305,7 @@ protected:
 
 int TSimpleThread::ThreadProc(void * Thread)
 {
-  TSimpleThread * SimpleThread = dyn_cast<TSimpleThread>(as_object(Thread));
+  TSimpleThread * SimpleThread = get_as<TSimpleThread>(Thread);
   DebugAssert(SimpleThread != nullptr);
   try
   {

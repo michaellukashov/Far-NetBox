@@ -561,7 +561,7 @@ public:
 void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
 {
   DebugAssert(Token);
-  TFarMessageData & Data = *dyn_cast<TFarMessageData>(as_object(Token));
+  TFarMessageData & Data = *get_as<TFarMessageData>(Token);
 
   DebugAssert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
 

@@ -350,7 +350,7 @@ TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) :
 
 void TSCPFileSystem::Init(void * Data)
 {
-  FSecureShell = dyn_cast<TSecureShell>(as_object(Data));
+  FSecureShell = get_as<TSecureShell>(Data);
   DebugAssert(FSecureShell);
   FCommandSet = new TCommandSet(FTerminal->GetSessionData());
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();

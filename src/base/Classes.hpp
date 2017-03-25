@@ -220,7 +220,7 @@ public:
   virtual ~TList();
 
   template<class T>
-  T * GetAs(intptr_t Index) const { return dyn_cast<T>(as_object(GetItem(Index))); }
+  T * GetAs(intptr_t Index) const { return get_as<T>(GetItem(Index)); }
   void * operator [](intptr_t Index) const;
   virtual void * GetItem(intptr_t Index) const { return FList[Index]; }
   virtual void * GetItem(intptr_t Index) { return FList[Index]; }

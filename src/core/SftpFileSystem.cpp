@@ -1760,7 +1760,7 @@ public:
   {
     void * Token;
     bool Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_ATTRS, asAll, &Token);
-    File = dyn_cast<TRemoteFile>(as_object(Token));
+    File = get_as<TRemoteFile>(Token);
     return Result;
   }
 
@@ -1851,13 +1851,15 @@ public:
     {
       SCOPE_EXIT
       {
-        File = dyn_cast<TRemoteFile>(as_object(Token));
+        File = get_as<TRemoteFile>(Token);
       };
       Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_EXTENDED_REPLY, asNo, &Token);
     }
     __finally
     {
-      File = dyn_cast<TRemoteFile>(as_object(Token));
+/*
+      File = get_as<TRemoteFile>(Token);
+*/
     };
     return Result;
   }
@@ -1960,7 +1962,7 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
 
 void TSFTPFileSystem::Init(void * Data)
 {
-  FSecureShell = dyn_cast<TSecureShell>(as_object(Data));
+  FSecureShell = get_as<TSecureShell>(Data);
   DebugAssert(FSecureShell);
   FFileSystemInfoValid = false;
   FVersion = NPOS;
@@ -5354,7 +5356,7 @@ RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
 
 intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
 {
-  TOpenRemoteFileParams * OpenParams = dyn_cast<TOpenRemoteFileParams>(as_object(AOpenParams));
+  TOpenRemoteFileParams * OpenParams = get_as<TOpenRemoteFileParams>(AOpenParams);
   DebugAssert(OpenParams);
   TFileOperationProgressType * OperationProgress = OpenParams->OperationProgress;
 
@@ -6418,7 +6420,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
 void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * Param)
 {
-  TSinkFileParams * Params = dyn_cast<TSinkFileParams>(as_object(Param));
+  TSinkFileParams * Params = get_as<TSinkFileParams>(Param);
   DebugAssert(Params->OperationProgress);
   try
   {

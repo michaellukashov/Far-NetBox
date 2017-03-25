@@ -250,8 +250,8 @@ void TSynchronizeChecklist::Add(TChecklistItem * Item)
 
 intptr_t TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2)
 {
-  const TChecklistItem * Item1 = dyn_cast<TChecklistItem>(as_object(AItem1));
-  const TChecklistItem * Item2 = dyn_cast<TChecklistItem>(as_object(AItem2));
+  const TChecklistItem * Item1 = get_as<TChecklistItem>(AItem1);
+  const TChecklistItem * Item2 = get_as<TChecklistItem>(AItem2);
 
   intptr_t Result;
   if (!Item1->Local.Directory.IsEmpty())
@@ -3736,7 +3736,7 @@ bool TTerminal::DeleteLocalFiles(TStrings * AFileList, intptr_t Params)
 void TTerminal::CustomCommandOnFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * AParams)
 {
-  TCustomCommandParams * Params = dyn_cast<TCustomCommandParams>(as_object(AParams));
+  TCustomCommandParams * Params = get_as<TCustomCommandParams>(AParams);
   UnicodeString LocalFileName = AFileName;
   if (AFileName.IsEmpty() && AFile)
   {
@@ -3840,7 +3840,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
 void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
   const TRemoteFile * AFile, /*const TRemoteProperties*/ void * Properties)
 {
-  TRemoteProperties * RProperties = dyn_cast<TRemoteProperties>(as_object(Properties));
+  TRemoteProperties * RProperties = get_as<TRemoteProperties>(Properties);
   DebugAssert(RProperties && !RProperties->Valid.Empty());
   UnicodeString LocalFileName = AFileName;
   if (AFileName.IsEmpty() && AFile)
@@ -3944,7 +3944,7 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
 {
   DebugAssert(Param);
   DebugAssert(AFile);
-  TCalculateSizeParams * AParams = dyn_cast<TCalculateSizeParams>(as_object(Param));
+  TCalculateSizeParams * AParams = get_as<TCalculateSizeParams>(Param);
   UnicodeString LocalFileName = AFileName;
   if (AFileName.IsEmpty())
   {
@@ -4140,7 +4140,7 @@ void TTerminal::TerminalMoveFile(const UnicodeString & AFileName,
 {
   StartOperationWithFile(AFileName, foRemoteMove, foDelete);
   DebugAssert(Param != nullptr);
-  const TMoveFileParams & Params = *dyn_cast<TMoveFileParams>(as_object(Param));
+  const TMoveFileParams & Params = *get_as<TMoveFileParams>(Param);
   UnicodeString NewName = core::UnixIncludeTrailingBackslash(Params.Target) +
     MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask);
   LogEvent(FORMAT(L"Moving file \"%s\" to \"%s\".", AFileName.c_str(), NewName.c_str()));
@@ -4284,7 +4284,7 @@ void TTerminal::TerminalCopyFile(const UnicodeString & AFileName,
 {
   StartOperationWithFile(AFileName, foRemoteCopy);
   DebugAssert(Param != nullptr);
-  const TMoveFileParams & Params = *dyn_cast<TMoveFileParams>(as_object(Param));
+  const TMoveFileParams & Params = *get_as<TMoveFileParams>(Param);
   UnicodeString NewName = core::UnixIncludeTrailingBackslash(Params.Target) +
     MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask);
   LogEvent(FORMAT(L"Copying file \"%s\" to \"%s\".", AFileName.c_str(), NewName.c_str()));
@@ -4904,7 +4904,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
 void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
   const TSearchRec & Rec, void * Param)
 {
-  TMakeLocalFileListParams & Params = *dyn_cast<TMakeLocalFileListParams>(as_object(Param));
+  TMakeLocalFileListParams & Params = *get_as<TMakeLocalFileListParams>(Param);
 
   bool Directory = FLAGSET(Rec.Attr, faDirectory);
   if (Directory && Params.Recursive)
@@ -4926,7 +4926,7 @@ void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
 void TTerminal::CalculateLocalFileSize(const UnicodeString & AFileName,
   const TSearchRec & Rec, /*int64_t*/ void * AParams)
 {
-  TCalculateSizeParams * Params = dyn_cast<TCalculateSizeParams>(as_object(AParams));
+  TCalculateSizeParams * Params = get_as<TCalculateSizeParams>(AParams);
 
   bool Dir = FLAGSET(Rec.Attr, faDirectory);
 
@@ -5406,7 +5406,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & AFileName,
 void TTerminal::DoSynchronizeCollectFile(const UnicodeString & /*AFileName*/,
   const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param)
 {
-  TSynchronizeData * Data = dyn_cast<TSynchronizeData>(as_object(Param));
+  TSynchronizeData * Data = get_as<TSynchronizeData>(Param);
 
   TFileMasks::TParams MaskParams;
   MaskParams.Size = AFile->GetSize();
@@ -5854,7 +5854,7 @@ void TTerminal::FileFind(const UnicodeString & AFileName,
 
   DebugAssert(Param);
   DebugAssert(AFile);
-  TFilesFindParams * AParams = dyn_cast<TFilesFindParams>(as_object(Param));
+  TFilesFindParams * AParams = get_as<TFilesFindParams>(Param);
 
   if (!AParams->Cancel)
   {
