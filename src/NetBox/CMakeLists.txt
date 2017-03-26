@@ -1607,6 +1607,8 @@ set(test_includes
   ../../libs/tinyxml2
   ../../libs/rdestl
   ../../libs/atlmfc/include
+  ../../libs/neon/src
+  ../../libs/expat/lib
   ../filezilla
   ../filezilla/misc
   ../base
