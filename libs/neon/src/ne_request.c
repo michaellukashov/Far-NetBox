@@ -189,6 +189,7 @@ static int aborted(ne_request *req, const char *doing, ssize_t code)
     ne_session *sess = req->session;
     NE_DEBUG_WINSCP_CONTEXT(sess);
     int ret = NE_ERROR;
+    const char *err = NULL;
 
     NE_DEBUG(NE_DBG_HTTP, "Aborted request (%" NE_FMT_SSIZE_T "): %s\n",
 	     code, doing);
@@ -210,7 +211,11 @@ static int aborted(ne_request *req, const char *doing, ssize_t code)
     case NE_SOCK_ERROR:
     case NE_SOCK_RESET:
     case NE_SOCK_TRUNC:
-        ne_set_error(sess, "%s: %s", doing, ne_sock_error(sess->socket));
+        err = ne_sock_error(sess->socket);
+        if (err && *err)
+          ne_set_error(sess, "%s: %s", doing, err);
+        else
+          ne_set_error(sess, "%s", doing);
         break;
     case 0:
 	ne_set_error(sess, "%s", doing);

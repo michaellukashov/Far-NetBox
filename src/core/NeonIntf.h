@@ -2,8 +2,8 @@
 #ifndef NeonIntfH
 #define NeonIntfH
 
-#include <neon/src/ne_uri.h>
-#include <neon/src/ne_session.h>
+#include <ne_uri.h>
+#include <ne_session.h>
 #include <SessionData.h>
 
 #define StrToNeon(S) UTF8String(S).c_str()
@@ -16,7 +16,7 @@ ne_session * CreateNeonSession(const ne_uri & uri, TProxyMethod ProxyMethod, con
 void DestroyNeonSession(ne_session * Session);
 UnicodeString GetNeonError(ne_session * Session);
 void CheckNeonStatus(ne_session * Session, int NeonStatus,
-  const UnicodeString & HostName, const UnicodeString & CustomError = L"");
+  const UnicodeString & AHostName, const UnicodeString & CustomError = L"");
 UnicodeString GetNeonRedirectUrl(ne_session * Session);
 void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls);
 typedef void (*TNeonTlsInit)(struct ssl_st * Ssl, ne_session * Session);

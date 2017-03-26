@@ -8,7 +8,7 @@
 
 static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
-  return dyn_cast<TNamedObject>(as_object(Item1))->Compare(dyn_cast<TNamedObject>(as_object(Item2)));
+  return get_as<TNamedObject>(Item1)->Compare(get_as<TNamedObject>(Item2));
 }
 //--- TNamedObject ----------------------------------------------------------
 TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString & AName) :
@@ -92,13 +92,13 @@ const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const
 //---------------------------------------------------------------------------
 TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
-  return dyn_cast<TNamedObject>(GetObj(Index + FHiddenCount));
+  return GetAs<TNamedObject>(Index + FHiddenCount);
 }
 //---------------------------------------------------------------------------
 void TNamedObjectList::Recount()
 {
   intptr_t Index = 0;
-  while ((Index < TObjectList::GetCount()) && (dyn_cast<TNamedObject>(GetObj(Index))->GetHidden()))
+  while ((Index < TObjectList::GetCount()) && GetAs<TNamedObject>(Index)->GetHidden())
   {
     ++Index;
   }

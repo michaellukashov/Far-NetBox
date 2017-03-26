@@ -20,7 +20,7 @@
 #include <Queue.h>
 #include <MsgIDs.h>
 #include <farkeys.hpp>
-#include <farcolor.hpp>
+//#include <farcolor.hpp>
 #include "plugin_version.hpp"
 
 enum TButtonResult
@@ -1371,7 +1371,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
 {
   for (intptr_t Index = 0; Index < FEdits->GetCount(); ++Index)
   {
-    dyn_cast<TFarEdit>(as_object(FEdits->GetItem(Index)))->SetText(Results->GetString(Index));
+    FEdits->GetAs<TFarEdit>(Index)->SetText(Results->GetString(Index));
   }
 
   bool Result = (ShowModal() != brCancel);
@@ -1379,7 +1379,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
   {
     for (intptr_t Index = 0; Index < FEdits->GetCount(); ++Index)
     {
-      UnicodeString Text = dyn_cast<TFarEdit>(as_object(FEdits->GetItem(Index)))->GetText();
+      UnicodeString Text = FEdits->GetAs<TFarEdit>(Index)->GetText();
       Results->SetString(Index, Text);
     }
 
@@ -1505,7 +1505,7 @@ private:
   void WindowsEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void UpdateControls();
   void TransferProtocolComboChange();
-  void LoginTypeComboChange();
+  //void LoginTypeComboChange();
   void FillCodePageEdit();
   void CodePageEditAdd(uint32_t Cp);
   void FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType);
@@ -4076,7 +4076,7 @@ void TSessionDialog::SelectTab(intptr_t Tab)
   }*/
   for (Index = 0; Index < FTabs->GetCount(); ++Index)
   {
-    TTabButton * TabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index));
+    TTabButton * TabBtn = (FTabs->GetAs<TTabButton>(Index));
     if (TabBtn == SelectedTabBtn)
     {
       break;
@@ -4112,13 +4112,13 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   // Change visibility
   for (intptr_t Index = 0; Index < FirstVisibleTabIndex; ++Index)
   {
-    TTabButton * TabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index));
+    TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
     TabBtn->SetVisible(false);
   }
   intptr_t LeftPos = GetBorderBox()->GetLeft() + 2;
   for (intptr_t Index = FirstVisibleTabIndex; Index <= LastVisibleTabIndex; ++Index)
   {
-    TTabButton * TabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index));
+    TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
     intptr_t Width = TabBtn->GetWidth();
     TabBtn->SetLeft(LeftPos);
     TabBtn->SetWidth(Width);
@@ -4127,7 +4127,7 @@ void TSessionDialog::ChangeTabs(intptr_t FirstVisibleTabIndex)
   }
   for (intptr_t Index = LastVisibleTabIndex + 1; Index < FTabs->GetCount(); ++Index)
   {
-    TTabButton * TabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index));
+    TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
     TabBtn->SetVisible(false);
   }
 }
@@ -4143,9 +4143,9 @@ intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward) co
   {
     for (intptr_t Index = TabIndex; Index < FTabs->GetCount() - 1; ++Index)
     {
-      TTabButton * TabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index));
+      TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * NextTabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index + 1));
+      TTabButton * NextTabBtn = FTabs->GetAs<TTabButton>(Index + 1);
       intptr_t NextTabWidth = NextTabBtn->GetWidth() + 1;
       if (TabsWidth + NextTabWidth >= DialogWidth)
         break;
@@ -4156,9 +4156,9 @@ intptr_t TSessionDialog::GetVisibleTabsCount(intptr_t TabIndex, bool Forward) co
   {
     for (intptr_t Index = TabIndex; Index >= 1; Index--)
     {
-      TTabButton * TabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index));
+      TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * PrevTabBtn = dyn_cast<TTabButton>(FTabs->GetObj(Index - 1));
+      TTabButton * PrevTabBtn = FTabs->GetAs<TTabButton>(Index - 1);
       intptr_t PrevTabWidth = PrevTabBtn->GetWidth() + 1;
       if (TabsWidth + PrevTabWidth >= DialogWidth)
         break;
@@ -4292,10 +4292,10 @@ public:
   TRights GetRights();
   void SetRights(const TRights & Value);
   void SetAddXToDirectories(bool Value);
-  bool GetAddXToDirectories();
+  bool GetAddXToDirectories() const;
   TFarCheckBox * GetChecks(TRights::TRight Right);
   TRights::TState GetStates(TRights::TRight Right);
-  bool GetAllowUndef();
+  bool GetAllowUndef() const;
   void SetAllowUndef(bool Value);
   void SetStates(TRights::TRight Flag, TRights::TState Value);
   void OctalEditExit(TObject * Sender);
@@ -4569,7 +4569,7 @@ void TRightsContainer::SetRights(const TRights & Value)
   }
 }
 
-bool TRightsContainer::GetAddXToDirectories()
+bool TRightsContainer::GetAddXToDirectories() const
 {
   return FDirectoriesXCheck ? FDirectoriesXCheck->GetChecked() : false;
 }
@@ -4582,7 +4582,7 @@ void TRightsContainer::SetAddXToDirectories(bool Value)
   }
 }
 
-bool TRightsContainer::GetAllowUndef()
+bool TRightsContainer::GetAllowUndef() const
 {
   DebugAssert(FCheckBoxes[_countof(FCheckBoxes) - 1] != nullptr);
   return FCheckBoxes[_countof(FCheckBoxes) - 1]->GetAllowGrayed();
@@ -4613,7 +4613,7 @@ public:
 
 protected:
   virtual void Change();
-  void UpdateProperties(TRemoteProperties & Properties);
+  void UpdateProperties(TRemoteProperties & Properties) const;
 
 private:
   bool FAnyDirectories;
@@ -4642,7 +4642,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   OkButton(nullptr)
 {
   DebugAssert(AFileList->GetCount() > 0);
-  TRemoteFile * OnlyFile = dyn_cast<TRemoteFile>(AFileList->GetObj(0));
+  TRemoteFile * OnlyFile = AFileList->GetAs<TRemoteFile>(0);
   DebugUsedParam(OnlyFile);
   DebugAssert(OnlyFile);
   FMultiple = (AFileList->GetCount() > 1);
@@ -4666,7 +4666,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     intptr_t Directories = 0;
     for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = dyn_cast<TRemoteFile>(AFileList->GetObj(Index));
+      TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
       DebugAssert(File);
       if (UsedGroupList.get() && !File->GetFileGroup().GetName().IsEmpty())
       {
@@ -4708,7 +4708,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     {
       Text->SetCaption(core::MinimizeName(AFileList->GetString(0), static_cast<intptr_t>(GetClientSize().x), true));
     }
-    TRemoteFile * File = dyn_cast<TRemoteFile>(AFileList->GetObj(0));
+    TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
     if (!File->GetLinkTo().IsEmpty())
     {
       Text = new TFarText(this);
@@ -4851,7 +4851,7 @@ void TPropertiesDialog::Change()
   }
 }
 
-void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties)
+void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties) const
 {
   if (FAllowedChanges & cpMode)
   {
@@ -4945,8 +4945,8 @@ public:
     intptr_t Options, intptr_t CopyParamAttrs);
 
   void SetParams(const TCopyParamType & Value);
-  TCopyParamType GetParams();
-  int GetHeight();
+  TCopyParamType GetParams() const;
+  intptr_t GetHeight() const;
 
 protected:
   TFarRadioButton * TMTextButton;
@@ -5324,7 +5324,7 @@ void TCopyParamsContainer::SetParams(const TCopyParamType & Value)
   FParams = Value;
 }
 
-TCopyParamType TCopyParamsContainer::GetParams()
+TCopyParamType TCopyParamsContainer::GetParams() const
 {
   TCopyParamType Result = FParams;
 
@@ -5405,7 +5405,7 @@ void TCopyParamsContainer::ValidateSpeedComboExit(TObject * /*Sender*/)
   }
 }
 
-int TCopyParamsContainer::GetHeight()
+intptr_t TCopyParamsContainer::GetHeight() const
 {
   return 16;
 }
@@ -5841,7 +5841,7 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
 }
 
 typedef nb::FastDelegate3<void,
-  TObject * /*Control*/, int /*Label*/, const UnicodeString & /*Value*/> TFeedFileSystemDataEvent;
+  TObject * /*Control*/, intptr_t /*Label*/, const UnicodeString & /*Value*/> TFeedFileSystemDataEvent;
 
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog
@@ -5867,10 +5867,10 @@ protected:
   UnicodeString CapabilityStr(TFSCapability Capability);
   UnicodeString CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
-  UnicodeString SpaceStr(int64_t Bytes);
-  void ControlsAddItem(TObject * AControl, int Label, const UnicodeString & Value);
-  void CalculateMaxLenAddItem(TObject * AControl, int Label, const UnicodeString & Value);
-  void ClipboardAddItem(TObject * AControl, int Label, const UnicodeString & Value);
+  UnicodeString SpaceStr(int64_t Bytes) const;
+  void ControlsAddItem(TObject * AControl, intptr_t Label, const UnicodeString & Value);
+  void CalculateMaxLenAddItem(TObject * AControl, intptr_t Label, const UnicodeString & Value) const;
+  void ClipboardAddItem(TObject * AControl, intptr_t Label, const UnicodeString & Value);
   void FeedControls();
   void UpdateControls();
   TLabelList * CreateLabelArray(intptr_t Count);
@@ -5880,7 +5880,7 @@ protected:
   void ClipboardButtonClick(TFarButton * Sender, bool & Close);
   void CheckSpaceAvailable();
   void NeedSpaceAvailable();
-  bool SpaceAvailableSupported();
+  bool SpaceAvailableSupported() const;
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
 
 private:
@@ -6066,7 +6066,7 @@ UnicodeString TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability1,
   return FORMAT(L"%s/%s", CapabilityStr(Capability1).c_str(), CapabilityStr(Capability2).c_str());
 }
 
-UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes)
+UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes) const
 {
   UnicodeString Result;
   if (Bytes == 0)
@@ -6141,7 +6141,7 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
 }
 
 void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
-  int Label, const UnicodeString & Value)
+  intptr_t Label, const UnicodeString & Value)
 {
   if (FLastFeededControl != AControl)
   {
@@ -6179,7 +6179,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
     DebugAssert(List != nullptr);
     if (!Value.IsEmpty() && List)
     {
-      TFarText * Text = dyn_cast<TFarText>(as_object(List->GetItem(FLastListItem)));
+      TFarText * Text = List->GetAs<TFarText>(FLastListItem);
       FLastListItem++;
 
       Text->SetCaption(FORMAT(L"%d-%s  %s", List->MaxLen, GetMsg(Label).c_str(), Value.c_str()));
@@ -6188,7 +6188,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
 }
 
 void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * AControl,
-  int Label, const UnicodeString & )
+  intptr_t Label, const UnicodeString & ) const
 {
   TLabelList * List = dyn_cast<TLabelList>(AControl);
   if (List != nullptr)
@@ -6202,7 +6202,7 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * AControl,
 }
 
 void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
-  int Label, const UnicodeString & Value)
+  intptr_t Label, const UnicodeString & Value)
 {
   TFarDialogItem * Control = dyn_cast<TFarDialogItem>(AControl);
   // check for Enabled instead of Visible, as Visible is false
@@ -6377,7 +6377,7 @@ void TFileSystemInfoDialog::NeedSpaceAvailable()
   }
 }
 
-bool TFileSystemInfoDialog::SpaceAvailableSupported()
+bool TFileSystemInfoDialog::SpaceAvailableSupported() const
 {
   return (FOnGetSpaceAvailable);
 }
@@ -6514,7 +6514,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         DebugAssert(ItemFocused >= 0);
         if (ItemFocused >= BookmarksOffset)
         {
-          TBookmark * Bookmark = dyn_cast<TBookmark>(as_object(Bookmarks->GetItem(ItemFocused - BookmarksOffset)));
+          TBookmark * Bookmark = Bookmarks->GetAs<TBookmark>(ItemFocused - BookmarksOffset);
           BookmarkList->Delete(Bookmark);
         }
         else
@@ -6712,7 +6712,7 @@ bool TApplyCommandDialog::Execute(UnicodeString & Command, intptr_t & Params)
 }
 
 bool TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
-  intptr_t & Params)
+  intptr_t & Params) const
 {
   std::unique_ptr<TApplyCommandDialog> Dialog(new TApplyCommandDialog(FPlugin));
   bool Result = Dialog->Execute(Command, Params);
@@ -6737,7 +6737,7 @@ protected:
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
   void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
 
-  intptr_t ActualCopyParamAttrs();
+  intptr_t ActualCopyParamAttrs() const;
   void CustomCopyParam();
   void AdaptSize();
 
@@ -7009,7 +7009,7 @@ void TFullSynchronizeDialog::Change()
   }
 }
 
-intptr_t TFullSynchronizeDialog::ActualCopyParamAttrs()
+intptr_t TFullSynchronizeDialog::ActualCopyParamAttrs() const
 {
   intptr_t Result = -1;
   if (SynchronizeTimestampsButton->GetChecked())
@@ -7049,7 +7049,7 @@ bool TFullSynchronizeDialog::CloseQuery()
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
 
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(SAVE_SYNCHRONIZE_MODE), nullptr,
-              qtConfirmation, qaYes | qaNo | qaCancel, 0))
+              qtConfirmation, qaYes | qaNo | qaCancel, nullptr))
     {
       case qaYes:
         FSaveMode = true;
@@ -7141,7 +7141,7 @@ bool TFullSynchronizeDialog::Execute(TTerminal::TSynchronizeMode & Mode,
 bool TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode,
   intptr_t & Params, UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
   TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, intptr_t Options,
-  const TUsableCopyParamAttrs & CopyParamAttrs)
+  const TUsableCopyParamAttrs & CopyParamAttrs) const
 {
   std::unique_ptr<TFullSynchronizeDialog> Dialog(new TFullSynchronizeDialog(
     FPlugin, Options, CopyParamAttrs));
@@ -7184,7 +7184,7 @@ private:
   intptr_t FChecked;
 
   void AdaptSize();
-  int ColumnWidth(intptr_t Index);
+  //int ColumnWidth(intptr_t Index);
   void LoadChecklist();
   void RefreshChecklist(bool Scroll);
   void UpdateControls();
@@ -7565,8 +7565,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
     {
       if (!Scroll || (List->GetString(Index).LastDelimiter(L"{}") > 0))
       {
-        const TChecklistItem * ChecklistItem =
-          dyn_cast<TChecklistItem>(List->GetObj(Index));
+        const TChecklistItem * ChecklistItem = List->GetAs<TChecklistItem>(Index);
 
         List->SetString(Index, ItemLine(ChecklistItem));
       }
@@ -7734,8 +7733,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
     intptr_t Count = List->GetCount();
     for (intptr_t Index = 0; Index < Count; ++Index)
     {
-      TChecklistItem * ChecklistItem =
-        dyn_cast<TChecklistItem>(List->GetObj(Index));
+      TChecklistItem * ChecklistItem = List->GetAs<TChecklistItem>(Index);
       ChecklistItem->Checked = List->GetChecked(Index);
     }
   }
@@ -7774,7 +7772,7 @@ protected:
   void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
   void Stop();
   void DoStartStop(bool Start, bool Synchronize);
-  TSynchronizeParamType GetParams();
+  TSynchronizeParamType GetParams() const;
   void DoAbort(TObject * Sender, bool Close);
   void DoLog(TSynchronizeController * Controller,
     TSynchronizeLogEntry Entry, const UnicodeString & Message);
@@ -7782,8 +7780,8 @@ protected:
   virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
   virtual bool CloseQuery();
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
-  TCopyParamType GetCopyParams();
-  intptr_t ActualCopyParamAttrs();
+  TCopyParamType GetCopyParams() const;
+  intptr_t ActualCopyParamAttrs() const;
   void CustomCopyParam();
 
 private:
@@ -7985,7 +7983,7 @@ bool TSynchronizeDialog::Execute(TSynchronizeParamType & Params,
   return true;
 }
 
-TSynchronizeParamType TSynchronizeDialog::GetParams()
+TSynchronizeParamType TSynchronizeDialog::GetParams() const
 {
   TSynchronizeParamType Result = FParams;
   Result.RemoteDirectory = RemoteDirectoryEdit->GetText();
@@ -8186,14 +8184,14 @@ void TSynchronizeDialog::UpdateControls()
     !FSynchronizing && FLAGSET(FOptions, soAllowSelectedOnly));
 }
 
-TCopyParamType TSynchronizeDialog::GetCopyParams()
+TCopyParamType TSynchronizeDialog::GetCopyParams() const
 {
   TCopyParamType Result = FCopyParams;
   Result.SetPreserveTime(true);
   return Result;
 }
 
-intptr_t TSynchronizeDialog::ActualCopyParamAttrs()
+intptr_t TSynchronizeDialog::ActualCopyParamAttrs() const
 {
   return FCopyParamAttrs | cpaNoPreserveTime;
 }

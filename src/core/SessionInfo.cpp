@@ -788,9 +788,11 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         }
         __finally
         {
+/*
           DeleteUnnecessary();
 
           EndUpdate();
+*/
         };
       }
     }
@@ -930,7 +932,9 @@ void TSessionLog::DeleteUnnecessary()
   }
   __finally
   {
+/*
     EndUpdate();
+*/
   };
 }
 
@@ -961,7 +965,7 @@ void TSessionLog::AddStartupInfo(bool System)
   }
 }
 
-UnicodeString TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion)
+UnicodeString TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion) const
 {
   switch (TlsVersion)
   {
@@ -992,7 +996,7 @@ UnicodeString TSessionLog::LogSensitive(const UnicodeString & Str)
   }
 }
 
-UnicodeString TSessionLog::GetCmdLineLog()
+UnicodeString TSessionLog::GetCmdLineLog() const
 {
   TODO("GetCmdLine()");
   UnicodeString Result = L"";
@@ -1322,9 +1326,11 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
   }
   __finally
   {
+/*
     DeleteUnnecessary();
 
     EndUpdate();
+*/
   };
 }
 
@@ -1365,7 +1371,7 @@ void TSessionLog::Clear()
   TStringList::Clear();
 }
 
-TSessionLog * TSessionLog::GetParent()
+TSessionLog * TSessionLog::GetParent() const
 {
   return FParent;
 }
@@ -1565,7 +1571,9 @@ void TActionLog::AddFailure(Exception * E)
     }
     __finally
     {
-//      delete Messages;
+/*
+      delete Messages;
+*/
     };
   }
 }
@@ -1671,7 +1679,7 @@ void TActionLog::AddPendingAction(TSessionActionRecord * Action)
 void TActionLog::RecordPendingActions()
 {
   while ((FPendingActions->GetCount() > 0) &&
-         dyn_cast<TSessionActionRecord>(as_object(FPendingActions->GetItem(0)))->Record())
+         FPendingActions->GetAs<TSessionActionRecord>(0)->Record())
   {
     FPendingActions->Delete(0);
   }

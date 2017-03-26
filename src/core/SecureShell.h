@@ -64,7 +64,7 @@ private:
   bool FSimple;
   bool FNoConnectionResponse;
   bool FCollectPrivateKeyUsage;
-  int FWaitingForData;
+  intptr_t FWaitingForData;
   TSshImplementation FSshImplementation;
 
   intptr_t PendLen;
@@ -114,8 +114,8 @@ public:
   uintptr_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
   bool TryFtp();
   UnicodeString ConvertInput(const RawByteString & Input, uintptr_t CodePage = CP_ACP) const;
-  void GetRealHost(UnicodeString & Host, intptr_t & Port);
-  UnicodeString RetrieveHostKey(const UnicodeString & Host, intptr_t Port, const UnicodeString & KeyType);
+  void GetRealHost(UnicodeString & Host, intptr_t & Port) const;
+  UnicodeString RetrieveHostKey(const UnicodeString & Host, intptr_t Port, const UnicodeString & KeyType) const;
 
 protected:
   TCaptureOutputEvent FOnCaptureOutput;
@@ -167,7 +167,7 @@ public:
   void UpdateSocket(SOCKET Value, bool Startup);
   void UpdatePortFwdSocket(SOCKET Value, bool Startup);
   void PuttyFatalError(const UnicodeString & Error);
-  TPromptKind IdentifyPromptKind(UnicodeString & AName);
+  TPromptKind IdentifyPromptKind(UnicodeString & AName) const;
   bool PromptUser(bool ToServer,
     const UnicodeString & AName, bool NameRequired,
     const UnicodeString & AInstructions, bool InstructionsRequired,

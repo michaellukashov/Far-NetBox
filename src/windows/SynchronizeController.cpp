@@ -4,10 +4,9 @@
 #include <Common.h>
 #include <RemoteFiles.h>
 #include <Terminal.h>
-#include <DiscMon.hpp>
+//#include <DiscMon.hpp>
 #include <Exceptions.h>
 #include "GUIConfiguration.h"
-#include "CoreMain.h"
 #include "TextsCore.h"
 #include "SynchronizeController.h"
 

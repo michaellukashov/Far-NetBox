@@ -178,11 +178,11 @@ protected:
     TGetSpaceAvailableEvent OnGetSpaceAvailable);
   bool OpenDirectoryDialog(bool Add, UnicodeString & Directory,
     TBookmarkList * BookmarkList);
-  bool ApplyCommandDialog(UnicodeString & Command, intptr_t & Params);
+  bool ApplyCommandDialog(UnicodeString & Command, intptr_t & Params) const;
   bool FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode,
     intptr_t & Params, UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
     TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, intptr_t Options,
-    const TUsableCopyParamAttrs & CopyParamAttrs);
+    const TUsableCopyParamAttrs & CopyParamAttrs) const;
   bool SynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
     TTerminal::TSynchronizeMode Mode, intptr_t Params,
     const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory);
@@ -219,7 +219,7 @@ protected:
   void GetSynchronizeOptions(intptr_t Params, TSynchronizeOptions & Options);
   void RequireCapability(intptr_t Capability);
   void RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeString & Message);
-  bool AreCachesEmpty();
+  bool AreCachesEmpty() const;
   void ClearCaches();
   void OpenSessionInPutty();
   void QueueShow(bool ClosingPlugin);
@@ -276,7 +276,7 @@ private:
   void TerminalDeleteLocalFile(const UnicodeString & AFileName, bool Alternative);
   HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
-  inline DWORD TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName);
+  inline DWORD TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName) const;
   inline BOOL TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
   BOOL TerminalMoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);
   BOOL TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName);

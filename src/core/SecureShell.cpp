@@ -3,7 +3,6 @@
 
 #include <Common.h>
 #include <StrUtils.hpp>
-#include <Exceptions.h>
 
 #include "PuttyIntf.h"
 #include "Interface.h"
@@ -451,7 +450,9 @@ void TSecureShell::Open()
     }
     __finally
     {
+/*
       conf_free(conf);
+*/
     };
 
     sfree(RealHost);
@@ -689,7 +690,7 @@ void TSecureShell::PuttyLogEvent(const char * AStr)
   LogEvent(Str);
 }
 
-TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & AName)
+TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & AName) const
 {
   // beware of changing order
   static const TPuttyTranslation NameTranslation[] =
@@ -1082,7 +1083,9 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Len
         }
         __finally
         {
+/*
           FFrozen = false;
+*/
         };
       }
       else
@@ -1163,7 +1166,9 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
     }
     __finally
     {
+/*
       OutPtr = nullptr;
+*/
     };
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
@@ -1276,7 +1281,9 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   }
   __finally
   {
+/*
     FWaiting--;
+*/
   };
   return Answer;
 }
@@ -2054,7 +2061,9 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     }
     __finally
     {
+/*
       sfree(Handles);
+*/
     };
 
     run_toplevel_callbacks();
@@ -2077,10 +2086,10 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     if ((FSendBuf > 0) && (TicksAfter - FLastSendBufferUpdate >= 1000))
     {
       DWORD BufferLen = 0;
-      DWORD OutLen = 0;
-      if (WSAIoctl(FSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, NULL, 0, &BufferLen, sizeof(BufferLen), &OutLen, 0, 0) == 0)
+      DWORD OutBuffLen = 0;
+      if (WSAIoctl(FSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, nullptr, 0, &BufferLen, sizeof(BufferLen), &OutBuffLen, nullptr, nullptr) == 0)
       {
-        DebugAssert(OutLen == sizeof(BufferLen));
+        DebugAssert(OutBuffLen == sizeof(BufferLen));
         if (FSendBuf < static_cast<intptr_t>(BufferLen))
         {
           LogEvent(FORMAT(L"Increasing send buffer from %d to %d", FSendBuf, static_cast<int>(BufferLen)));
@@ -2255,7 +2264,7 @@ UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & AKeyStr) const
   return KeyStr;
 }
 
-void TSecureShell::GetRealHost(UnicodeString & Host, intptr_t & Port)
+void TSecureShell::GetRealHost(UnicodeString & Host, intptr_t & Port) const
 {
   if (FSessionData->GetTunnel())
   {
@@ -2265,7 +2274,7 @@ void TSecureShell::GetRealHost(UnicodeString & Host, intptr_t & Port)
   }
 }
 
-UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, intptr_t Port, const UnicodeString & KeyType)
+UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, intptr_t Port, const UnicodeString & KeyType) const
 {
   AnsiString AnsiStoredKeys;
   AnsiStoredKeys.SetLength(10 * 1024);
@@ -2471,7 +2480,9 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
       }
       __finally
       {
-        // delete E;
+/*
+         delete E;
+*/
       };
     }
   }

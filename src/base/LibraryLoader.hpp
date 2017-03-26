@@ -16,8 +16,8 @@ public:
 
   void Load(const UnicodeString & LibraryName, bool AllowFailure = false);
   void Unload();
-  FARPROC GetProcAddress(const AnsiString & ProcedureName);
-  FARPROC GetProcAddress(intptr_t ProcedureOrdinal);
+  FARPROC GetProcAddress(const AnsiString & ProcedureName) const;
+  FARPROC GetProcAddress(intptr_t ProcedureOrdinal) const;
   bool Loaded() const { return FHModule != nullptr; }
 
 private:

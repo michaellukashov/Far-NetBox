@@ -26,7 +26,7 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) :
   FVisible(false),
   FItems(new TObjectList()),
   FContainers(new TObjectList()),
-  FHandle(0),
+  FHandle(nullptr),
   FDefaultButton(nullptr),
   FBorderBox(nullptr),
   FNextItemPosition(ipNewLine),
@@ -261,7 +261,7 @@ TFarDialogItem * TFarDialog::GetItem(intptr_t Index) const
   if (GetItemCount())
   {
     DebugAssert(Index >= 0 && Index < FItems->GetCount());
-    DialogItem = dyn_cast<TFarDialogItem>(FItems->GetObj(Index));
+    DialogItem = FItems->GetAs<TFarDialogItem>(Index);
     DebugAssert(DialogItem);
   }
   return DialogItem;
@@ -793,7 +793,7 @@ void TFarDialog::Change()
 
     for (intptr_t Index = 0; Index < NotifiedContainers->GetCount(); ++Index)
     {
-      dyn_cast<TFarDialogContainer>(as_object((*NotifiedContainers)[Index]))->Change();
+      NotifiedContainers->GetAs<TFarDialogContainer>(Index)->Change();
     }
   }
 }

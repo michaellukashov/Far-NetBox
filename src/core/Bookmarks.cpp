@@ -66,7 +66,9 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
       }
       __finally
       {
-//        delete BookmarkKeys;
+/*
+        delete BookmarkKeys;
+*/
       };
       Storage->CloseSubKey();
     }
@@ -147,7 +149,9 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
   }
   __finally
   {
-//    delete Names;
+/*
+    delete Names;
+*/
   };
 }
 
@@ -159,7 +163,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
     {
       for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
       {
-        TBookmarkList * BookmarkList = dyn_cast<TBookmarkList>(FBookmarkLists->GetObj(Index));
+        TBookmarkList * BookmarkList = FBookmarkLists->GetAs<TBookmarkList>(Index);
         if (All || BookmarkList->GetModified())
         {
           UnicodeString Key = FBookmarkLists->GetString(Index);
@@ -224,7 +228,7 @@ void TBookmarks::ModifyAll(bool Modify)
 {
   for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
   {
-    TBookmarkList * BookmarkList = dyn_cast<TBookmarkList>(FBookmarkLists->GetObj(Index));
+    TBookmarkList * BookmarkList = FBookmarkLists->GetAs<TBookmarkList>(Index);
     DebugAssert(BookmarkList);
     BookmarkList->SetModified(Modify);
   }
@@ -232,10 +236,10 @@ void TBookmarks::ModifyAll(bool Modify)
 
 TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & AIndex)
 {
-  intptr_t Index = FBookmarkLists->IndexOf(AIndex.c_str());
+  intptr_t Index = FBookmarkLists->IndexOf(AIndex);
   if (Index >= 0)
   {
-    return dyn_cast<TBookmarkList>(FBookmarkLists->GetObj(Index));
+    return FBookmarkLists->GetAs<TBookmarkList>(Index);
   }
   else
   {
@@ -245,11 +249,11 @@ TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & AIndex)
 
 void TBookmarks::SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Value)
 {
-  intptr_t Index = FBookmarkLists->IndexOf(AIndex.c_str());
+  intptr_t Index = FBookmarkLists->IndexOf(AIndex);
   if (Index >= 0)
   {
     TBookmarkList * BookmarkList;
-    BookmarkList = dyn_cast<TBookmarkList>(FBookmarkLists->GetObj(Index));
+    BookmarkList = FBookmarkLists->GetAs<TBookmarkList>(Index);
     BookmarkList->Assign(Value);
   }
   else
@@ -306,7 +310,7 @@ void TBookmarkList::Assign(const TPersistent * Source)
     for (intptr_t Index = 0; Index < SourceList->FBookmarks->GetCount(); ++Index)
     {
       TBookmark * Bookmark = new TBookmark();
-      Bookmark->Assign(dyn_cast<TBookmark>(SourceList->FBookmarks->GetObj(Index)));
+      Bookmark->Assign(SourceList->FBookmarks->GetAs<TBookmark>(Index));
       Add(Bookmark);
     }
     FOpenedNodes->Assign(SourceList->FOpenedNodes);
@@ -323,7 +327,7 @@ void TBookmarkList::LoadOptions(THierarchicalStorage * Storage)
   FOpenedNodes->SetCommaText(Storage->ReadString("OpenedNodes", L""));
 }
 
-void TBookmarkList::SaveOptions(THierarchicalStorage * Storage)
+void TBookmarkList::SaveOptions(THierarchicalStorage * Storage) const
 {
   Storage->WriteString("OpenedNodes", FOpenedNodes->GetCommaText());
 }
@@ -388,7 +392,7 @@ void TBookmarkList::Delete(TBookmark *& Bookmark)
   SAFE_DESTROY(Bookmark);
 }
 
-intptr_t TBookmarkList::IndexOf(TBookmark * Bookmark)
+intptr_t TBookmarkList::IndexOf(TBookmark * Bookmark) const
 {
   return FBookmarks->IndexOf(Bookmark->GetKey().c_str());
 }
@@ -396,7 +400,7 @@ intptr_t TBookmarkList::IndexOf(TBookmark * Bookmark)
 void TBookmarkList::KeyChanged(intptr_t Index)
 {
   DebugAssert(Index < GetCount());
-  TBookmark * Bookmark = dyn_cast<TBookmark>(FBookmarks->GetObj(Index));
+  TBookmark * Bookmark = FBookmarks->GetAs<TBookmark>(Index);
   DebugAssert(FBookmarks->GetString(Index) != Bookmark->GetKey());
   if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) >= 0)
   {
@@ -405,10 +409,10 @@ void TBookmarkList::KeyChanged(intptr_t Index)
   FBookmarks->SetString(Index, Bookmark->GetKey());
 }
 
-TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, const UnicodeString & Name)
+TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, const UnicodeString & Name) const
 {
   intptr_t Index = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
-  TBookmark * Bookmark = ((Index >= 0) ? dyn_cast<TBookmark>(FBookmarks->GetObj(Index)) : nullptr);
+  TBookmark * Bookmark = ((Index >= 0) ? FBookmarks->GetAs<TBookmark>(Index) : nullptr);
   DebugAssert(!Bookmark || (Bookmark->GetNode() == Node && Bookmark->GetName() == Name));
   return Bookmark;
 }
@@ -432,12 +436,12 @@ intptr_t TBookmarkList::GetCount() const
 
 TBookmark * TBookmarkList::GetBookmarks(intptr_t Index)
 {
-  TBookmark * Bookmark = dyn_cast<TBookmark>(FBookmarks->GetObj(Index));
+  TBookmark * Bookmark = FBookmarks->GetAs<TBookmark>(Index);
   DebugAssert(Bookmark);
   return Bookmark;
 }
 
-bool TBookmarkList::GetNodeOpened(const UnicodeString & Index)
+bool TBookmarkList::GetNodeOpened(const UnicodeString & Index) const
 {
   return (FOpenedNodes->IndexOf(Index.c_str()) >= 0);
 }

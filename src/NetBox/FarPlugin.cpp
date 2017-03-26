@@ -6,7 +6,6 @@
 #include "WinSCPPlugin.h"
 #include "FarPluginStrings.h"
 #include "FarDialog.h"
-#include "TextsCore.h"
 #include "FileMasks.h"
 #include "RemoteFiles.h"
 #include "puttyexp.h"
@@ -188,7 +187,7 @@ UnicodeString TCustomFarPlugin::GetModuleName() const
   return FStartupInfo.ModuleName;
 }
 
-void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info)
+void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info) const
 {
   if (Info.StructSize)
   {
@@ -252,7 +251,7 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
   intptr_t Index = 0;
   while (!Result && (Index < FOpenedPlugins->GetCount()))
   {
-    FarFileSystem = dyn_cast<TCustomFarFileSystem>(FOpenedPlugins->GetObj(Index));
+    FarFileSystem = FOpenedPlugins->GetAs<TCustomFarFileSystem>(Index);
     DebugAssert(FarFileSystem);
     RECT Bounds = GetPanelBounds(FarFileSystem);
     if (Another && CompareRects(Bounds, PassivePanelBounds))
@@ -273,7 +272,7 @@ void TCustomFarPlugin::InvalidateOpenPluginInfo()
   for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
   {
     TCustomFarFileSystem * FarFileSystem =
-      dyn_cast<TCustomFarFileSystem>(FOpenedPlugins->GetObj(Index));
+      FOpenedPlugins->GetAs<TCustomFarFileSystem>(Index);
     FarFileSystem->InvalidateOpenPluginInfo();
   }
 }
@@ -339,7 +338,7 @@ void TCustomFarPlugin::ClosePlugin(void * Plugin)
   try
   {
     ResetCachedInfo();
-    TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Plugin));
+    TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
     {
       SCOPE_EXIT
@@ -386,7 +385,7 @@ void TCustomFarPlugin::GetOpenPluginInfo(HANDLE Plugin,
 {
   if (!Info)
     return;
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Plugin));
+  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   if (!FOpenedPlugins || !FarFileSystem)
     return;
   try
@@ -406,7 +405,7 @@ void TCustomFarPlugin::GetOpenPluginInfo(HANDLE Plugin,
 intptr_t TCustomFarPlugin::GetFindData(HANDLE Plugin,
   struct PluginPanelItem ** PanelItem, int * ItemsNumber, int OpMode)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Plugin));
+  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   try
   {
     ResetCachedInfo();
@@ -428,7 +427,7 @@ intptr_t TCustomFarPlugin::GetFindData(HANDLE Plugin,
 void TCustomFarPlugin::FreeFindData(HANDLE Plugin,
   struct PluginPanelItem * PanelItem, int ItemsNumber)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Plugin));
+  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   try
   {
     ResetCachedInfo();
@@ -449,7 +448,7 @@ void TCustomFarPlugin::FreeFindData(HANDLE Plugin,
 intptr_t TCustomFarPlugin::ProcessHostFile(HANDLE Plugin,
   struct PluginPanelItem * PanelItem, int ItemsNumber, int OpMode)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Plugin));
+  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   try
   {
     ResetCachedInfo();
@@ -478,7 +477,7 @@ intptr_t TCustomFarPlugin::ProcessHostFile(HANDLE Plugin,
 intptr_t TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
   DWORD ControlState)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Plugin));
+  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   try
   {
     ResetCachedInfo();
@@ -508,7 +507,7 @@ intptr_t TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
 
 intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Plugin));
+  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   try
   {
     //ResetCachedInfo();
@@ -544,7 +543,7 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
 
 intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t * Dir, int OpMode)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Plugin));
+  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   DebugAssert(FarFileSystem);
   if (!FarFileSystem)
   {
@@ -582,7 +581,7 @@ intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t * Dir, int 
 
 intptr_t TCustomFarPlugin::MakeDirectory(HANDLE Plugin, const wchar_t ** Name, int OpMode)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Plugin));
+  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   try
   {
     ResetCachedInfo();
@@ -604,7 +603,7 @@ intptr_t TCustomFarPlugin::MakeDirectory(HANDLE Plugin, const wchar_t ** Name, i
 intptr_t TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
   struct PluginPanelItem * PanelItem, int ItemsNumber, int OpMode)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Plugin));
+  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   try
   {
     ResetCachedInfo();
@@ -627,7 +626,7 @@ intptr_t TCustomFarPlugin::GetFiles(HANDLE Plugin,
   struct PluginPanelItem * PanelItem, int ItemsNumber, int Move,
   const wchar_t ** DestPath, int OpMode)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Plugin));
+  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   try
   {
     ResetCachedInfo();
@@ -650,7 +649,7 @@ intptr_t TCustomFarPlugin::GetFiles(HANDLE Plugin,
 intptr_t TCustomFarPlugin::PutFiles(HANDLE Plugin,
   struct PluginPanelItem * PanelItem, int ItemsNumber, int Move, const wchar_t * srcPath, int OpMode)
 {
-  TCustomFarFileSystem * FarFileSystem = dyn_cast<TCustomFarFileSystem>(as_object(Plugin));
+  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   try
   {
     ResetCachedInfo();
@@ -703,18 +702,18 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const INPUT_RECORD * Rec)
   }
 }
 
-intptr_t TCustomFarPlugin::MaxMessageLines()
+intptr_t TCustomFarPlugin::MaxMessageLines() const
 {
   return static_cast<intptr_t>(TerminalInfo().y - 5);
 }
 
-intptr_t TCustomFarPlugin::MaxMenuItemLength()
+intptr_t TCustomFarPlugin::MaxMenuItemLength() const
 {
   // got from maximal length of path in FAR's folders history
   return static_cast<intptr_t>(TerminalInfo().x - 13);
 }
 
-intptr_t TCustomFarPlugin::MaxLength(TStrings * Strings)
+intptr_t TCustomFarPlugin::MaxLength(TStrings * Strings) const
 {
   intptr_t Result = 0;
   for (intptr_t Index = 0; Index < Strings->GetCount(); ++Index)
@@ -923,7 +922,7 @@ void TFarMessageDialog::Idle()
 
   if (FParams->Timer > 0)
   {
-    size_t SinceLastTimer = static_cast<size_t>((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
+    uintptr_t SinceLastTimer = static_cast<uintptr_t>((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
     if (SinceLastTimer >= FParams->Timeout)
     {
       DebugAssert(FParams->TimerEvent);
@@ -1192,7 +1191,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
   {
     UnicodeString DestText;
     DestText.SetLength(MaxLen + 1);
-    HANDLE ScreenHandle = 0;
+    HANDLE ScreenHandle = nullptr;
     SaveScreen(ScreenHandle);
     {
       TFarEnvGuard Guard;
@@ -1537,7 +1536,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
   DebugAssert(Screen);
   TFarEnvGuard Guard;
   FStartupInfo.RestoreScreen(Screen);
-  Screen = 0;
+  Screen = nullptr;
 }
 
 void TCustomFarPlugin::HandleException(Exception * E, int /*OpMode*/)
@@ -1869,7 +1868,7 @@ intptr_t TCustomFarFileSystem::GetFindData(
     *ItemsNumber = static_cast<int>(PanelItems->GetCount());
     for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
-      dyn_cast<TCustomFarPanelItem>(PanelItems->GetObj(Index))->FillPanelItem(
+      PanelItems->GetAs<TCustomFarPanelItem>(Index)->FillPanelItem(
         &((*PanelItem)[Index]));
     }
   }
@@ -2045,7 +2044,7 @@ bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
 
 void TCustomFarFileSystem::RedrawPanel(bool Another)
 {
-  FPlugin->FarControl(FCTL_REDRAWPANEL, 0, reinterpret_cast<intptr_t>(static_cast<void *>(0)), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+  FPlugin->FarControl(FCTL_REDRAWPANEL, 0, reinterpret_cast<intptr_t>(static_cast<void *>(nullptr)), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
 }
 
 void TCustomFarFileSystem::ClosePlugin()
@@ -2544,7 +2543,7 @@ TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & AFileName) con
     Items = GetItems();
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = dyn_cast<TFarPanelItem>(Items->GetObj(Index));
+    TFarPanelItem * PanelItem = Items->GetAs<TFarPanelItem>(Index);
     if (PanelItem->GetFileName() == AFileName)
     {
       return PanelItem;
@@ -2563,7 +2562,7 @@ TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData)
   TObjectList * Items = GetItems();
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = dyn_cast<TFarPanelItem>(Items->GetObj(Index));
+    TFarPanelItem * PanelItem = Items->GetAs<TFarPanelItem>(Index);
     if (PanelItem->GetUserData() == UserData)
     {
       return PanelItem;
@@ -2588,7 +2587,7 @@ TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
   if (Items->GetCount() > 0)
   {
     DebugAssert(Index < Items->GetCount());
-    return dyn_cast<TFarPanelItem>(Items->GetObj(Index));
+    return Items->GetAs<TFarPanelItem>(Index);
   }
   else
   {

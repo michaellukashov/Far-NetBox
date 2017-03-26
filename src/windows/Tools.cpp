@@ -5,14 +5,14 @@
 #include <Common.h>
 #include <TextsCore.h>
 #include <Exceptions.h>
-#include <FileMasks.h>
-#include <CoreMain.h>
+//#include <FileMasks.h>
+//#include <CoreMain.h>
 #include <RemoteFiles.h>
 #include <Interface.h>
 #include <LibraryLoader.hpp>
 
 #include "WinInterface.h"
-#include "GUITools.h"
+//#include "GUITools.h"
 #include "PuttyTools.h"
 #include "Tools.h"
 
@@ -153,7 +153,9 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   }
   __finally
   {
+/*
     FreeKey(PrivateKey);
+*/
   };
 }
 
@@ -305,7 +307,7 @@ static bool GetProxyUrlFromIE(UnicodeString & Proxy)
           LibraryLoader.GetProcAddress("WinHttpGetIEProxyConfigForCurrentUser"));
     if (GetIEProxyConfig && GetIEProxyConfig(&IEProxyInfo))
     {
-      if (IEProxyInfo.lpszProxy != NULL)
+      if (IEProxyInfo.lpszProxy != nullptr)
       {
         UnicodeString IEProxy = IEProxyInfo.lpszProxy;
         Proxy = L"";
@@ -329,11 +331,11 @@ static bool GetProxyUrlFromIE(UnicodeString & Proxy)
         GlobalFree(IEProxyInfo.lpszProxy);
         Result = true;
       }
-      if (IEProxyInfo.lpszAutoConfigUrl != NULL)
+      if (IEProxyInfo.lpszAutoConfigUrl != nullptr)
       {
         GlobalFree(IEProxyInfo.lpszAutoConfigUrl);
       }
-      if (IEProxyInfo.lpszProxyBypass != NULL)
+      if (IEProxyInfo.lpszProxyBypass != nullptr)
       {
         GlobalFree(IEProxyInfo.lpszProxyBypass);
       }
@@ -363,13 +365,13 @@ bool AutodetectProxy(UnicodeString & AHostName, intptr_t & APortNumber)
     {
       if (GetDefaultProxyConfiguration(&ProxyInfo))
       {
-        if (ProxyInfo.lpszProxy != NULL)
+        if (ProxyInfo.lpszProxy != nullptr)
         {
           Proxy = ProxyInfo.lpszProxy;
           GlobalFree(ProxyInfo.lpszProxy);
           Result = true;
         }
-        if (ProxyInfo.lpszProxyBypass != NULL)
+        if (ProxyInfo.lpszProxyBypass != nullptr)
         {
           GlobalFree(ProxyInfo.lpszProxyBypass);
         }

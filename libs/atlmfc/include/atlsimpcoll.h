@@ -381,7 +381,7 @@ public:
 	}
 	void RemoveAll()
 	{
-		if(m_aKey != NULL)
+		if((m_aKey != NULL) && (m_aVal != NULL))
 		{
 			for(int i = 0; i < m_nSize; i++)
 			{

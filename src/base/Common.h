@@ -1,5 +1,7 @@
 #pragma once
 
+#include <rdestl/map.h>
+
 #include <Global.h>
 #include <Exceptions.h>
 
@@ -274,11 +276,11 @@ protected:
   bool FArmed;
 };
 
-class TAutoNestingCounter : TValueRestorer<int>
+class TAutoNestingCounter : TValueRestorer<intptr_t>
 {
 public:
-  inline explicit TAutoNestingCounter(int & Target) :
-    TValueRestorer<int>(Target)
+  inline explicit TAutoNestingCounter(intptr_t & Target) :
+    TValueRestorer<intptr_t>(Target)
   {
     DebugAssert(Target >= 0);
     ++Target;
@@ -306,8 +308,6 @@ public:
   }
 };
 #pragma warning(pop)
-
-#include <rdestl/map.h>
 
 template<class T1, class T2>
 class BiDiMap

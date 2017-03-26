@@ -7,7 +7,6 @@
 #include <Global.h>
 #include <StrUtils.hpp>
 #include <Sysutils.hpp>
-#include <DateUtils.hpp>
 #include <math.h>
 #include <rdestl/map.h>
 #include <rdestl/vector.h>
@@ -1028,7 +1027,7 @@ static UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
         if ((APath.Length() >= 1) &&
             ((APath[1] == L'\\') || (APath[1] == L'/')))
         {
-          AddPrefix = FALSE;
+          AddPrefix = false;
 
           // Get current root path
           UnicodeString CurrentDir = GetCurrentDir();
@@ -2718,7 +2717,7 @@ bool IsDirectoryWriteable(const UnicodeString & APath)
     ::IncludeTrailingPathDelimiter(APath) +
     FORMAT(L"wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()).c_str(), int(GetCurrentProcessId()));
   HANDLE LocalFileHandle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
-    CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, 0);
+    CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
   bool Result = (LocalFileHandle != INVALID_HANDLE_VALUE);
   if (Result)
   {
@@ -3072,6 +3071,7 @@ void ParseCertificate(const UnicodeString & Path,
     }
     __finally
     {
+/*
       // We loaded private key, but failed to load certificate, discard the certificate
       // (either exception was thrown or WrongPassphrase)
       if ((PrivateKey != nullptr) && (Certificate == nullptr))
@@ -3086,6 +3086,7 @@ void ParseCertificate(const UnicodeString & Path,
         X509_free(Certificate);
         Certificate = nullptr;
       }
+*/
     };
   }
 }

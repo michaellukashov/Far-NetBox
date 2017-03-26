@@ -79,6 +79,8 @@ private:
 
 inline TObject * as_object(void * p) { return static_cast<TObject *>(p); }
 inline const TObject * as_object(const void * p) { return static_cast<const TObject *>(p); }
+template<class T> inline T * get_as(void * p) { return dyn_cast<T>(as_object(p)); }
+template<class T> inline const T * get_as(const void * p) { return dyn_cast<T>(as_object(p)); }
 
 struct TPoint
 {
@@ -148,7 +150,17 @@ public:
     switch(Obj->GetKind())
     {
       case OBJECT_CLASS_TPersistent:
+      case OBJECT_CLASS_TList:
+      case OBJECT_CLASS_TLabelList:
+      case OBJECT_CLASS_TObjectList:
+      case OBJECT_CLASS_TNamedObjectList:
+      case OBJECT_CLASS_TRemoteFileList:
+      case OBJECT_CLASS_TTerminalList:
+      case OBJECT_CLASS_TStoredSessionList:
       case OBJECT_CLASS_TStrings:
+      case OBJECT_CLASS_TStringList:
+      case OBJECT_CLASS_TFarList:
+      case OBJECT_CLASS_TFarMenuItems:
       case OBJECT_CLASS_TNamedObject:
       case OBJECT_CLASS_TSessionData:
       case OBJECT_CLASS_TBookmarkList:
@@ -184,7 +196,7 @@ enum TListNotification
 
 typedef intptr_t (CompareFunc)(const void * Item1, const void * Item2);
 
-class TList : public TObject
+class TList : public TPersistent
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -196,12 +208,19 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
       Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
       Obj->GetKind() == OBJECT_CLASS_TTerminalList ||
+      Obj->GetKind() == OBJECT_CLASS_TStrings ||
+      Obj->GetKind() == OBJECT_CLASS_TStringList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems ||
       Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
   }
 public:
   TList();
   explicit TList(TObjectClassId Kind);
   virtual ~TList();
+
+  template<class T>
+  T * GetAs(intptr_t Index) const { return get_as<T>(GetItem(Index)); }
   void * operator [](intptr_t Index) const;
   virtual void * GetItem(intptr_t Index) const { return FList[Index]; }
   virtual void * GetItem(intptr_t Index) { return FList[Index]; }
@@ -232,6 +251,10 @@ public:
   {
     return
       Obj->GetKind() == OBJECT_CLASS_TObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TStrings ||
+      Obj->GetKind() == OBJECT_CLASS_TStringList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems ||
       Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
       Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
       Obj->GetKind() == OBJECT_CLASS_TTerminalList ||
@@ -241,17 +264,16 @@ public:
   explicit TObjectList(TObjectClassId Kind = OBJECT_CLASS_TObjectList);
   virtual ~TObjectList();
 
+  template<class T>
+  T * GetAs(intptr_t Index) const { return dyn_cast<T>(GetObj(Index)); }
   TObject * operator [](intptr_t Index) const;
   TObject * GetObj(intptr_t Index) const;
   void SetItem(intptr_t Index, TObject * Value);
   intptr_t Add(TObject * Value);
   intptr_t Remove(TObject * Value);
   void Extract(TObject * Value);
-  virtual void Move(intptr_t Index, intptr_t To);
-  virtual void Delete(intptr_t Index);
   void Insert(intptr_t Index, TObject * Value);
   intptr_t IndexOf(const TObject * Value) const;
-  virtual void Clear();
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
   virtual void Sort(CompareFunc func);
@@ -270,7 +292,7 @@ enum TDuplicatesEnum
 
 class TStream;
 
-class TStrings : public TPersistent
+class TStrings : public TObjectList
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -278,14 +300,14 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TStrings ||
       Obj->GetKind() == OBJECT_CLASS_TStringList ||
-      Obj->GetKind() == OBJECT_CLASS_TFarList;
+      Obj->GetKind() == OBJECT_CLASS_TFarList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
   }
 public:
   TStrings();
   explicit TStrings(TObjectClassId Kind);
   virtual ~TStrings();
   intptr_t Add(const UnicodeString & S, TObject * AObject = nullptr);
-  virtual void Delete(intptr_t Index) = 0;
   virtual UnicodeString GetTextStr() const;
   virtual void SetTextStr(const UnicodeString & Text);
   virtual void BeginUpdate();
@@ -294,8 +316,7 @@ public:
   virtual intptr_t AddObject(const UnicodeString & S, TObject * AObject);
   virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
   bool Equals(const TStrings * Value) const;
-  virtual void Clear() = 0;
-  void Move(intptr_t CurIndex, intptr_t NewIndex);
+  virtual void Move(intptr_t CurIndex, intptr_t NewIndex);
   virtual intptr_t IndexOf(const UnicodeString & S) const;
   virtual intptr_t IndexOfName(const UnicodeString & Name) const;
   UnicodeString ExtractName(const UnicodeString & S) const;
@@ -315,7 +336,6 @@ public:
   virtual intptr_t GetCount() const = 0;
 
 public:
-  virtual TObject * GetObj(intptr_t Index) const = 0;
   virtual void SetObj(intptr_t Index, TObject * AObject) = 0;
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
@@ -371,7 +391,6 @@ public:
   void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
   virtual void Assign(const TPersistent * Source);
-  virtual void Clear();
   virtual bool Find(const UnicodeString & S, intptr_t & Index) const;
   virtual intptr_t IndexOf(const UnicodeString & S) const;
   virtual void Delete(intptr_t Index);
@@ -387,7 +406,6 @@ public:
   virtual intptr_t GetCount() const;
 
 public:
-  virtual TObject * GetObj(intptr_t Index) const;
   virtual void SetObj(intptr_t Index, TObject * AObject);
   virtual bool GetSorted() const { return FSorted; }
   virtual void SetSorted(bool Value);
@@ -400,7 +418,6 @@ private:
   TNotifyEvent FOnChange;
   TNotifyEvent FOnChanging;
   rde::vector<UnicodeString> FStrings;
-  rde::vector<TObject *> FObjects;
   bool FSorted;
   bool FCaseSensitive;
 
@@ -474,8 +491,8 @@ public:
     FValue = Value;
     return *this;
   }
-  bool operator == (const TDateTime & rhs);
-  bool operator != (const TDateTime & rhs)
+  bool operator == (const TDateTime & rhs) const;
+  bool operator != (const TDateTime & rhs) const
   {
     return !(operator == (rhs));
   }
@@ -680,13 +697,13 @@ public:
   bool GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const;
   TRegDataType GetDataType(const UnicodeString & ValueName) const;
   DWORD GetDataSize(const UnicodeString & Name) const;
-  bool ReadBool(const UnicodeString & Name);
-  TDateTime ReadDateTime(const UnicodeString & Name);
+  bool ReadBool(const UnicodeString & Name) const;
+  TDateTime ReadDateTime(const UnicodeString & Name) const;
   double ReadFloat(const UnicodeString & Name) const;
   intptr_t ReadInteger(const UnicodeString & Name) const;
-  int64_t ReadInt64(const UnicodeString & Name);
-  UnicodeString ReadString(const UnicodeString & Name);
-  UnicodeString ReadStringRaw(const UnicodeString & Name);
+  int64_t ReadInt64(const UnicodeString & Name) const;
+  UnicodeString ReadString(const UnicodeString & Name) const;
+  UnicodeString ReadStringRaw(const UnicodeString & Name) const;
   size_t ReadBinaryData(const UnicodeString & Name,
     void * Buffer, size_t Size) const;
 

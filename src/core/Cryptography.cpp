@@ -46,8 +46,6 @@
 
 */
 
-#include <memory.h>
-
 #define sha1_ctx                  SHA_State
 #define sha1_begin(ctx)           putty_SHA_Init(ctx)
 #define sha1_hash(buf, len, ctx)  putty_SHA_Bytes(ctx, buf, len)
@@ -131,7 +129,7 @@ static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
 
   /* if no data has been entered perform a null data phase        */
   if(cx->klen != HMAC_IN_DATA)
-    hmac_sha1_data((const uint8_t *)0, 0, cx);
+    hmac_sha1_data((const uint8_t *)nullptr, 0, cx);
 
   sha1_end(dig, cx->ctx);         /* complete the inner hash      */
 

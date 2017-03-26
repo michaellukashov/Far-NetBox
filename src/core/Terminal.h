@@ -28,46 +28,6 @@ struct TFilesFindParams;
 class TTunnelUI;
 class TCallbackGuard;
 
-typedef nb::FastDelegate8<void,
-  TObject * /*Sender*/, const UnicodeString & /*Query*/, TStrings * /*MoreMessages*/ ,
-  uintptr_t /*Answers*/,
-  const TQueryParams * /*Params*/, uintptr_t & /*Answer*/,
-  TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
-typedef nb::FastDelegate8<void,
-  TTerminal * /*Terminal*/, TPromptKind /*Kind*/, const UnicodeString & /*Name*/,
-  const UnicodeString & /*Instructions*/,
-  TStrings * /*Prompts*/, TStrings * /*Results*/,
-  bool & /*Result*/, void * /*Arg*/> TPromptUserEvent;
-typedef nb::FastDelegate5<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*SessionName*/,
-  const UnicodeString & /*Banner*/,
-  bool & /*NeverShowAgain*/, intptr_t /*Options*/> TDisplayBannerEvent;
-typedef nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, Exception * /*E*/, void * /*Arg*/ > TExtendedExceptionEvent;
-typedef nb::FastDelegate2<void, TObject * /*Sender*/,
-  Boolean /*ReloadOnly*/> TReadDirectoryEvent;
-typedef nb::FastDelegate4<void,
-  TObject * /*Sender*/, intptr_t /*Progress*/, intptr_t /*ResolvedLinks*/,
-  bool & /*Cancel*/> TReadDirectoryProgressEvent;
-typedef nb::FastDelegate3<void,
-  const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
-  void * /*Param*/> TProcessFileEvent;
-typedef nb::FastDelegate4<void,
-  const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
-  void * /*Param*/, intptr_t /*Index*/> TProcessFileEventEx;
-typedef nb::FastDelegate2<intptr_t,
-  void * /*Param1*/, void * /*Param2*/> TFileOperationEvent;
-typedef nb::FastDelegate4<void,
-  const UnicodeString & /*LocalDirectory*/, const UnicodeString & /*RemoteDirectory*/,
-  bool & /*Continue*/, bool /*Collect*/> TSynchronizeDirectoryEvent;
-typedef nb::FastDelegate2<void,
-  const UnicodeString & /*FileName*/, bool /*Alternative*/> TDeleteLocalFileEvent;
-typedef nb::FastDelegate3<int,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/,
-  bool /*SubDirs*/> TDirectoryModifiedEvent;
-typedef nb::FastDelegate4<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Str*/, bool /*Status*/,
-  intptr_t /*Phase*/> TInformationEvent;
 typedef nb::FastDelegate5<HANDLE,
   const UnicodeString & /*FileName*/, DWORD /*DesiredAccess*/,
   DWORD /*ShareMode*/, DWORD /*CreationDisposition*/,
@@ -85,6 +45,102 @@ typedef nb::FastDelegate2<BOOL,
   const UnicodeString & /*LocalDirName*/,
   LPSECURITY_ATTRIBUTES /*SecurityAttributes*/> TCreateLocalDirectoryEvent;
 typedef nb::FastDelegate0<bool> TCheckForEscEvent;
+
+/*
+typedef void __fastcall (__closure *TQueryUserEvent)
+  (TObject * Sender, const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
+   const TQueryParams * Params, unsigned int & Answer, TQueryType QueryType, void * Arg);
+*/
+typedef nb::FastDelegate8<void,
+  TObject * /*Sender*/, const UnicodeString & /*Query*/, TStrings * /*MoreMessages*/ ,
+  uintptr_t /*Answers*/,
+  const TQueryParams * /*Params*/, uintptr_t & /*Answer*/,
+  TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
+/*
+typedef void (__closure *TPromptUserEvent)
+  (TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
+   TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
+*/
+typedef nb::FastDelegate8<void,
+  TTerminal * /*Terminal*/, TPromptKind /*Kind*/, const UnicodeString & /*Name*/,
+  const UnicodeString & /*Instructions*/,
+  TStrings * /*Prompts*/, TStrings * /*Results*/,
+  bool & /*Result*/, void * /*Arg*/> TPromptUserEvent;
+/*
+typedef void (__closure *TDisplayBannerEvent)
+  (TTerminal * Terminal, UnicodeString SessionName, const UnicodeString & Banner,
+   bool & NeverShowAgain, int Options);
+*/
+typedef nb::FastDelegate5<void,
+  TTerminal * /*Terminal*/, const UnicodeString & /*SessionName*/,
+  const UnicodeString & /*Banner*/,
+  bool & /*NeverShowAgain*/, intptr_t /*Options*/> TDisplayBannerEvent;
+/*
+typedef void (__closure *TExtendedExceptionEvent)
+  (TTerminal * Terminal, Exception * E, void * Arg);
+*/
+typedef nb::FastDelegate3<void,
+  TTerminal * /*Terminal*/, Exception * /*E*/, void * /*Arg*/ > TExtendedExceptionEvent;
+/*
+typedef void (__closure *TReadDirectoryEvent)(System::TObject * Sender, Boolean ReloadOnly);
+*/
+typedef nb::FastDelegate2<void, TObject * /*Sender*/,
+  Boolean /*ReloadOnly*/> TReadDirectoryEvent;
+/*
+typedef void (__closure *TReadDirectoryProgressEvent)(
+  System::TObject* Sender, int Progress, int ResolvedLinks, bool & Cancel);
+*/
+typedef nb::FastDelegate4<void,
+  TObject * /*Sender*/, intptr_t /*Progress*/, intptr_t /*ResolvedLinks*/,
+  bool & /*Cancel*/> TReadDirectoryProgressEvent;
+/*
+typedef void (__closure *TProcessFileEvent)
+  (const UnicodeString FileName, const TRemoteFile * File, void * Param);
+*/
+typedef nb::FastDelegate3<void,
+  const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
+  void * /*Param*/> TProcessFileEvent;
+/*
+typedef void (__closure *TProcessFileEventEx)
+  (const UnicodeString FileName, const TRemoteFile * File, void * Param, int Index);
+*/
+typedef nb::FastDelegate4<void,
+  const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
+  void * /*Param*/, intptr_t /*Index*/> TProcessFileEventEx;
+/*
+typedef int (__closure *TFileOperationEvent)
+  (void * Param1, void * Param2);
+*/
+typedef nb::FastDelegate2<intptr_t,
+  void * /*Param1*/, void * /*Param2*/> TFileOperationEvent;
+/*
+typedef void (__closure *TSynchronizeDirectory)
+  (const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+   bool & Continue, bool Collect);
+*/
+typedef nb::FastDelegate4<void,
+  const UnicodeString & /*LocalDirectory*/, const UnicodeString & /*RemoteDirectory*/,
+  bool & /*Continue*/, bool /*Collect*/> TSynchronizeDirectoryEvent;
+/*
+typedef void (__closure *TDeleteLocalFileEvent)(
+  const UnicodeString FileName, bool Alternative);
+*/
+typedef nb::FastDelegate2<void,
+  const UnicodeString & /*FileName*/, bool /*Alternative*/> TDeleteLocalFileEvent;
+/*
+typedef int (__closure *TDirectoryModifiedEvent)
+  (TTerminal * Terminal, const UnicodeString Directory, bool SubDirs);
+*/
+typedef nb::FastDelegate3<int,
+  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/,
+  bool /*SubDirs*/> TDirectoryModifiedEvent;
+/*
+typedef void (__closure *TInformationEvent)
+  (TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
+*/
+typedef nb::FastDelegate4<void,
+  TTerminal * /*Terminal*/, const UnicodeString & /*Str*/, bool /*Status*/,
+  intptr_t /*Phase*/> TInformationEvent;
 
 inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 {
@@ -138,6 +194,7 @@ public:
   }
 public:
   // TScript::SynchronizeProc relies on the order
+  // enum TSynchronizeMode { smRemote, smLocal, smBoth };
   enum TSynchronizeMode
   {
     smRemote,
@@ -179,7 +236,7 @@ private:
   TConfiguration * FConfiguration;
   UnicodeString FCurrentDirectory;
   UnicodeString FLockDirectory;
-  Integer FExceptionOnFail;
+  intptr_t FExceptionOnFail;
   TRemoteDirectory * FFiles;
   intptr_t FInTransaction;
   bool FSuspendTransaction;
@@ -213,7 +270,7 @@ private:
   bool FReadingCurrentDirectory;
   bool * FClosedOnCompletion;
   TSessionStatus FStatus;
-  int FOpening;
+  intptr_t FOpening;
   RawByteString FRememberedPassword;
   RawByteString FRememberedTunnelPassword;
   TTunnelThread * FTunnelThread;
@@ -236,7 +293,7 @@ private:
   bool FCollectFileSystemUsage;
   bool FRememberedPasswordTried;
   bool FRememberedTunnelPasswordTried;
-  int FNesting;
+  intptr_t FNesting;
   UnicodeString FFingerprintScanned;
   TRemoteDirectory * FOldFiles;
 
@@ -339,10 +396,10 @@ public:
     OUT int64_t & Size);
   TBatchOverwrite EffectiveBatchOverwrite(
     const UnicodeString & AFileName, const TCopyParamType * CopyParam, intptr_t Params,
-    TFileOperationProgressType * OperationProgress, bool Special);
+    TFileOperationProgressType * OperationProgress, bool Special) const;
   bool CheckRemoteFile(
     const UnicodeString & AFileName, const TCopyParamType * CopyParam,
-    intptr_t Params, TFileOperationProgressType * OperationProgress);
+    intptr_t Params, TFileOperationProgressType * OperationProgress) const;
   uintptr_t ConfirmFileOverwrite(
     const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
     const TOverwriteFileParams * FileParams, uintptr_t Answers, TQueryParams * QueryParams,
@@ -416,7 +473,7 @@ public:
   TRemoteFileList * DoReadDirectoryListing(const UnicodeString & ADirectory, bool UseCache);
   RawByteString EncryptPassword(const UnicodeString & APassword) const;
   UnicodeString DecryptPassword(const RawByteString & APassword) const;
-  UnicodeString GetRemoteFileInfo(TRemoteFile * AFile);
+  UnicodeString GetRemoteFileInfo(TRemoteFile * AFile) const;
   void LogRemoteFile(TRemoteFile * AFile);
   UnicodeString FormatFileDetailsForLog(const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size);
   void LogFileDetails(const UnicodeString & AFileName, const TDateTime & Modification, int64_t Size);
@@ -540,7 +597,7 @@ public:
     TFileOperationProgressType * OperationProgress);
   UnicodeString PeekCurrentDirectory();
   void FatalAbort();
-  void ReflectSettings();
+  void ReflectSettings() const;
   void CollectUsage();
   bool IsThisOrChild(TTerminal * Terminal) const;
   void FillSessionDataForCode(TSessionData * Data);
@@ -550,8 +607,8 @@ public:
   void inline LogEvent(const UnicodeString & Str);
   void GetSupportedChecksumAlgs(TStrings * Algs);
   UnicodeString ChangeFileName(const TCopyParamType * CopyParam,
-    const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel);
-  UnicodeString GetBaseFileName(const UnicodeString & AFileName);
+    const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel) const;
+  UnicodeString GetBaseFileName(const UnicodeString & AFileName) const;
 
   static UnicodeString ExpandFileName(const UnicodeString & APath,
     const UnicodeString & BasePath);
@@ -730,8 +787,9 @@ public:
   void FreeAndNullTerminal(TTerminal *& Terminal);
   virtual void Idle();
   void RecryptPasswords();
-
-  // __property TTerminal * Terminals[int Index]  = { read=GetTerminal };
+/*
+  __property TTerminal * Terminals[int Index]  = { read=GetTerminal };
+*/
   TTerminal * GetTerminal(intptr_t Index);
 
 protected:
@@ -810,8 +868,8 @@ public:
 
   TStringList * Filter;
 
-  bool FilterFind(const UnicodeString & AFileName);
-  bool MatchesFilter(const UnicodeString & AFileName);
+  //bool FilterFind(const UnicodeString & AFileName) const;
+  bool MatchesFilter(const UnicodeString & AFileName) const;
 };
 
 enum TChecklistAction
@@ -825,7 +883,7 @@ enum TChecklistAction
   saDeleteLocal,
 };
 
-//---------------------------------------------------------------------------
+
 class TChecklistItem : public TObject
 {
 friend class TTerminal;
@@ -854,7 +912,7 @@ public:
   bool Checked;
   TRemoteFile * RemoteFile;
 
-  const UnicodeString GetFileName() const;
+  UnicodeString GetFileName() const;
 
   ~TChecklistItem();
 

@@ -4,7 +4,6 @@
 #include <rdestl/vector.h>
 #include <Common.h>
 #include <Exceptions.h>
-#include <TextsCore.h>
 #include <StrUtils.hpp>
 
 #include "PuttyIntf.h"
@@ -230,7 +229,9 @@ void THierarchicalStorage::ClearSubKeys()
   }
   __finally
   {
-//    delete SubKeys;
+/*
+    delete SubKeys;
+*/
   };
 }
 
@@ -255,7 +256,9 @@ bool THierarchicalStorage::HasSubKeys()
   }
   __finally
   {
-//    delete SubKeys;
+/*
+    delete SubKeys;
+*/
   };
   return Result;
 }
@@ -297,7 +300,9 @@ void THierarchicalStorage::ReadValues(TStrings * Strings,
   }
   __finally
   {
-//    delete Names;
+/*
+    delete Names;
+*/
   };
 }
 
@@ -314,7 +319,9 @@ void THierarchicalStorage::ClearValues()
   }
   __finally
   {
-//    delete Names;
+/*
+    delete Names;
+*/
   };
 }
 
@@ -500,7 +507,9 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   }
   __finally
   {
-//    delete Names;
+/*
+    delete Names;
+*/
   };
   return Result;
 }

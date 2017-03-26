@@ -643,7 +643,7 @@ intptr_t UnicodeString::FindFirstOf(const wchar_t * Str, size_t Offset) const
 {
   if (!Str || !*Str)
     return NPOS;
-  int Length = wstring_t::StringLength(Str);
+  // int Length = wstring_t::StringLength(Str);
   wstring_t str = Data.Mid((int)Offset);
   int Res = str.FindOneOf(Str);
   if (Res != -1)

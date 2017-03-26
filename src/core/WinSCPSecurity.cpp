@@ -20,7 +20,7 @@ static int random(int range)
 
 RawByteString SimpleEncryptChar(uint8_t Ch)
 {
-  Ch = (uint8_t)((~Ch) ^ PWALG_SIMPLE_MAGIC);
+  Ch = static_cast<uint8_t>((~Ch) ^ PWALG_SIMPLE_MAGIC);
   return
     PWALG_SIMPLE_STRING.SubString(((Ch & 0xF0) >> 4) + 1, 1) +
     PWALG_SIMPLE_STRING.SubString(((Ch & 0x0F) >> 0) + 1, 1);
@@ -30,9 +30,9 @@ uint8_t SimpleDecryptNextChar(RawByteString & Str)
 {
   if (Str.Length() > 0)
   {
-    uint8_t Result = (uint8_t)
+    uint8_t Result = static_cast<uint8_t>(
       ~((((PWALG_SIMPLE_STRING.Pos(Str.c_str()[0])-1) << 4) +
-         ((PWALG_SIMPLE_STRING.Pos(Str.c_str()[1])-1) << 0)) ^ PWALG_SIMPLE_MAGIC);
+         ((PWALG_SIMPLE_STRING.Pos(Str.c_str()[1])-1) << 0)) ^ PWALG_SIMPLE_MAGIC));
     Str.Delete(1, 2);
     return Result;
   }

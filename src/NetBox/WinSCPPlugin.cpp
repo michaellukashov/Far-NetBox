@@ -11,7 +11,6 @@
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarConfiguration.h"
-#include "FarDialog.h"
 #include "XmlStorage.h"
 
 TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
@@ -193,7 +192,7 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(intptr_t Event, void * Param)
   {
     for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
-      TWinSCPFileSystem * FileSystem = dyn_cast<TWinSCPFileSystem>(FOpenedPlugins->GetObj(Index));
+      TWinSCPFileSystem * FileSystem = FOpenedPlugins->GetAs<TWinSCPFileSystem>(Index);
       FileSystem->ProcessEditorEvent(Event, Param);
     }
   }
@@ -562,7 +561,7 @@ public:
 void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
 {
   DebugAssert(Token);
-  TFarMessageData & Data = *dyn_cast<TFarMessageData>(as_object(Token));
+  TFarMessageData & Data = *get_as<TFarMessageData>(Token);
 
   DebugAssert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
 

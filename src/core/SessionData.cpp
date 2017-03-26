@@ -101,7 +101,7 @@ intptr_t TSessionData::Compare(const TNamedObject * Other) const
   return Result;
 }
 
-TSessionData * TSessionData::Clone()
+TSessionData * TSessionData::Clone() const
 {
   std::unique_ptr<TSessionData> Data(new TSessionData(L""));
   Data->Assign(this);
@@ -1443,7 +1443,9 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
     }
     __finally
     {
+/*
       Storage->CloseSubKey();
+*/
     };
   }
 }
@@ -1462,7 +1464,9 @@ void TSessionData::Remove()
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 }
 
@@ -1637,7 +1641,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
        // this can be optimized as the list is sorted
       for (Integer Index = 0; Index < AStoredSessions->GetCountIncludingHidden(); ++Index)
       {
-        TSessionData * AData = dyn_cast<TSessionData>(AStoredSessions->GetObj(Index));
+        TSessionData * AData = AStoredSessions->GetAs<TSessionData>(Index);
         if (!AData->GetIsWorkspace())
         {
           bool Match = false;
@@ -1919,8 +1923,10 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       }
       __finally
       {
-//        delete RawSettings;
-//        delete OptionsStorage;
+/*
+        delete RawSettings;
+        delete OptionsStorage;
+*/
       };
     }
     if (Options->FindSwitch("allowemptypassword", Value))
@@ -2512,7 +2518,7 @@ void TSessionData::SetTrimVMSVersions(bool Value)
   SET_SESSION_PROPERTY(TrimVMSVersions);
 }
 
-TDateTime TSessionData::GetTimeoutDT()
+TDateTime TSessionData::GetTimeoutDT() const
 {
   return SecToDateTime(GetTimeout());
 }
@@ -2754,7 +2760,7 @@ static bool IsIPv6Literal(const UnicodeString & HostName)
   return Result;
 }
 
-UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags)
+UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
 {
   UnicodeString Url;
 
@@ -2843,7 +2849,7 @@ void TSessionData::LookupLastFingerprint()
   }
 }
 
-UnicodeString TSessionData::GenerateOpenCommandArgs()
+UnicodeString TSessionData::GenerateOpenCommandArgs() const
 {
   std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
   std::unique_ptr<TSessionData> SessionData(new TSessionData(L""));
@@ -3823,7 +3829,7 @@ void TSessionData::SetTunnelLocalPortNumber(intptr_t Value)
   SET_SESSION_PROPERTY(TunnelLocalPortNumber);
 }
 
-bool TSessionData::GetTunnelAutoassignLocalPortNumber()
+bool TSessionData::GetTunnelAutoassignLocalPortNumber() const
 {
   return (FTunnelLocalPortNumber <= 0);
 }
@@ -4259,10 +4265,12 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   }
   __finally
   {
-//    AutoSort = true;
-//    AlphaSort();
-//    delete SubKeys;
-//    delete Loaded;
+/*
+    AutoSort = true;
+    AlphaSort();
+    delete SubKeys;
+    delete Loaded;
+*/
   };
 }
 
@@ -4279,7 +4287,9 @@ void TStoredSessionList::Load()
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 }
 
@@ -4309,7 +4319,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults.get());
     for (intptr_t Index = 0; Index < GetCountIncludingHidden(); ++Index)
     {
-      TSessionData * SessionData = dyn_cast<TSessionData>(GetObj(Index));
+      TSessionData * SessionData = GetAs<TSessionData>(Index);
       try
       {
         DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
@@ -4331,7 +4341,9 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   }
   __finally
   {
-//    delete FactoryDefaults;
+/*
+    delete FactoryDefaults;
+*/
   };
 }
 
@@ -4356,7 +4368,9 @@ void TStoredSessionList::DoSave(bool All, bool Explicit,
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 
   Saved();
@@ -4377,7 +4391,7 @@ void TStoredSessionList::Saved()
   FDefaultSettings->SetModified(false);
   for (intptr_t Index = 0; Index < GetCountIncludingHidden(); ++Index)
   {
-    (dyn_cast<TSessionData>(GetObj(Index))->SetModified(false));
+    GetAs<TSessionData>(Index)->SetModified(false);
   }
 }
 
@@ -4510,7 +4524,9 @@ void TStoredSessionList::Cleanup()
     }
     __finally
     {
-//      delete Storage;
+/*
+      delete Storage;
+*/
     };
   }
   catch (Exception & E)
@@ -4753,9 +4769,11 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
   }
   __finally
   {
-//    delete SourceStorage;
-//    delete TargetStorage;
-//    delete KeyList;
+/*
+    delete SourceStorage;
+    delete TargetStorage;
+    delete KeyList;
+*/
   };
 }
 
@@ -4909,7 +4927,7 @@ void TStoredSessionList::NewWorkspace(
 
   for (intptr_t Index = 0; Index < DataList->GetCount(); ++Index)
   {
-    TSessionData * Data = dyn_cast<TSessionData>(as_object(DataList->GetItem(Index)));
+    TSessionData * Data = DataList->GetAs<TSessionData>(Index);
 
     TSessionData * Data2 = new TSessionData(L"");
     Data2->Assign(Data);

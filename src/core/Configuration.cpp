@@ -113,7 +113,9 @@ void TConfiguration::Default()
   }
   __finally
   {
-//    delete AdminStorage;
+/*
+    delete AdminStorage;
+*/
   };
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
@@ -310,7 +312,9 @@ void TConfiguration::DoSave(bool All, bool Explicit)
   }
   __finally
   {
-//    delete AStorage;
+/*
+    delete AStorage;
+*/
   };
 
   Saved();
@@ -455,7 +459,9 @@ void TConfiguration::Load(THierarchicalStorage * Storage)
   }
   __finally
   {
-//    Storage->AccessMode = StorageAccessMode;
+/*
+    Storage->AccessMode = StorageAccessMode;
+*/
   };
 }
 
@@ -530,7 +536,9 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
   }
   __finally
   {
-//    delete Names;
+/*
+    delete Names;
+*/
   };
 }
 
@@ -550,7 +558,9 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 }
 
@@ -571,7 +581,9 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 }
 
@@ -601,7 +613,9 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 
   return Result;
@@ -623,7 +637,9 @@ void TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 }
 //---------------------------------------------------------------------------
@@ -723,7 +739,9 @@ void TConfiguration::CleanupRegistry(const UnicodeString & CleanupSubKey)
   }
   __finally
   {
-//    delete Registry;
+/*
+    delete Registry;
+*/
   };
 }
 
@@ -883,7 +901,7 @@ UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString & AFileN
   return TrimVersion(GetFileFileInfoString(L"ProductVersion", AFileName));
 }
 
-UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName)
+UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName) const
 {
   return GetFileFileInfoString(L"FileDescription", AFileName);
 }
@@ -990,7 +1008,9 @@ UnicodeString TConfiguration::GetFileVersion(const UnicodeString & FileName)
   }
   __finally
   {
+/*
     FreeFileInfo(FileInfo);
+*/
   };
   return Result;
 }
@@ -1077,10 +1097,12 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
   }
   __finally
   {
+/*
     if (!AFileName.IsEmpty())
     {
       FreeFileInfo(Info);
     }
+*/
   };
   return Result;
 }
@@ -1255,8 +1277,10 @@ void TConfiguration::SetStorage(TStorage Value)
       }
       __finally
       {
-//        delete SourceStorage;
-//        delete TargetStorage;
+/*
+        delete SourceStorage;
+        delete TargetStorage;
+*/
       };
       // save all and explicit,
       // this also removes an INI file, when switching to registry storage

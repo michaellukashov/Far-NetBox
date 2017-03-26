@@ -2,7 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <neon/src/ne_request.h>
+#include <ne_request.h>
 #include <openssl/ssl.h>
 
 #include "Http.h"
@@ -78,6 +78,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
         DestroyNeonSession(NeonSession);
         ne_uri_free(&uri);
       };
+
       if (IsTls)
       {
         SetNeonTlsInit(NeonSession, InitSslSession);
@@ -94,6 +95,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
         {
           ne_request_destroy(NeonRequest);
         };
+
         if (FRequestHeaders != nullptr)
         {
           for (intptr_t Index = 0; Index < FRequestHeaders->GetCount(); Index++)
@@ -144,7 +146,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
             throw Exception(FMTLOAD(HTTP_ERROR2, StatusCode, Message.c_str(), FHostName.c_str()));
           }
 
-          void * Cursor = NULL;
+          void * Cursor = nullptr;
           const char * HeaderName;
           const char * HeaderValue;
           while ((Cursor = ne_response_header_iterate(NeonRequest, Cursor, &HeaderName, &HeaderValue)) != nullptr)
@@ -155,13 +157,17 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
       }
       __finally
       {
+/*
         ne_request_destroy(NeonRequest);
+*/
       };
     }
     __finally
     {
+/*
       DestroyNeonSession(NeonSession);
       ne_uri_free(&uri);
+*/
     };
   }
   while (Retry);

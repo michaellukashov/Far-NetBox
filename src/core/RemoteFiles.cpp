@@ -6,7 +6,6 @@
 #include <StrUtils.hpp>
 
 #include "RemoteFiles.h"
-#include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
@@ -1020,7 +1019,7 @@ wchar_t TRemoteFile::GetType() const
 void TRemoteFile::SetType(wchar_t AType)
 {
   FType = AType;
-  FIsSymLink = (static_cast<wchar_t>(towupper(FType)) == FILETYPE_SYMLINK);
+  FIsSymLink = (UpCase(FType) == FILETYPE_SYMLINK);
 }
 
 TRemoteFile * TRemoteFile::GetLinkedFile() const
@@ -1491,7 +1490,9 @@ void TRemoteFile::FindLinkedFile()
       }
       __finally
       {
+/*
         GetTerminal()->SetExceptionOnFail(false);
+*/
       };
     }
     catch (Exception & E)
@@ -1695,10 +1696,11 @@ void TRemoteFileList::AddFiles(const TRemoteFileList * AFileList)
 TStrings * TRemoteFileList::CloneStrings(TStrings * List)
 {
   std::unique_ptr<TStringList> Result(new TStringList());
+  Result->SetOwnsObjects(true);
   for (intptr_t Index = 0; Index < List->GetCount(); Index++)
   {
     TRemoteFile * File = static_cast<TRemoteFile *>(List->GetObj(Index));
-    Result->AddObject(List->GetString(Index), File);
+    Result->AddObject(List->GetString(Index), File->Duplicate(true));
   }
   return Result.release();
 }
@@ -1733,7 +1735,7 @@ UnicodeString TRemoteFileList::GetFullDirectory() const
 
 TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
-  return dyn_cast<TRemoteFile>(GetObj(Index));
+  return GetAs<TRemoteFile>(Index);
 }
 
 Boolean TRemoteFileList::GetIsRoot() const
@@ -1939,14 +1941,16 @@ void TRemoteDirectoryCache::Clear()
     };
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
-      TRemoteFileList * List = dyn_cast<TRemoteFileList>(GetObj(Index));
+      TRemoteFileList * List = GetAs<TRemoteFileList>(Index);
       SAFE_DESTROY(List);
       SetObj(Index, nullptr);
     }
   }
   __finally
   {
+/*
     TStringList::Clear();
+*/
   };
 }
 
@@ -1973,7 +1977,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   intptr_t Index = IndexOf(core::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
-    TRemoteFileList * FileList = dyn_cast<TRemoteFileList>(GetObj(Index));
+    TRemoteFileList * FileList = GetAs<TRemoteFileList>(Index);
     if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
@@ -1992,7 +1996,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   if (Result)
   {
     DebugAssert(GetObj(Index) != nullptr);
-    dyn_cast<TRemoteFileList>(GetObj(Index))->DuplicateTo(FileList);
+    GetAs<TRemoteFileList>(Index)->DuplicateTo(FileList);
   }
   return Result;
 }
@@ -2046,7 +2050,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
 
 void TRemoteDirectoryCache::Delete(intptr_t Index)
 {
-  TRemoteFileList * List = dyn_cast<TRemoteFileList>(GetObj(Index));
+  TRemoteFileList * List = GetAs<TRemoteFileList>(Index);
   SAFE_DESTROY(List);
   TStringList::Delete(Index);
 }
@@ -2194,7 +2198,9 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
     }
     __finally
     {
-//      delete Limited;
+/*
+      delete Limited;
+*/
     };
   }
   else
@@ -2245,9 +2251,9 @@ const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
 const wchar_t TRights::ModeGroups[] = L"ugo";
 
 TRights::TRights() :
-  FAllowUndef(false),
   FSet(0),
   FUnset(0),
+  FAllowUndef(false),
   FUnknown(true)
 {
   SetNumber(0);
@@ -2848,7 +2854,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
   TRemoteProperties CommonProperties;
   for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
   {
-    TRemoteFile * File = dyn_cast<TRemoteFile>(AFileList->GetObj(Index));
+    TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
     DebugAssert(File);
     if (!Index)
     {

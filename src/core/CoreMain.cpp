@@ -8,7 +8,6 @@
 #include "Configuration.h"
 #include "PuttyIntf.h"
 #include "Cryptography.h"
-#include <DateUtils.hpp>
 #ifndef NO_FILEZILLA
 #include "FileZillaIntf.h"
 #endif
