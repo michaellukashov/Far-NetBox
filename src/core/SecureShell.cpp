@@ -745,6 +745,7 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & AName) const
   return PromptKind;
 }
 
+
 bool TSecureShell::PromptUser(bool /*ToServer*/,
   const UnicodeString & AName, bool /*NameRequired*/,
   const UnicodeString & AInstructions, bool InstructionsRequired,
@@ -847,7 +848,6 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       { L"Enter new password: ", NEW_PASSWORD_NEW_PROMPT },
       { L"Confirm new password: ", NEW_PASSWORD_CONFIRM_PROMPT },
     };
-
     PromptTranslation = NewPasswordPromptTranslation;
     PromptTranslationCount = _countof(NewPasswordPromptTranslation);
     PromptDesc = L"new password";
@@ -1159,10 +1159,12 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
       }
 
       // This seems ambiguous
-//      if (Length <= 0)
-//      {
-//        FatalError(LoadStr(LOST_CONNECTION));
-//      }
+/*
+      if (Length <= 0)
+      {
+        FatalError(LoadStr(LOST_CONNECTION));
+      }
+*/
     }
     __finally
     {
@@ -1952,7 +1954,6 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
   ClearStruct(Events);
   bool Result = EnumNetworkEvents(Socket, Events);
   HandleNetworkEvents(Socket, Events);
-
   return Result;
 }
 
@@ -2097,7 +2098,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
           setsockopt(FSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&BufferLen), sizeof(BufferLen));
         }
       }
-      FLastSendBufferUpdate = (DWORD)TicksAfter;
+      FLastSendBufferUpdate = static_cast<DWORD>(TicksAfter);
     }
   }
   while (ReadEventRequired && (MSec > 0) && !Result);
@@ -2280,7 +2281,7 @@ UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, intptr_t
   AnsiStoredKeys.SetLength(10 * 1024);
   UnicodeString Result;
   if (retrieve_host_key(AnsiString(Host).c_str(), static_cast<int>(Port), AnsiString(KeyType).c_str(),
-        (char *)AnsiStoredKeys.c_str(), static_cast<int>(AnsiStoredKeys.Length())) == 0)
+        const_cast<char *>(AnsiStoredKeys.c_str()), static_cast<int>(AnsiStoredKeys.Length())) == 0)
   {
     PackStr(AnsiStoredKeys);
     Result = UnicodeString(AnsiStoredKeys);
@@ -2319,7 +2320,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
     UnicodeString StoredKey = CutToChar(Buf, HostKeyDelimiter, false);
     // skip leading ECDH subtype identification
     intptr_t P = StoredKey.Pos(L",");
-    // start from beginning or after the comma, if there 's any
+    // start from beginning or after the comma, if there's any
     bool Fingerprint = (StoredKey.SubString(P + 1, 2) != L"0x");
     // it's probably a fingerprint (stored by TSessionData::CacheHostKey)
     UnicodeString NormalizedExpectedKey;
