@@ -1019,7 +1019,7 @@ wchar_t TRemoteFile::GetType() const
 void TRemoteFile::SetType(wchar_t AType)
 {
   FType = AType;
-  FIsSymLink = (static_cast<wchar_t>(towupper(FType)) == FILETYPE_SYMLINK);
+  FIsSymLink = (UpCase(FType) == FILETYPE_SYMLINK);
 }
 
 TRemoteFile * TRemoteFile::GetLinkedFile() const
