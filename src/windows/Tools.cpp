@@ -153,7 +153,9 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   }
   __finally
   {
+/*
     FreeKey(PrivateKey);
+*/
   };
 }
 

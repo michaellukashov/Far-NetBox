@@ -1490,7 +1490,9 @@ void TRemoteFile::FindLinkedFile()
       }
       __finally
       {
+/*
         GetTerminal()->SetExceptionOnFail(false);
+*/
       };
     }
     catch (Exception & E)
@@ -1946,7 +1948,9 @@ void TRemoteDirectoryCache::Clear()
   }
   __finally
   {
+/*
     TStringList::Clear();
+*/
   };
 }
 
@@ -2194,7 +2198,9 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
     }
     __finally
     {
-//      delete Limited;
+/*
+      delete Limited;
+*/
     };
   }
   else

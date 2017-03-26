@@ -829,8 +829,10 @@ int TWebDAVFileSystem::ReadDirectoryInternal(const UnicodeString & APath, TRemot
   }
   __finally
   {
+/*
     ne_lock_discovery_free(DiscoveryContext);
     ne_propfind_destroy(PropFindHandler);
+*/
   };
   return Result;
 }
@@ -1367,7 +1369,9 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
     }
     __finally
     {
+/*
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+*/
     };
     ++Index;
   }
@@ -1603,6 +1607,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
   }
   __finally
   {
+/*
     if (FD >= 0)
     {
       // _close calls CloseHandle internally (even doc states, we should not call CloseHandle),
@@ -1613,6 +1618,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
     {
       CloseHandle(File);
     }
+*/
   };
 
   // TODO : Delete also read-only files.
@@ -1712,7 +1718,9 @@ void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   }
   __finally
   {
+/*
     ::FindClose(SearchRec);
+*/
   };
   // TODO : Delete also read-only directories.
   // TODO : Show error message on failure.
@@ -1772,7 +1780,9 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
     }
     __finally
     {
+/*
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+*/
     };
     ++Index;
   }
@@ -2276,6 +2286,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       }
       __finally
       {
+/*
         if (FD >= 0)
         {
           // _close calls CloseHandle internally (even doc states, we should not call CloseHandle),
@@ -2295,6 +2306,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
             THROWOSIFFALSE(::RemoveFile(DestFullName));
           });
         }
+*/
       };
     });
 
@@ -2741,10 +2753,12 @@ void TWebDAVFileSystem::LockFile(const UnicodeString & /*AFileName*/, const TRem
   }
   __finally
   {
+/*
     if (Lock != nullptr)
     {
       ne_lock_destroy(Lock);
     }
+*/
   };
 }
 
@@ -2851,7 +2865,9 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & FileName, const TRemote
   }
   __finally
   {
+/*
     ne_lock_destroy(Lock);
+*/
   };
 }
 

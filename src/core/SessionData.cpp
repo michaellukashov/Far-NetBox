@@ -1443,7 +1443,9 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
     }
     __finally
     {
+/*
       Storage->CloseSubKey();
+*/
     };
   }
 }
@@ -1462,7 +1464,9 @@ void TSessionData::Remove()
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 }
 
@@ -1919,8 +1923,10 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       }
       __finally
       {
-//        delete RawSettings;
-//        delete OptionsStorage;
+/*
+        delete RawSettings;
+        delete OptionsStorage;
+*/
       };
     }
     if (Options->FindSwitch("allowemptypassword", Value))
@@ -4259,10 +4265,12 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   }
   __finally
   {
-//    AutoSort = true;
-//    AlphaSort();
-//    delete SubKeys;
-//    delete Loaded;
+/*
+    AutoSort = true;
+    AlphaSort();
+    delete SubKeys;
+    delete Loaded;
+*/
   };
 }
 
@@ -4279,7 +4287,9 @@ void TStoredSessionList::Load()
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 }
 
@@ -4331,7 +4341,9 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   }
   __finally
   {
-//    delete FactoryDefaults;
+/*
+    delete FactoryDefaults;
+*/
   };
 }
 
@@ -4356,7 +4368,9 @@ void TStoredSessionList::DoSave(bool All, bool Explicit,
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 
   Saved();
@@ -4510,7 +4524,9 @@ void TStoredSessionList::Cleanup()
     }
     __finally
     {
-//      delete Storage;
+/*
+      delete Storage;
+*/
     };
   }
   catch (Exception & E)
@@ -4753,9 +4769,11 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
   }
   __finally
   {
-//    delete SourceStorage;
-//    delete TargetStorage;
-//    delete KeyList;
+/*
+    delete SourceStorage;
+    delete TargetStorage;
+    delete KeyList;
+*/
   };
 }
 

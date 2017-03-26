@@ -450,7 +450,9 @@ void TSecureShell::Open()
     }
     __finally
     {
+/*
       conf_free(conf);
+*/
     };
 
     sfree(RealHost);
@@ -1081,7 +1083,9 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Len
         }
         __finally
         {
+/*
           FFrozen = false;
+*/
         };
       }
       else
@@ -1162,7 +1166,9 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
     }
     __finally
     {
+/*
       OutPtr = nullptr;
+*/
     };
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
@@ -1275,7 +1281,9 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   }
   __finally
   {
+/*
     FWaiting--;
+*/
   };
   return Answer;
 }
@@ -2053,7 +2061,9 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     }
     __finally
     {
+/*
       sfree(Handles);
+*/
     };
 
     run_toplevel_callbacks();
@@ -2470,7 +2480,9 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
       }
       __finally
       {
-        // delete E;
+/*
+         delete E;
+*/
       };
     }
   }
