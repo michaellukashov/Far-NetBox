@@ -708,13 +708,6 @@ BOOL CWnd::PreTranslateMessage(MSG* pMsg)
 	return FALSE;
 }
 
-void PASCAL CWnd::CancelToolTips(BOOL bKeys)
-{
-	// check for active tooltip
-	AFX_MODULE_THREAD_STATE* pModuleThreadState = AfxGetModuleThreadState();
-
-}
-
 void CWnd::GetWindowText(CString& rString) const
 {
 	// ASSERT(::IsWindow(m_hWnd));
@@ -865,24 +858,6 @@ struct AFX_CTLCOLOR
 	HDC hDC;
 	UINT nCtlType;
 };
-
-LRESULT CWnd::OnNTCtlColor(WPARAM wParam, LPARAM lParam)
-{
-	// fill in special struct for compatiblity with 16-bit WM_CTLCOLOR
-	AFX_CTLCOLOR ctl;
-	ctl.hDC = (HDC)wParam;
-	ctl.hWnd = (HWND)lParam;
-	_AFX_THREAD_STATE* pThreadState = _afxThreadState.GetData();
-	ctl.nCtlType = pThreadState->m_lastSentMsg.message - WM_CTLCOLORMSGBOX;
-	//ASSERT(ctl.nCtlType >= CTLCOLOR_MSGBOX);
-	ASSERT(ctl.nCtlType <= CTLCOLOR_STATIC);
-
-	// Note: We call the virtual WindowProc for this window directly,
-	//  instead of calling AfxCallWindowProc, so that Default()
-	//  will still work (it will call the Default window proc with
-	//  the original Win32 WM_CTLCOLOR message).
-	return WindowProc(WM_CTLCOLOR, 0, (LPARAM)&ctl);
-}
 
 /////////////////////////////////////////////////////////////////////////////
 // Multi-touch support:
@@ -1594,14 +1569,6 @@ CWnd* PASCAL CWnd::GetSafeOwner(CWnd* pParent, HWND* pWndTop)
 {
 	HWND hWnd = 0; // GetSafeOwner_(pParent->GetSafeHwnd(), pWndTop);
 	return CWnd::FromHandle(hWnd);
-}
-
-int CWnd::MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption, UINT nType)
-{
-	if (lpszCaption == NULL)
-		lpszCaption = AfxGetAppName();
-	int nResult = 0; // ::AfxCtxMessageBox(GetSafeHwnd(), lpszText, lpszCaption, nType);
-	return nResult;
 }
 
 CWnd* PASCAL CWnd::GetDescendantWindow(HWND hWnd, int nID, BOOL bOnlyPerm)

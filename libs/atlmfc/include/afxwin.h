@@ -331,7 +331,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // OLE types
 
-typedef LONG HRESULT;
+//typedef LONG HRESULT;
 
 struct IUnknown;
 typedef IUnknown* LPUNKNOWN;

@@ -228,24 +228,11 @@
 
 #include <zmouse.h>
 
-struct HKEY__;
-typedef struct HKEY__ *HKEY;
+//struct HKEY__;
+//typedef struct HKEY__ *HKEY;
 
 #ifndef _INC_COMMCTRL
 	#include <commctrl.h>
-
-	// Note: We must avoid using TB_ADDBUTTONW and TB_INSERTBUTTONW
-	//       in the Unicode build or else MFCXXU.DLL will not be
-	//       compatible with pre-IE4 versions of COMCTL32.DLL.
-	#ifdef TB_ADDBUTTONSA
-		#undef TB_ADDBUTTONS
-		#define TB_ADDBUTTONS TB_ADDBUTTONSA
-	#endif
-
-	#ifdef TB_INSERTBUTTONA
-		#undef TB_INSERTBUTTON
-		#define TB_INSERTBUTTON TB_INSERTBUTTONA
-	#endif
 #endif
 
 #ifndef EXPORT
