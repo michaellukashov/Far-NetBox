@@ -125,12 +125,16 @@ enum TCaptureOutputType
   cotExitCode,
 };
 
-//typedef void (__closure *TCaptureOutputEvent)(
-//  const UnicodeString & Str, TCaptureOutputType OutputType);
+/*
+typedef void (__closure *TCaptureOutputEvent)(
+  const UnicodeString & Str, TCaptureOutputType OutputType);
+*/
 typedef nb::FastDelegate2<void,
   const UnicodeString & /*Str*/, TCaptureOutputType /*OutputType*/> TCaptureOutputEvent;
-//typedef void (__closure *TCalculatedChecksumEvent)(
-//  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
+/*
+typedef void (__closure *TCalculatedChecksumEvent)(
+  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
+*/
 typedef nb::FastDelegate3<void,
   const UnicodeString & /*FileName*/, const UnicodeString & /*Alg*/,
   const UnicodeString & /*Hash*/> TCalculatedChecksumEvent;
@@ -306,6 +310,7 @@ public:
   __property UnicodeString Name = { read = FName, write = FName };
   __property Count;
 */
+
   TSessionLog * GetParent() const;
   void SetParent(TSessionLog * Value);
   bool GetLogging() const;
