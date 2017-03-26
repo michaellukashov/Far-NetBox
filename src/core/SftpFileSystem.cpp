@@ -1343,8 +1343,10 @@ public:
     }
     __finally
     {
-//      delete Request;
-//      delete Response;
+/*
+      delete Request;
+      delete Response;
+*/
     };
 
     return Result;
@@ -4202,7 +4204,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
           }
           __finally
           {
-#if 0
+/*
             delete SubFiles;
             delete SubFileList;
 
@@ -4210,7 +4212,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
             {
               OperationProgress->Finish(File->FileName, Success, OnceDoneOperation);
             }
-#endif
+*/
           };
         }
       }

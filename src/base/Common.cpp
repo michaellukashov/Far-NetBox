@@ -3071,6 +3071,7 @@ void ParseCertificate(const UnicodeString & Path,
     }
     __finally
     {
+/*
       // We loaded private key, but failed to load certificate, discard the certificate
       // (either exception was thrown or WrongPassphrase)
       if ((PrivateKey != nullptr) && (Certificate == nullptr))
@@ -3085,6 +3086,7 @@ void ParseCertificate(const UnicodeString & Path,
         X509_free(Certificate);
         Certificate = nullptr;
       }
+*/
     };
   }
 }

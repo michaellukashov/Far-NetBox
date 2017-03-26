@@ -65,7 +65,11 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
     FCertificateError.SetLength(0);
     FException.reset(nullptr);
 
-    ne_session_s * NeonSession = CreateNeonSession(uri);
+    TProxyMethod ProxyMethod = GetProxyHost().IsEmpty() ? ::pmNone : pmHTTP;
+
+    ne_session_s * NeonSession =
+      CreateNeonSession(
+        uri, ProxyMethod, GetProxyHost(), GetProxyPort(), UnicodeString(), UnicodeString());
 
     try__finally
     {
@@ -74,9 +78,6 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
         DestroyNeonSession(NeonSession);
         ne_uri_free(&uri);
       };
-
-      TProxyMethod ProxyMethod = GetProxyHost().IsEmpty() ? ::pmNone : pmHTTP;
-      InitNeonSession(NeonSession, ProxyMethod, GetProxyHost(), GetProxyPort(), UnicodeString(), UnicodeString());
 
       if (IsTls)
       {
@@ -156,13 +157,17 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
       }
       __finally
       {
+/*
         ne_request_destroy(NeonRequest);
+*/
       };
     }
     __finally
     {
+/*
       DestroyNeonSession(NeonSession);
       ne_uri_free(&uri);
+*/
     };
   }
   while (Retry);

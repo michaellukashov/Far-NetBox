@@ -1,7 +1,6 @@
 
 #pragma once
 
-//#include <apr_pools.h>
 #include <ne_uri.h>
 #include <ne_utils.h>
 #include <ne_string.h>
@@ -146,9 +145,7 @@ protected:
   static int NeonPostSend(ne_request * Req, void * UserData, const ne_status * Status);
   static void NeonPostHeaders(ne_request * Req, void * UserData, const ne_status * Status);
   void ExchangeCapabilities(const char * APath, UnicodeString & CorrectedUrl);
-  static int DoNeonServerSSLCallback(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate, bool Aux);
-  static int NeonServerSSLCallbackMain(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
-  static int NeonServerSSLCallbackAux(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
+  static int NeonServerSSLCallback(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
   static void NeonProvideClientCert(void * UserData, ne_session * Sess, const ne_ssl_dname * const * DNames, int DNCount);
   void CloseNeonSession();
   bool CancelTransfer();
@@ -201,7 +198,8 @@ private:
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
   void RegisterForDebug();
   void UnregisterFromDebug();
-  bool VerifyCertificate(const TWebDAVCertificateData & Data, bool Aux);
+  bool VerifyCertificate(
+    const TWebDAVCertificateData & Data);
   void OpenUrl(const UnicodeString & Url);
   void CollectTLSSessionInfo();
   UnicodeString GetRedirectUrl() const;

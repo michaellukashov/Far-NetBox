@@ -445,7 +445,7 @@ public:
 
 	size_type index_of(const T& item, size_type index = 0) const
 	{
-		RDE_ASSERT(index >= 0 && index < size());
+		RDE_ASSERT((intptr_t)index >= 0 && index < size());
 		for ( ; index < size(); ++index)
 			if (m_begin[index] == item)
 				return index;

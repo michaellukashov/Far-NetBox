@@ -89,17 +89,21 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
           }
           __finally
           {
+/*
             FreeResource(Mem);
+*/
           };
         }
       }
     }
     __finally
     {
+/*
       if (NeedFree)
       {
         FreeLibrary(Module);
       }
+*/
     };
   }
 

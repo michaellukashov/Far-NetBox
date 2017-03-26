@@ -2026,12 +2026,12 @@ void TRegistry::WriteFloat(const UnicodeString & Name, double Value)
 
 void TRegistry::WriteString(const UnicodeString & Name, const UnicodeString & Value)
 {
-  PutData(Name, static_cast<const void *>(Value.c_str()), Value.Length() * sizeof(wchar_t) + 1, rdString);
+  PutData(Name, Value.c_str(), Value.Length() * sizeof(wchar_t), rdString);
 }
 
 void TRegistry::WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value)
 {
-  PutData(Name, Value.c_str(), Value.Length() * sizeof(wchar_t) + 1, rdString);
+  PutData(Name, Value.c_str(), Value.Length() * sizeof(wchar_t), rdString);
 }
 
 void TRegistry::WriteInteger(const UnicodeString & Name, intptr_t Value)

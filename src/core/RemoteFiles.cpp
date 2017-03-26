@@ -1019,7 +1019,7 @@ wchar_t TRemoteFile::GetType() const
 void TRemoteFile::SetType(wchar_t AType)
 {
   FType = AType;
-  FIsSymLink = (static_cast<wchar_t>(towupper(FType)) == FILETYPE_SYMLINK);
+  FIsSymLink = (UpCase(FType) == FILETYPE_SYMLINK);
 }
 
 TRemoteFile * TRemoteFile::GetLinkedFile() const
@@ -1490,7 +1490,9 @@ void TRemoteFile::FindLinkedFile()
       }
       __finally
       {
+/*
         GetTerminal()->SetExceptionOnFail(false);
+*/
       };
     }
     catch (Exception & E)
@@ -1946,7 +1948,9 @@ void TRemoteDirectoryCache::Clear()
   }
   __finally
   {
+/*
     TStringList::Clear();
+*/
   };
 }
 
@@ -2194,7 +2198,9 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
     }
     __finally
     {
-//      delete Limited;
+/*
+      delete Limited;
+*/
     };
   }
   else

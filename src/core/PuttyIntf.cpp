@@ -202,8 +202,10 @@ int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
   }
   __finally
   {
-//    delete Prompts;
-//    delete Results;
+/*
+    delete Prompts;
+    delete Results;
+*/
   };
 
   return Result;
@@ -714,8 +716,10 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
     }
     __finally
     {
+/*
       ssh_gss_cleanup(List);
       conf_free(conf);
+*/
     };
 
     if (has < 0)

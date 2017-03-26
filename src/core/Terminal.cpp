@@ -3003,6 +3003,10 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
           {
             SCOPE_EXIT
             {
+              // delete only after loading new files to dir view,
+              // not to destroy the file objects that the view holds
+              // (can be issue in multi threaded environment, such as when the
+              // terminal is reconnecting in the terminal thread)
               FOldFiles->Reset();
             };
             DoReadDirectory(ReloadOnly);

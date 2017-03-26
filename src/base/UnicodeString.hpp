@@ -260,18 +260,18 @@ public:
   AnsiString & operator +=(const char * rhs);
 
   inline friend bool operator ==(const AnsiString & lhs, const AnsiString & rhs)
-  { return strcmp(lhs.Data.c_str(), rhs.Data.c_str()) == 0; }
+  { return lhs.Data == rhs.Data; }
   inline friend bool operator !=(const AnsiString & lhs, const AnsiString & rhs)
-  { return strcmp(lhs.Data.c_str(), rhs.Data.c_str()) != 0; }
+  { return lhs.Data != rhs.Data; }
 
   inline friend bool operator ==(const AnsiString & lhs, const char * rhs)
-  { return strcmp(lhs.Data.c_str(), rhs ? rhs : "") == 0; }
+  { return lhs.Data == rhs; }
   inline friend bool operator ==(const char * lhs, const AnsiString & rhs)
-  { return strcmp(lhs ? lhs : "", rhs.Data.c_str()) == 0; }
+  { return lhs == rhs.Data; }
   inline friend bool operator !=(const AnsiString & lhs, const char * rhs)
-  { return strcmp(lhs.Data.c_str(), rhs ? rhs : "") != 0; }
+  { return lhs.Data != rhs; }
   inline friend bool operator !=(const char * lhs, const AnsiString & rhs)
-  { return strcmp(lhs ? lhs : "", rhs.Data.c_str()) != 0; }
+  { return lhs != rhs.Data; }
 
 private:
   void Init(const wchar_t * Str, intptr_t Length);

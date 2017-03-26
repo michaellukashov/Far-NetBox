@@ -64,14 +64,12 @@ static int NeonProxyAuth(
   return Result;
 }
 
-ne_session * CreateNeonSession(const ne_uri & uri)
-{
-  return ne_session_create(uri.scheme, uri.host, uri.port);
-}
-
-void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
+ne_session * CreateNeonSession(
+  const ne_uri & uri, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
   int ProxyPort, const UnicodeString & ProxyUsername, const UnicodeString & ProxyPassword)
 {
+  ne_session * Session = ne_session_create(uri.scheme, uri.host, uri.port);
+
   if (ProxyMethod != ::pmNone)
   {
     if ((ProxyMethod == pmSocks4) || (ProxyMethod == pmSocks5))
@@ -103,6 +101,8 @@ void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const Unico
 
   ne_redirect_register(Session);
   ne_set_useragent(Session, StrToNeon(FORMAT(L"%s/%s", GetAppNameString().c_str(), GetConfiguration()->GetVersion().c_str())));
+
+  return Session;
 }
 
 void DestroyNeonSession(ne_session * Session)

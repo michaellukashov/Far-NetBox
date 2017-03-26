@@ -788,9 +788,11 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
         }
         __finally
         {
+/*
           DeleteUnnecessary();
 
           EndUpdate();
+*/
         };
       }
     }
@@ -930,7 +932,9 @@ void TSessionLog::DeleteUnnecessary()
   }
   __finally
   {
+/*
     EndUpdate();
+*/
   };
 }
 
@@ -1323,9 +1327,11 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
   }
   __finally
   {
+/*
     DeleteUnnecessary();
 
     EndUpdate();
+*/
   };
 }
 
@@ -1566,7 +1572,9 @@ void TActionLog::AddFailure(Exception * E)
     }
     __finally
     {
-//      delete Messages;
+/*
+      delete Messages;
+*/
     };
   }
 }
