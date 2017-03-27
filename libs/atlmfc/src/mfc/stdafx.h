@@ -36,7 +36,7 @@
 #define _AFX_NO_DB_SUPPORT
 #define _AFX_NO_DAO_SUPPORT
 #define _AFX_NO_OCX_SUPPORT
-// #define _AFX_NO_AFXCMN_SUPPORT
+#define _AFX_NO_AFXCMN_SUPPORT
 #define _AFX_NO_DHTML_SUPPORT
 #define _AFX_NO_DOCOBJECT_SUPPORT
 
@@ -64,7 +64,7 @@
 #endif
 
 #ifdef _AFX_MFCS  // Building the static component of the DLL version.  Import stuff from MFC*.dll
-#include <afxv_dll.h>
+//#include <afxv_dll.h>
 #else  // Building the DLL itself
 // override default values for data import/export when building MFC DLLs
 #ifdef _AFX_CORE_IMPL
@@ -112,6 +112,7 @@
 		#include <ole2.h>
 	#endif
 
+#define _PRSHT_H_
 #include <winspool.h>
 
 // for the release version, MFC internally can use the more efficient
@@ -123,17 +124,17 @@
 
 // include OLE dialog/helper APIs
 #ifndef _OLEDLG_H_
-	#include <oledlg.h>
+//	#include <oledlg.h>
 #endif
 
 #include <winreg.h>
 	#include "afxcom_.h"
 #include "afxole.h"
-#include "afxdtctl.h"
+//#include "afxdtctl.h"
 // #include "afxocc.h"
 
 #ifndef _AFX_NO_DAO_SUPPORT
-	#include "afxdao.h"
+//	#include "afxdao.h"
 #endif
 
 #endif
@@ -142,7 +143,7 @@
 	#include "afxctl.h"
 #endif
 #ifndef _AFX_NO_DB_SUPPORT
-	#include "afxdb.h"
+//	#include "afxdb.h"
 #endif
 #ifndef _AFX_NO_SYNC_SUPPORT
 	#include "afxmt.h"
@@ -156,13 +157,13 @@
 #include "afximpl.h"
 #include "winhand_.h"
 #ifndef _AFX_NO_OLE_SUPPORT
-	#include "oleimpl2.h"
+//	#include "oleimpl2.h"
 #endif
 #ifndef _AFX_NO_OCX_SUPPORT
-	#include "ctlimpl.h"
+//	#include "ctlimpl.h"
 #endif
 #ifndef _AFX_NO_DB_SUPPORT
-	#include "dbimpl.h"
+//	#include "dbimpl.h"
 #endif
 #ifndef _AFX_NO_DAO_SUPPORT
 	#include "daoimpl.h"
@@ -178,11 +179,11 @@
 	#include "afxcmn.h"
 #endif
 #ifndef _AFX_NO_RICHEDIT_SUPPORT
-	#include "afxrich.h"
+//	#include "afxrich.h"
 #endif
 // #include "afxhtml.h"
 #ifndef _AFX_NO_DHTML_SUPPORT
-	#include "afxdhtml.h"
+//	#include "afxdhtml.h"
 #endif
 
 #if (0x0600 <= WINVER) && defined(_UNICODE)

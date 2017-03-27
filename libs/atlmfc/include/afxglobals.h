@@ -94,7 +94,7 @@ typedef struct _AFX_DTTOPTS {
 	LPARAM lParam;
 } AFX_DTTOPTS;
 
-typedef HRESULT (__stdcall * DRAWTHEMETEXTEX)(HTHEME hTheme, HDC hdc, int iPartId, int iStateId, LPCWSTR pszText, int iCharCount, DWORD dwFlags, LPRECT pRect, const AFX_DTTOPTS *pOptions);
+//typedef HRESULT (__stdcall * DRAWTHEMETEXTEX)(HTHEME hTheme, HDC hdc, int iPartId, int iStateId, LPCWSTR pszText, int iCharCount, DWORD dwFlags, LPRECT pRect, const AFX_DTTOPTS *pOptions);
 
 class CMFCToolBarImages;
 

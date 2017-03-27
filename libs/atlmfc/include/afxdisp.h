@@ -36,8 +36,10 @@
 #endif
  
 // Shell interface support
+#define _INC_COMMCTRL
+#define _NEVER_
 #ifndef _SHLOBJ_H_
-	#include <shlobj.h>
+//  #include <shlobj.h>
 #endif
 
 // Include ATL COM headers

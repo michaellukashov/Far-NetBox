@@ -1024,7 +1024,8 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
   if (!cur)
   {
     m_sCriticalSection.Unlock();
-    MessageBox(0, L"Can't lookup TLS session!", L"Critical error", MB_ICONEXCLAMATION);
+    // TODO: report error
+//    MessageBox(0, L"Can't lookup TLS session!", L"Critical error", MB_ICONEXCLAMATION);
     return;
   }
   else
@@ -1680,7 +1681,8 @@ CAsyncSslSocketLayer * CAsyncSslSocketLayer::LookupLayer(SSL * Ssl)
 
   if (Cur == NULL)
   {
-    MessageBox(0, L"Can't lookup TLS session!", L"Critical error", MB_ICONEXCLAMATION);
+    // TODO: report error
+//    MessageBox(0, L"Can't lookup TLS session!", L"Critical error", MB_ICONEXCLAMATION);
     Result = NULL;
   }
   else

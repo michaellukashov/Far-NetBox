@@ -37,8 +37,8 @@ CCmdTarget::CCmdTarget()
 CCmdTarget::~CCmdTarget()
 {
 #ifndef _AFX_NO_OLE_SUPPORT
-	if (m_xDispatch.m_vtbl != 0)
-		((COleDispatchImpl*)&m_xDispatch)->Disconnect();
+//	if (m_xDispatch.m_vtbl != 0)
+//		((COleDispatchImpl*)&m_xDispatch)->Disconnect();
 	ASSERT(m_dwRef <= 1);
 #endif
 //	m_pModuleState = NULL;
@@ -690,8 +690,8 @@ void CCmdUI::SetCheck(int nCheck)
 	{
 		// we can only check buttons or controls acting like buttons
 		ENSURE(m_pOther != NULL);
-		if (m_pOther->SendMessage(WM_GETDLGCODE) & DLGC_BUTTON)
-			m_pOther->SendMessage(BM_SETCHECK, nCheck);
+//		if (m_pOther->SendMessage(WM_GETDLGCODE) & DLGC_BUTTON)
+//			m_pOther->SendMessage(BM_SETCHECK, nCheck);
 		// otherwise ignore it
 	}
 }

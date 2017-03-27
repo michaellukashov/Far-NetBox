@@ -177,9 +177,9 @@ extern const TCHAR _afxWndOleControl[];
 #define AFX_WNDCOMMCTLSNEW_REG          0xFC000 // INTERNET|COOL|USEREX|DATE|LINK|PAGER
 #endif
 
-#define AfxDeferRegisterClass(fClass) AfxEndDeferRegisterClass(fClass)
+//#define AfxDeferRegisterClass(fClass) AfxEndDeferRegisterClass(fClass)
 
-BOOL AFXAPI AfxEndDeferRegisterClass(LONG fToRegister);
+//BOOL AFXAPI AfxEndDeferRegisterClass(LONG fToRegister);
 
 // MFC needs to call this function before creating CNetAddressCtrl
 BOOL AFXAPI AfxInitNetworkAddressControl();
@@ -550,7 +550,7 @@ union MessageMapFunctions
 	void (AFX_MSG_CALL CWnd::*pfn_v_u_pr)(UINT, LPRECT);
 	LRESULT (AFX_MSG_CALL CWnd::*pfn_l_v)();
 	UINT (AFX_MSG_CALL CWnd::*pfn_u_W_u)(CWnd*, UINT);
-	UINT (AFX_MSG_CALL CWnd::*pfn_u_v_MENUGETOBJECTINFO)(MENUGETOBJECTINFO*);
+//	UINT (AFX_MSG_CALL CWnd::*pfn_u_v_MENUGETOBJECTINFO)(MENUGETOBJECTINFO*);
 	void (AFX_MSG_CALL CWnd::*pfn_v_u_LPMDINEXTMENU)(UINT, LPMDINEXTMENU);
 	void (AFX_MSG_CALL CWnd::*pfn_APPCOMMAND)(CWnd*, UINT, UINT, UINT);
 	BOOL (AFX_MSG_CALL CWnd::*pfn_RAWINPUT)(UINT, HRAWINPUT);
