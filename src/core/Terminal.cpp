@@ -3518,7 +3518,7 @@ bool TTerminal::ProcessFiles(const TStrings * AFileList,
                 // not used anymore
 #if 0
                 TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
-                ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObjject(Index), Param, Index);
+                ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObj(Index), Param, Index);
 #endif
               }
               Success = true;
