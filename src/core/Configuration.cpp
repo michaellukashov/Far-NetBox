@@ -1,7 +1,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <shlobj.h>
+//#include <shlobj.h>
 #include <FileInfo.h>
 
 #include <Common.h>

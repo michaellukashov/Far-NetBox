@@ -8,7 +8,7 @@
 #include <TextsCore.h>
 #include <Terminal.h>
 #include <CoreMain.h>
-#include <shlobj.h>
+//#include <shlobj.h>
 
 const intptr_t ccLocal = ccUser;
 const intptr_t ccShowResults = ccUser << 1;
