@@ -28,7 +28,7 @@
 #endif
 
 #ifndef _INC_SHELLAPI
-	#include <shellapi.h>
+//	#include <shellapi.h>
 #endif
 
 #ifndef __AFXRES_H__
@@ -40,11 +40,11 @@
 #endif
 
 #ifndef _OBJBASE_H_
-	#include <objbase.h> //needed for commdlg.h (STDMETHOD)
+//	#include <objbase.h> //needed for commdlg.h (STDMETHOD)
 #endif
 
 #ifndef _INC_COMMDLG
-	#include <commdlg.h>    // common dialog APIs
+//	#include <commdlg.h>    // common dialog APIs
 #endif
 
 // #include <afxctrlcontainer.h>
@@ -70,7 +70,7 @@
 #ifdef _AFX_PACKING
 #pragma pack(push, _AFX_PACKING)
 #endif
-#include <afxcomctl32.h>
+//#include <afxcomctl32.h>
 #ifdef _AFX_PACKING
 #pragma pack(pop)
 #endif
@@ -1218,7 +1218,7 @@ public:
 
 
 // Message processing for modeless dialog-like windows
-	BOOL IsDialogMessage(LPMSG lpMsg);
+//	BOOL IsDialogMessage(LPMSG lpMsg);
 
 // Window Text Functions
 	void SetWindowText(LPCTSTR lpszString);
@@ -1263,14 +1263,14 @@ public:
 	// BOOL RedrawWindow(LPCRECT lpRectUpdate = NULL,
 		// CRgn* prgnUpdate = NULL,
 		// UINT flags = RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
-	BOOL EnableScrollBar(int nSBFlags, UINT nArrowFlags = ESB_ENABLE_BOTH);
+//	BOOL EnableScrollBar(int nSBFlags, UINT nArrowFlags = ESB_ENABLE_BOTH);
 
-	BOOL DrawAnimatedRects(int idAni, CONST RECT *lprcFrom, CONST RECT *lprcTo);
+//	BOOL DrawAnimatedRects(int idAni, CONST RECT *lprcFrom, CONST RECT *lprcTo);
 //	BOOL DrawCaption(CDC* pDC, LPCRECT lprc, UINT uFlags);
 
 #if(WINVER >= 0x0500)
 
-	BOOL AnimateWindow(DWORD dwTime, DWORD dwFlags);
+//	BOOL AnimateWindow(DWORD dwTime, DWORD dwFlags);
 
 #endif	// WINVER >= 0x0500
 
@@ -1338,9 +1338,6 @@ public:
 	static CWnd* PASCAL FindWindow(LPCTSTR lpszClassName, LPCTSTR lpszWindowName);
 	static CWnd* FindWindowEx(HWND hwndParent, HWND hwndChildAfter, LPCTSTR lpszClass, LPCTSTR lpszWindow);
 
-	CWnd* GetNextWindow(UINT nFlag = GW_HWNDNEXT) const;
-	CWnd* GetTopWindow() const;
-
 	CWnd* GetWindow(UINT nCmd) const;
 	CWnd* GetLastActivePopup() const;
 
@@ -1350,18 +1347,18 @@ public:
 	static CWnd* PASCAL WindowFromPoint(POINT point);
 
 // Alert Functions
-	BOOL FlashWindow(BOOL bInvert);
-#pragma push_macro("MessageBox")
-#undef MessageBox
-	int _AFX_FUNCNAME(MessageBox)(LPCTSTR lpszText, LPCTSTR lpszCaption = NULL,
-			UINT nType = MB_OK);
-	int MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption = NULL,
-			UINT nType = MB_OK);
-#pragma pop_macro("MessageBox")
+//	BOOL FlashWindow(BOOL bInvert);
+//#pragma push_macro("MessageBox")
+//#undef MessageBox
+//	int _AFX_FUNCNAME(MessageBox)(LPCTSTR lpszText, LPCTSTR lpszCaption = NULL,
+//			UINT nType = MB_OK);
+//	int MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption = NULL,
+//			UINT nType = MB_OK);
+//#pragma pop_macro("MessageBox")
 
 #if(WINVER >= 0x0500)
 
-	BOOL FlashWindowEx(DWORD dwFlags, UINT  uCount, DWORD dwTimeout);
+//	BOOL FlashWindowEx(DWORD dwFlags, UINT  uCount, DWORD dwTimeout);
 
 #endif	// WINVER >= 0x0500
 
@@ -1524,8 +1521,8 @@ protected:
 	afx_msg void OnNcPaint();
 
 // System message handler member functions
-	afx_msg void OnDropFiles(HDROP hDropInfo);
-	afx_msg void OnPaletteIsChanging(CWnd* pRealizeWnd);
+//	afx_msg void OnDropFiles(HDROP hDropInfo);
+//	afx_msg void OnPaletteIsChanging(CWnd* pRealizeWnd);
 	afx_msg void OnSysChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnSysDeadChar(UINT nChar, UINT nRepCnt, UINT nFlags);
@@ -1694,16 +1691,16 @@ public:
 
 protected:
 	WNDPROC m_pfnSuper; // for subclassing of controls
-	static const UINT m_nMsgDragList;
+//	static const UINT m_nMsgDragList;
 	int m_nModalResult; // for return values from CWnd::RunModalLoop
 
 	// COleDropTarget* m_pDropTarget;  // for automatic cleanup of drop target
 	// friend class COleDropTarget;
 
 	// for creating dialogs and dialog-like windows
-	BOOL CreateDlg(LPCTSTR lpszTemplateName, CWnd* pParentWnd);
-	BOOL CreateDlgIndirect(LPCDLGTEMPLATE lpDialogTemplate, CWnd* pParentWnd,
-		HINSTANCE hInst);
+//	BOOL CreateDlg(LPCTSTR lpszTemplateName, CWnd* pParentWnd);
+//	BOOL CreateDlgIndirect(LPCDLGTEMPLATE lpDialogTemplate, CWnd* pParentWnd,
+//		HINSTANCE hInst);
 
 #ifndef _AFX_NO_OCC_SUPPORT
 	friend class COccManager;
@@ -2096,10 +2093,10 @@ extern AFX_DATA UINT afxTraceFlags;
 void AFXAPI AfxFormatString1(CString& rString, UINT nIDS, LPCTSTR lpsz1);
 void AFXAPI AfxFormatString2(CString& rString, UINT nIDS,
 				LPCTSTR lpsz1, LPCTSTR lpsz2);
-int AFXAPI AfxMessageBox(LPCTSTR lpszText, UINT nType = MB_OK,
-				UINT nIDHelp = 0);
-int AFXAPI AfxMessageBox(UINT nIDPrompt, UINT nType = MB_OK,
-				UINT nIDHelp = (UINT)-1);
+//int AFXAPI AfxMessageBox(LPCTSTR lpszText, UINT nType = MB_OK,
+//				UINT nIDHelp = 0);
+//int AFXAPI AfxMessageBox(UINT nIDPrompt, UINT nType = MB_OK,
+//				UINT nIDHelp = (UINT)-1);
 
 // Implementation string helpers
 void AFXAPI AfxFormatStrings(CString& rString, UINT nIDS,

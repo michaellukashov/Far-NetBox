@@ -218,10 +218,10 @@ AFX_MODULE_STATE::AFX_MODULE_STATE(BOOL bDLL)
 	bEnable = AfxEnableMemoryTracking(FALSE);
 	//Fusion: allocate dll wrappers array.
 	m_pDllIsolationWrappers = new CDllIsolationWrapperBase*[_AFX_ISOLATION_WRAPPER_ARRAY_SIZE];
-#ifndef _AFX_NO_AFXCMN_SUPPORT
-	m_pDllIsolationWrappers[_AFX_COMCTL32_ISOLATION_WRAPPER_INDEX] = new CComCtlWrapper;
-#endif
-	m_pDllIsolationWrappers[_AFX_SHELL_ISOLATION_WRAPPER_INDEX] = new CShellWrapper;
+//#ifndef _AFX_NO_AFXCMN_SUPPORT
+//	m_pDllIsolationWrappers[_AFX_COMCTL32_ISOLATION_WRAPPER_INDEX] = new CComCtlWrapper;
+//#endif
+//	m_pDllIsolationWrappers[_AFX_SHELL_ISOLATION_WRAPPER_INDEX] = new CShellWrapper;
 	AfxEnableMemoryTracking(bEnable);
 	m_bSetAmbientActCtx = TRUE;
 //	m_hActCtx = NULL;
