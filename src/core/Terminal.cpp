@@ -400,7 +400,10 @@ class TTunnelUI : public TSessionUI
 NB_DISABLE_COPY(TTunnelUI)
 public:
   explicit TTunnelUI(TTerminal * Terminal);
-  virtual ~TTunnelUI() {}
+  virtual ~TTunnelUI()
+  {
+  }
+
   virtual void Information(const UnicodeString & Str, bool Status);
   virtual uintptr_t QueryUser(const UnicodeString & Query,
     TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
