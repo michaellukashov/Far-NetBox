@@ -1714,7 +1714,7 @@ void TRegistry::GetValueNames(TStrings * Strings) const
     {
       DWORD Len = Info.MaxValueLen + 1;
       RegEnumValue(GetCurrentKey(), Index, &S[1], &Len, nullptr, nullptr, nullptr, nullptr);
-      Strings->Add(S.c_str());
+      Strings->Add(S);
     }
   }
 }
