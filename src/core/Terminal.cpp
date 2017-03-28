@@ -422,19 +422,19 @@ public:
 
 private:
   TTerminal * FTerminal;
-  uint32_t FTerminalThread;
+  uint32_t FTerminalThreadID;
 };
 
 TTunnelUI::TTunnelUI(TTerminal * Terminal) :
   TSessionUI(OBJECT_CLASS_TTunnelUI),
   FTerminal(Terminal)
 {
-  FTerminalThread = GetCurrentThreadId();
+  FTerminalThreadID = GetCurrentThreadId();
 }
 
 void TTunnelUI::Information(const UnicodeString & Str, bool Status)
 {
-  if (GetCurrentThreadId() == FTerminalThread)
+  if (GetCurrentThreadId() == FTerminalThreadID)
   {
     FTerminal->Information(Str, Status);
   }
@@ -445,7 +445,7 @@ uintptr_t TTunnelUI::QueryUser(const UnicodeString & Query,
   TQueryType QueryType)
 {
   uintptr_t Result;
-  if (GetCurrentThreadId() == FTerminalThread)
+  if (GetCurrentThreadId() == FTerminalThreadID)
   {
     Result = FTerminal->QueryUser(Query, MoreMessages, Answers, Params, QueryType);
   }
@@ -461,7 +461,7 @@ uintptr_t TTunnelUI::QueryUserException(const UnicodeString & Query,
   TQueryType QueryType)
 {
   uintptr_t Result;
-  if (GetCurrentThreadId() == FTerminalThread)
+  if (GetCurrentThreadId() == FTerminalThreadID)
   {
     Result = FTerminal->QueryUserException(Query, E, Answers, Params, QueryType);
   }
@@ -476,7 +476,7 @@ bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
   const UnicodeString & AName, const UnicodeString & AInstructions, TStrings * Prompts, TStrings * Results)
 {
   bool Result = false;
-  if (GetCurrentThreadId() == FTerminalThread)
+  if (GetCurrentThreadId() == FTerminalThreadID)
   {
     UnicodeString Instructions = AInstructions;
     if (IsAuthenticationPrompt(Kind))
@@ -493,7 +493,7 @@ bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
 
 void TTunnelUI::DisplayBanner(const UnicodeString & Banner)
 {
-  if (GetCurrentThreadId() == FTerminalThread)
+  if (GetCurrentThreadId() == FTerminalThreadID)
   {
     FTerminal->DisplayBanner(Banner);
   }
@@ -506,7 +506,7 @@ void TTunnelUI::FatalError(Exception * E, const UnicodeString & Msg, const Unico
 
 void TTunnelUI::HandleExtendedException(Exception * E)
 {
-  if (GetCurrentThreadId() == FTerminalThread)
+  if (GetCurrentThreadId() == FTerminalThreadID)
   {
     FTerminal->HandleExtendedException(E);
   }
