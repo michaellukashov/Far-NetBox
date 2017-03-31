@@ -13,8 +13,14 @@ class TUserAction : public TObject
 {
 NB_DISABLE_COPY(TUserAction)
 public:
-  explicit TUserAction() {}
-  virtual ~TUserAction() {}
+  explicit TUserAction()
+  {
+  }
+
+  virtual ~TUserAction()
+  {
+  }
+
   virtual void Execute(void * Arg) = 0;
   virtual bool Force() const { return false; }
 };
@@ -1221,9 +1227,13 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
   }
+
 public:
   explicit TBackgroundTerminal(TTerminal * MainTerminal);
-  virtual ~TBackgroundTerminal() {}
+  virtual ~TBackgroundTerminal()
+  {
+  }
+
   void Init(
     TSessionData * SessionData, TConfiguration * Configuration,
     TTerminalItem * Item, const UnicodeString & Name);

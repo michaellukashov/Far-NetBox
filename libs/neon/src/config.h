@@ -1,3 +1,5 @@
+#pragma once
+
 /*                                                      -*- c -*-
    Win32 config.h
    Copyright (C) 1999-2000, Peter Boos <pedib@colorfullife.com>

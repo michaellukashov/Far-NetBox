@@ -39,6 +39,7 @@ inline void ThrowScpEror(Exception * Exception, const UnicodeString & Message)
 #define MaxShellCommand fsLang
 #define ShellCommandCount MaxShellCommand + 1
 #define MaxCommandLen 40
+
 struct TCommandType
 {
   int MinLines;
@@ -336,6 +337,7 @@ TStrings * TCommandSet::CreateCommandList() const
   }
   return CommandList;
 }
+
 //===========================================================================
 TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(OBJECT_CLASS_TSCPFileSystem, ATerminal),
@@ -488,6 +490,7 @@ void TSCPFileSystem::Idle()
 
   FSecureShell->Idle();
 }
+
 //---------------------------------------------------------------------------
 UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
 {
@@ -498,6 +501,7 @@ UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool 
 {
   return core::AbsolutePath(GetCurrDirectory(), APath);
 }
+
 //---------------------------------------------------------------------------
 bool TSCPFileSystem::IsCapable(intptr_t Capability) const
 {
