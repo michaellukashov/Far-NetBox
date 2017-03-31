@@ -72,7 +72,7 @@ TCriticalSection * TracingCriticalSection = nullptr;
 void SetTraceFile(HANDLE ATraceFile)
 {
   TraceFile = ATraceFile;
-  IsTracing = (TraceFile != 0);
+  IsTracing = (TraceFile != nullptr);
   if (TracingCriticalSection == nullptr)
   {
     TracingCriticalSection = new TCriticalSection();
