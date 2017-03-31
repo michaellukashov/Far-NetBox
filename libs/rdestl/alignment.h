@@ -24,7 +24,7 @@ namespace internal
 #endif
     
 #pragma warning(pop)
-	template<size_t N> struct type_with_alignment
+	template<::size_t N> struct type_with_alignment
 	{
 		typedef char err_invalid_alignment[N > 0 ? -1 : 1];
 	};

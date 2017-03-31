@@ -11,7 +11,7 @@ class buffer_allocator
 {
 public:
 	explicit buffer_allocator(const char* name, char* mem,
-		size_t bufferSize)
+		::size_t bufferSize)
 	:	m_name(name), 
 		m_buffer(mem),
 		m_bufferTop(0),
@@ -20,14 +20,14 @@ public:
 		/**/
 	}
 
-	void* allocate(size_t bytes, int /*flags*/ = 0)
+	void* allocate(::size_t bytes, int /*flags*/ = 0)
 	{
 		RDE_ASSERT(m_bufferTop + bytes <= m_bufferSize);
 		char* ret = m_buffer + m_bufferTop;
 		m_bufferTop += bytes;
 		return ret;
 	}
-	void deallocate(void* ptr, size_t /*bytes*/)
+	void deallocate(void* ptr, ::size_t /*bytes*/)
 	{
 		RDE_ASSERT(ptr == 0 || (ptr >= m_buffer && ptr < m_buffer + m_bufferSize));
 		sizeof(ptr);
@@ -38,8 +38,8 @@ public:
 private:
 	const char*	m_name;
 	char*		m_buffer;
-	size_t		m_bufferTop;
-	size_t		m_bufferSize;
+	::size_t		m_bufferTop;
+	::size_t		m_bufferSize;
 };
 
 } // namespace rde
