@@ -1,3 +1,4 @@
+#pragma once
 /* 
    Standard definitions for neon headers
    Copyright (C) 2003-2008, 2010, Joe Orton <joe@manyfish.co.uk>
