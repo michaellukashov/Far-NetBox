@@ -1939,18 +1939,18 @@ void AFXAPI AfxTermThread(HINSTANCE hInstTerm = NULL);
 #endif
 
 //Fusion: Access macros for WinSxS dynamic wrappers.
-#ifndef _AFX_NO_AFXCMN_SUPPORT
-#define _AFX_COMCTL32_ISOLATION_WRAPPER_INDEX 0
-#define afxComCtlWrapper static_cast<CComCtlWrapper*>(AfxGetModuleState()->m_pDllIsolationWrappers[_AFX_COMCTL32_ISOLATION_WRAPPER_INDEX])
-#endif
+//#ifndef _AFX_NO_AFXCMN_SUPPORT
+//#define _AFX_COMCTL32_ISOLATION_WRAPPER_INDEX 0
+//#define afxComCtlWrapper static_cast<CComCtlWrapper*>(AfxGetModuleState()->m_pDllIsolationWrappers[_AFX_COMCTL32_ISOLATION_WRAPPER_INDEX])
+//#endif
 
-#define _AFX_COMMDLG_ISOLATION_WRAPPER_INDEX 1
-#define afxCommDlgWrapper static_cast<CCommDlgWrapper*>(AfxGetModuleState()->m_pDllIsolationWrappers[_AFX_COMMDLG_ISOLATION_WRAPPER_INDEX])
+//#define _AFX_COMMDLG_ISOLATION_WRAPPER_INDEX 1
+//#define afxCommDlgWrapper static_cast<CCommDlgWrapper*>(AfxGetModuleState()->m_pDllIsolationWrappers[_AFX_COMMDLG_ISOLATION_WRAPPER_INDEX])
 
-#define _AFX_SHELL_ISOLATION_WRAPPER_INDEX 2
-#define afxShellWrapper static_cast<CShellWrapper*>(AfxGetModuleState()->m_pDllIsolationWrappers[_AFX_SHELL_ISOLATION_WRAPPER_INDEX])
+//#define _AFX_SHELL_ISOLATION_WRAPPER_INDEX 2
+//#define afxShellWrapper static_cast<CShellWrapper*>(AfxGetModuleState()->m_pDllIsolationWrappers[_AFX_SHELL_ISOLATION_WRAPPER_INDEX])
 
-#define _AFX_ISOLATION_WRAPPER_ARRAY_SIZE 3
+//#define _AFX_ISOLATION_WRAPPER_ARRAY_SIZE 3
 
 // Advanced initialization: for overriding default WinMain
 BOOL AFXAPI AfxWinInit(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
