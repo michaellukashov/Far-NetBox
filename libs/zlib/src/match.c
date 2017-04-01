@@ -31,6 +31,8 @@
 #if defined(_MSC_VER) && !defined(__clang__)
 # if defined(_M_IX86) || defined(_M_AMD64) || defined(_M_IA64)
 #  include "arch/x86/ctzl.h"
+# elif defined(_M_ARM)
+#  include "arch/arm/ctzl.h"
 # endif
 #endif
 
@@ -84,7 +86,9 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
 
     Assert((unsigned long)s->strstart <= s->window_size - MIN_LOOKAHEAD, "need lookahead");
     do {
-        Assert(cur_match < s->strstart, "no future");
+        if (cur_match >= s->strstart) {
+          break;
+        }
         match = s->window + cur_match;
 
         /*
@@ -203,7 +207,9 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
     Assert((unsigned long)s->strstart <= s->window_size - MIN_LOOKAHEAD, "need lookahead");
     do {
         unsigned char *match;
-        Assert(cur_match < s->strstart, "no future");
+        if (cur_match >= s->strstart) {
+          break;
+        }
         match = s->window + cur_match;
 
         /*
@@ -279,7 +285,7 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
 /* longest_match() with minor change to improve performance (in terms of
  * execution time).
  *
- * The pristine longest_match() function is sketched bellow (strip the
+ * The pristine longest_match() function is sketched below (strip the
  * then-clause of the "#ifdef UNALIGNED_OK"-directive)
  *
  * ------------------------------------------------------------
@@ -375,7 +381,9 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
     Assert((unsigned long)s->strstart <= s->window_size-MIN_LOOKAHEAD, "need lookahead");
 
     do {
-        Assert(cur_match < s->strstart, "no future");
+        if (cur_match >= s->strstart) {
+          break;
+        }
 
         /* Skip to next match if the match length cannot increase
          * or if the match length is less than 2.  Note that the checks below

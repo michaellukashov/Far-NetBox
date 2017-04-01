@@ -84,6 +84,7 @@
 #include "inftrees.h"
 #include "inflate.h"
 #include "inffast.h"
+#include "memcopy.h"
 
 #ifdef MAKEFIXED
 #  ifndef BUILDFIXED
@@ -371,9 +372,17 @@ static int updatewindow(z_stream *strm, const unsigned char *end, uint32_t copy)
 
     /* if it hasn't been done already, allocate space for the window */
     if (state->window == NULL) {
+#ifdef INFFAST_CHUNKSIZE
+        unsigned wsize = 1U << state->wbits;
+        state->window = (unsigned char *) ZALLOC(strm, wsize + INFFAST_CHUNKSIZE, sizeof(unsigned char));
+        if (state->window == Z_NULL)
+            return 1;
+        memset(state->window + wsize, 0, INFFAST_CHUNKSIZE);
+#else
         state->window = (unsigned char *) ZALLOC(strm, 1U << state->wbits, sizeof(unsigned char));
         if (state->window == NULL)
             return 1;
+#endif
     }
 
     /* if window not in use yet, initialize */
@@ -1141,17 +1150,27 @@ int ZEXPORT inflate(z_stream *strm, int flush) {
                 }
                 if (copy > state->length)
                     copy = state->length;
+                if (copy > left)
+                    copy = left;
+                left -= copy;
+                state->length -= copy;
+                if (copy >= sizeof(uint64_t))
+                    put = chunk_memcpy(put, from, copy);
+                else
+                    put = copy_bytes(put, from, copy);
             } else {                             /* copy from output */
-                from = put - state->offset;
+                unsigned offset = state->offset;
+                from = put - offset;
                 copy = state->length;
+                if (copy > left)
+                    copy = left;
+                left -= copy;
+                state->length -= copy;
+                if (copy >= sizeof(uint64_t))
+                    put = chunk_memset(put, from, offset, copy);
+                else
+                    put = set_bytes(put, from, offset, copy);
             }
-            if (copy > left)
-                copy = left;
-            left -= copy;
-            state->length -= copy;
-            do {
-                *put++ = *from++;
-            } while (--copy);
             if (state->length == 0)
                 state->mode = LEN;
             break;
