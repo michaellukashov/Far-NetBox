@@ -56,7 +56,7 @@ static inline long compare258(const uint8_t *const src0, const uint8_t *const sr
         cnt += 16;
     } while (cnt < 256);
 
-    if (*(unsigned short *)(src0 + cnt) == *(unsigned short *)(src1 + cnt)) {
+    if (*(uint16_t *)(src0 + cnt) == *(uint16_t *)(src1 + cnt)) {
         cnt += 2;
     } else if (*(src0 + cnt) == *(src1 + cnt)) {
         cnt++;
