@@ -581,8 +581,8 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD * Event)
   bool Handled = false;
   if (FLAGSET(Event->dwEventFlags, MOUSE_MOVED))
   {
-    int X = Event->dwMousePosition.X - GetBounds().Left;
-    int Y = Event->dwMousePosition.Y - GetBounds().Top;
+    intptr_t X = Event->dwMousePosition.X - GetBounds().Left;
+    intptr_t Y = Event->dwMousePosition.Y - GetBounds().Top;
     TFarDialogItem * Item = ItemAt(X, Y);
     if (Item != nullptr)
     {
@@ -1651,13 +1651,13 @@ bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD * Event)
   return DefaultItemProc(DN_MOUSECLICK, reinterpret_cast<LONG_PTR>(Event)) != 0;
 }
 
-bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
+bool TFarDialogItem::MouseMove(intptr_t /*X*/, intptr_t /*Y*/,
   MOUSE_EVENT_RECORD * Event)
 {
   return DefaultDialogProc(DN_MOUSEEVENT, 0, reinterpret_cast<LONG_PTR>(Event)) != 0;
 }
 
-void TFarDialogItem::Text(int X, int Y, uintptr_t Color, const UnicodeString & Str)
+void TFarDialogItem::Text(intptr_t X, intptr_t Y, uintptr_t Color, const UnicodeString & Str)
 {
   TFarEnvGuard Guard;
   GetPluginStartupInfo()->Text(
