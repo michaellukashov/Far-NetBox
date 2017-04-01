@@ -319,8 +319,8 @@ typedef enum {
  *    cost of penalty of potentially unaligned access. 
  */
 #define put_short(s, w) { \
+    *(uint16_t*)(&s->pending_buf[s->pending]) = (w) ; \
     s->pending += 2; \
-    *(uint16_t*)(&s->pending_buf[s->pending - 2]) = (w) ; \
 }
 #else
 #define put_short(s, w) { \
