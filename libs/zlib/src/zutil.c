@@ -27,9 +27,9 @@ const char * ZEXPORT zlibVersion(void)
     return ZLIB_VERSION;
 }
 
-unsigned long ZEXPORT zlibCompileFlags(void)
+uint64_t ZEXPORT zlibCompileFlags(void)
 {
-    unsigned long flags;
+    uint64_t flags;
 
     flags = 0;
     switch ((int)(sizeof(unsigned int))) {
@@ -38,7 +38,7 @@ unsigned long ZEXPORT zlibCompileFlags(void)
     case 8:     flags += 2;     break;
     default:    flags += 3;
     }
-    switch ((int)(sizeof(unsigned long))) {
+    switch ((int)(sizeof(uint64_t))) {
     case 2:     break;
     case 4:     flags += 1 << 2;        break;
     case 8:     flags += 2 << 2;        break;

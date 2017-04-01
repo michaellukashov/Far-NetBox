@@ -89,7 +89,7 @@ extern void crc_reset(deflate_state *const s);
 #ifdef X86_PCLMULQDQ_CRC
 extern void crc_finalize(deflate_state *const s);
 #endif
-extern void copy_with_crc(z_stream *strm, unsigned char *dst, unsigned long size);
+extern void copy_with_crc(z_stream *strm, unsigned char *dst, uint64_t size);
 
 #ifdef ZLIB_DEBUG
 static  void check_match (deflate_state *s, IPos start, IPos match,
@@ -372,7 +372,7 @@ int ZEXPORT deflateInit2_(z_stream *strm, int level, int method, int windowBits,
 
     overlay = (uint16_t *) ZALLOC(strm, s->lit_bufsize, sizeof(uint16_t)+2);
     s->pending_buf = (unsigned char *) overlay;
-    s->pending_buf_size = (unsigned long)s->lit_bufsize * (sizeof(uint16_t)+2L);
+    s->pending_buf_size = (uint64_t)s->lit_bufsize * (sizeof(uint16_t)+2L);
 
     if (s->window == Z_NULL || s->prev == Z_NULL || s->head == Z_NULL ||
         s->pending_buf == Z_NULL) {
@@ -674,10 +674,10 @@ int ZEXPORT deflateTune(z_stream *strm, int good_length, int max_lazy, int nice_
  * upper bound of about 14% expansion does not seem onerous for output buffer
  * allocation.
  */
-unsigned long ZEXPORT deflateBound(z_stream *strm, unsigned long sourceLen)
+uint64_t ZEXPORT deflateBound(z_stream *strm, uint64_t sourceLen)
 {
     deflate_state *s;
-    unsigned long complen, wraplen;
+    uint64_t complen, wraplen;
 
     /* conservative upper bound for compressed data */
     complen = sourceLen +
@@ -1221,7 +1221,7 @@ ZLIB_INTERNAL uint32_t read_buf(z_stream *strm, unsigned char *buf, unsigned siz
  */
 static void lm_init(deflate_state *s)
 {
-    s->window_size = (unsigned long)2L*s->w_size;
+    s->window_size = (uint64_t)2L*s->w_size;
 
     CLEAR_HASH(s);
 
@@ -1305,7 +1305,7 @@ static uint32_t longest_match(s, cur_match)
      */
     if ((unsigned int)nice_match > s->lookahead) nice_match = (int)s->lookahead;
 
-    Assert((unsigned long)s->strstart <= s->window_size-MIN_LOOKAHEAD, "need lookahead");
+    Assert((uint64_t)s->strstart <= s->window_size-MIN_LOOKAHEAD, "need lookahead");
 
     do {
         Assert(cur_match < s->strstart, "no future");
@@ -1538,7 +1538,7 @@ void fill_window_c(deflate_state *s)
     Assert(s->lookahead < MIN_LOOKAHEAD, "already enough lookahead");
 
     do {
-        more = (unsigned)(s->window_size -(unsigned long)s->lookahead -(unsigned long)s->strstart);
+        more = (unsigned)(s->window_size -(uint64_t)s->lookahead -(uint64_t)s->strstart);
 
         /* If the window is almost full and there is insufficient lookahead,
          * move the upper half to the lower one to make room in the upper half.
@@ -1659,8 +1659,8 @@ void fill_window_c(deflate_state *s)
      * routines allow scanning to strstart + MAX_MATCH, ignoring lookahead.
      */
     if (s->high_water < s->window_size) {
-        unsigned long curr = s->strstart + (unsigned long)(s->lookahead);
-        unsigned long init;
+        uint64_t curr = s->strstart + (uint64_t)(s->lookahead);
+        uint64_t init;
 
         if (s->high_water < curr) {
             /* Previous high water mark below current data -- zero WIN_INIT
@@ -1672,12 +1672,12 @@ void fill_window_c(deflate_state *s)
             zmemzero(s->window + curr, (unsigned)init);
             s->high_water = curr + init;
         }
-        else if (s->high_water < (unsigned long)curr + WIN_INIT) {
+        else if (s->high_water < (uint64_t)curr + WIN_INIT) {
             /* High water mark at or above current data, but below current data
              * plus WIN_INIT -- zero out to current data plus WIN_INIT, or up
              * to end of window, whichever is less.
              */
-            init = (unsigned long)curr + WIN_INIT - s->high_water;
+            init = (uint64_t)curr + WIN_INIT - s->high_water;
             if (init > s->window_size - s->high_water)
                 init = s->window_size - s->high_water;
             zmemzero(s->window + s->high_water, (unsigned)init);
@@ -1685,7 +1685,7 @@ void fill_window_c(deflate_state *s)
         }
     }
 
-    Assert((unsigned long)s->strstart <= s->window_size - MIN_LOOKAHEAD,
+    Assert((uint64_t)s->strstart <= s->window_size - MIN_LOOKAHEAD,
            "not enough room for search");
 }
 
@@ -1736,7 +1736,7 @@ static block_state deflate_stored(deflate_state *s, int flush)
             /* maximum stored block length that will fit in avail_out: */
         have = s->strm->avail_out - have;
         left = s->strstart - s->block_start;    /* bytes left in window */
-        if (len > (unsigned long)left + s->strm->avail_in)
+        if (len > (uint64_t)left + s->strm->avail_in)
             len = left + s->strm->avail_in;     /* limit len to the input */
         if (len > have)
             len = have;                         /* limit len to the output */

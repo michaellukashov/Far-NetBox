@@ -459,7 +459,7 @@ ZLIB_INTERNAL void crc_reset(deflate_state *const s) {
     s->strm->adler = crc32(0L, NULL, 0);
 }
 
-ZLIB_INTERNAL void copy_with_crc(z_stream *strm, unsigned char *dst, unsigned long size) {
+ZLIB_INTERNAL void copy_with_crc(z_stream *strm, unsigned char *dst, uint64_t size) {
     zmemcpy(dst, strm->next_in, size);
     strm->adler = crc32(strm->adler, dst, size);
 }

@@ -501,7 +501,7 @@ static int updatewindow(z_stream *strm, const unsigned char *end, uint32_t copy)
     do { \
         if (have == 0) goto inf_leave; \
         have--; \
-        hold += (unsigned long)(*next++) << bits; \
+        hold += (uint64_t)(*next++) << bits; \
         bits += 8; \
     } while (0)
 
@@ -1329,7 +1329,7 @@ int ZEXPORT inflateGetDictionary(z_stream *strm, unsigned char *dictionary, unsi
 int ZEXPORT inflateSetDictionary(z_stream *strm, const unsigned char *dictionary, unsigned int dictLength)
 {
     struct inflate_state *state;
-    unsigned long dictid;
+    uint64_t dictid;
     int ret;
 
     /* check state */
@@ -1555,16 +1555,16 @@ long ZEXPORT inflateMark(z_stream *strm)
     if (inflateStateCheck(strm))
         return -(1L << 16);
     state = (struct inflate_state *)strm->state;
-    return (long)(((unsigned long)((long)state->back)) << 16) +
+    return (long)(((uint64_t)((long)state->back)) << 16) +
         (state->mode == COPY ? state->length :
             (state->mode == MATCH ? state->was - state->length : 0));
 }
 
-unsigned long ZEXPORT inflateCodesUsed(z_stream * strm)
+uint64_t ZEXPORT inflateCodesUsed(z_stream * strm)
 {
     struct inflate_state *state;
     if (inflateStateCheck(strm))
-        return (unsigned long)-1;
+        return (uint64_t)-1;
     state = (struct inflate_state *)strm->state;
-    return (unsigned long)(state->next - state->codes);
+    return (uint64_t)(state->next - state->codes);
 }

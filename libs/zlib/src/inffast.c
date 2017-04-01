@@ -101,9 +101,9 @@ void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
        input data or output space */
     do {
         if (bits < 15) {
-            hold += (unsigned long)(*in++) << bits;
+            hold += (uint64_t)(*in++) << bits;
             bits += 8;
-            hold += (unsigned long)(*in++) << bits;
+            hold += (uint64_t)(*in++) << bits;
             bits += 8;
         }
         here = lcode[hold & lmask];
@@ -123,7 +123,7 @@ void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
             op &= 15;                           /* number of extra bits */
             if (op) {
                 if (bits < op) {
-                    hold += (unsigned long)(*in++) << bits;
+                    hold += (uint64_t)(*in++) << bits;
                     bits += 8;
                 }
                 len += (unsigned)hold & ((1U << op) - 1);
@@ -132,9 +132,9 @@ void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
             }
             Tracevv((stderr, "inflate:         length %u\n", len));
             if (bits < 15) {
-                hold += (unsigned long)(*in++) << bits;
+                hold += (uint64_t)(*in++) << bits;
                 bits += 8;
-                hold += (unsigned long)(*in++) << bits;
+                hold += (uint64_t)(*in++) << bits;
                 bits += 8;
             }
             here = dcode[hold & dmask];
@@ -147,10 +147,10 @@ void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
                 dist = (unsigned)(here.val);
                 op &= 15;                       /* number of extra bits */
                 if (bits < op) {
-                    hold += (unsigned long)(*in++) << bits;
+                    hold += (uint64_t)(*in++) << bits;
                     bits += 8;
                     if (bits < op) {
-                        hold += (unsigned long)(*in++) << bits;
+                        hold += (uint64_t)(*in++) << bits;
                         bits += 8;
                     }
                 }

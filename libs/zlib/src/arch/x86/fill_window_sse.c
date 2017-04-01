@@ -26,7 +26,7 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
     Assert(s->lookahead < MIN_LOOKAHEAD, "already enough lookahead");
 
     do {
-        more = (unsigned)(s->window_size -(unsigned long)s->lookahead -(unsigned long)s->strstart);
+        more = (unsigned)(s->window_size -(uint64_t)s->lookahead -(uint64_t)s->strstart);
 
         /* Deal with !@#$% 64K limit: */
         if (sizeof(int) <= 2) {
@@ -135,8 +135,8 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
      * routines allow scanning to strstart + MAX_MATCH, ignoring lookahead.
      */
     if (s->high_water < s->window_size) {
-        unsigned long curr = s->strstart + (unsigned long)(s->lookahead);
-        unsigned long init;
+        uint64_t curr = s->strstart + (uint64_t)(s->lookahead);
+        uint64_t init;
 
         if (s->high_water < curr) {
             /* Previous high water mark below current data -- zero WIN_INIT
@@ -147,12 +147,12 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
                 init = WIN_INIT;
             zmemzero(s->window + curr, (unsigned)init);
             s->high_water = curr + init;
-        } else if (s->high_water < (unsigned long)curr + WIN_INIT) {
+        } else if (s->high_water < (uint64_t)curr + WIN_INIT) {
             /* High water mark at or above current data, but below current data
              * plus WIN_INIT -- zero out to current data plus WIN_INIT, or up
              * to end of window, whichever is less.
              */
-            init = (unsigned long)curr + WIN_INIT - s->high_water;
+            init = (uint64_t)curr + WIN_INIT - s->high_water;
             if (init > s->window_size - s->high_water)
                 init = s->window_size - s->high_water;
             zmemzero(s->window + s->high_water, (unsigned)init);
@@ -160,6 +160,6 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
         }
     }
 
-    Assert((unsigned long)s->strstart <= s->window_size - MIN_LOOKAHEAD, "not enough room for search");
+    Assert((uint64_t)s->strstart <= s->window_size - MIN_LOOKAHEAD, "not enough room for search");
 }
 #endif

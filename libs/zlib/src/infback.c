@@ -164,7 +164,7 @@ static void fixedtables(struct inflate_state *state)
     do { \
         PULL(); \
         have--; \
-        hold += (unsigned long)(*next++) << bits; \
+        hold += (uint64_t)(*next++) << bits; \
         bits += 8; \
     } while (0)
 

@@ -107,12 +107,12 @@ typedef struct internal_state {
     z_stream      *strm;             /* pointer back to this zlib stream */
     int           status;            /* as the name implies */
     unsigned char *pending_buf;      /* output still pending */
-    unsigned long pending_buf_size;  /* size of pending_buf */
+    uint64_t pending_buf_size;  /* size of pending_buf */
     unsigned char *pending_out;      /* next pending byte to output to the stream */
-    unsigned long pending;           /* nb of bytes in the pending buffer */
+    uint64_t pending;           /* nb of bytes in the pending buffer */
     int           wrap;              /* bit 0 true for zlib, bit 1 true for gzip */
     gz_headerp    gzhead;            /* gzip header information to write */
-    unsigned long gzindex;           /* where in extra, name, or comment */
+    uint64_t gzindex;           /* where in extra, name, or comment */
     unsigned char method;            /* can only be DEFLATED */
     int           last_flush;        /* value of flush param for previous deflate call */
 
@@ -136,7 +136,7 @@ typedef struct internal_state {
      * To do: use the user input buffer as sliding window.
      */
 
-    unsigned long window_size;
+    uint64_t window_size;
     /* Actual size of window: 2*wSize, except when the user input buffer
      * is directly used as sliding window.
      */
@@ -259,14 +259,14 @@ typedef struct internal_state {
      * array would be necessary.
      */
 
-    unsigned long opt_len;        /* bit length of current block with optimal trees */
-    unsigned long static_len;     /* bit length of current block with static trees */
+    uint64_t opt_len;        /* bit length of current block with optimal trees */
+    uint64_t static_len;     /* bit length of current block with static trees */
     unsigned int matches;         /* number of string matches in current block */
     unsigned int insert;          /* bytes at end of window left to insert */
 
 #ifdef ZLIB_DEBUG
-    unsigned long compressed_len; /* total bit length of compressed file mod 2^32 */
-    unsigned long bits_sent;      /* bit length of compressed data sent mod 2^32 */
+    uint64_t compressed_len; /* total bit length of compressed file mod 2^32 */
+    uint64_t bits_sent;      /* bit length of compressed data sent mod 2^32 */
 #endif
 
     uint16_t bi_buf;
@@ -278,7 +278,7 @@ typedef struct internal_state {
      * are always zero.
      */
 
-    unsigned long high_water;
+    uint64_t high_water;
     /* High water mark offset in window for initialized bytes -- bytes above
      * this are set to zero in order to avoid memory check warnings when
      * longest match routines access bytes past the input.  This is then
@@ -347,11 +347,11 @@ typedef enum {
 void ZLIB_INTERNAL _tr_init(deflate_state *s);
 int ZLIB_INTERNAL _tr_tally(deflate_state *s, unsigned dist, unsigned lc);
 void ZLIB_INTERNAL _tr_flush_block(deflate_state *s, char *buf,
-                        unsigned long stored_len, int last);
+                        uint64_t stored_len, int last);
 void ZLIB_INTERNAL _tr_flush_bits(deflate_state *s);
 void ZLIB_INTERNAL _tr_align(deflate_state *s);
 void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf,
-                        unsigned long stored_len, int last);
+                        uint64_t stored_len, int last);
 void ZLIB_INTERNAL bi_windup(deflate_state *s);
 
 #define d_code(dist) \
@@ -446,7 +446,7 @@ void ZLIB_INTERNAL bi_windup(deflate_state *s);
 local void send_bits(deflate_state *s, int value, int length) {
     Tracevv((stderr, " l %2d v %4x ", length, value));
     Assert(length > 0 && length <= 15, "invalid length");
-    s->bits_sent += (unsigned long)length;
+    s->bits_sent += (uint64_t)length;
 
     /* If not enough room in bi_buf, use (valid) bits from bi_buf and
      * (16 - bi_valid) bits from value, leaving (width - (16-bi_valid))
