@@ -997,10 +997,10 @@ TFarDialogItem::TFarDialogItem(TObjectClassId Kind, TFarDialog * ADialog, uintpt
   FEnabledDependencyNegative(nullptr),
   FContainer(nullptr),
   FItem(NPOS),
-  FEnabled(true),
-  FIsEnabled(true),
   FColors(0),
-  FColorMask(0)
+  FColorMask(0),
+  FEnabled(true),
+  FIsEnabled(true)
 {
   DebugAssert(ADialog);
   GetDialog()->Add(this);

@@ -359,10 +359,10 @@ private:
   TFarDialogItem * FEnabledDependencyNegative;
   TFarDialogContainer * FContainer;
   intptr_t FItem;
-  bool FEnabled;
-  bool FIsEnabled;
   uint32_t FColors;
   uint32_t FColorMask;
+  bool FEnabled;
+  bool FIsEnabled;
 };
 
 class TFarBox : public TFarDialogItem
