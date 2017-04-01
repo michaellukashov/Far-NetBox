@@ -83,7 +83,7 @@ static block_state deflate_huff   (deflate_state *s, int flush);
 static void lm_init               (deflate_state *s);
 static void putShortMSB           (deflate_state *s, uint16_t b);
 ZLIB_INTERNAL void flush_pending (z_stream *strm);
-ZLIB_INTERNAL uint32_t read_buf       (z_stream *strm, uint8_t *buf, unsigned size);
+ZLIB_INTERNAL uint32_t read_buf       (z_stream *strm, uint8_t *buf, uint32_t size);
 
 extern void crc_reset(deflate_state *const s);
 #ifdef X86_PCLMULQDQ_CRC
@@ -194,7 +194,7 @@ static const config configuration_table[10] = {
  */
 static void slide_hash(deflate_state *s)
 {
-    unsigned n;
+    uint32_t n;
     Pos *p;
     uint32_t wsize = s->w_size;
 
@@ -264,7 +264,7 @@ int ZEXPORT deflateInit_(z_stream *strm, int level, const char *version, int str
 int ZEXPORT deflateInit2_(z_stream *strm, int level, int method, int windowBits,
                            int memLevel, int strategy, const char *version, int stream_size)
 {
-    unsigned window_padding = 0;
+    uint32_t window_padding = 0;
     deflate_state *s;
     int wrap = 1;
     static const char my_version[] = ZLIB_VERSION;
@@ -1190,7 +1190,7 @@ int ZEXPORT deflateCopy(z_stream *dest, z_stream *source)
  * allocating a large strm->next_in buffer and copying from it.
  * (See also flush_pending()).
  */
-ZLIB_INTERNAL uint32_t read_buf(z_stream *strm, uint8_t *buf, unsigned size)
+ZLIB_INTERNAL uint32_t read_buf(z_stream *strm, uint8_t *buf, uint32_t size)
 {
     uint32_t len = strm->avail_in;
 
@@ -1264,7 +1264,7 @@ static uint32_t longest_match(s, cur_match)
     deflate_state *s;
     IPos cur_match;                             /* current match */
 {
-    unsigned chain_length = s->max_chain_length;/* max hash chain length */
+    uint32_t chain_length = s->max_chain_length;/* max hash chain length */
     register Bytef *scan = s->window + s->strstart; /* current string */
     register Bytef *match;                      /* matched string */
     register int len;                           /* length of current match */
@@ -1320,7 +1320,7 @@ static uint32_t longest_match(s, cur_match)
          * the output of deflate is not affected by the uninitialized values.
          */
 #if (defined(UNALIGNED_OK) && MAX_MATCH == 258)
-        /* This code assumes sizeof(unsigned short) == 2. Do not use
+        /* This code assumes sizeof(uint32_t short) == 2. Do not use
          * UNALIGNED_OK if your compiler uses a different size.
          */
         if (*(ushf*)(match+best_len-1) != scan_end ||
@@ -1530,9 +1530,9 @@ void fill_window(deflate_state *s)
 
 void fill_window_c(deflate_state *s)
 {
-    unsigned n;
+    uint32_t n;
     Pos *p;
-    unsigned more;    /* Amount of free space at the end of the window. */
+    uint32_t more;    /* Amount of free space at the end of the window. */
     uint32_t wsize = s->w_size;
 
     Assert(s->lookahead < MIN_LOOKAHEAD, "already enough lookahead");
@@ -1559,7 +1559,7 @@ void fill_window_c(deflate_state *s)
             p = &s->head[n];
 #ifdef NOT_TWEAK_COMPILER
             do {
-                unsigned m;
+                uint32_t m;
                 m = *--p;
                 *p = (Pos)(m >= wsize ? m-wsize : NIL);
             } while (--n);
@@ -1587,7 +1587,7 @@ void fill_window_c(deflate_state *s)
             p = &s->prev[n];
 #ifdef NOT_TWEAK_COMPILER
             do {
-                unsigned m;
+                uint32_t m;
                 m = *--p;
                 *p = (Pos)(m >= wsize ? m-wsize : NIL);
                 /* If n is not on any hash chain, prev[n] is garbage but
@@ -1716,14 +1716,14 @@ static block_state deflate_stored(deflate_state *s, int flush)
      * this is 32K. This can be as small as 507 bytes for memLevel == 1. For
      * large input and output buffers, the stored block size will be larger.
      */
-    unsigned min_block = MIN(s->pending_buf_size - 5, s->w_size);
+    uint32_t min_block = MIN(s->pending_buf_size - 5, s->w_size);
 
     /* Copy as many min_block or larger stored blocks directly to next_out as
      * possible. If flushing, copy the remaining available input to next_out as
      * stored blocks, if there is enough space.
      */
-    unsigned len, left, have, last = 0;
-    unsigned used = s->strm->avail_in;
+    uint32_t len, left, have, last = 0;
+    uint32_t used = s->strm->avail_in;
     do {
         /* Set len to the maximum size block that we can copy directly with the
          * available input data and output space. Set left to how much of that

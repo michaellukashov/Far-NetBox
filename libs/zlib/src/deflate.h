@@ -117,7 +117,7 @@ typedef struct internal_state {
     int           last_flush;        /* value of flush param for previous deflate call */
 
 #ifdef X86_PCLMULQDQ_CRC
-    unsigned ALIGNED_(16) crc0[4 * 5];
+    uint32_t ALIGNED_(16) crc0[4 * 5];
 #endif
 
                 /* used by deflate.c: */
@@ -345,7 +345,7 @@ typedef enum {
 
         /* in trees.c */
 void ZLIB_INTERNAL _tr_init(deflate_state *s);
-int ZLIB_INTERNAL _tr_tally(deflate_state *s, unsigned dist, unsigned lc);
+int ZLIB_INTERNAL _tr_tally(deflate_state *s, uint32_t dist, uint32_t lc);
 void ZLIB_INTERNAL _tr_flush_block(deflate_state *s, char *buf,
                         uint64_t stored_len, int last);
 void ZLIB_INTERNAL _tr_flush_bits(deflate_state *s);

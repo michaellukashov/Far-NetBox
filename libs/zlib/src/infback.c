@@ -80,7 +80,7 @@ static void fixedtables(struct inflate_state *state)
 
     /* build fixed huffman tables if first call (may not be thread safe) */
     if (virgin) {
-        unsigned sym, bits;
+        uint32_t sym, bits;
         static code *next;
 
         /* literal/length table */
@@ -243,14 +243,14 @@ int ZEXPORT inflateBack(z_stream *strm, in_func in, void *in_desc, out_func out,
     struct inflate_state *state;
     const uint8_t *next;  /* next input */
     uint8_t *put;         /* next output */
-    unsigned have, left;        /* available input and output */
+    uint32_t have, left;        /* available input and output */
     uint32_t hold;              /* bit buffer */
-    unsigned bits;              /* bits in bit buffer */
-    unsigned copy;              /* number of stored or match bytes to copy */
+    uint32_t bits;              /* bits in bit buffer */
+    uint32_t copy;              /* number of stored or match bytes to copy */
     uint8_t *from;        /* where to copy match bytes from */
     code here;                  /* current decoding table entry */
     code last;                  /* parent table entry */
-    unsigned len;               /* length to copy for repeats, bits to drop */
+    uint32_t len;               /* length to copy for repeats, bits to drop */
     int ret;                    /* return code */
     static const uint16_t order[19] = /* permutation of code lengths */
         {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};

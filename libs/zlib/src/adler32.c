@@ -63,7 +63,7 @@ static uint32_t adler32_combine_(uint32_t adler1, uint32_t adler2, z_off64_t len
 uint32_t ZEXPORT adler32_z(uint32_t adler, const uint8_t *buf, size_t len)
 {
     uint32_t sum2;
-    unsigned n;
+    uint32_t n;
 
     /* split Adler-32 into component sums */
     sum2 = (adler >> 16) & 0xffff;
@@ -154,7 +154,7 @@ static uint32_t adler32_combine_(uint32_t adler1, uint32_t adler2, z_off64_t len
 {
     uint32_t sum1;
     uint32_t sum2;
-    unsigned rem;
+    uint32_t rem;
 
     /* for negative len, return invalid adler32 as a clue for debugging */
     if (len2 < 0)

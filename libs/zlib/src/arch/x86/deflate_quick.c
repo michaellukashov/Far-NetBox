@@ -115,18 +115,18 @@ static inline long compare258(const uint8_t *const src0, const uint8_t *const sr
 #endif
 }
 
-static const unsigned quick_len_codes[MAX_MATCH-MIN_MATCH+1];
-static const unsigned quick_dist_codes[8192];
+static const uint32_t quick_len_codes[MAX_MATCH-MIN_MATCH+1];
+static const uint32_t quick_dist_codes[8192];
 
 static inline void quick_send_bits(deflate_state *const s, const int value, const int length) {
-    unsigned out, width, bytes_out;
+    uint32_t out, width, bytes_out;
 
     /* Concatenate the new bits with the bits currently in the buffer */
     out = s->bi_buf | (value << s->bi_valid);
     width = s->bi_valid + length;
 
     /* Taking advantage of the fact that LSB comes first, write to output buffer */
-    *(unsigned *)(s->pending_buf + s->pending) = out;
+    *(uint32_t *)(s->pending_buf + s->pending) = out;
 
     bytes_out = width / 8;
 
@@ -137,8 +137,8 @@ static inline void quick_send_bits(deflate_state *const s, const int value, cons
     s->bi_valid = width - (bytes_out * 8);
 }
 
-static inline void static_emit_ptr(deflate_state *const s, const int lc, const unsigned dist) {
-    unsigned code, len;
+static inline void static_emit_ptr(deflate_state *const s, const int lc, const uint32_t dist) {
+    uint32_t code, len;
 
     code = quick_len_codes[lc] >> 8;
     len =  quick_len_codes[lc] & 0xFF;
@@ -157,7 +157,7 @@ static inline void static_emit_lit(deflate_state *const s, const int lit) {
 }
 
 static void static_emit_tree(deflate_state *const s, const int flush) {
-    unsigned last;
+    uint32_t last;
 
     last = flush == Z_FINISH ? 1 : 0;
     Tracev((stderr, "\n--- Emit Tree: Last: %u\n", last));
@@ -178,10 +178,10 @@ static void static_emit_end_block(deflate_state *const s, int last) {
 
 static inline Pos quick_insert_string(deflate_state *const s, const Pos str) {
     Pos ret;
-    unsigned h = 0;
+    uint32_t h = 0;
 
 #ifdef _MSC_VER
-    h = _mm_crc32_u32(h, *(unsigned *)(s->window + str));
+    h = _mm_crc32_u32(h, *(uint32_t *)(s->window + str));
 #else
     __asm__ __volatile__ (
         "crc32l (%[window], %[str], 1), %0\n\t"
@@ -198,7 +198,7 @@ static inline Pos quick_insert_string(deflate_state *const s, const Pos str) {
 
 ZLIB_INTERNAL block_state deflate_quick(deflate_state *s, int flush) {
     IPos hash_head;
-    unsigned dist, match_len;
+    uint32_t dist, match_len;
 
     if (s->block_open == 0) {
         static_emit_tree(s, flush);
@@ -264,7 +264,7 @@ ZLIB_INTERNAL block_state deflate_quick(deflate_state *s, int flush) {
     return block_done;
 }
 
-static const unsigned quick_len_codes[MAX_MATCH-MIN_MATCH+1] = {
+static const uint32_t quick_len_codes[MAX_MATCH-MIN_MATCH+1] = {
     0x00004007, 0x00002007, 0x00006007, 0x00001007,
     0x00005007, 0x00003007, 0x00007007, 0x00000807,
     0x00004808, 0x0000c808, 0x00002808, 0x0000a808,
@@ -331,7 +331,7 @@ static const unsigned quick_len_codes[MAX_MATCH-MIN_MATCH+1] = {
     0x001c230d, 0x001d230d, 0x001e230d, 0x0000a308,
 };
 
-static const unsigned quick_dist_codes[8192] = {
+static const uint32_t quick_dist_codes[8192] = {
     0x00000005, 0x00001005, 0x00000805, 0x00001805,
     0x00000406, 0x00002406, 0x00001406, 0x00003406,
     0x00000c07, 0x00002c07, 0x00004c07, 0x00006c07,

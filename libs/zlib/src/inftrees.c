@@ -32,24 +32,24 @@ const char inflate_copyright[] =
 int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
                                 code * *table, uint32_t *bits, uint16_t  *work)
 {
-    unsigned len;               /* a code's length in bits */
-    unsigned sym;               /* index of code symbols */
-    unsigned min, max;          /* minimum and maximum code lengths */
-    unsigned root;              /* number of index bits for root table */
-    unsigned curr;              /* number of index bits for current table */
-    unsigned drop;              /* code bits to drop for sub-table */
+    uint32_t len;               /* a code's length in bits */
+    uint32_t sym;               /* index of code symbols */
+    uint32_t min, max;          /* minimum and maximum code lengths */
+    uint32_t root;              /* number of index bits for root table */
+    uint32_t curr;              /* number of index bits for current table */
+    uint32_t drop;              /* code bits to drop for sub-table */
     int left;                   /* number of prefix codes available */
-    unsigned used;              /* code entries in table used */
-    unsigned huff;              /* Huffman code */
-    unsigned incr;              /* for incrementing code, index */
-    unsigned fill;              /* index for replicating entries */
-    unsigned low;               /* low bits for current root entry */
-    unsigned mask;              /* mask for low root bits */
+    uint32_t used;              /* code entries in table used */
+    uint32_t huff;              /* Huffman code */
+    uint32_t incr;              /* for incrementing code, index */
+    uint32_t fill;              /* index for replicating entries */
+    uint32_t low;               /* low bits for current root entry */
+    uint32_t mask;              /* mask for low root bits */
     code here;                  /* table entry for duplication */
     code *next;                 /* next available space in table */
     const uint16_t *base;       /* base value table to use */
     const uint16_t *extra;      /* extra bits table to use */
-    unsigned match;              /* use base and extra for symbol > match */
+    uint32_t match;              /* use base and extra for symbol > match */
     uint16_t count[MAXBITS+1];  /* number of codes of each length */
     uint16_t offs[MAXBITS+1];   /* offsets in table for each length */
     static const uint16_t lbase[31] = { /* Length codes 257..285 base */

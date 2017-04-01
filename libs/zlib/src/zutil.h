@@ -147,7 +147,7 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #   define Tracecv(c, x)
 #endif
 
-void ZLIB_INTERNAL *zcalloc(void *opaque, unsigned items, unsigned size);
+void ZLIB_INTERNAL *zcalloc(void *opaque, uint32_t items, uint32_t size);
 void ZLIB_INTERNAL   zcfree(void *opaque, void *ptr);
 
 #define ZALLOC(strm, items, size) \

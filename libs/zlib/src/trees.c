@@ -147,7 +147,7 @@ static int  build_bl_tree  (deflate_state *s);
 static void send_all_trees (deflate_state *s, int lcodes, int dcodes, int blcodes);
 static void compress_block (deflate_state *s, const ct_data *ltree, const ct_data *dtree);
 static int  detect_data_type (deflate_state *s);
-static unsigned bi_reverse (unsigned value, int length);
+static uint32_t bi_reverse (uint32_t value, int length);
 static void bi_windup      (deflate_state *s);
 static void bi_flush       (deflate_state *s);
 
@@ -1082,10 +1082,10 @@ static void compress_block(deflate_state *s, const ct_data *ltree, const ct_data
 {
     /* ltree: literal tree */
     /* dtree: distance tree */
-    unsigned dist;      /* distance of matched string */
+    uint32_t dist;      /* distance of matched string */
     int lc;             /* match length or unmatched char (if dist == 0) */
-    unsigned lx = 0;    /* running index in l_buf */
-    unsigned code;      /* the code to send */
+    uint32_t lx = 0;    /* running index in l_buf */
+    uint32_t code;      /* the code to send */
     int extra;          /* number of extra bits to send */
 
     if (s->last_lit != 0) {
@@ -1171,11 +1171,11 @@ static int detect_data_type(deflate_state *s)
  * method would use a table)
  * IN assertion: 1 <= len <= 15
  */
-static unsigned bi_reverse(uint32_t code, int len)
+static uint32_t bi_reverse(uint32_t code, int len)
 {
     /* code: the value to invert */
     /* len: its bit length */
-    register unsigned res = 0;
+    register uint32_t res = 0;
     do {
         res |= code & 1;
         code >>= 1, res <<= 1;
@@ -1220,7 +1220,7 @@ ZLIB_INTERNAL void bi_windup(deflate_state *s)
  * Copy a stored block, storing first the length and its
  * one's complement if requested.
  */
-static void copy_block(deflate_state *s, char *buf, unsigned len, int header) {
+static void copy_block(deflate_state *s, char *buf, uint32_t len, int header) {
     /* buf: the input data */
     /* len: its length */
     /* header: true if block header must be written */

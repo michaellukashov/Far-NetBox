@@ -57,23 +57,23 @@ void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start)
     uint8_t *beg;         /* inflate()'s initial strm->next_out */
     uint8_t *end;         /* while out < end, enough space available */
 #ifdef INFLATE_STRICT
-    unsigned dmax;              /* maximum distance from zlib header */
+    uint32_t dmax;              /* maximum distance from zlib header */
 #endif
-    unsigned wsize;             /* window size or zero if not using window */
-    unsigned whave;             /* valid bytes in the window */
-    unsigned wnext;             /* window write index */
+    uint32_t wsize;             /* window size or zero if not using window */
+    uint32_t whave;             /* valid bytes in the window */
+    uint32_t wnext;             /* window write index */
     uint8_t *window;      /* allocated sliding window, if wsize != 0 */
     uint32_t hold;              /* local strm->hold */
-    unsigned bits;              /* local strm->bits */
+    uint32_t bits;              /* local strm->bits */
     code const *lcode;          /* local strm->lencode */
     code const *dcode;          /* local strm->distcode */
-    unsigned lmask;             /* mask for first level of length codes */
-    unsigned dmask;             /* mask for first level of distance codes */
+    uint32_t lmask;             /* mask for first level of length codes */
+    uint32_t dmask;             /* mask for first level of distance codes */
     code here;                  /* retrieved table entry */
-    unsigned op;                /* code bits, operation, extra bits, or */
+    uint32_t op;                /* code bits, operation, extra bits, or */
                                 /*  window position, window bytes to copy */
-    unsigned len;               /* match length, unused bytes */
-    unsigned dist;              /* match distance */
+    uint32_t len;               /* match length, unused bytes */
+    uint32_t dist;              /* match distance */
     uint8_t *from;        /* where to copy match from */
 
     /* copy state to local variables */

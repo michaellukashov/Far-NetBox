@@ -46,7 +46,7 @@
  * - Unroll last copy for window match in inflate_fast()
  * - Use local copies of window variables in inflate_fast() for speed
  * - Pull out common wnext == 0 case for speed in inflate_fast()
- * - Make op and len in inflate_fast() unsigned for consistency
+ * - Make op and len in inflate_fast() uint32_t for consistency
  * - Add FAR to lcode and dcode declarations in inflate_fast()
  * - Simplified bad distance check in inflate_fast()
  * - Added inflateBackInit(), inflateBack(), and inflateBackEnd() in new
@@ -67,7 +67,7 @@
  * - Changed type of window in inflateBackInit() to uint8_t *
  *
  * 1.2.beta7    27 Jan 2003
- * - Changed many types to unsigned or unsigned short to avoid warnings
+ * - Changed many types to uint32_t or uint32_t short to avoid warnings
  * - Added inflateCopy() function
  *
  * 1.2.0        9 Mar 2003
@@ -275,7 +275,7 @@ static void fixedtables(struct inflate_state *state)
 
     /* build fixed huffman tables if first call (may not be thread safe) */
     if (virgin) {
-        unsigned sym, bits;
+        uint32_t sym, bits;
         static code *next;
 
         /* literal/length table */
@@ -331,7 +331,7 @@ static void fixedtables(struct inflate_state *state)
  */
 void makefixed(void)
 {
-    unsigned low, size;
+    uint32_t low, size;
     struct inflate_state state;
 
     fixedtables(&state);
@@ -618,15 +618,15 @@ int ZEXPORT inflate(z_stream *strm, int flush)
     struct inflate_state *state;
     const uint8_t *next;  /* next input */
     uint8_t *put;         /* next output */
-    unsigned have, left;        /* available input and output */
+    uint32_t have, left;        /* available input and output */
     uint32_t hold;              /* bit buffer */
-    unsigned bits;              /* bits in bit buffer */
+    uint32_t bits;              /* bits in bit buffer */
     uint32_t in, out;           /* save starting available input and output */
-    unsigned copy;              /* number of stored or match bytes to copy */
+    uint32_t copy;              /* number of stored or match bytes to copy */
     uint8_t *from;        /* where to copy match bytes from */
     code here;                  /* current decoding table entry */
     code last;                  /* parent table entry */
-    unsigned len;               /* length to copy for repeats, bits to drop */
+    uint32_t len;               /* length to copy for repeats, bits to drop */
     int ret;                    /* return code */
 #ifdef GUNZIP
     uint8_t hbuf[4];      /* buffer for gzip header crc calculation */
@@ -1387,7 +1387,7 @@ int ZEXPORT inflateGetHeader(z_stream *strm, gz_headerp head)
    called again with more data and the *have state.  *have is initialized to
    zero for the first call.
  */
-static unsigned syncsearch(uint32_t *have, const uint8_t *buf, uint32_t len)
+static uint32_t syncsearch(uint32_t *have, const uint8_t *buf, uint32_t len)
 {
     uint32_t got;
     uint32_t next;
@@ -1409,7 +1409,7 @@ static unsigned syncsearch(uint32_t *have, const uint8_t *buf, uint32_t len)
 
 int ZEXPORT inflateSync(z_stream *strm)
 {
-    unsigned len;               /* number of bytes to look at or looked at */
+    uint32_t len;               /* number of bytes to look at or looked at */
     size_t in, out;             /* temporary to save total_in and total_out */
     uint8_t buf[4];       /* to restore bit buffer to byte string */
     struct inflate_state *state;
@@ -1477,7 +1477,7 @@ int ZEXPORT inflateCopy(z_stream *dest, z_stream *source)
     struct inflate_state *state;
     struct inflate_state *copy;
     uint8_t *window;
-    unsigned wsize;
+    uint32_t wsize;
 
     /* check input */
     if (inflateStateCheck(source) || dest == Z_NULL)
