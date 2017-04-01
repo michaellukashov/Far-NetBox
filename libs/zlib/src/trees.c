@@ -119,7 +119,7 @@ struct static_tree_desc_s {
     const int     *extra_bits;  /* extra bits for each code or NULL */
     int            extra_base;  /* base index for extra_bits */
     int            elems;       /* max number of elements in the tree */
-    unsigned int   max_length;  /* max bit length for the codes */
+    uint32_t   max_length;  /* max bit length for the codes */
 };
 
 static const static_tree_desc  static_l_desc =
@@ -1117,7 +1117,7 @@ static void compress_block(deflate_state *s, const ct_data *ltree, const ct_data
             } /* literal or match pair ? */
 
             /* Check that the overlay between pending_buf and d_buf+l_buf is ok: */
-            Assert((unsigned int)(s->pending) < s->lit_bufsize + 2*lx,
+            Assert((uint32_t)(s->pending) < s->lit_bufsize + 2*lx,
                    "pendingBuf overflow");
         } while (lx < s->last_lit);
     }

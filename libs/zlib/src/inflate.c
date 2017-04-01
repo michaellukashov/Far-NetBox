@@ -248,11 +248,11 @@ int ZEXPORT inflatePrime(z_stream *strm, int bits, int value)
         state->bits = 0;
         return Z_OK;
     }
-    if (bits > 16 || state->bits + (unsigned int)bits > 32)
+    if (bits > 16 || state->bits + (uint32_t)bits > 32)
         return Z_STREAM_ERROR;
     value &= (1L << bits) - 1;
     state->hold += (uint32_t)value << state->bits;
-    state->bits += (unsigned int)bits;
+    state->bits += (uint32_t)bits;
     return Z_OK;
 }
 
@@ -1305,7 +1305,7 @@ int ZEXPORT inflateEnd(z_stream *strm)
     return Z_OK;
 }
 
-int ZEXPORT inflateGetDictionary(z_stream *strm, uint8_t *dictionary, unsigned int *dictLength)
+int ZEXPORT inflateGetDictionary(z_stream *strm, uint8_t *dictionary, uint32_t *dictLength)
 {
     struct inflate_state *state;
 
@@ -1326,7 +1326,7 @@ int ZEXPORT inflateGetDictionary(z_stream *strm, uint8_t *dictionary, unsigned i
     return Z_OK;
 }
 
-int ZEXPORT inflateSetDictionary(z_stream *strm, const uint8_t *dictionary, unsigned int dictLength)
+int ZEXPORT inflateSetDictionary(z_stream *strm, const uint8_t *dictionary, uint32_t dictLength)
 {
     struct inflate_state *state;
     uint64_t dictid;

@@ -122,9 +122,9 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #    define zmemzero(dest, len) memset(dest, 0, len)
 #  endif
 #else
-   void ZLIB_INTERNAL zmemcpy(uint8_t *dest, const uint8_t* source, unsigned int len);
-   int ZLIB_INTERNAL zmemcmp(const uint8_t* s1, const uint8_t* s2, unsigned int len);
-   void ZLIB_INTERNAL zmemzero(uint8_t* dest, unsigned int len);
+   void ZLIB_INTERNAL zmemcpy(uint8_t *dest, const uint8_t* source, uint32_t len);
+   int ZLIB_INTERNAL zmemcmp(const uint8_t* s1, const uint8_t* s2, uint32_t len);
+   void ZLIB_INTERNAL zmemzero(uint8_t* dest, uint32_t len);
 #endif
 
 /* Diagnostic functions */

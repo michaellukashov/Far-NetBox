@@ -32,7 +32,7 @@ uint64_t ZEXPORT zlibCompileFlags(void)
     uint64_t flags;
 
     flags = 0;
-    switch ((int)(sizeof(unsigned int))) {
+    switch ((int)(sizeof(uint32_t))) {
     case 2:     break;
     case 4:     flags += 1;     break;
     case 8:     flags += 2;     break;
@@ -132,7 +132,7 @@ const char * ZEXPORT zError(int err)
 
 #ifndef HAVE_MEMCPY
 
-void ZLIB_INTERNAL zmemcpy(uint8_t* dest, const uint8_t* source, unsigned int len)
+void ZLIB_INTERNAL zmemcpy(uint8_t* dest, const uint8_t* source, uint32_t len)
 {
     if (len == 0) return;
     do {
@@ -140,7 +140,7 @@ void ZLIB_INTERNAL zmemcpy(uint8_t* dest, const uint8_t* source, unsigned int le
     } while (--len != 0);
 }
 
-int ZLIB_INTERNAL zmemcmp(const uint8_t* s1, const uint8_t* s2, unsigned int len)
+int ZLIB_INTERNAL zmemcmp(const uint8_t* s1, const uint8_t* s2, uint32_t len)
 {
     uint32_t j;
 
@@ -150,7 +150,7 @@ int ZLIB_INTERNAL zmemcmp(const uint8_t* s1, const uint8_t* s2, unsigned int len
     return 0;
 }
 
-void ZLIB_INTERNAL zmemzero(uint8_t* dest, unsigned int len)
+void ZLIB_INTERNAL zmemzero(uint8_t* dest, uint32_t len)
 {
     if (len == 0) return;
     do {
@@ -162,15 +162,15 @@ void ZLIB_INTERNAL zmemzero(uint8_t* dest, unsigned int len)
 #ifndef MY_ZCALLOC /* Any system without a special alloc function */
 
 #ifndef STDC
-extern voidp  malloc (unsigned int size);
-extern voidp  calloc (unsigned int items, unsigned int size);
+extern voidp  malloc (uint32_t size);
+extern voidp  calloc (uint32_t items, uint32_t size);
 extern void   free   (void * ptr);
 #endif
 
 void ZLIB_INTERNAL *zcalloc (void *opaque, uint32_t items, uint32_t size)
 {
     (void)opaque;
-    return sizeof(unsigned int) > 2 ? (void *)malloc(items * size) :
+    return sizeof(uint32_t) > 2 ? (void *)malloc(items * size) :
                               (void *)calloc(items, size);
 }
 

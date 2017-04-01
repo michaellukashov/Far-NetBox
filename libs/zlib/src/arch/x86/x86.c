@@ -24,7 +24,7 @@ ZLIB_INTERNAL int x86_cpu_has_tzcnt;
 
 static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx) {
 #ifdef _MSC_VER
-	unsigned int registers[4];
+	uint32_t registers[4];
 	__cpuid(registers, info);
 
 	*eax = registers[0];
@@ -32,10 +32,10 @@ static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigne
 	*ecx = registers[2];
 	*edx = registers[3];
 #else
-	unsigned int _eax;
-	unsigned int _ebx;
-	unsigned int _ecx;
-	unsigned int _edx;
+	uint32_t _eax;
+	uint32_t _ebx;
+	uint32_t _ecx;
+	uint32_t _edx;
 	__cpuid(info, _eax, _ebx, _ecx, _edx);
 	*eax = _eax;
 	*ebx = _ebx;

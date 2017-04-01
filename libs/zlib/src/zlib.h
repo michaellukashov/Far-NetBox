@@ -86,7 +86,7 @@ extern "C" {
   even in the case of corrupted input.
 */
 
-typedef void *(*alloc_func) (void *opaque, unsigned int items, unsigned int size);
+typedef void *(*alloc_func) (void *opaque, uint32_t items, uint32_t size);
 typedef void  (*free_func)  (void *opaque, void *address);
 
 struct internal_state;
@@ -125,12 +125,12 @@ typedef struct gz_header_s {
     int             xflags;     /* extra flags (not used when writing a gzip file) */
     int             os;         /* operating system */
     uint8_t   *extra;     /* pointer to extra field or Z_NULL if none */
-    unsigned int    extra_len;  /* extra field length (valid if extra != Z_NULL) */
-    unsigned int    extra_max;  /* space at extra (only when reading header) */
+    uint32_t    extra_len;  /* extra field length (valid if extra != Z_NULL) */
+    uint32_t    extra_max;  /* space at extra (only when reading header) */
     uint8_t   *name;      /* pointer to zero-terminated file name or Z_NULL */
-    unsigned int    name_max;   /* space at name (only when reading header) */
+    uint32_t    name_max;   /* space at name (only when reading header) */
     uint8_t   *comment;   /* pointer to zero-terminated comment or Z_NULL */
-    unsigned int    comm_max;   /* space at comment (only when reading header) */
+    uint32_t    comm_max;   /* space at comment (only when reading header) */
     int             hcrc;       /* true if there was or will be a header crc */
     int             done;       /* true when done reading gzip header (not used
                                    when writing a gzip file) */
@@ -609,7 +609,7 @@ ZEXTERN int ZEXPORT deflateInit2(z_stream *strm,
 
 ZEXTERN int ZEXPORT deflateSetDictionary(z_stream *strm,
                                              const uint8_t *dictionary,
-                                             unsigned int dictLength);
+                                             uint32_t dictLength);
 /*
      Initializes the compression dictionary from the given byte sequence
    without producing any compressed output.  When using the zlib format, this
@@ -653,7 +653,7 @@ ZEXTERN int ZEXPORT deflateSetDictionary(z_stream *strm,
 
 ZEXTERN int ZEXPORT deflateGetDictionary(z_stream * strm,
                                              uint8_t *dictionary,
-                                             unsigned int  *dictLength);
+                                             uint32_t  *dictLength);
 /*
      Returns the sliding dictionary being maintained by deflate.  dictLength is
    set to the number of bytes in the dictionary, and that many bytes are copied
@@ -881,7 +881,7 @@ ZEXTERN int ZEXPORT inflateInit2(z_stream *strm, int  windowBits);
 
 ZEXTERN int ZEXPORT inflateSetDictionary(z_stream *strm,
                                            const uint8_t *dictionary,
-                                           unsigned int dictLength);
+                                           uint32_t dictLength);
 /*
      Initializes the decompression dictionary from the given uncompressed byte
    sequence.  This function must be called immediately after a call of inflate,
@@ -904,7 +904,7 @@ ZEXTERN int ZEXPORT inflateSetDictionary(z_stream *strm,
 
 ZEXTERN int ZEXPORT inflateGetDictionary(z_stream * strm,
                                              uint8_t *dictionary,
-                                             unsigned int  *dictLength);
+                                             uint32_t  *dictLength);
 /*
      Returns the sliding dictionary being maintained by inflate.  dictLength is
    set to the number of bytes in the dictionary, and that many bytes are copied
@@ -1173,7 +1173,7 @@ ZEXTERN uint64_t ZEXPORT zlibCompileFlags(void);
 /* Return flags indicating compile-time options.
 
     Type sizes, two bits each, 00 = 16 bits, 01 = 32, 10 = 64, 11 = other:
-     1.0: size of unsigned int
+     1.0: size of uint32_t
      3.2: size of uint64_t
      5.4: size of void * (pointer)
      7.6: size of z_off_t
