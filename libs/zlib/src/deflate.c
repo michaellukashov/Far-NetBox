@@ -471,7 +471,7 @@ int ZEXPORT deflateSetDictionary(z_stream *strm, const unsigned char *dictionary
         fill_window(s);
     }
     s->strstart += s->lookahead;
-    s->block_start = (long)s->strstart;
+    s->block_start = (int64_t)s->strstart;
     s->insert = s->lookahead;
     s->lookahead = 0;
     s->match_length = s->prev_length = MIN_MATCH-1;
@@ -1547,7 +1547,7 @@ void fill_window_c(deflate_state *s)
             zmemcpy(s->window, s->window+wsize, (uint32_t)wsize);
             s->match_start -= wsize;
             s->strstart    -= wsize; /* we now have strstart >= MAX_DIST */
-            s->block_start -= (long) wsize;
+            s->block_start -= (int64_t) wsize;
 
             /* Slide the hash table (could be avoided with 32 bit values
                at the expense of memory usage). We slide even when level == 0
@@ -1837,12 +1837,12 @@ static block_state deflate_stored(deflate_state *s, int flush)
     /* If flushing and all input has been consumed, then done. */
     if (flush != Z_NO_FLUSH && flush != Z_FINISH &&
         s->strm->avail_in == 0 && 
-        (long)s->strstart == s->block_start)
+        (int64_t)s->strstart == s->block_start)
         return block_done;
 
     /* Fill the window with any remaining input. */
     have = s->window_size - s->strstart - 1;
-    if (s->strm->avail_in > have && s->block_start >= (long)s->w_size) {
+    if (s->strm->avail_in > have && s->block_start >= (int64_t)s->w_size) {
         /* Slide the window down. */
         s->block_start -= s->w_size;
         s->strstart -= s->w_size;
@@ -1999,7 +1999,7 @@ static block_state deflate_fast(s, flush)
         FLUSH_BLOCK(s, 1);
         return finish_done;
     }
-    if ((long)s->strstart > s->block_start)
+    if ((int64_t)s->strstart > s->block_start)
         FLUSH_BLOCK(s, 0);
     return block_done;
 }

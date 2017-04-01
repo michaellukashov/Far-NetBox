@@ -1054,7 +1054,7 @@ int ZLIB_INTERNAL _tr_tally(deflate_state *s, uint32_t dist, uint32_t lc)
     if ((s->last_lit & 0x1fff) == 0 && s->level > 2) {
         /* Compute an upper bound for the compressed length */
         uint64_t out_length = (uint64_t)s->last_lit*8L;
-        uint64_t in_length = (uint64_t)((long)s->strstart - s->block_start);
+        uint64_t in_length = (uint64_t)((int64_t)s->strstart - s->block_start);
         int dcode;
         for (dcode = 0; dcode < D_CODES; dcode++) {
             out_length += (uint64_t)s->dyn_dtree[dcode].Freq *

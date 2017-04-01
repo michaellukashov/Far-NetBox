@@ -323,11 +323,11 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
  *       lot easier for compiler to promote this quantity to register and keep
  *       its value throughout the entire small loop.
  *
- * 2) Transfrom s3 such that it examines sizeof(long)-byte-match at a time.
+ * 2) Transfrom s3 such that it examines sizeof(int64_t)-byte-match at a time.
  *    This is done by:
  *        ------------------------------------------------
- *        v1 = load from "scan" by sizeof(long) bytes
- *        v2 = load from "match" by sizeof(lnog) bytes
+ *        v1 = load from "scan" by sizeof(int64_t) bytes
+ *        v2 = load from "match" by sizeof(int64_t) bytes
  *        v3 = v1 xor v2
  *        match-bit = little-endian-machine(yes-for-x86) ?
  *                     count-trailing-zero(v3) :
