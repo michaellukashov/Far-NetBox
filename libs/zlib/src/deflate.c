@@ -1507,6 +1507,8 @@ void check_match(deflate_state *s, IPos start, IPos match, int length)
  */
 #ifdef X86_SSE2_FILL_WINDOW
 extern void fill_window_sse(deflate_state *s);
+#elif defined(__arm__) || defined(__aarch64__) || defined(_M_ARM)
+extern void fill_window_arm(deflate_state *s);
 #endif
 void fill_window_c(deflate_state *s);
 
@@ -1523,6 +1525,8 @@ void fill_window(deflate_state *s)
     }
 # endif
 
+#elif defined(__arm__) || defined(__aarch64__) || defined(_M_ARM)
+    fill_window_arm(s);
 #else
     fill_window_c(s);
 #endif
@@ -1633,8 +1637,7 @@ void fill_window_c(deflate_state *s)
             if (str >= 1)
                 insert_string(s, str + 2 - MIN_MATCH, 1);
 #if MIN_MATCH != 3
-#warning    Call insert_string() MIN_MATCH-3 more times
-#endif
+#error Call insert_string() MIN_MATCH-3 more times
             while (s->insert) {
                 insert_string(s, str, 1);
 #ifndef FASTEST
@@ -1644,6 +1647,16 @@ void fill_window_c(deflate_state *s)
                 if (s->lookahead + s->insert < MIN_MATCH)
                     break;
             }
+#else
+            unsigned int count;
+            if (unlikely(s->lookahead == 1)){
+                count = s->insert - 1;
+            }else{
+                count = s->insert;
+            }
+            insert_string(s,str,count);
+            s->insert -= count;
+#endif
         }
         /* If the whole input has less than MIN_MATCH bytes, ins_h is garbage,
          * but this is not important since only literal bytes will be emitted.
