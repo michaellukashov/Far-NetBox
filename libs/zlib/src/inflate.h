@@ -15,6 +15,7 @@
    trailer decoding by inflate().  NO_GZIP would be used to avoid linking in
    the crc code when it is not needed.  For shared libraries, gzip decoding
    should be left enabled. */
+#define NO_GZIP
 #ifndef NO_GZIP
 #  define GUNZIP
 #endif
