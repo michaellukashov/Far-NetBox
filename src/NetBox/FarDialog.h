@@ -120,7 +120,7 @@ protected:
   void ShowItem(TFarDialogItem * Item, void * Arg);
   void EnableItem(TFarDialogItem * Item, void * Arg);
   bool ChangesLocked();
-  TFarDialogItem * ItemAt(int X, int Y);
+  TFarDialogItem * ItemAt(intptr_t X, intptr_t Y);
 
   static LONG_PTR WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2);
 

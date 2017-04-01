@@ -638,14 +638,14 @@ bool TFarDialog::HotKey(uintptr_t Key) const
   return Result;
 }
 
-TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
+TFarDialogItem * TFarDialog::ItemAt(intptr_t X, intptr_t Y)
 {
   TFarDialogItem * Result = nullptr;
   for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
   {
     TRect Bounds = GetItem(Index)->GetActualBounds();
-    if ((Bounds.Left <= X) && (X <= Bounds.Right) &&
-        (Bounds.Top <= Y) && (Y <= Bounds.Bottom))
+    if ((Bounds.Left <= (int)X) && ((int)X <= Bounds.Right) &&
+        (Bounds.Top <= (int)Y) && ((int)Y <= Bounds.Bottom))
     {
       Result = GetItem(Index);
     }
