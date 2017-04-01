@@ -196,7 +196,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
     next = *table;              /* current table to fill in */
     curr = root;                /* current table index bits */
     drop = 0;                   /* current bits to drop from code for index */
-    low = (unsigned)(-1);       /* trigger new sub-table when len > root */
+    low = (uint32_t)(-1);       /* trigger new sub-table when len > root */
     used = 1U << root;          /* use root table entries */
     mask = used - 1;            /* mask for comparing low */
 

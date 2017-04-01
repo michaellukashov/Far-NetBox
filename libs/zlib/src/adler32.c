@@ -162,7 +162,7 @@ static uint32_t adler32_combine_(uint32_t adler1, uint32_t adler2, z_off64_t len
 
     /* the derivation of this formula is left as an exercise for the reader */
     MOD63(len2);                /* assumes len2 >= 0 */
-    rem = (unsigned)len2;
+    rem = (uint32_t)len2;
     sum1 = adler1 & 0xffff;
     sum2 = rem * sum1;
     MOD(sum2);

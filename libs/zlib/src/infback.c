@@ -173,19 +173,19 @@ static void fixedtables(struct inflate_state *state)
    an error. */
 #define NEEDBITS(n) \
     do { \
-        while (bits < (unsigned)(n)) \
+        while (bits < (uint32_t)(n)) \
             PULLBYTE(); \
     } while (0)
 
 /* Return the low n bits of the bit accumulator (n < 16) */
 #define BITS(n) \
-    ((unsigned)hold & ((1U << (n)) - 1))
+    ((uint32_t)hold & ((1U << (n)) - 1))
 
 /* Remove n bits from the bit accumulator */
 #define DROPBITS(n) \
     do { \
         hold >>= (n); \
-        bits -= (unsigned)(n); \
+        bits -= (uint32_t)(n); \
     } while (0)
 
 /* Remove zero to seven bits as needed to go to a byte boundary */
@@ -404,7 +404,7 @@ int ZEXPORT inflateBack(z_stream *strm, in_func in, void *in_desc, out_func out,
                             state->mode = BAD;
                             break;
                         }
-                        len = (unsigned)(state->lens[state->have - 1]);
+                        len = (uint32_t)(state->lens[state->have - 1]);
                         copy = 3 + BITS(2);
                         DROPBITS(2);
                     }

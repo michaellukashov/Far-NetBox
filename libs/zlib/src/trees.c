@@ -293,7 +293,7 @@ static void tr_static_init(void)
     /* The static distance tree is trivial: */
     for (n = 0; n < D_CODES; n++) {
         static_dtree[n].Len = 5;
-        static_dtree[n].Code = bi_reverse((unsigned)n, 5);
+        static_dtree[n].Code = bi_reverse((uint32_t)n, 5);
     }
     static_init_done = 1;
 
@@ -519,9 +519,9 @@ static void gen_bitlen(deflate_state *s, tree_desc *desc)
         if (n >= base)
             xbits = extra[n-base];
         f = tree[n].Freq;
-        s->opt_len += (uint64_t)f * (unsigned)(bits + xbits);
+        s->opt_len += (uint64_t)f * (uint32_t)(bits + xbits);
         if (stree)
-            s->static_len += (uint64_t)f * (unsigned)(stree[n].Len + xbits);
+            s->static_len += (uint64_t)f * (uint32_t)(stree[n].Len + xbits);
     }
     if (overflow == 0)
         return;
@@ -554,7 +554,7 @@ static void gen_bitlen(deflate_state *s, tree_desc *desc)
             m = s->heap[--h];
             if (m > max_code)
                 continue;
-            if ((uint32_t)tree[m].Len != (unsigned)bits) {
+            if ((uint32_t)tree[m].Len != (uint32_t)bits) {
                 Trace((stderr, "code %d bits %d->%u\n", m, tree[m].Len, bits));
                 s->opt_len += ((uint64_t)bits - tree[m].Len) * tree[m].Freq;
                 tree[m].Len = (uint16_t)bits;

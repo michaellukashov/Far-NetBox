@@ -185,7 +185,7 @@ static const config configuration_table[10] = {
  */
 #define CLEAR_HASH(s) \
     s->head[s->hash_size-1] = NIL; \
-    zmemzero((unsigned char *)s->head, (unsigned)(s->hash_size-1)*sizeof(*s->head));
+    zmemzero((unsigned char *)s->head, (uint32_t)(s->hash_size-1)*sizeof(*s->head));
 
 /* ===========================================================================
  * Slide the hash table when sliding the window down (could be avoided with 32
@@ -1346,7 +1346,7 @@ static uint32_t longest_match(s, cur_match)
         /* The funny "do {}" generates better code on most compilers */
 
         /* Here, scan <= window+strstart+257 */
-        Assert(scan <= s->window+(unsigned)(s->window_size-1), "wild scan");
+        Assert(scan <= s->window+(uint32_t)(s->window_size-1), "wild scan");
         if (*scan == *match) scan++;
 
         len = (MAX_MATCH - 1) - (int)(strend-scan);
@@ -1378,7 +1378,7 @@ static uint32_t longest_match(s, cur_match)
                  *++scan == *++match && *++scan == *++match &&
                  scan < strend);
 
-        Assert(scan <= s->window+(unsigned)(s->window_size-1), "wild scan");
+        Assert(scan <= s->window+(uint32_t)(s->window_size-1), "wild scan");
 
         len = MAX_MATCH - (int)(strend - scan);
         scan = strend - MAX_MATCH;
@@ -1452,7 +1452,7 @@ static uint32_t longest_match(s, cur_match)
              *++scan == *++match && *++scan == *++match &&
              scan < strend);
 
-    Assert(scan <= s->window+(unsigned)(s->window_size-1), "wild scan");
+    Assert(scan <= s->window+(uint32_t)(s->window_size-1), "wild scan");
 
     len = MAX_MATCH - (int)(strend - scan);
 
@@ -1538,13 +1538,13 @@ void fill_window_c(deflate_state *s)
     Assert(s->lookahead < MIN_LOOKAHEAD, "already enough lookahead");
 
     do {
-        more = (unsigned)(s->window_size -(uint64_t)s->lookahead -(uint64_t)s->strstart);
+        more = (uint32_t)(s->window_size -(uint64_t)s->lookahead -(uint64_t)s->strstart);
 
         /* If the window is almost full and there is insufficient lookahead,
          * move the upper half to the lower one to make room in the upper half.
          */
         if (s->strstart >= wsize+MAX_DIST(s)) {
-            zmemcpy(s->window, s->window+wsize, (unsigned)wsize);
+            zmemcpy(s->window, s->window+wsize, (uint32_t)wsize);
             s->match_start -= wsize;
             s->strstart    -= wsize; /* we now have strstart >= MAX_DIST */
             s->block_start -= (long) wsize;
@@ -1669,7 +1669,7 @@ void fill_window_c(deflate_state *s)
             init = s->window_size - curr;
             if (init > WIN_INIT)
                 init = WIN_INIT;
-            zmemzero(s->window + curr, (unsigned)init);
+            zmemzero(s->window + curr, (uint32_t)init);
             s->high_water = curr + init;
         }
         else if (s->high_water < (uint64_t)curr + WIN_INIT) {
@@ -1680,7 +1680,7 @@ void fill_window_c(deflate_state *s)
             init = (uint64_t)curr + WIN_INIT - s->high_water;
             if (init > s->window_size - s->high_water)
                 init = s->window_size - s->high_water;
-            zmemzero(s->window + s->high_water, (unsigned)init);
+            zmemzero(s->window + s->high_water, (uint32_t)init);
             s->high_water += init;
         }
     }

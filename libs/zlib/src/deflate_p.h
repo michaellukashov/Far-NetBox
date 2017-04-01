@@ -80,7 +80,7 @@ static inline void bulk_insert_str(deflate_state *const s, Pos startpos, uint32_
  */
 #define FLUSH_BLOCK_ONLY(s, last) { \
    _tr_flush_block(s, (s->block_start >= 0L ? \
-                   (char *)&s->window[(unsigned)s->block_start] : \
+                   (char *)&s->window[(uint32_t)s->block_start] : \
                    (char *)Z_NULL), \
                    (uint64_t)((long)s->strstart - s->block_start), \
                 (last)); \

@@ -26,14 +26,14 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
     Assert(s->lookahead < MIN_LOOKAHEAD, "already enough lookahead");
 
     do {
-        more = (unsigned)(s->window_size -(uint64_t)s->lookahead -(uint64_t)s->strstart);
+        more = (uint32_t)(s->window_size -(uint64_t)s->lookahead -(uint64_t)s->strstart);
 
         /* Deal with !@#$% 64K limit: */
         if (sizeof(int) <= 2) {
             if (more == 0 && s->strstart == 0 && s->lookahead == 0) {
                 more = wsize;
 
-            } else if (more == (unsigned)(-1)) {
+            } else if (more == (uint32_t)(-1)) {
                 /* Very unlikely, but possible on 16 bit machine if
                  * strstart == 0 && lookahead == 1 (input done a byte at time)
                  */
@@ -45,7 +45,7 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
          * move the upper half to the lower one to make room in the upper half.
          */
         if (s->strstart >= wsize+MAX_DIST(s)) {
-            zmemcpy(s->window, s->window+wsize, (unsigned)wsize);
+            zmemcpy(s->window, s->window+wsize, (uint32_t)wsize);
             s->match_start -= wsize;
             s->strstart    -= wsize; /* we now have strstart >= MAX_DIST */
             s->block_start -= (long) wsize;
@@ -145,7 +145,7 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
             init = s->window_size - curr;
             if (init > WIN_INIT)
                 init = WIN_INIT;
-            zmemzero(s->window + curr, (unsigned)init);
+            zmemzero(s->window + curr, (uint32_t)init);
             s->high_water = curr + init;
         } else if (s->high_water < (uint64_t)curr + WIN_INIT) {
             /* High water mark at or above current data, but below current data
@@ -155,7 +155,7 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
             init = (uint64_t)curr + WIN_INIT - s->high_water;
             if (init > s->window_size - s->high_water)
                 init = s->window_size - s->high_water;
-            zmemzero(s->window + s->high_water, (unsigned)init);
+            zmemzero(s->window + s->high_water, (uint32_t)init);
             s->high_water += init;
         }
     }

@@ -178,14 +178,14 @@ int ZEXPORT inflateReset2(z_stream *strm, int windowBits)
     /* set number of window bits, free window if different */
     if (windowBits && (windowBits < 8 || windowBits > 15))
         return Z_STREAM_ERROR;
-    if (state->window != Z_NULL && state->wbits != (unsigned)windowBits) {
+    if (state->window != Z_NULL && state->wbits != (uint32_t)windowBits) {
         ZFREE(strm, state->window);
         state->window = Z_NULL;
     }
 
     /* update state and reset the rest of it */
     state->wrap = wrap;
-    state->wbits = (unsigned)windowBits;
+    state->wbits = (uint32_t)windowBits;
     return inflateReset(strm);
 }
 
@@ -251,7 +251,7 @@ int ZEXPORT inflatePrime(z_stream *strm, int bits, int value)
     if (bits > 16 || state->bits + (unsigned int)bits > 32)
         return Z_STREAM_ERROR;
     value &= (1L << bits) - 1;
-    state->hold += (unsigned)value << state->bits;
+    state->hold += (uint32_t)value << state->bits;
     state->bits += (unsigned int)bits;
     return Z_OK;
 }
@@ -509,19 +509,19 @@ static int updatewindow(z_stream *strm, const unsigned char *end, uint32_t copy)
    not enough available input to do that, then return from inflate(). */
 #define NEEDBITS(n) \
     do { \
-        while (bits < (unsigned)(n)) \
+        while (bits < (uint32_t)(n)) \
             PULLBYTE(); \
     } while (0)
 
 /* Return the low n bits of the bit accumulator (n < 16) */
 #define BITS(n) \
-    ((unsigned)hold & ((1U << (n)) - 1))
+    ((uint32_t)hold & ((1U << (n)) - 1))
 
 /* Remove n bits from the bit accumulator */
 #define DROPBITS(n) \
     do { \
         hold >>= (n); \
-        bits -= (unsigned)(n); \
+        bits -= (uint32_t)(n); \
     } while (0)
 
 /* Remove zero to seven bits as needed to go to a byte boundary */
@@ -776,7 +776,7 @@ int ZEXPORT inflate(z_stream *strm, int flush)
                 if (have == 0) goto inf_leave;
                 copy = 0;
                 do {
-                    len = (unsigned)(next[copy++]);
+                    len = (uint32_t)(next[copy++]);
                     if (state->head != Z_NULL &&
                         state->head->name != Z_NULL &&
                         state->length < state->head->name_max)
@@ -799,7 +799,7 @@ int ZEXPORT inflate(z_stream *strm, int flush)
                 if (have == 0) goto inf_leave;
                 copy = 0;
                 do {
-                    len = (unsigned)(next[copy++]);
+                    len = (uint32_t)(next[copy++]);
                     if (state->head != Z_NULL &&
                         state->head->comment != Z_NULL &&
                         state->length < state->head->comm_max)
@@ -962,7 +962,7 @@ int ZEXPORT inflate(z_stream *strm, int flush)
             while (state->have < state->nlen + state->ndist) {
                 for (;;) {
                     here = state->lencode[BITS(state->lenbits)];
-                    if ((unsigned)(here.bits) <= bits)
+                    if ((uint32_t)(here.bits) <= bits)
                         break;
                     PULLBYTE();
                 }
@@ -1058,7 +1058,7 @@ int ZEXPORT inflate(z_stream *strm, int flush)
             state->back = 0;
             for (;;) {
                 here = state->lencode[BITS(state->lenbits)];
-                if ((unsigned)(here.bits) <= bits)
+                if ((uint32_t)(here.bits) <= bits)
                     break;
                 PULLBYTE();
             }
@@ -1067,7 +1067,7 @@ int ZEXPORT inflate(z_stream *strm, int flush)
                 for (;;) {
                     here = state->lencode[last.val +
                             (BITS(last.bits + last.op) >> last.bits)];
-                    if ((unsigned)last.bits + (unsigned)here.bits <= bits)
+                    if ((uint32_t)last.bits + (uint32_t)here.bits <= bits)
                         break;
                     PULLBYTE();
                 }
@@ -1076,7 +1076,7 @@ int ZEXPORT inflate(z_stream *strm, int flush)
             }
             DROPBITS(here.bits);
             state->back += here.bits;
-            state->length = (unsigned)here.val;
+            state->length = (uint32_t)here.val;
             if ((int)(here.op) == 0) {
                 Tracevv((stderr, here.val >= 0x20 && here.val < 0x7f ?
                         "inflate:         literal '%c'\n" :
@@ -1095,7 +1095,7 @@ int ZEXPORT inflate(z_stream *strm, int flush)
                 state->mode = BAD;
                 break;
             }
-            state->extra = (unsigned)(here.op) & 15;
+            state->extra = (uint32_t)(here.op) & 15;
             state->mode = LENEXT;
         case LENEXT:
             if (state->extra) {
@@ -1133,8 +1133,8 @@ int ZEXPORT inflate(z_stream *strm, int flush)
                 state->mode = BAD;
                 break;
             }
-            state->offset = (unsigned)here.val;
-            state->extra = (unsigned)(here.op) & 15;
+            state->offset = (uint32_t)here.val;
+            state->extra = (uint32_t)(here.op) & 15;
             state->mode = DISTEXT;
         case DISTEXT:
             if (state->extra) {
