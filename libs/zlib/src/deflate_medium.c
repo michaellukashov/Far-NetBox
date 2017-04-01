@@ -12,10 +12,10 @@
 #include "match.h"
 
 struct match {
-    unsigned int match_start;
-    unsigned int match_length;
-    unsigned int strstart;
-    unsigned int orgstart;
+    uint32_t match_start;
+    uint32_t match_length;
+    uint32_t strstart;
+    uint32_t orgstart;
 };
 
 #define MAX_DIST2  ((1 << MAX_WBITS) - MIN_LOOKAHEAD)
@@ -129,7 +129,7 @@ static void insert_match(deflate_state *s, struct match match) {
 
 static void fizzle_matches(deflate_state *s, struct match *current, struct match *next) {
     IPos limit;
-    unsigned char *match, *orig;
+    uint8_t *match, *orig;
     int changed = 0;
     struct match c, n;
     /* step zero: sanity checks */
