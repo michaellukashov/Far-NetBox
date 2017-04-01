@@ -22,7 +22,7 @@
  * 1.2.beta2    4 Dec 2002
  * - Change external routine names to reduce potential conflicts
  * - Correct filename to inffixed.h for fixed tables in inflate.c
- * - Make hbuf[] unsigned char to match parameter type in inflate.c
+ * - Make hbuf[] uint8_t to match parameter type in inflate.c
  * - Change strm->next_out[-state->offset] to *(strm->next_out - state->offset)
  *   to avoid negation problem on Alphas (64 bit) in inflate.c
  *
@@ -64,7 +64,7 @@
  * - Typecasting all around to reduce compiler warnings
  * - Changed loops from while (1) or do {} while (1) to for (;;), again to
  *   make compilers happy
- * - Changed type of window in inflateBackInit() to unsigned char *
+ * - Changed type of window in inflateBackInit() to uint8_t *
  *
  * 1.2.beta7    27 Jan 2003
  * - Changed many types to unsigned or unsigned short to avoid warnings
@@ -94,12 +94,12 @@
 /* function prototypes */
 static int inflateStateCheck(z_stream * strm);
 static void fixedtables(struct inflate_state *state);
-static int updatewindow(z_stream *strm, const unsigned char *end,
+static int updatewindow(z_stream *strm, const uint8_t *end,
                        uint32_t copy);
 #ifdef BUILDFIXED
     void makefixed(void);
 #endif
-static uint32_t syncsearch(uint32_t *have, const unsigned char *buf,
+static uint32_t syncsearch(uint32_t *have, const uint8_t *buf,
                           uint32_t len);
 
 static int inflateStateCheck(z_stream * strm)
@@ -386,7 +386,7 @@ void makefixed(void)
    output will fall in the output data, making match copies simpler and faster.
    The advantage may be dependent on the size of the processor's data caches.
  */
-static int updatewindow(z_stream *strm, const unsigned char *end, uint32_t copy)
+static int updatewindow(z_stream *strm, const uint8_t *end, uint32_t copy)
 {
     struct inflate_state *state;
     uint32_t dist;
@@ -395,9 +395,9 @@ static int updatewindow(z_stream *strm, const unsigned char *end, uint32_t copy)
 
     /* if it hasn't been done already, allocate space for the window */
     if (state->window == Z_NULL) {
-        state->window = (unsigned char *)
+        state->window = (uint8_t *)
                         ZALLOC(strm, 1U << state->wbits,
-                        sizeof(unsigned char));
+                        sizeof(uint8_t));
         if (state->window == Z_NULL)
             return 1;
     }
@@ -451,17 +451,17 @@ static int updatewindow(z_stream *strm, const unsigned char *end, uint32_t copy)
 #ifdef GUNZIP
 #  define CRC2(check, word) \
     do { \
-        hbuf[0] = (unsigned char)(word); \
-        hbuf[1] = (unsigned char)((word) >> 8); \
+        hbuf[0] = (uint8_t)(word); \
+        hbuf[1] = (uint8_t)((word) >> 8); \
         check = crc32(check, hbuf, 2); \
     } while (0)
 
 #  define CRC4(check, word) \
     do { \
-        hbuf[0] = (unsigned char)(word); \
-        hbuf[1] = (unsigned char)((word) >> 8); \
-        hbuf[2] = (unsigned char)((word) >> 16); \
-        hbuf[3] = (unsigned char)((word) >> 24); \
+        hbuf[0] = (uint8_t)(word); \
+        hbuf[1] = (uint8_t)((word) >> 8); \
+        hbuf[2] = (uint8_t)((word) >> 16); \
+        hbuf[3] = (uint8_t)((word) >> 24); \
         check = crc32(check, hbuf, 4); \
     } while (0)
 #endif
@@ -616,20 +616,20 @@ static int updatewindow(z_stream *strm, const unsigned char *end, uint32_t copy)
 int ZEXPORT inflate(z_stream *strm, int flush)
 {
     struct inflate_state *state;
-    const unsigned char *next;  /* next input */
-    unsigned char *put;         /* next output */
+    const uint8_t *next;  /* next input */
+    uint8_t *put;         /* next output */
     unsigned have, left;        /* available input and output */
     uint32_t hold;              /* bit buffer */
     unsigned bits;              /* bits in bit buffer */
     uint32_t in, out;           /* save starting available input and output */
     unsigned copy;              /* number of stored or match bytes to copy */
-    unsigned char *from;        /* where to copy match bytes from */
+    uint8_t *from;        /* where to copy match bytes from */
     code here;                  /* current decoding table entry */
     code last;                  /* parent table entry */
     unsigned len;               /* length to copy for repeats, bits to drop */
     int ret;                    /* return code */
 #ifdef GUNZIP
-    unsigned char hbuf[4];      /* buffer for gzip header crc calculation */
+    uint8_t hbuf[4];      /* buffer for gzip header crc calculation */
 #endif
     static const uint16_t order[19] = /* permutation of code lengths */
         {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
@@ -780,7 +780,7 @@ int ZEXPORT inflate(z_stream *strm, int flush)
                     if (state->head != Z_NULL &&
                         state->head->name != Z_NULL &&
                         state->length < state->head->name_max)
-                        state->head->name[state->length++] = (unsigned char)len;
+                        state->head->name[state->length++] = (uint8_t)len;
                 } while (len && copy < have);
                 if ((state->flags & 0x0200) && (state->wrap & 4))
                     state->check = crc32(state->check, next, copy);
@@ -803,7 +803,7 @@ int ZEXPORT inflate(z_stream *strm, int flush)
                     if (state->head != Z_NULL &&
                         state->head->comment != Z_NULL &&
                         state->length < state->head->comm_max)
-                        state->head->comment[state->length++] = (unsigned char)len;
+                        state->head->comment[state->length++] = (uint8_t)len;
                 } while (len && copy < have);
                 if ((state->flags & 0x0200) && (state->wrap & 4))
                     state->check = crc32(state->check, next, copy);
@@ -1206,7 +1206,7 @@ int ZEXPORT inflate(z_stream *strm, int flush)
         case LIT:
             if (left == 0)
                 goto inf_leave;
-            *put++ = (unsigned char)(state->length);
+            *put++ = (uint8_t)(state->length);
             left--;
             state->mode = LEN;
             break;
@@ -1305,7 +1305,7 @@ int ZEXPORT inflateEnd(z_stream *strm)
     return Z_OK;
 }
 
-int ZEXPORT inflateGetDictionary(z_stream *strm, unsigned char *dictionary, unsigned int *dictLength)
+int ZEXPORT inflateGetDictionary(z_stream *strm, uint8_t *dictionary, unsigned int *dictLength)
 {
     struct inflate_state *state;
 
@@ -1326,7 +1326,7 @@ int ZEXPORT inflateGetDictionary(z_stream *strm, unsigned char *dictionary, unsi
     return Z_OK;
 }
 
-int ZEXPORT inflateSetDictionary(z_stream *strm, const unsigned char *dictionary, unsigned int dictLength)
+int ZEXPORT inflateSetDictionary(z_stream *strm, const uint8_t *dictionary, unsigned int dictLength)
 {
     struct inflate_state *state;
     uint64_t dictid;
@@ -1387,7 +1387,7 @@ int ZEXPORT inflateGetHeader(z_stream *strm, gz_headerp head)
    called again with more data and the *have state.  *have is initialized to
    zero for the first call.
  */
-static unsigned syncsearch(uint32_t *have, const unsigned char *buf, uint32_t len)
+static unsigned syncsearch(uint32_t *have, const uint8_t *buf, uint32_t len)
 {
     uint32_t got;
     uint32_t next;
@@ -1411,7 +1411,7 @@ int ZEXPORT inflateSync(z_stream *strm)
 {
     unsigned len;               /* number of bytes to look at or looked at */
     size_t in, out;             /* temporary to save total_in and total_out */
-    unsigned char buf[4];       /* to restore bit buffer to byte string */
+    uint8_t buf[4];       /* to restore bit buffer to byte string */
     struct inflate_state *state;
 
     /* check parameters */
@@ -1428,7 +1428,7 @@ int ZEXPORT inflateSync(z_stream *strm)
         state->bits -= state->bits & 7;
         len = 0;
         while (state->bits >= 8) {
-            buf[len++] = (unsigned char)(state->hold);
+            buf[len++] = (uint8_t)(state->hold);
             state->hold >>= 8;
             state->bits -= 8;
         }
@@ -1476,7 +1476,7 @@ int ZEXPORT inflateCopy(z_stream *dest, z_stream *source)
 {
     struct inflate_state *state;
     struct inflate_state *copy;
-    unsigned char *window;
+    uint8_t *window;
     unsigned wsize;
 
     /* check input */
@@ -1491,8 +1491,8 @@ int ZEXPORT inflateCopy(z_stream *dest, z_stream *source)
         return Z_MEM_ERROR;
     window = Z_NULL;
     if (state->window != Z_NULL) {
-        window = (unsigned char *)
-                 ZALLOC(source, 1U << state->wbits, sizeof(unsigned char));
+        window = (uint8_t *)
+                 ZALLOC(source, 1U << state->wbits, sizeof(uint8_t));
         if (window == Z_NULL) {
             ZFREE(source, copy);
             return Z_MEM_ERROR;

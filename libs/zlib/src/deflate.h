@@ -97,7 +97,7 @@ typedef struct tree_desc_s {
 } tree_desc;
 
 typedef uint16_t Pos;
-typedef unsigned IPos;
+typedef uint32_t IPos;
 
 /* A Pos is an index in the character window. We use short instead of int to
  * save space in the various tables. IPos is used only for parameter passing.
@@ -106,14 +106,14 @@ typedef unsigned IPos;
 typedef struct internal_state {
     z_stream      *strm;             /* pointer back to this zlib stream */
     int           status;            /* as the name implies */
-    unsigned char *pending_buf;      /* output still pending */
-    uint64_t pending_buf_size;  /* size of pending_buf */
-    unsigned char *pending_out;      /* next pending byte to output to the stream */
-    uint64_t pending;           /* nb of bytes in the pending buffer */
+    uint8_t       *pending_buf;      /* output still pending */
+    uint64_t      pending_buf_size;  /* size of pending_buf */
+    uint8_t       *pending_out;      /* next pending byte to output to the stream */
+    uint64_t      pending;           /* nb of bytes in the pending buffer */
     int           wrap;              /* bit 0 true for zlib, bit 1 true for gzip */
     gz_headerp    gzhead;            /* gzip header information to write */
-    uint64_t gzindex;           /* where in extra, name, or comment */
-    unsigned char method;            /* can only be DEFLATED */
+    uint64_t      gzindex;           /* where in extra, name, or comment */
+    uint8_t       method;            /* can only be DEFLATED */
     int           last_flush;        /* value of flush param for previous deflate call */
 
 #ifdef X86_PCLMULQDQ_CRC
@@ -126,7 +126,7 @@ typedef struct internal_state {
     unsigned int  w_bits;            /* log2(w_size)  (8..16) */
     unsigned int  w_mask;            /* w_size - 1 */
 
-    unsigned char *window;
+    uint8_t *window;
     /* Sliding window. Input bytes are read into the second half of the window,
      * and move to the first half later to keep a dictionary of at least wSize
      * bytes. With this organization, matches are limited to a distance of
@@ -225,11 +225,11 @@ typedef struct internal_state {
      * The same heap array is used to build all trees.
      */
 
-    unsigned char depth[2*L_CODES+1];
+    uint8_t depth[2*L_CODES+1];
     /* Depth of each subtree used as tie breaker for trees of equal frequency
      */
 
-    unsigned char *l_buf;       /* buffer for literals or lengths */
+    uint8_t *l_buf;       /* buffer for literals or lengths */
 
     unsigned int  lit_bufsize;
     /* Size of match buffer for literals/lengths.  There are 4 reasons for
@@ -302,7 +302,7 @@ typedef enum {
 /* Output a byte on the stream.
  * IN assertion: there is enough room in pending_buf.
  */
-#define put_byte(s, c) {s->pending_buf[s->pending++] = (unsigned char)(c);}
+#define put_byte(s, c) {s->pending_buf[s->pending++] = (uint8_t)(c);}
 
 /* ===========================================================================
  * Output a short LSB first on the stream.
@@ -324,8 +324,8 @@ typedef enum {
 }
 #else
 #define put_short(s, w) { \
-    put_byte(s, (unsigned char)((w) & 0xff)); \
-    put_byte(s, (unsigned char)((uint16_t)(w) >> 8)); \
+    put_byte(s, (uint8_t)((w) & 0xff)); \
+    put_byte(s, (uint8_t)((uint16_t)(w) >> 8)); \
 }
 #endif
 
@@ -365,22 +365,22 @@ void ZLIB_INTERNAL bi_windup(deflate_state *s);
 /* Inline versions of _tr_tally for speed: */
 
 #if defined(GEN_TREES_H) || !defined(STDC)
-    extern unsigned char ZLIB_INTERNAL _length_code[];
-    extern unsigned char ZLIB_INTERNAL _dist_code[];
+    extern uint8_t ZLIB_INTERNAL _length_code[];
+    extern uint8_t ZLIB_INTERNAL _dist_code[];
 # else
-    extern const unsigned char ZLIB_INTERNAL _length_code[];
-    extern const unsigned char ZLIB_INTERNAL _dist_code[];
+    extern const uint8_t ZLIB_INTERNAL _length_code[];
+    extern const uint8_t ZLIB_INTERNAL _dist_code[];
 # endif
 
 # define _tr_tally_lit(s, c, flush) \
-  { unsigned char cc = (c); \
+  { uint8_t cc = (c); \
     s->d_buf[s->last_lit] = 0; \
     s->l_buf[s->last_lit++] = cc; \
     s->dyn_ltree[cc].Freq++; \
     flush = (s->last_lit == s->lit_bufsize-1); \
   }
 # define _tr_tally_dist(s, distance, length, flush) \
-  { unsigned char len = (unsigned char)(length); \
+  { uint8_t len = (uint8_t)(length); \
     uint16_t dist = (uint16_t)(distance); \
     s->d_buf[s->last_lit] = dist; \
     s->l_buf[s->last_lit++] = len; \

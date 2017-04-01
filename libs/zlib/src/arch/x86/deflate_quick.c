@@ -26,7 +26,7 @@
 extern void fill_window_sse(deflate_state *s);
 extern void flush_pending(z_stream *strm);
 
-static inline long compare258(const unsigned char *const src0, const unsigned char *const src1) {
+static inline long compare258(const uint8_t *const src0, const uint8_t *const src1) {
 #ifdef _MSC_VER
     long cnt;
 

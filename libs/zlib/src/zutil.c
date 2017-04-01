@@ -132,7 +132,7 @@ const char * ZEXPORT zError(int err)
 
 #ifndef HAVE_MEMCPY
 
-void ZLIB_INTERNAL zmemcpy(unsigned char* dest, const unsigned char* source, unsigned int len)
+void ZLIB_INTERNAL zmemcpy(uint8_t* dest, const uint8_t* source, unsigned int len)
 {
     if (len == 0) return;
     do {
@@ -140,7 +140,7 @@ void ZLIB_INTERNAL zmemcpy(unsigned char* dest, const unsigned char* source, uns
     } while (--len != 0);
 }
 
-int ZLIB_INTERNAL zmemcmp(const unsigned char* s1, const unsigned char* s2, unsigned int len)
+int ZLIB_INTERNAL zmemcmp(const uint8_t* s1, const uint8_t* s2, unsigned int len)
 {
     uint32_t j;
 
@@ -150,7 +150,7 @@ int ZLIB_INTERNAL zmemcmp(const unsigned char* s1, const unsigned char* s2, unsi
     return 0;
 }
 
-void ZLIB_INTERNAL zmemzero(unsigned char* dest, unsigned int len)
+void ZLIB_INTERNAL zmemzero(uint8_t* dest, unsigned int len)
 {
     if (len == 0) return;
     do {

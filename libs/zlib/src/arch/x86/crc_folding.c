@@ -255,7 +255,7 @@ local void partial_fold(deflate_state *const s, const size_t len, __m128i *xmm_c
     *xmm_crc3 = _mm_castps_si128(ps_res);
 }
 
-ZLIB_INTERNAL void crc_fold_copy(deflate_state *const s, unsigned char *dst, const unsigned char *src, long len) {
+ZLIB_INTERNAL void crc_fold_copy(deflate_state *const s, uint8_t *dst, const uint8_t *src, long len) {
     uint64_t algn_diff;
     __m128i xmm_t0, xmm_t1, xmm_t2, xmm_t3;
 
