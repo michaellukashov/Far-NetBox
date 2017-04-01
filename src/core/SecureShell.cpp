@@ -76,8 +76,7 @@ TSecureShell::~TSecureShell()
   DebugAssert(FWaiting == 0);
   SetActive(false);
   ResetConnection();
-  ::CloseHandle(FSocketEvent);
-  FSocketEvent = nullptr;
+  SAFE_CLOSE_HANDLE(FSocketEvent);
 }
 
 void TSecureShell::ResetConnection()
@@ -578,7 +577,7 @@ bool TSecureShell::TryFtp()
               Result = (::WaitForSingleObject(Event, 2000) == WAIT_OBJECT_0);
             }
           }
-          ::CloseHandle(Event);
+          SAFE_CLOSE_HANDLE(Event);
         }
         closesocket(Socket);
       }

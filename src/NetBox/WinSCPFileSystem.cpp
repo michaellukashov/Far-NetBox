@@ -281,7 +281,7 @@ void TKeepaliveThread::Execute()
       FFileSystem->KeepaliveThreadCallback();
     }
   }
-  ::CloseHandle(FEvent);
+  SAFE_CLOSE_HANDLE(FEvent);
 }
 
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :

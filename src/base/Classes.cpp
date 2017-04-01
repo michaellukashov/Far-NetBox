@@ -1007,7 +1007,7 @@ void TStringList::LoadFromFile(const UnicodeString & AFileName)
     FileBuffer.LoadStream(&Stream, Size, True);
     bool ConvertToken = false;
     FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
-    ::CloseHandle(FileHandle);
+    SAFE_CLOSE_HANDLE(FileHandle);
     UnicodeString Str(FileBuffer.GetData(), static_cast<intptr_t>(FileBuffer.GetSize()));
     SetTextStr(Str);
   }
@@ -1366,7 +1366,7 @@ THandleStream::THandleStream(HANDLE AHandle) :
 THandleStream::~THandleStream()
 {
   // if (FHandle != INVALID_HANDLE_VALUE)
-  //   ::CloseHandle(FHandle);
+  //   SAFE_CLOSE_HANDLE(FHandle);
 }
 
 int64_t THandleStream::Read(void * Buffer, int64_t Count)

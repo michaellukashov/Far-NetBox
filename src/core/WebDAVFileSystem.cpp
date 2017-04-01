@@ -1458,7 +1458,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
       }
       else if (File != nullptr)
       {
-        CloseHandle(File);
+        SAFE_CLOSE_HANDLE(File);
       }
     };
     OperationProgress->SetFileInProgress();
@@ -2250,7 +2250,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
           }
           else
           {
-            CloseHandle(LocalFileHandle);
+            SAFE_CLOSE_HANDLE(LocalFileHandle);
           }
 
           if (DeleteLocalFile)

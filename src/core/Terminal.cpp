@@ -4886,13 +4886,13 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
 
       if ((AHandle == nullptr) || NoHandle)
       {
-        ::CloseHandle(LocalFileHandle);
+        SAFE_CLOSE_HANDLE(LocalFileHandle);
         LocalFileHandle = INVALID_HANDLE_VALUE;
       }
     }
     catch (...)
     {
-      ::CloseHandle(LocalFileHandle);
+      SAFE_CLOSE_HANDLE(LocalFileHandle);
       throw;
     }
   }
@@ -6505,7 +6505,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
     this->TerminalOpenLocalFile(LocalFileName, GENERIC_WRITE,
       &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, nullptr);
     bool Result = ::SetFileTime(LocalFileHandle, nullptr, AcTime, WrTime) > 0;
-    ::CloseHandle(LocalFileHandle);
+    SAFE_CLOSE_HANDLE(LocalFileHandle);
     if (!Result)
     {
       Abort();

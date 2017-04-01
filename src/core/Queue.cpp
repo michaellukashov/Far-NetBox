@@ -346,7 +346,7 @@ TSimpleThread::~TSimpleThread()
 
   if (FThread != nullptr)
   {
-    ::CloseHandle(FThread);
+    SAFE_CLOSE_HANDLE(FThread);
   }
 }
 
@@ -410,7 +410,7 @@ TSignalThread::~TSignalThread()
 
   if (FEvent)
   {
-    ::CloseHandle(FEvent);
+    SAFE_CLOSE_HANDLE(FEvent);
   }
 }
 
@@ -2291,7 +2291,7 @@ TTerminalThread::~TTerminalThread()
 {
   Close();
 
-  ::CloseHandle(FActionEvent);
+  SAFE_CLOSE_HANDLE(FActionEvent);
 
   DebugAssert(FTerminal->GetOnInformation() == nb::bind(&TTerminalThread::TerminalInformation, this));
   DebugAssert(FTerminal->GetOnQueryUser() == nb::bind(&TTerminalThread::TerminalQueryUser, this));

@@ -2721,7 +2721,7 @@ bool IsDirectoryWriteable(const UnicodeString & APath)
   bool Result = (LocalFileHandle != INVALID_HANDLE_VALUE);
   if (Result)
   {
-    ::CloseHandle(LocalFileHandle);
+    SAFE_CLOSE_HANDLE(LocalFileHandle);
   }
   return Result;
 }

@@ -1273,7 +1273,7 @@ void __fastcall TIniFileStorage::Flush()
           }
           __finally
           {
-            CloseHandle(Handle);
+            SAFE_CLOSE_HANDLE(Handle);
             delete Stream;
           }
         }

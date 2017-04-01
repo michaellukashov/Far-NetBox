@@ -4837,10 +4837,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
   {
     SCOPE_EXIT
     {
-      if (LocalFileHandle != INVALID_HANDLE_VALUE)
-      {
-        ::CloseHandle(LocalFileHandle);
-      }
+      SAFE_CLOSE_HANDLE(LocalFileHandle);
     };
     OperationProgress->SetFileInProgress();
 
@@ -5917,7 +5914,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           {
             SetFileTimeError = ::GetLastError();
           }
-          ::CloseHandle(LocalFileHandle);
+          SAFE_CLOSE_HANDLE(LocalFileHandle);
         }
 
         if (SetFileTimeError != ERROR_SUCCESS)
@@ -5990,10 +5987,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
       bool ResumeTransfer = false;
       SCOPE_EXIT
       {
-        if (LocalFileHandle != INVALID_HANDLE_VALUE)
-        {
-          ::CloseHandle(LocalFileHandle);
-        }
+        SAFE_CLOSE_HANDLE(LocalFileHandle);
         if (FileStream)
         {
           SAFE_DESTROY(FileStream);
@@ -6046,7 +6040,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
 
           if (!ResumeTransfer)
           {
-            ::CloseHandle(LocalFileHandle);
+            SAFE_CLOSE_HANDLE(LocalFileHandle);
             LocalFileHandle = INVALID_HANDLE_VALUE;
             FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()), "",
             [&]()
@@ -6172,7 +6166,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
           // is NULL when overwriting read-only file
           if (LocalFileHandle != INVALID_HANDLE_VALUE)
           {
-            ::CloseHandle(LocalFileHandle);
+            SAFE_CLOSE_HANDLE(LocalFileHandle);
             LocalFileHandle = INVALID_HANDLE_VALUE;
           }
         }
@@ -6383,7 +6377,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
         SetFileTime(LocalFileHandle, nullptr, &AcTime, &WrTime);
       }
 
-      ::CloseHandle(LocalFileHandle);
+      SAFE_CLOSE_HANDLE(LocalFileHandle);
       LocalFileHandle = INVALID_HANDLE_VALUE;
 
       if (ResumeAllowed)

@@ -61,14 +61,8 @@ TFarDialog::~TFarDialog()
   nb_free(FDialogItems);
   FDialogItemsCapacity = 0;
   SAFE_DESTROY(FContainers);
-  if (FSynchronizeObjects[0] != INVALID_HANDLE_VALUE)
-  {
-    ::CloseHandle(FSynchronizeObjects[0]);
-  }
-  if (FSynchronizeObjects[1] != INVALID_HANDLE_VALUE)
-  {
-    ::CloseHandle(FSynchronizeObjects[1]);
-  }
+  SAFE_CLOSE_HANDLE(FSynchronizeObjects[0]);
+  SAFE_CLOSE_HANDLE(FSynchronizeObjects[1]);
 }
 
 void TFarDialog::SetBounds(const TRect & Value)
