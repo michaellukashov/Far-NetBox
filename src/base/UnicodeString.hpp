@@ -335,7 +335,7 @@ public:
   RawByteString & operator +=(const char Ch);
 
   bool operator ==(const char * rhs) const
-  { return strcmp(reinterpret_cast<const char *>(Data.c_str()), rhs) == 0; }
+  { return Data == rhs; }
   inline friend bool operator ==(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data == rhs.Data; }
   inline friend bool operator !=(RawByteString & lhs, RawByteString & rhs)
