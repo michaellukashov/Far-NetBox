@@ -137,7 +137,7 @@
 
 #endif
 
-CFtpListResult::CFtpListResult(t_server server, bool *bUTF8, int *nCodePage)
+CFtpListResult::CFtpListResult(t_server & server, bool *bUTF8, int *nCodePage)
 {
   listhead=curpos=0;
 
