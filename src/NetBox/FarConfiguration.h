@@ -89,9 +89,9 @@ protected:
   virtual void Saved();
 
 private:
-    __int64 GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t * Name) const;
-    __int64 GetConfirmationsSetting(HANDLE & Settings, const wchar_t * Name) const;
-    __int64 GetConfirmationsSettings() const;
+  int64_t GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t * Name) const;
+  int64_t GetConfirmationsSetting(HANDLE & Settings, const wchar_t * Name) const;
+  int64_t GetConfirmationsSettings() const;
 
 private:
   TCustomFarPlugin * FFarPlugin;
