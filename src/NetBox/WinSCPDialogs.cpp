@@ -4227,7 +4227,7 @@ void TSessionDialog::FillCodePageEdit()
 {
   // CodePageEditAdd(CP_UTF8);
   CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
-    as_object(ToPtr(65001)));
+    as_object(ToPtr((intptr_t)65001)));
   CodePageEditAdd(CP_ACP);
   CodePageEditAdd(CP_OEMCP);
   CodePageEditAdd(20866); // KOI8-r
@@ -4240,7 +4240,7 @@ void TSessionDialog::CodePageEditAdd(uint32_t Cp)
   if (::GetCodePageInfo(Cp, cpInfoEx))
   {
     CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
-      as_object(ToPtr(cpInfoEx.CodePage)));
+      as_object(ToPtr((intptr_t)cpInfoEx.CodePage)));
   }
 }
 

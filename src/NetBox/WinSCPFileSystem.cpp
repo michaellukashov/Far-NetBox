@@ -4048,12 +4048,12 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     DebugAssert(it_e != FMultipleEdits.end());
 
     intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT);
-    int Pos = 0;
+    intptr_t Pos = 0;
     while (Pos < WindowCount)
     {
       WindowInfo Window;
       ClearStruct(Window);
-      Window.Pos = Pos;
+      Window.Pos = (int)Pos;
       UnicodeString EditedFileName(1024, 0);
       Window.Name = const_cast<wchar_t *>(EditedFileName.c_str());
       Window.NameSize = static_cast<int>(EditedFileName.GetLength());
