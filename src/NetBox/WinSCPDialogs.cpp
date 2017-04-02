@@ -5712,7 +5712,7 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
   TCopyParamsContainer * CopyParamsContainer = new TCopyParamsContainer(
     Dialog, 0, CopyParamAttrs);
 
-  Dialog->SetSize(TPoint(78, 2 + CopyParamsContainer->GetHeight() + 3));
+  Dialog->SetSize(TPoint(78, 2 + (int)CopyParamsContainer->GetHeight() + 3));
 
   Dialog->SetNextItemPosition(ipNewLine);
 
