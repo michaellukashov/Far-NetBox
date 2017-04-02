@@ -331,7 +331,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         command[1]=(m_nProxyOpID==PROXYOP_CONNECT)?1:2;
         command[2]=0;
         command[3]=m_nProxyPeerIp?1:3;
-        int len=4;
+        size_t len=4;
         if (m_nProxyPeerIp)
         {
           memcpy(&command[len],&m_nProxyPeerIp,4);

@@ -109,7 +109,7 @@ void CAsyncSslSocketLayer::OnReceive(int nErrorCode)
     m_mayTriggerRead = false;
 
     //Get number of bytes we can receive and store in the network input bio
-    int len = BIO_ctrl_get_write_guarantee(m_nbio);
+    size_t len = BIO_ctrl_get_write_guarantee(m_nbio);
     if (len > 16384)
       len = 16384;
     else if (!len)
@@ -122,7 +122,7 @@ void CAsyncSslSocketLayer::OnReceive(int nErrorCode)
     int numread = 0;
 
     // Receive data
-    numread = ReceiveNext(buffer, len);
+    numread = ReceiveNext(buffer, (int)len);
     if (numread > 0)
     {
       //Store it in the network input bio and process data
@@ -254,7 +254,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
     //Send the data waiting in the network bio
     char buffer[32 * 1024];
     size_t len = BIO_ctrl_pending(m_nbio);
-    int numread = BIO_read(m_nbio, buffer, Min(len, sizeof(buffer)));
+    int numread = BIO_read(m_nbio, buffer, (int)Min(len, sizeof(buffer)));
     if (numread <= 0)
       m_mayTriggerWrite = true;
     while (numread > 0)
@@ -303,7 +303,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
         m_mayTriggerWrite = true;
         break;
       }
-      numread = BIO_read(m_nbio, buffer, len);
+      numread = BIO_read(m_nbio, buffer, (int)len);
       if (numread <= 0)
       {
         m_mayTriggerWrite = true;
@@ -390,9 +390,9 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
       return 0;
     }
 
-    int len = BIO_ctrl_get_write_guarantee(m_sslbio);
+    size_t len = BIO_ctrl_get_write_guarantee(m_sslbio);
     if (nBufLen > len)
-      nBufLen = len;
+      nBufLen = (int)len;
     if (!len)
     {
       m_mayTriggerWriteUp = true;
@@ -1090,7 +1090,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     // exact SSL_CB_LOOP is abused for debugging
     if (where == SSL_CB_LOOP)
     {
-      debug = reinterpret_cast<char*>(ret);
+      debug = reinterpret_cast<char*>((intptr_t)ret);
     }
     char *buffer = nb::chcalloc(4096 + ((debug != NULL) ? strlen(debug) : 0));
     sprintf(buffer, "%s: %s",
@@ -1344,7 +1344,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
         {
           TCHAR tmp[20];
           _stprintf(tmp, L"%d", OBJ_obj2nid(pObject));
-          int maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
+          size_t  maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
           _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), tmp, maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
@@ -1358,7 +1358,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
         }
         else
         {
-          int maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
+          size_t maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
 
           USES_CONVERSION;
           _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), A2CT(OBJ_nid2sn(OBJ_obj2nid(pObject))), maxlen);
@@ -1453,7 +1453,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
         {
           TCHAR tmp[20];
           _stprintf(tmp, L"%d", OBJ_obj2nid(pObject));
-          int maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
+          size_t maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
           _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), tmp, maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
@@ -1467,7 +1467,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
         }
         else
         {
-          int maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
+          size_t maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
 
           USES_CONVERSION;
           _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), A2CT(OBJ_nid2sn(OBJ_obj2nid(pObject))), maxlen);
@@ -1850,7 +1850,7 @@ void CAsyncSslSocketLayer::TriggerEvents()
   }
   else
   {
-    int len = BIO_ctrl_get_write_guarantee(m_nbio);
+    size_t len = BIO_ctrl_get_write_guarantee(m_nbio);
     if (len > 0 && m_mayTriggerRead)
     {
       m_mayTriggerRead = false;

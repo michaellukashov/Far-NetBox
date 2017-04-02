@@ -408,7 +408,7 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, bool mlst)
     char *tmpline = nb::chcalloc(strlen(line) + 1);
     strcpy(tmpline, line);
     t_directory::t_direntry direntry;
-    if (parseLine(tmpline, strlen(tmpline), direntry, tmp, mlst))
+    if (parseLine(tmpline, (int)strlen(tmpline), direntry, tmp, mlst))
     {
       nb_free(tmpline);
       if (tmp)
@@ -528,7 +528,7 @@ BOOL CFtpListResult::parseLine(const char *lineToParse, const int linelen, t_dir
   // name-only entries
   if (strchr(lineToParse, ' ') == NULL)
   {
-    copyStr(direntry.name, 0, lineToParse, strlen(lineToParse));
+    copyStr(direntry.name, 0, lineToParse, (int)strlen(lineToParse));
     return TRUE;
   }
 
@@ -2532,7 +2532,7 @@ const char * CFtpListResult::strnstr(const char *str, int len, const char *c) co
     return NULL;
   if (!c)
     return NULL;
-  int clen = strlen(c);
+  size_t clen = strlen(c);
 
   const char *p = str;
   while (len > 0)
