@@ -180,7 +180,7 @@ public:
   void DisplayBanner(const UnicodeString & Banner);
   void OldKeyfileWarning();
   void PuttyLogEvent(const char * AStr);
-  UnicodeString ConvertFromPutty(const char * Str, size_t Length) const;
+  UnicodeString ConvertFromPutty(const char * Str, intptr_t Length) const;
 
 /*
   __property bool Active = { read = FActive, write = SetActive };

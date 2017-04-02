@@ -642,9 +642,9 @@ void TSecureShell::Init()
   }
 }
 
-UnicodeString TSecureShell::ConvertFromPutty(const char * Str, size_t Length) const
+UnicodeString TSecureShell::ConvertFromPutty(const char * Str, intptr_t Length) const
 {
-  size_t BomLength = strlen(MPEXT_BOM);
+  intptr_t BomLength = strlen(MPEXT_BOM);
   if ((Length >= BomLength) &&
       (strncmp(Str, MPEXT_BOM, BomLength) == 0))
   {
@@ -658,7 +658,7 @@ UnicodeString TSecureShell::ConvertFromPutty(const char * Str, size_t Length) co
 
 void TSecureShell::PuttyLogEvent(const char * AStr)
 {
-  UnicodeString Str = ConvertFromPutty(AStr, strlen(AStr));
+  UnicodeString Str = ConvertFromPutty(AStr, (intptr_t)strlen(AStr));
 #define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
   if (Str.Pos(SERVER_VERSION_MSG) == 1)
@@ -2008,7 +2008,6 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       }
       else if (WaitResult == WAIT_OBJECT_0 + HandleCount)
       {
-
         if (GetConfiguration()->GetActualLogProtocol() >= 1)
         {
           LogEvent("Detected network event");
@@ -2240,17 +2239,17 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
 
 UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & AKeyStr) const
 {
-  UnicodeString KeyStr = AKeyStr;
+  UnicodeString Result = AKeyStr;
   intptr_t Index = 1;
   intptr_t Digits = 0;
-  while (Index <= KeyStr.Length())
+  while (Index <= Result.Length())
   {
-    if (IsHex(KeyStr[Index]))
+    if (IsHex(Result[Index]))
     {
       Digits++;
       if (Digits >= 16)
       {
-        KeyStr.Insert(L" ", Index + 1);
+        Result.Insert(L" ", Index + 1);
         ++Index;
         Digits = 0;
       }
@@ -2261,7 +2260,7 @@ UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & AKeyStr) const
     }
     ++Index;
   }
-  return KeyStr;
+  return Result;
 }
 
 void TSecureShell::GetRealHost(UnicodeString & Host, intptr_t & Port) const
@@ -2594,7 +2593,8 @@ bool TSecureShell::GetReady() const
 
 void TSecureShell::CollectUsage()
 {
-  /*if (FCollectPrivateKeyUsage)
+/*
+  if (FCollectPrivateKeyUsage)
   {
     Configuration->Usage->Inc(L"OpenedSessionsPrivateKey2");
   }
@@ -2675,6 +2675,7 @@ void TSecureShell::CollectUsage()
   else
   {
     Configuration->Usage->Inc(L"OpenedSessionsSSHOther");
-  }*/
+  }
+*/
 }
 
