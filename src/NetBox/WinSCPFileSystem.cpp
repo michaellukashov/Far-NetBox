@@ -2115,7 +2115,7 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
   {
     UnicodeString Message = FSynchronisingBrowse ?
       GetMsg(SYNCHRONIZE_BROWSING_ON) : GetMsg(SYNCHRONIZE_BROWSING_OFF);
-    TMessageParams Params;
+    TMessageParams Params(0);
     Params.Params = qpNeverAskAgainCheck;
     if (MoreMessageDialog(Message, nullptr, qtInformation, qaOK, &Params) ==
         qaNeverAskAgain)
