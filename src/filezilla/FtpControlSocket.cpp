@@ -309,10 +309,10 @@ BOOL CFtpControlSocket::Connect(CString hostAddress, UINT nHostPort)
     return CAsyncSocketEx::Connect(hostAddress, nHostPort);
   }
   BOOL res = CAsyncSocketEx::Connect(hostAddress, nHostPort);
-  int nLastError = WSAGetLastError();
+  int nLastError = ::WSAGetLastError();
   if (res || nLastError==WSAEWOULDBLOCK)
   {
-    WSASetLastError(nLastError);
+    ::WSASetLastError(nLastError);
   }
 
   return res;
@@ -578,7 +578,7 @@ void CFtpControlSocket::Connect(t_server &server)
 
   if (!Connect(temp, port))
   {
-    if (WSAGetLastError() != WSAEWOULDBLOCK)
+    if (::WSAGetLastError() != WSAEWOULDBLOCK)
     {
       DoClose();
       return;

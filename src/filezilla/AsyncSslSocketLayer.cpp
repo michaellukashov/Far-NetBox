@@ -188,7 +188,7 @@ void CAsyncSslSocketLayer::OnReceive(int nErrorCode)
         else
         {
           m_nNetworkError = WSAECONNABORTED;
-          WSASetLastError(WSAECONNABORTED);
+          ::WSASetLastError(WSAECONNABORTED);
           TriggerEvent(FD_CLOSE, WSAECONNABORTED, TRUE);
         }
         return;
@@ -469,7 +469,7 @@ int CAsyncSslSocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
         TriggerEvents();
         return BIO_read(m_sslbio, lpBuf,nBufLen);
       }
-      WSASetLastError(m_nNetworkError);
+      ::WSASetLastError(m_nNetworkError);
       return SOCKET_ERROR;
     }
     if (m_nShutDown)
@@ -510,12 +510,12 @@ int CAsyncSslSocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
               return 0;
             }
             else
-              WSASetLastError(WSAEWOULDBLOCK);
+              ::WSASetLastError(WSAEWOULDBLOCK);
           }
           else
           {
             m_nNetworkError = WSAECONNABORTED;
-            WSASetLastError(WSAECONNABORTED);
+            ::WSASetLastError(WSAECONNABORTED);
             TriggerEvent(FD_CLOSE, WSAECONNABORTED, TRUE);
           }
           return SOCKET_ERROR;
@@ -539,12 +539,12 @@ int CAsyncSslSocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
             return 0;
           }
           else
-            WSASetLastError(WSAEWOULDBLOCK);
+            ::WSASetLastError(WSAEWOULDBLOCK);
         }
         else
         {
           m_nNetworkError = WSAECONNABORTED;
-          WSASetLastError(WSAECONNABORTED);
+          ::WSASetLastError(WSAECONNABORTED);
           TriggerEvent(FD_CLOSE, WSAECONNABORTED, TRUE);
         }
         return SOCKET_ERROR;
@@ -560,7 +560,7 @@ int CAsyncSslSocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
       {
         PrintLastErrorMsg();
         m_nNetworkError = WSAECONNABORTED;
-        WSASetLastError(WSAECONNABORTED);
+        ::WSASetLastError(WSAECONNABORTED);
         TriggerEvent(FD_CLOSE, 0, TRUE);
         return SOCKET_ERROR;
       }
@@ -576,12 +576,12 @@ int CAsyncSslSocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
               return 0;
             }
             else
-              WSASetLastError(WSAEWOULDBLOCK);
+              ::WSASetLastError(WSAEWOULDBLOCK);
           }
           else
           {
             m_nNetworkError = WSAECONNABORTED;
-            WSASetLastError(WSAECONNABORTED);
+            ::WSASetLastError(WSAECONNABORTED);
             TriggerEvent(FD_CLOSE, 0, TRUE);
           }
           return SOCKET_ERROR;
@@ -910,7 +910,7 @@ BOOL CAsyncSslSocketLayer::ShutDown(int nHow /*=sends*/)
     {
       if (!m_nShutDown)
         m_nShutDown = 1;
-      WSASetLastError(WSAEWOULDBLOCK);
+      ::WSASetLastError(WSAEWOULDBLOCK);
       return false;
     }
     if (!m_bSslEstablished)
@@ -928,7 +928,7 @@ BOOL CAsyncSslSocketLayer::ShutDown(int nHow /*=sends*/)
       else
       {
         TriggerEvents();
-        WSASetLastError(WSAEWOULDBLOCK);
+        ::WSASetLastError(WSAEWOULDBLOCK);
         return false;
       }
     }
@@ -945,7 +945,7 @@ BOOL CAsyncSslSocketLayer::ShutDown(int nHow /*=sends*/)
       else
       {
         TriggerEvents();
-        WSASetLastError(WSAEWOULDBLOCK);
+        ::WSASetLastError(WSAEWOULDBLOCK);
         return FALSE;
       }
     }
@@ -957,7 +957,7 @@ BOOL CAsyncSslSocketLayer::ShutDown(int nHow /*=sends*/)
         // retry shutdown later
         m_nShutDown = 0;
         TriggerEvents();
-        WSASetLastError(WSAEWOULDBLOCK);
+        ::WSASetLastError(WSAEWOULDBLOCK);
         return FALSE;
       }
       else if (ShutDownComplete())
@@ -965,7 +965,7 @@ BOOL CAsyncSslSocketLayer::ShutDown(int nHow /*=sends*/)
       else
       {
         TriggerEvents();
-        WSASetLastError(WSAEWOULDBLOCK);
+        ::WSASetLastError(WSAEWOULDBLOCK);
         return FALSE;
       }
     }
@@ -1587,7 +1587,7 @@ void CAsyncSslSocketLayer::SetNotifyReply(int nID, int nCode, int result)
   if (!result)
   {
     m_nNetworkError = WSAECONNABORTED;
-    WSASetLastError(WSAECONNABORTED);
+    ::WSASetLastError(WSAECONNABORTED);
     if (!m_bFailureSent)
     {
       m_bFailureSent = TRUE;
