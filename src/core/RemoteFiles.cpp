@@ -1778,11 +1778,11 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
   return nullptr;
 }
 //=== TRemoteDirectory ------------------------------------------------------
-TRemoteDirectory::TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template) :
+TRemoteDirectory::TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template) :
   TRemoteFileList(OBJECT_CLASS_TRemoteDirectory),
   FIncludeParentDirectory(false),
   FIncludeThisDirectory(false),
-  FTerminal(aTerminal),
+  FTerminal(ATerminal),
   FSelectedFiles(nullptr),
   FParentDirectory(nullptr),
   FThisDirectory(nullptr)

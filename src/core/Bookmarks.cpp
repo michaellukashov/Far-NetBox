@@ -7,9 +7,9 @@
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
 
-TBookmarks::TBookmarks() : TObject()
+TBookmarks::TBookmarks() : TObject(),
+  FSharedKey(UnicodeString(CONST_HIDDEN_PREFIX) + "shared")
 {
-  FSharedKey = UnicodeString(CONST_HIDDEN_PREFIX) + "shared";
   FBookmarkLists = CreateSortedStringList(false, dupError);
 }
 

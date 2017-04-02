@@ -1914,7 +1914,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
     {
       if (LocalFileHandle != INVALID_HANDLE_VALUE)
       {
-        ::CloseHandle(LocalFileHandle);
+        SAFE_CLOSE_HANDLE(LocalFileHandle);
       }
     };
     OperationProgress->SetFileInProgress();
@@ -2777,10 +2777,7 @@ void TSCPFileSystem::SCPSink(
             {
               SCOPE_EXIT
               {
-                if (LocalFileHandle != INVALID_HANDLE_VALUE)
-                {
-                  ::CloseHandle(LocalFileHandle);
-                }
+                SAFE_CLOSE_HANDLE(LocalFileHandle);
                 FileStream.reset();
               };
               try

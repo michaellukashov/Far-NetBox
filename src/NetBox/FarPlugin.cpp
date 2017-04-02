@@ -70,9 +70,9 @@ TCustomFarPlugin::~TCustomFarPlugin()
   DebugAssert(FTopDialog == nullptr);
 
   ResetCachedInfo();
-  ::CloseHandle(FConsoleInput);
+  SAFE_CLOSE_HANDLE(FConsoleInput);
   FConsoleInput = INVALID_HANDLE_VALUE;
-  ::CloseHandle(FConsoleOutput);
+  SAFE_CLOSE_HANDLE(FConsoleOutput);
   FConsoleOutput = INVALID_HANDLE_VALUE;
 
   ClearPluginInfo(FPluginInfo);

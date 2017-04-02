@@ -346,7 +346,7 @@ TSimpleThread::~TSimpleThread()
 
   if (FThread != nullptr)
   {
-    ::CloseHandle(FThread);
+    SAFE_CLOSE_HANDLE(FThread);
   }
 }
 
@@ -376,9 +376,9 @@ void TSimpleThread::Close()
   }
 }
 
-void TSimpleThread::WaitFor(uint32_t Milliseconds) const
+void TSimpleThread::WaitFor(uintptr_t Milliseconds) const
 {
-  ::WaitForSingleObject(FThread, Milliseconds);
+  ::WaitForSingleObject(FThread, (DWORD)Milliseconds);
 }
 
 // TSignalThread
@@ -410,7 +410,7 @@ TSignalThread::~TSignalThread()
 
   if (FEvent)
   {
-    ::CloseHandle(FEvent);
+    SAFE_CLOSE_HANDLE(FEvent);
   }
 }
 
@@ -434,9 +434,9 @@ bool TSignalThread::WaitForEvent()
   return WaitForEvent(INFINITE) > 0;
 }
 
-int TSignalThread::WaitForEvent(uint32_t Timeout) const
+uintptr_t TSignalThread::WaitForEvent(uint32_t Timeout) const
 {
-  uint32_t Result = ::WaitForSingleObject(FEvent, Timeout);
+  uintptr_t Result = ::WaitForSingleObject(FEvent, Timeout);
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
     return -1;
@@ -2291,7 +2291,7 @@ TTerminalThread::~TTerminalThread()
 {
   Close();
 
-  ::CloseHandle(FActionEvent);
+  SAFE_CLOSE_HANDLE(FActionEvent);
 
   DebugAssert(FTerminal->GetOnInformation() == nb::bind(&TTerminalThread::TerminalInformation, this));
   DebugAssert(FTerminal->GetOnQueryUser() == nb::bind(&TTerminalThread::TerminalQueryUser, this));
@@ -2563,7 +2563,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
           }
         }
 
-        int WaitResult = WaitForEvent(1000);
+        intptr_t WaitResult = (intptr_t)WaitForEvent(1000);
         if (WaitResult == 0)
         {
           SAFE_DESTROY_EX(Exception, FIdleException);

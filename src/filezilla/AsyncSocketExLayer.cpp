@@ -219,17 +219,17 @@ int CAsyncSocketExLayer::SendNext(const void *lpBuf, int nBufLen, int nFlags /*=
 {
   if (m_nCriticalError)
   {
-    WSASetLastError(m_nCriticalError);
+    ::WSASetLastError(m_nCriticalError);
     return SOCKET_ERROR;
   }
   else if (GetLayerState()==notsock)
   {
-    WSASetLastError(WSAENOTSOCK);
+    ::WSASetLastError(WSAENOTSOCK);
     return SOCKET_ERROR;
   }
   else if (GetLayerState()==unconnected || GetLayerState()==connecting || GetLayerState()==listening)
   {
-    WSASetLastError(WSAENOTCONN);
+    ::WSASetLastError(WSAENOTCONN);
     return SOCKET_ERROR;
   }
 
@@ -249,17 +249,17 @@ int CAsyncSocketExLayer::ReceiveNext(void *lpBuf, int nBufLen, int nFlags /*=0*/
 {
   if (m_nCriticalError)
   {
-    WSASetLastError(m_nCriticalError);
+    ::WSASetLastError(m_nCriticalError);
     return SOCKET_ERROR;
   }
   else if (GetLayerState()==notsock)
   {
-    WSASetLastError(WSAENOTSOCK);
+    ::WSASetLastError(WSAENOTSOCK);
     return SOCKET_ERROR;
   }
   else if (GetLayerState()==unconnected || GetLayerState()==connecting || GetLayerState()==listening)
   {
-    WSASetLastError(WSAENOTCONN);
+    ::WSASetLastError(WSAENOTCONN);
     return SOCKET_ERROR;
   }
 
@@ -302,7 +302,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
         sockAddr.sin_addr.s_addr = ((LPIN_ADDR)lphost->h_addr)->s_addr;
       else
       {
-        WSASetLastError(WSAEINVAL);
+        ::WSASetLastError(WSAEINVAL);
         res = FALSE;
       }
     }
@@ -360,7 +360,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
         }
         if (m_pOwnerSocket->m_pFirstLayer)
         {
-          if (WSAAsyncSelect(m_pOwnerSocket->m_SocketData.hSocket, m_pOwnerSocket->GetHelperWindowHandle(), m_pOwnerSocket->m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE) )
+          if (::WSAAsyncSelect(m_pOwnerSocket->m_SocketData.hSocket, m_pOwnerSocket->GetHelperWindowHandle(), m_pOwnerSocket->m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE) )
           {
             m_pOwnerSocket->Close();
             res = FALSE;
@@ -383,7 +383,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
       }
 
       if (!( res = ( SOCKET_ERROR != connect(m_pOwnerSocket->GetSocketHandle(), res1->ai_addr, res1->ai_addrlen) ) )
-        && WSAGetLastError() != WSAEWOULDBLOCK)
+        && ::WSAGetLastError() != WSAEWOULDBLOCK)
       {
         if (hints.ai_family == AF_UNSPEC)
         {
@@ -416,7 +416,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
       res = FALSE ;
   }
 
-  if (res || WSAGetLastError() == WSAEWOULDBLOCK)
+  if (res || ::WSAGetLastError() == WSAEWOULDBLOCK)
   {
     SetLayerState(connecting);
   }
@@ -433,7 +433,7 @@ BOOL CAsyncSocketExLayer::ConnectNext( const SOCKADDR* lpSockAddr, int nSockAddr
   else
     res = (SOCKET_ERROR!=connect(m_pOwnerSocket->GetSocketHandle(), lpSockAddr, nSockAddrLen));
 
-  if (res || WSAGetLastError()==WSAEWOULDBLOCK)
+  if (res || ::WSAGetLastError()==WSAEWOULDBLOCK)
     SetLayerState(connecting);
   return res;
 }
@@ -764,7 +764,7 @@ BOOL CAsyncSocketExLayer::CreateNext(UINT nSocketPort, int nSocketType, long lEv
     }
     if (m_pOwnerSocket->m_pFirstLayer)
     {
-      if (WSAAsyncSelect(m_pOwnerSocket->m_SocketData.hSocket, m_pOwnerSocket->GetHelperWindowHandle(), m_pOwnerSocket->m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE) )
+      if (::WSAAsyncSelect(m_pOwnerSocket->m_SocketData.hSocket, m_pOwnerSocket->GetHelperWindowHandle(), m_pOwnerSocket->m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE) )
       {
         m_pOwnerSocket->Close();
         return FALSE;
@@ -787,7 +787,7 @@ int CAsyncSocketExLayer::DoLayerCallback(int nType, intptr_t nParam1, intptr_t n
   if (!m_pOwnerSocket)
     return 0;
 
-  int nError = WSAGetLastError();
+  int nError = ::WSAGetLastError();
 
   t_callbackMsg msg;
   msg.pLayer = this;
@@ -798,7 +798,7 @@ int CAsyncSocketExLayer::DoLayerCallback(int nType, intptr_t nParam1, intptr_t n
 
   m_pOwnerSocket->AddCallbackNotification(msg);
 
-  WSASetLastError(nError);
+  ::WSASetLastError(nError);
 
   return 0;
 }
@@ -858,17 +858,17 @@ BOOL CAsyncSocketExLayer::ShutDownNext(int nHow /*=sends*/)
 {
   if (m_nCriticalError)
   {
-    WSASetLastError(m_nCriticalError);
+    ::WSASetLastError(m_nCriticalError);
     return FALSE;
   }
   else if (GetLayerState()==notsock)
   {
-    WSASetLastError(WSAENOTSOCK);
+    ::WSASetLastError(WSAENOTSOCK);
     return FALSE;
   }
   else if (GetLayerState()==unconnected || GetLayerState()==connecting || GetLayerState()==listening)
   {
-    WSASetLastError(WSAENOTCONN);
+    ::WSASetLastError(WSAENOTCONN);
     return FALSE;
   }
 
@@ -922,7 +922,7 @@ bool CAsyncSocketExLayer::TryNextProtocol()
 
     if (m_pOwnerSocket->m_pFirstLayer)
     {
-      if (WSAAsyncSelect(m_pOwnerSocket->m_SocketData.hSocket, m_pOwnerSocket->GetHelperWindowHandle(), m_pOwnerSocket->m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE))
+      if (::WSAAsyncSelect(m_pOwnerSocket->m_SocketData.hSocket, m_pOwnerSocket->GetHelperWindowHandle(), m_pOwnerSocket->m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE))
       {
         m_pOwnerSocket->DetachHandle(m_pOwnerSocket->m_SocketData.hSocket);
         closesocket(m_pOwnerSocket->m_SocketData.hSocket);
@@ -941,7 +941,7 @@ bool CAsyncSocketExLayer::TryNextProtocol()
       continue;
     }
 
-    if (connect(m_pOwnerSocket->GetSocketHandle(), m_nextAddr->ai_addr, m_nextAddr->ai_addrlen) == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK)
+    if (connect(m_pOwnerSocket->GetSocketHandle(), m_nextAddr->ai_addr, m_nextAddr->ai_addrlen) == SOCKET_ERROR && ::WSAGetLastError() != WSAEWOULDBLOCK)
     {
       m_pOwnerSocket->DetachHandle(m_pOwnerSocket->m_SocketData.hSocket);
       closesocket(m_pOwnerSocket->m_SocketData.hSocket);

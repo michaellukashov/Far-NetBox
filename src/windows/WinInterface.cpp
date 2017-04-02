@@ -10,7 +10,7 @@ TMessageParams::TMessageParams(uintptr_t AParams) :
   Aliases(nullptr),
   AliasesCount(0),
   Flags(0),
-  Params(0),
+  Params(AParams),
   Timer(0),
   TimerEvent(nullptr),
   TimerAnswers(0),

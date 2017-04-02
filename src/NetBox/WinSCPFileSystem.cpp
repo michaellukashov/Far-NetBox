@@ -283,7 +283,7 @@ void TKeepaliveThread::Execute()
       FFileSystem->KeepaliveThreadCallback();
     }
   }
-  ::CloseHandle(FEvent);
+  SAFE_CLOSE_HANDLE(FEvent);
 }
 
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
@@ -844,7 +844,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
     }
     else
     {
-      TMessageParams Params;
+      TMessageParams Params(0);
       Params.Params = qpNeverAskAgainCheck;
       uintptr_t Answer = MoreMessageDialog(
         FORMAT(GetMsg(PERFORM_ON_COMMAND_SESSION).c_str(),
@@ -1726,7 +1726,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
   }
   else
   {
-    TMessageParams Params;
+    TMessageParams Params(0);
     Params.Params = qpNeverAskAgainCheck;
     uintptr_t Result = MoreMessageDialog(
       FORMAT(GetMsg(TOO_MANY_WATCH_DIRECTORIES).c_str(), MaxDirectories, MaxDirectories), nullptr,
@@ -2130,7 +2130,7 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
   {
     UnicodeString Message = FSynchronisingBrowse ?
       GetMsg(SYNCHRONIZE_BROWSING_ON) : GetMsg(SYNCHRONIZE_BROWSING_OFF);
-    TMessageParams Params;
+    TMessageParams Params(0);
     Params.Params = qpNeverAskAgainCheck;
     if (MoreMessageDialog(Message, nullptr, qtInformation, qaOK, &Params) ==
         qaNeverAskAgain)
@@ -3299,7 +3299,7 @@ BOOL TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & Local
 uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams * AParams)
 {
-  TMessageParams Params;
+  TMessageParams Params(0);
 
   //if ((FProgressSaveScreenHandle != 0) ||
   //    (FSynchronizationSaveScreenHandle != 0))
@@ -3320,7 +3320,7 @@ void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
   const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
   const TQueryParams * AParams, uintptr_t & Answer, TQueryType Type, void * /*Arg*/)
 {
-  TMessageParams Params;
+  TMessageParams Params(0);
   UnicodeString Query = AQuery;
 
   if (AParams != nullptr)
@@ -4081,7 +4081,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   bool EditCurrent = false;
   if (it_e != FMultipleEdits.end())
   {
-    TMessageParams Params;
+    TMessageParams Params(0);
     TQueryButtonAlias Aliases[3];
     Aliases[0].Button = qaYes;
     Aliases[0].Alias = GetMsg(EDITOR_CURRENT);
@@ -4118,13 +4118,13 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     DebugAssert(it_e != FMultipleEdits.end());
 
     intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT, 0);
-    int Pos = 0;
+    intptr_t Pos = 0;
     while (Pos < WindowCount)
     {
       WindowInfo Window;
       ClearStruct(Window);
       Window.StructSize = sizeof(WindowInfo);
-      Window.Pos = Pos;
+      Window.Pos = (int)Pos;
       UnicodeString EditedFileName(1024, 0);
       Window.Name = const_cast<wchar_t *>(EditedFileName.c_str());
       Window.NameSize = static_cast<int>(EditedFileName.GetLength());

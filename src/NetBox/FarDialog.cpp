@@ -56,14 +56,8 @@ TFarDialog::~TFarDialog()
   nb_free(FDialogItems);
   FDialogItemsCapacity = 0;
   SAFE_DESTROY(FContainers);
-  if (FSynchronizeObjects[0] != INVALID_HANDLE_VALUE)
-  {
-    ::CloseHandle(FSynchronizeObjects[0]);
-  }
-  if (FSynchronizeObjects[1] != INVALID_HANDLE_VALUE)
-  {
-    ::CloseHandle(FSynchronizeObjects[1]);
-  }
+  SAFE_CLOSE_HANDLE(FSynchronizeObjects[0]);
+  SAFE_CLOSE_HANDLE(FSynchronizeObjects[1]);
 }
 
 void TFarDialog::SetBounds(const TRect & Value)
@@ -586,8 +580,8 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD * Event)
   bool Handled = false;
   if (FLAGSET(Event->dwEventFlags, MOUSE_MOVED))
   {
-    int X = Event->dwMousePosition.X - GetBounds().Left;
-    int Y = Event->dwMousePosition.Y - GetBounds().Top;
+    intptr_t X = Event->dwMousePosition.X - GetBounds().Left;
+    intptr_t Y = Event->dwMousePosition.Y - GetBounds().Top;
     TFarDialogItem * Item = ItemAt(X, Y);
     if (Item != nullptr)
     {
@@ -647,14 +641,14 @@ bool TFarDialog::HotKey(uintptr_t Key, uintptr_t ControlState) const
   return Result;
 }
 
-TFarDialogItem * TFarDialog::ItemAt(int X, int Y)
+TFarDialogItem * TFarDialog::ItemAt(intptr_t X, intptr_t Y)
 {
   TFarDialogItem * Result = nullptr;
   for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
   {
     TRect Bounds = GetItem(Index)->GetActualBounds();
-    if ((Bounds.Left <= X) && (X <= Bounds.Right) &&
-        (Bounds.Top <= Y) && (Y <= Bounds.Bottom))
+    if ((Bounds.Left <= (int)X) && ((int)X <= Bounds.Right) &&
+        (Bounds.Top <= (int)Y) && ((int)Y <= Bounds.Bottom))
     {
       Result = GetItem(Index);
     }
@@ -1011,10 +1005,10 @@ TFarDialogItem::TFarDialogItem(TObjectClassId Kind, TFarDialog * ADialog, FARDIA
   FEnabledDependencyNegative(nullptr),
   FContainer(nullptr),
   FItem(NPOS),
-  FEnabled(true),
-  FIsEnabled(true),
   FColors(0),
-  FColorMask(0)
+  FColorMask(0),
+  FEnabled(true),
+  FIsEnabled(true)
 {
   assert(ADialog);
   GetDialog()->Add(this);
@@ -1671,7 +1665,7 @@ bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD * Event)
   return DefaultItemProc(DN_CONTROLINPUT, static_cast<void *>(&Rec)) != 0;
 }
 
-bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
+bool TFarDialogItem::MouseMove(intptr_t /*X*/, intptr_t /*Y*/,
   MOUSE_EVENT_RECORD * Event)
 {
   INPUT_RECORD Rec = {0};
@@ -1680,7 +1674,7 @@ bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
   return DefaultDialogProc(DN_INPUT, 0, reinterpret_cast<void *>(&Rec)) != 0;
 }
 
-void TFarDialogItem::Text(int X, int Y, const FarColor & Color, const UnicodeString & Str)
+void TFarDialogItem::Text(intptr_t X, intptr_t Y, const FarColor & Color, const UnicodeString & Str)
 {
   TFarEnvGuard Guard;
   GetPluginStartupInfo()->Text(

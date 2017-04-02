@@ -416,9 +416,9 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
     NE_DBG_SSL |
     FLAGMASK(GetConfiguration()->GetLogSensitive(), NE_DBG_HTTPPLAIN);
 
-  ne_set_read_timeout(FNeonSession, Data->GetTimeout());
+  ne_set_read_timeout(FNeonSession, (int)Data->GetTimeout());
 
-  ne_set_connect_timeout(FNeonSession, Data->GetTimeout());
+  ne_set_connect_timeout(FNeonSession, (int)Data->GetTimeout());
 
   NeonAddAuthentiation(Ssl);
 
@@ -485,7 +485,7 @@ void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString &
     if (FCapabilities > 0)
     {
       UnicodeString Str;
-      uintptr_t Capability = 0x01;
+      uint32_t Capability = 0x01;
       uintptr_t Capabilities = FCapabilities;
       while (Capabilities > 0)
       {
@@ -1458,7 +1458,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
       }
       else if (File != nullptr)
       {
-        CloseHandle(File);
+        SAFE_CLOSE_HANDLE(File);
       }
     };
     OperationProgress->SetFileInProgress();
@@ -2250,7 +2250,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
           }
           else
           {
-            CloseHandle(LocalFileHandle);
+            SAFE_CLOSE_HANDLE(LocalFileHandle);
           }
 
           if (DeleteLocalFile)

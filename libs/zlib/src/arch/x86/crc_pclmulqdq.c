@@ -22,7 +22,8 @@ ZLIB_INTERNAL void crc_finalize(deflate_state *const s) {
         s->strm->adler = crc_fold_512to32(s);
 }
 
-ZLIB_INTERNAL void copy_with_crc(z_stream *strm, unsigned char *dst, unsigned long size) {
+ZLIB_INTERNAL void copy_with_crc(z_stream *strm, uint8_t *dst, uint64_t size)
+{
     if (x86_cpu_has_pclmulqdq) {
         crc_fold_copy(strm->state, dst, strm->next_in, size);
         return;
