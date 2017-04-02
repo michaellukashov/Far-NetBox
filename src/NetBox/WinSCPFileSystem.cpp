@@ -829,7 +829,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
     }
     else
     {
-      TMessageParams Params;
+      TMessageParams Params(0);
       Params.Params = qpNeverAskAgainCheck;
       uintptr_t Answer = MoreMessageDialog(
         FORMAT(GetMsg(PERFORM_ON_COMMAND_SESSION).c_str(),
@@ -1711,7 +1711,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
   }
   else
   {
-    TMessageParams Params;
+    TMessageParams Params(0);
     Params.Params = qpNeverAskAgainCheck;
     uintptr_t Result = MoreMessageDialog(
       FORMAT(GetMsg(TOO_MANY_WATCH_DIRECTORIES).c_str(), MaxDirectories, MaxDirectories), nullptr,
@@ -3232,7 +3232,7 @@ BOOL TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & Local
 uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams * AParams)
 {
-  TMessageParams Params;
+  TMessageParams Params(0);
 
   //if ((FProgressSaveScreenHandle != 0) ||
   //    (FSynchronizationSaveScreenHandle != 0))
@@ -3253,7 +3253,7 @@ void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
   const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
   const TQueryParams * AParams, uintptr_t & Answer, TQueryType Type, void * /*Arg*/)
 {
-  TMessageParams Params;
+  TMessageParams Params(0);
   UnicodeString Query = AQuery;
 
   if (AParams != nullptr)
@@ -4011,7 +4011,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   bool EditCurrent = false;
   if (it_e != FMultipleEdits.end())
   {
-    TMessageParams Params;
+    TMessageParams Params(0);
     TQueryButtonAlias Aliases[3];
     Aliases[0].Button = qaYes;
     Aliases[0].Alias = GetMsg(EDITOR_CURRENT);

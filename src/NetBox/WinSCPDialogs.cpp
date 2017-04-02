@@ -8077,7 +8077,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
   bool Continue = true;
   if (SynchronizeSynchronizeCheck->GetSelected() == BSTATE_3STATE)
   {
-    TMessageParams Params;
+    TMessageParams Params(0);
     Params.Params = qpNeverAskAgainCheck;
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(SYNCHRONISE_BEFORE_KEEPUPTODATE),
