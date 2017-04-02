@@ -1199,7 +1199,7 @@ int ZEXPORT inflate(z_stream *strm, int flush)
                 else
                     put = copy_bytes(put, from, copy);
             } else {                             /* copy from output */
-                unsigned offset = state->offset;
+                uint32_t offset = state->offset;
                 from = put - offset;
                 copy = state->length;
                 if (copy > left)

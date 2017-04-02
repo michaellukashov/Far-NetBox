@@ -68,7 +68,7 @@
 ZLIB_INTERNAL uint32_t crc32_generic(uint32_t, const uint8_t *, z_off64_t);
 
 #ifdef __ARM_FEATURE_CRC32
-extern uint32_t crc32_acle(uint32_t, const unsigned char *, z_off64_t);
+extern uint32_t crc32_acle(uint32_t, const uint8_t *, z_off64_t);
 #endif
 
 #if BYTE_ORDER == LITTLE_ENDIAN

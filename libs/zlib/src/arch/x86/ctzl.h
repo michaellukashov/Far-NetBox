@@ -10,7 +10,7 @@
 /* This is not a general purpose replacement for __builtin_ctzl. The function expects that value is != 0
  * Because of that assumption trailing_zero is not initialized and the return value of _BitScanForward is not checked
  */
-static __forceinline unsigned long __builtin_ctzl(uint64_t value)
+static __forceinline uint64_t __builtin_ctzl(uint64_t value)
 {
 #ifdef X86_CPUID
 	if (x86_cpu_has_tzcnt)

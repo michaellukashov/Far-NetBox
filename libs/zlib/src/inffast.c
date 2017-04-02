@@ -18,7 +18,8 @@
    Ask the compiler to perform a wide, unaligned load with an machine
    instruction appropriate for the inffast_chunk_t type.
  */
-static inline inffast_chunk_t loadchunk(unsigned char const* s) {
+static inline inffast_chunk_t loadchunk(uint8_t const* s)
+{
     inffast_chunk_t c;
     __builtin_memcpy(&c, s, sizeof(c));
     return c;
@@ -28,7 +29,8 @@ static inline inffast_chunk_t loadchunk(unsigned char const* s) {
    Ask the compiler to perform a wide, unaligned store with an machine
    instruction appropriate for the inffast_chunk_t type.
  */
-static inline void storechunk(unsigned char* d, inffast_chunk_t c) {
+static inline void storechunk(uint8_t* d, inffast_chunk_t c)
+{
     __builtin_memcpy(d, &c, sizeof(c));
 }
 
@@ -44,7 +46,8 @@ static inline void storechunk(unsigned char* d, inffast_chunk_t c) {
    without iteration, which will hopefully make the branch prediction more
    reliable.
  */
-static inline unsigned char* chunkcopy(unsigned char *out, unsigned char const *from, unsigned len) {
+static inline uint8_t* chunkcopy(uint8_t *out, uint8_t const *from, uint32_t len)
+{
     --len;
     storechunk(out, loadchunk(from));
     out += (len % INFFAST_CHUNKSIZE) + 1;
@@ -61,8 +64,9 @@ static inline unsigned char* chunkcopy(unsigned char *out, unsigned char const *
 /*
    Behave like chunkcopy, but avoid writing beyond of legal output.
  */
-static inline unsigned char* chunkcopysafe(unsigned char *out, unsigned char const *from, unsigned len,
-                                           unsigned char *safe) {
+static inline uint8_t* chunkcopysafe(uint8_t *out, uint8_t const *from, uint32_t len,
+                                           uint8_t *safe)
+{
     if (out > safe) {
         while (len-- > 0) {
           *out++ = *from++;
@@ -82,8 +86,9 @@ static inline unsigned char* chunkcopysafe(unsigned char *out, unsigned char con
    least 258 bytes of output space available (258 being the maximum length
    output from a single token; see inflate_fast()'s assumptions below).
  */
-static inline unsigned char* chunkunroll(unsigned char *out, unsigned *dist, unsigned *len) {
-    unsigned char const *from = out - *dist;
+static inline uint8_t* chunkunroll(uint8_t *out, uint32_t *dist, uint32_t *len)
+{
+    uint8_t const *from = out - *dist;
     while (*dist < *len && *dist < INFFAST_CHUNKSIZE) {
         storechunk(out, loadchunk(from));
         out += *dist;
