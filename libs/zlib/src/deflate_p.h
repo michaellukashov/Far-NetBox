@@ -35,7 +35,7 @@ void flush_pending(z_stream *strm);
 #ifdef X86_SSE4_2_CRC_HASH
 extern Pos insert_string_sse(deflate_state *const s, const Pos str, uint32_t count);
 #elif defined(ARM_ACLE_CRC_HASH)
-extern Pos insert_string_acle(deflate_state *const s, const Pos str, unsigned int count);
+extern Pos insert_string_acle(deflate_state *const s, const Pos str, uint32_t count);
 #endif
 
 static inline Pos insert_string_c(deflate_state *const s, const Pos str, uint32_t count)

@@ -1648,7 +1648,7 @@ void fill_window_c(deflate_state *s)
                     break;
             }
 #else
-            unsigned int count;
+            uint32_t count;
             if (unlikely(s->lookahead == 1)){
                 count = s->insert - 1;
             }else{
