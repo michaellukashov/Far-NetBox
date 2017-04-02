@@ -46,7 +46,7 @@ static inline void storechunk(uint8_t* d, inffast_chunk_t c)
    without iteration, which will hopefully make the branch prediction more
    reliable.
  */
-static inline uint8_t* chunkcopy(uint8_t *out, uint8_t const *from, unsigned len)
+static inline uint8_t* chunkcopy(uint8_t *out, uint8_t const *from, uint32_t len)
 {
     --len;
     storechunk(out, loadchunk(from));
@@ -64,7 +64,7 @@ static inline uint8_t* chunkcopy(uint8_t *out, uint8_t const *from, unsigned len
 /*
    Behave like chunkcopy, but avoid writing beyond of legal output.
  */
-static inline uint8_t* chunkcopysafe(uint8_t *out, uint8_t const *from, unsigned len,
+static inline uint8_t* chunkcopysafe(uint8_t *out, uint8_t const *from, uint32_t len,
                                            uint8_t *safe)
 {
     if (out > safe) {
@@ -86,7 +86,7 @@ static inline uint8_t* chunkcopysafe(uint8_t *out, uint8_t const *from, unsigned
    least 258 bytes of output space available (258 being the maximum length
    output from a single token; see inflate_fast()'s assumptions below).
  */
-static inline uint8_t* chunkunroll(uint8_t *out, unsigned *dist, unsigned *len)
+static inline uint8_t* chunkunroll(uint8_t *out, uint32_t *dist, uint32_t *len)
 {
     uint8_t const *from = out - *dist;
     while (*dist < *len && *dist < INFFAST_CHUNKSIZE) {

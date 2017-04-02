@@ -13,7 +13,8 @@
 #endif
 
 /* Load a short from IN and place the bytes at offset BITS in the result. */
-static inline uint32_t load_short(const uint8_t *in, unsigned bits) {
+static inline uint32_t load_short(const uint8_t *in, uint32_t bits)
+{
     union {
         uint16_t a;
         uint8_t b[2];
@@ -32,57 +33,66 @@ static inline uint32_t load_short(const uint8_t *in, unsigned bits) {
 #endif
 }
 
-static inline uint8_t *copy_1_bytes(uint8_t *out, uint8_t *from) {
+static inline uint8_t *copy_1_bytes(uint8_t *out, uint8_t *from)
+{
     *out++ = *from;
     return out;
 }
 
-static inline uint8_t *copy_2_bytes(uint8_t *out, uint8_t *from) {
+static inline uint8_t *copy_2_bytes(uint8_t *out, uint8_t *from)
+{
     uint16_t chunk;
-    unsigned sz = sizeof(chunk);
+    uint32_t sz = sizeof(chunk);
     MEMCPY(&chunk, from, sz);
     MEMCPY(out, &chunk, sz);
     return out + sz;
 }
 
-static inline uint8_t *copy_3_bytes(uint8_t *out, uint8_t *from) {
+static inline uint8_t *copy_3_bytes(uint8_t *out, uint8_t *from)
+{
     out = copy_1_bytes(out, from);
     return copy_2_bytes(out, from + 1);
 }
 
-static inline uint8_t *copy_4_bytes(uint8_t *out, uint8_t *from) {
+static inline uint8_t *copy_4_bytes(uint8_t *out, uint8_t *from)
+{
     uint32_t chunk;
-    unsigned sz = sizeof(chunk);
+    uint32_t sz = sizeof(chunk);
     MEMCPY(&chunk, from, sz);
     MEMCPY(out, &chunk, sz);
     return out + sz;
 }
 
-static inline uint8_t *copy_5_bytes(uint8_t *out, uint8_t *from) {
+static inline uint8_t *copy_5_bytes(uint8_t *out, uint8_t *from)
+{
     out = copy_1_bytes(out, from);
     return copy_4_bytes(out, from + 1);
 }
 
-static inline uint8_t *copy_6_bytes(uint8_t *out, uint8_t *from) {
+static inline uint8_t *copy_6_bytes(uint8_t *out, uint8_t *from)
+{
     out = copy_2_bytes(out, from);
     return copy_4_bytes(out, from + 2);
 }
 
-static inline uint8_t *copy_7_bytes(uint8_t *out, uint8_t *from) {
+static inline uint8_t *copy_7_bytes(uint8_t *out, uint8_t *from)
+{
     out = copy_3_bytes(out, from);
     return copy_4_bytes(out, from + 3);
 }
 
-static inline uint8_t *copy_8_bytes(uint8_t *out, uint8_t *from) {
+static inline uint8_t *copy_8_bytes(uint8_t *out, uint8_t *from)
+{
     uint64_t chunk;
-    unsigned sz = sizeof(chunk);
+    uint32_t sz = sizeof(chunk);
     MEMCPY(&chunk, from, sz);
     MEMCPY(out, &chunk, sz);
     return out + sz;
 }
 
 /* Copy LEN bytes (7 or fewer) from FROM into OUT. Return OUT + LEN. */
-static inline uint8_t *copy_bytes(uint8_t *out, uint8_t *from, unsigned len) {
+static inline uint8_t *copy_bytes(uint8_t *out, uint8_t *from, uint32_t len)
+{
     Assert(len < 8, "copy_bytes should be called with less than 8 bytes");
 
 #ifndef UNALIGNED_OK
@@ -117,7 +127,8 @@ static inline uint8_t *copy_bytes(uint8_t *out, uint8_t *from, unsigned len) {
 }
 
 /* Copy LEN bytes (7 or fewer) from FROM into OUT. Return OUT + LEN. */
-static inline uint8_t *set_bytes(uint8_t *out, uint8_t *from, unsigned dist, unsigned len) {
+static inline uint8_t *set_bytes(uint8_t *out, uint8_t *from, uint32_t dist, uint32_t len)
+{
     Assert(len < 8, "set_bytes should be called with less than 8 bytes");
 
 #ifndef UNALIGNED_OK
@@ -220,19 +231,20 @@ static inline uint8_t *set_bytes(uint8_t *out, uint8_t *from, unsigned dist, uns
 }
 
 /* Byte by byte semantics: copy LEN bytes from OUT + DIST and write them to OUT. Return OUT + LEN. */
-static inline uint8_t *chunk_memcpy(uint8_t *out, uint8_t *from, unsigned len) {
-    unsigned sz = sizeof(uint64_t);
+static inline uint8_t *chunk_memcpy(uint8_t *out, uint8_t *from, uint32_t len)
+{
+    uint32_t sz = sizeof(uint64_t);
     Assert(len >= sz, "chunk_memcpy should be called on larger chunks");
 
     /* Copy a few bytes to make sure the loop below has a multiple of SZ bytes to be copied. */
     copy_8_bytes(out, from);
 
-    unsigned rem = len % sz;
+    uint32_t rem = len % sz;
     len /= sz;
     out += rem;
     from += rem;
 
-    unsigned by8 = len % sz;
+    uint32_t by8 = len % sz;
     len -= by8;
     switch (by8) {
     case 7:
@@ -283,8 +295,9 @@ static inline uint8_t *chunk_memcpy(uint8_t *out, uint8_t *from, unsigned len) {
 }
 
 /* Memset LEN bytes in OUT with the value at OUT - 1. Return OUT + LEN. */
-static inline uint8_t *byte_memset(uint8_t *out, unsigned len) {
-    unsigned sz = sizeof(uint64_t);
+static inline uint8_t *byte_memset(uint8_t *out, uint32_t len)
+{
+    uint32_t sz = sizeof(uint64_t);
     Assert(len >= sz, "byte_memset should be called on larger chunks");
 
     uint8_t *from = out - 1;
@@ -292,12 +305,12 @@ static inline uint8_t *byte_memset(uint8_t *out, unsigned len) {
 
     /* First, deal with the case when LEN is not a multiple of SZ. */
     MEMSET(out, c, sz);
-    unsigned rem = len % sz;
+    uint32_t rem = len % sz;
     len /= sz;
     out += rem;
     from += rem;
 
-    unsigned by8 = len % 8;
+    uint32_t by8 = len % 8;
     len -= by8;
     switch (by8) {
     case 7:
@@ -349,14 +362,15 @@ static inline uint8_t *byte_memset(uint8_t *out, unsigned len) {
 }
 
 /* Copy DIST bytes from OUT - DIST into OUT + DIST * k, for 0 <= k < LEN/DIST. Return OUT + LEN. */
-static inline uint8_t *chunk_memset(uint8_t *out, uint8_t *from, unsigned dist, unsigned len) {
+static inline uint8_t *chunk_memset(uint8_t *out, uint8_t *from, uint32_t dist, uint32_t len)
+{
     if (dist >= len)
         return chunk_memcpy(out, from, len);
 
     Assert(len >= sizeof(uint64_t), "chunk_memset should be called on larger chunks");
 
     /* Double up the size of the memset pattern until reaching the largest pattern of size less than SZ. */
-    unsigned sz = sizeof(uint64_t);
+    uint32_t sz = sizeof(uint64_t);
     while (dist < len && dist < sz) {
         copy_8_bytes(out, from);
 
@@ -374,7 +388,8 @@ static inline uint8_t *chunk_memset(uint8_t *out, uint8_t *from, unsigned dist, 
 }
 
 /* Byte by byte semantics: copy LEN bytes from FROM and write them to OUT. Return OUT + LEN. */
-static inline uint8_t *chunk_copy(uint8_t *out, uint8_t *from, int dist, unsigned len) {
+static inline uint8_t *chunk_copy(uint8_t *out, uint8_t *from, int dist, uint32_t len)
+{
     if (len < sizeof(uint64_t)) {
         if (dist > 0)
             return set_bytes(out, from, dist, len);
