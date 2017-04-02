@@ -378,7 +378,7 @@ void TSimpleThread::Close()
 
 void TSimpleThread::WaitFor(uintptr_t Milliseconds) const
 {
-  ::WaitForSingleObject(FThread, Milliseconds);
+  ::WaitForSingleObject(FThread, (DWORD)Milliseconds);
 }
 
 // TSignalThread
@@ -2563,7 +2563,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
           }
         }
 
-        int WaitResult = WaitForEvent(1000);
+        intptr_t WaitResult = (intptr_t)WaitForEvent(1000);
         if (WaitResult == 0)
         {
           SAFE_DESTROY_EX(Exception, FIdleException);
