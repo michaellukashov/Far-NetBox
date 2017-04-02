@@ -24,7 +24,7 @@ public:
   virtual void Init();
 
   virtual void Start();
-  void WaitFor(uint32_t Milliseconds = INFINITE) const;
+  void WaitFor(uintptr_t Milliseconds = INFINITE) const;
   virtual void Terminate() {}
   void Close();
   bool IsFinished() const;
@@ -66,7 +66,7 @@ protected:
   virtual ~TSignalThread();
 
   virtual bool WaitForEvent();
-  int WaitForEvent(uint32_t Timeout) const;
+  uintptr_t WaitForEvent(uint32_t Timeout) const;
   virtual void Execute();
   virtual void ProcessEvent() = 0;
 };
@@ -122,8 +122,8 @@ public:
 
   /*
   __property bool IsEmpty = { read = GetIsEmpty };
-  __property int TransfersLimit = { read = FTransfersLimit, write = SetTransfersLimit };
-  __property int KeepDoneItemsFor = { read = FKeepDoneItemsFor, write = SetKeepDoneItemsFor };
+  __property intptr_t TransfersLimit = { read = FTransfersLimit, write = SetTransfersLimit };
+  __property intptr_t KeepDoneItemsFor = { read = FKeepDoneItemsFor, write = SetKeepDoneItemsFor };
   __property bool Enabled = { read = FEnabled, write = SetEnabled };
   __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
   __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };
@@ -210,11 +210,9 @@ public:
   void DoEvent(TQueueEvent Event);
 
 public:
-  // void SetMasks(const UnicodeString & Value);
   void SetTransfersLimit(intptr_t Value);
   void SetKeepDoneItemsFor(intptr_t Value);
   void SetEnabled(bool Value);
-  // void SetIsEmpty(bool Value);
 };
 
 
@@ -283,14 +281,12 @@ public:
   void SetMasks(const UnicodeString & Value);
   void SetStatus(TStatus Status);
   TStatus GetStatus() const;
+  void Execute(TTerminalItem * TerminalItem);
+  virtual void DoExecute(TTerminal * Terminal) = 0;
   void SetProgress(TFileOperationProgressType & ProgressData);
   void GetData(TQueueItemProxy * Proxy) const;
   void SetCPSLimit(uintptr_t CPSLimit);
   bool GetCPSLimit(uintptr_t & CPSLimit) const;
-
-private:
-  void Execute(TTerminalItem * TerminalItem);
-  virtual void DoExecute(TTerminal * Terminal) = 0;
   uintptr_t GetCPSLimit() const;
   virtual uintptr_t DefaultCPSLimit() const;
   virtual UnicodeString GetStartupDirectory() const = 0;
@@ -323,7 +319,7 @@ public:
 
 /*
   __property TFileOperationProgressType * ProgressData = { read = GetProgressData };
-  __property __int64 TotalTransferred = { read = GetTotalTransferred };
+  __property int64_t TotalTransferred = { read = GetTotalTransferred };
   __property TQueueItem::TInfo * Info = { read = FInfo };
   __property TQueueItem::TStatus Status = { read = FStatus };
   __property bool ProcessingUserAction = { read = FProcessingUserAction };
@@ -392,10 +388,10 @@ public:
   intptr_t GetActiveCount() const;
   intptr_t GetDoneAndActiveCount() const;
   intptr_t GetActiveAndPendingCount() const;
-  TQueueItemProxy * GetItem(intptr_t Index) const;
-  TQueueItemProxy * GetItem(intptr_t Index);
   void SetMasks(const UnicodeString & Value);
   void SetDoneCount(intptr_t Value);
+  TQueueItemProxy * GetItem(intptr_t Index) const;
+  TQueueItemProxy * GetItem(intptr_t Index);
 };
 
 class TLocatedQueueItem : public TQueueItem
@@ -502,6 +498,7 @@ public:
   __property TNotifyEvent OnIdle = { read = FOnIdle, write = FOnIdle };
   __property bool Cancelling = { read = FCancel };
 */
+
   TNotifyEvent & GetOnIdle() { return FOnIdle; }
   void SetOnIdle(TNotifyEvent Value) { FOnIdle = Value; }
   bool GetCancelling() const { return FCancel; }
