@@ -158,7 +158,7 @@ protected:
   void RequireLockStore();
   static void InitSslSession(ssl_st * Ssl, ne_session * Session);
   void InitSslSessionImpl(ssl_st * Ssl) const;
-  void NeonAddAuthentiation(bool UseNegotiate);
+  void NeonAddAuthentication(bool UseNegotiate);
   void HttpAuthenticationFailed();
 
 private:
