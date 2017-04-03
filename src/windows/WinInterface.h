@@ -219,7 +219,7 @@ bool DoOpenDirectoryDialog(TOpenDirectoryMode Mode, TOperationSide Side,
   UnicodeString & Directory, TStrings * Directories, TTerminal * Terminal,
   bool AllowSwitch);
 
-// forms\LocatinoProfiles.cpp
+// forms\LocationProfiles.cpp
 bool LocationProfilesDialog(TOpenDirectoryMode Mode,
   TOperationSide Side, UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
   TStrings * LocalDirectories, TStrings * RemoteDirectories, TTerminal * Terminal);
@@ -260,7 +260,7 @@ bool DoCopyParamPresetDialog(TCopyParamList * CopyParamList,
   int & Index, TCopyParamPresetMode Mode, TCopyParamRuleData * CurrentRuleData,
   const TCopyParamType & DefaultCopyParams);
 
-// forms\CopyParamCsutom.cpp
+// forms\CopyParamCustom.cpp
 bool DoCopyParamCustomDialog(TCopyParamType & CopyParam,
   int CopyParamAttrs);
 
