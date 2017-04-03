@@ -56,7 +56,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) :
   FSessionReopenBackground(0),
   FSessionReopenTimeout(0),
   FSessionReopenAutoStall(0),
-  FProgramIniPathWrittable(0),
+  FProgramIniPathWritable(0),
   FTunnelLocalPortNumberLow(0),
   FTunnelLocalPortNumberHigh(0),
   FCacheDirectoryChangesMaxSize(0),
@@ -153,7 +153,7 @@ void TConfiguration::Default()
   FLogActionsRequired = false;
   FActionsLogFileName = "%TEMP%\\&S.xml";
   FPermanentActionsLogFileName = FActionsLogFileName;
-  FProgramIniPathWrittable = -1;
+  FProgramIniPathWritable = -1;
 
   Changed();
 }
@@ -1169,14 +1169,14 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
       else
       {
         // avoid expensive test if we are interested in existing files only
-        if (!ReadingOnly && (FProgramIniPathWrittable < 0))
+        if (!ReadingOnly && (FProgramIniPathWritable < 0))
         {
           UnicodeString ProgramDir = ExtractFilePath(ProgramPath);
-          FProgramIniPathWrittable = IsDirectoryWriteable(ProgramDir) ? 1 : 0;
+          FProgramIniPathWritable = IsDirectoryWriteable(ProgramDir) ? 1 : 0;
         }
 
         // does not really matter what we return when < 0
-        IniPath = (FProgramIniPathWrittable == 0) ? AppDataIniPath : ProgramIniPath;
+        IniPath = (FProgramIniPathWritable == 0) ? AppDataIniPath : ProgramIniPath;
       }
     }
 
