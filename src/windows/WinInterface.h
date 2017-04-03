@@ -36,8 +36,7 @@ const int mpAllowContinueOnError = 0x02;
 #define KEYGEN_CHANGE_PASSPHRASE_SWITCH L"ChangePassphrase"
 #define LOG_SWITCH L"Log"
 #define INI_SWITCH L"Ini"
-
-typedef int TSize;
+#define FINGERPRINTSCAN_SWITCH L"FingerprintScan"
 
 struct TMessageParams : public TObject
 {
@@ -64,7 +63,7 @@ public:
   bool AllowHelp;
   UnicodeString ImageName;
   UnicodeString MoreMessagesUrl;
-  TSize MoreMessagesSize;
+  int MoreMessagesSize;
   UnicodeString CustomCaption;
 
 private:
@@ -83,6 +82,7 @@ extern const UnicodeString AppName;
 void SetOnForeground(bool OnForeground);
 void FlashOnBackground();
 
+void TerminateApplication();
 void ShowExtendedExceptionEx(TTerminal * Terminal, Exception * E);
 //void FormHelp(TCustomForm * Form);
 void SearchHelp(const UnicodeString & Message);
@@ -90,6 +90,7 @@ void MessageWithNoHelp(const UnicodeString & Message);
 
 class TProgramParams;
 bool CheckSafe(TProgramParams * Params);
+void CheckLogParam(TProgramParams * Params);
 bool CheckXmlLogParam(TProgramParams * Params);
 
 #if 0
@@ -185,6 +186,7 @@ const int coAllowRemoteTransfer = 0x100;
 const int coNoQueue             = 0x200;
 const int coNoQueueIndividually = 0x400;
 const int coShortCutHint        = 0x800;
+const int coAllFiles            = 0x1000;
 const int cooDoNotShowAgain     = 0x01;
 const int cooRemoteTransfer     = 0x02;
 const int cooSaveSettings       = 0x04;
@@ -243,8 +245,10 @@ class TShortCuts;
 enum TCustomCommandsMode { ccmAdd, ccmEdit, ccmAdHoc };
 const int ccoDisableRemote = 0x01;
 
-//typedef void (__closure *TCustomCommandValidate)
-//  (const TCustomCommandType & Command);
+/*
+typedef void (__closure *TCustomCommandValidate)
+  (const TCustomCommandType & Command);
+*/
 typedef nb::FastDelegate1<void,
   const TCustomCommandType & /*Command*/> TCustomCommandValidateEvent;
 
@@ -271,20 +275,26 @@ struct TCalculateSizeStats;
 const int cpMode =  0x01;
 const int cpOwner = 0x02;
 const int cpGroup = 0x04;
-//typedef void (__closure *TCalculateSizeEvent)
-//  (TStrings * FileList, __int64 & Size, TCalculateSizeStats & Stats,
-//   bool & Close);
+/*
+typedef void (__closure *TCalculateSizeEvent)
+  (TStrings * FileList, __int64 & Size, TCalculateSizeStats & Stats,
+   bool & Close);
+*/
 typedef nb::FastDelegate4<void,
   TStrings * /*FileList*/, int64_t & /*Size*/, TCalculateSizeStats & /*Stats*/,
   bool & /*Close*/> TCalculateSizeEvent;
-//typedef void (__closure *TCalculatedChecksumCallbackEvent)(
-//  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
+/*
+typedef void (__closure *TCalculatedChecksumCallbackEvent)(
+  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
+*/
 typedef nb::FastDelegate3<void,
   const UnicodeString & /*FileName*/, const UnicodeString & /*Alg*/,
   const UnicodeString & /*Hash*/> TCalculatedChecksumCallbackEvent;
-//typedef void (__closure *TCalculateChecksumEvent)
-//  (const UnicodeString & Alg, TStrings * FileList,
-//   TCalculatedChecksumCallbackEvent OnCalculatedChecksum, bool & Close);
+/*
+typedef void (__closure *TCalculateChecksumEvent)
+  (const UnicodeString & Alg, TStrings * FileList,
+   TCalculatedChecksumCallbackEvent OnCalculatedChecksum, bool & Close);
+*/
 typedef nb::FastDelegate4<void,
   const UnicodeString & /*Alg*/, TStrings * /*FileList*/,
   TCalculatedChecksumCallbackEvent /*OnCalculatedChecksum*/,
@@ -329,14 +339,18 @@ const int soDoNotUsePresets =  0x01;
 const int soNoMinimize =       0x02;
 const int soAllowSelectedOnly = 0x04;
 
-//typedef void (__closure *TGetSynchronizeOptionsEvent)
-//  (int Params, TSynchronizeOptions & Options);
+/*
+typedef void (__closure *TGetSynchronizeOptionsEvent)
+  (int Params, TSynchronizeOptions & Options);
+*/
 typedef nb::FastDelegate2<void,
   intptr_t /*Params*/,
   TSynchronizeOptions & /*Options*/> TGetSynchronizeOptionsEvent;
-//typedef void (__closure *TFeedSynchronizeError)
-//  (const UnicodeString & Message, TStrings * MoreMessages, TQueryType Type,
-//   const UnicodeString & HelpKeyword);
+/*
+typedef void (__closure *TFeedSynchronizeError)
+  (const UnicodeString & Message, TStrings * MoreMessages, TQueryType Type,
+   const UnicodeString & HelpKeyword);
+*/
 typedef nb::FastDelegate4<void,
   const UnicodeString & /*Message*/, TStrings * /*MoreMessages*/, TQueryType /*Type*/,
   const UnicodeString & /*HelpKeyword*/> TFeedSynchronizeErrorEvent;
@@ -362,8 +376,10 @@ bool DoFullSynchronizeDialog(TSynchronizeMode & Mode, intptr_t & Params,
 
 // forms\SynchronizeChecklist.cpp
 class TSynchronizeChecklist;
-//typedef void (__closure *TCustomCommandMenuEvent)
-//  (TAction * Action, TStrings * LocalFileList, TStrings * RemoteFileList);
+/*
+typedef void (__closure *TCustomCommandMenuEvent)
+  (TAction * Action, TStrings * LocalFileList, TStrings * RemoteFileList);
+*/
 typedef nb::FastDelegate3<void,
   void * /*Action*/, TStrings * /*LocalFileList*/,
   TStrings * /*RemoteFileList*/> TCustomCommandMenuEvent;
@@ -374,8 +390,12 @@ bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
   TCustomCommandMenuEvent OnCustomCommandMenu);
 
 // forms\Editor.cpp
-//typedef void (__closure *TFileClosedEvent)
-//  (TObject * Sender, bool Forced);
+/*
+typedef void (__closure *TFileClosedEvent)
+  (TObject * Sender, bool Forced);
+typedef void (__closure *TAnyModifiedEvent)
+  (TObject * Sender, bool & Modified);
+*/
 #if 0
 typedef nb::FastDelegate2(TFileClosedEvent, void,
   TObject * /*Sender* /, bool /*Forced*/);
@@ -398,8 +418,10 @@ bool DoSymlinkDialog(UnicodeString & FileName, UnicodeString & PointTo,
 struct TSpaceAvailable;
 struct TFileSystemInfo;
 struct TSessionInfo;
-//typedef void (__closure *TGetSpaceAvailable)
-//  (const UnicodeString Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
+/*
+typedef void (__closure *TGetSpaceAvailable)
+  (const UnicodeString Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
+*/
 typedef nb::FastDelegate3<void,
   const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
   bool & /*Close*/> TGetSpaceAvailableEvent;
@@ -438,9 +460,10 @@ bool DoEditorPreferencesDialog(TEditorData * Editor,
   bool & Remember, TEditorPreferencesMode Mode, bool MayRemote);
 
 // forms\Find.cpp
-//typedef void (__closure *TFindEvent)
-//  (UnicodeString Directory, const TFileMasks & FileMask,
-//   TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
+/*typedef void (__closure *TFindEvent)
+  (UnicodeString Directory, const TFileMasks & FileMask,
+   TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
+*/
 typedef nb::FastDelegate4<void,
   const UnicodeString & /*Directory*/, const TFileMasks & /*FileMask*/,
   TFileFoundEvent /*OnFileFound*/,
@@ -458,10 +481,11 @@ const int cplNone =             0x00;
 const int cplCustomize =        0x01;
 const int cplCustomizeDefault = 0x02;
 const int cplSaveSettings =     0x04;
+const int cplGenerateCode =     0x08;
 void CopyParamListPopup(TRect R, TPopupMenu * Menu,
   const TCopyParamType & Param, UnicodeString Preset, TNotifyEvent OnClick,
   int Options, int CopyParamAttrs, bool SaveSettings = false);
-bool CopyParamListPopupClick(TObject * Sender,
+int CopyParamListPopupClick(TObject * Sender,
   TCopyParamType & Param, UnicodeString & Preset, int CopyParamAttrs,
   bool * SaveSettings = nullptr);
 
@@ -533,6 +557,12 @@ struct TCopyDataMessage
   {
     wchar_t CommandLine[10240];
   };
+
+  TCopyDataMessage()
+  {
+    Version = TCopyDataMessage::Version1;
+    Command = static_cast<unsigned int>(-1);
+  }
 };
 
 class TWinInteractiveCustomCommand : public TInteractiveCustomCommand
