@@ -381,7 +381,7 @@ static RawByteString AES256Salt()
   return Result;
 }
 
-void AES256EncyptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
   RawByteString & Salt, RawByteString & Output, RawByteString & Mac)
 {
   fcrypt_ctx aes;
@@ -401,13 +401,13 @@ void AES256EncyptWithMAC(const RawByteString & Input, const UnicodeString & Pass
   fcrypt_end(reinterpret_cast<uint8_t *>(const_cast<char *>(Mac.c_str())), &aes);
 }
 
-void AES256EncyptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
   RawByteString & Output)
 {
   RawByteString Salt;
   RawByteString Encrypted;
   RawByteString Mac;
-  AES256EncyptWithMAC(Input, Password, Salt, Encrypted, Mac);
+  AES256EncryptWithMAC(Input, Password, Salt, Encrypted, Mac);
   Output = Salt + Encrypted + Mac;
 }
 
@@ -456,7 +456,7 @@ void AES256CreateVerifier(const UnicodeString & Input, RawByteString & Verifier)
 
   RawByteString Encrypted;
   RawByteString Mac;
-  AES256EncyptWithMAC(Dummy, Input, Salt, Encrypted, Mac);
+  AES256EncryptWithMAC(Dummy, Input, Salt, Encrypted, Mac);
 
   Verifier = Salt + Dummy + Mac;
 }
@@ -470,7 +470,7 @@ bool AES256Verify(const UnicodeString & Input, const RawByteString & Verifier)
 
   RawByteString Encrypted;
   RawByteString Mac2;
-  AES256EncyptWithMAC(Dummy, Input, Salt, Encrypted, Mac2);
+  AES256EncryptWithMAC(Dummy, Input, Salt, Encrypted, Mac2);
 
   DebugAssert(Mac2.Length() == Mac.Length());
 
