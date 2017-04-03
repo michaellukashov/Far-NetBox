@@ -1325,8 +1325,8 @@ bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * Sessions)
   try
   {
     UnicodeString Error;
-    std::unique_ptr<TStoredSessionList> Sesssions(SelectPuttySessionsForImport(Sessions, Error));
-    return (Sesssions->GetCount() > 0);
+    std::unique_ptr<TStoredSessionList> Sessions(SelectPuttySessionsForImport(Sessions, Error));
+    return (Sessions->GetCount() > 0);
   }
   catch (...)
   {
