@@ -420,7 +420,7 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
 
   ne_set_connect_timeout(FNeonSession, (int)Data->GetTimeout());
 
-  NeonAddAuthentiation(Ssl);
+  NeonAddAuthentication(Ssl);
 
   if (Ssl)
   {
@@ -446,7 +446,7 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
   ExchangeCapabilities(Path.c_str(), CorrectedUrl);
 }
 
-void TWebDAVFileSystem::NeonAddAuthentiation(bool UseNegotiate)
+void TWebDAVFileSystem::NeonAddAuthentication(bool UseNegotiate)
 {
   // TraceCallstack();
   unsigned int NeonAuthTypes = NE_AUTH_BASIC | NE_AUTH_DIGEST | NE_AUTH_PASSPORT;
@@ -1932,7 +1932,7 @@ void TWebDAVFileSystem::HttpAuthenticationFailed()
       // We have to retry with a fresh request. That's what FAuthenticationRetry does.
       FTerminal->LogEvent(FORMAT(L"%s challenge failed, will try different challenge", FAuthorizationProtocol.c_str()));
       ne_remove_server_auth(FNeonSession);
-      NeonAddAuthentiation(false);
+      NeonAddAuthentication(false);
       FAuthenticationRetry = true;
     }
     else

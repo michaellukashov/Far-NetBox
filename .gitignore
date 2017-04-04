@@ -46,13 +46,14 @@ ipch/
 tags
 README.html
 CMakeLists.txt.user
+cmake-build-*/
 
 *.cbp
 
 cov-int/
 /src/NetBox/My */
-/src/NetBox/.idea/
-/src/NetBox/#Verone/
+.idea/
+#Verone/
 
 .vs/
 *.VC.db

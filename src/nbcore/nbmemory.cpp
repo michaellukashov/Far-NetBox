@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#define BLOCK_ALLOCED 0xABBABABA
+#define BLOCK_ALLOCATED 0xABBABABA
 #define BLOCK_FREED   0xDEADBEEF
 
 static int CheckBlock(void* blk)
@@ -15,7 +15,7 @@ static int CheckBlock(void* blk)
     b = (uint32_t*)&p[ sizeof(uint32_t) ];
     e = (uint32_t*)&p[ sizeof(uint32_t)*2 + size ];
 
-    if (*b != BLOCK_ALLOCED || *e != BLOCK_ALLOCED)
+    if (*b != BLOCK_ALLOCATED || *e != BLOCK_ALLOCATED)
     {
       if (*b == BLOCK_FREED && *e == BLOCK_FREED)
         OutputDebugStringA("memory block is already deleted\n");
@@ -55,8 +55,8 @@ NB_C_CORE_DLL(void*) nbcore_alloc(size_t size)
   }
 
   *(uint32_t*)p = (uint32_t)size;
-  *(uint32_t*)&p[sizeof(uint32_t)] = BLOCK_ALLOCED;
-  *(uint32_t*)&p[size + sizeof(uint32_t)*2] = BLOCK_ALLOCED;
+  *(uint32_t*)&p[sizeof(uint32_t)] = BLOCK_ALLOCATED;
+  *(uint32_t*)&p[size + sizeof(uint32_t)*2] = BLOCK_ALLOCATED;
   return p + sizeof(uint32_t)* 2;
 }
 
@@ -93,8 +93,8 @@ NB_C_CORE_DLL(void*) nbcore_realloc(void* ptr, size_t size)
   }
 
   *(uint32_t*)p = (uint32_t)size;
-  *(uint32_t*)&p[sizeof(uint32_t)] = BLOCK_ALLOCED;
-  *(uint32_t*)&p[size + sizeof(uint32_t)*2] = BLOCK_ALLOCED;
+  *(uint32_t*)&p[sizeof(uint32_t)] = BLOCK_ALLOCATED;
+  *(uint32_t*)&p[size + sizeof(uint32_t)*2] = BLOCK_ALLOCATED;
   return p + sizeof(uint32_t)*2;
 }
 

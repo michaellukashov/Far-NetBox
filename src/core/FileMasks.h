@@ -229,7 +229,7 @@ public:
     TSessionData * SessionData, const UnicodeString & AUserName,
     const UnicodeString & APassword);
 
-  // __property TSessionData * SessionData = { read = GetSesssionData };
+  // __property TSessionData * SessionData = { read = GetSessionData };
 
   TCustomCommandData & operator=(const TCustomCommandData & Data);
 

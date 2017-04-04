@@ -56,7 +56,7 @@ inline void TMessageParams::Reset()
   AllowHelp = true;
   ImageName = L"";
   MoreMessagesUrl = L"";
-  MoreMessagesSize = TSize();
+  MoreMessagesSize = 0;
   CustomCaption = L"";
 }
 
