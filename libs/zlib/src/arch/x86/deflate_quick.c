@@ -115,8 +115,8 @@ static inline long compare258(const uint8_t *const src0, const uint8_t *const sr
 #endif
 }
 
-static const uint32_t quick_len_codes[MAX_MATCH-MIN_MATCH+1];
-static const uint32_t quick_dist_codes[8192];
+extern const uint32_t quick_len_codes[MAX_MATCH-MIN_MATCH+1];
+extern const uint32_t quick_dist_codes[8192];
 
 static inline void quick_send_bits(deflate_state *const s, const int value, const int length) {
     uint32_t out, width, bytes_out;
