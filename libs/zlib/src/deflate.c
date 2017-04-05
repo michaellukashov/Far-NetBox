@@ -1260,9 +1260,7 @@ static void lm_init(deflate_state *s)
 /* For 80x86 and 680x0, an optimized version will be provided in match.asm or
  * match.S. The code will be functionally equivalent.
  */
-static uint32_t longest_match(s, cur_match)
-    deflate_state *s;
-    IPos cur_match;                             /* current match */
+static uint32_t longest_match(deflate_state *s, IPos cur_match)
 {
     uint32_t chain_length = s->max_chain_length;/* max hash chain length */
     register Bytef *scan = s->window + s->strstart; /* current string */
@@ -1907,9 +1905,7 @@ static block_state deflate_stored(deflate_state *s, int flush)
  * new strings in the dictionary only for unmatched strings or for short
  * matches. It is used only for the fast compression options.
  */
-static block_state deflate_fast(s, flush)
-    deflate_state *s;
-    int flush;
+static block_state deflate_fast(deflate_state *s, int flush)
 {
     IPos hash_head;       /* head of the hash chain */
     int bflush;           /* set if current block must be flushed */
