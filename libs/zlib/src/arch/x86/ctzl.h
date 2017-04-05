@@ -16,7 +16,7 @@ static __forceinline uint64_t __builtin_ctzl(uint64_t value)
 	if (x86_cpu_has_tzcnt)
 		return _tzcnt_u32(value);
 #endif
-	uint64_t trailing_zero;
+	unsigned long trailing_zero;
 	_BitScanForward(&trailing_zero, value);
 	return trailing_zero;
 }
