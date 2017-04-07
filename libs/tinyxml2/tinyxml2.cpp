@@ -1133,6 +1133,7 @@ XMLNode* XMLText::ShallowClone( XMLDocument* doc ) const
 
 bool XMLText::ShallowEqual( const XMLNode* compare ) const
 {
+    TIXMLASSERT( compare );
     const XMLText* text = compare->ToText();
     return ( text && XMLUtil::StringEqual( text->Value(), Value() ) );
 }
@@ -1448,7 +1449,7 @@ void XMLAttribute::SetAttribute( float v )
 
 // --------- XMLElement ---------- //
 XMLElement::XMLElement( XMLDocument* doc ) : XMLNode( doc ),
-    _closingType( 0 ),
+    _closingType( OPEN ),
     _rootAttribute( 0 )
 {
 }
@@ -1867,7 +1868,7 @@ char* XMLElement::ParseDeep( char* p, StrPair* strPair, int* curLineNumPtr )
     }
 
     p = ParseAttributes( p, curLineNumPtr );
-    if ( !p || !*p || _closingType ) {
+    if ( !p || !*p || _closingType != OPEN ) {
         return p;
     }
 
