@@ -420,7 +420,7 @@ void TCopyParamType::DoGetInfoStr(
   {
     UnicodeString Value;
     UnicodeString CodeState;
-    intptr_t ResumeThresholdKB = (GetResumeThreshold() / 1024);
+    intptr_t ResumeThresholdKB = (intptr_t)(GetResumeThreshold() / 1024);
     switch (GetResumeSupport())
     {
       case rsOff:

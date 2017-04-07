@@ -217,7 +217,7 @@ void TFileBuffer::Insert(int64_t Index, const char * Buf, int64_t Len)
 {
   SetSize(GetSize() + Len);
   memmove(GetData() + Index + Len, GetData() + Index, static_cast<size_t>(GetSize() - Index - Len));
-  memmove(GetData() + Index, Buf, Len);
+  memmove(GetData() + Index, Buf, static_cast<size_t>(Len));
 }
 
 void TFileBuffer::Delete(int64_t Index, int64_t Len)
