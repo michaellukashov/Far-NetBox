@@ -288,7 +288,7 @@ intptr_t StrToCompoundVersion(const UnicodeString & AStr)
   int64_t MinorVer = StrToInt64(CutToChar(S, L'.', false));
   int64_t Release = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
   int64_t Build = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
-  return CalculateCompoundVersion(MajorVer, MinorVer, Release, Build);
+  return CalculateCompoundVersion((intptr_t)MajorVer, (intptr_t)MinorVer, (intptr_t)Release, (intptr_t)Build);
 }
 
 intptr_t CompareVersion(UnicodeString V1, UnicodeString V2)
