@@ -2091,62 +2091,39 @@ void TTerminal::AddCachedFileList(TRemoteFileList * FileList)
   FDirectoryCache->AddFileList(FileList);
 }
 
-bool TTerminal::DirectoryFileList(const UnicodeString & APath,
-  TRemoteFileList *& FileList, bool CanLoad)
+TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, TDateTime Timestamp, bool CanLoad)
 {
-  bool Result = false;
+  TRemoteFileList * Result = NULL;
   if (core::UnixSamePath(FFiles->GetDirectory(), APath))
   {
-    Result = (FileList == nullptr) || (FileList->GetTimestamp() < FFiles->GetTimestamp());
-    if (Result)
+    if (Timestamp < FFiles->GetTimestamp())
     {
-      if (FileList == nullptr)
-      {
-        FileList = new TRemoteFileList();
-      }
-      FFiles->DuplicateTo(FileList);
+      Result = new TRemoteFileList();
+      FFiles->DuplicateTo(Result);
     }
   }
   else
   {
-    if (((FileList == nullptr) && FDirectoryCache->HasFileList(APath)) ||
-        ((FileList != nullptr) && FDirectoryCache->HasNewerFileList(APath, FileList->GetTimestamp())))
+    if (FDirectoryCache->HasNewerFileList(APath, Timestamp))
     {
-      bool Created = (FileList == nullptr);
-      if (Created)
-      {
-        FileList = new TRemoteFileList();
-      }
-
-      Result = FDirectoryCache->GetFileList(APath, FileList);
-      if (!Result && Created)
-      {
-        SAFE_DESTROY(FileList);
-      }
+      Result = new TRemoteFileList();
+      DebugAlwaysTrue(FDirectoryCache->GetFileList(APath, Result));
     }
     // do not attempt to load file list if there is cached version,
     // only absence of cached version indicates that we consider
     // the directory content obsolete
     else if (CanLoad && !FDirectoryCache->HasFileList(APath))
     {
-      bool Created = (FileList == nullptr);
-      if (Created)
-      {
-        FileList = new TRemoteFileList();
-      }
-      FileList->SetDirectory(APath);
+      Result = new TRemoteFileList();
+      Result->SetDirectory(APath);
 
       try
       {
-        ReadDirectory(FileList);
-        Result = true;
+        ReadDirectory(Result);
       }
       catch (...)
       {
-        if (Created)
-        {
-          SAFE_DESTROY(FileList);
-        }
+        SAFE_DESTROY(Result);
         throw;
       }
     }
