@@ -278,7 +278,10 @@ void sk_init(void)
 	GET_WINDOWS_FUNCTION(winsock_module, getaddrinfo);
 	GET_WINDOWS_FUNCTION(winsock_module, freeaddrinfo);
 	GET_WINDOWS_FUNCTION(winsock_module, getnameinfo);
-	GET_WINDOWS_FUNCTION(winsock_module, gai_strerror);
+        /* This function would fail its type-check if we did one,
+         * because the VS header file provides an inline definition
+         * which is __cdecl instead of WINAPI. */
+        GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
     } else {
 	/* Fall back to wship6.dll for Windows 2000 */
 	wship6_module = load_system32_dll("wship6.dll");
@@ -289,7 +292,8 @@ void sk_init(void)
 	    GET_WINDOWS_FUNCTION(wship6_module, getaddrinfo);
 	    GET_WINDOWS_FUNCTION(wship6_module, freeaddrinfo);
 	    GET_WINDOWS_FUNCTION(wship6_module, getnameinfo);
-	    GET_WINDOWS_FUNCTION(wship6_module, gai_strerror);
+            /* See comment above about type check */
+            GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
 	} else {
 #ifdef NET_SETUP_DIAGNOSTICS
 	    logevent(NULL, "No IPv6 support detected");
@@ -320,7 +324,7 @@ void sk_init(void)
     GET_WINDOWS_FUNCTION(winsock_module, getservbyname);
     GET_WINDOWS_FUNCTION(winsock_module, inet_addr);
     GET_WINDOWS_FUNCTION(winsock_module, inet_ntoa);
-    GET_WINDOWS_FUNCTION(winsock_module, inet_ntop);
+    GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, inet_ntop);
     GET_WINDOWS_FUNCTION(winsock_module, connect);
     GET_WINDOWS_FUNCTION(winsock_module, bind);
     #ifdef MPEXT
