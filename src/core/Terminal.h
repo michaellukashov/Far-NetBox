@@ -585,8 +585,7 @@ public:
   void SpaceAvailable(const UnicodeString & APath, TSpaceAvailable & ASpaceAvailable);
   void LockFiles(TStrings * AFileList);
   void UnlockFiles(TStrings * AFileList);
-  bool DirectoryFileList(const UnicodeString & APath,
-    TRemoteFileList *& FileList, bool CanLoad);
+  TRemoteFileList * DirectoryFileList(const UnicodeString & APath, TDateTime Timestamp, bool CanLoad);
   void MakeLocalFileList(const UnicodeString & AFileName,
     const TSearchRec & Rec, void * Param);
   bool FileOperationLoopQuery(Exception & E,
