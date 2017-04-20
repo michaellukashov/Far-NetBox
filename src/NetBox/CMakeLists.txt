@@ -949,6 +949,7 @@ add_library(putty STATIC
   ../../libs/putty/sshzlib.c
   ../../libs/putty/tree234.c
   ../../libs/putty/wildcard.c
+  ../../libs/putty/miscucs.c
   ../../libs/putty/windows/wingss.c
   ../../libs/putty/windows/winhandl.c
   ../../libs/putty/windows/winmisc.c
@@ -961,6 +962,7 @@ add_library(putty STATIC
   ../../libs/putty/windows/winstore.c
   ../../libs/putty/windows/wintime.c
   ../../libs/putty/windows/winhsock.c
+  ../../libs/putty/windows/winucs.c
   ../../libs/putty/x11fwd.c
   ../../libs/putty/conf.c
   ../../libs/putty/callback.c
