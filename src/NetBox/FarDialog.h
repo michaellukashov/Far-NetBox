@@ -120,7 +120,7 @@ protected:
   void ShowItem(TFarDialogItem * Item, void * Arg);
   void EnableItem(TFarDialogItem * Item, void * Arg);
   bool ChangesLocked();
-  TFarDialogItem * ItemAt(int X, int Y);
+  TFarDialogItem * ItemAt(intptr_t X, intptr_t Y);
 
   static LONG_PTR WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2);
 
@@ -341,10 +341,10 @@ protected:
   virtual void ResetBounds();
   virtual void Init();
   virtual bool CloseQuery();
-  virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD * Event);
+  virtual bool MouseMove(intptr_t X, intptr_t Y, MOUSE_EVENT_RECORD * Event);
   virtual bool MouseClick(MOUSE_EVENT_RECORD * Event);
   TPoint MouseClientPosition(MOUSE_EVENT_RECORD * Event);
-  void Text(int X, int Y, uintptr_t Color, const UnicodeString & Str);
+  void Text(intptr_t X, intptr_t Y, uintptr_t Color, const UnicodeString & Str);
   void Redraw();
   virtual bool HotKey(char HotKey);
 
@@ -359,10 +359,10 @@ private:
   TFarDialogItem * FEnabledDependencyNegative;
   TFarDialogContainer * FContainer;
   intptr_t FItem;
-  bool FEnabled;
-  bool FIsEnabled;
   uint32_t FColors;
   uint32_t FColorMask;
+  bool FEnabled;
+  bool FIsEnabled;
 };
 
 class TFarBox : public TFarDialogItem

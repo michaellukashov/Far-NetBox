@@ -718,22 +718,22 @@ LRESULT CALLBACK _AfxMsgFilterHook(int code, WPARAM wParam, LPARAM lParam)
 	return (LRESULT)pThread->ProcessMessageFilter(code, (LPMSG)lParam);
 }
 
-AFX_STATIC BOOL AFXAPI IsHelpKey(LPMSG lpMsg)
-	// return TRUE only for non-repeat F1 keydowns.
-{
-	return lpMsg->message == WM_KEYDOWN &&
-			 lpMsg->wParam == VK_F1 &&
-			 !(HIWORD(lpMsg->lParam) & KF_REPEAT) &&
-			 GetKeyState(VK_SHIFT) >= 0 &&
-			 GetKeyState(VK_CONTROL) >= 0 &&
-			 GetKeyState(VK_MENU) >= 0;
-}
+//AFX_STATIC BOOL AFXAPI IsHelpKey(LPMSG lpMsg)
+//	// return TRUE only for non-repeat F1 keydowns.
+//{
+//	return lpMsg->message == WM_KEYDOWN &&
+//			 lpMsg->wParam == VK_F1 &&
+//			 !(HIWORD(lpMsg->lParam) & KF_REPEAT) &&
+//			 GetKeyState(VK_SHIFT) >= 0 &&
+//			 GetKeyState(VK_CONTROL) >= 0 &&
+//			 GetKeyState(VK_MENU) >= 0;
+//}
 
-AFX_STATIC inline BOOL IsEnterKey(LPMSG lpMsg)
-	{ return lpMsg->message == WM_KEYDOWN && lpMsg->wParam == VK_RETURN; }
+//AFX_STATIC inline BOOL IsEnterKey(LPMSG lpMsg)
+//	{ return lpMsg->message == WM_KEYDOWN && lpMsg->wParam == VK_RETURN; }
 
-AFX_STATIC inline BOOL IsButtonUp(LPMSG lpMsg)
-	{ return lpMsg->message == WM_LBUTTONUP; }
+//AFX_STATIC inline BOOL IsButtonUp(LPMSG lpMsg)
+//	{ return lpMsg->message == WM_LBUTTONUP; }
 
 BOOL CWinThread::ProcessMessageFilter(int code, LPMSG lpMsg)
 {

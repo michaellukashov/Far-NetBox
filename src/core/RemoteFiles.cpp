@@ -672,6 +672,7 @@ UnicodeString TRemoteToken::GetLogText() const
 {
   return FORMAT(L"\"%s\" [%d]", FName.c_str(), static_cast<int>(FID));
 }
+
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteTokenList * TRemoteTokenList::Duplicate() const
@@ -803,6 +804,7 @@ const TRemoteToken * TRemoteTokenList::Token(intptr_t Index) const
 {
   return &FTokens[Index];
 }
+
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile) :
@@ -947,17 +949,17 @@ Boolean TRemoteFile::GetIsHidden() const
   bool Result;
   switch (FIsHidden)
   {
-    case 0:
-      Result = false;
-      break;
+  case 0:
+    Result = false;
+    break;
 
-    case 1:
-      Result = true;
-      break;
+  case 1:
+    Result = true;
+    break;
 
-    default:
-      Result = core::IsUnixHiddenFile(GetFileName());
-      break;
+  default:
+    Result = core::IsUnixHiddenFile(GetFileName());
+    break;
   }
 
   return Result;
@@ -1629,6 +1631,7 @@ void TRemoteFile::SetFullFileName(const UnicodeString & Value)
 {
   FFullFileName = Value;
 }
+
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteDirectoryFile::TRemoteDirectoryFile() :
@@ -1651,6 +1654,7 @@ void TRemoteDirectoryFile::Init()
   SetType(L'D');
   SetSize(0);
 }
+
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal) :
@@ -1659,6 +1663,7 @@ TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal) :
   SetFileName(PARENTDIRECTORY);
   SetTerminal(ATerminal);
 }
+
 //=== TRemoteFileList ------------------------------------------------------
 TRemoteFileList::TRemoteFileList() :
   TObjectList(OBJECT_CLASS_TRemoteFileList),
@@ -1773,11 +1778,11 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
   return nullptr;
 }
 //=== TRemoteDirectory ------------------------------------------------------
-TRemoteDirectory::TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template) :
+TRemoteDirectory::TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template) :
   TRemoteFileList(OBJECT_CLASS_TRemoteDirectory),
   FIncludeParentDirectory(false),
   FIncludeThisDirectory(false),
-  FTerminal(aTerminal),
+  FTerminal(ATerminal),
   FSelectedFiles(nullptr),
   FParentDirectory(nullptr),
   FThisDirectory(nullptr)
@@ -2621,21 +2626,21 @@ void TRights::SetRightUndef(TRight Right, TState Value)
 
     switch (Value)
     {
-      case rsYes:
-        FSet |= static_cast<uint16_t>(Flag);
-        FUnset &= static_cast<uint16_t>(~Flag);
-        break;
+    case rsYes:
+      FSet |= static_cast<uint16_t>(Flag);
+      FUnset &= static_cast<uint16_t>(~Flag);
+      break;
 
-      case rsNo:
-        FSet &= static_cast<uint16_t>(~Flag);
-        FUnset |= static_cast<uint16_t>(Flag);
-        break;
+    case rsNo:
+      FSet &= static_cast<uint16_t>(~Flag);
+      FUnset |= static_cast<uint16_t>(Flag);
+      break;
 
-      case rsUndef:
-      default:
-        FSet &= static_cast<uint16_t>(~Flag);
-        FUnset &= static_cast<uint16_t>(~Flag);
-        break;
+    case rsUndef:
+    default:
+      FSet &= static_cast<uint16_t>(~Flag);
+      FUnset &= static_cast<uint16_t>(~Flag);
+      break;
     }
 
     FText.Clear();
@@ -2704,16 +2709,16 @@ UnicodeString TRights::GetModeStr() const
       Right = static_cast<TRight>(rrUserRead + Index);
       switch (GetRightUndef(Right))
       {
-        case rsYes:
-          SetModeStr += BasicSymbols[Index];
-          break;
+      case rsYes:
+        SetModeStr += BasicSymbols[Index];
+        break;
 
-        case rsNo:
-          UnsetModeStr += BasicSymbols[Index];
-          break;
+      case rsNo:
+        UnsetModeStr += BasicSymbols[Index];
+        break;
 
-        case rsUndef:
-          break;
+      case rsUndef:
+        break;
       }
     }
 
@@ -2721,16 +2726,16 @@ UnicodeString TRights::GetModeStr() const
     Index = (Group * 3) + 2;
     switch (GetRightUndef(Right))
     {
-      case rsYes:
-        SetModeStr += CombinedSymbols[Index];
-        break;
+    case rsYes:
+      SetModeStr += CombinedSymbols[Index];
+      break;
 
-      case rsNo:
-        UnsetModeStr += CombinedSymbols[Index];
-        break;
+    case rsNo:
+      UnsetModeStr += CombinedSymbols[Index];
+      break;
 
-      case rsUndef:
-        break;
+    case rsUndef:
+      break;
     }
 
     if (!SetModeStr.IsEmpty() || !UnsetModeStr.IsEmpty())
@@ -2934,6 +2939,7 @@ TRemoteProperties & TRemoteProperties::operator=(const TRemoteProperties & other
   LastAccess = other.Modification;
   return *this;
 }
+
 //---------------------------------------------------------------------------
 void TRemoteProperties::Load(THierarchicalStorage * Storage)
 {

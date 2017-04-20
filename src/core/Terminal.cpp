@@ -400,7 +400,10 @@ class TTunnelUI : public TSessionUI
 NB_DISABLE_COPY(TTunnelUI)
 public:
   explicit TTunnelUI(TTerminal * Terminal);
-  virtual ~TTunnelUI() {}
+  virtual ~TTunnelUI()
+  {
+  }
+
   virtual void Information(const UnicodeString & Str, bool Status);
   virtual uintptr_t QueryUser(const UnicodeString & Query,
     TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
@@ -419,19 +422,19 @@ public:
 
 private:
   TTerminal * FTerminal;
-  uint32_t FTerminalThread;
+  uint32_t FTerminalThreadID;
 };
 
 TTunnelUI::TTunnelUI(TTerminal * Terminal) :
   TSessionUI(OBJECT_CLASS_TTunnelUI),
   FTerminal(Terminal)
 {
-  FTerminalThread = GetCurrentThreadId();
+  FTerminalThreadID = GetCurrentThreadId();
 }
 
 void TTunnelUI::Information(const UnicodeString & Str, bool Status)
 {
-  if (GetCurrentThreadId() == FTerminalThread)
+  if (GetCurrentThreadId() == FTerminalThreadID)
   {
     FTerminal->Information(Str, Status);
   }
@@ -442,7 +445,7 @@ uintptr_t TTunnelUI::QueryUser(const UnicodeString & Query,
   TQueryType QueryType)
 {
   uintptr_t Result;
-  if (GetCurrentThreadId() == FTerminalThread)
+  if (GetCurrentThreadId() == FTerminalThreadID)
   {
     Result = FTerminal->QueryUser(Query, MoreMessages, Answers, Params, QueryType);
   }
@@ -458,7 +461,7 @@ uintptr_t TTunnelUI::QueryUserException(const UnicodeString & Query,
   TQueryType QueryType)
 {
   uintptr_t Result;
-  if (GetCurrentThreadId() == FTerminalThread)
+  if (GetCurrentThreadId() == FTerminalThreadID)
   {
     Result = FTerminal->QueryUserException(Query, E, Answers, Params, QueryType);
   }
@@ -473,7 +476,7 @@ bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
   const UnicodeString & AName, const UnicodeString & AInstructions, TStrings * Prompts, TStrings * Results)
 {
   bool Result = false;
-  if (GetCurrentThreadId() == FTerminalThread)
+  if (GetCurrentThreadId() == FTerminalThreadID)
   {
     UnicodeString Instructions = AInstructions;
     if (IsAuthenticationPrompt(Kind))
@@ -490,7 +493,7 @@ bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
 
 void TTunnelUI::DisplayBanner(const UnicodeString & Banner)
 {
-  if (GetCurrentThreadId() == FTerminalThread)
+  if (GetCurrentThreadId() == FTerminalThreadID)
   {
     FTerminal->DisplayBanner(Banner);
   }
@@ -503,7 +506,7 @@ void TTunnelUI::FatalError(Exception * E, const UnicodeString & Msg, const Unico
 
 void TTunnelUI::HandleExtendedException(Exception * E)
 {
-  if (GetCurrentThreadId() == FTerminalThread)
+  if (GetCurrentThreadId() == FTerminalThreadID)
   {
     FTerminal->HandleExtendedException(E);
   }
@@ -2088,62 +2091,39 @@ void TTerminal::AddCachedFileList(TRemoteFileList * FileList)
   FDirectoryCache->AddFileList(FileList);
 }
 
-bool TTerminal::DirectoryFileList(const UnicodeString & APath,
-  TRemoteFileList *& FileList, bool CanLoad)
+TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, TDateTime Timestamp, bool CanLoad)
 {
-  bool Result = false;
+  TRemoteFileList * Result = NULL;
   if (core::UnixSamePath(FFiles->GetDirectory(), APath))
   {
-    Result = (FileList == nullptr) || (FileList->GetTimestamp() < FFiles->GetTimestamp());
-    if (Result)
+    if (Timestamp < FFiles->GetTimestamp())
     {
-      if (FileList == nullptr)
-      {
-        FileList = new TRemoteFileList();
-      }
-      FFiles->DuplicateTo(FileList);
+      Result = new TRemoteFileList();
+      FFiles->DuplicateTo(Result);
     }
   }
   else
   {
-    if (((FileList == nullptr) && FDirectoryCache->HasFileList(APath)) ||
-        ((FileList != nullptr) && FDirectoryCache->HasNewerFileList(APath, FileList->GetTimestamp())))
+    if (FDirectoryCache->HasNewerFileList(APath, Timestamp))
     {
-      bool Created = (FileList == nullptr);
-      if (Created)
-      {
-        FileList = new TRemoteFileList();
-      }
-
-      Result = FDirectoryCache->GetFileList(APath, FileList);
-      if (!Result && Created)
-      {
-        SAFE_DESTROY(FileList);
-      }
+      Result = new TRemoteFileList();
+      DebugAlwaysTrue(FDirectoryCache->GetFileList(APath, Result));
     }
     // do not attempt to load file list if there is cached version,
     // only absence of cached version indicates that we consider
     // the directory content obsolete
     else if (CanLoad && !FDirectoryCache->HasFileList(APath))
     {
-      bool Created = (FileList == nullptr);
-      if (Created)
-      {
-        FileList = new TRemoteFileList();
-      }
-      FileList->SetDirectory(APath);
+      Result = new TRemoteFileList();
+      Result->SetDirectory(APath);
 
       try
       {
-        ReadDirectory(FileList);
-        Result = true;
+        ReadDirectory(Result);
       }
       catch (...)
       {
-        if (Created)
-        {
-          SAFE_DESTROY(FileList);
-        }
+        SAFE_DESTROY(Result);
         throw;
       }
     }
@@ -3518,7 +3498,7 @@ bool TTerminal::ProcessFiles(const TStrings * AFileList,
                 // not used anymore
 #if 0
                 TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
-                ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObjject(Index), Param, Index);
+                ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObj(Index), Param, Index);
 #endif
               }
               Success = true;
@@ -4883,13 +4863,13 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
 
       if ((AHandle == nullptr) || NoHandle)
       {
-        ::CloseHandle(LocalFileHandle);
+        SAFE_CLOSE_HANDLE(LocalFileHandle);
         LocalFileHandle = INVALID_HANDLE_VALUE;
       }
     }
     catch (...)
     {
-      ::CloseHandle(LocalFileHandle);
+      SAFE_CLOSE_HANDLE(LocalFileHandle);
       throw;
     }
   }
@@ -6502,7 +6482,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
     this->TerminalOpenLocalFile(LocalFileName, GENERIC_WRITE,
       &LocalFileHandle, nullptr, nullptr, nullptr, nullptr, nullptr);
     bool Result = ::SetFileTime(LocalFileHandle, nullptr, AcTime, WrTime) > 0;
-    ::CloseHandle(LocalFileHandle);
+    SAFE_CLOSE_HANDLE(LocalFileHandle);
     if (!Result)
     {
       Abort();

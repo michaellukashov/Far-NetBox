@@ -492,7 +492,7 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
   rde::vector<UnicodeString> Lines;
   UnicodeString Delimiter(UnicodeString(GetDelimiter()) + L'\n');
   tokenize(Value, Lines, Delimiter, true);
-  for (size_t Index = 0; Index < Lines.size(); Index++)
+  for (::size_t Index = 0; Index < Lines.size(); Index++)
   {
     Add(Lines[Index]);
   }
@@ -552,7 +552,7 @@ UnicodeString TStrings::GetTextStr() const
   for (intptr_t Index = 0; Index < Count; ++Index)
   {
     UnicodeString S = GetString(Index);
-    size_t L = S.Length() * sizeof(wchar_t);
+    ::size_t L = S.Length() * sizeof(wchar_t);
     if (L != 0)
     {
       memmove(P, S.c_str(), L);
@@ -1007,7 +1007,7 @@ void TStringList::LoadFromFile(const UnicodeString & AFileName)
     FileBuffer.LoadStream(&Stream, Size, True);
     bool ConvertToken = false;
     FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
-    ::CloseHandle(FileHandle);
+    SAFE_CLOSE_HANDLE(FileHandle);
     UnicodeString Str(FileBuffer.GetData(), static_cast<intptr_t>(FileBuffer.GetSize()));
     SetTextStr(Str);
   }
@@ -1366,7 +1366,7 @@ THandleStream::THandleStream(HANDLE AHandle) :
 THandleStream::~THandleStream()
 {
   // if (FHandle != INVALID_HANDLE_VALUE)
-  //   ::CloseHandle(FHandle);
+  //   SAFE_CLOSE_HANDLE(FHandle);
 }
 
 int64_t THandleStream::Read(void * Buffer, int64_t Count)
@@ -1473,7 +1473,7 @@ int64_t TMemoryStream::Read(void * Buffer, int64_t Count)
       {
         Result = Count;
       }
-      memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, static_cast<size_t>(Result));
+      memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, static_cast<::size_t>(Result));
       FPosition += Result;
       return Result;
     }
@@ -1563,11 +1563,11 @@ void * TMemoryStream::Realloc(int64_t & NewCapacity)
     {
       if (FCapacity == 0)
       {
-        Result = nb::calloc<void*>(static_cast<size_t>(NewCapacity));
+        Result = nb::calloc<void*>(static_cast<::size_t>(NewCapacity));
       }
       else
       {
-        Result = nb::realloc<void*>(FMemory, static_cast<size_t>(NewCapacity));
+        Result = nb::realloc<void*>(FMemory, static_cast<::size_t>(NewCapacity));
       }
       if (Result == nullptr)
       {
@@ -1601,7 +1601,7 @@ int64_t TMemoryStream::Write(const void * Buffer, int64_t Count)
         FSize = Pos;
       }
       memmove(static_cast<char *>(FMemory) + FPosition,
-              Buffer, static_cast<size_t>(Count));
+              Buffer, static_cast<::size_t>(Count));
       FPosition = Pos;
       Result = Count;
     }
@@ -1714,7 +1714,7 @@ void TRegistry::GetValueNames(TStrings * Strings) const
     {
       DWORD Len = Info.MaxValueLen + 1;
       RegEnumValue(GetCurrentKey(), Index, &S[1], &Len, nullptr, nullptr, nullptr, nullptr);
-      Strings->Add(S.c_str());
+      Strings->Add(S);
     }
   }
 }
@@ -1957,14 +1957,14 @@ UnicodeString TRegistry::ReadStringRaw(const UnicodeString & Name) const
   return Result;
 }
 
-size_t TRegistry::ReadBinaryData(const UnicodeString & Name,
-  void * Buffer, size_t BufSize) const
+::size_t TRegistry::ReadBinaryData(const UnicodeString & Name,
+  void * Buffer, ::size_t BufSize) const
 {
-  size_t Result = 0;
+  ::size_t Result = 0;
   TRegDataInfo Info;
   if (GetDataInfo(Name, Info))
   {
-    Result = static_cast<size_t>(Info.DataSize);
+    Result = static_cast<::size_t>(Info.DataSize);
     TRegDataType RegData = Info.RegData;
     if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result <= BufSize))
     {
@@ -2046,7 +2046,7 @@ void TRegistry::WriteInt64(const UnicodeString & Name, int64_t Value)
 }
 
 void TRegistry::WriteBinaryData(const UnicodeString & Name,
-                                const void * Buffer, size_t BufSize)
+                                const void * Buffer, ::size_t BufSize)
 {
   PutData(Name, Buffer, BufSize, rdBinary);
 }

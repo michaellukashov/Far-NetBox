@@ -553,7 +553,7 @@ void CTransferSocket::OnSend(int nErrorCode)
     {
       DWORD BufferLen = 0;
       DWORD OutLen = 0;
-      if (WSAIoctl(m_SocketData.hSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, NULL, 0, &BufferLen, sizeof(BufferLen), &OutLen, 0, 0) == 0)
+      if (::WSAIoctl(m_SocketData.hSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, NULL, 0, &BufferLen, sizeof(BufferLen), &OutLen, 0, 0) == 0)
       {
         DebugAssert(OutLen == sizeof(BufferLen));
         if (m_SendBuf < BufferLen)

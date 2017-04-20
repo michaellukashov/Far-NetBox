@@ -10,7 +10,7 @@ TMessageParams::TMessageParams(uintptr_t AParams) :
   Aliases(nullptr),
   AliasesCount(0),
   Flags(0),
-  Params(0),
+  Params(AParams),
   Timer(0),
   TimerEvent(nullptr),
   TimerAnswers(0),
@@ -56,7 +56,7 @@ inline void TMessageParams::Reset()
   AllowHelp = true;
   ImageName = L"";
   MoreMessagesUrl = L"";
-  MoreMessagesSize = TSize();
+  MoreMessagesSize = 0;
   CustomCaption = L"";
 }
 

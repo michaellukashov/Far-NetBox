@@ -10,8 +10,8 @@
 
 #include "stdafx.h"
 #include <winnetwk.h>
-#include <shlobj.h>
-#include <shellapi.h>
+//#include <shlobj.h>
+//#include <shellapi.h>
 #include <Strsafe.h>
 #include "sal.h"
 
@@ -706,8 +706,8 @@ BOOL AFXAPI AfxComparePath(LPCTSTR lpszPath1, LPCTSTR lpszPath2)
 #pragma warning(pop)
 
 	// on non-DBCS systems, we are done
-	if (!GetSystemMetrics(SM_DBCSENABLED))
-		return TRUE;
+//	if (!GetSystemMetrics(SM_DBCSENABLED))
+//		return TRUE;
 
 	// on DBCS systems, the file name may not actually be the same
 	// in particular, the file system is case sensitive with respect to

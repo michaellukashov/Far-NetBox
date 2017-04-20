@@ -1775,9 +1775,9 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
   SYSTEMTIME SysTime;
   if (!UsesDaylightHack())
   {
-    SYSTEMTIME UniverzalSysTime;
-    FileTimeToSystemTime(&FileTime, &UniverzalSysTime);
-    SystemTimeToTzSpecificLocalTime(nullptr, &UniverzalSysTime, &SysTime);
+    SYSTEMTIME UniversalSysTime;
+    FileTimeToSystemTime(&FileTime, &UniversalSysTime);
+    SystemTimeToTzSpecificLocalTime(nullptr, &UniversalSysTime, &SysTime);
   }
   else
   {
@@ -2721,7 +2721,7 @@ bool IsDirectoryWriteable(const UnicodeString & APath)
   bool Result = (LocalFileHandle != INVALID_HANDLE_VALUE);
   if (Result)
   {
-    ::CloseHandle(LocalFileHandle);
+    SAFE_CLOSE_HANDLE(LocalFileHandle);
   }
   return Result;
 }

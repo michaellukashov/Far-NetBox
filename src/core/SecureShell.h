@@ -128,7 +128,6 @@ protected:
   void AddStdError(const UnicodeString & AStr);
   void AddStdErrorLine(const UnicodeString & AStr);
   void LogEvent(const UnicodeString & AStr);
-  // void FatalError(Exception * E, const UnicodeString & Msg);
   void FatalError(const UnicodeString & Error, const UnicodeString & HelpKeyword = L"");
   UnicodeString FormatKeyStr(const UnicodeString & AKeyStr) const;
   static Conf * StoreToConfig(TSessionData * Data, bool Simple);
@@ -144,7 +143,6 @@ public:
   bool Peek(uint8_t *& Buf, intptr_t Length) const;
   UnicodeString ReceiveLine();
   void Send(const uint8_t * Buf, intptr_t Length);
-  // void SendStr(const UnicodeString & Str);
   void SendSpecial(int Code);
   void Idle(uintptr_t MSec = 0);
   void SendEOF();
@@ -182,9 +180,10 @@ public:
   void DisplayBanner(const UnicodeString & Banner);
   void OldKeyfileWarning();
   void PuttyLogEvent(const char * AStr);
-  UnicodeString ConvertFromPutty(const char * Str, size_t Length) const;
+  UnicodeString ConvertFromPutty(const char * Str, intptr_t Length) const;
 
-  /*__property bool Active = { read = FActive, write = SetActive };
+/*
+  __property bool Active = { read = FActive, write = SetActive };
   __property bool Ready = { read = GetReady };
   __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
   __property TDateTime LastDataSent = { read = FLastDataSent };
@@ -192,7 +191,8 @@ public:
   __property UnicodeString UserName = { read = FUserName };
   __property bool Simple = { read = FSimple, write = FSimple };
   __property TSshImplementation SshImplementation = { read = FSshImplementation };
-  __property bool UtfStrings = { read = FUtfStrings, write = FUtfStrings };*/
+  __property bool UtfStrings = { read = FUtfStrings, write = FUtfStrings };
+*/
 
   bool GetActive() const { return FActive; }
   const TCaptureOutputEvent & GetOnCaptureOutput() const { return FOnCaptureOutput; }

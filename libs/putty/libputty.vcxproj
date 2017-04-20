@@ -213,6 +213,7 @@
     <ClCompile Include=".\SSHZLIB.c" />
     <ClCompile Include=".\TREE234.c" />
     <ClCompile Include=".\WILDCARD.c" />
+    <ClCompile Include=".\miscucs.c" />
     <ClCompile Include=".\windows\WINGSS.c" />
     <ClCompile Include=".\windows\WINHANDL.c" />
     <ClCompile Include=".\windows\WINMISC.c" />
@@ -225,6 +226,7 @@
     <ClCompile Include=".\windows\WINSTORE.c" />
     <ClCompile Include=".\windows\WINTIME.c" />
     <ClCompile Include=".\windows\winhsock.c" />
+    <ClCompile Include=".\windows\winucs.c" />
     <ClCompile Include=".\X11FWD.c" />
     <ClCompile Include=".\CONF.c" />
     <ClCompile Include=".\CALLBACK.c" />

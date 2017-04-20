@@ -291,8 +291,7 @@ TFTPFileSystem::~TFTPFileSystem()
 
   SAFE_DESTROY_EX(CFileZillaTools, FFileZillaIntf);
 
-  ::CloseHandle(FQueueEvent);
-  FQueueEvent = nullptr;
+  SAFE_CLOSE_HANDLE(FQueueEvent);
 
   SAFE_DESTROY(FLastResponse);
   SAFE_DESTROY(FLastErrorResponse);
@@ -4629,7 +4628,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       // TryWindowsSystemCertificateStore is set for the same set of failures
       // as trigger NE_SSL_UNTRUSTED flag in ne_openssl.c's verify_callback().
-      // Use WindowsValidateCertificate only as a last resort (after checking the cached fiungerprint)
+      // Use WindowsValidateCertificate only as a last resort (after checking the cached fingerprint)
       // as it can take a very long time (up to 1 minute).
       if (!VerificationResult && TryWindowsSystemCertificateStore)
       {
@@ -5139,7 +5138,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
         Result = true;
       }
 
-      ::CloseHandle(LocalFileHandle);
+      SAFE_CLOSE_HANDLE(LocalFileHandle);
     }
   }
   catch (...)

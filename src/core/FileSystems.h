@@ -239,6 +239,9 @@ public:
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) = 0;
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) = 0;
 
+/*
+  __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
+*/
   virtual UnicodeString GetCurrDirectory() const = 0;
 
 protected:

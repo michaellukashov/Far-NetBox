@@ -296,8 +296,8 @@ intptr_t CompareVersion(UnicodeString V1, UnicodeString V2)
   intptr_t Result = 0;
   while ((Result == 0) && (!V1.IsEmpty() || !V2.IsEmpty()))
   {
-    int C1 = StrToIntDef(CutToChar(V1, L'.', false), 0);
-    int C2 = StrToIntDef(CutToChar(V2, L'.', false), 0);
+    intptr_t C1 = StrToIntDef(CutToChar(V1, L'.', false), 0);
+    intptr_t C2 = StrToIntDef(CutToChar(V2, L'.', false), 0);
     // Result = CompareValue(C1, C2);
     if (C1 < C2)
     {

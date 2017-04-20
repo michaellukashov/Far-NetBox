@@ -1412,18 +1412,18 @@ UnicodeString TSessionData::GetSource() const
 {
   switch (FSource)
   {
-    case ::ssNone:
-      return L"Ad-Hoc site";
+  case ::ssNone:
+    return L"Ad-Hoc site";
 
-    case ssStored:
-      return L"Site";
+  case ssStored:
+    return L"Site";
 
-    case ssStoredModified:
-      return L"Modified site";
+  case ssStoredModified:
+    return L"Modified site";
 
-    default:
-      DebugFail();
-      return L"";
+  default:
+    DebugFail();
+    return L"";
   }
 }
 
@@ -1638,7 +1638,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     // When using to paste URL on Login dialog, we do not want to lookup the stored sites
     if (AStoredSessions != nullptr)
     {
-       // this can be optimized as the list is sorted
+      // this can be optimized as the list is sorted
       for (Integer Index = 0; Index < AStoredSessions->GetCountIncludingHidden(); ++Index)
       {
         TSessionData * AData = AStoredSessions->GetAs<TSessionData>(Index);
@@ -2679,20 +2679,20 @@ bool TSessionData::GetIsSecure() const
   bool Result = false;
   switch (GetFSProtocol())
   {
-    case fsSCPonly:
-    case fsSFTP:
-    case fsSFTPonly:
-      Result = true;
-      break;
+  case fsSCPonly:
+  case fsSFTP:
+  case fsSFTPonly:
+    Result = true;
+    break;
 
-    case fsFTP:
-    case fsWebDAV:
-      Result = (GetFtps() != ftpsNone);
-      break;
+  case fsFTP:
+  case fsWebDAV:
+    Result = (GetFtps() != ftpsNone);
+    break;
 
-    default:
-      DebugFail();
-      break;
+  default:
+    DebugFail();
+    break;
   }
   return Result;
 }
@@ -4090,18 +4090,18 @@ TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t FSProtocol)
     }
     switch (FSProtocol)
     {
-      case fsFTPS_219:
-        SetFtps(ftpsExplicitSsl);
-        Result = fsFTP;
-        break;
-      case fsHTTP_219:
-        SetFtps(ftpsNone);
-        Result = fsWebDAV;
-        break;
-      case fsHTTPS_219:
-        SetFtps(ftpsImplicit);
-        Result = fsWebDAV;
-        break;
+    case fsFTPS_219:
+      SetFtps(ftpsExplicitSsl);
+      Result = fsFTP;
+      break;
+    case fsHTTP_219:
+      SetFtps(ftpsNone);
+      Result = fsWebDAV;
+      break;
+    case fsHTTPS_219:
+      SetFtps(ftpsImplicit);
+      Result = fsWebDAV;
+      break;
     }
   }
   // DebugAssert(Result != -1);
@@ -4134,20 +4134,20 @@ TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption) const
   {
     switch (FtpEncryption)
     {
-      case fesPlainFTP:
-        Result = ftpsNone;
-        break;
-      case fesExplicitSSL:
-        Result = ftpsExplicitSsl;
-        break;
-      case fesImplicit:
-        Result = ftpsImplicit;
-        break;
-      case fesExplicitTLS:
-        Result = ftpsExplicitTls;
-        break;
-      default:
-        break;
+    case fesPlainFTP:
+      Result = ftpsNone;
+      break;
+    case fesExplicitSSL:
+      Result = ftpsExplicitSsl;
+      break;
+    case fesImplicit:
+      Result = ftpsImplicit;
+      break;
+    case fesExplicitTLS:
+      Result = ftpsExplicitTls;
+      break;
+    default:
+      break;
     }
   }
   DebugAssert(Result != static_cast<TFtps>(-1));

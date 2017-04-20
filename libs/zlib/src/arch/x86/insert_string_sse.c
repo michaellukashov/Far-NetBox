@@ -16,13 +16,13 @@
  *    (except for the last MIN_MATCH-1 bytes of the input file).
  */
 #ifdef X86_SSE4_2_CRC_HASH
-Pos insert_string_sse(deflate_state *const s, const Pos str, unsigned int count) {
+Pos insert_string_sse(deflate_state *const s, const Pos str, uint32_t count) {
     Pos ret = 0;
-    unsigned int idx;
-    unsigned *ip, val, h = 0;
+    uint32_t idx;
+    uint32_t *ip, val, h = 0;
 
     for (idx = 0; idx < count; idx++) {
-        ip = (unsigned *)&s->window[str+idx];
+        ip = (uint32_t *)&s->window[str+idx];
         val = *ip;
         h = 0;
 

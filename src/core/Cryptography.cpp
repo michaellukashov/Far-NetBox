@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -380,7 +381,7 @@ static RawByteString AES256Salt()
   return Result;
 }
 
-void AES256EncyptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
   RawByteString & Salt, RawByteString & Output, RawByteString & Mac)
 {
   fcrypt_ctx aes;
@@ -400,13 +401,13 @@ void AES256EncyptWithMAC(const RawByteString & Input, const UnicodeString & Pass
   fcrypt_end(reinterpret_cast<uint8_t *>(const_cast<char *>(Mac.c_str())), &aes);
 }
 
-void AES256EncyptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
   RawByteString & Output)
 {
   RawByteString Salt;
   RawByteString Encrypted;
   RawByteString Mac;
-  AES256EncyptWithMAC(Input, Password, Salt, Encrypted, Mac);
+  AES256EncryptWithMAC(Input, Password, Salt, Encrypted, Mac);
   Output = Salt + Encrypted + Mac;
 }
 
@@ -420,6 +421,7 @@ bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
     reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
     reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
+  Output.Unique();
   fcrypt_decrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
   RawByteString Mac2;
   Mac2.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
@@ -454,7 +456,7 @@ void AES256CreateVerifier(const UnicodeString & Input, RawByteString & Verifier)
 
   RawByteString Encrypted;
   RawByteString Mac;
-  AES256EncyptWithMAC(Dummy, Input, Salt, Encrypted, Mac);
+  AES256EncryptWithMAC(Dummy, Input, Salt, Encrypted, Mac);
 
   Verifier = Salt + Dummy + Mac;
 }
@@ -468,7 +470,7 @@ bool AES256Verify(const UnicodeString & Input, const RawByteString & Verifier)
 
   RawByteString Encrypted;
   RawByteString Mac2;
-  AES256EncyptWithMAC(Dummy, Input, Salt, Encrypted, Mac2);
+  AES256EncryptWithMAC(Dummy, Input, Salt, Encrypted, Mac2);
 
   DebugAssert(Mac2.Length() == Mac.Length());
 

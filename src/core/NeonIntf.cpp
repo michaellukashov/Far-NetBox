@@ -38,6 +38,7 @@ bool IsTlsUri(const ne_uri & uri)
 
 struct TProxyAuthData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   UnicodeString UserName;
   UnicodeString Password;
 };
@@ -66,7 +67,7 @@ static int NeonProxyAuth(
 
 ne_session * CreateNeonSession(
   const ne_uri & uri, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
-  int ProxyPort, const UnicodeString & ProxyUsername, const UnicodeString & ProxyPassword)
+  intptr_t ProxyPort, const UnicodeString & ProxyUsername, const UnicodeString & ProxyPassword)
 {
   ne_session * Session = ne_session_create(uri.scheme, uri.host, uri.port);
 
@@ -75,11 +76,11 @@ ne_session * CreateNeonSession(
     if ((ProxyMethod == pmSocks4) || (ProxyMethod == pmSocks5))
     {
       enum ne_sock_sversion vers = (ProxyMethod == pmSocks4) ? NE_SOCK_SOCKSV4A : NE_SOCK_SOCKSV5;
-      ne_session_socks_proxy(Session, vers, StrToNeon(ProxyHost), ProxyPort, StrToNeon(ProxyUsername), StrToNeon(ProxyPassword));
+      ne_session_socks_proxy(Session, vers, StrToNeon(ProxyHost), (int)ProxyPort, StrToNeon(ProxyUsername), StrToNeon(ProxyPassword));
     }
     else if (!ProxyHost.IsEmpty())
     {
-      ne_session_proxy(Session, StrToNeon(ProxyHost), ProxyPort);
+      ne_session_proxy(Session, StrToNeon(ProxyHost), (int)ProxyPort);
 
       if (!ProxyUsername.IsEmpty())
       {

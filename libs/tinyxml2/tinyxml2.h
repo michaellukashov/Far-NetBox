@@ -907,7 +907,7 @@ protected:
     XMLNode( XMLDocument* );
     virtual ~XMLNode();
 
-    virtual char* ParseDeep( char*, StrPair*, int* );
+    virtual char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr);
 
     XMLDocument*	_document;
     XMLNode*		_parent;
@@ -975,7 +975,7 @@ protected:
     XMLText( XMLDocument* doc )	: XMLNode( doc ), _isCData( false )	{}
     virtual ~XMLText()												{}
 
-    char* ParseDeep( char*, StrPair* endTag, int* curLineNumPtr );
+    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
 
 private:
     bool _isCData;
@@ -1006,7 +1006,7 @@ protected:
     XMLComment( XMLDocument* doc );
     virtual ~XMLComment();
 
-    char* ParseDeep( char*, StrPair* endTag, int* curLineNumPtr);
+    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr);
 
 private:
     XMLComment( const XMLComment& );	// not supported
@@ -1045,7 +1045,7 @@ protected:
     XMLDeclaration( XMLDocument* doc );
     virtual ~XMLDeclaration();
 
-    char* ParseDeep( char*, StrPair* endTag, int* curLineNumPtr );
+    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
 
 private:
     XMLDeclaration( const XMLDeclaration& );	// not supported
@@ -1080,7 +1080,7 @@ protected:
     XMLUnknown( XMLDocument* doc );
     virtual ~XMLUnknown();
 
-    char* ParseDeep( char*, StrPair* endTag, int* curLineNumPtr );
+    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
 
 private:
     XMLUnknown( const XMLUnknown& );	// not supported
@@ -1559,19 +1559,19 @@ public:
 	float FloatText(float defaultValue = 0) const;
 
     // internal:
-    enum {
+    enum ElementClosingType {
         OPEN,		// <foo>
         CLOSED,		// <foo/>
         CLOSING		// </foo>
     };
-    int ClosingType() const {
+    ElementClosingType ClosingType() const {
         return _closingType;
     }
     virtual XMLNode* ShallowClone( XMLDocument* document ) const;
     virtual bool ShallowEqual( const XMLNode* compare ) const;
 
 protected:
-    char* ParseDeep( char* p, StrPair* endTag, int* curLineNumPtr );
+    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
 
 private:
     XMLElement( XMLDocument* doc );
@@ -1589,7 +1589,7 @@ private:
     XMLAttribute* CreateAttribute();
 
     enum { BUF_SIZE = 200 };
-    int _closingType;
+    ElementClosingType _closingType;
     // The attribute list is ordered; there is no 'lastAttribute'
     // because the list needs to be scanned for dupes before adding
     // a new attribute.
@@ -1635,7 +1635,7 @@ public:
     	specified, TinyXML-2 will assume 'xml' points to a
     	null terminated string.
     */
-    XMLError Parse( const char* xml, size_t nBytes=(size_t)(-1) );
+    XMLError Parse( const char* xml, ::size_t nBytes=(::size_t)(-1) );
 
     /**
     	Load an XML file from disk.

@@ -76,8 +76,7 @@ TSecureShell::~TSecureShell()
   DebugAssert(FWaiting == 0);
   SetActive(false);
   ResetConnection();
-  ::CloseHandle(FSocketEvent);
-  FSocketEvent = nullptr;
+  SAFE_CLOSE_HANDLE(FSocketEvent);
 }
 
 void TSecureShell::ResetConnection()
@@ -578,7 +577,7 @@ bool TSecureShell::TryFtp()
               Result = (::WaitForSingleObject(Event, 2000) == WAIT_OBJECT_0);
             }
           }
-          ::CloseHandle(Event);
+          SAFE_CLOSE_HANDLE(Event);
         }
         closesocket(Socket);
       }
@@ -643,9 +642,9 @@ void TSecureShell::Init()
   }
 }
 
-UnicodeString TSecureShell::ConvertFromPutty(const char * Str, size_t Length) const
+UnicodeString TSecureShell::ConvertFromPutty(const char * Str, intptr_t Length) const
 {
-  size_t BomLength = strlen(MPEXT_BOM);
+  intptr_t BomLength = strlen(MPEXT_BOM);
   if ((Length >= BomLength) &&
       (strncmp(Str, MPEXT_BOM, BomLength) == 0))
   {
@@ -659,7 +658,7 @@ UnicodeString TSecureShell::ConvertFromPutty(const char * Str, size_t Length) co
 
 void TSecureShell::PuttyLogEvent(const char * AStr)
 {
-  UnicodeString Str = ConvertFromPutty(AStr, strlen(AStr));
+  UnicodeString Str = ConvertFromPutty(AStr, (intptr_t)strlen(AStr));
 #define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
   if (Str.Pos(SERVER_VERSION_MSG) == 1)
@@ -744,6 +743,7 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & AName) const
 
   return PromptKind;
 }
+
 
 bool TSecureShell::PromptUser(bool /*ToServer*/,
   const UnicodeString & AName, bool /*NameRequired*/,
@@ -847,7 +847,6 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       { L"Enter new password: ", NEW_PASSWORD_NEW_PROMPT },
       { L"Confirm new password: ", NEW_PASSWORD_CONFIRM_PROMPT },
     };
-
     PromptTranslation = NewPasswordPromptTranslation;
     PromptTranslationCount = _countof(NewPasswordPromptTranslation);
     PromptDesc = L"new password";
@@ -1159,10 +1158,12 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
       }
 
       // This seems ambiguous
-//      if (Length <= 0)
-//      {
-//        FatalError(LoadStr(LOST_CONNECTION));
-//      }
+/*
+      if (Length <= 0)
+      {
+        FatalError(LoadStr(LOST_CONNECTION));
+      }
+*/
     }
     __finally
     {
@@ -1952,7 +1953,6 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
   ClearStruct(Events);
   bool Result = EnumNetworkEvents(Socket, Events);
   HandleNetworkEvents(Socket, Events);
-
   return Result;
 }
 
@@ -2008,7 +2008,6 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       }
       else if (WaitResult == WAIT_OBJECT_0 + HandleCount)
       {
-
         if (GetConfiguration()->GetActualLogProtocol() >= 1)
         {
           LogEvent("Detected network event");
@@ -2087,7 +2086,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     {
       DWORD BufferLen = 0;
       DWORD OutBuffLen = 0;
-      if (WSAIoctl(FSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, nullptr, 0, &BufferLen, sizeof(BufferLen), &OutBuffLen, nullptr, nullptr) == 0)
+      if (::WSAIoctl(FSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, nullptr, 0, &BufferLen, sizeof(BufferLen), &OutBuffLen, nullptr, nullptr) == 0)
       {
         DebugAssert(OutBuffLen == sizeof(BufferLen));
         if (FSendBuf < static_cast<intptr_t>(BufferLen))
@@ -2097,7 +2096,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
           setsockopt(FSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&BufferLen), sizeof(BufferLen));
         }
       }
-      FLastSendBufferUpdate = (DWORD)TicksAfter;
+      FLastSendBufferUpdate = static_cast<DWORD>(TicksAfter);
     }
   }
   while (ReadEventRequired && (MSec > 0) && !Result);
@@ -2240,17 +2239,17 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
 
 UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & AKeyStr) const
 {
-  UnicodeString KeyStr = AKeyStr;
+  UnicodeString Result = AKeyStr;
   intptr_t Index = 1;
   intptr_t Digits = 0;
-  while (Index <= KeyStr.Length())
+  while (Index <= Result.Length())
   {
-    if (IsHex(KeyStr[Index]))
+    if (IsHex(Result[Index]))
     {
       Digits++;
       if (Digits >= 16)
       {
-        KeyStr.Insert(L" ", Index + 1);
+        Result.Insert(L" ", Index + 1);
         ++Index;
         Digits = 0;
       }
@@ -2261,7 +2260,7 @@ UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & AKeyStr) const
     }
     ++Index;
   }
-  return KeyStr;
+  return Result;
 }
 
 void TSecureShell::GetRealHost(UnicodeString & Host, intptr_t & Port) const
@@ -2280,7 +2279,7 @@ UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, intptr_t
   AnsiStoredKeys.SetLength(10 * 1024);
   UnicodeString Result;
   if (retrieve_host_key(AnsiString(Host).c_str(), static_cast<int>(Port), AnsiString(KeyType).c_str(),
-        (char *)AnsiStoredKeys.c_str(), static_cast<int>(AnsiStoredKeys.Length())) == 0)
+        const_cast<char *>(AnsiStoredKeys.c_str()), static_cast<int>(AnsiStoredKeys.Length())) == 0)
   {
     PackStr(AnsiStoredKeys);
     Result = UnicodeString(AnsiStoredKeys);
@@ -2319,7 +2318,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
     UnicodeString StoredKey = CutToChar(Buf, HostKeyDelimiter, false);
     // skip leading ECDH subtype identification
     intptr_t P = StoredKey.Pos(L",");
-    // start from beginning or after the comma, if there 's any
+    // start from beginning or after the comma, if there's any
     bool Fingerprint = (StoredKey.SubString(P + 1, 2) != L"0x");
     // it's probably a fingerprint (stored by TSessionData::CacheHostKey)
     UnicodeString NormalizedExpectedKey;
@@ -2594,7 +2593,8 @@ bool TSecureShell::GetReady() const
 
 void TSecureShell::CollectUsage()
 {
-  /*if (FCollectPrivateKeyUsage)
+/*
+  if (FCollectPrivateKeyUsage)
   {
     Configuration->Usage->Inc(L"OpenedSessionsPrivateKey2");
   }
@@ -2675,6 +2675,7 @@ void TSecureShell::CollectUsage()
   else
   {
     Configuration->Usage->Inc(L"OpenedSessionsSSHOther");
-  }*/
+  }
+*/
 }
 

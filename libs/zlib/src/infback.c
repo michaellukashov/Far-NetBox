@@ -25,7 +25,7 @@ static void fixedtables(struct inflate_state *state);
    windowBits is in the range 8..15, and window is a user-supplied
    window and output buffer that is 2**windowBits bytes.
  */
-int ZEXPORT inflateBackInit_(z_stream *strm, int windowBits, unsigned char *window,
+int ZEXPORT inflateBackInit_(z_stream *strm, int windowBits, uint8_t *window,
                               const char *version, int stream_size) {
     struct inflate_state *state;
 
@@ -53,7 +53,7 @@ int ZEXPORT inflateBackInit_(z_stream *strm, int windowBits, unsigned char *wind
     Tracev((stderr, "inflate: allocated\n"));
     strm->state = (struct internal_state *)state;
     state->dmax = 32768U;
-    state->wbits = (unsigned int)windowBits;
+    state->wbits = (uint32_t)windowBits;
     state->wsize = 1U << windowBits;
     state->window = window;
     state->wnext = 0;
@@ -80,7 +80,7 @@ static void fixedtables(struct inflate_state *state)
 
     /* build fixed huffman tables if first call (may not be thread safe) */
     if (virgin) {
-        unsigned sym, bits;
+        uint32_t sym, bits;
         static code *next;
 
         /* literal/length table */
@@ -164,7 +164,7 @@ static void fixedtables(struct inflate_state *state)
     do { \
         PULL(); \
         have--; \
-        hold += (unsigned long)(*next++) << bits; \
+        hold += (uint64_t)(*next++) << bits; \
         bits += 8; \
     } while (0)
 
@@ -173,19 +173,19 @@ static void fixedtables(struct inflate_state *state)
    an error. */
 #define NEEDBITS(n) \
     do { \
-        while (bits < (unsigned)(n)) \
+        while (bits < (uint32_t)(n)) \
             PULLBYTE(); \
     } while (0)
 
 /* Return the low n bits of the bit accumulator (n < 16) */
 #define BITS(n) \
-    ((unsigned)hold & ((1U << (n)) - 1))
+    ((uint32_t)hold & ((1U << (n)) - 1))
 
 /* Remove n bits from the bit accumulator */
 #define DROPBITS(n) \
     do { \
         hold >>= (n); \
-        bits -= (unsigned)(n); \
+        bits -= (uint32_t)(n); \
     } while (0)
 
 /* Remove zero to seven bits as needed to go to a byte boundary */
@@ -241,16 +241,16 @@ static void fixedtables(struct inflate_state *state)
 int ZEXPORT inflateBack(z_stream *strm, in_func in, void *in_desc, out_func out, void *out_desc)
 {
     struct inflate_state *state;
-    const unsigned char *next;  /* next input */
-    unsigned char *put;         /* next output */
-    unsigned have, left;        /* available input and output */
+    const uint8_t *next;  /* next input */
+    uint8_t *put;         /* next output */
+    uint32_t have, left;        /* available input and output */
     uint32_t hold;              /* bit buffer */
-    unsigned bits;              /* bits in bit buffer */
-    unsigned copy;              /* number of stored or match bytes to copy */
-    unsigned char *from;        /* where to copy match bytes from */
+    uint32_t bits;              /* bits in bit buffer */
+    uint32_t copy;              /* number of stored or match bytes to copy */
+    uint8_t *from;        /* where to copy match bytes from */
     code here;                  /* current decoding table entry */
     code last;                  /* parent table entry */
-    unsigned len;               /* length to copy for repeats, bits to drop */
+    uint32_t len;               /* length to copy for repeats, bits to drop */
     int ret;                    /* return code */
     static const uint16_t order[19] = /* permutation of code lengths */
         {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
@@ -404,7 +404,7 @@ int ZEXPORT inflateBack(z_stream *strm, in_func in, void *in_desc, out_func out,
                             state->mode = BAD;
                             break;
                         }
-                        len = (unsigned)(state->lens[state->have - 1]);
+                        len = (uint32_t)(state->lens[state->have - 1]);
                         copy = 3 + BITS(2);
                         DROPBITS(2);
                     }
@@ -506,7 +506,7 @@ int ZEXPORT inflateBack(z_stream *strm, in_func in, void *in_desc, out_func out,
                         "inflate:         literal '%c'\n" :
                         "inflate:         literal 0x%02x\n", here.val));
                 ROOM();
-                *put++ = (unsigned char)(state->length);
+                *put++ = (uint8_t)(state->length);
                 left--;
                 state->mode = LEN;
                 break;

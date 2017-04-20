@@ -309,10 +309,10 @@ BOOL CFtpControlSocket::Connect(CString hostAddress, UINT nHostPort)
     return CAsyncSocketEx::Connect(hostAddress, nHostPort);
   }
   BOOL res = CAsyncSocketEx::Connect(hostAddress, nHostPort);
-  int nLastError = WSAGetLastError();
+  int nLastError = ::WSAGetLastError();
   if (res || nLastError==WSAEWOULDBLOCK)
   {
-    WSASetLastError(nLastError);
+    ::WSASetLastError(nLastError);
   }
 
   return res;
@@ -578,7 +578,7 @@ void CFtpControlSocket::Connect(t_server &server)
 
   if (!Connect(temp, port))
   {
-    if (WSAGetLastError() != WSAEWOULDBLOCK)
+    if (::WSAGetLastError() != WSAEWOULDBLOCK)
     {
       DoClose();
       return;
@@ -1496,7 +1496,7 @@ BOOL CFtpControlSocket::Send(CString str)
     char* utf8 = nb::chcalloc(len + 1);
     WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf8, len + 1, 0, 0);
 
-    int sendLen = strlen(utf8);
+    size_t sendLen = strlen(utf8);
     if (!m_awaitsReply && !m_sendBuffer)
       res = CAsyncSocketEx::Send(utf8, strlen(utf8));
     else
@@ -1543,7 +1543,7 @@ BOOL CFtpControlSocket::Send(CString str)
     char* utf8 = nb::chcalloc(len + 1);
     WideCharToMultiByte(m_nCodePage, 0, unicode, -1, utf8, len + 1, 0, 0);
 
-    int sendLen = strlen(utf8);
+    size_t sendLen = strlen(utf8);
     if (!m_awaitsReply && !m_sendBuffer)
       res = CAsyncSocketEx::Send(utf8, strlen(utf8));
     else
@@ -1581,7 +1581,7 @@ BOOL CFtpControlSocket::Send(CString str)
   {
     LPCSTR lpszAsciiSend = T2CA(str);
 
-    int sendLen = strlen(lpszAsciiSend);
+    size_t sendLen = strlen(lpszAsciiSend);
     if (!m_awaitsReply && !m_sendBuffer)
       res = CAsyncSocketEx::Send(lpszAsciiSend, strlen(lpszAsciiSend), 0, m_CurrentServer.iDupFF);
     else
@@ -6022,7 +6022,7 @@ _int64 CFtpControlSocket::GetAbleToUDSize( bool & beenWaiting, CTime & curTime, 
       ableToRead = 0;
 
     curLimit = GetSpeedLimit(direction, curTime);
-    int sz = m_InstanceList[direction].size();
+    size_t sz = m_InstanceList[direction].size();
     __int64 nMax = curLimit / (sz ? sz : 1);
     _int64 nLeft = 0;
     int nCount = 0;

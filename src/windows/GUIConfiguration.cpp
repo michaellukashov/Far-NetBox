@@ -8,11 +8,12 @@
 #include <TextsCore.h>
 #include <Terminal.h>
 #include <CoreMain.h>
-#include <shlobj.h>
+//#include <shlobj.h>
 
 const intptr_t ccLocal = ccUser;
 const intptr_t ccShowResults = ccUser << 1;
 const intptr_t ccCopyResults = ccUser << 2;
+const intptr_t ccRemoteFiles = ccUser << 3;
 const intptr_t ccSet = 0x80000000;
 
 static const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
@@ -140,7 +141,7 @@ bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
 #undef C
 
 bool TCopyParamRule::Match(const UnicodeString & Mask,
-  const UnicodeString & Value, bool Path, bool Local) const
+  const UnicodeString & Value, bool Path, bool Local, int ForceDirectoryMasks) const
 {
   bool Result;
   if (Mask.IsEmpty())
@@ -149,7 +150,8 @@ bool TCopyParamRule::Match(const UnicodeString & Mask,
   }
   else
   {
-    TFileMasks M(Mask);
+    TFileMasks M(ForceDirectoryMasks);
+    M.SetMasks(Mask);
     if (Path)
     {
       Result = M.Matches(Value, Local, true);
@@ -165,10 +167,10 @@ bool TCopyParamRule::Match(const UnicodeString & Mask,
 bool TCopyParamRule::Matches(const TCopyParamRuleData & Value) const
 {
   return
-    Match(FData.HostName, Value.HostName, false) &&
-    Match(FData.UserName, Value.UserName, false) &&
-    Match(FData.RemoteDirectory, Value.RemoteDirectory, true, false) &&
-    Match(FData.LocalDirectory, Value.LocalDirectory, true, true);
+    Match(FData.HostName, Value.HostName, false, true, 0) &&
+    Match(FData.UserName, Value.UserName, false, true, 0) &&
+    Match(FData.RemoteDirectory, Value.RemoteDirectory, true, false, 1) &&
+    Match(FData.LocalDirectory, Value.LocalDirectory, true, true, 1);
 }
 
 void TCopyParamRule::Load(THierarchicalStorage * Storage)
@@ -415,21 +417,41 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
     UnicodeString Name = ::IntToStr(Index);
     std::unique_ptr<TCopyParamRule> Rule;
     std::unique_ptr<TCopyParamType> CopyParam(new TCopyParamType());
-    if (Storage->OpenSubKey(Name, false))
+    try__catch
     {
-      SCOPE_EXIT
+      if (Storage->OpenSubKey(Name, false))
       {
-        Storage->CloseSubKey();
-      };
-      Name = Storage->ReadString("Name", Name);
-      CopyParam->Load(Storage);
+        try__finally
+        {
+          SCOPE_EXIT
+          {
+            Storage->CloseSubKey();
+          };
+          Name = Storage->ReadString("Name", Name);
+          CopyParam->Load(Storage);
 
-      if (Storage->ReadBool("HasRule", false))
-      {
-        Rule.reset(new TCopyParamRule());
-        Rule->Load(Storage);
+          if (Storage->ReadBool("HasRule", false))
+          {
+            Rule.reset(new TCopyParamRule());
+            Rule->Load(Storage);
+          }
+        }
+        __finally
+        {
+/*
+          Storage->CloseSubKey();
+*/
+        };
       }
     }
+/*
+    catch(...)
+    {
+      delete CopyParam;
+      delete Rule;
+      throw;
+    }
+*/
 
     FCopyParams->Add(CopyParam.release());
     FRules->Add(Rule.release());
@@ -445,22 +467,36 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
   {
     if (Storage->OpenSubKey(::IntToStr(Index), true))
     {
-      SCOPE_EXIT
+      try__finally
       {
-        Storage->CloseSubKey();
-      };
-      const TCopyParamType * CopyParam = GetCopyParam(Index);
-      const TCopyParamRule * Rule = GetRule(Index);
+        SCOPE_EXIT
+        {
+          Storage->CloseSubKey();
+        };
+        const TCopyParamType * CopyParam = GetCopyParam(Index);
+        const TCopyParamRule * Rule = GetRule(Index);
 
-      Storage->WriteString("Name", GetName(Index));
-      CopyParam->Save(Storage);
-      Storage->WriteBool("HasRule", (Rule != nullptr));
-      if (Rule != nullptr)
-      {
-        Rule->Save(Storage);
+        Storage->WriteString("Name", GetName(Index));
+        CopyParam->Save(Storage);
+        Storage->WriteBool("HasRule", (Rule != nullptr));
+        if (Rule != nullptr)
+        {
+          Rule->Save(Storage);
+        }
       }
+      __finally
+      {
+/*
+        Storage->CloseSubKey();
+*/
+      };
     }
   }
+}
+
+intptr_t TCopyParamList::GetCount() const
+{
+  return FCopyParams ? FCopyParams->GetCount() : 0;
 }
 
 const TCopyParamRule * TCopyParamList::GetRule(intptr_t Index) const
@@ -574,7 +610,7 @@ void TGUIConfiguration::Default()
   FBeepOnFinishAfter = TDateTime(0, 0, 30, 0);
   FCopyParamCurrent.Clear();
   FKeepUpToDateChangeDelay = 500;
-  FChecksumAlg = "md5";
+  FChecksumAlg = L"sha1";
   FSessionReopenAutoIdle = 9000;
 
   FNewDirectoryProperties.Default();
@@ -619,7 +655,7 @@ void TGUIConfiguration::UpdateStaticUsage()
   // Usage->Set(L"CopyParamsCount", (FCopyParamListDefaults ? 0 : FCopyParamList->GetCount()));
 }
 
-UnicodeString TGUIConfiguration::PropertyToKey(const UnicodeString & Property)
+static UnicodeString PropertyToKey(const UnicodeString & Property)
 {
   // no longer useful
   intptr_t P = Property.LastDelimiter(L".>");
@@ -676,6 +712,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   #undef KEYEX
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
+  try__finally
   {
     SCOPE_EXIT
     {
@@ -694,8 +731,15 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
       FCopyParamList->Save(Storage);
     }
   }
+  __finally
+  {
+/*
+    Storage->CloseSubKey();
+*/
+  };
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", true, true))
+  try__finally
   {
     SCOPE_EXIT
     {
@@ -703,6 +747,12 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     };
     FNewDirectoryProperties.Save(Storage);
   }
+  __finally
+  {
+/*
+    Storage->CloseSubKey();
+*/
+  };
 }
 
 void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
@@ -719,6 +769,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   #undef KEYEX
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
+  try__finally
   {
     SCOPE_EXIT
     {
@@ -741,6 +792,12 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     FCopyParamList->Reset();
   }
+  __finally
+  {
+/*
+    Storage->CloseSubKey();
+*/
+  };
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
   // with quotes. First check for absence of quotes.
@@ -757,6 +814,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   }
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", false, true))
+  try__finally
   {
     SCOPE_EXIT
     {
@@ -764,6 +822,12 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     };
     FNewDirectoryProperties.Load(Storage);
   }
+  __finally
+  {
+/*
+    Storage->CloseSubKey();
+*/
+  };
 }
 
 void TGUIConfiguration::Saved()
@@ -774,7 +838,7 @@ void TGUIConfiguration::Saved()
 }
 
 HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
-  UnicodeString * AFileName)
+  UnicodeString & AFileName)
 {
   UnicodeString LibraryFileName;
   HINSTANCE NewInstance = nullptr;
@@ -830,10 +894,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     }
   }
 
-  if (AFileName != nullptr)
-  {
-    *AFileName = LibraryFileName;
-  }
+  AFileName = LibraryFileName;
 
   return NewInstance;
 }
@@ -849,60 +910,161 @@ LCID TGUIConfiguration::InternalLocale() const
   }
   else
   {
-    DebugAssert(false);
+    DebugFail();
     Result = 0;
   }
   return Result;
 }
 
-LCID TGUIConfiguration::GetLocale() const
+LCID TGUIConfiguration::GetLocale()
 {
   if (!FLocale)
   {
-    FLocale = InternalLocale();
+    SetInitialLocale(InternalLocale());
   }
   return FLocale;
 }
 
 void TGUIConfiguration::SetLocale(LCID Value)
 {
-  if (GetLocale() != Value)
-  {
-    HINSTANCE Module = LoadNewResourceModule(Value);
-    if (Module != nullptr)
-    {
-      FLocale = Value;
-      // SetResourceModule(Module);
-    }
-    else
-    {
-      DebugAssert(false);
-    }
-  }
+  SetLocaleInternal(Value, false);
 }
 
 void TGUIConfiguration::SetLocaleSafe(LCID Value)
 {
+  SetLocaleInternal(Value, true);
+}
+
+UnicodeString TGUIConfiguration::GetLocaleHex()
+{
+  return IntToHex(int64_t(GetGUIConfiguration()->GetLocale()), 4);
+}
+
+void TGUIConfiguration::SetLocaleInternal(LCID Value, bool Safe)
+{
   if (GetLocale() != Value)
   {
     HINSTANCE Module = nullptr;
+    UnicodeString FileName;
 
     try
     {
-      Module = LoadNewResourceModule(Value);
+      Module = LoadNewResourceModule(Value, FileName);
+      DebugAssert(Module != nullptr);
     }
     catch (...)
     {
-      // ignore any exception while loading locale
-      Module = nullptr;
+      if (Safe)
+      {
+        // ignore any exception while loading locale
+        Module = nullptr;
+      }
+      else
+      {
+        throw;
+      }
     }
 
     if (Module != nullptr)
     {
       FLocale = Value;
-      // SetResourceModule(Module);
+      if (GetCanApplyLocaleImmediately())
+      {
+        FAppliedLocale = Value;
+        SetResourceModule(Module);
+        FLocaleModuleName = FileName;
+      }
     }
   }
+}
+
+bool TGUIConfiguration::GetCanApplyLocaleImmediately() const
+{
+  return true;
+//    (Screen->FormCount == 0) &&
+//    (Screen->DataModuleCount == 0);
+}
+
+UnicodeString TGUIConfiguration::LocaleCopyright()
+{
+  UnicodeString Result;
+  if ((FAppliedLocale == 0) || (FAppliedLocale == InternalLocale()))
+  {
+    DebugFail(); // we do not expect to get called with internal locale
+    Result = UnicodeString();
+  }
+  else
+  {
+    DebugAssert(!FLocaleModuleName.IsEmpty());
+    Result = GetFileFileInfoString(L"LegalCopyright", FLocaleModuleName);
+  }
+  return Result;
+}
+
+UnicodeString TGUIConfiguration::LocaleVersion()
+{
+  UnicodeString Result;
+  if ((FAppliedLocale == 0) || (FAppliedLocale == InternalLocale()))
+  {
+    // noop
+  }
+  else
+  {
+    Result = GetFileVersion(FLocaleModuleName);
+  }
+  return Result;
+}
+
+void TGUIConfiguration::SetInitialLocale(LCID Value)
+{
+  FLocale = Value;
+  FAppliedLocale = Value;
+}
+
+void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
+{
+/*
+  TLibModule * MainModule = FindModule(HInstance);
+  if ((unsigned)Instance != MainModule->Instance)
+  {
+    FreeLibrary(static_cast<HMODULE>(Instance));
+  }
+*/
+}
+
+HANDLE TGUIConfiguration::ChangeToDefaultResourceModule()
+{
+  return ChangeResourceModule(nullptr);
+}
+
+HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE Instance)
+{
+  /*
+  if (Instance == nullptr)
+  {
+    Instance = HInstance;
+  }
+  TLibModule * MainModule = FindModule(HInstance);
+  HANDLE Result = (HANDLE)MainModule->ResInstance;
+  MainModule->ResInstance = (unsigned)Instance;
+  CoreSetResourceModule(Instance);
+  return Result;
+  */
+  return nullptr;
+}
+
+HANDLE TGUIConfiguration::GetResourceModule()
+{
+//  return (HANDLE)FindModule(HInstance)->ResInstance;
+  return nullptr;
+}
+
+void TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
+{
+  HANDLE PrevHandle = ChangeResourceModule(Instance);
+  FreeResourceModule(PrevHandle);
+
+  DefaultLocalized();
 }
 
 TStrings * TGUIConfiguration::GetLocales()
@@ -1128,7 +1290,7 @@ void TGUIConfiguration::SetQueueKeepDoneItemsFor(intptr_t Value)
 }
 
 TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
-  TStoredSessionList * Sessions)
+  TStoredSessionList * Sessions, UnicodeString & /*Error*/)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
@@ -1137,7 +1299,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   Storage->SetForceAnsi(true);
   if (Storage->OpenRootKey(false))
   {
-    ImportSessionList->Load(Storage.get(), false, true);
+    ImportSessionList->Load(Storage.get(), false, true, true);
   }
 
   TSessionData * PuttySessionData =
@@ -1146,7 +1308,14 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   {
     ImportSessionList->Remove(PuttySessionData);
   }
-  ImportSessionList->SelectSessionsToImport(Sessions, true);
+  if (ImportSessionList->GetCount() > 0)
+  {
+    ImportSessionList->SelectSessionsToImport(Sessions, true);
+  }
+  else
+  {
+    // Error = FMTLOAD(PUTTY_NO_SITES, PuttySessionsKey.c_str());
+  }
 
   return ImportSessionList.release();
 }
@@ -1155,44 +1324,9 @@ bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * Sessions)
 {
   try
   {
-    std::unique_ptr<TStoredSessionList> Sesssions(SelectPuttySessionsForImport(Sessions));
-    return (Sesssions->GetCount() > 0);
-  }
-  catch (...)
-  {
-    return false;
-  }
-}
-
-TStoredSessionList * TGUIConfiguration::SelectFilezillaSessionsForImport(
-  TStoredSessionList * /*Sessions*/)
-{
-/*
-  std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
-  ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
-
-  UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
-  UnicodeString FilezillaSiteManagerFile =
-    IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\sitemanager.xml";
-
-  if (::FileExists(FilezillaSiteManagerFile))
-  {
-    ImportSessionList->ImportFromFilezilla(FilezillaSiteManagerFile);
-
-    ImportSessionList->SelectSessionsToImport(Sessions, true);
-  }
-
-  return ImportSessionList.release();
-*/
-  return nullptr;
-}
-
-bool TGUIConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
-{
-  try
-  {
-    std::unique_ptr<TStoredSessionList> Sesssions(SelectFilezillaSessionsForImport(Sessions));
-    return (Sesssions->GetCount() > 0);
+    UnicodeString Error;
+    std::unique_ptr<TStoredSessionList> Sessions(SelectPuttySessionsForImport(Sessions, Error));
+    return (Sessions->GetCount() > 0);
   }
   catch (...)
   {

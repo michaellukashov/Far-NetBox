@@ -38,10 +38,11 @@ public:
   bool WasSwitchAdded(UnicodeString & Switch, wchar_t & SwitchMark) const;
 
   void LogOptions(TLogOptionEvent OnEnumOption);
-
-  /*__property int ParamCount = { read = FParamCount };
+/*
+ __property int ParamCount = { read = FParamCount };
   __property UnicodeString Param[int Index] = { read = GetParam };
-  __property bool Empty = { read = GetEmpty };*/
+  __property bool Empty = { read = GetEmpty };
+*/
 
   intptr_t GetParamCount() const { return FParamCount; }
   UnicodeString GetParam(intptr_t AIndex);
@@ -76,7 +77,9 @@ private:
   intptr_t FParamCount;
   bool FNoMoreSwitches;
 
-  /*UnicodeString __fastcall GetParam(int Index);
-  bool __fastcall GetEmpty();*/
+/*
+  UnicodeString __fastcall GetParam(int Index);
+  bool __fastcall GetEmpty();
+*/
 };
 

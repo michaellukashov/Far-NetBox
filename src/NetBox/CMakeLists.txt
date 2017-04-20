@@ -63,7 +63,7 @@ set(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPA
 set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
 set(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
 set(APR_DEFS "-DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES")
-set(NETBOX_DEFS "-DMPEXT -DWINSCP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
+set(NETBOX_DEFS "-DNO_GZIP -DMPEXT -DWINSCP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS")
 set(NETBOX_DEFS "${NETBOX_DEFS} ${APR_DEFS}")
@@ -180,7 +180,6 @@ set(NETBOX_DLL_LINK_FLAGS
   /DELAYLOAD:version.dll
   /DELAYLOAD:ws2_32.dll
   /DELAYLOAD:oleaut32.dll
-  /DELAYLOAD:winhttp.dll
   /DELAYLOAD:shell32.dll
   /DELAYLOAD:shlwapi.dll
   /DELAYLOAD:crypt32.dll
@@ -953,6 +952,7 @@ add_library(putty STATIC
   ../../libs/putty/sshzlib.c
   ../../libs/putty/tree234.c
   ../../libs/putty/wildcard.c
+  ../../libs/putty/miscucs.c
   ../../libs/putty/windows/wingss.c
   ../../libs/putty/windows/winhandl.c
   ../../libs/putty/windows/winmisc.c
@@ -965,6 +965,7 @@ add_library(putty STATIC
   ../../libs/putty/windows/winstore.c
   ../../libs/putty/windows/wintime.c
   ../../libs/putty/windows/winhsock.c
+  ../../libs/putty/windows/winucs.c
   ../../libs/putty/x11fwd.c
   ../../libs/putty/conf.c
   ../../libs/putty/callback.c
