@@ -2096,7 +2096,7 @@ TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, TDat
   TRemoteFileList * Result = NULL;
   if (core::UnixSamePath(FFiles->GetDirectory(), APath))
   {
-    if (Timestamp < FFiles->Timestamp)
+    if (Timestamp < FFiles->GetTimestamp())
     {
       Result = new TRemoteFileList();
       FFiles->DuplicateTo(Result);
@@ -2104,10 +2104,10 @@ TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, TDat
   }
   else
   {
-    if (FDirectoryCache->HasNewerFileList(Path, Timestamp))
+    if (FDirectoryCache->HasNewerFileList(APath, Timestamp))
     {
       Result = new TRemoteFileList();
-      DebugAlwaysTrue(FDirectoryCache->GetFileList(Path, Result));
+      DebugAlwaysTrue(FDirectoryCache->GetFileList(APath, Result));
     }
     // do not attempt to load file list if there is cached version,
     // only absence of cached version indicates that we consider
@@ -2115,7 +2115,7 @@ TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, TDat
     else if (CanLoad && !FDirectoryCache->HasFileList(APath))
     {
       Result = new TRemoteFileList();
-      Result->Directory = Path;
+      Result->SetDirectory(APath);
 
       try
       {
