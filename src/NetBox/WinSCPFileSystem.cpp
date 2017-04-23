@@ -423,7 +423,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD & Flags,
     AFormat = FORMAT(L"netbox:%s", GetSessionData()->GetSessionName().c_str());
     if (GetFarConfiguration()->GetHostNameInTitle())
     {
-      PanelTitle = FORMAT(L" %s:%s ", AFormat.c_str(), CurDir.c_str());
+      PanelTitle = FORMAT(L" %s:%s ", GetSessionData()->GetSessionName().c_str(), CurDir.c_str());
     }
     else
     {
