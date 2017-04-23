@@ -421,15 +421,17 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD & Flags,
     // leaved subdirectory is not focused, when entering parent directory.
     CurDir = FTerminal->GetCurrDirectory();
     AFormat = FORMAT(L"netbox:%s", GetSessionData()->GetSessionName().c_str());
+    UnicodeString HostName = GetSessionData()->GetHostNameExpanded(); // GetSessionData()->GetSessionName();
+    UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
     if (GetFarConfiguration()->GetHostNameInTitle())
     {
-      PanelTitle = FORMAT(L" %s:%s ", GetSessionData()->GetSessionName().c_str(), CurDir.c_str());
+      PanelTitle = FORMAT(L" %s:%s ", HostName.c_str(), CurDir.c_str());
     }
     else
     {
       PanelTitle = FORMAT(L" %s ", CurDir.c_str());
     }
-    ShortcutData = FORMAT(L"netbox:%s\1%s", GetSessionData()->GenerateSessionUrl(sufComplete).c_str(), CurDir.c_str());
+    ShortcutData = FORMAT(L"netbox:%s\1%s", Url.c_str(), CurDir.c_str());
 
     TRemoteFilePanelItem::SetPanelModes(PanelModes);
     TRemoteFilePanelItem::SetKeyBarTitles(KeyBarTitles);
