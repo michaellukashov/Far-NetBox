@@ -46,7 +46,7 @@ static const char hex[16] = "0123456789ABCDEF";
 
 static int tried_shgetfolderpath = FALSE;
 static HMODULE shell32_module = NULL;
-DECL_WINDOWS_FUNCTION(static, HRESULT, SHGetFolderPathA, 
+PUTTY_DECL_WINDOWS_FUNCTION(static, HRESULT, SHGetFolderPathA, 
 		      (HWND, int, HANDLE, DWORD, LPSTR));
 
 static void mungestr(const char *in, char *out)
@@ -605,7 +605,7 @@ static HANDLE access_random_seed(int action)
 	 * However, the invocation below requires IE5+ anyway,
 	 * so stuff that. */
 	shell32_module = load_system32_dll("shell32.dll");
-	GET_WINDOWS_FUNCTION(shell32_module, SHGetFolderPathA);
+	PUTTY_GET_WINDOWS_FUNCTION(shell32_module, SHGetFolderPathA);
 	tried_shgetfolderpath = TRUE;
     }
     if (p_SHGetFolderPathA) {

@@ -125,11 +125,11 @@ struct FontSpec *fontspec_new(const char *name,
 /*
  * Dynamically linked functions. These come in two flavours:
  *
- *  - GET_WINDOWS_FUNCTION does not expose "name" to the preprocessor,
+ *  - PUTTY_GET_WINDOWS_FUNCTION does not expose "name" to the preprocessor,
  *    so will always dynamically link against exactly what is specified
  *    in "name". If you're not sure, use this one.
  *
- *  - GET_WINDOWS_FUNCTION_PP allows "name" to be redirected via
+ *  - PUTTY_GET_WINDOWS_FUNCTION_PP allows "name" to be redirected via
  *    preprocessor definitions like "#define foo bar"; this is principally
  *    intended for the ANSI/Unicode DoSomething/DoSomethingA/DoSomethingW.
  *    If your function has an argument of type "LPTSTR" or similar, this
@@ -137,24 +137,24 @@ struct FontSpec *fontspec_new(const char *name,
  *    (However, it can't always be used, as it trips over more complicated
  *    macro trickery such as the WspiapiGetAddrInfo wrapper for getaddrinfo.)
  *
- * (DECL_WINDOWS_FUNCTION works with both these variants.)
+ * (PUTTY_DECL_WINDOWS_FUNCTION works with both these variants.)
  */
 #define TYPECHECK(to_check, to_return)          \
     (sizeof(to_check) ? to_return : to_return)
-#define DECL_WINDOWS_FUNCTION(linkage, rettype, name, params)   \
+#define PUTTY_DECL_WINDOWS_FUNCTION(linkage, rettype, name, params)   \
     typedef rettype (WINAPI *t_##name) params;                  \
     linkage t_##name p_##name
 #define STR1(x) #x
 #define STR(x) STR1(x)
-#define GET_WINDOWS_FUNCTION_PP(module, name)                           \
+#define PUTTY_GET_WINDOWS_FUNCTION_PP(module, name)                           \
     TYPECHECK((t_##name)NULL == name,                                   \
               (p_##name = module ?                                      \
                (t_##name) GetProcAddress(module, STR(name)) : NULL))
-#define GET_WINDOWS_FUNCTION(module, name)                              \
+#define PUTTY_GET_WINDOWS_FUNCTION(module, name)                              \
     TYPECHECK((t_##name)NULL == name,                                   \
               (p_##name = module ?                                      \
                (t_##name) GetProcAddress(module, #name) : NULL))
-#define GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, name) \
+#define PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, name) \
     (p_##name = module ?                                \
      (t_##name) GetProcAddress(module, #name) : NULL)
 
@@ -303,12 +303,12 @@ extern int select_result(WPARAM, LPARAM);
  * that module must be exported from it as function pointers. So
  * here they are.
  */
-DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAAsyncSelect,
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAAsyncSelect,
 		      (SOCKET, HWND, u_int, long));
-DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEventSelect,
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEventSelect,
 		      (SOCKET, WSAEVENT, long));
-DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAGetLastError, (void));
-DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEnumNetworkEvents,
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAGetLastError, (void));
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEnumNetworkEvents,
 		      (SOCKET, WSAEVENT, LPWSANETWORKEVENTS));
 #ifdef NEED_DECLARATION_OF_SELECT
 /* This declaration is protected by an ifdef for the sake of building
@@ -318,7 +318,7 @@ DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEnumNetworkEvents,
  * only a modules actually needing to use (or define, or initialise)
  * this function pointer will see its declaration, and _those_ modules
  * - which will be Windows-specific anyway - can take more care. */
-DECL_WINDOWS_FUNCTION(GLOBAL, int, select,
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, select,
 		      (int, fd_set FAR *, fd_set FAR *,
 		       fd_set FAR *, const struct timeval FAR *));
 #endif
