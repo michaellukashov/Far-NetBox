@@ -420,7 +420,7 @@ void TCopyParamType::DoGetInfoStr(
   {
     UnicodeString Value;
     UnicodeString CodeState;
-    intptr_t ResumeThresholdKB = (GetResumeThreshold() / 1024);
+    intptr_t ResumeThresholdKB = (intptr_t)(GetResumeThreshold() / 1024);
     switch (GetResumeSupport())
     {
       case rsOff:
@@ -907,7 +907,7 @@ static bool TryGetSpeedLimit(const UnicodeString & Text, uintptr_t & Speed)
     Result = TryStrToInt(Text, SSpeed) && (SSpeed >= 0);
     if (Result)
     {
-      Speed = SSpeed * 1024;
+      Speed = (uintptr_t)SSpeed * 1024;
     }
   }
   return Result;

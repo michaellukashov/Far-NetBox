@@ -178,7 +178,6 @@ set(NETBOX_DLL_LINK_FLAGS
   /DELAYLOAD:version.dll
   /DELAYLOAD:ws2_32.dll
   /DELAYLOAD:oleaut32.dll
-  /DELAYLOAD:winhttp.dll
   /DELAYLOAD:shell32.dll
   /DELAYLOAD:shlwapi.dll
   /DELAYLOAD:crypt32.dll
@@ -952,6 +951,7 @@ add_library(putty STATIC
   ../../libs/putty/sshzlib.c
   ../../libs/putty/tree234.c
   ../../libs/putty/wildcard.c
+  ../../libs/putty/miscucs.c
   ../../libs/putty/windows/wingss.c
   ../../libs/putty/windows/winhandl.c
   ../../libs/putty/windows/winmisc.c
@@ -964,6 +964,7 @@ add_library(putty STATIC
   ../../libs/putty/windows/winstore.c
   ../../libs/putty/windows/wintime.c
   ../../libs/putty/windows/winhsock.c
+  ../../libs/putty/windows/winucs.c
   ../../libs/putty/x11fwd.c
   ../../libs/putty/conf.c
   ../../libs/putty/callback.c

@@ -130,7 +130,7 @@ char *get_username(void)
     DWORD namelen;
     char *user;
     int got_username = FALSE;
-    DECL_WINDOWS_FUNCTION(static, BOOLEAN, GetUserNameExA,
+    PUTTY_DECL_WINDOWS_FUNCTION(static, BOOLEAN, GetUserNameExA,
 			  (EXTENDED_NAME_FORMAT, LPSTR, PULONG));
 
     {
@@ -138,7 +138,12 @@ char *get_username(void)
 	if (!tried_usernameex) {
 	    /* Not available on Win9x, so load dynamically */
 	    HMODULE secur32 = load_system32_dll("secur32.dll");
-	    GET_WINDOWS_FUNCTION(secur32, GetUserNameExA);
+	    /* If MIT Kerberos is installed, the following call to
+	       PUTTY_GET_WINDOWS_FUNCTION makes Windows implicitly load
+	       sspicli.dll WITHOUT proper path sanitizing, so better
+	       load it properly before */
+	    HMODULE sspicli = load_system32_dll("sspicli.dll");
+	    PUTTY_GET_WINDOWS_FUNCTION(secur32, GetUserNameExA);
 	    tried_usernameex = TRUE;
 	}
     }
@@ -205,16 +210,25 @@ void dll_hijacking_protection(void)
      * full pathname by the user-provided configuration.
      */
     static HMODULE kernel32_module;
-    DECL_WINDOWS_FUNCTION(static, BOOL, SetDefaultDllDirectories, (DWORD));
+    PUTTY_DECL_WINDOWS_FUNCTION(static, BOOL, SetDefaultDllDirectories, (DWORD));
 
     if (!kernel32_module) {
         kernel32_module = load_system32_dll("kernel32.dll");
-        GET_WINDOWS_FUNCTION(kernel32_module, SetDefaultDllDirectories);
+#if defined _MSC_VER && _MSC_VER < 1900
+        /* For older Visual Studio, this function isn't available in
+         * the header files to type-check */
+        PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(
+            kernel32_module, SetDefaultDllDirectories);
+#else
+        PUTTY_GET_WINDOWS_FUNCTION(kernel32_module, SetDefaultDllDirectories);
+#endif
     }
 
     if (p_SetDefaultDllDirectories) {
-        /* LOAD_LIBRARY_SEARCH_SYSTEM32 only */
-        p_SetDefaultDllDirectories(0x800);
+        /* LOAD_LIBRARY_SEARCH_SYSTEM32 and explicitly specified
+         * directories only */
+        p_SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32 |
+                                   LOAD_LIBRARY_SEARCH_USER_DIRS);
     }
 }
 

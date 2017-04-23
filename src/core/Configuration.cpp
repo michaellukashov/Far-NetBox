@@ -1356,8 +1356,8 @@ bool TConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
   try
   {
     UnicodeString Error;
-    std::unique_ptr<TStoredSessionList> Sessions(SelectFilezillaSessionsForImport(Sessions, Error));
-    return (Sessions->GetCount() > 0);
+    std::unique_ptr<TStoredSessionList> SessionsList(SelectFilezillaSessionsForImport(Sessions, Error));
+    return (SessionsList->GetCount() > 0);
   }
   catch (...)
   {
