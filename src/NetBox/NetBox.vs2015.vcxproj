@@ -118,11 +118,11 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\mfc.vs2015;..\..\libs\openssl\vs2015-x86;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libputty.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libtinyxml2.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libneon.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libapr.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libexpat.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\dlmalloc.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\rdestl.vs2015;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.vs2015.lib;libssl.lib;libcrypto.lib;libputty.vs2015.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.vs2015.lib;rdestl.vs2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.vs2015.lib;libssl.lib;libcrypto.lib;libputty.vs2015.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.vs2015.lib;rdestl.vs2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfcs100ud.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;mfc100ud.lib;Atl.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib /ignore:4099 /ignore:4204 %(AdditionalOptions)</AdditionalOptions>
-      <DelayLoadDLLs>gdi32.dll;winhttp.dll;shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
+      <DelayLoadDLLs>shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>.;..\include;\..\..\libs\atlmfc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -143,11 +143,11 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\mfc.vs2015;..\..\libs\openssl\vs2015-x64;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libputty.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libtinyxml2.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libneon.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libapr.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libexpat.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\dlmalloc.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\rdestl.vs2015;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.vs2015.lib;libssl.lib;libcrypto.lib;libputty.vs2015.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.vs2015.lib;rdestl.vs2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.vs2015.lib;libssl.lib;libcrypto.lib;libputty.vs2015.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.vs2015.lib;rdestl.vs2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfc100ud.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;Atl.lib;mfcs100ud.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib /ignore:4099 /ignore:4204 %(AdditionalOptions)</AdditionalOptions>
-      <DelayLoadDLLs>gdi32.dll;winhttp.dll;shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
+      <DelayLoadDLLs>shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>
@@ -183,10 +183,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\mfc.vs2015;..\..\libs\openssl\vs2015-x86;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libputty.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libtinyxml2.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libneon.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libapr.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\libexpat.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\dlmalloc.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\rdestl.vs2015;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmt.lib;libcpmt.lib;libtinyxml2.vs2015.lib;libssl.lib;libcrypto.lib;libputty.vs2015.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.vs2015.lib;rdestl.vs2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;libcmt.lib;libcpmt.lib;libtinyxml2.vs2015.lib;libssl.lib;libcrypto.lib;libputty.vs2015.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.vs2015.lib;rdestl.vs2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>gdi32.dll;winhttp.dll;shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
+      <DelayLoadDLLs>shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -224,10 +224,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\mfc.vs2015;..\..\libs\openssl\vs2015-x64;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libputty.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libtinyxml2.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libneon.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libapr.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\libexpat.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\dlmalloc.vs2015;..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\rdestl.vs2015;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmt.lib;libcpmt.lib;libtinyxml2.vs2015.lib;libssl.lib;libcrypto.lib;libputty.vs2015.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.vs2015.lib;rdestl.vs2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;libcmt.lib;libcpmt.lib;libtinyxml2.vs2015.lib;libssl.lib;libcrypto.lib;libputty.vs2015.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.vs2015.lib;rdestl.vs2015.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>gdi32.dll;winhttp.dll;shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
+      <DelayLoadDLLs>shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>

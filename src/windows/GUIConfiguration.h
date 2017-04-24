@@ -260,8 +260,8 @@ public:
   void SetCopyParamList(const TCopyParamList * Value);
   virtual void DefaultLocalized();
   intptr_t GetCopyParamIndex() const;
-  const TGUICopyParamType GetCurrentCopyParam() const;
-  const TGUICopyParamType GetCopyParamPreset(const UnicodeString & Name) const;
+  TGUICopyParamType GetCurrentCopyParam() const;
+  TGUICopyParamType GetCopyParamPreset(const UnicodeString & Name) const;
   bool GetHasCopyParamPreset(const UnicodeString & Name) const;
   void SetCopyParamIndex(intptr_t Value);
   void SetCopyParamCurrent(const UnicodeString & Value);

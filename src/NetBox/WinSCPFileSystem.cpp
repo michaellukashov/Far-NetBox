@@ -1626,7 +1626,7 @@ void TWinSCPFileSystem::Synchronize()
   TSynchronizeParamType Params;
   Params.LocalDirectory = (*AnotherPanel)->GetCurrDirectory();
   Params.RemoteDirectory = FTerminal->GetCurrDirectory();
-  int UnusedParams = (GetGUIConfiguration()->GetSynchronizeParams() &
+  intptr_t UnusedParams = (GetGUIConfiguration()->GetSynchronizeParams() &
     (TTerminal::spPreviewChanges | TTerminal::spTimestamp |
      TTerminal::spNotByTime | TTerminal::spBySize));
   Params.Params = GetGUIConfiguration()->GetSynchronizeParams() & ~UnusedParams;

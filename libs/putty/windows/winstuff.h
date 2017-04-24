@@ -545,7 +545,7 @@ GLOBAL int restricted_acl;
 #ifndef LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
 #define LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR 0x00000100
 #endif
-#if _MSC_VER < 1400
+#if _MSC_VER <= 1600
 typedef PVOID DLL_DIRECTORY_COOKIE;
 #endif
 
