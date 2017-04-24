@@ -1557,8 +1557,8 @@ public:
 protected:
   virtual bool InitRequest(TSFTPQueuePacket * Request)
   {
-    uintptr_t BlockSize = FFileSystem->DownloadBlockSize(OperationProgress);
-    InitRequest(Request, FTransfered, (int32_t)BlockSize);
+    uint32_t BlockSize = FFileSystem->DownloadBlockSize(OperationProgress);
+    InitRequest(Request, FTransfered, BlockSize);
     Request->Token = ToPtr(BlockSize);
     FTransfered += BlockSize;
     return true;
