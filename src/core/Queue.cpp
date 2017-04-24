@@ -1973,7 +1973,7 @@ TTerminalQueueStatus::~TTerminalQueueStatus()
   SAFE_DESTROY(FList);
 }
 
-void TTerminalQueueStatus::ResetStats()
+void TTerminalQueueStatus::ResetStats() const
 {
   FActiveCount = -1;
 }
