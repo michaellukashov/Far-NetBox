@@ -1237,12 +1237,12 @@ void TGUIConfiguration::SetCopyParamCurrent(const UnicodeString & Value)
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
 
-const TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam() const
+TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam() const
 {
   return GetCopyParamPreset(GetCopyParamCurrent());
 }
 
-const TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Name) const
+TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Name) const
 {
   TGUICopyParamType Result = FDefaultCopyParam;
   if (!Name.IsEmpty())
