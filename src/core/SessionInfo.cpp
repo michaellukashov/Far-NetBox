@@ -1436,14 +1436,14 @@ TActionLog::TActionLog(TSessionUI * UI, TSessionData * SessionData,
   FConfiguration(Configuration),
   FLogging(false),
   FFile(nullptr),
+  FIndent(L"  "),
   FUI(UI),
   FSessionData(SessionData),
   FPendingActions(new TList()),
   FFailed(false),
   FClosed(false),
   FInGroup(false),
-  FEnabled(true),
-  FIndent(L"  ")
+  FEnabled(true)
 {
   DebugAssert(UI != nullptr);
   DebugAssert(SessionData != nullptr);
