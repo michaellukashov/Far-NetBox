@@ -19,7 +19,7 @@ static void hmacmd5_chap(const unsigned char *challenge, int challen,
 			 const char *passwd, unsigned char *response)
 {
     void *hmacmd5_ctx;
-    int pwlen;
+    size_t pwlen;
 
     hmacmd5_ctx = hmacmd5_make_context(NULL);
 
