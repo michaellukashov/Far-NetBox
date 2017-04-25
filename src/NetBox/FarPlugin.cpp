@@ -2358,7 +2358,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
     LEFT_ALT_PRESSED | SHIFT_PRESSED, // fsAltShift,
     LEFT_CTRL_PRESSED | LEFT_ALT_PRESSED, // fsCtrlAlt
   };
-  Labels[FunctionKey - 1].Key.VirtualKeyCode = VK_F1 + FunctionKey - 1;
+  Labels[FunctionKey - 1].Key.VirtualKeyCode = VK_F1 + (int)FunctionKey - 1;
   Labels[FunctionKey - 1].Key.ControlKeyState = FKeys[shift];
   Labels[FunctionKey - 1].Text = TCustomFarPlugin::DuplicateStr(Title, /*AllowEmpty=*/true);
   Labels[FunctionKey - 1].LongText = nullptr;
@@ -2982,7 +2982,7 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   int Length = 0;
   if (FarPlugin)
   {
-    Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str()) - 1;
+    Length = (int)FarPlugin->GetFarStandardFunctions().GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str()) - 1;
   }
   else
   {

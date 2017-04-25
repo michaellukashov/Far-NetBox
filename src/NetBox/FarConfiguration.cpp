@@ -193,7 +193,7 @@ int64_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t
   HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : 0;
   if (Settings)
   {
-    FarSettingsItem item = {sizeof(FarSettingsItem), Root, Name, FST_UNKNOWN, {0} };
+    FarSettingsItem item = {sizeof(FarSettingsItem), (size_t)Root, Name, FST_UNKNOWN, {0} };
     if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
     {
         Result = item.Number;
