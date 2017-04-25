@@ -164,7 +164,7 @@ int proxy_socks5_selectchap(Proxy_Socket p)
     char *password = conf_get_str(p->conf, CONF_proxy_password);
     if (username[0] || password[0]) {
 	char chapbuf[514];
-	int ulen;
+	size_t ulen;
 	chapbuf[0] = '\x01'; /* Version */
 	chapbuf[1] = '\x02'; /* Number of attributes sent */
 	chapbuf[2] = '\x11'; /* First attribute - algorithms list */
