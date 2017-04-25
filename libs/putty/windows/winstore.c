@@ -760,7 +760,7 @@ static int transform_jumplist_registry
         ++piterator_tmp;
     }
 
-    if ((piterator_tmp - old_value) >= (value_length-1)) {
+    if ((piterator_tmp - old_value) >= ((int)value_length-1)) {
         /* Invalid value. Start from an empty value. */
         *old_value = '\0';
         *(old_value + 1) = '\0';
