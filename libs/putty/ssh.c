@@ -6207,7 +6207,7 @@ static int first_in_commasep_string(char const *needle, char const *haystack,
       return 0;
     needlen = strlen(needle);
 
-    if (haylen >= needlen &&       /* haystack is long enough */
+		if (haylen >= (int)needlen &&       /* haystack is long enough */
 	!memcmp(needle, haystack, needlen) &&	/* initial match */
 	(haylen == needlen || haystack[needlen] == ',')
 	/* either , or EOS follows */
@@ -11524,7 +11524,7 @@ static void ssh_reconfig(void *handle, Conf *conf)
 	unsigned long new_next = ssh->last_rekey + rekey_time*60*TICKSPERSEC;
 	unsigned long now = GETTICKCOUNT();
 
-	if (now - ssh->last_rekey > rekey_time*60*TICKSPERSEC) {
+	if (now - ssh->last_rekey > (unsigned long)rekey_time*60*TICKSPERSEC) {
 	    rekeying = "timeout shortened";
 	} else {
 	    ssh->next_rekey = schedule_timer(new_next - now, ssh2_timer, ssh);
