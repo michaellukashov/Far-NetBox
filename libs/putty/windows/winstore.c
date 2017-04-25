@@ -377,7 +377,10 @@ int verify_host_key(const char *hostname, int port,
     HKEY rkey;
     DWORD readlen;
     DWORD type;
-    int ret, compare;
+    int ret;
+#ifndef MPEXT
+    int compare;
+#endif
 
 #ifdef MPEXT
     len = maxlen;
