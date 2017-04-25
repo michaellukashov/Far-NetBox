@@ -176,7 +176,7 @@ int proxy_socks5_selectchap(Proxy_Socket p)
 	if (ulen > 255) ulen = 255;
 	if (ulen < 1) ulen = 1;
 
-	chapbuf[6] = ulen;
+	chapbuf[6] = (char)ulen;
 	memcpy(chapbuf+7, username, ulen);
 
 	sk_write(p->sub_socket, chapbuf, ulen + 7);
