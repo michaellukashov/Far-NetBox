@@ -6202,9 +6202,9 @@ static void ssh1_protocol(Ssh ssh, const void *vin, int inlen,
 static int first_in_commasep_string(char const *needle, char const *haystack,
 				    int haylen)
 {
-    int needlen;
+    size_t needlen;
     if (!needle || !haystack)	       /* protect against null pointers */
-	return 0;
+      return 0;
     needlen = strlen(needle);
 
     if (haylen >= needlen &&       /* haystack is long enough */
