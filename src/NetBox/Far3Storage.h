@@ -48,12 +48,12 @@ public:
 
 private:
   UnicodeString GetFullCurrentSubKey() { return /* GetStorage() + */ GetCurrentSubKey(); }
-  intptr_t OpenSubKeyInternal(intptr_t Root, const UnicodeString & SubKey, bool CanCreate);
+  int OpenSubKeyInternal(int Root, const UnicodeString & SubKey, bool CanCreate);
 
 private:
-  intptr_t FRoot;
+  int FRoot;
   mutable PluginSettings FPluginSettings;
-  rde::vector<intptr_t> FSubKeyIds;
+  rde::vector<int> FSubKeyIds;
 
   void Init();
 };

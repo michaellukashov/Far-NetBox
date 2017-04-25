@@ -46,9 +46,9 @@ void TFar3Storage::SetAccessMode(TStorageAccessMode Value)
   THierarchicalStorage::SetAccessMode(Value);
 }
 
-intptr_t TFar3Storage::OpenSubKeyInternal(intptr_t Root, const UnicodeString & SubKey, bool CanCreate)
+int TFar3Storage::OpenSubKeyInternal(int Root, const UnicodeString & SubKey, bool CanCreate)
 {
-  intptr_t NewRoot = 0;
+  int NewRoot = 0;
   if (CanCreate)
   {
     NewRoot = FPluginSettings.CreateSubKey(Root, SubKey.c_str());
@@ -62,8 +62,8 @@ intptr_t TFar3Storage::OpenSubKeyInternal(intptr_t Root, const UnicodeString & S
 
 bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate)
 {
-  intptr_t OldRoot = FRoot;
-  intptr_t Root = FRoot;
+  int OldRoot = FRoot;
+  int Root = FRoot;
   bool Result = true;
   {
     UnicodeString subKey = MungedSubKey;
