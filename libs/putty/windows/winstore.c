@@ -755,7 +755,7 @@ static int transform_jumplist_registry
     /* Check validity of registry data: REG_MULTI_SZ value must end
      * with \0\0. */
     piterator_tmp = old_value;
-    while (((piterator_tmp - old_value) < (value_length - 1)) &&
+    while (((piterator_tmp - old_value) < ((int)value_length - 1)) &&
            !(*piterator_tmp == '\0' && *(piterator_tmp+1) == '\0')) {
         ++piterator_tmp;
     }
