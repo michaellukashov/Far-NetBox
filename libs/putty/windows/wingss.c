@@ -271,7 +271,7 @@ static Ssh_gss_stat ssh_sspi_indicate_mech(struct ssh_gss_library *lib,
 
 
 static Ssh_gss_stat ssh_sspi_import_name(struct ssh_gss_library *lib,
-					 char *host, Ssh_gss_name *srv_name)
+           const char *host, Ssh_gss_name *srv_name)
 {
     char *pStr;
 
