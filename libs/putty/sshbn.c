@@ -509,16 +509,16 @@ static void internal_add_shifted(BignumInt *number,
     addendl = n << bshift;
     addendh = (bshift == 0 ? 0 : n >> (BIGNUM_INT_BITS - bshift));
 
-    assert(word <= number[0]);
+    assert((unsigned int)word <= number[0]);
     BignumADC(number[word], carry, number[word], addendl, 0);
     word++;
     if (!addendh && !carry)
         return;
-    assert(word <= number[0]);
+    assert((unsigned int)word <= number[0]);
     BignumADC(number[word], carry, number[word], addendh, carry);
     word++;
     while (carry) {
-        assert(word <= number[0]);
+        assert((unsigned int)word <= number[0]);
         BignumADC(number[word], carry, number[word], 0, carry);
 	word++;
     }
@@ -1908,7 +1908,7 @@ Bignum bignum_add_long(Bignum number, unsigned long n)
     ret[0] = 0;
     for (i = 0; i < words; i++) {
         BignumInt nword = (i < maxwords ? n >> (i * BIGNUM_INT_BITS) : 0);
-        BignumInt numword = (i < number[0] ? number[i+1] : 0);
+        BignumInt numword = ((Bignum)i < number[0] ? number[i+1] : 0);
         BignumADC(ret[i+1], carry, numword, nword, carry);
 	if (ret[i+1] != 0)
             ret[0] = i+1;

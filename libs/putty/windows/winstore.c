@@ -377,7 +377,10 @@ int verify_host_key(const char *hostname, int port,
     HKEY rkey;
     DWORD readlen;
     DWORD type;
-    int ret, compare;
+    int ret;
+#ifndef MPEXT
+    int compare;
+#endif
 
 #ifdef MPEXT
     len = maxlen;
@@ -755,12 +758,12 @@ static int transform_jumplist_registry
     /* Check validity of registry data: REG_MULTI_SZ value must end
      * with \0\0. */
     piterator_tmp = old_value;
-    while (((piterator_tmp - old_value) < (value_length - 1)) &&
+    while (((piterator_tmp - old_value) < ((int)value_length - 1)) &&
            !(*piterator_tmp == '\0' && *(piterator_tmp+1) == '\0')) {
         ++piterator_tmp;
     }
 
-    if ((piterator_tmp - old_value) >= (value_length-1)) {
+    if ((piterator_tmp - old_value) >= ((int)value_length-1)) {
         /* Invalid value. Start from an empty value. */
         *old_value = '\0';
         *(old_value + 1) = '\0';

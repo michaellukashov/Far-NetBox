@@ -1137,7 +1137,7 @@ int proxy_socks5_negotiate (Proxy_Socket p, int change)
 		assert(type == ADDRTYPE_NAME);
 		command[3] = 3;
 		sk_getaddr(p->remote_addr, command+5, 256);
-		command[4] = strlen(command+5);
+		command[4] = (char)strlen(command+5);
 		len = 7 + command[4];  /* 4 hdr, 1 len, N addr, 2 trailer */
 	    }
 

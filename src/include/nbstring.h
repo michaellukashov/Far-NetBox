@@ -1,7 +1,5 @@
 #pragma once
 
-//#include <stdio.h>
-//#include <string.h>
 #include <mbstring.h>
 #include <wchar.h>
 
@@ -52,9 +50,9 @@ enum CMStringDataFormat { FORMAT };
 struct CMStringData
 {
 CUSTOM_MEM_ALLOCATION_IMPL
+  long nRefs;        // Reference count: negative == locked
   int nDataLength;   // Length of currently used data in XCHARs (not including terminating null)
   int nAllocLength;  // Length of allocated data in XCHARs (not including terminating null)
-  long nRefs;        // Reference count: negative == locked
 
   __forceinline void* data() { return (this + 1); }
   __forceinline void AddRef() { InterlockedIncrement(&nRefs); }

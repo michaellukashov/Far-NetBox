@@ -6207,7 +6207,7 @@ static int first_in_commasep_string(char const *needle, char const *haystack,
       return 0;
     needlen = strlen(needle);
 
-    if (haylen >= needlen &&       /* haystack is long enough */
+		if (haylen >= (int)needlen &&       /* haystack is long enough */
 	!memcmp(needle, haystack, needlen) &&	/* initial match */
 	(haylen == needlen || haystack[needlen] == ',')
 	/* either , or EOS follows */
