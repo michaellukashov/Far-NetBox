@@ -1,4 +1,4 @@
-NetBox 2.4.3.483 23.04.2017
+NetBox 2.4.3.484 26.04.2017
 --------------------
   * Issue #229: Remove "netbox:" prefix from Far window title
     (https://github.com/michaellukashov/Far-NetBox/issues/229)
