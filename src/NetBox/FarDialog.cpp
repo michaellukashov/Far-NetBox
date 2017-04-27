@@ -2622,7 +2622,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
           Buf += static_cast<wchar_t>(0x2591); // ucBox25
         }
       }
-      Text(0, (int)Row, Color, Buf);
+      Text(0, Row, Color, Buf);
     }
   }
   else if (Msg == DN_KEY)
