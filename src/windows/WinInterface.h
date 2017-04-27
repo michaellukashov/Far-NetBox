@@ -575,7 +575,7 @@ protected:
   virtual void Prompt(const UnicodeString & Prompt,
     UnicodeString & Value);
   virtual void Execute(const UnicodeString & Command,
-    UnicodeString & Value);
+    UnicodeString & Value) const;
 
 private:
   UnicodeString FCustomCommandName;
