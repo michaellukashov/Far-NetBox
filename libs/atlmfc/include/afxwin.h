@@ -972,7 +972,6 @@ public:
 	CWnd* m_pOther;         // NULL if a menu or not a CWnd
 
 // Operations to do in ON_UPDATE_COMMAND_UI
-	virtual void Enable(BOOL bOn = TRUE);
 	virtual void SetCheck(int nCheck = 1);   // 0, 1 or 2 (indeterminate)
 	virtual void SetRadio(BOOL bOn = TRUE);
 	virtual void SetText(LPCTSTR lpszText);
@@ -1191,10 +1190,6 @@ public:
 		// like GetDlgItem but recursive
 	void SendMessageToDescendants(UINT message, WPARAM wParam = 0,
 		LPARAM lParam = 0, BOOL bDeep = TRUE, BOOL bOnlyPerm = FALSE);
-	CWnd* GetTopLevelParent() const;
-	CWnd* EnsureTopLevelParent() const;
-	CWnd* GetTopLevelOwner() const;
-	CWnd* GetParentOwner() const;
 	static CWnd* PASCAL GetSafeOwner(CWnd* pParent = NULL, HWND* pWndTop = NULL);
 
 #if(WINVER >= 0x0500)

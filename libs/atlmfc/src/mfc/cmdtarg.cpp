@@ -671,20 +671,6 @@ CCmdUI::CCmdUI()
 }
 
 // default CCmdUI implementation only works for Menu Items
-void CCmdUI::Enable(BOOL bOn)
-{
-	{
-		// enable/disable a control (i.e. child window)
-		ENSURE(m_pOther != NULL);
-
-		// if control has the focus, move the focus before disabling
-		if (!bOn && (::GetFocus() == m_pOther->m_hWnd))
-			m_pOther->GetParent()->SendMessage(WM_NEXTDLGCTL, 0, FALSE);
-		m_pOther->EnableWindow(bOn);
-	}
-	m_bEnableChanged = TRUE;
-}
-
 void CCmdUI::SetCheck(int nCheck)
 {
 	{
@@ -731,9 +717,6 @@ BOOL CCmdUI::DoUpdate(CCmdTarget* pTarget, BOOL bDisableIfNoHndler)
 		AFX_CMDHANDLERINFO info;
 		info.pTarget = NULL;
 		BOOL bHandler = pTarget->OnCmdMsg(m_nID, CN_COMMAND, this, &info);
-
-		// Enable or Disable based on whether there is a handler there
-		Enable(bHandler);
 	}
 	return bResult;
 }
