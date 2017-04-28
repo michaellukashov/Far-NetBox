@@ -184,7 +184,7 @@ struct ssh_gss_liblist *ssh_gss_setup(Conf *conf)
             /* Add the custom directory as well in case it chainloads
              * some other DLLs (e.g a non-installed MIT Kerberos
              * instance) */
-            int pathlen = strlen(path);
+            size_t pathlen = strlen(path);
 
             while (pathlen > 0 && path[pathlen-1] != ':' &&
                    path[pathlen-1] != '\\')
