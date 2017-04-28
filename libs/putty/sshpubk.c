@@ -29,7 +29,7 @@ static int loadrsakey_main(FILE * fp, struct RSAKey *key, int pub_only,
 {
     unsigned char buf[16384];
     unsigned char keybuf[16];
-    int len;
+    size_t len;
     int i, j, ciphertype;
     int ret = 0;
     struct MD5Context md5c;
@@ -108,7 +108,7 @@ static int loadrsakey_main(FILE * fp, struct RSAKey *key, int pub_only,
      */
     if (ciphertype) {
 	MD5Init(&md5c);
-	MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
+	MD5Update(&md5c, (unsigned char *)passphrase, (unsigned int)strlen(passphrase));
 	MD5Final(keybuf, &md5c);
 	des3_decrypt_pubkey(keybuf, buf + i, (len - i + 7) & ~7);
 	smemclr(keybuf, sizeof(keybuf));	/* burn the evidence */
@@ -410,7 +410,7 @@ int saversakey(const Filename *filename, struct RSAKey *key, char *passphrase)
      */
     if (passphrase) {
 	MD5Init(&md5c);
-	MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
+	MD5Update(&md5c, (unsigned char *)passphrase, (unsigned int)strlen(passphrase));
 	MD5Final(keybuf, &md5c);
 	des3_encrypt_pubkey(keybuf, estart, p - estart);
 	smemclr(keybuf, sizeof(keybuf));	/* burn the evidence */
@@ -571,7 +571,7 @@ static unsigned char *read_blob(FILE * fp, int nlines, int *bloblen)
 {
     unsigned char *blob;
     char *line;
-    int linelen, len;
+    size_t linelen, len;
     int i, j, k;
 
     /* We expect at most 64 base64 characters, ie 48 real bytes, per line. */
@@ -631,7 +631,7 @@ const struct ssh_signkey *find_pubkey_alg_len(int namelen, const char *name)
 
 const struct ssh_signkey *find_pubkey_alg(const char *name)
 {
-    return find_pubkey_alg_len(strlen(name), name);
+		return find_pubkey_alg_len((int)strlen(name), name);
 }
 
 struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
@@ -646,7 +646,7 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
     unsigned char *public_blob, *private_blob;
     int public_blob_len, private_blob_len;
     int i, is_mac, old_fmt;
-    int passlen = passphrase ? strlen(passphrase) : 0;
+    size_t passlen = passphrase ? strlen(passphrase) : 0;
     const char *error = NULL;
 
     ret = NULL;			       /* return NULL for most errors */
@@ -786,9 +786,9 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
 	    free_macdata = 0;
 	} else {
 	    unsigned char *p;
-	    int namelen = strlen(alg->name);
-	    int enclen = strlen(encryption);
-	    int commlen = strlen(comment);
+			size_t namelen = strlen(alg->name);
+			size_t enclen = strlen(encryption);
+			size_t commlen = strlen(comment);
 	    maclen = (4 + namelen +
 		      4 + enclen +
 		      4 + commlen +
@@ -1037,8 +1037,8 @@ unsigned char *openssh_loadpub(FILE *fp, char **algorithm,
     char *line, *base64;
     char *comment = NULL;
     unsigned char *pubblob = NULL;
-    int pubbloblen, pubblobsize;
-    int alglen;
+    size_t pubbloblen, pubblobsize;
+    size_t alglen;
 
     line = chomp(fgetline(fp));
 
@@ -1309,8 +1309,8 @@ int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
 {
     FILE *fp;
     unsigned char *pub_blob, *priv_blob, *priv_blob_encrypted;
-    int pub_blob_len, priv_blob_len, priv_encrypted_len;
-    int passlen;
+    size_t pub_blob_len, priv_blob_len, priv_encrypted_len;
+    size_t passlen;
     int cipherblk;
     int i;
     const char *cipherstr;
@@ -1378,7 +1378,7 @@ int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
 	putty_SHA_Init(&s);
 	putty_SHA_Bytes(&s, header, sizeof(header)-1);
 	if (passphrase)
-	    putty_SHA_Bytes(&s, passphrase, strlen(passphrase));
+			putty_SHA_Bytes(&s, passphrase, (int)strlen(passphrase));
 	putty_SHA_Final(&s, mackey);
 	hmac_sha1_simple(mackey, 20, macdata, maclen, priv_mac);
 	smemclr(macdata, maclen);
@@ -1470,7 +1470,7 @@ static char *ssh2_pubkey_openssh_str_internal(const char *comment,
 {
     const unsigned char *ssh2blob = (const unsigned char *)v_pub_blob;
     const char *alg;
-    int alglen;
+    size_t alglen;
     char *buffer, *p;
     int i;
 
