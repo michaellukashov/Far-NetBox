@@ -130,7 +130,7 @@ char *get_username(void)
     DWORD namelen;
     char *user;
     int got_username = FALSE;
-    DECL_WINDOWS_FUNCTION(static, BOOLEAN, GetUserNameExA,
+    PUTTY_DECL_WINDOWS_FUNCTION(static, BOOLEAN, GetUserNameExA,
 			  (EXTENDED_NAME_FORMAT, LPSTR, PULONG));
 
     {
@@ -139,11 +139,11 @@ char *get_username(void)
 	    /* Not available on Win9x, so load dynamically */
 	    HMODULE secur32 = load_system32_dll("secur32.dll");
 	    /* If MIT Kerberos is installed, the following call to
-	       GET_WINDOWS_FUNCTION makes Windows implicitly load
+	       PUTTY_GET_WINDOWS_FUNCTION makes Windows implicitly load
 	       sspicli.dll WITHOUT proper path sanitizing, so better
 	       load it properly before */
 	    HMODULE sspicli = load_system32_dll("sspicli.dll");
-	    GET_WINDOWS_FUNCTION(secur32, GetUserNameExA);
+	    PUTTY_GET_WINDOWS_FUNCTION(secur32, GetUserNameExA);
 	    tried_usernameex = TRUE;
 	}
     }
@@ -210,17 +210,17 @@ void dll_hijacking_protection(void)
      * full pathname by the user-provided configuration.
      */
     static HMODULE kernel32_module;
-    DECL_WINDOWS_FUNCTION(static, BOOL, SetDefaultDllDirectories, (DWORD));
+    PUTTY_DECL_WINDOWS_FUNCTION(static, BOOL, SetDefaultDllDirectories, (DWORD));
 
     if (!kernel32_module) {
         kernel32_module = load_system32_dll("kernel32.dll");
 #if defined _MSC_VER && _MSC_VER < 1900
         /* For older Visual Studio, this function isn't available in
          * the header files to type-check */
-        GET_WINDOWS_FUNCTION_NO_TYPECHECK(
+        PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(
             kernel32_module, SetDefaultDllDirectories);
 #else
-        GET_WINDOWS_FUNCTION(kernel32_module, SetDefaultDllDirectories);
+        PUTTY_GET_WINDOWS_FUNCTION(kernel32_module, SetDefaultDllDirectories);
 #endif
     }
 

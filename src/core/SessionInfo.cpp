@@ -1053,7 +1053,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       AddToList(OS, WindowsProductName(), L" - ");
       ADF(L"NetBox %s (OS %s)", FConfiguration->GetProductVersionStr().c_str(), OS.c_str());
       std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateConfigStorage());
-       DebugAssert(Storage.get());
+      DebugAssert(Storage.get());
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
 
       if (0)
@@ -1436,14 +1436,14 @@ TActionLog::TActionLog(TSessionUI * UI, TSessionData * SessionData,
   FConfiguration(Configuration),
   FLogging(false),
   FFile(nullptr),
+  FIndent(L"  "),
   FUI(UI),
   FSessionData(SessionData),
   FPendingActions(new TList()),
   FFailed(false),
   FClosed(false),
   FInGroup(false),
-  FEnabled(true),
-  FIndent(L"  ")
+  FEnabled(true)
 {
   DebugAssert(UI != nullptr);
   DebugAssert(SessionData != nullptr);

@@ -375,7 +375,7 @@ protected:
 
   void Add(TQueueItemProxy * ItemProxy);
   void Delete(TQueueItemProxy * ItemProxy);
-  void ResetStats();
+  void ResetStats() const;
 
 private:
   TList * FList;

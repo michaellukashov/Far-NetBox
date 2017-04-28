@@ -542,6 +542,7 @@ bool TCopyParamList::GetAnyRule() const
 
 TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) :
   TConfiguration(Kind),
+  FAppliedLocale(0),
   FLocale(0),
   FLocales(CreateSortedStringList()),
   FLastLocalesExts(L"*"),
@@ -1236,12 +1237,12 @@ void TGUIConfiguration::SetCopyParamCurrent(const UnicodeString & Value)
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
 
-const TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam() const
+TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam() const
 {
   return GetCopyParamPreset(GetCopyParamCurrent());
 }
 
-const TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Name) const
+TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Name) const
 {
   TGUICopyParamType Result = FDefaultCopyParam;
   if (!Name.IsEmpty())
@@ -1325,8 +1326,8 @@ bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * Sessions)
   try
   {
     UnicodeString Error;
-    std::unique_ptr<TStoredSessionList> Sessions(SelectPuttySessionsForImport(Sessions, Error));
-    return (Sessions->GetCount() > 0);
+    std::unique_ptr<TStoredSessionList> SessionsList(SelectPuttySessionsForImport(Sessions, Error));
+    return (SessionsList->GetCount() > 0);
   }
   catch (...)
   {

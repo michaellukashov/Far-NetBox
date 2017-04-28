@@ -410,13 +410,13 @@ private:
   void * FFile;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
+  UnicodeString FIndent;
   TSessionUI * FUI;
   TSessionData * FSessionData;
   TList * FPendingActions;
   bool FFailed;
   bool FClosed;
   bool FInGroup;
-  UnicodeString FIndent;
   bool FEnabled;
 
   void OpenLogFile();

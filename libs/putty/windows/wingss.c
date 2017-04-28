@@ -25,31 +25,31 @@ const struct keyvalwhere gsslibkeywords[] = {
     { "custom", 2, -1, -1 },
 };
 
-DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      AcquireCredentialsHandleA,
 		      (SEC_CHAR *, SEC_CHAR *, ULONG, PLUID,
 		       PVOID, SEC_GET_KEY_FN, PVOID, PCredHandle, PTimeStamp));
-DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      InitializeSecurityContextA,
 		      (PCredHandle, PCtxtHandle, SEC_CHAR *, ULONG, ULONG,
 		       ULONG, PSecBufferDesc, ULONG, PCtxtHandle,
 		       PSecBufferDesc, PULONG, PTimeStamp));
-DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      FreeContextBuffer,
 		      (PVOID));
-DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      FreeCredentialsHandle,
 		      (PCredHandle));
-DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      DeleteSecurityContext,
 		      (PCtxtHandle));
-DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      QueryContextAttributesA,
 		      (PCtxtHandle, ULONG, PVOID));
-DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      MakeSignature,
 		      (PCtxtHandle, ULONG, PSecBufferDesc, ULONG));
-DECL_WINDOWS_FUNCTION(static, DLL_DIRECTORY_COOKIE,
+PUTTY_DECL_WINDOWS_FUNCTION(static, DLL_DIRECTORY_COOKIE,
                       AddDllDirectory,
                       (PCWSTR));
 
@@ -84,9 +84,9 @@ struct ssh_gss_liblist *ssh_gss_setup(Conf *conf)
     }
 #if defined _MSC_VER && _MSC_VER < 1900
     /* Omit the type-check because older MSVCs don't have this function */
-    GET_WINDOWS_FUNCTION_NO_TYPECHECK(kernel32_module, AddDllDirectory);
+    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(kernel32_module, AddDllDirectory);
 #else
-    GET_WINDOWS_FUNCTION(kernel32_module, AddDllDirectory);
+    PUTTY_GET_WINDOWS_FUNCTION(kernel32_module, AddDllDirectory);
 #endif
 
     list->libraries = snewn(3, struct ssh_gss_library);
@@ -163,13 +163,13 @@ struct ssh_gss_liblist *ssh_gss_setup(Conf *conf)
 	lib->gsslogmsg = "Using SSPI from SECUR32.DLL";
 	lib->handle = (void *)module;
 
-	GET_WINDOWS_FUNCTION(module, AcquireCredentialsHandleA);
-	GET_WINDOWS_FUNCTION(module, InitializeSecurityContextA);
-	GET_WINDOWS_FUNCTION(module, FreeContextBuffer);
-	GET_WINDOWS_FUNCTION(module, FreeCredentialsHandle);
-	GET_WINDOWS_FUNCTION(module, DeleteSecurityContext);
-	GET_WINDOWS_FUNCTION(module, QueryContextAttributesA);
-	GET_WINDOWS_FUNCTION(module, MakeSignature);
+	PUTTY_GET_WINDOWS_FUNCTION(module, AcquireCredentialsHandleA);
+	PUTTY_GET_WINDOWS_FUNCTION(module, InitializeSecurityContextA);
+	PUTTY_GET_WINDOWS_FUNCTION(module, FreeContextBuffer);
+	PUTTY_GET_WINDOWS_FUNCTION(module, FreeCredentialsHandle);
+	PUTTY_GET_WINDOWS_FUNCTION(module, DeleteSecurityContext);
+	PUTTY_GET_WINDOWS_FUNCTION(module, QueryContextAttributesA);
+	PUTTY_GET_WINDOWS_FUNCTION(module, MakeSignature);
 
 	ssh_sspi_bind_fns(lib);
     }
@@ -271,7 +271,7 @@ static Ssh_gss_stat ssh_sspi_indicate_mech(struct ssh_gss_library *lib,
 
 
 static Ssh_gss_stat ssh_sspi_import_name(struct ssh_gss_library *lib,
-					 char *host, Ssh_gss_name *srv_name)
+           const char *host, Ssh_gss_name *srv_name)
 {
     char *pStr;
 

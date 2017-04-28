@@ -206,15 +206,6 @@ BOOL AfxInternalPreTranslateMessage(MSG* pMsg)
 	if (CWnd::WalkPreTranslateTree(pMainWnd->GetSafeHwnd(), pMsg))
 		return TRUE;
 
-	// in case of modeless dialogs, last chance route through main
-	//   window's accelerator table
-	if (pMainWnd != NULL)
-	{
-		 CWnd* pWnd = CWnd::FromHandle(pMsg->hwnd);
-		 if (pWnd->GetTopLevelParent() != pMainWnd)
-			return pMainWnd->PreTranslateMessage(pMsg);
-	}
-
 	return FALSE;   // no special processing
 }
 

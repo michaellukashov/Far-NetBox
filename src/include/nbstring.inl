@@ -113,7 +113,7 @@ void CMSimpleStringT<BaseType>::Append(PCXSTR pszSrc, int nLength)
 template<typename BaseType>
 void CMSimpleStringT<BaseType>::AppendChar(XCHAR ch)
 {
-  UINT nOldLength = GetLength();
+  int nOldLength = GetLength();
   int nNewLength = nOldLength + 1;
   PXSTR pszBuffer = GetBuffer(nNewLength);
   pszBuffer[nOldLength] = ch;

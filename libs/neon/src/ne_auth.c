@@ -1536,7 +1536,7 @@ static char *request_passport(auth_session *sess, struct auth_request *req)
 static void lower_case(char * s)
 {
     int i;
-    for (i = 0; i < strlen(s); i++)
+    for (i = 0; i < (int)strlen(s); i++)
     {
         s[i] = ne_tolower(s[i]);
     }

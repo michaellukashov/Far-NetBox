@@ -36,7 +36,7 @@ public:
 			return( NULL );
 		}
 #endif
-		return( ::CoTaskMemAlloc( ULONG( nBytes ) ) );
+		return( ::CoTaskMemAlloc( size_t( nBytes ) ) );
 	}
 	virtual void Free(_In_opt_ void* p) throw()
 	{
@@ -52,7 +52,7 @@ public:
 			return( NULL );
 		}
 #endif
-		return( ::CoTaskMemRealloc( p, ULONG( nBytes ) ) );
+		return( ::CoTaskMemRealloc( p, size_t( nBytes ) ) );
 	}
 	virtual size_t GetSize(_In_opt_ void* p) throw()
 	{

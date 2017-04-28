@@ -46,7 +46,7 @@ static const char hex[16] = "0123456789ABCDEF";
 
 static int tried_shgetfolderpath = FALSE;
 static HMODULE shell32_module = NULL;
-DECL_WINDOWS_FUNCTION(static, HRESULT, SHGetFolderPathA, 
+PUTTY_DECL_WINDOWS_FUNCTION(static, HRESULT, SHGetFolderPathA, 
 		      (HWND, int, HANDLE, DWORD, LPSTR));
 
 static void mungestr(const char *in, char *out)
@@ -377,7 +377,10 @@ int verify_host_key(const char *hostname, int port,
     HKEY rkey;
     DWORD readlen;
     DWORD type;
-    int ret, compare;
+    int ret;
+#ifndef MPEXT
+    int compare;
+#endif
 
 #ifdef MPEXT
     len = maxlen;
@@ -605,7 +608,7 @@ static HANDLE access_random_seed(int action)
 	 * However, the invocation below requires IE5+ anyway,
 	 * so stuff that. */
 	shell32_module = load_system32_dll("shell32.dll");
-	GET_WINDOWS_FUNCTION(shell32_module, SHGetFolderPathA);
+	PUTTY_GET_WINDOWS_FUNCTION(shell32_module, SHGetFolderPathA);
 	tried_shgetfolderpath = TRUE;
     }
     if (p_SHGetFolderPathA) {
@@ -755,12 +758,12 @@ static int transform_jumplist_registry
     /* Check validity of registry data: REG_MULTI_SZ value must end
      * with \0\0. */
     piterator_tmp = old_value;
-    while (((piterator_tmp - old_value) < (value_length - 1)) &&
+    while (((piterator_tmp - old_value) < ((int)value_length - 1)) &&
            !(*piterator_tmp == '\0' && *(piterator_tmp+1) == '\0')) {
         ++piterator_tmp;
     }
 
-    if ((piterator_tmp - old_value) >= (value_length-1)) {
+    if ((piterator_tmp - old_value) >= ((int)value_length-1)) {
         /* Invalid value. Start from an empty value. */
         *old_value = '\0';
         *(old_value + 1) = '\0';

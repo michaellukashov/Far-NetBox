@@ -550,7 +550,7 @@ void CFtpControlSocket::Connect(t_server &server)
 
   int logontype = GetOptionVal(OPTION_LOGONTYPE);
   int port;
-  CString buf,temp;
+  CString temp;
   // are we connecting directly to the host (logon type 0) or via a firewall? (logon type>0)
   CString fwhost;
   int fwport;

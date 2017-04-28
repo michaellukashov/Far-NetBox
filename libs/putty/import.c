@@ -2213,7 +2213,7 @@ static int sshcom_read_mpint(void *data, int len, struct mpint_pos *ret)
     bits = GET_32BIT(d);
 
     bytes = (bits + 7) / 8;
-    if (len < 4+bytes)
+    if ((unsigned int)len < 4+bytes)
         goto error;
 
     ret->start = d + 4;

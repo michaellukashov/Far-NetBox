@@ -1091,7 +1091,7 @@ int validate_manual_hostkey(char *key)
                 goto not_ssh2_blob;    /* sorry */
 
             minlen = ((alglen + 4) + 2) / 3;
-            if (strlen(q) < minlen)
+            if ((int)strlen(q) < minlen)
                 goto not_ssh2_blob;    /* sorry */
 
             strcpy(key, q);
@@ -1133,7 +1133,7 @@ void *get_ssh_string(int *datalen, const void **data, int *stringlen)
     if (*datalen < 4)
         return NULL;
     len = GET_32BIT_MSB_FIRST((const unsigned char *)*data);
-    if (*datalen - 4 < len)
+    if (*datalen - 4 < (int)len)
         return NULL;
     ret = (void *)((const char *)*data + 4);
     *datalen -= len + 4;
