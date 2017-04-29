@@ -29,7 +29,7 @@ static int loadrsakey_main(FILE * fp, struct RSAKey *key, int pub_only,
 {
     unsigned char buf[16384];
     unsigned char keybuf[16];
-    size_t len;
+    int len;
     int i, j, ciphertype;
     int ret = 0;
     struct MD5Context md5c;
@@ -1309,8 +1309,8 @@ int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
 {
     FILE *fp;
     unsigned char *pub_blob, *priv_blob, *priv_blob_encrypted;
-    size_t pub_blob_len, priv_blob_len, priv_encrypted_len;
-    size_t passlen;
+    int pub_blob_len, priv_blob_len, priv_encrypted_len;
+    int passlen;
     int cipherblk;
     int i;
     const char *cipherstr;
