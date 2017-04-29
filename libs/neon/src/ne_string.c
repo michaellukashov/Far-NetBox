@@ -155,7 +155,7 @@ void ne_buffer_concat(ne_buffer *buf, ...)
     ssize_t total;
 
     va_start(ap, buf);
-    total = buf->used + count_concat(&ap);
+    total = (ssize_t)(buf->used + count_concat(&ap));
     va_end(ap);    
 
     /* Grow the buffer */

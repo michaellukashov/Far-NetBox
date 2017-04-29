@@ -932,7 +932,7 @@ ne_ssl_client_cert *ne_ssl_clicert_import(const unsigned char *buffer,
     PKCS12 *p12;
 
     p = buffer;
-    p12 = d2i_PKCS12(NULL, &p, buflen);
+    p12 = d2i_PKCS12(NULL, &p, (long)buflen);
     
     return parse_client_cert(p12);
 }
@@ -1113,7 +1113,7 @@ ne_ssl_certificate *ne_ssl_cert_import(const char *data)
     }
 
     p = der;
-    x5 = d2i_X509(NULL, &p, len); /* p is incremented */
+    x5 = d2i_X509(NULL, &p, (long)len); /* p is incremented */
     ne_free(der);
     if (x5 == NULL) {
         ERR_clear_error();
