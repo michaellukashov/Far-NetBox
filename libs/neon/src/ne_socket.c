@@ -244,7 +244,7 @@ struct ne_sock_addr_s {
 /* Print system error message to given buffer. */
 static void print_error(int errnum, char *buffer, size_t buflen)
 {
-    if (FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM
+    if (FormatMessageA (FORMAT_MESSAGE_FROM_SYSTEM
                        | FORMAT_MESSAGE_IGNORE_INSERTS,
                        NULL, (DWORD) errnum, 0, 
                        buffer, buflen, NULL) == 0)
