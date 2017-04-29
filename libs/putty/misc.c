@@ -684,7 +684,7 @@ void bufchain_add(bufchain *ch, const void *data, size_t len)
 
     while (len > 0) {
 	if (ch->tail && ch->tail->bufend < ch->tail->bufmax) {
-			size_t copylen = min(len, ch->tail->bufmax - ch->tail->bufend);
+			size_t copylen = min(len, (size_t)(ch->tail->bufmax - ch->tail->bufend));
 	    memcpy(ch->tail->bufend, buf, copylen);
 	    buf += copylen;
 	    len -= copylen;

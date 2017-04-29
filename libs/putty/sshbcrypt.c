@@ -85,7 +85,7 @@ void openssh_bcrypt(const char *passphrase,
     int modulus, residue, i, j, round;
 
     /* Hash the passphrase to get the bcrypt key material */
-    putty_SHA512_Simple(passphrase, strlen(passphrase), hashed_passphrase);
+    putty_SHA512_Simple(passphrase, (int)strlen(passphrase), hashed_passphrase);
 
     /* We output key bytes in a scattered fashion to meld all output
      * key blocks into all parts of the output. To do this, we pick a

@@ -509,7 +509,7 @@ const char *winsock_error_string(int error)
         bufsize = 65535 + sizeof(prefix);
         es->text = snewn(bufsize, char);
         strcpy(es->text, prefix);
-        bufused = strlen(es->text);
+        bufused = (int)strlen(es->text);
         if (!FormatMessage((FORMAT_MESSAGE_FROM_SYSTEM |
                             FORMAT_MESSAGE_IGNORE_INSERTS), NULL, error,
                            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
@@ -518,7 +518,7 @@ const char *winsock_error_string(int error)
                     "Windows error code %d (and FormatMessage returned %u)",
                     error, (unsigned int)GetLastError());
         } else {
-            int len = strlen(es->text);
+            int len = (int)strlen(es->text);
             if (len > 0 && es->text[len-1] == '\n')
                 es->text[len-1] = '\0';
         }

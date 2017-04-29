@@ -355,8 +355,8 @@ static Ssh_gss_stat ssh_sspi_init_sec_context(struct ssh_gss_library *lib,
 					      Ssh_gss_buf *send_tok)
 {
     winSsh_gss_ctx *winctx = (winSsh_gss_ctx *) *ctx;
-    SecBuffer wsend_tok = MPEXT_INIT_SEC_BUFFER(send_tok->length,SECBUFFER_TOKEN,send_tok->value);
-    SecBuffer wrecv_tok = MPEXT_INIT_SEC_BUFFER(recv_tok->length,SECBUFFER_TOKEN,recv_tok->value);
+    SecBuffer wsend_tok = MPEXT_INIT_SEC_BUFFER((unsigned long)send_tok->length,SECBUFFER_TOKEN,send_tok->value);
+    SecBuffer wrecv_tok = MPEXT_INIT_SEC_BUFFER((unsigned long)recv_tok->length,SECBUFFER_TOKEN,recv_tok->value);
     SecBufferDesc output_desc= MPEXT_INIT_SEC_BUFFERDESC(SECBUFFER_VERSION,1,&wsend_tok);
     SecBufferDesc input_desc = MPEXT_INIT_SEC_BUFFERDESC(SECBUFFER_VERSION,1,&wrecv_tok);
     unsigned long flags=ISC_REQ_MUTUAL_AUTH|ISC_REQ_REPLAY_DETECT|
@@ -516,7 +516,7 @@ static Ssh_gss_stat ssh_sspi_get_mic(struct ssh_gss_library *lib,
     InputBufferDescriptor.pBuffers = InputSecurityToken;
     InputBufferDescriptor.ulVersion = SECBUFFER_VERSION;
     InputSecurityToken[0].BufferType = SECBUFFER_DATA;
-    InputSecurityToken[0].cbBuffer = buf->length;
+    InputSecurityToken[0].cbBuffer = (unsigned long)buf->length;
     InputSecurityToken[0].pvBuffer = buf->value;
     InputSecurityToken[1].BufferType = SECBUFFER_TOKEN;
     InputSecurityToken[1].cbBuffer = ContextSizes.cbMaxSignature;

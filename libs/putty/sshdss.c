@@ -568,7 +568,7 @@ Bignum *dss_gen_k(const char *id_string, Bignum modulus, Bignum private_key,
      * Hash some identifying text plus x.
      */
     putty_SHA512_Init(&ss);
-    putty_SHA512_Bytes(&ss, id_string, strlen(id_string) + 1);
+    putty_SHA512_Bytes(&ss, id_string, (int)strlen(id_string) + 1);
     sha512_mpint(&ss, private_key);
     putty_SHA512_Final(&ss, digest512);
 
