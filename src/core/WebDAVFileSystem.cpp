@@ -393,7 +393,7 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
   DebugAssert(FNeonSession == nullptr);
   FNeonSession = 
     CreateNeonSession(
-      uri, Data->GetProxyMethod(), Data->GetProxyHost(), static_cast<int>(Data->GetProxyPort()),
+      uri, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
       Data->GetProxyUsername(), Data->GetProxyPassword());
 
 

@@ -1536,6 +1536,7 @@ void fill_window_c(deflate_state *s)
     Pos *p;
     uint32_t more;    /* Amount of free space at the end of the window. */
     uint32_t wsize = s->w_size;
+    uint32_t count;
 
     Assert(s->lookahead < MIN_LOOKAHEAD, "already enough lookahead");
 
@@ -1546,67 +1547,12 @@ void fill_window_c(deflate_state *s)
          * move the upper half to the lower one to make room in the upper half.
          */
         if (s->strstart >= wsize+MAX_DIST(s)) {
-            zmemcpy(s->window, s->window+wsize, (uint32_t)wsize);
+            zmemcpy(s->window, s->window+wsize, (uint32_t)wsize - more);
             s->match_start -= wsize;
             s->strstart    -= wsize; /* we now have strstart >= MAX_DIST */
             s->block_start -= (int64_t) wsize;
 
-            /* Slide the hash table (could be avoided with 32 bit values
-               at the expense of memory usage). We slide even when level == 0
-               to keep the hash table consistent if we switch back to level > 0
-               later. (Using level 0 permanently is not an optimal usage of
-               zlib, so we don't care about this pathological case.)
-             */
-            n = s->hash_size;
-            p = &s->head[n];
-#ifdef NOT_TWEAK_COMPILER
-            do {
-                uint32_t m;
-                m = *--p;
-                *p = (Pos)(m >= wsize ? m-wsize : NIL);
-            } while (--n);
-#else
-            /* As of I make this change, gcc (4.8.*) isn't able to vectorize
-             * this hot loop using saturated-subtraction on x86-64 architecture.
-             * To avoid this defect, we can change the loop such that
-             *    o. the pointer advance forward, and
-             *    o. demote the variable 'm' to be static to the loop, and
-             *       choose type "Pos" (instead of 'uint32_t') for the
-             *       variable to avoid unncessary zero-extension.
-             */
-            {
-                uint32_t i;
-                Pos *q = p - n;
-                for (i = 0; i < n; i++) {
-                    Pos m = *q;
-                    Pos t = wsize;
-                    *q++ = (Pos)(m >= t ? m-t: NIL);
-                }
-            }
-
-#endif /* NOT_TWEAK_COMPILER */
-            n = wsize;
-            p = &s->prev[n];
-#ifdef NOT_TWEAK_COMPILER
-            do {
-                uint32_t m;
-                m = *--p;
-                *p = (Pos)(m >= wsize ? m-wsize : NIL);
-                /* If n is not on any hash chain, prev[n] is garbage but
-                 * its value will never be used.
-                 */
-            } while (--n);
-#else
-            {
-                uint32_t i;
-                Pos *q = p - n;
-                for (i = 0; i < n; i++) {
-                    Pos m = *q;
-                    Pos t = wsize;
-                    *q++ = (Pos)(m >= t ? m-t: NIL);
-                }
-            }
-#endif /* NOT_TWEAK_COMPILER */
+            slide_hash(s);
             more += wsize;
         }
         if (s->strm->avail_in == 0)
@@ -1638,15 +1584,12 @@ void fill_window_c(deflate_state *s)
 #error Call insert_string() MIN_MATCH-3 more times
             while (s->insert) {
                 insert_string(s, str, 1);
-#ifndef FASTEST
-#endif
                 str++;
                 s->insert--;
                 if (s->lookahead + s->insert < MIN_MATCH)
                     break;
             }
 #else
-            uint32_t count;
             if (unlikely(s->lookahead == 1)){
                 count = s->insert - 1;
             }else{
@@ -1659,7 +1602,6 @@ void fill_window_c(deflate_state *s)
         /* If the whole input has less than MIN_MATCH bytes, ins_h is garbage,
          * but this is not important since only literal bytes will be emitted.
          */
-
     } while (s->lookahead < MIN_LOOKAHEAD && s->strm->avail_in != 0);
 
     /* If the WIN_INIT bytes after the end of the current data have never been

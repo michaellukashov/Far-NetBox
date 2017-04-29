@@ -1524,43 +1524,6 @@ BOOL CWnd::OnNotify(WPARAM, LPARAM lParam, LRESULT* pResult)
 //		::GetParent(hWnd) : ::GetWindow(hWnd, GW_OWNER);
 //}
 
-CWnd* CWnd::GetTopLevelParent() const
-{
-	if (GetSafeHwnd() == NULL) // no Window attached
-		return NULL;
-
-	ASSERT_VALID(this);
-
-	return NULL; // CWnd::FromHandle(hWndParent);
-}
-
-CWnd* CWnd::GetTopLevelOwner() const
-{
-	if (GetSafeHwnd() == NULL) // no Window attached
-		return NULL;
-
-	ASSERT_VALID(this);
-
-	return 0; // CWnd::FromHandle(hWndOwner);
-}
-
-CWnd* CWnd::GetParentOwner() const
-{
-	if (GetSafeHwnd() == NULL) // no Window attached
-		return NULL;
-
-	ASSERT_VALID(this);
-
-	return 0; // CWnd::FromHandle(hWndParent);
-}
-
-BOOL CWnd::IsTopParentActive() const
-{
-	ASSERT_VALID(this);
-
-	return false;
-}
-
 void CWnd::ActivateTopParent()
 {
 }

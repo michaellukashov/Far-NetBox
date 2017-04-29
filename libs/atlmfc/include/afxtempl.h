@@ -51,7 +51,7 @@ using ATL::CComBSTR;
 template<class TYPE>
 AFX_INLINE void AFXAPI CopyElements(TYPE* pDest, const TYPE* pSrc, INT_PTR nCount)
 {
-	ENSURE(nCount == 0 || pDest != 0 && pSrc != 0);
+	ENSURE(nCount == 0 || (pDest != 0 && pSrc != 0));
 	ASSERT(nCount == 0 ||
 		AfxIsValidAddress(pDest, (size_t)nCount * sizeof(TYPE)));
 	ASSERT(nCount == 0 ||

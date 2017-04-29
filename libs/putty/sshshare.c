@@ -774,19 +774,23 @@ static void share_try_cleanup(struct ssh_sharing_connstate *cs)
      * CHANNEL_OPEN from the server but not passed back a response
      * from downstream, should be responded to with OPEN_FAILURE.
      */
+    static const char reason[] = "PuTTY downstream no longer available";
+    const int strlen_reason = strlen(reason);
+    static const char lang[] = "en";
+    const int strlen_lang = strlen(lang);
+    static const char request[] = "cancel-tcpip-forward";
+    const int strlen_request = strlen(request);
     while ((hc = (struct share_halfchannel *)
             index234(cs->halfchannels, 0)) != NULL) {
-        static const char reason[] = "PuTTY downstream no longer available";
-        static const char lang[] = "en";
         unsigned char packet[256];
         int pos = 0;
 
         PUT_32BIT(packet + pos, hc->server_id); pos += 4;
         PUT_32BIT(packet + pos, SSH2_OPEN_CONNECT_FAILED); pos += 4;
-        PUT_32BIT(packet + pos, strlen(reason)); pos += 4;
-        memcpy(packet + pos, reason, strlen(reason)); pos += strlen(reason);
-        PUT_32BIT(packet + pos, strlen(lang)); pos += 4;
-        memcpy(packet + pos, lang, strlen(lang)); pos += strlen(lang);
+        PUT_32BIT(packet + pos, strlen_reason); pos += 4;
+        memcpy(packet + pos, reason, strlen_reason); pos += strlen(reason);
+        PUT_32BIT(packet + pos, strlen_lang); pos += 4;
+        memcpy(packet + pos, lang, strlen_lang); pos += strlen(lang);
         ssh_send_packet_from_downstream(cs->parent->ssh, cs->id,
                                         SSH2_MSG_CHANNEL_OPEN_FAILURE,
                                         packet, pos, "cleanup after"
@@ -841,13 +845,12 @@ static void share_try_cleanup(struct ssh_sharing_connstate *cs)
     for (i = 0; (fwd = (struct share_forwarding *)
                  index234(cs->forwardings, i)) != NULL; i++) {
         if (fwd->active) {
-            static const char request[] = "cancel-tcpip-forward";
             char *packet = snewn(256 + strlen(fwd->host), char);
             int pos = 0;
 
-            PUT_32BIT(packet + pos, strlen(request)); pos += 4;
-            memcpy(packet + pos, request, strlen(request));
-            pos += strlen(request);
+            PUT_32BIT(packet + pos, strlen_request); pos += 4;
+            memcpy(packet + pos, request, strlen_request);
+            pos += strlen_request;
 
             packet[pos++] = 0;         /* !want_reply */
 

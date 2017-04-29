@@ -943,7 +943,7 @@ Bignum modpow_simple(Bignum base_in, Bignum exp, Bignum mod)
     BignumInt *a, *b, *n, *m, *scratch;
     BignumInt recip;
     int rshift;
-    int mlen, scratchlen, i, j;
+    size_t mlen, scratchlen, i, j;
     Bignum base, result;
 
     /*
@@ -981,7 +981,7 @@ Bignum modpow_simple(Bignum base_in, Bignum exp, Bignum mod)
     a[2 * mlen - 1] = 1;
 
     /* Scratch space for multiplies */
-    scratchlen = mul_compute_scratch(mlen);
+    scratchlen = (int)mul_compute_scratch(mlen);
     scratch = snewn(scratchlen, BignumInt);
 
     /* Skip leading zero bits of exp. */
@@ -1335,7 +1335,7 @@ static void bigdivmod(Bignum p, Bignum mod, Bignum result, Bignum quotient)
     BignumInt *n, *m;
     BignumInt recip;
     int rshift;
-    int plen, mlen, i, j;
+    size_t plen, mlen, i, j;
 
     /*
      * The most significant word of mod needs to be non-zero. It

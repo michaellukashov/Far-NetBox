@@ -55,12 +55,6 @@ _AFXWIN_INLINE BOOL CWnd::DragDetect(POINT pt) const
 //_AFXWIN_INLINE int CWnd::SetDlgCtrlID(int nID)
 //	{ ASSERT(::IsWindow(m_hWnd)); return (int)::SetWindowLong(m_hWnd, GWL_ID, nID); }
 //#endif //_AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE CWnd* CWnd::EnsureTopLevelParent() const
-{
-    CWnd *pWnd=GetTopLevelParent();
-    ENSURE_VALID(pWnd);
-    return pWnd;
-}
 _AFXWIN_INLINE void CWnd::MapWindowPoints(CWnd* pwndTo, LPPOINT lpPoint, UINT nCount) const
 	{ ASSERT(::IsWindow(m_hWnd)); ::MapWindowPoints(m_hWnd, pwndTo->GetSafeHwnd(), lpPoint, nCount); }
 _AFXWIN_INLINE void CWnd::MapWindowPoints(CWnd* pwndTo, LPRECT lpRect) const
