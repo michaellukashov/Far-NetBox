@@ -425,7 +425,7 @@ static int raw_poll(SOCKET fdno, int rdwr, int secs)
         tvp->tv_usec = 0;
     }
     do {
-	ret = select(fdno + 1, &rdfds, &wrfds, &exfds, tvp);
+  ret = select((int)fdno + 1, &rdfds, &wrfds, &exfds, tvp);
     } while (ret < 0 && NE_ISINTR(ne_errno));
 #endif
     return ret;
@@ -571,7 +571,7 @@ static ssize_t writev_raw(ne_socket *sock, const struct ne_iovec *vector, int co
 
     for (i = 0; i < count; i++){
         wasvector[i].buf = vector[i].base;
-        wasvector[i].len = vector[i].len;
+        wasvector[i].len = (ULONG)vector[i].len;
     }
         
     ret = WSASend(sock->fd, wasvector, count, &total, 0, NULL, NULL);
@@ -665,7 +665,7 @@ static ssize_t read_ossl(ne_socket *sock, char *buffer, size_t len)
     ret = readable_ossl(sock, sock->rdtimeout);
     if (ret) return ret;
     
-    ret = SSL_read(sock->ssl, buffer, CAST2INT(len));
+    ret = SSL_read(sock->ssl, buffer, (int)CAST2INT(len));
     if (ret <= 0)
 	ret = error_ossl(sock, ret);
 
@@ -674,7 +674,7 @@ static ssize_t read_ossl(ne_socket *sock, char *buffer, size_t len)
 
 static ssize_t write_ossl(ne_socket *sock, const char *data, size_t len)
 {
-    int ret, ilen = CAST2INT(len);
+    int ret, ilen = (int)CAST2INT(len);
     ret = SSL_write(sock->ssl, data, ilen);
     /* ssl.h says SSL_MODE_ENABLE_PARTIAL_WRITE must be enabled to
      * have SSL_write return < length...  so, SSL_write should never
@@ -1274,7 +1274,7 @@ static int timed_connect(ne_socket *sock, SOCKET fd,
     } else 
 #endif /* USE_NONBLOCKING_CONNECT */
     {
-        ret = raw_connect(fd, sa, salen);
+        ret = raw_connect((int)fd, sa, salen);
         
         if (ret < 0) {
             set_strerror(sock, ne_errno);
