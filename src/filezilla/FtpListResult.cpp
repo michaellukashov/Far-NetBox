@@ -2543,7 +2543,7 @@ const char * CFtpListResult::strnstr(const char *str, int len, const char *c) co
     {
       if (clen == 1)
         return p;
-      else if (len >= clen)
+      else if (len >= (int)clen)
       {
         if (!memcmp(p + 1, c+1, clen-1))
           return p;

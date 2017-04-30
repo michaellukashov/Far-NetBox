@@ -391,7 +391,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
     }
 
     size_t len = BIO_ctrl_get_write_guarantee(m_sslbio);
-    if (nBufLen > len)
+    if (nBufLen > (int)len)
       nBufLen = (int)len;
     if (!len)
     {
