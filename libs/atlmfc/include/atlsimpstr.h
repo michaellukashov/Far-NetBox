@@ -439,7 +439,7 @@ public:
 
 		int nNewLength = nOldLength+nLength;
 		PXSTR pszBuffer = GetBuffer( nNewLength );
-		if( nOffset <= nOldLength )
+		if( (int)nOffset <= nOldLength )
 		{
 			pszSrc = pszBuffer+nOffset;
 			// No need to call CopyCharsOverlapped, since the destination is
