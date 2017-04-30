@@ -649,7 +649,8 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
     return res;
 
   m_sCriticalSection.Lock();
-  if ((SSL_CTX*)pSslContext)
+  SSL_CTX * ssl_ctx = (SSL_CTX*)pSslContext;
+  if (ssl_ctx)
   {
     if (m_ssl_ctx)
     {
@@ -658,14 +659,14 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
       return SSL_FAILURE_INITSSL;
     }
 
-    rde::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find((SSL_CTX*)pSslContext);
+    rde::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find(ssl_ctx);
     if (iter == m_contextRefCount.end() || iter->second < 1)
     {
       m_sCriticalSection.Unlock();
       ResetSslSession();
       return SSL_FAILURE_INITSSL;
     }
-    m_ssl_ctx = (SSL_CTX*)pSslContext;
+    m_ssl_ctx = ssl_ctx;
     iter->second++;
   }
   else if (!m_ssl_ctx)
@@ -746,7 +747,6 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
   SSL_ctrl(m_ssl, SSL_CTRL_OPTIONS, options, NULL);
 
   //Init SSL connection
-  void * ssl_sessionid = NULL;
   m_Main = main;
   m_sessionreuse = sessionreuse;
   if ((m_Main != NULL) && m_sessionreuse)
@@ -1039,7 +1039,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
   const char * str;
   int w;
 
-  w = where& ~SSL_ST_MASK;
+  w = where & ~SSL_ST_MASK;
 
   if (w & SSL_ST_CONNECT)
   {
