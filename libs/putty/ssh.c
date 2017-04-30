@@ -2051,7 +2051,7 @@ static void s_wrpkt(Ssh ssh, struct Packet *pkt)
     backlog = s_write(ssh, pkt->data + offset, len);
     if (backlog > SSH_MAX_BACKLOG)
 	{
-	ssh_throttle_all(ssh, 1, backlog);
+      ssh_throttle_all(ssh, 1, backlog);
 	}
     ssh_free_packet(pkt);
 }
@@ -2455,7 +2455,7 @@ static void ssh2_pkt_send_noqueue(Ssh ssh, struct Packet *pkt)
     backlog = s_write(ssh, pkt->body, len);
     if (backlog > SSH_MAX_BACKLOG)
 	{
-	ssh_throttle_all(ssh, 1, backlog);
+       ssh_throttle_all(ssh, 1, backlog);
 	}
 
     ssh->outgoing_data_size += pkt->encrypted_len;
@@ -2559,7 +2559,7 @@ static void ssh_pkt_defersend(Ssh ssh)
     ssh->deferred_send_data = NULL;
     if (backlog > SSH_MAX_BACKLOG)
 	{
-	ssh_throttle_all(ssh, 1, backlog);
+      ssh_throttle_all(ssh, 1, backlog);
 	}
 
     if (ssh->version == 2) {
@@ -3617,7 +3617,7 @@ static void ssh_sent(Plug plug, int bufsize)
      */
     if (bufsize < SSH_MAX_BACKLOG)
 	{
-	ssh_throttle_all(ssh, 0, bufsize);
+	  ssh_throttle_all(ssh, 0, bufsize);
     }
 }
 

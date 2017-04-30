@@ -266,7 +266,7 @@ void sk_init(void)
     }
     if (!winsock_module)
     {
-	fatalbox("Unable to load any WinSock library");
+      fatalbox("Unable to load any WinSock library");
     }
 
 #ifndef NO_IPV6
@@ -366,7 +366,7 @@ void sk_cleanup(void)
 
     if (p_WSACleanup)
     {
-	p_WSACleanup();
+	  p_WSACleanup();
     }
     if (winsock_module)
 	FreeLibrary(winsock_module);
@@ -578,7 +578,7 @@ SockAddr sk_namelookup(const char *host, char **canonicalname,
             }
 	    if (err == 0)
 	    {
-		ret->resolved = TRUE;
+		  ret->resolved = TRUE;
 	    }	
 	} else
 #endif
@@ -1070,28 +1070,28 @@ static DWORD try_connect(Actual_Socket sock,
 	SetHandleInformation((HANDLE)s, HANDLE_FLAG_INHERIT, 0);
 
     if (sock->oobinline) {
-	BOOL b = TRUE;
-	p_setsockopt(s, SOL_SOCKET, SO_OOBINLINE, (void *) &b, sizeof(b));
+	  BOOL b = TRUE;
+	  p_setsockopt(s, SOL_SOCKET, SO_OOBINLINE, (void *) &b, sizeof(b));
     }
 
     if (sock->nodelay) {
-	BOOL b = TRUE;
-	p_setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *) &b, sizeof(b));
+	  BOOL b = TRUE;
+	  p_setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *) &b, sizeof(b));
     }
 
     if (sock->keepalive) {
-	BOOL b = TRUE;
-	p_setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (void *) &b, sizeof(b));
+	  BOOL b = TRUE;
+	  p_setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (void *) &b, sizeof(b));
     }
 
     if (sndbuf > 0)
     {
-	int rcvbuf = 256 * 1024; // 4 * 1024 * 1024;
-	p_setsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *) &sndbuf, sizeof(sndbuf));
+	  int rcvbuf = 256 * 1024; // 4 * 1024 * 1024;
+	  p_setsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *) &sndbuf, sizeof(sndbuf));
 
-	// For now we increase receive buffer, whenever send buffer is set.
-	// The size is not configurable. The constant taken from FZ.
-	p_setsockopt(s, SOL_SOCKET, SO_RCVBUF, (void*) &rcvbuf, sizeof(rcvbuf));
+	  // For now we increase receive buffer, whenever send buffer is set.
+	  // The size is not configurable. The constant taken from FZ.
+	  p_setsockopt(s, SOL_SOCKET, SO_RCVBUF, (void*) &rcvbuf, sizeof(rcvbuf));
     }
 
     /*
@@ -1222,8 +1222,8 @@ static DWORD try_connect(Actual_Socket sock,
 	 */
 	if ( err != WSAEWOULDBLOCK ) {
 #ifdef MPEXT
-    // unselect on error
-    do_select(sock->plug, s, 0);
+        // unselect on error
+        do_select(sock->plug, s, 0);
 #endif
 	    sock->error = winsock_error_string(err);
 	    goto ret;
