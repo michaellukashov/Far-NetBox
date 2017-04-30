@@ -4,8 +4,9 @@
 #include <Common.h>
 #include <Sysutils.hpp>
 
-#include "FarUtil.h"
 #include "resource.h"
+#include "FarUtil.h"
+#include "FarDialog.h"
 #include "plugin_version.hpp"
 
 extern void InitExtensionModule(HINSTANCE HInst);

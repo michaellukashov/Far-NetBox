@@ -579,8 +579,6 @@ public:
   ~TFarPluginEnvGuard();
 };
 
-void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth);
-
 extern TCustomFarPlugin * FarPlugin;
 
 class TGlobalFunctions : public TGlobalFunctionsIntf, public TObject

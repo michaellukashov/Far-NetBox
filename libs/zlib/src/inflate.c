@@ -1353,7 +1353,7 @@ int ZEXPORT inflateSetDictionary(z_stream *strm, const uint8_t *dictionary, uint
     /* check for correct dictionary identifier */
     if (state->mode == DICT) {
         dictid = adler32(0L, Z_NULL, 0);
-        dictid = adler32(dictid, dictionary, dictLength);
+        dictid = adler32((uint32_t)dictid, dictionary, dictLength);
         if (dictid != state->check)
             return Z_DATA_ERROR;
     }

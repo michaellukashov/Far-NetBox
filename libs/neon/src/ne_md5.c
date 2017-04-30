@@ -229,7 +229,7 @@ md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
       size_t add = 128 - left_over > len ? len : 128 - left_over;
 
       memcpy (&ctx->buffer[left_over], buffer, add);
-      ctx->buflen += add;
+      ctx->buflen += (md5_uint32)add;
 
       if (left_over + add > 64)
 	{
@@ -256,7 +256,7 @@ md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
   if (len > 0)
     {
       memcpy (ctx->buffer, buffer, len);
-      ctx->buflen = len;
+      ctx->buflen = (md5_uint32)len;
     }
 }
 
@@ -287,7 +287,7 @@ md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
   /* First increment the byte count.  RFC 1321 specifies the possible
      length of the file up to 2^64 bits.  Here we only compute the
      number of bytes.  Do a double word increment.  */
-  ctx->total[0] += len;
+  ctx->total[0] += (md5_uint32)len;
   if (ctx->total[0] < len)
     ++ctx->total[1];
 

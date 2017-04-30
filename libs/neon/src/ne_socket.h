@@ -160,7 +160,7 @@ void ne_sock_prebind(ne_socket *sock, const ne_inet_addr *addr,
  * Returns zero on success, NE_SOCK_TIMEOUT if a timeout occurs when a
  * non-zero connect timeout is configured (and is supported), or
  * NE_SOCK_ERROR on failure.  */
-int ne_sock_connect(ne_socket *sock, const ne_inet_addr *addr, 
+int ne_sock_connect(ne_socket *sock, const ne_inet_addr *addr,
                     unsigned int port);
 
 /* Read up to 'count' bytes from socket into 'buffer'.  Returns:

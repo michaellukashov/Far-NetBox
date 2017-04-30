@@ -889,7 +889,7 @@ void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf, uint64_t stored
     bi_windup(s);        /* align on byte boundary */
     put_short(s, (uint16_t)stored_len);
     put_short(s, (uint16_t)~stored_len);
-    zmemcpy(s->pending_buf + s->pending, (uint8_t *)buf, stored_len);
+    zmemcpy(s->pending_buf + s->pending, (uint8_t *)buf, (size_t)stored_len);
     s->pending += stored_len;
 #ifdef ZLIB_DEBUG
     s->compressed_len = (s->compressed_len + 3 + 7) & (uint64_t)~7L;

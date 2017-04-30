@@ -757,7 +757,7 @@ ZLIB_INTERNAL void flush_pending(z_stream *strm)
     deflate_state *s = strm->state;
 
     _tr_flush_bits(s);
-    len = s->pending;
+    len = (uint32_t)s->pending;
     if (len > strm->avail_out)
         len = strm->avail_out;
     if (len == 0)

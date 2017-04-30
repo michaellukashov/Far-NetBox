@@ -56,7 +56,7 @@ void filename_free(Filename *fn)
 int filename_serialise(const Filename *f, void *vdata)
 {
     char *data = (char *)vdata;
-    int len = strlen(f->path) + 1;     /* include trailing NUL */
+    int len = (int)strlen(f->path) + 1;     /* include trailing NUL */
     if (data) {
         strcpy(data, f->path);
     }
@@ -70,7 +70,7 @@ Filename *filename_deserialise(void *vdata, int maxsize, int *used)
     if (!end)
         return NULL;
     end++;
-    *used = end - data;
+    *used = (int)(end - data);
     return filename_from_str(data);
 }
 
@@ -87,7 +87,7 @@ FILE * mp_wfopen(const char *filename, const char *mode)
 {
     size_t len = strlen(filename);
     wchar_t * wfilename = snewn(len * 10, wchar_t);
-    size_t wlen = MultiByteToWideChar(CP_UTF8, 0, filename, -1, wfilename, len * 10);
+    size_t wlen = MultiByteToWideChar(CP_UTF8, 0, filename, -1, wfilename, (int)(len * 10));
     FILE * file;
     if (wlen <= 0)
     {
@@ -329,7 +329,7 @@ const char *win_strerror(int error)
                     "Windows error code %d (and FormatMessage returned %d)", 
                     error, GetLastError());
         } else {
-            int len = strlen(es->text);
+            int len = (int)strlen(es->text);
             if (len > 0 && es->text[len-1] == '\n')
                 es->text[len-1] = '\0';
         }
@@ -360,7 +360,7 @@ void dputs(const char *buf)
     }
 
     if (debug_hdl != INVALID_HANDLE_VALUE) {
-	WriteFile(debug_hdl, buf, strlen(buf), &dw, NULL);
+      WriteFile(debug_hdl, buf, (DWORD)strlen(buf), &dw, NULL);
     }
     fputs(buf, debug_fp);
     fflush(debug_fp);
@@ -610,7 +610,7 @@ void fontspec_free(FontSpec *f)
 int fontspec_serialise(FontSpec *f, void *vdata)
 {
     char *data = (char *)vdata;
-    int len = strlen(f->name) + 1;     /* include trailing NUL */
+    int len = (int)strlen(f->name) + 1;     /* include trailing NUL */
     if (data) {
         strcpy(data, f->name);
         PUT_32BIT_MSB_FIRST(data + len, f->isbold);
@@ -629,7 +629,7 @@ FontSpec *fontspec_deserialise(void *vdata, int maxsize, int *used)
     if (!end)
         return NULL;
     end++;
-    *used = end - data + 12;
+    *used = (int)(end - data + 12);
     return fontspec_new(data,
                         GET_32BIT_MSB_FIRST(end),
                         GET_32BIT_MSB_FIRST(end + 4),

@@ -95,7 +95,7 @@ agent_pending_query *agent_query(
     p = MapViewOfFile(filemap, FILE_MAP_WRITE, 0, 0, 0);
     memcpy(p, in, inlen);
     cds.dwData = AGENT_COPYDATA_ID;
-    cds.cbData = 1 + strlen(mapname);
+    cds.cbData = 1 + (DWORD)strlen(mapname);
     cds.lpData = mapname;
 
     /*
