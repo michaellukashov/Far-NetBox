@@ -575,9 +575,9 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
   return Result;
 }
 
-uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
-  const UnicodeString & MessageFormat, uintptr_t Answers, const UnicodeString & HelpKeyword,
-  const TMessageParams * Params)
+uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
+  const UnicodeString & /*MessageFormat*/, uintptr_t /*Answers*/, const UnicodeString & /*HelpKeyword*/,
+  const TMessageParams * /*Params*/)
 {
 #if 0
   TStrings * MoreMessages = nullptr;
@@ -608,9 +608,9 @@ uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
   return 0;
 }
 
-uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
-  int SessionReopenTimeout, const UnicodeString & MessageFormat, uintptr_t Answers,
-  const UnicodeString & HelpKeyword, const TMessageParams * Params)
+uintptr_t FatalExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
+  int /*SessionReopenTimeout*/, const UnicodeString & /*MessageFormat*/, uintptr_t /*Answers*/,
+  const UnicodeString & /*HelpKeyword*/, const TMessageParams * /*Params*/)
 {
 #if 0
   DebugAssert(FLAGCLEAR(Answers, qaRetry));
@@ -642,8 +642,8 @@ uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
   return 0;
 }
 
-static void DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
-  bool OSException, void * BaseOfStack)
+static void DoExceptNotify(TObject * /*ExceptObj*/, void * /*ExceptAddr*/,
+  bool /*OSException*/, void * /*BaseOfStack*/)
 {
 #if 0
   if (ExceptObj != nullptr)
@@ -691,7 +691,7 @@ void * BusyStart()
   return Token;
 }
 
-void BusyEnd(void * Token)
+void BusyEnd(void * /*Token*/)
 {
 //  Screen->Cursor = reinterpret_cast<TCursor>(Token);
 }
@@ -1296,7 +1296,7 @@ uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
   return Result;
 }
 
-uintptr_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & MoreMessages)
+uintptr_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & /*MoreMessages*/)
 {
   uintptr_t Answers = qaOK;
   uintptr_t Result = GetGlobalFunctions()->MoreMessageDialog(Msg, nullptr, qtError, Answers, nullptr);

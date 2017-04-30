@@ -249,8 +249,9 @@ void TWebDAVFileSystem::Init(void *)
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
 }
 
-void TWebDAVFileSystem::FileTransferProgress(int64_t TransferSize, int64_t Bytes)
+void TWebDAVFileSystem::FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/)
 {
+  TODO("implement");
 }
 
 TWebDAVFileSystem::~TWebDAVFileSystem()
@@ -1085,8 +1086,8 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
   CheckStatus(NeonStatus);
 }
 
-void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
+void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & /*AFileName*/,
+  const TRemoteFile * AFile, intptr_t /*Params*/, TRmSessionAction & Action)
 {
   Action.Recursive();
   ClearNeonError();
@@ -1190,7 +1191,7 @@ void TWebDAVFileSystem::ConfirmOverwrite(
   TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
   intptr_t Params,
-  OUT TOverwriteMode & OverwriteMode,
+  OUT TOverwriteMode & /*OverwriteMode*/,
   OUT uintptr_t & Answer)
 {
   // all = "yes to newer"

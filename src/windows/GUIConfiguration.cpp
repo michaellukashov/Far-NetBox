@@ -1022,7 +1022,7 @@ void TGUIConfiguration::SetInitialLocale(LCID Value)
   FAppliedLocale = Value;
 }
 
-void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
+void TGUIConfiguration::FreeResourceModule(HANDLE /*Instance*/)
 {
 /*
   TLibModule * MainModule = FindModule(HInstance);
