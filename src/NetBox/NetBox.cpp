@@ -5,6 +5,7 @@
 #include <Sysutils.hpp>
 
 #include "FarUtil.h"
+#include "FarDialog.h"
 
 extern void InitExtensionModule(HINSTANCE HInst);
 extern void TermExtensionModule();
