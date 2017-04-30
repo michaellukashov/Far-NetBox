@@ -284,7 +284,7 @@ static int base64ToBuffer(const char *token, SecBufferDesc * secBufferDesc)
 
     buffer->BufferType = SECBUFFER_TOKEN;
     buffer->cbBuffer =
-        ne_unbase64(token, (unsigned char **) &buffer->pvBuffer);
+        (unsigned long)ne_unbase64(token, (unsigned char **) &buffer->pvBuffer);
 
     if (buffer->cbBuffer == 0) {
         NE_DEBUG(NE_DBG_HTTPAUTH,
