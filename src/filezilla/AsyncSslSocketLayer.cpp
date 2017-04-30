@@ -637,6 +637,49 @@ BOOL CAsyncSslSocketLayer::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
   return res;
 }
 
+static SSL_SESSION* _ssl_session_dup(SSL_SESSION *session)
+{
+  SSL_SESSION *newsession = NULL;
+  int slen;
+  unsigned char *senc = NULL, *p;
+  const unsigned char *const_p;
+
+  if (session == NULL) {
+    // PyErr_SetString(PyExc_ValueError, "Invalid session");
+    goto error;
+  }
+
+  /* get length */
+  slen = i2d_SSL_SESSION(session, NULL);
+  if (slen == 0 || slen > 0xFF00) {
+    // PyErr_SetString(PyExc_ValueError, "i2d() failed.");
+    goto error;
+  }
+  senc = (unsigned char *)nb::chcalloc(slen);
+  if (senc == NULL) {
+    // PyErr_NoMemory();
+    goto error;
+  }
+  p = senc;
+  if (!i2d_SSL_SESSION(session, &p)) 
+  {
+    // PyErr_SetString(PyExc_ValueError, "i2d() failed.");
+    goto error;
+  }
+  const_p = senc;
+  newsession = d2i_SSL_SESSION(NULL, &const_p, slen);
+  if (session == NULL) {
+    goto error;
+  }
+  nb_free(senc);
+  return newsession;
+error:
+  if (senc != NULL) {
+    nb_free(senc);
+  }
+  return NULL;
+}
+
 int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
   CAsyncSslSocketLayer* main, bool sessionreuse,
   int minTlsVersion, int maxTlsVersion,
@@ -753,12 +796,16 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
   {
     if (m_Main->m_sessionid != NULL)
     {
-      if (!SSL_set_session(m_ssl, m_Main->m_sessionid))
+      SSL_SESSION * sessionid = _ssl_session_dup(m_Main->m_sessionid);
+      // m_Main->m_sessionid = _ssl_session_dup(m_Main->m_sessionid);
+      if (!SSL_set_session(m_ssl, sessionid))
       {
         LogSocketMessageRaw(FZ_LOG_INFO, L"SSL_set_session failed");
         return SSL_FAILURE_INITSSL;
       }
       LogSocketMessageRaw(FZ_LOG_INFO, L"Trying reuse main TLS session ID");
+      // SSL_CTX_set_session_cache_mode(m_ssl_ctx, SSL_SESS_CACHE_CLIENT); // SSL_SESS_CACHE_BOTH);
+      SSL_SESSION_free(sessionid);
     }
     else
     {
@@ -1047,6 +1094,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     if (pLayer->m_sessionreuse)
     {
       SSL_SESSION * sessionid = SSL_get1_session(pLayer->m_ssl);
+      // sessionid = _ssl_session_dup(sessionid);
       if (pLayer->m_sessionid != sessionid)
       {
         if (pLayer->m_sessionid == NULL)
