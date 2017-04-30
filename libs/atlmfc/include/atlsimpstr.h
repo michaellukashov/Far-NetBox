@@ -421,7 +421,7 @@ public:
 		// See comment in SetString() about why we do this
 		UINT_PTR nOffset = pszSrc-GetString();
 
-		int nOldLength = GetLength();
+		UINT nOldLength = GetLength();
 		if (nOldLength < 0)
 		{
 			// protects from underflow
@@ -439,7 +439,7 @@ public:
 
 		int nNewLength = nOldLength+nLength;
 		PXSTR pszBuffer = GetBuffer( nNewLength );
-		if( (int)nOffset <= nOldLength )
+		if( nOffset <= nOldLength )
 		{
 			pszSrc = pszBuffer+nOffset;
 			// No need to call CopyCharsOverlapped, since the destination is
