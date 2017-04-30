@@ -3,6 +3,7 @@
 
 #include <Common.h>
 #include "FarPlugin.h"
+#include "FarUtil.h"
 #include "WinSCPPlugin.h"
 #include "FarPluginStrings.h"
 #include "FarDialog.h"
