@@ -571,7 +571,7 @@ static unsigned char *read_blob(FILE * fp, int nlines, int *bloblen)
 {
     unsigned char *blob;
     char *line;
-    size_t linelen, len;
+    int linelen, len;
     int i, j, k;
 
     /* We expect at most 64 base64 characters, ie 48 real bytes, per line. */
@@ -1037,8 +1037,8 @@ unsigned char *openssh_loadpub(FILE *fp, char **algorithm,
     char *line, *base64;
     char *comment = NULL;
     unsigned char *pubblob = NULL;
-    size_t pubbloblen, pubblobsize;
-    size_t alglen;
+    int pubbloblen, pubblobsize;
+    int alglen;
 
     line = chomp(fgetline(fp));
 
@@ -1074,7 +1074,7 @@ unsigned char *openssh_loadpub(FILE *fp, char **algorithm,
      * algorithm, and should match the encoded string at the start of
      * the public blob.
      */
-    alglen = strlen(line);
+    alglen = (int)strlen(line);
     if (pubbloblen < alglen + 4 ||
         GET_32BIT(pubblob) != alglen ||
         0 != memcmp(pubblob + 4, line, alglen)) {
@@ -1470,7 +1470,7 @@ static char *ssh2_pubkey_openssh_str_internal(const char *comment,
 {
     const unsigned char *ssh2blob = (const unsigned char *)v_pub_blob;
     const char *alg;
-    size_t alglen;
+    int alglen;
     char *buffer, *p;
     int i;
 

@@ -1,4 +1,4 @@
-NetBox 2.4.3.485 30.04.2017
+NetBox 2.4.3.486 30.04.2017
 --------------------
   * Bugfix: plugin crashes on FAR startup
     (http://bugs.farmanager.com/view.php?id=3429)

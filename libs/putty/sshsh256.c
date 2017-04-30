@@ -191,7 +191,7 @@ void putty_SHA256_Simple(const void *p, int len, unsigned char *output) {
  * Thin abstraction for things where hashes are pluggable.
  */
 
-static void *sha256_init(void)
+static void *putty_sha256_init(void)
 {
     SHA256_State *s;
 
@@ -200,7 +200,7 @@ static void *sha256_init(void)
     return s;
 }
 
-static void *sha256_copy(const void *vold)
+static void *putty_sha256_copy(const void *vold)
 {
     const SHA256_State *old = (const SHA256_State *)vold;
     SHA256_State *s;
@@ -210,7 +210,7 @@ static void *sha256_copy(const void *vold)
     return s;
 }
 
-static void sha256_free(void *handle)
+static void putty_sha256_free(void *handle)
 {
     SHA256_State *s = handle;
 
@@ -218,23 +218,23 @@ static void sha256_free(void *handle)
     sfree(s);
 }
 
-static void sha256_bytes(void *handle, const void *p, int len)
+static void putty_sha256_bytes(void *handle, const void *p, int len)
 {
     SHA256_State *s = handle;
 
     putty_SHA256_Bytes(s, p, len);
 }
 
-static void sha256_final(void *handle, unsigned char *output)
+static void putty_sha256_final(void *handle, unsigned char *output)
 {
     SHA256_State *s = handle;
 
     putty_SHA256_Final(s, output);
-    sha256_free(s);
+    putty_sha256_free(s);
 }
 
 const struct ssh_hash ssh_sha256 = {
-    sha256_init, sha256_copy, sha256_bytes, sha256_final, sha256_free,
+    putty_sha256_init, putty_sha256_copy, putty_sha256_bytes, putty_sha256_final, putty_sha256_free,
     32, "SHA-256"
 };
 

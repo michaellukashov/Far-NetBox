@@ -347,9 +347,9 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         len+=2;
         int res=SendNext(command,len);
         nb_free(command);
-        if (res==SOCKET_ERROR || res<len)
+        if (res==SOCKET_ERROR || res<(int)len)
         {
-          if ((::WSAGetLastError()!=WSAEWOULDBLOCK) || res<len)
+          if ((::WSAGetLastError()!=WSAEWOULDBLOCK) || res<(int)len)
           {
             ConnectionFailed(::WSAGetLastError());
             return;
