@@ -1038,7 +1038,7 @@ unsigned char *openssh_loadpub(FILE *fp, char **algorithm,
     char *comment = NULL;
     unsigned char *pubblob = NULL;
     int pubbloblen, pubblobsize;
-    size_t alglen;
+    int alglen;
 
     line = chomp(fgetline(fp));
 
@@ -1074,7 +1074,7 @@ unsigned char *openssh_loadpub(FILE *fp, char **algorithm,
      * algorithm, and should match the encoded string at the start of
      * the public blob.
      */
-    alglen = strlen(line);
+    alglen = (int)strlen(line);
     if (pubbloblen < alglen + 4 ||
         GET_32BIT(pubblob) != alglen ||
         0 != memcmp(pubblob + 4, line, alglen)) {

@@ -142,6 +142,7 @@ typedef struct in_addr ne_inet_addr;
 #include "ne_socket.h"
 #include "ne_alloc.h"
 #include "ne_sspi.h"
+#include "ne_session.h"
 
 #if defined(__BEOS__) && !defined(BONE_VERSION)
 /* pre-BONE */
