@@ -6,6 +6,7 @@
 #include "FarDialog.h"
 #include "FarConfiguration.h"
 #include "FarInterface.h"
+#include "FarUtil.h"
 
 #include <shellapi.h>
 #include <PuttyTools.h>

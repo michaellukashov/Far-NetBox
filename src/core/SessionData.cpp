@@ -1127,7 +1127,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
   SavePasswords(Storage, PuttyExport, DoNotEncryptPasswords);
 }
 
-TStrings * TSessionData::SaveToOptions(const TSessionData * Default)
+TStrings * TSessionData::SaveToOptions(const TSessionData * /*Default*/)
 {
   TODO("implement");
 #if 0

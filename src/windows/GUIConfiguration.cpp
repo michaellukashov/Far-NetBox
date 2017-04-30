@@ -713,47 +713,51 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   #undef KEYEX
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
-  try__finally
   {
-    SCOPE_EXIT
+    try__finally
     {
-      Storage->CloseSubKey();
-    };
-    FDefaultCopyParam.Save(Storage);
+      SCOPE_EXIT
+      {
+        Storage->CloseSubKey();
+      };
+      FDefaultCopyParam.Save(Storage);
 
-    if (FCopyParamListDefaults)
-    {
-      DebugAssert(!FCopyParamList->GetModified());
-      Storage->WriteInteger("CopyParamList", -1);
+      if (FCopyParamListDefaults)
+      {
+        DebugAssert(!FCopyParamList->GetModified());
+        Storage->WriteInteger("CopyParamList", -1);
+      }
+      else if (All || FCopyParamList->GetModified())
+      {
+        Storage->WriteInteger("CopyParamList", FCopyParamList->GetCount());
+        FCopyParamList->Save(Storage);
+      }
     }
-    else if (All || FCopyParamList->GetModified())
+    __finally
     {
-      Storage->WriteInteger("CopyParamList", FCopyParamList->GetCount());
-      FCopyParamList->Save(Storage);
-    }
+  /*
+      Storage->CloseSubKey();
+  */
+    };
   }
-  __finally
-  {
-/*
-    Storage->CloseSubKey();
-*/
-  };
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", true, true))
-  try__finally
   {
-    SCOPE_EXIT
+    try__finally
     {
+      SCOPE_EXIT
+      {
+        Storage->CloseSubKey();
+      };
+      FNewDirectoryProperties.Save(Storage);
+    }
+    __finally
+    {
+  /*
       Storage->CloseSubKey();
+  */
     };
-    FNewDirectoryProperties.Save(Storage);
   }
-  __finally
-  {
-/*
-    Storage->CloseSubKey();
-*/
-  };
 }
 
 void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
@@ -770,35 +774,37 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   #undef KEYEX
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
-  try__finally
   {
-    SCOPE_EXIT
+    try__finally
     {
-      Storage->CloseSubKey();
-    };
-    // must be loaded before eventual setting defaults for CopyParamList
-    FDefaultCopyParam.Load(Storage);
+      SCOPE_EXIT
+      {
+        Storage->CloseSubKey();
+      };
+      // must be loaded before eventual setting defaults for CopyParamList
+      FDefaultCopyParam.Load(Storage);
 
-    intptr_t CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
-    FCopyParamListDefaults = ((int)CopyParamListCount <= 0);
-    if (!FCopyParamListDefaults)
-    {
-      FCopyParamList->Clear();
-      FCopyParamList->Load(Storage, CopyParamListCount);
+      intptr_t CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
+      FCopyParamListDefaults = ((int)CopyParamListCount <= 0);
+      if (!FCopyParamListDefaults)
+      {
+        FCopyParamList->Clear();
+        FCopyParamList->Load(Storage, CopyParamListCount);
+      }
+      else if (FCopyParamList->GetModified())
+      {
+        FCopyParamList->Clear();
+        FCopyParamListDefaults = false;
+      }
+      FCopyParamList->Reset();
     }
-    else if (FCopyParamList->GetModified())
+    __finally
     {
-      FCopyParamList->Clear();
-      FCopyParamListDefaults = false;
-    }
-    FCopyParamList->Reset();
+  /*
+      Storage->CloseSubKey();
+  */
+    };
   }
-  __finally
-  {
-/*
-    Storage->CloseSubKey();
-*/
-  };
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
   // with quotes. First check for absence of quotes.
@@ -815,20 +821,22 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   }
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", false, true))
-  try__finally
   {
-    SCOPE_EXIT
+    try__finally
     {
+      SCOPE_EXIT
+      {
+        Storage->CloseSubKey();
+      };
+      FNewDirectoryProperties.Load(Storage);
+    }
+    __finally
+    {
+  /*
       Storage->CloseSubKey();
+  */
     };
-    FNewDirectoryProperties.Load(Storage);
   }
-  __finally
-  {
-/*
-    Storage->CloseSubKey();
-*/
-  };
 }
 
 void TGUIConfiguration::Saved()
@@ -1022,7 +1030,7 @@ void TGUIConfiguration::SetInitialLocale(LCID Value)
   FAppliedLocale = Value;
 }
 
-void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
+void TGUIConfiguration::FreeResourceModule(HANDLE /*Instance*/)
 {
 /*
   TLibModule * MainModule = FindModule(HInstance);
