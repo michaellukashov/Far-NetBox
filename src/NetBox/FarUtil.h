@@ -1,6 +1,8 @@
 #pragma once
 
-#include "FarDialog.h"
+#include <vcl.h>
+
+void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth);
 
 /**
  * File read/write wrapper

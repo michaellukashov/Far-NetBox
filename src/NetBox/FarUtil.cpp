@@ -135,3 +135,52 @@ DWORD CNBFile::LoadFile(const wchar_t *fileName, rde::vector<char>& fileContent)
   }
   return f.LastError();
 }
+
+void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth)
+{
+  size_t TabSize = 8;
+  TStringList Lines;
+  Lines.SetText(Text);
+  TStringList WrappedLines;
+  for (intptr_t Index = 0; Index < Lines.GetCount(); ++Index)
+  {
+    UnicodeString WrappedLine = Lines.GetString(Index);
+    if (!WrappedLine.IsEmpty())
+    {
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\'', L'\3');
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\"', L'\4');
+      WrappedLine = ::WrapText(WrappedLine, MaxWidth);
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\3', L'\'');
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\4', L'\"');
+      WrappedLines.SetText(WrappedLine);
+      for (intptr_t WrappedIndex = 0; WrappedIndex < WrappedLines.GetCount(); ++WrappedIndex)
+      {
+        UnicodeString FullLine = WrappedLines.GetString(WrappedIndex);
+        do
+        {
+          // WrapText does not wrap when not possible, enforce it
+          // (it also does not wrap when the line is longer than maximum only
+          // because of trailing dot or similar)
+          UnicodeString Line = FullLine.SubString(1, MaxWidth);
+          FullLine.Delete(1, MaxWidth);
+
+          intptr_t P = 0;
+          while ((P = Line.Pos(L'\t')) > 0)
+          {
+            Line.Delete(P, 1);
+            Line.Insert(::StringOfChar(' ',
+                ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1),
+              P);
+          }
+          Result->Add(Line);
+        }
+        while (!FullLine.IsEmpty());
+      }
+    }
+    else
+    {
+      Result->Add(L"");
+    }
+  }
+}
+
