@@ -12,7 +12,12 @@
 #include <FileBuffer.h>
 
 #include "TestTexts.h"
+#include "TextsCore.h"
 #include "FarPlugin.h"
+#include "WinSCPPlugin.h"
+#include "GUITools.h"
+#include "GUIConfiguration.h"
+
 #include "testutils.h"
 
 #include "neon/src/ne_session.h"
@@ -105,4 +110,181 @@ TEST_CASE_METHOD(base_fixture_t, "test3", "netbox")
   val = q.Get();
   INFO("val = " << val);
   REQUIRE(val == 3);
+}
+
+TEST_CASE_METHOD(base_fixture_t, "testConfig", "netbox")
+{
+  TEST_CASE_TODO("implement testConfig");
+#if 0
+  Config cfg; //  = new Config();
+  memset(&cfg, 0, sizeof(cfg));
+  cfg.logtype = LGTYP_ASCII;
+  void * ctx = log_init(NULL, &cfg);
+  // strcpy(&ctx->currlogfilename.path, "putty.log");
+  logfopen(ctx);
+  log_eventlog(ctx, "test2: start");
+
+  char buf[256];
+  struct tm tm = ltime();
+  time_t t = time(0);
+#endif
+
+#if 0
+  char buf2[256];
+  _snprintf(buf2, sizeof(buf2) - 1, "%04d.%02d.%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+  strftime2(buf, sizeof(buf) - 1, "%Y.%m.%d %H:%M:%S", &tm);
+  INFO("buf = " << buf); //  << ", sizeof(buf) = " << sizeof(buf));
+  INFO("buf2 = " << buf2);
+  REQUIRE(0 == strcmp(buf, buf2));
+  log_eventlog(ctx, "test2: end");
+  logfclose(ctx);
+  log_free(ctx);
+#endif
+}
+
+TEST_CASE_METHOD(base_fixture_t, "testFmtLoadStr", "netbox")
+{
+  TEST_CASE_TODO("fix FmtLoadStr for tests");
+  return;
+  // Тесты на ::FmtLoadStr FMTLOAD ::Format ::LoadStr ::LoadStrPart ::CutToChar ::TrimLeft ::TrimRight
+  {
+    UnicodeString str = FMTLOAD(CONST_TEST_STRING, L"lalala", 42);
+    // INFO("str = " << W2MB(str.c_str()));
+    // INFO("length = " << str.size());
+    REQUIRE(W2MB(str.c_str()) == "test string: \"lalala\" 42");
+  }
+  {
+    UnicodeString str2 = FMTLOAD(CONST_TEST_STRING, L"lalala", 42);
+    // INFO("str2 = " << W2MB(str2.c_str()));
+    REQUIRE(W2MB(str2.c_str()) == "test string: \"lalala\" 42");
+  }
+  {
+    UnicodeString str2 = FORMAT(L"test: %s %d", L"lalala", 42);
+    INFO("str2 = " << str2.c_str());
+    REQUIRE_EQUAL(0, wcscmp(str2.c_str(), L"test: lalala 42"));
+  }
+  {
+    UnicodeString str3 = FORMAT(L"test: %s %d", L"lalala", 42);
+    INFO("str3 = " << str3.c_str());
+    REQUIRE_EQUAL(0, wcscmp(str3.c_str(), L"test: lalala 42"));
+  }
+  {
+    UnicodeString str = ::TrimLeft(L"");
+    INFO("str = " << str.c_str());
+    REQUIRE_EQUAL(0, wcscmp(str.c_str(), L""));
+  }
+  {
+    UnicodeString str = ::TrimLeft(L"1");
+    INFO("str = " << str.c_str());
+    REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"1"));
+  }
+  {
+    UnicodeString str = ::TrimLeft(L" 1");
+    INFO("str = " << str.c_str());
+    REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"1"));
+  }
+  {
+    UnicodeString str = ::TrimRight(L"");
+    INFO("str = " << str.c_str());
+    REQUIRE_EQUAL(0, wcscmp(str.c_str(), L""));
+  }
+  {
+    UnicodeString str = ::TrimRight(L"1");
+    INFO("str = " << str.c_str());
+    REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"1"));
+  }
+  {
+    UnicodeString str = ::TrimRight(L"1 ");
+    INFO("str = " << str.c_str());
+    REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"1"));
+  }
+  {
+    // UnicodeString CutToChar(UnicodeString &Str, char Ch, bool Trim)
+    UnicodeString Str1 = L" part 1 | part 2 ";
+    UnicodeString str1 = ::CutToChar(Str1, '|', false);
+    INFO("str1 = '" << str1.c_str() << "'");
+    INFO("Str1 = '" << Str1.c_str() << "'");
+    // INFO("Str1 = '" << W2MB(Str1.c_str()) << "'");
+    // DEBUG_PRINTF(L"str1 = \"%s\"", str1.c_str());
+    REQUIRE_EQUAL(0, wcscmp(str1.c_str(), L" part 1 "));
+
+    UnicodeString str2 = ::CutToChar(Str1, '|', true);
+    INFO("str2 = '" << str2.c_str() << "'");
+    INFO("Str1 = '" << Str1.c_str() << "'");
+    REQUIRE_EQUAL(0, wcscmp(str2.c_str(), L" part 2"));
+  }
+  {
+    UnicodeString str = ::LoadStr(CONST_TEST_STRING);
+    INFO("str = " << str.c_str());
+    REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"test string: \"%s\" %d"));
+  }
+  {
+    UnicodeString str = ::LoadStrPart(CONST_TEST_STRING2, 1);
+    INFO("str = " << str.c_str());
+    REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"test string part 1"));
+  }
+  {
+    UnicodeString str = ::LoadStrPart(CONST_TEST_STRING2, 2);
+    INFO("str = " << str.c_str());
+    REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"part 2"));
+  }
+}
+
+TEST_CASE_METHOD(base_fixture_t, "testCopyParam", "netbox")
+{
+  TEST_CASE_TODO("implement testCopyParam");
+  return;
+  TGUICopyParamType DefaultCopyParam;
+  TCopyParamType * CopyParam = new TCopyParamType(DefaultCopyParam);
+  CopyParam->SetTransferMode(tmAscii);
+  TCopyParamList CopyParamList;
+  // INFO("CopyParamList.GetCount() = " << CopyParamList.GetCount());
+  CopyParamList.Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, NULL);
+  // INFO("CopyParamList.GetCount() = " << CopyParamList.GetCount());
+  CopyParam = new TCopyParamType(DefaultCopyParam);
+  CopyParam->SetTransferMode(tmAscii);
+  CopyParamList.Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, NULL);
+  // INFO("CopyParamList.GetCount() = " << CopyParamList.GetCount());
+}
+
+TEST_CASE_METHOD(base_fixture_t, "testWinSCPPlugin", "netbox")
+{
+  TEST_CASE_TODO("implement testWinSCPPlugin");
+  if (1)
+  {
+    HINSTANCE HInst = ::GetModuleHandle(0);
+    TWinSCPPlugin * FarPlugin = new TWinSCPPlugin(HInst);
+    //DEBUG_PRINTF(L"FarPlugin = %x", FarPlugin);
+    REQUIRE(FarPlugin != NULL);
+    // SAFE_DESTROY(FarPlugin);
+    delete FarPlugin;
+    // REQUIRE(FarPlugin == NULL);
+  }
+}
+
+TEST_CASE_METHOD(base_fixture_t, "testError", "netbox")
+{
+  TEST_CASE_TODO("implement Error");
+  return;
+  if (1)
+  {
+    REQUIRE_THROWS_AS(Error(SListIndexError, 0), ExtException);
+  }
+}
+
+TEST_CASE_METHOD(base_fixture_t, "testStringList", "netbox")
+{
+  TEST_CASE_TODO("implement LoadFmt");
+  return;
+  TStringList Lines;
+  Lines.SetSorted(true);
+  Lines.Clear();
+  if (1)
+  {
+    Lines.SetDuplicates(dupError);
+    Lines.Add(L"aaa");
+    Lines.Add(L"bbb");
+    INFO("before REQUIRE_THROWS_AS");
+    REQUIRE_THROWS_AS(Lines.Add(L"aaa"), std::exception);
+  }
 }

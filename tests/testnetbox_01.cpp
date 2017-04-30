@@ -58,60 +58,6 @@ protected:
 
 // mocks
 
-class TTestGlobalFunctions : public TGlobalFunctionsIntf, public TObject
-{
-public:
-  virtual HINSTANCE GetInstanceHandle() const;
-  virtual UnicodeString GetMsg(intptr_t Id) const;
-  virtual UnicodeString GetCurrDirectory() const;
-  virtual UnicodeString GetStrVersionNumber() const;
-  virtual bool InputDialog(const UnicodeString & ACaption,
-    const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
-    TStrings * History, bool PathInput,
-    TInputDialogInitializeEvent OnInitialize, bool Echo);
-  virtual uintptr_t MoreMessageDialog(const UnicodeString & Message,
-    TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
-      const TMessageParams * Params);
-};
-
-HINSTANCE TTestGlobalFunctions::GetInstanceHandle() const
-{
-  HINSTANCE Result = nullptr;
-  if (FarPlugin)
-  {
-    Result = FarPlugin->GetHandle();
-  }
-  return Result;
-}
-
-UnicodeString TTestGlobalFunctions::GetMsg(intptr_t Id) const
-{
-  return UnicodeString();
-}
-
-UnicodeString TTestGlobalFunctions::GetCurrDirectory() const
-{
-  UnicodeString Path(NB_MAX_PATH, 0);
-  int Length = ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
-  UnicodeString Result = UnicodeString(Path.c_str(), Length);
-  return Result;
-}
-
-UnicodeString TTestGlobalFunctions::GetStrVersionNumber() const
-{
-  return UnicodeString();
-}
-
-bool TTestGlobalFunctions::InputDialog(const UnicodeString & ACaption, const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword, TStrings * History, bool PathInput, TInputDialogInitializeEvent OnInitialize, bool Echo)
-{
-  return false;
-}
-
-uintptr_t TTestGlobalFunctions::MoreMessageDialog(const UnicodeString & Message, TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams * Params)
-{
-  return 0;
-}
-
 TGlobalFunctionsIntf * GetGlobalFunctions()
 {
   static TGlobalFunctionsIntf * GlobalFunctions = nullptr;
