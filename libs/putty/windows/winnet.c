@@ -275,14 +275,14 @@ void sk_init(void)
 #ifdef NET_SETUP_DIAGNOSTICS
 	logevent(NULL, "Native WinSock IPv6 support detected");
 #endif
-	PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getaddrinfo);
-	PUTTY_GET_WINDOWS_FUNCTION(winsock_module, freeaddrinfo);
-	PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, getnameinfo);
+		PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getaddrinfo);
+		PUTTY_GET_WINDOWS_FUNCTION(winsock_module, freeaddrinfo);
+		PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, getnameinfo);
 		/* This function would fail its type-check if we did one,
 		 * because the VS header file provides an inline definition
 		 * which is __cdecl instead of WINAPI. */
 		PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
-		} else {
+	} else {
 	/* Fall back to wship6.dll for Windows 2000 */
 	wship6_module = load_system32_dll("wship6.dll");
 	if (wship6_module) {
