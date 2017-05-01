@@ -103,13 +103,13 @@ intptr_t AnsiString::Pos(wchar_t Ch) const
 char AnsiString::operator [](intptr_t Idx) const
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.operator []((int)Idx-1);
+  return Data.operator []((int)Idx - 1);
 }
 
 char & AnsiString::operator [](intptr_t Idx)
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.GetBuffer()[Idx-1];
+  return Data.GetBuffer()[Idx - 1];
 }
 
 AnsiString & AnsiString::Append(const char * Str, intptr_t StrLen)
@@ -847,13 +847,13 @@ UnicodeString & UnicodeString::operator +=(const wchar_t Ch)
 wchar_t UnicodeString::operator [](intptr_t Idx) const
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.operator []((int)Idx-1);
+  return Data.operator []((int)Idx - 1);
 }
 
 wchar_t & UnicodeString::operator [](intptr_t Idx)
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.GetBuffer()[(int)Idx-1];
+  return Data.GetBuffer()[(int)Idx - 1];
 }
 
 void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
