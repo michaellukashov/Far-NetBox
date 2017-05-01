@@ -86,9 +86,9 @@ TCustomFarPlugin::~TCustomFarPlugin()
     SAFE_DESTROY(Object);
   }
   SAFE_DESTROY(FSavedTitles);
-  TGlobalsIntf * Intf = GetGlobals();
-  SAFE_DESTROY_EX(TGlobalsIntf, Intf);
-  ::SetGlobals(nullptr);
+//  TGlobalsIntf * Intf = GetGlobals();
+//  SAFE_DESTROY_EX(TGlobalsIntf, Intf);
+//  ::SetGlobals(nullptr);
 }
 
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/) const
