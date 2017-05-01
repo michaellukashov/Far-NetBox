@@ -3,7 +3,7 @@
 
 #include <Common.h>
 
-#include "FarUtil.h"
+#include "FarUtils.h"
 
 bool CNBFile::OpenWrite(const wchar_t *fileName)
 {

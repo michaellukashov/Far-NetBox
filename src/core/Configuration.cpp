@@ -1328,7 +1328,7 @@ TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
 
   UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
   UnicodeString FilezillaSiteManagerFile =
-    IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\sitemanager.xml";
+    ::IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\sitemanager.xml";
 
   if (FileExists(ApiPath(FilezillaSiteManagerFile)))
   {

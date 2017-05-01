@@ -1025,6 +1025,8 @@ static DWORD FindMatchingFile(TSearchRec & Rec)
   return Result;
 }
 
+namespace base {
+
 DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec)
 {
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
@@ -1066,6 +1068,8 @@ DWORD FindClose(TSearchRec & Rec)
   }
   return Result;
 }
+
+} // namespace base
 
 void InitPlatformId()
 {
@@ -1211,7 +1215,7 @@ UnicodeString IncludeTrailingBackslash(const UnicodeString & Str)
 
 UnicodeString IncludeTrailingPathDelimiter(const UnicodeString & Str)
 {
-  return IncludeTrailingBackslash(Str);
+  return ::IncludeTrailingBackslash(Str);
 }
 
 UnicodeString ExtractFileDir(const UnicodeString & Str)

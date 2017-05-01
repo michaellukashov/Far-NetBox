@@ -389,9 +389,13 @@ public:
   TWin32FindData FindData;
 };
 
+namespace base {
+
 DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec);
 DWORD FindNext(TSearchRec & Rec);
 DWORD FindClose(TSearchRec & Rec);
+
+} // namespace base
 
 void InitPlatformId();
 bool Win32Check(bool RetVal);
