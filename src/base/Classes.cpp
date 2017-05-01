@@ -791,14 +791,6 @@ intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t 
   return Result;
 }
 
-TStringList::TStringList() :
-  TStrings(OBJECT_CLASS_TStringList),
-  FSorted(false),
-  FCaseSensitive(false)
-{
-  SetOwnsObjects(false);
-}
-
 TStringList::TStringList(TObjectClassId Kind) :
   TStrings(Kind),
   FSorted(false),

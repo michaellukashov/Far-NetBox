@@ -376,8 +376,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
   }
 public:
-  TStringList();
-  explicit TStringList(TObjectClassId Kind);
+  explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList);
   virtual ~TStringList();
 
   intptr_t Add(const UnicodeString & S);
