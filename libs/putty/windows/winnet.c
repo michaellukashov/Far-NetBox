@@ -721,7 +721,7 @@ void sk_getaddr(SockAddr addr, char *buf, int buflen)
 	int err = 0;
 	if (p_WSAAddressToStringA) {
 	    DWORD dwbuflen = buflen;
-	    err = p_WSAAddressToStringA(step.ai->ai_addr, step.ai->ai_addrlen,
+			err = p_WSAAddressToStringA(step.ai->ai_addr, (DWORD)step.ai->ai_addrlen,
 					NULL, buf, &dwbuflen);
 	} else
 	    err = -1;
