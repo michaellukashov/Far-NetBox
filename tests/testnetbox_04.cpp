@@ -49,7 +49,8 @@ public:
 protected:
   static int read_block(void * udata, const char * data, size_t len)
   {
-    std::vector<unsigned char> *vec = static_cast<std::vector<unsigned char> *>(udata);
+    typedef std::vector<unsigned char> uvector;
+    uvector *vec = static_cast<uvector *>(udata);
     for (unsigned int n = 0; n < len; ++n)
       vec->push_back((unsigned char)data[n]);
   }
