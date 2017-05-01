@@ -36,7 +36,7 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) :
   FTopDialog(nullptr),
   FSavedTitles(new TStringList())
 {
-  ::SetGlobals(new TGlobalFunctions());
+  // ::SetGlobals(new TGlobalFunctions());
   FFarThreadId = GetCurrentThreadId();
   FHandle = HInst;
   FFarVersion = 0;

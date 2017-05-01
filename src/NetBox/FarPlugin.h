@@ -64,6 +64,8 @@ public:
   void * Token;
 };
 
+class TGlobalFunctions;
+
 class TCustomFarPlugin : public TObject
 {
 friend class TCustomFarFileSystem;
@@ -173,6 +175,7 @@ public:
   FarStandardFunctions & GetFarStandardFunctions() { return FFarStandardFunctions; }
 
 protected:
+  TGlobalsIntfInitializer<TGlobalFunctions> FGlobalsIntfInitializer;
   PluginStartupInfo FStartupInfo;
   FarStandardFunctions FFarStandardFunctions;
   HINSTANCE FHandle;

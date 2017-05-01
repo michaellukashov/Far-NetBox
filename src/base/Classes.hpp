@@ -839,3 +839,19 @@ private:
 TGlobals * GetGlobals();
 void SetGlobals(TGlobals * Value);
 
+template<typename T>
+class TGlobalsIntfInitializer
+{
+public:
+  TGlobalsIntfInitializer()
+  {
+    ::SetGlobals(new T());
+  }
+
+  ~TGlobalsIntfInitializer()
+  {
+    TGlobalsIntf * Intf = GetGlobals();
+    delete Intf;
+    ::SetGlobals(nullptr);
+  }
+};
