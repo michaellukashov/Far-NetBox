@@ -340,6 +340,7 @@ struct ctlpos {
     int boxystart, boxid;
     char *boxtext;
 };
+void init_common_controls(void);       /* also does some DLL-loading */
 
 /*
  * Exports from winutils.c.
@@ -533,6 +534,21 @@ HMODULE load_system32_dll(const char *libname);
 const char *win_strerror(int error);
 void restrict_process_acl(void);
 GLOBAL int restricted_acl;
+
+/* A few pieces of up-to-date Windows API definition needed for older
+ * compilers. */
+#ifndef LOAD_LIBRARY_SEARCH_SYSTEM32
+#define LOAD_LIBRARY_SEARCH_SYSTEM32 0x00000800
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_USER_DIRS
+#define LOAD_LIBRARY_SEARCH_USER_DIRS 0x00000400
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+#define LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR 0x00000100
+#endif
+#if _MSC_VER < 1400
+typedef PVOID DLL_DIRECTORY_COOKIE;
+#endif
 
 /* A few pieces of up-to-date Windows API definition needed for older
  * compilers. */
