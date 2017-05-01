@@ -13,6 +13,7 @@
 #include "plugin_version.hpp"
 
 TCustomFarPlugin * FarPlugin = nullptr;
+
 #define FAR_TITLE_SUFFIX L" - Far"
 
 TFarMessageParams::TFarMessageParams() :
@@ -31,7 +32,7 @@ TFarMessageParams::TFarMessageParams() :
 
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) :
   TObject(Kind),
-  FOpenedPlugins(new TObjectList()),
+  FOpenedPlugins(new TList()),
   FTopDialog(nullptr),
   FSavedTitles(new TStringList())
 {
@@ -41,7 +42,6 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) :
   FFarVersion = 0;
   FTerminalScreenShowing = false;
 
-  FOpenedPlugins->SetOwnsObjects(false);
   FCurrentProgress = -1;
   FValidFarSystemSettings = false;
   FFarSystemSettings = 0;
@@ -2837,10 +2837,17 @@ HINSTANCE TGlobalFunctions::GetInstanceHandle() const
 
 UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 {
+//  HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
+//  intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
+//    const_cast<wchar_t *>(Fmt.c_str()), static_cast<int>(Fmt.GetLength()));
+//  if (!Length)
+//  {
+//    DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
+//  }
   // map Id to PluginString value
   intptr_t PluginStringId = Id;
   const TFarPluginStrings * CurFarPluginStrings = &FarPluginStrings[0];
-  while (CurFarPluginStrings->Id)
+  while (CurFarPluginStrings && CurFarPluginStrings->Id)
   {
     if (CurFarPluginStrings->Id == Id)
     {
@@ -2849,6 +2856,7 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
     }
     ++CurFarPluginStrings;
   }
+  DebugAssert(FarPlugin != nullptr);
   return FarPlugin->GetMsg(PluginStringId);
 }
 
