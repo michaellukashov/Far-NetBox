@@ -92,12 +92,12 @@ void AnsiString::Init(const unsigned char * Str, intptr_t Length)
 
 intptr_t AnsiString::Pos(const AnsiString & Str) const
 {
-  return Data.Find(Str.c_str()) + 1;
+  return (intptr_t)Data.Find(Str.c_str()) + 1;
 }
 
-intptr_t AnsiString::Pos(wchar_t Ch) const
+intptr_t AnsiString::Pos(char Ch) const
 {
-  return Data.Find(Ch) + 1;
+  return (intptr_t)Data.Find(Ch) + 1;
 }
 
 char AnsiString::operator [](intptr_t Idx) const

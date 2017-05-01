@@ -230,8 +230,8 @@ public:
   AnsiString SubString(intptr_t Pos, intptr_t Len) const;
 
   intptr_t Pos(const AnsiString & Str) const;
-  intptr_t Pos(wchar_t Ch) const;
-  intptr_t Pos(const wchar_t * Str) const;
+  intptr_t Pos(char Ch) const;
+//  intptr_t Pos(const wchar_t * Str) const;
 
   char operator [](intptr_t Idx) const;
   char & operator [](intptr_t Idx);
