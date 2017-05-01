@@ -689,14 +689,14 @@ AnsiString FormatA(const char * Format, ...)
 
 AnsiString FormatA(const char * Format, va_list Args)
 {
-  AnsiString Result(64, 0);
   if (Format && *Format)
   {
     intptr_t Len = _vscprintf(Format, Args);
-    Result.SetLength(Len + 1);
+    AnsiString Result(Len + 1, 0);
     vsprintf_s(&Result[1], Len + 1, Format, Args);
+    return Result.c_str();
   }
-  return Result.c_str();
+  return AnsiString();
 }
 
 UnicodeString FmtLoadStr(intptr_t Id, ...)
@@ -716,7 +716,7 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
   {
     DEBUG_PRINTF("Unknown resource string id: %d\n", Id);
   }
-  return Result;
+  return UnicodeString();
 }
 
 // Returns the next available word, ignoring whitespace
