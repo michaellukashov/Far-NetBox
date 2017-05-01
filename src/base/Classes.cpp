@@ -8,6 +8,20 @@
 #include <rtlconsts.h>
 #include <FileBuffer.h>
 
+TGlobalsIntf * GlobalFunctions = nullptr;
+
+void SetGlobals(TGlobalsIntf * Value)
+{
+  DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
+  GlobalFunctions = Value;
+}
+
+TGlobalsIntf * GetGlobals()
+{
+  DebugAssert(GlobalFunctions != nullptr);
+  return GlobalFunctions;
+}
+
 #if (_MSC_VER >= 1900)
 
 extern "C" {

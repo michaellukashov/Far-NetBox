@@ -13,7 +13,6 @@
 #include "plugin_version.hpp"
 
 TCustomFarPlugin * FarPlugin = nullptr;
-TGlobalsIntf * GlobalFunctions = nullptr;
 
 #define FAR_TITLE_SUFFIX L" - Far"
 
@@ -37,7 +36,6 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) :
   FTopDialog(nullptr),
   FSavedTitles(new TStringList())
 {
-  ::InitPlatformId();
   ::SetGlobals(new TGlobalFunctions());
   FFarThreadId = GetCurrentThreadId();
   FHandle = HInst;
@@ -2826,23 +2824,6 @@ TFarPluginEnvGuard::TFarPluginEnvGuard()
 TFarPluginEnvGuard::~TFarPluginEnvGuard()
 {
   DebugAssert(FarPlugin != nullptr);
-}
-
-void SetGlobals(TGlobalsIntf * Value)
-{
-  DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
-  GlobalFunctions = Value;
-}
-
-TGlobalsIntf * GetGlobals()
-{
-//  static TGlobalFunctionsIntf * GlobalFunctions = nullptr;
-//  if (!GlobalFunctions)
-//  {
-//    GlobalFunctions = new TGlobalFunctions();
-//  }
-  DebugAssert(GlobalFunctions != nullptr);
-  return GlobalFunctions;
 }
 
 HINSTANCE TGlobalFunctions::GetInstanceHandle() const
