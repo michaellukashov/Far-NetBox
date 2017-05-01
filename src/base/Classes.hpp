@@ -268,15 +268,8 @@ public:
   T * GetAs(intptr_t Index) const { return dyn_cast<T>(GetObj(Index)); }
   TObject * operator [](intptr_t Index) const;
   TObject * GetObj(intptr_t Index) const;
-  void SetItem(intptr_t Index, TObject * Value);
-  intptr_t Add(TObject * Value);
-  intptr_t Remove(TObject * Value);
-  void Extract(TObject * Value);
-  void Insert(intptr_t Index, TObject * Value);
-  intptr_t IndexOf(const TObject * Value) const;
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
-  virtual void Sort(CompareFunc func);
   virtual void Notify(void * Ptr, TListNotification Action);
 
 private:
@@ -376,8 +369,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
   }
 public:
-  TStringList();
-  explicit TStringList(TObjectClassId Kind);
+  explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList);
   virtual ~TStringList();
 
   intptr_t Add(const UnicodeString & S);
@@ -799,10 +791,12 @@ enum TQueryType
 
 struct TMessageParams;
 
-class TGlobalFunctionsIntf
+class TGlobalsIntf
 {
 public:
-  virtual ~TGlobalFunctionsIntf() {}
+  virtual ~TGlobalsIntf()
+  {
+  }
 
   virtual HINSTANCE GetInstanceHandle() const = 0;
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;
@@ -817,5 +811,39 @@ public:
       const TMessageParams * Params) = 0;
 };
 
-TGlobalFunctionsIntf * GetGlobalFunctions();
+class TGlobals : public TGlobalsIntf, public TObject
+{
+public:
+  TGlobals();
+  virtual ~TGlobals();
 
+public:
+  wchar_t Win32CSDVersion[128];
+  int Win32Platform;
+  int Win32MajorVersion;
+  int Win32MinorVersion;
+  int Win32BuildNumber;
+
+private:
+  void InitPlatformId();
+};
+
+TGlobals * GetGlobals();
+void SetGlobals(TGlobals * Value);
+
+template<typename T>
+class TGlobalsIntfInitializer
+{
+public:
+  TGlobalsIntfInitializer()
+  {
+    ::SetGlobals(new T());
+  }
+
+  ~TGlobalsIntfInitializer()
+  {
+    TGlobalsIntf * Intf = GetGlobals();
+    delete Intf;
+    ::SetGlobals(nullptr);
+  }
+};

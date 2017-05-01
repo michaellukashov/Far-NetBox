@@ -1346,7 +1346,7 @@ set(NETBOX_SOURCES
   NetBox.cpp
   FarDialog.cpp
   FarPlugin.cpp
-  FarUtil.cpp
+  FarUtils.cpp
   WinSCPFileSystem.cpp
   WinSCPDialogs.cpp
   WinSCPPlugin.cpp
@@ -1372,7 +1372,7 @@ set(NETBOX_SOURCES
   FarConfiguration.h
   XmlStorage.h
   Far3Storage.h
-  FarUtil.h
+  FarUtils.h
   FarPluginStrings.h
 
   ../include/FastDelegateBind.h

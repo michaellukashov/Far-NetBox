@@ -1274,7 +1274,7 @@ bool InputDialog(const UnicodeString & ACaption,
   TStrings * History, bool PathInput,
   TInputDialogInitializeEvent OnInitialize, bool Echo)
 {
-  bool Result = GetGlobalFunctions()->InputDialog(ACaption, APrompt, Value, HelpKeyword,
+  bool Result = GetGlobals()->InputDialog(ACaption, APrompt, Value, HelpKeyword,
                                                   History, PathInput, OnInitialize, Echo);
   return Result;
 }
@@ -1283,7 +1283,7 @@ uintptr_t MessageDialog(const UnicodeString & Msg, TQueryType Type,
   uintptr_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
   DebugUsedParam(HelpKeyword);
-  uintptr_t Result = GetGlobalFunctions()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
   return Result;
 }
 
@@ -1292,14 +1292,14 @@ uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
 {
   DebugUsedParam(HelpKeyword);
   UnicodeString Msg = LoadStr(Ident);
-  uintptr_t Result = GetGlobalFunctions()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
   return Result;
 }
 
 uintptr_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & /*MoreMessages*/)
 {
   uintptr_t Answers = qaOK;
-  uintptr_t Result = GetGlobalFunctions()->MoreMessageDialog(Msg, nullptr, qtError, Answers, nullptr);
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, qtError, Answers, nullptr);
   return Result;
 }
 
@@ -1308,7 +1308,7 @@ uintptr_t MoreMessageDialog(const UnicodeString & Message,
   const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
   DebugUsedParam(HelpKeyword);
-  uintptr_t Result = GetGlobalFunctions()->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);
   return Result;
 }
 

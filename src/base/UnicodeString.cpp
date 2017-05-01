@@ -92,24 +92,24 @@ void AnsiString::Init(const unsigned char * Str, intptr_t Length)
 
 intptr_t AnsiString::Pos(const AnsiString & Str) const
 {
-  return Data.Find(Str.c_str()) + 1;
+  return (intptr_t)Data.Find(Str.c_str()) + 1;
 }
 
-intptr_t AnsiString::Pos(wchar_t Ch) const
+intptr_t AnsiString::Pos(char Ch) const
 {
-  return Data.Find(Ch) + 1;
+  return (intptr_t)Data.Find(Ch) + 1;
 }
 
 char AnsiString::operator [](intptr_t Idx) const
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.operator []((int)Idx-1);
+  return Data.operator []((int)Idx - 1);
 }
 
 char & AnsiString::operator [](intptr_t Idx)
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.GetBuffer()[Idx-1];
+  return Data.GetBuffer()[Idx - 1];
 }
 
 AnsiString & AnsiString::Append(const char * Str, intptr_t StrLen)
@@ -697,7 +697,7 @@ intptr_t UnicodeString::Pos(const UnicodeString & Str) const
   return Data.Find(Str.Data.c_str()) + 1;
 }
 
-bool UnicodeString::RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos) const
+bool UnicodeString::RPos(intptr_t & nPos, wchar_t Ch, intptr_t /*nStartPos*/) const
 {
   size_t Pos = Data.ReverseFind(Ch); //, Data.size() - nStartPos);
   nPos = Pos + 1;
@@ -847,13 +847,13 @@ UnicodeString & UnicodeString::operator +=(const wchar_t Ch)
 wchar_t UnicodeString::operator [](intptr_t Idx) const
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.operator []((int)Idx-1);
+  return Data.operator []((int)Idx - 1);
 }
 
 wchar_t & UnicodeString::operator [](intptr_t Idx)
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.GetBuffer()[(int)Idx-1];
+  return Data.GetBuffer()[(int)Idx - 1];
 }
 
 void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const

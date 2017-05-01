@@ -8,6 +8,20 @@
 #include <rtlconsts.h>
 #include <FileBuffer.h>
 
+static TGlobals * GlobalFunctions = nullptr;
+
+void SetGlobals(TGlobals * Value)
+{
+  DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
+  GlobalFunctions = Value;
+}
+
+TGlobals * GetGlobals()
+{
+  DebugAssert(GlobalFunctions != nullptr);
+  return GlobalFunctions;
+}
+
 #if (_MSC_VER >= 1900)
 
 extern "C" {
@@ -254,10 +268,8 @@ void TList::Sort(CompareFunc Func)
   }
 }
 
-void TList::Notify(void * Ptr, TListNotification Action)
+void TList::Notify(void * /*Ptr*/, TListNotification /*Action*/)
 {
-  (void)Ptr;
-  (void)Action;
 }
 
 void TList::Sort()
@@ -291,41 +303,6 @@ TObject * TObjectList::GetObj(intptr_t Index) const
     Error(SListIndexError, Index);
   }
   return as_object(TList::GetItem(Index));
-}
-
-void TObjectList::SetItem(intptr_t Index, TObject * Value)
-{
-  TList::SetItem(Index, Value);
-}
-
-intptr_t TObjectList::Add(TObject * Value)
-{
-  return TList::Add(Value);
-}
-
-intptr_t TObjectList::Remove(TObject * Value)
-{
-  return TList::Remove(Value);
-}
-
-void TObjectList::Extract(TObject * Value)
-{
-  TList::Extract(Value);
-}
-
-void TObjectList::Insert(intptr_t Index, TObject * Value)
-{
-  TList::Insert(Index, Value);
-}
-
-intptr_t TObjectList::IndexOf(const TObject * Value) const
-{
-  return TList::IndexOf(Value);
-}
-
-void TObjectList::Sort(CompareFunc func)
-{
-  TList::Sort(func);
 }
 
 void TObjectList::Notify(void * Ptr, TListNotification Action)
@@ -777,14 +754,6 @@ intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t 
   return Result;
 }
 
-TStringList::TStringList() :
-  TStrings(OBJECT_CLASS_TStringList),
-  FSorted(false),
-  FCaseSensitive(false)
-{
-  SetOwnsObjects(false);
-}
-
 TStringList::TStringList(TObjectClassId Kind) :
   TStrings(Kind),
   FSorted(false),
@@ -804,7 +773,7 @@ void TStringList::Assign(const TPersistent * Source)
 
 intptr_t TStringList::GetCount() const
 {
-  DebugAssert(FStrings.size() == TObjectList::GetCount());
+  DebugAssert((intptr_t)FStrings.size() == TObjectList::GetCount());
   return static_cast<intptr_t>(FStrings.size());
 }
 
@@ -2118,3 +2087,27 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
   ThrowNotImplemented(1204);
 }
 
+
+TGlobals::TGlobals()
+{
+  InitPlatformId();
+}
+
+TGlobals::~TGlobals()
+{
+
+}
+
+void TGlobals::InitPlatformId()
+{
+  OSVERSIONINFO OSVersionInfo;
+  OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
+  if (::GetVersionEx(&OSVersionInfo) != 0)
+  {
+    Win32Platform = OSVersionInfo.dwPlatformId;
+    Win32MajorVersion = OSVersionInfo.dwMajorVersion;
+    Win32MinorVersion = OSVersionInfo.dwMinorVersion;
+    Win32BuildNumber = OSVersionInfo.dwBuildNumber;
+    memcpy(Win32CSDVersion, OSVersionInfo.szCSDVersion, sizeof(OSVersionInfo.szCSDVersion));
+  }
+}

@@ -139,7 +139,7 @@ struct FontSpec *fontspec_new(const char *name,
  *
  * (PUTTY_DECL_WINDOWS_FUNCTION works with both these variants.)
  */
-#define TYPECHECK(to_check, to_return)          \
+#define PUTTY_TYPECHECK(to_check, to_return)          \
     (sizeof(to_check) ? to_return : to_return)
 #define PUTTY_DECL_WINDOWS_FUNCTION(linkage, rettype, name, params)   \
     typedef rettype (WINAPI *t_##name) params;                  \
@@ -147,11 +147,11 @@ struct FontSpec *fontspec_new(const char *name,
 #define STR1(x) #x
 #define STR(x) STR1(x)
 #define PUTTY_GET_WINDOWS_FUNCTION_PP(module, name)                           \
-    TYPECHECK((t_##name)NULL == name,                                   \
+    PUTTY_TYPECHECK((t_##name)NULL == name,                                   \
               (p_##name = module ?                                      \
                (t_##name) GetProcAddress(module, STR(name)) : NULL))
 #define PUTTY_GET_WINDOWS_FUNCTION(module, name)                              \
-    TYPECHECK((t_##name)NULL == name,                                   \
+    PUTTY_TYPECHECK((t_##name)NULL == name,                                   \
               (p_##name = module ?                                      \
                (t_##name) GetProcAddress(module, #name) : NULL))
 #define PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, name) \
@@ -340,6 +340,7 @@ struct ctlpos {
     int boxystart, boxid;
     char *boxtext;
 };
+void init_common_controls(void);       /* also does some DLL-loading */
 
 /*
  * Exports from winutils.c.
@@ -533,6 +534,21 @@ HMODULE load_system32_dll(const char *libname);
 const char *win_strerror(int error);
 void restrict_process_acl(void);
 GLOBAL int restricted_acl;
+
+/* A few pieces of up-to-date Windows API definition needed for older
+ * compilers. */
+#ifndef LOAD_LIBRARY_SEARCH_SYSTEM32
+#define LOAD_LIBRARY_SEARCH_SYSTEM32 0x00000800
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_USER_DIRS
+#define LOAD_LIBRARY_SEARCH_USER_DIRS 0x00000400
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+#define LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR 0x00000100
+#endif
+#if _MSC_VER < 1400
+typedef PVOID DLL_DIRECTORY_COOKIE;
+#endif
 
 /* A few pieces of up-to-date Windows API definition needed for older
  * compilers. */

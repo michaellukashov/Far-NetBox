@@ -5,12 +5,6 @@
 #include <Global.h>
 #include <Exceptions.h>
 
-extern int Win32Platform;
-extern int Win32MajorVersion;
-extern int Win32MinorVersion;
-extern int Win32BuildNumber;
-extern wchar_t Win32CSDVersion[128];
-
 extern const wchar_t EngShortMonthNames[12][4];
 #define CONST_BOM "\xEF\xBB\xBF"
 extern const wchar_t TokenPrefix;
@@ -164,7 +158,7 @@ TStrings * CloneStrings(TStrings * Strings);
 UnicodeString TrimVersion(const UnicodeString & Version);
 UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int Patch);
 TFormatSettings GetEngFormatSettings();
-int ParseShortEngMonthName(const UnicodeString & MonthStr);
+intptr_t ParseShortEngMonthName(const UnicodeString & MonthStr);
 // The defaults are equal to defaults of TStringList class (except for Sorted)
 TStringList * CreateSortedStringList(bool CaseSensitive = false, TDuplicatesEnum Duplicates = dupIgnore);
 UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);

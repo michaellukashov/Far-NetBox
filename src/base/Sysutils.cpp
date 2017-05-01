@@ -607,7 +607,7 @@ void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
   }
 }
 
-DWORD FileGetAttr(const UnicodeString & AFileName, bool FollowLink)
+DWORD FileGetAttr(const UnicodeString & AFileName, bool /*FollowLink*/)
 {
   TODO("FollowLink");
   DWORD LocalFileAttrs = ::GetFileAttributes(ApiPath(AFileName).c_str());
@@ -689,42 +689,34 @@ AnsiString FormatA(const char * Format, ...)
 
 AnsiString FormatA(const char * Format, va_list Args)
 {
-  AnsiString Result(64, 0);
   if (Format && *Format)
   {
     intptr_t Len = _vscprintf(Format, Args);
-    Result.SetLength(Len + 1);
+    AnsiString Result(Len + 1, 0);
     vsprintf_s(&Result[1], Len + 1, Format, Args);
+    return Result.c_str();
   }
-  return Result.c_str();
+  return AnsiString();
 }
 
 UnicodeString FmtLoadStr(intptr_t Id, ...)
 {
-  UnicodeString Result;
-//  HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
-//  intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
-//    const_cast<wchar_t *>(Fmt.c_str()), static_cast<int>(Fmt.GetLength()));
-//  if (!Length)
-//  {
-//    DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
-//  }
-//  else
-  UnicodeString Fmt = GetGlobalFunctions()->GetMsg(Id);
+  UnicodeString Fmt = GetGlobals()->GetMsg(Id);
   if (!Fmt.IsEmpty())
   {
     va_list Args;
     va_start(Args, Id);
     intptr_t Len = _vscwprintf(Fmt.c_str(), Args);
-    Result.SetLength(Len + sizeof(wchar_t));
+    UnicodeString Result(Len + sizeof(wchar_t), 0);
     vswprintf_s(&Result[1], Result.Length(), Fmt.c_str(), Args);
     va_end(Args);
+    return Result;
   }
   else
   {
     DEBUG_PRINTF("Unknown resource string id: %d\n", Id);
   }
-  return Result;
+  return UnicodeString();
 }
 
 // Returns the next available word, ignoring whitespace
@@ -1025,6 +1017,8 @@ static DWORD FindMatchingFile(TSearchRec & Rec)
   return Result;
 }
 
+namespace base {
+
 DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec)
 {
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
@@ -1067,19 +1061,7 @@ DWORD FindClose(TSearchRec & Rec)
   return Result;
 }
 
-void InitPlatformId()
-{
-  OSVERSIONINFO OSVersionInfo;
-  OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
-  if (::GetVersionEx(&OSVersionInfo) != 0)
-  {
-    Win32Platform = OSVersionInfo.dwPlatformId;
-    Win32MajorVersion = OSVersionInfo.dwMajorVersion;
-    Win32MinorVersion = OSVersionInfo.dwMinorVersion;
-    Win32BuildNumber = OSVersionInfo.dwBuildNumber;
-    memcpy(Win32CSDVersion, OSVersionInfo.szCSDVersion, sizeof(OSVersionInfo.szCSDVersion));
-  }
-}
+} // namespace base
 
 bool Win32Check(bool RetVal)
 {
@@ -1211,7 +1193,7 @@ UnicodeString IncludeTrailingBackslash(const UnicodeString & Str)
 
 UnicodeString IncludeTrailingPathDelimiter(const UnicodeString & Str)
 {
-  return IncludeTrailingBackslash(Str);
+  return ::IncludeTrailingBackslash(Str);
 }
 
 UnicodeString ExtractFileDir(const UnicodeString & Str)
@@ -1238,7 +1220,7 @@ UnicodeString ExtractFilePath(const UnicodeString & Str)
 
 UnicodeString GetCurrentDir()
 {
-  UnicodeString Result = GetGlobalFunctions()->GetCurrDirectory();
+  UnicodeString Result = GetGlobals()->GetCurrDirectory();
   return Result;
 }
 

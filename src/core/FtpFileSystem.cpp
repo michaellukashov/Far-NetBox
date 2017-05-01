@@ -2005,7 +2005,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   const TRemoteFile * AFile,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
   TOpenRemoteFileParams * OpenParams,
-  TOverwriteFileParams * FileParams,
+  TOverwriteFileParams * /*FileParams*/,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TUploadSessionAction & Action)
 {
@@ -2198,7 +2198,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   {
     SCOPE_EXIT
     {
-      FindClose(SearchRec);
+      base::FindClose(SearchRec);
     };
     while (FindOK && !OperationProgress->Cancel)
     {

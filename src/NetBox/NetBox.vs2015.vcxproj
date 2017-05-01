@@ -291,7 +291,7 @@
     <ClCompile Include="FarInterface.cpp" />
     <ClCompile Include="FarPlugin.cpp" />
     <ClCompile Include="FarPluginStrings.cpp" />
-    <ClCompile Include="FarUtil.cpp" />
+    <ClCompile Include="FarUtils.cpp" />
     <ClCompile Include="NetBox.cpp" />
     <ClCompile Include="UnityBuildFilezilla.cpp">
     </ClCompile>

@@ -2,7 +2,7 @@
 #include <Classes.hpp>
 #include <Common.h>
 #include "XmlStorage.h"
-#include "FarUtil.h"
+#include "FarUtils.h"
 
 static const char * CONST_XML_VERSION21 = "2.1";
 static const char * CONST_ROOT_NODE = "NetBox";

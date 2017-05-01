@@ -121,7 +121,7 @@ void TFarConfiguration::Saved()
     KEY(String,   ApplyCommandCommand); \
     KEY(Integer,  ApplyCommandParams); \
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
-  );
+  )
 
 void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {

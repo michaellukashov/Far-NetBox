@@ -5,7 +5,7 @@
 #include <Sysutils.hpp>
 
 #include "resource.h"
-#include "FarUtil.h"
+#include "FarUtils.h"
 #include "FarDialog.h"
 #include "plugin_version.hpp"
 

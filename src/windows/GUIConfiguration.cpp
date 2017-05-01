@@ -465,7 +465,7 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
   Storage->ClearSubKeys();
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (Storage->OpenSubKey(::IntToStr(Index), true))
+    if (Storage->OpenSubKey(::IntToStr(Index), /*CanCreate*/ true))
     {
       try__finally
       {
@@ -669,6 +669,7 @@ static UnicodeString PropertyToKey(const UnicodeString & Property)
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
     { SCOPE_EXIT { Storage->CloseSubKey(); }; { BLOCK } }
 #undef REGCONFIG
+
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
     KEY(Bool,     ContinueOnError); \
@@ -679,7 +680,7 @@ static UnicodeString PropertyToKey(const UnicodeString & Property)
     KEY(Integer,  SynchronizeMode); \
     KEY(Integer,  MaxWatchDirectories); \
     KEY(Integer,  QueueTransfersLimit); \
-    KEY(Integer,  QueueKeepDoneItems); \
+    KEY(Bool,  QueueKeepDoneItems); \
     KEY(Integer,  QueueKeepDoneItemsFor); \
     KEY(Bool,     QueueAutoPopup); \
     KEYEX(Bool,   QueueRememberPassword, SessionRememberPassword); \
@@ -693,7 +694,7 @@ static UnicodeString PropertyToKey(const UnicodeString & Property)
     KEY(Integer,  KeepUpToDateChangeDelay); \
     KEY(String,   ChecksumAlg); \
     KEY(Integer,  SessionReopenAutoIdle); \
-  ); \
+  )
 
 void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
@@ -705,14 +706,14 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #endif
   #undef KEYEX
-  #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(MB_TEXT(#NAME))), Get ## VAR())
+  #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
   #undef KEY
-  #define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(MB_TEXT(#NAME)), Get ## NAME())
+  #define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), Get ## NAME())
   REGCONFIG(true);
   #undef KEY
   #undef KEYEX
 
-  if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
+  if (Storage->OpenSubKey(L"Interface\\CopyParam", /*CanCreate*/ true, /*Path*/ true))
   {
     try__finally
     {
@@ -741,7 +742,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     };
   }
 
-  if (Storage->OpenSubKey(L"Interface\\NewDirectory", true, true))
+  if (Storage->OpenSubKey(L"Interface\\NewDirectory", /*CanCreate*/ true, /*Path*/ true))
   {
     try__finally
     {
@@ -766,14 +767,14 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
 
   // duplicated from core\configuration.cpp
   #undef KEYEX
-  #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(MB_TEXT(#NAME))), Get ## VAR()))
+  #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
   #undef KEY
-  #define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(MB_TEXT(#NAME)), Get ## NAME()))
+  #define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(#NAME), Get ## NAME()))
   REGCONFIG(false);
   #undef KEY
   #undef KEYEX
 
-  if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
+  if (Storage->OpenSubKey(L"Interface\\CopyParam", /*CanCreate*/ false, /*Path*/ true))
   {
     try__finally
     {
@@ -1046,7 +1047,7 @@ HANDLE TGUIConfiguration::ChangeToDefaultResourceModule()
   return ChangeResourceModule(nullptr);
 }
 
-HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE Instance)
+HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE /*Instance*/)
 {
   /*
   if (Instance == nullptr)
@@ -1086,12 +1087,12 @@ TStrings * TGUIConfiguration::GetLocales()
   TSearchRecChecked SearchRec;
   bool Found;
 
-  Found = (FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
+  Found = (base::FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
     FindAttrs, SearchRec) == 0);
   {
     SCOPE_EXIT
     {
-      FindClose(SearchRec);
+      base::FindClose(SearchRec);
     };
     UnicodeString Ext;
     while (Found)

@@ -102,7 +102,7 @@ UnicodeString TCopyParamType::GenerateTransferCommandArgs(int Attrs, const Unico
 void TCopyParamType::DoGetInfoStr(
   const UnicodeString & Separator, intptr_t Options,
   UnicodeString & Result, bool & SomeAttrIncluded,
-  const UnicodeString & Link, UnicodeString & ScriptArgs, bool & NoScriptArgs, /*TAssemblyLanguage Language, UnicodeString & AssemblyCode,*/
+  const UnicodeString & /*Link*/, UnicodeString & /*ScriptArgs*/, bool & NoScriptArgs, /*TAssemblyLanguage Language, UnicodeString & AssemblyCode,*/
   bool & NoCodeProperties) const
 {
   TCopyParamType Defaults;

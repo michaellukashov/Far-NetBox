@@ -70,7 +70,7 @@ template <class T>
 inline const T Round(const T a, const T b) { return a / b + (a % b * 2 > b ? 1 : 0); }
 
 template <class T>
-inline void * ToPtr(const T a) { return reinterpret_cast<void *>(a); }
+inline void * ToPtr(const T a) { return reinterpret_cast<void *>((intptr_t)a); }
 
 template <class T>
 inline double ToDouble(const T a) { return static_cast<double>(a); }

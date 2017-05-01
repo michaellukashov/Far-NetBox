@@ -5243,7 +5243,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & LocalDirecto
       {
         SCOPE_EXIT
         {
-          FindClose(SearchRec);
+          base::FindClose(SearchRec);
         };
         UnicodeString FileName;
         while (Found)

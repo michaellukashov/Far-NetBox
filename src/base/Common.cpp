@@ -20,12 +20,6 @@
 
 #pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
 
-int Win32Platform = 0;
-int Win32MajorVersion = 0;
-int Win32MinorVersion = 0;
-int Win32BuildNumber = 0;
-wchar_t Win32CSDVersion[128] = {};
-
 const wchar_t * DSTModeNames = L"Win;Unix;Keep";
 
 const wchar_t EngShortMonthNames[12][4] =
@@ -1262,7 +1256,7 @@ DWORD FindCheck(DWORD Result, const UnicodeString & APath)
 DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD Attr, TSearchRecChecked & F)
 {
   F.Path = APath;
-  return FindFirst(ApiPath(APath), Attr, F);
+  return base::FindFirst(ApiPath(APath), Attr, F);
 }
 
 DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked & F)
@@ -1275,7 +1269,7 @@ DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearc
 // Equivalent to FindNext, just to complement to FindFirstUnchecked
 DWORD FindNextUnchecked(TSearchRecChecked & F)
 {
-  return FindNext(F);
+  return base::FindNext(F);
 }
 
 // It can make sense to use FindNextChecked, even if unchecked FindFirst is used.
@@ -1289,10 +1283,10 @@ DWORD FindNextChecked(TSearchRecChecked & F)
 bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec)
 {
   DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  bool Result = (FindFirst(ApiPath(AFileName), FindAttrs, Rec) == 0);
+  bool Result = (base::FindFirst(ApiPath(AFileName), FindAttrs, Rec) == 0);
   if (Result)
   {
-    FindClose(Rec);
+    base::FindClose(Rec);
   }
   return Result;
 }
@@ -1313,7 +1307,7 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
   {
     SCOPE_EXIT
     {
-      FindClose(SearchRec);
+      base::FindClose(SearchRec);
     };
     do
     {
@@ -1985,7 +1979,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
   return Result;
 }
 
-UnicodeString FormatTimeZone(intptr_t Sec)
+UnicodeString FormatTimeZone(intptr_t /*Sec*/)
 {
   UnicodeString Str;
   TODO("implement class TTimeSpan");
@@ -2167,7 +2161,7 @@ static bool DoRecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycl
           {
             SCOPE_EXIT
             {
-              FindClose(SearchRec);
+              base::FindClose(SearchRec);
             };
             do
             {
@@ -2340,7 +2334,7 @@ uintptr_t ContinueAnswer(uintptr_t Answers)
 
 UnicodeString LoadStr(intptr_t Ident, uintptr_t /*MaxLength*/)
 {
-  UnicodeString Result = GetGlobalFunctions()->GetMsg(Ident);
+  UnicodeString Result = GetGlobals()->GetMsg(Ident);
   return Result;
 }
 
@@ -2597,7 +2591,7 @@ void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeS
 
 static bool CheckWin32Version(int Major, int Minor)
 {
-  return (Win32MajorVersion >= Major) && (Win32MinorVersion >= Minor);
+  return (GetGlobals()->Win32MajorVersion >= Major) && (GetGlobals()->Win32MinorVersion >= Minor);
 }
 
 bool IsWinVista()
@@ -2662,7 +2656,7 @@ bool GetWindowsProductType(DWORD & Type)
   }
   else
   {
-    GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
+    GetProductInfo(GetGlobals()->Win32MajorVersion, GetGlobals()->Win32MinorVersion, 0, 0, &Type);
     Result = true;
   }
   return Result;
@@ -2707,7 +2701,7 @@ UnicodeString WindowsVersion()
 UnicodeString WindowsVersionLong()
 {
   UnicodeString Result = WindowsVersion();
-  AddToList(Result, Win32CSDVersion, L" ");
+  AddToList(Result, GetGlobals()->Win32CSDVersion, L" ");
   return Result;
 }
 
@@ -2793,10 +2787,10 @@ TFormatSettings GetEngFormatSettings()
   return TFormatSettings::Create(1033);
 }
 
-static int IndexStr(const UnicodeString & AStr)
+static intptr_t IndexStr(const UnicodeString & AStr)
 {
-  int Result = -1;
-  for (int Index = 0; Index < 12; ++Index)
+  intptr_t Result = -1;
+  for (intptr_t Index = 0; Index < 12; ++Index)
   {
     if (AStr.CompareIC(EngShortMonthNames[Index]) == 0)
     {
@@ -2807,7 +2801,7 @@ static int IndexStr(const UnicodeString & AStr)
   return Result;
 }
 
-int ParseShortEngMonthName(const UnicodeString & MonthStr)
+intptr_t ParseShortEngMonthName(const UnicodeString & MonthStr)
 {
   // TFormatSettings FormatSettings = GetEngFormatSettings();
   // return IndexStr(MonthStr, FormatSettings.ShortMonthNames, FormatSettings.ShortMonthNames.size()) + 1;
