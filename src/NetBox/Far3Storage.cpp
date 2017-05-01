@@ -24,7 +24,7 @@ TFar3Storage::~TFar3Storage()
 {
 }
 
-bool TFar3Storage::Copy(TFar3Storage * Storage)
+bool TFar3Storage::Copy(TFar3Storage * /*Storage*/)
 {
   Error(SNotImplemented, 3014);
   bool Result = true;
