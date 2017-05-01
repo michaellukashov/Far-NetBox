@@ -1047,7 +1047,7 @@ HANDLE TGUIConfiguration::ChangeToDefaultResourceModule()
   return ChangeResourceModule(nullptr);
 }
 
-HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE Instance)
+HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE /*Instance*/)
 {
   /*
   if (Instance == nullptr)

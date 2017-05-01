@@ -607,7 +607,7 @@ void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
   }
 }
 
-DWORD FileGetAttr(const UnicodeString & AFileName, bool FollowLink)
+DWORD FileGetAttr(const UnicodeString & AFileName, bool /*FollowLink*/)
 {
   TODO("FollowLink");
   DWORD LocalFileAttrs = ::GetFileAttributes(ApiPath(AFileName).c_str());

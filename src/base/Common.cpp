@@ -1979,7 +1979,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
   return Result;
 }
 
-UnicodeString FormatTimeZone(intptr_t Sec)
+UnicodeString FormatTimeZone(intptr_t /*Sec*/)
 {
   UnicodeString Str;
   TODO("implement class TTimeSpan");
