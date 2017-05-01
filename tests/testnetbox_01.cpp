@@ -58,9 +58,9 @@ protected:
 
 // mocks
 
-TGlobalFunctionsIntf * GetGlobalFunctions()
+TGlobalsIntf * GetGlobalFunctions()
 {
-  static TGlobalFunctionsIntf * GlobalFunctions = nullptr;
+  static TGlobalsIntf * GlobalFunctions = nullptr;
   if (!GlobalFunctions)
   {
     GlobalFunctions = new TTestGlobalFunctions();

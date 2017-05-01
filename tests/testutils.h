@@ -92,7 +92,7 @@ static TCustomFarPlugin * CreateStub()
 
 // mocks
 
-class TTestGlobalFunctions : public TGlobalFunctionsIntf, public TObject
+class TTestGlobalFunctions : public TGlobalsIntf, public TObject
 {
 public:
   virtual HINSTANCE GetInstanceHandle() const;

@@ -570,7 +570,7 @@ public:
 
 extern TCustomFarPlugin * FarPlugin;
 
-class TGlobalFunctions : public TGlobalFunctionsIntf, public TObject
+class TGlobalFunctions : public TGlobalsIntf, public TObject
 {
 public:
   virtual HINSTANCE GetInstanceHandle() const;

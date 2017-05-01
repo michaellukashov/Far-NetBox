@@ -13,7 +13,7 @@
 #include "plugin_version.hpp"
 
 TCustomFarPlugin * FarPlugin = nullptr;
-TGlobalFunctionsIntf * GlobalFunctions = nullptr;
+TGlobalsIntf * GlobalFunctions = nullptr;
 
 #define FAR_TITLE_SUFFIX L" - Far"
 
@@ -88,8 +88,8 @@ TCustomFarPlugin::~TCustomFarPlugin()
     SAFE_DESTROY(Object);
   }
   SAFE_DESTROY(FSavedTitles);
-  TGlobalFunctionsIntf * Intf = GetGlobalFunctions();
-  SAFE_DESTROY_EX(TGlobalFunctionsIntf, Intf);
+  TGlobalsIntf * Intf = GetGlobalFunctions();
+  SAFE_DESTROY_EX(TGlobalsIntf, Intf);
   ::SetGlobalFunctions(nullptr);
 }
 
@@ -2828,13 +2828,13 @@ TFarPluginEnvGuard::~TFarPluginEnvGuard()
   DebugAssert(FarPlugin != nullptr);
 }
 
-void SetGlobalFunctions(TGlobalFunctionsIntf * Value)
+void SetGlobalFunctions(TGlobalsIntf * Value)
 {
   DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
   GlobalFunctions = Value;
 }
 
-TGlobalFunctionsIntf * GetGlobalFunctions()
+TGlobalsIntf * GetGlobalFunctions()
 {
 //  static TGlobalFunctionsIntf * GlobalFunctions = nullptr;
 //  if (!GlobalFunctions)

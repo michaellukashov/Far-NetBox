@@ -44,8 +44,8 @@ public:
   }
   virtual ~base_fixture_t()
   {
-    TGlobalFunctionsIntf * Intf = GetGlobalFunctions();
-    SAFE_DESTROY_EX(TGlobalFunctionsIntf, Intf);
+    TGlobalsIntf * Intf = GetGlobalFunctions();
+    SAFE_DESTROY_EX(TGlobalsIntf, Intf);
     ::SetGlobalFunctions(nullptr);
   }
 

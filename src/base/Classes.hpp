@@ -799,10 +799,10 @@ enum TQueryType
 
 struct TMessageParams;
 
-class TGlobalFunctionsIntf
+class TGlobalsIntf
 {
 public:
-  virtual ~TGlobalFunctionsIntf() {}
+  virtual ~TGlobalsIntf() {}
 
   virtual HINSTANCE GetInstanceHandle() const = 0;
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;
@@ -817,6 +817,6 @@ public:
       const TMessageParams * Params) = 0;
 };
 
-TGlobalFunctionsIntf * GetGlobalFunctions();
-void SetGlobalFunctions(TGlobalFunctionsIntf * Value);
+TGlobalsIntf * GetGlobalFunctions();
+void SetGlobalFunctions(TGlobalsIntf * Value);
 
