@@ -179,7 +179,7 @@ protected:
   PluginStartupInfo FStartupInfo;
   FarStandardFunctions FFarStandardFunctions;
   HINSTANCE FHandle;
-  TObjectList * FOpenedPlugins;
+  TList * FOpenedPlugins;
   TFarDialog * FTopDialog;
   HANDLE FConsoleInput;
   HANDLE FConsoleOutput;

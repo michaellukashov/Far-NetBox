@@ -32,7 +32,7 @@ TFarMessageParams::TFarMessageParams() :
 
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) :
   TObject(Kind),
-  FOpenedPlugins(new TObjectList()),
+  FOpenedPlugins(new TList()),
   FTopDialog(nullptr),
   FSavedTitles(new TStringList())
 {
@@ -42,7 +42,6 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) :
   FFarVersion = 0;
   FTerminalScreenShowing = false;
 
-  FOpenedPlugins->SetOwnsObjects(false);
   FCurrentProgress = -1;
   FValidFarSystemSettings = false;
   FFarSystemSettings = 0;
