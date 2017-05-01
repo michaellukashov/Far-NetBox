@@ -139,7 +139,7 @@ struct FontSpec *fontspec_new(const char *name,
  *
  * (PUTTY_DECL_WINDOWS_FUNCTION works with both these variants.)
  */
-#define TYPECHECK(to_check, to_return)          \
+#define PUTTY_TYPECHECK(to_check, to_return)          \
     (sizeof(to_check) ? to_return : to_return)
 #define PUTTY_DECL_WINDOWS_FUNCTION(linkage, rettype, name, params)   \
     typedef rettype (WINAPI *t_##name) params;                  \
@@ -147,11 +147,11 @@ struct FontSpec *fontspec_new(const char *name,
 #define STR1(x) #x
 #define STR(x) STR1(x)
 #define PUTTY_GET_WINDOWS_FUNCTION_PP(module, name)                           \
-    TYPECHECK((t_##name)NULL == name,                                   \
+    PUTTY_TYPECHECK((t_##name)NULL == name,                                   \
               (p_##name = module ?                                      \
                (t_##name) GetProcAddress(module, STR(name)) : NULL))
 #define PUTTY_GET_WINDOWS_FUNCTION(module, name)                              \
-    TYPECHECK((t_##name)NULL == name,                                   \
+    PUTTY_TYPECHECK((t_##name)NULL == name,                                   \
               (p_##name = module ?                                      \
                (t_##name) GetProcAddress(module, #name) : NULL))
 #define PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, name) \
