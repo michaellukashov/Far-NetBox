@@ -8,7 +8,7 @@
 #include "NetBox.cpp"
 #include "FarDialog.cpp"
 #include "FarPlugin.cpp"
-#include "FarUtil.cpp"
+#include "FarUtils.cpp"
 #include "WinSCPFileSystem.cpp"
 #include "WinSCPDialogs.cpp"
 #include "WinSCPPlugin.cpp"

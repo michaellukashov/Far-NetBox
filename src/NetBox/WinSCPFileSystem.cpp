@@ -4,7 +4,7 @@
 #include "WinSCPFileSystem.h"
 #include "WinSCPPlugin.h"
 #include "FarConfiguration.h"
-#include "FarUtil.h"
+#include "FarUtils.h"
 #include <Common.h>
 #include <MsgIDs.h>
 #include <Exceptions.h>
