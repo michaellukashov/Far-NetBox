@@ -6305,7 +6305,7 @@ bool TFileSystemInfoDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
 {
   bool Result = false;
   WORD Key = KeyCode & 0xFFFF;
-  LONG_PTR ControlState = KeyCode >> 16;
+  // LONG_PTR ControlState = KeyCode >> 16;
   if ((Item == SpaceAvailablePathEdit) && (Key == VK_RETURN))
   {
     CheckSpaceAvailable();
@@ -8170,7 +8170,7 @@ bool TSynchronizeDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
   WORD Key = KeyCode & 0xFFFF;
-  LONG_PTR ControlState = KeyCode >> 16;
+  // LONG_PTR ControlState = KeyCode >> 16;
   if ((Key == VK_ESCAPE) && FSynchronizing)
   {
     Stop();
