@@ -31,7 +31,7 @@ public:
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info);
 
 protected:
-  virtual bool HandlesFunction(THandlesFunction Function) const;
+  virtual bool HandlesFunction(THandlesFunction Function) const override;
   virtual void GetPluginInfoEx(DWORD & Flags, TStrings * DiskMenuStrings,
     TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
     TStrings * CommandPrefixes);
