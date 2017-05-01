@@ -2132,3 +2132,27 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
   ThrowNotImplemented(1204);
 }
 
+
+TGlobalsIntf::TGlobalsIntf()
+{
+  InitPlatformId();
+}
+
+TGlobalsIntf::~TGlobalsIntf()
+{
+
+}
+
+void TGlobalsIntf::InitPlatformId()
+{
+  OSVERSIONINFO OSVersionInfo;
+  OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
+  if (::GetVersionEx(&OSVersionInfo) != 0)
+  {
+    Win32Platform = OSVersionInfo.dwPlatformId;
+    Win32MajorVersion = OSVersionInfo.dwMajorVersion;
+    Win32MinorVersion = OSVersionInfo.dwMinorVersion;
+    Win32BuildNumber = OSVersionInfo.dwBuildNumber;
+    memcpy(Win32CSDVersion, OSVersionInfo.szCSDVersion, sizeof(OSVersionInfo.szCSDVersion));
+  }
+}

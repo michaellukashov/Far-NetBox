@@ -1071,20 +1071,6 @@ DWORD FindClose(TSearchRec & Rec)
 
 } // namespace base
 
-void InitPlatformId()
-{
-  OSVERSIONINFO OSVersionInfo;
-  OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
-  if (::GetVersionEx(&OSVersionInfo) != 0)
-  {
-    Win32Platform = OSVersionInfo.dwPlatformId;
-    Win32MajorVersion = OSVersionInfo.dwMajorVersion;
-    Win32MinorVersion = OSVersionInfo.dwMinorVersion;
-    Win32BuildNumber = OSVersionInfo.dwBuildNumber;
-    memcpy(Win32CSDVersion, OSVersionInfo.szCSDVersion, sizeof(OSVersionInfo.szCSDVersion));
-  }
-}
-
 bool Win32Check(bool RetVal)
 {
   if (!RetVal)

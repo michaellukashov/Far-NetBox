@@ -802,7 +802,8 @@ struct TMessageParams;
 class TGlobalsIntf
 {
 public:
-  virtual ~TGlobalsIntf() {}
+  TGlobalsIntf();
+  virtual ~TGlobalsIntf();
 
   virtual HINSTANCE GetInstanceHandle() const = 0;
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;
@@ -815,6 +816,16 @@ public:
   virtual uintptr_t MoreMessageDialog(const UnicodeString & Message,
     TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
       const TMessageParams * Params) = 0;
+
+public:
+  wchar_t Win32CSDVersion[128];
+  int Win32Platform;
+  int Win32MajorVersion;
+  int Win32MinorVersion;
+  int Win32BuildNumber;
+
+private:
+  void InitPlatformId();
 };
 
 TGlobalsIntf * GetGlobals();
