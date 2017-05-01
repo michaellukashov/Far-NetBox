@@ -92,20 +92,20 @@ static TCustomFarPlugin * CreateStub()
 
 // mocks
 
-class TTestGlobalFunctions : public TGlobalsIntf, public TObject
+class TTestGlobalFunctions : public TGlobals
 {
 public:
-  virtual HINSTANCE GetInstanceHandle() const;
-  virtual UnicodeString GetMsg(intptr_t Id) const;
-  virtual UnicodeString GetCurrDirectory() const;
-  virtual UnicodeString GetStrVersionNumber() const;
+  virtual HINSTANCE GetInstanceHandle() const override;
+  virtual UnicodeString GetMsg(intptr_t Id) const override;
+  virtual UnicodeString GetCurrDirectory() const override;
+  virtual UnicodeString GetStrVersionNumber() const override;
   virtual bool InputDialog(const UnicodeString & ACaption,
     const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
     TStrings * History, bool PathInput,
-    TInputDialogInitializeEvent OnInitialize, bool Echo);
+    TInputDialogInitializeEvent OnInitialize, bool Echo) override;
   virtual uintptr_t MoreMessageDialog(const UnicodeString & Message,
     TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
-      const TMessageParams * Params);
+      const TMessageParams * Params) override;
 };
 
 HINSTANCE TTestGlobalFunctions::GetInstanceHandle() const

@@ -8,15 +8,15 @@
 #include <rtlconsts.h>
 #include <FileBuffer.h>
 
-TGlobalsIntf * GlobalFunctions = nullptr;
+TGlobals * GlobalFunctions = nullptr;
 
-void SetGlobals(TGlobalsIntf * Value)
+void SetGlobals(TGlobals * Value)
 {
   DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
   GlobalFunctions = Value;
 }
 
-TGlobalsIntf * GetGlobals()
+TGlobals * GetGlobals()
 {
   DebugAssert(GlobalFunctions != nullptr);
   return GlobalFunctions;
@@ -2133,17 +2133,17 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
 }
 
 
-TGlobalsIntf::TGlobalsIntf()
+TGlobals::TGlobals()
 {
   InitPlatformId();
 }
 
-TGlobalsIntf::~TGlobalsIntf()
+TGlobals::~TGlobals()
 {
 
 }
 
-void TGlobalsIntf::InitPlatformId()
+void TGlobals::InitPlatformId()
 {
   OSVERSIONINFO OSVersionInfo;
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
