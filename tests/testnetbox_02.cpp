@@ -288,7 +288,7 @@ TEST_CASE_METHOD(base_fixture_t, "testStorage", "netbox")
   Storage.CloseSubKey();
   REQUIRE(Storage.KeyExists(SubKey));
   REQUIRE(Storage.OpenSubKey(SubKey, false));
-  int res = Storage.ReadInteger(L"IntVal", -1);
+  intptr_t res = Storage.ReadInteger(L"IntVal", -1);
   INFO("res = " << res);
   REQUIRE(1234 == res);
 }
