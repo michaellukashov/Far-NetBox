@@ -268,15 +268,8 @@ public:
   T * GetAs(intptr_t Index) const { return dyn_cast<T>(GetObj(Index)); }
   TObject * operator [](intptr_t Index) const;
   TObject * GetObj(intptr_t Index) const;
-  void SetItem(intptr_t Index, TObject * Value);
-  intptr_t Add(TObject * Value);
-  intptr_t Remove(TObject * Value);
-  void Extract(TObject * Value);
-  void Insert(intptr_t Index, TObject * Value);
-  intptr_t IndexOf(const TObject * Value) const;
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
-  virtual void Sort(CompareFunc func);
   virtual void Notify(void * Ptr, TListNotification Action);
 
 private:
