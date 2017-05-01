@@ -289,7 +289,7 @@ void sk_init(void)
 #ifdef NET_SETUP_DIAGNOSTICS
 	    logevent(NULL, "WSH IPv6 support detected");
 #endif
-		PUTTY_GET_WINDOWS_FUNCTION(wship6_module, getaddrinfo);
+		PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(wship6_module, getaddrinfo);
 		PUTTY_GET_WINDOWS_FUNCTION(wship6_module, freeaddrinfo);
 		PUTTY_GET_WINDOWS_FUNCTION(wship6_module, getnameinfo);
 		/* See comment above about type check */
