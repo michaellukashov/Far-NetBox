@@ -679,7 +679,7 @@ static UnicodeString PropertyToKey(const UnicodeString & Property)
     KEY(Integer,  SynchronizeMode); \
     KEY(Integer,  MaxWatchDirectories); \
     KEY(Integer,  QueueTransfersLimit); \
-    KEY(Integer,  QueueKeepDoneItems); \
+    KEY(Bool,  QueueKeepDoneItems); \
     KEY(Integer,  QueueKeepDoneItemsFor); \
     KEY(Bool,     QueueAutoPopup); \
     KEYEX(Bool,   QueueRememberPassword, SessionRememberPassword); \
