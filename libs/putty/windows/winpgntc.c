@@ -103,7 +103,7 @@ agent_pending_query *agent_query(
      * query is required to be synchronous) or CreateThread failed.
      * Either way, we need a synchronous request.
      */
-    id = SendMessage(hwnd, WM_COPYDATA, (WPARAM) NULL, (LPARAM) &cds);
+    id = (int)SendMessage(hwnd, WM_COPYDATA, (WPARAM) NULL, (LPARAM) &cds);
     if (id > 0) {
 	retlen = 4 + GET_32BIT(p);
 	ret = snewn(retlen, unsigned char);
