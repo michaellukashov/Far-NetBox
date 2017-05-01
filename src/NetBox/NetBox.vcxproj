@@ -94,6 +94,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PreprocessToFile>false</PreprocessToFile>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <DisableSpecificWarnings>4481</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -119,6 +120,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <DisableSpecificWarnings>4481</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -158,6 +160,7 @@
       <CallingConvention>Cdecl</CallingConvention>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <DisableSpecificWarnings>4481</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -200,6 +203,7 @@
       <CallingConvention>Cdecl</CallingConvention>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <DisableSpecificWarnings>4481</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
