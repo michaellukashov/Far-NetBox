@@ -8,7 +8,7 @@
 #include <rtlconsts.h>
 #include <FileBuffer.h>
 
-TGlobals * GlobalFunctions = nullptr;
+static TGlobals * GlobalFunctions = nullptr;
 
 void SetGlobals(TGlobals * Value)
 {
