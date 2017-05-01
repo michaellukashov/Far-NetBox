@@ -689,42 +689,34 @@ AnsiString FormatA(const char * Format, ...)
 
 AnsiString FormatA(const char * Format, va_list Args)
 {
-  AnsiString Result(64, 0);
   if (Format && *Format)
   {
     intptr_t Len = _vscprintf(Format, Args);
-    Result.SetLength(Len + 1);
+    AnsiString Result(Len + 1, 0);
     vsprintf_s(&Result[1], Len + 1, Format, Args);
+    return Result.c_str();
   }
-  return Result.c_str();
+  return AnsiString();
 }
 
 UnicodeString FmtLoadStr(intptr_t Id, ...)
 {
-  UnicodeString Result;
-//  HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
-//  intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
-//    const_cast<wchar_t *>(Fmt.c_str()), static_cast<int>(Fmt.GetLength()));
-//  if (!Length)
-//  {
-//    DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
-//  }
-//  else
-  UnicodeString Fmt = GetGlobalFunctions()->GetMsg(Id);
+  UnicodeString Fmt = GetGlobals()->GetMsg(Id);
   if (!Fmt.IsEmpty())
   {
     va_list Args;
     va_start(Args, Id);
     intptr_t Len = _vscwprintf(Fmt.c_str(), Args);
-    Result.SetLength(Len + sizeof(wchar_t));
+    UnicodeString Result(Len + sizeof(wchar_t), 0);
     vswprintf_s(&Result[1], Result.Length(), Fmt.c_str(), Args);
     va_end(Args);
+    return Result;
   }
   else
   {
     DEBUG_PRINTF("Unknown resource string id: %d\n", Id);
   }
-  return Result;
+  return UnicodeString();
 }
 
 // Returns the next available word, ignoring whitespace
