@@ -144,88 +144,87 @@ TEST_CASE_METHOD(base_fixture_t, "testConfig", "netbox")
 
 TEST_CASE_METHOD(base_fixture_t, "testFmtLoadStr", "netbox")
 {
-  TEST_CASE_TODO("fix FmtLoadStr for tests");
-  return;
   // Тесты на ::FmtLoadStr FMTLOAD ::Format ::LoadStr ::LoadStrPart ::CutToChar ::TrimLeft ::TrimRight
+  TEST_CASE_TODO("fix FmtLoadStr for tests");
   {
     UnicodeString str = FMTLOAD(CONST_TEST_STRING, L"lalala", 42);
-    // INFO("str = " << W2MB(str.c_str()));
+    INFO("str = " << str);
     // INFO("length = " << str.size());
     REQUIRE(W2MB(str.c_str()) == "test string: \"lalala\" 42");
   }
   {
     UnicodeString str2 = FMTLOAD(CONST_TEST_STRING, L"lalala", 42);
-    // INFO("str2 = " << W2MB(str2.c_str()));
+    INFO("str2 = " << str2);
     REQUIRE(W2MB(str2.c_str()) == "test string: \"lalala\" 42");
   }
   {
     UnicodeString str2 = FORMAT(L"test: %s %d", L"lalala", 42);
-    INFO("str2 = " << str2.c_str());
+    INFO("str2 = " << str2);
     REQUIRE_EQUAL(0, wcscmp(str2.c_str(), L"test: lalala 42"));
   }
   {
     UnicodeString str3 = FORMAT(L"test: %s %d", L"lalala", 42);
-    INFO("str3 = " << str3.c_str());
+    INFO("str3 = " << str3);
     REQUIRE_EQUAL(0, wcscmp(str3.c_str(), L"test: lalala 42"));
   }
   {
     UnicodeString str = ::TrimLeft(L"");
-    INFO("str = " << str.c_str());
+    INFO("str = " << str);
     REQUIRE_EQUAL(0, wcscmp(str.c_str(), L""));
   }
   {
     UnicodeString str = ::TrimLeft(L"1");
-    INFO("str = " << str.c_str());
+    INFO("str = " << str);
     REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"1"));
   }
   {
     UnicodeString str = ::TrimLeft(L" 1");
-    INFO("str = " << str.c_str());
+    INFO("str = " << str);
     REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"1"));
   }
   {
     UnicodeString str = ::TrimRight(L"");
-    INFO("str = " << str.c_str());
+    INFO("str = " << str);
     REQUIRE_EQUAL(0, wcscmp(str.c_str(), L""));
   }
   {
     UnicodeString str = ::TrimRight(L"1");
-    INFO("str = " << str.c_str());
+    INFO("str = " << str);
     REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"1"));
   }
   {
     UnicodeString str = ::TrimRight(L"1 ");
-    INFO("str = " << str.c_str());
+    INFO("str = " << str);
     REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"1"));
   }
   {
     // UnicodeString CutToChar(UnicodeString &Str, char Ch, bool Trim)
     UnicodeString Str1 = L" part 1 | part 2 ";
     UnicodeString str1 = ::CutToChar(Str1, '|', false);
-    INFO("str1 = '" << str1.c_str() << "'");
-    INFO("Str1 = '" << Str1.c_str() << "'");
+    INFO("str1 = '" << str1 << "'");
+    INFO("Str1 = '" << Str1 << "'");
     // INFO("Str1 = '" << W2MB(Str1.c_str()) << "'");
     // DEBUG_PRINTF(L"str1 = \"%s\"", str1.c_str());
     REQUIRE_EQUAL(0, wcscmp(str1.c_str(), L" part 1 "));
 
     UnicodeString str2 = ::CutToChar(Str1, '|', true);
-    INFO("str2 = '" << str2.c_str() << "'");
-    INFO("Str1 = '" << Str1.c_str() << "'");
+    INFO("str2 = '" << str2 << "'");
+    INFO("Str1 = '" << Str1 << "'");
     REQUIRE_EQUAL(0, wcscmp(str2.c_str(), L" part 2"));
   }
   {
     UnicodeString str = ::LoadStr(CONST_TEST_STRING);
-    INFO("str = " << str.c_str());
+    INFO("str = " << str);
     REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"test string: \"%s\" %d"));
   }
   {
     UnicodeString str = ::LoadStrPart(CONST_TEST_STRING2, 1);
-    INFO("str = " << str.c_str());
+    INFO("str = " << str);
     REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"test string part 1"));
   }
   {
     UnicodeString str = ::LoadStrPart(CONST_TEST_STRING2, 2);
-    INFO("str = " << str.c_str());
+    INFO("str = " << str);
     REQUIRE_EQUAL(0, wcscmp(str.c_str(), L"part 2"));
   }
 }
