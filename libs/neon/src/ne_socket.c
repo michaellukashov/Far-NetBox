@@ -1053,7 +1053,7 @@ char *ne_addr_error(const ne_sock_addr *addr, char *buf, size_t bufsiz)
     return buf;
 }
 
-char *ne_iaddr_print(const ne_inet_addr *ia, char *buf, size_t bufsiz)
+char *ne_iaddr_print(const ne_inet_addr *ia, char *buf, socklen_t bufsiz)
 {
 #if defined(USE_GETADDRINFO) && defined(HAVE_INET_NTOP)
     const char *ret;
@@ -1158,7 +1158,7 @@ ne_inet_addr *ne_iaddr_parse(const char *addr, ne_iaddr_type type)
 #endif /* !USE_GETADDRINFO */
 }
 
-int ne_iaddr_reverse(const ne_inet_addr *ia, char *buf, size_t bufsiz)
+int ne_iaddr_reverse(const ne_inet_addr *ia, char *buf, socklen_t bufsiz)
 {
 #ifdef USE_GETADDRINFO
     return getnameinfo(ia->ai_addr, ia->ai_addrlen, buf, bufsiz,
