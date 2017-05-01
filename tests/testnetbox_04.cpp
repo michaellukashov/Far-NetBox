@@ -39,13 +39,13 @@ class base_fixture_t
 public:
   base_fixture_t()
   {
-    ::SetGlobals(new TTestGlobalFunctions());
+//    ::SetGlobals(new TTestGlobalFunctions());
   }
   virtual ~base_fixture_t()
   {
-    TGlobalsIntf * Intf = GetGlobals();
-    SAFE_DESTROY_EX(TGlobalsIntf, Intf);
-    ::SetGlobals(nullptr);
+//    TGlobalsIntf * Intf = GetGlobals();
+//    SAFE_DESTROY_EX(TGlobalsIntf, Intf);
+//    ::SetGlobals(nullptr);
   }
 
 public:
@@ -57,6 +57,8 @@ protected:
     for (unsigned int n = 0; n < len; ++n)
       vec->push_back((unsigned char)data[n]);
   }
+private:
+  TGlobalsIntfInitializer<TTestGlobalFunctions> FGlobalsIntfInitializer;
 };
 
 //------------------------------------------------------------------------------
