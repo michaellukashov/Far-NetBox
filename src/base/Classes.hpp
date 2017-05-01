@@ -818,4 +818,5 @@ public:
 };
 
 TGlobalFunctionsIntf * GetGlobalFunctions();
+void SetGlobalFunctions(TGlobalFunctionsIntf * Value);
 

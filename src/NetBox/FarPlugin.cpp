@@ -13,6 +13,8 @@
 #include "plugin_version.hpp"
 
 TCustomFarPlugin * FarPlugin = nullptr;
+TGlobalFunctionsIntf * GlobalFunctions = nullptr;
+
 #define FAR_TITLE_SUFFIX L" - Far"
 
 TFarMessageParams::TFarMessageParams() :
@@ -36,6 +38,7 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) :
   FSavedTitles(new TStringList())
 {
   ::InitPlatformId();
+  ::SetGlobalFunctions(new TGlobalFunctions());
   FFarThreadId = GetCurrentThreadId();
   FHandle = HInst;
   FFarVersion = 0;
@@ -87,6 +90,7 @@ TCustomFarPlugin::~TCustomFarPlugin()
   SAFE_DESTROY(FSavedTitles);
   TGlobalFunctionsIntf * Intf = GetGlobalFunctions();
   SAFE_DESTROY_EX(TGlobalFunctionsIntf, Intf);
+  ::SetGlobalFunctions(nullptr);
 }
 
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/) const
@@ -2824,13 +2828,20 @@ TFarPluginEnvGuard::~TFarPluginEnvGuard()
   DebugAssert(FarPlugin != nullptr);
 }
 
+void SetGlobalFunctions(TGlobalFunctionsIntf * Value)
+{
+  DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
+  GlobalFunctions = Value;
+}
+
 TGlobalFunctionsIntf * GetGlobalFunctions()
 {
-  static TGlobalFunctionsIntf * GlobalFunctions = nullptr;
-  if (!GlobalFunctions)
-  {
-    GlobalFunctions = new TGlobalFunctions();
-  }
+//  static TGlobalFunctionsIntf * GlobalFunctions = nullptr;
+//  if (!GlobalFunctions)
+//  {
+//    GlobalFunctions = new TGlobalFunctions();
+//  }
+  DebugAssert(GlobalFunctions != nullptr);
   return GlobalFunctions;
 }
 
@@ -2849,7 +2860,7 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
   // map Id to PluginString value
   intptr_t PluginStringId = Id;
   const TFarPluginStrings * CurFarPluginStrings = &FarPluginStrings[0];
-  while (CurFarPluginStrings->Id)
+  while (CurFarPluginStrings && CurFarPluginStrings->Id)
   {
     if (CurFarPluginStrings->Id == Id)
     {
@@ -2858,6 +2869,7 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
     }
     ++CurFarPluginStrings;
   }
+  DebugAssert(FarPlugin != nullptr);
   return FarPlugin->GetMsg(PluginStringId);
 }
 
