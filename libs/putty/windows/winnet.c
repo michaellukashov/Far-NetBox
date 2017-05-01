@@ -275,25 +275,25 @@ void sk_init(void)
 #ifdef NET_SETUP_DIAGNOSTICS
 	logevent(NULL, "Native WinSock IPv6 support detected");
 #endif
-	PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getaddrinfo);
-	PUTTY_GET_WINDOWS_FUNCTION(winsock_module, freeaddrinfo);
-	PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getnameinfo);
-        /* This function would fail its type-check if we did one,
-         * because the VS header file provides an inline definition
-         * which is __cdecl instead of WINAPI. */
-        PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
-    } else {
+		PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getaddrinfo);
+		PUTTY_GET_WINDOWS_FUNCTION(winsock_module, freeaddrinfo);
+		PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, getnameinfo);
+		/* This function would fail its type-check if we did one,
+		 * because the VS header file provides an inline definition
+		 * which is __cdecl instead of WINAPI. */
+		PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
+	} else {
 	/* Fall back to wship6.dll for Windows 2000 */
 	wship6_module = load_system32_dll("wship6.dll");
 	if (wship6_module) {
 #ifdef NET_SETUP_DIAGNOSTICS
 	    logevent(NULL, "WSH IPv6 support detected");
 #endif
-	    PUTTY_GET_WINDOWS_FUNCTION(wship6_module, getaddrinfo);
-	    PUTTY_GET_WINDOWS_FUNCTION(wship6_module, freeaddrinfo);
-	    PUTTY_GET_WINDOWS_FUNCTION(wship6_module, getnameinfo);
-            /* See comment above about type check */
-            PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
+		PUTTY_GET_WINDOWS_FUNCTION(wship6_module, getaddrinfo);
+		PUTTY_GET_WINDOWS_FUNCTION(wship6_module, freeaddrinfo);
+		PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(wship6_module, getnameinfo);
+		/* See comment above about type check */
+		PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
 	} else {
 #ifdef NET_SETUP_DIAGNOSTICS
 	    logevent(NULL, "No IPv6 support detected");
@@ -721,7 +721,7 @@ void sk_getaddr(SockAddr addr, char *buf, int buflen)
 	int err = 0;
 	if (p_WSAAddressToStringA) {
 	    DWORD dwbuflen = buflen;
-	    err = p_WSAAddressToStringA(step.ai->ai_addr, step.ai->ai_addrlen,
+			err = p_WSAAddressToStringA(step.ai->ai_addr, (DWORD)step.ai->ai_addrlen,
 					NULL, buf, &dwbuflen);
 	} else
 	    err = -1;
@@ -1189,7 +1189,7 @@ static DWORD try_connect(Actual_Socket sock,
 #ifdef MPEXT
     if (timeout > 0)
     {
-        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, &rcvtimeo) < 0)
+        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, (int *)&rcvtimeo) < 0)
         {
             rcvtimeo.tv_sec = -1;
         }
@@ -1773,7 +1773,7 @@ int select_result(WPARAM wParam, LPARAM lParam)
 	    return 1;
     }
 
-    noise_ultralight(lParam);
+    noise_ultralight((unsigned long)lParam);
 
     switch (WSAGETSELECTEVENT(lParam)) {
       case FD_CONNECT:
