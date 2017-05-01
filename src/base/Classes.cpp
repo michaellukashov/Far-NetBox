@@ -8,6 +8,20 @@
 #include <rtlconsts.h>
 #include <FileBuffer.h>
 
+static TGlobals * GlobalFunctions = nullptr;
+
+void SetGlobals(TGlobals * Value)
+{
+  DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
+  GlobalFunctions = Value;
+}
+
+TGlobals * GetGlobals()
+{
+  DebugAssert(GlobalFunctions != nullptr);
+  return GlobalFunctions;
+}
+
 #if (_MSC_VER >= 1900)
 
 extern "C" {
@@ -2118,3 +2132,27 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings)
   ThrowNotImplemented(1204);
 }
 
+
+TGlobals::TGlobals()
+{
+  InitPlatformId();
+}
+
+TGlobals::~TGlobals()
+{
+
+}
+
+void TGlobals::InitPlatformId()
+{
+  OSVERSIONINFO OSVersionInfo;
+  OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
+  if (::GetVersionEx(&OSVersionInfo) != 0)
+  {
+    Win32Platform = OSVersionInfo.dwPlatformId;
+    Win32MajorVersion = OSVersionInfo.dwMajorVersion;
+    Win32MinorVersion = OSVersionInfo.dwMinorVersion;
+    Win32BuildNumber = OSVersionInfo.dwBuildNumber;
+    memcpy(Win32CSDVersion, OSVersionInfo.szCSDVersion, sizeof(OSVersionInfo.szCSDVersion));
+  }
+}

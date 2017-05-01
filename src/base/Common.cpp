@@ -20,12 +20,6 @@
 
 #pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
 
-int Win32Platform = 0;
-int Win32MajorVersion = 0;
-int Win32MinorVersion = 0;
-int Win32BuildNumber = 0;
-wchar_t Win32CSDVersion[128] = {};
-
 const wchar_t * DSTModeNames = L"Win;Unix;Keep";
 
 const wchar_t EngShortMonthNames[12][4] =
@@ -2340,7 +2334,7 @@ uintptr_t ContinueAnswer(uintptr_t Answers)
 
 UnicodeString LoadStr(intptr_t Ident, uintptr_t /*MaxLength*/)
 {
-  UnicodeString Result = GetGlobalFunctions()->GetMsg(Ident);
+  UnicodeString Result = GetGlobals()->GetMsg(Ident);
   return Result;
 }
 
@@ -2597,7 +2591,7 @@ void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeS
 
 static bool CheckWin32Version(int Major, int Minor)
 {
-  return (Win32MajorVersion >= Major) && (Win32MinorVersion >= Minor);
+  return (GetGlobals()->Win32MajorVersion >= Major) && (GetGlobals()->Win32MinorVersion >= Minor);
 }
 
 bool IsWinVista()
@@ -2662,7 +2656,7 @@ bool GetWindowsProductType(DWORD & Type)
   }
   else
   {
-    GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
+    GetProductInfo(GetGlobals()->Win32MajorVersion, GetGlobals()->Win32MinorVersion, 0, 0, &Type);
     Result = true;
   }
   return Result;
@@ -2707,7 +2701,7 @@ UnicodeString WindowsVersion()
 UnicodeString WindowsVersionLong()
 {
   UnicodeString Result = WindowsVersion();
-  AddToList(Result, Win32CSDVersion, L" ");
+  AddToList(Result, GetGlobals()->Win32CSDVersion, L" ");
   return Result;
 }
 

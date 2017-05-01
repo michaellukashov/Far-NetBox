@@ -799,10 +799,12 @@ enum TQueryType
 
 struct TMessageParams;
 
-class TGlobalFunctionsIntf
+class TGlobalsIntf
 {
 public:
-  virtual ~TGlobalFunctionsIntf() {}
+  virtual ~TGlobalsIntf()
+  {
+  }
 
   virtual HINSTANCE GetInstanceHandle() const = 0;
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;
@@ -817,5 +819,39 @@ public:
       const TMessageParams * Params) = 0;
 };
 
-TGlobalFunctionsIntf * GetGlobalFunctions();
+class TGlobals : public TGlobalsIntf, public TObject
+{
+public:
+  TGlobals();
+  virtual ~TGlobals();
 
+public:
+  wchar_t Win32CSDVersion[128];
+  int Win32Platform;
+  int Win32MajorVersion;
+  int Win32MinorVersion;
+  int Win32BuildNumber;
+
+private:
+  void InitPlatformId();
+};
+
+TGlobals * GetGlobals();
+void SetGlobals(TGlobals * Value);
+
+template<typename T>
+class TGlobalsIntfInitializer
+{
+public:
+  TGlobalsIntfInitializer()
+  {
+    ::SetGlobals(new T());
+  }
+
+  ~TGlobalsIntfInitializer()
+  {
+    TGlobalsIntf * Intf = GetGlobals();
+    delete Intf;
+    ::SetGlobals(nullptr);
+  }
+};
