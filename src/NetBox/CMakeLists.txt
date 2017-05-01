@@ -1666,7 +1666,6 @@ set(TESTNETBOX_02_SOURCES
   UnityBuildCore.cpp
   UnityBuildMain.cpp
   UnityBuildFilezilla.cpp
-  ../../tests/testnetbox_02.rc
   ../../tests/testnetbox_02.cpp
 )
 
@@ -1745,6 +1744,7 @@ set(TESTNETBOX_04_SOURCES
   UnityBuildMain.cpp
   UnityBuildFilezilla.cpp
   ../../tests/testnetbox_04.cpp
+  ../../tests/testnetbox_04.rc
 )
 
 add_executable(testnetbox_04 ${TESTNETBOX_04_SOURCES})

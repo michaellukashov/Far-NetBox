@@ -147,6 +147,7 @@ TEST_CASE_METHOD(base_fixture_t, "testFmtLoadStr", "netbox")
   // Тесты на ::FmtLoadStr FMTLOAD ::Format ::LoadStr ::LoadStrPart ::CutToChar ::TrimLeft ::TrimRight
   TEST_CASE_TODO("fix FmtLoadStr for tests");
   {
+    INFO("before FMTLOAD");
     UnicodeString str = FMTLOAD(CONST_TEST_STRING, L"lalala", 42);
     INFO("str = " << str);
     // INFO("length = " << str.size());
