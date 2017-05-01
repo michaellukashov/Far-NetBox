@@ -268,10 +268,8 @@ void TList::Sort(CompareFunc Func)
   }
 }
 
-void TList::Notify(void * Ptr, TListNotification Action)
+void TList::Notify(void * /*Ptr*/, TListNotification /*Action*/)
 {
-  (void)Ptr;
-  (void)Action;
 }
 
 void TList::Sort()
@@ -305,41 +303,6 @@ TObject * TObjectList::GetObj(intptr_t Index) const
     Error(SListIndexError, Index);
   }
   return as_object(TList::GetItem(Index));
-}
-
-void TObjectList::SetItem(intptr_t Index, TObject * Value)
-{
-  TList::SetItem(Index, Value);
-}
-
-intptr_t TObjectList::Add(TObject * Value)
-{
-  return TList::Add(Value);
-}
-
-intptr_t TObjectList::Remove(TObject * Value)
-{
-  return TList::Remove(Value);
-}
-
-void TObjectList::Extract(TObject * Value)
-{
-  TList::Extract(Value);
-}
-
-void TObjectList::Insert(intptr_t Index, TObject * Value)
-{
-  TList::Insert(Index, Value);
-}
-
-intptr_t TObjectList::IndexOf(const TObject * Value) const
-{
-  return TList::IndexOf(Value);
-}
-
-void TObjectList::Sort(CompareFunc func)
-{
-  TList::Sort(func);
 }
 
 void TObjectList::Notify(void * Ptr, TListNotification Action)
@@ -789,14 +752,6 @@ intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t 
   intptr_t Result = List->CompareStrings(List->FStrings[Index1],
     List->FStrings[Index2]);
   return Result;
-}
-
-TStringList::TStringList() :
-  TStrings(OBJECT_CLASS_TStringList),
-  FSorted(false),
-  FCaseSensitive(false)
-{
-  SetOwnsObjects(false);
 }
 
 TStringList::TStringList(TObjectClassId Kind) :
