@@ -336,7 +336,7 @@ TEST_CASE_METHOD(base_fixture_t, "test7", "netbox")
     }
     catch (const std::exception & ex)
     {
-      INFO("in catch block");
+      INFO("in catch block: " << ex.what());
       REQUIRE(nullptr == Lines1);
       REQUIRE(nullptr == Lines2);
     }
@@ -417,7 +417,7 @@ TEST_CASE_METHOD(base_fixture_t, "test13", "netbox")
   UnicodeString str_value = ::IntToStr(1234);
   INFO("str_value = " << str_value);
   REQUIRE(W2MB(str_value.c_str()) == "1234");
-  int int_value = ::StrToInt(L"1234");
+  intptr_t int_value = ::StrToInt(L"1234");
   INFO("int_value = " << int_value);
   REQUIRE(int_value == 1234);
 }
@@ -446,7 +446,7 @@ TEST_CASE_METHOD(base_fixture_t, "test16", "netbox")
   {
     UnicodeString Name1 = L"1";
     UnicodeString Name2 = L"2";
-    int res = ::AnsiCompareIC(Name1, Name2);
+    intptr_t res = ::AnsiCompareIC(Name1, Name2);
     INFO("res = " << res);
     REQUIRE(res != 0);
     res = ::AnsiCompare(Name1, Name2);
@@ -456,7 +456,7 @@ TEST_CASE_METHOD(base_fixture_t, "test16", "netbox")
   {
     UnicodeString Name1 = L"abc";
     UnicodeString Name2 = L"ABC";
-    int res = ::AnsiCompareIC(Name1, Name2);
+    intptr_t res = ::AnsiCompareIC(Name1, Name2);
     INFO("res = " << res);
     REQUIRE(res == 0);
     res = ::AnsiCompare(Name1, Name2);
@@ -754,7 +754,7 @@ TEST_CASE_METHOD(base_fixture_t, "test28", "netbox")
     wchar_t codeNum[16];
     DEBUG_PRINTF(L"6");
     // swprintf_s(codeNum, sizeof(codeNum), L"[0x%08X]", errCode);  // Causes AV x64
-    swprintf(codeNum, L"[0x%08X]", errCode);
+    swprintf(codeNum, L"[0x%08X]", (unsigned int)errCode);
     DEBUG_PRINTF(L"7");
     INFO("codeNum = " << W2MB(codeNum));
     DEBUG_PRINTF(L"8");

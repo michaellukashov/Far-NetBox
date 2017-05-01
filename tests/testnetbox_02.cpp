@@ -395,7 +395,7 @@ TEST_CASE_METHOD(base_fixture_t, "testFileMasks", "netbox")
     TFileMasks m(L"*.txt;*.log");
     REQUIRE_EQUAL(true, m.Matches(L"test.log"));
 
-    intptr_t Start, Length;
+//    intptr_t Start, Length;
 //    REQUIRE_EQUAL(true, m.GetIsValid(Start, Length));
     m.SetMask(L"*.exe");
     REQUIRE_EQUAL(true, m.Matches(L"test.exe"));
