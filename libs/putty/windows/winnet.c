@@ -1189,7 +1189,7 @@ static DWORD try_connect(Actual_Socket sock,
 #ifdef MPEXT
     if (timeout > 0)
     {
-        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, &rcvtimeo) < 0)
+        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, (int *)&rcvtimeo) < 0)
         {
             rcvtimeo.tv_sec = -1;
         }
@@ -1773,7 +1773,7 @@ int select_result(WPARAM wParam, LPARAM lParam)
 	    return 1;
     }
 
-    noise_ultralight(lParam);
+    noise_ultralight((unsigned long)lParam);
 
     switch (WSAGETSELECTEVENT(lParam)) {
       case FD_CONNECT:
