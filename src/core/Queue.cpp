@@ -439,7 +439,7 @@ uintptr_t TSignalThread::WaitForEvent(uint32_t Timeout) const
   uintptr_t Result = ::WaitForSingleObject(FEvent, Timeout);
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
-    return -1;
+    return (uintptr_t )-1;
   }
   else
   {
