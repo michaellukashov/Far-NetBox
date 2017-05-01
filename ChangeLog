@@ -1,5 +1,6 @@
-NetBox 2.4.3.486 30.04.2017
+NetBox 2.4.3.487 01.05.2017
 --------------------
+  * Update putty sources to 0.69
   * Bugfix: plugin crashes on FAR startup
     (http://bugs.farmanager.com/view.php?id=3429)
     (http://forum.farmanager.com/viewtopic.php?p=143678#p143678)
