@@ -140,7 +140,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
     {
       FreeKey(PrivateKey);
     };
-    FileName = ChangeFileExt(FileName, ".ppk", L'\\');
+    FileName = ::ChangeFileExt(FileName, ".ppk", L'\\');
 
     if (!SaveDialog(LoadStr(CONVERTKEY_SAVE_TITLE), LoadStr(CONVERTKEY_SAVE_FILTER), L"ppk", FileName))
     {

@@ -528,7 +528,7 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, b
   {
     Dir = ExtractFilePath(ATarget);
     Name = ExtractFileName(ATarget, Unix);
-    Path = IncludeTrailingBackslash(ATarget);
+    Path = ::IncludeTrailingBackslash(ATarget);
   }
   return FMTLOAD(MULTI_FILES_TO_ONE, Name.c_str(), Dir.c_str(), Path.c_str());
 }

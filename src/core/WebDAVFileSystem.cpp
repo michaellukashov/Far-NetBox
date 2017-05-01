@@ -2152,7 +2152,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       });
 
       TSinkFileParams SinkFileParams;
-      SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
+      SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
       SinkFileParams.CopyParam = CopyParam;
       SinkFileParams.Params = AParams;
       SinkFileParams.OperationProgress = OperationProgress;

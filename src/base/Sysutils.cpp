@@ -1215,7 +1215,7 @@ UnicodeString IncludeTrailingBackslash(const UnicodeString & Str)
 
 UnicodeString IncludeTrailingPathDelimiter(const UnicodeString & Str)
 {
-  return IncludeTrailingBackslash(Str);
+  return ::IncludeTrailingBackslash(Str);
 }
 
 UnicodeString ExtractFileDir(const UnicodeString & Str)
