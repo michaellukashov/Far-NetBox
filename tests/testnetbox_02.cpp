@@ -10,7 +10,7 @@
 
 #include "winstuff.h"
 #include "puttyexp.h"
-#include "FarUtil.h"
+#include "FarUtils.h"
 
 #include "TestTexts.h"
 #include "Common.h"
