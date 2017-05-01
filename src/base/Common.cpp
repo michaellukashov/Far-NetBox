@@ -2340,7 +2340,7 @@ uintptr_t ContinueAnswer(uintptr_t Answers)
 
 UnicodeString LoadStr(intptr_t Ident, uintptr_t /*MaxLength*/)
 {
-  UnicodeString Result = GetGlobalFunctions()->GetMsg(Ident);
+  UnicodeString Result = GetGlobals()->GetMsg(Ident);
   return Result;
 }
 

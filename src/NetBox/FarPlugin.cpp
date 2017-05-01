@@ -38,7 +38,7 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) :
   FSavedTitles(new TStringList())
 {
   ::InitPlatformId();
-  ::SetGlobalFunctions(new TGlobalFunctions());
+  ::SetGlobals(new TGlobalFunctions());
   FFarThreadId = GetCurrentThreadId();
   FHandle = HInst;
   FFarVersion = 0;
@@ -88,9 +88,9 @@ TCustomFarPlugin::~TCustomFarPlugin()
     SAFE_DESTROY(Object);
   }
   SAFE_DESTROY(FSavedTitles);
-  TGlobalsIntf * Intf = GetGlobalFunctions();
+  TGlobalsIntf * Intf = GetGlobals();
   SAFE_DESTROY_EX(TGlobalsIntf, Intf);
-  ::SetGlobalFunctions(nullptr);
+  ::SetGlobals(nullptr);
 }
 
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/) const
@@ -2828,13 +2828,13 @@ TFarPluginEnvGuard::~TFarPluginEnvGuard()
   DebugAssert(FarPlugin != nullptr);
 }
 
-void SetGlobalFunctions(TGlobalsIntf * Value)
+void SetGlobals(TGlobalsIntf * Value)
 {
   DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
   GlobalFunctions = Value;
 }
 
-TGlobalsIntf * GetGlobalFunctions()
+TGlobalsIntf * GetGlobals()
 {
 //  static TGlobalFunctionsIntf * GlobalFunctions = nullptr;
 //  if (!GlobalFunctions)

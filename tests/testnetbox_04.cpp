@@ -40,13 +40,13 @@ public:
   base_fixture_t()
   {
     ::InitPlatformId();
-    ::SetGlobalFunctions(new TTestGlobalFunctions());
+    ::SetGlobals(new TTestGlobalFunctions());
   }
   virtual ~base_fixture_t()
   {
-    TGlobalsIntf * Intf = GetGlobalFunctions();
+    TGlobalsIntf * Intf = GetGlobals();
     SAFE_DESTROY_EX(TGlobalsIntf, Intf);
-    ::SetGlobalFunctions(nullptr);
+    ::SetGlobals(nullptr);
   }
 
 public:

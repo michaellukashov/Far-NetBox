@@ -710,7 +710,7 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
 //    DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
 //  }
 //  else
-  UnicodeString Fmt = GetGlobalFunctions()->GetMsg(Id);
+  UnicodeString Fmt = GetGlobals()->GetMsg(Id);
   if (!Fmt.IsEmpty())
   {
     va_list Args;
@@ -1242,7 +1242,7 @@ UnicodeString ExtractFilePath(const UnicodeString & Str)
 
 UnicodeString GetCurrentDir()
 {
-  UnicodeString Result = GetGlobalFunctions()->GetCurrDirectory();
+  UnicodeString Result = GetGlobals()->GetCurrDirectory();
   return Result;
 }
 

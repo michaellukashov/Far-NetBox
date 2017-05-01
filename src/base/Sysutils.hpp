@@ -441,7 +441,7 @@ UnicodeString VersionNumberToStr(uintptr_t VersionNumber);
 uintptr_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
 uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
 uintptr_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2,1,21); }
-uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobalFunctions()->GetStrVersionNumber()); }
+uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobals()->GetStrVersionNumber()); }
 
 #if defined(__MINGW32__) && (__MINGW_GCC_VERSION < 50100)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION

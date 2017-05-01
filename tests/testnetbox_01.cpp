@@ -58,7 +58,7 @@ protected:
 
 // mocks
 
-TGlobalsIntf * GetGlobalFunctions()
+TGlobalsIntf * GetGlobals()
 {
   static TGlobalsIntf * GlobalFunctions = nullptr;
   if (!GlobalFunctions)

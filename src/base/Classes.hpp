@@ -817,6 +817,6 @@ public:
       const TMessageParams * Params) = 0;
 };
 
-TGlobalsIntf * GetGlobalFunctions();
-void SetGlobalFunctions(TGlobalsIntf * Value);
+TGlobalsIntf * GetGlobals();
+void SetGlobals(TGlobalsIntf * Value);
 

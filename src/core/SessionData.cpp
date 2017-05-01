@@ -270,7 +270,7 @@ void TSessionData::Default()
   SetFtpAllowEmptyPassword(false);
 
   FNumberOfRetries = 0;
-  FSessionVersion = ::StrToVersionNumber(GetGlobalFunctions()->GetStrVersionNumber());
+  FSessionVersion = ::StrToVersionNumber(GetGlobals()->GetStrVersionNumber());
   // add also to TSessionLog::AddStartupInfo()
 }
 
