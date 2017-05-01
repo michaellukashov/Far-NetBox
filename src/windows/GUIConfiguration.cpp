@@ -465,7 +465,7 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
   Storage->ClearSubKeys();
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (Storage->OpenSubKey(::IntToStr(Index), true))
+    if (Storage->OpenSubKey(::IntToStr(Index), /*CanCreate*/ true))
     {
       try__finally
       {
@@ -712,7 +712,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   #undef KEY
   #undef KEYEX
 
-  if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
+  if (Storage->OpenSubKey(L"Interface\\CopyParam", /*CanCreate*/ true, /*Path*/ true))
   {
     try__finally
     {
@@ -741,7 +741,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     };
   }
 
-  if (Storage->OpenSubKey(L"Interface\\NewDirectory", true, true))
+  if (Storage->OpenSubKey(L"Interface\\NewDirectory", /*CanCreate*/ true, /*Path*/ true))
   {
     try__finally
     {
@@ -773,7 +773,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   #undef KEY
   #undef KEYEX
 
-  if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
+  if (Storage->OpenSubKey(L"Interface\\CopyParam", /*CanCreate*/ false, /*Path*/ true))
   {
     try__finally
     {
