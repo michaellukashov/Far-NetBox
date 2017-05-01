@@ -1750,7 +1750,7 @@ UnicodeString TCustomFarPlugin::GetTemporaryDir() const
   return Result;
 }
 
-int TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * Rec)
+int TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * /*Rec*/)
 {
   int Result;
   /*
