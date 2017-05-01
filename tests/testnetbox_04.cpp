@@ -39,10 +39,14 @@ class base_fixture_t
 public:
   base_fixture_t()
   {
-    InitPlatformId();
+    ::InitPlatformId();
+    ::SetGlobalFunctions(new TTestGlobalFunctions());
   }
   virtual ~base_fixture_t()
   {
+    TGlobalFunctionsIntf * Intf = GetGlobalFunctions();
+    SAFE_DESTROY_EX(TGlobalFunctionsIntf, Intf);
+    ::SetGlobalFunctions(nullptr);
   }
 
 public:
@@ -58,7 +62,7 @@ protected:
 
 //------------------------------------------------------------------------------
 #if 0
-TEST_CASE_METHOD(base_fixture_t, "test1", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testNE", "netbox")
 {
   WSADATA wsaData;
   WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -95,7 +99,7 @@ TEST_CASE_METHOD(base_fixture_t, "test1", "netbox")
   INFO("sqrt = " << calc.sqrt(25));
 }*/
 
-TEST_CASE_METHOD(base_fixture_t, "test3", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testDynamicQueue", "netbox")
 {
   DynamicQueue<int> q;
   q.Reserve(10);
@@ -254,11 +258,11 @@ TEST_CASE_METHOD(base_fixture_t, "testWinSCPPlugin", "netbox")
   if (1)
   {
     HINSTANCE HInst = ::GetModuleHandle(0);
-    TWinSCPPlugin * FarPlugin = new TWinSCPPlugin(HInst);
+    // TWinSCPPlugin * FarPlugin = new TWinSCPPlugin(HInst);
     //DEBUG_PRINTF(L"FarPlugin = %x", FarPlugin);
-    REQUIRE(FarPlugin != NULL);
+    // REQUIRE(FarPlugin != NULL);
     // SAFE_DESTROY(FarPlugin);
-    delete FarPlugin;
+    // delete FarPlugin;
     // REQUIRE(FarPlugin == NULL);
   }
 }
