@@ -34,12 +34,16 @@ class base_fixture_t
 public:
   base_fixture_t()
   {
-    // INFO("base_fixture_t ctor");
-    InitPlatformId();
+    INFO("base_fixture_t ctor");
+    ::SetGlobals(new TTestGlobalFunctions());
   }
 
   virtual ~base_fixture_t()
   {
+    INFO("base_fixture_t dtor");
+    TGlobalsIntf * Intf = GetGlobals();
+    SAFE_DESTROY_EX(TGlobalsIntf, Intf);
+    ::SetGlobals(nullptr);
   }
 public:
 protected:

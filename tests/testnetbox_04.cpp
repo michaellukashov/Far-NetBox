@@ -39,7 +39,6 @@ class base_fixture_t
 public:
   base_fixture_t()
   {
-    ::InitPlatformId();
     ::SetGlobals(new TTestGlobalFunctions());
   }
   virtual ~base_fixture_t()

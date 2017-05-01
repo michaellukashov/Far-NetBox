@@ -46,27 +46,20 @@ public:
   base_fixture_t()
   {
     // INFO("base_fixture_t ctor");
-    InitPlatformId();
+    ::SetGlobals(new TTestGlobalFunctions());
   }
 
   virtual ~base_fixture_t()
   {
+    TGlobalsIntf * Intf = GetGlobals();
+    SAFE_DESTROY_EX(TGlobalsIntf, Intf);
+    ::SetGlobals(nullptr);
   }
 public:
 protected:
 };
 
 // mocks
-
-TGlobalsIntf * GetGlobals()
-{
-  static TGlobalsIntf * GlobalFunctions = nullptr;
-  if (!GlobalFunctions)
-  {
-    GlobalFunctions = new TTestGlobalFunctions();
-  }
-  return GlobalFunctions;
-}
 
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 {
