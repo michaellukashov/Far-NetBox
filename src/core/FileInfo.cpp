@@ -44,8 +44,7 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
           ::FreeLibrary(Module);
         }
       };
-      HRSRC Rsrc = ::FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
-        MAKEINTRESOURCE(VS_FILE_INFO));
+      HRSRC Rsrc = ::FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO), VS_FILE_INFO);
       if (Rsrc == nullptr)
       {
       }
