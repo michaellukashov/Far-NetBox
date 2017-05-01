@@ -773,7 +773,7 @@ void TStringList::Assign(const TPersistent * Source)
 
 intptr_t TStringList::GetCount() const
 {
-  DebugAssert(FStrings.size() == TObjectList::GetCount());
+  DebugAssert((intptr_t)FStrings.size() == TObjectList::GetCount());
   return static_cast<intptr_t>(FStrings.size());
 }
 

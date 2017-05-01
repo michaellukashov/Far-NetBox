@@ -697,7 +697,7 @@ intptr_t UnicodeString::Pos(const UnicodeString & Str) const
   return Data.Find(Str.Data.c_str()) + 1;
 }
 
-bool UnicodeString::RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos) const
+bool UnicodeString::RPos(intptr_t & nPos, wchar_t Ch, intptr_t /*nStartPos*/) const
 {
   size_t Pos = Data.ReverseFind(Ch); //, Data.size() - nStartPos);
   nPos = Pos + 1;
