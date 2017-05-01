@@ -1,8 +1,7 @@
-#include "stdafx.h"
-
-#include "Common.h"
-#include "Exceptions.h"
-#include "PuttyIntf.h"
+#include <Classes.hpp>
+#include <Common.h>
+#include <Exceptions.h>
+#include <PuttyIntf.h>
 #include "Far3Storage.h"
 #include "TextsCore.h"
 
