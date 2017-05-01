@@ -1684,7 +1684,7 @@ void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   {
     SCOPE_EXIT
     {
-      ::FindClose(SearchRec);
+      base::FindClose(SearchRec);
     };
     while (FindOK && !OperationProgress->Cancel)
     {

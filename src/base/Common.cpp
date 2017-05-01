@@ -1262,7 +1262,7 @@ DWORD FindCheck(DWORD Result, const UnicodeString & APath)
 DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD Attr, TSearchRecChecked & F)
 {
   F.Path = APath;
-  return FindFirst(ApiPath(APath), Attr, F);
+  return base::FindFirst(ApiPath(APath), Attr, F);
 }
 
 DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked & F)
@@ -1275,7 +1275,7 @@ DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearc
 // Equivalent to FindNext, just to complement to FindFirstUnchecked
 DWORD FindNextUnchecked(TSearchRecChecked & F)
 {
-  return FindNext(F);
+  return base::FindNext(F);
 }
 
 // It can make sense to use FindNextChecked, even if unchecked FindFirst is used.
@@ -1289,10 +1289,10 @@ DWORD FindNextChecked(TSearchRecChecked & F)
 bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec)
 {
   DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  bool Result = (FindFirst(ApiPath(AFileName), FindAttrs, Rec) == 0);
+  bool Result = (base::FindFirst(ApiPath(AFileName), FindAttrs, Rec) == 0);
   if (Result)
   {
-    FindClose(Rec);
+    base::FindClose(Rec);
   }
   return Result;
 }
@@ -1313,7 +1313,7 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
   {
     SCOPE_EXIT
     {
-      FindClose(SearchRec);
+      base::FindClose(SearchRec);
     };
     do
     {
@@ -2167,7 +2167,7 @@ static bool DoRecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycl
           {
             SCOPE_EXIT
             {
-              FindClose(SearchRec);
+              base::FindClose(SearchRec);
             };
             do
             {

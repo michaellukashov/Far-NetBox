@@ -1086,12 +1086,12 @@ TStrings * TGUIConfiguration::GetLocales()
   TSearchRecChecked SearchRec;
   bool Found;
 
-  Found = (FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
+  Found = (base::FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
     FindAttrs, SearchRec) == 0);
   {
     SCOPE_EXIT
     {
-      FindClose(SearchRec);
+      base::FindClose(SearchRec);
     };
     UnicodeString Ext;
     while (Found)

@@ -399,7 +399,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
 {
   TSearchRecChecked SearchRec;
   bool retval = true;
-  if (::FindFirst(ADirName + L"\\*", faAnyFile, SearchRec) == 0) // VCL Function
+  if (base::FindFirst(ADirName + L"\\*", faAnyFile, SearchRec) == 0) // VCL Function
   {
     if (FLAGSET(SearchRec.Attr, faDirectory))
     {
@@ -432,7 +432,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
       }
     }
   }
-  FindClose(SearchRec);
+  base::FindClose(SearchRec);
   if (retval)
   {
     retval = ::RemoveDir(ADirName); // VCL function
