@@ -2787,10 +2787,10 @@ TFormatSettings GetEngFormatSettings()
   return TFormatSettings::Create(1033);
 }
 
-static int IndexStr(const UnicodeString & AStr)
+static intptr_t IndexStr(const UnicodeString & AStr)
 {
-  int Result = -1;
-  for (int Index = 0; Index < 12; ++Index)
+  intptr_t Result = -1;
+  for (intptr_t Index = 0; Index < 12; ++Index)
   {
     if (AStr.CompareIC(EngShortMonthNames[Index]) == 0)
     {
@@ -2801,7 +2801,7 @@ static int IndexStr(const UnicodeString & AStr)
   return Result;
 }
 
-int ParseShortEngMonthName(const UnicodeString & MonthStr)
+intptr_t ParseShortEngMonthName(const UnicodeString & MonthStr)
 {
   // TFormatSettings FormatSettings = GetEngFormatSettings();
   // return IndexStr(MonthStr, FormatSettings.ShortMonthNames, FormatSettings.ShortMonthNames.size()) + 1;
