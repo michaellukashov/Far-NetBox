@@ -1732,6 +1732,7 @@ void TCustomFarPlugin::RunTests()
   {
     TFileMasks m(L"*.txt;*.log");
     bool res = m.Matches(L"test.exe");
+    DebugAssert(!res);
   }
   {
     random_ref();
