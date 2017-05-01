@@ -47,7 +47,7 @@ protected:
 
 //------------------------------------------------------------------------------
 
-TEST_CASE_METHOD(base_fixture_t, "test1", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testTList", "netbox")
 {
   TList list;
   REQUIRE_EQUAL(0, list.GetCount());
@@ -101,7 +101,7 @@ TEST_CASE_METHOD(base_fixture_t, "test1", "netbox")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testTStringList", "netbox")
 {
   UnicodeString str;
   if (1)
@@ -152,7 +152,7 @@ TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test3", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testTStringList2", "netbox")
 {
   UnicodeString Text = L"text text text text text1\ntext text text text text2\n";
   TStringList Lines;
@@ -180,7 +180,7 @@ TEST_CASE_METHOD(base_fixture_t, "test4", "netbox")
   REQUIRE_EQUAL("\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\"", W2MB(Text2.c_str()));
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test5", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testTStringList3", "netbox")
 {
   TStringList Lines;
   TObject obj1;
@@ -188,7 +188,7 @@ TEST_CASE_METHOD(base_fixture_t, "test5", "netbox")
   REQUIRE(&obj1 == Lines.GetObj(0));
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test6", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testTStringList4", "netbox")
 {
   TStringList Lines;
   Lines.Add(L"bbb");
@@ -213,7 +213,7 @@ TEST_CASE_METHOD(base_fixture_t, "test6", "netbox")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test7", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testTStringList5", "netbox")
 {
   TStringList Lines;
   {
@@ -305,7 +305,7 @@ TEST_CASE_METHOD(base_fixture_t, "test7", "netbox")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test8", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testStringFuncs1", "netbox")
 {
   UnicodeString ProgramsFolder;
   UnicodeString DefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
@@ -313,7 +313,7 @@ TEST_CASE_METHOD(base_fixture_t, "test8", "netbox")
   REQUIRE(L"" == ::ExcludeTrailingBackslash(::IncludeTrailingBackslash(ProgramsFolder)));
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test9", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testStringFuncs2", "netbox")
 {
   UnicodeString Folder = L"C:\\Program Files\\Putty";
   INFO("ExtractFileDir = " << W2MB(::ExtractFileDir(Folder).c_str()).c_str());
@@ -324,7 +324,7 @@ TEST_CASE_METHOD(base_fixture_t, "test9", "netbox")
   REQUIRE(::DirectoryExists(::GetCurrentDir()));
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test10", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testTDateTime1", "netbox")
 {
   TDateTime dt1(23, 58, 59, 102);
   INFO("dt1 = " << dt1);
@@ -337,7 +337,7 @@ TEST_CASE_METHOD(base_fixture_t, "test10", "netbox")
   REQUIRE_EQUAL(MS, 102);
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test11", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testTDateTime2", "netbox")
 {
   TDateTime dt1 = EncodeDateVerbose(2009, 12, 29);
   INFO("dt1 = " << dt1);
@@ -355,7 +355,7 @@ TEST_CASE_METHOD(base_fixture_t, "test11", "netbox")
   REQUIRE_EQUAL(3, DOW);
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test12", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testTDateTime3", "netbox")
 {
 //  INFO("Is2000 = " << Is2000());
   INFO("IsWin7 = " << IsWin7());
@@ -366,7 +366,7 @@ TEST_CASE_METHOD(base_fixture_t, "test12", "netbox")
   INFO("ft.dwHighDateTime = " << ft.dwHighDateTime);
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test13", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testStringFuncs3", "netbox")
 {
   UnicodeString str_value = ::IntToStr(1234);
   INFO("str_value = " << W2MB(str_value.c_str()));
@@ -376,7 +376,7 @@ TEST_CASE_METHOD(base_fixture_t, "test13", "netbox")
   REQUIRE(int_value == 1234);
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test14", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testTStringList6", "netbox")
 {
   TStringList Strings1;
   TStringList Strings2;
@@ -388,14 +388,14 @@ TEST_CASE_METHOD(base_fixture_t, "test14", "netbox")
   REQUIRE(L"lalalla" == Strings1.GetString(0));
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test15", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testStringFuncs4", "netbox")
 {
   UnicodeString res = ::IntToHex(10, 2);
   INFO("res = " << W2MB(res.c_str()));
   REQUIRE(res == L"0A");
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test16", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testStringFuncs5", "netbox")
 {
   {
     UnicodeString Name1 = L"1";
@@ -424,7 +424,7 @@ TEST_CASE_METHOD(base_fixture_t, "test16", "netbox")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test17", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testStringFuncs6", "netbox")
 {
   TStringList List1;
   List1.SetText(L"123\n456");
@@ -440,7 +440,7 @@ TEST_CASE_METHOD(base_fixture_t, "test17", "netbox")
   REQUIRE("123" == W2MB(List1.GetString(1).c_str()));
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test18", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testStringFuncs7", "netbox")
 {
   {
     UnicodeString Key = L"Interface";
@@ -456,14 +456,14 @@ TEST_CASE_METHOD(base_fixture_t, "test18", "netbox")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test19", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testStringFuncs8", "netbox")
 {
   TStringList Strings1;
   Strings1.Add(L"Name1=Value1");
   REQUIRE(0 == Strings1.IndexOfName(L"Name1"));
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test20", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testStringFuncs9", "netbox")
 {
   TDateTime DateTime = Now();
   unsigned short H, M, S, MS;
@@ -482,7 +482,7 @@ TEST_CASE_METHOD(base_fixture_t, "test21", "netbox")
   REQUIRE("23.46" == W2MB(str.c_str()));
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test22", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testFileFuncs1", "netbox")
 {
   UnicodeString FileName = L"testfile";
   ::RemoveFile(FileName);
@@ -532,7 +532,7 @@ TEST_CASE_METHOD(base_fixture_t, "test22", "netbox")
   }
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test23", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testFileFuncs2", "netbox")
 {
   UnicodeString Dir1 = L"subdir1";
   UnicodeString Dir2 = L"subdir1/subdir2";
@@ -549,14 +549,14 @@ TEST_CASE_METHOD(base_fixture_t, "test23", "netbox")
   REQUIRE(!::DirectoryExists(Dir1));
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test24", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testDateTimeFuncs1", "netbox")
 {
   TDateTime now = Now();
   INFO("now = " << (double)now);
   REQUIRE(now > 0.0);
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test25", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testMallocFuncs1", "netbox")
 {
 #if 0
   GC_find_leak = 1;
@@ -565,7 +565,7 @@ TEST_CASE_METHOD(base_fixture_t, "test25", "netbox")
 #endif
 }
 
-TEST_CASE_METHOD(base_fixture_t, "test26", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testBookmarks1", "netbox")
 {
   TBookmarks Bookmarks;
 }
@@ -614,7 +614,7 @@ public:
   IndexedProperty<std::string, std::string, TestPropsClass, &TestPropsClass::GetAssignment, &TestPropsClass::SetAssignment > Assignments;
 };
 
-TEST_CASE_METHOD(base_fixture_t, "test27", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testTestPropsClass1", "netbox")
 {
   TestPropsClass obj;
   obj.Name = "Name";
