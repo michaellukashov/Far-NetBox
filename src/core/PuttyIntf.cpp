@@ -11,9 +11,11 @@
 #include "CoreMain.h"
 #include "TextsCore.h"
 
-extern "C" {
+extern "C"
+{
 #include <winstuff.h>
 }
+
 char sshver[50];
 extern const char commitid[] = "";
 const int platform_uses_x11_unix_by_default = TRUE;
@@ -324,8 +326,10 @@ void nonfatal(const char * fmt, ...)
   SSHFatalError(fmt, Param);
   va_end(Param);
 }
+
 //---------------------------------------------------------------------------
 void CleanupExit(int /*code*/);
+
 void cleanup_exit(int code)
 {
   CleanupExit(code);
@@ -335,6 +339,7 @@ void CleanupExit(int /*code*/)
 {
   throw ESshFatal(nullptr, L"");
 }
+
 //---------------------------------------------------------------------------
 int askappend(void * /*frontend*/, Filename * /*filename*/,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
@@ -508,8 +513,8 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     int sz = static_cast<int>(*DataSize);
     if (sz > 0)
     {
-        strncpy(DataStr, Value.c_str(), sz);
-        DataStr[sz - 1] = '\0';
+      strncpy(DataStr, Value.c_str(), sz);
+      DataStr[sz - 1] = '\0';
     }
     *DataSize = static_cast<uint32_t>(strlen(DataStr));
   }
@@ -567,20 +572,20 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeStr
   char * CommentStr = nullptr;
   switch (KeyType)
   {
-    case ktSSH2:
-      Result = (ssh2_userkey_encrypted(KeyFile, &CommentStr) != 0);
-      break;
+  case ktSSH2:
+    Result = (ssh2_userkey_encrypted(KeyFile, &CommentStr) != 0);
+    break;
 
-    case ktOpenSSHPEM:
-    case ktOpenSSHNew:
-    case ktSSHCom:
-      Result = (import_encrypted(KeyFile, KeyType, &CommentStr) != 0);
-      break;
+  case ktOpenSSHPEM:
+  case ktOpenSSHNew:
+  case ktSSHCom:
+    Result = (import_encrypted(KeyFile, KeyType, &CommentStr) != 0);
+    break;
 
-    default:
-      DebugFail();
-      Result = false;
-      break;
+  default:
+    DebugFail();
+    Result = false;
+    break;
   }
 
   if (CommentStr != nullptr)
@@ -607,19 +612,19 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
 
   switch (KeyType)
   {
-    case ktSSH2:
-      Ssh2Key = ssh2_load_userkey(KeyFile, AnsiPassphrase.c_str(), &ErrorStr);
-      break;
+  case ktSSH2:
+    Ssh2Key = ssh2_load_userkey(KeyFile, AnsiPassphrase.c_str(), &ErrorStr);
+    break;
 
-    case ktOpenSSHPEM:
-    case ktOpenSSHNew:
-    case ktSSHCom:
-      Ssh2Key = import_ssh2(KeyFile, KeyType, (char *)AnsiPassphrase.c_str(), &ErrorStr);
-      break;
+  case ktOpenSSHPEM:
+  case ktOpenSSHNew:
+  case ktSSHCom:
+    Ssh2Key = import_ssh2(KeyFile, KeyType, (char *)AnsiPassphrase.c_str(), &ErrorStr);
+    break;
 
-    default:
-      DebugFail();
-      break;
+  default:
+    DebugFail();
+    break;
   }
 
   Shred(AnsiPassphrase);
@@ -659,17 +664,17 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
   const char * PassphrasePtr = (AnsiPassphrase.IsEmpty() ? nullptr : AnsiPassphrase.c_str());
   switch (KeyType)
   {
-    case ktSSH2:
-      if (!ssh2_save_userkey(KeyFile, Ssh2Key, PassphrasePtr))
-      {
-        intptr_t Error = errno;
-        throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, FileName.c_str()), Error);
-      }
-      break;
+  case ktSSH2:
+    if (!ssh2_save_userkey(KeyFile, Ssh2Key, PassphrasePtr))
+    {
+      intptr_t Error = errno;
+      throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, FileName.c_str()), Error);
+    }
+    break;
 
-    default:
-      DebugFail();
-      break;
+  default:
+    DebugFail();
+    break;
   }
   filename_free(KeyFile);
 }
