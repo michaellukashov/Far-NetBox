@@ -141,47 +141,47 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
     {
       switch (NeonStatus)
       {
-        case NE_ERROR:
-          // noop
-          DebugAssert(!NeonError.IsEmpty());
-          Error = NeonError;
-          NeonError = L"";
-          break;
+      case NE_ERROR:
+        // noop
+        DebugAssert(!NeonError.IsEmpty());
+        Error = NeonError;
+        NeonError = L"";
+        break;
 
-        case NE_LOOKUP:
-          Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), L"%HOST%", AHostName);
-          break;
+      case NE_LOOKUP:
+        Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), L"%HOST%", AHostName);
+        break;
 
-        case NE_AUTH:
-          Error = LoadStr(AUTHENTICATION_FAILED);
-          break;
+      case NE_AUTH:
+        Error = LoadStr(AUTHENTICATION_FAILED);
+        break;
 
-        case NE_PROXYAUTH:
-          Error = LoadStr(PROXY_AUTHENTICATION_FAILED);
-          break;
+      case NE_PROXYAUTH:
+        Error = LoadStr(PROXY_AUTHENTICATION_FAILED);
+        break;
 
-        case NE_CONNECT:
-          Error = LoadStr(CONNECTION_FAILED);
-          break;
+      case NE_CONNECT:
+        Error = LoadStr(CONNECTION_FAILED);
+        break;
 
-        case NE_TIMEOUT:
-          Error = ReplaceStr(LoadStr(NET_TRANSL_TIMEOUT2), L"%HOST%", AHostName);
-          break;
+      case NE_TIMEOUT:
+        Error = ReplaceStr(LoadStr(NET_TRANSL_TIMEOUT2), L"%HOST%", AHostName);
+        break;
 
-        case NE_REDIRECT:
-          {
-            char * Uri = ne_uri_unparse(ne_redirect_location(Session));
-            Error = FMTLOAD(REQUEST_REDIRECTED, Uri);
-            ne_free(Uri);
-          }
-          break;
+      case NE_REDIRECT:
+        {
+          char* Uri = ne_uri_unparse(ne_redirect_location(Session));
+          Error = FMTLOAD(REQUEST_REDIRECTED, Uri);
+          ne_free(Uri);
+        }
+        break;
 
-        case NE_FAILED: // never used by neon as of 0.30.0
-        case NE_RETRY: // not sure if this is a public API
-        default:
-          DebugFail();
-          Error = FORMAT(L"Unexpected neon error %d", NeonStatus);
-          break;
+      case NE_FAILED: // never used by neon as of 0.30.0
+      case NE_RETRY: // not sure if this is a public API
+      default:
+        DebugFail();
+        Error = FORMAT(L"Unexpected neon error %d", NeonStatus);
+        break;
       }
     }
 
