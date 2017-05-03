@@ -110,7 +110,7 @@ extern "C" void WINAPI InitializeSListHeadWrapper(PSLIST_HEADER ListHead)
 {
   struct implementation
   {
-    static void WINAPI InitializeSListHead(PSLIST_HEADER ListHead)
+    static void WINAPI InitializeSListHead(PSLIST_HEADER /*ListHead*/)
     {
       SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
     }
@@ -125,7 +125,7 @@ extern "C" PSLIST_ENTRY WINAPI InterlockedFlushSListWrapper(PSLIST_HEADER ListHe
 {
   struct implementation
   {
-    static PSLIST_ENTRY WINAPI InterlockedFlushSList(PSLIST_HEADER ListHead)
+    static PSLIST_ENTRY WINAPI InterlockedFlushSList(PSLIST_HEADER /*ListHead*/)
     {
       SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
       return nullptr;
@@ -141,7 +141,7 @@ extern "C" PSLIST_ENTRY WINAPI InterlockedPopEntrySListWrapper(PSLIST_HEADER Lis
 {
   struct implementation
   {
-    static PSLIST_ENTRY WINAPI InterlockedPopEntrySList(PSLIST_HEADER ListHead)
+    static PSLIST_ENTRY WINAPI InterlockedPopEntrySList(PSLIST_HEADER /*ListHead*/)
     {
       SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
       return nullptr;
@@ -157,7 +157,7 @@ extern "C" PSLIST_ENTRY WINAPI InterlockedPushEntrySListWrapper(PSLIST_HEADER Li
 {
   struct implementation
   {
-    static PSLIST_ENTRY WINAPI InterlockedPushEntrySList(PSLIST_HEADER ListHead, PSLIST_ENTRY ListEntry)
+    static PSLIST_ENTRY WINAPI InterlockedPushEntrySList(PSLIST_HEADER /*ListHead*/, PSLIST_ENTRY /*ListEntry*/)
     {
       SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
       return nullptr;
@@ -173,7 +173,7 @@ extern "C" PSLIST_ENTRY WINAPI InterlockedPushListSListExWrapper(PSLIST_HEADER L
 {
   struct implementation
   {
-    static PSLIST_ENTRY WINAPI InterlockedPushListSListEx(PSLIST_HEADER ListHead, PSLIST_ENTRY List, PSLIST_ENTRY ListEnd, ULONG Count)
+    static PSLIST_ENTRY WINAPI InterlockedPushListSListEx(PSLIST_HEADER /*ListHead*/, PSLIST_ENTRY /*List*/, PSLIST_ENTRY /*ListEnd*/, ULONG /*Count*/)
     {
       SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
       return nullptr;
@@ -189,7 +189,7 @@ extern "C" PSLIST_ENTRY WINAPI RtlFirstEntrySListWrapper(PSLIST_HEADER ListHead)
 {
   struct implementation
   {
-    static PSLIST_ENTRY WINAPI RtlFirstEntrySList(PSLIST_HEADER ListHead)
+    static PSLIST_ENTRY WINAPI RtlFirstEntrySList(PSLIST_HEADER /*ListHead*/)
     {
       SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
       return nullptr;
@@ -205,7 +205,7 @@ extern "C" USHORT WINAPI QueryDepthSListWrapper(PSLIST_HEADER ListHead)
 {
   struct implementation
   {
-    static USHORT WINAPI QueryDepthSList(PSLIST_HEADER ListHead)
+    static USHORT WINAPI QueryDepthSList(PSLIST_HEADER /*ListHead*/)
     {
       SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
       return 0;
