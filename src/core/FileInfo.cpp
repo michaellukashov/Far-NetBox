@@ -10,11 +10,12 @@
 
 #define DWORD_ALIGN( base, ptr ) \
     ( (LPBYTE)(base) + ((((LPBYTE)(ptr) - (LPBYTE)(base)) + 3) & ~3) )
+
 struct VS_VERSION_INFO_STRUCT32
 {
-  WORD  wLength;
-  WORD  wValueLength;
-  WORD  wType;
+  WORD wLength;
+  WORD wValueLength;
+  WORD wType;
   WCHAR szKey[1];
 };
 
