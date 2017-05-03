@@ -129,7 +129,8 @@ TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source) :
 }
 
 #define C(Property) (Property == rhp.Property)
-bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
+
+bool TCopyParamRule::operator==(const TCopyParamRule& rhp) const
 {
   return
     C(FData.HostName) &&
@@ -207,14 +208,14 @@ TCopyParamRule & TCopyParamRule::operator=(const TCopyParamRule & other)
 UnicodeString TCopyParamRule::GetInfoStr(const UnicodeString & Separator) const
 {
   UnicodeString Result;
-  #define ADD(FMT, ELEM) \
+#define ADD(FMT, ELEM) \
     if (!FData.ELEM.IsEmpty()) \
       Result += (Result.IsEmpty() ? UnicodeString() : Separator) + FMTLOAD(FMT, FData.ELEM.c_str());
   ADD(COPY_RULE_HOSTNAME, HostName);
   ADD(COPY_RULE_USERNAME, UserName);
   ADD(COPY_RULE_REMOTE_DIR, RemoteDirectory);
   ADD(COPY_RULE_LOCAL_DIR, LocalDirectory);
-  #undef ADD
+#undef ADD
   return Result;
 }
 
@@ -318,8 +319,8 @@ bool TCopyParamList::CompareItem(intptr_t Index,
   return
     ((*GetCopyParam(Index)) == *CopyParam) &&
     ((GetRule(Index) == nullptr) ?
-      (Rule == nullptr) :
-      ((Rule != nullptr) && (*GetRule(Index)) == (*Rule)));
+       (Rule == nullptr) :
+       ((Rule != nullptr) && (*GetRule(Index)) == (*Rule)));
 }
 
 void TCopyParamList::Clear()
@@ -705,13 +706,13 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #endif
-  #undef KEYEX
-  #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
-  #undef KEY
-  #define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), Get ## NAME())
+#undef KEYEX
+#define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
+#undef KEY
+#define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), Get ## NAME())
   REGCONFIG(true);
-  #undef KEY
-  #undef KEYEX
+#undef KEY
+#undef KEYEX
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", /*CanCreate*/ true, /*Path*/ true))
   {
@@ -766,13 +767,13 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   TConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
-  #undef KEYEX
-  #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
-  #undef KEY
-  #define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(#NAME), Get ## NAME()))
+#undef KEYEX
+#define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
+#undef KEY
+#define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(#NAME), Get ## NAME()))
   REGCONFIG(false);
-  #undef KEY
-  #undef KEYEX
+#undef KEY
+#undef KEYEX
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", /*CanCreate*/ false, /*Path*/ true))
   {
@@ -815,8 +816,8 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   // it should be called only for custom users path, let's expect that the user
   // can take care of it.
   if ((FPuttyPath.SubString(1, 1) != L"\"") &&
-      (CompareFileName(::ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
-       ::FileExists(::ExpandEnvironmentVariables(FPuttyPath))))
+    (CompareFileName(::ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
+      ::FileExists(::ExpandEnvironmentVariables(FPuttyPath))))
   {
     FPuttyPath = FormatCommand(FPuttyPath, L"");
   }
@@ -1099,7 +1100,7 @@ TStrings * TGUIConfiguration::GetLocales()
     {
       Ext = ::ExtractFileExt(SearchRec.Name).UpperCase();
       if ((Ext.Length() >= 3) && (Ext != L".EXE") && (Ext != L".COM") &&
-          (Ext != L".DLL") && (Ext != L".INI"))
+        (Ext != L".DLL") && (Ext != L".INI"))
       {
         Ext = Ext.SubString(2, Ext.Length() - 1);
         LocalesExts += Ext;
@@ -1170,8 +1171,8 @@ TStrings * TGUIConfiguration::GetLocales()
     for (intptr_t Index = 0; Index < Exts->GetCount(); ++Index)
     {
       if ((Exts->GetObj(Index) == nullptr) &&
-          (Exts->GetString(Index).Length() == 3) &&
-          ::SameText(Exts->GetString(Index).SubString(1, 2), ADDITIONAL_LANGUAGE_PREFIX))
+        (Exts->GetString(Index).Length() == 3) &&
+        ::SameText(Exts->GetString(Index).SubString(1, 2), ADDITIONAL_LANGUAGE_PREFIX))
       {
         UnicodeString LangName = GetFileFileInfoString(L"LangName",
           ::ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
