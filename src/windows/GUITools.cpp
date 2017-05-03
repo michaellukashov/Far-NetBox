@@ -103,7 +103,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
         SourceStorage->SetMungeStringValues(false);
         SourceStorage->SetForceAnsi(true);
         if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
-            Storage->OpenSubKey(GetGUIConfiguration()->GetPuttySession(), true))
+          Storage->OpenSubKey(GetGUIConfiguration()->GetPuttySession(), true))
         {
           Storage->Copy(SourceStorage.get());
           Storage->CloseSubKey();
@@ -277,7 +277,7 @@ bool SpecialFolderLocation(int PathID, UnicodeString & APath)
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
   if (::SHGetSpecialFolderLocation(nullptr, PathID, &Pidl) == NO_ERROR &&
-      ::SHGetPathFromIDList(Pidl, Buf))
+    ::SHGetPathFromIDList(Pidl, Buf))
   {
     APath = UnicodeString(Buf);
     return true;

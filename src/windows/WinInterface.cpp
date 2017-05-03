@@ -715,7 +715,7 @@ bool ProcessGUI(bool Force)
   {
     TDateTime N = Now();
     if (Force ||
-        (double(N) - double(LastGUIUpdate) > GUIUpdateIntervalFrac))
+      (double(N) - double(LastGUIUpdate) > GUIUpdateIntervalFrac))
     {
       LastGUIUpdate = N;
       TODO("GetGlobalFunctions()->ProcessMessages()");

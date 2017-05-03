@@ -124,9 +124,9 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   if (IsKeyEncrypted(Type, FileName, Comment))
   {
     if (!InputDialog(
-          LoadStr(PASSPHRASE_TITLE),
-          FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE).c_str(), Comment.c_str()),
-          Passphrase, HELP_NONE, nullptr, false, nullptr, false))
+      LoadStr(PASSPHRASE_TITLE),
+      FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE).c_str(), Comment.c_str()),
+      Passphrase, HELP_NONE, nullptr, false, nullptr, false))
     {
       Abort();
     }
@@ -304,7 +304,7 @@ static bool GetProxyUrlFromIE(UnicodeString & Proxy)
   {
     typedef BOOL (WINAPI *FWinHttpGetIEProxyConfigForCurrentUser)(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *);
     FWinHttpGetIEProxyConfigForCurrentUser GetIEProxyConfig = reinterpret_cast<FWinHttpGetIEProxyConfigForCurrentUser>(
-          LibraryLoader.GetProcAddress("WinHttpGetIEProxyConfigForCurrentUser"));
+      LibraryLoader.GetProcAddress("WinHttpGetIEProxyConfigForCurrentUser"));
     if (GetIEProxyConfig && GetIEProxyConfig(&IEProxyInfo))
     {
       if (IEProxyInfo.lpszProxy != nullptr)
@@ -358,9 +358,9 @@ bool AutodetectProxy(UnicodeString & AHostName, intptr_t & APortNumber)
   TLibraryLoader LibraryLoader(L"winhttp.dll", true);
   if (LibraryLoader.Loaded())
   {
-    typedef BOOL (WINAPI *FWinHttpGetDefaultProxyConfiguration)(WINHTTP_PROXY_INFO *);
+    typedef BOOL (WINAPI *FWinHttpGetDefaultProxyConfiguration)(WINHTTP_PROXY_INFO*);
     FWinHttpGetDefaultProxyConfiguration GetDefaultProxyConfiguration = reinterpret_cast<FWinHttpGetDefaultProxyConfiguration>(
-          LibraryLoader.GetProcAddress("WinHttpGetDefaultProxyConfiguration"));
+      LibraryLoader.GetProcAddress("WinHttpGetDefaultProxyConfiguration"));
     if (GetDefaultProxyConfiguration)
     {
       if (GetDefaultProxyConfiguration(&ProxyInfo))
