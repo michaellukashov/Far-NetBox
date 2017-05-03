@@ -30,7 +30,10 @@ class TFileZillaImpl : public TFileZillaIntf
 {
 public:
   explicit TFileZillaImpl(TFTPFileSystem * FileSystem);
-  virtual ~TFileZillaImpl() {}
+
+  virtual ~TFileZillaImpl()
+  {
+  }
 
   virtual const wchar_t * Option(intptr_t OptionID) const;
   virtual intptr_t OptionVal(intptr_t OptionID) const;
@@ -322,22 +325,22 @@ void TFTPFileSystem::Open()
 
   switch (Data->GetFtps())
   {
-    case ftpsNone:
-      // noop;
-      break;
+  case ftpsNone:
+    // noop;
+    break;
 
-    case ftpsImplicit:
-      FSessionInfo.SecurityProtocolName = LoadStr(FTPS_IMPLICIT);
-      break;
+  case ftpsImplicit:
+    FSessionInfo.SecurityProtocolName = LoadStr(FTPS_IMPLICIT);
+    break;
 
-    case ftpsExplicitSsl:
-    case ftpsExplicitTls:
-      FSessionInfo.SecurityProtocolName = LoadStr(FTPS_EXPLICIT);
-      break;
+  case ftpsExplicitSsl:
+  case ftpsExplicitTls:
+    FSessionInfo.SecurityProtocolName = LoadStr(FTPS_EXPLICIT);
+    break;
 
-    default:
-      DebugFail();
-      break;
+  default:
+    DebugFail();
+    break;
   }
 
   FLastDataSent = Now();
@@ -354,15 +357,15 @@ void TFTPFileSystem::Open()
       TFileZillaIntf::TLogLevel LogLevel;
       switch (FTerminal->GetConfiguration()->GetActualLogProtocol())
       {
-        default:
-        case 0:
-        case 1:
-          LogLevel = TFileZillaIntf::LOG_PROGRESS;
-          break;
+      default:
+      case 0:
+      case 1:
+        LogLevel = TFileZillaIntf::LOG_PROGRESS;
+        break;
 
-        case 2:
-          LogLevel = TFileZillaIntf::LOG_INFO;
-          break;
+      case 2:
+        LogLevel = TFileZillaIntf::LOG_INFO;
+        break;
       }
       FileZillaImpl->SetDebugLevel(LogLevel);
       FileZillaImpl->Init();
@@ -392,28 +395,28 @@ void TFTPFileSystem::Open()
   int ServerType = 0;
   switch (Data->GetFtps())
   {
-    case ftpsNone:
-      ServerType = TFileZillaIntf::SERVER_FTP;
-      break;
+  case ftpsNone:
+    ServerType = TFileZillaIntf::SERVER_FTP;
+    break;
 
-    case ftpsImplicit:
-      ServerType = TFileZillaIntf::SERVER_FTP_SSL_IMPLICIT;
-      FSessionInfo.SecurityProtocolName = LoadStr(FTPS_IMPLICIT);
-      break;
+  case ftpsImplicit:
+    ServerType = TFileZillaIntf::SERVER_FTP_SSL_IMPLICIT;
+    FSessionInfo.SecurityProtocolName = LoadStr(FTPS_IMPLICIT);
+    break;
 
-    case ftpsExplicitSsl:
-      ServerType = TFileZillaIntf::SERVER_FTP_SSL_EXPLICIT;
-      FSessionInfo.SecurityProtocolName = LoadStr(FTPS_EXPLICIT);
-      break;
+  case ftpsExplicitSsl:
+    ServerType = TFileZillaIntf::SERVER_FTP_SSL_EXPLICIT;
+    FSessionInfo.SecurityProtocolName = LoadStr(FTPS_EXPLICIT);
+    break;
 
-    case ftpsExplicitTls:
-      ServerType = TFileZillaIntf::SERVER_FTP_TLS_EXPLICIT;
-      FSessionInfo.SecurityProtocolName = LoadStr(FTPS_EXPLICIT);
-      break;
+  case ftpsExplicitTls:
+    ServerType = TFileZillaIntf::SERVER_FTP_TLS_EXPLICIT;
+    FSessionInfo.SecurityProtocolName = LoadStr(FTPS_EXPLICIT);
+    break;
 
-    default:
-      DebugFail();
-      break;
+  default:
+    DebugFail();
+    break;
   }
 
   intptr_t Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
@@ -425,17 +428,17 @@ void TFTPFileSystem::Open()
 
   switch (CodePage)
   {
-    case CP_ACP:
-      UTF8 = 2; // no UTF8
-      break;
+  case CP_ACP:
+    UTF8 = 2; // no UTF8
+    break;
 
-    case CP_UTF8:
-      UTF8 = 1; // always UTF8
-      break;
+  case CP_UTF8:
+    UTF8 = 1; // always UTF8
+    break;
 
-    default:
-      UTF8 = 0; // auto detect
-      break;
+  default:
+    UTF8 = 0; // auto detect
+    break;
   }
 
   FPasswordFailed = false;
@@ -823,7 +826,7 @@ void TFTPFileSystem::Idle()
 
     // Keep session alive
     if ((FTerminal->GetSessionData()->GetFtpPingType() != ptOff) &&
-        ((Now() - FLastDataSent).GetValue() > FTerminal->GetSessionData()->GetFtpPingIntervalDT().GetValue() * 4))
+      ((Now() - FLastDataSent).GetValue() > FTerminal->GetSessionData()->GetFtpPingIntervalDT().GetValue() * 4))
     {
       FTerminal->LogEvent("Dummy directory read to keep session alive.");
       FLastDataSent = Now(); // probably redundant to the same statement in DoReadDirectory
@@ -1422,57 +1425,57 @@ bool TFTPFileSystem::ConfirmOverwrite(
   switch (Answer)
   {
     // resume
-    case qaRetry:
-      OverwriteMode = omResume;
-      DebugAssert(FileParams != nullptr);
-      DebugAssert(CanResume);
-      FFileTransferResumed = FileParams ? FileParams->DestSize : 0;
-      break;
+  case qaRetry:
+    OverwriteMode = omResume;
+    DebugAssert(FileParams != nullptr);
+    DebugAssert(CanResume);
+    FFileTransferResumed = FileParams ? FileParams->DestSize : 0;
+    break;
 
     // rename
-    case qaIgnore:
-      if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
-            LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, ATargetFileName))
-      {
-        OverwriteMode = omOverwrite;
-      }
-      else
-      {
-        if (!OperationProgress->Cancel)
-        {
-          OperationProgress->Cancel = csCancel;
-        }
-        FFileTransferAbort = ftaCancel;
-        Result = false;
-      }
-      break;
-
-    case qaYes:
+  case qaIgnore:
+    if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
+                              LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, ATargetFileName))
+    {
       OverwriteMode = omOverwrite;
-      break;
-
-    case qaCancel:
+    }
+    else
+    {
       if (!OperationProgress->Cancel)
       {
         OperationProgress->Cancel = csCancel;
       }
       FFileTransferAbort = ftaCancel;
       Result = false;
-      break;
+    }
+    break;
 
-    case qaNo:
-      FFileTransferAbort = ftaSkip;
-      Result = false;
-      break;
+  case qaYes:
+    OverwriteMode = omOverwrite;
+    break;
 
-    case qaSkip:
-      OverwriteMode = omComplete;
-      break;
+  case qaCancel:
+    if (!OperationProgress->Cancel)
+    {
+      OperationProgress->Cancel = csCancel;
+    }
+    FFileTransferAbort = ftaCancel;
+    Result = false;
+    break;
 
-    default:
-      DebugFail();
-      Result = false;
-      break;
+  case qaNo:
+    FFileTransferAbort = ftaSkip;
+    Result = false;
+    break;
+
+  case qaSkip:
+    OverwriteMode = omComplete;
+    break;
+
+  default:
+    DebugFail();
+    Result = false;
+    break;
   }
   return Result;
 }
@@ -1569,12 +1572,12 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
 
   switch (FFileTransferAbort)
   {
-    case ftaSkip:
-      ThrowSkipFileNull();
+  case ftaSkip:
+    ThrowSkipFileNull();
 
-    case ftaCancel:
-      Abort();
-      break;
+  case ftaCancel:
+    Abort();
+    break;
   }
 
   if (!FFileTransferCancelled)
@@ -2123,8 +2126,8 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
     // MFMT-like (two argument) call to MDTM.
     // IIS definitely does.
     if (FFileTransferPreserveTime &&
-        ((FServerCapabilities->GetCapability(mfmt_command) == yes) ||
-         ((FServerCapabilities->GetCapability(mdtm_command) == yes))))
+      ((FServerCapabilities->GetCapability(mfmt_command) == yes) ||
+        ((FServerCapabilities->GetCapability(mdtm_command) == yes))))
     {
       TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, Modification);
 
@@ -2441,53 +2444,53 @@ bool TFTPFileSystem::IsCapable(intptr_t Capability) const
   DebugAssert(FTerminal);
   switch (Capability)
   {
-    case fcResolveSymlink: // sic
-    case fcTextMode:
-    case fcModeChanging: // but not fcModeChangingUpload
-    case fcNewerOnlyUpload:
-    case fcAnyCommand: // but not fcShellAnyCommand
-    case fcRename:
-    case fcRemoteMove:
-    case fcRemoveBOMUpload:
-    case fcMoveToQueue:
-      return true;
+  case fcResolveSymlink: // sic
+  case fcTextMode:
+  case fcModeChanging: // but not fcModeChangingUpload
+  case fcNewerOnlyUpload:
+  case fcAnyCommand: // but not fcShellAnyCommand
+  case fcRename:
+  case fcRemoteMove:
+  case fcRemoveBOMUpload:
+  case fcMoveToQueue:
+    return true;
 
-    case fcPreservingTimestampUpload:
-      return (FServerCapabilities->GetCapability(mfmt_command) == yes);
+  case fcPreservingTimestampUpload:
+    return (FServerCapabilities->GetCapability(mfmt_command) == yes);
 
-    case fcRemoteCopy:
-      return SupportsSiteCommand(CopySiteCommand);
+  case fcRemoteCopy:
+    return SupportsSiteCommand(CopySiteCommand);
 
-    case fcSymbolicLink:
-      return SupportsSiteCommand(SymlinkSiteCommand);
+  case fcSymbolicLink:
+    return SupportsSiteCommand(SymlinkSiteCommand);
 
-    case fcCalculatingChecksum:
-      return FSupportsAnyChecksumFeature;
+  case fcCalculatingChecksum:
+    return FSupportsAnyChecksumFeature;
 
-    case fcCheckingSpaceAvailable:
-      return FBytesAvailableSupported || SupportsCommand(AvblCommand) || SupportsCommand(XQuotaCommand);
+  case fcCheckingSpaceAvailable:
+    return FBytesAvailableSupported || SupportsCommand(AvblCommand) || SupportsCommand(XQuotaCommand);
 
-    case fcModeChangingUpload:
-    case fcLoadingAdditionalProperties:
-    case fcShellAnyCommand:
-    case fcHardLink:
-    case fcUserGroupListing:
-    case fcGroupChanging:
-    case fcOwnerChanging:
-    case fcGroupOwnerChangingByID:
-    case fcSecondaryShell:
-    case fcNativeTextMode:
-    case fcTimestampChanging:
-    case fcIgnorePermErrors:
-    case fcRemoveCtrlZUpload:
-    case fcLocking:
-    case fcPreservingTimestampDirs:
-    case fcResumeSupport:
-      return false;
+  case fcModeChangingUpload:
+  case fcLoadingAdditionalProperties:
+  case fcShellAnyCommand:
+  case fcHardLink:
+  case fcUserGroupListing:
+  case fcGroupChanging:
+  case fcOwnerChanging:
+  case fcGroupOwnerChangingByID:
+  case fcSecondaryShell:
+  case fcNativeTextMode:
+  case fcTimestampChanging:
+  case fcIgnorePermErrors:
+  case fcRemoveCtrlZUpload:
+  case fcLocking:
+  case fcPreservingTimestampDirs:
+  case fcResumeSupport:
+    return false;
 
-    default:
-      DebugFail();
-      return false;
+  default:
+    DebugFail();
+    return false;
   }
 }
 
@@ -2776,10 +2779,10 @@ void TFTPFileSystem::AutoDetectTimeDifference(
   const UnicodeString & Directory, const TCopyParamType * CopyParam, intptr_t Params)
 {
   if (NeedAutoDetectTimeDifference() &&
-      // do we need FTimeDifference for the operation?
-      // (tmAutomatic - AsciiFileMask can theoretically include time constraints, while it is unlikely)
-      (!FLAGSET(Params, cpNoConfirmation) ||
-       CopyParam->GetNewerOnly() || (!(CopyParam->GetTransferMode() == tmAutomatic)) || !CopyParam->GetIncludeFileMask().GetMasks().IsEmpty()))
+    // do we need FTimeDifference for the operation?
+    // (tmAutomatic - AsciiFileMask can theoretically include time constraints, while it is unlikely)
+    (!FLAGSET(Params, cpNoConfirmation) ||
+      CopyParam->GetNewerOnly() || (!(CopyParam->GetTransferMode() == tmAutomatic)) || !CopyParam->GetIncludeFileMask().GetMasks().IsEmpty()))
   {
     FTerminal->LogEvent(L"Retrieving listing to detect timezone difference");
     DummyReadDirectory(Directory);
@@ -3173,33 +3176,33 @@ const wchar_t * TFTPFileSystem::GetOption(intptr_t OptionID) const
 
   switch (OptionID)
   {
-    case OPTION_PROXYHOST:
-    case OPTION_FWHOST:
-      FOptionScratch = Data->GetProxyHost();
-      break;
+  case OPTION_PROXYHOST:
+  case OPTION_FWHOST:
+    FOptionScratch = Data->GetProxyHost();
+    break;
 
-    case OPTION_PROXYUSER:
-    case OPTION_FWUSER:
-      FOptionScratch = Data->GetProxyUsername();
-      break;
+  case OPTION_PROXYUSER:
+  case OPTION_FWUSER:
+    FOptionScratch = Data->GetProxyUsername();
+    break;
 
-    case OPTION_PROXYPASS:
-    case OPTION_FWPASS:
-      FOptionScratch = Data->GetProxyPassword();
-      break;
+  case OPTION_PROXYPASS:
+  case OPTION_FWPASS:
+    FOptionScratch = Data->GetProxyPassword();
+    break;
 
-    case OPTION_TRANSFERIP:
-      FOptionScratch = FTerminal->GetConfiguration()->GetExternalIpAddress();
-      break;
+  case OPTION_TRANSFERIP:
+    FOptionScratch = FTerminal->GetConfiguration()->GetExternalIpAddress();
+    break;
 
-    case OPTION_ANONPWD:
-    case OPTION_TRANSFERIP6:
-      FOptionScratch.Clear();
-      break;
+  case OPTION_ANONPWD:
+  case OPTION_TRANSFERIP6:
+    FOptionScratch.Clear();
+    break;
 
-    default:
-      DebugFail();
-      FOptionScratch.Clear();
+  default:
+    DebugFail();
+    FOptionScratch.Clear();
   }
 
   return FOptionScratch.c_str();
@@ -3212,152 +3215,152 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
 
   switch (OptionID)
   {
-    case OPTION_PROXYTYPE:
-      switch (Data->GetActualProxyMethod())
-      {
-        case ::pmNone:
-          Result = 0; // PROXYTYPE_NOPROXY;
-          break;
-
-        case pmSocks4:
-          Result = 2; // PROXYTYPE_SOCKS4A
-          break;
-
-        case pmSocks5:
-          Result = 3; // PROXYTYPE_SOCKS5
-          break;
-
-        case pmHTTP:
-          Result = 4; // PROXYTYPE_HTTP11
-          break;
-
-        case pmTelnet:
-        case pmCmd:
-        default:
-          DebugFail();
-          Result = 0; // PROXYTYPE_NOPROXY;
-          break;
-      }
+  case OPTION_PROXYTYPE:
+    switch (Data->GetActualProxyMethod())
+    {
+    case ::pmNone:
+      Result = 0; // PROXYTYPE_NOPROXY;
       break;
 
-    case OPTION_PROXYPORT:
-    case OPTION_FWPORT:
-      Result = Data->GetProxyPort();
+    case pmSocks4:
+      Result = 2; // PROXYTYPE_SOCKS4A
       break;
 
-    case OPTION_PROXYUSELOGON:
-      Result = !Data->GetProxyUsername().IsEmpty();
+    case pmSocks5:
+      Result = 3; // PROXYTYPE_SOCKS5
       break;
 
-    case OPTION_LOGONTYPE:
-      Result = Data->GetFtpProxyLogonType();
+    case pmHTTP:
+      Result = 4; // PROXYTYPE_HTTP11
       break;
 
-    case OPTION_TIMEOUTLENGTH:
-      Result = Data->GetTimeout();
-      break;
-
-    case OPTION_DEBUGSHOWLISTING:
-      Result = TRUE;
-      break;
-
-    case OPTION_PASV:
-      // should never get here t_server.nPasv being nonzero
-      DebugFail();
-      Result = FALSE;
-      break;
-
-    case OPTION_PRESERVEDOWNLOADFILETIME:
-    case OPTION_MPEXT_PRESERVEUPLOADFILETIME:
-      Result = FFileTransferPreserveTime ? TRUE : FALSE;
-      break;
-
-    case OPTION_LIMITPORTRANGE:
-      Result = FALSE;
-      break;
-
-    case OPTION_PORTRANGELOW:
-    case OPTION_PORTRANGEHIGH:
-      // should never get here OPTION_LIMITPORTRANGE being zero
-      DebugFail();
-      Result = 0;
-      break;
-
-    case OPTION_ENABLE_IPV6:
-      Result = ((Data->GetAddressFamily() != afIPv4) ? TRUE : FALSE);
-      break;
-
-    case OPTION_KEEPALIVE:
-      Result = ((Data->GetFtpPingType() != ptOff) ? TRUE : FALSE);
-      break;
-
-    case OPTION_INTERVALLOW:
-    case OPTION_INTERVALHIGH:
-      Result = Data->GetFtpPingInterval();
-      break;
-
-    case OPTION_VMSALLREVISIONS:
-      Result = FALSE;
-      break;
-
-    case OPTION_SPEEDLIMIT_DOWNLOAD_TYPE:
-    case OPTION_SPEEDLIMIT_UPLOAD_TYPE:
-      Result = (FFileTransferCPSLimit == 0 ? 0 : 1);
-      break;
-
-    case OPTION_SPEEDLIMIT_DOWNLOAD_VALUE:
-    case OPTION_SPEEDLIMIT_UPLOAD_VALUE:
-      Result = static_cast<intptr_t>((FFileTransferCPSLimit / 1024)); // FZAPI expects KB/s
-      break;
-
-    case OPTION_MPEXT_SHOWHIDDEN:
-      Result = (FDoListAll ? TRUE : FALSE);
-      break;
-
-    case OPTION_MPEXT_SSLSESSIONREUSE:
-      Result = (Data->GetSslSessionReuse() ? TRUE : FALSE);
-      break;
-
-    case OPTION_MPEXT_MIN_TLS_VERSION:
-      Result = Data->GetMinTlsVersion();
-      break;
-
-    case OPTION_MPEXT_MAX_TLS_VERSION:
-      Result = Data->GetMaxTlsVersion();
-      break;
-
-    case OPTION_MPEXT_SNDBUF:
-      Result = Data->GetSendBuf();
-      break;
-
-    case OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY:
-      Result = FTransferActiveImmediately;
-      break;
-
-    case OPTION_MPEXT_REMOVE_BOM:
-      Result = FFileTransferRemoveBOM ? TRUE : FALSE;
-      break;
-
-    case OPTION_MPEXT_LOG_SENSITIVE:
-      Result = FTerminal->GetConfiguration()->GetLogSensitive() ? TRUE : FALSE;
-      break;
-
-    case OPTION_MPEXT_HOST:
-      Result = (Data->GetFtpHost() == asOn);
-      break;
-
-    case OPTION_MPEXT_NODELAY:
-      Result = Data->GetTcpNoDelay();
-      break;
-
-    case OPTION_MPEXT_NOLIST:
-      Result = FFileTransferNoList ? TRUE : FALSE;
-      break;
-
+    case pmTelnet:
+    case pmCmd:
     default:
       DebugFail();
-      Result = FALSE;
+      Result = 0; // PROXYTYPE_NOPROXY;
       break;
+    }
+    break;
+
+  case OPTION_PROXYPORT:
+  case OPTION_FWPORT:
+    Result = Data->GetProxyPort();
+    break;
+
+  case OPTION_PROXYUSELOGON:
+    Result = !Data->GetProxyUsername().IsEmpty();
+    break;
+
+  case OPTION_LOGONTYPE:
+    Result = Data->GetFtpProxyLogonType();
+    break;
+
+  case OPTION_TIMEOUTLENGTH:
+    Result = Data->GetTimeout();
+    break;
+
+  case OPTION_DEBUGSHOWLISTING:
+    Result = TRUE;
+    break;
+
+  case OPTION_PASV:
+    // should never get here t_server.nPasv being nonzero
+    DebugFail();
+    Result = FALSE;
+    break;
+
+  case OPTION_PRESERVEDOWNLOADFILETIME:
+  case OPTION_MPEXT_PRESERVEUPLOADFILETIME:
+    Result = FFileTransferPreserveTime ? TRUE : FALSE;
+    break;
+
+  case OPTION_LIMITPORTRANGE:
+    Result = FALSE;
+    break;
+
+  case OPTION_PORTRANGELOW:
+  case OPTION_PORTRANGEHIGH:
+    // should never get here OPTION_LIMITPORTRANGE being zero
+    DebugFail();
+    Result = 0;
+    break;
+
+  case OPTION_ENABLE_IPV6:
+    Result = ((Data->GetAddressFamily() != afIPv4) ? TRUE : FALSE);
+    break;
+
+  case OPTION_KEEPALIVE:
+    Result = ((Data->GetFtpPingType() != ptOff) ? TRUE : FALSE);
+    break;
+
+  case OPTION_INTERVALLOW:
+  case OPTION_INTERVALHIGH:
+    Result = Data->GetFtpPingInterval();
+    break;
+
+  case OPTION_VMSALLREVISIONS:
+    Result = FALSE;
+    break;
+
+  case OPTION_SPEEDLIMIT_DOWNLOAD_TYPE:
+  case OPTION_SPEEDLIMIT_UPLOAD_TYPE:
+    Result = (FFileTransferCPSLimit == 0 ? 0 : 1);
+    break;
+
+  case OPTION_SPEEDLIMIT_DOWNLOAD_VALUE:
+  case OPTION_SPEEDLIMIT_UPLOAD_VALUE:
+    Result = static_cast<intptr_t>((FFileTransferCPSLimit / 1024)); // FZAPI expects KB/s
+    break;
+
+  case OPTION_MPEXT_SHOWHIDDEN:
+    Result = (FDoListAll ? TRUE : FALSE);
+    break;
+
+  case OPTION_MPEXT_SSLSESSIONREUSE:
+    Result = (Data->GetSslSessionReuse() ? TRUE : FALSE);
+    break;
+
+  case OPTION_MPEXT_MIN_TLS_VERSION:
+    Result = Data->GetMinTlsVersion();
+    break;
+
+  case OPTION_MPEXT_MAX_TLS_VERSION:
+    Result = Data->GetMaxTlsVersion();
+    break;
+
+  case OPTION_MPEXT_SNDBUF:
+    Result = Data->GetSendBuf();
+    break;
+
+  case OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY:
+    Result = FTransferActiveImmediately;
+    break;
+
+  case OPTION_MPEXT_REMOVE_BOM:
+    Result = FFileTransferRemoveBOM ? TRUE : FALSE;
+    break;
+
+  case OPTION_MPEXT_LOG_SENSITIVE:
+    Result = FTerminal->GetConfiguration()->GetLogSensitive() ? TRUE : FALSE;
+    break;
+
+  case OPTION_MPEXT_HOST:
+    Result = (Data->GetFtpHost() == asOn);
+    break;
+
+  case OPTION_MPEXT_NODELAY:
+    Result = Data->GetTcpNoDelay();
+    break;
+
+  case OPTION_MPEXT_NOLIST:
+    Result = FFileTransferNoList ? TRUE : FALSE;
+    break;
+
+  default:
+    DebugFail();
+    Result = FALSE;
+    break;
   }
 
   return Result;
@@ -4085,82 +4088,82 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
 
   switch (Type)
   {
-    case TFileZillaIntf::LOG_STATUS:
-      FTerminal->Information(Status, true);
-      LogType = llMessage;
-      break;
+  case TFileZillaIntf::LOG_STATUS:
+    FTerminal->Information(Status, true);
+    LogType = llMessage;
+    break;
 
-    case TFileZillaIntf::LOG_COMMAND:
-      if (Status == L"SYST")
-      {
-        // not to trigger the assert in HandleReplyStatus,
-        // when SYST command is used by the user
-        FSystem.Clear();
-        FLastCommand = SYST;
-      }
-      else if (Status == L"FEAT")
-      {
-        FLastCommand = FEAT;
-      }
-      else if (Status.SubString(1, 5) == L"PASS ")
-      {
-        FLastCommand = PASS;
-      }
-      else
-      {
-        FLastCommand = CMD_UNKNOWN;
-      }
-      LogType = llInput;
-      break;
+  case TFileZillaIntf::LOG_COMMAND:
+    if (Status == L"SYST")
+    {
+      // not to trigger the assert in HandleReplyStatus,
+      // when SYST command is used by the user
+      FSystem.Clear();
+      FLastCommand = SYST;
+    }
+    else if (Status == L"FEAT")
+    {
+      FLastCommand = FEAT;
+    }
+    else if (Status.SubString(1, 5) == L"PASS ")
+    {
+      FLastCommand = PASS;
+    }
+    else
+    {
+      FLastCommand = CMD_UNKNOWN;
+    }
+    LogType = llInput;
+    break;
 
-    case TFileZillaIntf::LOG_ERROR:
-    case TFileZillaIntf::LOG_APIERROR:
-    case TFileZillaIntf::LOG_WARNING:
-      // when timeout message occurs, break loop waiting for response code
-      // by setting dummy one
-      if (Type == TFileZillaIntf::LOG_ERROR)
+  case TFileZillaIntf::LOG_ERROR:
+  case TFileZillaIntf::LOG_APIERROR:
+  case TFileZillaIntf::LOG_WARNING:
+    // when timeout message occurs, break loop waiting for response code
+    // by setting dummy one
+    if (Type == TFileZillaIntf::LOG_ERROR)
+    {
+      if (StartsStr(FTimeoutStatus, Status))
       {
-        if (StartsStr(FTimeoutStatus, Status))
+        if (NoFinalLastCode())
         {
-          if (NoFinalLastCode())
-          {
-            SetLastCode(DummyTimeoutCode);
-          }
-        }
-        else if (Status == FDisconnectStatus)
-        {
-          if (NoFinalLastCode())
-          {
-            SetLastCode(DummyDisconnectCode);
-          }
+          SetLastCode(DummyTimeoutCode);
         }
       }
-      // there can be multiple error messages associated with single failure
-      // (such as "cannot open local file..." followed by "download failed")
-      FLastError->Add(Status);
-      LogType = llMessage;
-      break;
+      else if (Status == FDisconnectStatus)
+      {
+        if (NoFinalLastCode())
+        {
+          SetLastCode(DummyDisconnectCode);
+        }
+      }
+    }
+    // there can be multiple error messages associated with single failure
+    // (such as "cannot open local file..." followed by "download failed")
+    FLastError->Add(Status);
+    LogType = llMessage;
+    break;
 
-    case TFileZillaIntf::LOG_PROGRESS:
-      LogType = llMessage;
-      break;
+  case TFileZillaIntf::LOG_PROGRESS:
+    LogType = llMessage;
+    break;
 
-    case TFileZillaIntf::LOG_REPLY:
-      HandleReplyStatus(AStatus);
-      LogType = llOutput;
-      break;
+  case TFileZillaIntf::LOG_REPLY:
+    HandleReplyStatus(AStatus);
+    LogType = llOutput;
+    break;
 
-    case TFileZillaIntf::LOG_INFO:
-      LogType = llMessage;
-      break;
+  case TFileZillaIntf::LOG_INFO:
+    LogType = llMessage;
+    break;
 
-    case TFileZillaIntf::LOG_DEBUG:
-      LogType = llMessage;
-      break;
+  case TFileZillaIntf::LOG_DEBUG:
+    LogType = llMessage;
+    break;
 
-    default:
-      DebugFail();
-      break;
+  default:
+    DebugFail();
+    break;
   }
 
   if (FTerminal->GetLog()->GetLogging() && (LogType != static_cast<TLogLineType>(-1)))
@@ -4351,17 +4354,19 @@ UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
 {
   UnicodeString Result =
     FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
-       FormatContactList(FormatContactList(FormatContactList(
-        Contact.Organization, Contact.Unit).c_str(), Contact.CommonName).c_str(), Contact.Mail).c_str());
+      FormatContactList(FormatContactList(FormatContactList(
+        Contact.Organization, Contact.Unit).c_str(), Contact.CommonName).c_str(), Contact.Mail).c_str())
+  ;
 
   if ((wcslen(Contact.Country) > 0) ||
-      (wcslen(Contact.StateProvince) > 0) ||
-      (wcslen(Contact.Town) > 0))
+    (wcslen(Contact.StateProvince) > 0) ||
+    (wcslen(Contact.Town) > 0))
   {
     Result +=
       FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 2).c_str(),
-         FormatContactList(FormatContactList(
-          Contact.Country, Contact.StateProvince).c_str(), Contact.Town).c_str());
+        FormatContactList(FormatContactList(
+          Contact.Country, Contact.StateProvince).c_str(), Contact.Town).c_str())
+      ;
   }
 
   if (wcslen(Contact.Other) > 0)
@@ -4530,77 +4535,77 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       UnicodeString VerificationResultStr;
       switch (Data.VerificationResult)
       {
-        case X509_V_OK:
-          Trusted = true;
-          break;
-        case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
-          VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_GET_ISSUER_CERT);
-          TryWindowsSystemCertificateStore = true;
-          break;
-        case X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE:
-          VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE);
-          break;
-        case X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY:
-          VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY);
-          break;
-        case X509_V_ERR_CERT_SIGNATURE_FAILURE:
-          VerificationResultStr = LoadStr(CERT_ERR_CERT_SIGNATURE_FAILURE);
-          break;
-        case X509_V_ERR_CERT_NOT_YET_VALID:
-          VerificationResultStr = LoadStr(CERT_ERR_CERT_NOT_YET_VALID);
-          break;
-        case X509_V_ERR_CERT_HAS_EXPIRED:
-          VerificationResultStr = LoadStr(CERT_ERR_CERT_HAS_EXPIRED);
-          break;
-        case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
-          VerificationResultStr = LoadStr(CERT_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD);
-          break;
-        case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
-          VerificationResultStr = LoadStr(CERT_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD);
-          break;
-        case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
-          VerificationResultStr = LoadStr(CERT_ERR_DEPTH_ZERO_SELF_SIGNED_CERT);
-          TryWindowsSystemCertificateStore = true;
-          break;
-        case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
-          VerificationResultStr = LoadStr(CERT_ERR_SELF_SIGNED_CERT_IN_CHAIN);
-          TryWindowsSystemCertificateStore = true;
-          break;
-        case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
-          VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY);
-          TryWindowsSystemCertificateStore = true;
-          break;
-        case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
-          VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE);
-          TryWindowsSystemCertificateStore = true;
-          break;
-        case X509_V_ERR_INVALID_CA:
-          VerificationResultStr = LoadStr(CERT_ERR_INVALID_CA);
-          break;
-        case X509_V_ERR_PATH_LENGTH_EXCEEDED:
-          VerificationResultStr = LoadStr(CERT_ERR_PATH_LENGTH_EXCEEDED);
-          break;
-        case X509_V_ERR_INVALID_PURPOSE:
-          VerificationResultStr = LoadStr(CERT_ERR_INVALID_PURPOSE);
-          break;
-        case X509_V_ERR_CERT_UNTRUSTED:
-          VerificationResultStr = LoadStr(CERT_ERR_CERT_UNTRUSTED);
-          TryWindowsSystemCertificateStore = true;
-          break;
-        case X509_V_ERR_CERT_REJECTED:
-          VerificationResultStr = LoadStr(CERT_ERR_CERT_REJECTED);
-          break;
-        case X509_V_ERR_KEYUSAGE_NO_CERTSIGN:
-          VerificationResultStr = LoadStr(CERT_ERR_KEYUSAGE_NO_CERTSIGN);
-          break;
-        case X509_V_ERR_CERT_CHAIN_TOO_LONG:
-          VerificationResultStr = LoadStr(CERT_ERR_CERT_CHAIN_TOO_LONG);
-          break;
-        default:
-          VerificationResultStr =
-            FORMAT(L"%s (%s)",
-              LoadStr(CERT_ERR_UNKNOWN).c_str(), UnicodeString(X509_verify_cert_error_string(Data.VerificationResult)).c_str());
-          break;
+      case X509_V_OK:
+        Trusted = true;
+        break;
+      case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
+        VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_GET_ISSUER_CERT);
+        TryWindowsSystemCertificateStore = true;
+        break;
+      case X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE:
+        VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE);
+        break;
+      case X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY:
+        VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY);
+        break;
+      case X509_V_ERR_CERT_SIGNATURE_FAILURE:
+        VerificationResultStr = LoadStr(CERT_ERR_CERT_SIGNATURE_FAILURE);
+        break;
+      case X509_V_ERR_CERT_NOT_YET_VALID:
+        VerificationResultStr = LoadStr(CERT_ERR_CERT_NOT_YET_VALID);
+        break;
+      case X509_V_ERR_CERT_HAS_EXPIRED:
+        VerificationResultStr = LoadStr(CERT_ERR_CERT_HAS_EXPIRED);
+        break;
+      case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
+        VerificationResultStr = LoadStr(CERT_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD);
+        break;
+      case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
+        VerificationResultStr = LoadStr(CERT_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD);
+        break;
+      case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+        VerificationResultStr = LoadStr(CERT_ERR_DEPTH_ZERO_SELF_SIGNED_CERT);
+        TryWindowsSystemCertificateStore = true;
+        break;
+      case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+        VerificationResultStr = LoadStr(CERT_ERR_SELF_SIGNED_CERT_IN_CHAIN);
+        TryWindowsSystemCertificateStore = true;
+        break;
+      case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
+        VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY);
+        TryWindowsSystemCertificateStore = true;
+        break;
+      case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
+        VerificationResultStr = LoadStr(CERT_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE);
+        TryWindowsSystemCertificateStore = true;
+        break;
+      case X509_V_ERR_INVALID_CA:
+        VerificationResultStr = LoadStr(CERT_ERR_INVALID_CA);
+        break;
+      case X509_V_ERR_PATH_LENGTH_EXCEEDED:
+        VerificationResultStr = LoadStr(CERT_ERR_PATH_LENGTH_EXCEEDED);
+        break;
+      case X509_V_ERR_INVALID_PURPOSE:
+        VerificationResultStr = LoadStr(CERT_ERR_INVALID_PURPOSE);
+        break;
+      case X509_V_ERR_CERT_UNTRUSTED:
+        VerificationResultStr = LoadStr(CERT_ERR_CERT_UNTRUSTED);
+        TryWindowsSystemCertificateStore = true;
+        break;
+      case X509_V_ERR_CERT_REJECTED:
+        VerificationResultStr = LoadStr(CERT_ERR_CERT_REJECTED);
+        break;
+      case X509_V_ERR_KEYUSAGE_NO_CERTSIGN:
+        VerificationResultStr = LoadStr(CERT_ERR_KEYUSAGE_NO_CERTSIGN);
+        break;
+      case X509_V_ERR_CERT_CHAIN_TOO_LONG:
+        VerificationResultStr = LoadStr(CERT_ERR_CERT_CHAIN_TOO_LONG);
+        break;
+      default:
+        VerificationResultStr =
+          FORMAT(L"%s (%s)",
+            LoadStr(CERT_ERR_UNKNOWN).c_str(), UnicodeString(X509_verify_cert_error_string(Data.VerificationResult)).c_str());
+        break;
       }
 
       bool IsHostNameIPAddress = IsIPAddress(FTerminal->GetSessionData()->GetHostNameExpanded());
@@ -5043,45 +5048,45 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
   {
     switch (State)
     {
-      case STATE_INIT:
-        if ((Str[Index] == L'"') || (Str[Index] == L'\''))
-        {
-          Quote = Str[Index];
-          State = STATE_QUOTED;
-          Str.Delete(Index, 1);
-        }
-        else
-        {
-          DebugFail();
-          // no quoted string
-          Str.SetLength(0);
-        }
-        break;
+    case STATE_INIT:
+      if ((Str[Index] == L'"') || (Str[Index] == L'\''))
+      {
+        Quote = Str[Index];
+        State = STATE_QUOTED;
+        Str.Delete(Index, 1);
+      }
+      else
+      {
+        DebugFail();
+        // no quoted string
+        Str.SetLength(0);
+      }
+      break;
 
-      case STATE_QUOTED:
-        if (Str[Index] == Quote)
-        {
-          State = STATE_QUOTE;
-          Str.Delete(Index, 1);
-        }
-        else
-        {
-          ++Index;
-        }
-        break;
+    case STATE_QUOTED:
+      if (Str[Index] == Quote)
+      {
+        State = STATE_QUOTE;
+        Str.Delete(Index, 1);
+      }
+      else
+      {
+        ++Index;
+      }
+      break;
 
-      case STATE_QUOTE:
-        if (Str[Index] == Quote)
-        {
-          ++Index;
-        }
-        else
-        {
-          // end of quoted string, trim the rest
-          Str.SetLength(Index - 1);
-          State = STATE_DONE;
-        }
-        break;
+    case STATE_QUOTE:
+      if (Str[Index] == Quote)
+      {
+        ++Index;
+      }
+      else
+      {
+        // end of quoted string, trim the rest
+        Str.SetLength(Index - 1);
+        State = STATE_DONE;
+      }
+      break;
     }
   }
 
