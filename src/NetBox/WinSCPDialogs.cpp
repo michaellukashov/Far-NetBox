@@ -98,12 +98,16 @@ void TWinSCPDialog::AddStandardButtons(int Shift, bool ButtonsOnly)
 }
 
 class TTabButton;
+
 class TTabbedDialog : public TWinSCPDialog
 {
 friend class TTabButton;
 public:
   explicit TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount);
-  virtual ~TTabbedDialog() {}
+
+  virtual ~TTabbedDialog()
+  {
+  }
 
   intptr_t GetTab() const { return FTab; }
 
@@ -248,7 +252,7 @@ bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
   if ((KeyCode == KEY_CTRLPGDN) || (KeyCode == KEY_CTRLPGUP) ||
-      (KeyCode == KEY_CTRLNUMPAD3) || (KeyCode == KEY_CTRLNUMPAD9))
+    (KeyCode == KEY_CTRLNUMPAD3) || (KeyCode == KEY_CTRLNUMPAD9))
   {
     intptr_t NewTab = FTab;
     do
@@ -534,8 +538,8 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   LogToFileCheck->SetChecked(GetConfiguration()->GetLogToFile());
   LogFileNameEdit->SetText(
     (!GetConfiguration()->GetLogToFile() && GetConfiguration()->GetLogFileName().IsEmpty()) ?
-    ::IncludeTrailingBackslash(GetSystemTemporaryDirectory()) + L"&s.log" :
-    GetConfiguration()->GetLogFileName());
+      ::IncludeTrailingBackslash(GetSystemTemporaryDirectory()) + L"&s.log" :
+      GetConfiguration()->GetLogFileName());
   LogFileAppendButton->SetChecked(GetConfiguration()->GetLogFileAppend());
   LogFileOverwriteButton->SetChecked(!GetConfiguration()->GetLogFileAppend());
 
@@ -1177,12 +1181,12 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
   UnicodeString Address;
   switch (Sender->GetTag())
   {
-    case 1:
-      Address = GetMsg(ABOUT_URL) + L"eng/docs/far";
-      break;
-    case 2:
-      Address = GetMsg(ABOUT_URL) + L"forum/";
-      break;
+  case 1:
+    Address = GetMsg(ABOUT_URL) + L"eng/docs/far";
+    break;
+  case 2:
+    Address = GetMsg(ABOUT_URL) + L"forum/";
+    break;
   }
   ::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(Address.c_str()), nullptr, nullptr, SW_SHOWNORMAL);
 }
@@ -1230,9 +1234,9 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
 
   bool ShowSavePassword = false;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
-       (Kind == pkKeybInteractive)) &&
-       (Prompts->GetCount() == 1) && // FLAGSET((intptr_t)Prompts->GetObject(0), pupRemember) &&
-      !SessionName.IsEmpty())
+      (Kind == pkKeybInteractive)) &&
+    (Prompts->GetCount() == 1) && // FLAGSET((intptr_t)Prompts->GetObject(0), pupRemember) &&
+    !SessionName.IsEmpty())
   //    // StoredCredentialsTried)
   {
     FSessionData = dyn_cast<TSessionData>(StoredSessions->FindByName(SessionName));
@@ -1464,8 +1468,21 @@ class TSessionDialog : public TTabbedDialog
 public:
   enum TSessionTab
   {
-    tabSession = 1, tabEnvironment, tabDirectories, tabSFTP, tabSCP, tabFTP,
-    tabConnection, tabTunnel, tabProxy, tabSsh, tabKex, tabAuthentication, tabBugs, tabWebDAV, tabCount
+    tabSession = 1,
+    tabEnvironment,
+    tabDirectories,
+    tabSFTP,
+    tabSCP,
+    tabFTP,
+    tabConnection,
+    tabTunnel,
+    tabProxy,
+    tabSsh,
+    tabKex,
+    tabAuthentication,
+    tabBugs,
+    tabWebDAV,
+    tabCount
   };
 
   explicit TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action);
@@ -3159,18 +3176,18 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   switch (SessionData->GetDSTMode())
   {
-    case dstmWin:
-      DSTModeWinCheck->SetChecked(true);
-      break;
+  case dstmWin:
+    DSTModeWinCheck->SetChecked(true);
+    break;
 
-    case dstmKeep:
-      DSTModeKeepCheck->SetChecked(true);
-      break;
+  case dstmKeep:
+    DSTModeKeepCheck->SetChecked(true);
+    break;
 
-    default:
-    case dstmUnix:
-      DSTModeUnixCheck->SetChecked(true);
-      break;
+  default:
+  case dstmUnix:
+    DSTModeUnixCheck->SetChecked(true);
+    break;
   }
 
   DeleteToRecycleBinCheck->SetChecked(SessionData->GetDeleteToRecycleBin());
@@ -3245,25 +3262,25 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   TFtps Ftps = SessionData->GetFtps();
   switch (Ftps)
   {
-    case ftpsNone:
-      FtpEncryptionCombo->SetItemIndex(0);
-      break;
+  case ftpsNone:
+    FtpEncryptionCombo->SetItemIndex(0);
+    break;
 
-    case ftpsImplicit:
-      FtpEncryptionCombo->SetItemIndex(1);
-      break;
+  case ftpsImplicit:
+    FtpEncryptionCombo->SetItemIndex(1);
+    break;
 
-    case ftpsExplicitSsl:
-      FtpEncryptionCombo->SetItemIndex(2);
-      break;
+  case ftpsExplicitSsl:
+    FtpEncryptionCombo->SetItemIndex(2);
+    break;
 
-    case ftpsExplicitTls:
-      FtpEncryptionCombo->SetItemIndex(3);
-      break;
+  case ftpsExplicitTls:
+    FtpEncryptionCombo->SetItemIndex(3);
+    break;
 
-    default:
-      FtpEncryptionCombo->SetItemIndex(0);
-      break;
+  default:
+    FtpEncryptionCombo->SetItemIndex(0);
+    break;
   }
 
   // Connection tab
@@ -3274,18 +3291,18 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   switch (SessionData->GetAddressFamily())
   {
-    case afIPv4:
-      IPv4Button->SetChecked(true);
-      break;
+  case afIPv4:
+    IPv4Button->SetChecked(true);
+    break;
 
-    case afIPv6:
-      IPv6Button->SetChecked(true);
-      break;
+  case afIPv6:
+    IPv6Button->SetChecked(true);
+    break;
 
-    case afAuto:
-    default:
-      IPAutoButton->SetChecked(true);
-      break;
+  case afAuto:
+  default:
+    IPAutoButton->SetChecked(true);
+    break;
   }
 
   if (SessionData->GetCodePage().IsEmpty())
@@ -3313,15 +3330,15 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   ProxyLocalhostCheck->SetChecked(SessionData->GetProxyLocalhost());
   switch (SessionData->GetProxyDNS())
   {
-    case asOn:
-      ProxyDNSOnButton->SetChecked(true);
-      break;
-    case asOff:
-      ProxyDNSOffButton->SetChecked(true);
-      break;
-    default:
-      ProxyDNSAutoButton->SetChecked(true);
-      break;
+  case asOn:
+    ProxyDNSOnButton->SetChecked(true);
+    break;
+  case asOff:
+    ProxyDNSOffButton->SetChecked(true);
+    break;
+  default:
+    ProxyDNSAutoButton->SetChecked(true);
+    break;
   }
 
   // Tunnel tab
@@ -3349,18 +3366,18 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   switch (SessionData->GetSshProt())
   {
-    case ssh1only:
-      SshProt1onlyButton->SetChecked(true);
-      break;
-    case ssh1deprecated:
-      SshProt1Button->SetChecked(true);
-      break;
-    case ssh2deprecated:
-      SshProt2Button->SetChecked(true);
-      break;
-    case ssh2only:
-      SshProt2onlyButton->SetChecked(true);
-      break;
+  case ssh1only:
+    SshProt1onlyButton->SetChecked(true);
+    break;
+  case ssh1deprecated:
+    SshProt1Button->SetChecked(true);
+    break;
+  case ssh2deprecated:
+    SshProt2Button->SetChecked(true);
+    break;
+  case ssh2only:
+    SshProt2onlyButton->SetChecked(true);
+    break;
   }
 
   CipherListBox->GetItems()->BeginUpdate();
@@ -3532,7 +3549,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     SessionData->SetSftpServer(
       (SftpServerEdit->GetText() == SftpServerEdit->GetItems()->GetString(0)) ?
-      UnicodeString() : SftpServerEdit->GetText());
+        UnicodeString() : SftpServerEdit->GetText());
     SessionData->SetSFTPMaxVersion(SFTPMaxVersionCombo->GetItemIndex());
     SessionData->SetSFTPMinPacketSize(SFTPMinPacketSizeEdit->GetAsInteger());
     SessionData->SetSFTPMaxPacketSize(SFTPMaxPacketSizeEdit->GetAsInteger());
@@ -3567,21 +3584,21 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     switch (FtpEncryptionCombo->GetItemIndex())
     {
-      case 0:
-        SessionData->SetFtps(ftpsNone);
-        break;
-      case 1:
-        SessionData->SetFtps(ftpsImplicit);
-        break;
-      case 2:
-        SessionData->SetFtps(ftpsExplicitSsl);
-        break;
-      case 3:
-        SessionData->SetFtps(ftpsExplicitTls);
-        break;
-      default:
-        SessionData->SetFtps(ftpsNone);
-        break;
+    case 0:
+      SessionData->SetFtps(ftpsNone);
+      break;
+    case 1:
+      SessionData->SetFtps(ftpsImplicit);
+      break;
+    case 2:
+      SessionData->SetFtps(ftpsExplicitSsl);
+      break;
+    case 3:
+      SessionData->SetFtps(ftpsExplicitTls);
+      break;
+    default:
+      SessionData->SetFtps(ftpsNone);
+      break;
     }
 
     // Connection tab
@@ -3764,24 +3781,24 @@ void TSessionDialog::LoadPing(TSessionData * SessionData)
 
   switch ((FSProtocol == fsFTP) ? SessionData->GetFtpPingType() : SessionData->GetPingType())
   {
-    case ptOff:
-      PingOffButton->SetChecked(true);
-      break;
-    case ptNullPacket:
-      PingNullPacketButton->SetChecked(true);
-      break;
+  case ptOff:
+    PingOffButton->SetChecked(true);
+    break;
+  case ptNullPacket:
+    PingNullPacketButton->SetChecked(true);
+    break;
 
-    case ptDummyCommand:
-      PingDummyCommandButton->SetChecked(true);
-      break;
+  case ptDummyCommand:
+    PingDummyCommandButton->SetChecked(true);
+    break;
 
-    default:
-      PingOffButton->SetChecked(true);
-      break;
+  default:
+    PingOffButton->SetChecked(true);
+    break;
   }
   PingIntervalSecEdit->SetAsInteger(
     (GetFSProtocol() == fsFTP) ?
-     SessionData->GetFtpPingInterval() : SessionData->GetPingInterval());
+      SessionData->GetFtpPingInterval() : SessionData->GetPingInterval());
 }
 
 void TSessionDialog::SavePing(TSessionData * SessionData)
@@ -3916,24 +3933,24 @@ TFtps TSessionDialog::IndexToFtps(intptr_t Index) const
   {
     switch (Index)
     {
-      case 0:
-        Result = ftpsNone;
-        break;
+    case 0:
+      Result = ftpsNone;
+      break;
 
-      case 1:
-        Result = ftpsImplicit;
-        break;
+    case 1:
+      Result = ftpsImplicit;
+      break;
 
-      case 2:
-        Result = ftpsExplicitSsl;
-        break;
+    case 2:
+      Result = ftpsExplicitSsl;
+      break;
 
-      case 3:
-        Result = ftpsExplicitTls;
-        break;
+    case 3:
+      Result = ftpsExplicitTls;
+      break;
 
-      default:
-        break;
+    default:
+      break;
     }
   }
   return Result;
@@ -4048,10 +4065,10 @@ bool TSessionDialog::CloseQuery()
   }
 
   if (CanClose && !PasswordEdit->GetText().IsEmpty() &&
-      !GetConfiguration()->GetDisablePasswordStoring() &&
-      (PasswordEdit->GetText() != FSessionData->GetPassword()) &&
-      (((GetResult() == brOK)) ||
-       ((GetResult() == brConnect) && (FAction == saEdit))))
+    !GetConfiguration()->GetDisablePasswordStoring() &&
+    (PasswordEdit->GetText() != FSessionData->GetPassword()) &&
+    (((GetResult() == brOK)) ||
+      ((GetResult() == brConnect) && (FAction == saEdit))))
   {
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
     CanClose = (WinSCPPlugin->MoreMessageDialog(GetMsg(SAVE_PASSWORD), nullptr,
@@ -4086,7 +4103,7 @@ void TSessionDialog::SelectTab(intptr_t Tab)
   intptr_t SelectedTabIndex = Index;
   intptr_t VisibleTabsCount = GetVisibleTabsCount(SelectedTabIndex, false);
   if ((FFirstVisibleTabIndex < SelectedTabIndex - VisibleTabsCount) ||
-      (SelectedTabIndex - VisibleTabsCount == 0))
+    (SelectedTabIndex - VisibleTabsCount == 0))
   {
     FFirstVisibleTabIndex = SelectedTabIndex - VisibleTabsCount;
     ChangeTabs(FFirstVisibleTabIndex);
@@ -4522,15 +4539,15 @@ void TRightsContainer::SetStates(TRights::TRight Right,
   {
     switch (Value)
     {
-      case TRights::rsNo:
-        CheckBox->SetSelected(BSTATE_UNCHECKED);
-        break;
-      case TRights::rsYes:
-        CheckBox->SetSelected(BSTATE_CHECKED);
-        break;
-      case TRights::rsUndef:
-        CheckBox->SetSelected(BSTATE_3STATE);
-        break;
+    case TRights::rsNo:
+      CheckBox->SetSelected(BSTATE_UNCHECKED);
+      break;
+    case TRights::rsYes:
+      CheckBox->SetSelected(BSTATE_CHECKED);
+      break;
+    case TRights::rsUndef:
+      CheckBox->SetSelected(BSTATE_3STATE);
+      break;
     }
   }
   else
@@ -4564,7 +4581,7 @@ void TRightsContainer::SetRights(const TRights & Value)
     for (size_t Right = 0; Right < _countof(FCheckBoxes); Right++)
     {
       SetStates(static_cast<TRights::TRight>(Right),
-        Value.GetRightUndef(static_cast<TRights::TRight>(Right)));
+                Value.GetRightUndef(static_cast<TRights::TRight>(Right)));
     }
     SetAllowUndef(Value.GetAllowUndef());
   }
@@ -4842,12 +4859,12 @@ void TPropertiesDialog::Change()
       // group name is specified or we set multiple-file properties and
       // no valid group was specified (there are at least two different groups)
       (!GroupComboBox->GetText().IsEmpty() ||
-       (FMultiple && !FOrigProperties.Valid.Contains(vpGroup)) ||
-       (FOrigProperties.Group.GetName() == GroupComboBox->GetText())) &&
+        (FMultiple && !FOrigProperties.Valid.Contains(vpGroup)) ||
+        (FOrigProperties.Group.GetName() == GroupComboBox->GetText())) &&
       // same but with owner
       (!OwnerComboBox->GetText().IsEmpty() ||
-       (FMultiple && !FOrigProperties.Valid.Contains(vpOwner)) ||
-       (FOrigProperties.Owner.GetName() == OwnerComboBox->GetText())) &&
+        (FMultiple && !FOrigProperties.Valid.Contains(vpOwner)) ||
+        (FOrigProperties.Owner.GetName() == OwnerComboBox->GetText())) &&
       ((FileProperties != FOrigProperties) || (RecursiveCheck && RecursiveCheck->GetChecked())));
   }
 }
@@ -5240,7 +5257,7 @@ void TCopyParamsContainer::UpdateControls()
   {
     IgnorePermErrorsCheck->SetEnabled(
       ((PreserveRightsCheck->GetEnabled() && PreserveRightsCheck->GetChecked()) ||
-       (PreserveTimeCheck->GetEnabled() && PreserveTimeCheck->GetChecked())) &&
+        (PreserveTimeCheck->GetEnabled() && PreserveTimeCheck->GetChecked())) &&
       FLAGCLEAR(FCopyParamAttrs, cpaNoIgnorePermErrors));
   }
 }
@@ -5261,17 +5278,17 @@ void TCopyParamsContainer::SetParams(const TCopyParamType & Value)
   {
     switch (Value.GetTransferMode())
     {
-      case tmAscii:
-        TMTextButton->SetChecked(true);
-        break;
+    case tmAscii:
+      TMTextButton->SetChecked(true);
+      break;
 
-      case tmBinary:
-        TMBinaryButton->SetChecked(true);
-        break;
+    case tmBinary:
+      TMBinaryButton->SetChecked(true);
+      break;
 
-      default:
-        TMAutomaticButton->SetChecked(true);
-        break;
+    default:
+      TMAutomaticButton->SetChecked(true);
+      break;
     }
   }
   else
@@ -5283,26 +5300,26 @@ void TCopyParamsContainer::SetParams(const TCopyParamType & Value)
 
   switch (Value.GetFileNameCase())
   {
-    case ncLowerCase:
-      CCLowerCaseButton->SetChecked(true);
-      break;
+  case ncLowerCase:
+    CCLowerCaseButton->SetChecked(true);
+    break;
 
-    case ncUpperCase:
-      CCUpperCaseButton->SetChecked(true);
-      break;
+  case ncUpperCase:
+    CCUpperCaseButton->SetChecked(true);
+    break;
 
-    case ncFirstUpperCase:
-      CCFirstUpperCaseButton->SetChecked(true);
-      break;
+  case ncFirstUpperCase:
+    CCFirstUpperCaseButton->SetChecked(true);
+    break;
 
-    case ncLowerCaseShort:
-      CCLowerCaseShortButton->SetChecked(true);
-      break;
+  case ncLowerCaseShort:
+    CCLowerCaseShortButton->SetChecked(true);
+    break;
 
-    default:
-    case ncNoChange:
-      CCNoChangeButton->SetChecked(true);
-      break;
+  default:
+  case ncNoChange:
+    CCNoChangeButton->SetChecked(true);
+    break;
   }
 
   RightsContainer->SetAddXToDirectories(Value.GetAddXToDirectories());
@@ -5915,10 +5932,12 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TLabelList;
   }
+
 public:
   explicit TLabelList() :
     TList(OBJECT_CLASS_TLabelList), MaxLen(0)
-  {}
+  {
+  }
 
   intptr_t MaxLen;
 };
@@ -6116,7 +6135,7 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
   AddItem(ProtocolLabels, PROTOCOL_OWNER_GROUP_CHANGING, CapabilityStr(fcGroupChanging));
   UnicodeString AnyCommand;
   if (!FFileSystemInfo.IsCapable[fcShellAnyCommand] &&
-      FFileSystemInfo.IsCapable[fcAnyCommand])
+    FFileSystemInfo.IsCapable[fcAnyCommand])
   {
     AnyCommand = GetMsg(PROTOCOL_PROTOCOL_ANY_COMMAND);
   }
@@ -6211,7 +6230,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
   if ((!Value.IsEmpty() &&
       ((Control == nullptr) || Control->GetEnabled()) &&
       (AControl != SpaceAvailableLabels)) ||
-       SpaceAvailableSupported())
+    SpaceAvailableSupported())
   {
     if (FLastFeededControl != AControl)
     {
@@ -7021,20 +7040,20 @@ intptr_t TFullSynchronizeDialog::ActualCopyParamAttrs() const
   {
     switch (GetMode())
     {
-      case TTerminal::smRemote:
-        Result = FCopyParamAttrs.Upload;
-        break;
+    case TTerminal::smRemote:
+      Result = FCopyParamAttrs.Upload;
+      break;
 
-      case TTerminal::smLocal:
-        Result = FCopyParamAttrs.Download;
-        break;
+    case TTerminal::smLocal:
+      Result = FCopyParamAttrs.Download;
+      break;
 
-      default:
-        DebugAssert(false);
-        //fallthru
-      case TTerminal::smBoth:
-        Result = FCopyParamAttrs.General;
-        break;
+    default:
+      DebugAssert(false);
+      //fallthru
+    case TTerminal::smBoth:
+      Result = FCopyParamAttrs.General;
+      break;
     }
   }
   return Result | cpaNoPreserveTime;
@@ -7045,20 +7064,20 @@ bool TFullSynchronizeDialog::CloseQuery()
   bool CanClose = TWinSCPDialog::CloseQuery();
 
   if (CanClose && (GetResult() == brOK) &&
-      SaveSettingsCheck->GetChecked() && (FOrigMode != GetMode()) && !FSaveMode)
+    SaveSettingsCheck->GetChecked() && (FOrigMode != GetMode()) && !FSaveMode)
   {
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
 
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(SAVE_SYNCHRONIZE_MODE), nullptr,
               qtConfirmation, qaYes | qaNo | qaCancel, nullptr))
     {
-      case qaYes:
-        FSaveMode = true;
-        break;
+    case qaYes:
+      FSaveMode = true;
+      break;
 
-      case qaCancel:
-        CanClose = false;
-        break;
+    case qaCancel:
+      CanClose = false;
+      break;
     }
   }
 
@@ -7328,7 +7347,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
     FarPlugin->ConsoleWindowState() == SW_SHOWMAXIMIZED ?
       CHECKLIST_RESTORE : CHECKLIST_MAXIMIZE));
 
-  static const int Ratio[FColumns] = { 140, 100, 80, 150, -2, 100, 80, 150 };
+  static const int Ratio[FColumns] = {140, 100, 80, 150, -2, 100, 80, 150};
 
   intptr_t Width = ListBox->GetWidth() - 2 /*checkbox*/ - 1 /*scrollbar*/ - FColumns;
   double Temp[FColumns];
@@ -7662,7 +7681,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
       Result = true;
     }
     else if ((KeyCode == KEY_SPACE) || (KeyCode == KEY_INS) ||
-             (KeyCode == KEY_ADD) || (KeyCode == KEY_SUBTRACT))
+      (KeyCode == KEY_ADD) || (KeyCode == KEY_SUBTRACT))
     {
       intptr_t Index = ListBox->GetItems()->GetSelected();
       if (Index >= 0)
@@ -7683,7 +7702,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
         Redraw();
         UpdateControls();
         if ((KeyCode == KEY_INS) &&
-            (Index < ListBox->GetItems()->GetCount() - 1))
+          (Index < ListBox->GetItems()->GetCount() - 1))
         {
           ListBox->GetItems()->SetSelected(Index + 1);
         }
@@ -7991,7 +8010,7 @@ TSynchronizeParamType TSynchronizeDialog::GetParams() const
   Result.LocalDirectory = LocalDirectoryEdit->GetText();
   Result.Params =
     (Result.Params & ~(TTerminal::spDelete | TTerminal::spExistingOnly |
-     spSelectedOnly | TTerminal::spTimestamp)) |
+      spSelectedOnly | TTerminal::spTimestamp)) |
     FLAGMASK(SynchronizeDeleteCheck->GetChecked(), TTerminal::spDelete) |
     FLAGMASK(SynchronizeExistingOnlyCheck->GetChecked(), TTerminal::spExistingOnly) |
     FLAGMASK(SynchronizeSelectedOnlyCheck->GetChecked(), spSelectedOnly);
@@ -8084,22 +8103,22 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(SYNCHRONISE_BEFORE_KEEPUPTODATE),
         nullptr, qtConfirmation, qaYes | qaNo | qaCancel, &Params))
     {
-      case qaNeverAskAgain:
-        SynchronizeSynchronizeCheck->SetSelected(BSTATE_CHECKED);
-        // fall thru
+    case qaNeverAskAgain:
+      SynchronizeSynchronizeCheck->SetSelected(BSTATE_CHECKED);
+      // fall thru
 
-      case qaYes:
-        Synchronize = true;
-        break;
+    case qaYes:
+      Synchronize = true;
+      break;
 
-      case qaNo:
-        Synchronize = false;
-        break;
+    case qaNo:
+      Synchronize = false;
+      break;
 
-      default:
-      case qaCancel:
-        Continue = false;
-        break;
+    default:
+    case qaCancel:
+      Continue = false;
+      break;
     }
   }
   else
@@ -8241,8 +8260,12 @@ NB_DISABLE_COPY(TQueueDialog)
 public:
   explicit TQueueDialog(TCustomFarPlugin * AFarPlugin,
     TWinSCPFileSystem * AFileSystem, bool ClosingPlugin);
-  virtual ~TQueueDialog() {}
-  bool Execute(TTerminalQueueStatus * Status);
+
+  virtual ~TQueueDialog()
+  {
+  }
+
+  bool Execute(TTerminalQueueStatus* Status);
 
 protected:
   virtual void Change();
@@ -8536,8 +8559,8 @@ void TQueueDialog::RefreshQueue()
 
     intptr_t ILine = 0;
     while ((Index > ILine) &&
-           (GetQueueItems()->GetObj(Index) ==
-            GetQueueItems()->GetObj(Index - ILine - 1)))
+      (GetQueueItems()->GetObj(Index) ==
+        GetQueueItems()->GetObj(Index - ILine - 1)))
     {
       ILine++;
     }
@@ -8546,7 +8569,7 @@ void TQueueDialog::RefreshQueue()
     TQueueItemProxy * QueueItem = nullptr;
     UnicodeString Line;
     while ((Index < GetQueueItems()->GetCount()) &&
-           (Index < TopIndex + QueueListBox->GetHeight()))
+      (Index < TopIndex + QueueListBox->GetHeight()))
     {
       QueueItem = dyn_cast<TQueueItemProxy>(
         GetQueueItems()->GetObj(Index));
@@ -8557,7 +8580,7 @@ void TQueueDialog::RefreshQueue()
       }
 
       if (QueueItemNeedsFrequentRefresh(QueueItem) &&
-          !QueueItem->GetProcessingUserAction())
+        !QueueItem->GetProcessingUserAction())
       {
         FillQueueItemLine(Line, QueueItem, ILine);
         if (GetQueueItems()->GetString(Index) != Line)
@@ -8603,7 +8626,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
   int PathMaxLen = 49;
 
   if ((Index > 2) ||
-      ((Index == 2) && (QueueItem->GetStatus() == TQueueItem::qsPending)))
+    ((Index == 2) && (QueueItem->GetStatus() == TQueueItem::qsPending)))
   {
     return false;
   }
@@ -8612,29 +8635,29 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
 
   switch (QueueItem->GetStatus())
   {
-    case TQueueItem::qsPending:
-      ProgressStr = GetMsg(QUEUE_PENDING);
-      break;
+  case TQueueItem::qsPending:
+    ProgressStr = GetMsg(QUEUE_PENDING);
+    break;
 
-    case TQueueItem::qsConnecting:
-      ProgressStr = GetMsg(QUEUE_CONNECTING);
-      break;
+  case TQueueItem::qsConnecting:
+    ProgressStr = GetMsg(QUEUE_CONNECTING);
+    break;
 
-    case TQueueItem::qsQuery:
-      ProgressStr = GetMsg(QUEUE_QUERY);
-      break;
+  case TQueueItem::qsQuery:
+    ProgressStr = GetMsg(QUEUE_QUERY);
+    break;
 
-    case TQueueItem::qsError:
-      ProgressStr = GetMsg(QUEUE_ERROR);
-      break;
+  case TQueueItem::qsError:
+    ProgressStr = GetMsg(QUEUE_ERROR);
+    break;
 
-    case TQueueItem::qsPrompt:
-      ProgressStr = GetMsg(QUEUE_PROMPT);
-      break;
+  case TQueueItem::qsPrompt:
+    ProgressStr = GetMsg(QUEUE_PROMPT);
+    break;
 
-    case TQueueItem::qsPaused:
-      ProgressStr = GetMsg(QUEUE_PAUSED);
-      break;
+  case TQueueItem::qsPaused:
+    ProgressStr = GetMsg(QUEUE_PAUSED);
+    break;
   }
 
   bool BlinkHide = QueueItemNeedsFrequentRefresh(QueueItem) &&
@@ -8653,13 +8676,13 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
     {
       switch (Info->Operation)
       {
-        case foCopy:
-          Operation = GetMsg(QUEUE_COPY);
-          break;
+      case foCopy:
+        Operation = GetMsg(QUEUE_COPY);
+        break;
 
-        case foMove:
-          Operation = GetMsg(QUEUE_MOVE);
-          break;
+      case foMove:
+        Operation = GetMsg(QUEUE_MOVE);
+        break;
       }
       Direction = GetMsg((Info->Side == osLocal) ? QUEUE_UPLOAD : QUEUE_DOWNLOAD);
     }
@@ -8667,7 +8690,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
     Values[0] = core::MinimizeName(Info->Source, PathMaxLen, (Info->Side == osRemote));
 
     if ((ProgressData != nullptr) &&
-        (ProgressData->Operation == Info->Operation))
+      (ProgressData->Operation == Info->Operation))
     {
       Values[1] = FormatBytes(ProgressData->TotalTransfered);
     }
@@ -8723,7 +8746,7 @@ bool TQueueDialog::QueueItemNeedsFrequentRefresh(
 {
   return (QueueItem &&
     (TQueueItem::IsUserActionStatus(QueueItem->GetStatus()) ||
-     (QueueItem->GetStatus() == TQueueItem::qsPaused)));
+      (QueueItem->GetStatus() == TQueueItem::qsPaused)));
 }
 
 bool TQueueDialog::Execute(TTerminalQueueStatus * Status)
