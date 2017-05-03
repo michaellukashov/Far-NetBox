@@ -53,6 +53,7 @@ TPersistent::TPersistent(TObjectClassId Kind) :
 
 TPersistent::~TPersistent()
 {
+}
 
 void TPersistent::Assign(const TPersistent * Source)
 {
