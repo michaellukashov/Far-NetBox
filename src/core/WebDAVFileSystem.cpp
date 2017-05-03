@@ -69,6 +69,7 @@ static const int HttpUnauthorized = 401;
 #define PROP_OWNER "owner"
 
 static std::unique_ptr<TCriticalSection> DebugSection(new TCriticalSection);
+
 //static rde::set<TWebDAVFileSystem *> FileSystems;
 
 extern "C"
@@ -392,7 +393,7 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
   TSessionData * Data = FTerminal->GetSessionData();
 
   DebugAssert(FNeonSession == nullptr);
-  FNeonSession = 
+  FNeonSession =
     CreateNeonSession(
       uri, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
       Data->GetProxyUsername(), Data->GetProxyPassword());
@@ -646,47 +647,47 @@ bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
   DebugAssert(FTerminal);
   switch (Capability)
   {
-    case fcRename:
-    case fcRemoteMove:
-    case fcMoveToQueue:
-    case fcPreservingTimestampUpload:
-    case fcCheckingSpaceAvailable:
+  case fcRename:
+  case fcRemoteMove:
+  case fcMoveToQueue:
+  case fcPreservingTimestampUpload:
+  case fcCheckingSpaceAvailable:
     // Only to make double-click on file edit/open the file,
     // instead of trying to open it as directory
-    case fcResolveSymlink:
-      return true;
+  case fcResolveSymlink:
+    return true;
 
-    case fcUserGroupListing:
-    case fcModeChanging:
-    case fcModeChangingUpload:
-    case fcGroupChanging:
-    case fcOwnerChanging:
-    case fcAnyCommand:
-    case fcShellAnyCommand:
-    case fcHardLink:
-    case fcSymbolicLink:
-    case fcTextMode:
-    case fcNativeTextMode:
-    case fcNewerOnlyUpload:
-    case fcTimestampChanging:
-    case fcLoadingAdditionalProperties:
-    case fcIgnorePermErrors:
-    case fcCalculatingChecksum:
-    case fcSecondaryShell:
-    case fcGroupOwnerChangingByID:
-    case fcRemoveCtrlZUpload:
-    case fcRemoveBOMUpload:
-    case fcRemoteCopy:
-    case fcPreservingTimestampDirs:
-    case fcResumeSupport:
-      return false;
+  case fcUserGroupListing:
+  case fcModeChanging:
+  case fcModeChangingUpload:
+  case fcGroupChanging:
+  case fcOwnerChanging:
+  case fcAnyCommand:
+  case fcShellAnyCommand:
+  case fcHardLink:
+  case fcSymbolicLink:
+  case fcTextMode:
+  case fcNativeTextMode:
+  case fcNewerOnlyUpload:
+  case fcTimestampChanging:
+  case fcLoadingAdditionalProperties:
+  case fcIgnorePermErrors:
+  case fcCalculatingChecksum:
+  case fcSecondaryShell:
+  case fcGroupOwnerChangingByID:
+  case fcRemoveCtrlZUpload:
+  case fcRemoveBOMUpload:
+  case fcRemoteCopy:
+  case fcPreservingTimestampDirs:
+  case fcResumeSupport:
+    return false;
 
-    case fcLocking:
-      return FLAGSET(FCapabilities, NE_CAP_DAV_CLASS2);
+  case fcLocking:
+    return FLAGSET(FCapabilities, NE_CAP_DAV_CLASS2);
 
-    default:
-      DebugFail();
-      return false;
+  default:
+    DebugFail();
+    return false;
   }
 }
 
@@ -943,14 +944,14 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
   const char * Modified = LastModified ? LastModified : CreationDate;
   if (DebugAlwaysTrue(Modified != nullptr))
   {
-    char WeekDay[4] = { L'\0' };
+    char WeekDay[4] = {L'\0'};
     int Year = 0;
-    char MonthStr[4] = { L'\0' };
+    char MonthStr[4] = {L'\0'};
     int Day = 0;
     int Hour = 0;
     int Min = 0;
     int Sec = 0;
-    #define RFC1123_FORMAT "%3s, %02d %3s %4d %02d:%02d:%02d GMT"
+#define RFC1123_FORMAT "%3s, %02d %3s %4d %02d:%02d:%02d GMT"
     int Filled =
       sscanf(Modified, RFC1123_FORMAT, WeekDay, &Day, MonthStr, &Year, &Hour, &Min, &Sec);
     // we need at least a complete date
@@ -1222,22 +1223,22 @@ void TWebDAVFileSystem::ConfirmOverwrite(
 
   switch (Answer)
   {
-    case qaYes:
-      // noop
-      break;
+  case qaYes:
+    // noop
+    break;
 
-    case qaNo:
-      ThrowSkipFileNull();
+  case qaNo:
+    ThrowSkipFileNull();
 
-    default:
-      DebugFail();
-    case qaCancel:
-      if (!OperationProgress->Cancel)
-      {
-        OperationProgress->Cancel = csCancel;
-      }
-      Abort();
-      break;
+  default:
+    DebugFail();
+  case qaCancel:
+    if (!OperationProgress->Cancel)
+    {
+      OperationProgress->Cancel = csCancel;
+    }
+    Abort();
+    break;
   }
 }
 
@@ -1356,7 +1357,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
           }
         }
         SourceRobust(FileName, File, FullTargetDir, CopyParam, Params, OperationProgress,
-          tfFirstLevel);
+                     tfFirstLevel);
         Success = true;
       }
       catch (ESkipFile & E)
@@ -1394,7 +1395,7 @@ void TWebDAVFileSystem::SourceRobust(const UnicodeString & AFileName,
     try
     {
       Source(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
-        Flags, Action, ChildError);
+             Flags, Action, ChildError);
     }
     catch (Exception & E)
     {
@@ -1694,7 +1695,7 @@ void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
         if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
         {
           SourceRobust(FileName, nullptr, DestFullName, CopyParam, Params, OperationProgress,
-            Flags & ~(tfFirstLevel));
+                       Flags & ~(tfFirstLevel));
         }
       }
       catch (ESkipFile & E)
@@ -1767,7 +1768,7 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       try
       {
         SinkRobust(AbsoluteFilePath, File, TargetDirectory, CopyParam, Params,
-          OperationProgress, tfFirstLevel);
+                   OperationProgress, tfFirstLevel);
         Success = true;
       }
       catch (ESkipFile & E)
@@ -1805,7 +1806,7 @@ void TWebDAVFileSystem::SinkRobust(const UnicodeString & AFileName,
     try
     {
       Sink(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
-        Flags, Action, ChildError);
+           Flags, Action, ChildError);
     }
     catch (Exception & E)
     {
@@ -2054,8 +2055,8 @@ bool TWebDAVFileSystem::CancelTransfer()
 {
   bool Result = false;
   if ((FUploading || FDownloading) &&
-      (FTerminal->GetOperationProgress() != nullptr) &&
-      (FTerminal->GetOperationProgress()->Cancel != csContinue))
+    (FTerminal->GetOperationProgress() != nullptr) &&
+    (FTerminal->GetOperationProgress()->Cancel != csContinue))
   {
     FCancelled = true;
     Result = true;
@@ -2079,8 +2080,8 @@ int TWebDAVFileSystem::NeonBodyReader(void * UserData, const char * Buf, size_t 
       // But this won't work when downloading text files that have text
       // content type on their own, hence the additional not-downloading test.
       if (!FileSystem->FDownloading &&
-          ((ne_strcasecmp(ContentType.type, "text") == 0) ||
-           media_type_is_xml(&ContentType)))
+        ((ne_strcasecmp(ContentType.type, "text") == 0) ||
+          media_type_is_xml(&ContentType)))
       {
         UnicodeString Content = UnicodeString(UTF8String(Buf, Len)).Trim();
         FileSystem->FResponse += Content;
@@ -2448,24 +2449,24 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
         nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
       switch (Answer)
       {
-        case qaYes:
-          FTerminal->CacheCertificate(HttpsCertificateStorageKey, SiteKey, Data.Fingerprint, Failures);
-          Result = true;
-          break;
+      case qaYes:
+        FTerminal->CacheCertificate(HttpsCertificateStorageKey, SiteKey, Data.Fingerprint, Failures);
+        Result = true;
+        break;
 
-        case qaNo:
-          Result = true;
-          break;
+      case qaNo:
+        Result = true;
+        break;
 
-        default:
-          DebugFail();
-          Result = false;
-          break;
+      default:
+        DebugFail();
+        Result = false;
+        break;
 
-        case qaCancel:
-//          FTerminal->GetConfiguration()->GetUsage()->Inc(L"HostNotVerified");
-          Result = false;
-          break;
+      case qaCancel:
+        //          FTerminal->GetConfiguration()->GetUsage()->Inc(L"HostNotVerified");
+        Result = false;
+        break;
       }
 
       if (Result)
@@ -2657,8 +2658,8 @@ void TWebDAVFileSystem::NeonNotifier(void * UserData, ne_session_status Status, 
   // We particularly have to filter out response to "put" request,
   // handling that would reset the upload progress back to low number (response is small).
   if (((FileSystem->FUploading && (Status == ne_status_sending)) ||
-       (FileSystem->FDownloading && (Status == ne_status_recving))) &&
-      DebugAlwaysTrue(OperationProgress != nullptr))
+      (FileSystem->FDownloading && (Status == ne_status_recving))) &&
+    DebugAlwaysTrue(OperationProgress != nullptr))
   {
     int64_t Progress = StatusInfo->sr.progress;
     int64_t Diff = Progress - OperationProgress->TransferedSize;
