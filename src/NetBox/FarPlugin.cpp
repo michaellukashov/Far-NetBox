@@ -108,19 +108,19 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     ClearStruct(FStartupInfo);
     memmove(&FStartupInfo, Info,
             Info->StructSize >= static_cast<intptr_t>(sizeof(FStartupInfo)) ?
-            sizeof(FStartupInfo) : static_cast<size_t>(Info->StructSize));
+              sizeof(FStartupInfo) : static_cast<size_t>(Info->StructSize));
     // the minimum we really need
     DebugAssert(FStartupInfo.GetMsg != nullptr);
     DebugAssert(FStartupInfo.Message != nullptr);
 
     ClearStruct(FFarStandardFunctions);
     size_t FSFOffset = (static_cast<const char *>(reinterpret_cast<const void *>(&Info->FSF)) -
-                        static_cast<const char *>(reinterpret_cast<const void *>(Info)));
+      static_cast<const char *>(reinterpret_cast<const void *>(Info)));
     if (static_cast<size_t>(Info->StructSize) > FSFOffset)
     {
       memmove(&FFarStandardFunctions, Info->FSF,
               static_cast<size_t>(Info->FSF->StructSize) >= sizeof(FFarStandardFunctions) ?
-              sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
+                sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
     }
   }
   catch (Exception & E)
@@ -148,9 +148,9 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     ClearPluginInfo(FPluginInfo);
 
     GetPluginInfoEx(FPluginInfo.Flags, &DiskMenuStrings, &PluginMenuStrings,
-      &PluginConfigStrings, &CommandPrefixes);
+                    &PluginConfigStrings, &CommandPrefixes);
 
-    #define COMPOSESTRINGARRAY(NAME) \
+#define COMPOSESTRINGARRAY(NAME) \
         if (NAME.GetCount()) \
         { \
           wchar_t ** StringArray = nb::calloc<wchar_t **>(sizeof(wchar_t *) * (1 + NAME.GetCount())); \
@@ -166,12 +166,12 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     COMPOSESTRINGARRAY(PluginMenuStrings);
     COMPOSESTRINGARRAY(PluginConfigStrings);
 
-    #undef COMPOSESTRINGARRAY
+#undef COMPOSESTRINGARRAY
     UnicodeString CommandPrefix;
     for (intptr_t Index = 0; Index < CommandPrefixes.GetCount(); ++Index)
     {
       CommandPrefix = CommandPrefix + (CommandPrefix.IsEmpty() ? L"" : L":") +
-                      CommandPrefixes.GetString(Index);
+        CommandPrefixes.GetString(Index);
     }
     FPluginInfo.CommandPrefix = DuplicateStr(CommandPrefix);
 
@@ -193,7 +193,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info) const
 {
   if (Info.StructSize)
   {
-    #define FREESTRINGARRAY(NAME) \
+#define FREESTRINGARRAY(NAME) \
       for (intptr_t Index = 0; Index < Info.NAME ## Number; ++Index) \
       { \
         nb_free((void*)Info.NAME[Index]); \
@@ -205,7 +205,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info) const
     FREESTRINGARRAY(PluginMenuStrings);
     FREESTRINGARRAY(PluginConfigStrings);
 
-    #undef FREESTRINGARRAY
+#undef FREESTRINGARRAY
 
     nb_free((void*)Info.CommandPrefix);
   }
@@ -784,7 +784,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     MoreMessageLinesPtr.reset(MoreMessageLines);
     UnicodeString MoreMessages = FParams->MoreMessages->GetText();
     while ((MoreMessages.Length() > 0) && (MoreMessages[MoreMessages.Length()] == L'\n' ||
-           MoreMessages[MoreMessages.Length()] == L'\r'))
+      MoreMessages[MoreMessages.Length()] == L'\r'))
     {
       MoreMessages.SetLength(MoreMessages.Length() - 1);
     }
@@ -894,9 +894,9 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   TPoint S(
     static_cast<int>(rect.Left + MaxLen - rect.Right),
     static_cast<int>(rect.Top + MessageLines->GetCount() +
-    (FParams->MoreMessages != nullptr ? 1 : 0) + ButtonLines +
-    (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
-    (-(rect.Bottom + 1))));
+      (FParams->MoreMessages != nullptr ? 1 : 0) + ButtonLines +
+      (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
+      (-(rect.Bottom + 1))));
 
   if (FParams->MoreMessages != nullptr)
   {
@@ -1041,7 +1041,7 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
   {
     FullMessage += UnicodeString(L"\n\x01\n") + Params->MoreMessages->GetText();
     while (FullMessage[FullMessage.Length()] == L'\n' ||
-           FullMessage[FullMessage.Length()] == L'\r')
+      FullMessage[FullMessage.Length()] == L'\r')
     {
       FullMessage.SetLength(FullMessage.Length() - 1);
     }
@@ -1328,7 +1328,7 @@ void TCustomFarPlugin::ToggleVideoMode()
     {
       if (FNormalConsoleSize.x >= 0)
       {
-        COORD Size = { static_cast<short>(FNormalConsoleSize.x), static_cast<short>(FNormalConsoleSize.y) };
+        COORD Size = {static_cast<short>(FNormalConsoleSize.x), static_cast<short>(FNormalConsoleSize.y)};
 
         ::Win32Check(::ShowWindow(Window, SW_RESTORE) > 0);
 
@@ -1422,12 +1422,15 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TConsoleTitleParam;
   }
+
 public:
   explicit TConsoleTitleParam() :
     TObject(OBJECT_CLASS_TConsoleTitleParam),
     Progress(0),
     Own(0)
-  {}
+  {
+  }
+
   short Progress;
   short Own;
 };
@@ -1568,8 +1571,8 @@ bool TCustomFarPlugin::CheckForEsc()
     {
       ::ReadConsoleInput(FConsoleInput, &Rec, 1, &ReadCount);
       if (Rec.EventType == KEY_EVENT &&
-          Rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE &&
-          Rec.Event.KeyEvent.bKeyDown)
+        Rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE &&
+        Rec.Event.KeyEvent.bKeyDown)
       {
         return true;
       }
