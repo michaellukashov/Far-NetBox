@@ -139,4 +139,3 @@ bool TMask::Matches(const UnicodeString & Str) const
 }
 
 } // namespace Masks
-

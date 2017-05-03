@@ -53,8 +53,8 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
 int RandSeed = 0;
 const TDayTable MonthDays[] =
 {
-  { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
-  { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
+  {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
+  {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 };
 
 Exception::Exception(TObjectClassId Kind, Exception * E) :
@@ -430,7 +430,7 @@ UnicodeString UTF8ToString(const char * Str, intptr_t Len)
   {
     Result.SetLength(reqLength);
     ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Len), const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
-    Result.SetLength(Result.Length() - 1);  //remove NULL character
+    Result.SetLength(Result.Length() - 1); //remove NULL character
   }
   return Result;
 }
@@ -986,7 +986,7 @@ UnicodeString ExpandUNCFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result = ExpandFileName(AFileName);
   if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= L'A') &&
-      (::UpCase(Result[1]) <= L'Z'))
+    (::UpCase(Result[1]) <= L'Z'))
   {
     Result = GetUniversalName(Result);
   }
@@ -1158,14 +1158,14 @@ UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeStri
   if (FileName.RPos(L'.') > 1)
   {
     return ExtractDirectory(APath, Delimiter) +
-           FileName.SubString(1, FileName.RPos(L'.') - 1) +
-           Ext;
+      FileName.SubString(1, FileName.RPos(L'.') - 1) +
+      Ext;
   }
   else
   {
     return ExtractDirectory(APath, Delimiter) +
-           FileName +
-           Ext;
+      FileName +
+      Ext;
   }
 }
 
@@ -1173,7 +1173,7 @@ UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str)
 {
   UnicodeString Result = Str;
   if ((Result.Length() > 0) && ((Result[Result.Length()] == L'/') ||
-      (Result[Result.Length()] == L'\\')))
+    (Result[Result.Length()] == L'\\')))
   {
     Result.SetLength(Result.Length() - 1);
   }
@@ -1275,7 +1275,7 @@ uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars)
     {
       if ((MinChars == NPOS) || (Index <= static_cast<intptr_t>(MinChars)))
       {
-          Result = 0;
+        Result = 0;
       }
       break;
     }
@@ -1530,8 +1530,8 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateT
 
     uint16_t Y, M, D, H, Mm, S, MS;
     TDateTime DateTime =
-        EncodeDateVerbose(Year, Month, Day) +
-        EncodeTimeVerbose(Hour, Minutes, Seconds, Milliseconds);
+      EncodeDateVerbose(Year, Month, Day) +
+      EncodeTimeVerbose(Hour, Minutes, Seconds, Milliseconds);
     DateTime.DecodeDate(Y, M, D);
     DateTime.DecodeTime(H, Mm, S, MS);
     Result = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
@@ -1583,7 +1583,7 @@ static void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonth
   Year = Year + (NumberOfMonths % 12);
   NumberOfMonths = NumberOfMonths / 12;
   Month += ToWord(NumberOfMonths);
-  if (ToWord(Month-1) > 11) // if Month <= 0, word(Month-1) > 11)
+  if (ToWord(Month - 1) > 11) // if Month <= 0, word(Month-1) > 11)
   {
     Year += ToWord(Sign);
     Month += -12 * ToWord(Sign);
@@ -1721,8 +1721,8 @@ uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr)
 
 UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
 {
-  DWORD Major = (VersionNumber>>16) & 0xFF;
-  DWORD Minor = (VersionNumber>>8) & 0xFF;
+  DWORD Major = (VersionNumber >> 16) & 0xFF;
+  DWORD Minor = (VersionNumber >> 8) & 0xFF;
   DWORD Revision = (VersionNumber & 0xFF);
   UnicodeString Result = FORMAT(L"%d.%d.%d", Major, Minor, Revision);
   return Result;
@@ -1740,4 +1740,3 @@ TFormatSettings::TFormatSettings(int) :
   TwoDigitYearCenturyWindow(0)
 {
 }
-
