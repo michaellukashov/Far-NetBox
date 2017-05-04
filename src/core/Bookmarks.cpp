@@ -29,7 +29,7 @@ void TBookmarks::Clear()
   FBookmarkLists->Clear();
 }
 
-UnicodeString TBookmarks::Keys[] = { "Local", "Remote", "ShortCuts", "Options" };
+UnicodeString TBookmarks::Keys[] = {"Local", "Remote", "ShortCuts", "Options"};
 
 void TBookmarks::Load(THierarchicalStorage * Storage)
 {
@@ -117,17 +117,17 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
         }
         switch (AIndex)
         {
-          case 0:
-            Bookmark->SetLocal(Directory);
-            break;
+        case 0:
+          Bookmark->SetLocal(Directory);
+          break;
 
-          case 1:
-            Bookmark->SetRemote(Directory);
-            break;
+        case 1:
+          Bookmark->SetRemote(Directory);
+          break;
 
-          case 2:
-            Bookmark->SetShortCut(ShortCut);
-            break;
+        case 2:
+          Bookmark->SetShortCut(ShortCut);
+          break;
         }
         if (New)
         {
@@ -177,25 +177,25 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
                 TBookmark * Bookmark = BookmarkList->GetBookmarks(IndexB);
                 // avoid creating empty subfolder if there's no shortcut
                 if ((Idx == 0) || (Idx == 1) ||
-                    ((Idx == 2) && (Bookmark->GetShortCut() != 0)))
+                  ((Idx == 2) && (Bookmark->GetShortCut() != 0)))
                 {
                   bool HasNode = !Bookmark->GetNode().IsEmpty();
                   if (!HasNode || Storage->OpenSubKey(Bookmark->GetNode(), true))
                   {
                     switch (Idx)
                     {
-                      case 0:
-                        Storage->WriteString(Bookmark->GetName(), Bookmark->GetLocal());
-                        break;
+                    case 0:
+                      Storage->WriteString(Bookmark->GetName(), Bookmark->GetLocal());
+                      break;
 
-                      case 1:
-                        Storage->WriteString(Bookmark->GetName(), Bookmark->GetRemote());
-                        break;
+                    case 1:
+                      Storage->WriteString(Bookmark->GetName(), Bookmark->GetRemote());
+                      break;
 
-                      case 2:
-                        DebugAssert(Bookmark->GetShortCut() != 0);
-                        Storage->WriteInteger(Bookmark->GetName(), Bookmark->GetShortCut());
-                        break;
+                    case 2:
+                      DebugAssert(Bookmark->GetShortCut() != 0);
+                      Storage->WriteInteger(Bookmark->GetName(), Bookmark->GetShortCut());
+                      break;
                     }
 
                     if (HasNode)

@@ -111,7 +111,7 @@ void TCopyParamType::DoGetInfoStr(
   NoScriptArgs = false;
   NoCodeProperties = false;
   SomeAttrIncluded = false;
-  #define ADD(STR, EXCEPT) \
+#define ADD(STR, EXCEPT) \
     if (FLAGCLEAR(Options, EXCEPT)) \
     { \
       AddToList(Result, (STR), Separator); \
@@ -132,19 +132,19 @@ void TCopyParamType::DoGetInfoStr(
     int Ident;
     switch (GetTransferMode())
     {
-      case tmBinary:
-        FormatMask = false;
-        Ident = 2;
-        break;
-      case tmAscii:
-        FormatMask = false;
-        Ident = 3;
-        break;
-      case tmAutomatic:
-      default:
-        FormatMask = !(GetAsciiFileMask() == Defaults.GetAsciiFileMask());
-        Ident = FormatMask ? 4 : 5;
-        break;
+    case tmBinary:
+      FormatMask = false;
+      Ident = 2;
+      break;
+    case tmAscii:
+      FormatMask = false;
+      Ident = 3;
+      break;
+    case tmAutomatic:
+    default:
+      FormatMask = !(GetAsciiFileMask() == Defaults.GetAsciiFileMask());
+      Ident = FormatMask ? 4 : 5;
+      break;
     }
     UnicodeString S = FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE2, 1).c_str(),
       LoadStrPart(COPY_INFO_TRANSFER_TYPE2, Ident).c_str());
@@ -203,8 +203,8 @@ void TCopyParamType::DoGetInfoStr(
   }
 
   if ((GetPreserveRights() != Defaults.GetPreserveRights()) ||
-      (GetPreserveRights() &&
-       ((GetRights() != Defaults.GetRights()) || (GetAddXToDirectories() != Defaults.GetAddXToDirectories()))))
+    (GetPreserveRights() &&
+      ((GetRights() != Defaults.GetRights()) || (GetAddXToDirectories() != Defaults.GetAddXToDirectories()))))
   {
     const int Except = cpaIncludeMaskOnly | cpaNoRights;
     if (DebugAlwaysTrue(GetPreserveRights()))
@@ -423,19 +423,19 @@ void TCopyParamType::DoGetInfoStr(
     intptr_t ResumeThresholdKB = (intptr_t)(GetResumeThreshold() / 1024);
     switch (GetResumeSupport())
     {
-      case rsOff:
-        Value = ToggleNames[ToggleOff];
-        CodeState = L"Off";
-        break;
+    case rsOff:
+      Value = ToggleNames[ToggleOff];
+      CodeState = L"Off";
+      break;
 
-      case rsOn:
-        Value = ToggleNames[ToggleOn];
-        CodeState = L"On";
-        break;
+    case rsOn:
+      Value = ToggleNames[ToggleOn];
+      CodeState = L"On";
+      break;
 
-      case rsSmart:
-        Value = IntToStr(ResumeThresholdKB);
-        break;
+    case rsSmart:
+      Value = IntToStr(ResumeThresholdKB);
+      break;
     }
 //    ScriptArgs += RtfSwitchValue(RESUMESUPPORT_SWITCH, Link, Value);
 
@@ -466,13 +466,13 @@ void TCopyParamType::DoGetInfoStr(
   {
     Result = LoadStr(COPY_INFO_DEFAULT);
   }
-  #undef ADD
+#undef ADD
 }
 
 void TCopyParamType::Assign(const TCopyParamType * Source)
 {
   DebugAssert(Source != nullptr);
-  #define COPY(Prop) Set ## Prop(Source->Get ## Prop())
+#define COPY(Prop) Set ## Prop(Source->Get ## Prop())
   COPY(FileNameCase);
   COPY(PreserveReadOnly);
   COPY(PreserveTime);
@@ -497,7 +497,7 @@ void TCopyParamType::Assign(const TCopyParamType * Source)
   COPY(RemoveBOM);
   COPY(CPSLimit);
   COPY(NewerOnly);
-  #undef COPY
+#undef COPY
 }
 
 TCopyParamType & TCopyParamType::operator =(const TCopyParamType & rhp)
@@ -547,16 +547,16 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) cons
         UnicodeString Hex = FileName.SubString(Index + 1, 2);
         wchar_t Char = static_cast<wchar_t>(HexToByte(Hex));
         if ((Char != L'\0') &&
-            ((FTokenizibleChars.Pos(Char) > 0) ||
-             (((Char == L' ') || (Char == L'.')) && (Index == FileName.Length() - 2))))
+          ((FTokenizibleChars.Pos(Char) > 0) ||
+            (((Char == L' ') || (Char == L'.')) && (Index == FileName.Length() - 2))))
         {
           FileName[Index] = Char;
           FileName.Delete(Index + 1, 2);
           InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index);
         }
         else if ((Hex == L"00") &&
-                 ((Index == FileName.Length() - 2) || (FileName[Index + 3] == L'.')) &&
-                 IsReservedName(FileName.SubString(1, Index - 1) + FileName.SubString(Index + 3, FileName.Length() - Index - 3 + 1)))
+          ((Index == FileName.Length() - 2) || (FileName[Index + 3] == L'.')) &&
+          IsReservedName(FileName.SubString(1, Index - 1) + FileName.SubString(Index + 3, FileName.Length() - Index - 3 + 1)))
         {
           FileName.Delete(Index, 3);
           InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index - 1);
@@ -600,27 +600,27 @@ UnicodeString TCopyParamType::ChangeFileName(const UnicodeString & AFileName,
   }
   switch (GetFileNameCase())
   {
-    case ncUpperCase:
-      FileName = FileName.UpperCase();
-      break;
-    case ncLowerCase:
+  case ncUpperCase:
+    FileName = FileName.UpperCase();
+    break;
+  case ncLowerCase:
+    FileName = FileName.LowerCase();
+    break;
+  case ncFirstUpperCase:
+    FileName = FileName.SubString(1, 1).UpperCase() +
+      FileName.SubString(2, FileName.Length() - 1).LowerCase();
+    break;
+  case ncLowerCaseShort:
+    if ((FileName.Length() <= 12) && (FileName.Pos(L".") <= 9) &&
+      (FileName == FileName.UpperCase()))
+    {
       FileName = FileName.LowerCase();
-      break;
-    case ncFirstUpperCase:
-      FileName = FileName.SubString(1, 1).UpperCase() +
-        FileName.SubString(2, FileName.Length() - 1).LowerCase();
-      break;
-    case ncLowerCaseShort:
-      if ((FileName.Length() <= 12) && (FileName.Pos(L".") <= 9) &&
-          (FileName == FileName.UpperCase()))
-      {
-        FileName = FileName.LowerCase();
-      }
-      break;
-    case ncNoChange:
-    default:
-      /*nothing*/
-      break;
+    }
+    break;
+  case ncNoChange:
+  default:
+    /*nothing*/
+    break;
   }
   if (Side == osRemote)
   {
@@ -638,16 +638,16 @@ bool TCopyParamType::UseAsciiTransfer(const UnicodeString & AFileName,
 {
   switch (GetTransferMode())
   {
-    case tmBinary:
-      return false;
-    case tmAscii:
-      return true;
-    case tmAutomatic:
-      return GetAsciiFileMask().Matches(AFileName, (Side == osLocal),
-        false, &Params);
-    default:
-      DebugFail();
-      return false;
+  case tmBinary:
+    return false;
+  case tmAscii:
+    return true;
+  case tmAutomatic:
+    return GetAsciiFileMask().Matches(AFileName, (Side == osLocal),
+                                      false, &Params);
+  default:
+    DebugFail();
+    return false;
   }
 }
 
@@ -666,9 +666,9 @@ UnicodeString TCopyParamType::GetLogStr() const
   wchar_t ResumeC[] = L"YSN";
   // OpenArray (ARRAYOFCONST) supports only up to 19 arguments, so we had to split it
   return
-   FORMAT(
-     L"  PrTime: %s%s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %c; "
-        L"Resume: %c (%d); CalcS: %s; Mask: %s\n",
+    FORMAT(
+      L"  PrTime: %s%s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %c; "
+      L"Resume: %c (%d); CalcS: %s; Mask: %s\n",
       BooleanToEngStr(GetPreserveTime()).c_str(),
       UnicodeString(GetPreserveTime() && GetPreserveTimeDirs() ? L"+Dirs" : L"").c_str(),
       BooleanToEngStr(GetPreserveReadOnly()).c_str(),
@@ -709,15 +709,15 @@ bool TCopyParamType::AllowResume(int64_t Size) const
 {
   switch (GetResumeSupport())
   {
-    case rsOn:
-      return true;
-    case rsOff:
-      return false;
-    case rsSmart:
-      return (Size >= GetResumeThreshold());
-    default:
-      DebugFail();
-      return false;
+  case rsOn:
+    return true;
+  case rsOff:
+    return false;
+  case rsSmart:
+    return (Size >= GetResumeThreshold());
+  default:
+    DebugFail();
+    return false;
   }
 }
 
@@ -861,6 +861,7 @@ void TCopyParamType::Save(THierarchicalStorage * Storage) const
 }
 
 #define C(Property) (Get ## Property() == rhp.Get ## Property())
+
 bool TCopyParamType::operator==(const TCopyParamType & rhp) const
 {
   DebugAssert(FTransferSkipList.get() == nullptr);

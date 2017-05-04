@@ -317,7 +317,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
 
     DebugAssert(lpszHostAddress != NULL);
 
-    addrinfo hints, *res0, *res1;
+    addrinfo hints, *res0 = 0, *res1;
     SOCKET hSocket;
     int error;
     char port[10];

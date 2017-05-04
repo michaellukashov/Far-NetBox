@@ -564,7 +564,7 @@ int ZEXPORT deflatePending(z_stream *strm, uint32_t *pending, int *bits)
     if (deflateStateCheck(strm))
         return Z_STREAM_ERROR;
     if (pending != Z_NULL)
-        *pending = strm->state->pending;
+        *pending = (uint32_t)strm->state->pending;
     if (bits != Z_NULL)
         *bits = strm->state->bi_valid;
     return Z_OK;
@@ -1533,7 +1533,7 @@ void fill_window(deflate_state *s)
 void fill_window_c(deflate_state *s)
 {
     uint32_t n;
-    Pos *p;
+//    Pos *p;
     uint32_t more;    /* Amount of free space at the end of the window. */
     uint32_t wsize = s->w_size;
     uint32_t count;
@@ -1669,7 +1669,7 @@ static block_state deflate_stored(deflate_state *s, int flush)
      * this is 32K. This can be as small as 507 bytes for memLevel == 1. For
      * large input and output buffers, the stored block size will be larger.
      */
-    uint32_t min_block = MIN(s->pending_buf_size - 5, s->w_size);
+    uint32_t min_block = (uint32_t)MIN(s->pending_buf_size - 5, s->w_size);
 
     /* Copy as many min_block or larger stored blocks directly to next_out as
      * possible. If flushing, copy the remaining available input to next_out as
@@ -1794,7 +1794,7 @@ static block_state deflate_stored(deflate_state *s, int flush)
         return block_done;
 
     /* Fill the window with any remaining input. */
-    have = s->window_size - s->strstart - 1;
+    have = (uint32_t)s->window_size - s->strstart - 1;
     if (s->strm->avail_in > have && s->block_start >= (int64_t)s->w_size) {
         /* Slide the window down. */
         s->block_start -= s->w_size;
@@ -1820,7 +1820,7 @@ static block_state deflate_stored(deflate_state *s, int flush)
      */
     have = (s->bi_valid + 42) >> 3;         /* number of header bytes */
         /* maximum stored block length that will fit in pending: */
-    have = MIN(s->pending_buf_size - have, MAX_STORED);
+    have = (uint32_t)MIN(s->pending_buf_size - have, MAX_STORED);
     min_block = MIN(have, s->w_size);
     left = s->strstart - s->block_start;
     if (left >= min_block ||

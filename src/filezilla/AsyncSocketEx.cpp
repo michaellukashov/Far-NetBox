@@ -785,7 +785,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
 
   if ((m_SocketData.nFamily == AF_INET6 || m_SocketData.nFamily == AF_INET) && lpszAscii)
   {
-    addrinfo hints, *res0, *res;
+    addrinfo hints, *res0 = 0, *res;
     int error;
     char port[10];
     BOOL ret = FALSE;

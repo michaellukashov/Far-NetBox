@@ -439,7 +439,7 @@ uintptr_t TSignalThread::WaitForEvent(uint32_t Timeout) const
   uintptr_t Result = ::WaitForSingleObject(FEvent, Timeout);
   if ((Result == WAIT_TIMEOUT) && !FTerminated)
   {
-    return (uintptr_t )-1;
+    return (uintptr_t)-1;
   }
   else
   {
@@ -883,9 +883,9 @@ bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
         }
 
         if ((FTransfersLimit >= 0) && (FTerminals->GetCount() >= FTransfersLimit) &&
-            // when queue is disabled, we may have idle terminals,
-            // even when there are pending queue items
-            (FFreeTerminals == 0))
+          // when queue is disabled, we may have idle terminals,
+          // even when there are pending queue items
+          (FFreeTerminals == 0))
         {
           FTemporaryTerminals++;
         }
@@ -965,8 +965,8 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
       TGuard Guard(FItemsSection);
 
       Result = (FItems->IndexOf(Item) >= 0) &&
-        ((Pause && (Item->GetStatus() == TQueueItem::qsProcessing)) ||
-         (!Pause && (Item->GetStatus() == TQueueItem::qsPaused)));
+      ((Pause && (Item->GetStatus() == TQueueItem::qsProcessing)) ||
+        (!Pause && (Item->GetStatus() == TQueueItem::qsPaused)));
       if (Result)
       {
         TerminalItem = Item->FTerminalItem;
@@ -1103,8 +1103,8 @@ void TTerminalQueue::ProcessEvent()
         if (FEnabled || (ForcedIndex >= 0))
         {
           if ((FFreeTerminals == 0) &&
-              ((FTransfersLimit <= 0) ||
-               (FTerminals->GetCount() < FTransfersLimit + FTemporaryTerminals)))
+            ((FTransfersLimit <= 0) ||
+              (FTerminals->GetCount() < FTransfersLimit + FTemporaryTerminals)))
           {
             FOverallTerminals++;
             TerminalItem = new TTerminalItem(this);
@@ -1397,7 +1397,7 @@ void TTerminalItem::ProcessEvent()
   }
 
   if (!FTerminal->GetActive() ||
-      !FQueue->TerminalFree(this))
+    !FQueue->TerminalFree(this))
   {
     Terminate();
   }
@@ -1418,7 +1418,7 @@ void TTerminalItem::Idle()
   }
 
   if (!FTerminal->GetActive() ||
-      !FQueue->TerminalFree(this))
+    !FQueue->TerminalFree(this))
   {
     Terminate();
   }
@@ -1428,7 +1428,7 @@ void TTerminalItem::Cancel()
 {
   FCancel = true;
   if ((FItem->GetStatus() == TQueueItem::qsPaused) ||
-      TQueueItem::IsUserActionStatus(FItem->GetStatus()))
+    TQueueItem::IsUserActionStatus(FItem->GetStatus()))
   {
     TriggerEvent();
   }
@@ -2371,36 +2371,36 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       {
         switch (::WaitForSingleObject(FActionEvent, 50))
         {
-          case WAIT_OBJECT_0:
-            Done = true;
-            break;
+        case WAIT_OBJECT_0:
+          Done = true;
+          break;
 
-          case WAIT_TIMEOUT:
-            if (FUserAction != nullptr)
+        case WAIT_TIMEOUT:
+          if (FUserAction != nullptr)
+          {
+            try
             {
-              try
-              {
-                FUserAction->Execute(nullptr);
-              }
-              catch (Exception & E)
-              {
-                SaveException(E, FException);
-              }
-
-              FUserAction = nullptr;
-              TriggerEvent();
+              FUserAction->Execute(nullptr);
             }
-            else
+            catch (Exception& E)
             {
-              if (FOnIdle != nullptr)
-              {
-                FOnIdle(nullptr);
-              }
+              SaveException(E, FException);
             }
-            break;
 
-          default:
-            throw Exception(L"Error waiting for background session task to complete");
+            FUserAction = nullptr;
+            TriggerEvent();
+          }
+          else
+          {
+            if (FOnIdle != nullptr)
+            {
+              FOnIdle(nullptr);
+            }
+          }
+          break;
+
+        default:
+          throw Exception(L"Error waiting for background session task to complete");
         }
       }
       while (!Done);

@@ -24,8 +24,9 @@ TGlobals * GetGlobals()
 
 #if (_MSC_VER >= 1900)
 
-extern "C" {
-  FILE * __iob_func = nullptr;
+extern "C"
+{
+  FILE* __iob_func = nullptr;
 }
 #endif
 
@@ -47,10 +48,12 @@ void ThrowNotImplemented(intptr_t ErrorId)
 
 TPersistent::TPersistent(TObjectClassId Kind) :
   TObject(Kind)
-{}
+{
+}
 
 TPersistent::~TPersistent()
-{}
+{
+}
 
 void TPersistent::Assign(const TPersistent * Source)
 {
@@ -325,8 +328,8 @@ const intptr_t HoursPerDay = 24;
 const intptr_t MSecsPerSec = 1000;
 const intptr_t OneSecond = MSecsPerSec;
 const intptr_t SecsPerHour = MinsPerHour * SecsPerMin;
-const intptr_t MinsPerDay  = HoursPerDay * MinsPerHour;
-const intptr_t SecsPerDay  = MinsPerDay * SecsPerMin;
+const intptr_t MinsPerDay = HoursPerDay * MinsPerHour;
+const intptr_t SecsPerDay = MinsPerDay * SecsPerMin;
 const intptr_t MSecsPerDay = SecsPerDay * MSecsPerSec;
 // Days between 1/1/0001 and 12/31/1899
 const intptr_t DateDelta = 693594;
@@ -349,7 +352,6 @@ TStrings::TStrings(TObjectClassId Kind) :
   FQuoteChar(L'"'),
   FUpdateCount(0)
 {
-
 }
 
 TStrings::~TStrings()
@@ -436,14 +438,14 @@ static void tokenize(const UnicodeString & str, rde::vector<UnicodeString> & tok
     intptr_t pos = str.FindFirstOf(delimiters.c_str(), lastPos);
     if (pos == NPOS)
     {
-       pos = str.Length();
+      pos = str.Length();
 
-       if (pos != lastPos || !trimEmpty)
-       {
-         tokens.push_back(
-           UnicodeString(str.data() + lastPos, pos - lastPos));
-       }
-       break;
+      if (pos != lastPos || !trimEmpty)
+      {
+        tokens.push_back(
+          UnicodeString(str.data() + lastPos, pos - lastPos));
+      }
+      break;
     }
     else
     {
@@ -795,14 +797,14 @@ intptr_t TStringList::AddObject(const UnicodeString & S, TObject * AObject)
     {
       switch (FDuplicates)
       {
-        case dupIgnore:
-          return Result;
-          break;
-        case dupError:
-          Error(SDuplicateString, 2);
-          break;
-        case dupAccept:
-          break;
+      case dupIgnore:
+        return Result;
+        break;
+      case dupError:
+        Error(SDuplicateString, 2);
+        break;
+      case dupAccept:
+        break;
       }
     }
     else
@@ -1369,15 +1371,15 @@ int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin Origin)
   int origin = FILE_BEGIN;
   switch (Origin)
   {
-    case soFromBeginning:
-      origin = FILE_BEGIN;
-      break;
-    case soFromCurrent:
-      origin = FILE_CURRENT;
-      break;
-    case soFromEnd:
-      origin = FILE_END;
-      break;
+  case soFromBeginning:
+    origin = FILE_BEGIN;
+    break;
+  case soFromCurrent:
+    origin = FILE_CURRENT;
+    break;
+  case soFromEnd:
+    origin = FILE_END;
+    break;
   }
   return Seek(Offset, origin);
 }
@@ -1460,15 +1462,15 @@ int64_t TMemoryStream::Seek(const int64_t Offset, TSeekOrigin Origin)
 {
   switch (Origin)
   {
-    case soFromBeginning:
-      FPosition = Offset;
-      break;
-    case soFromCurrent:
-      FPosition += Offset;
-      break;
-    case soFromEnd:
-      FPosition = FSize + Offset;
-      break;
+  case soFromBeginning:
+    FPosition = Offset;
+    break;
+  case soFromCurrent:
+    FPosition += Offset;
+    break;
+  case soFromEnd:
+    FPosition = FSize + Offset;
+    break;
   }
   int64_t Result = FPosition;
   return Result;
@@ -1614,21 +1616,21 @@ DWORD RegDataToDataType(TRegDataType Value)
   DWORD Result = 0;
   switch (Value)
   {
-    case rdString:
-      Result = REG_SZ;
-      break;
-    case rdExpandString:
-      Result = REG_EXPAND_SZ;
-      break;
-    case rdInteger:
-      Result = REG_DWORD;
-      break;
-    case rdBinary:
-      Result = REG_BINARY;
-      break;
-    default:
-      Result = REG_NONE;
-      break;
+  case rdString:
+    Result = REG_SZ;
+    break;
+  case rdExpandString:
+    Result = REG_EXPAND_SZ;
+    break;
+  case rdInteger:
+    Result = REG_DWORD;
+    break;
+  case rdBinary:
+    Result = REG_BINARY;
+    break;
+  default:
+    Result = REG_NONE;
+    break;
   }
   return Result;
 }
@@ -1728,12 +1730,12 @@ bool TRegistry::OpenKey(const UnicodeString & Key, bool CanCreate)
   if (!CanCreate || S.IsEmpty())
   {
     Result = ::RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0,
-                          FAccess, &TempKey) == ERROR_SUCCESS;
+                            FAccess, &TempKey) == ERROR_SUCCESS;
   }
   else
   {
     Result = ::RegCreateKeyEx(GetBaseKey(Relative), S.c_str(), 0, nullptr,
-                            REG_OPTION_NON_VOLATILE, FAccess, nullptr, &TempKey, nullptr) == ERROR_SUCCESS;
+                              REG_OPTION_NON_VOLATILE, FAccess, nullptr, &TempKey, nullptr) == ERROR_SUCCESS;
   }
   if (Result)
   {
@@ -1817,7 +1819,7 @@ bool TRegistry::GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Valu
   DWORD DataType;
   ClearStruct(Value);
   bool Result = (::RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), nullptr, &DataType, nullptr,
-                                 &Value.DataSize) == ERROR_SUCCESS);
+                                   &Value.DataSize) == ERROR_SUCCESS);
   Value.RegData = DataTypeToRegData(DataType);
   return Result;
 }
@@ -2095,7 +2097,6 @@ TGlobals::TGlobals()
 
 TGlobals::~TGlobals()
 {
-
 }
 
 void TGlobals::InitPlatformId()

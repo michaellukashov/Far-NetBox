@@ -10,15 +10,15 @@ char * EOLToStr(TEOLType EOLType)
 {
   switch (EOLType)
   {
-    case eolLF:
-      return (char *)"\n";
-    case eolCRLF:
-      return (char *)"\r\n";
-    case eolCR:
-      return (char *)"\r";
-    default:
-      DebugFail();
-      return (char *)"";
+  case eolLF:
+    return (char *)"\n";
+  case eolCRLF:
+    return (char *)"\r\n";
+  case eolCR:
+    return (char *)"\r";
+  default:
+    DebugFail();
+    return (char *)"";
   }
 }
 
@@ -106,7 +106,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
 
   const std::string Bom(CONST_BOM);
   if (FLAGSET(Params, cpRemoveBOM) && (GetSize() >= 3) &&
-      (memcmp(GetData(), Bom.c_str(), Bom.size()) == 0))
+    (memcmp(GetData(), Bom.c_str(), Bom.size()) == 0))
   {
     Delete(0, 3);
   }
@@ -149,7 +149,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
       else if ((*Ptr == Dest[0]) && (Index == GetSize() - 1) && Dest[1])
       {
         Token = true;
-        Insert(Index+1, Dest+1, 1);
+        Insert(Index + 1, Dest + 1, 1);
         ++Index;
         Ptr = GetData() + Index;
       }
@@ -158,7 +158,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
         *Ptr = Dest[0];
         if (Dest[1])
         {
-          Insert(Index+1, Dest+1, 1);
+          Insert(Index + 1, Dest + 1, 1);
           ++Index;
           Ptr = GetData() + Index;
         }
@@ -172,17 +172,18 @@ void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
     intptr_t Index;
     for (Index = 0; Index < GetSize() - 1; ++Index)
     {
-      if ((*Ptr == Source[0]) && (*(Ptr+1) == Source[1]))
+      if ((*Ptr == Source[0]) && (*(Ptr + 1) == Source[1]))
       {
         *Ptr = Dest[0];
         if (Dest[1])
         {
-          *(Ptr+1) = Dest[1];
-          ++Index; ++Ptr;
+          *(Ptr + 1) = Dest[1];
+          ++Index;
+          ++Ptr;
         }
         else
         {
-          Delete(Index+1, 1);
+          Delete(Index + 1, 1);
           Ptr = GetData() + Index;
         }
       }

@@ -529,14 +529,14 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode Value)
   {
     switch (GetAccessMode())
     {
-      case smRead:
-        FRegistry->SetAccess(KEY_READ);
-        break;
+    case smRead:
+      FRegistry->SetAccess(KEY_READ);
+      break;
 
-      case smReadWrite:
-      default:
-        FRegistry->SetAccess(KEY_READ | KEY_WRITE);
-        break;
+    case smReadWrite:
+    default:
+      FRegistry->SetAccess(KEY_READ | KEY_WRITE);
+      break;
     }
   }
 }
