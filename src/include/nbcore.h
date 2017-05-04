@@ -519,7 +519,8 @@ class T2Utf
 public:
   __forceinline T2Utf(const wchar_t *str) :
     m_str(nbcore_utf8encodeT(str))
-  {}
+  {
+  }
 
   __forceinline ~T2Utf()
   {

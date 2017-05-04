@@ -102,7 +102,8 @@ public:
     DestSize(0),
     SourcePrecision(mfFull),
     DestPrecision(mfFull)
-  {}
+  {
+  }
 
   int64_t SourceSize;
   int64_t DestSize;
@@ -134,7 +135,8 @@ public:
     DestFileSize(0),
     FileParams(nullptr),
     Confirmed(false)
-  {}
+  {
+  }
   uintptr_t LocalFileAttrs;
   UnicodeString FileName;
   UnicodeString RemoteFileName;

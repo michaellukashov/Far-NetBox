@@ -1297,7 +1297,8 @@ class EStreamError : public ExtException
 public:
   explicit EStreamError(const UnicodeString & Msg) :
     ExtException(OBJECT_CLASS_EStreamError, (Exception * )nullptr, Msg)
-  {}
+  {
+  }
 };
 
 TStream::TStream()
