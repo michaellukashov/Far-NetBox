@@ -1722,10 +1722,11 @@ Bignum bignum_lshift(Bignum a, int shift)
  */
 Bignum bigmuladd(Bignum a, Bignum b, Bignum addend)
 {
-    int alen = a[0], blen = b[0];
-    int mlen = (alen > blen ? alen : blen);
-    int rlen, i, maxspot;
-    int wslen;
+    BignumInt alen = a[0], blen = b[0];
+    BignumInt mlen = (alen > blen ? alen : blen);
+    BignumInt rlen;
+    int i, maxspot;
+    BignumInt wslen;
     BignumInt *workspace;
     Bignum ret;
 
