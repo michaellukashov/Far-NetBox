@@ -36,7 +36,8 @@ CUSTOM_MEM_ALLOCATION_IMPL
     transfersize(0), transferleft(0),
     localFileHandle(INVALID_HANDLE_VALUE),
     bResume(FALSE), bResumeAppend(FALSE), bType(FALSE)
-  {}
+  {
+  }
   __int64 transfersize, transferleft;
   HANDLE localFileHandle;
   BOOL bResume, bResumeAppend, bType;
