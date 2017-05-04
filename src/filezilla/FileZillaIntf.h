@@ -295,7 +295,8 @@ protected:
       cap(unknown),
       option(),
       number(0)
-    {}
+    {
+    }
     ftp_capabilities_t cap;
     std::string option;
     int number;
