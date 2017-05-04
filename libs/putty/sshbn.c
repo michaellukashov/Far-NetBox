@@ -804,7 +804,7 @@ static void internal_mod(BignumInt *a, int alen,
             }
         } else {
             BignumInt add_word = 0;
-            BignumInt c = 1;
+            BignumCarry c = 1;
             BignumInt prev_hi_word = 0;
             for (k = mlen - 1; wordoffset+k >= i; k--) {
                 BignumInt mword = k<0 ? 0 : m[k];
