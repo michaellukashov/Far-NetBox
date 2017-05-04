@@ -81,7 +81,7 @@ bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
   return
     (Prompts->GetCount() == 1) && FLAGCLEAR(reinterpret_cast<intptr_t>(Prompts->GetObj(0)), pupEcho) &&
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
-     (Kind == pkTIS) || (Kind == pkCryptoCard));
+      (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
 
 bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
@@ -171,9 +171,9 @@ void CoreInitialize()
 //  Configuration = CreateConfiguration();
 
   PuttyInitialize();
-  #ifndef NO_FILEZILLA
+#ifndef NO_FILEZILLA
   TFileZillaIntf::Initialize();
-  #endif
+#endif
   NeonInitialize();
 
   CoreLoad();
@@ -191,9 +191,9 @@ void CoreFinalize()
   }
 
   NeonFinalize();
-  #ifndef NO_FILEZILLA
+#ifndef NO_FILEZILLA
   TFileZillaIntf::Finalize();
-  #endif
+#endif
   PuttyFinalize();
 
   SAFE_DESTROY(StoredSessions);
@@ -205,11 +205,11 @@ void CoreFinalize()
 
 void CoreSetResourceModule(void * ResourceHandle)
 {
-  #ifndef NO_FILEZILLA
+#ifndef NO_FILEZILLA
   TFileZillaIntf::SetResourceModule(ResourceHandle);
-  #else
+#else
   DebugUsedParam(ResourceHandle);
-  #endif
+#endif
 }
 
 void CoreMaintenanceTask()
@@ -251,4 +251,3 @@ TInstantOperationVisualizer::~TInstantOperationVisualizer()
     ::Sleep(static_cast<uint32_t>(MinDuration - Duration));
   }
 }
-

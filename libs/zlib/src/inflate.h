@@ -91,7 +91,7 @@ struct inflate_state {
     int havedict;               /* true if dictionary provided */
     int flags;                  /* gzip header method and flags (0 if zlib) */
     uint32_t dmax;              /* zlib header max distance (INFLATE_STRICT) */
-    uint64_t check;        /* protected copy of check value */
+    uint32_t check;        /* protected copy of check value */
     uint64_t total;        /* protected copy of output count */
     gz_headerp head;            /* where to save gzip header information */
         /* sliding window */

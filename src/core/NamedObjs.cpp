@@ -72,7 +72,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
           N = 0;
         }
       }
-      SetName(Name + L" (" + ::Int64ToStr(N+1) + L")");
+      SetName(Name + L" (" + ::Int64ToStr(N + 1) + L")");
     }
 }
 
@@ -104,12 +104,14 @@ void TNamedObjectList::Recount()
   }
   FHiddenCount = Index;
 }
+
 //---------------------------------------------------------------------------
 void TNamedObjectList::AlphaSort()
 {
   Sort(NamedObjectSortProc);
   Recount();
 }
+
 //---------------------------------------------------------------------------
 intptr_t TNamedObjectList::Add(TObject * AObject)
 {
@@ -174,6 +176,7 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name)
   }
   return nullptr;
 }
+
 //---------------------------------------------------------------------------
 void TNamedObjectList::SetCount(intptr_t Value)
 {
@@ -191,5 +194,3 @@ intptr_t TNamedObjectList::GetCountIncludingHidden() const
   DebugAssert(FHiddenCount >= 0);
   return TObjectList::GetCount();
 }
-
-

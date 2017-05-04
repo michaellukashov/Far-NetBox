@@ -122,7 +122,8 @@ int ZEXPORT inflateResetKeep(z_stream * strm)
 
     if (inflateStateCheck(strm)) return Z_STREAM_ERROR;
     state = (struct inflate_state *)strm->state;
-    strm->total_in = strm->total_out = state->total = 0;
+    strm->total_in = strm->total_out = 0;
+    state->total = 0;
     strm->msg = Z_NULL;
     if (state->wrap)        /* to support ill-conceived Java test suite */
         strm->adler = state->wrap & 1;
@@ -692,7 +693,8 @@ int ZEXPORT inflate(z_stream *strm, int flush)
             }
             state->dmax = 1U << len;
             Tracev((stderr, "inflate:   zlib header ok\n"));
-            strm->adler = state->check = adler32(0L, Z_NULL, 0);
+            strm->adler = adler32(0L, Z_NULL, 0);
+            state->check = strm->adler;
             state->mode = hold & 0x200 ? DICTID : TYPE;
             INITBITS();
             break;
@@ -837,7 +839,8 @@ int ZEXPORT inflate(z_stream *strm, int flush)
 #endif
         case DICTID:
             NEEDBITS(32);
-            strm->adler = state->check = ZSWAP32(hold);
+            strm->adler = ZSWAP32(hold);
+            state->check = strm->adler;
             INITBITS();
             state->mode = DICT;
         case DICT:
@@ -845,7 +848,8 @@ int ZEXPORT inflate(z_stream *strm, int flush)
                 RESTORE();
                 return Z_NEED_DICT;
             }
-            strm->adler = state->check = adler32(0L, Z_NULL, 0);
+            strm->adler = adler32(0L, Z_NULL, 0);
+            state->check = strm->adler;
             state->mode = TYPE;
         case TYPE:
             if (flush == Z_BLOCK || flush == Z_TREES)
@@ -1227,9 +1231,11 @@ int ZEXPORT inflate(z_stream *strm, int flush)
                 out -= left;
                 strm->total_out += out;
                 state->total += out;
-                if ((state->wrap & 4) && out)
-                    strm->adler = state->check =
+                if ((state->wrap & 4) && out) {
+                    strm->adler =
                         UPDATE(state->check, put - out, out);
+                    state->check = strm->adler;
+                }
                 out = left;
                 if ((state->wrap & 4) && (
 #ifdef GUNZIP
@@ -1291,9 +1297,11 @@ int ZEXPORT inflate(z_stream *strm, int flush)
     strm->total_in += in;
     strm->total_out += out;
     state->total += out;
-    if ((state->wrap & 4) && out)
-        strm->adler = state->check =
+    if ((state->wrap & 4) && out) {
+        strm->adler =
             UPDATE(state->check, strm->next_out - out, out);
+        state->check =strm->adler;
+    }
     strm->data_type = (int)state->bits + (state->last ? 64 : 0) +
                       (state->mode == TYPE ? 128 : 0) +
                       (state->mode == LEN_ || state->mode == COPY_ ? 256 : 0);

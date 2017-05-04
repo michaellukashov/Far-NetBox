@@ -848,7 +848,7 @@ void TSCPFileSystem::DoStartup()
   // Needs to be done before UnsetNationalVars()
   DetectUtf();
 
-  #define COND_OPER(OPER) if (Data->Get##OPER()) OPER()
+#define COND_OPER(OPER) if (Data->Get##OPER()) OPER()
   COND_OPER(ClearAliases);
   COND_OPER(UnsetNationalVars);
 #undef COND_OPER
@@ -859,38 +859,38 @@ void TSCPFileSystem::DetectUtf()
   const TSessionData * Data = FTerminal->GetSessionData();
   switch (Data->GetNotUtf())
   {
-    case asOn:
-      FSecureShell->SetUtfStrings(false); // noop
-      break;
+  case asOn:
+    FSecureShell->SetUtfStrings(false); // noop
+    break;
 
-    case asOff:
-      FSecureShell->SetUtfStrings(true);
-      break;
+  case asOff:
+    FSecureShell->SetUtfStrings(true);
+    break;
 
-    case asAuto:
-      FSecureShell->SetUtfStrings(false); // noop
-      try
+  case asAuto:
+    FSecureShell->SetUtfStrings(false); // noop
+    try
+    {
+      ExecCommand(fsLang, 0, false);
+
+      if ((FOutput->GetCount() >= 1) &&
+        ::AnsiContainsText(FOutput->GetString(0), L"UTF-8"))
       {
-        ExecCommand(fsLang, 0, false);
-
-        if ((FOutput->GetCount() >= 1) &&
-            ::AnsiContainsText(FOutput->GetString(0), L"UTF-8"))
-        {
-          FSecureShell->SetUtfStrings(true);
-        }
+        FSecureShell->SetUtfStrings(true);
       }
-      catch (Exception &)
+    }
+    catch (Exception&)
+    {
+      // ignore non-fatal errors
+      if (!FTerminal->GetActive())
       {
-        // ignore non-fatal errors
-        if (!FTerminal->GetActive())
-        {
-          throw;
-        }
+        throw;
       }
-      break;
+    }
+    break;
 
-    default:
-      DebugFail();
+  default:
+    DebugFail();
   }
 
   if (FSecureShell->GetUtfStrings())
@@ -1444,7 +1444,7 @@ void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   {
     TCustomCommandData Data(FTerminal);
     UnicodeString Cmd = TRemoteCustomCommand(
-      Data, FTerminal->GetCurrDirectory(), AFileName, L"").
+        Data, FTerminal->GetCurrDirectory(), AFileName, L"").
       Complete(Command, true);
 
     AnyCommand(Cmd, OutputEvent);
@@ -1458,8 +1458,8 @@ void TSCPFileSystem::CaptureOutput(const UnicodeString & AddedLine, TCaptureOutp
   // TSecureShell never uses cotExitCode
   DebugAssert((OutputType == cotOutput) || (OutputType == cotError));
   if ((OutputType == cotError) || DebugAlwaysFalse(OutputType == cotExitCode) ||
-      !RemoveLastLine(Line, ReturnCode) ||
-      !Line.IsEmpty())
+    !RemoveLastLine(Line, ReturnCode) ||
+    !Line.IsEmpty())
   {
     DebugAssert(FOnCaptureOutput != nullptr);
     FOnCaptureOutput(Line, OutputType);
@@ -1707,7 +1707,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
     CopyBatchStarted = true;
 
     for (intptr_t IFile = 0; (IFile < AFilesToCopy->GetCount()) &&
-      !OperationProgress->Cancel; ++IFile)
+         !OperationProgress->Cancel; ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
       TRemoteFile * File1 = AFilesToCopy->GetAs<TRemoteFile>(IFile);
@@ -1756,24 +1756,24 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
           switch (Answer)
           {
-            case qaYes:
-              CanProceed = true;
-              break;
+          case qaYes:
+            CanProceed = true;
+            break;
 
-            case qaCancel:
-              if (!OperationProgress->Cancel)
-              {
-                OperationProgress->Cancel = csCancel;
-              }
-              CanProceed = false;
-              break;
-            case qaNo:
-              CanProceed = false;
-              break;
+          case qaCancel:
+            if (!OperationProgress->Cancel)
+            {
+              OperationProgress->Cancel = csCancel;
+            }
+            CanProceed = false;
+            break;
+          case qaNo:
+            CanProceed = false;
+            break;
 
-            default:
-              DebugFail();
-              break;
+          default:
+            DebugFail();
+            break;
           }
         }
         else
@@ -2005,7 +2005,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
               X /= OperationProgress->LocallyUsed;
               OperationProgress->ChangeTransferSize(X);
             }
-              else
+            else
             {
               OperationProgress->ChangeTransferSize(0);
             }
@@ -2088,7 +2088,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
           }
 
           if ((OperationProgress->Cancel == csCancelTransfer) ||
-              (OperationProgress->Cancel == csCancel && !OperationProgress->TransferingFile))
+            (OperationProgress->Cancel == csCancel && !OperationProgress->TransferingFile))
           {
             throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
           }
@@ -2374,8 +2374,8 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       // still active) but wasn't successful (exception or user termination)
       // we need to ensure, that SCP on remote side is closed
       if (FTerminal->GetActive() && (CloseSCP ||
-          (OperationProgress->Cancel == csCancel) ||
-          (OperationProgress->Cancel == csCancelTransfer)))
+        (OperationProgress->Cancel == csCancel) ||
+        (OperationProgress->Cancel == csCancelTransfer)))
       {
         // If we get LastLine, it means that remote side 'scp' is already
         // terminated, so we need not to terminate it. There is also
@@ -2399,7 +2399,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
     };
 
     for (intptr_t IFile = 0; (IFile < AFilesToCopy->GetCount()) &&
-      !OperationProgress->Cancel; ++IFile)
+         !OperationProgress->Cancel; ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
       TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(IFile);

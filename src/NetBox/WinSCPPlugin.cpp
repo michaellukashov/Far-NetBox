@@ -188,7 +188,7 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(intptr_t Event, void * Param)
 {
   // for performance reasons, do not pass the event to file systems on redraw
   if ((Event != EE_REDRAW) || GetFarConfiguration()->GetEditorUploadOnSave() ||
-      GetFarConfiguration()->GetEditorMultiple())
+    GetFarConfiguration()->GetEditorMultiple())
   {
     for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
@@ -204,11 +204,11 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 {
   intptr_t Result = 0;
   if ((Rec->EventType == KEY_EVENT) &&
-      Rec->Event.KeyEvent.bKeyDown &&
-      (Rec->Event.KeyEvent.uChar.AsciiChar == 'W') &&
-      (FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, LEFT_ALT_PRESSED) ||
-       FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, RIGHT_ALT_PRESSED)) &&
-       FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, SHIFT_PRESSED))
+    Rec->Event.KeyEvent.bKeyDown &&
+    (Rec->Event.KeyEvent.uChar.AsciiChar == 'W') &&
+    (FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, LEFT_ALT_PRESSED) ||
+      FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, RIGHT_ALT_PRESSED)) &&
+    FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, SHIFT_PRESSED))
   {
     CommandsMenu(false);
     Result = 1;
@@ -223,7 +223,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
   CoreInitializeOnce();
 
   if ((OpenFrom == OPEN_PLUGINSMENU) &&
-      (!GetFarConfiguration()->GetPluginsMenu() || (Item == 1)))
+    (!GetFarConfiguration()->GetPluginsMenu() || (Item == 1)))
   {
     CommandsMenu(true);
   }
@@ -233,7 +233,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
     FileSystem->Init(nullptr);
 
     if (OpenFrom == OPEN_DISKMENU || OpenFrom == OPEN_PLUGINSMENU ||
-        OpenFrom == OPEN_FINDLIST)
+      OpenFrom == OPEN_FINDLIST)
     {
       // nothing
     }
@@ -253,7 +253,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
         TWinSCPFileSystem * PanelSystem;
         PanelSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
         if (PanelSystem && PanelSystem->Connected() &&
-            PanelSystem->GetTerminal()->GetSessionData()->GenerateSessionUrl(sufComplete) == CommandLine)
+          PanelSystem->GetTerminal()->GetSessionData()->GenerateSessionUrl(sufComplete) == CommandLine)
         {
           PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
           if (PanelSystem->UpdatePanel())
@@ -292,7 +292,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
       ImportStorage->Init();
       ImportStorage->SetAccessMode(smRead);
       if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
-            ImportStorage->HasSubKeys()))
+        ImportStorage->HasSubKeys()))
       {
         DebugAssert(false);
         Abort();
@@ -544,6 +544,7 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TFarMessageData;
   }
+
 public:
   TFarMessageData() :
     TObject(OBJECT_CLASS_TFarMessageData),
@@ -571,7 +572,7 @@ void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
     {
       const TQueryButtonAlias & Alias = Data.Params->Aliases[Index];
       if ((Alias.Button == Data.Buttons[Result]) &&
-          (Alias.OnClick))
+        (Alias.OnClick))
       {
         Alias.OnClick(nullptr);
         Close = false;
@@ -598,29 +599,29 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   intptr_t TitleId = 0;
   switch (Type)
   {
-    case qtConfirmation:
-      TitleId = MSG_TITLE_CONFIRMATION;
-      break;
-    case qtInformation:
-      TitleId = MSG_TITLE_INFORMATION;
-      break;
-    case qtError:
-      TitleId = MSG_TITLE_ERROR; 
-      Flags |= FMSG_WARNING;
-      break;
-    case qtWarning:
-      TitleId = MSG_TITLE_WARNING;
-      Flags |= FMSG_WARNING;
-      break;
-    default:
-      DebugAssert(false);
+  case qtConfirmation:
+    TitleId = MSG_TITLE_CONFIRMATION;
+    break;
+  case qtInformation:
+    TitleId = MSG_TITLE_INFORMATION;
+    break;
+  case qtError:
+    TitleId = MSG_TITLE_ERROR;
+    Flags |= FMSG_WARNING;
+    break;
+  case qtWarning:
+    TitleId = MSG_TITLE_WARNING;
+    Flags |= FMSG_WARNING;
+    break;
+  default:
+    DebugAssert(false);
   }
   TFarMessageData Data;
   Data.Params = Params;
 
   // make sure to do the check on full answers, not on reduced "timer answers"
   if (((Answers & qaAbort) && (Answers & qaRetry)) ||
-      (GetTopDialog() != nullptr))
+    (GetTopDialog() != nullptr))
   {
     // use warning colors for abort/retry confirmation dialog
     Flags |= FMSG_WARNING;
@@ -696,7 +697,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       for (uintptr_t ai = 0; ai < Params->AliasesCount; ai++)
       {
         if (Params->Aliases[ai].Button == Data.Buttons[bi] &&
-            !Params->Aliases[ai].Alias.IsEmpty())
+          !Params->Aliases[ai].Alias.IsEmpty())
         {
           ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
           if (Params->Aliases[ai].Default)
