@@ -20,9 +20,11 @@ struct message_t
 {
 CUSTOM_MEM_ALLOCATION_IMPL
   message_t() : wparam(0), lparam(0)
-  {}
+  {
+  }
   message_t(WPARAM w, LPARAM l) : wparam(w), lparam(l)
-  {}
+  {
+  }
   WPARAM wparam;
   LPARAM lparam;
 };
