@@ -82,7 +82,8 @@ private:
     TMaskMask() :
       Kind(Any),
       Mask(nullptr)
-    {}
+    {
+    }
     enum
     {
       Any,
@@ -101,7 +102,8 @@ private:
       LowSize(0),
       HighModificationMask(None),
       LowModificationMask(None)
-    {}
+    {
+    }
     TMaskMask FileNameMask;
     TMaskMask DirectoryMask;
 

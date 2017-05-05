@@ -412,7 +412,8 @@ public:
 protected:
   explicit TCustomFarPanelItem(TObjectClassId Kind) : TObject(Kind) {}
   virtual ~TCustomFarPanelItem()
-  {}
+  {
+  }
   virtual void GetData(
     PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
     uintptr_t & FileAttributes,

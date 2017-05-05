@@ -244,7 +244,8 @@ public:
       Operation(foNone),
       Side(osLocal),
       SingleFile(false)
-    {}
+    {
+    }
     TFileOperation Operation;
     TOperationSide Side;
     UnicodeString Source;

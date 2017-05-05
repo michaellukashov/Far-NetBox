@@ -137,9 +137,11 @@ public:
   }
 public:
   explicit EAbort(const UnicodeString & what) : Exception(OBJECT_CLASS_EAbort, what)
-  {}
+  {
+  }
   explicit EAbort(TObjectClassId Kind, const UnicodeString & what) : Exception(Kind, what)
-  {}
+  {
+  }
 };
 
 class EAccessViolation : public Exception
@@ -152,7 +154,8 @@ public:
   }
 public:
   explicit EAccessViolation(const UnicodeString & what) : Exception(OBJECT_CLASS_EAccessViolation, what)
-  {}
+  {
+  }
 };
 
 class EFileNotFoundError : public Exception
@@ -165,7 +168,8 @@ public:
   }
 public:
   EFileNotFoundError() : Exception(OBJECT_CLASS_EFileNotFoundError, L"")
-  {}
+  {
+  }
 };
 
 class EOSError : public Exception
@@ -405,7 +409,8 @@ class EConvertError : public Exception
 public:
   explicit EConvertError(const UnicodeString & Msg) :
     Exception(OBJECT_CLASS_EConvertError, Msg)
-  {}
+  {
+  }
 };
 
 UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath);

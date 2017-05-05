@@ -89,11 +89,13 @@ struct TPoint
   TPoint() :
     x(0),
     y(0)
-  {}
+  {
+  }
   TPoint(int ax, int ay) :
     x(ax),
     y(ay)
-  {}
+  {
+  }
 };
 
 struct TRect
