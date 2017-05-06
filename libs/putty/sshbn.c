@@ -1909,7 +1909,7 @@ Bignum bignum_add_long(Bignum number, unsigned long n)
     ret[0] = 0;
     for (i = 0; i < words; i++) {
         BignumInt nword = (i < maxwords ? n >> (i * BIGNUM_INT_BITS) : 0);
-        BignumInt numword = (BignumInt)(i < number[0] ? number[i+1] : 0);
+        BignumInt numword = ((BignumInt)i < number[0] ? number[i+1] : 0);
         BignumADC(ret[i+1], carry, numword, nword, carry);
 	if (ret[i+1] != 0)
             ret[0] = i+1;
