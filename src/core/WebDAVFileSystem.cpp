@@ -2718,7 +2718,7 @@ void TWebDAVFileSystem::InitSslSessionImpl(ssl_st * Ssl) const
   // SSL_ctrl() with SSL_CTRL_OPTIONS adds flags (not sets)
   SSL_ctrl(Ssl, SSL_CTRL_OPTIONS, Options, nullptr);
 }
-//---------------------------------------------------------------------------
+
 void TWebDAVFileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)
 {
   // NOOP

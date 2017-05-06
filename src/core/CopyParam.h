@@ -49,7 +49,7 @@ const int cpaNoRemoveCtrlZ      = 0x200;
 const int cpaNoRemoveBOM        = 0x400;
 const int cpaNoPreserveTimeDirs = 0x800;
 const int cpaNoResumeSupport    = 0x1000;
-//---------------------------------------------------------------------------
+
 struct TUsableCopyParamAttrs
 {
   int General;
