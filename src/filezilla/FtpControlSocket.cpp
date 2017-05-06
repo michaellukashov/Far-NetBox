@@ -1498,7 +1498,7 @@ BOOL CFtpControlSocket::Send(CString str)
 
     size_t sendLen = strlen(utf8);
     if (!m_awaitsReply && !m_sendBuffer)
-      res = CAsyncSocketEx::Send(utf8, strlen(utf8));
+      res = CAsyncSocketEx::Send(utf8, (int)strlen(utf8));
     else
       res = -2;
     if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
@@ -1545,7 +1545,7 @@ BOOL CFtpControlSocket::Send(CString str)
 
     size_t sendLen = strlen(utf8);
     if (!m_awaitsReply && !m_sendBuffer)
-      res = CAsyncSocketEx::Send(utf8, strlen(utf8));
+      res = CAsyncSocketEx::Send(utf8, (int)strlen(utf8));
     else
       res = -2;
     if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
@@ -1583,7 +1583,7 @@ BOOL CFtpControlSocket::Send(CString str)
 
     size_t sendLen = strlen(lpszAsciiSend);
     if (!m_awaitsReply && !m_sendBuffer)
-      res = CAsyncSocketEx::Send(lpszAsciiSend, strlen(lpszAsciiSend), 0, m_CurrentServer.iDupFF);
+      res = CAsyncSocketEx::Send(lpszAsciiSend, (int)strlen(lpszAsciiSend), 0, m_CurrentServer.iDupFF);
     else
       res = -2;
     if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
@@ -3868,7 +3868,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
           reply.MakeLower();
           int pos = reply.Find(L"restarting at offset ");
           if (pos != -1)
-            pos += _tcslen(L"restarting at offset ");
+            pos += (int)_tcslen(L"restarting at offset ");
 
           reply = reply.Mid(pos);
 
@@ -5782,10 +5782,10 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
   {
     if (iter->nType == LAYERCALLBACK_STATECHANGE)
     {
-      if (CAsyncSocketEx::LogStateChange(iter->nParam1, iter->nParam2))
+      if (CAsyncSocketEx::LogStateChange((int)iter->nParam1, (int)iter->nParam2))
       {
-        const TCHAR * state2Desc = CAsyncSocketEx::GetStateDesc(iter->nParam2);
-        const TCHAR * state1Desc = CAsyncSocketEx::GetStateDesc(iter->nParam1);
+        const TCHAR * state2Desc = CAsyncSocketEx::GetStateDesc((int)iter->nParam2);
+        const TCHAR * state1Desc = CAsyncSocketEx::GetStateDesc((int)iter->nParam1);
         if (iter->pLayer == m_pProxyLayer)
           LogMessage(FZ_LOG_INFO, L"Proxy layer changed state from %s to %s", state2Desc, state1Desc);
 #ifndef MPEXT_NO_GSS
@@ -5795,7 +5795,7 @@ int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
         else if (iter->pLayer == m_pSslLayer)
         {
           nb_free(iter->str);
-          LogMessage(FZ_LOG_INFO, L"TLS layer changed state from %s to %s", (LPCTSTR)CAsyncSocketEx::GetStateDesc(iter->nParam2), (LPCTSTR)CAsyncSocketEx::GetStateDesc(iter->nParam1));
+          LogMessage(FZ_LOG_INFO, L"TLS layer changed state from %s to %s", (LPCTSTR)CAsyncSocketEx::GetStateDesc((int)iter->nParam2), (LPCTSTR)CAsyncSocketEx::GetStateDesc((int)iter->nParam1));
         }
         else
           LogMessage(FZ_LOG_INFO, L"Layer @ %d changed state from %s to %s", iter->pLayer, state2Desc, state1Desc);
@@ -6133,7 +6133,7 @@ CString CFtpControlSocket::ConvertDomainName(CString domain)
   LPCWSTR buffer = T2CW(domain);
 
   char *utf8 = nb::chcalloc(wcslen(buffer) * 2 + 2);
-  if (!WideCharToMultiByte(CP_UTF8, 0, buffer, -1, utf8, wcslen(buffer) * 2 + 2, 0, 0))
+  if (!WideCharToMultiByte(CP_UTF8, 0, buffer, -1, utf8, (int)(wcslen(buffer) * 2 + 2), 0, 0))
   {
     nb_free(utf8);
     LogMessage(FZ_LOG_WARNING, L"Could not convert domain name");
@@ -6384,7 +6384,7 @@ void CFtpControlSocket::OnSend(int nErrorCode)
   if (!m_sendBufferLen || !m_sendBuffer || m_awaitsReply)
     return;
 
-  int res = CAsyncSocketEx::Send(m_sendBuffer, m_sendBufferLen, 0, m_bUTF8 ? 0 : m_CurrentServer.iDupFF);
+  int res = CAsyncSocketEx::Send(m_sendBuffer, (int)m_sendBufferLen, 0, m_bUTF8 ? 0 : m_CurrentServer.iDupFF);
   if (res == -1)
   {
     if (GetLastError() != WSAEWOULDBLOCK)

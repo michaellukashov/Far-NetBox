@@ -382,7 +382,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
         }
       }
 
-      if (!( res = ( SOCKET_ERROR != connect(m_pOwnerSocket->GetSocketHandle(), res1->ai_addr, res1->ai_addrlen) ) )
+      if (!( res = ( SOCKET_ERROR != connect(m_pOwnerSocket->GetSocketHandle(), res1->ai_addr, (int)res1->ai_addrlen) ) )
         && ::WSAGetLastError() != WSAEWOULDBLOCK)
       {
         if (hints.ai_family == AF_UNSPEC)
@@ -941,7 +941,7 @@ bool CAsyncSocketExLayer::TryNextProtocol()
       continue;
     }
 
-    if (connect(m_pOwnerSocket->GetSocketHandle(), m_nextAddr->ai_addr, m_nextAddr->ai_addrlen) == SOCKET_ERROR && ::WSAGetLastError() != WSAEWOULDBLOCK)
+    if (connect(m_pOwnerSocket->GetSocketHandle(), m_nextAddr->ai_addr, (int)m_nextAddr->ai_addrlen) == SOCKET_ERROR && ::WSAGetLastError() != WSAEWOULDBLOCK)
     {
       m_pOwnerSocket->DetachHandle(m_pOwnerSocket->m_SocketData.hSocket);
       closesocket(m_pOwnerSocket->m_SocketData.hSocket);

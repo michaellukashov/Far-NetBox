@@ -210,7 +210,7 @@ public:
           return 0;
 
         int nEvent=lParam&0xFFFF;
-        int nErrorCode=lParam>>16;
+        int nErrorCode=(int)(lParam >> 16);
 
         //Dispatch notification
         if (!pSocket->m_pFirstLayer)
@@ -541,7 +541,7 @@ public:
       if (!pSocket)
         return 0;
 
-      int nErrorCode = lParam >> 16;
+      int nErrorCode = (int)(lParam >> 16);
       if (nErrorCode)
       {
         pSocket->OnConnect(nErrorCode);
@@ -799,7 +799,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
       return FALSE;
 
     for (res = res0; res; res = res->ai_next)
-      if (Bind(res->ai_addr, res->ai_addrlen))
+      if (Bind(res->ai_addr, (int)res->ai_addrlen))
       {
         ret = TRUE;
         break;
@@ -1174,7 +1174,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
         }
       }
 
-      if (!(ret = CAsyncSocketEx::Connect(m_SocketData.nextAddr->ai_addr, m_SocketData.nextAddr->ai_addrlen)) && GetLastError() != WSAEWOULDBLOCK)
+      if (!(ret = CAsyncSocketEx::Connect(m_SocketData.nextAddr->ai_addr, (int)m_SocketData.nextAddr->ai_addrlen)) && GetLastError() != WSAEWOULDBLOCK)
       {
         if (newSocket)
         {
@@ -1659,7 +1659,7 @@ bool CAsyncSocketEx::TryNextProtocol()
       continue;
     }
 
-    ret = CAsyncSocketEx::Connect(m_SocketData.nextAddr->ai_addr, m_SocketData.nextAddr->ai_addrlen);
+    ret = CAsyncSocketEx::Connect(m_SocketData.nextAddr->ai_addr, (int)m_SocketData.nextAddr->ai_addrlen);
     if (!ret && GetLastError() != WSAEWOULDBLOCK)
     {
       DetachHandle(m_SocketData.hSocket);
