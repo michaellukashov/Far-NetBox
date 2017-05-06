@@ -276,7 +276,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       }
       else
       {
-        command[len]=strlen(lpszAsciiHost);
+        command[len]=(char)strlen(lpszAsciiHost);
         strcpy(&command[len+1], lpszAsciiHost);
         len += strlen(lpszAsciiHost) + 1;
       }
@@ -339,7 +339,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         }
         else
         {
-          command[len]=strlen(lpszAsciiHost);
+          command[len]=(char)strlen(lpszAsciiHost);
           strcpy(&command[len+1],lpszAsciiHost);
           len+=strlen(lpszAsciiHost)+1;
         }
