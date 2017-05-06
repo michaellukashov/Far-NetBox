@@ -10,7 +10,6 @@
 #include "TextsCore.h"
 #include "HelpCore.h"
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
-//---------------------------------------------------------------------------
 
 namespace core {
 
@@ -535,8 +534,7 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, b
 
 } // namespace core
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 TRemoteToken::TRemoteToken() :
   FID(0),
   FIDValid(false)
@@ -673,8 +671,7 @@ UnicodeString TRemoteToken::GetLogText() const
   return FORMAT(L"\"%s\" [%d]", FName.c_str(), static_cast<int>(FID));
 }
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 TRemoteTokenList * TRemoteTokenList::Duplicate() const
 {
   std::unique_ptr<TRemoteTokenList> Result(new TRemoteTokenList());
@@ -805,8 +802,7 @@ const TRemoteToken * TRemoteTokenList::Token(intptr_t Index) const
   return &FTokens[Index];
 }
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile) :
   TPersistent(Kind),
   FDirectory(nullptr),
@@ -1632,8 +1628,7 @@ void TRemoteFile::SetFullFileName(const UnicodeString & Value)
   FFullFileName = Value;
 }
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 TRemoteDirectoryFile::TRemoteDirectoryFile() :
   TRemoteFile(OBJECT_CLASS_TRemoteDirectoryFile)
 {
@@ -1655,8 +1650,7 @@ void TRemoteDirectoryFile::Init()
   SetSize(0);
 }
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal) :
   TRemoteDirectoryFile(OBJECT_CLASS_TRemoteParentDirectory)
 {
@@ -2940,7 +2934,6 @@ TRemoteProperties & TRemoteProperties::operator=(const TRemoteProperties & other
   return *this;
 }
 
-//---------------------------------------------------------------------------
 void TRemoteProperties::Load(THierarchicalStorage * Storage)
 {
   uint8_t Buf[sizeof(Valid)];

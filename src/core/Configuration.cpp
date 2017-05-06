@@ -642,7 +642,7 @@ void TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
 */
   };
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TConfiguration::FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType) const
 {
   return FORMAT(L"%s:%s", SiteKey.c_str(), FingerprintType.c_str());
@@ -1476,7 +1476,7 @@ void TConfiguration::SetLogFileName(const UnicodeString & Value)
     Changed();
   }
 }
-//---------------------------------------------------------------------
+
 void TConfiguration::SetActionsLogFileName(const UnicodeString & Value)
 {
   if (GetActionsLogFileName() != Value)
@@ -1486,7 +1486,7 @@ void TConfiguration::SetActionsLogFileName(const UnicodeString & Value)
     Changed();
   }
 }
-//---------------------------------------------------------------------
+
 void TConfiguration::SetLogToFile(bool Value)
 {
   if (Value != GetLogToFile())
@@ -1692,8 +1692,7 @@ bool TConfiguration::GetPersistent() const
   return (GetStorage() != stNul);
 }
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 void TShortCuts::Add(const TShortCut & ShortCut)
 {
   FShortCuts.push_back(ShortCut);

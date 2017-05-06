@@ -16,7 +16,7 @@ enum TStorageAccessMode
   smRead,
   smReadWrite,
 };
-//---------------------------------------------------------------------------
+
 class THierarchicalStorage : public TObject
 {
 NB_DISABLE_COPY(THierarchicalStorage)

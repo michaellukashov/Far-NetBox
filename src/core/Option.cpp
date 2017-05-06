@@ -185,7 +185,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
 {
   return DoFindSwitch(Switch, Params, ParamsMax, false);
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::FindSwitchCaseSensitive(const UnicodeString & Switch,
   TStrings * Params, int ParamsMax)
 {

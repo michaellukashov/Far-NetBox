@@ -1129,7 +1129,6 @@ TCustomCommandData::TCustomCommandData(const TCustomCommandData & Data)
   this->operator=(Data);
 }
 
-//---------------------------------------------------------------------------
 TCustomCommandData::TCustomCommandData(TTerminal * Terminal)
 {
   Init(Terminal->GetSessionData(), Terminal->TerminalGetUserName(), Terminal->GetPassword(),

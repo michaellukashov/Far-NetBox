@@ -136,7 +136,7 @@ int from_backend_eof(void * /*frontend*/)
 {
   return FALSE;
 }
-//---------------------------------------------------------------------------
+
 int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/);
 
 int get_userpass_input(prompts_t * p, const uint8_t * in, int inlen)
@@ -327,7 +327,7 @@ void nonfatal(const char * fmt, ...)
   va_end(Param);
 }
 
-//---------------------------------------------------------------------------
+
 void CleanupExit(int /*code*/);
 
 void cleanup_exit(int code)
@@ -340,7 +340,6 @@ void CleanupExit(int /*code*/)
   throw ESshFatal(nullptr, L"");
 }
 
-//---------------------------------------------------------------------------
 int askappend(void * /*frontend*/, Filename * /*filename*/,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
