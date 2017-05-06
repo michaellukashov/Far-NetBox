@@ -212,7 +212,7 @@ protected:
   bool m_skipReply;
 
   char * m_sendBuffer;
-  int m_sendBufferLen;
+  size_t m_sendBufferLen;
 
   bool m_bProtP;
 

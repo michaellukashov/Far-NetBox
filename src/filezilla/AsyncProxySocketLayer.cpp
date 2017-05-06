@@ -244,7 +244,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           buffer[1]=static_cast<uint8_t>(strlen(lpszAsciiUser));
           buffer[2+strlen(lpszAsciiUser)]=static_cast<uint8_t>(strlen(lpszAsciiPass?lpszAsciiPass:""));
           intptr_t len=3+strlen(lpszAsciiUser)+strlen(lpszAsciiPass?lpszAsciiPass:"");
-          int res=SendNext(buffer,len);
+          int res=SendNext(buffer,(int)len);
           nb_free(buffer);
           if (res==SOCKET_ERROR || res<len)
           {
@@ -276,9 +276,9 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       }
       else
       {
-        command[len]=strlen(lpszAsciiHost);
+        command[len]=(char)strlen(lpszAsciiHost);
         strcpy(&command[len+1], lpszAsciiHost);
-        len += strlen(lpszAsciiHost) + 1;
+        len += (int)strlen(lpszAsciiHost) + 1;
       }
       memcpy(&command[len], &m_nProxyPeerPort, 2);
       len+=2;
@@ -331,7 +331,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         command[1]=(m_nProxyOpID==PROXYOP_CONNECT)?1:2;
         command[2]=0;
         command[3]=m_nProxyPeerIp?1:3;
-        size_t len=4;
+        int len=4;
         if (m_nProxyPeerIp)
         {
           memcpy(&command[len],&m_nProxyPeerIp,4);
@@ -339,17 +339,17 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         }
         else
         {
-          command[len]=strlen(lpszAsciiHost);
+          command[len]=(char)strlen(lpszAsciiHost);
           strcpy(&command[len+1],lpszAsciiHost);
-          len+=strlen(lpszAsciiHost)+1;
+          len+=(int)strlen(lpszAsciiHost)+1;
         }
         memcpy(&command[len],&m_nProxyPeerPort,2);
         len+=2;
         int res=SendNext(command,len);
         nb_free(command);
-        if (res==SOCKET_ERROR || res<(int)len)
+        if (res==SOCKET_ERROR || res<len)
         {
-          if ((::WSAGetLastError()!=WSAEWOULDBLOCK) || res<(int)len)
+          if ((::WSAGetLastError()!=WSAEWOULDBLOCK) || res<len)
           {
             ConnectionFailed(::WSAGetLastError());
             return;
@@ -695,7 +695,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
         command[7]=1;
         //Add host as URL
         strcpy(&command[9],lpszAscii);
-        len+=strlen(lpszAscii)+1;
+        len+=(int)strlen(lpszAscii)+1;
       }
       else
         memcpy(&command[4],&m_nProxyPeerIp,4);
@@ -767,7 +767,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
         char base64str[4096];
 
         CBase64Coding base64coding;
-        base64coding.Encode(userpass, strlen(userpass), base64str);
+        base64coding.Encode(userpass, (int)strlen(userpass), base64str);
         strcat(str, "Authorization: Basic ");
         strcat(str, base64str);
         strcat(str, "\r\nProxy-Authorization: Basic ");
@@ -777,7 +777,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
       nb_free(pHost);
 
       USES_CONVERSION;
-      int numsent=SendNext(str, strlen(str) );
+      int numsent=SendNext(str, (int)strlen(str) );
       int nErrorCode=::WSAGetLastError();
       if (numsent==SOCKET_ERROR)//nErrorCode!=WSAEWOULDBLOCK)
       {
