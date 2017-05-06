@@ -151,9 +151,9 @@ BOOL CMainThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
     else if (wParam==FZAPI_THREADMSG_PROCESSREPLY)
       m_pControlSocket->ProcessReply();
     else if (wParam==FZAPI_THREADMSG_TRANSFEREND)
-      m_pControlSocket->TransferEnd(lParam);
+      m_pControlSocket->TransferEnd((int)lParam);
     else if (wParam==FZAPI_THREADMSG_CANCEL)
-      m_pControlSocket->Cancel(lParam);
+      m_pControlSocket->Cancel((BOOL)lParam);
     else if (wParam==FZAPI_THREADMSG_DISCONNECT)
       m_pControlSocket->Disconnect();
     else if (wParam==FZAPI_THREADMSG_POSTKEEPALIVE)
