@@ -991,9 +991,9 @@ void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
   FReadCurrentDirectory = true;
 }
 
-void TFTPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
+void TFTPFileSystem::CachedChangeDirectory(const UnicodeString & ADirectory)
 {
-  FCurrentDirectory = core::UnixExcludeTrailingBackslash(Directory);
+  FCurrentDirectory = core::UnixExcludeTrailingBackslash(ADirectory);
   if (FCurrentDirectory.IsEmpty())
   {
     FCurrentDirectory = ROOTDIRECTORY;
@@ -1298,11 +1298,11 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
 }
 
 void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
-  TStrings * FileList, TStrings * Checksums,
+  TStrings * AFileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
   TFileOperationProgressType Progress(nb::bind(&TTerminal::DoProgress, FTerminal), nb::bind(&TTerminal::DoFinished, FTerminal));
-  Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
+  Progress.Start(foCalculateChecksum, osRemote, AFileList->GetCount());
 
   FTerminal->SetOperationProgress(&Progress);
 
@@ -1332,7 +1332,7 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
       throw Exception(FMTLOAD(UNKNOWN_CHECKSUM, Alg.c_str()));
     }
 
-    DoCalculateFilesChecksum(UsingHashCommand, NormalizedAlg, FileList, Checksums, OnCalculatedChecksum,
+    DoCalculateFilesChecksum(UsingHashCommand, NormalizedAlg, AFileList, Checksums, OnCalculatedChecksum,
       &Progress, true);
   }
   __finally

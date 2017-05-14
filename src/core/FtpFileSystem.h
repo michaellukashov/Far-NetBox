@@ -61,8 +61,8 @@ public:
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const;
   virtual void AnyCommand(const UnicodeString & Command,
     TCaptureOutputEvent OutputEvent);
-  virtual void ChangeDirectory(const UnicodeString & Directory);
-  virtual void CachedChangeDirectory(const UnicodeString & Directory);
+  virtual void ChangeDirectory(const UnicodeString & ADirectory);
+  virtual void CachedChangeDirectory(const UnicodeString & ADirectory);
   virtual void AnnounceFileListOperation();
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
@@ -76,7 +76,7 @@ public:
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CopyToRemote(const TStrings * AFilesToCopy,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
+    const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void RemoteCreateDirectory(const UnicodeString & ADirName);
@@ -147,12 +147,12 @@ protected:
   bool KeepWaitingForReply(uintptr_t &ReplyToAwait, bool WantLastCode) const;
   inline bool NoFinalLastCode() const;
 
-  bool HandleStatus(const wchar_t * Status, int Type);
+  bool HandleStatus(const wchar_t * AStatus, int Type);
   bool HandleAsynchRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
-    bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData,
+    bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * AUserData,
     HANDLE & LocalFileHandle,
     int & RequestResult);
   bool HandleAsynchRequestVerifyCertificate(

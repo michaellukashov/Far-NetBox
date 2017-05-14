@@ -994,10 +994,10 @@ UnicodeString TConfiguration::GetProductVersionStr() const
   return Result;
 }
 
-UnicodeString TConfiguration::GetFileVersion(const UnicodeString & FileName)
+UnicodeString TConfiguration::GetFileVersion(const UnicodeString & AFileName)
 {
   UnicodeString Result;
-  void * FileInfo = CreateFileInfo(FileName);
+  void * FileInfo = CreateFileInfo(AFileName);
   try__finally
   {
     SCOPE_EXIT
