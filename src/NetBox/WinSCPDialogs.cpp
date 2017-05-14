@@ -6448,7 +6448,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     {
       TBookmark * Bookmark = BookmarkList->GetBookmarks(Index);
       UnicodeString RemoteDirectory = Bookmark->GetRemote();
-      if (!RemoteDirectory.IsEmpty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) == NPOS))
+      if (!RemoteDirectory.IsEmpty() && (BookmarkDirectories->IndexOf(RemoteDirectory) == NPOS))
       {
         intptr_t Pos = BookmarkDirectories->Add(RemoteDirectory);
         if (RemoteDirectory == Directory)

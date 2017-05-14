@@ -5481,7 +5481,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & /*AFileName*/,
       }
       else
       {
-        intptr_t LocalIndex = Data->LocalFileList->IndexOf(LocalFileName.c_str());
+        intptr_t LocalIndex = Data->LocalFileList->IndexOf(LocalFileName);
         New = (LocalIndex < 0);
         if (!New)
         {

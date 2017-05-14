@@ -2273,7 +2273,7 @@ bool TSFTPFileSystem::IsCapable(intptr_t Capability) const
 
 bool TSFTPFileSystem::SupportsExtension(const UnicodeString & Extension) const
 {
-  return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension.c_str()) >= 0);
+  return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension) >= 0);
 }
 
 inline void TSFTPFileSystem::BusyStart()

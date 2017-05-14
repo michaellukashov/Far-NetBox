@@ -310,7 +310,7 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
 
 intptr_t TCopyParamList::IndexOfName(const UnicodeString & Name) const
 {
-  return FNames->IndexOf(Name.c_str());
+  return FNames->IndexOf(Name);
 }
 
 bool TCopyParamList::CompareItem(intptr_t Index,

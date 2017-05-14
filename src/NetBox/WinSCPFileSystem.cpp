@@ -536,7 +536,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
         if (Slash > 0)
         {
           Name.SetLength(Slash - 1);
-          if (ChildPaths->IndexOf(Name.c_str()) < 0)
+          if (ChildPaths->IndexOf(Name) < 0)
           {
             PanelItems->Add(new TSessionFolderPanelItem(Name));
             ChildPaths->Add(Name);
@@ -3135,7 +3135,7 @@ void TWinSCPFileSystem::TerminalChangeDirectory(TObject * /*Sender*/)
   if (!FNoProgress)
   {
     UnicodeString Directory = FTerminal->GetCurrDirectory();
-    intptr_t Index = FPathHistory->IndexOf(Directory.c_str());
+    intptr_t Index = FPathHistory->IndexOf(Directory);
     if (Index >= 0)
     {
       FPathHistory->Delete(Index);
@@ -3378,7 +3378,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
     {
       DebugAssert(FFileList);
       DebugAssert(FPanelItems->GetCount() == FFileList->GetCount());
-      intptr_t Index = FFileList->IndexOf(AFileName.c_str());
+      intptr_t Index = FFileList->IndexOf(AFileName);
       DebugAssert(Index >= 0);
       PanelItem = get_as<TFarPanelItem>(FPanelItems->GetItem(Index));
     }

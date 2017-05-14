@@ -2152,7 +2152,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   {
     Key = ROOTDIRECTORY;
   }
-  bool Result = (IndexOfName(Key.c_str()) >= 0);
+  bool Result = (IndexOfName(Key) >= 0);
   if (Result)
   {
     TargetDir = GetValue(Key);
