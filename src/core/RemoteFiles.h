@@ -266,7 +266,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TRemoteParentDirectory;
   }
 public:
-  explicit TRemoteParentDirectory(TTerminal * Terminal);
+  explicit TRemoteParentDirectory(TTerminal * ATerminal);
   virtual ~TRemoteParentDirectory() {}
 };
 
@@ -481,7 +481,7 @@ public:
 
   TRights();
   TRights(const TRights & Source);
-  explicit TRights(uint16_t Number);
+  explicit TRights(uint16_t ANumber);
   void Assign(const TRights * Source);
   void AddExecute();
   void AllUndef();
