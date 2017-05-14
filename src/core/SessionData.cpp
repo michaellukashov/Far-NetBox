@@ -4664,7 +4664,7 @@ void TStoredSessionList::UpdateStaticUsage()
 #endif
 }
 
-const TSessionData * TStoredSessionList::FindSame(TSessionData * Data) const
+const TSessionData * TStoredSessionList::FindSame(TSessionData * Data)
 {
   const TSessionData * Result = nullptr;
   if (!(Data->GetHidden() || Data->GetName().IsEmpty())) // || Data->GetIsWorkspace())
