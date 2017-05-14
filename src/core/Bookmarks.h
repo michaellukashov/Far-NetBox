@@ -27,8 +27,8 @@ private:
   static UnicodeString Keys[];
 
 public:
-  TBookmarkList * GetBookmarks(const UnicodeString & Index);
-  void SetBookmarks(const UnicodeString & Index, TBookmarkList * Value);
+  TBookmarkList * GetBookmarks(const UnicodeString & AIndex);
+  void SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Value);
   TBookmarkList * GetSharedBookmarks();
   void SetSharedBookmarks(TBookmarkList * Value);
 
@@ -86,9 +86,9 @@ private:
 public:
 
   intptr_t GetCount() const;
-  TBookmark * GetBookmarks(intptr_t Index);
-  bool GetNodeOpened(const UnicodeString & Index) const;
-  void SetNodeOpened(const UnicodeString & Index, bool Value);
+  TBookmark * GetBookmarks(intptr_t AIndex);
+  bool GetNodeOpened(const UnicodeString & AIndex) const;
+  void SetNodeOpened(const UnicodeString & AIndex, bool Value);
 };
 
 class TBookmark : public TPersistent

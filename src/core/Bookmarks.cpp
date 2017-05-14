@@ -434,16 +434,16 @@ intptr_t TBookmarkList::GetCount() const
   return FBookmarks->GetCount();
 }
 
-TBookmark * TBookmarkList::GetBookmarks(intptr_t Index)
+TBookmark * TBookmarkList::GetBookmarks(intptr_t AIndex)
 {
-  TBookmark * Bookmark = FBookmarks->GetAs<TBookmark>(Index);
+  TBookmark * Bookmark = FBookmarks->GetAs<TBookmark>(AIndex);
   DebugAssert(Bookmark);
   return Bookmark;
 }
 
-bool TBookmarkList::GetNodeOpened(const UnicodeString & Index) const
+bool TBookmarkList::GetNodeOpened(const UnicodeString & AIndex) const
 {
-  return (FOpenedNodes->IndexOf(Index.c_str()) >= 0);
+  return (FOpenedNodes->IndexOf(AIndex.c_str()) >= 0);
 }
 
 void TBookmarkList::SetNodeOpened(const UnicodeString & AIndex, bool Value)

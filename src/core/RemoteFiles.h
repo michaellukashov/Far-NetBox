@@ -30,15 +30,15 @@ class TRemoteToken : public TObject
 public:
   TRemoteToken();
   explicit TRemoteToken(const UnicodeString & Name);
-  explicit TRemoteToken(const TRemoteToken & rht);
+  explicit TRemoteToken(const TRemoteToken & rhs);
 
   void Clear();
 
-  bool operator ==(const TRemoteToken & rht) const;
-  bool operator !=(const TRemoteToken & rht) const;
-  TRemoteToken & operator =(const TRemoteToken & rht);
+  bool operator ==(const TRemoteToken & rhs) const;
+  bool operator !=(const TRemoteToken & rhs) const;
+  TRemoteToken & operator =(const TRemoteToken & rhs);
 
-  intptr_t Compare(const TRemoteToken & rht) const;
+  intptr_t Compare(const TRemoteToken & rhs) const;
 
   /*
   __property UnicodeString Name = { read = FName, write = FName };
@@ -655,7 +655,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
 bool UnixExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
 UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix);
 bool IsUnixRootPath(const UnicodeString & APath);
-bool IsUnixHiddenFile(const UnicodeString & APath);
+bool IsUnixHiddenFile(const UnicodeString & AFileName);
 UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APath);
 UnicodeString FromUnixPath(const UnicodeString & APath);
 UnicodeString ToUnixPath(const UnicodeString & APath);
