@@ -1199,7 +1199,7 @@ bool TGUIConfiguration::GetRememberPassword() const
   return GetSessionRememberPassword() || GetPuttyPassword();
 }
 
-const TCopyParamList * TGUIConfiguration::GetCopyParamList()
+TCopyParamList * TGUIConfiguration::GetCopyParamList() const
 {
   return FCopyParamList;
 }

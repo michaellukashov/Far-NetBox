@@ -256,7 +256,7 @@ public:
   void FreeResourceModule(HANDLE Instance);
   void SetDefaultCopyParam(const TGUICopyParamType & Value);
   virtual bool GetRememberPassword() const;
-  const TCopyParamList * GetCopyParamList();
+  TCopyParamList * GetCopyParamList() const;
   void SetCopyParamList(const TCopyParamList * Value);
   virtual void DefaultLocalized();
   intptr_t GetCopyParamIndex() const;
