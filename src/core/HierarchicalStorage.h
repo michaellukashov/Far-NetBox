@@ -151,7 +151,7 @@ public:
   virtual void GetValueNames(TStrings * Strings) const;
 
 protected:
-  virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
+  virtual bool DoKeyExists(const UnicodeString & SubKey, bool AForceAnsi);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate);
   virtual UnicodeString GetSource() const;
   virtual UnicodeString GetSource();
