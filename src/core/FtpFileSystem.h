@@ -153,7 +153,7 @@ protected:
     const wchar_t * Path1, const wchar_t * Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * AUserData,
-    HANDLE & LocalFileHandle,
+    HANDLE & ALocalFileHandle,
     int & RequestResult);
   bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);

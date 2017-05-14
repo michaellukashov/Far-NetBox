@@ -4212,7 +4212,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   const wchar_t * Path1, const wchar_t * Path2,
   int64_t Size1, int64_t Size2, time_t LocalTime,
   bool /*HasLocalTime*/, const TRemoteFileTime & RemoteTime, void * AUserData,
-  HANDLE & LocalFileHandle,
+  HANDLE & ALocalFileHandle,
   int & RequestResult)
 {
   if (!FActive)
@@ -4277,7 +4277,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
           case omOverwrite:
             if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
               false, true,
-              &LocalFileHandle))
+              &ALocalFileHandle))
             {
               RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
               break;
@@ -4298,7 +4298,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
           case omResume:
             if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
               true, true,
-              &LocalFileHandle))
+              &ALocalFileHandle))
             {
   //            ThrowSkipFileNull();
               RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
