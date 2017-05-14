@@ -2806,7 +2806,7 @@ void TWebDAVFileSystem::DiscardLock(const RawByteString & APath)
   }
 }
 
-void TWebDAVFileSystem::UnlockFile(const UnicodeString & FileName, const TRemoteFile * File)
+void TWebDAVFileSystem::UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile)
 {
   ClearNeonError();
   struct ne_lock * Lock = ne_lock_create();
@@ -2816,7 +2816,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & FileName, const TRemote
     {
       ne_lock_destroy(Lock);
     };
-    RawByteString Path = PathToNeon(FilePath(File));
+    RawByteString Path = PathToNeon(FilePath(AFile));
     RawByteString LockToken;
 
     struct ne_lock * Lock2 = nullptr;
@@ -2839,7 +2839,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & FileName, const TRemote
 
     if ((Lock2 == nullptr) && (LockToken.IsEmpty()))
     {
-      throw Exception(FMTLOAD(NOT_LOCKED, FileName.c_str()));
+      throw Exception(FMTLOAD(NOT_LOCKED, AFileName.c_str()));
     }
     else
     {
