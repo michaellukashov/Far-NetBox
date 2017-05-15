@@ -50,7 +50,7 @@ protected:
 
 private:
   UnicodeString GetSubKeyText(const UnicodeString & Name) const;
-  tinyxml2::XMLElement * FindElement(const UnicodeString & Value) const;
+  tinyxml2::XMLElement * FindElement(const UnicodeString & Name) const;
   std::string ToStdString(const UnicodeString & String) const { return std::string(::W2MB(String.c_str()).c_str()); }
   UnicodeString ToUnicodeString(const char * String) const { return ::MB2W(String ? String : ""); }
   void RemoveIfExists(const UnicodeString & Name);
