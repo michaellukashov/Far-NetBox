@@ -82,7 +82,7 @@ bool IsNumber(const UnicodeString & Str);
 UnicodeString GetSystemTemporaryDirectory();
 UnicodeString GetShellFolderPath(int CSIdl);
 UnicodeString StripPathQuotes(const UnicodeString & APath);
-UnicodeString AddQuotes(const UnicodeString & Str);
+UnicodeString AddQuotes(const UnicodeString & AStr);
 UnicodeString AddPathQuotes(const UnicodeString & APath);
 void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   UnicodeString & Params, UnicodeString & Dir);

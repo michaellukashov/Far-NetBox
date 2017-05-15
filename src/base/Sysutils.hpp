@@ -236,7 +236,7 @@ UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
 char HexToChar(const UnicodeString & Hex, uintptr_t MinChars = 0);
 
 UnicodeString ReplaceStrAll(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);
-UnicodeString SysErrorMessage(intptr_t Code);
+UnicodeString SysErrorMessage(intptr_t ErrorCode);
 
 bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
@@ -245,10 +245,10 @@ UnicodeString DateTimeToString(const TDateTime & DateTime);
 uint32_t DayOfWeek(const TDateTime & DateTime);
 
 TDateTime Date();
-void DecodeDate(const TDateTime & DateTime, uint16_t & Y,
-  uint16_t & M, uint16_t & D);
-void DecodeTime(const TDateTime & DateTime, uint16_t & H,
-  uint16_t & N, uint16_t & S, uint16_t & MS);
+void DecodeDate(const TDateTime & DateTime, uint16_t & Year,
+  uint16_t & Month, uint16_t & Day);
+void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
+  uint16_t & Min, uint16_t & Sec, uint16_t & MSec);
 
 UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime);
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
