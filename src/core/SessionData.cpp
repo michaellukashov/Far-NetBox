@@ -2821,14 +2821,14 @@ void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Switc
   Result += FORMAT(L" -%s", Switch.c_str());
 }
 
-void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value)
+void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & AName, const UnicodeString & Value)
 {
-  AddSwitchValue(Result, Name, FORMAT(L"\"%s\"", EscapeParam(Value).c_str()));
+  AddSwitchValue(Result, AName, FORMAT(L"\"%s\"", EscapeParam(Value).c_str()));
 }
 
-void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & Name, intptr_t Value)
+void TSessionData::AddSwitch(UnicodeString & Result, const UnicodeString & AName, intptr_t Value)
 {
-  AddSwitchValue(Result, Name, IntToStr(Value));
+  AddSwitchValue(Result, AName, IntToStr(Value));
 }
 
 void TSessionData::LookupLastFingerprint()
