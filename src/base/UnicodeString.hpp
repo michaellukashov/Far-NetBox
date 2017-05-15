@@ -154,7 +154,7 @@ public:
   UnicodeString & operator=(const RawByteString & StrCopy);
   UnicodeString & operator=(const AnsiString & StrCopy);
   UnicodeString & operator=(const UTF8String & StrCopy);
-  UnicodeString & operator=(const wchar_t * lpwszData);
+  UnicodeString & operator=(const wchar_t * Str);
   UnicodeString & operator=(const char * lpszData);
   UnicodeString & operator=(const wchar_t Ch);
 
@@ -173,9 +173,9 @@ public:
   UnicodeString & operator +=(const wchar_t * rhs);
   UnicodeString & operator +=(const UTF8String & rhs);
   UnicodeString & operator +=(const RawByteString & rhs);
-  UnicodeString & operator +=(const char rhs);
-  UnicodeString & operator +=(const char * rhs);
-  UnicodeString & operator +=(const wchar_t rhs);
+  UnicodeString & operator +=(const char Ch);
+  UnicodeString & operator +=(const char * Ch);
+  UnicodeString & operator +=(const wchar_t Ch);
 
   bool operator ==(const UnicodeString & Str) const { return Data == Str.Data; }
   bool operator !=(const UnicodeString & Str) const { return Data != Str.Data; }
