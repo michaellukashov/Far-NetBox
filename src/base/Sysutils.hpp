@@ -188,7 +188,7 @@ public:
   DWORD ErrorCode;
 };
 
-void RaiseLastOSError(DWORD Result = 0);
+void RaiseLastOSError(DWORD LastError = 0);
 
 struct TFormatSettings : public TObject
 {
@@ -264,8 +264,8 @@ UnicodeString LowerCase(const UnicodeString & Str);
 wchar_t UpCase(const wchar_t Ch);
 wchar_t LowCase(const wchar_t Ch);
 UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To);
-intptr_t AnsiPos(const UnicodeString & Str2, wchar_t Ch);
-intptr_t Pos(const UnicodeString & Str2, const UnicodeString & Substr);
+intptr_t AnsiPos(const UnicodeString & Str, wchar_t Ch);
+intptr_t Pos(const UnicodeString & Str, const UnicodeString & Substr);
 UnicodeString StringReplaceAll(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To);
 bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t AIndex);
 intptr_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
@@ -335,8 +335,8 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth = 40);
 
 UnicodeString TranslateExceptionMessage(Exception * E);
 
-void AppendWChar(UnicodeString & Str2, const wchar_t Ch);
-void AppendChar(std::string & Str2, const char Ch);
+void AppendWChar(UnicodeString & Str, const wchar_t Ch);
+void AppendChar(std::string & Str, const char Ch);
 
 void AppendPathDelimiterW(UnicodeString & Str);
 

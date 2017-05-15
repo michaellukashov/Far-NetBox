@@ -2018,7 +2018,7 @@ void TRegistry::WriteInt64(const UnicodeString & Name, int64_t Value)
 }
 
 void TRegistry::WriteBinaryData(const UnicodeString & Name,
-                                const void * Buffer, ::size_t BufSize)
+  const void * Buffer, ::size_t BufSize)
 {
   PutData(Name, Buffer, BufSize, rdBinary);
 }
