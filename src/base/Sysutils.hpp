@@ -117,13 +117,12 @@ public:
   explicit Exception(TObjectClassId Kind, intptr_t Ident);
   ~Exception() {}
 
-public:
-  UnicodeString Message;
-
 protected:
   // UnicodeString FHelpKeyword;
 private:
   TObjectClassId FKind;
+public:
+  UnicodeString Message;
 };
 
 class EAbort : public Exception
