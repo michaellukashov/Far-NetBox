@@ -168,8 +168,8 @@ public:
   bool Init();
   void Destroying();
 
-  bool SetCurrentPath(const wchar_t * Path);
-  bool GetCurrentPath(wchar_t * Path, size_t MaxLen);
+  bool SetCurrentPath(const wchar_t * APath);
+  bool GetCurrentPath(wchar_t * APath, size_t MaxLen);
 
   bool UsingMlsd();
   bool UsingUtf8();
@@ -186,17 +186,17 @@ public:
     X509 * Certificate, EVP_PKEY * PrivateKey);
   bool Close(bool AllowBusy);
 
-  bool List(const wchar_t * Path);
+  bool List(const wchar_t * APath);
   bool ListFile(const wchar_t * FileName, const wchar_t * APath);
 
   bool CustomCommand(const wchar_t * Command);
 
-  bool MakeDir(const wchar_t* Path);
-  bool Chmod(int Value, const wchar_t* FileName, const wchar_t* Path);
-  bool Delete(const wchar_t* FileName, const wchar_t* Path);
-  bool RemoveDir(const wchar_t* FileName, const wchar_t* Path);
+  bool MakeDir(const wchar_t* APath);
+  bool Chmod(int Value, const wchar_t* FileName, const wchar_t* APath);
+  bool Delete(const wchar_t* FileName, const wchar_t* APath);
+  bool RemoveDir(const wchar_t* FileName, const wchar_t* APath);
   bool Rename(const wchar_t* OldName, const wchar_t* NewName,
-    const wchar_t* Path, const wchar_t* NewPath);
+    const wchar_t* APath, const wchar_t* ANewPath);
 
   bool FileTransfer(const wchar_t * LocalFile, const wchar_t * RemoteFile,
     const wchar_t * RemotePath, bool Get, __int64 Size, int Type, void * UserData);
@@ -302,7 +302,7 @@ protected:
     int number;
   };
 
-  rde::map<ftp_capability_names_t, t_cap> FCapabilityMap;
+  mutable rde::map<ftp_capability_names_t, t_cap> FCapabilityMap;
 };
 
 #endif // FileZillaIntfH
