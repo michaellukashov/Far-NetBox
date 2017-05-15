@@ -243,12 +243,12 @@ public:
   void Unique() {}
 
 public:
-  AnsiString & operator=(const UnicodeString & strCopy);
-  AnsiString & operator=(const RawByteString & strCopy);
-  AnsiString & operator=(const AnsiString & strCopy);
-  AnsiString & operator=(const UTF8String & strCopy);
-  AnsiString & operator=(const char * lpszData);
-  AnsiString & operator=(const wchar_t * lpwszData);
+  AnsiString & operator=(const UnicodeString & StrCopy);
+  AnsiString & operator=(const RawByteString & StrCopy);
+  AnsiString & operator=(const AnsiString & StrCopy);
+  AnsiString & operator=(const UTF8String & StrCopy);
+  AnsiString & operator=(const char * Str);
+  AnsiString & operator=(const wchar_t * Str);
   AnsiString & operator=(wchar_t chData);
 
   AnsiString operator +(const UnicodeString & rhs) const;
@@ -315,15 +315,15 @@ public:
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(const wchar_t * Str) const;
   intptr_t Pos(const char Ch) const;
-  intptr_t Pos(const char * Ch) const;
+  intptr_t Pos(const char * Str) const;
 
   void Unique() {}
 
 public:
-  RawByteString & operator=(const UnicodeString & strCopy);
-  RawByteString & operator=(const RawByteString & strCopy);
-  RawByteString & operator=(const AnsiString & strCopy);
-  RawByteString & operator=(const UTF8String & strCopy);
+  RawByteString & operator=(const UnicodeString & StrCopy);
+  RawByteString & operator=(const RawByteString & StrCopy);
+  RawByteString & operator=(const AnsiString & StrCopy);
+  RawByteString & operator=(const UTF8String & StrCopy);
   RawByteString & operator=(const char * lpszData);
   RawByteString & operator=(const wchar_t * lpwszData);
   RawByteString & operator=(wchar_t chData);
