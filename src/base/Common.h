@@ -119,7 +119,7 @@ bool IsHex(wchar_t Ch);
 UnicodeString DecodeUrlChars(const UnicodeString & S);
 UnicodeString EncodeUrlString(const UnicodeString & S);
 UnicodeString EncodeUrlPath(const UnicodeString & S);
-UnicodeString AppendUrlParams(const UnicodeString & URL, const UnicodeString & Params);
+UnicodeString AppendUrlParams(const UnicodeString & AURL, const UnicodeString & Params);
 UnicodeString ExtractFileNameFromUrl(const UnicodeString & Url);
 bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin);
 void RecursiveDeleteFileChecked(const UnicodeString & AFileName, bool ToRecycleBin);
