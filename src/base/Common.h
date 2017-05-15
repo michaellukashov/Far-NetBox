@@ -149,7 +149,7 @@ bool GetWindowsProductType(DWORD & Type);
 UnicodeString WindowsVersion();
 UnicodeString WindowsVersionLong();
 bool IsDirectoryWriteable(const UnicodeString & APath);
-UnicodeString FormatNumber(int64_t Size);
+UnicodeString FormatNumber(int64_t Number);
 UnicodeString FormatSize(int64_t Size);
 UnicodeString ExtractFileBaseName(const UnicodeString & APath);
 TStringList * TextToStringList(const UnicodeString & Text);
