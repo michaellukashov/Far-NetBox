@@ -289,7 +289,7 @@ public:
 class TAutoFlag : public TValueRestorer<bool>
 {
 public:
-  TAutoFlag(bool & Target) :
+  explicit TAutoFlag(bool & Target) :
     TValueRestorer<bool>(Target)
   {
     DebugAssert(!Target);
