@@ -270,8 +270,8 @@ CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TFTPServerCapabilities)
 public:
   TFTPServerCapabilities(){}
-  ftp_capabilities_t GetCapability(ftp_capability_names_t Name);
-  ftp_capabilities_t GetCapabilityString(ftp_capability_names_t Name, std::string * Option = NULL);
+  ftp_capabilities_t GetCapability(ftp_capability_names_t Name) const;
+  ftp_capabilities_t GetCapabilityString(ftp_capability_names_t Name, std::string * Option = NULL) const;
   void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap);
   void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap, const std::string & Option);
   void Clear() { FCapabilityMap.clear(); }
