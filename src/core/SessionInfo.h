@@ -196,7 +196,7 @@ class TChmodSessionAction : public TFileSessionAction
 public:
   explicit TChmodSessionAction(TActionLog * Log, const UnicodeString & AFileName);
   explicit TChmodSessionAction(TActionLog * Log, const UnicodeString & AFileName,
-    const TRights & Rights);
+    const TRights & ARights);
 
   void Rights(const TRights & Rights);
   void Recursive();
