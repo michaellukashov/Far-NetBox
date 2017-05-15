@@ -499,9 +499,9 @@ void TTunnelUI::DisplayBanner(const UnicodeString & Banner)
   }
 }
 
-void TTunnelUI::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
+void TTunnelUI::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpContext)
 {
-  throw ESshFatal(E, Msg, HelpKeyword);
+  throw ESshFatal(E, Msg, HelpContext);
 }
 
 void TTunnelUI::HandleExtendedException(Exception * E)
