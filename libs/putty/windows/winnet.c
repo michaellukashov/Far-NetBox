@@ -579,7 +579,7 @@ SockAddr sk_namelookup(const char *host, char **canonicalname,
 	    if (err == 0)
 	    {
 		  ret->resolved = TRUE;
-	    }	
+	    }
 	} else
 #endif
 	{
@@ -721,7 +721,7 @@ void sk_getaddr(SockAddr addr, char *buf, int buflen)
 	int err = 0;
 	if (p_WSAAddressToStringA) {
 	    DWORD dwbuflen = buflen;
-			err = p_WSAAddressToStringA(step.ai->ai_addr, (DWORD)step.ai->ai_addrlen,
+		err = p_WSAAddressToStringA(step.ai->ai_addr, (DWORD)step.ai->ai_addrlen,
 					NULL, buf, &dwbuflen);
 	} else
 	    err = -1;
@@ -1823,8 +1823,7 @@ int select_result(WPARAM wParam, LPARAM lParam)
 	    }
 	}
 	if (ret < 0) {
-	    return plug_closing(s->plug, winsock_error_string(err), err,
-				0);
+	    return plug_closing(s->plug, winsock_error_string(err), err, 0);
 	} else if (0 == ret) {
 	    return plug_closing(s->plug, NULL, 0, 0);
 	} else {
@@ -1871,8 +1870,7 @@ int select_result(WPARAM wParam, LPARAM lParam)
 		err = p_WSAGetLastError();
 		if (err == WSAEWOULDBLOCK)
 		    break;
-		return plug_closing(s->plug, winsock_error_string(err),
-				    err, 0);
+		return plug_closing(s->plug, winsock_error_string(err), err, 0);
 	    } else {
 		if (ret)
 		    open &= plug_receive(s->plug, 0, buf, ret);
