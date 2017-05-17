@@ -126,15 +126,15 @@ UnicodeString UnixExtractFileExt(const UnicodeString & APath)
     return UnicodeString();
 }
 
-UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix)
+UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
 {
   if (Unix)
   {
-    return UnixExtractFileName(Path);
+    return UnixExtractFileName(APath);
   }
   else
   {
-    return base::ExtractFileName(Path, Unix);
+    return base::ExtractFileName(APath, Unix);
   }
 }
 
@@ -548,10 +548,10 @@ TRemoteToken::TRemoteToken(const UnicodeString & Name) :
 {
 }
 
-TRemoteToken::TRemoteToken(const TRemoteToken & rhp) :
-  FName(rhp.FName),
-  FID(rhp.FID),
-  FIDValid(rhp.FIDValid)
+TRemoteToken::TRemoteToken(const TRemoteToken & rhs) :
+  FName(rhs.FName),
+  FID(rhs.FID),
+  FIDValid(rhs.FIDValid)
 {
 }
 
@@ -561,38 +561,38 @@ void TRemoteToken::Clear()
   FIDValid = false;
 }
 
-bool TRemoteToken::operator ==(const TRemoteToken & rht) const
+bool TRemoteToken::operator ==(const TRemoteToken & rhs) const
 {
   return
-    (FName == rht.FName) &&
-    (FIDValid == rht.FIDValid) &&
-    (!FIDValid || (FID == rht.FID));
+    (FName == rhs.FName) &&
+    (FIDValid == rhs.FIDValid) &&
+    (!FIDValid || (FID == rhs.FID));
 }
 
-bool TRemoteToken::operator !=(const TRemoteToken & rht) const
+bool TRemoteToken::operator !=(const TRemoteToken & rhs) const
 {
-  return !(*this == rht);
+  return !(*this == rhs);
 }
 
-TRemoteToken & TRemoteToken::operator =(const TRemoteToken & rht)
+TRemoteToken & TRemoteToken::operator =(const TRemoteToken & rhs)
 {
-  if (this != &rht)
+  if (this != &rhs)
   {
-    FName = rht.FName;
-    FIDValid = rht.FIDValid;
-    FID = rht.FID;
+    FName = rhs.FName;
+    FIDValid = rhs.FIDValid;
+    FID = rhs.FID;
   }
   return *this;
 }
 
-intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
+intptr_t TRemoteToken::Compare(const TRemoteToken & rhs) const
 {
   intptr_t Result;
   if (!FName.IsEmpty())
   {
-    if (!rht.FName.IsEmpty())
+    if (!rhs.FName.IsEmpty())
     {
-      Result = ::AnsiCompareText(FName, rht.FName);
+      Result = ::AnsiCompareText(FName, rhs.FName);
     }
     else
     {
@@ -601,7 +601,7 @@ intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
   }
   else
   {
-    if (!rht.FName.IsEmpty())
+    if (!rhs.FName.IsEmpty())
     {
       Result = 1;
     }
@@ -609,9 +609,9 @@ intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
     {
       if (FIDValid)
       {
-        if (rht.FIDValid)
+        if (rhs.FIDValid)
         {
-          Result = (FID < rht.FID) ? -1 : ((FID > rht.FID) ? 1 : 0);
+          Result = (FID < rhs.FID) ? -1 : ((FID > rhs.FID) ? 1 : 0);
         }
         else
         {
@@ -620,7 +620,7 @@ intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
       }
       else
       {
-        if (rht.FIDValid)
+        if (rhs.FIDValid)
         {
           Result = 1;
         }
@@ -2152,7 +2152,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   {
     Key = ROOTDIRECTORY;
   }
-  bool Result = (IndexOfName(Key.c_str()) >= 0);
+  bool Result = (IndexOfName(Key) >= 0);
   if (Result)
   {
     TargetDir = GetValue(Key);
@@ -2293,7 +2293,7 @@ bool TRights::operator ==(const TRights & rhr) const
     for (int Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
-            rhr.GetRightUndef(static_cast<TRight>(Right)))
+          rhr.GetRightUndef(static_cast<TRight>(Right)))
       {
         return false;
       }

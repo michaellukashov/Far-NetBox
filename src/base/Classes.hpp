@@ -240,7 +240,7 @@ public:
   virtual void Sort();
 
   intptr_t GetCount() const;
-  void SetCount(intptr_t Value);
+  void SetCount(intptr_t NewCount);
 
 private:
   rde::vector<void *> FList;
@@ -690,7 +690,7 @@ public:
   bool ValueExists(const UnicodeString & Value) const;
   bool GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const;
   TRegDataType GetDataType(const UnicodeString & ValueName) const;
-  DWORD GetDataSize(const UnicodeString & Name) const;
+  DWORD GetDataSize(const UnicodeString & ValueName) const;
   bool ReadBool(const UnicodeString & Name) const;
   TDateTime ReadDateTime(const UnicodeString & Name) const;
   double ReadFloat(const UnicodeString & Name) const;

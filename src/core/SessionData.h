@@ -870,13 +870,12 @@ public:
   void SelectAll(bool Select);
   void Import(TStoredSessionList * From, bool OnlySelected, TList * Imported);
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
-  TSessionData * AtSession(int Index)
-    { return (TSessionData*)AtObject(Index); }
+  TSessionData * AtSession(intptr_t Index) { return (TSessionData *)AtObject(Index); }
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
   void UpdateStaticUsage();
   intptr_t IndexOf(TSessionData * Data) const;
-  const TSessionData * FindSame(TSessionData * Data) const;
+  const TSessionData * FindSame(TSessionData * Data);
   TSessionData * NewSession(const UnicodeString & SessionName, TSessionData * Session);
   void NewWorkspace(const UnicodeString & Name, TList * DataList);
   bool GetIsFolder(const UnicodeString & Name) const;

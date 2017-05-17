@@ -36,7 +36,7 @@ UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
 UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, const TStrings * Items);
 UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
-  const UnicodeString & MultiFileFormat, const TStrings * AFiles, bool Remote);
+  const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote);
 UnicodeString UniqTempDir(const UnicodeString & BaseDir,
   const UnicodeString & Identity, bool Mask = false);
 bool DeleteDirectory(const UnicodeString & ADirName);

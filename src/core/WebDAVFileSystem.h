@@ -41,7 +41,7 @@ public:
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const;
   virtual void AnyCommand(const UnicodeString & Command,
     TCaptureOutputEvent OutputEvent);
-  virtual void ChangeDirectory(const UnicodeString & Directory);
+  virtual void ChangeDirectory(const UnicodeString & ADirectory);
   virtual void CachedChangeDirectory(const UnicodeString & Directory);
   virtual void AnnounceFileListOperation();
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
@@ -56,7 +56,7 @@ public:
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CopyToRemote(const TStrings * AFilesToCopy,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
+    const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void RemoteCreateDirectory(const UnicodeString & ADirName);
@@ -90,7 +90,7 @@ public:
   virtual void GetSupportedChecksumAlgs(TStrings * Algs);
   virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
-  virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem);
+  virtual void UpdateFromMain(TCustomFileSystem * AMainFileSystem);
 
   void NeonDebug(const UnicodeString & Message);
 
@@ -120,7 +120,7 @@ protected:
     const UnicodeString & TargetDir, uintptr_t Attrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
   void ConfirmOverwrite(
-    const UnicodeString & ASourceFullFileName, UnicodeString & ADestFileName,
+    const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
     TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
     intptr_t Params,

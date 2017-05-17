@@ -207,7 +207,7 @@ bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams, bo
   return Result;
 }
 
-bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
+bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams,
   HANDLE & Handle)
 {
   TShellExecuteInfoW ExecuteInfo;
@@ -216,7 +216,7 @@ bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
   ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
   ExecuteInfo.lpFile = const_cast<wchar_t *>(APath.data());
-  ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
+  ExecuteInfo.lpParameters = const_cast<wchar_t *>(AParams.data());
   ExecuteInfo.nShow = SW_SHOW;
 
   bool Result = (::ShellExecuteEx(&ExecuteInfo) != 0);

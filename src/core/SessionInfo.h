@@ -227,7 +227,7 @@ class TMvSessionAction : public TFileLocationSessionAction
 {
 public:
   explicit TMvSessionAction(TActionLog * Log, const UnicodeString & AFileName,
-    const UnicodeString & Destination);
+    const UnicodeString & ADestination);
 };
 
 class TCallSessionAction : public TSessionAction

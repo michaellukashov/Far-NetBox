@@ -310,7 +310,7 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
 
 intptr_t TCopyParamList::IndexOfName(const UnicodeString & Name) const
 {
-  return FNames->IndexOf(Name.c_str());
+  return FNames->IndexOf(Name);
 }
 
 bool TCopyParamList::CompareItem(intptr_t Index,
@@ -1199,7 +1199,7 @@ bool TGUIConfiguration::GetRememberPassword() const
   return GetSessionRememberPassword() || GetPuttyPassword();
 }
 
-const TCopyParamList * TGUIConfiguration::GetCopyParamList()
+TCopyParamList * TGUIConfiguration::GetCopyParamList() const
 {
   return FCopyParamList;
 }

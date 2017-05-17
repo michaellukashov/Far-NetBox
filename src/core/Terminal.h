@@ -372,7 +372,7 @@ public:
   void ReadDirectory(TRemoteFileList * AFileList);
   void CustomReadDirectory(TRemoteFileList * AFileList);
   void DoCreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
-  bool TerminalCreateLocalFile(const UnicodeString & AFileName,
+  bool TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,
@@ -386,7 +386,7 @@ public:
     const TCopyParamType * CopyParam, TFileOperationProgressType * OperationProgress);
   bool HandleException(Exception * E);
   void CalculateFileSize(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * Size);
+    const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * ASize);
   void DoCalculateDirectorySize(const UnicodeString & AFileName,
     const TRemoteFile * AFile, TCalculateSizeParams * Params);
   void CalculateLocalFileSize(const UnicodeString & AFileName,
@@ -395,7 +395,7 @@ public:
     const TCopyParamType * CopyParam, bool AllowDirs,
     OUT int64_t & Size);
   TBatchOverwrite EffectiveBatchOverwrite(
-    const UnicodeString & AFileName, const TCopyParamType * CopyParam, intptr_t Params,
+    const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, bool Special) const;
   bool CheckRemoteFile(
     const UnicodeString & AFileName, const TCopyParamType * CopyParam,
@@ -407,7 +407,7 @@ public:
     TFileOperationProgressType * OperationProgress, const UnicodeString & AMessage = L"");
   void DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirectory,
     const UnicodeString & ARemoteDirectory, TSynchronizeMode Mode,
-    const TCopyParamType * CopyParam, intptr_t Params,
+    const TCopyParamType * CopyParam, intptr_t Flags,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory,
     TSynchronizeOptions * Options, intptr_t Level, TSynchronizeChecklist * Checklist);
   void DoSynchronizeCollectFile(const UnicodeString & AFileName,
@@ -420,7 +420,7 @@ public:
     const TRemoteFile * AFile, void * Param);
   void DoSynchronizeProgress(const TSynchronizeData & Data, bool Collect);
   void DeleteLocalFile(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, void * Param);
+    const TRemoteFile * AFile, void * Params);
   void RecycleFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
   TStrings * GetFixedPaths() const;
   void DoStartup();
@@ -476,7 +476,7 @@ public:
   UnicodeString GetRemoteFileInfo(TRemoteFile * AFile) const;
   void LogRemoteFile(TRemoteFile * AFile);
   UnicodeString FormatFileDetailsForLog(const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size);
-  void LogFileDetails(const UnicodeString & AFileName, const TDateTime & Modification, int64_t Size);
+  void LogFileDetails(const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size);
   void LogFileDone(TFileOperationProgressType * OperationProgress);
   virtual const TTerminal * GetPasswordSource() const { return this; }
   virtual TTerminal * GetPasswordSource();
@@ -536,7 +536,7 @@ public:
     const TRemoteProperties * Properties = nullptr);
   void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic, bool IsDirectory);
   void RemoteDeleteFile(const UnicodeString & AFileName,
-    const TRemoteFile * AFile = nullptr, void * Params = nullptr);
+    const TRemoteFile * AFile = nullptr, void * AParams = nullptr);
   bool RemoteDeleteFiles(TStrings * AFilesToDelete, intptr_t Params = 0);
   bool DeleteLocalFiles(TStrings * AFileList, intptr_t Params = 0);
   bool IsRecycledFile(const UnicodeString & AFileName);
@@ -755,7 +755,7 @@ public:
   explicit TSecondaryTerminal(TTerminal * MainTerminal);
   explicit TSecondaryTerminal(TObjectClassId Kind, TTerminal * MainTerminal);
   virtual ~TSecondaryTerminal() {}
-  void Init(TSessionData * SessionData, TConfiguration * Configuration,
+  void Init(TSessionData * ASessionData, TConfiguration * AConfiguration,
     const UnicodeString & Name);
 
   void UpdateFromMain();
@@ -953,7 +953,7 @@ public:
 private:
   TList FList;
 
-  static intptr_t Compare(const void * Item1, const void * Item2);
+  static intptr_t Compare(const void * AItem1, const void * AItem2);
 };
 
 struct TSpaceAvailable : public TObject

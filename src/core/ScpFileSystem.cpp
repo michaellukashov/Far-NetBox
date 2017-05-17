@@ -331,7 +331,7 @@ TStrings * TCommandSet::CreateCommandList() const
     if (!Cmd.IsEmpty())
     {
       Cmd = ExtractCommand(Cmd);
-      if ((Cmd != L"%s") && (CommandList->IndexOf(Cmd.c_str()) < 0))
+      if ((Cmd != L"%s") && (CommandList->IndexOf(Cmd) < 0))
         CommandList->Add(Cmd);
     }
   }

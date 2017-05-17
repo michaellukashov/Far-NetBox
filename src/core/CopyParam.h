@@ -137,9 +137,8 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
   UnicodeString GetInfoStr(const UnicodeString & Separator, intptr_t Options) const;
-  bool AnyUsableCopyParam(intptr_t Attrs) const;
-  UnicodeString GenerateTransferCommandArgs(
-    int Attrs, const UnicodeString & Link, bool & NoScriptArgs) const;
+  bool AnyUsableCopyParam(intptr_t Options) const;
+  UnicodeString GenerateTransferCommandArgs(intptr_t Options, const UnicodeString & Link, bool & NoScriptArgs) const;
   //UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs, bool & NoCodeProperties) const;
 
   bool operator==(const TCopyParamType & rhp) const;

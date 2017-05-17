@@ -340,7 +340,7 @@ void TBookmarkList::Add(TBookmark * Bookmark)
 void TBookmarkList::InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark)
 {
   DebugAssert(BeforeBookmark);
-  intptr_t Index = FBookmarks->IndexOf(BeforeBookmark->GetKey().c_str());
+  intptr_t Index = FBookmarks->IndexOf(BeforeBookmark->GetKey());
   DebugAssert(Index >= 0);
   Insert(Index, Bookmark);
 }
@@ -349,9 +349,9 @@ void TBookmarkList::MoveTo(TBookmark * ToBookmark,
   TBookmark * Bookmark, bool Before)
 {
   DebugAssert(ToBookmark != nullptr);
-  intptr_t NewIndex = FBookmarks->IndexOf(ToBookmark->GetKey().c_str());
+  intptr_t NewIndex = FBookmarks->IndexOf(ToBookmark->GetKey());
   DebugAssert(Bookmark != nullptr);
-  intptr_t OldIndex = FBookmarks->IndexOf(Bookmark->GetKey().c_str());
+  intptr_t OldIndex = FBookmarks->IndexOf(Bookmark->GetKey());
   if (Before && (NewIndex > OldIndex))
   {
     // otherwise item is moved after the item in the target index
@@ -373,7 +373,7 @@ void TBookmarkList::Insert(intptr_t Index, TBookmark * Bookmark)
 
   FModified = true;
   Bookmark->FOwner = this;
-  if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) >= 0)
+  if (FBookmarks->IndexOf(Bookmark->GetKey()) >= 0)
   {
     throw Exception(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName().c_str()));
   }
@@ -394,7 +394,7 @@ void TBookmarkList::Delete(TBookmark *& Bookmark)
 
 intptr_t TBookmarkList::IndexOf(TBookmark * Bookmark) const
 {
-  return FBookmarks->IndexOf(Bookmark->GetKey().c_str());
+  return FBookmarks->IndexOf(Bookmark->GetKey());
 }
 
 void TBookmarkList::KeyChanged(intptr_t Index)
@@ -402,7 +402,7 @@ void TBookmarkList::KeyChanged(intptr_t Index)
   DebugAssert(Index < GetCount());
   TBookmark * Bookmark = FBookmarks->GetAs<TBookmark>(Index);
   DebugAssert(FBookmarks->GetString(Index) != Bookmark->GetKey());
-  if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) >= 0)
+  if (FBookmarks->IndexOf(Bookmark->GetKey()) >= 0)
   {
     throw Exception(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName().c_str()));
   }
@@ -411,7 +411,7 @@ void TBookmarkList::KeyChanged(intptr_t Index)
 
 TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, const UnicodeString & Name) const
 {
-  intptr_t Index = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
+  intptr_t Index = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name));
   TBookmark * Bookmark = ((Index >= 0) ? FBookmarks->GetAs<TBookmark>(Index) : nullptr);
   DebugAssert(!Bookmark || (Bookmark->GetNode() == Node && Bookmark->GetName() == Name));
   return Bookmark;
@@ -434,21 +434,21 @@ intptr_t TBookmarkList::GetCount() const
   return FBookmarks->GetCount();
 }
 
-TBookmark * TBookmarkList::GetBookmarks(intptr_t Index)
+TBookmark * TBookmarkList::GetBookmarks(intptr_t AIndex)
 {
-  TBookmark * Bookmark = FBookmarks->GetAs<TBookmark>(Index);
+  TBookmark * Bookmark = FBookmarks->GetAs<TBookmark>(AIndex);
   DebugAssert(Bookmark);
   return Bookmark;
 }
 
-bool TBookmarkList::GetNodeOpened(const UnicodeString & Index) const
+bool TBookmarkList::GetNodeOpened(const UnicodeString & AIndex) const
 {
-  return (FOpenedNodes->IndexOf(Index.c_str()) >= 0);
+  return (FOpenedNodes->IndexOf(AIndex) >= 0);
 }
 
 void TBookmarkList::SetNodeOpened(const UnicodeString & AIndex, bool Value)
 {
-  intptr_t Index = FOpenedNodes->IndexOf(AIndex.c_str());
+  intptr_t Index = FOpenedNodes->IndexOf(AIndex);
   if ((Index >= 0) != Value)
   {
     if (Value)
