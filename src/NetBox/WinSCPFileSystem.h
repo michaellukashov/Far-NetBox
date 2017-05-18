@@ -131,16 +131,16 @@ protected:
   TWinSCPPlugin * GetWinSCPPlugin();
   void ShowOperationProgress(TFileOperationProgressType & ProgressData,
     bool Force);
-  bool SessionDialog(TSessionData * Data, TSessionActionEnum & Action);
+  bool SessionDialog(TSessionData * SessionData, TSessionActionEnum & Action);
   void EditConnectSession(TSessionData * Data, bool Edit);
   void EditConnectSession(TSessionData * Data, bool Edit, bool NewData, bool FillInConnect);
   void DuplicateOrRenameSession(TSessionData * Data,
     bool Duplicate);
   void FocusSession(const TSessionData * Data);
-  void DeleteSession(TSessionData * Data, void * Param);
+  void DeleteSession(TSessionData * Data, void * AParam);
   void ProcessSessions(TObjectList * PanelItems,
-    TProcessSessionEvent ProcessSession, void * Param);
-  void ExportSession(TSessionData * Data, void * Param);
+    TProcessSessionEvent ProcessSession, void * AParam);
+  void ExportSession(TSessionData * Data, void * AParam);
   bool ImportSessions(TObjectList * PanelItems, bool Move, int OpMode);
   void FileProperties();
   void CreateLink();
@@ -291,9 +291,9 @@ private:
     TOperationSide Side, bool SelectedOnly = false, const UnicodeString & Directory = L"",
     bool FileNameOnly = false, TStrings * AFileList = nullptr);
   TStrings * CreateSelectedFileList(TOperationSide Side,
-    TFarPanelInfo ** PanelInfo = nullptr);
+    TFarPanelInfo ** APanelInfo = nullptr);
   TStrings * CreateFocusedFileList(TOperationSide Side,
-    TFarPanelInfo ** PanelInfo = nullptr);
+    TFarPanelInfo ** APanelInfo = nullptr);
   void CustomCommandGetParamValue(
     const UnicodeString & AName, UnicodeString & Value);
   void TerminalSynchronizeDirectory(const UnicodeString & LocalDirectory,

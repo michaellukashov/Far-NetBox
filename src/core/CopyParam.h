@@ -103,7 +103,7 @@ public:
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(const UnicodeString & AFileName) const;
-  void DoGetInfoStr(const UnicodeString & Separator, intptr_t Attrs,
+  void DoGetInfoStr(const UnicodeString & Separator, intptr_t Options,
     UnicodeString & Result, bool & SomeAttrIncluded,
     const UnicodeString & Link, UnicodeString & ScriptArgs, bool & NoScriptArgs,
     /*TAssemblyLanguage Language, UnicodeString & AssemblyCode, */bool & NoCodeProperties) const;

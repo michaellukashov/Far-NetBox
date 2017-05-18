@@ -6510,13 +6510,13 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 }
 
 
-ftp_capabilities_t TFTPServerCapabilities::GetCapability(ftp_capability_names_t Name)
+ftp_capabilities_t TFTPServerCapabilities::GetCapability(ftp_capability_names_t Name) const
 {
   t_cap tcap = FCapabilityMap[Name];
   return tcap.cap;
 }
 
-ftp_capabilities_t TFTPServerCapabilities::GetCapabilityString(ftp_capability_names_t Name, std::string * Option)
+ftp_capabilities_t TFTPServerCapabilities::GetCapabilityString(ftp_capability_names_t Name, std::string * Option) const
 {
   t_cap tcap = FCapabilityMap[Name];
   if (Option)

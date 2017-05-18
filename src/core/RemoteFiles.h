@@ -252,7 +252,7 @@ public:
   }
 public:
   TRemoteDirectoryFile();
-  TRemoteDirectoryFile(TObjectClassId Kind);
+  explicit TRemoteDirectoryFile(TObjectClassId Kind);
   void Init();
   virtual ~TRemoteDirectoryFile() {}
 };

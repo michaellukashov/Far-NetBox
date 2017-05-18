@@ -1488,7 +1488,7 @@ public:
   explicit TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action);
   virtual ~TSessionDialog();
 
-  bool Execute(TSessionData * Data, TSessionActionEnum & Action);
+  bool Execute(TSessionData * SessionData, TSessionActionEnum & Action);
 
 protected:
   virtual void Change();
@@ -4315,7 +4315,7 @@ public:
   TRights::TState GetStates(TRights::TRight Right);
   bool GetAllowUndef() const;
   void SetAllowUndef(bool Value);
-  void SetStates(TRights::TRight Flag, TRights::TState Value);
+  void SetStates(TRights::TRight Right, TRights::TState Value);
   void OctalEditExit(TObject * Sender);
   void RightsButtonClick(TFarButton * Sender, bool & Close);
 };

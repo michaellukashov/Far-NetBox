@@ -407,9 +407,9 @@ public:
     TFileOperationProgressType * OperationProgress, const UnicodeString & AMessage = L"");
   void DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirectory,
     const UnicodeString & ARemoteDirectory, TSynchronizeMode Mode,
-    const TCopyParamType * CopyParam, intptr_t Flags,
+    const TCopyParamType * CopyParam, intptr_t Params,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory,
-    TSynchronizeOptions * Options, intptr_t Level, TSynchronizeChecklist * Checklist);
+    TSynchronizeOptions * Options, intptr_t Flags, TSynchronizeChecklist * Checklist);
   void DoSynchronizeCollectFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param);
   void SynchronizeCollectFile(const UnicodeString & AFileName,

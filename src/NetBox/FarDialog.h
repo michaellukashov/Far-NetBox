@@ -98,7 +98,7 @@ protected:
   TCustomFarPlugin * GetFarPlugin() { return FFarPlugin; }
   TObjectList * GetItems() const { return FItems; }
   TObjectList * GetItems() { return FItems; }
-  void Add(TFarDialogItem * Item);
+  void Add(TFarDialogItem * DialogItem);
   void Add(TFarDialogContainer * Container);
   LONG_PTR SendDlgMessage(int Msg, intptr_t Param1, LONG_PTR Param2);
   virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);

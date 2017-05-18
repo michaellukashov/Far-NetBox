@@ -82,7 +82,7 @@ bool IsNumber(const UnicodeString & Str);
 UnicodeString GetSystemTemporaryDirectory();
 UnicodeString GetShellFolderPath(int CSIdl);
 UnicodeString StripPathQuotes(const UnicodeString & APath);
-UnicodeString AddQuotes(const UnicodeString & Str);
+UnicodeString AddQuotes(const UnicodeString & AStr);
 UnicodeString AddPathQuotes(const UnicodeString & APath);
 void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   UnicodeString & Params, UnicodeString & Dir);
@@ -119,7 +119,7 @@ bool IsHex(wchar_t Ch);
 UnicodeString DecodeUrlChars(const UnicodeString & S);
 UnicodeString EncodeUrlString(const UnicodeString & S);
 UnicodeString EncodeUrlPath(const UnicodeString & S);
-UnicodeString AppendUrlParams(const UnicodeString & URL, const UnicodeString & Params);
+UnicodeString AppendUrlParams(const UnicodeString & AURL, const UnicodeString & Params);
 UnicodeString ExtractFileNameFromUrl(const UnicodeString & Url);
 bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin);
 void RecursiveDeleteFileChecked(const UnicodeString & AFileName, bool ToRecycleBin);
@@ -149,7 +149,7 @@ bool GetWindowsProductType(DWORD & Type);
 UnicodeString WindowsVersion();
 UnicodeString WindowsVersionLong();
 bool IsDirectoryWriteable(const UnicodeString & APath);
-UnicodeString FormatNumber(int64_t Size);
+UnicodeString FormatNumber(int64_t Number);
 UnicodeString FormatSize(int64_t Size);
 UnicodeString ExtractFileBaseName(const UnicodeString & APath);
 TStringList * TextToStringList(const UnicodeString & Text);
@@ -289,7 +289,7 @@ public:
 class TAutoFlag : public TValueRestorer<bool>
 {
 public:
-  TAutoFlag(bool & Target) :
+  explicit TAutoFlag(bool & Target) :
     TValueRestorer<bool>(Target)
   {
     DebugAssert(!Target);

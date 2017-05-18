@@ -86,7 +86,7 @@ public:
   UnicodeString GetReturnVar() const;
 
 public:
-  explicit TCommandSet(TSessionData * aSessionData);
+  explicit TCommandSet(TSessionData * ASessionData);
   void Default();
   void CopyFrom(TCommandSet * Source);
   UnicodeString Command(TFSCommand Cmd, ...) const;

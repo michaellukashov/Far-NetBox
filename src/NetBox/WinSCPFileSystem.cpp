@@ -2391,14 +2391,14 @@ intptr_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
   }
 }
 
-void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*Param*/)
+void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*AParam*/)
 {
   Data->Remove();
   StoredSessions->Remove(Data);
 }
 
 void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
-  TProcessSessionEvent ProcessSession, void * Param)
+  TProcessSessionEvent ProcessSession, void * AParam)
 {
   for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {
@@ -2408,7 +2408,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
     {
       if (PanelItem->GetUserData() != nullptr)
       {
-        ProcessSession(get_as<TSessionData>(PanelItem->GetUserData()), Param);
+        ProcessSession(get_as<TSessionData>(PanelItem->GetUserData()), AParam);
         PanelItem->SetSelected(false);
       }
       else
@@ -2428,7 +2428,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
         TSessionData * Data = StoredSessions->GetSession(Index2);
         if (Data->GetName().SubString(1, Folder.Length()) == Folder)
         {
-          ProcessSession(Data, Param);
+          ProcessSession(Data, AParam);
           if ((Index2 < StoredSessions->GetCount()) && StoredSessions->GetSession(Index2) != Data)
           {
             Index2--;
@@ -2842,15 +2842,15 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
   return Result;
 }
 
-TStrings * TWinSCPFileSystem::CreateFocusedFileList(TOperationSide Side, TFarPanelInfo ** PanelInfo)
+TStrings * TWinSCPFileSystem::CreateFocusedFileList(TOperationSide Side, TFarPanelInfo ** APanelInfo)
 {
-  if (!PanelInfo || !*PanelInfo)
+  if (!APanelInfo || !*APanelInfo)
   {
-    PanelInfo = this->GetPanelInfo();
+    APanelInfo = this->GetPanelInfo();
   }
 
   TStrings * Result = nullptr;
-  const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
+  const TFarPanelItem * Focused = APanelInfo && *APanelInfo ? (*APanelInfo)->GetFocusedItem() : nullptr;
   if (!Focused->GetIsParentDirectory())
   {
     Result = new TStringList();
@@ -2858,7 +2858,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(TOperationSide Side, TFarPan
     UnicodeString FileName = Focused->GetFileName();
     if (Side == osLocal)
     {
-      FileName = ::IncludeTrailingBackslash((*PanelInfo)->GetCurrDirectory()) + FileName;
+      FileName = ::IncludeTrailingBackslash((*APanelInfo)->GetCurrDirectory()) + FileName;
     }
     Result->AddObject(FileName, as_object(Focused->GetUserData()));
   }
@@ -3407,12 +3407,12 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
 }
 
 void TWinSCPFileSystem::ShowOperationProgress(
-  TFileOperationProgressType & ProgressData, bool First)
+  TFileOperationProgressType & ProgressData, bool Force)
 {
   static uint32_t LastTicks;
   uint32_t Ticks = ::GetTickCount();
   short percents = static_cast<short>(ProgressData.OverallProgress());
-  if (Ticks - LastTicks > 500 || First)
+  if (Ticks - LastTicks > 500 || Force)
   {
     LastTicks = Ticks;
 
@@ -3507,7 +3507,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       Message1 + ProgressBarCurrentFile + Message2 + ProgressBarTotal;
     GetWinSCPPlugin()->Message(0, Title, Message, nullptr, nullptr);
 
-    if (First)
+    if (Force)
     {
       GetWinSCPPlugin()->ShowConsoleTitle(Title);
     }

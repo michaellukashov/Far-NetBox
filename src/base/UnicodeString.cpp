@@ -173,15 +173,15 @@ AnsiString & AnsiString::operator=(const UTF8String & StrCopy)
   return *this;
 }
 
-AnsiString & AnsiString::operator=(const char * lpszData)
+AnsiString & AnsiString::operator=(const char * Str)
 {
-  Init(lpszData, string_t::StringLength(lpszData));
+  Init(Str, string_t::StringLength(Str));
   return *this;
 }
 
-AnsiString & AnsiString::operator=(const wchar_t * lpwszData)
+AnsiString & AnsiString::operator=(const wchar_t * Str)
 {
-  Init(lpwszData, CMStringW::StringLength(lpwszData));
+  Init(Str, CMStringW::StringLength(Str));
   return *this;
 }
 
