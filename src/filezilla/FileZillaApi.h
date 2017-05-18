@@ -249,7 +249,7 @@ public:
 
   void SetDebugLevel(int nDebugLevel);
 
-  int CustomCommand(CString command);
+  int CustomCommand(CString ACommand);
   int Delete(CString FileName, const CServerPath & path = CServerPath());
   int RemoveDir(CString DirName, const CServerPath & path = CServerPath());
   int Rename(CString oldName, CString newName, const CServerPath & path = CServerPath(), const CServerPath & newPath = CServerPath());

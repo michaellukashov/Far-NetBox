@@ -10,7 +10,6 @@
 #include "TextsCore.h"
 #include "HelpCore.h"
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
-//---------------------------------------------------------------------------
 
 namespace core {
 
@@ -127,15 +126,15 @@ UnicodeString UnixExtractFileExt(const UnicodeString & APath)
     return UnicodeString();
 }
 
-UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix)
+UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
 {
   if (Unix)
   {
-    return UnixExtractFileName(Path);
+    return UnixExtractFileName(APath);
   }
   else
   {
-    return base::ExtractFileName(Path, Unix);
+    return base::ExtractFileName(APath, Unix);
   }
 }
 
@@ -535,8 +534,7 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, b
 
 } // namespace core
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 TRemoteToken::TRemoteToken() :
   FID(0),
   FIDValid(false)
@@ -550,10 +548,10 @@ TRemoteToken::TRemoteToken(const UnicodeString & Name) :
 {
 }
 
-TRemoteToken::TRemoteToken(const TRemoteToken & rhp) :
-  FName(rhp.FName),
-  FID(rhp.FID),
-  FIDValid(rhp.FIDValid)
+TRemoteToken::TRemoteToken(const TRemoteToken & rhs) :
+  FName(rhs.FName),
+  FID(rhs.FID),
+  FIDValid(rhs.FIDValid)
 {
 }
 
@@ -563,38 +561,38 @@ void TRemoteToken::Clear()
   FIDValid = false;
 }
 
-bool TRemoteToken::operator ==(const TRemoteToken & rht) const
+bool TRemoteToken::operator ==(const TRemoteToken & rhs) const
 {
   return
-    (FName == rht.FName) &&
-    (FIDValid == rht.FIDValid) &&
-    (!FIDValid || (FID == rht.FID));
+    (FName == rhs.FName) &&
+    (FIDValid == rhs.FIDValid) &&
+    (!FIDValid || (FID == rhs.FID));
 }
 
-bool TRemoteToken::operator !=(const TRemoteToken & rht) const
+bool TRemoteToken::operator !=(const TRemoteToken & rhs) const
 {
-  return !(*this == rht);
+  return !(*this == rhs);
 }
 
-TRemoteToken & TRemoteToken::operator =(const TRemoteToken & rht)
+TRemoteToken & TRemoteToken::operator =(const TRemoteToken & rhs)
 {
-  if (this != &rht)
+  if (this != &rhs)
   {
-    FName = rht.FName;
-    FIDValid = rht.FIDValid;
-    FID = rht.FID;
+    FName = rhs.FName;
+    FIDValid = rhs.FIDValid;
+    FID = rhs.FID;
   }
   return *this;
 }
 
-intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
+intptr_t TRemoteToken::Compare(const TRemoteToken & rhs) const
 {
   intptr_t Result;
   if (!FName.IsEmpty())
   {
-    if (!rht.FName.IsEmpty())
+    if (!rhs.FName.IsEmpty())
     {
-      Result = ::AnsiCompareText(FName, rht.FName);
+      Result = ::AnsiCompareText(FName, rhs.FName);
     }
     else
     {
@@ -603,7 +601,7 @@ intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
   }
   else
   {
-    if (!rht.FName.IsEmpty())
+    if (!rhs.FName.IsEmpty())
     {
       Result = 1;
     }
@@ -611,9 +609,9 @@ intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
     {
       if (FIDValid)
       {
-        if (rht.FIDValid)
+        if (rhs.FIDValid)
         {
-          Result = (FID < rht.FID) ? -1 : ((FID > rht.FID) ? 1 : 0);
+          Result = (FID < rhs.FID) ? -1 : ((FID > rhs.FID) ? 1 : 0);
         }
         else
         {
@@ -622,7 +620,7 @@ intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
       }
       else
       {
-        if (rht.FIDValid)
+        if (rhs.FIDValid)
         {
           Result = 1;
         }
@@ -673,8 +671,7 @@ UnicodeString TRemoteToken::GetLogText() const
   return FORMAT(L"\"%s\" [%d]", FName.c_str(), static_cast<int>(FID));
 }
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 TRemoteTokenList * TRemoteTokenList::Duplicate() const
 {
   std::unique_ptr<TRemoteTokenList> Result(new TRemoteTokenList());
@@ -805,8 +802,7 @@ const TRemoteToken * TRemoteTokenList::Token(intptr_t Index) const
   return &FTokens[Index];
 }
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile) :
   TPersistent(Kind),
   FDirectory(nullptr),
@@ -1632,8 +1628,7 @@ void TRemoteFile::SetFullFileName(const UnicodeString & Value)
   FFullFileName = Value;
 }
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 TRemoteDirectoryFile::TRemoteDirectoryFile() :
   TRemoteFile(OBJECT_CLASS_TRemoteDirectoryFile)
 {
@@ -1655,8 +1650,7 @@ void TRemoteDirectoryFile::Init()
   SetSize(0);
 }
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal) :
   TRemoteDirectoryFile(OBJECT_CLASS_TRemoteParentDirectory)
 {
@@ -2158,7 +2152,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   {
     Key = ROOTDIRECTORY;
   }
-  bool Result = (IndexOfName(Key.c_str()) >= 0);
+  bool Result = (IndexOfName(Key) >= 0);
   if (Result)
   {
     TargetDir = GetValue(Key);
@@ -2299,7 +2293,7 @@ bool TRights::operator ==(const TRights & rhr) const
     for (int Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
-            rhr.GetRightUndef(static_cast<TRight>(Right)))
+          rhr.GetRightUndef(static_cast<TRight>(Right)))
       {
         return false;
       }
@@ -2940,7 +2934,6 @@ TRemoteProperties & TRemoteProperties::operator=(const TRemoteProperties & other
   return *this;
 }
 
-//---------------------------------------------------------------------------
 void TRemoteProperties::Load(THierarchicalStorage * Storage)
 {
   uint8_t Buf[sizeof(Valid)];

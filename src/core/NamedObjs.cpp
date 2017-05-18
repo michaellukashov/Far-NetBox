@@ -76,7 +76,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
     }
 }
 
-//--- TNamedObjectList ------------------------------------------------------
+
 TNamedObjectList::TNamedObjectList(TObjectClassId Kind) :
   TObjectList(Kind),
   FHiddenCount(0),
@@ -84,17 +84,17 @@ TNamedObjectList::TNamedObjectList(TObjectClassId Kind) :
   FControlledAdd(false)
 {
 }
-//---------------------------------------------------------------------------
+
 const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const
 {
   return const_cast<TNamedObjectList *>(this)->AtObject(Index);
 }
-//---------------------------------------------------------------------------
+
 TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
   return GetAs<TNamedObject>(Index + FHiddenCount);
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::Recount()
 {
   intptr_t Index = 0;
@@ -105,14 +105,13 @@ void TNamedObjectList::Recount()
   FHiddenCount = Index;
 }
 
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::AlphaSort()
 {
   Sort(NamedObjectSortProc);
   Recount();
 }
 
-//---------------------------------------------------------------------------
 intptr_t TNamedObjectList::Add(TObject * AObject)
 {
   intptr_t Result;
@@ -132,7 +131,7 @@ intptr_t TNamedObjectList::Add(TObject * AObject)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
 {
   if (Action == lnDeleted)
@@ -156,7 +155,7 @@ void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 const TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name) const
 {
   return const_cast<TNamedObjectList *>(this)->FindByName(Name);
@@ -177,7 +176,7 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name)
   return nullptr;
 }
 
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::SetCount(intptr_t Value)
 {
   TObjectList::SetCount(Value/*+HiddenCount*/);

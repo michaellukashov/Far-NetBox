@@ -27,7 +27,7 @@ public:
   explicit TNamedObject(TObjectClassId Kind, const UnicodeString & AName);
   virtual ~TNamedObject() {}
 
-  bool IsSameName(const UnicodeString & Name) const;
+  bool IsSameName(const UnicodeString & AName) const;
   virtual intptr_t Compare(const TNamedObject * Other) const;
   void MakeUniqueIn(TNamedObjectList * List);
 private:

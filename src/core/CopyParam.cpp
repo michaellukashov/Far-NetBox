@@ -58,35 +58,35 @@ void TCopyParamType::Default()
 }
 
 UnicodeString TCopyParamType::GetInfoStr(
-  const UnicodeString & Separator, intptr_t Attrs) const
+  const UnicodeString & Separator, intptr_t Options) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded;
   UnicodeString ScriptArgs;
   bool NoScriptArgs;
-  UnicodeString AssemblyCode;
+//  UnicodeString AssemblyCode;
   bool NoCodeProperties;
   DoGetInfoStr(
-    Separator, Attrs, Result, SomeAttrIncluded,
+    Separator, Options, Result, SomeAttrIncluded,
     UnicodeString(), ScriptArgs, NoScriptArgs, /*TAssemblyLanguage(0), AssemblyCode, */NoCodeProperties);
   return Result;
 }
 
-bool TCopyParamType::AnyUsableCopyParam(intptr_t Attrs) const
+bool TCopyParamType::AnyUsableCopyParam(intptr_t Options) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded;
   UnicodeString ScriptArgs;
   bool NoScriptArgs;
-  UnicodeString AssemblyCode;
+//  UnicodeString AssemblyCode;
   bool NoCodeProperties;
   DoGetInfoStr(
-    L";", Attrs, Result, SomeAttrIncluded,
+    L";", Options, Result, SomeAttrIncluded,
     UnicodeString(), ScriptArgs, NoScriptArgs, /*TAssemblyLanguage(0), AssemblyCode, */NoCodeProperties);
   return SomeAttrIncluded;
 }
 
-UnicodeString TCopyParamType::GenerateTransferCommandArgs(int Attrs, const UnicodeString & Link, bool & NoScriptArgs) const
+UnicodeString TCopyParamType::GenerateTransferCommandArgs(intptr_t Options, const UnicodeString & Link, bool & NoScriptArgs) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded;
@@ -94,7 +94,7 @@ UnicodeString TCopyParamType::GenerateTransferCommandArgs(int Attrs, const Unico
   UnicodeString AssemblyCode;
   bool NoCodeProperties;
   DoGetInfoStr(
-    L";", Attrs, Result, SomeAttrIncluded,
+    L";", Options, Result, SomeAttrIncluded,
     Link, ScriptArgs, NoScriptArgs, /*TAssemblyLanguage(0), AssemblyCode, */NoCodeProperties);
   return ScriptArgs;
 }
@@ -500,9 +500,9 @@ void TCopyParamType::Assign(const TCopyParamType * Source)
 #undef COPY
 }
 
-TCopyParamType & TCopyParamType::operator =(const TCopyParamType & rhp)
+TCopyParamType & TCopyParamType::operator =(const TCopyParamType & rhs)
 {
-  Assign(&rhp);
+  Assign(&rhs);
   return *this;
 }
 

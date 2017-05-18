@@ -593,15 +593,15 @@ void TStrings::InsertObject(intptr_t Index, const UnicodeString & Key, TObject *
   Insert(Index, Key, AObject);
 }
 
-bool TStrings::Equals(const TStrings * Strings) const
+bool TStrings::Equals(const TStrings * Value) const
 {
-  if (GetCount() != Strings->GetCount())
+  if (GetCount() != Value->GetCount())
   {
     return false;
   }
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    if (GetString(Index) != Strings->GetString(Index))
+    if (GetString(Index) != Value->GetString(Index))
     {
       return false;
     }
@@ -1655,9 +1655,9 @@ TRegistry::~TRegistry()
   CloseKey();
 }
 
-void TRegistry::SetAccess(uint32_t access)
+void TRegistry::SetAccess(uint32_t Value)
 {
-  FAccess = access;
+  FAccess = Value;
 }
 
 void TRegistry::SetRootKey(HKEY ARootKey)
@@ -1674,9 +1674,9 @@ void TRegistry::SetRootKey(HKEY ARootKey)
   }
 }
 
-void TRegistry::GetValueNames(TStrings * Strings) const
+void TRegistry::GetValueNames(TStrings * Names) const
 {
-  Strings->Clear();
+  Names->Clear();
   TRegKeyInfo Info;
   UnicodeString S;
   if (GetKeyInfo(Info))
@@ -1686,14 +1686,14 @@ void TRegistry::GetValueNames(TStrings * Strings) const
     {
       DWORD Len = Info.MaxValueLen + 1;
       RegEnumValue(GetCurrentKey(), Index, &S[1], &Len, nullptr, nullptr, nullptr, nullptr);
-      Strings->Add(S);
+      Names->Add(S);
     }
   }
 }
 
-void TRegistry::GetKeyNames(TStrings * Strings) const
+void TRegistry::GetKeyNames(TStrings * Names) const
 {
-  Strings->Clear();
+  Names->Clear();
   TRegKeyInfo Info;
   UnicodeString S;
   if (GetKeyInfo(Info))
@@ -1703,7 +1703,7 @@ void TRegistry::GetKeyNames(TStrings * Strings) const
     {
       DWORD Len = Info.MaxSubKeyLen + 1;
       RegEnumKeyEx(GetCurrentKey(), static_cast<DWORD>(Index), &S[1], &Len, nullptr, nullptr, nullptr, nullptr);
-      Strings->Add(S);
+      Names->Add(S);
     }
   }
 }
@@ -1784,13 +1784,13 @@ bool TRegistry::DeleteKey(const UnicodeString & Key)
   return Result;
 }
 
-bool TRegistry::DeleteValue(const UnicodeString & Name) const
+bool TRegistry::DeleteValue(const UnicodeString & Value) const
 {
-  bool Result = RegDeleteValue(GetCurrentKey(), Name.c_str()) == ERROR_SUCCESS;
+  bool Result = RegDeleteValue(GetCurrentKey(), Value.c_str()) == ERROR_SUCCESS;
   return Result;
 }
 
-bool TRegistry::KeyExists(const UnicodeString & Key) const
+bool TRegistry::KeyExists(const UnicodeString & SubKey) const
 {
   bool Result = false;
   uint32_t OldAccess = FAccess;
@@ -1799,7 +1799,7 @@ bool TRegistry::KeyExists(const UnicodeString & Key) const
     FAccess = OldAccess;
   };
   FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
-  HKEY TempKey = GetKey(Key);
+  HKEY TempKey = GetKey(SubKey);
   if (TempKey != nullptr)
   {
     ::RegCloseKey(TempKey);
@@ -1808,10 +1808,10 @@ bool TRegistry::KeyExists(const UnicodeString & Key) const
   return Result;
 }
 
-bool TRegistry::ValueExists(const UnicodeString & Name) const
+bool TRegistry::ValueExists(const UnicodeString & Value) const
 {
   TRegDataInfo Info;
-  bool Result = GetDataInfo(Name, Info);
+  bool Result = GetDataInfo(Value, Info);
   return Result;
 }
 
@@ -2018,7 +2018,7 @@ void TRegistry::WriteInt64(const UnicodeString & Name, int64_t Value)
 }
 
 void TRegistry::WriteBinaryData(const UnicodeString & Name,
-                                const void * Buffer, ::size_t BufSize)
+  const void * Buffer, ::size_t BufSize)
 {
   PutData(Name, Buffer, BufSize, rdBinary);
 }

@@ -674,9 +674,9 @@ UnicodeString EscapeParam(const UnicodeString & AParam)
   return ReplaceStr(AParam, L"\"", L"\"\"");
 }
 
-UnicodeString EscapePuttyCommandParam(const UnicodeString & Param)
+UnicodeString EscapePuttyCommandParam(const UnicodeString & AParam)
 {
-  UnicodeString Result = Param;
+  UnicodeString Result = AParam;
 
   bool Space = false;
 
@@ -1253,10 +1253,10 @@ DWORD FindCheck(DWORD Result, const UnicodeString & APath)
   return Result;
 }
 
-DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD Attr, TSearchRecChecked & F)
+DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked & F)
 {
   F.Path = APath;
-  return base::FindFirst(ApiPath(APath), Attr, F);
+  return base::FindFirst(ApiPath(APath), LocalFileAttrs, F);
 }
 
 DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked & F)
@@ -2561,10 +2561,10 @@ static bool DoCutToken(UnicodeString & AStr, UnicodeString & AToken,
   return Result;
 }
 
-bool CutToken(UnicodeString & Str, UnicodeString & Token,
-  UnicodeString * RawToken, UnicodeString * Separator)
+bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
+  UnicodeString * ARawToken, UnicodeString * ASeparator)
 {
-  return DoCutToken(Str, Token, RawToken, Separator, false);
+  return DoCutToken(AStr, AToken, ARawToken, ASeparator, false);
 }
 
 bool CutTokenEx(UnicodeString & Str, UnicodeString & Token,

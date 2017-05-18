@@ -196,7 +196,7 @@ class TChmodSessionAction : public TFileSessionAction
 public:
   explicit TChmodSessionAction(TActionLog * Log, const UnicodeString & AFileName);
   explicit TChmodSessionAction(TActionLog * Log, const UnicodeString & AFileName,
-    const TRights & Rights);
+    const TRights & ARights);
 
   void Rights(const TRights & Rights);
   void Recursive();
@@ -227,7 +227,7 @@ class TMvSessionAction : public TFileLocationSessionAction
 {
 public:
   explicit TMvSessionAction(TActionLog * Log, const UnicodeString & AFileName,
-    const UnicodeString & Destination);
+    const UnicodeString & ADestination);
 };
 
 class TCallSessionAction : public TSessionAction

@@ -291,7 +291,7 @@ protected:
   virtual void ProcessEvent();
   virtual void Finished();
   bool WaitForUserAction(TQueueItem::TStatus ItemStatus, TUserAction * UserAction);
-  bool OverrideItemStatus(TQueueItem::TStatus & ItemStatus);
+  bool OverrideItemStatus(TQueueItem::TStatus & ItemStatus) const;
 
   void TerminalQueryUser(TObject * Sender,
     const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
@@ -1657,7 +1657,7 @@ void TTerminalItem::OperationProgress(
   FItem->SetProgress(ProgressData);
 }
 
-bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus)
+bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus) const
 {
   DebugAssert(FTerminal != nullptr);
   bool Result = (FTerminal->GetStatus() < ssOpened) && (ItemStatus == TQueueItem::qsProcessing);

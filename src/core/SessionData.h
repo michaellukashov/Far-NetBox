@@ -530,19 +530,19 @@ public:
   void CacheHostKeyIfNotCached();
   virtual void Assign(const TPersistent * Source);
   virtual intptr_t Compare(const TNamedObject * Other) const;
-  void CopyData(TSessionData * Source);
+  void CopyData(TSessionData * SourceData);
   void CopyDirectoriesStateData(TSessionData * SourceData);
   bool ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     TStoredSessionList * AStoredSessions, bool & DefaultsOnly,
     UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
   bool ParseOptions(TOptions * Options);
-  void ConfigureTunnel(intptr_t PortNumber);
+  void ConfigureTunnel(intptr_t APortNumber);
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
   bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
   bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const;
-  bool IsSameSite(const TSessionData * Default) const;
-  bool IsInFolderOrWorkspace(const UnicodeString & Name) const;
+  bool IsSameSite(const TSessionData * Other) const;
+  bool IsInFolderOrWorkspace(const UnicodeString & AFolder) const;
   UnicodeString GenerateSessionUrl(uintptr_t Flags) const;
   UnicodeString GenerateOpenCommandArgs() const;
 //  UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language);
@@ -870,19 +870,18 @@ public:
   void SelectAll(bool Select);
   void Import(TStoredSessionList * From, bool OnlySelected, TList * Imported);
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
-  TSessionData * AtSession(int Index)
-    { return (TSessionData*)AtObject(Index); }
+  TSessionData * AtSession(intptr_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
   void UpdateStaticUsage();
   intptr_t IndexOf(TSessionData * Data) const;
-  const TSessionData * FindSame(TSessionData * Data) const;
+  const TSessionData * FindSame(TSessionData * Data);
   TSessionData * NewSession(const UnicodeString & SessionName, TSessionData * Session);
   void NewWorkspace(const UnicodeString & Name, TList * DataList);
   bool GetIsFolder(const UnicodeString & Name) const;
   bool GetIsWorkspace(const UnicodeString & Name) const;
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
-    UnicodeString * AFileName = nullptr, bool * ProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
+    UnicodeString * AFileName = nullptr, bool * AProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
   bool IsUrl(const UnicodeString & Url);
   bool CanLogin(TSessionData * Data);
   void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);

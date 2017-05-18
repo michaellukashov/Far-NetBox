@@ -240,7 +240,7 @@ public:
   virtual void Sort();
 
   intptr_t GetCount() const;
-  void SetCount(intptr_t Value);
+  void SetCount(intptr_t NewCount);
 
 private:
   rde::vector<void *> FList;
@@ -690,7 +690,7 @@ public:
   bool ValueExists(const UnicodeString & Value) const;
   bool GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const;
   TRegDataType GetDataType(const UnicodeString & ValueName) const;
-  DWORD GetDataSize(const UnicodeString & Name) const;
+  DWORD GetDataSize(const UnicodeString & ValueName) const;
   bool ReadBool(const UnicodeString & Name) const;
   TDateTime ReadDateTime(const UnicodeString & Name) const;
   double ReadFloat(const UnicodeString & Name) const;
@@ -699,7 +699,7 @@ public:
   UnicodeString ReadString(const UnicodeString & Name) const;
   UnicodeString ReadStringRaw(const UnicodeString & Name) const;
   size_t ReadBinaryData(const UnicodeString & Name,
-    void * Buffer, size_t Size) const;
+    void * Buffer, size_t BufSize) const;
 
   void WriteBool(const UnicodeString & Name, bool Value);
   void WriteDateTime(const UnicodeString & Name, const TDateTime & Value);
@@ -709,7 +709,7 @@ public:
   void WriteInteger(const UnicodeString & Name, intptr_t Value);
   void WriteInt64(const UnicodeString & Name, int64_t Value);
   void WriteBinaryData(const UnicodeString & Name,
-    const void * Buffer, size_t Size);
+    const void * Buffer, size_t BufSize);
 private:
   void ChangeKey(HKEY Value, const UnicodeString & APath);
   HKEY GetBaseKey(bool Relative) const;

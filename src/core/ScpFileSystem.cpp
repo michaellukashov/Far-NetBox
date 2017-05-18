@@ -86,7 +86,7 @@ public:
   UnicodeString GetReturnVar() const;
 
 public:
-  explicit TCommandSet(TSessionData * aSessionData);
+  explicit TCommandSet(TSessionData * ASessionData);
   void Default();
   void CopyFrom(TCommandSet * Source);
   UnicodeString Command(TFSCommand Cmd, ...) const;
@@ -331,7 +331,7 @@ TStrings * TCommandSet::CreateCommandList() const
     if (!Cmd.IsEmpty())
     {
       Cmd = ExtractCommand(Cmd);
-      if ((Cmd != L"%s") && (CommandList->IndexOf(Cmd.c_str()) < 0))
+      if ((Cmd != L"%s") && (CommandList->IndexOf(Cmd) < 0))
         CommandList->Add(Cmd);
     }
   }
@@ -491,7 +491,6 @@ void TSCPFileSystem::Idle()
   FSecureShell->Idle();
 }
 
-//---------------------------------------------------------------------------
 UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
 {
   return static_cast<const TSCPFileSystem *>(this)->GetAbsolutePath(APath, Local);
@@ -502,7 +501,6 @@ UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool 
   return core::AbsolutePath(GetCurrDirectory(), APath);
 }
 
-//---------------------------------------------------------------------------
 bool TSCPFileSystem::IsCapable(intptr_t Capability) const
 {
   DebugAssert(FTerminal);

@@ -991,9 +991,9 @@ void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
   FReadCurrentDirectory = true;
 }
 
-void TFTPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
+void TFTPFileSystem::CachedChangeDirectory(const UnicodeString & ADirectory)
 {
-  FCurrentDirectory = core::UnixExcludeTrailingBackslash(Directory);
+  FCurrentDirectory = core::UnixExcludeTrailingBackslash(ADirectory);
   if (FCurrentDirectory.IsEmpty())
   {
     FCurrentDirectory = ROOTDIRECTORY;
@@ -1298,11 +1298,11 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
 }
 
 void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
-  TStrings * FileList, TStrings * Checksums,
+  TStrings * AFileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
   TFileOperationProgressType Progress(nb::bind(&TTerminal::DoProgress, FTerminal), nb::bind(&TTerminal::DoFinished, FTerminal));
-  Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
+  Progress.Start(foCalculateChecksum, osRemote, AFileList->GetCount());
 
   FTerminal->SetOperationProgress(&Progress);
 
@@ -1332,7 +1332,7 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
       throw Exception(FMTLOAD(UNKNOWN_CHECKSUM, Alg.c_str()));
     }
 
-    DoCalculateFilesChecksum(UsingHashCommand, NormalizedAlg, FileList, Checksums, OnCalculatedChecksum,
+    DoCalculateFilesChecksum(UsingHashCommand, NormalizedAlg, AFileList, Checksums, OnCalculatedChecksum,
       &Progress, true);
   }
   __finally
@@ -4212,7 +4212,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   const wchar_t * Path1, const wchar_t * Path2,
   int64_t Size1, int64_t Size2, time_t LocalTime,
   bool /*HasLocalTime*/, const TRemoteFileTime & RemoteTime, void * AUserData,
-  HANDLE & LocalFileHandle,
+  HANDLE & ALocalFileHandle,
   int & RequestResult)
 {
   if (!FActive)
@@ -4277,7 +4277,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
           case omOverwrite:
             if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
               false, true,
-              &LocalFileHandle))
+              &ALocalFileHandle))
             {
               RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
               break;
@@ -4298,7 +4298,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
           case omResume:
             if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
               true, true,
-              &LocalFileHandle))
+              &ALocalFileHandle))
             {
   //            ThrowSkipFileNull();
               RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;

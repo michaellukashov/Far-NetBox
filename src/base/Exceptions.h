@@ -206,7 +206,7 @@ public:
   ECallbackGuardAbort();
 };
 
-Exception * CloneException(Exception * Exception);
+Exception * CloneException(Exception * E);
 void RethrowException(Exception * E);
 UnicodeString GetExceptionHelpKeyword(const Exception* E);
 UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const UnicodeString & SecondaryHelpKeyword);

@@ -729,30 +729,30 @@ void TFileMasks::SetMask(const UnicodeString & Mask)
   SetStr(Mask, true);
 }
 
-void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
+void TFileMasks::SetStr(const UnicodeString & Value, bool SingleMask)
 {
   UnicodeString Backup = FStr;
   try
   {
-    FStr = Str;
+    FStr = Value;
     Clear();
 
     intptr_t NextMaskFrom = 1;
     bool Include = true;
-    while (NextMaskFrom <= Str.Length())
+    while (NextMaskFrom <= Value.Length())
     {
       intptr_t MaskStart = NextMaskFrom;
       wchar_t NextMaskDelimiter;
       UnicodeString MaskStr;
       if (SingleMask)
       {
-        MaskStr = Str;
-        NextMaskFrom = Str.Length() + 1;
+        MaskStr = Value;
+        NextMaskFrom = Value.Length() + 1;
         NextMaskDelimiter = L'\0';
       }
       else
       {
-        MaskStr = CopyToChars(Str, NextMaskFrom, ALL_FILE_MASKS_DELIMITERS, false, &NextMaskDelimiter, true);
+        MaskStr = CopyToChars(Value, NextMaskFrom, ALL_FILE_MASKS_DELIMITERS, false, &NextMaskDelimiter, true);
       }
       intptr_t MaskEnd = NextMaskFrom - 2;
 
@@ -771,7 +771,7 @@ void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
         }
         else
         {
-          ThrowError(NextMaskFrom - 1, Str.Length());
+          ThrowError(NextMaskFrom - 1, Value.Length());
         }
       }
     }
@@ -1129,7 +1129,6 @@ TCustomCommandData::TCustomCommandData(const TCustomCommandData & Data)
   this->operator=(Data);
 }
 
-//---------------------------------------------------------------------------
 TCustomCommandData::TCustomCommandData(TTerminal * Terminal)
 {
   Init(Terminal->GetSessionData(), Terminal->TerminalGetUserName(), Terminal->GetPassword(),

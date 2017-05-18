@@ -137,7 +137,7 @@ public:
   virtual ~TCopyParamList();
   intptr_t Find(const TCopyParamRuleData & Value) const;
 
-  void Load(THierarchicalStorage * Storage, intptr_t Count);
+  void Load(THierarchicalStorage * Storage, intptr_t ACount);
   void Save(THierarchicalStorage * Storage) const;
 
   static void ValidateName(const UnicodeString & Name);
@@ -248,15 +248,15 @@ public:
   LCID GetLocaleSafe() { return GetLocale(); }
   void SetLocaleSafe(LCID Value);
   UnicodeString GetLocaleHex();
-  virtual HINSTANCE LoadNewResourceModule(LCID Locale,
-    UnicodeString & FileName);
+  virtual HINSTANCE LoadNewResourceModule(LCID ALocale,
+    UnicodeString & AFileName);
   HANDLE GetResourceModule();
   void SetResourceModule(HINSTANCE Instance);
   TStrings * GetLocales();
   void FreeResourceModule(HANDLE Instance);
   void SetDefaultCopyParam(const TGUICopyParamType & Value);
   virtual bool GetRememberPassword() const;
-  const TCopyParamList * GetCopyParamList();
+  TCopyParamList * GetCopyParamList() const;
   void SetCopyParamList(const TCopyParamList * Value);
   virtual void DefaultLocalized();
   intptr_t GetCopyParamIndex() const;
@@ -270,7 +270,7 @@ public:
   void SetQueueTransfersLimit(intptr_t Value);
   void SetQueueKeepDoneItems(bool Value);
   void SetQueueKeepDoneItemsFor(intptr_t Value);
-  void SetLocaleInternal(LCID value, bool Safe);
+  void SetLocaleInternal(LCID Value, bool Safe);
   void SetInitialLocale(LCID Value);
   bool GetCanApplyLocaleImmediately() const;
 
