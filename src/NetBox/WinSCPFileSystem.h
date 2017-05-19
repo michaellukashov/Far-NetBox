@@ -106,7 +106,7 @@ protected:
   void Disconnect();
   void SaveSession();
 
-  virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
+  virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & AFormat,
     UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & StartPanelMode,
     OPENPANELINFO_SORTMODES & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
