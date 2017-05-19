@@ -314,7 +314,7 @@ public:
   void SetPortNumber(intptr_t Value);
   void SetUserName(const UnicodeString & Value);
   UnicodeString GetUserNameExpanded() const;
-  void SetPassword(const UnicodeString & Value);
+  void SetPassword(const UnicodeString & AValue);
   UnicodeString GetPassword() const;
   void SetPingInterval(intptr_t Value);
   void SetTryAgent(bool Value);
@@ -335,7 +335,7 @@ public:
   TKex GetKex(intptr_t Index) const;
   void SetPublicKeyFile(const UnicodeString & Value);
   UnicodeString GetPassphrase() const;
-  void SetPassphrase(const UnicodeString & Value);
+  void SetPassphrase(const UnicodeString & AValue);
 
   void SetPuttyProtocol(const UnicodeString & Value);
   bool GetCanLogin() const;
@@ -390,7 +390,7 @@ public:
   void SetProxyHost(const UnicodeString & Value);
   void SetProxyPort(intptr_t Value);
   void SetProxyUsername(const UnicodeString & Value);
-  void SetProxyPassword(const UnicodeString & Value);
+  void SetProxyPassword(const UnicodeString & AValue);
   void SetProxyTelnetCommand(const UnicodeString & Value);
   void SetProxyLocalCommand(const UnicodeString & Value);
   void SetProxyDNS(TAutoSwitch Value);
@@ -435,7 +435,7 @@ public:
   void SetTunnelHostName(const UnicodeString & Value);
   void SetTunnelPortNumber(intptr_t Value);
   void SetTunnelUserName(const UnicodeString & Value);
-  void SetTunnelPassword(const UnicodeString & Value);
+  void SetTunnelPassword(const UnicodeString & AValue);
   UnicodeString GetTunnelPassword() const;
   void SetTunnelPublicKeyFile(const UnicodeString & Value);
   void SetTunnelPortFwd(const UnicodeString & Value);
