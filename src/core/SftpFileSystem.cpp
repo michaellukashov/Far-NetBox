@@ -589,9 +589,8 @@ public:
 
   uint32_t GetSmallCardinal() const
   {
-    uint32_t Result;
     Need(2);
-    Result = (FData[FPosition] << 8) + FData[FPosition + 1];
+    uint32_t Result = (FData[FPosition] << 8) + FData[FPosition + 1];
     DataConsumed(2);
     return Result;
   }
