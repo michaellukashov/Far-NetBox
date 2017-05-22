@@ -127,11 +127,10 @@ void TRemoteFilePanelItem::TranslateColumnTypes(UnicodeString & AColumnTypes,
 {
   UnicodeString ColumnTypes = AColumnTypes;
   AColumnTypes.Clear();
-  UnicodeString Column;
   UnicodeString Title;
   while (!ColumnTypes.IsEmpty())
   {
-    Column = CutToChar(ColumnTypes, ',', false);
+    UnicodeString Column = CutToChar(ColumnTypes, ',', false);
     if (Column == L"G")
     {
       Column = L"C0";
