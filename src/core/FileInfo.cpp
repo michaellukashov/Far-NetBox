@@ -167,11 +167,10 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
 void * CreateFileInfo(const UnicodeString & AFileName)
 {
   DWORD Handle;
-  uintptr_t Size;
   void * Result = nullptr;
 
   // Get file version info block size
-  Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
+  uintptr_t Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
   // If size is valid
   if (Size > 0)
   {
