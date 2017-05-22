@@ -398,13 +398,12 @@ UnicodeString TStrings::GetCommaText() const
   wchar_t LOldQuoteChar = GetQuoteChar();
   FDelimiter = L',';
   FQuoteChar = L'"';
-  UnicodeString Result;
   SCOPE_EXIT
   {
     FDelimiter = LOldDelimiter;
     FQuoteChar = LOldQuoteChar;
   };
-  Result = GetDelimitedText();
+  UnicodeString Result = GetDelimitedText();
   return Result;
 }
 
