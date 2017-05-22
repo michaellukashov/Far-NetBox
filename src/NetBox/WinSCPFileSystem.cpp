@@ -1822,7 +1822,6 @@ void TWinSCPFileSystem::FileProperties()
   if (FileList.get())
   {
     DebugAssert(!FPanelItems);
-    TRemoteProperties CurrentProperties;
 
     bool Cont = true;
     if (!GetTerminal()->LoadFilesProperties(FileList.get()))
@@ -1839,7 +1838,7 @@ void TWinSCPFileSystem::FileProperties()
 
     if (Cont)
     {
-      CurrentProperties = TRemoteProperties::CommonProperties(FileList.get());
+      TRemoteProperties CurrentProperties = TRemoteProperties::CommonProperties(FileList.get());
 
       intptr_t Flags = 0;
       if (FTerminal->GetIsCapable(fcModeChanging))
@@ -2064,9 +2063,8 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
   std::unique_ptr<TBookmarkList> BookmarkList(new TBookmarkList());
   UnicodeString Directory = FTerminal->GetCurrDirectory();
   UnicodeString SessionKey = GetSessionData()->GetSessionKey();
-  TBookmarkList * CurrentBookmarkList;
 
-  CurrentBookmarkList = GetFarConfiguration()->GetBookmarks(SessionKey);
+  TBookmarkList * CurrentBookmarkList = GetFarConfiguration()->GetBookmarks(SessionKey);
   if (CurrentBookmarkList != nullptr)
   {
     BookmarkList->Assign(CurrentBookmarkList);
@@ -2275,11 +2273,10 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
             }
             else if (FullPrevPath.SubString(1, RemotePath.Length()) == RemotePath && AnotherPanel)
             {
-              UnicodeString NewLocalPath;
               LocalPath = ::ExcludeTrailingBackslash((*AnotherPanel)->GetCurrDirectory());
               while (!core::UnixSamePath(FullPrevPath, RemotePath))
               {
-                NewLocalPath = ::ExcludeTrailingBackslash(::ExtractFileDir(LocalPath));
+                UnicodeString NewLocalPath = ::ExcludeTrailingBackslash(::ExtractFileDir(LocalPath));
                 if (NewLocalPath == LocalPath)
                 {
                   Abort();

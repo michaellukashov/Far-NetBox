@@ -2864,7 +2864,6 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 
 UnicodeString TGlobalFunctions::GetCurrDirectory() const
 {
-  UnicodeString Result;
   UnicodeString Path(NB_MAX_PATH, 0);
   int Length = 0;
   if (FarPlugin)
@@ -2875,7 +2874,7 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   {
     Length = ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
   }
-  Result = UnicodeString(Path.c_str(), Length);
+  UnicodeString Result = UnicodeString(Path.c_str(), Length);
   return Result;
 }
 
