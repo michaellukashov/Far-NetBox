@@ -630,9 +630,7 @@ void TGUIConfiguration::DefaultLocalized()
     // obsolete translations)
     if (!LoadStr(COPY_PARAM_PRESET_ASCII).IsEmpty())
     {
-      TCopyParamType * CopyParam;
-
-      CopyParam = new TCopyParamType(FDefaultCopyParam);
+      TCopyParamType * CopyParam = new TCopyParamType(FDefaultCopyParam);
       CopyParam->SetTransferMode(tmAscii);
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, nullptr);
 
@@ -856,10 +854,9 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   bool Internal = (ALocale == InternalLocale());
   if (!Internal)
   {
-    UnicodeString Module;
     UnicodeString LocaleName;
 
-    Module = ModuleFileName();
+    UnicodeString Module = ModuleFileName();
     if ((ALocale & AdditionaLanguageMask) != AdditionaLanguageMask)
     {
       LOCALESIGNATURE LocSig;
@@ -1086,19 +1083,17 @@ TStrings * TGUIConfiguration::GetLocales()
 
   DWORD FindAttrs = faReadOnly | faArchive;
   TSearchRecChecked SearchRec;
-  bool Found;
 
-  Found = (base::FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
+  bool Found = (base::FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
     FindAttrs, SearchRec) == 0);
   {
     SCOPE_EXIT
     {
       base::FindClose(SearchRec);
     };
-    UnicodeString Ext;
     while (Found)
     {
-      Ext = ::ExtractFileExt(SearchRec.Name).UpperCase();
+      UnicodeString Ext = ::ExtractFileExt(SearchRec.Name).UpperCase();
       if ((Ext.Length() >= 3) && (Ext != L".EXE") && (Ext != L".COM") &&
         (Ext != L".DLL") && (Ext != L".INI"))
       {

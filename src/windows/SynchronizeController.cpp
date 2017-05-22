@@ -114,10 +114,8 @@ void TSynchronizeController::SynchronizeChange(
 {
   try
   {
-    UnicodeString RemoteDirectory;
-    UnicodeString RootLocalDirectory;
-    RootLocalDirectory = ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
-    RemoteDirectory = core::UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
+    UnicodeString RootLocalDirectory = ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
+    UnicodeString RemoteDirectory = core::UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
 
     UnicodeString LocalDirectory = ::IncludeTrailingBackslash(Directory);
 

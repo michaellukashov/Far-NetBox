@@ -295,8 +295,7 @@ UnicodeString ExceptionLogString(Exception * E)
   DebugAssert(E);
   if (isa<Exception>(E))
   {
-    UnicodeString Msg;
-    Msg = FORMAT(L"%s", UnicodeString(E->what()).c_str());
+    UnicodeString Msg = FORMAT(L"%s", UnicodeString(E->what()).c_str());
     if (isa<ExtException>(E))
     {
       TStrings * MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
@@ -2922,10 +2921,8 @@ void ParseCertificate(const UnicodeString& Path,
   PrivateKey = nullptr;
   bool HasPassphrase = !Passphrase.IsEmpty();
 
-  FILE * File;
-
   // Inspired by neon's ne_ssl_clicert_read
-  File = OpenCertificate(Path);
+  FILE * File = OpenCertificate(Path);
   // openssl pkcs12 -inkey cert.pem -in cert.crt -export -out cert.pfx
   // Binary file
   PKCS12 * Pkcs12 = d2i_PKCS12_fp(File, nullptr);

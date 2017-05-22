@@ -1479,19 +1479,17 @@ int TSecureShell::TranslateAuthenticationMessage(
 
 void TSecureShell::AddStdError(const UnicodeString & AStr)
 {
-  UnicodeString Str;
   FStdError += AStr;
 
   intptr_t P = 0;
-  Str = DeleteChar(AStr, L'\r');
+  UnicodeString Str = DeleteChar(AStr, L'\r');
   // We send only whole line at once to log, so we have to cache
   // incoming std error data
   FStdErrorTemp += Str;
-  UnicodeString Line;
   // Do we have at least one complete line in std error cache?
   while ((P = FStdErrorTemp.Pos(L"\n")) > 0)
   {
-    Line = FStdErrorTemp.SubString(1, P - 1);
+    UnicodeString Line = FStdErrorTemp.SubString(1, P - 1);
     FStdErrorTemp.Delete(1, P);
     AddStdErrorLine(Line);
   }
@@ -2398,14 +2396,12 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
 
       bool Unknown = StoredKeys.IsEmpty();
 
-      uintptr_t Answers;
-      uintptr_t AliasesCount;
       TQueryButtonAlias Aliases[3];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
       Aliases[0].OnClick = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
-      Answers = qaYes | qaCancel | qaRetry;
-      AliasesCount = 1;
+      uintptr_t Answers = qaYes | qaCancel | qaRetry;
+      uintptr_t AliasesCount = 1;
       if (!Unknown)
       {
         Aliases[1].Button = qaYes;

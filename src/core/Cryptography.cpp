@@ -163,8 +163,7 @@ void aes_encrypt_block(const uint8_t in_blk[], uint8_t out_blk[], void * cx)
   memmove(out_blk, in_blk, BLOCK_SIZE);
   for (Index = 0; Index < 4; ++Index)
   {
-    uint8_t t;
-    t = out_blk[Index * 4 + 0];
+    uint8_t t = out_blk[Index * 4 + 0];
     out_blk[Index * 4 + 0] = out_blk[Index * 4 + 3];
     out_blk[Index * 4 + 3] = t;
     t = out_blk[Index * 4 + 1];
@@ -174,8 +173,7 @@ void aes_encrypt_block(const uint8_t in_blk[], uint8_t out_blk[], void * cx)
   call_aes_encrypt(cx, reinterpret_cast<uint32_t *>(out_blk));
   for (Index = 0; Index < 4; ++Index)
   {
-    uint8_t t;
-    t = out_blk[Index * 4 + 0];
+    uint8_t t = out_blk[Index * 4 + 0];
     out_blk[Index * 4 + 0] = out_blk[Index * 4 + 3];
     out_blk[Index * 4 + 3] = t;
     t = out_blk[Index * 4 + 1];
@@ -226,7 +224,6 @@ static void derive_key(const uint8_t pwd[], /* the PASSWORD     */
                        uint8_t key[], /* space for the output key */
                        uint32_t key_len)/* and its required length  */
 {
-  uint32_t i, j, k, n_blk;
   uint8_t uu[OUT_BLOCK_LENGTH], ux[OUT_BLOCK_LENGTH];
   hmac_ctx c1[1] = {0}, c2[1] = {0}, c3[1] = {0};
 
@@ -239,9 +236,9 @@ static void derive_key(const uint8_t pwd[], /* the PASSWORD     */
   hmac_sha1_data(salt, salt_len, c2);
 
   /* find the number of SHA blocks in the key         */
-  n_blk = 1 + (key_len - 1) / OUT_BLOCK_LENGTH;
+  uint32_t n_blk = 1 + (key_len - 1) / OUT_BLOCK_LENGTH;
 
-  for (i = 0; i < n_blk; ++i) /* for each block in key */
+  for (uint32_t i = 0; i < n_blk; ++i) /* for each block in key */
   {
     /* ux[] holds the running xor value             */
     ::ZeroMemory(ux, OUT_BLOCK_LENGTH);
@@ -256,7 +253,7 @@ static void derive_key(const uint8_t pwd[], /* the PASSWORD     */
     uu[3] = (uint8_t)(i + 1);
 
     /* this is the key mixing iteration         */
-    for (j = 0 , k = 4; j < iter; ++j)
+    for (uint32_t j = 0 , k = 4; j < iter; ++j)
     {
       /* add previous round data to HMAC      */
       hmac_sha1_data(uu, k, c3);
@@ -273,8 +270,8 @@ static void derive_key(const uint8_t pwd[], /* the PASSWORD     */
     }
 
     /* compile key blocks into the key output   */
-    j = 0;
-    k = i * OUT_BLOCK_LENGTH;
+    uint32_t j = 0;
+    uint32_t k = i * OUT_BLOCK_LENGTH;
     while (j < OUT_BLOCK_LENGTH && k < key_len)
       key[k++] = ux[j++];
   }

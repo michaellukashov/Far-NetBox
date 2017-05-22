@@ -485,8 +485,8 @@ bool IsZero(double Value)
 TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
 {
   TTimeStamp Result = {0, 0};
-  double fractpart, intpart;
-  fractpart = modf(DateTime, &intpart);
+  double intpart;
+  double fractpart = modf(DateTime, &intpart);
   Result.Time = static_cast<int>(fractpart * MSecsPerDay + 0.5);
   Result.Date = static_cast<int>(intpart + DateDelta);
   return Result;
@@ -559,9 +559,8 @@ bool DirectoryExists(const UnicodeString & ADir)
 
 UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList)
 {
-  UnicodeString Temp;
   UnicodeString Result;
-  Temp = DirectoryList;
+  UnicodeString Temp = DirectoryList;
   UnicodeString PathSeparators = L"/\\";
   do
   {
@@ -1074,7 +1073,6 @@ bool Win32Check(bool RetVal)
 
 UnicodeString SysErrorMessage(intptr_t ErrorCode)
 {
-  UnicodeString Result;
   wchar_t Buffer[255];
   intptr_t Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
     FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, (int)ErrorCode, 0,
@@ -1085,7 +1083,7 @@ UnicodeString SysErrorMessage(intptr_t ErrorCode)
   {
     Len--;
   }
-  Result = UnicodeString(Buffer, Len);
+  UnicodeString Result = UnicodeString(Buffer, Len);
   return Result;
 }
 
@@ -1604,18 +1602,16 @@ static void ReplaceTime(TDateTime & DateTime, const TDateTime & NewTime)
 
 TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears)
 {
-  TDateTime Result;
-  Result = IncMonth(AValue, ANumberOfYears * MonthsPerYear);
+  TDateTime Result = IncMonth(AValue, ANumberOfYears * MonthsPerYear);
   return Result;
 }
 
 TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths)
 {
-  TDateTime Result;
   Word Year, Month, Day;
   DecodeDate(AValue, Year, Month, Day);
   IncAMonth(Year, Month, Day, NumberOfMonths);
-  Result = EncodeDate(Year, Month, Day);
+  TDateTime Result = EncodeDate(Year, Month, Day);
   ReplaceTime(Result, AValue);
   return Result;
 }

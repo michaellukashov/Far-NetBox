@@ -589,9 +589,8 @@ public:
 
   uint32_t GetSmallCardinal() const
   {
-    uint32_t Result;
     Need(2);
-    Result = (FData[FPosition] << 8) + FData[FPosition + 1];
+    uint32_t Result = (FData[FPosition] << 8) + FData[FPosition + 1];
     DataConsumed(2);
     return Result;
   }
@@ -2695,13 +2694,12 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
         if ((Reservation < 0) ||
             Packet->GetMessageNumber() != FPacketNumbers[Reservation])
         {
-          TSFTPPacket * ReservedPacket;
           for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
           {
             uint32_t MessageNumber = static_cast<uint32_t>(FPacketNumbers[Index]);
             if (MessageNumber == Packet->GetMessageNumber())
             {
-              ReservedPacket = FPacketReservations->GetAs<TSFTPPacket>(Index);
+              TSFTPPacket * ReservedPacket = FPacketReservations->GetAs<TSFTPPacket>(Index);
               IsReserved = true;
               if (ReservedPacket)
               {
@@ -3163,8 +3161,7 @@ void TSFTPFileSystem::DoStartup()
           // were added only in rev 08, while "supported2" was defined in rev 07
           FSupport->OpenBlockVector = SupportedStruct.GetSmallCardinal();
           FSupport->BlockVector = SupportedStruct.GetSmallCardinal();
-          uint32_t ExtensionCount;
-          ExtensionCount = SupportedStruct.GetCardinal();
+          uint32_t ExtensionCount = SupportedStruct.GetCardinal();
           for (uint32_t Index = 0; Index < ExtensionCount; ++Index)
           {
             FSupport->AttribExtensions->Add(SupportedStruct.GetAnsiString());
@@ -3506,10 +3503,8 @@ void TSFTPFileSystem::AnnounceFileListOperation()
 
 void TSFTPFileSystem::ChangeDirectory(const UnicodeString & Directory)
 {
-  UnicodeString Path, Current;
-
-  Current = !FDirectoryToChangeTo.IsEmpty() ? FDirectoryToChangeTo : FCurrentDirectory;
-  Path = GetRealPath(Directory, Current);
+  UnicodeString Current = !FDirectoryToChangeTo.IsEmpty() ? FDirectoryToChangeTo : FCurrentDirectory;
+  UnicodeString Path = GetRealPath(Directory, Current);
 
   // to verify existence of directory try to open it (SSH_FXP_REALPATH succeeds
   // for invalid paths on some systems, like CygWin)
@@ -4475,16 +4470,15 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 {
   DebugAssert(AFilesToCopy && OperationProgress);
 
-  UnicodeString FileName, FileNameOnly;
   UnicodeString FullTargetDir = core::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = AFilesToCopy->GetString(Index);
+    UnicodeString FileName = AFilesToCopy->GetString(Index);
     TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
-    FileNameOnly = base::ExtractFileName(RealFileName, false);
+    UnicodeString FileNameOnly = base::ExtractFileName(RealFileName, false);
     DebugAssert(!FAvoidBusy);
     FAvoidBusy = true;
 
@@ -4858,7 +4852,6 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
           FLAGSET(Flags, tfFirstLevel));
       UnicodeString DestFullName = LocalCanonify(TargetDir + DestFileName);
       UnicodeString DestPartialFullName;
-      bool ResumeAllowed;
       bool ResumeTransfer = false;
       bool DestFileExists = false;
       TRights DestRights;
@@ -4888,7 +4881,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
           " transfer mode selected.");
 
       // should we check for interrupted transfer?
-      ResumeAllowed = !OperationProgress->AsciiTransfer &&
+      bool ResumeAllowed = !OperationProgress->AsciiTransfer &&
         CopyParam->AllowResume(OperationProgress->LocalSize) &&
         IsCapable(fcRename);
 
@@ -5729,13 +5722,12 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
 {
   DebugAssert(AFilesToCopy && OperationProgress);
 
-  UnicodeString FileName;
   UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = AFilesToCopy->GetString(Index);
+    UnicodeString FileName = AFilesToCopy->GetString(Index);
     const TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
 
     DebugAssert(!FAvoidBusy);
