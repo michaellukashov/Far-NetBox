@@ -898,7 +898,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     if (Internal)
     {
       ThrowNotImplemented(90);
-      NewInstance = 0; // FIXME  HInstance;
+      NewInstance = nullptr; // FIXME  HInstance;
     }
   }
 
