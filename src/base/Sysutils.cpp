@@ -485,8 +485,8 @@ bool IsZero(double Value)
 TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
 {
   TTimeStamp Result = {0, 0};
-  double fractpart, intpart;
-  fractpart = modf(DateTime, &intpart);
+  double intpart;
+  double fractpart = modf(DateTime, &intpart);
   Result.Time = static_cast<int>(fractpart * MSecsPerDay + 0.5);
   Result.Date = static_cast<int>(intpart + DateDelta);
   return Result;
@@ -559,9 +559,8 @@ bool DirectoryExists(const UnicodeString & ADir)
 
 UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList)
 {
-  UnicodeString Temp;
   UnicodeString Result;
-  Temp = DirectoryList;
+  UnicodeString Temp = DirectoryList;
   UnicodeString PathSeparators = L"/\\";
   do
   {

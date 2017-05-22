@@ -227,27 +227,24 @@ UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
 
 UnicodeString TCommandSet::Command(TFSCommand Cmd, ...) const
 {
-  UnicodeString Result;
   va_list args;
   va_start(args, Cmd);
-  Result = Command(Cmd, args);
+  UnicodeString Result = Command(Cmd, args);
   va_end(args);
   return Result;
 }
 
 UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args) const
 {
-  UnicodeString Result;
-  Result = ::FormatV(GetCommands(Cmd).c_str(), args);
+  UnicodeString Result = ::FormatV(GetCommands(Cmd).c_str(), args);
   return Result.c_str();
 }
 
 UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, ...) const
 {
-  UnicodeString Result;
   va_list args;
   va_start(args, Cmd);
-  Result = FullCommand(Cmd, args);
+  UnicodeString Result = FullCommand(Cmd, args);
   va_end(args);
   return Result.c_str();
 }
