@@ -307,10 +307,9 @@ void * TCustomFarPlugin::OpenPlugin(int OpenFrom, intptr_t Item)
   {
     ResetCachedInfo();
 
-    UnicodeString Buf;
     if ((OpenFrom == OPEN_SHORTCUT) || (OpenFrom == OPEN_COMMANDLINE))
     {
-      Buf = reinterpret_cast<wchar_t *>(Item);
+      UnicodeString Buf = reinterpret_cast<wchar_t *>(Item);
       Item = reinterpret_cast<intptr_t>(Buf.c_str());
     }
 
