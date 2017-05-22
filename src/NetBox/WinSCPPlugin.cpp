@@ -250,8 +250,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
           CommandLine.SetLength(P - 1);
         }
 
-        TWinSCPFileSystem * PanelSystem;
-        PanelSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
+        TWinSCPFileSystem * PanelSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
         if (PanelSystem && PanelSystem->Connected() &&
           PanelSystem->GetTerminal()->GetSessionData()->GenerateSessionUrl(sufComplete) == CommandLine)
         {

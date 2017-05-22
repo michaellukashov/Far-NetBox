@@ -307,8 +307,6 @@ bool TWinSCPPlugin::ConfigurationDialog()
   std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(this));
   TWinSCPDialog * Dialog = DialogPtr.get();
 
-  TFarText * Text;
-
   Dialog->SetSize(TPoint(67, 22));
   Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_INTERFACE)).c_str()));
@@ -329,7 +327,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
 
   new TFarSeparator(Dialog);
 
-  Text = new TFarText(Dialog);
+  TFarText * Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(CONFIG_COMAND_PREFIXES));
 
   TFarEdit * CommandPrefixesEdit = new TFarEdit(Dialog);
