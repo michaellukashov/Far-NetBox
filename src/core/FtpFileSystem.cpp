@@ -3038,9 +3038,7 @@ void TFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   DebugAssert(SupportsSiteCommand(CopySiteCommand));
   EnsureLocation();
 
-  UnicodeString Command;
-
-  Command = FORMAT(L"%s CPFR %s", SiteCommand.c_str(), AFileName.c_str());
+  UnicodeString Command = FORMAT(L"%s CPFR %s", SiteCommand.c_str(), AFileName.c_str());
   SendCommand(Command);
   GotReply(WaitForCommandReply(), REPLY_3XX_CODE);
 
@@ -5035,9 +5033,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
     STATE_QUOTE,
     STATE_QUOTED,
     STATE_DONE
-  } State;
-
-  State = STATE_INIT;
+  } State = STATE_INIT;
   DebugAssert((Str.Length() > 0) && ((Str[1] == L'"') || (Str[1] == L'\'')));
 
   intptr_t Index = 1;

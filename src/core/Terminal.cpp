@@ -3475,10 +3475,9 @@ bool TTerminal::ProcessFiles(const TStrings * AFileList,
           }
         };
         intptr_t Index = 0;
-        UnicodeString FileName;
         while ((Index < AFileList->GetCount()) && (Progress.Cancel == csContinue))
         {
-          FileName = AFileList->GetString(Index);
+          UnicodeString FileName = AFileList->GetString(Index);
           try
           {
             bool Success = false;
@@ -5246,10 +5245,9 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
         {
           base::FindClose(SearchRec);
         };
-        UnicodeString FileName;
         while (Found)
         {
-          FileName = SearchRec.Name;
+          UnicodeString FileName = SearchRec.Name;
           // add dirs for recursive mode or when we are interested in newly
           // added subdirs
           // SearchRec.Size in C++B2010 is int64_t,
