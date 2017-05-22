@@ -1189,13 +1189,13 @@ TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen)
 
 double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen)
 {
-  TDateTime Result = MSecsPerDay * SpanOfNowAndThen(ANow, AThen);
+  double Result = MSecsPerDay * SpanOfNowAndThen(ANow, AThen);
   return Result;
 }
 
 int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
-  TDateTime Result = floor(MilliSecondSpan(ANow, AThen));
+  int64_t Result = floor(MilliSecondSpan(ANow, AThen));
   return static_cast<int64_t>(Result);
 }
 

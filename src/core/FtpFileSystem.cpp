@@ -1353,7 +1353,6 @@ bool TFTPFileSystem::ConfirmOverwrite(
   const TCopyParamType * CopyParam,
   OUT TOverwriteMode & OverwriteMode)
 {
-  bool Result;
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
   bool DestIsSmaller = (FileParams != nullptr) && (FileParams->DestSize < FileParams->SourceSize);
   bool DestIsSame = (FileParams != nullptr) && (FileParams->DestSize == FileParams->SourceSize);
@@ -1420,7 +1419,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
     }
   }
 
-  Result = true;
+  bool Result = true;
 
   switch (Answer)
   {

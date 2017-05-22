@@ -1479,19 +1479,17 @@ int TSecureShell::TranslateAuthenticationMessage(
 
 void TSecureShell::AddStdError(const UnicodeString & AStr)
 {
-  UnicodeString Str;
   FStdError += AStr;
 
   intptr_t P = 0;
-  Str = DeleteChar(AStr, L'\r');
+  UnicodeString Str = DeleteChar(AStr, L'\r');
   // We send only whole line at once to log, so we have to cache
   // incoming std error data
   FStdErrorTemp += Str;
-  UnicodeString Line;
   // Do we have at least one complete line in std error cache?
   while ((P = FStdErrorTemp.Pos(L"\n")) > 0)
   {
-    Line = FStdErrorTemp.SubString(1, P - 1);
+    UnicodeString Line = FStdErrorTemp.SubString(1, P - 1);
     FStdErrorTemp.Delete(1, P);
     AddStdErrorLine(Line);
   }

@@ -1083,19 +1083,17 @@ TStrings * TGUIConfiguration::GetLocales()
 
   DWORD FindAttrs = faReadOnly | faArchive;
   TSearchRecChecked SearchRec;
-  bool Found;
 
-  Found = (base::FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
+  bool Found = (base::FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
     FindAttrs, SearchRec) == 0);
   {
     SCOPE_EXIT
     {
       base::FindClose(SearchRec);
     };
-    UnicodeString Ext;
     while (Found)
     {
-      Ext = ::ExtractFileExt(SearchRec.Name).UpperCase();
+      UnicodeString Ext = ::ExtractFileExt(SearchRec.Name).UpperCase();
       if ((Ext.Length() >= 3) && (Ext != L".EXE") && (Ext != L".COM") &&
         (Ext != L".DLL") && (Ext != L".INI"))
       {

@@ -1602,18 +1602,16 @@ static void ReplaceTime(TDateTime & DateTime, const TDateTime & NewTime)
 
 TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears)
 {
-  TDateTime Result;
-  Result = IncMonth(AValue, ANumberOfYears * MonthsPerYear);
+  TDateTime Result = IncMonth(AValue, ANumberOfYears * MonthsPerYear);
   return Result;
 }
 
 TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths)
 {
-  TDateTime Result;
   Word Year, Month, Day;
   DecodeDate(AValue, Year, Month, Day);
   IncAMonth(Year, Month, Day, NumberOfMonths);
-  Result = EncodeDate(Year, Month, Day);
+  TDateTime Result = EncodeDate(Year, Month, Day);
   ReplaceTime(Result, AValue);
   return Result;
 }
