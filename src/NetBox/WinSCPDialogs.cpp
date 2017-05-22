@@ -582,14 +582,11 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(this));
   TWinSCPDialog * Dialog = DialogPtr.get();
 
-  TFarSeparator * Separator;
-  TFarText * Text;
-
   Dialog->SetSize(TPoint(76, 13));
   Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_ENDURANCE)).c_str()));
 
-  Separator = new TFarSeparator(Dialog);
+  TFarSeparator * Separator = new TFarSeparator(Dialog);
   Separator->SetCaption(GetMsg(TRANSFER_RESUME));
 
   TFarRadioButton * ResumeOnButton = new TFarRadioButton(Dialog);
@@ -612,7 +609,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Dialog->SetNextItemPosition(ipRight);
 
-  Text = new TFarText(Dialog);
+  TFarText * Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(TRANSFER_RESUME_THRESHOLD_UNIT));
   Text->SetEnabledDependency(ResumeSmartButton);
 

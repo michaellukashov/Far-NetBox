@@ -512,8 +512,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
   {
     if (isa<EAbort>(E))
     {
-      TQueryType Type;
-      Type = isa<ESshTerminate>(E) ? qtInformation : qtError;
+      TQueryType Type = isa<ESshTerminate>(E) ? qtInformation : qtError;
 
       TStrings * MoreMessages = nullptr;
       if (isa<ExtException>(E))
