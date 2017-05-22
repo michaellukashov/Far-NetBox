@@ -163,8 +163,7 @@ void aes_encrypt_block(const uint8_t in_blk[], uint8_t out_blk[], void * cx)
   memmove(out_blk, in_blk, BLOCK_SIZE);
   for (Index = 0; Index < 4; ++Index)
   {
-    uint8_t t;
-    t = out_blk[Index * 4 + 0];
+    uint8_t t = out_blk[Index * 4 + 0];
     out_blk[Index * 4 + 0] = out_blk[Index * 4 + 3];
     out_blk[Index * 4 + 3] = t;
     t = out_blk[Index * 4 + 1];
