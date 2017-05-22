@@ -2787,7 +2787,7 @@ void TWebDAVFileSystem::LockResult(void * UserData, const struct ne_lock * Lock,
 
 struct ne_lock * TWebDAVFileSystem::FindLock(const RawByteString & APath) const
 {
-  ne_uri Uri = {0};
+  ne_uri Uri = {nullptr};
   Uri.path = const_cast<char *>(APath.c_str());
   return ne_lockstore_findbyuri(FNeonLockStore, &Uri);
 }
