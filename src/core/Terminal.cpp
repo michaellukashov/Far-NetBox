@@ -2093,7 +2093,7 @@ void TTerminal::AddCachedFileList(TRemoteFileList * FileList)
 
 TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, TDateTime Timestamp, bool CanLoad)
 {
-  TRemoteFileList * Result = NULL;
+  TRemoteFileList * Result = nullptr;
   if (core::UnixSamePath(FFiles->GetDirectory(), APath))
   {
     if (Timestamp < FFiles->GetTimestamp())

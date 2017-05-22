@@ -2146,8 +2146,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
 bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   const UnicodeString & SourceDir, const UnicodeString & Change, UnicodeString & TargetDir) const
 {
-  UnicodeString Key;
-  Key = TTerminal::ExpandFileName(Change, SourceDir);
+  UnicodeString Key = TTerminal::ExpandFileName(Change, SourceDir);
   if (Key.IsEmpty())
   {
     Key = ROOTDIRECTORY;
