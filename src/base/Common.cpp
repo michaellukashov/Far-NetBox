@@ -295,8 +295,7 @@ UnicodeString ExceptionLogString(Exception * E)
   DebugAssert(E);
   if (isa<Exception>(E))
   {
-    UnicodeString Msg;
-    Msg = FORMAT(L"%s", UnicodeString(E->what()).c_str());
+    UnicodeString Msg = FORMAT(L"%s", UnicodeString(E->what()).c_str());
     if (isa<ExtException>(E))
     {
       TStrings * MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();

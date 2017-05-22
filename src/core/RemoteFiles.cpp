@@ -296,10 +296,10 @@ static void CutFirstDirectory(UnicodeString & S, bool Unix)
 
 UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, bool Unix)
 {
-  UnicodeString Drive, Dir, Name, Result;
+  UnicodeString Drive, Dir, Name;
   UnicodeString Sep = Unix ? SLASH : BACKSLASH;
 
-  Result = AFileName;
+  UnicodeString Result = AFileName;
   if (Unix)
   {
     intptr_t P = Result.LastDelimiter(SLASH);
