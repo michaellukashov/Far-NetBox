@@ -365,7 +365,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
   {
     if (Dialog != nullptr)
     {
-        Dialog->FHandle = 0;
+        Dialog->FHandle = nullptr;
     }
     Dialogs.erase(Handle);
   }
