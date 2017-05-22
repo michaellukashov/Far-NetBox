@@ -4681,12 +4681,9 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     SetSize(TPoint(56, 19));
 
-    TFarButton * Button;
-    TFarSeparator * Separator;
-    TFarText * Text;
     TRect CRect = GetClientRect();
 
-    Text = new TFarText(this);
+    TFarText * Text = new TFarText(this);
     Text->SetCaption(GetMsg(PROPERTIES_PROMPT));
     Text->SetCenterGroup(true);
 
@@ -4765,7 +4762,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     SetNextItemPosition(ipNewLine);
 
-    Separator = new TFarSeparator(this);
+    TFarSeparator * Separator = new TFarSeparator(this);
     Separator->SetCaption(GetMsg(PROPERTIES_RIGHTS));
 
     RightsContainer = new TRightsContainer(this, FAnyDirectories,
@@ -4798,7 +4795,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     SetNextItemPosition(ipRight);
 
-    Button = new TFarButton(this);
+    TFarButton * Button = new TFarButton(this);
     Button->SetCaption(GetMsg(MSG_BUTTON_Cancel));
     Button->SetResult(brCancel);
     Button->SetCenterGroup(true);
