@@ -105,16 +105,13 @@ NB_C_CORE_DLL(void*) nbcore_realloc(void* ptr, size_t size)
 
 NB_C_CORE_DLL(void) nbcore_free(void* ptr)
 {
-  char* p;
-  uint32_t size;
-
   if (ptr == nullptr)
     return;
   if (!CheckBlock(ptr))
     return;
 
-  p = (char*)ptr - sizeof(uint32_t) * 2;
-  size = *(uint32_t*)p;
+  char* p = (char*)ptr - sizeof(uint32_t) * 2;
+  uint32_t size = *(uint32_t*)p;
 
   *(uint32_t*)&p[sizeof(uint32_t)] = BLOCK_FREED;
   *(uint32_t*)&p[size + sizeof(uint32_t) * 2] = BLOCK_FREED;
