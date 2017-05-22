@@ -567,7 +567,7 @@ TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) :
   FKeepUpToDateChangeDelay(0),
   FSessionReopenAutoIdle(0)
 {
-  CoreSetResourceModule(0);
+  CoreSetResourceModule(nullptr);
 }
 
 TGUIConfiguration::~TGUIConfiguration()
@@ -898,7 +898,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     if (Internal)
     {
       ThrowNotImplemented(90);
-      NewInstance = 0; // FIXME  HInstance;
+      NewInstance = nullptr; // FIXME  HInstance;
     }
   }
 
