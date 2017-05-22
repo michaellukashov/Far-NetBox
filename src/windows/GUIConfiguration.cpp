@@ -567,7 +567,7 @@ TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) :
   FKeepUpToDateChangeDelay(0),
   FSessionReopenAutoIdle(0)
 {
-  CoreSetResourceModule(0);
+  CoreSetResourceModule(nullptr);
 }
 
 TGUIConfiguration::~TGUIConfiguration()
