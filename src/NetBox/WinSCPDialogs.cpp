@@ -710,13 +710,11 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(this));
   TWinSCPDialog * Dialog = DialogPtr.get();
 
-  TFarText * Text;
-
   Dialog->SetSize(TPoint(76, 11));
   Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_BACKGROUND)).c_str()));
 
-  Text = new TFarText(Dialog);
+  TFarText * Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(TRANSFER_QUEUE_LIMIT));
 
   Dialog->SetNextItemPosition(ipRight);
