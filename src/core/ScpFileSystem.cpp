@@ -669,14 +669,13 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
     };
     if (Params & coWaitForLastLine)
     {
-      UnicodeString Line;
       bool IsLast = true;
       intptr_t Total = 0;
       // #55: fixed so, even when last line of command output does not
       // contain CR/LF, we can recognize last line
       do
       {
-        Line = FSecureShell->ReceiveLine();
+        UnicodeString Line = FSecureShell->ReceiveLine();
         IsLast = IsLastLine(Line);
         if (!IsLast || !Line.IsEmpty())
         {

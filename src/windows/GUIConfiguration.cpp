@@ -854,10 +854,9 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   bool Internal = (ALocale == InternalLocale());
   if (!Internal)
   {
-    UnicodeString Module;
     UnicodeString LocaleName;
 
-    Module = ModuleFileName();
+    UnicodeString Module = ModuleFileName();
     if ((ALocale & AdditionaLanguageMask) != AdditionaLanguageMask)
     {
       LOCALESIGNATURE LocSig;

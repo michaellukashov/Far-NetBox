@@ -1073,7 +1073,6 @@ bool Win32Check(bool RetVal)
 
 UnicodeString SysErrorMessage(intptr_t ErrorCode)
 {
-  UnicodeString Result;
   wchar_t Buffer[255];
   intptr_t Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
     FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, (int)ErrorCode, 0,
@@ -1084,7 +1083,7 @@ UnicodeString SysErrorMessage(intptr_t ErrorCode)
   {
     Len--;
   }
-  Result = UnicodeString(Buffer, Len);
+  UnicodeString Result = UnicodeString(Buffer, Len);
   return Result;
 }
 
