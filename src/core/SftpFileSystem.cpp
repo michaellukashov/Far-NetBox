@@ -2694,13 +2694,12 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
         if ((Reservation < 0) ||
             Packet->GetMessageNumber() != FPacketNumbers[Reservation])
         {
-          TSFTPPacket * ReservedPacket;
           for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
           {
             uint32_t MessageNumber = static_cast<uint32_t>(FPacketNumbers[Index]);
             if (MessageNumber == Packet->GetMessageNumber())
             {
-              ReservedPacket = FPacketReservations->GetAs<TSFTPPacket>(Index);
+              TSFTPPacket * ReservedPacket = FPacketReservations->GetAs<TSFTPPacket>(Index);
               IsReserved = true;
               if (ReservedPacket)
               {

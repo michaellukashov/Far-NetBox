@@ -1895,17 +1895,16 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   AutoDetectTimeDifference(ATargetDir, CopyParam, Params);
 
   Params &= ~cpAppend;
-  UnicodeString FileName, FileNameOnly;
   UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = core::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
   while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = AFilesToCopy->GetString(Index);
+    UnicodeString FileName = AFilesToCopy->GetString(Index);
     TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
-    FileNameOnly = base::ExtractFileName(RealFileName, false);
+    UnicodeString FileNameOnly = base::ExtractFileName(RealFileName, false);
 
     try__finally
     {

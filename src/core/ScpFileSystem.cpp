@@ -2216,12 +2216,10 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
 
   UnicodeString TargetDirFull = core::UnixIncludeTrailingBackslash(TargetDir + DestFileName);
 
-  UnicodeString Buf;
-
   /* TODO 1: maybe send filetime */
 
   // Send directory modes (rights), filesize and file name
-  Buf = FORMAT(L"D%s 0 %s",
+  UnicodeString Buf = FORMAT(L"D%s 0 %s",
     CopyParam->RemoteFileRights(LocalFileAttrs).GetOctal().c_str(), DestFileName.c_str());
   FSecureShell->SendLine(Buf);
   SCPResponse();
