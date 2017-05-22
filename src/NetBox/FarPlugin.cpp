@@ -307,10 +307,9 @@ void * TCustomFarPlugin::OpenPlugin(int OpenFrom, intptr_t Item)
   {
     ResetCachedInfo();
 
-    UnicodeString Buf;
     if ((OpenFrom == OPEN_SHORTCUT) || (OpenFrom == OPEN_COMMANDLINE))
     {
-      Buf = reinterpret_cast<wchar_t *>(Item);
+      UnicodeString Buf = reinterpret_cast<wchar_t *>(Item);
       Item = reinterpret_cast<intptr_t>(Buf.c_str());
     }
 
@@ -517,10 +516,9 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
     {
       DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
-      UnicodeString Buf;
       if ((Event == FE_CHANGEVIEWMODE) || (Event == FE_COMMAND))
       {
-        Buf = static_cast<wchar_t *>(Param);
+        UnicodeString Buf = static_cast<wchar_t *>(Param);
         Param = const_cast<void *>(reinterpret_cast<const void *>(Buf.c_str()));
       }
       else if ((Event == FE_GOTFOCUS) || (Event == FE_KILLFOCUS))
@@ -2866,7 +2864,6 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 
 UnicodeString TGlobalFunctions::GetCurrDirectory() const
 {
-  UnicodeString Result;
   UnicodeString Path(NB_MAX_PATH, 0);
   int Length = 0;
   if (FarPlugin)
@@ -2877,7 +2874,7 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   {
     Length = ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
   }
-  Result = UnicodeString(Path.c_str(), Length);
+  UnicodeString Result = UnicodeString(Path.c_str(), Length);
   return Result;
 }
 

@@ -2590,11 +2590,10 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
     intptr_t DisplayWidth = GetWidth() - (AScrollBar ? 1 : 0);
     uintptr_t Color = GetDialog()->GetSystemColor(
       FLAGSET(GetDialog()->GetFlags(), FDLG_WARNING) ? COL_WARNDIALOGLISTTEXT : COL_DIALOGLISTTEXT);
-    UnicodeString Buf;
     for (intptr_t Row = 0; Row < GetHeight(); Row++)
     {
       intptr_t Index = GetTopIndex() + Row;
-      Buf = L" ";
+      UnicodeString Buf = L" ";
       if (Index < GetItems()->GetCount())
       {
         UnicodeString Value = GetItems()->GetString(Index).SubString(1, DisplayWidth - 1);
