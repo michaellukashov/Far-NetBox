@@ -795,8 +795,6 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
   TCustomFarPlugin * AFarPlugin) :
   TWinSCPDialog(AFarPlugin)
 {
-  TFarSeparator * Separator;
-
   SetSize(TPoint(65, 14));
   SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_TRANSFER_EDITOR)).c_str()));
@@ -807,7 +805,7 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
   EditorUploadOnSaveCheck = new TFarCheckBox(this);
   EditorUploadOnSaveCheck->SetCaption(GetMsg(TRANSFER_EDITOR_UPLOAD_ON_SAVE));
 
-  Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(TRANSFER_EDITOR_DOWNLOAD));
 
   EditorDownloadDefaultButton = new TFarRadioButton(this);
@@ -947,13 +945,11 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
   std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(this));
   TWinSCPDialog * Dialog = DialogPtr.get();
 
-  TFarText * Text;
-
   Dialog->SetSize(TPoint(65, 14));
   Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_INTEGRATION)).c_str()));
 
-  Text = new TFarText(Dialog);
+  TFarText * Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(INTEGRATION_PUTTY));
 
   TFarEdit * PuttyPathEdit = new TFarEdit(Dialog);
@@ -1020,9 +1016,6 @@ UnicodeString ReplaceCopyright(const UnicodeString & S)
 TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   TFarDialog(AFarPlugin)
 {
-  TFarText * Text;
-  TFarButton * Button;
-
   // UnicodeString ProductName = GetConfiguration()->GetFileInfoString("ProductName");
   UnicodeString ProductName = LoadStr(WINSCPFAR_NAME);
   UnicodeString Comments;
@@ -1056,7 +1049,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
 
   SetCaption(FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_ABOUT)).c_str()));
-  Text = new TFarText(this);
+  TFarText * Text = new TFarText(this);
   Text->SetCaption(GetConfiguration()->GetFileInfoString("FileDescription"));
   Text->SetCenterGroup(true);
 
@@ -1115,7 +1108,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCenterGroup(true);
   Text->SetOnMouseClick(nb::bind(&TAboutDialog::UrlTextClick, this));
 
-  Button = new TFarButton(this);
+  TFarButton * Button = new TFarButton(this);
   Button->Move(0, 1);
   Button->SetCaption(GetMsg(ABOUT_HOMEPAGE));
   Button->SetOnClick(nb::bind(&TAboutDialog::UrlButtonClick, this));
@@ -1223,8 +1216,6 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   FEdits(new TList()),
   SavePasswordCheck(nullptr)
 {
-  TFarButton * Button;
-
   bool ShowSavePassword = false;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
       (Kind == pkKeybInteractive)) &&
@@ -1253,7 +1244,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
 
   new TFarSeparator(this);
 
-  Button = new TFarButton(this);
+  TFarButton * Button = new TFarButton(this);
   Button->SetCaption(GetMsg(MSG_BUTTON_OK));
   Button->SetDefault(true);
   Button->SetResult(brOK);
