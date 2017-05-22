@@ -5722,13 +5722,12 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
 {
   DebugAssert(AFilesToCopy && OperationProgress);
 
-  UnicodeString FileName;
   UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
   while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = AFilesToCopy->GetString(Index);
+    UnicodeString FileName = AFilesToCopy->GetString(Index);
     const TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
 
     DebugAssert(!FAvoidBusy);

@@ -5678,14 +5678,12 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
     intptr_t IIndex = 0;
     while (IIndex < Checklist->GetCount())
     {
-      const TChecklistItem * ChecklistItem;
-
       DownloadList->Clear();
       DeleteRemoteList->Clear();
       UploadList->Clear();
       DeleteLocalList->Clear();
 
-      ChecklistItem = Checklist->GetItem(IIndex);
+      const TChecklistItem * ChecklistItem = Checklist->GetItem(IIndex);
 
       UnicodeString CurrentLocalDirectory = ChecklistItem->Local.Directory;
       UnicodeString CurrentRemoteDirectory = ChecklistItem->Remote.Directory;
