@@ -1584,9 +1584,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
       TimeElapsedLabel = GetMsg(SYNCHRONIZE_PROGRESS_ELAPSED);
     }
 
-    UnicodeString Message;
-
-    Message = LocalLabel + core::MinimizeName(LocalDirectory,
+    UnicodeString Message = LocalLabel + core::MinimizeName(LocalDirectory,
       ProgressWidth - LocalLabel.Length(), false);
     Message += ::StringOfChar(L' ', ProgressWidth - Message.Length()) + L"\n";
     Message += RemoteLabel + core::MinimizeName(RemoteDirectory,

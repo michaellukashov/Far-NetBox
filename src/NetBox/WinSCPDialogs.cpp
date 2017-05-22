@@ -1711,15 +1711,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   TRect CRect = GetClientRect();
 
-  TFarButton * Button;
-  // TTabButton * Tab;
-  TFarSeparator * Separator;
-  TFarText * Text;
-  intptr_t GroupTop;
-  intptr_t Pos;
-  intptr_t Index1;
-
-  Index1 = AddTab(tabSession, GetMsg(LOGIN_TAB_SESSION).c_str());
+  intptr_t Index1 = AddTab(tabSession, GetMsg(LOGIN_TAB_SESSION).c_str());
   // Tab = dyn_cast<TTabButton>(GetItem(Index));
 
   SetNextItemPosition(ipRight);
@@ -1784,11 +1776,11 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
   SetDefaultGroup(tabSession);
 
-  Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(LOGIN_GROUP_SESSION));
-  GroupTop = Separator->GetTop();
+  intptr_t GroupTop = Separator->GetTop();
 
-  Text = new TFarText(this);
+  TFarText * Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_TRANSFER_PROTOCOL));
 
   SetNextItemPosition(ipRight);
@@ -1973,7 +1965,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   DSTModeKeepCheck->SetCaption(GetMsg(LOGIN_DST_MODE_KEEP));
   DSTModeKeepCheck->SetEnabledFollow(DSTModeUnixCheck);
 
-  Button = new TFarButton(this);
+  TFarButton * Button = new TFarButton(this);
   Button->SetCaption(GetMsg(LOGIN_ENVIRONMENT_UNIX));
   Button->SetOnClick(nb::bind(&TSessionDialog::UnixEnvironmentButtonClick, this));
   Button->SetCenterGroup(true);
@@ -2597,7 +2589,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   CipherListBox = new TFarListBox(this);
   CipherListBox->SetRight(CipherListBox->GetRight() - 15);
   CipherListBox->SetHeight(1 + CIPHER_COUNT + 1);
-  Pos = CipherListBox->GetBottom();
+  intptr_t Pos = CipherListBox->GetBottom();
 
   SetNextItemPosition(ipRight);
 
