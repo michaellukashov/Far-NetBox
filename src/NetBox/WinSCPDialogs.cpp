@@ -1147,7 +1147,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
 
   new TFarSeparator(this);
 
-  Button = new TFarButton(this);
+  TFarButton * Button = new TFarButton(this);
   Button->SetCaption(GetMsg(MSG_BUTTON_CLOSE));
   Button->SetDefault(true);
   Button->SetResult(brOK);
@@ -4997,17 +4997,11 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   SpeedCombo(nullptr),
   FOptions(Options), FCopyParamAttrs(CopyParamAttrs)
 {
-  TFarBox * Box;
-  TFarSeparator * Separator;
-  TFarText * Text;
-
   intptr_t TMWidth = 37;
-  intptr_t TMTop;
-  intptr_t TMBottom;
 
   SetLeft(GetLeft() - 1);
 
-  Box = new TFarBox(GetDialog());
+  TFarBox * Box = new TFarBox(GetDialog());
   Box->SetLeft(0);
   Box->SetTop(0);
   Box->SetHeight(1);
@@ -5028,7 +5022,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   TMTextButton = new TFarRadioButton(GetDialog());
   TMTextButton->SetLeft(1);
   Add(TMTextButton);
-  TMTop = TMTextButton->GetTop();
+  intptr_t TMTop = TMTextButton->GetTop();
   TMTextButton->SetCaption(GetMsg(TRANSFER_MODE_TEXT));
   TMTextButton->SetEnabled(
     FLAGCLEAR(CopyParamAttrs, cpaNoTransferMode));
@@ -5045,7 +5039,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   TMAutomaticButton->SetCaption(GetMsg(TRANSFER_MODE_AUTOMATIC));
   TMAutomaticButton->SetEnabled(TMTextButton->GetEnabled());
 
-  Text = new TFarText(GetDialog());
+  TFarText * Text = new TFarText(GetDialog());
   Text->SetLeft(1);
   Add(Text);
   Text->SetCaption(GetMsg(TRANSFER_MODE_MASK));
@@ -5122,7 +5116,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   PreserveReadOnlyCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_READONLY));
   PreserveReadOnlyCheck->SetEnabled(
     FLAGCLEAR(CopyParamAttrs, cpaNoPreserveReadOnly));
-  TMBottom = PreserveReadOnlyCheck->GetTop();
+  intptr_t TMBottom = PreserveReadOnlyCheck->GetTop();
 
   PreserveRightsCheck = new TFarCheckBox(GetDialog());
   Add(PreserveRightsCheck);
@@ -5176,7 +5170,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(GetDialog());
+  TFarSeparator * Separator = new TFarSeparator(GetDialog());
   Add(Separator);
   Separator->SetPosition(TMBottom + 1);
   Separator->SetCaption(GetMsg(TRANSFER_OTHER));
@@ -5749,16 +5743,12 @@ private:
 TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   bool Edit, bool AllowSymbolic) : TFarDialog(AFarPlugin)
 {
-  TFarButton * Button;
-  TFarSeparator * Separator;
-  TFarText * Text;
-
   SetSize(TPoint(76, 12));
   TRect CRect = GetClientRect();
 
   SetCaption(GetMsg(Edit ? STRING_LINK_EDIT_CAPTION : STRING_LINK_ADD_CAPTION));
 
-  Text = new TFarText(this);
+  TFarText * Text = new TFarText(this);
   Text->SetCaption(GetMsg(STRING_LINK_FILE));
   Text->SetEnabled(!Edit);
 
@@ -5778,7 +5768,7 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   SymbolicCheck->SetCaption(GetMsg(STRING_LINK_SYMLINK));
   SymbolicCheck->SetEnabled(AllowSymbolic && !Edit);
 
-  Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = new TFarSeparator(this);
   Separator->SetPosition(CRect.Bottom - 1);
 
   OkButton = new TFarButton(this);
@@ -5789,7 +5779,7 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
 
   SetNextItemPosition(ipRight);
 
-  Button = new TFarButton(this);
+  TFarButton * Button = new TFarButton(this);
   Button->SetCaption(GetMsg(MSG_BUTTON_Cancel));
   Button->SetResult(brCancel);
   Button->SetCenterGroup(true);
@@ -5923,16 +5913,11 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   InfoLabel(nullptr)
 {
   FOnGetSpaceAvailable = OnGetSpaceAvailable;
-  TFarText * Text;
-  TFarSeparator * Separator;
-  TFarButton * Button;
-  TTabButton * Tab;
-  intptr_t GroupTop;
 
   SetSize(TPoint(73, 22));
   SetCaption(GetMsg(SERVER_PROTOCOL_INFORMATION));
 
-  Tab = new TTabButton(this);
+  TTabButton * Tab = new TTabButton(this);
   Tab->SetTabName(GetMsg(SERVER_PROTOCOL_TAB_PROTOCOL));
   Tab->SetTab(tabProtocol);
 
@@ -5951,9 +5936,9 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   SetNextItemPosition(ipNewLine);
   SetDefaultGroup(tabProtocol);
 
-  Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(SERVER_INFORMATION_GROUP));
-  GroupTop = Separator->GetTop();
+  intptr_t GroupTop = Separator->GetTop();
 
   ServerLabels = CreateLabelArray(5);
 
@@ -5990,7 +5975,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   Separator->SetCaption(GetMsg(SPACE_AVAILABLE_GROUP));
   Separator->SetPosition(GroupTop);
 
-  Text = new TFarText(this);
+  TFarText * Text = new TFarText(this);
   Text->SetCaption(GetMsg(SPACE_AVAILABLE_PATH));
 
   SetNextItemPosition(ipRight);
@@ -5999,7 +5984,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   SpaceAvailablePathEdit->SetRight(
     - (static_cast<int>(GetMsg(SPACE_AVAILABLE_CHECK_SPACE).Length() + 11)));
 
-  Button = new TFarButton(this);
+  TFarButton * Button = new TFarButton(this);
   Button->SetCaption(GetMsg(SPACE_AVAILABLE_CHECK_SPACE));
   Button->SetEnabledDependency(SpaceAvailablePathEdit);
   Button->SetOnClick(nb::bind(&TFileSystemInfoDialog::SpaceAvailableButtonClick, this));
@@ -6579,12 +6564,10 @@ TApplyCommandDialog::TApplyCommandDialog(TCustomFarPlugin * AFarPlugin) :
   NormalEdit(nullptr),
   HideTypingCheck(nullptr)
 {
-  TFarText * Text;
-
   SetSize(TPoint(76, 18));
   SetCaption(GetMsg(APPLY_COMMAND_TITLE));
 
-  Text = new TFarText(this);
+  TFarText * Text = new TFarText(this);
   Text->SetCaption(GetMsg(APPLY_COMMAND_PROMPT));
 
   CommandEdit = new TFarEdit(this);
@@ -6769,13 +6752,10 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   FOptions(Options),
   FCopyParamAttrs(CopyParamAttrs)
 {
-  TFarText * Text;
-  TFarSeparator * Separator;
-
   SetSize(TPoint(78, 25));
   SetCaption(GetMsg(FULL_SYNCHRONIZE_TITLE));
 
-  Text = new TFarText(this);
+  TFarText * Text = new TFarText(this);
   Text->SetCaption(GetMsg(FULL_SYNCHRONIZE_LOCAL_LABEL));
 
   LocalDirectoryEdit = new TFarEdit(this);
@@ -6787,7 +6767,7 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   RemoteDirectoryEdit = new TFarEdit(this);
   RemoteDirectoryEdit->SetHistory(REMOTE_SYNC_HISTORY);
 
-  Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(FULL_SYNCHRONIZE_DIRECTION_GROUP));
 
   SynchronizeBothButton = new TFarRadioButton(this);
@@ -7409,9 +7389,8 @@ UnicodeString TSynchronizeChecklistDialog::FormatSize(
 UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * ChecklistItem)
 {
   UnicodeString Line;
-  UnicodeString S;
 
-  S = ChecklistItem->GetFileName();
+  UnicodeString S = ChecklistItem->GetFileName();
   if (ChecklistItem->IsDirectory)
   {
     S = ::IncludeTrailingBackslash(S);
@@ -7809,9 +7788,6 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   intptr_t Options, intptr_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions) :
   TFarDialog(AFarPlugin)
 {
-  TFarText * Text;
-  TFarSeparator * Separator;
-
   FSynchronizing = false;
   FStarted = false;
   FOnStartStop = OnStartStop;
@@ -7826,7 +7802,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
 
   SetDefaultGroup(1);
 
-  Text = new TFarText(this);
+  TFarText * Text = new TFarText(this);
   Text->SetCaption(GetMsg(SYNCHRONIZE_LOCAL_LABEL));
 
   LocalDirectoryEdit = new TFarEdit(this);
@@ -7838,7 +7814,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   RemoteDirectoryEdit = new TFarEdit(this);
   RemoteDirectoryEdit->SetHistory(REMOTE_SYNC_HISTORY);
 
-  Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(SYNCHRONIZE_GROUP));
   Separator->SetGroup(0);
 
@@ -8291,7 +8267,6 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
 
   SetSize(TPoint(80, 23));
   // TRect CRect = GetClientRect();
-  intptr_t ListTop;
   intptr_t ListHeight = GetClientSize().y - 4;
 
   SetCaption(GetMsg(QUEUE_TITLE));
@@ -8300,7 +8275,7 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetCaption(GetMsg(QUEUE_HEADER));
 
   Separator = new TFarSeparator(this);
-  ListTop = Separator->GetBottom();
+  intptr_t ListTop = Separator->GetBottom();
 
   Separator = new TFarSeparator(this);
   Separator->Move(0, ListHeight);
@@ -8750,19 +8725,17 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
   TRemoteProperties * Properties, bool & SaveSettings)
 {
   std::unique_ptr<TWinSCPDialog> Dialog(new TWinSCPDialog(FPlugin));
-  TFarText * Text;
-  TFarSeparator * Separator;
 
   Dialog->SetCaption(GetMsg(CREATE_FOLDER_TITLE));
   Dialog->SetSize(TPoint(66, 15));
 
-  Text = new TFarText(Dialog.get());
+  TFarText * Text = new TFarText(Dialog.get());
   Text->SetCaption(GetMsg(CREATE_FOLDER_PROMPT));
 
   TFarEdit * DirectoryEdit = new TFarEdit(Dialog.get());
   DirectoryEdit->SetHistory(L"NewFolder");
 
-  Separator = new TFarSeparator(Dialog.get());
+  TFarSeparator * Separator = new TFarSeparator(Dialog.get());
   Separator->SetCaption(GetMsg(CREATE_FOLDER_ATTRIBUTES));
 
   TFarCheckBox * SetRightsCheck = new TFarCheckBox(Dialog.get());
