@@ -196,10 +196,10 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="malloc.c" />
+    <ClCompile Include="dlmalloc.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="malloc-2.8.6.h" />
+    <ClInclude Include="dlmalloc-2.8.6.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
