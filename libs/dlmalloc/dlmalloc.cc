@@ -558,7 +558,7 @@ MAX_RELEASE_CHECK_RATE   default: 4095 unless not HAVE_MMAP
 #define LACKS_STRING_H
 #define LACKS_STRINGS_H
 #define LACKS_SYS_TYPES_H
-#define LACKS_ERRNO_H
+//#define LACKS_ERRNO_H
 #define LACKS_SCHED_H
 #ifndef MALLOC_FAILURE_ACTION
 #define MALLOC_FAILURE_ACTION
@@ -593,8 +593,6 @@ MAX_RELEASE_CHECK_RATE   default: 4095 unless not HAVE_MMAP
 #ifndef LACKS_SYS_TYPES_H
     #include <sys/types.h>  /* For size_t */
 #endif  /* LACKS_SYS_TYPES_H */
-
-#include <errno.h>
 
 /* The maximum possible size_t value has all bits set */
 #define MAX_SIZE_T           (~(size_t)0)
