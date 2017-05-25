@@ -2,11 +2,13 @@
 #pragma once
 
 #include <Classes.hpp>
-//#include <Buttons.hpp>
+#include <Common.h>
 #include <Interface.h>
+#include <MsgIDs.h>
+#if defined(WINSCP)
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
-#include <MsgIDs.h>
+#endif // WINSCP
 
 #ifdef LOCALINTERFACE
 #include <LocalInterface.h>
@@ -42,7 +44,6 @@ struct TMessageParams : public TObject
 {
 NB_DISABLE_COPY(TMessageParams)
 public:
-//  TMessageParams();
   explicit TMessageParams(uintptr_t AParams);
   void Assign(const TMessageParams * AParams);
 
@@ -124,6 +125,8 @@ uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
   intptr_t SessionReopenTimeout, const UnicodeString & MessageFormat = L"", uintptr_t Answers = qaOK,
   const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 
+#if defined(WINSCP)
+
 // forms\Custom.cpp
 TSessionData * DoSaveSession(TSessionData * SessionData,
   TSessionData * OriginalSession, bool ForceDialog,
@@ -137,14 +140,18 @@ class TShortCuts;
 bool DoShortCutDialog(TShortCut & ShortCut,
   const TShortCuts & ShortCuts, UnicodeString HelpKeyword);
 
+#endif // WINSCP
+
 // windows\UserInterface.cpp
 bool DoMasterPasswordDialog();
 bool DoChangeMasterPasswordDialog(UnicodeString & NewPassword);
 
 // windows\WinMain.cpp
 int Execute();
+#if defined(WINSCP)
 void GetLoginData(UnicodeString SessionName, TOptions * Options,
   TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession);
+#endif // WINSCP
 
 bool InputDialog(const UnicodeString & ACaption,
   const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword = HELP_NONE,
@@ -174,6 +181,8 @@ bool DoCleanupDialog(TStoredSessionList *SessionList,
 // forms\Console.cpp
 void DoConsoleDialog(TTerminal * Terminal,
     const UnicodeString & Command = L"", const TStrings * Log = nullptr);
+
+#if defined(WINSCP)
 
 // forms\Copy.cpp
 const int coTemp                = 0x001;
@@ -216,7 +225,12 @@ bool DoLoginDialog(TStoredSessionList * SessionList, TList * DataList);
 bool DoSiteAdvancedDialog(TSessionData * SessionData);
 
 // forms\OpenDirectory.cpp
-enum TOpenDirectoryMode { odBrowse, odAddBookmark };
+enum TOpenDirectoryMode
+{
+  odBrowse,
+  odAddBookmark
+};
+
 bool DoOpenDirectoryDialog(TOpenDirectoryMode Mode, TOperationSide Side,
   UnicodeString & Directory, TStrings * Directories, TTerminal * Terminal,
   bool AllowSwitch);
@@ -227,14 +241,21 @@ bool LocationProfilesDialog(TOpenDirectoryMode Mode,
   TStrings * LocalDirectories, TStrings * RemoteDirectories, TTerminal * Terminal);
 
 // forms\Preferences.cpp
-enum TPreferencesMode { pmDefault, pmEditor, pmCustomCommands,
+enum TPreferencesMode
+{
+  pmDefault,
+  pmEditor,
+  pmCustomCommands,
     pmQueue, pmLogging, pmUpdates, pmPresets, pmEditors, pmCommander,
-    pmEditorInternal };
+  pmEditorInternal
+};
+
 struct TCopyParamRuleData;
 struct TPreferencesDialogData
 {
   TCopyParamRuleData * CopyParamRuleData;
 };
+
 bool DoPreferencesDialog(TPreferencesMode APreferencesMode,
   TPreferencesDialogData * DialogData = nullptr);
 
@@ -242,7 +263,14 @@ bool DoPreferencesDialog(TPreferencesMode APreferencesMode,
 class TCustomCommandList;
 class TCustomCommandType;
 class TShortCuts;
-enum TCustomCommandsMode { ccmAdd, ccmEdit, ccmAdHoc };
+
+enum TCustomCommandsMode
+{
+  ccmAdd,
+  ccmEdit,
+  ccmAdHoc
+};
+
 const int ccoDisableRemote = 0x01;
 
 /*
@@ -389,6 +417,8 @@ bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
   const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
   TCustomCommandMenuEvent OnCustomCommandMenu);
 
+#endif // WINSCP
+
 // forms\Editor.cpp
 /*
 typedef void (__closure *TFileClosedEvent)
@@ -410,6 +440,8 @@ void EditorFormFileUploadComplete(TForm * Form);
 void EditorFormFileSave(TForm * Form);
 bool IsEditorFormModified(TForm * Form);
 #endif
+
+#if defined(WINSCP)
 
 bool DoSymlinkDialog(UnicodeString & FileName, UnicodeString & PointTo,
   TOperationSide Side, bool & SymbolicLink, bool Edit, bool AllowSymbolic);
@@ -581,3 +613,4 @@ private:
   UnicodeString FCustomCommandName;
 };
 
+#endif // WINSCP

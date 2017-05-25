@@ -12,11 +12,13 @@
 #include <rdestl/vector.h>
 #include <shlobj.h>
 #include <shlwapi.h>
+#if defined(HAVE_OPENSSL)
 #include <openssl/pkcs12.h>
 #include <openssl/pem.h>
 #include <openssl/err.h>
+#endif // HAVE_OPENSSL
 
-#include "TextsCore.h"
+#include <TextsCore.h>
 
 #pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
 
@@ -582,7 +584,7 @@ void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   {
     Cmd.Delete(1, 1);
     intptr_t P = Cmd.Pos(L'"');
-    if (P)
+    if (P > 0)
     {
       Program = Cmd.SubString(1, P - 1).Trim();
       Params = Cmd.SubString(P + 1, Cmd.Length() - P).Trim();
@@ -595,7 +597,7 @@ void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   else
   {
     intptr_t P = Cmd.Pos(L" ");
-    if (P)
+    if (P > 0)
     {
       Program = Cmd.SubString(1, P).Trim();
       Params = Cmd.SubString(P + 1, Cmd.Length() - P).Trim();
@@ -606,7 +608,7 @@ void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
     }
   }
   intptr_t B = Program.LastDelimiter(L"\\/");
-  if (B)
+  if (B > 0)
   {
     Dir = Program.SubString(1, B).Trim();
   }
@@ -2847,6 +2849,8 @@ UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents)
   return Ident;
 }
 
+#if defined(HAVE_OPENSSL)
+
 static UnicodeString GetTlsErrorStr(int Err)
 {
   char Buffer[512];
@@ -3107,6 +3111,7 @@ void CheckCertificate(const UnicodeString & Path)
   }
 }
 
+#endif // HAVE_OPENSSL
 
 const UnicodeString HttpProtocol(L"http");
 const UnicodeString HttpsProtocol(L"https");

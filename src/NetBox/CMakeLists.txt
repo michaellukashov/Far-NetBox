@@ -1195,8 +1195,8 @@ target_include_directories(zlib PRIVATE
 #dlmalloc
 
 add_library(dlmalloc STATIC
-  ../../libs/dlmalloc/malloc.c
-  ../../libs/dlmalloc/malloc-2.8.6.h
+  ../../libs/dlmalloc/dlmalloc.cc
+  ../../libs/dlmalloc/dlmalloc-2.8.6.h
 )
 
 target_compile_options(dlmalloc PRIVATE

@@ -99,7 +99,9 @@ NB_CORE_DLL(void) nbstr_unlock(CMStringData* pThis)
 // don't remove it
 // this code just instantiates templates for CMStringW[A/W]
 
+#if !defined(__MINGW32__)
 template CMStringW;
+#endif // defined(__MINGW32__)
 template NB_CORE_EXPORT CMStringW CALLBACK operator +(const CMStringW& str1, const CMStringW& str2);
 template NB_CORE_EXPORT CMStringW CALLBACK operator+(const CMStringW& str1, const wchar_t* psz2);
 template NB_CORE_EXPORT CMStringW CALLBACK operator+(const wchar_t* psz1, const CMStringW& str2);
@@ -108,7 +110,9 @@ template NB_CORE_EXPORT CMStringW CALLBACK operator+(const CMStringW& str1, char
 template NB_CORE_EXPORT CMStringW CALLBACK operator+(wchar_t ch1, const CMStringW& str2);
 template NB_CORE_EXPORT CMStringW CALLBACK operator+(char ch1, const CMStringW& str2);
 
+#if !defined(__MINGW32__)
 template CMStringA;
+#endif // defined(__MINGW32__)
 template NB_CORE_EXPORT CMStringA CALLBACK operator+(const CMStringA& str1, const CMStringA& str2);
 template NB_CORE_EXPORT CMStringA CALLBACK operator+(const CMStringA& str1, const char* psz2);
 template NB_CORE_EXPORT CMStringA CALLBACK operator+(const char* psz1, const CMStringA& str2);

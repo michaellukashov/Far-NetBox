@@ -1195,7 +1195,7 @@ double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen)
 
 int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
-  int64_t Result = floor(MilliSecondSpan(ANow, AThen));
+  double Result = floor(MilliSecondSpan(ANow, AThen));
   return static_cast<int64_t>(Result);
 }
 
