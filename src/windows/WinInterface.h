@@ -225,7 +225,12 @@ bool DoLoginDialog(TStoredSessionList * SessionList, TList * DataList);
 bool DoSiteAdvancedDialog(TSessionData * SessionData);
 
 // forms\OpenDirectory.cpp
-enum TOpenDirectoryMode { odBrowse, odAddBookmark };
+enum TOpenDirectoryMode
+{
+  odBrowse,
+  odAddBookmark
+};
+
 bool DoOpenDirectoryDialog(TOpenDirectoryMode Mode, TOperationSide Side,
   UnicodeString & Directory, TStrings * Directories, TTerminal * Terminal,
   bool AllowSwitch);
@@ -236,14 +241,21 @@ bool LocationProfilesDialog(TOpenDirectoryMode Mode,
   TStrings * LocalDirectories, TStrings * RemoteDirectories, TTerminal * Terminal);
 
 // forms\Preferences.cpp
-enum TPreferencesMode { pmDefault, pmEditor, pmCustomCommands,
+enum TPreferencesMode
+{
+  pmDefault,
+  pmEditor,
+  pmCustomCommands,
     pmQueue, pmLogging, pmUpdates, pmPresets, pmEditors, pmCommander,
-    pmEditorInternal };
+  pmEditorInternal
+};
+
 struct TCopyParamRuleData;
 struct TPreferencesDialogData
 {
   TCopyParamRuleData * CopyParamRuleData;
 };
+
 bool DoPreferencesDialog(TPreferencesMode APreferencesMode,
   TPreferencesDialogData * DialogData = nullptr);
 
@@ -251,7 +263,14 @@ bool DoPreferencesDialog(TPreferencesMode APreferencesMode,
 class TCustomCommandList;
 class TCustomCommandType;
 class TShortCuts;
-enum TCustomCommandsMode { ccmAdd, ccmEdit, ccmAdHoc };
+
+enum TCustomCommandsMode
+{
+  ccmAdd,
+  ccmEdit,
+  ccmAdHoc
+};
+
 const int ccoDisableRemote = 0x01;
 
 /*
