@@ -23,7 +23,9 @@ __inline size_t wcsnlen(const wchar_t *string, size_t maxlen)
 #define memcpy_s(dest,size,src,count) memcpy(dest,src,count)
 /* FIXME: This is quite silly implementation of _mbsstr */
 #define _mbsstr(str,search) strstr((const char *)str,(const char *)search)
+#ifndef __max
 #define __max(x,y) (((x)<(y))?(y):(x))
+#endif
 #endif /* __MINGW32__ */
 
 /* FIXME: This may be wrong assumption about Langpack_GetDefaultCodePage */
@@ -233,9 +235,9 @@ public:
   void   SetString(PCXSTR pszSrc, int nLength);
 
 public:
-  friend CMSimpleStringT operator+(const CMSimpleStringT& str1, const CMSimpleStringT& str2);
-  friend CMSimpleStringT operator+(const CMSimpleStringT& str1, PCXSTR psz2);
-  friend CMSimpleStringT operator+(PCXSTR psz1, const CMSimpleStringT& str2);
+  template<typename T> friend CMSimpleStringT<T> operator+(const CMSimpleStringT<T>& str1, const CMSimpleStringT<T>& str2);
+  template<typename T> friend CMSimpleStringT<T> operator+(const CMSimpleStringT<T>& str1, PCXSTR psz2);
+  template<typename T> friend CMSimpleStringT<T> operator+(PCXSTR psz1, const CMSimpleStringT<T>& str2);
 
   static void __stdcall CopyChars(XCHAR* pchDest, const XCHAR* pchSrc, int nChars);
   static void __stdcall CopyChars(XCHAR* pchDest, size_t nDestLen, const XCHAR* pchSrc, int nChars);
