@@ -584,7 +584,7 @@ void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   {
     Cmd.Delete(1, 1);
     intptr_t P = Cmd.Pos(L'"');
-    if (P)
+    if (P > 0)
     {
       Program = Cmd.SubString(1, P - 1).Trim();
       Params = Cmd.SubString(P + 1, Cmd.Length() - P).Trim();
@@ -597,7 +597,7 @@ void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
   else
   {
     intptr_t P = Cmd.Pos(L" ");
-    if (P)
+    if (P > 0)
     {
       Program = Cmd.SubString(1, P).Trim();
       Params = Cmd.SubString(P + 1, Cmd.Length() - P).Trim();
@@ -608,7 +608,7 @@ void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
     }
   }
   intptr_t B = Program.LastDelimiter(L"\\/");
-  if (B)
+  if (B > 0)
   {
     Dir = Program.SubString(1, B).Trim();
   }
