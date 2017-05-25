@@ -44,7 +44,6 @@ struct TMessageParams : public TObject
 {
 NB_DISABLE_COPY(TMessageParams)
 public:
-//  TMessageParams();
   explicit TMessageParams(uintptr_t AParams);
   void Assign(const TMessageParams * AParams);
 
