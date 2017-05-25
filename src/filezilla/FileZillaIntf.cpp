@@ -7,12 +7,6 @@
 #include "FileZillaApi.h"
 #include "structures.h"
 
-#ifndef _DEBUG
-#pragma comment(lib, "uafxcw.lib")
-#else
-#pragma comment(lib, "uafxcwd.lib")
-#endif
-
 static HMODULE winsock_module = NULL;
 #ifndef NO_IPV6
 static HMODULE winsock2_module = NULL;
