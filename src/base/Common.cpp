@@ -16,7 +16,7 @@
 #include <openssl/pem.h>
 #include <openssl/err.h>
 
-#include "TextsCore.h"
+#include <TextsCore.h>
 
 #pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
 

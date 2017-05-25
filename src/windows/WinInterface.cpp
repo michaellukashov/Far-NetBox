@@ -1,5 +1,5 @@
 #include <Interface.h>
-#include <WinInterface.h>
+#include "WinInterface.h"
 
 static bool IsPositiveAnswer(uintptr_t Answer)
 {

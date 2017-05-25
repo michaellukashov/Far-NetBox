@@ -2,11 +2,13 @@
 #pragma once
 
 #include <Classes.hpp>
-//#include <Buttons.hpp>
+#include <Common.h>
 #include <Interface.h>
+#include <MsgIDs.h>
+#if defined(WINSCP)
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
-#include <MsgIDs.h>
+#endif // WINSCP
 
 #ifdef LOCALINTERFACE
 #include <LocalInterface.h>
