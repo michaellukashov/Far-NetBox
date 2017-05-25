@@ -12,9 +12,11 @@
 #include <rdestl/vector.h>
 #include <shlobj.h>
 #include <shlwapi.h>
+#if defined(HAVE_OPENSSL)
 #include <openssl/pkcs12.h>
 #include <openssl/pem.h>
 #include <openssl/err.h>
+#endif // HAVE_OPENSSL
 
 #include <TextsCore.h>
 
@@ -2847,6 +2849,8 @@ UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents)
   return Ident;
 }
 
+#if defined(HAVE_OPENSSL)
+
 static UnicodeString GetTlsErrorStr(int Err)
 {
   char Buffer[512];
@@ -3107,6 +3111,7 @@ void CheckCertificate(const UnicodeString & Path)
   }
 }
 
+#endif // HAVE_OPENSSL
 
 const UnicodeString HttpProtocol(L"http");
 const UnicodeString HttpsProtocol(L"https");
