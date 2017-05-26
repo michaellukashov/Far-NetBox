@@ -7,6 +7,7 @@
 #define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
+#define SAFE_CLOSE_HANDLE(H) { if ((H) && (H) != INVALID_HANDLE_VALUE) { HANDLE HH = (H); (H) = nullptr; if (HH != INVALID_HANDLE_VALUE) { ::CloseHandle(HH); } } }
 #define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
 
 #define SWAP(TYPE, FIRST, SECOND) \
@@ -116,13 +117,12 @@ public:
   explicit Exception(TObjectClassId Kind, intptr_t Ident);
   ~Exception() {}
 
-public:
-  UnicodeString Message;
-
 protected:
   // UnicodeString FHelpKeyword;
 private:
   TObjectClassId FKind;
+public:
+  UnicodeString Message;
 };
 
 class EAbort : public Exception
@@ -136,9 +136,11 @@ public:
   }
 public:
   explicit EAbort(const UnicodeString & what) : Exception(OBJECT_CLASS_EAbort, what)
-  {}
+  {
+  }
   explicit EAbort(TObjectClassId Kind, const UnicodeString & what) : Exception(Kind, what)
-  {}
+  {
+  }
 };
 
 class EAccessViolation : public Exception
@@ -151,7 +153,8 @@ public:
   }
 public:
   explicit EAccessViolation(const UnicodeString & what) : Exception(OBJECT_CLASS_EAccessViolation, what)
-  {}
+  {
+  }
 };
 
 class EFileNotFoundError : public Exception
@@ -164,7 +167,8 @@ public:
   }
 public:
   EFileNotFoundError() : Exception(OBJECT_CLASS_EFileNotFoundError, L"")
-  {}
+  {
+  }
 };
 
 class EOSError : public Exception
@@ -184,7 +188,7 @@ public:
   DWORD ErrorCode;
 };
 
-void RaiseLastOSError(DWORD Result = 0);
+void RaiseLastOSError(DWORD LastError = 0);
 
 struct TFormatSettings : public TObject
 {
@@ -232,7 +236,7 @@ UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
 char HexToChar(const UnicodeString & Hex, uintptr_t MinChars = 0);
 
 UnicodeString ReplaceStrAll(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);
-UnicodeString SysErrorMessage(intptr_t Code);
+UnicodeString SysErrorMessage(intptr_t ErrorCode);
 
 bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
 UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
@@ -241,10 +245,10 @@ UnicodeString DateTimeToString(const TDateTime & DateTime);
 uint32_t DayOfWeek(const TDateTime & DateTime);
 
 TDateTime Date();
-void DecodeDate(const TDateTime & DateTime, uint16_t & Y,
-  uint16_t & M, uint16_t & D);
-void DecodeTime(const TDateTime & DateTime, uint16_t & H,
-  uint16_t & N, uint16_t & S, uint16_t & MS);
+void DecodeDate(const TDateTime & DateTime, uint16_t & Year,
+  uint16_t & Month, uint16_t & Day);
+void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
+  uint16_t & Min, uint16_t & Sec, uint16_t & MSec);
 
 UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime);
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
@@ -260,8 +264,8 @@ UnicodeString LowerCase(const UnicodeString & Str);
 wchar_t UpCase(const wchar_t Ch);
 wchar_t LowCase(const wchar_t Ch);
 UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To);
-intptr_t AnsiPos(const UnicodeString & Str2, wchar_t Ch);
-intptr_t Pos(const UnicodeString & Str2, const UnicodeString & Substr);
+intptr_t AnsiPos(const UnicodeString & Str, wchar_t Ch);
+intptr_t Pos(const UnicodeString & Str, const UnicodeString & Substr);
 UnicodeString StringReplaceAll(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To);
 bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t AIndex);
 intptr_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
@@ -331,8 +335,8 @@ UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth = 40);
 
 UnicodeString TranslateExceptionMessage(Exception * E);
 
-void AppendWChar(UnicodeString & Str2, const wchar_t Ch);
-void AppendChar(std::string & Str2, const char Ch);
+void AppendWChar(UnicodeString & Str, const wchar_t Ch);
+void AppendChar(std::string & Str, const char Ch);
 
 void AppendPathDelimiterW(UnicodeString & Str);
 
@@ -388,9 +392,13 @@ public:
   TWin32FindData FindData;
 };
 
+namespace base {
+
 DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec);
 DWORD FindNext(TSearchRec & Rec);
 DWORD FindClose(TSearchRec & Rec);
+
+} // namespace base
 
 void InitPlatformId();
 bool Win32Check(bool RetVal);
@@ -400,7 +408,8 @@ class EConvertError : public Exception
 public:
   explicit EConvertError(const UnicodeString & Msg) :
     Exception(OBJECT_CLASS_EConvertError, Msg)
-  {}
+  {
+  }
 };
 
 UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath);
@@ -436,7 +445,7 @@ UnicodeString VersionNumberToStr(uintptr_t VersionNumber);
 uintptr_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
 uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
 uintptr_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2,1,21); }
-uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobalFunctions()->GetStrVersionNumber()); }
+uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobals()->GetStrVersionNumber()); }
 
 #if defined(__MINGW32__) && (__MINGW_GCC_VERSION < 50100)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION

@@ -11,11 +11,11 @@
 
 #include <wincrypt.h>
 
-DECL_WINDOWS_FUNCTION(static, BOOL, CryptAcquireContextA,
+PUTTY_DECL_WINDOWS_FUNCTION(static, BOOL, CryptAcquireContextA,
                       (HCRYPTPROV *, LPCTSTR, LPCTSTR, DWORD, DWORD));
-DECL_WINDOWS_FUNCTION(static, BOOL, CryptGenRandom,
+PUTTY_DECL_WINDOWS_FUNCTION(static, BOOL, CryptGenRandom,
                       (HCRYPTPROV, DWORD, BYTE *));
-DECL_WINDOWS_FUNCTION(static, BOOL, CryptReleaseContext,
+PUTTY_DECL_WINDOWS_FUNCTION(static, BOOL, CryptReleaseContext,
                       (HCRYPTPROV, DWORD));
 static HMODULE wincrypt_module = NULL;
 
@@ -46,9 +46,9 @@ void noise_get_heavy(void (*func) (void *, int))
 
     if (!wincrypt_module) {
         wincrypt_module = load_system32_dll("advapi32.dll");
-        GET_WINDOWS_FUNCTION(wincrypt_module, CryptAcquireContextA);
-        GET_WINDOWS_FUNCTION(wincrypt_module, CryptGenRandom);
-        GET_WINDOWS_FUNCTION(wincrypt_module, CryptReleaseContext);
+        PUTTY_GET_WINDOWS_FUNCTION(wincrypt_module, CryptAcquireContextA);
+        PUTTY_GET_WINDOWS_FUNCTION(wincrypt_module, CryptGenRandom);
+        PUTTY_GET_WINDOWS_FUNCTION(wincrypt_module, CryptReleaseContext);
     }
 
     if (wincrypt_module && p_CryptAcquireContextA &&

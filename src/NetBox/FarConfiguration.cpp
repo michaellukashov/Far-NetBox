@@ -104,16 +104,16 @@ void TFarConfiguration::Saved()
     KEY(String,   ApplyCommandCommand); \
     KEY(Integer,  ApplyCommandParams); \
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
-  );
+  )
 
 void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
   TGUIConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR())
+#define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR())
   REGCONFIG(true);
-  #undef KEY
+#undef KEY
 
   if (Storage->OpenSubKey(L"Bookmarks", /*CanCreate=*/true))
   {
@@ -128,9 +128,9 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
   TGUIConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR()))
+#define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR()))
   REGCONFIG(false);
-  #undef KEY
+#undef KEY
 
   if (Storage->OpenSubKey(L"Bookmarks", false))
   {

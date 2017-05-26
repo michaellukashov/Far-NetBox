@@ -98,7 +98,15 @@ static int handle_stderr(struct handle *h, void *data, int len)
 static void handle_sentdata(struct handle *h, int new_backlog)
 {
     Handle_Socket ps = (Handle_Socket) handle_get_privdata(h);
-    
+
+    if (new_backlog < 0) {
+        /* Special case: this is actually reporting an error writing
+         * to the underlying handle, and our input value is the error
+         * code itself, negated. */
+        plug_closing(ps->plug, win_strerror(-new_backlog), -new_backlog, 0);
+        return;
+    }
+
     plug_sent(ps->plug, new_backlog);
 }
 
@@ -278,12 +286,13 @@ static char *sk_handle_peer_info(Socket s)
     Handle_Socket ps = (Handle_Socket) s;
     ULONG pid;
     static HMODULE kernel32_module;
-    DECL_WINDOWS_FUNCTION(static, BOOL, GetNamedPipeClientProcessId,
+    PUTTY_DECL_WINDOWS_FUNCTION(static, BOOL, GetNamedPipeClientProcessId,
                           (HANDLE, PULONG));
 
     if (!kernel32_module) {
         kernel32_module = load_system32_dll("kernel32.dll");
-        GET_WINDOWS_FUNCTION(kernel32_module, GetNamedPipeClientProcessId);
+        PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(
+            kernel32_module, GetNamedPipeClientProcessId);
     }
 
     /*

@@ -61,8 +61,9 @@ message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 set(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB") #" -DUSE_GETADDRINFO")
 set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
 set(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
-set(APR_DEFS "-DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES")
-set(NETBOX_DEFS "-DMPEXT -DWINSCP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
+set(APR_DEFS "-DAPR_DECLARE_STATIC")
+set(APR_DEFS "${APR_DEFS} -DAPR_HAS_LARGE_FILES")
+set(NETBOX_DEFS "-DNO_GZIP -DMPEXT -DWINSCP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS")
 set(NETBOX_DEFS "${NETBOX_DEFS} ${APR_DEFS}")
@@ -165,8 +166,6 @@ set(NETBOX_DLL_LINK_FLAGS
   /NODEFAULTLIB:MSVCRTD.LIB
   /NODEFAULTLIB:MFCS100U.LIB
   /NODEFAULTLIB:MFCS100UD.LIB
-  /NODEFAULTLIB:UAFXCW.LIB
-  /NODEFAULTLIB:UAFXCWD.LIB
   /NODEFAULTLIB:LIBCPMT.LIB
   /NODEFAULTLIB:LIBCPMTD.LIB
   /NODEFAULTLIB:LIBCRYPTO.LIB
@@ -178,7 +177,6 @@ set(NETBOX_DLL_LINK_FLAGS
   /DELAYLOAD:version.dll
   /DELAYLOAD:ws2_32.dll
   /DELAYLOAD:oleaut32.dll
-  /DELAYLOAD:winhttp.dll
   /DELAYLOAD:shell32.dll
   /DELAYLOAD:shlwapi.dll
   /DELAYLOAD:crypt32.dll
@@ -818,7 +816,6 @@ target_include_directories(libcrypto SYSTEM BEFORE PRIVATE
   ../../libs/openssl/crypto
   ../../libs/openssl/crypto/include
   ../../libs/openssl/crypto/modes
-  ../../libs/openssl/include
 )
 
 add_library(libssl STATIC
@@ -869,7 +866,6 @@ target_compile_options(libssl
 
 target_include_directories(libssl SYSTEM BEFORE PRIVATE
   ../../libs/openssl
-  ../../libs/openssl/include
   ../../libs/openssl/include
 )
 
@@ -953,6 +949,7 @@ add_library(putty STATIC
   ../../libs/putty/sshzlib.c
   ../../libs/putty/tree234.c
   ../../libs/putty/wildcard.c
+  ../../libs/putty/miscucs.c
   ../../libs/putty/windows/wingss.c
   ../../libs/putty/windows/winhandl.c
   ../../libs/putty/windows/winmisc.c
@@ -965,6 +962,7 @@ add_library(putty STATIC
   ../../libs/putty/windows/winstore.c
   ../../libs/putty/windows/wintime.c
   ../../libs/putty/windows/winhsock.c
+  ../../libs/putty/windows/winucs.c
   ../../libs/putty/x11fwd.c
   ../../libs/putty/conf.c
   ../../libs/putty/callback.c
@@ -1193,8 +1191,8 @@ target_include_directories(zlib PRIVATE
 #dlmalloc
 
 add_library(dlmalloc STATIC
-  ../../libs/dlmalloc/malloc.c
-  ../../libs/dlmalloc/malloc-2.8.6.h
+  ../../libs/dlmalloc/dlmalloc.cc
+  ../../libs/dlmalloc/dlmalloc-2.8.6.h
 )
 
 target_compile_options(dlmalloc PRIVATE
@@ -1345,7 +1343,7 @@ set(NETBOX_SOURCES
   NetBox.cpp
   FarDialog.cpp
   FarPlugin.cpp
-  FarUtil.cpp
+  FarUtils.cpp
   WinSCPFileSystem.cpp
   WinSCPDialogs.cpp
   WinSCPPlugin.cpp
@@ -1369,7 +1367,7 @@ set(NETBOX_SOURCES
   FarInterface.h
   FarConfiguration.h
   XmlStorage.h
-  FarUtil.h
+  FarUtils.h
   FarPluginStrings.h
 
   ../include/FastDelegateBind.h
@@ -1527,11 +1525,12 @@ target_include_directories(NetBox PRIVATE
   ../../libs/putty
   ../../libs/putty/windows
   ../../libs/apr/include
+  ../../libs/neon/src
   ../../libs/tinyxml2
   ../../libs/rdestl
+  ../../libs/expat/lib
   ../../libs/atlmfc/include
   ../filezilla
-  ../filezilla/misc
   ../base
   ../core
   ../windows
@@ -1570,7 +1569,7 @@ add_custom_command(TARGET create_plugin_dir POST_BUILD
 )
 
 file(GLOB DIST_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/*.lng
+  ${CMAKE_CURRENT_SOURCE_DIR}/*.lng
 #  ${BUILD_DIR}/*.dll
 #  ${BUILD_DIR}/*.pdb
 #  ${BUILD_DIR}/*.map
@@ -1590,5 +1589,6 @@ add_custom_command(TARGET NetBox POST_BUILD
   COMMAND if exist ${BUILD_DIR}/NetBox.map ( ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.map ${NETBOX_PLUGIN_DIR} )
 )
 
-add_dependencies(NetBox create_plugin_dir copy_to_plugin_dir)
+add_dependencies(copy_to_plugin_dir create_plugin_dir )
+add_dependencies(NetBox copy_to_plugin_dir)
 

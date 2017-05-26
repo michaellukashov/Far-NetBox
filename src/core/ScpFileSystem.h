@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <FileSystems.h>
@@ -19,7 +20,7 @@ public:
   explicit TSCPFileSystem(TTerminal * ATerminal);
   virtual ~TSCPFileSystem();
 
-  virtual void Init(void *); // TSecureShell *
+  virtual void Init(void * /*TSecureShell * */);
   virtual void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) {}
 
   virtual void Open();
@@ -83,6 +84,10 @@ public:
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem);
 
 protected:
+/*
+  __property TStrings * Output = { read = FOutput };
+  __property int ReturnCode = { read = FReturnCode };
+*/
   TStrings * GetOutput() const { return FOutput; }
   intptr_t GetReturnCode() const { return FReturnCode; }
 

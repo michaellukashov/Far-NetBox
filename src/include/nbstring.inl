@@ -4,7 +4,7 @@
 
 template<typename BaseType>
 CMSimpleStringT<BaseType>::CMSimpleStringT() :
-  m_pszData(NULL)
+  m_pszData(nullptr)
 {
   CMStringData* pData = nbstr_getNil();
   Attach(pData);
@@ -12,7 +12,7 @@ CMSimpleStringT<BaseType>::CMSimpleStringT() :
 
 template<typename BaseType>
 CMSimpleStringT<BaseType>::CMSimpleStringT(const CMSimpleStringT& strSrc) :
-  m_pszData(NULL)
+  m_pszData(nullptr)
 {
   CMStringData* pSrcData = strSrc.GetData();
   CMStringData* pNewData = CloneData(pSrcData);
@@ -21,11 +21,12 @@ CMSimpleStringT<BaseType>::CMSimpleStringT(const CMSimpleStringT& strSrc) :
 
 template<typename BaseType>
 CMSimpleStringT<BaseType>::CMSimpleStringT(PCXSTR pszSrc) :
-  m_pszData(NULL)
+  m_pszData(nullptr)
 {
   int nLength = StringLength(pszSrc);
   CMStringData* pData = nbstr_allocate(nLength, sizeof(XCHAR));
-  if (pData != NULL) {
+  if (pData != nullptr)
+  {
     Attach(pData);
     SetLength(nLength);
     CopyChars(m_pszData, nLength, pszSrc, nLength);
@@ -34,10 +35,11 @@ CMSimpleStringT<BaseType>::CMSimpleStringT(PCXSTR pszSrc) :
 
 template<typename BaseType>
 CMSimpleStringT<BaseType>::CMSimpleStringT(const XCHAR* pchSrc, int nLength) :
-  m_pszData(NULL)
+  m_pszData(nullptr)
 {
   CMStringData* pData = nbstr_allocate(nLength, sizeof(XCHAR));
-  if (pData != NULL) {
+  if (pData != nullptr)
+  {
     Attach(pData);
     SetLength(nLength);
     CopyChars(m_pszData, nLength, pchSrc, nLength);
@@ -56,10 +58,14 @@ CMSimpleStringT<BaseType>& CMSimpleStringT<BaseType>::operator=(const CMSimpleSt
 {
   CMStringData* pSrcData = strSrc.GetData();
   CMStringData* pOldData = GetData();
-  if (pSrcData != pOldData) {
+  if (pSrcData != pOldData)
+  {
     if (pOldData->IsLocked())
+    {
       SetString(strSrc.GetString(), strSrc.GetLength());
-    else {
+    }
+    else
+    {
       CMStringData* pNewData = CloneData(pSrcData);
       pOldData->Release();
       Attach(pNewData);
@@ -82,7 +88,8 @@ void CMSimpleStringT<BaseType>::Append(PCXSTR pszSrc, int nLength)
   UINT_PTR nOffset = UINT_PTR(pszSrc - GetString());
 
   int nOldLength = GetLength();
-  if (nOldLength < 0) {
+  if (nOldLength < 0)
+  {
     // protects from underflow
     nOldLength = 0;
   }
@@ -93,7 +100,8 @@ void CMSimpleStringT<BaseType>::Append(PCXSTR pszSrc, int nLength)
 
   int nNewLength = nOldLength + nLength;
   PXSTR pszBuffer = GetBuffer(nNewLength);
-  if (nOffset <= UINT_PTR(nOldLength)) {
+  if (nOffset <= UINT_PTR(nOldLength))
+  {
     pszSrc = pszBuffer + nOffset;
     // No need to call CopyCharsOverlapped, since the destination is
     // beyond the end of the original buffer
@@ -105,7 +113,7 @@ void CMSimpleStringT<BaseType>::Append(PCXSTR pszSrc, int nLength)
 template<typename BaseType>
 void CMSimpleStringT<BaseType>::AppendChar(XCHAR ch)
 {
-  UINT nOldLength = GetLength();
+  int nOldLength = GetLength();
   int nNewLength = nOldLength + 1;
   PXSTR pszBuffer = GetBuffer(nNewLength);
   pszBuffer[nOldLength] = ch;
@@ -125,11 +133,13 @@ void CMSimpleStringT<BaseType>::Empty()
   if (pOldData->nDataLength == 0)
     return;
 
-  if (pOldData->IsLocked()) {
+  if (pOldData->IsLocked())
+  {
     // Don't reallocate a locked buffer that's shrinking
     SetLength(0);
   }
-  else {
+  else
+  {
     pOldData->Release();
     CMStringData* pNewData = nbstr_getNil();
     Attach(pNewData);
@@ -144,9 +154,12 @@ void CMSimpleStringT<BaseType>::FreeExtra()
   if (pOldData->nAllocLength == nLength)
     return;
 
-  if (!pOldData->IsLocked()) { // Don't reallocate a locked buffer that's shrinking
+  if (!pOldData->IsLocked())
+  {
+    // Don't reallocate a locked buffer that's shrinking
     CMStringData* pNewData = nbstr_allocate(nLength, sizeof(XCHAR));
-    if (pNewData == NULL) {
+    if (pNewData == nullptr)
+    {
       SetLength(nLength);
       return;
     }
@@ -182,7 +195,8 @@ template<typename BaseType>
 typename CMSimpleStringT<BaseType>::PXSTR CMSimpleStringT<BaseType>::LockBuffer()
 {
   CMStringData* pData = GetData();
-  if (pData->IsShared()) {
+  if (pData->IsShared())
+  {
     Fork(pData->nDataLength);
     pData = GetData();  // Do it again, because the fork might have changed it
   }
@@ -199,9 +213,10 @@ void CMSimpleStringT<BaseType>::UnlockBuffer()
 }
 
 template<typename BaseType>
-void CMSimpleStringT<BaseType>::ReleaseBuffer(int nNewLength = -1)
+void CMSimpleStringT<BaseType>::ReleaseBuffer(int nNewLength)
 {
-  if (nNewLength == -1) {
+  if (nNewLength == -1)
+  {
     int nAlloc = GetData()->nAllocLength;
     nNewLength = StringLengthN(m_pszData, nAlloc);
   }
@@ -235,8 +250,11 @@ template<typename BaseType>
 void CMSimpleStringT<BaseType>::SetString(PCXSTR pszSrc, int nLength)
 {
   if (nLength == 0)
+  {
     Empty();
-  else {
+  }
+  else
+  {
     UINT nOldLength = GetLength();
     UINT_PTR nOffset = pszSrc - GetString();
 
@@ -251,17 +269,17 @@ void CMSimpleStringT<BaseType>::SetString(PCXSTR pszSrc, int nLength)
 }
 
 template<typename BaseType>
-typename CMSimpleStringT<BaseType> operator+(const CMSimpleStringT<BaseType>& str1, const CMSimpleStringT<BaseType>& str2)
+CMSimpleStringT<BaseType> operator+(const CMSimpleStringT<BaseType>& str1, const CMSimpleStringT<BaseType>& str2)
 {
-  CMSimpleStringT s;
+  CMSimpleStringT<BaseType> s;
   Concatenate(s, str1, str1.GetLength(), str2, str2.GetLength());
   return s;
 }
 
 template<typename BaseType>
-typename CMSimpleStringT<BaseType> operator+(const CMSimpleStringT<BaseType>& str1, typename CMSimpleStringT<BaseType>::PCXSTR psz2)
+CMSimpleStringT<BaseType> operator+(const CMSimpleStringT<BaseType>& str1, typename CMSimpleStringT<BaseType>::PCXSTR psz2)
 {
-  CMSimpleStringT s;
+  CMSimpleStringT<BaseType> s;
   Concatenate(s, str1, str1.GetLength(), psz2, StringLength(psz2));
   return s;
 }
@@ -269,7 +287,7 @@ typename CMSimpleStringT<BaseType> operator+(const CMSimpleStringT<BaseType>& st
 template<typename BaseType>
 CMSimpleStringT<BaseType> operator+(typename CMSimpleStringT<BaseType>::PCXSTR psz1, const CMSimpleStringT<BaseType>& str2)
 {
-  CMSimpleStringT s;
+  CMSimpleStringT<BaseType> s;
   Concatenate(s, psz1, StringLength(psz1), str2, str2.GetLength());
   return s;
 }
@@ -307,7 +325,7 @@ void __stdcall CMSimpleStringT<BaseType>::CopyCharsOverlapped(XCHAR* pchDest, si
 template<typename BaseType>
 int __stdcall CMSimpleStringT<BaseType>::StringLength(const char* psz)
 {
-  if (psz == NULL)
+  if (psz == nullptr)
     return(0);
 
   return (int(strlen(psz)));
@@ -316,7 +334,7 @@ int __stdcall CMSimpleStringT<BaseType>::StringLength(const char* psz)
 template<typename BaseType>
 int __stdcall CMSimpleStringT<BaseType>::StringLength(const wchar_t* psz)
 {
-  if (psz == NULL)
+  if (psz == nullptr)
     return 0;
 
   return int(wcslen(psz));
@@ -325,7 +343,7 @@ int __stdcall CMSimpleStringT<BaseType>::StringLength(const wchar_t* psz)
 template<typename BaseType>
 int __stdcall CMSimpleStringT<BaseType>::StringLengthN(const char* psz, size_t sizeInXChar)
 {
-  if (psz == NULL)
+  if (psz == nullptr)
     return 0;
 
   return int(strnlen(psz, sizeInXChar));
@@ -334,7 +352,7 @@ int __stdcall CMSimpleStringT<BaseType>::StringLengthN(const char* psz, size_t s
 template<typename BaseType>
 int __stdcall CMSimpleStringT<BaseType>::StringLengthN(const wchar_t* psz, size_t sizeInXChar)
 {
-  if (psz == NULL)
+  if (psz == nullptr)
     return 0;
 
   return int(wcsnlen(psz, sizeInXChar));
@@ -362,7 +380,8 @@ void CMSimpleStringT<BaseType>::Fork(int nLength)
   CMStringData* pOldData = GetData();
   int nOldLength = pOldData->nDataLength;
   CMStringData* pNewData = nbstr_allocate(nLength, sizeof(XCHAR));
-  if (pNewData != NULL) {
+  if (pNewData != nullptr)
+  {
     int nCharsToCopy = ((nOldLength < nLength) ? nOldLength : nLength) + 1;  // Copy '\0'
     CopyChars(PXSTR(pNewData->data()), nCharsToCopy, PCXSTR(pOldData->data()), nCharsToCopy);
     pNewData->nDataLength = nOldLength;
@@ -390,10 +409,12 @@ void CMSimpleStringT<BaseType>::PrepareWrite2(int nLength)
   if (pOldData->nDataLength > nLength)
     nLength = pOldData->nDataLength;
 
-  if (pOldData->IsShared()) {
+  if (pOldData->IsShared())
+  {
     Fork(nLength);
   }
-  else if (pOldData->nAllocLength < nLength) {
+  else if (pOldData->nAllocLength < nLength)
+  {
     // Grow exponentially, until we hit 1K.
     int nNewLength = pOldData->nAllocLength;
     if (nNewLength > 1024)
@@ -416,7 +437,7 @@ void CMSimpleStringT<BaseType>::Reallocate(int nLength)
     return;
 
   CMStringData* pNewData = nbstr_realloc(pOldData, nLength, sizeof(XCHAR));
-  if (pNewData != NULL)
+  if (pNewData != nullptr)
     Attach(pNewData);
 }
 
@@ -430,9 +451,10 @@ void CMSimpleStringT<BaseType>::SetLength(int nLength)
 template<typename BaseType>
 CMStringData* __stdcall CMSimpleStringT<BaseType>::CloneData(CMStringData* pData)
 {
-  CMStringData* pNewData = NULL;
+  CMStringData* pNewData = nullptr;
 
-  if (!pData->IsLocked()) {
+  if (!pData->IsLocked())
+  {
     pNewData = pData;
     pNewData->AddRef();
   }
@@ -484,10 +506,11 @@ CMStringT<BaseType, StringTraits>::CMStringT(const unsigned char* pszSrc) :
 }
 
 template< typename BaseType, class StringTraits >
-CMStringT<BaseType, StringTraits>::CMStringT(char ch, int nLength = 1) :
+CMStringT<BaseType, StringTraits>::CMStringT(char ch, int nLength) :
   CThisSimpleString()
 {
-  if (nLength > 0) {
+  if (nLength > 0)
+  {
     PXSTR pszBuffer = this->GetBuffer(nLength);
     StringTraits::FloodCharacters(XCHAR(ch), nLength, pszBuffer);
     this->ReleaseBufferSetLength(nLength);
@@ -495,10 +518,11 @@ CMStringT<BaseType, StringTraits>::CMStringT(char ch, int nLength = 1) :
 }
 
 template< typename BaseType, class StringTraits >
-CMStringT<BaseType, StringTraits>::CMStringT(wchar_t ch, int nLength = 1) :
+CMStringT<BaseType, StringTraits>::CMStringT(wchar_t ch, int nLength) :
   CThisSimpleString()
 {
-  if (nLength > 0) {
+  if (nLength > 0)
+  {
     //Convert ch to the BaseType
     wchar_t pszCh[2] = { ch, 0 };
     int nBaseTypeCharLen = 1;
@@ -511,11 +535,16 @@ CMStringT<BaseType, StringTraits>::CMStringT(wchar_t ch, int nLength = 1) :
     //allocate enough characters in String and flood (replicate) with the (converted character)*nLength
     PXSTR pszBuffer = this->GetBuffer(nLength*nBaseTypeCharLen);
     if (nBaseTypeCharLen == 1)  //Optimization for a common case - wide char translates to 1 ansi/wide char.
+    {
       StringTraits::FloodCharacters(buffBaseTypeChar[0], nLength, pszBuffer);
-    else {
+    }
+    else
+    {
       XCHAR* p = pszBuffer;
-      for (int i = 0; i < nLength; i++) {
-        for (int j = 0; j < nBaseTypeCharLen; ++j) {
+      for (int i = 0; i < nLength; i++)
+      {
+        for (int j = 0; j < nBaseTypeCharLen; ++j)
+        {
           *p = buffBaseTypeChar[j];
           ++p;
         }
@@ -536,7 +565,8 @@ template< typename BaseType, class StringTraits >
 CMStringT<BaseType, StringTraits>::CMStringT(const YCHAR* pch, int nLength) :
   CThisSimpleString()
 {
-  if (nLength > 0) {
+  if (nLength > 0)
+  {
     int nDestLength = StringTraits::GetBaseTypeLength(pch, nLength);
     PXSTR pszBuffer = this->GetBuffer(nDestLength);
     StringTraits::ConvertToBaseType(pszBuffer, nDestLength, pch, nLength);
@@ -548,7 +578,8 @@ template< typename BaseType, class StringTraits >
 CMStringT<BaseType, StringTraits>::CMStringT(const YCHAR* pch, int nLength, int CodePage) :
   CThisSimpleString()
 {
-  if (nLength > 0) {
+  if (nLength > 0)
+  {
     int nDestLength = StringTraits::GetBaseTypeLength(pch, nLength, CodePage);
     PXSTR pszBuffer = this->GetBuffer(nDestLength);
     StringTraits::ConvertToBaseType(pszBuffer, nDestLength, pch, nLength, CodePage);
@@ -581,13 +612,17 @@ template< typename BaseType, class StringTraits >
 CMStringT<BaseType, StringTraits>& CMStringT<BaseType, StringTraits>::operator=(PCYSTR pszSrc)
 {
   // nDestLength is in XCHARs
-  int nDestLength = (pszSrc != NULL) ? StringTraits::GetBaseTypeLength(pszSrc) : 0;
-  if (nDestLength > 0) {
+  int nDestLength = (pszSrc != nullptr) ? StringTraits::GetBaseTypeLength(pszSrc) : 0;
+  if (nDestLength > 0)
+  {
     PXSTR pszBuffer = this->GetBuffer(nDestLength);
     StringTraits::ConvertToBaseType(pszBuffer, nDestLength, pszSrc);
     this->ReleaseBufferSetLength(nDestLength);
   }
-  else this->Empty();
+  else
+  {
+    this->Empty();
+  }
 
   return *this;
 }
@@ -691,7 +726,7 @@ int CMStringT<BaseType, StringTraits>::CollateNoCase(PCXSTR psz) const
 
 // Delete 'nCount' characters, starting at index 'iIndex'
 template< typename BaseType, class StringTraits >
-int CMStringT<BaseType, StringTraits>::Delete(int iIndex, int nCount = 1)
+int CMStringT<BaseType, StringTraits>::Delete(int iIndex, int nCount)
 {
   if (iIndex < 0)
     iIndex = 0;
@@ -703,7 +738,8 @@ int CMStringT<BaseType, StringTraits>::Delete(int iIndex, int nCount = 1)
   if (nCount + iIndex > nLength)
     nCount = nLength - iIndex;
 
-  if (nCount > 0) {
+  if (nCount > 0)
+  {
     int nNewLength = nLength - nCount;
     int nXCHARsToCopy = nLength - (iIndex + nCount) + 1;
     PXSTR pszBuffer = this->GetBuffer();
@@ -757,7 +793,8 @@ int CMStringT<BaseType, StringTraits>::Insert(int iIndex, PCXSTR psz)
   // nInsertLength and nNewLength are in XCHARs
   int nInsertLength = StringTraits::SafeStringLen(psz);
   int nNewLength = this->GetLength();
-  if (nInsertLength > 0) {
+  if (nInsertLength > 0)
+  {
     nNewLength += nInsertLength;
 
     PXSTR pszBuffer = this->GetBuffer(nNewLength);
@@ -782,17 +819,21 @@ int CMStringT<BaseType, StringTraits>::Replace(XCHAR chOld, XCHAR chNew)
   int nCount = 0;
 
   // short-circuit the nop case
-  if (chOld != chNew) {
+  if (chOld != chNew)
+  {
     // otherwise modify each character that matches in the string
     bool bCopied = false;
     PXSTR pszBuffer = const_cast<PXSTR>(this->GetString());  // We don't actually write to pszBuffer until we've called GetBuffer().
 
     int nLength = this->GetLength();
     int iChar = 0;
-    while (iChar < nLength) {
+    while (iChar < nLength)
+    {
       // replace instances of the specified character only
-      if (pszBuffer[iChar] == chOld) {
-        if (!bCopied) {
+      if (pszBuffer[iChar] == chOld)
+      {
+        if (!bCopied)
+        {
           bCopied = true;
           pszBuffer = this->GetBuffer(nLength);
         }
@@ -827,9 +868,11 @@ int CMStringT<BaseType, StringTraits>::Replace(PCXSTR pszOld, PCXSTR pszNew)
   {
     PCXSTR pszStart = this->GetString();
     PCXSTR pszEnd = pszStart + this->GetLength();
-    while (pszStart < pszEnd) {
+    while (pszStart < pszEnd)
+    {
       PCXSTR pszTarget;
-      while ((pszTarget = StringTraits::StringFindString(pszStart, pszOld)) != NULL) {
+      while ((pszTarget = StringTraits::StringFindString(pszStart, pszOld)) != nullptr)
+      {
         nCount++;
         pszStart = pszTarget + nSourceLen;
       }
@@ -838,7 +881,8 @@ int CMStringT<BaseType, StringTraits>::Replace(PCXSTR pszOld, PCXSTR pszNew)
   }
 
   // if any changes were made, make them
-  if (nCount > 0) {
+  if (nCount > 0)
+  {
     // if the buffer is too small, just
     // allocate a new buffer (slow but sure)
     int nOldLength = this->GetLength();
@@ -850,9 +894,11 @@ int CMStringT<BaseType, StringTraits>::Replace(PCXSTR pszOld, PCXSTR pszNew)
     PXSTR pszEnd = pszStart + nOldLength;
 
     // loop again to actually do the work
-    while (pszStart < pszEnd) {
+    while (pszStart < pszEnd)
+    {
       PXSTR pszTarget;
-      while ((pszTarget = StringTraits::StringFindString(pszStart, pszOld)) != NULL) {
+      while ((pszTarget = StringTraits::StringFindString(pszStart, pszOld)) != nullptr)
+      {
         int nBalance = nOldLength - int(pszTarget - pszBuffer + nSourceLen);
         memmove_s(pszTarget + nReplacementLen, nBalance*sizeof(XCHAR),
           pszTarget + nSourceLen, nBalance*sizeof(XCHAR));
@@ -881,14 +927,17 @@ int CMStringT<BaseType, StringTraits>::Remove(XCHAR chRemove)
   PXSTR pszDest = pszBuffer;
   PXSTR pszEnd = pszBuffer + nLength;
 
-  while (pszSource < pszEnd) {
+  while (pszSource < pszEnd)
+  {
     PXSTR pszNewSource = StringTraits::CharNext(pszSource);
-    if (*pszSource != chRemove) {
+    if (*pszSource != chRemove)
+    {
       // Copy the source to the destination.  Remember to copy all bytes of an MBCS character
       // Copy the source to the destination.  Remember to copy all bytes of an MBCS character
       size_t NewSourceGap = (pszNewSource - pszSource);
       PXSTR pszNewDest = pszDest + NewSourceGap;
-      for (size_t i = 0; pszDest != pszNewDest && i < NewSourceGap; i++) {
+      for (size_t i = 0; pszDest != pszNewDest && i < NewSourceGap; i++)
+      {
         *pszDest = *pszSource;
         pszSource++;
         pszDest++;
@@ -906,17 +955,21 @@ int CMStringT<BaseType, StringTraits>::Remove(XCHAR chRemove)
 template< typename BaseType, class StringTraits >
 CMStringT<BaseType, StringTraits> CMStringT<BaseType, StringTraits>::Tokenize(PCXSTR pszTokens, int& iStart) const
 {
-  if ((pszTokens == NULL) || (*pszTokens == (XCHAR)0)) {
+  if ((pszTokens == nullptr) || (*pszTokens == (XCHAR)0))
+  {
     if (iStart < this->GetLength())
       return CMStringT(this->GetString() + iStart);
   }
-  else {
+  else
+  {
     PCXSTR pszPlace = this->GetString() + iStart;
     PCXSTR pszEnd = this->GetString() + this->GetLength();
-    if (pszPlace < pszEnd) {
+    if (pszPlace < pszEnd)
+    {
       int nIncluding = StringTraits::StringSpanIncluding(pszPlace, pszTokens);
 
-      if ((pszPlace + nIncluding) < pszEnd) {
+      if ((pszPlace + nIncluding) < pszEnd)
+      {
         pszPlace += nIncluding;
         int nExcluding = StringTraits::StringSpanExcluding(pszPlace, pszTokens);
 
@@ -939,7 +992,7 @@ CMStringT<BaseType, StringTraits> CMStringT<BaseType, StringTraits>::Tokenize(PC
 
 // Find the first occurrence of character 'ch', starting at index 'iStart'
 template< typename BaseType, class StringTraits >
-int CMStringT<BaseType, StringTraits>::Find(XCHAR ch, int iStart = 0) const
+int CMStringT<BaseType, StringTraits>::Find(XCHAR ch, int iStart) const
 {
   // nLength is in XCHARs
   int nLength = this->GetLength();
@@ -950,17 +1003,17 @@ int CMStringT<BaseType, StringTraits>::Find(XCHAR ch, int iStart = 0) const
   PCXSTR psz = StringTraits::StringFindChar(this->GetString() + iStart, ch);
 
   // return -1 if not found and index otherwise
-  return (psz == NULL) ? -1 : int(psz - this->GetString());
+  return (psz == nullptr) ? -1 : int(psz - this->GetString());
 }
 
 // look for a specific sub-string
 
 // Find the first occurrence of string 'pszSub', starting at index 'iStart'
 template< typename BaseType, class StringTraits >
-int CMStringT<BaseType, StringTraits>::Find(PCXSTR pszSub, int iStart = 0) const
+int CMStringT<BaseType, StringTraits>::Find(PCXSTR pszSub, int iStart) const
 {
   // iStart is in XCHARs
-  if (pszSub == NULL)
+  if (pszSub == nullptr)
     return -1;
 
   // nLength is in XCHARs
@@ -972,7 +1025,7 @@ int CMStringT<BaseType, StringTraits>::Find(PCXSTR pszSub, int iStart = 0) const
   PCXSTR psz = StringTraits::StringFindString(this->GetString() + iStart, pszSub);
 
   // return -1 for not found, distance from beginning otherwise
-  return (psz == NULL) ? -1 : int(psz - this->GetString());
+  return (psz == nullptr) ? -1 : int(psz - this->GetString());
 }
 
 // Find the first occurrence of any of the characters in string 'pszCharSet'
@@ -980,7 +1033,7 @@ template< typename BaseType, class StringTraits >
 int CMStringT<BaseType, StringTraits>::FindOneOf(PCXSTR pszCharSet) const
 {
   PCXSTR psz = StringTraits::StringScanSet(this->GetString(), pszCharSet);
-  return (psz == NULL) ? -1 : int(psz - this->GetString());
+  return (psz == nullptr) ? -1 : int(psz - this->GetString());
 }
 
 // Find the last occurrence of character 'ch'
@@ -991,7 +1044,7 @@ int CMStringT<BaseType, StringTraits>::ReverseFind(XCHAR ch) const
   PCXSTR psz = StringTraits::StringFindCharRev(this->GetString(), ch);
 
   // return -1 if not found, distance from beginning otherwise
-  return (psz == NULL) ? -1 : int(psz - this->GetString());
+  return (psz == nullptr) ? -1 : int(psz - this->GetString());
 }
 
 // manipulation
@@ -1042,19 +1095,25 @@ CMStringT<BaseType, StringTraits>& CMStringT<BaseType, StringTraits>::TrimRight(
   // at beginning (DBCS aware)
 
   PCXSTR psz = this->GetString();
-  PCXSTR pszLast = NULL;
+  PCXSTR pszLast = nullptr;
 
-  while (*psz != 0) {
-    if (StringTraits::IsSpace(*psz)) {
-      if (pszLast == NULL)
+  while (*psz != 0)
+  {
+    if (StringTraits::IsSpace(*psz))
+    {
+      if (pszLast == nullptr)
         pszLast = psz;
     }
-    else pszLast = NULL;
+    else
+    {
+      pszLast = nullptr;
+    }
 
     psz = StringTraits::CharNext(psz);
   }
 
-  if (pszLast != NULL) {
+  if (pszLast != nullptr)
+  {
     // truncate at trailing space start
     int iLast = int(pszLast - this->GetString());
 
@@ -1074,7 +1133,8 @@ CMStringT<BaseType, StringTraits>& CMStringT<BaseType, StringTraits>::TrimLeft()
   while (StringTraits::IsSpace(*psz))
     psz = StringTraits::CharNext(psz);
 
-  if (psz != this->GetString()) {
+  if (psz != this->GetString())
+  {
     // fix up data and length
     int iFirst = int(psz - this->GetString());
     PXSTR pszBuffer = this->GetBuffer(this->GetLength());
@@ -1119,19 +1179,27 @@ CMStringT<BaseType, StringTraits>& CMStringT<BaseType, StringTraits>::TrimRight(
   // by starting at beginning (DBCS aware)
 
   PCXSTR psz = this->GetString();
-  PCXSTR pszLast = NULL;
+  PCXSTR pszLast = nullptr;
 
-  while (*psz != 0) {
-    if (*psz == chTarget) {
-      if (pszLast == NULL)
+  while (*psz != 0)
+  {
+    if (*psz == chTarget)
+    {
+      if (pszLast == nullptr)
+      {
         pszLast = psz;
+      }
     }
-    else pszLast = NULL;
+    else
+    {
+      pszLast = nullptr;
+    }
 
     psz = StringTraits::CharNext(psz);
   }
 
-  if (pszLast != NULL) {
+  if (pszLast != nullptr)
+  {
     // truncate at left-most matching character
     int iLast = int(pszLast - this->GetString());
     this->Truncate(iLast);
@@ -1145,7 +1213,8 @@ template< typename BaseType, class StringTraits >
 CMStringT<BaseType, StringTraits>& CMStringT<BaseType, StringTraits>::TrimRight(PCXSTR pszTargets)
 {
   // if we're not trimming anything, we're not doing any work
-  if ((pszTargets == NULL) || (*pszTargets == 0)) {
+  if ((pszTargets == nullptr) || (*pszTargets == 0))
+  {
     return *this;
   }
 
@@ -1153,21 +1222,26 @@ CMStringT<BaseType, StringTraits>& CMStringT<BaseType, StringTraits>::TrimRight(
   // by starting at beginning (DBCS aware)
 
   PCXSTR psz = this->GetString();
-  PCXSTR pszLast = NULL;
+  PCXSTR pszLast = nullptr;
 
-  while (*psz != 0) {
-    if (StringTraits::StringFindChar(pszTargets, *psz) != NULL) {
-      if (pszLast == NULL) {
+  while (*psz != 0)
+  {
+    if (StringTraits::StringFindChar(pszTargets, *psz) != nullptr)
+    {
+      if (pszLast == nullptr)
+      {
         pszLast = psz;
       }
     }
-    else {
-      pszLast = NULL;
+    else
+    {
+      pszLast = nullptr;
     }
     psz = StringTraits::CharNext(psz);
   }
 
-  if (pszLast != NULL) {
+  if (pszLast != nullptr)
+  {
     // truncate at left-most matching character
     int iLast = int(pszLast - this->GetString());
     this->Truncate(iLast);
@@ -1183,11 +1257,13 @@ CMStringT<BaseType, StringTraits>& CMStringT<BaseType, StringTraits>::TrimLeft(X
   // find first non-matching character
   PCXSTR psz = this->GetString();
 
-  while (chTarget == *psz) {
+  while (chTarget == *psz)
+  {
     psz = StringTraits::CharNext(psz);
   }
 
-  if (psz != this->GetString()) {
+  if (psz != this->GetString())
+  {
     // fix up data and length
     int iFirst = int(psz - this->GetString());
     PXSTR pszBuffer = this->GetBuffer(this->GetLength());
@@ -1206,16 +1282,19 @@ template< typename BaseType, class StringTraits >
 CMStringT<BaseType, StringTraits>& CMStringT<BaseType, StringTraits>::TrimLeft(PCXSTR pszTargets)
 {
   // if we're not trimming anything, we're not doing any work
-  if ((pszTargets == NULL) || (*pszTargets == 0)) {
+  if ((pszTargets == nullptr) || (*pszTargets == 0))
+  {
     return *this;
   }
 
   PCXSTR psz = this->GetString();
-  while ((*psz != 0) && (StringTraits::StringFindChar(pszTargets, *psz) != NULL)) {
+  while ((*psz != 0) && (StringTraits::StringFindChar(pszTargets, *psz) != nullptr))
+  {
     psz = StringTraits::CharNext(psz);
   }
 
-  if (psz != this->GetString()) {
+  if (psz != this->GetString())
+  {
     // fix up data and length
     int iFirst = int(psz - this->GetString());
     PXSTR pszBuffer = this->GetBuffer(this->GetLength());
@@ -1335,7 +1414,7 @@ typename CMStringT<BaseType, StringTraits>::PCXSTR CMStringT<BaseType, StringTra
   va_start(argList, pszFormat);
   FormatV(pszFormat, argList);
   va_end(argList);
-  return GetString();
+  return this->GetString();
 }
 
 // Append formatted data using format string 'pszFormat'
@@ -1346,7 +1425,7 @@ typename CMStringT<BaseType, StringTraits>::PCXSTR CMStringT<BaseType, StringTra
   va_start(argList, pszFormat);
   AppendFormatV(pszFormat, argList);
   va_end(argList);
-  return GetString();
+  return this->GetString();
 }
 
 template< typename BaseType, class StringTraits >
@@ -1366,19 +1445,22 @@ typename CMStringT<BaseType, StringTraits>::PCXSTR CMStringT<BaseType, StringTra
   PXSTR pszBuffer = this->GetBuffer(nLength);
   StringTraits::Format(pszBuffer, nLength + 1, pszFormat, args);
   this->ReleaseBufferSetLength(nLength);
-  return GetString();
+  return this->GetString();
 }
 
 // Set the string to the value of environment variable 'pszVar'
 template< typename BaseType, class StringTraits >
 BOOL CMStringT<BaseType, StringTraits>::GetEnvironmentVariable(PCXSTR pszVar)
 {
-  ULONG nLength = StringTraits::GetEnvironmentVariable(pszVar, NULL, 0);
+  ULONG nLength = StringTraits::GetEnvironmentVariable(pszVar, nullptr, 0);
   BOOL bRetVal = FALSE;
 
   if (nLength == 0)
+  {
     this->Empty();
-  else {
+  }
+  else
+  {
     PXSTR pszBuffer = this->GetBuffer(nLength);
     StringTraits::GetEnvironmentVariable(pszVar, pszBuffer, nLength);
     this->ReleaseBuffer();
@@ -1392,7 +1474,7 @@ BOOL CMStringT<BaseType, StringTraits>::GetEnvironmentVariable(PCXSTR pszVar)
 template< typename BaseType, class StringTraits >
 typename CMStringT<BaseType, StringTraits>::PXSTR CMStringT<BaseType, StringTraits>::Detach() const
 {
-  return StringTraits::NBCopy(CMStringT<BaseType, StringTraits>::GetString(), GetLength());
+  return StringTraits::NBCopy(CMStringT<BaseType, StringTraits>::GetString(), this->GetLength());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

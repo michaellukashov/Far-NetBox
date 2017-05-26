@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <rdestl/vector.h>
@@ -29,23 +30,25 @@ class TRemoteToken : public TObject
 public:
   TRemoteToken();
   explicit TRemoteToken(const UnicodeString & Name);
-  explicit TRemoteToken(const TRemoteToken & rht);
+  explicit TRemoteToken(const TRemoteToken & rhs);
 
   void Clear();
 
-  bool operator ==(const TRemoteToken & rht) const;
-  bool operator !=(const TRemoteToken & rht) const;
-  TRemoteToken & operator =(const TRemoteToken & rht);
+  bool operator ==(const TRemoteToken & rhs) const;
+  bool operator !=(const TRemoteToken & rhs) const;
+  TRemoteToken & operator =(const TRemoteToken & rhs);
 
-  intptr_t Compare(const TRemoteToken & rht) const;
+  intptr_t Compare(const TRemoteToken & rhs) const;
 
-  /*__property UnicodeString Name = { read = FName, write = FName };
+  /*
+  __property UnicodeString Name = { read = FName, write = FName };
   __property bool NameValid = { read = GetNameValid };
   __property unsigned int ID = { read = FID, write = SetID };
   __property bool IDValid = { read = FIDValid };
   __property bool IsSet  = { read = GetIsSet };
   __property UnicodeString LogText = { read = GetLogText };
-  __property UnicodeString DisplayText = { read = GetDisplayText };*/
+  __property UnicodeString DisplayText = { read = GetDisplayText };
+*/
 
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString & Value) { FName = Value; }
@@ -120,9 +123,9 @@ private:
   int64_t FSize;
   int64_t FINodeBlocks;
   intptr_t FIconIndex;
-  int FIsHidden;
+  intptr_t FIsHidden;
   wchar_t FType;
-  Boolean FIsSymLink;
+  bool FIsSymLink;
   bool FSelected;
   bool FCyclicLink;
 
@@ -152,6 +155,8 @@ public:
   bool GetIsInaccesibleDirectory() const;
   UnicodeString GetExtension() const;
   UnicodeString GetUserModificationStr() const;
+  void LoadTypeInfo() const;
+  int64_t GetSize() const;
 
 protected:
   void FindLinkedFile();
@@ -168,6 +173,7 @@ public:
 
   static bool GetIsTimeShiftingApplicable(TModificationFmt ModificationFmt);
   static void ShiftTimeInSeconds(TDateTime & DateTime, TModificationFmt ModificationFmt, int64_t Seconds);
+
 /*
   __property int Attr = { read = GetAttr };
   __property bool BrokenLink = { read = GetBrokenLink };
@@ -206,7 +212,6 @@ public:
 
   TRemoteFileList * GetDirectory() const { return FDirectory; }
   void SetDirectory(TRemoteFileList * Value) { FDirectory = Value; }
-  int64_t GetSize() const;
   void SetSize(int64_t Value) { FSize = Value; }
   const TRemoteToken & GetFileOwner() const;
   TRemoteToken & GetFileOwner();
@@ -233,7 +238,6 @@ public:
   void SetFullFileName(const UnicodeString & Value);
 
 private:
-  void LoadTypeInfo() const;
   void Init();
 };
 
@@ -248,7 +252,7 @@ public:
   }
 public:
   TRemoteDirectoryFile();
-  TRemoteDirectoryFile(TObjectClassId Kind);
+  explicit TRemoteDirectoryFile(TObjectClassId Kind);
   void Init();
   virtual ~TRemoteDirectoryFile() {}
 };
@@ -262,7 +266,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TRemoteParentDirectory;
   }
 public:
-  explicit TRemoteParentDirectory(TTerminal * Terminal);
+  explicit TRemoteParentDirectory(TTerminal * ATerminal);
   virtual ~TRemoteParentDirectory() {}
 };
 
@@ -286,12 +290,12 @@ protected:
 public:
   TRemoteFile * GetFile(Integer Index) const;
   virtual void SetDirectory(const UnicodeString & Value);
-  virtual void AddFiles(const TRemoteFileList * AFileList);
   UnicodeString GetFullDirectory() const;
   Boolean GetIsRoot() const;
   TRemoteFile * GetParentDirectory();
   UnicodeString GetParentPath() const;
   int64_t GetTotalSize() const;
+  virtual void AddFiles(const TRemoteFileList * AFileList);
 
 public:
   TRemoteFileList();
@@ -304,13 +308,15 @@ public:
 
   static TStrings * CloneStrings(TStrings * List);
 
-  /*__property UnicodeString Directory = { read = FDirectory, write = SetDirectory };
+/*
+  __property UnicodeString Directory = { read = FDirectory, write = SetDirectory };
   __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
   __property UnicodeString FullDirectory  = { read=GetFullDirectory };
   __property Boolean IsRoot = { read = GetIsRoot };
   __property UnicodeString ParentPath = { read = GetParentPath };
   __property __int64 TotalSize = { read = GetTotalSize };
-  __property TDateTime Timestamp = { read = FTimestamp };*/
+  __property TDateTime Timestamp = { read = FTimestamp };
+*/
 
   UnicodeString GetDirectory() const { return FDirectory; }
   TDateTime GetTimestamp() const { return FTimestamp; }
@@ -342,20 +348,21 @@ public:
   void SetIncludeParentDirectory(Boolean Value);
   void SetIncludeThisDirectory(Boolean Value);
   void ReleaseRelativeDirectories();
-
 public:
   explicit TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template = nullptr);
   virtual ~TRemoteDirectory();
   virtual void AddFile(TRemoteFile * AFile);
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
   virtual void Reset();
-  /*__property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
+/*
+  __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
   __property TStrings * SelectedFiles  = { read=GetSelectedFiles };
   __property Boolean IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };
   __property Boolean IncludeThisDirectory = { read = FIncludeThisDirectory, write = SetIncludeThisDirectory };
   __property Boolean Loaded = { read = GetLoaded };
   __property TRemoteFile * ParentDirectory = { read = FParentDirectory };
-  __property TRemoteFile * ThisDirectory = { read = FThisDirectory };*/
+  __property TRemoteFile * ThisDirectory = { read = FThisDirectory };
+*/
 
   TTerminal * GetTerminal() const { return FTerminal; }
   void SetTerminal(TTerminal * Value) { FTerminal = Value; }
@@ -380,7 +387,9 @@ public:
   void ClearFileList(const UnicodeString & Directory, bool SubDirs);
   void Clear();
 
-  // __property bool IsEmpty = { read = GetIsEmpty };
+/*
+  __property bool IsEmpty = { read = GetIsEmpty };
+*/
   bool GetIsEmpty() const;
 
 protected:
@@ -409,7 +418,9 @@ public:
   void Serialize(UnicodeString & Data) const;
   void Deserialize(const UnicodeString & Data);
 
-  // __property bool IsEmpty = { read = GetIsEmpty };
+/*
+  __property bool IsEmpty = { read = GetIsEmpty };
+*/
   bool GetIsEmpty() const;
 
 private:
@@ -470,7 +481,7 @@ public:
 
   TRights();
   TRights(const TRights & Source);
-  explicit TRights(uint16_t Number);
+  explicit TRights(uint16_t ANumber);
   void Assign(const TRights * Source);
   void AddExecute();
   void AllUndef();
@@ -492,7 +503,8 @@ public:
   operator uint16_t() const;
   operator uint32_t() const;
 
-  /*__property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
+/*
+  __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
   __property bool IsUndef = { read = GetIsUndef };
   __property UnicodeString ModeStr = { read = GetModeStr };
   __property UnicodeString SimplestStr = { read = GetSimplestStr };
@@ -505,7 +517,8 @@ public:
   __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
   __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
   __property UnicodeString Text = { read = GetText, write = SetText };
-  __property bool Unknown = { read = FUnknown };*/
+  __property bool Unknown = { read = FUnknown };
+*/
 
 private:
   UnicodeString FText;
@@ -550,6 +563,7 @@ enum TValidProperty
 // typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
 class TValidProperties // : public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   TValidProperties() :
     FValue(0)
@@ -641,7 +655,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
 bool UnixExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
 UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix);
 bool IsUnixRootPath(const UnicodeString & APath);
-bool IsUnixHiddenFile(const UnicodeString & APath);
+bool IsUnixHiddenFile(const UnicodeString & AFileName);
 UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APath);
 UnicodeString FromUnixPath(const UnicodeString & APath);
 UnicodeString ToUnixPath(const UnicodeString & APath);

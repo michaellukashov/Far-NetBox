@@ -4,7 +4,9 @@
 #define INCL_WINSOCK_API_TYPEDEFS 1
 #endif
 #ifndef _WINSOCKAPI_
+#if !defined(__MINGW32__)
 #define _WINSOCKAPI_
+#endif // defined(__MINGW32__)
 #endif
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -70,7 +72,7 @@ template <class T>
 inline const T Round(const T a, const T b) { return a / b + (a % b * 2 > b ? 1 : 0); }
 
 template <class T>
-inline void * ToPtr(const T a) { return reinterpret_cast<void *>(a); }
+inline void * ToPtr(const T a) { return reinterpret_cast<void *>((intptr_t)a); }
 
 template <class T>
 inline double ToDouble(const T a) { return static_cast<double>(a); }

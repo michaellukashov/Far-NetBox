@@ -195,8 +195,8 @@ HGLOBAL AFXAPI _AfxOleGetObjectDescriptorData(LPOLEOBJECT lpOleObj,
 SCODE AFXAPI _AfxOleDoConvert(LPSTORAGE lpStg, REFCLSID rClsidNew);
 SCODE AFXAPI _AfxOleDoTreatAsClass(
 	LPCTSTR lpszUserType, REFCLSID rclsid, REFCLSID rclsidNew);
-DVTARGETDEVICE* AFXAPI _AfxOleCreateTargetDevice(LPPRINTDLG lpPrintDlg);
-DVTARGETDEVICE* AFXAPI _AfxOleCreateTargetDevice(LPDEVNAMES pDN, LPDEVMODE pDM);
+//DVTARGETDEVICE* AFXAPI _AfxOleCreateTargetDevice(LPPRINTDLG lpPrintDlg);
+//DVTARGETDEVICE* AFXAPI _AfxOleCreateTargetDevice(LPDEVNAMES pDN, LPDEVMODE pDM);
 DWORD AFXAPI _AfxOleGetLenFilePrefixOfMoniker(LPMONIKER lpmk);
 DVTARGETDEVICE* AFXAPI _AfxOleCopyTargetDevice(DVTARGETDEVICE* ptdSrc);
 void AFXAPI _AfxOleCopyFormatEtc(LPFORMATETC petcDest, LPFORMATETC petcSrc);

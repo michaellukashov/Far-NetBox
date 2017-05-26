@@ -21,7 +21,7 @@ struct string_rep
 	short	size;
 	short	capacity;
 	// [data]
-	static const size_t kMaxCapacity = (1 << (sizeof(short) << 3)) >> 1;
+	static const ::size_t kMaxCapacity = (1 << (sizeof(short) << 3)) >> 1;
 };
 typedef char ERR_InvalidStringRepSize[sizeof(string_rep) == 6 ? 1 : -1];
 

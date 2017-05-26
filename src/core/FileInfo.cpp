@@ -10,11 +10,12 @@
 
 #define DWORD_ALIGN( base, ptr ) \
     ( (LPBYTE)(base) + ((((LPBYTE)(ptr) - (LPBYTE)(base)) + 3) & ~3) )
+
 struct VS_VERSION_INFO_STRUCT32
 {
-  WORD  wLength;
-  WORD  wValueLength;
-  WORD  wType;
+  WORD wLength;
+  WORD wValueLength;
+  WORD wType;
   WCHAR szKey[1];
 };
 
@@ -26,7 +27,7 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
   HMODULE Module = ::GetModuleHandle(FileName);
   if (Module == nullptr)
   {
-    Module = ::LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE);
+    Module = ::LoadLibraryEx(FileName, nullptr, LOAD_LIBRARY_AS_DATAFILE);
     NeedFree = true;
   }
   if (Module == nullptr)
@@ -44,8 +45,7 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
           ::FreeLibrary(Module);
         }
       };
-      HRSRC Rsrc = ::FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
-        MAKEINTRESOURCE(VS_FILE_INFO));
+      HRSRC Rsrc = ::FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO), VS_FILE_INFO);
       if (Rsrc == nullptr)
       {
       }
@@ -89,17 +89,21 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
           }
           __finally
           {
+/*
             FreeResource(Mem);
+*/
           };
         }
       }
     }
     __finally
     {
+/*
       if (NeedFree)
       {
         FreeLibrary(Module);
       }
+*/
     };
   }
 
@@ -163,11 +167,10 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
 void * CreateFileInfo(const UnicodeString & AFileName)
 {
   DWORD Handle;
-  uintptr_t Size;
   void * Result = nullptr;
 
   // Get file version info block size
-  Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
+  uintptr_t Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
   // If size is valid
   if (Size > 0)
   {
@@ -233,10 +236,9 @@ TTranslation GetTranslation(void * FileInfo, intptr_t I)
 // Return the name of the specified language
 UnicodeString GetLanguage(Word Language)
 {
-  uintptr_t Len;
   wchar_t P[256];
 
-  Len = ::VerLanguageName(Language, P, _countof(P));
+  uintptr_t Len = ::VerLanguageName(Language, P, _countof(P));
   if (Len > _countof(P))
     throw Exception(L"Language not available");
   return UnicodeString(P, Len);
@@ -284,7 +286,7 @@ intptr_t StrToCompoundVersion(const UnicodeString & AStr)
   int64_t MinorVer = StrToInt64(CutToChar(S, L'.', false));
   int64_t Release = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
   int64_t Build = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
-  return CalculateCompoundVersion(MajorVer, MinorVer, Release, Build);
+  return CalculateCompoundVersion((intptr_t)MajorVer, (intptr_t)MinorVer, (intptr_t)Release, (intptr_t)Build);
 }
 
 intptr_t CompareVersion(UnicodeString V1, UnicodeString V2)
@@ -292,8 +294,8 @@ intptr_t CompareVersion(UnicodeString V1, UnicodeString V2)
   intptr_t Result = 0;
   while ((Result == 0) && (!V1.IsEmpty() || !V2.IsEmpty()))
   {
-    int C1 = StrToIntDef(CutToChar(V1, L'.', false), 0);
-    int C2 = StrToIntDef(CutToChar(V2, L'.', false), 0);
+    intptr_t C1 = StrToIntDef(CutToChar(V1, L'.', false), 0);
+    intptr_t C2 = StrToIntDef(CutToChar(V2, L'.', false), 0);
     // Result = CompareValue(C1, C2);
     if (C1 < C2)
     {

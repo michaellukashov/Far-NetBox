@@ -49,11 +49,11 @@ class CFileFix;
 
 #define _strlwr strlwr
 
-const int FILEEXISTS_OVERWRITE = 0;
-const int FILEEXISTS_RESUME = 1;
-const int FILEEXISTS_RENAME = 2;
-const int FILEEXISTS_SKIP = 3;
-const int FILEEXISTS_COMPLETE = 4;
+//const int FILEEXISTS_OVERWRITE = 0;
+//const int FILEEXISTS_RESUME = 1;
+//const int FILEEXISTS_RENAME = 2;
+//const int FILEEXISTS_SKIP = 3;
+//const int FILEEXISTS_COMPLETE = 4;
 
 class t_ffam_statusmessage
 {

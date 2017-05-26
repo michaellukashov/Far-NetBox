@@ -28,7 +28,7 @@
 #endif
 
 #ifndef _INC_SHELLAPI
-	#include <shellapi.h>
+//	#include <shellapi.h>
 #endif
 
 #ifndef __AFXRES_H__
@@ -40,11 +40,11 @@
 #endif
 
 #ifndef _OBJBASE_H_
-	#include <objbase.h> //needed for commdlg.h (STDMETHOD)
+//	#include <objbase.h> //needed for commdlg.h (STDMETHOD)
 #endif
 
 #ifndef _INC_COMMDLG
-	#include <commdlg.h>    // common dialog APIs
+//	#include <commdlg.h>    // common dialog APIs
 #endif
 
 // #include <afxctrlcontainer.h>
@@ -70,7 +70,7 @@
 #ifdef _AFX_PACKING
 #pragma pack(push, _AFX_PACKING)
 #endif
-#include <afxcomctl32.h>
+//#include <afxcomctl32.h>
 #ifdef _AFX_PACKING
 #pragma pack(pop)
 #endif
@@ -331,7 +331,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // OLE types
 
-typedef LONG HRESULT;
+//typedef LONG HRESULT;
 
 struct IUnknown;
 typedef IUnknown* LPUNKNOWN;
@@ -972,7 +972,6 @@ public:
 	CWnd* m_pOther;         // NULL if a menu or not a CWnd
 
 // Operations to do in ON_UPDATE_COMMAND_UI
-	virtual void Enable(BOOL bOn = TRUE);
 	virtual void SetCheck(int nCheck = 1);   // 0, 1 or 2 (indeterminate)
 	virtual void SetRadio(BOOL bOn = TRUE);
 	virtual void SetText(LPCTSTR lpszText);
@@ -1191,10 +1190,6 @@ public:
 		// like GetDlgItem but recursive
 	void SendMessageToDescendants(UINT message, WPARAM wParam = 0,
 		LPARAM lParam = 0, BOOL bDeep = TRUE, BOOL bOnlyPerm = FALSE);
-	CWnd* GetTopLevelParent() const;
-	CWnd* EnsureTopLevelParent() const;
-	CWnd* GetTopLevelOwner() const;
-	CWnd* GetParentOwner() const;
 	static CWnd* PASCAL GetSafeOwner(CWnd* pParent = NULL, HWND* pWndTop = NULL);
 
 #if(WINVER >= 0x0500)
@@ -1218,7 +1213,7 @@ public:
 
 
 // Message processing for modeless dialog-like windows
-	BOOL IsDialogMessage(LPMSG lpMsg);
+//	BOOL IsDialogMessage(LPMSG lpMsg);
 
 // Window Text Functions
 	void SetWindowText(LPCTSTR lpszString);
@@ -1263,14 +1258,14 @@ public:
 	// BOOL RedrawWindow(LPCRECT lpRectUpdate = NULL,
 		// CRgn* prgnUpdate = NULL,
 		// UINT flags = RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
-	BOOL EnableScrollBar(int nSBFlags, UINT nArrowFlags = ESB_ENABLE_BOTH);
+//	BOOL EnableScrollBar(int nSBFlags, UINT nArrowFlags = ESB_ENABLE_BOTH);
 
-	BOOL DrawAnimatedRects(int idAni, CONST RECT *lprcFrom, CONST RECT *lprcTo);
+//	BOOL DrawAnimatedRects(int idAni, CONST RECT *lprcFrom, CONST RECT *lprcTo);
 //	BOOL DrawCaption(CDC* pDC, LPCRECT lprc, UINT uFlags);
 
 #if(WINVER >= 0x0500)
 
-	BOOL AnimateWindow(DWORD dwTime, DWORD dwFlags);
+//	BOOL AnimateWindow(DWORD dwTime, DWORD dwFlags);
 
 #endif	// WINVER >= 0x0500
 
@@ -1338,9 +1333,6 @@ public:
 	static CWnd* PASCAL FindWindow(LPCTSTR lpszClassName, LPCTSTR lpszWindowName);
 	static CWnd* FindWindowEx(HWND hwndParent, HWND hwndChildAfter, LPCTSTR lpszClass, LPCTSTR lpszWindow);
 
-	CWnd* GetNextWindow(UINT nFlag = GW_HWNDNEXT) const;
-	CWnd* GetTopWindow() const;
-
 	CWnd* GetWindow(UINT nCmd) const;
 	CWnd* GetLastActivePopup() const;
 
@@ -1350,18 +1342,18 @@ public:
 	static CWnd* PASCAL WindowFromPoint(POINT point);
 
 // Alert Functions
-	BOOL FlashWindow(BOOL bInvert);
-#pragma push_macro("MessageBox")
-#undef MessageBox
-	int _AFX_FUNCNAME(MessageBox)(LPCTSTR lpszText, LPCTSTR lpszCaption = NULL,
-			UINT nType = MB_OK);
-	int MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption = NULL,
-			UINT nType = MB_OK);
-#pragma pop_macro("MessageBox")
+//	BOOL FlashWindow(BOOL bInvert);
+//#pragma push_macro("MessageBox")
+//#undef MessageBox
+//	int _AFX_FUNCNAME(MessageBox)(LPCTSTR lpszText, LPCTSTR lpszCaption = NULL,
+//			UINT nType = MB_OK);
+//	int MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption = NULL,
+//			UINT nType = MB_OK);
+//#pragma pop_macro("MessageBox")
 
 #if(WINVER >= 0x0500)
 
-	BOOL FlashWindowEx(DWORD dwFlags, UINT  uCount, DWORD dwTimeout);
+//	BOOL FlashWindowEx(DWORD dwFlags, UINT  uCount, DWORD dwTimeout);
 
 #endif	// WINVER >= 0x0500
 
@@ -1524,8 +1516,8 @@ protected:
 	afx_msg void OnNcPaint();
 
 // System message handler member functions
-	afx_msg void OnDropFiles(HDROP hDropInfo);
-	afx_msg void OnPaletteIsChanging(CWnd* pRealizeWnd);
+//	afx_msg void OnDropFiles(HDROP hDropInfo);
+//	afx_msg void OnPaletteIsChanging(CWnd* pRealizeWnd);
 	afx_msg void OnSysChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnSysDeadChar(UINT nChar, UINT nRepCnt, UINT nFlags);
@@ -1694,16 +1686,16 @@ public:
 
 protected:
 	WNDPROC m_pfnSuper; // for subclassing of controls
-	static const UINT m_nMsgDragList;
+//	static const UINT m_nMsgDragList;
 	int m_nModalResult; // for return values from CWnd::RunModalLoop
 
 	// COleDropTarget* m_pDropTarget;  // for automatic cleanup of drop target
 	// friend class COleDropTarget;
 
 	// for creating dialogs and dialog-like windows
-	BOOL CreateDlg(LPCTSTR lpszTemplateName, CWnd* pParentWnd);
-	BOOL CreateDlgIndirect(LPCDLGTEMPLATE lpDialogTemplate, CWnd* pParentWnd,
-		HINSTANCE hInst);
+//	BOOL CreateDlg(LPCTSTR lpszTemplateName, CWnd* pParentWnd);
+//	BOOL CreateDlgIndirect(LPCDLGTEMPLATE lpDialogTemplate, CWnd* pParentWnd,
+//		HINSTANCE hInst);
 
 #ifndef _AFX_NO_OCC_SUPPORT
 	friend class COccManager;
@@ -1942,18 +1934,18 @@ void AFXAPI AfxTermThread(HINSTANCE hInstTerm = NULL);
 #endif
 
 //Fusion: Access macros for WinSxS dynamic wrappers.
-#ifndef _AFX_NO_AFXCMN_SUPPORT
-#define _AFX_COMCTL32_ISOLATION_WRAPPER_INDEX 0
-#define afxComCtlWrapper static_cast<CComCtlWrapper*>(AfxGetModuleState()->m_pDllIsolationWrappers[_AFX_COMCTL32_ISOLATION_WRAPPER_INDEX])
-#endif
+//#ifndef _AFX_NO_AFXCMN_SUPPORT
+//#define _AFX_COMCTL32_ISOLATION_WRAPPER_INDEX 0
+//#define afxComCtlWrapper static_cast<CComCtlWrapper*>(AfxGetModuleState()->m_pDllIsolationWrappers[_AFX_COMCTL32_ISOLATION_WRAPPER_INDEX])
+//#endif
 
-#define _AFX_COMMDLG_ISOLATION_WRAPPER_INDEX 1
-#define afxCommDlgWrapper static_cast<CCommDlgWrapper*>(AfxGetModuleState()->m_pDllIsolationWrappers[_AFX_COMMDLG_ISOLATION_WRAPPER_INDEX])
+//#define _AFX_COMMDLG_ISOLATION_WRAPPER_INDEX 1
+//#define afxCommDlgWrapper static_cast<CCommDlgWrapper*>(AfxGetModuleState()->m_pDllIsolationWrappers[_AFX_COMMDLG_ISOLATION_WRAPPER_INDEX])
 
-#define _AFX_SHELL_ISOLATION_WRAPPER_INDEX 2
-#define afxShellWrapper static_cast<CShellWrapper*>(AfxGetModuleState()->m_pDllIsolationWrappers[_AFX_SHELL_ISOLATION_WRAPPER_INDEX])
+//#define _AFX_SHELL_ISOLATION_WRAPPER_INDEX 2
+//#define afxShellWrapper static_cast<CShellWrapper*>(AfxGetModuleState()->m_pDllIsolationWrappers[_AFX_SHELL_ISOLATION_WRAPPER_INDEX])
 
-#define _AFX_ISOLATION_WRAPPER_ARRAY_SIZE 3
+//#define _AFX_ISOLATION_WRAPPER_ARRAY_SIZE 3
 
 // Advanced initialization: for overriding default WinMain
 BOOL AFXAPI AfxWinInit(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
@@ -2096,10 +2088,10 @@ extern AFX_DATA UINT afxTraceFlags;
 void AFXAPI AfxFormatString1(CString& rString, UINT nIDS, LPCTSTR lpsz1);
 void AFXAPI AfxFormatString2(CString& rString, UINT nIDS,
 				LPCTSTR lpsz1, LPCTSTR lpsz2);
-int AFXAPI AfxMessageBox(LPCTSTR lpszText, UINT nType = MB_OK,
-				UINT nIDHelp = 0);
-int AFXAPI AfxMessageBox(UINT nIDPrompt, UINT nType = MB_OK,
-				UINT nIDHelp = (UINT)-1);
+//int AFXAPI AfxMessageBox(LPCTSTR lpszText, UINT nType = MB_OK,
+//				UINT nIDHelp = 0);
+//int AFXAPI AfxMessageBox(UINT nIDPrompt, UINT nType = MB_OK,
+//				UINT nIDHelp = (UINT)-1);
 
 // Implementation string helpers
 void AFXAPI AfxFormatStrings(CString& rString, UINT nIDS,

@@ -4,7 +4,6 @@
 #include <rdestl/vector.h>
 #include <Common.h>
 #include <Exceptions.h>
-#include <TextsCore.h>
 #include <StrUtils.hpp>
 
 #include "PuttyIntf.h"
@@ -203,9 +202,7 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & ASubKey, bool CanCre
 
 void THierarchicalStorage::CloseSubKey()
 {
-  if (FKeyHistory->GetCount() == 0)
-    throw Exception(L"");
-  else
+  if (FKeyHistory->GetCount() > 0)
     FKeyHistory->Delete(FKeyHistory->GetCount() - 1);
 }
 
@@ -230,7 +227,9 @@ void THierarchicalStorage::ClearSubKeys()
   }
   __finally
   {
-//    delete SubKeys;
+/*
+    delete SubKeys;
+*/
   };
 }
 
@@ -255,7 +254,9 @@ bool THierarchicalStorage::HasSubKeys()
   }
   __finally
   {
-//    delete SubKeys;
+/*
+    delete SubKeys;
+*/
   };
   return Result;
 }
@@ -297,7 +298,9 @@ void THierarchicalStorage::ReadValues(TStrings * Strings,
   }
   __finally
   {
-//    delete Names;
+/*
+    delete Names;
+*/
   };
 }
 
@@ -314,7 +317,9 @@ void THierarchicalStorage::ClearValues()
   }
   __finally
   {
-//    delete Names;
+/*
+    delete Names;
+*/
   };
 }
 
@@ -500,7 +505,9 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   }
   __finally
   {
-//    delete Names;
+/*
+    delete Names;
+*/
   };
   return Result;
 }
@@ -522,14 +529,14 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode Value)
   {
     switch (GetAccessMode())
     {
-      case smRead:
-        FRegistry->SetAccess(KEY_READ);
-        break;
+    case smRead:
+      FRegistry->SetAccess(KEY_READ);
+      break;
 
-      case smReadWrite:
-      default:
-        FRegistry->SetAccess(KEY_READ | KEY_WRITE);
-        break;
+    case smReadWrite:
+    default:
+      FRegistry->SetAccess(KEY_READ | KEY_WRITE);
+      break;
     }
   }
 }
@@ -1264,7 +1271,7 @@ void __fastcall TIniFileStorage::Flush()
           }
           __finally
           {
-            CloseHandle(Handle);
+            SAFE_CLOSE_HANDLE(Handle);
             delete Stream;
           }
         }

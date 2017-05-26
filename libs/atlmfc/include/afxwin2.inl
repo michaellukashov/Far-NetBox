@@ -23,16 +23,6 @@ _AFXWIN_INLINE BOOL CWnd::operator!=(const CWnd& wnd) const
 	{ return ((HWND) wnd) != m_hWnd; }
 _AFXWIN_INLINE HWND CWnd::GetSafeHwnd() const
 	{ return this == NULL ? NULL : m_hWnd; }
-#ifdef _AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE DWORD CWnd::GetStyle() const
-	{ ASSERT(::IsWindow(m_hWnd)); return (DWORD)GetWindowLong(m_hWnd, GWL_STYLE); }
-_AFXWIN_INLINE DWORD CWnd::GetExStyle() const
-	{ ASSERT(::IsWindow(m_hWnd)); return (DWORD)GetWindowLong(m_hWnd, GWL_EXSTYLE); }
-_AFXWIN_INLINE BOOL CWnd::ModifyStyle(DWORD dwRemove, DWORD dwAdd, UINT nFlags)
-	{ ASSERT(::IsWindow(m_hWnd)); return ModifyStyle(m_hWnd, dwRemove, dwAdd, nFlags); }
-_AFXWIN_INLINE BOOL CWnd::ModifyStyleEx(DWORD dwRemove, DWORD dwAdd, UINT nFlags)
-	{ ASSERT(::IsWindow(m_hWnd)); return ModifyStyleEx(m_hWnd, dwRemove, dwAdd, nFlags); }
-#endif //_AFX_NO_OCC_SUPPORT
 _AFXWIN_INLINE CWnd* CWnd::GetOwner() const
 	{ return m_hWndOwner != NULL ? CWnd::FromHandle(m_hWndOwner) : GetParent(); }
 _AFXWIN_INLINE void CWnd::SetOwner(CWnd* pOwnerWnd)
@@ -49,28 +39,22 @@ _AFXWIN_INLINE BOOL CWnd::PostMessage(UINT message, WPARAM wParam, LPARAM lParam
 	{ ASSERT(::IsWindow(m_hWnd)); return ::PostMessage(m_hWnd, message, wParam, lParam); }
 _AFXWIN_INLINE BOOL CWnd::DragDetect(POINT pt) const
 	{ ASSERT(::IsWindow(m_hWnd)); return ::DragDetect(m_hWnd, pt); }
-#ifdef _AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE void CWnd::SetWindowText(LPCTSTR lpszString)
-	{ ASSERT(::IsWindow(m_hWnd)); ::SetWindowText(m_hWnd, lpszString); }
-_AFXWIN_INLINE int CWnd::GetWindowText(_Out_z_cap_post_count_(nMaxCount, return + 1) LPTSTR lpszString, _In_ int nMaxCount) const
-	{ ASSERT(::IsWindow(m_hWnd)); return ::GetWindowText(m_hWnd, lpszString, nMaxCount); }
-_AFXWIN_INLINE int CWnd::GetWindowTextLength() const
-	{ ASSERT(::IsWindow(m_hWnd)); return ::GetWindowTextLength(m_hWnd); }
-#endif //_AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE void CWnd::DragAcceptFiles(BOOL bAccept)
-	{ ASSERT(::IsWindow(m_hWnd)); ::DragAcceptFiles(m_hWnd, bAccept); }
-#ifdef _AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE int CWnd::GetDlgCtrlID() const
-	{ ASSERT(::IsWindow(m_hWnd)); return ::GetDlgCtrlID(m_hWnd); }
-_AFXWIN_INLINE int CWnd::SetDlgCtrlID(int nID)
-	{ ASSERT(::IsWindow(m_hWnd)); return (int)::SetWindowLong(m_hWnd, GWL_ID, nID); }
-#endif //_AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE CWnd* CWnd::EnsureTopLevelParent() const
-{
-    CWnd *pWnd=GetTopLevelParent();
-    ENSURE_VALID(pWnd);
-    return pWnd;
-}
+//#ifdef _AFX_NO_OCC_SUPPORT
+//_AFXWIN_INLINE void CWnd::SetWindowText(LPCTSTR lpszString)
+//	{ ASSERT(::IsWindow(m_hWnd)); ::SetWindowText(m_hWnd, lpszString); }
+//_AFXWIN_INLINE int CWnd::GetWindowText(_Out_z_cap_post_count_(nMaxCount, return + 1) LPTSTR lpszString, _In_ int nMaxCount) const
+//	{ ASSERT(::IsWindow(m_hWnd)); return ::GetWindowText(m_hWnd, lpszString, nMaxCount); }
+//_AFXWIN_INLINE int CWnd::GetWindowTextLength() const
+//	{ ASSERT(::IsWindow(m_hWnd)); return ::GetWindowTextLength(m_hWnd); }
+//#endif //_AFX_NO_OCC_SUPPORT
+//_AFXWIN_INLINE void CWnd::DragAcceptFiles(BOOL bAccept)
+//	{ ASSERT(::IsWindow(m_hWnd)); ::DragAcceptFiles(m_hWnd, bAccept); }
+//#ifdef _AFX_NO_OCC_SUPPORT
+//_AFXWIN_INLINE int CWnd::GetDlgCtrlID() const
+//	{ ASSERT(::IsWindow(m_hWnd)); return ::GetDlgCtrlID(m_hWnd); }
+//_AFXWIN_INLINE int CWnd::SetDlgCtrlID(int nID)
+//	{ ASSERT(::IsWindow(m_hWnd)); return (int)::SetWindowLong(m_hWnd, GWL_ID, nID); }
+//#endif //_AFX_NO_OCC_SUPPORT
 _AFXWIN_INLINE void CWnd::MapWindowPoints(CWnd* pwndTo, LPPOINT lpPoint, UINT nCount) const
 	{ ASSERT(::IsWindow(m_hWnd)); ::MapWindowPoints(m_hWnd, pwndTo->GetSafeHwnd(), lpPoint, nCount); }
 _AFXWIN_INLINE void CWnd::MapWindowPoints(CWnd* pwndTo, LPRECT lpRect) const
@@ -108,19 +92,19 @@ _AFXWIN_INLINE void CWnd::SendMessageToDescendants(
 _AFXWIN_INLINE CWnd* CWnd::GetDescendantWindow(int nID, BOOL bOnlyPerm) const
 	{ ASSERT(::IsWindow(m_hWnd)); return CWnd::GetDescendantWindow(m_hWnd, nID, bOnlyPerm); }
 
-#ifdef _AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE BOOL CWnd::IsDialogMessage(LPMSG lpMsg)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::IsDialogMessage(m_hWnd, lpMsg); }
-#endif
+//#ifdef _AFX_NO_OCC_SUPPORT
+//_AFXWIN_INLINE BOOL CWnd::IsDialogMessage(LPMSG lpMsg)
+//	{ ASSERT(::IsWindow(m_hWnd)); return ::IsDialogMessage(m_hWnd, lpMsg); }
+//#endif
 
-_AFXWIN_INLINE BOOL CWnd::LockWindowUpdate()
-	{ ASSERT(::IsWindow(m_hWnd)); return ::LockWindowUpdate(m_hWnd); }
-_AFXWIN_INLINE void CWnd::UnlockWindowUpdate()
-	{ ASSERT(::IsWindow(m_hWnd)); ::LockWindowUpdate(NULL); }
-_AFXWIN_INLINE BOOL CWnd::EnableScrollBar(int nSBFlags, UINT nArrowFlags)
-	{ ASSERT(::IsWindow(m_hWnd)); return (BOOL)::EnableScrollBar(m_hWnd, nSBFlags, nArrowFlags); }
-_AFXWIN_INLINE BOOL CWnd::DrawAnimatedRects(int idAni, CONST RECT *lprcFrom, CONST RECT *lprcTo)
-	{ ASSERT(::IsWindow(m_hWnd)); return (BOOL)::DrawAnimatedRects(m_hWnd, idAni, lprcFrom, lprcTo); }
+//_AFXWIN_INLINE BOOL CWnd::LockWindowUpdate()
+//	{ ASSERT(::IsWindow(m_hWnd)); return ::LockWindowUpdate(m_hWnd); }
+//_AFXWIN_INLINE void CWnd::UnlockWindowUpdate()
+//	{ ASSERT(::IsWindow(m_hWnd)); ::LockWindowUpdate(NULL); }
+//_AFXWIN_INLINE BOOL CWnd::EnableScrollBar(int nSBFlags, UINT nArrowFlags)
+//	{ ASSERT(::IsWindow(m_hWnd)); return (BOOL)::EnableScrollBar(m_hWnd, nSBFlags, nArrowFlags); }
+//_AFXWIN_INLINE BOOL CWnd::DrawAnimatedRects(int idAni, CONST RECT *lprcFrom, CONST RECT *lprcTo)
+//	{ ASSERT(::IsWindow(m_hWnd)); return (BOOL)::DrawAnimatedRects(m_hWnd, idAni, lprcFrom, lprcTo); }
 //_AFXWIN_INLINE BOOL CWnd::DrawCaption(CDC* pDC, LPCRECT lprc, UINT uFlags)
 //	{ ASSERT(::IsWindow(m_hWnd)); return (BOOL)::DrawCaption(m_hWnd, pDC->GetSafeHdc(), lprc, uFlags); }
 
@@ -146,17 +130,7 @@ _AFXWIN_INLINE CWnd* CWnd::SetCapture()
 	{ ASSERT(::IsWindow(m_hWnd)); return CWnd::FromHandle(::SetCapture(m_hWnd)); }
 _AFXWIN_INLINE CWnd* PASCAL CWnd::GetFocus()
 	{ return CWnd::FromHandle(::GetFocus()); }
-#ifdef _AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE CWnd* CWnd::SetFocus()
-	{ ASSERT(::IsWindow(m_hWnd)); return CWnd::FromHandle(::SetFocus(m_hWnd)); }
-#endif //_AFX_NO_OCC_SUPPORT
-_AFXWIN_INLINE CWnd* PASCAL CWnd::GetDesktopWindow()
-	{ return CWnd::FromHandle(::GetDesktopWindow()); }
 
-_AFXWIN_INLINE CWnd* CWnd::GetNextWindow(UINT nFlag) const
-	{ ASSERT(::IsWindow(m_hWnd)); return CWnd::FromHandle(::GetNextWindow(m_hWnd, nFlag)); }
-_AFXWIN_INLINE CWnd* CWnd::GetTopWindow() const
-	{ ASSERT(::IsWindow(m_hWnd)); return CWnd::FromHandle(::GetTopWindow(m_hWnd)); }
 _AFXWIN_INLINE CWnd* CWnd::GetWindow(UINT nCmd) const
 	{ ASSERT(::IsWindow(m_hWnd)); return CWnd::FromHandle(::GetWindow(m_hWnd, nCmd)); }
 _AFXWIN_INLINE CWnd* CWnd::GetLastActivePopup() const
@@ -170,25 +144,25 @@ _AFXWIN_INLINE CWnd* CWnd::SetParent(CWnd* pWndNewParent)
 			pWndNewParent->GetSafeHwnd())); }
 _AFXWIN_INLINE CWnd* PASCAL CWnd::WindowFromPoint(POINT point)
 	{ return CWnd::FromHandle(::WindowFromPoint(point)); }
-#pragma push_macro("MessageBox")
-#undef MessageBox
-_AFXWIN_INLINE int CWnd::MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption, UINT nType)
-	{ return _AFX_FUNCNAME(MessageBox)(lpszText, lpszCaption, nType); }
-#pragma pop_macro("MessageBox")
-_AFXWIN_INLINE BOOL CWnd::FlashWindow(BOOL bInvert)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::FlashWindow(m_hWnd, bInvert); }
-_AFXWIN_INLINE BOOL CWnd::ChangeClipboardChain(HWND hWndNext)
-	{ ASSERT(::IsWindow(m_hWnd)); return ::ChangeClipboardChain(m_hWnd, hWndNext); }
-_AFXWIN_INLINE HWND CWnd::SetClipboardViewer()
-	{ ASSERT(::IsWindow(m_hWnd)); return ::SetClipboardViewer(m_hWnd); }
-_AFXWIN_INLINE BOOL CWnd::OpenClipboard()
-	{ ASSERT(::IsWindow(m_hWnd)); return ::OpenClipboard(m_hWnd); }
-_AFXWIN_INLINE CWnd* PASCAL CWnd::GetOpenClipboardWindow()
-	{ return CWnd::FromHandle(::GetOpenClipboardWindow()); }
-_AFXWIN_INLINE CWnd* PASCAL CWnd::GetClipboardOwner()
-	{ return CWnd::FromHandle(::GetClipboardOwner()); }
-_AFXWIN_INLINE CWnd* PASCAL CWnd::GetClipboardViewer()
-	{ return CWnd::FromHandle(::GetClipboardViewer()); }
+//#pragma push_macro("MessageBox")
+//#undef MessageBox
+//_AFXWIN_INLINE int CWnd::MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption, UINT nType)
+//	{ return _AFX_FUNCNAME(MessageBox)(lpszText, lpszCaption, nType); }
+//#pragma pop_macro("MessageBox")
+//_AFXWIN_INLINE BOOL CWnd::FlashWindow(BOOL bInvert)
+//	{ ASSERT(::IsWindow(m_hWnd)); return ::FlashWindow(m_hWnd, bInvert); }
+//_AFXWIN_INLINE BOOL CWnd::ChangeClipboardChain(HWND hWndNext)
+//	{ ASSERT(::IsWindow(m_hWnd)); return ::ChangeClipboardChain(m_hWnd, hWndNext); }
+//_AFXWIN_INLINE HWND CWnd::SetClipboardViewer()
+//	{ ASSERT(::IsWindow(m_hWnd)); return ::SetClipboardViewer(m_hWnd); }
+//_AFXWIN_INLINE BOOL CWnd::OpenClipboard()
+//	{ ASSERT(::IsWindow(m_hWnd)); return ::OpenClipboard(m_hWnd); }
+//_AFXWIN_INLINE CWnd* PASCAL CWnd::GetOpenClipboardWindow()
+//	{ return CWnd::FromHandle(::GetOpenClipboardWindow()); }
+//_AFXWIN_INLINE CWnd* PASCAL CWnd::GetClipboardOwner()
+//	{ return CWnd::FromHandle(::GetClipboardOwner()); }
+//_AFXWIN_INLINE CWnd* PASCAL CWnd::GetClipboardViewer()
+//	{ return CWnd::FromHandle(::GetClipboardViewer()); }
 _AFXWIN_INLINE void CWnd::CreateSolidCaret(int nWidth, int nHeight)
 	{ ASSERT(::IsWindow(m_hWnd)); ::CreateCaret(m_hWnd, (HBITMAP)0, nWidth, nHeight); }
 _AFXWIN_INLINE void CWnd::CreateGrayCaret(int nWidth, int nHeight)
@@ -280,10 +254,10 @@ _AFXWIN_INLINE void CWnd::OnWindowPosChanged(WINDOWPOS*)
 	{ Default(); }
 _AFXWIN_INLINE void CWnd::OnSessionChange(UINT, UINT)
 	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnDropFiles(HDROP)
-	{ Default(); }
-_AFXWIN_INLINE void CWnd::OnPaletteIsChanging(CWnd*)
-	{ Default(); }
+//_AFXWIN_INLINE void CWnd::OnDropFiles(HDROP)
+//	{ Default(); }
+//_AFXWIN_INLINE void CWnd::OnPaletteIsChanging(CWnd*)
+//	{ Default(); }
 _AFXWIN_INLINE BOOL CWnd::OnNcActivate(BOOL)
 	{ return (BOOL)Default(); }
 _AFXWIN_INLINE void CWnd::OnNcCalcSize(BOOL, NCCALCSIZE_PARAMS*)

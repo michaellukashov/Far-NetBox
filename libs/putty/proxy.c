@@ -272,7 +272,7 @@ int proxy_for_destination (SockAddr addr, const char *hostname,
 {
     int s = 0, e = 0;
     char hostip[64];
-    int hostip_len, hostname_len;
+    size_t hostip_len, hostname_len;
     const char *exclude_list;
 
     /*
@@ -618,23 +618,23 @@ int proxy_http_negotiate (Proxy_Socket p, int change)
 
 	buf = dupprintf("CONNECT %s:%i HTTP/1.1\r\nHost: %s:%i\r\n",
 			dest, p->remote_port, dest, p->remote_port);
-	sk_write(p->sub_socket, buf, strlen(buf));
+	sk_write(p->sub_socket, buf, (int)strlen(buf));
 	sfree(buf);
 
 	username = conf_get_str(p->conf, CONF_proxy_username);
 	password = conf_get_str(p->conf, CONF_proxy_password);
 	if (username[0] || password[0]) {
 	    char *buf, *buf2;
-	    int i, j, len;
+			size_t i, j, len;
 	    buf = dupprintf("%s:%s", username, password);
-	    len = strlen(buf);
+			len = strlen(buf);
 	    buf2 = snewn(len * 4 / 3 + 100, char);
 	    sprintf(buf2, "Proxy-Authorization: Basic ");
 	    for (i = 0, j = strlen(buf2); i < len; i += 3, j += 4)
 		base64_encode_atom((unsigned char *)(buf+i),
-				   (len-i > 3 ? 3 : len-i), buf2+j);
+					 (int)(len-i > 3 ? 3 : len-i), buf2+j);
 	    strcpy(buf2+j, "\r\n");
-	    sk_write(p->sub_socket, buf2, strlen(buf2));
+			sk_write(p->sub_socket, buf2, (int)strlen(buf2));
 	    sfree(buf);
 	    sfree(buf2);
 	}
@@ -802,7 +802,9 @@ int proxy_socks4_negotiate (Proxy_Socket p, int change)
 	 *  user ID (variable length, null terminated string)
 	 */
 
-	int length, type, namelen;
+	size_t length;
+	int type;
+	size_t namelen;
 	char *command, addr[4], hostname[512];
 	char *username;
 
@@ -840,7 +842,7 @@ int proxy_socks4_negotiate (Proxy_Socket p, int change)
 	memcpy(command + 8 + strlen(username) + 1,
 	       hostname, namelen);
 
-	sk_write(p->sub_socket, command, length);
+	sk_write(p->sub_socket, command, (int)length);
 	sfree(username);
 	sfree(command);
 
@@ -1137,7 +1139,7 @@ int proxy_socks5_negotiate (Proxy_Socket p, int change)
 		assert(type == ADDRTYPE_NAME);
 		command[3] = 3;
 		sk_getaddr(p->remote_addr, command+5, 256);
-		command[4] = strlen(command+5);
+		command[4] = (char)strlen(command+5);
 		len = 7 + command[4];  /* 4 hdr, 1 len, N addr, 2 trailer */
 	    }
 
@@ -1252,7 +1254,7 @@ int proxy_socks5_negotiate (Proxy_Socket p, int change)
 	    char *password = conf_get_str(p->conf, CONF_proxy_password);
 	    if (username[0] || password[0]) {
 		char userpwbuf[255 + 255 + 3];
-		int ulen, plen;
+		size_t ulen, plen;
 		ulen = strlen(username);
 		if (ulen > 255) ulen = 255;
 		if (ulen < 1) ulen = 1;
@@ -1260,11 +1262,11 @@ int proxy_socks5_negotiate (Proxy_Socket p, int change)
 		if (plen > 255) plen = 255;
 		if (plen < 1) plen = 1;
 		userpwbuf[0] = 1;      /* version number of subnegotiation */
-		userpwbuf[1] = ulen;
+		userpwbuf[1] = (char)ulen;
 		memcpy(userpwbuf+2, username, ulen);
-		userpwbuf[ulen+2] = plen;
+		userpwbuf[ulen+2] = (char)plen;
 		memcpy(userpwbuf+ulen+3, password, plen);
-		sk_write(p->sub_socket, userpwbuf, ulen + plen + 3);
+		sk_write(p->sub_socket, userpwbuf, (int)(ulen + plen + 3));
 		p->state = 7;
 	    } else 
 		plug_closing(p->plug, "Proxy error: Server chose "
@@ -1300,7 +1302,7 @@ char *format_telnet_command(SockAddr addr, int port, Conf *conf)
 {
     char *fmt = conf_get_str(conf, CONF_proxy_telnet_command);
     char *ret = NULL;
-    int retlen = 0, retsize = 0;
+    size_t retlen = 0, retsize = 0;
     int so = 0, eo = 0;
 #define ENSURE(n) do { \
     if (retsize < retlen + n) { \
@@ -1435,7 +1437,7 @@ char *format_telnet_command(SockAddr addr, int port, Conf *conf)
 	    }
 	    else if (strnicmp(fmt + eo, "host", 4) == 0) {
 		char dest[512];
-		int destlen;
+		size_t destlen;
 		sk_getaddr(addr, dest, lenof(dest));
 		destlen = strlen(dest);
 		ENSURE(destlen);
@@ -1453,7 +1455,7 @@ char *format_telnet_command(SockAddr addr, int port, Conf *conf)
 	    }
 	    else if (strnicmp(fmt + eo, "user", 4) == 0) {
 		char *username = conf_get_str(conf, CONF_proxy_username);
-		int userlen = strlen(username);
+		size_t userlen = strlen(username);
 		ENSURE(userlen);
 		memcpy(ret+retlen, username, userlen);
 		retlen += userlen;
@@ -1461,7 +1463,7 @@ char *format_telnet_command(SockAddr addr, int port, Conf *conf)
 	    }
 	    else if (strnicmp(fmt + eo, "pass", 4) == 0) {
 		char *password = conf_get_str(conf, CONF_proxy_password);
-		int passlen = strlen(password);
+		size_t passlen = strlen(password);
 		ENSURE(passlen);
 		memcpy(ret+retlen, password, passlen);
 		retlen += passlen;
@@ -1469,7 +1471,7 @@ char *format_telnet_command(SockAddr addr, int port, Conf *conf)
 	    }
 	    else if (strnicmp(fmt + eo, "proxyhost", 9) == 0) {
 		char *host = conf_get_str(conf, CONF_proxy_host);
-		int phlen = strlen(host);
+		size_t phlen = strlen(host);
 		ENSURE(phlen);
 		memcpy(ret+retlen, host, phlen);
 		retlen += phlen;
@@ -1478,9 +1480,9 @@ char *format_telnet_command(SockAddr addr, int port, Conf *conf)
 	    else if (strnicmp(fmt + eo, "proxyport", 9) == 0) {
 		int port = conf_get_int(conf, CONF_proxy_port);
                 char pport[50];
-		int pplen;
-                sprintf(pport, "%d", port);
-                pplen = strlen(pport);
+    size_t pplen;
+    sprintf(pport, "%d", port);
+    pplen = strlen(pport);
 		ENSURE(pplen);
 		memcpy(ret+retlen, pport, pplen);
 		retlen += pplen;
@@ -1555,7 +1557,7 @@ int proxy_telnet_negotiate (Proxy_Socket p, int change)
             sfree(reescaped);
         }
 
-	sk_write(p->sub_socket, formatted_cmd, strlen(formatted_cmd));
+	sk_write(p->sub_socket, formatted_cmd, (int)strlen(formatted_cmd));
 	sfree(formatted_cmd);
 
 	p->state = 1;

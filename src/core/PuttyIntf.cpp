@@ -11,10 +11,13 @@
 #include "CoreMain.h"
 #include "TextsCore.h"
 
-extern "C" {
+extern "C"
+{
 #include <winstuff.h>
 }
+
 char sshver[50];
+extern const char commitid[] = "";
 const int platform_uses_x11_unix_by_default = TRUE;
 CRITICAL_SECTION putty_section;
 bool SaveRandomSeed;
@@ -91,7 +94,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
   frontend = get_ssh_frontend(plug);
   DebugAssert(frontend);
 
-  TSecureShell * SecureShell = dyn_cast<TSecureShell>(as_object(frontend));
+  TSecureShell * SecureShell = get_as<TSecureShell>(frontend);
   if (!pfwd)
   {
     SecureShell->UpdateSocket(skt, startup != 0);
@@ -107,7 +110,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
 int from_backend(void * frontend, int is_stderr, const char * data, int datalen)
 {
   DebugAssert(frontend);
-  TSecureShell * SecureShell = dyn_cast<TSecureShell>(as_object(frontend));
+  TSecureShell * SecureShell = get_as<TSecureShell>(frontend);
   DebugAssert(SecureShell);
   if (is_stderr >= 0)
   {
@@ -133,7 +136,7 @@ int from_backend_eof(void * /*frontend*/)
 {
   return FALSE;
 }
-//---------------------------------------------------------------------------
+
 int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/);
 
 int get_userpass_input(prompts_t * p, const uint8_t * in, int inlen)
@@ -144,7 +147,7 @@ int get_userpass_input(prompts_t * p, const uint8_t * in, int inlen)
 int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
 {
   DebugAssert(p != nullptr);
-  TSecureShell * SecureShell = dyn_cast<TSecureShell>(as_object(p->frontend));
+  TSecureShell * SecureShell = get_as<TSecureShell>(p->frontend);
   DebugAssert(SecureShell != nullptr);
 
   int Result;
@@ -202,8 +205,10 @@ int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
   }
   __finally
   {
-//    delete Prompts;
-//    delete Results;
+/*
+    delete Prompts;
+    delete Results;
+*/
   };
 
   return Result;
@@ -221,7 +226,7 @@ void logevent(void * frontend, const char * str)
   // Frontend maybe NULL here
   if (frontend != nullptr)
   {
-    dyn_cast<TSecureShell>(as_object(frontend))->PuttyLogEvent(str);
+    get_as<TSecureShell>(frontend)->PuttyLogEvent(str);
   }
 }
 
@@ -236,7 +241,7 @@ void connection_fatal(void * frontend, const char * fmt, ...)
   va_end(Param);
 
   DebugAssert(frontend != nullptr);
-  dyn_cast<TSecureShell>(as_object(frontend))->PuttyFatalError(UnicodeString(Buf.c_str()));
+  get_as<TSecureShell>(frontend)->PuttyFatalError(UnicodeString(Buf.c_str()));
 }
 
 int verify_ssh_host_key(void * frontend, char * host, int port, const char * keytype,
@@ -244,7 +249,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, const char * key
   void * /*ctx*/)
 {
   DebugAssert(frontend != nullptr);
-  dyn_cast<TSecureShell>(as_object(frontend))->VerifyHostKey(UnicodeString(host), port, keytype, keystr, fingerprint);
+  get_as<TSecureShell>(frontend)->VerifyHostKey(UnicodeString(host), port, keytype, keystr, fingerprint);
 
   // We should return 0 when key was not confirmed, we throw exception instead.
   return 1;
@@ -261,7 +266,7 @@ int askalg(void * frontend, const char * algtype, const char * algname,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   DebugAssert(frontend != nullptr);
-  dyn_cast<TSecureShell>(as_object(frontend))->AskAlg(algtype, algname);
+  get_as<TSecureShell>(frontend)->AskAlg(algtype, algname);
 
   // We should return 0 when alg was not confirmed, we throw exception instead.
   return 1;
@@ -282,7 +287,7 @@ void display_banner(void * frontend, const char * banner, int size)
 {
   DebugAssert(frontend);
   UnicodeString Banner(banner, size);
-  dyn_cast<TSecureShell>(as_object(frontend))->DisplayBanner(Banner);
+  get_as<TSecureShell>(frontend)->DisplayBanner(Banner);
 }
 
 static void SSHFatalError(const char * Format, va_list Param)
@@ -321,8 +326,10 @@ void nonfatal(const char * fmt, ...)
   SSHFatalError(fmt, Param);
   va_end(Param);
 }
-//---------------------------------------------------------------------------
+
+
 void CleanupExit(int /*code*/);
+
 void cleanup_exit(int code)
 {
   CleanupExit(code);
@@ -332,7 +339,7 @@ void CleanupExit(int /*code*/)
 {
   throw ESshFatal(nullptr, L"");
 }
-//---------------------------------------------------------------------------
+
 int askappend(void * /*frontend*/, Filename * /*filename*/,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
@@ -505,8 +512,8 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     int sz = static_cast<int>(*DataSize);
     if (sz > 0)
     {
-        strncpy(DataStr, Value.c_str(), sz);
-        DataStr[sz - 1] = '\0';
+      strncpy(DataStr, Value.c_str(), sz);
+      DataStr[sz - 1] = '\0';
     }
     *DataSize = static_cast<uint32_t>(strlen(DataStr));
   }
@@ -564,20 +571,20 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeStr
   char * CommentStr = nullptr;
   switch (KeyType)
   {
-    case ktSSH2:
-      Result = (ssh2_userkey_encrypted(KeyFile, &CommentStr) != 0);
-      break;
+  case ktSSH2:
+    Result = (ssh2_userkey_encrypted(KeyFile, &CommentStr) != 0);
+    break;
 
-    case ktOpenSSHPEM:
-    case ktOpenSSHNew:
-    case ktSSHCom:
-      Result = (import_encrypted(KeyFile, KeyType, &CommentStr) != 0);
-      break;
+  case ktOpenSSHPEM:
+  case ktOpenSSHNew:
+  case ktSSHCom:
+    Result = (import_encrypted(KeyFile, KeyType, &CommentStr) != 0);
+    break;
 
-    default:
-      DebugFail();
-      Result = false;
-      break;
+  default:
+    DebugFail();
+    Result = false;
+    break;
   }
 
   if (CommentStr != nullptr)
@@ -604,19 +611,19 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
 
   switch (KeyType)
   {
-    case ktSSH2:
-      Ssh2Key = ssh2_load_userkey(KeyFile, AnsiPassphrase.c_str(), &ErrorStr);
-      break;
+  case ktSSH2:
+    Ssh2Key = ssh2_load_userkey(KeyFile, AnsiPassphrase.c_str(), &ErrorStr);
+    break;
 
-    case ktOpenSSHPEM:
-    case ktOpenSSHNew:
-    case ktSSHCom:
-      Ssh2Key = import_ssh2(KeyFile, KeyType, (char *)AnsiPassphrase.c_str(), &ErrorStr);
-      break;
+  case ktOpenSSHPEM:
+  case ktOpenSSHNew:
+  case ktSSHCom:
+    Ssh2Key = import_ssh2(KeyFile, KeyType, (char *)AnsiPassphrase.c_str(), &ErrorStr);
+    break;
 
-    default:
-      DebugFail();
-      break;
+  default:
+    DebugFail();
+    break;
   }
 
   Shred(AnsiPassphrase);
@@ -656,17 +663,17 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
   const char * PassphrasePtr = (AnsiPassphrase.IsEmpty() ? nullptr : AnsiPassphrase.c_str());
   switch (KeyType)
   {
-    case ktSSH2:
-      if (!ssh2_save_userkey(KeyFile, Ssh2Key, PassphrasePtr))
-      {
-        intptr_t Error = errno;
-        throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, FileName.c_str()), Error);
-      }
-      break;
+  case ktSSH2:
+    if (!ssh2_save_userkey(KeyFile, Ssh2Key, PassphrasePtr))
+    {
+      intptr_t Error = errno;
+      throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, FileName.c_str()), Error);
+    }
+    break;
 
-    default:
-      DebugFail();
-      break;
+  default:
+    DebugFail();
+    break;
   }
   filename_free(KeyFile);
 }
@@ -714,8 +721,10 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
     }
     __finally
     {
+/*
       ssh_gss_cleanup(List);
       conf_free(conf);
+*/
     };
 
     if (has < 0)

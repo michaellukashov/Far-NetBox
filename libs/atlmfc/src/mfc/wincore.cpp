@@ -23,7 +23,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Globals
 
-const UINT CWnd::m_nMsgDragList = ::RegisterWindowMessage(DRAGLISTMSGSTRING);
+//const UINT CWnd::m_nMsgDragList = ::RegisterWindowMessage(DRAGLISTMSGSTRING);
 
 // CWnds for setting z-order with SetWindowPos's pWndInsertAfter parameter
 
@@ -71,35 +71,35 @@ CWnd::CWnd(HWND hWnd)
 
 // Change a window's style
 
-AFX_STATIC BOOL AFXAPI _AfxModifyStyle(HWND hWnd, int nStyleOffset,
-	DWORD dwRemove, DWORD dwAdd, UINT nFlags)
-{
-	ASSERT(hWnd != NULL);
-	DWORD dwStyle = ::GetWindowLong(hWnd, nStyleOffset);
-	DWORD dwNewStyle = (dwStyle & ~dwRemove) | dwAdd;
-	if (dwStyle == dwNewStyle)
-		return FALSE;
+//AFX_STATIC BOOL AFXAPI _AfxModifyStyle(HWND hWnd, int nStyleOffset,
+//	DWORD dwRemove, DWORD dwAdd, UINT nFlags)
+//{
+//	ASSERT(hWnd != NULL);
+//	DWORD dwStyle = ::GetWindowLong(hWnd, nStyleOffset);
+//	DWORD dwNewStyle = (dwStyle & ~dwRemove) | dwAdd;
+//	if (dwStyle == dwNewStyle)
+//		return FALSE;
 
-	::SetWindowLong(hWnd, nStyleOffset, dwNewStyle);
-	if (nFlags != 0)
-	{
-		::SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
-			SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | nFlags);
-	}
-	return TRUE;
-}
+//	::SetWindowLong(hWnd, nStyleOffset, dwNewStyle);
+//	if (nFlags != 0)
+//	{
+//		::SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
+//			SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | nFlags);
+//	}
+//	return TRUE;
+//}
 
-BOOL PASCAL
-CWnd::ModifyStyle(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
-{
-	return _AfxModifyStyle(hWnd, GWL_STYLE, dwRemove, dwAdd, nFlags);
-}
+//BOOL PASCAL
+//CWnd::ModifyStyle(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
+//{
+//	return _AfxModifyStyle(hWnd, GWL_STYLE, dwRemove, dwAdd, nFlags);
+//}
 
-BOOL PASCAL
-CWnd::ModifyStyleEx(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
-{
-	return _AfxModifyStyle(hWnd, GWL_EXSTYLE, dwRemove, dwAdd, nFlags);
-}
+//BOOL PASCAL
+//CWnd::ModifyStyleEx(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
+//{
+//	return _AfxModifyStyle(hWnd, GWL_EXSTYLE, dwRemove, dwAdd, nFlags);
+//}
 
 /////////////////////////////////////////////////////////////////////////////
 // Special helpers for certain windows messages
@@ -363,85 +363,85 @@ _AfxCbtFilterHook(int code, WPARAM wParam, LPARAM lParam)
 
 	CWnd* pWndInit = pThreadState->m_pWndInit;
 	BOOL bContextIsDLL = afxContextIsDLL;
-	if (pWndInit != NULL || (!(lpcs->style & WS_CHILD) && !bContextIsDLL))
-	{
-		ASSERT(wParam != NULL); // should be non-NULL HWND
-		HWND hWnd = (HWND)wParam;
-		WNDPROC oldWndProc;
-		if (pWndInit != NULL)
-		{
-//			AFX_MANAGE_STATE(pWndInit->m_pModuleState);
+//	if (pWndInit != NULL || (!(lpcs->style & WS_CHILD) && !bContextIsDLL))
+//	{
+//		ASSERT(wParam != NULL); // should be non-NULL HWND
+//		HWND hWnd = (HWND)wParam;
+//		WNDPROC oldWndProc;
+//		if (pWndInit != NULL)
+//		{
+////			AFX_MANAGE_STATE(pWndInit->m_pModuleState);
 
-			// the window should not be in the permanent map at this time
-			ASSERT(CWnd::FromHandlePermanent(hWnd) == NULL);
+//			// the window should not be in the permanent map at this time
+//			ASSERT(CWnd::FromHandlePermanent(hWnd) == NULL);
 
-			// connect the HWND to pWndInit...
-			pWndInit->Attach(hWnd);
-			// allow other subclassing to occur first
-			pWndInit->PreSubclassWindow();
+//			// connect the HWND to pWndInit...
+//			pWndInit->Attach(hWnd);
+//			// allow other subclassing to occur first
+//			pWndInit->PreSubclassWindow();
 
-			WNDPROC *pOldWndProc = pWndInit->GetSuperWndProcAddr();
-			ASSERT(pOldWndProc != NULL);
+//			WNDPROC *pOldWndProc = pWndInit->GetSuperWndProcAddr();
+//			ASSERT(pOldWndProc != NULL);
 
-			// subclass the window with standard AfxWndProc
-			WNDPROC afxWndProc = AfxGetAfxWndProc();
-			oldWndProc = (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC,
-				(DWORD_PTR)afxWndProc);
-			ASSERT(oldWndProc != NULL);
-			if (oldWndProc != afxWndProc)
-				*pOldWndProc = oldWndProc;
+//			// subclass the window with standard AfxWndProc
+//			WNDPROC afxWndProc = AfxGetAfxWndProc();
+//			oldWndProc = (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC,
+//				(DWORD_PTR)afxWndProc);
+//			ASSERT(oldWndProc != NULL);
+//			if (oldWndProc != afxWndProc)
+//				*pOldWndProc = oldWndProc;
 
-			pThreadState->m_pWndInit = NULL;
-		}
-		else
-		{
-			ASSERT(!bContextIsDLL);   // should never get here
+//			pThreadState->m_pWndInit = NULL;
+//		}
+//		else
+//		{
+//			ASSERT(!bContextIsDLL);   // should never get here
 
-			static ATOM s_atomMenu = 0;
-			bool bSubclass = true;
+//			static ATOM s_atomMenu = 0;
+//			bool bSubclass = true;
 
-			if (s_atomMenu == 0)
-			{
-				WNDCLASSEX wc;
-				memset(&wc, 0, sizeof(WNDCLASSEX));
-				wc.cbSize = sizeof(WNDCLASSEX);
-				// s_atomMenu = (ATOM)::AfxCtxGetClassInfoEx(NULL, _T("#32768"), &wc);
-			}
+//			if (s_atomMenu == 0)
+//			{
+//				WNDCLASSEX wc;
+//				memset(&wc, 0, sizeof(WNDCLASSEX));
+//				wc.cbSize = sizeof(WNDCLASSEX);
+//				// s_atomMenu = (ATOM)::AfxCtxGetClassInfoEx(NULL, _T("#32768"), &wc);
+//			}
 
-			// Do not subclass menus.
-			if (s_atomMenu != 0)
-			{
-				ATOM atomWnd = (ATOM)::GetClassLongPtr(hWnd, GCW_ATOM);
-				if (atomWnd == s_atomMenu)
-						bSubclass = false;
-			}
-			else
-			{
-				TCHAR szClassName[256];
-				if (::GetClassName(hWnd, szClassName, 256))
-				{
-					szClassName[255] = NULL;
-					if (_tcscmp(szClassName, _T("#32768")) == 0)
-						bSubclass = false;
-				}
-			}
-			if (bSubclass)
-			{
-				// subclass the window with the proc which does gray backgrounds
-				oldWndProc = (WNDPROC)GetWindowLongPtr(hWnd, GWLP_WNDPROC);
-				if (oldWndProc != NULL && GetProp(hWnd, _afxOldWndProc) == NULL)
-				{
-					SetProp(hWnd, _afxOldWndProc, oldWndProc);
-					if ((WNDPROC)GetProp(hWnd, _afxOldWndProc) == oldWndProc)
-					{
-						GlobalAddAtom(_afxOldWndProc);
-						SetWindowLongPtr(hWnd, GWLP_WNDPROC, (DWORD_PTR)_AfxActivationWndProc);
-						ASSERT(oldWndProc != NULL);
-					}
-				}
-			}
-		}
-	}
+//			// Do not subclass menus.
+//			if (s_atomMenu != 0)
+//			{
+//				ATOM atomWnd = (ATOM)::GetClassLongPtr(hWnd, GCW_ATOM);
+//				if (atomWnd == s_atomMenu)
+//						bSubclass = false;
+//			}
+//			else
+//			{
+//				TCHAR szClassName[256];
+//				if (::GetClassName(hWnd, szClassName, 256))
+//				{
+//					szClassName[255] = NULL;
+//					if (_tcscmp(szClassName, _T("#32768")) == 0)
+//						bSubclass = false;
+//				}
+//			}
+//			if (bSubclass)
+//			{
+//				// subclass the window with the proc which does gray backgrounds
+//				oldWndProc = (WNDPROC)GetWindowLongPtr(hWnd, GWLP_WNDPROC);
+//				if (oldWndProc != NULL && GetProp(hWnd, _afxOldWndProc) == NULL)
+//				{
+//					SetProp(hWnd, _afxOldWndProc, oldWndProc);
+//					if ((WNDPROC)GetProp(hWnd, _afxOldWndProc) == oldWndProc)
+//					{
+//						GlobalAddAtom(_afxOldWndProc);
+//						SetWindowLongPtr(hWnd, GWLP_WNDPROC, (DWORD_PTR)_AfxActivationWndProc);
+//						ASSERT(oldWndProc != NULL);
+//					}
+//				}
+//			}
+//		}
+//	}
 
 	LRESULT lResult = CallNextHookEx(pThreadState->m_hHookOldCbtFilter, code,
 		wParam, lParam);
@@ -558,17 +558,17 @@ BOOL CWnd::PreCreateWindow(CREATESTRUCT& cs)
 	if (cs.lpszClass == NULL)
 	{
 		// make sure the default window class is registered
-		VERIFY(AfxDeferRegisterClass(AFX_WND_REG));
+//		VERIFY(AfxDeferRegisterClass(AFX_WND_REG));
 
 		// no WNDCLASS provided - use child window default
-		ASSERT(cs.style & WS_CHILD);
+//		ASSERT(cs.style & WS_CHILD);
 		cs.lpszClass = _afxWnd;
 	}
 
-	if ((cs.hMenu == NULL) && (cs.style & WS_CHILD))
-	{
-		cs.hMenu = (HMENU)(UINT_PTR)this;
-	}
+//	if ((cs.hMenu == NULL) && (cs.style & WS_CHILD))
+//	{
+//		cs.hMenu = (HMENU)(UINT_PTR)this;
+//	}
 
 	return TRUE;
 }
@@ -581,10 +581,10 @@ BOOL CWnd::Create(LPCTSTR lpszClassName,
 {
 	// can't use for desktop or pop-up windows (use CreateEx instead)
 	ASSERT(pParentWnd != NULL);
-	ASSERT((dwStyle & WS_POPUP) == 0);
+//	ASSERT((dwStyle & WS_POPUP) == 0);
 
 	return CreateEx(0, lpszClassName, lpszWindowName,
-		dwStyle | WS_CHILD,
+	  dwStyle | 0 /*WS_CHILD*/,
 		rect.left, rect.top,
 		rect.right - rect.left, rect.bottom - rect.top,
 		pParentWnd->GetSafeHwnd(), (HMENU)(UINT_PTR)nID, (LPVOID)pContext);
@@ -706,13 +706,6 @@ BOOL CWnd::PreTranslateMessage(MSG* pMsg)
 
 	// no default processing
 	return FALSE;
-}
-
-void PASCAL CWnd::CancelToolTips(BOOL bKeys)
-{
-	// check for active tooltip
-	AFX_MODULE_THREAD_STATE* pModuleThreadState = AfxGetModuleThreadState();
-
 }
 
 void CWnd::GetWindowText(CString& rString) const
@@ -865,24 +858,6 @@ struct AFX_CTLCOLOR
 	HDC hDC;
 	UINT nCtlType;
 };
-
-LRESULT CWnd::OnNTCtlColor(WPARAM wParam, LPARAM lParam)
-{
-	// fill in special struct for compatiblity with 16-bit WM_CTLCOLOR
-	AFX_CTLCOLOR ctl;
-	ctl.hDC = (HDC)wParam;
-	ctl.hWnd = (HWND)lParam;
-	_AFX_THREAD_STATE* pThreadState = _afxThreadState.GetData();
-	ctl.nCtlType = pThreadState->m_lastSentMsg.message - WM_CTLCOLORMSGBOX;
-	//ASSERT(ctl.nCtlType >= CTLCOLOR_MSGBOX);
-	ASSERT(ctl.nCtlType <= CTLCOLOR_STATIC);
-
-	// Note: We call the virtual WindowProc for this window directly,
-	//  instead of calling AfxCallWindowProc, so that Default()
-	//  will still work (it will call the Default window proc with
-	//  the original Win32 WM_CTLCOLOR message).
-	return WindowProc(WM_CTLCOLOR, 0, (LPARAM)&ctl);
-}
 
 /////////////////////////////////////////////////////////////////////////////
 // Multi-touch support:
@@ -1521,7 +1496,7 @@ BOOL CWnd::OnNotify(WPARAM, LPARAM lParam, LRESULT* pResult)
 	HWND hWndCtrl = pNMHDR->hwndFrom;
 
 	// get the child ID from the window itself
-	UINT_PTR nID = _AfxGetDlgCtrlID(hWndCtrl);
+	UINT_PTR nID = 0; // _AfxGetDlgCtrlID(hWndCtrl);
 	int nCode = pNMHDR->code;
 
 	ASSERT(hWndCtrl != NULL);
@@ -1537,54 +1512,17 @@ BOOL CWnd::OnNotify(WPARAM, LPARAM lParam, LRESULT* pResult)
 	return OnCmdMsg((UINT)nID, MAKELONG(nCode, WM_NOTIFY), &notify, NULL);
 }
 
-HWND AFXAPI AfxGetParentOwner(HWND hWnd)
-{
-	// check for permanent-owned window first
-	CWnd* pWnd = CWnd::FromHandlePermanent(hWnd);
-	if (pWnd != NULL)
-		return pWnd->GetOwner()->GetSafeHwnd();
+//HWND AFXAPI AfxGetParentOwner(HWND hWnd)
+//{
+//	// check for permanent-owned window first
+//	CWnd* pWnd = CWnd::FromHandlePermanent(hWnd);
+//	if (pWnd != NULL)
+//		return pWnd->GetOwner()->GetSafeHwnd();
 
-	// otherwise, return parent in the Windows sense
-	return (::GetWindowLong(hWnd, GWL_STYLE) & WS_CHILD) ?
-		::GetParent(hWnd) : ::GetWindow(hWnd, GW_OWNER);
-}
-
-CWnd* CWnd::GetTopLevelParent() const
-{
-	if (GetSafeHwnd() == NULL) // no Window attached
-		return NULL;
-
-	ASSERT_VALID(this);
-
-	return NULL; // CWnd::FromHandle(hWndParent);
-}
-
-CWnd* CWnd::GetTopLevelOwner() const
-{
-	if (GetSafeHwnd() == NULL) // no Window attached
-		return NULL;
-
-	ASSERT_VALID(this);
-
-	return 0; // CWnd::FromHandle(hWndOwner);
-}
-
-CWnd* CWnd::GetParentOwner() const
-{
-	if (GetSafeHwnd() == NULL) // no Window attached
-		return NULL;
-
-	ASSERT_VALID(this);
-
-	return 0; // CWnd::FromHandle(hWndParent);
-}
-
-BOOL CWnd::IsTopParentActive() const
-{
-	ASSERT_VALID(this);
-
-	return false;
-}
+//	// otherwise, return parent in the Windows sense
+//	return (::GetWindowLong(hWnd, GWL_STYLE) & WS_CHILD) ?
+//		::GetParent(hWnd) : ::GetWindow(hWnd, GW_OWNER);
+//}
 
 void CWnd::ActivateTopParent()
 {
@@ -1594,14 +1532,6 @@ CWnd* PASCAL CWnd::GetSafeOwner(CWnd* pParent, HWND* pWndTop)
 {
 	HWND hWnd = 0; // GetSafeOwner_(pParent->GetSafeHwnd(), pWndTop);
 	return CWnd::FromHandle(hWnd);
-}
-
-int CWnd::MessageBox(LPCTSTR lpszText, LPCTSTR lpszCaption, UINT nType)
-{
-	if (lpszCaption == NULL)
-		lpszCaption = AfxGetAppName();
-	int nResult = 0; // ::AfxCtxMessageBox(GetSafeHwnd(), lpszText, lpszCaption, nType);
-	return nResult;
 }
 
 CWnd* PASCAL CWnd::GetDescendantWindow(HWND hWnd, int nID, BOOL bOnlyPerm)
@@ -1979,7 +1909,7 @@ BOOL CWnd::UpdateData(BOOL bSaveAndValidate)
 	CATCH_ALL(e)
 	{
 		// validation failed due to OOM or other resource failure
-		e->ReportError(MB_ICONEXCLAMATION, AFX_IDP_INTERNAL_FAILURE);
+//		e->ReportError(MB_ICONEXCLAMATION, AFX_IDP_INTERNAL_FAILURE);
 		ASSERT(!bOK);
 		DELETE_EXCEPTION(e);
 	}
@@ -2012,7 +1942,7 @@ BOOL CWnd::PreTranslateInput(LPMSG lpMsg)
 		(lpMsg->message < WM_MOUSEFIRST || lpMsg->message > AFX_WM_MOUSELAST))
 		return FALSE;
 
-	return IsDialogMessage(lpMsg);
+	return FALSE; // IsDialogMessage(lpMsg);
 }
 
 int CWnd::RunModalLoop(DWORD dwFlags)
@@ -2022,8 +1952,8 @@ int CWnd::RunModalLoop(DWORD dwFlags)
 	// for tracking the idle time state
 	BOOL bIdle = TRUE;
 	LONG lIdleCount = 0;
-	BOOL bShowIdle = (dwFlags & MLF_SHOWONIDLE) && !(GetStyle() & WS_VISIBLE);
-	m_nFlags |= (WF_MODALLOOP|WF_CONTINUEMODAL);
+	BOOL bShowIdle = 0; // (dwFlags & MLF_SHOWONIDLE) && !(GetStyle() & WS_VISIBLE);
+	m_nFlags |= 0; // (WF_MODALLOOP|WF_CONTINUEMODAL);
 	MSG *pMsg = AfxGetCurrentMessage();
 
 	// acquire and dispatch messages until the modal state is done
@@ -2040,7 +1970,7 @@ int CWnd::RunModalLoop(DWORD dwFlags)
 			// show the dialog when the message queue goes idle
 			if (bShowIdle)
 			{
-				ShowWindow(SW_SHOWNORMAL);
+//				ShowWindow(SW_SHOWNORMAL);
 				UpdateWindow();
 				bShowIdle = FALSE;
 			}
@@ -2074,7 +2004,7 @@ int CWnd::RunModalLoop(DWORD dwFlags)
 			if (bShowIdle &&
 				(pMsg->message == 0x118 || pMsg->message == WM_SYSKEYDOWN))
 			{
-				ShowWindow(SW_SHOWNORMAL);
+//				ShowWindow(SW_SHOWNORMAL);
 				UpdateWindow();
 				bShowIdle = FALSE;
 			}
@@ -2143,188 +2073,188 @@ AFX_STATIC BOOL AFXAPI _AfxRegisterWithIcon(WNDCLASS* pWndCls,
 	if ((pWndCls->hIcon = ::LoadIconW(hInst, ATL_MAKEINTRESOURCEW(nIDIcon))) == NULL)
 	{
 		// use default icon
-		pWndCls->hIcon = ::LoadIcon(NULL, IDI_APPLICATION);
+//		pWndCls->hIcon = ::LoadIcon(NULL, IDI_APPLICATION);
 	}
 	return AfxRegisterClass(pWndCls);
 }
 
-LONG AFXAPI _AfxInitCommonControls(LPINITCOMMONCONTROLSEX lpInitCtrls, LONG fToRegister)
-{
-	ASSERT(fToRegister != 0);
+//LONG AFXAPI _AfxInitCommonControls(LPINITCOMMONCONTROLSEX lpInitCtrls, LONG fToRegister)
+//{
+//	ASSERT(fToRegister != 0);
 
-	LONG lResult = 0;
-	// if (AFX_COMCTL32_IF_EXISTS(InitCommonControlsEx))
-	{
-		// if (AfxInitCommonControlsEx(lpInitCtrls))
-		{
-			// InitCommonControlsEx was successful so return the full mask
-			// lResult = fToRegister;
-		}
-	}
-	// else
-	{
-		// not there, so call InitCommonControls if possible
-		if ((fToRegister & AFX_WIN95CTLS_MASK) == fToRegister)
-		{
-			// AfxInitCommonControls();
-			lResult = AFX_WIN95CTLS_MASK;
-		}
-	}
-	return lResult;
-}
+//	LONG lResult = 0;
+//	// if (AFX_COMCTL32_IF_EXISTS(InitCommonControlsEx))
+//	{
+//		// if (AfxInitCommonControlsEx(lpInitCtrls))
+//		{
+//			// InitCommonControlsEx was successful so return the full mask
+//			// lResult = fToRegister;
+//		}
+//	}
+//	// else
+//	{
+//		// not there, so call InitCommonControls if possible
+//		if ((fToRegister & AFX_WIN95CTLS_MASK) == fToRegister)
+//		{
+//			// AfxInitCommonControls();
+//			lResult = AFX_WIN95CTLS_MASK;
+//		}
+//	}
+//	return lResult;
+//}
 
-BOOL AFXAPI AfxEndDeferRegisterClass(LONG fToRegister)
-{
-	// mask off all classes that are already registered
-	AFX_MODULE_STATE* pModuleState = AfxGetModuleState();
-	fToRegister &= ~pModuleState->m_fRegisteredClasses;
-	if (fToRegister == 0)
-		return TRUE;
+//BOOL AFXAPI AfxEndDeferRegisterClass(LONG fToRegister)
+//{
+//	// mask off all classes that are already registered
+//	AFX_MODULE_STATE* pModuleState = AfxGetModuleState();
+//	fToRegister &= ~pModuleState->m_fRegisteredClasses;
+//	if (fToRegister == 0)
+//		return TRUE;
 
-	LONG fRegisteredClasses = 0;
+//	LONG fRegisteredClasses = 0;
 
-	// common initialization
-	WNDCLASS wndcls;
-	memset(&wndcls, 0, sizeof(WNDCLASS));   // start with NULL defaults
-	wndcls.lpfnWndProc = DefWindowProc;
-	wndcls.hInstance = AfxGetInstanceHandle();
+//	// common initialization
+//	WNDCLASS wndcls;
+//	memset(&wndcls, 0, sizeof(WNDCLASS));   // start with NULL defaults
+//	wndcls.lpfnWndProc = DefWindowProc;
+//	wndcls.hInstance = AfxGetInstanceHandle();
 
-	INITCOMMONCONTROLSEX init;
-	init.dwSize = sizeof(init);
+//	INITCOMMONCONTROLSEX init;
+//	init.dwSize = sizeof(init);
 
-	// work to register classes as specified by fToRegister, populate fRegisteredClasses as we go
-	if (fToRegister & AFX_WND_REG)
-	{
-		// Child windows - no brush, no icon, safest default class styles
-		wndcls.style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;
-		wndcls.lpszClassName = _afxWnd;
-		if (AfxRegisterClass(&wndcls))
-			fRegisteredClasses |= AFX_WND_REG;
-	}
-	if (fToRegister & AFX_WNDOLECONTROL_REG)
-	{
-		// OLE Control windows - use parent DC for speed
-		wndcls.style |= CS_PARENTDC | CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;
-		wndcls.lpszClassName = _afxWndOleControl;
-		if (AfxRegisterClass(&wndcls))
-			fRegisteredClasses |= AFX_WNDOLECONTROL_REG;
-	}
-	if (fToRegister & AFX_WNDCONTROLBAR_REG)
-	{
-		// Control bar windows
-		wndcls.style = 0;   // control bars don't handle double click
-		wndcls.lpszClassName = _afxWndControlBar;
-		wndcls.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
-		if (AfxRegisterClass(&wndcls))
-			fRegisteredClasses |= AFX_WNDCONTROLBAR_REG;
-	}
-	if (fToRegister & AFX_WNDMDIFRAME_REG)
-	{
-		// MDI Frame window (also used for splitter window)
-		wndcls.style = CS_DBLCLKS;
-		wndcls.hbrBackground = NULL;
-		if (_AfxRegisterWithIcon(&wndcls, _afxWndMDIFrame, AFX_IDI_STD_MDIFRAME))
-			fRegisteredClasses |= AFX_WNDMDIFRAME_REG;
-	}
-	if (fToRegister & AFX_WNDFRAMEORVIEW_REG)
-	{
-		// SDI Frame or MDI Child windows or views - normal colors
-		wndcls.style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;
-		wndcls.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
-		if (_AfxRegisterWithIcon(&wndcls, _afxWndFrameOrView, AFX_IDI_STD_FRAME))
-			fRegisteredClasses |= AFX_WNDFRAMEORVIEW_REG;
-	}
-	if (fToRegister & AFX_WNDCOMMCTLS_REG)
-	{
-		// this flag is compatible with the old InitCommonControls() API
-		init.dwICC = ICC_WIN95_CLASSES;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WIN95CTLS_MASK);
-		fToRegister &= ~AFX_WIN95CTLS_MASK;
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_UPDOWN_REG)
-	{
-		init.dwICC = ICC_UPDOWN_CLASS;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_UPDOWN_REG);
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_TREEVIEW_REG)
-	{
-		init.dwICC = ICC_TREEVIEW_CLASSES;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_TREEVIEW_REG);
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_TAB_REG)
-	{
-		init.dwICC = ICC_TAB_CLASSES;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_TAB_REG);
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_PROGRESS_REG)
-	{
-		init.dwICC = ICC_PROGRESS_CLASS;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_PROGRESS_REG);
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_LISTVIEW_REG)
-	{
-		init.dwICC = ICC_LISTVIEW_CLASSES;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_LISTVIEW_REG);
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_HOTKEY_REG)
-	{
-		init.dwICC = ICC_HOTKEY_CLASS;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_HOTKEY_REG);
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_BAR_REG)
-	{
-		init.dwICC = ICC_BAR_CLASSES;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_BAR_REG);
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_ANIMATE_REG)
-	{
-		init.dwICC = ICC_ANIMATE_CLASS;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_ANIMATE_REG);
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_INTERNET_REG)
-	{
-		init.dwICC = ICC_INTERNET_CLASSES;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_INTERNET_REG);
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_COOL_REG)
-	{
-		init.dwICC = ICC_COOL_CLASSES;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_COOL_REG);
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_USEREX_REG)
-	{
-		init.dwICC = ICC_USEREX_CLASSES;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_USEREX_REG);
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_DATE_REG)
-	{
-		init.dwICC = ICC_DATE_CLASSES;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_DATE_REG);
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_LINK_REG)
-	{
-		init.dwICC = ICC_LINK_CLASS;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_LINK_REG);
-	}
-	if (fToRegister & AFX_WNDCOMMCTL_PAGER_REG)
-	{
-		init.dwICC = ICC_PAGESCROLLER_CLASS;
-		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_PAGER_REG);
-	}
+//	// work to register classes as specified by fToRegister, populate fRegisteredClasses as we go
+//	if (fToRegister & AFX_WND_REG)
+//	{
+//		// Child windows - no brush, no icon, safest default class styles
+//		wndcls.style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;
+//		wndcls.lpszClassName = _afxWnd;
+//		if (AfxRegisterClass(&wndcls))
+//			fRegisteredClasses |= AFX_WND_REG;
+//	}
+//	if (fToRegister & AFX_WNDOLECONTROL_REG)
+//	{
+//		// OLE Control windows - use parent DC for speed
+//		wndcls.style |= CS_PARENTDC | CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;
+//		wndcls.lpszClassName = _afxWndOleControl;
+//		if (AfxRegisterClass(&wndcls))
+//			fRegisteredClasses |= AFX_WNDOLECONTROL_REG;
+//	}
+//	if (fToRegister & AFX_WNDCONTROLBAR_REG)
+//	{
+//		// Control bar windows
+//		wndcls.style = 0;   // control bars don't handle double click
+//		wndcls.lpszClassName = _afxWndControlBar;
+//		wndcls.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
+//		if (AfxRegisterClass(&wndcls))
+//			fRegisteredClasses |= AFX_WNDCONTROLBAR_REG;
+//	}
+//	if (fToRegister & AFX_WNDMDIFRAME_REG)
+//	{
+//		// MDI Frame window (also used for splitter window)
+//		wndcls.style = CS_DBLCLKS;
+//		wndcls.hbrBackground = NULL;
+//		if (_AfxRegisterWithIcon(&wndcls, _afxWndMDIFrame, AFX_IDI_STD_MDIFRAME))
+//			fRegisteredClasses |= AFX_WNDMDIFRAME_REG;
+//	}
+//	if (fToRegister & AFX_WNDFRAMEORVIEW_REG)
+//	{
+//		// SDI Frame or MDI Child windows or views - normal colors
+//		wndcls.style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;
+//		wndcls.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+//		if (_AfxRegisterWithIcon(&wndcls, _afxWndFrameOrView, AFX_IDI_STD_FRAME))
+//			fRegisteredClasses |= AFX_WNDFRAMEORVIEW_REG;
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTLS_REG)
+//	{
+//		// this flag is compatible with the old InitCommonControls() API
+//		init.dwICC = ICC_WIN95_CLASSES;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WIN95CTLS_MASK);
+//		fToRegister &= ~AFX_WIN95CTLS_MASK;
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_UPDOWN_REG)
+//	{
+//		init.dwICC = ICC_UPDOWN_CLASS;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_UPDOWN_REG);
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_TREEVIEW_REG)
+//	{
+//		init.dwICC = ICC_TREEVIEW_CLASSES;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_TREEVIEW_REG);
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_TAB_REG)
+//	{
+//		init.dwICC = ICC_TAB_CLASSES;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_TAB_REG);
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_PROGRESS_REG)
+//	{
+//		init.dwICC = ICC_PROGRESS_CLASS;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_PROGRESS_REG);
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_LISTVIEW_REG)
+//	{
+//		init.dwICC = ICC_LISTVIEW_CLASSES;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_LISTVIEW_REG);
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_HOTKEY_REG)
+//	{
+//		init.dwICC = ICC_HOTKEY_CLASS;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_HOTKEY_REG);
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_BAR_REG)
+//	{
+//		init.dwICC = ICC_BAR_CLASSES;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_BAR_REG);
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_ANIMATE_REG)
+//	{
+//		init.dwICC = ICC_ANIMATE_CLASS;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_ANIMATE_REG);
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_INTERNET_REG)
+//	{
+//		init.dwICC = ICC_INTERNET_CLASSES;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_INTERNET_REG);
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_COOL_REG)
+//	{
+//		init.dwICC = ICC_COOL_CLASSES;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_COOL_REG);
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_USEREX_REG)
+//	{
+//		init.dwICC = ICC_USEREX_CLASSES;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_USEREX_REG);
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_DATE_REG)
+//	{
+//		init.dwICC = ICC_DATE_CLASSES;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_DATE_REG);
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_LINK_REG)
+//	{
+//		init.dwICC = ICC_LINK_CLASS;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_LINK_REG);
+//	}
+//	if (fToRegister & AFX_WNDCOMMCTL_PAGER_REG)
+//	{
+//		init.dwICC = ICC_PAGESCROLLER_CLASS;
+//		fRegisteredClasses |= _AfxInitCommonControls(&init, AFX_WNDCOMMCTL_PAGER_REG);
+//	}
 
-	// save new state of registered controls
-	pModuleState->m_fRegisteredClasses |= fRegisteredClasses;
+//	// save new state of registered controls
+//	pModuleState->m_fRegisteredClasses |= fRegisteredClasses;
 
-	// special case for all common controls registered, turn on AFX_WNDCOMMCTLS_REG
-	if ((pModuleState->m_fRegisteredClasses & AFX_WIN95CTLS_MASK) == AFX_WIN95CTLS_MASK)
-	{
-		pModuleState->m_fRegisteredClasses |= AFX_WNDCOMMCTLS_REG;
-		fRegisteredClasses |= AFX_WNDCOMMCTLS_REG;
-	}
+//	// special case for all common controls registered, turn on AFX_WNDCOMMCTLS_REG
+//	if ((pModuleState->m_fRegisteredClasses & AFX_WIN95CTLS_MASK) == AFX_WIN95CTLS_MASK)
+//	{
+//		pModuleState->m_fRegisteredClasses |= AFX_WNDCOMMCTLS_REG;
+//		fRegisteredClasses |= AFX_WNDCOMMCTLS_REG;
+//	}
 
-	// must have registered at least as mamy classes as requested
-	return (fToRegister & fRegisteredClasses) == fToRegister;
-}
+//	// must have registered at least as mamy classes as requested
+//	return (fToRegister & fRegisteredClasses) == fToRegister;
+//}
 
 BOOL AFXAPI AfxInitNetworkAddressControl()
 {
@@ -2362,22 +2292,22 @@ BOOL CWnd::SubclassWindow(HWND hWnd)
 	// allow any other subclassing to occur
 	PreSubclassWindow();
 
-	// now hook into the AFX WndProc
-	WNDPROC* lplpfn = GetSuperWndProcAddr();
-	WNDPROC oldWndProc = (WNDPROC)::SetWindowLongPtr(hWnd, GWLP_WNDPROC,
-		(INT_PTR)AfxGetAfxWndProc());
-	ASSERT(oldWndProc != AfxGetAfxWndProc());
+//	// now hook into the AFX WndProc
+//	WNDPROC* lplpfn = GetSuperWndProcAddr();
+//	WNDPROC oldWndProc = (WNDPROC)::SetWindowLongPtr(hWnd, GWLP_WNDPROC,
+//		(INT_PTR)AfxGetAfxWndProc());
+//	ASSERT(oldWndProc != AfxGetAfxWndProc());
 
-	if (*lplpfn == NULL)
-		*lplpfn = oldWndProc;   // the first control of that type created
-#ifdef _DEBUG
-	else if (*lplpfn != oldWndProc)
-	{
-		ASSERT(FALSE);
-		// undo the subclassing if continuing after assert
-		::SetWindowLongPtr(hWnd, GWLP_WNDPROC, (INT_PTR)oldWndProc);
-	}
-#endif
+//	if (*lplpfn == NULL)
+//		*lplpfn = oldWndProc;   // the first control of that type created
+//#ifdef _DEBUG
+//	else if (*lplpfn != oldWndProc)
+//	{
+//		ASSERT(FALSE);
+//		// undo the subclassing if continuing after assert
+//		::SetWindowLongPtr(hWnd, GWLP_WNDPROC, (INT_PTR)oldWndProc);
+//	}
+//#endif
 
 	return TRUE;
 }

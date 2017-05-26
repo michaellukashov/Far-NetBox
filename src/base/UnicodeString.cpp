@@ -92,24 +92,24 @@ void AnsiString::Init(const unsigned char * Str, intptr_t Length)
 
 intptr_t AnsiString::Pos(const AnsiString & Str) const
 {
-  return Data.Find(Str.c_str()) + 1;
+  return (intptr_t)Data.Find(Str.c_str()) + 1;
 }
 
-intptr_t AnsiString::Pos(wchar_t Ch) const
+intptr_t AnsiString::Pos(char Ch) const
 {
-  return Data.Find(Ch) + 1;
+  return (intptr_t)Data.Find(Ch) + 1;
 }
 
 char AnsiString::operator [](intptr_t Idx) const
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.operator []((int)Idx-1);
+  return Data.operator []((int)Idx - 1);
 }
 
 char & AnsiString::operator [](intptr_t Idx)
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.GetBuffer()[Idx-1];
+  return Data.GetBuffer()[Idx - 1];
 }
 
 AnsiString & AnsiString::Append(const char * Str, intptr_t StrLen)
@@ -173,15 +173,15 @@ AnsiString & AnsiString::operator=(const UTF8String & StrCopy)
   return *this;
 }
 
-AnsiString & AnsiString::operator=(const char * lpszData)
+AnsiString & AnsiString::operator=(const char * Str)
 {
-  Init(lpszData, string_t::StringLength(lpszData));
+  Init(Str, string_t::StringLength(Str));
   return *this;
 }
 
-AnsiString & AnsiString::operator=(const wchar_t * lpwszData)
+AnsiString & AnsiString::operator=(const wchar_t * Str)
 {
-  Init(lpwszData, CMStringW::StringLength(lpwszData));
+  Init(Str, CMStringW::StringLength(Str));
   return *this;
 }
 
@@ -529,6 +529,10 @@ bool operator !=(const UTF8String & lhs, const UTF8String & rhs)
   return lhs.Data != rhs.Data;
 }
 
+UnicodeString::UnicodeString(const UnicodeString & Str)
+{
+  Init(Str.c_str(), Str.GetLength());
+}
 
 UnicodeString::UnicodeString(const UTF8String & Str) :
   Data(Str.c_str(), (int)Str.GetLength(), CP_UTF8)
@@ -639,7 +643,7 @@ intptr_t UnicodeString::FindFirstOf(const wchar_t * Str, size_t Offset) const
 {
   if (!Str || !*Str)
     return NPOS;
-  int Length = wstring_t::StringLength(Str);
+  // int Length = wstring_t::StringLength(Str);
   wstring_t str = Data.Mid((int)Offset);
   int Res = str.FindOneOf(Str);
   if (Res != -1)
@@ -693,7 +697,7 @@ intptr_t UnicodeString::Pos(const UnicodeString & Str) const
   return Data.Find(Str.Data.c_str()) + 1;
 }
 
-bool UnicodeString::RPos(intptr_t & nPos, wchar_t Ch, intptr_t nStartPos) const
+bool UnicodeString::RPos(intptr_t & nPos, wchar_t Ch, intptr_t /*nStartPos*/) const
 {
   size_t Pos = Data.ReverseFind(Ch); //, Data.size() - nStartPos);
   nPos = Pos + 1;
@@ -747,6 +751,11 @@ UnicodeString UnicodeString::TrimRight() const
   return ::TrimRight(*this);
 }
 
+void UnicodeString::Unique()
+{
+  Init(Data.c_str(), Data.GetLength());
+}
+
 void UnicodeString::sprintf(const wchar_t * fmt, ...)
 {
   va_list args;
@@ -757,10 +766,7 @@ void UnicodeString::sprintf(const wchar_t * fmt, ...)
 
 UnicodeString & UnicodeString::operator=(const UnicodeString & StrCopy)
 {
-  if (*this != StrCopy)
-  {
-    Data = StrCopy.Data;
-  }
+  Init(StrCopy.c_str(), StrCopy.GetLength());
   return *this;
 }
 
@@ -841,13 +847,13 @@ UnicodeString & UnicodeString::operator +=(const wchar_t Ch)
 wchar_t UnicodeString::operator [](intptr_t Idx) const
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.operator []((int)Idx-1);
+  return Data.operator []((int)Idx - 1);
 }
 
 wchar_t & UnicodeString::operator [](intptr_t Idx)
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.GetBuffer()[(int)Idx-1];
+  return Data.GetBuffer()[(int)Idx - 1];
 }
 
 void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const

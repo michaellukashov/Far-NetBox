@@ -44,7 +44,7 @@ typedef nb::FastDelegate6<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
   const UnicodeString & /*FileName*/, bool /*Success*/,
   TOnceDoneOperation & /*OnceDoneOperation*/> TFileOperationFinishedEvent;
-//---------------------------------------------------------------------------
+
 class TFileOperationProgressType : public TObject
 {
 private:

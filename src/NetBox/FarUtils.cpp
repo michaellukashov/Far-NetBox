@@ -2,11 +2,10 @@
 #pragma hdrstop
 
 #include <Common.h>
-#include <MsgIDs.h>
 
-#include "FarUtil.h"
+#include "FarUtils.h"
 
-bool CNBFile::OpenWrite(const wchar_t *fileName)
+bool CNBFile::OpenWrite(const wchar_t * fileName)
 {
   DebugAssert(m_File == INVALID_HANDLE_VALUE);
   DebugAssert(fileName);
@@ -20,7 +19,7 @@ bool CNBFile::OpenWrite(const wchar_t *fileName)
   return (m_LastError == ERROR_SUCCESS);
 }
 
-bool CNBFile::OpenRead(const wchar_t *fileName)
+bool CNBFile::OpenRead(const wchar_t * fileName)
 {
   DebugAssert(m_File == INVALID_HANDLE_VALUE);
   DebugAssert(fileName);
@@ -34,7 +33,7 @@ bool CNBFile::OpenRead(const wchar_t *fileName)
   return (m_LastError == ERROR_SUCCESS);
 }
 
-bool CNBFile::Read(void *buff, size_t &buffSize)
+bool CNBFile::Read(void * buff, size_t & buffSize)
 {
   DebugAssert(m_File != INVALID_HANDLE_VALUE);
   m_LastError = ERROR_SUCCESS;
@@ -52,7 +51,7 @@ bool CNBFile::Read(void *buff, size_t &buffSize)
   return (m_LastError == ERROR_SUCCESS);
 }
 
-bool CNBFile::Write(const void *buff, const size_t buffSize)
+bool CNBFile::Write(const void * buff, const size_t buffSize)
 {
   DebugAssert(m_File != INVALID_HANDLE_VALUE);
   m_LastError = ERROR_SUCCESS;
@@ -83,7 +82,7 @@ void CNBFile::Close()
 {
   if (m_File != INVALID_HANDLE_VALUE)
   {
-    ::CloseHandle(m_File);
+    SAFE_CLOSE_HANDLE(m_File);
     m_File = INVALID_HANDLE_VALUE;
   }
 }
@@ -93,7 +92,7 @@ DWORD CNBFile::LastError() const
   return m_LastError;
 }
 
-DWORD CNBFile::SaveFile(const wchar_t *fileName, const rde::vector<char>& fileContent)
+DWORD CNBFile::SaveFile(const wchar_t * fileName, const rde::vector<char> & fileContent)
 {
   CNBFile f;
   if (f.OpenWrite(fileName) && !fileContent.empty())
@@ -103,7 +102,7 @@ DWORD CNBFile::SaveFile(const wchar_t *fileName, const rde::vector<char>& fileCo
   return f.LastError();
 }
 
-DWORD CNBFile::SaveFile(const wchar_t *fileName, const char *fileContent)
+DWORD CNBFile::SaveFile(const wchar_t * fileName, const char * fileContent)
 {
   DebugAssert(fileContent);
   CNBFile f;
@@ -114,7 +113,7 @@ DWORD CNBFile::SaveFile(const wchar_t *fileName, const char *fileContent)
   return f.LastError();
 }
 
-DWORD CNBFile::LoadFile(const wchar_t *fileName, rde::vector<char>& fileContent)
+DWORD CNBFile::LoadFile(const wchar_t * fileName, rde::vector<char> & fileContent)
 {
   fileContent.clear();
 
@@ -136,3 +135,52 @@ DWORD CNBFile::LoadFile(const wchar_t *fileName, rde::vector<char>& fileContent)
   }
   return f.LastError();
 }
+
+void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth)
+{
+  size_t TabSize = 8;
+  TStringList Lines;
+  Lines.SetText(Text);
+  TStringList WrappedLines;
+  for (intptr_t Index = 0; Index < Lines.GetCount(); ++Index)
+  {
+    UnicodeString WrappedLine = Lines.GetString(Index);
+    if (!WrappedLine.IsEmpty())
+    {
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\'', L'\3');
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\"', L'\4');
+      WrappedLine = ::WrapText(WrappedLine, MaxWidth);
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\3', L'\'');
+      WrappedLine = ::ReplaceChar(WrappedLine, L'\4', L'\"');
+      WrappedLines.SetText(WrappedLine);
+      for (intptr_t WrappedIndex = 0; WrappedIndex < WrappedLines.GetCount(); ++WrappedIndex)
+      {
+        UnicodeString FullLine = WrappedLines.GetString(WrappedIndex);
+        do
+        {
+          // WrapText does not wrap when not possible, enforce it
+          // (it also does not wrap when the line is longer than maximum only
+          // because of trailing dot or similar)
+          UnicodeString Line = FullLine.SubString(1, MaxWidth);
+          FullLine.Delete(1, MaxWidth);
+
+          intptr_t P = 0;
+          while ((P = Line.Pos(L'\t')) > 0)
+          {
+            Line.Delete(P, 1);
+            Line.Insert(::StringOfChar(' ',
+                ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1),
+              P);
+          }
+          Result->Add(Line);
+        }
+        while (!FullLine.IsEmpty());
+      }
+    }
+    else
+    {
+      Result->Add(L"");
+    }
+  }
+}
+

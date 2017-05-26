@@ -6,7 +6,7 @@
 
 #ifdef USE_DLMALLOC
 
-#include <dlmalloc/malloc-2.8.6.h>
+#include <dlmalloc/dlmalloc-2.8.6.h>
 
 #define nb_malloc(size) dlcalloc(1, size)
 #define nb_calloc(count, size) dlcalloc(count, size)
@@ -254,7 +254,7 @@ struct SelfTest {       \
 #define NB_DISABLE_COPY(Class) \
 private: \
   Class(const Class &); \
-  Class &operator=(const Class &);
+  Class & operator=(const Class &);
 
 #define NB_STATIC_ASSERT(Condition, Message) \
   static_assert(bool(Condition), Message)

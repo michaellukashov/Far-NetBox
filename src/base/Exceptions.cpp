@@ -1,12 +1,13 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <rdestl/set.h>
 #include <Common.h>
 #include <StrUtils.hpp>
 
 #include "TextsCore.h"
+#if defined(WINSCP)
 #include "HelpCore.h"
+#endif // WINSCP
 #include "rtlconsts.h"
 
 //static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(new TCriticalSection());
@@ -238,7 +239,9 @@ UnicodeString GetExceptionHelpKeyword(const Exception * E)
   else if ((E != nullptr) && ExceptionMessage(E, false, false, Message, InternalError) &&
            InternalError)
   {
+#if defined(WINSCP)
     HelpKeyword = HELP_INTERNAL_ERROR;
+#endif // WINSCP
   }
   return HelpKeyword;
 }
@@ -260,8 +263,12 @@ UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const U
 
 bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword)
 {
+#if defined(WINSCP)
   return
     (HelpKeyword == HELP_INTERNAL_ERROR);
+#else
+  return false;
+#endif // WINSCP
 }
 
 ExtException::ExtException(Exception * E) :

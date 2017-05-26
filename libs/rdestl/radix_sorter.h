@@ -9,7 +9,7 @@ template<typename T>
 class radix_sorter
 {
 public:
-	static const size_t kHistogramSize	= 256;
+	static const ::size_t kHistogramSize	= 256;
 
 	enum data_type
 	{

@@ -125,11 +125,11 @@ struct FontSpec *fontspec_new(const char *name,
 /*
  * Dynamically linked functions. These come in two flavours:
  *
- *  - GET_WINDOWS_FUNCTION does not expose "name" to the preprocessor,
+ *  - PUTTY_GET_WINDOWS_FUNCTION does not expose "name" to the preprocessor,
  *    so will always dynamically link against exactly what is specified
  *    in "name". If you're not sure, use this one.
  *
- *  - GET_WINDOWS_FUNCTION_PP allows "name" to be redirected via
+ *  - PUTTY_GET_WINDOWS_FUNCTION_PP allows "name" to be redirected via
  *    preprocessor definitions like "#define foo bar"; this is principally
  *    intended for the ANSI/Unicode DoSomething/DoSomethingA/DoSomethingW.
  *    If your function has an argument of type "LPTSTR" or similar, this
@@ -137,17 +137,26 @@ struct FontSpec *fontspec_new(const char *name,
  *    (However, it can't always be used, as it trips over more complicated
  *    macro trickery such as the WspiapiGetAddrInfo wrapper for getaddrinfo.)
  *
- * (DECL_WINDOWS_FUNCTION works with both these variants.)
+ * (PUTTY_DECL_WINDOWS_FUNCTION works with both these variants.)
  */
-#define DECL_WINDOWS_FUNCTION(linkage, rettype, name, params) \
-    typedef rettype (WINAPI *t_##name) params; \
+#define PUTTY_TYPECHECK(to_check, to_return)          \
+    (sizeof(to_check) ? to_return : to_return)
+#define PUTTY_DECL_WINDOWS_FUNCTION(linkage, rettype, name, params)   \
+    typedef rettype (WINAPI *t_##name) params;                  \
     linkage t_##name p_##name
 #define STR1(x) #x
 #define STR(x) STR1(x)
-#define GET_WINDOWS_FUNCTION_PP(module, name) \
-    (p_##name = module ? (t_##name) GetProcAddress(module, STR(name)) : NULL)
-#define GET_WINDOWS_FUNCTION(module, name) \
-    (p_##name = module ? (t_##name) GetProcAddress(module, #name) : NULL)
+#define PUTTY_GET_WINDOWS_FUNCTION_PP(module, name)                           \
+    PUTTY_TYPECHECK((t_##name)NULL == name,                                   \
+              (p_##name = module ?                                      \
+               (t_##name) GetProcAddress(module, STR(name)) : NULL))
+#define PUTTY_GET_WINDOWS_FUNCTION(module, name)                              \
+    PUTTY_TYPECHECK((t_##name)NULL == name,                                   \
+              (p_##name = module ?                                      \
+               (t_##name) GetProcAddress(module, #name) : NULL))
+#define PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, name) \
+    (p_##name = module ?                                \
+     (t_##name) GetProcAddress(module, #name) : NULL)
 
 /*
  * Global variables. Most modules declare these `extern', but
@@ -294,12 +303,12 @@ extern int select_result(WPARAM, LPARAM);
  * that module must be exported from it as function pointers. So
  * here they are.
  */
-DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAAsyncSelect,
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAAsyncSelect,
 		      (SOCKET, HWND, u_int, long));
-DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEventSelect,
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEventSelect,
 		      (SOCKET, WSAEVENT, long));
-DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAGetLastError, (void));
-DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEnumNetworkEvents,
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAGetLastError, (void));
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEnumNetworkEvents,
 		      (SOCKET, WSAEVENT, LPWSANETWORKEVENTS));
 #ifdef NEED_DECLARATION_OF_SELECT
 /* This declaration is protected by an ifdef for the sake of building
@@ -309,7 +318,7 @@ DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEnumNetworkEvents,
  * only a modules actually needing to use (or define, or initialise)
  * this function pointer will see its declaration, and _those_ modules
  * - which will be Windows-specific anyway - can take more care. */
-DECL_WINDOWS_FUNCTION(GLOBAL, int, select,
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, select,
 		      (int, fd_set FAR *, fd_set FAR *,
 		       fd_set FAR *, const struct timeval FAR *));
 #endif
@@ -331,6 +340,7 @@ struct ctlpos {
     int boxystart, boxid;
     char *boxtext;
 };
+void init_common_controls(void);       /* also does some DLL-loading */
 
 /*
  * Exports from winutils.c.
@@ -525,6 +535,36 @@ const char *win_strerror(int error);
 void restrict_process_acl(void);
 GLOBAL int restricted_acl;
 
+/* A few pieces of up-to-date Windows API definition needed for older
+ * compilers. */
+#ifndef LOAD_LIBRARY_SEARCH_SYSTEM32
+#define LOAD_LIBRARY_SEARCH_SYSTEM32 0x00000800
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_USER_DIRS
+#define LOAD_LIBRARY_SEARCH_USER_DIRS 0x00000400
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+#define LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR 0x00000100
+#endif
+#if _MSC_VER < 1400
+typedef PVOID DLL_DIRECTORY_COOKIE;
+#endif
+
+/* A few pieces of up-to-date Windows API definition needed for older
+ * compilers. */
+#ifndef LOAD_LIBRARY_SEARCH_SYSTEM32
+#define LOAD_LIBRARY_SEARCH_SYSTEM32 0x00000800
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_USER_DIRS
+#define LOAD_LIBRARY_SEARCH_USER_DIRS 0x00000400
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+#define LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR 0x00000100
+#endif
+#if _MSC_VER <= 1600
+typedef PVOID DLL_DIRECTORY_COOKIE;
+#endif
+
 /*
  * Exports from sizetip.c.
  */
@@ -593,7 +633,9 @@ extern Backend serial_backend;
 /*
  * Exports from winjump.c.
  */
+#if 0
 #define JUMPLIST_SUPPORTED             /* suppress #defines in putty.h */
+#endif
 void add_session_to_jumplist(const char * const sessionname);
 void remove_session_from_jumplist(const char * const sessionname);
 void clear_jumplist(void);

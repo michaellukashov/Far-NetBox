@@ -133,10 +133,9 @@ TMask::TMask(const UnicodeString & Mask) :
 {
 }
 
-bool TMask::Matches(const UnicodeString & Str)
+bool TMask::Matches(const UnicodeString & Str) const
 {
   return CmpName(FMask.c_str(), Str.c_str()) == TRUE;
 }
 
 } // namespace Masks
-

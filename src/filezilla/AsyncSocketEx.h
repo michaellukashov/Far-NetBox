@@ -199,6 +199,7 @@ protected:
   // Strucure to hold the socket data
   struct t_AsyncSocketExData
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     SOCKET hSocket; // Socket handle
     int nSocketIndex; // Index of socket, required by CAsyncSocketExHelperWindow
     int nFamily;
@@ -229,6 +230,7 @@ protected:
   // Pointer to the data of the local thread
   struct t_AsyncSocketExThreadData
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     CAsyncSocketExHelperWindow * m_pHelperWindow;
     int nInstanceCount;
     DWORD nThreadId;
@@ -238,6 +240,7 @@ protected:
   // List of the data structures for all threads
   static struct t_AsyncSocketExThreadDataList
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     t_AsyncSocketExThreadDataList * pNext;
     t_AsyncSocketExThreadData * pThreadData;
   } *m_spAsyncSocketExThreadDataList;
@@ -318,6 +321,7 @@ inline TCHAR * Inet6AddrToString(in6_addr & addr)
 
 class CCriticalSectionWrapper
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CCriticalSectionWrapper()
   {
