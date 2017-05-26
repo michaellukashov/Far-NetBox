@@ -1,5 +1,6 @@
-NetBox 2.4.3.496 20.05.2017
+NetBox 2.4.3.499 26.05.2017
 --------------------
+  * Update openssl sources to 1.1.0f
   * Update putty sources to 0.69
   * Bugfix: plugin crashes on FAR startup
     (http://bugs.farmanager.com/view.php?id=3429)

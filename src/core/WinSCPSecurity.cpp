@@ -76,10 +76,9 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
   RawByteString Password = APassword;
   UTF8String Key = UTF8String(AKey);
   UTF8String Result("");
-  Integer Index;
-  uint8_t Length, Flag;
+  uint8_t Length;
 
-  Flag = SimpleDecryptNextChar(Password);
+  uint8_t Flag = SimpleDecryptNextChar(Password);
   if (Flag == PWALG_SIMPLE_FLAG)
   {
     /* Dummy = */ SimpleDecryptNextChar(Password);
@@ -88,7 +87,7 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
   else
     Length = Flag;
   Password.Delete(1, (static_cast<Integer>(SimpleDecryptNextChar(Password)) * 2));
-  for (Index = 0; Index < Length; ++Index)
+  for (uint8_t Index = 0; Index < Length; ++Index)
     Result += static_cast<char>(SimpleDecryptNextChar(Password));
   if (Flag == PWALG_SIMPLE_FLAG)
   {

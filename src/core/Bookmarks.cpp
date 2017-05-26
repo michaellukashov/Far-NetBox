@@ -252,8 +252,7 @@ void TBookmarks::SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Valu
   intptr_t Index = FBookmarkLists->IndexOf(AIndex);
   if (Index >= 0)
   {
-    TBookmarkList * BookmarkList;
-    BookmarkList = FBookmarkLists->GetAs<TBookmarkList>(Index);
+    TBookmarkList * BookmarkList = FBookmarkLists->GetAs<TBookmarkList>(Index);
     BookmarkList->Assign(Value);
   }
   else

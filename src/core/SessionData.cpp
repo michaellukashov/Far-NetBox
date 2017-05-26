@@ -4744,18 +4744,16 @@ void TStoredSessionList::ImportHostKeys(const UnicodeString & TargetKey,
     {
       SourceStorage->GetValueNames(KeyList.get());
 
-      UnicodeString HostKeyName;
       DebugAssert(Sessions != nullptr);
       for (intptr_t Index = 0; Index < Sessions->GetCount(); ++Index)
       {
         TSessionData * Session = Sessions->GetSession(Index);
         if (!OnlySelected || Session->GetSelected())
         {
-          HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostNameExpanded().c_str()));
-          UnicodeString KeyName;
+          UnicodeString HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostNameExpanded().c_str()));
           for (intptr_t KeyIndex = 0; KeyIndex < KeyList->GetCount(); ++KeyIndex)
           {
-            KeyName = KeyList->GetString(KeyIndex);
+            UnicodeString KeyName = KeyList->GetString(KeyIndex);
             intptr_t P = KeyName.Pos(HostKeyName);
             if ((P > 0) && (P == KeyName.Length() - HostKeyName.Length() + 1))
             {

@@ -1353,7 +1353,6 @@ bool TFTPFileSystem::ConfirmOverwrite(
   const TCopyParamType * CopyParam,
   OUT TOverwriteMode & OverwriteMode)
 {
-  bool Result;
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
   bool DestIsSmaller = (FileParams != nullptr) && (FileParams->DestSize < FileParams->SourceSize);
   bool DestIsSame = (FileParams != nullptr) && (FileParams->DestSize == FileParams->SourceSize);
@@ -1420,7 +1419,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
     }
   }
 
-  Result = true;
+  bool Result = true;
 
   switch (Answer)
   {
@@ -1896,17 +1895,16 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   AutoDetectTimeDifference(ATargetDir, CopyParam, Params);
 
   Params &= ~cpAppend;
-  UnicodeString FileName, FileNameOnly;
   UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = core::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
   while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = AFilesToCopy->GetString(Index);
+    UnicodeString FileName = AFilesToCopy->GetString(Index);
     TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
-    FileNameOnly = base::ExtractFileName(RealFileName, false);
+    UnicodeString FileNameOnly = base::ExtractFileName(RealFileName, false);
 
     try__finally
     {
@@ -3040,9 +3038,7 @@ void TFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   DebugAssert(SupportsSiteCommand(CopySiteCommand));
   EnsureLocation();
 
-  UnicodeString Command;
-
-  Command = FORMAT(L"%s CPFR %s", SiteCommand.c_str(), AFileName.c_str());
+  UnicodeString Command = FORMAT(L"%s CPFR %s", SiteCommand.c_str(), AFileName.c_str());
   SendCommand(Command);
   GotReply(WaitForCommandReply(), REPLY_3XX_CODE);
 
@@ -5037,9 +5033,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
     STATE_QUOTE,
     STATE_QUOTED,
     STATE_DONE
-  } State;
-
-  State = STATE_INIT;
+  } State = STATE_INIT;
   DebugAssert((Str.Length() > 0) && ((Str[1] == L'"') || (Str[1] == L'\'')));
 
   intptr_t Index = 1;

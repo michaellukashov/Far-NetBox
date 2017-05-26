@@ -398,13 +398,12 @@ UnicodeString TStrings::GetCommaText() const
   wchar_t LOldQuoteChar = GetQuoteChar();
   FDelimiter = L',';
   FQuoteChar = L'"';
-  UnicodeString Result;
   SCOPE_EXIT
   {
     FDelimiter = LOldDelimiter;
     FQuoteChar = LOldQuoteChar;
   };
-  Result = GetDelimitedText();
+  UnicodeString Result = GetDelimitedText();
   return Result;
 }
 
@@ -1190,15 +1189,13 @@ TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen)
 
 double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen)
 {
-  TDateTime Result;
-  Result = MSecsPerDay * SpanOfNowAndThen(ANow, AThen);
+  double Result = MSecsPerDay * SpanOfNowAndThen(ANow, AThen);
   return Result;
 }
 
 int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
-  TDateTime Result;
-  Result = floor(MilliSecondSpan(ANow, AThen));
+  double Result = floor(MilliSecondSpan(ANow, AThen));
   return static_cast<int64_t>(Result);
 }
 

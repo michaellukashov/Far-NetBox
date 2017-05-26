@@ -129,11 +129,10 @@ void TRemoteFilePanelItem::TranslateColumnTypes(UnicodeString & AColumnTypes,
 {
   UnicodeString ColumnTypes = AColumnTypes;
   AColumnTypes.Clear();
-  UnicodeString Column;
   UnicodeString Title;
   while (!ColumnTypes.IsEmpty())
   {
-    Column = CutToChar(ColumnTypes, ',', false);
+    UnicodeString Column = CutToChar(ColumnTypes, ',', false);
     if (Column == L"G")
     {
       Column = L"C0";
@@ -1600,9 +1599,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
       TimeElapsedLabel = GetMsg(SYNCHRONIZE_PROGRESS_ELAPSED);
     }
 
-    UnicodeString Message;
-
-    Message = LocalLabel + core::MinimizeName(LocalDirectory,
+    UnicodeString Message = LocalLabel + core::MinimizeName(LocalDirectory,
       ProgressWidth - LocalLabel.Length(), false);
     Message += ::StringOfChar(L' ', ProgressWidth - Message.Length()) + L"\n";
     Message += RemoteLabel + core::MinimizeName(RemoteDirectory,
@@ -1840,7 +1837,6 @@ void TWinSCPFileSystem::FileProperties()
   if (FileList.get())
   {
     DebugAssert(!FPanelItems);
-    TRemoteProperties CurrentProperties;
 
     bool Cont = true;
     if (!GetTerminal()->LoadFilesProperties(FileList.get()))
@@ -1857,7 +1853,7 @@ void TWinSCPFileSystem::FileProperties()
 
     if (Cont)
     {
-      CurrentProperties = TRemoteProperties::CommonProperties(FileList.get());
+      TRemoteProperties CurrentProperties = TRemoteProperties::CommonProperties(FileList.get());
 
       intptr_t Flags = 0;
       if (FTerminal->GetIsCapable(fcModeChanging))
@@ -2082,9 +2078,8 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
   std::unique_ptr<TBookmarkList> BookmarkList(new TBookmarkList());
   UnicodeString Directory = FTerminal->GetCurrDirectory();
   UnicodeString SessionKey = GetSessionData()->GetSessionKey();
-  TBookmarkList * CurrentBookmarkList;
 
-  CurrentBookmarkList = GetFarConfiguration()->GetBookmarks(SessionKey);
+  TBookmarkList * CurrentBookmarkList = GetFarConfiguration()->GetBookmarks(SessionKey);
   if (CurrentBookmarkList != nullptr)
   {
     BookmarkList->Assign(CurrentBookmarkList);
@@ -2296,11 +2291,10 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, OPERATION_MODE
             }
             else if (FullPrevPath.SubString(1, RemotePath.Length()) == RemotePath && AnotherPanel)
             {
-              UnicodeString NewLocalPath;
               LocalPath = ::ExcludeTrailingBackslash((*AnotherPanel)->GetCurrDirectory());
               while (!core::UnixSamePath(FullPrevPath, RemotePath))
               {
-                NewLocalPath = ::ExcludeTrailingBackslash(::ExtractFileDir(LocalPath));
+                UnicodeString NewLocalPath = ::ExcludeTrailingBackslash(::ExtractFileDir(LocalPath));
                 if (NewLocalPath == LocalPath)
                 {
                   Abort();
@@ -2830,10 +2824,9 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
   if (Result)
   {
     UnicodeString FileName;
-    TFarPanelItem * PanelItem;
     for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
-      PanelItem = PanelItems->GetAs<TFarPanelItem>(Index);
+      TFarPanelItem * PanelItem = PanelItems->GetAs<TFarPanelItem>(Index);
       bool AnyData = false;
       FileName = PanelItem->GetFileName();
       if (PanelItem->GetIsFile())
@@ -2911,7 +2904,6 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   std::unique_ptr<TStrings> FileList(AFileList == nullptr ? new TStringList() : AFileList);
   FileList->SetDuplicates(dupAccept);
 
-  UnicodeString FileName;
   TFarPanelItem * PanelItem;
   TObject * Data = nullptr;
   for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
@@ -2921,7 +2913,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
     if ((!SelectedOnly || PanelItem->GetSelected()) &&
       !PanelItem->GetIsParentDirectory())
     {
-      FileName = PanelItem->GetFileName();
+      UnicodeString FileName = PanelItem->GetFileName();
       if (Side == osRemote)
       {
         Data = get_as<TRemoteFile>(PanelItem->GetUserData());
@@ -3510,10 +3502,8 @@ void TWinSCPFileSystem::ShowOperationProgress(
     bool TransferOperation =
       ((ProgressData.Operation == foCopy) || (ProgressData.Operation == foMove));
 
-    UnicodeString Message1;
     UnicodeString ProgressBarCurrentFile;
     UnicodeString Message2;
-    UnicodeString ProgressBarTotal;
     UnicodeString Title = GetMsg(Captions[static_cast<int>(ProgressData.Operation - 1)]);
     UnicodeString FileName = ProgressData.FileName;
     // for upload from temporary directory,
@@ -3522,7 +3512,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
     {
       FileName = base::ExtractFileName(FileName, false);
     }
-    Message1 = ProgressFileLabel + core::MinimizeName(FileName,
+    UnicodeString Message1 = ProgressFileLabel + core::MinimizeName(FileName,
       ProgressWidth - ProgressFileLabel.Length(), ProgressData.Side == osRemote) + L"\n";
     // for downloads to temporary directory,
     // do not show target directory
@@ -3531,15 +3521,13 @@ void TWinSCPFileSystem::ShowOperationProgress(
       Message1 += TargetDirLabel + core::MinimizeName(ProgressData.Directory,
                   ProgressWidth - TargetDirLabel.Length(), ProgressData.Side == osLocal) + L"\n";
     }
-    ProgressBarTotal = ProgressBar(ProgressData.OverallProgress(), ProgressWidth) + L"\n";
+    UnicodeString ProgressBarTotal = ProgressBar(ProgressData.OverallProgress(), ProgressWidth) + L"\n";
     if (TransferOperation)
     {
       Message2 = L"\1\n";
-      UnicodeString StatusLine;
-      UnicodeString Value;
 
-      Value = FormatDateTimeSpan(GetConfiguration()->GetTimeFormat(), ProgressData.TimeElapsed());
-      StatusLine = TimeElapsedLabel +
+      UnicodeString Value = FormatDateTimeSpan(GetConfiguration()->GetTimeFormat(), ProgressData.TimeElapsed());
+      UnicodeString StatusLine = TimeElapsedLabel +
                    ::StringOfChar(L' ', ProgressWidth / 2 - 1 - TimeElapsedLabel.Length() - Value.Length()) +
                    Value + L"  ";
 
@@ -3593,10 +3581,9 @@ void TWinSCPFileSystem::ShowOperationProgress(
 
 UnicodeString TWinSCPFileSystem::ProgressBar(intptr_t Percentage, intptr_t Width)
 {
-  UnicodeString Result;
   // 0xB0 - 0x2591
   // 0xDB - 0x2588
-  Result = ::StringOfChar(0x2588, (Width - 5) * (Percentage > 100 ? 100 : Percentage) / 100);
+  UnicodeString Result = ::StringOfChar(0x2588, (Width - 5) * (Percentage > 100 ? 100 : Percentage) / 100);
   Result += ::StringOfChar(0x2591, (Width - 5) - Result.Length());
   Result += FORMAT(L"%4d%%", Percentage > 100 ? 100 : Percentage);
   return Result;

@@ -519,11 +519,10 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
     {
       DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
-      UnicodeString Buf;
       void *Param = Info->Param;
       if ((Info->Event == FE_CHANGEVIEWMODE) || (Info->Event == FE_COMMAND))
       {
-        Buf = static_cast<wchar_t *>(Info->Param);
+        UnicodeString Buf = static_cast<wchar_t *>(Info->Param);
         Param = const_cast<void *>(reinterpret_cast<const void *>(Buf.c_str()));
       }
 
@@ -2930,7 +2929,6 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 
 UnicodeString TGlobalFunctions::GetCurrDirectory() const
 {
-  UnicodeString Result;
   UnicodeString Path(NB_MAX_PATH, 0);
   int Length = 0;
   if (FarPlugin)
@@ -2941,7 +2939,7 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   {
     Length = ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
   }
-  Result = UnicodeString(Path.c_str(), Length);
+  UnicodeString Result = UnicodeString(Path.c_str(), Length);
   return Result;
 }
 

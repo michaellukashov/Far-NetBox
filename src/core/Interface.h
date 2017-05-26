@@ -2,8 +2,10 @@
 #pragma once
 
 #include <Classes.hpp>
+#if defined(WINSCP)
 #include "Configuration.h"
 #include "SessionData.h"
+#endif // WINSCP
 #define HELP_NONE L""
 #define SCRIPT_SWITCH "script"
 #define COMMAND_SWITCH L"Command"
@@ -27,9 +29,13 @@ extern const int TransferModeNamesCount;
 extern const wchar_t * ToggleNames[];
 enum TToggle { ToggleOff, ToggleOn };
 
+#if defined(WINSCP)
+
 TConfiguration * CreateConfiguration();
 class TOptions;
 TOptions * GetGlobalOptions();
+
+#endif // WINSCP
 
 void ShowExtendedException(Exception * E);
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
@@ -120,6 +126,9 @@ enum TPromptUserParam
 bool IsAuthenticationPrompt(TPromptKind Kind);
 bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
 bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
+
+class TTerminal;
+class TRemoteFile;
 
 /*
 typedef void (__closure *TFileFoundEvent)

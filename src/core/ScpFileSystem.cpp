@@ -227,27 +227,24 @@ UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
 
 UnicodeString TCommandSet::Command(TFSCommand Cmd, ...) const
 {
-  UnicodeString Result;
   va_list args;
   va_start(args, Cmd);
-  Result = Command(Cmd, args);
+  UnicodeString Result = Command(Cmd, args);
   va_end(args);
   return Result;
 }
 
 UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args) const
 {
-  UnicodeString Result;
-  Result = ::FormatV(GetCommands(Cmd).c_str(), args);
+  UnicodeString Result = ::FormatV(GetCommands(Cmd).c_str(), args);
   return Result.c_str();
 }
 
 UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, ...) const
 {
-  UnicodeString Result;
   va_list args;
   va_start(args, Cmd);
-  Result = FullCommand(Cmd, args);
+  UnicodeString Result = FullCommand(Cmd, args);
   va_end(args);
   return Result.c_str();
 }
@@ -672,14 +669,13 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
     };
     if (Params & coWaitForLastLine)
     {
-      UnicodeString Line;
       bool IsLast = true;
       intptr_t Total = 0;
       // #55: fixed so, even when last line of command output does not
       // contain CR/LF, we can recognize last line
       do
       {
-        Line = FSecureShell->ReceiveLine();
+        UnicodeString Line = FSecureShell->ReceiveLine();
         IsLast = IsLastLine(Line);
         if (!IsLast || !Line.IsEmpty())
         {
@@ -2220,12 +2216,10 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
 
   UnicodeString TargetDirFull = core::UnixIncludeTrailingBackslash(TargetDir + DestFileName);
 
-  UnicodeString Buf;
-
   /* TODO 1: maybe send filetime */
 
   // Send directory modes (rights), filesize and file name
-  Buf = FORMAT(L"D%s 0 %s",
+  UnicodeString Buf = FORMAT(L"D%s 0 %s",
     CopyParam->RemoteFileRights(LocalFileAttrs).GetOctal().c_str(), DestFileName.c_str());
   FSecureShell->SendLine(Buf);
   SCPResponse();

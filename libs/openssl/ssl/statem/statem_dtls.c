@@ -214,9 +214,8 @@ int dtls1_do_write(SSL *s, int type)
         else
             len = s->init_num;
 
-        /* Shouldn't ever happen */
-        if (len > INT_MAX)
-            len = INT_MAX;
+        if (len > s->max_send_fragment)
+            len = s->max_send_fragment;
 
         /*
          * XDTLS: this function is too long.  split out the CCS part
@@ -564,7 +563,6 @@ dtls1_reassemble_fragment(SSL *s, const struct hm_header_st *msg_hdr, int *ok)
                 goto err;
             frag_len -= i;
         }
-        if (item == NULL) dtls1_hm_fragment_free(frag);
         return DTLS1_HM_FRAGMENT_RETRY;
     }
 

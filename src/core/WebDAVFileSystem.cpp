@@ -1327,7 +1327,6 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   DebugAssert((AFilesToCopy != nullptr) && (OperationProgress != nullptr));
 
   Params &= ~cpAppend;
-  UnicodeString FileName, FileNameOnly;
   UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = core::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
@@ -1335,9 +1334,9 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   {
     TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
     bool Success = false;
-    FileName = AFilesToCopy->GetString(Index);
+    UnicodeString FileName = AFilesToCopy->GetString(Index);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
-    FileNameOnly = base::ExtractFileName(RealFileName, false);
+    UnicodeString FileNameOnly = base::ExtractFileName(RealFileName, false);
 
     try__finally
     {
@@ -2788,7 +2787,7 @@ void TWebDAVFileSystem::LockResult(void * UserData, const struct ne_lock * Lock,
 
 struct ne_lock * TWebDAVFileSystem::FindLock(const RawByteString & APath) const
 {
-  ne_uri Uri = {0};
+  ne_uri Uri = {nullptr};
   Uri.path = const_cast<char *>(APath.c_str());
   return ne_lockstore_findbyuri(FNeonLockStore, &Uri);
 }

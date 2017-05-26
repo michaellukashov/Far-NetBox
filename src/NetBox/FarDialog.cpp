@@ -360,7 +360,7 @@ intptr_t WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, intptr_t Msg, intpt
   {
     if (Dialog != nullptr)
     {
-        Dialog->FHandle = 0;
+        Dialog->FHandle = nullptr;
     }
     Dialogs.erase(Handle);
   }
@@ -2620,11 +2620,10 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
     intptr_t DisplayWidth = GetWidth() - (AScrollBar ? 1 : 0);
     FarColor Color = GetDialog()->GetSystemColor(
       FLAGSET(GetDialog()->GetFlags(), FDLG_WARNING) ? COL_WARNDIALOGLISTTEXT : COL_DIALOGLISTTEXT);
-    UnicodeString Buf;
     for (intptr_t Row = 0; Row < GetHeight(); Row++)
     {
       intptr_t Index = GetTopIndex() + Row;
-      Buf = L" ";
+      UnicodeString Buf = L" ";
       if (Index < GetItems()->GetCount())
       {
         UnicodeString Value = GetItems()->GetString(Index).SubString(1, DisplayWidth - 1);

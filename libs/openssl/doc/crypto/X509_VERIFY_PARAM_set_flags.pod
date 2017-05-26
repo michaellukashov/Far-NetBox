@@ -3,7 +3,6 @@
 =head1 NAME
 
 X509_VERIFY_PARAM_set_flags, X509_VERIFY_PARAM_clear_flags,
-X509_VERIFY_PARAM_set_flags, X509_VERIFY_PARAM_clear_flags,
 X509_VERIFY_PARAM_get_flags, X509_VERIFY_PARAM_set_purpose,
 X509_VERIFY_PARAM_get_inh_flags, X509_VERIFY_PARAM_set_inh_flags,
 X509_VERIFY_PARAM_set_trust, X509_VERIFY_PARAM_set_depth,
@@ -270,7 +269,7 @@ is used to specify a verification time, the check is not suppressed.
 
 =head1 INHERITANCE FLAGS
 
-These flags spevify how parameters are "inherited" from one structure to
+These flags specify how parameters are "inherited" from one structure to
 another.
 
 If B<X509_VP_FLAG_ONCE> is set then the current setting is zeroed
