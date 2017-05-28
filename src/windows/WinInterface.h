@@ -5,10 +5,10 @@
 #include <Common.h>
 #include <Interface.h>
 #include <MsgIDs.h>
-#if defined(WINSCP)
+#if defined(FARPLUGIN)
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
-#endif // WINSCP
+#endif // FARPLUGIN
 
 #ifdef LOCALINTERFACE
 #include <LocalInterface.h>
@@ -125,7 +125,7 @@ uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
   intptr_t SessionReopenTimeout, const UnicodeString & MessageFormat = L"", uintptr_t Answers = qaOK,
   const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 
-#if defined(WINSCP)
+#if defined(FARPLUGIN)
 
 // forms\Custom.cpp
 TSessionData * DoSaveSession(TSessionData * SessionData,
@@ -140,7 +140,7 @@ class TShortCuts;
 bool DoShortCutDialog(TShortCut & ShortCut,
   const TShortCuts & ShortCuts, UnicodeString HelpKeyword);
 
-#endif // WINSCP
+#endif // FARPLUGIN
 
 // windows\UserInterface.cpp
 bool DoMasterPasswordDialog();
@@ -148,10 +148,10 @@ bool DoChangeMasterPasswordDialog(UnicodeString & NewPassword);
 
 // windows\WinMain.cpp
 int Execute();
-#if defined(WINSCP)
+#if defined(FARPLUGIN)
 void GetLoginData(UnicodeString SessionName, TOptions * Options,
   TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession);
-#endif // WINSCP
+#endif // FARPLUGIN
 
 bool InputDialog(const UnicodeString & ACaption,
   const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword = HELP_NONE,
@@ -182,7 +182,7 @@ bool DoCleanupDialog(TStoredSessionList *SessionList,
 void DoConsoleDialog(TTerminal * Terminal,
     const UnicodeString & Command = L"", const TStrings * Log = nullptr);
 
-#if defined(WINSCP)
+#if defined(FARPLUGIN)
 
 // forms\Copy.cpp
 const int coTemp                = 0x001;
@@ -417,7 +417,7 @@ bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
   const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
   TCustomCommandMenuEvent OnCustomCommandMenu);
 
-#endif // WINSCP
+#endif // FARPLUGIN
 
 // forms\Editor.cpp
 /*
@@ -441,7 +441,7 @@ void EditorFormFileSave(TForm * Form);
 bool IsEditorFormModified(TForm * Form);
 #endif
 
-#if defined(WINSCP)
+#if defined(FARPLUGIN)
 
 bool DoSymlinkDialog(UnicodeString & FileName, UnicodeString & PointTo,
   TOperationSide Side, bool & SymbolicLink, bool Edit, bool AllowSymbolic);
@@ -613,4 +613,4 @@ private:
   UnicodeString FCustomCommandName;
 };
 
-#endif // WINSCP
+#endif // FARPLUGIN

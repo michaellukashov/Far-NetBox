@@ -2,10 +2,10 @@
 #pragma once
 
 #include <Classes.hpp>
-#if defined(WINSCP)
+#if defined(FARPLUGIN)
 #include "Configuration.h"
 #include "SessionData.h"
-#endif // WINSCP
+#endif // FARPLUGIN
 #define HELP_NONE L""
 #define SCRIPT_SWITCH "script"
 #define COMMAND_SWITCH L"Command"
@@ -29,13 +29,13 @@ extern const int TransferModeNamesCount;
 extern const wchar_t * ToggleNames[];
 enum TToggle { ToggleOff, ToggleOn };
 
-#if defined(WINSCP)
+#if defined(FARPLUGIN)
 
 TConfiguration * CreateConfiguration();
 class TOptions;
 TOptions * GetGlobalOptions();
 
-#endif // WINSCP
+#endif // FARPLUGIN
 
 void ShowExtendedException(Exception * E);
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
