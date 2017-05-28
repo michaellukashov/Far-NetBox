@@ -225,14 +225,19 @@ set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   -DDSO_WIN32
 )
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
-  /Zi /Zl -DOPENSSL_THREADS -DOPENSSL_NO_DYNAMIC_ENGINE
+  -DOPENSSL_THREADS -DOPENSSL_NO_DYNAMIC_ENGINE
   -DOPENSSL_PIC -DOPENSSL_NO_ERR
 )
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
-  -wd4090
   -DOPENSSLDIR="" -DENGINESDIR=""
   -DNB_COMPILE_OPENSSL
 )
+if(MSVC)
+set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
+  /Zi /Zl
+  -wd4090
+)
+endif()
 
 add_library(libcrypto STATIC
   ../../libs/openssl/crypto/aes/aes_cbc.c
@@ -916,10 +921,14 @@ add_library(atlmfc STATIC
 )
 
 target_compile_options(atlmfc PRIVATE 
-  -wd4995 -wd4996 -wd4101 -wd4290
   ${ATLMFC_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )
+if(MSVC)
+target_compile_options(atlmfc PRIVATE
+  -wd4995 -wd4996 -wd4101 -wd4290
+)
+endif()
 
 target_include_directories(atlmfc PRIVATE
   ../../libs/atlmfc/include
@@ -987,9 +996,13 @@ add_library(putty STATIC
 )
 
 set(PUTTY_COMPILE_FLAGS
-  -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -wd4996
+  -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS
 )
-
+if(MSVC)
+set(PUTTY_COMPILE_FLAGS ${PUTTY_COMPILE_FLAGS}
+  -wd4996
+)
+endif()
 target_compile_options(putty PRIVATE
   ${PUTTY_COMPILE_FLAGS}
 )
@@ -1040,7 +1053,12 @@ add_library(neon STATIC
   ../../libs/neon/src/ne_openssl.c
 )
 
-set(NEON_COMPILE_FLAGS -wd4996)
+set(NEON_COMPILE_FLAGS)
+if(MSVC)
+set(NEON_COMPILE_FLAGS ${NEON_COMPILE_FLAGS}
+  -wd4996
+)
+endif()
 
 target_compile_options(neon PRIVATE
   ${NEON_COMPILE_FLAGS}
