@@ -235,7 +235,7 @@ public:
   void Insert(intptr_t Index, void * Item);
   intptr_t IndexOf(const void * Value) const;
   virtual void Clear();
-  virtual void Sort(CompareFunc Func);
+  void Sort(CompareFunc Func);
   virtual void Notify(void * Ptr, TListNotification Action);
   virtual void Sort();
 

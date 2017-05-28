@@ -4,12 +4,14 @@
 
 #define SECURITY_WIN32
 #include <security.h>
+#include <winnt.h>
 
 #include "pgssapi.h"
 #include "sshgss.h"
 #include "sshgssc.h"
 
 #include "misc.h"
+#include "winstuff.h"
 
 /* Windows code to set up the GSSAPI library list. */
 
@@ -49,7 +51,7 @@ PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      MakeSignature,
 		      (PCtxtHandle, ULONG, PSecBufferDesc, ULONG));
-PUTTY_DECL_WINDOWS_FUNCTION(static, DLL_DIRECTORY_COOKIE,
+PUTTY_DECL_WINDOWS_FUNCTION(static, void *,
                       AddDllDirectory,
                       (PCWSTR));
 
@@ -82,7 +84,7 @@ struct ssh_gss_liblist *ssh_gss_setup(Conf *conf)
     if (!kernel32_module) {
         kernel32_module = load_system32_dll("kernel32.dll");
     }
-#if defined _MSC_VER && _MSC_VER < 1900
+#if defined _MSC_VER // && _MSC_VER < 1910
     /* Omit the type-check because older MSVCs don't have this function */
     PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(kernel32_module, AddDllDirectory);
 #else

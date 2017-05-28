@@ -141,22 +141,22 @@ struct FontSpec *fontspec_new(const char *name,
  */
 #define PUTTY_TYPECHECK(to_check, to_return)          \
     (sizeof(to_check) ? to_return : to_return)
-#define PUTTY_DECL_WINDOWS_FUNCTION(linkage, rettype, name, params)   \
-    typedef rettype (WINAPI *t_##name) params;                  \
-    linkage t_##name p_##name
+#define PUTTY_DECL_WINDOWS_FUNCTION(flinkage, frettype, fname, fparams)   \
+    typedef frettype (WINAPI *t_##fname) fparams;                  \
+    flinkage t_##fname p_##fname
 #define STR1(x) #x
 #define STR(x) STR1(x)
-#define PUTTY_GET_WINDOWS_FUNCTION_PP(module, name)                           \
-    PUTTY_TYPECHECK((t_##name)NULL == name,                                   \
-              (p_##name = module ?                                      \
-               (t_##name) GetProcAddress(module, STR(name)) : NULL))
-#define PUTTY_GET_WINDOWS_FUNCTION(module, name)                              \
-    PUTTY_TYPECHECK((t_##name)NULL == name,                                   \
-              (p_##name = module ?                                      \
-               (t_##name) GetProcAddress(module, #name) : NULL))
-#define PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, name) \
-    (p_##name = module ?                                \
-     (t_##name) GetProcAddress(module, #name) : NULL)
+#define PUTTY_GET_WINDOWS_FUNCTION_PP(module, fname)                           \
+    PUTTY_TYPECHECK((t_##fname)NULL == fname,                                   \
+              (p_##fname = module ?                                      \
+               (t_##fname) GetProcAddress(module, STR(fname)) : NULL))
+#define PUTTY_GET_WINDOWS_FUNCTION(module, fname)                              \
+    PUTTY_TYPECHECK((t_##fname)NULL == fname,                                   \
+              (p_##fname = module ?                                      \
+               (t_##fname) GetProcAddress(module, #fname) : NULL))
+#define PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, fname) \
+    (p_##fname = module ?                                \
+     (t_##fname) GetProcAddress(module, #fname) : NULL)
 
 /*
  * Global variables. Most modules declare these `extern', but
