@@ -21,7 +21,7 @@
 #else
 
 #define nb_malloc(size) malloc(size)
-#define nb_calloc(count, size) calloc(count, size)
+#define nb_calloc(count, size) calloc(count * size)
 #define nb_realloc(ptr, size) realloc(ptr, size)
 
 #if defined(__cplusplus)

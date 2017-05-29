@@ -5,9 +5,9 @@
 #include <StrUtils.hpp>
 
 #include "TextsCore.h"
-#if defined(WINSCP)
+#if defined(FARPLUGIN)
 #include "HelpCore.h"
-#endif // WINSCP
+#endif // FARPLUGIN
 #include "rtlconsts.h"
 
 //static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(new TCriticalSection());
@@ -239,9 +239,9 @@ UnicodeString GetExceptionHelpKeyword(const Exception * E)
   else if ((E != nullptr) && ExceptionMessage(E, false, false, Message, InternalError) &&
            InternalError)
   {
-#if defined(WINSCP)
+#if defined(FARPLUGIN)
     HelpKeyword = HELP_INTERNAL_ERROR;
-#endif // WINSCP
+#endif // FARPLUGIN
   }
   return HelpKeyword;
 }
@@ -263,12 +263,12 @@ UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const U
 
 bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword)
 {
-#if defined(WINSCP)
+#if defined(FARPLUGIN)
   return
     (HelpKeyword == HELP_INTERNAL_ERROR);
 #else
   return false;
-#endif // WINSCP
+#endif // FARPLUGIN
 }
 
 ExtException::ExtException(Exception * E) :

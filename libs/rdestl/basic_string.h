@@ -155,7 +155,7 @@ public:
   size_type find_first_of(const E *_Ptr, size_type _Off = 0) const
   {	// look for one of [_Ptr, <null>) at or after _Off
     _DEBUG_POINTER(_Ptr);
-    return (find_first_of(_Ptr, _Off, _Traits::length(_Ptr)));
+    return (find_first_of(_Ptr, _Off, length(_Ptr)));
   }
 
   size_type find_first_of(E _Ch, size_type _Off = 0) const

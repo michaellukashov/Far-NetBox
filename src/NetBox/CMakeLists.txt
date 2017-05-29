@@ -64,7 +64,8 @@ set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
 set(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
 set(APR_DEFS "-DAPR_DECLARE_STATIC")
 set(APR_DEFS "${APR_DEFS} -DAPR_HAS_LARGE_FILES")
-set(NETBOX_DEFS "-DNO_GZIP -DMPEXT -DWINSCP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
+set(NETBOX_DEFS "-DMPEXT -DWINSCP -DFARPLUGIN")
+set(NETBOX_DEFS "${NETBOX_DEFS} -DNO_GZIP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS")
 set(NETBOX_DEFS "${NETBOX_DEFS} ${APR_DEFS}")
@@ -227,14 +228,19 @@ set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   -DDSO_WIN32
 )
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
-  /Zi /Zl -DOPENSSL_THREADS -DOPENSSL_NO_DYNAMIC_ENGINE
+  -DOPENSSL_THREADS -DOPENSSL_NO_DYNAMIC_ENGINE
   -DOPENSSL_PIC -DOPENSSL_NO_ERR
 )
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
-  -wd4090
   -DOPENSSLDIR="" -DENGINESDIR=""
   -DNB_COMPILE_OPENSSL
 )
+if(MSVC)
+set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
+  /Zi /Zl
+  -wd4090
+)
+endif()
 
 add_library(libcrypto STATIC
   ../../libs/openssl/crypto/aes/aes_cbc.c
@@ -307,6 +313,7 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/asn1/x_sig.c
   ../../libs/openssl/crypto/asn1/x_spki.c
   ../../libs/openssl/crypto/asn1/x_val.c
+  ../../libs/openssl/crypto/asn1/x_int64.c
   ../../libs/openssl/crypto/async/arch/async_null.c
   ../../libs/openssl/crypto/async/arch/async_posix.c
   ../../libs/openssl/crypto/async/arch/async_win.c
@@ -467,7 +474,7 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/dso/dso_openssl.c
   ../../libs/openssl/crypto/dso/dso_vms.c
   ../../libs/openssl/crypto/dso/dso_win32.c
-  ../../libs/openssl/crypto/ebcdic.c
+#  ../../libs/openssl/crypto/ebcdic.c
   ../../libs/openssl/crypto/ec/curve25519.c
   ../../libs/openssl/crypto/ec/ec2_mult.c
   ../../libs/openssl/crypto/ec/ec2_oct.c
@@ -493,10 +500,10 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/ec/eck_prn.c
   ../../libs/openssl/crypto/ec/ecp_mont.c
   ../../libs/openssl/crypto/ec/ecp_nist.c
-  ../../libs/openssl/crypto/ec/ecp_nistp224.c
-  ../../libs/openssl/crypto/ec/ecp_nistp256.c
-  ../../libs/openssl/crypto/ec/ecp_nistp521.c
-  ../../libs/openssl/crypto/ec/ecp_nistputil.c
+#  ../../libs/openssl/crypto/ec/ecp_nistp224.c
+#  ../../libs/openssl/crypto/ec/ecp_nistp256.c
+#  ../../libs/openssl/crypto/ec/ecp_nistp521.c
+#  ../../libs/openssl/crypto/ec/ecp_nistputil.c
   ../../libs/openssl/crypto/ec/ecp_oct.c
   ../../libs/openssl/crypto/ec/ecp_smpl.c
   ../../libs/openssl/crypto/ec/ecx_meth.c
@@ -538,7 +545,7 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/evp/e_aes_cbc_hmac_sha1.c
   ../../libs/openssl/crypto/evp/e_aes_cbc_hmac_sha256.c
   ../../libs/openssl/crypto/evp/e_bf.c
-  ../../libs/openssl/crypto/evp/e_camellia.c
+#  ../../libs/openssl/crypto/evp/e_camellia.c
   ../../libs/openssl/crypto/evp/e_cast.c
   ../../libs/openssl/crypto/evp/e_chacha20_poly1305.c
   ../../libs/openssl/crypto/evp/e_des.c
@@ -550,7 +557,7 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/evp/e_rc4.c
   ../../libs/openssl/crypto/evp/e_rc4_hmac_md5.c
   ../../libs/openssl/crypto/evp/e_rc5.c
-  ../../libs/openssl/crypto/evp/e_seed.c
+#  ../../libs/openssl/crypto/evp/e_seed.c
   ../../libs/openssl/crypto/evp/e_xcbc_d.c
   ../../libs/openssl/crypto/evp/encode.c
   ../../libs/openssl/crypto/evp/evp_cnf.c
@@ -672,7 +679,7 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/pkcs7/pkcs7err.c
   ../../libs/openssl/crypto/poly1305/poly1305.c
   ../../libs/openssl/crypto/rand/md_rand.c
-  ../../libs/openssl/crypto/rand/rand_egd.c
+#  ../../libs/openssl/crypto/rand/rand_egd.c
   ../../libs/openssl/crypto/rand/rand_err.c
   ../../libs/openssl/crypto/rand/rand_lib.c
   ../../libs/openssl/crypto/rand/rand_unix.c
@@ -806,6 +813,7 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/x509v3/v3err.c
   ../../libs/openssl/engines/e_capi.c
   ../../libs/openssl/engines/e_padlock.c
+
 )
 
 target_compile_options(libcrypto
@@ -832,6 +840,7 @@ add_library(libssl STATIC
   ../../libs/openssl/ssl/record/rec_layer_s3.c
   ../../libs/openssl/ssl/record/ssl3_buffer.c
   ../../libs/openssl/ssl/record/ssl3_record.c
+#  ../../libs/openssl/ssl/record/ssl3_record_tls13.c
   ../../libs/openssl/ssl/s3_cbc.c
   ../../libs/openssl/ssl/s3_enc.c
   ../../libs/openssl/ssl/s3_lib.c
@@ -854,12 +863,18 @@ add_library(libssl STATIC
   ../../libs/openssl/ssl/statem/statem_dtls.c
   ../../libs/openssl/ssl/statem/statem_lib.c
   ../../libs/openssl/ssl/statem/statem_srvr.c
+#  ../../libs/openssl/ssl/statem/extensions_srvr.c
+#  ../../libs/openssl/ssl/statem/extensions_clnt.c
+#  ../../libs/openssl/ssl/statem/extensions_cust.c
+#  ../../libs/openssl/ssl/statem/extensions.c
   ../../libs/openssl/ssl/t1_enc.c
   ../../libs/openssl/ssl/t1_ext.c
   ../../libs/openssl/ssl/t1_lib.c
   ../../libs/openssl/ssl/t1_reneg.c
   ../../libs/openssl/ssl/t1_trce.c
   ../../libs/openssl/ssl/tls_srp.c
+#  ../../libs/openssl/ssl/packet.c
+#  ../../libs/openssl/ssl/tls13_enc.c
 )
 
 target_compile_options(libssl
@@ -909,10 +924,14 @@ add_library(atlmfc STATIC
 )
 
 target_compile_options(atlmfc PRIVATE 
-  -wd4995 -wd4996 -wd4101 -wd4290
   ${ATLMFC_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )
+if(MSVC)
+target_compile_options(atlmfc PRIVATE
+  -wd4995 -wd4996 -wd4101 -wd4290
+)
+endif()
 
 target_include_directories(atlmfc PRIVATE
   ../../libs/atlmfc/include
@@ -980,9 +999,13 @@ add_library(putty STATIC
 )
 
 set(PUTTY_COMPILE_FLAGS
-  -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -wd4996
+  -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS
 )
-
+if(MSVC)
+set(PUTTY_COMPILE_FLAGS ${PUTTY_COMPILE_FLAGS}
+  -wd4996
+)
+endif()
 target_compile_options(putty PRIVATE
   ${PUTTY_COMPILE_FLAGS}
 )
@@ -1033,7 +1056,12 @@ add_library(neon STATIC
   ../../libs/neon/src/ne_openssl.c
 )
 
-set(NEON_COMPILE_FLAGS -wd4996)
+set(NEON_COMPILE_FLAGS)
+if(MSVC)
+set(NEON_COMPILE_FLAGS ${NEON_COMPILE_FLAGS}
+  -wd4996
+)
+endif()
 
 target_compile_options(neon PRIVATE
   ${NEON_COMPILE_FLAGS}

@@ -15,6 +15,8 @@
  */
 
 #include "apr.h"
+#undef NOMSG
+#include <winuser.h>
 #include <aclapi.h>
 #include "apr_private.h"
 #include "apr_arch_file_io.h"
