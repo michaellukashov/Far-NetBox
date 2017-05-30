@@ -19,6 +19,7 @@ BEGIN
   IDS_ERRORMSG_PROXY_CANTRESOLVEHOST, "Can't resolve host of proxy server"
   IDS_ERRORMSG_PROXY_NOCONN, "Can't connect to proxy server"
   IDS_ERRORMSG_PROXY_REQUESTFAILED, "Proxy request failed, can't connect through proxy server"
+  IDS_ERRORMSG_FILEOPENFAILED, "Can't open file '%s'."
 END
 
 STRINGTABLE
