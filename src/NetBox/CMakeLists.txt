@@ -186,6 +186,8 @@ set(NETBOX_DLL_LINK_FLAGS
   /MAP
   /INCREMENTAL:NO
   /ignore:4099
+  /ignore:4197
+  /ignore:4199
 "
 )
 #/DELAYLOAD:gdi32.dll
@@ -906,9 +908,21 @@ set(ATLMFC_COMPILE_FLAGS
 
 if(CMAKE_COMPILER_IS_MINGW)
 
-  set(ATLMFC_COMPILE_FLAGS ${ATLMFC_COMPILE_FLAGS}
-    -Wno-int-to-pointer-cast -Wno-pragmas -fpermissive
-  )
+set(ATLMFC_COMPILE_FLAGS ${ATLMFC_COMPILE_FLAGS}
+  -D_AFXDLL
+  -fpermissive
+  -Wno-int-to-pointer-cast
+  -Wno-pragmas
+  -Wno-non-virtual-dtor
+  -Wno-unused-parameter
+  -Wno-conversion-null
+  -Wno-sign-conversion
+  -Wno-deprecated
+  -Wno-overloaded-virtual
+  -Wno-sign-conversion
+  -Wno-conversion
+  -Wno-unused-result
+)
 
 endif(CMAKE_COMPILER_IS_MINGW)
 
@@ -1004,6 +1018,7 @@ set(PUTTY_COMPILE_FLAGS ${PUTTY_COMPILE_FLAGS}
   -wd4996
 )
 endif()
+
 target_compile_options(putty PRIVATE
   ${PUTTY_COMPILE_FLAGS}
 )
@@ -1054,7 +1069,7 @@ add_library(neon STATIC
   ../../libs/neon/src/ne_openssl.c
 )
 
-set(NEON_COMPILE_FLAGS)
+set(NEON_COMPILE_FLAGS )
 if(MSVC)
 set(NEON_COMPILE_FLAGS ${NEON_COMPILE_FLAGS}
   -wd4996
@@ -1583,6 +1598,7 @@ target_link_libraries(NetBox PRIVATE
 
 target_compile_options(NetBox PRIVATE
 #  -wd4251 -wd4275 -wd4661
+  ${ATLMFC_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )
 
