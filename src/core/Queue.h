@@ -21,7 +21,7 @@ public:
 public:
   explicit TSimpleThread(TObjectClassId Kind);
   virtual ~TSimpleThread();
-  virtual void Init();
+  void Init();
 
   virtual void Start();
   void WaitFor(uintptr_t Milliseconds = INFINITE) const;
@@ -105,6 +105,7 @@ typedef void (__closure * TQueueEventEvent)
 typedef nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/> TQueueEventEvent;
 
+class TTerminalItem;
 
 class TTerminalQueue : public TSignalThread
 {
