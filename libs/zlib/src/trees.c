@@ -1202,7 +1202,7 @@ static void bi_flush(deflate_state *s)
 /* ===========================================================================
  * Flush the bit buffer and align the output on a byte boundary
  */
-ZLIB_INTERNAL void bi_windup(deflate_state *s)
+static void bi_windup(deflate_state *s)
 {
     if (s->bi_valid > 8) {
         put_short(s, s->bi_buf);

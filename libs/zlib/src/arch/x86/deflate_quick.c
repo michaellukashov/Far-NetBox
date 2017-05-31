@@ -264,7 +264,7 @@ ZLIB_INTERNAL block_state deflate_quick(deflate_state *s, int flush) {
     return block_done;
 }
 
-static const uint32_t quick_len_codes[MAX_MATCH-MIN_MATCH+1] = {
+const uint32_t quick_len_codes[MAX_MATCH-MIN_MATCH+1] = {
     0x00004007, 0x00002007, 0x00006007, 0x00001007,
     0x00005007, 0x00003007, 0x00007007, 0x00000807,
     0x00004808, 0x0000c808, 0x00002808, 0x0000a808,
@@ -331,7 +331,7 @@ static const uint32_t quick_len_codes[MAX_MATCH-MIN_MATCH+1] = {
     0x001c230d, 0x001d230d, 0x001e230d, 0x0000a308,
 };
 
-static const uint32_t quick_dist_codes[8192] = {
+const uint32_t quick_dist_codes[8192] = {
     0x00000005, 0x00001005, 0x00000805, 0x00001805,
     0x00000406, 0x00002406, 0x00001406, 0x00003406,
     0x00000c07, 0x00002c07, 0x00004c07, 0x00006c07,
