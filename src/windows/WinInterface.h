@@ -604,8 +604,8 @@ public:
     const UnicodeString & CustomCommandName);
 
 protected:
-  virtual void Prompt(const UnicodeString & Prompt,
-    UnicodeString & Value);
+  virtual void Prompt(intptr_t Index, const UnicodeString & Prompt,
+    UnicodeString & Value) const;
   virtual void Execute(const UnicodeString & Command,
     UnicodeString & Value) const;
 

@@ -880,7 +880,7 @@ TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
 }
 
 void TWinInteractiveCustomCommand::Prompt(
-  const UnicodeString & Prompt, UnicodeString & Value)
+  intptr_t Index, const UnicodeString & Prompt, UnicodeString & Value) const
 {
   UnicodeString APrompt = Prompt;
   if (APrompt.IsEmpty())

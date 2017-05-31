@@ -12,7 +12,9 @@
 #endif
 
 #define _ATL_MIN_CRT
+#ifndef _ATL_NO_DEFAULT_LIBS
 #define _ATL_NO_DEFAULT_LIBS
+#endif
 
 #include "afxpriv.h"
 #include "afxole.h"

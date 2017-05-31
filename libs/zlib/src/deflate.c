@@ -73,10 +73,10 @@ static int deflateStateCheck      (z_stream *strm);
 static void slide_hash            (deflate_state *s);
 void fill_window                 (deflate_state *s);
 static block_state deflate_stored (deflate_state *s, int flush);
-block_state deflate_fast         (deflate_state *s, int flush);
+static block_state deflate_fast         (deflate_state *s, int flush);
 block_state deflate_quick        (deflate_state *s, int flush);
 #ifndef FASTEST
-block_state deflate_slow         (deflate_state *s, int flush);
+static block_state deflate_slow         (deflate_state *s, int flush);
 #endif
 static block_state deflate_rle    (deflate_state *s, int flush);
 static block_state deflate_huff   (deflate_state *s, int flush);
@@ -169,14 +169,14 @@ static const config configuration_table[10] = {
  */
 #ifdef FASTEST
 #define INSERT_STRING(s, str, match_head) \
-   (UPDATE_HASH(s, s->ins_h, str), \
-    match_head = s->head[s->ins_h], \
-    s->head[s->ins_h] = (Pos)(str))
+   {UPDATE_HASH(s, s->ins_h, str); \
+    match_head = s->head[s->ins_h]; \
+    s->head[s->ins_h] = (Pos)(str)}
 #else
 #define INSERT_STRING(s, str, match_head) \
-   (UPDATE_HASH(s, s->ins_h, str), \
-    match_head = s->prev[(str) & s->w_mask] = s->head[s->ins_h], \
-    s->head[s->ins_h] = (Pos)(str))
+   {UPDATE_HASH(s, s->ins_h, str); \
+    match_head = s->prev[(str) & s->w_mask] = s->head[s->ins_h]; \
+    s->head[s->ins_h] = (Pos)(str);}
 #endif
 
 /* ===========================================================================
@@ -1260,7 +1260,7 @@ static void lm_init(deflate_state *s)
 /* For 80x86 and 680x0, an optimized version will be provided in match.asm or
  * match.S. The code will be functionally equivalent.
  */
-static uint32_t longest_match(deflate_state *s, IPos cur_match)
+uint32_t longest_match(deflate_state *s, IPos cur_match)
 {
     uint32_t chain_length = s->max_chain_length;/* max hash chain length */
     register Bytef *scan = s->window + s->strstart; /* current string */
@@ -1407,7 +1407,7 @@ static uint32_t longest_match(deflate_state *s, IPos cur_match)
 /* ---------------------------------------------------------------------------
  * Optimized version for FASTEST only
  */
-static uint32_t longest_match(s, cur_match)
+uint32_t longest_match(s, cur_match)
     deflate_state *s;
     IPos cur_match;                             /* current match */
 {
