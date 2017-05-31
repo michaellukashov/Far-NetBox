@@ -148,7 +148,7 @@ static void send_all_trees (deflate_state *s, int lcodes, int dcodes, int blcode
 static void compress_block (deflate_state *s, const ct_data *ltree, const ct_data *dtree);
 static int  detect_data_type (deflate_state *s);
 static uint32_t bi_reverse (uint32_t value, int length);
-static void bi_windup      (deflate_state *s);
+void bi_windup      (deflate_state *s);
 static void bi_flush       (deflate_state *s);
 
 #ifdef GEN_TREES_H
@@ -1202,7 +1202,7 @@ static void bi_flush(deflate_state *s)
 /* ===========================================================================
  * Flush the bit buffer and align the output on a byte boundary
  */
-static void bi_windup(deflate_state *s)
+void bi_windup(deflate_state *s)
 {
     if (s->bi_valid > 8) {
         put_short(s, s->bi_buf);
