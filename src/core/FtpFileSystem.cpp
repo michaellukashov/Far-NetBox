@@ -3737,13 +3737,13 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
           MoreMessages.reset();
         }
       }
-/*
+#if 0
       catch(...)
       {
         delete MoreMessages;
         throw;
       }
-*/
+#endif // #if 0
 
       UnicodeString ErrorStr = Error;
       if (ErrorStr.IsEmpty() && (MoreMessages.get() != nullptr))
