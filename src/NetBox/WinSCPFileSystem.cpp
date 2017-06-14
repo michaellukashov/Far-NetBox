@@ -2904,7 +2904,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   std::unique_ptr<TStrings> FileList(AFileList == nullptr ? new TStringList() : AFileList);
   FileList->SetDuplicates(dupAccept);
 
-  TFarPanelItem * PanelItem;
+  TFarPanelItem * PanelItem = nullptr;
   TObject * Data = nullptr;
   for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {
@@ -2941,7 +2941,8 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
           }
         }
       }
-      FileList->AddObject(FileName, Data);
+      if (Data)
+        FileList->AddObject(FileName, Data);
     }
   }
 
