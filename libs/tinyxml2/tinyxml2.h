@@ -264,6 +264,13 @@ public:
         return _allocated;
     }
 
+	void SwapRemove(int i) {
+        TIXMLASSERT(i >= 0);
+		TIXMLASSERT(i < _size);
+		_mem[i] = _mem[_size - 1];
+		--_size;
+	}
+
     const T* Mem() const				{
         TIXMLASSERT( _mem );
         return _mem;
@@ -284,6 +291,7 @@ private:
             TIXMLASSERT( cap <= INT_MAX / 2 );
             int newAllocated = cap * 2;
             T* newMem = new T[newAllocated];
+            TIXMLASSERT( newAllocated >= _size );
             memcpy( newMem, _mem, sizeof(T)*_size );	// warning: not using constructors, only works for PODs
             if ( _mem != _pool ) {
                 delete [] _mem;
@@ -1801,6 +1809,9 @@ public:
     // internal
     char* Identify( char* p, XMLNode** node );
 
+	// internal
+	void MarkInUse(XMLNode*);
+
     virtual XMLNode* ShallowClone( XMLDocument* /*document*/ ) const	{
         return 0;
     }
@@ -1821,6 +1832,13 @@ private:
     int             _errorLineNum;
     char*			_charBuffer;
     int				_parseCurLineNum;
+	// Memory tracking does add some overhead.
+	// However, the code assumes that you don't
+	// have a bunch of unlinked nodes around.
+	// Therefore it takes less memory to track
+	// in the document vs. a linked list in the XMLNode,
+	// and the performance is the same.
+	DynArray<XMLNode*, 10> _unlinked;
 
     MemPoolT< sizeof(XMLElement) >	 _elementPool;
     MemPoolT< sizeof(XMLAttribute) > _attributePool;
@@ -1843,6 +1861,8 @@ inline NodeType* XMLDocument::CreateUnlinkedNode( MemPoolT<PoolElementSize>& poo
     NodeType* returnNode = new (pool.Alloc()) NodeType( this );
     TIXMLASSERT( returnNode );
     returnNode->_memPool = &pool;
+
+	_unlinked.Push(returnNode);
     return returnNode;
 }
 
@@ -2176,6 +2196,7 @@ public:
     void ClearBuffer() {
         _buffer.Clear();
         _buffer.Push(0);
+		_firstElement = true;
     }
 
 protected:
