@@ -3198,7 +3198,7 @@ UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
   }
 }
 
-UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName)
+UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName)
 {
   UnicodeString Result;
   intptr_t Len = ::GetEnvironmentVariable(L"PATH", nullptr, 0);
