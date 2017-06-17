@@ -3201,7 +3201,7 @@ UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
 UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName)
 {
   UnicodeString Result;
-  intptr_t Len = ::GetEnvironmentVariable(L"PATH", nullptr, 0);
+  intptr_t Len = ::GetEnvironmentVariable(AEnvVarName.c_str(), nullptr, 0);
   if (Len > 0)
   {
     wchar_t * Buffer = Result.SetLength(Len - 1);
