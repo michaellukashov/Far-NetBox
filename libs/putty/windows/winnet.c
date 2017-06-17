@@ -1732,9 +1732,9 @@ static void sk_tcp_write_eof(Socket sock)
 	try_send(s);
 }
 
-int select_result(WPARAM wParam, LPARAM lParam)
+void select_result(WPARAM wParam, LPARAM lParam)
 {
-    int ret, open;
+    int ret;
     DWORD err;
     char buf[20480];		       /* nice big buffer for plenty of speed */
     Actual_Socket s;
@@ -1743,11 +1743,11 @@ int select_result(WPARAM wParam, LPARAM lParam)
     /* wParam is the socket itself */
 
     if (wParam == 0)
-	return 1;		       /* boggle */
+	return;		       /* boggle */
 
     s = find234(sktree, (void *) wParam, cmpforsearch);
     if (!s)
-	return 1;		       /* boggle */
+	return;		       /* boggle */
 
     if ((err = WSAGETSELECTERROR(lParam)) != 0) {
 	/*
@@ -1768,9 +1768,8 @@ int select_result(WPARAM wParam, LPARAM lParam)
 	    }
 	}
 	if (err != 0)
-	    return plug_closing(s->plug, winsock_error_string(err), err, 0);
-	else
-	    return 1;
+	    plug_closing(s->plug, winsock_error_string(err), err, 0);
+	return;
     }
 
     noise_ultralight((unsigned long)lParam);
@@ -1823,11 +1822,11 @@ int select_result(WPARAM wParam, LPARAM lParam)
 	    }
 	}
 	if (ret < 0) {
-	    return plug_closing(s->plug, winsock_error_string(err), err, 0);
+	    plug_closing(s->plug, winsock_error_string(err), err, 0);
 	} else if (0 == ret) {
-	    return plug_closing(s->plug, NULL, 0, 0);
+	    plug_closing(s->plug, NULL, 0, 0);
 	} else {
-	    return plug_receive(s->plug, atmark ? 0 : 1, buf, ret);
+	    plug_receive(s->plug, atmark ? 0 : 1, buf, ret);
 	}
 	break;
       case FD_OOB:
@@ -1847,7 +1846,7 @@ int select_result(WPARAM wParam, LPARAM lParam)
 	    logevent(NULL, str);
 	    fatalbox("%s", str);
 	} else {
-	    return plug_receive(s->plug, 2, buf, ret);
+	    plug_receive(s->plug, 2, buf, ret);
 	}
 	break;
       case FD_WRITE:
@@ -1863,22 +1862,21 @@ int select_result(WPARAM wParam, LPARAM lParam)
 	break;
       case FD_CLOSE:
 	/* Signal a close on the socket. First read any outstanding data. */
-	open = 1;
 	do {
 	    ret = p_recv(s->s, buf, sizeof(buf), 0);
 	    if (ret < 0) {
 		err = p_WSAGetLastError();
 		if (err == WSAEWOULDBLOCK)
 		    break;
-		return plug_closing(s->plug, winsock_error_string(err), err, 0);
+		plug_closing(s->plug, winsock_error_string(err), err, 0);
 	    } else {
 		if (ret)
-		    open &= plug_receive(s->plug, 0, buf, ret);
+		    plug_receive(s->plug, 0, buf, ret);
 		else
-		    open &= plug_closing(s->plug, NULL, 0, 0);
+		    plug_closing(s->plug, NULL, 0, 0);
 	    }
 	} while (ret > 0);
-	return open;
+	return;
        case FD_ACCEPT:
 	{
 #ifdef NO_IPV6
@@ -1916,8 +1914,6 @@ int select_result(WPARAM wParam, LPARAM lParam)
 	    }
 	}
     }
-
-    return 1;
 }
 
 /*

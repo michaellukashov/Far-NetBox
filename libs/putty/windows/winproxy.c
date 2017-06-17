@@ -36,17 +36,17 @@ struct Socket_localproxy_tag {
     void *privptr;
 };
 
-int localproxy_gotdata(struct handle *h, void *data, int len)
+void localproxy_gotdata(struct handle *h, void *data, int len)
 {
     Local_Proxy_Socket ps = (Local_Proxy_Socket) handle_get_privdata(h);
 
     if (len < 0) {
-	return plug_closing(ps->plug, "Read error from local proxy command",
-			    0, 0);
+      plug_closing(ps->plug, "Read error from local proxy command",
+          0, 0);
     } else if (len == 0) {
-	return plug_closing(ps->plug, NULL, 0, 0);
+      plug_closing(ps->plug, NULL, 0, 0);
     } else {
-	return plug_receive(ps->plug, 0, data, len);
+      plug_receive(ps->plug, 0, data, len);
     }
 }
 
