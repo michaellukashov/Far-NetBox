@@ -772,6 +772,18 @@ void XMLNode::SetValue( const char* str, bool staticMem )
     }
 }
 
+XMLNode* XMLNode::DeepClone(XMLDocument* document) const
+{
+	XMLNode* clone = this->ShallowClone(document);
+	if (!clone) return 0;
+
+	for (const XMLNode* child = this->FirstChild(); child; child = child->NextSibling()) {
+		XMLNode* childClone = child->DeepClone(document);
+		TIXMLASSERT(childClone);
+		clone->InsertEndChild(childClone);
+	}
+	return clone;
+}
 
 void XMLNode::DeleteChildren()
 {
@@ -797,12 +809,12 @@ void XMLNode::Unlink( XMLNode* child )
 
     if ( child->_prev ) {
         child->_prev->_next = child->_next;
-        child->_prev = 0;
     }
     if ( child->_next ) {
         child->_next->_prev = child->_prev;
-        child->_next = 0;
     }
+	child->_next = 0;
+	child->_prev = 0;
 	child->_parent = 0;
 }
 
@@ -1994,6 +2006,7 @@ XMLDocument::~XMLDocument()
 
 void XMLDocument::MarkInUse(XMLNode* node)
 {
+	TIXMLASSERT(node);
 	TIXMLASSERT(node->_parent == 0);
 
 	for (int i = 0; i < _unlinked.Size(); ++i) {
@@ -2036,6 +2049,19 @@ void XMLDocument::Clear()
 #endif
 }
 
+
+void XMLDocument::DeepCopy(XMLDocument* target)
+{
+	TIXMLASSERT(target);
+    if (target == this) {
+        return; // technically success - a no-op.
+    }
+
+	target->Clear();
+	for (const XMLNode* node = this->FirstChild(); node; node = node->NextSibling()) {
+		target->InsertEndChild(node->DeepClone(target));
+	}
+}
 
 XMLElement* XMLDocument::NewElement( const char* name )
 {
