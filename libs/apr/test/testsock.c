@@ -26,10 +26,15 @@
 #define APR_WANT_BYTEFUNC
 #include "apr_want.h"
 
+#define UNIX_SOCKET_NAME    "/tmp/apr-socket"
+#define IPV4_SOCKET_NAME    "127.0.0.1"
+static char *socket_name = NULL;
+static int   socket_type = APR_INET;
+
 static void launch_child(abts_case *tc, apr_proc_t *proc, const char *arg1, apr_pool_t *p)
 {
     apr_procattr_t *procattr;
-    const char *args[3];
+    const char *args[4];
     apr_status_t rv;
 
     rv = apr_procattr_create(&procattr, p);
@@ -47,7 +52,8 @@ static void launch_child(abts_case *tc, apr_proc_t *proc, const char *arg1, apr_
 
     args[0] = "sockchild" EXTENSION;
     args[1] = arg1;
-    args[2] = NULL;
+    args[2] = socket_name;
+    args[3] = NULL;
     rv = apr_proc_create(proc, TESTBINPATH "sockchild" EXTENSION, args, NULL,
                          procattr, p);
     APR_ASSERT_SUCCESS(tc, "Couldn't launch program", rv);
@@ -91,6 +97,56 @@ static void test_addr_info(abts_case *tc, void *data)
     ABTS_INT_EQUAL(tc, 0, ntohs(sa->sa.sin.sin_port));
 }
 
+static void test_addr_copy(abts_case *tc, void *data)
+{
+    apr_status_t rv;
+    apr_sockaddr_t *sa1, *sa2;
+    int rc;
+    const char *hosts[] = {
+        "127.0.0.1",
+#if APR_HAVE_IPV6
+        "::1",
+#endif
+        NULL
+    }, **host = hosts;
+
+    /* Loop up to and including NULL */
+    do {
+        rv = apr_sockaddr_info_get(&sa1, *host, APR_UNSPEC, 80, 0, p);
+        APR_ASSERT_SUCCESS(tc, "Problem generating sockaddr", rv);
+
+        rv = apr_sockaddr_info_copy(&sa2, sa1, p);
+        APR_ASSERT_SUCCESS(tc, "Problem copying sockaddr", rv);
+
+        ABTS_PTR_NOTNULL(tc, sa1);
+        do {
+            ABTS_PTR_NOTNULL(tc, sa2);
+
+            rc = apr_sockaddr_equal(sa2, sa1);
+            ABTS_INT_NEQUAL(tc, 0, rc);
+            ABTS_INT_EQUAL(tc, 80, sa1->port);
+            ABTS_INT_EQUAL(tc, sa2->port, sa1->port);
+            ABTS_INT_EQUAL(tc, 80, ntohs(sa1->sa.sin.sin_port));
+            ABTS_INT_EQUAL(tc, ntohs(sa2->sa.sin.sin_port), ntohs(sa1->sa.sin.sin_port));
+
+            if (*host) {
+                ABTS_PTR_NOTNULL(tc, sa1->hostname);
+                ABTS_PTR_NOTNULL(tc, sa2->hostname);
+                ABTS_STR_EQUAL(tc, *host, sa1->hostname);
+                ABTS_STR_EQUAL(tc, sa1->hostname, sa2->hostname);
+                ABTS_TRUE(tc, sa1->hostname != sa2->hostname);
+            }
+            else {
+                ABTS_PTR_EQUAL(tc, NULL, sa1->hostname);
+                ABTS_PTR_EQUAL(tc, NULL, sa2->hostname);
+            }
+
+        } while ((sa2 = sa2->next, sa1 = sa1->next));
+        ABTS_PTR_EQUAL(tc, NULL, sa2);
+
+    } while (*host++);
+}
+
 static void test_serv_by_name(abts_case *tc, void *data)
 {
     apr_status_t rv;
@@ -117,7 +173,7 @@ static apr_socket_t *setup_socket(abts_case *tc)
     apr_sockaddr_t *sa;
     apr_socket_t *sock;
 
-    rv = apr_sockaddr_info_get(&sa, "127.0.0.1", APR_INET, 8021, 0, p);
+    rv = apr_sockaddr_info_get(&sa, socket_name, socket_type, 8021, 0, p);
     APR_ASSERT_SUCCESS(tc, "Problem generating sockaddr", rv);
 
     rv = apr_socket_create(&sock, sa->family, SOCK_STREAM, APR_PROTO_TCP, p);
@@ -488,11 +544,45 @@ static void test_nonblock_inheritance(abts_case *tc, void *data)
     APR_ASSERT_SUCCESS(tc, "Problem closing socket", rv);
 }
 
+static void test_freebind(abts_case *tc, void *data)
+{
+#ifdef IP_FREEBIND
+    apr_status_t rv;
+    apr_socket_t *sock;
+    apr_sockaddr_t *sa;
+    apr_int32_t on;
+    
+    /* RFC 5737 address */
+    rv = apr_sockaddr_info_get(&sa, "192.0.2.1", APR_INET, 8080, 0, p);
+    APR_ASSERT_SUCCESS(tc, "Problem generating sockaddr", rv);
+    
+    rv = apr_socket_create(&sock, sa->family, SOCK_STREAM, APR_PROTO_TCP, p);
+    APR_ASSERT_SUCCESS(tc, "Problem creating socket", rv);
+
+    rv = apr_socket_opt_set(sock, APR_SO_REUSEADDR, 1);
+    APR_ASSERT_SUCCESS(tc, "Could not set REUSEADDR on socket", rv);
+
+    rv = apr_socket_opt_set(sock, APR_SO_FREEBIND, 1);
+    APR_ASSERT_SUCCESS(tc, "Could not enable FREEBIND option", rv);
+    
+    rv = apr_socket_opt_get(sock, APR_SO_FREEBIND, &on);
+    APR_ASSERT_SUCCESS(tc, "Could not retrieve FREEBIND option", rv);
+    ABTS_INT_EQUAL(tc, 1, on);
+    
+    rv = apr_socket_bind(sock, sa);
+    APR_ASSERT_SUCCESS(tc, "Problem binding to port with FREEBIND", rv);
+    
+    rv = apr_socket_close(sock);
+    APR_ASSERT_SUCCESS(tc, "Problem closing socket", rv);
+#endif
+}
+
 abts_suite *testsock(abts_suite *suite)
 {
     suite = ADD_SUITE(suite)
-
+    socket_name = IPV4_SOCKET_NAME;
     abts_run_test(suite, test_addr_info, NULL);
+    abts_run_test(suite, test_addr_copy, NULL);
     abts_run_test(suite, test_serv_by_name, NULL);
     abts_run_test(suite, test_create_bind_listen, NULL);
     abts_run_test(suite, test_send, NULL);
@@ -502,7 +592,16 @@ abts_suite *testsock(abts_suite *suite)
     abts_run_test(suite, test_print_addr, NULL);
     abts_run_test(suite, test_get_addr, NULL);
     abts_run_test(suite, test_nonblock_inheritance, NULL);
+    abts_run_test(suite, test_freebind, NULL);
 
+#if APR_HAVE_SOCKADDR_UN
+    socket_name = UNIX_SOCKET_NAME;
+    socket_type = APR_UNIX;
+    abts_run_test(suite, test_create_bind_listen, NULL);
+    abts_run_test(suite, test_send, NULL);
+    abts_run_test(suite, test_recv, NULL);
+    abts_run_test(suite, test_timeout, NULL);
+#endif
     return suite;
 }
 
