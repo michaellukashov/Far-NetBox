@@ -501,7 +501,7 @@ public:
 
   static DWORD __stdcall GetEnvVariable(LPCSTR pszVar, LPSTR pszBuffer, uint32_t dwSize)
   {
-    return ::GetEnvironmentVariableA(pszVar, pszBuffer, dwSize);
+    return ::GetEnvironmentVariableA(pszVar, pszBuffer, (DWORD)dwSize);
   }
 
   static char* NBCopy(const char *pstrString, size_t size)
