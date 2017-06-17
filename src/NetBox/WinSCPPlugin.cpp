@@ -250,8 +250,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t I
           CommandLine.SetLength(P - 1);
         }
 
-        TWinSCPFileSystem * PanelSystem;
-        PanelSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
+        TWinSCPFileSystem * PanelSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
         if (PanelSystem && PanelSystem->Connected() &&
           PanelSystem->GetTerminal()->GetSessionData()->GenerateSessionUrl(sufComplete) == CommandLine)
         {
@@ -513,8 +512,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
   {
     if (isa<EAbort>(E))
     {
-      TQueryType Type;
-      Type = isa<ESshTerminate>(E) ? qtInformation : qtError;
+      TQueryType Type = isa<ESshTerminate>(E) ? qtInformation : qtError;
 
       TStrings * MoreMessages = nullptr;
       if (isa<ExtException>(E))

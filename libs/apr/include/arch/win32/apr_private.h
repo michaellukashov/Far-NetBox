@@ -49,6 +49,7 @@
 #include <accctrl.h>
 #else
 #define __wtypes_h__
+#define COM_NO_WINDOWS_H
 #include <accctrl.h>
 #undef __wtypes_h__
 #endif

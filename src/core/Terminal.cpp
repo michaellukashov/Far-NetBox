@@ -2093,7 +2093,7 @@ void TTerminal::AddCachedFileList(TRemoteFileList * FileList)
 
 TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, TDateTime Timestamp, bool CanLoad)
 {
-  TRemoteFileList * Result = NULL;
+  TRemoteFileList * Result = nullptr;
   if (core::UnixSamePath(FFiles->GetDirectory(), APath))
   {
     if (Timestamp < FFiles->GetTimestamp())
@@ -3475,10 +3475,9 @@ bool TTerminal::ProcessFiles(const TStrings * AFileList,
           }
         };
         intptr_t Index = 0;
-        UnicodeString FileName;
         while ((Index < AFileList->GetCount()) && (Progress.Cancel == csContinue))
         {
-          FileName = AFileList->GetString(Index);
+          UnicodeString FileName = AFileList->GetString(Index);
           try
           {
             bool Success = false;
@@ -5246,10 +5245,9 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
         {
           base::FindClose(SearchRec);
         };
-        UnicodeString FileName;
         while (Found)
         {
-          FileName = SearchRec.Name;
+          UnicodeString FileName = SearchRec.Name;
           // add dirs for recursive mode or when we are interested in newly
           // added subdirs
           // SearchRec.Size in C++B2010 is int64_t,
@@ -5680,14 +5678,12 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
     intptr_t IIndex = 0;
     while (IIndex < Checklist->GetCount())
     {
-      const TChecklistItem * ChecklistItem;
-
       DownloadList->Clear();
       DeleteRemoteList->Clear();
       UploadList->Clear();
       DeleteLocalList->Clear();
 
-      ChecklistItem = Checklist->GetItem(IIndex);
+      const TChecklistItem * ChecklistItem = Checklist->GetItem(IIndex);
 
       UnicodeString CurrentLocalDirectory = ChecklistItem->Local.Directory;
       UnicodeString CurrentRemoteDirectory = ChecklistItem->Remote.Directory;

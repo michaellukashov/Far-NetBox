@@ -172,7 +172,7 @@ BOOL CFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pExcepti
 	m_hFile = INVALID_HANDLE_VALUE;
 	m_strFileName.Empty();
 
-	TCHAR szTemp[_MAX_PATH];
+	/*TCHAR szTemp[_MAX_PATH];
 	if (lpszFileName != NULL && SUCCEEDED(StringCchLength(lpszFileName, _MAX_PATH, NULL)) )
 	{
 		if( _AfxFullPath2(szTemp, lpszFileName,pException) == FALSE )
@@ -187,9 +187,9 @@ BOOL CFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pExcepti
 			pException->m_strFileName = lpszFileName;
 		}
 		return FALSE; // path is too long
-	}
+	}*/
 		
-	m_strFileName = szTemp;
+	m_strFileName = lpszFileName;
 	ASSERT(shareCompat == 0);
 
 	// map read/write mode

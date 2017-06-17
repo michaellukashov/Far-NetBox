@@ -352,7 +352,7 @@ void ZLIB_INTERNAL _tr_flush_bits(deflate_state *s);
 void ZLIB_INTERNAL _tr_align(deflate_state *s);
 void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf,
                         uint64_t stored_len, int last);
-void ZLIB_INTERNAL bi_windup(deflate_state *s);
+void bi_windup(deflate_state *s);
 
 #define d_code(dist) \
    ((dist) < 256 ? _dist_code[dist] : _dist_code[256+((dist)>>7)])

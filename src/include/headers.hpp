@@ -4,7 +4,9 @@
 #define INCL_WINSOCK_API_TYPEDEFS 1
 #endif
 #ifndef _WINSOCKAPI_
+#if !defined(__MINGW32__)
 #define _WINSOCKAPI_
+#endif // defined(__MINGW32__)
 #endif
 #include <winsock2.h>
 #include <ws2tcpip.h>

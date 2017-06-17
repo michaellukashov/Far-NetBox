@@ -9,7 +9,9 @@ static int CheckBlock(void* blk)
   char* p = (char*)blk - sizeof(uint32_t) * 2;
   uint32_t size, *b, *e;
 
+#if !defined(__MINGW32__)
   __try
+#endif // defined(__MINGW32__)
   {
     size = *(uint32_t*)p;
     b = (uint32_t*)&p[sizeof(uint32_t)];
@@ -27,6 +29,7 @@ static int CheckBlock(void* blk)
     }
     else result = TRUE;
   }
+#if !defined(__MINGW32__)
   __except (EXCEPTION_EXECUTE_HANDLER)
   {
     OutputDebugStringA("access violation during checking memory block\n");
@@ -34,6 +37,7 @@ static int CheckBlock(void* blk)
       DebugBreak();
 #endif
   }
+#endif // defined(__MINGW32__)
 
   return result;
 }
@@ -105,16 +109,13 @@ NB_C_CORE_DLL(void*) nbcore_realloc(void* ptr, size_t size)
 
 NB_C_CORE_DLL(void) nbcore_free(void* ptr)
 {
-  char* p;
-  uint32_t size;
-
   if (ptr == nullptr)
     return;
   if (!CheckBlock(ptr))
     return;
 
-  p = (char*)ptr - sizeof(uint32_t) * 2;
-  size = *(uint32_t*)p;
+  char* p = (char*)ptr - sizeof(uint32_t) * 2;
+  uint32_t size = *(uint32_t*)p;
 
   *(uint32_t*)&p[sizeof(uint32_t)] = BLOCK_FREED;
   *(uint32_t*)&p[size + sizeof(uint32_t) * 2] = BLOCK_FREED;

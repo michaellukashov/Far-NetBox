@@ -73,11 +73,11 @@ static int ssl_free(BIO *a)
     if (a == NULL)
         return (0);
     bs = BIO_get_data(a);
-    if (bs && bs->ssl != NULL)
+    if (bs->ssl != NULL)
         SSL_shutdown(bs->ssl);
     if (BIO_get_shutdown(a)) {
         if (BIO_get_init(a))
-            if (bs) SSL_free(bs->ssl);
+            SSL_free(bs->ssl);
         /* Clear all flags */
         BIO_clear_flags(a, ~0);
         BIO_set_init(a, 0);
@@ -517,12 +517,13 @@ int BIO_ssl_copy_session_id(BIO *t, BIO *f)
 
 void BIO_ssl_shutdown(BIO *b)
 {
-    SSL *s;
+    BIO_SSL *bdata;
 
-    b = BIO_find_type(b, BIO_TYPE_SSL);
-    if (b == NULL)
-        return;
-
-    s = BIO_get_data(b);
-    SSL_shutdown(s);
+    for (; b != NULL; b = BIO_next(b)) {
+        if (BIO_method_type(b) != BIO_TYPE_SSL)
+            continue;
+        bdata = BIO_get_data(b);
+        if (bdata != NULL && bdata->ssl != NULL)
+            SSL_shutdown(bdata->ssl);
+    }
 }

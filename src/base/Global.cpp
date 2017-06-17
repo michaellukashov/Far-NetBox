@@ -4,7 +4,8 @@
 #ifdef _DEBUG
 #include <stdio.h>
 //#include <rdestl/vector.h>
-#include "Interface.h"
+// TODO: remove src/core dep
+#include <Interface.h> 
 #endif // ifdef _DEBUG
 
 #include <Global.h>
@@ -273,7 +274,7 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
 #else
   DWORD Written;
   WriteFile(TraceFile, Buffer.c_str(), static_cast<DWORD>(Buffer.Length()), &Written, nullptr);
-#endif TRACE_IN_MEMORY
+#endif // TRACE_IN_MEMORY
 }
 
 void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,

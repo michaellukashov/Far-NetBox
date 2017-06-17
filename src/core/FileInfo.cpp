@@ -167,11 +167,10 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
 void * CreateFileInfo(const UnicodeString & AFileName)
 {
   DWORD Handle;
-  uintptr_t Size;
   void * Result = nullptr;
 
   // Get file version info block size
-  Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
+  uintptr_t Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
   // If size is valid
   if (Size > 0)
   {
@@ -237,10 +236,9 @@ TTranslation GetTranslation(void * FileInfo, intptr_t I)
 // Return the name of the specified language
 UnicodeString GetLanguage(Word Language)
 {
-  uintptr_t Len;
   wchar_t P[256];
 
-  Len = ::VerLanguageName(Language, P, _countof(P));
+  uintptr_t Len = ::VerLanguageName(Language, P, _countof(P));
   if (Len > _countof(P))
     throw Exception(L"Language not available");
   return UnicodeString(P, Len);
