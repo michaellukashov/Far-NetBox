@@ -289,13 +289,7 @@ UnicodeString GetPersonalFolder()
 
   if (IsWine())
   {
-    UnicodeString WineHostHome;
-    int Len1 = ::GetEnvironmentVariable(L"WINE_HOST_HOME", nullptr, 0);
-    if (Len1 > 0)
-    {
-      WineHostHome.SetLength(Len1 - 1);
-      ::GetEnvironmentVariable(L"WINE_HOST_HOME", const_cast<LPWSTR>(WineHostHome.c_str()), Len1);
-    }
+    UnicodeString WineHostHome = base::GetEnvVariable("WINE_HOST_HOME");
     if (!WineHostHome.IsEmpty())
     {
       UnicodeString WineHome = L"Z:" + core::ToUnixPath(WineHostHome);
@@ -307,13 +301,7 @@ UnicodeString GetPersonalFolder()
     else
     {
       // Should we use WinAPI GetUserName() instead?
-      UnicodeString UserName;
-      int Len2 = ::GetEnvironmentVariable(L"USERNAME", nullptr, 0);
-      if (Len2 > 0)
-      {
-        UserName.SetLength(Len2 - 1);
-        ::GetEnvironmentVariable(L"USERNAME", const_cast<LPWSTR>(UserName.c_str()), Len2);
-      }
+      UnicodeString UserName = base::GetEnvVariable("USERNAME");
       if (!UserName.IsEmpty())
       {
         UnicodeString WineHome = L"Z:\\home\\" + UserName;
