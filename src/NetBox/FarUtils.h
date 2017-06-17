@@ -47,7 +47,7 @@ class CNBFile : public TObject
      * Get file size
      * \return file size or -1 if error
      */
-  int64_t GetFileSize();
+  int64_t GetFileSize() const;
   /**
      * Close file
      */
@@ -81,6 +81,6 @@ class CNBFile : public TObject
 
 private:
   HANDLE  m_File;          ///< File handle
-  DWORD   m_LastError;     ///< Last errno
+  mutable DWORD   m_LastError;     ///< Last errno
 };
 
