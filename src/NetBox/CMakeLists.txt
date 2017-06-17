@@ -1153,6 +1153,7 @@ add_library(apr STATIC
   ../../libs/apr/strings/apr_strings.c
   ../../libs/apr/strings/apr_strnatcmp.c
   ../../libs/apr/strings/apr_strtok.c
+  ../../libs/apr/strings/apr_cstr.c
   ../../libs/apr/tables/apr_hash.c
   ../../libs/apr/tables/apr_tables.c
 #  ../../libs/apr/tables/apr_skiplist.c
