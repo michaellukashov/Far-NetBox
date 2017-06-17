@@ -16,9 +16,9 @@ TOptions::TOptions() :
 void TOptions::Add(const UnicodeString & Value)
 {
   if (!FNoMoreSwitches &&
-      (Value.Length() == 2) &&
-      (Value[1] == Value[2]) &&
-      (FSwitchMarks.Pos(Value[1]) > 0))
+    (Value.Length() == 2) &&
+    (Value[1] == Value[2]) &&
+    (FSwitchMarks.Pos(Value[1]) > 0))
   {
     FNoMoreSwitches = true;
   }
@@ -28,8 +28,8 @@ void TOptions::Add(const UnicodeString & Value)
     intptr_t Index = 0; // shut up
     wchar_t SwitchMark = L'\0';
     if (!FNoMoreSwitches &&
-        (Value.Length() >= 2) &&
-        (FSwitchMarks.Pos(Value[1]) > 0))
+      (Value.Length() >= 2) &&
+      (FSwitchMarks.Pos(Value[1]) > 0))
     {
       Index = 2;
       Switch = true;
@@ -120,7 +120,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
     else if (FOptions[Index].Type == otSwitch)
     {
       if ((!CaseSensitive && ::SameText(FOptions[Index].Name, Switch)) ||
-          (CaseSensitive && ::SameText(FOptions[Index].Name, Switch)))
+        (CaseSensitive && ::SameText(FOptions[Index].Name, Switch)))
       {
         Found = true;
         Value = FOptions[Index].Value;
@@ -136,7 +136,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
   {
     ParamsStart++;
     while ((Index + ParamsCount < static_cast<intptr_t>(FOptions.size())) &&
-           (FOptions[Index + ParamsCount].Type == otParam))
+      (FOptions[Index + ParamsCount].Type == otParam))
     {
       ParamsCount++;
     }
@@ -185,7 +185,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
 {
   return DoFindSwitch(Switch, Params, ParamsMax, false);
 }
-//---------------------------------------------------------------------------
+
 bool TOptions::FindSwitchCaseSensitive(const UnicodeString & Switch,
   TStrings * Params, int ParamsMax)
 {
@@ -274,7 +274,7 @@ bool TOptions::UnusedSwitch(UnicodeString & Switch) const
   while (!Result && (Index < FOptions.size()))
   {
     if ((FOptions[Index].Type == otSwitch) &&
-        !FOptions[Index].Used)
+      !FOptions[Index].Used)
     {
       Switch = FOptions[Index].Name;
       Result = true;
@@ -337,20 +337,20 @@ void TOptions::LogOptions(TLogOptionEvent OnLogOption)
     UnicodeString LogStr;
     switch (Option.Type)
     {
-      case otParam:
-        LogStr = FORMAT(L"Parameter: %s", Option.Value.c_str());
-        DebugAssert(Option.Name.IsEmpty());
-        break;
+    case otParam:
+      LogStr = FORMAT(L"Parameter: %s", Option.Value.c_str());
+      DebugAssert(Option.Name.IsEmpty());
+      break;
 
-      case otSwitch:
-        LogStr =
-          FORMAT(L"Switch:    %c%s%s%s",
-            FSwitchMarks[1], Option.Name.c_str(), (Option.Value.IsEmpty() ? UnicodeString() : FSwitchValueDelimiters.SubString(1, 1)).c_str(), Option.Value.c_str());
-        break;
+    case otSwitch:
+      LogStr =
+        FORMAT(L"Switch:    %c%s%s%s",
+          FSwitchMarks[1], Option.Name.c_str(), (Option.Value.IsEmpty() ? UnicodeString() : FSwitchValueDelimiters.SubString(1, 1)).c_str(), Option.Value.c_str());
+      break;
 
-      default:
-        DebugFail();
-        break;
+    default:
+      DebugFail();
+      break;
     }
     OnLogOption(LogStr);
   }

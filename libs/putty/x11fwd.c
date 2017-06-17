@@ -683,10 +683,10 @@ int x11_get_screen_number(char *display)
 {
     int n;
 
-    n = host_strcspn(display, ":");
+    n = (int)host_strcspn(display, ":");
     if (!display[n])
 	return 0;
-    n = strcspn(display, ".");
+		n = (int)strcspn(display, ".");
     if (!display[n])
 	return 0;
     return atoi(display + n + 1);
@@ -788,7 +788,7 @@ static void x11_send_init_error(struct X11Connection *xconn,
 
     full_message = dupprintf("%s X11 proxy: %s\n", appname, err_message);
 
-    msglen = strlen(full_message);
+    msglen = (int)strlen(full_message);
     reply = snewn(8 + msglen+1 + 4, unsigned char); /* include zero */
     msgsize = (msglen + 3) & ~3;
     reply[0] = 0;	       /* failure */
@@ -1015,7 +1015,7 @@ void *x11_dehexify(const char *hex, int *outlen)
     int len, i;
     unsigned char *ret;
 
-    len = strlen(hex) / 2;
+    len = (int)strlen(hex) / 2;
     ret = snewn(len, unsigned char);
 
     for (i = 0; i < len; i++) {
@@ -1050,7 +1050,7 @@ void *x11_make_greeting(int endian, int protomajor, int protominor,
     int greeting_len;
 
     authname = x11_authnames[auth_proto];
-    authnamelen = strlen(authname);
+    authnamelen = (int)strlen(authname);
     authnamelen_pad = (authnamelen + 3) & ~3;
 
     if (auth_proto == X11_MIT) {
@@ -1064,7 +1064,7 @@ void *x11_make_greeting(int endian, int protomajor, int protominor,
 
         authdata = realauthdata;
         authdatalen = 24;
-        memset(realauthdata, 0, authdatalen);
+        memset(realauthdata, 0, sizeof(realauthdata));
         memcpy(realauthdata, auth_data, 8);
         PUT_32BIT_MSB_FIRST(realauthdata+8, peer_ip);
         PUT_16BIT_MSB_FIRST(realauthdata+12, peer_port);

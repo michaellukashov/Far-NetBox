@@ -286,12 +286,12 @@ static char *sk_handle_peer_info(Socket s)
     Handle_Socket ps = (Handle_Socket) s;
     ULONG pid;
     static HMODULE kernel32_module;
-    DECL_WINDOWS_FUNCTION(static, BOOL, GetNamedPipeClientProcessId,
+    PUTTY_DECL_WINDOWS_FUNCTION(static, BOOL, GetNamedPipeClientProcessId,
                           (HANDLE, PULONG));
 
     if (!kernel32_module) {
         kernel32_module = load_system32_dll("kernel32.dll");
-        GET_WINDOWS_FUNCTION_NO_TYPECHECK(
+        PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(
             kernel32_module, GetNamedPipeClientProcessId);
     }
 

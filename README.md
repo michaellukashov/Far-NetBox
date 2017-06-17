@@ -1,9 +1,12 @@
 NetBox: SFTP/FTP/FTP(S)/SCP/WebDAV client for Far Manager 2.0/3.0 x86/x64
 ==============
 
-Based on [WinSCP](http://winscp.net/eng/index.php) version 5.9.4 Copyright (c) 2000-2017 Martin Prikryl  
+[![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox)
+
+
+Based on [WinSCP](http://winscp.net/eng/index.php) version 5.9.5 Copyright (c) 2000-2017 Martin Prikryl  
 Based on [WinSCP as FAR Plugin: SFTP/FTP/SCP client for FAR version 1.6.2](http://winscp.net/download/winscpfar162setup.exe) Copyright (c) 2000-2009 Martin Prikryl  
-SSH and SCP code based on PuTTY 0.67 Copyright (c) 1997-2016 Simon Tatham  
+SSH and SCP code based on PuTTY 0.69 Copyright (c) 1997-2017 Simon Tatham  
 FTP code based on FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse  
 
 How to install
@@ -58,7 +61,8 @@ Links
 ========================
 
 * Project main page: [https://github.com/michaellukashov/Far-NetBox/](https://github.com/michaellukashov/Far-NetBox/)
-* Download page: [http://plugring.farmanager.com/plugin.php?pid=859&l=en](http://plugring.farmanager.com/plugin.php?pid=859&l=en)
+* Download page:
+[https://github.com/michaellukashov/Far-NetBox/releases](https://github.com/michaellukashov/Far-NetBox/releases) [http://plugring.farmanager.com/plugin.php?pid=859&l=en](http://plugring.farmanager.com/plugin.php?pid=859&l=en)
 * Far Manager forum: [http://forum.farmanager.com/](http://forum.farmanager.com/)
 * NetBox discussions (in Russian): [http://forum.farmanager.com/viewtopic.php?f=5&t=6317](http://forum.farmanager.com/viewtopic.php?f=5&t=6317)
 * NetBox discussions (in English): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39&t=6638)

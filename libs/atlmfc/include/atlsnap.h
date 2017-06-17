@@ -20,7 +20,7 @@
 #endif //!_ATL_NO_PRAGMA_WARNINGS
 
 #include <mmc.h>
-#include <commctrl.h>
+//#include <commctrl.h>
 #include <atlwin.h>
 
 #ifndef _ATL_NO_DEFAULT_LIBS

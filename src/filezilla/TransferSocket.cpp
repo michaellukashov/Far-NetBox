@@ -553,7 +553,7 @@ void CTransferSocket::OnSend(int nErrorCode)
     {
       DWORD BufferLen = 0;
       DWORD OutLen = 0;
-      if (WSAIoctl(m_SocketData.hSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, NULL, 0, &BufferLen, sizeof(BufferLen), &OutLen, 0, 0) == 0)
+      if (::WSAIoctl(m_SocketData.hSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, NULL, 0, &BufferLen, sizeof(BufferLen), &OutLen, 0, 0) == 0)
       {
         DebugAssert(OutLen == sizeof(BufferLen));
         if (m_SendBuf < BufferLen)
@@ -950,10 +950,10 @@ int CTransferSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
   {
     if (iter->nType == LAYERCALLBACK_STATECHANGE)
     {
-        if (CAsyncSocketEx::LogStateChange(iter->nParam1, iter->nParam2))
+        if (CAsyncSocketEx::LogStateChange((int)iter->nParam1, (int)iter->nParam2))
         {
-          const TCHAR * state2Desc = CAsyncSocketEx::GetStateDesc(iter->nParam2);
-          const TCHAR * state1Desc = CAsyncSocketEx::GetStateDesc(iter->nParam1);
+          const TCHAR * state2Desc = CAsyncSocketEx::GetStateDesc((int)iter->nParam2);
+          const TCHAR * state1Desc = CAsyncSocketEx::GetStateDesc((int)iter->nParam1);
         if (iter->pLayer == m_pProxyLayer)
           LogMessage(FZ_LOG_INFO, L"Proxy layer changed state from %s to %s", state2Desc, state1Desc);
         else if (iter->pLayer == m_pSslLayer)

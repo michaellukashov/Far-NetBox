@@ -27,8 +27,8 @@ private:
   static UnicodeString Keys[];
 
 public:
-  TBookmarkList * GetBookmarks(const UnicodeString & Index);
-  void SetBookmarks(const UnicodeString & Index, TBookmarkList * Value);
+  TBookmarkList * GetBookmarks(const UnicodeString & AIndex);
+  void SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Value);
   TBookmarkList * GetSharedBookmarks();
   void SetSharedBookmarks(TBookmarkList * Value);
 
@@ -59,11 +59,11 @@ public:
   void InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
   void MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
   void Delete(TBookmark *& Bookmark);
-  TBookmark * FindByName(const UnicodeString & Node, const UnicodeString & Name);
+  TBookmark * FindByName(const UnicodeString & Node, const UnicodeString & Name) const;
   TBookmark * FindByShortCut(const TShortCut & ShortCut);
   virtual void Assign(const TPersistent * Source);
   void LoadOptions(THierarchicalStorage * Storage);
-  void SaveOptions(THierarchicalStorage * Storage);
+  void SaveOptions(THierarchicalStorage * Storage) const;
   void ShortCuts(TShortCuts & ShortCuts);
 
 /*  __property int Count = { read = GetCount };
@@ -71,7 +71,7 @@ public:
   __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };*/
 
 protected:
-  intptr_t IndexOf(TBookmark * Bookmark);
+  intptr_t IndexOf(TBookmark * Bookmark) const;
   void KeyChanged(intptr_t Index);
 
 //  __property bool Modified = { read = FModified, write = FModified };
@@ -86,9 +86,9 @@ private:
 public:
 
   intptr_t GetCount() const;
-  TBookmark * GetBookmarks(intptr_t Index);
-  bool GetNodeOpened(const UnicodeString & Index);
-  void SetNodeOpened(const UnicodeString & Index, bool Value);
+  TBookmark * GetBookmarks(intptr_t AIndex);
+  bool GetNodeOpened(const UnicodeString & AIndex) const;
+  void SetNodeOpened(const UnicodeString & AIndex, bool Value);
 };
 
 class TBookmark : public TPersistent

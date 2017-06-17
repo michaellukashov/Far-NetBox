@@ -8,7 +8,7 @@
 
 static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
-  return dyn_cast<TNamedObject>(Item1)->Compare(dyn_cast<TNamedObject>(Item2));
+  return get_as<TNamedObject>(Item1)->Compare(get_as<TNamedObject>(Item2));
 }
 //--- TNamedObject ----------------------------------------------------------
 TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString & AName) :
@@ -72,11 +72,11 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
           N = 0;
         }
       }
-      SetName(Name + L" (" + ::Int64ToStr(N+1) + L")");
+      SetName(Name + L" (" + ::Int64ToStr(N + 1) + L")");
     }
 }
 
-//--- TNamedObjectList ------------------------------------------------------
+
 TNamedObjectList::TNamedObjectList(TObjectClassId Kind) :
   TObjectList(Kind),
   FHiddenCount(0),
@@ -84,33 +84,34 @@ TNamedObjectList::TNamedObjectList(TObjectClassId Kind) :
   FControlledAdd(false)
 {
 }
-//---------------------------------------------------------------------------
+
 const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const
 {
   return const_cast<TNamedObjectList *>(this)->AtObject(Index);
 }
-//---------------------------------------------------------------------------
+
 TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
-  return dyn_cast<TNamedObject>(GetObj(Index + FHiddenCount));
+  return GetAs<TNamedObject>(Index + FHiddenCount);
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::Recount()
 {
   intptr_t Index = 0;
-  while ((Index < TObjectList::GetCount()) && (dyn_cast<TNamedObject>(GetObj(Index))->GetHidden()))
+  while ((Index < TObjectList::GetCount()) && GetAs<TNamedObject>(Index)->GetHidden())
   {
     ++Index;
   }
   FHiddenCount = Index;
 }
-//---------------------------------------------------------------------------
+
+
 void TNamedObjectList::AlphaSort()
 {
   Sort(NamedObjectSortProc);
   Recount();
 }
-//---------------------------------------------------------------------------
+
 intptr_t TNamedObjectList::Add(TObject * AObject)
 {
   intptr_t Result;
@@ -130,7 +131,7 @@ intptr_t TNamedObjectList::Add(TObject * AObject)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
 {
   if (Action == lnDeleted)
@@ -154,7 +155,7 @@ void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 const TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name) const
 {
   return const_cast<TNamedObjectList *>(this)->FindByName(Name);
@@ -174,7 +175,8 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name)
   }
   return nullptr;
 }
-//---------------------------------------------------------------------------
+
+
 void TNamedObjectList::SetCount(intptr_t Value)
 {
   TObjectList::SetCount(Value/*+HiddenCount*/);
@@ -191,5 +193,3 @@ intptr_t TNamedObjectList::GetCountIncludingHidden() const
   DebugAssert(FHiddenCount >= 0);
   return TObjectList::GetCount();
 }
-
-

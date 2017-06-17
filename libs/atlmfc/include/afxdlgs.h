@@ -20,7 +20,7 @@
 #include <objbase.h>
 
 #ifndef _INC_COMMDLG
-	#include <commdlg.h>    // common dialog APIs
+//	#include <commdlg.h>    // common dialog APIs
 #endif
 
 #if WINVER >= 0x0600

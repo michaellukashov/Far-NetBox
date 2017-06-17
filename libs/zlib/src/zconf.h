@@ -57,7 +57,7 @@
 #endif
 
 #ifdef Z_SOLO
-   typedef unsigned long z_size_t;
+   typedef uint64_t z_size_t;
 #else
 #  define z_longlong long long
 #  if defined(NO_SIZE_T)
@@ -66,7 +66,7 @@
 #    include <stddef.h>
      typedef size_t z_size_t;
 #  else
-     typedef unsigned long z_size_t;
+     typedef uint64_t z_size_t;
 #  endif
 #  undef z_longlong
 #endif
@@ -141,7 +141,7 @@
 typedef unsigned char Byte;
 typedef Byte Bytef;
 
-typedef unsigned int   uInt;  /* 16 bits or more */
+typedef uint32_t   uInt;  /* 16 bits or more */
 typedef unsigned long  uLong; /* 32 bits or more */
 
 typedef char  charf;
@@ -165,7 +165,7 @@ typedef void       *voidp;
 #include <stdarg.h>         /* for va_list */
 
 #ifdef _WIN32
-#  include <stddef.h>         /* for wchar_t */
+#  include <stddef.h>         /* for wchar_t and NULL */
 #endif
 
 /* a little trick to accommodate both "#define _LARGEFILE64_SOURCE" and
@@ -210,7 +210,9 @@ typedef void       *voidp;
 #if !defined(_WIN32) && defined(Z_LARGE64)
 #  define z_off64_t off64_t
 #else
-#  if (defined(_WIN32) || defined(WIN32)) && !defined(__GNUC__)
+#  if defined(__MSYS__)
+#    define z_off64_t _off64_t
+#  elif (defined(_WIN32) || defined(WIN32)) && !defined(__GNUC__)
 #    define z_off64_t __int64
 #  else
 #    define z_off64_t z_off_t

@@ -89,8 +89,8 @@
   #define BignumADC(ret, retc, a, b, c) do                \
       {                                                   \
           BignumInt ADC_tmp;                              \
-          (retc) = _addcarry_u64(c, a, b, &ADC_tmp);      \
-          (ret) = ADC_tmp;                                \
+          (retc) = (BignumCarry)_addcarry_u64(c, a, b, &ADC_tmp);      \
+          (ret) = (BignumInt)ADC_tmp;                                \
       } while (0)
   #define BignumMUL(rh, rl, a, b) do              \
       {                                           \

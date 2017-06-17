@@ -3264,7 +3264,7 @@ doCdataSection(XML_Parser parser,
   *startPtr = NULL;
 
   for (;;) {
-    const char *next;
+    const char *next = NULL;
     int tok = XmlCdataSectionTok(enc, s, end, &next);
     *eventEndPP = next;
     switch (tok) {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <nbglobals.h>
 #include <nbstring.h>
 
 class RawByteString;
@@ -77,7 +76,7 @@ public:
   UnicodeString(const char * Str);
   UnicodeString(intptr_t Length, wchar_t Ch) : Data(Ch, Length) {}
 
-  UnicodeString(const UnicodeString & Str) { Data = Str.Data; }
+  UnicodeString(const UnicodeString & Str);
   explicit UnicodeString(const UTF8String & Str);
   explicit UnicodeString(const AnsiString & Str);
 
@@ -100,6 +99,8 @@ public:
 
   UnicodeString & LowerCase() { return Lower(); }
   UnicodeString & UpperCase() { return Upper(); }
+  UnicodeString & MakeUpper() { Data.MakeUpper(); return *this; }
+  UnicodeString & MakeLower() { Data.MakeLower(); return *this; }
 
   intptr_t Compare(const UnicodeString & Str) const;
   intptr_t CompareIC(const UnicodeString & Str) const;
@@ -144,7 +145,7 @@ public:
   UnicodeString TrimLeft() const;
   UnicodeString TrimRight() const;
 
-  void Unique() {}
+  void Unique();
 
   void sprintf(const wchar_t * fmt, ...);
 
@@ -153,7 +154,7 @@ public:
   UnicodeString & operator=(const RawByteString & StrCopy);
   UnicodeString & operator=(const AnsiString & StrCopy);
   UnicodeString & operator=(const UTF8String & StrCopy);
-  UnicodeString & operator=(const wchar_t * lpwszData);
+  UnicodeString & operator=(const wchar_t * Str);
   UnicodeString & operator=(const char * lpszData);
   UnicodeString & operator=(const wchar_t Ch);
 
@@ -172,9 +173,9 @@ public:
   UnicodeString & operator +=(const wchar_t * rhs);
   UnicodeString & operator +=(const UTF8String & rhs);
   UnicodeString & operator +=(const RawByteString & rhs);
-  UnicodeString & operator +=(const char rhs);
-  UnicodeString & operator +=(const char * rhs);
-  UnicodeString & operator +=(const wchar_t rhs);
+  UnicodeString & operator +=(const char Ch);
+  UnicodeString & operator +=(const char * Ch);
+  UnicodeString & operator +=(const wchar_t Ch);
 
   bool operator ==(const UnicodeString & Str) const { return Data == Str.Data; }
   bool operator !=(const UnicodeString & Str) const { return Data != Str.Data; }
@@ -229,8 +230,7 @@ public:
   AnsiString SubString(intptr_t Pos, intptr_t Len) const;
 
   intptr_t Pos(const AnsiString & Str) const;
-  intptr_t Pos(wchar_t Ch) const;
-  intptr_t Pos(const wchar_t * Str) const;
+  intptr_t Pos(char Ch) const;
 
   char operator [](intptr_t Idx) const;
   char & operator [](intptr_t Idx);
@@ -243,12 +243,12 @@ public:
   void Unique() {}
 
 public:
-  AnsiString & operator=(const UnicodeString & strCopy);
-  AnsiString & operator=(const RawByteString & strCopy);
-  AnsiString & operator=(const AnsiString & strCopy);
-  AnsiString & operator=(const UTF8String & strCopy);
-  AnsiString & operator=(const char * lpszData);
-  AnsiString & operator=(const wchar_t * lpwszData);
+  AnsiString & operator=(const UnicodeString & StrCopy);
+  AnsiString & operator=(const RawByteString & StrCopy);
+  AnsiString & operator=(const AnsiString & StrCopy);
+  AnsiString & operator=(const UTF8String & StrCopy);
+  AnsiString & operator=(const char * Str);
+  AnsiString & operator=(const wchar_t * Str);
   AnsiString & operator=(wchar_t chData);
 
   AnsiString operator +(const UnicodeString & rhs) const;
@@ -259,18 +259,18 @@ public:
   AnsiString & operator +=(const char * rhs);
 
   inline friend bool operator ==(const AnsiString & lhs, const AnsiString & rhs)
-  { return strcmp(lhs.Data.c_str(), rhs.Data.c_str()) == 0; }
+  { return lhs.Data == rhs.Data; }
   inline friend bool operator !=(const AnsiString & lhs, const AnsiString & rhs)
-  { return strcmp(lhs.Data.c_str(), rhs.Data.c_str()) != 0; }
+  { return lhs.Data != rhs.Data; }
 
   inline friend bool operator ==(const AnsiString & lhs, const char * rhs)
-  { return strcmp(lhs.Data.c_str(), rhs ? rhs : "") == 0; }
+  { return lhs.Data == rhs; }
   inline friend bool operator ==(const char * lhs, const AnsiString & rhs)
-  { return strcmp(lhs ? lhs : "", rhs.Data.c_str()) == 0; }
+  { return lhs == rhs.Data; }
   inline friend bool operator !=(const AnsiString & lhs, const char * rhs)
-  { return strcmp(lhs.Data.c_str(), rhs ? rhs : "") != 0; }
+  { return lhs.Data != rhs; }
   inline friend bool operator !=(const char * lhs, const AnsiString & rhs)
-  { return strcmp(lhs ? lhs : "", rhs.Data.c_str()) != 0; }
+  { return lhs != rhs.Data; }
 
 private:
   void Init(const wchar_t * Str, intptr_t Length);
@@ -315,15 +315,15 @@ public:
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(const wchar_t * Str) const;
   intptr_t Pos(const char Ch) const;
-  intptr_t Pos(const char * Ch) const;
+  intptr_t Pos(const char * Str) const;
 
   void Unique() {}
 
 public:
-  RawByteString & operator=(const UnicodeString & strCopy);
-  RawByteString & operator=(const RawByteString & strCopy);
-  RawByteString & operator=(const AnsiString & strCopy);
-  RawByteString & operator=(const UTF8String & strCopy);
+  RawByteString & operator=(const UnicodeString & StrCopy);
+  RawByteString & operator=(const RawByteString & StrCopy);
+  RawByteString & operator=(const AnsiString & StrCopy);
+  RawByteString & operator=(const UTF8String & StrCopy);
   RawByteString & operator=(const char * lpszData);
   RawByteString & operator=(const wchar_t * lpwszData);
   RawByteString & operator=(wchar_t chData);
@@ -334,7 +334,7 @@ public:
   RawByteString & operator +=(const char Ch);
 
   bool operator ==(const char * rhs) const
-  { return strcmp(reinterpret_cast<const char *>(Data.c_str()), rhs) == 0; }
+  { return Data == rhs; }
   inline friend bool operator ==(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data == rhs.Data; }
   inline friend bool operator !=(RawByteString & lhs, RawByteString & rhs)

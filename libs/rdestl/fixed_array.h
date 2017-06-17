@@ -6,7 +6,7 @@
 namespace rde
 {
 //=============================================================================
-template<typename T, size_t N>
+template<typename T, ::size_t N>
 class fixed_array
 {
 	typedef char ERR_N_MustBeBiggerThanZero[N > 0 ? 1 : -1];
@@ -14,7 +14,7 @@ public:
 	typedef T			value_type;
 	typedef T*			iterator;
 	typedef const T*	const_iterator;
-	typedef size_t		size_type;
+	typedef ::size_t		size_type;
 
 	fixed_array() {/**/}
 	fixed_array(const T array[N])

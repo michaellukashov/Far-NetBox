@@ -1,12 +1,13 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <rdestl/set.h>
 #include <Common.h>
 #include <StrUtils.hpp>
 
 #include "TextsCore.h"
+#if defined(FARPLUGIN)
 #include "HelpCore.h"
+#endif // FARPLUGIN
 #include "rtlconsts.h"
 
 //static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(new TCriticalSection());
@@ -238,7 +239,9 @@ UnicodeString GetExceptionHelpKeyword(const Exception * E)
   else if ((E != nullptr) && ExceptionMessage(E, false, false, Message, InternalError) &&
            InternalError)
   {
+#if defined(FARPLUGIN)
     HelpKeyword = HELP_INTERNAL_ERROR;
+#endif // FARPLUGIN
   }
   return HelpKeyword;
 }
@@ -260,8 +263,12 @@ UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const U
 
 bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword)
 {
+#if defined(FARPLUGIN)
   return
     (HelpKeyword == HELP_INTERNAL_ERROR);
+#else
+  return false;
+#endif // FARPLUGIN
 }
 
 ExtException::ExtException(Exception * E) :

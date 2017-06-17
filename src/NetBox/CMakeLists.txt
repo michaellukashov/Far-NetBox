@@ -9,9 +9,9 @@ project(NetBox)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug" FORCE)
 endif()
-message(STATUS "Build type -- ${CMAKE_BUILD_TYPE}")
-message(STATUS "CMAKE_CL_64 -- ${CMAKE_CL_64}")
-message(STATUS "MSVC10 -- ${MSVC10}")
+message("Build type: ${CMAKE_BUILD_TYPE}")
+message("CMAKE_CL_64: ${CMAKE_CL_64}")
+message("MSVC10: ${MSVC10}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far2)
@@ -27,12 +27,12 @@ endif()
 
 if(MSVC)
   if(MSVC14)
-    set(OPENSSL_INC_DIR "vs2015-${PROJECT_PLATFORM}")
+    set(OPENSSL_LIB_DIR "vs2015-${PROJECT_PLATFORM}")
   else()
-    set(OPENSSL_INC_DIR "${PROJECT_PLATFORM}")
+    set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}")
   endif()
 else()
-  set(OPENSSL_INC_DIR "${PROJECT_PLATFORM}")
+  set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}")
 endif(MSVC)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -51,17 +51,20 @@ endif()
 #-------------------------------------------------------------------------------
 
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
-include(CMakeDetermineCXXCompiler)
-message(STATUS "System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
-message(STATUS "MSVC_VERSION: ${MSVC_VERSION}")
+#include(CMakeDetermineCXXCompiler)
+message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
+message("MSVC_VERSION: ${MSVC_VERSION}")
+message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 #-------------------------------------------------------------------------------
 
 set(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB") #" -DUSE_GETADDRINFO")
 set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
 set(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
-set(APR_DEFS "-DAPR_DECLARE_STATIC -DAPR_HAS_LARGE_FILES")
-set(NETBOX_DEFS "-DMPEXT -DWINSCP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
+set(APR_DEFS "-DAPR_DECLARE_STATIC")
+set(APR_DEFS "${APR_DEFS} -DAPR_HAS_LARGE_FILES")
+set(NETBOX_DEFS "-DMPEXT -DWINSCP -DFARPLUGIN")
+set(NETBOX_DEFS "${NETBOX_DEFS} -DNO_GZIP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS")
 set(NETBOX_DEFS "${NETBOX_DEFS} ${APR_DEFS}")
@@ -91,7 +94,6 @@ set(NETBOX_FLAGS_RELEASE "-U_DEBUG -DNDEBUG")
 set(NETBOX_FLAGS_DEBUG "-D_DEBUG -DDEBUG")
 
 set(NETBOX_UNICODE_FLAGS -D_UNICODE -DUNICODE)
-set(NETBOX_UNICODE_FLAGS_STRING "-D_UNICODE -DUNICODE")
 
 if(MSVC)
 
@@ -114,7 +116,7 @@ set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
 endif()
 
 set(NETBOX_C_FLAGS "${NETBOX_DEFS} ${NETBOX_C_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_C_WARNING_FLAGS}")
-set(NETBOX_CXX_FLAGS "${NETBOX_DEFS} ${NETBOX_CXX_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_CXX_WARNING_FLAGS} ${NETBOX_UNICODE_FLAGS_STRING}")
+set(NETBOX_CXX_FLAGS "${NETBOX_DEFS} ${NETBOX_CXX_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_CXX_WARNING_FLAGS}")
 
 set(CMAKE_CXX_FLAGS_RELEASE "${NETBOX_CXX_FLAGS} ${NETBOX_FLAGS_RELEASE}")
 set(CMAKE_C_FLAGS_RELEASE "${NETBOX_C_FLAGS} ${NETBOX_FLAGS_RELEASE}")
@@ -165,8 +167,6 @@ set(NETBOX_DLL_LINK_FLAGS
   /NODEFAULTLIB:MSVCRTD.LIB
   /NODEFAULTLIB:MFCS100U.LIB
   /NODEFAULTLIB:MFCS100UD.LIB
-  /NODEFAULTLIB:UAFXCW.LIB
-  /NODEFAULTLIB:UAFXCWD.LIB
   /NODEFAULTLIB:LIBCPMT.LIB
   /NODEFAULTLIB:LIBCPMTD.LIB
   /NODEFAULTLIB:LIBCRYPTO.LIB
@@ -178,7 +178,6 @@ set(NETBOX_DLL_LINK_FLAGS
   /DELAYLOAD:version.dll
   /DELAYLOAD:ws2_32.dll
   /DELAYLOAD:oleaut32.dll
-  /DELAYLOAD:winhttp.dll
   /DELAYLOAD:shell32.dll
   /DELAYLOAD:shlwapi.dll
   /DELAYLOAD:crypt32.dll
@@ -187,6 +186,8 @@ set(NETBOX_DLL_LINK_FLAGS
   /MAP
   /INCREMENTAL:NO
   /ignore:4099
+  /ignore:4197
+  /ignore:4199
 "
 )
 #/DELAYLOAD:gdi32.dll
@@ -227,14 +228,19 @@ set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   -DDSO_WIN32
 )
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
-  /Zi /Zl -DOPENSSL_THREADS -DOPENSSL_NO_DYNAMIC_ENGINE
+  -DOPENSSL_THREADS -DOPENSSL_NO_DYNAMIC_ENGINE
   -DOPENSSL_PIC -DOPENSSL_NO_ERR
 )
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
-  -wd4090
   -DOPENSSLDIR="" -DENGINESDIR=""
   -DNB_COMPILE_OPENSSL
 )
+if(MSVC)
+set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
+  /Zi /Zl
+  -wd4090
+)
+endif()
 
 add_library(libcrypto STATIC
   ../../libs/openssl/crypto/aes/aes_cbc.c
@@ -307,6 +313,7 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/asn1/x_sig.c
   ../../libs/openssl/crypto/asn1/x_spki.c
   ../../libs/openssl/crypto/asn1/x_val.c
+  ../../libs/openssl/crypto/asn1/x_int64.c
   ../../libs/openssl/crypto/async/arch/async_null.c
   ../../libs/openssl/crypto/async/arch/async_posix.c
   ../../libs/openssl/crypto/async/arch/async_win.c
@@ -467,7 +474,7 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/dso/dso_openssl.c
   ../../libs/openssl/crypto/dso/dso_vms.c
   ../../libs/openssl/crypto/dso/dso_win32.c
-  ../../libs/openssl/crypto/ebcdic.c
+#  ../../libs/openssl/crypto/ebcdic.c
   ../../libs/openssl/crypto/ec/curve25519.c
   ../../libs/openssl/crypto/ec/ec2_mult.c
   ../../libs/openssl/crypto/ec/ec2_oct.c
@@ -493,10 +500,10 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/ec/eck_prn.c
   ../../libs/openssl/crypto/ec/ecp_mont.c
   ../../libs/openssl/crypto/ec/ecp_nist.c
-  ../../libs/openssl/crypto/ec/ecp_nistp224.c
-  ../../libs/openssl/crypto/ec/ecp_nistp256.c
-  ../../libs/openssl/crypto/ec/ecp_nistp521.c
-  ../../libs/openssl/crypto/ec/ecp_nistputil.c
+#  ../../libs/openssl/crypto/ec/ecp_nistp224.c
+#  ../../libs/openssl/crypto/ec/ecp_nistp256.c
+#  ../../libs/openssl/crypto/ec/ecp_nistp521.c
+#  ../../libs/openssl/crypto/ec/ecp_nistputil.c
   ../../libs/openssl/crypto/ec/ecp_oct.c
   ../../libs/openssl/crypto/ec/ecp_smpl.c
   ../../libs/openssl/crypto/ec/ecx_meth.c
@@ -538,7 +545,7 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/evp/e_aes_cbc_hmac_sha1.c
   ../../libs/openssl/crypto/evp/e_aes_cbc_hmac_sha256.c
   ../../libs/openssl/crypto/evp/e_bf.c
-  ../../libs/openssl/crypto/evp/e_camellia.c
+#  ../../libs/openssl/crypto/evp/e_camellia.c
   ../../libs/openssl/crypto/evp/e_cast.c
   ../../libs/openssl/crypto/evp/e_chacha20_poly1305.c
   ../../libs/openssl/crypto/evp/e_des.c
@@ -550,7 +557,7 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/evp/e_rc4.c
   ../../libs/openssl/crypto/evp/e_rc4_hmac_md5.c
   ../../libs/openssl/crypto/evp/e_rc5.c
-  ../../libs/openssl/crypto/evp/e_seed.c
+#  ../../libs/openssl/crypto/evp/e_seed.c
   ../../libs/openssl/crypto/evp/e_xcbc_d.c
   ../../libs/openssl/crypto/evp/encode.c
   ../../libs/openssl/crypto/evp/evp_cnf.c
@@ -672,7 +679,7 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/pkcs7/pkcs7err.c
   ../../libs/openssl/crypto/poly1305/poly1305.c
   ../../libs/openssl/crypto/rand/md_rand.c
-  ../../libs/openssl/crypto/rand/rand_egd.c
+#  ../../libs/openssl/crypto/rand/rand_egd.c
   ../../libs/openssl/crypto/rand/rand_err.c
   ../../libs/openssl/crypto/rand/rand_lib.c
   ../../libs/openssl/crypto/rand/rand_unix.c
@@ -806,6 +813,7 @@ add_library(libcrypto STATIC
   ../../libs/openssl/crypto/x509v3/v3err.c
   ../../libs/openssl/engines/e_capi.c
   ../../libs/openssl/engines/e_padlock.c
+
 )
 
 target_compile_options(libcrypto
@@ -818,7 +826,6 @@ target_include_directories(libcrypto SYSTEM BEFORE PRIVATE
   ../../libs/openssl/crypto
   ../../libs/openssl/crypto/include
   ../../libs/openssl/crypto/modes
-  ../../libs/openssl/${OPENSSL_INC_DIR}/include
 )
 
 add_library(libssl STATIC
@@ -833,6 +840,7 @@ add_library(libssl STATIC
   ../../libs/openssl/ssl/record/rec_layer_s3.c
   ../../libs/openssl/ssl/record/ssl3_buffer.c
   ../../libs/openssl/ssl/record/ssl3_record.c
+#  ../../libs/openssl/ssl/record/ssl3_record_tls13.c
   ../../libs/openssl/ssl/s3_cbc.c
   ../../libs/openssl/ssl/s3_enc.c
   ../../libs/openssl/ssl/s3_lib.c
@@ -855,12 +863,18 @@ add_library(libssl STATIC
   ../../libs/openssl/ssl/statem/statem_dtls.c
   ../../libs/openssl/ssl/statem/statem_lib.c
   ../../libs/openssl/ssl/statem/statem_srvr.c
+#  ../../libs/openssl/ssl/statem/extensions_srvr.c
+#  ../../libs/openssl/ssl/statem/extensions_clnt.c
+#  ../../libs/openssl/ssl/statem/extensions_cust.c
+#  ../../libs/openssl/ssl/statem/extensions.c
   ../../libs/openssl/ssl/t1_enc.c
   ../../libs/openssl/ssl/t1_ext.c
   ../../libs/openssl/ssl/t1_lib.c
   ../../libs/openssl/ssl/t1_reneg.c
   ../../libs/openssl/ssl/t1_trce.c
   ../../libs/openssl/ssl/tls_srp.c
+#  ../../libs/openssl/ssl/packet.c
+#  ../../libs/openssl/ssl/tls13_enc.c
 )
 
 target_compile_options(libssl
@@ -870,17 +884,16 @@ target_compile_options(libssl
 target_include_directories(libssl SYSTEM BEFORE PRIVATE
   ../../libs/openssl
   ../../libs/openssl/include
-  ../../libs/openssl/${OPENSSL_INC_DIR}/include
 )
 
 else(OPT_COMPILE_OPENSSL)
 
 add_library (libcrypto STATIC IMPORTED)
 set_property(TARGET libcrypto
-    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_INC_DIR}/libcrypto.lib)
+    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_LIB_DIR}/libcrypto.lib)
 add_library (libssl STATIC IMPORTED)
 set_property(TARGET libssl
-    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_INC_DIR}/libssl.lib)
+    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_LIB_DIR}/libssl.lib)
 
 endif(OPT_COMPILE_OPENSSL)
 
@@ -890,14 +903,28 @@ endif(OPT_COMPILE_OPENSSL)
 set(ATLMFC_COMPILE_FLAGS
   -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
   -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
-  -D_AFX_NO_OLE_SUPPORT -D_AFX_NO_SOCKET_SUPPORT -DCOM_NO_WINDOWS_H
+  -D_AFX_NO_SOCKET_SUPPORT -DCOM_NO_WINDOWS_H
 )
 
 if(CMAKE_COMPILER_IS_MINGW)
-  set(ATLMFC_COMPILE_FLAGS ${ATLMFC_COMPILE_FLAGS}
-    -Wno-int-to-pointer-cast -Wno-pragmas -fpermissive
-  )
-endif()
+
+set(ATLMFC_COMPILE_FLAGS ${ATLMFC_COMPILE_FLAGS}
+  -D_AFXDLL
+  -fpermissive
+  -Wno-int-to-pointer-cast
+  -Wno-pragmas
+  -Wno-non-virtual-dtor
+  -Wno-unused-parameter
+  -Wno-conversion-null
+  -Wno-sign-conversion
+  -Wno-deprecated
+  -Wno-overloaded-virtual
+  -Wno-sign-conversion
+  -Wno-conversion
+  -Wno-unused-result
+)
+
+endif(CMAKE_COMPILER_IS_MINGW)
 
 add_library(atlmfc STATIC
   ../../libs/atlmfc/mfc1.cpp
@@ -908,9 +935,15 @@ add_library(atlmfc STATIC
   ../../libs/atlmfc/src/mfc/thrdcore.cpp
 )
 
-target_compile_options(atlmfc
-  PRIVATE ${ATLMFC_COMPILE_FLAGS} -wd4995 -wd4996 -wd4101 -wd4290
+target_compile_options(atlmfc PRIVATE 
+  ${ATLMFC_COMPILE_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
 )
+if(MSVC)
+target_compile_options(atlmfc PRIVATE
+  -wd4995 -wd4996 -wd4101 -wd4290
+)
+endif()
 
 target_include_directories(atlmfc PRIVATE
   ../../libs/atlmfc/include
@@ -977,10 +1010,17 @@ add_library(putty STATIC
 #  ../../libs/putty/ldisc.c
 )
 
-set(PUTTY_COMPILE_FLAGS -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS -wd4996)
+set(PUTTY_COMPILE_FLAGS
+  -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS
+)
+if(MSVC)
+set(PUTTY_COMPILE_FLAGS ${PUTTY_COMPILE_FLAGS}
+  -wd4996
+)
+endif()
 
-target_compile_options(putty
-  PRIVATE ${PUTTY_COMPILE_FLAGS}
+target_compile_options(putty PRIVATE
+  ${PUTTY_COMPILE_FLAGS}
 )
 
 target_include_directories(putty PRIVATE
@@ -989,9 +1029,13 @@ target_include_directories(putty PRIVATE
 )
 
 #-------------------------------------------------------------------------------
+#tinyxml2
 
 add_library(tinyxml2 STATIC
   ../../libs/tinyxml2/tinyxml2.cpp
+)
+
+target_compile_options(tinyxml2 PRIVATE
 )
 
 #-------------------------------------------------------------------------------
@@ -1025,16 +1069,22 @@ add_library(neon STATIC
   ../../libs/neon/src/ne_openssl.c
 )
 
-set(NEON_COMPILE_FLAGS -wd4996)
+set(NEON_COMPILE_FLAGS )
+if(MSVC)
+set(NEON_COMPILE_FLAGS ${NEON_COMPILE_FLAGS}
+  -wd4996
+)
+endif()
 
-target_compile_options(neon
-  PRIVATE ${NEON_COMPILE_FLAGS} ${NETBOX_UNICODE_FLAGS}
+target_compile_options(neon PRIVATE
+  ${NEON_COMPILE_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 target_include_directories(neon PRIVATE
   ../../libs/zlib/src
   ../../libs/expat/lib
-  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+  ../../libs/openssl/include
 )
 
 #-------------------------------------------------------------------------------
@@ -1116,8 +1166,8 @@ add_library(apr STATIC
   ../../libs/apr/user/win32/userinfo.c
 )
 
-target_compile_options(apr
-  PRIVATE -U_UNICODE -UUNICODE
+target_compile_options(apr PRIVATE
+  -U_UNICODE -UUNICODE
 )
 
 target_include_directories(apr PRIVATE
@@ -1137,8 +1187,8 @@ add_library(expat STATIC
 #  ../../libs/expat/lib/xmltok_ns.c
 )
 
-target_compile_options(expat
-  PRIVATE
+target_compile_options(expat PRIVATE
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 #-------------------------------------------------------------------------------
@@ -1172,8 +1222,8 @@ add_library(zlib STATIC
   ${ZLIB_SOURCES}
 )
 
-target_compile_options(zlib
-  PRIVATE ${NETBOX_UNICODE_FLAGS}
+target_compile_options(zlib PRIVATE
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 target_include_directories(zlib PRIVATE
@@ -1184,12 +1234,12 @@ target_include_directories(zlib PRIVATE
 #dlmalloc
 
 add_library(dlmalloc STATIC
-  ../../libs/dlmalloc/malloc.c
-  ../../libs/dlmalloc/malloc-2.8.6.h
+  ../../libs/dlmalloc/dlmalloc.cc
+  ../../libs/dlmalloc/dlmalloc-2.8.6.h
 )
 
-target_compile_options(dlmalloc
-  PRIVATE ${NETBOX_UNICODE_FLAGS}
+target_compile_options(dlmalloc PRIVATE
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 #-------------------------------------------------------------------------------
@@ -1245,8 +1295,11 @@ target_include_directories(rdestl PRIVATE
   ../base
 )
 
+target_compile_options(rdestl PRIVATE
+)
+
 #-------------------------------------------------------------------------------
-# target NetBox
+#NetBox
 
 if(OPT_USE_UNITY_BUILD)
 
@@ -1333,7 +1386,7 @@ set(NETBOX_SOURCES
   NetBox.cpp
   FarDialog.cpp
   FarPlugin.cpp
-  FarUtil.cpp
+  FarUtils.cpp
   WinSCPFileSystem.cpp
   WinSCPDialogs.cpp
   WinSCPPlugin.cpp
@@ -1357,7 +1410,7 @@ set(NETBOX_SOURCES
   FarInterface.h
   FarConfiguration.h
   XmlStorage.h
-  FarUtil.h
+  FarUtils.h
   FarPluginStrings.h
 
   ../include/FastDelegateBind.h
@@ -1492,12 +1545,14 @@ set(NETBOX_LIBRARIES
 
 if(MSVC)
 if(BUILD_DEBUG)
-set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+set(NETBOX_LIBRARIES PRIVATE
+  ${NETBOX_LIBRARIES}
   libcmtd.lib
   libcpmtd.lib
 )
 else()
-set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
+set(NETBOX_LIBRARIES PRIVATE
+  ${NETBOX_LIBRARIES}
   libcmt.lib
   libcpmt.lib
 )
@@ -1509,15 +1564,16 @@ add_library(NetBox SHARED
 )
 
 target_include_directories(NetBox PRIVATE
-  ../../libs/openssl/${OPENSSL_INC_DIR}/include
+  ../../libs/openssl/include
   ../../libs/putty
   ../../libs/putty/windows
   ../../libs/apr/include
+  ../../libs/neon/src
   ../../libs/tinyxml2
   ../../libs/rdestl
+  ../../libs/expat/lib
   ../../libs/atlmfc/include
   ../filezilla
-  ../filezilla/misc
   ../base
   ../core
   ../windows
@@ -1540,29 +1596,43 @@ target_link_libraries(NetBox PRIVATE
   ${NETBOX_LIBRARIES}
 )
 
+target_compile_options(NetBox PRIVATE
+#  -wd4251 -wd4275 -wd4661
+  ${ATLMFC_COMPILE_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
 string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 
-add_custom_command(TARGET NetBox
-  POST_BUILD
+add_custom_target(create_plugin_dir)
+add_custom_command(TARGET create_plugin_dir POST_BUILD
   COMMAND if not exist "${NETBOX_PLUGIN_DIR}" ( ${CMAKE_COMMAND} -E make_directory "${NETBOX_PLUGIN_DIR}" )
-  COMMAND if exist NetBox.dll ${CMAKE_COMMAND} -E copy NetBox.dll ${NETBOX_PLUGIN_DIR}
-  COMMAND if exist NetBox.pdb ( ${CMAKE_COMMAND} -E copy NetBox.pdb ${NETBOX_PLUGIN_DIR} )
-  COMMAND if exist NetBox.map ( ${CMAKE_COMMAND} -E copy NetBox.map ${NETBOX_PLUGIN_DIR} )
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    ${CMAKE_CURRENT_SOURCE_DIR}/NetBoxRus.lng
-    ${CMAKE_CURRENT_SOURCE_DIR}/NetBoxEng.lng
-    ${NETBOX_PLUGIN_DIR}
   WORKING_DIRECTORY ${BUILD_DIR}
   VERBATIM
 )
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-add_custom_command(TARGET NetBox
-  POST_BUILD
-  DEPENDS ${BUILD_DIR}\\NetBox.dll
-  COMMAND scripts\\make_dist.cmd ${FAR_VERSION} ${PROJECT_PLATFORM}
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  VERBATIM
+file(GLOB DIST_FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/*.lng
+#  ${BUILD_DIR}/*.dll
+#  ${BUILD_DIR}/*.pdb
+#  ${BUILD_DIR}/*.map
 )
-endif()
+
+add_custom_target(copy_to_plugin_dir)
+foreach(DIST_FILE ${DIST_FILES})
+  add_custom_command(TARGET copy_to_plugin_dir POST_BUILD
+#    COMMAND echo DIST_FILE: ${DIST_FILE}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}
+  )
+endforeach()
+
+add_custom_command(TARGET NetBox POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.dll ${NETBOX_PLUGIN_DIR}
+  COMMAND if exist ${BUILD_DIR}/NetBox.pdb ( ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.pdb ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist ${BUILD_DIR}/NetBox.map ( ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.map ${NETBOX_PLUGIN_DIR} )
+)
+
+add_dependencies(copy_to_plugin_dir create_plugin_dir )
+add_dependencies(NetBox copy_to_plugin_dir)
+

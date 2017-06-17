@@ -119,7 +119,7 @@ ne_iaddr_type ne_iaddr_typeof(const ne_inet_addr *ia);
 
 /* Print the string representation of network address 'ia' into the
  * buffer 'buffer', which is of length 'bufsiz'.  Returns 'buffer'. */
-char *ne_iaddr_print(const ne_inet_addr *ia, char *buffer, size_t bufsiz);
+char *ne_iaddr_print(const ne_inet_addr *ia, char *buffer, socklen_t bufsiz);
 
 /* Dump the raw byte representation (in network byte order) of address
  * 'ia' into the buffer 'buffer', which must be of a suitable length
@@ -130,7 +130,7 @@ unsigned char *ne_iaddr_raw(const ne_inet_addr *ia, unsigned char *buffer);
 /* Perform the reverse name lookup on network address 'ia', placing
  * the returned name in the 'buf' buffer (of length 'bufsiz') if
  * successful.  Returns zero on success, or non-zero on error. */
-int ne_iaddr_reverse(const ne_inet_addr *ia, char *buf, size_t bufsiz);
+int ne_iaddr_reverse(const ne_inet_addr *ia, char *buf, socklen_t bufsiz);
 
 /* Convert network address string 'addr' (for example, "127.0.0.1")
  * into a network address object.  Returns NULL on parse error.  If
@@ -160,7 +160,7 @@ void ne_sock_prebind(ne_socket *sock, const ne_inet_addr *addr,
  * Returns zero on success, NE_SOCK_TIMEOUT if a timeout occurs when a
  * non-zero connect timeout is configured (and is supported), or
  * NE_SOCK_ERROR on failure.  */
-int ne_sock_connect(ne_socket *sock, const ne_inet_addr *addr, 
+int ne_sock_connect(ne_socket *sock, const ne_inet_addr *addr,
                     unsigned int port);
 
 /* Read up to 'count' bytes from socket into 'buffer'.  Returns:

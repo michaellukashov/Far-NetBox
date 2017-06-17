@@ -4,10 +4,9 @@
 #include <Common.h>
 #include <RemoteFiles.h>
 #include <Terminal.h>
-#include <DiscMon.hpp>
+//#include <DiscMon.hpp>
 #include <Exceptions.h>
 #include "GUIConfiguration.h"
-#include "CoreMain.h"
 #include "TextsCore.h"
 #include "SynchronizeController.h"
 
@@ -115,10 +114,8 @@ void TSynchronizeController::SynchronizeChange(
 {
   try
   {
-    UnicodeString RemoteDirectory;
-    UnicodeString RootLocalDirectory;
-    RootLocalDirectory = ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
-    RemoteDirectory = core::UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
+    UnicodeString RootLocalDirectory = ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
+    UnicodeString RemoteDirectory = core::UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
 
     UnicodeString LocalDirectory = ::IncludeTrailingBackslash(Directory);
 

@@ -5,14 +5,14 @@
 #include <Common.h>
 #include <TextsCore.h>
 #include <Exceptions.h>
-#include <FileMasks.h>
-#include <CoreMain.h>
+//#include <FileMasks.h>
+//#include <CoreMain.h>
 #include <RemoteFiles.h>
 #include <Interface.h>
 #include <LibraryLoader.hpp>
 
 #include "WinInterface.h"
-#include "GUITools.h"
+//#include "GUITools.h"
 #include "PuttyTools.h"
 #include "Tools.h"
 
@@ -124,9 +124,9 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   if (IsKeyEncrypted(Type, FileName, Comment))
   {
     if (!InputDialog(
-          LoadStr(PASSPHRASE_TITLE),
-          FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE).c_str(), Comment.c_str()),
-          Passphrase, HELP_NONE, nullptr, false, nullptr, false))
+      LoadStr(PASSPHRASE_TITLE),
+      FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE).c_str(), Comment.c_str()),
+      Passphrase, HELP_NONE, nullptr, false, nullptr, false))
     {
       Abort();
     }
@@ -140,7 +140,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
     {
       FreeKey(PrivateKey);
     };
-    FileName = ChangeFileExt(FileName, ".ppk", L'\\');
+    FileName = ::ChangeFileExt(FileName, ".ppk", L'\\');
 
     if (!SaveDialog(LoadStr(CONVERTKEY_SAVE_TITLE), LoadStr(CONVERTKEY_SAVE_FILTER), L"ppk", FileName))
     {
@@ -153,7 +153,9 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   }
   __finally
   {
+/*
     FreeKey(PrivateKey);
+*/
   };
 }
 
@@ -302,10 +304,10 @@ static bool GetProxyUrlFromIE(UnicodeString & Proxy)
   {
     typedef BOOL (WINAPI *FWinHttpGetIEProxyConfigForCurrentUser)(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *);
     FWinHttpGetIEProxyConfigForCurrentUser GetIEProxyConfig = reinterpret_cast<FWinHttpGetIEProxyConfigForCurrentUser>(
-          LibraryLoader.GetProcAddress("WinHttpGetIEProxyConfigForCurrentUser"));
+      LibraryLoader.GetProcAddress("WinHttpGetIEProxyConfigForCurrentUser"));
     if (GetIEProxyConfig && GetIEProxyConfig(&IEProxyInfo))
     {
-      if (IEProxyInfo.lpszProxy != NULL)
+      if (IEProxyInfo.lpszProxy != nullptr)
       {
         UnicodeString IEProxy = IEProxyInfo.lpszProxy;
         Proxy = L"";
@@ -329,11 +331,11 @@ static bool GetProxyUrlFromIE(UnicodeString & Proxy)
         GlobalFree(IEProxyInfo.lpszProxy);
         Result = true;
       }
-      if (IEProxyInfo.lpszAutoConfigUrl != NULL)
+      if (IEProxyInfo.lpszAutoConfigUrl != nullptr)
       {
         GlobalFree(IEProxyInfo.lpszAutoConfigUrl);
       }
-      if (IEProxyInfo.lpszProxyBypass != NULL)
+      if (IEProxyInfo.lpszProxyBypass != nullptr)
       {
         GlobalFree(IEProxyInfo.lpszProxyBypass);
       }
@@ -356,20 +358,20 @@ bool AutodetectProxy(UnicodeString & AHostName, intptr_t & APortNumber)
   TLibraryLoader LibraryLoader(L"winhttp.dll", true);
   if (LibraryLoader.Loaded())
   {
-    typedef BOOL (WINAPI *FWinHttpGetDefaultProxyConfiguration)(WINHTTP_PROXY_INFO *);
+    typedef BOOL (WINAPI *FWinHttpGetDefaultProxyConfiguration)(WINHTTP_PROXY_INFO*);
     FWinHttpGetDefaultProxyConfiguration GetDefaultProxyConfiguration = reinterpret_cast<FWinHttpGetDefaultProxyConfiguration>(
-          LibraryLoader.GetProcAddress("WinHttpGetDefaultProxyConfiguration"));
+      LibraryLoader.GetProcAddress("WinHttpGetDefaultProxyConfiguration"));
     if (GetDefaultProxyConfiguration)
     {
       if (GetDefaultProxyConfiguration(&ProxyInfo))
       {
-        if (ProxyInfo.lpszProxy != NULL)
+        if (ProxyInfo.lpszProxy != nullptr)
         {
           Proxy = ProxyInfo.lpszProxy;
           GlobalFree(ProxyInfo.lpszProxy);
           Result = true;
         }
-        if (ProxyInfo.lpszProxyBypass != NULL)
+        if (ProxyInfo.lpszProxyBypass != nullptr)
         {
           GlobalFree(ProxyInfo.lpszProxyBypass);
         }

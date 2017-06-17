@@ -1895,7 +1895,7 @@ static char *ecdsa_fmtkey(void *key)
 
     len = 4 + 2 + 1;                  /* 2 x "0x", punctuation, \0 */
     if (ec->publicKey.curve->name)
-        len += strlen(ec->publicKey.curve->name); /* Curve name */
+        len += (int)strlen(ec->publicKey.curve->name); /* Curve name */
     len += 4 * (bignum_bitcount(ec->publicKey.x) + 15) / 16;
     len += 4 * (bignum_bitcount(ec->publicKey.y) + 15) / 16;
     p = snewn(len, char);
@@ -1930,7 +1930,7 @@ static unsigned char *ecdsa_public_blob(void *key, int *len)
     int i;
     unsigned char *blob, *p;
 
-    fullnamelen = strlen(ec->signalg->name);
+    fullnamelen = (int)strlen(ec->signalg->name);
 
     if (ec->publicKey.curve->type == EC_EDWARDS) {
         /* Edwards compressed form "ssh-ed25519" point y[:-1] + x[0:1] */
@@ -1960,7 +1960,7 @@ static unsigned char *ecdsa_public_blob(void *key, int *len)
         *p++ |= bignum_bit(ec->publicKey.x, 0) << 7;
     } else if (ec->publicKey.curve->type == EC_WEIERSTRASS) {
         assert(ec->publicKey.curve->name);
-        namelen = strlen(ec->publicKey.curve->name);
+        namelen = (int)strlen(ec->publicKey.curve->name);
 
         pointlen = (bignum_bitcount(ec->publicKey.curve->p) + 7) / 8;
 
@@ -2280,7 +2280,7 @@ static int ecdsa_openssh_fmtkey(void *key, unsigned char *blob, int len)
     }
 
     pointlen = (bignum_bitcount(ec->publicKey.curve->p) + 7) / 8;
-    namelen = strlen(ec->publicKey.curve->name);
+    namelen = (int)strlen(ec->publicKey.curve->name);
     bloblen =
         4 + namelen /* <LEN> nistpXXX */
         + 4 + 1 + (pointlen * 2) /* <LEN> 0x04 pX pY */
@@ -2588,7 +2588,7 @@ static unsigned char *ecdsa_sign(void *key, const char *data, int datalen,
         }
 
         /* Format the output */
-        namelen = strlen(ec->signalg->name);
+        namelen = (int)strlen(ec->signalg->name);
         *siglen = 4+namelen+4+((ec->publicKey.curve->fieldBits / 8)*2);
         buf = snewn(*siglen, unsigned char);
         p = buf;
@@ -2634,7 +2634,7 @@ static unsigned char *ecdsa_sign(void *key, const char *data, int datalen,
         rlen = (bignum_bitcount(r) + 8) / 8;
         slen = (bignum_bitcount(s) + 8) / 8;
 
-        namelen = strlen(ec->signalg->name);
+        namelen = (int)strlen(ec->signalg->name);
 
         /* Format the output */
         *siglen = 8+namelen+rlen+slen+8;

@@ -24,5 +24,5 @@ wchar_t *dup_mb_to_wc_c(int codepage, int flags, const char *string, int len)
 
 wchar_t *dup_mb_to_wc(int codepage, int flags, const char *string)
 {
-    return dup_mb_to_wc_c(codepage, flags, string, strlen(string));
+    return dup_mb_to_wc_c(codepage, flags, string, (int)strlen(string));
 }

@@ -189,6 +189,7 @@ static int aborted(ne_request *req, const char *doing, ssize_t code)
     ne_session *sess = req->session;
     NE_DEBUG_WINSCP_CONTEXT(sess);
     int ret = NE_ERROR;
+    const char *err = NULL;
 
     NE_DEBUG(NE_DBG_HTTP, "Aborted request (%" NE_FMT_SSIZE_T "): %s\n",
 	     code, doing);
@@ -210,7 +211,11 @@ static int aborted(ne_request *req, const char *doing, ssize_t code)
     case NE_SOCK_ERROR:
     case NE_SOCK_RESET:
     case NE_SOCK_TRUNC:
-        ne_set_error(sess, "%s: %s", doing, ne_sock_error(sess->socket));
+        err = ne_sock_error(sess->socket);
+        if (err && *err)
+          ne_set_error(sess, "%s: %s", doing, err);
+        else
+          ne_set_error(sess, "%s", doing);
         break;
     case 0:
 	ne_set_error(sess, "%s", doing);
@@ -281,7 +286,7 @@ static ssize_t body_string_send(void *userdata, char *buffer, size_t count)
 	req->body.buf.remain -= count;
     }
 
-    return count;
+    return (int)count;
 }    
 
 static ssize_t body_fd_send(void *userdata, char *buffer, size_t count)
@@ -300,7 +305,7 @@ static ssize_t body_fd_send(void *userdata, char *buffer, size_t count)
         if ((ne_off_t)count > req->body.file.remain)
             count = (size_t)req->body.file.remain;
         
-        ret = read(req->body.file.fd, buffer, count);
+        ret = read(req->body.file.fd, buffer, (unsigned int)count);
         if (ret > 0) {
             req->body.file.remain -= ret;
             return ret;
@@ -917,7 +922,7 @@ ssize_t ne_read_response_block(ne_request *req, char *buffer, size_t buflen)
         }
     }
     
-    return readlen;
+    return (int)readlen;
 }
 
 /* Build the request string, returning the buffer. */

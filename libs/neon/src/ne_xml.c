@@ -585,7 +585,7 @@ int ne_xml_parse(ne_xml_parser *p, const char *block, size_t len)
     /* Note, don't write a parser error if p->failure, since an error
      * will already have been written in that case. */
 #ifdef HAVE_EXPAT
-    ret = XML_Parse(p->parser, block, len, flag);
+    ret = (int)XML_Parse(p->parser, block, (int)len, flag);
     NE_DEBUG(NE_DBG_XMLPARSE, "XML: XML_Parse returned %d\n", ret);
     if (ret == 0 && p->failure == 0) {
 	ne_snprintf(p->error, ERR_SIZE,

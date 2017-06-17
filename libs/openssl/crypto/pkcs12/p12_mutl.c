@@ -108,22 +108,12 @@ static int pkcs12_gen_mac(PKCS12 *p12, const char *pass, int passlen,
     md_type_nid = EVP_MD_type(md_type);
     if (md_size < 0)
         return 0;
-    #if defined(WINSCP) && defined(PBE_UNICODE)
-    if (passlen < 0)
-    {
-      // PKCS12_key_gen_uni cannot handle -1 length (contrary to PKCS12_key_gen_asc).
-      // OPENSSL_asc2uni adds the trailing \0 to the length,
-      // even if input ascii password length does not include it.
-      passlen = (wcslen((wchar_t*)pass) * sizeof(wchar_t)) + sizeof(wchar_t);
-    }
-    #endif
-      if ((md_type_nid == NID_id_GostR3411_94
+    if ((md_type_nid == NID_id_GostR3411_94
          || md_type_nid == NID_id_GostR3411_2012_256
          || md_type_nid == NID_id_GostR3411_2012_512)
         && !getenv("LEGACY_GOST_PKCS12")) {
         md_size = TK26_MAC_KEY_LEN;
         if (!pkcs12_gen_gost_mac_key(pass, passlen, salt, saltlen, iter,
-
                                      md_size, key, md_type)) {
             PKCS12err(PKCS12_F_PKCS12_GEN_MAC, PKCS12_R_KEY_GEN_ERROR);
             return 0;
@@ -213,6 +203,9 @@ int PKCS12_setup_mac(PKCS12 *p12, int iter, unsigned char *salt, int saltlen,
                      const EVP_MD *md_type)
 {
     X509_ALGOR *macalg;
+
+    PKCS12_MAC_DATA_free(p12->mac);
+    p12->mac = NULL;
 
     if ((p12->mac = PKCS12_MAC_DATA_new()) == NULL)
         return PKCS12_ERROR;

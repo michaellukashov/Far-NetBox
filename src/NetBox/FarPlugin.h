@@ -64,6 +64,8 @@ public:
   void * Token;
 };
 
+class TGlobalFunctions;
+
 class TCustomFarPlugin : public TObject
 {
 friend class TCustomFarFileSystem;
@@ -117,8 +119,8 @@ public:
   intptr_t Message(DWORD Flags, const UnicodeString & Title,
     const UnicodeString & Message, TStrings * Buttons = nullptr,
     TFarMessageParams * Params = nullptr);
-  intptr_t MaxMessageLines();
-  intptr_t MaxMenuItemLength();
+  intptr_t MaxMessageLines() const;
+  intptr_t MaxMenuItemLength() const;
   intptr_t Menu(DWORD Flags, const UnicodeString & Title,
     const UnicodeString & Bottom, TStrings * Items, const int * BreakKeys,
     int & BreakCode);
@@ -173,10 +175,11 @@ public:
   FarStandardFunctions & GetFarStandardFunctions() { return FFarStandardFunctions; }
 
 protected:
+  TGlobalsIntfInitializer<TGlobalFunctions> FGlobalsIntfInitializer;
   PluginStartupInfo FStartupInfo;
   FarStandardFunctions FFarStandardFunctions;
   HINSTANCE FHandle;
-  TObjectList * FOpenedPlugins;
+  TList * FOpenedPlugins;
   TFarDialog * FTopDialog;
   HANDLE FConsoleInput;
   HANDLE FConsoleOutput;
@@ -199,7 +202,7 @@ protected:
   virtual void HandleFileSystemException(TCustomFarFileSystem * FarFileSystem,
     Exception * E, int OpMode = 0);
   void ResetCachedInfo();
-  intptr_t MaxLength(TStrings * Strings);
+  intptr_t MaxLength(TStrings * Strings) const;
   intptr_t FarMessage(DWORD Flags,
     const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
     TFarMessageParams * Params);
@@ -223,7 +226,7 @@ private:
   UnicodeString FCurrentTitle;
   short FCurrentProgress;
 
-  void ClearPluginInfo(PluginInfo & Info);
+  void ClearPluginInfo(PluginInfo & Info) const;
   void UpdateCurrentConsoleTitle();
   UnicodeString FormatConsoleTitle();
   HWND GetConsoleWindow() const;
@@ -398,7 +401,8 @@ public:
 protected:
   explicit TCustomFarPanelItem(TObjectClassId Kind) : TObject(Kind) {}
   virtual ~TCustomFarPanelItem()
-  {}
+  {
+  }
   virtual void GetData(
     DWORD & Flags, UnicodeString & AFileName, int64_t & Size,
     DWORD & FileAttributes,
@@ -568,23 +572,21 @@ public:
   ~TFarPluginEnvGuard();
 };
 
-void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth);
-
 extern TCustomFarPlugin * FarPlugin;
 
-class TGlobalFunctions : public TGlobalFunctionsIntf, public TObject
+class TGlobalFunctions : public TGlobals
 {
 public:
-  virtual HINSTANCE GetInstanceHandle() const;
-  virtual UnicodeString GetMsg(intptr_t Id) const;
-  virtual UnicodeString GetCurrDirectory() const;
-  virtual UnicodeString GetStrVersionNumber() const;
+  virtual HINSTANCE GetInstanceHandle() const override;
+  virtual UnicodeString GetMsg(intptr_t Id) const override;
+  virtual UnicodeString GetCurrDirectory() const override;
+  virtual UnicodeString GetStrVersionNumber() const override;
   virtual bool InputDialog(const UnicodeString & ACaption,
     const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
     TStrings * History, bool PathInput,
-    TInputDialogInitializeEvent OnInitialize, bool Echo);
+    TInputDialogInitializeEvent OnInitialize, bool Echo) override;
   virtual uintptr_t MoreMessageDialog(const UnicodeString & Message,
     TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
-      const TMessageParams * Params);
+      const TMessageParams * Params) override;
 };
 

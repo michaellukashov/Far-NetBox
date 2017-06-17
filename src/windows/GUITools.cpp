@@ -103,7 +103,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
         SourceStorage->SetMungeStringValues(false);
         SourceStorage->SetForceAnsi(true);
         if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
-            Storage->OpenSubKey(GetGUIConfiguration()->GetPuttySession(), true))
+          Storage->OpenSubKey(GetGUIConfiguration()->GetPuttySession(), true))
         {
           Storage->Copy(SourceStorage.get());
           Storage->CloseSubKey();
@@ -207,16 +207,16 @@ bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams, bo
   return Result;
 }
 
-bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
+bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams,
   HANDLE & Handle)
 {
   TShellExecuteInfoW ExecuteInfo;
   ClearStruct(ExecuteInfo);
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
   ExecuteInfo.lpFile = const_cast<wchar_t *>(APath.data());
-  ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
+  ExecuteInfo.lpParameters = const_cast<wchar_t *>(AParams.data());
   ExecuteInfo.nShow = SW_SHOW;
 
   bool Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
@@ -234,7 +234,7 @@ bool ExecuteShellAndWait(HINSTANCE /*Handle*/, const UnicodeString & APath,
   ClearStruct(ExecuteInfo);
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
   ExecuteInfo.lpFile = const_cast<wchar_t *>(APath.data());
   ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
@@ -277,7 +277,7 @@ bool SpecialFolderLocation(int PathID, UnicodeString & APath)
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
   if (::SHGetSpecialFolderLocation(nullptr, PathID, &Pidl) == NO_ERROR &&
-      ::SHGetPathFromIDList(Pidl, Buf))
+    ::SHGetPathFromIDList(Pidl, Buf))
   {
     APath = UnicodeString(Buf);
     return true;
@@ -399,7 +399,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
 {
   TSearchRecChecked SearchRec;
   bool retval = true;
-  if (::FindFirst(ADirName + L"\\*", faAnyFile, SearchRec) == 0) // VCL Function
+  if (base::FindFirst(ADirName + L"\\*", faAnyFile, SearchRec) == 0) // VCL Function
   {
     if (FLAGSET(SearchRec.Attr, faDirectory))
     {
@@ -432,7 +432,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
       }
     }
   }
-  FindClose(SearchRec);
+  base::FindClose(SearchRec);
   if (retval)
   {
     retval = ::RemoveDir(ADirName); // VCL function

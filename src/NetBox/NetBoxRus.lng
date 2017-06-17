@@ -1204,7 +1204,7 @@
 
 "CORE_VARIABLE"
 "SSH and SCP code based on PuTTY %s"
-"0.67"
+"0.69"
 "Copyright © 1997-2017 Simon Tatham"
 "http://www.chiark.greenend.org.uk/~sgtatham/putty/"
 "FTP code based on FileZilla"
@@ -1213,7 +1213,7 @@
 "http://filezilla-project.org/"
 "This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit %s."
 "Copyright © 1998-2017 The OpenSSL Project"
-"1.1.0e"
+"1.1.0f"
 "http://www.openssl.org/"
 "WebDAV code based on neon library %s"
 "Copyright В© 1999-2016 Joe Orton"
@@ -1226,7 +1226,7 @@
 "$$"
 
 "WinSCP"
-"5.9.4"
+"5.9.5"
 "1.6.2"
 "Based on WinSCP: SFTP/FTP/SCP client for FAR"
 " Version %s"

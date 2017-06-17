@@ -2,7 +2,6 @@
 
 #include <string>
 #include "type_traits.h"
-#include "nbglobals.h"
 
 //===-- from llvm/Support/Casting.h - Allow flexible, checked, casts
 //
@@ -320,32 +319,14 @@ inline const X * dyn_cast(const Y * Val)
   return rtti::dyn_cast_or_null<X>(Val);
 }
 
-template <class X>
-inline const X * dyn_cast(const void * Val)
-{
-  return rtti::dyn_cast_or_null<X>(as_object(Val));
-}
-
 template <class X, class Y>
 inline X * dyn_cast(Y * Val)
 {
   return rtti::dyn_cast_or_null<X>(Val);
 }
 
-template <class X>
-inline X * dyn_cast(void * Val)
-{
-  return rtti::dyn_cast_or_null<X>(as_object(Val));
-}
-
 template <class X, class Y>
 inline bool isa(const Y * Val)
 {
   return Val && rtti::isa<X>(Val);
-}
-
-template <class X, class Y>
-inline X * cast_or_null(void * Val)
-{
-  return rtti::cast_or_null<X>(static_cast<Y *>(Val));
 }

@@ -550,7 +550,7 @@ int ne_path_compare(const char *a, const char *b)
 	 * slash and the SHORTER one DOESN'T, then..." */
 	int traila = ne_path_has_trailing_slash(a),
 	    trailb = ne_path_has_trailing_slash(b),
-	    lena = strlen(a), lenb = strlen(b);
+			lena = (int)strlen(a), lenb = (int)strlen(b);
 	if (traila != trailb && abs(lena - lenb) == 1 &&
 	    ((traila && lena > lenb) || (trailb && lenb > lena))) {
 	    /* Compare them, ignoring the trailing slash on the longer
