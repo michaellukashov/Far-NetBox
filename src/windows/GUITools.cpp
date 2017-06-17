@@ -50,12 +50,9 @@ bool FindFile(UnicodeString & APath)
   bool Result = ::FileExists(APath);
   if (!Result)
   {
-    intptr_t Len = ::GetEnvironmentVariable(L"PATH", nullptr, 0);
-    if (Len > 0)
+    UnicodeString Paths = base::GetEnvVariable("PATH");
+    if (Paths.Length() > 0)
     {
-      UnicodeString Paths;
-      Paths.SetLength(Len - 1);
-      ::GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
 
       UnicodeString NewPath = ::FileSearch(base::ExtractFileName(APath, true), Paths);
       Result = !NewPath.IsEmpty();
