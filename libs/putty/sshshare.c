@@ -915,8 +915,8 @@ static void share_disconnect(struct ssh_sharing_connstate *cs,
     share_begin_cleanup(cs);
 }
 
-static int share_closing(Plug plug, const char *error_msg, int error_code,
-                         int calling_back)
+static void share_closing(Plug plug, const char *error_msg, int error_code,
+			  int calling_back)
 {
     struct ssh_sharing_connstate *cs = (struct ssh_sharing_connstate *)plug;
 
@@ -939,7 +939,6 @@ static int share_closing(Plug plug, const char *error_msg, int error_code,
                              "Socket error: %s", error_msg);
     }
     share_begin_cleanup(cs);
-    return 1;
 }
 
 static int getstring_inner(const void *vdata, int datalen,
@@ -1779,17 +1778,17 @@ static void share_got_pkt_from_downstream(struct ssh_sharing_connstate *cs,
  * Coroutine macros similar to, but simplified from, those in ssh.c.
  */
 #define crBegin(v)	{ int *crLine = &v; switch(v) { case 0:;
-#define crFinish(z)	} *crLine = 0; return (z); }
+#define crFinishV	} *crLine = 0; return; }
 #define crGetChar(c) do                                         \
     {                                                           \
         while (len == 0) {                                      \
-            *crLine =__LINE__; return 1; case __LINE__:;        \
+            *crLine =__LINE__; return; case __LINE__:;          \
         }                                                       \
         len--;                                                  \
         (c) = (unsigned char)*data++;                           \
     } while (0)
 
-static int share_receive(Plug plug, int urgent, char *data, int len)
+static void share_receive(Plug plug, int urgent, char *data, int len)
 {
     struct ssh_sharing_connstate *cs = (struct ssh_sharing_connstate *)plug;
     static const char expected_verstring_prefix[] =
@@ -1862,7 +1861,7 @@ static int share_receive(Plug plug, int urgent, char *data, int len)
     }
 
   dead:;
-    crFinish(1);
+    crFinishV;
 }
 
 static void share_sent(Plug plug, int bufsize)
@@ -1879,8 +1878,8 @@ static void share_sent(Plug plug, int bufsize)
      */
 }
 
-static int share_listen_closing(Plug plug, const char *error_msg,
-                                int error_code, int calling_back)
+static void share_listen_closing(Plug plug, const char *error_msg,
+				 int error_code, int calling_back)
 {
     struct ssh_sharing_state *sharestate = (struct ssh_sharing_state *)plug;
     if (error_msg)
@@ -1888,7 +1887,6 @@ static int share_listen_closing(Plug plug, const char *error_msg,
                          "listening socket: %s", error_msg);
     sk_close(sharestate->listensock);
     sharestate->listensock = NULL;
-    return 1;
 }
 
 static void share_send_verstring(struct ssh_sharing_connstate *cs)
@@ -2051,10 +2049,9 @@ char *ssh_share_sockname(const char *host, int port, Conf *conf)
 
 static void nullplug_socket_log(Plug plug, int type, SockAddr addr, int port,
                                 const char *error_msg, int error_code) {}
-static int nullplug_closing(Plug plug, const char *error_msg, int error_code,
-                            int calling_back) { return 0; }
-static int nullplug_receive(Plug plug, int urgent, char *data,
-                            int len) { return 0; }
+static void nullplug_closing(Plug plug, const char *error_msg, int error_code,
+			     int calling_back) {}
+static void nullplug_receive(Plug plug, int urgent, char *data, int len) {}
 static void nullplug_sent(Plug plug, int bufsize) {}
 
 int ssh_share_test_for_upstream(const char *host, int port, Conf *conf)

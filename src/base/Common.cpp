@@ -3198,14 +3198,14 @@ UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
   }
 }
 
-UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName)
+UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName)
 {
   UnicodeString Result;
-  intptr_t Len = ::GetEnvironmentVariable(L"PATH", nullptr, 0);
+  intptr_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);
   if (Len > 0)
   {
     wchar_t * Buffer = Result.SetLength(Len - 1);
-    ::GetEnvironmentVariable(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), static_cast<DWORD>(Len));
+    ::GetEnvironmentVariableW(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), static_cast<DWORD>(Len));
   }
   return Result;
 }

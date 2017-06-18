@@ -772,6 +772,18 @@ void XMLNode::SetValue( const char* str, bool staticMem )
     }
 }
 
+XMLNode* XMLNode::DeepClone(XMLDocument* document) const
+{
+	XMLNode* clone = this->ShallowClone(document);
+	if (!clone) return 0;
+
+	for (const XMLNode* child = this->FirstChild(); child; child = child->NextSibling()) {
+		XMLNode* childClone = child->DeepClone(document);
+		TIXMLASSERT(childClone);
+		clone->InsertEndChild(childClone);
+	}
+	return clone;
+}
 
 void XMLNode::DeleteChildren()
 {
@@ -801,6 +813,8 @@ void XMLNode::Unlink( XMLNode* child )
     if ( child->_next ) {
         child->_next->_prev = child->_prev;
     }
+	child->_next = 0;
+	child->_prev = 0;
 	child->_parent = 0;
 }
 
@@ -811,6 +825,9 @@ void XMLNode::DeleteChild( XMLNode* node )
     TIXMLASSERT( node->_document == _document );
     TIXMLASSERT( node->_parent == this );
     Unlink( node );
+	TIXMLASSERT(node->_prev == 0);
+	TIXMLASSERT(node->_next == 0);
+	TIXMLASSERT(node->_parent == 0);
     DeleteNode( node );
 }
 
@@ -1055,11 +1072,16 @@ char* XMLNode::ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr )
     return 0;
 }
 
-void XMLNode::DeleteNode( XMLNode* node )
+/*static*/ void XMLNode::DeleteNode( XMLNode* node )
 {
     if ( node == 0 ) {
         return;
     }
+	TIXMLASSERT(node->_document);
+	if (!node->ToDocument()) {
+		node->_document->MarkInUse(node);
+	}
+
     MemPool* pool = node->_memPool;
     node->~XMLNode();
     pool->Free( node );
@@ -1070,10 +1092,13 @@ void XMLNode::InsertChildPreamble( XMLNode* insertThis ) const
     TIXMLASSERT( insertThis );
     TIXMLASSERT( insertThis->_document == _document );
 
-    if ( insertThis->_parent )
+	if (insertThis->_parent) {
         insertThis->_parent->Unlink( insertThis );
-    else
+	}
+	else {
+		insertThis->_document->MarkInUse(insertThis);
         insertThis->_memPool->SetTracked();
+	}
 }
 
 const XMLElement* XMLNode::ToElementWithName( const char* name ) const
@@ -1979,9 +2004,25 @@ XMLDocument::~XMLDocument()
 }
 
 
+void XMLDocument::MarkInUse(XMLNode* node)
+{
+	TIXMLASSERT(node);
+	TIXMLASSERT(node->_parent == 0);
+
+	for (int i = 0; i < _unlinked.Size(); ++i) {
+		if (node == _unlinked[i]) {
+			_unlinked.SwapRemove(i);
+			break;
+		}
+	}
+}
+
 void XMLDocument::Clear()
 {
     DeleteChildren();
+	while( _unlinked.Size()) {
+		DeleteNode(_unlinked[0]);	// Will remove from _unlinked as part of delete.
+	}
 
 #ifdef DEBUG
     const bool hadError = Error();
@@ -2008,6 +2049,19 @@ void XMLDocument::Clear()
 #endif
 }
 
+
+void XMLDocument::DeepCopy(XMLDocument* target)
+{
+	TIXMLASSERT(target);
+    if (target == this) {
+        return; // technically success - a no-op.
+    }
+
+	target->Clear();
+	for (const XMLNode* node = this->FirstChild(); node; node = node->NextSibling()) {
+		target->InsertEndChild(node->DeepClone(target));
+	}
+}
 
 XMLElement* XMLDocument::NewElement( const char* name )
 {

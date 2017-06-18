@@ -67,6 +67,7 @@ set(NETBOX_DEFS "-DMPEXT -DWINSCP -DFARPLUGIN")
 set(NETBOX_DEFS "${NETBOX_DEFS} -DNO_GZIP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS")
+set(NETBOX_DEFS "${NETBOX_DEFS} -DCOM_NO_WINDOWS_H")
 set(NETBOX_DEFS "${NETBOX_DEFS} ${APR_DEFS}")
 set(NETBOX_DEFS "${NETBOX_DEFS} ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} ${DLMALLOC_DEFS}")
 #-D_WINDLL -D_USRDLL
@@ -105,8 +106,8 @@ set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} /Gm- /Od /MTd /GS /RTC1")
 
 elseif(CMAKE_COMPILER_IS_MINGW)
 
-set(NETBOX_C_WARNING_FLAGS "")
-set(NETBOX_CXX_WARNING_FLAGS "-Wno-attributes -Wno-write-strings -Wno-unknown-pragmas -Wno-old-style-cast -Wno-effc++ -Wno-unknown-pragmas -Wno-unused-value")
+set(NETBOX_C_WARNING_FLAGS "-Wno-unknown-pragmas")
+set(NETBOX_CXX_WARNING_FLAGS "${NETBOX_C_WARNING_FLAGS} -Wno-attributes -Wno-write-strings -Wno-old-style-cast -Wno-effc++ -Wno-unknown-pragmas -Wno-unused-value")
 set(NETBOX_CXX_FLAGS "${NETBOX_CXX_FLAGS} -std=c++11 -Woverloaded-virtual -Wnon-virtual-dtor")
 set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
 #-Weffc++
@@ -904,7 +905,7 @@ endif(OPT_COMPILE_OPENSSL)
 set(ATLMFC_COMPILE_FLAGS
   -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
   -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
-  -D_AFX_NO_SOCKET_SUPPORT -DCOM_NO_WINDOWS_H
+  -D_AFX_NO_SOCKET_SUPPORT
 )
 
 if(CMAKE_COMPILER_IS_MINGW)
@@ -1154,6 +1155,7 @@ add_library(apr STATIC
   ../../libs/apr/strings/apr_strings.c
   ../../libs/apr/strings/apr_strnatcmp.c
   ../../libs/apr/strings/apr_strtok.c
+  ../../libs/apr/strings/apr_cstr.c
   ../../libs/apr/tables/apr_hash.c
   ../../libs/apr/tables/apr_tables.c
 #  ../../libs/apr/tables/apr_skiplist.c
