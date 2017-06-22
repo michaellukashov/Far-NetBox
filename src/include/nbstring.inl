@@ -1450,9 +1450,9 @@ typename CMStringT<BaseType, StringTraits>::PCXSTR CMStringT<BaseType, StringTra
 
 // Set the string to the value of environment variable 'pszVar'
 template< typename BaseType, class StringTraits >
-BOOL CMStringT<BaseType, StringTraits>::GetEnvironmentVariable(PCXSTR pszVar)
+BOOL CMStringT<BaseType, StringTraits>::GetEnvVariable(PCXSTR pszVar)
 {
-  ULONG nLength = StringTraits::GetEnvironmentVariable(pszVar, nullptr, 0);
+  ULONG nLength = StringTraits::GetEnvVariable(pszVar, nullptr, 0);
   BOOL bRetVal = FALSE;
 
   if (nLength == 0)
@@ -1462,7 +1462,7 @@ BOOL CMStringT<BaseType, StringTraits>::GetEnvironmentVariable(PCXSTR pszVar)
   else
   {
     PXSTR pszBuffer = this->GetBuffer(nLength);
-    StringTraits::GetEnvironmentVariable(pszVar, pszBuffer, nLength);
+    StringTraits::GetEnvVariable(pszVar, pszBuffer, nLength);
     this->ReleaseBuffer();
     bRetVal = TRUE;
   }

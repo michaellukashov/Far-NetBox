@@ -78,7 +78,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) :
   FScripting = false;
 
   UnicodeString RandomSeedPath;
-  if (!base::GetEnvironmentVariable("APPDATA").IsEmpty())
+  if (!base::GetEnvVariable("APPDATA").IsEmpty())
   {
     RandomSeedPath = "%APPDATA%";
   }

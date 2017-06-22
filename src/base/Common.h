@@ -356,6 +356,6 @@ namespace base {
 UnicodeString UnixExtractFileExt(const UnicodeString & APath);
 UnicodeString UnixExtractFileName(const UnicodeString & APath);
 UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix);
-UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName);
+UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName);
 
 } // namespace base

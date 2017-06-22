@@ -39,7 +39,7 @@ bool CNBFile::Read(void * buff, size_t & buffSize)
   m_LastError = ERROR_SUCCESS;
 
   DWORD bytesRead = static_cast<DWORD>(buffSize);
-  if (!ReadFile(m_File, buff, bytesRead, &bytesRead, nullptr))
+  if (!::ReadFile(m_File, buff, bytesRead, &bytesRead, nullptr))
   {
     m_LastError = ::GetLastError();
     buffSize = 0;
@@ -57,20 +57,20 @@ bool CNBFile::Write(const void * buff, const size_t buffSize)
   m_LastError = ERROR_SUCCESS;
 
   DWORD bytesWritten;
-  if (!WriteFile(m_File, buff, static_cast<DWORD>(buffSize), &bytesWritten, nullptr))
+  if (!::WriteFile(m_File, buff, static_cast<DWORD>(buffSize), &bytesWritten, nullptr))
   {
     m_LastError = ::GetLastError();
   }
   return (m_LastError == ERROR_SUCCESS);
 }
 
-int64_t CNBFile::GetFileSize()
+int64_t CNBFile::GetFileSize() const
 {
   DebugAssert(m_File != INVALID_HANDLE_VALUE);
   m_LastError = ERROR_SUCCESS;
 
   LARGE_INTEGER fileSize;
-  if (!GetFileSizeEx(m_File, &fileSize))
+  if (!::GetFileSizeEx(m_File, &fileSize))
   {
     m_LastError = ::GetLastError();
     return -1;
