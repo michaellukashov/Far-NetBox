@@ -9,7 +9,7 @@
 class EFileMasksException : public Exception
 {
 public:
-  explicit EFileMasksException(const UnicodeString & AMessage, intptr_t ErrorStart, intptr_t ErrorLen);
+  explicit EFileMasksException(const UnicodeString & AMessage, intptr_t AErrorStart, intptr_t AErrorLen);
   intptr_t ErrorStart;
   intptr_t ErrorLen;
 };
@@ -82,7 +82,8 @@ private:
     TMaskMask() :
       Kind(Any),
       Mask(nullptr)
-    {}
+    {
+    }
     enum
     {
       Any,
@@ -101,7 +102,8 @@ private:
       LowSize(0),
       HighModificationMask(None),
       LowModificationMask(None)
-    {}
+    {
+    }
     TMaskMask FileNameMask;
     TMaskMask DirectoryMask;
 
@@ -229,14 +231,14 @@ public:
     TSessionData * SessionData, const UnicodeString & AUserName,
     const UnicodeString & APassword);
 
-  // __property TSessionData * SessionData = { read = GetSesssionData };
+  // __property TSessionData * SessionData = { read = GetSessionData };
 
   TCustomCommandData & operator=(const TCustomCommandData & Data);
 
 private:
   std::unique_ptr<TSessionData> FSessionData;
   void Init(
-    TSessionData * SessionData, const UnicodeString & AUserName,
+    TSessionData * ASessionData, const UnicodeString & AUserName,
     const UnicodeString & APassword, const UnicodeString & AHostKey);
 
 public:

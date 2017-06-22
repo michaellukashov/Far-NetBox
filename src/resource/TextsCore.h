@@ -4,33 +4,6 @@
 #define DIFFERENT_KEY4  2
 #define OLD_KEY         3
 
-//#define SCRIPT_HELP_HELP        4
-//#define SCRIPT_EXIT_HELP        5
-//#define SCRIPT_OPEN_HELP6       6
-//#define SCRIPT_CLOSE_HELP       7
-//#define SCRIPT_SESSION_HELP     8
-//#define SCRIPT_PWD_HELP         9
-//#define SCRIPT_CD_HELP          10
-//#define SCRIPT_LS_HELP          11
-//#define SCRIPT_LPWD_HELP        12
-//#define SCRIPT_LCD_HELP         13
-//#define SCRIPT_LLS_HELP         14
-//#define SCRIPT_RM_HELP          15
-//#define SCRIPT_RMDIR_HELP       16
-//#define SCRIPT_MV_HELP          17
-//#define SCRIPT_CHMOD_HELP       18
-//#define SCRIPT_LN_HELP          19
-//#define SCRIPT_MKDIR_HELP       20
-//#define SCRIPT_GET_HELP7        21
-//#define SCRIPT_PUT_HELP7        22
-//#define SCRIPT_OPTION_HELP7     23
-//#define SCRIPT_SYNCHRONIZE_HELP7 24
-//#define SCRIPT_KEEPUPTODATE_HELP4 25
-//#define SCRIPT_CALL_HELP2       26
-//#define SCRIPT_ECHO_HELP        27
-//#define SCRIPT_STAT_HELP        28
-//#define SCRIPT_CHECKSUM_HELP    29
-
 #define CORE_ERROR_STRINGS      100
 #define KEY_NOT_VERIFIED        101
 #define CONNECTION_FAILED       102

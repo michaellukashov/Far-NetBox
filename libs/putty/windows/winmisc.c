@@ -56,7 +56,7 @@ void filename_free(Filename *fn)
 int filename_serialise(const Filename *f, void *vdata)
 {
     char *data = (char *)vdata;
-    int len = strlen(f->path) + 1;     /* include trailing NUL */
+    int len = (int)strlen(f->path) + 1;     /* include trailing NUL */
     if (data) {
         strcpy(data, f->path);
     }
@@ -70,7 +70,7 @@ Filename *filename_deserialise(void *vdata, int maxsize, int *used)
     if (!end)
         return NULL;
     end++;
-    *used = end - data;
+    *used = (int)(end - data);
     return filename_from_str(data);
 }
 
@@ -87,7 +87,7 @@ FILE * mp_wfopen(const char *filename, const char *mode)
 {
     size_t len = strlen(filename);
     wchar_t * wfilename = snewn(len * 10, wchar_t);
-    size_t wlen = MultiByteToWideChar(CP_UTF8, 0, filename, -1, wfilename, len * 10);
+    size_t wlen = MultiByteToWideChar(CP_UTF8, 0, filename, -1, wfilename, (int)(len * 10));
     FILE * file;
     if (wlen <= 0)
     {
@@ -130,7 +130,7 @@ char *get_username(void)
     DWORD namelen;
     char *user;
     int got_username = FALSE;
-    DECL_WINDOWS_FUNCTION(static, BOOLEAN, GetUserNameExA,
+    PUTTY_DECL_WINDOWS_FUNCTION(static, BOOLEAN, GetUserNameExA,
 			  (EXTENDED_NAME_FORMAT, LPSTR, PULONG));
 
     {
@@ -138,7 +138,12 @@ char *get_username(void)
 	if (!tried_usernameex) {
 	    /* Not available on Win9x, so load dynamically */
 	    HMODULE secur32 = load_system32_dll("secur32.dll");
-	    GET_WINDOWS_FUNCTION(secur32, GetUserNameExA);
+	    /* If MIT Kerberos is installed, the following call to
+	       PUTTY_GET_WINDOWS_FUNCTION makes Windows implicitly load
+	       sspicli.dll WITHOUT proper path sanitizing, so better
+	       load it properly before */
+	    HMODULE sspicli = load_system32_dll("sspicli.dll");
+	    PUTTY_GET_WINDOWS_FUNCTION(secur32, GetUserNameExA);
 	    tried_usernameex = TRUE;
 	}
     }
@@ -205,16 +210,25 @@ void dll_hijacking_protection(void)
      * full pathname by the user-provided configuration.
      */
     static HMODULE kernel32_module;
-    DECL_WINDOWS_FUNCTION(static, BOOL, SetDefaultDllDirectories, (DWORD));
+    PUTTY_DECL_WINDOWS_FUNCTION(static, BOOL, SetDefaultDllDirectories, (DWORD));
 
     if (!kernel32_module) {
         kernel32_module = load_system32_dll("kernel32.dll");
-        GET_WINDOWS_FUNCTION(kernel32_module, SetDefaultDllDirectories);
+#if defined _MSC_VER // && _MSC_VER < 1900
+        /* For older Visual Studio, this function isn't available in
+         * the header files to type-check */
+        PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(
+            kernel32_module, SetDefaultDllDirectories);
+#else
+        PUTTY_GET_WINDOWS_FUNCTION(kernel32_module, SetDefaultDllDirectories);
+#endif
     }
 
     if (p_SetDefaultDllDirectories) {
-        /* LOAD_LIBRARY_SEARCH_SYSTEM32 only */
-        p_SetDefaultDllDirectories(0x800);
+        /* LOAD_LIBRARY_SEARCH_SYSTEM32 and explicitly specified
+         * directories only */
+        p_SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32 |
+                                   LOAD_LIBRARY_SEARCH_USER_DIRS);
     }
 }
 
@@ -315,7 +329,7 @@ const char *win_strerror(int error)
                     "Windows error code %d (and FormatMessage returned %d)", 
                     error, GetLastError());
         } else {
-            int len = strlen(es->text);
+            int len = (int)strlen(es->text);
             if (len > 0 && es->text[len-1] == '\n')
                 es->text[len-1] = '\0';
         }
@@ -346,7 +360,7 @@ void dputs(const char *buf)
     }
 
     if (debug_hdl != INVALID_HANDLE_VALUE) {
-	WriteFile(debug_hdl, buf, strlen(buf), &dw, NULL);
+      WriteFile(debug_hdl, buf, (DWORD)strlen(buf), &dw, NULL);
     }
     fputs(buf, debug_fp);
     fflush(debug_fp);
@@ -596,7 +610,7 @@ void fontspec_free(FontSpec *f)
 int fontspec_serialise(FontSpec *f, void *vdata)
 {
     char *data = (char *)vdata;
-    int len = strlen(f->name) + 1;     /* include trailing NUL */
+    int len = (int)strlen(f->name) + 1;     /* include trailing NUL */
     if (data) {
         strcpy(data, f->name);
         PUT_32BIT_MSB_FIRST(data + len, f->isbold);
@@ -615,7 +629,7 @@ FontSpec *fontspec_deserialise(void *vdata, int maxsize, int *used)
     if (!end)
         return NULL;
     end++;
-    *used = end - data + 12;
+    *used = (int)(end - data + 12);
     return fontspec_new(data,
                         GET_32BIT_MSB_FIRST(end),
                         GET_32BIT_MSB_FIRST(end + 4),

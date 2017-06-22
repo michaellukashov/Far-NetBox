@@ -210,7 +210,7 @@ static int ber_read_id_len(void *source, int sourcelen,
 	p++, sourcelen--;
     }
 
-    return p - (unsigned char *) source;
+    return (int)(p - (unsigned char *) source);
 }
 
 /*
@@ -293,7 +293,7 @@ static int put_string(void *target, const void *data, int len)
 
 static int put_string_z(void *target, const char *string)
 {
-    return put_string(target, string, strlen(string));
+    return put_string(target, string, (int)strlen(string));
 }
 
 static int put_mp(void *target, void *data, int len)
@@ -601,13 +601,13 @@ struct ssh2_userkey *openssh_pem_read(const Filename *filename,
         unsigned char keybuf[32];
 
         MD5Init(&md5c);
-        MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
+        MD5Update(&md5c, (unsigned char *)passphrase, (int)strlen(passphrase));
         MD5Update(&md5c, (unsigned char *)key->iv, 8);
         MD5Final(keybuf, &md5c);
 
         MD5Init(&md5c);
         MD5Update(&md5c, keybuf, 16);
-        MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
+        MD5Update(&md5c, (unsigned char *)passphrase, (int)strlen(passphrase));
         MD5Update(&md5c, (unsigned char *)key->iv, 8);
         MD5Final(keybuf+16, &md5c);
 
@@ -683,7 +683,7 @@ struct ssh2_userkey *openssh_pem_read(const Filename *filename,
         const struct ec_curve *curve;
         int algnamelen, curvenamelen;
         /* Read INTEGER 1 */
-        ret = ber_read_id_len(p, key->keyblob+key->keyblob_len-p,
+        ret = ber_read_id_len(p, (int)(key->keyblob+key->keyblob_len-p),
                               &id, &len, &flags);
         p += ret;
         if (ret < 0 || id != 2 || len != 1 ||
@@ -694,7 +694,7 @@ struct ssh2_userkey *openssh_pem_read(const Filename *filename,
         }
         p += 1;
         /* Read private key OCTET STRING */
-        ret = ber_read_id_len(p, key->keyblob+key->keyblob_len-p,
+        ret = ber_read_id_len(p, (int)(key->keyblob+key->keyblob_len-p),
                               &id, &len, &flags);
         p += ret;
         if (ret < 0 || id != 4 || len < 0 ||
@@ -707,7 +707,7 @@ struct ssh2_userkey *openssh_pem_read(const Filename *filename,
         privlen = len;
         p += len;
         /* Read curve OID */
-        ret = ber_read_id_len(p, key->keyblob+key->keyblob_len-p,
+        ret = ber_read_id_len(p, (int)(key->keyblob+key->keyblob_len-p),
                               &id, &len, &flags);
         p += ret;
         if (ret < 0 || id != 0 || len < 0 ||
@@ -716,7 +716,7 @@ struct ssh2_userkey *openssh_pem_read(const Filename *filename,
             retval = key->encrypted ? SSH2_WRONG_PASSPHRASE : NULL;
             goto error;
         }
-        ret = ber_read_id_len(p, key->keyblob+key->keyblob_len-p,
+        ret = ber_read_id_len(p, (int)(key->keyblob+key->keyblob_len-p),
                               &id, &len, &flags);
         p += ret;
         if (ret < 0 || id != 6 || len < 0 ||
@@ -733,7 +733,7 @@ struct ssh2_userkey *openssh_pem_read(const Filename *filename,
         }
         p += len;
         /* Read BIT STRING point */
-        ret = ber_read_id_len(p, key->keyblob+key->keyblob_len-p,
+        ret = ber_read_id_len(p, (int)(key->keyblob+key->keyblob_len-p),
                               &id, &len, &flags);
         p += ret;
         if (ret < 0 || id != 1 || len < 0 ||
@@ -742,7 +742,7 @@ struct ssh2_userkey *openssh_pem_read(const Filename *filename,
             retval = key->encrypted ? SSH2_WRONG_PASSPHRASE : NULL;
             goto error;
         }
-        ret = ber_read_id_len(p, key->keyblob+key->keyblob_len-p,
+        ret = ber_read_id_len(p, (int)(key->keyblob+key->keyblob_len-p),
                               &id, &len, &flags);
         p += ret;
         if (ret < 0 || id != 3 || len < 0 ||
@@ -770,11 +770,11 @@ struct ssh2_userkey *openssh_pem_read(const Filename *filename,
 
         q = blob;
 
-        algnamelen = strlen(alg->name);
+        algnamelen = (int)strlen(alg->name);
         PUT_32BIT(q, algnamelen); q += 4;
         memcpy(q, alg->name, algnamelen); q += algnamelen;
 
-        curvenamelen = strlen(curve->name);
+        curvenamelen = (int)strlen(curve->name);
         PUT_32BIT(q, curvenamelen); q += 4;
         memcpy(q, curve->name, curvenamelen); q += curvenamelen;
 
@@ -793,7 +793,7 @@ struct ssh2_userkey *openssh_pem_read(const Filename *filename,
         memcpy(q+5, priv, privlen);
 
         retkey->data = retkey->alg->createkey(retkey->alg,
-                                              blob, q-blob,
+                                              blob, (int)(q-blob),
                                               q, 5+privlen);
 
         if (!retkey->data) {
@@ -818,7 +818,7 @@ struct ssh2_userkey *openssh_pem_read(const Filename *filename,
         privptr = -1;
 
         for (i = 0; i < num_integers; i++) {
-            ret = ber_read_id_len(p, key->keyblob+key->keyblob_len-p,
+            ret = ber_read_id_len(p, (int)(key->keyblob+key->keyblob_len-p),
                                   &id, &len, &flags);
             p += ret;
             if (ret < 0 || id != 2 || len < 0 ||
@@ -1200,13 +1200,13 @@ int openssh_pem_write(const Filename *filename, struct ssh2_userkey *key,
 	for (i = 0; i < 8; i++) iv[i] = random_byte();
 
 	MD5Init(&md5c);
-	MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
+	MD5Update(&md5c, (unsigned char *)passphrase, (int)strlen(passphrase));
 	MD5Update(&md5c, iv, 8);
 	MD5Final(keybuf, &md5c);
 
 	MD5Init(&md5c);
 	MD5Update(&md5c, keybuf, 16);
-	MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
+	MD5Update(&md5c, (unsigned char *)passphrase, (int)strlen(passphrase));
 	MD5Update(&md5c, iv, 8);
 	MD5Final(keybuf+16, &md5c);
 
@@ -1753,7 +1753,7 @@ int openssh_new_write(const Filename *filename, struct ssh2_userkey *key,
     privblob = snewn(i, unsigned char);
     privlen = key->alg->openssh_fmtkey(key->data, privblob, i);
     assert(privlen == i);
-    commentlen = strlen(key->comment);
+    commentlen = (int)strlen(key->comment);
 
     /*
      * Allocate enough space for the full binary key format. No need
@@ -1767,7 +1767,7 @@ int openssh_new_write(const Filename *filename, struct ssh2_userkey *key,
                4+publen +              /* public key string */
                4 +                     /* string header for private section */
                8 +                     /* checkint x 2 */
-               4+strlen(key->alg->name) + /* key type string */
+               4+(int)strlen(key->alg->name) + /* key type string */
                privlen +               /* private blob */
                4+commentlen +          /* comment string */
                16);                    /* padding at end of private section */
@@ -1856,7 +1856,7 @@ int openssh_new_write(const Filename *filename, struct ssh2_userkey *key,
         aes256_key(ctx, keybuf);
         aes_iv(ctx, keybuf + 32);
         aes_ssh2_encrypt_blk(ctx, private_section_start,
-                             p - private_section_start);
+                             (int)(p - private_section_start));
         aes_free_context(ctx);
 
         smemclr(keybuf, sizeof(keybuf));
@@ -1870,7 +1870,7 @@ int openssh_new_write(const Filename *filename, struct ssh2_userkey *key,
     if (!fp)
 	goto error;
     fputs("-----BEGIN OPENSSH PRIVATE KEY-----\n", fp);
-    base64_encode(fp, outblob, p - outblob, 64);
+    base64_encode(fp, outblob, (int)(p - outblob), 64);
     fputs("-----END OPENSSH PRIVATE KEY-----\n", fp);
     fclose(fp);
     ret = 1;
@@ -2050,13 +2050,13 @@ static struct sshcom_key *load_sshcom_key(const Filename *filename,
 	    }
 	    *p++ = '\0';
 	    while (*p && isspace((unsigned char)*p)) p++;
-	    hdrstart = p - line;
+			hdrstart = (int)(p - line);
 
             /*
              * Header lines can end in a trailing backslash for
              * continuation.
              */
-	    len = hdrstart + strlen(line+hdrstart);
+      len = hdrstart + (int)strlen(line+hdrstart);
 	    assert(!line[len]);
             while (line[len-1] == '\\') {
 		char *line2;
@@ -2069,7 +2069,7 @@ static struct sshcom_key *load_sshcom_key(const Filename *filename,
                 }
 		strip_crlf(line2);
 
-		line2len = strlen(line2);
+		line2len = (int)strlen(line2);
 		line = sresize(line, len + line2len + 1, char);
 		strcpy(line + len - 1, line2);
 		len += line2len - 1;
@@ -2213,7 +2213,7 @@ static int sshcom_read_mpint(void *data, int len, struct mpint_pos *ret)
     bits = GET_32BIT(d);
 
     bytes = (bits + 7) / 8;
-    if (len < 4+bytes)
+    if ((unsigned int)len < 4+bytes)
         goto error;
 
     ret->start = d + 4;
@@ -2351,11 +2351,11 @@ struct ssh2_userkey *sshcom_read(const Filename *filename, char *passphrase,
         }
 
 	MD5Init(&md5c);
-	MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
+	MD5Update(&md5c, (unsigned char *)passphrase, (int)strlen(passphrase));
 	MD5Final(keybuf, &md5c);
 
 	MD5Init(&md5c);
-	MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
+	MD5Update(&md5c, (unsigned char *)passphrase, (int)strlen(passphrase));
 	MD5Update(&md5c, keybuf, 16);
 	MD5Final(keybuf+16, &md5c);
 
@@ -2586,10 +2586,10 @@ int sshcom_write(const Filename *filename, struct ssh2_userkey *key,
     pos = 0;
     PUT_32BIT(outblob+pos, SSHCOM_MAGIC_NUMBER); pos += 4;
     pos += 4;			       /* length field, fill in later */
-    pos += put_string(outblob+pos, type, strlen(type));
+    pos += put_string(outblob+pos, type, (int)strlen(type));
     {
 	const char *ciphertype = passphrase ? "3des-cbc" : "none";
-	pos += put_string(outblob+pos, ciphertype, strlen(ciphertype));
+	pos += put_string(outblob+pos, ciphertype, (int)strlen(ciphertype));
     }
     lenpos = pos;		       /* remember this position */
     pos += 4;			       /* encrypted-blob size */
@@ -2635,11 +2635,11 @@ int sshcom_write(const Filename *filename, struct ssh2_userkey *key,
 	unsigned char keybuf[32], iv[8];
 
 	MD5Init(&md5c);
-	MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
+	MD5Update(&md5c, (unsigned char *)passphrase, (unsigned int)strlen(passphrase));
 	MD5Final(keybuf, &md5c);
 
 	MD5Init(&md5c);
-	MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
+	MD5Update(&md5c, (unsigned char *)passphrase, (unsigned int)strlen(passphrase));
 	MD5Update(&md5c, keybuf, 16);
 	MD5Final(keybuf+16, &md5c);
 

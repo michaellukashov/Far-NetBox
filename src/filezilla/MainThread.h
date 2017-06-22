@@ -71,7 +71,7 @@ protected:
   BOOL m_bQuit;
   t_command * m_pPostKeepAliveCommand;
   CServerPath m_CurrentPath;
-  UINT m_nTimerID;
+  UINT_PTR m_nTimerID;
   virtual ~CMainThread();
   CEvent m_EventStarted;
 };

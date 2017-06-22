@@ -21,7 +21,7 @@ TFarDialog * CreateMoreMessageDialog(const UnicodeString & Msg,
   const TQueryButtonAlias * Aliases, uintptr_t AliasesCount,
   uintptr_t TimeoutAnswer, TFarButton ** TimeoutButton,
   const UnicodeString & ImageName, const UnicodeString & NeverAskAgainCaption,
-  const UnicodeString & MoreMessagesUrl, TSize MoreMessagesSize,
+  const UnicodeString & MoreMessagesUrl, int MoreMessagesSize,
   const UnicodeString & CustomCaption);
 TFarDialog * CreateMoreMessageDialogEx(const UnicodeString & Message, TStrings * MoreMessages,
   TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params);

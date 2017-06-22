@@ -6,7 +6,7 @@ __int64 GetLength64(CFile &file)
 {
   DWORD low;
   DWORD high;
-  low=GetFileSize((void *)file.m_hFile, &high);
+  low=::GetFileSize((void *)file.m_hFile, &high);
   _int64 size=((_int64)high<<32)+low;
   return size;
 }

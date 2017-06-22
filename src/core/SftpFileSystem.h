@@ -34,7 +34,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TSFTPFileSystem;
   }
 public:
-  explicit TSFTPFileSystem(TTerminal * ATermina);
+  explicit TSFTPFileSystem(TTerminal * ATerminal);
   virtual ~TSFTPFileSystem();
 
   virtual void Init(void * Data /*TSecureShell* */);
@@ -53,7 +53,7 @@ public:
   virtual void CachedChangeDirectory(const UnicodeString & Directory);
   virtual void AnnounceFileListOperation();
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, const TRemoteProperties * Properties,
+    const TRemoteFile * AFile, const TRemoteProperties * AProperties,
     TChmodSessionAction & Action);
   virtual bool LoadFilesProperties(TStrings * AFileList);
   virtual void CalculateFilesChecksum(const UnicodeString & Alg,
@@ -190,10 +190,10 @@ protected:
   void SFTPDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, uintptr_t LocalFileAttrs, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags);
-  void SFTPConfirmOverwrite(const UnicodeString & AFullFileName, UnicodeString & AFileName,
+  void SFTPConfirmOverwrite(const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
     const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams,
-    OUT TOverwriteMode & Mode);
+    OUT TOverwriteMode & OverwriteMode);
   bool SFTPConfirmResume(const UnicodeString & DestFileName, bool PartialBiggerThanSource,
     TFileOperationProgressType * OperationProgress);
   void SFTPSinkRobust(const UnicodeString & AFileName,
@@ -210,15 +210,15 @@ protected:
   char * GetEOL() const;
   inline void BusyStart();
   inline void BusyEnd();
-  inline uint32_t TransferBlockSize(uint32_t Overhead,
+  uint32_t TransferBlockSize(uint32_t Overhead,
     TFileOperationProgressType * OperationProgress,
     uint32_t MinPacketSize = 0,
-    uint32_t MaxPacketSize = 0);
-  inline uint32_t UploadBlockSize(const RawByteString & Handle,
-    TFileOperationProgressType * OperationProgress);
-  inline uint32_t DownloadBlockSize(
-    TFileOperationProgressType * OperationProgress);
-  inline intptr_t PacketLength(uint8_t * LenBuf, SSH_FXP_TYPES ExpectedType);
+    uint32_t MaxPacketSize = 0) const;
+  uint32_t UploadBlockSize(const RawByteString & Handle,
+    TFileOperationProgressType * OperationProgress) const;
+  uint32_t DownloadBlockSize(
+    TFileOperationProgressType * OperationProgress) const;
+  intptr_t PacketLength(uint8_t * LenBuf, SSH_FXP_TYPES ExpectedType) const;
   void Progress(TFileOperationProgressType * OperationProgress);
 
 private:

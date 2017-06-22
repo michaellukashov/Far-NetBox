@@ -41,7 +41,7 @@ distribution.
 	   const char *format [,
 		  argument] ...
 	);*/
-	static inline int TIXML_SNPRINTF( char* buffer, size_t size, const char* format, ... )
+	static inline int TIXML_SNPRINTF( char* buffer, ::size_t size, const char* format, ... )
 	{
 		va_list va;
 		va_start( va, format );
@@ -50,7 +50,7 @@ distribution.
 		return result;
 	}
 
-	static inline int TIXML_VSNPRINTF( char* buffer, size_t size, const char* format, va_list va )
+	static inline int TIXML_VSNPRINTF( char* buffer, ::size_t size, const char* format, va_list va )
 	{
 		int result = vsnprintf_s( buffer, size, _TRUNCATE, format, va );
 		return result;
@@ -180,7 +180,7 @@ void StrPair::SetStr( const char* str, int flags )
 {
     TIXMLASSERT( str );
     Reset();
-    size_t len = strlen( str );
+    ::size_t len = strlen( str );
     TIXMLASSERT( _start == 0 );
     _start = new char[ len+1 ];
     memcpy( _start, str, len+1 );
@@ -197,7 +197,7 @@ char* StrPair::ParseText( char* p, const char* endTag, int strFlags, int* curLin
 
     char* start = p;
     char  endChar = *endTag;
-    size_t length = strlen( endTag );
+    ::size_t length = strlen( endTag );
 
     // Inner loop of text parsing.
     while ( *p ) {
@@ -2063,6 +2063,19 @@ void XMLDocument::DeepCopy(XMLDocument* target)
 	}
 }
 
+void XMLDocument::DeepCopy(XMLDocument* target)
+{
+	TIXMLASSERT(target);
+    if (target == this) {
+        return; // technically success - a no-op.
+    }
+
+	target->Clear();
+	for (const XMLNode* node = this->FirstChild(); node; node = node->NextSibling()) {
+		target->InsertEndChild(node->DeepClone(target));
+	}
+}
+
 XMLElement* XMLDocument::NewElement( const char* name )
 {
     XMLElement* ele = CreateUnlinkedNode<XMLElement>( _elementPool );
@@ -2156,7 +2169,7 @@ XMLError XMLDocument::LoadFile( const char* filename )
 // is useful and code with no check when a check is redundant depending on how size_t and unsigned long
 // types sizes relate to each other.
 template
-<bool = (sizeof(unsigned long) >= sizeof(size_t))>
+<bool = (sizeof(unsigned long) >= sizeof(::size_t))>
 struct LongFitsIntoSizeTMinusOne {
     static bool Fits( unsigned long value )
     {
@@ -2202,10 +2215,10 @@ XMLError XMLDocument::LoadFile( FILE* fp )
         return _errorID;
     }
 
-    const size_t size = filelength;
+    const ::size_t size = filelength;
     TIXMLASSERT( _charBuffer == 0 );
     _charBuffer = new char[size+1];
-    size_t read = fread( _charBuffer, 1, size, fp );
+    ::size_t read = fread( _charBuffer, 1, size, fp );
     if ( read != size ) {
         SetError( XML_ERROR_FILE_READ_ERROR, 0, 0, 0 );
         return _errorID;
@@ -2242,7 +2255,7 @@ XMLError XMLDocument::SaveFile( FILE* fp, bool compact )
 }
 
 
-XMLError XMLDocument::Parse( const char* p, size_t len )
+XMLError XMLDocument::Parse( const char* p, ::size_t len )
 {
     Clear();
 
@@ -2250,7 +2263,7 @@ XMLError XMLDocument::Parse( const char* p, size_t len )
         SetError( XML_ERROR_EMPTY_DOCUMENT, 0, 0, 0 );
         return _errorID;
     }
-    if ( len == (size_t)(-1) ) {
+    if ( len == (::size_t)(-1) ) {
         len = strlen( p );
     }
     TIXMLASSERT( _charBuffer == 0 );
@@ -2422,7 +2435,7 @@ void XMLPrinter::PrintString( const char* p, bool restricted )
                 // entity, and keep looking.
                 if ( flag[(unsigned char)(*q)] ) {
                     while ( p < q ) {
-                        const size_t delta = q - p;
+                        const ::size_t delta = q - p;
                         // %.*s accepts type int as "precision"
                         const int toPrint = ( INT_MAX < delta ) ? INT_MAX : (int)delta;
                         Print( "%.*s", toPrint, p );

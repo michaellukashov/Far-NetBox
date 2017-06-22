@@ -19,58 +19,40 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
+    <ProjectName>NetBox</ProjectName>
     <ProjectGuid>{61EA6DDD-19CD-481B-8FA4-D92CEBB516C1}</ProjectGuid>
-    <Keyword>Win32Proj</Keyword>
     <RootNamespace>NetBox</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup>
+    <PlatformToolset Condition="'$(VisualStudioVersion)' == '14.0'">v140</PlatformToolset>
+    <PlatformToolset Condition="'$(VisualStudioVersion)' == '15.0'">v141</PlatformToolset>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+  <PropertyGroup Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>false</UseOfMfc>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>false</UseOfMfc>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>false</UseOfMfc>
+  <PropertyGroup>
+    <PlatformToolset Condition="'$(VisualStudioVersion)' == '14.0'">v140</PlatformToolset>
+    <PlatformToolset Condition="'$(VisualStudioVersion)' == '15.0'">v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="UserMacros">
+    <FarBit Condition="'$(Platform)'=='Win32'">32</FarBit>
+    <FarBit Condition="'$(Platform)'=='x64'">64</FarBit>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\Far2_x86\Plugins\NetBox\</OutDir>
     <IntDir>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\</IntDir>
+    <EmbedManifest>false</EmbedManifest>
     <GenerateManifest>false</GenerateManifest>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -78,42 +60,51 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\Far2_x64\Plugins\NetBox\</OutDir>
     <IntDir>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\</IntDir>
+    <EmbedManifest>false</EmbedManifest>
+    <GenerateManifest>false</GenerateManifest>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\Far2_x86\Plugins\NetBox\</OutDir>
     <IntDir>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\</IntDir>
+    <EmbedManifest>false</EmbedManifest>
     <GenerateManifest>false</GenerateManifest>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\Far2_x64\Plugins\NetBox\</OutDir>
     <IntDir>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\</IntDir>
+    <EmbedManifest>false</EmbedManifest>
     <GenerateManifest>false</GenerateManifest>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level2</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>NB_CORE_EXPORTS;_SCL_SECURE_NO_WARNINGS;WIN32;_WIN32;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;APR_DECLARE_STATIC;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\x86\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;..\..\libs\dlmalloc;..\..\libs\rdestl;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;WIN32;_WIN32;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;APR_DECLARE_STATIC;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;..\..\libs\dlmalloc;..\..\libs\rdestl</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <OmitDefaultLibName>true</OmitDefaultLibName>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PreprocessToFile>false</PreprocessToFile>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <DisableSpecificWarnings>4481</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\mfc;..\..\libs\openssl\x86;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libputty;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libtinyxml2;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libneon;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libapr;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libexpat;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\dlmalloc;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\rdestl;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.lib;libssl.lib;libcrypto.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.lib;rdestl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.lib;libssl.lib;libcrypto.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.lib;rdestl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfcs100ud.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;mfc100ud.lib;Atl.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib /ignore:4099 /ignore:4204 %(AdditionalOptions)</AdditionalOptions>
-      <DelayLoadDLLs>gdi32.dll;winhttp.dll;shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
+      <DelayLoadDLLs>shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>.;..\include;\..\..\libs\atlmfc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -124,21 +115,22 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>NB_CORE_EXPORTS;_SCL_SECURE_NO_WARNINGS;WIN32;WIN64;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;APR_DECLARE_STATIC;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\x64\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;..\..\libs\dlmalloc;..\..\libs\rdestl;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;WIN32;WIN64;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;APR_DECLARE_STATIC;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;..\..\libs\dlmalloc;..\..\libs\rdestl;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <DisableSpecificWarnings>4481</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\mfc;..\..\libs\openssl\x64;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libputty;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libtinyxml2;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libneon;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libapr;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libexpat;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\dlmalloc;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\rdestl;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.lib;libssl.lib;libcrypto.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.lib;rdestl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;libcmtd.lib;libcpmtd.lib;libtinyxml2.lib;libssl.lib;libcrypto.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.lib;rdestl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfc100ud.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;Atl.lib;mfcs100ud.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib /ignore:4099 /ignore:4204 %(AdditionalOptions)</AdditionalOptions>
-      <DelayLoadDLLs>gdi32.dll;winhttp.dll;shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
+      <DelayLoadDLLs>shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>
@@ -153,8 +145,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
-      <PreprocessorDefinitions>NB_CORE_EXPORTS;_SCL_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;APR_DECLARE_STATIC;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\x86\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;..\..\libs\dlmalloc;..\..\libs\rdestl;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;APR_DECLARE_STATIC;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;..\..\libs\dlmalloc;..\..\libs\rdestl</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -167,6 +159,8 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <CallingConvention>Cdecl</CallingConvention>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <DisableSpecificWarnings>4481</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -174,10 +168,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\mfc;..\..\libs\openssl\x86;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libputty;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libtinyxml2;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libneon;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libapr;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\libexpat;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\dlmalloc;..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\rdestl;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmt.lib;libcpmt.lib;libtinyxml2.lib;libssl.lib;libcrypto.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.lib;rdestl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;libcmt.lib;libcpmt.lib;libtinyxml2.lib;libssl.lib;libcrypto.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.lib;rdestl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>gdi32.dll;winhttp.dll;shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
+      <DelayLoadDLLs>shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -194,8 +188,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
-      <PreprocessorDefinitions>NB_CORE_EXPORTS;_SCL_SECURE_NO_WARNINGS;WIN32;WIN64;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;APR_DECLARE_STATIC;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\x64\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;..\..\libs\dlmalloc;..\..\libs\rdestl;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;WIN32;WIN64;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;APR_DECLARE_STATIC;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\apr\include;..\..\libs\apr\include\arch;..\..\libs\apr\include\arch\win32;..\..\libs\apr\include\arch\unix;..\..\libs\dlmalloc;..\..\libs\rdestl;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -208,6 +202,8 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <CallingConvention>Cdecl</CallingConvention>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <DisableSpecificWarnings>4481</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -215,10 +211,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\mfc;..\..\libs\openssl\x64;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libputty;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libtinyxml2;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libneon;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libapr;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\libexpat;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\dlmalloc;..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\rdestl;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;gdi32.lib;libcmt.lib;libcpmt.lib;libtinyxml2.lib;libssl.lib;libcrypto.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.lib;rdestl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfc.lib;shell32.lib;shlwapi.lib;libcmt.lib;libcpmt.lib;libtinyxml2.lib;libssl.lib;libcrypto.lib;libputty.lib;libexpat.lib;libneon.lib;libapr.lib;Ws2_32.lib;kernel32.lib;user32.lib;comdlg32.lib;advapi32.lib;Version.lib;winhttp.lib;winspool.lib;Crypt32.lib;dlmalloc.lib;rdestl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>gdi32.dll;winhttp.dll;shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
+      <DelayLoadDLLs>shell32.dll;shlwapi.dll;crypt32.dll;version.dll;ws2_32.dll;oleaut32.dll;</DelayLoadDLLs>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
@@ -281,7 +277,7 @@
     <ClCompile Include="FarInterface.cpp" />
     <ClCompile Include="FarPlugin.cpp" />
     <ClCompile Include="FarPluginStrings.cpp" />
-    <ClCompile Include="FarUtil.cpp" />
+    <ClCompile Include="FarUtils.cpp" />
     <ClCompile Include="NetBox.cpp" />
     <ClCompile Include="UnityBuildFilezilla.cpp">
     </ClCompile>
@@ -309,6 +305,7 @@
     <ResourceCompile Include="..\resource\TextsFileZilla.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\base\MsgIDs.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

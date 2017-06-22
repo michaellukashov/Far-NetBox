@@ -1,3 +1,4 @@
+#pragma once
 /* 
    Standard definitions for neon headers
    Copyright (C) 2003-2008, 2010, Joe Orton <joe@manyfish.co.uk>
@@ -36,6 +37,9 @@
 
 #ifdef NE_LFS
 # ifdef _MSC_VER
+typedef __int64 off64_t;
+# endif
+# ifdef __BORLANDC__
 typedef __int64 off64_t;
 # endif
 typedef off64_t ne_off_t;
@@ -78,7 +82,7 @@ typedef off_t ne_off_t;
 #endif
 
 #ifndef NE_BUFSIZ
-#define NE_BUFSIZ 2 * 64 * 1024
+#define NE_BUFSIZ 16 * 1024
 #endif
 
 #endif /* NE_DEFS_H */

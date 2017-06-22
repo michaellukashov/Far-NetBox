@@ -686,7 +686,7 @@ public:
 		_Out_opt_ PUINT pnHelpContext = NULL) const ;
 	virtual BOOL GetErrorMessage(_Out_z_cap_(nMaxError) LPTSTR lpszError, _In_ UINT nMaxError,
 		_Out_opt_ PUINT pnHelpContext = NULL);
-	virtual int ReportError(UINT nType = MB_OK, UINT nMessageID = 0);
+//	virtual int ReportError(UINT nType = MB_OK, UINT nMessageID = 0);
 
 // Implementation (setting m_bAutoDelete to FALSE is advanced)
 public:

@@ -82,6 +82,7 @@ static ERR_STRING_DATA ERR_str_functs[] = {
     {ERR_PACK(0, SYS_F_GETSOCKOPT, 0), "getsockopt"},
     {ERR_PACK(0, SYS_F_GETSOCKNAME, 0), "getsockname"},
     {ERR_PACK(0, SYS_F_GETHOSTBYNAME, 0), "gethostbyname"},
+    {ERR_PACK(0, SYS_F_FFLUSH, 0), "fflush"},
     {0, NULL},
 };
 
@@ -259,6 +260,7 @@ DEFINE_RUN_ONCE_STATIC(do_err_strings_init)
 
 void err_cleanup(void)
 {
+    CRYPTO_THREAD_cleanup_local(&err_thread_local);
     CRYPTO_THREAD_lock_free(err_string_lock);
     err_string_lock = NULL;
 }

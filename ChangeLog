@@ -1,5 +1,26 @@
-NetBox 2.4.2.463 25.02.2017
+NetBox 2.4.3.505 18.06.2017
 --------------------
+  * Bugfix: Mantis-3439: Far crash when trying to copy to long path
+    (http://bugs.farmanager.com/view.php?id=3439)
+  * Update openssl sources to 1.1.0f
+  * Update putty sources to 0.69
+  * Bugfix: plugin crashes on FAR startup
+    (http://bugs.farmanager.com/view.php?id=3429)
+    (http://forum.farmanager.com/viewtopic.php?p=143678#p143678)
+    (https://github.com/michaellukashov/Far-NetBox/issues/230)
+  * Issue #229: Remove "netbox:" prefix from Far window title
+    (https://github.com/michaellukashov/Far-NetBox/issues/229)
+  * Update WinSCP sources to 5.9.5
+
+NetBox 2.4.2.475 24.03.2017
+--------------------
+  * Bugfix: Mantis-3412: Access Violation when connection is reopened
+    (http://bugs.farmanager.com/view.php?id=3412)
+  * Bugfix: WebDAV: plugin shows error "Cannot change properties of file" after creating directory on remote server
+    (http://forum.farmanager.com/viewtopic.php?p=142479#p142479)
+  * Bugfix: Can't open remote directory stored in Folders history
+    (http://forum.farmanager.com/viewtopic.php?t=6317&p=142882#p142882)
+    (http://bugs.farmanager.com/view.php?id=3402)
   * Bugfix: Synchronized browsing is not working
     (http://forum.farmanager.com/viewtopic.php?t=6317&p=142746#p142746)
   * Update putty sources to 0.68

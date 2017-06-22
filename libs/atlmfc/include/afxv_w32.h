@@ -139,28 +139,29 @@
 #undef NODRAWTEXT
 #undef NOTEXTMETRIC
 #undef NOSCALABLEFONT
-#undef NOBITMAP
-#undef NORASTEROPS
-#undef NOMETAFILE
-#undef NOSYSMETRICS
-#undef NOSYSTEMPARAMSINFO
+#define NOBITMAP
+#define NORASTEROPS
+#define NOMETAFILE
+#define NOSYSMETRICS
+#define NOSYSTEMPARAMSINFO
 #undef NOMSG
-#undef NOWINSTYLES
+#define NOWINSTYLES
 #undef NOWINOFFSETS
 #undef NOSHOWWINDOW
-#undef NODEFERWINDOWPOS
+#define NODEFERWINDOWPOS
 #undef NOVIRTUALKEYCODES
-#undef NOKEYSTATES
+#define NOKEYSTATES
 #undef NOWH
-#undef NOMENUS
-#undef NOSCROLL
-#undef NOCLIPBOARD
-#undef NOICONS
+#define NOMENUS
+#define NOSCROLL
+#define NOCLIPBOARD
+#define NOICONS
 #undef NOMB
-#undef NOSYSCOMMANDS
-#undef NOMDI
-#undef NOCTLMGR
+#define NOSYSCOMMANDS
+#define NOMDI
+#define NOCTLMGR
 #undef NOWINMESSAGES
+#define GUID_DEFS_ONLY
 
 #ifndef WIN32
 #define WIN32
@@ -226,26 +227,13 @@
 #define AFX_WM_MOUSELAST 0x0209
 #endif
 
-#include <zmouse.h>
+//#include <zmouse.h>
 
-struct HKEY__;
-typedef struct HKEY__ *HKEY;
+//struct HKEY__;
+//typedef struct HKEY__ *HKEY;
 
 #ifndef _INC_COMMCTRL
-	#include <commctrl.h>
-
-	// Note: We must avoid using TB_ADDBUTTONW and TB_INSERTBUTTONW
-	//       in the Unicode build or else MFCXXU.DLL will not be
-	//       compatible with pre-IE4 versions of COMCTL32.DLL.
-	#ifdef TB_ADDBUTTONSA
-		#undef TB_ADDBUTTONS
-		#define TB_ADDBUTTONS TB_ADDBUTTONSA
-	#endif
-
-	#ifdef TB_INSERTBUTTONA
-		#undef TB_INSERTBUTTON
-		#define TB_INSERTBUTTON TB_INSERTBUTTONA
-	#endif
+//	#include <commctrl.h>
 #endif
 
 #ifndef EXPORT
@@ -270,37 +258,6 @@ typedef struct HKEY__ *HKEY;
 
 /////////////////////////////////////////////////////////////////////////////
 // Now for the Windows API specific parts
-
-// WM_CTLCOLOR for 16 bit API compatability
-#define WM_CTLCOLOR     0x0019
-
-// Win32 uses macros with parameters for this, which breaks C++ code.
-#ifdef GetWindowTask
-#undef GetWindowTask
-AFX_INLINE HTASK GetWindowTask(HWND hWnd)
-	{ return (HTASK)(DWORD_PTR)::GetWindowThreadProcessId(hWnd, NULL); }
-#endif
-
-// Win32 uses macros with parameters for this, which breaks C++ code.
-#ifdef GetNextWindow
-#undef GetNextWindow
-AFX_INLINE HWND GetNextWindow(HWND hWnd, UINT nDirection)
-	{ return ::GetWindow(hWnd, nDirection); }
-#endif
-
-// Avoid mapping CToolBar::DrawState to DrawState[A/W]
-#ifdef DrawState
-#undef DrawState
-AFX_INLINE BOOL WINAPI DrawState(HDC hdc, HBRUSH hbr, DRAWSTATEPROC lpOutputFunc,
-	LPARAM lData, WPARAM wData, int x, int y, int cx, int cy, UINT fuFlags)
-#ifdef UNICODE
-	{ return ::DrawStateW(hdc, hbr, lpOutputFunc, lData, wData, x, y, cx, cy,
-		fuFlags); }
-#else
-	{ return ::DrawStateA(hdc, hbr, lpOutputFunc, lData, wData, x, y, cx, cy,
-		fuFlags); }
-#endif
-#endif
 
 // FreeResource is not required on Win32 platforms
 #undef FreeResource

@@ -210,7 +210,7 @@ public:
           return 0;
 
         int nEvent=lParam&0xFFFF;
-        int nErrorCode=lParam>>16;
+        int nErrorCode=(int)(lParam >> 16);
 
         //Dispatch notification
         if (!pSocket->m_pFirstLayer)
@@ -240,7 +240,7 @@ public:
               DWORD nBytes = 0;
               if (!nErrorCode)
                 if (!pSocket->IOCtl(FIONREAD, &nBytes))
-                  nErrorCode = WSAGetLastError();
+                  nErrorCode = ::WSAGetLastError();
               if (nErrorCode)
               {
                 pSocket->SetState(aborted);
@@ -358,7 +358,7 @@ public:
 
             DWORD nBytes;
             if (!pSocket->IOCtl(FIONREAD, &nBytes))
-              nErrorCode = WSAGetLastError();
+              nErrorCode = ::WSAGetLastError();
             if (nBytes != 0 || nErrorCode != 0)
               pSocket->m_pLastLayer->CallEvent(nEvent, nErrorCode);
           }
@@ -541,7 +541,7 @@ public:
       if (!pSocket)
         return 0;
 
-      int nErrorCode = lParam >> 16;
+      int nErrorCode = (int)(lParam >> 16);
       if (nErrorCode)
       {
         pSocket->OnConnect(nErrorCode);
@@ -662,7 +662,7 @@ BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STR
   //Close the socket, although this should not happen
   if (GetSocketHandle() != INVALID_SOCKET)
   {
-    WSASetLastError(WSAEALREADY);
+    ::WSASetLastError(WSAEALREADY);
     return FALSE;
   }
 
@@ -670,7 +670,7 @@ BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STR
   DebugAssert(res);
   if (!res)
   {
-    WSASetLastError(WSANOTINITIALISED);
+    ::WSASetLastError(WSANOTINITIALISED);
     return FALSE;
   }
 
@@ -716,7 +716,7 @@ BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STR
       if (m_pFirstLayer)
       {
         m_lEvent = lEvent;
-        if (WSAAsyncSelect(m_SocketData.hSocket, GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE) )
+        if (::WSAAsyncSelect(m_SocketData.hSocket, GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE) )
         {
           Close();
           return FALSE;
@@ -785,7 +785,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
 
   if ((m_SocketData.nFamily == AF_INET6 || m_SocketData.nFamily == AF_INET) && lpszAscii)
   {
-    addrinfo hints, *res0, *res;
+    addrinfo hints, *res0 = 0, *res;
     int error;
     char port[10];
     BOOL ret = FALSE;
@@ -799,7 +799,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
       return FALSE;
 
     for (res = res0; res; res = res->ai_next)
-      if (Bind(res->ai_addr, res->ai_addrlen))
+      if (Bind(res->ai_addr, (int)res->ai_addrlen))
       {
         ret = TRUE;
         break;
@@ -889,7 +889,7 @@ void CAsyncSocketEx::Close()
   nb_free(m_pAsyncGetHostByNameBuffer);
   m_pAsyncGetHostByNameBuffer = NULL;
   if (m_hAsyncGetHostByNameHandle)
-    WSACancelAsyncRequest(m_hAsyncGetHostByNameHandle);
+    ::WSACancelAsyncRequest(m_hAsyncGetHostByNameHandle);
   m_hAsyncGetHostByNameHandle = NULL;
   m_SocketData.onCloseCalled = false;
 }
@@ -1080,11 +1080,11 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 
       m_nAsyncGetHostByNamePort=nHostPort;
 
-      m_hAsyncGetHostByNameHandle=WSAAsyncGetHostByName(GetHelperWindowHandle(), WM_USER+1, lpszAscii, m_pAsyncGetHostByNameBuffer, MAXGETHOSTSTRUCT);
+      m_hAsyncGetHostByNameHandle=::WSAAsyncGetHostByName(GetHelperWindowHandle(), WM_USER+1, lpszAscii, m_pAsyncGetHostByNameBuffer, MAXGETHOSTSTRUCT);
       if (!m_hAsyncGetHostByNameHandle)
         return FALSE;
 
-      WSASetLastError(WSAEWOULDBLOCK);
+      ::WSASetLastError(WSAEWOULDBLOCK);
       SetState(connecting);
       return FALSE;
     }
@@ -1148,7 +1148,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 
       if (m_pFirstLayer)
       {
-        if (WSAAsyncSelect(m_SocketData.hSocket, GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE))
+        if (::WSAAsyncSelect(m_SocketData.hSocket, GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE))
         {
           if (newSocket)
           {
@@ -1174,7 +1174,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
         }
       }
 
-      if (!(ret = CAsyncSocketEx::Connect(m_SocketData.nextAddr->ai_addr, m_SocketData.nextAddr->ai_addrlen)) && GetLastError() != WSAEWOULDBLOCK)
+      if (!(ret = CAsyncSocketEx::Connect(m_SocketData.nextAddr->ai_addr, (int)m_SocketData.nextAddr->ai_addrlen)) && GetLastError() != WSAEWOULDBLOCK)
       {
         if (newSocket)
         {
@@ -1384,7 +1384,7 @@ BOOL CAsyncSocketEx::Attach(SOCKET hSocket, long lEvent /*= FD_READ | FD_WRITE |
   if (m_pFirstLayer)
   {
     m_lEvent = lEvent;
-    return !WSAAsyncSelect(m_SocketData.hSocket, GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE);
+    return !::WSAAsyncSelect(m_SocketData.hSocket, GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE);
   }
   else
   {
@@ -1403,7 +1403,7 @@ BOOL CAsyncSocketEx::AsyncSelect( long lEvent /*= FD_READ | FD_WRITE | FD_OOB | 
     if (m_SocketData.hSocket == INVALID_SOCKET && m_SocketData.nFamily == AF_UNSPEC)
       return true;
 
-    if ( !WSAAsyncSelect(m_SocketData.hSocket, GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, lEvent) )
+    if ( !::WSAAsyncSelect(m_SocketData.hSocket, GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, lEvent) )
       return TRUE;
     else
       return FALSE;
@@ -1454,7 +1454,7 @@ BOOL CAsyncSocketEx::IOCtl( long lCommand, DWORD* lpArgument )
 
 int CAsyncSocketEx::GetLastError()
 {
-  return WSAGetLastError();
+  return ::WSAGetLastError();
 }
 
 BOOL CAsyncSocketEx::TriggerEvent(long lEvent)
@@ -1515,7 +1515,7 @@ BOOL CAsyncSocketEx::AddLayer(CAsyncSocketExLayer *pLayer)
     m_pFirstLayer=pLayer;
     m_pLastLayer=m_pFirstLayer;
     if (m_SocketData.hSocket != INVALID_SOCKET)
-      if (WSAAsyncSelect(m_SocketData.hSocket, GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE))
+      if (::WSAAsyncSelect(m_SocketData.hSocket, GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE))
         return FALSE;
   }
 
@@ -1642,7 +1642,7 @@ bool CAsyncSocketEx::TryNextProtocol()
 
     if (m_pFirstLayer)
     {
-      if (WSAAsyncSelect(m_SocketData.hSocket, GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE))
+      if (::WSAAsyncSelect(m_SocketData.hSocket, GetHelperWindowHandle(), m_SocketData.nSocketIndex+WM_SOCKETEX_NOTIFY, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE))
       {
         DetachHandle(m_SocketData.hSocket);
         closesocket(m_SocketData.hSocket);
@@ -1659,7 +1659,7 @@ bool CAsyncSocketEx::TryNextProtocol()
       continue;
     }
 
-    ret = CAsyncSocketEx::Connect(m_SocketData.nextAddr->ai_addr, m_SocketData.nextAddr->ai_addrlen);
+    ret = CAsyncSocketEx::Connect(m_SocketData.nextAddr->ai_addr, (int)m_SocketData.nextAddr->ai_addrlen);
     if (!ret && GetLastError() != WSAEWOULDBLOCK)
     {
       DetachHandle(m_SocketData.hSocket);

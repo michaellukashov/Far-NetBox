@@ -193,7 +193,7 @@ static int do_inflate(ne_decompress *ctx, const char *buf, size_t len)
     NE_DEBUG_WINSCP_CONTEXT(ctx->session);
     int ret;
 
-    ctx->zstr.avail_in = len;
+    ctx->zstr.avail_in = (uint32_t)len;
     ctx->zstr.next_in = (unsigned char *)buf;
     ctx->zstr.total_in = 0;
     

@@ -42,7 +42,7 @@ class CBase64Coding
 
       virtual ~CBase64Coding();
 
-      virtual BOOL Encode( const char * source, int len, char * destination );
+      virtual BOOL Encode( const char * source, int len, char * destination_string );
 };
 
 #endif // BASE_64_CODING_CLASS_HEADER

@@ -2,7 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <neon/src/ne_request.h>
+#include <ne_request.h>
 #include <openssl/ssl.h>
 
 #include "Http.h"
@@ -78,6 +78,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
         DestroyNeonSession(NeonSession);
         ne_uri_free(&uri);
       };
+
       if (IsTls)
       {
         SetNeonTlsInit(NeonSession, InitSslSession);
@@ -94,6 +95,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
         {
           ne_request_destroy(NeonRequest);
         };
+
         if (FRequestHeaders != nullptr)
         {
           for (intptr_t Index = 0; Index < FRequestHeaders->GetCount(); Index++)
@@ -135,16 +137,16 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           const ne_status * NeonStatus = ne_get_status(NeonRequest);
           if (NeonStatus->klass != 2)
           {
-            int Status = NeonStatus->code;
+            int StatusCode = NeonStatus->code;
             UnicodeString Message = StrFromNeon(NeonStatus->reason_phrase);
             if (GetOnError() != nullptr)
             {
-              GetOnError()(this, Status, Message);
+              GetOnError()(this, StatusCode, Message);
             }
-            throw Exception(FMTLOAD(HTTP_ERROR2, Status, Message.c_str(), FHostName.c_str()));
+            throw Exception(FMTLOAD(HTTP_ERROR2, StatusCode, Message.c_str(), FHostName.c_str()));
           }
 
-          void * Cursor = NULL;
+          void * Cursor = nullptr;
           const char * HeaderName;
           const char * HeaderValue;
           while ((Cursor = ne_response_header_iterate(NeonRequest, Cursor, &HeaderName, &HeaderValue)) != nullptr)
@@ -155,13 +157,17 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
       }
       __finally
       {
+/*
         ne_request_destroy(NeonRequest);
+*/
       };
     }
     __finally
     {
+/*
       DestroyNeonSession(NeonSession);
       ne_uri_free(&uri);
+*/
     };
   }
   while (Retry);
@@ -187,7 +193,7 @@ int THttp::NeonBodyReaderImpl(const char * Buf, size_t Len)
 {
   bool Result = true;
   if ((FResponseLimit < 0) ||
-      (FResponse.Length() + static_cast<intptr_t>(Len) <= FResponseLimit))
+    (FResponse.Length() + static_cast<intptr_t>(Len) <= FResponseLimit))
   {
     FResponse += RawByteString(Buf, Len);
 

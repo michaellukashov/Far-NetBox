@@ -152,7 +152,8 @@ struct TIEProxyConfig : public TObject
     AutoDetect(false),
     ProxyPort(0),
     ProxyMethod(pmNone)
-  {}
+  {
+  }
   bool AutoDetect; // not used
   UnicodeString AutoConfigUrl; // not used
   UnicodeString Proxy; //< string in format "http=host:80;https=host:443;ftp=ftpproxy:20;socks=socksproxy:1080"
@@ -313,7 +314,7 @@ public:
   void SetPortNumber(intptr_t Value);
   void SetUserName(const UnicodeString & Value);
   UnicodeString GetUserNameExpanded() const;
-  void SetPassword(const UnicodeString & Value);
+  void SetPassword(const UnicodeString & AValue);
   UnicodeString GetPassword() const;
   void SetPingInterval(intptr_t Value);
   void SetTryAgent(bool Value);
@@ -334,7 +335,7 @@ public:
   TKex GetKex(intptr_t Index) const;
   void SetPublicKeyFile(const UnicodeString & Value);
   UnicodeString GetPassphrase() const;
-  void SetPassphrase(const UnicodeString & Value);
+  void SetPassphrase(const UnicodeString & AValue);
 
   void SetPuttyProtocol(const UnicodeString & Value);
   bool GetCanLogin() const;
@@ -389,7 +390,7 @@ public:
   void SetProxyHost(const UnicodeString & Value);
   void SetProxyPort(intptr_t Value);
   void SetProxyUsername(const UnicodeString & Value);
-  void SetProxyPassword(const UnicodeString & Value);
+  void SetProxyPassword(const UnicodeString & AValue);
   void SetProxyTelnetCommand(const UnicodeString & Value);
   void SetProxyLocalCommand(const UnicodeString & Value);
   void SetProxyDNS(TAutoSwitch Value);
@@ -434,12 +435,12 @@ public:
   void SetTunnelHostName(const UnicodeString & Value);
   void SetTunnelPortNumber(intptr_t Value);
   void SetTunnelUserName(const UnicodeString & Value);
-  void SetTunnelPassword(const UnicodeString & Value);
+  void SetTunnelPassword(const UnicodeString & AValue);
   UnicodeString GetTunnelPassword() const;
   void SetTunnelPublicKeyFile(const UnicodeString & Value);
   void SetTunnelPortFwd(const UnicodeString & Value);
   void SetTunnelLocalPortNumber(intptr_t Value);
-  bool GetTunnelAutoassignLocalPortNumber();
+  bool GetTunnelAutoassignLocalPortNumber() const;
   void SetTunnelHostKey(const UnicodeString & Value);
   void SetFtpPasvMode(bool Value);
   void SetFtpForcePasvIp(TAutoSwitch Value);
@@ -457,7 +458,7 @@ public:
   void SetHostKey(const UnicodeString & Value);
   void SetFingerprintScan(bool Value) { FFingerprintScan = Value; }
   void SetNote(const UnicodeString & Value);
-  TDateTime GetTimeoutDT();
+  TDateTime GetTimeoutDT() const;
   void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport, bool DoNotEncryptPasswords);
   UnicodeString GetLocalName() const;
   UnicodeString GetFolderName() const;
@@ -511,7 +512,7 @@ public:
 public:
   explicit TSessionData(const UnicodeString & AName);
   virtual ~TSessionData();
-  TSessionData * Clone();
+  TSessionData * Clone() const;
   void Default();
   void NonPersistant();
   void Load(THierarchicalStorage * Storage, bool PuttyImport);
@@ -529,21 +530,21 @@ public:
   void CacheHostKeyIfNotCached();
   virtual void Assign(const TPersistent * Source);
   virtual intptr_t Compare(const TNamedObject * Other) const;
-  void CopyData(TSessionData * Source);
+  void CopyData(TSessionData * SourceData);
   void CopyDirectoriesStateData(TSessionData * SourceData);
   bool ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     TStoredSessionList * AStoredSessions, bool & DefaultsOnly,
     UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
   bool ParseOptions(TOptions * Options);
-  void ConfigureTunnel(intptr_t PortNumber);
+  void ConfigureTunnel(intptr_t APortNumber);
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
   bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
   bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const;
-  bool IsSameSite(const TSessionData * Default) const;
-  bool IsInFolderOrWorkspace(const UnicodeString & Name) const;
-  UnicodeString GenerateSessionUrl(uintptr_t Flags);
-  UnicodeString GenerateOpenCommandArgs();
+  bool IsSameSite(const TSessionData * Other) const;
+  bool IsInFolderOrWorkspace(const UnicodeString & AFolder) const;
+  UnicodeString GenerateSessionUrl(uintptr_t Flags) const;
+  UnicodeString GenerateOpenCommandArgs() const;
 //  UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language);
   void LookupLastFingerprint();
   bool GetIsSecure() const;
@@ -754,10 +755,7 @@ public:
   intptr_t GetSendBuf() const { return FSendBuf; }
   bool GetSshSimple() const { return FSshSimple; }
   TProxyMethod GetProxyMethod() const { return FProxyMethod; }
-  TProxyMethod GetActualProxyMethod() const
-  {
-    return GetProxyMethod() == pmSystem ? GetSystemProxyMethod() : GetProxyMethod();
-  }
+  TProxyMethod GetActualProxyMethod() const;
   UnicodeString GetProxyHost() const;
   intptr_t GetProxyPort() const;
   UnicodeString GetProxyUsername() const;
@@ -872,19 +870,18 @@ public:
   void SelectAll(bool Select);
   void Import(TStoredSessionList * From, bool OnlySelected, TList * Imported);
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
-  TSessionData * AtSession(int Index)
-    { return (TSessionData*)AtObject(Index); }
+  TSessionData * AtSession(intptr_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
   void UpdateStaticUsage();
   intptr_t IndexOf(TSessionData * Data) const;
-  const TSessionData * FindSame(TSessionData * Data) const;
+  const TSessionData * FindSame(TSessionData * Data);
   TSessionData * NewSession(const UnicodeString & SessionName, TSessionData * Session);
   void NewWorkspace(const UnicodeString & Name, TList * DataList);
   bool GetIsFolder(const UnicodeString & Name) const;
   bool GetIsWorkspace(const UnicodeString & Name) const;
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
-    UnicodeString * AFileName = nullptr, bool * ProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
+    UnicodeString * AFileName = nullptr, bool * AProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
   bool IsUrl(const UnicodeString & Url);
   bool CanLogin(TSessionData * Data);
   void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);

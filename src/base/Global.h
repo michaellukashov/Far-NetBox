@@ -70,7 +70,7 @@ private:
 
 #else // _DEBUG
 
-void SetTraceFile(HANDLE TraceFile);
+void SetTraceFile(HANDLE ATraceFile);
 void CleanupTracing();
 #define TRACEENV "WINSCPTRACE"
 extern BOOL IsTracing;
@@ -79,7 +79,7 @@ extern uintptr_t CallstackTls;
 extern "C" void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
   uintptr_t Line, const wchar_t * Message);
 void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  uintptr_t Line, const wchar_t * Format, va_list Args);
+  uintptr_t Line, const wchar_t * AFormat, va_list Args);
 
 #ifdef TRACE_IN_MEMORY
 void TraceDumpToFile();

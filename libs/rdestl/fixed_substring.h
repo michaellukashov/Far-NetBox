@@ -9,13 +9,13 @@ namespace rde
 // "Substring" of fixed size.
 // Cannot grow.
 // Never allocates memory.
-template<typename E, size_t N>
+template<typename E, ::size_t N>
 class fixed_substring : private fixed_array<E, N + 1>
 {
 	typedef fixed_array<E, N + 1>	Base;
 public:
 	typedef E	value_type;
-	typedef size_t	size_type;
+	typedef ::size_t size_type;
 
 	fixed_substring()
 	{
@@ -25,13 +25,13 @@ public:
 	{
 		assign(str);
 	}
-	template<size_t M>
+	template<::size_t M>
 	fixed_substring(const fixed_substring<E, M>& rhs)
 	{
 		assign(rhs.data());
 	}
 
-	template<size_t M>
+	template<::size_t M>
 	fixed_substring& operator=(const fixed_substring<E, M>& rhs)
 	{
 		assign(rhs.data());

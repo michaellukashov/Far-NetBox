@@ -14,4 +14,3 @@ TConfiguration * GetConfiguration();
 
 UnicodeString NeonVersion();
 UnicodeString ExpatVersion();
-

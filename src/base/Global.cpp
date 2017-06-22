@@ -3,8 +3,9 @@
 
 #ifdef _DEBUG
 #include <stdio.h>
-#include <rdestl/vector.h>
-#include "Interface.h"
+//#include <rdestl/vector.h>
+// TODO: remove src/core dep
+#include <Interface.h> 
 #endif // ifdef _DEBUG
 
 #include <Global.h>
@@ -72,7 +73,7 @@ TCriticalSection * TracingCriticalSection = nullptr;
 void SetTraceFile(HANDLE ATraceFile)
 {
   TraceFile = ATraceFile;
-  IsTracing = (TraceFile != 0);
+  IsTracing = (TraceFile != nullptr);
   if (TracingCriticalSection == nullptr)
   {
     TracingCriticalSection = new TCriticalSection();
@@ -181,9 +182,9 @@ void TraceDumpToFile()
     DWORD Written;
 
     TDateTime N = Now();
-    #ifdef TRACE_IN_MEMORY_NO_FORMATTING
+#ifdef TRACE_IN_MEMORY_NO_FORMATTING
     DWORD Ticks = GetTickCount();
-    #endif
+#endif
 
     const UnicodeString TimestampFormat = L"hh:mm:ss.zzz";
     UnicodeString TimeString = FormatDateTime(TimestampFormat, N);
@@ -196,7 +197,7 @@ void TraceDumpToFile()
     TTracesInMemory::const_iterator i = TracesInMemory.begin();
     while (i != TracesInMemory.end())
     {
-      #ifdef TRACE_IN_MEMORY_NO_FORMATTING
+#ifdef TRACE_IN_MEMORY_NO_FORMATTING
       const wchar_t * SourceFile = i->SourceFile;
       const wchar_t * Slash = wcsrchr(SourceFile, L'\\');
       if (Slash != nullptr)
@@ -211,9 +212,9 @@ void TraceDumpToFile()
         (TimeString, int(i->Thread), SourceFile,
          i->Line, i->Func, i->Message)));
       WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, nullptr);
-      #else
+#else
       WriteFile(TraceFile, i->Message.c_str(), i->Message.Length(), &Written, nullptr);
-      #endif
+#endif
       ++i;
     }
     TracesInMemory.clear();
@@ -273,7 +274,7 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
 #else
   DWORD Written;
   WriteFile(TraceFile, Buffer.c_str(), static_cast<DWORD>(Buffer.Length()), &Written, nullptr);
-#endif TRACE_IN_MEMORY
+#endif // TRACE_IN_MEMORY
 }
 
 void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,

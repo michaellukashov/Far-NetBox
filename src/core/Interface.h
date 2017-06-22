@@ -2,8 +2,10 @@
 #pragma once
 
 #include <Classes.hpp>
+#if defined(FARPLUGIN)
 #include "Configuration.h"
 #include "SessionData.h"
+#endif // FARPLUGIN
 #define HELP_NONE L""
 #define SCRIPT_SWITCH "script"
 #define COMMAND_SWITCH L"Command"
@@ -27,9 +29,13 @@ extern const int TransferModeNamesCount;
 extern const wchar_t * ToggleNames[];
 enum TToggle { ToggleOff, ToggleOn };
 
+#if defined(FARPLUGIN)
+
 TConfiguration * CreateConfiguration();
 class TOptions;
 TOptions * GetGlobalOptions();
+
+#endif // FARPLUGIN
 
 void ShowExtendedException(Exception * E);
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
@@ -66,7 +72,9 @@ struct TQueryButtonAlias : public TObject
   bool ElevationRequired;
 };
 
-// typedef void __fastcall (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
+/*
+typedef void (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
+*/
 typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TQueryParamsTimerEvent;
 
 struct TQueryParams : public TObject
@@ -118,16 +126,23 @@ enum TPromptUserParam
 bool IsAuthenticationPrompt(TPromptKind Kind);
 bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
 bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
-//---------------------------------------------------------------------------
-//typedef void __fastcall (__closure *TFileFoundEvent)
-//  (TTerminal * Terminal, const UnicodeString FileName, const TRemoteFile * File,
-//   bool & Cancel);
+
+class TTerminal;
+class TRemoteFile;
+
+/*
+typedef void (__closure *TFileFoundEvent)
+  (TTerminal * Terminal, const UnicodeString FileName, const TRemoteFile * File,
+   bool & Cancel);
+*/
 typedef nb::FastDelegate4<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*FileName*/,
   const TRemoteFile * /*File*/,
   bool & /*Cancel*/> TFileFoundEvent;
-//typedef void __fastcall (__closure *TFindingFileEvent)
-//  (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
+/*
+typedef void (__closure *TFindingFileEvent)
+  (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
+*/
 typedef nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool & /*Cancel*/> TFindingFileEvent;
 

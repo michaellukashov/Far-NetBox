@@ -77,7 +77,7 @@ private:
   UnicodeString FIniFileStorageName;
   UnicodeString FVirtualIniFileStorageName;
   std::unique_ptr<TStrings> FOptionsStorage;
-  intptr_t FProgramIniPathWrittable;
+  intptr_t FProgramIniPathWritable;
   intptr_t FTunnelLocalPortNumberLow;
   intptr_t FTunnelLocalPortNumberHigh;
   intptr_t FCacheDirectoryChangesMaxSize;
@@ -252,7 +252,7 @@ public:
   virtual RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
-  UnicodeString GetFileDescription(const UnicodeString & AFileName);
+  UnicodeString GetFileDescription(const UnicodeString & AFileName) const;
   UnicodeString GetFileVersion(const UnicodeString & AFileName);
 
   TStoredSessionList * SelectFilezillaSessionsForImport(

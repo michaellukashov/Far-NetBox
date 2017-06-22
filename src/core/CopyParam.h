@@ -49,7 +49,7 @@ const int cpaNoRemoveCtrlZ      = 0x200;
 const int cpaNoRemoveBOM        = 0x400;
 const int cpaNoPreserveTimeDirs = 0x800;
 const int cpaNoResumeSupport    = 0x1000;
-//---------------------------------------------------------------------------
+
 struct TUsableCopyParamAttrs
 {
   int General;
@@ -103,7 +103,7 @@ public:
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(const UnicodeString & AFileName) const;
-  void DoGetInfoStr(const UnicodeString & Separator, intptr_t Attrs,
+  void DoGetInfoStr(const UnicodeString & Separator, intptr_t Options,
     UnicodeString & Result, bool & SomeAttrIncluded,
     const UnicodeString & Link, UnicodeString & ScriptArgs, bool & NoScriptArgs,
     /*TAssemblyLanguage Language, UnicodeString & AssemblyCode, */bool & NoCodeProperties) const;
@@ -137,9 +137,8 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
   UnicodeString GetInfoStr(const UnicodeString & Separator, intptr_t Options) const;
-  bool AnyUsableCopyParam(intptr_t Attrs) const;
-  UnicodeString GenerateTransferCommandArgs(
-    int Attrs, const UnicodeString & Link, bool & NoScriptArgs) const;
+  bool AnyUsableCopyParam(intptr_t Options) const;
+  UnicodeString GenerateTransferCommandArgs(intptr_t Options, const UnicodeString & Link, bool & NoScriptArgs) const;
   //UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs, bool & NoCodeProperties) const;
 
   bool operator==(const TCopyParamType & rhp) const;

@@ -51,7 +51,7 @@ typedef struct SSPIContextStruct SSPIContext;
 static ULONG negotiateMaxTokenSize = 0;
 static ULONG ntlmMaxTokenSize = 0;
 static HINSTANCE hSecDll = NULL;
-static PSecurityFunctionTable pSFT = NULL;
+static PSecurityFunctionTableA pSFT = NULL;
 static int initialized = 0;
 
 /*
@@ -60,9 +60,9 @@ static int initialized = 0;
 static int getMaxTokenSize(char *package, ULONG * maxTokenSize)
 {
     SECURITY_STATUS status;
-    SecPkgInfo *packageSecurityInfo = NULL;
+    SecPkgInfoA *packageSecurityInfo = NULL;
 
-    status = pSFT->QuerySecurityPackageInfo(package, &packageSecurityInfo);
+    status = pSFT->QuerySecurityPackageInfoA(package, &packageSecurityInfo);
     if (status == SEC_E_OK) {
         *maxTokenSize = packageSecurityInfo->cbMaxToken;
         if (pSFT->FreeContextBuffer(packageSecurityInfo) != SEC_E_OK) {
@@ -83,11 +83,11 @@ static int getMaxTokenSize(char *package, ULONG * maxTokenSize)
  */
 static void initDll(HINSTANCE hSecDll)
 {
-    INIT_SECURITY_INTERFACE initSecurityInterface = NULL;
+    INIT_SECURITY_INTERFACE_A initSecurityInterface = NULL;
 
     initSecurityInterface =
-        (INIT_SECURITY_INTERFACE) GetProcAddress(hSecDll,
-                                                 SECURITY_ENTRYPOINT);
+        (INIT_SECURITY_INTERFACE_A) GetProcAddress(hSecDll,
+                                                 (LPCSTR)SECURITY_ENTRYPOINTA);
 
     if (initSecurityInterface == NULL) {
         NE_DEBUG(NE_DBG_HTTPAUTH,
@@ -133,7 +133,7 @@ int ne_sspi_init(void)
 
     NE_DEBUG(NE_DBG_SOCKET, "sspiInit\n");
     NE_DEBUG(NE_DBG_HTTPAUTH, "sspi: Loading security dll.\n");
-    hSecDll = LoadLibrary("security.dll");
+    hSecDll = LoadLibraryA("security.dll");
 
     if (hSecDll == NULL) {
         NE_DEBUG(NE_DBG_HTTPAUTH, "sspi: Loading of security dll [fail].\n");
@@ -192,7 +192,7 @@ static int acquireCredentialsHandle(CredHandle * credentials, char *package)
     TimeStamp timestamp;
 
     status =
-        pSFT->AcquireCredentialsHandle(NULL, package, SECPKG_CRED_OUTBOUND,
+        pSFT->AcquireCredentialsHandleA(NULL, package, SECPKG_CRED_OUTBOUND,
                                        NULL, NULL, NULL, NULL, credentials,
                                        &timestamp);
 
@@ -219,7 +219,7 @@ initializeSecurityContext(CredHandle * credentials, CtxtHandle * context,
     SECURITY_STATUS status;
 
     status =
-        pSFT->InitializeSecurityContext(credentials, context, spn, contextReq,
+        pSFT->InitializeSecurityContextA(credentials, context, spn, contextReq,
                                         0, SECURITY_NETWORK_DREP, inBuffer, 0,
                                         newContext, outBuffer,
                                         &contextAttributes, NULL);
@@ -284,7 +284,7 @@ static int base64ToBuffer(const char *token, SecBufferDesc * secBufferDesc)
 
     buffer->BufferType = SECBUFFER_TOKEN;
     buffer->cbBuffer =
-        ne_unbase64(token, (unsigned char **) &buffer->pvBuffer);
+        (unsigned long)ne_unbase64(token, (unsigned char **) &buffer->pvBuffer);
 
     if (buffer->cbBuffer == 0) {
         NE_DEBUG(NE_DBG_HTTPAUTH,

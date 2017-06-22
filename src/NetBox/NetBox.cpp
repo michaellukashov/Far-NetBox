@@ -3,10 +3,9 @@
 
 #include <Common.h>
 #include <Sysutils.hpp>
-#include <MsgIDs.h>
 
-#include "FarUtil.h"
-#include "resource.h"
+#include "FarUtils.h"
+#include "FarDialog.h"
 
 extern void InitExtensionModule(HINSTANCE HInst);
 extern void TermExtensionModule();
@@ -69,7 +68,7 @@ HANDLE WINAPI OpenPluginW(int openFrom, intptr_t item)
 
     UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
     UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
-    Instructions2 = ReplaceStrAll(Instructions, L"\x0A\x0D", L"\x01");
+    Instructions2 = ReplaceStrAll(Instructions2, L"\x0A\x0D", L"\x01");
     Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
     Instructions2 = ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
     Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");

@@ -22,9 +22,9 @@ ZLIB_INTERNAL int x86_cpu_has_sse42;
 ZLIB_INTERNAL int x86_cpu_has_pclmulqdq;
 ZLIB_INTERNAL int x86_cpu_has_tzcnt;
 
-static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigned* edx) {
+static void cpuid(int info, unsigned * eax, unsigned * ebx, unsigned * ecx, unsigned * edx) {
 #ifdef _MSC_VER
-	unsigned int registers[4];
+	int registers[4];
 	__cpuid(registers, info);
 
 	*eax = registers[0];
@@ -32,10 +32,10 @@ static void cpuid(int info, unsigned* eax, unsigned* ebx, unsigned* ecx, unsigne
 	*ecx = registers[2];
 	*edx = registers[3];
 #else
-	unsigned int _eax;
-	unsigned int _ebx;
-	unsigned int _ecx;
-	unsigned int _edx;
+	unsigned _eax;
+	unsigned _ebx;
+	unsigned _ecx;
+	unsigned _edx;
 	__cpuid(info, _eax, _ebx, _ecx, _edx);
 	*eax = _eax;
 	*ebx = _ebx;

@@ -76,9 +76,22 @@ void RECORD_LAYER_release(RECORD_LAYER *rl)
     SSL3_RECORD_release(rl->rrec, SSL_MAX_PIPELINES);
 }
 
+/* Checks if we have unprocessed read ahead data pending */
 int RECORD_LAYER_read_pending(const RECORD_LAYER *rl)
 {
     return SSL3_BUFFER_get_left(&rl->rbuf) != 0;
+}
+
+/* Checks if we have decrypted unread record data pending */
+int RECORD_LAYER_processed_read_pending(const RECORD_LAYER *rl)
+{
+    size_t curr_rec = 0, num_recs = RECORD_LAYER_get_numrpipes(rl);
+    const SSL3_RECORD *rr = rl->rrec;
+
+    while (curr_rec < num_recs && SSL3_RECORD_is_read(&rr[curr_rec]))
+        curr_rec++;
+
+    return curr_rec < num_recs;
 }
 
 int RECORD_LAYER_write_pending(const RECORD_LAYER *rl)
@@ -355,7 +368,8 @@ int ssl3_write_bytes(SSL *s, int type, const void *buf_, int len)
      * promptly send beyond the end of the users buffer ... so we trap and
      * report the error in a way the user will notice
      */
-    if ((unsigned int)len < s->rlayer.wnum) {
+    if (((unsigned int)len < s->rlayer.wnum) 
+        || ((wb->left != 0) && ((unsigned int)len < (s->rlayer.wnum + s->rlayer.wpend_tot)))) {
         SSLerr(SSL_F_SSL3_WRITE_BYTES, SSL_R_BAD_LENGTH);
         return -1;
     }

@@ -1,3 +1,5 @@
+#pragma once
+
 /*                                                      -*- c -*-
    Win32 config.h
    Copyright (C) 1999-2000, Peter Boos <pedib@colorfullife.com>
@@ -80,13 +82,21 @@
 #define HAVE_STRTOLL
 #define strtoll				_strtoi64
 #endif
+#ifndef __BORLANDC__
 #define ssize_t				int
+#endif
 #define inline                          __inline
 #if defined(NE_LFS)
+#ifdef __BORLANDC__
+#define lseek64				_lseeki64
+#define fstat64				_fstati64
+#define stat64				stati64
+#else
 #define lseek64				_lseeki64
 #define fstat64				_fstat64
 #if !defined(__MINGW32__) || (__MINGW_GCC_VERSION < 50100)
 #define stat64				__stat64
+#endif
 #endif
 #else
 #define off_t                           _off_t

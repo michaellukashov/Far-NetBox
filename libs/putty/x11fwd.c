@@ -58,11 +58,9 @@ static int xdmseen_cmp(void *a, void *b)
  *      independent network.c or something */
 static void dummy_plug_log(Plug p, int type, SockAddr addr, int port,
 			   const char *error_msg, int error_code) { }
-static int dummy_plug_closing
-     (Plug p, const char *error_msg, int error_code, int calling_back)
-{ return 1; }
-static int dummy_plug_receive(Plug p, int urgent, char *data, int len)
-{ return 1; }
+static void dummy_plug_closing
+     (Plug p, const char *error_msg, int error_code, int calling_back) { }
+static void dummy_plug_receive(Plug p, int urgent, char *data, int len) { }
 static void dummy_plug_sent(Plug p, int bufsize) { }
 static int dummy_plug_accepting(Plug p, accept_fn_t constructor, accept_ctx_t ctx) { return 1; }
 static const struct plug_function_table dummy_plug = {
@@ -620,8 +618,8 @@ static void x11_log(Plug p, int type, SockAddr addr, int port,
 static void x11_send_init_error(struct X11Connection *conn,
                                 const char *err_message);
 
-static int x11_closing(Plug plug, const char *error_msg, int error_code,
-		       int calling_back)
+static void x11_closing(Plug plug, const char *error_msg, int error_code,
+			int calling_back)
 {
     struct X11Connection *xconn = (struct X11Connection *) plug;
 
@@ -650,11 +648,9 @@ static int x11_closing(Plug plug, const char *error_msg, int error_code,
         if (xconn->c)
             sshfwd_write_eof(xconn->c);
     }
-
-    return 1;
 }
 
-static int x11_receive(Plug plug, int urgent, char *data, int len)
+static void x11_receive(Plug plug, int urgent, char *data, int len)
 {
     struct X11Connection *xconn = (struct X11Connection *) plug;
 
@@ -663,8 +659,6 @@ static int x11_receive(Plug plug, int urgent, char *data, int len)
         xconn->no_data_sent_to_x_client = FALSE;
 	sk_set_frozen(xconn->s, 1);
     }
-
-    return 1;
 }
 
 static void x11_sent(Plug plug, int bufsize)
@@ -683,10 +677,10 @@ int x11_get_screen_number(char *display)
 {
     int n;
 
-    n = host_strcspn(display, ":");
+    n = (int)host_strcspn(display, ":");
     if (!display[n])
 	return 0;
-    n = strcspn(display, ".");
+		n = (int)strcspn(display, ".");
     if (!display[n])
 	return 0;
     return atoi(display + n + 1);
@@ -788,7 +782,7 @@ static void x11_send_init_error(struct X11Connection *xconn,
 
     full_message = dupprintf("%s X11 proxy: %s\n", appname, err_message);
 
-    msglen = strlen(full_message);
+    msglen = (int)strlen(full_message);
     reply = snewn(8 + msglen+1 + 4, unsigned char); /* include zero */
     msgsize = (msglen + 3) & ~3;
     reply[0] = 0;	       /* failure */
@@ -1015,7 +1009,7 @@ void *x11_dehexify(const char *hex, int *outlen)
     int len, i;
     unsigned char *ret;
 
-    len = strlen(hex) / 2;
+    len = (int)strlen(hex) / 2;
     ret = snewn(len, unsigned char);
 
     for (i = 0; i < len; i++) {
@@ -1050,7 +1044,7 @@ void *x11_make_greeting(int endian, int protomajor, int protominor,
     int greeting_len;
 
     authname = x11_authnames[auth_proto];
-    authnamelen = strlen(authname);
+    authnamelen = (int)strlen(authname);
     authnamelen_pad = (authnamelen + 3) & ~3;
 
     if (auth_proto == X11_MIT) {
@@ -1064,7 +1058,7 @@ void *x11_make_greeting(int endian, int protomajor, int protominor,
 
         authdata = realauthdata;
         authdatalen = 24;
-        memset(realauthdata, 0, authdatalen);
+        memset(realauthdata, 0, sizeof(realauthdata));
         memcpy(realauthdata, auth_data, 8);
         PUT_32BIT_MSB_FIRST(realauthdata+8, peer_ip);
         PUT_16BIT_MSB_FIRST(realauthdata+12, peer_port);
