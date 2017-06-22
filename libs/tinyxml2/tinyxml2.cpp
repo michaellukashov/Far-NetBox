@@ -772,13 +772,13 @@ void XMLNode::SetValue( const char* str, bool staticMem )
     }
 }
 
-XMLNode* XMLNode::DeepClone(XMLDocument* document) const
+XMLNode* XMLNode::DeepClone(XMLDocument* target) const
 {
-	XMLNode* clone = this->ShallowClone(document);
+	XMLNode* clone = this->ShallowClone(target);
 	if (!clone) return 0;
 
 	for (const XMLNode* child = this->FirstChild(); child; child = child->NextSibling()) {
-		XMLNode* childClone = child->DeepClone(document);
+		XMLNode* childClone = child->DeepClone(target);
 		TIXMLASSERT(childClone);
 		clone->InsertEndChild(childClone);
 	}
@@ -1966,10 +1966,10 @@ const char* XMLDocument::_errorNames[XML_ERROR_COUNT] = {
     "XML_ERROR_FILE_NOT_FOUND",
     "XML_ERROR_FILE_COULD_NOT_BE_OPENED",
     "XML_ERROR_FILE_READ_ERROR",
-    "XML_ERROR_ELEMENT_MISMATCH",
+    "UNUSED_XML_ERROR_ELEMENT_MISMATCH",
     "XML_ERROR_PARSING_ELEMENT",
     "XML_ERROR_PARSING_ATTRIBUTE",
-    "XML_ERROR_IDENTIFYING_TAG",
+    "UNUSED_XML_ERROR_IDENTIFYING_TAG",
     "XML_ERROR_PARSING_TEXT",
     "XML_ERROR_PARSING_CDATA",
     "XML_ERROR_PARSING_COMMENT",
