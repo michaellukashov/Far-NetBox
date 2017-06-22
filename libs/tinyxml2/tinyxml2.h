@@ -513,10 +513,10 @@ enum XMLError {
     XML_ERROR_FILE_NOT_FOUND,
     XML_ERROR_FILE_COULD_NOT_BE_OPENED,
     XML_ERROR_FILE_READ_ERROR,
-    XML_ERROR_ELEMENT_MISMATCH,
+    UNUSED_XML_ERROR_ELEMENT_MISMATCH,	// remove at next major version
     XML_ERROR_PARSING_ELEMENT,
     XML_ERROR_PARSING_ATTRIBUTE,
-    XML_ERROR_IDENTIFYING_TAG,
+    UNUSED_XML_ERROR_IDENTIFYING_TAG,	// remove at next major version
     XML_ERROR_PARSING_TEXT,
     XML_ERROR_PARSING_CDATA,
     XML_ERROR_PARSING_COMMENT,
@@ -868,8 +868,8 @@ public:
 	/**
 		Make a copy of this node and all its children.
 
-		If the 'document' is null, then the nodes will
-		be allocated in the current document. If document 
+		If the 'target' is null, then the nodes will
+		be allocated in the current document. If 'target' 
         is specified, the memory will be allocated is the 
         specified XMLDocument.
 
@@ -878,7 +878,7 @@ public:
 		top level XMLNodes. You probably want to use
         XMLDocument::DeepCopy()
 	*/
-	XMLNode* DeepClone( XMLDocument* document ) const;
+	XMLNode* DeepClone( XMLDocument* target ) const;
 
     /**
     	Test if 2 nodes are the same, but don't test children.
