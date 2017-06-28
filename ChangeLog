@@ -1,4 +1,4 @@
-NetBox 2.4.3.505 18.06.2017
+NetBox 2.4.3.506 22.06.2017
 --------------------
   * Bugfix: Mantis-3439: Far crash when trying to copy to long path
     (http://bugs.farmanager.com/view.php?id=3439)

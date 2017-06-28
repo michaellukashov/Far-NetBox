@@ -2063,18 +2063,6 @@ void XMLDocument::DeepCopy(XMLDocument* target)
 	}
 }
 
-void XMLDocument::DeepCopy(XMLDocument* target)
-{
-	TIXMLASSERT(target);
-    if (target == this) {
-        return; // technically success - a no-op.
-    }
-
-	target->Clear();
-	for (const XMLNode* node = this->FirstChild(); node; node = node->NextSibling()) {
-		target->InsertEndChild(node->DeepClone(target));
-	}
-}
 
 XMLElement* XMLDocument::NewElement( const char* name )
 {
