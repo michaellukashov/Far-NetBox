@@ -98,7 +98,7 @@ distribution.
 /* Versioning, past 1.0.14:
 	http://semver.org/
 */
-static const int TIXML2_MAJOR_VERSION = 4;
+static const int TIXML2_MAJOR_VERSION = 5;
 static const int TIXML2_MINOR_VERSION = 0;
 static const int TIXML2_PATCH_VERSION = 1;
 
@@ -1803,13 +1803,11 @@ public:
     static const char* ErrorIDToName(XMLError errorID);
 
     /// Return a possibly helpful diagnostic location or string.
-    const char* GetErrorStr1() const {
-        return _errorStr1.GetStr();
-    }
+	const char* GetErrorStr1() const;
+
     /// Return a possibly helpful secondary diagnostic location or string.
-    const char* GetErrorStr2() const {
-        return _errorStr2.GetStr();
-    }
+	const char* GetErrorStr2() const;
+
     /// Return the line where the error occured, or zero if unknown.
     int GetErrorLineNum() const
     {
