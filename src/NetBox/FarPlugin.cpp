@@ -516,9 +516,10 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
     {
       DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
+      UnicodeString Buf;
       if ((Event == FE_CHANGEVIEWMODE) || (Event == FE_COMMAND))
       {
-        UnicodeString Buf = static_cast<wchar_t *>(Param);
+        Buf = static_cast<wchar_t *>(Param);
         Param = const_cast<void *>(reinterpret_cast<const void *>(Buf.c_str()));
       }
       else if ((Event == FE_GOTFOCUS) || (Event == FE_KILLFOCUS))
