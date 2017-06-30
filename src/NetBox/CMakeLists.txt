@@ -1014,6 +1014,7 @@ add_library(putty STATIC
 
 set(PUTTY_COMPILE_FLAGS
   -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS
+  -wd4996
 )
 if(MSVC)
 set(PUTTY_COMPILE_FLAGS ${PUTTY_COMPILE_FLAGS}
@@ -1144,6 +1145,7 @@ add_library(apr STATIC
 #  ../../libs/apr/poll/unix/pollcb.c
 #  ../../libs/apr/poll/unix/pollset.c
 #  ../../libs/apr/poll/unix/select.c
+#  ../../libs/apr/poll/unix/wakeup.c
 #  ../../libs/apr/poll/unix/z_asio.c
   ../../libs/apr/random/unix/apr_random.c
 #  ../../libs/apr/random/unix/sha2.c

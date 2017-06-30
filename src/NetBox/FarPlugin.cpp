@@ -519,10 +519,11 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
     {
       DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
+      UnicodeString Buf;
       void *Param = Info->Param;
       if ((Info->Event == FE_CHANGEVIEWMODE) || (Info->Event == FE_COMMAND))
       {
-        UnicodeString Buf = static_cast<wchar_t *>(Info->Param);
+        Buf = static_cast<wchar_t *>(Param);
         Param = const_cast<void *>(reinterpret_cast<const void *>(Buf.c_str()));
       }
 

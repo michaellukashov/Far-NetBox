@@ -162,7 +162,8 @@ int main(void)
             passes++;                                                   \
         } else {                                                        \
             printf("fail: %s(%s,%s)%s = %u, expected %u\n",             \
-                   #func, #string, #arg2, #suffix, ret, result);        \
+                   #func, #string, #arg2, #suffix, ret,                 \
+                   (unsigned)result);                                   \
             fails++;                                                    \
         }                                                               \
 } while (0)

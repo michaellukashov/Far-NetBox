@@ -1,5 +1,6 @@
-NetBox 2.4.3.505 18.06.2017
+NetBox 2.4.3.507 30.06.2017
 --------------------
+  * Bugfix: Fix issues #240, #241, #239, #237
   * Bugfix: Mantis-3439: Far crash when trying to copy to long path
     (http://bugs.farmanager.com/view.php?id=3439)
   * Update openssl sources to 1.1.0f
