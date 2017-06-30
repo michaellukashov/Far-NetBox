@@ -2923,8 +2923,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
           }
         }
       }
-      if (Data)
-        FileList->AddObject(FileName, Data);
+      FileList->AddObject(FileName, Data);
     }
   }
 

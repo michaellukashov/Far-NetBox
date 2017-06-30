@@ -23,7 +23,7 @@ extern "C" {
  * stddef.h. So here we try to make sure _some_ standard header is
  * included which defines uintptr_t. */
 #include <stddef.h>
-#if !defined _MSC_VER || _MSC_VER >= 1600
+#if !defined _MSC_VER || _MSC_VER >= 1600 || defined __clang__
 #include <stdint.h>
 #endif
 
@@ -295,7 +295,7 @@ GLOBAL void *logctx;
 /*
  * Exports from winnet.c.
  */
-extern int select_result(WPARAM, LPARAM);
+extern void select_result(WPARAM, LPARAM);
 
 /*
  * winnet.c dynamically loads WinSock 2 or WinSock 1 depending on
@@ -534,6 +534,22 @@ HMODULE load_system32_dll(const char *libname);
 const char *win_strerror(int error);
 void restrict_process_acl(void);
 GLOBAL int restricted_acl;
+
+/* A few pieces of up-to-date Windows API definition needed for older
+ * compilers. */
+#ifndef LOAD_LIBRARY_SEARCH_SYSTEM32
+#define LOAD_LIBRARY_SEARCH_SYSTEM32 0x00000800
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_USER_DIRS
+#define LOAD_LIBRARY_SEARCH_USER_DIRS 0x00000400
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+#define LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR 0x00000100
+#endif
+#ifndef DLL_DIRECTORY_COOKIE
+typedef PVOID DLL_DIRECTORY_COOKIE;
+DECLSPEC_IMPORT DLL_DIRECTORY_COOKIE WINAPI AddDllDirectory (PCWSTR NewDirectory);
+#endif
 
 /* A few pieces of up-to-date Windows API definition needed for older
  * compilers. */
