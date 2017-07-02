@@ -218,8 +218,7 @@ struct ne_socket_s {
      * and is hence always <= RDBUFSIZ. */
     char *bufpos;
     size_t bufavail;
-// #define RDBUFSIZ 4096
-#define RDBUFSIZ 64*1024
+#define RDBUFSIZ 4096
     char buffer[RDBUFSIZ];
     /* Error string. */
     char error[192];

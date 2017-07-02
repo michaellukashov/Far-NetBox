@@ -962,9 +962,9 @@ static void dump_request(ne_request *req, const char *request)
 
 static void dump_request(const char *request)
 #endif
-{ 
+{
     NE_DEBUG_WINSCP_CONTEXT(req->session);
-    if (ne_debug_mask & NE_DBG_HTTPPLAIN) { 
+    if (ne_debug_mask & NE_DBG_HTTPPLAIN) {
 	/* Display everything mode */
 	NE_DEBUG(NE_DBG_HTTP, "Sending request headers:\n%s", request);
     } else if (ne_debug_mask & NE_DBG_HTTP) {
