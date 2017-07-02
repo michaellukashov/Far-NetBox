@@ -898,8 +898,8 @@ public:
   TSessionData * GetSession(intptr_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
   const TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
   TSessionData * GetDefaultSettings() { return FDefaultSettings; }
-  const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;
   void SetDefaultSettings(const TSessionData * Value);
+  const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;
 
   static void ImportHostKeys(const UnicodeString & TargetKey,
     const UnicodeString & SourceKey, TStoredSessionList * Sessions,

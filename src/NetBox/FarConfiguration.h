@@ -40,8 +40,8 @@ public:
   void SetPluginsMenuCommands(bool Value) { FPluginsMenuCommands = Value; }
   UnicodeString GetCommandPrefixes() const { return FCommandPrefixes; }
   void SetCommandPrefixes(const UnicodeString & Value) { FCommandPrefixes = Value; }
-  bool GetHostNameInTitle() const { return FHostNameInTitle; }
-  void SetHostNameInTitle(bool Value) { FHostNameInTitle = Value; }
+  bool GetSessionNameInTitle() const { return FSessionNameInTitle; }
+  void SetSessionNameInTitle(bool Value) { FSessionNameInTitle = Value; }
 
   bool GetCustomPanelModeDetailed() const { return FCustomPanelModeDetailed; }
   void SetCustomPanelModeDetailed(bool Value) { FCustomPanelModeDetailed = Value; }
@@ -105,7 +105,7 @@ private:
   bool FPluginsMenu;
   bool FPluginsMenuCommands;
   UnicodeString FCommandPrefixes;
-  bool FHostNameInTitle;
+  bool FSessionNameInTitle;
   bool FEditorDownloadDefaultMode;
   bool FEditorUploadSameOptions;
   bool FEditorUploadOnSave;

@@ -52,7 +52,7 @@ void TFarConfiguration::Default()
   SetPluginsMenu(true);
   SetPluginsMenuCommands(true);
   SetCommandPrefixes("netbox,ftp,scp,sftp,ftps,http,https,webdav");
-  SetHostNameInTitle(true);
+  SetSessionNameInTitle(true);
   SetEditorDownloadDefaultMode(true);
   SetEditorUploadSameOptions(true);
   FEditorUploadOnSave = true;
@@ -109,7 +109,7 @@ void TFarConfiguration::Saved()
     KEY(String,   ColumnWidthsDetailed); \
     KEY(String,   StatusColumnTypesDetailed); \
     KEY(String,   StatusColumnWidthsDetailed); \
-    KEY(Bool,     HostNameInTitle); \
+    KEY(Bool,     SessionNameInTitle); \
     KEY(Bool,     ConfirmOverwritingOverride); \
     KEY(Bool,     EditorDownloadDefaultMode); \
     KEY(Bool,     EditorUploadSameOptions); \

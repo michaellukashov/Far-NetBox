@@ -431,16 +431,17 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
     // leaved subdirectory is not focused, when entering parent directory.
     HostFile = GetSessionData()->GetHostName(); // GenerateSessionUrl(sufHostKey); // GetSessionData()->GetSessionName();
     CurDir = FTerminal->GetCurrDirectory();
-    AFormat = FORMAT(L"netbox:%s", GetSessionData()->GetSessionName().c_str());
-    UnicodeString HostName = GetSessionData()->GetHostNameExpanded(); // GetSessionData()->GetSessionName();
+    UnicodeString SessionName = GetSessionData()->GetLocalName();
+    AFormat = FORMAT(L"netbox:%s", SessionName.c_str());
+    UnicodeString HostName = GetSessionData()->GetHostNameExpanded();
     UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
-    if (GetFarConfiguration()->GetHostNameInTitle())
+    if (GetFarConfiguration()->GetSessionNameInTitle())
     {
-      PanelTitle = FORMAT(L" %s:%s ", HostName.c_str(), CurDir.c_str());
+      PanelTitle = FORMAT(L" %s:%s ", SessionName.c_str(), CurDir.c_str());
     }
     else
     {
-      PanelTitle = FORMAT(L" %s ", CurDir.c_str());
+      PanelTitle = FORMAT(L" %s:%s ", HostName.c_str(), CurDir.c_str());
     }
     ShortcutData = FORMAT(L"netbox:%s\1%s", Url.c_str(), CurDir.c_str());
 
