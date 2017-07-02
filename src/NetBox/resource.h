@@ -1,6 +1,6 @@
 #pragma once
 
-#define PLUGIN_VERSION_NUM 2,4,3,507
+#define PLUGIN_VERSION_NUM 2,4,3,508
 #define PLUGIN_VERSION_TXT "2.4.3"
 #define PLUGIN_VERSION_WTXT L"2.4.3"
 
