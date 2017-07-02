@@ -408,7 +408,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
   DisksMenuCheck->SetChecked(FarConfiguration->GetDisksMenu());
   PluginsMenuCheck->SetChecked(FarConfiguration->GetPluginsMenu());
   PluginsMenuCommandsCheck->SetChecked(FarConfiguration->GetPluginsMenuCommands());
-  SessionNameInTitleCheck->SetChecked(FarConfiguration->GetHostNameInTitle());
+  SessionNameInTitleCheck->SetChecked(FarConfiguration->GetSessionNameInTitle());
   CommandPrefixesEdit->SetText(FarConfiguration->GetCommandPrefixes());
 
   CustomPanelCheck->SetChecked(FarConfiguration->GetCustomPanelModeDetailed());
@@ -424,7 +424,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
     FarConfiguration->SetDisksMenu(DisksMenuCheck->GetChecked());
     FarConfiguration->SetPluginsMenu(PluginsMenuCheck->GetChecked());
     FarConfiguration->SetPluginsMenuCommands(PluginsMenuCommandsCheck->GetChecked());
-    FarConfiguration->SetHostNameInTitle(SessionNameInTitleCheck->GetChecked());
+    FarConfiguration->SetSessionNameInTitle(SessionNameInTitleCheck->GetChecked());
 
     FarConfiguration->SetCommandPrefixes(CommandPrefixesEdit->GetText());
 

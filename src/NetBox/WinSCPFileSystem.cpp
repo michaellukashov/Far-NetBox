@@ -426,7 +426,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD & Flags,
     AFormat = FORMAT(L"netbox:%s", GetSessionData()->GetSessionName().c_str());
     UnicodeString HostName = GetSessionData()->GetHostNameExpanded(); // GetSessionData()->GetSessionName();
     UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
-    if (GetFarConfiguration()->GetHostNameInTitle())
+    if (GetFarConfiguration()->GetSessionNameInTitle())
     {
       PanelTitle = FORMAT(L" %s:%s ", HostName.c_str(), CurDir.c_str());
     }
