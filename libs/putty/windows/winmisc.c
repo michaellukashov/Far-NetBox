@@ -139,7 +139,7 @@ char *get_username(void)
 	    /* Not available on Win9x, so load dynamically */
 	    HMODULE secur32 = load_system32_dll("secur32.dll");
 	    /* If MIT Kerberos is installed, the following call to
-	       PUTTY_GET_WINDOWS_FUNCTION makes Windows implicitly load
+	       GET_WINDOWS_FUNCTION makes Windows implicitly load
 	       sspicli.dll WITHOUT proper path sanitizing, so better
 	       load it properly before */
 	    HMODULE sspicli = load_system32_dll("sspicli.dll");
@@ -214,7 +214,7 @@ void dll_hijacking_protection(void)
 
     if (!kernel32_module) {
         kernel32_module = load_system32_dll("kernel32.dll");
-#if defined _MSC_VER // && _MSC_VER < 1900
+#if (defined _MSC_VER && _MSC_VER < 1900) || defined MPEXT
         /* For older Visual Studio, this function isn't available in
          * the header files to type-check */
         PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(

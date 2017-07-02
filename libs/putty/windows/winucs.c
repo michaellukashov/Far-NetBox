@@ -5,7 +5,10 @@
 #include <assert.h>
 
 #include "putty.h"
-//#include "terminal.h"
+
+#ifndef MPEXT
+
+#include "terminal.h"
 #include "misc.h"
 
 /* Character conversion arrays; they are usually taken from windows,
@@ -1193,6 +1196,8 @@ int wc_to_mb(int codepage, int flags, const wchar_t *wcstr, int wclen,
 	return WideCharToMultiByte(codepage, flags, wcstr, wclen,
 				   mbstr, mblen, defchr, defused);
 }
+
+#endif
 
 int mb_to_wc(int codepage, int flags, const char *mbstr, int mblen,
 	     wchar_t *wcstr, int wclen)

@@ -324,12 +324,18 @@ void sk_init(void)
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getservbyname);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, inet_addr);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, inet_ntoa);
-    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, inet_ntop);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, connect);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, bind);
-    #ifdef MPEXT
+#if (defined _MSC_VER) || defined __MINGW32__
+    /* Older Visual Studio, and MinGW as of Ubuntu 16.04, don't know
+     * about this function at all, so can't type-check it */
+    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, inet_ntop);
+#else
+    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, inet_ntop);
+#endif
+#ifdef MPEXT
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getsockopt);
-    #endif
+#endif
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, setsockopt);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, socket);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, listen);
@@ -1768,8 +1774,10 @@ void select_result(WPARAM wParam, LPARAM lParam)
 	    }
 	}
 	if (err != 0)
-	    plug_closing(s->plug, winsock_error_string(err), err, 0);
-	return;
+	{
+		plug_closing(s->plug, winsock_error_string(err), err, 0);
+		return;
+	}
     }
 
     noise_ultralight((unsigned long)lParam);

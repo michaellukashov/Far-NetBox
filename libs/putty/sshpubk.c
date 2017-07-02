@@ -1029,18 +1029,26 @@ unsigned char *rfc4716_loadpub(FILE *fp, char **algorithm,
     return NULL;
 }
 
-unsigned char *openssh_loadpub(FILE *fp, char **algorithm,
+#ifdef MPEXT
+unsigned char *openssh_loadpub_line(const char * aline, char **algorithm,
+#else
+unsigned char *openssh_loadpub_line(FILE *fp, char **algorithm,
+#endif
                                int *pub_blob_len, char **commentptr,
                                const char **errorstr)
 {
     const char *error;
-    char *line, *base64;
+    const char *line; char *base64;
     char *comment = NULL;
     unsigned char *pubblob = NULL;
     int pubbloblen, pubblobsize;
     int alglen;
 
+#ifndef MPEXT
     line = chomp(fgetline(fp));
+#else
+    line = aline;
+#endif
 
     base64 = strchr(line, ' ');
     if (!base64) {
@@ -1093,17 +1101,33 @@ unsigned char *openssh_loadpub(FILE *fp, char **algorithm,
         *commentptr = comment;
     else
         sfree(comment);
+#ifndef MPEXT
     sfree(line);
+#endif
     return pubblob;
 
   error:
+#ifndef MPEXT
     sfree(line);
+#endif
     sfree(comment);
     sfree(pubblob);
     if (errorstr)
         *errorstr = error;
     return NULL;
 }
+
+#ifdef MPEXT
+unsigned char *openssh_loadpub(FILE *fp, char **algorithm,
+                               int *pub_blob_len, char **commentptr,
+                               const char **errorstr)
+{
+    char * line = chomp(fgetline(fp));
+    unsigned char * pubblob = openssh_loadpub_line(line, algorithm, pub_blob_len, commentptr, errorstr);
+    sfree(line);
+    return pubblob;
+}
+#endif
 
 unsigned char *ssh2_userkey_loadpub(const Filename *filename, char **algorithm,
 				    int *pub_blob_len, char **commentptr,

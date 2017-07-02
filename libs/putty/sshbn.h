@@ -130,6 +130,17 @@
   #define BIGNUM_INT_BITS  32
   #define DEFINE_BIGNUMDBLINT typedef unsigned __int64 BignumDblInt
 
+#if defined(MPEXT) && !defined(_MSC_VER)
+// BCC requires semicolons
+#define DIVMOD_WORD(q, r, hi, lo, w) do { \
+    __asm mov edx, hi; \
+    __asm mov eax, lo; \
+    __asm div w; \
+    __asm mov r, edx; \
+    __asm mov q, eax; \
+} while(0)
+#else
+#endif
 #elif defined _LP64
 
   /*
