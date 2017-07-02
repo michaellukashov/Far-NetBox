@@ -60,7 +60,7 @@ public:
   virtual void FtpCommand(LPCTSTR pCommand);
   virtual void Disconnect();
   virtual void FileTransfer(t_transferfile * transferfile = 0, BOOL bFinish = FALSE, int nError = 0);
-  virtual void Delete(const CString & filename, const CServerPath & path);
+  virtual void Delete(const CString & filename, const CServerPath & path, bool filenameOnly);
   virtual void Rename(const CString & oldName, const CString & newName, const CServerPath & path, const CServerPath & newPath);
   virtual void MakeDir(const CServerPath & path);
   virtual void RemoveDir(const CString & dirname, const CServerPath & path);

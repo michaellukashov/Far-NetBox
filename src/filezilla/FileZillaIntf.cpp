@@ -234,11 +234,11 @@ bool TFileZillaIntf::Chmod(int Value, const wchar_t* FileName,
   return Check(FFileZillaApi->Chmod(Value, FileName, Path), L"chmod");
 }
 
-bool TFileZillaIntf::Delete(const wchar_t* FileName, const wchar_t* APath)
+bool TFileZillaIntf::Delete(const wchar_t* FileName, const wchar_t* APath, bool FileNameOnly)
 {
   DebugAssert(FFileZillaApi != NULL);
   CServerPath Path(APath);
-  return Check(FFileZillaApi->Delete(FileName, Path), L"delete");
+  return Check(FFileZillaApi->Delete(FileName, Path, FileNameOnly), L"delete");
 }
 
 bool TFileZillaIntf::RemoveDir(const wchar_t* FileName, const wchar_t* APath)
@@ -493,6 +493,8 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.Permissions = Source.permissionstr;
           Dest.HumanPerm = Source.humanpermstr;
           Dest.OwnerGroup = Source.ownergroup;
+          Dest.Owner = Source.owner;
+          Dest.Group = Source.group;
           Dest.Size = Source.size;
           Dest.Dir = Source.dir;
           Dest.Link = Source.bLink;

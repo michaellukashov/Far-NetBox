@@ -30,12 +30,14 @@ struct TListDataEntry
 {
 CUSTOM_MEM_ALLOCATION_IMPL
   TRemoteFileTime Time;
-  __int64 Size;
+  int64_t Size;
   const wchar_t * LinkTarget;
   const wchar_t * Name;
   const wchar_t * Permissions;
   const wchar_t * HumanPerm;
-  const wchar_t * OwnerGroup;
+  const wchar_t * OwnerGroup; // deprecated, to be replaced with Owner/Group
+  const wchar_t * Owner;
+  const wchar_t * Group;
   bool Dir;
   bool Link;
 };
@@ -193,7 +195,7 @@ public:
 
   bool MakeDir(const wchar_t* APath);
   bool Chmod(int Value, const wchar_t* FileName, const wchar_t* APath);
-  bool Delete(const wchar_t* FileName, const wchar_t* APath);
+  bool Delete(const wchar_t* FileName, const wchar_t* APath, bool FileNameOnly);
   bool RemoveDir(const wchar_t* FileName, const wchar_t* APath);
   bool Rename(const wchar_t* OldName, const wchar_t* NewName,
     const wchar_t* APath, const wchar_t* ANewPath);

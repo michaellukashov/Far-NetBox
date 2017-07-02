@@ -1418,7 +1418,7 @@ void CFtpControlSocket::ProcessReply()
   else if (m_Operation.nOpMode&CSMODE_LISTFILE)
     ListFile(L"", CServerPath());
   else if (m_Operation.nOpMode&CSMODE_DELETE)
-    Delete( L"",CServerPath());
+    Delete( L"",CServerPath(), false);
   else if (m_Operation.nOpMode&CSMODE_RMDIR)
     RemoveDir( L"",CServerPath());
   else if (m_Operation.nOpMode&CSMODE_MKDIR)
@@ -2154,7 +2154,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
   if (m_Operation.nOpState == LIST_PWD)
     cmd=L"PWD";
   else if (m_Operation.nOpState==LIST_CWD)
-    cmd=L"CWD " + pData->path.GetPath(); //Command to retrieve the current directory
+    cmd=L"CWD " + pData->path.GetPathUnterminated(); //Command to retrieve the current directory
   else if (m_Operation.nOpState==LIST_PWD2)
     cmd=L"PWD";
   else if (m_Operation.nOpState==LIST_CWD2)
@@ -2170,7 +2170,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
       {
         CServerPath path = m_pOwner->GetCurrentPath();
         path.AddSubdir(pData->subdir);
-        cmd = L"CWD " + path.GetPath();
+        cmd = L"CWD " + path.GetPathUnterminated();
       }
       else
         cmd = L"CWD " + pData->subdir;
@@ -2536,7 +2536,7 @@ void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & p
     if (code == 2)
     {
       pData->direntry->dir = TRUE;
-      if (Send(L"CWD " + pData->pwd.GetPath()))
+      if (Send(L"CWD " + pData->pwd.GetPathUnterminated()))
       {
         m_Operation.nOpState = LISTFILE_CWD2;
       }
@@ -3075,7 +3075,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
             {
               pData->MKDSegments.push_front(pData->MKDCurrent.GetLastSegment());
               pData->MKDCurrent=pData->MKDCurrent.GetParent();
-              if (!Send(L"CWD "+pData->MKDCurrent.GetPath()))
+              if (!Send(L"CWD "+pData->MKDCurrent.GetPathUnterminated()))
                 return;
             }
           }
@@ -3173,7 +3173,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
             m_Operation.nOpState=FILETRANSFER_CWD2;
           else
           {
-            if (Send( L"CWD " + pData->MKDCurrent.GetPath()))
+            if (Send( L"CWD " + pData->MKDCurrent.GetPathUnterminated()))
               pData->nMKDOpState=MKD_MAKESUBDIRS;
             else
               return;
@@ -3203,23 +3203,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         if (!ParsePwdReply(pData->rawpwd))
           return;
 
-        if (m_pOwner->GetCurrentPath() != pData->transferfile.remotepath)
-        {
-          // More user-friendly message when the actual paths differ
-          if (m_pOwner->GetCurrentPath().GetPath() != pData->transferfile.remotepath.GetPath())
-          {
-            LogMessage(FZ_LOG_WARNING, L"Real path and requested remote path do not match: \"%s\"  \"%s\"", m_pOwner->GetCurrentPath().GetPath(), pData->transferfile.remotepath.GetPath());
-          }
-          else
-          {
-            LogMessage(FZ_LOG_WARNING, L"Real path and requested remote path do not match: \"%s\"  \"%s\"", m_pOwner->GetCurrentPath().GetSafePath(), pData->transferfile.remotepath.GetSafePath());
-          }
-          nReplyError = FZ_REPLY_CRITICALERROR;
-        }
-        else
-        {
           m_Operation.nOpState = NeedModeCommand() ? FILETRANSFER_LIST_MODE : (NeedOptsCommand() ? FILETRANSFER_LIST_OPTS : FILETRANSFER_LIST_TYPE);
-        }
       }
       break;
     case FILETRANSFER_LIST_MODE:
@@ -3961,7 +3945,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
       bError = TRUE;
     break;
   case FILETRANSFER_CWD:
-    if (!Send(L"CWD "+pData->transferfile.remotepath.GetPath()))
+    if (!Send(L"CWD "+pData->transferfile.remotepath.GetPathUnterminated()))
       bError=TRUE;
     break;
   case FILETRANSFER_MKD:
@@ -3973,7 +3957,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         ResetOperation(FZ_REPLY_CRITICALERROR);
         return;
       }
-      if (!Send(L"CWD "+pData->transferfile.remotepath.GetParent().GetPath()))
+      if (!Send(L"CWD "+pData->transferfile.remotepath.GetParent().GetPathUnterminated()))
         bError=TRUE;
       pData->MKDCurrent=pData->transferfile.remotepath.GetParent();
       pData->MKDSegments.push_front(pData->transferfile.remotepath.GetLastSegment());
@@ -3981,7 +3965,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     }
     break;
   case FILETRANSFER_CWD2:
-    if (!Send(L"CWD "+pData->transferfile.remotepath.GetPath()))
+    if (!Send(L"CWD "+pData->transferfile.remotepath.GetPathUnterminated()))
       bError=TRUE;
     break;
   case FILETRANSFER_PWD2:
@@ -4424,10 +4408,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
       return;
     }
     m_pTransferSocket->m_transferdata=pData->transferdata;
-    // not sure what happens when we active transfer socket immediately while resuming
-    // it can possibly make transfer socket start reading from a file before a file pointer is advanced
-    if (GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY) ||
-        ((pData->transferfile.get || !pData->transferdata.bResume) && !pData->bPasv))
+    if (GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY) || !pData->bPasv)
     {
       m_pTransferSocket->SetActive();
     }
@@ -4578,7 +4559,7 @@ void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
       else
       {
         // Support for MDTM does not necessarily mean
-        // that the server supportsnon-standard hack
+        // that the server supports non-standard hack
         // of setting timestamp using
         // MFMT-like (two argument) call to MDTM.
         // IIS definitelly does.
@@ -4831,7 +4812,7 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
   m_Operation.pData=0;
 }
 
-void CFtpControlSocket::Delete(const CString & filename, const CServerPath & path)
+void CFtpControlSocket::Delete(const CString & filename, const CServerPath & path, bool filenameOnly)
 {
   class CDeleteData : public CFtpControlSocket::t_operation::COpData
   {
@@ -4848,7 +4829,16 @@ void CFtpControlSocket::Delete(const CString & filename, const CServerPath & pat
     DebugAssert(m_Operation.nOpState==-1);
     DebugAssert(!m_Operation.pData);
     m_Operation.nOpMode=CSMODE_DELETE;
-    if (!Send(L"DELE " + path.FormatFilename(filename)))
+    CString command = L"DELE ";
+    if (!filenameOnly)
+    {
+      command += path.FormatFilename(filename);
+    }
+    else
+    {
+      command += filename;
+    }
+    if (!Send(command))
       return;
     CDeleteData *data=new CDeleteData;
     data->m_FileName=filename;
@@ -4954,7 +4944,7 @@ void CFtpControlSocket::RemoveDir(const CString & dirname, const CServerPath & p
       ShowStatus(L"Unable to concatenate path", FZ_LOG_ERROR);
       return;
     }
-    if (!Send(L"RMD "+ newPath.GetPath()))
+    if (!Send(L"RMD "+ newPath.GetPathUnterminated()))
       return;
     CRemoveDirData *data = new CRemoveDirData();
     data->m_DirName = dirname;
@@ -5291,7 +5281,7 @@ void CFtpControlSocket::MakeDir(const CServerPath &path)
     DebugAssert(m_Operation.nOpMode==CSMODE_NONE);
     DebugAssert(!m_Operation.pData);
     m_Operation.nOpMode = CSMODE_MKDIR;
-    if (!Send(L"CWD "+path.GetParent().GetPath()))
+    if (!Send(L"CWD "+path.GetParent().GetPathUnterminated()))
       return;
     CMakeDirData *data = new CMakeDirData();
     data->path = path;
@@ -5328,7 +5318,7 @@ void CFtpControlSocket::MakeDir(const CServerPath &path)
       {
         pData->Segments.push_front(pData->Current.GetLastSegment());
         pData->Current=pData->Current.GetParent();
-        if (!Send(L"CWD "+pData->Current.GetPath()))
+        if (!Send(L"CWD "+pData->Current.GetPathUnterminated()))
           return;
       }
     }
@@ -5434,7 +5424,7 @@ void CFtpControlSocket::MakeDir(const CServerPath &path)
       ResetOperation(FZ_REPLY_OK);
     else
     {
-      if (Send( L"CWD " + pData->Current.GetPath()))
+      if (Send( L"CWD " + pData->Current.GetPathUnterminated()))
         m_Operation.nOpState=MKD_MAKESUBDIRS;
       else
         return;
