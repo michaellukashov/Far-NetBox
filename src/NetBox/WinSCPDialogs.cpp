@@ -323,7 +323,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
   PluginsMenuCommandsCheck->SetCaption(GetMsg(CONFIG_PLUGINS_MENU_COMMANDS));
 
   TFarCheckBox * HostNameInTitleCheck = new TFarCheckBox(Dialog);
-  HostNameInTitleCheck->SetCaption(GetMsg(CONFIG_HOST_NAME_IN_TITLE));
+  HostNameInTitleCheck->SetCaption(GetMsg(CONFIG_SESSION_NAME_IN_TITLE));
 
   new TFarSeparator(Dialog);
 
