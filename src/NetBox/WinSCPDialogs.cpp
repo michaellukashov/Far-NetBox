@@ -552,7 +552,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
     };
     GetConfiguration()->SetLogging(LoggingCheck->GetChecked());
     GetConfiguration()->SetLogProtocol(LogProtocolCombo->GetItemIndex());
-    GetConfiguration()->SetLogToFile(LogToFileCheck->GetChecked());
+    //GetConfiguration()->SetLogToFile(LogToFileCheck->GetChecked());
     if (LogToFileCheck->GetChecked())
     {
       GetConfiguration()->SetLogFileName(LogFileNameEdit->GetText());
@@ -3969,8 +3969,8 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
 {
   bool Result = true;
 
-//  Result = ::VerifyKey(AFileName, TypeOnly);
-  Result = ::VerifyAndConvertKey(AFileName, TypeOnly);
+//  ::VerifyKey(AFileName, TypeOnly);
+  ::VerifyAndConvertKey(AFileName, ssh2only);
 #if 0
   if (!::Trim(AFileName).IsEmpty())
   {
@@ -4697,7 +4697,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     }
     else
     {
-      Text->SetCaption(core::MinimizeName(AFileList->GetString(0), static_cast<intptr_t>(GetClientSize().x), true));
+      Text->SetCaption(base::MinimizeName(AFileList->GetString(0), static_cast<intptr_t>(GetClientSize().x), true));
     }
     TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
     if (!File->GetLinkTo().IsEmpty())
@@ -5460,7 +5460,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
       UnicodeString OnlyFileName = ToRemote ?
         base::ExtractFileName(FileName, false) :
         base::UnixExtractFileName(FileName);
-      UnicodeString MinimizedName = core::MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
+      UnicodeString MinimizedName = base::MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
       Prompt = FORMAT(PromptMsg.c_str(), MinimizedName.c_str());
     }
 
@@ -5542,7 +5542,7 @@ bool TCopyDialog::Execute(OUT UnicodeString & TargetDirectory,
 
     UnicodeString FileMask = Params->GetFileMask();
     UnicodeString Directory = FToRemote ?
-      core::UnixIncludeTrailingBackslash(TargetDirectory) :
+      base::UnixIncludeTrailingBackslash(TargetDirectory) :
       ::IncludeTrailingBackslash(TargetDirectory);
     if (FFileList->GetCount() == 1)
     {
@@ -5567,7 +5567,7 @@ bool TCopyDialog::Execute(OUT UnicodeString & TargetDirectory,
       if (FToRemote)
       {
         Params->SetFileMask(base::UnixExtractFileName(DirectoryEdit->GetText()));
-        NewTargetDirectory = core::UnixExtractFilePath(DirectoryEdit->GetText());
+        NewTargetDirectory = base::UnixExtractFilePath(DirectoryEdit->GetText());
         if (!NewTargetDirectory.IsEmpty())
           TargetDirectory = NewTargetDirectory;
       }
@@ -6053,8 +6053,8 @@ UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes) const
   }
   else
   {
-    Result = FormatBytes(Bytes);
-    UnicodeString SizeUnorderedStr = FormatBytes(Bytes, false);
+    Result = base::FormatBytes(Bytes);
+    UnicodeString SizeUnorderedStr = base::FormatBytes(Bytes, false);
     if (Result != SizeUnorderedStr)
     {
       Result = FORMAT(L"%s (%s)", Result.c_str(), SizeUnorderedStr.c_str());
@@ -6396,7 +6396,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     {
       UnicodeString Path = FPathHistory->GetString(Index);
       BookmarkPaths->Add(Path);
-      BookmarkItems->Add(core::MinimizeName(Path, MaxLength, true));
+      BookmarkItems->Add(base::MinimizeName(Path, MaxLength, true));
     }
 
     intptr_t FirstItemFocused = -1;
@@ -6450,7 +6450,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       {
         UnicodeString Path = BookmarkDirectories->GetString(II);
         BookmarkItems->Add(Path);
-        BookmarkPaths->Add(core::MinimizeName(Path, MaxLength, true));
+        BookmarkPaths->Add(base::MinimizeName(Path, MaxLength, true));
       }
     }
 
@@ -7431,7 +7431,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
       {
         AddColumn(Line, FormatSize(ChecklistItem->Local.Size, 2), 2);
       }
-      AddColumn(Line, core::UserModificationStr(ChecklistItem->Local.Modification,
+      AddColumn(Line, base::UserModificationStr(ChecklistItem->Local.Modification,
         ChecklistItem->Local.ModificationFmt), 3);
     }
   }
@@ -7475,7 +7475,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
       {
         AddColumn(Line, FormatSize(ChecklistItem->Remote.Size, 6), 6);
       }
-      AddColumn(Line, core::UserModificationStr(ChecklistItem->Remote.Modification,
+      AddColumn(Line, base::UserModificationStr(ChecklistItem->Remote.Modification,
         ChecklistItem->Remote.ModificationFmt), 7);
     }
   }
@@ -8182,13 +8182,13 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * AFileList,
     GetMsg(Move ? REMOTE_MOVE_FILE : REMOTE_COPY_FILE),
     GetMsg(Move ? REMOTE_MOVE_FILES : REMOTE_COPY_FILES), AFileList, true);
 
-  UnicodeString Value = core::UnixIncludeTrailingBackslash(Target) + FileMask;
+  UnicodeString Value = base::UnixIncludeTrailingBackslash(Target) + FileMask;
   bool Result = FPlugin->InputBox(
     GetMsg(Move ? REMOTE_MOVE_TITLE : REMOTE_COPY_TITLE), Prompt,
     Value, 0, MOVE_TO_HISTORY) && !Value.IsEmpty();
   if (Result)
   {
-    Target = core::UnixExtractFilePath(Value);
+    Target = base::UnixExtractFilePath(Value);
     FileMask = base::UnixExtractFileName(Value);
   }
   return Result;
@@ -8635,27 +8635,27 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
       Direction = GetMsg((Info->Side == osLocal) ? QUEUE_UPLOAD : QUEUE_DOWNLOAD);
     }
 
-    Values[0] = core::MinimizeName(Info->Source, PathMaxLen, (Info->Side == osRemote));
+    Values[0] = base::MinimizeName(Info->Source, PathMaxLen, (Info->Side == osRemote));
 
     if ((ProgressData != nullptr) &&
-      (ProgressData->Operation == Info->Operation))
+      (ProgressData->GetOperation() == Info->Operation))
     {
-      Values[1] = FormatBytes(ProgressData->TotalTransfered);
+      Values[1] = base::FormatBytes(ProgressData->GetTotalTransferred());
     }
   }
   else if (Index == 1)
   {
-    Values[0] = core::MinimizeName(Info->Destination, PathMaxLen, (Info->Side == osLocal));
+    Values[0] = base::MinimizeName(Info->Destination, PathMaxLen, (Info->Side == osLocal));
 
     if (ProgressStr.IsEmpty())
     {
       if (ProgressData != nullptr)
       {
-        if (ProgressData->Operation == Info->Operation)
+        if (ProgressData->GetOperation() == Info->Operation)
         {
           Values[1] = FORMAT(L"%d%%", ProgressData->OverallProgress());
         }
-        else if (ProgressData->Operation == foCalculateSize)
+        else if (ProgressData->GetOperation() == foCalculateSize)
         {
           Values[1] = GetMsg(QUEUE_CALCULATING_SIZE);
         }
@@ -8670,9 +8670,9 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
   {
     if (ProgressData != nullptr)
     {
-      Values[0] = core::MinimizeName(ProgressData->FileName, PathMaxLen,
+      Values[0] = base::MinimizeName(ProgressData->GetFileName(), PathMaxLen,
         (Info->Side == osRemote));
-      if (ProgressData->Operation == Info->Operation)
+      if (ProgressData->GetOperation() == Info->Operation)
       {
         Values[1] = FORMAT(L"%d%%", ProgressData->TransferProgress());
       }

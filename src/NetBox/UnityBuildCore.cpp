@@ -55,5 +55,6 @@
 #include "../windows/GUIConfiguration.cpp"
 #include "../windows/Tools.cpp"
 #include "../windows/ProgParams.cpp"
+#include "../windows/UserInterface.cpp"
 
 #include <disable_warnings_in_std_end.hpp>

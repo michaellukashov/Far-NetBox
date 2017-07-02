@@ -218,7 +218,7 @@ public:
   void RunTests();
 #endif
 private:
-  void UpdateProgress(intptr_t State, intptr_t Progress);
+  void UpdateProgress(intptr_t State, intptr_t Progress) const;
 
 private:
   PluginInfo FPluginInfo;

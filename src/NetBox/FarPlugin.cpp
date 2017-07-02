@@ -1457,27 +1457,30 @@ void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString & Title)
 void TCustomFarPlugin::ClearConsoleTitle()
 {
   DebugAssert(FSavedTitles->GetCount() > 0);
-  UnicodeString Title = FSavedTitles->GetString(FSavedTitles->GetCount() - 1);
-  TObject * Object = FSavedTitles->GetObj(FSavedTitles->GetCount() - 1);
-  TConsoleTitleParam * Param = dyn_cast<TConsoleTitleParam>(Object);
-  if (Param->Own)
+  if (FSavedTitles->GetCount() > 0)
   {
-    FCurrentTitle = Title;
-    FCurrentProgress = Param->Progress;
-    UpdateCurrentConsoleTitle();
+    UnicodeString Title = FSavedTitles->GetString(FSavedTitles->GetCount() - 1);
+    TObject * Object = FSavedTitles->GetObj(FSavedTitles->GetCount() - 1);
+    TConsoleTitleParam * Param = dyn_cast<TConsoleTitleParam>(Object);
+    if (Param->Own)
+    {
+      FCurrentTitle = Title;
+      FCurrentProgress = Param->Progress;
+      UpdateCurrentConsoleTitle();
+    }
+    else
+    {
+      FCurrentTitle.Clear();
+      FCurrentProgress = -1;
+      ::SetConsoleTitle(Title.c_str());
+      UpdateProgress(PS_NOPROGRESS, 0);
+    }
+    {
+      TObject * Obj = FSavedTitles->GetObj(FSavedTitles->GetCount() - 1);
+      SAFE_DESTROY(Obj);
+    }
+    FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
   }
-  else
-  {
-    FCurrentTitle.Clear();
-    FCurrentProgress = -1;
-    ::SetConsoleTitle(Title.c_str());
-    UpdateProgress(PS_NOPROGRESS, 0);
-  }
-  {
-    TObject * Obj = FSavedTitles->GetObj(FSavedTitles->GetCount() - 1);
-    SAFE_DESTROY(Obj);
-  }
-  FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
 }
 
 void TCustomFarPlugin::UpdateConsoleTitle(const UnicodeString & Title)
@@ -1507,7 +1510,7 @@ UnicodeString TCustomFarPlugin::FormatConsoleTitle()
   return Title;
 }
 
-void TCustomFarPlugin::UpdateProgress(intptr_t State, intptr_t Progress)
+void TCustomFarPlugin::UpdateProgress(intptr_t State, intptr_t Progress) const
 {
   FarAdvControl(ACTL_SETPROGRESSSTATE, ToPtr(State));
   if (State == PS_NORMAL)

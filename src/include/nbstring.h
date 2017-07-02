@@ -514,7 +514,7 @@ public:
 template<>
 class NBChTraitsCRT< wchar_t > : public NBChTraitsBase< wchar_t >
 {
-  static DWORD __stdcall _GetEnvVariable(LPCWSTR pszName, LPWSTR pszBuffer, uint32_t nSize)
+  static DWORD __stdcall GetEnvVariableW(LPCWSTR pszName, LPWSTR pszBuffer, uint32_t nSize)
   {
     return ::GetEnvironmentVariableW(pszName, pszBuffer, (DWORD)nSize);
   }
@@ -733,7 +733,7 @@ public:
 
   static uint32_t __stdcall GetEnvVariable(LPCWSTR pszVar, LPWSTR pszBuffer, uint32_t dwSize)
   {
-    return _GetEnvVariable(pszVar, pszBuffer, dwSize);
+    return GetEnvVariableW(pszVar, pszBuffer, dwSize);
   }
 
   static void __stdcall ConvertToOem(LPWSTR /*psz*/)
