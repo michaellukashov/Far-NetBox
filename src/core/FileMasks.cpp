@@ -16,6 +16,13 @@
 #define DIRECTORY_MASK_DELIMITERS L"/\\"
 #define FILE_MASKS_DELIMITER_STR L"; "
 
+extern const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
+UnicodeString FileMasksDelimiters = L";,";
+static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
+static UnicodeString DirectoryMaskDelimiters = L"/\\";
+static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
+UnicodeString AnyMask = L"*.*";
+
 EFileMasksException::EFileMasksException(
   const UnicodeString & AMessage, intptr_t AErrorStart, intptr_t AErrorLen) :
   Exception(AMessage), ErrorStart(AErrorStart), ErrorLen(AErrorLen)
@@ -148,14 +155,9 @@ bool TFileMasks::IsMask(const UnicodeString & Mask)
   return (Mask.LastDelimiter(L"?*[/") > 0);
 }
 
-bool TFileMasks::IsAnyMask(const UnicodeString & Mask)
-{
-  return Mask.IsEmpty() || (Mask == L"*.*") || (Mask == L"*");
-}
-
 UnicodeString TFileMasks::NormalizeMask(const UnicodeString & Mask, const UnicodeString & AnyMask)
 {
-  if (IsAnyMask(Mask))
+  if (!IsEffectiveFileNameMask(Mask))
   {
     return AnyMask;
   }
@@ -401,10 +403,10 @@ bool TFileMasks::MatchesMasks(const UnicodeString & AFileName, bool Directory,
     ++it;
   }
 
-  if (!Result && Directory && !core::IsUnixRootPath(APath) && Recurse)
+  if (!Result && Directory && !base::IsUnixRootPath(APath) && Recurse)
   {
     UnicodeString ParentFileName = base::UnixExtractFileName(APath);
-    UnicodeString ParentPath = core::SimpleUnixExcludeTrailingBackslash(core::UnixExtractFilePath(APath));
+    UnicodeString ParentPath = base::SimpleUnixExcludeTrailingBackslash(base::UnixExtractFilePath(APath));
     // Pass Params down or not?
     // Currently it includes Size/Time only, what is not used for directories.
     // So it depends on future use. Possibly we should make a copy
@@ -453,7 +455,7 @@ bool TFileMasks::Matches(const UnicodeString & AFileName, bool Local,
     UnicodeString Path = ::ExtractFilePath(AFileName);
     if (!Path.IsEmpty())
     {
-      Path = core::ToUnixPath(::ExcludeTrailingBackslash(Path));
+      Path = base::ToUnixPath(::ExcludeTrailingBackslash(Path));
     }
     Result = Matches(base::ExtractFileName(AFileName, false), Directory, Path, Params,
       RecurseInclude, ImplicitMatch);
@@ -461,7 +463,7 @@ bool TFileMasks::Matches(const UnicodeString & AFileName, bool Local,
   else
   {
     Result = Matches(base::UnixExtractFileName(AFileName), Directory,
-      core::SimpleUnixExcludeTrailingBackslash(core::UnixExtractFilePath(AFileName)), Params,
+      base::SimpleUnixExcludeTrailingBackslash(base::UnixExtractFilePath(AFileName)), Params,
       RecurseInclude, ImplicitMatch);
   }
   return Result;
@@ -503,7 +505,7 @@ void TFileMasks::CreateMaskMask(const UnicodeString & Mask, intptr_t Start, intp
   try
   {
     DebugAssert(MaskMask.Mask == nullptr);
-    if (Ex && IsAnyMask(Mask))
+    if (Ex && !IsEffectiveFileNameMask(Mask))
     {
       MaskMask.Kind = TMaskMask::Any;
       MaskMask.Mask = nullptr;
@@ -587,7 +589,8 @@ void TFileMasks::CreateMask(
       FormatSettings.ShortTimeFormat = "hh:nn:ss";
 
       TDateTime Modification;
-      if (TryStrToDateTime(PartStr, Modification, FormatSettings) ||
+      int64_t DummySize;
+      if ((!TryStrToInt64(PartStr, DummySize) && TryStrToDateTime(PartStr, Modification, FormatSettings)) ||
         TryRelativeStrToDateTime(PartStr, Modification, false))
       {
         TMask::TMaskBoundary & ModificationMask =
@@ -614,7 +617,10 @@ void TFileMasks::CreateMask(
         }
 
         SizeMask = Boundary;
-        Size = ParseSize(PartStr);
+        if (!TryStrToSize(PartStr, Size))
+        {
+          ThrowError(PartStart, PartEnd);
+        }
       }
     }
     else if (!PartStr.IsEmpty())
@@ -651,7 +657,7 @@ void TFileMasks::CreateMask(
       {
         // make sure sole "/" (root dir) is preserved as is
         CreateMaskMask(
-          core::SimpleUnixExcludeTrailingBackslash(core::ToUnixPath(PartStr.SubString(1, D))),
+          base::SimpleUnixExcludeTrailingBackslash(base::ToUnixPath(PartStr.SubString(1, D))),
           PartStart, PartStart + D - 1, false,
           Mask.DirectoryMask);
         CreateMaskMask(
@@ -1223,27 +1229,42 @@ bool TFileCustomCommand::PatternReplacement(
 
   if (::SameText(Pattern, L"!s"))
   {
-    Replacement = SessionData->GenerateSessionUrl(sufComplete);
+    if (SessionData != nullptr)
+    {
+      Replacement = SessionData->GenerateSessionUrl(sufComplete);
+    }
   }
   else if (Pattern == L"!@")
   {
-    Replacement = SessionData->GetHostNameExpanded();
+    if (SessionData != nullptr)
+    {
+      Replacement = SessionData->GetHostNameExpanded();
+    }
   }
   else if (::SameText(Pattern, L"!u"))
   {
-    Replacement = SessionData->SessionGetUserName();
+    if (SessionData != nullptr)
+    {
+      Replacement = SessionData->SessionGetUserName();
+    }
   }
   else if (::SameText(Pattern, L"!p"))
   {
-    Replacement = SessionData->GetPassword();
+    if (SessionData != nullptr)
+    {
+      Replacement = SessionData->GetPassword();
+    }
   }
   else if (::SameText(Pattern, L"!#"))
   {
-    Replacement = IntToStr(SessionData->GetPortNumber());
+    if (SessionData != nullptr)
+    {
+      Replacement = IntToStr(SessionData->GetPortNumber());
+    }
   }
   else if (Pattern == L"!/")
   {
-    Replacement = core::UnixIncludeTrailingBackslash(FPath);
+    Replacement = base::UnixIncludeTrailingBackslash(FPath);
   }
   else if (Pattern == L"!&")
   {
@@ -1253,7 +1274,10 @@ bool TFileCustomCommand::PatternReplacement(
   }
   else if (::SameText(Pattern, L"!n"))
   {
-    Replacement = SessionData->GetSessionName();
+    if (SessionData != nullptr)
+    {
+      Replacement = SessionData->GetSessionName();
+    }
   }
   else
   {

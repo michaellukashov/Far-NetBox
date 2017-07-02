@@ -493,10 +493,8 @@ public:
   UnicodeString DateString() const;
   UnicodeString TimeString(bool Short) const;
   UnicodeString FormatString(wchar_t * fmt) const;
-  void DecodeDate(uint16_t & Y,
-    uint16_t & M, uint16_t & D) const;
-  void DecodeTime(uint16_t & H,
-    uint16_t & N, uint16_t & S, uint16_t & MS) const;
+  void DecodeDate(uint16_t & Y, uint16_t & M, uint16_t & D) const;
+  void DecodeTime(uint16_t & H, uint16_t & N, uint16_t & S, uint16_t & MS) const;
 private:
   double FValue;
 };
@@ -508,7 +506,8 @@ TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
 double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
 int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
 int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
-/*
+
+#if 0
 class TSHFileInfo : public TObject
 {
   typedef DWORD_PTR (WINAPI * TGetFileInfo)(
@@ -533,7 +532,8 @@ private:
   TGetFileInfo FGetFileInfo;
   TLibraryLoader FSHFileInfoLoader;
 };
-*/
+#endif // #if 0
+
 enum TSeekOrigin
 {
   soFromBeginning = 0,

@@ -27,6 +27,7 @@ public:
   bool IsEmpty() const { return Length() == 0; }
   char * SetLength(intptr_t nLength);
   UTF8String & Delete(intptr_t Index, intptr_t Count);
+  UTF8String & Insert(wchar_t Ch, intptr_t Pos);
   UTF8String & Insert(const wchar_t * Str, intptr_t Pos);
   UTF8String SubString(intptr_t Pos) const;
   UTF8String SubString(intptr_t Pos, intptr_t Len) const;

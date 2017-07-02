@@ -23,6 +23,7 @@ TQueryButtonAlias::TQueryButtonAlias() :
   GrouppedShiftState(ssShift),
   ElevationRequired(false)
 {
+  MenuButton = false;
 }
 
 TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword) :

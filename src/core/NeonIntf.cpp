@@ -33,7 +33,7 @@ void NeonParseUrl(const UnicodeString & Url, ne_uri & uri)
 
 bool IsTlsUri(const ne_uri & uri)
 {
-  return SameText(StrFromNeon(uri.scheme), WebDAVSProtocol);
+  return SameText(StrFromNeon(uri.scheme), HttpsProtocol);
 }
 
 struct TProxyAuthData
@@ -65,12 +65,14 @@ static int NeonProxyAuth(
   return Result;
 }
 
-ne_session * CreateNeonSession(
-  const ne_uri & uri, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
-  intptr_t ProxyPort, const UnicodeString & ProxyUsername, const UnicodeString & ProxyPassword)
+ne_session * CreateNeonSession(const ne_uri & uri)
 {
-  ne_session * Session = ne_session_create(uri.scheme, uri.host, uri.port);
+  return ne_session_create(uri.scheme, uri.host, uri.port);
+}
 
+void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
+                     intptr_t ProxyPort, const UnicodeString & ProxyUsername, const UnicodeString & ProxyPassword)
+{
   if (ProxyMethod != ::pmNone)
   {
     if ((ProxyMethod == pmSocks4) || (ProxyMethod == pmSocks5))
@@ -102,8 +104,6 @@ ne_session * CreateNeonSession(
 
   ne_redirect_register(Session);
   ne_set_useragent(Session, StrToNeon(FORMAT(L"%s/%s", GetAppNameString().c_str(), GetConfiguration()->GetVersion().c_str())));
-
-  return Session;
 }
 
 void DestroyNeonSession(ne_session * Session)
@@ -122,7 +122,7 @@ UnicodeString GetNeonError(ne_session * Session)
   return StrFromNeon(ne_get_error(Session));
 }
 
-void CheckNeonStatus(ne_session * Session, int NeonStatus,
+void CheckNeonStatus(ne_session * Session, intptr_t NeonStatus,
   const UnicodeString & AHostName, const UnicodeString & CustomError)
 {
   if (NeonStatus == NE_OK)

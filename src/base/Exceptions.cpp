@@ -60,7 +60,7 @@ static bool WellKnownException(
     CounterName = L"AccessViolations";
     Clone.reset(new EAccessViolation(E->Message));
   }
-  /*
+#if 0
   // EIntError and EMathError are EExternal
   // EClassNotFound is EFilerError
   else if ((dyn_cast<EListError>(E) != nullptr) ||
@@ -69,7 +69,7 @@ static bool WellKnownException(
            (dyn_cast<EMathError>(E) != nullptr) ||
            (dyn_cast<EVariantError>(E) != nullptr) ||
            (dyn_cast<EInvalidOperation>(E) != nullptr))
-           (dynamic_cast<EFilerError*>(E) != NULL))
+           (dyn_cast<EFilerError*>(E) != nullptr))
   {
     if (Rethrow)
     {
@@ -99,7 +99,7 @@ static bool WellKnownException(
     CounterName = L"HeapExceptions";
     Clone.reset(new EHeapException(E->Message));
   }
-  */
+#endif // #if 0
   else
   {
     Result = false;
@@ -442,6 +442,11 @@ ExtException * ExtException::Clone() const
   return CloneFrom(this);
 }
 
+void ExtException::Rethrow()
+{
+  throw ExtException(this, L"");
+}
+
 UnicodeString SysErrorMessageForError(intptr_t LastError)
 {
   UnicodeString Result;
@@ -513,7 +518,12 @@ ECRTExtException::ECRTExtException(const UnicodeString & Msg) :
 
 ExtException * ESshTerminate::Clone() const
 {
-  return new ESshTerminate(this, L"", Operation);
+  return new ESshTerminate(this, L"", Operation, TargetLocalPath, DestLocalFileName);
+}
+
+void ESshTerminate::Rethrow()
+{
+  throw ESshTerminate(this, L"", Operation, TargetLocalPath, DestLocalFileName);
 }
 
 ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(OBJECT_CLASS_ECallbackGuardAbort, L"callback abort")
@@ -575,6 +585,10 @@ void RethrowException(Exception * E)
   else if (WellKnownException(E, nullptr, nullptr, nullptr, true))
   {
     // noop, should never get here
+  }
+  else if (isa<ExtException>(E))
+  {
+    dyn_cast<ExtException>(E)->Rethrow();
   }
   else
   {

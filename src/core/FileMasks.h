@@ -171,6 +171,7 @@ friend class TInteractiveCustomCommand;
 
 public:
   TCustomCommand();
+  // Needs an explicit virtual destructor, as is has virtual methods
   virtual ~TCustomCommand() {}
 
   UnicodeString Complete(const UnicodeString & Command, bool LastPass);
@@ -277,4 +278,5 @@ private:
 };
 
 typedef TFileCustomCommand TRemoteCustomCommand;
-
+extern UnicodeString FileMasksDelimiters;
+extern UnicodeString AnyMask;

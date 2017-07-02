@@ -168,6 +168,7 @@ protected:
   bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
   void PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const;
   bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
+  void EnsureLocation(const UnicodeString & ADirectory, bool Log);
   void EnsureLocation();
   UnicodeString GetActualCurrentDirectory() const;
   void Discard();
@@ -330,6 +331,8 @@ private:
   int64_t FBytesAvailable;
   bool FBytesAvailableSupported;
   bool FMVS;
+  bool FVMS;
+  bool FFileTransferAny;
   mutable UnicodeString FOptionScratch;
 };
 

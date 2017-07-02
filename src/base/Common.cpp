@@ -32,6 +32,9 @@ const wchar_t EngShortMonthNames[12][4] =
 const wchar_t TokenPrefix = L'%';
 const wchar_t NoReplacement = wchar_t(0);
 const wchar_t TokenReplacement = wchar_t(1);
+const UnicodeString LocalInvalidChars(TraceInitStr(L"/\\:*?\"<>|"));
+const UnicodeString PasswordMask(TraceInitStr(L"***"));
+const UnicodeString Ellipsis(TraceInitStr(L"..."));
 
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
@@ -452,13 +455,86 @@ UnicodeString GetSystemTemporaryDirectory()
   return TempDir;
 }
 
-UnicodeString GetShellFolderPath(int CSIdl)
+UnicodeString GetShellFolderPath(intptr_t CSIdl)
 {
   UnicodeString Result;
   wchar_t Path[2 * MAX_PATH + 10] = L"\0";
-  if (SUCCEEDED(::SHGetFolderPath(nullptr, CSIdl, nullptr, SHGFP_TYPE_CURRENT, Path)))
+  if (SUCCEEDED(::SHGetFolderPath(nullptr, (int)CSIdl, nullptr, SHGFP_TYPE_CURRENT, Path)))
   {
     Result = Path;
+  }
+  return Result;
+}
+
+static UnicodeString GetWineHomeFolder()
+{
+  UnicodeString Result;
+
+  UnicodeString WineHostHome = base::GetEnvVariable(L"WINE_HOST_HOME");
+  if (!WineHostHome.IsEmpty())
+  {
+    Result = L"Z:" + base::FromUnixPath(WineHostHome);
+  }
+  else
+  {
+    // Should we use WinAPI GetUserName() instead?
+    UnicodeString UserName = base::GetEnvVariable(L"USERNAME");
+    if (!UserName.IsEmpty())
+    {
+      Result = L"Z:\\home\\" + UserName;
+    }
+  }
+
+  if (!DirectoryExists(Result))
+  {
+    Result = L"";
+  }
+
+  return Result;
+}
+
+UnicodeString GetPersonalFolder()
+{
+  UnicodeString Result = GetShellFolderPath(CSIDL_PERSONAL);
+
+  if (IsWine())
+  {
+    UnicodeString WineHome = GetWineHomeFolder();
+
+    if (!WineHome.IsEmpty())
+    {
+      // if at least home exists, use it
+      Result = WineHome;
+
+      // but try to go deeper to "Documents"
+      UnicodeString WineDocuments =
+        IncludeTrailingBackslash(WineHome) + L"Documents";
+      if (DirectoryExists(WineDocuments))
+      {
+        Result = WineDocuments;
+      }
+    }
+  }
+  return Result;
+}
+
+UnicodeString GetDesktopFolder()
+{
+  UnicodeString Result = GetShellFolderPath(CSIDL_DESKTOPDIRECTORY);
+
+  if (IsWine())
+  {
+    UnicodeString WineHome = GetWineHomeFolder();
+
+    if (!WineHome.IsEmpty())
+    {
+      UnicodeString WineDesktop =
+        IncludeTrailingBackslash(WineHome) + L"Desktop";
+      if (DirectoryExists(WineHome))
+      {
+        Result = WineDesktop;
+      }
+    }
   }
   return Result;
 }
@@ -740,7 +816,7 @@ UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str)
   return Buf;
 }
 
-bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2)
+bool IsPathToSameFile(const UnicodeString & APath1, const UnicodeString & APath2)
 {
   UnicodeString ShortPath1 = ExtractShortPathName(APath1);
   UnicodeString ShortPath2 = ExtractShortPathName(APath2);
@@ -758,9 +834,21 @@ bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2)
   return Result;
 }
 
+bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2)
+{
+  return IsPathToSameFile(APath1, APath2);
+}
+
 bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2)
 {
   TODO("ExpandUNCFileName");
+  return AnsiSameText(::IncludeTrailingBackslash(APath1), ::IncludeTrailingBackslash(APath2));
+}
+
+bool SamePaths(const UnicodeString & APath1, const UnicodeString & APath2)
+{
+  TODO("ExpandUNCFileName");
+  // TODO: ExpandUNCFileName
   return AnsiSameText(::IncludeTrailingBackslash(APath1), ::IncludeTrailingBackslash(APath2));
 }
 
@@ -937,7 +1025,7 @@ static intptr_t GetOffsetAfterPathRoot(const UnicodeString & APath, PATH_PREFIX_
     {
       // Check for UNC, i.e. \\server\share\ part
       intptr_t Index = IndCheckUNC;
-      for (int SkipSlashes = 2; SkipSlashes > 0; SkipSlashes--)
+      for (intptr_t SkipSlashes = 2; SkipSlashes > 0; SkipSlashes--)
       {
         for (; Index <= Len; ++Index)
         {
@@ -1691,6 +1779,80 @@ bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, 
     else
     {
       Result = false;
+    }
+  }
+  return Result;
+}
+
+const wchar_t KiloSize = L'K';
+const wchar_t MegaSize = L'M';
+const wchar_t GigaSize = L'G';
+
+// Keep consistent with parse_blocksize
+bool TryStrToSize(UnicodeString SizeStr, int64_t & Size)
+{
+  intptr_t Index = 0;
+  while ((Index + 1 <= SizeStr.Length()) && IsDigit(SizeStr[Index + 1]))
+  {
+    Index++;
+  }
+  bool Result =
+    (Index > 0) && TryStrToInt64(SizeStr.SubString(1, Index), Size);
+  if (Result)
+  {
+    SizeStr = SizeStr.SubString(Index + 1, SizeStr.Length() - Index).Trim();
+    if (!SizeStr.IsEmpty())
+    {
+      Result = (SizeStr.Length() == 1);
+      if (Result)
+      {
+        wchar_t Unit = (wchar_t)toupper(SizeStr[1]);
+        switch (Unit)
+        {
+          case GigaSize:
+            Size *= 1024;
+            // fallthru
+          case MegaSize:
+            Size *= 1024;
+            // fallthru
+          case KiloSize:
+            Size *= 1024;
+            break;
+          default:
+            Result = false;
+        }
+      }
+    }
+  }
+  return Result;
+}
+
+UnicodeString SizeToStr(int64_t Size)
+{
+  UnicodeString Result;
+  if ((Size <= 0) || ((Size % 1024) != 0))
+  {
+    Result = Int64ToStr(Size);
+  }
+  else
+  {
+    Size /= 1024;
+    if ((Size % 1024) != 0)
+    {
+      Result = Int64ToStr(Size) + KiloSize;
+    }
+    else
+    {
+      Size /= 1024;
+      if ((Size % 1024) != 0)
+      {
+        Result = Int64ToStr(Size) + MegaSize;
+      }
+      else
+      {
+        Size /= 1024;
+        Result = Int64ToStr(Size) + GigaSize;
+      }
     }
   }
   return Result;
@@ -2733,6 +2895,27 @@ UnicodeString FormatSize(int64_t Size)
   return FormatNumber(Size);
 }
 
+UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime)
+{
+  UnicodeString Result;
+  try
+  {
+    if ((int64_t)DateTime > 0)
+    {
+      Result = Int64ToStr((int64_t)DateTime) + L", ";
+    }
+    // days are decremented, because when there are to many of them,
+    // "integer overflow" error occurs
+    Result += FormatDateTime(TimeFormat, DateTime - TDateTime((double)(int64_t)DateTime));
+  }
+  catch (...)
+  {
+    //TODO: log error
+  }
+  return Result;
+}
+
+
 UnicodeString ExtractFileBaseName(const UnicodeString & APath)
 {
   return ChangeFileExt(base::ExtractFileName(APath, false), L"");
@@ -2778,9 +2961,9 @@ UnicodeString TrimVersion(const UnicodeString & Version)
   return Result;
 }
 
-UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int Patch)
+UnicodeString FormatVersion(intptr_t MajorVersion, intptr_t MinorVersion, intptr_t Patch)
 {
-  return FORMAT(L"%d.%d.%d", MajorVersion, MinorVersion, Patch);
+  return FORMAT(L"%d.%d.%d", (int)MajorVersion, (int)MinorVersion, (int)Patch);
 }
 
 TFormatSettings GetEngFormatSettings()
@@ -2879,7 +3062,7 @@ struct TPemPasswordCallbackData
 };
 
 
-static int PemPasswordCallback(char* Buf, int Size, int /*RWFlag*/, void* UserData)
+static int PemPasswordCallback(char * Buf, int Size, int /*RWFlag*/, void * UserData)
 {
   TPemPasswordCallbackData & Data = *reinterpret_cast<TPemPasswordCallbackData *>(UserData);
   UTF8String UtfPassphrase = UTF8String(*Data.Passphrase);
@@ -2937,7 +3120,7 @@ void ParseCertificate(const UnicodeString& Path,
     // Modeled after OPENSSL_asc2uni (reversed bitness to what UnicodeString/wchar_t use)
     rde::vector<char> Buf;
     Buf.resize(Passphrase.Length() * sizeof(wchar_t) + sizeof(wchar_t));
-    for (int Index = 0; Index <= Passphrase.Length(); Index++)
+    for (intptr_t Index = 0; Index <= Passphrase.Length(); Index++)
     {
       Buf[(Index * 2)] = (Passphrase.c_str()[Index] >> 8);
       Buf[(Index * 2) + 1] = (Passphrase.c_str()[Index] & 0x00FF);
@@ -3136,9 +3319,25 @@ UnicodeString ChangeUrlProtocol(const UnicodeString & S, const UnicodeString & P
   return Protocol + ProtocolSeparator + RightStr(S, S.Length() - P - ProtocolSeparator.Length() + 1);
 }
 
+#if 0
+// implemented in FarInterface.cpp
 const UnicodeString RtfPara = L"\\par\n";
 const UnicodeString RtfHyperlinkField = L"HYPERLINK";
 const UnicodeString RtfHyperlinkFieldPrefix = RtfHyperlinkField + L" \"";
+#endif // #if 0
+
+UnicodeString StripEllipsis(const UnicodeString & S)
+{
+  UnicodeString Result = S;
+  if (Result.SubString(Result.Length() - Ellipsis.Length() + 1, Ellipsis.Length()) == Ellipsis)
+  {
+    Result.SetLength(Result.Length() - Ellipsis.Length());
+    Result = Result.TrimRight();
+  }
+  return Result;
+}
+
+namespace base {
 
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
 {
@@ -3161,8 +3360,6 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   }
   return Result;
 }
-
-namespace base {
 
 UnicodeString UnixExtractFileName(const UnicodeString & APath)
 {
@@ -3211,3 +3408,540 @@ UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName)
 }
 
 } // namespace base
+
+// from RemoteFiles.cpp
+
+namespace base {
+
+bool IsUnixStyleWindowsPath(const UnicodeString & APath)
+{
+  return (APath.Length() >= 3) && IsLetter(APath[1]) && (APath[2] == L':') && (APath[3] == L'/');
+}
+
+bool UnixIsAbsolutePath(const UnicodeString & APath)
+{
+  return
+    ((APath.Length() >= 1) && (APath[1] == L'/')) ||
+    // we need this for FTP only, but this is unfortunately used in a static context
+    base::IsUnixStyleWindowsPath(APath);
+}
+
+UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & APath)
+{
+  // it used to return "/" when input path was empty
+  if (!APath.IsEmpty() && !APath.IsDelimiter(SLASH, APath.Length()))
+  {
+    return APath + SLASH;
+  }
+  else
+  {
+    return APath;
+  }
+}
+
+// Keeps "/" for root path
+UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & APath, bool Simple)
+{
+  if (APath.IsEmpty() ||
+      (APath == ROOTDIRECTORY) ||
+      !APath.IsDelimiter(SLASH, APath.Length()) ||
+      (!Simple && ((APath.Length() == 3) && base::IsUnixStyleWindowsPath(APath))))
+  {
+    return APath;
+  }
+  else
+  {
+    return APath.SubString(1, APath.Length() - 1);
+  }
+}
+
+UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & APath)
+{
+  return base::UnixExcludeTrailingBackslash(APath, true);
+}
+
+UnicodeString UnixCombinePaths(const UnicodeString & APath1, const UnicodeString & APath2)
+{
+  return UnixIncludeTrailingBackslash(APath1) + APath2;
+}
+
+Boolean UnixSamePath(const UnicodeString & APath1, const UnicodeString & APath2)
+{
+  return (base::UnixIncludeTrailingBackslash(APath1) == base::UnixIncludeTrailingBackslash(APath2));
+}
+
+bool UnixIsChildPath(const UnicodeString & AParent, const UnicodeString & AChild)
+{
+  UnicodeString Parent = base::UnixIncludeTrailingBackslash(AParent);
+  UnicodeString Child = base::UnixIncludeTrailingBackslash(AChild);
+  return (Child.SubString(1, Parent.Length()) == Parent);
+}
+
+UnicodeString UnixExtractFileDir(const UnicodeString & APath)
+{
+  intptr_t Pos = APath.LastDelimiter(L'/');
+  // it used to return Path when no slash was found
+  if (Pos > 1)
+  {
+    return APath.SubString(1, Pos - 1);
+  }
+  else
+  {
+    return (Pos == 1) ? UnicodeString(L"/") : UnicodeString();
+  }
+}
+
+// must return trailing backslash
+UnicodeString UnixExtractFilePath(const UnicodeString & APath)
+{
+  intptr_t Pos = APath.LastDelimiter(L'/');
+  // it used to return Path when no slash was found
+  if (Pos > 0)
+  {
+    return APath.SubString(1, Pos);
+  }
+  else
+  {
+    return UnicodeString();
+  }
+}
+
+#if 0
+
+UnicodeString UnixExtractFileName(const UnicodeString & APath)
+{
+  intptr_t Pos = APath.LastDelimiter(L'/');
+  UnicodeString Result;
+  if (Pos > 0)
+  {
+    Result = APath.SubString(Pos + 1, APath.Length() - Pos);
+  }
+  else
+  {
+    Result = APath;
+  }
+  return Result;
+}
+
+UnicodeString UnixExtractFileExt(const UnicodeString & APath)
+{
+  UnicodeString FileName = UnixExtractFileName(APath);
+  intptr_t Pos = FileName.LastDelimiter(L".");
+  if (Pos > 0)
+    return APath.SubString(Pos, APath.Length() - Pos + 1);
+  else
+    return UnicodeString();
+}
+
+UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
+{
+  if (Unix)
+  {
+    return UnixExtractFileName(APath);
+  }
+  else
+  {
+    return base::ExtractFileName(APath, Unix);
+  }
+}
+
+#endif // #if 0
+
+bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
+{
+  DebugAssert(AFiles->GetCount() > 0);
+
+  APath = ::ExtractFilePath(AFiles->GetString(0));
+  bool Result = !APath.IsEmpty();
+  if (Result)
+  {
+    for (intptr_t Index = 1; Index < AFiles->GetCount(); ++Index)
+    {
+      while (!APath.IsEmpty() &&
+        (AFiles->GetString(Index).SubString(1, APath.Length()) != APath))
+      {
+        intptr_t PrevLen = APath.Length();
+        APath = ::ExtractFilePath(::ExcludeTrailingBackslash(APath));
+        if (APath.Length() == PrevLen)
+        {
+          APath.Clear();
+          Result = false;
+        }
+      }
+    }
+  }
+
+  return Result;
+}
+
+bool UnixExtractCommonPath(const TStrings * const AFiles, OUT UnicodeString & APath)
+{
+  DebugAssert(AFiles->GetCount() > 0);
+
+  APath = base::UnixExtractFilePath(AFiles->GetString(0));
+  bool Result = !APath.IsEmpty();
+  if (Result)
+  {
+    for (intptr_t Index = 1; Index < AFiles->GetCount(); ++Index)
+    {
+      while (!APath.IsEmpty() &&
+        (AFiles->GetString(Index).SubString(1, APath.Length()) != APath))
+      {
+        intptr_t PrevLen = APath.Length();
+        APath = base::UnixExtractFilePath(base::UnixExcludeTrailingBackslash(APath));
+        if (APath.Length() == PrevLen)
+        {
+          APath.Clear();
+          Result = false;
+        }
+      }
+    }
+  }
+
+  return Result;
+}
+
+bool IsUnixRootPath(const UnicodeString & APath)
+{
+  return APath.IsEmpty() || (APath == ROOTDIRECTORY);
+}
+
+bool IsUnixHiddenFile(const UnicodeString & APath)
+{
+  return (APath != THISDIRECTORY) && (APath != PARENTDIRECTORY) &&
+    !APath.IsEmpty() && (APath[1] == L'.');
+}
+
+UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APath)
+{
+  // There's a duplicate implementation in TTerminal::ExpandFileName()
+  UnicodeString Result;
+  if (APath.IsEmpty())
+  {
+    Result = Base;
+  }
+  else if (APath[1] == L'/')
+  {
+    Result = base::UnixExcludeTrailingBackslash(APath);
+  }
+  else
+  {
+    Result = base::UnixIncludeTrailingBackslash(
+      base::UnixIncludeTrailingBackslash(Base) + APath);
+    intptr_t P;
+    while ((P = Result.Pos(L"/../")) > 0)
+    {
+      // special case, "/../" => "/"
+      if (P == 1)
+      {
+        Result = ROOTDIRECTORY;
+      }
+      else
+      {
+        intptr_t P2 = Result.SubString(1, P-1).LastDelimiter(L"/");
+        DebugAssert(P2 > 0);
+        Result.Delete(P2, P - P2 + 3);
+      }
+    }
+    while ((P = Result.Pos(L"/./")) > 0)
+    {
+      Result.Delete(P, 2);
+    }
+    Result = base::UnixExcludeTrailingBackslash(Result);
+  }
+  return Result;
+}
+
+UnicodeString FromUnixPath(const UnicodeString & APath)
+{
+  return ReplaceStr(APath, SLASH, BACKSLASH);
+}
+
+UnicodeString ToUnixPath(const UnicodeString & APath)
+{
+  return ReplaceStr(APath, BACKSLASH, SLASH);
+}
+
+static void CutFirstDirectory(UnicodeString & S, bool Unix)
+{
+  UnicodeString Sep = Unix ? SLASH : BACKSLASH;
+  if (S == Sep)
+  {
+    S.Clear();
+  }
+  else
+  {
+    bool Root = false;
+    intptr_t P = 0;
+    if (S[1] == Sep[1])
+    {
+      Root = true;
+      S.Delete(1, 1);
+    }
+    else
+    {
+      Root = false;
+    }
+    if (S[1] == L'.')
+    {
+      S.Delete(1, 4);
+    }
+    P = S.Pos(Sep[1]);
+    if (P)
+    {
+      S.Delete(1, P);
+      S = L"..." + Sep + S;
+    }
+    else
+    {
+      S.Clear();
+    }
+    if (Root)
+    {
+      S = Sep + S;
+    }
+  }
+}
+
+UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, bool Unix)
+{
+  UnicodeString Drive, Dir, Name;
+  UnicodeString Sep = Unix ? SLASH : BACKSLASH;
+
+  UnicodeString Result = AFileName;
+  if (Unix)
+  {
+    intptr_t P = Result.LastDelimiter(SLASH);
+    if (P)
+    {
+      Dir = Result.SubString(1, P);
+      Name = Result.SubString(P + 1, Result.Length() - P);
+    }
+    else
+    {
+      Dir.Clear();
+      Name = Result;
+    }
+  }
+  else
+  {
+    Dir = ::ExtractFilePath(Result);
+    Name = base::ExtractFileName(Result, false);
+
+    if (Dir.Length() >= 2 && Dir[2] == L':')
+    {
+      Drive = Dir.SubString(1, 2);
+      Dir.Delete(1, 2);
+    }
+  }
+
+  while ((!Dir.IsEmpty() || !Drive.IsEmpty()) && (Result.Length() > MaxLen))
+  {
+    if (Dir == Sep + L"..." + Sep)
+    {
+      Dir = L"..." + Sep;
+    }
+    else if (Dir.IsEmpty())
+    {
+      Drive.Clear();
+    }
+    else
+    {
+      CutFirstDirectory(Dir, Unix);
+    }
+    Result = Drive + Dir + Name;
+  }
+
+  if (Result.Length() > MaxLen)
+  {
+    Result = Result.SubString(1, MaxLen);
+  }
+  return Result;
+}
+
+UnicodeString MakeFileList(const TStrings * AFileList)
+{
+  UnicodeString Result;
+  for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
+  {
+    UnicodeString FileName = AFileList->GetString(Index);
+    // currently this is used for local file only, so no delimiting is done
+    AddToList(Result,  AddQuotes(FileName), L" ");
+  }
+  return Result;
+}
+
+// copy from BaseUtils.pas
+TDateTime ReduceDateTimePrecision(const TDateTime & ADateTime,
+  TModificationFmt Precision)
+{
+  TDateTime DateTime = ADateTime;
+  if (Precision == mfNone)
+  {
+    DateTime = double(0.0);
+  }
+  else if (Precision != mfFull)
+  {
+    uint16_t Y, M, D, H, N, S, MS;
+
+    ::DecodeDate(DateTime, Y, M, D);
+    ::DecodeTime(DateTime, H, N, S, MS);
+    switch (Precision)
+    {
+      case mfMDHM:
+        S = 0;
+        MS = 0;
+        break;
+
+      case mfMDY:
+        H = 0;
+        N = 0;
+        S = 0;
+        MS = 0;
+        break;
+
+      default:
+        DebugFail();
+    }
+
+    DateTime = EncodeDateVerbose(Y, M, D) + EncodeTimeVerbose(H, N, S, MS);
+  }
+  return DateTime;
+}
+
+TModificationFmt LessDateTimePrecision(
+  TModificationFmt Precision1, TModificationFmt Precision2)
+{
+  return (Precision1 < Precision2) ? Precision1 : Precision2;
+}
+
+UnicodeString UserModificationStr(const TDateTime & DateTime,
+  TModificationFmt Precision)
+{
+  Word Year, Month, Day, Hour, Min, Sec, MSec;
+  DateTime.DecodeDate(Year, Month, Day);
+  DateTime.DecodeTime(Hour, Min, Sec, MSec);
+  switch (Precision)
+  {
+    case mfNone:
+      return L"";
+    case mfMDY:
+      return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
+    case mfMDHM:
+      return FORMAT(L"%3s %2d %2d:%2.2d",
+        EngShortMonthNames[Month-1], Day, Hour, Min);
+    case mfFull:
+      return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
+        EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
+    default:
+      DebugAssert(false);
+  }
+  return UnicodeString();
+}
+
+UnicodeString ModificationStr(const TDateTime & DateTime,
+  TModificationFmt Precision)
+{
+  uint16_t Year, Month, Day, Hour, Min, Sec, MSec;
+  DateTime.DecodeDate(Year, Month, Day);
+  DateTime.DecodeTime(Hour, Min, Sec, MSec);
+  switch (Precision)
+  {
+    case mfNone:
+      return L"";
+
+    case mfMDY:
+      return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
+
+    case mfMDHM:
+      return FORMAT(L"%3s %2d %2d:%2.2d",
+        EngShortMonthNames[Month-1], Day, Hour, Min);
+
+    default:
+      DebugFail();
+      // fall thru
+
+    case mfFull:
+      return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
+        EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
+  }
+}
+
+int FakeFileImageIndex(const UnicodeString & /*AFileName*/, uint32_t /*Attrs*/,
+  UnicodeString * /*TypeName*/)
+{
+#if 0
+  Attrs |= FILE_ATTRIBUTE_NORMAL;
+
+  TSHFileInfoW SHFileInfo = {0};
+  // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
+  if ((FileName == L"..") ||
+      ((FileName.Length() == 2) && (FileName[2] == L':') && IsLetter(FileName[1])) ||
+      IsReservedName(FileName))
+  {
+    FileName = L"dumb";
+  }
+  // this should be somewhere else, probably in TUnixDirView,
+  // as the "partial" overlay is added there too
+  if (::SameText(base::UnixExtractFileExt(FileName), PARTIAL_EXT))
+  {
+    static const size_t PartialExtLen = _countof(PARTIAL_EXT) - 1;
+    FileName.SetLength(FileName.Length() - PartialExtLen);
+  }
+
+  int Icon;
+  if (SHGetFileInfo(FileName.c_str(),
+        Attrs, &SHFileInfo, sizeof(SHFileInfo),
+        SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
+  {
+
+    if (TypeName != nullptr)
+    {
+      *TypeName = SHFileInfo.szTypeName;
+    }
+    Icon = SHFileInfo.iIcon;
+  }
+  else
+  {
+    if (TypeName != nullptr)
+    {
+      *TypeName = L"";
+    }
+    Icon = -1;
+  }
+
+  return Icon;
+#endif // #if 0
+  return -1;
+}
+
+bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2)
+{
+  // Bitvise reports file owner as "user@host", but we login with "user" only.
+  UnicodeString AUserName1 = CopyToChar(UserName1, L'@', true);
+  UnicodeString AUserName2 = CopyToChar(UserName2, L'@', true);
+  return ::SameText(AUserName1, AUserName2);
+}
+
+UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, bool Unix)
+{
+  UnicodeString Dir;
+  UnicodeString Name;
+  UnicodeString Path;
+  if (Unix)
+  {
+    Dir = UnixExtractFileDir(ATarget);
+    Name = UnixExtractFileName(ATarget);
+    Path = UnixIncludeTrailingBackslash(ATarget);
+  }
+  else
+  {
+    Dir = ::ExtractFilePath(ATarget);
+    Name = ExtractFileName(ATarget, Unix);
+    Path = ::IncludeTrailingBackslash(ATarget);
+  }
+  return FMTLOAD(MULTI_FILES_TO_ONE, Name.c_str(), Dir.c_str(), Path.c_str());
+}
+
+} // namespace base
+

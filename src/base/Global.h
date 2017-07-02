@@ -25,11 +25,11 @@ public:
   void Enter() const;
   void Leave() const;
 
-  int GetAcquired() const { return FAcquired; }
+  intptr_t GetAcquired() const { return FAcquired; }
 
 private:
   mutable CRITICAL_SECTION FSection;
-  mutable int FAcquired;
+  mutable intptr_t FAcquired;
 };
 
 
@@ -67,6 +67,9 @@ private:
 #define DebugAlwaysTrue(p) (p)
 #define DebugAlwaysFalse(p) (p)
 #define DebugNotNull(p) (p)
+#define TraceInitPtr(p) (p)
+#define TraceInitStr(p) (p)
+#define DebugUsedParam(p) (void)(p)
 
 #else // _DEBUG
 
@@ -126,10 +129,20 @@ inline T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filena
 #define DebugAlwaysTrue(p) DoAlwaysTrue((p), TEXT(#p), TEXT(__FILE__), __LINE__)
 #define DebugAlwaysFalse(p) DoAlwaysFalse((p), TEXT(#p), TEXT(__FILE__), __LINE__)
 #define DebugNotNull(p) DoCheckNotNull((p), TEXT(#p), TEXT(__FILE__), __LINE__)
+#define TraceInitPtr(p) (p)
+#define TraceInitStr(p) (p)
+#define DebugUsedParam(p) (void)(p)
 
 #endif // _DEBUG
 
-#define DebugUsedParam(p) (void)(p)
+#if 0
+#define DebugAlwaysTrue(p) (p)
+#define DebugAlwaysFalse(p) (p)
+#define DebugNotNull(p) (p)
+#define TraceInitPtr(p) (p)
+#define TraceInitStr(p) (p)
+#define DebugUsedParam(p) ((&p) == (&p))
+#endif // #if 0
 
 #define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())
 

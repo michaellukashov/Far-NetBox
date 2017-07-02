@@ -27,12 +27,12 @@ TCriticalSection::~TCriticalSection()
 void TCriticalSection::Enter() const
 {
   ::EnterCriticalSection(&FSection);
-  FAcquired++;
+  ++FAcquired;
 }
 
 void TCriticalSection::Leave() const
 {
-  FAcquired--;
+  --FAcquired;
   ::LeaveCriticalSection(&FSection);
 }
 

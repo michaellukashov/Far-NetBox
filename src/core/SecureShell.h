@@ -60,7 +60,7 @@ private:
   bool FStoredPassphraseTried;
   mutable int FSshVersion;
   bool FOpened;
-  int FWaiting;
+  intptr_t FWaiting;
   bool FSimple;
   bool FNoConnectionResponse;
   bool FCollectPrivateKeyUsage;
@@ -143,7 +143,7 @@ public:
   bool Peek(uint8_t *& Buf, intptr_t Length) const;
   UnicodeString ReceiveLine();
   void Send(const uint8_t * Buf, intptr_t Length);
-  void SendSpecial(int Code);
+  void SendSpecial(intptr_t Code);
   void Idle(uintptr_t MSec = 0);
   void SendEOF();
   void SendLine(const UnicodeString & Line);
@@ -157,6 +157,7 @@ public:
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
   void CollectUsage();
+  bool CanChangePassword() const;
 
   void RegisterReceiveHandler(TNotifyEvent Handler);
   void UnregisterReceiveHandler(TNotifyEvent Handler);
@@ -164,7 +165,7 @@ public:
   // interface to PuTTY core
   void UpdateSocket(SOCKET Value, bool Startup);
   void UpdatePortFwdSocket(SOCKET Value, bool Startup);
-  void PuttyFatalError(const UnicodeString & Error);
+  void PuttyFatalError(UnicodeString Error);
   TPromptKind IdentifyPromptKind(UnicodeString & AName) const;
   bool PromptUser(bool ToServer,
     const UnicodeString & AName, bool NameRequired,

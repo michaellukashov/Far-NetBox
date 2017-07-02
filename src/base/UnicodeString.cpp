@@ -444,6 +444,13 @@ int UTF8String::vprintf(const char * Format, va_list ArgList)
   return Size;
 }
 
+UTF8String & UTF8String::Insert(wchar_t Ch, intptr_t Pos)
+{
+  UTF8String UTF8(&Ch, 1);
+  Data.Insert((int)Pos - 1, UTF8.c_str());
+  return *this;
+}
+
 UTF8String & UTF8String::Insert(const wchar_t * Str, intptr_t Pos)
 {
   UTF8String UTF8(Str);

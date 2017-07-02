@@ -204,6 +204,11 @@ bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value)
   return Result;
 }
 
+bool TryStrToInt64(const UnicodeString & StrValue, int64_t & Value)
+{
+  return TryStrToInt(StrValue, Value);
+}
+
 UnicodeString Trim(const UnicodeString & Str)
 {
   UnicodeString Result = TrimRight(TrimLeft(Str));
@@ -1504,6 +1509,17 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateT
 {
   (void)Fmt;
   UnicodeString Result;
+  uint16_t Year;
+  uint16_t Month;
+  uint16_t Day;
+  uint16_t Hour;
+  uint16_t Minutes;
+  uint16_t Seconds;
+  uint16_t Milliseconds;
+
+  ADateTime.DecodeDate(Year, Month, Day);
+  ADateTime.DecodeTime(Hour, Minutes, Seconds, Milliseconds);
+
   if (Fmt == L"ddddd tt")
   {
     /*
@@ -1515,17 +1531,6 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateT
             static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
             static_cast<uint16_t>(ValidityTime.Sec), 0));
     */
-    uint16_t Year;
-    uint16_t Month;
-    uint16_t Day;
-    uint16_t Hour;
-    uint16_t Minutes;
-    uint16_t Seconds;
-    uint16_t Milliseconds;
-
-    ADateTime.DecodeDate(Year, Month, Day);
-    ADateTime.DecodeTime(Hour, Minutes, Seconds, Milliseconds);
-
     uint16_t Y, M, D, H, Mm, S, MS;
     TDateTime DateTime =
       EncodeDateVerbose(Year, Month, Day) +
@@ -1533,6 +1538,18 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateT
     DateTime.DecodeDate(Y, M, D);
     DateTime.DecodeTime(H, Mm, S, MS);
     Result = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
+  }
+  else if (Fmt == L"nnzzz")
+  {
+    Result = FORMAT(L"%02d%03d ", Seconds, Milliseconds);
+  }
+  else if (Fmt == L" yyyy-mm-dd hh:nn:ss.zzz ")
+  {
+    Result = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Year, Month, Day, Hour, Minutes, Seconds, Milliseconds);
+  }
+  else if (Fmt == L"h:nn:ss")
+  {
+    Result = FORMAT(L"%02d:%02d:%02d", Hour, Minutes, Seconds);
   }
   else
   {
@@ -1735,4 +1752,10 @@ TFormatSettings::TFormatSettings(int) :
   ListSeparator(0),
   TwoDigitYearCenturyWindow(0)
 {
+}
+
+UnicodeString TPath::Combine(UnicodeString APath, UnicodeString FileName)
+{
+  UnicodeString Result = ::IncludeTrailingBackslash(APath) + FileName;
+  return Result;
 }

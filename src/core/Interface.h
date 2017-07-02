@@ -10,6 +10,7 @@
 #define SCRIPT_SWITCH "script"
 #define COMMAND_SWITCH L"Command"
 #define SESSIONNAME_SWITCH L"SessionName"
+#define NEWPASSWORD_SWITCH L"newpassword"
 #define INI_NUL L"nul"
 #define PRESERVETIME_SWITCH L"preservetime"
 #define PRESERVETIMEDIRS_SWITCH_VALUE L"all"
@@ -70,12 +71,23 @@ struct TQueryButtonAlias : public TObject
   bool Default;
   TShiftStateFlag GrouppedShiftState;
   bool ElevationRequired;
+  bool MenuButton;
 };
 
-/*
-typedef void (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
-*/
+#if 0
+typedef void (__closure *TQueryParamsTimerEvent)(uintptr_t & Result);
+#endif // #if 0
 typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TQueryParamsTimerEvent;
+
+#if 0
+enum TQueryType
+{
+  qtConfirmation,
+  qtWarning,
+  qtError,
+  qtInformation,
+};
+#endif // #if 0
 
 struct TQueryParams : public TObject
 {
@@ -114,7 +126,7 @@ enum TPromptKind
   pkCryptoCard,
   pkKeybInteractive,
   pkPassword,
-  pkNewPassword
+  pkNewPassword,
 };
 
 enum TPromptUserParam
@@ -130,19 +142,19 @@ bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
 class TTerminal;
 class TRemoteFile;
 
-/*
+#if 0
 typedef void (__closure *TFileFoundEvent)
   (TTerminal * Terminal, const UnicodeString FileName, const TRemoteFile * File,
    bool & Cancel);
-*/
+#endif // #if 0
 typedef nb::FastDelegate4<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*FileName*/,
   const TRemoteFile * /*File*/,
   bool & /*Cancel*/> TFileFoundEvent;
-/*
+#if 0
 typedef void (__closure *TFindingFileEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
-*/
+#endif // #if 0
 typedef nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool & /*Cancel*/> TFindingFileEvent;
 

@@ -76,6 +76,7 @@ public:
   static ExtException * CloneFrom(const Exception * E);
 
   virtual ExtException * Clone() const;
+  virtual void Rethrow();
 
 protected:
   void AddMoreMessages(const Exception * E);
@@ -183,15 +184,22 @@ public:
      Obj->GetKind() == OBJECT_CLASS_ESshTerminate;
   }
 public:
-  explicit inline ESshTerminate(const Exception * E, const UnicodeString & Msg, TOnceDoneOperation AOperation) :
+  explicit inline ESshTerminate(
+    const Exception * E, const UnicodeString & Msg, TOnceDoneOperation AOperation,
+    const UnicodeString & ATargetLocalPath, const UnicodeString & ADestLocalFileName) :
     EFatal(OBJECT_CLASS_ESshTerminate, E, Msg),
-    Operation(AOperation)
+    Operation(AOperation),
+    TargetLocalPath(ATargetLocalPath),
+    DestLocalFileName(ADestLocalFileName)
   {
   }
 
   virtual ExtException * Clone() const;
+  virtual void Rethrow();
 
   TOnceDoneOperation Operation;
+  UnicodeString TargetLocalPath;
+  UnicodeString DestLocalFileName;
 };
 
 class ECallbackGuardAbort : public EAbort

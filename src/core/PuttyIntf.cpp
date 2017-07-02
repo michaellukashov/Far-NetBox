@@ -685,12 +685,6 @@ void FreeKey(TPrivateKey * PrivateKey)
   sfree(Ssh2Key);
 }
 
-int64_t ParseSize(const UnicodeString & SizeStr)
-{
-  AnsiString AnsiSizeStr = AnsiString(SizeStr);
-  return parse_blocksize64(AnsiSizeStr.c_str());
-}
-
 bool HasGSSAPI(const UnicodeString & CustomPath)
 {
   static int has = -1;
@@ -721,10 +715,10 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
     }
     __finally
     {
-/*
+#if 0
       ssh_gss_cleanup(List);
       conf_free(conf);
-*/
+#endif // #if 0
     };
 
     if (has < 0)
@@ -802,5 +796,10 @@ UnicodeString Sha256(const char * Data, size_t Size)
   putty_SHA256_Simple(Data, static_cast<int>(Size), Digest);
   UnicodeString Result(BytesToHex(Digest, _countof(Digest)));
   return Result;
+}
+
+void DllHijackingProtection()
+{
+  dll_hijacking_protection();
 }
 

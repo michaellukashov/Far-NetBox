@@ -10,7 +10,9 @@ bool IsWin64();
 void CopyToClipboard(const UnicodeString & AText);
 void CopyToClipboard(TStrings * Strings);
 
-bool VerifyAndConvertKey(const UnicodeString & AFileName, bool TypeOnly);
-bool VerifyKey(const UnicodeString & AFileName, bool TypeOnly);
+void VerifyAndConvertKey(const UnicodeString & AFileName, TSshProt SshProt);
+void VerifyKey(const UnicodeString & FileName, TSshProt SshProt);
 void VerifyKeyIncludingVersion(const UnicodeString & AFileName, TSshProt SshProt);
 void VerifyCertificate(const UnicodeString & AFileName);
+void OpenFileInExplorer(const UnicodeString & Path);
+void OpenFolderInExplorer(const UnicodeString & Path);

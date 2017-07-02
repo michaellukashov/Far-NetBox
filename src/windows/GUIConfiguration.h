@@ -27,6 +27,7 @@ extern const intptr_t ccShowResults;
 extern const intptr_t ccCopyResults;
 extern const intptr_t ccSet;
 extern const intptr_t ccRemoteFiles;
+extern const intptr_t ccShowResultsInMsgBox;
 
 const int soRecurse =        0x01;
 const int soSynchronize =    0x02;
@@ -45,7 +46,9 @@ public:
   TGUICopyParamType();
   TGUICopyParamType(const TCopyParamType & Source);
   explicit TGUICopyParamType(const TGUICopyParamType & Source);
-  virtual ~TGUICopyParamType() {}
+  virtual ~TGUICopyParamType()
+  {
+  }
 
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage);
@@ -55,17 +58,18 @@ public:
   TGUICopyParamType & operator =(const TGUICopyParamType & rhp);
   TGUICopyParamType & operator =(const TCopyParamType & rhp);
 
-/*
+#if 0
   __property bool Queue = { read = FQueue, write = FQueue };
   __property bool QueueNoConfirmation = { read = FQueueNoConfirmation, write = FQueueNoConfirmation };
-  __property bool QueueIndividually = { read = FQueueIndividually, write = FQueueIndividually };
-*/
+  __property bool QueueParallel = { read = FQueueParallel, write = FQueueParallel };
+#endif // #if 0
+
   bool GetQueue() const { return FQueue; }
   void SetQueue(bool Value) { FQueue = Value; }
   bool GetQueueNoConfirmation() const { return FQueueNoConfirmation; }
   void SetQueueNoConfirmation(bool Value) { FQueueNoConfirmation = Value; }
-  bool GetQueueIndividually() const { return FQueueIndividually; }
-  void SetQueueIndividually(bool Value) { FQueueIndividually = Value; }
+  bool GetQueueParallel() const { return FQueueParallel; }
+  void SetQueueParallel(bool Value) { FQueueParallel = Value; }
 
 protected:
   void GUIDefault();
@@ -74,7 +78,7 @@ protected:
 private:
   bool FQueue;
   bool FQueueNoConfirmation;
-  bool FQueueIndividually;
+  bool FQueueParallel;
 };
 
 struct TCopyParamRuleData : public TObject
@@ -108,14 +112,13 @@ public:
 
   bool operator ==(const TCopyParamRule & rhp) const;
 
-/*
+#if 0
   __property TCopyParamRuleData Data = { read = FData, write = FData };
   __property bool IsEmpty = { read = GetEmpty };
-*/
+#endif // #if 0
 
   TCopyParamRuleData GetData() const { return FData; }
-  void SetData(const TCopyParamRuleData & Value);
-  bool GetEmpty() const;
+  void SetData(const TCopyParamRuleData & Value) { FData = Value; }
 
 public:
   TCopyParamRule & operator=(const TCopyParamRule & other);
@@ -123,8 +126,19 @@ public:
 private:
   TCopyParamRuleData FData;
 
-  inline bool Match(const UnicodeString & Mask,
+  bool Match(const UnicodeString & Mask,
     const UnicodeString & Value, bool Path, bool Local, int ForceDirectoryMasks) const;
+
+public:
+  bool GetEmpty() const;
+};
+
+class TLocaleInfo : public TObject
+{
+public:
+  LCID Locale;
+  UnicodeString Name;
+  int Completeness;
 };
 
 class TCopyParamList : public TObject
@@ -156,7 +170,7 @@ public:
   void Delete(intptr_t Index);
   intptr_t IndexOfName(const UnicodeString & Name) const;
 
-/*
+#if 0
   __property int Count = { read = GetCount };
   __property UnicodeString Names[int Index] = { read = GetName };
   __property const TCopyParamRule * Rules[int Index] = { read = GetRule };
@@ -164,7 +178,7 @@ public:
   __property bool Modified = { read = FModified };
   __property TStrings * NameList = { read = GetNameList };
   __property bool AnyRule = { read = GetAnyRule };
-*/
+#endif // #if 0
 
 private:
   static UnicodeString FInvalidChars;
@@ -201,12 +215,11 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TFarConfiguration;
   }
 private:
-  TStrings * FLocales;
+  TObjectList * FLocales;
   UnicodeString FLastLocalesExts;
   bool FContinueOnError;
   bool FConfirmCommandSession;
   UnicodeString FPuttyPath;
-  UnicodeString FPSftpPath;
   bool FPuttyPassword;
   bool FTelnetForFtpInPutty;
   UnicodeString FPuttySession;
@@ -235,10 +248,11 @@ private:
   UnicodeString FChecksumAlg;
   intptr_t FSessionReopenAutoIdle;
   LCID FAppliedLocale;
+  // Corresponds to FAppliedLocale
+  UnicodeString FLocaleModuleName;
 
 protected:
   LCID FLocale;
-  UnicodeString FLocaleModuleName;
 
 public:
   virtual void SaveData(THierarchicalStorage * Storage, bool All);
@@ -247,12 +261,13 @@ public:
   void SetLocale(LCID Value);
   LCID GetLocaleSafe() { return GetLocale(); }
   void SetLocaleSafe(LCID Value);
-  UnicodeString GetLocaleHex();
+  UnicodeString GetAppliedLocaleHex() const;
   virtual HINSTANCE LoadNewResourceModule(LCID ALocale,
     UnicodeString & AFileName);
   HANDLE GetResourceModule();
   void SetResourceModule(HINSTANCE Instance);
-  TStrings * GetLocales();
+  TObjectList * GetLocales();
+  void AddLocale(LCID Locale, const UnicodeString & Name);
   void FreeResourceModule(HANDLE Instance);
   void SetDefaultCopyParam(const TGUICopyParamType & Value);
   virtual bool GetRememberPassword() const;
@@ -270,9 +285,16 @@ public:
   void SetQueueTransfersLimit(intptr_t Value);
   void SetQueueKeepDoneItems(bool Value);
   void SetQueueKeepDoneItemsFor(intptr_t Value);
-  void SetLocaleInternal(LCID Value, bool Safe);
+  void SetLocaleInternal(LCID Value, bool Safe, bool CompleteOnly);
   void SetInitialLocale(LCID Value);
+  void SetAppliedLocale(LCID AppliedLocale, const UnicodeString & LocaleModuleName);
   bool GetCanApplyLocaleImmediately() const;
+  UnicodeString GetTranslationModule(const UnicodeString & Path) const;
+  UnicodeString AddTranslationsSubFolder(const UnicodeString & Path) const;
+  void FindLocales(const UnicodeString & LocalesMask, TStrings * Exts, UnicodeString & LocalesExts);
+  virtual int GetResourceModuleCompleteness(HINSTANCE Module);
+  virtual bool IsTranslationComplete(HINSTANCE Module);
+  static intptr_t LocalesCompare(void * Item1, void * Item2);
 
 public:
   TGUIConfiguration(TObjectClassId Kind);
@@ -283,31 +305,30 @@ public:
   HANDLE ChangeToDefaultResourceModule();
   HANDLE ChangeResourceModule(HANDLE Instance);
   LCID InternalLocale() const;
-  UnicodeString LocaleCopyright();
-  UnicodeString LocaleVersion();
+  UnicodeString AppliedLocaleCopyright() const;
+  UnicodeString AppliedLocaleVersion();
   TStoredSessionList * SelectPuttySessionsForImport(TStoredSessionList * Sessions, UnicodeString & Error);
   bool AnyPuttySessionForImport(TStoredSessionList * Sessions);
 
-/*
+#if 0
   __property bool ContinueOnError = { read = FContinueOnError, write = FContinueOnError };
   __property bool ConfirmCommandSession = { read = FConfirmCommandSession, write = FConfirmCommandSession };
-  __property int SynchronizeParams = { read = FSynchronizeParams, write = FSynchronizeParams };
-  __property int SynchronizeOptions = { read = FSynchronizeOptions, write = FSynchronizeOptions };
-  __property int SynchronizeModeAuto = { read = FSynchronizeModeAuto, write = FSynchronizeModeAuto };
-  __property int SynchronizeMode = { read = FSynchronizeMode, write = FSynchronizeMode };
-  __property int MaxWatchDirectories = { read = FMaxWatchDirectories, write = FMaxWatchDirectories };
-  __property int QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
+  __property intptr_t SynchronizeParams = { read = FSynchronizeParams, write = FSynchronizeParams };
+  __property intptr_t SynchronizeOptions = { read = FSynchronizeOptions, write = FSynchronizeOptions };
+  __property intptr_t SynchronizeModeAuto = { read = FSynchronizeModeAuto, write = FSynchronizeModeAuto };
+  __property intptr_t SynchronizeMode = { read = FSynchronizeMode, write = FSynchronizeMode };
+  __property intptr_t MaxWatchDirectories = { read = FMaxWatchDirectories, write = FMaxWatchDirectories };
+  __property intptr_t QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
   __property bool QueueKeepDoneItems = { read = FQueueKeepDoneItems, write = SetQueueKeepDoneItems };
-  __property int QueueKeepDoneItemsFor = { read = FQueueKeepDoneItemsFor, write = SetQueueKeepDoneItemsFor };
+  __property intptr_t QueueKeepDoneItemsFor = { read = FQueueKeepDoneItemsFor, write = SetQueueKeepDoneItemsFor };
   __property bool QueueAutoPopup = { read = FQueueAutoPopup, write = FQueueAutoPopup };
   __property bool SessionRememberPassword = { read = FSessionRememberPassword, write = FSessionRememberPassword };
   __property LCID Locale = { read = GetLocale, write = SetLocale };
   __property LCID LocaleSafe = { read = GetLocale, write = SetLocaleSafe };
-  __property UnicodeString LocaleHex = { read = GetLocaleHex };
-  __property TStrings * Locales = { read = GetLocales };
+  __property UnicodeString AppliedLocaleHex = { read = GetAppliedLocaleHex };
+  __property TObjectList * Locales = { read = GetLocales };
   __property UnicodeString PuttyPath = { read = FPuttyPath, write = FPuttyPath };
   __property UnicodeString DefaultPuttyPath = { read = FDefaultPuttyPath };
-  __property UnicodeString PSftpPath = { read = FPSftpPath, write = FPSftpPath };
   __property bool PuttyPassword = { read = FPuttyPassword, write = FPuttyPassword };
   __property bool TelnetForFtpInPutty = { read = FTelnetForFtpInPutty, write = FTelnetForFtpInPutty };
   __property UnicodeString PuttySession = { read = FPuttySession, write = FPuttySession };
@@ -328,7 +349,7 @@ public:
   __property int SessionReopenAutoIdle = { read = FSessionReopenAutoIdle, write = FSessionReopenAutoIdle };
   __property bool CanApplyLocaleImmediately = { read = GetCanApplyLocaleImmediately };
   __property LCID AppliedLocale = { read = FAppliedLocale };
-*/
+#endif // #if 0
 
 public:
 
@@ -379,6 +400,7 @@ public:
   void SetChecksumAlg(const UnicodeString & Value);
   intptr_t GetSessionReopenAutoIdle() const { return FSessionReopenAutoIdle; }
   void SetSessionReopenAutoIdle(intptr_t Value) { FSessionReopenAutoIdle = Value; }
+  LCID GetAppliedLocale() const { return FAppliedLocale; }
 };
 
 TGUIConfiguration * GetGUIConfiguration();

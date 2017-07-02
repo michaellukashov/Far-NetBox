@@ -38,3 +38,5 @@ UnicodeString GetKeyTypeFromFingerprint(const UnicodeString & AFingerprint);
 UnicodeString GetPuTTYVersion();
 
 UnicodeString Sha256(const char * Data, size_t Size);
+
+void DllHijackingProtection();

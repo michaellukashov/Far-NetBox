@@ -10,6 +10,10 @@ extern const wchar_t EngShortMonthNames[12][4];
 extern const wchar_t TokenPrefix;
 extern const wchar_t NoReplacement;
 extern const wchar_t TokenReplacement;
+extern const UnicodeString LocalInvalidChars;
+extern const UnicodeString PasswordMask;
+extern const UnicodeString Ellipsis;
+
 #define LOCAL_INVALID_CHARS "/\\:*?\"<>|"
 #define PASSWORD_MASK "***"
 #define sLineBreak L"\n"
@@ -36,11 +40,11 @@ const uint32_t qaLast  = qaReport;
 
 const uint32_t qaNeverAskAgain = 0x00010000;
 
-const int qpFatalAbort           = 0x01;
-const int qpNeverAskAgainCheck   = 0x02;
-const int qpAllowContinueOnError = 0x04;
-const int qpIgnoreAbort          = 0x08;
-const int qpWaitInBatch          = 0x10;
+const intptr_t qpFatalAbort           = 0x01;
+const intptr_t qpNeverAskAgainCheck   = 0x02;
+const intptr_t qpAllowContinueOnError = 0x04;
+const intptr_t qpIgnoreAbort          = 0x08;
+const intptr_t qpWaitInBatch          = 0x10;
 
 inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
 
@@ -80,7 +84,9 @@ UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S);
 UnicodeString RemoveEmptyLines(const UnicodeString & S);
 bool IsNumber(const UnicodeString & Str);
 UnicodeString GetSystemTemporaryDirectory();
-UnicodeString GetShellFolderPath(int CSIdl);
+UnicodeString GetShellFolderPath(intptr_t CSIdl);
+UnicodeString GetPersonalFolder();
+UnicodeString GetDesktopFolder();
 UnicodeString StripPathQuotes(const UnicodeString & APath);
 UnicodeString AddQuotes(const UnicodeString & AStr);
 UnicodeString AddPathQuotes(const UnicodeString & APath);
@@ -99,8 +105,10 @@ void ReformatFileNameCommand(UnicodeString & Command);
 UnicodeString EscapeParam(const UnicodeString & AParam);
 UnicodeString EscapePuttyCommandParam(const UnicodeString & AParam);
 UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str);
+bool CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2);
+bool SamePaths(const UnicodeString & APath1, const UnicodeString & APath2);
 bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2);
-bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2);
+bool IsPathToSameFile(const UnicodeString & APath1, const UnicodeString & APath2);
 intptr_t CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2);
 bool IsReservedName(const UnicodeString & AFileName);
 UnicodeString ApiPath(const UnicodeString & APath);
@@ -128,6 +136,7 @@ uintptr_t CancelAnswer(uintptr_t Answers);
 uintptr_t AbortAnswer(uintptr_t Answers);
 uintptr_t ContinueAnswer(uintptr_t Answers);
 UnicodeString LoadStr(intptr_t Ident, uintptr_t MaxLength = 0);
+UnicodeString LoadStrFrom(HINSTANCE Module, intptr_t Ident);
 UnicodeString LoadStrPart(intptr_t Ident, intptr_t Part);
 UnicodeString EscapeHotkey(const UnicodeString & Caption);
 bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
@@ -142,6 +151,8 @@ bool IsWin10();
 bool IsWine();
 int64_t Round(double Number);
 bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, bool Add);
+bool TryStrToSize(UnicodeString SizeStr, int64_t & Size);
+UnicodeString SizeToStr(int64_t Size);
 LCID GetDefaultLCID();
 UnicodeString DefaultEncodingName();
 UnicodeString WindowsProductName();
@@ -156,7 +167,7 @@ TStringList * TextToStringList(const UnicodeString & Text);
 UnicodeString StringsToText(TStrings * Strings);
 TStrings * CloneStrings(TStrings * Strings);
 UnicodeString TrimVersion(const UnicodeString & Version);
-UnicodeString FormatVersion(int MajorVersion, int MinorVersion, int Patch);
+UnicodeString FormatVersion(intptr_t MajorVersion, intptr_t MinorVersion, intptr_t Patch);
 TFormatSettings GetEngFormatSettings();
 intptr_t ParseShortEngMonthName(const UnicodeString & MonthStr);
 // The defaults are equal to defaults of TStringList class (except for Sorted)
@@ -171,9 +182,15 @@ void ParseCertificate(const UnicodeString & Path,
 bool IsHttpUrl(const UnicodeString & S);
 bool IsHttpOrHttpsUrl(const UnicodeString & S);
 UnicodeString ChangeUrlProtocol(const UnicodeString & S, const UnicodeString & Protocol);
+#if 0
 void LoadScriptFromFile(const UnicodeString & FileName, TStrings * Lines);
+#endif // if 0
 UnicodeString StripEllipsis(const UnicodeString & S);
 
+#if 0
+typedef void (__closure* TProcessLocalFileEvent)
+  (const UnicodeString FileName, const TSearchRec Rec, void * Param);
+#endif // #if 0
 typedef nb::FastDelegate3<void,
   const UnicodeString & /*FileName*/, const TSearchRec & /*Rec*/,
   void * /*Param*/> TProcessLocalFileEvent;
@@ -228,12 +245,13 @@ intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2);
 intptr_t TimeToMSec(const TDateTime & T);
 intptr_t TimeToSeconds(const TDateTime & T);
 intptr_t TimeToMinutes(const TDateTime & T);
+UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime);
 
 #pragma warning(push)
 #pragma warning(disable: 4512) // assignment operator could not be generated
 
 template<class T>
-class TValueRestorer : public TObject
+class TValueRestorer // : public TObject
 {
 public:
   inline explicit TValueRestorer(T & Target, const T & Value) :
@@ -348,14 +366,64 @@ private:
 
 typedef rde::vector<UnicodeString> TUnicodeStringVector;
 
-UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 
 
 namespace base {
 
-UnicodeString UnixExtractFileExt(const UnicodeString & APath);
-UnicodeString UnixExtractFileName(const UnicodeString & APath);
-UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix);
+UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
+//UnicodeString UnixExtractFileExt(const UnicodeString & APath);
+//UnicodeString UnixExtractFileName(const UnicodeString & APath);
+//UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix);
 UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName);
+
+} // namespace base
+
+// from  RemoteFiles.h
+
+enum TModificationFmt
+{
+  mfNone,
+  mfMDHM,
+  mfMDY,
+  mfFull,
+};
+
+namespace base {
+
+bool IsUnixStyleWindowsPath(const UnicodeString & APath);
+bool UnixIsAbsolutePath(const UnicodeString & APath);
+UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & APath);
+UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & APath, bool Simple = false);
+UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & APath);
+UnicodeString UnixCombinePaths(const UnicodeString & APath1, const UnicodeString & APath2);
+UnicodeString UnixExtractFileDir(const UnicodeString & APath);
+UnicodeString UnixExtractFilePath(const UnicodeString & APath);
+UnicodeString UnixExtractFileName(const UnicodeString & APath);
+UnicodeString UnixExtractFileExt(const UnicodeString & APath);
+Boolean UnixSamePath(const UnicodeString & APath1, const UnicodeString & APath2);
+bool UnixIsChildPath(const UnicodeString & AParent, const UnicodeString & AChild);
+bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
+bool UnixExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
+UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix);
+bool IsUnixRootPath(const UnicodeString & APath);
+UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName);
+bool IsUnixHiddenFile(const UnicodeString & APath);
+UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APath);
+UnicodeString FromUnixPath(const UnicodeString & APath);
+UnicodeString ToUnixPath(const UnicodeString & APath);
+UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, bool Unix);
+UnicodeString MakeFileList(const TStrings * AFileList);
+TDateTime ReduceDateTimePrecision(const TDateTime & ADateTime,
+  TModificationFmt Precision);
+TModificationFmt LessDateTimePrecision(
+  TModificationFmt Precision1, TModificationFmt Precision2);
+UnicodeString UserModificationStr(const TDateTime & DateTime,
+  TModificationFmt Precision);
+UnicodeString ModificationStr(const TDateTime & DateTime,
+  TModificationFmt Precision);
+int FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
+  UnicodeString * TypeName = nullptr);
+bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2);
+UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, bool Unix);
 
 } // namespace base

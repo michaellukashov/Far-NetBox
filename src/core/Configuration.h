@@ -59,6 +59,10 @@ private:
   bool FLogFileAppend;
   bool FLogSensitive;
   bool FPermanentLogSensitive;
+  int64_t FLogMaxSize;
+  int64_t FPermanentLogMaxSize;
+  intptr_t FLogMaxCount;
+  intptr_t FPermanentLogMaxCount;
   intptr_t FLogProtocol;
   intptr_t FPermanentLogProtocol;
   intptr_t FActualLogProtocol;
@@ -74,6 +78,7 @@ private:
   intptr_t FSessionReopenBackground;
   intptr_t FSessionReopenTimeout;
   intptr_t FSessionReopenAutoStall;
+  UnicodeString FCustomIniFileStorageName;
   UnicodeString FIniFileStorageName;
   UnicodeString FVirtualIniFileStorageName;
   std::unique_ptr<TStrings> FOptionsStorage;
@@ -88,6 +93,7 @@ private:
   UnicodeString FPuttyRegistryStorageKey;
   UnicodeString FExternalIpAddress;
   bool FTryFtpWhenSshFails;
+  intptr_t FParallelDurationThreshold;
   bool FScripting;
 
   bool FDisablePasswordStoring;
@@ -110,36 +116,42 @@ public:
   UnicodeString GetPuttySessionsKey() const;
   void SetRandomSeedFile(const UnicodeString & Value);
   UnicodeString GetRandomSeedFileName() const;
-  void SetPuttyRegistryStorageKey(const UnicodeString & Value);
+  void SetPuttyRegistryStorageKey(UnicodeString Value);
   UnicodeString GetSshHostKeysSubKey() const;
   UnicodeString GetRootKeyStr() const;
   UnicodeString GetConfigurationSubKey() const;
   TEOLType GetLocalEOLType() const;
   void SetLogging(bool Value);
-  void SetLogFileName(const UnicodeString & Value);
+  bool GetLogging() const;
+  void SetLogFileName(UnicodeString Value);
+  UnicodeString GetLogFileName() const;
   bool GetLogToFile() const;
-  void SetLogWindowLines(intptr_t Value);
-  void SetLogWindowComplete(bool Value);
-  bool GetLogWindowComplete() const;
   void SetLogFileAppend(bool Value);
-  bool GetLogSensitive() const { return FLogSensitive; }
   void SetLogSensitive(bool Value);
+  void SetLogMaxSize(int64_t Value);
+  int64_t GetLogMaxSize() const;
+  void SetLogMaxCount(intptr_t Value);
+  intptr_t GetLogMaxCount() const;
   void SetLogProtocol(intptr_t Value);
   void SetLogActions(bool Value);
-  void SetLogActionsRequired(bool Value);
-  void SetActionsLogFileName(const UnicodeString & Value);
+  bool GetLogActions() const;
+  void SetActionsLogFileName(UnicodeString Value);
+  UnicodeString GetPermanentActionsLogFileName() const;
+  UnicodeString GetActionsLogFileName() const;
   UnicodeString GetDefaultLogFileName() const;
-  UnicodeString GetTimeFormat() const;
+  UnicodeString TimeFormat() const;
   void SetStorage(TStorage Value);
   UnicodeString GetRegistryStorageKey() const;
-//  UnicodeString GetIniFileStorageNameForReadingWriting() const;
-//  UnicodeString GetIniFileStorageNameForReading();
-//  UnicodeString GetIniFileStorageName(bool ReadingOnly);
-  void SetIniFileStorageName(const UnicodeString & Value);
+#if 0
+  UnicodeString GetIniFileStorageNameForReadingWriting() const;
+  UnicodeString GetIniFileStorageNameForReading();
+  UnicodeString GetIniFileStorageName(bool ReadingOnly);
+#endif // #if 0
+  void SetIniFileStorageName(UnicodeString Value);
   void SetOptionsStorage(TStrings * Value);
   TStrings * GetOptionsStorage();
   UnicodeString GetPartialExt() const;
-  UnicodeString GetFileInfoString(const UnicodeString & Key) const;
+  UnicodeString GetFileInfoString(UnicodeString Key) const;
   void SetSessionReopenAuto(intptr_t Value);
   void SetSessionReopenBackground(intptr_t Value);
   void SetSessionReopenTimeout(intptr_t Value);
@@ -150,8 +162,9 @@ public:
   void SetShowFtpWelcomeMessage(bool Value);
   intptr_t GetCompoundVersion() const;
   void UpdateActualLogProtocol();
-  void SetExternalIpAddress(const UnicodeString & Value);
+  void SetExternalIpAddress(UnicodeString Value);
   void SetTryFtpWhenSshFails(bool Value);
+  void SetParallelDurationThreshold(intptr_t Value);
   bool GetCollectUsage() const;
   void SetCollectUsage(bool Value);
   bool GetIsUnofficial() const;
@@ -187,6 +200,9 @@ public:
   void SetAutoReadDirectoryAfterOp(bool Value);
   virtual bool GetRememberPassword() const;
   UnicodeString GetReleaseType() const;
+  UnicodeString LoadCustomIniFileStorageName();
+  void SaveCustomIniFileStorageName();
+  UnicodeString GetRegistryStorageOverrideKey() const;
 
   virtual UnicodeString ModuleFileName() const;
 
@@ -197,23 +213,16 @@ public:
   UnicodeString GetFileProductName(const UnicodeString & AFileName) const;
   UnicodeString GetFileCompanyName(const UnicodeString & AFileName) const;
 
-  /*__property bool PermanentLogging  = { read=FPermanentLogging, write=SetLogging };
-  __property UnicodeString PermanentLogFileName  = { read=FPermanentLogFileName, write=SetLogFileName };
-  __property bool PermanentLogActions  = { read=FPermanentLogActions, write=SetLogActions };
-  __property UnicodeString PermanentActionsLogFileName  = { read=FPermanentActionsLogFileName, write=SetActionsLogFileName };
-  __property int PermanentLogProtocol  = { read=FPermanentLogProtocol, write=SetLogProtocol };
-  __property bool PermanentLogSensitive  = { read=FPermanentLogSensitive, write=SetLogSensitive };*/
-
-  bool GetPermanentLogging() const { return FPermanentLogging; }
-  void SetPermanentLogging(bool Value) { FPermanentLogging = Value; }
-  UnicodeString GetPermanentLogFileName() const;
-  void SetPermanentLogFileName(const UnicodeString & Value);
-  bool GetPermanentLogActions() const { return FPermanentLogActions; }
-  void SetPermanentLogActions(bool Value) { FPermanentLogActions = Value; }
-  UnicodeString GetPermanentActionsLogFileName() const;
-  void SetPermanentActionsLogFileName(const UnicodeString & Value);
-  intptr_t GetPermanentLogProtocol() const { return FPermanentLogProtocol; }
-  bool GetPermanentLogSensitive() const { return FPermanentLogSensitive; }
+#if 0
+  __property bool PermanentLogging  = { read=GetLogging, write=SetLogging };
+  __property UnicodeString PermanentLogFileName  = { read=GetLogFileName, write=SetLogFileName };
+  __property bool PermanentLogActions  = { read=GetLogActions, write=SetLogActions };
+  __property UnicodeString PermanentActionsLogFileName  = { read=GetPermanentActionsLogFileName, write=SetActionsLogFileName };
+  __property intptr_t PermanentLogProtocol  = { read=FPermanentLogProtocol, write=SetLogProtocol };
+  __property bool PermanentLogSensitive  = { read=FPermanentLogSensitive, write=SetLogSensitive };
+  __property int64_t PermanentLogMaxSize  = { read=GetLogMaxSize, write=SetLogMaxSize };
+  __property intptr_t PermanentLogMaxCount  = { read=GetLogMaxCount, write=SetLogMaxCount };
+#endif // #if 0
 
 public:
   // TConfiguration() : TObject(OBJECT_CLASS_TConfiguration) {}
@@ -224,8 +233,12 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save();
   void SaveExplicit();
+  void MoveStorage(TStorage AStorage, const UnicodeString & ACustomIniFileStorageName);
+  void ScheduleCustomIniFileStorageUse(const UnicodeString & ACustomIniFileStorageName);
   void SetNulStorage();
   void SetDefaultStorage();
+  UnicodeString GetAutomaticIniFileStorageName(bool ReadingOnly);
+  UnicodeString GetDefaultIniFileExportPath();
   void Export(const UnicodeString & AFileName);
   void Import(const UnicodeString & AFileName);
   void CleanupConfiguration();
@@ -245,10 +258,12 @@ public:
   UnicodeString GetLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType);
   virtual THierarchicalStorage * CreateConfigStorage();
   virtual THierarchicalStorage * CreateStorage(bool & SessionList);
-  void TemporaryLogging(const UnicodeString & ALogFileName);
-  void TemporaryActionsLogging(const UnicodeString & ALogFileName);
+  void TemporaryLogging(UnicodeString ALogFileName);
+  void TemporaryActionsLogging(UnicodeString ALogFileName);
   void TemporaryLogProtocol(intptr_t ALogProtocol);
   void TemporaryLogSensitive(bool ALogSensitive);
+  void TemporaryLogMaxSize(int64_t ALogMaxSize);
+  void TemporaryLogMaxCount(intptr_t ALogMaxCount);
   virtual RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
   virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
@@ -258,8 +273,13 @@ public:
   TStoredSessionList * SelectFilezillaSessionsForImport(
     TStoredSessionList * Sessions, UnicodeString & Error);
   bool AnyFilezillaSessionForImport(TStoredSessionList * Sessions);
+  TStoredSessionList * SelectKnownHostsSessionsForImport(
+    TStoredSessionList * Sessions, UnicodeString & Error);
+  TStoredSessionList * SelectKnownHostsSessionsForImport(
+    TStrings * Lines, TStoredSessionList * Sessions, UnicodeString & Error);
 
-  /*__property TVSFixedFileInfo *FixedApplicationInfo  = { read=GetFixedApplicationInfo };
+#if 0
+  __property TVSFixedFileInfo *FixedApplicationInfo  = { read=GetFixedApplicationInfo };
   __property void * ApplicationInfo  = { read=GetApplicationInfo };
   __property TUsage * Usage = { read = FUsage };
   __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
@@ -274,7 +294,7 @@ public:
   __property TEOLType LocalEOLType = { read = GetLocalEOLType };
   __property UnicodeString VersionStr = { read=GetVersionStr };
   __property UnicodeString Version = { read=GetVersion };
-  __property int CompoundVersion = { read=GetCompoundVersion };
+  __property intptr_t CompoundVersion = { read=GetCompoundVersion };
   __property UnicodeString ProductVersion = { read=GetProductVersion };
   __property UnicodeString ProductName = { read=GetProductName };
   __property UnicodeString CompanyName = { read=GetCompanyName };
@@ -284,13 +304,13 @@ public:
   __property bool LogToFile  = { read=GetLogToFile };
   __property bool LogFileAppend  = { read=FLogFileAppend, write=SetLogFileAppend };
   __property bool LogSensitive  = { read=FLogSensitive, write=SetLogSensitive };
-  __property int LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
-  __property int ActualLogProtocol  = { read=FActualLogProtocol };
+  __property int64_t LogMaxSize  = { read=FLogMaxSize, write=SetLogMaxSize };
+  __property intptr_t LogMaxCount  = { read=FLogMaxCount, write=SetLogMaxCount };
+  __property intptr_t LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
+  __property intptr_t ActualLogProtocol  = { read=FActualLogProtocol };
   __property bool LogActions  = { read=FLogActions, write=SetLogActions };
   __property bool LogActionsRequired  = { read=FLogActionsRequired, write=FLogActionsRequired };
-  __property UnicodeString ActionsLogFileName  = { read=FActionsLogFileName, write=SetActionsLogFileName };
-  __property int LogWindowLines  = { read=FLogWindowLines, write=SetLogWindowLines };
-  __property bool LogWindowComplete  = { read=GetLogWindowComplete, write=SetLogWindowComplete };
+  __property UnicodeString ActionsLogFileName  = { read=GetActionsLogFileName, write=SetActionsLogFileName };
   __property UnicodeString DefaultLogFileName  = { read=GetDefaultLogFileName };
   __property TNotifyEvent OnChange = { read = FOnChange, write = FOnChange };
   __property bool ConfirmOverwriting = { read = GetConfirmOverwriting, write = SetConfirmOverwriting};
@@ -298,20 +318,22 @@ public:
   __property bool AutoReadDirectoryAfterOp = { read = GetAutoReadDirectoryAfterOp, write = SetAutoReadDirectoryAfterOp};
   __property bool RememberPassword = { read = GetRememberPassword };
   __property UnicodeString PartialExt = {read=GetPartialExt};
-  __property int SessionReopenAuto = { read = FSessionReopenAuto, write = SetSessionReopenAuto };
-  __property int SessionReopenBackground = { read = FSessionReopenBackground, write = SetSessionReopenBackground };
-  __property int SessionReopenTimeout = { read = FSessionReopenTimeout, write = SetSessionReopenTimeout };
-  __property int SessionReopenAutoStall = { read = FSessionReopenAutoStall, write = SetSessionReopenAutoStall };
-  __property int TunnelLocalPortNumberLow = { read = FTunnelLocalPortNumberLow, write = SetTunnelLocalPortNumberLow };
-  __property int TunnelLocalPortNumberHigh = { read = FTunnelLocalPortNumberHigh, write = SetTunnelLocalPortNumberHigh };
-  __property int CacheDirectoryChangesMaxSize = { read = FCacheDirectoryChangesMaxSize, write = SetCacheDirectoryChangesMaxSize };
+  __property intptr_t SessionReopenAuto = { read = FSessionReopenAuto, write = SetSessionReopenAuto };
+  __property intptr_t SessionReopenBackground = { read = FSessionReopenBackground, write = SetSessionReopenBackground };
+  __property intptr_t SessionReopenTimeout = { read = FSessionReopenTimeout, write = SetSessionReopenTimeout };
+  __property intptr_t SessionReopenAutoStall = { read = FSessionReopenAutoStall, write = SetSessionReopenAutoStall };
+  __property intptr_t TunnelLocalPortNumberLow = { read = FTunnelLocalPortNumberLow, write = SetTunnelLocalPortNumberLow };
+  __property intptr_t TunnelLocalPortNumberHigh = { read = FTunnelLocalPortNumberHigh, write = SetTunnelLocalPortNumberHigh };
+  __property intptr_t CacheDirectoryChangesMaxSize = { read = FCacheDirectoryChangesMaxSize, write = SetCacheDirectoryChangesMaxSize };
   __property bool ShowFtpWelcomeMessage = { read = FShowFtpWelcomeMessage, write = SetShowFtpWelcomeMessage };
   __property UnicodeString ExternalIpAddress = { read = FExternalIpAddress, write = SetExternalIpAddress };
   __property bool TryFtpWhenSshFails = { read = FTryFtpWhenSshFails, write = SetTryFtpWhenSshFails };
+  __property intptr_t ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };
-  __property TStorage Storage  = { read=GetStorage, write=SetStorage };
+  __property TStorage Storage  = { read=GetStorage };
   __property UnicodeString RegistryStorageKey  = { read=GetRegistryStorageKey };
+  __property UnicodeString CustomIniFileStorageName  = { read=FCustomIniFileStorageName };
   __property UnicodeString IniFileStorageName  = { read=GetIniFileStorageNameForReadingWriting, write=SetIniFileStorageName };
   __property UnicodeString IniFileStorageNameForReading  = { read=GetIniFileStorageNameForReading };
   __property TStrings * OptionsStorage = { read = GetOptionsStorage, write = SetOptionsStorage };
@@ -323,18 +345,16 @@ public:
   __property bool DisablePasswordStoring = { read = FDisablePasswordStoring };
   __property bool ForceBanners = { read = FForceBanners };
   __property bool DisableAcceptingHostKeys = { read = FDisableAcceptingHostKeys };
-*/
+#endif // #if 0
+
   // TUsage * GetUsage() { return FUsage; }
   UnicodeString GetPuttyRegistryStorageKey() const { return FPuttyRegistryStorageKey; }
   UnicodeString GetRandomSeedFile() const { return FRandomSeedFile; }
-  bool GetLogging() const { return FLogging; }
-  UnicodeString GetLogFileName() const { return FLogFileName; }
   bool GetLogFileAppend() const { return FLogFileAppend; }
+  bool GetLogSensitive() const { return FLogSensitive; }
   intptr_t GetLogProtocol() const { return FLogProtocol; }
   intptr_t GetActualLogProtocol() const { return FActualLogProtocol; }
-  bool GetLogActions() const { return FLogActions; }
   bool GetLogActionsRequired() const { return FLogActionsRequired; }
-  UnicodeString GetActionsLogFileName() const { return FActionsLogFileName; }
   intptr_t GetLogWindowLines() const { return FLogWindowLines; }
   TNotifyEvent & GetOnChange() { return FOnChange; }
   void SetOnChange(TNotifyEvent Value) { FOnChange = Value; }
@@ -348,13 +368,12 @@ public:
   bool GetShowFtpWelcomeMessage() const { return FShowFtpWelcomeMessage; }
   UnicodeString GetExternalIpAddress() const { return FExternalIpAddress; }
   bool GetTryFtpWhenSshFails() const { return FTryFtpWhenSshFails; }
+  intptr_t GetParallelDurationThreshold() const { return FParallelDurationThreshold; }
   bool GetDisablePasswordStoring() const { return FDisablePasswordStoring; }
   bool GetForceBanners() const { return FForceBanners; }
   bool GetDisableAcceptingHostKeys() const { return FDisableAcceptingHostKeys; }
-  void SetLogToFile(bool Value);
   intptr_t GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
   void SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value);
-
 };
 
 class TShortCuts : public TObject

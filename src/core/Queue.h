@@ -21,11 +21,13 @@ public:
 public:
   explicit TSimpleThread(TObjectClassId Kind);
   virtual ~TSimpleThread();
-  void Init();
+  void InitSimpleThread();
 
   virtual void Start();
   void WaitFor(uintptr_t Milliseconds = INFINITE) const;
-  virtual void Terminate() {}
+  virtual void Terminate()
+  {
+  }
   void Close();
   bool IsFinished() const;
 
@@ -53,7 +55,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TTerminalQueue;
   }
 public:
-  void Init(bool LowPriority);
+  void InitSignalThread(bool LowPriority);
   virtual void Start();
   virtual void Terminate();
   void TriggerEvent() const;
@@ -111,20 +113,23 @@ class TTerminalQueue : public TSignalThread
 {
 friend class TQueueItem;
 friend class TQueueItemProxy;
+friend class TTransferQueueItem;
+friend class TParallelTransferQueueItem;
 NB_DISABLE_COPY(TTerminalQueue)
 public:
   explicit TTerminalQueue(TTerminal * ATerminal, TConfiguration * AConfiguration);
   virtual ~TTerminalQueue();
 
-  void Init();
+  void InitTerminalQueue();
   void AddItem(TQueueItem * Item);
   TTerminalQueueStatus * CreateStatus(TTerminalQueueStatus * Current);
   void Idle();
 
-  /*
+#if 0
   __property bool IsEmpty = { read = GetIsEmpty };
   __property intptr_t TransfersLimit = { read = FTransfersLimit, write = SetTransfersLimit };
   __property intptr_t KeepDoneItemsFor = { read = FKeepDoneItemsFor, write = SetKeepDoneItemsFor };
+  __property int ParallelDurationThreshold = { read = GetParallelDurationThreshold };
   __property bool Enabled = { read = FEnabled, write = SetEnabled };
   __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
   __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };
@@ -132,7 +137,7 @@ public:
   __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
   __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };
   __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };
-*/
+#endif // #if 0
 
 protected:
   friend class TTerminalItem;
@@ -195,8 +200,8 @@ public:
   bool ItemExecuteNow(TQueueItem * Item);
   bool ItemDelete(TQueueItem * Item);
   bool ItemPause(TQueueItem * Item, bool Pause);
-  bool ItemSetCPSLimit(TQueueItem * Item, uintptr_t CPSLimit);
-  bool ItemGetCPSLimit(TQueueItem * Item, uintptr_t & CPSLimit) const;
+  bool ItemSetCPSLimit(TQueueItem * Item, intptr_t CPSLimit);
+  bool ItemGetCPSLimit(TQueueItem * Item, intptr_t & CPSLimit) const;
 
   void RetryItem(TQueueItem * Item);
   void DeleteItem(TQueueItem * Item, bool CanKeep);
@@ -205,6 +210,7 @@ public:
   virtual void ProcessEvent();
   void TerminalFinished(TTerminalItem * TerminalItem);
   bool TerminalFree(TTerminalItem * TerminalItem);
+  intptr_t GetParallelDurationThreshold() const;
 
   void DoQueueItemUpdate(TQueueItem * Item);
   void DoListUpdate();
@@ -214,6 +220,9 @@ public:
   void SetTransfersLimit(intptr_t Value);
   void SetKeepDoneItemsFor(intptr_t Value);
   void SetEnabled(bool Value);
+
+  bool TryAddParallelOperation(TQueueItem * Item, bool Force);
+  bool ContinueParallelOperation() const;
 };
 
 
@@ -221,6 +230,7 @@ class TQueueItem : public TObject
 {
 friend class TTerminalQueue;
 friend class TTerminalItem;
+friend class TParallelTransferQueueItem;
 NB_DISABLE_COPY(TQueueItem)
 public:
   static inline bool classof(const TObject * Obj)
@@ -229,6 +239,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TQueueItem ||
       Obj->GetKind() == OBJECT_CLASS_TLocatedQueueItem ||
       Obj->GetKind() == OBJECT_CLASS_TTransferQueueItem ||
+      Obj->GetKind() == OBJECT_CLASS_TParallelTransferQueueItem ||
       Obj->GetKind() == OBJECT_CLASS_TUploadQueueItem ||
       Obj->GetKind() == OBJECT_CLASS_TDownloadQueueItem;
   }
@@ -239,6 +250,7 @@ public:
     qsPending, qsConnecting, qsProcessing, qsPrompt, qsQuery, qsError,
     qsPaused, qsDone,
   };
+
   struct TInfo : public TObject
   {
     TInfo() :
@@ -254,14 +266,17 @@ public:
     UnicodeString ModifiedLocal;
     UnicodeString ModifiedRemote;
     bool SingleFile;
+    bool Primary;
+    void * GroupToken;
   };
 
   static bool IsUserActionStatus(TStatus Status);
 
-/*
+#if 0
   __property TStatus Status = { read = GetStatus };
   __property HANDLE CompleteEvent = { read = FCompleteEvent, write = FCompleteEvent };
-*/
+#endif // #if 0
+
   HANDLE GetCompleteEvent() const { return FCompleteEvent; }
   void SetCompleteEvent(HANDLE Value) { FCompleteEvent = Value; }
 
@@ -273,7 +288,7 @@ protected:
   TQueueItem::TInfo * FInfo;
   TTerminalQueue * FQueue;
   HANDLE FCompleteEvent;
-  uintptr_t FCPSLimit;
+  intptr_t FCPSLimit;
   TDateTime FDoneAt;
 
   explicit TQueueItem(TObjectClassId Kind);
@@ -287,12 +302,13 @@ public:
   virtual void DoExecute(TTerminal * Terminal) = 0;
   void SetProgress(TFileOperationProgressType & ProgressData);
   void GetData(TQueueItemProxy * Proxy) const;
-  void SetCPSLimit(uintptr_t CPSLimit);
-  bool GetCPSLimit(uintptr_t & CPSLimit) const;
-  uintptr_t GetCPSLimit() const;
-  virtual uintptr_t DefaultCPSLimit() const;
+  void SetCPSLimit(intptr_t CPSLimit);
+  intptr_t GetCPSLimit() const;
+  virtual intptr_t DefaultCPSLimit() const;
   virtual UnicodeString GetStartupDirectory() const = 0;
-  void Complete();
+  virtual void ProgressUpdated();
+  virtual TQueueItem * CreateParallelOperation();
+  bool Complete();
 };
 
 class TQueueItemProxy : public TObject
@@ -316,10 +332,10 @@ public:
   bool Delete();
   bool Pause();
   bool Resume();
-  bool SetCPSLimit(uintptr_t CPSLimit);
-  bool GetCPSLimit(uintptr_t & CPSLimit) const;
+  bool SetCPSLimit(intptr_t CPSLimit);
+  bool GetCPSLimit(intptr_t & CPSLimit) const;
 
-/*
+#if 0
   __property TFileOperationProgressType * ProgressData = { read = GetProgressData };
   __property int64_t TotalTransferred = { read = GetTotalTransferred };
   __property TQueueItem::TInfo * Info = { read = FInfo };
@@ -327,7 +343,8 @@ public:
   __property bool ProcessingUserAction = { read = FProcessingUserAction };
   __property int Index = { read = GetIndex };
   __property void * UserData = { read = FUserData, write = FUserData };
-*/
+#endif // #if 0
+
   TQueueItem::TInfo * GetInfo() const { return FInfo; }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
   bool GetProcessingUserAction() const { return FProcessingUserAction; }
@@ -365,12 +382,16 @@ public:
 
   TQueueItemProxy * FindByQueueItem(TQueueItem * QueueItem);
 
-  /*__property int Count = { read = GetCount };
+#if 0
+  __property int Count = { read = GetCount };
   __property int DoneCount = { read = FDoneCount };
   __property int ActiveCount = { read = GetActiveCount };
   __property int DoneAndActiveCount = { read = GetDoneAndActiveCount };
-  __property int ActiveAndPendingCount = { read = GetActiveAndPendingCount };
-  __property TQueueItemProxy * Items[int Index] = { read = GetItem };*/
+  __property int ActivePrimaryCount = { read = GetActivePrimaryCount };
+  __property TQueueItemProxy * Items[int Index] = { read = GetItem };
+#endif // #if 0
+
+  bool IsOnlyOneActiveAndNoPending() const;
 
 protected:
   TTerminalQueueStatus();
@@ -378,19 +399,23 @@ protected:
   void Add(TQueueItemProxy * ItemProxy);
   void Delete(TQueueItemProxy * ItemProxy);
   void ResetStats() const;
+  void NeedStats() const;
 
 private:
   TList * FList;
   intptr_t FDoneCount;
   mutable intptr_t FActiveCount;
+  mutable intptr_t FActivePrimaryCount;
+  mutable intptr_t FActiveAndPendingPrimaryCount;
 
 public:
   intptr_t GetCount() const;
   intptr_t GetDoneCount() const { return FDoneCount; }
   intptr_t GetActiveCount() const;
   intptr_t GetDoneAndActiveCount() const;
-  intptr_t GetActiveAndPendingCount() const;
-  void SetMasks(const UnicodeString & Value);
+  intptr_t GetActivePrimaryCount() const;
+  intptr_t GetActiveAndPendingPrimaryCount() const;
+  //void SetMasks(const UnicodeString & Value);
   void SetDoneCount(intptr_t Value);
   TQueueItemProxy * GetItem(intptr_t Index) const;
   TQueueItemProxy * GetItem(intptr_t Index);
@@ -404,12 +429,16 @@ public:
     return
       Obj->GetKind() == OBJECT_CLASS_TLocatedQueueItem ||
       Obj->GetKind() == OBJECT_CLASS_TTransferQueueItem ||
+      Obj->GetKind() == OBJECT_CLASS_TParallelTransferQueueItem ||
       Obj->GetKind() == OBJECT_CLASS_TUploadQueueItem ||
       Obj->GetKind() == OBJECT_CLASS_TDownloadQueueItem;
   }
 protected:
   explicit TLocatedQueueItem(TObjectClassId Kind, TTerminal * Terminal);
-  virtual ~TLocatedQueueItem() {}
+  TLocatedQueueItem(const TLocatedQueueItem & Source);
+  virtual ~TLocatedQueueItem()
+  {
+  }
 
   virtual void DoExecute(TTerminal * Terminal);
   virtual UnicodeString GetStartupDirectory() const;
@@ -433,7 +462,7 @@ public:
   explicit TTransferQueueItem(TObjectClassId Kind, TTerminal * Terminal,
     const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
-    bool SingleFile);
+    bool SingleFile, bool Parallel);
   virtual ~TTransferQueueItem();
 
 protected:
@@ -441,8 +470,19 @@ protected:
   UnicodeString FTargetDir;
   TCopyParamType * FCopyParam;
   intptr_t FParams;
+  bool FParallel;
+  DWORD FLastParallelOperationAdded;
+  TParallelOperation * FParallelOperation;
 
-  virtual uintptr_t DefaultCPSLimit() const;
+  virtual intptr_t DefaultCPSLimit() const;
+  virtual void DoExecute(TTerminal * Terminal);
+  virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation) = 0;
+  virtual void ProgressUpdated();
+  virtual TQueueItem * CreateParallelOperation();
+
+public:
+  TParallelOperation * GetParallelOperation() const { return FParallelOperation; }
+  TParallelOperation * GetParallelOperation() { return FParallelOperation; }
 };
 
 class TUploadQueueItem : public TTransferQueueItem
@@ -456,11 +496,13 @@ public:
 public:
   explicit TUploadQueueItem(TTerminal * Terminal,
     const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile);
-  virtual ~TUploadQueueItem() {}
+    const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile, bool Parallel);
+  virtual ~TUploadQueueItem()
+  {
+  }
 
 protected:
-  virtual void DoExecute(TTerminal * Terminal);
+  virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation);
 };
 
 class TDownloadQueueItem : public TTransferQueueItem
@@ -474,11 +516,13 @@ public:
 public:
   explicit TDownloadQueueItem(TTerminal * Terminal,
     const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile);
-  virtual ~TDownloadQueueItem() {}
+    const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile, bool Parallel);
+  virtual ~TDownloadQueueItem()
+  {
+  }
 
 protected:
-  virtual void DoExecute(TTerminal * Terminal);
+  virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation);
 };
 
 class TUserAction;
@@ -487,7 +531,7 @@ class TTerminalThread : public TSignalThread
 NB_DISABLE_COPY(TTerminalThread)
 public:
   explicit TTerminalThread(TTerminal * Terminal);
-  void Init();
+  void InitTerminalThread();
   virtual ~TTerminalThread();
 
   void TerminalOpen();
@@ -496,10 +540,10 @@ public:
   void Cancel();
   void Idle();
 
-/*
+#if 0
   __property TNotifyEvent OnIdle = { read = FOnIdle, write = FOnIdle };
   __property bool Cancelling = { read = FCancel };
-*/
+#endif // #if 0
 
   TNotifyEvent & GetOnIdle() { return FOnIdle; }
   void SetOnIdle(TNotifyEvent Value) { FOnIdle = Value; }

@@ -126,7 +126,7 @@ protected:
     intptr_t Params,
     OUT TOverwriteMode & OverwriteMode,
     OUT uintptr_t & Answer);
-  void CheckStatus(int NeonStatus);
+  void CheckStatus(intptr_t NeonStatus);
   void ClearNeonError();
   static void NeonPropsResult(
     void * UserData, const ne_uri * Uri, const ne_prop_result_set_s * Results);
@@ -145,7 +145,9 @@ protected:
   static int NeonPostSend(ne_request * Req, void * UserData, const ne_status * Status);
   static void NeonPostHeaders(ne_request * Req, void * UserData, const ne_status * Status);
   void ExchangeCapabilities(const char * APath, UnicodeString & CorrectedUrl);
-  static int NeonServerSSLCallback(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
+  static int DoNeonServerSSLCallback(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate, bool Aux);
+  static int NeonServerSSLCallbackMain(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
+  static int NeonServerSSLCallbackAux(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
   static void NeonProvideClientCert(void * UserData, ne_session * Sess, const ne_ssl_dname * const * DNames, int DNCount);
   void CloseNeonSession();
   bool CancelTransfer();
@@ -194,12 +196,11 @@ private:
 
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
-  int CustomReadFileInternal(const UnicodeString & AFileName,
+  intptr_t CustomReadFileInternal(const UnicodeString & AFileName,
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
   void RegisterForDebug();
   void UnregisterFromDebug();
-  bool VerifyCertificate(
-    const TWebDAVCertificateData & Data);
+  bool VerifyCertificate(const TWebDAVCertificateData & Data, bool Aux);
   void OpenUrl(const UnicodeString & Url);
   void CollectTLSSessionInfo();
   UnicodeString GetRedirectUrl() const;
@@ -207,7 +208,7 @@ private:
   int ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList * AFileList);
   int RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
   int CopyFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
-  bool IsValidRedirect(int NeonStatus, UnicodeString & APath) const;
+  bool IsValidRedirect(intptr_t NeonStatus, UnicodeString & APath) const;
   UnicodeString DirectoryPath(const UnicodeString & APath) const;
   UnicodeString FilePath(const TRemoteFile * AFile) const;
   struct ne_lock * FindLock(const RawByteString & APath) const;
@@ -216,6 +217,7 @@ private:
   static void NeonAuxRequestInit(ne_session_s * Session, ne_request * Request, void * UserData);
   void SetSessionTls(ne_session_s * Session, bool Aux);
   void InitSession(ne_session_s * Session);
+  TFtps GetFtps() const;
 };
 
 void NeonInitialize();

@@ -5,7 +5,10 @@
 #include <rdestl/map.h>
 
 #include <Sysutils.hpp>
+#include <Common.h>
 
+#if 0
+//moved to base/Common.h
 enum TModificationFmt
 {
   mfNone,
@@ -13,6 +16,7 @@ enum TModificationFmt
   mfMDY,
   mfFull,
 };
+#endif // #if 0
 
 #define SYMLINKSTR L" -> "
 #define FILETYPE_DEFAULT L'-'
@@ -109,6 +113,7 @@ private:
   TRemoteToken FOwner;
   TModificationFmt FModificationFmt;
   UnicodeString FFileName;
+  UnicodeString FDisplayName;
   TDateTime FModification;
   TDateTime FLastAccess;
   TRemoteToken FGroup;
@@ -126,7 +131,6 @@ private:
   intptr_t FIsHidden;
   wchar_t FType;
   bool FIsSymLink;
-  bool FSelected;
   bool FCyclicLink;
 
 public:
@@ -183,6 +187,7 @@ public:
   __property TRemoteToken Owner = { read = FOwner, write = FOwner };
   __property TRemoteToken Group = { read = FGroup, write = FGroup };
   __property UnicodeString FileName = { read = FFileName, write = FFileName };
+  __property UnicodeString DisplayName = { read = FDisplayName, write = FDisplayName };
   __property int INodeBlocks = { read = FINodeBlocks };
   __property TDateTime Modification = { read = FModification, write = SetModification };
   __property UnicodeString ModificationStr = { read = GetModificationStr };
@@ -198,7 +203,6 @@ public:
   __property UnicodeString HumanRights = { read = FHumanRights, write = FHumanRights };
   __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
   __property wchar_t Type = { read = GetType, write = SetType };
-  __property bool Selected  = { read=FSelected, write=FSelected };
   __property UnicodeString FullFileName  = { read = GetFullFileName, write = FFullFileName };
   __property bool HaveFullFileName  = { read = GetHaveFullFileName };
   __property int IconIndex = { read = GetIconIndex };
@@ -221,6 +225,8 @@ public:
   void SetFileGroup(const TRemoteToken & Value);
   UnicodeString GetFileName() const { return FFileName; }
   void SetFileName(const UnicodeString & Value);
+  UnicodeString GetDisplayName() const { return FDisplayName; }
+  void SetDisplayName(UnicodeString Value) { FDisplayName = Value; }
   TDateTime GetModification() const { return FModification; }
   TModificationFmt GetModificationFmt() const { return FModificationFmt; }
   void SetModificationFmt(TModificationFmt Value) { FModificationFmt = Value; }
@@ -233,8 +239,6 @@ public:
   UnicodeString GetHumanRights() const { return FHumanRights; }
   void SetHumanRights(const UnicodeString & Value) { FHumanRights = Value; }
   TTerminal * GetTerminal() const { return FTerminal; }
-  bool GetSelected() const { return FSelected; }
-  void SetSelected(bool Value) { FSelected = Value; }
   void SetFullFileName(const UnicodeString & Value);
 
 private:
@@ -336,7 +340,6 @@ public:
   }
 private:
   TTerminal * FTerminal;
-  mutable TStrings * FSelectedFiles;
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
   Boolean FIncludeParentDirectory;
@@ -356,7 +359,6 @@ public:
   virtual void Reset();
 /*
   __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
-  __property TStrings * SelectedFiles  = { read=GetSelectedFiles };
   __property Boolean IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };
   __property Boolean IncludeThisDirectory = { read = FIncludeThisDirectory, write = SetIncludeThisDirectory };
   __property Boolean Loaded = { read = GetLoaded };
@@ -638,6 +640,9 @@ public:
   TRemoteProperties & operator=(const TRemoteProperties & other);
 };
 
+#if 0
+// moved to base/Common.h
+
 namespace core {
 
 bool IsUnixStyleWindowsPath(const UnicodeString & APath);
@@ -645,6 +650,7 @@ bool UnixIsAbsolutePath(const UnicodeString & APath);
 UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & APath);
 UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & APath, bool Simple = false);
 UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & APath);
+UnicodeString UnixCombinePaths(const UnicodeString & APath1, const UnicodeString & APath2);
 UnicodeString UnixExtractFileDir(const UnicodeString & APath);
 UnicodeString UnixExtractFilePath(const UnicodeString & APath);
 UnicodeString UnixExtractFileName(const UnicodeString & APath);
@@ -655,7 +661,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
 bool UnixExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
 UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix);
 bool IsUnixRootPath(const UnicodeString & APath);
-bool IsUnixHiddenFile(const UnicodeString & AFileName);
+bool IsUnixHiddenFile(const UnicodeString & APath);
 UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APath);
 UnicodeString FromUnixPath(const UnicodeString & APath);
 UnicodeString ToUnixPath(const UnicodeString & APath);
@@ -676,3 +682,4 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, b
 
 } // namespace core
 
+#endif // #if 0

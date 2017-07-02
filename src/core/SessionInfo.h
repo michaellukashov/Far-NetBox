@@ -47,6 +47,7 @@ enum TFSCapability
   fcModeChangingUpload, fcPreservingTimestampUpload, fcShellAnyCommand,
   fcSecondaryShell, fcRemoveCtrlZUpload, fcRemoveBOMUpload, fcMoveToQueue,
   fcLocking, fcPreservingTimestampDirs, fcResumeSupport,
+  fcChangePassword, fsSkipTransfer, fsParallelTransfers,
   fcCount,
 };
 
@@ -125,16 +126,16 @@ enum TCaptureOutputType
   cotExitCode,
 };
 
-/*
+#if 0
 typedef void (__closure *TCaptureOutputEvent)(
   const UnicodeString & Str, TCaptureOutputType OutputType);
-*/
+#endif // #if 0
 typedef nb::FastDelegate2<void,
   const UnicodeString & /*Str*/, TCaptureOutputType /*OutputType*/> TCaptureOutputEvent;
-/*
+#if 0
 typedef void (__closure *TCalculatedChecksumEvent)(
   const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
-*/
+#endif // #if 0
 typedef nb::FastDelegate3<void,
   const UnicodeString & /*FileName*/, const UnicodeString & /*Alg*/,
   const UnicodeString & /*Hash*/> TCalculatedChecksumEvent;
@@ -270,63 +271,44 @@ public:
   TCwdSessionAction(TActionLog * Log, const UnicodeString & Path);
 };
 
-// void (__closure *f)(TLogLineType Type, const UnicodeString & Line));
+#if 0
+void (__closure *f)(TLogLineType Type, const UnicodeString & Line));
+#endif // #if 0
 typedef nb::FastDelegate2<void,
   TLogLineType /*Type*/, const UnicodeString & /*Line*/> TDoAddLogEvent;
 
-class TSessionLog : protected TStringList
+class TSessionLog // : public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 friend class TSessionAction;
 friend class TSessionActionRecord;
 NB_DISABLE_COPY(TSessionLog)
 public:
-  explicit TSessionLog(TSessionUI * UI, TSessionData * SessionData,
+  explicit TSessionLog(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
     TConfiguration * Configuration);
   virtual ~TSessionLog();
-  HIDESBASE void Add(TLogLineType Type, const UnicodeString & Line);
+
+  void SetParent(TSessionLog * AParent, const UnicodeString & AName);
+
+  void Add(TLogLineType Type, const UnicodeString & ALine);
   void AddSystemInfo();
   void AddStartupInfo();
   void AddException(Exception * E);
   void AddSeparator();
 
-  virtual void Clear();
   void ReflectSettings();
-  void Lock();
-  void Unlock();
 
-/*
-  __property TSessionLog * Parent = { read = FParent, write = FParent };
+#if 0
   __property bool Logging = { read = FLogging };
-  __property int BottomIndex = { read = GetBottomIndex };
-  __property UnicodeString Line[int Index]  = { read=GetLine };
-  __property TLogLineType Type[int Index]  = { read=GetType };
-  __property OnChange;
-  __property TNotifyEvent OnStateChange = { read = FOnStateChange, write = FOnStateChange };
-  __property UnicodeString CurrentFileName = { read = FCurrentFileName };
-  __property bool LoggingToFile = { read = GetLoggingToFile };
-  __property int TopIndex = { read = FTopIndex };
-  __property UnicodeString SessionName = { read = GetSessionName };
-  __property UnicodeString Name = { read = FName, write = FName };
-  __property Count;
-*/
+  __property UnicodeString Name = { read = FName };
+#endif // #if 0
 
-  TSessionLog * GetParent() const;
-  void SetParent(TSessionLog * Value);
-  bool GetLogging() const;
-  TNotifyEvent & GetOnChange();
-  void SetOnChange(TNotifyEvent Value);
-  TNotifyEvent & GetOnStateChange();
-  void SetOnStateChange(TNotifyEvent Value);
-  UnicodeString GetCurrentFileName() const;
-  intptr_t GetTopIndex() const;
-  UnicodeString GetName() const;
-  void SetName(const UnicodeString & Value);
-  virtual intptr_t GetCount() const;
+  bool GetLogging() const { return FLogging; }
+  UnicodeString GetName() const { return FName; }
+  bool LogToFile() const;
 
 protected:
   void CloseLogFile();
-  bool LogToFile() const;
 
 private:
   TConfiguration * FConfiguration;
@@ -336,13 +318,12 @@ private:
   void * FFile;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
-  int FLoggedLines;
-  intptr_t FTopIndex;
+  int64_t FCurrentFileSize;
   TSessionUI * FUI;
   TSessionData * FSessionData;
+  TDateTime FStarted;
   UnicodeString FName;
   bool FClosed;
-  TNotifyEvent FOnStateChange;
 
 public:
   UnicodeString GetLine(intptr_t Index) const;
@@ -350,10 +331,7 @@ public:
   void DeleteUnnecessary();
   void StateChange();
   void OpenLogFile();
-  intptr_t GetBottomIndex() const;
-  UnicodeString GetLogFileName() const;
-  bool GetLoggingToFile() const;
-  UnicodeString GetSessionName() const;
+  UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
 
 private:
   void DoAdd(TLogLineType AType, const UnicodeString & ALine,
@@ -367,6 +345,8 @@ private:
   void AddOption(const UnicodeString & LogStr);
   void AddOptions(TOptions * Options);
   UnicodeString GetCmdLineLog() const;
+  void CheckSize(int64_t Addition);
+  UnicodeString LogPartFileName(const UnicodeString & BaseName, intptr_t Index);
 };
 
 class TActionLog : public TObject
@@ -375,9 +355,11 @@ friend class TSessionAction;
 friend class TSessionActionRecord;
 NB_DISABLE_COPY(TActionLog)
 public:
-  explicit TActionLog(TSessionUI * UI, TSessionData * SessionData,
+  explicit TActionLog(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
     TConfiguration * Configuration);
-  explicit TActionLog(TConfiguration * Configuration);
+  // For fatal failures for .NET assembly
+  explicit TActionLog(TDateTime Started, TConfiguration * Configuration);
+  // explicit TActionLog(TConfiguration * Configuration);
   virtual ~TActionLog();
 
   void ReflectSettings();
@@ -386,10 +368,10 @@ public:
   void BeginGroup(const UnicodeString & Name);
   void EndGroup();
 
-/*
+#if 0
   __property UnicodeString CurrentFileName = { read = FCurrentFileName };
   __property bool Enabled = { read = FEnabled, write = SetEnabled };
-*/
+#endif
   UnicodeString GetCurrentFileName() const { return FCurrentFileName; }
   bool GetEnabled() const { return FEnabled; }
 
@@ -400,7 +382,7 @@ protected:
   void Add(const UnicodeString & Line);
   void AddIndented(const UnicodeString & Line);
   void AddMessages(const UnicodeString & Indent, TStrings * Messages);
-  void Init(TSessionUI * UI, TSessionData * SessionData,
+  void Init(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
     TConfiguration * Configuration);
 
 private:
@@ -413,6 +395,7 @@ private:
   UnicodeString FIndent;
   TSessionUI * FUI;
   TSessionData * FSessionData;
+  TDateTime FStarted;
   TList * FPendingActions;
   bool FFailed;
   bool FClosed;
@@ -422,7 +405,7 @@ private:
   void OpenLogFile();
 
 public:
-  UnicodeString GetLogFileName() const;
+  UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
   void SetEnabled(bool Value);
 };
 

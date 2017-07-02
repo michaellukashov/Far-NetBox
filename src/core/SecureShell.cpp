@@ -183,6 +183,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_str(conf, CONF_username, UTF8String(Data->GetUserNameExpanded()).c_str());
   conf_set_int(conf, CONF_port, static_cast<int>(Data->GetPortNumber()));
   conf_set_int(conf, CONF_protocol, PROT_SSH);
+  conf_set_int(conf, CONF_change_password, Data->GetChangePassword());
   // always set 0, as we will handle keepalives ourselves to avoid
   // multi-threaded issues in putty timer list
   conf_set_int(conf, CONF_ping_interval, 0);
@@ -256,6 +257,30 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
     }
     conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
   }
+
+  DebugAssert(ngsslibs == GSSLIB_COUNT);
+  for (int g = 0; g < GSSLIB_COUNT; g++)
+  {
+    int pgsslib = 0;
+    switch (Data->GetGssLib(g))
+    {
+    case gssGssApi32:
+      pgsslib = 0;
+      break;
+    case gssSspi:
+      pgsslib = 1;
+      break;
+    case gssCustom:
+      pgsslib = 2;
+      break;
+    default:
+      DebugFail();
+    }
+    conf_set_int_int(conf, CONF_ssh_gsslist, g, pgsslib);
+  }
+  Filename * GssLibCustomFileName = filename_from_str(UTF8String(Data->GetGssLibCustom()).c_str());
+  conf_set_filename(conf, CONF_ssh_gss_custom, GssLibCustomFileName);
+  filename_free(GssLibCustomFileName);
 
   UnicodeString SPublicKeyFile = Data->GetPublicKeyFile();
   if (SPublicKeyFile.IsEmpty())
@@ -391,10 +416,6 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_int(conf, CONF_nopty, TRUE);
   conf_set_int(conf, CONF_tcp_keepalives, 1);
   conf_set_int(conf, CONF_ssh_show_banner, TRUE);
-  for (int Index = 0; Index < ngsslibs; ++Index)
-  {
-    conf_set_int_int(conf, CONF_ssh_gsslist, Index, gsslibkeywords[Index].v);
-  }
   conf_set_int(conf, CONF_proxy_log_to_term, FORCE_OFF);
 
   conf_set_int_int(conf, CONF_ssh_hklist, 0, HK_ED25519);
@@ -449,9 +470,9 @@ void TSecureShell::Open()
     }
     __finally
     {
-/*
+#if 0
       conf_free(conf);
-*/
+#endif // #if 0
     };
 
     sfree(RealHost);
@@ -933,6 +954,24 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       FStoredPassphraseTried = true;
     }
   }
+  else if (PromptKind == pkNewPassword)
+  {
+    if (FSessionData->GetChangePassword())
+    {
+      FUI->Information(LoadStr(AUTH_CHANGING_PASSWORD), false);
+
+      if (!FSessionData->GetPassword().IsEmpty() && !FSessionData->GetNewPassword().IsEmpty() && !FStoredPasswordTried)
+      {
+        LogEvent(L"Using stored password and new password.");
+        Result = true;
+        DebugAssert(Results->GetCount() == 3);
+        Results->SetString(0, FSessionData->GetPassword());
+        Results->SetString(1, FSessionData->GetNewPassword());
+        Results->SetString(2, FSessionData->GetNewPassword());
+        FStoredPasswordTried = true;
+      }
+    }
+  }
 
   if (!Result)
   {
@@ -963,7 +1002,10 @@ void TSecureShell::GotHostKey()
   if (!FAuthenticating && !FAuthenticated)
   {
     FAuthenticating = true;
-    FUI->Information(LoadStr(STATUS_AUTHENTICATE), true);
+    if (!FSessionData->GetChangePassword())
+    {
+      FUI->Information(LoadStr(STATUS_AUTHENTICATE), true);
+    }
   }
 }
 
@@ -1084,9 +1126,9 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Len
         }
         __finally
         {
-/*
+#if 0
           FFrozen = false;
-*/
+#endif // #if 0
         };
       }
       else
@@ -1169,9 +1211,9 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
     }
     __finally
     {
-/*
+#if 0
       OutPtr = nullptr;
-*/
+#endif // #if 0
     };
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
@@ -1242,7 +1284,7 @@ UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uintptr_t 
   return Result;
 }
 
-void TSecureShell::SendSpecial(int Code)
+void TSecureShell::SendSpecial(intptr_t Code)
 {
   LogEvent(FORMAT(L"Sending special code: %d", Code));
   CheckConnection();
@@ -1258,14 +1300,14 @@ void TSecureShell::SendEOF()
 
 uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 {
-  FWaiting++;
+  ++FWaiting;
 
   uintptr_t Answer = 0;
   try__finally
   {
     SCOPE_EXIT
     {
-      FWaiting--;
+      --FWaiting;
     };
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);
     Params.HelpKeyword = HELP_MESSAGE_HOST_IS_NOT_COMMUNICATING;
@@ -1284,9 +1326,9 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   }
   __finally
   {
-/*
+#if 0
     FWaiting--;
-*/
+#endif // #if 0
   };
   return Answer;
 }
@@ -1497,13 +1539,14 @@ void TSecureShell::AddStdError(const UnicodeString & AStr)
 
 void TSecureShell::AddStdErrorLine(const UnicodeString & AStr)
 {
+  UnicodeString Str = AStr.Trim();
   if (FAuthenticating)
   {
-    FAuthenticationLog += (FAuthenticationLog.IsEmpty() ? L"" : L"\n") + AStr;
+    FAuthenticationLog += (FAuthenticationLog.IsEmpty() ? L"" : L"\n") + Str;
   }
-  if (!AStr.Trim().IsEmpty())
+  if (!Str.IsEmpty())
   {
-    CaptureOutput(llStdError, AStr);
+    CaptureOutput(llStdError, Str);
   }
 }
 
@@ -1565,13 +1608,12 @@ int TSecureShell::TranslateErrorMessage(
   return Index;
 }
 
-void TSecureShell::PuttyFatalError(const UnicodeString & Error)
+void TSecureShell::PuttyFatalError(UnicodeString Error)
 {
-  UnicodeString Error2 = Error;
   UnicodeString HelpKeyword;
-  TranslateErrorMessage(Error2, &HelpKeyword);
+  TranslateErrorMessage(Error, &HelpKeyword);
 
-  FatalError(Error2, HelpKeyword);
+  FatalError(Error, HelpKeyword);
 }
 
 void TSecureShell::FatalError(const UnicodeString & Error, const UnicodeString & HelpKeyword)
@@ -1927,6 +1969,9 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
       {FD_ACCEPT_BIT, FD_ACCEPT, L"accept"},
       {FD_CONNECT_BIT, FD_CONNECT, L"connect"},
       {FD_CLOSE_BIT, FD_CLOSE, L"close"},
+      // Read goes last, as it can cause an exception.
+      // Though a correct solution would be to process all events, even if one causes exception
+      { FD_READ_BIT, FD_READ, L"read" },
     };
 
   for (uintptr_t Event = 0; Event < _countof(EventTypes); Event++)
@@ -2056,9 +2101,9 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     }
     __finally
     {
-/*
+#if 0
       sfree(Handles);
-*/
+#endif // #if 0
     };
 
     run_toplevel_callbacks();
@@ -2473,9 +2518,9 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
       }
       __finally
       {
-/*
+#if 0
          delete E;
-*/
+#endif // #if 0
       };
     }
   }
@@ -2587,7 +2632,7 @@ bool TSecureShell::GetReady() const
 
 void TSecureShell::CollectUsage()
 {
-/*
+#if 0
   if (FCollectPrivateKeyUsage)
   {
     Configuration->Usage->Inc(L"OpenedSessionsPrivateKey2");
@@ -2670,6 +2715,14 @@ void TSecureShell::CollectUsage()
   {
     Configuration->Usage->Inc(L"OpenedSessionsSSHOther");
   }
-*/
+#endif // #if 0
+}
+
+bool TSecureShell::CanChangePassword() const
+{
+  return
+    // These major SSH servers explicitly do not support password change.
+    (GetSshImplementation() != sshiOpenSSH) && // See userauth_passwd
+    (GetSshImplementation() != sshiProFTPD); // See sftp_auth_password
 }
 

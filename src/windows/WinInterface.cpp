@@ -226,7 +226,7 @@ uintptr_t ExecuteMessageDialog(TForm * Dialog, uintptr_t Answers, const TMessage
   uintptr_t Answer = Dialog->ShowModal();
   // mrCancel is returned always when X button is pressed, despite
   // no Cancel button was on the dialog. Find valid "cancel" answer.
-  // mrNone is retuned when Windows session is closing (log off)
+  // mrNone is returned when Windows session is closing (log off)
   if ((Answer == mrCancel) || (Answer == mrNone))
   {
     Answer = CancelAnswer(Answers);
@@ -828,7 +828,8 @@ void CopyParamListPopup(TRect Rect, TPopupMenu * Menu,
   MenuPopup(Menu, Rect, nullptr);
 }
 
-bool CopyParamListPopupClick(TObject * Sender,
+//---------------------------------------------------------------------------
+int CopyParamListPopupClick(TObject * Sender,
   TCopyParamType & Param, UnicodeString & Preset, int CopyParamAttrs,
   bool * SaveSettings)
 {
@@ -871,18 +872,83 @@ bool CopyParamListPopupClick(TObject * Sender,
   }
   return Result;
 }
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+class TCustomCommandPromptsDialog : public TCustomDialog
+{
+public:
+  __fastcall TCustomCommandPromptsDialog(
+    const UnicodeString & CustomCommandName, const UnicodeString & HelpKeyword,
+    const TUnicodeStringVector & Prompts, const TUnicodeStringVector & Defaults);
+
+  bool __fastcall Execute(TUnicodeStringVector & Values);
+
+private:
+  UnicodeString __fastcall HistoryKey(int Index);
+
+  std::vector<THistoryComboBox *> FEdits;
+  TUnicodeStringVector FPrompts;
+  UnicodeString FCustomCommandName;
+};
+//---------------------------------------------------------------------------
+__fastcall TCustomCommandPromptsDialog::TCustomCommandPromptsDialog(
+    const UnicodeString & CustomCommandName, const UnicodeString & HelpKeyword,
+    const TUnicodeStringVector & Prompts, const TUnicodeStringVector & Defaults) :
+  TCustomDialog(HelpKeyword)
+{
+
+  FCustomCommandName = CustomCommandName;
+  Caption = FMTLOAD(CUSTOM_COMMANDS_PARAMS_TITLE, (FCustomCommandName));
+
+  FPrompts = Prompts;
+  DebugAssert(FPrompts.size() == Defaults.size());
+  for (size_t Index = 0; Index < FPrompts.size(); Index++)
+  {
+    UnicodeString Prompt = FPrompts[Index];
+    if (Prompt.IsEmpty())
+    {
+      Prompt = LoadStr(CUSTOM_COMMANDS_PARAM_PROMPT2);
+    }
+    THistoryComboBox * ComboBox = new THistoryComboBox(this);
+    ComboBox->AutoComplete = false;
+    AddComboBox(ComboBox, CreateLabel(Prompt));
+    ComboBox->Items = CustomWinConfiguration->History[HistoryKey(Index)];
+    ComboBox->Text = Defaults[Index];
+    FEdits.push_back(ComboBox);
+  }
+}
+
+#endif // #if 0
 
 TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
-  TCustomCommand * ChildCustomCommand, const UnicodeString CustomCommandName) :
+  TCustomCommand * ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword) :
   TInteractiveCustomCommand(ChildCustomCommand)
 {
-  FCustomCommandName = StripHotkey(CustomCommandName);
+  FCustomCommandName = StripEllipsis(StripHotkey(CustomCommandName));
+  FHelpKeyword = HelpKeyword;
+}
+
+void TWinInteractiveCustomCommand::PatternHint(intptr_t Index, const UnicodeString & Pattern)
+{
+  if (IsPromptPattern(Pattern))
+  {
+    UnicodeString Prompt;
+    UnicodeString Default;
+    bool Delimit = false;
+    ParsePromptPattern(Pattern, Prompt, Default, Delimit);
+#if 0
+    FIndexes.insert(std::make_pair(Index, FPrompts.size()));
+    FPrompts.push_back(Prompt);
+    FDefaults.push_back(Default);
+#endif // #if 0
+  }
 }
 
 void TWinInteractiveCustomCommand::Prompt(
   intptr_t Index, const UnicodeString & Prompt, UnicodeString & Value) const
 {
   UnicodeString APrompt = Prompt;
+#if 0
   if (APrompt.IsEmpty())
   {
     APrompt = FMTLOAD(CUSTOM_COMMANDS_PARAM_PROMPT, FCustomCommandName.c_str());
@@ -897,11 +963,13 @@ void TWinInteractiveCustomCommand::Prompt(
   {
     Abort();
   }
+#endif // #if 0
 }
 
 void TWinInteractiveCustomCommand::Execute(
-  const UnicodeString & Command, UnicodeString & Value)
+  const UnicodeString & /*Command*/, UnicodeString & /*Value*/)
 {
+#if 0
   // inspired by
   // http://forum.codecall.net/topic/72472-execute-a-console-program-and-capture-its-output/
   HANDLE StdOutOutput;
@@ -912,13 +980,32 @@ void TWinInteractiveCustomCommand::Execute(
   SecurityAttributes.nLength = sizeof(SecurityAttributes);
   SecurityAttributes.lpSecurityDescriptor = nullptr;
   SecurityAttributes.bInheritHandle = TRUE;
-  try
+  try__finally
   {
-    if (!CreatePipe(&StdOutOutput, &StdOutInput, &SecurityAttributes, 0))
+    SCOPE_EXIT
+    {
+      if (StdOutOutput != INVALID_HANDLE_VALUE)
+      {
+        CloseHandle(StdOutOutput);
+      }
+      if (StdOutInput != INVALID_HANDLE_VALUE)
+      {
+        CloseHandle(StdOutInput);
+      }
+      if (StdInOutput != INVALID_HANDLE_VALUE)
+      {
+        CloseHandle(StdInOutput);
+      }
+      if (StdInInput != INVALID_HANDLE_VALUE)
+      {
+        CloseHandle(StdInInput);
+      }
+    };
+    if (!::CreatePipe(&StdOutOutput, &StdOutInput, &SecurityAttributes, 0))
     {
       throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"out"));
     }
-    else if (!CreatePipe(&StdInOutput, &StdInInput, &SecurityAttributes, 0))
+    else if (!::CreatePipe(&StdInOutput, &StdInInput, &SecurityAttributes, 0))
     {
       throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"in"));
     }
@@ -934,15 +1021,20 @@ void TWinInteractiveCustomCommand::Execute(
       StartupInfo.hStdOutput = StdOutInput;
       StartupInfo.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
 
-      if (!CreateProcess(nullptr, Command.c_str(), &SecurityAttributes, &SecurityAttributes,
+      if (!::CreateProcess(nullptr, Command.c_str(), &SecurityAttributes, &SecurityAttributes,
             TRUE, NORMAL_PRIORITY_CLASS, nullptr, nullptr, &StartupInfo, &ProcessInformation))
       {
         throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"process"));
       }
       else
       {
-        try
+        try__finally
         {
+          SCOPE_EXIT
+          {
+            CloseHandle(ProcessInformation.hProcess);
+            CloseHandle(ProcessInformation.hThread);
+          };
           // wait until the console program terminated
           bool Running = true;
           while (Running)
@@ -983,14 +1075,17 @@ void TWinInteractiveCustomCommand::Execute(
         }
         __finally
         {
+#if 0
           CloseHandle(ProcessInformation.hProcess);
           CloseHandle(ProcessInformation.hThread);
-        }
+#endif // #if 0
+        };
       }
     }
   }
   __finally
   {
+#if 0
     if (StdOutOutput != INVALID_HANDLE_VALUE)
     {
       CloseHandle(StdOutOutput);
@@ -1007,8 +1102,12 @@ void TWinInteractiveCustomCommand::Execute(
     {
       CloseHandle(StdInInput);
     }
-  }
+#endif // #if 0
+  };
+#endif // #if 0
 }
+
+#if 0
 
 void MenuPopup(TPopupMenu * Menu, TButton * Button)
 {
@@ -1047,10 +1146,21 @@ TComponent * GetPopupComponent(TObject * Sender)
 
 void MenuButton(TButton * Button)
 {
-  Button->Images = GlyphsModule->ButtonImages;
+  Button->Images = GetButtonImages(Button);
+}
+//---------------------------------------------------------------------------
+static void __fastcall MenuButtonRescale(TComponent * Sender, TObject * /*Token*/)
+{
+  TButton * Button = DebugNotNull(dynamic_cast<TButton *>(Sender));
+  SetMenuButtonImages(Button);
+}
+//---------------------------------------------------------------------------
+{
+  SetMenuButtonImages(Button);
   Button->ImageIndex = 0;
   Button->DisabledImageIndex = 1;
   Button->ImageAlignment = iaRight;
+  SetRescaleFunction(Button, MenuButtonRescale);
 }
 
 TRect CalculatePopupRect(TButton * Button)

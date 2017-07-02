@@ -115,14 +115,14 @@ void TSynchronizeController::SynchronizeChange(
   try
   {
     UnicodeString RootLocalDirectory = ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
-    UnicodeString RemoteDirectory = core::UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
+    UnicodeString RemoteDirectory = base::UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
 
     UnicodeString LocalDirectory = ::IncludeTrailingBackslash(Directory);
 
     DebugAssert(LocalDirectory.SubString(1, RootLocalDirectory.Length()) ==
       RootLocalDirectory);
     RemoteDirectory = RemoteDirectory +
-      core::ToUnixPath(LocalDirectory.SubString(RootLocalDirectory.Length() + 1,
+      base::ToUnixPath(LocalDirectory.SubString(RootLocalDirectory.Length() + 1,
         LocalDirectory.Length() - RootLocalDirectory.Length()));
 
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,

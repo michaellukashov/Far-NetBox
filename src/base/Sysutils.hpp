@@ -7,7 +7,7 @@
 #define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
-#define SAFE_CLOSE_HANDLE(H) { if ((H) && (H) != INVALID_HANDLE_VALUE) { HANDLE HH = (H); (H) = nullptr; if (HH != INVALID_HANDLE_VALUE) { ::CloseHandle(HH); } } }
+#define SAFE_CLOSE_HANDLE(H) { if ((H) && (H) != INVALID_HANDLE_VALUE) { HANDLE HH = (H); (H) = nullptr; if (HH != nullptr) { ::CloseHandle(HH); } } }
 #define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
 
 #define SWAP(TYPE, FIRST, SECOND) \
@@ -98,6 +98,7 @@ public:
       Kind == OBJECT_CLASS_EAccessViolation ||
       Kind == OBJECT_CLASS_EFileNotFoundError ||
       Kind == OBJECT_CLASS_EOSError ||
+      Kind == OBJECT_CLASS_EInvalidOperation ||
       Kind == OBJECT_CLASS_EFatal ||
       Kind == OBJECT_CLASS_ESshFatal ||
       Kind == OBJECT_CLASS_ESshTerminate ||
@@ -189,6 +190,21 @@ public:
 };
 
 void RaiseLastOSError(DWORD LastError = 0);
+
+class EInvalidOperation : public Exception
+{
+public:
+  static inline bool classof(const Exception * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_EInvalidOperation;
+  }
+public:
+  explicit EInvalidOperation(const UnicodeString & Msg) :
+    Exception(OBJECT_CLASS_EInvalidOperation, Msg)
+  {
+  }
+};
 
 struct TFormatSettings : public TObject
 {
@@ -299,6 +315,7 @@ intptr_t StrToIntDef(const UnicodeString & Value, intptr_t DefVal);
 int64_t StrToInt64(const UnicodeString & Value);
 int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal);
 bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value);
+bool TryStrToInt64(const UnicodeString & StrValue, int64_t & Value);
 
 double StrToFloat(const UnicodeString & Value);
 double StrToFloatDef(const UnicodeString & Value, double DefVal);
@@ -526,3 +543,9 @@ public:
 
 void ShowExtendedException(Exception * E);
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
+
+class TPath : public TObject
+{
+public:
+  static UnicodeString Combine(UnicodeString APath, UnicodeString FileName);
+};

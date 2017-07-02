@@ -1,6 +1,5 @@
 
-#ifndef NeonIntfH
-#define NeonIntfH
+#pragma once
 
 #include <ne_uri.h>
 #include <ne_session.h>
@@ -11,11 +10,12 @@
 
 void NeonParseUrl(const UnicodeString & Url, ne_uri & uri);
 bool IsTlsUri(const ne_uri & uri);
-ne_session * CreateNeonSession(const ne_uri & uri, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
+ne_session * CreateNeonSession(const ne_uri & uri);
+void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
   intptr_t ProxyPort, const UnicodeString & ProxyUsername, const UnicodeString & ProxyPassword);
 void DestroyNeonSession(ne_session * Session);
 UnicodeString GetNeonError(ne_session * Session);
-void CheckNeonStatus(ne_session * Session, int NeonStatus,
+void CheckNeonStatus(ne_session * Session, intptr_t NeonStatus,
   const UnicodeString & AHostName, const UnicodeString & CustomError = L"");
 UnicodeString GetNeonRedirectUrl(ne_session * Session);
 void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls);
@@ -25,4 +25,3 @@ AnsiString NeonExportCertificate(const ne_ssl_certificate * Certificate);
 bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert, UnicodeString & Error);
 UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString & HostName);
 
-#endif
