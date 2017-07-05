@@ -81,6 +81,7 @@ void TFileOperationProgressType::Clear()
   FFileInProgress = false;
   FTotalTransferred = 0;
   FTotalSkipped = 0;
+  FTotalSize = 0;
   FFileStartTime = 0.0;
   FFilesFinished = 0;
   FReset = false;
@@ -94,7 +95,6 @@ void TFileOperationProgressType::Clear()
   FFileName.Clear();
   FDirectory.Clear();
   FAsciiTransfer = false;
-  FTemp = false;
   FLocalSize = 0;
   FLocallyUsed = 0;
   FOperation = foNone;

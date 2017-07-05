@@ -119,6 +119,7 @@ void TSessionData::Default()
   SetPortNumber(SshPortNumber);
   SetUserName(ANONYMOUS_USER_NAME);
   SetPassword(ANONYMOUS_PASSWORD);
+  SetChangePassword(false);
   SetPingInterval(30);
   SetPingType(ptOff);
   SetTimeout(15);
@@ -141,6 +142,10 @@ void TSessionData::Default()
   for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
   {
     SetKex(Index, DefaultKexList[Index]);
+  }
+  for (intptr_t Index = 0; Index < GSSLIB_COUNT; ++Index)
+  {
+    SetGssLib(Index, DefaultGssLibList[Index]);
   }
   SetPublicKeyFile(L"");
   SetPassphrase(L"");
