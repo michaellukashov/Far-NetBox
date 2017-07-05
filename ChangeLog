@@ -1,5 +1,7 @@
-NetBox 2.4.3.508 02.07.2017
+NetBox 2.4.3.509 05.07.2017
 --------------------
+  * Issue #244: Fail to change dir on remote server after reconnect
+    (https://github.com/michaellukashov/Far-NetBox/issues/244)
   * Issue #243: Show session name and current dir if interface option "Show session name in window title" is set
     (https://github.com/michaellukashov/Far-NetBox/issues/243)
   * Bugfix: Fix issues #240, #241, #239, #237
