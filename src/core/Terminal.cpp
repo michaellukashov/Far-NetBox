@@ -1893,7 +1893,9 @@ void TTerminal::Reopen(intptr_t Params)
     }
 
     if (DebugAlwaysFalse(GetActive()))
-    Open();
+    {
+      Open();
+    }
   }
   __finally
   {
