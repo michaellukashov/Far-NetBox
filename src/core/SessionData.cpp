@@ -1556,7 +1556,7 @@ bool TSessionData::HasAnySessionPassword() const
 
 bool TSessionData::HasAnyPassword() const
 {
-  return HasAnySessionPassword() || !FProxyPassword.IsEmpty() || !FTunnelPassword.IsEmpty();
+  return
     HasAnySessionPassword() ||
     !FProxyPassword.IsEmpty() ||
     // will probably be never used
@@ -1566,6 +1566,7 @@ bool TSessionData::HasAnyPassword() const
 void TSessionData::ClearSessionPasswords()
 {
   FPassword.Clear();
+  FNewPassword.Clear();
   FTunnelPassword.Clear();
 }
 
@@ -1692,9 +1693,9 @@ bool TSessionData::IsProtocolUrl(
 
 bool TSessionData::IsSensitiveOption(const UnicodeString & Option)
 {
-  return ::SameText(Option, PassphraseOption);
-    SameText(Option, PassphraseOption) ||
-    SameText(Option, NEWPASSWORD_SWITCH);
+  return
+    ::SameText(Option, PassphraseOption) ||
+    ::SameText(Option, NEWPASSWORD_SWITCH);
 }
 
 bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,

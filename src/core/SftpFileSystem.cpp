@@ -1254,34 +1254,26 @@ public:
       std::unique_ptr<TSFTPQueuePacket> Request(FRequests->GetAs<TSFTPQueuePacket>(0));
       std::unique_ptr<TSFTPPacket> Response(FResponses->GetAs<TSFTPPacket>(0));
 
-      // Particularly when ExpectedType >= 0, the ReceiveResponse may throw, and we have to remove the packets from queue
-      FRequests->Delete(0);
-      FResponses->Delete(0);
-
       try
       {
         ReceiveResponse(Request.get(), Response.get(), ExpectedType, AllowStatus);
       }
       catch (Exception & E)
       {
-        if (ExpectedType < 0)
+        if (FFileSystem->FTerminal->GetActive())
         {
-          if (FFileSystem->FTerminal->GetActive())
-          {
-            FFileSystem->FTerminal->LogEvent("Error while disposing the SFTP queue.");
-            FFileSystem->FTerminal->GetLog()->AddException(&E);
-          }
-          else
-          {
-            FFileSystem->FTerminal->LogEvent("Fatal error while disposing the SFTP queue.");
-            throw;
-          }
+          FFileSystem->FTerminal->LogEvent("Error while disposing the SFTP queue.");
+          FFileSystem->FTerminal->GetLog()->AddException(&E);
         }
         else
         {
+          FFileSystem->FTerminal->LogEvent("Fatal error while disposing the SFTP queue.");
           throw;
         }
       }
+
+      FRequests->Delete(0);
+      FResponses->Delete(0);
     }
   }
 
