@@ -1895,8 +1895,10 @@ void TTerminal::Reopen(intptr_t Params)
 
     if (DebugAlwaysFalse(GetActive()))
     {
-      Open();
+      Close();
     }
+
+    Open();
   }
   __finally
   {
@@ -1908,7 +1910,7 @@ void TTerminal::Reopen(intptr_t Params)
     FReadDirectoryPending = PrevReadDirectoryPending;
     FSuspendTransaction = false;
     FExceptionOnFail = PrevExceptionOnFail;
-#endif
+#endif // if 0
   };
 }
 
