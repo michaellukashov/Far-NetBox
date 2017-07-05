@@ -967,7 +967,7 @@ void TWinInteractiveCustomCommand::Prompt(
 }
 
 void TWinInteractiveCustomCommand::Execute(
-  const UnicodeString & /*Command*/, UnicodeString & /*Value*/)
+  const UnicodeString & /*Command*/, UnicodeString & /*Value*/) const
 {
 #if 0
   // inspired by

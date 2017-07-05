@@ -662,7 +662,7 @@ protected:
   virtual void Prompt(intptr_t Index, const UnicodeString & Prompt,
     UnicodeString & Value) const;
   virtual void Execute(const UnicodeString & Command,
-    UnicodeString & Value);
+    UnicodeString & Value) const override;
   virtual void PatternHint(intptr_t Index, const UnicodeString & Pattern);
 
 private:
