@@ -2812,6 +2812,7 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPER
   {
     Result = -1;
   }
+  UpdatePanel();
   return Result;
 }
 
