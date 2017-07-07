@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <Classes.hpp>
@@ -28,6 +29,12 @@ public:
   int64_t LoadStream(TStream * Stream, const int64_t Len, bool ForceLen);
   int64_t ReadStream(TStream * Stream, const int64_t Len, bool ForceLen);
   void WriteToStream(TStream * Stream, const int64_t Len);
+#if 0
+  __property TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
+  __property char * Data = { read=GetData };
+  __property int Size = { read=FSize, write=SetSize };
+  __property int Position = { read=GetPosition, write=SetPosition };
+#endif // #if 0
 
 public:
   TMemoryStream * GetMemory() const { return FMemory; }
@@ -41,6 +48,20 @@ public:
 private:
   TMemoryStream * FMemory;
 };
+
+#if 0
+//moved to Classes.hpp
+
+class TSafeHandleStream : public THandleStream
+{
+public:
+  TSafeHandleStream(int AHandle);
+  virtual int Read(void * Buffer, int Count);
+  virtual int Write(const void * Buffer, int Count);
+  virtual int Read(System::DynamicArray<System::Byte> Buffer, int Offset, int Count);
+  virtual int Write(const System::DynamicArray<System::Byte> Buffer, int Offset, int Count);
+};
+#endif // #if 0
 
 char * EOLToStr(TEOLType EOLType);
 
