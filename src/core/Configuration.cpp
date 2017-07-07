@@ -1,7 +1,7 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
-#include <shlobj.h>
 #include <FileInfo.h>
 
 #include <Common.h>
@@ -12,8 +12,9 @@
 #include "Interface.h"
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
-
-#define BUILD_OFFICIAL
+#include <shlobj.h>
+#include <System.IOUtils.hpp>
+#include <System.StrUtils.hpp>
 
 const wchar_t * AutoSwitchNames = L"On;Off;Auto";
 const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
@@ -70,13 +71,13 @@ TConfiguration::TConfiguration(TObjectClassId Kind) :
   FDefaultCollectUsage(false)
 {
   FUpdating = 0;
-  FStorage = stRegistry;
+  FStorage = stDetect;
   FDontSave = false;
   FApplicationInfo = nullptr;
 #if 0
   FUsage = new TUsage(this);
-  FDefaultCollectUsage = false;
 #endif // #if 0
+  FDefaultCollectUsage = false;
   FScripting = false;
 
   UnicodeString RandomSeedPath;
@@ -138,7 +139,6 @@ void TConfiguration::Default()
   FParallelDurationThreshold = 10;
   SetCollectUsage(FDefaultCollectUsage);
   FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
-  FDefaultCollectUsage = false;
 
   FLogging = false;
   FPermanentLogging = false;
@@ -199,10 +199,19 @@ THierarchicalStorage * TConfiguration::CreateConfigStorage()
 
 THierarchicalStorage * TConfiguration::CreateStorage(bool & SessionList)
 {
+  TGuard Guard(FCriticalSection);
   THierarchicalStorage * Result = nullptr;
   if (GetStorage() == stRegistry)
   {
     Result = new TRegistryStorage(GetRegistryStorageKey());
+  }
+  else if (GetStorage() == stNul)
+  {
+#if 0
+    Result = TIniFileStorage::CreateFromPath(INI_NUL);
+#endif // #if 0
+    ThrowNotImplemented(3005);
+    DebugAssert(false);
   }
   else
   {
@@ -245,6 +254,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
 
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
+
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
     { SCOPE_EXIT { Storage->CloseSubKey(); }; { BLOCK } }
@@ -600,7 +610,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
   };
 }
 
-void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
+void TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
@@ -622,7 +632,7 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
   };
 }
 
-void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
+void TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
@@ -655,7 +665,7 @@ UnicodeString TConfiguration::BannerHash(const UnicodeString & Banner) const
   return BytesToHex(Result);
 }
 
-bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
+bool TConfiguration::ShowBanner(const UnicodeString SessionKey,
   const UnicodeString & Banner)
 {
   bool Result = false;
@@ -679,7 +689,7 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
   return Result;
 }
 
-void TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
+void TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
   const UnicodeString & Banner)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
@@ -798,7 +808,7 @@ void TConfiguration::CleanupConfiguration()
   }
 }
 
-void TConfiguration::CleanupRegistry(const UnicodeString & CleanupSubKey)
+void TConfiguration::CleanupRegistry(UnicodeString CleanupSubKey)
 {
   std::unique_ptr<TRegistryStorage> Registry(new TRegistryStorage(GetRegistryStorageKey()));
   try__finally
@@ -867,7 +877,7 @@ void TConfiguration::DontSave()
   FDontSave = true;
 }
 
-RawByteString TConfiguration::EncryptPassword(const UnicodeString & Password, const UnicodeString & Key)
+RawByteString TConfiguration::EncryptPassword(UnicodeString Password, UnicodeString Key)
 {
   if (Password.IsEmpty())
   {
@@ -879,7 +889,7 @@ RawByteString TConfiguration::EncryptPassword(const UnicodeString & Password, co
   }
 }
 
-UnicodeString TConfiguration::DecryptPassword(const RawByteString & Password, const UnicodeString & Key)
+UnicodeString TConfiguration::DecryptPassword(RawByteString Password, UnicodeString Key)
 {
   if (Password.IsEmpty())
   {
@@ -891,7 +901,7 @@ UnicodeString TConfiguration::DecryptPassword(const RawByteString & Password, co
   }
 }
 
-RawByteString TConfiguration::StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & /*Key*/)
+RawByteString TConfiguration::StronglyRecryptPassword(RawByteString Password, UnicodeString /*Key*/)
 {
   return Password;
 }
@@ -920,7 +930,7 @@ UnicodeString TConfiguration::ModuleFileName() const
   return L"";
 }
 
-void * TConfiguration::GetFileApplicationInfo(const UnicodeString & AFileName) const
+void * TConfiguration::GetFileApplicationInfo(const UnicodeString AFileName) const
 {
   void * Result;
   if (AFileName.IsEmpty())
@@ -940,15 +950,15 @@ void * TConfiguration::GetFileApplicationInfo(const UnicodeString & AFileName) c
 
 void * TConfiguration::GetApplicationInfo() const
 {
-  return GetFileApplicationInfo(L"");
+  return GetFileApplicationInfo("");
 }
 
-UnicodeString TConfiguration::GetFileProductName(const UnicodeString & AFileName) const
+UnicodeString TConfiguration::GetFileProductName(const UnicodeString AFileName) const
 {
   return GetFileFileInfoString(L"ProductName", AFileName);
 }
 
-UnicodeString TConfiguration::GetFileCompanyName(const UnicodeString & AFileName) const
+UnicodeString TConfiguration::GetFileCompanyName(const UnicodeString AFileName) const
 {
   // particularly in IDE build, company name is empty
   return GetFileFileInfoString(L"CompanyName", AFileName, true);
@@ -964,7 +974,7 @@ UnicodeString TConfiguration::GetCompanyName() const
   return GetFileCompanyName(L"");
 }
 
-UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString & AFileName) const
+UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString AFileName) const
 {
   return TrimVersion(GetFileFileInfoString(L"ProductVersion", AFileName));
 }
@@ -999,12 +1009,14 @@ UnicodeString TConfiguration::GetProductVersionStr() const
   TGuard Guard(FCriticalSection);
   try
   {
-    TVSFixedFileInfo * Info = GetFixedApplicationInfo();
-    /*return FMTLOAD(VERSION,
+    TVSFixedFileInfo * FixedApplicationInfo = GetFixedApplicationInfo();
+#if 0
+    return FMTLOAD(VERSION,
       HIWORD(Info->dwFileVersionMS),
       LOWORD(Info->dwFileVersionMS),
       HIWORD(Info->dwFileVersionLS),
-      LOWORD(Info->dwFileVersionLS));*/
+      LOWORD(Info->dwFileVersionLS));
+#endif // #if 0
     UnicodeString BuildStr;
     if (!GetIsUnofficial())
     {
@@ -1019,7 +1031,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
       #endif
     }
 
-    int Build = LOWORD(Info->dwFileVersionLS);
+    int Build = LOWORD(FixedApplicationInfo->dwFileVersionLS);
     if (Build > 0)
     {
       BuildStr += L" " + ::IntToStr(Build);
@@ -1107,13 +1119,13 @@ UnicodeString TConfiguration::GetProductVersion() const
   UnicodeString Result;
   try
   {
-    TVSFixedFileInfo * Info = GetFixedApplicationInfo();
-    if (Info)
+    TVSFixedFileInfo * FixedApplicationInfo = GetFixedApplicationInfo();
+    if (FixedApplicationInfo)
     {
       Result = FormatVersion(
-        HIWORD(Info->dwFileVersionMS),
-        LOWORD(Info->dwFileVersionMS),
-        HIWORD(Info->dwFileVersionLS));
+        HIWORD(FixedApplicationInfo->dwFileVersionMS),
+        LOWORD(FixedApplicationInfo->dwFileVersionMS),
+        HIWORD(FixedApplicationInfo->dwFileVersionLS));
     }
   }
   catch (Exception & E)
@@ -1128,8 +1140,8 @@ UnicodeString TConfiguration::GetVersion()
   return GetFileVersion(GetFixedApplicationInfo());
 }
 
-UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
-  const UnicodeString & AFileName, bool AllowEmpty) const
+UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString AKey,
+  const UnicodeString AFileName, bool AllowEmpty) const
 {
   TGuard Guard(FCriticalSection);
 
@@ -1227,7 +1239,7 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly)
   UnicodeString ProgramIniPath = ChangeFileExt(ProgramPath, L".ini");
 
   UnicodeString IniPath;
-    if (::FileExists(ApiPath(ProgramIniPath)))
+  if (::FileExists(ApiPath(ProgramIniPath)))
   {
     IniPath = ProgramIniPath;
   }
@@ -1235,22 +1247,22 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly)
   {
     UnicodeString AppDataIniPath =
       IncludeTrailingBackslash(GetShellFolderPath(CSIDL_APPDATA)) +
-        ::ExtractFileName(ProgramIniPath);
-      if (::FileExists(ApiPath(AppDataIniPath)))
+      ::ExtractFileName(ProgramIniPath);
+    if (::FileExists(ApiPath(AppDataIniPath)))
     {
       IniPath = AppDataIniPath;
     }
     else
     {
       // avoid expensive test if we are interested in existing files only
-        if (!ReadingOnly && (FProgramIniPathWritable < 0))
+      if (!ReadingOnly && (FProgramIniPathWritable < 0))
       {
         UnicodeString ProgramDir = ::ExtractFilePath(ProgramPath);
-          FProgramIniPathWritable = IsDirectoryWriteable(ProgramDir) ? 1 : 0;
+        FProgramIniPathWritable = IsDirectoryWriteable(ProgramDir) ? 1 : 0;
       }
 
       // does not really matter what we return when < 0
-        IniPath = (FProgramIniPathWritable == 0) ? AppDataIniPath : ProgramIniPath;
+      IniPath = (FProgramIniPathWritable == 0) ? AppDataIniPath : ProgramIniPath;
     }
   }
 
@@ -1272,7 +1284,7 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly)
   }
 
   if (!FVirtualIniFileStorageName.IsEmpty() &&
-        ::FileExists(ApiPath(FVirtualIniFileStorageName)))
+      ::FileExists(ApiPath(FVirtualIniFileStorageName)))
   {
     return FVirtualIniFileStorageName;
   }
@@ -1407,11 +1419,13 @@ TStorage TConfiguration::GetStorage() const
   TGuard Guard(FCriticalSection);
   if (FStorage == stDetect)
   {
-    /*if (::FileExists(ApiPath(IniFileStorageNameForReading)))
+#if 0
+    if (::FileExists(ApiPath(IniFileStorageNameForReading)))
     {
       FStorage = stIniFile;
     }
-    else*/
+    else
+#endif // #if 0
     {
       FStorage = stRegistry;
     }
@@ -1516,7 +1530,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
   return ImportSessionList.release();
 }
 
-void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
+void TConfiguration::SetRandomSeedFile(UnicodeString Value)
 {
   if (GetRandomSeedFile() != Value)
   {
@@ -1581,7 +1595,7 @@ void TConfiguration::SetCollectUsage(bool /*Value*/)
   // FUsage->Collect = Value;
 }
 
-void TConfiguration::TemporaryLogging(UnicodeString ALogFileName)
+void TConfiguration::TemporaryLogging(const UnicodeString ALogFileName)
 {
   if (SameText(ExtractFileExt(ALogFileName), L".xml"))
   {
@@ -1595,7 +1609,7 @@ void TConfiguration::TemporaryLogging(UnicodeString ALogFileName)
   }
 }
 
-void TConfiguration::TemporaryActionsLogging(UnicodeString ALogFileName)
+void TConfiguration::TemporaryActionsLogging(const UnicodeString ALogFileName)
 {
   FLogActions = true;
   FActionsLogFileName = ALogFileName;
@@ -1834,11 +1848,6 @@ void TConfiguration::SetSessionReopenAuto(intptr_t Value)
   SET_CONFIG_PROPERTY(SessionReopenAuto);
 }
 
-void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value)
-{
-  SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
-}
-
 void TConfiguration::SetSessionReopenBackground(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenBackground);
@@ -1877,6 +1886,11 @@ void TConfiguration::SetShowFtpWelcomeMessage(bool Value)
 bool TConfiguration::GetPersistent() const
 {
   return (GetStorage() != stNul);
+}
+
+void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value)
+{
+  SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
 }
 
 

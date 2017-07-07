@@ -18,8 +18,10 @@ public:
   void ModifyAll(bool Modify);
   void Clear();
 
-/*  __property TBookmarkList * Bookmarks[UnicodeString Index] = { read = GetBookmarks, write = SetBookmarks };
-  __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };*/
+#if 0
+  __property TBookmarkList * Bookmarks[UnicodeString Index] = { read = GetBookmarks, write = SetBookmarks };
+  __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
+#endif // if 0
 
 private:
   TStringList * FBookmarkLists;
@@ -66,15 +68,19 @@ public:
   void SaveOptions(THierarchicalStorage * Storage) const;
   void ShortCuts(TShortCuts & ShortCuts);
 
-/*  __property int Count = { read = GetCount };
+#if 0
+  __property int Count = { read = GetCount };
   __property TBookmark * Bookmarks[int Index] = { read = GetBookmarks };
-  __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };*/
+  __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
+#endif // if 0
 
 protected:
   intptr_t IndexOf(TBookmark * Bookmark) const;
   void KeyChanged(intptr_t Index);
 
-//  __property bool Modified = { read = FModified, write = FModified };
+#if 0
+  __property bool Modified = { read = FModified, write = FModified };
+#endif // if 0
   bool GetModified() const { return FModified; }
   void SetModified(bool Value) { FModified = Value; }
 
@@ -84,7 +90,6 @@ private:
   bool FModified;
 
 public:
-
   intptr_t GetCount() const;
   TBookmark * GetBookmarks(intptr_t AIndex);
   bool GetNodeOpened(const UnicodeString & AIndex) const;
@@ -106,17 +111,21 @@ public:
 
   virtual void Assign(const TPersistent * Source);
 
-/*  __property UnicodeString Name = { read = FName, write = SetName };
+#if 0
+  __property UnicodeString Name = { read = FName, write = SetName };
   __property UnicodeString Local = { read = FLocal, write = SetLocal };
   __property UnicodeString Remote = { read = FRemote, write = SetRemote };
   __property UnicodeString Node = { read = FNode, write = SetNode };
-  __property TShortCut ShortCut = { read = FShortCut, write = SetShortCut };*/
+  __property TShortCut ShortCut = { read = FShortCut, write = SetShortCut };
+#endif // if 0
 
 protected:
   TBookmarkList * FOwner;
 
   static UnicodeString BookmarkKey(const UnicodeString & Node, const UnicodeString & Name);
-  // __property UnicodeString Key = { read = GetKey };
+#if 0
+  __property UnicodeString Key = { read = GetKey };
+#endif // if 0
 
 private:
   UnicodeString FName;
@@ -126,16 +135,17 @@ private:
   TShortCut FShortCut;
 
 public:
-  void SetName(const UnicodeString & Value);
   UnicodeString GetName() const { return FName; }
-  void SetLocal(const UnicodeString & Value);
   UnicodeString GetLocal() const { return FLocal; }
-  void SetRemote(const UnicodeString & Value);
   UnicodeString GetRemote() const { return FRemote; }
-  void SetNode(const UnicodeString & Value);
   UnicodeString GetNode() const { return FNode; }
-  void SetShortCut(const TShortCut & Value);
   TShortCut GetShortCut() const { return FShortCut; }
+
+  void SetName(const UnicodeString & Value);
+  void SetLocal(const UnicodeString & Value);
+  void SetRemote(const UnicodeString & Value);
+  void SetNode(const UnicodeString & Value);
+  void SetShortCut(const TShortCut & Value);
   UnicodeString GetKey() const;
 
 private:

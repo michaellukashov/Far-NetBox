@@ -66,9 +66,9 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
       }
       __finally
       {
-/*
+#if 0
         delete BookmarkKeys;
-*/
+#endif // if 0
       };
       Storage->CloseSubKey();
     }
@@ -149,9 +149,9 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
   }
   __finally
   {
-/*
+#if 0
     delete Names;
-*/
+#endif // if 0
   };
 }
 
@@ -177,7 +177,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
                 TBookmark * Bookmark = BookmarkList->GetBookmarks(IndexB);
                 // avoid creating empty subfolder if there's no shortcut
                 if ((Idx == 0) || (Idx == 1) ||
-                  ((Idx == 2) && (Bookmark->GetShortCut() != 0)))
+                    ((Idx == 2) && (Bookmark->GetShortCut() != 0)))
                 {
                   bool HasNode = !Bookmark->GetNode().IsEmpty();
                   if (!HasNode || Storage->OpenSubKey(Bookmark->GetNode(), true))

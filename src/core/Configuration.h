@@ -27,7 +27,7 @@ enum TFtpEncryptionSwitch_219
   fesPlainFTP,
   fesExplicitSSL,
   fesImplicit,
-  fesExplicitTLS
+  fesExplicitTLS,
 };
 
 class TStoredSessionList;
@@ -86,7 +86,6 @@ private:
   intptr_t FTunnelLocalPortNumberLow;
   intptr_t FTunnelLocalPortNumberHigh;
   intptr_t FCacheDirectoryChangesMaxSize;
-  intptr_t FSessionReopenAutoMaximumNumberOfRetries;
   bool FShowFtpWelcomeMessage;
   UnicodeString FDefaultRandomSeedFile;
   UnicodeString FRandomSeedFile;
@@ -95,6 +94,7 @@ private:
   bool FTryFtpWhenSshFails;
   intptr_t FParallelDurationThreshold;
   bool FScripting;
+  intptr_t FSessionReopenAutoMaximumNumberOfRetries;
 
   bool FDisablePasswordStoring;
   bool FForceBanners;
@@ -102,10 +102,8 @@ private:
   bool FDefaultCollectUsage;
 
 public:
-
   TVSFixedFileInfo * GetFixedApplicationInfo() const;
   void * GetApplicationInfo() const;
-  virtual UnicodeString GetProductVersionStr() const;
   virtual UnicodeString GetProductVersion() const;
   UnicodeString GetVersion();
   UnicodeString GetFileProductVersion() const;
@@ -114,7 +112,7 @@ public:
   UnicodeString GetFileVersion(TVSFixedFileInfo * Info);
   UnicodeString GetStoredSessionsSubKey() const;
   UnicodeString GetPuttySessionsKey() const;
-  void SetRandomSeedFile(const UnicodeString & Value);
+  void SetRandomSeedFile(UnicodeString Value);
   UnicodeString GetRandomSeedFileName() const;
   void SetPuttyRegistryStorageKey(UnicodeString Value);
   UnicodeString GetSshHostKeysSubKey() const;
@@ -140,7 +138,6 @@ public:
   UnicodeString GetActionsLogFileName() const;
   UnicodeString GetDefaultLogFileName() const;
   UnicodeString TimeFormat() const;
-  void SetStorage(TStorage Value);
   UnicodeString GetRegistryStorageKey() const;
 #if 0
   UnicodeString GetIniFileStorageNameForReadingWriting() const;
@@ -169,8 +166,11 @@ public:
   void SetCollectUsage(bool Value);
   bool GetIsUnofficial() const;
   bool GetPersistent() const;
+
   bool GetScripting() const { return FScripting; }
   void SetScripting(bool Value) { FScripting = Value; }
+  virtual UnicodeString GetProductVersionStr() const;
+  void SetStorage(TStorage Value);
 
 protected:
   mutable TStorage FStorage;
@@ -186,7 +186,7 @@ public:
   virtual void LoadAdmin(THierarchicalStorage * Storage);
   virtual UnicodeString GetDefaultKeyFile() const;
   virtual void Saved();
-  void CleanupRegistry(const UnicodeString & CleanupSubKey);
+  void CleanupRegistry(UnicodeString CleanupSubKey);
   UnicodeString BannerHash(const UnicodeString & Banner) const;
   static UnicodeString PropertyToKey(const UnicodeString & Property);
   virtual void DoSave(bool All, bool Explicit);
@@ -206,12 +206,12 @@ public:
 
   virtual UnicodeString ModuleFileName() const;
 
-  UnicodeString GetFileFileInfoString(const UnicodeString & AKey,
-    const UnicodeString & AFileName, bool AllowEmpty = false) const;
-  void * GetFileApplicationInfo(const UnicodeString & AFileName) const;
-  UnicodeString GetFileProductVersion(const UnicodeString & AFileName) const;
-  UnicodeString GetFileProductName(const UnicodeString & AFileName) const;
-  UnicodeString GetFileCompanyName(const UnicodeString & AFileName) const;
+  UnicodeString GetFileFileInfoString(const UnicodeString AKey,
+    const UnicodeString AFileName, bool AllowEmpty = false) const;
+  void * GetFileApplicationInfo(const UnicodeString AFileName) const;
+  UnicodeString GetFileProductVersion(const UnicodeString AFileName) const;
+  UnicodeString GetFileProductName(const UnicodeString AFileName) const;
+  UnicodeString GetFileCompanyName(const UnicodeString AFileName) const;
 
 #if 0
   __property bool PermanentLogging  = { read=GetLogging, write=SetLogging };
@@ -248,25 +248,25 @@ public:
   void BeginUpdate();
   void EndUpdate();
   void DontSave();
-  void LoadDirectoryChangesCache(const UnicodeString & SessionKey,
+  void LoadDirectoryChangesCache(const UnicodeString SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  void SaveDirectoryChangesCache(const UnicodeString & SessionKey,
+  void SaveDirectoryChangesCache(const UnicodeString SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  bool ShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
-  void NeverShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
+  bool ShowBanner(const UnicodeString SessionKey, const UnicodeString & Banner);
+  void NeverShowBanner(const UnicodeString SessionKey, const UnicodeString & Banner);
   void RememberLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType, const UnicodeString & Fingerprint);
   UnicodeString GetLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType);
   virtual THierarchicalStorage * CreateConfigStorage();
   virtual THierarchicalStorage * CreateStorage(bool & SessionList);
-  void TemporaryLogging(UnicodeString ALogFileName);
-  void TemporaryActionsLogging(UnicodeString ALogFileName);
+  void TemporaryLogging(const UnicodeString ALogFileName);
+  void TemporaryActionsLogging(const UnicodeString ALogFileName);
   void TemporaryLogProtocol(intptr_t ALogProtocol);
   void TemporaryLogSensitive(bool ALogSensitive);
   void TemporaryLogMaxSize(int64_t ALogMaxSize);
   void TemporaryLogMaxCount(intptr_t ALogMaxCount);
-  virtual RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
-  virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
-  virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
+  virtual RawByteString EncryptPassword(UnicodeString Password, UnicodeString Key);
+  virtual UnicodeString DecryptPassword(RawByteString Password, UnicodeString Key);
+  virtual RawByteString StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
   UnicodeString GetFileDescription(const UnicodeString & AFileName) const;
   UnicodeString GetFileVersion(const UnicodeString & AFileName);
 
