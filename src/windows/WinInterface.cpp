@@ -1361,14 +1361,18 @@ bool HandleMinimizeSysCommand(TMessage & Message)
 
 void WinInitialize()
 {
-//  if (JclHookExceptions())
-//  {
-//    JclStackTrackingOptions << stAllModules;
-//    JclAddExceptNotifier(DoExceptNotify, npFirstChain);
-//  }
+#if 0
+  if (JclHookExceptions())
+  {
+    JclStackTrackingOptions << stAllModules;
+    JclAddExceptNotifier(DoExceptNotify, npFirstChain);
+  }
+#endif // #if 0
 
   SetErrorMode(SEM_FAILCRITICALERRORS);
-//  OnApiPath = ::ApiPath;
+#if 0
+  OnApiPath = ::ApiPath;
+#endif // #if 0
   MainThread = ::GetCurrentThreadId();
 
 }

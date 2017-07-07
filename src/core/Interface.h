@@ -91,7 +91,7 @@ enum TQueryType
 
 struct TQueryParams : public TObject
 {
-  explicit TQueryParams(uintptr_t AParams = 0, const UnicodeString & AHelpKeyword = HELP_NONE);
+  explicit TQueryParams(uintptr_t AParams = 0, UnicodeString AHelpKeyword = HELP_NONE);
   explicit TQueryParams(const TQueryParams & Source);
 
   void Assign(const TQueryParams & Source);

@@ -16,7 +16,7 @@
 #define DIRECTORY_MASK_DELIMITERS L"/\\"
 #define FILE_MASKS_DELIMITER_STR L"; "
 
-extern const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
+const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
 UnicodeString FileMasksDelimiters = L";,";
 static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
 static UnicodeString DirectoryMaskDelimiters = L"/\\";
@@ -24,7 +24,7 @@ static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1
 UnicodeString AnyMask = L"*.*";
 
 EFileMasksException::EFileMasksException(
-  const UnicodeString & AMessage, intptr_t AErrorStart, intptr_t AErrorLen) :
+  UnicodeString AMessage, intptr_t AErrorStart, intptr_t AErrorLen) :
   Exception(AMessage), ErrorStart(AErrorStart), ErrorLen(AErrorLen)
 {
 }
@@ -232,7 +232,7 @@ UnicodeString TFileMasks::ComposeMaskStr(
     {
       Result += L' ';
     }
-    Result += UnicodeString(INCLUDE_EXCLUDE_FILE_MASKS_DELIMITER) + L' ' + ExcludeMasks;
+    Result += UnicodeString(IncludeExcludeFileMasksDelimiter) + L' ' + ExcludeMasks;
   }
   return Result;
 }
@@ -769,7 +769,7 @@ void TFileMasks::SetStr(const UnicodeString & Value, bool SingleMask)
         CreateMask(MaskStr, MaskStart, MaskEnd, Include);
       }
 
-      if (NextMaskDelimiter == INCLUDE_EXCLUDE_FILE_MASKS_DELIMITER)
+      if (NextMaskDelimiter == IncludeExcludeFileMasksDelimiter)
       {
         if (Include)
         {

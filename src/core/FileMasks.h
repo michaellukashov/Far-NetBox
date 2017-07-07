@@ -9,12 +9,12 @@
 class EFileMasksException : public Exception
 {
 public:
-  explicit EFileMasksException(const UnicodeString & AMessage, intptr_t AErrorStart, intptr_t AErrorLen);
+  explicit EFileMasksException(UnicodeString AMessage, intptr_t AErrorStart, intptr_t AErrorLen);
   intptr_t ErrorStart;
   intptr_t ErrorLen;
 };
 
-#define INCLUDE_EXCLUDE_FILE_MASKS_DELIMITER L'|'
+extern const wchar_t IncludeExcludeFileMasksDelimiter;
 #define MASK_INDEX(DIRECTORY, INCLUDE) ((DIRECTORY ? 2 : 0) + (INCLUDE ? 0 : 1))
 
 class TFileMasks : public TObject

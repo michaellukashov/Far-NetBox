@@ -247,6 +247,8 @@ intptr_t TimeToSeconds(const TDateTime & T);
 intptr_t TimeToMinutes(const TDateTime & T);
 UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime);
 
+enum TAssemblyLanguage { alCSharp, alVBNET, alPowerShell };
+
 #pragma warning(push)
 #pragma warning(disable: 4512) // assignment operator could not be generated
 

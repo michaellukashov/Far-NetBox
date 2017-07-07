@@ -2,7 +2,7 @@
 #pragma once
 
 #include <Classes.hpp>
-#include <FileMasks.H>
+#include <FileMasks.h>
 
 
 class TSessionData;
