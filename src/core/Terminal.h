@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <rdestl/map.h>
@@ -151,6 +152,59 @@ typedef nb::FastDelegate2<BOOL,
   LPSECURITY_ATTRIBUTES /*SecurityAttributes*/> TCreateLocalDirectoryEvent;
 typedef nb::FastDelegate0<bool> TCheckForEscEvent;
 
+#if 0
+#define THROW_SKIP_FILE(EXCEPTION, MESSAGE) \
+  throw EScpSkipFile(EXCEPTION, MESSAGE)
+#define THROW_SKIP_FILE_NULL THROW_SKIP_FILE(nullptr, L"")
+
+/* TODO : Better user interface (query to user) */
+#define FILE_OPERATION_LOOP_BEGIN \
+  { \
+    bool DoRepeat; \
+    do { \
+      DoRepeat = false; \
+      try \
+
+#define FILE_OPERATION_LOOP_END_CUSTOM(MESSAGE, ALLOW_SKIP, HELPKEYWORD) \
+      catch (EAbort & E) \
+      { \
+        throw; \
+      } \
+      catch (EScpSkipFile & E) \
+      { \
+        throw; \
+      } \
+      catch (EFatal & E) \
+      { \
+        throw; \
+      } \
+      catch (Exception & E) \
+      { \
+        FILE_OPERATION_LOOP_TERMINAL->FileOperationLoopQuery( \
+          E, OperationProgress, MESSAGE, ALLOW_SKIP, L"", HELPKEYWORD); \
+        DoRepeat = true; \
+      } \
+    } while (DoRepeat); \
+  }
+
+#define FILE_OPERATION_LOOP_END_EX(MESSAGE, ALLOW_SKIP) \
+  FILE_OPERATION_LOOP_END_CUSTOM(MESSAGE, ALLOW_SKIP, L"")
+#define FILE_OPERATION_LOOP_END(MESSAGE) \
+  FILE_OPERATION_LOOP_END_EX(MESSAGE, true)
+
+enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsWebDAV };
+#endif // #if 0
+
+enum TCurrentFSProtocol
+{
+  cfsUnknown,
+  cfsSCP,
+  cfsSFTP,
+  cfsFTP,
+  cfsFTPS,
+  cfsWebDAV
+};
+
 inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 {
   throw ESkipFile(Exception, Message);
@@ -162,16 +216,6 @@ void FileOperationLoopCustom(TTerminal * Terminal,
   bool AllowSkip, const UnicodeString & Message,
   const UnicodeString & HelpKeyword,
   const std::function<void()> & Operation);
-
-enum TCurrentFSProtocol
-{
-  cfsUnknown,
-  cfsSCP,
-  cfsSFTP,
-  cfsFTP,
-  cfsFTPS,
-  cfsWebDAV
-};
 
 const int cpDelete = 0x01;
 const int cpTemporary = 0x04;
@@ -204,7 +248,9 @@ public:
   }
 public:
   // TScript::SynchronizeProc relies on the order
-  // enum TSynchronizeMode { smRemote, smLocal, smBoth };
+#if 0
+  enum TSynchronizeMode { smRemote, smLocal, smBoth };
+#endif // #if 0
   enum TSynchronizeMode
   {
     smRemote,
@@ -321,8 +367,8 @@ public:
   TRemoteTokenList * GetGroups();
   const TRemoteTokenList * GetUsers() const { return const_cast<TTerminal *>(this)->GetUsers(); }
   TRemoteTokenList * GetUsers();
-  const TRemoteTokenList * GetMembership() const { return const_cast<TTerminal *>(this)->GetMembership(); }
   TRemoteTokenList * GetMembership();
+  const TRemoteTokenList * GetMembership() const { return const_cast<TTerminal *>(this)->GetMembership(); }
   void TerminalSetCurrentDirectory(const UnicodeString & AValue);
   void SetExceptionOnFail(bool Value);
   void ReactOnCommand(intptr_t /*TFSCommand*/ Cmd);
@@ -365,7 +411,7 @@ public:
     const TRemoteFile * AFile, const TRemoteProperties * Properties);
   void DoChangeDirectory();
   void DoInitializeLog();
-  void EnsureNonExistence(const UnicodeString & AFileName, bool IsDirectory);
+  void EnsureNonExistence(const UnicodeString & AFileName);
   void LookupUsersGroups();
   void FileModified(const TRemoteFile * AFile,
     const UnicodeString & AFileName, bool ClearDirectoryChange = false);
@@ -498,8 +544,8 @@ public:
     const UnicodeString TargetDir, const TCopyParamType * CopyParam,
     TFileOperationProgressType * OperationProgress, bool Parallel, TStrings * Files);
   void LogTotalTransferDone(TFileOperationProgressType * OperationProgress);
-  virtual const TTerminal * GetPasswordSource() const { return this; }
   virtual TTerminal * GetPasswordSource();
+  virtual const TTerminal * GetPasswordSource() const { return this; }
   void DoEndTransaction(bool Inform);
   bool VerifyCertificate(
     const UnicodeString & CertificateStorageKey, const UnicodeString & SiteKey,
@@ -829,8 +875,8 @@ protected:
 
 private:
   TConfiguration * FConfiguration;
-public:
 
+public:
   TTerminal * GetTerminal(intptr_t Index);
 };
 
@@ -920,7 +966,7 @@ public:
 
   TStringList * Filter;
 
-  //bool FilterFind(const UnicodeString & AFileName) const;
+  bool FilterFind(const UnicodeString & AFileName) const;
   bool MatchesFilter(const UnicodeString & AFileName) const;
 };
 
@@ -947,6 +993,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TChecklistItem;
   }
 public:
+
   struct TFileInfo : public TObject
   {
     UnicodeString FileName;
@@ -976,10 +1023,49 @@ private:
 
 class TSynchronizeChecklist : public TObject
 {
-friend class TTerminal;
 NB_DISABLE_COPY(TSynchronizeChecklist)
+friend class TTerminal;
+
 public:
+#if 0
+  enum TAction { saNone, saUploadNew, saDownloadNew, saUploadUpdate,
+    saDownloadUpdate, saDeleteRemote, saDeleteLocal };
+#endif // #if 0
   static const intptr_t ActionCount = saDeleteLocal;
+
+#if 0
+  class TItem
+  {
+  friend class TTerminal;
+
+  public:
+    struct TFileInfo
+    {
+      UnicodeString FileName;
+      UnicodeString Directory;
+      TDateTime Modification;
+      TModificationFmt ModificationFmt;
+      __int64 Size;
+    };
+
+    TAction Action;
+    bool IsDirectory;
+    TFileInfo Local;
+    TFileInfo Remote;
+    int ImageIndex;
+    bool Checked;
+    TRemoteFile * RemoteFile;
+
+    const UnicodeString& GetFileName() const;
+
+    ~TItem();
+
+  private:
+    FILETIME FLocalLastWriteTime;
+
+    TItem();
+  };
+#endif // #if 0
 
   ~TSynchronizeChecklist();
 

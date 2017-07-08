@@ -19,9 +19,13 @@
 #include <ne_session.h>
 #include <ne_request.h>
 #include <ne_xml.h>
+#include <ne_redirect.h>
 #include <ne_xmlreq.h>
 #include <ne_locks.h>
 #include <expat.h>
+
+#include <StrUtils.hpp>
+#include <NeonIntf.h>
 
 #include "WebDAVFileSystem.h"
 
@@ -34,8 +38,25 @@
 #include "HelpCore.h"
 #include "CoreMain.h"
 #include "Security.h"
-#include <NeonIntf.h>
 #include <openssl/ssl.h>
+
+#if 0
+#pragma package(smart_init)
+
+#define FILE_OPERATION_LOOP_TERMINAL FTerminal
+
+const int tfFirstLevel = 0x01;
+
+struct TSinkFileParams
+{
+  UnicodeString TargetDir;
+  const TCopyParamType * CopyParam;
+  int Params;
+  TFileOperationProgressType * OperationProgress;
+  bool Skipped;
+  unsigned int Flags;
+};
+#endif // #if 0
 
 struct TWebDAVCertificateData
 {
@@ -71,7 +92,9 @@ static const int HttpUnauthorized = 401;
 
 static std::unique_ptr<TCriticalSection> DebugSection(TraceInitPtr(new TCriticalSection));
 
-//static rde::set<TWebDAVFileSystem *> FileSystems;
+#if 0
+static rde::set<TWebDAVFileSystem *> FileSystems;
+#endif // #if 0
 
 extern "C"
 {
@@ -133,10 +156,12 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
         TGuard Guard(*DebugSection.get());
 
         TODO("implement");
-        /*if (FileSystems.size() == 1)
+#if 0
+        if (FileSystems.size() == 1)
         {
           FileSystem = *FileSystems.begin();
-        }*/
+        }
+#endif // #if 0
       }
 
       if (FileSystem != nullptr)
@@ -269,6 +294,9 @@ TWebDAVFileSystem::~TWebDAVFileSystem()
     }
   }
 
+#if 0
+  delete FNeonLockStoreSection;
+#endif // #if 0
 }
 
 void TWebDAVFileSystem::Open()
@@ -351,7 +379,6 @@ void TWebDAVFileSystem::OpenUrl(const UnicodeString & Url)
 
 void TWebDAVFileSystem::NeonClientOpenSessionInternal(UnicodeString & CorrectedUrl, UnicodeString Url)
 {
-  // TraceCallstack();
   std::unique_ptr<TStringList> AttemptedUrls(CreateSortedStringList());
   AttemptedUrls->Add(Url);
   while (true)
@@ -689,8 +716,8 @@ bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
   case fcMoveToQueue:
   case fcPreservingTimestampUpload:
   case fcCheckingSpaceAvailable:
-    // Only to make double-click on file edit/open the file,
-    // instead of trying to open it as directory
+  // Only to make double-click on file edit/open the file,
+  // instead of trying to open it as directory
   case fcResolveSymlink:
   case fsSkipTransfer:
   case fsParallelTransfers:
@@ -993,6 +1020,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
   const char * LastModified = GetNeonProp(Results, PROP_LAST_MODIFIED);
   const char * CreationDate = GetNeonProp(Results, PROP_CREATIONDATE);
   const char * Modified = LastModified ? LastModified : CreationDate;
+  // We've seen a server (t=24891) that does not set "getlastmodified" for the "this" folder entry.
   if (DebugAlwaysTrue(Modified != nullptr))
   {
     char WeekDay[4] = {L'\0'};
@@ -1286,12 +1314,13 @@ void TWebDAVFileSystem::ConfirmOverwrite(
   case qaNo:
     ThrowSkipFileNull();
 
-  default:
-    DebugFail();
   case qaCancel:
     OperationProgress->SetCancelAtLeast(csCancel);
     Abort();
     break;
+
+  default:
+    DebugFail();
   }
 }
 
@@ -1305,7 +1334,6 @@ void TWebDAVFileSystem::AnyCommand(const UnicodeString & /*Command*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
-  // ThrowNotImplemented(1008);
 }
 
 TStrings * TWebDAVFileSystem::GetFixedPaths() const
@@ -1701,7 +1729,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, RealFileName.c_str()), "",
       [&]()
       {
-        THROWOSIFFALSE(::RemoveFile(RealFileName));
+        THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(RealFileName)));
       });
     }
   }
@@ -2136,8 +2164,8 @@ bool TWebDAVFileSystem::CancelTransfer()
   bool Result = false;
   TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
   if ((FUploading || FDownloading) &&
-    (OperationProgress != nullptr) &&
-    (OperationProgress->GetCancel() != csContinue))
+      (OperationProgress != nullptr) &&
+      (OperationProgress->GetCancel() != csContinue))
   {
     if (OperationProgress->ClearCancelFile())
     {
@@ -2168,8 +2196,8 @@ int TWebDAVFileSystem::NeonBodyReader(void * UserData, const char * Buf, size_t 
       // But this won't work when downloading text files that have text
       // content type on their own, hence the additional not-downloading test.
       if (!FileSystem->FDownloading &&
-        ((ne_strcasecmp(ContentType.type, "text") == 0) ||
-          media_type_is_xml(&ContentType)))
+          ((ne_strcasecmp(ContentType.type, "text") == 0) ||
+           media_type_is_xml(&ContentType)))
       {
         UnicodeString Content = UnicodeString(UTF8String(Buf, Len)).Trim();
         FileSystem->FResponse += Content;
@@ -2282,7 +2310,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       FileParams.SourceTimestamp = AFile->GetModification();
       FileParams.DestSize = Size;
       FileParams.DestTimestamp = ::UnixToDateTime(MTime,
-      FTerminal->GetSessionData()->GetDSTMode());
+        FTerminal->GetSessionData()->GetDSTMode());
 
       TOverwriteMode OverwriteMode = omOverwrite;
       uintptr_t Answer = 0;
@@ -2319,9 +2347,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     [&]()
     {
       HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName,
-        GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
-//      if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress,
-//             &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
+        GENERIC_WRITE, 0, FLAGSET(AParams, cpNoConfirmation) ? CREATE_ALWAYS : CREATE_NEW, 0);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
         ThrowSkipFileNull();
@@ -2350,7 +2376,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
             FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName.c_str()), "",
             [&]()
             {
-              THROWOSIFFALSE(::RemoveFile(DestFullName));
+              THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(DestFullName)));
             });
           }
         };
@@ -2395,7 +2421,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
           FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName.c_str()), "",
           [&]()
           {
-            THROWOSIFFALSE(::RemoveFile(DestFullName));
+            THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(DestFullName)));
           });
         }
 #endif // #if 0
@@ -2555,7 +2581,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data, b
         break;
 
       case qaCancel:
-        //          FTerminal->GetConfiguration()->GetUsage()->Inc(L"HostNotVerified");
+        // FTerminal->GetConfiguration()->GetUsage()->Inc(L"HostNotVerified");
         Result = false;
         break;
       }
@@ -2759,8 +2785,8 @@ void TWebDAVFileSystem::NeonNotifier(void * UserData, ne_session_status Status, 
   // We particularly have to filter out response to "put" request,
   // handling that would reset the upload progress back to low number (response is small).
   if (((FileSystem->FUploading && (Status == ne_status_sending)) ||
-      (FileSystem->FDownloading && (Status == ne_status_recving))) &&
-    DebugAlwaysTrue(OperationProgress != nullptr))
+       (FileSystem->FDownloading && (Status == ne_status_recving))) &&
+      DebugAlwaysTrue(OperationProgress != nullptr))
   {
     int64_t Progress = StatusInfo->sr.progress;
     int64_t Diff = Progress - OperationProgress->GetTransferredSize();
