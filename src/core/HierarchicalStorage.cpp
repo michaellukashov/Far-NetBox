@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -62,12 +63,12 @@ UnicodeString UnMungeStr(const UnicodeString & Str)
   return Result;
 }
 
-UnicodeString PuttyMungeStr(const UnicodeString & Str)
+UnicodeString PuttyMungeStr(const UnicodeString Str)
 {
   return MungeStr(Str, false);
 }
 
-UnicodeString PuttyUnMungeStr(const UnicodeString & Str)
+UnicodeString PuttyUnMungeStr(const UnicodeString Str)
 {
   return UnMungeStr(Str);
 }
@@ -149,7 +150,7 @@ bool THierarchicalStorage::OpenRootKey(bool CanCreate)
   return OpenSubKey(L"", CanCreate);
 }
 
-UnicodeString THierarchicalStorage::MungeKeyName(const UnicodeString & Key)
+UnicodeString THierarchicalStorage::MungeKeyName(UnicodeString Key)
 {
   UnicodeString Result = MungeStr(Key, GetForceAnsi());
   // if there's already ANSI-munged subkey, keep ANSI munging
@@ -227,9 +228,9 @@ void THierarchicalStorage::ClearSubKeys()
   }
   __finally
   {
-/*
+#if 0
     delete SubKeys;
-*/
+#endif // #if 0
   };
 }
 
@@ -254,9 +255,9 @@ bool THierarchicalStorage::HasSubKeys()
   }
   __finally
   {
-/*
+#if 0
     delete SubKeys;
-*/
+#endif // #if 0
   };
   return Result;
 }
@@ -298,9 +299,9 @@ void THierarchicalStorage::ReadValues(TStrings * Strings,
   }
   __finally
   {
-/*
+#if 0
     delete Names;
-*/
+#endif // #if 0
   };
 }
 
@@ -317,9 +318,9 @@ void THierarchicalStorage::ClearValues()
   }
   __finally
   {
-/*
+#if 0
     delete Names;
-*/
+#endif // #if 0
   };
 }
 
@@ -505,9 +506,9 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   }
   __finally
   {
-/*
+#if 0
     delete Names;
-*/
+#endif // #if 0
   };
   return Result;
 }
@@ -732,7 +733,7 @@ intptr_t TRegistryStorage::GetFailed() const
   return Result;
 }
 
-/*
+#if 0
 __fastcall TCustomIniFileStorage::TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile * IniFile) :
   THierarchicalStorage(Storage),
   FIniFile(IniFile),
@@ -1560,4 +1561,4 @@ bool __fastcall TOptionsStorage::GetTemporary()
 {
   return true;
 }
-*/
+#endif // #if 0

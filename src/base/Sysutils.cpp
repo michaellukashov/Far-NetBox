@@ -121,6 +121,24 @@ Exception::Exception(TObjectClassId Kind, intptr_t Ident) :
   Message = FMTLOAD(Ident);
 }
 
+void RaiseLastOSError(DWORD LastError)
+{
+  if (LastError == 0)
+    LastError = ::GetLastError();
+  UnicodeString ErrorMsg;
+  if (LastError != 0)
+  {
+    ErrorMsg = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError).c_str());
+  }
+  else
+  {
+    ErrorMsg = FMTLOAD(SUnkOSError);
+  }
+  throw EOSError(ErrorMsg, LastError);
+}
+
+namespace Sysutils {
+
 UnicodeString IntToStr(intptr_t Value)
 {
   UnicodeString Result;
@@ -440,22 +458,6 @@ UnicodeString UTF8ToString(const char * Str, intptr_t Len)
   return Result;
 }
 
-void RaiseLastOSError(DWORD LastError)
-{
-  if (LastError == 0)
-    LastError = ::GetLastError();
-  UnicodeString ErrorMsg;
-  if (LastError != 0)
-  {
-    ErrorMsg = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError).c_str());
-  }
-  else
-  {
-    ErrorMsg = FMTLOAD(SUnkOSError);
-  }
-  throw EOSError(ErrorMsg, LastError);
-}
-
 double StrToFloat(const UnicodeString & Value)
 {
   return StrToFloatDef(Value, 0.0);
@@ -600,7 +602,7 @@ UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & 
 void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
 {
   WIN32_FIND_DATA FindData;
-  HANDLE LocalFileHandle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
+  HANDLE LocalFileHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &FindData);
   if (LocalFileHandle != INVALID_HANDLE_VALUE)
   {
     ATimestamp =
@@ -614,24 +616,24 @@ void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
 DWORD FileGetAttr(const UnicodeString & AFileName, bool /*FollowLink*/)
 {
   TODO("FollowLink");
-  DWORD LocalFileAttrs = ::GetFileAttributes(ApiPath(AFileName).c_str());
+  DWORD LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
   return LocalFileAttrs;
 }
 
 DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs)
 {
-  DWORD Result = ::SetFileAttributes(ApiPath(AFileName).c_str(), LocalFileAttrs);
+  DWORD Result = ::SetFileAttributesW(ApiPath(AFileName).c_str(), LocalFileAttrs);
   return Result;
 }
 
 bool CreateDir(const UnicodeString & ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
-  return ::CreateDirectory(ApiPath(ADir).c_str(), SecurityAttributes) != 0;
+  return ::CreateDirectoryW(ApiPath(ADir).c_str(), SecurityAttributes) != 0;
 }
 
 bool RemoveDir(const UnicodeString & ADir)
 {
-  return ::RemoveDirectory(ApiPath(ADir).c_str()) != 0;
+  return ::RemoveDirectoryW(ApiPath(ADir).c_str()) != 0;
 }
 
 bool ForceDirectories(const UnicodeString & ADir)
@@ -1003,7 +1005,7 @@ static DWORD FindMatchingFile(TSearchRec & Rec)
   DWORD Result = ERROR_SUCCESS;
   while ((Rec.FindData.dwFileAttributes && Rec.ExcludeAttr) != 0)
   {
-    if (!::FindNextFile(Rec.FindHandle, &Rec.FindData))
+    if (!::FindNextFileW(Rec.FindHandle, &Rec.FindData))
     {
       Result = ::GetLastError();
       return Result;
@@ -1021,52 +1023,6 @@ static DWORD FindMatchingFile(TSearchRec & Rec)
   return Result;
 }
 
-namespace base {
-
-DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec)
-{
-  const DWORD faSpecial = faHidden | faSysFile | faDirectory;
-  Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
-  Rec.FindHandle = ::FindFirstFile(ApiPath(AFileName).c_str(), &Rec.FindData);
-  DWORD Result = ERROR_SUCCESS;
-  if (Rec.FindHandle != INVALID_HANDLE_VALUE)
-  {
-    Result = FindMatchingFile(Rec);
-    if (Result != ERROR_SUCCESS)
-    {
-      FindClose(Rec);
-    }
-  }
-  else
-  {
-    Result = ::GetLastError();
-  }
-  return Result;
-}
-
-DWORD FindNext(TSearchRec & Rec)
-{
-  DWORD Result = 0;
-  if (::FindNextFile(Rec.FindHandle, &Rec.FindData))
-    Result = FindMatchingFile(Rec);
-  else
-    Result = ::GetLastError();
-  return Result;
-}
-
-DWORD FindClose(TSearchRec & Rec)
-{
-  DWORD Result = 0;
-  if (Rec.FindHandle != INVALID_HANDLE_VALUE)
-  {
-    ::FindClose(Rec.FindHandle);
-    Rec.FindHandle = INVALID_HANDLE_VALUE;
-  }
-  return Result;
-}
-
-} // namespace base
-
 bool Win32Check(bool RetVal)
 {
   if (!RetVal)
@@ -1079,7 +1035,7 @@ bool Win32Check(bool RetVal)
 UnicodeString SysErrorMessage(intptr_t ErrorCode)
 {
   wchar_t Buffer[255];
-  intptr_t Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
+  intptr_t Len = ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
     FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, (int)ErrorCode, 0,
     static_cast<LPTSTR>(Buffer),
     _countof(Buffer), nullptr);
@@ -1759,3 +1715,51 @@ UnicodeString TPath::Combine(UnicodeString APath, UnicodeString FileName)
   UnicodeString Result = ::IncludeTrailingBackslash(APath) + FileName;
   return Result;
 }
+
+} // namespace Sysutils
+
+namespace base {
+
+DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec)
+{
+  const DWORD faSpecial = faHidden | faSysFile | faDirectory;
+  Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
+  Rec.FindHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &Rec.FindData);
+  DWORD Result = ERROR_SUCCESS;
+  if (Rec.FindHandle != INVALID_HANDLE_VALUE)
+  {
+    Result = FindMatchingFile(Rec);
+    if (Result != ERROR_SUCCESS)
+    {
+      FindClose(Rec);
+    }
+  }
+  else
+  {
+    Result = ::GetLastError();
+  }
+  return Result;
+}
+
+DWORD FindNext(TSearchRec & Rec)
+{
+  DWORD Result = 0;
+  if (::FindNextFileW(Rec.FindHandle, &Rec.FindData))
+    Result = FindMatchingFile(Rec);
+  else
+    Result = ::GetLastError();
+  return Result;
+}
+
+DWORD FindClose(TSearchRec & Rec)
+{
+  DWORD Result = 0;
+  if (Rec.FindHandle != INVALID_HANDLE_VALUE)
+  {
+    ::FindClose(Rec.FindHandle);
+    Rec.FindHandle = INVALID_HANDLE_VALUE;
+  }
+  return Result;
+}
+
+} // namespace base

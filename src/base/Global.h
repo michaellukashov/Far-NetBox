@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <headers.hpp>
@@ -14,24 +15,7 @@
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 
-class TCriticalSection // : public TObject
-{
-CUSTOM_MEM_ALLOCATION_IMPL
-NB_DISABLE_COPY(TCriticalSection)
-public:
-  TCriticalSection();
-  ~TCriticalSection();
-
-  void Enter() const;
-  void Leave() const;
-
-  intptr_t GetAcquired() const { return FAcquired; }
-
-private:
-  mutable CRITICAL_SECTION FSection;
-  mutable intptr_t FAcquired;
-};
-
+#include <System.SyncObjs.hpp>
 
 class TGuard // : public TObject
 {
@@ -58,7 +42,10 @@ private:
   TCriticalSection & FCriticalSection;
 };
 
-#if !defined(_DEBUG)
+
+#include <assert.h>
+#define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
+#if !defined(_DEBUG) || defined(DESIGN_ONLY)
 
 #define DebugAssert(p) (void)(p)
 #define DebugCheck(p) (p)
@@ -71,7 +58,7 @@ private:
 #define TraceInitStr(p) (p)
 #define DebugUsedParam(p) (void)(p)
 
-#else // _DEBUG
+#else // if !defined(_DEBUG) || defined(DESIGN_ONLY)
 
 void SetTraceFile(HANDLE ATraceFile);
 void CleanupTracing();
@@ -133,7 +120,7 @@ inline T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filena
 #define TraceInitStr(p) (p)
 #define DebugUsedParam(p) (void)(p)
 
-#endif // _DEBUG
+#endif  // if !defined(_DEBUG) || defined(DESIGN_ONLY)
 
 #if 0
 #define DebugAlwaysTrue(p) (p)

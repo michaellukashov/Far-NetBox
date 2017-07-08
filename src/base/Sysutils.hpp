@@ -189,8 +189,6 @@ public:
   DWORD ErrorCode;
 };
 
-void RaiseLastOSError(DWORD LastError = 0);
-
 class EInvalidOperation : public Exception
 {
 public:
@@ -205,6 +203,12 @@ public:
   {
   }
 };
+
+void RaiseLastOSError(DWORD LastError = 0);
+//void ShowExtendedException(Exception * E);
+bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
+
+namespace Sysutils {
 
 struct TFormatSettings : public TObject
 {
@@ -409,14 +413,6 @@ public:
   TWin32FindData FindData;
 };
 
-namespace base {
-
-DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec);
-DWORD FindNext(TSearchRec & Rec);
-DWORD FindClose(TSearchRec & Rec);
-
-} // namespace base
-
 void InitPlatformId();
 bool Win32Check(bool RetVal);
 
@@ -541,11 +537,20 @@ public:
   NullFunc ANONYMOUS_VARIABLE(null_) = CONCATENATE(null_func_, __LINE__) = [&]() /* lambda body here */
 
 
-void ShowExtendedException(Exception * E);
-bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
-
 class TPath : public TObject
 {
 public:
   static UnicodeString Combine(UnicodeString APath, UnicodeString FileName);
 };
+
+} // namespace Sysutils
+
+using namespace Sysutils;
+
+namespace base {
+
+DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec);
+DWORD FindNext(TSearchRec & Rec);
+DWORD FindClose(TSearchRec & Rec);
+
+} // namespace base

@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <rdestl/map.h>
@@ -101,13 +102,13 @@ UnicodeString ExtractProgramName(const UnicodeString & Command);
 UnicodeString FormatCommand(const UnicodeString & Program, const UnicodeString & AParams);
 UnicodeString ExpandFileNameCommand(const UnicodeString & Command,
   const UnicodeString & AFileName);
+bool CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2);
+bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2);
 void ReformatFileNameCommand(UnicodeString & Command);
 UnicodeString EscapeParam(const UnicodeString & AParam);
 UnicodeString EscapePuttyCommandParam(const UnicodeString & AParam);
 UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str);
-bool CompareFileName(const UnicodeString & Path1, const UnicodeString & Path2);
 bool SamePaths(const UnicodeString & APath1, const UnicodeString & APath2);
-bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2);
 bool IsPathToSameFile(const UnicodeString & APath1, const UnicodeString & APath2);
 intptr_t CompareLogicalText(const UnicodeString & S1, const UnicodeString & S2);
 bool IsReservedName(const UnicodeString & AFileName);
@@ -182,9 +183,7 @@ void ParseCertificate(const UnicodeString & Path,
 bool IsHttpUrl(const UnicodeString & S);
 bool IsHttpOrHttpsUrl(const UnicodeString & S);
 UnicodeString ChangeUrlProtocol(const UnicodeString & S, const UnicodeString & Protocol);
-#if 0
 void LoadScriptFromFile(const UnicodeString & FileName, TStrings * Lines);
-#endif // if 0
 UnicodeString StripEllipsis(const UnicodeString & S);
 
 #if 0
@@ -371,11 +370,8 @@ typedef rde::vector<UnicodeString> TUnicodeStringVector;
 
 
 namespace base {
-
+//TODO: move to Sysutils.hpp
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
-//UnicodeString UnixExtractFileExt(const UnicodeString & APath);
-//UnicodeString UnixExtractFileName(const UnicodeString & APath);
-//UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix);
 UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName);
 
 } // namespace base

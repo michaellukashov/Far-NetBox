@@ -1,6 +1,8 @@
+
 #pragma once
 
 #include <registry.hpp>
+#include <memory>
 
 enum TStorage
 {
@@ -20,6 +22,7 @@ enum TStorageAccessMode
 class THierarchicalStorage : public TObject
 {
 NB_DISABLE_COPY(THierarchicalStorage)
+
 public:
   explicit THierarchicalStorage(const UnicodeString & AStorage);
   virtual ~THierarchicalStorage();
@@ -69,14 +72,16 @@ public:
 
   virtual void Flush();
 
-  /*__property UnicodeString Storage  = { read=FStorage };
+#if 0
+  __property UnicodeString Storage  = { read=FStorage };
   __property UnicodeString CurrentSubKey  = { read=GetCurrentSubKey };
   __property TStorageAccessMode AccessMode  = { read=FAccessMode, write=SetAccessMode };
   __property bool Explicit = { read = FExplicit, write = FExplicit };
   __property bool ForceAnsi = { read = FForceAnsi, write = FForceAnsi };
   __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
   __property UnicodeString Source = { read = GetSource };
-  __property bool Temporary = { read = GetTemporary };*/
+  __property bool Temporary = { read = GetTemporary };
+#endif // #if 0
 
   UnicodeString GetStorage() const { return FStorage; }
   TStorageAccessMode GetAccessMode() const { return FAccessMode; }
@@ -104,13 +109,10 @@ public:
   static UnicodeString IncludeTrailingBackslash(const UnicodeString & S);
   static UnicodeString ExcludeTrailingBackslash(const UnicodeString & S);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) = 0;
-  UnicodeString MungeKeyName(const UnicodeString & Key);
-
-  virtual bool GetTemporary() const;
-
-public:
+  UnicodeString MungeKeyName(UnicodeString Key);
   virtual UnicodeString GetSource() const = 0;
   virtual UnicodeString GetSource() = 0;
+  virtual bool GetTemporary() const;
 };
 
 class TRegistryStorage : public THierarchicalStorage
@@ -156,8 +158,10 @@ protected:
   virtual UnicodeString GetSource() const;
   virtual UnicodeString GetSource();
 
+#if 0
+  __property int Failed  = { read=GetFailed, write=FFailed };
+#endif // #if 0
 public:
-//  __property int Failed  = { read=GetFailed, write=FFailed };
   intptr_t GetFailed() const;
   void SetFailed(intptr_t Value) { FFailed = Value; }
   virtual void SetAccessMode(TStorageAccessMode Value);
@@ -167,7 +171,7 @@ private:
   mutable intptr_t FFailed;
 };
 
-/*
+#if 0
 class TCustomIniFileStorage : public THierarchicalStorage
 {
 public:
@@ -249,8 +253,8 @@ public:
 protected:
   virtual bool __fastcall GetTemporary();
 };
-*/
+#endif // #if 0
 
-UnicodeString PuttyMungeStr(const UnicodeString & Str);
-UnicodeString PuttyUnMungeStr(const UnicodeString & Str);
+UnicodeString PuttyMungeStr(const UnicodeString Str);
+UnicodeString PuttyUnMungeStr(const UnicodeString Str);
 
