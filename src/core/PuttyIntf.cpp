@@ -205,10 +205,10 @@ int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
   }
   __finally
   {
-/*
+#if 0
     delete Prompts;
     delete Results;
-*/
+#endif // #if 0
   };
 
   return Result;
@@ -326,7 +326,6 @@ void nonfatal(const char * fmt, ...)
   SSHFatalError(fmt, Param);
   va_end(Param);
 }
-
 
 void CleanupExit(int /*code*/);
 

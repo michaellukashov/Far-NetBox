@@ -1,18 +1,12 @@
+
 #pragma once
 
 enum TKeyType
 {
-  ktUnopenable,
-  ktUnknown,
-  ktSSH1,
-  ktSSH2,
-  ktOpenSSHAuto,
-  ktOpenSSHPEM,
-  ktOpenSSHNew,
-  ktSSHCom,
-  ktSSH1Public,
-  ktSSH2PublicRFC4716,
-  ktSSH2PublicOpenSSH,
+  ktUnopenable, ktUnknown,
+  ktSSH1, ktSSH2,
+  ktOpenSSHAuto, ktOpenSSHPEM, ktOpenSSHNew, ktSSHCom,
+  ktSSH1Public, ktSSH2PublicRFC4716, ktSSH2PublicOpenSSH,
 };
 
 TKeyType GetKeyType(const UnicodeString & AFileName);

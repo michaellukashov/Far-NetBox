@@ -3,6 +3,8 @@
 #pragma hdrstop
 
 #include <Common.h>
+#include <Exceptions.h>
+#include <System.DateUtils.hpp>
 
 #include "Terminal.h"
 #include "Queue.h"
@@ -454,15 +456,17 @@ bool TSignalThread::WaitForEvent()
 
 uintptr_t TSignalThread::WaitForEvent(uint32_t Timeout) const
 {
-  uintptr_t Result = ::WaitForSingleObject(FEvent, Timeout);
-  if ((Result == WAIT_TIMEOUT) && !FTerminated)
+  uintptr_t Res = ::WaitForSingleObject(FEvent, Timeout);
+  uintptr_t Result;
+  if ((Res == WAIT_TIMEOUT) && !FTerminated)
   {
-    return (uintptr_t)-1;
+    Result = (uintptr_t)-1;
   }
   else
   {
-    return ((Result == WAIT_OBJECT_0) && !FTerminated) ? 1 : 0;
+    Result = ((Res == WAIT_OBJECT_0) && !FTerminated) ? 1 : 0;
   }
+  return Result;
 }
 
 void TSignalThread::Execute()
@@ -525,14 +529,15 @@ void TTerminalQueue::InitTerminalQueue()
   DebugAssert(FTerminal != nullptr);
   FSessionData->Assign(FTerminal->GetSessionData());
 
-/*
+#if 0
   FItems = new TList();
   FDoneItems = new TList();
   FTerminals = new TList();
   FForcedItems = new TList();
 
   FItemsSection = new TCriticalSection();
-*/
+#endif // #if 0
+
   DebugAssert(FItems);
   DebugAssert(FDoneItems);
   DebugAssert(FTerminals);
@@ -1296,7 +1301,8 @@ TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal) :
 {
 }
 
-void TBackgroundTerminal::Init(TSessionData * SessionData, TConfiguration * Configuration, TTerminalItem * Item,
+void TBackgroundTerminal::Init(
+    TSessionData * SessionData, TConfiguration * Configuration, TTerminalItem * Item,
     const UnicodeString & Name)
 {
   TSecondaryTerminal::Init(SessionData, Configuration, Name);
@@ -1442,7 +1448,7 @@ void TTerminalItem::ProcessEvent()
   }
 
   if (!FTerminal->GetActive() ||
-    !FQueue->TerminalFree(this))
+      !FQueue->TerminalFree(this))
   {
     Terminate();
   }
@@ -1473,7 +1479,7 @@ void TTerminalItem::Cancel()
 {
   FCancel = true;
   if ((FItem->GetStatus() == TQueueItem::qsPaused) ||
-    TQueueItem::IsUserActionStatus(FItem->GetStatus()))
+      TQueueItem::IsUserActionStatus(FItem->GetStatus()))
   {
     TriggerEvent();
   }
@@ -2381,7 +2387,7 @@ void TParallelTransferQueueItem::DoExecute(TTerminal * Terminal)
   TLocatedQueueItem::DoExecute(Terminal);
 
   DebugAssert(Terminal != nullptr);
-//  Terminal->CopyToRemote(FFilesToCopy, FTargetDir, FCopyParam, FParams);
+
   Terminal->LogParallelTransfer(FParallelOperation);
   TFileOperationProgressType OperationProgress(Terminal->GetOnProgress(), Terminal->GetOnFinished(), FParallelOperation->GetMainOperationProgress());
   TFileOperation Operation = (FLAGSET(FParallelOperation->GetParams(), cpDelete) ? foMove : foCopy);
@@ -2625,28 +2631,30 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
           break;
 
         case WAIT_TIMEOUT:
-          if (FUserAction != nullptr)
           {
-            try
+            if (FUserAction != nullptr)
             {
-              FUserAction->Execute(nullptr);
-            }
-            catch (Exception & E)
-            {
-              SaveException(E, FException);
-            }
+              try
+              {
+                FUserAction->Execute(nullptr);
+              }
+              catch (Exception & E)
+              {
+                SaveException(E, FException);
+              }
 
-            FUserAction = nullptr;
-            TriggerEvent();
+              FUserAction = nullptr;
+              TriggerEvent();
               Wait = 0;
-          }
-          else
-          {
-            if (FOnIdle != nullptr)
-            {
-              FOnIdle(nullptr);
             }
-            Wait = Min(Wait + 10, MaxWait);
+            else
+            {
+              if (FOnIdle != nullptr)
+              {
+                FOnIdle(nullptr);
+              }
+              Wait = Min(Wait + 10, MaxWait);
+            }
           }
           break;
 

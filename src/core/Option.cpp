@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -28,8 +29,8 @@ void TOptions::Add(const UnicodeString & Value)
     intptr_t Index = 0; // shut up
     wchar_t SwitchMark = L'\0';
     if (!FNoMoreSwitches &&
-      (Value.Length() >= 2) &&
-      (FSwitchMarks.Pos(Value[1]) > 0))
+        (Value.Length() >= 2) &&
+        (FSwitchMarks.Pos(Value[1]) > 0))
     {
       Index = 2;
       Switch = true;

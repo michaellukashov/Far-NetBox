@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -13,8 +14,6 @@
 
 #if 0
 // moved to base/Common.cpp
-
-namespace core {
 
 bool IsUnixStyleWindowsPath(const UnicodeString & APath)
 {
@@ -540,8 +539,6 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, b
   return FMTLOAD(MULTI_FILES_TO_ONE, Name.c_str(), Dir.c_str(), Path.c_str());
 }
 
-} // namespace core
-
 #endif // #if 0
 
 TRemoteToken::TRemoteToken() :
@@ -693,11 +690,13 @@ TRemoteTokenList * TRemoteTokenList::Duplicate() const
       ++it;
     }
   }
-  /*catch (...)
+#if 0
+  catch (...)
   {
     delete Result;
     throw;
-  }*/
+  }
+#endif // #if 0
   return Result.release();
 }
 
@@ -880,18 +879,21 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
       Result->FFullFileName = GetFullFileName();
     }
   }
-  /*catch (...)
+#if 0
+  catch (...)
   {
     delete Result;
     throw;
-  }*/
+  }
+#endif // #if 0
   return Result.release();
 }
 
 void TRemoteFile::LoadTypeInfo() const
 {
   /* TODO : If file is link: Should be attributes taken from linked file? */
-  /*uint32_t Attrs = INVALID_FILE_ATTRIBUTES;
+#if 0
+  uint32_t Attrs = INVALID_FILE_ATTRIBUTES;
   if (GetIsDirectory())
   {
     Attrs |= FILE_ATTRIBUTE_DIRECTORY;
@@ -903,7 +905,8 @@ void TRemoteFile::LoadTypeInfo() const
 
   UnicodeString DumbFileName = (GetIsSymLink() && !GetLinkTo().IsEmpty() ? GetLinkTo() : GetFileName());
 
-  FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);*/
+  FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);
+#endif // #if 0
 }
 
 void TRemoteFile::Init()
@@ -1074,10 +1077,6 @@ void TRemoteFile::ShiftTimeInSeconds(TDateTime & DateTime, TModificationFmt Modi
 {
   if ((Seconds != 0) && GetIsTimeShiftingApplicable(ModificationFmt))
   {
-    /*DebugAssert(int(FModification) != 0);
-    FModification = IncSecond(FModification, Seconds);
-    DebugAssert(int(FLastAccess) != 0);
-    FLastAccess = IncSecond(FLastAccess, Seconds);*/
     DebugAssert(int(DateTime) != 0);
     DateTime = IncSecond(DateTime, Seconds);
   }
@@ -1122,39 +1121,39 @@ UnicodeString TRemoteFile::GetRightsStr() const
 void TRemoteFile::SetListingStr(const UnicodeString & Value)
 {
   // Value stored in 'Value' can be used for error message
-  UnicodeString ListingStr = Value;
+  UnicodeString Line = Value;
   FIconIndex = -1;
   try
   {
     UnicodeString Col;
 
     // Do we need to do this (is ever TAB is LS output)?
-    ListingStr = ReplaceChar(ListingStr, L'\t', L' ');
+    Line = ReplaceChar(Line, L'\t', L' ');
 
-    SetType(ListingStr[1]);
-    ListingStr.Delete(1, 1);
+    SetType(Line[1]);
+    Line.Delete(1, 1);
 
     auto GetNCol = [&]()
     {
-      if (ListingStr.IsEmpty())
+      if (Line.IsEmpty())
         throw Exception(L"");
-      intptr_t P = ListingStr.Pos(L' ');
+      intptr_t P = Line.Pos(L' ');
       if (P)
       {
-        Col = ListingStr;
+        Col = Line;
         Col.SetLength(P - 1);
-        ListingStr.Delete(1, P);
+        Line.Delete(1, P);
       }
       else
       {
-        Col = ListingStr;
-        ListingStr.Clear();
+        Col = Line;
+        Line.Clear();
       }
     };
     auto GetCol = [&]()
     {
       GetNCol();
-      ListingStr = ::TrimLeft(ListingStr);
+      Line = ::TrimLeft(Line);
     };
 
     // Rights string may contain special permission attributes (S,t, ...)
@@ -1162,20 +1161,20 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     GetRights()->SetAllowUndef(True);
     // On some system there is no space between permissions and node blocks count columns
     // so we get only first 9 characters and trim all following spaces (if any)
-    GetRights()->SetText(ListingStr.SubString(1, 9));
-    ListingStr.Delete(1, 9);
+    GetRights()->SetText(Line.SubString(1, 9));
+    Line.Delete(1, 9);
     // Rights column maybe followed by '+', '@' or '.' signs, we ignore them
     // (On MacOS, there may be a space in between)
-    if (!ListingStr.IsEmpty() && ((ListingStr[1] == L'+') || (ListingStr[1] == L'@') || (ListingStr[1] == L'.')))
+    if (!Line.IsEmpty() && ((Line[1] == L'+') || (Line[1] == L'@') || (Line[1] == L'.')))
     {
-      ListingStr.Delete(1, 1);
+      Line.Delete(1, 1);
     }
-    else if ((ListingStr.Length() >= 2) && (ListingStr[1] == L' ') &&
-             ((ListingStr[2] == L'+') || (ListingStr[2] == L'@') || (ListingStr[2] == L'.')))
+    else if ((Line.Length() >= 2) && (Line[1] == L' ') &&
+             ((Line[2] == L'+') || (Line[2] == L'@') || (Line[2] == L'.')))
     {
-      ListingStr.Delete(1, 2);
+      Line.Delete(1, 2);
     }
-    ListingStr = ListingStr.TrimLeft();
+    Line = Line.TrimLeft();
 
     GetCol();
     if (!::TryStrToInt(Col, FINodeBlocks))
@@ -1344,8 +1343,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
               // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
               // we must ensure that trailing space is also deleted, so real
               // separator space is not treated as part of file name
-              Col = ListingStr.SubString(1, 6).Trim();
-              ListingStr.Delete(1, 6);
+              Col = Line.SubString(1, 6).Trim();
+              Line.Delete(1, 6);
             }
             // GetNCol(); // We don't want to trim input strings (name with space at beginning???)
             // Check if we got time (contains :) or year
@@ -1410,19 +1409,19 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         FLinkTo.Clear();
         if (GetIsSymLink())
         {
-          intptr_t P = ListingStr.Pos(SYMLINKSTR);
+          intptr_t P = Line.Pos(SYMLINKSTR);
           if (P)
           {
-            FLinkTo = ListingStr.SubString(
-              P + wcslen(SYMLINKSTR), ListingStr.Length() - P + wcslen(SYMLINKSTR) + 1);
-            ListingStr.SetLength(P - 1);
+            FLinkTo = Line.SubString(
+              P + wcslen(SYMLINKSTR), Line.Length() - P + wcslen(SYMLINKSTR) + 1);
+            Line.SetLength(P - 1);
           }
           else
           {
             Abort();
           }
         }
-        FFileName = base::UnixExtractFileName(::Trim(ListingStr));
+        FFileName = base::UnixExtractFileName(::Trim(Line));
       }
     }
   }
@@ -1495,9 +1494,9 @@ void TRemoteFile::FindLinkedFile()
       }
       __finally
       {
-/*
+#if 0
         GetTerminal()->SetExceptionOnFail(false);
-*/
+#endif // #if 0
       };
     }
     catch (Exception & E)
@@ -1585,55 +1584,6 @@ void TRemoteFile::SetTerminal(TTerminal * Value)
   }
 }
 
-const TRemoteToken & TRemoteFile::GetFileOwner() const
-{
-  return FOwner;
-}
-
-TRemoteToken & TRemoteFile::GetFileOwner()
-{
-  return FOwner;
-}
-
-void TRemoteFile::SetFileOwner(const TRemoteToken & Value)
-{
-  FOwner = Value;
-}
-
-const TRemoteToken & TRemoteFile::GetFileGroup() const
-{
-  return FGroup;
-}
-
-TRemoteToken & TRemoteFile::GetFileGroup()
-{
-  return FGroup;
-}
-
-void TRemoteFile::SetFileGroup(const TRemoteToken & Value)
-{
-  FGroup = Value;
-}
-
-void TRemoteFile::SetFileName(const UnicodeString & Value)
-{
-  FFileName = Value;
-}
-
-UnicodeString TRemoteFile::GetLinkTo() const
-{
-  return FLinkTo;
-}
-
-void TRemoteFile::SetLinkTo(const UnicodeString & Value)
-{
-  FLinkTo = Value;
-}
-
-void TRemoteFile::SetFullFileName(const UnicodeString & Value)
-{
-  FFullFileName = Value;
-}
 
 
 TRemoteDirectoryFile::TRemoteDirectoryFile() :
@@ -1931,13 +1881,13 @@ void TRemoteDirectoryCache::Clear()
   }
   __finally
   {
-/*
+#if 0
     TStringList::Clear();
-*/
+#endif // #if 0
   };
 }
 
-bool TRemoteDirectoryCache::GetIsEmpty() const
+bool TRemoteDirectoryCache::GetIsEmptyPrivate() const
 {
   TGuard Guard(FSection);
 
@@ -1990,7 +1940,6 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
   if (FileList)
   {
     TRemoteFileList * Copy = new TRemoteFileList();
-
     FileList->DuplicateTo(Copy);
 
     TGuard Guard(FSection);
@@ -2049,7 +1998,7 @@ void TRemoteDirectoryChangesCache::Clear()
   TStringList::Clear();
 }
 
-bool TRemoteDirectoryChangesCache::GetIsEmpty() const
+bool TRemoteDirectoryChangesCache::GetIsEmptyPrivate() const
 {
   return (const_cast<TRemoteDirectoryChangesCache *>(this)->GetCount() == 0);
 }
@@ -2063,11 +2012,6 @@ void TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,
     Delete(Index);
   }
   TStringList::SetValue(Name, Value);
-}
-
-UnicodeString TRemoteDirectoryChangesCache::GetValue(const UnicodeString & Name) const
-{
-  return TStringList::GetValue(Name);
 }
 
 UnicodeString TRemoteDirectoryChangesCache::GetValue(const UnicodeString & Name)
@@ -2131,10 +2075,6 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   const UnicodeString & SourceDir, const UnicodeString & Change, UnicodeString & TargetDir) const
 {
   UnicodeString Key = TTerminal::ExpandFileName(Change, SourceDir);
-  if (Key.IsEmpty())
-  {
-    Key = ROOTDIRECTORY;
-  }
   bool Result = (IndexOfName(Key) >= 0);
   if (Result)
   {
@@ -2180,9 +2120,9 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
     }
     __finally
     {
-/*
+#if 0
       delete Limited;
-*/
+#endif // #if 0
     };
   }
   else
@@ -2276,7 +2216,7 @@ bool TRights::operator ==(const TRights & rhr) const
     for (int Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
-          rhr.GetRightUndef(static_cast<TRight>(Right)))
+            rhr.GetRightUndef(static_cast<TRight>(Right)))
       {
         return false;
       }
@@ -2797,13 +2737,13 @@ void TRemoteProperties::Default()
 {
   Valid.Clear();
   AddXToDirectories = false;
-  Recursive = false;
   Rights.SetAllowUndef(false);
   Rights.SetNumber(0);
   Group.Clear();
   Owner.Clear();
   Modification = 0;
   LastAccess = 0;
+  Recursive = false;
 }
 
 bool TRemoteProperties::operator ==(const TRemoteProperties & rhp) const
@@ -2897,9 +2837,6 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
     {
       NewProperties.Valid >> vpOwner;
     }
-
-    NewProperties.Group.SetID(OriginalProperties.Group.GetID());
-    NewProperties.Owner.SetID(OriginalProperties.Owner.GetID());
   }
   return NewProperties;
 }
@@ -2907,13 +2844,13 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
 TRemoteProperties & TRemoteProperties::operator=(const TRemoteProperties & other)
 {
   Valid = other.Valid;
-  Recursive = other.Recursive;
   Rights = other.Rights;
-  AddXToDirectories = other.AddXToDirectories;
   Group = other.Group;
   Owner = other.Owner;
   Modification = other.Modification;
-  LastAccess = other.Modification;
+  LastAccess = other.LastAccess;
+  Recursive = other.Recursive;
+  AddXToDirectories = other.AddXToDirectories;
   return *this;
 }
 

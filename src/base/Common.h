@@ -19,6 +19,7 @@ extern const UnicodeString Ellipsis;
 #define PASSWORD_MASK "***"
 #define sLineBreak L"\n"
 
+#if 1
 // Order of the values also define order of the buttons/answers on the prompts
 // MessageDlg relies on these to be <= 0x0000FFFF
 const uint32_t qaYes      = 0x00000001;
@@ -46,6 +47,7 @@ const intptr_t qpNeverAskAgainCheck   = 0x02;
 const intptr_t qpAllowContinueOnError = 0x04;
 const intptr_t qpIgnoreAbort          = 0x08;
 const intptr_t qpWaitInBatch          = 0x10;
+#endif // #if 1
 
 inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
 

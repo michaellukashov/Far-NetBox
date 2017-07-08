@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <Classes.hpp>
@@ -8,7 +9,9 @@ enum TOptionType
   otSwitch
 };
 
-// typedef void (__closure *TLogOptionEvent)(const UnicodeString & LogStr);
+#if 0
+typedef void (__closure *TLogOptionEvent)(const UnicodeString & LogStr);
+#endif // #if 0
 typedef nb::FastDelegate1<void, const UnicodeString & /*LogStr*/> TLogOptionEvent;
 
 class TOptions : public TObject
@@ -38,16 +41,14 @@ public:
   bool WasSwitchAdded(UnicodeString & Switch, wchar_t & SwitchMark) const;
 
   void LogOptions(TLogOptionEvent OnLogOption);
-/*
+#if 0
  __property int ParamCount = { read = FParamCount };
   __property UnicodeString Param[int Index] = { read = GetParam };
   __property bool Empty = { read = GetEmpty };
-*/
+#endif // #if 0
 
   intptr_t GetParamCount() const { return FParamCount; }
-  UnicodeString GetParam(intptr_t AIndex);
   void Clear() { FOptions.resize(0); FNoMoreSwitches = false; FParamCount = 0; }
-  bool GetEmpty() const;
   UnicodeString GetSwitchMarks() const { return FSwitchMarks; }
 
 protected:
@@ -77,9 +78,8 @@ private:
   intptr_t FParamCount;
   bool FNoMoreSwitches;
 
-/*
-  UnicodeString __fastcall GetParam(int Index);
-  bool __fastcall GetEmpty();
-*/
+public:
+  UnicodeString GetParam(intptr_t AIndex);
+  bool GetEmpty() const;
 };
 

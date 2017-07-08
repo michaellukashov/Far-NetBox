@@ -1,6 +1,8 @@
+
 #pragma once
 
 #include <Classes.hpp>
+#include <memory>
 
 struct ne_session_s;
 struct ne_request_s;
@@ -8,10 +10,14 @@ struct ne_ssl_certificate_s;
 struct ssl_st;
 
 class THttp;
-//typedef void (__closure * THttpDownloadEvent)(THttp * Sender, int64_t Size, bool & Cancel);
+#if 0
+typedef void (__closure * THttpDownloadEvent)(THttp * Sender, int64_t Size, bool & Cancel);
+#endif // #if 0
 typedef nb::FastDelegate3<void,
   THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/> THttpDownloadEvent;
-//typedef void (__closure * THttpErrorEvent)(THttp * Sender, int Status, const UnicodeString & Message);
+#if 0
+typedef void (__closure * THttpErrorEvent)(THttp * Sender, int Status, const UnicodeString & Message);
+#endif // #if 0
 typedef nb::FastDelegate3<void,
   THttp * /*Sender*/, int /*Status*/, const UnicodeString & /*Message*/> THttpErrorEvent;
 
@@ -25,7 +31,8 @@ public:
   void Post(const UnicodeString & Request);
   bool IsCertificateError() const;
 
-  /*__property UnicodeString URL = { read = FURL, write = FURL };
+#if 0
+  __property UnicodeString URL = { read = FURL, write = FURL };
   __property UnicodeString ProxyHost = { read = FProxyHost, write = FProxyHost };
   __property int ProxyPort = { read = FProxyPort, write = FProxyPort };
   __property TStrings * RequestHeaders = { read = FRequestHeaders, write = FRequestHeaders };
@@ -34,8 +41,9 @@ public:
   __property TStrings * ResponseHeaders = { read = FResponseHeaders };
   __property __int64 ResponseLength = { read = GetResponseLength };
   __property __int64 ResponseLimit = { read = FResponseLimit, write = FResponseLimit };
-  __property THttpDownloadEvent OnDownload = { read = FOnDownload, write = FOnDownload};
-  __property THttpErrorEvent OnError = { read = FOnError, write = FOnError };*/
+  __property THttpDownloadEvent OnDownload = { read = FOnDownload, write = FOnDownload };
+  __property THttpErrorEvent OnError = { read = FOnError, write = FOnError };
+#endif // #if 0
 
   UnicodeString GetURL() const { return FURL; }
   void SetURL(const UnicodeString & Value) { FURL = Value; }

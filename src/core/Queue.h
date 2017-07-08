@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "Terminal.h"
@@ -79,17 +80,17 @@ class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
 
-/*
+#if 0
 typedef void (__closure * TQueueListUpdate)
   (TTerminalQueue * Queue);
-*/
+#endif // #if 0
 typedef nb::FastDelegate1<void,
   TTerminalQueue * /*Queue*/> TQueueListUpdateEvent;
-/*
+#if 0
 typedef void (__closure * TQueueItemUpdateEvent)
   (TTerminalQueue * Queue, TQueueItem * Item);
 enum TQueueEvent { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
-*/
+#endif // #if 0
 typedef nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueItem * /*Item*/> TQueueItemUpdateEvent;
 
@@ -100,10 +101,10 @@ enum TQueueEvent
   qePendingUserAction,
 };
 
-/*
+#if 0
 typedef void (__closure * TQueueEventEvent)
   (TTerminalQueue * Queue, TQueueEvent Event);
-*/
+#endif // #if 0
 typedef nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/> TQueueEventEvent;
 
@@ -146,7 +147,6 @@ protected:
   friend class TShowExtendedExceptionAction;
 
 public:
-  bool GetIsEmpty() const;
   intptr_t GetTransfersLimit() const { return FTransfersLimit; }
   intptr_t GetKeepDoneItemsFor() const { return FKeepDoneItemsFor; }
   bool GetEnabled() const { return FEnabled; }
@@ -188,7 +188,6 @@ protected:
   TDateTime FIdleInterval;
   TDateTime FLastIdle;
 
-public:
   inline static TQueueItem * GetItem(TList * List, intptr_t Index);
   inline TQueueItem * GetItem(intptr_t Index);
   void FreeItemsList(TList *& List) const;
@@ -220,6 +219,7 @@ public:
   void SetTransfersLimit(intptr_t Value);
   void SetKeepDoneItemsFor(intptr_t Value);
   void SetEnabled(bool Value);
+  bool GetIsEmpty() const;
 
   bool TryAddParallelOperation(TQueueItem * Item, bool Force);
   bool ContinueParallelOperation() const;
@@ -388,6 +388,7 @@ public:
   __property int ActiveCount = { read = GetActiveCount };
   __property int DoneAndActiveCount = { read = GetDoneAndActiveCount };
   __property int ActivePrimaryCount = { read = GetActivePrimaryCount };
+  __property int ActiveAndPendingPrimaryCount = { read = GetActiveAndPendingPrimaryCount };
   __property TQueueItemProxy * Items[int Index] = { read = GetItem };
 #endif // #if 0
 
@@ -410,12 +411,11 @@ private:
 
 public:
   intptr_t GetCount() const;
-  intptr_t GetDoneCount() const { return FDoneCount; }
   intptr_t GetActiveCount() const;
   intptr_t GetDoneAndActiveCount() const;
   intptr_t GetActivePrimaryCount() const;
   intptr_t GetActiveAndPendingPrimaryCount() const;
-  //void SetMasks(const UnicodeString & Value);
+  intptr_t GetDoneCount() const { return FDoneCount; }
   void SetDoneCount(intptr_t Value);
   TQueueItemProxy * GetItem(intptr_t Index) const;
   TQueueItemProxy * GetItem(intptr_t Index);

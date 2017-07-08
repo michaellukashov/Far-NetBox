@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <system.hpp>
@@ -16,8 +17,10 @@ public:
       Obj->GetKind() == OBJECT_CLASS_TSessionData;
   }
 public:
-  /*__property UnicodeString Name = { read = FName, write = SetName };
-  __property bool Hidden = { read = FHidden };*/
+#if 0
+  __property UnicodeString Name = { read = FName, write = SetName };
+  __property bool Hidden = { read = FHidden };
+#endif // #if 0
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString & Value);
   bool GetHidden() const { return FHidden; }
@@ -53,10 +56,12 @@ protected:
   intptr_t FHiddenCount;
   bool FAutoSort;
   bool FControlledAdd;
-
   void Recount();
-
 public:
+  static const UnicodeString HiddenPrefix;
+
+  bool AutoSort;
+
   explicit TNamedObjectList(TObjectClassId Kind = OBJECT_CLASS_TNamedObjectList);
   void AlphaSort();
   intptr_t Add(TObject * AObject);
@@ -64,8 +69,10 @@ public:
   virtual TNamedObject * AtObject(intptr_t Index);
   const TNamedObject * FindByName(const UnicodeString & Name) const;
   TNamedObject * FindByName(const UnicodeString & Name);
-  /*__property int Count = { read = GetCount, write = SetCount };
-  __property int CountIncludingHidden = { read = GetCountIncludingHidden };*/
+#if 0
+  __property int Count = { read = GetCount, write = SetCount };
+  __property int CountIncludingHidden = { read = GetCountIncludingHidden };
+#endif // #if 0
 };
 
 int NamedObjectSortProc(void * Item1, void * Item2);

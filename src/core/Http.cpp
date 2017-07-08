@@ -22,8 +22,8 @@ THttp::THttp() :
 
 THttp::~THttp()
 {
-  delete FResponseHeaders;
-  delete FRequestHeaders;
+  SAFE_DESTROY(FResponseHeaders);
+  SAFE_DESTROY(FRequestHeaders);
 }
 
 void THttp::SendRequest(const char * Method, const UnicodeString & Request)

@@ -40,8 +40,10 @@ TOptions * GetGlobalOptions();
 
 void ShowExtendedException(Exception * E);
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
-//void IgnoreException(const std::type_info & ExceptionType);
-//UnicodeString GetExceptionDebugInfo();
+#if 0
+void IgnoreException(const std::type_info & ExceptionType);
+UnicodeString GetExceptionDebugInfo();
+#endif // #if 0
 
 UnicodeString GetCompanyRegistryKey();
 UnicodeString GetRegistryKey();
@@ -59,6 +61,37 @@ HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
 
 void WinInitialize();
 void WinFinalize();
+
+#if 0
+// moved to Common.h
+// Order of the values also define order of the buttons/answers on the prompts
+// MessageDlg relies on these to be <= 0x0000FFFF
+const unsigned int qaYes =      0x00000001;
+// MessageDlg relies that answer do not conflict with mrCancel (=0x2)
+const unsigned int qaNo =       0x00000004;
+const unsigned int qaOK =       0x00000008;
+const unsigned int qaCancel =   0x00000010;
+const unsigned int qaYesToAll = 0x00000020;
+const unsigned int qaNoToAll =  0x00000040;
+const unsigned int qaAbort =    0x00000080;
+const unsigned int qaRetry =    0x00000100;
+const unsigned int qaIgnore =   0x00000200;
+const unsigned int qaSkip =     0x00000400;
+const unsigned int qaAll =      0x00000800;
+const unsigned int qaHelp =     0x00001000;
+const unsigned int qaReport =   0x00002000;
+
+const unsigned int qaFirst = qaYes;
+const unsigned int qaLast = qaReport;
+
+const unsigned int qaNeverAskAgain = 0x00010000;
+
+const int qpFatalAbort =           0x01;
+const int qpNeverAskAgainCheck =   0x02;
+const int qpAllowContinueOnError = 0x04;
+const int qpIgnoreAbort =          0x08;
+const int qpWaitInBatch =          0x10;
+#endif // #if 0
 
 struct TQueryButtonAlias : public TObject
 {
@@ -80,6 +113,7 @@ typedef void (__closure *TQueryParamsTimerEvent)(uintptr_t & Result);
 typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TQueryParamsTimerEvent;
 
 #if 0
+// moved to Classes.h
 enum TQueryType
 {
   qtConfirmation,
