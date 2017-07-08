@@ -94,7 +94,7 @@ public:
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
   virtual bool GetStoredCredentialsTried() const;
-  virtual UnicodeString FSGetUserName() const;
+  virtual UnicodeString RemoteGetUserName() const override;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs);
   virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
@@ -134,7 +134,7 @@ protected:
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile, SSH_FXP_TYPES Type, TRemoteFile * ALinkedByFile = nullptr,
     SSH_FX_TYPES AllowStatus = -1);
-  virtual UnicodeString GetCurrDirectory() const;
+  virtual UnicodeString RemoteGetCurrentDirectory() const override;
   UnicodeString GetHomeDirectory();
   SSH_FX_TYPES GotStatusPacket(TSFTPPacket * Packet, SSH_FX_TYPES AllowStatus);
   bool RemoteFileExists(const UnicodeString & FullPath, TRemoteFile ** AFile = nullptr);

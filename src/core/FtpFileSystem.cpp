@@ -814,7 +814,7 @@ void TFTPFileSystem::DummyReadDirectory(const UnicodeString & /*Directory*/)
   std::unique_ptr<TRemoteDirectory> Files(new TRemoteDirectory(FTerminal));
   try
   {
-    Files->SetDirectory(GetCurrDirectory());
+    Files->SetDirectory(RemoteGetCurrentDirectory());
     DoReadDirectory(Files.get());
   }
   catch (...)
@@ -841,7 +841,7 @@ void TFTPFileSystem::Idle()
       FTerminal->LogEvent("Dummy directory read to keep session alive.");
       FLastDataSent = Now(); // probably redundant to the same statement in DoReadDirectory
 
-      DummyReadDirectory(GetCurrDirectory());
+      DummyReadDirectory(RemoteGetCurrentDirectory());
     }
   }
 }
@@ -2985,7 +2985,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
       if ((FFileListCache != nullptr) &&
           base::UnixSamePath(Path, FFileListCache->GetDirectory()) &&
           (base::UnixIsAbsolutePath(FFileListCache->GetDirectory()) ||
-          (FFileListCachePath == GetCurrDirectory())))
+          (FFileListCachePath == RemoteGetCurrentDirectory())))
       {
         File = FFileListCache->FindFile(NameOnly);
       }
@@ -3008,7 +3008,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
         // the FFileListCache is reset from ResetCache.
         SAFE_DESTROY(FFileListCache);
         FFileListCache = FileListCache.release();
-        FFileListCachePath = GetCurrDirectory();
+        FFileListCachePath = RemoteGetCurrentDirectory();
 
         File = FFileListCache->FindFile(NameOnly);
       }
@@ -3199,12 +3199,12 @@ bool TFTPFileSystem::GetStoredCredentialsTried() const
   return FStoredPasswordTried;
 }
 
-UnicodeString TFTPFileSystem::FSGetUserName() const
+UnicodeString TFTPFileSystem::RemoteGetUserName() const
 {
   return FUserName;
 }
 
-UnicodeString TFTPFileSystem::GetCurrDirectory() const
+UnicodeString TFTPFileSystem::RemoteGetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -3872,7 +3872,7 @@ void TFTPFileSystem::StoreLastResponse(const UnicodeString & Text)
   }
 }
 
-void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
+void TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
 {
   int64_t Code = 0;
 
@@ -3881,7 +3881,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
     FOnCaptureOutput(Response, cotOutput);
   }
 
-  if (FWelcomeMessage.IsEmpty() && StartsStr(L"SSH", Response))
+  if (FWelcomeMessage.IsEmpty() && ::StartsStr(L"SSH", Response))
   {
     FLastErrorResponse->Add(LoadStr(SFTP_AS_FTP_ERROR));
   }
@@ -3960,7 +3960,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
   }
 
 
-  if (StartsStr(DirectoryHasBytesPrefix, Response))
+  if (::StartsStr(DirectoryHasBytesPrefix, Response))
   {
     UnicodeString Buf = Response;
     Buf.Delete(1, DirectoryHasBytesPrefix.Length());
@@ -4164,7 +4164,7 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
     // by setting dummy one
     if (Type == TFileZillaIntf::LOG_ERROR)
     {
-      if (StartsStr(FTimeoutStatus, Status))
+      if (::StartsStr(FTimeoutStatus, Status))
       {
         if (NoFinalLastCode())
         {

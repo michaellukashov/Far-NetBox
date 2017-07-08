@@ -359,7 +359,7 @@ bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions
 {
   bool Result = false;
   UnicodeString MainMsgTag = LoadStr(MAIN_MSG_TAG);
-  if (StartsStr(MainMsgTag, S))
+  if (::StartsStr(MainMsgTag, S))
   {
     intptr_t EndTagPos =
       S.SubString(MainMsgTag.Length() + 1, S.Length() - MainMsgTag.Length()).Pos(MainMsgTag);

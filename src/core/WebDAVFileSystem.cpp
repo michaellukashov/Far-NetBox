@@ -637,7 +637,7 @@ bool TWebDAVFileSystem::GetStoredCredentialsTried() const
   return FStoredPasswordTried;
 }
 
-UnicodeString TWebDAVFileSystem::FSGetUserName() const
+UnicodeString TWebDAVFileSystem::RemoteGetUserName() const
 {
   return FUserName;
 }
@@ -663,7 +663,7 @@ UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString & APath, bo
     AddTrailingBackslash = (APath[APath.Length()] == L'/');
   }
 
-  UnicodeString Result = base::AbsolutePath(GetCurrDirectory(), APath);
+  UnicodeString Result = base::AbsolutePath(RemoteGetCurrentDirectory(), APath);
   // We must preserve trailing slash, because particularly for mod_dav,
   // it really matters if the slash in there or not
   if (AddTrailingBackslash)
@@ -731,7 +731,7 @@ bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
   }
 }
 
-UnicodeString TWebDAVFileSystem::GetCurrDirectory() const
+UnicodeString TWebDAVFileSystem::RemoteGetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }

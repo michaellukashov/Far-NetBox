@@ -2113,7 +2113,7 @@ bool TSFTPFileSystem::GetStoredCredentialsTried() const
   return FSecureShell->GetStoredCredentialsTried();
 }
 
-UnicodeString TSFTPFileSystem::FSGetUserName() const
+UnicodeString TSFTPFileSystem::RemoteGetUserName() const
 {
   return FSecureShell->ShellGetUserName();
 }
@@ -3030,7 +3030,7 @@ UnicodeString TSFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool
   }
   else
   {
-    return GetRealPath(APath, GetCurrDirectory());
+    return GetRealPath(APath, RemoteGetCurrentDirectory());
   }
 }
 
@@ -3075,7 +3075,7 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
   return File.release();
 }
 
-UnicodeString TSFTPFileSystem::GetCurrDirectory() const
+UnicodeString TSFTPFileSystem::RemoteGetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }

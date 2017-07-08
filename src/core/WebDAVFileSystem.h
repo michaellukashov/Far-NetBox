@@ -86,7 +86,7 @@ public:
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
   virtual bool GetStoredCredentialsTried() const;
-  virtual UnicodeString FSGetUserName() const;
+  virtual UnicodeString RemoteGetUserName() const override;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs);
   virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
@@ -95,7 +95,7 @@ public:
   void NeonDebug(const UnicodeString & Message);
 
 protected:
-  virtual UnicodeString GetCurrDirectory() const;
+  virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
   void Sink(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & TargetDir,

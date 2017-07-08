@@ -743,7 +743,7 @@ static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & 
   {
     const ssh_signkey * SignKey = SignKeys[Index];
     UnicodeString Name = UnicodeString(SignKey->name);
-    if (StartsStr(Name + L" ", Fingerprint))
+    if (::StartsStr(Name + L" ", Fingerprint))
     {
       intptr_t LenStart = Name.Length() + 1;
       Fingerprint[LenStart] = NormalizedSeparator;
@@ -754,7 +754,7 @@ static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & 
       KeyType = UnicodeString(SignKey->keytype);
       return;
     }
-    else if (StartsStr(Name + NormalizedSeparator, Fingerprint))
+    else if (::StartsStr(Name + NormalizedSeparator, Fingerprint))
     {
       KeyType = UnicodeString(SignKey->keytype);
       return;

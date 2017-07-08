@@ -237,22 +237,23 @@ public:
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) = 0;
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) = 0;
   virtual bool GetStoredCredentialsTried() const = 0;
-  virtual UnicodeString FSGetUserName() const = 0;
+  virtual UnicodeString RemoteGetUserName() const = 0;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs) = 0;
   virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) = 0;
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) = 0;
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) = 0;
 
-/*
+#if 0
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
-*/
-  virtual UnicodeString GetCurrDirectory() const = 0;
+#endif // #if 0
+  UnicodeString RemoteCurrentDirectory() const { return RemoteGetCurrentDirectory(); }
 
 protected:
   TTerminal * FTerminal;
 
   explicit TCustomFileSystem(TObjectClassId Kind) : TObject(Kind), FTerminal(nullptr) {}
   explicit TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal);
+  virtual UnicodeString RemoteGetCurrentDirectory() const = 0;
 
   UnicodeString CreateTargetDirectory(
     IN const UnicodeString & AFileName,

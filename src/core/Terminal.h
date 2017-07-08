@@ -315,7 +315,7 @@ public:
   void CommandError(Exception * E, const UnicodeString & Msg);
   uintptr_t CommandError(Exception * E, const UnicodeString & Msg,
     uintptr_t Answers, const UnicodeString & HelpKeyword = L"");
-  UnicodeString GetCurrDirectory();
+  UnicodeString RemoteGetCurrentDirectory();
   bool GetExceptionOnFail() const;
   const TRemoteTokenList * GetGroups() const { return const_cast<TTerminal *>(this)->GetGroups(); }
   TRemoteTokenList * GetGroups();

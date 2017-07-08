@@ -599,7 +599,7 @@ static void DoSelectScaledImageList(TImageList * ImageList)
 
     if ((OtherList != nullptr) &&
         (OtherList != ImageList) &&
-        StartsStr(ImageList->Name, OtherList->Name))
+        ::StartsStr(ImageList->Name, OtherList->Name))
     {
       UnicodeString OtherListPixelsPerInchStr =
         OtherList->Name.SubString(

@@ -77,21 +77,21 @@ public:
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
   virtual bool GetStoredCredentialsTried() const;
-  virtual UnicodeString FSGetUserName() const;
+  virtual UnicodeString RemoteGetUserName() const override;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs);
   virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem);
 
 protected:
-/*
+#if 0
   __property TStrings * Output = { read = FOutput };
   __property int ReturnCode = { read = FReturnCode };
-*/
+#endif // #if 0
   TStrings * GetOutput() const { return FOutput; }
   intptr_t GetReturnCode() const { return FReturnCode; }
 
-  virtual UnicodeString GetCurrDirectory() const;
+  virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
 private:
   TSecureShell * FSecureShell;

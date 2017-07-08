@@ -2621,20 +2621,20 @@ void TTerminal::TerminalSetCurrentDirectory(const UnicodeString & AValue)
 {
   DebugAssert(FFileSystem);
   UnicodeString Value = TranslateLockedPath(AValue, false);
-  if (Value != FFileSystem->GetCurrDirectory())
+  if (Value != FFileSystem->RemoteCurrentDirectory())
   {
     RemoteChangeDirectory(Value);
   }
 }
 
-UnicodeString TTerminal::GetCurrDirectory()
+UnicodeString TTerminal::RemoteGetCurrentDirectory()
 {
   if (FFileSystem != nullptr)
   {
     // there's occasional crash when assigning FFileSystem->CurrentDirectory
     // to FCurrentDirectory, splitting the assignment to two statements
     // to locate the crash more closely
-    UnicodeString CurrentDirectory = FFileSystem->GetCurrDirectory();
+    UnicodeString CurrentDirectory = FFileSystem->RemoteCurrentDirectory();
     if (FCurrentDirectory != CurrentDirectory)
     {
       FCurrentDirectory = CurrentDirectory;
@@ -2653,7 +2653,7 @@ UnicodeString TTerminal::PeekCurrentDirectory()
 {
   if (FFileSystem)
   {
-    FCurrentDirectory = FFileSystem->GetCurrDirectory();
+    FCurrentDirectory = FFileSystem->RemoteCurrentDirectory();
   }
 
   UnicodeString Result = TranslateLockedPath(FCurrentDirectory, true);
@@ -2685,7 +2685,7 @@ UnicodeString TTerminal::TerminalGetUserName() const
 {
   // in future might also be implemented to detect username similar to GetUserGroups
   DebugAssert(FFileSystem != nullptr);
-  UnicodeString Result = FFileSystem->FSGetUserName();
+  UnicodeString Result = FFileSystem->RemoteGetUserName();
   // Is empty also when stored username was used
   if (Result.IsEmpty())
   {
@@ -3298,7 +3298,7 @@ void TTerminal::FileModified(const TRemoteFile * AFile,
       ParentDirectory = base::UnixExtractFilePath(AFileName);
       if (ParentDirectory.IsEmpty())
       {
-        ParentDirectory = GetCurrDirectory();
+        ParentDirectory = RemoteGetCurrentDirectory();
       }
 
       // this case for scripting
@@ -3336,7 +3336,7 @@ void TTerminal::DirectoryModified(const UnicodeString & APath, bool SubDirs)
 {
   if (APath.IsEmpty())
   {
-    ClearCachedFileList(GetCurrDirectory(), SubDirs);
+    ClearCachedFileList(RemoteGetCurrentDirectory(), SubDirs);
   }
   else
   {
@@ -3353,12 +3353,12 @@ void TTerminal::ReloadDirectory()
 {
   if (GetSessionData()->GetCacheDirectories())
   {
-    DirectoryModified(GetCurrDirectory(), false);
+    DirectoryModified(RemoteGetCurrentDirectory(), false);
   }
   if (GetSessionData()->GetCacheDirectoryChanges())
   {
     DebugAssert(FDirectoryChangesCache != nullptr);
-    FDirectoryChangesCache->ClearDirectoryChange(GetCurrDirectory());
+    FDirectoryChangesCache->ClearDirectoryChange(RemoteGetCurrentDirectory());
   }
 
   ReadCurrentDirectory();
@@ -3373,7 +3373,7 @@ void TTerminal::RefreshDirectory()
   {
     LogEvent("Not refreshing directory, caching is off.");
   }
-  else if (FDirectoryCache->HasNewerFileList(GetCurrDirectory(), FFiles->GetTimestamp()))
+  else if (FDirectoryCache->HasNewerFileList(RemoteGetCurrentDirectory(), FFiles->GetTimestamp()))
   {
     // Second parameter was added to allow (rather force) using the cache.
     // Before, the directory was reloaded always, it seems useless,
@@ -3387,7 +3387,7 @@ void TTerminal::EnsureNonExistence(const UnicodeString & AFileName, bool IsDirec
 {
   // if filename doesn't contain path, we check for existence of file
   if ((base::UnixExtractFileDir(AFileName).IsEmpty()) &&
-      base::UnixSamePath(GetCurrDirectory(), FFiles->GetDirectory()))
+      base::UnixSamePath(RemoteGetCurrentDirectory(), FFiles->GetDirectory()))
   {
     TRemoteFile * File = FFiles->FindFile(AFileName);
     if (File)
@@ -3474,7 +3474,7 @@ void TTerminal::ReadCurrentDirectory()
     FReadCurrentDirectoryPending = false;
 
     LogEvent("Getting current directory name.");
-    UnicodeString OldDirectory = FFileSystem->GetCurrDirectory();
+    UnicodeString OldDirectory = FFileSystem->RemoteCurrentDirectory();
 
     FFileSystem->ReadCurrentDirectory();
     ReactOnCommand(fsCurrentDirectory);
@@ -3482,7 +3482,7 @@ void TTerminal::ReadCurrentDirectory()
     if (GetSessionData()->GetCacheDirectoryChanges())
     {
       DebugAssert(FDirectoryChangesCache != nullptr);
-      UnicodeString CurrentDirectory = GetCurrDirectory();
+      UnicodeString CurrentDirectory = RemoteGetCurrentDirectory();
       if (!CurrentDirectory.IsEmpty() && !FLastDirectoryChange.IsEmpty() && (CurrentDirectory != OldDirectory))
       {
         FDirectoryChangesCache->AddDirectoryChange(OldDirectory,
@@ -3497,7 +3497,7 @@ void TTerminal::ReadCurrentDirectory()
     if (OldDirectory.IsEmpty())
     {
       FLockDirectory = (GetSessionData()->GetLockInHome() ?
-        FFileSystem->GetCurrDirectory() : UnicodeString(L""));
+        FFileSystem->RemoteCurrentDirectory() : UnicodeString(L""));
     }
     // if (OldDirectory != FFileSystem->GetCurrDirectory())
     {
@@ -3514,7 +3514,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 {
   bool LoadedFromCache = false;
 
-  if (GetSessionData()->GetCacheDirectories() && FDirectoryCache->HasFileList(GetCurrDirectory()))
+  if (GetSessionData()->GetCacheDirectories() && FDirectoryCache->HasFileList(RemoteGetCurrentDirectory()))
   {
     if (ReloadOnly && !ForceCache)
     {
@@ -3529,7 +3529,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         {
           DoReadDirectory(ReloadOnly);
         };
-        LoadedFromCache = FDirectoryCache->GetFileList(GetCurrDirectory(), FFiles);
+        LoadedFromCache = FDirectoryCache->GetFileList(RemoteGetCurrentDirectory(), FFiles);
       }
       __finally
       {
@@ -3598,7 +3598,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
             }
           }
         };
-        Files->SetDirectory(GetCurrDirectory());
+        Files->SetDirectory(RemoteGetCurrentDirectory());
         CustomReadDirectory(Files);
       }
       __finally
@@ -4217,7 +4217,7 @@ bool TTerminal::IsRecycledFile(const UnicodeString & AFileName)
     UnicodeString Path = base::UnixExtractFilePath(AFileName);
     if (Path.IsEmpty())
     {
-      Path = GetCurrDirectory();
+      Path = RemoteGetCurrentDirectory();
     }
     Result = base::UnixSamePath(Path, GetSessionData()->GetRecycleBinPath());
   }
@@ -4405,9 +4405,9 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
         DebugAssert(FCommandSession->GetFSProtocol() == cfsSCP);
         LogEvent("Executing custom command on command session.");
 
-        if (FCommandSession->GetCurrDirectory() != GetCurrDirectory())
+        if (FCommandSession->RemoteGetCurrentDirectory() != RemoteGetCurrentDirectory())
         {
-          FCommandSession->TerminalSetCurrentDirectory(GetCurrDirectory());
+          FCommandSession->TerminalSetCurrentDirectory(RemoteGetCurrentDirectory());
           // We are likely in transaction, so ReadCurrentDirectory won't get called
           // until transaction ends. But we need to know CurrentDirectory to
           // expand !/ pattern.
@@ -4464,7 +4464,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
 
     TCustomCommandData Data(this);
     UnicodeString Cmd =
-      TRemoteCustomCommand(Data, GetCurrDirectory(), L"", FileList).
+      TRemoteCustomCommand(Data, RemoteGetCurrentDirectory(), L"", FileList).
         Complete(Command, true);
     if (!DoOnCustomCommand(Cmd))
     {
@@ -4759,7 +4759,7 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
   // if filename doesn't contain path, we check for existence of file
   if ((AFile->GetFileName() != ANewName) && CheckExistence &&
     FConfiguration->GetConfirmOverwriting() &&
-    base::UnixSamePath(GetCurrDirectory(), FFiles->GetDirectory()))
+    base::UnixSamePath(RemoteGetCurrentDirectory(), FFiles->GetDirectory()))
   {
     TRemoteFile * DuplicateFile = FFiles->FindFile(ANewName);
     if (DuplicateFile)
@@ -4851,7 +4851,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
         // check if we was moving current directory.
         // this is just optimization to avoid checking existence of current
         // directory after each move operation.
-        UnicodeString CurrentDirectory = this->GetCurrDirectory();
+        UnicodeString CurrentDirectory = this->RemoteGetCurrentDirectory();
         for (intptr_t Index = 0; !PossiblyMoved && (Index < AFileList->GetCount()); ++Index)
         {
           const TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
@@ -4948,7 +4948,7 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
         DebugAssert(GetCommandSessionOpened());
         DebugAssert(FCommandSession->GetFSProtocol() == cfsSCP);
         LogEvent("Copying file on command session.");
-        FCommandSession->TerminalSetCurrentDirectory(GetCurrDirectory());
+        FCommandSession->TerminalSetCurrentDirectory(RemoteGetCurrentDirectory());
         FCommandSession->FFileSystem->RemoteCopyFile(AFileName, ANewName);
       }
     }
@@ -5027,7 +5027,7 @@ void TTerminal::CreateLink(const UnicodeString & AFileName,
   EnsureNonExistence(AFileName, IsDirectory);
   if (GetSessionData()->GetCacheDirectories())
   {
-    DirectoryModified(GetCurrDirectory(), false);
+    DirectoryModified(RemoteGetCurrentDirectory(), false);
   }
 
   LogEvent(FORMAT(L"Creating link \"%s\" to \"%s\" (symbolic: %s).",
@@ -5187,7 +5187,7 @@ TTerminal * TTerminal::GetCommandSession()
     DebugAssert(FInTransaction == 0);
 
     std::unique_ptr<TSessionData> CommandSessionData(FSessionData->Clone());
-    CommandSessionData->SetRemoteDirectory(GetCurrDirectory());
+    CommandSessionData->SetRemoteDirectory(RemoteGetCurrentDirectory());
     CommandSessionData->SetFSProtocol(fsSCPonly);
     CommandSessionData->SetClearAliases(false);
     CommandSessionData->SetUnsetNationalVars(false);
@@ -5265,7 +5265,7 @@ private:
 void TTerminal::AnyCommand(const UnicodeString & Command,
   TCaptureOutputEvent OutputEvent)
 {
-  TCallSessionAction Action(GetActionLog(), Command, GetCurrDirectory());
+  TCallSessionAction Action(GetActionLog(), Command, RemoteGetCurrentDirectory());
   TOutputProxy ProxyOutputEvent(Action, OutputEvent);
   DoAnyCommand(Command, nb::bind(&TOutputProxy::Output, &ProxyOutputEvent), &Action);
 }
@@ -5276,7 +5276,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
   DebugAssert(FFileSystem);
   try
   {
-    DirectoryModified(GetCurrDirectory(), false);
+    DirectoryModified(RemoteGetCurrentDirectory(), false);
     if (GetIsCapable(fcAnyCommand))
     {
       LogEvent("Executing user defined command.");
@@ -5288,13 +5288,13 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
       DebugAssert(FCommandSession->GetFSProtocol() == cfsSCP);
       LogEvent("Executing user defined command on command session.");
 
-      FCommandSession->TerminalSetCurrentDirectory(GetCurrDirectory());
+      FCommandSession->TerminalSetCurrentDirectory(RemoteGetCurrentDirectory());
       FCommandSession->FFileSystem->AnyCommand(ACommand, OutputEvent);
 
       FCommandSession->GetFileSystem()->ReadCurrentDirectory();
 
       // synchronize pwd (by purpose we lose transaction optimization here)
-      RemoteChangeDirectory(FCommandSession->GetCurrDirectory());
+      RemoteChangeDirectory(FCommandSession->RemoteGetCurrentDirectory());
     }
     ReactOnCommand(fsAnyCommand);
   }

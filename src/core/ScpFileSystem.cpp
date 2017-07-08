@@ -452,7 +452,7 @@ bool TSCPFileSystem::GetStoredCredentialsTried() const
   return FSecureShell->GetStoredCredentialsTried();
 }
 
-UnicodeString TSCPFileSystem::FSGetUserName() const
+UnicodeString TSCPFileSystem::RemoteGetUserName() const
 {
   return FSecureShell->ShellGetUserName();
 }
@@ -495,7 +495,7 @@ UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool 
 
 UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
-  return base::AbsolutePath(GetCurrDirectory(), APath);
+  return base::AbsolutePath(RemoteGetCurrentDirectory(), APath);
 }
 
 bool TSCPFileSystem::IsCapable(intptr_t Capability) const
@@ -816,7 +816,7 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, intptr_t Params, ...)
   }
 }
 
-UnicodeString TSCPFileSystem::GetCurrDirectory() const
+UnicodeString TSCPFileSystem::RemoteGetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -1108,7 +1108,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
       UnicodeString Options =
         ((FLsFullTime == asAuto) || (FLsFullTime == asOn)) ? FullTimeOption : "";
-      bool ListCurrentDirectory = (FileList->GetDirectory() == FTerminal->GetCurrDirectory());
+      bool ListCurrentDirectory = (FileList->GetDirectory() == FTerminal->RemoteGetCurrentDirectory());
       if (ListCurrentDirectory)
       {
         FTerminal->LogEvent("Listing current directory.");
@@ -1443,7 +1443,7 @@ void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   {
     TCustomCommandData Data(FTerminal);
     UnicodeString Cmd = TRemoteCustomCommand(
-        Data, FTerminal->GetCurrDirectory(), AFileName, L"").
+        Data, FTerminal->RemoteGetCurrentDirectory(), AFileName, L"").
       Complete(Command, true);
 
     if (!FTerminal->DoOnCustomCommand(Cmd))
@@ -1629,7 +1629,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
   Params &= ~(cpAppend | cpResume);
   UnicodeString Options;
-  bool CheckExistence = base::UnixSamePath(TargetDir, FTerminal->GetCurrDirectory()) &&
+  bool CheckExistence = base::UnixSamePath(TargetDir, FTerminal->RemoteGetCurrentDirectory()) &&
     (FTerminal->GetFiles() != nullptr) && FTerminal->GetFiles()->GetLoaded();
   bool CopyBatchStarted = false;
   bool Failed = true;

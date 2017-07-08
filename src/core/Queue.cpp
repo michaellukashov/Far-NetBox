@@ -2160,7 +2160,7 @@ TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, TTerminal * Terminal) 
   TQueueItem(Kind)
 {
   DebugAssert(Terminal != nullptr);
-  FCurrentDir = Terminal->GetCurrDirectory();
+  FCurrentDir = Terminal->RemoteGetCurrentDirectory();
 }
 
 TLocatedQueueItem::TLocatedQueueItem(const TLocatedQueueItem & Source) :
@@ -2434,7 +2434,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   {
     if (!base::UnixExtractCommonPath(AFilesToCopy, FInfo->Source))
     {
-      FInfo->Source = Terminal->GetCurrDirectory();
+      FInfo->Source = Terminal->RemoteGetCurrentDirectory();
     }
     FInfo->Source = base::UnixExcludeTrailingBackslash(FInfo->Source);
     FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
@@ -2446,10 +2446,10 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
     FInfo->Source = AFilesToCopy->GetString(0);
     if (base::UnixExtractFilePath(FInfo->Source).IsEmpty())
     {
-      FInfo->Source = base::UnixIncludeTrailingBackslash(Terminal->GetCurrDirectory()) +
+      FInfo->Source = base::UnixIncludeTrailingBackslash(Terminal->RemoteGetCurrentDirectory()) +
         FInfo->Source;
       FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        base::UnixIncludeTrailingBackslash(Terminal->GetCurrDirectory());
+        base::UnixIncludeTrailingBackslash(Terminal->RemoteGetCurrentDirectory());
     }
     else
     {

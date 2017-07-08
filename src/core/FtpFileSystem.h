@@ -1,3 +1,4 @@
+
 #pragma once
 
 #ifndef NO_FILEZILLA
@@ -106,16 +107,18 @@ public:
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName);
   virtual bool GetStoredCredentialsTried() const;
-  virtual UnicodeString FSGetUserName() const;
+  virtual UnicodeString RemoteGetUserName() const override;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs);
   virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem);
 
 protected:
-  // enum TOverwriteMode { omOverwrite, omResume, omComplete };
+#if 0
+  enum TOverwriteMode { omOverwrite, omResume, omComplete };
+#endif // #if 0
 
-  virtual UnicodeString GetCurrDirectory() const;
+  virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
   const wchar_t * GetOption(intptr_t OptionID) const;
   intptr_t GetOptionVal(intptr_t OptionID) const;
@@ -142,7 +145,7 @@ protected:
     const UnicodeString & Error = L"", uintptr_t * Code = nullptr,
     TStrings ** Response = nullptr);
   void ResetReply();
-  void HandleReplyStatus(const UnicodeString & Response);
+  void HandleReplyStatus(UnicodeString Response);
   void DoWaitForReply(uintptr_t &ReplyToAwait, bool WantLastCode);
   bool KeepWaitingForReply(uintptr_t &ReplyToAwait, bool WantLastCode) const;
   inline bool NoFinalLastCode() const;
