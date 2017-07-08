@@ -82,6 +82,8 @@ void TFileOperationProgressType::Clear()
   FTotalTransferred = 0;
   FTotalSkipped = 0;
   FTotalSize = 0;
+  FSkippedSize = 0;
+  FTotalSizeSet = false;
   FFileStartTime = 0.0;
   FFilesFinished = 0;
   FReset = false;
@@ -109,13 +111,10 @@ void TFileOperationProgressType::Clear()
   FCounterSet = false;
   ClearTransfer();
   FTransferredSize = 0;
-  FSkippedSize = 0;
   FCancel = csContinue;
   FCount = 0;
   FStartTime = Now();
-  FSkipToAll = false;
   FCPSLimit = 0;
-  FTotalSizeSet = false;
   FSuspended = false;
 
   ClearTransfer();
@@ -290,7 +289,7 @@ void TFileOperationProgressType::DoProgress()
   FOnProgress(*this);
 }
 
-void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
+void TFileOperationProgressType::Finish(UnicodeString AFileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   DebugAssert(FInProgress);
@@ -306,18 +305,17 @@ void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
   DoProgress();
 }
 
-void TFileOperationProgressType::SetFile(const UnicodeString & AFileName, bool AFileInProgress)
+void TFileOperationProgressType::SetFile(UnicodeString AFileName, bool AFileInProgress)
 {
-  UnicodeString FileName = AFileName;
-  FFullFileName = FileName;
+  FFullFileName = AFileName;
   if (FSide == osRemote)
   {
     // historically set were passing filename-only for remote site operations,
     // now we need to collect a full paths, so we pass in full path,
     // but still want to have filename-only in FileName
-    FileName = base::UnixExtractFileName(FileName);
+    AFileName = base::UnixExtractFileName(AFileName);
   }
-  FFileName = FileName;
+  FFileName = AFileName;
   FFileInProgress = AFileInProgress;
   ClearTransfer();
   FFileStartTime = Now();
@@ -653,8 +651,9 @@ void TFileOperationProgressType::RollbackTransfer()
 void TFileOperationProgressType::AddTransferredToTotals(int64_t ASize)
 {
   TGuard Guard(*FSection);
-  intptr_t Ticks = static_cast<intptr_t>(::GetTickCount());
+
   FTotalTransferred += ASize;
+  intptr_t Ticks = static_cast<intptr_t>(::GetTickCount());
   if (FTicks.empty() ||
       (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
       ((Ticks - FTicks.back()) >= static_cast<uintptr_t>(MSecsPerSec)))

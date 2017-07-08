@@ -5,7 +5,7 @@
 #include <Exceptions.h>
 #include <FileBuffer.h>
 #include <Windows.hpp>
-
+#include <Math.hpp>
 #include "FileInfo.h"
 
 #define DWORD_ALIGN( base, ptr ) \
@@ -89,21 +89,21 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
           }
           __finally
           {
-/*
+#if 0
             FreeResource(Mem);
-*/
+#endif // #if 0
           };
         }
       }
     }
     __finally
     {
-/*
+#if 0
       if (NeedFree)
       {
         FreeLibrary(Module);
       }
-*/
+#endif // #if 0
     };
   }
 
@@ -164,7 +164,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
 }
 
 // Return pointer to file version info block
-void * CreateFileInfo(const UnicodeString & AFileName)
+void * CreateFileInfo(UnicodeString AFileName)
 {
   DWORD Handle;
   void * Result = nullptr;
@@ -279,7 +279,7 @@ intptr_t CalculateCompoundVersion(intptr_t MajorVer,
   return CompoundVer;
 }
 
-intptr_t StrToCompoundVersion(const UnicodeString & AStr)
+intptr_t StrToCompoundVersion(UnicodeString AStr)
 {
   UnicodeString S(AStr);
   int64_t MajorVer = StrToInt64(CutToChar(S, L'.', false));

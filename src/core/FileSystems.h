@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <Common.h>
@@ -29,6 +30,7 @@ const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
 const int dfForceDelete = 0x04;
 
+// from FtpFileSystem.h
 enum TOverwriteMode
 {
   omOverwrite,

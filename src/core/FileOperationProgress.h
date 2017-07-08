@@ -1,20 +1,25 @@
+
 #pragma once
 
 #include <Common.h>
+#include <Exceptions.h>
 
 #include "Configuration.h"
 #include "CopyParam.h"
 
 class TFileOperationProgressType;
+
 enum TFileOperation
 {
   foNone, foCopy, foMove, foDelete, foSetProperties,
   foRename, foCustomCommand, foCalculateSize, foRemoteMove, foRemoteCopy,
-  foGetProperties, foCalculateChecksum, foLock, foUnlock
+  foGetProperties, foCalculateChecksum, foLock, foUnlock,
 };
 
 // csCancelTransfer and csRemoteAbort are used with SCP only
-//enum TCancelStatus { csContinue = 0, csCancelFile, csCancel, csCancelTransfer, csRemoteAbort };
+#if 0
+enum TCancelStatus { csContinue = 0, csCancelFile, csCancel, csCancelTransfer, csRemoteAbort };
+#endif // #if 0
 enum TCancelStatus
 {
   csContinue = 0,
@@ -24,7 +29,9 @@ enum TCancelStatus
   csRemoteAbort,
 };
 
-//enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
+#if 0
+enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
+#endif // #if 0
 enum TBatchOverwrite
 {
   boNo,
@@ -203,13 +210,13 @@ public:
   void AddSkippedFileSize(int64_t ASize);
   void Clear();
   uintptr_t CPS() const;
-  void Finish(const UnicodeString & AFileName, bool Success,
+  void Finish(UnicodeString AFileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   void Progress();
   uintptr_t LocalBlockSize();
   bool IsLocallyDone() const;
   bool IsTransferDone() const;
-  void SetFile(const UnicodeString & AFileName, bool AFileInProgress = true);
+  void SetFile(UnicodeString AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
   uintptr_t TransferBlockSize();
   intptr_t AdjustToCPSLimit(intptr_t Size);
@@ -236,7 +243,6 @@ public:
   TDateTime TimeElapsed() const;
   // only current file
   TDateTime TimeExpected() const;
-  TDateTime TotalTimeExpected() const;
   TDateTime TotalTimeLeft() const;
   intptr_t TransferProgress() const;
   intptr_t OverallProgress() const;

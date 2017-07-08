@@ -8,7 +8,7 @@ struct TTranslation
 };
 
 // Return pointer to file version info block
-void * CreateFileInfo(const UnicodeString & AFileName);
+void * CreateFileInfo(UnicodeString AFileName);
 
 // Free file version info block memory
 void FreeFileInfo(void * FileInfo);
@@ -33,6 +33,6 @@ UnicodeString GetFileInfoString(void * FileInfo,
 intptr_t CalculateCompoundVersion(intptr_t MajorVer,
   intptr_t MinorVer, intptr_t Release, intptr_t Build);
 
-intptr_t StrToCompoundVersion(const UnicodeString & AStr);
+intptr_t StrToCompoundVersion(UnicodeString AStr);
 
 intptr_t CompareVersion(UnicodeString V1, UnicodeString V2);
