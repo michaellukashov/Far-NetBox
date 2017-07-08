@@ -1539,6 +1539,11 @@ UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath)
   return Result;
 }
 
+int random(int range)
+{
+  return static_cast<int>(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
+}
+
 void Randomize()
 {
   srand(static_cast<uint32_t>(time(nullptr)));

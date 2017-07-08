@@ -306,6 +306,7 @@ public:
   bool GetLogging() const { return FLogging; }
   UnicodeString GetName() const { return FName; }
   bool LogToFile() const;
+  UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
 
 protected:
   void CloseLogFile();
@@ -325,15 +326,7 @@ private:
   UnicodeString FName;
   bool FClosed;
 
-public:
-  UnicodeString GetLine(intptr_t Index) const;
-  TLogLineType GetType(intptr_t Index) const;
-  void DeleteUnnecessary();
-  void StateChange();
   void OpenLogFile();
-  UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
-
-private:
   void DoAdd(TLogLineType AType, const UnicodeString & ALine,
     TDoAddLogEvent Event);
   void DoAddToParent(TLogLineType AType, const UnicodeString & ALine);
@@ -347,6 +340,12 @@ private:
   UnicodeString GetCmdLineLog() const;
   void CheckSize(int64_t Addition);
   UnicodeString LogPartFileName(const UnicodeString & BaseName, intptr_t Index);
+public:
+  UnicodeString GetLine(intptr_t Index) const;
+  TLogLineType GetType(intptr_t Index) const;
+  void DeleteUnnecessary();
+  void StateChange();
+
 };
 
 class TActionLog : public TObject
@@ -359,13 +358,12 @@ public:
     TConfiguration * Configuration);
   // For fatal failures for .NET assembly
   explicit TActionLog(TDateTime Started, TConfiguration * Configuration);
-  // explicit TActionLog(TConfiguration * Configuration);
   virtual ~TActionLog();
 
   void ReflectSettings();
   void AddFailure(Exception * E);
   void AddFailure(TStrings * Messages);
-  void BeginGroup(const UnicodeString & Name);
+  void BeginGroup(UnicodeString Name);
   void EndGroup();
 
 #if 0

@@ -7512,7 +7512,7 @@ void TTerminal::CollectUsage()
   }
 
   std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
-  if (!GetSessionData()->IsSame(FactoryDefaults.get(), true, nullptr))
+  if (!GetSessionData()->IsSame(FactoryDefaults.get(), true))
   {
 //    Configuration->Usage->Inc(L"OpenedSessionsAdvanced");
   }

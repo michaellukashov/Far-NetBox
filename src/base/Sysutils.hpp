@@ -428,6 +428,7 @@ public:
 UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath);
 
 extern int RandSeed;
+extern int random(int range);
 extern void Randomize();
 
 TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears = 1);
