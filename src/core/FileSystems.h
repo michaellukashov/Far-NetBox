@@ -73,8 +73,9 @@ public:
 public:
   TFileTransferData() :
     TObject(OBJECT_CLASS_TFileTransferData),
+    FileName(),
     CopyParam(nullptr),
-    Modification(0.0),
+    Modification(),
     Params(0),
     OverwriteResult(-1),
     AutoResume(false)

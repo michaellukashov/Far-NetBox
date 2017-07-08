@@ -5,36 +5,17 @@
 
 #include <time.h>
 #include <rdestl/map.h>
-#include <rdestl/list.h>
 #include <FileSystems.h>
 
 class TFileZillaIntf;
 class TFileZillaImpl;
+class TMessageQueue;
 class TFTPServerCapabilities;
 struct TOverwriteFileParams;
 struct TListDataEntry;
 struct TFileTransferData;
 struct TFtpsCertificateData;
 struct TRemoteFileTime;
-
-struct message_t
-{
-CUSTOM_MEM_ALLOCATION_IMPL
-  message_t() : wparam(0), lparam(0)
-  {
-  }
-  message_t(WPARAM w, LPARAM l) : wparam(w), lparam(l)
-  {
-  }
-  WPARAM wparam;
-  LPARAM lparam;
-};
-
-class TMessageQueue : public TObject, public rde::list<message_t>
-{
-public:
-  typedef message_t value_type;
-};
 
 class TFTPFileSystem : public TCustomFileSystem
 {
@@ -142,7 +123,7 @@ protected:
   void PoolForFatalNonCommandReply();
   void GotNonCommandReply(uintptr_t Reply);
   UnicodeString GotReply(uintptr_t Reply, uintptr_t Flags = 0,
-    const UnicodeString & Error = L"", uintptr_t * Code = nullptr,
+    UnicodeString Error = L"", uintptr_t * Code = nullptr,
     TStrings ** Response = nullptr);
   void ResetReply();
   void HandleReplyStatus(UnicodeString Response);
@@ -265,7 +246,7 @@ private:
   mutable TFileZillaIntf * FFileZillaIntf;
   TCriticalSection FQueueCriticalSection;
   TCriticalSection FTransferStatusCriticalSection;
-  TMessageQueue FQueue;
+  TMessageQueue * FQueue;
   HANDLE FQueueEvent;
   TSessionInfo FSessionInfo;
   TFileSystemInfo FFileSystemInfo;

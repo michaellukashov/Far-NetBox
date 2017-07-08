@@ -5571,7 +5571,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
     FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()), "",
     [&]()
     {
-      LocalFileHandle = ::FindFirstFile(ApiPath(::ExcludeTrailingBackslash(AFileName)).c_str(), &FindData);
+      LocalFileHandle = ::FindFirstFileW(ApiPath(::ExcludeTrailingBackslash(AFileName)).c_str(), &FindData);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
         ::RaiseLastOSError();

@@ -3442,17 +3442,23 @@ UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & APath)
 // Keeps "/" for root path
 UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & APath, bool Simple)
 {
+  UnicodeString Result;
   if (APath.IsEmpty() ||
       (APath == ROOTDIRECTORY) ||
       !APath.IsDelimiter(SLASH, APath.Length()) ||
       (!Simple && ((APath.Length() == 3) && base::IsUnixStyleWindowsPath(APath))))
   {
-    return APath;
+    Result = APath;
   }
   else
   {
-    return APath.SubString(1, APath.Length() - 1);
+    Result = APath.SubString(1, APath.Length() - 1);
   }
+  if (Result.IsEmpty())
+  {
+    Result = ROOTDIRECTORY;
+  }
+  return Result;
 }
 
 UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & APath)
