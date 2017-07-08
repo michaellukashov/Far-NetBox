@@ -118,8 +118,9 @@ void TSessionData::Default()
 {
   SetHostName(L"");
   SetPortNumber(SshPortNumber);
-  SetUserName(AnonymousUserName);
-  SetPassword(AnonymousPassword);
+  SetUserName(L"");
+  SetPassword(L"");
+  SetNewPassword(L"");
   SetChangePassword(false);
   SetPingInterval(30);
   SetPingType(ptOff);
@@ -131,6 +132,7 @@ void TSessionData::Default()
   SetAuthKIPassword(true);
   SetAuthGSSAPI(false);
   SetGSSAPIFwdTGT(false);
+  SetLogicalHostName(L"");
   SetChangeUsername(false);
   SetCompression(false);
   SetSshProt(ssh2only);
@@ -148,6 +150,7 @@ void TSessionData::Default()
   {
     SetGssLib(Index, DefaultGssLibList[Index]);
   }
+  SetGssLibCustom(L"");
   SetPublicKeyFile(L"");
   SetPassphrase(L"");
   SetPuttyProtocol(L"");
@@ -160,6 +163,7 @@ void TSessionData::Default()
   SetFingerprintScan(false);
   FOverrideCachedHostKey = true;
   SetNote(L"");
+  SetWinTitle(L"");
   FOrigHostName.Clear();
   FOrigPortNumber = 0;
   FOrigProxyMethod = pmNone;
@@ -986,16 +990,13 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
 
   if (PuttyExport)
   {
-//      WRITE_DATA(StringRaw, UserName);
     WRITE_DATA_EX(StringRaw, "UserName", SessionGetUserName(), );
     // PuTTY is started in its binary directory to allow relative paths when opening PuTTY's own stored session.
     // To allow relative paths in our sessions, we have to expand them for PuTTY.
     WRITE_DATA(StringRaw, PublicKeyFile);
-//    WRITE_DATA_EX(StringRaw, "PublicKeyFile", GetPublicKeyFile(), ExpandFileName);
   }
   else
   {
-//      WRITE_DATA(String, UserName);
     WRITE_DATA_EX(String, "UserName", SessionGetUserName(), );
     WRITE_DATA(String, PublicKeyFile);
     WRITE_DATA_EX2(String, "FSProtocol", GetFSProtocolStr(), );
@@ -1143,8 +1144,10 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     WRITE_DATA(Integer, MinTlsVersion);
     WRITE_DATA(Integer, MaxTlsVersion);
 
-    // WRITE_DATA(Bool, IsWorkspace);
-    // WRITE_DATA(String, Link);
+#if 0
+    WRITE_DATA(Bool, IsWorkspace);
+    WRITE_DATA(String, Link);
+#endif // #if 0
 
     WRITE_DATA(String, CustomParam1);
     WRITE_DATA(String, CustomParam2);
@@ -1214,7 +1217,7 @@ intptr_t TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name
   return Result;
 }
 
-void TSessionData::ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & APath)
+_di_IXMLNode TSessionData::FindSettingsNode(_di_IXMLNode Node, const UnicodeString & Name)
 {
   for (int Index = 0; Index < Node->ChildNodes->Count; Index++)
   {
@@ -1300,8 +1303,8 @@ void TSessionData::ImportFromFilezilla(
   intptr_t LogonType = ReadXmlNode(Node, L"Logontype", 0);
   if (LogonType == 0) // ANONYMOUS
   {
-    UserName = ANONYMOUS_USER_NAME;
-    Password = ANONYMOUS_PASSWORD;
+    UserName = AnonymousUserName;
+    Password = AnonymousPassword;
   }
   else
   {

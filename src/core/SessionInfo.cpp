@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -157,19 +158,9 @@ public:
             {
               FLog->AddIndented(FORMAT("      <size value=\"%s\" />", ::Int64ToStr(File->GetSize()).c_str()));
             }
-            FLog->AddIndented(FORMAT("      <modification value=\"%s\" />", StandardTimestamp(File->GetModification()).c_str()));
-            FLog->AddIndented(FORMAT("      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
             FLog->AddIndented(L"    </file>");
           }
           FLog->AddIndented(L"  </files>");
-          if (File->Owner.IsSet)
-          {
-            FLog->AddIndented(FORMAT(L"      <owner value=\"%s\" />", XmlAttributeEscape(File->Owner.DisplayText)));
-          }
-          if (File->Group.IsSet)
-          {
-            FLog->AddIndented(FORMAT(L"      <group value=\"%s\" />", XmlAttributeEscape(File->Group.DisplayText)));
-          }
         }
         if (FFile != nullptr)
         {
@@ -582,6 +573,7 @@ void TLsSessionAction::FileList(TRemoteFileList * FileList)
     FRecord->FileList(FileList);
   }
 }
+
 
 TStatSessionAction::TStatSessionAction(TActionLog * Log, const UnicodeString & AFileName) :
   TFileSessionAction(Log, laStat, AFileName)
@@ -1045,8 +1037,6 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     {
       LogStr += L", Logging passwords";
     }
-    ADF(L"Log level: %s", LogStr.c_str());
-    ADF(L"Local account: %s", UserName.c_str());
 #endif // #if 0
     if (FConfiguration->GetLogMaxSize() > 0)
     {
@@ -1056,10 +1046,14 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         LogStr += FORMAT(L", Keeping at most %d logs", FConfiguration->GetLogMaxCount());
       }
     }
+#if 0
+    ADF(L"Log level: %s", LogStr.c_str());
+    ADF(L"Local account: %s", UserName.c_str());
+#endif // #if 0
     ADF(L"Working directory: %s", GetCurrentDir().c_str());
     ADF(L"Process ID: %d", intptr_t(GetCurrentProcessId()));
-//    ADF(L"Command-line: %s", GetCmdLineLog().c_ctr());
 #if 0
+    ADF(L"Command-line: %s", GetCmdLineLog().c_ctr());
     if (FConfiguration->GetLogProtocol() >= 1)
     {
       AddOptions(GetGlobalOptions());
@@ -1070,36 +1064,32 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     {
       ADF(L"Warning: System option \"Automatically adjust clock for Daylight Saving Time\" is disabled, timestamps will not be represented correctly");
     }
-//    ADF(L"Login time: %s", dt.c_str());
+#if 0
+    ADF(L"Login time: %s", dt.c_str());
+#endif // #if 0
     AddSeparator();
   }
   else
   {
-    if (0)
-    {
-      ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
-    }
+#if 0
+    ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
     ADF(L"Host name: %s (Port: %d)", Data->GetHostNameExpanded().c_str(), Data->GetPortNumber());
-    if (0)
-    {
-      ADF(L"User name: %s (Password: %s, Key file: %s, Passphrase: %s)",
-        Data->GetUserNameExpanded().c_str(), LogSensitive(Data->GetPassword()).c_str(),
-        LogSensitive(Data->GetPublicKeyFile()).c_str(), LogSensitive(Data->GetPassphrase()).c_str())
-
-    }
+    ADF(L"User name: %s (Password: %s, Key file: %s, Passphrase: %s)",
+      Data->GetUserNameExpanded().c_str(), LogSensitive(Data->GetPassword()).c_str(),
+       LogSensitive(Data->GetPublicKeyFile()).c_str(), LogSensitive(Data->GetPassphrase()).c_str())
+#endif // #if 0
     if (Data->GetUsesSsh())
     {
       ADF(L"Tunnel: %s", BooleanToEngStr(Data->GetTunnel()).c_str());
       if (Data->GetTunnel())
       {
         ADF(L"Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName().c_str(), Data->GetTunnelPortNumber());
-        if (0)
-        {
-          ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
-            Data->GetTunnelUserName().c_str(), BooleanToEngStr(!Data->GetTunnelPassword().IsEmpty()).c_str(),
-            BooleanToEngStr(!Data->GetTunnelPublicKeyFile().IsEmpty()).c_str());
-          ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
-        }
+#if 0
+        ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
+           Data->GetTunnelUserName().c_str(), BooleanToEngStr(!Data->GetTunnelPassword().IsEmpty()).c_str(),
+           BooleanToEngStr(!Data->GetTunnelPublicKeyFile().IsEmpty()).c_str());
+        ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
+#endif // #if 0
       }
     }
     ADF(L"Transfer Protocol: %s", Data->GetFSProtocolStr().c_str());
@@ -1165,7 +1155,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       }
       ADF(L"Ciphers: %s; Ssh2DES: %s",
           Data->GetCipherList().c_str(), BooleanToEngStr(Data->GetSsh2DES()).c_str());
-//        ADF(L"KEX: %s", (Data->KexList));
+      ADF(L"KEX: %s", Data->GetKexList().c_str());
       UnicodeString Bugs;
       for (intptr_t Index = 0; Index < BUG_COUNT; ++Index)
       {
@@ -1228,9 +1218,9 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       {
         ADF(L"Transfer active immediately: %s", EnumName(Data->GetFtpTransferActiveImmediately(), AutoSwitchNames).c_str());
       }
-      ADF(L"FTPS: %s; [Client certificate: %s]",
+      ADF(L"FTPS: %s [Client certificate: %s]",
         Ftps.c_str(), LogSensitive(Data->GetTlsCertificateFile()).c_str());
-      ADF(L"FTP: Passive: %s [Force IP: %s]; MLSD: %s  [List all: %s]; HOST: %s",
+      ADF(L"FTP: Passive: %s [Force IP: %s]; MLSD: %s [List all: %s]; HOST: %s",
         BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
          EnumName(Data->GetFtpForcePasvIp(), AutoSwitchNames).c_str(),
          EnumName(Data->GetFtpUseMlsd(), AutoSwitchNames).c_str(),
@@ -1338,7 +1328,6 @@ TActionLog::TActionLog(TDateTime Started, TConfiguration * Configuration)
 void TActionLog::Init(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
   TConfiguration * Configuration)
 {
-//  FCriticalSection = new TCriticalSection;
   FConfiguration = Configuration;
   FUI = UI;
   FSessionData = SessionData;
@@ -1362,7 +1351,6 @@ TActionLog::~TActionLog()
   FClosed = true;
   ReflectSettings();
   DebugAssert(FFile == nullptr);
-//  delete FCriticalSection;
 }
 
 void TActionLog::Add(const UnicodeString & Line)
@@ -1483,7 +1471,7 @@ void TActionLog::ReflectSettings()
       (FSessionData != nullptr) ? XmlAttributeEscape(FSessionData->SessionName) : UnicodeString(L"nosession");
     Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
       (SessionName, StandardTimestamp())));
-#endif
+#endif // #if 0
   }
   else if (!ALogging && FLogging)
   {
@@ -1494,7 +1482,9 @@ void TActionLog::ReflectSettings()
     // do not try to close the file, if it has not been opened, to avoid recursion
     if (FFile != nullptr)
     {
-//      Add(L"</session>");
+#if 0
+      Add(L"</session>");
+#endif // #if 0
     }
     CloseLogFile();
     FLogging = false;
@@ -1559,7 +1549,7 @@ void TActionLog::AddPendingAction(TSessionActionRecord * Action)
 void TActionLog::RecordPendingActions()
 {
   while ((FPendingActions->GetCount() > 0) &&
-    FPendingActions->GetAs<TSessionActionRecord>(0)->Record())
+          FPendingActions->GetAs<TSessionActionRecord>(0)->Record())
   {
     FPendingActions->Delete(0);
   }
