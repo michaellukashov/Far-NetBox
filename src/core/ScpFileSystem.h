@@ -108,7 +108,7 @@ private:
 
   void DetectUtf();
   void ClearAliases();
-  void ClearAlias(const UnicodeString & Alias);
+  void ClearAlias(UnicodeString Alias);
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
   static UnicodeString DelimitStr(const UnicodeString & AStr);
@@ -119,21 +119,25 @@ private:
   void ExecCommand2(const UnicodeString & Cmd, intptr_t Params,
     const UnicodeString & CmdString);
   void ExecCommand(TFSCommand Cmd, intptr_t Params, ...);
+#if 0
+  void ExecCommand(TFSCommand Cmd, const TVarRec * args = nullptr,
+    int size = 0, int Params = -1);
+#endif // #if 0
   void ReadCommandOutput(intptr_t Params, const UnicodeString * Cmd = nullptr);
   void SCPResponse(bool * GotLastLine = nullptr);
   void SCPDirectorySource(const UnicodeString & DirectoryName,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, intptr_t Level);
-  void SCPError(const UnicodeString & Message, bool Fatal);
-  void SCPSendError(const UnicodeString & Message, bool Fatal);
-  void SCPSink(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, const UnicodeString & TargetDir,
-    const UnicodeString & SourceDir,
+  void SCPError(const UnicodeString Message, bool Fatal);
+  void SCPSendError(const UnicodeString Message, bool Fatal);
+  void SCPSink(const UnicodeString ATargetDir,
+    const UnicodeString AFileName, const UnicodeString ASourceDir,
+    const TRemoteFile * AFile,
     const TCopyParamType * CopyParam, bool & Success,
     TFileOperationProgressType * OperationProgress, intptr_t Params, intptr_t Level);
   void SCPSource(const UnicodeString & AFileName,
     const TRemoteFile * AFile,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
+    const UnicodeString TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, intptr_t Level);
   void SendCommand(const UnicodeString & Cmd);
   void SkipFirstLine();
@@ -151,6 +155,6 @@ private:
     intptr_t Params, TFileOperationProgressType * OperationProgress);
 
   static bool RemoveLastLine(UnicodeString & Line,
-    intptr_t & ReturnCode, const UnicodeString & ALastLine = L"");
+    intptr_t & ReturnCode, UnicodeString ALastLine = L"");
 };
 
