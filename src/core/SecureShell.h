@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <rdestl/vector.h>
 #include "PuttyIntf.h"
 #include "Configuration.h"
 #include "SessionData.h"
@@ -115,7 +116,7 @@ public:
   bool TryFtp();
   UnicodeString ConvertInput(const RawByteString & Input, uintptr_t CodePage = CP_ACP) const;
   void GetRealHost(UnicodeString & Host, intptr_t & Port) const;
-  UnicodeString RetrieveHostKey(const UnicodeString & Host, intptr_t Port, const UnicodeString & KeyType) const;
+  UnicodeString RetrieveHostKey(UnicodeString Host, intptr_t Port, const UnicodeString KeyType) const;
 
 protected:
   TCaptureOutputEvent FOnCaptureOutput;
@@ -125,11 +126,11 @@ protected:
     intptr_t Count, UnicodeString & Message, UnicodeString * HelpKeyword = nullptr) const;
   int TranslateAuthenticationMessage(UnicodeString & Message, UnicodeString * HelpKeyword = nullptr);
   int TranslateErrorMessage(UnicodeString & Message, UnicodeString * HelpKeyword = nullptr);
-  void AddStdError(const UnicodeString & AStr);
+  void AddStdError(UnicodeString AStr);
   void AddStdErrorLine(const UnicodeString & AStr);
   void LogEvent(const UnicodeString & AStr);
-  void FatalError(const UnicodeString & Error, const UnicodeString & HelpKeyword = L"");
-  UnicodeString FormatKeyStr(const UnicodeString & AKeyStr) const;
+  void FatalError(UnicodeString Error, UnicodeString HelpKeyword = L"");
+  UnicodeString FormatKeyStr(UnicodeString KeyStr) const;
   static Conf * StoreToConfig(TSessionData * Data, bool Simple);
 
 public:
@@ -176,14 +177,14 @@ public:
   const UnicodeString & GetStdError() const;
   void VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
     const UnicodeString & AKeyType, const UnicodeString & AKeyStr, const UnicodeString & AFingerprint);
-  bool HaveHostKey(const UnicodeString & AHost, intptr_t Port, const UnicodeString & KeyType);
-  void AskAlg(const UnicodeString & AlgType, const UnicodeString & AlgName);
+  bool HaveHostKey(UnicodeString AHost, intptr_t Port, const UnicodeString & KeyType);
+  void AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
   void DisplayBanner(const UnicodeString & Banner);
   void OldKeyfileWarning();
   void PuttyLogEvent(const char * AStr);
   UnicodeString ConvertFromPutty(const char * Str, intptr_t Length) const;
 
-/*
+#if 0
   __property bool Active = { read = FActive, write = SetActive };
   __property bool Ready = { read = GetReady };
   __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
@@ -193,7 +194,7 @@ public:
   __property bool Simple = { read = FSimple, write = FSimple };
   __property TSshImplementation SshImplementation = { read = FSshImplementation };
   __property bool UtfStrings = { read = FUtfStrings, write = FUtfStrings };
-*/
+#endif // #if 0
 
   bool GetActive() const { return FActive; }
   const TCaptureOutputEvent & GetOnCaptureOutput() const { return FOnCaptureOutput; }
