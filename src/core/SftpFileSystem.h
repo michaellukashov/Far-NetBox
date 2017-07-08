@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <FileSystems.h>
@@ -14,7 +15,9 @@ struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
 
-//enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
+#if 0
+enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
+#endif // #if 0
 
 class TSFTPFileSystem : public TCustomFileSystem
 {
