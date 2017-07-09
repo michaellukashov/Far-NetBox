@@ -84,7 +84,7 @@
 
   #include <intrin.h>
   typedef unsigned char BignumCarry; /* the type _addcarry_u64 likes to use */
-  typedef unsigned __int64 BignumInt;
+  typedef unsigned long long BignumInt;
   #define BIGNUM_INT_BITS 64
   #define BignumADC(ret, retc, a, b, c) do                \
       {                                                   \
@@ -124,11 +124,11 @@
 
 #elif (defined _MSC_VER && defined _M_IX86) || defined(MPEXT)
 
-  /* 32-bit BignumInt, using Visual Studio __int64 as BignumDblInt */
+  /* 32-bit BignumInt, using Visual Studio int64_t as BignumDblInt */
 
   typedef unsigned int BignumInt;
   #define BIGNUM_INT_BITS  32
-  #define DEFINE_BIGNUMDBLINT typedef unsigned __int64 BignumDblInt
+  #define DEFINE_BIGNUMDBLINT typedef unsigned long long BignumDblInt
 
 #if defined(MPEXT) && !defined(_MSC_VER)
 // BCC requires semicolons

@@ -130,10 +130,10 @@ static void sk_handle_close(Socket s)
         return;
     }
 
-    #ifdef MPEXT
+#ifdef MPEXT
     // WinSCP core uses do_select as signalization of connection up/down
     do_select(ps->plug, INVALID_SOCKET, 0);
-    #endif
+#endif
 
     if (ps->defer_close) {
         ps->deferred_close = TRUE;
@@ -298,10 +298,11 @@ static char *sk_handle_peer_info(Socket s)
 
     if (!kernel32_module) {
         kernel32_module = load_system32_dll("kernel32.dll");
-#if (defined _MSC_VER) || defined __MINGW32__
+#if (defined _MSC_VER && _MSC_VER < 1900) || defined __MINGW32__ || defined COVERITY || defined MPEXT
         /* For older Visual Studio, and MinGW too (at least as of
          * Ubuntu 16.04), this function isn't available in the header
-         * files to type-check */
+         * files to type-check. Ditto the toolchain I use for
+         * Coveritying the Windows code. */
         PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(
             kernel32_module, GetNamedPipeClientProcessId);
 #else
@@ -359,10 +360,10 @@ Socket make_handle_socket(HANDLE send_H, HANDLE recv_H, HANDLE stderr_H,
 
     ret->defer_close = ret->deferred_close = FALSE;
 
-    #ifdef MPEXT
+#ifdef MPEXT
     // WinSCP core uses do_select as signalization of connection up/down
     do_select(plug, INVALID_SOCKET, 1);
-    #endif
+#endif
 
     ret->defer_close = ret->deferred_close = FALSE;
 

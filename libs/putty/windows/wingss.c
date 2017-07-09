@@ -273,7 +273,7 @@ static Ssh_gss_stat ssh_sspi_indicate_mech(struct ssh_gss_library *lib,
 
 
 static Ssh_gss_stat ssh_sspi_import_name(struct ssh_gss_library *lib,
-           const char *host, Ssh_gss_name *srv_name)
+					 const char *host, Ssh_gss_name *srv_name)
 {
     char *pStr;
 
@@ -415,9 +415,9 @@ static Ssh_gss_stat ssh_sspi_release_cred(struct ssh_gss_library *lib,
 
     /* free Windows data */
     p_FreeCredentialsHandle(&winctx->cred_handle);
-    #ifdef MPEXT
+#ifdef MPEXT
     if (winctx->context_handle != NULL)
-    #endif
+#endif
     p_DeleteSecurityContext(&winctx->context);
 
     /* delete our "wrapper" structure */

@@ -1402,7 +1402,7 @@ int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
 	putty_SHA_Init(&s);
 	putty_SHA_Bytes(&s, header, sizeof(header)-1);
 	if (passphrase)
-			putty_SHA_Bytes(&s, passphrase, (int)strlen(passphrase));
+		putty_SHA_Bytes(&s, passphrase, (int)strlen(passphrase));
 	putty_SHA_Final(&s, mackey);
 	hmac_sha1_simple(mackey, 20, macdata, maclen, priv_mac);
 	smemclr(macdata, maclen);
@@ -1692,7 +1692,7 @@ static int key_type_fp(FILE *fp)
         (p = p+1 + strspn(p+1, "0123456789"), *p == ' ') &&
         (p = p+1 + strspn(p+1, "0123456789"), *p == ' ' || *p == '\n' || !*p))
 	return SSH_KEYTYPE_SSH1_PUBLIC;
-		if ((p = buf + strcspn(buf, " "), find_pubkey_alg_len((int)(p-buf), buf)) &&
+	if ((p = buf + strcspn(buf, " "), find_pubkey_alg_len((int)(p-buf), buf)) &&
         (p = p+1 + strspn(p+1, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij"
                           "klmnopqrstuvwxyz+/="),
          *p == ' ' || *p == '\n' || !*p))

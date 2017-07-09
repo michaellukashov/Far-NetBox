@@ -266,7 +266,7 @@ void sk_init(void)
     }
     if (!winsock_module)
     {
-      fatalbox("Unable to load any WinSock library");
+        fatalbox("Unable to load any WinSock library");
     }
 
 #ifndef NO_IPV6
@@ -275,25 +275,25 @@ void sk_init(void)
 #ifdef NET_SETUP_DIAGNOSTICS
 	logevent(NULL, "Native WinSock IPv6 support detected");
 #endif
-		PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getaddrinfo);
-		PUTTY_GET_WINDOWS_FUNCTION(winsock_module, freeaddrinfo);
-		PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, getnameinfo);
-		/* This function would fail its type-check if we did one,
-		 * because the VS header file provides an inline definition
-		 * which is __cdecl instead of WINAPI. */
-		PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
-	} else {
+	PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getaddrinfo);
+	PUTTY_GET_WINDOWS_FUNCTION(winsock_module, freeaddrinfo);
+	PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, getnameinfo);
+        /* This function would fail its type-check if we did one,
+         * because the VS header file provides an inline definition
+         * which is __cdecl instead of WINAPI. */
+        PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
+    } else {
 	/* Fall back to wship6.dll for Windows 2000 */
 	wship6_module = load_system32_dll("wship6.dll");
 	if (wship6_module) {
 #ifdef NET_SETUP_DIAGNOSTICS
 	    logevent(NULL, "WSH IPv6 support detected");
 #endif
-		PUTTY_GET_WINDOWS_FUNCTION(wship6_module, getaddrinfo);
-		PUTTY_GET_WINDOWS_FUNCTION(wship6_module, freeaddrinfo);
-		PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(wship6_module, getnameinfo);
-		/* See comment above about type check */
-		PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
+	    PUTTY_GET_WINDOWS_FUNCTION(wship6_module, getaddrinfo);
+	    PUTTY_GET_WINDOWS_FUNCTION(wship6_module, freeaddrinfo);
+	    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(wship6_module, getnameinfo);
+            /* See comment above about type check */
+            PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
 	} else {
 #ifdef NET_SETUP_DIAGNOSTICS
 	    logevent(NULL, "No IPv6 support detected");
@@ -315,15 +315,31 @@ void sk_init(void)
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, WSAStartup);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, WSACleanup);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, closesocket);
+#ifndef COVERITY
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, ntohl);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, htonl);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, htons);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, ntohs);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, gethostname);
+#else
+    /* The toolchain I use for Windows Coverity builds doesn't know
+     * the type signatures of these */
+    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, ntohl);
+    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, htonl);
+    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, htons);
+    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, ntohs);
+    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gethostname);
+#endif
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, gethostbyname);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getservbyname);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, inet_addr);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, inet_ntoa);
+#if (defined _MSC_VER && _MSC_VER < 1900) || defined __MINGW32__ || defined MPEXT
+    /* Older Visual Studio, and MinGW as of Ubuntu 16.04, don't know
+     * about this function at all, so can't type-check it */
+#else
+    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, inet_ntop);
+#endif
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, connect);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, bind);
 #if (defined _MSC_VER) || defined __MINGW32__
@@ -584,7 +600,7 @@ SockAddr sk_namelookup(const char *host, char **canonicalname,
             }
 	    if (err == 0)
 	    {
-		  ret->resolved = TRUE;
+	    	ret->resolved = TRUE;
 	    }
 	} else
 #endif
@@ -727,7 +743,7 @@ void sk_getaddr(SockAddr addr, char *buf, int buflen)
 	int err = 0;
 	if (p_WSAAddressToStringA) {
 	    DWORD dwbuflen = buflen;
-		err = p_WSAAddressToStringA(step.ai->ai_addr, (DWORD)step.ai->ai_addrlen,
+	    err = p_WSAAddressToStringA(step.ai->ai_addr, (DWORD)step.ai->ai_addrlen,
 					NULL, buf, &dwbuflen);
 	} else
 	    err = -1;

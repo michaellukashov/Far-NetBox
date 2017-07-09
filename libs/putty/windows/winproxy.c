@@ -70,10 +70,10 @@ static void sk_localproxy_close (Socket s)
 {
     Local_Proxy_Socket ps = (Local_Proxy_Socket) s;
 
-    #ifdef MPEXT
+#ifdef MPEXT
     // WinSCP core uses do_select as signalization of connection up/down
     do_select(ps->plug, INVALID_SOCKET, 0);
-    #endif
+#endif
 
     handle_free(ps->to_cmd_h);
     handle_free(ps->from_cmd_h);

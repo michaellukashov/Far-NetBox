@@ -308,9 +308,9 @@ struct X11Display *x11_setup_display(const char *display, Conf *conf)
 	     * socket */
 	    const struct plug_function_table *dummy = &dummy_plug;
 	    Socket s = putty_sk_new(sk_addr_dup(ux), 0, 0, 0, 0, 0, (Plug)&dummy,
-	    #ifdef MPEXT
+	#ifdef MPEXT
 	    0, 0
-	    #endif
+	#endif
 	    );
 	    err = sk_socket_error(s);
 	    sk_close(s);
@@ -933,10 +933,10 @@ int x11_send(struct X11Connection *xconn, char *data, int len)
          * auth data.
 	 */
         socketdatalen = 0;             /* placate compiler warning */
-        #ifdef MPEXT
+#ifdef MPEXT
         // placate compiler warning
         socketdatalen = 0;
-        #endif
+#endif
         socketdata = sk_getxdmdata(xconn->s, &socketdatalen);
         if (socketdata && socketdatalen==6) {
             sprintf(new_peer_addr, "%d.%d.%d.%d", socketdata[0],

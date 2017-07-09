@@ -631,11 +631,11 @@ void handle_got_event(HANDLE event)
 	 * an event notification here for a handle which is already
 	 * deceased. In that situation we simply do nothing.
 	 */
-    #ifdef MPEXT
+#ifdef MPEXT
     return 0;
-    #else
+#else
 	return;
-    #endif
+#endif
     }
 
     if (h->u.g.moribund) {
@@ -654,11 +654,11 @@ void handle_got_event(HANDLE event)
 	    h->u.g.busy = TRUE;
 	    SetEvent(h->u.g.ev_from_main);
 	}
-    #ifdef MPEXT
+#ifdef MPEXT
     return 0;
-    #else
+#else
 	return;
-    #endif
+#endif
     }
 
     switch (h->type) {
@@ -680,11 +680,11 @@ void handle_got_event(HANDLE event)
 	    backlog = h->u.i.gotdata(h, h->u.i.buffer, h->u.i.len);
 	    handle_throttle(&h->u.i, backlog);
 	}
-    #ifdef MPEXT
+#ifdef MPEXT
         return 1;
-    #else
+#else
         break;
-    #endif
+#endif
 
       case HT_OUTPUT:
 	h->u.o.busy = FALSE;
@@ -707,20 +707,20 @@ void handle_got_event(HANDLE event)
 	    h->u.o.sentdata(h, bufchain_size(&h->u.o.queued_data));
 	    handle_try_output(&h->u.o);
 	}
-    #ifdef MPEXT
+#ifdef MPEXT
         return 0;
-    #else
+#else
         break;
-    #endif
+#endif
 
       case HT_FOREIGN:
         /* Just call the callback. */
         h->u.f.callback(h->u.f.ctx);
-    #ifdef MPEXT
+#ifdef MPEXT
         return 0;
-    #else
+#else
         break;
-    #endif
+#endif
     }
 #ifdef MPEXT
     return 0;
