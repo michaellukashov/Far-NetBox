@@ -80,7 +80,7 @@ public:
     const UnicodeString & ANewName) override;
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName) override;
-  virtual TStrings * GetFixedPaths() const;
+  virtual TStrings * GetFixedPaths() const override;
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable) override;
   virtual const TSessionInfo & GetSessionInfo() const override;
