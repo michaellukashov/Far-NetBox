@@ -1223,7 +1223,7 @@ Bignum modmul(Bignum p, Bignum q, Bignum mod)
     for (j = 0; j < mlen; j++)
 	m[j] = mod[mod[0] - j];
 
-		pqlen = (int)(p[0] > q[0] ? p[0] : q[0]);
+    pqlen = (int)(p[0] > q[0] ? p[0] : q[0]);
 
     /*
      * Make sure that we're allowing enough space. The shifting below
@@ -1724,8 +1724,7 @@ Bignum bigmuladd(Bignum a, Bignum b, Bignum addend)
 {
     int alen = (int)a[0], blen = (int)b[0];
     int mlen = (alen > blen ? alen : blen);
-    int rlen;
-    int i, maxspot;
+    int rlen, i, maxspot;
     int wslen;
     BignumInt *workspace;
     Bignum ret;
@@ -1947,7 +1946,7 @@ void diagbn(char *prefix, Bignum md)
     nibbles = (3 + bignum_bitcount(md)) / 4;
     if (nibbles < 1)
 	nibbles = 1;
-		morenibbles = (int)(4 * md[0] - nibbles);
+    morenibbles = (int)(4 * md[0] - nibbles);
     for (i = 0; i < morenibbles; i++)
 	debug(("-"));
     for (i = nibbles; i--;)
@@ -1992,7 +1991,7 @@ Bignum biggcd(Bignum av, Bignum bv)
     Bignum b = copybn(bv);
 
     while (bignum_cmp(b, Zero) != 0) {
-  Bignum t = newbn((int)b[0]);
+	Bignum t = newbn((int)b[0]);
 	bigdivmod(a, b, t, NULL);
 	while (t[0] > 1 && t[t[0]] == 0)
 	    t[0]--;
@@ -2034,7 +2033,7 @@ Bignum modinv(Bignum number, Bignum modulus)
             return NULL;
         }
 
-				t = newbn((int)b[0]);
+        t = newbn((int)b[0]);
 	q = newbn((int)a[0]);
 	bigdivmod(a, b, t, q);
 	while (t[0] > 1 && t[t[0]] == 0)

@@ -57,7 +57,7 @@ void run_toplevel_callbacks(void)
     MPEXT_PUTTY_SECTION_ENTER;
     if (cbhead) {
         struct callback *cb = cbhead;
-        #ifdef MPEXT
+#ifdef MPEXT
         toplevel_callback_fn_t fn = cb->fn;
         void * ctx = cb->ctx;
         cbhead = cb->next;
@@ -67,7 +67,7 @@ void run_toplevel_callbacks(void)
         sfree(cb);
         MPEXT_PUTTY_SECTION_LEAVE;
         fn(ctx);
-        #else
+#else
         /*
          * Careful ordering here. We call the function _before_
          * advancing cbhead (though, of course, we must free cb
@@ -81,14 +81,14 @@ void run_toplevel_callbacks(void)
         sfree(cb);
         if (!cbhead)
             cbtail = NULL;
-        #endif
+#endif
     }
-    #ifdef MPEXT
+#ifdef MPEXT
     else
     {
       MPEXT_PUTTY_SECTION_LEAVE;
     }
-    #endif
+#endif
 }
 
 int toplevel_callback_pending(void)

@@ -322,10 +322,10 @@ void random_unref(void)
     MPEXT_PUTTY_SECTION_ENTER;
     assert(random_active > 0);
     if (random_active == 1) {
-        #ifndef MPEXT
+#ifndef MPEXT
         // We control this on our own in PuttyFinalize()
         random_save_seed();
-        #endif
+#endif
         expire_timer_context(&pool);
     }
     random_active--;

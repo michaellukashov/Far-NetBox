@@ -29,7 +29,7 @@ static void hmacmd5_chap(const unsigned char *challenge, int challen,
 	MD5Simple(passwd, (unsigned int)pwlen, md5buf);
 	hmacmd5_key(hmacmd5_ctx, md5buf, 16);
     } else {
-  hmacmd5_key(hmacmd5_ctx, passwd, (int)pwlen);
+        hmacmd5_key(hmacmd5_ctx, passwd, (int)pwlen);
     }
 
     hmacmd5_do_hmac(hmacmd5_ctx, challenge, challen, response);

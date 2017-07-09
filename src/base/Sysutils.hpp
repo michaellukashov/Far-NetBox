@@ -523,6 +523,100 @@ public:
   std::function<void()> CONCATENATE(null_func_, __LINE__); \
   NullFunc ANONYMOUS_VARIABLE(null_) = CONCATENATE(null_func_, __LINE__) = [&]() /* lambda body here */
 
+#if (defined _MSC_VER && _MSC_VER > 1900)
+
+#define NONCOPYABLE(Type) \
+Type(const Type&) = delete; \
+Type& operator=(const Type&) = delete;
+
+#define MOVABLE(Type) \
+Type(Type&&) = default; \
+Type& operator=(Type&&) = default;
+
+template<typename T, T Default = T{}>
+class movable
+{
+public:
+  movable(T Value): m_Value(Value){}
+  auto& operator=(T Value) { m_Value = Value; return *this; }
+
+  movable(const movable& rhs) { *this = rhs; }
+  auto& operator=(const movable& rhs) { m_Value = rhs.m_Value; return *this; }
+
+  movable(movable&& rhs) noexcept { *this = std::move(rhs); }
+  auto& operator=(movable&& rhs) noexcept { m_Value = rhs.m_Value; rhs.m_Value = Default; return *this; }
+
+  auto& operator*() const { return m_Value; }
+  auto& operator*() { return m_Value; }
+
+private:
+  T m_Value;
+};
+
+namespace detail
+{
+  struct nop_deleter { void operator()(void*) const {} };
+}
+
+template<class T>
+using movable_ptr = std::unique_ptr<T, detail::nop_deleter>;
+
+namespace scope_exit
+{
+  class uncaught_exceptions_counter
+  {
+  public:
+    bool is_new() const noexcept { return std::uncaught_exceptions() > m_Count; }
+    int m_Count{ std::uncaught_exceptions() }; // int... "a camel is a horse designed by a committee" :(
+  };
+
+  enum class scope_type
+  {
+    exit,
+    fail,
+
+    success
+  };
+
+  template<typename F, scope_type Type>
+  class scope_guard
+  {
+  public:
+    NONCOPYABLE(scope_guard);
+    MOVABLE(scope_guard);
+
+    explicit scope_guard(F&& f): m_f(std::forward<F>(f)) {}
+
+    ~scope_guard() noexcept(Type == scope_type::fail)
+    {
+      if (*m_Active && (Type == scope_type::exit || (Type == scope_type::fail) == m_Ec.is_new()))
+        m_f();
+    }
+
+  private:
+    F m_f;
+    movable<bool> m_Active{ true };
+    uncaught_exceptions_counter m_Ec;
+  };
+
+  template<scope_type Type>
+  class make_scope_guard
+  {
+  public:
+    template<typename F>
+    auto operator << (F&& f) { return scope_guard<F, Type>(std::forward<F>(f)); }
+  };
+}
+
+#define DETAIL_SCOPE_IMPL(type) \
+const auto ANONYMOUS_VARIABLE(scope_##type##_guard) = scope_exit::make_scope_guard<scope_exit::scope_type::type>() << [&]() /* lambda body here */
+
+#undef SCOPE_EXIT
+#define SCOPE_EXIT DETAIL_SCOPE_IMPL(exit)
+#define SCOPE_FAIL DETAIL_SCOPE_IMPL(fail) noexcept
+#define SCOPE_SUCCESS DETAIL_SCOPE_IMPL(success)
+
+#endif // #if (defined _MSC_VER && _MSC_VER > 1900)
 
 void ShowExtendedException(Exception * E);
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
