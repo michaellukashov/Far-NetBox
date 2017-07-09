@@ -81,6 +81,8 @@ inline TObject * as_object(void * p) { return static_cast<TObject *>(p); }
 inline const TObject * as_object(const void * p) { return static_cast<const TObject *>(p); }
 template<class T> inline T * get_as(void * p) { return dyn_cast<T>(as_object(p)); }
 template<class T> inline const T * get_as(const void * p) { return dyn_cast<T>(as_object(p)); }
+template <class T>
+inline TObject * ToObj(const T & a) { return reinterpret_cast<TObject *>(static_cast<size_t>(a)); }
 
 struct TPoint
 {

@@ -65,7 +65,7 @@ void TWinSCPPlugin::GetPluginInfoEx(DWORD & Flags,
   if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
-      reinterpret_cast<TObject *>(static_cast<size_t>(FarConfiguration->GetDisksMenuHotKey())));
+      ToObj(FarConfiguration->GetDisksMenuHotKey()));
   }
   if (FarConfiguration->GetPluginsMenu())
   {
@@ -659,7 +659,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       } \
       if (NeverAskAgainPending && CANNEVERASK) \
       { \
-        ButtonLabels->SetObj(ButtonLabels->GetCount() - 1, reinterpret_cast<TObject *>((size_t)true)); \
+        ButtonLabels->SetObj(ButtonLabels->GetCount() - 1, ToObj(true)); \
         NeverAskAgainPending = false; \
       } \
     }

@@ -628,7 +628,7 @@ TSessionInfo::TSessionInfo() :
 
 TFileSystemInfo::TFileSystemInfo()
 {
-  ::ZeroMemory(&IsCapable, sizeof(IsCapable));
+  ClearArray(IsCapable);
 }
 
 static FILE * OpenFile(UnicodeString LogFileName, TDateTime Started, TSessionData * SessionData, bool Append, UnicodeString & ANewFileName)
