@@ -131,7 +131,7 @@ void write_setting_s(void *handle, const char *key, const char *value)
 {
     if (handle)
 	RegSetValueEx((HKEY) handle, key, 0, REG_SZ, (CONST BYTE *)value,
-					1 + (int)strlen(value));
+		      1 + (int)strlen(value));
 }
 
 void write_setting_i(void *handle, const char *key, int value)
@@ -465,7 +465,7 @@ int verify_host_key(const char *hostname, int port,
 	     */
 	    if (!strcmp(otherstr, key))
 		RegSetValueEx(rkey, regname, 0, REG_SZ, (BYTE *)otherstr,
-						(int)strlen(otherstr) + 1);
+			      (int)strlen(otherstr) + 1);
 	}
 
         sfree(oldstyle);

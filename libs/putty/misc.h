@@ -7,6 +7,7 @@
 
 #include "puttymem.h"
 
+#include <stdint.h>		       /* for int64_t * */
 #include <stdio.h>		       /* for FILE * */
 #include <stdarg.h>		       /* for va_list */
 #include <time.h>                      /* for struct tm */
@@ -22,7 +23,7 @@ typedef struct Filename Filename;
 typedef struct FontSpec FontSpec;
 
 #ifdef MPEXT
-__int64 parse_blocksize64(const char *bs);
+int64_t parse_blocksize64(const char *bs);
 #endif
 unsigned long parse_blocksize(const char *bs);
 char ctrlparse(char *s, char **next);

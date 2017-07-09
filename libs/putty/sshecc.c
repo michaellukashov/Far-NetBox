@@ -160,14 +160,14 @@ static struct ec_curve *ec_p256(void)
     static struct ec_curve curve = { 0 };
     static unsigned char initialised = 0;
 
-    #ifdef MPEXT
+#ifdef MPEXT
     if (ec_curve_cleanup)
     {
         if (initialised) finalize_wcurve(&curve);
         initialised = 0;
         return NULL;
     }
-    #endif
+#endif
 
     if (!initialised)
     {
@@ -223,14 +223,14 @@ static struct ec_curve *ec_p384(void)
     static struct ec_curve curve = { 0 };
     static unsigned char initialised = 0;
 
-    #ifdef MPEXT
+#ifdef MPEXT
     if (ec_curve_cleanup)
     {
         if (initialised) finalize_wcurve(&curve);
         initialised = 0;
         return NULL;
     }
-    #endif
+#endif
 
     if (!initialised)
     {
@@ -298,14 +298,14 @@ static struct ec_curve *ec_p521(void)
     static struct ec_curve curve = { 0 };
     static unsigned char initialised = 0;
 
-    #ifdef MPEXT
+#ifdef MPEXT
     if (ec_curve_cleanup)
     {
         if (initialised) finalize_wcurve(&curve);
         initialised = 0;
         return NULL;
     }
-    #endif
+#endif
 
     if (!initialised)
     {
@@ -391,14 +391,14 @@ static struct ec_curve *ec_curve25519(void)
     static struct ec_curve curve = { 0 };
     static unsigned char initialised = 0;
 
-    #ifdef MPEXT
+#ifdef MPEXT
     if (ec_curve_cleanup)
     {
         if (initialised) finalize_mcurve(&curve);
         initialised = 0;
         return NULL;
     }
-    #endif
+#endif
 
     if (!initialised)
     {
@@ -445,14 +445,14 @@ static struct ec_curve *ec_ed25519(void)
     static struct ec_curve curve = { 0 };
     static unsigned char initialised = 0;
 
-    #ifdef MPEXT
+#ifdef MPEXT
     if (ec_curve_cleanup)
     {
         if (initialised) finalize_ecurve(&curve);
         initialised = 0;
         return NULL;
     }
-    #endif
+#endif
 
     if (!initialised)
     {
