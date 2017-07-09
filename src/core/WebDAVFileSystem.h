@@ -133,7 +133,7 @@ protected:
     void * UserData, const ne_uri * Uri, const ne_prop_result_set_s * Results);
   void ParsePropResultSet(TRemoteFile * AFile,
     const UnicodeString & APath, const ne_prop_result_set_s * Results);
-  void TryOpenDirectory(const UnicodeString & ADirectory);
+  void TryOpenDirectory(UnicodeString ADirectory);
   static int NeonBodyReader(void * UserData, const char * Buf, size_t Len);
   static void NeonPreSend(ne_request * Request, void * UserData, ne_buffer * Header);
   static int NeonBodyAccepter(void * UserData, ne_request * Request, const ne_status * Status);
@@ -210,7 +210,7 @@ private:
   int RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
   int CopyFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName);
   bool IsValidRedirect(intptr_t NeonStatus, UnicodeString & APath) const;
-  UnicodeString DirectoryPath(const UnicodeString & APath) const;
+  UnicodeString DirectoryPath(UnicodeString APath) const;
   UnicodeString FilePath(const TRemoteFile * AFile) const;
   struct ne_lock * FindLock(const RawByteString & APath) const;
   void DiscardLock(const RawByteString & APath);

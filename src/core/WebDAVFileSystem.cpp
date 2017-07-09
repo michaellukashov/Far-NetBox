@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
+#include <WinCrypt.h>
 
 #ifndef NE_LFS
 #define NE_LFS
@@ -469,8 +470,6 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
     NE_DBG_SSL |
     FLAGMASK(GetConfiguration()->GetLogSensitive(), NE_DBG_HTTPPLAIN);
 
-  ne_set_read_timeout(FNeonSession, (int)Data->GetTimeout());
-  ne_set_connect_timeout(FNeonSession, (int)Data->GetTimeout());
   NeonAddAuthentication(Ssl);
 
   if (Ssl)
@@ -830,7 +829,7 @@ void TWebDAVFileSystem::HomeDirectory()
   ChangeDirectory(L"/");
 }
 
-UnicodeString TWebDAVFileSystem::DirectoryPath(const UnicodeString & APath) const
+UnicodeString TWebDAVFileSystem::DirectoryPath(UnicodeString APath) const
 {
   if (FHasTrailingSlash)
   {
@@ -850,13 +849,13 @@ UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile * AFile) const
   return Result;
 }
 
-void TWebDAVFileSystem::TryOpenDirectory(const UnicodeString & ADirectory)
+void TWebDAVFileSystem::TryOpenDirectory(UnicodeString ADirectory)
 {
-  UnicodeString Directory = DirectoryPath(ADirectory);
-  FTerminal->LogEvent(FORMAT(L"Trying to open directory \"%s\".", Directory.c_str()));
-  TRemoteFile * File;
-  ReadFile(Directory, File);
-  delete File;
+  ADirectory = DirectoryPath(ADirectory);
+  FTerminal->LogEvent(FORMAT(L"Trying to open directory \"%s\".", ADirectory.c_str()));
+  TRemoteFile * File = nullptr;
+  ReadFile(ADirectory, File);
+  SAFE_DESTROY(File);
 }
 
 void TWebDAVFileSystem::AnnounceFileListOperation()
@@ -888,7 +887,8 @@ CUSTOM_MEM_ALLOCATION_IMPL
   TRemoteFileList * FileList;
 };
 
-int TWebDAVFileSystem::ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList * AFileList)
+int TWebDAVFileSystem::ReadDirectoryInternal(
+  const UnicodeString & APath, TRemoteFileList * AFileList)
 {
   TReadFileData Data;
   Data.FileSystem = this;
