@@ -81,7 +81,7 @@ inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t
 inline static void WriteTraceBuffer(const char * Buffer, size_t Length)
 {
   DWORD Written;
-  WriteFile(TraceFile, Buffer, Length, &Written, nullptr);
+  ::WriteFile(TraceFile, Buffer, (DWORD)Length, &Written, nullptr);
 }
 
 inline static void DoDirectTrace(DWORD Thread, const wchar_t * SourceFile,

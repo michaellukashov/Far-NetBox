@@ -492,7 +492,7 @@ double StrToFloatDef(const UnicodeString & Value, double DefVal)
 UnicodeString FormatFloat(const UnicodeString & /*Format*/, double Value)
 {
   UnicodeString Result(20, L'\0');
-  swprintf(&Result[1], L"%.2f", Value);
+  swprintf_s(&Result[1], Result.Length(), L"%.2f", Value);
   return Result.c_str();
 }
 
