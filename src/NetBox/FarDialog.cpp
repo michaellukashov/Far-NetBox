@@ -597,7 +597,7 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD * Event)
 
   if (!Handled)
   {
-    Result = DefaultDialogProc(DN_MOUSEEVENT, 0, reinterpret_cast<intptr_t>(Event)) != 0;
+    Result = DefaultDialogProc(DN_MOUSEEVENT, 0, ToInt(Event)) != 0;
   }
 
   return Result;
@@ -2638,7 +2638,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
       else
       {
         long ShiftTab = KEY_SHIFTTAB;
-        SendDialogMessage(DM_KEY, 1, reinterpret_cast<intptr_t>(&ShiftTab));
+        SendDialogMessage(DM_KEY, 1, ToInt(&ShiftTab));
       }
     }
     else if ((Param == KEY_DOWN) || (Param == KEY_RIGHT))
