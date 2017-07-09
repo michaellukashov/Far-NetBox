@@ -1168,6 +1168,7 @@ add_library(apr STATIC
   ../../libs/apr/time/win32/timestr.c
 #  ../../libs/apr/user/win32/groupinfo.c
   ../../libs/apr/user/win32/userinfo.c
+  ../../libs/apr/encoding/apr_escape.c
 )
 
 target_compile_options(apr PRIVATE
