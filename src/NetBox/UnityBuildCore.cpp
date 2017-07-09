@@ -30,6 +30,7 @@
 #include "../core/Queue.cpp"
 #include "../core/SecureShell.cpp"
 #include "../core/SessionInfo.cpp"
+#include "../core/Script.cpp"
 #include "../core/CoreMain.cpp"
 #include "../core/FileMasks.cpp"
 #include "../core/CopyParam.cpp"

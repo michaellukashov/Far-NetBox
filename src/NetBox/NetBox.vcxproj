@@ -260,6 +260,7 @@
     <ClCompile Include="..\core\SecureShell.cpp" />
     <ClCompile Include="..\core\SessionData.cpp" />
     <ClCompile Include="..\core\SessionInfo.cpp" />
+    <ClCompile Include="..\core\Script.cpp" />
     <ClCompile Include="..\core\SftpFileSystem.cpp" />
     <ClCompile Include="..\core\Terminal.cpp" />
     <ClCompile Include="..\core\WebDAVFileSystem.cpp" />

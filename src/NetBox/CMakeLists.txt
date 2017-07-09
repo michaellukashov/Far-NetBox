@@ -1339,6 +1339,7 @@ set(NETBOX_SOURCES
   ../core/Queue.cpp
   ../core/SecureShell.cpp
   ../core/SessionInfo.cpp
+  ../core/Script.cpp
   ../core/CoreMain.cpp
   ../core/FileMasks.cpp
   ../core/CopyParam.cpp

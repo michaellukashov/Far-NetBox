@@ -11,9 +11,6 @@
 const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
 const int TransferModeNamesCount = _countof(TransferModeNames);
 
-//TODO: move to Script
-const wchar_t * ToggleNames[] = { L"off", L"on" };
-
 TCopyParamType::TCopyParamType(TObjectClassId Kind) :
   TObject(Kind)
 {
