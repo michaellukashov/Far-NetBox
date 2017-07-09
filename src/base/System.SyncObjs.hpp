@@ -1,6 +1,7 @@
 #pragma once
 
-#include <nbglobals.h>
+#include <headers.hpp>
+
 
 class TCriticalSection
 {

@@ -204,6 +204,10 @@ public:
   }
 };
 
+extern int RandSeed;
+extern int random(int range);
+extern void Randomize();
+
 void RaiseLastOSError(DWORD LastError = 0);
 //void ShowExtendedException(Exception * E);
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
@@ -426,10 +430,6 @@ public:
 };
 
 UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath);
-
-extern int RandSeed;
-extern int random(int range);
-extern void Randomize();
 
 TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears = 1);
 TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths = 1);

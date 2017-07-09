@@ -50,7 +50,6 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
   return Result;
 }
 
-int RandSeed = 0;
 const TDayTable MonthDays[] =
 {
   {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
@@ -136,6 +135,19 @@ void RaiseLastOSError(DWORD LastError)
   }
   throw EOSError(ErrorMsg, LastError);
 }
+
+int RandSeed = 0;
+
+int random(int range)
+{
+  return static_cast<int>(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
+}
+
+void Randomize()
+{
+  srand(static_cast<uint32_t>(time(nullptr)));
+}
+
 
 namespace Sysutils {
 
@@ -1537,16 +1549,6 @@ UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath)
     Result.Delete(1, 1);
   }
   return Result;
-}
-
-int random(int range)
-{
-  return static_cast<int>(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
-}
-
-void Randomize()
-{
-  srand(static_cast<uint32_t>(time(nullptr)));
 }
 
 static void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonths = 1)

@@ -1,4 +1,7 @@
-#include <System.SyncObjs.hpp>
+#include <vcl.h>
+#pragma hdrstop
+
+#include "System.SyncObjs.hpp"
 
 // TCriticalSection
 
