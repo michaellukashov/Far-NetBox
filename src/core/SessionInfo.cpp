@@ -13,6 +13,8 @@
 
 #include "SessionInfo.h"
 #include "TextsCore.h"
+#include "CoreMain.h"
+#include "Script.h"
 
 static UnicodeString DoXmlEscape(const UnicodeString & AStr, bool NewLine)
 {
@@ -71,6 +73,10 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
   return DoXmlEscape(Str, true);
 }
 
+
+#if 0
+#pragma warn -inl
+#endif // #if 0
 class TSessionActionRecord : public TObject
 {
 public:
@@ -245,7 +251,7 @@ public:
     Parameter(L"command", Command);
   }
 
-  void AddOutput(const UnicodeString & Output, bool StdError)
+  void AddOutput(UnicodeString Output, bool StdError)
   {
     const wchar_t * Name = (StdError ? L"erroroutput" : L"output");
     intptr_t Index = FNames->IndexOf(Name);
@@ -348,6 +354,10 @@ private:
   TRemoteFileList * FFileList;
   TRemoteFile * FFile;
 };
+#if 0
+#pragma warn .inl
+#endif // #if 0
+
 
 TSessionAction::TSessionAction(TActionLog * Log, TLogAction Action)
 {
@@ -621,7 +631,7 @@ TFileSystemInfo::TFileSystemInfo()
   ::ZeroMemory(&IsCapable, sizeof(IsCapable));
 }
 
-static FILE * OpenFile(const UnicodeString & LogFileName, TDateTime Started, TSessionData * SessionData, bool Append, UnicodeString & ANewFileName)
+static FILE * OpenFile(UnicodeString LogFileName, TDateTime Started, TSessionData * SessionData, bool Append, UnicodeString & ANewFileName)
 {
   UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
   FILE * Result = _fsopen(::W2MB(ApiPath(NewFileName).c_str()).c_str(),
@@ -639,7 +649,6 @@ static FILE * OpenFile(const UnicodeString & LogFileName, TDateTime Started, TSe
 }
 
 const wchar_t * LogLineMarks = L"<>!.*";
-
 TSessionLog::TSessionLog(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
   TConfiguration * Configuration) :
   FConfiguration(Configuration),
@@ -700,6 +709,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & ALine)
     }}
     catch (...)
     {
+      // TODO: log error
     }
   }
 }
@@ -756,10 +766,9 @@ void TSessionLog::CheckSize(int64_t Addition)
   }
 }
 
-void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString & ALine,
+void TSessionLog::DoAdd(TLogLineType AType, UnicodeString Line,
   TDoAddLogEvent Event)
 {
-  UnicodeString Line = ALine;
   UnicodeString Prefix;
 
   if (!GetName().IsEmpty())
@@ -826,7 +835,7 @@ void TSessionLog::ReflectSettings()
 
   // if logging to file was turned off or log file was changed -> close current log file
   if ((FFile != nullptr) &&
-    (!LogToFile() || (FCurrentLogFileName != FConfiguration->GetLogFileName())))
+      (!LogToFile() || (FCurrentLogFileName != FConfiguration->GetLogFileName())))
   {
     CloseLogFile();
   }
@@ -1007,7 +1016,6 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       DebugAssert(Storage.get());
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
     }
-    UnicodeString LogStr;
 
 #if 0
     typedef BOOL (WINAPI * TGetUserNameEx)(EXTENDED_NAME_FORMAT NameFormat, LPWSTR lpNameBuffer, PULONG nSize);
@@ -1020,6 +1028,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     {
       wcscpy_s(UserName, UNLEN, L"<Failed to retrieve username>");
     }
+#endif // #if 0
+    UnicodeString LogStr;
     if (FConfiguration->GetLogProtocol() <= 0)
     {
       LogStr = L"Normal";
@@ -1032,6 +1042,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     {
       LogStr = L"Debug 2";
     }
+#if 0
     if (FConfiguration->GetLogSensitive())
     {
       LogStr += L", Logging passwords";
