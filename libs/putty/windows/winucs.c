@@ -5,7 +5,9 @@
 #include <assert.h>
 
 #include "putty.h"
-//#include "terminal.h"
+#if 0
+#include "terminal.h"
+#endif // #if 0
 #include "misc.h"
 
 /* Character conversion arrays; they are usually taken from windows,

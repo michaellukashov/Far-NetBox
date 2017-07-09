@@ -848,7 +848,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     Button->SetBottom(Button->GetTop());
     Button->SetResult(Index + 1);
     Button->SetCenterGroup(true);
-    Button->SetTag(reinterpret_cast<intptr_t>(Buttons->GetObj(Index)));
+    Button->SetTag(ToInt(Buttons->GetObj(Index)));
     if (PrevButton != nullptr)
     {
       Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -1174,9 +1174,9 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
     Result = MenuItems[ResultItem].UserData;
     if (Selected >= 0)
     {
-      Items->SetObj(Selected, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObj(Selected)) & ~MIF_SELECTED));
+      Items->SetObj(Selected, ToObj(ToInt(Items->GetObj(Selected)) & ~MIF_SELECTED));
     }
-    Items->SetObj(Result, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObj(Result)) | MIF_SELECTED));
+    Items->SetObj(Result, ToObj(ToInt(Items->GetObj(Result)) | MIF_SELECTED));
   }
   else
   {
@@ -1789,7 +1789,7 @@ TCustomFarFileSystem::TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin
   FClosed(false),
   FOpenPanelInfoValid(false)
 {
-  ::ZeroMemory(FPanelInfo, sizeof(FPanelInfo));
+  ClearArray(FPanelInfo);
   ClearStruct(FOpenPanelInfo);
 }
 
@@ -2189,7 +2189,7 @@ TObjectList * TCustomFarFileSystem::CreatePanelItemList(
 TFarPanelModes::TFarPanelModes() : TObject(),
   FReferenced(false)
 {
-  ::ZeroMemory(&FPanelModes, sizeof(FPanelModes));
+  ClearArray(FPanelModes);
 }
 
 TFarPanelModes::~TFarPanelModes()
@@ -2826,7 +2826,7 @@ void TFarMenuItems::SetFlag(intptr_t Index, uintptr_t Flag, bool Value)
     {
       F &= ~Flag;
     }
-    SetObj(Index, reinterpret_cast<TObject *>(F));
+    SetObj(Index, ToObj(F));
   }
 }
 

@@ -2063,7 +2063,6 @@ void XMLDocument::DeepCopy(XMLDocument* target)
 	}
 }
 
-
 XMLElement* XMLDocument::NewElement( const char* name )
 {
     XMLElement* ele = CreateUnlinkedNode<XMLElement>( _elementPool );

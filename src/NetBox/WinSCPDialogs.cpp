@@ -1216,7 +1216,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   bool ShowSavePassword = false;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
       (Kind == pkKeybInteractive)) &&
-    (Prompts->GetCount() == 1) && // FLAGSET((intptr_t)Prompts->GetObject(0), pupRemember) &&
+    (Prompts->GetCount() == 1) && // FLAGSET(ToInt(Prompts->GetObject(0)), pupRemember) &&
     !SessionName.IsEmpty())
   //    // StoredCredentialsTried)
   {
@@ -1341,7 +1341,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   {
     GenerateLabel(Prompts->GetString(Index), Truncated);
 
-    FEdits->Add(GenerateEdit(FLAGSET(reinterpret_cast<intptr_t>(Prompts->GetObj(Index)), pupEcho)));
+    FEdits->Add(GenerateEdit(FLAGSET(ToInt(Prompts->GetObj(Index)), pupEcho)));
   }
 }
 
@@ -3703,7 +3703,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     for (intptr_t Index5 = 0; Index5 < CIPHER_COUNT; ++Index5)
     {
       TObject * Obj = as_object(CipherListBox->GetItems()->GetObj(Index5));
-      SessionData->SetCipher(Index5, static_cast<TCipher>(reinterpret_cast<intptr_t>(Obj)));
+      SessionData->SetCipher(Index5, static_cast<TCipher>(ToInt(Obj)));
     }
 
     // KEX tab
@@ -3713,7 +3713,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (intptr_t Index6 = 0; Index6 < KEX_COUNT; ++Index6)
     {
-      SessionData->SetKex(Index6, static_cast<TKex>(reinterpret_cast<intptr_t>(KexListBox->GetItems()->GetObj(Index))));
+      SessionData->SetKex(Index6, static_cast<TKex>(ToInt(KexListBox->GetItems()->GetObj(Index))));
     }
 
     // Authentication tab
@@ -3836,7 +3836,7 @@ intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList *
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
     TObject * Obj = as_object(Items->GetObj(Index));
-    TProxyMethod Method = static_cast<TProxyMethod>(reinterpret_cast<intptr_t>(Obj));
+    TProxyMethod Method = static_cast<TProxyMethod>(ToInt(Obj));
     if (Method == ProxyMethod)
       return Index;
   }
@@ -3849,7 +3849,7 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items
   if (Index >= 0 && Index < Items->GetCount())
   {
     TObject * Obj = as_object(Items->GetObj(Index));
-    Result = static_cast<TProxyMethod>(reinterpret_cast<intptr_t>(Obj));
+    Result = static_cast<TProxyMethod>(ToInt(Obj));
   }
   return Result;
 }

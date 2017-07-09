@@ -1204,7 +1204,7 @@
 
 "CORE_VARIABLE"
 "SSH and SCP code based on PuTTY %s"
-"0.69"
+"0.70"
 "Copyright © 1997-2017 Simon Tatham"
 "http://www.chiark.greenend.org.uk/~sgtatham/putty/"
 "FTP code based on FileZilla"

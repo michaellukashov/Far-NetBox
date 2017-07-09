@@ -171,7 +171,7 @@ int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
       {
         S = UnicodeString(AnsiString(Prompt->prompt));
       }
-      Prompts->AddObject(S, reinterpret_cast<TObject *>(static_cast<size_t>(FLAGMASK(Prompt->echo, pupEcho))));
+      Prompts->AddObject(S, ToObj(FLAGMASK(Prompt->echo, pupEcho)));
       // this fails, when new passwords do not match on change password prompt,
       // and putty retries the prompt
       DebugAssert(Prompt->resultsize == 0);
