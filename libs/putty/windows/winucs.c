@@ -5,10 +5,12 @@
 #include <assert.h>
 
 #include "putty.h"
+
+#ifndef MPEXT
+
 #if 0
 #include "terminal.h"
 #endif // #if 0
-#include "terminal.h"
 #include "misc.h"
 
 /* Character conversion arrays; they are usually taken from windows,
