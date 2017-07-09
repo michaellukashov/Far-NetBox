@@ -38,7 +38,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
     bResume(FALSE), bResumeAppend(FALSE), bType(FALSE)
   {
   }
-  __int64 transfersize, transferleft;
+  int64_t transfersize, transferleft;
   HANDLE localFileHandle;
   BOOL bResume, bResumeAppend, bType;
 };
@@ -88,7 +88,7 @@ public:
   virtual bool UsingUtf8();
   virtual std::string GetTlsVersionStr();
   virtual std::string GetCipherName();
-  bool HandleSize(int code, __int64 & size);
+  bool HandleSize(int code, int64_t & size);
   bool HandleMdtm(int code, t_directory::t_direntry::t_date & date);
   void TransferHandleListError();
 
@@ -163,8 +163,8 @@ protected:
   {
   CUSTOM_MEM_ALLOCATION_IMPL
     CFtpControlSocket * pOwner;
-    __int64 nBytesAvailable;
-    __int64 nBytesTransferred;
+    int64_t nBytesAvailable;
+    int64_t nBytesTransferred;
   };
   static rde::list<t_ActiveList> m_InstanceList[2];
   static CTime m_CurrentTransferTime[2];
@@ -205,7 +205,7 @@ protected:
   bool m_hasClntCmd;
   TFTPServerCapabilities m_serverCapabilities;
   CStringA m_ListFile;
-  __int64 m_ListFileSize;
+  int64_t m_ListFileSize;
   bool m_isFileZilla;
 
   bool m_awaitsReply;

@@ -118,7 +118,7 @@ public:
   CAsyncRequestData();
   virtual ~CAsyncRequestData();
   int nRequestType;
-  __int64 nRequestID; //Unique for every request sent
+  int64_t nRequestID; //Unique for every request sent
   int nRequestResult;
 };
 
@@ -130,8 +130,8 @@ public:
   CString FileName1;
   CString FileName2;
   CString path1,path2;
-  __int64 size1;
-  __int64 size2;
+  int64_t size1;
+  int64_t size2;
   CTime * localtime;
   HANDLE localFileHandle;
   t_directory::t_direntry::t_date remotetime;

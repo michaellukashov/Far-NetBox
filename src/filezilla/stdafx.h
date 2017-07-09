@@ -1,6 +1,6 @@
 #pragma once
 
-#define _int64 __int64
+#define _int64 int64_t
 
 #define MPEXT_NO_ZLIB
 #define MPEXT_NO_GSS
@@ -69,8 +69,8 @@ public:
 struct t_ffam_transferstatus
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-  __int64 bytes;
-  __int64 transfersize;
+  int64_t bytes;
+  int64_t transfersize;
   BOOL bFileTransfer;
 };
 

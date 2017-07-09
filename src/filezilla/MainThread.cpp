@@ -363,12 +363,12 @@ void CMainThread::SendDirectoryListing(t_directory * pDirectoryToSend)
   }
 }
 
-__int64 CMainThread::GetAsyncRequestID() const
+int64_t CMainThread::GetAsyncRequestID() const
 {
   return m_nAsyncRequestID;
 }
 
-__int64 CMainThread::GetNextAsyncRequestID()
+int64_t CMainThread::GetNextAsyncRequestID()
 {
   return ++m_nAsyncRequestID;
 }

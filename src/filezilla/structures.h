@@ -26,7 +26,7 @@ public:
     CString ownergroup; // deprecated, to be replaced with owner/group
     CString owner;
     CString group;
-    __int64 size;
+    int64_t size;
     bool bUnsure; // Set by CFtpControlSocket::FileTransfer when uploads fail after sending STOR/APPE
     bool dir;
     bool bLink;

@@ -1233,7 +1233,7 @@ BOOL CFtpListResult::parseAsEPLF(const char *line, const int linelen, t_director
         dir.size = strntoi64(fact+1, len-1);
       else if (*fact=='m')
       {
-        __int64 rawtime = strntoi64(fact+1, len-1);
+        int64_t rawtime = strntoi64(fact+1, len-1);
         COleDateTime time((time_t)rawtime);
         dir.date.hasdate = TRUE;
         dir.date.hastime = TRUE;
@@ -1623,7 +1623,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   const char *prevstr = 0;
   int prevstrlen = 0;
 
-  __int64 tmp = 0;
+  int64_t tmp = 0;
   while (str && !ParseSize(str, tokenlen, tmp) && !IsNumeric(skipped, skippedlen))
   {
     //Maybe the server has left no space between the group and the size
@@ -3111,7 +3111,7 @@ BOOL CFtpListResult::parseAsWfFtp(const char *line, const int linelen, t_directo
   return TRUE;
 }
 
-bool CFtpListResult::ParseSize(const char* str, int len, __int64 &size) const
+bool CFtpListResult::ParseSize(const char* str, int len, int64_t &size) const
 {
   if (len < 1)
     return false;
@@ -3161,7 +3161,7 @@ bool CFtpListResult::ParseSize(const char* str, int len, __int64 &size) const
     break;
   case 't':
   case 'T':
-    size *= static_cast<__int64>(1) << 40;
+    size *= static_cast<int64_t>(1) << 40;
     break;
   default:
     return false;

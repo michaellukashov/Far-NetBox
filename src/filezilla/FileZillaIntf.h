@@ -201,7 +201,7 @@ public:
     const wchar_t* APath, const wchar_t* ANewPath);
 
   bool FileTransfer(const wchar_t * LocalFile, const wchar_t * RemoteFile,
-    const wchar_t * RemotePath, bool Get, __int64 Size, int Type, void * UserData);
+    const wchar_t * RemotePath, bool Get, int64_t Size, int Type, void * UserData);
 
   virtual const wchar_t * Option(intptr_t OptionID) const = 0;
   virtual intptr_t OptionVal(intptr_t OptionID) const = 0;
@@ -217,7 +217,7 @@ protected:
   virtual bool HandleAsynchRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
-    __int64 Size1, __int64 Size2, time_t LocalTime,
+    int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime1, const TRemoteFileTime & RemoteTime, void * UserData,
     HANDLE & LocalFileHandle,
     int & RequestResult) = 0;
@@ -227,8 +227,8 @@ protected:
     struct TNeedPassRequestData & Data, int & RequestResult) = 0;
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uintptr_t Count) = 0;
-  virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
-    __int64 Bytes, bool FileTransfer) = 0;
+  virtual bool HandleTransferStatus(bool Valid, int64_t TransferSize,
+    int64_t Bytes, bool FileTransfer) = 0;
   virtual bool HandleReply(intptr_t Command, uintptr_t Reply) = 0;
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities) = 0;
   virtual bool CheckError(intptr_t ReturnCode, const wchar_t * Context);

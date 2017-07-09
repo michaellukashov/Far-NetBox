@@ -41,7 +41,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   CString remotefile;
   CServerPath remotepath;
   BOOL get;
-  __int64 size;
+  int64_t size;
   t_server server;
   int nType;
   void * nUserData;
