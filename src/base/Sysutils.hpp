@@ -503,7 +503,7 @@ namespace detail
   class scope_guard
   {
   public:
-    explicit scope_guard(F&& f) : m_f(std::move(f)) {}
+    explicit scope_guard(F && f) : m_f(std::move(f)) {}
     ~scope_guard() { m_f(); }
 
   private:
@@ -530,12 +530,12 @@ public:
   ~NullFunc() { }
 };
 
-#define try__catch (void)0;
-#define try__finally (void)0;
+#define try__catch
+#define try__finally
 
 #define __finally \
   std::function<void()> CONCATENATE(null_func_, __LINE__); \
-  NullFunc ANONYMOUS_VARIABLE(null_) = CONCATENATE(null_func_, __LINE__) = [&]() /* lambda body here */
+  NullFunc ANONYMOUS_VARIABLE(null_) = CONCATENATE(null_func_, __LINE__) = []() /* lambda body here */
 
 
 class TPath : public TObject
