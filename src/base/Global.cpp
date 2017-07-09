@@ -3,38 +3,13 @@
 
 #ifdef _DEBUG
 #include <stdio.h>
-//#include <rdestl/vector.h>
+#include <rdestl/vector.h>
 // TODO: remove src/core dep
 #include <Interface.h> 
 #endif // ifdef _DEBUG
 
 #include <Global.h>
 
-// TCriticalSection
-
-TCriticalSection::TCriticalSection() :
-  FAcquired(0)
-{
-  InitializeCriticalSection(&FSection);
-}
-
-TCriticalSection::~TCriticalSection()
-{
-  DebugAssert(FAcquired == 0);
-  DeleteCriticalSection(&FSection);
-}
-
-void TCriticalSection::Enter() const
-{
-  ::EnterCriticalSection(&FSection);
-  ++FAcquired;
-}
-
-void TCriticalSection::Leave() const
-{
-  --FAcquired;
-  ::LeaveCriticalSection(&FSection);
-}
 
 
 // TGuard
@@ -69,6 +44,52 @@ static HANDLE TraceFile = nullptr;
 BOOL IsTracing = false;
 uintptr_t CallstackTls = CallstackTlsOff;
 TCriticalSection * TracingCriticalSection = nullptr;
+
+bool TracingInMemory = false;
+HANDLE TracingThread = nullptr;
+
+typedef rde::vector<UTF8String> TTracesInMemory;
+typedef rde::vector<TTracesInMemory *> TTracesInMemoryList;
+TTracesInMemory * CurrentTracesInMemory = nullptr;
+TTracesInMemoryList WriteTracesInMemory;
+TTracesInMemoryList ReadTracesInMemory;
+#define TracesInMemorySecond() (GetTickCount() % 1000)
+int CurrentTracesInMemorySecond = -1;
+std::unique_ptr<TCriticalSection> CurrentTracesInMemorySection;
+std::unique_ptr<TCriticalSection> TracesInMemoryListsSection;
+
+#define DirectTrace(MESSAGE) \
+  DoDirectTrace(GetCurrentThreadId(), TEXT(__FILE__), TEXT(__FUNC__), __LINE__, (MESSAGE))
+// Map to DirectTrace(MESSAGE) to enable tracing of in-memory tracing
+#define MemoryTracingTrace(MESSAGE)
+
+inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t * SourceFile,
+  const wchar_t * Func, int Line, const wchar_t * Message)
+{
+  UnicodeString TimeString = DateTimeToString(Time); // TimeString, L"hh:mm:ss.zzz", Time);
+  const wchar_t * Slash = wcsrchr(SourceFile, L'\\');
+  if (Slash != nullptr)
+  {
+    SourceFile = Slash + 1;
+  }
+  UTF8String Buffer =
+    UTF8String(FORMAT(L"[%s] [%.4X] [%s:%d:%s] %s\n",
+      TimeString.c_str(), int(Thread), SourceFile, Line, Func, Message));
+  return Buffer;
+}
+
+inline static void WriteTraceBuffer(const char * Buffer, size_t Length)
+{
+  DWORD Written;
+  WriteFile(TraceFile, Buffer, Length, &Written, nullptr);
+}
+
+inline static void DoDirectTrace(DWORD Thread, const wchar_t * SourceFile,
+  const wchar_t * Func, int Line, const wchar_t * Message)
+{
+  UTF8String Buf = TraceFormat(Now(), Thread, SourceFile, Func, Line, Message);
+  WriteTraceBuffer(Buf.c_str(), Buf.Length());
+}
 
 void SetTraceFile(HANDLE ATraceFile)
 {
