@@ -7398,9 +7398,9 @@ bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
         Configuration->Usage->Inc(L"DownloadTime", CounterTime);
         Configuration->Usage->SetMax(L"MaxDownloadTime", CounterTime);
       }
-#endif // #if 0
       FOperationProgress = nullptr;
       OperationProgress.Stop();
+#endif // #if 0
     };
   }
   __finally
