@@ -2090,14 +2090,15 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
 
   if (!FTerminal->AllowLocalFileTransfer(AFileName, CopyParam, OperationProgress))
   {
-    // FTerminal->LogEvent(FORMAT("File \"%s\" excluded from transfer", RealFileName.c_str()));
     ThrowSkipFileNull();
   }
 
   int64_t Size = 0;
-  // uintptr_t Attrs = 0;
+#if 0
+  uintptr_t Attrs = 0;
+#endif // #if 0
 
-  FTerminal->TerminalOpenLocalFile(AFileName, GENERIC_READ, nullptr, &OpenParams->LocalFileAttrs, // &Attrs,
+  FTerminal->TerminalOpenLocalFile(AFileName, GENERIC_READ, &OpenParams->LocalFileAttrs,
     nullptr, nullptr, nullptr, nullptr, &Size);
 
   OperationProgress->SetFileInProgress();

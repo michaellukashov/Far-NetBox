@@ -1520,13 +1520,13 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
     ThrowSkipFileNull();
   }
 
-  HANDLE File;
+  HANDLE LocalFileHandle;
   int64_t MTime;
   int64_t Size;
   uintptr_t LocalFileAttrs = 0;
 
-  FTerminal->TerminalOpenLocalFile(RealFileName, GENERIC_READ, &File,
-    &LocalFileAttrs, nullptr, nullptr, &MTime, &Size);
+  FTerminal->TerminalOpenLocalFile(RealFileName, GENERIC_READ,
+    &LocalFileAttrs, &LocalFileHandle, nullptr, nullptr, &MTime, &Size);
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
 
@@ -1541,9 +1541,9 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
         // but it crashes code guard
         _close(FD);
       }
-      else if (File != nullptr)
+      else if (LocalFileHandle != nullptr)
       {
-        SAFE_CLOSE_HANDLE(File);
+        SAFE_CLOSE_HANDLE(LocalFileHandle);
       }
     };
     OperationProgress->SetFileInProgress();
@@ -1630,9 +1630,9 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
       FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, RealFileName.c_str()), "",
       [&]()
       {
-        SetFilePointer(File, 0, nullptr, FILE_BEGIN);
+        SetFilePointer(LocalFileHandle, 0, nullptr, FILE_BEGIN);
 
-        FD = _open_osfhandle((intptr_t)File, O_BINARY);
+        FD = _open_osfhandle((intptr_t)LocalFileHandle, O_BINARY);
         if (FD < 0)
         {
           ThrowSkipFileNull();

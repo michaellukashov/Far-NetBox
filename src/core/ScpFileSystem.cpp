@@ -1747,8 +1747,8 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
           {
             int64_t MTime = 0;
             TOverwriteFileParams FileParams;
-            FTerminal->TerminalOpenLocalFile(FileName, GENERIC_READ,
-              nullptr, nullptr, nullptr, &MTime, nullptr,
+            FTerminal->TerminalOpenLocalFile(FileName, GENERIC_READ, nullptr,
+              nullptr, nullptr, &MTime, nullptr,
               &FileParams.SourceSize);
             FileParams.SourceTimestamp = ::UnixToDateTime(MTime,
               FTerminal->GetSessionData()->GetDSTMode());
@@ -1905,7 +1905,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
   int64_t Size;
 
   FTerminal->TerminalOpenLocalFile(AFileName, GENERIC_READ,
-    &LocalFileHandle, &LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
+    &LocalFileAttrs, &LocalFileHandle, nullptr, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
   std::unique_ptr<TSafeHandleStream> Stream(new TSafeHandleStream(LocalFileHandle));
