@@ -1752,7 +1752,7 @@ TCustomFarFileSystem::TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin
   FClosed(false),
   FOpenPluginInfoValid(false)
 {
-  ::ZeroMemory(FPanelInfo, sizeof(FPanelInfo));
+  ClearArray(FPanelInfo);
   ClearStruct(FOpenPluginInfo);
 }
 
@@ -2142,7 +2142,7 @@ TObjectList * TCustomFarFileSystem::CreatePanelItemList(
 TFarPanelModes::TFarPanelModes() : TObject(),
   FReferenced(false)
 {
-  ::ZeroMemory(&FPanelModes, sizeof(FPanelModes));
+  ClearArray(FPanelModes);
 }
 
 TFarPanelModes::~TFarPanelModes()
