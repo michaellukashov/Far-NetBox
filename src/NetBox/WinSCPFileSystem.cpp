@@ -2794,6 +2794,7 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int 
   {
     Result = -1;
   }
+  UpdatePanel();
   return Result;
 }
 
