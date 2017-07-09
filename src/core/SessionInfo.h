@@ -11,8 +11,9 @@ enum TSessionStatus
   ssOpened,
 };
 
-struct TSessionInfo : public TObject
+struct TSessionInfo
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   TSessionInfo();
 
   TDateTime LoginTime;
@@ -52,8 +53,9 @@ enum TFSCapability
   fcCount,
 };
 
-struct TFileSystemInfo : public TObject
+struct TFileSystemInfo
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   TFileSystemInfo();
 
   UnicodeString ProtocolBaseName;
@@ -106,27 +108,11 @@ enum TLogLineType
 
 enum TLogAction
 {
-  laUpload,
-  laDownload,
-  laTouch,
-  laChmod,
-  laMkdir,
-  laRm,
-  laMv,
-  laCall,
-  laLs,
-  laStat,
-  laChecksum,
-  laCwd,
+  laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs,
+  laStat, laChecksum, laCwd
 };
 
-enum TCaptureOutputType
-{
-  cotOutput,
-  cotError,
-  cotExitCode,
-};
-
+enum TCaptureOutputType { cotOutput, cotError, cotExitCode };
 #if 0
 typedef void (__closure *TCaptureOutputEvent)(
   const UnicodeString & Str, TCaptureOutputType OutputType);
@@ -144,8 +130,9 @@ typedef nb::FastDelegate3<void,
 class TSessionActionRecord;
 class TActionLog;
 
-class TSessionAction : public TObject
+class TSessionAction
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TSessionAction)
 public:
   explicit TSessionAction(TActionLog * Log, TLogAction Action);
@@ -278,7 +265,7 @@ void (__closure *f)(TLogLineType Type, const UnicodeString & Line));
 typedef nb::FastDelegate2<void,
   TLogLineType /*Type*/, const UnicodeString & /*Line*/> TDoAddLogEvent;
 
-class TSessionLog // : public TObject
+class TSessionLog
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 friend class TSessionAction;
@@ -306,11 +293,12 @@ public:
 
   bool GetLogging() const { return FLogging; }
   UnicodeString GetName() const { return FName; }
-  bool LogToFile() const;
   UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
+  bool LogToFile() const { return LogToFileProtected(); }
 
 protected:
   void CloseLogFile();
+  bool LogToFileProtected() const;
 
 private:
   TConfiguration * FConfiguration;
@@ -341,12 +329,12 @@ private:
   UnicodeString GetCmdLineLog() const;
   void CheckSize(int64_t Addition);
   UnicodeString LogPartFileName(const UnicodeString & BaseName, intptr_t Index);
+
 public:
   UnicodeString GetLine(intptr_t Index) const;
   TLogLineType GetType(intptr_t Index) const;
   void DeleteUnnecessary();
   void StateChange();
-
 };
 
 class TActionLog : public TObject

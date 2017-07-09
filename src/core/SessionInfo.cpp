@@ -3,7 +3,6 @@
 #pragma hdrstop
 
 #include <stdio.h>
-#include <share.h>
 #include <lmcons.h>
 #define SECURITY_WIN32
 #include <sspi.h>
@@ -839,7 +838,7 @@ void TSessionLog::ReflectSettings()
 
 }
 
-bool TSessionLog::LogToFile() const
+bool TSessionLog::LogToFileProtected() const
 {
   return GetLogging() && FConfiguration->GetLogToFile() && (FParent == nullptr);
 }
