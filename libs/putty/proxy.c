@@ -534,9 +534,9 @@ Socket new_connection(SockAddr addr, const char *hostname,
 				 conf_get_int(conf, CONF_proxy_port),
 				 privport, oobinline,
 				 nodelay, keepalive, (Plug) pplug,
-				 #ifdef MPEXT
+#ifdef MPEXT
 				 conf_get_int(conf, CONF_connect_timeout), conf_get_int(conf, CONF_sndbuf)
-				 #endif
+#endif
 				 );
 	if (sk_socket_error(ret->sub_socket) != NULL)
 	    return (Socket) ret;
@@ -550,9 +550,9 @@ Socket new_connection(SockAddr addr, const char *hostname,
 
     /* no proxy, so just return the direct socket */
     return putty_sk_new(addr, port, privport, oobinline, nodelay, keepalive, plug,
-      #ifdef MPEXT
+#ifdef MPEXT
       conf_get_int(conf, CONF_connect_timeout), conf_get_int(conf, CONF_sndbuf)
-      #endif
+#endif
       );
 }
 
@@ -626,16 +626,16 @@ int proxy_http_negotiate (Proxy_Socket p, int change)
 	password = conf_get_str(p->conf, CONF_proxy_password);
 	if (username[0] || password[0]) {
 	    char *buf, *buf2;
-			size_t i, j, len;
+	    size_t i, j, len;
 	    buf = dupprintf("%s:%s", username, password);
-			len = strlen(buf);
+	    len = strlen(buf);
 	    buf2 = snewn(len * 4 / 3 + 100, char);
 	    sprintf(buf2, "Proxy-Authorization: Basic ");
 	    for (i = 0, j = strlen(buf2); i < len; i += 3, j += 4)
 		base64_encode_atom((unsigned char *)(buf+i),
-					 (int)(len-i > 3 ? 3 : len-i), buf2+j);
+				   (int)(len-i > 3 ? 3 : len-i), buf2+j);
 	    strcpy(buf2+j, "\r\n");
-			sk_write(p->sub_socket, buf2, (int)strlen(buf2));
+	    sk_write(p->sub_socket, buf2, (int)strlen(buf2));
 	    sfree(buf);
 	    sfree(buf2);
 	}
@@ -1481,9 +1481,9 @@ char *format_telnet_command(SockAddr addr, int port, Conf *conf)
 	    else if (strnicmp(fmt + eo, "proxyport", 9) == 0) {
 		int port = conf_get_int(conf, CONF_proxy_port);
                 char pport[50];
-    size_t pplen;
-    sprintf(pport, "%d", port);
-    pplen = strlen(pport);
+		size_t pplen;
+		sprintf(pport, "%d", port);
+		pplen = strlen(pport);
 		ENSURE(pplen);
 		memcpy(ret+retlen, pport, pplen);
 		retlen += pplen;

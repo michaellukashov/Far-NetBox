@@ -10,7 +10,9 @@
 #include <assert.h>
 
 #include "putty.h"
-//#include "terminal.h"
+#if 0
+#include "terminal.h"
+#endif // #if 0
 #include "ldisc.h"
 
 #define ECHOING (ldisc->localecho == FORCE_ON || \
@@ -97,7 +99,9 @@ void *ldisc_create(Conf *conf, Terminal *term,
 
     /* Link ourselves into the backend and the terminal */
     if (term)
-//	term->ldisc = ldisc;
+#if 0
+	term->ldisc = ldisc;
+#endif // #if 0
     if (back)
 	back->provide_ldisc(backhandle, ldisc);
 
@@ -120,7 +124,9 @@ void ldisc_free(void *handle)
     Ldisc ldisc = (Ldisc) handle;
 
     if (ldisc->term)
-//	ldisc->term->ldisc = NULL;
+#if 0
+	ldisc->term->ldisc = NULL;
+#endif // #if 0
     if (ldisc->back)
 	ldisc->back->provide_ldisc(ldisc->backhandle, NULL);
     if (ldisc->buf)
