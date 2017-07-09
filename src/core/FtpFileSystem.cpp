@@ -307,6 +307,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) :
   FBytesAvailable(0),
   FBytesAvailableSupported(false),
   FMVS(false),
+  FVMS(false),
   FFileTransferAny(false)
 {
 }

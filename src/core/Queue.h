@@ -256,7 +256,9 @@ public:
     TInfo() :
       Operation(foNone),
       Side(osLocal),
-      SingleFile(false)
+      SingleFile(false),
+      Primary(false),
+      GroupToken(nullptr)
     {
     }
     TFileOperation Operation;

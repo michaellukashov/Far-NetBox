@@ -2018,7 +2018,9 @@ intptr_t TQueueItemProxy::GetIndex() const
 TTerminalQueueStatus::TTerminalQueueStatus() :
   FList(new TList()),
   FDoneCount(0),
-  FActiveCount(0)
+  FActiveCount(0),
+  FActivePrimaryCount(0),
+  FActiveAndPendingPrimaryCount(0)
 {
   ResetStats();
 }
