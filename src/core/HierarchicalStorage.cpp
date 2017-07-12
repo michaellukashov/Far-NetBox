@@ -1205,7 +1205,7 @@ void __fastcall TCustomIniFileStorage::WriteStringRaw(const UnicodeString Name, 
 void __fastcall TCustomIniFileStorage::DoWriteBinaryData(const UnicodeString & Name,
   const void * Buffer, int Size)
 {
-  DoWriteStringRaw(Name, BytesToHex(RawByteString(static_cast<const char*>(Buffer), Size)));
+  DoWriteStringRaw(Name, BytesToHex(RawByteString(static_cast<const char *>(Buffer), Size)));
 }
 //---------------------------------------------------------------------------
 void __fastcall TCustomIniFileStorage::WriteBinaryData(const UnicodeString Name,

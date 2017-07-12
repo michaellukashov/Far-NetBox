@@ -107,7 +107,7 @@ public:
 
   CMSimpleStringT(const CMSimpleStringT& strSrc);
   CMSimpleStringT(PCXSTR pszSrc);
-  CMSimpleStringT(const XCHAR* pchSrc, int nLength);
+  CMSimpleStringT(const XCHAR *pchSrc, int nLength);
   ~CMSimpleStringT();
 
   __forceinline operator CMSimpleStringT<BaseType>&()
@@ -239,13 +239,13 @@ public:
   template<typename T> friend CMSimpleStringT<T> operator+(const CMSimpleStringT<T>& str1, PCXSTR psz2);
   template<typename T> friend CMSimpleStringT<T> operator+(PCXSTR psz1, const CMSimpleStringT<T>& str2);
 
-  static void __stdcall CopyChars(XCHAR* pchDest, const XCHAR* pchSrc, int nChars);
-  static void __stdcall CopyChars(XCHAR* pchDest, size_t nDestLen, const XCHAR* pchSrc, int nChars);
-  static void __stdcall CopyCharsOverlapped(XCHAR* pchDest, const XCHAR* pchSrc, int nChars);
-  static void __stdcall CopyCharsOverlapped(XCHAR* pchDest, size_t nDestLen, const XCHAR* pchSrc, int nChars);
-  static int  __stdcall StringLength(const char* psz);
-  static int  __stdcall StringLength(const wchar_t* psz);
-  static int  __stdcall StringLengthN(const char* psz, size_t sizeInXChar);
+  static void __stdcall CopyChars(XCHAR *pchDest, const XCHAR *pchSrc, int nChars);
+  static void __stdcall CopyChars(XCHAR *pchDest, size_t nDestLen, const XCHAR *pchSrc, int nChars);
+  static void __stdcall CopyCharsOverlapped(XCHAR *pchDest, const XCHAR *pchSrc, int nChars);
+  static void __stdcall CopyCharsOverlapped(XCHAR *pchDest, size_t nDestLen, const XCHAR *pchSrc, int nChars);
+  static int  __stdcall StringLength(const char *psz);
+  static int  __stdcall StringLength(const wchar_t *psz);
+  static int  __stdcall StringLengthN(const char *psz, size_t sizeInXChar);
   static int  __stdcall StringLengthN(const wchar_t* psz, size_t sizeInXChar);
   static void __stdcall Concatenate(CMSimpleStringT& strResult, PCXSTR psz1, int nLength1, PCXSTR psz2, int nLength2);
 
@@ -274,9 +274,9 @@ class NBChTraitsCRT : public NBChTraitsBase < _CharType >
 {
 public:
 
-  static char* __stdcall CharNext(const char* p)
+  static char * __stdcall CharNext(const char * p)
   {
-    return reinterpret_cast<char*>(_mbsinc(reinterpret_cast<const unsigned char*>(p)));
+    return reinterpret_cast<char *>(_mbsinc(reinterpret_cast<const unsigned char *>(p)));
   }
 
   static int __stdcall IsDigit(char ch)
@@ -291,28 +291,28 @@ public:
 
   static int __stdcall StringCompare(LPCSTR pszA, LPCSTR pszB)
   {
-    return _mbscmp(reinterpret_cast<const unsigned char*>(pszA), reinterpret_cast<const unsigned char*>(pszB));
+    return _mbscmp(reinterpret_cast<const unsigned char *>(pszA), reinterpret_cast<const unsigned char *>(pszB));
   }
 
   static int __stdcall StringCompareIgnore(LPCSTR pszA, LPCSTR pszB)
   {
-    return _mbsicmp(reinterpret_cast<const unsigned char*>(pszA), reinterpret_cast<const unsigned char*>(pszB));
+    return _mbsicmp(reinterpret_cast<const unsigned char *>(pszA), reinterpret_cast<const unsigned char *>(pszB));
   }
 
   static int __stdcall StringCollate(LPCSTR pszA, LPCSTR pszB)
   {
-    return _mbscoll(reinterpret_cast<const unsigned char*>(pszA), reinterpret_cast<const unsigned char*>(pszB));
+    return _mbscoll(reinterpret_cast<const unsigned char *>(pszA), reinterpret_cast<const unsigned char *>(pszB));
   }
 
   static int __stdcall StringCollateIgnore(LPCSTR pszA, LPCSTR pszB)
   {
-    return _mbsicoll(reinterpret_cast<const unsigned char*>(pszA), reinterpret_cast<const unsigned char*>(pszB));
+    return _mbsicoll(reinterpret_cast<const unsigned char *>(pszA), reinterpret_cast<const unsigned char *>(pszB));
   }
 
   static LPCSTR __stdcall StringFindString(LPCSTR pszBlock, LPCSTR pszMatch)
   {
-    return reinterpret_cast<LPCSTR>(_mbsstr(reinterpret_cast<const unsigned char*>(pszBlock),
-      reinterpret_cast<const unsigned char*>(pszMatch)));
+    return reinterpret_cast<LPCSTR>(_mbsstr(reinterpret_cast<const unsigned char *>(pszBlock),
+      reinterpret_cast<const unsigned char *>(pszMatch)));
   }
 
   static LPSTR __stdcall StringFindString(LPSTR pszBlock, LPCSTR pszMatch)
@@ -322,28 +322,28 @@ public:
 
   static LPCSTR __stdcall StringFindChar(LPCSTR pszBlock, char chMatch)
   {
-    return reinterpret_cast<LPCSTR>(_mbschr(reinterpret_cast<const unsigned char*>(pszBlock), (unsigned char)chMatch));
+    return reinterpret_cast<LPCSTR>(_mbschr(reinterpret_cast<const unsigned char *>(pszBlock), (unsigned char)chMatch));
   }
 
   static LPCSTR __stdcall StringFindCharRev(LPCSTR psz, char ch)
   {
-    return reinterpret_cast<LPCSTR>(_mbsrchr(reinterpret_cast<const unsigned char*>(psz), (unsigned char)ch));
+    return reinterpret_cast<LPCSTR>(_mbsrchr(reinterpret_cast<const unsigned char *>(psz), (unsigned char)ch));
   }
 
   static LPCSTR __stdcall StringScanSet(LPCSTR pszBlock, LPCSTR pszMatch)
   {
-    return reinterpret_cast<LPCSTR>(_mbspbrk(reinterpret_cast<const unsigned char*>(pszBlock),
-      reinterpret_cast<const unsigned char*>(pszMatch)));
+    return reinterpret_cast<LPCSTR>(_mbspbrk(reinterpret_cast<const unsigned char *>(pszBlock),
+      reinterpret_cast<const unsigned char *>(pszMatch)));
   }
 
   static int __stdcall StringSpanIncluding(LPCSTR pszBlock, LPCSTR pszSet)
   {
-    return (int)_mbsspn(reinterpret_cast<const unsigned char*>(pszBlock), reinterpret_cast<const unsigned char*>(pszSet));
+    return (int)_mbsspn(reinterpret_cast<const unsigned char *>(pszBlock), reinterpret_cast<const unsigned char *>(pszSet));
   }
 
   static int __stdcall StringSpanExcluding(LPCSTR pszBlock, LPCSTR pszSet)
   {
-    return (int)_mbscspn(reinterpret_cast<const unsigned char*>(pszBlock), reinterpret_cast<const unsigned char*>(pszSet));
+    return (int)_mbscspn(reinterpret_cast<const unsigned char *>(pszBlock), reinterpret_cast<const unsigned char *>(pszSet));
   }
 
   static LPSTR __stdcall StringUppercase(LPSTR psz)
@@ -372,7 +372,7 @@ public:
 
   static LPSTR __stdcall StringReverse(LPSTR psz)
   {
-    return reinterpret_cast<LPSTR>(_mbsrev(reinterpret_cast<unsigned char*>(psz)));
+    return reinterpret_cast<LPSTR>(_mbsrev(reinterpret_cast<unsigned char *>(psz)));
   }
 
   static int __stdcall GetFormattedLength(LPCSTR pszFormat, va_list args)
@@ -469,7 +469,7 @@ public:
     ::OemToCharBuffA(pstrString, pstrString, dwSize);
   }
 
-  static void __stdcall FloodCharacters(char ch, int nLength, char* pch)
+  static void __stdcall FloodCharacters(char ch, int nLength, char * pch)
   {
     // nLength is in XCHARs
     memset(pch, ch, nLength);
@@ -493,10 +493,10 @@ public:
     return 1;
   }
 
-  static int __stdcall GetCharLen(const char* pch)
+  static int __stdcall GetCharLen(const char *pch)
   {
     // returns char length
-    return int(_mbclen(reinterpret_cast<const unsigned char*>(pch)));
+    return int(_mbclen(reinterpret_cast<const unsigned char *>(pch)));
   }
 
   static DWORD __stdcall GetEnvVariable(LPCSTR pszVar, LPSTR pszBuffer, uint32_t dwSize)
@@ -504,7 +504,7 @@ public:
     return ::GetEnvironmentVariableA(pszVar, pszBuffer, (DWORD)dwSize);
   }
 
-  static char* NBCopy(const char *pstrString, size_t size)
+  static char *NBCopy(const char *pstrString, size_t size)
   {
     return nbcore_strndup(pstrString, size);
   }
@@ -725,10 +725,10 @@ public:
     return 1;
   }
 
-  static int __stdcall GetCharLen(const char* pch)
+  static int __stdcall GetCharLen(const char *pch)
   {
     // returns char length
-    return (int)(_mbclen(reinterpret_cast< const unsigned char* >(pch)));
+    return (int)(_mbclen(reinterpret_cast< const unsigned char *>(pch)));
   }
 
   static uint32_t __stdcall GetEnvVariable(LPCWSTR pszVar, LPWSTR pszBuffer, uint32_t dwSize)
@@ -776,18 +776,18 @@ public:
   // Copy constructor
   CMStringT(const CMStringT& strSrc);
 
-  CMStringT(const XCHAR* pszSrc);
-  CMStringT(CMStringDataFormat, const XCHAR* pszFormat, ...);
+  CMStringT(const XCHAR *pszSrc);
+  CMStringT(CMStringDataFormat, const XCHAR *pszFormat, ...);
 
-  CMStringT(const YCHAR* pszSrc);
-  CMStringT(const unsigned char* pszSrc);
+  CMStringT(const YCHAR *pszSrc);
+  CMStringT(const unsigned char *pszSrc);
 
   CMStringT(char ch, int nLength = 1);
   CMStringT(wchar_t ch, int nLength = 1);
 
-  CMStringT(const XCHAR* pch, int nLength);
-  CMStringT(const YCHAR* pch, int nLength);
-  CMStringT(const YCHAR* pch, int nLength, int CodePage);
+  CMStringT(const XCHAR *pch, int nLength);
+  CMStringT(const YCHAR *pch, int nLength);
+  CMStringT(const YCHAR *pch, int nLength, int CodePage);
 
   // Destructor
   ~CMStringT();
@@ -796,7 +796,7 @@ public:
   CMStringT& operator=(const CMStringT& strSrc);
   CMStringT& operator=(PCXSTR pszSrc);
   CMStringT& operator=(PCYSTR pszSrc);
-  CMStringT& operator=(const unsigned char* pszSrc);
+  CMStringT& operator=(const unsigned char *pszSrc);
   CMStringT& operator=(char ch);
   CMStringT& operator=(wchar_t ch);
 

@@ -4848,7 +4848,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
                 throw Exception(FORMAT(L"Unknown public key algorithm \"%s\".", (AlgorithmName)));
               }
 
-              void * Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char*>(PubBlob), PubBlobLen);
+              void *Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char *>(PubBlob), PubBlobLen);
               try__finally
               {
                 SCOPE_EXIT

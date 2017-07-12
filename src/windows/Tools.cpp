@@ -808,7 +808,7 @@ UnicodeString ReadResource(const UnicodeString ResName)
 
   if (GetResource(ResName, Content, Size))
   {
-    Result = UnicodeString(UTF8String(static_cast<char*>(Content), Size));
+    Result = UnicodeString(UTF8String(static_cast<char *>(Content), Size));
   }
 
   return Result;
