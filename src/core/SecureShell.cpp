@@ -1986,13 +1986,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
       }
       LPARAM SelectEvent = WSAMAKESELECTREPLY(EventTypes[Event].Mask, Err);
       select_result(static_cast<WPARAM>(Socket), SelectEvent);
-#if 0
-      {
-        // note that connection was closed definitely,
-        // so "check" is actually not required
-        CheckConnection();
-      }
-#endif // #if 0
+      CheckConnection();
     }
   }
 }
