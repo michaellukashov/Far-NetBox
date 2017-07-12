@@ -349,7 +349,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
   }
 }
 
-int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
+int CAsyncSslSocketLayer::Send(const void * lpBuf, int nBufLen, int nFlags)
 {
   if (m_bUseSSL)
   {
@@ -450,7 +450,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
   }
 }
 
-int CAsyncSslSocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
+int CAsyncSslSocketLayer::Receive(void * lpBuf, int nBufLen, int nFlags)
 {
   if (m_bUseSSL)
   {

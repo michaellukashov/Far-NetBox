@@ -110,7 +110,7 @@ public:
   // MFC allocates CObject (ancestor of CFile) with new, but deallocates with free,
   // what codeguard dislikes, this is fix, not sure if it is necessary for
   // release version, but probably causes no harm
-  /*void operator delete(void* p)
+  /*void operator delete(void * p)
   {
     delete p;
   }*/

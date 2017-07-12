@@ -113,10 +113,10 @@ public:
   BOOL GetSockName(SOCKADDR* lpSockAddr, int* lpSockAddrLen);
 
   // Retrieves a socket option.
-  BOOL GetSockOpt(int nOptionName, void* lpOptionValue, int* lpOptionLen, int nLevel = SOL_SOCKET);
+  BOOL GetSockOpt(int nOptionName, void * lpOptionValue, int* lpOptionLen, int nLevel = SOL_SOCKET);
 
   // Sets a socket option.
-  BOOL SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel = SOL_SOCKET);
+  BOOL SetSockOpt(int nOptionName, const void * lpOptionValue, int nOptionLen, int nLevel = SOL_SOCKET);
 
   // Gets the socket family
   int GetFamily() const;

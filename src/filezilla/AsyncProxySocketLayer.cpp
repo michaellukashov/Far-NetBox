@@ -930,7 +930,7 @@ void CAsyncProxySocketLayer::Reset()
   m_nProxyOpID=0;
 }
 
-int CAsyncProxySocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
+int CAsyncProxySocketLayer::Send(const void * lpBuf, int nBufLen, int nFlags)
 {
   if (m_nProxyOpID)
   {
@@ -941,7 +941,7 @@ int CAsyncProxySocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
   return SendNext(lpBuf, nBufLen, nFlags);
 }
 
-int CAsyncProxySocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
+int CAsyncProxySocketLayer::Receive(void * lpBuf, int nBufLen, int nFlags)
 {
   if (m_nProxyOpID)
   {
