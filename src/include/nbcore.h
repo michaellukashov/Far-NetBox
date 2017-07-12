@@ -39,13 +39,13 @@ typedef uint32_t MEVENT;
 
 typedef int (*NETBOXHOOK)(WPARAM, LPARAM);
 typedef int (*NETBOXHOOKPARAM)(WPARAM, LPARAM, LPARAM);
-typedef int (*NETBOXHOOKOBJ)(void*, WPARAM, LPARAM);
-typedef int (*NETBOXHOOKOBJPARAM)(void*, WPARAM, LPARAM, LPARAM);
+typedef int (*NETBOXHOOKOBJ)(void *, WPARAM, LPARAM);
+typedef int (*NETBOXHOOKOBJPARAM)(void *, WPARAM, LPARAM, LPARAM);
 
 typedef intptr_t (*NETBOXSERVICE)(WPARAM, LPARAM);
 typedef intptr_t (*NETBOXSERVICEPARAM)(WPARAM, LPARAM, LPARAM);
-typedef intptr_t (*NETBOXSERVICEOBJ)(void*, WPARAM, LPARAM);
-typedef intptr_t (*NETBOXSERVICEOBJPARAM)(void*, WPARAM, LPARAM, LPARAM);
+typedef intptr_t (*NETBOXSERVICEOBJ)(void *, WPARAM, LPARAM);
+typedef intptr_t (*NETBOXSERVICEOBJPARAM)(void *, WPARAM, LPARAM, LPARAM);
 
 #ifdef _WIN64
 #define CALLSERVICE_NOTFOUND      ((intptr_t)0x8000000000000000)
@@ -62,8 +62,8 @@ NB_CORE_DLL(int)     NotifyFastHook(HANDLE hEvent, WPARAM wParam = 0, LPARAM lPa
 
 NB_CORE_DLL(HANDLE)  HookEvent(const char *name, NETBOXHOOK hookProc);
 NB_CORE_DLL(HANDLE)  HookEventParam(const char *name, NETBOXHOOKPARAM hookProc, LPARAM lParam = 0);
-NB_CORE_DLL(HANDLE)  HookEventObj(const char *name, NETBOXHOOKOBJ hookProc, void* object);
-NB_CORE_DLL(HANDLE)  HookEventObjParam(const char *name, NETBOXHOOKOBJPARAM hookProc, void* object, LPARAM lParam);
+NB_CORE_DLL(HANDLE)  HookEventObj(const char *name, NETBOXHOOKOBJ hookProc, void * object);
+NB_CORE_DLL(HANDLE)  HookEventObjParam(const char *name, NETBOXHOOKOBJPARAM hookProc, void * object, LPARAM lParam);
 NB_CORE_DLL(HANDLE)  HookEventMessage(const char *name, HWND hwnd, UINT message);
 NB_CORE_DLL(int)     UnhookEvent(HANDLE hHook);
 NB_CORE_DLL(void)    KillObjectEventHooks(void *pObject);
@@ -71,8 +71,8 @@ NB_CORE_DLL(void)    KillModuleEventHooks(HINSTANCE pModule);
 
 NB_CORE_DLL(HANDLE)  CreateServiceFunction(const char *name, NETBOXSERVICE serviceProc);
 NB_CORE_DLL(HANDLE)  CreateServiceFunctionParam(const char *name, NETBOXSERVICEPARAM serviceProc, LPARAM lParam);
-NB_CORE_DLL(HANDLE)  CreateServiceFunctionObj(const char *name, NETBOXSERVICEOBJ serviceProc, void* object);
-NB_CORE_DLL(HANDLE)  CreateServiceFunctionObjParam(const char *name, NETBOXSERVICEOBJPARAM serviceProc, void* object, LPARAM lParam);
+NB_CORE_DLL(HANDLE)  CreateServiceFunctionObj(const char *name, NETBOXSERVICEOBJ serviceProc, void * object);
+NB_CORE_DLL(HANDLE)  CreateServiceFunctionObjParam(const char *name, NETBOXSERVICEOBJPARAM serviceProc, void * object, LPARAM lParam);
 NB_CORE_DLL(HANDLE)  CreateProtoServiceFunction(const char *szModule, const char *szService, NETBOXSERVICE serviceProc);
 NB_CORE_DLL(int)     DestroyServiceFunction(HANDLE hService);
 NB_CORE_DLL(int)     ServiceExists(const char *name);
@@ -82,7 +82,7 @@ NB_CORE_DLL(intptr_t) CallServiceSync(const char *name, WPARAM wParam = 0, LPARA
 
 NB_CORE_DLL(int)     CallFunctionAsync(void (__stdcall *func)(void *), void *arg);
 NB_CORE_DLL(void)    KillModuleServices(HINSTANCE hInst);
-NB_CORE_DLL(void)    KillObjectServices(void* pObject);
+NB_CORE_DLL(void)    KillObjectServices(void * pObject);
 
 NB_CORE_DLL(int)      ProtoServiceExists(LPCSTR szModule, const char *szService);
 NB_CORE_DLL(intptr_t)  CallProtoService(LPCSTR szModule, const char *szService, WPARAM wParam = 0, LPARAM lParam = 0);
@@ -138,19 +138,19 @@ __forceinline unsigned int nbcore_hashstrW(const wchar_t * key)
 ///////////////////////////////////////////////////////////////////////////////
 // lists
 
-typedef int (*FSortFunc)(void*, void*);  // sort function prototype
+typedef int (*FSortFunc)(void *, void *);  // sort function prototype
 
 // Assumes first 32 bit value of the data is the numeric key
 // and uses it to perform sort/search operations, this results
 // in much better performance as no compare function calls needed
 // Incredibly useful for Hash Tables
-#define NumericKeySort (FSortFunc)(void*) -1
-#define HandleKeySort  (FSortFunc)(void*) -2
-#define PtrKeySort     (FSortFunc)(void*) -3
+#define NumericKeySort (FSortFunc)(void *) -1
+#define HandleKeySort  (FSortFunc)(void *) -2
+#define PtrKeySort     (FSortFunc)(void *) -3
 
 typedef struct
 {
-  void**    items;
+  void **    items;
   int      realCount;
   int      limit;
   int      increment;
@@ -161,13 +161,13 @@ SortedList;
 
 NB_CORE_DLL(SortedList*) List_Create(int p_limit, int p_increment);
 NB_CORE_DLL(void)        List_Destroy(SortedList* p_list);
-NB_CORE_DLL(void*)       List_Find(SortedList* p_list, void* p_value);
-NB_CORE_DLL(int)         List_GetIndex(SortedList* p_list, void* p_value, int* p_index);
-NB_CORE_DLL(int)         List_IndexOf(SortedList* p_list, void* p_value);
-NB_CORE_DLL(int)         List_Insert(SortedList* p_list, void* p_value, int p_index);
-NB_CORE_DLL(int)         List_InsertPtr(SortedList* list, void* p);
+NB_CORE_DLL(void *)       List_Find(SortedList* p_list, void * p_value);
+NB_CORE_DLL(int)         List_GetIndex(SortedList* p_list, void * p_value, int* p_index);
+NB_CORE_DLL(int)         List_IndexOf(SortedList* p_list, void * p_value);
+NB_CORE_DLL(int)         List_Insert(SortedList* p_list, void * p_value, int p_index);
+NB_CORE_DLL(int)         List_InsertPtr(SortedList* list, void * p);
 NB_CORE_DLL(int)         List_Remove(SortedList* p_list, int index);
-NB_CORE_DLL(int)         List_RemovePtr(SortedList* list, void* p);
+NB_CORE_DLL(int)         List_RemovePtr(SortedList* list, void * p);
 NB_CORE_DLL(void)        List_Copy(SortedList* s, SortedList* d, size_t itemSize);
 NB_CORE_DLL(void)        List_ObjCopy(SortedList* s, SortedList* d, size_t itemSize);
 
@@ -203,8 +203,8 @@ NB_CORE_DLL(void) nbcore_md5_hash(const uint8_t * data, size_t len, uint8_t dige
 
 NB_C_CORE_DLL(void *) nbcore_alloc(size_t);
 NB_C_CORE_DLL(void *) nbcore_calloc(size_t);
-NB_C_CORE_DLL(void *) nbcore_realloc(void* ptr, size_t);
-NB_C_CORE_DLL(void)   nbcore_free(void* ptr);
+NB_C_CORE_DLL(void *) nbcore_realloc(void * ptr, size_t);
+NB_C_CORE_DLL(void)   nbcore_free(void * ptr);
 
 NB_CORE_DLL(size_t)   nbcore_strlen(const char *p);
 NB_CORE_DLL(size_t)   nbcore_wstrlen(const wchar_t *p);
@@ -243,7 +243,7 @@ NB_CORE_DLL(wchar_t *) nbcore_wstrndup(const wchar_t *str, size_t len);
 NB_CORE_DLL(void) RegisterModule(HINSTANCE hInst);
 NB_CORE_DLL(void) UnregisterModule(HINSTANCE hInst);
 
-NB_CORE_DLL(HINSTANCE) GetInstByAddress(void* codePtr);
+NB_CORE_DLL(HINSTANCE) GetInstByAddress(void * codePtr);
 
 ///////////////////////////////////////////////////////////////////////////////
 // print functions
@@ -439,39 +439,39 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 // threads
 
-typedef void (__cdecl *pThreadFunc)(void*);
-typedef unsigned (__stdcall *pThreadFuncEx)(void*);
-typedef unsigned (__cdecl *pThreadFuncOwner)(void *owner, void* param);
+typedef void (__cdecl *pThreadFunc)(void *);
+typedef unsigned (__stdcall *pThreadFuncEx)(void *);
+typedef unsigned (__cdecl *pThreadFuncOwner)(void *owner, void * param);
 
 #if defined( __cplusplus )
-NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void* pOwner=nullptr);
+NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void * pOwner=nullptr);
 #else
-NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void* pOwner);
+NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void * pOwner);
 #endif
 NB_CORE_DLL(intptr_t) Thread_Pop(void);
 NB_CORE_DLL(void)    Thread_Wait(void);
 
 NB_CORE_DLL(UINT_PTR) forkthread(pThreadFunc, unsigned long stacksize, void *arg);
-NB_CORE_DLL(UINT_PTR) forkthreadex(void *sec, unsigned stacksize, pThreadFuncEx, void* owner, void *arg, unsigned *thraddr);
+NB_CORE_DLL(UINT_PTR) forkthreadex(void *sec, unsigned stacksize, pThreadFuncEx, void * owner, void *arg, unsigned *thraddr);
 
-__forceinline HANDLE nbcore_forkthread(pThreadFunc aFunc, void* arg)
+__forceinline HANDLE nbcore_forkthread(pThreadFunc aFunc, void * arg)
 {
   return (HANDLE)forkthread(aFunc, 0, arg);
 }
 
-__forceinline HANDLE nbcore_forkthreadex(pThreadFuncEx aFunc, void* arg, unsigned* pThreadID)
+__forceinline HANDLE nbcore_forkthreadex(pThreadFuncEx aFunc, void * arg, unsigned* pThreadID)
 {
   return (HANDLE)forkthreadex(nullptr, 0, aFunc, nullptr, arg, pThreadID);
 }
 
-__forceinline HANDLE nbcore_forkthreadowner(pThreadFuncOwner aFunc, void* owner, void* arg, unsigned* pThreadID)
+__forceinline HANDLE nbcore_forkthreadowner(pThreadFuncOwner aFunc, void * owner, void * arg, unsigned* pThreadID)
 {
   return (HANDLE)forkthreadex(nullptr, 0, (pThreadFuncEx)aFunc, owner, arg, pThreadID);
 }
 
 NB_CORE_DLL(void) Thread_SetName(const char *szThreadName);
 
-NB_CORE_DLL(void) KillObjectThreads(void* pObject);
+NB_CORE_DLL(void) KillObjectThreads(void * pObject);
 
 ///////////////////////////////////////////////////////////////////////////////
 // utf8 interface

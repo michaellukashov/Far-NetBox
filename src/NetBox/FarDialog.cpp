@@ -1014,7 +1014,7 @@ TFarDialogItem::~TFarDialogItem()
   DebugAssert(!Dlg);
   if (Dlg)
   {
-    nb_free((void*)GetDialogItem()->PtrData);
+    nb_free((void *)GetDialogItem()->PtrData);
   }
 }
 
@@ -1041,7 +1041,7 @@ void TFarDialogItem::SetBounds(const TRect & Value)
 
 void TFarDialogItem::Detach()
 {
-  nb_free((void*)GetDialogItem()->PtrData);
+  nb_free((void *)GetDialogItem()->PtrData);
   FDialog = nullptr;
 }
 
@@ -1134,7 +1134,7 @@ void TFarDialogItem::SetDataInternal(const UnicodeString & Value)
   {
     SendDialogMessage(DM_SETTEXTPTR, reinterpret_cast<LONG_PTR>(FarData.c_str()));
   }
-  nb_free((void*)GetDialogItem()->PtrData);
+  nb_free((void *)GetDialogItem()->PtrData);
   GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, /*AllowEmpty=*/true);
   DialogChange();
 }
@@ -1150,7 +1150,7 @@ void TFarDialogItem::SetData(const UnicodeString & Value)
 void TFarDialogItem::UpdateData(const UnicodeString & Value)
 {
   UnicodeString FarData = Value.c_str();
-  nb_free((void*)GetDialogItem()->PtrData);
+  nb_free((void *)GetDialogItem()->PtrData);
   GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, /*AllowEmpty=*/true);
 }
 
@@ -1955,8 +1955,8 @@ TFarEdit::TFarEdit(TFarDialog * ADialog) :
 
 void TFarEdit::Detach()
 {
-  nb_free((void*)GetDialogItem()->Mask);
-  // nb_free((void*)GetDialogItem()->History);
+  nb_free((void *)GetDialogItem()->Mask);
+  // nb_free((void *)GetDialogItem()->History);
   TFarDialogItem::Detach();
 }
 
@@ -1965,7 +1965,7 @@ LONG_PTR TFarEdit::ItemProc(int Msg, LONG_PTR Param)
   if (Msg == DN_EDITCHANGE)
   {
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->PtrData;
-    nb_free((void*)GetDialogItem()->PtrData);
+    nb_free((void *)GetDialogItem()->PtrData);
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, /*AllowEmpty=*/true);
   }
   return TFarDialogItem::ItemProc(Msg, Param);
@@ -1986,7 +1986,7 @@ void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString & Value)
     DebugAssert(!GetDialog()->GetHandle());
     DebugAssert(&GetDialogItem()->Mask == &GetDialogItem()->History);
 
-    nb_free((void*)GetDialogItem()->Mask);
+    nb_free((void *)GetDialogItem()->Mask);
     if (Value.IsEmpty())
     {
       GetDialogItem()->Mask = nullptr;
@@ -2100,7 +2100,7 @@ TFarList::~TFarList()
 {
   for (intptr_t Index = 0; Index < FListItems->ItemsNumber; ++Index)
   {
-    nb_free((void*)FListItems->Items[Index].Text);
+    nb_free((void *)FListItems->Items[Index].Text);
   }
   nb_free(FListItems->Items);
   nb_free(FListItems);
@@ -2123,7 +2123,7 @@ void TFarList::Assign(const TPersistent * Source)
 void TFarList::UpdateItem(intptr_t Index)
 {
   FarListItem * ListItem = &FListItems->Items[Index];
-  nb_free((void*)ListItem->Text);
+  nb_free((void *)ListItem->Text);
   ListItem->Text = TCustomFarPlugin::DuplicateStr(GetString(Index), /*AllowEmpty=*/true);
 
   FarListUpdate ListUpdate;
@@ -2189,7 +2189,7 @@ void TFarList::Changed()
       }
       for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
       {
-        nb_free((void*)Items[Index].Text);
+        nb_free((void *)Items[Index].Text);
       }
       nb_free(Items);
       FListItems->ItemsNumber = static_cast<int>(GetCount());
@@ -2500,7 +2500,7 @@ LONG_PTR TFarComboBox::ItemProc(int Msg, LONG_PTR Param)
   if (Msg == DN_EDITCHANGE)
   {
     UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->PtrData;
-    nb_free((void*)GetDialogItem()->PtrData);
+    nb_free((void *)GetDialogItem()->PtrData);
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, /*AllowEmpty=*/true);
   }
 

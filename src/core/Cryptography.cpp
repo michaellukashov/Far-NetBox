@@ -188,7 +188,7 @@ typedef struct
 {
   uint8_t nonce[BLOCK_SIZE]; /* the CTR nonce          */
   uint8_t encr_bfr[BLOCK_SIZE]; /* encrypt buffer         */
-  void* encr_ctx; /* encryption context     */
+  void * encr_ctx; /* encryption context     */
   hmac_ctx auth_ctx; /* authentication context */
   uint32_t encr_pos; /* block position (enc)   */
   uint32_t pwd_len; /* password length        */

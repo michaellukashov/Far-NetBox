@@ -449,7 +449,7 @@ static int ToolbarReadInt(const UnicodeString ToolbarName,
   }
   else
   {
-    TStrings * Storage = static_cast<TStrings *>(const_cast<void*>(ExtraData));
+    TStrings * Storage = static_cast<TStrings *>(const_cast<void *>(ExtraData));
     UnicodeString ToolbarKey;
     GetToolbarKey(ToolbarName, Value, ToolbarKey);
     if (Storage->IndexOfName(ToolbarKey) >= 0)
@@ -490,7 +490,7 @@ static UnicodeString ToolbarReadString(const UnicodeString ToolbarName,
   const UnicodeString Value, const UnicodeString Default, const void * ExtraData)
 {
   UnicodeString Result;
-  TStrings * Storage = static_cast<TStrings *>(const_cast<void*>(ExtraData));
+  TStrings * Storage = static_cast<TStrings *>(const_cast<void *>(ExtraData));
   UnicodeString ToolbarKey;
   GetToolbarKey(ToolbarName, Value, ToolbarKey);
   if (Storage->IndexOfName(ToolbarKey) >= 0)
@@ -509,7 +509,7 @@ static void ToolbarWriteInt(const UnicodeString ToolbarName,
 {
   if (Value != L"Rev")
   {
-    TStrings * Storage = static_cast<TStrings *>(const_cast<void*>(ExtraData));
+    TStrings * Storage = static_cast<TStrings *>(const_cast<void *>(ExtraData));
     UnicodeString ToolbarKey;
     GetToolbarKey(ToolbarName, Value, ToolbarKey);
     DebugAssert(Storage->IndexOfName(ToolbarKey) < 0);
@@ -520,7 +520,7 @@ static void ToolbarWriteInt(const UnicodeString ToolbarName,
 static void ToolbarWriteString(const UnicodeString ToolbarName,
   const UnicodeString Value, const UnicodeString Data, const void * ExtraData)
 {
-  TStrings * Storage = static_cast<TStrings *>(const_cast<void*>(ExtraData));
+  TStrings * Storage = static_cast<TStrings *>(const_cast<void *>(ExtraData));
   UnicodeString ToolbarKey;
   GetToolbarKey(ToolbarName, Value, ToolbarKey);
   DebugAssert(Storage->IndexOfName(ToolbarKey) < 0);

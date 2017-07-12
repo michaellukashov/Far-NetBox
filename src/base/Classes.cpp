@@ -1532,11 +1532,11 @@ void * TMemoryStream::Realloc(int64_t & NewCapacity)
     {
       if (FCapacity == 0)
       {
-        Result = nb::calloc<void*>(static_cast<::size_t>(NewCapacity));
+        Result = nb::calloc<void *>(static_cast<::size_t>(NewCapacity));
       }
       else
       {
-        Result = nb::realloc<void*>(FMemory, static_cast<::size_t>(NewCapacity));
+        Result = nb::realloc<void *>(FMemory, static_cast<::size_t>(NewCapacity));
       }
       if (Result == nullptr)
       {

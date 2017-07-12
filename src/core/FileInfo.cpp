@@ -174,7 +174,7 @@ void * CreateFileInfo(UnicodeString AFileName)
   // If size is valid
   if (Size > 0)
   {
-    Result = nb::calloc<void*>(Size);
+    Result = nb::calloc<void *>(Size);
     // Get file version info block
     if (!GetFileVersionInfoFix(AFileName.c_str(), Handle, Size, Result))
     {

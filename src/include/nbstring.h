@@ -56,7 +56,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   int nDataLength;   // Length of currently used data in XCHARs (not including terminating null)
   int nAllocLength;  // Length of allocated data in XCHARs (not including terminating null)
 
-  __forceinline void* data() { return (this + 1); }
+  __forceinline void * data() { return (this + 1); }
   __forceinline void AddRef() { InterlockedIncrement(&nRefs); }
   __forceinline bool IsLocked() const { return nRefs < 0; }
   __forceinline bool IsShared() const { return nRefs > 1; }

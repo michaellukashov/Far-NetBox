@@ -3,7 +3,7 @@
 #define BLOCK_ALLOCATED 0xABBABABA
 #define BLOCK_FREED   0xDEADBEEF
 
-static int CheckBlock(void* blk)
+static int CheckBlock(void * blk)
 {
   int result = FALSE;
   char *p = (char *)blk - sizeof(uint32_t) * 2;
@@ -44,7 +44,7 @@ static int CheckBlock(void* blk)
 
 /******************************************************************************/
 
-NB_C_CORE_DLL(void*) nbcore_alloc(size_t size)
+NB_C_CORE_DLL(void *) nbcore_alloc(size_t size)
 {
   if (size == 0)
     return nullptr;
@@ -67,9 +67,9 @@ NB_C_CORE_DLL(void*) nbcore_alloc(size_t size)
 
 /******************************************************************************/
 
-NB_C_CORE_DLL(void*) nbcore_calloc(size_t size)
+NB_C_CORE_DLL(void *) nbcore_calloc(size_t size)
 {
-  void* p = nbcore_alloc(size);
+  void * p = nbcore_alloc(size);
   if (p != nullptr)
     memset(p, 0, size);
   return p;
@@ -77,7 +77,7 @@ NB_C_CORE_DLL(void*) nbcore_calloc(size_t size)
 
 /******************************************************************************/
 
-NB_C_CORE_DLL(void*) nbcore_realloc(void* ptr, size_t size)
+NB_C_CORE_DLL(void *) nbcore_realloc(void * ptr, size_t size)
 {
   char *p;
 
@@ -107,7 +107,7 @@ NB_C_CORE_DLL(void*) nbcore_realloc(void* ptr, size_t size)
 
 /******************************************************************************/
 
-NB_C_CORE_DLL(void) nbcore_free(void* ptr)
+NB_C_CORE_DLL(void) nbcore_free(void * ptr)
 {
   if (ptr == nullptr)
     return;

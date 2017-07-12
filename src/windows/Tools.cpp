@@ -496,7 +496,7 @@ IShellLink * CreateDesktopShortCut(const UnicodeString & Name,
 
         // this is necessary for Windows 7 taskbar jump list links
         IPropertyStore * PropertyStore;
-        if (SUCCEEDED(pLink->QueryInterface(IID_IPropertyStore, (void**)&PropertyStore)))
+        if (SUCCEEDED(pLink->QueryInterface(IID_IPropertyStore, (void **)&PropertyStore)))
         {
           PROPVARIANT Prop;
           Prop.vt = VT_LPWSTR;

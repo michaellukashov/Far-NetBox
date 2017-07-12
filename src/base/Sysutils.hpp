@@ -569,7 +569,7 @@ private:
 
 namespace detail
 {
-  struct nop_deleter { void operator()(void*) const {} };
+  struct nop_deleter { void operator()(void *) const {} };
 }
 
 template<class T>

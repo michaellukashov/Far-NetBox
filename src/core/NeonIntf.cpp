@@ -234,7 +234,7 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 
 void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit)
 {
-  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, (void*)OnNeonTlsInit);
+  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, (void *)OnNeonTlsInit);
 }
 
 AnsiString NeonExportCertificate(const ne_ssl_certificate * Certificate)
