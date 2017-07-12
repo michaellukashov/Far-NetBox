@@ -41,9 +41,9 @@ public:
 
   void Clear();
 
-  bool operator ==(const TRemoteToken & rhs) const;
-  bool operator !=(const TRemoteToken & rhs) const;
-  TRemoteToken & operator =(const TRemoteToken & rhs);
+  bool operator==(const TRemoteToken & rhs) const;
+  bool operator!=(const TRemoteToken & rhs) const;
+  TRemoteToken & operator=(const TRemoteToken & rhs);
 
   intptr_t Compare(const TRemoteToken & rhs) const;
 
@@ -493,20 +493,20 @@ public:
   void AddExecute();
   void AllUndef();
 
-  bool operator ==(const TRights & rhr) const;
-  bool operator ==(uint16_t rhr) const;
-  bool operator !=(const TRights & rhr) const;
-  TRights & operator =(const TRights & rhr);
-  TRights & operator =(uint16_t rhr);
-  TRights operator ~() const;
-  TRights operator &(uint16_t rhr) const;
-  TRights operator &(const TRights & rhr) const;
-  TRights & operator &=(uint16_t rhr);
-  TRights & operator &=(const TRights & rhr);
-  TRights operator |(uint16_t rhr) const;
-  TRights operator |(const TRights & rhr) const;
-  TRights & operator |=(uint16_t rhr);
-  TRights & operator |=(const TRights & rhr);
+  bool operator==(const TRights & rhr) const;
+  bool operator==(uint16_t rhr) const;
+  bool operator!=(const TRights & rhr) const;
+  TRights & operator=(const TRights & rhr);
+  TRights & operator=(uint16_t rhr);
+  TRights operator~() const;
+  TRights operator&(uint16_t rhr) const;
+  TRights operator&(const TRights & rhr) const;
+  TRights & operator&=(uint16_t rhr);
+  TRights & operator&=(const TRights & rhr);
+  TRights operator|(uint16_t rhr) const;
+  TRights operator|(const TRights & rhr) const;
+  TRights & operator|=(uint16_t rhr);
+  TRights & operator|=(const TRights & rhr);
   operator uint16_t() const;
   operator uint32_t() const;
 
@@ -584,20 +584,20 @@ public:
   {
     return (FValue & Value) != 0;
   }
-  bool operator == (const TValidProperties & rhs) const
+  bool operator==(const TValidProperties & rhs) const
   {
     return FValue == rhs.FValue;
   }
-  bool operator != (const TValidProperties & rhs) const
+  bool operator!=(const TValidProperties & rhs) const
   {
-    return !(operator == (rhs));
+    return !(operator==(rhs));
   }
-  TValidProperties & operator << (const TValidProperty Value)
+  TValidProperties & operator<<(const TValidProperty Value)
   {
     FValue |= Value;
     return *this;
   }
-  TValidProperties & operator >> (const TValidProperty Value)
+  TValidProperties & operator>>(const TValidProperty Value)
   {
     FValue &= ~(static_cast<int64_t>(Value));
     return *this;
@@ -635,8 +635,8 @@ public:
 
   TRemoteProperties();
   TRemoteProperties(const TRemoteProperties & rhp);
-  bool operator ==(const TRemoteProperties & rhp) const;
-  bool operator !=(const TRemoteProperties & rhp) const;
+  bool operator==(const TRemoteProperties & rhp) const;
+  bool operator!=(const TRemoteProperties & rhp) const;
   void Default();
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;

@@ -515,7 +515,7 @@ namespace detail
   {
   public:
     template<typename F>
-    scope_guard<F> operator << (F && f) { return scope_guard<F>(std::move(f)); }
+    scope_guard<F> operator<<(F && f) { return scope_guard<F>(std::move(f)); }
   };
 
 } // namespace detail
@@ -618,7 +618,7 @@ namespace scope_exit
   {
   public:
     template<typename F>
-    auto operator << (F&& f) { return scope_guard<F, Type>(std::forward<F>(f)); }
+    auto operator<<(F&& f) { return scope_guard<F, Type>(std::forward<F>(f)); }
   };
 }
 

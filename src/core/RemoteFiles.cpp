@@ -567,7 +567,7 @@ void TRemoteToken::Clear()
   FIDValid = false;
 }
 
-bool TRemoteToken::operator ==(const TRemoteToken & rhs) const
+bool TRemoteToken::operator==(const TRemoteToken & rhs) const
 {
   return
     (FName == rhs.FName) &&
@@ -575,12 +575,12 @@ bool TRemoteToken::operator ==(const TRemoteToken & rhs) const
     (!FIDValid || (FID == rhs.FID));
 }
 
-bool TRemoteToken::operator !=(const TRemoteToken & rhs) const
+bool TRemoteToken::operator!=(const TRemoteToken & rhs) const
 {
   return !(*this == rhs);
 }
 
-TRemoteToken & TRemoteToken::operator =(const TRemoteToken & rhs)
+TRemoteToken & TRemoteToken::operator=(const TRemoteToken & rhs)
 {
   if (this != &rhs)
   {
@@ -2209,7 +2209,7 @@ TRights::TFlag TRights::RightToFlag(TRights::TRight Right)
   return static_cast<TFlag>(1 << (rrLast - Right));
 }
 
-bool TRights::operator ==(const TRights & rhr) const
+bool TRights::operator==(const TRights & rhr) const
 {
   if (GetAllowUndef() || rhr.GetAllowUndef())
   {
@@ -2229,49 +2229,49 @@ bool TRights::operator ==(const TRights & rhr) const
   }
 }
 
-bool TRights::operator ==(uint16_t rhr) const
+bool TRights::operator==(uint16_t rhr) const
 {
   return (GetNumber() == rhr);
 }
 
-bool TRights::operator !=(const TRights & rhr) const
+bool TRights::operator!=(const TRights & rhr) const
 {
   return !(*this == rhr);
 }
 
-TRights & TRights::operator =(uint16_t rhr)
+TRights & TRights::operator=(uint16_t rhr)
 {
   SetNumber(rhr);
   return *this;
 }
 
-TRights & TRights::operator =(const TRights & rhr)
+TRights & TRights::operator=(const TRights & rhr)
 {
   Assign(&rhr);
   return *this;
 }
 
-TRights TRights::operator ~() const
+TRights TRights::operator~() const
 {
   TRights Result(static_cast<uint16_t>(~GetNumber()));
   return Result;
 }
 
-TRights TRights::operator &(const TRights & rhr) const
+TRights TRights::operator&(const TRights & rhr) const
 {
   TRights Result(*this);
   Result &= rhr;
   return Result;
 }
 
-TRights TRights::operator &(uint16_t rhr) const
+TRights TRights::operator&(uint16_t rhr) const
 {
   TRights Result(*this);
   Result &= rhr;
   return Result;
 }
 
-TRights & TRights::operator &=(const TRights & rhr)
+TRights & TRights::operator&=(const TRights & rhr)
 {
   if (GetAllowUndef() || rhr.GetAllowUndef())
   {
@@ -2291,33 +2291,33 @@ TRights & TRights::operator &=(const TRights & rhr)
   return *this;
 }
 
-TRights & TRights::operator &=(uint16_t rhr)
+TRights & TRights::operator&=(uint16_t rhr)
 {
   SetNumber(GetNumber() & rhr);
   return *this;
 }
 
-TRights TRights::operator |(const TRights & rhr) const
+TRights TRights::operator|(const TRights & rhr) const
 {
   TRights Result(*this);
   Result |= rhr;
   return Result;
 }
 
-TRights TRights::operator |(uint16_t rhr) const
+TRights TRights::operator|(uint16_t rhr) const
 {
   TRights Result(*this);
   Result |= rhr;
   return Result;
 }
 
-TRights & TRights::operator |=(const TRights & rhr)
+TRights & TRights::operator|=(const TRights & rhr)
 {
   SetNumber(GetNumber() | rhr.GetNumber());
   return *this;
 }
 
-TRights & TRights::operator |=(uint16_t rhr)
+TRights & TRights::operator|=(uint16_t rhr)
 {
   SetNumber(GetNumber() | rhr);
   return *this;
@@ -2746,7 +2746,7 @@ void TRemoteProperties::Default()
   Recursive = false;
 }
 
-bool TRemoteProperties::operator ==(const TRemoteProperties & rhp) const
+bool TRemoteProperties::operator==(const TRemoteProperties & rhp) const
 {
   bool Result = (Valid == rhp.Valid && Recursive == rhp.Recursive);
 
@@ -2765,7 +2765,7 @@ bool TRemoteProperties::operator ==(const TRemoteProperties & rhp) const
   return Result;
 }
 
-bool TRemoteProperties::operator !=(const TRemoteProperties & rhp) const
+bool TRemoteProperties::operator!=(const TRemoteProperties & rhp) const
 {
   return !(*this == rhp);
 }

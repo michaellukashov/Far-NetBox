@@ -41,10 +41,10 @@ public:
   TFileMasks(const TFileMasks & Source);
   explicit TFileMasks(const UnicodeString & AMasks);
   virtual ~TFileMasks();
-  TFileMasks & operator =(const TFileMasks & rhm);
-  TFileMasks & operator =(const UnicodeString & rhs);
-  bool operator ==(const TFileMasks & rhm) const;
-  bool operator ==(const UnicodeString & rhs) const;
+  TFileMasks & operator=(const TFileMasks & rhm);
+  TFileMasks & operator=(const UnicodeString & rhs);
+  bool operator==(const TFileMasks & rhm) const;
+  bool operator==(const UnicodeString & rhs) const;
 
   void SetMask(const UnicodeString & Mask);
 

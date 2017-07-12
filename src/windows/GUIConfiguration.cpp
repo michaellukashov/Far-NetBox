@@ -89,13 +89,13 @@ void TGUICopyParamType::Save(THierarchicalStorage * Storage)
   Storage->WriteBool("QueueQueueParallel", GetQueueParallel());
 }
 
-TGUICopyParamType & TGUICopyParamType::operator =(const TCopyParamType & rhp)
+TGUICopyParamType & TGUICopyParamType::operator=(const TCopyParamType & rhp)
 {
   Assign(&rhp);
   return *this;
 }
 
-TGUICopyParamType & TGUICopyParamType::operator =(const TGUICopyParamType & rhp)
+TGUICopyParamType & TGUICopyParamType::operator=(const TGUICopyParamType & rhp)
 {
   Assign(&rhp);
   return *this;

@@ -95,7 +95,7 @@ int FontStylesToInt(const TFontStyles value)
 
 bool SameFont(TFont * Font1, TFont * Font2)
 {
-  // keep in sync with TFontConfiguration::operator !=
+  // keep in sync with TFontConfiguration::operator!=
   return
     SameText(Font1->Name, Font2->Name) && (Font1->Height == Font2->Height) &&
     (Font1->Charset == Font2->Charset) && (Font1->Style == Font2->Style);

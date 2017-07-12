@@ -120,7 +120,7 @@ struct TRect
     Right(right),
     Bottom(bottom)
   {}
-  bool operator == (const TRect & other) const
+  bool operator==(const TRect & other) const
   {
     return
       Left == other.Left &&
@@ -128,11 +128,11 @@ struct TRect
       Right == other.Right &&
       Bottom == other.Bottom;
   }
-  bool operator != (const TRect & other) const
+  bool operator!=(const TRect & other) const
   {
-    return !(operator == (other));
+    return !(operator==(other));
   }
-  bool operator == (const RECT & other) const
+  bool operator==(const RECT & other) const
   {
     return
       Left == other.left &&
@@ -140,9 +140,9 @@ struct TRect
       Right == other.right &&
       Bottom == other.bottom;
   }
-  bool operator != (const RECT & other) const
+  bool operator!=(const RECT & other) const
   {
-    return !(operator == (other));
+    return !(operator==(other));
   }
 };
 
@@ -225,7 +225,7 @@ public:
 
   template<class T>
   T * GetAs(intptr_t Index) const { return get_as<T>(GetItem(Index)); }
-  void * operator [](intptr_t Index) const;
+  void * operator[](intptr_t Index) const;
   virtual void * GetItem(intptr_t Index) const { return FList[Index]; }
   virtual void * GetItem(intptr_t Index) { return FList[Index]; }
   void SetItem(intptr_t Index, void * Item);
@@ -270,7 +270,7 @@ public:
 
   template<class T>
   T * GetAs(intptr_t Index) const { return dyn_cast<T>(GetObj(Index)); }
-  TObject * operator [](intptr_t Index) const;
+  TObject * operator[](intptr_t Index) const;
   TObject * GetObj(intptr_t Index) const;
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
@@ -443,7 +443,7 @@ public:
   {
   }
   double GetValue() const { return operator double(); }
-  TDateTime & operator = (const TDateTime & rhs)
+  TDateTime & operator=(const TDateTime & rhs)
   {
     FValue = rhs.FValue;
     return *this;
@@ -452,45 +452,45 @@ public:
   {
     return FValue;
   }
-  TDateTime & operator + (const TDateTime & rhs)
+  TDateTime & operator+(const TDateTime & rhs)
   {
     FValue += rhs.FValue;
     return *this;
   }
-  TDateTime & operator += (const TDateTime & rhs)
+  TDateTime & operator+=(const TDateTime & rhs)
   {
     FValue += rhs.FValue;
     return *this;
   }
-  TDateTime & operator += (double val)
+  TDateTime & operator+=(double val)
   {
     FValue += val;
     return *this;
   }
-  TDateTime & operator - (const TDateTime & rhs)
+  TDateTime & operator-(const TDateTime & rhs)
   {
     FValue -= rhs.FValue;
     return *this;
   }
-  TDateTime & operator -= (const TDateTime & rhs)
+  TDateTime & operator-=(const TDateTime & rhs)
   {
     FValue -= rhs.FValue;
     return *this;
   }
-  TDateTime & operator -= (double val)
+  TDateTime & operator-=(double val)
   {
     FValue -= val;
     return *this;
   }
-  TDateTime & operator = (double Value)
+  TDateTime & operator=(double Value)
   {
     FValue = Value;
     return *this;
   }
-  bool operator == (const TDateTime & rhs) const;
-  bool operator != (const TDateTime & rhs) const
+  bool operator==(const TDateTime & rhs) const;
+  bool operator!=(const TDateTime & rhs) const
   {
-    return !(operator == (rhs));
+    return !(operator==(rhs));
   }
   UnicodeString DateString() const;
   UnicodeString TimeString(bool Short) const;
@@ -751,7 +751,7 @@ public:
   explicit TShortCut();
   explicit TShortCut(intptr_t Value);
   operator intptr_t() const;
-  bool operator < (const TShortCut & rhs) const;
+  bool operator<(const TShortCut & rhs) const;
   intptr_t Compare(const TShortCut & rhs) const { return FValue - rhs.FValue; }
 
 private:

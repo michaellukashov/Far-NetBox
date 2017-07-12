@@ -25,7 +25,7 @@ struct TScpExplorerConfiguration {
   bool DriveView;
   int DriveViewWidth;
   int DriveViewWidthPixelsPerInch;
-  bool __fastcall operator !=(TScpExplorerConfiguration & rhc)
+  bool __fastcall operator!=(TScpExplorerConfiguration & rhc)
     { return C(WindowParams) C(DirViewParams) C(ToolbarsLayout)
         C(SessionsTabs) C(StatusBar)
         C(LastLocalTargetDirectory) C(ViewStyle) C(ShowFullAddress)
@@ -40,7 +40,7 @@ struct TScpCommanderPanelConfiguration {
   int DriveViewHeightPixelsPerInch;
   int DriveViewWidth;
   int DriveViewWidthPixelsPerInch;
-  bool __fastcall operator !=(TScpCommanderPanelConfiguration & rhc)
+  bool __fastcall operator!=(TScpCommanderPanelConfiguration & rhc)
     { return C(DirViewParams) C(StatusBar)
         C(DriveView) C(DriveViewHeight) C(DriveViewHeightPixelsPerInch)
         C(DriveViewWidth) C(DriveViewWidthPixelsPerInch) 0; };
@@ -63,7 +63,7 @@ struct TScpCommanderConfiguration {
   bool TreeOnLeft;
   bool ExplorerKeyboardShortcuts;
   bool SystemContextMenu;
-  bool __fastcall operator !=(TScpCommanderConfiguration & rhc)
+  bool __fastcall operator!=(TScpCommanderConfiguration & rhc)
     { return C(WindowParams) C(LocalPanelWidth) C(ToolbarsLayout)
       C(SessionsTabs) C(StatusBar)
       C(LocalPanel) C(RemotePanel) C(CurrentPanel)
@@ -101,7 +101,7 @@ struct TFontConfiguration
   }
 
   // keep in sync with SameFont
-  bool __fastcall operator !=(const TFontConfiguration & rhc)
+  bool __fastcall operator!=(const TFontConfiguration & rhc)
     { return !SameText(FontName, rhc.FontName) || C(FontSize)
       C(FontCharset) C(FontStyle) 0; };
 };
@@ -124,7 +124,7 @@ struct TEditorConfiguration {
   int Encoding;
   bool WarnOnEncodingFallback;
   bool WarnOrLargeFileSize;
-  bool __fastcall operator !=(TEditorConfiguration & rhc)
+  bool __fastcall operator!=(TEditorConfiguration & rhc)
     { return C(Font) C(FontColor) C(BackgroundColor) C(WordWrap) C(FindText) C(ReplaceText)
       C(FindMatchCase) C(FindWholeWord) C(FindDown) C(TabSize)
       C(MaxEditors) C(EarlyClose) C(SDIShellEditor) C(WindowParams)
@@ -140,7 +140,7 @@ struct TQueueViewConfiguration {
   TQueueViewShow LastHideShow;
   bool ToolBar;
   bool Label;
-  bool __fastcall operator !=(TQueueViewConfiguration & rhc)
+  bool __fastcall operator!=(TQueueViewConfiguration & rhc)
     { return C(Height) C(HeightPixelsPerInch) C(Layout) C(Show) C(LastHideShow) C(ToolBar) C(Label) 0; };
 };
 //---------------------------------------------------------------------------
@@ -167,7 +167,7 @@ struct TUpdatesData
   UnicodeString Tips;
   int TipsIntervalDays;
   int TipsIntervalRuns;
-  bool __fastcall operator !=(TUpdatesData & rhc)
+  bool __fastcall operator!=(TUpdatesData & rhc)
     { return C(ForVersion) C(Version) C(Message) C(Critical) C(Release)
              C(Disabled) C(Url) C(UrlButton) C(NewsUrl) C(NewsSize)
              C(DownloadUrl) C(DownloadSize) C(DownloadSha256) C(AuthenticationError)
@@ -217,7 +217,7 @@ struct TUpdatesConfiguration
   UnicodeString ConsoleVersion;
   TUpdatesData Results;
 
-  bool __fastcall operator !=(TUpdatesConfiguration & rhc)
+  bool __fastcall operator!=(TUpdatesConfiguration & rhc)
     { return C(Period) C(LastCheck) C(ConnectionType) C(ProxyHost) C(ProxyPort)
         C(BetaVersions) C(ShowOnStartup) C(AuthenticationEmail)
         C(HaveResults) C(ShownResults) C(DotNetVersion)
@@ -244,7 +244,7 @@ struct TEditorData
   bool SDIExternalEditor;
   bool DetectMDIExternalEditor;
 
-  bool __fastcall operator ==(const TEditorData & rhd) const;
+  bool __fastcall operator==(const TEditorData & rhd) const;
   void __fastcall DecideExternalEditorText();
   static bool __fastcall DecideExternalEditorText(UnicodeString ExternalEditor);
 };
@@ -265,7 +265,7 @@ public:
 
   static UnicodeString __fastcall GetDefaultExternalEditor();
 
-  bool __fastcall operator ==(const TEditorPreferences & rhp) const;
+  bool __fastcall operator==(const TEditorPreferences & rhp) const;
 
   __property const TEditorData * Data = { read = GetConstData };
   __property UnicodeString Name = { read = GetName };

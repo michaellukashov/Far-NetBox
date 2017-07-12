@@ -120,7 +120,7 @@ void TList::SetCount(intptr_t NewCount)
   FList.resize(NewCount);
 }
 
-void * TList::operator [](intptr_t Index) const
+void * TList::operator[](intptr_t Index) const
 {
   return FList[Index];
 }
@@ -294,7 +294,7 @@ TObjectList::~TObjectList()
   Clear();
 }
 
-TObject * TObjectList::operator [](intptr_t Index) const
+TObject * TObjectList::operator[](intptr_t Index) const
 {
   return as_object(TList::operator[](Index));
 }
@@ -1121,7 +1121,7 @@ TDateTime::TDateTime(uint16_t Hour,
   FValue = ::EncodeTimeVerbose(Hour, Min, Sec, MSec);
 }
 
-bool TDateTime::operator ==(const TDateTime & rhs) const
+bool TDateTime::operator==(const TDateTime & rhs) const
 {
   return ::IsZero(FValue - rhs.FValue);
 }
@@ -2075,7 +2075,7 @@ TShortCut::operator intptr_t() const
   return FValue;
 }
 
-bool TShortCut::operator < (const TShortCut & rhs) const
+bool TShortCut::operator<(const TShortCut & rhs) const
 {
   return FValue < rhs.FValue;
 }

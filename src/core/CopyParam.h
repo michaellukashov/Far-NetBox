@@ -118,7 +118,7 @@ public:
   explicit TCopyParamType(TObjectClassId Kind = OBJECT_CLASS_TCopyParamType);
   TCopyParamType(const TCopyParamType & Source);
   virtual ~TCopyParamType();
-  TCopyParamType & operator =(const TCopyParamType & rhs);
+  TCopyParamType & operator=(const TCopyParamType & rhs);
   virtual void Assign(const TCopyParamType * Source);
   virtual void Default();
   UnicodeString ChangeFileName(UnicodeString AFileName,

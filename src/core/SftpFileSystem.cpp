@@ -985,7 +985,7 @@ public:
     return Result;
   }
 
-  TSFTPPacket & operator = (const TSFTPPacket & Source)
+  TSFTPPacket & operator=(const TSFTPPacket & Source)
   {
     SetCapacity(0);
     Add(Source.GetData(), Source.GetLength());

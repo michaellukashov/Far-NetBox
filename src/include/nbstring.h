@@ -986,7 +986,7 @@ template< typename BaseType, class StringTraits >
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits>& str1, char ch2);
 
 template< typename BaseType, class StringTraits >
-NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator + (wchar_t ch1, const CMStringT<BaseType, StringTraits>& str2);
+NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(wchar_t ch1, const CMStringT<BaseType, StringTraits>& str2);
 
 template< typename BaseType, class StringTraits >
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(char ch1, const CMStringT<BaseType, StringTraits>& str2);

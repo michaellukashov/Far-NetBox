@@ -100,13 +100,13 @@ intptr_t AnsiString::Pos(char Ch) const
   return (intptr_t)Data.Find(Ch) + 1;
 }
 
-char AnsiString::operator [](intptr_t Idx) const
+char AnsiString::operator[](intptr_t Idx) const
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.operator []((int)Idx - 1);
+  return Data.operator[]((int)Idx - 1);
 }
 
-char & AnsiString::operator [](intptr_t Idx)
+char & AnsiString::operator[](intptr_t Idx)
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
   return Data.GetBuffer()[Idx - 1];
@@ -185,19 +185,19 @@ AnsiString & AnsiString::operator=(const wchar_t * Str)
   return *this;
 }
 
-AnsiString & AnsiString::operator +=(const AnsiString & rhs)
+AnsiString & AnsiString::operator+=(const AnsiString & rhs)
 {
   Data.Append(rhs.c_str(), (int)rhs.Length());
   return *this;
 }
 
-AnsiString & AnsiString::operator +=(const char Ch)
+AnsiString & AnsiString::operator+=(const char Ch)
 {
   Data.AppendChar(Ch);
   return *this;
 }
 
-AnsiString & AnsiString::operator +=(const char * rhs)
+AnsiString & AnsiString::operator+=(const char * rhs)
 {
   Data.Append(rhs);
   return *this;
@@ -361,19 +361,19 @@ RawByteString & RawByteString::operator=(const wchar_t * lpwszData)
   return *this;
 }
 
-RawByteString RawByteString::operator +(const RawByteString & rhs) const
+RawByteString RawByteString::operator+(const RawByteString & rhs) const
 {
   rawstring_t Result = Data + rhs.Data;
   return RawByteString(Result.c_str(), Result.GetLength());
 }
 
-RawByteString & RawByteString::operator +=(const RawByteString & rhs)
+RawByteString & RawByteString::operator+=(const RawByteString & rhs)
 {
   Data.Append(rhs.c_str(), (int)rhs.Length());
   return *this;
 }
 
-RawByteString & RawByteString::operator +=(const char Ch)
+RawByteString & RawByteString::operator+=(const char Ch)
 {
   Data.AppendChar(Ch);
   return *this;
@@ -500,38 +500,38 @@ UTF8String & UTF8String::operator=(const wchar_t * lpwszData)
   return *this;
 }
 
-UTF8String UTF8String::operator +(const UTF8String & rhs) const
+UTF8String UTF8String::operator+(const UTF8String & rhs) const
 {
   string_t Result(Data);
   Result += rhs.Data;
   return UTF8String(Result);
 }
 
-UTF8String & UTF8String::operator +=(const UTF8String & rhs)
+UTF8String & UTF8String::operator+=(const UTF8String & rhs)
 {
   Data.Append(rhs.Data.c_str(), (int)rhs.Length());
   return *this;
 }
 
-UTF8String & UTF8String::operator +=(const RawByteString & rhs)
+UTF8String & UTF8String::operator+=(const RawByteString & rhs)
 {
   UTF8String s(rhs.c_str(), rhs.Length());
   Data.Append(s.Data.c_str(), (int)s.Length());
   return *this;
 }
 
-UTF8String & UTF8String::operator +=(const char Ch)
+UTF8String & UTF8String::operator+=(const char Ch)
 {
   Data.AppendChar(Ch);
   return *this;
 }
 
-bool operator ==(const UTF8String & lhs, const UTF8String & rhs)
+bool operator==(const UTF8String & lhs, const UTF8String & rhs)
 {
   return lhs.Data == rhs.Data;
 }
 
-bool operator !=(const UTF8String & lhs, const UTF8String & rhs)
+bool operator!=(const UTF8String & lhs, const UTF8String & rhs)
 {
   return lhs.Data != rhs.Data;
 }
@@ -813,51 +813,51 @@ UnicodeString & UnicodeString::operator=(const char * lpszData)
   return *this;
 }
 
-UnicodeString UnicodeString::operator +(const UnicodeString & rhs) const
+UnicodeString UnicodeString::operator+(const UnicodeString & rhs) const
 {
   wstring_t Result(Data);
   Result += rhs.Data;
   return UnicodeString(Result);
 }
 
-UnicodeString & UnicodeString::operator +=(const UnicodeString & rhs)
+UnicodeString & UnicodeString::operator+=(const UnicodeString & rhs)
 {
   Data.Append(rhs.Data.c_str(), (int)rhs.Length());
   return *this;
 }
 
-UnicodeString & UnicodeString::operator +=(const wchar_t * rhs)
+UnicodeString & UnicodeString::operator+=(const wchar_t * rhs)
 {
   Data.Append(rhs);
   return *this;
 }
 
-UnicodeString & UnicodeString::operator +=(const RawByteString & rhs)
+UnicodeString & UnicodeString::operator+=(const RawByteString & rhs)
 {
   UnicodeString s(rhs.c_str(), rhs.Length());
   Data.Append(s.Data.c_str(), (int)s.Length());
   return *this;
 }
 
-UnicodeString & UnicodeString::operator +=(const char Ch)
+UnicodeString & UnicodeString::operator+=(const char Ch)
 {
   Data.AppendChar(Ch);
   return *this;
 }
 
-UnicodeString & UnicodeString::operator +=(const wchar_t Ch)
+UnicodeString & UnicodeString::operator+=(const wchar_t Ch)
 {
   Data += Ch;
   return *this;
 }
 
-wchar_t UnicodeString::operator [](intptr_t Idx) const
+wchar_t UnicodeString::operator[](intptr_t Idx) const
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
-  return Data.operator []((int)Idx - 1);
+  return Data.operator[]((int)Idx - 1);
 }
 
-wchar_t & UnicodeString::operator [](intptr_t Idx)
+wchar_t & UnicodeString::operator[](intptr_t Idx)
 {
   ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
   return Data.GetBuffer()[(int)Idx - 1];
@@ -869,47 +869,47 @@ void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
     throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
-UnicodeString operator +(const wchar_t lhs, const UnicodeString & rhs)
+UnicodeString operator+(const wchar_t lhs, const UnicodeString & rhs)
 {
   return UnicodeString(&lhs, 1) + rhs;
 }
 
-UnicodeString operator +(const UnicodeString & lhs, const wchar_t rhs)
+UnicodeString operator+(const UnicodeString & lhs, const wchar_t rhs)
 {
   return lhs + UnicodeString(rhs);
 }
 
-UnicodeString operator +(const wchar_t * lhs, const UnicodeString & rhs)
+UnicodeString operator+(const wchar_t * lhs, const UnicodeString & rhs)
 {
   return UnicodeString(lhs) + rhs;
 }
 
-UnicodeString operator +(const UnicodeString & lhs, const wchar_t * rhs)
+UnicodeString operator+(const UnicodeString & lhs, const wchar_t * rhs)
 {
   return lhs + UnicodeString(rhs);
 }
 
-UnicodeString operator +(const UnicodeString & lhs, const char * rhs)
+UnicodeString operator+(const UnicodeString & lhs, const char * rhs)
 {
   return lhs + UnicodeString(rhs);
 }
 
-bool operator ==(const UnicodeString & lhs, const wchar_t * rhs)
+bool operator==(const UnicodeString & lhs, const wchar_t * rhs)
 {
   return wcscmp(lhs.Data.c_str(), NullToEmpty(rhs)) == 0;
 }
 
-bool operator ==(const wchar_t * lhs, const UnicodeString & rhs)
+bool operator==(const wchar_t * lhs, const UnicodeString & rhs)
 {
   return wcscmp(NullToEmpty(lhs), rhs.Data.c_str()) == 0;
 }
 
-bool operator !=(const UnicodeString & lhs, const wchar_t * rhs)
+bool operator!=(const UnicodeString & lhs, const wchar_t * rhs)
 {
   return wcscmp(lhs.Data.c_str(), NullToEmpty(rhs)) != 0;
 }
 
-bool operator !=(const wchar_t * lhs, const UnicodeString & rhs)
+bool operator!=(const wchar_t * lhs, const UnicodeString & rhs)
 {
   return wcscmp(NullToEmpty(lhs), rhs.Data.c_str()) != 0;
 }

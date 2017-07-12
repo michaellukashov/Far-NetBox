@@ -465,25 +465,25 @@ bool TFileMasks::Matches(const UnicodeString AFileName, bool Local,
   return Result;
 }
 
-bool TFileMasks::operator ==(const TFileMasks & rhm) const
+bool TFileMasks::operator==(const TFileMasks & rhm) const
 {
   return (GetMasks() == rhm.GetMasks());
 }
 
-TFileMasks & TFileMasks::operator =(const UnicodeString & rhs)
+TFileMasks & TFileMasks::operator=(const UnicodeString & rhs)
 {
   SetMasks(rhs);
   return *this;
 }
 
-TFileMasks & TFileMasks::operator =(const TFileMasks & rhm)
+TFileMasks & TFileMasks::operator=(const TFileMasks & rhm)
 {
   FForceDirectoryMasks = rhm.FForceDirectoryMasks;
   SetMasks(rhm.GetMasks());
   return *this;
 }
 
-bool TFileMasks::operator ==(const UnicodeString & rhs) const
+bool TFileMasks::operator==(const UnicodeString & rhs) const
 {
   return (GetMasks() == rhs);
 }

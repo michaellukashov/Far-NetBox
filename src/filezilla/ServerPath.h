@@ -27,8 +27,8 @@ public:
 
   CServerPath & operator=(const CServerPath & op);
 
-  const bool operator == (const CServerPath & op) const;
-  const bool operator != (const CServerPath & op) const;
+  const bool operator==(const CServerPath & op) const;
+  const bool operator!=(const CServerPath & op) const;
 
   CString FormatFilename(CString fn, bool omitPath = false) const;
 
@@ -44,6 +44,6 @@ private:
   const CString DoGetPath(bool unterminated) const;
 };
 
-const BOOL operator == (const CServerPath & a, const CString & b);
+const BOOL operator==(const CServerPath & a, const CString & b);
 
 

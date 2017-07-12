@@ -20,7 +20,7 @@ public:
 
   ~UTF8String() {}
 
-  operator const char * () const { return c_str(); }
+  operator const char *() const { return c_str(); }
   const char * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.GetLength(); }
   intptr_t GetLength() const { return Length(); }
@@ -46,15 +46,15 @@ public:
   UTF8String & operator=(const wchar_t * lpwszData);
   UTF8String & operator=(wchar_t chData);
 
-  UTF8String operator +(const UTF8String & rhs) const;
-  UTF8String operator +(const RawByteString & rhs) const;
-  UTF8String & operator +=(const UTF8String & rhs);
-  UTF8String & operator +=(const RawByteString & rhs);
-  UTF8String & operator +=(const char Ch);
-  UTF8String & operator +=(const char * rhs);
+  UTF8String operator+(const UTF8String & rhs) const;
+  UTF8String operator+(const RawByteString & rhs) const;
+  UTF8String & operator+=(const UTF8String & rhs);
+  UTF8String & operator+=(const RawByteString & rhs);
+  UTF8String & operator+=(const char Ch);
+  UTF8String & operator+=(const char * rhs);
 
-  friend bool operator ==(const UTF8String & lhs, const UTF8String & rhs);
-  friend bool operator !=(const UTF8String & lhs, const UTF8String & rhs);
+  friend bool operator==(const UTF8String & lhs, const UTF8String & rhs);
+  friend bool operator!=(const UTF8String & lhs, const UTF8String & rhs);
 
 private:
   void Init(const wchar_t * Str, intptr_t Length);
@@ -159,35 +159,35 @@ public:
   UnicodeString & operator=(const char * lpszData);
   UnicodeString & operator=(const wchar_t Ch);
 
-  UnicodeString operator +(const UnicodeString & rhs) const;
-  UnicodeString operator +(const RawByteString & rhs) const;
-  UnicodeString operator +(const AnsiString & rhs) const;
-  UnicodeString operator +(const UTF8String & rhs) const;
+  UnicodeString operator+(const UnicodeString & rhs) const;
+  UnicodeString operator+(const RawByteString & rhs) const;
+  UnicodeString operator+(const AnsiString & rhs) const;
+  UnicodeString operator+(const UTF8String & rhs) const;
 
-  friend UnicodeString operator +(const wchar_t lhs, const UnicodeString & rhs);
-  friend UnicodeString operator +(const UnicodeString & lhs, wchar_t rhs);
-  friend UnicodeString operator +(const wchar_t * lhs, const UnicodeString & rhs);
-  friend UnicodeString operator +(const UnicodeString & lhs, const wchar_t * rhs);
-  friend UnicodeString operator +(const UnicodeString & lhs, const char * rhs);
+  friend UnicodeString operator+(const wchar_t lhs, const UnicodeString & rhs);
+  friend UnicodeString operator+(const UnicodeString & lhs, wchar_t rhs);
+  friend UnicodeString operator+(const wchar_t * lhs, const UnicodeString & rhs);
+  friend UnicodeString operator+(const UnicodeString & lhs, const wchar_t * rhs);
+  friend UnicodeString operator+(const UnicodeString & lhs, const char * rhs);
 
-  UnicodeString & operator +=(const UnicodeString & rhs);
-  UnicodeString & operator +=(const wchar_t * rhs);
-  UnicodeString & operator +=(const UTF8String & rhs);
-  UnicodeString & operator +=(const RawByteString & rhs);
-  UnicodeString & operator +=(const char Ch);
-  UnicodeString & operator +=(const char * Ch);
-  UnicodeString & operator +=(const wchar_t Ch);
+  UnicodeString & operator+=(const UnicodeString & rhs);
+  UnicodeString & operator+=(const wchar_t * rhs);
+  UnicodeString & operator+=(const UTF8String & rhs);
+  UnicodeString & operator+=(const RawByteString & rhs);
+  UnicodeString & operator+=(const char Ch);
+  UnicodeString & operator+=(const char * Ch);
+  UnicodeString & operator+=(const wchar_t Ch);
 
-  bool operator ==(const UnicodeString & Str) const { return Data == Str.Data; }
-  bool operator !=(const UnicodeString & Str) const { return Data != Str.Data; }
+  bool operator==(const UnicodeString & Str) const { return Data == Str.Data; }
+  bool operator!=(const UnicodeString & Str) const { return Data != Str.Data; }
 
-  friend bool operator ==(const UnicodeString & lhs, const wchar_t * rhs);
-  friend bool operator ==(const wchar_t * lhs, const UnicodeString & rhs);
-  friend bool operator !=(const UnicodeString & lhs, const wchar_t * rhs);
-  friend bool operator !=(const wchar_t * lhs, const UnicodeString & rhs);
+  friend bool operator==(const UnicodeString & lhs, const wchar_t * rhs);
+  friend bool operator==(const wchar_t * lhs, const UnicodeString & rhs);
+  friend bool operator!=(const UnicodeString & lhs, const wchar_t * rhs);
+  friend bool operator!=(const wchar_t * lhs, const UnicodeString & rhs);
 
-  wchar_t operator [](intptr_t Idx) const;
-  wchar_t & operator [](intptr_t Idx);
+  wchar_t operator[](intptr_t Idx) const;
+  wchar_t & operator[](intptr_t Idx);
 
 private:
   void Init(const wchar_t * Str, intptr_t Length);
@@ -233,8 +233,8 @@ public:
   intptr_t Pos(const AnsiString & Str) const;
   intptr_t Pos(char Ch) const;
 
-  char operator [](intptr_t Idx) const;
-  char & operator [](intptr_t Idx);
+  char operator[](intptr_t Idx) const;
+  char & operator[](intptr_t Idx);
 
   AnsiString & Append(const char * Str, intptr_t StrLen);
   AnsiString & Append(const AnsiString & Str);
@@ -252,25 +252,25 @@ public:
   AnsiString & operator=(const wchar_t * Str);
   AnsiString & operator=(wchar_t chData);
 
-  AnsiString operator +(const UnicodeString & rhs) const;
-  AnsiString operator +(const AnsiString & rhs) const;
+  AnsiString operator+(const UnicodeString & rhs) const;
+  AnsiString operator+(const AnsiString & rhs) const;
 
-  AnsiString & operator +=(const AnsiString & rhs);
-  AnsiString & operator +=(const char Ch);
-  AnsiString & operator +=(const char * rhs);
+  AnsiString & operator+=(const AnsiString & rhs);
+  AnsiString & operator+=(const char Ch);
+  AnsiString & operator+=(const char * rhs);
 
-  inline friend bool operator ==(const AnsiString & lhs, const AnsiString & rhs)
+  inline friend bool operator==(const AnsiString & lhs, const AnsiString & rhs)
   { return lhs.Data == rhs.Data; }
-  inline friend bool operator !=(const AnsiString & lhs, const AnsiString & rhs)
+  inline friend bool operator!=(const AnsiString & lhs, const AnsiString & rhs)
   { return lhs.Data != rhs.Data; }
 
-  inline friend bool operator ==(const AnsiString & lhs, const char * rhs)
+  inline friend bool operator==(const AnsiString & lhs, const char * rhs)
   { return lhs.Data == rhs; }
-  inline friend bool operator ==(const char * lhs, const AnsiString & rhs)
+  inline friend bool operator==(const char * lhs, const AnsiString & rhs)
   { return lhs == rhs.Data; }
-  inline friend bool operator !=(const AnsiString & lhs, const char * rhs)
+  inline friend bool operator!=(const AnsiString & lhs, const char * rhs)
   { return lhs.Data != rhs; }
-  inline friend bool operator !=(const char * lhs, const AnsiString & rhs)
+  inline friend bool operator!=(const char * lhs, const AnsiString & rhs)
   { return lhs != rhs.Data; }
 
 private:
@@ -300,7 +300,7 @@ public:
   RawByteString(const UTF8String & Str);
   ~RawByteString() {}
 
-  operator const char * () const { return Data.c_str(); }
+  operator const char *() const { return Data.c_str(); }
   operator UnicodeString() const;
   const char * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.GetLength(); }
@@ -329,16 +329,16 @@ public:
   RawByteString & operator=(const wchar_t * lpwszData);
   RawByteString & operator=(wchar_t chData);
 
-  RawByteString operator +(const RawByteString & rhs) const;
+  RawByteString operator+(const RawByteString & rhs) const;
 
-  RawByteString & operator +=(const RawByteString & rhs);
-  RawByteString & operator +=(const char Ch);
+  RawByteString & operator+=(const RawByteString & rhs);
+  RawByteString & operator+=(const char Ch);
 
-  bool operator ==(const char * rhs) const
+  bool operator==(const char * rhs) const
   { return Data == rhs; }
-  inline friend bool operator ==(RawByteString & lhs, RawByteString & rhs)
+  inline friend bool operator==(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data == rhs.Data; }
-  inline friend bool operator !=(RawByteString & lhs, RawByteString & rhs)
+  inline friend bool operator!=(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data != rhs.Data; }
 
 private:

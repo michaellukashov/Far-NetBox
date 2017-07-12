@@ -55,8 +55,8 @@ public:
 
   virtual void Default();
   virtual void Assign(const TCopyParamType * Source);
-  TGUICopyParamType & operator =(const TGUICopyParamType & rhp);
-  TGUICopyParamType & operator =(const TCopyParamType & rhp);
+  TGUICopyParamType & operator=(const TGUICopyParamType & rhp);
+  TGUICopyParamType & operator=(const TCopyParamType & rhp);
 
 #if 0
   __property bool Queue = { read = FQueue, write = FQueue };
@@ -110,7 +110,7 @@ public:
 
   UnicodeString GetInfoStr(const UnicodeString & Separator) const;
 
-  bool operator ==(const TCopyParamRule & rhp) const;
+  bool operator==(const TCopyParamRule & rhp) const;
 
 #if 0
   __property TCopyParamRuleData Data = { read = FData, write = FData };

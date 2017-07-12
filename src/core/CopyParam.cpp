@@ -528,7 +528,7 @@ void TCopyParamType::Assign(const TCopyParamType * Source)
 #undef COPY
 }
 
-TCopyParamType & TCopyParamType::operator =(const TCopyParamType & rhs)
+TCopyParamType & TCopyParamType::operator=(const TCopyParamType & rhs)
 {
   Assign(&rhs);
   return *this;

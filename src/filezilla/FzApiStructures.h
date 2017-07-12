@@ -28,8 +28,8 @@ public:
   EVP_PKEY * PrivateKey;
 };
 
-const bool operator == (const t_server &a,const t_server &b);
-const bool operator != (const t_server &a,const t_server &b);
+const bool operator==(const t_server &a,const t_server &b);
+const bool operator!=(const t_server &a,const t_server &b);
 
 #include "ServerPath.h"
 

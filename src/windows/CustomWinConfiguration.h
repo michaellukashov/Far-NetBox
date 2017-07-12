@@ -21,7 +21,7 @@ struct TSynchronizeChecklistConfiguration
 {
   UnicodeString WindowParams;
   UnicodeString ListParams;
-  bool __fastcall operator !=(TSynchronizeChecklistConfiguration & rhc)
+  bool __fastcall operator!=(TSynchronizeChecklistConfiguration & rhc)
     { return C(WindowParams) C(ListParams) 0; };
 };
 typedef TSynchronizeChecklistConfiguration TFindFileConfiguration;
@@ -29,7 +29,7 @@ typedef TSynchronizeChecklistConfiguration TFindFileConfiguration;
 struct TConsoleWinConfiguration
 {
   UnicodeString WindowSize;
-  bool __fastcall operator !=(TConsoleWinConfiguration & rhc)
+  bool __fastcall operator!=(TConsoleWinConfiguration & rhc)
     { return C(WindowSize) 0; };
 };
 //---------------------------------------------------------------------------
@@ -38,8 +38,8 @@ enum TSiteSearch { ssSiteNameStartOnly, ssSiteName, ssSite };
 struct TLoginDialogConfiguration : public TConsoleWinConfiguration
 {
   TSiteSearch SiteSearch;
-  bool __fastcall operator !=(TLoginDialogConfiguration & rhc)
-    { return (TConsoleWinConfiguration::operator !=(rhc)) || C(SiteSearch) 0; };
+  bool __fastcall operator!=(TLoginDialogConfiguration & rhc)
+    { return (TConsoleWinConfiguration::operator!=(rhc)) || C(SiteSearch) 0; };
 };
 //---------------------------------------------------------------------------
 class TCustomWinConfiguration : public TGUIConfiguration

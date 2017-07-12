@@ -70,7 +70,7 @@ public:
   {
     AddMoreMessages(&E);
   }
-  ExtException & operator = (const ExtException & rhs)
+  ExtException & operator=(const ExtException & rhs)
   {
     FHelpKeyword = rhs.FHelpKeyword;
     Message = rhs.Message;
