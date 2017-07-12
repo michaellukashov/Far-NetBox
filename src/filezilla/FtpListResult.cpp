@@ -2891,7 +2891,7 @@ BOOL CFtpListResult::parseAsIBMMVSPDS2(const char *line, const int linelen, t_di
     IsNumeric(str, tokenlen))
   {
     int prevlen = tokenlen;
-    const char* prev = str;
+    const char *prev = str;
     int oldpos = pos;
 
     str = GetNextToken(line, linelen, tokenlen, pos, 0);
@@ -2964,8 +2964,8 @@ BOOL CFtpListResult::parseAsIBMMVSPDS2(const char *line, const int linelen, t_di
   if (!IsNumeric(str, tokenlen))
     return false;
 
-  const char* prevprev = 0;
-  const char* prev = 0;
+  const char *prevprev = 0;
+  const char *prev = 0;
   int prevprevlen = 0;
   int prevlen = 0;
 
@@ -3111,7 +3111,7 @@ BOOL CFtpListResult::parseAsWfFtp(const char *line, const int linelen, t_directo
   return TRUE;
 }
 
-bool CFtpListResult::ParseSize(const char* str, int len, int64_t &size) const
+bool CFtpListResult::ParseSize(const char *str, int len, int64_t &size) const
 {
   if (len < 1)
     return false;

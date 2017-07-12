@@ -486,7 +486,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       const char start[] = "HTTP/";
       if (memcmp(start, m_pStrBuffer, (strlen(start)>strlen(m_pStrBuffer)) ? strlen(m_pStrBuffer) : strlen(start)))
       {
-        char* str = nb::chcalloc(strlen("No valid HTTP response") + 1);
+        char *str = nb::chcalloc(strlen("No valid HTTP response") + 1);
         strcpy(str, "No valid HTTP response");
         ConnectionFailed(WSAECONNABORTED, str);
         return;

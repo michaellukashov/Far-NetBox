@@ -81,7 +81,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   int nType;
   intptr_t nParam1;
   intptr_t nParam2;
-  char* str;
+  char *str;
 };
 
 class CAsyncSocketEx

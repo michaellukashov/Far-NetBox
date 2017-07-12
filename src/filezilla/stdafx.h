@@ -125,9 +125,9 @@ struct CStringDataA
   int nAllocLength;       // length of allocation
   // char data[nAllocLength];
 
-  CHAR * data()           // CHAR* to managed data
+  CHAR *data()           // CHAR * to managed data
   {
-    return (CHAR *)(this+1);
+    return (CHAR *)(this + 1);
   }
 };
 

@@ -1493,7 +1493,7 @@ BOOL CFtpControlSocket::Send(CString str)
       DoClose();
       return FALSE;
     }
-    char* utf8 = nb::chcalloc(len + 1);
+    char *utf8 = nb::chcalloc(len + 1);
     WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf8, len + 1, 0, 0);
 
     size_t sendLen = strlen(utf8);
@@ -1520,7 +1520,7 @@ BOOL CFtpControlSocket::Send(CString str)
       }
       else
       {
-        char* tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
+        char *tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
         memcpy(tmp, m_sendBuffer, m_sendBufferLen);
         memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
         nb_free(m_sendBuffer);
@@ -1540,7 +1540,7 @@ BOOL CFtpControlSocket::Send(CString str)
       DoClose();
       return FALSE;
     }
-    char* utf8 = nb::chcalloc(len + 1);
+    char *utf8 = nb::chcalloc(len + 1);
     WideCharToMultiByte(m_nCodePage, 0, unicode, -1, utf8, len + 1, 0, 0);
 
     size_t sendLen = strlen(utf8);
@@ -1567,7 +1567,7 @@ BOOL CFtpControlSocket::Send(CString str)
       }
       else
       {
-        char* tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
+        char *tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
         memcpy(tmp, m_sendBuffer, m_sendBufferLen);
         memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
         nb_free(m_sendBuffer);
@@ -1604,7 +1604,7 @@ BOOL CFtpControlSocket::Send(CString str)
       }
       else
       {
-        char* tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
+        char *tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
         memcpy(tmp, m_sendBuffer, m_sendBufferLen);
         memcpy(tmp + m_sendBufferLen, lpszAsciiSend + res, sendLen - res);
         nb_free(m_sendBuffer);
@@ -6401,7 +6401,7 @@ void CFtpControlSocket::OnSend(int nErrorCode)
   }
   else
   {
-    char* tmp = nb::chcalloc(m_sendBufferLen - res);
+    char *tmp = nb::chcalloc(m_sendBufferLen - res);
     memcpy(tmp, m_sendBuffer + res, m_sendBufferLen - res);
     nb_free(m_sendBuffer);
     m_sendBuffer = tmp;
