@@ -33,8 +33,8 @@
 ///* TODO : Better user interface (query to user) */
 void FileOperationLoopCustom(TTerminal * Terminal,
   TFileOperationProgressType * OperationProgress,
-  bool AllowSkip, const UnicodeString & Message,
-  const UnicodeString & HelpKeyword,
+  bool AllowSkip, UnicodeString Message,
+  UnicodeString HelpKeyword,
   const std::function<void()> & Operation)
 {
   bool DoRepeat;
@@ -86,8 +86,8 @@ class TLoopDetector : public TObject
 {
 public:
   TLoopDetector();
-  void RecordVisitedDirectory(const UnicodeString & Directory);
-  bool IsUnvisitedDirectory(const UnicodeString & Directory);
+  void RecordVisitedDirectory(UnicodeString Directory);
+  bool IsUnvisitedDirectory(UnicodeString Directory);
 
 private:
   std::unique_ptr<TStringList> FVisitedDirectories;
@@ -98,13 +98,13 @@ TLoopDetector::TLoopDetector()
   FVisitedDirectories.reset(CreateSortedStringList());
 }
 
-void TLoopDetector::RecordVisitedDirectory(const UnicodeString & Directory)
+void TLoopDetector::RecordVisitedDirectory(UnicodeString Directory)
 {
   UnicodeString VisitedDirectory = ::ExcludeTrailingBackslash(Directory);
   FVisitedDirectories->Add(VisitedDirectory);
 }
 
-bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString & Directory)
+bool TLoopDetector::IsUnvisitedDirectory(UnicodeString Directory)
 {
   bool Result = (FVisitedDirectories->IndexOf(Directory) < 0);
 
@@ -181,7 +181,7 @@ TSynchronizeOptions::~TSynchronizeOptions()
   SAFE_DESTROY(Filter);
 }
 
-bool TSynchronizeOptions::MatchesFilter(const UnicodeString & AFileName) const
+bool TSynchronizeOptions::MatchesFilter(UnicodeString AFileName) const
 {
   bool Result = false;
   if (Filter == nullptr)
@@ -417,18 +417,18 @@ public:
   {
   }
 
-  virtual void Information(const UnicodeString & Str, bool Status);
-  virtual uintptr_t QueryUser(const UnicodeString & Query,
+  virtual void Information(UnicodeString Str, bool Status);
+  virtual uintptr_t QueryUser(UnicodeString Query,
     TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType);
-  virtual uintptr_t QueryUserException(const UnicodeString & Query,
+  virtual uintptr_t QueryUserException(UnicodeString Query,
     Exception * E, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType);
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    const UnicodeString & AName, const UnicodeString & AInstructions, TStrings * Prompts,
+    UnicodeString AName, UnicodeString AInstructions, TStrings * Prompts,
     TStrings * Results);
-  virtual void DisplayBanner(const UnicodeString & Banner);
-  virtual void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpContext);
+  virtual void DisplayBanner(UnicodeString Banner);
+  virtual void FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpContext);
   virtual void HandleExtendedException(Exception * E);
   virtual void Closed();
   virtual void ProcessGUI();
@@ -445,7 +445,7 @@ TTunnelUI::TTunnelUI(TTerminal * Terminal) :
   FTerminalThreadID = GetCurrentThreadId();
 }
 
-void TTunnelUI::Information(const UnicodeString & Str, bool Status)
+void TTunnelUI::Information(UnicodeString Str, bool Status)
 {
   if (GetCurrentThreadId() == FTerminalThreadID)
   {
@@ -453,7 +453,7 @@ void TTunnelUI::Information(const UnicodeString & Str, bool Status)
   }
 }
 
-uintptr_t TTunnelUI::QueryUser(const UnicodeString & Query,
+uintptr_t TTunnelUI::QueryUser(UnicodeString Query,
   TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
@@ -469,7 +469,7 @@ uintptr_t TTunnelUI::QueryUser(const UnicodeString & Query,
   return Result;
 }
 
-uintptr_t TTunnelUI::QueryUserException(const UnicodeString & Query,
+uintptr_t TTunnelUI::QueryUserException(UnicodeString Query,
   Exception * E, uintptr_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
@@ -486,7 +486,7 @@ uintptr_t TTunnelUI::QueryUserException(const UnicodeString & Query,
 }
 
 bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
-  const UnicodeString & AName, const UnicodeString & AInstructions, TStrings * Prompts, TStrings * Results)
+  UnicodeString AName, UnicodeString AInstructions, TStrings * Prompts, TStrings * Results)
 {
   bool Result = false;
   if (GetCurrentThreadId() == FTerminalThreadID)
@@ -505,7 +505,7 @@ bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
   return Result;
 }
 
-void TTunnelUI::DisplayBanner(const UnicodeString & Banner)
+void TTunnelUI::DisplayBanner(UnicodeString Banner)
 {
   if (GetCurrentThreadId() == FTerminalThreadID)
   {
@@ -513,7 +513,7 @@ void TTunnelUI::DisplayBanner(const UnicodeString & Banner)
   }
 }
 
-void TTunnelUI::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpContext)
+void TTunnelUI::FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpContext)
 {
   throw ESshFatal(E, Msg, HelpContext);
 }
@@ -544,7 +544,7 @@ public:
   explicit TCallbackGuard(TTerminal * ATerminal);
   inline ~TCallbackGuard();
 
-  void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword);
+  void FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpKeyword);
   inline void Verify();
   inline bool Verify(Exception * E);
   void Dismiss();
@@ -577,7 +577,7 @@ TCallbackGuard::~TCallbackGuard()
   SAFE_DESTROY_EX(Exception, FFatalError);
 }
 
-void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
+void TCallbackGuard::FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpKeyword)
 {
   DebugAssert(FGuarding);
 
@@ -701,15 +701,15 @@ public:
 
   void Error(Exception & E);
   void Error(Exception & E, TSessionAction & Action);
-  void Error(Exception & E, const UnicodeString & Message);
-  void Error(Exception & E, TSessionAction & Action, const UnicodeString & Message);
+  void Error(Exception & E, UnicodeString Message);
+  void Error(Exception & E, TSessionAction & Action, UnicodeString Message);
   bool Retry();
 
 private:
   TTerminal * FTerminal;
   bool FRetry;
 
-  void DoError(Exception & E, TSessionAction * Action, const UnicodeString & Message);
+  void DoError(Exception & E, TSessionAction * Action, UnicodeString Message);
 };
 
 TRetryOperationLoop::TRetryOperationLoop(TTerminal * Terminal)
@@ -718,7 +718,7 @@ TRetryOperationLoop::TRetryOperationLoop(TTerminal * Terminal)
   FRetry = false;
 }
 
-void TRetryOperationLoop::DoError(Exception & E, TSessionAction * Action, const UnicodeString & Message)
+void TRetryOperationLoop::DoError(Exception & E, TSessionAction * Action, UnicodeString Message)
 {
   // Note that the action may already be canceled when RollbackAction is called
   uintptr_t Result;
@@ -776,12 +776,12 @@ void TRetryOperationLoop::Error(Exception & E, TSessionAction & Action)
   DoError(E, &Action, UnicodeString());
 }
 
-void TRetryOperationLoop::Error(Exception & E, const UnicodeString & Message)
+void TRetryOperationLoop::Error(Exception & E, UnicodeString Message)
 {
   DoError(E, nullptr, Message);
 }
 
-void TRetryOperationLoop::Error(Exception & E, TSessionAction & Action, const UnicodeString & Message)
+void TRetryOperationLoop::Error(Exception & E, TSessionAction & Action, UnicodeString Message)
 {
   DoError(E, &Action, Message);
 }
@@ -799,7 +799,7 @@ TCollectedFileList::TCollectedFileList() :
 {
 }
 
-intptr_t TCollectedFileList::Add(const UnicodeString & FileName, TObject * Object, bool Dir)
+intptr_t TCollectedFileList::Add(UnicodeString FileName, TObject * Object, bool Dir)
 {
   TFileData Data;
   Data.FileName = FileName;
@@ -859,8 +859,8 @@ TParallelOperation::TParallelOperation(TOperationSide Side) :
 }
 
 void TParallelOperation::Init(
-  TStrings * AFileList, const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
-  TFileOperationProgressType * MainOperationProgress, const UnicodeString & MainName)
+  TStrings * AFileList, UnicodeString TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
+  TFileOperationProgressType * MainOperationProgress, UnicodeString MainName)
 {
   DebugAssert(FFileList.get() == nullptr);
   // More lists should really happen in scripting only, which does not support parallel transfers atm.
@@ -946,7 +946,7 @@ void TParallelOperation::WaitFor()
 
 }
 
-void TParallelOperation::Done(const UnicodeString & FileName, bool Dir, bool Success)
+void TParallelOperation::Done(UnicodeString FileName, bool Dir, bool Success)
 {
   if (Dir)
   {
@@ -1314,7 +1314,7 @@ void TTerminal::Idle()
   }
 }
 
-RawByteString TTerminal::EncryptPassword(const UnicodeString & APassword) const
+RawByteString TTerminal::EncryptPassword(UnicodeString APassword) const
 {
   return FConfiguration->EncryptPassword(APassword, GetSessionData()->GetSessionName());
 }
@@ -1340,8 +1340,8 @@ void TTerminal::RecryptPasswords()
   FRememberedTunnelPassword = EncryptPassword(DecryptPassword(FRememberedTunnelPassword));
 }
 
-UnicodeString TTerminal::ExpandFileName(const UnicodeString & APath,
-  const UnicodeString & BasePath)
+UnicodeString TTerminal::ExpandFileName(UnicodeString APath,
+  UnicodeString BasePath)
 {
   // replace this by AbsolutePath()
   UnicodeString Result = base::UnixExcludeTrailingBackslash(APath);
@@ -1924,7 +1924,7 @@ void TTerminal::Reopen(intptr_t Params)
 }
 
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
-  const UnicodeString & AName, const UnicodeString & Instructions, const UnicodeString & Prompt, bool Echo, intptr_t MaxLen, UnicodeString & AResult)
+  UnicodeString AName, UnicodeString Instructions, UnicodeString Prompt, bool Echo, intptr_t MaxLen, UnicodeString & AResult)
 {
   bool Result = false;
   std::unique_ptr<TStrings> Prompts(new TStringList());
@@ -1947,7 +1947,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
 }
 
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
-  const UnicodeString & AName, const UnicodeString & Instructions, TStrings * Prompts, TStrings * Results)
+  UnicodeString AName, UnicodeString Instructions, TStrings * Prompts, TStrings * Results)
 {
   // If PromptUser is overridden in descendant class, the overridden version
   // is not called when accessed via TSessionIU interface.
@@ -1963,7 +1963,7 @@ TTerminal * TTerminal::GetPasswordSource()
 }
 
 bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
-  const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts, TStrings * Response)
+  UnicodeString Name, UnicodeString Instructions, TStrings * Prompts, TStrings * Response)
 {
   bool Result = false;
 
@@ -2038,7 +2038,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   return Result;
 }
 
-uintptr_t TTerminal::QueryUser(const UnicodeString & Query,
+uintptr_t TTerminal::QueryUser(UnicodeString Query,
   TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
@@ -2063,7 +2063,7 @@ uintptr_t TTerminal::QueryUser(const UnicodeString & Query,
   return Answer;
 }
 
-uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
+uintptr_t TTerminal::QueryUserException(UnicodeString Query,
   Exception * E, uintptr_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
@@ -2114,7 +2114,7 @@ uintptr_t TTerminal::QueryUserException(const UnicodeString & Query,
   return Result;
 }
 
-void TTerminal::DisplayBanner(const UnicodeString & Banner)
+void TTerminal::DisplayBanner(UnicodeString Banner)
 {
   if (GetOnDisplayBanner() != nullptr)
   {
@@ -2180,7 +2180,7 @@ void TTerminal::ShowExtendedException(Exception * E)
   }
 }
 
-void TTerminal::DoInformation(const UnicodeString & Str, bool Status,
+void TTerminal::DoInformation(UnicodeString Str, bool Status,
   intptr_t Phase)
 {
   if (GetOnInformation())
@@ -2201,7 +2201,7 @@ void TTerminal::DoInformation(const UnicodeString & Str, bool Status,
   }
 }
 
-void TTerminal::Information(const UnicodeString & Str, bool Status)
+void TTerminal::Information(UnicodeString Str, bool Status)
 {
   DoInformation(Str, Status);
 }
@@ -2239,7 +2239,7 @@ void TTerminal::DoProgress(TFileOperationProgressType & ProgressData)
 }
 
 void TTerminal::DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
-  const UnicodeString & AFileName, bool Success, TOnceDoneOperation & OnceDoneOperation)
+  UnicodeString AFileName, bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   if (GetOnFinished() != nullptr)
   {
@@ -2273,7 +2273,7 @@ bool TTerminal::GetIsCapable(TFSCapability Capability) const
   return FFileSystem->IsCapable(Capability);
 }
 
-UnicodeString TTerminal::GetAbsolutePath(const UnicodeString & APath, bool Local) const
+UnicodeString TTerminal::GetAbsolutePath(UnicodeString APath, bool Local) const
 {
   return FFileSystem->GetAbsolutePath(APath, Local);
 }
@@ -2348,7 +2348,7 @@ void TTerminal::TerminalError(UnicodeString Msg)
 }
 
 void TTerminal::TerminalError(
-  Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
+  Exception * E, UnicodeString Msg, UnicodeString HelpKeyword)
 {
   throw ETerminal(E, Msg, HelpKeyword);
 }
@@ -2441,8 +2441,8 @@ bool TTerminal::QueryReopen(Exception * E, intptr_t Params,
 }
 
 bool TTerminal::FileOperationLoopQuery(Exception & E,
-  TFileOperationProgressType * OperationProgress, const UnicodeString & Message,
-  bool AllowSkip, const UnicodeString & SpecialRetry, const UnicodeString & HelpKeyword)
+  TFileOperationProgressType * OperationProgress, UnicodeString Message,
+  bool AllowSkip, UnicodeString SpecialRetry, UnicodeString HelpKeyword)
 {
   bool Result = false;
   GetLog()->AddException(&E);
@@ -2524,7 +2524,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
 
 intptr_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
   TFileOperationProgressType * OperationProgress, bool AllowSkip,
-  const UnicodeString & Message, void * Param1, void * Param2)
+  UnicodeString Message, void * Param1, void * Param2)
 {
   DebugAssert(CallBackFunc);
   intptr_t Result = 0;
@@ -2537,7 +2537,7 @@ intptr_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
   return Result;
 }
 
-UnicodeString TTerminal::TranslateLockedPath(const UnicodeString & APath, bool Lock)
+UnicodeString TTerminal::TranslateLockedPath(UnicodeString APath, bool Lock)
 {
   UnicodeString Result = APath;
   if (GetSessionData()->GetLockInHome() && !Result.IsEmpty() && (Result[1] == L'/'))
@@ -2574,7 +2574,7 @@ void TTerminal::ClearCaches()
   }
 }
 
-void TTerminal::ClearCachedFileList(const UnicodeString & APath,
+void TTerminal::ClearCachedFileList(UnicodeString APath,
   bool SubDirs)
 {
   FDirectoryCache->ClearFileList(APath, SubDirs);
@@ -2585,7 +2585,7 @@ void TTerminal::AddCachedFileList(TRemoteFileList * FileList)
   FDirectoryCache->AddFileList(FileList);
 }
 
-TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, TDateTime Timestamp, bool CanLoad)
+TRemoteFileList * TTerminal::DirectoryFileList(UnicodeString APath, TDateTime Timestamp, bool CanLoad)
 {
   TRemoteFileList * Result = nullptr;
   if (base::UnixSamePath(FFiles->GetDirectory(), APath))
@@ -2626,7 +2626,7 @@ TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, TDat
   return Result;
 }
 
-void TTerminal::TerminalSetCurrentDirectory(const UnicodeString & AValue)
+void TTerminal::TerminalSetCurrentDirectory(UnicodeString AValue)
 {
   DebugAssert(FFileSystem);
   UnicodeString Value = TranslateLockedPath(AValue, false);
@@ -2928,7 +2928,7 @@ void TTerminal::FatalAbort()
   FatalError(nullptr, L"");
 }
 
-void TTerminal::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword)
+void TTerminal::FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpKeyword)
 {
   bool SecureShellActive = (FSecureShell != nullptr) && FSecureShell->GetActive();
   if (GetActive() || SecureShellActive)
@@ -2963,13 +2963,13 @@ void TTerminal::FatalError(Exception * E, const UnicodeString & Msg, const Unico
   }
 }
 
-void TTerminal::CommandError(Exception * E, const UnicodeString & Msg)
+void TTerminal::CommandError(Exception * E, UnicodeString Msg)
 {
   CommandError(E, Msg, 0);
 }
 
-uintptr_t TTerminal::CommandError(Exception * E, const UnicodeString & Msg,
-  uintptr_t Answers, const UnicodeString & HelpKeyword)
+uintptr_t TTerminal::CommandError(Exception * E, UnicodeString Msg,
+  uintptr_t Answers, UnicodeString HelpKeyword)
 {
   // may not be, particularly when TTerminal::Reopen is being called
   // from within OnShowExtendedException handler
@@ -3048,8 +3048,8 @@ bool TTerminal::HandleException(Exception* E)
 }
 
 void TTerminal::CloseOnCompletion(
-  TOnceDoneOperation Operation, const UnicodeString & Message,
-  const UnicodeString & TargetLocalPath, const UnicodeString & DestLocalFileName)
+  TOnceDoneOperation Operation, UnicodeString Message,
+  UnicodeString TargetLocalPath, UnicodeString DestLocalFileName)
 {
 //  Configuration->Usage->Inc(L"ClosesOnCompletion");
   LogEvent("Closing session after completed operation (as requested by user)");
@@ -3060,7 +3060,7 @@ void TTerminal::CloseOnCompletion(
 }
 
 TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
-  const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special) const
+  UnicodeString ASourceFullFileName, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress, bool Special) const
 {
   TBatchOverwrite Result;
   if (Special &&
@@ -3098,7 +3098,7 @@ TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
 }
 
 bool TTerminal::CheckRemoteFile(
-  const UnicodeString & AFileName, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress) const
+  UnicodeString AFileName, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress) const
 {
   bool Result;
   OperationProgress->LockUserSelections();
@@ -3120,10 +3120,10 @@ bool TTerminal::CheckRemoteFile(
 }
 
 uintptr_t TTerminal::ConfirmFileOverwrite(
-  const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
+  UnicodeString ASourceFullFileName, UnicodeString ATargetFileName,
   const TOverwriteFileParams * FileParams, uintptr_t Answers, TQueryParams * QueryParams,
   TOperationSide Side, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
-  const UnicodeString & AMessage)
+  UnicodeString AMessage)
 {
   UnicodeString Message = AMessage;
   uintptr_t Result = 0;
@@ -3288,7 +3288,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(
 }
 
 void TTerminal::FileModified(const TRemoteFile * AFile,
-  const UnicodeString & AFileName, bool ClearDirectoryChange)
+  UnicodeString AFileName, bool ClearDirectoryChange)
 {
   UnicodeString ParentDirectory;
   UnicodeString Directory;
@@ -3342,7 +3342,7 @@ void TTerminal::FileModified(const TRemoteFile * AFile,
   }
 }
 
-void TTerminal::DirectoryModified(const UnicodeString & APath, bool SubDirs)
+void TTerminal::DirectoryModified(UnicodeString APath, bool SubDirs)
 {
   if (APath.IsEmpty())
   {
@@ -3393,7 +3393,7 @@ void TTerminal::RefreshDirectory()
   }
 }
 
-void TTerminal::EnsureNonExistence(const UnicodeString & AFileName)
+void TTerminal::EnsureNonExistence(UnicodeString AFileName)
 {
   // if filename doesn't contain path, we check for existence of file
   if ((base::UnixExtractFileDir(AFileName).IsEmpty()) &&
@@ -3414,7 +3414,7 @@ void TTerminal::EnsureNonExistence(const UnicodeString & AFileName)
   }
 }
 
-void TTerminal::LogEvent(const UnicodeString & Str)
+void TTerminal::LogEvent(UnicodeString Str)
 {
   if (GetLog()->GetLogging())
   {
@@ -3666,7 +3666,7 @@ void TTerminal::LogRemoteFile(TRemoteFile * AFile)
   }
 }
 
-UnicodeString TTerminal::FormatFileDetailsForLog(const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size)
+UnicodeString TTerminal::FormatFileDetailsForLog(UnicodeString AFileName, const TDateTime & AModification, int64_t Size)
 {
   UnicodeString Result;
   // optimization
@@ -3677,7 +3677,7 @@ UnicodeString TTerminal::FormatFileDetailsForLog(const UnicodeString & AFileName
   return Result;
 }
 
-void TTerminal::LogFileDetails(const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size)
+void TTerminal::LogFileDetails(UnicodeString AFileName, const TDateTime & AModification, int64_t Size)
 {
   // optimization
   if (GetLog()->GetLogging())
@@ -3686,7 +3686,7 @@ void TTerminal::LogFileDetails(const UnicodeString & AFileName, const TDateTime 
   }
 }
 
-void TTerminal::LogFileDone(TFileOperationProgressType * OperationProgress, const UnicodeString & DestFileName)
+void TTerminal::LogFileDone(TFileOperationProgressType * OperationProgress, UnicodeString DestFileName)
 {
   if (FDestFileName.IsEmpty())
   {
@@ -3745,7 +3745,7 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * AFileList)
   ReactOnCommand(fsListDirectory);
 }
 
-TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Directory, const TFileMasks & Mask)
+TRemoteFileList * TTerminal::ReadDirectoryListing(UnicodeString Directory, const TFileMasks & Mask)
 {
   TRemoteFileList * FileList = nullptr;
   TRetryOperationLoop RetryLoop(this);
@@ -3790,7 +3790,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & Director
   return FileList;
 }
 
-TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
+TRemoteFile * TTerminal::ReadFileListing(UnicodeString APath)
 {
   TRemoteFile * File = nullptr;
   TRetryOperationLoop RetryLoop(this);
@@ -3814,7 +3814,7 @@ TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
   return File;
 }
 
-TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Directory, bool UseCache)
+TRemoteFileList * TTerminal::CustomReadDirectoryListing(UnicodeString Directory, bool UseCache)
 {
   TRemoteFileList * FileList = nullptr;
   TRetryOperationLoop RetryLoop(this);
@@ -3833,7 +3833,7 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString & Di
   return FileList;
 }
 
-TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & ADirectory, bool UseCache)
+TRemoteFileList * TTerminal::DoReadDirectoryListing(UnicodeString ADirectory, bool UseCache)
 {
   std::unique_ptr<TRemoteFileList> FileList(new TRemoteFileList());
   try__catch
@@ -3881,7 +3881,7 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & ADirec
   return FileList.release();
 }
 
-void TTerminal::ProcessDirectory(const UnicodeString & ADirName,
+void TTerminal::ProcessDirectory(UnicodeString ADirName,
   TProcessFileEvent CallBackFunc, void * Param, bool UseCache, bool IgnoreErrors)
 {
   std::unique_ptr<TRemoteFileList> FileList;
@@ -3975,7 +3975,7 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
   }
 }
 
-void TTerminal::ReadFile(const UnicodeString & AFileName,
+void TTerminal::ReadFile(UnicodeString AFileName,
   TRemoteFile *& AFile)
 {
   DebugAssert(FFileSystem);
@@ -3998,7 +3998,7 @@ void TTerminal::ReadFile(const UnicodeString & AFileName,
   }
 }
 
-bool TTerminal::FileExists(const UnicodeString & AFileName, TRemoteFile ** AFile)
+bool TTerminal::FileExists(UnicodeString AFileName, TRemoteFile ** AFile)
 {
   bool Result = false;
   TRemoteFile * File = nullptr;
@@ -4222,7 +4222,7 @@ TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(intptr_t Params)
   return Result;
 }
 
-bool TTerminal::IsRecycledFile(const UnicodeString & AFileName)
+bool TTerminal::IsRecycledFile(UnicodeString AFileName)
 {
   bool Result = !GetSessionData()->GetRecycleBinPath().IsEmpty();
   if (Result)
@@ -4237,7 +4237,7 @@ bool TTerminal::IsRecycledFile(const UnicodeString & AFileName)
   return Result;
 }
 
-void TTerminal::RecycleFile(const UnicodeString & AFileName,
+void TTerminal::RecycleFile(UnicodeString AFileName,
   const TRemoteFile * AFile)
 {
   UnicodeString FileName = AFileName;
@@ -4275,7 +4275,7 @@ void TTerminal::RecycleFile(const UnicodeString & AFileName,
 }
 
 bool TTerminal::TryStartOperationWithFile(
-  const UnicodeString & AFileName, TFileOperation Operation1, TFileOperation Operation2)
+  UnicodeString AFileName, TFileOperation Operation1, TFileOperation Operation2)
 {
   bool Result = true;
   if ((GetOperationProgress() != nullptr) &&
@@ -4295,7 +4295,7 @@ bool TTerminal::TryStartOperationWithFile(
 }
 
 void TTerminal::StartOperationWithFile(
-  const UnicodeString & AFileName, TFileOperation Operation1, TFileOperation Operation2)
+  UnicodeString AFileName, TFileOperation Operation1, TFileOperation Operation2)
 {
   if (!TryStartOperationWithFile(AFileName, Operation1, Operation2))
   {
@@ -4303,7 +4303,7 @@ void TTerminal::StartOperationWithFile(
   }
 }
 
-void TTerminal::RemoteDeleteFile(const UnicodeString & AFileName,
+void TTerminal::RemoteDeleteFile(UnicodeString AFileName,
   const TRemoteFile * AFile, void * AParams)
 {
   UnicodeString FileName = AFileName;
@@ -4330,7 +4330,7 @@ void TTerminal::RemoteDeleteFile(const UnicodeString & AFileName,
   }
 }
 
-void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
+void TTerminal::DoDeleteFile(UnicodeString AFileName,
   const TRemoteFile * AFile, intptr_t Params)
 {
   TRetryOperationLoop RetryLoop(this);
@@ -4362,7 +4362,7 @@ bool TTerminal::RemoteDeleteFiles(TStrings * AFilesToDelete, intptr_t Params)
   return ProcessFiles(AFilesToDelete, foDelete, nb::bind(&TTerminal::RemoteDeleteFile, this), &Params);
 }
 
-void TTerminal::DeleteLocalFile(const UnicodeString & AFileName,
+void TTerminal::DeleteLocalFile(UnicodeString AFileName,
   const TRemoteFile * /*AFile*/, void * Params)
 {
   StartOperationWithFile(AFileName, foDelete);
@@ -4381,7 +4381,7 @@ bool TTerminal::DeleteLocalFiles(TStrings * AFileList, intptr_t Params)
   return ProcessFiles(AFileList, foDelete, nb::bind(&TTerminal::DeleteLocalFile, this), &Params, osLocal);
 }
 
-void TTerminal::CustomCommandOnFile(const UnicodeString & AFileName,
+void TTerminal::CustomCommandOnFile(UnicodeString AFileName,
   const TRemoteFile * AFile, void * AParams)
 {
   TCustomCommandParams * Params = get_as<TCustomCommandParams>(AParams);
@@ -4399,8 +4399,8 @@ void TTerminal::CustomCommandOnFile(const UnicodeString & AFileName,
   ReactOnCommand(fsAnyCommand);
 }
 
-void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params,
+void TTerminal::DoCustomCommandOnFile(UnicodeString AFileName,
+  const TRemoteFile * AFile, UnicodeString Command, intptr_t Params,
   TCaptureOutputEvent OutputEvent)
 {
   TRetryOperationLoop RetryLoop(this);
@@ -4447,7 +4447,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
   while (RetryLoop.Retry());
 }
 
-void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
+void TTerminal::CustomCommandOnFiles(UnicodeString Command,
   intptr_t Params, TStrings * AFiles, TCaptureOutputEvent OutputEvent)
 {
   if (!TRemoteCustomCommand().IsFileListCommand(Command))
@@ -4488,7 +4488,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & Command,
   }
 }
 
-bool TTerminal::DoOnCustomCommand(const UnicodeString & Command)
+bool TTerminal::DoOnCustomCommand(UnicodeString Command)
 {
   bool Result = false;
   if (FOnCustomCommand != nullptr)
@@ -4498,7 +4498,7 @@ bool TTerminal::DoOnCustomCommand(const UnicodeString & Command)
   return Result;
 }
 
-void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
+void TTerminal::ChangeFileProperties(UnicodeString AFileName,
   const TRemoteFile * AFile, /*const TRemoteProperties*/ void * Properties)
 {
   TRemoteProperties * RProperties = get_as<TRemoteProperties>(Properties);
@@ -4555,7 +4555,7 @@ void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
   ReactOnCommand(fsChangeProperties);
 }
 
-void TTerminal::DoChangeFileProperties(const UnicodeString & AFileName,
+void TTerminal::DoChangeFileProperties(UnicodeString AFileName,
   const TRemoteFile * AFile, const TRemoteProperties * Properties)
 {
   TRetryOperationLoop RetryLoop(this);
@@ -4600,7 +4600,7 @@ bool TTerminal::LoadFilesProperties(TStrings * AFileList)
   return Result;
 }
 
-void TTerminal::DoCalculateFileSize(const UnicodeString & AFileName,
+void TTerminal::DoCalculateFileSize(UnicodeString AFileName,
   const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * AParam)
 {
   TCalculateSizeParams * AParams = get_as<TCalculateSizeParams>(AParam);
@@ -4621,7 +4621,7 @@ void TTerminal::DoCalculateFileSize(const UnicodeString & AFileName,
 }
 
 
-void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
+void TTerminal::CalculateFileSize(UnicodeString AFileName,
   const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * AParam)
 {
   DebugAssert(AParam);
@@ -4707,7 +4707,7 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
   }
 }
 
-bool TTerminal::DoCalculateDirectorySize(const UnicodeString & AFileName,
+bool TTerminal::DoCalculateDirectorySize(UnicodeString AFileName,
   const TRemoteFile * /*AFile*/, TCalculateSizeParams * Params)
 {
   bool Result = false;
@@ -4755,15 +4755,15 @@ bool TTerminal::CalculateFilesSize(const TStrings * AFileList,
   return Param->Result;
 }
 
-void TTerminal::CalculateFilesChecksum(const UnicodeString & Alg,
+void TTerminal::CalculateFilesChecksum(UnicodeString Alg,
   TStrings * AFileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
   FFileSystem->CalculateFilesChecksum(Alg, AFileList, Checksums, OnCalculatedChecksum);
 }
 
-void TTerminal::TerminalRenameFile(const UnicodeString & AFileName,
-  const UnicodeString & ANewName)
+void TTerminal::TerminalRenameFile(UnicodeString AFileName,
+  UnicodeString ANewName)
 {
   LogEvent(FORMAT(L"Renaming file \"%s\" to \"%s\".", AFileName.c_str(), ANewName.c_str()));
   DoRenameFile(AFileName, ANewName, false);
@@ -4771,7 +4771,7 @@ void TTerminal::TerminalRenameFile(const UnicodeString & AFileName,
 }
 
 void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
-  const UnicodeString & ANewName, bool CheckExistence)
+  UnicodeString ANewName, bool CheckExistence)
 {
   DebugAssert(AFile && AFile->GetDirectory() == FFiles);
   bool Proceed = true;
@@ -4815,8 +4815,8 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
   }
 }
 
-void TTerminal::DoRenameFile(const UnicodeString & AFileName,
-  const UnicodeString & ANewName, bool Move)
+void TTerminal::DoRenameFile(UnicodeString AFileName,
+  UnicodeString ANewName, bool Move)
 {
   TRetryOperationLoop RetryLoop(this);
   do
@@ -4836,7 +4836,7 @@ void TTerminal::DoRenameFile(const UnicodeString & AFileName,
   while (RetryLoop.Retry());
 }
 
-void TTerminal::TerminalMoveFile(const UnicodeString & AFileName,
+void TTerminal::TerminalMoveFile(UnicodeString AFileName,
   const TRemoteFile * AFile, /*const TMoveFileParams*/ void * Param)
 {
   StartOperationWithFile(AFileName, foRemoteMove, foDelete);
@@ -4850,8 +4850,8 @@ void TTerminal::TerminalMoveFile(const UnicodeString & AFileName,
   ReactOnCommand(fsMoveFile);
 }
 
-bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
-  const UnicodeString & FileMask)
+bool TTerminal::MoveFiles(TStrings * AFileList, UnicodeString Target,
+  UnicodeString FileMask)
 {
   TMoveFileParams Params;
   Params.Target = Target;
@@ -4877,7 +4877,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
           // File can be nullptr, and filename may not be full path,
           // but currently this is the only way we can move (at least in GUI)
           // current directory
-          const UnicodeString & Str = AFileList->GetString(Index);
+          UnicodeString Str = AFileList->GetString(Index);
           if ((File != nullptr) &&
             File->GetIsDirectory() &&
             ((CurrentDirectory.SubString(1, Str.Length()) == Str) &&
@@ -4949,8 +4949,8 @@ bool TTerminal::MoveFiles(TStrings * AFileList, const UnicodeString & Target,
   return Result;
 }
 
-void TTerminal::DoCopyFile(const UnicodeString & AFileName,
-  const UnicodeString & ANewName)
+void TTerminal::DoCopyFile(UnicodeString AFileName,
+  UnicodeString ANewName)
 {
   TRetryOperationLoop RetryLoop(this);
   do
@@ -4979,7 +4979,7 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
   while (RetryLoop.Retry());
 }
 
-void TTerminal::TerminalCopyFile(const UnicodeString & AFileName,
+void TTerminal::TerminalCopyFile(UnicodeString AFileName,
   const TRemoteFile * /*File*/, /*const TMoveFileParams*/ void * Param)
 {
   StartOperationWithFile(AFileName, foRemoteCopy);
@@ -4992,8 +4992,8 @@ void TTerminal::TerminalCopyFile(const UnicodeString & AFileName,
   ReactOnCommand(fsCopyFile);
 }
 
-bool TTerminal::CopyFiles(const TStrings * AFileList, const UnicodeString & Target,
-  const UnicodeString & FileMask)
+bool TTerminal::CopyFiles(const TStrings * AFileList, UnicodeString Target,
+  UnicodeString FileMask)
 {
   TMoveFileParams Params;
   Params.Target = Target;
@@ -5002,7 +5002,7 @@ bool TTerminal::CopyFiles(const TStrings * AFileList, const UnicodeString & Targ
   return ProcessFiles(AFileList, foRemoteCopy, nb::bind(&TTerminal::TerminalCopyFile, this), &Params);
 }
 
-void TTerminal::RemoteCreateDirectory(const UnicodeString & ADirName,
+void TTerminal::RemoteCreateDirectory(UnicodeString ADirName,
   const TRemoteProperties * Properties)
 {
   DebugAssert(FFileSystem);
@@ -5020,7 +5020,7 @@ void TTerminal::RemoteCreateDirectory(const UnicodeString & ADirName,
   ReactOnCommand(fsCreateDirectory);
 }
 
-void TTerminal::DoCreateDirectory(const UnicodeString & ADirName)
+void TTerminal::DoCreateDirectory(UnicodeString ADirName)
 {
   TRetryOperationLoop RetryLoop(this);
   do
@@ -5039,8 +5039,8 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName)
   while (RetryLoop.Retry());
 }
 
-void TTerminal::CreateLink(const UnicodeString & AFileName,
-  const UnicodeString & PointTo, bool Symbolic, bool IsDirectory)
+void TTerminal::CreateLink(UnicodeString AFileName,
+  UnicodeString PointTo, bool Symbolic, bool IsDirectory)
 {
   DebugAssert(FFileSystem);
   EnsureNonExistence(AFileName);
@@ -5055,8 +5055,8 @@ void TTerminal::CreateLink(const UnicodeString & AFileName,
   ReactOnCommand(fsCreateDirectory);
 }
 
-void TTerminal::DoCreateLink(const UnicodeString & AFileName,
-  const UnicodeString & PointTo, bool Symbolic)
+void TTerminal::DoCreateLink(UnicodeString AFileName,
+  UnicodeString PointTo, bool Symbolic)
 {
   TRetryOperationLoop RetryLoop(this);
   do
@@ -5089,7 +5089,7 @@ void TTerminal::HomeDirectory()
   }
 }
 
-void TTerminal::RemoteChangeDirectory(const UnicodeString & Directory)
+void TTerminal::RemoteChangeDirectory(UnicodeString Directory)
 {
   UnicodeString DirectoryNormalized = base::ToUnixPath(Directory);
   DebugAssert(FFileSystem);
@@ -5153,7 +5153,7 @@ void TTerminal::LookupUsersGroups()
   }
 }
 
-bool TTerminal::AllowedAnyCommand(const UnicodeString & Command) const
+bool TTerminal::AllowedAnyCommand(UnicodeString Command) const
 {
   return !Command.Trim().IsEmpty();
 }
@@ -5166,7 +5166,7 @@ bool TTerminal::GetCommandSessionOpened() const
     (FCommandSession->GetStatus() == ssOpened);
 }
 
-TTerminal * TTerminal::CreateSecondarySession(const UnicodeString & Name, TSessionData * SessionData)
+TTerminal * TTerminal::CreateSecondarySession(UnicodeString Name, TSessionData * SessionData)
 {
   std::unique_ptr<TSecondaryTerminal> Result(new TSecondaryTerminal(this));
   Result->Init(SessionData, FConfiguration, Name);
@@ -5251,7 +5251,7 @@ public:
   {
   }
 
-  void Output(const UnicodeString & Str, TCaptureOutputType OutputType)
+  void Output(UnicodeString Str, TCaptureOutputType OutputType)
   {
     switch (OutputType)
     {
@@ -5279,7 +5279,7 @@ private:
 
 #pragma warning(pop)
 
-void TTerminal::AnyCommand(const UnicodeString & Command,
+void TTerminal::AnyCommand(UnicodeString Command,
   TCaptureOutputEvent OutputEvent)
 {
 
@@ -5294,7 +5294,7 @@ void TTerminal::AnyCommand(const UnicodeString & Command,
     {
     }
 
-    void Output(const UnicodeString & Str, TCaptureOutputType OutputType)
+    void Output(UnicodeString Str, TCaptureOutputType OutputType)
     {
       switch (OutputType)
       {
@@ -5327,7 +5327,7 @@ void TTerminal::AnyCommand(const UnicodeString & Command,
   DoAnyCommand(Command, nb::bind(&TOutputProxy::Output, &ProxyOutputEvent), &Action);
 }
 
-void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
+void TTerminal::DoAnyCommand(UnicodeString ACommand,
   TCaptureOutputEvent OutputEvent, TCallSessionAction * Action)
 {
   DebugAssert(FFileSystem);
@@ -5372,7 +5372,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
   }
 }
 
-bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
+bool TTerminal::DoCreateLocalFile(UnicodeString AFileName,
   TFileOperationProgressType * OperationProgress,
   bool Resume,
   bool NoConfirmation,
@@ -5485,7 +5485,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
   return Result;
 }
 
-bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
+bool TTerminal::TerminalCreateLocalFile(UnicodeString ATargetFileName,
   TFileOperationProgressType * OperationProgress,
   bool Resume,
   bool NoConfirmation,
@@ -5504,7 +5504,7 @@ bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
   return Result;
 }
 
-void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
+void TTerminal::TerminalOpenLocalFile(UnicodeString ATargetFileName,
   DWORD Access, OUT uintptr_t * AAttrs, OUT HANDLE * AHandle, OUT int64_t * ACTime,
   OUT int64_t * AMTime, OUT int64_t * AATime, OUT int64_t * ASize,
   bool TryWriteReadOnly)
@@ -5615,7 +5615,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
   }
 }
 
-bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
+bool TTerminal::AllowLocalFileTransfer(UnicodeString AFileName,
   const TCopyParamType * CopyParam, TFileOperationProgressType * OperationProgress)
 {
   bool Result = true;
@@ -5662,7 +5662,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
   return Result;
 }
 
-void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
+void TTerminal::MakeLocalFileList(UnicodeString AFileName,
   const TSearchRec & Rec, void * Param)
 {
   TMakeLocalFileListParams & Params = *get_as<TMakeLocalFileListParams>(Param);
@@ -5684,7 +5684,7 @@ void TTerminal::MakeLocalFileList(const UnicodeString & AFileName,
   }
 }
 
-void TTerminal::CalculateLocalFileSize(const UnicodeString & AFileName,
+void TTerminal::CalculateLocalFileSize(UnicodeString AFileName,
   const TSearchRec & Rec, /*int64_t*/ void * AParams)
 {
   TCalculateSizeParams * Params = get_as<TCalculateSizeParams>(AParams);
@@ -5891,8 +5891,8 @@ public:
   }
 };
 
-TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & LocalDirectory,
-  const UnicodeString & RemoteDirectory, TSynchronizeMode Mode,
+TSynchronizeChecklist * TTerminal::SynchronizeCollect(UnicodeString LocalDirectory,
+  UnicodeString RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, intptr_t Params,
   TSynchronizeDirectoryEvent OnSynchronizeDirectory,
   TSynchronizeOptions * Options)
@@ -5918,7 +5918,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   return Checklist.release();
 }
 
-static void AddFlagName(UnicodeString & ParamsStr, intptr_t & Params, intptr_t Param, const UnicodeString & Name)
+static void AddFlagName(UnicodeString & ParamsStr, intptr_t & Params, intptr_t Param, UnicodeString Name)
 {
   if (FLAGSET(Params, Param))
   {
@@ -5971,8 +5971,8 @@ UnicodeString TTerminal::SynchronizeParamsStr(intptr_t Params)
   return ParamsStr;
 }
 
-void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirectory,
-  const UnicodeString & ARemoteDirectory, TSynchronizeMode Mode,
+void TTerminal::DoSynchronizeCollectDirectory(UnicodeString ALocalDirectory,
+  UnicodeString ARemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, intptr_t Params,
   TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions * Options,
   intptr_t Level, TSynchronizeChecklist * Checklist)
@@ -6200,7 +6200,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
   };
 }
 
-void TTerminal::SynchronizeCollectFile(const UnicodeString & AFileName,
+void TTerminal::SynchronizeCollectFile(UnicodeString AFileName,
   const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param)
 {
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
@@ -6218,7 +6218,7 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & AFileName,
   }
 }
 
-void TTerminal::DoSynchronizeCollectFile(const UnicodeString & /*AFileName*/,
+void TTerminal::DoSynchronizeCollectFile(UnicodeString /*AFileName*/,
   const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param)
 {
   TSynchronizeData * Data = get_as<TSynchronizeData>(Param);
@@ -6424,7 +6424,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & /*AFileName*/,
 }
 
 void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
-  const UnicodeString & /*LocalDirectory*/, const UnicodeString & /*RemoteDirectory*/,
+  UnicodeString /*LocalDirectory*/, UnicodeString /*RemoteDirectory*/,
   const TCopyParamType * CopyParam, intptr_t Params,
   TSynchronizeDirectoryEvent OnSynchronizeDirectory)
 {
@@ -6627,7 +6627,7 @@ void TTerminal::DoSynchronizeProgress(const TSynchronizeData & Data,
   }
 }
 
-void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*FileName*/,
+void TTerminal::SynchronizeLocalTimestamp(UnicodeString /*FileName*/,
   const TRemoteFile * AFile, void * /*Param*/)
 {
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
@@ -6659,7 +6659,7 @@ void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*FileName*/,
   });
 }
 
-void TTerminal::SynchronizeRemoteTimestamp(const UnicodeString & /*AFileName*/,
+void TTerminal::SynchronizeRemoteTimestamp(UnicodeString /*AFileName*/,
   const TRemoteFile * AFile, void * /*Param*/)
 {
   const TChecklistItem * ChecklistItem =
@@ -6675,7 +6675,7 @@ void TTerminal::SynchronizeRemoteTimestamp(const UnicodeString & /*AFileName*/,
     nullptr, &Properties);
 }
 
-void TTerminal::FileFind(const UnicodeString & AFileName,
+void TTerminal::FileFind(UnicodeString AFileName,
   const TRemoteFile * AFile, /*TFilesFindParams*/ void * Param)
 {
   // see DoFilesFind
@@ -6733,7 +6733,7 @@ void TTerminal::FileFind(const UnicodeString & AFileName,
   }
 }
 
-void TTerminal::DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params, const UnicodeString & RealDirectory)
+void TTerminal::DoFilesFind(UnicodeString Directory, TFilesFindParams & Params, UnicodeString RealDirectory)
 {
   LogEvent(FORMAT(L"Searching directory \"%s\" (real path \"%s\")", Directory.c_str(), RealDirectory.c_str()));
   Params.OnFindingFile(this, Directory, Params.Cancel);
@@ -6765,7 +6765,7 @@ void TTerminal::DoFilesFind(const UnicodeString & Directory, TFilesFindParams & 
   }
 }
 
-void TTerminal::FilesFind(const UnicodeString & Directory, const TFileMasks & FileMask,
+void TTerminal::FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
   TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile)
 {
   TFilesFindParams Params;
@@ -6779,7 +6779,7 @@ void TTerminal::FilesFind(const UnicodeString & Directory, const TFileMasks & Fi
   DoFilesFind(Directory, Params, Directory);
 }
 
-void TTerminal::SpaceAvailable(const UnicodeString & APath,
+void TTerminal::SpaceAvailable(UnicodeString APath,
   TSpaceAvailable & ASpaceAvailable)
 {
   DebugAssert(GetIsCapable(fcCheckingSpaceAvailable));
@@ -6794,7 +6794,7 @@ void TTerminal::SpaceAvailable(const UnicodeString & APath,
   }
 }
 
-void TTerminal::LockFile(const UnicodeString & AFileName,
+void TTerminal::LockFile(UnicodeString AFileName,
   const TRemoteFile * AFile, void * /*Param*/)
 {
   StartOperationWithFile(AFileName, foLock);
@@ -6806,7 +6806,7 @@ void TTerminal::LockFile(const UnicodeString & AFileName,
   ReactOnCommand(fsLock);
 }
 
-void TTerminal::DoLockFile(const UnicodeString & AFileName, const TRemoteFile * AFile)
+void TTerminal::DoLockFile(UnicodeString AFileName, const TRemoteFile * AFile)
 {
   TRetryOperationLoop RetryLoop(this);
   do
@@ -6823,7 +6823,7 @@ void TTerminal::DoLockFile(const UnicodeString & AFileName, const TRemoteFile * 
   while (RetryLoop.Retry());
 }
 
-void TTerminal::UnlockFile(const UnicodeString & AFileName,
+void TTerminal::UnlockFile(UnicodeString AFileName,
   const TRemoteFile * AFile, void * /*Param*/)
 {
   StartOperationWithFile(AFileName, foUnlock);
@@ -6835,7 +6835,7 @@ void TTerminal::UnlockFile(const UnicodeString & AFileName,
   ReactOnCommand(fsLock);
 }
 
-void TTerminal::DoUnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile)
+void TTerminal::DoUnlockFile(UnicodeString AFileName, const TRemoteFile * AFile)
 {
   TRetryOperationLoop RetryLoop(this);
   do
@@ -7099,7 +7099,7 @@ void TTerminal::LogTotalTransferDone(TFileOperationProgressType * OperationProgr
 }
 
 bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params, TParallelOperation * ParallelOperation)
+  UnicodeString TargetDir, const TCopyParamType * CopyParam, intptr_t Params, TParallelOperation * ParallelOperation)
 {
   DebugAssert(FFileSystem);
   DebugAssert(AFilesToCopy);
@@ -7242,7 +7242,7 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
 }
 
 bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
+  UnicodeString TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
   TParallelOperation * ParallelOperation)
 {
   DebugAssert(FFileSystem);
@@ -7425,7 +7425,7 @@ bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
   return Result;
 }
 
-void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
+void TTerminal::SetLocalFileTime(UnicodeString LocalFileName,
   const TDateTime & Modification)
 {
   FILETIME WrTime = ::DateTimeToFileTime(Modification,
@@ -7433,7 +7433,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   SetLocalFileTime(LocalFileName, nullptr, &WrTime);
 }
 
-void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
+void TTerminal::SetLocalFileTime(UnicodeString LocalFileName,
   FILETIME * AcTime, FILETIME * WrTime)
 {
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
@@ -7453,7 +7453,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   });
 }
 
-HANDLE TTerminal::TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
+HANDLE TTerminal::TerminalCreateLocalFile(UnicodeString LocalFileName, DWORD DesiredAccess,
   DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   if (GetOnCreateLocalFile())
@@ -7466,7 +7466,7 @@ HANDLE TTerminal::TerminalCreateLocalFile(const UnicodeString & LocalFileName, D
   }
 }
 
-DWORD TTerminal::GetLocalFileAttributes(const UnicodeString & LocalFileName)
+DWORD TTerminal::GetLocalFileAttributes(UnicodeString LocalFileName)
 {
   if (GetOnGetLocalFileAttributes())
   {
@@ -7478,7 +7478,7 @@ DWORD TTerminal::GetLocalFileAttributes(const UnicodeString & LocalFileName)
   }
 }
 
-BOOL TTerminal::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
+BOOL TTerminal::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes)
 {
   if (GetOnSetLocalFileAttributes())
   {
@@ -7490,7 +7490,7 @@ BOOL TTerminal::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWOR
   }
 }
 
-BOOL TTerminal::MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
+BOOL TTerminal::MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags)
 {
   if (GetOnMoveLocalFile())
   {
@@ -7502,7 +7502,7 @@ BOOL TTerminal::MoveLocalFile(const UnicodeString & LocalFileName, const Unicode
   }
 }
 
-BOOL TTerminal::RemoveLocalDirectory(const UnicodeString & LocalDirName)
+BOOL TTerminal::RemoveLocalDirectory(UnicodeString LocalDirName)
 {
   if (GetOnRemoveLocalDirectory())
   {
@@ -7514,7 +7514,7 @@ BOOL TTerminal::RemoveLocalDirectory(const UnicodeString & LocalDirName)
   }
 }
 
-BOOL TTerminal::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+BOOL TTerminal::CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   if (GetOnCreateLocalDirectory())
   {
@@ -7607,15 +7607,15 @@ bool TTerminal::CheckForEsc()
     return (FOperationProgress && FOperationProgress->GetCancel() == csCancel);
 }
 
-static UnicodeString FormatCertificateData(const UnicodeString & Fingerprint, int Failures)
+static UnicodeString FormatCertificateData(UnicodeString Fingerprint, int Failures)
 {
   return FORMAT(L"%s;%2.2X", Fingerprint.c_str(), Failures);
 }
 
 bool TTerminal::VerifyCertificate(
-  const UnicodeString & CertificateStorageKey, const UnicodeString & SiteKey,
-  const UnicodeString & Fingerprint,
-  const UnicodeString & CertificateSubject, int Failures)
+  UnicodeString CertificateStorageKey, UnicodeString SiteKey,
+  UnicodeString Fingerprint,
+  UnicodeString CertificateSubject, int Failures)
 {
   bool Result = false;
 
@@ -7666,8 +7666,8 @@ bool TTerminal::VerifyCertificate(
   return Result;
 }
 
-void TTerminal::CacheCertificate(const UnicodeString & CertificateStorageKey,
-  const UnicodeString & SiteKey, const UnicodeString & Fingerprint, int Failures)
+void TTerminal::CacheCertificate(UnicodeString CertificateStorageKey,
+  UnicodeString SiteKey, UnicodeString Fingerprint, int Failures)
 {
   UnicodeString CertificateData = FormatCertificateData(Fingerprint, Failures);
 
@@ -7680,7 +7680,7 @@ void TTerminal::CacheCertificate(const UnicodeString & CertificateStorageKey,
   }
 }
 
-void TTerminal::CollectTlsUsage(const UnicodeString & TlsVersionStr)
+void TTerminal::CollectTlsUsage(UnicodeString TlsVersionStr)
 {
   // see SSL_get_version() in OpenSSL ssl_lib.c
 #if 0
@@ -7758,7 +7758,7 @@ bool TTerminal::LoadTlsCertificate(X509 *& Certificate, EVP_PKEY *& PrivateKey)
   return Result;
 }
 
-UnicodeString TTerminal::GetBaseFileName(const UnicodeString & AFileName) const
+UnicodeString TTerminal::GetBaseFileName(UnicodeString AFileName) const
 {
   UnicodeString FileName = AFileName;
 
@@ -7774,7 +7774,7 @@ UnicodeString TTerminal::GetBaseFileName(const UnicodeString & AFileName) const
 }
 
 UnicodeString TTerminal::ChangeFileName(const TCopyParamType * CopyParam,
-  const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel) const
+  UnicodeString AFileName, TOperationSide Side, bool FirstLevel) const
 {
   UnicodeString FileName = GetBaseFileName(AFileName);
   if (CopyParam)
@@ -7810,7 +7810,7 @@ TSecondaryTerminal::TSecondaryTerminal(TObjectClassId Kind, TTerminal * MainTerm
 }
 
 void TSecondaryTerminal::Init(
-  TSessionData * ASessionData, TConfiguration * AConfiguration, const UnicodeString & Name)
+  TSessionData * ASessionData, TConfiguration * AConfiguration, UnicodeString Name)
 {
   TTerminal::Init(ASessionData, AConfiguration);
   DebugAssert(FMainTerminal != nullptr);
@@ -7837,7 +7837,7 @@ void TSecondaryTerminal::DirectoryLoaded(TRemoteFileList * FileList)
   DebugAssert(FileList != nullptr);
 }
 
-void TSecondaryTerminal::DirectoryModified(const UnicodeString & APath,
+void TSecondaryTerminal::DirectoryModified(UnicodeString APath,
   bool SubDirs)
 {
   // clear cache of main terminal

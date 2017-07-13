@@ -40,7 +40,7 @@ typedef void (__closure *TQueryUserEvent)
    const TQueryParams * Params, uintptr_t & Answer, TQueryType QueryType, void * Arg);
 #endif
 typedef nb::FastDelegate8<void,
-  TObject * /*Sender*/, const UnicodeString & /*Query*/, TStrings * /*MoreMessages*/, uintptr_t /*Answers*/,
+  TObject * /*Sender*/, UnicodeString /*Query*/, TStrings * /*MoreMessages*/, uintptr_t /*Answers*/,
    const TQueryParams * /*Params*/, uintptr_t & /*Answer*/, TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
 #if 0
 typedef void (__closure *TPromptUserEvent)
@@ -48,18 +48,18 @@ typedef void (__closure *TPromptUserEvent)
    TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
 #endif
 typedef nb::FastDelegate8<void,
-  TTerminal * /*Terminal*/, TPromptKind /*Kind*/, const UnicodeString & /*Name*/,
-  const UnicodeString & /*Instructions*/,
+  TTerminal * /*Terminal*/, TPromptKind /*Kind*/, UnicodeString /*Name*/,
+  UnicodeString /*Instructions*/,
   TStrings * /*Prompts*/, TStrings * /*Results*/,
   bool & /*Result*/, void * /*Arg*/> TPromptUserEvent;
 #if 0
 typedef void (__closure *TDisplayBannerEvent)
-  (TTerminal * Terminal, UnicodeString SessionName, const UnicodeString & Banner,
+  (TTerminal * Terminal, UnicodeString SessionName, UnicodeString Banner,
    bool & NeverShowAgain, int Options);
 #endif
 typedef nb::FastDelegate5<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*SessionName*/,
-  const UnicodeString & /*Banner*/,
+  TTerminal * /*Terminal*/, UnicodeString /*SessionName*/,
+  UnicodeString /*Banner*/,
   bool & /*NeverShowAgain*/, intptr_t /*Options*/> TDisplayBannerEvent;
 #if 0
 typedef void (__closure *TExtendedExceptionEvent)
@@ -84,14 +84,14 @@ typedef void (__closure *TProcessFileEvent)
   (const UnicodeString FileName, const TRemoteFile * File, void * Param);
 #endif
 typedef nb::FastDelegate3<void,
-  const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
+  UnicodeString /*FileName*/, const TRemoteFile * /*File*/,
   void * /*Param*/> TProcessFileEvent;
 #if 0
 typedef void (__closure *TProcessFileEventEx)
   (const UnicodeString FileName, const TRemoteFile * File, void * Param, int Index);
 #endif
 typedef nb::FastDelegate4<void,
-  const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
+  UnicodeString /*FileName*/, const TRemoteFile * /*File*/,
   void * /*Param*/, intptr_t /*Index*/> TProcessFileEventEx;
 #if 0
 typedef int (__closure *TFileOperationEvent)
@@ -105,50 +105,50 @@ typedef void (__closure *TSynchronizeDirectory)
    bool & Continue, bool Collect);
 #endif
 typedef nb::FastDelegate4<void,
-  const UnicodeString & /*LocalDirectory*/, const UnicodeString & /*RemoteDirectory*/,
+  UnicodeString /*LocalDirectory*/, UnicodeString /*RemoteDirectory*/,
   bool & /*Continue*/, bool /*Collect*/> TSynchronizeDirectoryEvent;
 #if 0
 typedef void (__closure *TDeleteLocalFileEvent)(
   const UnicodeString FileName, bool Alternative);
 #endif
 typedef nb::FastDelegate2<void,
-  const UnicodeString & /*FileName*/, bool /*Alternative*/> TDeleteLocalFileEvent;
+  UnicodeString /*FileName*/, bool /*Alternative*/> TDeleteLocalFileEvent;
 #if 0
 typedef int (__closure *TDirectoryModifiedEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool SubDirs);
 #endif
 typedef nb::FastDelegate3<int,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/,
+  TTerminal * /*Terminal*/, UnicodeString /*Directory*/,
   bool /*SubDirs*/> TDirectoryModifiedEvent;
 #if 0
 typedef void (__closure *TInformationEvent)
-  (TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
+  (TTerminal * Terminal, UnicodeString Str, bool Status, int Phase);
 #endif
 typedef nb::FastDelegate4<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Str*/, bool /*Status*/,
+  TTerminal * /*Terminal*/, UnicodeString /*Str*/, bool /*Status*/,
   intptr_t /*Phase*/> TInformationEvent;
 #if 0
 typedef void (__closure *TCustomCommandEvent)
-  (TTerminal * Terminal, const UnicodeString & Command, bool & Handled);
+  (TTerminal * Terminal, UnicodeString Command, bool & Handled);
 #endif
 typedef nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Command*/, bool & /*Handled*/> TCustomCommandEvent;
+  TTerminal * /*Terminal*/, UnicodeString /*Command*/, bool & /*Handled*/> TCustomCommandEvent;
 
 typedef nb::FastDelegate5<HANDLE,
-  const UnicodeString & /*FileName*/, DWORD /*DesiredAccess*/,
+  UnicodeString /*FileName*/, DWORD /*DesiredAccess*/,
   DWORD /*ShareMode*/, DWORD /*CreationDisposition*/,
   DWORD /*FlagsAndAttributes*/> TCreateLocalFileEvent;
 typedef nb::FastDelegate1<DWORD,
-  const UnicodeString & /*FileName*/> TGetLocalFileAttributesEvent;
+  UnicodeString /*FileName*/> TGetLocalFileAttributesEvent;
 typedef nb::FastDelegate2<BOOL,
-  const UnicodeString & /*FileName*/, DWORD /*FileAttributes*/> TSetLocalFileAttributesEvent;
+  UnicodeString /*FileName*/, DWORD /*FileAttributes*/> TSetLocalFileAttributesEvent;
 typedef nb::FastDelegate3<BOOL,
-  const UnicodeString & /*FileName*/, const UnicodeString & /*NewFileName*/,
+  UnicodeString /*FileName*/, UnicodeString /*NewFileName*/,
   DWORD /*Flags*/> TMoveLocalFileEvent;
 typedef nb::FastDelegate1<BOOL,
-  const UnicodeString & /*LocalDirName*/> TRemoveLocalDirectoryEvent;
+  UnicodeString /*LocalDirName*/> TRemoveLocalDirectoryEvent;
 typedef nb::FastDelegate2<BOOL,
-  const UnicodeString & /*LocalDirName*/,
+  UnicodeString /*LocalDirName*/,
   LPSECURITY_ATTRIBUTES /*SecurityAttributes*/> TCreateLocalDirectoryEvent;
 typedef nb::FastDelegate0<bool> TCheckForEscEvent;
 
@@ -205,7 +205,7 @@ enum TCurrentFSProtocol
   cfsWebDAV
 };
 
-inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
+inline void ThrowSkipFile(Exception * Exception, UnicodeString Message)
 {
   throw ESkipFile(Exception, Message);
 }
@@ -213,8 +213,8 @@ inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
 
 void FileOperationLoopCustom(TTerminal * Terminal,
   TFileOperationProgressType * OperationProgress,
-  bool AllowSkip, const UnicodeString & Message,
-  const UnicodeString & HelpKeyword,
+  bool AllowSkip, UnicodeString Message,
+  UnicodeString HelpKeyword,
   const std::function<void()> & Operation);
 
 const int cpDelete = 0x01;
@@ -358,9 +358,9 @@ private:
   bool FMultipleDestinationFiles;
 
 public:
-  void CommandError(Exception * E, const UnicodeString & Msg);
-  uintptr_t CommandError(Exception * E, const UnicodeString & Msg,
-    uintptr_t Answers, const UnicodeString & HelpKeyword = L"");
+  void CommandError(Exception * E, UnicodeString Msg);
+  uintptr_t CommandError(Exception * E, UnicodeString Msg,
+    uintptr_t Answers, UnicodeString HelpKeyword = L"");
   UnicodeString RemoteGetCurrentDirectory();
   bool GetExceptionOnFail() const;
   const TRemoteTokenList * GetGroups() const { return const_cast<TTerminal *>(this)->GetGroups(); }
@@ -369,12 +369,12 @@ public:
   TRemoteTokenList * GetUsers();
   TRemoteTokenList * GetMembership();
   const TRemoteTokenList * GetMembership() const { return const_cast<TTerminal *>(this)->GetMembership(); }
-  void TerminalSetCurrentDirectory(const UnicodeString & AValue);
+  void TerminalSetCurrentDirectory(UnicodeString AValue);
   void SetExceptionOnFail(bool Value);
   void ReactOnCommand(intptr_t /*TFSCommand*/ Cmd);
   UnicodeString TerminalGetUserName() const;
   bool GetAreCachesEmpty() const;
-  void ClearCachedFileList(const UnicodeString & APath, bool SubDirs);
+  void ClearCachedFileList(UnicodeString APath, bool SubDirs);
   void AddCachedFileList(TRemoteFileList * FileList);
   bool GetCommandSessionOpened() const;
   TTerminal * GetCommandSession();
@@ -399,128 +399,128 @@ public:
   void DoStartReadDirectory();
   void DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel);
   void DoReadDirectory(bool ReloadOnly);
-  void DoCreateDirectory(const UnicodeString & ADirName);
-  void DoDeleteFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
+  void DoCreateDirectory(UnicodeString ADirName);
+  void DoDeleteFile(UnicodeString AFileName, const TRemoteFile * AFile,
     intptr_t Params);
-  void DoCustomCommandOnFile(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
-  void DoRenameFile(const UnicodeString & AFileName,
-    const UnicodeString & ANewName, bool Move);
-  void DoCopyFile(const UnicodeString & AFileName, const UnicodeString & ANewName);
-  void DoChangeFileProperties(const UnicodeString & AFileName,
+  void DoCustomCommandOnFile(UnicodeString AFileName,
+    const TRemoteFile * AFile, UnicodeString Command, intptr_t Params, TCaptureOutputEvent OutputEvent);
+  void DoRenameFile(UnicodeString AFileName,
+    UnicodeString ANewName, bool Move);
+  void DoCopyFile(UnicodeString AFileName, UnicodeString ANewName);
+  void DoChangeFileProperties(UnicodeString AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties);
   void DoChangeDirectory();
   void DoInitializeLog();
-  void EnsureNonExistence(const UnicodeString & AFileName);
+  void EnsureNonExistence(UnicodeString AFileName);
   void LookupUsersGroups();
   void FileModified(const TRemoteFile * AFile,
-    const UnicodeString & AFileName, bool ClearDirectoryChange = false);
+    UnicodeString AFileName, bool ClearDirectoryChange = false);
   intptr_t FileOperationLoop(TFileOperationEvent CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
-    const UnicodeString & Message, void * Param1 = nullptr, void * Param2 = nullptr);
+    UnicodeString Message, void * Param1 = nullptr, void * Param2 = nullptr);
   bool GetIsCapable(TFSCapability Capability) const;
   bool ProcessFiles(const TStrings * AFileList, TFileOperation Operation,
     TProcessFileEvent ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote,
     bool Ex = false);
   bool ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
     TProcessFileEventEx ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote);
-  void ProcessDirectory(const UnicodeString & ADirName,
+  void ProcessDirectory(UnicodeString ADirName,
     TProcessFileEvent CallBackFunc, void * Param = nullptr, bool UseCache = false,
     bool IgnoreErrors = false);
   void AnnounceFileListOperation();
-  UnicodeString TranslateLockedPath(const UnicodeString & APath, bool Lock);
+  UnicodeString TranslateLockedPath(UnicodeString APath, bool Lock);
   void ReadDirectory(TRemoteFileList * AFileList);
   void CustomReadDirectory(TRemoteFileList * AFileList);
-  void DoCreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic);
-  bool TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
+  void DoCreateLink(UnicodeString AFileName, UnicodeString PointTo, bool Symbolic);
+  bool TerminalCreateLocalFile(UnicodeString ATargetFileName,
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,
     OUT HANDLE * AHandle);
-  HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
+  HANDLE TerminalCreateLocalFile(UnicodeString LocalFileName, DWORD DesiredAccess,
     DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
-  void TerminalOpenLocalFile(const UnicodeString & AFileName, DWORD Access,
+  void TerminalOpenLocalFile(UnicodeString AFileName, DWORD Access,
     OUT OPTIONAL uintptr_t * AAttrs, OUT OPTIONAL HANDLE * AHandle, OUT OPTIONAL int64_t * ACTime,
     OUT OPTIONAL int64_t * AMTime, OUT OPTIONAL int64_t * AATime, OUT OPTIONAL int64_t * ASize,
     bool TryWriteReadOnly = true);
-  bool AllowLocalFileTransfer(const UnicodeString & AFileName,
+  bool AllowLocalFileTransfer(UnicodeString AFileName,
     const TCopyParamType * CopyParam, TFileOperationProgressType * OperationProgress);
   bool HandleException(Exception * E);
-  void CalculateFileSize(const UnicodeString & AFileName,
+  void CalculateFileSize(UnicodeString AFileName,
     const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * AParam);
-  void DoCalculateFileSize(const UnicodeString & AFileName,
+  void DoCalculateFileSize(UnicodeString AFileName,
     const TRemoteFile * AFile, void * AParam);
-  bool DoCalculateDirectorySize(const UnicodeString & AFileName,
+  bool DoCalculateDirectorySize(UnicodeString AFileName,
     const TRemoteFile * AFile, TCalculateSizeParams * Params);
-  void CalculateLocalFileSize(const UnicodeString & AFileName,
+  void CalculateLocalFileSize(UnicodeString AFileName,
     const TSearchRec & Rec, /*int64_t*/ void * Size);
   bool CalculateLocalFilesSize(const TStrings * AFileList,
     const TCopyParamType * CopyParam, bool AllowDirs, TStrings * Files,
     OUT int64_t & Size);
   TBatchOverwrite EffectiveBatchOverwrite(
-    const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, intptr_t Params,
+    UnicodeString ASourceFullFileName, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, bool Special) const;
   bool CheckRemoteFile(
-    const UnicodeString & AFileName, const TCopyParamType * CopyParam,
+    UnicodeString AFileName, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress) const;
   uintptr_t ConfirmFileOverwrite(
-    const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
+    UnicodeString ASourceFullFileName, UnicodeString ATargetFileName,
     const TOverwriteFileParams * FileParams, uintptr_t Answers, TQueryParams * QueryParams,
     TOperationSide Side, const TCopyParamType * CopyParam, intptr_t Params,
-    TFileOperationProgressType * OperationProgress, const UnicodeString & AMessage = L"");
-  void DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirectory,
-    const UnicodeString & ARemoteDirectory, TSynchronizeMode Mode,
+    TFileOperationProgressType * OperationProgress, UnicodeString AMessage = L"");
+  void DoSynchronizeCollectDirectory(UnicodeString ALocalDirectory,
+    UnicodeString ARemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, intptr_t Params,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory,
     TSynchronizeOptions * Options, intptr_t Level, TSynchronizeChecklist * Checklist);
-  void DoSynchronizeCollectFile(const UnicodeString & AFileName,
+  void DoSynchronizeCollectFile(UnicodeString AFileName,
     const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param);
-  void SynchronizeCollectFile(const UnicodeString & AFileName,
+  void SynchronizeCollectFile(UnicodeString AFileName,
     const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param);
-  void SynchronizeRemoteTimestamp(const UnicodeString & AFileName,
+  void SynchronizeRemoteTimestamp(UnicodeString AFileName,
     const TRemoteFile * AFile, void * Param);
-  void SynchronizeLocalTimestamp(const UnicodeString & AFileName,
+  void SynchronizeLocalTimestamp(UnicodeString AFileName,
     const TRemoteFile * AFile, void * Param);
   void DoSynchronizeProgress(const TSynchronizeData & Data, bool Collect);
-  void DeleteLocalFile(const UnicodeString & AFileName,
+  void DeleteLocalFile(UnicodeString AFileName,
     const TRemoteFile * AFile, void * Params);
-  void RecycleFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  void RecycleFile(UnicodeString AFileName, const TRemoteFile * AFile);
   TStrings * GetFixedPaths() const;
   void DoStartup();
   virtual bool DoQueryReopen(Exception * E);
-  virtual void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  virtual void FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpKeyword = L"");
   void ResetConnection();
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
-    const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
+    UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
     TStrings * Response);
   void OpenTunnel();
   void CloseTunnel();
-  void DoInformation(const UnicodeString & Str, bool Status, intptr_t Phase = -1);
+  void DoInformation(UnicodeString Str, bool Status, intptr_t Phase = -1);
   bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    const UnicodeString & AName, const UnicodeString & Instructions, const UnicodeString & Prompt, bool Echo,
+    UnicodeString AName, UnicodeString Instructions, UnicodeString Prompt, bool Echo,
     intptr_t MaxLen, OUT UnicodeString & AResult);
-  void FileFind(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
-  void DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params, const UnicodeString & RealDirectory);
-  bool DoCreateLocalFile(const UnicodeString & AFileName,
+  void FileFind(UnicodeString AFileName, const TRemoteFile * AFile, void * Param);
+  void DoFilesFind(UnicodeString Directory, TFilesFindParams & Params, UnicodeString RealDirectory);
+  bool DoCreateLocalFile(UnicodeString AFileName,
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,
     OUT HANDLE * AHandle);
-  void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * AParam);
-  void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * AParam);
-  void DoLockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
-  void DoUnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  void LockFile(UnicodeString AFileName, const TRemoteFile * AFile, void * AParam);
+  void UnlockFile(UnicodeString AFileName, const TRemoteFile * AFile, void * AParam);
+  void DoLockFile(UnicodeString AFileName, const TRemoteFile * AFile);
+  void DoUnlockFile(UnicodeString AFileName, const TRemoteFile * AFile);
 
-  virtual void Information(const UnicodeString & Str, bool Status);
-  virtual uintptr_t QueryUser(const UnicodeString & Query,
+  virtual void Information(UnicodeString Str, bool Status);
+  virtual uintptr_t QueryUser(UnicodeString Query,
     TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
-  virtual uintptr_t QueryUserException(const UnicodeString & Query,
+  virtual uintptr_t QueryUserException(UnicodeString Query,
     Exception * E, uintptr_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    const UnicodeString & AName, const UnicodeString & Instructions, TStrings * Prompts, TStrings * Results);
-  virtual void DisplayBanner(const UnicodeString & Banner);
+    UnicodeString AName, UnicodeString Instructions, TStrings * Prompts, TStrings * Results);
+  virtual void DisplayBanner(UnicodeString Banner);
   virtual void Closed();
   virtual void ProcessGUI();
   void Progress(TFileOperationProgressType * OperationProgress);
@@ -528,19 +528,19 @@ public:
   bool IsListenerFree(uintptr_t PortNumber) const;
   void DoProgress(TFileOperationProgressType & ProgressData);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
-    const UnicodeString & AFileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
+    UnicodeString AFileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
     TFileOperationProgressType * OperationProgress, Exception * E = nullptr);
-  void DoAnyCommand(const UnicodeString & ACommand, TCaptureOutputEvent OutputEvent,
+  void DoAnyCommand(UnicodeString ACommand, TCaptureOutputEvent OutputEvent,
     TCallSessionAction * Action);
-  TRemoteFileList * DoReadDirectoryListing(const UnicodeString & ADirectory, bool UseCache);
-  RawByteString EncryptPassword(const UnicodeString & APassword) const;
+  TRemoteFileList * DoReadDirectoryListing(UnicodeString ADirectory, bool UseCache);
+  RawByteString EncryptPassword(UnicodeString APassword) const;
   UnicodeString DecryptPassword(const RawByteString & APassword) const;
   UnicodeString GetRemoteFileInfo(TRemoteFile * AFile) const;
   void LogRemoteFile(TRemoteFile * AFile);
-  UnicodeString FormatFileDetailsForLog(const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size);
-  void LogFileDetails(const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size);
-  void LogFileDone(TFileOperationProgressType * OperationProgress, const UnicodeString & DestFileName);
+  UnicodeString FormatFileDetailsForLog(UnicodeString AFileName, const TDateTime & AModification, int64_t Size);
+  void LogFileDetails(UnicodeString AFileName, const TDateTime & AModification, int64_t Size);
+  void LogFileDone(TFileOperationProgressType * OperationProgress, UnicodeString DestFileName);
   void LogTotalTransferDetails(
     const UnicodeString TargetDir, const TCopyParamType * CopyParam,
     TFileOperationProgressType * OperationProgress, bool Parallel, TStrings * Files);
@@ -549,19 +549,19 @@ public:
   virtual const TTerminal * GetPasswordSource() const { return this; }
   void DoEndTransaction(bool Inform);
   bool VerifyCertificate(
-    const UnicodeString & CertificateStorageKey, const UnicodeString & SiteKey,
-    const UnicodeString & Fingerprint,
-    const UnicodeString & CertificateSubject, int Failures);
-  void CacheCertificate(const UnicodeString & CertificateStorageKey,
-    const UnicodeString & SiteKey, const UnicodeString & Fingerprint, int Failures);
-  void CollectTlsUsage(const UnicodeString & TlsVersionStr);
+    UnicodeString CertificateStorageKey, UnicodeString SiteKey,
+    UnicodeString Fingerprint,
+    UnicodeString CertificateSubject, int Failures);
+  void CacheCertificate(UnicodeString CertificateStorageKey,
+    UnicodeString SiteKey, UnicodeString Fingerprint, int Failures);
+  void CollectTlsUsage(UnicodeString TlsVersionStr);
   bool LoadTlsCertificate(X509 *& Certificate, EVP_PKEY *& PrivateKey);
   bool TryStartOperationWithFile(
-    const UnicodeString & AFileName, TFileOperation Operation1, TFileOperation Operation2 = foNone);
+    UnicodeString AFileName, TFileOperation Operation1, TFileOperation Operation2 = foNone);
   void StartOperationWithFile(
-    const UnicodeString & AFileName, TFileOperation Operation1, TFileOperation Operation2 = foNone);
+    UnicodeString AFileName, TFileOperation Operation1, TFileOperation Operation2 = foNone);
   bool CanRecurseToDirectory(const TRemoteFile * AFile) const;
-  bool DoOnCustomCommand(const UnicodeString & Command);
+  bool DoOnCustomCommand(UnicodeString Command);
   bool CanParallel(const TCopyParamType * CopyParam, intptr_t Params, TParallelOperation * ParallelOperation) const;
   void CopyParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType * OperationProgress);
 
@@ -580,91 +580,91 @@ public:
   void Close();
   UnicodeString FingerprintScan();
   void Reopen(intptr_t Params);
-  virtual void DirectoryModified(const UnicodeString & APath, bool SubDirs);
+  virtual void DirectoryModified(UnicodeString APath, bool SubDirs);
   virtual void DirectoryLoaded(TRemoteFileList * FileList);
   void ShowExtendedException(Exception * E);
   void Idle();
   void RecryptPasswords();
-  bool AllowedAnyCommand(const UnicodeString & Command) const;
-  void AnyCommand(const UnicodeString & Command, TCaptureOutputEvent OutputEvent);
+  bool AllowedAnyCommand(UnicodeString Command) const;
+  void AnyCommand(UnicodeString Command, TCaptureOutputEvent OutputEvent);
   void CloseOnCompletion(
-    TOnceDoneOperation Operation = odoDisconnect, const UnicodeString & Message = L"",
-    const UnicodeString & TargetLocalPath = L"", const UnicodeString & DestLocalFileName = L"");
-  UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const;
+    TOnceDoneOperation Operation = odoDisconnect, UnicodeString Message = L"",
+    UnicodeString TargetLocalPath = L"", UnicodeString DestLocalFileName = L"");
+  UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const;
   void BeginTransaction();
   void ReadCurrentDirectory();
   void ReadDirectory(bool ReloadOnly, bool ForceCache = false);
-  TRemoteFileList * ReadDirectoryListing(const UnicodeString & Directory, const TFileMasks & Mask);
-  TRemoteFileList * CustomReadDirectoryListing(const UnicodeString & Directory, bool UseCache);
-  TRemoteFile * ReadFileListing(const UnicodeString & APath);
-  void ReadFile(const UnicodeString & AFileName, TRemoteFile *& AFile);
-  bool FileExists(const UnicodeString & AFileName, TRemoteFile ** AFile = nullptr);
+  TRemoteFileList * ReadDirectoryListing(UnicodeString Directory, const TFileMasks & Mask);
+  TRemoteFileList * CustomReadDirectoryListing(UnicodeString Directory, bool UseCache);
+  TRemoteFile * ReadFileListing(UnicodeString APath);
+  void ReadFile(UnicodeString AFileName, TRemoteFile *& AFile);
+  bool FileExists(UnicodeString AFileName, TRemoteFile ** AFile = nullptr);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& File);
   bool CopyToLocal(const TStrings * AFilesToCopy,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params, TParallelOperation * ParallelOperation);
+    UnicodeString TargetDir, const TCopyParamType * CopyParam, intptr_t Params, TParallelOperation * ParallelOperation);
   bool CopyToRemote(const TStrings * AFilesToCopy,
-    const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, intptr_t Params, TParallelOperation * ParallelOperation);
+    UnicodeString ATargetDir, const TCopyParamType * CopyParam, intptr_t Params, TParallelOperation * ParallelOperation);
   intptr_t CopyToParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType * OperationProgress);
   void LogParallelTransfer(TParallelOperation * ParallelOperation);
-  void RemoteCreateDirectory(const UnicodeString & ADirName,
+  void RemoteCreateDirectory(UnicodeString ADirName,
     const TRemoteProperties * Properties = nullptr);
-  void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic, bool IsDirectory);
-  void RemoteDeleteFile(const UnicodeString & AFileName,
+  void CreateLink(UnicodeString AFileName, UnicodeString PointTo, bool Symbolic, bool IsDirectory);
+  void RemoteDeleteFile(UnicodeString AFileName,
     const TRemoteFile * AFile = nullptr, void * AParams = nullptr);
   bool RemoteDeleteFiles(TStrings * AFilesToDelete, intptr_t Params = 0);
   bool DeleteLocalFiles(TStrings * AFileList, intptr_t Params = 0);
-  bool IsRecycledFile(const UnicodeString & AFileName);
-  void CustomCommandOnFile(const UnicodeString & AFileName,
+  bool IsRecycledFile(UnicodeString AFileName);
+  void CustomCommandOnFile(UnicodeString AFileName,
     const TRemoteFile * AFile, void * AParams);
-  void CustomCommandOnFiles(const UnicodeString & Command, intptr_t Params,
+  void CustomCommandOnFiles(UnicodeString Command, intptr_t Params,
     TStrings * AFiles, TCaptureOutputEvent OutputEvent);
-  void RemoteChangeDirectory(const UnicodeString & Directory);
+  void RemoteChangeDirectory(UnicodeString Directory);
   void EndTransaction();
   void HomeDirectory();
-  void ChangeFileProperties(const UnicodeString & AFileName,
+  void ChangeFileProperties(UnicodeString AFileName,
     const TRemoteFile * AFile, /*const TRemoteProperties*/ void * Properties);
   void ChangeFilesProperties(TStrings * AFileList,
     const TRemoteProperties * Properties);
   bool LoadFilesProperties(TStrings * AFileList);
   void TerminalError(UnicodeString Msg);
-  void TerminalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  void TerminalError(Exception * E, UnicodeString Msg, UnicodeString HelpKeyword = L"");
   void ReloadDirectory();
   void RefreshDirectory();
-  void TerminalRenameFile(const UnicodeString & AFileName, const UnicodeString & ANewName);
-  void TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString & ANewName, bool CheckExistence);
-  void TerminalMoveFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
+  void TerminalRenameFile(UnicodeString AFileName, UnicodeString ANewName);
+  void TerminalRenameFile(const TRemoteFile * AFile, UnicodeString ANewName, bool CheckExistence);
+  void TerminalMoveFile(UnicodeString AFileName, const TRemoteFile * AFile,
     /*const TMoveFileParams*/ void * Param);
-  bool MoveFiles(TStrings * AFileList, const UnicodeString & Target,
-    const UnicodeString & FileMask);
-  void TerminalCopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
+  bool MoveFiles(TStrings * AFileList, UnicodeString Target,
+    UnicodeString FileMask);
+  void TerminalCopyFile(UnicodeString AFileName, const TRemoteFile * AFile,
     /*const TMoveFileParams*/ void * Param);
-  bool CopyFiles(const TStrings * AFileList, const UnicodeString & Target,
-    const UnicodeString & FileMask);
+  bool CopyFiles(const TStrings * AFileList, UnicodeString Target,
+    UnicodeString FileMask);
   bool CalculateFilesSize(const TStrings * AFileList, int64_t & Size,
     intptr_t Params, const TCopyParamType * CopyParam, bool AllowDirs,
     TCalculateSizeStats & Stats);
-  void CalculateFilesChecksum(const UnicodeString & Alg, TStrings * AFileList,
+  void CalculateFilesChecksum(UnicodeString Alg, TStrings * AFileList,
     TStrings * Checksums, TCalculatedChecksumEvent OnCalculatedChecksum);
   void ClearCaches();
-  TSynchronizeChecklist * SynchronizeCollect(const UnicodeString & LocalDirectory,
-    const UnicodeString & RemoteDirectory, TSynchronizeMode Mode,
+  TSynchronizeChecklist * SynchronizeCollect(UnicodeString LocalDirectory,
+    UnicodeString RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, intptr_t Params,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions * Options);
   void SynchronizeApply(TSynchronizeChecklist * Checklist,
-    const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
+    UnicodeString LocalDirectory, UnicodeString RemoteDirectory,
     const TCopyParamType * CopyParam, intptr_t Params,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory);
-  void FilesFind(const UnicodeString & Directory, const TFileMasks & FileMask,
+  void FilesFind(UnicodeString Directory, const TFileMasks & FileMask,
     TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
-  void SpaceAvailable(const UnicodeString & APath, TSpaceAvailable & ASpaceAvailable);
+  void SpaceAvailable(UnicodeString APath, TSpaceAvailable & ASpaceAvailable);
   void LockFiles(TStrings * AFileList);
   void UnlockFiles(TStrings * AFileList);
-  TRemoteFileList * DirectoryFileList(const UnicodeString & APath, TDateTime Timestamp, bool CanLoad);
-  void MakeLocalFileList(const UnicodeString & AFileName,
+  TRemoteFileList * DirectoryFileList(UnicodeString APath, TDateTime Timestamp, bool CanLoad);
+  void MakeLocalFileList(UnicodeString AFileName,
     const TSearchRec & Rec, void * Param);
   bool FileOperationLoopQuery(Exception & E,
-    TFileOperationProgressType * OperationProgress, const UnicodeString & Message,
-    bool AllowSkip, const UnicodeString & SpecialRetry = L"", const UnicodeString & HelpKeyword = L"");
+    TFileOperationProgressType * OperationProgress, UnicodeString Message,
+    bool AllowSkip, UnicodeString SpecialRetry = L"", UnicodeString HelpKeyword = L"");
   TUsableCopyParamAttrs UsableCopyParamAttrs(intptr_t Params);
   bool ContinueReopen(TDateTime Start);
   bool QueryReopen(Exception * E, intptr_t Params,
@@ -674,19 +674,19 @@ public:
   void ReflectSettings() const;
   void CollectUsage();
   bool IsThisOrChild(TTerminal * Terminal) const;
-  TTerminal * CreateSecondarySession(const UnicodeString & Name, TSessionData * SessionData);
+  TTerminal * CreateSecondarySession(UnicodeString Name, TSessionData * SessionData);
   void FillSessionDataForCode(TSessionData * SessionData);
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
-  void inline LogEvent(const UnicodeString & Str);
+  void inline LogEvent(UnicodeString Str);
   void GetSupportedChecksumAlgs(TStrings * Algs);
   UnicodeString ChangeFileName(const TCopyParamType * CopyParam,
-    const UnicodeString & AFileName, TOperationSide Side, bool FirstLevel) const;
-  UnicodeString GetBaseFileName(const UnicodeString & AFileName) const;
+    UnicodeString AFileName, TOperationSide Side, bool FirstLevel) const;
+  UnicodeString GetBaseFileName(UnicodeString AFileName) const;
 
-  static UnicodeString ExpandFileName(const UnicodeString & APath,
-    const UnicodeString & BasePath);
+  static UnicodeString ExpandFileName(UnicodeString APath,
+    UnicodeString BasePath);
 
 #if 0
   __property TSessionData * SessionData = { read = FSessionData };
@@ -733,17 +733,17 @@ public:
   __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
 #endif
 
-  void SetMasks(const UnicodeString & Value);
+  void SetMasks(UnicodeString Value);
 
-  void SetLocalFileTime(const UnicodeString & LocalFileName,
+  void SetLocalFileTime(UnicodeString LocalFileName,
     const TDateTime & Modification);
-  void SetLocalFileTime(const UnicodeString & LocalFileName,
+  void SetLocalFileTime(UnicodeString LocalFileName,
     FILETIME * AcTime, FILETIME * WrTime);
-  DWORD GetLocalFileAttributes(const UnicodeString & LocalFileName);
-  BOOL SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
-  BOOL MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);
-  BOOL RemoveLocalDirectory(const UnicodeString & LocalDirName);
-  BOOL CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
+  DWORD GetLocalFileAttributes(UnicodeString LocalFileName);
+  BOOL SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes);
+  BOOL MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags);
+  BOOL RemoveLocalDirectory(UnicodeString LocalDirName);
+  BOOL CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
   TSessionData * GetSessionData() const { return FSessionData; }
   TSessionData * GetSessionData() { return FSessionData; }
@@ -804,9 +804,9 @@ public:
   TNotifyEvent & GetOnClose() { return FOnClose; }
   void SetOnClose(TNotifyEvent Value) { FOnClose = Value; }
   intptr_t GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
-  void SetRememberedPassword(const UnicodeString & Value) { FRememberedPassword = Value; }
-  void SetRememberedTunnelPassword(const UnicodeString & Value) { FRememberedTunnelPassword = Value; }
-  void SetTunnelPassword(const UnicodeString & Value) { FRememberedTunnelPassword = Value; }
+  void SetRememberedPassword(UnicodeString Value) { FRememberedPassword = Value; }
+  void SetRememberedTunnelPassword(UnicodeString Value) { FRememberedTunnelPassword = Value; }
+  void SetTunnelPassword(UnicodeString Value) { FRememberedTunnelPassword = Value; }
   TCustomFileSystem * GetFileSystem() const { return FFileSystem; }
   TCustomFileSystem * GetFileSystem() { return FFileSystem; }
 
@@ -835,7 +835,7 @@ public:
   explicit TSecondaryTerminal(TObjectClassId Kind, TTerminal * MainTerminal);
   virtual ~TSecondaryTerminal() {}
   void Init(TSessionData * ASessionData, TConfiguration * AConfiguration,
-    const UnicodeString & Name);
+    UnicodeString Name);
 
   void UpdateFromMain();
 
@@ -846,7 +846,7 @@ public:
 
 protected:
   virtual void DirectoryLoaded(TRemoteFileList * FileList);
-  virtual void DirectoryModified(const UnicodeString & APath,
+  virtual void DirectoryModified(UnicodeString APath,
     bool SubDirs);
   virtual const TTerminal * GetPasswordSource() const { return FMainTerminal; }
   virtual TTerminal * GetPasswordSource();
@@ -967,8 +967,8 @@ public:
 
   TStringList * Filter;
 
-  bool FilterFind(const UnicodeString & AFileName) const;
-  bool MatchesFilter(const UnicodeString & AFileName) const;
+  bool FilterFind(UnicodeString AFileName) const;
+  bool MatchesFilter(UnicodeString AFileName) const;
 };
 
 enum TChecklistAction
@@ -1086,7 +1086,7 @@ protected:
   void Add(TChecklistItem * Item);
 
 public:
-  void SetMasks(const UnicodeString & Value);
+  void SetMasks(UnicodeString Value);
 
   intptr_t GetCount() const;
   const TChecklistItem * GetItem(intptr_t Index) const;
@@ -1138,7 +1138,7 @@ public:
   }
 public:
   TCollectedFileList();
-  intptr_t Add(const UnicodeString & FileName, TObject * Object, bool Dir);
+  intptr_t Add(UnicodeString FileName, TObject * Object, bool Dir);
   void DidNotRecurse(intptr_t Index);
   void Delete(intptr_t Index);
 
@@ -1168,8 +1168,8 @@ public:
   ~TParallelOperation();
 
   void Init(
-    TStrings * AFiles, const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
-    TFileOperationProgressType * MainOperationProgress, const UnicodeString & MainName);
+    TStrings * AFiles, UnicodeString TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
+    TFileOperationProgressType * MainOperationProgress, UnicodeString MainName);
 
   bool IsInitialized() const;
   void WaitFor();
@@ -1179,7 +1179,7 @@ public:
   intptr_t GetNext(
     TTerminal * Terminal, UnicodeString & FileName, TObject *& Object, UnicodeString & TargetDir,
     bool & Dir, bool & Recursed);
-  void Done(const UnicodeString & FileName, bool Dir, bool Success);
+  void Done(UnicodeString FileName, bool Dir, bool Success);
 
 #if 0
   __property TOperationSide Side = { read = FSide };

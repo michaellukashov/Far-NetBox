@@ -10,33 +10,33 @@ enum TOptionType
 };
 
 #if 0
-typedef void (__closure *TLogOptionEvent)(const UnicodeString & LogStr);
+typedef void (__closure *TLogOptionEvent)(UnicodeString LogStr);
 #endif // #if 0
-typedef nb::FastDelegate1<void, const UnicodeString & /*LogStr*/> TLogOptionEvent;
+typedef nb::FastDelegate1<void, UnicodeString /*LogStr*/> TLogOptionEvent;
 
 class TOptions : public TObject
 {
 public:
   TOptions();
 
-  void Add(const UnicodeString & Value);
+  void Add(UnicodeString Value);
 
-  // void ParseParams(const UnicodeString & Params);
+  // void ParseParams(UnicodeString Params);
 
-  bool FindSwitch(const UnicodeString & Switch);
-  bool FindSwitch(const UnicodeString & Switch, UnicodeString & Value);
-  bool FindSwitch(const UnicodeString & Switch, UnicodeString & Value, bool & ValueSet);
-  bool FindSwitch(const UnicodeString & Switch, intptr_t & ParamsStart,
+  bool FindSwitch(UnicodeString Switch);
+  bool FindSwitch(UnicodeString Switch, UnicodeString & Value);
+  bool FindSwitch(UnicodeString Switch, UnicodeString & Value, bool & ValueSet);
+  bool FindSwitch(UnicodeString Switch, intptr_t & ParamsStart,
     intptr_t & ParamsCount);
-  bool FindSwitch(const UnicodeString & Switch, TStrings * Params,
+  bool FindSwitch(UnicodeString Switch, TStrings * Params,
     intptr_t ParamsMax = -1);
-  bool FindSwitchCaseSensitive(const UnicodeString & Switch);
-  bool FindSwitchCaseSensitive(const UnicodeString & Switch, TStrings * Params,
+  bool FindSwitchCaseSensitive(UnicodeString Switch);
+  bool FindSwitchCaseSensitive(UnicodeString Switch, TStrings * Params,
     int ParamsMax = -1);
   void ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount);
-  UnicodeString SwitchValue(const UnicodeString & Switch, const UnicodeString & Default = L"");
-  bool SwitchValue(const UnicodeString & Switch, bool Default);
-  bool SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence);
+  UnicodeString SwitchValue(UnicodeString Switch, UnicodeString Default = L"");
+  bool SwitchValue(UnicodeString Switch, bool Default);
+  bool SwitchValue(UnicodeString Switch, bool Default, bool DefaultOnNonExistence);
   bool UnusedSwitch(UnicodeString & Switch) const;
   bool WasSwitchAdded(UnicodeString & Switch, wchar_t & SwitchMark) const;
 
@@ -55,9 +55,9 @@ protected:
   UnicodeString FSwitchMarks;
   UnicodeString FSwitchValueDelimiters;
 
-  bool FindSwitch(const UnicodeString & Switch,
+  bool FindSwitch(UnicodeString Switch,
     UnicodeString & Value, intptr_t & ParamsStart, intptr_t & ParamsCount, bool CaseSensitive, bool & ValueSet);
-  bool DoFindSwitch(const UnicodeString & Switch, TStrings * Params,
+  bool DoFindSwitch(UnicodeString Switch, TStrings * Params,
     intptr_t ParamsMax, bool CaseSensitive);
 
 private:

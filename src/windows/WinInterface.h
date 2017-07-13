@@ -88,8 +88,8 @@ void FlashOnBackground();
 void TerminateApplication();
 void ShowExtendedExceptionEx(TTerminal * Terminal, Exception * E);
 //void FormHelp(TCustomForm * Form);
-void SearchHelp(const UnicodeString & Message);
-void MessageWithNoHelp(const UnicodeString & Message);
+void SearchHelp(UnicodeString Message);
+void MessageWithNoHelp(UnicodeString Message);
 
 class TProgramParams;
 bool CheckSafe(TProgramParams * Params);
@@ -102,7 +102,7 @@ void LoadToolbarsLayoutStr(TComponent * OwnerComponent, UnicodeString LayoutStr)
 
 namespace Tb2item { class TTBCustomItem; }
 void AddMenuSeparator(Tb2item::TTBCustomItem * Menu);
-void AddMenuLabel(Tb2item::TTBCustomItem * Menu, const UnicodeString & Label);
+void AddMenuLabel(Tb2item::TTBCustomItem * Menu, UnicodeString Label);
 #endif // #if 0
 
 // windows\WinHelp.cpp
@@ -110,22 +110,22 @@ void InitializeWinHelp();
 void FinalizeWinHelp();
 
 // windows\WinInterface.cpp
-uintptr_t MessageDialog(const UnicodeString & Msg, TQueryType Type,
-  uintptr_t Answers, const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+uintptr_t MessageDialog(UnicodeString Msg, TQueryType Type,
+  uintptr_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
-  uintptr_t Answers, const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
-uintptr_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & MoreMessages = L"");
+  uintptr_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+uintptr_t SimpleErrorDialog(UnicodeString Msg, UnicodeString MoreMessages = L"");
 
-uintptr_t MoreMessageDialog(const UnicodeString & Message,
+uintptr_t MoreMessageDialog(UnicodeString Message,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
-  const UnicodeString & HelpKeyword, const TMessageParams * Params = nullptr);
+  UnicodeString HelpKeyword, const TMessageParams * Params = nullptr);
 
 uintptr_t ExceptionMessageDialog(Exception * E, TQueryType Type,
-  const UnicodeString & MessageFormat = L"", uintptr_t Answers = qaOK,
-  const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+  UnicodeString MessageFormat = L"", uintptr_t Answers = qaOK,
+  UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
-  intptr_t SessionReopenTimeout, const UnicodeString & MessageFormat = L"", uintptr_t Answers = qaOK,
-  const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+  intptr_t SessionReopenTimeout, UnicodeString MessageFormat = L"", uintptr_t Answers = qaOK,
+  UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 
 #if defined(FARPLUGIN)
 
@@ -133,8 +133,8 @@ uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
 TSessionData * DoSaveSession(TSessionData * SessionData,
   TSessionData * OriginalSession, bool ForceDialog,
   TStrings * AdditionalFolders);
-void SessionNameValidate(const UnicodeString & Text,
-  const UnicodeString & OriginalName);
+void SessionNameValidate(UnicodeString Text,
+  UnicodeString OriginalName);
 bool DoSaveWorkspaceDialog(UnicodeString & WorkspaceName,
   bool * SavePasswords, bool NotRecommendedSavingPasswords,
   bool & CreateShortcut, bool & EnableAutoSave);
@@ -144,7 +144,7 @@ bool DoShortCutDialog(TShortCut & ShortCut,
 #if 0
 bool DoCustomCommandOptionsDialog(
   const TCustomCommandType * Command, TStrings * CustomCommandOptions, unsigned int Flags,
-  TCustomCommand * CustomCommandForOptions, const UnicodeString & Site);
+  TCustomCommand * CustomCommandForOptions, UnicodeString Site);
 #endif // #if 0
 
 #endif // FARPLUGIN
@@ -166,8 +166,8 @@ void GetLoginData(UnicodeString SessionName, TOptions * Options,
 typedef void (__closure *TInputDialogInitialize)
   (TObject * Sender, TInputDialogData * Data);
 #endif // #if 0
-bool InputDialog(const UnicodeString & ACaption,
-  const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword = HELP_NONE,
+bool InputDialog(UnicodeString ACaption,
+  UnicodeString APrompt, UnicodeString & Value, UnicodeString HelpKeyword = HELP_NONE,
   TStrings * History = nullptr, bool PathInput = false,
   TInputDialogInitializeEvent OnInitialize = nullptr, bool Echo = true);
 
@@ -193,7 +193,7 @@ bool DoCleanupDialog(TStoredSessionList *SessionList,
 
 // forms\Console.cpp
 void DoConsoleDialog(TTerminal * Terminal,
-    const UnicodeString & Command = L"", const TStrings * Log = nullptr);
+    UnicodeString Command = L"", const TStrings * Log = nullptr);
 
 #if defined(FARPLUGIN)
 
@@ -326,23 +326,23 @@ typedef nb::FastDelegate4<void,
   bool & /*Close*/> TCalculateSizeEvent;
 #if 0
 typedef void (__closure *TCalculatedChecksumCallbackEvent)(
-  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
+  UnicodeString FileName, UnicodeString Alg, UnicodeString Hash);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
-  const UnicodeString & /*FileName*/, const UnicodeString & /*Alg*/,
-  const UnicodeString & /*Hash*/> TCalculatedChecksumCallbackEvent;
+  UnicodeString /*FileName*/, UnicodeString /*Alg*/,
+  UnicodeString /*Hash*/> TCalculatedChecksumCallbackEvent;
 #if 0
 typedef void (__closure *TCalculateChecksumEvent)
-  (const UnicodeString & Alg, TStrings * FileList,
+  (UnicodeString Alg, TStrings * FileList,
    TCalculatedChecksumCallbackEvent OnCalculatedChecksum, bool & Close);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
-  const UnicodeString & /*Alg*/, TStrings * /*FileList*/,
+  UnicodeString /*Alg*/, TStrings * /*FileList*/,
   TCalculatedChecksumCallbackEvent /*OnCalculatedChecksum*/,
   bool & /*Close*/> TCalculateChecksumEvent;
 
 bool DoPropertiesDialog(TStrings * FileList,
-    const UnicodeString & Directory, const TRemoteTokenList * GroupList,
+    UnicodeString Directory, const TRemoteTokenList * GroupList,
     const TRemoteTokenList * UserList, TStrings * ChecksumAlgs,
     TRemoteProperties * Properties,
     int AllowedChanges, bool UserGroupByID, TCalculateSizeEvent OnCalculateSize,
@@ -388,18 +388,18 @@ typedef nb::FastDelegate2<void,
   TSynchronizeOptions & /*Options*/> TGetSynchronizeOptionsEvent;
 #if 0
 typedef void (__closure *TSynchronizeSessionLog)
-  (const UnicodeString & Message);
+  (UnicodeString Message);
 #endif // #if 0
 typedef nb::FastDelegate1<void,
-  const UnicodeString & /*Message*/> TSynchronizeSessionLogEvent;
+  UnicodeString /*Message*/> TSynchronizeSessionLogEvent;
 #if 0
 typedef void (__closure *TFeedSynchronizeError)
-  (const UnicodeString & Message, TStrings * MoreMessages, TQueryType Type,
-   const UnicodeString & HelpKeyword);
+  (UnicodeString Message, TStrings * MoreMessages, TQueryType Type,
+   UnicodeString HelpKeyword);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
-  const UnicodeString & /*Message*/, TStrings * /*MoreMessages*/, TQueryType /*Type*/,
-  const UnicodeString & /*HelpKeyword*/> TFeedSynchronizeErrorEvent;
+  UnicodeString /*Message*/, TStrings * /*MoreMessages*/, TQueryType /*Type*/,
+  UnicodeString /*HelpKeyword*/> TFeedSynchronizeErrorEvent;
 
 bool DoSynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
@@ -433,7 +433,7 @@ typedef nb::FastDelegate3<void,
 
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
   TSynchronizeMode Mode, intptr_t Params,
-  const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
+  UnicodeString LocalDirectory, UnicodeString RemoteDirectory,
   TCustomCommandMenuEvent OnCustomCommandMenu);
 
 #endif // FARPLUGIN
@@ -474,30 +474,30 @@ typedef void (__closure *TGetSpaceAvailable)
   (const UnicodeString Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
-  const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
+  UnicodeString /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
   bool & /*Close*/> TGetSpaceAvailableEvent;
 
 void DoFileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
-  const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable);
+  UnicodeString SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable);
 
 //moved to FarInterface.h
 #if 0
 // forms\MessageDlg.cpp
 void AnswerNameAndCaption(
   uintptr_t Answer, UnicodeString & Name, UnicodeString & Caption);
-TFarDialog * CreateMoreMessageDialog(const UnicodeString & Msg,
+TFarDialog * CreateMoreMessageDialog(UnicodeString Msg,
   TStrings * MoreMessages, TMsgDlgType DlgType, uintptr_t Answers,
   const TQueryButtonAlias * Aliases, uintptr_t AliasesCount,
   uintptr_t TimeoutAnswer, TFarButton ** TimeoutButton,
-  const UnicodeString & ImageName, const UnicodeString & NeverAskAgainCaption,
-  const UnicodeString & MoreMessagesUrl, TSize MoreMessagesSize,
-  const UnicodeString & CustomCaption);
-TFarDialog * CreateMoreMessageDialogEx(const UnicodeString & Message, TStrings * MoreMessages,
+  UnicodeString ImageName, UnicodeString NeverAskAgainCaption,
+  UnicodeString MoreMessagesUrl, TSize MoreMessagesSize,
+  UnicodeString CustomCaption);
+TFarDialog * CreateMoreMessageDialogEx(UnicodeString Message, TStrings * MoreMessages,
   TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params);
 uintptr_t ExecuteMessageDialog(TFarDialog * Dialog, uintptr_t Answers, const TMessageParams * Params);
 void InsertPanelToMessageDialog(TFarDialog * Form, TPanel * Panel);
-void NavigateMessageDialogToUrl(TFarDialog * Form, const UnicodeString & Url);
+void NavigateMessageDialogToUrl(TFarDialog * Form, UnicodeString Url);
 
 extern const UnicodeString MessagePanelName;
 extern const UnicodeString MainMessageLabelName;
@@ -524,21 +524,21 @@ typedef void (__closure *TFindEvent)
    TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
-  const UnicodeString & /*Directory*/, const TFileMasks & /*FileMask*/,
+  UnicodeString /*Directory*/, const TFileMasks & /*FileMask*/,
   TFileFoundEvent /*OnFileFound*/,
   TFindingFileEvent /*OnFindingFile*/> TFindEvent;
 #if 0
 typedef void (__closure *TFocusFileEvent)
-  (TTerminal * Terminal, const UnicodeString & Path);
+  (TTerminal * Terminal, UnicodeString Path);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Path*/> TFocusFileEvent;
+  TTerminal * /*Terminal*/, UnicodeString /*Path*/> TFocusFileEvent;
 #if 0
 typedef void (__closure *TFileOperationFinished2Event)
-  (const UnicodeString & FileName, bool Success);
+  (UnicodeString FileName, bool Success);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
-  const UnicodeString & /*FileName*/, bool /*Success*/> TFileOperationFinished2Event;
+  UnicodeString /*FileName*/, bool /*Success*/> TFileOperationFinished2Event;
 #if 0
 typedef void (__closure *TFileListOperationEvent)
   (TTerminal * Terminal, TStrings * FileList, TFileOperationFinished2Event OnFileOperationFinished);
@@ -556,7 +556,7 @@ void DoGenerateUrlDialog(TSessionData * Data, TStrings * Paths);
 enum TFilesSelected { fsList, fsAll };
 void DoGenerateTransferCodeDialog(
   bool ToRemote, bool Move, int CopyParamAttrs, TSessionData * Data, TFilesSelected FilesSelected,
-  TStrings * FileList, const UnicodeString & Path, const TCopyParamType & CopyParam);
+  TStrings * FileList, UnicodeString Path, const TCopyParamType & CopyParam);
 
 #if 0
 void CopyParamListButton(TButton * Button);
@@ -596,7 +596,7 @@ void CenterButtonImage(TButton * Button);
 
 void UpgradeSpeedButton(TSpeedButton * Button);
 
-int AdjustLocaleFlag(const UnicodeString & S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off);
+int AdjustLocaleFlag(UnicodeString S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off);
 
 void SetGlobalMinimizeHandler(TCustomForm * Form, TNotifyEvent OnMinimize);
 void ClearGlobalMinimizeHandler(TNotifyEvent OnMinimize);
@@ -610,7 +610,7 @@ void WinInitialize();
 void WinFinalize();
 #endif // #if 0
 
-void ShowNotification(TTerminal * Terminal, const UnicodeString & Str,
+void ShowNotification(TTerminal * Terminal, UnicodeString Str,
   TQueryType Type);
 #if 0
 void InitializeShortCutCombo(TComboBox * ComboBox,
@@ -659,11 +659,11 @@ public:
     TCustomCommand * ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword);
 
 protected:
-  virtual void Prompt(intptr_t Index, const UnicodeString & Prompt,
+  virtual void Prompt(intptr_t Index, UnicodeString Prompt,
     UnicodeString & Value) const;
-  virtual void Execute(const UnicodeString & Command,
+  virtual void Execute(UnicodeString Command,
     UnicodeString & Value) const override;
-  virtual void PatternHint(intptr_t Index, const UnicodeString & Pattern);
+  virtual void PatternHint(intptr_t Index, UnicodeString Pattern);
 
 private:
   UnicodeString FCustomCommandName;
@@ -682,7 +682,7 @@ public:
   TTrayIcon(unsigned int Id);
   ~TTrayIcon();
 
-  void PopupBalloon(UnicodeString Title, const UnicodeString & Str,
+  void PopupBalloon(UnicodeString Title, UnicodeString Str,
     TQueryType QueryType, unsigned int Timeout, TNotifyEvent OnBalloonClick,
     TObject * BalloonUserData);
   void CancelBalloon();

@@ -109,11 +109,11 @@ public:
 public:
   explicit Exception(TObjectClassId Kind, const wchar_t * Msg);
   explicit Exception(const wchar_t * Msg);
-  explicit Exception(TObjectClassId Kind, const UnicodeString & Msg);
-  explicit Exception(const UnicodeString & Msg);
+  explicit Exception(TObjectClassId Kind, UnicodeString Msg);
+  explicit Exception(UnicodeString Msg);
   explicit Exception(TObjectClassId Kind, Exception * E);
   explicit Exception(TObjectClassId Kind, std::exception * E);
-  explicit Exception(TObjectClassId Kind, const UnicodeString & Msg, intptr_t AHelpContext);
+  explicit Exception(TObjectClassId Kind, UnicodeString Msg, intptr_t AHelpContext);
   explicit Exception(TObjectClassId Kind, Exception * E, intptr_t Ident);
   explicit Exception(TObjectClassId Kind, intptr_t Ident);
   ~Exception() {}
@@ -136,10 +136,10 @@ public:
       Obj->GetKind() == OBJECT_CLASS_ECallbackGuardAbort;
   }
 public:
-  explicit EAbort(const UnicodeString & what) : Exception(OBJECT_CLASS_EAbort, what)
+  explicit EAbort(UnicodeString what) : Exception(OBJECT_CLASS_EAbort, what)
   {
   }
-  explicit EAbort(TObjectClassId Kind, const UnicodeString & what) : Exception(Kind, what)
+  explicit EAbort(TObjectClassId Kind, UnicodeString what) : Exception(Kind, what)
   {
   }
 };
@@ -153,7 +153,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_EAccessViolation;
   }
 public:
-  explicit EAccessViolation(const UnicodeString & what) : Exception(OBJECT_CLASS_EAccessViolation, what)
+  explicit EAccessViolation(UnicodeString what) : Exception(OBJECT_CLASS_EAccessViolation, what)
   {
   }
 };
@@ -181,7 +181,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_EOSError;
   }
 public:
-  explicit EOSError(const UnicodeString & Msg, DWORD code) :
+  explicit EOSError(UnicodeString Msg, DWORD code) :
     Exception(OBJECT_CLASS_EOSError, Msg),
     ErrorCode(code)
   {
@@ -198,7 +198,7 @@ public:
       Obj->GetKind() == OBJECT_CLASS_EInvalidOperation;
   }
 public:
-  explicit EInvalidOperation(const UnicodeString & Msg) :
+  explicit EInvalidOperation(UnicodeString Msg) :
     Exception(OBJECT_CLASS_EInvalidOperation, Msg)
   {
   }
@@ -239,31 +239,31 @@ public:
 
 void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings);
 
-UnicodeString ExtractShortPathName(const UnicodeString & APath);
-UnicodeString ExtractDirectory(const UnicodeString & APath, wchar_t Delimiter = L'/');
-UnicodeString ExtractFilename(const UnicodeString & APath, wchar_t Delimiter = L'/');
-UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimiter = L'/');
-UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeString & Ext, wchar_t Delimiter = L'/');
+UnicodeString ExtractShortPathName(UnicodeString APath);
+UnicodeString ExtractDirectory(UnicodeString APath, wchar_t Delimiter = L'/');
+UnicodeString ExtractFilename(UnicodeString APath, wchar_t Delimiter = L'/');
+UnicodeString ExtractFileExtension(UnicodeString APath, wchar_t Delimiter = L'/');
+UnicodeString ChangeFileExtension(UnicodeString APath, UnicodeString Ext, wchar_t Delimiter = L'/');
 
-UnicodeString IncludeTrailingBackslash(const UnicodeString & Str);
-UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str);
-UnicodeString ExtractFileDir(const UnicodeString & Str);
-UnicodeString ExtractFilePath(const UnicodeString & Str);
+UnicodeString IncludeTrailingBackslash(UnicodeString Str);
+UnicodeString ExcludeTrailingBackslash(UnicodeString Str);
+UnicodeString ExtractFileDir(UnicodeString Str);
+UnicodeString ExtractFilePath(UnicodeString Str);
 UnicodeString GetCurrentDir();
 
-UnicodeString IncludeTrailingPathDelimiter(const UnicodeString & Str);
+UnicodeString IncludeTrailingPathDelimiter(UnicodeString Str);
 
-UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase = true, wchar_t Separator = L'\0');
-UnicodeString HexToStr(const UnicodeString & Hex);
-uintptr_t HexToInt(const UnicodeString & Hex, uintptr_t MinChars = 0);
+UnicodeString StrToHex(UnicodeString Str, bool UpperCase = true, wchar_t Separator = L'\0');
+UnicodeString HexToStr(UnicodeString Hex);
+uintptr_t HexToInt(UnicodeString Hex, uintptr_t MinChars = 0);
 UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
-char HexToChar(const UnicodeString & Hex, uintptr_t MinChars = 0);
+char HexToChar(UnicodeString Hex, uintptr_t MinChars = 0);
 
-UnicodeString ReplaceStrAll(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);
+UnicodeString ReplaceStrAll(UnicodeString Str, UnicodeString What, UnicodeString ByWhat);
 UnicodeString SysErrorMessage(intptr_t ErrorCode);
 
-bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
-UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
+bool TryStrToDateTime(UnicodeString StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
+UnicodeString DateTimeToStr(UnicodeString & Result, UnicodeString Format,
   const TDateTime & DateTime);
 UnicodeString DateTimeToString(const TDateTime & DateTime);
 uint32_t DayOfWeek(const TDateTime & DateTime);
@@ -274,40 +274,40 @@ void DecodeDate(const TDateTime & DateTime, uint16_t & Year,
 void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
   uint16_t & Min, uint16_t & Sec, uint16_t & MSec);
 
-UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime);
+UnicodeString FormatDateTime(UnicodeString Fmt, const TDateTime & ADateTime);
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 
 TDateTime EncodeDate(int Year, int Month, int Day);
 TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec);
 
-UnicodeString Trim(const UnicodeString & Str);
-UnicodeString TrimLeft(const UnicodeString & Str);
-UnicodeString TrimRight(const UnicodeString & Str);
-UnicodeString UpperCase(const UnicodeString & Str);
-UnicodeString LowerCase(const UnicodeString & Str);
+UnicodeString Trim(UnicodeString Str);
+UnicodeString TrimLeft(UnicodeString Str);
+UnicodeString TrimRight(UnicodeString Str);
+UnicodeString UpperCase(UnicodeString Str);
+UnicodeString LowerCase(UnicodeString Str);
 wchar_t UpCase(const wchar_t Ch);
 wchar_t LowCase(const wchar_t Ch);
-UnicodeString AnsiReplaceStr(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To);
-intptr_t AnsiPos(const UnicodeString & Str, wchar_t Ch);
-intptr_t Pos(const UnicodeString & Str, const UnicodeString & Substr);
-UnicodeString StringReplaceAll(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To);
-bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, intptr_t AIndex);
-intptr_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
-intptr_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
+UnicodeString AnsiReplaceStr(UnicodeString Str, UnicodeString From, UnicodeString To);
+intptr_t AnsiPos(UnicodeString Str, wchar_t Ch);
+intptr_t Pos(UnicodeString Str, UnicodeString Substr);
+UnicodeString StringReplaceAll(UnicodeString Str, UnicodeString From, UnicodeString To);
+bool IsDelimiter(UnicodeString Delimiters, UnicodeString Str, intptr_t AIndex);
+intptr_t FirstDelimiter(UnicodeString Delimiters, UnicodeString Str);
+intptr_t LastDelimiter(UnicodeString Delimiters, UnicodeString Str);
 
-intptr_t CompareText(const UnicodeString & Str1, const UnicodeString & Str2);
-intptr_t AnsiCompare(const UnicodeString & Str1, const UnicodeString & Str2);
-intptr_t AnsiCompareStr(const UnicodeString & Str1, const UnicodeString & Str2);
-bool AnsiSameText(const UnicodeString & Str1, const UnicodeString & Str2);
-bool SameText(const UnicodeString & Str1, const UnicodeString & Str2);
-intptr_t AnsiCompareText(const UnicodeString & Str1, const UnicodeString & Str2);
-intptr_t AnsiCompareIC(const UnicodeString & Str1, const UnicodeString & Str2);
-bool AnsiSameStr(const UnicodeString & Str1, const UnicodeString & Str2);
-bool AnsiContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
+intptr_t CompareText(UnicodeString Str1, UnicodeString Str2);
+intptr_t AnsiCompare(UnicodeString Str1, UnicodeString Str2);
+intptr_t AnsiCompareStr(UnicodeString Str1, UnicodeString Str2);
+bool AnsiSameText(UnicodeString Str1, UnicodeString Str2);
+bool SameText(UnicodeString Str1, UnicodeString Str2);
+intptr_t AnsiCompareText(UnicodeString Str1, UnicodeString Str2);
+intptr_t AnsiCompareIC(UnicodeString Str1, UnicodeString Str2);
+bool AnsiSameStr(UnicodeString Str1, UnicodeString Str2);
+bool AnsiContainsText(UnicodeString Str1, UnicodeString Str2);
 bool ContainsStr(const AnsiString & Str1, const AnsiString & Str2);
-bool ContainsText(const UnicodeString & Str1, const UnicodeString & Str2);
-UnicodeString RightStr(const UnicodeString & Str, intptr_t ACount);
-intptr_t PosEx(const UnicodeString & SubStr, const UnicodeString & Str, intptr_t Offset = 1);
+bool ContainsText(UnicodeString Str1, UnicodeString Str2);
+UnicodeString RightStr(UnicodeString Str, intptr_t ACount);
+intptr_t PosEx(UnicodeString SubStr, UnicodeString Str, intptr_t Offset = 1);
 
 UnicodeString UTF8ToString(const RawByteString & Str);
 UnicodeString UTF8ToString(const char * Str, intptr_t Len);
@@ -317,17 +317,17 @@ int StringCmpI(const wchar_t * S1, const wchar_t * S2);
 
 UnicodeString IntToStr(intptr_t Value);
 UnicodeString Int64ToStr(int64_t Value);
-intptr_t StrToInt(const UnicodeString & Value);
-int64_t ToInt(const UnicodeString & Value);
-intptr_t StrToIntDef(const UnicodeString & Value, intptr_t DefVal);
-int64_t StrToInt64(const UnicodeString & Value);
-int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal);
-bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value);
-bool TryStrToInt64(const UnicodeString & StrValue, int64_t & Value);
+intptr_t StrToInt(UnicodeString Value);
+int64_t ToInt(UnicodeString Value);
+intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal);
+int64_t StrToInt64(UnicodeString Value);
+int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal);
+bool TryStrToInt(UnicodeString StrValue, int64_t & Value);
+bool TryStrToInt64(UnicodeString StrValue, int64_t & Value);
 
-double StrToFloat(const UnicodeString & Value);
-double StrToFloatDef(const UnicodeString & Value, double DefVal);
-UnicodeString FormatFloat(const UnicodeString & Format, double Value);
+double StrToFloat(UnicodeString Value);
+double StrToFloatDef(UnicodeString Value, double DefVal);
+UnicodeString FormatFloat(UnicodeString Format, double Value);
 bool IsZero(double Value);
 
 TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime);
@@ -336,19 +336,19 @@ int64_t FileRead(HANDLE AHandle, void * Buffer, int64_t Count);
 int64_t FileWrite(HANDLE AHandle, const void * Buffer, int64_t Count);
 int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin);
 
-bool FileExists(const UnicodeString & AFileName);
-bool RenameFile(const UnicodeString & From, const UnicodeString & To);
-bool DirectoryExists(const UnicodeString & ADir);
-UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList);
-void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp);
+bool FileExists(UnicodeString AFileName);
+bool RenameFile(UnicodeString From, UnicodeString To);
+bool DirectoryExists(UnicodeString ADir);
+UnicodeString FileSearch(UnicodeString AFileName, UnicodeString DirectoryList);
+void FileAge(UnicodeString AFileName, TDateTime & ATimestamp);
 
-DWORD FileGetAttr(const UnicodeString & AFileName, bool FollowLink = true);
-DWORD FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs);
+DWORD FileGetAttr(UnicodeString AFileName, bool FollowLink = true);
+DWORD FileSetAttr(UnicodeString AFileName, DWORD LocalFileAttrs);
 
-bool ForceDirectories(const UnicodeString & ADir);
-bool RemoveFile(const UnicodeString & AFileName);
-bool CreateDir(const UnicodeString & ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
-bool RemoveDir(const UnicodeString & ADir);
+bool ForceDirectories(UnicodeString ADir);
+bool RemoveFile(UnicodeString AFileName);
+bool CreateDir(UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
+bool RemoveDir(UnicodeString ADir);
 
 UnicodeString Format(const wchar_t * Format, ...);
 UnicodeString FormatV(const wchar_t * Format, va_list Args);
@@ -356,7 +356,7 @@ AnsiString FormatA(const char * Format, ...);
 AnsiString FormatA(const char * Format, va_list Args);
 UnicodeString FmtLoadStr(intptr_t Id, ...);
 
-UnicodeString WrapText(const UnicodeString & Line, intptr_t MaxWidth = 40);
+UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth = 40);
 
 UnicodeString TranslateExceptionMessage(Exception * E);
 
@@ -365,14 +365,14 @@ void AppendChar(std::string & Str, const char Ch);
 
 void AppendPathDelimiterW(UnicodeString & Str);
 
-UnicodeString ExpandEnvVars(const UnicodeString & Str);
+UnicodeString ExpandEnvVars(UnicodeString Str);
 
 UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len);
 
-UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt,
+UnicodeString ChangeFileExt(UnicodeString AFileName, UnicodeString AExt,
   wchar_t Delimiter = L'/');
-UnicodeString ExtractFileExt(const UnicodeString & AFileName);
-UnicodeString ExpandUNCFileName(const UnicodeString & AFileName);
+UnicodeString ExtractFileExt(UnicodeString AFileName);
+UnicodeString ExpandUNCFileName(UnicodeString AFileName);
 
 typedef WIN32_FIND_DATA TWin32FindData;
 typedef UnicodeString TFileName;
@@ -423,13 +423,13 @@ bool Win32Check(bool RetVal);
 class EConvertError : public Exception
 {
 public:
-  explicit EConvertError(const UnicodeString & Msg) :
+  explicit EConvertError(UnicodeString Msg) :
     Exception(OBJECT_CLASS_EConvertError, Msg)
   {
   }
 };
 
-UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath);
+UnicodeString UnixExcludeLeadingBackslash(UnicodeString APath);
 
 TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears = 1);
 TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths = 1);
@@ -442,8 +442,8 @@ TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSec
 
 Boolean IsLeapYear(Word Year);
 
-UnicodeString StripHotkey(const UnicodeString & AText);
-bool StartsText(const UnicodeString & ASubText, const UnicodeString & AText);
+UnicodeString StripHotkey(UnicodeString AText);
+bool StartsText(UnicodeString ASubText, UnicodeString AText);
 
 struct TVersionInfo
 {
@@ -454,7 +454,7 @@ struct TVersionInfo
 };
 
 #define MAKEVERSIONNUMBER(major, minor, revision) ( ((major)<<16) | ((minor)<<8) | (revision))
-uintptr_t StrToVersionNumber(const UnicodeString & VersionMumberStr);
+uintptr_t StrToVersionNumber(UnicodeString VersionMumberStr);
 UnicodeString VersionNumberToStr(uintptr_t VersionNumber);
 uintptr_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
 uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
@@ -644,7 +644,7 @@ using namespace Sysutils;
 
 namespace base {
 
-DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec);
+DWORD FindFirst(UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec & Rec);
 DWORD FindNext(TSearchRec & Rec);
 DWORD FindClose(TSearchRec & Rec);
 

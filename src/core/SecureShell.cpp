@@ -768,8 +768,8 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & AName) const
 
 
 bool TSecureShell::PromptUser(bool /*ToServer*/,
-  const UnicodeString & AName, bool /*NameRequired*/,
-  const UnicodeString & AInstructions, bool InstructionsRequired,
+  UnicodeString AName, bool /*NameRequired*/,
+  UnicodeString AInstructions, bool InstructionsRequired,
   TStrings * Prompts, TStrings * Results)
 {
   // there can be zero prompts!
@@ -1429,7 +1429,7 @@ void TSecureShell::SendNull()
   Send(&Null, 1);
 }
 
-void TSecureShell::SendLine(const UnicodeString & Line)
+void TSecureShell::SendLine(UnicodeString Line)
 {
   CheckConnection();
   RawByteString Buf;
@@ -1537,7 +1537,7 @@ void TSecureShell::AddStdError(UnicodeString AStr)
   }
 }
 
-void TSecureShell::AddStdErrorLine(const UnicodeString & AStr)
+void TSecureShell::AddStdErrorLine(UnicodeString AStr)
 {
   UnicodeString Str = AStr.Trim();
   if (FAuthenticating)
@@ -1550,7 +1550,7 @@ void TSecureShell::AddStdErrorLine(const UnicodeString & AStr)
   }
 }
 
-const UnicodeString & TSecureShell::GetStdError() const
+UnicodeString TSecureShell::GetStdError() const
 {
   return FStdError;
 }
@@ -1572,7 +1572,7 @@ void TSecureShell::ClearStdError()
 }
 
 void TSecureShell::CaptureOutput(TLogLineType Type,
-  const UnicodeString & Line)
+  UnicodeString Line)
 {
   if (FOnCaptureOutput != nullptr)
   {
@@ -1621,7 +1621,7 @@ void TSecureShell::FatalError(UnicodeString Error, UnicodeString HelpKeyword)
   FUI->FatalError(nullptr, Error, HelpKeyword);
 }
 
-void TSecureShell::LogEvent(const UnicodeString & AStr)
+void TSecureShell::LogEvent(UnicodeString AStr)
 {
   if (FLog->GetLogging())
   {
@@ -2331,8 +2331,8 @@ UnicodeString TSecureShell::RetrieveHostKey(UnicodeString Host, intptr_t Port, c
   return Result;
 }
 
-void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
-  const UnicodeString & AKeyType, const UnicodeString & AKeyStr, const UnicodeString & AFingerprint)
+void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
+  UnicodeString AKeyType, UnicodeString AKeyStr, UnicodeString AFingerprint)
 {
   UnicodeString Host = AHost;
   UnicodeString KeyStr = AKeyStr;
@@ -2530,7 +2530,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
   GetConfiguration()->RememberLastFingerprint(FSessionData->GetSiteKey(), SshFingerprintType, AFingerprint);
 }
 
-bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, const UnicodeString & KeyType)
+bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType)
 {
   // Return true, if we have any host key fingerprint of a particular type
 
@@ -2610,7 +2610,7 @@ void TSecureShell::AskAlg(const UnicodeString AlgType,
   }
 }
 
-void TSecureShell::DisplayBanner(const UnicodeString & Banner)
+void TSecureShell::DisplayBanner(UnicodeString Banner)
 {
   FUI->DisplayBanner(Banner);
 }

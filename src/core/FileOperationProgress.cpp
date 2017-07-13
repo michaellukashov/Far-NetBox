@@ -145,7 +145,7 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
 
 void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, intptr_t ACount, bool ATemp,
-  const UnicodeString & ADirectory, uintptr_t ACPSLimit)
+  UnicodeString ADirectory, uintptr_t ACPSLimit)
 {
 
   {

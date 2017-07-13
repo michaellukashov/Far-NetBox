@@ -54,7 +54,7 @@ void SetNoGUI();
 bool ProcessGUI(bool Force = false);
 UnicodeString GetAppNameString();
 UnicodeString GetSshVersionString();
-void CopyToClipboard(const UnicodeString & Text);
+void CopyToClipboard(UnicodeString Text);
 HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
   /*TThreadFunc ThreadFunc,*/ void * Parameter, DWORD CreationFlags,
   TThreadID & ThreadId);
@@ -182,7 +182,7 @@ typedef void (__closure *TFileFoundEvent)
    bool & Cancel);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*FileName*/,
+  TTerminal * /*Terminal*/, UnicodeString /*FileName*/,
   const TRemoteFile * /*File*/,
   bool & /*Cancel*/> TFileFoundEvent;
 #if 0
@@ -190,7 +190,7 @@ typedef void (__closure *TFindingFileEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool & /*Cancel*/> TFindingFileEvent;
+  TTerminal * /*Terminal*/, UnicodeString /*Directory*/, bool & /*Cancel*/> TFindingFileEvent;
 
 class TOperationVisualizer
 {

@@ -31,20 +31,20 @@ enum TSynchronizeLogEntry
 
 typedef nb::FastDelegate3<void,
   TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/,
-  const UnicodeString & /*Message*/> TSynchronizeLogEvent;
+  UnicodeString /*Message*/> TSynchronizeLogEvent;
 typedef nb::FastDelegate8<void,
   TObject * /*Sender*/, bool /*Start*/, const TSynchronizeParamType & /*Params*/,
   const TCopyParamType & /*CopyParam*/, TSynchronizeOptions * /*Options*/,
   TSynchronizeAbortEvent /*OnAbort*/, TSynchronizeThreadsEvent /*OnSynchronizeThreads*/,
   TSynchronizeLogEvent /*OnSynchronizeLog*/> TSynchronizeStartStopEvent;
 typedef nb::FastDelegate8<void,
-  TSynchronizeController * /*Sender*/, const UnicodeString & /*LocalDirectory*/,
-  const UnicodeString & /*RemoteDirectory*/, const TCopyParamType & /*CopyParam*/,
+  TSynchronizeController * /*Sender*/, UnicodeString /*LocalDirectory*/,
+  UnicodeString /*RemoteDirectory*/, const TCopyParamType & /*CopyParam*/,
   const TSynchronizeParamType & /*Params*/, TSynchronizeChecklist ** /*Checklist*/,
   TSynchronizeOptions * /*Options*/, bool /*Full*/> TSynchronizeEvent;
 typedef nb::FastDelegate3<void,
-  TSynchronizeController * /*Sender*/, const UnicodeString & /*Directory*/,
-  const UnicodeString & /*ErrorStr*/> TSynchronizeInvalidEvent;
+  TSynchronizeController * /*Sender*/, UnicodeString /*Directory*/,
+  UnicodeString /*ErrorStr*/> TSynchronizeInvalidEvent;
 typedef nb::FastDelegate2<void,
   TSynchronizeController * /*Sender*/,
   intptr_t & /*MaxDirectories*/> TSynchronizeTooManyDirectoriesEvent;
@@ -73,7 +73,7 @@ public:
     TSynchronizeOptions * Options,
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
     TSynchronizeLogEvent OnSynchronizeLog);
-  void LogOperation(TSynchronizeOperation Operation, const UnicodeString & AFileName);
+  void LogOperation(TSynchronizeOperation Operation, UnicodeString AFileName);
 
 private:
   TSynchronizeEvent FOnSynchronize;
@@ -87,13 +87,13 @@ private:
   TSynchronizeLogEvent FSynchronizeLog;
   TCopyParamType FCopyParam;
 
-  void SynchronizeChange(TObject * Sender, const UnicodeString & Directory,
+  void SynchronizeChange(TObject * Sender, UnicodeString Directory,
     bool & SubdirsChanged);
   void SynchronizeAbort(bool Close);
-  void SynchronizeLog(TSynchronizeLogEntry Entry, const UnicodeString & Message);
-  void SynchronizeInvalid(TObject * Sender, const UnicodeString & Directory,
-    const UnicodeString & ErrorStr);
-  void SynchronizeFilter(TObject * Sender, const UnicodeString & DirectoryName,
+  void SynchronizeLog(TSynchronizeLogEntry Entry, UnicodeString Message);
+  void SynchronizeInvalid(TObject * Sender, UnicodeString Directory,
+    UnicodeString ErrorStr);
+  void SynchronizeFilter(TObject * Sender, UnicodeString DirectoryName,
     bool & Add);
   void SynchronizeTooManyDirectories(TObject * Sender, intptr_t & MaxDirectories);
   void SynchronizeDirectoriesChange(TObject * Sender, intptr_t Directories);

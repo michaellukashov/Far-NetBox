@@ -52,11 +52,11 @@ typedef nb::FastDelegate1<void,
 #if 0
 typedef void (__closure *TFileOperationFinished)
   (TFileOperation Operation, TOperationSide Side, bool Temp,
-    const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
+    UnicodeString FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
 #endif
 typedef nb::FastDelegate6<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
-  const UnicodeString & /*FileName*/, bool /*Success*/,
+  UnicodeString /*FileName*/, bool /*Success*/,
   TOnceDoneOperation & /*OnceDoneOperation*/> TFileOperationFinishedEvent;
 
 class TFileOperationProgressType : public TObject
@@ -232,7 +232,7 @@ public:
   void SetTotalSize(int64_t ASize);
   void Start(TFileOperation AOperation, TOperationSide ASide, intptr_t ACount);
   void Start(TFileOperation AOperation,
-    TOperationSide ASide, intptr_t ACount, bool ATemp, const UnicodeString & ADirectory,
+    TOperationSide ASide, intptr_t ACount, bool ATemp, UnicodeString ADirectory,
     uintptr_t ACPSLimit);
   void Stop();
   void SetDone();

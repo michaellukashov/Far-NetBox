@@ -26,7 +26,7 @@ THttp::~THttp()
   SAFE_DESTROY(FRequestHeaders);
 }
 
-void THttp::SendRequest(const char * Method, const UnicodeString & Request)
+void THttp::SendRequest(const char * Method, UnicodeString Request)
 {
   std::unique_ptr<TStringList> AttemptedUrls(CreateSortedStringList());
   AttemptedUrls->Add(GetURL());
@@ -176,7 +176,7 @@ void THttp::Get()
   SendRequest("GET", UnicodeString());
 }
 
-void THttp::Post(const UnicodeString & Request)
+void THttp::Post(UnicodeString Request)
 {
   SendRequest("POST", Request);
 }

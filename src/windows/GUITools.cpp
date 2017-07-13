@@ -75,7 +75,7 @@ bool FindFile(UnicodeString & APath)
   return Result;
 }
 
-void OpenSessionInPutty(const UnicodeString & PuttyPath,
+void OpenSessionInPutty(UnicodeString PuttyPath,
   TSessionData * SessionData)
 {
   UnicodeString Program, Params, Dir;
@@ -194,7 +194,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
   }
 }
 
-bool FindTool(const UnicodeString & Name, UnicodeString & APath)
+bool FindTool(UnicodeString Name, UnicodeString & APath)
 {
   UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName()));
   APath = AppPath + Name;
@@ -214,7 +214,7 @@ bool FindTool(const UnicodeString & Name, UnicodeString & APath)
   return Result;
 }
 
-bool CopyCommandToClipboard(const UnicodeString & Command)
+bool CopyCommandToClipboard(UnicodeString Command)
 {
   bool Result = false; // UseAlternativeFunction() && IsKeyPressed(VK_CONTROL);
   if (Result)
@@ -327,8 +327,8 @@ bool SpecialFolderLocation(intptr_t PathID, UnicodeString & APath)
   return false;
 }
 
-UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
-  const UnicodeString & MultiItemsFormat, intptr_t Count, const UnicodeString & FirstItem)
+UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
+  UnicodeString MultiItemsFormat, intptr_t Count, UnicodeString FirstItem)
 {
   UnicodeString Result;
   if (Count == 1)
@@ -342,15 +342,15 @@ UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   return Result;
 }
 
-UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
-  const UnicodeString & MultiItemsFormat, const TStrings * Items)
+UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
+  UnicodeString MultiItemsFormat, const TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
     Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
 }
 
-UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
-  const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote)
+UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
+  UnicodeString MultiFilesFormat, const TStrings * AFiles, bool Remote)
 {
   DebugAssert(AFiles != nullptr);
   UnicodeString Item;
@@ -676,7 +676,7 @@ void CopyImageList(TImageList * TargetList, TImageList * SourceList)
   }
 }
 
-static bool DoLoadDialogImage(TImage * Image, const UnicodeString & ImageName)
+static bool DoLoadDialogImage(TImage * Image, UnicodeString ImageName)
 {
   bool Result = false;
   if (GlyphsModule != nullptr)
@@ -725,7 +725,7 @@ static void DialogImageRescale(TComponent * Sender, TObject * Token)
   DoLoadDialogImage(Image, DialogImageName->ImageName);
 }
 
-void LoadDialogImage(TImage * Image, const UnicodeString & ImageName)
+void LoadDialogImage(TImage * Image, UnicodeString ImageName)
 {
   if (DoLoadDialogImage(Image, ImageName))
   {
@@ -779,8 +779,8 @@ public:
   virtual TBrowserViewer(TComponent* AOwner);
 
   void AddLinkHandler(
-    const UnicodeString & Url, TNotifyEvent Handler);
-  void NavigateToUrl(const UnicodeString & Url);
+    UnicodeString Url, TNotifyEvent Handler);
+  void NavigateToUrl(UnicodeString Url);
 
   TControl * LoadingPanel;
 
@@ -808,7 +808,7 @@ TBrowserViewer::TBrowserViewer(TComponent* AOwner) :
 }
 
 void TBrowserViewer::AddLinkHandler(
-  const UnicodeString & Url, TNotifyEvent Handler)
+  UnicodeString Url, TNotifyEvent Handler)
 {
   FHandlers.insert(std::make_pair(Url, Handler));
 }
@@ -858,13 +858,13 @@ void TBrowserViewer::BeforeNavigate2(
   }
 }
 
-void TBrowserViewer::NavigateToUrl(const UnicodeString & Url)
+void TBrowserViewer::NavigateToUrl(UnicodeString Url)
 {
   FComplete = false;
   Navigate(Url.c_str());
 }
 
-TPanel * CreateLabelPanel(TPanel * Parent, const UnicodeString & Label)
+TPanel * CreateLabelPanel(TPanel * Parent, UnicodeString Label)
 {
   TPanel * Result = CreateBlankPanel(Parent);
   Result->Parent = Parent;
@@ -873,7 +873,7 @@ TPanel * CreateLabelPanel(TPanel * Parent, const UnicodeString & Label)
   return Result;
 }
 
-TWebBrowserEx * CreateBrowserViewer(TPanel * Parent, const UnicodeString & LoadingLabel)
+TWebBrowserEx * CreateBrowserViewer(TPanel * Parent, UnicodeString LoadingLabel)
 {
   TBrowserViewer * Result = new TBrowserViewer(Parent);
   // TWebBrowserEx has its own unrelated Name and Parent properties.
@@ -897,7 +897,7 @@ void SetBrowserDesignModeOff(TWebBrowserEx * WebBrowser)
 }
 
 void AddBrowserLinkHandler(TWebBrowserEx * WebBrowser,
-  const UnicodeString & Url, TNotifyEvent Handler)
+  UnicodeString Url, TNotifyEvent Handler)
 {
   TBrowserViewer * BrowserViewer = dynamic_cast<TBrowserViewer *>(WebBrowser);
   if (DebugAlwaysTrue(BrowserViewer != nullptr))
@@ -906,7 +906,7 @@ void AddBrowserLinkHandler(TWebBrowserEx * WebBrowser,
   }
 }
 
-void NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, const UnicodeString & Url)
+void NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, UnicodeString Url)
 {
   TBrowserViewer * BrowserViewer = dynamic_cast<TBrowserViewer *>(WebBrowser);
   if (DebugAlwaysTrue(BrowserViewer != nullptr))
@@ -915,7 +915,7 @@ void NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, const UnicodeString & Url)
   }
 }
 
-TComponent * FindComponentRecursively(TComponent * Root, const UnicodeString & Name)
+TComponent * FindComponentRecursively(TComponent * Root, UnicodeString Name)
 {
   for (intptr_t Index = 0; Index < Root->ComponentCount; Index++)
   {
@@ -941,22 +941,22 @@ TLocalCustomCommand::TLocalCustomCommand()
 }
 
 TLocalCustomCommand::TLocalCustomCommand(
-    const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & LocalPath) :
+    const TCustomCommandData & Data, UnicodeString RemotePath, UnicodeString LocalPath) :
   TFileCustomCommand(Data, RemotePath)
 {
   FLocalPath = LocalPath;
 }
 
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-  const UnicodeString & RemotePath, const UnicodeString & LocalPath, const UnicodeString & FileName,
-  const UnicodeString & LocalFileName, const UnicodeString & FileList) :
+  UnicodeString RemotePath, UnicodeString LocalPath, UnicodeString FileName,
+  UnicodeString LocalFileName, UnicodeString FileList) :
   TFileCustomCommand(Data, RemotePath, FileName, FileList)
 {
   FLocalPath = LocalPath;
   FLocalFileName = LocalFileName;
 }
 
-intptr_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index) const
+intptr_t TLocalCustomCommand::PatternLen(UnicodeString Command, intptr_t Index) const
 {
   intptr_t Len;
   if ((Index < Command.Length()) && (Command[Index + 1] == L'\\'))
@@ -975,7 +975,7 @@ intptr_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, intptr_t
 }
 
 bool TLocalCustomCommand::PatternReplacement(
-  intptr_t Index, const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit) const
+  intptr_t Index, UnicodeString Pattern, UnicodeString & Replacement, bool & Delimit) const
 {
   bool Result;
   if (Pattern == L"!\\")
@@ -1003,12 +1003,12 @@ void TLocalCustomCommand::DelimitReplacement(
   // never delimit local commands
 }
 
-bool TLocalCustomCommand::HasLocalFileName(const UnicodeString & Command) const
+bool TLocalCustomCommand::HasLocalFileName(UnicodeString Command) const
 {
   return FindPattern(Command, L'^');
 }
 
-bool TLocalCustomCommand::IsFileCommand(const UnicodeString & Command) const
+bool TLocalCustomCommand::IsFileCommand(UnicodeString Command) const
 {
   return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
 }
@@ -1128,7 +1128,7 @@ TFrameAnimation::TFrameAnimation()
   FFirstFrame = -1;
 }
 
-void TFrameAnimation::Init(TPaintBox * PaintBox, const UnicodeString & Name)
+void TFrameAnimation::Init(TPaintBox * PaintBox, UnicodeString Name)
 {
   FName = Name;
   FPaintBox = PaintBox;
@@ -1353,13 +1353,13 @@ bool TScreenTipHintWindow::IsPathLabel(TControl * HintControl)
   return (dynamic_cast<TPathLabel *>(HintControl) != nullptr);
 }
 
-bool TScreenTipHintWindow::IsHintPopup(TControl * HintControl, const UnicodeString & Hint)
+bool TScreenTipHintWindow::IsHintPopup(TControl * HintControl, UnicodeString Hint)
 {
   TLabel * HintLabel = dynamic_cast<TLabel *>(HintControl);
   return (HintLabel != nullptr) && HasLabelHintPopup(HintLabel, Hint);
 }
 
-intptr_t TScreenTipHintWindow::GetMargin(TControl * HintControl, const UnicodeString & Hint)
+intptr_t TScreenTipHintWindow::GetMargin(TControl * HintControl, UnicodeString Hint)
 {
   intptr_t Result;
 
@@ -1377,7 +1377,7 @@ intptr_t TScreenTipHintWindow::GetMargin(TControl * HintControl, const UnicodeSt
   return Result;
 }
 
-TFont * TScreenTipHintWindow::GetFont(TControl * HintControl, const UnicodeString & Hint)
+TFont * TScreenTipHintWindow::GetFont(TControl * HintControl, UnicodeString Hint)
 {
   TFont * Result;
   if (IsHintPopup(HintControl, Hint) || IsPathLabel(HintControl))
@@ -1394,7 +1394,7 @@ TFont * TScreenTipHintWindow::GetFont(TControl * HintControl, const UnicodeStrin
   return Result;
 }
 
-void TScreenTipHintWindow::CalcHintTextRect(TControl * Control, TCanvas * Canvas, TRect & Rect, const UnicodeString & Hint)
+void TScreenTipHintWindow::CalcHintTextRect(TControl * Control, TCanvas * Canvas, TRect & Rect, UnicodeString Hint)
 {
   const intptr_t Flags = DT_CALCRECT | GetTextFlags(Control);
   DrawText(Canvas->Handle, Hint.c_str(), -1, &Rect, Flags);
@@ -1501,7 +1501,7 @@ TControl * TScreenTipHintWindow::GetHintControl(void * Data)
   return reinterpret_cast<TControl *>(DebugNotNull(Data));
 }
 
-UnicodeString TScreenTipHintWindow::GetLongHintIfAny(const UnicodeString & AHint)
+UnicodeString TScreenTipHintWindow::GetLongHintIfAny(UnicodeString AHint)
 {
   UnicodeString Result;
   intptr_t P = Pos(L"|", AHint);

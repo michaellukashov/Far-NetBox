@@ -301,7 +301,7 @@ UnicodeString StoreFormSize(TForm * Form)
 }
 
 static void ExecuteProcessAndReadOutput(const
-  UnicodeString & Command, const UnicodeString & HelpKeyword, UnicodeString & Output)
+  UnicodeString & Command, UnicodeString HelpKeyword, UnicodeString & Output)
 {
   if (!CopyCommandToClipboard(Command))
   {
@@ -382,7 +382,7 @@ static void ExecuteProcessAndReadOutput(const
 }
 
 void ExecuteProcessChecked(
-  const UnicodeString & Command, const UnicodeString & HelpKeyword, UnicodeString * Output)
+  UnicodeString Command, UnicodeString HelpKeyword, UnicodeString * Output)
 {
   if (Output == NULL)
   {
@@ -395,7 +395,7 @@ void ExecuteProcessChecked(
 }
 
 void ExecuteProcessCheckedAndWait(
-  const UnicodeString & Command, const UnicodeString & HelpKeyword, UnicodeString * Output)
+  UnicodeString Command, UnicodeString HelpKeyword, UnicodeString * Output)
 {
   if (Output == NULL)
   {
@@ -422,7 +422,7 @@ bool OpenInNewWindow()
   return UseAlternativeFunction();
 }
 
-void ExecuteNewInstance(const UnicodeString & Param)
+void ExecuteNewInstance(UnicodeString Param)
 {
   UnicodeString Arg = Param;
   if (!Arg.IsEmpty())
@@ -433,8 +433,8 @@ void ExecuteNewInstance(const UnicodeString & Param)
   ExecuteShellChecked(Application->ExeName, Arg);
 }
 
-IShellLink * CreateDesktopShortCut(const UnicodeString & Name,
-  const UnicodeString &File, const UnicodeString & Params, const UnicodeString & Description,
+IShellLink * CreateDesktopShortCut(UnicodeString Name,
+  const UnicodeString &File, UnicodeString Params, UnicodeString Description,
   int SpecialFolder, int IconIndex, bool Return)
 {
   IShellLink* pLink = NULL;
@@ -528,8 +528,8 @@ IShellLink * CreateDesktopShortCut(const UnicodeString & Name,
 }
 
 IShellLink * CreateDesktopSessionShortCut(
-  const UnicodeString & SessionName, UnicodeString Name,
-  const UnicodeString & AdditionalParams, int SpecialFolder, int IconIndex,
+  UnicodeString SessionName, UnicodeString Name,
+  UnicodeString AdditionalParams, int SpecialFolder, int IconIndex,
   bool Return)
 {
   bool DefaultsOnly;
@@ -572,7 +572,7 @@ IShellLink * CreateDesktopSessionShortCut(
 }
 
 template<class TEditControl>
-void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int ForceDirectoryMasks)
+void ValidateMaskEditT(UnicodeString Mask, TEditControl * Edit, int ForceDirectoryMasks)
 {
   DebugAssert(Edit != NULL);
   TFileMasks Masks(ForceDirectoryMasks);
@@ -627,7 +627,7 @@ void ExitActiveControl(TForm * Form)
   }
 }
 
-bool IsWinSCPUrl(const UnicodeString & Url)
+bool IsWinSCPUrl(UnicodeString Url)
 {
   UnicodeString HomePageUrl = LoadStr(HOMEPAGE_URL);
   UnicodeString HttpHomePageUrl = ChangeUrlProtocol(HomePageUrl, HttpProtocol);
@@ -637,7 +637,7 @@ bool IsWinSCPUrl(const UnicodeString & Url)
     StartsText(HttpHomePageUrl, Url);
 }
 
-UnicodeString SecureUrl(const UnicodeString & Url)
+UnicodeString SecureUrl(UnicodeString Url)
 {
   UnicodeString Result = Url;
   if (IsWinSCPUrl(Url) && IsHttpUrl(Url))
@@ -657,7 +657,7 @@ void OpenBrowser(UnicodeString URL)
   ShellExecute(Application->Handle, L"open", URL.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 
-void OpenFolderInExplorer(const UnicodeString & Path)
+void OpenFolderInExplorer(UnicodeString Path)
 {
   if ((int)ShellExecute(Application->Handle, L"explore",
       (wchar_t*)Path.data(), NULL, NULL, SW_SHOWNORMAL) <= 32)
@@ -666,13 +666,13 @@ void OpenFolderInExplorer(const UnicodeString & Path)
   }
 }
 
-void OpenFileInExplorer(const UnicodeString & Path)
+void OpenFileInExplorer(UnicodeString Path)
 {
   PCIDLIST_ABSOLUTE Folder = ILCreateFromPathW(ApiPath(Path).c_str());
   SHOpenFolderAndSelectItems(Folder, 0, NULL, 0);
 }
 
-void ShowHelp(const UnicodeString & AHelpKeyword)
+void ShowHelp(UnicodeString AHelpKeyword)
 {
   // see also AppendUrlParams
   UnicodeString HelpKeyword = AHelpKeyword;
@@ -970,8 +970,8 @@ bool SaveDialog(UnicodeString Title, UnicodeString Filter,
 }
 #endif // #if 0
 
-bool SaveDialog(const UnicodeString & ATitle, const UnicodeString & Filter,
-  const UnicodeString & ADefaultExt, UnicodeString & AFileName)
+bool SaveDialog(UnicodeString ATitle, UnicodeString Filter,
+  UnicodeString ADefaultExt, UnicodeString & AFileName)
 {
   bool Result = false;
   DebugUsedParam(Filter);
@@ -1165,7 +1165,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 }
 
 static void DoVerifyKey(
-  const UnicodeString & AFileName, TSshProt SshProt, bool Convert)
+  UnicodeString AFileName, TSshProt SshProt, bool Convert)
 {
   if (!AFileName.Trim().IsEmpty())
   {
@@ -1253,17 +1253,17 @@ static void DoVerifyKey(
   }
 }
 
-void VerifyAndConvertKey(const UnicodeString & FileName, TSshProt SshProt)
+void VerifyAndConvertKey(UnicodeString FileName, TSshProt SshProt)
 {
   DoVerifyKey(FileName, SshProt, true);
 }
 
-void VerifyKey(const UnicodeString & FileName, TSshProt SshProt)
+void VerifyKey(UnicodeString FileName, TSshProt SshProt)
 {
   DoVerifyKey(FileName, SshProt, false);
 }
 
-void VerifyCertificate(const UnicodeString & FileName)
+void VerifyCertificate(UnicodeString FileName)
 {
   if (!FileName.Trim().IsEmpty())
   {
@@ -1500,7 +1500,7 @@ public:
 class TCustomHelpSelector : public TInterfacedObject, public IHelpSelector
 {
 public:
-  TCustomHelpSelector(const UnicodeString & Name);
+  TCustomHelpSelector(UnicodeString Name);
 
   virtual int SelectKeyword(TStrings * Keywords);
   virtual int TableOfContents(TStrings * Contents);
@@ -1577,7 +1577,7 @@ UnicodeString TWinHelpTester::GetDefaultHelpFile()
 }
 
 
-TCustomHelpSelector::TCustomHelpSelector(const UnicodeString & Name) :
+TCustomHelpSelector::TCustomHelpSelector(UnicodeString Name) :
   FName(Name)
 {
 }

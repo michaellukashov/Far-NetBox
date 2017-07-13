@@ -11,14 +11,14 @@ static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
   return get_as<TNamedObject>(Item1)->Compare(get_as<TNamedObject>(Item2));
 }
 //--- TNamedObject ----------------------------------------------------------
-TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString & AName) :
+TNamedObject::TNamedObject(TObjectClassId Kind, UnicodeString AName) :
   TPersistent(Kind),
   FHidden(false)
 {
   SetName(AName);
 }
 
-void TNamedObject::SetName(const UnicodeString & Value)
+void TNamedObject::SetName(UnicodeString Value)
 {
   FHidden = (Value.SubString(1, TNamedObjectList::HiddenPrefix.Length()) == TNamedObjectList::HiddenPrefix);
   FName = Value;
@@ -42,7 +42,7 @@ intptr_t TNamedObject::Compare(const TNamedObject * Other) const
   return Result;
 }
 
-bool TNamedObject::IsSameName(const UnicodeString & AName) const
+bool TNamedObject::IsSameName(UnicodeString AName) const
 {
   return (GetName().CompareIC(AName) == 0);
 }
@@ -155,12 +155,12 @@ void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
   }
 }
 
-const TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name) const
+const TNamedObject * TNamedObjectList::FindByName(UnicodeString Name) const
 {
   return const_cast<TNamedObjectList *>(this)->FindByName(Name);
 }
 
-TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name)
+TNamedObject * TNamedObjectList::FindByName(UnicodeString Name)
 {
   // This should/can be optimized when list is sorted
   for (Integer Index = 0; Index < GetCountIncludingHidden(); ++Index)

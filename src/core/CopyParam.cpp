@@ -86,7 +86,7 @@ bool TCopyParamType::AnyUsableCopyParam(intptr_t Attrs) const
   return SomeAttrIncluded;
 }
 
-UnicodeString TCopyParamType::GenerateTransferCommandArgs(intptr_t Attrs, const UnicodeString & Link, bool & NoScriptArgs) const
+UnicodeString TCopyParamType::GenerateTransferCommandArgs(intptr_t Attrs, UnicodeString Link, bool & NoScriptArgs) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded;
@@ -116,7 +116,7 @@ UnicodeString TCopyParamType::GenerateAssemblyCode(
 void TCopyParamType::DoGetInfoStr(
   UnicodeString Separator, intptr_t Attrs,
   UnicodeString & Result, bool & SomeAttrIncluded,
-  const UnicodeString & /*Link*/, UnicodeString & /*ScriptArgs*/, bool & NoScriptArgs, /*TAssemblyLanguage Language, UnicodeString & AssemblyCode,*/
+  UnicodeString /*Link*/, UnicodeString & /*ScriptArgs*/, bool & NoScriptArgs, /*TAssemblyLanguage Language, UnicodeString & AssemblyCode,*/
   bool & NoCodeProperties) const
 {
   TCopyParamType Defaults;
@@ -922,7 +922,7 @@ bool TCopyParamType::operator==(const TCopyParamType & rhp) const
 }
 #undef C
 
-static bool TryGetSpeedLimit(const UnicodeString & Text, uintptr_t & Speed)
+static bool TryGetSpeedLimit(UnicodeString Text, uintptr_t & Speed)
 {
   bool Result;
   if (AnsiSameText(Text, LoadStr(SPEED_UNLIMITED)))
@@ -942,7 +942,7 @@ static bool TryGetSpeedLimit(const UnicodeString & Text, uintptr_t & Speed)
   return Result;
 }
 
-uintptr_t GetSpeedLimit(const UnicodeString & Text)
+uintptr_t GetSpeedLimit(UnicodeString Text)
 {
   uintptr_t Speed = 0;
   if (!TryGetSpeedLimit(Text, Speed))

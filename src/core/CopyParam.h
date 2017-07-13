@@ -109,7 +109,7 @@ public:
   UnicodeString RestoreChars(UnicodeString AFileName) const;
   void DoGetInfoStr(UnicodeString Separator, intptr_t Attrs,
     UnicodeString & Result, bool & SomeAttrIncluded,
-    const UnicodeString & Link, UnicodeString & ScriptArgs, bool & NoScriptArgs,
+    UnicodeString Link, UnicodeString & ScriptArgs, bool & NoScriptArgs,
     /*TAssemblyLanguage Language, UnicodeString & AssemblyCode, */bool & NoCodeProperties) const;
   TStrings * GetTransferSkipList() const;
   void SetTransferSkipList(TStrings * Value);
@@ -141,7 +141,7 @@ public:
   UnicodeString GetInfoStr(UnicodeString Separator, intptr_t Attrs) const;
   bool AnyUsableCopyParam(intptr_t Attrs) const;
   UnicodeString GenerateTransferCommandArgs(
-    intptr_t Attrs, const UnicodeString & Link, bool & NoScriptArgs) const;
+    intptr_t Attrs, UnicodeString Link, bool & NoScriptArgs) const;
   UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs, bool & NoCodeProperties) const;
 
   bool operator==(const TCopyParamType & rhp) const;
@@ -208,14 +208,14 @@ public:
   bool GetCalculateSize() const { return FCalculateSize; }
   void SetCalculateSize(bool Value) { FCalculateSize = Value; }
   UnicodeString GetFileMask() const { return FFileMask; }
-  void SetFileMask(const UnicodeString & Value) { FFileMask = Value; }
+  void SetFileMask(UnicodeString Value) { FFileMask = Value; }
   const TFileMasks & GetIncludeFileMask() const { return FIncludeFileMask; }
   TFileMasks & GetIncludeFileMask() { return FIncludeFileMask; }
   void SetIncludeFileMask(const TFileMasks & Value) { FIncludeFileMask = Value; }
   bool GetClearArchive() const { return FClearArchive; }
   void SetClearArchive(bool Value) { FClearArchive = Value; }
   UnicodeString GetTransferResumeFile() const { return FTransferResumeFile; }
-  void SetTransferResumeFile(const UnicodeString & Value) { FTransferResumeFile = Value; }
+  void SetTransferResumeFile(UnicodeString Value) { FTransferResumeFile = Value; }
   bool GetRemoveCtrlZ() const { return FRemoveCtrlZ; }
   void SetRemoveCtrlZ(bool Value) { FRemoveCtrlZ = Value; }
   bool GetRemoveBOM() const { return FRemoveBOM; }
@@ -227,6 +227,6 @@ public:
 
 };
 
-uintptr_t GetSpeedLimit(const UnicodeString & Text);
+uintptr_t GetSpeedLimit(UnicodeString Text);
 UnicodeString SetSpeedLimit(uintptr_t Limit);
 void CopySpeedLimits(TStrings * Source, TStrings * Dest);

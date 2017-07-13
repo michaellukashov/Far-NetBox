@@ -187,10 +187,10 @@ public:
   virtual UnicodeString GetDefaultKeyFile() const;
   virtual void Saved();
   void CleanupRegistry(UnicodeString CleanupSubKey);
-  UnicodeString BannerHash(const UnicodeString & Banner) const;
-  static UnicodeString PropertyToKey(const UnicodeString & Property);
+  UnicodeString BannerHash(UnicodeString Banner) const;
+  static UnicodeString PropertyToKey(UnicodeString Property);
   virtual void DoSave(bool All, bool Explicit);
-  UnicodeString FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType) const;
+  UnicodeString FormatFingerprintKey(UnicodeString SiteKey, UnicodeString FingerprintType) const;
 
   virtual bool GetConfirmOverwriting() const;
   virtual void SetConfirmOverwriting(bool Value);
@@ -233,14 +233,14 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save();
   void SaveExplicit();
-  void MoveStorage(TStorage AStorage, const UnicodeString & ACustomIniFileStorageName);
-  void ScheduleCustomIniFileStorageUse(const UnicodeString & ACustomIniFileStorageName);
+  void MoveStorage(TStorage AStorage, UnicodeString ACustomIniFileStorageName);
+  void ScheduleCustomIniFileStorageUse(UnicodeString ACustomIniFileStorageName);
   void SetNulStorage();
   void SetDefaultStorage();
   UnicodeString GetAutomaticIniFileStorageName(bool ReadingOnly);
   UnicodeString GetDefaultIniFileExportPath();
-  void Export(const UnicodeString & AFileName);
-  void Import(const UnicodeString & AFileName);
+  void Export(UnicodeString AFileName);
+  void Import(UnicodeString AFileName);
   void CleanupConfiguration();
   void CleanupIniFile();
   void CleanupHostKeys();
@@ -252,10 +252,10 @@ public:
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
   void SaveDirectoryChangesCache(const UnicodeString SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  bool ShowBanner(const UnicodeString SessionKey, const UnicodeString & Banner);
-  void NeverShowBanner(const UnicodeString SessionKey, const UnicodeString & Banner);
-  void RememberLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType, const UnicodeString & Fingerprint);
-  UnicodeString GetLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType);
+  bool ShowBanner(const UnicodeString SessionKey, UnicodeString Banner);
+  void NeverShowBanner(const UnicodeString SessionKey, UnicodeString Banner);
+  void RememberLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType, UnicodeString Fingerprint);
+  UnicodeString GetLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType);
   virtual THierarchicalStorage * CreateConfigStorage();
   virtual THierarchicalStorage * CreateStorage(bool & SessionList);
   void TemporaryLogging(const UnicodeString ALogFileName);
@@ -267,8 +267,8 @@ public:
   virtual RawByteString EncryptPassword(UnicodeString Password, UnicodeString Key);
   virtual UnicodeString DecryptPassword(RawByteString Password, UnicodeString Key);
   virtual RawByteString StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
-  UnicodeString GetFileDescription(const UnicodeString & AFileName) const;
-  UnicodeString GetFileVersion(const UnicodeString & AFileName);
+  UnicodeString GetFileDescription(UnicodeString AFileName) const;
+  UnicodeString GetFileVersion(UnicodeString AFileName);
 
   TStoredSessionList * SelectFilezillaSessionsForImport(
     TStoredSessionList * Sessions, UnicodeString & Error);

@@ -297,7 +297,7 @@ protected:
   virtual ~TQueueItem();
 
 public:
-  void SetMasks(const UnicodeString & Value);
+  void SetMasks(UnicodeString Value);
   void SetStatus(TStatus Status);
   TStatus GetStatus() const;
   void Execute(TTerminalItem * TerminalItem);
@@ -353,7 +353,7 @@ public:
   void * GetUserData() const { return FUserData; }
   void * GetUserData() { return FUserData; }
   void SetUserData(void * Value) { FUserData = Value; }
-  void SetMasks(const UnicodeString & Value);
+  void SetMasks(UnicodeString Value);
 
 private:
   TFileOperationProgressType * FProgressData;
@@ -462,7 +462,7 @@ public:
   }
 public:
   explicit TTransferQueueItem(TObjectClassId Kind, TTerminal * Terminal,
-    const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
+    const TStrings * AFilesToCopy, UnicodeString TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
     bool SingleFile, bool Parallel);
   virtual ~TTransferQueueItem();
@@ -497,7 +497,7 @@ public:
   }
 public:
   explicit TUploadQueueItem(TTerminal * Terminal,
-    const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
+    const TStrings * AFilesToCopy, UnicodeString TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile, bool Parallel);
   virtual ~TUploadQueueItem()
   {
@@ -517,7 +517,7 @@ public:
   }
 public:
   explicit TDownloadQueueItem(TTerminal * Terminal,
-    const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
+    const TStrings * AFilesToCopy, UnicodeString TargetDir,
     const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile, bool Parallel);
   virtual ~TDownloadQueueItem()
   {
@@ -595,17 +595,17 @@ private:
   void TerminalReopenEvent(TObject * Sender);
 
   void TerminalInformation(
-    TTerminal * Terminal, const UnicodeString & Str, bool Status, intptr_t Phase);
+    TTerminal * Terminal, UnicodeString Str, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject * Sender,
-    const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
+    UnicodeString AQuery, TStrings * MoreMessages, uintptr_t Answers,
     const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
-    const UnicodeString & Name, const UnicodeString & Instructions,
+    UnicodeString Name, UnicodeString Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
   void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
-    const UnicodeString & SessionName, const UnicodeString & Banner,
+    UnicodeString SessionName, UnicodeString Banner,
     bool & NeverShowAgain, intptr_t Options);
   void TerminalChangeDirectory(TObject * Sender);
   void TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly);

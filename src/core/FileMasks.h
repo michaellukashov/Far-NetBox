@@ -30,7 +30,7 @@ public:
   };
 
   static bool IsMask(const UnicodeString Mask);
-  static UnicodeString NormalizeMask(const UnicodeString & Mask, const UnicodeString & AnyMask = L"");
+  static UnicodeString NormalizeMask(UnicodeString Mask, UnicodeString AnyMask = L"");
   static UnicodeString ComposeMaskStr(
     TStrings * IncludeFileMasksStr, TStrings * ExcludeFileMasksStr,
     TStrings * IncludeDirectoryMasksStr, TStrings * ExcludeDirectoryMasksStr);
@@ -39,14 +39,14 @@ public:
   TFileMasks();
   explicit TFileMasks(intptr_t ForceDirectoryMasks);
   TFileMasks(const TFileMasks & Source);
-  explicit TFileMasks(const UnicodeString & AMasks);
+  explicit TFileMasks(UnicodeString AMasks);
   virtual ~TFileMasks();
   TFileMasks & operator=(const TFileMasks & rhm);
-  TFileMasks & operator=(const UnicodeString & rhs);
+  TFileMasks & operator=(UnicodeString rhs);
   bool operator==(const TFileMasks & rhm) const;
-  bool operator==(const UnicodeString & rhs) const;
+  bool operator==(UnicodeString rhs) const;
 
-  void SetMask(const UnicodeString & Mask);
+  void SetMask(UnicodeString Mask);
 
   bool Matches(const UnicodeString AFileName, bool Directory = false,
     const UnicodeString APath = L"", const TParams * Params = nullptr) const;
@@ -137,9 +137,9 @@ private:
 private:
   void SetStr(const UnicodeString Str, bool SingleMask);
   void SetMasksPrivate(const UnicodeString Value);
-  void CreateMaskMask(const UnicodeString & Mask, intptr_t Start, intptr_t End,
+  void CreateMaskMask(UnicodeString Mask, intptr_t Start, intptr_t End,
     bool Ex, TMaskMask & MaskMask) const;
-  void CreateMask(const UnicodeString & MaskStr, intptr_t MaskStart,
+  void CreateMask(UnicodeString MaskStr, intptr_t MaskStart,
     intptr_t MaskEnd, bool Include);
   TStrings * GetMasksStr(intptr_t Index) const;
   static UnicodeString MakeDirectoryMask(UnicodeString AStr);
@@ -151,13 +151,13 @@ private:
   static void TrimEx(UnicodeString & Str, intptr_t & Start, intptr_t & End);
   static bool MatchesMasks(const UnicodeString AFileName, bool Directory,
     const UnicodeString APath, const TParams * Params, const TMasks & Masks, bool Recurse);
-  static inline bool MatchesMaskMask(const TMaskMask & MaskMask, const UnicodeString & Str);
+  static inline bool MatchesMaskMask(const TMaskMask & MaskMask, UnicodeString Str);
   void ThrowError(intptr_t Start, intptr_t End) const;
 };
 
 UnicodeString MaskFileName(UnicodeString AFileName, const UnicodeString Mask);
-bool IsFileNameMask(const UnicodeString & AMask);
-bool IsEffectiveFileNameMask(const UnicodeString & AMask);
+bool IsFileNameMask(UnicodeString AMask);
+bool IsEffectiveFileNameMask(UnicodeString AMask);
 UnicodeString DelimitFileNameMask(UnicodeString AMask);
 
 #if 0
@@ -178,26 +178,26 @@ public:
   // Needs an explicit virtual destructor, as is has virtual methods
   virtual ~TCustomCommand() {}
 
-  UnicodeString Complete(const UnicodeString & Command, bool LastPass);
-  virtual void Validate(const UnicodeString & Command);
-  bool HasAnyPatterns(const UnicodeString & Command) const;
+  UnicodeString Complete(UnicodeString Command, bool LastPass);
+  virtual void Validate(UnicodeString Command);
+  bool HasAnyPatterns(UnicodeString Command) const;
 
-  static UnicodeString Escape(const UnicodeString & S);
+  static UnicodeString Escape(UnicodeString S);
 
 protected:
   static const wchar_t NoQuote;
   static const UnicodeString Quotes;
-  void GetToken(const UnicodeString & Command,
+  void GetToken(UnicodeString Command,
     intptr_t Index, intptr_t & Len, wchar_t & PatternCmd) const;
-  void CustomValidate(const UnicodeString & Command, void * Arg);
-  bool FindPattern(const UnicodeString & Command, wchar_t PatternCmd) const;
+  void CustomValidate(UnicodeString Command, void * Arg);
+  bool FindPattern(UnicodeString Command, wchar_t PatternCmd) const;
 
-  virtual void ValidatePattern(const UnicodeString & Command,
+  virtual void ValidatePattern(UnicodeString Command,
     intptr_t Index, intptr_t Len, wchar_t PatternCmd, void * Arg);
 
-  virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) const = 0;
-  virtual void PatternHint(intptr_t Index, const UnicodeString & Pattern);
-  virtual bool PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
+  virtual intptr_t PatternLen(UnicodeString Command, intptr_t Index) const = 0;
+  virtual void PatternHint(intptr_t Index, UnicodeString Pattern);
+  virtual bool PatternReplacement(intptr_t Index, UnicodeString Pattern,
     UnicodeString & Replacement, bool & Delimit) const = 0;
   virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 };
@@ -209,16 +209,16 @@ public:
   explicit TInteractiveCustomCommand(TCustomCommand * ChildCustomCommand);
 
 protected:
-  virtual void Prompt(intptr_t Index, const UnicodeString & Prompt,
+  virtual void Prompt(intptr_t Index, UnicodeString Prompt,
     UnicodeString & Value) const;
-  virtual void Execute(const UnicodeString & Command,
+  virtual void Execute(UnicodeString Command,
     UnicodeString & Value) const;
-  virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) const;
-  virtual bool PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
+  virtual intptr_t PatternLen(UnicodeString Command, intptr_t Index) const;
+  virtual bool PatternReplacement(intptr_t Index, UnicodeString Pattern,
     UnicodeString & Replacement, bool & Delimit) const;
   void ParsePromptPattern(
-    const UnicodeString & Pattern, UnicodeString & Prompt, UnicodeString & Default, bool & Delimit) const;
-  bool IsPromptPattern(const UnicodeString & Pattern) const;
+    UnicodeString Pattern, UnicodeString & Prompt, UnicodeString & Default, bool & Delimit) const;
+  bool IsPromptPattern(UnicodeString Pattern) const;
 
 private:
   TCustomCommand * FChildCustomCommand;
@@ -234,8 +234,8 @@ public:
   explicit TCustomCommandData(const TCustomCommandData & Data);
   explicit TCustomCommandData(TTerminal * Terminal);
   explicit TCustomCommandData(
-    TSessionData * SessionData, const UnicodeString & AUserName,
-    const UnicodeString & APassword);
+    TSessionData * SessionData, UnicodeString AUserName,
+    UnicodeString APassword);
 
 #if 0
   __property TSessionData * SessionData = { read = GetSessionData };
@@ -247,8 +247,8 @@ public:
 private:
   std::unique_ptr<TSessionData> FSessionData;
   void Init(
-    TSessionData * ASessionData, const UnicodeString & AUserName,
-    const UnicodeString & APassword, const UnicodeString & AHostKey);
+    TSessionData * ASessionData, UnicodeString AUserName,
+    UnicodeString APassword, UnicodeString AHostKey);
 
   TSessionData * GetSessionDataPrivate() const;
 };
@@ -257,24 +257,24 @@ class TFileCustomCommand : public TCustomCommand
 {
 public:
   TFileCustomCommand();
-  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & APath);
-  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & APath,
-    const UnicodeString & AFileName, const UnicodeString & FileList);
+  explicit TFileCustomCommand(const TCustomCommandData & Data, UnicodeString APath);
+  explicit TFileCustomCommand(const TCustomCommandData & Data, UnicodeString APath,
+    UnicodeString AFileName, UnicodeString FileList);
   virtual ~TFileCustomCommand() {}
 
-  virtual void Validate(const UnicodeString & Command);
-  virtual void ValidatePattern(const UnicodeString & Command,
+  virtual void Validate(UnicodeString Command);
+  virtual void ValidatePattern(UnicodeString Command,
     intptr_t Index, intptr_t Len, wchar_t PatternCmd, void * Arg);
 
-  bool IsFileListCommand(const UnicodeString & Command) const;
-  virtual bool IsFileCommand(const UnicodeString & Command) const;
-  bool IsRemoteFileCommand(const UnicodeString & Command) const;
-  bool IsSiteCommand(const UnicodeString & Command) const;
-  bool IsPasswordCommand(const UnicodeString & Command) const;
+  bool IsFileListCommand(UnicodeString Command) const;
+  virtual bool IsFileCommand(UnicodeString Command) const;
+  bool IsRemoteFileCommand(UnicodeString Command) const;
+  bool IsSiteCommand(UnicodeString Command) const;
+  bool IsPasswordCommand(UnicodeString Command) const;
 
 protected:
-  virtual intptr_t PatternLen(const UnicodeString & Command, intptr_t Index) const;
-  virtual bool PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
+  virtual intptr_t PatternLen(UnicodeString Command, intptr_t Index) const;
+  virtual bool PatternReplacement(intptr_t Index, UnicodeString Pattern,
     UnicodeString & Replacement, bool & Delimit) const;
 
 private:

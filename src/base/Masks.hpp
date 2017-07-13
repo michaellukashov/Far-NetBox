@@ -7,8 +7,8 @@ namespace Masks {
 class TMask : public TObject
 {
 public:
-  explicit TMask(const UnicodeString & Mask);
-  bool Matches(const UnicodeString & Str) const;
+  explicit TMask(UnicodeString Mask);
+  bool Matches(UnicodeString Str) const;
 
 private:
   UnicodeString FMask;

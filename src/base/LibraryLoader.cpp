@@ -1,7 +1,7 @@
 #include "LibraryLoader.hpp"
 
 
-TLibraryLoader::TLibraryLoader(const UnicodeString & LibraryName, bool AllowFailure) :
+TLibraryLoader::TLibraryLoader(UnicodeString LibraryName, bool AllowFailure) :
   FHModule(nullptr)
 {
   Load(LibraryName, AllowFailure);
@@ -17,7 +17,7 @@ TLibraryLoader::~TLibraryLoader()
   Unload();
 }
 
-void TLibraryLoader::Load(const UnicodeString & LibraryName, bool AllowFailure)
+void TLibraryLoader::Load(UnicodeString LibraryName, bool AllowFailure)
 {
   DebugAssert(FHModule == nullptr);
 

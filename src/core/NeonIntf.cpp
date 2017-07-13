@@ -16,7 +16,7 @@
 #define SESSION_PROXY_AUTH_KEY "proxyauth"
 #define SESSION_TLS_INIT_KEY "tlsinit"
 
-void NeonParseUrl(const UnicodeString & Url, ne_uri & uri)
+void NeonParseUrl(UnicodeString Url, ne_uri & uri)
 {
   if (ne_uri_parse(StrToNeon(Url), &uri) != 0)
   {
@@ -70,8 +70,8 @@ ne_session * CreateNeonSession(const ne_uri & uri)
   return ne_session_create(uri.scheme, uri.host, uri.port);
 }
 
-void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
-                     intptr_t ProxyPort, const UnicodeString & ProxyUsername, const UnicodeString & ProxyPassword)
+void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, UnicodeString ProxyHost,
+                     intptr_t ProxyPort, UnicodeString ProxyUsername, UnicodeString ProxyPassword)
 {
   if (ProxyMethod != ::pmNone)
   {
@@ -123,7 +123,7 @@ UnicodeString GetNeonError(ne_session * Session)
 }
 
 void CheckNeonStatus(ne_session * Session, intptr_t NeonStatus,
-  const UnicodeString & AHostName, const UnicodeString & CustomError)
+  UnicodeString AHostName, UnicodeString CustomError)
 {
   if (NeonStatus == NE_OK)
   {
@@ -200,7 +200,7 @@ UnicodeString GetNeonRedirectUrl(ne_session * Session)
 
 #define MAX_REDIRECT_ATTEMPTS 5
 
-void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls)
+void CheckRedirectLoop(UnicodeString RedirectUrl, TStrings * AttemptedUrls)
 {
   if (AttemptedUrls->GetCount() > MAX_REDIRECT_ATTEMPTS)
   {
@@ -268,7 +268,7 @@ bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert
   return Result;
 }
 
-UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString & HostName)
+UnicodeString NeonCertificateFailuresErrorStr(int Failures, UnicodeString HostName)
 {
   int FailuresToList = Failures;
 

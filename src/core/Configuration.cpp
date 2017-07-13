@@ -248,7 +248,7 @@ THierarchicalStorage * TConfiguration::CreateStorage(bool & SessionList)
   return Result;
 }
 
-UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
+UnicodeString TConfiguration::PropertyToKey(UnicodeString Property)
 {
   // no longer useful
   intptr_t P = Property.LastDelimiter(L".>");
@@ -383,7 +383,7 @@ void TConfiguration::SaveCustomIniFileStorageName()
 #endif // #if 0
 }
 
-void TConfiguration::Export(const UnicodeString & /*AFileName*/)
+void TConfiguration::Export(UnicodeString /*AFileName*/)
 {
   ThrowNotImplemented(3004);
 #if 0
@@ -421,7 +421,7 @@ void TConfiguration::Export(const UnicodeString & /*AFileName*/)
 #endif // #if 0
 }
 
-void TConfiguration::Import(const UnicodeString & /*AFileName*/)
+void TConfiguration::Import(UnicodeString /*AFileName*/)
 {
   ThrowNotImplemented(3005);
 #if 0
@@ -658,7 +658,7 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
   };
 }
 
-UnicodeString TConfiguration::BannerHash(const UnicodeString & Banner) const
+UnicodeString TConfiguration::BannerHash(UnicodeString Banner) const
 {
   RawByteString Result;
   Result.SetLength(16);
@@ -669,7 +669,7 @@ UnicodeString TConfiguration::BannerHash(const UnicodeString & Banner) const
 }
 
 bool TConfiguration::ShowBanner(const UnicodeString SessionKey,
-  const UnicodeString & Banner)
+  UnicodeString Banner)
 {
   bool Result = false;
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
@@ -693,7 +693,7 @@ bool TConfiguration::ShowBanner(const UnicodeString SessionKey,
 }
 
 void TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
-  const UnicodeString & Banner)
+  UnicodeString Banner)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   try__finally
@@ -714,12 +714,12 @@ void TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
   };
 }
 
-UnicodeString TConfiguration::FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType) const
+UnicodeString TConfiguration::FormatFingerprintKey(UnicodeString SiteKey, UnicodeString FingerprintType) const
 {
   return FORMAT(L"%s:%s", SiteKey.c_str(), FingerprintType.c_str());
 }
 
-void TConfiguration::RememberLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType, const UnicodeString & Fingerprint)
+void TConfiguration::RememberLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType, UnicodeString Fingerprint)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   Storage->SetAccessMode(smReadWrite);
@@ -732,7 +732,7 @@ void TConfiguration::RememberLastFingerprint(const UnicodeString & SiteKey, cons
   }
 }
 
-UnicodeString TConfiguration::GetLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType)
+UnicodeString TConfiguration::GetLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType)
 {
   UnicodeString Result;
 
@@ -982,7 +982,7 @@ UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString AFileNam
   return TrimVersion(GetFileFileInfoString(L"ProductVersion", AFileName));
 }
 
-UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName) const
+UnicodeString TConfiguration::GetFileDescription(UnicodeString AFileName) const
 {
   return GetFileFileInfoString(L"FileDescription", AFileName);
 }
@@ -1077,7 +1077,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
   return Result;
 }
 
-UnicodeString TConfiguration::GetFileVersion(const UnicodeString & AFileName)
+UnicodeString TConfiguration::GetFileVersion(UnicodeString AFileName)
 {
   UnicodeString Result;
   void * FileInfo = CreateFileInfo(AFileName);
@@ -1355,7 +1355,7 @@ UnicodeString TConfiguration::GetRootKeyStr() const
   return RootKeyToStr(HKEY_CURRENT_USER);
 }
 
-void TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString & ACustomIniFileStorageName)
+void TConfiguration::MoveStorage(TStorage AStorage, UnicodeString ACustomIniFileStorageName)
 {
   if ((FStorage != AStorage) ||
       !IsPathToSameFile(FCustomIniFileStorageName, ACustomIniFileStorageName))
@@ -1405,7 +1405,7 @@ void TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString & ACusto
   }
 }
 
-void TConfiguration::ScheduleCustomIniFileStorageUse(const UnicodeString & ACustomIniFileStorageName)
+void TConfiguration::ScheduleCustomIniFileStorageUse(UnicodeString ACustomIniFileStorageName)
 {
   FStorage = stIniFile;
   FCustomIniFileStorageName = ACustomIniFileStorageName;

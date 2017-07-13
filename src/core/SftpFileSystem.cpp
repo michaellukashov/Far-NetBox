@@ -373,7 +373,7 @@ public:
     Add(Data, ALength);
   }
 
-  void AddStringW(const UnicodeString & ValueW)
+  void AddStringW(UnicodeString ValueW)
   {
     AddString(::W2MB(ValueW.c_str(), static_cast<UINT>(FCodePage)).c_str());
   }
@@ -389,12 +389,12 @@ public:
     AddString(Value);
   }
 
-  inline void AddUtfString(const UnicodeString & Value)
+  inline void AddUtfString(UnicodeString Value)
   {
     AddUtfString(UTF8String(Value));
   }
 
-  inline void AddString(const UnicodeString & Value, TAutoSwitch /*Utf*/)
+  inline void AddString(UnicodeString Value, TAutoSwitch /*Utf*/)
   {
     AddStringW(Value);
 #if 0
@@ -411,7 +411,7 @@ public:
   }
 
   // now purposeless alias to AddString
-  inline void AddPathString(const UnicodeString & Value, TAutoSwitch Utf)
+  inline void AddPathString(UnicodeString Value, TAutoSwitch Utf)
   {
     AddString(Value, Utf);
   }
@@ -927,7 +927,7 @@ public:
     }
   }
 
-  void LoadFromFile(const UnicodeString & AFileName)
+  void LoadFromFile(UnicodeString AFileName)
   {
     std::unique_ptr<TStringList> DumpLines(new TStringList());
     RawByteString Dump;
@@ -1629,7 +1629,7 @@ public:
     SAFE_DESTROY(FStream);
   }
 
-  bool Init(const UnicodeString & AFileName,
+  bool Init(UnicodeString AFileName,
     HANDLE AFile, TFileOperationProgressType * AOperationProgress,
     const RawByteString & AHandle, int64_t ATransferred,
     intptr_t ConvertParams)
@@ -1868,7 +1868,7 @@ public:
   {
   }
 
-  bool Init(intptr_t QueueLen, const UnicodeString & Alg, TStrings * AFileList)
+  bool Init(intptr_t QueueLen, UnicodeString Alg, TStrings * AFileList)
   {
     FAlg = Alg;
     FFileList = AFileList;
@@ -2165,7 +2165,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
   return FFileSystemInfo;
 }
 
-bool TSFTPFileSystem::TemporaryTransferFile(const UnicodeString & AFileName)
+bool TSFTPFileSystem::TemporaryTransferFile(UnicodeString AFileName)
 {
   return ::SameText(base::UnixExtractFileExt(AFileName), PARTIAL_EXT);
 }
@@ -2332,7 +2332,7 @@ bool TSFTPFileSystem::IsCapable(intptr_t Capability) const
   }
 }
 
-bool TSFTPFileSystem::SupportsExtension(const UnicodeString & Extension) const
+bool TSFTPFileSystem::SupportsExtension(UnicodeString Extension) const
 {
   return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension) >= 0);
 }
@@ -2909,7 +2909,7 @@ SSH_FX_TYPES TSFTPFileSystem::SendPacketAndReceiveResponse(const TSFTPPacket * P
   return Result;
 }
 
-UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath)
+UnicodeString TSFTPFileSystem::GetRealPath(UnicodeString APath)
 {
   try
   {
@@ -2978,8 +2978,8 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath)
   return UnicodeString();
 }
 
-UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath,
-  const UnicodeString & ABaseDir)
+UnicodeString TSFTPFileSystem::GetRealPath(UnicodeString APath,
+  UnicodeString ABaseDir)
 {
   UnicodeString Path;
 
@@ -3007,7 +3007,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath,
   return GetRealPath(Path);
 }
 
-UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & APath) const
+UnicodeString TSFTPFileSystem::LocalCanonify(UnicodeString APath) const
 {
   TODO("improve (handle .. etc.)");
   if (base::UnixIsAbsolutePath(APath) ||
@@ -3021,7 +3021,7 @@ UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & APath) const
   }
 }
 
-UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
+UnicodeString TSFTPFileSystem::Canonify(UnicodeString APath)
 {
   // inspired by canonify() from PSFTP.C
   UnicodeString Result;
@@ -3079,12 +3079,12 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
   return Result;
 }
 
-UnicodeString TSFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local) const
+UnicodeString TSFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool Local) const
 {
   return const_cast<TSFTPFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
 
-UnicodeString TSFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TSFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool Local)
 {
   if (Local)
   {
@@ -3113,7 +3113,7 @@ void TSFTPFileSystem::LoadFile(TRemoteFile * AFile, TSFTPPacket * Packet,
 }
 
 TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
-  TRemoteFile * ALinkedByFile, const UnicodeString & AFileName,
+  TRemoteFile * ALinkedByFile, UnicodeString AFileName,
   TRemoteFileList * TempFileList, bool Complete)
 {
   std::unique_ptr<TRemoteFile> File(new TRemoteFile(ALinkedByFile));
@@ -3536,7 +3536,7 @@ void TSFTPFileSystem::HomeDirectory()
   ChangeDirectory(GetHomeDirectory());
 }
 
-void TSFTPFileSystem::TryOpenDirectory(const UnicodeString & Directory)
+void TSFTPFileSystem::TryOpenDirectory(UnicodeString Directory)
 {
   FTerminal->LogEvent(FORMAT(L"Trying to open directory \"%s\".", Directory.c_str()));
   TRemoteFile * File = nullptr;
@@ -3565,7 +3565,7 @@ void TSFTPFileSystem::AnnounceFileListOperation()
 {
 }
 
-void TSFTPFileSystem::ChangeDirectory(const UnicodeString & Directory)
+void TSFTPFileSystem::ChangeDirectory(UnicodeString Directory)
 {
   UnicodeString Current = !FDirectoryToChangeTo.IsEmpty() ? FDirectoryToChangeTo : FCurrentDirectory;
   UnicodeString Path = GetRealPath(Directory, Current);
@@ -3578,7 +3578,7 @@ void TSFTPFileSystem::ChangeDirectory(const UnicodeString & Directory)
   FDirectoryToChangeTo = Path;
 }
 
-void TSFTPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
+void TSFTPFileSystem::CachedChangeDirectory(UnicodeString Directory)
 {
   FDirectoryToChangeTo = base::UnixExcludeTrailingBackslash(Directory);
 }
@@ -3835,13 +3835,13 @@ void TSFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
     base::UnixExtractFileName(SymlinkFile->GetLinkTo()));
 }
 
-void TSFTPFileSystem::ReadFile(const UnicodeString & AFileName,
+void TSFTPFileSystem::ReadFile(UnicodeString AFileName,
   TRemoteFile *& AFile)
 {
   CustomReadFile(AFileName, AFile, SSH_FXP_LSTAT);
 }
 
-bool TSFTPFileSystem::RemoteFileExists(const UnicodeString & FullPath,
+bool TSFTPFileSystem::RemoteFileExists(UnicodeString FullPath,
   TRemoteFile ** AFile)
 {
   bool Result;
@@ -3884,7 +3884,7 @@ void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket * Packet,
   ReserveResponse(Packet, Response);
 }
 
-void TSFTPFileSystem::CustomReadFile(const UnicodeString & AFileName,
+void TSFTPFileSystem::CustomReadFile(UnicodeString AFileName,
   TRemoteFile *& AFile, SSH_FXP_TYPES Type, TRemoteFile * ALinkedByFile,
   SSH_FX_TYPES AllowStatus)
 {
@@ -3907,7 +3907,7 @@ void TSFTPFileSystem::CustomReadFile(const UnicodeString & AFileName,
   }
 }
 
-void TSFTPFileSystem::DoDeleteFile(const UnicodeString & AFileName, SSH_FXP_TYPES Type)
+void TSFTPFileSystem::DoDeleteFile(UnicodeString AFileName, SSH_FXP_TYPES Type)
 {
   TSFTPPacket Packet(Type, FCodePage);
   UnicodeString RealFileName = LocalCanonify(AFileName);
@@ -3915,7 +3915,7 @@ void TSFTPFileSystem::DoDeleteFile(const UnicodeString & AFileName, SSH_FXP_TYPE
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 
-void TSFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
+void TSFTPFileSystem::RemoteDeleteFile(UnicodeString AFileName,
   const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
 {
   uint8_t Type;
@@ -3943,8 +3943,8 @@ void TSFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   DoDeleteFile(AFileName, Type);
 }
 
-void TSFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
-  const UnicodeString & ANewName)
+void TSFTPFileSystem::RemoteRenameFile(UnicodeString AFileName,
+  UnicodeString ANewName)
 {
   TSFTPPacket Packet(SSH_FXP_RENAME, FCodePage);
   UnicodeString RealName = LocalCanonify(AFileName);
@@ -3967,8 +3967,8 @@ void TSFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 
-void TSFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
-  const UnicodeString & ANewName)
+void TSFTPFileSystem::RemoteCopyFile(UnicodeString AFileName,
+  UnicodeString ANewName)
 {
   // Implemented by ProFTPD/mod_sftp and Bitvise WinSSHD (without announcing it)
   DebugAssert(SupportsExtension(SFTP_EXT_COPY_FILE) || (FSecureShell->GetSshImplementation() == sshiBitvise));
@@ -3980,7 +3980,7 @@ void TSFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 
-void TSFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
+void TSFTPFileSystem::RemoteCreateDirectory(UnicodeString ADirName)
 {
   TSFTPPacket Packet(SSH_FXP_MKDIR, FCodePage);
   UnicodeString CanonifiedName = Canonify(ADirName);
@@ -3989,8 +3989,8 @@ void TSFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 
-void TSFTPFileSystem::CreateLink(const UnicodeString & AFileName,
-  const UnicodeString & PointTo, bool Symbolic)
+void TSFTPFileSystem::CreateLink(UnicodeString AFileName,
+  UnicodeString PointTo, bool Symbolic)
 {
   // Cerberus server does not even respond to LINK or SYMLINK,
   // Although its log says:
@@ -4090,7 +4090,7 @@ void TSFTPFileSystem::CreateLink(const UnicodeString & AFileName,
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 
-void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
+void TSFTPFileSystem::ChangeFileProperties(UnicodeString AFileName,
   const TRemoteFile * /*AFile*/, const TRemoteProperties * AProperties,
   TChmodSessionAction & Action)
 {
@@ -4213,7 +4213,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
 }
 
 void TSFTPFileSystem::DoCalculateFilesChecksum(
-  const UnicodeString & Alg, const UnicodeString & SftpAlg,
+  UnicodeString Alg, UnicodeString SftpAlg,
   TStrings * AFileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum,
   TFileOperationProgressType * OperationProgress, bool FirstLevel)
@@ -4371,7 +4371,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
   // queue is discarded here
 }
 
-void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
+void TSFTPFileSystem::CalculateFilesChecksum(UnicodeString Alg,
   TStrings * AFileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
@@ -4412,14 +4412,14 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
   };
 }
 
-void TSFTPFileSystem::CustomCommandOnFile(const UnicodeString & /*AFileName*/,
-  const TRemoteFile * /*AFile*/, const UnicodeString & /*Command*/, intptr_t /*Params*/,
+void TSFTPFileSystem::CustomCommandOnFile(UnicodeString /*AFileName*/,
+  const TRemoteFile * /*AFile*/, UnicodeString /*Command*/, intptr_t /*Params*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
 }
 
-void TSFTPFileSystem::AnyCommand(const UnicodeString & /*Command*/,
+void TSFTPFileSystem::AnyCommand(UnicodeString /*Command*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
@@ -4430,7 +4430,7 @@ TStrings * TSFTPFileSystem::GetFixedPaths() const
   return FFixedPaths;
 }
 
-void TSFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
+void TSFTPFileSystem::SpaceAvailable(UnicodeString APath,
   TSpaceAvailable & ASpaceAvailable)
 {
   if (SupportsExtension(SFTP_EXT_SPACE_AVAILABLE) ||
@@ -4529,7 +4529,7 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
 // transfer protocol
 
 void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
+  UnicodeString TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
@@ -4592,7 +4592,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 }
 
 void TSFTPFileSystem::SFTPConfirmOverwrite(
-  const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
+  UnicodeString ASourceFullFileName, UnicodeString & ATargetFileName,
   const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams,
   OUT TOverwriteMode & OverwriteMode)
@@ -4742,7 +4742,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
   }
 }
 
-bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString & DestFileName,
+bool TSFTPFileSystem::SFTPConfirmResume(UnicodeString DestFileName,
   bool PartialBiggerThanSource, TFileOperationProgressType * OperationProgress)
 {
   bool ResumeTransfer = false;
@@ -4805,9 +4805,9 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString & DestFileName,
   return ResumeTransfer;
 }
 
-void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & AFileName,
+void TSFTPFileSystem::SFTPSourceRobust(UnicodeString AFileName,
   const TRemoteFile * AFile,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
+  UnicodeString TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   // the same in TFTPFileSystem
@@ -4854,9 +4854,9 @@ void TSFTPFileSystem::SFTPSourceRobust(const UnicodeString & AFileName,
   while (RobustLoop.Retry());
 }
 
-void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
+void TSFTPFileSystem::SFTPSource(UnicodeString AFileName,
   const TRemoteFile * AFile,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
+  UnicodeString TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
   TOpenRemoteFileParams & OpenParams,
   TOverwriteFileParams & FileParams,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
@@ -5399,7 +5399,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
 }
 
 RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
-  const UnicodeString & AFileName, SSH_FXF_TYPES OpenType, int64_t Size)
+  UnicodeString AFileName, SSH_FXF_TYPES OpenType, int64_t Size)
 {
   TSFTPPacket Packet(SSH_FXP_OPEN, FCodePage);
 
@@ -5629,7 +5629,7 @@ intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
 }
 
 void TSFTPFileSystem::SFTPCloseRemote(const RawByteString & Handle,
-  const UnicodeString & AFileName, TFileOperationProgressType * OperationProgress,
+  UnicodeString AFileName, TFileOperationProgressType * OperationProgress,
   bool TransferFinished, bool Request, TSFTPPacket * Packet)
 {
   // Moving this out of SFTPSource() fixed external exception 0xC0000029 error
@@ -5664,8 +5664,8 @@ void TSFTPFileSystem::SFTPCloseRemote(const RawByteString & Handle,
   });
 }
 
-void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
-  const UnicodeString & TargetDir, uintptr_t LocalFileAttrs, const TCopyParamType * CopyParam,
+void TSFTPFileSystem::SFTPDirectorySource(UnicodeString DirectoryName,
+  UnicodeString TargetDir, uintptr_t LocalFileAttrs, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName =
@@ -5797,7 +5797,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const UnicodeString & DirectoryName,
 }
 
 void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
+  UnicodeString TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
@@ -5853,8 +5853,8 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
   }
 }
 
-void TSFTPFileSystem::SFTPSinkRobust(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, const UnicodeString & TargetDir,
+void TSFTPFileSystem::SFTPSinkRobust(UnicodeString AFileName,
+  const TRemoteFile * AFile, UnicodeString TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags)
 {
@@ -5898,8 +5898,8 @@ void TSFTPFileSystem::SFTPSinkRobust(const UnicodeString & AFileName,
   while (RobustLoop.Retry());
 }
 
-void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, const UnicodeString & TargetDir,
+void TSFTPFileSystem::SFTPSink(UnicodeString AFileName,
+  const TRemoteFile * AFile, UnicodeString TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TDownloadSessionAction & Action, bool & ChildError)
@@ -6536,7 +6536,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
   }
 }
 
-void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & AFileName,
+void TSFTPFileSystem::SFTPSinkFile(UnicodeString AFileName,
   const TRemoteFile * AFile, void * Param)
 {
   TSinkFileParams * Params = get_as<TSinkFileParams>(Param);
@@ -6567,7 +6567,7 @@ void TSFTPFileSystem::SFTPSinkFile(const UnicodeString & AFileName,
   }
 }
 
-void TSFTPFileSystem::RegisterChecksumAlg(const UnicodeString & Alg, const UnicodeString & SftpAlg)
+void TSFTPFileSystem::RegisterChecksumAlg(UnicodeString Alg, UnicodeString SftpAlg)
 {
   FChecksumAlgs->Add(Alg);
   FChecksumSftpAlgs->Add(SftpAlg);
@@ -6578,12 +6578,12 @@ void TSFTPFileSystem::GetSupportedChecksumAlgs(TStrings * Algs)
   Algs->AddStrings(FChecksumAlgs.get());
 }
 
-void TSFTPFileSystem::LockFile(const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/)
+void TSFTPFileSystem::LockFile(UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }
 
-void TSFTPFileSystem::UnlockFile(const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/)
+void TSFTPFileSystem::UnlockFile(UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }

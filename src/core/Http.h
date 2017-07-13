@@ -16,10 +16,10 @@ typedef void (__closure * THttpDownloadEvent)(THttp * Sender, int64_t Size, bool
 typedef nb::FastDelegate3<void,
   THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/> THttpDownloadEvent;
 #if 0
-typedef void (__closure * THttpErrorEvent)(THttp * Sender, int Status, const UnicodeString & Message);
+typedef void (__closure * THttpErrorEvent)(THttp * Sender, int Status, UnicodeString Message);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
-  THttp * /*Sender*/, int /*Status*/, const UnicodeString & /*Message*/> THttpErrorEvent;
+  THttp * /*Sender*/, int /*Status*/, UnicodeString /*Message*/> THttpErrorEvent;
 
 class THttp : public TObject
 {
@@ -28,7 +28,7 @@ public:
   ~THttp();
 
   void Get();
-  void Post(const UnicodeString & Request);
+  void Post(UnicodeString Request);
   bool IsCertificateError() const;
 
 #if 0
@@ -46,9 +46,9 @@ public:
 #endif // #if 0
 
   UnicodeString GetURL() const { return FURL; }
-  void SetURL(const UnicodeString & Value) { FURL = Value; }
+  void SetURL(UnicodeString Value) { FURL = Value; }
   UnicodeString GetProxyHost() const { return FProxyHost; }
-  void SetProxyHost(const UnicodeString & Value) { FProxyHost = Value; }
+  void SetProxyHost(UnicodeString Value) { FProxyHost = Value; }
   intptr_t GetProxyPort() const { return FProxyPort; }
   void SetProxyPort(intptr_t Value) { FProxyPort = Value; }
   TStrings * GetRequestHeaders() const { return FRequestHeaders; }
@@ -78,7 +78,7 @@ private:
 
   static int NeonBodyReader(void * UserData, const char * Buf, size_t Len);
   int NeonBodyReaderImpl(const char * Buf, size_t Len);
-  void SendRequest(const char * Method, const UnicodeString & Request);
+  void SendRequest(const char * Method, UnicodeString Request);
   UnicodeString GetResponse() const;
   int64_t GetResponseLength() const;
   static void InitSslSession(ssl_st * Ssl, ne_session_s * Session);

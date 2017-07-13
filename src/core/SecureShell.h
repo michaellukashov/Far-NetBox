@@ -99,7 +99,7 @@ public:
   void FreeBackend();
   void PoolForData(WSANETWORKEVENTS & Events, intptr_t & Result);
   inline void CaptureOutput(TLogLineType Type,
-    const UnicodeString & Line);
+    UnicodeString Line);
   void ResetConnection();
   void ResetSessionInfo();
   void SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup);
@@ -127,8 +127,8 @@ protected:
   int TranslateAuthenticationMessage(UnicodeString & Message, UnicodeString * HelpKeyword = nullptr);
   int TranslateErrorMessage(UnicodeString & Message, UnicodeString * HelpKeyword = nullptr);
   void AddStdError(UnicodeString AStr);
-  void AddStdErrorLine(const UnicodeString & AStr);
-  void LogEvent(const UnicodeString & AStr);
+  void AddStdErrorLine(UnicodeString AStr);
+  void LogEvent(UnicodeString AStr);
   void FatalError(UnicodeString Error, UnicodeString HelpKeyword = L"");
   UnicodeString FormatKeyStr(UnicodeString KeyStr) const;
   static Conf * StoreToConfig(TSessionData * Data, bool Simple);
@@ -147,7 +147,7 @@ public:
   void SendSpecial(intptr_t Code);
   void Idle(uintptr_t MSec = 0);
   void SendEOF();
-  void SendLine(const UnicodeString & Line);
+  void SendLine(UnicodeString Line);
   void SendNull();
 
   const TSessionInfo & GetSessionInfo() const;
@@ -169,17 +169,17 @@ public:
   void PuttyFatalError(UnicodeString Error);
   TPromptKind IdentifyPromptKind(UnicodeString & AName) const;
   bool PromptUser(bool ToServer,
-    const UnicodeString & AName, bool NameRequired,
-    const UnicodeString & AInstructions, bool InstructionsRequired,
+    UnicodeString AName, bool NameRequired,
+    UnicodeString AInstructions, bool InstructionsRequired,
     TStrings * Prompts, TStrings * Results);
   void FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Length);
   void CWrite(const char * Data, intptr_t Length);
-  const UnicodeString & GetStdError() const;
-  void VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
-    const UnicodeString & AKeyType, const UnicodeString & AKeyStr, const UnicodeString & AFingerprint);
-  bool HaveHostKey(UnicodeString AHost, intptr_t Port, const UnicodeString & KeyType);
+  UnicodeString GetStdError() const;
+  void VerifyHostKey(UnicodeString AHost, intptr_t Port,
+    UnicodeString AKeyType, UnicodeString AKeyStr, UnicodeString AFingerprint);
+  bool HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType);
   void AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
-  void DisplayBanner(const UnicodeString & Banner);
+  void DisplayBanner(UnicodeString Banner);
   void OldKeyfileWarning();
   void PuttyLogEvent(const char * AStr);
   UnicodeString ConvertFromPutty(const char * Str, intptr_t Length) const;

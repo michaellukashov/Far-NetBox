@@ -539,7 +539,7 @@ private:
   bool __fastcall GetAnyBetaInVersionHistory();
   void __fastcall PurgePassword(UnicodeString & Password);
   void __fastcall UpdateEntryInJumpList(
-    bool Session, const UnicodeString & Name, bool Add);
+    bool Session, UnicodeString Name, bool Add);
   TStringList * __fastcall LoadJumpList(THierarchicalStorage * Storage,
     UnicodeString Name);
   void __fastcall SaveJumpList(THierarchicalStorage * Storage,
@@ -566,9 +566,9 @@ protected:
   virtual void __fastcall DefaultLocalized();
   bool __fastcall DetectRegistryStorage(HKEY RootKey);
   bool __fastcall CanWriteToStorage();
-  bool __fastcall DoIsBeta(const UnicodeString & ReleaseType);
+  bool __fastcall DoIsBeta(UnicodeString ReleaseType);
   void __fastcall AskForMasterPassword();
-  void __fastcall DoLoadExtensionList(const UnicodeString & Path, const UnicodeString & PathId, TStringList * DeletedExtensions);
+  void __fastcall DoLoadExtensionList(UnicodeString Path, UnicodeString PathId, TStringList * DeletedExtensions);
   TStrings * __fastcall GetExtensionsPaths();
   virtual int __fastcall GetResourceModuleCompleteness(HINSTANCE Module);
   virtual bool __fastcall IsTranslationComplete(HINSTANCE Module);
@@ -607,10 +607,10 @@ public:
   void __fastcall MinimizeToTrayOnce();
   void __fastcall CustomCommandShortCuts(TShortCuts & ShortCuts) const;
   UnicodeString __fastcall GetUserExtensionsPath();
-  UnicodeString __fastcall GetExtensionId(const UnicodeString & ExtensionPath);
-  UnicodeString __fastcall ExtensionStringTranslation(const UnicodeString & ExtensionId, const UnicodeString & S);
-  UnicodeString __fastcall UniqueExtensionName(const UnicodeString & ExtensionName, int Counter);
-  UnicodeString __fastcall GetProvisionaryExtensionId(const UnicodeString & FileName);
+  UnicodeString __fastcall GetExtensionId(UnicodeString ExtensionPath);
+  UnicodeString __fastcall ExtensionStringTranslation(UnicodeString ExtensionId, UnicodeString S);
+  UnicodeString __fastcall UniqueExtensionName(UnicodeString ExtensionName, int Counter);
+  UnicodeString __fastcall GetProvisionaryExtensionId(UnicodeString FileName);
 
   static void __fastcall RestoreFont(const TFontConfiguration & Configuration, TFont * Font);
   static void __fastcall StoreFont(TFont * Font, TFontConfiguration & Configuration);
@@ -748,9 +748,9 @@ public:
   TCustomCommandType & operator=(const TCustomCommandType & Other);
   bool __fastcall Equals(const TCustomCommandType * Other) const;
 
-  void __fastcall LoadExtension(const UnicodeString & Path);
-  void __fastcall LoadExtension(TStrings * Lines, const UnicodeString & PathForBaseName);
-  static UnicodeString __fastcall GetExtensionId(const UnicodeString & Name);
+  void __fastcall LoadExtension(UnicodeString Path);
+  void __fastcall LoadExtension(TStrings * Lines, UnicodeString PathForBaseName);
+  static UnicodeString __fastcall GetExtensionId(UnicodeString Name);
 
   __property UnicodeString Name = { read = FName, write = FName };
   __property UnicodeString Command = { read = FCommand, write = FCommand };
@@ -765,14 +765,14 @@ public:
   __property int OptionsCount = { read = GetOptionsCount };
   const TOption & __fastcall GetOption(int Index) const;
   bool __fastcall AnyOptionWithFlag(unsigned int Flag) const;
-  UnicodeString __fastcall GetOptionKey(const TOption & Option, const UnicodeString & Site) const;
+  UnicodeString __fastcall GetOptionKey(const TOption & Option, UnicodeString Site) const;
   UnicodeString __fastcall GetCommandWithExpandedOptions(
-    TStrings * CustomCommandOptions, const UnicodeString & Site) const;
+    TStrings * CustomCommandOptions, UnicodeString Site) const;
 
 protected:
-  bool __fastcall ParseOption(const UnicodeString & Value, TOption & Option, const UnicodeString & ExtensionBaseName);
+  bool __fastcall ParseOption(UnicodeString Value, TOption & Option, UnicodeString ExtensionBaseName);
   int __fastcall GetOptionsCount() const;
-  UnicodeString __fastcall GetOptionCommand(const TOption & Option, const UnicodeString & Value) const;
+  UnicodeString __fastcall GetOptionCommand(const TOption & Option, UnicodeString Value) const;
 
 private:
   UnicodeString FName;
@@ -809,7 +809,7 @@ public:
 
   const TCustomCommandType * Find(const UnicodeString Name) const;
   const TCustomCommandType * Find(TShortCut ShortCut) const;
-  int FindIndexByFileName(const UnicodeString & FileName) const;
+  int FindIndexByFileName(UnicodeString FileName) const;
 
   bool __fastcall Equals(const TCustomCommandList * Other) const;
   void __fastcall Assign(const TCustomCommandList * Other);

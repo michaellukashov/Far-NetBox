@@ -314,15 +314,15 @@ protected:
   bool OverrideItemStatus(TQueueItem::TStatus & ItemStatus) const;
 
   void TerminalQueryUser(TObject * Sender,
-    const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
+    UnicodeString AQuery, TStrings * MoreMessages, uintptr_t Answers,
     const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
-    const UnicodeString & Name, const UnicodeString & Instructions,
+    UnicodeString Name, UnicodeString Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
   void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
-    bool Temp, const UnicodeString & AFileName, bool Success,
+    bool Temp, UnicodeString AFileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType & ProgressData);
 };
@@ -1286,7 +1286,7 @@ public:
 
   void Init(
     TSessionData * SessionData, TConfiguration * Configuration,
-    TTerminalItem * Item, const UnicodeString & Name);
+    TTerminalItem * Item, UnicodeString Name);
 
 protected:
   virtual bool DoQueryReopen(Exception * E);
@@ -1303,7 +1303,7 @@ TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal) :
 
 void TBackgroundTerminal::Init(
     TSessionData * SessionData, TConfiguration * Configuration, TTerminalItem * Item,
-    const UnicodeString & Name)
+    UnicodeString Name)
 {
   TSecondaryTerminal::Init(SessionData, Configuration, Name);
   FItem = Item;
@@ -1571,7 +1571,7 @@ void TTerminalItem::Finished()
 }
 
 void TTerminalItem::TerminalQueryUser(TObject * Sender,
-  const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
+  UnicodeString AQuery, TStrings * MoreMessages, uintptr_t Answers,
   const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
   // so far query without queue item can occur only for key confirmation
@@ -1604,7 +1604,7 @@ void TTerminalItem::TerminalQueryUser(TObject * Sender,
 }
 
 void TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
-  TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
+  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
   TStrings * Results, bool & Result, void * Arg)
 {
   if (FItem == nullptr)
@@ -1653,7 +1653,7 @@ void TTerminalItem::TerminalShowExtendedException(
 }
 
 void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
-  TOperationSide /*Side*/, bool /*Temp*/, const UnicodeString & /*AFileName*/,
+  TOperationSide /*Side*/, bool /*Temp*/, UnicodeString /*AFileName*/,
   bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/)
 {
   // nothing
@@ -2192,7 +2192,7 @@ void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 // TTransferQueueItem
 
 TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * Terminal,
-  const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
+  const TStrings * AFilesToCopy, UnicodeString TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
   bool SingleFile, bool Parallel) :
   TLocatedQueueItem(Kind, Terminal),
@@ -2321,7 +2321,7 @@ TQueueItem * TTransferQueueItem::CreateParallelOperation()
 // TUploadQueueItem
 
 TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
-  const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
+  const TStrings * AFilesToCopy, UnicodeString TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile, bool Parallel) :
   TTransferQueueItem(OBJECT_CLASS_TUploadQueueItem, Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile, Parallel)
 {
@@ -2434,7 +2434,7 @@ void TParallelTransferQueueItem::DoExecute(TTerminal * Terminal)
 // TDownloadQueueItem
 
 TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
-  const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
+  const TStrings * AFilesToCopy, UnicodeString TargetDir,
   const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile, bool Parallel) :
   TTransferQueueItem(OBJECT_CLASS_TDownloadQueueItem, Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile, Parallel)
 {
@@ -2866,7 +2866,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 }
 
 void TTerminalThread::TerminalInformation(
-  TTerminal * Terminal, const UnicodeString & Str, bool Status, intptr_t Phase)
+  TTerminal * Terminal, UnicodeString Str, bool Status, intptr_t Phase)
 {
   TInformationUserAction Action(FOnInformation);
   Action.Terminal = Terminal;
@@ -2878,7 +2878,7 @@ void TTerminalThread::TerminalInformation(
 }
 
 void TTerminalThread::TerminalQueryUser(TObject * Sender,
-  const UnicodeString & AQuery, TStrings * MoreMessages, uintptr_t Answers,
+  UnicodeString AQuery, TStrings * MoreMessages, uintptr_t Answers,
   const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
 {
   DebugUsedParam(Arg);
@@ -2921,7 +2921,7 @@ void TTerminalThread::TerminalInitializeLog(TObject * Sender)
 }
 
 void TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
-  TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
+  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
   TStrings * Results, bool & Result, void * Arg)
 {
   DebugUsedParam(Arg);
@@ -2956,7 +2956,7 @@ void TTerminalThread::TerminalShowExtendedException(
 }
 
 void TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
-  const UnicodeString & SessionName, const UnicodeString & Banner,
+  UnicodeString SessionName, UnicodeString Banner,
   bool & NeverShowAgain, intptr_t Options)
 {
   TDisplayBannerAction Action(FOnDisplayBanner);

@@ -16,8 +16,8 @@ TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal)
 }
 
 UnicodeString TCustomFileSystem::CreateTargetDirectory(
-  IN const UnicodeString & AFileName,
-  IN const UnicodeString & ADirectory,
+  IN UnicodeString AFileName,
+  IN UnicodeString ADirectory,
   IN const TCopyParamType * CopyParam)
 {
   UnicodeString Result = ADirectory;

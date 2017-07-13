@@ -108,7 +108,7 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
 
-  UnicodeString GetInfoStr(const UnicodeString & Separator) const;
+  UnicodeString GetInfoStr(UnicodeString Separator) const;
 
   bool operator==(const TCopyParamRule & rhp) const;
 
@@ -126,8 +126,8 @@ public:
 private:
   TCopyParamRuleData FData;
 
-  bool Match(const UnicodeString & Mask,
-    const UnicodeString & Value, bool Path, bool Local, int ForceDirectoryMasks) const;
+  bool Match(UnicodeString Mask,
+    UnicodeString Value, bool Path, bool Local, int ForceDirectoryMasks) const;
 
 public:
   bool GetEmpty() const;
@@ -154,21 +154,21 @@ public:
   void Load(THierarchicalStorage * Storage, intptr_t ACount);
   void Save(THierarchicalStorage * Storage) const;
 
-  static void ValidateName(const UnicodeString & Name);
+  static void ValidateName(UnicodeString Name);
 
   TCopyParamList & operator=(const TCopyParamList & rhl);
   bool operator==(const TCopyParamList & rhl) const;
 
   void Clear();
-  void Add(const UnicodeString & Name,
+  void Add(UnicodeString Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void Insert(intptr_t Index, const UnicodeString & Name,
+  void Insert(intptr_t Index, UnicodeString Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void Change(intptr_t Index, const UnicodeString & Name,
+  void Change(intptr_t Index, UnicodeString Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
   void Move(intptr_t CurIndex, intptr_t NewIndex);
   void Delete(intptr_t Index);
-  intptr_t IndexOfName(const UnicodeString & Name) const;
+  intptr_t IndexOfName(UnicodeString Name) const;
 
 #if 0
   __property int Count = { read = GetCount };
@@ -267,7 +267,7 @@ public:
   HANDLE GetResourceModule();
   void SetResourceModule(HINSTANCE Instance);
   TObjectList * GetLocales();
-  void AddLocale(LCID Locale, const UnicodeString & Name);
+  void AddLocale(LCID Locale, UnicodeString Name);
   void FreeResourceModule(HANDLE Instance);
   void SetDefaultCopyParam(const TGUICopyParamType & Value);
   virtual bool GetRememberPassword() const;
@@ -276,10 +276,10 @@ public:
   virtual void DefaultLocalized();
   intptr_t GetCopyParamIndex() const;
   TGUICopyParamType GetCurrentCopyParam() const;
-  TGUICopyParamType GetCopyParamPreset(const UnicodeString & Name) const;
-  bool GetHasCopyParamPreset(const UnicodeString & Name) const;
+  TGUICopyParamType GetCopyParamPreset(UnicodeString Name) const;
+  bool GetHasCopyParamPreset(UnicodeString Name) const;
   void SetCopyParamIndex(intptr_t Value);
-  void SetCopyParamCurrent(const UnicodeString & Value);
+  void SetCopyParamCurrent(UnicodeString Value);
   void SetNewDirectoryProperties(const TRemoteProperties & Value);
   virtual void Saved();
   void SetQueueTransfersLimit(intptr_t Value);
@@ -287,11 +287,11 @@ public:
   void SetQueueKeepDoneItemsFor(intptr_t Value);
   void SetLocaleInternal(LCID Value, bool Safe, bool CompleteOnly);
   void SetInitialLocale(LCID Value);
-  void SetAppliedLocale(LCID AppliedLocale, const UnicodeString & LocaleModuleName);
+  void SetAppliedLocale(LCID AppliedLocale, UnicodeString LocaleModuleName);
   bool GetCanApplyLocaleImmediately() const;
-  UnicodeString GetTranslationModule(const UnicodeString & Path) const;
-  UnicodeString AddTranslationsSubFolder(const UnicodeString & Path) const;
-  void FindLocales(const UnicodeString & LocalesMask, TStrings * Exts, UnicodeString & LocalesExts);
+  UnicodeString GetTranslationModule(UnicodeString Path) const;
+  UnicodeString AddTranslationsSubFolder(UnicodeString Path) const;
+  void FindLocales(UnicodeString LocalesMask, TStrings * Exts, UnicodeString & LocalesExts);
   virtual int GetResourceModuleCompleteness(HINSTANCE Module);
   virtual bool IsTranslationComplete(HINSTANCE Module);
   static intptr_t LocalesCompare(void * Item1, void * Item2);
@@ -375,16 +375,16 @@ public:
   bool GetSessionRememberPassword() const { return FSessionRememberPassword; }
   void SetSessionRememberPassword(bool Value) { FSessionRememberPassword = Value; }
   UnicodeString GetPuttyPath() const;
-  void SetPuttyPath(const UnicodeString & Value);
+  void SetPuttyPath(UnicodeString Value);
   UnicodeString GetDefaultPuttyPath() const;
   UnicodeString GetPSftpPath() const;
-  void SetPSftpPath(const UnicodeString & Value);
+  void SetPSftpPath(UnicodeString Value);
   bool GetPuttyPassword() const { return FPuttyPassword; }
   void SetPuttyPassword(bool Value) { FPuttyPassword = Value; }
   bool GetTelnetForFtpInPutty() const { return FTelnetForFtpInPutty; }
   void SetTelnetForFtpInPutty(bool Value) { FTelnetForFtpInPutty = Value; }
   UnicodeString GetPuttySession() const;
-  void SetPuttySession(const UnicodeString & Value);
+  void SetPuttySession(UnicodeString Value);
   TDateTime GetIgnoreCancelBeforeFinish() const { return FIgnoreCancelBeforeFinish; }
   void SetIgnoreCancelBeforeFinish(const TDateTime & Value) { FIgnoreCancelBeforeFinish = Value; }
   TGUICopyParamType & GetDefaultCopyParam() { return FDefaultCopyParam; }
@@ -397,7 +397,7 @@ public:
   intptr_t GetKeepUpToDateChangeDelay() const { return FKeepUpToDateChangeDelay; }
   void SetKeepUpToDateChangeDelay(intptr_t Value) { FKeepUpToDateChangeDelay = Value; }
   UnicodeString GetChecksumAlg() const;
-  void SetChecksumAlg(const UnicodeString & Value);
+  void SetChecksumAlg(UnicodeString Value);
   intptr_t GetSessionReopenAutoIdle() const { return FSessionReopenAutoIdle; }
   void SetSessionReopenAutoIdle(intptr_t Value) { FSessionReopenAutoIdle = Value; }
   LCID GetAppliedLocale() const { return FAppliedLocale; }

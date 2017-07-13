@@ -369,7 +369,7 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
   }
 }
 
-void ShowNotification(TTerminal * Terminal, const UnicodeString & Str,
+void ShowNotification(TTerminal * Terminal, UnicodeString Str,
   TQueryType Type)
 {
   TTerminalManager * Manager = TTerminalManager::Instance(false);
@@ -423,8 +423,8 @@ int GetToolbarLayoutPixelsPerInch(TStrings * Storage, TControl * Control)
   return Result;
 }
 //---------------------------------------------------------------------
-static inline void GetToolbarKey(const UnicodeString & ToolbarName,
-  const UnicodeString & Value, UnicodeString & ToolbarKey)
+static inline void GetToolbarKey(UnicodeString ToolbarName,
+  UnicodeString Value, UnicodeString & ToolbarKey)
 {
   int ToolbarNameLen;
   if ((ToolbarName.Length() > 7) &&
@@ -989,9 +989,9 @@ void CreateColorPalette(TTBCustomItem * Owner, TColor Color, int Rows,
 
 static void CreateColorMenu(TComponent * AOwner, TColor Color,
   TColorChangeEvent OnColorChange, bool SessionColors,
-  const UnicodeString & DefaultColorCaption, const UnicodeString & DefaultColorHint,
-  const UnicodeString & HelpKeyword,
-  const UnicodeString & ColorPickHint)
+  UnicodeString DefaultColorCaption, UnicodeString DefaultColorHint,
+  UnicodeString HelpKeyword,
+  UnicodeString ColorPickHint)
 {
   TTBCustomItem * Owner = dynamic_cast<TTBCustomItem *>(AOwner);
   if (DebugAlwaysTrue(Owner != NULL))
@@ -1339,7 +1339,7 @@ bool DoChangeMasterPasswordDialog(UnicodeString & NewPassword)
   return Result;
 }
 
-void MessageWithNoHelp(const UnicodeString & Message)
+void MessageWithNoHelp(UnicodeString Message)
 {
   TMessageParams Params;
   Params.AllowHelp = false; // to avoid recursion

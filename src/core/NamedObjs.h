@@ -22,15 +22,15 @@ public:
   __property bool Hidden = { read = FHidden };
 #endif // #if 0
   UnicodeString GetName() const { return FName; }
-  void SetName(const UnicodeString & Value);
+  void SetName(UnicodeString Value);
   bool GetHidden() const { return FHidden; }
 
   explicit TNamedObject() : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}
   explicit TNamedObject(TObjectClassId Kind) : TPersistent(Kind), FHidden(false) {}
-  explicit TNamedObject(TObjectClassId Kind, const UnicodeString & AName);
+  explicit TNamedObject(TObjectClassId Kind, UnicodeString AName);
   virtual ~TNamedObject() {}
 
-  bool IsSameName(const UnicodeString & AName) const;
+  bool IsSameName(UnicodeString AName) const;
   virtual intptr_t Compare(const TNamedObject * Other) const;
   void MakeUniqueIn(TNamedObjectList * List);
 private:
@@ -67,8 +67,8 @@ public:
   intptr_t Add(TObject * AObject);
   virtual const TNamedObject * AtObject(intptr_t Index) const;
   virtual TNamedObject * AtObject(intptr_t Index);
-  const TNamedObject * FindByName(const UnicodeString & Name) const;
-  TNamedObject * FindByName(const UnicodeString & Name);
+  const TNamedObject * FindByName(UnicodeString Name) const;
+  TNamedObject * FindByName(UnicodeString Name);
 #if 0
   __property int Count = { read = GetCount, write = SetCount };
   __property int CountIncludingHidden = { read = GetCountIncludingHidden };

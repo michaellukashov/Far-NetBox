@@ -29,13 +29,13 @@ private:
   static UnicodeString Keys[];
 
 public:
-  TBookmarkList * GetBookmarks(const UnicodeString & AIndex);
-  void SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Value);
+  TBookmarkList * GetBookmarks(UnicodeString AIndex);
+  void SetBookmarks(UnicodeString AIndex, TBookmarkList * Value);
   TBookmarkList * GetSharedBookmarks();
   void SetSharedBookmarks(TBookmarkList * Value);
 
 private:
-  void LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
+  void LoadLevel(THierarchicalStorage * Storage, UnicodeString Key,
     intptr_t AIndex, TBookmarkList * BookmarkList);
 };
 
@@ -61,7 +61,7 @@ public:
   void InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
   void MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
   void Delete(TBookmark *& Bookmark);
-  TBookmark * FindByName(const UnicodeString & Node, const UnicodeString & Name) const;
+  TBookmark * FindByName(UnicodeString Node, UnicodeString Name) const;
   TBookmark * FindByShortCut(const TShortCut & ShortCut);
   virtual void Assign(const TPersistent * Source);
   void LoadOptions(THierarchicalStorage * Storage);
@@ -92,8 +92,8 @@ private:
 public:
   intptr_t GetCount() const;
   TBookmark * GetBookmarks(intptr_t AIndex);
-  bool GetNodeOpened(const UnicodeString & AIndex) const;
-  void SetNodeOpened(const UnicodeString & AIndex, bool Value);
+  bool GetNodeOpened(UnicodeString AIndex) const;
+  void SetNodeOpened(UnicodeString AIndex, bool Value);
 };
 
 class TBookmark : public TPersistent
@@ -122,7 +122,7 @@ public:
 protected:
   TBookmarkList * FOwner;
 
-  static UnicodeString BookmarkKey(const UnicodeString & Node, const UnicodeString & Name);
+  static UnicodeString BookmarkKey(UnicodeString Node, UnicodeString Name);
 #if 0
   __property UnicodeString Key = { read = GetKey };
 #endif // if 0
@@ -141,10 +141,10 @@ public:
   UnicodeString GetNode() const { return FNode; }
   TShortCut GetShortCut() const { return FShortCut; }
 
-  void SetName(const UnicodeString & Value);
-  void SetLocal(const UnicodeString & Value);
-  void SetRemote(const UnicodeString & Value);
-  void SetNode(const UnicodeString & Value);
+  void SetName(UnicodeString Value);
+  void SetLocal(UnicodeString Value);
+  void SetRemote(UnicodeString Value);
+  void SetNode(UnicodeString Value);
   void SetShortCut(const TShortCut & Value);
   UnicodeString GetKey() const;
 
