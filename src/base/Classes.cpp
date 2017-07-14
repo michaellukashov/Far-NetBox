@@ -929,7 +929,7 @@ void TStringList::InsertItem(intptr_t Index, UnicodeString S, TObject * AObject)
   Changed();
 }
 
-UnicodeString TStringList::GetString(intptr_t Index) const
+const UnicodeString & TStringList::GetStringRef(intptr_t Index) const
 {
   if ((Index == NPOS) || (Index > static_cast<intptr_t>(FStrings.size())))
   {
@@ -940,6 +940,16 @@ UnicodeString TStringList::GetString(intptr_t Index) const
     const_cast<TStringList *>(this)->InsertItem(Index, UnicodeString(), nullptr);
   }
   return FStrings[Index];
+}
+
+const UnicodeString & TStringList::GetString(intptr_t Index) const
+{
+  return GetStringRef(Index);
+}
+
+UnicodeString TStringList::GetString(intptr_t Index)
+{
+  return GetStringRef(Index);
 }
 
 void TStringList::SetCaseSensitive(bool Value)

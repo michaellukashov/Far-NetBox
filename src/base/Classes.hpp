@@ -343,7 +343,9 @@ public:
   void SetCommaText(UnicodeString Value);
   virtual UnicodeString GetText() const;
   virtual void SetText(UnicodeString Text);
-  virtual UnicodeString GetString(intptr_t Index) const = 0;
+  virtual const UnicodeString & GetStringRef(intptr_t Index) const = 0;
+  virtual const UnicodeString & GetString(intptr_t Index) const = 0;
+  virtual UnicodeString GetString(intptr_t Index) = 0;
   virtual void SetString(intptr_t Index, UnicodeString S) = 0;
   UnicodeString GetName(intptr_t Index) const;
   void SetName(intptr_t Index, UnicodeString Value);
@@ -407,7 +409,9 @@ public:
   virtual void SetSorted(bool Value);
   virtual bool GetCaseSensitive() const { return FCaseSensitive; }
   virtual void SetCaseSensitive(bool Value);
-  virtual UnicodeString GetString(intptr_t Index) const;
+  virtual const UnicodeString & GetStringRef(intptr_t Index) const override;
+  virtual const UnicodeString & GetString(intptr_t Index) const override;
+  virtual UnicodeString GetString(intptr_t Index) override;
   virtual void SetString(intptr_t Index, UnicodeString S);
 
 private:

@@ -1151,7 +1151,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
         DebugAssert(Selected == NPOS);
         Selected = Index;
       }
-      MenuItems[Count].Text = Items->GetString(Index).c_str();
+      MenuItems[Count].Text = Items->GetStringRef(Index).c_str();
       MenuItems[Count].UserData = Index;
       Count++;
     }
