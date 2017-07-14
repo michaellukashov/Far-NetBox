@@ -57,12 +57,6 @@ enum TSessionActionEnum
   saConnect
 };
 
-//typedef nb::FastDelegate2<void,
-//  intptr_t /*Params*/, TSynchronizeOptions & /*Options*/> TGetSynchronizeOptionsEvent;
-typedef nb::FastDelegate3<void,
-  UnicodeString /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
-  bool & /*Close*/>TGetSpaceAvailableEvent;
-
 struct TMultipleEdit : public TObject
 {
   UnicodeString FileName;

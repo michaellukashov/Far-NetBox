@@ -784,8 +784,10 @@ struct TInputDialogData
   void * Edit;
 };
 
-//typedef void (__closure *TInputDialogInitialize)
-//  (TObject * Sender, TInputDialogData * Data);
+#if 0
+typedef void (__closure *TInputDialogInitialize)
+  (TObject * Sender, TInputDialogData * Data);
+#endif // #if 0
 typedef nb::FastDelegate2<void,
   TObject * /*Sender*/, TInputDialogData * /*Data*/> TInputDialogInitializeEvent;
 
