@@ -274,7 +274,7 @@ public:
   TObject * GetObj(intptr_t Index) const;
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
-  virtual void Notify(void * Ptr, TListNotification Action);
+  virtual void Notify(void * Ptr, TListNotification Action) override;
 
 private:
   bool FOwnsObjects;
@@ -313,7 +313,7 @@ public:
   virtual intptr_t AddObject(UnicodeString S, TObject * AObject);
   virtual void InsertObject(intptr_t Index, UnicodeString Key, TObject * AObject);
   bool Equals(const TStrings * Value) const;
-  virtual void Move(intptr_t CurIndex, intptr_t NewIndex);
+  virtual void Move(intptr_t CurIndex, intptr_t NewIndex) override;
   virtual intptr_t IndexOf(UnicodeString S) const;
   virtual intptr_t IndexOfName(UnicodeString Name) const;
   UnicodeString ExtractName(UnicodeString S) const;
@@ -329,7 +329,7 @@ public:
   void SetDelimitedText(UnicodeString Value);
   virtual intptr_t CompareStrings(UnicodeString S1, UnicodeString S2) const;
   intptr_t GetUpdateCount() const { return FUpdateCount; }
-  virtual void Assign(const TPersistent * Source);
+  virtual void Assign(const TPersistent * Source) override;
   virtual intptr_t GetCount() const = 0;
 
 public:
@@ -379,7 +379,7 @@ public:
   virtual ~TStringList();
 
   intptr_t Add(UnicodeString S);
-  virtual intptr_t AddObject(UnicodeString S, TObject * AObject);
+  virtual intptr_t AddObject(UnicodeString S, TObject * AObject) override;
   void LoadFromFile(UnicodeString AFileName);
   TNotifyEvent & GetOnChange() { return FOnChange; }
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
@@ -388,31 +388,31 @@ public:
   void InsertItem(intptr_t Index, UnicodeString S, TObject * AObject);
   void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
-  virtual void Assign(const TPersistent * Source);
+  virtual void Assign(const TPersistent * Source) override;
   virtual bool Find(UnicodeString S, intptr_t & Index) const;
-  virtual intptr_t IndexOf(UnicodeString S) const;
-  virtual void Delete(intptr_t Index);
-  virtual void InsertObject(intptr_t Index, UnicodeString Key, TObject * AObject);
-  virtual void Sort();
+  virtual intptr_t IndexOf(UnicodeString S) const override;
+  virtual void Delete(intptr_t Index) override;
+  virtual void InsertObject(intptr_t Index, UnicodeString Key, TObject * AObject) override;
+  virtual void Sort() override;
   virtual void CustomSort(TStringListSortCompare ACompareFunc);
 
-  virtual void SetUpdateState(bool Updating);
+  virtual void SetUpdateState(bool Updating) override;
   virtual void Changing();
-  virtual void Changed();
-  virtual void Insert(intptr_t Index, UnicodeString S, TObject * AObject = nullptr);
-  virtual intptr_t CompareStrings(UnicodeString S1, UnicodeString S2) const;
-  virtual intptr_t GetCount() const;
+  virtual void Changed() override;
+  virtual void Insert(intptr_t Index, UnicodeString S, TObject * AObject = nullptr) override;
+  virtual intptr_t CompareStrings(UnicodeString S1, UnicodeString S2) const override;
+  virtual intptr_t GetCount() const override;
 
 public:
-  virtual void SetObj(intptr_t Index, TObject * AObject);
-  virtual bool GetSorted() const { return FSorted; }
-  virtual void SetSorted(bool Value);
-  virtual bool GetCaseSensitive() const { return FCaseSensitive; }
-  virtual void SetCaseSensitive(bool Value);
+  virtual void SetObj(intptr_t Index, TObject * AObject) override;
+  virtual bool GetSorted() const override { return FSorted; }
+  virtual void SetSorted(bool Value) override;
+  virtual bool GetCaseSensitive() const override { return FCaseSensitive; }
+  virtual void SetCaseSensitive(bool Value) override;
   virtual const UnicodeString & GetStringRef(intptr_t Index) const override;
   virtual const UnicodeString & GetString(intptr_t Index) const override;
   virtual UnicodeString GetString(intptr_t Index) override;
-  virtual void SetString(intptr_t Index, UnicodeString S);
+  virtual void SetString(intptr_t Index, UnicodeString S) override;
 
 private:
   TNotifyEvent FOnChange;
@@ -587,14 +587,16 @@ NB_DISABLE_COPY(THandleStream)
 public:
   explicit THandleStream(HANDLE AHandle);
   virtual ~THandleStream();
-  virtual int64_t Read(void * Buffer, int64_t Count);
-  virtual int64_t Write(const void * Buffer, int64_t Count);
-  virtual int64_t Seek(int64_t Offset, int Origin);
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin);
+  virtual int64_t Read(void * Buffer, int64_t Count) override;
+  virtual int64_t Write(const void * Buffer, int64_t Count) override;
+  virtual int64_t Seek(int64_t Offset, int Origin) override;
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) override;
 
   HANDLE GetHandle() { return FHandle; }
+
 protected:
-  virtual void SetSize(const int64_t NewSize);
+  virtual void SetSize(const int64_t NewSize) override;
+
 protected:
   HANDLE FHandle;
 };
@@ -604,8 +606,8 @@ class TSafeHandleStream : public THandleStream
 public:
   explicit TSafeHandleStream(THandle AHandle);
   virtual ~TSafeHandleStream() {}
-  virtual int64_t Read(void * Buffer, int64_t Count);
-  virtual int64_t Write(const void * Buffer, int64_t Count);
+  virtual int64_t Read(void * Buffer, int64_t Count) override;
+  virtual int64_t Write(const void * Buffer, int64_t Count) override;
 };
 
 class EReadError : public std::runtime_error
@@ -630,9 +632,9 @@ NB_DISABLE_COPY(TMemoryStream)
 public:
   TMemoryStream();
   virtual ~TMemoryStream();
-  virtual int64_t Read(void * Buffer, int64_t Count);
-  virtual int64_t Seek(int64_t Offset, int Origin);
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin);
+  virtual int64_t Read(void * Buffer, int64_t Count) override;
+  virtual int64_t Seek(int64_t Offset, int Origin) override;
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) override;
   void SaveToStream(TStream * Stream);
   void SaveToFile(UnicodeString AFileName);
 
@@ -640,8 +642,8 @@ public:
   void LoadFromStream(TStream * Stream);
   //void LoadFromFile(UnicodeString AFileName);
   int64_t GetSize() const { return FSize; }
-  virtual void SetSize(const int64_t NewSize);
-  virtual int64_t Write(const void * Buffer, int64_t Count);
+  virtual void SetSize(const int64_t NewSize) override;
+  virtual int64_t Write(const void * Buffer, int64_t Count) override;
 
   void * GetMemory() const { return FMemory; }
 
@@ -652,6 +654,7 @@ protected:
 
 private:
   void SetCapacity(int64_t NewCapacity);
+
 private:
   void * FMemory;
   int64_t FSize;
