@@ -6504,7 +6504,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       }
       else if (BreakCode == 2)
       {
-        FarControl(FCTL_INSERTCMDLINE, 0, ToInt(BookmarkPaths->GetString(ItemFocused).c_str()));
+        FarControl(FCTL_INSERTCMDLINE, 0, ToInt(BookmarkPaths->GetStringRef(ItemFocused).c_str()));
       }
       else if (BreakCode == 3 || BreakCode == 4)
       {
