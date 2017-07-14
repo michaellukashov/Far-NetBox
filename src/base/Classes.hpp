@@ -343,7 +343,9 @@ public:
   void SetCommaText(UnicodeString Value);
   virtual UnicodeString GetText() const;
   virtual void SetText(UnicodeString Text);
-  virtual UnicodeString GetString(intptr_t Index) const = 0;
+  virtual const UnicodeString & GetStringRef(intptr_t Index) const = 0;
+  virtual const UnicodeString & GetString(intptr_t Index) const = 0;
+  virtual UnicodeString GetString(intptr_t Index) = 0;
   virtual void SetString(intptr_t Index, UnicodeString S) = 0;
   UnicodeString GetName(intptr_t Index) const;
   void SetName(intptr_t Index, UnicodeString Value);
@@ -407,7 +409,9 @@ public:
   virtual void SetSorted(bool Value) override;
   virtual bool GetCaseSensitive() const override { return FCaseSensitive; }
   virtual void SetCaseSensitive(bool Value) override;
-  virtual UnicodeString GetString(intptr_t Index) const;
+  virtual const UnicodeString & GetStringRef(intptr_t Index) const override;
+  virtual const UnicodeString & GetString(intptr_t Index) const override;
+  virtual UnicodeString GetString(intptr_t Index) override;
   virtual void SetString(intptr_t Index, UnicodeString S) override;
 
 private:
@@ -783,8 +787,10 @@ struct TInputDialogData
   void * Edit;
 };
 
-//typedef void (__closure *TInputDialogInitialize)
-//  (TObject * Sender, TInputDialogData * Data);
+#if 0
+typedef void (__closure *TInputDialogInitialize)
+  (TObject * Sender, TInputDialogData * Data);
+#endif // #if 0
 typedef nb::FastDelegate2<void,
   TObject * /*Sender*/, TInputDialogData * /*Data*/> TInputDialogInitializeEvent;
 

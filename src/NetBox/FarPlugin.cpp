@@ -1072,7 +1072,7 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
   {
     UnicodeString S = MessageLines->GetString(Index);
     MessageLines->SetString(Index, UnicodeString(S));
-    Items[Index] = const_cast<wchar_t *>(MessageLines->GetString(Index).c_str());
+    Items[Index] = const_cast<wchar_t *>(MessageLines->GetStringRef(Index).c_str());
   }
 
   TFarEnvGuard Guard;
@@ -1151,7 +1151,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
         DebugAssert(Selected == NPOS);
         Selected = Index;
       }
-      MenuItems[Count].Text = Items->GetString(Index).c_str();
+      MenuItems[Count].Text = Items->GetStringRef(Index).c_str();
       MenuItems[Count].UserData = Index;
       Count++;
     }
