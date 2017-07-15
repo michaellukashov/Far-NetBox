@@ -556,7 +556,7 @@ bool FileExists(UnicodeString AFileName)
 
 bool RenameFile(UnicodeString From, UnicodeString To)
 {
-  bool Result = ::MoveFile(From.c_str(), To.c_str()) != 0;
+  bool Result = ::MoveFile(ApiPath(From).c_str(), ApiPath(To).c_str()) != FALSE;
   return Result;
 }
 
