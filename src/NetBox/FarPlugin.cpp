@@ -2886,7 +2886,7 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
 
 UnicodeString TGlobalFunctions::GetStrVersionNumber() const
 {
-  return NETBOX_VERSION_NUMBER.c_str();
+  return FORMAT(L"%d.%d.%d", NETBOX_VERSION_MAJOR, NETBOX_VERSION_MINOR, NETBOX_VERSION_PATCH);
 }
 
 //bool InputBox(UnicodeString Title, UnicodeString Prompt,
