@@ -640,12 +640,12 @@ bool FileSetAttr(UnicodeString AFileName, DWORD LocalFileAttrs)
 
 bool CreateDir(UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
-  return ::CreateDirectoryW(ApiPath(ADir).c_str(), SecurityAttributes) != 0;
+  return ::CreateDirectoryW(ApiPath(ADir).c_str(), SecurityAttributes) != FALSE;
 }
 
 bool RemoveDir(UnicodeString ADir)
 {
-  return ::RemoveDirectoryW(ApiPath(ADir).c_str()) != 0;
+  return ::RemoveDirectoryW(ApiPath(ADir).c_str()) != FALSE;
 }
 
 bool ForceDirectories(UnicodeString ADir)
