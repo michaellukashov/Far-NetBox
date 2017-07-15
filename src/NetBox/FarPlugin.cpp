@@ -2677,7 +2677,8 @@ UnicodeString TFarPanelInfo::GetCurrDirectory() const
       ToInt(Result.c_str()),
       FOwner != nullptr ? PANEL_ACTIVE : PANEL_PASSIVE);
   }
-  return Result.c_str();
+  PackStr(Result);
+  return Result;
 }
 
 TFarMenuItems::TFarMenuItems() :
@@ -2798,7 +2799,8 @@ UnicodeString TFarEditorInfo::GetFileName()
     wchar_t * Buffer = Result.SetLength(BuffLen + 1);
     FarPlugin->FarEditorControl(ECTL_GETFILENAME, Buffer);
   }
-  return Result.c_str();
+  PackStr(Result);
+  return Result;
 }
 
 TFarEnvGuard::TFarEnvGuard()

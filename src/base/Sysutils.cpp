@@ -493,7 +493,8 @@ UnicodeString FormatFloat(UnicodeString /*Format*/, double Value)
 {
   UnicodeString Result(20, L'\0');
   swprintf_s(&Result[1], Result.Length(), L"%.2f", Value);
-  return Result.c_str();
+  PackStr(Result);
+  return Result;
 }
 
 bool IsZero(double Value)
@@ -680,7 +681,8 @@ UnicodeString Format(const wchar_t * Format, ...)
   va_start(Args, Format);
   UnicodeString Result = ::FormatV(Format, Args);
   va_end(Args);
-  return Result.c_str();
+  PackStr(Result);
+  return Result;
 }
 
 UnicodeString FormatV(const wchar_t * Format, va_list Args)
@@ -692,7 +694,8 @@ UnicodeString FormatV(const wchar_t * Format, va_list Args)
     wchar_t * Buffer = Result.SetLength(Len + 1);
     vswprintf(Buffer, Len + 1, Format, Args);
   }
-  return Result.c_str();
+  PackStr(Result);
+  return Result;
 }
 
 AnsiString FormatA(const char * Format, ...)
@@ -712,7 +715,8 @@ AnsiString FormatA(const char * Format, va_list Args)
     intptr_t Len = _vscprintf(Format, Args);
     AnsiString Result(Len + 1, 0);
     vsprintf_s(&Result[1], Len + 1, Format, Args);
-    return Result.c_str();
+    PackStr(Result);
+    return Result;
   }
   return AnsiString();
 }
