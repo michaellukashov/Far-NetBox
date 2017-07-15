@@ -6230,7 +6230,8 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
           {
             ReactOnCommand(fsCopyToRemote);
           }
-          EndTransaction();
+          if (InTransaction())
+            EndTransaction();
         };
         if (GetLog()->GetLogging())
         {
