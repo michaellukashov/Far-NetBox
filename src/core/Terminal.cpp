@@ -1882,9 +1882,13 @@ void TTerminal::Reopen(intptr_t Params)
     };
     FReadCurrentDirectoryPending = false;
     FReadDirectoryPending = false;
-    FSuspendTransaction = true;
     FExceptionOnFail = 0;
-    FInTransaction = 0; // reset transactions
+    // reset transactions
+    while (InTransaction())
+    {
+      EndTransaction();
+    }
+    FSuspendTransaction = true;
     // typically, we avoid reading directory, when there is operation ongoing,
     // for file list which may reference files from current directory
     if (FLAGSET(Params, ropNoReadDirectory))
