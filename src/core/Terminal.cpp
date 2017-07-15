@@ -1368,6 +1368,9 @@ bool TTerminal::GetActive() const
 
 void TTerminal::Close()
 {
+  if (FStatus == ssClosing)
+    return;
+  FStatus = ssClosing;
   FFileSystem->Close();
 
   // Cannot rely on CommandSessionOpened here as Status is set to ssClosed too late
