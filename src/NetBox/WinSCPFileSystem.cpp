@@ -3188,8 +3188,7 @@ void TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
   }
 }
 
-void TWinSCPFileSystem::TerminalDeleteLocalFile(UnicodeString AFileName,
-  bool Alternative)
+void TWinSCPFileSystem::TerminalDeleteLocalFile(UnicodeString AFileName, bool Alternative)
 {
   if (!RecursiveDeleteFile(AFileName,
         (FLAGSET(GetWinSCPPlugin()->GetFarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
@@ -3214,19 +3213,19 @@ bool TWinSCPFileSystem::TerminalSetLocalFileAttributes(UnicodeString LocalFileNa
   return ::FileSetAttr(LocalFileName, FileAttributes);
 }
 
-BOOL TWinSCPFileSystem::TerminalMoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags)
+bool TWinSCPFileSystem::TerminalMoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags)
 {
-  return ::MoveFileExW(ApiPath(LocalFileName).c_str(), NewLocalFileName.c_str(), Flags) != 0;
+  return ::MoveFileExW(ApiPath(LocalFileName).c_str(), NewLocalFileName.c_str(), Flags) != FALSE;
 }
 
-BOOL TWinSCPFileSystem::TerminalRemoveLocalDirectory(UnicodeString LocalDirName)
+bool TWinSCPFileSystem::TerminalRemoveLocalDirectory(UnicodeString LocalDirName)
 {
   return ::RemoveDir(LocalDirName);
 }
 
-BOOL TWinSCPFileSystem::TerminalCreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool TWinSCPFileSystem::TerminalCreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
-  return ::CreateDirectory(ApiPath(LocalDirName).c_str(), SecurityAttributes) != 0;
+  return ::CreateDirectory(ApiPath(LocalDirName).c_str(), SecurityAttributes) != FALSE;
 }
 
 uintptr_t TWinSCPFileSystem::MoreMessageDialog(UnicodeString Str,

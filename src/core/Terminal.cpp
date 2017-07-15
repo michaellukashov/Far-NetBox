@@ -7488,7 +7488,7 @@ bool TTerminal::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAt
   }
 }
 
-BOOL TTerminal::MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags)
+bool TTerminal::MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags)
 {
   if (GetOnMoveLocalFile())
   {
@@ -7496,11 +7496,11 @@ BOOL TTerminal::MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLoca
   }
   else
   {
-    return ::MoveFileEx(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), Flags) != 0;
+    return ::MoveFileEx(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), Flags) != FALSE;
   }
 }
 
-BOOL TTerminal::RemoveLocalDirectory(UnicodeString LocalDirName)
+bool TTerminal::RemoveLocalDirectory(UnicodeString LocalDirName)
 {
   if (GetOnRemoveLocalDirectory())
   {
@@ -7512,7 +7512,7 @@ BOOL TTerminal::RemoveLocalDirectory(UnicodeString LocalDirName)
   }
 }
 
-BOOL TTerminal::CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool TTerminal::CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   if (GetOnCreateLocalDirectory())
   {

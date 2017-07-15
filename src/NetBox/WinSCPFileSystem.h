@@ -275,9 +275,9 @@ private:
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
   DWORD TerminalGetLocalFileAttributes(UnicodeString LocalFileName) const;
   bool TerminalSetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes);
-  BOOL TerminalMoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags);
-  BOOL TerminalRemoveLocalDirectory(UnicodeString LocalDirName);
-  BOOL TerminalCreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
+  bool TerminalMoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags);
+  bool TerminalRemoveLocalDirectory(UnicodeString LocalDirName);
+  bool TerminalCreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
   void OperationProgress(
     TFileOperationProgressType & ProgressData);
   void OperationFinished(TFileOperation Operation,

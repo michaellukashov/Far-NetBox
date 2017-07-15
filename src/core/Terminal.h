@@ -137,12 +137,12 @@ typedef nb::FastDelegate1<DWORD,
   UnicodeString /*FileName*/> TGetLocalFileAttributesEvent;
 typedef nb::FastDelegate2<bool,
   UnicodeString /*FileName*/, DWORD /*FileAttributes*/> TSetLocalFileAttributesEvent;
-typedef nb::FastDelegate3<BOOL,
+typedef nb::FastDelegate3<bool,
   UnicodeString /*FileName*/, UnicodeString /*NewFileName*/,
   DWORD /*Flags*/> TMoveLocalFileEvent;
-typedef nb::FastDelegate1<BOOL,
+typedef nb::FastDelegate1<bool,
   UnicodeString /*LocalDirName*/> TRemoveLocalDirectoryEvent;
-typedef nb::FastDelegate2<BOOL,
+typedef nb::FastDelegate2<bool,
   UnicodeString /*LocalDirName*/,
   LPSECURITY_ATTRIBUTES /*SecurityAttributes*/> TCreateLocalDirectoryEvent;
 typedef nb::FastDelegate0<bool> TCheckForEscEvent;
@@ -736,9 +736,9 @@ public:
     FILETIME * AcTime, FILETIME * WrTime);
   DWORD GetLocalFileAttributes(UnicodeString LocalFileName);
   bool SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes);
-  BOOL MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags);
-  BOOL RemoveLocalDirectory(UnicodeString LocalDirName);
-  BOOL CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
+  bool MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags);
+  bool RemoveLocalDirectory(UnicodeString LocalDirName);
+  bool CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
   TSessionData * GetSessionData() const { return FSessionData; }
   TSessionData * GetSessionData() { return FSessionData; }
