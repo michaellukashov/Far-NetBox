@@ -1,15 +1,19 @@
-#define NO_WIN32_LEAN_AND_MEAN
+
+//#define NO_WIN32_LEAN_AND_MEAN
 #include <vcl.h>
 #pragma hdrstop
 
-#include <shellapi.h>
+#include <Exceptions.h>
+#include <TextsCore.h>
+//#include <Interface.h>
 #include <Common.h>
 #include <Global.h>
 #include <StrUtils.hpp>
-#include <Sysutils.hpp>
+#include <DateUtils.hpp>
 #include <math.h>
 #include <rdestl/map.h>
 #include <rdestl/vector.h>
+//#include <shellapi.h>
 #include <shlobj.h>
 #include <shlwapi.h>
 #if defined(HAVE_OPENSSL)
@@ -18,7 +22,6 @@
 #include <openssl/err.h>
 #endif // HAVE_OPENSSL
 
-#include <TextsCore.h>
 
 #pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
 
