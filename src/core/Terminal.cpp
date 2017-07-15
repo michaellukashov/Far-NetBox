@@ -7181,7 +7181,8 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
           {
             ReactOnCommand(fsCopyToRemote);
           }
-          EndTransaction();
+          if (InTransaction())
+            EndTransaction();
         };
 
         bool Parallel = CalculatedSize && (Files.get() != nullptr);
