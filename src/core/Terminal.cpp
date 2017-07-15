@@ -7478,7 +7478,7 @@ DWORD TTerminal::GetLocalFileAttributes(UnicodeString LocalFileName)
   }
 }
 
-BOOL TTerminal::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes)
+bool TTerminal::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes)
 {
   if (GetOnSetLocalFileAttributes())
   {
@@ -7486,7 +7486,7 @@ BOOL TTerminal::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAt
   }
   else
   {
-    return ::FileSetAttr(LocalFileName, FileAttributes) ? TRUE : FALSE;
+    return ::FileSetAttr(LocalFileName, FileAttributes);
   }
 }
 

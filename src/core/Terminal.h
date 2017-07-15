@@ -135,7 +135,7 @@ typedef nb::FastDelegate5<HANDLE,
   DWORD /*FlagsAndAttributes*/> TCreateLocalFileEvent;
 typedef nb::FastDelegate1<DWORD,
   UnicodeString /*FileName*/> TGetLocalFileAttributesEvent;
-typedef nb::FastDelegate2<BOOL,
+typedef nb::FastDelegate2<bool,
   UnicodeString /*FileName*/, DWORD /*FileAttributes*/> TSetLocalFileAttributesEvent;
 typedef nb::FastDelegate3<BOOL,
   UnicodeString /*FileName*/, UnicodeString /*NewFileName*/,
@@ -735,7 +735,7 @@ public:
   void SetLocalFileTime(UnicodeString LocalFileName,
     FILETIME * AcTime, FILETIME * WrTime);
   DWORD GetLocalFileAttributes(UnicodeString LocalFileName);
-  BOOL SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes);
+  bool SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes);
   BOOL MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags);
   BOOL RemoveLocalDirectory(UnicodeString LocalDirName);
   BOOL CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
