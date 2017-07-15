@@ -7441,15 +7441,13 @@ void TTerminal::SetLocalFileTime(UnicodeString LocalFileName,
   [&]()
   {
     HANDLE LocalFileHandle;
+    SCOPE_EXIT
+    {
+      SAFE_CLOSE_HANDLE(LocalFileHandle);
+    };
     this->TerminalOpenLocalFile(LocalFileName, GENERIC_WRITE, nullptr,
       &LocalFileHandle, nullptr, nullptr, nullptr, nullptr);
-    bool Result = ::SetFileTime(LocalFileHandle, nullptr, AcTime, WrTime) > 0;
-    int Error = ::GetLastError();
-    SAFE_CLOSE_HANDLE(LocalFileHandle);
-    if (!Result)
-    {
-      ::RaiseLastOSError(Error);
-    }
+    THROWOSIFFALSE(::SetFileTime(LocalFileHandle, nullptr, AcTime, WrTime));
   });
 }
 
