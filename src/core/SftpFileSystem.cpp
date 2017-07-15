@@ -665,7 +665,7 @@ public:
   // the content should be pure ASCII (e.g. extension names, etc.)
   inline UnicodeString GetAnsiString() const
   {
-    return AnsiToString(GetRawByteString().c_str()).c_str();
+    return UnicodeString(AnsiToString(GetRawByteString().c_str()));
   }
 
   inline RawByteString GetFileHandle() const
