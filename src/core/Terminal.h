@@ -749,54 +749,54 @@ public:
   TConfiguration * GetConfiguration() { return FConfiguration; }
   TSessionStatus GetStatus() const { return FStatus; }
   TRemoteDirectory * GetFiles() const { return FFiles; }
-  TNotifyEvent & GetOnChangeDirectory() { return FOnChangeDirectory; }
+  TNotifyEvent GetOnChangeDirectory() const { return FOnChangeDirectory; }
   void SetOnChangeDirectory(TNotifyEvent Value) { FOnChangeDirectory = Value; }
-  TReadDirectoryEvent & GetOnReadDirectory() { return FOnReadDirectory; }
+  TReadDirectoryEvent GetOnReadDirectory() const { return FOnReadDirectory; }
   void SetOnReadDirectory(TReadDirectoryEvent Value) { FOnReadDirectory = Value; }
-  TNotifyEvent & GetOnStartReadDirectory() { return FOnStartReadDirectory; }
+  TNotifyEvent GetOnStartReadDirectory() const { return FOnStartReadDirectory; }
   void SetOnStartReadDirectory(TNotifyEvent Value) { FOnStartReadDirectory = Value; }
-  TReadDirectoryProgressEvent & GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
+  TReadDirectoryProgressEvent GetOnReadDirectoryProgress() const { return FOnReadDirectoryProgress; }
   void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent Value) { FOnReadDirectoryProgress = Value; }
-  TDeleteLocalFileEvent & GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
+  TDeleteLocalFileEvent GetOnDeleteLocalFile() const { return FOnDeleteLocalFile; }
   void SetOnDeleteLocalFile(TDeleteLocalFileEvent Value) { FOnDeleteLocalFile = Value; }
-  TNotifyEvent & GetOnInitializeLog() { return FOnInitializeLog; }
+  TNotifyEvent GetOnInitializeLog() const { return FOnInitializeLog; }
   void SetOnInitializeLog(TNotifyEvent Value) { FOnInitializeLog = Value; }
-  TCreateLocalFileEvent & GetOnCreateLocalFile() { return FOnCreateLocalFile; }
+  TCreateLocalFileEvent GetOnCreateLocalFile() const { return FOnCreateLocalFile; }
   void SetOnCreateLocalFile(TCreateLocalFileEvent Value) { FOnCreateLocalFile = Value; }
-  TGetLocalFileAttributesEvent & GetOnGetLocalFileAttributes() { return FOnGetLocalFileAttributes; }
+  TGetLocalFileAttributesEvent GetOnGetLocalFileAttributes() const { return FOnGetLocalFileAttributes; }
   void SetOnGetLocalFileAttributes(TGetLocalFileAttributesEvent Value) { FOnGetLocalFileAttributes = Value; }
-  TSetLocalFileAttributesEvent & GetOnSetLocalFileAttributes() { return FOnSetLocalFileAttributes; }
+  TSetLocalFileAttributesEvent GetOnSetLocalFileAttributes() const { return FOnSetLocalFileAttributes; }
   void SetOnSetLocalFileAttributes(TSetLocalFileAttributesEvent Value) { FOnSetLocalFileAttributes = Value; }
-  TMoveLocalFileEvent & GetOnMoveLocalFile() { return FOnMoveLocalFile; }
+  TMoveLocalFileEvent GetOnMoveLocalFile() const { return FOnMoveLocalFile; }
   void SetOnMoveLocalFile(TMoveLocalFileEvent Value) { FOnMoveLocalFile = Value; }
-  TRemoveLocalDirectoryEvent & GetOnRemoveLocalDirectory() { return FOnRemoveLocalDirectory; }
+  TRemoveLocalDirectoryEvent GetOnRemoveLocalDirectory() const { return FOnRemoveLocalDirectory; }
   void SetOnRemoveLocalDirectory(TRemoveLocalDirectoryEvent Value) { FOnRemoveLocalDirectory = Value; }
-  TCreateLocalDirectoryEvent & GetOnCreateLocalDirectory() { return FOnCreateLocalDirectory; }
+  TCreateLocalDirectoryEvent GetOnCreateLocalDirectory() const { return FOnCreateLocalDirectory; }
   void SetOnCreateLocalDirectory(TCreateLocalDirectoryEvent Value) { FOnCreateLocalDirectory = Value; }
-  TFileOperationProgressEvent & GetOnProgress() { return FOnProgress; }
+  TFileOperationProgressEvent GetOnProgress() const { return FOnProgress; }
   void SetOnProgress(TFileOperationProgressEvent Value) { FOnProgress = Value; }
-  TFileOperationFinishedEvent & GetOnFinished() { return FOnFinished; }
+  TFileOperationFinishedEvent GetOnFinished() const { return FOnFinished; }
   void SetOnFinished(TFileOperationFinishedEvent Value) { FOnFinished = Value; }
   TCurrentFSProtocol GetFSProtocol() const { return FFSProtocol; }
   bool GetUseBusyCursor() const { return FUseBusyCursor; }
   void SetUseBusyCursor(bool Value) { FUseBusyCursor = Value; }
   bool GetAutoReadDirectory() const { return FAutoReadDirectory; }
   void SetAutoReadDirectory(bool Value) { FAutoReadDirectory = Value; }
-  TQueryUserEvent & GetOnQueryUser() { return FOnQueryUser; }
+  TQueryUserEvent GetOnQueryUser() const { return FOnQueryUser; }
   void SetOnQueryUser(TQueryUserEvent Value) { FOnQueryUser = Value; }
-  TPromptUserEvent & GetOnPromptUser() { return FOnPromptUser; }
+  TPromptUserEvent GetOnPromptUser() const { return FOnPromptUser; }
   void SetOnPromptUser(TPromptUserEvent Value) { FOnPromptUser = Value; }
-  TDisplayBannerEvent & GetOnDisplayBanner() { return FOnDisplayBanner; }
+  TDisplayBannerEvent GetOnDisplayBanner() const { return FOnDisplayBanner; }
   void SetOnDisplayBanner(TDisplayBannerEvent Value) { FOnDisplayBanner = Value; }
-  TExtendedExceptionEvent & GetOnShowExtendedException() { return FOnShowExtendedException; }
+  TExtendedExceptionEvent GetOnShowExtendedException() const { return FOnShowExtendedException; }
   void SetOnShowExtendedException(TExtendedExceptionEvent Value) { FOnShowExtendedException = Value; }
-  TInformationEvent & GetOnInformation() { return FOnInformation; }
+  TInformationEvent GetOnInformation() const { return FOnInformation; }
   void SetOnInformation(TInformationEvent Value) { FOnInformation = Value; }
-  TCustomCommandEvent & GetOnCustomCommand() { return FOnCustomCommand; }
+  TCustomCommandEvent GetOnCustomCommand() const { return FOnCustomCommand; }
   void SetOnCustomCommand(TCustomCommandEvent Value) { FOnCustomCommand = Value; }
-  TCheckForEscEvent & GetOnCheckForEsc() { return FOnCheckForEsc; }
+  TCheckForEscEvent GetOnCheckForEsc() const { return FOnCheckForEsc; }
   void SetOnCheckForEsc(TCheckForEscEvent Value) { FOnCheckForEsc = Value; }
-  TNotifyEvent & GetOnClose() { return FOnClose; }
+  TNotifyEvent GetOnClose() const { return FOnClose; }
   void SetOnClose(TNotifyEvent Value) { FOnClose = Value; }
   intptr_t GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
   void SetRememberedPassword(UnicodeString Value) { FRememberedPassword = Value; }

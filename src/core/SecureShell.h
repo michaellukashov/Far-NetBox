@@ -197,7 +197,7 @@ public:
 #endif // #if 0
 
   bool GetActive() const { return FActive; }
-  const TCaptureOutputEvent & GetOnCaptureOutput() const { return FOnCaptureOutput; }
+  const TCaptureOutputEvent GetOnCaptureOutput() const { return FOnCaptureOutput; }
   void SetOnCaptureOutput(TCaptureOutputEvent Value) { FOnCaptureOutput = Value; }
   TDateTime GetLastDataSent() const { return FLastDataSent; }
   UnicodeString GetLastTunnelError() const { return FLastTunnelError; }

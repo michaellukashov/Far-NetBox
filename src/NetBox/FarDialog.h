@@ -96,7 +96,7 @@ public:
   intptr_t GetResult() const { return FResult; }
   TPoint GetMaxSize();
 
-  TFarKeyEvent & GetOnKey() { return FOnKey; }
+  TFarKeyEvent GetOnKey() const { return FOnKey; }
   void SetOnKey(TFarKeyEvent Value) { FOnKey = Value; }
 
   void Redraw();
@@ -272,9 +272,9 @@ public:
   const TFarDialog * GetOwner() const { return FDialog; }
   TFarDialog * GetOwner() { return FDialog; }
 
-  TNotifyEvent & GetOnExit() { return FOnExit; }
+  TNotifyEvent GetOnExit() const { return FOnExit; }
   void SetOnExit(TNotifyEvent Value) { FOnExit = Value; }
-  TFarMouseClickEvent & GetOnMouseClick() { return FOnMouseClick; }
+  TFarMouseClickEvent GetOnMouseClick() const { return FOnMouseClick; }
   void SetOnMouseClick(TFarMouseClickEvent Value) { FOnMouseClick = Value; }
   bool GetFocused() const;
   void SetFocused(bool Value);
@@ -425,7 +425,7 @@ public:
   void SetBrackets(TFarButtonBrackets Value);
   bool GetCenterGroup() const { return TFarDialogItem::GetCenterGroup(); }
   void SetCenterGroup(bool Value) { TFarDialogItem::SetCenterGroup(Value); }
-  virtual TFarButtonClickEvent & GetOnClick() { return FOnClick; }
+  virtual TFarButtonClickEvent GetOnClick() const { return FOnClick; }
   virtual void SetOnClick(TFarButtonClickEvent Value) { FOnClick = Value; }
 
 protected:
@@ -458,7 +458,7 @@ public:
   virtual void SetCaption(UnicodeString Value) { SetData(Value); }
   bool GetAllowGrayed() const { return GetFlag(DIF_3STATE); }
   void SetAllowGrayed(bool Value) { SetFlag(DIF_3STATE, Value); }
-  virtual TFarAllowChangeEvent & GetOnAllowChange() { return FOnAllowChange; }
+  virtual TFarAllowChangeEvent GetOnAllowChange() const { return FOnAllowChange; }
   virtual void SetOnAllowChange(TFarAllowChangeEvent Value) { FOnAllowChange = Value; }
   bool GetChecked() const { return TFarDialogItem::GetChecked(); }
   void SetChecked(bool Value) { TFarDialogItem::SetChecked(Value); }
@@ -481,7 +481,7 @@ public:
   void SetChecked(bool Value) { TFarDialogItem::SetChecked(Value); }
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(UnicodeString Value) { SetData(Value); }
-  virtual TFarAllowChangeEvent & GetOnAllowChange() { return FOnAllowChange; }
+  virtual TFarAllowChangeEvent GetOnAllowChange() const { return FOnAllowChange; }
   virtual void SetOnAllowChange(TFarAllowChangeEvent Value) { FOnAllowChange = Value; }
 
 protected:

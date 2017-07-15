@@ -405,8 +405,8 @@ bool DoSynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
   bool & SaveSettings, int Options, int CopyParamAttrs,
   TGetSynchronizeOptionsEvent OnGetOptions,
-  TSynchronizeSessionLogEvent & OnSynchronizeSessionLog,
-  TFeedSynchronizeErrorEvent & OnFeedSynchronizeError,
+  TSynchronizeSessionLogEvent OnSynchronizeSessionLog,
+  TFeedSynchronizeErrorEvent OnFeedSynchronizeError,
   bool Start);
 
 // forms\FullSynchronize.cpp

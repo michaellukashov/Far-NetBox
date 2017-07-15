@@ -150,17 +150,17 @@ public:
   intptr_t GetTransfersLimit() const { return FTransfersLimit; }
   intptr_t GetKeepDoneItemsFor() const { return FKeepDoneItemsFor; }
   bool GetEnabled() const { return FEnabled; }
-  TQueryUserEvent & GetOnQueryUser() { return FOnQueryUser; }
+  TQueryUserEvent GetOnQueryUser() const { return FOnQueryUser; }
   void SetOnQueryUser(TQueryUserEvent Value) { FOnQueryUser = Value; }
-  TPromptUserEvent & GetOnPromptUser() { return FOnPromptUser; }
+  TPromptUserEvent GetOnPromptUser() const { return FOnPromptUser; }
   void SetOnPromptUser(TPromptUserEvent Value) { FOnPromptUser = Value; }
-  TExtendedExceptionEvent & GetOnShowExtendedException() { return FOnShowExtendedException; }
+  TExtendedExceptionEvent GetOnShowExtendedException() const { return FOnShowExtendedException; }
   void SetOnShowExtendedException(TExtendedExceptionEvent Value) { FOnShowExtendedException = Value; }
-  TQueueListUpdateEvent & GetOnListUpdate() { return FOnListUpdate; }
+  TQueueListUpdateEvent GetOnListUpdate() const { return FOnListUpdate; }
   void SetOnListUpdate(TQueueListUpdateEvent Value) { FOnListUpdate = Value; }
-  TQueueItemUpdateEvent & GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
+  TQueueItemUpdateEvent GetOnQueueItemUpdate() const { return FOnQueueItemUpdate; }
   void SetOnQueueItemUpdate(TQueueItemUpdateEvent Value) { FOnQueueItemUpdate = Value; }
-  TQueueEventEvent & GetOnEvent() { return FOnEvent; }
+  TQueueEventEvent GetOnEvent() const { return FOnEvent; }
   void SetOnEvent(TQueueEventEvent Value) { FOnEvent = Value; }
 
 protected:
@@ -547,7 +547,7 @@ public:
   __property bool Cancelling = { read = FCancel };
 #endif // #if 0
 
-  TNotifyEvent & GetOnIdle() { return FOnIdle; }
+  TNotifyEvent GetOnIdle() const { return FOnIdle; }
   void SetOnIdle(TNotifyEvent Value) { FOnIdle = Value; }
   bool GetCancelling() const { return FCancel; }
 

@@ -356,7 +356,7 @@ public:
   intptr_t GetActualLogProtocol() const { return FActualLogProtocol; }
   bool GetLogActionsRequired() const { return FLogActionsRequired; }
   intptr_t GetLogWindowLines() const { return FLogWindowLines; }
-  TNotifyEvent & GetOnChange() { return FOnChange; }
+  TNotifyEvent GetOnChange() const { return FOnChange; }
   void SetOnChange(TNotifyEvent Value) { FOnChange = Value; }
   intptr_t GetSessionReopenAuto() const { return FSessionReopenAuto; }
   intptr_t GetSessionReopenBackground() const { return FSessionReopenBackground; }

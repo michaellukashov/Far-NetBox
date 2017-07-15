@@ -381,9 +381,9 @@ public:
   intptr_t Add(UnicodeString S);
   virtual intptr_t AddObject(UnicodeString S, TObject * AObject) override;
   void LoadFromFile(UnicodeString AFileName);
-  TNotifyEvent & GetOnChange() { return FOnChange; }
+  TNotifyEvent GetOnChange() const { return FOnChange; }
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
-  TNotifyEvent & GetOnChanging() { return FOnChanging; }
+  TNotifyEvent GetOnChanging() const { return FOnChanging; }
   void SetOnChanging(TNotifyEvent OnChanging) { FOnChanging = OnChanging; }
   void InsertItem(intptr_t Index, UnicodeString S, TObject * AObject);
   void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
