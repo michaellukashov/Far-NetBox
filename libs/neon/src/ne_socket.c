@@ -498,7 +498,7 @@ ssize_t ne_sock_peek(ne_socket *sock, char *buffer, size_t buflen)
 
     memcpy(buffer, sock->bufpos, buflen);
 
-    return (int)buflen;
+    return (ssize_t)buflen;
 }
 
 /* Await data on raw fd in socket. */
@@ -521,7 +521,7 @@ static ssize_t read_raw(ne_socket *sock, char *buffer, size_t len)
     if (ret) return ret;
 
     do {
-  ret = recv(sock->fd, buffer, (int)len, 0);
+	ret = recv(sock->fd, buffer, (int)len, 0);
     } while (ret == -1 && NE_ISINTR(ne_errno));
 
     if (ret == 0) {
@@ -550,7 +550,7 @@ static ssize_t write_raw(ne_socket *sock, const char *data, size_t length)
 #endif
 
     do {
-  ret = send(sock->fd, data, (int)length, 0);
+	ret = send(sock->fd, data, (int)length, 0);
     } while (ret == -1 && NE_ISINTR(ne_errno));
 
     if (ret < 0) {
