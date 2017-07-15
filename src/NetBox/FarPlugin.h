@@ -106,19 +106,19 @@ public:
   virtual intptr_t GetFindData(HANDLE Plugin,
     struct PluginPanelItem ** PanelItem, int * ItemsNumber, int OpMode);
   virtual void FreeFindData(HANDLE Plugin, struct PluginPanelItem * PanelItem,
-    int ItemsNumber);
+    intptr_t ItemsNumber);
   virtual intptr_t ProcessHostFile(HANDLE Plugin,
-    struct PluginPanelItem * PanelItem, int ItemsNumber, int OpMode);
+    struct PluginPanelItem * PanelItem, intptr_t ItemsNumber, int OpMode);
   virtual intptr_t ProcessKey(HANDLE Plugin, int Key, DWORD ControlState);
   virtual intptr_t ProcessEvent(HANDLE Plugin, int Event, void * Param);
   virtual intptr_t SetDirectory(HANDLE Plugin, const wchar_t * Dir, int OpMode);
   virtual intptr_t MakeDirectory(HANDLE Plugin, const wchar_t ** Name, int OpMode);
   virtual intptr_t DeleteFiles(HANDLE Plugin, struct PluginPanelItem * PanelItem,
-    int ItemsNumber, int OpMode);
+    intptr_t ItemsNumber, int OpMode);
   virtual intptr_t GetFiles(HANDLE Plugin, struct PluginPanelItem * PanelItem,
-    int ItemsNumber, int Move, const wchar_t ** DestPath, int OpMode);
+    intptr_t ItemsNumber, int Move, const wchar_t ** DestPath, int OpMode);
   virtual intptr_t PutFiles(HANDLE Plugin, struct PluginPanelItem * PanelItem,
-    int ItemsNumber, int Move, const wchar_t * srcPath, int OpMode);
+    intptr_t ItemsNumber, int Move, const wchar_t * srcPath, int OpMode);
   virtual intptr_t ProcessEditorEvent(int Event, void * Param);
   virtual intptr_t ProcessEditorInput(const INPUT_RECORD * Rec);
 
@@ -270,19 +270,19 @@ public:
   void GetOpenPluginInfo(struct OpenPluginInfo * Info);
   intptr_t GetFindData(struct PluginPanelItem ** PanelItem,
     int * ItemsNumber, int OpMode);
-  void FreeFindData(struct PluginPanelItem * PanelItem, int ItemsNumber);
+  void FreeFindData(struct PluginPanelItem * PanelItem, intptr_t ItemsNumber);
   intptr_t ProcessHostFile(struct PluginPanelItem * PanelItem,
-    int ItemsNumber, int OpMode);
+    intptr_t ItemsNumber, int OpMode);
   intptr_t ProcessKey(intptr_t Key, uintptr_t ControlState);
   intptr_t ProcessEvent(intptr_t Event, void * Param);
   intptr_t SetDirectory(const wchar_t * Dir, int OpMode);
   intptr_t MakeDirectory(const wchar_t ** Name, int OpMode);
   intptr_t DeleteFiles(struct PluginPanelItem * PanelItem,
-    int ItemsNumber, int OpMode);
+    intptr_t ItemsNumber, int OpMode);
   intptr_t GetFiles(struct PluginPanelItem * PanelItem,
-    int ItemsNumber, int Move, const wchar_t ** DestPath, int OpMode);
+    intptr_t ItemsNumber, int Move, const wchar_t ** DestPath, int OpMode);
   intptr_t PutFiles(struct PluginPanelItem * PanelItem,
-    int ItemsNumber, int Move, const wchar_t * srcPath, int OpMode);
+    intptr_t ItemsNumber, int Move, const wchar_t * srcPath, int OpMode);
   virtual void Close();
 
 protected:
@@ -343,7 +343,7 @@ private:
   static uintptr_t FInstances;
 
   void ClearOpenPluginInfo(OpenPluginInfo & Info);
-  TObjectList * CreatePanelItemList(struct PluginPanelItem * PanelItem, int ItemsNumber);
+  TObjectList * CreatePanelItemList(struct PluginPanelItem * PanelItem, intptr_t ItemsNumber);
   TFarPanelInfo * const * GetPanelInfo(int Another) const;
   TFarPanelInfo ** GetPanelInfo(int Another);
 };

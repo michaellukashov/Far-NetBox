@@ -427,7 +427,7 @@ intptr_t TCustomFarPlugin::GetFindData(HANDLE Plugin,
 }
 
 void TCustomFarPlugin::FreeFindData(HANDLE Plugin,
-  struct PluginPanelItem * PanelItem, int ItemsNumber)
+  struct PluginPanelItem * PanelItem, intptr_t ItemsNumber)
 {
   TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   try
@@ -448,7 +448,7 @@ void TCustomFarPlugin::FreeFindData(HANDLE Plugin,
 }
 
 intptr_t TCustomFarPlugin::ProcessHostFile(HANDLE Plugin,
-  struct PluginPanelItem * PanelItem, int ItemsNumber, int OpMode)
+  struct PluginPanelItem * PanelItem, intptr_t ItemsNumber, int OpMode)
 {
   TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   try
@@ -603,7 +603,7 @@ intptr_t TCustomFarPlugin::MakeDirectory(HANDLE Plugin, const wchar_t ** Name, i
 }
 
 intptr_t TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
-  struct PluginPanelItem * PanelItem, int ItemsNumber, int OpMode)
+  struct PluginPanelItem * PanelItem, intptr_t ItemsNumber, int OpMode)
 {
   TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   try
@@ -625,7 +625,7 @@ intptr_t TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
 }
 
 intptr_t TCustomFarPlugin::GetFiles(HANDLE Plugin,
-  struct PluginPanelItem * PanelItem, int ItemsNumber, int Move,
+  struct PluginPanelItem * PanelItem, intptr_t ItemsNumber, int Move,
   const wchar_t ** DestPath, int OpMode)
 {
   TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
@@ -649,7 +649,7 @@ intptr_t TCustomFarPlugin::GetFiles(HANDLE Plugin,
 }
 
 intptr_t TCustomFarPlugin::PutFiles(HANDLE Plugin,
-  struct PluginPanelItem * PanelItem, int ItemsNumber, int Move, const wchar_t * srcPath, int OpMode)
+  struct PluginPanelItem * PanelItem, intptr_t ItemsNumber, int Move, const wchar_t * srcPath, int OpMode)
 {
   TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
   try
@@ -1891,7 +1891,7 @@ intptr_t TCustomFarFileSystem::GetFindData(
 }
 
 void TCustomFarFileSystem::FreeFindData(
-  struct PluginPanelItem * PanelItem, int ItemsNumber)
+  struct PluginPanelItem * PanelItem, intptr_t ItemsNumber)
 {
   ResetCachedInfo();
   if (PanelItem)
@@ -1913,7 +1913,7 @@ void TCustomFarFileSystem::FreeFindData(
 }
 
 intptr_t TCustomFarFileSystem::ProcessHostFile(struct PluginPanelItem * PanelItem,
-  int ItemsNumber, int OpMode)
+  intptr_t ItemsNumber, int OpMode)
 {
   ResetCachedInfo();
   std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(PanelItem, ItemsNumber));
@@ -1959,7 +1959,7 @@ intptr_t TCustomFarFileSystem::MakeDirectory(const wchar_t ** Name, int OpMode)
 }
 
 intptr_t TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem * PanelItem,
-    int ItemsNumber, int OpMode)
+  intptr_t ItemsNumber, int OpMode)
 {
   ResetCachedInfo();
   std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(PanelItem, ItemsNumber));
@@ -1968,7 +1968,7 @@ intptr_t TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem * PanelItem,
 }
 
 intptr_t TCustomFarFileSystem::GetFiles(struct PluginPanelItem * PanelItem,
-  int ItemsNumber, int Move, const wchar_t ** DestPath, int OpMode)
+  intptr_t ItemsNumber, int Move, const wchar_t ** DestPath, int OpMode)
 {
   ResetCachedInfo();
   std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(PanelItem, ItemsNumber));
@@ -1989,7 +1989,7 @@ intptr_t TCustomFarFileSystem::GetFiles(struct PluginPanelItem * PanelItem,
 }
 
 intptr_t TCustomFarFileSystem::PutFiles(struct PluginPanelItem * PanelItem,
-  int ItemsNumber, int Move, const wchar_t * srcPath, int OpMode)
+  intptr_t ItemsNumber, int Move, const wchar_t * srcPath, int OpMode)
 {
   (void)srcPath;
   ResetCachedInfo();
@@ -2131,7 +2131,7 @@ intptr_t TCustomFarFileSystem::PutFilesEx(TObjectList * /*PanelItems*/,
 }
 
 TObjectList * TCustomFarFileSystem::CreatePanelItemList(
-  struct PluginPanelItem * PanelItem, int ItemsNumber)
+  struct PluginPanelItem * PanelItem, intptr_t ItemsNumber)
 {
   std::unique_ptr<TObjectList> PanelItems(new TObjectList());
   PanelItems->SetOwnsObjects(true);
