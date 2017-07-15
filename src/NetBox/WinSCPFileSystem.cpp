@@ -3209,9 +3209,9 @@ inline DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(UnicodeString Loc
   return ::FileGetAttrFix(LocalFileName);
 }
 
-inline BOOL TWinSCPFileSystem::TerminalSetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes)
+BOOL TWinSCPFileSystem::TerminalSetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes)
 {
-  return ::FileSetAttr(LocalFileName, FileAttributes) != 0;
+  return ::FileSetAttr(LocalFileName, FileAttributes) ? TRUE : FALSE;
 }
 
 BOOL TWinSCPFileSystem::TerminalMoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags)

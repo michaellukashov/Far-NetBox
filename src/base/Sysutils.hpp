@@ -343,7 +343,7 @@ UnicodeString FileSearch(UnicodeString AFileName, UnicodeString DirectoryList);
 void FileAge(UnicodeString AFileName, TDateTime & ATimestamp);
 
 DWORD FileGetAttr(UnicodeString AFileName, bool FollowLink = true);
-DWORD FileSetAttr(UnicodeString AFileName, DWORD LocalFileAttrs);
+bool FileSetAttr(UnicodeString AFileName, DWORD LocalFileAttrs);
 
 bool ForceDirectories(UnicodeString ADir);
 bool RemoveFile(UnicodeString AFileName);

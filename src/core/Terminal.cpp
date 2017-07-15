@@ -7486,7 +7486,7 @@ BOOL TTerminal::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAt
   }
   else
   {
-    return ::FileSetAttr(LocalFileName, FileAttributes) != 0;
+    return ::FileSetAttr(LocalFileName, FileAttributes) ? TRUE : FALSE;
   }
 }
 

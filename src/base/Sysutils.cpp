@@ -632,9 +632,9 @@ DWORD FileGetAttr(UnicodeString AFileName, bool /*FollowLink*/)
   return LocalFileAttrs;
 }
 
-DWORD FileSetAttr(UnicodeString AFileName, DWORD LocalFileAttrs)
+bool FileSetAttr(UnicodeString AFileName, DWORD LocalFileAttrs)
 {
-  DWORD Result = ::SetFileAttributesW(ApiPath(AFileName).c_str(), LocalFileAttrs);
+  bool Result = ::SetFileAttributesW(ApiPath(AFileName).c_str(), LocalFileAttrs) != FALSE;
   return Result;
 }
 
