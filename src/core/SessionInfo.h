@@ -8,6 +8,7 @@ enum TSessionStatus
   ssClosed,
   ssOpening,
   ssOpened,
+  ssClosing,
 };
 
 struct TSessionInfo : public TObject
