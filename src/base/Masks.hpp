@@ -14,7 +14,7 @@ private:
   UnicodeString FMask;
 };
 
-int CmpName(const wchar_t *pattern, const wchar_t *str, bool CmpNameSearchMode=false);
+int CmpName(const wchar_t *pattern, const wchar_t *str, bool CmpNameSearchMode = false);
 
 } // namespace Masks
 
