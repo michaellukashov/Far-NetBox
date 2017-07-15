@@ -60,7 +60,8 @@ protected:
 public:
   static const UnicodeString HiddenPrefix;
 
-  bool AutoSort;
+  bool GetAutoSort() const { return FAutoSort; }
+  void SetAutoSort(bool Value) { FAutoSort = Value; }
 
   explicit TNamedObjectList(TObjectClassId Kind = OBJECT_CLASS_TNamedObjectList);
   void AlphaSort();

@@ -2723,13 +2723,13 @@ TRemoteProperties::TRemoteProperties() :
 TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhp) :
   TObject(OBJECT_CLASS_TRemoteProperties),
   Valid(rhp.Valid),
-  Recursive(rhp.Recursive),
   Rights(rhp.Rights),
-  AddXToDirectories(rhp.AddXToDirectories),
   Group(rhp.Group),
   Owner(rhp.Owner),
   Modification(rhp.Modification),
-  LastAccess(rhp.Modification)
+  LastAccess(rhp.Modification),
+  Recursive(rhp.Recursive),
+  AddXToDirectories(rhp.AddXToDirectories)
 {
 }
 
