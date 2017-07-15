@@ -2482,7 +2482,6 @@ TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwn
   FItems(nullptr),
   FOwner(AOwner)
 {
-  // if (!FPanelInfo) throw ExtException(L"");
   DebugAssert(FPanelInfo);
 }
 

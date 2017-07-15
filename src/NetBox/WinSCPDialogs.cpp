@@ -4599,7 +4599,6 @@ NB_DISABLE_COPY(TPropertiesDialog)
 public:
   explicit TPropertiesDialog(TCustomFarPlugin * AFarPlugin, TStrings * AFileList,
     UnicodeString Directory,
-    // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
     intptr_t AllowedChanges);
 
