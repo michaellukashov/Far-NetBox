@@ -166,7 +166,7 @@ typedef void (__closure * TCustomCommandPatternEvent)
    bool & LastPass);
 #endif // #if 0
 typedef nb::FastDelegate5<void,
-  int /*Index*/, const UnicodeString /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
+  intptr_t /*Index*/, UnicodeString /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
   bool & /*LastPass*/> TCustomCommandPatternEvent;
 
 class TCustomCommand : public TObject

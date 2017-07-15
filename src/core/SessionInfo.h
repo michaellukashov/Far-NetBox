@@ -124,8 +124,7 @@ typedef void (__closure *TCalculatedChecksumEvent)(
   UnicodeString FileName, UnicodeString Alg, UnicodeString Hash);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
-  UnicodeString /*FileName*/, UnicodeString /*Alg*/,
-  UnicodeString /*Hash*/> TCalculatedChecksumEvent;
+  UnicodeString /*FileName*/, UnicodeString /*Alg*/, UnicodeString /*Hash*/> TCalculatedChecksumEvent;
 
 class TSessionActionRecord;
 class TActionLog;

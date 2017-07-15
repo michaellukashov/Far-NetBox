@@ -73,6 +73,9 @@ struct TEditHistory : public TObject
   bool operator==(const TEditHistory & rh) const { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
 
+#if 0
+typedef void __fastcall (__closure * TProcessSessionEvent)(TSessionData * Data, void * Param);
+#endif // #if 0
 typedef nb::FastDelegate2<void, TSessionData * /*Data*/, void * /*Param*/> TProcessSessionEvent;
 
 class TWinSCPFileSystem : public TCustomFarFileSystem

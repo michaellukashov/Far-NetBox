@@ -4303,7 +4303,7 @@ void TTerminal::StartOperationWithFile(
   }
 }
 
-void TTerminal::RemoteDeleteFile(UnicodeString AFileName,
+void TTerminal::RemoteDeleteFile(const UnicodeString AFileName,
   const TRemoteFile * AFile, void * AParams)
 {
   UnicodeString FileName = AFileName;

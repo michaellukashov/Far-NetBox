@@ -58,8 +58,7 @@ typedef void (__closure *TDisplayBannerEvent)
    bool & NeverShowAgain, int Options);
 #endif
 typedef nb::FastDelegate5<void,
-  TTerminal * /*Terminal*/, UnicodeString /*SessionName*/,
-  UnicodeString /*Banner*/,
+  TTerminal * /*Terminal*/, UnicodeString /*SessionName*/, UnicodeString /*Banner*/,
   bool & /*NeverShowAgain*/, intptr_t /*Options*/> TDisplayBannerEvent;
 #if 0
 typedef void (__closure *TExtendedExceptionEvent)
@@ -77,15 +76,13 @@ typedef void (__closure *TReadDirectoryProgressEvent)(
   System::TObject* Sender, int Progress, int ResolvedLinks, bool & Cancel);
 #endif
 typedef nb::FastDelegate4<void,
-  TObject * /*Sender*/, intptr_t /*Progress*/, intptr_t /*ResolvedLinks*/,
-  bool & /*Cancel*/> TReadDirectoryProgressEvent;
+  TObject * /*Sender*/, intptr_t /*Progress*/, intptr_t /*ResolvedLinks*/, bool & /*Cancel*/> TReadDirectoryProgressEvent;
 #if 0
 typedef void (__closure *TProcessFileEvent)
   (const UnicodeString FileName, const TRemoteFile * File, void * Param);
 #endif
 typedef nb::FastDelegate3<void,
-  UnicodeString /*FileName*/, const TRemoteFile * /*File*/,
-  void * /*Param*/> TProcessFileEvent;
+  UnicodeString /*FileName*/, const TRemoteFile * /*File*/, void * /*Param*/> TProcessFileEvent;
 #if 0
 typedef void (__closure *TProcessFileEventEx)
   (const UnicodeString FileName, const TRemoteFile * File, void * Param, int Index);
@@ -118,18 +115,16 @@ typedef int (__closure *TDirectoryModifiedEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool SubDirs);
 #endif
 typedef nb::FastDelegate3<int,
-  TTerminal * /*Terminal*/, UnicodeString /*Directory*/,
-  bool /*SubDirs*/> TDirectoryModifiedEvent;
+  TTerminal * /*Terminal*/, UnicodeString /*Directory*/, bool /*SubDirs*/> TDirectoryModifiedEvent;
 #if 0
 typedef void (__closure *TInformationEvent)
   (TTerminal * Terminal, UnicodeString Str, bool Status, int Phase);
 #endif
 typedef nb::FastDelegate4<void,
-  TTerminal * /*Terminal*/, UnicodeString /*Str*/, bool /*Status*/,
-  intptr_t /*Phase*/> TInformationEvent;
+  TTerminal * /*Terminal*/, UnicodeString /*Str*/, bool /*Status*/, intptr_t /*Phase*/> TInformationEvent;
 #if 0
 typedef void (__closure *TCustomCommandEvent)
-  (TTerminal * Terminal, UnicodeString Command, bool & Handled);
+  (TTerminal * Terminal, const UnicodeString Command, bool & Handled);
 #endif
 typedef nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, UnicodeString /*Command*/, bool & /*Handled*/> TCustomCommandEvent;
@@ -609,7 +604,7 @@ public:
   void RemoteCreateDirectory(UnicodeString ADirName,
     const TRemoteProperties * Properties = nullptr);
   void CreateLink(UnicodeString AFileName, UnicodeString PointTo, bool Symbolic, bool IsDirectory);
-  void RemoteDeleteFile(UnicodeString AFileName,
+  void RemoteDeleteFile(const UnicodeString AFileName,
     const TRemoteFile * AFile = nullptr, void * AParams = nullptr);
   bool RemoteDeleteFiles(TStrings * AFilesToDelete, intptr_t Params = 0);
   bool DeleteLocalFiles(TStrings * AFileList, intptr_t Params = 0);

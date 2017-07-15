@@ -5821,6 +5821,10 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
   return Result;
 }
 
+#if 0
+typedef void __fastcall (__closure *TFeedFileSystemData)
+  (TObject * Control, int Label, AnsiString Value);
+#endif // #if 0
 typedef nb::FastDelegate3<void,
   TObject * /*Control*/, intptr_t /*Label*/, UnicodeString /*Value*/> TFeedFileSystemDataEvent;
 

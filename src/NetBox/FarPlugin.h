@@ -38,9 +38,18 @@ enum THandlesFunction
   hfProcessEvent
 };
 
+#if 0
+typedef void __fastcall (__closure * TFarInputBoxValidateEvent)
+  (AnsiString & Text);
+#endif // #if 0
 typedef nb::FastDelegate1<void, UnicodeString & /*Text*/> TFarInputBoxValidateEvent;
-
+#if 0
+typedef void __fastcall (__closure *TFarMessageTimerEvent)(unsigned int & Result);
+#endif // #if 0
 typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TFarMessageTimerEvent;
+#if 0
+typedef void __fastcall (__closure *TFarMessageClickEvent)(void * Token, int Result, bool & Close);
+#endif // #if 0
 typedef nb::FastDelegate3<void, void * /*Token*/,
   uintptr_t /*Result*/, bool & /*Close*/> TFarMessageClickEvent;
 
