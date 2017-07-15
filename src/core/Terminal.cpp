@@ -2396,7 +2396,7 @@ bool TTerminal::DoQueryReopen(Exception * E)
   return Result;
 }
 
-bool TTerminal::ContinueReopen(TDateTime Start)
+bool TTerminal::ContinueReopen(TDateTime Start) const
 {
   return
     (FConfiguration->GetSessionReopenTimeout() == 0) ||
@@ -3034,7 +3034,7 @@ uintptr_t TTerminal::CommandError(Exception * E, UnicodeString Msg,
   return Result;
 }
 
-bool TTerminal::HandleException(Exception* E)
+bool TTerminal::HandleException(Exception * E)
 {
   if (GetExceptionOnFail())
   {
@@ -4195,7 +4195,7 @@ bool TTerminal::GetResolvingSymlinks() const
   return GetSessionData()->GetResolveSymlinks() && GetIsCapable(fcResolveSymlink);
 }
 
-TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(intptr_t Params)
+TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(intptr_t Params) const
 {
   TUsableCopyParamAttrs Result;
   Result.General =
@@ -5186,7 +5186,7 @@ TTerminal * TTerminal::CreateSecondarySession(UnicodeString Name, TSessionData *
   return Result.release();
 }
 
-void TTerminal::FillSessionDataForCode(TSessionData * Data)
+void TTerminal::FillSessionDataForCode(TSessionData * Data) const
 {
   const TSessionInfo & SessionInfo = GetSessionInfo();
   Data->SetHostKey(SessionInfo.HostKeyFingerprint);

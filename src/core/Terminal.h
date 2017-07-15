@@ -660,8 +660,8 @@ public:
   bool FileOperationLoopQuery(Exception & E,
     TFileOperationProgressType * OperationProgress, UnicodeString Message,
     bool AllowSkip, UnicodeString SpecialRetry = L"", UnicodeString HelpKeyword = L"");
-  TUsableCopyParamAttrs UsableCopyParamAttrs(intptr_t Params);
-  bool ContinueReopen(TDateTime Start);
+  TUsableCopyParamAttrs UsableCopyParamAttrs(intptr_t Params) const;
+  bool ContinueReopen(TDateTime Start) const;
   bool QueryReopen(Exception * E, intptr_t Params,
     TFileOperationProgressType * OperationProgress);
   UnicodeString PeekCurrentDirectory();
@@ -670,7 +670,7 @@ public:
   void CollectUsage();
   bool IsThisOrChild(TTerminal * Terminal) const;
   TTerminal * CreateSecondarySession(UnicodeString Name, TSessionData * SessionData);
-  void FillSessionDataForCode(TSessionData * SessionData);
+  void FillSessionDataForCode(TSessionData * SessionData) const;
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
