@@ -343,8 +343,7 @@ private:
   static uintptr_t FInstances;
 
   void ClearOpenPluginInfo(OpenPluginInfo & Info);
-  TObjectList * CreatePanelItemList(struct PluginPanelItem * PanelItem,
-    int ItemsNumber);
+  TObjectList * CreatePanelItemList(struct PluginPanelItem * PanelItem, int ItemsNumber);
   TFarPanelInfo * const * GetPanelInfo(int Another) const;
   TFarPanelInfo ** GetPanelInfo(int Another);
 };
