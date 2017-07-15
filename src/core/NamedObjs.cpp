@@ -51,6 +51,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
 {
   // This object can't be item of list, it would create infinite loop
   if (List && (List->IndexOf(this) == -1))
+  {
     while (List->FindByName(GetName()))
     {
       int64_t N = 0;
@@ -73,6 +74,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
       }
       SetName(Name + L" (" + ::Int64ToStr(N + 1) + L")");
     }
+  }
 }
 
 const UnicodeString TNamedObjectList::HiddenPrefix = "_!_";
