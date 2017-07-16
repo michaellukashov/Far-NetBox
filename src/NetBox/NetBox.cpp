@@ -203,7 +203,7 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const uint8_t * fileHead
     return INVALID_HANDLE_VALUE;
   }
   HANDLE Handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(OPEN_ANALYSE,
-    reinterpret_cast<intptr_t>(fileName)));
+    ToInt(fileName)));
   return Handle;
 }
 

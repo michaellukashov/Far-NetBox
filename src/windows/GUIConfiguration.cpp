@@ -1135,7 +1135,7 @@ TStrings * TGUIConfiguration::GetLocales()
 
         if (Ext >= 0)
         {
-          Exts->SetObj(Ext, reinterpret_cast<TObject *>(Locale));
+          Exts->SetObj(Ext, ToObj(Locale));
         }
         else
         {
@@ -1158,7 +1158,7 @@ TStrings * TGUIConfiguration::GetLocales()
         GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
           LocaleStr, sizeof(LocaleStr));
         Name += LocaleStr;
-        FLocales->AddObject(Name, reinterpret_cast<TObject *>(Locale));
+        FLocales->AddObject(Name, ToObj(Locale));
       }
       ++Index;
     }
@@ -1173,8 +1173,8 @@ TStrings * TGUIConfiguration::GetLocales()
           ::ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
         if (!LangName.IsEmpty())
         {
-          FLocales->AddObject(LangName, reinterpret_cast<TObject *>(static_cast<size_t>(
-            AdditionaLanguageMask + Exts->GetString(Index)[3])));
+          FLocales->AddObject(LangName, ToObj(
+            AdditionaLanguageMask + Exts->GetString(Index)[3]));
         }
       }
     }

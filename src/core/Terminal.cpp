@@ -968,6 +968,9 @@ bool TTerminal::GetActive() const
 
 void TTerminal::Close()
 {
+  if (FStatus == ssClosing)
+    return;
+  FStatus = ssClosing;
   FFileSystem->Close();
 
   // Cannot rely on CommandSessionOpened here as Status is set to ssClosed
@@ -1470,9 +1473,13 @@ void TTerminal::Reopen(intptr_t Params)
     };
     FReadCurrentDirectoryPending = false;
     FReadDirectoryPending = false;
-    FSuspendTransaction = true;
     FExceptionOnFail = 0;
-    FInTransaction = 0; // reset transactions
+    // reset transactions
+    while (InTransaction())
+    {
+      EndTransaction();
+    }
+    FSuspendTransaction = true;
     // typically, we avoid reading directory, when there is operation ongoing,
     // for file list which may reference files from current directory
     if (FLAGSET(Params, ropNoReadDirectory))
@@ -1527,8 +1534,8 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   std::unique_ptr<TStrings> Results(new TStringList());
   try__finally
   {
-    Prompts->AddObject(Prompt, reinterpret_cast<TObject *>(FLAGMASK(Echo, (void*)pupEcho)));
-    Results->AddObject(AResult, reinterpret_cast<TObject *>(MaxLen));
+    Prompts->AddObject(Prompt, ToObj(FLAGMASK(Echo, pupEcho)));
+    Results->AddObject(AResult, ToObj(MaxLen));
     Result = PromptUser(Data, Kind, AName, Instructions, Prompts.get(), Results.get());
     AResult = Results->GetString(0);
   }
@@ -1597,7 +1604,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   {
     if (PasswordOrPassphrasePrompt && !GetConfiguration()->GetRememberPassword())
     {
-      Prompts->SetObj(0, reinterpret_cast<TObject*>(reinterpret_cast<intptr_t>(Prompts->GetObj(0)) | pupRemember));
+      Prompts->SetObj(0, ToObj(ToInt(Prompts->GetObj(0)) | pupRemember));
     }
 
     if (GetOnPromptUser() != nullptr)
@@ -1608,7 +1615,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     }
 
     if (Result && PasswordOrPassphrasePrompt &&
-      (GetConfiguration()->GetRememberPassword() || FLAGSET(reinterpret_cast<intptr_t>(Prompts->GetObj(0)), pupRemember)))
+      (GetConfiguration()->GetRememberPassword() || FLAGSET(ToInt(Prompts->GetObj(0)), pupRemember)))
     {
       RawByteString EncryptedPassword = EncryptPassword(Response->GetString(0));
       if (FTunnelOpening)
@@ -6223,7 +6230,8 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
           {
             ReactOnCommand(fsCopyToRemote);
           }
-          EndTransaction();
+          if (InTransaction())
+            EndTransaction();
         };
         if (GetLog()->GetLogging())
         {
