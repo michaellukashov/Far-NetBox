@@ -1,6 +1,9 @@
+
+#include <vcl.h>
+#pragma hdrstop
+
 #include <Sysutils.hpp>
 #include "UnicodeString.hpp"
-#pragma hdrstop
 
 
 AnsiString::AnsiString(const AnsiString & rhs) :

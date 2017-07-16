@@ -8,31 +8,31 @@ struct TTranslation
 };
 
 // Return pointer to file version info block
-void * CreateFileInfo(UnicodeString AFileName);
+NB_CORE_EXPORT void * CreateFileInfo(UnicodeString AFileName);
 
 // Free file version info block memory
-void FreeFileInfo(void * FileInfo);
+NB_CORE_EXPORT void FreeFileInfo(void * FileInfo);
 
 // Return pointer to fixed file version info
-PVSFixedFileInfo GetFixedFileInfo(void * FileInfo);
+NB_CORE_EXPORT PVSFixedFileInfo GetFixedFileInfo(void * FileInfo);
 
 // Return number of available file version info translations
-uint32_t GetTranslationCount(void * FileInfo);
+NB_CORE_EXPORT uint32_t GetTranslationCount(void * FileInfo);
 
 // Return i-th translation in the file version info translation list
-TTranslation GetTranslation(void * FileInfo, intptr_t I);
+NB_CORE_EXPORT TTranslation GetTranslation(void * FileInfo, intptr_t I);
 
 // Return the name of the specified language
-UnicodeString GetLanguage(Word Language);
+NB_CORE_EXPORT UnicodeString GetLanguage(Word Language);
 
 // Return the value of the specified file version info string using the
 // specified translation
-UnicodeString GetFileInfoString(void * FileInfo,
+NB_CORE_EXPORT UnicodeString GetFileInfoString(void * FileInfo,
   TTranslation Translation, UnicodeString StringName, bool AllowEmpty);
 
-intptr_t CalculateCompoundVersion(intptr_t MajorVer,
+NB_CORE_EXPORT intptr_t CalculateCompoundVersion(intptr_t MajorVer,
   intptr_t MinorVer, intptr_t Release, intptr_t Build);
 
-intptr_t StrToCompoundVersion(UnicodeString AStr);
+NB_CORE_EXPORT intptr_t StrToCompoundVersion(UnicodeString AStr);
 
-intptr_t CompareVersion(UnicodeString V1, UnicodeString V2);
+NB_CORE_EXPORT intptr_t CompareVersion(UnicodeString V1, UnicodeString V2);

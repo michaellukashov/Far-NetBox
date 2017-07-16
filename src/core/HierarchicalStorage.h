@@ -19,7 +19,7 @@ enum TStorageAccessMode
   smReadWrite,
 };
 
-class THierarchicalStorage : public TObject
+class NB_CORE_EXPORT THierarchicalStorage : public TObject
 {
 NB_DISABLE_COPY(THierarchicalStorage)
 
@@ -115,7 +115,7 @@ public:
   virtual bool GetTemporary() const;
 };
 
-class TRegistryStorage : public THierarchicalStorage
+class NB_CORE_EXPORT TRegistryStorage : public THierarchicalStorage
 {
 NB_DISABLE_COPY(TRegistryStorage)
 public:
@@ -255,6 +255,6 @@ protected:
 };
 #endif // #if 0
 
-UnicodeString PuttyMungeStr(const UnicodeString Str);
-UnicodeString PuttyUnMungeStr(const UnicodeString Str);
+NB_CORE_EXPORT UnicodeString PuttyMungeStr(const UnicodeString Str);
+NB_CORE_EXPORT UnicodeString PuttyUnMungeStr(const UnicodeString Str);
 

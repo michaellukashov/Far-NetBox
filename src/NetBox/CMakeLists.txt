@@ -1368,6 +1368,8 @@ set(NETBOX_SOURCES
   ../windows/GUIConfiguration.cpp
   ../windows/Tools.cpp
   ../windows/ProgParams.cpp
+  ../windows/UserInterface.cpp
+  ../windows/WinInterface.cpp
 
 #  UnityBuildFilezilla.cpp
 #  ../filezilla/stdafx.cpp
@@ -1402,7 +1404,6 @@ set(NETBOX_SOURCES
   FarInterface.cpp
   XmlStorage.cpp
   FarPluginStrings.cpp
-  ../windows/WinInterface.cpp
 )
 
 endif(OPT_USE_UNITY_BUILD)

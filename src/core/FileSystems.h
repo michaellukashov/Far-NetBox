@@ -43,7 +43,7 @@ const int tfFirstLevel   = 0x01;
 const int tfAutoResume   = 0x02;
 const int tfNewDirectory = 0x04;
 
-struct TSinkFileParams : public TObject
+struct NB_CORE_EXPORT TSinkFileParams : public TObject
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -61,7 +61,7 @@ public:
   bool Skipped;
 };
 
-struct TFileTransferData : public TObject
+struct NB_CORE_EXPORT TFileTransferData : public TObject
 {
 NB_DISABLE_COPY(TFileTransferData)
 public:
@@ -90,7 +90,7 @@ public:
   bool AutoResume;
 };
 
-struct TOverwriteFileParams : public TObject
+struct NB_CORE_EXPORT TOverwriteFileParams : public TObject
 {
 public:
   static bool classof(const TObject * Obj)
@@ -116,7 +116,7 @@ public:
   TModificationFmt DestPrecision;
 };
 
-struct TOpenRemoteFileParams : public TObject
+struct NB_CORE_EXPORT TOpenRemoteFileParams : public TObject
 {
 NB_DISABLE_COPY(TOpenRemoteFileParams)
 public:
@@ -167,7 +167,7 @@ public:
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;
 };
 
-class TCustomFileSystem : public TObject, public TFileSystemIntf
+class NB_CORE_EXPORT TCustomFileSystem : public TObject, public TFileSystemIntf
 {
 NB_DISABLE_COPY(TCustomFileSystem)
 public:

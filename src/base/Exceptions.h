@@ -6,14 +6,14 @@
 #include <SysInit.hpp>
 #include <System.hpp>
 
-bool ShouldDisplayException(Exception * E);
-bool ExceptionMessage(const Exception * E, UnicodeString & Message);
-bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message);
-bool ExceptionFullMessage(Exception * E, UnicodeString & Message);
-UnicodeString SysErrorMessageForError(intptr_t LastError);
-UnicodeString LastSysErrorMessage();
-TStrings * ExceptionToMoreMessages(Exception * E);
-bool IsInternalException(const Exception * E);
+NB_CORE_EXPORT bool ShouldDisplayException(Exception * E);
+NB_CORE_EXPORT bool ExceptionMessage(const Exception * E, UnicodeString & Message);
+NB_CORE_EXPORT bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message);
+NB_CORE_EXPORT bool ExceptionFullMessage(Exception * E, UnicodeString & Message);
+NB_CORE_EXPORT UnicodeString SysErrorMessageForError(intptr_t LastError);
+NB_CORE_EXPORT UnicodeString LastSysErrorMessage();
+NB_CORE_EXPORT TStrings * ExceptionToMoreMessages(Exception * E);
+NB_CORE_EXPORT bool IsInternalException(const Exception * E);
 
 enum TOnceDoneOperation
 {
@@ -23,7 +23,7 @@ enum TOnceDoneOperation
   odoShutDown,
 };
 
-class ExtException : public Exception
+class NB_CORE_EXPORT ExtException : public Exception
 {
 public:
   static bool classof(const Exception * Obj)
@@ -92,7 +92,7 @@ private:
 };
 
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \
-  class NAME : public BASE \
+  class NB_CORE_EXPORT NAME : public BASE \
   { \
   public: \
     static inline bool classof(const Exception * Obj) { return Obj->GetKind() == OBJECT_CLASS_##NAME; } \
@@ -112,7 +112,7 @@ DERIVE_EXT_EXCEPTION(EScp, ExtException) // SCP protocol fatal error (non-fatal 
 DERIVE_EXT_EXCEPTION(ESkipFile, ExtException)
 DERIVE_EXT_EXCEPTION(EFileSkipped, ESkipFile)
 
-class EOSExtException : public ExtException
+class NB_CORE_EXPORT EOSExtException : public ExtException
 {
 public:
   static bool classof(const Exception * Obj)
@@ -128,7 +128,7 @@ public:
   explicit EOSExtException(TObjectClassId Kind, UnicodeString Msg, intptr_t LastError);
 };
 
-class ECRTExtException : public EOSExtException
+class NB_CORE_EXPORT ECRTExtException : public EOSExtException
 {
 public:
   static bool classof(const Exception * Obj)
@@ -141,7 +141,7 @@ public:
   explicit ECRTExtException(UnicodeString Msg);
 };
 
-class EFatal : public ExtException
+class NB_CORE_EXPORT EFatal : public ExtException
 {
 public:
   static inline bool classof(const Exception * Obj)
@@ -170,7 +170,7 @@ private:
 };
 
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
-  class NAME : public BASE \
+  class NB_CORE_EXPORT NAME : public BASE \
   { \
   public: \
     static inline bool classof(const Exception * Obj) { return Obj->GetKind() == OBJECT_CLASS_##NAME; } \
@@ -183,7 +183,7 @@ DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
 
 // exception that closes application, but displays info message (not error message)
 // = close on completion
-class ESshTerminate : public EFatal
+class NB_CORE_EXPORT ESshTerminate : public EFatal
 {
 public:
   static inline bool classof(const Exception * Obj)
@@ -210,7 +210,7 @@ public:
   UnicodeString DestLocalFileName;
 };
 
-class ECallbackGuardAbort : public EAbort
+class NB_CORE_EXPORT ECallbackGuardAbort : public EAbort
 {
 public:
   static inline bool classof(const Exception * Obj)
@@ -222,9 +222,9 @@ public:
   ECallbackGuardAbort();
 };
 
-Exception * CloneException(Exception * E);
-void RethrowException(Exception * E);
-UnicodeString GetExceptionHelpKeyword(const Exception* E);
-UnicodeString MergeHelpKeyword(UnicodeString PrimaryHelpKeyword, UnicodeString SecondaryHelpKeyword);
-bool IsInternalErrorHelpKeyword(UnicodeString HelpKeyword);
+NB_CORE_EXPORT Exception * CloneException(Exception * E);
+NB_CORE_EXPORT void RethrowException(Exception * E);
+NB_CORE_EXPORT UnicodeString GetExceptionHelpKeyword(const Exception* E);
+NB_CORE_EXPORT UnicodeString MergeHelpKeyword(UnicodeString PrimaryHelpKeyword, UnicodeString SecondaryHelpKeyword);
+NB_CORE_EXPORT bool IsInternalErrorHelpKeyword(UnicodeString HelpKeyword);
 

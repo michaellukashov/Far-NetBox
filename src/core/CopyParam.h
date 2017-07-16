@@ -58,7 +58,7 @@ struct TUsableCopyParamAttrs
   int Download;
 };
 
-class TCopyParamType : public TObject
+class NB_CORE_EXPORT TCopyParamType : public TObject
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -227,6 +227,6 @@ public:
 
 };
 
-uintptr_t GetSpeedLimit(UnicodeString Text);
-UnicodeString SetSpeedLimit(uintptr_t Limit);
-void CopySpeedLimits(TStrings * Source, TStrings * Dest);
+NB_CORE_EXPORT uintptr_t GetSpeedLimit(UnicodeString Text);
+NB_CORE_EXPORT UnicodeString SetSpeedLimit(uintptr_t Limit);
+NB_CORE_EXPORT void CopySpeedLimits(TStrings * Source, TStrings * Dest);

@@ -309,39 +309,39 @@ bool TWinSCPPlugin::ConfigurationDialog()
 
   Dialog->SetSize(TPoint(67, 22));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_INTERFACE)).c_str()));
+    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_INTERFACE)).c_str()));
 
   TFarCheckBox * DisksMenuCheck = new TFarCheckBox(Dialog);
-  DisksMenuCheck->SetCaption(GetMsg(CONFIG_DISKS_MENU));
+  DisksMenuCheck->SetCaption(GetMsg(NB_CONFIG_DISKS_MENU));
 
   Dialog->SetNextItemPosition(ipNewLine);
 
   TFarCheckBox * PluginsMenuCheck = new TFarCheckBox(Dialog);
-  PluginsMenuCheck->SetCaption(GetMsg(CONFIG_PLUGINS_MENU));
+  PluginsMenuCheck->SetCaption(GetMsg(NB_CONFIG_PLUGINS_MENU));
 
   TFarCheckBox * PluginsMenuCommandsCheck = new TFarCheckBox(Dialog);
-  PluginsMenuCommandsCheck->SetCaption(GetMsg(CONFIG_PLUGINS_MENU_COMMANDS));
+  PluginsMenuCommandsCheck->SetCaption(GetMsg(NB_CONFIG_PLUGINS_MENU_COMMANDS));
 
   TFarCheckBox * SessionNameInTitleCheck = new TFarCheckBox(Dialog);
-  SessionNameInTitleCheck->SetCaption(GetMsg(CONFIG_SESSION_NAME_IN_TITLE));
+  SessionNameInTitleCheck->SetCaption(GetMsg(NB_CONFIG_SESSION_NAME_IN_TITLE));
 
   new TFarSeparator(Dialog);
 
   TFarText * Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(CONFIG_COMAND_PREFIXES));
+  Text->SetCaption(GetMsg(NB_CONFIG_COMAND_PREFIXES));
 
   TFarEdit * CommandPrefixesEdit = new TFarEdit(Dialog);
 
   new TFarSeparator(Dialog);
 
   TFarCheckBox * CustomPanelCheck = new TFarCheckBox(Dialog);
-  CustomPanelCheck->SetCaption(GetMsg(CONFIG_PANEL_MODE_CHECK));
+  CustomPanelCheck->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_CHECK));
   CustomPanelCheck->SetEnabled(true);
 
   Text = new TFarText(Dialog);
   Text->SetLeft(Text->GetLeft() + 4);
   Text->SetEnabledDependency(CustomPanelCheck);
-  Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_TYPES));
+  Text->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_TYPES));
 
   Dialog->SetNextItemPosition(ipBelow);
 
@@ -354,7 +354,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
   Text = new TFarText(Dialog);
   Text->SetEnabledDependency(CustomPanelCheck);
   Text->Move(0, -1);
-  Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_STATUS_TYPES));
+  Text->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_STATUS_TYPES));
 
   Dialog->SetNextItemPosition(ipBelow);
 
@@ -366,7 +366,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
   Text = new TFarText(Dialog);
   Text->SetLeft(Text->GetLeft() + 4);
   Text->SetEnabledDependency(CustomPanelCheck);
-  Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_WIDTHS));
+  Text->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_WIDTHS));
 
   Dialog->SetNextItemPosition(ipBelow);
 
@@ -379,7 +379,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
   Text = new TFarText(Dialog);
   Text->SetEnabledDependency(CustomPanelCheck);
   Text->Move(0, -1);
-  Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_STATUS_WIDTHS));
+  Text->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_STATUS_WIDTHS));
 
   Dialog->SetNextItemPosition(ipBelow);
 
@@ -391,16 +391,16 @@ bool TWinSCPPlugin::ConfigurationDialog()
   TFarCheckBox * CustomPanelFullScreenCheck = new TFarCheckBox(Dialog);
   CustomPanelFullScreenCheck->SetLeft(CustomPanelFullScreenCheck->GetLeft() + 4);
   CustomPanelFullScreenCheck->SetEnabledDependency(CustomPanelCheck);
-  CustomPanelFullScreenCheck->SetCaption(GetMsg(CONFIG_PANEL_MODE_FULL_SCREEN));
+  CustomPanelFullScreenCheck->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_FULL_SCREEN));
 
   Text = new TFarText(Dialog);
   Text->SetLeft(Text->GetLeft());
   Text->SetEnabledDependency(CustomPanelCheck);
-  Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_HINT));
+  Text->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_HINT));
   Text = new TFarText(Dialog);
   Text->SetLeft(Text->GetLeft());
   Text->SetEnabledDependency(CustomPanelCheck);
-  Text->SetCaption(GetMsg(CONFIG_PANEL_MODE_HINT2));
+  Text->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_HINT2));
 
   Dialog->AddStandardButtons();
 
@@ -443,10 +443,10 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
   std::unique_ptr<TWinSCPDialog> Dialog(new TWinSCPDialog(this));
   Dialog->SetSize(TPoint(65, 7));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_PANEL)).c_str()));
+    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_PANEL)).c_str()));
 
   TFarCheckBox * AutoReadDirectoryAfterOpCheck = new TFarCheckBox(Dialog.get());
-  AutoReadDirectoryAfterOpCheck->SetCaption(GetMsg(CONFIG_AUTO_READ_DIRECTORY_AFTER_OP));
+  AutoReadDirectoryAfterOpCheck->SetCaption(GetMsg(NB_CONFIG_AUTO_READ_DIRECTORY_AFTER_OP));
 
   Dialog->AddStandardButtons();
 
@@ -476,16 +476,16 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 
   Dialog->SetSize(TPoint(65, 15));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_LOGGING)).c_str()));
+    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_LOGGING)).c_str()));
 
   TFarCheckBox * LoggingCheck = new TFarCheckBox(Dialog);
-  LoggingCheck->SetCaption(GetMsg(LOGGING_ENABLE));
+  LoggingCheck->SetCaption(GetMsg(NB_LOGGING_ENABLE));
 
   Separator = new TFarSeparator(Dialog);
-  Separator->SetCaption(GetMsg(LOGGING_OPTIONS_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGGING_OPTIONS_GROUP));
 
   Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(LOGGING_LOG_PROTOCOL));
+  Text->SetCaption(GetMsg(NB_LOGGING_LOG_PROTOCOL));
   Text->SetEnabledDependency(LoggingCheck);
 
   Dialog->SetNextItemPosition(ipRight);
@@ -495,7 +495,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   LogProtocolCombo->SetWidth(10);
   for (intptr_t Index = 0; Index <= 2; ++Index)
   {
-    LogProtocolCombo->GetItems()->Add(GetMsg(LOGGING_LOG_PROTOCOL_0 + Index));
+    LogProtocolCombo->GetItems()->Add(GetMsg(NB_LOGGING_LOG_PROTOCOL_0 + Index));
   }
   LogProtocolCombo->SetEnabledDependency(LoggingCheck);
 
@@ -504,7 +504,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   new TFarSeparator(Dialog);
 
   TFarCheckBox * LogToFileCheck = new TFarCheckBox(Dialog);
-  LogToFileCheck->SetCaption(GetMsg(LOGGING_LOG_TO_FILE));
+  LogToFileCheck->SetCaption(GetMsg(NB_LOGGING_LOG_TO_FILE));
   LogToFileCheck->SetEnabledDependency(LoggingCheck);
 
   TFarEdit * LogFileNameEdit = new TFarEdit(Dialog);
@@ -515,18 +515,18 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   Dialog->SetNextItemPosition(ipBelow);
 
   Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(LOGGING_LOG_FILE_HINT1));
+  Text->SetCaption(GetMsg(NB_LOGGING_LOG_FILE_HINT1));
   Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(LOGGING_LOG_FILE_HINT2));
+  Text->SetCaption(GetMsg(NB_LOGGING_LOG_FILE_HINT2));
 
   TFarRadioButton * LogFileAppendButton = new TFarRadioButton(Dialog);
-  LogFileAppendButton->SetCaption(GetMsg(LOGGING_LOG_FILE_APPEND));
+  LogFileAppendButton->SetCaption(GetMsg(NB_LOGGING_LOG_FILE_APPEND));
   LogFileAppendButton->SetEnabledDependency(LogToFileCheck);
 
   Dialog->SetNextItemPosition(ipRight);
 
   TFarRadioButton * LogFileOverwriteButton = new TFarRadioButton(Dialog);
-  LogFileOverwriteButton->SetCaption(GetMsg(LOGGING_LOG_FILE_OVERWRITE));
+  LogFileOverwriteButton->SetCaption(GetMsg(NB_LOGGING_LOG_FILE_OVERWRITE));
   LogFileOverwriteButton->SetEnabledDependency(LogToFileCheck);
 
   Dialog->AddStandardButtons();
@@ -565,7 +565,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 bool TWinSCPPlugin::TransferConfigurationDialog()
 {
   UnicodeString Caption = FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_TRANSFER)).c_str());
+    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER)).c_str());
 
   TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   bool Result = CopyParamDialog(Caption, CopyParam, 0);
@@ -584,20 +584,20 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Dialog->SetSize(TPoint(76, 13));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_ENDURANCE)).c_str()));
+    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_ENDURANCE)).c_str()));
 
   TFarSeparator * Separator = new TFarSeparator(Dialog);
-  Separator->SetCaption(GetMsg(TRANSFER_RESUME));
+  Separator->SetCaption(GetMsg(NB_TRANSFER_RESUME));
 
   TFarRadioButton * ResumeOnButton = new TFarRadioButton(Dialog);
-  ResumeOnButton->SetCaption(GetMsg(TRANSFER_RESUME_ON));
+  ResumeOnButton->SetCaption(GetMsg(NB_TRANSFER_RESUME_ON));
 
   TFarRadioButton * ResumeSmartButton = new TFarRadioButton(Dialog);
-  ResumeSmartButton->SetCaption(GetMsg(TRANSFER_RESUME_SMART));
+  ResumeSmartButton->SetCaption(GetMsg(NB_TRANSFER_RESUME_SMART));
   intptr_t ResumeThresholdLeft = ResumeSmartButton->GetRight();
 
   TFarRadioButton * ResumeOffButton = new TFarRadioButton(Dialog);
-  ResumeOffButton->SetCaption(GetMsg(TRANSFER_RESUME_OFF));
+  ResumeOffButton->SetCaption(GetMsg(NB_TRANSFER_RESUME_OFF));
 
   TFarEdit * ResumeThresholdEdit = new TFarEdit(Dialog);
   ResumeThresholdEdit->Move(0, -2);
@@ -610,17 +610,17 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   Dialog->SetNextItemPosition(ipRight);
 
   TFarText * Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(TRANSFER_RESUME_THRESHOLD_UNIT));
+  Text->SetCaption(GetMsg(NB_TRANSFER_RESUME_THRESHOLD_UNIT));
   Text->SetEnabledDependency(ResumeSmartButton);
 
   Dialog->SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(Dialog);
-  Separator->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_GROUP));
+  Separator->SetCaption(GetMsg(NB_TRANSFER_SESSION_REOPEN_GROUP));
   Separator->Move(0, 1);
 
   TFarCheckBox * SessionReopenAutoCheck = new TFarCheckBox(Dialog);
-  SessionReopenAutoCheck->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_AUTO_LABEL));
+  SessionReopenAutoCheck->SetCaption(GetMsg(NB_TRANSFER_SESSION_REOPEN_AUTO_LABEL));
 
   Dialog->SetNextItemPosition(ipRight);
 
@@ -632,13 +632,13 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   SessionReopenAutoEdit->Move(12, 0);
 
   Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_AUTO_LABEL2));
+  Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_REOPEN_AUTO_LABEL2));
   Text->SetEnabledDependency(SessionReopenAutoCheck);
 
   Dialog->SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL));
+  Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL));
   Text->SetEnabledDependency(SessionReopenAutoCheck);
   Text->Move(4, 0);
 
@@ -651,7 +651,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   SessionReopenNumberOfRetriesEdit->SetWidth(5);
 
   Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL2));
+  Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL2));
   Text->SetEnabledDependency(SessionReopenAutoCheck);
 
   Dialog->AddStandardButtons();
@@ -712,10 +712,10 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 
   Dialog->SetSize(TPoint(76, 11));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_BACKGROUND)).c_str()));
+    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_BACKGROUND)).c_str()));
 
   TFarText * Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(TRANSFER_QUEUE_LIMIT));
+  Text->SetCaption(GetMsg(NB_TRANSFER_QUEUE_LIMIT));
 
   Dialog->SetNextItemPosition(ipRight);
 
@@ -727,16 +727,16 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   Dialog->SetNextItemPosition(ipNewLine);
 
   TFarCheckBox * QueueCheck = new TFarCheckBox(Dialog);
-  QueueCheck->SetCaption(GetMsg(TRANSFER_QUEUE_DEFAULT));
+  QueueCheck->SetCaption(GetMsg(NB_TRANSFER_QUEUE_DEFAULT));
 
   TFarCheckBox * QueueAutoPopupCheck = new TFarCheckBox(Dialog);
-  QueueAutoPopupCheck->SetCaption(GetMsg(TRANSFER_AUTO_POPUP));
+  QueueAutoPopupCheck->SetCaption(GetMsg(NB_TRANSFER_AUTO_POPUP));
 
   TFarCheckBox * RememberPasswordCheck = new TFarCheckBox(Dialog);
-  RememberPasswordCheck->SetCaption(GetMsg(TRANSFER_REMEMBER_PASSWORD));
+  RememberPasswordCheck->SetCaption(GetMsg(NB_TRANSFER_REMEMBER_PASSWORD));
 
   TFarCheckBox * QueueBeepCheck = new TFarCheckBox(Dialog);
-  QueueBeepCheck->SetCaption(GetMsg(TRANSFER_QUEUE_BEEP));
+  QueueBeepCheck->SetCaption(GetMsg(NB_TRANSFER_QUEUE_BEEP));
 
   Dialog->AddStandardButtons();
 
@@ -797,31 +797,31 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
 {
   SetSize(TPoint(65, 14));
   SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_TRANSFER_EDITOR)).c_str()));
+    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER_EDITOR)).c_str()));
 
   EditorMultipleCheck = new TFarCheckBox(this);
-  EditorMultipleCheck->SetCaption(GetMsg(TRANSFER_EDITOR_MULTIPLE));
+  EditorMultipleCheck->SetCaption(GetMsg(NB_TRANSFER_EDITOR_MULTIPLE));
 
   EditorUploadOnSaveCheck = new TFarCheckBox(this);
-  EditorUploadOnSaveCheck->SetCaption(GetMsg(TRANSFER_EDITOR_UPLOAD_ON_SAVE));
+  EditorUploadOnSaveCheck->SetCaption(GetMsg(NB_TRANSFER_EDITOR_UPLOAD_ON_SAVE));
 
   TFarSeparator * Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(TRANSFER_EDITOR_DOWNLOAD));
+  Separator->SetCaption(GetMsg(NB_TRANSFER_EDITOR_DOWNLOAD));
 
   EditorDownloadDefaultButton = new TFarRadioButton(this);
-  EditorDownloadDefaultButton->SetCaption(GetMsg(TRANSFER_EDITOR_DOWNLOAD_DEFAULT));
+  EditorDownloadDefaultButton->SetCaption(GetMsg(NB_TRANSFER_EDITOR_DOWNLOAD_DEFAULT));
 
   EditorDownloadOptionsButton = new TFarRadioButton(this);
-  EditorDownloadOptionsButton->SetCaption(GetMsg(TRANSFER_EDITOR_DOWNLOAD_OPTIONS));
+  EditorDownloadOptionsButton->SetCaption(GetMsg(NB_TRANSFER_EDITOR_DOWNLOAD_OPTIONS));
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(TRANSFER_EDITOR_UPLOAD));
+  Separator->SetCaption(GetMsg(NB_TRANSFER_EDITOR_UPLOAD));
 
   EditorUploadSameButton = new TFarRadioButton(this);
-  EditorUploadSameButton->SetCaption(GetMsg(TRANSFER_EDITOR_UPLOAD_SAME));
+  EditorUploadSameButton->SetCaption(GetMsg(NB_TRANSFER_EDITOR_UPLOAD_SAME));
 
   EditorUploadOptionsButton = new TFarRadioButton(this);
-  EditorUploadOptionsButton->SetCaption(GetMsg(TRANSFER_EDITOR_UPLOAD_OPTIONS));
+  EditorUploadOptionsButton->SetCaption(GetMsg(NB_TRANSFER_EDITOR_UPLOAD_OPTIONS));
 
   AddStandardButtons();
 }
@@ -893,20 +893,20 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
 
   Dialog->SetSize(TPoint(67, 10));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
+    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_CONFIRMATIONS)).c_str()));
 
   TFarCheckBox * ConfirmOverwritingCheck = new TFarCheckBox(Dialog);
   ConfirmOverwritingCheck->SetAllowGrayed(true);
-  ConfirmOverwritingCheck->SetCaption(GetMsg(CONFIRMATIONS_CONFIRM_OVERWRITING));
+  ConfirmOverwritingCheck->SetCaption(GetMsg(NB_CONFIRMATIONS_CONFIRM_OVERWRITING));
 
   TFarCheckBox * ConfirmCommandSessionCheck = new TFarCheckBox(Dialog);
-  ConfirmCommandSessionCheck->SetCaption(GetMsg(CONFIRMATIONS_OPEN_COMMAND_SESSION));
+  ConfirmCommandSessionCheck->SetCaption(GetMsg(NB_CONFIRMATIONS_OPEN_COMMAND_SESSION));
 
   TFarCheckBox * ConfirmResumeCheck = new TFarCheckBox(Dialog);
-  ConfirmResumeCheck->SetCaption(GetMsg(CONFIRMATIONS_CONFIRM_RESUME));
+  ConfirmResumeCheck->SetCaption(GetMsg(NB_CONFIRMATIONS_CONFIRM_RESUME));
 
   TFarCheckBox * ConfirmSynchronizedBrowsingCheck = new TFarCheckBox(Dialog);
-  ConfirmSynchronizedBrowsingCheck->SetCaption(GetMsg(CONFIRMATIONS_SYNCHRONIZED_BROWSING));
+  ConfirmSynchronizedBrowsingCheck->SetCaption(GetMsg(NB_CONFIRMATIONS_SYNCHRONIZED_BROWSING));
 
   Dialog->AddStandardButtons();
 
@@ -947,28 +947,28 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 
   Dialog->SetSize(TPoint(65, 14));
   Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_INTEGRATION)).c_str()));
+    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_INTEGRATION)).c_str()));
 
   TFarText * Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(INTEGRATION_PUTTY));
+  Text->SetCaption(GetMsg(NB_INTEGRATION_PUTTY));
 
   TFarEdit * PuttyPathEdit = new TFarEdit(Dialog);
 
   TFarCheckBox * PuttyPasswordCheck = new TFarCheckBox(Dialog);
-  PuttyPasswordCheck->SetCaption(GetMsg(INTEGRATION_PUTTY_PASSWORD));
+  PuttyPasswordCheck->SetCaption(GetMsg(NB_INTEGRATION_PUTTY_PASSWORD));
   PuttyPasswordCheck->SetEnabledDependency(PuttyPathEdit);
 
   TFarCheckBox * TelnetForFtpInPuttyCheck = new TFarCheckBox(Dialog);
-  TelnetForFtpInPuttyCheck->SetCaption(GetMsg(INTEGRATION_TELNET_FOR_FTP_IN_PUTTY));
+  TelnetForFtpInPuttyCheck->SetCaption(GetMsg(NB_INTEGRATION_TELNET_FOR_FTP_IN_PUTTY));
   TelnetForFtpInPuttyCheck->SetEnabledDependency(PuttyPathEdit);
 
   Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(INTEGRATION_PAGEANT));
+  Text->SetCaption(GetMsg(NB_INTEGRATION_PAGEANT));
 
   TFarEdit * PageantPathEdit = new TFarEdit(Dialog);
 
   Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(INTEGRATION_PUTTYGEN));
+  Text->SetCaption(GetMsg(NB_INTEGRATION_PUTTYGEN));
 
   TFarEdit * PuttygenPathEdit = new TFarEdit(Dialog);
 
@@ -1048,13 +1048,13 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   SetSize(TPoint(55, Height));
 
   SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(CONFIG_ABOUT)).c_str()));
+    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT)).c_str()));
   TFarText * Text = new TFarText(this);
   Text->SetCaption(GetConfiguration()->GetFileInfoString("FileDescription"));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), GetConfiguration()->GetProductVersion().c_str(), NETBOX_VERSION_BUILD));
+  Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_VERSION).c_str(), GetConfiguration()->GetProductVersion().c_str(), NETBOX_VERSION_BUILD));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
@@ -1069,7 +1069,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   if (!ProductName.IsEmpty())
   {
     Text = new TFarText(this);
-    Text->SetCaption(FORMAT(GetMsg(ABOUT_PRODUCT_VERSION).c_str(),
+    Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_PRODUCT_VERSION).c_str(),
       ProductName.c_str(),
       LoadStr(WINSCP_VERSION).c_str()));
     Text->SetCenterGroup(true);
@@ -1103,14 +1103,14 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Text->Move(0, 1);
   }
-  Text->SetCaption(GetMsg(ABOUT_URL));
+  Text->SetCaption(GetMsg(NB_ABOUT_URL));
   // FIXME Text->SetColor(static_cast<int>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
   Text->SetCenterGroup(true);
   Text->SetOnMouseClick(nb::bind(&TAboutDialog::UrlTextClick, this));
 
   TFarButton * Button = new TFarButton(this);
   Button->Move(0, 1);
-  Button->SetCaption(GetMsg(ABOUT_HOMEPAGE));
+  Button->SetCaption(GetMsg(NB_ABOUT_HOMEPAGE));
   Button->SetOnClick(nb::bind(&TAboutDialog::UrlButtonClick, this));
   Button->SetTag(1);
   Button->SetCenterGroup(true);
@@ -1118,7 +1118,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   SetNextItemPosition(ipRight);
 
   Button = new TFarButton(this);
-  Button->SetCaption(GetMsg(ABOUT_FORUM));
+  Button->SetCaption(GetMsg(NB_ABOUT_FORUM));
   Button->SetOnClick(nb::bind(&TAboutDialog::UrlButtonClick, this));
   Button->SetTag(2);
   Button->SetCenterGroup(true);
@@ -1158,7 +1158,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
 void TAboutDialog::UrlTextClick(TFarDialogItem * /*Item*/,
   MOUSE_EVENT_RECORD * /*Event*/)
 {
-  UnicodeString Address = GetMsg(ABOUT_URL);
+  UnicodeString Address = GetMsg(NB_ABOUT_URL);
   ::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(Address.c_str()), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
@@ -1168,10 +1168,10 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
   switch (Sender->GetTag())
   {
   case 1:
-    Address = GetMsg(ABOUT_URL) + L"eng/docs/far";
+    Address = GetMsg(NB_ABOUT_URL) + L"eng/docs/far";
     break;
   case 2:
-    Address = GetMsg(ABOUT_URL) + L"forum/";
+    Address = GetMsg(NB_ABOUT_URL) + L"forum/";
     break;
   }
   ::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(Address.c_str()), nullptr, nullptr, SW_SHOWNORMAL);
@@ -1235,7 +1235,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   if (ShowSavePassword)
   {
     SavePasswordCheck = new TFarCheckBox(this);
-    SavePasswordCheck->SetCaption(GetMsg(PASSWORD_SAVE));
+    SavePasswordCheck->SetCaption(GetMsg(NB_PASSWORD_SAVE));
   }
   else
   {
@@ -1255,7 +1255,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   if (Truncated)
   {
     Button = new TFarButton(this);
-    Button->SetCaption(GetMsg(PASSWORD_SHOW_PROMPT));
+    Button->SetCaption(GetMsg(NB_PASSWORD_SHOW_PROMPT));
     Button->SetOnClick(nb::bind(&TPasswordDialog::ShowPromptClick, this));
     Button->SetCenterGroup(true);
   }
@@ -1401,7 +1401,7 @@ bool TWinSCPFileSystem::BannerDialog(UnicodeString SessionName,
   TWinSCPDialog * Dialog = DialogPtr.get();
 
   Dialog->SetSize(TPoint(70, 21));
-  Dialog->SetCaption(FORMAT(GetMsg(BANNER_TITLE).c_str(), SessionName.c_str()));
+  Dialog->SetCaption(FORMAT(GetMsg(NB_BANNER_TITLE).c_str(), SessionName.c_str()));
 
   TFarLister * Lister = new TFarLister(Dialog);
   FarWrapText(Banner, Lister->GetItems(), Dialog->GetBorderBox()->GetWidth() - 4);
@@ -1415,7 +1415,7 @@ bool TWinSCPFileSystem::BannerDialog(UnicodeString SessionName,
   if (FLAGCLEAR(Options, boDisableNeverShowAgain))
   {
     NeverShowAgainCheck = new TFarCheckBox(Dialog);
-    NeverShowAgainCheck->SetCaption(GetMsg(BANNER_NEVER_SHOW_AGAIN));
+    NeverShowAgainCheck->SetCaption(GetMsg(NB_BANNER_NEVER_SHOW_AGAIN));
     NeverShowAgainCheck->SetVisible(FLAGCLEAR(Options, boDisableNeverShowAgain));
     NeverShowAgainCheck->SetChecked(NeverShowAgain);
 
@@ -1423,7 +1423,7 @@ bool TWinSCPFileSystem::BannerDialog(UnicodeString SessionName,
   }
 
   TFarButton * Button = new TFarButton(Dialog);
-  Button->SetCaption(GetMsg(BANNER_CONTINUE));
+  Button->SetCaption(GetMsg(NB_BANNER_CONTINUE));
   Button->SetDefault(true);
   Button->SetResult(brOK);
   if (NeverShowAgainCheck != nullptr)
@@ -1655,17 +1655,17 @@ private:
 #define BUG(BUGID, MSG, PREFIX) \
   TRISTATE(PREFIX ## Bug ## BUGID ## Combo, PREFIX ## Bug(sb ## BUGID), MSG)
 #define BUGS() \
-  BUG(Ignore1, LOGIN_BUGS_IGNORE1, ); \
-  BUG(PlainPW1, LOGIN_BUGS_PLAIN_PW1, ); \
-  BUG(RSA1, LOGIN_BUGS_RSA1, ); \
-  BUG(HMAC2, LOGIN_BUGS_HMAC2, ); \
-  BUG(DeriveKey2, LOGIN_BUGS_DERIVE_KEY2, ); \
-  BUG(RSAPad2, LOGIN_BUGS_RSA_PAD2, ); \
-  BUG(PKSessID2, LOGIN_BUGS_PKSESSID2, ); \
-  BUG(Rekey2, LOGIN_BUGS_REKEY2, );
+  BUG(Ignore1, NB_LOGIN_BUGS_IGNORE1, ); \
+  BUG(PlainPW1, NB_LOGIN_BUGS_PLAIN_PW1, ); \
+  BUG(RSA1, NB_LOGIN_BUGS_RSA1, ); \
+  BUG(HMAC2, NB_LOGIN_BUGS_HMAC2, ); \
+  BUG(DeriveKey2, NB_LOGIN_BUGS_DERIVE_KEY2, ); \
+  BUG(RSAPad2, NB_LOGIN_BUGS_RSA_PAD2, ); \
+  BUG(PKSessID2, NB_LOGIN_BUGS_PKSESSID2, ); \
+  BUG(Rekey2, NB_LOGIN_BUGS_REKEY2, );
 #define SFTP_BUGS() \
-  BUG(Symlink, LOGIN_SFTP_BUGS_SYMLINK, SFTP); \
-  BUG(SignedTS, LOGIN_SFTP_BUGS_SIGNED_TS, SFTP);
+  BUG(Symlink, NB_LOGIN_SFTP_BUGS_SYMLINK, SFTP); \
+  BUG(SignedTS, NB_LOGIN_SFTP_BUGS_SIGNED_TS, SFTP);
 
 static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
 
@@ -1702,28 +1702,28 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
       { \
         COMBO->GetItems()->EndUpdate(); \
       }; \
-      COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_AUTO)); \
-      COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_OFF)); \
-      COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_ON)); \
+      COMBO->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_AUTO)); \
+      COMBO->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_OFF)); \
+      COMBO->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_ON)); \
     } \
     Text->SetEnabledFollow(COMBO); \
     SetNextItemPosition(ipNewLine);
 
   TRect CRect = GetClientRect();
 
-  intptr_t Index1 = AddTab(tabSession, GetMsg(LOGIN_TAB_SESSION).c_str());
+  intptr_t Index1 = AddTab(tabSession, GetMsg(NB_LOGIN_TAB_SESSION).c_str());
   // Tab = dyn_cast<TTabButton>(GetItem(Index));
 
   SetNextItemPosition(ipRight);
 
-  Index1 = AddTab(tabEnvironment, GetMsg(LOGIN_TAB_ENVIRONMENT).c_str());
+  Index1 = AddTab(tabEnvironment, GetMsg(NB_LOGIN_TAB_ENVIRONMENT).c_str());
 
-  Index1 = AddTab(tabDirectories, GetMsg(LOGIN_TAB_DIRECTORIES).c_str());
+  Index1 = AddTab(tabDirectories, GetMsg(NB_LOGIN_TAB_DIRECTORIES).c_str());
 
-  Index1 = AddTab(tabSFTP, GetMsg(LOGIN_TAB_SFTP).c_str());
+  Index1 = AddTab(tabSFTP, GetMsg(NB_LOGIN_TAB_SFTP).c_str());
   SftpTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabSCP, GetMsg(LOGIN_TAB_SCP).c_str());
+  Index1 = AddTab(tabSCP, GetMsg(NB_LOGIN_TAB_SCP).c_str());
   ScpTab = dyn_cast<TTabButton>(GetItem(Index1));
 
   PrevTab = new TTabButton(this);
@@ -1746,29 +1746,29 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   NextTab->SetLeft(R - NWidth - 1);
   NextTab->SetWidth(PWidth);
 
-  Index1 = AddTab(tabFTP, GetMsg(LOGIN_TAB_FTP).c_str());
+  Index1 = AddTab(tabFTP, GetMsg(NB_LOGIN_TAB_FTP).c_str());
   FtpTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabConnection, GetMsg(LOGIN_TAB_CONNECTION).c_str());
+  Index1 = AddTab(tabConnection, GetMsg(NB_LOGIN_TAB_CONNECTION).c_str());
 
-  Index1 = AddTab(tabProxy, GetMsg(LOGIN_TAB_PROXY).c_str());
+  Index1 = AddTab(tabProxy, GetMsg(NB_LOGIN_TAB_PROXY).c_str());
 
-  Index1 = AddTab(tabTunnel, GetMsg(LOGIN_TAB_TUNNEL).c_str());
+  Index1 = AddTab(tabTunnel, GetMsg(NB_LOGIN_TAB_TUNNEL).c_str());
   TunnelTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabSsh, GetMsg(LOGIN_TAB_SSH).c_str());
+  Index1 = AddTab(tabSsh, GetMsg(NB_LOGIN_TAB_SSH).c_str());
   SshTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabKex, GetMsg(LOGIN_TAB_KEX).c_str());
+  Index1 = AddTab(tabKex, GetMsg(NB_LOGIN_TAB_KEX).c_str());
   KexTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabAuthentication, GetMsg(LOGIN_TAB_AUTH).c_str());
+  Index1 = AddTab(tabAuthentication, GetMsg(NB_LOGIN_TAB_AUTH).c_str());
   AuthenticationTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabBugs, GetMsg(LOGIN_TAB_BUGS).c_str());
+  Index1 = AddTab(tabBugs, GetMsg(NB_LOGIN_TAB_BUGS).c_str());
   BugsTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabWebDAV, GetMsg(LOGIN_TAB_WEBDAV).c_str());
+  Index1 = AddTab(tabWebDAV, GetMsg(NB_LOGIN_TAB_WEBDAV).c_str());
   WebDAVTab = dyn_cast<TTabButton>(GetItem(Index1));
 
   // Session tab
@@ -1777,44 +1777,44 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetDefaultGroup(tabSession);
 
   TFarSeparator * Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_GROUP_SESSION));
+  Separator->SetCaption(GetMsg(NB_LOGIN_GROUP_SESSION));
   intptr_t GroupTop = Separator->GetTop();
 
   TFarText * Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_TRANSFER_PROTOCOL));
+  Text->SetCaption(GetMsg(NB_LOGIN_TRANSFER_PROTOCOL));
 
   SetNextItemPosition(ipRight);
 
   TransferProtocolCombo = new TFarComboBox(this);
   TransferProtocolCombo->SetDropDownList(true);
   TransferProtocolCombo->SetWidth(10);
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SFTP));
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SCP));
+  TransferProtocolCombo->GetItems()->Add(GetMsg(NB_LOGIN_SFTP));
+  TransferProtocolCombo->GetItems()->Add(GetMsg(NB_LOGIN_SCP));
 #ifndef NO_FILEZILLA
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTP));
+  TransferProtocolCombo->GetItems()->Add(GetMsg(NB_LOGIN_FTP));
 #endif
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_WEBDAV));
+  TransferProtocolCombo->GetItems()->Add(GetMsg(NB_LOGIN_WEBDAV));
 
   AllowScpFallbackCheck = new TFarCheckBox(this);
-  AllowScpFallbackCheck->SetCaption(GetMsg(LOGIN_ALLOW_SCP_FALLBACK));
+  AllowScpFallbackCheck->SetCaption(GetMsg(NB_LOGIN_ALLOW_SCP_FALLBACK));
 
   InsecureLabel = new TFarText(this);
-  InsecureLabel->SetCaption(GetMsg(LOGIN_INSECURE));
+  InsecureLabel->SetCaption(GetMsg(NB_LOGIN_INSECURE));
   InsecureLabel->MoveAt(AllowScpFallbackCheck->GetLeft(), AllowScpFallbackCheck->GetTop());
 
   SetNextItemPosition(ipNewLine);
 
   FtpEncryptionLabel = new TFarText(this);
-  FtpEncryptionLabel->SetCaption(GetMsg(LOGIN_FTP_ENCRYPTION));
+  FtpEncryptionLabel->SetCaption(GetMsg(NB_LOGIN_FTP_ENCRYPTION));
   FtpEncryptionLabel->SetWidth(15);
 
   SetNextItemPosition(ipRight);
 
   FtpEncryptionCombo = new TFarComboBox(this);
   FtpEncryptionCombo->SetDropDownList(true);
-  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_USE_PLAIN_FTP));
-  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_IMPLICIT_FTP));
-  FtpEncryptionCombo->GetItems()->Add(GetMsg(LOGIN_FTP_REQUIRE_EXPLICIT_FTP));
+  FtpEncryptionCombo->GetItems()->Add(GetMsg(NB_LOGIN_FTP_USE_PLAIN_FTP));
+  FtpEncryptionCombo->GetItems()->Add(GetMsg(NB_LOGIN_FTP_REQUIRE_IMPLICIT_FTP));
+  FtpEncryptionCombo->GetItems()->Add(GetMsg(NB_LOGIN_FTP_REQUIRE_EXPLICIT_FTP));
   FtpEncryptionCombo->SetRight(CRect.Right);
   FtpEncryptionCombo->SetWidth(30);
 
@@ -1823,7 +1823,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   new TFarSeparator(this);
 
   HostNameLabel = new TFarText(this);
-  HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
+  HostNameLabel->SetCaption(GetMsg(NB_LOGIN_HOST_NAME));
 
   HostNameEdit = new TFarEdit(this);
   HostNameEdit->SetRight(CRect.Right - 12 - 2);
@@ -1831,7 +1831,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipRight);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_PORT_NUMBER));
+  Text->SetCaption(GetMsg(NB_LOGIN_PORT_NUMBER));
   Text->Move(0, -1);
 
   SetNextItemPosition(ipBelow);
@@ -1845,7 +1845,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_USER_NAME));
+  Text->SetCaption(GetMsg(NB_LOGIN_USER_NAME));
   Text->SetWidth(20);
 
   SetNextItemPosition(ipRight);
@@ -1859,7 +1859,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_PASSWORD));
+  Text->SetCaption(GetMsg(NB_LOGIN_PASSWORD));
   Text->SetWidth(20);
 
   SetNextItemPosition(ipRight);
@@ -1874,7 +1874,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_PRIVATE_KEY));
+  Text->SetCaption(GetMsg(NB_LOGIN_PRIVATE_KEY));
 
   PrivateKeyEdit = new TFarEdit(this);
   Text->SetEnabledFollow(PrivateKeyEdit);
@@ -1884,9 +1884,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Text = new TFarText(this);
   Text->SetTop(CRect.Bottom - 3);
   Text->SetBottom(Text->GetTop());
-  Text->SetCaption(GetMsg(LOGIN_TAB_HINT1));
+  Text->SetCaption(GetMsg(NB_LOGIN_TAB_HINT1));
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_TAB_HINT2));
+  Text->SetCaption(GetMsg(NB_LOGIN_TAB_HINT2));
 
   // Environment tab
 
@@ -1895,10 +1895,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
-  Separator->SetCaption(GetMsg(LOGIN_ENVIRONMENT_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_ENVIRONMENT_GROUP));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_EOL_TYPE));
+  Text->SetCaption(GetMsg(NB_LOGIN_EOL_TYPE));
 
   SetNextItemPosition(ipRight);
 
@@ -1913,7 +1913,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   // UTF_TRISTATE();
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_CODE_PAGE));
+  Text->SetCaption(GetMsg(NB_LOGIN_CODE_PAGE));
 
   SetNextItemPosition(ipRight);
 
@@ -1925,7 +1925,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_TIME_DIFFERENCE));
+  Text->SetCaption(GetMsg(NB_LOGIN_TIME_DIFFERENCE));
 
   SetNextItemPosition(ipRight);
 
@@ -1936,7 +1936,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Text->SetEnabledFollow(TimeDifferenceEdit);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_TIME_DIFFERENCE_HOURS));
+  Text->SetCaption(GetMsg(NB_LOGIN_TIME_DIFFERENCE_HOURS));
   Text->SetEnabledFollow(TimeDifferenceEdit);
 
   TimeDifferenceMinutesEdit = new TFarEdit(this);
@@ -1946,50 +1946,50 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TimeDifferenceMinutesEdit->SetEnabledFollow(TimeDifferenceEdit);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_TIME_DIFFERENCE_MINUTES));
+  Text->SetCaption(GetMsg(NB_LOGIN_TIME_DIFFERENCE_MINUTES));
   Text->SetEnabledFollow(TimeDifferenceEdit);
 
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_DST_MODE_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_DST_MODE_GROUP));
 
   DSTModeUnixCheck = new TFarRadioButton(this);
-  DSTModeUnixCheck->SetCaption(GetMsg(LOGIN_DST_MODE_UNIX));
+  DSTModeUnixCheck->SetCaption(GetMsg(NB_LOGIN_DST_MODE_UNIX));
 
   DSTModeWinCheck = new TFarRadioButton(this);
-  DSTModeWinCheck->SetCaption(GetMsg(LOGIN_DST_MODE_WIN));
+  DSTModeWinCheck->SetCaption(GetMsg(NB_LOGIN_DST_MODE_WIN));
   DSTModeWinCheck->SetEnabledFollow(DSTModeUnixCheck);
 
   DSTModeKeepCheck = new TFarRadioButton(this);
-  DSTModeKeepCheck->SetCaption(GetMsg(LOGIN_DST_MODE_KEEP));
+  DSTModeKeepCheck->SetCaption(GetMsg(NB_LOGIN_DST_MODE_KEEP));
   DSTModeKeepCheck->SetEnabledFollow(DSTModeUnixCheck);
 
   TFarButton * Button = new TFarButton(this);
-  Button->SetCaption(GetMsg(LOGIN_ENVIRONMENT_UNIX));
+  Button->SetCaption(GetMsg(NB_LOGIN_ENVIRONMENT_UNIX));
   Button->SetOnClick(nb::bind(&TSessionDialog::UnixEnvironmentButtonClick, this));
   Button->SetCenterGroup(true);
 
   SetNextItemPosition(ipRight);
 
   Button = new TFarButton(this);
-  Button->SetCaption(GetMsg(LOGIN_ENVIRONMENT_WINDOWS));
+  Button->SetCaption(GetMsg(NB_LOGIN_ENVIRONMENT_WINDOWS));
   Button->SetOnClick(nb::bind(&TSessionDialog::WindowsEnvironmentButtonClick, this));
   Button->SetCenterGroup(true);
 
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_RECYCLE_BIN_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_RECYCLE_BIN_GROUP));
 
   DeleteToRecycleBinCheck = new TFarCheckBox(this);
-  DeleteToRecycleBinCheck->SetCaption(GetMsg(LOGIN_RECYCLE_BIN_DELETE));
+  DeleteToRecycleBinCheck->SetCaption(GetMsg(NB_LOGIN_RECYCLE_BIN_DELETE));
 
   OverwrittenToRecycleBinCheck = new TFarCheckBox(this);
-  OverwrittenToRecycleBinCheck->SetCaption(GetMsg(LOGIN_RECYCLE_BIN_OVERWRITE));
+  OverwrittenToRecycleBinCheck->SetCaption(GetMsg(NB_LOGIN_RECYCLE_BIN_OVERWRITE));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_RECYCLE_BIN_LABEL));
+  Text->SetCaption(GetMsg(NB_LOGIN_RECYCLE_BIN_LABEL));
 
   RecycleBinPathEdit = new TFarEdit(this);
   Text->SetEnabledFollow(RecycleBinPathEdit);
@@ -2003,32 +2003,32 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
-  Separator->SetCaption(GetMsg(LOGIN_DIRECTORIES_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_DIRECTORIES_GROUP));
 
   UpdateDirectoriesCheck = new TFarCheckBox(this);
-  UpdateDirectoriesCheck->SetCaption(GetMsg(LOGIN_UPDATE_DIRECTORIES));
+  UpdateDirectoriesCheck->SetCaption(GetMsg(NB_LOGIN_UPDATE_DIRECTORIES));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_REMOTE_DIRECTORY));
+  Text->SetCaption(GetMsg(NB_LOGIN_REMOTE_DIRECTORY));
 
   RemoteDirectoryEdit = new TFarEdit(this);
   RemoteDirectoryEdit->SetHistory(REMOTE_DIR_HISTORY);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_DIRECTORY_OPTIONS_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_DIRECTORY_OPTIONS_GROUP));
 
   CacheDirectoriesCheck = new TFarCheckBox(this);
-  CacheDirectoriesCheck->SetCaption(GetMsg(LOGIN_CACHE_DIRECTORIES));
+  CacheDirectoriesCheck->SetCaption(GetMsg(NB_LOGIN_CACHE_DIRECTORIES));
 
   CacheDirectoryChangesCheck = new TFarCheckBox(this);
-  CacheDirectoryChangesCheck->SetCaption(GetMsg(LOGIN_CACHE_DIRECTORY_CHANGES));
+  CacheDirectoryChangesCheck->SetCaption(GetMsg(NB_LOGIN_CACHE_DIRECTORY_CHANGES));
 
   PreserveDirectoryChangesCheck = new TFarCheckBox(this);
-  PreserveDirectoryChangesCheck->SetCaption(GetMsg(LOGIN_PRESERVE_DIRECTORY_CHANGES));
+  PreserveDirectoryChangesCheck->SetCaption(GetMsg(NB_LOGIN_PRESERVE_DIRECTORY_CHANGES));
   PreserveDirectoryChangesCheck->SetLeft(PreserveDirectoryChangesCheck->GetLeft() + 4);
 
   ResolveSymlinksCheck = new TFarCheckBox(this);
-  ResolveSymlinksCheck->SetCaption(GetMsg(LOGIN_RESOLVE_SYMLINKS));
+  ResolveSymlinksCheck->SetCaption(GetMsg(NB_LOGIN_RESOLVE_SYMLINKS));
 
   new TFarSeparator(this);
 
@@ -2040,37 +2040,37 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
-  Separator->SetCaption(GetMsg(LOGIN_SHELL_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_SHELL_GROUP));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_SHELL_SHELL));
+  Text->SetCaption(GetMsg(NB_LOGIN_SHELL_SHELL));
 
   SetNextItemPosition(ipRight);
 
   ShellEdit = new TFarComboBox(this);
-  ShellEdit->GetItems()->Add(GetMsg(LOGIN_SHELL_SHELL_DEFAULT));
+  ShellEdit->GetItems()->Add(GetMsg(NB_LOGIN_SHELL_SHELL_DEFAULT));
   ShellEdit->GetItems()->Add(L"/bin/bash");
   ShellEdit->GetItems()->Add(L"/bin/ksh");
 
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_SHELL_RETURN_VAR));
+  Text->SetCaption(GetMsg(NB_LOGIN_SHELL_RETURN_VAR));
 
   SetNextItemPosition(ipRight);
 
   ReturnVarEdit = new TFarComboBox(this);
-  ReturnVarEdit->GetItems()->Add(GetMsg(LOGIN_SHELL_RETURN_VAR_AUTODETECT));
+  ReturnVarEdit->GetItems()->Add(GetMsg(NB_LOGIN_SHELL_RETURN_VAR_AUTODETECT));
   ReturnVarEdit->GetItems()->Add(L"?");
   ReturnVarEdit->GetItems()->Add(L"status");
 
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_SCP_LS_OPTIONS_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_SCP_LS_OPTIONS_GROUP));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_LISTING_COMMAND));
+  Text->SetCaption(GetMsg(NB_LOGIN_LISTING_COMMAND));
 
   SetNextItemPosition(ipRight);
 
@@ -2082,35 +2082,35 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   IgnoreLsWarningsCheck = new TFarCheckBox(this);
-  IgnoreLsWarningsCheck->SetCaption(GetMsg(LOGIN_IGNORE_LS_WARNINGS));
+  IgnoreLsWarningsCheck->SetCaption(GetMsg(NB_LOGIN_IGNORE_LS_WARNINGS));
 
   SetNextItemPosition(ipRight);
 
   SCPLsFullTimeAutoCheck = new TFarCheckBox(this);
-  SCPLsFullTimeAutoCheck->SetCaption(GetMsg(LOGIN_SCP_LS_FULL_TIME_AUTO));
+  SCPLsFullTimeAutoCheck->SetCaption(GetMsg(NB_LOGIN_SCP_LS_FULL_TIME_AUTO));
 
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_SCP_OPTIONS));
+  Separator->SetCaption(GetMsg(NB_LOGIN_SCP_OPTIONS));
 
   LookupUserGroupsCheck = new TFarCheckBox(this);
-  LookupUserGroupsCheck->SetCaption(GetMsg(LOGIN_LOOKUP_USER_GROUPS));
+  LookupUserGroupsCheck->SetCaption(GetMsg(NB_LOGIN_LOOKUP_USER_GROUPS));
 
   SetNextItemPosition(ipRight);
 
   UnsetNationalVarsCheck = new TFarCheckBox(this);
-  UnsetNationalVarsCheck->SetCaption(GetMsg(LOGIN_CLEAR_NATIONAL_VARS));
+  UnsetNationalVarsCheck->SetCaption(GetMsg(NB_LOGIN_CLEAR_NATIONAL_VARS));
 
   SetNextItemPosition(ipNewLine);
 
   ClearAliasesCheck = new TFarCheckBox(this);
-  ClearAliasesCheck->SetCaption(GetMsg(LOGIN_CLEAR_ALIASES));
+  ClearAliasesCheck->SetCaption(GetMsg(NB_LOGIN_CLEAR_ALIASES));
 
   SetNextItemPosition(ipRight);
 
   Scp1CompatibilityCheck = new TFarCheckBox(this);
-  Scp1CompatibilityCheck->SetCaption(GetMsg(LOGIN_SCP1_COMPATIBILITY));
+  Scp1CompatibilityCheck->SetCaption(GetMsg(NB_LOGIN_SCP1_COMPATIBILITY));
 
   SetNextItemPosition(ipNewLine);
 
@@ -2124,13 +2124,13 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
-  Separator->SetCaption(GetMsg(LOGIN_SFTP_PROTOCOL_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_SFTP_PROTOCOL_GROUP));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_SFTP_SERVER));
+  Text->SetCaption(GetMsg(NB_LOGIN_SFTP_SERVER));
   SetNextItemPosition(ipRight);
   SftpServerEdit = new TFarComboBox(this);
-  SftpServerEdit->GetItems()->Add(GetMsg(LOGIN_SFTP_SERVER_DEFAULT));
+  SftpServerEdit->GetItems()->Add(GetMsg(NB_LOGIN_SFTP_SERVER_DEFAULT));
   SftpServerEdit->GetItems()->Add(L"/bin/sftp-server");
   SftpServerEdit->GetItems()->Add(L"sudo su -c /bin/sftp-server");
   Text->SetEnabledFollow(SftpServerEdit);
@@ -2138,7 +2138,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_SFTP_MAX_VERSION));
+  Text->SetCaption(GetMsg(NB_LOGIN_SFTP_MAX_VERSION));
   SetNextItemPosition(ipRight);
   SFTPMaxVersionCombo = new TFarComboBox(this);
   SFTPMaxVersionCombo->SetDropDownList(true);
@@ -2152,14 +2152,14 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_SFTP_BUGS_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_SFTP_BUGS_GROUP));
 
   SFTP_BUGS();
 
   new TFarSeparator(this);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_SFTP_MIN_PACKET_SIZE));
+  Text->SetCaption(GetMsg(NB_LOGIN_SFTP_MIN_PACKET_SIZE));
   SetNextItemPosition(ipRight);
 
   SFTPMinPacketSizeEdit = new TFarEdit(this);
@@ -2171,7 +2171,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_SFTP_MAX_PACKET_SIZE));
+  Text->SetCaption(GetMsg(NB_LOGIN_SFTP_MAX_PACKET_SIZE));
   SetNextItemPosition(ipRight);
 
   SFTPMaxPacketSizeEdit = new TFarEdit(this);
@@ -2188,37 +2188,37 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
-  Separator->SetCaption(GetMsg(LOGIN_FTP_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_FTP_GROUP));
 
-  TRISTATE(FtpUseMlsdCombo, FtpUseMlsd, LOGIN_FTP_USE_MLSD);
+  TRISTATE(FtpUseMlsdCombo, FtpUseMlsd, NB_LOGIN_FTP_USE_MLSD);
 
   FtpPasvModeCheck = new TFarCheckBox(this);
-  FtpPasvModeCheck->SetCaption(GetMsg(LOGIN_FTP_PASV_MODE));
+  FtpPasvModeCheck->SetCaption(GetMsg(NB_LOGIN_FTP_PASV_MODE));
 
   FtpAllowEmptyPasswordCheck = new TFarCheckBox(this);
-  FtpAllowEmptyPasswordCheck->SetCaption(GetMsg(LOGIN_FTP_ALLOW_EMPTY_PASSWORD));
+  FtpAllowEmptyPasswordCheck->SetCaption(GetMsg(NB_LOGIN_FTP_ALLOW_EMPTY_PASSWORD));
 
   SetNextItemPosition(ipNewLine);
 
   FtpDupFFCheck = new TFarCheckBox(this);
-  FtpDupFFCheck->SetCaption(GetMsg(LOGIN_FTP_DUPFF));
+  FtpDupFFCheck->SetCaption(GetMsg(NB_LOGIN_FTP_DUPFF));
 
   SetNextItemPosition(ipNewLine);
 
   FtpUndupFFCheck = new TFarCheckBox(this);
-  FtpUndupFFCheck->SetCaption(GetMsg(LOGIN_FTP_UNDUPFF));
+  FtpUndupFFCheck->SetCaption(GetMsg(NB_LOGIN_FTP_UNDUPFF));
 
   SetNextItemPosition(ipNewLine);
 
   SslSessionReuseCheck = new TFarCheckBox(this);
-  SslSessionReuseCheck->SetCaption(GetMsg(LOGIN_FTP_SSLSESSIONREUSE));
+  SslSessionReuseCheck->SetCaption(GetMsg(NB_LOGIN_FTP_SSLSESSIONREUSE));
 
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_FTP_POST_LOGIN_COMMANDS));
+  Text->SetCaption(GetMsg(NB_LOGIN_FTP_POST_LOGIN_COMMANDS));
 
   for (intptr_t Index3 = 0; Index3 < static_cast<intptr_t>(_countof(PostLoginCommandsEdits)); ++Index3)
   {
@@ -2236,19 +2236,19 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
-  Separator->SetCaption(GetMsg(LOGIN_CONNECTION_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_CONNECTION_GROUP));
 
   Text = new TFarText(this);
   SetNextItemPosition(ipNewLine);
 
   SshBufferSizeCheck = new TFarCheckBox(this);
-  SshBufferSizeCheck->SetCaption(GetMsg(LOGIN_SSH_OPTIMIZE_BUFFER_SIZE));
+  SshBufferSizeCheck->SetCaption(GetMsg(NB_LOGIN_SSH_OPTIMIZE_BUFFER_SIZE));
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_TIMEOUTS_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_TIMEOUTS_GROUP));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_TIMEOUT));
+  Text->SetCaption(GetMsg(NB_LOGIN_TIMEOUT));
 
   SetNextItemPosition(ipRight);
 
@@ -2258,24 +2258,24 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TimeoutEdit->SetWidth(5);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_TIMEOUT_SECONDS));
+  Text->SetCaption(GetMsg(NB_LOGIN_TIMEOUT_SECONDS));
 
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_PING_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_PING_GROUP));
 
   PingOffButton = new TFarRadioButton(this);
-  PingOffButton->SetCaption(GetMsg(LOGIN_PING_OFF));
+  PingOffButton->SetCaption(GetMsg(NB_LOGIN_PING_OFF));
 
   PingNullPacketButton = new TFarRadioButton(this);
-  PingNullPacketButton->SetCaption(GetMsg(LOGIN_PING_NULL_PACKET));
+  PingNullPacketButton->SetCaption(GetMsg(NB_LOGIN_PING_NULL_PACKET));
 
   PingDummyCommandButton = new TFarRadioButton(this);
-  PingDummyCommandButton->SetCaption(GetMsg(LOGIN_PING_DUMMY_COMMAND));
+  PingDummyCommandButton->SetCaption(GetMsg(NB_LOGIN_PING_DUMMY_COMMAND));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_PING_INTERVAL));
+  Text->SetCaption(GetMsg(NB_LOGIN_PING_INTERVAL));
   Text->SetEnabledDependencyNegative(PingOffButton);
 
   SetNextItemPosition(ipRight);
@@ -2289,18 +2289,18 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_IP_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_IP_GROUP));
 
   IPAutoButton = new TFarRadioButton(this);
-  IPAutoButton->SetCaption(GetMsg(LOGIN_IP_AUTO));
+  IPAutoButton->SetCaption(GetMsg(NB_LOGIN_IP_AUTO));
 
   SetNextItemPosition(ipRight);
 
   IPv4Button = new TFarRadioButton(this);
-  IPv4Button->SetCaption(GetMsg(LOGIN_IP_V4));
+  IPv4Button->SetCaption(GetMsg(NB_LOGIN_IP_V4));
 
   IPv6Button = new TFarRadioButton(this);
-  IPv6Button->SetCaption(GetMsg(LOGIN_IP_V6));
+  IPv6Button->SetCaption(GetMsg(NB_LOGIN_IP_V6));
 
   SetNextItemPosition(ipNewLine);
 
@@ -2313,29 +2313,29 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetDefaultGroup(tabProxy);
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
-  Separator->SetCaption(GetMsg(LOGIN_PROXY_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_PROXY_GROUP));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_PROXY_METHOD));
+  Text->SetCaption(GetMsg(NB_LOGIN_PROXY_METHOD));
 
   SetNextItemPosition(ipRight);
 
   FtpProxyMethodCombo = new TFarComboBox(this);
   FtpProxyMethodCombo->SetDropDownList(true);
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_NONE, pmNone);
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS4, pmSocks4);
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS5, pmSocks5);
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_HTTP, pmHTTP);
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_SYSTEM, pmSystem);
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_NONE, pmNone);
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_SOCKS4, pmSocks4);
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_SOCKS5, pmSocks5);
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_HTTP, pmHTTP);
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_SYSTEM, pmSystem);
   TProxyMethod FtpProxyMethod = static_cast<TProxyMethod>(GetLastSupportedFtpProxyMethod());
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_SITE, static_cast<TProxyMethod>(FtpProxyMethod + 1));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_USERHOST, static_cast<TProxyMethod>(FtpProxyMethod + 2));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_OPEN_HOST, static_cast<TProxyMethod>(FtpProxyMethod + 3));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_USERUSER, static_cast<TProxyMethod>(FtpProxyMethod + 4));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USER_USERHOST, static_cast<TProxyMethod>(FtpProxyMethod + 5));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_PROXYUSER_HOST, static_cast<TProxyMethod>(FtpProxyMethod + 6));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USERHOST_PROXYUSER, static_cast<TProxyMethod>(FtpProxyMethod + 7));
-  FtpProxyMethodComboAddNewItem(LOGIN_PROXY_FTP_USER_USERPROXYUSERHOST, static_cast<TProxyMethod>(FtpProxyMethod + 8));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_SITE, static_cast<TProxyMethod>(FtpProxyMethod + 1));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_PROXYUSER_USERHOST, static_cast<TProxyMethod>(FtpProxyMethod + 2));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_OPEN_HOST, static_cast<TProxyMethod>(FtpProxyMethod + 3));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_PROXYUSER_USERUSER, static_cast<TProxyMethod>(FtpProxyMethod + 4));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_USER_USERHOST, static_cast<TProxyMethod>(FtpProxyMethod + 5));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_PROXYUSER_HOST, static_cast<TProxyMethod>(FtpProxyMethod + 6));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_USERHOST_PROXYUSER, static_cast<TProxyMethod>(FtpProxyMethod + 7));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_USER_USERPROXYUSERHOST, static_cast<TProxyMethod>(FtpProxyMethod + 8));
   FtpProxyMethodCombo->SetWidth(40);
 
   SshProxyMethodCombo = new TFarComboBox(this);
@@ -2344,20 +2344,20 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SshProxyMethodCombo->SetRight(FtpProxyMethodCombo->GetRight());
   SshProxyMethodCombo->SetDropDownList(true);
 
-  SshProxyMethodComboAddNewItem(LOGIN_PROXY_NONE, pmNone);
-  SshProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS4, pmSocks4);
-  SshProxyMethodComboAddNewItem(LOGIN_PROXY_SOCKS5, pmSocks5);
-  SshProxyMethodComboAddNewItem(LOGIN_PROXY_HTTP, pmHTTP);
-  SshProxyMethodComboAddNewItem(LOGIN_PROXY_TELNET, pmTelnet);
-  SshProxyMethodComboAddNewItem(LOGIN_PROXY_LOCAL, pmCmd);
-  SshProxyMethodComboAddNewItem(LOGIN_PROXY_SYSTEM, pmSystem);
+  SshProxyMethodComboAddNewItem(NB_LOGIN_PROXY_NONE, pmNone);
+  SshProxyMethodComboAddNewItem(NB_LOGIN_PROXY_SOCKS4, pmSocks4);
+  SshProxyMethodComboAddNewItem(NB_LOGIN_PROXY_SOCKS5, pmSocks5);
+  SshProxyMethodComboAddNewItem(NB_LOGIN_PROXY_HTTP, pmHTTP);
+  SshProxyMethodComboAddNewItem(NB_LOGIN_PROXY_TELNET, pmTelnet);
+  SshProxyMethodComboAddNewItem(NB_LOGIN_PROXY_LOCAL, pmCmd);
+  SshProxyMethodComboAddNewItem(NB_LOGIN_PROXY_SYSTEM, pmSystem);
 
   SetNextItemPosition(ipNewLine);
 
   new TFarSeparator(this);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_PROXY_HOST));
+  Text->SetCaption(GetMsg(NB_LOGIN_PROXY_HOST));
 
   SetNextItemPosition(ipNewLine);
 
@@ -2368,7 +2368,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipRight);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_PROXY_PORT));
+  Text->SetCaption(GetMsg(NB_LOGIN_PROXY_PORT));
   Text->Move(0, -1);
 
   SetNextItemPosition(ipBelow);
@@ -2382,7 +2382,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_PROXY_USERNAME));
+  Text->SetCaption(GetMsg(NB_LOGIN_PROXY_USERNAME));
 
   ProxyUsernameEdit = new TFarEdit(this);
   ProxyUsernameEdit->SetWidth(ProxyUsernameEdit->GetWidth() / 2 - 1);
@@ -2391,7 +2391,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipRight);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_PROXY_PASSWORD));
+  Text->SetCaption(GetMsg(NB_LOGIN_PROXY_PASSWORD));
   Text->Move(0, -1);
 
   SetNextItemPosition(ipBelow);
@@ -2403,10 +2403,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_PROXY_SETTINGS_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_PROXY_SETTINGS_GROUP));
 
   ProxyTelnetCommandLabel = new TFarText(this);
-  ProxyTelnetCommandLabel->SetCaption(GetMsg(LOGIN_PROXY_TELNET_COMMAND));
+  ProxyTelnetCommandLabel->SetCaption(GetMsg(NB_LOGIN_PROXY_TELNET_COMMAND));
 
   SetNextItemPosition(ipRight);
 
@@ -2416,7 +2416,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   ProxyLocalCommandLabel = new TFarText(this);
-  ProxyLocalCommandLabel->SetCaption(GetMsg(LOGIN_PROXY_LOCAL_COMMAND));
+  ProxyLocalCommandLabel->SetCaption(GetMsg(NB_LOGIN_PROXY_LOCAL_COMMAND));
   ProxyLocalCommandLabel->Move(0, -1);
 
   SetNextItemPosition(ipRight);
@@ -2427,23 +2427,23 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   ProxyLocalhostCheck = new TFarCheckBox(this);
-  ProxyLocalhostCheck->SetCaption(GetMsg(LOGIN_PROXY_LOCALHOST));
+  ProxyLocalhostCheck->SetCaption(GetMsg(NB_LOGIN_PROXY_LOCALHOST));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_PROXY_DNS));
+  Text->SetCaption(GetMsg(NB_LOGIN_PROXY_DNS));
 
   ProxyDNSOffButton = new TFarRadioButton(this);
-  ProxyDNSOffButton->SetCaption(GetMsg(LOGIN_PROXY_DNS_NO));
+  ProxyDNSOffButton->SetCaption(GetMsg(NB_LOGIN_PROXY_DNS_NO));
   Text->SetEnabledFollow(ProxyDNSOffButton);
 
   SetNextItemPosition(ipRight);
 
   ProxyDNSAutoButton = new TFarRadioButton(this);
-  ProxyDNSAutoButton->SetCaption(GetMsg(LOGIN_PROXY_DNS_AUTO));
+  ProxyDNSAutoButton->SetCaption(GetMsg(NB_LOGIN_PROXY_DNS_AUTO));
   ProxyDNSAutoButton->SetEnabledFollow(ProxyDNSOffButton);
 
   ProxyDNSOnButton = new TFarRadioButton(this);
-  ProxyDNSOnButton->SetCaption(GetMsg(LOGIN_PROXY_DNS_YES));
+  ProxyDNSOnButton->SetCaption(GetMsg(NB_LOGIN_PROXY_DNS_YES));
   ProxyDNSOnButton->SetEnabledFollow(ProxyDNSOffButton);
 
   SetNextItemPosition(ipNewLine);
@@ -2457,16 +2457,16 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetDefaultGroup(tabTunnel);
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
-  Separator->SetCaption(GetMsg(LOGIN_TUNNEL_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_TUNNEL_GROUP));
 
   TunnelCheck = new TFarCheckBox(this);
-  TunnelCheck->SetCaption(GetMsg(LOGIN_TUNNEL_TUNNEL));
+  TunnelCheck->SetCaption(GetMsg(NB_LOGIN_TUNNEL_TUNNEL));
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_TUNNEL_SESSION_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_TUNNEL_SESSION_GROUP));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_HOST_NAME));
+  Text->SetCaption(GetMsg(NB_LOGIN_HOST_NAME));
   Text->SetEnabledDependency(TunnelCheck);
 
   TunnelHostNameEdit = new TFarEdit(this);
@@ -2476,7 +2476,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipRight);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_PORT_NUMBER));
+  Text->SetCaption(GetMsg(NB_LOGIN_PORT_NUMBER));
   Text->Move(0, -1);
   Text->SetEnabledDependency(TunnelCheck);
 
@@ -2490,7 +2490,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_USER_NAME));
+  Text->SetCaption(GetMsg(NB_LOGIN_USER_NAME));
   Text->SetEnabledDependency(TunnelCheck);
 
   TunnelUserNameEdit = new TFarEdit(this);
@@ -2500,7 +2500,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipRight);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_PASSWORD));
+  Text->SetCaption(GetMsg(NB_LOGIN_PASSWORD));
   Text->Move(0, -1);
   Text->SetEnabledDependency(TunnelCheck);
 
@@ -2513,17 +2513,17 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_PRIVATE_KEY));
+  Text->SetCaption(GetMsg(NB_LOGIN_PRIVATE_KEY));
   Text->SetEnabledDependency(TunnelCheck);
 
   TunnelPrivateKeyEdit = new TFarEdit(this);
   TunnelPrivateKeyEdit->SetEnabledDependency(TunnelCheck);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_TUNNEL_OPTIONS_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_TUNNEL_OPTIONS_GROUP));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER));
+  Text->SetCaption(GetMsg(NB_LOGIN_TUNNEL_LOCAL_PORT_NUMBER));
   Text->SetEnabledDependency(TunnelCheck);
 
   SetNextItemPosition(ipRight);
@@ -2537,7 +2537,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
     {
       TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
     };
-    TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
+    TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(NB_LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
     for (intptr_t Index4 = GetConfiguration()->GetTunnelLocalPortNumberLow();
          Index4 <= GetConfiguration()->GetTunnelLocalPortNumberHigh(); ++Index4)
     {
@@ -2556,35 +2556,35 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetDefaultGroup(tabSsh);
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
-  Separator->SetCaption(GetMsg(LOGIN_SSH_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_SSH_GROUP));
 
   CompressionCheck = new TFarCheckBox(this);
-  CompressionCheck->SetCaption(GetMsg(LOGIN_COMPRESSION));
+  CompressionCheck->SetCaption(GetMsg(NB_LOGIN_COMPRESSION));
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_SSH_PROTOCOL_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_SSH_PROTOCOL_GROUP));
 
   SshProt1onlyButton = new TFarRadioButton(this);
-  SshProt1onlyButton->SetCaption(GetMsg(LOGIN_SSH1_ONLY));
+  SshProt1onlyButton->SetCaption(GetMsg(NB_LOGIN_SSH1_ONLY));
 
   SetNextItemPosition(ipRight);
 
   SshProt1Button = new TFarRadioButton(this);
-  SshProt1Button->SetCaption(GetMsg(LOGIN_SSH1));
+  SshProt1Button->SetCaption(GetMsg(NB_LOGIN_SSH1));
 
   SshProt2Button = new TFarRadioButton(this);
-  SshProt2Button->SetCaption(GetMsg(LOGIN_SSH2));
+  SshProt2Button->SetCaption(GetMsg(NB_LOGIN_SSH2));
 
   SshProt2onlyButton = new TFarRadioButton(this);
-  SshProt2onlyButton->SetCaption(GetMsg(LOGIN_SSH2_ONLY));
+  SshProt2onlyButton->SetCaption(GetMsg(NB_LOGIN_SSH2_ONLY));
 
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_ENCRYPTION_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_ENCRYPTION_GROUP));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_CIPHER));
+  Text->SetCaption(GetMsg(NB_LOGIN_CIPHER));
 
   CipherListBox = new TFarListBox(this);
   CipherListBox->SetRight(CipherListBox->GetRight() - 15);
@@ -2594,7 +2594,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipRight);
 
   CipherUpButton = new TFarButton(this);
-  CipherUpButton->SetCaption(GetMsg(LOGIN_UP));
+  CipherUpButton->SetCaption(GetMsg(NB_LOGIN_UP));
   CipherUpButton->Move(0, 1);
   CipherUpButton->SetResult(-1);
   CipherUpButton->SetOnClick(nb::bind(&TSessionDialog::CipherButtonClick, this));
@@ -2602,7 +2602,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipBelow);
 
   CipherDownButton = new TFarButton(this);
-  CipherDownButton->SetCaption(GetMsg(LOGIN_DOWN));
+  CipherDownButton->SetCaption(GetMsg(NB_LOGIN_DOWN));
   CipherDownButton->SetResult(1);
   CipherDownButton->SetOnClick(nb::bind(&TSessionDialog::CipherButtonClick, this));
 
@@ -2612,7 +2612,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   {
     Ssh2DESCheck = new TFarCheckBox(this);
     Ssh2DESCheck->Move(0, Pos - Ssh2DESCheck->GetTop() + 1);
-    Ssh2DESCheck->SetCaption(GetMsg(LOGIN_SSH2DES));
+    Ssh2DESCheck->SetCaption(GetMsg(NB_LOGIN_SSH2DES));
     Ssh2DESCheck->SetEnabledDependencyNegative(SshProt1onlyButton);
   }
   else
@@ -2625,10 +2625,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetDefaultGroup(tabKex);
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
-  Separator->SetCaption(GetMsg(LOGIN_KEX_REEXCHANGE_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_KEX_REEXCHANGE_GROUP));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_KEX_REKEY_TIME));
+  Text->SetCaption(GetMsg(NB_LOGIN_KEX_REKEY_TIME));
   Text->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   SetNextItemPosition(ipRight);
@@ -2642,7 +2642,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_KEX_REKEY_DATA));
+  Text->SetCaption(GetMsg(NB_LOGIN_KEX_REKEY_DATA));
   Text->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   SetNextItemPosition(ipRight);
@@ -2654,10 +2654,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_KEX_OPTIONS_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_KEX_OPTIONS_GROUP));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_KEX_LIST));
+  Text->SetCaption(GetMsg(NB_LOGIN_KEX_LIST));
   Text->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   KexListBox = new TFarListBox(this);
@@ -2668,7 +2668,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipRight);
 
   KexUpButton = new TFarButton(this);
-  KexUpButton->SetCaption(GetMsg(LOGIN_UP));
+  KexUpButton->SetCaption(GetMsg(NB_LOGIN_UP));
   KexUpButton->Move(0, 1);
   KexUpButton->SetResult(-1);
   KexUpButton->SetOnClick(nb::bind(&TSessionDialog::KexButtonClick, this));
@@ -2676,7 +2676,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipBelow);
 
   KexDownButton = new TFarButton(this);
-  KexDownButton->SetCaption(GetMsg(LOGIN_DOWN));
+  KexDownButton->SetCaption(GetMsg(NB_LOGIN_DOWN));
   KexDownButton->SetResult(1);
   KexDownButton->SetOnClick(nb::bind(&TSessionDialog::KexButtonClick, this));
 
@@ -2690,40 +2690,40 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Separator->SetPosition(GroupTop);
 
   SshNoUserAuthCheck = new TFarCheckBox(this);
-  SshNoUserAuthCheck->SetCaption(GetMsg(LOGIN_AUTH_SSH_NO_USER_AUTH));
+  SshNoUserAuthCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_SSH_NO_USER_AUTH));
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_AUTH_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_AUTH_GROUP));
 
   TryAgentCheck = new TFarCheckBox(this);
-  TryAgentCheck->SetCaption(GetMsg(LOGIN_AUTH_TRY_AGENT));
+  TryAgentCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_TRY_AGENT));
 
   AuthTISCheck = new TFarCheckBox(this);
-  AuthTISCheck->SetCaption(GetMsg(LOGIN_AUTH_TIS));
+  AuthTISCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_TIS));
 
   AuthKICheck = new TFarCheckBox(this);
-  AuthKICheck->SetCaption(GetMsg(LOGIN_AUTH_KI));
+  AuthKICheck->SetCaption(GetMsg(NB_LOGIN_AUTH_KI));
 
   AuthKIPasswordCheck = new TFarCheckBox(this);
-  AuthKIPasswordCheck->SetCaption(GetMsg(LOGIN_AUTH_KI_PASSWORD));
+  AuthKIPasswordCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_KI_PASSWORD));
   AuthKIPasswordCheck->Move(4, 0);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_AUTH_PARAMS_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_AUTH_PARAMS_GROUP));
 
   AgentFwdCheck = new TFarCheckBox(this);
-  AgentFwdCheck->SetCaption(GetMsg(LOGIN_AUTH_AGENT_FWD));
+  AgentFwdCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_AGENT_FWD));
 
   // GSSAPI
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_AUTH_GSSAPI_PARAMS_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_AUTH_GSSAPI_PARAMS_GROUP));
 
   AuthGSSAPICheck3 = new TFarCheckBox(this);
-  AuthGSSAPICheck3->SetCaption(GetMsg(LOGIN_AUTH_ATTEMPT_GSSAPI_AUTHENTICATION));
+  AuthGSSAPICheck3->SetCaption(GetMsg(NB_LOGIN_AUTH_ATTEMPT_GSSAPI_AUTHENTICATION));
   AuthGSSAPICheck3->SetOnAllowChange(nb::bind(&TSessionDialog::AuthGSSAPICheckAllowChange, this));
 
   GSSAPIFwdTGTCheck = new TFarCheckBox(this);
-  GSSAPIFwdTGTCheck->SetCaption(GetMsg(LOGIN_AUTH_ALLOW_GSSAPI_CREDENTIAL_DELEGATION));
+  GSSAPIFwdTGTCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_ALLOW_GSSAPI_CREDENTIAL_DELEGATION));
 
   new TFarSeparator(this);
 
@@ -2733,7 +2733,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
-  Separator->SetCaption(GetMsg(LOGIN_BUGS_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_BUGS_GROUP));
 
   BUGS();
 
@@ -2753,10 +2753,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetDefaultGroup(tabWebDAV);
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
-  Separator->SetCaption(GetMsg(LOGIN_WEBDAV_GROUP));
+  Separator->SetCaption(GetMsg(NB_LOGIN_WEBDAV_GROUP));
 
   WebDAVCompressionCheck = new TFarCheckBox(this);
-  WebDAVCompressionCheck->SetCaption(GetMsg(LOGIN_COMPRESSION));
+  WebDAVCompressionCheck->SetCaption(GetMsg(NB_LOGIN_COMPRESSION));
 
 #undef TRISTATE
 
@@ -2779,7 +2779,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipRight);
 
   ConnectButton = new TFarButton(this);
-  ConnectButton->SetCaption(GetMsg(LOGIN_CONNECT_BUTTON));
+  ConnectButton->SetCaption(GetMsg(NB_LOGIN_CONNECT_BUTTON));
   ConnectButton->SetDefault(Action == saConnect);
   ConnectButton->SetResult(brConnect);
   ConnectButton->SetCenterGroup(true);
@@ -2961,7 +2961,7 @@ void TSessionDialog::UpdateControls()
   FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
   FtpEncryptionCombo->SetVisible(FtpEncryptionVisible);
   PrivateKeyEdit->SetEnabled(SshProtocol || FtpsProtocol || HTTPSProtocol);
-  HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
+  HostNameLabel->SetCaption(GetMsg(NB_LOGIN_HOST_NAME));
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
   PasswordEdit->SetEnabled(!LoginAnonymous);
@@ -2972,7 +2972,7 @@ void TSessionDialog::UpdateControls()
   {
     FtpPasvModeCheck->SetChecked(true);
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
-    WinSCPPlugin->MoreMessageDialog(GetMsg(FTP_PASV_MODE_REQUIRED),
+    WinSCPPlugin->MoreMessageDialog(GetMsg(NB_FTP_PASV_MODE_REQUIRED),
       nullptr, qtInformation, qaOK);
   }
   SshBufferSizeCheck->SetEnabled(SshProtocol);
@@ -3103,9 +3103,9 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 {
   int Captions[] =
   {
-    LOGIN_ADD,
-    LOGIN_EDIT,
-    LOGIN_CONNECT
+    NB_LOGIN_ADD,
+    NB_LOGIN_EDIT,
+    NB_LOGIN_CONNECT
   };
   SetCaption(GetMsg(Captions[Action]));
 
@@ -3363,12 +3363,12 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       CipherListBox->GetItems()->EndUpdate();
     };
     CipherListBox->GetItems()->Clear();
-    DebugAssert(CIPHER_NAME_WARN + CIPHER_COUNT - 1 == CIPHER_NAME_CHACHA20);
+    DebugAssert(NB_CIPHER_NAME_WARN + CIPHER_COUNT - 1 == NB_CIPHER_NAME_CHACHA20);
     for (intptr_t Index2 = 0; Index2 < CIPHER_COUNT; ++Index2)
     {
       TObject * Obj = as_object(ToPtr(SessionData->GetCipher(Index2)));
       CipherListBox->GetItems()->AddObject(
-        GetMsg(CIPHER_NAME_WARN + static_cast<intptr_t>(SessionData->GetCipher(Index2))),
+        GetMsg(NB_CIPHER_NAME_WARN + static_cast<intptr_t>(SessionData->GetCipher(Index2))),
         Obj);
     }
   }
@@ -3385,11 +3385,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       KexListBox->GetItems()->EndUpdate();
     };
     KexListBox->GetItems()->Clear();
-    DebugAssert(KEX_NAME_WARN + KEX_COUNT - 1 == KEX_NAME_ECDH);
+    DebugAssert(NB_KEX_NAME_WARN + KEX_COUNT - 1 == NB_KEX_NAME_ECDH);
     for (intptr_t Index3 = 0; Index3 < KEX_COUNT; ++Index3)
     {
       KexListBox->GetItems()->AddObject(
-        GetMsg(KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index3))),
+        GetMsg(NB_KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index3))),
         as_object(ToPtr(SessionData->GetKex(Index3))));
     }
   }
@@ -4047,7 +4047,7 @@ bool TSessionDialog::CloseQuery()
       ((GetResult() == brConnect) && (FAction == saEdit))))
   {
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
-    CanClose = (WinSCPPlugin->MoreMessageDialog(GetMsg(SAVE_PASSWORD), nullptr,
+    CanClose = (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SAVE_PASSWORD), nullptr,
                 qtWarning, qaOK | qaCancel) == qaOK);
   }
 
@@ -4198,7 +4198,7 @@ void TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem * /*Sender*/,
     Allow = false;
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
 
-    WinSCPPlugin->MoreMessageDialog(GetMsg(GSSAPI_NOT_INSTALLED),
+    WinSCPPlugin->MoreMessageDialog(GetMsg(NB_GSSAPI_NOT_INSTALLED),
       nullptr, qtError, qaOK);
   }
 }
@@ -4308,21 +4308,21 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 
   static int RowLabels[] =
   {
-    PROPERTIES_OWNER_RIGHTS,
-    PROPERTIES_GROUP_RIGHTS,
-    PROPERTIES_OTHERS_RIGHTS
+    NB_PROPERTIES_OWNER_RIGHTS,
+    NB_PROPERTIES_GROUP_RIGHTS,
+    NB_PROPERTIES_OTHERS_RIGHTS
   };
   static int ColLabels[] =
   {
-    PROPERTIES_READ_RIGHTS,
-    PROPERTIES_WRITE_RIGHTS,
-    PROPERTIES_EXECUTE_RIGHTS
+    NB_PROPERTIES_READ_RIGHTS,
+    NB_PROPERTIES_WRITE_RIGHTS,
+    NB_PROPERTIES_EXECUTE_RIGHTS
   };
   static int SpecialLabels[] =
   {
-    PROPERTIES_SETUID_RIGHTS,
-    PROPERTIES_SETGID_RIGHTS,
-    PROPERTIES_STICKY_BIT_RIGHTS
+    NB_PROPERTIES_SETUID_RIGHTS,
+    NB_PROPERTIES_SETGID_RIGHTS,
+    NB_PROPERTIES_STICKY_BIT_RIGHTS
   };
 
   for (intptr_t RowIndex = 0; RowIndex < 3; ++RowIndex)
@@ -4371,7 +4371,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   Add(Text);
   Text->SetEnabledDependency(EnabledDependency);
   Text->SetLeft(0);
-  Text->SetCaption(GetMsg(PROPERTIES_OCTAL));
+  Text->SetCaption(GetMsg(NB_PROPERTIES_OCTAL));
 
   GetDialog()->SetNextItemPosition(ipRight);
 
@@ -4389,21 +4389,21 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
     TFarButton * Button = new TFarButton(GetDialog());
     Add(Button);
     Button->SetEnabledDependency(EnabledDependency);
-    Button->SetCaption(GetMsg(PROPERTIES_NONE_RIGHTS));
+    Button->SetCaption(GetMsg(NB_PROPERTIES_NONE_RIGHTS));
     Button->SetTag(TRights::rfNo);
     Button->SetOnClick(nb::bind(&TRightsContainer::RightsButtonClick, this));
 
     Button = new TFarButton(GetDialog());
     Add(Button);
     Button->SetEnabledDependency(EnabledDependency);
-    Button->SetCaption(GetMsg(PROPERTIES_DEFAULT_RIGHTS));
+    Button->SetCaption(GetMsg(NB_PROPERTIES_DEFAULT_RIGHTS));
     Button->SetTag(TRights::rfDefault);
     Button->SetOnClick(nb::bind(&TRightsContainer::RightsButtonClick, this));
 
     Button = new TFarButton(GetDialog());
     Add(Button);
     Button->SetEnabledDependency(EnabledDependency);
-    Button->SetCaption(GetMsg(PROPERTIES_ALL_RIGHTS));
+    Button->SetCaption(GetMsg(NB_PROPERTIES_ALL_RIGHTS));
     Button->SetTag(TRights::rfAll);
     Button->SetOnClick(nb::bind(&TRightsContainer::RightsButtonClick, this));
   }
@@ -4416,7 +4416,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
     Add(FDirectoriesXCheck);
     FDirectoriesXCheck->SetEnabledDependency(EnabledDependency);
     FDirectoriesXCheck->SetLeft(0);
-    FDirectoriesXCheck->SetCaption(GetMsg(PROPERTIES_DIRECTORIES_X));
+    FDirectoriesXCheck->SetCaption(GetMsg(NB_PROPERTIES_DIRECTORIES_X));
   }
   else
   {
@@ -4676,14 +4676,14 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     }
     FAnyDirectories = (Directories > 0);
 
-    SetCaption(GetMsg(PROPERTIES_CAPTION));
+    SetCaption(GetMsg(NB_PROPERTIES_CAPTION));
 
     SetSize(TPoint(56, 19));
 
     TRect CRect = GetClientRect();
 
     TFarText * Text = new TFarText(this);
-    Text->SetCaption(GetMsg(PROPERTIES_PROMPT));
+    Text->SetCaption(GetMsg(NB_PROPERTIES_PROMPT));
     Text->SetCenterGroup(true);
 
     SetNextItemPosition(ipNewLine);
@@ -4692,7 +4692,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     Text->SetCenterGroup(true);
     if (AFileList->GetCount() > 1)
     {
-      Text->SetCaption(FORMAT(GetMsg(PROPERTIES_PROMPT_FILES).c_str(), AFileList->GetCount()));
+      Text->SetCaption(FORMAT(GetMsg(NB_PROPERTIES_PROMPT_FILES).c_str(), AFileList->GetCount()));
     }
     else
     {
@@ -4702,7 +4702,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     if (!File->GetLinkTo().IsEmpty())
     {
       Text = new TFarText(this);
-      Text->SetCaption(GetMsg(PROPERTIES_LINKTO));
+      Text->SetCaption(GetMsg(NB_PROPERTIES_LINKTO));
 
       SetNextItemPosition(ipRight);
 
@@ -4716,7 +4716,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     new TFarSeparator(this);
 
     Text = new TFarText(this);
-    Text->SetCaption(GetMsg(PROPERTIES_OWNER));
+    Text->SetCaption(GetMsg(NB_PROPERTIES_OWNER));
     Text->SetEnabled((FAllowedChanges & cpOwner) != 0);
 
     SetNextItemPosition(ipRight);
@@ -4739,7 +4739,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     SetNextItemPosition(ipNewLine);
 
     Text = new TFarText(this);
-    Text->SetCaption(GetMsg(PROPERTIES_GROUP));
+    Text->SetCaption(GetMsg(NB_PROPERTIES_GROUP));
     Text->SetEnabled((FAllowedChanges & cpGroup) != 0);
 
     SetNextItemPosition(ipRight);
@@ -4762,7 +4762,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     SetNextItemPosition(ipNewLine);
 
     TFarSeparator * Separator = new TFarSeparator(this);
-    Separator->SetCaption(GetMsg(PROPERTIES_RIGHTS));
+    Separator->SetCaption(GetMsg(NB_PROPERTIES_RIGHTS));
 
     RightsContainer = new TRightsContainer(this, FAnyDirectories,
       true, true, nullptr);
@@ -4774,7 +4774,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
       Separator->SetPosition(Separator->GetPosition() + RightsContainer->GetTop());
 
       RecursiveCheck = new TFarCheckBox(this);
-      RecursiveCheck->SetCaption(GetMsg(PROPERTIES_RECURSIVE));
+      RecursiveCheck->SetCaption(GetMsg(NB_PROPERTIES_RECURSIVE));
     }
     else
     {
@@ -5006,7 +5006,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Box->SetHeight(1);
   Add(Box);
   Box->SetWidth(TMWidth + 2);
-  Box->SetCaption(GetMsg(TRANSFER_MODE));
+  Box->SetCaption(GetMsg(NB_TRANSFER_MODE));
 
   GetDialog()->SetNextItemPosition(ipRight);
 
@@ -5014,7 +5014,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Add(Box);
   Box->SetLeft(Box->GetLeft() - 2);
   Box->SetRight(Box->GetRight() + 1);
-  Box->SetCaption(GetMsg(TRANSFER_UPLOAD_OPTIONS));
+  Box->SetCaption(GetMsg(NB_TRANSFER_UPLOAD_OPTIONS));
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
@@ -5022,26 +5022,26 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   TMTextButton->SetLeft(1);
   Add(TMTextButton);
   intptr_t TMTop = TMTextButton->GetTop();
-  TMTextButton->SetCaption(GetMsg(TRANSFER_MODE_TEXT));
+  TMTextButton->SetCaption(GetMsg(NB_TRANSFER_MODE_TEXT));
   TMTextButton->SetEnabled(
     FLAGCLEAR(CopyParamAttrs, cpaNoTransferMode));
 
   TMBinaryButton = new TFarRadioButton(GetDialog());
   TMBinaryButton->SetLeft(1);
   Add(TMBinaryButton);
-  TMBinaryButton->SetCaption(GetMsg(TRANSFER_MODE_BINARY));
+  TMBinaryButton->SetCaption(GetMsg(NB_TRANSFER_MODE_BINARY));
   TMBinaryButton->SetEnabled(TMTextButton->GetEnabled());
 
   TMAutomaticButton = new TFarRadioButton(GetDialog());
   TMAutomaticButton->SetLeft(1);
   Add(TMAutomaticButton);
-  TMAutomaticButton->SetCaption(GetMsg(TRANSFER_MODE_AUTOMATIC));
+  TMAutomaticButton->SetCaption(GetMsg(NB_TRANSFER_MODE_AUTOMATIC));
   TMAutomaticButton->SetEnabled(TMTextButton->GetEnabled());
 
   TFarText * Text = new TFarText(GetDialog());
   Text->SetLeft(1);
   Add(Text);
-  Text->SetCaption(GetMsg(TRANSFER_MODE_MASK));
+  Text->SetCaption(GetMsg(NB_TRANSFER_MODE_MASK));
   Text->SetEnabledDependency(TMAutomaticButton);
 
   AsciiFileMaskEdit = new TFarEdit(GetDialog());
@@ -5056,19 +5056,19 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Box->SetLeft(0);
   Add(Box);
   Box->SetWidth(TMWidth + 2);
-  Box->SetCaption(GetMsg(TRANSFER_FILENAME_MODIFICATION));
+  Box->SetCaption(GetMsg(NB_TRANSFER_FILENAME_MODIFICATION));
 
   CCNoChangeButton = new TFarRadioButton(GetDialog());
   CCNoChangeButton->SetLeft(1);
   Add(CCNoChangeButton);
-  CCNoChangeButton->SetCaption(GetMsg(TRANSFER_FILENAME_NOCHANGE));
+  CCNoChangeButton->SetCaption(GetMsg(NB_TRANSFER_FILENAME_NOCHANGE));
   CCNoChangeButton->SetEnabled(true);
 
   GetDialog()->SetNextItemPosition(ipRight);
 
   CCUpperCaseButton = new TFarRadioButton(GetDialog());
   Add(CCUpperCaseButton);
-  CCUpperCaseButton->SetCaption(GetMsg(TRANSFER_FILENAME_UPPERCASE));
+  CCUpperCaseButton->SetCaption(GetMsg(NB_TRANSFER_FILENAME_UPPERCASE));
   CCUpperCaseButton->SetEnabled(CCNoChangeButton->GetEnabled());
 
   GetDialog()->SetNextItemPosition(ipNewLine);
@@ -5076,14 +5076,14 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   CCFirstUpperCaseButton = new TFarRadioButton(GetDialog());
   CCFirstUpperCaseButton->SetLeft(1);
   Add(CCFirstUpperCaseButton);
-  CCFirstUpperCaseButton->SetCaption(GetMsg(TRANSFER_FILENAME_FIRSTUPPERCASE));
+  CCFirstUpperCaseButton->SetCaption(GetMsg(NB_TRANSFER_FILENAME_FIRSTUPPERCASE));
   CCFirstUpperCaseButton->SetEnabled(CCNoChangeButton->GetEnabled());
 
   GetDialog()->SetNextItemPosition(ipRight);
 
   CCLowerCaseButton = new TFarRadioButton(GetDialog());
   Add(CCLowerCaseButton);
-  CCLowerCaseButton->SetCaption(GetMsg(TRANSFER_FILENAME_LOWERCASE));
+  CCLowerCaseButton->SetCaption(GetMsg(NB_TRANSFER_FILENAME_LOWERCASE));
   CCLowerCaseButton->SetEnabled(CCNoChangeButton->GetEnabled());
 
   GetDialog()->SetNextItemPosition(ipNewLine);
@@ -5091,14 +5091,14 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   CCLowerCaseShortButton = new TFarRadioButton(GetDialog());
   CCLowerCaseShortButton->SetLeft(1);
   Add(CCLowerCaseShortButton);
-  CCLowerCaseShortButton->SetCaption(GetMsg(TRANSFER_FILENAME_LOWERCASESHORT));
+  CCLowerCaseShortButton->SetCaption(GetMsg(NB_TRANSFER_FILENAME_LOWERCASESHORT));
   CCLowerCaseShortButton->SetEnabled(CCNoChangeButton->GetEnabled());
 
   GetDialog()->SetNextItemPosition(ipRight);
 
   ReplaceInvalidCharsCheck = new TFarCheckBox(GetDialog());
   Add(ReplaceInvalidCharsCheck);
-  ReplaceInvalidCharsCheck->SetCaption(GetMsg(TRANSFER_FILENAME_REPLACE_INVALID));
+  ReplaceInvalidCharsCheck->SetCaption(GetMsg(NB_TRANSFER_FILENAME_REPLACE_INVALID));
   ReplaceInvalidCharsCheck->SetEnabled(CCNoChangeButton->GetEnabled());
 
   GetDialog()->SetNextItemPosition(ipNewLine);
@@ -5107,12 +5107,12 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Box->SetLeft(0);
   Add(Box);
   Box->SetWidth(TMWidth + 2);
-  Box->SetCaption(GetMsg(TRANSFER_DOWNLOAD_OPTIONS));
+  Box->SetCaption(GetMsg(NB_TRANSFER_DOWNLOAD_OPTIONS));
 
   PreserveReadOnlyCheck = new TFarCheckBox(GetDialog());
   Add(PreserveReadOnlyCheck);
   PreserveReadOnlyCheck->SetLeft(1);
-  PreserveReadOnlyCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_READONLY));
+  PreserveReadOnlyCheck->SetCaption(GetMsg(NB_TRANSFER_PRESERVE_READONLY));
   PreserveReadOnlyCheck->SetEnabled(
     FLAGCLEAR(CopyParamAttrs, cpaNoPreserveReadOnly));
   intptr_t TMBottom = PreserveReadOnlyCheck->GetTop();
@@ -5122,7 +5122,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   PreserveRightsCheck->SetLeft(TMWidth + 3);
   PreserveRightsCheck->SetTop(TMTop);
   PreserveRightsCheck->SetBottom(TMTop);
-  PreserveRightsCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_RIGHTS));
+  PreserveRightsCheck->SetCaption(GetMsg(NB_TRANSFER_PRESERVE_RIGHTS));
   PreserveRightsCheck->SetEnabled(
     FLAGCLEAR(CopyParamAttrs, cpaNoRights));
 
@@ -5137,13 +5137,13 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Add(IgnorePermErrorsCheck);
   IgnorePermErrorsCheck->SetLeft(PreserveRightsCheck->GetLeft());
   IgnorePermErrorsCheck->SetTop(TMTop + 6);
-  IgnorePermErrorsCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_PERM_ERRORS));
+  IgnorePermErrorsCheck->SetCaption(GetMsg(NB_TRANSFER_PRESERVE_PERM_ERRORS));
 
   ClearArchiveCheck = new TFarCheckBox(GetDialog());
   ClearArchiveCheck->SetLeft(IgnorePermErrorsCheck->GetLeft());
   Add(ClearArchiveCheck);
   ClearArchiveCheck->SetTop(TMTop + 7);
-  ClearArchiveCheck->SetCaption(GetMsg(TRANSFER_CLEAR_ARCHIVE));
+  ClearArchiveCheck->SetCaption(GetMsg(NB_TRANSFER_CLEAR_ARCHIVE));
   ClearArchiveCheck->SetEnabled(
     FLAGCLEAR(FOptions, coTempTransfer) &&
     FLAGCLEAR(CopyParamAttrs, cpaNoClearArchive));
@@ -5153,17 +5153,17 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Add(Box);
   Box->SetBottom(Box->GetTop());
   Box->SetLeft(TMWidth + 3 - 1);
-  Box->SetCaption(GetMsg(TRANSFER_COMMON_OPTIONS));
+  Box->SetCaption(GetMsg(NB_TRANSFER_COMMON_OPTIONS));
 
   PreserveTimeCheck = new TFarCheckBox(GetDialog());
   Add(PreserveTimeCheck);
   PreserveTimeCheck->SetLeft(TMWidth + 3);
-  PreserveTimeCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_TIMESTAMP));
+  PreserveTimeCheck->SetCaption(GetMsg(NB_TRANSFER_PRESERVE_TIMESTAMP));
   PreserveTimeCheck->SetEnabled(
     FLAGCLEAR(CopyParamAttrs, cpaNoPreserveTime));
 
   CalculateSizeCheck = new TFarCheckBox(GetDialog());
-  CalculateSizeCheck->SetCaption(GetMsg(TRANSFER_CALCULATE_SIZE));
+  CalculateSizeCheck->SetCaption(GetMsg(NB_TRANSFER_CALCULATE_SIZE));
   Add(CalculateSizeCheck);
   CalculateSizeCheck->SetLeft(TMWidth + 3);
 
@@ -5172,12 +5172,12 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   TFarSeparator * Separator = new TFarSeparator(GetDialog());
   Add(Separator);
   Separator->SetPosition(TMBottom + 1);
-  Separator->SetCaption(GetMsg(TRANSFER_OTHER));
+  Separator->SetCaption(GetMsg(NB_TRANSFER_OTHER));
 
   FileMaskText = new TFarText(GetDialog());
   FileMaskText->SetLeft(1);
   Add(FileMaskText);
-  FileMaskText->SetCaption(GetMsg(TRANSFER_FILE_MASK));
+  FileMaskText->SetCaption(GetMsg(NB_TRANSFER_FILE_MASK));
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
@@ -5193,7 +5193,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
 
   Text = new TFarText(GetDialog());
   Add(Text);
-  Text->SetCaption(GetMsg(TRANSFER_SPEED));
+  Text->SetCaption(GetMsg(NB_TRANSFER_SPEED));
   Text->MoveAt(TMWidth + 3, FileMaskText->GetTop());
 
   GetDialog()->SetNextItemPosition(ipRight);
@@ -5443,18 +5443,18 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   const intptr_t DlgLength = 78;
   SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
 
-  SetCaption(GetMsg(Move ? MOVE_TITLE : COPY_TITLE));
+  SetCaption(GetMsg(Move ? NB_MOVE_TITLE : NB_COPY_TITLE));
 
   if (FLAGCLEAR(FOptions, coTempTransfer))
   {
     UnicodeString Prompt;
     if (FFileList->GetCount() > 1)
     {
-      Prompt = FORMAT(GetMsg(Move ? MOVE_FILES_PROMPT : COPY_FILES_PROMPT).c_str(), FFileList->GetCount());
+      Prompt = FORMAT(GetMsg(Move ? NB_MOVE_FILES_PROMPT : NB_COPY_FILES_PROMPT).c_str(), FFileList->GetCount());
     }
     else
     {
-      UnicodeString PromptMsg = GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT);
+      UnicodeString PromptMsg = GetMsg(Move ? NB_MOVE_FILE_PROMPT : NB_COPY_FILE_PROMPT);
       UnicodeString FileName = FFileList->GetString(0);
       UnicodeString OnlyFileName = ToRemote ?
         base::ExtractFileName(FileName, false) :
@@ -5471,7 +5471,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   }
 
   TFarSeparator * Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(COPY_PARAM_GROUP));
+  Separator->SetCaption(GetMsg(NB_COPY_PARAM_GROUP));
 
   CopyParamLister = new TFarLister(this);
   CopyParamLister->SetHeight(3);
@@ -5484,16 +5484,16 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   if (FLAGCLEAR(FOptions, coTempTransfer))
   {
     NewerOnlyCheck = new TFarCheckBox(this);
-    NewerOnlyCheck->SetCaption(GetMsg(TRANSFER_NEWER_ONLY));
+    NewerOnlyCheck->SetCaption(GetMsg(NB_TRANSFER_NEWER_ONLY));
     NewerOnlyCheck->SetEnabled(FLAGCLEAR(FOptions, coDisableNewerOnly));
 
     QueueCheck = new TFarCheckBox(this);
-    QueueCheck->SetCaption(GetMsg(TRANSFER_QUEUE));
+    QueueCheck->SetCaption(GetMsg(NB_TRANSFER_QUEUE));
 
     SetNextItemPosition(ipRight);
 
     QueueNoConfirmationCheck = new TFarCheckBox(this);
-    QueueNoConfirmationCheck->SetCaption(GetMsg(TRANSFER_QUEUE_NO_CONFIRMATION));
+    QueueNoConfirmationCheck->SetCaption(GetMsg(NB_TRANSFER_QUEUE_NO_CONFIRMATION));
     QueueNoConfirmationCheck->SetEnabledDependency(QueueCheck);
 
     SetNextItemPosition(ipNewLine);
@@ -5504,12 +5504,12 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   }
 
   SaveSettingsCheck = new TFarCheckBox(this);
-  SaveSettingsCheck->SetCaption(GetMsg(TRANSFER_REUSE_SETTINGS));
+  SaveSettingsCheck->SetCaption(GetMsg(NB_TRANSFER_REUSE_SETTINGS));
 
   new TFarSeparator(this);
 
   TFarButton * Button = new TFarButton(this);
-  Button->SetCaption(GetMsg(TRANSFER_SETTINGS_BUTTON));
+  Button->SetCaption(GetMsg(NB_TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
   Button->SetOnClick(nb::bind(&TCopyDialog::TransferSettingsButtonClick, this));
@@ -5610,13 +5610,13 @@ bool TCopyDialog::CloseQuery()
       {
         TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
 
-        if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(CREATE_LOCAL_DIRECTORY).c_str(), Directory.c_str()),
+        if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(NB_CREATE_LOCAL_DIRECTORY).c_str(), Directory.c_str()),
           nullptr, qtConfirmation, qaOK | qaCancel) != qaCancel)
         {
           if (!::ForceDirectories(ApiPath(Directory)))
           {
             DirectoryEdit->SetFocus();
-            throw ExtException(FORMAT(GetMsg(CREATE_LOCAL_DIR_ERROR).c_str(), Directory.c_str()));
+            throw ExtException(FORMAT(GetMsg(NB_CREATE_LOCAL_DIR_ERROR).c_str(), Directory.c_str()));
           }
         }
         else
@@ -5716,7 +5716,7 @@ bool TWinSCPPlugin::CopyParamDialog(UnicodeString Caption,
 bool TWinSCPPlugin::CopyParamCustomDialog(TCopyParamType & CopyParam,
   intptr_t CopyParamAttrs)
 {
-  return CopyParamDialog(GetMsg(COPY_PARAM_CUSTOM_TITLE), CopyParam, CopyParamAttrs);
+  return CopyParamDialog(GetMsg(NB_COPY_PARAM_CUSTOM_TITLE), CopyParam, CopyParamAttrs);
 }
 
 class TLinkDialog : TFarDialog
@@ -5745,10 +5745,10 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   SetSize(TPoint(76, 12));
   TRect CRect = GetClientRect();
 
-  SetCaption(GetMsg(Edit ? STRING_LINK_EDIT_CAPTION : STRING_LINK_ADD_CAPTION));
+  SetCaption(GetMsg(Edit ? NB_STRING_LINK_EDIT_CAPTION : NB_STRING_LINK_ADD_CAPTION));
 
   TFarText * Text = new TFarText(this);
-  Text->SetCaption(GetMsg(STRING_LINK_FILE));
+  Text->SetCaption(GetMsg(NB_STRING_LINK_FILE));
   Text->SetEnabled(!Edit);
 
   FileNameEdit = new TFarEdit(this);
@@ -5756,7 +5756,7 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   FileNameEdit->SetHistory(LINK_FILENAME_HISTORY);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(STRING_LINK_POINT_TO));
+  Text->SetCaption(GetMsg(NB_STRING_LINK_POINT_TO));
 
   PointToEdit = new TFarEdit(this);
   PointToEdit->SetHistory(LINK_POINT_TO_HISTORY);
@@ -5764,7 +5764,7 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   new TFarSeparator(this);
 
   SymbolicCheck = new TFarCheckBox(this);
-  SymbolicCheck->SetCaption(GetMsg(STRING_LINK_SYMLINK));
+  SymbolicCheck->SetCaption(GetMsg(NB_STRING_LINK_SYMLINK));
   SymbolicCheck->SetEnabled(AllowSymbolic && !Edit);
 
   TFarSeparator * Separator = new TFarSeparator(this);
@@ -5918,20 +5918,20 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   FOnGetSpaceAvailable = OnGetSpaceAvailable;
 
   SetSize(TPoint(73, 22));
-  SetCaption(GetMsg(SERVER_PROTOCOL_INFORMATION));
+  SetCaption(GetMsg(NB_SERVER_PROTOCOL_INFORMATION));
 
   TTabButton * Tab = new TTabButton(this);
-  Tab->SetTabName(GetMsg(SERVER_PROTOCOL_TAB_PROTOCOL));
+  Tab->SetTabName(GetMsg(NB_SERVER_PROTOCOL_TAB_PROTOCOL));
   Tab->SetTab(tabProtocol);
 
   SetNextItemPosition(ipRight);
 
   Tab = new TTabButton(this);
-  Tab->SetTabName(GetMsg(SERVER_PROTOCOL_TAB_CAPABILITIES));
+  Tab->SetTabName(GetMsg(NB_SERVER_PROTOCOL_TAB_CAPABILITIES));
   Tab->SetTab(tabCapabilities);
 
   SpaceAvailableTab = new TTabButton(this);
-  SpaceAvailableTab->SetTabName(GetMsg(SERVER_PROTOCOL_TAB_SPACE_AVAILABLE));
+  SpaceAvailableTab->SetTabName(GetMsg(NB_SERVER_PROTOCOL_TAB_SPACE_AVAILABLE));
   SpaceAvailableTab->SetTab(tabSpaceAvailable);
 
   // Server tab
@@ -5940,7 +5940,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   SetDefaultGroup(tabProtocol);
 
   TFarSeparator * Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(SERVER_INFORMATION_GROUP));
+  Separator->SetCaption(GetMsg(NB_SERVER_INFORMATION_GROUP));
   intptr_t GroupTop = Separator->GetTop();
 
   ServerLabels = CreateLabelArray(5);
@@ -5948,7 +5948,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   new TFarSeparator(this);
 
   HostKeyFingerprintLabel = new TFarText(this);
-  HostKeyFingerprintLabel->SetCaption(GetMsg(SERVER_HOST_KEY));
+  HostKeyFingerprintLabel->SetCaption(GetMsg(NB_SERVER_HOST_KEY));
   HostKeyFingerprintEdit = new TFarEdit(this);
   HostKeyFingerprintEdit->SetReadOnly(true);
 
@@ -5957,13 +5957,13 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   SetDefaultGroup(tabCapabilities);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(PROTOCOL_INFORMATION_GROUP));
+  Separator->SetCaption(GetMsg(NB_PROTOCOL_INFORMATION_GROUP));
   Separator->SetPosition(GroupTop);
 
   ProtocolLabels = CreateLabelArray(9);
 
   InfoSeparator = new TFarSeparator(this);
-  InfoSeparator->SetCaption(GetMsg(PROTOCOL_INFO_GROUP));
+  InfoSeparator->SetCaption(GetMsg(NB_PROTOCOL_INFO_GROUP));
 
   InfoLister = new TFarLister(this);
   InfoLister->SetHeight(4);
@@ -5975,20 +5975,20 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   SetDefaultGroup(tabSpaceAvailable);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(SPACE_AVAILABLE_GROUP));
+  Separator->SetCaption(GetMsg(NB_SPACE_AVAILABLE_GROUP));
   Separator->SetPosition(GroupTop);
 
   TFarText * Text = new TFarText(this);
-  Text->SetCaption(GetMsg(SPACE_AVAILABLE_PATH));
+  Text->SetCaption(GetMsg(NB_SPACE_AVAILABLE_PATH));
 
   SetNextItemPosition(ipRight);
 
   SpaceAvailablePathEdit = new TFarEdit(this);
   SpaceAvailablePathEdit->SetRight(
-    - (static_cast<int>(GetMsg(SPACE_AVAILABLE_CHECK_SPACE).Length() + 11)));
+    - (static_cast<int>(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE).Length() + 11)));
 
   TFarButton * Button = new TFarButton(this);
-  Button->SetCaption(GetMsg(SPACE_AVAILABLE_CHECK_SPACE));
+  Button->SetCaption(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE));
   Button->SetEnabledDependency(SpaceAvailablePathEdit);
   Button->SetOnClick(nb::bind(&TFileSystemInfoDialog::SpaceAvailableButtonClick, this));
 
@@ -6006,7 +6006,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   Separator->SetPosition(GetClientRect().Bottom - 1);
 
   Button = new TFarButton(this);
-  Button->SetCaption(GetMsg(SERVER_PROTOCOL_COPY_CLIPBOARD));
+  Button->SetCaption(GetMsg(NB_SERVER_PROTOCOL_COPY_CLIPBOARD));
   Button->SetOnClick(nb::bind(&TFileSystemInfoDialog::ClipboardButtonClick, this));
   Button->SetCenterGroup(true);
 
@@ -6052,7 +6052,7 @@ UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes) const
   UnicodeString Result;
   if (Bytes == 0)
   {
-    Result = GetMsg(SPACE_AVAILABLE_BYTES_UNKNOWN);
+    Result = GetMsg(NB_SPACE_AVAILABLE_BYTES_UNKNOWN);
   }
   else
   {
@@ -6068,57 +6068,57 @@ UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes) const
 
 void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
 {
-  AddItem(ServerLabels, SERVER_REMOTE_SYSTEM, FFileSystemInfo.RemoteSystem);
-  AddItem(ServerLabels, SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
-  AddItem(ServerLabels, SERVER_SSH_IMPLEMENTATION, FSessionInfo.SshImplementation);
+  AddItem(ServerLabels, NB_SERVER_REMOTE_SYSTEM, FFileSystemInfo.RemoteSystem);
+  AddItem(ServerLabels, NB_SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
+  AddItem(ServerLabels, NB_SERVER_SSH_IMPLEMENTATION, FSessionInfo.SshImplementation);
 
   UnicodeString Str = FSessionInfo.CSCipher;
   if (FSessionInfo.CSCipher != FSessionInfo.SCCipher)
   {
     Str += FORMAT(L"/%s", FSessionInfo.SCCipher.c_str());
   }
-  AddItem(ServerLabels, SERVER_CIPHER, Str);
+  AddItem(ServerLabels, NB_SERVER_CIPHER, Str);
 
   Str = DefaultStr(FSessionInfo.CSCompression, LoadStr(NO_STR));
   if (FSessionInfo.CSCompression != FSessionInfo.SCCompression)
   {
     Str += FORMAT(L"/%s", DefaultStr(FSessionInfo.SCCompression, LoadStr(NO_STR)).c_str());
   }
-  AddItem(ServerLabels, SERVER_COMPRESSION, Str);
+  AddItem(ServerLabels, NB_SERVER_COMPRESSION, Str);
   if (FSessionInfo.ProtocolName != FFileSystemInfo.ProtocolName)
   {
-    AddItem(ServerLabels, SERVER_FS_PROTOCOL, FFileSystemInfo.ProtocolName);
+    AddItem(ServerLabels, NB_SERVER_FS_PROTOCOL, FFileSystemInfo.ProtocolName);
   }
 
   AddItem(HostKeyFingerprintEdit, 0, FSessionInfo.HostKeyFingerprint);
 
-  AddItem(ProtocolLabels, PROTOCOL_MODE_CHANGING, CapabilityStr(fcModeChanging));
-  AddItem(ProtocolLabels, PROTOCOL_OWNER_GROUP_CHANGING, CapabilityStr(fcGroupChanging));
+  AddItem(ProtocolLabels, NB_PROTOCOL_MODE_CHANGING, CapabilityStr(fcModeChanging));
+  AddItem(ProtocolLabels, NB_PROTOCOL_OWNER_GROUP_CHANGING, CapabilityStr(fcGroupChanging));
   UnicodeString AnyCommand;
   if (!FFileSystemInfo.IsCapable[fcShellAnyCommand] &&
     FFileSystemInfo.IsCapable[fcAnyCommand])
   {
-    AnyCommand = GetMsg(PROTOCOL_PROTOCOL_ANY_COMMAND);
+    AnyCommand = GetMsg(NB_PROTOCOL_PROTOCOL_ANY_COMMAND);
   }
   else
   {
     AnyCommand = CapabilityStr(fcAnyCommand);
   }
-  AddItem(ProtocolLabels, PROTOCOL_ANY_COMMAND, AnyCommand);
-  AddItem(ProtocolLabels, PROTOCOL_SYMBOLIC_HARD_LINK, CapabilityStr(fcSymbolicLink, fcHardLink));
-  AddItem(ProtocolLabels, PROTOCOL_USER_GROUP_LISTING, CapabilityStr(fcUserGroupListing));
-  AddItem(ProtocolLabels, PROTOCOL_REMOTE_COPY, CapabilityStr(fcRemoteCopy));
-  AddItem(ProtocolLabels, PROTOCOL_CHECKING_SPACE_AVAILABLE, CapabilityStr(fcCheckingSpaceAvailable));
-  AddItem(ProtocolLabels, PROTOCOL_CALCULATING_CHECKSUM, CapabilityStr(fcCalculatingChecksum));
-  AddItem(ProtocolLabels, PROTOCOL_NATIVE_TEXT_MODE, CapabilityStr(fcNativeTextMode));
+  AddItem(ProtocolLabels, NB_PROTOCOL_ANY_COMMAND, AnyCommand);
+  AddItem(ProtocolLabels, NB_PROTOCOL_SYMBOLIC_HARD_LINK, CapabilityStr(fcSymbolicLink, fcHardLink));
+  AddItem(ProtocolLabels, NB_PROTOCOL_USER_GROUP_LISTING, CapabilityStr(fcUserGroupListing));
+  AddItem(ProtocolLabels, NB_PROTOCOL_REMOTE_COPY, CapabilityStr(fcRemoteCopy));
+  AddItem(ProtocolLabels, NB_PROTOCOL_CHECKING_SPACE_AVAILABLE, CapabilityStr(fcCheckingSpaceAvailable));
+  AddItem(ProtocolLabels, NB_PROTOCOL_CALCULATING_CHECKSUM, CapabilityStr(fcCalculatingChecksum));
+  AddItem(ProtocolLabels, NB_PROTOCOL_NATIVE_TEXT_MODE, CapabilityStr(fcNativeTextMode));
 
   AddItem(InfoLister, 0, FFileSystemInfo.AdditionalInfo);
 
-  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.BytesOnDevice));
-  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.UnusedBytesOnDevice));
-  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.BytesAvailableToUser));
-  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.UnusedBytesAvailableToUser));
-  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_PER_ALLOCATION_UNIT, SpaceStr(FSpaceAvailable.BytesPerAllocationUnit));
+  AddItem(SpaceAvailableLabels, NB_SPACE_AVAILABLE_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.BytesOnDevice));
+  AddItem(SpaceAvailableLabels, NB_SPACE_AVAILABLE_UNUSED_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.UnusedBytesOnDevice));
+  AddItem(SpaceAvailableLabels, NB_SPACE_AVAILABLE_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.BytesAvailableToUser));
+  AddItem(SpaceAvailableLabels, NB_SPACE_AVAILABLE_UNUSED_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.UnusedBytesAvailableToUser));
+  AddItem(SpaceAvailableLabels, NB_SPACE_AVAILABLE_BYTES_PER_ALLOCATION_UNIT, SpaceStr(FSpaceAvailable.BytesPerAllocationUnit));
 }
 
 void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
@@ -6207,11 +6207,11 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       UnicodeString LabelStr;
       if (Control == HostKeyFingerprintEdit)
       {
-        LabelStr = GetMsg(SERVER_HOST_KEY);
+        LabelStr = GetMsg(NB_SERVER_HOST_KEY);
       }
       else if (Control == InfoLister)
       {
-        LabelStr = ::Trim(GetMsg(PROTOCOL_INFO_GROUP));
+        LabelStr = ::Trim(GetMsg(NB_PROTOCOL_INFO_GROUP));
       }
       else
       {
@@ -6473,8 +6473,8 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     int BreakCode;
 
     Repeat = false;
-    UnicodeString Caption = GetMsg(Add ? OPEN_DIRECTORY_ADD_BOOMARK_ACTION :
-      OPEN_DIRECTORY_BROWSE_CAPTION);
+    UnicodeString Caption = GetMsg(Add ? NB_OPEN_DIRECTORY_ADD_BOOMARK_ACTION :
+      NB_OPEN_DIRECTORY_BROWSE_CAPTION);
     const int BreakKeys[] =
     {
       VK_DELETE,
@@ -6486,7 +6486,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     };
 
     ItemFocused = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
-      Caption, GetMsg(OPEN_DIRECTORY_HELP), BookmarkItems.get(), BreakKeys, BreakCode);
+      Caption, GetMsg(NB_OPEN_DIRECTORY_HELP), BookmarkItems.get(), BreakKeys, BreakCode);
     if (BreakCode >= 0)
     {
       DebugAssert(BreakCode >= 0 && BreakCode <= 4);
@@ -6568,36 +6568,36 @@ TApplyCommandDialog::TApplyCommandDialog(TCustomFarPlugin * AFarPlugin) :
   HideTypingCheck(nullptr)
 {
   SetSize(TPoint(76, 18));
-  SetCaption(GetMsg(APPLY_COMMAND_TITLE));
+  SetCaption(GetMsg(NB_APPLY_COMMAND_TITLE));
 
   TFarText * Text = new TFarText(this);
-  Text->SetCaption(GetMsg(APPLY_COMMAND_PROMPT));
+  Text->SetCaption(GetMsg(NB_APPLY_COMMAND_PROMPT));
 
   CommandEdit = new TFarEdit(this);
   CommandEdit->SetHistory(APPLY_COMMAND_HISTORY);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(APPLY_COMMAND_HINT1));
+  Text->SetCaption(GetMsg(NB_APPLY_COMMAND_HINT1));
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(APPLY_COMMAND_HINT2));
+  Text->SetCaption(GetMsg(NB_APPLY_COMMAND_HINT2));
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(APPLY_COMMAND_HINT3));
+  Text->SetCaption(GetMsg(NB_APPLY_COMMAND_HINT3));
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(APPLY_COMMAND_HINT4));
+  Text->SetCaption(GetMsg(NB_APPLY_COMMAND_HINT4));
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(APPLY_COMMAND_HINT5));
+  Text->SetCaption(GetMsg(NB_APPLY_COMMAND_HINT5));
   LocalHintText = new TFarText(this);
-  LocalHintText->SetCaption(GetMsg(APPLY_COMMAND_HINT_LOCAL));
+  LocalHintText->SetCaption(GetMsg(NB_APPLY_COMMAND_HINT_LOCAL));
 
   new TFarSeparator(this);
 
   RemoteCommandButton = new TFarRadioButton(this);
-  RemoteCommandButton->SetCaption(GetMsg(APPLY_COMMAND_REMOTE_COMMAND));
+  RemoteCommandButton->SetCaption(GetMsg(NB_APPLY_COMMAND_REMOTE_COMMAND));
 
   SetNextItemPosition(ipRight);
 
   LocalCommandButton = new TFarRadioButton(this);
-  LocalCommandButton->SetCaption(GetMsg(APPLY_COMMAND_LOCAL_COMMAND));
+  LocalCommandButton->SetCaption(GetMsg(NB_APPLY_COMMAND_LOCAL_COMMAND));
 
   LocalHintText->SetEnabledDependency(LocalCommandButton);
 
@@ -6605,23 +6605,23 @@ TApplyCommandDialog::TApplyCommandDialog(TCustomFarPlugin * AFarPlugin) :
 
   ApplyToDirectoriesCheck = new TFarCheckBox(this);
   ApplyToDirectoriesCheck->SetCaption(
-    GetMsg(APPLY_COMMAND_APPLY_TO_DIRECTORIES));
+    GetMsg(NB_APPLY_COMMAND_APPLY_TO_DIRECTORIES));
 
   SetNextItemPosition(ipRight);
 
   RecursiveCheck = new TFarCheckBox(this);
-  RecursiveCheck->SetCaption(GetMsg(APPLY_COMMAND_RECURSIVE));
+  RecursiveCheck->SetCaption(GetMsg(NB_APPLY_COMMAND_RECURSIVE));
 
   SetNextItemPosition(ipNewLine);
 
   ShowResultsCheck = new TFarCheckBox(this);
-  ShowResultsCheck->SetCaption(GetMsg(APPLY_COMMAND_SHOW_RESULTS));
+  ShowResultsCheck->SetCaption(GetMsg(NB_APPLY_COMMAND_SHOW_RESULTS));
   ShowResultsCheck->SetEnabledDependency(RemoteCommandButton);
 
   SetNextItemPosition(ipRight);
 
   CopyResultsCheck = new TFarCheckBox(this);
-  CopyResultsCheck->SetCaption(GetMsg(APPLY_COMMAND_COPY_RESULTS));
+  CopyResultsCheck->SetCaption(GetMsg(NB_APPLY_COMMAND_COPY_RESULTS));
   CopyResultsCheck->SetEnabledDependency(RemoteCommandButton);
 
   AddStandardButtons();
@@ -6756,88 +6756,88 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   FCopyParamAttrs(CopyParamAttrs)
 {
   SetSize(TPoint(78, 25));
-  SetCaption(GetMsg(FULL_SYNCHRONIZE_TITLE));
+  SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_TITLE));
 
   TFarText * Text = new TFarText(this);
-  Text->SetCaption(GetMsg(FULL_SYNCHRONIZE_LOCAL_LABEL));
+  Text->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_LOCAL_LABEL));
 
   LocalDirectoryEdit = new TFarEdit(this);
   LocalDirectoryEdit->SetHistory(LOCAL_SYNC_HISTORY);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(FULL_SYNCHRONIZE_REMOTE_LABEL));
+  Text->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_REMOTE_LABEL));
 
   RemoteDirectoryEdit = new TFarEdit(this);
   RemoteDirectoryEdit->SetHistory(REMOTE_SYNC_HISTORY);
 
   TFarSeparator * Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(FULL_SYNCHRONIZE_DIRECTION_GROUP));
+  Separator->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_DIRECTION_GROUP));
 
   SynchronizeBothButton = new TFarRadioButton(this);
-  SynchronizeBothButton->SetCaption(GetMsg(FULL_SYNCHRONIZE_BOTH));
+  SynchronizeBothButton->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_BOTH));
 
   SetNextItemPosition(ipRight);
 
   SynchronizeRemoteButton = new TFarRadioButton(this);
-  SynchronizeRemoteButton->SetCaption(GetMsg(FULL_SYNCHRONIZE_REMOTE));
+  SynchronizeRemoteButton->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_REMOTE));
 
   SynchronizeLocalButton = new TFarRadioButton(this);
-  SynchronizeLocalButton->SetCaption(GetMsg(FULL_SYNCHRONIZE_LOCAL));
+  SynchronizeLocalButton->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_LOCAL));
 
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(FULL_SYNCHRONIZE_MODE_GROUP));
+  Separator->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_MODE_GROUP));
 
   SynchronizeFilesButton = new TFarRadioButton(this);
-  SynchronizeFilesButton->SetCaption(GetMsg(SYNCHRONIZE_SYNCHRONIZE_FILES));
+  SynchronizeFilesButton->SetCaption(GetMsg(NB_SYNCHRONIZE_SYNCHRONIZE_FILES));
 
   SetNextItemPosition(ipRight);
 
   MirrorFilesButton = new TFarRadioButton(this);
-  MirrorFilesButton->SetCaption(GetMsg(SYNCHRONIZE_MIRROR_FILES));
+  MirrorFilesButton->SetCaption(GetMsg(NB_SYNCHRONIZE_MIRROR_FILES));
 
   SynchronizeTimestampsButton = new TFarRadioButton(this);
-  SynchronizeTimestampsButton->SetCaption(GetMsg(SYNCHRONIZE_SYNCHRONIZE_TIMESTAMPS));
+  SynchronizeTimestampsButton->SetCaption(GetMsg(NB_SYNCHRONIZE_SYNCHRONIZE_TIMESTAMPS));
   SynchronizeTimestampsButton->SetEnabled(FLAGCLEAR(Options, fsoDisableTimestamp));
 
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(FULL_SYNCHRONIZE_GROUP));
+  Separator->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_GROUP));
 
   SynchronizeDeleteCheck = new TFarCheckBox(this);
-  SynchronizeDeleteCheck->SetCaption(GetMsg(SYNCHRONIZE_DELETE));
+  SynchronizeDeleteCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_DELETE));
 
   SetNextItemPosition(ipRight);
 
   SynchronizeExistingOnlyCheck = new TFarCheckBox(this);
-  SynchronizeExistingOnlyCheck->SetCaption(GetMsg(SYNCHRONIZE_EXISTING_ONLY));
+  SynchronizeExistingOnlyCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_EXISTING_ONLY));
   SynchronizeExistingOnlyCheck->SetEnabledDependencyNegative(SynchronizeTimestampsButton);
 
   SetNextItemPosition(ipNewLine);
 
   SynchronizePreviewChangesCheck = new TFarCheckBox(this);
-  SynchronizePreviewChangesCheck->SetCaption(GetMsg(SYNCHRONIZE_PREVIEW_CHANGES));
+  SynchronizePreviewChangesCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_PREVIEW_CHANGES));
 
   SetNextItemPosition(ipRight);
 
   SynchronizeSelectedOnlyCheck = new TFarCheckBox(this);
-  SynchronizeSelectedOnlyCheck->SetCaption(GetMsg(SYNCHRONIZE_SELECTED_ONLY));
+  SynchronizeSelectedOnlyCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_SELECTED_ONLY));
   SynchronizeSelectedOnlyCheck->SetEnabled(FLAGSET(FOptions, fsoAllowSelectedOnly));
 
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(FULL_SYNCHRONIZE_CRITERIONS_GROUP));
+  Separator->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_CRITERIONS_GROUP));
 
   SynchronizeByTimeCheck = new TFarCheckBox(this);
-  SynchronizeByTimeCheck->SetCaption(GetMsg(SYNCHRONIZE_BY_TIME));
+  SynchronizeByTimeCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_BY_TIME));
 
   SetNextItemPosition(ipRight);
 
   SynchronizeBySizeCheck = new TFarCheckBox(this);
-  SynchronizeBySizeCheck->SetCaption(GetMsg(SYNCHRONIZE_BY_SIZE));
+  SynchronizeBySizeCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_BY_SIZE));
   SynchronizeBySizeCheck->SetEnabledDependencyNegative(SynchronizeBothButton);
 
   SetNextItemPosition(ipNewLine);
@@ -6845,11 +6845,11 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   new TFarSeparator(this);
 
   SaveSettingsCheck = new TFarCheckBox(this);
-  SaveSettingsCheck->SetCaption(GetMsg(SYNCHRONIZE_REUSE_SETTINGS));
+  SaveSettingsCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_REUSE_SETTINGS));
 
   Separator = new TFarSeparator(this);
   Separator->SetGroup(1);
-  Separator->SetCaption(GetMsg(COPY_PARAM_GROUP));
+  Separator->SetCaption(GetMsg(NB_COPY_PARAM_GROUP));
 
   CopyParamLister = new TFarLister(this);
   CopyParamLister->SetHeight(3);
@@ -6864,7 +6864,7 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   Separator->SetPosition(-4);
 
   TFarButton * Button = new TFarButton(this);
-  Button->SetCaption(GetMsg(TRANSFER_SETTINGS_BUTTON));
+  Button->SetCaption(GetMsg(NB_TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
   Button->SetOnClick(nb::bind(&TFullSynchronizeDialog::TransferSettingsButtonClick, this));
@@ -6962,7 +6962,7 @@ void TFullSynchronizeDialog::Change()
     SynchronizeByTimeCheck->SetEnabled(!SynchronizeBothButton->GetChecked() &&
       !SynchronizeTimestampsButton->GetChecked() && !MirrorFilesButton->GetChecked());
     SynchronizeBySizeCheck->SetCaption(SynchronizeTimestampsButton->GetChecked() ?
-      GetMsg(SYNCHRONIZE_SAME_SIZE) : GetMsg(SYNCHRONIZE_BY_SIZE));
+      GetMsg(NB_SYNCHRONIZE_SAME_SIZE) : GetMsg(NB_SYNCHRONIZE_BY_SIZE));
 
     if (!SynchronizeBySizeCheck->GetChecked() && !SynchronizeByTimeCheck->GetChecked())
     {
@@ -7024,7 +7024,7 @@ bool TFullSynchronizeDialog::CloseQuery()
   {
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
 
-    switch (WinSCPPlugin->MoreMessageDialog(GetMsg(SAVE_SYNCHRONIZE_MODE), nullptr,
+    switch (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SAVE_SYNCHRONIZE_MODE), nullptr,
               qtConfirmation, qaYes | qaNo | qaCancel, nullptr))
     {
     case qaYes:
@@ -7181,7 +7181,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   FScroll(0),
   FCanScrollRight(false)
 {
-  SetCaption(GetMsg(CHECKLIST_TITLE));
+  SetCaption(GetMsg(NB_CHECKLIST_TITLE));
 
   Header = new TFarText(this);
 
@@ -7191,7 +7191,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   ListBox->SetBottom(-5);
   ListBox->SetOnMouseClick(nb::bind(&TSynchronizeChecklistDialog::ListBoxClick, this));
 
-  UnicodeString Actions = GetMsg(CHECKLIST_ACTIONS);
+  UnicodeString Actions = GetMsg(NB_CHECKLIST_ACTIONS);
   size_t Action = 0;
   while (!Actions.IsEmpty() && (Action < _countof(FActions)))
   {
@@ -7205,14 +7205,14 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   ButtonSeparator->SetBottom(ButtonSeparator->GetTop());
 
   CheckAllButton = new TFarButton(this);
-  CheckAllButton->SetCaption(GetMsg(CHECKLIST_CHECK_ALL));
+  CheckAllButton->SetCaption(GetMsg(NB_CHECKLIST_CHECK_ALL));
   CheckAllButton->SetCenterGroup(true);
   CheckAllButton->SetOnClick(nb::bind(&TSynchronizeChecklistDialog::CheckAllButtonClick, this));
 
   SetNextItemPosition(ipRight);
 
   UncheckAllButton = new TFarButton(this);
-  UncheckAllButton->SetCaption(GetMsg(CHECKLIST_UNCHECK_ALL));
+  UncheckAllButton->SetCaption(GetMsg(NB_CHECKLIST_UNCHECK_ALL));
   UncheckAllButton->SetCenterGroup(true);
   UncheckAllButton->SetOnClick(nb::bind(&TSynchronizeChecklistDialog::CheckAllButtonClick, this));
 
@@ -7301,7 +7301,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
 
   VideoModeButton->SetCaption(GetMsg(
     FarPlugin->ConsoleWindowState() == SW_SHOWMAXIMIZED ?
-      CHECKLIST_RESTORE : CHECKLIST_MAXIMIZE));
+      NB_CHECKLIST_RESTORE : NB_CHECKLIST_MAXIMIZE));
 
   static const int Ratio[FColumns] = {140, 100, 80, 150, -2, 100, 80, 150};
 
@@ -7519,7 +7519,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
 
 void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
 {
-  UnicodeString HeaderStr = GetMsg(CHECKLIST_HEADER);
+  UnicodeString HeaderStr = GetMsg(NB_CHECKLIST_HEADER);
   UnicodeString HeaderCaption(::StringOfChar(' ', 2));
 
   for (intptr_t Index = 0; Index < FColumns; ++Index)
@@ -7551,7 +7551,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
 void TSynchronizeChecklistDialog::UpdateControls()
 {
   ButtonSeparator->SetCaption(
-    FORMAT(GetMsg(CHECKLIST_CHECKED).c_str(), FChecked, ListBox->GetItems()->GetCount()));
+    FORMAT(GetMsg(NB_CHECKLIST_CHECKED).c_str(), FChecked, ListBox->GetItems()->GetCount()));
   CheckAllButton->SetEnabled(FChecked < ListBox->GetItems()->GetCount());
   UncheckAllButton->SetEnabled(FChecked > 0);
 }
@@ -7806,55 +7806,55 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   SetDefaultGroup(1);
 
   TFarText * Text = new TFarText(this);
-  Text->SetCaption(GetMsg(SYNCHRONIZE_LOCAL_LABEL));
+  Text->SetCaption(GetMsg(NB_SYNCHRONIZE_LOCAL_LABEL));
 
   LocalDirectoryEdit = new TFarEdit(this);
   LocalDirectoryEdit->SetHistory(LOCAL_SYNC_HISTORY);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(SYNCHRONIZE_REMOTE_LABEL));
+  Text->SetCaption(GetMsg(NB_SYNCHRONIZE_REMOTE_LABEL));
 
   RemoteDirectoryEdit = new TFarEdit(this);
   RemoteDirectoryEdit->SetHistory(REMOTE_SYNC_HISTORY);
 
   TFarSeparator * Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(SYNCHRONIZE_GROUP));
+  Separator->SetCaption(GetMsg(NB_SYNCHRONIZE_GROUP));
   Separator->SetGroup(0);
 
   SynchronizeDeleteCheck = new TFarCheckBox(this);
-  SynchronizeDeleteCheck->SetCaption(GetMsg(SYNCHRONIZE_DELETE));
+  SynchronizeDeleteCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_DELETE));
 
   SetNextItemPosition(ipRight);
 
   SynchronizeExistingOnlyCheck = new TFarCheckBox(this);
-  SynchronizeExistingOnlyCheck->SetCaption(GetMsg(SYNCHRONIZE_EXISTING_ONLY));
+  SynchronizeExistingOnlyCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_EXISTING_ONLY));
 
   SetNextItemPosition(ipNewLine);
 
   SynchronizeRecursiveCheck = new TFarCheckBox(this);
-  SynchronizeRecursiveCheck->SetCaption(GetMsg(SYNCHRONIZE_RECURSIVE));
+  SynchronizeRecursiveCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_RECURSIVE));
 
   SetNextItemPosition(ipRight);
 
   SynchronizeSelectedOnlyCheck = new TFarCheckBox(this);
-  SynchronizeSelectedOnlyCheck->SetCaption(GetMsg(SYNCHRONIZE_SELECTED_ONLY));
+  SynchronizeSelectedOnlyCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_SELECTED_ONLY));
   // have more complex enable rules
   SynchronizeSelectedOnlyCheck->SetGroup(0);
 
   SetNextItemPosition(ipNewLine);
 
   SynchronizeSynchronizeCheck = new TFarCheckBox(this);
-  SynchronizeSynchronizeCheck->SetCaption(GetMsg(SYNCHRONIZE_SYNCHRONIZE));
+  SynchronizeSynchronizeCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_SYNCHRONIZE));
   SynchronizeSynchronizeCheck->SetAllowGrayed(true);
 
   Separator = new TFarSeparator(this);
   Separator->SetGroup(0);
 
   SaveSettingsCheck = new TFarCheckBox(this);
-  SaveSettingsCheck->SetCaption(GetMsg(SYNCHRONIZE_REUSE_SETTINGS));
+  SaveSettingsCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_REUSE_SETTINGS));
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(COPY_PARAM_GROUP));
+  Separator->SetCaption(GetMsg(NB_COPY_PARAM_GROUP));
 
   CopyParamLister = new TFarLister(this);
   CopyParamLister->SetHeight(3);
@@ -7870,7 +7870,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   Separator->SetPosition(-4);
 
   TFarButton * Button = new TFarButton(this);
-  Button->SetCaption(GetMsg(TRANSFER_SETTINGS_BUTTON));
+  Button->SetCaption(GetMsg(NB_TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
   Button->SetOnClick(nb::bind(&TSynchronizeDialog::TransferSettingsButtonClick, this));
@@ -7878,13 +7878,13 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   SetNextItemPosition(ipRight);
 
   StartButton = new TFarButton(this);
-  StartButton->SetCaption(GetMsg(SYNCHRONIZE_START_BUTTON));
+  StartButton->SetCaption(GetMsg(NB_SYNCHRONIZE_START_BUTTON));
   StartButton->SetDefault(true);
   StartButton->SetCenterGroup(true);
   StartButton->SetOnClick(nb::bind(&TSynchronizeDialog::StartButtonClick, this));
 
   StopButton = new TFarButton(this);
-  StopButton->SetCaption(GetMsg(SYNCHRONIZE_STOP_BUTTON));
+  StopButton->SetCaption(GetMsg(NB_SYNCHRONIZE_STOP_BUTTON));
   StopButton->SetCenterGroup(true);
   StopButton->SetOnClick(nb::bind(&TSynchronizeDialog::StopButtonClick, this));
 
@@ -8052,7 +8052,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
     TMessageParams Params(0);
     Params.Params = qpNeverAskAgainCheck;
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
-    switch (WinSCPPlugin->MoreMessageDialog(GetMsg(SYNCHRONISE_BEFORE_KEEPUPTODATE),
+    switch (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SYNCHRONISE_BEFORE_KEEPUPTODATE),
         nullptr, qtConfirmation, qaYes | qaNo | qaCancel, &Params))
     {
     case qaNeverAskAgain:
@@ -8147,7 +8147,7 @@ bool TSynchronizeDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 
 void TSynchronizeDialog::UpdateControls()
 {
-  SetCaption(GetMsg(FSynchronizing ? SYNCHRONIZE_SYCHRONIZING : SYNCHRONIZE_TITLE));
+  SetCaption(GetMsg(FSynchronizing ? NB_SYNCHRONIZE_SYCHRONIZING : NB_SYNCHRONIZE_TITLE));
   StartButton->SetEnabled(!FSynchronizing);
   StopButton->SetEnabled(FSynchronizing);
   CloseButton->SetEnabled(!FSynchronizing);
@@ -8182,12 +8182,12 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * AFileList,
   UnicodeString & Target, UnicodeString & FileMask, bool Move)
 {
   UnicodeString Prompt = FileNameFormatString(
-    GetMsg(Move ? REMOTE_MOVE_FILE : REMOTE_COPY_FILE),
-    GetMsg(Move ? REMOTE_MOVE_FILES : REMOTE_COPY_FILES), AFileList, true);
+    GetMsg(Move ? NB_REMOTE_MOVE_FILE : NB_REMOTE_COPY_FILE),
+    GetMsg(Move ? NB_REMOTE_MOVE_FILES : NB_REMOTE_COPY_FILES), AFileList, true);
 
   UnicodeString Value = base::UnixIncludeTrailingBackslash(Target) + FileMask;
   bool Result = FPlugin->InputBox(
-    GetMsg(Move ? REMOTE_MOVE_TITLE : REMOTE_COPY_TITLE), Prompt,
+    GetMsg(Move ? NB_REMOTE_MOVE_TITLE : NB_REMOTE_COPY_TITLE), Prompt,
     Value, 0, MOVE_TO_HISTORY) && !Value.IsEmpty();
   if (Result)
   {
@@ -8200,8 +8200,8 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * AFileList,
 bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * AFile,
   UnicodeString & NewName)
 {
-  return FPlugin->InputBox(GetMsg(RENAME_FILE_TITLE).c_str(),
-    FORMAT(GetMsg(RENAME_FILE).c_str(), AFile->GetFileName().c_str()), NewName, 0) &&
+  return FPlugin->InputBox(GetMsg(NB_RENAME_FILE_TITLE).c_str(),
+    FORMAT(GetMsg(NB_RENAME_FILE).c_str(), AFile->GetFileName().c_str()), NewName, 0) &&
     !NewName.IsEmpty();
 }
 
@@ -8272,10 +8272,10 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
   // TRect CRect = GetClientRect();
   intptr_t ListHeight = GetClientSize().y - 4;
 
-  SetCaption(GetMsg(QUEUE_TITLE));
+  SetCaption(GetMsg(NB_QUEUE_TITLE));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(QUEUE_HEADER));
+  Text->SetCaption(GetMsg(NB_QUEUE_HEADER));
 
   Separator = new TFarSeparator(this);
   intptr_t ListTop = Separator->GetBottom();
@@ -8284,29 +8284,29 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
   Separator->Move(0, ListHeight);
 
   ExecuteButton = new TFarButton(this);
-  ExecuteButton->SetCaption(GetMsg(QUEUE_EXECUTE));
+  ExecuteButton->SetCaption(GetMsg(NB_QUEUE_EXECUTE));
   ExecuteButton->SetOnClick(nb::bind(&TQueueDialog::OperationButtonClick, this));
   ExecuteButton->SetCenterGroup(true);
 
   SetNextItemPosition(ipRight);
 
   DeleteButton = new TFarButton(this);
-  DeleteButton->SetCaption(GetMsg(QUEUE_DELETE));
+  DeleteButton->SetCaption(GetMsg(NB_QUEUE_DELETE));
   DeleteButton->SetOnClick(nb::bind(&TQueueDialog::OperationButtonClick, this));
   DeleteButton->SetCenterGroup(true);
 
   MoveUpButton = new TFarButton(this);
-  MoveUpButton->SetCaption(GetMsg(QUEUE_MOVE_UP));
+  MoveUpButton->SetCaption(GetMsg(NB_QUEUE_MOVE_UP));
   MoveUpButton->SetOnClick(nb::bind(&TQueueDialog::OperationButtonClick, this));
   MoveUpButton->SetCenterGroup(true);
 
   MoveDownButton = new TFarButton(this);
-  MoveDownButton->SetCaption(GetMsg(QUEUE_MOVE_DOWN));
+  MoveDownButton->SetCaption(GetMsg(NB_QUEUE_MOVE_DOWN));
   MoveDownButton->SetOnClick(nb::bind(&TQueueDialog::OperationButtonClick, this));
   MoveDownButton->SetCenterGroup(true);
 
   CloseButton = new TFarButton(this);
-  CloseButton->SetCaption(GetMsg(QUEUE_CLOSE));
+  CloseButton->SetCaption(GetMsg(NB_QUEUE_CLOSE));
   CloseButton->SetResult(brCancel);
   CloseButton->SetCenterGroup(true);
   CloseButton->SetDefault(true);
@@ -8421,22 +8421,22 @@ void TQueueDialog::UpdateControls()
 
   if ((QueueItem != nullptr) && (QueueItem->GetStatus() == TQueueItem::qsProcessing))
   {
-    ExecuteButton->SetCaption(GetMsg(QUEUE_PAUSE));
+    ExecuteButton->SetCaption(GetMsg(NB_QUEUE_PAUSE));
     ExecuteButton->SetEnabled(true);
   }
   else if ((QueueItem != nullptr) && (QueueItem->GetStatus() == TQueueItem::qsPaused))
   {
-    ExecuteButton->SetCaption(GetMsg(QUEUE_RESUME));
+    ExecuteButton->SetCaption(GetMsg(NB_QUEUE_RESUME));
     ExecuteButton->SetEnabled(true);
   }
   else if ((QueueItem != nullptr) && TQueueItem::IsUserActionStatus(QueueItem->GetStatus()))
   {
-    ExecuteButton->SetCaption(GetMsg(QUEUE_SHOW));
+    ExecuteButton->SetCaption(GetMsg(NB_QUEUE_SHOW));
     ExecuteButton->SetEnabled(true);
   }
   else
   {
-    ExecuteButton->SetCaption(GetMsg(QUEUE_EXECUTE));
+    ExecuteButton->SetCaption(GetMsg(NB_QUEUE_EXECUTE));
     ExecuteButton->SetEnabled(
       (QueueItem != nullptr) && (QueueItem->GetStatus() == TQueueItem::qsPending));
   }
@@ -8472,7 +8472,7 @@ bool TQueueDialog::CloseQuery()
   {
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
     Result = !FClosingPlugin || (FStatus->GetCount() == 0) ||
-      (WinSCPPlugin->MoreMessageDialog(GetMsg(QUEUE_PENDING_ITEMS), nullptr,
+      (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_QUEUE_PENDING_ITEMS), nullptr,
         qtWarning, qaOK | qaCancel) == qaCancel);
   }
   return Result;
@@ -8587,27 +8587,27 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
   switch (QueueItem->GetStatus())
   {
   case TQueueItem::qsPending:
-    ProgressStr = GetMsg(QUEUE_PENDING);
+    ProgressStr = GetMsg(NB_QUEUE_PENDING);
     break;
 
   case TQueueItem::qsConnecting:
-    ProgressStr = GetMsg(QUEUE_CONNECTING);
+    ProgressStr = GetMsg(NB_QUEUE_CONNECTING);
     break;
 
   case TQueueItem::qsQuery:
-    ProgressStr = GetMsg(QUEUE_QUERY);
+    ProgressStr = GetMsg(NB_QUEUE_QUERY);
     break;
 
   case TQueueItem::qsError:
-    ProgressStr = GetMsg(QUEUE_ERROR);
+    ProgressStr = GetMsg(NB_QUEUE_ERROR);
     break;
 
   case TQueueItem::qsPrompt:
-    ProgressStr = GetMsg(QUEUE_PROMPT);
+    ProgressStr = GetMsg(NB_QUEUE_PROMPT);
     break;
 
   case TQueueItem::qsPaused:
-    ProgressStr = GetMsg(QUEUE_PAUSED);
+    ProgressStr = GetMsg(NB_QUEUE_PAUSED);
     break;
   }
 
@@ -8628,14 +8628,14 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
       switch (Info->Operation)
       {
       case foCopy:
-        Operation = GetMsg(QUEUE_COPY);
+        Operation = GetMsg(NB_QUEUE_COPY);
         break;
 
       case foMove:
-        Operation = GetMsg(QUEUE_MOVE);
+        Operation = GetMsg(NB_QUEUE_MOVE);
         break;
       }
-      Direction = GetMsg((Info->Side == osLocal) ? QUEUE_UPLOAD : QUEUE_DOWNLOAD);
+      Direction = GetMsg((Info->Side == osLocal) ? NB_QUEUE_UPLOAD : NB_QUEUE_DOWNLOAD);
     }
 
     Values[0] = base::MinimizeName(Info->Source, PathMaxLen, (Info->Side == osRemote));
@@ -8660,7 +8660,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
         }
         else if (ProgressData->GetOperation() == foCalculateSize)
         {
-          Values[1] = GetMsg(QUEUE_CALCULATING_SIZE);
+          Values[1] = GetMsg(NB_QUEUE_CALCULATING_SIZE);
         }
       }
     }
@@ -8729,26 +8729,26 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
 {
   std::unique_ptr<TWinSCPDialog> Dialog(new TWinSCPDialog(FPlugin));
 
-  Dialog->SetCaption(GetMsg(CREATE_FOLDER_TITLE));
+  Dialog->SetCaption(GetMsg(NB_CREATE_FOLDER_TITLE));
   Dialog->SetSize(TPoint(66, 15));
 
   TFarText * Text = new TFarText(Dialog.get());
-  Text->SetCaption(GetMsg(CREATE_FOLDER_PROMPT));
+  Text->SetCaption(GetMsg(NB_CREATE_FOLDER_PROMPT));
 
   TFarEdit * DirectoryEdit = new TFarEdit(Dialog.get());
   DirectoryEdit->SetHistory(L"NewFolder");
 
   TFarSeparator * Separator = new TFarSeparator(Dialog.get());
-  Separator->SetCaption(GetMsg(CREATE_FOLDER_ATTRIBUTES));
+  Separator->SetCaption(GetMsg(NB_CREATE_FOLDER_ATTRIBUTES));
 
   TFarCheckBox * SetRightsCheck = new TFarCheckBox(Dialog.get());
-  SetRightsCheck->SetCaption(GetMsg(CREATE_FOLDER_SET_RIGHTS));
+  SetRightsCheck->SetCaption(GetMsg(NB_CREATE_FOLDER_SET_RIGHTS));
 
   TRightsContainer * RightsContainer = new TRightsContainer(Dialog.get(), false, true,
       true, SetRightsCheck);
 
   TFarCheckBox * SaveSettingsCheck = new TFarCheckBox(Dialog.get());
-  SaveSettingsCheck->SetCaption(GetMsg(CREATE_FOLDER_REUSE_SETTINGS));
+  SaveSettingsCheck->SetCaption(GetMsg(NB_CREATE_FOLDER_REUSE_SETTINGS));
   SaveSettingsCheck->Move(0, 6);
 
   Dialog->AddStandardButtons();

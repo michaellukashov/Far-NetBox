@@ -59,7 +59,7 @@ typedef nb::FastDelegate6<void,
   UnicodeString /*FileName*/, bool /*Success*/,
   TOnceDoneOperation & /*OnceDoneOperation*/> TFileOperationFinishedEvent;
 
-class TFileOperationProgressType : public TObject
+class NB_CORE_EXPORT TFileOperationProgressType : public TObject
 {
 private:
   TFileOperation FOperation;
@@ -259,7 +259,7 @@ public:
   UnicodeString GetLogStr(bool Done) const;
 };
 
-class TSuspendFileOperationProgress : public TObject
+class NB_CORE_EXPORT TSuspendFileOperationProgress : public TObject
 {
 NB_DISABLE_COPY(TSuspendFileOperationProgress)
 public:

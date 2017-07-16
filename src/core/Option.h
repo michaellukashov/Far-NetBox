@@ -14,7 +14,7 @@ typedef void (__closure *TLogOptionEvent)(UnicodeString LogStr);
 #endif // #if 0
 typedef nb::FastDelegate1<void, UnicodeString /*LogStr*/> TLogOptionEvent;
 
-class TOptions : public TObject
+class NB_CORE_EXPORT TOptions : public TObject
 {
 public:
   TOptions();

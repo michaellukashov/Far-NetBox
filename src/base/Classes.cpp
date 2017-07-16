@@ -1,3 +1,7 @@
+
+#include <vcl.h>
+#pragma hdrstop
+
 #include <iostream>
 
 #include <Classes.hpp>

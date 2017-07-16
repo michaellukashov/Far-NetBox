@@ -7,7 +7,7 @@
 #define CONST_HIDDEN_PREFIX L"_!_"
 
 class TNamedObjectList;
-class TNamedObject : public TPersistent
+class NB_CORE_EXPORT TNamedObject : public TPersistent
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -38,7 +38,7 @@ private:
   bool FHidden;
 };
 
-class TNamedObjectList : public TObjectList
+class NB_CORE_EXPORT TNamedObjectList : public TObjectList
 {
 public:
   static inline bool classof(const TObject * Obj)

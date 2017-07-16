@@ -42,7 +42,7 @@ const int mpAllowContinueOnError = 0x02;
 #define INI_SWITCH L"Ini"
 #define FINGERPRINTSCAN_SWITCH L"FingerprintScan"
 
-struct TMessageParams : public TObject
+struct NB_CORE_EXPORT TMessageParams : public TObject
 {
 NB_DISABLE_COPY(TMessageParams)
 public:

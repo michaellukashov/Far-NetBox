@@ -95,7 +95,7 @@ enum TSynchronizeOperation
   soDelete
 };
 
-class TSynchronizeController : public TObject
+class NB_CORE_EXPORT TSynchronizeController : public TObject
 {
 NB_DISABLE_COPY(TSynchronizeController)
 public:

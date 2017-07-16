@@ -1,3 +1,7 @@
+
+#include <vcl.h>
+#pragma hdrstop
+
 #include "WideStrUtils.hpp"
 
 nb::TEncodeType DetectUTF8Encoding(const RawByteString & S)

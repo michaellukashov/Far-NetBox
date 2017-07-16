@@ -32,7 +32,7 @@ class TRights;
 class TRemoteFileList;
 class THierarchicalStorage;
 
-class TRemoteToken : public TObject
+class NB_CORE_EXPORT TRemoteToken : public TObject
 {
 public:
   TRemoteToken();
@@ -75,7 +75,7 @@ public:
   UnicodeString GetLogText() const;
 };
 
-class TRemoteTokenList : public TObject
+class NB_CORE_EXPORT TRemoteTokenList : public TObject
 {
 public:
   TRemoteTokenList * Duplicate() const;
@@ -99,7 +99,7 @@ private:
   mutable TIDMap FIDMap;
 };
 
-class TRemoteFile : public TPersistent
+class NB_CORE_EXPORT TRemoteFile : public TPersistent
 {
 NB_DISABLE_COPY(TRemoteFile)
 public:
@@ -248,7 +248,7 @@ private:
   void Init();
 };
 
-class TRemoteDirectoryFile : public TRemoteFile
+class NB_CORE_EXPORT TRemoteDirectoryFile : public TRemoteFile
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -264,7 +264,7 @@ public:
   virtual ~TRemoteDirectoryFile() {}
 };
 
-class TRemoteParentDirectory : public TRemoteDirectoryFile
+class NB_CORE_EXPORT TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -277,7 +277,7 @@ public:
   virtual ~TRemoteParentDirectory() {}
 };
 
-class TRemoteFileList : public TObjectList
+class NB_CORE_EXPORT TRemoteFileList : public TObjectList
 {
 friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
@@ -329,7 +329,7 @@ public:
   TDateTime GetTimestamp() const { return FTimestamp; }
 };
 
-class TRemoteDirectory : public TRemoteFileList
+class NB_CORE_EXPORT TRemoteDirectory : public TRemoteFileList
 {
 friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
@@ -440,7 +440,7 @@ private:
   intptr_t FMaxSize;
 };
 
-class TRights : public TObject
+class NB_CORE_EXPORT TRights : public TObject
 {
 public:
   static const intptr_t TextLen = 9;
@@ -568,7 +568,7 @@ enum TValidProperty
 };
 
 // FIXME
-class TValidProperties // : public TObject
+class NB_CORE_EXPORT TValidProperties // : public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
@@ -651,39 +651,39 @@ public:
 
 #if 0
 // moved to base/Common.h
-bool IsUnixStyleWindowsPath(UnicodeString APath);
-bool UnixIsAbsolutePath(UnicodeString APath);
-UnicodeString UnixIncludeTrailingBackslash(UnicodeString APath);
-UnicodeString UnixExcludeTrailingBackslash(UnicodeString APath, bool Simple = false);
-UnicodeString SimpleUnixExcludeTrailingBackslash(UnicodeString APath);
-UnicodeString UnixCombinePaths(UnicodeString APath1, UnicodeString APath2);
-UnicodeString UnixExtractFileDir(UnicodeString APath);
-UnicodeString UnixExtractFilePath(UnicodeString APath);
-UnicodeString UnixExtractFileName(UnicodeString APath);
-UnicodeString UnixExtractFileExt(UnicodeString APath);
-Boolean UnixSamePath(UnicodeString APath1, UnicodeString APath2);
-bool UnixIsChildPath(UnicodeString AParent, UnicodeString AChild);
-bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
-bool UnixExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
-UnicodeString ExtractFileName(UnicodeString APath, bool Unix);
-bool IsUnixRootPath(UnicodeString APath);
-bool IsUnixHiddenFile(UnicodeString APath);
-UnicodeString AbsolutePath(UnicodeString Base, UnicodeString APath);
-UnicodeString FromUnixPath(UnicodeString APath);
-UnicodeString ToUnixPath(UnicodeString APath);
-UnicodeString MinimizeName(UnicodeString AFileName, intptr_t MaxLen, bool Unix);
-UnicodeString MakeFileList(const TStrings * AFileList);
-TDateTime ReduceDateTimePrecision(const TDateTime & ADateTime,
+NB_CORE_EXPORT bool IsUnixStyleWindowsPath(UnicodeString APath);
+NB_CORE_EXPORT bool UnixIsAbsolutePath(UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixIncludeTrailingBackslash(UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixExcludeTrailingBackslash(UnicodeString APath, bool Simple = false);
+NB_CORE_EXPORT UnicodeString SimpleUnixExcludeTrailingBackslash(UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixCombinePaths(UnicodeString APath1, UnicodeString APath2);
+NB_CORE_EXPORT UnicodeString UnixExtractFileDir(UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixExtractFilePath(UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixExtractFileName(UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixExtractFileExt(UnicodeString APath);
+NB_CORE_EXPORT Boolean UnixSamePath(UnicodeString APath1, UnicodeString APath2);
+NB_CORE_EXPORT bool UnixIsChildPath(UnicodeString AParent, UnicodeString AChild);
+NB_CORE_EXPORT bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
+NB_CORE_EXPORT bool UnixExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
+NB_CORE_EXPORT UnicodeString ExtractFileName(UnicodeString APath, bool Unix);
+NB_CORE_EXPORT bool IsUnixRootPath(UnicodeString APath);
+NB_CORE_EXPORT bool IsUnixHiddenFile(UnicodeString APath);
+NB_CORE_EXPORT UnicodeString AbsolutePath(UnicodeString Base, UnicodeString APath);
+NB_CORE_EXPORT UnicodeString FromUnixPath(UnicodeString APath);
+NB_CORE_EXPORT UnicodeString ToUnixPath(UnicodeString APath);
+NB_CORE_EXPORT UnicodeString MinimizeName(UnicodeString AFileName, intptr_t MaxLen, bool Unix);
+NB_CORE_EXPORT UnicodeString MakeFileList(const TStrings * AFileList);
+NB_CORE_EXPORT TDateTime ReduceDateTimePrecision(const TDateTime & ADateTime,
   TModificationFmt Precision);
-TModificationFmt LessDateTimePrecision(
+NB_CORE_EXPORT TModificationFmt LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2);
-UnicodeString UserModificationStr(const TDateTime & DateTime,
+NB_CORE_EXPORT UnicodeString UserModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
-UnicodeString ModificationStr(const TDateTime & DateTime,
+NB_CORE_EXPORT UnicodeString ModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
-int FakeFileImageIndex(UnicodeString AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
+NB_CORE_EXPORT int FakeFileImageIndex(UnicodeString AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
   UnicodeString * TypeName = nullptr);
-bool SameUserName(UnicodeString UserName1, UnicodeString UserName2);
-UnicodeString FormatMultiFilesToOneConfirmation(UnicodeString ATarget, bool Unix);
+NB_CORE_EXPORT bool SameUserName(UnicodeString UserName1, UnicodeString UserName2);
+NB_CORE_EXPORT UnicodeString FormatMultiFilesToOneConfirmation(UnicodeString ATarget, bool Unix);
 
 #endif // #if 0

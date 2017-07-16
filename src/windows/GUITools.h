@@ -12,29 +12,29 @@ typedef void (__closure* TProcessMessagesEvent)();
 #endif // #if 0
 typedef nb::FastDelegate0<void> TProcessMessagesEvent;
 
-bool FindFile(UnicodeString & APath);
-bool FindTool(UnicodeString Name, UnicodeString & APath);
-void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params,
+NB_CORE_EXPORT bool FindFile(UnicodeString & APath);
+NB_CORE_EXPORT bool FindTool(UnicodeString Name, UnicodeString & APath);
+NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params,
   bool ChangeWorkingDirectory = false);
-void ExecuteShellChecked(const UnicodeString Command);
-bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
+NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString Command);
+NB_CORE_EXPORT bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
   HANDLE & Handle);
-void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command, TProcessMessagesEvent ProcessMessages);
-bool CopyCommandToClipboard(UnicodeString Command);
-void OpenSessionInPutty(UnicodeString PuttyPath,
+NB_CORE_EXPORT void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command, TProcessMessagesEvent ProcessMessages);
+NB_CORE_EXPORT bool CopyCommandToClipboard(UnicodeString Command);
+NB_CORE_EXPORT void OpenSessionInPutty(UnicodeString PuttyPath,
   TSessionData * SessionData);
-bool SpecialFolderLocation(intptr_t PathID, UnicodeString & APath);
-UnicodeString UniqTempDir(const UnicodeString BaseDir,
+NB_CORE_EXPORT bool SpecialFolderLocation(intptr_t PathID, UnicodeString & APath);
+NB_CORE_EXPORT UnicodeString UniqTempDir(const UnicodeString BaseDir,
   const UnicodeString Identity, bool Mask = false);
-bool DeleteDirectory(const UnicodeString ADirName);
-UnicodeString GetPersonalFolder();
-UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
+NB_CORE_EXPORT bool DeleteDirectory(const UnicodeString ADirName);
+NB_CORE_EXPORT UnicodeString GetPersonalFolder();
+NB_CORE_EXPORT UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
   UnicodeString MultiItemsFormat, intptr_t Count, UnicodeString FirstItem);
-UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
+NB_CORE_EXPORT UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
   UnicodeString MultiItemsFormat, const TStrings * Items);
-UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
+NB_CORE_EXPORT UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
   UnicodeString MultiFilesFormat, const TStrings * AFiles, bool Remote);
-//UnicodeString FormatDateTimeSpan(UnicodeString TimeFormat, const TDateTime & DateTime);
+//NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(UnicodeString TimeFormat, const TDateTime & DateTime);
 
 #if 0
 
@@ -65,7 +65,7 @@ TComponent * FindComponentRecursively(TComponent * Root, UnicodeString Name);
 
 #endif // #if 0
 
-class TLocalCustomCommand : public TFileCustomCommand
+class NB_CORE_EXPORT TLocalCustomCommand : public TFileCustomCommand
 {
 public:
   TLocalCustomCommand();
@@ -170,5 +170,5 @@ private:
 
 #endif // #if 0
 
-extern const UnicodeString PageantTool;
-extern const UnicodeString PuttygenTool;
+NB_CORE_EXPORT extern const UnicodeString PageantTool;
+NB_CORE_EXPORT extern const UnicodeString PuttygenTool;
