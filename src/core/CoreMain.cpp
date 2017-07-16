@@ -8,6 +8,7 @@
 #include "Configuration.h"
 #include "PuttyIntf.h"
 #include "Cryptography.h"
+#include <DateUtils.hpp>
 #ifndef NO_FILEZILLA
 #include "FileZillaIntf.h"
 #endif
@@ -23,9 +24,10 @@ TQueryButtonAlias::TQueryButtonAlias() :
   GrouppedShiftState(ssShift),
   ElevationRequired(false)
 {
+  MenuButton = false;
 }
 
-TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword) :
+TQueryParams::TQueryParams(uintptr_t AParams, UnicodeString AHelpKeyword) :
   Aliases(nullptr),
   AliasesCount(0),
   Params(AParams),
@@ -48,23 +50,23 @@ TQueryParams::TQueryParams(const TQueryParams & Source)
 
 void TQueryParams::Assign(const TQueryParams & Source)
 {
-  Params = Source.Params;
-  Aliases = Source.Aliases;
-  AliasesCount = Source.AliasesCount;
-  Timer = Source.Timer;
-  TimerEvent = Source.TimerEvent;
-  TimerMessage = Source.TimerMessage;
-  TimerAnswers = Source.TimerAnswers;
-  TimerQueryType = Source.TimerQueryType;
-  Timeout = Source.Timeout;
-  TimeoutAnswer = Source.TimeoutAnswer;
-  NoBatchAnswers = Source.NoBatchAnswers;
-  HelpKeyword = Source.HelpKeyword;
+  *this = Source;
 }
 
 TQueryParams & TQueryParams::operator=(const TQueryParams & other)
 {
-  Assign(other);
+  Params = other.Params;
+  Aliases = other.Aliases;
+  AliasesCount = other.AliasesCount;
+  Timer = other.Timer;
+  TimerEvent = other.TimerEvent;
+  TimerMessage = other.TimerMessage;
+  TimerAnswers = other.TimerAnswers;
+  TimerQueryType = other.TimerQueryType;
+  Timeout = other.Timeout;
+  TimeoutAnswer = other.TimeoutAnswer;
+  NoBatchAnswers = other.NoBatchAnswers;
+  HelpKeyword = other.HelpKeyword;
   return *this;
 }
 
@@ -81,7 +83,7 @@ bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
   return
     (Prompts->GetCount() == 1) && FLAGCLEAR(ToInt(Prompts->GetObj(0)), pupEcho) &&
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
-      (Kind == pkTIS) || (Kind == pkCryptoCard));
+     (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
 
 bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
@@ -140,7 +142,7 @@ void CoreLoad()
     ShowExtendedException(&E);
   }
 
-  // should be noop, unless exception occurred above
+  // should be noop, unless exception occured above
   ConfigStorage->CloseAll();
 
   StoredSessions = new TStoredSessionList();
@@ -217,6 +219,7 @@ void CoreMaintenanceTask()
   DontSaveRandomSeed();
 }
 
+
 TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
   FUseBusyCursor(UseBusyCursor),
   FToken(nullptr)
@@ -234,6 +237,7 @@ TOperationVisualizer::~TOperationVisualizer()
     BusyEnd(FToken);
   }
 }
+
 
 TInstantOperationVisualizer::TInstantOperationVisualizer() :
   TOperationVisualizer(true),

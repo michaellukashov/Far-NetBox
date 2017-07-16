@@ -234,11 +234,11 @@ bool TFileZillaIntf::Chmod(int Value, const wchar_t* FileName,
   return Check(FFileZillaApi->Chmod(Value, FileName, Path), L"chmod");
 }
 
-bool TFileZillaIntf::Delete(const wchar_t* FileName, const wchar_t* APath)
+bool TFileZillaIntf::Delete(const wchar_t* FileName, const wchar_t* APath, bool FileNameOnly)
 {
   DebugAssert(FFileZillaApi != NULL);
   CServerPath Path(APath);
-  return Check(FFileZillaApi->Delete(FileName, Path), L"delete");
+  return Check(FFileZillaApi->Delete(FileName, Path, FileNameOnly), L"delete");
 }
 
 bool TFileZillaIntf::RemoveDir(const wchar_t* FileName, const wchar_t* APath)
@@ -272,7 +272,7 @@ bool TFileZillaIntf::ListFile(const wchar_t * FileName, const wchar_t * APath)
 }
 
 bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile,
-  const wchar_t * RemoteFile, const wchar_t * RemotePath, bool Get, __int64 Size,
+  const wchar_t * RemoteFile, const wchar_t * RemotePath, bool Get, int64_t Size,
   int Type, void * UserData)
 {
   t_transferfile Transfer;
@@ -493,6 +493,8 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.Permissions = Source.permissionstr;
           Dest.HumanPerm = Source.humanpermstr;
           Dest.OwnerGroup = Source.ownergroup;
+          Dest.Owner = Source.owner;
+          Dest.Group = Source.group;
           Dest.Size = Source.size;
           Dest.Dir = Source.dir;
           Dest.Link = Source.bLink;

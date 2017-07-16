@@ -128,12 +128,12 @@ int CmpName(const wchar_t * pattern, const wchar_t * str, bool CmpNameSearchMode
   return CmpName_Body(pattern, str, CmpNameSearchMode);
 }
 
-TMask::TMask(const UnicodeString & Mask) :
+TMask::TMask(UnicodeString Mask) :
   FMask(Mask)
 {
 }
 
-bool TMask::Matches(const UnicodeString & Str) const
+bool TMask::Matches(UnicodeString Str) const
 {
   return CmpName(FMask.c_str(), Str.c_str()) == TRUE;
 }

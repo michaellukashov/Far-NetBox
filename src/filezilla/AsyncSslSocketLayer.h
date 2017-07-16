@@ -226,11 +226,11 @@ private:
   BIO* m_sslbio; // The data to encrypt / the decrypted data has to go though this bio
 
   // Send buffer
-  char* m_pNetworkSendBuffer;
+  char *m_pNetworkSendBuffer;
   int m_nNetworkSendBufferLen;
   int m_nNetworkSendBufferMaxLen;
 
-  char* m_pRetrySendBuffer;
+  char *m_pRetrySendBuffer;
   int m_nRetrySendBufferLen;
 
   bool m_mayTriggerRead;

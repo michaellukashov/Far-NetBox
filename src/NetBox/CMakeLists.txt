@@ -1336,6 +1336,7 @@ set(NETBOX_SOURCES
   ../base/Exceptions.cpp
   ../base/FileBuffer.cpp
   ../base/Global.cpp
+  ../base/System.SyncObjs.cpp
 
   ../core/RemoteFiles.cpp
   ../core/Terminal.cpp
@@ -1343,6 +1344,7 @@ set(NETBOX_SOURCES
   ../core/Queue.cpp
   ../core/SecureShell.cpp
   ../core/SessionInfo.cpp
+  ../core/Script.cpp
   ../core/CoreMain.cpp
   ../core/FileMasks.cpp
   ../core/CopyParam.cpp
@@ -1604,6 +1606,7 @@ target_link_libraries(NetBox PRIVATE
 )
 
 target_compile_options(NetBox PRIVATE
+  -DBUILD_OFFICIAL
 #  -wd4251 -wd4275 -wd4661
   ${ATLMFC_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}

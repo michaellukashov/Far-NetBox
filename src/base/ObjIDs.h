@@ -23,6 +23,7 @@ enum TObjectClassId
   OBJECT_CLASS_ECallbackGuardAbort,
   OBJECT_CLASS_EFileNotFoundError,
   OBJECT_CLASS_EOSError,
+  OBJECT_CLASS_EInvalidOperation,
   OBJECT_CLASS_TPersistent,
   OBJECT_CLASS_TStrings,
   OBJECT_CLASS_TNamedObject,
@@ -88,6 +89,7 @@ enum TObjectClassId
   OBJECT_CLASS_TTerminalItem,
   OBJECT_CLASS_TQueueItem,
   OBJECT_CLASS_TLocatedQueueItem,
+  OBJECT_CLASS_TParallelTransferQueueItem,
   OBJECT_CLASS_TTransferQueueItem,
   OBJECT_CLASS_TUploadQueueItem,
   OBJECT_CLASS_TDownloadQueueItem,
@@ -196,5 +198,6 @@ enum TObjectClassId
   OBJECT_CLASS_TFarSeparator,
   OBJECT_CLASS_TFarLister,
 
+  OBJECT_CLASS_TCollectedFileList,
 };
 

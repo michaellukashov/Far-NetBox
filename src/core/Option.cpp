@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -13,7 +14,7 @@ TOptions::TOptions() :
 {
 }
 
-void TOptions::Add(const UnicodeString & Value)
+void TOptions::Add(UnicodeString Value)
 {
   if (!FNoMoreSwitches &&
     (Value.Length() == 2) &&
@@ -28,8 +29,8 @@ void TOptions::Add(const UnicodeString & Value)
     intptr_t Index = 0; // shut up
     wchar_t SwitchMark = L'\0';
     if (!FNoMoreSwitches &&
-      (Value.Length() >= 2) &&
-      (FSwitchMarks.Pos(Value[1]) > 0))
+        (Value.Length() >= 2) &&
+        (FSwitchMarks.Pos(Value[1]) > 0))
     {
       Index = 2;
       Switch = true;
@@ -104,7 +105,7 @@ bool TOptions::GetEmpty() const
   return FOptions.empty();
 }
 
-bool TOptions::FindSwitch(const UnicodeString & Switch,
+bool TOptions::FindSwitch(UnicodeString Switch,
   UnicodeString & Value, intptr_t & ParamsStart, intptr_t & ParamsCount, bool CaseSensitive, bool & ValueSet)
 {
   ParamsStart = 0;
@@ -149,20 +150,20 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
   return Found;
 }
 
-bool TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value)
+bool TOptions::FindSwitch(UnicodeString Switch, UnicodeString & Value)
 {
   bool ValueSet;
   return FindSwitch(Switch, Value, ValueSet);
 }
 
-bool TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value, bool & ValueSet)
+bool TOptions::FindSwitch(UnicodeString Switch, UnicodeString & Value, bool & ValueSet)
 {
   intptr_t ParamsStart;
   intptr_t ParamsCount;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount, false, ValueSet);
 }
 
-bool TOptions::FindSwitch(const UnicodeString & Switch)
+bool TOptions::FindSwitch(UnicodeString Switch)
 {
   UnicodeString Value;
   intptr_t ParamsStart;
@@ -171,7 +172,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch)
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount, false, ValueSet);
 }
 
-bool TOptions::FindSwitchCaseSensitive(const UnicodeString & Switch)
+bool TOptions::FindSwitchCaseSensitive(UnicodeString Switch)
 {
   UnicodeString Value;
   intptr_t ParamsStart;
@@ -180,19 +181,19 @@ bool TOptions::FindSwitchCaseSensitive(const UnicodeString & Switch)
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount, true, ValueSet);
 }
 
-bool TOptions::FindSwitch(const UnicodeString & Switch,
+bool TOptions::FindSwitch(UnicodeString Switch,
   TStrings * Params, intptr_t ParamsMax)
 {
   return DoFindSwitch(Switch, Params, ParamsMax, false);
 }
 
-bool TOptions::FindSwitchCaseSensitive(const UnicodeString & Switch,
+bool TOptions::FindSwitchCaseSensitive(UnicodeString Switch,
   TStrings * Params, int ParamsMax)
 {
   return DoFindSwitch(Switch, Params, ParamsMax, true);
 }
 
-bool TOptions::DoFindSwitch(const UnicodeString & Switch,
+bool TOptions::DoFindSwitch(UnicodeString Switch,
   TStrings * Params, intptr_t ParamsMax, bool CaseSensitive)
 {
   UnicodeString Value;
@@ -218,8 +219,8 @@ bool TOptions::DoFindSwitch(const UnicodeString & Switch,
   return Result;
 }
 
-UnicodeString TOptions::SwitchValue(const UnicodeString & Switch,
-  const UnicodeString & Default)
+UnicodeString TOptions::SwitchValue(UnicodeString Switch,
+  UnicodeString Default)
 {
   UnicodeString Value;
   FindSwitch(Switch, Value);
@@ -230,7 +231,7 @@ UnicodeString TOptions::SwitchValue(const UnicodeString & Switch,
   return Value;
 }
 
-bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence)
+bool TOptions::SwitchValue(UnicodeString Switch, bool Default, bool DefaultOnNonExistence)
 {
   bool Result = false;
   int64_t IntValue = 0;
@@ -262,7 +263,7 @@ bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool Defa
   return Result;
 }
 
-bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default)
+bool TOptions::SwitchValue(UnicodeString Switch, bool Default)
 {
   return SwitchValue(Switch, Default, Default);
 }

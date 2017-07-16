@@ -2,6 +2,6 @@
 
 #include <Classes.hpp>
 
-UnicodeString ReplaceStr(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);
-bool StartsStr(const UnicodeString & SubStr, const UnicodeString & Str);
-bool EndsStr(const UnicodeString & SubStr, const UnicodeString & Str);
+UnicodeString ReplaceStr(UnicodeString Str, UnicodeString What, UnicodeString ByWhat);
+bool StartsStr(UnicodeString SubStr, UnicodeString Str);
+bool EndsStr(UnicodeString SubStr, UnicodeString Str);

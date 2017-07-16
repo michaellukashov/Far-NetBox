@@ -126,8 +126,8 @@ static TFarCheckBox * FindNeverAskAgainCheck(TFarDialog * Dialog)
   return nullptr; // DebugNotNull(dyn_cast<TFarCheckBox>(Dialog->FindComponent(L"NeverAskAgainCheck")));
 }
 
-TFarDialog * CreateMessageDialogEx(const UnicodeString & Msg,
-  TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const UnicodeString & HelpKeyword,
+TFarDialog * CreateMessageDialogEx(UnicodeString Msg,
+  TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword,
   const TMessageParams * Params, TFarButton *& TimeoutButton)
 {
   TMsgDlgType DlgType;
@@ -226,7 +226,7 @@ uintptr_t ExecuteMessageDialog(TForm * Dialog, uintptr_t Answers, const TMessage
   uintptr_t Answer = Dialog->ShowModal();
   // mrCancel is returned always when X button is pressed, despite
   // no Cancel button was on the dialog. Find valid "cancel" answer.
-  // mrNone is retuned when Windows session is closing (log off)
+  // mrNone is returned when Windows session is closing (log off)
   if ((Answer == mrCancel) || (Answer == mrNone))
   {
     Answer = CancelAnswer(Answers);
@@ -477,21 +477,21 @@ TForm * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMe
   return Dialog.release();
 }
 
-uintptr_t MoreMessageDialog(const UnicodeString & Message, TStrings * MoreMessages,
-  TQueryType Type, uintptr_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
+uintptr_t MoreMessageDialog(UnicodeString Message, TStrings * MoreMessages,
+  TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
 {
   std::unique_ptr<TForm> Dialog(CreateMoreMessageDialogEx(Message, MoreMessages, Type, Answers, HelpKeyword, Params));
   uintptr_t Result = ExecuteMessageDialog(Dialog.get(), Answers, Params);
   return Result;
 }
 
-uintptr_t MessageDialog(const UnicodeString & Msg, TQueryType Type,
-  uintptr_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
+uintptr_t MessageDialog(UnicodeString Msg, TQueryType Type,
+  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
 {
   return MoreMessageDialog(Msg, nullptr, Type, Answers, HelpKeyword, Params);
 }
 
-uintptr_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & MoreMessages)
+uintptr_t SimpleErrorDialog(UnicodeString Msg, UnicodeString MoreMessages)
 {
   uintptr_t Result;
   TStrings * More = nullptr;
@@ -576,7 +576,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 }
 
 uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
-  const UnicodeString & /*MessageFormat*/, uintptr_t /*Answers*/, const UnicodeString & /*HelpKeyword*/,
+  UnicodeString /*MessageFormat*/, uintptr_t /*Answers*/, UnicodeString /*HelpKeyword*/,
   const TMessageParams * /*Params*/)
 {
 #if 0
@@ -609,8 +609,8 @@ uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
 }
 
 uintptr_t FatalExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
-  int /*SessionReopenTimeout*/, const UnicodeString & /*MessageFormat*/, uintptr_t /*Answers*/,
-  const UnicodeString & /*HelpKeyword*/, const TMessageParams * /*Params*/)
+  int /*SessionReopenTimeout*/, UnicodeString /*MessageFormat*/, uintptr_t /*Answers*/,
+  UnicodeString /*HelpKeyword*/, const TMessageParams * /*Params*/)
 {
 #if 0
   DebugAssert(FLAGCLEAR(Answers, qaRetry));
@@ -828,7 +828,8 @@ void CopyParamListPopup(TRect Rect, TPopupMenu * Menu,
   MenuPopup(Menu, Rect, nullptr);
 }
 
-bool CopyParamListPopupClick(TObject * Sender,
+//---------------------------------------------------------------------------
+int CopyParamListPopupClick(TObject * Sender,
   TCopyParamType & Param, UnicodeString & Preset, int CopyParamAttrs,
   bool * SaveSettings)
 {
@@ -871,18 +872,83 @@ bool CopyParamListPopupClick(TObject * Sender,
   }
   return Result;
 }
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+class TCustomCommandPromptsDialog : public TCustomDialog
+{
+public:
+  __fastcall TCustomCommandPromptsDialog(
+    UnicodeString CustomCommandName, UnicodeString HelpKeyword,
+    const TUnicodeStringVector & Prompts, const TUnicodeStringVector & Defaults);
+
+  bool __fastcall Execute(TUnicodeStringVector & Values);
+
+private:
+  UnicodeString __fastcall HistoryKey(int Index);
+
+  std::vector<THistoryComboBox *> FEdits;
+  TUnicodeStringVector FPrompts;
+  UnicodeString FCustomCommandName;
+};
+//---------------------------------------------------------------------------
+__fastcall TCustomCommandPromptsDialog::TCustomCommandPromptsDialog(
+    UnicodeString CustomCommandName, UnicodeString HelpKeyword,
+    const TUnicodeStringVector & Prompts, const TUnicodeStringVector & Defaults) :
+  TCustomDialog(HelpKeyword)
+{
+
+  FCustomCommandName = CustomCommandName;
+  Caption = FMTLOAD(CUSTOM_COMMANDS_PARAMS_TITLE, (FCustomCommandName));
+
+  FPrompts = Prompts;
+  DebugAssert(FPrompts.size() == Defaults.size());
+  for (size_t Index = 0; Index < FPrompts.size(); Index++)
+  {
+    UnicodeString Prompt = FPrompts[Index];
+    if (Prompt.IsEmpty())
+    {
+      Prompt = LoadStr(CUSTOM_COMMANDS_PARAM_PROMPT2);
+    }
+    THistoryComboBox * ComboBox = new THistoryComboBox(this);
+    ComboBox->AutoComplete = false;
+    AddComboBox(ComboBox, CreateLabel(Prompt));
+    ComboBox->Items = CustomWinConfiguration->History[HistoryKey(Index)];
+    ComboBox->Text = Defaults[Index];
+    FEdits.push_back(ComboBox);
+  }
+}
+
+#endif // #if 0
 
 TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
-  TCustomCommand * ChildCustomCommand, const UnicodeString CustomCommandName) :
+  TCustomCommand * ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword) :
   TInteractiveCustomCommand(ChildCustomCommand)
 {
-  FCustomCommandName = StripHotkey(CustomCommandName);
+  FCustomCommandName = StripEllipsis(StripHotkey(CustomCommandName));
+  FHelpKeyword = HelpKeyword;
+}
+
+void TWinInteractiveCustomCommand::PatternHint(intptr_t Index, UnicodeString Pattern)
+{
+  if (IsPromptPattern(Pattern))
+  {
+    UnicodeString Prompt;
+    UnicodeString Default;
+    bool Delimit = false;
+    ParsePromptPattern(Pattern, Prompt, Default, Delimit);
+#if 0
+    FIndexes.insert(std::make_pair(Index, FPrompts.size()));
+    FPrompts.push_back(Prompt);
+    FDefaults.push_back(Default);
+#endif // #if 0
+  }
 }
 
 void TWinInteractiveCustomCommand::Prompt(
-  intptr_t Index, const UnicodeString & Prompt, UnicodeString & Value) const
+  intptr_t Index, UnicodeString Prompt, UnicodeString & Value) const
 {
   UnicodeString APrompt = Prompt;
+#if 0
   if (APrompt.IsEmpty())
   {
     APrompt = FMTLOAD(CUSTOM_COMMANDS_PARAM_PROMPT, FCustomCommandName.c_str());
@@ -897,11 +963,13 @@ void TWinInteractiveCustomCommand::Prompt(
   {
     Abort();
   }
+#endif // #if 0
 }
 
 void TWinInteractiveCustomCommand::Execute(
-  const UnicodeString & Command, UnicodeString & Value)
+  UnicodeString /*Command*/, UnicodeString & /*Value*/) const
 {
+#if 0
   // inspired by
   // http://forum.codecall.net/topic/72472-execute-a-console-program-and-capture-its-output/
   HANDLE StdOutOutput;
@@ -912,13 +980,32 @@ void TWinInteractiveCustomCommand::Execute(
   SecurityAttributes.nLength = sizeof(SecurityAttributes);
   SecurityAttributes.lpSecurityDescriptor = nullptr;
   SecurityAttributes.bInheritHandle = TRUE;
-  try
+  try__finally
   {
-    if (!CreatePipe(&StdOutOutput, &StdOutInput, &SecurityAttributes, 0))
+    SCOPE_EXIT
+    {
+      if (StdOutOutput != INVALID_HANDLE_VALUE)
+      {
+        CloseHandle(StdOutOutput);
+      }
+      if (StdOutInput != INVALID_HANDLE_VALUE)
+      {
+        CloseHandle(StdOutInput);
+      }
+      if (StdInOutput != INVALID_HANDLE_VALUE)
+      {
+        CloseHandle(StdInOutput);
+      }
+      if (StdInInput != INVALID_HANDLE_VALUE)
+      {
+        CloseHandle(StdInInput);
+      }
+    };
+    if (!::CreatePipe(&StdOutOutput, &StdOutInput, &SecurityAttributes, 0))
     {
       throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"out"));
     }
-    else if (!CreatePipe(&StdInOutput, &StdInInput, &SecurityAttributes, 0))
+    else if (!::CreatePipe(&StdInOutput, &StdInInput, &SecurityAttributes, 0))
     {
       throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"in"));
     }
@@ -934,15 +1021,20 @@ void TWinInteractiveCustomCommand::Execute(
       StartupInfo.hStdOutput = StdOutInput;
       StartupInfo.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
 
-      if (!CreateProcess(nullptr, Command.c_str(), &SecurityAttributes, &SecurityAttributes,
+      if (!::CreateProcess(nullptr, Command.c_str(), &SecurityAttributes, &SecurityAttributes,
             TRUE, NORMAL_PRIORITY_CLASS, nullptr, nullptr, &StartupInfo, &ProcessInformation))
       {
         throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"process"));
       }
       else
       {
-        try
+        try__finally
         {
+          SCOPE_EXIT
+          {
+            CloseHandle(ProcessInformation.hProcess);
+            CloseHandle(ProcessInformation.hThread);
+          };
           // wait until the console program terminated
           bool Running = true;
           while (Running)
@@ -983,14 +1075,17 @@ void TWinInteractiveCustomCommand::Execute(
         }
         __finally
         {
+#if 0
           CloseHandle(ProcessInformation.hProcess);
           CloseHandle(ProcessInformation.hThread);
-        }
+#endif // #if 0
+        };
       }
     }
   }
   __finally
   {
+#if 0
     if (StdOutOutput != INVALID_HANDLE_VALUE)
     {
       CloseHandle(StdOutOutput);
@@ -1007,8 +1102,12 @@ void TWinInteractiveCustomCommand::Execute(
     {
       CloseHandle(StdInInput);
     }
-  }
+#endif // #if 0
+  };
+#endif // #if 0
 }
+
+#if 0
 
 void MenuPopup(TPopupMenu * Menu, TButton * Button)
 {
@@ -1047,10 +1146,21 @@ TComponent * GetPopupComponent(TObject * Sender)
 
 void MenuButton(TButton * Button)
 {
-  Button->Images = GlyphsModule->ButtonImages;
+  Button->Images = GetButtonImages(Button);
+}
+//---------------------------------------------------------------------------
+static void __fastcall MenuButtonRescale(TComponent * Sender, TObject * /*Token*/)
+{
+  TButton * Button = DebugNotNull(dynamic_cast<TButton *>(Sender));
+  SetMenuButtonImages(Button);
+}
+//---------------------------------------------------------------------------
+{
+  SetMenuButtonImages(Button);
   Button->ImageIndex = 0;
   Button->DisabledImageIndex = 1;
   Button->ImageAlignment = iaRight;
+  SetRescaleFunction(Button, MenuButtonRescale);
 }
 
 TRect CalculatePopupRect(TButton * Button)
@@ -1126,7 +1236,7 @@ void CenterButtonImage(TButton * Button)
   }
 }
 
-int AdjustLocaleFlag(const UnicodeString & S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off)
+int AdjustLocaleFlag(UnicodeString S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off)
 {
   int Result = !S.IsEmpty() && StrToInt(S);
   switch (LocaleFlagOverride)
@@ -1251,14 +1361,18 @@ bool HandleMinimizeSysCommand(TMessage & Message)
 
 void WinInitialize()
 {
-//  if (JclHookExceptions())
-//  {
-//    JclStackTrackingOptions << stAllModules;
-//    JclAddExceptNotifier(DoExceptNotify, npFirstChain);
-//  }
+#if 0
+  if (JclHookExceptions())
+  {
+    JclStackTrackingOptions << stAllModules;
+    JclAddExceptNotifier(DoExceptNotify, npFirstChain);
+  }
+#endif // #if 0
 
   SetErrorMode(SEM_FAILCRITICALERRORS);
-//  OnApiPath = ::ApiPath;
+#if 0
+  OnApiPath = ::ApiPath;
+#endif // #if 0
   MainThread = ::GetCurrentThreadId();
 
 }
@@ -1269,8 +1383,8 @@ void WinFinalize()
 //  JclRemoveExceptNotifier(DoExceptNotify);
 }
 
-bool InputDialog(const UnicodeString & ACaption,
-  const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
+bool InputDialog(UnicodeString ACaption,
+  UnicodeString APrompt, UnicodeString & Value, UnicodeString HelpKeyword,
   TStrings * History, bool PathInput,
   TInputDialogInitializeEvent OnInitialize, bool Echo)
 {
@@ -1279,8 +1393,8 @@ bool InputDialog(const UnicodeString & ACaption,
   return Result;
 }
 
-uintptr_t MessageDialog(const UnicodeString & Msg, TQueryType Type,
-  uintptr_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
+uintptr_t MessageDialog(UnicodeString Msg, TQueryType Type,
+  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
 {
   DebugUsedParam(HelpKeyword);
   uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
@@ -1288,7 +1402,7 @@ uintptr_t MessageDialog(const UnicodeString & Msg, TQueryType Type,
 }
 
 uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
-  uintptr_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
+  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
 {
   DebugUsedParam(HelpKeyword);
   UnicodeString Msg = LoadStr(Ident);
@@ -1296,16 +1410,16 @@ uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
   return Result;
 }
 
-uintptr_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & /*MoreMessages*/)
+uintptr_t SimpleErrorDialog(UnicodeString Msg, UnicodeString /*MoreMessages*/)
 {
   uintptr_t Answers = qaOK;
   uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, qtError, Answers, nullptr);
   return Result;
 }
 
-uintptr_t MoreMessageDialog(const UnicodeString & Message,
+uintptr_t MoreMessageDialog(UnicodeString Message,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
-  const UnicodeString & HelpKeyword, const TMessageParams * Params)
+  UnicodeString HelpKeyword, const TMessageParams * Params)
 {
   DebugUsedParam(HelpKeyword);
   uintptr_t Result = GetGlobals()->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);

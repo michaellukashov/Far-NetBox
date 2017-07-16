@@ -337,12 +337,18 @@ void sk_init(void)
 #if (defined _MSC_VER && _MSC_VER < 1900) || defined __MINGW32__ || defined MPEXT
     /* Older Visual Studio, and MinGW as of Ubuntu 16.04, don't know
      * about this function at all, so can't type-check it */
-    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, inet_ntop);
 #else
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, inet_ntop);
 #endif
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, connect);
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, bind);
+#if (defined _MSC_VER) || defined __MINGW32__
+    /* Older Visual Studio, and MinGW as of Ubuntu 16.04, don't know
+     * about this function at all, so can't type-check it */
+    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, inet_ntop);
+#else
+    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, inet_ntop);
+#endif
 #ifdef MPEXT
     PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getsockopt);
 #endif
@@ -1784,8 +1790,10 @@ void select_result(WPARAM wParam, LPARAM lParam)
 	    }
 	}
 	if (err != 0)
-	    plug_closing(s->plug, winsock_error_string(err), err, 0);
-	return;
+	{
+		plug_closing(s->plug, winsock_error_string(err), err, 0);
+		return;
+	}
     }
 
     noise_ultralight((unsigned long)lParam);

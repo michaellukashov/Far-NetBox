@@ -205,10 +205,10 @@ int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
   }
   __finally
   {
-/*
+#if 0
     delete Prompts;
     delete Results;
-*/
+#endif // #if 0
   };
 
   return Result;
@@ -326,7 +326,6 @@ void nonfatal(const char * fmt, ...)
   SSHFatalError(fmt, Param);
   va_end(Param);
 }
-
 
 void CleanupExit(int /*code*/);
 
@@ -552,7 +551,7 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 
-TKeyType GetKeyType(const UnicodeString & AFileName)
+TKeyType GetKeyType(UnicodeString AFileName)
 {
   DebugAssert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   DebugAssert(ktSSH2PublicOpenSSH == SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH);
@@ -563,7 +562,7 @@ TKeyType GetKeyType(const UnicodeString & AFileName)
   return Result;
 }
 
-bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeString & Comment)
+bool IsKeyEncrypted(TKeyType KeyType, UnicodeString FileName, UnicodeString & Comment)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
@@ -601,7 +600,7 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeStr
   return Result;
 }
 
-TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const UnicodeString & Passphrase)
+TPrivateKey * LoadKey(TKeyType KeyType, UnicodeString FileName, UnicodeString Passphrase)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
@@ -645,7 +644,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
   return reinterpret_cast<TPrivateKey *>(Ssh2Key);
 }
 
-void ChangeKeyComment(TPrivateKey * PrivateKey, const UnicodeString & Comment)
+void ChangeKeyComment(TPrivateKey * PrivateKey, UnicodeString Comment)
 {
   AnsiString AnsiComment(Comment);
   struct ssh2_userkey * Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
@@ -653,8 +652,8 @@ void ChangeKeyComment(TPrivateKey * PrivateKey, const UnicodeString & Comment)
   Ssh2Key->comment = dupstr(AnsiComment.c_str());
 }
 
-void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
-  const UnicodeString & Passphrase, TPrivateKey * PrivateKey)
+void SaveKey(TKeyType KeyType, UnicodeString FileName,
+  UnicodeString Passphrase, TPrivateKey * PrivateKey)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
@@ -685,13 +684,7 @@ void FreeKey(TPrivateKey * PrivateKey)
   sfree(Ssh2Key);
 }
 
-int64_t ParseSize(const UnicodeString & SizeStr)
-{
-  AnsiString AnsiSizeStr = AnsiString(SizeStr);
-  return parse_blocksize64(AnsiSizeStr.c_str());
-}
-
-bool HasGSSAPI(const UnicodeString & CustomPath)
+bool HasGSSAPI(UnicodeString CustomPath)
 {
   static int has = -1;
   if (has < 0)
@@ -721,10 +714,10 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
     }
     __finally
     {
-/*
+#if 0
       ssh_gss_cleanup(List);
       conf_free(conf);
-*/
+#endif // #if 0
     };
 
     if (has < 0)
@@ -749,7 +742,7 @@ static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & 
   {
     const ssh_signkey * SignKey = SignKeys[Index];
     UnicodeString Name = UnicodeString(SignKey->name);
-    if (StartsStr(Name + L" ", Fingerprint))
+    if (::StartsStr(Name + L" ", Fingerprint))
     {
       intptr_t LenStart = Name.Length() + 1;
       Fingerprint[LenStart] = NormalizedSeparator;
@@ -760,7 +753,7 @@ static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & 
       KeyType = UnicodeString(SignKey->keytype);
       return;
     }
-    else if (StartsStr(Name + NormalizedSeparator, Fingerprint))
+    else if (::StartsStr(Name + NormalizedSeparator, Fingerprint))
     {
       KeyType = UnicodeString(SignKey->keytype);
       return;
@@ -768,7 +761,7 @@ static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & 
   }
 }
 
-UnicodeString NormalizeFingerprint(const UnicodeString & AFingerprint)
+UnicodeString NormalizeFingerprint(UnicodeString AFingerprint)
 {
   UnicodeString Fingerprint = AFingerprint;
   UnicodeString KeyType; // unused
@@ -776,7 +769,7 @@ UnicodeString NormalizeFingerprint(const UnicodeString & AFingerprint)
   return Fingerprint;
 }
 
-UnicodeString GetKeyTypeFromFingerprint(const UnicodeString & AFingerprint)
+UnicodeString GetKeyTypeFromFingerprint(UnicodeString AFingerprint)
 {
   UnicodeString Fingerprint = AFingerprint;
   UnicodeString KeyType;
@@ -802,5 +795,10 @@ UnicodeString Sha256(const char * Data, size_t Size)
   putty_SHA256_Simple(Data, static_cast<int>(Size), Digest);
   UnicodeString Result(BytesToHex(Digest, _countof(Digest)));
   return Result;
+}
+
+void DllHijackingProtection()
+{
+  dll_hijacking_protection();
 }
 

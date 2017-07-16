@@ -109,10 +109,14 @@ struct FontSpec *fontspec_new(const char *name,
 #endif
 
 #ifndef __WINE__
+#ifdef MPEXT
+/* use them as is in bcb */
+#else
 /* Up-to-date Windows headers warn that the unprefixed versions of
  * these names are deprecated. */
 #define stricmp _stricmp
 #define strnicmp _strnicmp
+#endif
 #else
 /* Compiling with winegcc, _neither_ version of these functions
  * exists. Use the POSIX names. */
@@ -549,6 +553,21 @@ GLOBAL int restricted_acl;
 #ifndef DLL_DIRECTORY_COOKIE
 typedef PVOID DLL_DIRECTORY_COOKIE;
 DECLSPEC_IMPORT DLL_DIRECTORY_COOKIE WINAPI AddDllDirectory (PCWSTR NewDirectory);
+#endif
+
+/* A few pieces of up-to-date Windows API definition needed for older
+ * compilers. */
+#ifndef LOAD_LIBRARY_SEARCH_SYSTEM32
+#define LOAD_LIBRARY_SEARCH_SYSTEM32 0x00000800
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_USER_DIRS
+#define LOAD_LIBRARY_SEARCH_USER_DIRS 0x00000400
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+#define LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR 0x00000100
+#endif
+#if _MSC_VER < 1400
+typedef PVOID DLL_DIRECTORY_COOKIE;
 #endif
 
 /* A few pieces of up-to-date Windows API definition needed for older

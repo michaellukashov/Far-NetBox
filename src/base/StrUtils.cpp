@@ -2,17 +2,17 @@
 #include <StrUtils.hpp>
 #include <Sysutils.hpp>
 
-UnicodeString ReplaceStr(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat)
+UnicodeString ReplaceStr(UnicodeString Str, UnicodeString What, UnicodeString ByWhat)
 {
   return ::StringReplaceAll(Str, What, ByWhat);
 }
 
-bool StartsStr(const UnicodeString & SubStr, const UnicodeString & Str)
+bool StartsStr(UnicodeString SubStr, UnicodeString Str)
 {
   return Str.Pos(SubStr) == 1;
 }
 
-bool EndsStr(const UnicodeString & SubStr, const UnicodeString & Str)
+bool EndsStr(UnicodeString SubStr, UnicodeString Str)
 {
   if (SubStr.Length() > Str.Length())
     return false;

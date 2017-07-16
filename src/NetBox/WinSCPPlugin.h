@@ -23,7 +23,7 @@ public:
   virtual intptr_t GetMinFarVersion() const;
 
   virtual void HandleException(Exception * E, int OpMode = 0);
-  uintptr_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
+  uintptr_t MoreMessageDialog(UnicodeString Str, TStrings * MoreMessages,
     TQueryType Type, uintptr_t Answers, const TMessageParams * Params = nullptr);
   void ShowExtendedException(Exception * E);
   bool CopyParamCustomDialog(TCopyParamType & CopyParam,
@@ -39,7 +39,7 @@ protected:
   virtual bool ConfigureEx(intptr_t Item);
   virtual intptr_t ProcessEditorEventEx(intptr_t Event, void * Param);
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec);
-  bool CopyParamDialog(const UnicodeString & Caption, TCopyParamType & CopyParam,
+  bool CopyParamDialog(UnicodeString Caption, TCopyParamType & CopyParam,
     intptr_t CopyParamAttrs);
   void MessageClick(void * Token, uintptr_t Result, bool & Close);
 

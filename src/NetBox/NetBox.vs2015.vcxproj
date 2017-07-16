@@ -253,6 +253,7 @@
     <ClCompile Include="..\base\Exceptions.cpp" />
     <ClCompile Include="..\base\FileBuffer.cpp" />
     <ClCompile Include="..\base\Global.cpp" />
+    <ClCompile Include="..\base\System.SyncObjs.cpp" />
     <ClCompile Include="..\core\Bookmarks.cpp" />
     <ClCompile Include="..\core\Configuration.cpp" />
     <ClCompile Include="..\core\CopyParam.cpp" />
@@ -273,6 +274,7 @@
     <ClCompile Include="..\core\SecureShell.cpp" />
     <ClCompile Include="..\core\SessionData.cpp" />
     <ClCompile Include="..\core\SessionInfo.cpp" />
+    <ClCompile Include="..\core\Script.cpp" />
     <ClCompile Include="..\core\SftpFileSystem.cpp" />
     <ClCompile Include="..\core\Terminal.cpp" />
     <ClCompile Include="..\core\WebDAVFileSystem.cpp" />

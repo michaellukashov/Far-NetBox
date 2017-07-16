@@ -47,6 +47,8 @@
 
 */
 
+#include <memory.h>
+
 #define sha1_ctx                  SHA_State
 #define sha1_begin(ctx)           putty_SHA_Init(ctx)
 #define sha1_hash(buf, len, ctx)  putty_SHA_Bytes(ctx, buf, len)
@@ -186,7 +188,7 @@ typedef struct
 {
   uint8_t nonce[BLOCK_SIZE]; /* the CTR nonce          */
   uint8_t encr_bfr[BLOCK_SIZE]; /* encrypt buffer         */
-  void* encr_ctx; /* encryption context     */
+  void * encr_ctx; /* encryption context     */
   hmac_ctx auth_ctx; /* authentication context */
   uint32_t encr_pos; /* block position (enc)   */
   uint32_t pwd_len; /* password length        */
@@ -382,7 +384,7 @@ static RawByteString AES256Salt()
   return Result;
 }
 
-void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString & Salt, RawByteString & Output, RawByteString & Mac)
 {
   fcrypt_ctx aes;
@@ -402,7 +404,7 @@ void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   fcrypt_end(reinterpret_cast<uint8_t *>(const_cast<char *>(Mac.c_str())), &aes);
 }
 
-void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString & Output)
 {
   RawByteString Salt;
@@ -412,8 +414,8 @@ void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   Output = Salt + Encrypted + Mac;
 }
 
-bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
-  const RawByteString & Salt, RawByteString & Output, const RawByteString & Mac)
+bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
+  RawByteString Salt, RawByteString & Output, RawByteString Mac)
 {
   fcrypt_ctx aes;
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
@@ -431,7 +433,7 @@ bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   return (Mac2 == Mac);
 }
 
-bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString & Output)
 {
   bool Result =
@@ -450,7 +452,7 @@ bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   return Result;
 }
 
-void AES256CreateVerifier(const UnicodeString & Input, RawByteString & Verifier)
+void AES256CreateVerifier(UnicodeString Input, RawByteString & Verifier)
 {
   RawByteString Salt = AES256Salt();
   RawByteString Dummy = AES256Salt();
@@ -462,7 +464,7 @@ void AES256CreateVerifier(const UnicodeString & Input, RawByteString & Verifier)
   Verifier = Salt + Dummy + Mac;
 }
 
-bool AES256Verify(const UnicodeString & Input, const RawByteString & Verifier)
+bool AES256Verify(UnicodeString Input, RawByteString Verifier)
 {
   int SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
   RawByteString Salt = Verifier.SubString(1, SaltLength);
@@ -501,7 +503,7 @@ static uint8_t SScrambleTable[256] =
 uint8_t * ScrambleTable;
 uint8_t * UnscrambleTable;
 
-RawByteString ScramblePassword(const UnicodeString & Password)
+RawByteString ScramblePassword(UnicodeString Password)
 {
 #define SCRAMBLE_LENGTH_EXTENSION 50
   UTF8String UtfPassword = UTF8String(Password);
@@ -535,7 +537,7 @@ RawByteString ScramblePassword(const UnicodeString & Password)
   return Result;
 }
 
-bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Password)
+bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
 {
   RawByteString LocalScrambled = Scrambled;
   char * S = const_cast<char *>(LocalScrambled.c_str());
@@ -602,7 +604,7 @@ int PasswordMaxLength()
   return 128;
 }
 
-int IsValidPassword(const UnicodeString & Password)
+int IsValidPassword(UnicodeString Password)
 {
   if (Password.IsEmpty() || (Password.Length() > PasswordMaxLength()))
   {

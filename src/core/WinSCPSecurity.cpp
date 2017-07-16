@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -8,15 +9,6 @@
 
 #define PWALG_SIMPLE_INTERNAL 0x00
 #define PWALG_SIMPLE_EXTERNAL 0x01
-
-#define PWALG_SIMPLE_STRING ((RawByteString)"0123456789ABCDEF")
-#define PWALG_SIMPLE_MAXLEN 50
-#define PWALG_SIMPLE_FLAG 0xFF
-
-static int random(int range)
-{
-  return static_cast<int>(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
-}
 
 RawByteString SimpleEncryptChar(uint8_t Ch)
 {
@@ -42,10 +34,10 @@ uint8_t SimpleDecryptNextChar(RawByteString & Str)
   }
 }
 
-RawByteString EncryptPassword(const UnicodeString & APassword, const UnicodeString & AKey, Integer /*Algorithm*/)
+RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString UnicodeKey, Integer /* Algorithm */)
 {
-  UTF8String Password = UTF8String(APassword);
-  UTF8String Key = UTF8String(AKey);
+  UTF8String Password = UTF8String(UnicodePassword);
+  UTF8String Key = UTF8String(UnicodeKey);
 
   RawByteString Result("");
   intptr_t Shift, Index;
@@ -71,10 +63,9 @@ RawByteString EncryptPassword(const UnicodeString & APassword, const UnicodeStri
   return Result;
 }
 
-UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeString & AKey, Integer /*Algorithm*/)
+UnicodeString DecryptPassword(RawByteString Password, UnicodeString UnicodeKey, Integer /*Algorithm*/)
 {
-  RawByteString Password = APassword;
-  UTF8String Key = UTF8String(AKey);
+  UTF8String Key = UTF8String(UnicodeKey);
   UTF8String Result("");
   uint8_t Length;
 
@@ -99,24 +90,23 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
   return UnicodeString(Result);
 }
 
-RawByteString SetExternalEncryptedPassword(const RawByteString & APassword)
+RawByteString SetExternalEncryptedPassword(RawByteString Password)
 {
   RawByteString Result;
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG));
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_EXTERNAL));
-  Result += UTF8String(BytesToHex(reinterpret_cast<const uint8_t *>(APassword.c_str()), APassword.Length()));
+  Result += UTF8String(BytesToHex(reinterpret_cast<const uint8_t *>(Password.c_str()), Password.Length()));
   return Result;
 }
 
-bool GetExternalEncryptedPassword(const RawByteString & AEncrypted, RawByteString & APassword)
+bool GetExternalEncryptedPassword(RawByteString Encrypted, RawByteString & Password)
 {
-  RawByteString Encrypted = AEncrypted;
   bool Result =
     (SimpleDecryptNextChar(Encrypted) == PWALG_SIMPLE_FLAG) &&
     (SimpleDecryptNextChar(Encrypted) == PWALG_SIMPLE_EXTERNAL);
   if (Result)
   {
-    APassword = HexToBytes(UTF8ToString(Encrypted));
+    Password = HexToBytes(UTF8ToString(Encrypted));
   }
   return Result;
 }

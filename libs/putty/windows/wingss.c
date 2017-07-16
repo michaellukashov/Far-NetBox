@@ -51,7 +51,7 @@ PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      MakeSignature,
 		      (PCtxtHandle, ULONG, PSecBufferDesc, ULONG));
-PUTTY_DECL_WINDOWS_FUNCTION(static, void *,
+PUTTY_DECL_WINDOWS_FUNCTION(static, PVOID,
                       AddDllDirectory,
                       (PCWSTR));
 

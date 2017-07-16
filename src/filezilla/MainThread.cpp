@@ -126,7 +126,7 @@ BOOL CMainThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
           break;
         case FZ_COMMAND_DELETE:
           DebugAssert(m_pControlSocket);
-          m_pControlSocket->Delete(pCommand->param1, pCommand->path);
+          m_pControlSocket->Delete(pCommand->param1, pCommand->path, (pCommand->param4 != 0));
           break;
         case FZ_COMMAND_REMOVEDIR:
           DebugAssert(m_pControlSocket);
@@ -363,12 +363,12 @@ void CMainThread::SendDirectoryListing(t_directory * pDirectoryToSend)
   }
 }
 
-__int64 CMainThread::GetAsyncRequestID() const
+int64_t CMainThread::GetAsyncRequestID() const
 {
   return m_nAsyncRequestID;
 }
 
-__int64 CMainThread::GetNextAsyncRequestID()
+int64_t CMainThread::GetNextAsyncRequestID()
 {
   return ++m_nAsyncRequestID;
 }

@@ -136,7 +136,7 @@ DWORD CNBFile::LoadFile(const wchar_t * fileName, rde::vector<char> & fileConten
   return f.LastError();
 }
 
-void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth)
+void FarWrapText(UnicodeString Text, TStrings * Result, intptr_t MaxWidth)
 {
   size_t TabSize = 8;
   TStringList Lines;

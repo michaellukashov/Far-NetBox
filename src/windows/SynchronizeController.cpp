@@ -110,19 +110,19 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
 }
 
 void TSynchronizeController::SynchronizeChange(
-  TObject * /*Sender*/, const UnicodeString & Directory, bool & SubdirsChanged)
+  TObject * /*Sender*/, UnicodeString Directory, bool & SubdirsChanged)
 {
   try
   {
     UnicodeString RootLocalDirectory = ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
-    UnicodeString RemoteDirectory = core::UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
+    UnicodeString RemoteDirectory = base::UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
 
     UnicodeString LocalDirectory = ::IncludeTrailingBackslash(Directory);
 
     DebugAssert(LocalDirectory.SubString(1, RootLocalDirectory.Length()) ==
       RootLocalDirectory);
     RemoteDirectory = RemoteDirectory +
-      core::ToUnixPath(LocalDirectory.SubString(RootLocalDirectory.Length() + 1,
+      base::ToUnixPath(LocalDirectory.SubString(RootLocalDirectory.Length() + 1,
         LocalDirectory.Length() - RootLocalDirectory.Length()));
 
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
@@ -190,7 +190,7 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
 }
 
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
-  const UnicodeString & AFileName)
+  UnicodeString AFileName)
 {
   TSynchronizeLogEntry Entry;
   UnicodeString Message;
@@ -214,7 +214,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 }
 
 void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
-  const UnicodeString & Message)
+  UnicodeString Message)
 {
   if (FSynchronizeLog != nullptr)
   {
@@ -223,7 +223,7 @@ void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
 }
 
 void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
-  const UnicodeString & DirectoryName, bool & Add)
+  UnicodeString DirectoryName, bool & Add)
 {
   if ((FOptions != nullptr) && (FOptions->Filter != nullptr))
   {
@@ -239,7 +239,7 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 }
 
 void TSynchronizeController::SynchronizeInvalid(
-  TObject * /*Sender*/, const UnicodeString & Directory, const UnicodeString & ErrorStr)
+  TObject * /*Sender*/, UnicodeString Directory, UnicodeString ErrorStr)
 {
   if (FOnSynchronizeInvalid != nullptr)
   {

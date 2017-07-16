@@ -15,26 +15,9 @@
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 
-class TCriticalSection // : public TObject
-{
-CUSTOM_MEM_ALLOCATION_IMPL
-NB_DISABLE_COPY(TCriticalSection)
-public:
-  TCriticalSection();
-  ~TCriticalSection();
+#include <System.SyncObjs.hpp>
 
-  void Enter() const;
-  void Leave() const;
-
-  int GetAcquired() const { return FAcquired; }
-
-private:
-  mutable CRITICAL_SECTION FSection;
-  mutable int FAcquired;
-};
-
-
-class TGuard // : public TObject
+class TGuard
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TGuard)
@@ -46,8 +29,7 @@ private:
   const TCriticalSection & FCriticalSection;
 };
 
-
-class TUnguard // : public TObject
+class TUnguard
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TUnguard)
@@ -59,18 +41,31 @@ private:
   TCriticalSection & FCriticalSection;
 };
 
-#if !defined(_DEBUG)
 
-#define DebugAssert(p) (void)(p)
-#define DebugCheck(p) (p)
-#define DebugFail() (void)0
+#include <assert.h>
+#define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
+#if !defined(_DEBUG) || defined(DESIGN_ONLY)
+#define DebugAssert(p)   (void)(p)
+#define DebugCheck(p)    (p)
+#define DebugFail()      (void)0
+#else // if !defined(_DEBUG) || defined(DESIGN_ONLY)
+void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber);
+#define DebugAssert(p) ((p) ? (void)0 : DoAssert(TEXT(#p), TEXT(__FILE__), __LINE__))
+#define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
+#define DebugFail() DebugAssert(false)
+#endif // if !defined(_DEBUG) || defined(DESIGN_ONLY)
 
 #define DebugAlwaysTrue(p) (p)
 #define DebugAlwaysFalse(p) (p)
 #define DebugNotNull(p) (p)
+#define TraceInitPtr(p) (p)
+#define TraceInitStr(p) (p)
+#define DebugUsedParam(p) (void)(p)
+#if 0
+#define DebugUsedParam(p) ((&p) == (&p))
+#endif // #if 0
 
-#else // _DEBUG
-
+#if defined(_DEBUG)
 void SetTraceFile(HANDLE ATraceFile);
 void CleanupTracing();
 #define TRACEENV "WINSCPTRACE"
@@ -83,18 +78,13 @@ void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
   uintptr_t Line, const wchar_t * AFormat, va_list Args);
 
 #ifdef TRACE_IN_MEMORY
+
 void TraceDumpToFile();
 void TraceInMemoryCallback(const wchar_t * Msg);
 
 #endif // TRACE_IN_MEMORY
 
 #define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
-
-void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber);
-
-#define DebugAssert(p) ((p) ? (void)0 : DoAssert(TEXT(#p), TEXT(__FILE__), __LINE__))
-#define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
-#define DebugFail() DebugAssert(false)
 
 inline bool DoAlwaysTrue(bool Value, const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
 {
@@ -124,13 +114,19 @@ inline T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filena
   return p;
 }
 
+#undef DebugAlwaysTrue
+#undef DebugAlwaysFalse
+#undef DebugNotNull
+#undef TraceInitPtr
+#undef TraceInitStr
+
 #define DebugAlwaysTrue(p) DoAlwaysTrue((p), TEXT(#p), TEXT(__FILE__), __LINE__)
 #define DebugAlwaysFalse(p) DoAlwaysFalse((p), TEXT(#p), TEXT(__FILE__), __LINE__)
 #define DebugNotNull(p) DoCheckNotNull((p), TEXT(#p), TEXT(__FILE__), __LINE__)
+#define TraceInitPtr(p) (p)
+#define TraceInitStr(p) (p)
 
-#endif // _DEBUG
-
-#define DebugUsedParam(p) (void)(p)
+#endif // #if defined(_DEBUG)
 
 #define MB_TEXT(x) const_cast<wchar_t *>(::MB2W(x).c_str())
 
