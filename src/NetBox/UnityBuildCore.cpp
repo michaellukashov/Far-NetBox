@@ -37,6 +37,7 @@
 #include "../core/CopyParam.cpp"
 #include "../core/SessionData.cpp"
 #include "../core/Configuration.cpp"
+#include "../core/FileSystems.cpp"
 #include "../core/ScpFileSystem.cpp"
 #include "../core/FtpFileSystem.cpp"
 #include "../core/SftpFileSystem.cpp"
@@ -47,9 +48,9 @@
 #include "../core/HierarchicalStorage.cpp"
 #include "../core/Option.cpp"
 #include "../core/FileInfo.cpp"
-#include "../core/FileSystems.cpp"
 #include "../core/Bookmarks.cpp"
 #include "../core/WinSCPSecurity.cpp"
+
 #include "../core/Http.cpp"
 #include "../core/NeonIntf.cpp"
 #include "../windows/SynchronizeController.cpp"
@@ -58,5 +59,6 @@
 #include "../windows/Tools.cpp"
 #include "../windows/ProgParams.cpp"
 #include "../windows/UserInterface.cpp"
+#include "../windows/WinInterface.cpp"
 
 #include <disable_warnings_in_std_end.hpp>

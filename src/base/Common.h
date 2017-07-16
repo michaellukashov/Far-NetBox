@@ -370,7 +370,6 @@ private:
 typedef rde::vector<UnicodeString> TUnicodeStringVector;
 
 
-
 namespace base {
 //TODO: move to Sysutils.hpp
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
