@@ -74,11 +74,8 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 class TSessionActionRecord : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TSessionActionRecord;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSessionActionRecord); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionActionRecord) || TObject::is(Kind); }
 public:
   explicit TSessionActionRecord(TActionLog * Log, TLogAction Action) :
     TObject(OBJECT_CLASS_TSessionActionRecord),

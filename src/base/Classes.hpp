@@ -66,7 +66,6 @@ class NB_CORE_EXPORT TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  // inline TObjectClassId GetKind() const { return FKind; }
   static inline bool classof(const TObject * /*Obj*/) { return true; }
   virtual bool is(TObjectClassId Kind) const { return Kind == FKind; }
 public:
@@ -150,8 +149,8 @@ struct TRect
 class NB_CORE_EXPORT TPersistent : public TObject
 {
 public:
-  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPersistent); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPersistent); }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPersistent); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPersistent) || TObject::is(Kind); }
 public:
   TPersistent() : TObject(OBJECT_CLASS_TPersistent) {}
   explicit TPersistent(TObjectClassId Kind);
@@ -176,7 +175,7 @@ typedef intptr_t (CompareFunc)(const void * Item1, const void * Item2);
 class NB_CORE_EXPORT TList : public TPersistent
 {
 public:
-  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TList); }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TPersistent::is(Kind); }
 public:
   TList();
@@ -211,19 +210,8 @@ private:
 class NB_CORE_EXPORT TObjectList : public TList
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TObjectList ||
-      Obj->GetKind() == OBJECT_CLASS_TStrings ||
-      Obj->GetKind() == OBJECT_CLASS_TStringList ||
-      Obj->GetKind() == OBJECT_CLASS_TFarList ||
-      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems ||
-      Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
-      Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
-      Obj->GetKind() == OBJECT_CLASS_TTerminalList ||
-      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TObjectList); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TObjectList) || TList::is(Kind); }
 public:
   explicit TObjectList(TObjectClassId Kind = OBJECT_CLASS_TObjectList);
   virtual ~TObjectList();
@@ -252,14 +240,8 @@ class TStream;
 class NB_CORE_EXPORT TStrings : public TObjectList
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TStrings ||
-      Obj->GetKind() == OBJECT_CLASS_TStringList ||
-      Obj->GetKind() == OBJECT_CLASS_TFarList ||
-      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TStrings); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStrings) || TObjectList::is(Kind); }
 public:
   TStrings();
   explicit TStrings(TObjectClassId Kind);
@@ -325,13 +307,8 @@ class NB_CORE_EXPORT TStringList : public TStrings
 {
 friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TStringList ||
-      Obj->GetKind() == OBJECT_CLASS_TFarList ||
-      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TStringList); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
 public:
   explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList);
   virtual ~TStringList();

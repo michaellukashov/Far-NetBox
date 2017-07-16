@@ -44,12 +44,8 @@ friend class TBookmarks;
 friend class TBookmark;
 NB_DISABLE_COPY(TBookmarkList)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      // Obj->GetKind() == OBJECT_CLASS_TBookmarkList;
-      Obj->is(OBJECT_CLASS_TBookmarkList);
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TBookmarkList); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBookmarkList) || TPersistent::is(Kind); }
 public:
   explicit TBookmarkList();
   virtual ~TBookmarkList();
@@ -97,11 +93,8 @@ class NB_CORE_EXPORT TBookmark : public TPersistent
 friend class TBookmarkList;
 NB_DISABLE_COPY(TBookmark)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TBookmark;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TBookmark); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBookmark) || TPersistent::is(Kind); }
 public:
   TBookmark();
 

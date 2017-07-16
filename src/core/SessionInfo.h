@@ -65,14 +65,8 @@ struct NB_CORE_EXPORT TFileSystemInfo : public TObject
 class TSessionUI : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TSessionUI ||
-      Obj->GetKind() == OBJECT_CLASS_TTerminal ||
-      Obj->GetKind() == OBJECT_CLASS_TSecondaryTerminal ||
-      Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSessionUI); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionUI) || TObject::is(Kind); }
 public:
   explicit TSessionUI(TObjectClassId Kind) : TObject(Kind) {}
   virtual ~TSessionUI() {}

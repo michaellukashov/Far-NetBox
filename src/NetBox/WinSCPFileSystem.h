@@ -89,11 +89,8 @@ friend class TKeepaliveThread;
 friend class TQueueDialog;
 NB_DISABLE_COPY(TWinSCPFileSystem)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TWinSCPFileSystem;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TWinSCPFileSystem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWinSCPFileSystem) || TCustomFarFileSystem::is(Kind); }
 public:
   explicit TWinSCPFileSystem(TCustomFarPlugin * APlugin);
   void Init(TSecureShell * SecureShell);

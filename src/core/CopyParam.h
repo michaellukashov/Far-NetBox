@@ -60,12 +60,8 @@ struct TUsableCopyParamAttrs
 class NB_CORE_EXPORT TCopyParamType : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TCopyParamType ||
-      Obj->GetKind() == OBJECT_CLASS_TGUICopyParamType;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCopyParamType); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamType) || TObject::is(Kind); }
 private:
   TFileMasks FAsciiFileMask;
   TFileNameCase FFileNameCase;

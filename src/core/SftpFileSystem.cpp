@@ -222,12 +222,8 @@ public:
 class TSFTPPacket : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TSFTPPacket ||
-      Obj->GetKind() == OBJECT_CLASS_TSFTPQueuePacket;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPPacket); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPPacket) || TObject::is(Kind); }
 public:
   explicit TSFTPPacket(uintptr_t codePage) :
     TObject(OBJECT_CLASS_TSFTPPacket)
@@ -1193,11 +1189,8 @@ class TSFTPQueuePacket : public TSFTPPacket
 {
 NB_DISABLE_COPY(TSFTPQueuePacket)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TSFTPQueuePacket;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPQueuePacket); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPQueuePacket) || TSFTPPacket::is(Kind); }
 public:
   explicit TSFTPQueuePacket(uintptr_t CodePage) :
     TSFTPPacket(OBJECT_CLASS_TSFTPQueuePacket, CodePage),
@@ -1212,11 +1205,8 @@ class TSFTPQueue : public TObject
 {
 NB_DISABLE_COPY(TSFTPQueue)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TSFTPQueue;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPQueue); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPQueue) || TObject::is(Kind); }
 public:
   explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
     TObject(OBJECT_CLASS_TSFTPQueue),

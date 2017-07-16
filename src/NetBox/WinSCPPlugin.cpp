@@ -537,12 +537,8 @@ struct TFarMessageData : public TObject
 {
 NB_DISABLE_COPY(TFarMessageData)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TFarMessageData;
-  }
-
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarMessageData); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarMessageData) || TObject::is(Kind); }
 public:
   TFarMessageData() :
     TObject(OBJECT_CLASS_TFarMessageData),
