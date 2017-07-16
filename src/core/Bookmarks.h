@@ -47,7 +47,8 @@ public:
   static inline bool classof(const TObject * Obj)
   {
     return
-      Obj->GetKind() == OBJECT_CLASS_TBookmarkList;
+      // Obj->GetKind() == OBJECT_CLASS_TBookmarkList;
+      Obj->is(OBJECT_CLASS_TBookmarkList);
   }
 public:
   explicit TBookmarkList();

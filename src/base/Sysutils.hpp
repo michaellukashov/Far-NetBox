@@ -90,9 +90,9 @@ public:
   inline TObjectClassId GetKind() const { return FKind; }
   static bool classof(const Exception * Obj)
   {
-    TObjectClassId Kind = Obj->GetKind();
-    return
-      Kind == OBJECT_CLASS_Exception ||
+    // TObjectClassId Kind = Obj->GetKind();
+    return Obj->is(OBJECT_CLASS_Exception);
+      /*Kind == OBJECT_CLASS_Exception ||
       Kind == OBJECT_CLASS_ExtException ||
       Kind == OBJECT_CLASS_EAbort ||
       Kind == OBJECT_CLASS_EAccessViolation ||
@@ -103,8 +103,9 @@ public:
       Kind == OBJECT_CLASS_ESshTerminate ||
       Kind == OBJECT_CLASS_ECallbackGuardAbort ||
       Kind == OBJECT_CLASS_EFileSkipped ||
-      Kind == OBJECT_CLASS_ESkipFile;
+      Kind == OBJECT_CLASS_ESkipFile;*/
   }
+  virtual bool is(TObjectClassId Kind) const { return Kind == FKind; }
 public:
   explicit Exception(TObjectClassId Kind, const wchar_t * Msg);
   explicit Exception(const wchar_t * Msg);

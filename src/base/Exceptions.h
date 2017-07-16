@@ -27,9 +27,9 @@ class NB_CORE_EXPORT ExtException : public Exception
 public:
   static bool classof(const Exception * Obj)
   {
-    TObjectClassId Kind = Obj->GetKind();
-    return
-      Kind == OBJECT_CLASS_ExtException ||
+    // TObjectClassId Kind = Obj->GetKind();
+    return Obj->is(OBJECT_CLASS_ExtException);
+    /*  Kind == OBJECT_CLASS_ExtException ||
       Kind == OBJECT_CLASS_EFatal ||
       Kind == OBJECT_CLASS_ESshTerminate ||
       Kind == OBJECT_CLASS_ESsh ||
@@ -38,8 +38,9 @@ public:
       Kind == OBJECT_CLASS_EScp ||
       Kind == OBJECT_CLASS_ESkipFile ||
       Kind == OBJECT_CLASS_EFileSkipped ||
-      Kind == OBJECT_CLASS_EStreamError;
+      Kind == OBJECT_CLASS_EStreamError;*/
   }
+  virtual bool is(TObjectClassId Kind) const { return (Kind == OBJECT_CLASS_ExtException) || Exception::is(Kind); }
 public:
   explicit ExtException(Exception * E);
   explicit ExtException(TObjectClassId Kind, Exception * E);
@@ -138,13 +139,11 @@ public:
 class NB_CORE_EXPORT EFatal : public ExtException
 {
 public:
-  static inline bool classof(const Exception * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_EFatal ||
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EFatal); }
+      /*Obj->GetKind() == OBJECT_CLASS_EFatal ||
       Obj->GetKind() == OBJECT_CLASS_ESshFatal ||
-      Obj->GetKind() == OBJECT_CLASS_ESshTerminate;
-  }
+      Obj->GetKind() == OBJECT_CLASS_ESshTerminate;*/
+  virtual bool is(TObjectClassId Kind) const { return Kind == OBJECT_CLASS_EFatal || ExtException::is(Kind); }
 public:
   // fatal errors are always copied, new message is only appended
   explicit EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
@@ -164,7 +163,8 @@ private:
   class NB_CORE_EXPORT NAME : public BASE \
   { \
   public: \
-    static inline bool classof(const Exception * Obj) { return Obj->GetKind() == OBJECT_CLASS_##NAME; } \
+    static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
+    virtual bool is(TObjectClassId Kind) const { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
     explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
     virtual ExtException * Clone() const { return new NAME(this, L""); } \

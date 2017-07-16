@@ -66,8 +66,9 @@ class NB_CORE_EXPORT TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  inline TObjectClassId GetKind() const { return FKind; }
+  // inline TObjectClassId GetKind() const { return FKind; }
   static inline bool classof(const TObject * /*Obj*/) { return true; }
+  virtual bool is(TObjectClassId Kind) const { return Kind == FKind; }
 public:
   TObject() : FKind(OBJECT_CLASS_TObject) {}
   explicit TObject(TObjectClassId Kind) : FKind(Kind) {}
@@ -149,36 +150,8 @@ struct TRect
 class NB_CORE_EXPORT TPersistent : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    switch(Obj->GetKind())
-    {
-      case OBJECT_CLASS_TPersistent:
-      case OBJECT_CLASS_TList:
-      case OBJECT_CLASS_TLabelList:
-      case OBJECT_CLASS_TObjectList:
-      case OBJECT_CLASS_TNamedObjectList:
-      case OBJECT_CLASS_TRemoteFileList:
-      case OBJECT_CLASS_TTerminalList:
-      case OBJECT_CLASS_TStoredSessionList:
-      case OBJECT_CLASS_TStrings:
-      case OBJECT_CLASS_TStringList:
-      case OBJECT_CLASS_TFarList:
-      case OBJECT_CLASS_TFarMenuItems:
-      case OBJECT_CLASS_TNamedObject:
-      case OBJECT_CLASS_TSessionData:
-      case OBJECT_CLASS_TBookmarkList:
-      case OBJECT_CLASS_TBookmark:
-      case OBJECT_CLASS_TRemoteFile:
-      case OBJECT_CLASS_TRemoteDirectoryFile:
-      case OBJECT_CLASS_TRemoteDirectory:
-      case OBJECT_CLASS_TRemoteParentDirectory:
-        return true;
-    default:
-        return false;
-    }
-    return false;
-  }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPersistent); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPersistent); }
 public:
   TPersistent() : TObject(OBJECT_CLASS_TPersistent) {}
   explicit TPersistent(TObjectClassId Kind);
@@ -203,21 +176,8 @@ typedef intptr_t (CompareFunc)(const void * Item1, const void * Item2);
 class NB_CORE_EXPORT TList : public TPersistent
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TList ||
-      Obj->GetKind() == OBJECT_CLASS_TLabelList ||
-      Obj->GetKind() == OBJECT_CLASS_TObjectList ||
-      Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
-      Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
-      Obj->GetKind() == OBJECT_CLASS_TTerminalList ||
-      Obj->GetKind() == OBJECT_CLASS_TStrings ||
-      Obj->GetKind() == OBJECT_CLASS_TStringList ||
-      Obj->GetKind() == OBJECT_CLASS_TFarList ||
-      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems ||
-      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
-  }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TList); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TPersistent::is(Kind); }
 public:
   TList();
   explicit TList(TObjectClassId Kind);
