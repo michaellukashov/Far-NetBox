@@ -49,7 +49,7 @@ NB_CORE_EXPORT UnicodeString GetCompanyRegistryKey();
 NB_CORE_EXPORT UnicodeString GetRegistryKey();
 NB_CORE_EXPORT void * BusyStart();
 NB_CORE_EXPORT void BusyEnd(void * Token);
-NB_CORE_EXPORT const uint32_t GUIUpdateInterval = 100;
+NB_CORE_EXPORT extern const uint32_t GUIUpdateInterval;
 NB_CORE_EXPORT void SetNoGUI();
 NB_CORE_EXPORT bool ProcessGUI(bool Force = false);
 NB_CORE_EXPORT UnicodeString GetAppNameString();
