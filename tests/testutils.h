@@ -99,11 +99,11 @@ public:
   virtual UnicodeString GetMsg(intptr_t Id) const override;
   virtual UnicodeString GetCurrDirectory() const override;
   virtual UnicodeString GetStrVersionNumber() const override;
-  virtual bool InputDialog(const UnicodeString & ACaption,
-    const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
+  virtual bool InputDialog(UnicodeString ACaption,
+    UnicodeString APrompt, UnicodeString & Value, UnicodeString HelpKeyword,
     TStrings * History, bool PathInput,
     TInputDialogInitializeEvent OnInitialize, bool Echo) override;
-  virtual uintptr_t MoreMessageDialog(const UnicodeString & Message,
+  virtual uintptr_t MoreMessageDialog(UnicodeString Message,
     TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
       const TMessageParams * Params) override;
 };
@@ -136,12 +136,16 @@ UnicodeString TTestGlobalFunctions::GetStrVersionNumber() const
   return UnicodeString();
 }
 
-bool TTestGlobalFunctions::InputDialog(const UnicodeString & ACaption, const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword, TStrings * History, bool PathInput, TInputDialogInitializeEvent OnInitialize, bool Echo)
+bool TTestGlobalFunctions::InputDialog(UnicodeString ACaption, UnicodeString APrompt,
+  UnicodeString & Value, UnicodeString HelpKeyword, TStrings * History, bool PathInput,
+  TInputDialogInitializeEvent OnInitialize, bool Echo)
 {
   return false;
 }
 
-uintptr_t TTestGlobalFunctions::MoreMessageDialog(const UnicodeString & Message, TStrings * MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams * Params)
+uintptr_t TTestGlobalFunctions::MoreMessageDialog(UnicodeString Message, TStrings * MoreMessages,
+  TQueryType Type, uintptr_t Answers,
+  const TMessageParams * Params)
 {
   return 0;
 }
