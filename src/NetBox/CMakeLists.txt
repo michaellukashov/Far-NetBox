@@ -1680,6 +1680,7 @@ set(TESTNETBOX_01_SOURCES
   ../nbcore/nbstring.cpp
   ../nbcore/nbmemory.cpp
   ../base/Global.cpp
+  ../base/System.SyncObjs.cpp
   ../base/LibraryLoader.cpp
   ../base/Classes.cpp
   ../base/Sysutils.cpp
