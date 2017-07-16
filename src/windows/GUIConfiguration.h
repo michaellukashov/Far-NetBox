@@ -33,7 +33,7 @@ const int soSynchronize =    0x02;
 const int soSynchronizeAsk = 0x04;
 const int soContinueOnError = 0x08;
 
-class TGUICopyParamType : public TCopyParamType
+class NB_CORE_EXPORT TGUICopyParamType : public TCopyParamType
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -87,7 +87,7 @@ struct TCopyParamRuleData : public TObject
   void Default();
 };
 
-class TCopyParamRule : public TObject
+class NB_CORE_EXPORT TCopyParamRule : public TObject
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -127,7 +127,7 @@ private:
     const UnicodeString & Value, bool Path, bool Local, int ForceDirectoryMasks) const;
 };
 
-class TCopyParamList : public TObject
+class NB_CORE_EXPORT TCopyParamList : public TObject
 {
 friend class TGUIConfiguration;
 public:
@@ -190,7 +190,7 @@ private:
     const TCopyParamRule * Rule) const;
 };
 
-class TGUIConfiguration : public TConfiguration
+class NB_CORE_EXPORT TGUIConfiguration : public TConfiguration
 {
 NB_DISABLE_COPY(TGUIConfiguration)
 public:
@@ -381,5 +381,5 @@ public:
   void SetSessionReopenAutoIdle(intptr_t Value) { FSessionReopenAutoIdle = Value; }
 };
 
-TGUIConfiguration * GetGUIConfiguration();
+NB_CORE_EXPORT TGUIConfiguration * GetGUIConfiguration();
 

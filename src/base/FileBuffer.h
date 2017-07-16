@@ -13,7 +13,7 @@ enum TEOLType
 const int cpRemoveCtrlZ = 0x01;
 const int cpRemoveBOM   = 0x02;
 
-class TFileBuffer : public TObject
+class NB_CORE_EXPORT TFileBuffer : public TObject
 {
 NB_DISABLE_COPY(TFileBuffer)
 public:

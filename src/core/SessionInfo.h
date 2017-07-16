@@ -11,7 +11,7 @@ enum TSessionStatus
   ssClosing,
 };
 
-struct TSessionInfo : public TObject
+struct NB_CORE_EXPORT TSessionInfo : public TObject
 {
   TSessionInfo();
 
@@ -51,7 +51,7 @@ enum TFSCapability
   fcCount,
 };
 
-struct TFileSystemInfo : public TObject
+struct NB_CORE_EXPORT TFileSystemInfo : public TObject
 {
   TFileSystemInfo();
 
@@ -143,7 +143,7 @@ typedef nb::FastDelegate3<void,
 class TSessionActionRecord;
 class TActionLog;
 
-class TSessionAction : public TObject
+class NB_CORE_EXPORT TSessionAction : public TObject
 {
 NB_DISABLE_COPY(TSessionAction)
 public:
@@ -160,7 +160,7 @@ protected:
   TSessionActionRecord * FRecord;
 };
 
-class TFileSessionAction : public TSessionAction
+class NB_CORE_EXPORT TFileSessionAction : public TSessionAction
 {
 public:
   explicit TFileSessionAction(TActionLog * Log, TLogAction Action);
@@ -169,7 +169,7 @@ public:
   void SetFileName(const UnicodeString & AFileName);
 };
 
-class TFileLocationSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TFileLocationSessionAction : public TFileSessionAction
 {
 public:
   explicit TFileLocationSessionAction(TActionLog * Log, TLogAction Action);
@@ -178,13 +178,13 @@ public:
   void Destination(const UnicodeString & Destination);
 };
 
-class TUploadSessionAction : public TFileLocationSessionAction
+class NB_CORE_EXPORT TUploadSessionAction : public TFileLocationSessionAction
 {
 public:
   explicit TUploadSessionAction(TActionLog * Log);
 };
 
-class TDownloadSessionAction : public TFileLocationSessionAction
+class NB_CORE_EXPORT TDownloadSessionAction : public TFileLocationSessionAction
 {
 public:
   explicit TDownloadSessionAction(TActionLog * Log);
@@ -192,7 +192,7 @@ public:
 
 class TRights;
 
-class TChmodSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TChmodSessionAction : public TFileSessionAction
 {
 public:
   explicit TChmodSessionAction(TActionLog * Log, const UnicodeString & AFileName);
@@ -203,20 +203,20 @@ public:
   void Recursive();
 };
 
-class TTouchSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TTouchSessionAction : public TFileSessionAction
 {
 public:
   explicit TTouchSessionAction(TActionLog * Log, const UnicodeString & AFileName,
     const TDateTime & Modification);
 };
 
-class TMkdirSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TMkdirSessionAction : public TFileSessionAction
 {
 public:
   explicit TMkdirSessionAction(TActionLog * Log, const UnicodeString & AFileName);
 };
 
-class TRmSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TRmSessionAction : public TFileSessionAction
 {
 public:
   explicit TRmSessionAction(TActionLog * Log, const UnicodeString & AFileName);
@@ -224,14 +224,14 @@ public:
   void Recursive();
 };
 
-class TMvSessionAction : public TFileLocationSessionAction
+class NB_CORE_EXPORT TMvSessionAction : public TFileLocationSessionAction
 {
 public:
   explicit TMvSessionAction(TActionLog * Log, const UnicodeString & AFileName,
     const UnicodeString & ADestination);
 };
 
-class TCallSessionAction : public TSessionAction
+class NB_CORE_EXPORT TCallSessionAction : public TSessionAction
 {
 public:
   explicit TCallSessionAction(TActionLog * Log, const UnicodeString & Command,
@@ -241,7 +241,7 @@ public:
   void ExitCode(int ExitCode);
 };
 
-class TLsSessionAction : public TSessionAction
+class NB_CORE_EXPORT TLsSessionAction : public TSessionAction
 {
 public:
   explicit TLsSessionAction(TActionLog * Log, const UnicodeString & Destination);
@@ -249,7 +249,7 @@ public:
   void FileList(TRemoteFileList * FileList);
 };
 
-class TStatSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TStatSessionAction : public TFileSessionAction
 {
 public:
   explicit TStatSessionAction(TActionLog * Log, const UnicodeString & AFileName);
@@ -257,7 +257,7 @@ public:
   void File(TRemoteFile * AFile);
 };
 
-class TChecksumSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TChecksumSessionAction : public TFileSessionAction
 {
 public:
   explicit TChecksumSessionAction(TActionLog * Log);
@@ -265,7 +265,7 @@ public:
   void Checksum(const UnicodeString & Alg, const UnicodeString & Checksum);
 };
 
-class TCwdSessionAction : public TSessionAction
+class NB_CORE_EXPORT TCwdSessionAction : public TSessionAction
 {
 public:
   TCwdSessionAction(TActionLog * Log, const UnicodeString & Path);
@@ -275,7 +275,7 @@ public:
 typedef nb::FastDelegate2<void,
   TLogLineType /*Type*/, const UnicodeString & /*Line*/> TDoAddLogEvent;
 
-class TSessionLog : protected TStringList
+class NB_CORE_EXPORT TSessionLog : protected TStringList
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 friend class TSessionAction;
@@ -370,7 +370,7 @@ private:
   UnicodeString GetCmdLineLog() const;
 };
 
-class TActionLog : public TObject
+class NB_CORE_EXPORT TActionLog : public TObject
 {
 friend class TSessionAction;
 friend class TSessionActionRecord;

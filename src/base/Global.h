@@ -2,6 +2,7 @@
 #pragma once
 
 #include <headers.hpp>
+#include <nbcore.h>
 
 #include <tchar.h>
 #include <assert.h>
@@ -15,7 +16,7 @@
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 
-class TCriticalSection // : public TObject
+class NB_CORE_EXPORT TCriticalSection // : public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TCriticalSection)
@@ -34,7 +35,7 @@ private:
 };
 
 
-class TGuard // : public TObject
+class NB_CORE_EXPORT TGuard // : public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TGuard)
@@ -47,7 +48,7 @@ private:
 };
 
 
-class TUnguard // : public TObject
+class NB_CORE_EXPORT TUnguard // : public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TUnguard)
@@ -71,26 +72,26 @@ private:
 
 #else // _DEBUG
 
-void SetTraceFile(HANDLE ATraceFile);
-void CleanupTracing();
+NB_CORE_EXPORT void SetTraceFile(HANDLE ATraceFile);
+NB_CORE_EXPORT void CleanupTracing();
 #define TRACEENV "WINSCPTRACE"
-extern BOOL IsTracing;
-const uintptr_t CallstackTlsOff = (uintptr_t)-1;
-extern uintptr_t CallstackTls;
-extern "C" void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
+NB_CORE_EXPORT extern BOOL IsTracing;
+NB_CORE_EXPORT const uintptr_t CallstackTlsOff = (uintptr_t)-1;
+NB_CORE_EXPORT extern uintptr_t CallstackTls;
+NB_CORE_EXPORT extern "C" void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
   uintptr_t Line, const wchar_t * Message);
-void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+NB_CORE_EXPORT void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
   uintptr_t Line, const wchar_t * AFormat, va_list Args);
 
 #ifdef TRACE_IN_MEMORY
-void TraceDumpToFile();
-void TraceInMemoryCallback(const wchar_t * Msg);
+NB_CORE_EXPORT void TraceDumpToFile();
+NB_CORE_EXPORT void TraceInMemoryCallback(const wchar_t * Msg);
 
 #endif // TRACE_IN_MEMORY
 
 #define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 
-void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber);
+NB_CORE_EXPORT void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber);
 
 #define DebugAssert(p) ((p) ? (void)0 : DoAssert(TEXT(#p), TEXT(__FILE__), __LINE__))
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }

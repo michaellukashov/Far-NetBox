@@ -31,35 +31,35 @@ enum TToggle { ToggleOff, ToggleOn };
 
 #if defined(FARPLUGIN)
 
-TConfiguration * CreateConfiguration();
+NB_CORE_EXPORT TConfiguration * CreateConfiguration();
 class TOptions;
-TOptions * GetGlobalOptions();
+NB_CORE_EXPORT TOptions * GetGlobalOptions();
 
 #endif // FARPLUGIN
 
-void ShowExtendedException(Exception * E);
-bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
+NB_CORE_EXPORT void ShowExtendedException(Exception * E);
+NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
 //void IgnoreException(const std::type_info & ExceptionType);
 //UnicodeString GetExceptionDebugInfo();
 
-UnicodeString GetCompanyRegistryKey();
-UnicodeString GetRegistryKey();
-void * BusyStart();
-void BusyEnd(void * Token);
-const uint32_t GUIUpdateInterval = 100;
-void SetNoGUI();
-bool ProcessGUI(bool Force = false);
-UnicodeString GetAppNameString();
-UnicodeString GetSshVersionString();
-void CopyToClipboard(const UnicodeString & Text);
-HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
+NB_CORE_EXPORT UnicodeString GetCompanyRegistryKey();
+NB_CORE_EXPORT UnicodeString GetRegistryKey();
+NB_CORE_EXPORT void * BusyStart();
+NB_CORE_EXPORT void BusyEnd(void * Token);
+NB_CORE_EXPORT const uint32_t GUIUpdateInterval = 100;
+NB_CORE_EXPORT void SetNoGUI();
+NB_CORE_EXPORT bool ProcessGUI(bool Force = false);
+NB_CORE_EXPORT UnicodeString GetAppNameString();
+NB_CORE_EXPORT UnicodeString GetSshVersionString();
+NB_CORE_EXPORT void CopyToClipboard(const UnicodeString & Text);
+NB_CORE_EXPORT HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
   /*TThreadFunc ThreadFunc,*/ void * Parameter, DWORD CreationFlags,
   TThreadID & ThreadId);
 
-void WinInitialize();
-void WinFinalize();
+NB_CORE_EXPORT void WinInitialize();
+NB_CORE_EXPORT void WinFinalize();
 
-struct TQueryButtonAlias : public TObject
+struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 {
   TQueryButtonAlias();
 
@@ -77,7 +77,7 @@ typedef void (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
 */
 typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TQueryParamsTimerEvent;
 
-struct TQueryParams : public TObject
+struct NB_CORE_EXPORT TQueryParams : public TObject
 {
   explicit TQueryParams(uintptr_t AParams = 0, const UnicodeString & AHelpKeyword = HELP_NONE);
   explicit TQueryParams(const TQueryParams & Source);
@@ -123,9 +123,9 @@ enum TPromptUserParam
   pupRemember = 0x02,
 };
 
-bool IsAuthenticationPrompt(TPromptKind Kind);
-bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
-bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
+NB_CORE_EXPORT bool IsAuthenticationPrompt(TPromptKind Kind);
+NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
+NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
 
 class TTerminal;
 class TRemoteFile;
@@ -146,7 +146,7 @@ typedef void (__closure *TFindingFileEvent)
 typedef nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool & /*Cancel*/> TFindingFileEvent;
 
-class TOperationVisualizer
+class NB_CORE_EXPORT TOperationVisualizer
 {
 NB_DISABLE_COPY(TOperationVisualizer)
 public:
@@ -158,7 +158,7 @@ private:
   void * FToken;
 };
 
-class TInstantOperationVisualizer : public TOperationVisualizer
+class NB_CORE_EXPORT TInstantOperationVisualizer : public TOperationVisualizer
 {
 public:
   TInstantOperationVisualizer();
