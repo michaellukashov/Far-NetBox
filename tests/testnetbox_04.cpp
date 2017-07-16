@@ -2,6 +2,10 @@
 // testnetbox_04.cpp
 //------------------------------------------------------------------------------
 
+
+#include <vcl.h>
+#pragma hdrstop
+
 #include <Classes.hpp>
 #include <time.h>
 #include <stdio.h>

@@ -2,6 +2,10 @@
 // testnetbox_03.cpp
 //------------------------------------------------------------------------------
 
+
+#include <vcl.h>
+#pragma hdrstop
+
 #include <Classes.hpp>
 #include <CppProperties.h>
 #include <map>

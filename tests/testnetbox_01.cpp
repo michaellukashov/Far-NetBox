@@ -2,6 +2,10 @@
 // testnetbox_01.cpp
 //------------------------------------------------------------------------------
 
+
+#include <vcl.h>
+#pragma hdrstop
+
 // #include "leak_detector.h"
 // extern int GC_find_leak;
 

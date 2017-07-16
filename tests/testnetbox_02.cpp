@@ -2,11 +2,16 @@
 // testnetbox_02.cpp
 //------------------------------------------------------------------------------
 
+#include <vcl.h>
+#pragma hdrstop
+
 #include <Classes.hpp>
 #include <time.h>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+
+#include <shlobj.h>
 
 #include "winstuff.h"
 #include "puttyexp.h"
