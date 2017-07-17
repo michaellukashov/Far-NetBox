@@ -2059,7 +2059,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
         {
           temp = temp.Mid(3);
           pData->port = atol( T2CA(temp.Left(temp.GetLength() - 1) ) );
-          if (pData->port < 0 || pData->port > 65535)
+          if ((int)pData->port < 0 || pData->port > 65535)
           {
             LogMessage(FZ_LOG_WARNING, L"Port %u not valid", pData->port);
             error = TRUE;
