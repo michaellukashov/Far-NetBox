@@ -201,8 +201,8 @@ public:
     TCustomCommand * ChildCustomCommand);
 
 protected:
-  virtual void Prompt(UnicodeString APrompt,
-    UnicodeString & Value) const;
+  virtual void Prompt(intptr_t Index, UnicodeString APrompt,
+    UnicodeString & Value) const override;
 
 private:
   TCustomFarPlugin * FPlugin;
@@ -215,7 +215,7 @@ TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
   FPlugin = Plugin;
 }
 
-void TFarInteractiveCustomCommand::Prompt(UnicodeString APrompt,
+void TFarInteractiveCustomCommand::Prompt(intptr_t Index, UnicodeString APrompt,
   UnicodeString & Value) const
 {
   UnicodeString Prompt = APrompt;
