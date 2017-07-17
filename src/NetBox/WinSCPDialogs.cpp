@@ -468,9 +468,6 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(this));
   TWinSCPDialog * Dialog = DialogPtr.get();
 
-  TFarSeparator * Separator;
-  TFarText * Text;
-
   Dialog->SetSize(TPoint(65, 15));
   Dialog->SetCaption(FORMAT(L"%s - %s",
     GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_LOGGING)).c_str()));
@@ -478,10 +475,10 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   TFarCheckBox * LoggingCheck = new TFarCheckBox(Dialog);
   LoggingCheck->SetCaption(GetMsg(NB_LOGGING_ENABLE));
 
-  Separator = new TFarSeparator(Dialog);
+  TFarSeparator * Separator = new TFarSeparator(Dialog);
   Separator->SetCaption(GetMsg(NB_LOGGING_OPTIONS_GROUP));
 
-  Text = new TFarText(Dialog);
+  TFarText * Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(NB_LOGGING_LOG_PROTOCOL));
   Text->SetEnabledDependency(LoggingCheck);
 

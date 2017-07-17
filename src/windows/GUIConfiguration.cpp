@@ -42,8 +42,7 @@ void TGUICopyParamType::Assign(const TCopyParamType * Source)
 {
   TCopyParamType::Assign(Source);
 
-  const TGUICopyParamType * GUISource;
-  GUISource = dyn_cast<TGUICopyParamType>(Source);
+  const TGUICopyParamType * GUISource = dyn_cast<TGUICopyParamType>(Source);
   if (GUISource != nullptr)
   {
     GUIAssign(GUISource);
@@ -1139,9 +1138,7 @@ void TGUIConfiguration::FindLocales(UnicodeString LocalesMask, TStrings * Exts, 
 {
   int FindAttrs = faReadOnly | faArchive;
   TSearchRecChecked SearchRec;
-  bool Found;
-
-  Found =
+  bool Found =
     (FindFirstUnchecked(LocalesMask, FindAttrs, SearchRec) == 0);
   try__finally
   {
