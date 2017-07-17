@@ -1105,11 +1105,8 @@ private:
 class TCollectedFileList : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TCollectedFileList;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCollectedFileList); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCollectedFileList) || TObject::is(Kind); }
 public:
   TCollectedFileList();
   intptr_t Add(UnicodeString FileName, TObject * Object, bool Dir);

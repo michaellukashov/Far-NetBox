@@ -14,11 +14,8 @@ class TBackgroundTerminal;
 class TParallelTransferQueueItem : public TLocatedQueueItem
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TParallelTransferQueueItem;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TParallelTransferQueueItem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TParallelTransferQueueItem) || TLocatedQueueItem::is(Kind); }
 public:
   TParallelTransferQueueItem(const TLocatedQueueItem * ParentItem, TParallelOperation * ParallelOperation);
 

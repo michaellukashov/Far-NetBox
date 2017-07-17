@@ -221,7 +221,6 @@ NB_DISABLE_COPY(TQueueItem)
 public:
   static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TQueueItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TQueueItem) || TObject::is(Kind); }
-      Obj->GetKind() == OBJECT_CLASS_TParallelTransferQueueItem ||
 public:
 
   enum TStatus
@@ -404,7 +403,6 @@ class NB_CORE_EXPORT TLocatedQueueItem : public TQueueItem
 public:
   static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TLocatedQueueItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLocatedQueueItem) || TQueueItem::is(Kind); }
-      Obj->GetKind() == OBJECT_CLASS_TParallelTransferQueueItem ||
 protected:
   explicit TLocatedQueueItem(TObjectClassId Kind, TTerminal * Terminal);
   TLocatedQueueItem(const TLocatedQueueItem & Source);

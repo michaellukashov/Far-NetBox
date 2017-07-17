@@ -83,13 +83,12 @@ NB_CORE_EXPORT AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
 typedef int TDayTable[12];
 extern const TDayTable MonthDays[];
 
-class NB_CORE_EXPORT Exception : public std::runtime_error//, public TObject
+class NB_CORE_EXPORT Exception : public std::runtime_error
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
   static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_Exception); }
   virtual bool is(TObjectClassId Kind) const { return (Kind == FKind); }
-      Kind == OBJECT_CLASS_EInvalidOperation ||
 public:
   explicit Exception(TObjectClassId Kind, const wchar_t * Msg);
   explicit Exception(const wchar_t * Msg);
@@ -163,11 +162,8 @@ public:
 class EInvalidOperation : public Exception
 {
 public:
-  static inline bool classof(const Exception * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_EInvalidOperation;
-  }
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EInvalidOperation); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EInvalidOperation) || Exception::is(Kind); }
 public:
   explicit EInvalidOperation(UnicodeString Msg) :
     Exception(OBJECT_CLASS_EInvalidOperation, Msg)
