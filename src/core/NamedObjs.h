@@ -10,12 +10,8 @@ class TNamedObjectList;
 class NB_CORE_EXPORT TNamedObject : public TPersistent
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TNamedObject ||
-      Obj->GetKind() == OBJECT_CLASS_TSessionData;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TNamedObject); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObject) || TPersistent::is(Kind); }
 public:
 #if 0
   __property UnicodeString Name = { read = FName, write = SetName };
@@ -41,12 +37,8 @@ private:
 class NB_CORE_EXPORT TNamedObjectList : public TObjectList
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
-      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TNamedObjectList); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObjectList) || TObjectList::is(Kind); }
 public:
   intptr_t GetCount() const;
   intptr_t GetCountIncludingHidden() const;

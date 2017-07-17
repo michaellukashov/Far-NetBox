@@ -234,13 +234,8 @@ class NB_CORE_EXPORT TTerminal : public TSessionUI
 {
 NB_DISABLE_COPY(TTerminal)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TTerminal ||
-      Obj->GetKind() == OBJECT_CLASS_TSecondaryTerminal ||
-      Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TTerminal); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTerminal) || TSessionUI::is(Kind); }
 public:
   // TScript::SynchronizeProc relies on the order
 #if 0
@@ -818,12 +813,8 @@ class NB_CORE_EXPORT TSecondaryTerminal : public TTerminal
 {
 NB_DISABLE_COPY(TSecondaryTerminal)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TSecondaryTerminal ||
-      Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSecondaryTerminal); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecondaryTerminal) || TTerminal::is(Kind); }
 public:
   TSecondaryTerminal() : TTerminal(OBJECT_CLASS_TSecondaryTerminal), FMainTerminal(nullptr) {}
   explicit TSecondaryTerminal(TTerminal * MainTerminal);
@@ -879,11 +870,8 @@ public:
 struct NB_CORE_EXPORT TCustomCommandParams : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TCustomCommandParams;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomCommandParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomCommandParams) || TObject::is(Kind); }
 public:
   TCustomCommandParams() : TObject(OBJECT_CLASS_TCustomCommandParams), Params(0) {}
   UnicodeString Command;
@@ -904,11 +892,8 @@ struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
 struct NB_CORE_EXPORT TCalculateSizeParams : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TCalculateSizeParams;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCalculateSizeParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCalculateSizeParams) || TObject::is(Kind); }
 public:
   TCalculateSizeParams() : TObject(OBJECT_CLASS_TCalculateSizeParams), Size(0), Params(0), CopyParam(nullptr), Stats(nullptr), Files(nullptr), AllowDirs(false), Result(false) {}
   int64_t Size;
@@ -940,11 +925,8 @@ typedef rde::vector<TDateTime> TDateTimes;
 struct NB_CORE_EXPORT TMakeLocalFileListParams : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TMakeLocalFileListParams;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TMakeLocalFileListParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TMakeLocalFileListParams) || TObject::is(Kind); }
 public:
   TMakeLocalFileListParams() : TObject(OBJECT_CLASS_TMakeLocalFileListParams), FileList(nullptr), FileTimes(nullptr), IncludeDirs(false), Recursive(false) {}
   TStrings * FileList;
@@ -983,11 +965,8 @@ class NB_CORE_EXPORT TChecklistItem : public TObject
 friend class TTerminal;
 NB_DISABLE_COPY(TChecklistItem)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TChecklistItem;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TChecklistItem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TChecklistItem) || TObject::is(Kind); }
 public:
 
   struct TFileInfo : public TObject

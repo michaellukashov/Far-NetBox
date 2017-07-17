@@ -85,12 +85,8 @@ friend class TFarMessageDialog;
 friend class TFarPluginGuard;
 NB_DISABLE_COPY(TCustomFarPlugin)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TCustomFarPlugin ||
-      Obj->GetKind() == OBJECT_CLASS_TWinSCPPlugin;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPlugin); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPlugin) || TObject::is(Kind); }
 public:
   explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst);
   virtual ~TCustomFarPlugin();
@@ -256,12 +252,8 @@ friend class TFarPanelInfo;
 friend class TCustomFarPlugin;
 NB_DISABLE_COPY(TCustomFarFileSystem)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TCustomFarFileSystem ||
-      Obj->GetKind() == OBJECT_CLASS_TWinSCPFileSystem;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomFarFileSystem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarFileSystem) || TObject::is(Kind); }
 public:
   explicit TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin * APlugin);
   void Init();
@@ -396,16 +388,8 @@ class TCustomFarPanelItem : public TObject
 {
 friend class TCustomFarFileSystem;
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TCustomFarPanelItem ||
-      Obj->GetKind() == OBJECT_CLASS_TFarPanelItem ||
-      Obj->GetKind() == OBJECT_CLASS_THintPanelItem ||
-      Obj->GetKind() == OBJECT_CLASS_TSessionPanelItem ||
-      Obj->GetKind() == OBJECT_CLASS_TSessionFolderPanelItem ||
-      Obj->GetKind() == OBJECT_CLASS_TRemoteFilePanelItem;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPanelItem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPanelItem) || TObject::is(Kind); }
 protected:
   explicit TCustomFarPanelItem(TObjectClassId Kind) : TObject(Kind) {}
   virtual ~TCustomFarPanelItem()
@@ -426,11 +410,8 @@ class TFarPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TFarPanelItem)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TFarPanelItem;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarPanelItem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarPanelItem) || TCustomFarPanelItem::is(Kind); }
 public:
   explicit TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem);
   virtual ~TFarPanelItem();
@@ -517,11 +498,8 @@ private:
 class TFarMenuItems : public TStringList
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarMenuItems); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarMenuItems) || TStringList::is(Kind); }
 public:
   explicit TFarMenuItems();
   virtual ~TFarMenuItems() {}

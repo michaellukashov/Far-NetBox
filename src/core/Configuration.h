@@ -36,13 +36,8 @@ class NB_CORE_EXPORT TConfiguration : public TObject
 {
 NB_DISABLE_COPY(TConfiguration)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TConfiguration ||
-      Obj->GetKind() == OBJECT_CLASS_TGUIConfiguration ||
-      Obj->GetKind() == OBJECT_CLASS_TFarConfiguration;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TConfiguration); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TConfiguration) || TObject::is(Kind); }
 private:
   bool FDontSave;
   bool FChanged;

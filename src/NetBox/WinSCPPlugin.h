@@ -12,11 +12,8 @@ class TWinSCPPlugin : public TCustomFarPlugin
 {
 friend class TWinSCPFileSystem;
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TWinSCPPlugin;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TWinSCPPlugin); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWinSCPPlugin) || TCustomFarPlugin::is(Kind); }
 public:
   explicit TWinSCPPlugin(HINSTANCE HInst);
   virtual ~TWinSCPPlugin();
