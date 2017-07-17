@@ -2153,7 +2153,7 @@ void TTerminal::HandleExtendedException(Exception * E)
     try
     {
       // the event handler may destroy 'this' ...
-    GetOnShowExtendedException()(this, E, nullptr);
+      GetOnShowExtendedException()(this, E, nullptr);
       // .. hence guard is dismissed from destructor, to make following call no-op
       Guard.Verify();
     }
@@ -3207,7 +3207,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(
         case qaNoToAll:
           BatchOverwrite = boNone;
           break;
-       }
+        }
 
         // we user has not selected another batch overwrite mode,
         // keep the current one. note that we may get here even
@@ -7305,8 +7305,8 @@ bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
     //bool CollectingUsage = false;
     try__finally
     {
-        SCOPE_EXIT
-        {
+      SCOPE_EXIT
+      {
 #if 0
           if (CollectingUsage)
           {
