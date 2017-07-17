@@ -402,6 +402,7 @@ class TTunnelUI : public TSessionUI
 NB_DISABLE_COPY(TTunnelUI)
 public:
   explicit TTunnelUI(TTerminal * Terminal);
+
   virtual ~TTunnelUI()
   {
   }
@@ -932,7 +933,6 @@ void TParallelOperation::WaitFor()
   {
     DebugAssert(FClients == 0);
   }
-
 }
 
 void TParallelOperation::Done(UnicodeString FileName, bool Dir, bool Success)
@@ -2204,7 +2204,6 @@ void TTerminal::Information(UnicodeString Str, bool Status)
 
 void TTerminal::DoProgress(TFileOperationProgressType & ProgressData)
 {
-
   if ((FConfiguration->GetActualLogProtocol() >= 1) &&
       ((ProgressData.GetOperation() == foCopy) || (ProgressData.GetOperation() == foMove)))
   {
@@ -3569,7 +3568,6 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
       {
         SCOPE_EXIT
         {
-
           DoReadDirectoryProgress(-1, 0, Cancel);
           FReadingCurrentDirectory = false;
           FOldFiles->Reset();
@@ -3649,8 +3647,8 @@ UnicodeString TTerminal::GetRemoteFileInfo(TRemoteFile * AFile) const
   return
     FORMAT(L"%s;%c;%lld;%s;%d;%s;%s;%s;%d",
       AFile->GetFileName().c_str(), AFile->GetType(), AFile->GetSize(), StandardTimestamp(AFile->GetModification()).c_str(), int(AFile->GetModificationFmt()),
-       AFile->GetFileOwner().GetLogText().c_str(), AFile->GetFileGroup().GetLogText().c_str(), AFile->GetRights()->GetText().c_str(),
-       AFile->GetAttr());
+      AFile->GetFileOwner().GetLogText().c_str(), AFile->GetFileGroup().GetLogText().c_str(), AFile->GetRights()->GetText().c_str(),
+      AFile->GetAttr());
 }
 
 void TTerminal::LogRemoteFile(TRemoteFile * AFile)
@@ -5278,7 +5276,6 @@ private:
 void TTerminal::AnyCommand(UnicodeString Command,
   TCaptureOutputEvent OutputEvent)
 {
-
 #if 0
   #pragma warn -inl
   class TOutputProxy

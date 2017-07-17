@@ -99,80 +99,79 @@ static rde::set<TWebDAVFileSystem *> FileSystems;
 
 extern "C"
 {
+  void ne_debug(void * Context, int Channel, const char * Format, ...)
+  {
+    bool DoLog;
 
-void ne_debug(void * Context, int Channel, const char * Format, ...)
-{
-  bool DoLog;
-
-  if (FLAGSET(Channel, NE_DBG_SOCKET) ||
+    if (FLAGSET(Channel, NE_DBG_SOCKET) ||
       FLAGSET(Channel, NE_DBG_HTTP) ||
       FLAGSET(Channel, NE_DBG_HTTPAUTH) ||
       FLAGSET(Channel, NE_DBG_SSL))
-  {
-    DoLog = true;
-  }
-  else if (FLAGSET(Channel, NE_DBG_XML) ||
-           FLAGSET(Channel, NE_DBG_WINSCP_HTTP_DETAIL))
-  {
-    DoLog = (GetConfiguration()->GetActualLogProtocol() >= 1);
-  }
-  else if (FLAGSET(Channel, NE_DBG_LOCKS) ||
-           FLAGSET(Channel, NE_DBG_XMLPARSE) ||
-           FLAGSET(Channel, NE_DBG_HTTPBODY))
-  {
-    DoLog = (GetConfiguration()->GetActualLogProtocol() >= 2);
-  }
-  else
-  {
-    DoLog = false;
-    DebugFail();
-  }
-
-  #ifndef _DEBUG
-  if (DoLog)
-  #endif
-  {
-    va_list Args;
-    va_start(Args, Format);
-    UTF8String UTFMessage;
-    UTFMessage.vprintf(Format, Args);
-    va_end(Args);
-
-    UnicodeString Message(TrimRight(UnicodeString(UTFMessage)));
-
-    if (DoLog)
     {
-      // Note that this gets called for THttp sessions too.
-      // It does no harm atm.
-      TWebDAVFileSystem * FileSystem = nullptr;
-      if (Context != nullptr)
-      {
-        ne_session * Session = static_cast<ne_session *>(Context);
+      DoLog = true;
+    }
+    else if (FLAGSET(Channel, NE_DBG_XML) ||
+      FLAGSET(Channel, NE_DBG_WINSCP_HTTP_DETAIL))
+    {
+      DoLog = (GetConfiguration()->GetActualLogProtocol() >= 1);
+    }
+    else if (FLAGSET(Channel, NE_DBG_LOCKS) ||
+      FLAGSET(Channel, NE_DBG_XMLPARSE) ||
+      FLAGSET(Channel, NE_DBG_HTTPBODY))
+    {
+      DoLog = (GetConfiguration()->GetActualLogProtocol() >= 2);
+    }
+    else
+    {
+      DoLog = false;
+      DebugFail();
+    }
 
-        FileSystem =
-          static_cast<TWebDAVFileSystem *>(ne_get_session_private(Session, SESSION_FS_KEY));
-      }
-      else
-      {
-        TGuard Guard(*DebugSection.get());
+#ifndef _DEBUG
+  if (DoLog)
+#endif
+    {
+      va_list Args;
+      va_start(Args, Format);
+      UTF8String UTFMessage;
+      UTFMessage.vprintf(Format, Args);
+      va_end(Args);
 
-        TODO("implement");
+      UnicodeString Message(TrimRight(UnicodeString(UTFMessage)));
+
+      if (DoLog)
+      {
+        // Note that this gets called for THttp sessions too.
+        // It does no harm atm.
+        TWebDAVFileSystem * FileSystem = nullptr;
+        if (Context != nullptr)
+        {
+          ne_session * Session = static_cast<ne_session *>(Context);
+
+          FileSystem =
+            static_cast<TWebDAVFileSystem *>(ne_get_session_private(Session, SESSION_FS_KEY));
+        }
+        else
+        {
+          TGuard Guard(*DebugSection.get());
+
+          TODO("implement")
+          ;
 #if 0
         if (FileSystems.size() == 1)
         {
           FileSystem = *FileSystems.begin();
         }
 #endif // #if 0
-      }
+        }
 
-      if (FileSystem != nullptr)
-      {
-        FileSystem->NeonDebug(Message);
+        if (FileSystem != nullptr)
+        {
+          FileSystem->NeonDebug(Message);
+        }
       }
     }
   }
-}
-
 } // extern "C"
 
 
@@ -835,8 +834,7 @@ UnicodeString TWebDAVFileSystem::DirectoryPath(UnicodeString APath) const
   {
     return base::UnixIncludeTrailingBackslash(APath);
   }
-  else
-    return APath;
+  return APath;
 }
 
 UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile * AFile) const
@@ -2835,7 +2833,7 @@ void TWebDAVFileSystem::InitSslSessionImpl(ssl_st * Ssl) const
 {
   // See also CAsyncSslSocketLayer::InitSSLConnection
   TSessionData * Data = FTerminal->GetSessionData();
-  #define MASK_TLS_VERSION(VERSION, FLAG) ((Data->GetMinTlsVersion() > VERSION) || (Data->GetMaxTlsVersion() < VERSION) ? FLAG : 0)
+#define MASK_TLS_VERSION(VERSION, FLAG) ((Data->GetMinTlsVersion() > VERSION) || (Data->GetMaxTlsVersion() < VERSION) ? FLAG : 0)
   int Options =
     MASK_TLS_VERSION(ssl2, SSL_OP_NO_SSLv2) |
     MASK_TLS_VERSION(ssl3, SSL_OP_NO_SSLv3) |
