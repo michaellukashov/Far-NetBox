@@ -97,81 +97,81 @@ static std::unique_ptr<TCriticalSection> DebugSection(TraceInitPtr(new TCritical
 static rde::set<TWebDAVFileSystem *> FileSystems;
 #endif // #if 0
 
-extern "C"
-{
-  void ne_debug(void * Context, int Channel, const char * Format, ...)
-  {
-    bool DoLog;
+extern "C" {
 
-    if (FLAGSET(Channel, NE_DBG_SOCKET) ||
-      FLAGSET(Channel, NE_DBG_HTTP) ||
-      FLAGSET(Channel, NE_DBG_HTTPAUTH) ||
-      FLAGSET(Channel, NE_DBG_SSL))
-    {
-      DoLog = true;
-    }
-    else if (FLAGSET(Channel, NE_DBG_XML) ||
-      FLAGSET(Channel, NE_DBG_WINSCP_HTTP_DETAIL))
-    {
-      DoLog = (GetConfiguration()->GetActualLogProtocol() >= 1);
-    }
-    else if (FLAGSET(Channel, NE_DBG_LOCKS) ||
-      FLAGSET(Channel, NE_DBG_XMLPARSE) ||
-      FLAGSET(Channel, NE_DBG_HTTPBODY))
-    {
-      DoLog = (GetConfiguration()->GetActualLogProtocol() >= 2);
-    }
-    else
-    {
-      DoLog = false;
-      DebugFail();
-    }
+void ne_debug(void * Context, int Channel, const char * Format, ...)
+{
+  bool DoLog;
+
+  if (FLAGSET(Channel, NE_DBG_SOCKET) ||
+    FLAGSET(Channel, NE_DBG_HTTP) ||
+    FLAGSET(Channel, NE_DBG_HTTPAUTH) ||
+    FLAGSET(Channel, NE_DBG_SSL))
+  {
+    DoLog = true;
+  }
+  else if (FLAGSET(Channel, NE_DBG_XML) ||
+    FLAGSET(Channel, NE_DBG_WINSCP_HTTP_DETAIL))
+  {
+    DoLog = (GetConfiguration()->GetActualLogProtocol() >= 1);
+  }
+  else if (FLAGSET(Channel, NE_DBG_LOCKS) ||
+    FLAGSET(Channel, NE_DBG_XMLPARSE) ||
+    FLAGSET(Channel, NE_DBG_HTTPBODY))
+  {
+    DoLog = (GetConfiguration()->GetActualLogProtocol() >= 2);
+  }
+  else
+  {
+    DoLog = false;
+    DebugFail();
+  }
 
 #ifndef _DEBUG
   if (DoLog)
 #endif
+  {
+    va_list Args;
+    va_start(Args, Format);
+    UTF8String UTFMessage;
+    UTFMessage.vprintf(Format, Args);
+    va_end(Args);
+
+    UnicodeString Message(TrimRight(UnicodeString(UTFMessage)));
+
+    if (DoLog)
     {
-      va_list Args;
-      va_start(Args, Format);
-      UTF8String UTFMessage;
-      UTFMessage.vprintf(Format, Args);
-      va_end(Args);
-
-      UnicodeString Message(TrimRight(UnicodeString(UTFMessage)));
-
-      if (DoLog)
+      // Note that this gets called for THttp sessions too.
+      // It does no harm atm.
+      TWebDAVFileSystem * FileSystem = nullptr;
+      if (Context != nullptr)
       {
-        // Note that this gets called for THttp sessions too.
-        // It does no harm atm.
-        TWebDAVFileSystem * FileSystem = nullptr;
-        if (Context != nullptr)
-        {
-          ne_session * Session = static_cast<ne_session *>(Context);
+        ne_session * Session = static_cast<ne_session *>(Context);
 
-          FileSystem =
-            static_cast<TWebDAVFileSystem *>(ne_get_session_private(Session, SESSION_FS_KEY));
-        }
-        else
-        {
-          TGuard Guard(*DebugSection.get());
+        FileSystem =
+          static_cast<TWebDAVFileSystem *>(ne_get_session_private(Session, SESSION_FS_KEY));
+      }
+      else
+      {
+        TGuard Guard(*DebugSection.get());
 
-          TODO("implement")
-          ;
+        TODO("implement");
 #if 0
-        if (FileSystems.size() == 1)
-        {
-          FileSystem = *FileSystems.begin();
-        }
+      if (FileSystems.size() == 1)
+      {
+        FileSystem = *FileSystems.begin();
+      }
 #endif // #if 0
-        }
+      }
 
-        if (FileSystem != nullptr)
-        {
-          FileSystem->NeonDebug(Message);
-        }
+      if (FileSystem != nullptr)
+      {
+        FileSystem->NeonDebug(Message);
       }
     }
   }
+}
+
 } // extern "C"
 
 
