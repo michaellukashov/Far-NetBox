@@ -238,7 +238,7 @@ class TFTPFileListHelper : public TObject
 NB_DISABLE_COPY(TFTPFileListHelper)
 public:
   explicit TFTPFileListHelper(TFTPFileSystem * FileSystem, TRemoteFileList * FileList,
-      bool IgnoreFileList) :
+    bool IgnoreFileList) :
     FFileSystem(FileSystem),
     FFileList(FFileSystem->FFileList),
     FIgnoreFileList(FFileSystem->FIgnoreFileList)
@@ -942,10 +942,7 @@ UnicodeString TFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool /*Local*
   {
     return APath;
   }
-  else
-  {
-    return base::AbsolutePath(FCurrentDirectory, APath);
-  }
+  return base::AbsolutePath(FCurrentDirectory, APath);
 }
 
 UnicodeString TFTPFileSystem::GetActualCurrentDirectory() const
@@ -4454,10 +4451,7 @@ static UnicodeString FormatContactList(UnicodeString Entry1, UnicodeString Entry
   {
     return FORMAT(L"%s, %s", Entry1.c_str(), Entry2.c_str());
   }
-  else
-  {
-    return Entry1 + Entry2;
-  }
+  return Entry1 + Entry2;
 }
 
 UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
@@ -4929,7 +4923,6 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
     {
       DateTime = ::ConvertTimestampFromUTC(DateTime);
     }
-
   }
   else
   {

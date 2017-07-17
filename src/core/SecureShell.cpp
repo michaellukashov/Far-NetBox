@@ -672,10 +672,7 @@ UnicodeString TSecureShell::ConvertFromPutty(const char * Str, intptr_t Length) 
   {
     return UTF8ToString(Str + BomLength, Length - BomLength);
   }
-  else
-  {
-    return AnsiToString(Str, Length);
-  }
+  return AnsiToString(Str, Length);
 }
 
 void TSecureShell::PuttyLogEvent(const char * AStr)
@@ -1180,7 +1177,7 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
         {
           PendUsed = OutLen;
         }
-        memmove(OutPtr, Pending, PendUsed);  //-V575
+        memmove(OutPtr, Pending, PendUsed); //-V575
         memmove(Pending, Pending + PendUsed, PendLen - PendUsed);
         OutPtr += PendUsed;
         OutLen -= PendUsed;
@@ -1203,12 +1200,12 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
       }
 
       // This seems ambiguous
-/*
+#if 0
       if (Length <= 0)
       {
         FatalError(LoadStr(LOST_CONNECTION));
       }
-*/
+#endif // #if 0
     }
     __finally
     {
@@ -1960,7 +1957,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
   static const struct
   {
     int Bit, Mask;
-    const wchar_t* Desc;
+    const wchar_t * Desc;
   } EventTypes[] =
   {
     { FD_WRITE_BIT, FD_WRITE, L"write" },
@@ -2190,14 +2187,11 @@ uint32_t TSecureShell::MinPacketSize() const
   {
     return 0;
   }
-  else
+  if (FMinPacketSize == nullptr)
   {
-    if (FMinPacketSize == nullptr)
-    {
-      FMinPacketSize = &minPacketSize;
-    }
-    return *FMinPacketSize;
+    FMinPacketSize = &minPacketSize;
   }
+  return *FMinPacketSize;
 }
 
 uint32_t TSecureShell::MaxPacketSize() const
@@ -2211,14 +2205,11 @@ uint32_t TSecureShell::MaxPacketSize() const
   {
     return 0;
   }
-  else
+  if (FMaxPacketSize == nullptr)
   {
-    if (FMaxPacketSize == nullptr)
-    {
-      FMaxPacketSize = ssh2_remmaxpkt(FBackendHandle);
-    }
-    return *FMaxPacketSize;
+    FMaxPacketSize = ssh2_remmaxpkt(FBackendHandle);
   }
+  return *FMaxPacketSize;
 }
 
 UnicodeString TSecureShell::FuncToCompression(
@@ -2233,15 +2224,12 @@ UnicodeString TSecureShell::FuncToCompression(
   {
     return get_ssh1_compressing(FBackendHandle) ? L"ZLib" : L"";
   }
-  else
-  {
-    return reinterpret_cast<ssh_compress *>(const_cast<void *>(Compress)) == &ssh_zlib ? L"ZLib" : L"";
-  }
+  return reinterpret_cast<ssh_compress *>(const_cast<void *>(Compress)) == &ssh_zlib ? L"ZLib" : L"";
 }
 
 TCipher TSecureShell::FuncToSsh1Cipher(const void * Cipher)
 {
-  const ssh_cipher *CipherFuncs[] =
+  const ssh_cipher * CipherFuncs[] =
     {&ssh_3des, &ssh_des, &ssh_blowfish_ssh1};
   const TCipher TCiphers[] = {cip3DES, cipDES, cipBlowfish};
   DebugAssert(_countof(CipherFuncs) == _countof(TCiphers));
@@ -2261,7 +2249,7 @@ TCipher TSecureShell::FuncToSsh1Cipher(const void * Cipher)
 
 TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
 {
-  const ssh2_ciphers *CipherFuncs[] =
+  const ssh2_ciphers * CipherFuncs[] =
     {&ssh2_3des, &ssh2_des, &ssh2_aes, &ssh2_blowfish, &ssh2_arcfour, &ssh2_ccp};
   const TCipher TCiphers[] = {cip3DES, cipDES, cipAES, cipBlowfish, cipArcfour, cipChaCha20};
   DebugAssert(_countof(CipherFuncs) == _countof(TCiphers));
