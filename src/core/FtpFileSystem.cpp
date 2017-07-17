@@ -262,8 +262,8 @@ private:
 TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(OBJECT_CLASS_TFTPFileSystem, ATerminal),
   FFileZillaIntf(nullptr),
-  FQueueEvent(::CreateEvent(nullptr, true, false, nullptr)),
   FQueue(new TMessageQueue),
+  FQueueEvent(::CreateEvent(nullptr, true, false, nullptr)),
   FFileSystemInfoValid(false),
   FReply(0),
   FCommandReply(0),

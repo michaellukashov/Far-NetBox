@@ -250,7 +250,7 @@ public:
     void * GroupToken;
   };
 
-  static bool IsUserActionStatus(TStatus Status);
+  static bool IsUserActionStatus(TQueueItem::TStatus Status);
 
 #if 0
   __property TStatus Status = { read = GetStatus };

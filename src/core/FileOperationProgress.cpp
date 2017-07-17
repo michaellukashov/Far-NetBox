@@ -10,9 +10,9 @@
 #define TRANSFER_BUF_SIZE 32 * 1024
 
 TFileOperationProgressType::TFileOperationProgressType() :
+  FParent(nullptr),
   FOnProgress(nullptr),
   FOnFinished(nullptr),
-  FParent(nullptr),
   FReset(false)
 {
   Init();
@@ -22,9 +22,9 @@ TFileOperationProgressType::TFileOperationProgressType() :
 TFileOperationProgressType::TFileOperationProgressType(
   TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
   TFileOperationProgressType * Parent) :
+  FParent(Parent),
   FOnProgress(AOnProgress),
   FOnFinished(AOnFinished),
-  FParent(Parent),
   FReset(false)
 {
   Init();

@@ -653,9 +653,9 @@ TSessionLog::TSessionLog(TSessionUI * UI, TDateTime Started, TSessionData * Sess
   FLogging(false),
   FFile(nullptr),
   FCurrentFileSize(0),
-  FStarted(Started),
   FUI(UI),
   FSessionData(SessionData),
+  FStarted(Started),
   FClosed(false)
 {
 }

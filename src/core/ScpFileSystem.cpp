@@ -342,8 +342,8 @@ TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) :
   FReturnCode(0),
   FProcessingCommand(false),
   FLsFullTime(asAuto),
-  FScpFatalError(false),
-  FOnCaptureOutput(nullptr)
+  FOnCaptureOutput(nullptr),
+  FScpFatalError(false)
 {
 }
 

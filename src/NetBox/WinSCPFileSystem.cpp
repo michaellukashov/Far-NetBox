@@ -296,9 +296,9 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FProgressSaveScreenHandle(nullptr),
   FSynchronizationSaveScreenHandle(nullptr),
   FAuthenticationSaveScreenHandle(nullptr),
-  FSynchronizationCompare(false),
   FFileList(nullptr),
   FPanelItems(nullptr),
+  FKeepaliveThread(nullptr),
   FSavedFindFolder(L""),
   FQueueStatusInvalidated(false),
   FQueueItemInvalidated(false),
@@ -307,7 +307,6 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FQueueEventPending(false),
   FNoProgress(false),
   FNoProgressFinish(false),
-  FKeepaliveThread(nullptr),
   FSynchronisingBrowse(false),
   FSynchronizeController(nullptr),
   FCapturedLog(nullptr),
@@ -319,6 +318,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
 
   FReloadDirectory(false),
   FLastMultipleEditReadOnly(false),
+  FSynchronizationCompare(false),
   FEditorPendingSave(false),
   FOutputLog(false)
 {

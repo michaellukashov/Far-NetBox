@@ -2182,9 +2182,9 @@ TRights::TRights() :
 }
 
 TRights::TRights(uint16_t ANumber) :
-  FAllowUndef(false),
   FSet(0),
   FUnset(0),
+  FAllowUndef(false),
   FUnknown(true)
 {
   SetNumber(ANumber);

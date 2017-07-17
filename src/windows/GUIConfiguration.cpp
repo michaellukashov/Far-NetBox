@@ -540,9 +540,9 @@ bool TCopyParamList::GetAnyRule() const
 
 TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) :
   TConfiguration(Kind),
+  FLocales(CreateSortedStringList()),
   FAppliedLocale(0),
   FLocale(0),
-  FLocales(CreateSortedStringList()),
   FLastLocalesExts(L"*"),
   FContinueOnError(false),
   FConfirmCommandSession(false),

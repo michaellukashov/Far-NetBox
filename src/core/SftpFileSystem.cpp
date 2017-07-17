@@ -1604,13 +1604,13 @@ public:
   explicit TSFTPUploadQueue(TSFTPFileSystem * AFileSystem, uintptr_t CodePage) :
     TSFTPAsynchronousQueue(AFileSystem, CodePage),
     FStream(nullptr),
+    FTerminal(nullptr),
     OperationProgress(nullptr),
     FLastBlockSize(0),
     FEnd(false),
     FTransferred(0),
     FConvertToken(false),
-    FConvertParams(0),
-    FTerminal(nullptr)
+    FConvertParams(0)
   {
   }
 
