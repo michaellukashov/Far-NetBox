@@ -173,13 +173,13 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
       intptr_t P = Params2.LowerCase().Pos(LoadSwitch + L" ");
       if ((P == 0) || ((P > 1) && (Params2[P - 1] != L' ')))
       {
-        AddToList(PuttyParams, FORMAT(L"%s %s", (LoadSwitch, EscapePuttyCommandParam(SessionName))), L" ");
+        AddToList(PuttyParams, FORMAT(L"%s %s", LoadSwitch.c_str(), EscapePuttyCommandParam(SessionName).c_str()), L" ");
       }
     }
 
     if (!Password.IsEmpty() && !RemoteCustomCommand.IsPasswordCommand(Params))
     {
-      AddToList(PuttyParams, FORMAT(L"-pw %s", (EscapePuttyCommandParam(Password))), L" ");
+      AddToList(PuttyParams, FORMAT(L"-pw %s", EscapePuttyCommandParam(Password).c_str()), L" ");
     }
 
     AddToList(PuttyParams, Params2, L" ");
@@ -262,7 +262,7 @@ void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params, 
 {
   if (!DoExecuteShell(APath, Params, ChangeWorkingDirectory, nullptr))
   {
-    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (APath)));
+    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, APath.c_str()));
   }
 }
 
@@ -288,7 +288,7 @@ void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command,
   bool Result = DoExecuteShell(Program, Params, false, &ProcessHandle);
   if (!Result)
   {
-    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (Program)));
+    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
   }
   else
   {

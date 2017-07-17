@@ -269,7 +269,7 @@ void TCopyParamType::DoGetInfoStr(
       {
         if (FLAGCLEAR(Attrs, ExceptDirs))
         {
-          Str = FMTLOAD(COPY_INFO_PRESERVE_TIME_DIRS, (Str));
+          Str = FMTLOAD(COPY_INFO_PRESERVE_TIME_DIRS, Str.c_str());
           AddPreserveTime = true;
         }
       }
