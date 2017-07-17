@@ -20,7 +20,7 @@ public:
   TParallelTransferQueueItem(const TLocatedQueueItem * ParentItem, TParallelOperation * ParallelOperation);
 
 protected:
-  virtual void DoExecute(TTerminal * Terminal);
+  virtual void DoExecute(TTerminal * Terminal) override;
 
 private:
   TParallelOperation * FParallelOperation;
@@ -53,7 +53,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/)
+  virtual void Execute(void * /*Arg*/) override
   {
     if (OnNotify != nullptr)
     {
@@ -77,7 +77,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/)
+  virtual void Execute(void * /*Arg*/) override
   {
     if (OnInformation != nullptr)
     {
@@ -85,7 +85,7 @@ public:
     }
   }
 
-  virtual bool Force() const
+  virtual bool Force() const override
   {
     // we need to propagate mainly the end-phase event even, when user cancels
     // the connection, so that authentication window is closed
@@ -114,7 +114,7 @@ public:
   {
   }
 
-  virtual void Execute(void * Arg)
+  virtual void Execute(void * Arg) override
   {
     if (OnQueryUser != nullptr)
     {
@@ -151,7 +151,7 @@ public:
     SAFE_DESTROY(Results);
   }
 
-  virtual void Execute(void * Arg)
+  virtual void Execute(void * Arg) override
   {
     if (OnPromptUser != nullptr)
     {
@@ -180,7 +180,7 @@ public:
   {
   }
 
-  virtual void Execute(void * Arg)
+  virtual void Execute(void * Arg) override
   {
     if (OnShowExtendedException != nullptr)
     {
@@ -205,7 +205,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/)
+  virtual void Execute(void * /*Arg*/) override
   {
     if (OnDisplayBanner != nullptr)
     {
@@ -232,7 +232,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/)
+  virtual void Execute(void * /*Arg*/) override
   {
     if (OnReadDirectory != nullptr)
     {
@@ -258,7 +258,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/)
+  virtual void Execute(void * /*Arg*/) override
   {
     if (OnReadDirectoryProgress != nullptr)
     {
@@ -302,8 +302,8 @@ protected:
   bool FCancel;
   bool FPause;
 
-  virtual void ProcessEvent();
-  virtual void Finished();
+  virtual void ProcessEvent() override;
+  virtual void Finished() override;
   bool WaitForUserAction(TQueueItem::TStatus ItemStatus, TUserAction * UserAction);
   bool OverrideItemStatus(TQueueItem::TStatus & ItemStatus) const;
 

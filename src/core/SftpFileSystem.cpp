@@ -1448,7 +1448,7 @@ protected:
   intptr_t FMissedRequests;
 
   // sends as many requests as allowed by implementation
-  virtual bool SendRequests()
+  virtual bool SendRequests() override
   {
     bool Result = false;
     FMissedRequests++;
@@ -1475,7 +1475,7 @@ public:
     UnregisterReceiveHandler();
   }
 
-  virtual void Dispose(SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1)
+  virtual void Dispose(SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1) override
   {
     // we do not want to receive asynchronous notifications anymore,
     // while waiting synchronously for pending responses
@@ -1512,7 +1512,7 @@ protected:
   virtual bool ReceivePacketAsynchronously() = 0;
 
   // sends as many requests as allowed by implementation
-  virtual bool SendRequests()
+  virtual bool SendRequests() override
   {
     // noop
     return true;
@@ -1568,7 +1568,7 @@ public:
   }
 
 protected:
-  virtual bool InitRequest(TSFTPQueuePacket * Request)
+  virtual bool InitRequest(TSFTPQueuePacket * Request) override
   {
     uint32_t BlockSize = FFileSystem->DownloadBlockSize(OperationProgress);
     InitRequest(Request, FTransferred, BlockSize);
@@ -1586,7 +1586,7 @@ protected:
     Request->AddCardinal(Size);
   }
 
-  virtual bool End(TSFTPPacket * Response)
+  virtual bool End(TSFTPPacket * Response) override
   {
     return (Response->GetType() != SSH_FXP_DATA);
   }
@@ -1640,7 +1640,7 @@ public:
   }
 
 protected:
-  virtual bool InitRequest(TSFTPQueuePacket * Request)
+  virtual bool InitRequest(TSFTPQueuePacket * Request) override
   {
     FTerminal = FFileSystem->FTerminal;
     // Buffer for one block of data
@@ -1694,7 +1694,7 @@ protected:
     return Result;
   }
 
-  virtual void SendPacket(TSFTPQueuePacket * Packet)
+  virtual void SendPacket(TSFTPQueuePacket * Packet) override
   {
     TSFTPAsynchronousQueue::SendPacket(Packet);
     OperationProgress->AddTransferred(FLastBlockSize);
@@ -1702,7 +1702,7 @@ protected:
 
   virtual void ReceiveResponse(
     const TSFTPPacket * Packet, TSFTPPacket * Response, SSH_FXP_TYPES ExpectedType = -1,
-    SSH_FX_TYPES AllowStatus = -1, bool TryOnly = false)
+    SSH_FX_TYPES AllowStatus = -1, bool TryOnly = false) override
   {
     TSFTPAsynchronousQueue::ReceiveResponse(Packet, Response, ExpectedType, AllowStatus, TryOnly);
     if (Response->GetCapacity() > 0)
@@ -1720,7 +1720,7 @@ protected:
     }
   }
 
-  virtual bool ReceivePacketAsynchronously()
+  virtual bool ReceivePacketAsynchronously() override
   {
     // do not read response to close request
     bool Result = (FRequests->GetCount() > 0);
@@ -1739,7 +1739,7 @@ protected:
     return FFileSystem->UploadBlockSize(FHandle, OperationProgress);
   }
 
-  virtual bool End(TSFTPPacket * /*Response*/)
+  virtual bool End(TSFTPPacket * /*Response*/) override
   {
     return FEnd;
   }
@@ -1788,7 +1788,7 @@ public:
   }
 
 protected:
-  virtual bool InitRequest(TSFTPQueuePacket * Request)
+  virtual bool InitRequest(TSFTPQueuePacket * Request) override
   {
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
@@ -1825,7 +1825,7 @@ protected:
     return Result;
   }
 
-  virtual bool SendRequest()
+  virtual bool SendRequest() override
   {
     bool Result =
       (FIndex < FFileList->GetCount()) &&
@@ -1833,7 +1833,7 @@ protected:
     return Result;
   }
 
-  virtual bool End(TSFTPPacket * /*Response*/)
+  virtual bool End(TSFTPPacket * /*Response*/) override
   {
     return (FRequests->GetCount() == 0);
   }
@@ -1888,7 +1888,7 @@ public:
   }
 
 protected:
-  virtual bool InitRequest(TSFTPQueuePacket * Request)
+  virtual bool InitRequest(TSFTPQueuePacket * Request) override
   {
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
@@ -1918,7 +1918,7 @@ protected:
     return Result;
   }
 
-  virtual bool SendRequest()
+  virtual bool SendRequest() override
   {
     bool Result =
       (FIndex < FFileList->GetCount()) &&
@@ -1926,7 +1926,7 @@ protected:
     return Result;
   }
 
-  virtual bool End(TSFTPPacket * /*Response*/)
+  virtual bool End(TSFTPPacket * /*Response*/) override
   {
     return (FRequests->GetCount() == 0);
   }

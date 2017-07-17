@@ -343,10 +343,10 @@ public:
   virtual ~TTunnelThread();
 
   virtual void InitTunnelThread();
-  virtual void Terminate();
+  virtual void Terminate() override;
 
 protected:
-  virtual void Execute();
+  virtual void Execute() override;
 
 private:
   TSecureShell * FSecureShell;
@@ -406,21 +406,21 @@ public:
   {
   }
 
-  virtual void Information(UnicodeString Str, bool Status);
+  virtual void Information(UnicodeString Str, bool Status) override;
   virtual uintptr_t QueryUser(UnicodeString Query,
     TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
-    TQueryType QueryType);
+    TQueryType QueryType) override;
   virtual uintptr_t QueryUserException(UnicodeString Query,
     Exception * E, uintptr_t Answers, const TQueryParams * Params,
-    TQueryType QueryType);
+    TQueryType QueryType) override;
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
     UnicodeString AName, UnicodeString AInstructions, TStrings * Prompts,
-    TStrings * Results);
-  virtual void DisplayBanner(UnicodeString Banner);
-  virtual void FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpContext);
-  virtual void HandleExtendedException(Exception * E);
-  virtual void Closed();
-  virtual void ProcessGUI();
+    TStrings * Results) override;
+  virtual void DisplayBanner(UnicodeString Banner) override;
+  virtual void FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpContext) override;
+  virtual void HandleExtendedException(Exception * E) override;
+  virtual void Closed() override;
+  virtual void ProcessGUI() override;
 
 private:
   TTerminal * FTerminal;

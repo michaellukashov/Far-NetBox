@@ -115,7 +115,7 @@ protected:
   void HideTabs();
   virtual void SelectTab(intptr_t Tab);
   void TabButtonClick(TFarButton * Sender, bool & Close);
-  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
+  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode) override;
   virtual UnicodeString GetTabName(intptr_t Tab) const;
   TTabButton * GetTabButton(intptr_t Tab) const;
   intptr_t GetTabCount() const { return FTabCount; }
@@ -771,7 +771,7 @@ public:
   bool Execute();
 
 protected:
-  virtual void Change();
+  virtual void Change() override;
 
 private:
   virtual void UpdateControls();
@@ -1469,10 +1469,10 @@ public:
   bool Execute(TSessionData * SessionData, TSessionActionEnum & Action);
 
 protected:
-  virtual void Change();
-  virtual void Init();
-  virtual bool CloseQuery();
-  virtual void SelectTab(intptr_t Tab);
+  virtual void Change() override;
+  virtual void Init() override;
+  virtual bool CloseQuery() override;
+  virtual void SelectTab(intptr_t Tab) override;
 
 private:
   void LoadPing(TSessionData * SessionData);
@@ -4270,7 +4270,7 @@ protected:
   TFarEdit * FOctalEdit;
   TFarCheckBox * FDirectoriesXCheck;
 
-  virtual void Change();
+  virtual void Change() override;
   void UpdateControls();
 
 public:
@@ -4596,7 +4596,7 @@ public:
   bool Execute(TRemoteProperties * Properties);
 
 protected:
-  virtual void Change();
+  virtual void Change() override;
   void UpdateProperties(TRemoteProperties & Properties) const;
 
 private:
@@ -4950,7 +4950,7 @@ protected:
 
   void ValidateMaskComboExit(TObject * Sender);
   void ValidateSpeedComboExit(TObject * Sender);
-  virtual void Change();
+  virtual void Change() override;
   void UpdateControls();
 
 private:
@@ -5392,8 +5392,8 @@ public:
   bool Execute(OUT UnicodeString & TargetDirectory, OUT TGUICopyParamType * Params);
 
 protected:
-  virtual bool CloseQuery();
-  virtual void Change();
+  virtual bool CloseQuery() override;
+  virtual void Change() override;
   void CustomCopyParam();
 
   void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
@@ -5718,7 +5718,7 @@ public:
     bool & Symbolic);
 
 protected:
-  virtual void Change();
+  virtual void Change() override;
 
 private:
   TFarEdit * FileNameEdit;
@@ -5846,14 +5846,14 @@ protected:
   void FeedControls();
   void UpdateControls();
   TLabelList * CreateLabelArray(intptr_t Count);
-  virtual void SelectTab(intptr_t Tab);
-  virtual void Change();
+  virtual void SelectTab(intptr_t Tab) override;
+  virtual void Change() override;
   void SpaceAvailableButtonClick(TFarButton * Sender, bool & Close);
   void ClipboardButtonClick(TFarButton * Sender, bool & Close);
   void CheckSpaceAvailable();
   void NeedSpaceAvailable();
   bool SpaceAvailableSupported() const;
-  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
+  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode) override;
 
 private:
   TGetSpaceAvailableEvent FOnGetSpaceAvailable;
@@ -6524,7 +6524,7 @@ public:
   bool Execute(UnicodeString & Command, intptr_t & Params);
 
 protected:
-  virtual void Change();
+  virtual void Change() override;
 
 private:
   intptr_t FParams;
@@ -6693,9 +6693,9 @@ public:
     TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode);
 
 protected:
-  virtual bool CloseQuery();
-  virtual void Change();
-  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
+  virtual bool CloseQuery() override;
+  virtual void Change() override;
+  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2) override;
 
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
   void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
@@ -7120,8 +7120,8 @@ public:
   virtual bool Execute(TSynchronizeChecklist * Checklist);
 
 protected:
-  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
-  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
+  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2) override;
+  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode) override;
   void CheckAllButtonClick(TFarButton * Sender, bool & Close);
   void VideoModeButtonClick(TFarButton * Sender, bool & Close);
   void ListBoxClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
@@ -7723,7 +7723,7 @@ public:
     const TCopyParamType * CopyParams, bool & SaveSettings);
 
 protected:
-  virtual void Change();
+  virtual void Change() override;
   void UpdateControls();
   void StartButtonClick(TFarButton * Sender, bool & Close);
   void StopButtonClick(TFarButton * Sender, bool & Close);
@@ -7736,9 +7736,9 @@ protected:
   void DoLog(TSynchronizeController * Controller,
     TSynchronizeLogEntry Entry, UnicodeString Message);
   void DoSynchronizeThreads(TObject * Sender, TThreadMethod Slot);
-  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
-  virtual bool CloseQuery();
-  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
+  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2) override;
+  virtual bool CloseQuery() override;
+  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode) override;
   TCopyParamType GetCopyParams() const;
   intptr_t ActualCopyParamAttrs() const;
   void CustomCopyParam();
@@ -8204,8 +8204,8 @@ public:
   bool Execute(TTerminalQueueStatus* Status);
 
 protected:
-  virtual void Change();
-  virtual void Idle();
+  virtual void Change() override;
+  virtual void Idle() override;
   bool UpdateQueue();
   void LoadQueue();
   void RefreshQueue();
@@ -8213,8 +8213,8 @@ protected:
     TQueueItemProxy * QueueItem, size_t Index);
   bool QueueItemNeedsFrequentRefresh(TQueueItemProxy * QueueItem);
   void UpdateControls();
-  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
-  virtual bool CloseQuery();
+  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode) override;
+  virtual bool CloseQuery() override;
 
 private:
   void OperationButtonClick(TFarButton * Sender, bool & Close);

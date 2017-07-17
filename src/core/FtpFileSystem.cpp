@@ -36,8 +36,8 @@ public:
   {
   }
 
-  virtual const wchar_t * Option(intptr_t OptionID) const;
-  virtual intptr_t OptionVal(intptr_t OptionID) const;
+  virtual const wchar_t * Option(intptr_t OptionID) const override;
+  virtual intptr_t OptionVal(intptr_t OptionID) const override;
 
 protected:
   virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) override;

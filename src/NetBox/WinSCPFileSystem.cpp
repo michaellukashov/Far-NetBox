@@ -242,8 +242,8 @@ public:
   }
 
   void InitKeepaliveThread();
-  virtual void Execute();
-  virtual void Terminate();
+  virtual void Execute() override;
+  virtual void Terminate() override;
 
 private:
   TWinSCPFileSystem * FFileSystem;
