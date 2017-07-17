@@ -5828,8 +5828,15 @@ public:
   static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeFileData); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSynchronizeFileData) || TObject::is(Kind); }
 public:
-  TSynchronizeFileData() : TObject(OBJECT_CLASS_TSynchronizeFileData)
+  TSynchronizeFileData() :
+    TObject(OBJECT_CLASS_TSynchronizeFileData),
+    Modified(false),
+    New(false),
+    IsDirectory(false),
+    MatchingRemoteFileFile(nullptr),
+    MatchingRemoteFileImageIndex(0)
   {
+    ClearStruct(LocalLastWriteTime);
   }
 
   bool Modified;
