@@ -151,11 +151,11 @@ bool TFileMasks::IsMask(const UnicodeString Mask)
   return (Mask.LastDelimiter(L"?*[") > 0);
 }
 
-UnicodeString TFileMasks::NormalizeMask(UnicodeString Mask, UnicodeString AnyMask)
+UnicodeString TFileMasks::NormalizeMask(UnicodeString Mask, UnicodeString AAnyMask)
 {
   if (!IsEffectiveFileNameMask(Mask))
   {
-    return AnyMask;
+    return AAnyMask;
   }
   else
   {
