@@ -2541,7 +2541,7 @@ SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
   if ((AllowStatus & (0x01LL << Code)) == 0)
   {
     intptr_t Message;
-    if (Code >= _countof(Messages))
+    if ((uint32_t)Code >= _countof(Messages))
     {
       Message = SFTP_STATUS_UNKNOWN;
     }

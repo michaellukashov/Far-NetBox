@@ -4,7 +4,7 @@
 #include <FileSystems.h>
 
 typedef int32_t SSH_FX_TYPES;
-typedef uint32_t SSH_FXP_TYPES;
+typedef int32_t SSH_FXP_TYPES;
 typedef uint32_t SSH_FILEXFER_ATTR_TYPES;
 typedef uint8_t SSH_FILEXFER_TYPES;
 typedef uint32_t SSH_FXF_TYPES;
