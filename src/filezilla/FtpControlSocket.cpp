@@ -267,7 +267,7 @@ void CFtpControlSocket::ShowTimeoutError(UINT nID) const
   CString str2;
   str2.LoadString(nID);
   CString message;
-  message.Format(L"%s (%s)", str1, str2);
+  message.Format(L"%s (%s)", (LPTSTR)str1, (LPTSTR)str2);
   ShowStatus(message, FZ_LOG_ERROR);
 }
 
@@ -2414,9 +2414,9 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 bool CFtpControlSocket::ConnectTransferSocket(const CString & host, UINT port)
 {
   CString hostname;
-  hostname.Format(L"%s:%d", host, port);
+  hostname.Format(L"%s:%d", (LPTSTR)host, (LPTSTR)port);
   CString str;
-  str.Format(IDS_STATUSMSG_CONNECTING, hostname);
+  str.Format(IDS_STATUSMSG_CONNECTING, (LPTSTR)hostname);
   ShowStatus(str, FZ_LOG_PROGRESS);
 
   bool result = true;
@@ -3676,7 +3676,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
           wchar_t * Error = m_pTools->LastSysErrorMessage();
           //Error opening the file
           CString str;
-          str.Format(IDS_ERRORMSG_FILEOPENFAILED,pData->transferfile.localfile);
+          str.Format(IDS_ERRORMSG_FILEOPENFAILED, (LPTSTR)pData->transferfile.localfile);
           str += L"\n";
           str += Error;
           free(Error);
@@ -6474,7 +6474,7 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 
       if (ahost != host)
       {
-        LogMessage(FZ_LOG_WARNING, L"Using host address %s instead of the one suggested by the server: %s", ahost, host);
+        LogMessage(FZ_LOG_WARNING, L"Using host address %s instead of the one suggested by the server: %s", (LPTSTR)ahost, (LPTSTR)host);
         host = ahost;
       }
       break;
@@ -6490,7 +6490,7 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
       }
       else if (!IsRoutableAddress(host) && IsRoutableAddress(ahost))
       {
-        LogMessage(FZ_LOG_WARNING, L"Server sent passive reply with unroutable address %s, using host address instead.", host, ahost);
+        LogMessage(FZ_LOG_WARNING, L"Server sent passive reply with unroutable address %s, using host address %s instead.", (LPTSTR)host, (LPTSTR)ahost);
         host = ahost;
       }
       break;
