@@ -110,6 +110,7 @@ public:
   CMSimpleStringT(const XCHAR *pchSrc, int nLength);
   ~CMSimpleStringT();
 
+  template< typename BaseType >
   __forceinline operator CMSimpleStringT<BaseType>&()
   {
     return *(CMSimpleStringT<BaseType>*)this;
