@@ -542,7 +542,6 @@ TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) :
   TConfiguration(Kind),
   FLocales(CreateSortedStringList()),
   FAppliedLocale(0),
-  FLocale(0),
   FLastLocalesExts(L"*"),
   FContinueOnError(false),
   FConfirmCommandSession(false),
@@ -562,7 +561,8 @@ TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) :
   FCopyParamList(new TCopyParamList()),
   FCopyParamListDefaults(false),
   FKeepUpToDateChangeDelay(0),
-  FSessionReopenAutoIdle(0)
+  FSessionReopenAutoIdle(0),
+  FLocale(0)
 {
   CoreSetResourceModule(nullptr);
   FLocales = new TObjectList();
