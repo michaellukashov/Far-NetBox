@@ -2689,7 +2689,7 @@ UnicodeString TTerminal::TerminalGetUserName() const
 {
   // in future might also be implemented to detect username similar to GetUserGroups
   DebugAssert(FFileSystem != nullptr);
-  UnicodeString Result = FFileSystem->RemoteGetUserName();
+  UnicodeString Result = FFileSystem ? FFileSystem->RemoteGetUserName() : L"";
   // Is empty also when stored username was used
   if (Result.IsEmpty())
   {
@@ -4178,7 +4178,7 @@ bool TTerminal::ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
 TStrings * TTerminal::GetFixedPaths() const
 {
   DebugAssert(FFileSystem != nullptr);
-  return FFileSystem->GetFixedPaths();
+  return FFileSystem ? FFileSystem->GetFixedPaths() : nullptr;
 }
 
 bool TTerminal::GetResolvingSymlinks() const
