@@ -4767,7 +4767,7 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
   DebugAssert(AFile && AFile->GetDirectory() == FFiles);
   bool Proceed = true;
   // if filename doesn't contain path, we check for existence of file
-  if ((AFile->GetFileName() != ANewName) && CheckExistence &&
+  if ((AFile && AFile->GetFileName() != ANewName) && CheckExistence &&
     FConfiguration->GetConfirmOverwriting() &&
     base::UnixSamePath(RemoteGetCurrentDirectory(), FFiles->GetDirectory()))
   {
@@ -4799,7 +4799,7 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
     }
   }
 
-  if (Proceed)
+  if (Proceed && AFile)
   {
     FileModified(AFile, AFile->GetFileName());
     TerminalRenameFile(AFile->GetFileName(), ANewName);
