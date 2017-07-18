@@ -862,10 +862,12 @@ void TSessionLog::CloseLogFile()
 
 void TSessionLog::OpenLogFile()
 {
+  DebugAssert(FConfiguration != nullptr);
+  if (!FConfiguration)
+    return;
   try
   {
     DebugAssert(FFile == nullptr);
-    DebugAssert(FConfiguration != nullptr);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
     FFile = OpenFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
     TSearchRec SearchRec;
@@ -1508,10 +1510,12 @@ void TActionLog::CloseLogFile()
 
 void TActionLog::OpenLogFile()
 {
+  DebugAssert(FConfiguration != nullptr);
+  if (!FConfiguration)
+    return;
   try
   {
     DebugAssert(FFile == nullptr);
-    DebugAssert(FConfiguration != nullptr);
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
     FFile = OpenFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
   }
