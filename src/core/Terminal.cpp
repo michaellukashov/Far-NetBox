@@ -7290,7 +7290,7 @@ bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
     };
 
     OperationProgress.Start(((Params & cpDelete) != 0 ? foMove : foCopy), osRemote,
-      AFilesToCopy->GetCount(), (Params & cpTemporary) != 0, TargetDir, CopyParam->GetCPSLimit());
+      AFilesToCopy ? AFilesToCopy->GetCount() : 0, (Params & cpTemporary) != 0, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = &OperationProgress; //-V506
     //bool CollectingUsage = false;
