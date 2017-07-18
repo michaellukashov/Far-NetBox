@@ -1904,6 +1904,8 @@ protected:
       TRemoteFile * File = FFileList->GetAs<TRemoteFile>(FIndex);
       DebugAssert(File != nullptr);
       ++FIndex;
+      if (!File)
+        continue;
 
       Result = !File->GetIsDirectory();
       if (Result)
