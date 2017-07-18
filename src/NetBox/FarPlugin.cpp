@@ -1025,7 +1025,7 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
     nb_free(Items);
   };
   UnicodeString FullMessage = Message;
-  if (Params->MoreMessages != nullptr)
+  if (Params && (Params->MoreMessages != nullptr))
   {
     FullMessage += UnicodeString(L"\n\x01\n") + Params->MoreMessages->GetText();
     while (FullMessage[FullMessage.Length()] == L'\n' ||
@@ -1119,6 +1119,8 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
   int & BreakCode)
 {
   DebugAssert(Items && Items->GetCount());
+  if (Items)
+    return -1;
   intptr_t Result = 0;
   FarMenuItemEx * MenuItems = nb::calloc<FarMenuItemEx*>(sizeof(FarMenuItemEx) * (1 + Items->GetCount()));
   SCOPE_EXIT
@@ -2846,7 +2848,7 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
     ++CurFarPluginStrings;
   }
   DebugAssert(FarPlugin != nullptr);
-  return FarPlugin->GetMsg(PluginStringId);
+  return FarPlugin ? FarPlugin->GetMsg(PluginStringId) : UnicodeString();
 }
 
 UnicodeString TGlobalFunctions::GetCurrDirectory() const

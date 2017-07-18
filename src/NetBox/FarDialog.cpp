@@ -760,7 +760,8 @@ void TFarDialog::Synchronize(TThreadMethod Method)
 void TFarDialog::Close(TFarButton * Button)
 {
   DebugAssert(Button != nullptr);
-  SendDlgMessage(DM_CLOSE, Button->GetItem(), 0);
+  if (Button)
+    SendDlgMessage(DM_CLOSE, Button->GetItem(), 0);
 }
 
 void TFarDialog::Change()
@@ -2300,7 +2301,7 @@ intptr_t TFarList::GetVisibleCount() const
 {
   TFarDialogItem * DialogItem = GetDialogItem();
   DebugAssert(DialogItem != nullptr);
-  return DialogItem->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2);
+  return DialogItem ? DialogItem->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2) : 0;
 }
 
 intptr_t TFarList::GetSelectedInt(bool Init) const

@@ -327,6 +327,8 @@ int TSimpleThread::ThreadProc(void * Thread)
 {
   TSimpleThread * SimpleThread = get_as<TSimpleThread>(Thread);
   DebugAssert(SimpleThread != nullptr);
+  if (!SimpleThread)
+    return 0;
   try
   {
     SimpleThread->Execute();
@@ -1381,6 +1383,8 @@ void TTerminalItem::Process(TQueueItem * Item)
 
 void TTerminalItem::ProcessEvent()
 {
+  if (!FItem)
+    return;
   TGuard Guard(FCriticalSection);
 
   bool Retry = true;
@@ -1485,7 +1489,7 @@ void TTerminalItem::Cancel()
 bool TTerminalItem::Pause()
 {
   DebugAssert(FItem != nullptr);
-  bool Result = (FItem->GetStatus() == TQueueItem::qsProcessing) && !FPause;
+  bool Result = FItem && (FItem->GetStatus() == TQueueItem::qsProcessing) && !FPause;
   if (Result)
   {
     FPause = true;
@@ -1496,7 +1500,7 @@ bool TTerminalItem::Pause()
 bool TTerminalItem::Resume()
 {
   DebugAssert(FItem != nullptr);
-  bool Result = (FItem->GetStatus() == TQueueItem::qsPaused);
+  bool Result = FItem && (FItem->GetStatus() == TQueueItem::qsPaused);
   if (Result)
   {
     TriggerEvent();
@@ -1530,6 +1534,8 @@ bool TTerminalItem::WaitForUserAction(
   DebugAssert(FItem != nullptr);
   DebugAssert((FItem->GetStatus() == TQueueItem::qsProcessing) ||
     (FItem->GetStatus() == TQueueItem::qsConnecting));
+  if (FItem)
+    return false;
 
   bool Result;
 
@@ -1659,7 +1665,7 @@ void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
 void TTerminalItem::OperationProgress(
   TFileOperationProgressType & ProgressData)
 {
-  if (FPause && !FTerminated && !FCancel)
+  if (FPause && !FTerminated && !FCancel && FItem)
   {
     DebugAssert(FItem != nullptr);
     TQueueItem::TStatus PrevStatus = FItem->GetStatus();
@@ -1708,7 +1714,7 @@ void TTerminalItem::OperationProgress(
 bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus) const
 {
   DebugAssert(FTerminal != nullptr);
-  bool Result = (FTerminal->GetStatus() < ssOpened) && (ItemStatus == TQueueItem::qsProcessing);
+  bool Result = (FTerminal && FTerminal->GetStatus() < ssOpened) && (ItemStatus == TQueueItem::qsProcessing);
   if (Result)
   {
     ItemStatus = TQueueItem::qsConnecting;
@@ -2013,7 +2019,7 @@ bool TQueueItemProxy::SetCPSLimit(intptr_t CPSLimit)
 intptr_t TQueueItemProxy::GetIndex() const
 {
   DebugAssert(FQueueStatus != nullptr);
-  intptr_t Index = FQueueStatus->FList->IndexOf(this);
+  intptr_t Index = FQueueStatus ? FQueueStatus->FList->IndexOf(this) : 0;
   DebugAssert(Index >= 0);
   return Index;
 }
@@ -2213,6 +2219,8 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * Terminal
   FInfo->SingleFile = SingleFile;
 
   DebugAssert(AFilesToCopy != nullptr);
+  if (!AFilesToCopy)
+    return;
   FFilesToCopy = new TStringList();
   for (intptr_t Index = 0; Index < AFilesToCopy->GetCount(); ++Index)
   {
@@ -2224,12 +2232,15 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * Terminal
   FTargetDir = TargetDir;
 
   DebugAssert(CopyParam != nullptr);
-  FCopyParam = new TCopyParamType(*CopyParam);
+  if (CopyParam)
+  {
+    FCopyParam = new TCopyParamType(*CopyParam);
 
-  FParams = Params;
+    FParams = Params;
 
-  FParallel = Parallel;
-  FLastParallelOperationAdded = GetTickCount();
+    FParallel = Parallel;
+    FLastParallelOperationAdded = GetTickCount();
+  }
 }
 
 TTransferQueueItem::~TTransferQueueItem()

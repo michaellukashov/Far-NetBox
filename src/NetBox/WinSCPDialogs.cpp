@@ -8511,7 +8511,7 @@ void TQueueDialog::RefreshQueue()
       }
 
       if (QueueItemNeedsFrequentRefresh(QueueItem) &&
-        !QueueItem->GetProcessingUserAction())
+        QueueItem && !QueueItem->GetProcessingUserAction())
       {
         FillQueueItemLine(Line, QueueItem, ILine);
         if (GetQueueItems()->GetString(Index) != Line)

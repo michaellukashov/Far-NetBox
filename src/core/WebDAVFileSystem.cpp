@@ -1406,6 +1406,8 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   TOnceDoneOperation & OnceDoneOperation)
 {
   DebugAssert((AFilesToCopy != nullptr) && (OperationProgress != nullptr));
+  if (!AFilesToCopy)
+    return;
 
   Params &= ~cpAppend;
   UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);

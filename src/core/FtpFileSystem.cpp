@@ -1277,7 +1277,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
     TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObj(Index1));
     DebugAssert(File != nullptr);
 
-    if (File->GetIsDirectory())
+    if (File && File->GetIsDirectory())
     {
       if (FTerminal->CanRecurseToDirectory(File) &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory() &&
@@ -1332,7 +1332,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
         }
       }
     }
-    else
+    else if (File)
     {
       TChecksumSessionAction Action(FTerminal->GetActionLog());
       try
@@ -1745,7 +1745,7 @@ void TFTPFileSystem::SinkRobust(UnicodeString AFileName,
       OperationProgress->RollbackTransfer();
       Action.Restart();
       DebugAssert(AFile != nullptr);
-      if (!AFile->GetIsDirectory())
+      if (AFile && !AFile->GetIsDirectory())
       {
         // prevent overwrite confirmations
         Params |= cpNoConfirmation;
@@ -1974,7 +1974,7 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = base::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
-  while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->GetCancel())
+  while ((Index < AFilesToCopy->GetCount()) && OperationProgress && !OperationProgress->GetCancel())
   {
     bool Success = false;
     UnicodeString FileName = AFilesToCopy->GetString(Index);
@@ -4951,7 +4951,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
     DebugAssert(FFileList == nullptr);
     return false;
   }
-  else
+  else if (FFileList)
   {
     DebugAssert(FFileList != nullptr);
     // This can actually fail in real life,

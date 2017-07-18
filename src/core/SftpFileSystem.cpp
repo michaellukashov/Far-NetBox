@@ -4077,6 +4077,8 @@ void TSFTPFileSystem::ChangeFileProperties(UnicodeString AFileName,
   TChmodSessionAction & Action)
 {
   DebugAssert(AProperties != nullptr);
+  if (!AProperties)
+    return;
 
   TRemoteFile * File = nullptr;
 

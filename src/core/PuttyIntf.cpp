@@ -147,8 +147,12 @@ int get_userpass_input(prompts_t * p, const uint8_t * in, int inlen)
 int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
 {
   DebugAssert(p != nullptr);
+  if (!p)
+    return -1;
   TSecureShell * SecureShell = get_as<TSecureShell>(p->frontend);
   DebugAssert(SecureShell != nullptr);
+  if (!SecureShell)
+    return -1;
 
   int Result;
   std::unique_ptr<TStrings> Prompts(new TStringList());
@@ -503,7 +507,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     }
   }
 
-  if (R == ERROR_SUCCESS)
+  if ((R == ERROR_SUCCESS) && Type)
   {
     DebugAssert(Type != nullptr);
     *Type = REG_SZ;

@@ -351,13 +351,13 @@ UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
 {
   DebugAssert(AFiles != nullptr);
   UnicodeString Item;
-  if (AFiles->GetCount() > 0)
+  if (AFiles && (AFiles->GetCount() > 0))
   {
     Item = Remote ? base::UnixExtractFileName(AFiles->GetString(0)) :
       base::ExtractFileName(AFiles->GetString(0), true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
-    AFiles->GetCount(), Item);
+    AFiles ? AFiles->GetCount() : 0, Item);
 }
 
 UnicodeString UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
