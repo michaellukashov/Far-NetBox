@@ -5238,7 +5238,7 @@ void TStoredSessionList::ImportHostKeys(
       SourceStorage->GetValueNames(KeyList.get());
 
       DebugAssert(Sessions != nullptr);
-      for (intptr_t Index = 0; Index < Sessions->GetCount(); ++Index)
+      for (intptr_t Index = 0; Index < (Sessions ? Sessions->GetCount() : 0); ++Index)
       {
         TSessionData * Session = Sessions->GetSession(Index);
         if (!OnlySelected || Session->GetSelected())
