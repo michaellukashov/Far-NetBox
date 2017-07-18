@@ -2286,7 +2286,7 @@ void TTransferQueueItem::ProgressUpdated()
       DebugAssert(FParallelOperation != nullptr);
       // Won't be initialized, if the operation is not eligible for parallel transfers (like cpDelete).
       // We can probably move the check outside of the guard.
-      if (FParallelOperation->IsInitialized())
+      if (FParallelOperation && FParallelOperation->IsInitialized())
       {
         DebugAssert((FProgressData->GetOperation() == foCopy) || (FProgressData->GetOperation() == foCalculateSize));
         if (FProgressData->GetOperation() == foCopy)
