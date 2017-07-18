@@ -4158,7 +4158,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
         {
           Next = Queue.ReceivePacket(&Packet, File);
           DebugAssert((Packet.GetType() == SSH_FXP_ATTRS) || (Packet.GetType() == SSH_FXP_STATUS));
-          if (Packet.GetType() == SSH_FXP_ATTRS)
+          if ((Packet.GetType() == SSH_FXP_ATTRS) && File)
           {
             DebugAssert(File != nullptr);
             Progress.SetFile(File->GetFileName());
