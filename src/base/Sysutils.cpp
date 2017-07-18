@@ -1,3 +1,7 @@
+
+#include <vcl.h>
+#pragma hdrstop
+
 #include <iostream>
 #include <iomanip>
 
@@ -705,8 +709,8 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
   {
     va_list Args;
     va_start(Args, Id);
-    intptr_t Len = _vscwprintf(Fmt.c_str(), Args);
-    UnicodeString Result(Len + sizeof(wchar_t), 0);
+    intptr_t Len = _vscwprintf(Fmt.c_str(), Args) + 1; // _vscprintf doesn't count terminating '\0'
+    UnicodeString Result(Len, 0);
     vswprintf_s(&Result[1], Result.Length(), Fmt.c_str(), Args);
     va_end(Args);
     return Result;

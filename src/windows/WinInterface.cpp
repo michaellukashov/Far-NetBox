@@ -1,6 +1,8 @@
 #include <Interface.h>
 #include "WinInterface.h"
 
+const uint32_t GUIUpdateInterval = 100;
+
 static bool IsPositiveAnswer(uintptr_t Answer)
 {
   return (Answer == qaYes) || (Answer == qaOK) || (Answer == qaYesToAll);

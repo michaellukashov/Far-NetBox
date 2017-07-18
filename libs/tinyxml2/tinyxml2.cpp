@@ -2063,7 +2063,6 @@ void XMLDocument::DeepCopy(XMLDocument* target)
 	}
 }
 
-
 XMLElement* XMLDocument::NewElement( const char* name )
 {
     XMLElement* ele = CreateUnlinkedNode<XMLElement>( _elementPool );
@@ -2307,6 +2306,16 @@ void XMLDocument::SetError( XMLError error, const char* str1, const char* str2, 
     const char* errorName = _errorNames[errorID];
     TIXMLASSERT( errorName && errorName[0] );
     return errorName;
+}
+
+const char* XMLDocument::GetErrorStr1() const 
+{
+	return _errorStr1.GetStr();
+}
+
+const char* XMLDocument::GetErrorStr2() const 
+{
+	return _errorStr2.GetStr();
 }
 
 const char* XMLDocument::ErrorName() const

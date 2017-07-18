@@ -1,9 +1,20 @@
-NetBox 2.4.3.505 18.06.2017
+NetBox 2.4.4.513 16.07.2017
 --------------------
+  * Fix AV after reopen connection
+
+NetBox 2.4.3.512 09.07.2017
+--------------------
+  * Update putty sources to 0.70
+  * Issue #245: AV when file is edited in external editor
+    (https://github.com/michaellukashov/Far-NetBox/issues/245)
+  * Issue #244: Fail to change dir on remote server after reconnect
+    (https://github.com/michaellukashov/Far-NetBox/issues/244)
+  * Issue #243: Show session name and current dir if interface option "Show session name in window title" is set
+    (https://github.com/michaellukashov/Far-NetBox/issues/243)
+  * Bugfix: Fix issues #240, #241, #239, #237
   * Bugfix: Mantis-3439: Far crash when trying to copy to long path
     (http://bugs.farmanager.com/view.php?id=3439)
   * Update openssl sources to 1.1.0f
-  * Update putty sources to 0.69
   * Bugfix: plugin crashes on FAR startup
     (http://bugs.farmanager.com/view.php?id=3429)
     (http://forum.farmanager.com/viewtopic.php?p=143678#p143678)

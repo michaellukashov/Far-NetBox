@@ -1622,7 +1622,7 @@ int ne_sock_accept(ne_socket *sock, int listener)
 {
     SOCKET fd = accept(listener, NULL, NULL);
 
-    if (fd < 0) {
+    if (fd == INVALID_SOCKET) {
         set_strerror(sock, ne_errno);
         return -1;
     }
@@ -1963,7 +1963,7 @@ int ne_sock_close(ne_socket *sock)
     }
 #endif
 
-    if (sock->fd < 0)
+    if (sock->fd == INVALID_SOCKET)
         ret = 0;
     else
         ret = ne_close(sock->fd);

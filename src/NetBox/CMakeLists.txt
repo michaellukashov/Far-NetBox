@@ -42,6 +42,7 @@ else()
 endif()
 
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+set(NETBOX_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 
 if(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
@@ -1013,6 +1014,7 @@ add_library(putty STATIC
 
 set(PUTTY_COMPILE_FLAGS
   -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS
+  -wd4996
 )
 if(MSVC)
 set(PUTTY_COMPILE_FLAGS ${PUTTY_COMPILE_FLAGS}
@@ -1143,6 +1145,7 @@ add_library(apr STATIC
 #  ../../libs/apr/poll/unix/pollcb.c
 #  ../../libs/apr/poll/unix/pollset.c
 #  ../../libs/apr/poll/unix/select.c
+#  ../../libs/apr/poll/unix/wakeup.c
 #  ../../libs/apr/poll/unix/z_asio.c
   ../../libs/apr/random/unix/apr_random.c
 #  ../../libs/apr/random/unix/sha2.c
@@ -1166,6 +1169,7 @@ add_library(apr STATIC
   ../../libs/apr/time/win32/timestr.c
 #  ../../libs/apr/user/win32/groupinfo.c
   ../../libs/apr/user/win32/userinfo.c
+  ../../libs/apr/encoding/apr_escape.c
 )
 
 target_compile_options(apr PRIVATE
@@ -1502,7 +1506,7 @@ find_program(MASM_EXECUTABLE ml)
 # message("masm: ${MASM_EXECUTABLE}")
 set(ASM_OBJECTS)
 foreach(src vc_crt_fix)
-  set(ASM_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/${src}.asm)
+  set(ASM_SOURCE ${NETBOX_DIR}/${src}.asm)
   set(ASM_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${src}.obj)
   set(ASM_OBJECTS ${ASM_OBJECTS} ${ASM_OBJECT})
   add_custom_command(
@@ -1615,7 +1619,7 @@ add_custom_command(TARGET create_plugin_dir POST_BUILD
 )
 
 file(GLOB DIST_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/*.lng
+  ${NETBOX_DIR}/*.lng
 #  ${BUILD_DIR}/*.dll
 #  ${BUILD_DIR}/*.pdb
 #  ${BUILD_DIR}/*.map

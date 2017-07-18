@@ -39,30 +39,30 @@ typedef DWORD TThreadID;
 
 class Exception;
 
-extern const intptr_t MonthsPerYear;
-extern const intptr_t DaysPerWeek;
-extern const intptr_t MinsPerHour;
-extern const intptr_t MinsPerDay;
-extern const intptr_t SecsPerMin;
-extern const intptr_t SecsPerHour;
-extern const intptr_t HoursPerDay;
-extern const intptr_t SecsPerDay;
-extern const intptr_t MSecsPerDay;
-extern const intptr_t MSecsPerSec;
-extern const intptr_t OneSecond;
-extern const intptr_t DateDelta;
-extern const intptr_t UnixDateDelta;
+NB_CORE_EXPORT extern const intptr_t MonthsPerYear;
+NB_CORE_EXPORT extern const intptr_t DaysPerWeek;
+NB_CORE_EXPORT extern const intptr_t MinsPerHour;
+NB_CORE_EXPORT extern const intptr_t MinsPerDay;
+NB_CORE_EXPORT extern const intptr_t SecsPerMin;
+NB_CORE_EXPORT extern const intptr_t SecsPerHour;
+NB_CORE_EXPORT extern const intptr_t HoursPerDay;
+NB_CORE_EXPORT extern const intptr_t SecsPerDay;
+NB_CORE_EXPORT extern const intptr_t MSecsPerDay;
+NB_CORE_EXPORT extern const intptr_t MSecsPerSec;
+NB_CORE_EXPORT extern const intptr_t OneSecond;
+NB_CORE_EXPORT extern const intptr_t DateDelta;
+NB_CORE_EXPORT extern const intptr_t UnixDateDelta;
 
 class TObject;
 
 typedef nb::FastDelegate0<void> TThreadMethod;
 typedef nb::FastDelegate1<void, TObject * /*Sender*/> TNotifyEvent;
 
-void Abort();
-void Error(intptr_t Id, intptr_t ErrorId);
-void ThrowNotImplemented(intptr_t ErrorId);
+NB_CORE_EXPORT void Abort();
+NB_CORE_EXPORT void Error(intptr_t Id, intptr_t ErrorId);
+NB_CORE_EXPORT void ThrowNotImplemented(intptr_t ErrorId);
 
-class TObject
+class NB_CORE_EXPORT TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
@@ -81,6 +81,8 @@ inline TObject * as_object(void * p) { return static_cast<TObject *>(p); }
 inline const TObject * as_object(const void * p) { return static_cast<const TObject *>(p); }
 template<class T> inline T * get_as(void * p) { return dyn_cast<T>(as_object(p)); }
 template<class T> inline const T * get_as(const void * p) { return dyn_cast<T>(as_object(p)); }
+template <class T>
+inline TObject * ToObj(const T & a) { return reinterpret_cast<TObject *>(static_cast<size_t>(a)); }
 
 struct TPoint
 {
@@ -144,7 +146,7 @@ struct TRect
   }
 };
 
-class TPersistent : public TObject
+class NB_CORE_EXPORT TPersistent : public TObject
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -198,7 +200,7 @@ enum TListNotification
 
 typedef intptr_t (CompareFunc)(const void * Item1, const void * Item2);
 
-class TList : public TPersistent
+class NB_CORE_EXPORT TList : public TPersistent
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -246,7 +248,7 @@ private:
   rde::vector<void *> FList;
 };
 
-class TObjectList : public TList
+class NB_CORE_EXPORT TObjectList : public TList
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -287,7 +289,7 @@ enum TDuplicatesEnum
 
 class TStream;
 
-class TStrings : public TObjectList
+class NB_CORE_EXPORT TStrings : public TObjectList
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -359,7 +361,7 @@ protected:
 class TStringList;
 typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, intptr_t Index2);
 
-class TStringList : public TStrings
+class NB_CORE_EXPORT TStringList : public TStrings
 {
 friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
 public:
@@ -424,7 +426,7 @@ private:
 };
 
 /// TDateTime: number of days since 12/30/1899
-class TDateTime : public TObject
+class NB_CORE_EXPORT TDateTime : public TObject
 {
 public:
   TDateTime() :
@@ -503,13 +505,14 @@ private:
 
 #define MinDateTime TDateTime(-657434.0)
 
-TDateTime Now();
-TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
-double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
-int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
-int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
-/*
-class TSHFileInfo : public TObject
+NB_CORE_EXPORT TDateTime Now();
+NB_CORE_EXPORT TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
+NB_CORE_EXPORT double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
+NB_CORE_EXPORT int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
+NB_CORE_EXPORT int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
+
+#if 0
+class NB_CORE_EXPORT TSHFileInfo : public TObject
 {
   typedef DWORD_PTR (WINAPI * TGetFileInfo)(
   _In_ LPCTSTR pszPath,
@@ -533,7 +536,8 @@ private:
   TGetFileInfo FGetFileInfo;
   TLibraryLoader FSHFileInfoLoader;
 };
-*/
+#endif // #if 0
+
 enum TSeekOrigin
 {
   soFromBeginning = 0,
@@ -541,7 +545,7 @@ enum TSeekOrigin
   soFromEnd = 2
 };
 
-class TStream : public TObject
+class NB_CORE_EXPORT TStream : public TObject
 {
 public:
   TStream();
@@ -575,7 +579,7 @@ public:
   }
 };
 
-class THandleStream : public TStream
+class NB_CORE_EXPORT THandleStream : public TStream
 {
 NB_DISABLE_COPY(THandleStream)
 public:
@@ -593,7 +597,7 @@ protected:
   HANDLE FHandle;
 };
 
-class TSafeHandleStream : public THandleStream
+class NB_CORE_EXPORT TSafeHandleStream : public THandleStream
 {
 public:
   explicit TSafeHandleStream(THandle AHandle);
@@ -602,7 +606,7 @@ public:
   virtual int64_t Write(const void * Buffer, int64_t Count);
 };
 
-class EReadError : public std::runtime_error
+class NB_CORE_EXPORT EReadError : public std::runtime_error
 {
 public:
   explicit EReadError(const char * Msg) :
@@ -610,7 +614,7 @@ public:
   {}
 };
 
-class EWriteError : public std::runtime_error
+class NB_CORE_EXPORT EWriteError : public std::runtime_error
 {
 public:
   explicit EWriteError(const char * Msg) :
@@ -618,7 +622,7 @@ public:
   {}
 };
 
-class TMemoryStream : public TStream
+class NB_CORE_EXPORT TMemoryStream : public TStream
 {
 NB_DISABLE_COPY(TMemoryStream)
 public:
@@ -646,6 +650,7 @@ protected:
 
 private:
   void SetCapacity(int64_t NewCapacity);
+
 private:
   void * FMemory;
   int64_t FSize;
@@ -674,7 +679,7 @@ struct TRegDataInfo
   DWORD DataSize;
 };
 
-class TRegistry : public TObject
+class NB_CORE_EXPORT TRegistry : public TObject
 {
 NB_DISABLE_COPY(TRegistry)
 public:
@@ -743,7 +748,7 @@ struct TTimeStamp
 };
 
 // FIXME
-class TShortCut : public TObject
+class NB_CORE_EXPORT TShortCut : public TObject
 {
 public:
   explicit TShortCut();
@@ -813,7 +818,7 @@ public:
       const TMessageParams * Params) = 0;
 };
 
-class TGlobals : public TGlobalsIntf, public TObject
+class NB_CORE_EXPORT TGlobals : public TGlobalsIntf, public TObject
 {
 public:
   TGlobals();
@@ -830,8 +835,8 @@ private:
   void InitPlatformId();
 };
 
-TGlobals * GetGlobals();
-void SetGlobals(TGlobals * Value);
+NB_CORE_EXPORT TGlobals * GetGlobals();
+NB_CORE_EXPORT void SetGlobals(TGlobals * Value);
 
 template<typename T>
 class TGlobalsIntfInitializer
