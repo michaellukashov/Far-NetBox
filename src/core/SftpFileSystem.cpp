@@ -4100,24 +4100,27 @@ void TSFTPFileSystem::ChangeFileProperties(UnicodeString AFileName,
     // SFTP can change owner and group at the same time only, not individually.
     // Fortunately we know current owner/group, so if only one is present,
     // we can supplement the other.
-    TRemoteProperties Properties(*AProperties);
-    if (Properties.Valid.Contains(vpGroup) &&
+    if (AProperties)
+    {
+      TRemoteProperties Properties(*AProperties);
+      if (Properties.Valid.Contains(vpGroup) &&
         !Properties.Valid.Contains(vpOwner))
-    {
-      Properties.Owner = File->GetFileOwner();
-      Properties.Valid << vpOwner;
-    }
-    else if (Properties.Valid.Contains(vpOwner) &&
-             !Properties.Valid.Contains(vpGroup))
-    {
-      Properties.Group = File->GetFileGroup();
-      Properties.Valid << vpGroup;
-    }
+      {
+        Properties.Owner = File->GetFileOwner();
+        Properties.Valid << vpOwner;
+      }
+      else if (Properties.Valid.Contains(vpOwner) &&
+        !Properties.Valid.Contains(vpGroup))
+      {
+        Properties.Group = File->GetFileGroup();
+        Properties.Valid << vpGroup;
+      }
 
-    TSFTPPacket Packet(SSH_FXP_SETSTAT, FCodePage);
-    Packet.AddPathString(RealFileName, FUtfStrings);
-    Packet.AddProperties(&Properties, *File->GetRights(), File->GetIsDirectory(), FVersion, FUtfStrings, &Action);
-    SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+      TSFTPPacket Packet(SSH_FXP_SETSTAT, FCodePage);
+      Packet.AddPathString(RealFileName, FUtfStrings);
+      Packet.AddProperties(&Properties, *File->GetRights(), File->GetIsDirectory(), FVersion, FUtfStrings, &Action);
+      SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+    }
   }
   __finally
   {
