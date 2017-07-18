@@ -1411,7 +1411,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = base::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
-  while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->GetCancel())
+  while ((Index < AFilesToCopy->GetCount()) && OperationProgress && !OperationProgress->GetCancel())
   {
     TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
     bool Success = false;
