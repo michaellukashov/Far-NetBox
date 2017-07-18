@@ -1912,7 +1912,7 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
     }
     Result = SystemTimeToDateTimeVerbose(SysTime);
   }
-#if o
+#if 0
   SYSTEMTIME SysTime;
   if (!UsesDaylightHack())
   {

@@ -49,7 +49,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
 
       FOptions = Options;
       if (FLAGSET(Params.Options, soSynchronize) &&
-          (FOnSynchronize != nullptr))
+        (FOnSynchronize != nullptr))
       {
         FOnSynchronize(this, Params.LocalDirectory,
           Params.RemoteDirectory, CopyParam,
@@ -153,15 +153,12 @@ void TSynchronizeController::SynchronizeChange(
             if (Item->IsDirectory)
             {
               if ((Item->Action == saUploadNew) ||
-                  (Item->Action == saDeleteRemote))
+                (Item->Action == saDeleteRemote))
               {
                 SubdirsChanged = true;
                 break;
               }
-              else
-              {
-                DebugAssert(false);
-              }
+              DebugAssert(false);
             }
           }
         }
@@ -196,19 +193,19 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
   UnicodeString Message;
   switch (Operation)
   {
-    case soDelete:
-      Entry = slDelete;
-      Message = FMTLOAD(SYNCHRONIZE_DELETED, AFileName.c_str());
-      break;
+  case soDelete:
+    Entry = slDelete;
+    Message = FMTLOAD(SYNCHRONIZE_DELETED, AFileName.c_str());
+    break;
 
-    default:
-      DebugAssert(false);
-      // fallthru
+  default:
+    DebugAssert(false);
+    // fallthru
 
-    case soUpload:
-      Entry = slUpload;
-      Message = FMTLOAD(SYNCHRONIZE_UPLOADED, AFileName.c_str());
-      break;
+  case soUpload:
+    Entry = slUpload;
+    Message = FMTLOAD(SYNCHRONIZE_UPLOADED, AFileName.c_str());
+    break;
   }
   SynchronizeLog(Entry, Message);
 }

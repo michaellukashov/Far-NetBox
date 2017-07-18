@@ -145,10 +145,10 @@ TFarDialog * CreateMessageDialogEx(UnicodeString Msg,
   uintptr_t TimeoutAnswer = (Params != nullptr) ? Params->TimeoutAnswer : 0;
 
   uintptr_t ActualAnswers = Answers;
-  /*if ((Params == nullptr) || Params->AllowHelp)
+  if ((Params == nullptr) || Params->AllowHelp)
   {
     Answers = Answers | qaHelp;
-  }*/
+  }
 
   if (IsInternalErrorHelpKeyword(HelpKeyword))
   {
@@ -701,7 +701,7 @@ void BusyEnd(void * /*Token*/)
 
 static DWORD MainThread = 0;
 static TDateTime LastGUIUpdate(0.0);
-static double GUIUpdateIntervalFrac = static_cast<double>(OneSecond / 1000 * GUIUpdateInterval);  // 1/5 sec
+static double GUIUpdateIntervalFrac = static_cast<double>(OneSecond / 1000 * GUIUpdateInterval); // 1/5 sec
 static bool NoGUI = false;
 
 void SetNoGUI()
@@ -1376,7 +1376,6 @@ void WinInitialize()
   OnApiPath = ::ApiPath;
 #endif // #if 0
   MainThread = ::GetCurrentThreadId();
-
 }
 
 
@@ -1391,7 +1390,7 @@ bool InputDialog(UnicodeString ACaption,
   TInputDialogInitializeEvent OnInitialize, bool Echo)
 {
   bool Result = GetGlobals()->InputDialog(ACaption, APrompt, Value, HelpKeyword,
-                                                  History, PathInput, OnInitialize, Echo);
+    History, PathInput, OnInitialize, Echo);
   return Result;
 }
 
