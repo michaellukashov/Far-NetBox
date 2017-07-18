@@ -5860,7 +5860,7 @@ void TSFTPFileSystem::SFTPSinkRobust(UnicodeString AFileName,
       OperationProgress->RollbackTransfer();
       Action.Restart();
       DebugAssert(AFile != nullptr);
-      if (!AFile->GetIsDirectory())
+      if (AFile && !AFile->GetIsDirectory())
       {
         // prevent overwrite and resume confirmations
         Params |= cpNoConfirmation;
