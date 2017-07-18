@@ -2840,7 +2840,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(TOperationSide Side, TFarPan
 
   TStrings * Result = nullptr;
   const TFarPanelItem * Focused = APanelInfo && *APanelInfo ? (*APanelInfo)->GetFocusedItem() : nullptr;
-  if (!Focused->GetIsParentDirectory())
+  if (Focused && !Focused->GetIsParentDirectory())
   {
     Result = new TStringList();
     DebugAssert((Side == osLocal) || Focused->GetUserData());
