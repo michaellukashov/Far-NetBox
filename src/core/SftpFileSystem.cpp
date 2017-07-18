@@ -4515,7 +4515,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
   UnicodeString FullTargetDir = base::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
-  while (Index < AFilesToCopy->GetCount() && !OperationProgress->GetCancel())
+  while (AFilesToCopy && (Index < AFilesToCopy->GetCount()) && !OperationProgress->GetCancel())
   {
     bool Success = false;
     UnicodeString FileName = AFilesToCopy->GetString(Index);
@@ -5777,7 +5777,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
 
   UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
-  while (Index < AFilesToCopy->GetCount() && !OperationProgress->GetCancel())
+  while (AFilesToCopy && (Index < AFilesToCopy->GetCount()) && !OperationProgress->GetCancel())
   {
     bool Success = false;
     UnicodeString FileName = AFilesToCopy->GetString(Index);
