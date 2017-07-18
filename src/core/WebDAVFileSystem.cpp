@@ -1923,7 +1923,7 @@ void TWebDAVFileSystem::SinkRobust(UnicodeString AFileName,
       OperationProgress->RollbackTransfer();
       Action.Restart();
       DebugAssert(AFile != nullptr);
-      if (!AFile->GetIsDirectory())
+      if (AFile && !AFile->GetIsDirectory())
       {
         // prevent overwrite confirmations
         Params |= cpNoConfirmation;
