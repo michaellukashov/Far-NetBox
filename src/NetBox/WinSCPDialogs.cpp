@@ -4562,8 +4562,9 @@ void TRightsContainer::SetAddXToDirectories(bool Value)
 
 bool TRightsContainer::GetAllowUndef() const
 {
-  DebugAssert(FCheckBoxes[_countof(FCheckBoxes) - 1] != nullptr);
-  return FCheckBoxes[_countof(FCheckBoxes) - 1]->GetAllowGrayed();
+  TFarCheckBox * CheckBox = FCheckBoxes[_countof(FCheckBoxes) - 1];
+  DebugAssert(CheckBox != nullptr);
+  return CheckBox && CheckBox->GetAllowGrayed();
 }
 
 void TRightsContainer::SetAllowUndef(bool Value)
