@@ -3776,6 +3776,8 @@ void TSFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   TRemoteFile *& AFile)
 {
   DebugAssert(SymlinkFile && SymlinkFile->GetIsSymLink());
+  if (!SymlinkFile)
+    return;
   DebugAssert(FVersion >= 3); // symlinks are supported with SFTP version 3 and later
 
   // need to use full filename when resolving links within subdirectory
