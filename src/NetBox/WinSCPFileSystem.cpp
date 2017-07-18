@@ -3060,6 +3060,8 @@ void TWinSCPFileSystem::LogAuthentication(
   TTerminal * Terminal, UnicodeString Msg)
 {
   DebugAssert(FAuthenticationLog != nullptr);
+  if (!FAuthenticationLog)
+    return;
   FAuthenticationLog->Add(Msg);
   std::unique_ptr<TStringList> AuthenticationLogLines(new TStringList());
   intptr_t Width = 42;
