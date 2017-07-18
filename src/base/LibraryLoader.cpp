@@ -54,5 +54,3 @@ FARPROC TLibraryLoader::GetProcAddress(intptr_t ProcedureOrdinal) const
 {
   return ::GetProcAddress(FHModule, (LPCSTR)nullptr + ProcedureOrdinal);
 }
-
-

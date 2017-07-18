@@ -21,7 +21,7 @@ CNilMStringData::CNilMStringData()
   achNil[1] = 0;
 }
 
-static CNilMStringData* m_nil = nullptr;
+static CNilMStringData * m_nil = nullptr;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // CMBaseString
@@ -32,7 +32,7 @@ NB_CORE_DLL(CMStringData*) nbstr_allocate(int nChars, int nCharSize)
   size_t nDataBytes = nCharSize * nChars;
   size_t nTotalSize = nDataBytes + sizeof(CMStringData);
 
-  CMStringData* pData = static_cast<CMStringData*>(nbcore_alloc(nTotalSize));
+  CMStringData * pData = static_cast<CMStringData*>(nbcore_alloc(nTotalSize));
   if (pData == nullptr)
     return nullptr;
 
@@ -42,18 +42,18 @@ NB_CORE_DLL(CMStringData*) nbstr_allocate(int nChars, int nCharSize)
   return pData;
 }
 
-NB_CORE_DLL(void) nbstr_free(CMStringData* pData)
+NB_CORE_DLL(void) nbstr_free(CMStringData * pData)
 {
   nbcore_free(pData);
 }
 
-NB_CORE_DLL(CMStringData*) nbstr_realloc(CMStringData* pData, int nChars, int nCharSize)
+NB_CORE_DLL(CMStringData*) nbstr_realloc(CMStringData * pData, int nChars, int nCharSize)
 {
   nChars++; // nil char
   ULONG nDataBytes = nCharSize * nChars;
   ULONG nTotalSize = nDataBytes + sizeof(CMStringData);
 
-  CMStringData* pNewData = static_cast<CMStringData*>(nbcore_realloc(pData, nTotalSize));
+  CMStringData * pNewData = static_cast<CMStringData*>(nbcore_realloc(pData, nTotalSize));
   if (pNewData == nullptr)
     return nullptr;
 
@@ -72,20 +72,20 @@ NB_CORE_DLL(CMStringData*) nbstr_getNil()
 /////////////////////////////////////////////////////////////////////////////////////////
 // CMStringData
 
-NB_CORE_DLL(void) nbstr_lock(CMStringData* pThis)
+NB_CORE_DLL(void) nbstr_lock(CMStringData * pThis)
 {
   pThis->nRefs--; // Locked buffers can't be shared, so no interlocked operation necessary
   if (pThis->nRefs == 0)
     pThis->nRefs = -1;
 }
 
-NB_CORE_DLL(void) nbstr_release(CMStringData* pThis)
+NB_CORE_DLL(void) nbstr_release(CMStringData * pThis)
 {
   if (InterlockedDecrement(&pThis->nRefs) <= 0)
     nbstr_free(pThis);
 }
 
-NB_CORE_DLL(void) nbstr_unlock(CMStringData* pThis)
+NB_CORE_DLL(void) nbstr_unlock(CMStringData * pThis)
 {
   if (pThis->IsLocked())
   {
@@ -102,21 +102,21 @@ NB_CORE_DLL(void) nbstr_unlock(CMStringData* pThis)
 #if !defined(__MINGW32__)
 template CMStringW;
 #endif // defined(__MINGW32__)
-template NB_CORE_EXPORT CMStringW CALLBACK operator+(const CMStringW &str1, const CMStringW &str2);
-template NB_CORE_EXPORT CMStringW CALLBACK operator+(const CMStringW &str1, const wchar_t *psz2);
-template NB_CORE_EXPORT CMStringW CALLBACK operator+(const wchar_t *psz1, const CMStringW &str2);
-template NB_CORE_EXPORT CMStringW CALLBACK operator+(const CMStringW &str1, wchar_t ch2);
-template NB_CORE_EXPORT CMStringW CALLBACK operator+(const CMStringW &str1, char ch2);
-template NB_CORE_EXPORT CMStringW CALLBACK operator+(wchar_t ch1, const CMStringW &str2);
-template NB_CORE_EXPORT CMStringW CALLBACK operator+(char ch1, const CMStringW &str2);
+template NB_CORE_EXPORT CMStringW CALLBACK operator+(const CMStringW & str1, const CMStringW & str2);
+template NB_CORE_EXPORT CMStringW CALLBACK operator+(const CMStringW & str1, const wchar_t * psz2);
+template NB_CORE_EXPORT CMStringW CALLBACK operator+(const wchar_t * psz1, const CMStringW & str2);
+template NB_CORE_EXPORT CMStringW CALLBACK operator+(const CMStringW & str1, wchar_t ch2);
+template NB_CORE_EXPORT CMStringW CALLBACK operator+(const CMStringW & str1, char ch2);
+template NB_CORE_EXPORT CMStringW CALLBACK operator+(wchar_t ch1, const CMStringW & str2);
+template NB_CORE_EXPORT CMStringW CALLBACK operator+(char ch1, const CMStringW & str2);
 
 #if !defined(__MINGW32__)
 template CMStringA;
 #endif // defined(__MINGW32__)
-template NB_CORE_EXPORT CMStringA CALLBACK operator+(const CMStringA &str1, const CMStringA &str2);
-template NB_CORE_EXPORT CMStringA CALLBACK operator+(const CMStringA &str1, const char *psz2);
-template NB_CORE_EXPORT CMStringA CALLBACK operator+(const char *psz1, const CMStringA &str2);
-template NB_CORE_EXPORT CMStringA CALLBACK operator+(const CMStringA &str1, wchar_t ch2);
-template NB_CORE_EXPORT CMStringA CALLBACK operator+(const CMStringA &str1, char ch2);
-template NB_CORE_EXPORT CMStringA CALLBACK operator+(wchar_t ch1, const CMStringA &str2);
-template NB_CORE_EXPORT CMStringA CALLBACK operator+(char ch1, const CMStringA &str2);
+template NB_CORE_EXPORT CMStringA CALLBACK operator+(const CMStringA & str1, const CMStringA & str2);
+template NB_CORE_EXPORT CMStringA CALLBACK operator+(const CMStringA & str1, const char * psz2);
+template NB_CORE_EXPORT CMStringA CALLBACK operator+(const char * psz1, const CMStringA & str2);
+template NB_CORE_EXPORT CMStringA CALLBACK operator+(const CMStringA & str1, wchar_t ch2);
+template NB_CORE_EXPORT CMStringA CALLBACK operator+(const CMStringA & str1, char ch2);
+template NB_CORE_EXPORT CMStringA CALLBACK operator+(wchar_t ch1, const CMStringA & str2);
+template NB_CORE_EXPORT CMStringA CALLBACK operator+(char ch1, const CMStringA & str2);

@@ -273,7 +273,7 @@ int askalg(void * frontend, const char * algtype, const char * algname,
 }
 
 int askhk(void * /*frontend*/, const char * /*algname*/, const char * /*betteralgs*/,
-  void (* /*callback*/)(void *ctx, int result), void * /*ctx*/)
+  void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   return 1;
 }
@@ -636,7 +636,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, UnicodeString FileName, UnicodeString Pa
     // and handle ktUnopenable accordingly.
     throw Exception(Error);
   }
-  else if (Ssh2Key == SSH2_WRONG_PASSPHRASE)
+  if (Ssh2Key == SSH2_WRONG_PASSPHRASE)
   {
     throw Exception(LoadStr(AUTH_TRANSL_WRONG_PASSPHRASE));
   }
@@ -753,7 +753,7 @@ static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & 
       KeyType = UnicodeString(SignKey->keytype);
       return;
     }
-    else if (::StartsStr(Name + NormalizedSeparator, Fingerprint))
+    if (StartsStr(Name + NormalizedSeparator, Fingerprint))
     {
       KeyType = UnicodeString(SignKey->keytype);
       return;

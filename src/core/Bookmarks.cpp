@@ -241,10 +241,7 @@ TBookmarkList * TBookmarks::GetBookmarks(UnicodeString AIndex)
   {
     return FBookmarkLists->GetAs<TBookmarkList>(Index);
   }
-  else
-  {
-    return nullptr;
-  }
+  return nullptr;
 }
 
 void TBookmarks::SetBookmarks(UnicodeString AIndex, TBookmarkList * Value)

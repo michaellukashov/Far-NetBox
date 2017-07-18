@@ -12,7 +12,6 @@
 #include <Global.h>
 
 
-
 // TGuard
 
 TGuard::TGuard(const TCriticalSection & ACriticalSection) :

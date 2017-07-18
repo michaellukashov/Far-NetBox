@@ -42,7 +42,7 @@ void TOptions::Add(UnicodeString Value)
           break;
         }
         // this is to treat /home/martin as parameter, not as switch
-        else if ((Value[Index] != L'?') && !IsLetter(Value[Index]))
+        if ((Value[Index] != L'?') && !IsLetter(Value[Index]))
         {
           Switch = false;
           break;

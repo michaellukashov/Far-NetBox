@@ -1271,6 +1271,7 @@ public:
 
 public:
   explicit TBackgroundTerminal(TTerminal * MainTerminal);
+
   virtual ~TBackgroundTerminal()
   {
   }
@@ -1319,8 +1320,13 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
 // TTerminalItem
 
 TTerminalItem::TTerminalItem(TTerminalQueue * Queue) :
-  TSignalThread(OBJECT_CLASS_TTerminalItem, true), FQueue(Queue), FTerminal(nullptr), FItem(nullptr),
-  FUserAction(nullptr), FCancel(false), FPause(false)
+  TSignalThread(OBJECT_CLASS_TTerminalItem, true),
+  FQueue(Queue),
+  FTerminal(nullptr),
+  FItem(nullptr),
+  FUserAction(nullptr),
+  FCancel(false),
+  FPause(false)
 {
 }
 
@@ -1342,7 +1348,7 @@ void TTerminalItem::InitTerminalItem(intptr_t Index)
 
     FTerminal = Terminal.release();
   }
-  catch(...)
+  catch (...)
   {
 #if 0
     delete FTerminal;
@@ -1714,9 +1720,12 @@ bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus) const
 
 TQueueItem::TQueueItem(TObjectClassId Kind) :
   TObject(Kind),
-  FStatus(qsPending), FTerminalItem(nullptr), FProgressData(nullptr),
+  FStatus(qsPending),
+  FTerminalItem(nullptr),
+  FProgressData(nullptr),
   FInfo(new TInfo()),
-  FQueue(nullptr), FCompleteEvent(INVALID_HANDLE_VALUE),
+  FQueue(nullptr),
+  FCompleteEvent(INVALID_HANDLE_VALUE),
   FCPSLimit((uintptr_t)-1)
 {
   FInfo->SingleFile = false;
@@ -1874,9 +1883,14 @@ TQueueItem * TQueueItem::CreateParallelOperation()
 TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
   TQueueItem * QueueItem) :
   TObject(OBJECT_CLASS_TQueueItemProxy),
-  FProgressData(new TFileOperationProgressType()), FStatus(TQueueItem::qsPending), FQueue(Queue), FQueueItem(QueueItem),
-  FQueueStatus(nullptr), FInfo(new TQueueItem::TInfo()),
-  FProcessingUserAction(false), FUserData(nullptr)
+  FProgressData(new TFileOperationProgressType()),
+  FStatus(TQueueItem::qsPending),
+  FQueue(Queue),
+  FQueueItem(QueueItem),
+  FQueueStatus(nullptr),
+  FInfo(new TQueueItem::TInfo()),
+  FProcessingUserAction(false),
+  FUserData(nullptr)
 {
   Update();
 }
@@ -2187,8 +2201,12 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * Terminal
   const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
   bool SingleFile, bool Parallel) :
   TLocatedQueueItem(Kind, Terminal),
-  FFilesToCopy(new TStringList()), FCopyParam(nullptr),
-  FParams(0), FParallel(false), FLastParallelOperationAdded(0), FParallelOperation(nullptr)
+  FFilesToCopy(new TStringList()),
+  FCopyParam(nullptr),
+  FParams(0),
+  FParallel(false),
+  FLastParallelOperationAdded(0),
+  FParallelOperation(nullptr)
 {
   FInfo->Operation = (Params & cpDelete) ? foMove : foCopy;
   FInfo->Side = Side;
@@ -2212,7 +2230,6 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * Terminal
 
   FParallel = Parallel;
   FLastParallelOperationAdded = GetTickCount();
-
 }
 
 TTransferQueueItem::~TTransferQueueItem()
@@ -2478,7 +2495,8 @@ void TDownloadQueueItem::DoTransferExecute(TTerminal * Terminal, TParallelOperat
 // TTerminalThread
 
 TTerminalThread::TTerminalThread(TTerminal * Terminal) :
-  TSignalThread(OBJECT_CLASS_TTerminalThread, false), FTerminal(Terminal),
+  TSignalThread(OBJECT_CLASS_TTerminalThread, false),
+  FTerminal(Terminal),
   FOnInformation(nullptr),
   FOnQueryUser(nullptr),
   FOnPromptUser(nullptr),
@@ -2792,7 +2810,6 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 
       while (true)
       {
-
         {
           TGuard Guard(FSection);
           // If idle exception is already set, we are only waiting

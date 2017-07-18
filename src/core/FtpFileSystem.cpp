@@ -170,13 +170,18 @@ std::wstring TFileZillaImpl::GetClientString() const
 
 struct message_t
 {
-CUSTOM_MEM_ALLOCATION_IMPL
-  message_t() : wparam(0), lparam(0)
+  CUSTOM_MEM_ALLOCATION_IMPL
+
+  message_t() : wparam(0),
+    lparam(0)
   {
   }
-  message_t(WPARAM w, LPARAM l) : wparam(w), lparam(l)
+
+  message_t(WPARAM w, LPARAM l) : wparam(w),
+    lparam(l)
   {
   }
+
   WPARAM wparam;
   LPARAM lparam;
 };
@@ -5057,7 +5062,7 @@ bool TFTPFileSystem::HandleTransferStatus(bool Valid, int64_t TransferSize,
   {
     return false;
   }
-  else if (!Valid)
+  if (!Valid)
   {
   }
   else if (FileTransfer)
@@ -5077,28 +5082,25 @@ bool TFTPFileSystem::HandleReply(intptr_t Command, uintptr_t Reply)
   {
     return false;
   }
+  if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
+  {
+    FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", static_cast<int>(Reply), Command));
+  }
+
+  // reply with Command 0 is not associated with current operation
+  // so do not treat is as a reply
+  // (it is typically used asynchronously to notify about disconnects)
+  if (Command != 0)
+  {
+    DebugAssert(FCommandReply == 0);
+    FCommandReply = Reply;
+  }
   else
   {
-    if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
-    {
-      FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", static_cast<int>(Reply), Command));
-    }
-
-    // reply with Command 0 is not associated with current operation
-    // so do not treat is as a reply
-    // (it is typically used asynchronously to notify about disconnects)
-    if (Command != 0)
-    {
-      DebugAssert(FCommandReply == 0);
-      FCommandReply = Reply;
-    }
-    else
-    {
-      DebugAssert(FReply == 0);
-      FReply = Reply;
-    }
-    return true;
+    DebugAssert(FReply == 0);
+    FReply = Reply;
   }
+  return true;
 }
 
 bool TFTPFileSystem::HandleCapabilities(

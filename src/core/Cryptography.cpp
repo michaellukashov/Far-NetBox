@@ -219,12 +219,12 @@ typedef struct
 /* buffers and using 32 bit operations          */
 
 static void derive_key(const uint8_t pwd[], /* the PASSWORD     */
-                       uint32_t pwd_len, /* and its length   */
-                       const uint8_t salt[], /* the SALT and its */
-                       uint32_t salt_len, /* length           */
-                       uint32_t iter, /* the number of iterations */
-                       uint8_t key[], /* space for the output key */
-                       uint32_t key_len)/* and its required length  */
+  uint32_t pwd_len, /* and its length   */
+  const uint8_t salt[], /* the SALT and its */
+  uint32_t salt_len, /* length           */
+  uint32_t iter, /* the number of iterations */
+  uint8_t key[], /* space for the output key */
+  uint32_t key_len)/* and its required length  */
 {
   uint8_t uu[OUT_BLOCK_LENGTH], ux[OUT_BLOCK_LENGTH];
   hmac_ctx c1[1] = {0}, c2[1] = {0}, c3[1] = {0};
@@ -255,7 +255,7 @@ static void derive_key(const uint8_t pwd[], /* the PASSWORD     */
     uu[3] = (uint8_t)(i + 1);
 
     /* this is the key mixing iteration         */
-    for (uint32_t j = 0 , k = 4; j < iter; ++j)
+    for (uint32_t j = 0, k = 4; j < iter; ++j)
     {
       /* add previous round data to HMAC      */
       hmac_sha1_data(uu, k, c3);
@@ -317,7 +317,7 @@ static void fcrypt_init(
 
   /* derive the encryption and authentication keys and the password verifier   */
   derive_key(pwd, pwd_len, salt, SALT_LENGTH(mode), KEYING_ITERATIONS,
-             kbuf, 2 * KEY_LENGTH(mode) + PWD_VER_LENGTH);
+    kbuf, 2 * KEY_LENGTH(mode) + PWD_VER_LENGTH);
 
   /* initialise the encryption nonce and buffer pos   */
   cx->encr_pos = BLOCK_SIZE;
@@ -395,8 +395,8 @@ void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-              reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
-              reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
+    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
+    reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
   Output.Unique();
   fcrypt_encrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
@@ -421,8 +421,8 @@ bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-              reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
-              reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
+    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
+    reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
   Output.Unique();
   fcrypt_decrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
@@ -610,32 +610,29 @@ int IsValidPassword(UnicodeString Password)
   {
     return -1;
   }
-  else
+  int A = 0;
+  int B = 0;
+  int C = 0;
+  int D = 0;
+  for (intptr_t Index = 1; Index <= Password.Length(); ++Index)
   {
-    int A = 0;
-    int B = 0;
-    int C = 0;
-    int D = 0;
-    for (intptr_t Index = 1; Index <= Password.Length(); ++Index)
+    if (IsLowerCaseLetter(Password[Index]))
     {
-      if (IsLowerCaseLetter(Password[Index]))
-      {
-        A = 1;
-      }
-      else if (IsUpperCaseLetter(Password[Index]))
-      {
-        B = 1;
-      }
-      else if (IsDigit(Password[Index]))
-      {
-        C = 1;
-      }
-      else
-      {
-        D = 1;
-      }
+      A = 1;
     }
-    return (Password.Length() >= 6) && ((A + B + C + D) >= 2);
+    else if (IsUpperCaseLetter(Password[Index]))
+    {
+      B = 1;
+    }
+    else if (IsDigit(Password[Index]))
+    {
+      C = 1;
+    }
+    else
+    {
+      D = 1;
+    }
   }
+  return (Password.Length() >= 6) && ((A + B + C + D) >= 2);
 }
 

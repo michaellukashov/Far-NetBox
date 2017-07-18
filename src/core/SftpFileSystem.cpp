@@ -141,7 +141,7 @@ static const SSH_FXP_REALPATH_TYPES
   SSH_FXP_REALPATH_STAT_IF = 0x00000002,
   SSH_FXP_REALPATH_STAT_ALWAYS = 0x00000003;
 
-static const intptr_t SFTP_MAX_PACKET_LEN   = 1000 * 1024;
+static const intptr_t SFTP_MAX_PACKET_LEN = 1000 * 1024;
 
 #define SFTP_EXT_OWNER_GROUP "owner-group-query@generic-extensions"
 #define SFTP_EXT_OWNER_GROUP_REPLY "owner-group-query-reply@generic-extensions"
@@ -4662,25 +4662,25 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
 
         switch (Answer)
         {
-          case qaYes:
-            OverwriteMode = omAppend;
-            break;
+        case qaYes:
+          OverwriteMode = omAppend;
+          break;
 
-          case qaNo:
-            OverwriteMode = omResume;
-            break;
+        case qaNo:
+          OverwriteMode = omResume;
+          break;
 
-          case qaNoToAll:
-            OverwriteMode = omResume;
-            OperationProgress->SetBatchOverwrite(boAlternateResume);
-            break;
+        case qaNoToAll:
+          OverwriteMode = omResume;
+          OperationProgress->SetBatchOverwrite(boAlternateResume);
+          break;
 
         default:
           DebugFail(); //fallthru
-          case qaCancel:
-            OperationProgress->SetCancelAtLeast(csCancel);
-            Abort();
-            break;
+        case qaCancel:
+          OperationProgress->SetCancelAtLeast(csCancel);
+          Abort();
+          break;
         }
       }
     }

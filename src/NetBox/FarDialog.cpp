@@ -182,10 +182,7 @@ TPoint TFarDialog::GetSize() const
   {
     return TPoint(GetBounds().Right, GetBounds().Bottom);
   }
-  else
-  {
-    return TPoint(GetBounds().Width() + 1, GetBounds().Height() + 1);
-  }
+  return TPoint(GetBounds().Width() + 1, GetBounds().Height() + 1);
 }
 
 void TFarDialog::SetSize(TPoint Value)
@@ -365,7 +362,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
   {
     if (Dialog != nullptr)
     {
-        Dialog->FHandle = nullptr;
+      Dialog->FHandle = nullptr;
     }
     Dialogs.erase(Handle);
   }

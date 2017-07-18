@@ -3401,10 +3401,7 @@ void TTerminal::EnsureNonExistence(UnicodeString AFileName)
       {
         throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_DIR_EXISTS, AFileName.c_str()));
       }
-      else
-      {
-        throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_FILE_EXISTS, AFileName.c_str()));
-      }
+      throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_FILE_EXISTS, AFileName.c_str()));
     }
   }
 }
@@ -5358,10 +5355,7 @@ void TTerminal::DoAnyCommand(UnicodeString ACommand,
     {
       throw;
     }
-    else
-    {
-      HandleExtendedException(&E);
-    }
+    HandleExtendedException(&E);
   }
 }
 
@@ -5415,22 +5409,22 @@ bool TTerminal::DoCreateLocalFile(UnicodeString AFileName,
                 qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, nullptr);
               }
 
-            switch (Answer)
-            {
-            case qaYesToAll:
-              OperationProgress->SetBatchOverwrite(boAll);
-              break;
-            case qaCancel:
-              OperationProgress->SetCancel(csCancel); // continue on next case
-              Result = false;
-              break;
-            case qaNoToAll:
-              OperationProgress->SetBatchOverwrite(boNone);
-              Result = false;
-              break;
-            case qaNo:
-              Result = false;
-              break;
+              switch (Answer)
+              {
+              case qaYesToAll:
+                OperationProgress->SetBatchOverwrite(boAll);
+                break;
+              case qaCancel:
+                OperationProgress->SetCancel(csCancel); // continue on next case
+                Result = false;
+                break;
+              case qaNoToAll:
+                OperationProgress->SetBatchOverwrite(boNone);
+                Result = false;
+                break;
+              case qaNo:
+                Result = false;
+                break;
               }
             }
           }
@@ -7451,10 +7445,7 @@ HANDLE TTerminal::TerminalCreateLocalFile(UnicodeString LocalFileName, DWORD Des
   {
     return GetOnCreateLocalFile()(ApiPath(LocalFileName), DesiredAccess, ShareMode, CreationDisposition, FlagsAndAttributes);
   }
-  else
-  {
-    return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
-  }
+  return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
 }
 
 DWORD TTerminal::GetLocalFileAttributes(UnicodeString LocalFileName)
@@ -7463,10 +7454,7 @@ DWORD TTerminal::GetLocalFileAttributes(UnicodeString LocalFileName)
   {
     return GetOnGetLocalFileAttributes()(ApiPath(LocalFileName));
   }
-  else
-  {
-    return ::FileGetAttrFix(LocalFileName);
-  }
+  return ::FileGetAttrFix(LocalFileName);
 }
 
 bool TTerminal::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes)
@@ -7475,10 +7463,7 @@ bool TTerminal::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAt
   {
     return GetOnSetLocalFileAttributes()(ApiPath(LocalFileName), FileAttributes);
   }
-  else
-  {
-    return ::FileSetAttr(LocalFileName, FileAttributes);
-  }
+  return ::FileSetAttr(LocalFileName, FileAttributes);
 }
 
 bool TTerminal::MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags)
@@ -7487,10 +7472,7 @@ bool TTerminal::MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLoca
   {
     return GetOnMoveLocalFile()(LocalFileName, NewLocalFileName, Flags);
   }
-  else
-  {
-    return ::MoveFileEx(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), Flags) != FALSE;
-  }
+  return ::MoveFileEx(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), Flags) != FALSE;
 }
 
 bool TTerminal::RemoveLocalDirectory(UnicodeString LocalDirName)
@@ -7499,10 +7481,7 @@ bool TTerminal::RemoveLocalDirectory(UnicodeString LocalDirName)
   {
     return GetOnRemoveLocalDirectory()(LocalDirName);
   }
-  else
-  {
-    return ::RemoveDir(LocalDirName);
-  }
+  return RemoveDir(LocalDirName);
 }
 
 bool TTerminal::CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
@@ -7511,10 +7490,7 @@ bool TTerminal::CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTR
   {
     return GetOnCreateLocalDirectory()(LocalDirName, SecurityAttributes);
   }
-  else
-  {
-    return ::CreateDir(LocalDirName, SecurityAttributes);
-  }
+  return ::CreateDir(LocalDirName, SecurityAttributes);
 }
 
 void TTerminal::ReflectSettings() const
@@ -7594,8 +7570,7 @@ bool TTerminal::CheckForEsc()
 {
   if (FOnCheckForEsc)
     return FOnCheckForEsc();
-  else
-    return (FOperationProgress && FOperationProgress->GetCancel() == csCancel);
+  return (FOperationProgress && FOperationProgress->GetCancel() == csCancel);
 }
 
 static UnicodeString FormatCertificateData(UnicodeString Fingerprint, int Failures)

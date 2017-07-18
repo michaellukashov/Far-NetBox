@@ -20,7 +20,9 @@ UnicodeString AnyMask = L"*.*";
 
 EFileMasksException::EFileMasksException(
   UnicodeString AMessage, intptr_t AErrorStart, intptr_t AErrorLen) :
-  Exception(AMessage), ErrorStart(AErrorStart), ErrorLen(AErrorLen)
+  Exception(AMessage),
+  ErrorStart(AErrorStart),
+  ErrorLen(AErrorLen)
 {
 }
 
@@ -157,10 +159,7 @@ UnicodeString TFileMasks::NormalizeMask(UnicodeString Mask, UnicodeString AAnyMa
   {
     return AAnyMask;
   }
-  else
-  {
-    return Mask;
-  }
+  return Mask;
 }
 
 UnicodeString TFileMasks::ComposeMaskStr(
@@ -828,12 +827,9 @@ void TCustomCommand::GetToken(
     {
       throw Exception(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
     }
-    else
+    if ((Command.Length() - Index + 1) < Len)
     {
-      if ((Command.Length() - Index + 1) < Len)
-      {
-        throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
-      }
+      throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
     }
   }
   else

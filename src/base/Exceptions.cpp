@@ -260,10 +260,7 @@ UnicodeString MergeHelpKeyword(UnicodeString PrimaryHelpKeyword, UnicodeString S
     // PrimaryHelpKeyword and SecondaryHelpKeyword
     return PrimaryHelpKeyword;
   }
-  else
-  {
-    return SecondaryHelpKeyword;
-  }
+  return SecondaryHelpKeyword;
 }
 
 bool IsInternalErrorHelpKeyword(UnicodeString HelpKeyword)
@@ -582,15 +579,15 @@ void RethrowException(Exception * E)
   {
     throw EFatal(E, L"");
   }
-  else if (isa<ECallbackGuardAbort>(E))
+  if (isa<ECallbackGuardAbort>(E))
   {
     throw ECallbackGuardAbort();
   }
-  else if (isa<EAbort>(E))
+  if (isa<EAbort>(E))
   {
     throw EAbort(E->Message);
   }
-  else if (WellKnownException(E, nullptr, nullptr, nullptr, true))
+  if (WellKnownException(E, nullptr, nullptr, nullptr, true))
   {
     // noop, should never get here
   }

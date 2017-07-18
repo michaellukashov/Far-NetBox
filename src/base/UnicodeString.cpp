@@ -105,13 +105,13 @@ intptr_t AnsiString::Pos(char Ch) const
 
 char AnsiString::operator[](intptr_t Idx) const
 {
-  ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
+  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
   return Data.operator[]((int)Idx - 1);
 }
 
 char & AnsiString::operator[](intptr_t Idx)
 {
-  ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
+  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
   return Data.GetBuffer()[Idx - 1];
 }
 
@@ -539,7 +539,7 @@ bool operator!=(const UTF8String & lhs, const UTF8String & rhs)
   return lhs.Data != rhs.Data;
 }
 
-UnicodeString::UnicodeString(const UnicodeString &Str)
+UnicodeString::UnicodeString(const UnicodeString & Str)
 {
   Init(Str.c_str(), Str.GetLength());
 }
@@ -856,13 +856,13 @@ UnicodeString & UnicodeString::operator+=(const wchar_t Ch)
 
 wchar_t UnicodeString::operator[](intptr_t Idx) const
 {
-  ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
+  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
   return Data.operator[]((int)Idx - 1);
 }
 
 wchar_t & UnicodeString::operator[](intptr_t Idx)
 {
-  ThrowIfOutOfRange(Idx);   // Should Range-checking be optional to avoid overhead ??
+  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
   return Data.GetBuffer()[(int)Idx - 1];
 }
 

@@ -301,7 +301,6 @@ TWebDAVFileSystem::~TWebDAVFileSystem()
 
 void TWebDAVFileSystem::Open()
 {
-
   if (!NeonInitialized)
   {
     throw Exception(LoadStr(NEON_INIT_FAILED));
@@ -493,7 +492,7 @@ void TWebDAVFileSystem::NeonAuxRequestInit(ne_session * Session, ne_request * /*
   TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
   FileSystem->InitSession(Session);
 
-  ne_uri uri = {0};
+  ne_uri uri = {nullptr};
   ne_fill_server_uri(Session, &uri);
   bool Tls = IsTlsUri(uri);
   ne_uri_free(&uri);
@@ -1809,11 +1808,11 @@ void TWebDAVFileSystem::DirectorySource(UnicodeString DirectoryName,
           }
         }
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
-      [&]()
-      {
-        FindOK = FindNextChecked(SearchRec) == 0;
-      });
+        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
+        [&]()
+        {
+          FindOK = FindNextChecked(SearchRec) == 0;
+        });
       }
     }
     __finally
