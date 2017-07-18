@@ -4500,7 +4500,7 @@ void TTerminal::ChangeFileProperties(UnicodeString AFileName,
     LocalFileName = AFile->GetFileName();
   }
   StartOperationWithFile(LocalFileName, foSetProperties);
-  if (GetLog()->GetLogging())
+  if (GetLog()->GetLogging() && RProperties)
   {
     LogEvent(FORMAT(L"Changing properties of \"%s\" (%s)",
       LocalFileName.c_str(), BooleanToEngStr(RProperties->Recursive).c_str()));
