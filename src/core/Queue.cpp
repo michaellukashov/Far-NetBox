@@ -2397,6 +2397,8 @@ void TParallelTransferQueueItem::DoExecute(TTerminal * Terminal)
   TLocatedQueueItem::DoExecute(Terminal);
 
   DebugAssert(Terminal != nullptr);
+  if (!Terminal)
+    return;
 
   Terminal->LogParallelTransfer(FParallelOperation);
   TFileOperationProgressType OperationProgress(Terminal->GetOnProgress(), Terminal->GetOnFinished(), FParallelOperation->GetMainOperationProgress());
