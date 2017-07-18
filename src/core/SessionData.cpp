@@ -5351,7 +5351,7 @@ bool TStoredSessionList::GetIsWorkspace(UnicodeString Name) const
 TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
   TSessionData * Data, UnicodeString Name)
 {
-  if (Data->IsInFolderOrWorkspace(Name))
+  if (Data && Data->IsInFolderOrWorkspace(Name))
   {
     Data = ResolveWorkspaceData(Data);
 
