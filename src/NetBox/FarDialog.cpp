@@ -923,7 +923,7 @@ TFarDialogContainer::~TFarDialogContainer()
   SAFE_DESTROY(FItems);
 }
 
-UnicodeString TFarDialogContainer::GetMsg(intptr_t  MsgId) const
+UnicodeString TFarDialogContainer::GetMsg(intptr_t MsgId) const
 {
   return GetDialog()->GetMsg(MsgId);
 }
@@ -1051,7 +1051,7 @@ void TFarDialogItem::ResetBounds()
 {
   TRect B = FBounds;
   FarDialogItem * DItem = GetDialogItem();
-  #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
+#define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
     (GetContainer() ? (int)GetContainer()->CB : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
   BOUND(X1, Left, x, GetLeft());
   BOUND(Y1, Top, y, GetTop());
@@ -1116,7 +1116,7 @@ void TFarDialogItem::UpdateFlags(DWORD Value)
 TRect TFarDialogItem::GetActualBounds() const
 {
   return TRect(GetDialogItem()->X1, GetDialogItem()->Y1,
-               GetDialogItem()->X2, GetDialogItem()->Y2);
+    GetDialogItem()->X2, GetDialogItem()->Y2);
 }
 
 DWORD TFarDialogItem::GetFlags() const
@@ -1819,17 +1819,14 @@ LONG_PTR TFarButton::ItemProc(int Msg, LONG_PTR Param)
     {
       return 1;
     }
-    else
+    bool Close = (GetResult() != 0);
+    if (FOnClick)
     {
-      bool Close = (GetResult() != 0);
-      if (FOnClick)
-      {
-        FOnClick(this, Close);
-      }
-      if (!Close)
-      {
-        return 1;
-      }
+      FOnClick(this, Close);
+    }
+    if (!Close)
+    {
+      return 1;
     }
   }
   return TFarDialogItem::ItemProc(Msg, Param);
@@ -1880,10 +1877,7 @@ LONG_PTR TFarCheckBox::ItemProc(int Msg, LONG_PTR Param)
     }
     return static_cast<intptr_t>(Allow);
   }
-  else
-  {
-    return TFarDialogItem::ItemProc(Msg, Param);
-  }
+  return TFarDialogItem::ItemProc(Msg, Param);
 }
 
 bool TFarCheckBox::GetIsEmpty() const
@@ -1924,10 +1918,7 @@ LONG_PTR TFarRadioButton::ItemProc(int Msg, LONG_PTR Param)
     }
     return static_cast<intptr_t>(Allow);
   }
-  else
-  {
-    return TFarDialogItem::ItemProc(Msg, Param);
-  }
+  return TFarDialogItem::ItemProc(Msg, Param);
 }
 
 bool TFarRadioButton::GetIsEmpty() const
@@ -2208,7 +2199,7 @@ void TFarList::Changed()
         PrevTopIndex = GetCount() > GetDialogItem()->GetHeight() ? GetCount() - GetDialogItem()->GetHeight() : 0;
       }
       SetCurPos((PrevSelected >= GetCount()) ? (GetCount() - 1) : PrevSelected,
-                PrevTopIndex);
+        PrevTopIndex);
     }
   }
 }
@@ -2505,10 +2496,7 @@ LONG_PTR TFarComboBox::ItemProc(int Msg, LONG_PTR Param)
   {
     return 1;
   }
-  else
-  {
-    return TFarDialogItem::ItemProc(Msg, Param);
-  }
+  return TFarDialogItem::ItemProc(Msg, Param);
 }
 
 void TFarComboBox::Init()

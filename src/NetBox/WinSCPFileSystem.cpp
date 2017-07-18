@@ -298,29 +298,29 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FAuthenticationSaveScreenHandle(nullptr),
   FFileList(nullptr),
   FPanelItems(nullptr),
-  FKeepaliveThread(nullptr),
   FSavedFindFolder(L""),
+  FLastEditorID(-1),
+  FKeepaliveThread(nullptr),
+  FSynchronizeController(nullptr),
+  FCapturedLog(nullptr),
+  FAuthenticationLog(nullptr),
+  FPathHistory(new TStringList()),
   FQueueStatusInvalidated(false),
   FQueueItemInvalidated(false),
   FRefreshLocalDirectory(false),
   FRefreshRemoteDirectory(false),
   FQueueEventPending(false),
-  FNoProgress(false),
-  FNoProgressFinish(false),
-  FSynchronisingBrowse(false),
-  FSynchronizeController(nullptr),
-  FCapturedLog(nullptr),
-  FAuthenticationLog(nullptr),
-  FLastEditorID(-1),
-  FLoadingSessionList(false),
-  FPathHistory(new TStringList()),
-  FCurrentDirectoryWasChanged(false),
-
   FReloadDirectory(false),
   FLastMultipleEditReadOnly(false),
+  FNoProgress(false),
   FSynchronizationCompare(false),
   FEditorPendingSave(false),
-  FOutputLog(false)
+
+  FNoProgressFinish(false),
+  FSynchronisingBrowse(false),
+  FOutputLog(false),
+  FLoadingSessionList(false),
+  FCurrentDirectoryWasChanged(false)
 {
 }
 
@@ -1237,7 +1237,7 @@ void TWinSCPFileSystem::ApplyCommand()
         TCustomCommandData Data1(GetTerminal());
         TLocalCustomCommand LocalCustomCommand(Data1, GetTerminal()->RemoteGetCurrentDirectory(), L"");
         TFarInteractiveCustomCommand InteractiveCustomCommand(GetWinSCPPlugin(),
-            &LocalCustomCommand);
+          &LocalCustomCommand);
 
         Command = InteractiveCustomCommand.Complete(Command, false);
 
@@ -1487,7 +1487,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
     FLAGMASK(!FTerminal->GetIsCapable(fcTimestampChanging), fsoDisableTimestamp) |
     FLAGMASK(SynchronizeAllowSelectedOnly(), fsoAllowSelectedOnly);
   if (FullSynchronizeDialog(Mode, Params, LocalDirectory, RemoteDirectory,
-      &CopyParam, SaveSettings, SaveMode, Options, CopyParamAttrs))
+    &CopyParam, SaveSettings, SaveMode, Options, CopyParamAttrs))
   {
     TSynchronizeOptions SynchronizeOptions;
     GetSynchronizeOptions(Params, SynchronizeOptions);
@@ -1528,11 +1528,11 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
       if (Checklist.get() && Checklist->GetCount() == 0)
       {
         MoreMessageDialog(GetMsg(NB_COMPARE_NO_DIFFERENCES), nullptr,
-           qtInformation, qaOK);
+          qtInformation, qaOK);
       }
       else if (FLAGCLEAR(Params, TTerminal::spPreviewChanges) ||
-               SynchronizeChecklistDialog(Checklist.get(), Mode, Params,
-                 LocalDirectory, RemoteDirectory))
+        SynchronizeChecklistDialog(Checklist.get(), Mode, Params,
+          LocalDirectory, RemoteDirectory))
       {
         if (FLAGSET(Params, TTerminal::spPreviewChanges))
         {
@@ -1597,8 +1597,8 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
     GetWinSCPPlugin()->Message(0, (Collect ? ProgressTitleCompare : ProgressTitle), Message);
 
     if (GetWinSCPPlugin()->CheckForEsc() &&
-        (MoreMessageDialog(GetMsg(NB_CANCEL_OPERATION), nullptr,
-          qtConfirmation, qaOK | qaCancel) == qaOK))
+      (MoreMessageDialog(GetMsg(NB_CANCEL_OPERATION), nullptr,
+        qtConfirmation, qaOK | qaCancel) == qaOK))
     {
       Continue = false;
     }
@@ -1647,7 +1647,7 @@ void TWinSCPFileSystem::Synchronize()
         nb::bind(&TSynchronizeController::StartStop, &Controller),
         SaveSettings, Options, CopyParamAttrs,
         nb::bind(&TWinSCPFileSystem::GetSynchronizeOptions, this)) &&
-        SaveSettings)
+      SaveSettings)
     {
       GetGUIConfiguration()->SetSynchronizeParams(Params.Params | UnusedParams);
       GetGUIConfiguration()->SetSynchronizeOptions(Params.Options);
@@ -1745,7 +1745,7 @@ void TWinSCPFileSystem::CustomCommandGetParamValue(
     Name = GetMsg(NB_APPLY_COMMAND_PARAM_PROMPT);
   }
   if (!GetWinSCPPlugin()->InputBox(GetMsg(NB_APPLY_COMMAND_PARAM_TITLE),
-        Name, Value, 0, APPLY_COMMAND_PARAM_HISTORY))
+    Name, Value, 0, APPLY_COMMAND_PARAM_HISTORY))
   {
     Abort();
   }
@@ -1857,7 +1857,7 @@ void TWinSCPFileSystem::FileProperties()
 
       TRemoteProperties NewProperties = CurrentProperties;
       if (PropertiesDialog(FileList.get(), FTerminal->RemoteGetCurrentDirectory(),
-          FTerminal->GetGroups(), FTerminal->GetUsers(), &NewProperties, Flags))
+        FTerminal->GetGroups(), FTerminal->GetUsers(), &NewProperties, Flags))
       {
         NewProperties = TRemoteProperties::ChangedProperties(CurrentProperties,
           NewProperties);
@@ -2135,9 +2135,9 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(UnicodeString NewPath)
   // IncludeTrailingBackslash to expand C: to C:\.
   UnicodeString LocalPath = ::IncludeTrailingBackslash(NewPath);
   if (!FarControl(FCTL_SETPANELDIR,
-         0,
-         ToInt(LocalPath.c_str()),
-         reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
+    0,
+    ToInt(LocalPath.c_str()),
+    reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
   {
     Result = false;
   }
@@ -2177,155 +2177,149 @@ bool TWinSCPFileSystem::SetDirectoryEx(UnicodeString Dir, int OpMode)
   // workaround to ignore "change to root directory" command issued by FAR,
   // before file is opened for viewing/editing from "find file" dialog
   // when plugin uses UNIX style paths
-  else if ((OpMode & OPM_FIND) && (OpMode & OPM_SILENT) && (Dir == L"\\"))
+  if ((OpMode & OPM_FIND) && (OpMode & OPM_SILENT) && (Dir == L"\\"))
   {
     if (FSavedFindFolder.IsEmpty())
     {
       return true;
     }
-    else
+    bool Result = false;
+    SCOPE_EXIT
     {
-      bool Result = false;
-      SCOPE_EXIT
-      {
-        FSavedFindFolder.Clear();
-      };
-      Result = SetDirectoryEx(FSavedFindFolder, OpMode);
-      return Result;
-    }
+      FSavedFindFolder.Clear();
+    };
+    Result = SetDirectoryEx(FSavedFindFolder, OpMode);
+    return Result;
+  }
+  if ((OpMode & OPM_FIND) && FSavedFindFolder.IsEmpty() && FTerminal)
+  {
+    FSavedFindFolder = FTerminal->RemoteGetCurrentDirectory();
+  }
+
+  if (IsSessionList())
+  {
+    FSessionsFolder = base::AbsolutePath(ROOTDIRECTORY + FSessionsFolder, Dir);
+    DebugAssert(FSessionsFolder[1] == L'/');
+    FSessionsFolder.Delete(1, 1);
+    FNewSessionsFolder.Clear();
   }
   else
   {
-    if ((OpMode & OPM_FIND) && FSavedFindFolder.IsEmpty() && FTerminal)
+    DebugAssert(!FNoProgress);
+    bool Normal = FLAGCLEAR(OpMode, OPM_FIND | OPM_SILENT);
+    UnicodeString PrevPath = FTerminal ? FTerminal->RemoteGetCurrentDirectory() : L"";
+    FNoProgress = !Normal;
+    if (!FNoProgress)
     {
-      FSavedFindFolder = FTerminal->RemoteGetCurrentDirectory();
+      GetWinSCPPlugin()->ShowConsoleTitle(GetMsg(NB_CHANGING_DIRECTORY_TITLE));
+    }
+    if (FTerminal)
+    {
+      FTerminal->SetExceptionOnFail(true);
+    }
+    {
+      SCOPE_EXIT
+      {
+        if (FTerminal)
+        {
+          FTerminal->SetExceptionOnFail(false);
+        }
+        if (!FNoProgress)
+        {
+          GetWinSCPPlugin()->ClearConsoleTitle();
+        }
+        FNoProgress = false;
+      };
+      if (Dir == L"\\")
+      {
+        FTerminal->RemoteChangeDirectory(ROOTDIRECTORY);
+      }
+      else if ((Dir == PARENTDIRECTORY) && (FTerminal->RemoteGetCurrentDirectory() == ROOTDIRECTORY))
+      {
+        // ClosePlugin();
+        Disconnect();
+      }
+      else
+      {
+        FTerminal->RemoteChangeDirectory(Dir);
+        FCurrentDirectoryWasChanged = true;
+      }
     }
 
-    if (IsSessionList())
+    if (FTerminal && Normal && FSynchronisingBrowse &&
+      (PrevPath != FTerminal->RemoteGetCurrentDirectory()))
     {
-      FSessionsFolder = base::AbsolutePath(ROOTDIRECTORY + FSessionsFolder, Dir);
-      DebugAssert(FSessionsFolder[1] == L'/');
-      FSessionsFolder.Delete(1, 1);
-      FNewSessionsFolder.Clear();
-    }
-    else
-    {
-      DebugAssert(!FNoProgress);
-      bool Normal = FLAGCLEAR(OpMode, OPM_FIND | OPM_SILENT);
-      UnicodeString PrevPath = FTerminal ? FTerminal->RemoteGetCurrentDirectory() : L"";
-      FNoProgress = !Normal;
-      if (!FNoProgress)
+      TFarPanelInfo ** AnotherPanel = GetAnotherPanelInfo();
+      if (AnotherPanel && *AnotherPanel && ((*AnotherPanel)->GetIsPlugin() || ((*AnotherPanel)->GetType() != ptFile)))
       {
-        GetWinSCPPlugin()->ShowConsoleTitle(GetMsg(NB_CHANGING_DIRECTORY_TITLE));
+        MoreMessageDialog(GetMsg(NB_SYNCHRONIZE_LOCAL_PATH_REQUIRED), nullptr, qtError, qaOK);
       }
-      if (FTerminal)
+      else if (AnotherPanel && *AnotherPanel)
       {
-        FTerminal->SetExceptionOnFail(true);
-      }
-      {
-        SCOPE_EXIT
+        try
         {
-          if (FTerminal)
+          UnicodeString RemotePath = base::UnixIncludeTrailingBackslash(FTerminal->RemoteGetCurrentDirectory());
+          UnicodeString FullPrevPath = base::UnixIncludeTrailingBackslash(PrevPath);
+          UnicodeString LocalPath;
+          if (RemotePath.SubString(1, FullPrevPath.Length()) == FullPrevPath && AnotherPanel)
           {
-            FTerminal->SetExceptionOnFail(false);
+            LocalPath = IncludeTrailingBackslash((*AnotherPanel)->GetCurrDirectory()) +
+              base::FromUnixPath(RemotePath.SubString(FullPrevPath.Length() + 1,
+                RemotePath.Length() - FullPrevPath.Length()));
           }
-          if (!FNoProgress)
+          else if (FullPrevPath.SubString(1, RemotePath.Length()) == RemotePath && AnotherPanel)
           {
-            GetWinSCPPlugin()->ClearConsoleTitle();
-          }
-          FNoProgress = false;
-        };
-        if (Dir == L"\\")
-        {
-          FTerminal->RemoteChangeDirectory(ROOTDIRECTORY);
-        }
-        else if ((Dir == PARENTDIRECTORY) && (FTerminal->RemoteGetCurrentDirectory() == ROOTDIRECTORY))
-        {
-          // ClosePlugin();
-          Disconnect();
-        }
-        else
-        {
-          FTerminal->RemoteChangeDirectory(Dir);
-          FCurrentDirectoryWasChanged = true;
-        }
-      }
-
-      if (FTerminal && Normal && FSynchronisingBrowse &&
-        (PrevPath != FTerminal->RemoteGetCurrentDirectory()))
-      {
-        TFarPanelInfo ** AnotherPanel = GetAnotherPanelInfo();
-        if (AnotherPanel && *AnotherPanel && ((*AnotherPanel)->GetIsPlugin() || ((*AnotherPanel)->GetType() != ptFile)))
-        {
-          MoreMessageDialog(GetMsg(NB_SYNCHRONIZE_LOCAL_PATH_REQUIRED), nullptr, qtError, qaOK);
-        }
-        else if (AnotherPanel && *AnotherPanel)
-        {
-          try
-          {
-            UnicodeString RemotePath = base::UnixIncludeTrailingBackslash(FTerminal->RemoteGetCurrentDirectory());
-            UnicodeString FullPrevPath = base::UnixIncludeTrailingBackslash(PrevPath);
-            UnicodeString LocalPath;
-            if (RemotePath.SubString(1, FullPrevPath.Length()) == FullPrevPath && AnotherPanel)
+            LocalPath = ExcludeTrailingBackslash((*AnotherPanel)->GetCurrDirectory());
+            while (!base::UnixSamePath(FullPrevPath, RemotePath))
             {
-              LocalPath = ::IncludeTrailingBackslash((*AnotherPanel)->GetCurrDirectory()) +
-                base::FromUnixPath(RemotePath.SubString(FullPrevPath.Length() + 1,
-                  RemotePath.Length() - FullPrevPath.Length()));
-            }
-            else if (FullPrevPath.SubString(1, RemotePath.Length()) == RemotePath && AnotherPanel)
-            {
-              LocalPath = ::ExcludeTrailingBackslash((*AnotherPanel)->GetCurrDirectory());
-              while (!base::UnixSamePath(FullPrevPath, RemotePath))
+              UnicodeString NewLocalPath = ExcludeTrailingBackslash(ExtractFileDir(LocalPath));
+              if (NewLocalPath == LocalPath)
               {
-                UnicodeString NewLocalPath = ::ExcludeTrailingBackslash(::ExtractFileDir(LocalPath));
-                if (NewLocalPath == LocalPath)
+                Abort();
+              }
+              LocalPath = NewLocalPath;
+              FullPrevPath = base::UnixExtractFilePath(base::UnixExcludeTrailingBackslash(FullPrevPath));
+            }
+          }
+          else
+          {
+            Abort();
+          }
+
+          if (!SynchronizeBrowsing(LocalPath))
+          {
+            if (MoreMessageDialog(FORMAT(GetMsg(NB_SYNC_DIR_BROWSE_CREATE).c_str(), LocalPath.c_str()),
+              nullptr, qtInformation, qaYes | qaNo) == qaYes)
+            {
+              if (!ForceDirectories(ApiPath(LocalPath)))
+              {
+                ::RaiseLastOSError();
+              }
+              else
+              {
+                if (!SynchronizeBrowsing(LocalPath))
                 {
                   Abort();
                 }
-                LocalPath = NewLocalPath;
-                FullPrevPath = base::UnixExtractFilePath(base::UnixExcludeTrailingBackslash(FullPrevPath));
               }
             }
             else
             {
-              Abort();
-            }
-
-            if (!SynchronizeBrowsing(LocalPath))
-            {
-              if (MoreMessageDialog(FORMAT(GetMsg(NB_SYNC_DIR_BROWSE_CREATE).c_str(), LocalPath.c_str()),
-                    nullptr, qtInformation, qaYes | qaNo) == qaYes)
-              {
-                if (!::ForceDirectories(ApiPath(LocalPath)))
-                {
-                  ::RaiseLastOSError();
-                }
-                else
-                {
-                  if (!SynchronizeBrowsing(LocalPath))
-                  {
-                    Abort();
-                  }
-                }
-              }
-              else
-              {
-                FSynchronisingBrowse = false;
-              }
+              FSynchronisingBrowse = false;
             }
           }
-          catch (Exception & E)
-          {
-            FSynchronisingBrowse = false;
-            GetWinSCPPlugin()->ShowExtendedException(&E);
-            MoreMessageDialog(GetMsg(NB_SYNC_DIR_BROWSE_ERROR), nullptr, qtInformation, qaOK);
-          }
+        }
+        catch (Exception & E)
+        {
+          FSynchronisingBrowse = false;
+          GetWinSCPPlugin()->ShowExtendedException(&E);
+          MoreMessageDialog(GetMsg(NB_SYNC_DIR_BROWSE_ERROR), nullptr, qtInformation, qaOK);
         }
       }
     }
-
-    return true;
   }
+
+  return true;
 }
 
 intptr_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & Name, int OpMode)
@@ -3161,7 +3155,7 @@ void TWinSCPFileSystem::TerminalReadDirectoryProgress(
     if (!FNoProgress && (Progress == -2))
     {
       MoreMessageDialog(GetMsg(NB_DIRECTORY_READING_CANCELLED), nullptr,
-         qtWarning, qaOK);
+        qtWarning, qaOK);
     }
   }
   else
@@ -3191,7 +3185,7 @@ void TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
 void TWinSCPFileSystem::TerminalDeleteLocalFile(UnicodeString AFileName, bool Alternative)
 {
   if (!RecursiveDeleteFile(AFileName,
-        (FLAGSET(GetWinSCPPlugin()->GetFarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
+    (FLAGSET(GetWinSCPPlugin()->GetFarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
   {
     throw Exception(FORMAT(GetMsg(NB_DELETE_LOCAL_FILE_ERROR).c_str(), AFileName.c_str()));
   }
@@ -3201,7 +3195,7 @@ HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(UnicodeString LocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr,
-                      CreationDisposition, FlagsAndAttributes, nullptr);
+    CreationDisposition, FlagsAndAttributes, nullptr);
 }
 
 DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(UnicodeString LocalFileName) const
@@ -3454,7 +3448,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
     if (TransferOperation && !((ProgressData.GetSide() == osRemote) && ProgressData.GetTemp()))
     {
       Message1 += TargetDirLabel + base::MinimizeName(ProgressData.GetDirectory(),
-                  ProgressWidth - TargetDirLabel.Length(), ProgressData.GetSide() == osLocal) + L"\n";
+        ProgressWidth - TargetDirLabel.Length(), ProgressData.GetSide() == osLocal) + L"\n";
     }
     UnicodeString ProgressBarTotal = ProgressBar(ProgressData.OverallProgress(), ProgressWidth) + L"\n";
     if (TransferOperation)
@@ -3463,8 +3457,8 @@ void TWinSCPFileSystem::ShowOperationProgress(
 
       UnicodeString Value = FormatDateTimeSpan(GetConfiguration()->TimeFormat(), ProgressData.TimeElapsed());
       UnicodeString StatusLine = TimeElapsedLabel +
-                   ::StringOfChar(L' ', ProgressWidth / 2 - 1 - TimeElapsedLabel.Length() - Value.Length()) +
-                   Value + L"  ";
+        StringOfChar(L' ', ProgressWidth / 2 - 1 - TimeElapsedLabel.Length() - Value.Length()) +
+        Value + L"  ";
 
       UnicodeString LabelText;
       if (ProgressData.GetTotalSizeSet())
@@ -3478,18 +3472,18 @@ void TWinSCPFileSystem::ShowOperationProgress(
         LabelText = StartTimeLabel;
       }
       StatusLine = StatusLine + LabelText +
-                   ::StringOfChar(' ', ProgressWidth - StatusLine.Length() -
-                                  LabelText.Length() - Value.Length()) + Value;
+        StringOfChar(' ', ProgressWidth - StatusLine.Length() -
+          LabelText.Length() - Value.Length()) + Value;
       Message2 += StatusLine + L"\n";
 
       Value = base::FormatBytes(ProgressData.GetTotalTransferred());
       StatusLine = BytesTransferredLabel +
-                   ::StringOfChar(' ', ProgressWidth / 2 - 1 - BytesTransferredLabel.Length() - Value.Length()) +
-                   Value + L"  ";
+        StringOfChar(' ', ProgressWidth / 2 - 1 - BytesTransferredLabel.Length() - Value.Length()) +
+        Value + L"  ";
       Value = FORMAT(L"%s/s", base::FormatBytes(ProgressData.CPS()).c_str());
       StatusLine = StatusLine + CPSLabel +
-                   ::StringOfChar(' ', ProgressWidth - StatusLine.Length() -
-                                  CPSLabel.Length() - Value.Length()) + Value;
+        StringOfChar(' ', ProgressWidth - StatusLine.Length() -
+          CPSLabel.Length() - Value.Length()) + Value;
       Message2 += StatusLine + L"\n";
       ProgressBarCurrentFile = ProgressBar(ProgressData.TransferProgress(), ProgressWidth) + L"\n";
     }
@@ -3685,12 +3679,12 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
       (ProgressData.TimeExpected() > GetGUIConfiguration()->GetIgnoreCancelBeforeFinish()))
     {
       Result = MoreMessageDialog(GetMsg(NB_CANCEL_OPERATION_FATAL2), nullptr,
-                                 qtWarning, qaYes | qaNo | qaCancel);
+        qtWarning, qaYes | qaNo | qaCancel);
     }
     else
     {
       Result = MoreMessageDialog(GetMsg(NB_CANCEL_OPERATION), nullptr,
-                                 qtConfirmation, qaOK | qaCancel);
+        qtConfirmation, qaOK | qaCancel);
     }
     switch (Result)
     {
@@ -4017,7 +4011,7 @@ void TWinSCPFileSystem::MultipleEdit(UnicodeString Directory,
     Params.Aliases = Aliases;
     Params.AliasesCount = _countof(Aliases);
     switch (MoreMessageDialog(FORMAT(GetMsg(NB_EDITOR_ALREADY_LOADED).c_str(), FullFileName.c_str()),
-          nullptr, qtConfirmation, qaYes | qaNo | qaOK | qaCancel, &Params))
+      nullptr, qtConfirmation, qaYes | qaNo | qaOK | qaCancel, &Params))
     {
     case qaYes:
       EditCurrent = true;
@@ -4055,7 +4049,7 @@ void TWinSCPFileSystem::MultipleEdit(UnicodeString Directory,
       if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, &Window) != 0)
       {
         if ((Window.Type == WTYPE_EDITOR) &&
-            Window.Name && ::AnsiSameText(Window.Name, it_e->second.LocalFileName))
+          Window.Name && AnsiSameText(Window.Name, it_e->second.LocalFileName))
         {
           // Switch to current editor.
           if (FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW,
@@ -4094,7 +4088,7 @@ void TWinSCPFileSystem::MultipleEdit(UnicodeString Directory,
     FLastMultipleEditDirectory = Directory;
 
     if (FarPlugin->Editor(FLastMultipleEditFile, FullFileName,
-          EF_NONMODAL | EF_IMMEDIATERETURN | EF_DISABLEHISTORY))
+      EF_NONMODAL | EF_IMMEDIATERETURN | EF_DISABLEHISTORY))
     {
       // DebugAssert(FLastMultipleEditFile.IsEmpty());
     }

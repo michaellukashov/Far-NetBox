@@ -107,8 +107,8 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     ResetCachedInfo();
     ClearStruct(FStartupInfo);
     memmove(&FStartupInfo, Info,
-            Info->StructSize >= static_cast<intptr_t>(sizeof(FStartupInfo)) ?
-              sizeof(FStartupInfo) : static_cast<size_t>(Info->StructSize));
+      Info->StructSize >= static_cast<intptr_t>(sizeof(FStartupInfo)) ?
+        sizeof(FStartupInfo) : static_cast<size_t>(Info->StructSize));
     // the minimum we really need
     DebugAssert(FStartupInfo.GetMsg != nullptr);
     DebugAssert(FStartupInfo.Message != nullptr);
@@ -119,8 +119,8 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     if (static_cast<size_t>(Info->StructSize) > FSFOffset)
     {
       memmove(&FFarStandardFunctions, Info->FSF,
-              static_cast<size_t>(Info->FSF->StructSize) >= sizeof(FFarStandardFunctions) ?
-                sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
+        static_cast<size_t>(Info->FSF->StructSize) >= sizeof(FFarStandardFunctions) ?
+          sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
     }
   }
   catch (Exception & E)
@@ -148,7 +148,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
     ClearPluginInfo(FPluginInfo);
 
     GetPluginInfoEx(FPluginInfo.Flags, &DiskMenuStrings, &PluginMenuStrings,
-                    &PluginConfigStrings, &CommandPrefixes);
+      &PluginConfigStrings, &CommandPrefixes);
 
 #define COMPOSESTRINGARRAY(NAME) \
         if (NAME.GetCount()) \
@@ -219,13 +219,10 @@ wchar_t * TCustomFarPlugin::DuplicateStr(UnicodeString Str, bool AllowEmpty)
   {
     return nullptr;
   }
-  else
-  {
-    const size_t sz = Str.Length() + 1;
-    wchar_t * Result = nb::wchcalloc(sizeof(wchar_t) * (1 + sz));
-    wcscpy_s(Result, sz, Str.c_str());
-    return Result;
-  }
+  const size_t sz = Str.Length() + 1;
+  wchar_t * Result = nb::wchcalloc(sizeof(wchar_t) * (1 + sz));
+  wcscpy_s(Result, sz, Str.c_str());
+  return Result;
 }
 
 RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
@@ -243,7 +240,7 @@ RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
 }
 
 TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
-    HANDLE /*Plugin*/)
+  HANDLE /*Plugin*/)
 {
   TCustomFarFileSystem * Result = nullptr;
   RECT ActivePanelBounds = GetPanelBounds(PANEL_ACTIVE);
@@ -463,10 +460,7 @@ intptr_t TCustomFarPlugin::ProcessHostFile(HANDLE Plugin,
         return FarFileSystem->ProcessHostFile(PanelItem, ItemsNumber, OpMode);
       }
     }
-    else
-    {
-      return 0;
-    }
+    return 0;
   }
   catch (Exception & E)
   {
@@ -492,10 +486,7 @@ intptr_t TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
         return FarFileSystem->ProcessKey(Key, ControlState);
       }
     }
-    else
-    {
-      return 0;
-    }
+    return 0;
   }
   catch (Exception & E)
   {
@@ -530,10 +521,7 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
       TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->ProcessEvent(Event, Param);
     }
-    else
-    {
-      return 0;
-    }
+    return 0;
   }
   catch (Exception & E)
   {
@@ -2593,10 +2581,7 @@ TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
     DebugAssert(Index < Items->GetCount());
     return Items->GetAs<TFarPanelItem>(Index);
   }
-  else
-  {
-    return nullptr;
-  }
+  return nullptr;
 }
 
 void TFarPanelInfo::SetFocusedItem(const TFarPanelItem * Value)
@@ -2889,9 +2874,9 @@ UnicodeString TGlobalFunctions::GetStrVersionNumber() const
 //  UnicodeString & Text, DWORD Flags, UnicodeString HistoryName = UnicodeString(),
 //  intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
 bool TGlobalFunctions::InputDialog(UnicodeString ACaption, UnicodeString APrompt,
-                                   UnicodeString & Value, UnicodeString HelpKeyword,
-                                   TStrings * History, bool PathInput,
-                                   TInputDialogInitializeEvent OnInitialize, bool Echo)
+  UnicodeString & Value, UnicodeString HelpKeyword,
+  TStrings * History, bool PathInput,
+  TInputDialogInitializeEvent OnInitialize, bool Echo)
 {
   DebugUsedParam(HelpKeyword);
   DebugUsedParam(History);

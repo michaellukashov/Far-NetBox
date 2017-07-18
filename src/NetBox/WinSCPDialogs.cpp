@@ -2825,7 +2825,6 @@ void TSessionDialog::Change()
 void TSessionDialog::Init()
 {
   TTabbedDialog::Init();
-
 }
 
 static void AdjustRemoteDir(
@@ -3631,7 +3630,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     }
     SessionData->SetCodePage(
       (CodePageEdit->GetText() == CodePageEdit->GetItems()->GetString(0)) ?
-      UnicodeString() : CodePageEdit->GetText());
+        UnicodeString() : CodePageEdit->GetText());
 
     // Proxy tab
     SessionData->SetProxyMethod(GetProxyMethod());
@@ -3813,19 +3812,16 @@ intptr_t TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
     bool Dummy;
     return FSProtocolToIndex(fsSFTPonly, Dummy);
   }
-  else
+  AllowScpFallback = false;
+  for (intptr_t Index = 0; Index < TransferProtocolCombo->GetItems()->GetCount(); ++Index)
   {
-    AllowScpFallback = false;
-    for (intptr_t Index = 0; Index < TransferProtocolCombo->GetItems()->GetCount(); ++Index)
+    if (FSOrder[Index] == FSProtocol)
     {
-      if (FSOrder[Index] == FSProtocol)
-      {
-        return Index;
-      }
+      return Index;
     }
-    // SFTP is always present
-    return FSProtocolToIndex(fsSFTP, AllowScpFallback);
   }
+  // SFTP is always present
+  return FSProtocolToIndex(fsSFTP, AllowScpFallback);
 }
 
 intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items) const
@@ -4042,7 +4038,7 @@ bool TSessionDialog::CloseQuery()
   {
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
     CanClose = (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SAVE_PASSWORD), nullptr,
-                qtWarning, qaOK | qaCancel) == qaOK);
+      qtWarning, qaOK | qaCancel) == qaOK);
   }
 
   return CanClose;
@@ -4486,16 +4482,13 @@ TRights::TState TRightsContainer::GetStates(TRights::TRight Right)
   {
     switch (CheckBox->GetSelected())
     {
-      case BSTATE_UNCHECKED: return TRights::rsNo;
-      case BSTATE_CHECKED: return TRights::rsYes;
-      case BSTATE_3STATE:
-      default: return TRights::rsUndef;
+    case BSTATE_UNCHECKED: return TRights::rsNo;
+    case BSTATE_CHECKED: return TRights::rsYes;
+    case BSTATE_3STATE:
+    default: return TRights::rsUndef;
     }
   }
-  else
-  {
-    return FFixedStates[Right];
-  }
+  return FFixedStates[Right];
 }
 
 void TRightsContainer::SetStates(TRights::TRight Right,
@@ -4548,7 +4541,7 @@ void TRightsContainer::SetRights(const TRights & Value)
     for (size_t Right = 0; Right < _countof(FCheckBoxes); Right++)
     {
       SetStates(static_cast<TRights::TRight>(Right),
-                Value.GetRightUndef(static_cast<TRights::TRight>(Right)));
+        Value.GetRightUndef(static_cast<TRights::TRight>(Right)));
     }
     SetAllowUndef(Value.GetAllowUndef());
   }
@@ -4697,7 +4690,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
       SetNextItemPosition(ipRight);
 
-      TFarEdit* Edit = new TFarEdit(this);
+      TFarEdit * Edit = new TFarEdit(this);
       Edit->SetText(File->GetLinkTo());
       Edit->SetReadOnly(true);
 
@@ -4808,7 +4801,7 @@ void TPropertiesDialog::Change()
       // when "recursive" is on (possible for directory only).
       bool AllowUndef =
         (FOrigProperties.Valid.Contains(vpRights) &&
-         FOrigProperties.Rights.GetAllowUndef()) ||
+          FOrigProperties.Rights.GetAllowUndef()) ||
         ((RecursiveCheck != nullptr) && (RecursiveCheck->GetChecked()));
       if (!AllowUndef)
       {
@@ -4885,9 +4878,9 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
     RightsContainer->SetAddXToDirectories(false);
   }
   OwnerComboBox->SetText(Properties->Valid.Contains(vpOwner) ?
-    Properties->Owner.GetName() : UnicodeString());
+                           Properties->Owner.GetName() : UnicodeString());
   GroupComboBox->SetText(Properties->Valid.Contains(vpGroup) ?
-    Properties->Group.GetName() : UnicodeString());
+                           Properties->Group.GetName() : UnicodeString());
   if (RecursiveCheck)
   {
     RecursiveCheck->SetChecked(Properties->Recursive);
@@ -4982,7 +4975,8 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   FileMaskText(nullptr),
   FileMaskEdit(nullptr),
   SpeedCombo(nullptr),
-  FOptions(Options), FCopyParamAttrs(CopyParamAttrs)
+  FOptions(Options),
+  FCopyParamAttrs(CopyParamAttrs)
 {
   intptr_t TMWidth = 37;
 
@@ -5885,7 +5879,8 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLabelList) || TList::is(Kind); }
 public:
   explicit TLabelList() :
-    TList(OBJECT_CLASS_TLabelList), MaxLen(0)
+    TList(OBJECT_CLASS_TLabelList),
+    MaxLen(0)
   {
   }
 
@@ -5893,7 +5888,7 @@ public:
 };
 
 TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
-    TGetSpaceAvailableEvent OnGetSpaceAvailable) : TTabbedDialog(AFarPlugin, tabCount),
+  TGetSpaceAvailableEvent OnGetSpaceAvailable) : TTabbedDialog(AFarPlugin, tabCount),
   FSpaceAvailableLoaded(false),
   FLastFeededControl(nullptr),
   FLastListItem(0),
@@ -6026,7 +6021,7 @@ UnicodeString TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability)
 }
 
 UnicodeString TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability1,
-    TFSCapability Capability2)
+  TFSCapability Capability2)
 {
   return FORMAT(L"%s/%s", CapabilityStr(Capability1).c_str(), CapabilityStr(Capability2).c_str());
 }
@@ -6153,7 +6148,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
 }
 
 void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * AControl,
-  intptr_t Label, UnicodeString ) const
+  intptr_t Label, UnicodeString) const
 {
   TLabelList * List = dyn_cast<TLabelList>(AControl);
   if (List != nullptr)
@@ -7009,7 +7004,7 @@ bool TFullSynchronizeDialog::CloseQuery()
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
 
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SAVE_SYNCHRONIZE_MODE), nullptr,
-              qtConfirmation, qaYes | qaNo | qaCancel, nullptr))
+      qtConfirmation, qaYes | qaNo | qaCancel, nullptr))
     {
     case qaYes:
       FSaveMode = true;
@@ -8037,7 +8032,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
     Params.Params = qpNeverAskAgainCheck;
     TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SYNCHRONISE_BEFORE_KEEPUPTODATE),
-        nullptr, qtConfirmation, qaYes | qaNo | qaCancel, &Params))
+      nullptr, qtConfirmation, qaYes | qaNo | qaCancel, &Params))
     {
     case qaNeverAskAgain:
       SynchronizeSynchronizeCheck->SetSelected(BSTATE_CHECKED);
@@ -8185,7 +8180,7 @@ bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * AFile,
   UnicodeString & NewName)
 {
   return FPlugin->InputBox(GetMsg(NB_RENAME_FILE_TITLE).c_str(),
-    FORMAT(GetMsg(NB_RENAME_FILE).c_str(), AFile->GetFileName().c_str()), NewName, 0) &&
+      FORMAT(GetMsg(NB_RENAME_FILE).c_str(), AFile->GetFileName().c_str()), NewName, 0) &&
     !NewName.IsEmpty();
 }
 
@@ -8201,7 +8196,7 @@ public:
   {
   }
 
-  bool Execute(TTerminalQueueStatus* Status);
+  bool Execute(TTerminalQueueStatus * Status);
 
 protected:
   virtual void Change() override;
@@ -8729,7 +8724,7 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
   SetRightsCheck->SetCaption(GetMsg(NB_CREATE_FOLDER_SET_RIGHTS));
 
   TRightsContainer * RightsContainer = new TRightsContainer(Dialog.get(), false, true,
-      true, SetRightsCheck);
+    true, SetRightsCheck);
 
   TFarCheckBox * SaveSettingsCheck = new TFarCheckBox(Dialog.get());
   SaveSettingsCheck->SetCaption(GetMsg(NB_CREATE_FOLDER_REUSE_SETTINGS));
