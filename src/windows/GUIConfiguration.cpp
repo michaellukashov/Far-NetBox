@@ -131,7 +131,7 @@ TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source) :
 
 #define C(Property) (Property == rhp.Property)
 
-bool TCopyParamRule::operator==(const TCopyParamRule& rhp) const
+bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
 {
   return
     C(FData.HostName) &&
@@ -435,20 +435,20 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
         }
         __finally
         {
-/*
+#if 0
           Storage->CloseSubKey();
-*/
+#endif // #if 0
         };
       }
     }
-/*
+#if 0
     catch(...)
     {
       delete CopyParam;
       delete Rule;
       throw;
     }
-*/
+#endif // #if 0
 
     FCopyParams->Add(CopyParam.release());
     FRules->Add(Rule.release());
@@ -483,9 +483,9 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
       }
       __finally
       {
-/*
+#if 0
         Storage->CloseSubKey();
-*/
+#endif // #if 0
       };
     }
   }
@@ -540,7 +540,6 @@ bool TCopyParamList::GetAnyRule() const
 TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) :
   TConfiguration(Kind),
   FLocales(CreateSortedStringList()),
-  FAppliedLocale(0),
   FLastLocalesExts(L"*"),
   FContinueOnError(false),
   FConfirmCommandSession(false),
@@ -561,6 +560,7 @@ TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) :
   FCopyParamListDefaults(false),
   FKeepUpToDateChangeDelay(0),
   FSessionReopenAutoIdle(0),
+  FAppliedLocale(0),
   FLocale(0)
 {
   CoreSetResourceModule(nullptr);
@@ -732,9 +732,9 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     }
     __finally
     {
-  /*
+#if 0
       Storage->CloseSubKey();
-  */
+#endif // #if 0
     };
   }
 
@@ -750,9 +750,9 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     }
     __finally
     {
-  /*
+#if 0
       Storage->CloseSubKey();
-  */
+#endif // #if 0
     };
   }
 }
@@ -797,9 +797,9 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     __finally
     {
-  /*
+#if 0
       Storage->CloseSubKey();
-  */
+#endif // #if 0
     };
   }
 
@@ -829,9 +829,9 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     __finally
     {
-  /*
+#if 0
       Storage->CloseSubKey();
-  */
+#endif // #if 0
     };
   }
 }
@@ -925,13 +925,10 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   {
     throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
   }
-  else
+  if (Internal)
   {
-    if (Internal)
-    {
-      ThrowNotImplemented(90);
-      NewInstance = nullptr; // FIXME  HInstance;
-    }
+    ThrowNotImplemented(90);
+    NewInstance = nullptr; // FIXME  HInstance;
   }
 
   AFileName = LibraryFileName;

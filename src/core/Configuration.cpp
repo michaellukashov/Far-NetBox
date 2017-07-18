@@ -364,7 +364,6 @@ void TConfiguration::DoSave(bool All, bool Explicit)
   }
 
   SaveCustomIniFileStorageName();
-
 }
 
 void TConfiguration::SaveCustomIniFileStorageName()
@@ -476,9 +475,9 @@ void TConfiguration::LoadData(THierarchicalStorage * Storage)
   if (FPermanentLogActions && FPermanentActionsLogFileName.IsEmpty() &&
       FPermanentLogging && !FPermanentLogFileName.IsEmpty())
   {
-     FPermanentActionsLogFileName = FPermanentLogFileName;
-     FPermanentLogging = false;
-     FPermanentLogFileName.Clear();
+    FPermanentActionsLogFileName = FPermanentLogFileName;
+    FPermanentLogging = false;
+    FPermanentLogFileName.Clear();
   }
 }
 
@@ -541,7 +540,7 @@ void TConfiguration::Load(THierarchicalStorage * Storage)
 void TConfiguration::CopyData(THierarchicalStorage * Source,
   THierarchicalStorage * Target)
 {
-  std::unique_ptr<TStrings > Names(new TStringList());
+  std::unique_ptr<TStrings> Names(new TStringList());
   try__finally
   {
     if (Source->OpenSubKey(GetConfigurationSubKey(), false))
@@ -888,10 +887,7 @@ RawByteString TConfiguration::EncryptPassword(UnicodeString Password, UnicodeStr
   {
     return RawByteString();
   }
-  else
-  {
-    return ::EncryptPassword(Password, Key);
-  }
+  return ::EncryptPassword(Password, Key);
 }
 
 UnicodeString TConfiguration::DecryptPassword(RawByteString Password, UnicodeString Key)
@@ -900,10 +896,7 @@ UnicodeString TConfiguration::DecryptPassword(RawByteString Password, UnicodeStr
   {
     return UnicodeString();
   }
-  else
-  {
-    return ::DecryptPassword(Password, Key);
-  }
+  return ::DecryptPassword(Password, Key);
 }
 
 RawByteString TConfiguration::StronglyRecryptPassword(RawByteString Password, UnicodeString /*Key*/)
@@ -925,8 +918,7 @@ intptr_t TConfiguration::GetCompoundVersion() const
       HIWORD(FileInfo->dwFileVersionMS), LOWORD(FileInfo->dwFileVersionMS),
       HIWORD(FileInfo->dwFileVersionLS), LOWORD(FileInfo->dwFileVersionLS));
   }
-  else
-    return 0;
+  return 0;
 }
 
 UnicodeString TConfiguration::ModuleFileName() const
@@ -1001,11 +993,11 @@ UnicodeString TConfiguration::GetReleaseType() const
 
 bool TConfiguration::GetIsUnofficial() const
 {
-  #ifdef BUILD_OFFICIAL
+#ifdef BUILD_OFFICIAL
   return false;
-  #else
+#else
   return true;
-  #endif
+#endif
 }
 
 UnicodeString TConfiguration::GetProductVersionStr() const
@@ -1029,11 +1021,11 @@ UnicodeString TConfiguration::GetProductVersionStr() const
     }
     else
     {
-      #ifdef _DEBUG
+#ifdef _DEBUG
       BuildStr = LoadStr(VERSION_DEBUG_BUILD);
-      #else
+#else
       BuildStr = LoadStr(VERSION_DEV_BUILD);
-      #endif
+#endif
     }
 
     int Build = LOWORD(FixedApplicationInfo->dwFileVersionLS);
@@ -1043,7 +1035,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
     }
 
 #if 0
-    #ifndef BUILD_OFFICIAL
+#ifndef BUILD_OFFICIAL
     UnicodeString BuildDate = __DATE__;
     UnicodeString MonthStr = CutToChar(BuildDate, L' ', true);
     int Month = ParseShortEngMonthName(MonthStr);
@@ -1051,7 +1043,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
     int Year = StrToInt64(Trim(BuildDate));
     UnicodeString DateStr = FORMAT("%d-%2.2d-%2.2d", Year, Month, Day);
     AddToList(BuildStr, DateStr, L" ");
-    #endif
+#endif
 #endif
 
     UnicodeString FullVersion = GetProductVersion();
@@ -1067,9 +1059,9 @@ UnicodeString TConfiguration::GetProductVersionStr() const
     Result = FMTLOAD(VERSION2, GetProductVersion().c_str(), Build);
 
 #if 0
-    #ifndef BUILD_OFFICIAL
+#ifndef BUILD_OFFICIAL
     Result += L" " + LoadStr(VERSION_DONT_DISTRIBUTE);
-    #endif
+#endif
 #endif
   }
   catch (Exception & E)

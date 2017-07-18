@@ -151,7 +151,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
       if (DataSize >= BufSize)
       {
         uintptr_t ConvBuf = DataSize - VersionInfo->wLength;
-        memmove((static_cast<char *>(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf );
+        memmove((static_cast<char *>(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf);
       }
     }
   }
@@ -196,7 +196,7 @@ void FreeFileInfo(void * FileInfo)
 }
 
 typedef TTranslation TTranslations[65536];
-typedef TTranslation *PTranslations;
+typedef TTranslation * PTranslations;
 
 // Return pointer to fixed file version info
 PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)

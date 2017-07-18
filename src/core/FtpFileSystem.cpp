@@ -170,13 +170,18 @@ std::wstring TFileZillaImpl::GetClientString() const
 
 struct message_t
 {
-CUSTOM_MEM_ALLOCATION_IMPL
-  message_t() : wparam(0), lparam(0)
+  CUSTOM_MEM_ALLOCATION_IMPL
+
+  message_t() : wparam(0),
+    lparam(0)
   {
   }
-  message_t(WPARAM w, LPARAM l) : wparam(w), lparam(l)
+
+  message_t(WPARAM w, LPARAM l) : wparam(w),
+    lparam(l)
   {
   }
+
   WPARAM wparam;
   LPARAM lparam;
 };
@@ -238,7 +243,7 @@ class TFTPFileListHelper : public TObject
 NB_DISABLE_COPY(TFTPFileListHelper)
 public:
   explicit TFTPFileListHelper(TFTPFileSystem * FileSystem, TRemoteFileList * FileList,
-      bool IgnoreFileList) :
+    bool IgnoreFileList) :
     FFileSystem(FileSystem),
     FFileList(FFileSystem->FFileList),
     FIgnoreFileList(FFileSystem->FIgnoreFileList)
@@ -942,10 +947,7 @@ UnicodeString TFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool /*Local*
   {
     return APath;
   }
-  else
-  {
-    return base::AbsolutePath(FCurrentDirectory, APath);
-  }
+  return base::AbsolutePath(FCurrentDirectory, APath);
 }
 
 UnicodeString TFTPFileSystem::GetActualCurrentDirectory() const
@@ -1275,7 +1277,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
     TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObj(Index1));
     DebugAssert(File != nullptr);
 
-    if (File->GetIsDirectory())
+    if (File && File->GetIsDirectory())
     {
       if (FTerminal->CanRecurseToDirectory(File) &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory() &&
@@ -1330,7 +1332,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
         }
       }
     }
-    else
+    else if (File)
     {
       TChecksumSessionAction Action(FTerminal->GetActionLog());
       try
@@ -1743,7 +1745,7 @@ void TFTPFileSystem::SinkRobust(UnicodeString AFileName,
       OperationProgress->RollbackTransfer();
       Action.Restart();
       DebugAssert(AFile != nullptr);
-      if (!AFile->GetIsDirectory())
+      if (AFile && !AFile->GetIsDirectory())
       {
         // prevent overwrite confirmations
         Params |= cpNoConfirmation;
@@ -1972,7 +1974,7 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = base::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
-  while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->GetCancel())
+  while ((Index < AFilesToCopy->GetCount()) && OperationProgress && !OperationProgress->GetCancel())
   {
     bool Success = false;
     UnicodeString FileName = AFilesToCopy->GetString(Index);
@@ -4454,10 +4456,7 @@ static UnicodeString FormatContactList(UnicodeString Entry1, UnicodeString Entry
   {
     return FORMAT(L"%s, %s", Entry1.c_str(), Entry2.c_str());
   }
-  else
-  {
-    return Entry1 + Entry2;
-  }
+  return Entry1 + Entry2;
 }
 
 UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
@@ -4929,7 +4928,6 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
     {
       DateTime = ::ConvertTimestampFromUTC(DateTime);
     }
-
   }
   else
   {
@@ -4953,7 +4951,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
     DebugAssert(FFileList == nullptr);
     return false;
   }
-  else
+  else if (FFileList)
   {
     DebugAssert(FFileList != nullptr);
     // This can actually fail in real life,
@@ -5064,7 +5062,7 @@ bool TFTPFileSystem::HandleTransferStatus(bool Valid, int64_t TransferSize,
   {
     return false;
   }
-  else if (!Valid)
+  if (!Valid)
   {
   }
   else if (FileTransfer)
@@ -5084,28 +5082,25 @@ bool TFTPFileSystem::HandleReply(intptr_t Command, uintptr_t Reply)
   {
     return false;
   }
+  if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
+  {
+    FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", static_cast<int>(Reply), Command));
+  }
+
+  // reply with Command 0 is not associated with current operation
+  // so do not treat is as a reply
+  // (it is typically used asynchronously to notify about disconnects)
+  if (Command != 0)
+  {
+    DebugAssert(FCommandReply == 0);
+    FCommandReply = Reply;
+  }
   else
   {
-    if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
-    {
-      FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", static_cast<int>(Reply), Command));
-    }
-
-    // reply with Command 0 is not associated with current operation
-    // so do not treat is as a reply
-    // (it is typically used asynchronously to notify about disconnects)
-    if (Command != 0)
-    {
-      DebugAssert(FCommandReply == 0);
-      FCommandReply = Reply;
-    }
-    else
-    {
-      DebugAssert(FReply == 0);
-      FReply = Reply;
-    }
-    return true;
+    DebugAssert(FReply == 0);
+    FReply = Reply;
   }
+  return true;
 }
 
 bool TFTPFileSystem::HandleCapabilities(

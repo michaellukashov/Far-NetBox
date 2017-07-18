@@ -86,8 +86,7 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
           {
             if (match)
               break;
-            else
-              return FALSE;
+            return FALSE;
           }
 
           if (match)

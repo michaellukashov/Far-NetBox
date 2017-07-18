@@ -662,14 +662,11 @@ UnicodeString TRemoteToken::GetDisplayText() const
   {
     return FName;
   }
-  else if (FIDValid)
+  if (FIDValid)
   {
-    return ::IntToStr(FID);
+    return IntToStr(FID);
   }
-  else
-  {
-    return UnicodeString();
-  }
+  return UnicodeString();
 }
 
 UnicodeString TRemoteToken::GetLogText() const
@@ -1018,10 +1015,7 @@ wchar_t TRemoteFile::GetType() const
   {
     return FLinkedFile->GetType();
   }
-  else
-  {
-    return FType;
-  }
+  return FType;
 }
 
 void TRemoteFile::SetType(wchar_t AType)
@@ -1505,10 +1499,7 @@ void TRemoteFile::FindLinkedFile()
       {
         throw;
       }
-      else
-      {
-        GetTerminal()->GetLog()->AddException(&E);
-      }
+      GetTerminal()->GetLog()->AddException(&E);
     }
   }
 }
@@ -1524,7 +1515,7 @@ UnicodeString TRemoteFile::GetListingStr() const
   }
   return FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
     GetType(), GetRights()->GetText().c_str(), ::Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(), GetFileGroup().GetName().c_str(),
-    ::Int64ToStr(GetSize()).c_str(),  // explicitly using size even for directories
+    ::Int64ToStr(GetSize()).c_str(), // explicitly using size even for directories
     GetModificationStr().c_str(), GetFileName().c_str(),
     LinkPart.c_str());
 }
@@ -1550,10 +1541,7 @@ UnicodeString TRemoteFile::GetFullFileName() const
     }
     return GetTerminal()->TranslateLockedPath(Path, true);
   }
-  else
-  {
-    return FFullFileName;
-  }
+  return FFullFileName;
 }
 
 bool TRemoteFile::GetHaveFullFileName() const
@@ -1583,7 +1571,6 @@ void TRemoteFile::SetTerminal(TTerminal * Value)
     FLinkedFile->SetTerminal(Value);
   }
 }
-
 
 
 TRemoteDirectoryFile::TRemoteDirectoryFile() :
@@ -1728,6 +1715,7 @@ TRemoteFile * TRemoteFileList::FindFile(UnicodeString AFileName) const
   }
   return nullptr;
 }
+
 //=== TRemoteDirectory ------------------------------------------------------
 TRemoteDirectory::TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template) :
   TRemoteFileList(OBJECT_CLASS_TRemoteDirectory),
@@ -2204,7 +2192,7 @@ void TRights::Assign(const TRights * Source)
   FUnknown = Source->FUnknown;
 }
 
-TRights::TFlag TRights::RightToFlag(TRights::TRight Right)
+TRights::TFlag TRights::RightToFlag(TRight Right)
 {
   return static_cast<TFlag>(1 << (rrLast - Right));
 }
@@ -2223,10 +2211,7 @@ bool TRights::operator==(const TRights & rhr) const
     }
     return true;
   }
-  else
-  {
-    return (GetNumber() == rhr.GetNumber());
-  }
+  return (GetNumber() == rhr.GetNumber());
 }
 
 bool TRights::operator==(uint16_t rhr) const
@@ -2603,10 +2588,7 @@ UnicodeString TRights::GetSimplestStr() const
   {
     return GetModeStr();
   }
-  else
-  {
-    return GetOctal();
-  }
+  return GetOctal();
 }
 
 UnicodeString TRights::GetModeStr() const

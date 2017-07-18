@@ -46,8 +46,8 @@ bool FindFile(UnicodeString & APath)
     UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramFiles"));
     UnicodeString ProgramFiles64 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramW6432"));
     if (!ProgramFiles32.IsEmpty() &&
-        SameText(APath.SubString(1, ProgramFiles32.Length()), ProgramFiles32) &&
-        !ProgramFiles64.IsEmpty())
+      SameText(APath.SubString(1, ProgramFiles32.Length()), ProgramFiles32) &&
+      !ProgramFiles64.IsEmpty())
     {
       UnicodeString Path64 =
         ProgramFiles64 + APath.SubString(ProgramFiles32.Length() + 1, APath.Length() - ProgramFiles32.Length());
@@ -126,7 +126,7 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
             SourceStorage->SetMungeStringValues(false);
             SourceStorage->SetForceAnsi(true);
             if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
-                Storage->OpenSubKey(GetGUIConfiguration()->GetPuttySession(), true))
+              Storage->OpenSubKey(GetGUIConfiguration()->GetPuttySession(), true))
             {
               Storage->Copy(SourceStorage);
               Storage->CloseSubKey();
@@ -290,27 +290,24 @@ void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command,
   {
     throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
   }
+  if (ProcessMessages != nullptr)
+  {
+    unsigned long WaitResult;
+    do
+    {
+      // Same as in ExecuteProcessAndReadOutput
+      WaitResult = WaitForSingleObject(ProcessHandle, 200);
+      if (WaitResult == WAIT_FAILED)
+      {
+        throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
+      }
+      ProcessMessages();
+    }
+    while (WaitResult == WAIT_TIMEOUT);
+  }
   else
   {
-    if (ProcessMessages != nullptr)
-    {
-      unsigned long WaitResult;
-      do
-      {
-        // Same as in ExecuteProcessAndReadOutput
-        WaitResult = WaitForSingleObject(ProcessHandle, 200);
-        if (WaitResult == WAIT_FAILED)
-        {
-          throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
-        }
-        ProcessMessages();
-      }
-      while (WaitResult == WAIT_TIMEOUT);
-    }
-    else
-    {
-      WaitForSingleObject(ProcessHandle, INFINITE);
-    }
+    WaitForSingleObject(ProcessHandle, INFINITE);
   }
 }
 
@@ -354,13 +351,13 @@ UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
 {
   DebugAssert(AFiles != nullptr);
   UnicodeString Item;
-  if (AFiles->GetCount() > 0)
+  if (AFiles && (AFiles->GetCount() > 0))
   {
     Item = Remote ? base::UnixExtractFileName(AFiles->GetString(0)) :
       base::ExtractFileName(AFiles->GetString(0), true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
-    AFiles->GetCount(), Item);
+    AFiles ? AFiles->GetCount() : 0, Item);
 }
 
 UnicodeString UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
@@ -941,7 +938,7 @@ TLocalCustomCommand::TLocalCustomCommand()
 }
 
 TLocalCustomCommand::TLocalCustomCommand(
-    const TCustomCommandData & Data, UnicodeString RemotePath, UnicodeString LocalPath) :
+  const TCustomCommandData & Data, UnicodeString RemotePath, UnicodeString LocalPath) :
   TFileCustomCommand(Data, RemotePath)
 {
   FLocalPath = LocalPath;

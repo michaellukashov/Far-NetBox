@@ -10,6 +10,7 @@ static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
   return get_as<TNamedObject>(Item1)->Compare(get_as<TNamedObject>(Item2));
 }
+
 //--- TNamedObject ----------------------------------------------------------
 TNamedObject::TNamedObject(TObjectClassId Kind, UnicodeString AName) :
   TPersistent(Kind),

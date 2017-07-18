@@ -81,10 +81,7 @@ UnicodeString MungeIniName(UnicodeString Str)
   {
     return ReplaceStr(Str, L"=", L"%3D");
   }
-  else
-  {
-    return Str;
-  }
+  return Str;
 }
 
 UnicodeString UnMungeIniName(UnicodeString Str)
@@ -95,10 +92,7 @@ UnicodeString UnMungeIniName(UnicodeString Str)
   {
     return ReplaceStr(Str, L"%3D", L"=");
   }
-  else
-  {
-    return Str;
-  }
+  return Str;
 }
 
 THierarchicalStorage::THierarchicalStorage(UnicodeString AStorage) :
@@ -134,10 +128,7 @@ UnicodeString THierarchicalStorage::GetCurrentSubKeyMunged() const
   {
     return FKeyHistory->GetString(FKeyHistory->GetCount() - 1);
   }
-  else
-  {
-    return L"";
-  }
+  return L"";
 }
 
 UnicodeString THierarchicalStorage::GetCurrentSubKey() const
@@ -414,10 +405,7 @@ UnicodeString THierarchicalStorage::IncludeTrailingBackslash(UnicodeString S)
   {
     return S;
   }
-  else
-  {
-    return ::IncludeTrailingBackslash(S);
-  }
+  return ::IncludeTrailingBackslash(S);
 }
 
 UnicodeString THierarchicalStorage::ExcludeTrailingBackslash(UnicodeString S)
@@ -427,10 +415,7 @@ UnicodeString THierarchicalStorage::ExcludeTrailingBackslash(UnicodeString S)
   {
     return S;
   }
-  else
-  {
-    return ::ExcludeTrailingBackslash(S);
-  }
+  return ::ExcludeTrailingBackslash(S);
 }
 
 bool THierarchicalStorage::GetTemporary() const

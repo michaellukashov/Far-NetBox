@@ -176,10 +176,7 @@ intptr_t StrToInt(UnicodeString Value)
   {
     return static_cast<intptr_t>(Result);
   }
-  else
-  {
-    return 0;
-  }
+  return 0;
 }
 
 int64_t ToInt(UnicodeString Value)
@@ -189,10 +186,7 @@ int64_t ToInt(UnicodeString Value)
   {
     return Result;
   }
-  else
-  {
-    return 0;
-  }
+  return 0;
 }
 
 intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal)
@@ -202,10 +196,7 @@ intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal)
   {
     return static_cast<intptr_t>(Result);
   }
-  else
-  {
-    return DefVal;
-  }
+  return DefVal;
 }
 
 int64_t StrToInt64(UnicodeString Value)
@@ -220,10 +211,7 @@ int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal)
   {
     return Result;
   }
-  else
-  {
-    return DefVal;
-  }
+  return DefVal;
 }
 
 bool TryStrToInt(UnicodeString StrValue, int64_t & Value)
@@ -258,8 +246,7 @@ UnicodeString TrimLeft(UnicodeString Str)
     Pos++;
   if (Pos > 1)
     return Result.SubString(Pos, Len - Pos + 1);
-  else
-    return Result;
+  return Result;
 }
 
 UnicodeString TrimRight(UnicodeString Str)
@@ -738,10 +725,7 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
     va_end(Args);
     return Result;
   }
-  else
-  {
-    DEBUG_PRINTF("Unknown resource string id: %d\n", Id);
-  }
+  DEBUG_PRINTF("Unknown resource string id: %d\n", Id);
   return UnicodeString();
 }
 
@@ -918,15 +902,9 @@ UnicodeString TranslateExceptionMessage(Exception * E)
     {
       return dyn_cast<Exception>(E)->Message;
     }
-    else
-    {
-      return E->what();
-    }
+    return E->what();
   }
-  else
-  {
-    return UnicodeString();
-  }
+  return UnicodeString();
 }
 
 void AppendWChar(UnicodeString & Str, const wchar_t Ch)
@@ -1140,12 +1118,9 @@ UnicodeString ChangeFileExtension(UnicodeString APath, UnicodeString Ext, wchar_
       FileName.SubString(1, FileName.RPos(L'.') - 1) +
       Ext;
   }
-  else
-  {
-    return ExtractDirectory(APath, Delimiter) +
-      FileName +
-      Ext;
-  }
+  return ExtractDirectory(APath, Delimiter) +
+    FileName +
+    Ext;
 }
 
 UnicodeString ExcludeTrailingBackslash(UnicodeString Str)
@@ -1233,10 +1208,7 @@ UnicodeString HexToStr(UnicodeString Hex)
         Result.Clear();
         break;
       }
-      else
-      {
-        Result += static_cast<wchar_t>((P1 - 1) * 16 + P2 - 1);
-      }
+      Result += static_cast<wchar_t>((P1 - 1) * 16 + P2 - 1);
     }
   }
   return Result;
@@ -1317,51 +1289,48 @@ static bool DecodeDateFully(const TDateTime & DateTime,
     DOW = 0;
     return false;
   }
-  else
+  DOW = T % 7 + 1;
+  T--;
+  uintptr_t Y = 1;
+  while (T >= D400)
   {
-    DOW = T % 7 + 1;
-    T--;
-    uintptr_t Y = 1;
-    while (T >= D400)
-    {
-      T -= D400;
-      Y += 400;
-    }
-    uintptr_t D = 0;
-    uintptr_t I = 0;
-    DivMod(T, D100, I, D);
-    if (I == 4)
-    {
-      I--;
-      D += D100;
-    }
-    Y += I * 100;
-    DivMod(D, D4, I, D);
-    Y += I * 4;
-    DivMod(D, D1, I, D);
-    if (I == 4)
-    {
-      I--;
-      D += ToWord(D1);
-    }
-    Y += I;
-    Result = IsLeapYear(ToWord(Y));
-    const TDayTable * DayTable = &MonthDays[Result];
-    uintptr_t M = 1;
-    while (true)
-    {
-      I = (*DayTable)[M - 1];
-      if (D < I)
-      {
-        break;
-      }
-      D -= I;
-      M++;
-    }
-    Year = static_cast<uint16_t>(Y);
-    Month = static_cast<uint16_t>(M);
-    Day = static_cast<uint16_t>(D + 1);
+    T -= D400;
+    Y += 400;
   }
+  uintptr_t D = 0;
+  uintptr_t I = 0;
+  DivMod(T, D100, I, D);
+  if (I == 4)
+  {
+    I--;
+    D += D100;
+  }
+  Y += I * 100;
+  DivMod(D, D4, I, D);
+  Y += I * 4;
+  DivMod(D, D1, I, D);
+  if (I == 4)
+  {
+    I--;
+    D += ToWord(D1);
+  }
+  Y += I;
+  Result = IsLeapYear(ToWord(Y));
+  const TDayTable * DayTable = &MonthDays[Result];
+  uintptr_t M = 1;
+  while (true)
+  {
+    I = (*DayTable)[M - 1];
+    if (D < I)
+    {
+      break;
+    }
+    D -= I;
+    M++;
+  }
+  Year = static_cast<uint16_t>(Y);
+  Month = static_cast<uint16_t>(M);
+  Day = static_cast<uint16_t>(D + 1);
   return Result;
 }
 

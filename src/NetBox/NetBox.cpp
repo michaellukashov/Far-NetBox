@@ -14,7 +14,7 @@ extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
 {
 public:
-  inline TFarPluginGuard() :
+  TFarPluginGuard() :
     TGuard(FarPlugin->GetCriticalSection())
   {
   }

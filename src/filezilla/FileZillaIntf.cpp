@@ -375,9 +375,10 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         int RequestResult = 0;
         wchar_t FileName1[MAX_PATH];
         COverwriteRequestData * Data = (COverwriteRequestData *)lParam;
+        DebugAssert(Data != NULL);
+        if (Data)
         try
         {
-          DebugAssert(Data != NULL);
           wcsncpy(FileName1, Data->FileName1, _countof(FileName1));
           FileName1[_countof(FileName1) - 1] = L'\0';
           TRemoteFileTime RemoteTime;
@@ -409,9 +410,10 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       {
         int RequestResult;
         CVerifyCertRequestData * AData = (CVerifyCertRequestData *)lParam;
+        DebugAssert(AData != NULL);
+        if (AData)
         try
         {
-          DebugAssert(AData != NULL);
           TFtpsCertificateData Data;
           CopyContact(Data.Subject, AData->pCertData->subject);
           CopyContact(Data.Issuer, AData->pCertData->issuer);

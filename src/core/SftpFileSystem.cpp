@@ -22,63 +22,63 @@
 #endif // #if 0
 
 static const SSH_FX_TYPES
-SSH_FX_OK                                 = 0,
-SSH_FX_EOF                                = 1,
-SSH_FX_NO_SUCH_FILE                       = 2,
-SSH_FX_PERMISSION_DENIED                  = 3,
-SSH_FX_FAILURE                            = 4,
-SSH_FX_OP_UNSUPPORTED                     = 8;
+  SSH_FX_OK = 0,
+  SSH_FX_EOF = 1,
+  SSH_FX_NO_SUCH_FILE = 2,
+  SSH_FX_PERMISSION_DENIED = 3,
+  SSH_FX_FAILURE = 4,
+  SSH_FX_OP_UNSUPPORTED = 8;
 
 static const SSH_FXP_TYPES
-SSH_FXP_INIT               = 1,
-SSH_FXP_VERSION            = 2,
-SSH_FXP_OPEN               = 3,
-SSH_FXP_CLOSE              = 4,
-SSH_FXP_READ               = 5,
-SSH_FXP_WRITE              = 6,
-SSH_FXP_LSTAT              = 7,
-SSH_FXP_FSTAT              = 8,
-SSH_FXP_SETSTAT            = 9,
-SSH_FXP_FSETSTAT           = 10,
-SSH_FXP_OPENDIR            = 11,
-SSH_FXP_READDIR            = 12,
-SSH_FXP_REMOVE             = 13,
-SSH_FXP_MKDIR              = 14,
-SSH_FXP_RMDIR              = 15,
-SSH_FXP_REALPATH           = 16,
-SSH_FXP_STAT               = 17,
-SSH_FXP_RENAME             = 18,
-SSH_FXP_READLINK           = 19,
-SSH_FXP_SYMLINK            = 20,
-SSH_FXP_LINK               = 21,
-SSH_FXP_STATUS             = 101,
-SSH_FXP_HANDLE             = 102,
-SSH_FXP_DATA               = 103,
-SSH_FXP_NAME               = 104,
-SSH_FXP_ATTRS              = 105,
-SSH_FXP_EXTENDED           = 200,
-SSH_FXP_EXTENDED_REPLY     = 201;
+  SSH_FXP_INIT = 1,
+  SSH_FXP_VERSION = 2,
+  SSH_FXP_OPEN = 3,
+  SSH_FXP_CLOSE = 4,
+  SSH_FXP_READ = 5,
+  SSH_FXP_WRITE = 6,
+  SSH_FXP_LSTAT = 7,
+  SSH_FXP_FSTAT = 8,
+  SSH_FXP_SETSTAT = 9,
+  SSH_FXP_FSETSTAT = 10,
+  SSH_FXP_OPENDIR = 11,
+  SSH_FXP_READDIR = 12,
+  SSH_FXP_REMOVE = 13,
+  SSH_FXP_MKDIR = 14,
+  SSH_FXP_RMDIR = 15,
+  SSH_FXP_REALPATH = 16,
+  SSH_FXP_STAT = 17,
+  SSH_FXP_RENAME = 18,
+  SSH_FXP_READLINK = 19,
+  SSH_FXP_SYMLINK = 20,
+  SSH_FXP_LINK = 21,
+  SSH_FXP_STATUS = 101,
+  SSH_FXP_HANDLE = 102,
+  SSH_FXP_DATA = 103,
+  SSH_FXP_NAME = 104,
+  SSH_FXP_ATTRS = 105,
+  SSH_FXP_EXTENDED = 200,
+  SSH_FXP_EXTENDED_REPLY = 201;
 //#define SSH_FXP_ATTRS              105
 
 static const SSH_FILEXFER_ATTR_TYPES
-SSH_FILEXFER_ATTR_SIZE              = 0x00000001,
-SSH_FILEXFER_ATTR_UIDGID            = 0x00000002,
-SSH_FILEXFER_ATTR_PERMISSIONS       = 0x00000004,
-SSH_FILEXFER_ATTR_ACMODTIME         = 0x00000008,
-SSH_FILEXFER_ATTR_EXTENDED          = 0x80000000,
-SSH_FILEXFER_ATTR_ACCESSTIME        = 0x00000008,
-SSH_FILEXFER_ATTR_CREATETIME        = 0x00000010,
-SSH_FILEXFER_ATTR_MODIFYTIME        = 0x00000020,
-SSH_FILEXFER_ATTR_ACL               = 0x00000040,
-SSH_FILEXFER_ATTR_OWNERGROUP        = 0x00000080,
-SSH_FILEXFER_ATTR_SUBSECOND_TIMES   = 0x00000100,
-SSH_FILEXFER_ATTR_BITS              = 0x00000200,
-SSH_FILEXFER_ATTR_ALLOCATION_SIZE   = 0x00000400,
-SSH_FILEXFER_ATTR_TEXT_HINT         = 0x00000800,
-SSH_FILEXFER_ATTR_MIME_TYPE         = 0x00001000,
-SSH_FILEXFER_ATTR_LINK_COUNT        = 0x00002000,
-SSH_FILEXFER_ATTR_UNTRANSLATED_NAME = 0x00004000,
-SSH_FILEXFER_ATTR_CTIME             = 0x00008000;
+  SSH_FILEXFER_ATTR_SIZE = 0x00000001,
+  SSH_FILEXFER_ATTR_UIDGID = 0x00000002,
+  SSH_FILEXFER_ATTR_PERMISSIONS = 0x00000004,
+  SSH_FILEXFER_ATTR_ACMODTIME = 0x00000008,
+  SSH_FILEXFER_ATTR_EXTENDED = 0x80000000,
+  SSH_FILEXFER_ATTR_ACCESSTIME = 0x00000008,
+  SSH_FILEXFER_ATTR_CREATETIME = 0x00000010,
+  SSH_FILEXFER_ATTR_MODIFYTIME = 0x00000020,
+  SSH_FILEXFER_ATTR_ACL = 0x00000040,
+  SSH_FILEXFER_ATTR_OWNERGROUP = 0x00000080,
+  SSH_FILEXFER_ATTR_SUBSECOND_TIMES = 0x00000100,
+  SSH_FILEXFER_ATTR_BITS = 0x00000200,
+  SSH_FILEXFER_ATTR_ALLOCATION_SIZE = 0x00000400,
+  SSH_FILEXFER_ATTR_TEXT_HINT = 0x00000800,
+  SSH_FILEXFER_ATTR_MIME_TYPE = 0x00001000,
+  SSH_FILEXFER_ATTR_LINK_COUNT = 0x00002000,
+  SSH_FILEXFER_ATTR_UNTRANSLATED_NAME = 0x00004000,
+  SSH_FILEXFER_ATTR_CTIME = 0x00008000;
 //SSH_FILEXFER_ATTR_EXTENDED          = 0x80000000;
 
 // #define SSH_FILEXFER_ATTR_COMMON
@@ -89,59 +89,59 @@ SSH_FILEXFER_ATTR_COMMON =
    SSH_FILEXFER_ATTR_MODIFYTIME);
 
 static const SSH_FILEXFER_TYPES
-SSH_FILEXFER_TYPE_REGULAR          = 1,
-SSH_FILEXFER_TYPE_DIRECTORY        = 2,
-SSH_FILEXFER_TYPE_SYMLINK          = 3,
-SSH_FILEXFER_TYPE_SPECIAL          = 4,
-SSH_FILEXFER_TYPE_UNKNOWN          = 5;
+  SSH_FILEXFER_TYPE_REGULAR = 1,
+  SSH_FILEXFER_TYPE_DIRECTORY = 2,
+  SSH_FILEXFER_TYPE_SYMLINK = 3,
+  SSH_FILEXFER_TYPE_SPECIAL = 4,
+  SSH_FILEXFER_TYPE_UNKNOWN = 5;
 
 static const SSH_FXF_TYPES
-SSH_FXF_READ            = 0x00000001,
-SSH_FXF_WRITE           = 0x00000002,
-SSH_FXF_APPEND          = 0x00000004,
-SSH_FXF_CREAT           = 0x00000008,
-SSH_FXF_TRUNC           = 0x00000010,
-SSH_FXF_EXCL            = 0x00000020,
-SSH_FXF_TEXT            = 0x00000040,
+  SSH_FXF_READ = 0x00000001,
+  SSH_FXF_WRITE = 0x00000002,
+  SSH_FXF_APPEND = 0x00000004,
+  SSH_FXF_CREAT = 0x00000008,
+  SSH_FXF_TRUNC = 0x00000010,
+  SSH_FXF_EXCL = 0x00000020,
+  SSH_FXF_TEXT = 0x00000040,
 
-SSH_FXF_ACCESS_DISPOSITION        = 0x00000007,
-    SSH_FXF_CREATE_NEW            = 0x00000000,
-    SSH_FXF_CREATE_TRUNCATE       = 0x00000001,
-    SSH_FXF_OPEN_EXISTING         = 0x00000002,
-    SSH_FXF_OPEN_OR_CREATE        = 0x00000003,
-    SSH_FXF_TRUNCATE_EXISTING     = 0x00000004,
-SSH_FXF_ACCESS_APPEND_DATA        = 0x00000008,
-SSH_FXF_ACCESS_APPEND_DATA_ATOMIC = 0x00000010,
-SSH_FXF_ACCESS_TEXT_MODE          = 0x00000020;
+  SSH_FXF_ACCESS_DISPOSITION = 0x00000007,
+  SSH_FXF_CREATE_NEW = 0x00000000,
+  SSH_FXF_CREATE_TRUNCATE = 0x00000001,
+  SSH_FXF_OPEN_EXISTING = 0x00000002,
+  SSH_FXF_OPEN_OR_CREATE = 0x00000003,
+  SSH_FXF_TRUNCATE_EXISTING = 0x00000004,
+  SSH_FXF_ACCESS_APPEND_DATA = 0x00000008,
+  SSH_FXF_ACCESS_APPEND_DATA_ATOMIC = 0x00000010,
+  SSH_FXF_ACCESS_TEXT_MODE = 0x00000020;
 
 static const ACE4_TYPES
-ACE4_READ_DATA         = 0x00000001,
-ACE4_LIST_DIRECTORY    = 0x00000001,
-ACE4_WRITE_DATA        = 0x00000002,
-ACE4_ADD_FILE          = 0x00000002,
-ACE4_APPEND_DATA       = 0x00000004,
-ACE4_ADD_SUBDIRECTORY  = 0x00000004,
-ACE4_READ_NAMED_ATTRS  = 0x00000008,
-ACE4_WRITE_NAMED_ATTRS = 0x00000010,
-ACE4_EXECUTE           = 0x00000020,
-ACE4_DELETE_CHILD      = 0x00000040,
-ACE4_READ_ATTRIBUTES   = 0x00000080,
-ACE4_WRITE_ATTRIBUTES  = 0x00000100,
-ACE4_DELETE            = 0x00010000,
-ACE4_READ_ACL          = 0x00020000,
-ACE4_WRITE_ACL         = 0x00040000,
-ACE4_WRITE_OWNER       = 0x00080000,
-ACE4_SYNCHRONIZE       = 0x00100000;
+  ACE4_READ_DATA = 0x00000001,
+  ACE4_LIST_DIRECTORY = 0x00000001,
+  ACE4_WRITE_DATA = 0x00000002,
+  ACE4_ADD_FILE = 0x00000002,
+  ACE4_APPEND_DATA = 0x00000004,
+  ACE4_ADD_SUBDIRECTORY = 0x00000004,
+  ACE4_READ_NAMED_ATTRS = 0x00000008,
+  ACE4_WRITE_NAMED_ATTRS = 0x00000010,
+  ACE4_EXECUTE = 0x00000020,
+  ACE4_DELETE_CHILD = 0x00000040,
+  ACE4_READ_ATTRIBUTES = 0x00000080,
+  ACE4_WRITE_ATTRIBUTES = 0x00000100,
+  ACE4_DELETE = 0x00010000,
+  ACE4_READ_ACL = 0x00020000,
+  ACE4_WRITE_ACL = 0x00040000,
+  ACE4_WRITE_OWNER = 0x00080000,
+  ACE4_SYNCHRONIZE = 0x00100000;
 
-static const uint32_t SSH_FILEXFER_ATTR_FLAGS_HIDDEN           = 0x00000004;
+static const uint32_t SSH_FILEXFER_ATTR_FLAGS_HIDDEN = 0x00000004;
 
 typedef uint8_t SSH_FXP_REALPATH_TYPES;
 static const SSH_FXP_REALPATH_TYPES
-SSH_FXP_REALPATH_NO_CHECK    = 0x00000001,
-SSH_FXP_REALPATH_STAT_IF     = 0x00000002,
-SSH_FXP_REALPATH_STAT_ALWAYS = 0x00000003;
+  SSH_FXP_REALPATH_NO_CHECK = 0x00000001,
+  SSH_FXP_REALPATH_STAT_IF = 0x00000002,
+  SSH_FXP_REALPATH_STAT_ALWAYS = 0x00000003;
 
-static const intptr_t SFTP_MAX_PACKET_LEN   = 1000 * 1024;
+static const intptr_t SFTP_MAX_PACKET_LEN = 1000 * 1024;
 
 #define SFTP_EXT_OWNER_GROUP "owner-group-query@generic-extensions"
 #define SFTP_EXT_OWNER_GROUP_REPLY "owner-group-query-reply@generic-extensions"
@@ -256,6 +256,7 @@ public:
   {
     Init(codePage);
   }
+
   explicit TSFTPPacket(TObjectClassId Kind, uintptr_t codePage) :
     TObject(Kind)
   {
@@ -380,17 +381,17 @@ public:
     Add(Value.c_str(), Value.Length());
   }
 
-  inline void AddUtfString(const UTF8String & Value)
+  void AddUtfString(const UTF8String & Value)
   {
     AddString(Value);
   }
 
-  inline void AddUtfString(UnicodeString Value)
+  void AddUtfString(UnicodeString Value)
   {
     AddUtfString(UTF8String(Value));
   }
 
-  inline void AddString(UnicodeString Value, TAutoSwitch /*Utf*/)
+  void AddString(UnicodeString Value, TAutoSwitch /*Utf*/)
   {
     AddStringW(Value);
 #if 0
@@ -407,7 +408,7 @@ public:
   }
 
   // now purposeless alias to AddString
-  inline void AddPathString(UnicodeString Value, TAutoSwitch Utf)
+  void AddPathString(UnicodeString Value, TAutoSwitch Utf)
   {
     AddString(Value, Utf);
   }
@@ -517,8 +518,12 @@ public:
   {
     enum TValid
     {
-      valNone = 0, valRights = 0x01, valOwner = 0x02, valGroup = 0x04,
-      valMTime = 0x08, valATime = 0x10,
+      valNone = 0,
+      valRights = 0x01,
+      valOwner = 0x02,
+      valGroup = 0x04,
+      valMTime = 0x08,
+      valATime = 0x10,
     } Valid = valNone;
     uint16_t RightsNum = 0;
     TRemoteToken Owner;
@@ -545,7 +550,7 @@ public:
         Valid = static_cast<TValid>(Valid | valRights);
         TRights Rights = TRights(BaseRights);
         Rights |= Properties->Rights.GetNumberSet();
-        Rights &= static_cast<uint16_t >(~Properties->Rights.GetNumberUnset());
+        Rights &= static_cast<uint16_t>(~Properties->Rights.GetNumberUnset());
         if (IsDirectory && Properties->AddXToDirectories)
         {
           Rights.AddExecute();
@@ -659,22 +664,22 @@ public:
   // as file handles), and SFTP spec does not say explicitly that they
   // are in UTF. For most of them it actually does not matter as
   // the content should be pure ASCII (e.g. extension names, etc.)
-  inline UnicodeString GetAnsiString() const
+  UnicodeString GetAnsiString() const
   {
     return UnicodeString(AnsiToString(GetRawByteString().c_str()));
   }
 
-  inline RawByteString GetFileHandle() const
+  RawByteString GetFileHandle() const
   {
     return GetRawByteString();
   }
 
-  inline UnicodeString GetStringW() const
+  UnicodeString GetStringW() const
   {
     return ::MB2W(GetRawByteString().c_str(), static_cast<UINT>(FCodePage));
   }
 
-  inline UnicodeString GetString(TAutoSwitch /*Utf*/) const
+  UnicodeString GetString(TAutoSwitch /*Utf*/) const
   {
     return GetStringW();
 #if 0
@@ -690,7 +695,7 @@ public:
   }
 
   // now purposeless alias to GetString(bool)
-  inline UnicodeString GetPathString(TAutoSwitch Utf) const
+  UnicodeString GetPathString(TAutoSwitch Utf) const
   {
     return GetString(Utf);
   }
@@ -1056,11 +1061,8 @@ public:
     {
       return static_cast<uint8_t>(FMessageNumber & 0xFF);
     }
-    else
-    {
-      DebugAssert(GetType() == SSH_FXP_VERSION);
-      return SSH_FXP_INIT;
-    }
+    DebugAssert(GetType() == SSH_FXP_VERSION);
+    return SSH_FXP_INIT;
   }
 
   void Add(const void * AData, uintptr_t ALength)
@@ -1107,7 +1109,7 @@ public:
 
   UnicodeString GetTypeName() const
   {
-    #define TYPE_CASE(TYPE) case TYPE: return MB_TEXT(#TYPE)
+#define TYPE_CASE(TYPE) case TYPE: return MB_TEXT(#TYPE)
     switch (GetType())
     {
       TYPE_CASE(SSH_FXP_INIT);
@@ -1138,8 +1140,8 @@ public:
       TYPE_CASE(SSH_FXP_ATTRS);
       TYPE_CASE(SSH_FXP_EXTENDED);
       TYPE_CASE(SSH_FXP_EXTENDED_REPLY);
-      default:
-        return FORMAT(L"Unknown message (%d)", static_cast<int>(GetType()));
+    default:
+      return FORMAT(L"Unknown message (%d)", static_cast<int>(GetType()));
     }
   }
 
@@ -1162,7 +1164,7 @@ public:
   }
 
 private:
-  inline void Need(uintptr_t Size) const
+  void Need(uintptr_t Size) const
   {
     if (Size > GetRemainingLength())
     {
@@ -1178,7 +1180,7 @@ private:
     return Result;
   }
 
-  inline UnicodeString GetUtfString(TAutoSwitch & Utf) const
+  UnicodeString GetUtfString(TAutoSwitch & Utf) const
   {
     DebugAssert(Utf != asOff);
     UnicodeString Result;
@@ -1436,7 +1438,10 @@ public:
     FMissedRequests(0)
   {
   }
-  virtual ~TSFTPFixedLenQueue() {}
+
+  virtual ~TSFTPFixedLenQueue()
+  {
+  }
 
   bool Init(intptr_t QueueLen)
   {
@@ -1496,8 +1501,8 @@ protected:
     try
     {
       while (// optimization only as we call ReceivePacket with TryOnly anyway
-             FFileSystem->PeekPacket() &&
-             ReceivePacketAsynchronously())
+        FFileSystem->PeekPacket() &&
+        ReceivePacketAsynchronously())
       {
         // loop
       }
@@ -1541,7 +1546,10 @@ public:
     FTransferred(0)
   {
   }
-  virtual ~TSFTPDownloadQueue() {}
+
+  virtual ~TSFTPDownloadQueue()
+  {
+  }
 
   bool Init(intptr_t QueueLen, const RawByteString & AHandle, int64_t ATransferred,
     TFileOperationProgressType * AOperationProgress)
@@ -1734,7 +1742,7 @@ protected:
     return Result;
   }
 
-  inline intptr_t GetBlockSize() const
+  intptr_t GetBlockSize() const
   {
     return FFileSystem->UploadBlockSize(FHandle, OperationProgress);
   }
@@ -1896,6 +1904,8 @@ protected:
       TRemoteFile * File = FFileList->GetAs<TRemoteFile>(FIndex);
       DebugAssert(File != nullptr);
       ++FIndex;
+      if (!File)
+        continue;
 
       Result = !File->GetIsDirectory();
       if (Result)
@@ -1956,6 +1966,7 @@ public:
 private:
   TSFTPFileSystem * FFileSystem;
 };
+
 //===========================================================================
 #if 0
 // moved to FileSystems.h
@@ -2078,31 +2089,31 @@ void TSFTPFileSystem::CollectUsage()
   UnicodeString VersionCounter;
   switch (FVersion)
   {
-    case 0:
-      VersionCounter = L"OpenedSessionsSFTP0";
-      break;
-    case 1:
-      VersionCounter = L"OpenedSessionsSFTP1";
-      break;
-    case 2:
-      VersionCounter = L"OpenedSessionsSFTP2";
-      break;
-    case 3:
-      VersionCounter = L"OpenedSessionsSFTP3";
-      break;
-    case 4:
-      VersionCounter = L"OpenedSessionsSFTP4";
-      break;
-    case 5:
-      VersionCounter = L"OpenedSessionsSFTP5";
-      break;
-    case 6:
-      VersionCounter = L"OpenedSessionsSFTP6";
-      break;
-    default:
-      DebugFail();
+  case 0:
+    VersionCounter = L"OpenedSessionsSFTP0";
+    break;
+  case 1:
+    VersionCounter = L"OpenedSessionsSFTP1";
+    break;
+  case 2:
+    VersionCounter = L"OpenedSessionsSFTP2";
+    break;
+  case 3:
+    VersionCounter = L"OpenedSessionsSFTP3";
+    break;
+  case 4:
+    VersionCounter = L"OpenedSessionsSFTP4";
+    break;
+  case 5:
+    VersionCounter = L"OpenedSessionsSFTP5";
+    break;
+  case 6:
+    VersionCounter = L"OpenedSessionsSFTP6";
+    break;
+  default:
+    DebugFail();
   }
-//  FTerminal->Configuration->Usage->Inc(VersionCounter);
+  //  FTerminal->Configuration->Usage->Inc(VersionCounter);
 }
 
 const TSessionInfo & TSFTPFileSystem::GetSessionInfo() const
@@ -2621,14 +2632,11 @@ SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     FTerminal->TerminalError(nullptr, Error, HelpKeyword);
     return 0;
   }
-  else
+  if (!FNotLoggedPackets || Code)
   {
-    if (!FNotLoggedPackets || Code)
-    {
-      FTerminal->GetLog()->Add(llOutput, FORMAT(L"Status code: %d", static_cast<int>(Code)));
-    }
-    return Code;
+    FTerminal->GetLog()->Add(llOutput, FORMAT(L"Status code: %d", static_cast<int>(Code)));
   }
+  return Code;
 }
 
 void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
@@ -2960,10 +2968,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(UnicodeString APath)
     {
       throw ExtException(&E, FMTLOAD(SFTP_REALPATH_ERROR, APath.c_str()));
     }
-    else
-    {
-      throw;
-    }
+    throw;
   }
   return UnicodeString();
 }
@@ -3005,10 +3010,7 @@ UnicodeString TSFTPFileSystem::LocalCanonify(UnicodeString APath) const
   {
     return APath;
   }
-  else
-  {
-    return base::AbsolutePath(FCurrentDirectory, APath);
-  }
+  return base::AbsolutePath(FCurrentDirectory, APath);
 }
 
 UnicodeString TSFTPFileSystem::Canonify(UnicodeString APath)
@@ -3080,10 +3082,7 @@ UnicodeString TSFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool Local)
   {
     return LocalCanonify(APath);
   }
-  else
-  {
-    return GetRealPath(APath, RemoteGetCurrentDirectory());
-  }
+  return GetRealPath(APath, RemoteGetCurrentDirectory());
 }
 
 UnicodeString TSFTPFileSystem::GetHomeDirectory()
@@ -3233,14 +3232,14 @@ void TSFTPFileSystem::DoStartup()
             L"Server support information (%s):\n"
             L"  Attribute mask: %x, Attribute bits: %x, Open flags: %x\n"
             L"  Access mask: %x, Open block vector: %x, Block vector: %x, Max read size: %d\n",
-             ExtensionName.c_str(),
-             int(FSupport->AttributeMask),
-             int(FSupport->AttributeBits),
-             int(FSupport->OpenFlags),
-             int(FSupport->AccessMask),
-             int(FSupport->OpenBlockVector),
-             int(FSupport->BlockVector),
-             int(FSupport->MaxReadSize)));
+            ExtensionName.c_str(),
+            int(FSupport->AttributeMask),
+            int(FSupport->AttributeBits),
+            int(FSupport->OpenFlags),
+            int(FSupport->AccessMask),
+            int(FSupport->OpenBlockVector),
+            int(FSupport->BlockVector),
+            int(FSupport->MaxReadSize)));
           FTerminal->LogEvent(FORMAT(L"  Attribute extensions (%d)\n", FSupport->AttribExtensions->GetCount()));
           for (intptr_t Index = 0; Index < FSupport->AttribExtensions->GetCount(); ++Index)
           {
@@ -3280,13 +3279,10 @@ void TSFTPFileSystem::DoStartup()
             {
               break;
             }
-            else
-            {
-              uint8_t Drive = RootsPacket.GetByte();
-              uint8_t MaybeType = RootsPacket.GetByte();
-              FTerminal->LogEvent(FORMAT(L"  %c: (type %d)", static_cast<char>(Drive), static_cast<int>(MaybeType)));
-              FFixedPaths->Add(FORMAT(L"%c:", static_cast<char>(Drive)));
-            }
+            uint8_t Drive = RootsPacket.GetByte();
+            uint8_t MaybeType = RootsPacket.GetByte();
+            FTerminal->LogEvent(FORMAT(L"  %c: (type %d)", static_cast<char>(Drive), static_cast<int>(MaybeType)));
+            FFixedPaths->Add(FORMAT(L"%c:", static_cast<char>(Drive)));
           }
         }
         catch (Exception & E)
@@ -3451,10 +3447,7 @@ char * TSFTPFileSystem::GetEOL() const
     DebugAssert(!FEOL.IsEmpty());
     return const_cast<char *>(FEOL.c_str());
   }
-  else
-  {
-    return EOLToStr(GetSessionData()->GetEOLType());
-  }
+  return EOLToStr(GetSessionData()->GetEOLType());
 }
 
 void TSFTPFileSystem::LookupUsersGroups()
@@ -3737,11 +3730,8 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           {
             throw;
           }
-          else
-          {
-            File = nullptr;
-            Failure = true;
-          }
+          File = nullptr;
+          Failure = true;
         }
       }
 
@@ -3788,6 +3778,8 @@ void TSFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   TRemoteFile *& AFile)
 {
   DebugAssert(SymlinkFile && SymlinkFile->GetIsSymLink());
+  if (!SymlinkFile)
+    return;
   DebugAssert(FVersion >= 3); // symlinks are supported with SFTP version 3 and later
 
   // need to use full filename when resolving links within subdirectory
@@ -4085,6 +4077,8 @@ void TSFTPFileSystem::ChangeFileProperties(UnicodeString AFileName,
   TChmodSessionAction & Action)
 {
   DebugAssert(AProperties != nullptr);
+  if (!AProperties)
+    return;
 
   TRemoteFile * File = nullptr;
 
@@ -4112,24 +4106,27 @@ void TSFTPFileSystem::ChangeFileProperties(UnicodeString AFileName,
     // SFTP can change owner and group at the same time only, not individually.
     // Fortunately we know current owner/group, so if only one is present,
     // we can supplement the other.
-    TRemoteProperties Properties(*AProperties);
-    if (Properties.Valid.Contains(vpGroup) &&
+    if (AProperties)
+    {
+      TRemoteProperties Properties(*AProperties);
+      if (Properties.Valid.Contains(vpGroup) &&
         !Properties.Valid.Contains(vpOwner))
-    {
-      Properties.Owner = File->GetFileOwner();
-      Properties.Valid << vpOwner;
-    }
-    else if (Properties.Valid.Contains(vpOwner) &&
-             !Properties.Valid.Contains(vpGroup))
-    {
-      Properties.Group = File->GetFileGroup();
-      Properties.Valid << vpGroup;
-    }
+      {
+        Properties.Owner = File->GetFileOwner();
+        Properties.Valid << vpOwner;
+      }
+      else if (Properties.Valid.Contains(vpOwner) &&
+        !Properties.Valid.Contains(vpGroup))
+      {
+        Properties.Group = File->GetFileGroup();
+        Properties.Valid << vpGroup;
+      }
 
-    TSFTPPacket Packet(SSH_FXP_SETSTAT, FCodePage);
-    Packet.AddPathString(RealFileName, FUtfStrings);
-    Packet.AddProperties(&Properties, *File->GetRights(), File->GetIsDirectory(), FVersion, FUtfStrings, &Action);
-    SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+      TSFTPPacket Packet(SSH_FXP_SETSTAT, FCodePage);
+      Packet.AddPathString(RealFileName, FUtfStrings);
+      Packet.AddProperties(&Properties, *File->GetRights(), File->GetIsDirectory(), FVersion, FUtfStrings, &Action);
+      SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+    }
   }
   __finally
   {
@@ -4170,7 +4167,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
         {
           Next = Queue.ReceivePacket(&Packet, File);
           DebugAssert((Packet.GetType() == SSH_FXP_ATTRS) || (Packet.GetType() == SSH_FXP_STATUS));
-          if (Packet.GetType() == SSH_FXP_ATTRS)
+          if ((Packet.GetType() == SSH_FXP_ATTRS) && File)
           {
             DebugAssert(File != nullptr);
             Progress.SetFile(File->GetFileName());
@@ -4527,7 +4524,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
   UnicodeString FullTargetDir = base::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
-  while (Index < AFilesToCopy->GetCount() && !OperationProgress->GetCancel())
+  while (AFilesToCopy && (Index < AFilesToCopy->GetCount()) && !OperationProgress->GetCancel())
   {
     bool Success = false;
     UnicodeString FileName = AFilesToCopy->GetString(Index);
@@ -4674,25 +4671,25 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
 
         switch (Answer)
         {
-          case qaYes:
-            OverwriteMode = omAppend;
-            break;
+        case qaYes:
+          OverwriteMode = omAppend;
+          break;
 
-          case qaNo:
-            OverwriteMode = omResume;
-            break;
+        case qaNo:
+          OverwriteMode = omResume;
+          break;
 
-          case qaNoToAll:
-            OverwriteMode = omResume;
-            OperationProgress->SetBatchOverwrite(boAlternateResume);
-            break;
+        case qaNoToAll:
+          OverwriteMode = omResume;
+          OperationProgress->SetBatchOverwrite(boAlternateResume);
+          break;
 
         default:
           DebugFail(); //fallthru
-          case qaCancel:
-            OperationProgress->SetCancelAtLeast(csCancel);
-            Abort();
-            break;
+        case qaCancel:
+          OperationProgress->SetCancelAtLeast(csCancel);
+          Abort();
+          break;
         }
       }
     }
@@ -4721,13 +4718,13 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
     OverwriteMode = omOverwrite;
     switch (Answer)
     {
-      case qaCancel:
-        OperationProgress->SetCancelAtLeast(csCancel);
-        Abort();
-        break;
+    case qaCancel:
+      OperationProgress->SetCancelAtLeast(csCancel);
+      Abort();
+      break;
 
-      case qaNo:
-        ThrowSkipFileNull();
+    case qaNo:
+      ThrowSkipFileNull();
     }
   }
 }
@@ -4745,7 +4742,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(UnicodeString DestFileName,
       TQueryParams Params(qpAllowContinueOnError, HELP_PARTIAL_BIGGER_THAN_SOURCE);
       Answer = FTerminal->QueryUser(
         FMTLOAD(PARTIAL_BIGGER_THAN_SOURCE, DestFileName.c_str()), nullptr,
-          qaOK | qaAbort, &Params, qtWarning);
+        qaOK | qaAbort, &Params, qtWarning);
     }
 
     if (Answer == qaAbort)
@@ -4771,21 +4768,21 @@ bool TSFTPFileSystem::SFTPConfirmResume(UnicodeString DestFileName,
 
     switch (Answer)
     {
-      case qaNeverAskAgain:
-        FTerminal->GetConfiguration()->SetConfirmResume(false);
-        //FALLTHROU
-      case qaYes:
-        ResumeTransfer = true;
-        break;
+    case qaNeverAskAgain:
+      FTerminal->GetConfiguration()->SetConfirmResume(false);
+      //FALLTHROU
+    case qaYes:
+      ResumeTransfer = true;
+      break;
 
-      case qaNo:
-        ResumeTransfer = false;
-        break;
+    case qaNo:
+      ResumeTransfer = false;
+      break;
 
-      case qaCancel:
-        OperationProgress->SetCancelAtLeast(csCancel);
-        Abort();
-        break;
+    case qaCancel:
+      OperationProgress->SetCancelAtLeast(csCancel);
+      Abort();
+      break;
     }
   }
   else
@@ -4930,7 +4927,7 @@ void TSFTPFileSystem::SFTPSource(UnicodeString AFileName,
         CopyParam->UseAsciiTransfer(BaseFileName, osLocal, MaskParams));
       FTerminal->LogEvent(
         UnicodeString((OperationProgress->GetAsciiTransfer() ? "Ascii" : "Binary")) +
-          " transfer mode selected.");
+        " transfer mode selected.");
 
       // should we check for interrupted transfer?
       bool ResumeAllowed = !OperationProgress->GetAsciiTransfer() &&
@@ -5521,10 +5518,7 @@ intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           {
             throw;
           }
-          else
-          {
-            ThrowOriginal = true;
-          }
+          ThrowOriginal = true;
         }
 
         if (ThrowOriginal)
@@ -5584,10 +5578,7 @@ intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
             {
               throw;
             }
-            else
-            {
-              ThrowOriginal = true;
-            }
+            ThrowOriginal = true;
           }
 
           if (ThrowOriginal)
@@ -5795,7 +5786,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
 
   UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
-  while (Index < AFilesToCopy->GetCount() && !OperationProgress->GetCancel())
+  while (AFilesToCopy && (Index < AFilesToCopy->GetCount()) && !OperationProgress->GetCancel())
   {
     bool Success = false;
     UnicodeString FileName = AFilesToCopy->GetString(Index);
@@ -5878,7 +5869,7 @@ void TSFTPFileSystem::SFTPSinkRobust(UnicodeString AFileName,
       OperationProgress->RollbackTransfer();
       Action.Restart();
       DebugAssert(AFile != nullptr);
-      if (!AFile->GetIsDirectory())
+      if (AFile && !AFile->GetIsDirectory())
       {
         // prevent overwrite and resume confirmations
         Params |= cpNoConfirmation;
@@ -5894,7 +5885,6 @@ void TSFTPFileSystem::SFTPSink(UnicodeString AFileName,
   TFileOperationProgressType * OperationProgress, uintptr_t Flags,
   TDownloadSessionAction & Action, bool & ChildError)
 {
-
   Action.SetFileName(AFileName);
 
   UnicodeString OnlyFileName = base::UnixExtractFileName(AFileName);
@@ -6483,7 +6473,6 @@ void TSFTPFileSystem::SFTPSink(UnicodeString AFileName,
           THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFullName), LocalFileAttrs | NewAttrs));
         });
       }
-
     }
     __finally
     {

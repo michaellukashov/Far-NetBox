@@ -97,28 +97,27 @@ static std::unique_ptr<TCriticalSection> DebugSection(TraceInitPtr(new TCritical
 static rde::set<TWebDAVFileSystem *> FileSystems;
 #endif // #if 0
 
-extern "C"
-{
+extern "C" {
 
 void ne_debug(void * Context, int Channel, const char * Format, ...)
 {
   bool DoLog;
 
   if (FLAGSET(Channel, NE_DBG_SOCKET) ||
-      FLAGSET(Channel, NE_DBG_HTTP) ||
-      FLAGSET(Channel, NE_DBG_HTTPAUTH) ||
-      FLAGSET(Channel, NE_DBG_SSL))
+    FLAGSET(Channel, NE_DBG_HTTP) ||
+    FLAGSET(Channel, NE_DBG_HTTPAUTH) ||
+    FLAGSET(Channel, NE_DBG_SSL))
   {
     DoLog = true;
   }
   else if (FLAGSET(Channel, NE_DBG_XML) ||
-           FLAGSET(Channel, NE_DBG_WINSCP_HTTP_DETAIL))
+    FLAGSET(Channel, NE_DBG_WINSCP_HTTP_DETAIL))
   {
     DoLog = (GetConfiguration()->GetActualLogProtocol() >= 1);
   }
   else if (FLAGSET(Channel, NE_DBG_LOCKS) ||
-           FLAGSET(Channel, NE_DBG_XMLPARSE) ||
-           FLAGSET(Channel, NE_DBG_HTTPBODY))
+    FLAGSET(Channel, NE_DBG_XMLPARSE) ||
+    FLAGSET(Channel, NE_DBG_HTTPBODY))
   {
     DoLog = (GetConfiguration()->GetActualLogProtocol() >= 2);
   }
@@ -128,9 +127,9 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
     DebugFail();
   }
 
-  #ifndef _DEBUG
+#ifndef _DEBUG
   if (DoLog)
-  #endif
+#endif
   {
     va_list Args;
     va_start(Args, Format);
@@ -158,10 +157,10 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
 
         TODO("implement");
 #if 0
-        if (FileSystems.size() == 1)
-        {
-          FileSystem = *FileSystems.begin();
-        }
+      if (FileSystems.size() == 1)
+      {
+        FileSystem = *FileSystems.begin();
+      }
 #endif // #if 0
       }
 
@@ -302,7 +301,6 @@ TWebDAVFileSystem::~TWebDAVFileSystem()
 
 void TWebDAVFileSystem::Open()
 {
-
   if (!NeonInitialized)
   {
     throw Exception(LoadStr(NEON_INIT_FAILED));
@@ -494,7 +492,7 @@ void TWebDAVFileSystem::NeonAuxRequestInit(ne_session * Session, ne_request * /*
   TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
   FileSystem->InitSession(Session);
 
-  ne_uri uri = {0};
+  ne_uri uri = {nullptr};
   ne_fill_server_uri(Session, &uri);
   bool Tls = IsTlsUri(uri);
   ne_uri_free(&uri);
@@ -835,8 +833,7 @@ UnicodeString TWebDAVFileSystem::DirectoryPath(UnicodeString APath) const
   {
     return base::UnixIncludeTrailingBackslash(APath);
   }
-  else
-    return APath;
+  return APath;
 }
 
 UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile * AFile) const
@@ -1409,12 +1406,14 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   TOnceDoneOperation & OnceDoneOperation)
 {
   DebugAssert((AFilesToCopy != nullptr) && (OperationProgress != nullptr));
+  if (!AFilesToCopy)
+    return;
 
   Params &= ~cpAppend;
   UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = base::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
-  while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->GetCancel())
+  while ((Index < AFilesToCopy->GetCount()) && OperationProgress && !OperationProgress->GetCancel())
   {
     TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
     bool Success = false;
@@ -1811,11 +1810,11 @@ void TWebDAVFileSystem::DirectorySource(UnicodeString DirectoryName,
           }
         }
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
-      [&]()
-      {
-        FindOK = FindNextChecked(SearchRec) == 0;
-      });
+        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
+        [&]()
+        {
+          FindOK = FindNextChecked(SearchRec) == 0;
+        });
       }
     }
     __finally
@@ -1926,7 +1925,7 @@ void TWebDAVFileSystem::SinkRobust(UnicodeString AFileName,
       OperationProgress->RollbackTransfer();
       Action.Restart();
       DebugAssert(AFile != nullptr);
-      if (!AFile->GetIsDirectory())
+      if (AFile && !AFile->GetIsDirectory())
       {
         // prevent overwrite confirmations
         Params |= cpNoConfirmation;
@@ -2835,7 +2834,7 @@ void TWebDAVFileSystem::InitSslSessionImpl(ssl_st * Ssl) const
 {
   // See also CAsyncSslSocketLayer::InitSSLConnection
   TSessionData * Data = FTerminal->GetSessionData();
-  #define MASK_TLS_VERSION(VERSION, FLAG) ((Data->GetMinTlsVersion() > VERSION) || (Data->GetMaxTlsVersion() < VERSION) ? FLAG : 0)
+#define MASK_TLS_VERSION(VERSION, FLAG) ((Data->GetMinTlsVersion() > VERSION) || (Data->GetMaxTlsVersion() < VERSION) ? FLAG : 0)
   int Options =
     MASK_TLS_VERSION(ssl2, SSL_OP_NO_SSLv2) |
     MASK_TLS_VERSION(ssl3, SSL_OP_NO_SSLv3) |

@@ -30,7 +30,7 @@ TGlobals * GetGlobals()
 
 extern "C"
 {
-  FILE* __iob_func = nullptr;
+  FILE * __iob_func = nullptr;
 }
 #endif
 
@@ -151,10 +151,7 @@ void * TList::Extract(void * Item)
   {
     return Item;
   }
-  else
-  {
-    return nullptr;
-  }
+  return nullptr;
 }
 
 intptr_t TList::Remove(void * Item)
@@ -450,13 +447,10 @@ static void tokenize(UnicodeString str, rde::vector<UnicodeString> & tokens,
       }
       break;
     }
-    else
+    if (pos != lastPos || !trimEmpty)
     {
-      if (pos != lastPos || !trimEmpty)
-      {
-        tokens.push_back(
-          UnicodeString(str.data() + lastPos, pos - lastPos));
-      }
+      tokens.push_back(
+        UnicodeString(str.data() + lastPos, pos - lastPos));
     }
 
     lastPos = pos + 1;
@@ -1121,12 +1115,9 @@ intptr_t TStringList::CompareStrings(UnicodeString S1, UnicodeString S2) const
 {
   if (GetCaseSensitive())
   {
-    return ::AnsiCompareStr(S1, S2);
+    return AnsiCompareStr(S1, S2);
   }
-  else
-  {
-    return ::AnsiCompareText(S1, S2);
-  }
+  return AnsiCompareText(S1, S2);
 }
 
 TDateTime::TDateTime(uint16_t Hour,
@@ -1307,7 +1298,7 @@ class EStreamError : public ExtException
 {
 public:
   explicit EStreamError(UnicodeString Msg) :
-    ExtException(OBJECT_CLASS_EStreamError, (Exception * )nullptr, Msg)
+    ExtException(OBJECT_CLASS_EStreamError, (Exception *)nullptr, Msg)
   {
   }
 };
@@ -1594,7 +1585,7 @@ int64_t TMemoryStream::Write(const void * Buffer, int64_t Count)
 
 bool IsRelative(UnicodeString Value)
 {
-  return  !(!Value.IsEmpty() && (Value[1] == L'\\'));
+  return !(!Value.IsEmpty() && (Value[1] == L'\\'));
 }
 
 TRegDataType DataTypeToRegData(DWORD Value)
@@ -1987,7 +1978,7 @@ void TRegistry::PutData(UnicodeString Name, const void * Buffer,
   if (::RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
                     reinterpret_cast<const BYTE *>(Buffer), static_cast<DWORD>(BufSize)) != ERROR_SUCCESS)
   {
-    throw Exception(L"RegSetValueEx failed");    // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
+    throw Exception(L"RegSetValueEx failed"); // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
   }
 }
 
@@ -2062,8 +2053,7 @@ HKEY TRegistry::GetKey(UnicodeString Key) const
   HKEY Result = nullptr;
   if (::RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result) == ERROR_SUCCESS)
     return Result;
-  else
-    return nullptr;
+  return nullptr;
 }
 
 bool TRegistry::GetKeyInfo(TRegKeyInfo & Value) const

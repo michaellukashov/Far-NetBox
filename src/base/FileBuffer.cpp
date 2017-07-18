@@ -133,7 +133,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
     for (intptr_t Index = 0; Index < GetSize(); ++Index)
     {
       // EOL already in destination format, make sure to pass it unmodified
-      if ((Index < GetSize() - 1) && (*Ptr == Dest[0]) && (*(Ptr+1) == Dest[1]))
+      if ((Index < GetSize() - 1) && (*Ptr == Dest[0]) && (*(Ptr + 1) == Dest[1]))
       {
         ++Index;
         Ptr++;
