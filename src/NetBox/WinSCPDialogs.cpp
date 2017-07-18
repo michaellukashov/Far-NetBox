@@ -8735,9 +8735,12 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
   DirectoryEdit->SetText(Directory);
   SaveSettingsCheck->SetChecked(SaveSettings);
   DebugAssert(Properties != nullptr);
-  SetRightsCheck->SetChecked(Properties->Valid.Contains(vpRights));
-  // expect sensible value even if rights are not set valid
-  RightsContainer->SetRights(Properties->Rights);
+  if (Properties)
+  {
+    SetRightsCheck->SetChecked(Properties->Valid.Contains(vpRights));
+    // expect sensible value even if rights are not set valid
+    RightsContainer->SetRights(Properties->Rights);
+  }
 
   bool Result = (Dialog->ShowModal() == brOK);
 
@@ -8745,14 +8748,17 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
   {
     Directory = DirectoryEdit->GetText();
     SaveSettings = SaveSettingsCheck->GetChecked();
-    if (SetRightsCheck->GetChecked())
+    if (Properties)
     {
-      Properties->Valid = Properties->Valid << vpRights;
-      Properties->Rights = RightsContainer->GetRights();
-    }
-    else
-    {
-      Properties->Valid = Properties->Valid >> vpRights;
+      if (SetRightsCheck->GetChecked())
+      {
+        Properties->Valid = Properties->Valid << vpRights;
+        Properties->Rights = RightsContainer->GetRights();
+      }
+      else
+      {
+        Properties->Valid = Properties->Valid >> vpRights;
+      }
     }
   }
   return Result;
