@@ -500,6 +500,8 @@ void TCopyParamType::DoGetInfoStr(
 void TCopyParamType::Assign(const TCopyParamType * Source)
 {
   DebugAssert(Source != nullptr);
+  if (!Source)
+    return;
 #define COPY(Prop) Set ## Prop(Source->Get ## Prop())
   COPY(FileNameCase);
   COPY(PreserveReadOnly);
