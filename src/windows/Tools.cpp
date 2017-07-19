@@ -1076,13 +1076,13 @@ static void AcquireShutDownPrivileges()
   // Get the LUID for the shutdown privilege.
   // For hibernate/suspend, you need the same:
   // https://stackoverflow.com/q/959589/850848
-  Win32Check(FALSE != ::LookupPrivilegeValue(NULL, SE_SHUTDOWN_NAME, &Priv.Privileges[0].Luid));
+  Win32Check(FALSE != ::LookupPrivilegeValue(nullptr, SE_SHUTDOWN_NAME, &Priv.Privileges[0].Luid));
 
   Priv.PrivilegeCount = 1;  // one privilege to set
   Priv.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
   // Get the shutdown privilege for this process.
-  Win32Check(FALSE != ::AdjustTokenPrivileges(Token, FALSE, &Priv, 0, (PTOKEN_PRIVILEGES)NULL, 0));
+  Win32Check(FALSE != ::AdjustTokenPrivileges(Token, FALSE, &Priv, 0, static_cast<PTOKEN_PRIVILEGES>(nullptr), nullptr));
 }
 
 void ShutDownWindows()

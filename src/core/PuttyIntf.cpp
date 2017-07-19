@@ -240,7 +240,7 @@ void connection_fatal(void * frontend, const char * fmt, ...)
   std::string Buf;
   Buf.resize(32 * 1024);
   va_start(Param, fmt);
-  vsnprintf_s((char *)Buf.c_str(), Buf.size(), _TRUNCATE, fmt, Param);
+  vsnprintf_s(const_cast<char *>(Buf.c_str()), Buf.size(), _TRUNCATE, fmt, Param);
   Buf[Buf.size() - 1] = '\0';
   va_end(Param);
 
@@ -298,7 +298,7 @@ static void SSHFatalError(const char * Format, va_list Param)
 {
   std::string Buf;
   Buf.resize(32 * 1024);
-  vsnprintf_s((char *)Buf.c_str(), Buf.size(), _TRUNCATE, Format, Param);
+  vsnprintf_s(const_cast<char *>(Buf.c_str()), Buf.size(), _TRUNCATE, Format, Param);
   Buf[Buf.size() - 1] = '\0';
 
   // Only few calls from putty\winnet.c might be connected with specific
@@ -621,7 +621,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, UnicodeString FileName, UnicodeString Pa
   case ktOpenSSHPEM:
   case ktOpenSSHNew:
   case ktSSHCom:
-    Ssh2Key = import_ssh2(KeyFile, KeyType, (char *)AnsiPassphrase.c_str(), &ErrorStr);
+    Ssh2Key = import_ssh2(KeyFile, KeyType, const_cast<char *>(AnsiPassphrase.c_str()), &ErrorStr);
     break;
 
   default:

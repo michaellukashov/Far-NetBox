@@ -1189,7 +1189,7 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
 intptr_t TFileCustomCommand::PatternLen(UnicodeString Command, intptr_t Index) const
 {
   intptr_t Len;
-  wchar_t PatternCmd = (Index < Command.Length()) ? (wchar_t)::tolower(Command[Index + 1]) : L'\0';
+  wchar_t PatternCmd = (Index < Command.Length()) ? static_cast<wchar_t>(::tolower(Command[Index + 1])) : L'\0';
   switch (PatternCmd)
   {
   case L's':

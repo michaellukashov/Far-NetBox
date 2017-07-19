@@ -772,7 +772,7 @@ void TStringList::Assign(const TPersistent * Source)
 
 intptr_t TStringList::GetCount() const
 {
-  DebugAssert((intptr_t)FStrings.size() == TObjectList::GetCount());
+  DebugAssert(static_cast<intptr_t>(FStrings.size()) == TObjectList::GetCount());
   return static_cast<intptr_t>(FStrings.size());
 }
 
@@ -1298,7 +1298,7 @@ class EStreamError : public ExtException
 {
 public:
   explicit EStreamError(UnicodeString Msg) :
-    ExtException(OBJECT_CLASS_EStreamError, (Exception *)nullptr, Msg)
+    ExtException(OBJECT_CLASS_EStreamError, static_cast<Exception *>(nullptr), Msg)
   {
   }
 };
@@ -1365,7 +1365,7 @@ int64_t THandleStream::Write(const void * Buffer, int64_t Count)
 
 int64_t THandleStream::Seek(int64_t Offset, int Origin)
 {
-  int64_t Result = ::FileSeek(FHandle, Offset, (DWORD)Origin);
+  int64_t Result = ::FileSeek(FHandle, Offset, static_cast<DWORD>(Origin));
   return Result;
 }
 

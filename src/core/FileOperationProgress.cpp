@@ -411,7 +411,7 @@ intptr_t TFileOperationProgressType::AdjustToCPSLimit(
 uintptr_t TFileOperationProgressType::LocalBlockSize()
 {
   uintptr_t Result = TRANSFER_BUF_SIZE;
-  if (FLocallyUsed + (int64_t)Result > FLocalSize)
+  if (FLocallyUsed + static_cast<int64_t>(Result) > FLocalSize)
   {
     Result = static_cast<uintptr_t>(FLocalSize - FLocallyUsed);
   }

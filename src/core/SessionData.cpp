@@ -1840,7 +1840,7 @@ bool TSessionData::ParseUrl(UnicodeString AUrl, TOptions * Options,
           else if ((Name.Length() < DecodedUrl.Length()) &&
             // (DecodedUrl[Name.Length() + 1] == L'/') &&
             // StrLIComp is an equivalent of SameText
-            (nb::StrLIComp(Name.c_str(), DecodedUrl.c_str(), (int)Name.Length()) == 0))
+            (nb::StrLIComp(Name.c_str(), DecodedUrl.c_str(), Name.Length()) == 0))
           {
             Match = true;
           }
@@ -2273,7 +2273,7 @@ UnicodeString TSessionData::GetStorageKey() const
 
 UnicodeString TSessionData::FormatSiteKey(UnicodeString HostName, intptr_t PortNumber)
 {
-  return FORMAT(L"%s:%d", HostName.c_str(), (int)PortNumber);
+  return FORMAT(L"%s:%d", HostName.c_str(), static_cast<int>(PortNumber));
 }
 
 UnicodeString TSessionData::GetSiteKey() const
@@ -2522,7 +2522,7 @@ void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const Un
       if (!AlgoStr.CompareIC(Names[Algo]) &&
         !Used[Algo] && DebugAlwaysTrue(Index < Count))
       {
-        NewList[Index] = (AlgoT)Algo;
+        NewList[Index] = static_cast<AlgoT>(Algo);
         Used[Algo] = true;
         ++Index;
         break;
@@ -4409,7 +4409,7 @@ TFSProtocol TSessionData::TranslateFSProtocol(UnicodeString ProtocolID) const
       break;
     }
   }
-  if (Result == (TFSProtocol)-1)
+  if (Result == static_cast<TFSProtocol>(-1))
     Result = CONST_DEFAULT_PROTOCOL;
   DebugAssert(Result != static_cast<TFSProtocol>(-1));
   return Result;
@@ -4810,7 +4810,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
               if (P > 0)
               {
                 UnicodeString PortNumberStr = HostNameStr.SubString(P + 1, HostNameStr.Length() - P);
-                PortNumber = (intptr_t)::StrToInt64(PortNumberStr);
+                PortNumber = static_cast<intptr_t>(::StrToInt64(PortNumberStr));
                 HostNameStr.SetLength(P - 1);
               }
               if ((HostNameStr.Length() >= 2) &&

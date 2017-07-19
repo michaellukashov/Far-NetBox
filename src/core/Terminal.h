@@ -670,7 +670,7 @@ public:
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
   void inline LogEvent(UnicodeString Str);
-  void GetSupportedChecksumAlgs(TStrings * Algs);
+  void GetSupportedChecksumAlgs(TStrings * Algs) const;
   UnicodeString ChangeFileName(const TCopyParamType * CopyParam,
     UnicodeString AFileName, TOperationSide Side, bool FirstLevel) const;
   UnicodeString GetBaseFileName(UnicodeString AFileName) const;
@@ -729,7 +729,7 @@ public:
     const TDateTime & Modification);
   void SetLocalFileTime(UnicodeString LocalFileName,
     FILETIME * AcTime, FILETIME * WrTime);
-  DWORD GetLocalFileAttributes(UnicodeString LocalFileName);
+  DWORD GetLocalFileAttributes(UnicodeString LocalFileName) const;
   bool SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes);
   bool MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags);
   bool RemoveLocalDirectory(UnicodeString LocalDirName);
@@ -800,7 +800,7 @@ public:
   TCustomFileSystem * GetFileSystem() const { return FFileSystem; }
   TCustomFileSystem * GetFileSystem() { return FFileSystem; }
 
-  bool CheckForEsc();
+  bool CheckForEsc() const;
   void SetupTunnelLocalPortNumber();
 
 private:
@@ -1144,7 +1144,7 @@ public:
 
   bool IsInitialized() const;
   void WaitFor();
-  bool ShouldAddClient();
+  bool ShouldAddClient() const;
   void AddClient();
   void RemoveClient();
   intptr_t GetNext(

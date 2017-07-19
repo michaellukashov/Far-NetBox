@@ -5053,6 +5053,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
     }
     return true;
   }
+  return false;
 }
 
 bool TFTPFileSystem::HandleTransferStatus(bool Valid, int64_t TransferSize,

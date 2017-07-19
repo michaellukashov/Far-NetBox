@@ -92,7 +92,7 @@ void DoShred(T & Str)
   if (!Str.IsEmpty())
   {
     Str.Unique();
-    ::ZeroMemory((void *)Str.c_str(), Str.Length() * sizeof(*Str.c_str()));
+    ::ZeroMemory((void *)(Str.c_str()), Str.Length() * sizeof(*Str.c_str()));
     Str = L"";
   }
 }
@@ -449,7 +449,7 @@ UnicodeString GetShellFolderPath(intptr_t CSIdl)
 {
   UnicodeString Result;
   wchar_t Path[2 * MAX_PATH + 10] = L"\0";
-  if (SUCCEEDED(::SHGetFolderPath(nullptr, (int)CSIdl, nullptr, SHGFP_TYPE_CURRENT, Path)))
+  if (SUCCEEDED(::SHGetFolderPath(nullptr, static_cast<int>(CSIdl), nullptr, SHGFP_TYPE_CURRENT, Path)))
   {
     Result = Path;
   }
@@ -850,7 +850,7 @@ intptr_t CompareLogicalText(UnicodeString S1, UnicodeString S2)
     return -1;
   }
 #if defined(_MSC_VER)
-  return ::StrCmpNCW(S1.c_str(), S2.c_str(), (int)S1.Length());
+  return ::StrCmpNCW(S1.c_str(), S2.c_str(), static_cast<int>(S1.Length()));
 #else
     return S1.Compare(S2);
 #endif
@@ -1538,7 +1538,7 @@ static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
     typedef BOOL (WINAPI * TGetTimeZoneInformationForYear)
       (USHORT wYear, PDYNAMIC_TIME_ZONE_INFORMATION pdtzi, LPTIME_ZONE_INFORMATION ptzi);
     TGetTimeZoneInformationForYear GetTimeZoneInformationForYear =
-      (TGetTimeZoneInformationForYear)::GetProcAddress(Kernel32, "GetTimeZoneInformationForYear");
+      reinterpret_cast<TGetTimeZoneInformationForYear>(::GetProcAddress(Kernel32, "GetTimeZoneInformationForYear"));
 
     if ((Year == 0) || (GetTimeZoneInformationForYear == nullptr))
     {
@@ -1570,23 +1570,23 @@ static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
     }
 
     Result->BaseDifferenceSec = TZI.Bias;
-    Result->BaseDifference = (double)(TZI.Bias) / MinsPerDay;
+    Result->BaseDifference = static_cast<double>(TZI.Bias) / MinsPerDay;
     Result->BaseDifferenceSec *= SecsPerMin;
 
     Result->CurrentDifferenceSec = TZI.Bias +
       Result->CurrentDaylightDifferenceSec;
     Result->CurrentDifference =
-      (double)(Result->CurrentDifferenceSec) / MinsPerDay;
+      static_cast<double>(Result->CurrentDifferenceSec) / MinsPerDay;
     Result->CurrentDifferenceSec *= SecsPerMin;
 
     Result->CurrentDaylightDifference =
-      (double)(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
+      static_cast<double>(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
     Result->CurrentDaylightDifferenceSec *= SecsPerMin;
 
     Result->DaylightDifferenceSec = TZI.DaylightBias * SecsPerMin;
-    Result->DaylightDifference = (double)(TZI.DaylightBias) / MinsPerDay;
+    Result->DaylightDifference = static_cast<double>(TZI.DaylightBias) / MinsPerDay;
     Result->StandardDifferenceSec = TZI.StandardBias * SecsPerMin;
-    Result->StandardDifference = (double)(TZI.StandardBias) / MinsPerDay;
+    Result->StandardDifference = static_cast<double>(TZI.StandardBias) / MinsPerDay;
 
     Result->SystemStandardDate = TZI.StandardDate;
     Result->SystemDaylightDate = TZI.DaylightDate;
@@ -1681,7 +1681,7 @@ TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
 {
   DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  TDateTime Result = TDateTime(UnixDateDelta + ((double)(TimeStamp) / SecsPerDay));
+  TDateTime Result = TDateTime(UnixDateDelta + (static_cast<double>(TimeStamp) / SecsPerDay));
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
 
   if (Params->DaylightHack)
@@ -1787,7 +1787,7 @@ bool TryStrToSize(UnicodeString SizeStr, int64_t & Size)
       Result = (SizeStr.Length() == 1);
       if (Result)
       {
-        wchar_t Unit = (wchar_t)toupper(SizeStr[1]);
+        wchar_t Unit = static_cast<wchar_t>(toupper(SizeStr[1]));
         switch (Unit)
         {
         case GigaSize:
@@ -1845,7 +1845,7 @@ static int64_t DateTimeToUnix(const TDateTime & DateTime)
 
   DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  return Round((double)(DateTime - UnixDateDelta) * SecsPerDay) +
+  return Round(static_cast<double>(DateTime - UnixDateDelta) * SecsPerDay) +
     CurrentParams->CurrentDifferenceSec;
 }
 
@@ -1874,7 +1874,7 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
   }
 
   FILETIME Result;
-  (*(int64_t*)&(Result) = ((int64_t)(UnixTimeStamp) + 11644473600LL) * 10000000LL);
+  (*reinterpret_cast<int64_t*>(&(Result)) = (static_cast<int64_t>(UnixTimeStamp) + 11644473600LL) * 10000000LL);
 
   return Result;
 }
@@ -2795,7 +2795,7 @@ bool GetWindowsProductType(DWORD & Type)
   )
   (DWORD , DWORD , DWORD , DWORD , PDWORD);
   TGetProductInfo GetProductInfo =
-    (TGetProductInfo)::GetProcAddress(Kernel32, "GetProductInfo");
+    reinterpret_cast<TGetProductInfo>(::GetProcAddress(Kernel32, "GetProductInfo"));
   if (GetProductInfo == nullptr)
   {
     Result = false;
@@ -2883,13 +2883,13 @@ UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateT
   UnicodeString Result;
   try
   {
-    if ((int64_t)DateTime > 0)
+    if (static_cast<int64_t>(DateTime) > 0)
     {
-      Result = Int64ToStr((int64_t)DateTime) + L", ";
+      Result = Int64ToStr(static_cast<int64_t>(DateTime)) + L", ";
     }
     // days are decremented, because when there are to many of them,
     // "integer overflow" error occurs
-    Result += FormatDateTime(TimeFormat, DateTime - TDateTime((double)(int64_t)DateTime));
+    Result += FormatDateTime(TimeFormat, DateTime - TDateTime(static_cast<double>((int64_t)DateTime)));
   }
   catch (...)
   {
@@ -2946,7 +2946,7 @@ UnicodeString TrimVersion(UnicodeString Version)
 
 UnicodeString FormatVersion(intptr_t MajorVersion, intptr_t MinorVersion, intptr_t Patch)
 {
-  return FORMAT(L"%d.%d.%d", (int)MajorVersion, (int)MinorVersion, (int)Patch);
+  return FORMAT(L"%d.%d.%d", static_cast<int>(MajorVersion), static_cast<int>(MinorVersion), static_cast<int>(Patch));
 }
 
 TFormatSettings GetEngFormatSettings()
