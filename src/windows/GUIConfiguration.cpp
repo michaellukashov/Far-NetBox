@@ -912,7 +912,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
       {
         Module.SetLength(Module.Length() - 1);
         ModulePath = GetTranslationModule(Module);
-        NewInstance = LoadLibraryEx(ModulePath.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
+        NewInstance = LoadLibraryEx(ModulePath.c_str(), nullptr, LOAD_LIBRARY_AS_DATAFILE);
         if (NewInstance)
         {
           LibraryFileName = ModulePath;
