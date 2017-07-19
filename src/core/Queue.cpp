@@ -1283,7 +1283,7 @@ public:
     TTerminalItem * Item, UnicodeString Name);
 
 protected:
-  virtual bool DoQueryReopen(Exception * E);
+  virtual bool DoQueryReopen(Exception * E) override;
 
 private:
   TTerminalItem * FItem;

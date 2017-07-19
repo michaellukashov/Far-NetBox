@@ -727,8 +727,8 @@ public:
   intptr_t Execute(bool & ACheckBox);
 
 protected:
-  virtual void Change();
-  virtual void Idle();
+  virtual void Change() override;
+  virtual void Idle() override;
 
 private:
   void ButtonClick(TFarButton * Sender, bool & Close);
