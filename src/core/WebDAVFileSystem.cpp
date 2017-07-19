@@ -419,9 +419,9 @@ void TWebDAVFileSystem::InitSession(ne_session_s * Session)
     Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
     Data->GetProxyUsername(), Data->GetProxyPassword());
 
-  ne_set_read_timeout(FNeonSession, (int)Data->GetTimeout());
+  ne_set_read_timeout(FNeonSession, static_cast<int>(Data->GetTimeout()));
 
-  ne_set_connect_timeout(FNeonSession, (int)Data->GetTimeout());
+  ne_set_connect_timeout(FNeonSession, static_cast<int>(Data->GetTimeout()));
 
   ne_set_session_private(Session, SESSION_FS_KEY, this);
 }
@@ -1037,8 +1037,8 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
       if (Month >= 1)
       {
         TDateTime Modification =
-          EncodeDateVerbose((unsigned short)Year, (unsigned short)Month, (unsigned short)Day) +
-          EncodeTimeVerbose((unsigned short)Hour, (unsigned short)Min, (unsigned short)Sec, 0);
+          EncodeDateVerbose(static_cast<unsigned short>(Year), static_cast<unsigned short>(Month), static_cast<unsigned short>(Day)) +
+          EncodeTimeVerbose(static_cast<unsigned short>(Hour), static_cast<unsigned short>(Min), static_cast<unsigned short>(Sec), 0);
         AFile->SetModification(ConvertTimestampFromUTC(Modification));
         AFile->SetModificationFmt(mfFull);
       }
@@ -1152,7 +1152,7 @@ intptr_t TWebDAVFileSystem::CustomReadFileInternal(UnicodeString AFileName,
   {
     AFile = File.release();
   }
-  return (intptr_t)Result;
+  return static_cast<intptr_t>(Result);
 }
 
 void TWebDAVFileSystem::CustomReadFile(UnicodeString AFileName,
@@ -1631,7 +1631,7 @@ void TWebDAVFileSystem::Source(UnicodeString AFileName,
       {
         SetFilePointer(LocalFileHandle, 0, nullptr, FILE_BEGIN);
 
-        FD = _open_osfhandle((intptr_t)LocalFileHandle, O_BINARY);
+        FD = _open_osfhandle(reinterpret_cast<intptr_t>(LocalFileHandle), O_BINARY);
         if (FD < 0)
         {
           ThrowSkipFileNull();
@@ -2380,7 +2380,7 @@ void TWebDAVFileSystem::Sink(UnicodeString AFileName,
           }
         };
 
-        FD = _open_osfhandle((intptr_t)LocalFileHandle, O_BINARY);
+        FD = _open_osfhandle(reinterpret_cast<intptr_t>(LocalFileHandle), O_BINARY);
         if (FD < 0)
         {
           ThrowSkipFileNull();

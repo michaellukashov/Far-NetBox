@@ -207,7 +207,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info) const
 
 #undef FREESTRINGARRAY
 
-    nb_free((void *)Info.CommandPrefix);
+    nb_free(Info.CommandPrefix);
   }
   ClearStruct(Info);
   Info.StructSize = sizeof(Info);
@@ -814,7 +814,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   int ButtonLines = 1;
   TFarButton * Button = nullptr;
   FTimeoutButton = nullptr;
-  for (uintptr_t Index = 0; Index < (uintptr_t)Buttons->GetCount(); ++Index)
+  for (uintptr_t Index = 0; Index < static_cast<uintptr_t>(Buttons->GetCount()); ++Index)
   {
     TFarButton * PrevButton = Button;
     Button = new TFarButton(this);
@@ -1542,7 +1542,7 @@ void TCustomFarPlugin::HandleException(Exception * E, int /*OpMode*/)
 UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
 {
   TFarEnvGuard Guard;
-  UnicodeString Result = FStartupInfo.GetMsg(FStartupInfo.ModuleNumber, (int)MsgId);
+  UnicodeString Result = FStartupInfo.GetMsg(FStartupInfo.ModuleNumber, static_cast<int>(MsgId));
   return Result;
 }
 
@@ -1698,7 +1698,7 @@ UnicodeString TCustomFarPlugin::GetTemporaryDir() const
 {
   UnicodeString Result(NB_MAX_PATH, 0);
   TFarEnvGuard Guard;
-  FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), (DWORD)Result.Length(), nullptr);
+  FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), static_cast<DWORD>(Result.Length()), nullptr);
   PackStr(Result);
   return Result;
 }
@@ -1783,10 +1783,10 @@ void TCustomFarFileSystem::ClearOpenPluginInfo(OpenPluginInfo & Info)
 {
   if (Info.StructSize)
   {
-    nb_free((void *)Info.HostFile);
-    nb_free((void *)Info.CurDir);
-    nb_free((void *)Info.Format);
-    nb_free((void *)Info.PanelTitle);
+    nb_free(Info.HostFile);
+    nb_free(Info.CurDir);
+    nb_free(Info.Format);
+    nb_free(Info.PanelTitle);
     DebugAssert(!Info.InfoLines);
     DebugAssert(!Info.InfoLinesNumber);
     DebugAssert(!Info.DescrFiles);
@@ -1798,13 +1798,13 @@ void TCustomFarFileSystem::ClearOpenPluginInfo(OpenPluginInfo & Info)
       TFarPanelModes::ClearPanelMode(
         const_cast<PanelMode &>(Info.PanelModesArray[Index]));
     }
-    nb_free((void *)Info.PanelModesArray);
+    nb_free(Info.PanelModesArray);
     if (Info.KeyBar)
     {
       TFarKeyBarTitles::ClearKeyBarTitles(const_cast<KeyBarTitles &>(*Info.KeyBar));
-      nb_free((void *)Info.KeyBar);
+      nb_free(Info.KeyBar);
     }
-    nb_free((void *)Info.ShortcutData);
+    nb_free(Info.ShortcutData);
   }
   ClearStruct(Info);
   Info.StructSize = sizeof(Info);
@@ -1885,14 +1885,14 @@ void TCustomFarFileSystem::FreeFindData(
     DebugAssert(ItemsNumber > 0);
     for (intptr_t Index = 0; Index < ItemsNumber; ++Index)
     {
-      nb_free((void *)PanelItem[Index].FindData.lpwszFileName);
-      nb_free((void *)PanelItem[Index].Description);
-      nb_free((void *)PanelItem[Index].Owner);
+      nb_free(PanelItem[Index].FindData.lpwszFileName);
+      nb_free(PanelItem[Index].Description);
+      nb_free(PanelItem[Index].Owner);
       for (intptr_t CustomIndex = 0; CustomIndex < PanelItem[Index].CustomColumnNumber; ++CustomIndex)
       {
-        nb_free((void *)PanelItem[Index].CustomColumnData[CustomIndex]);
+        nb_free(PanelItem[Index].CustomColumnData[CustomIndex]);
       }
-      nb_free((void *)PanelItem[Index].CustomColumnData);
+      nb_free(PanelItem[Index].CustomColumnData);
     }
     nb_free(PanelItem);
   }
@@ -2187,18 +2187,18 @@ void TFarPanelModes::ClearPanelMode(PanelMode & Mode)
     intptr_t ColumnTypesCount = Mode.ColumnTypes ?
       CommaCount(UnicodeString(Mode.ColumnTypes)) + 1 : 0;
 
-    nb_free((void *)Mode.ColumnTypes);
-    nb_free((void *)Mode.ColumnWidths);
+    nb_free(Mode.ColumnTypes);
+    nb_free(Mode.ColumnWidths);
     if (Mode.ColumnTitles)
     {
       for (intptr_t Index = 0; Index < ColumnTypesCount; ++Index)
       {
-        nb_free((void *)Mode.ColumnTitles[Index]);
+        nb_free(Mode.ColumnTitles[Index]);
       }
-      nb_free((void *)Mode.ColumnTitles);
+      nb_free(Mode.ColumnTitles);
     }
-    nb_free((void *)Mode.StatusColumnTypes);
-    nb_free((void *)Mode.StatusColumnWidths);
+    nb_free(Mode.StatusColumnTypes);
+    nb_free(Mode.StatusColumnWidths);
     ClearStruct(Mode);
   }
 }
@@ -2607,7 +2607,7 @@ void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
   DebugAssert(FOwner != nullptr);
   if (GetFocusedIndex() != Value)
   {
-    DebugAssert(Value != NPOS && Value < (intptr_t)FPanelInfo->ItemsNumber);
+    DebugAssert(Value != NPOS && Value < static_cast<intptr_t>(FPanelInfo->ItemsNumber));
     FPanelInfo->CurrentItem = static_cast<int>(Value);
     PanelRedrawInfo PanelInfo;
     ClearStruct(PanelInfo);
@@ -2857,11 +2857,11 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   int Length = 0;
   if (FarPlugin)
   {
-    Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str()) - 1;
+    Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(static_cast<DWORD>(Path.Length()), const_cast<wchar_t *>(Path.c_str())) - 1;
   }
   else
   {
-    Length = ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
+    Length = ::GetCurrentDirectory(static_cast<DWORD>(Path.Length()), const_cast<wchar_t *>(Path.c_str()));
   }
   UnicodeString Result = UnicodeString(Path.c_str(), Length);
   return Result;

@@ -173,7 +173,7 @@ static const SSH_FX_TYPES asEOF =           1 << SSH_FX_EOF;
 static const SSH_FX_TYPES asPermDenied =    1 << SSH_FX_PERMISSION_DENIED;
 static const SSH_FX_TYPES asOpUnsupported = 1 << SSH_FX_OP_UNSUPPORTED;
 static const SSH_FX_TYPES asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
-static const SSH_FX_TYPES asAll = (SSH_FX_TYPES)0xFFFF;
+static const SSH_FX_TYPES asAll = static_cast<SSH_FX_TYPES>(0xFFFF);
 
 #if 0
 const int tfFirstLevel =   0x01;
@@ -319,7 +319,7 @@ public:
     FLength = 0;
     SetCapacity(0);
     FType = AType;
-    AddByte((uint8_t)FType);
+    AddByte(static_cast<uint8_t>(FType));
     if (FType != SSH_FXP_INIT) // && (FType != 1)
     {
       AssignNumber();
@@ -724,7 +724,7 @@ public:
 
       // SSH-2.0-cryptlib returns file type 0 in response to SSH_FXP_LSTAT,
       // handle this undefined value as "unknown"
-      static wchar_t * Types = (wchar_t *)L"U-DLSUOCBF";
+      static wchar_t * Types = static_cast<wchar_t *>(L"U-DLSUOCBF");
       if (FXType > static_cast<uint8_t>(wcslen(Types)))
       {
         throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, static_cast<int>(FXType)));
@@ -2552,7 +2552,7 @@ SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
   if ((AllowStatus & (0x01LL << Code)) == 0)
   {
     intptr_t Message;
-    if ((uint32_t)Code >= _countof(Messages))
+    if (static_cast<uint32_t>(Code) >= _countof(Messages))
     {
       Message = SFTP_STATUS_UNKNOWN;
     }
@@ -2683,7 +2683,7 @@ bool TSFTPFileSystem::PeekPacket()
   bool Result = FSecureShell->Peek(Buf, 4);
   if (Result)
   {
-    intptr_t Length = PacketLength(Buf, (SSH_FXP_TYPES)-1);
+    intptr_t Length = PacketLength(Buf, static_cast<SSH_FXP_TYPES>(-1));
     Result = FSecureShell->Peek(Buf, 4 + Length);
   }
   return Result;
@@ -2801,7 +2801,7 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
       RemoveReservation(Reservation);
     }
 
-    if (ExpectedType != (SSH_FXP_TYPES)-1)
+    if (ExpectedType != static_cast<SSH_FXP_TYPES>(-1))
     {
       if (Packet->GetType() == SSH_FXP_STATUS)
       {

@@ -703,7 +703,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, UnicodeString ALine)
       }
       intptr_t Writting = UtfLine.Length();
       CheckSize(Writting);
-      FCurrentFileSize += fwrite(UtfLine.c_str(), 1, Writting, (FILE *)FFile);
+      FCurrentFileSize += fwrite(UtfLine.c_str(), 1, Writting, static_cast<FILE *>(FFile));
     }}
     catch (...)
     {

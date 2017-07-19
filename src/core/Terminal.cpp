@@ -5253,7 +5253,7 @@ public:
       FAction.AddOutput(Str, true);
       break;
     case cotExitCode:
-      FAction.ExitCode((int)::StrToInt64(Str));
+      FAction.ExitCode(static_cast<int>(::StrToInt64(Str)));
       break;
     }
 

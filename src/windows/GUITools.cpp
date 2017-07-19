@@ -315,7 +315,7 @@ bool SpecialFolderLocation(intptr_t PathID, UnicodeString & APath)
 {
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
-  if (::SHGetSpecialFolderLocation(nullptr, (int)PathID, &Pidl) == NO_ERROR &&
+  if (::SHGetSpecialFolderLocation(nullptr, static_cast<int>(PathID), &Pidl) == NO_ERROR &&
     ::SHGetPathFromIDList(Pidl, Buf))
   {
     APath = UnicodeString(Buf);

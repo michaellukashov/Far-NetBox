@@ -52,5 +52,5 @@ FARPROC TLibraryLoader::GetProcAddress(const AnsiString & ProcedureName) const
 // Get procedure address from loaded library by ordinal value
 FARPROC TLibraryLoader::GetProcAddress(intptr_t ProcedureOrdinal) const
 {
-  return ::GetProcAddress(FHModule, (LPCSTR)nullptr + ProcedureOrdinal);
+  return ::GetProcAddress(FHModule, static_cast<LPCSTR>(nullptr) + ProcedureOrdinal);
 }

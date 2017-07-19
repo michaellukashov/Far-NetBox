@@ -394,7 +394,7 @@ void TSimpleThread::Close()
 
 void TSimpleThread::WaitFor(uintptr_t Milliseconds) const
 {
-  ::WaitForSingleObject(FThread, (DWORD)Milliseconds);
+  ::WaitForSingleObject(FThread, static_cast<DWORD>(Milliseconds));
 }
 
 // TSignalThread
@@ -456,7 +456,7 @@ uintptr_t TSignalThread::WaitForEvent(uint32_t Timeout) const
   uintptr_t Result;
   if ((Res == WAIT_TIMEOUT) && !FTerminated)
   {
-    Result = (uintptr_t)-1;
+    Result = static_cast<uintptr_t>(-1);
   }
   else
   {
@@ -1732,7 +1732,7 @@ TQueueItem::TQueueItem(TObjectClassId Kind) :
   FInfo(new TInfo()),
   FQueue(nullptr),
   FCompleteEvent(INVALID_HANDLE_VALUE),
-  FCPSLimit((uintptr_t)-1)
+  FCPSLimit(static_cast<uintptr_t>(-1))
 {
   FInfo->SingleFile = false;
   FInfo->Primary = true;
@@ -2845,7 +2845,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
           }
         }
 
-        intptr_t WaitResult = (intptr_t)WaitForEvent(1000);
+        intptr_t WaitResult = static_cast<intptr_t>(WaitForEvent(1000));
         if (WaitResult == 0)
         {
           SAFE_DESTROY_EX(Exception, FIdleException);

@@ -4045,7 +4045,7 @@ void TWinSCPFileSystem::MultipleEdit(UnicodeString Directory,
     {
       WindowInfo Window;
       ClearStruct(Window);
-      Window.Pos = (int)Pos;
+      Window.Pos = static_cast<int>(Pos);
       UnicodeString EditedFileName(1024, 0);
       Window.Name = const_cast<wchar_t *>(EditedFileName.c_str());
       Window.NameSize = static_cast<int>(EditedFileName.GetLength());

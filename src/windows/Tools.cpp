@@ -1082,7 +1082,7 @@ static void AcquireShutDownPrivileges()
   Priv.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
   // Get the shutdown privilege for this process.
-  Win32Check(FALSE != ::AdjustTokenPrivileges(Token, FALSE, &Priv, 0, (PTOKEN_PRIVILEGES)NULL, 0));
+  Win32Check(FALSE != ::AdjustTokenPrivileges(Token, FALSE, &Priv, 0, static_cast<PTOKEN_PRIVILEGES>(nullptr), nullptr));
 }
 
 void ShutDownWindows()

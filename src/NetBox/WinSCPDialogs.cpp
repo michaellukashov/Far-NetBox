@@ -4211,7 +4211,7 @@ void TSessionDialog::FillCodePageEdit()
 {
   // CodePageEditAdd(CP_UTF8);
   CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
-    as_object(ToPtr((intptr_t)65001)));
+    as_object(ToPtr(static_cast<intptr_t>(65001))));
   CodePageEditAdd(CP_ACP);
   CodePageEditAdd(CP_OEMCP);
   CodePageEditAdd(20866); // KOI8-r
@@ -4224,7 +4224,7 @@ void TSessionDialog::CodePageEditAdd(uint32_t Cp)
   if (::GetCodePageInfo(Cp, cpInfoEx))
   {
     CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
-      as_object(ToPtr((intptr_t)cpInfoEx.CodePage)));
+      as_object(ToPtr(static_cast<intptr_t>(cpInfoEx.CodePage))));
   }
 }
 
@@ -5679,7 +5679,7 @@ bool TWinSCPPlugin::CopyParamDialog(UnicodeString Caption,
   TCopyParamsContainer * CopyParamsContainer = new TCopyParamsContainer(
     Dialog, 0, CopyParamAttrs);
 
-  Dialog->SetSize(TPoint(78, 2 + (int)CopyParamsContainer->GetHeight() + 3));
+  Dialog->SetSize(TPoint(78, 2 + static_cast<int>(CopyParamsContainer->GetHeight()) + 3));
 
   Dialog->SetNextItemPosition(ipNewLine);
 
