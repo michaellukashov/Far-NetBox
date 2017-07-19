@@ -737,7 +737,7 @@ TQueueItem * TTerminalQueue::GetItem(TList * List, intptr_t Index)
   return List->GetAs<TQueueItem>(Index);
 }
 
-TQueueItem * TTerminalQueue::GetItem(intptr_t Index)
+TQueueItem * TTerminalQueue::GetItem(intptr_t Index) const
 {
   return FItems->GetAs<TQueueItem>(Index);
 }
@@ -1907,7 +1907,7 @@ TQueueItemProxy::~TQueueItemProxy()
   SAFE_DESTROY(FInfo);
 }
 
-TFileOperationProgressType * TQueueItemProxy::GetProgressData()
+TFileOperationProgressType * TQueueItemProxy::GetProgressData() const
 {
   return (FProgressData->GetOperation() == foNone) ? nullptr : FProgressData;
 }

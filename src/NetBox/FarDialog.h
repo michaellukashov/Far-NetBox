@@ -128,7 +128,7 @@ protected:
   void ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback, void * Arg);
   void ShowItem(TFarDialogItem * Item, void * Arg);
   void EnableItem(TFarDialogItem * Item, void * Arg);
-  bool ChangesLocked();
+  bool ChangesLocked() const;
   TFarDialogItem * ItemAt(intptr_t X, intptr_t Y);
 
   static LONG_PTR WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2);
@@ -471,7 +471,7 @@ public:
 
   virtual UnicodeString GetText() const { return GetData(); }
   virtual void SetText(UnicodeString Value) { SetData(Value); }
-  intptr_t GetAsInteger();
+  intptr_t GetAsInteger() const;
   void SetAsInteger(intptr_t Value);
   virtual bool GetPassword() const { return GetAlterType(DI_PSWEDIT); }
   virtual void SetPassword(bool Value) { SetAlterType(DI_PSWEDIT, Value); }
@@ -502,12 +502,12 @@ class TFarSeparator : public TFarDialogItem
 public:
   explicit TFarSeparator(TFarDialog * ADialog);
 
-  bool GetDouble();
+  bool GetDouble() const;
   void SetDouble(bool Value);
   virtual UnicodeString GetCaption() { return GetData(); }
   virtual void SetCaption(UnicodeString Value) { SetData(Value); }
+  int GetPosition() const;
   void SetPosition(intptr_t Value);
-  int GetPosition();
 
 protected:
   virtual void ResetBounds();

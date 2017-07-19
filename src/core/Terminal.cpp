@@ -876,7 +876,7 @@ bool TParallelOperation::IsInitialized() const
   return (FMainOperationProgress != nullptr);
 }
 
-bool TParallelOperation::ShouldAddClient()
+bool TParallelOperation::ShouldAddClient() const
 {
   bool Result;
   // TTransferQueueItem::ProgressUpdated() already checks IsInitialized() before calling this
@@ -6886,7 +6886,7 @@ const TFileSystemInfo & TTerminal::GetFileSystemInfo(bool Retrieve)
   return FFileSystem->GetFileSystemInfo(Retrieve);
 }
 
-void TTerminal::GetSupportedChecksumAlgs(TStrings * Algs)
+void TTerminal::GetSupportedChecksumAlgs(TStrings * Algs) const
 {
   FFileSystem->GetSupportedChecksumAlgs(Algs);
 }
@@ -7448,7 +7448,7 @@ HANDLE TTerminal::TerminalCreateLocalFile(UnicodeString LocalFileName, DWORD Des
   return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
 }
 
-DWORD TTerminal::GetLocalFileAttributes(UnicodeString LocalFileName)
+DWORD TTerminal::GetLocalFileAttributes(UnicodeString LocalFileName) const
 {
   if (GetOnGetLocalFileAttributes())
   {
@@ -7566,7 +7566,7 @@ void TTerminal::CollectUsage()
   FCollectFileSystemUsage = true;
 }
 
-bool TTerminal::CheckForEsc()
+bool TTerminal::CheckForEsc() const
 {
   if (FOnCheckForEsc)
     return FOnCheckForEsc();

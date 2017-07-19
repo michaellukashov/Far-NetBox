@@ -1482,7 +1482,7 @@ void TCustomFarPlugin::UpdateConsoleTitleProgress(short Progress)
   UpdateCurrentConsoleTitle();
 }
 
-UnicodeString TCustomFarPlugin::FormatConsoleTitle()
+UnicodeString TCustomFarPlugin::FormatConsoleTitle() const
 {
   UnicodeString Title;
   if (FCurrentProgress >= 0)
@@ -1546,7 +1546,7 @@ UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
   return Result;
 }
 
-bool TCustomFarPlugin::CheckForEsc()
+bool TCustomFarPlugin::CheckForEsc() const
 {
   static uint32_t LastTicks;
   uint32_t Ticks = ::GetTickCount();
@@ -1703,7 +1703,7 @@ UnicodeString TCustomFarPlugin::GetTemporaryDir() const
   return Result;
 }
 
-intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * Rec)
+intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * Rec) const
 {
   int Result;
   if (FFarStandardFunctions.FarInputRecordToKey != nullptr)

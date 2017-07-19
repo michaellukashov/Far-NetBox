@@ -174,8 +174,8 @@ protected:
   TDateTime FIdleInterval;
   TDateTime FLastIdle;
 
-  inline static TQueueItem * GetItem(TList * List, intptr_t Index);
-  inline TQueueItem * GetItem(intptr_t Index);
+  static TQueueItem * GetItem(TList * List, intptr_t Index);
+  TQueueItem * GetItem(intptr_t Index) const;
   void FreeItemsList(TList *& List) const;
   void UpdateStatusForList(
     TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current);
@@ -345,7 +345,7 @@ private:
 
 public:
   intptr_t GetIndex() const;
-  TFileOperationProgressType * GetProgressData();
+  TFileOperationProgressType * GetProgressData() const;
   int64_t GetTotalTransferred() const;
 };
 

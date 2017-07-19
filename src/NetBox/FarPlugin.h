@@ -140,7 +140,7 @@ public:
   UnicodeString GetMsg(intptr_t MsgId) const;
   void SaveScreen(HANDLE & Screen);
   void RestoreScreen(HANDLE & Screen);
-  bool CheckForEsc();
+  bool CheckForEsc() const;
   bool Viewer(UnicodeString AFileName, UnicodeString Title, DWORD Flags);
   bool Editor(UnicodeString AFileName, UnicodeString Title, DWORD Flags);
 
@@ -156,7 +156,7 @@ public:
   intptr_t GetFarVersion() const;
   UnicodeString FormatFarVersion(intptr_t Version) const;
   UnicodeString GetTemporaryDir() const;
-  intptr_t InputRecordToKey(const INPUT_RECORD * Rec);
+  intptr_t InputRecordToKey(const INPUT_RECORD * Rec) const;
   TFarEditorInfo * EditorInfo();
 
   void ShowConsoleTitle(UnicodeString Title);
@@ -233,7 +233,7 @@ private:
 
   void ClearPluginInfo(PluginInfo & Info) const;
   void UpdateCurrentConsoleTitle();
-  UnicodeString FormatConsoleTitle();
+  UnicodeString FormatConsoleTitle() const;
   HWND GetConsoleWindow() const;
   RECT GetPanelBounds(HANDLE PanelHandle);
   bool CompareRects(const RECT & lhs, const RECT & rhs) const

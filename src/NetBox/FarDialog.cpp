@@ -900,7 +900,7 @@ void TFarDialog::UnlockChanges()
   }
 }
 
-bool TFarDialog::ChangesLocked()
+bool TFarDialog::ChangesLocked() const
 {
   return (FChangesLocked > 0);
 }
@@ -2012,7 +2012,7 @@ void TFarEdit::SetAsInteger(intptr_t Value)
   }
 }
 
-intptr_t TFarEdit::GetAsInteger()
+intptr_t TFarEdit::GetAsInteger() const
 {
   return ::StrToIntDef(::Trim(GetText()), 0);
 }
@@ -2043,7 +2043,7 @@ void TFarSeparator::SetDouble(bool Value)
   }
 }
 
-bool TFarSeparator::GetDouble()
+bool TFarSeparator::GetDouble() const
 {
   return GetFlag(DIF_SEPARATOR2);
 }
@@ -2056,7 +2056,7 @@ void TFarSeparator::SetPosition(intptr_t Value)
   SetBounds(R);
 }
 
-int TFarSeparator::GetPosition()
+int TFarSeparator::GetPosition() const
 {
   return GetBounds().Top;
 }
