@@ -4843,7 +4843,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
               const struct ssh_signkey * Algorithm = find_pubkey_alg(AlgorithmName);
               if (Algorithm == nullptr)
               {
-                throw Exception(FORMAT(L"Unknown public key algorithm \"%s\".", (AlgorithmName)));
+                throw Exception(FORMAT(L"Unknown public key algorithm \"%s\".", AlgorithmName));
               }
 
               void * Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char *>(PubBlob), PubBlobLen);
