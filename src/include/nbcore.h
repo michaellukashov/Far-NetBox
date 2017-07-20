@@ -260,8 +260,6 @@ struct PROTO_INTERFACE;
 
 NB_CORE_DLL(intptr_t) ProtoBroadcastAck(LPCSTR szModule, int type, int result, HANDLE hProcess, LPARAM lParam);
 
-// avatar support functions
-
 ///////////////////////////////////////////////////////////////////////////////
 // sha1 functions
 
