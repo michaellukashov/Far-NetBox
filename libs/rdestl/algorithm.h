@@ -264,7 +264,7 @@ T min(const T& x, const T& y)
 
 //-----------------------------------------------------------------------------
 template<typename TAssignable>
-void swap(TAssignable& a, TAssignable& b)
+void swap(TAssignable& a, TAssignable& b) noexcept
 {
 	TAssignable tmp(a);
 	a = b;

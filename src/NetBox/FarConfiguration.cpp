@@ -183,11 +183,8 @@ intptr_t TFarConfiguration::FarConfirmations() const
   {
     return GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
   }
-  else
-  {
-    DebugAssert(FFarConfirmations >= 0);
-    return FFarConfirmations;
-  }
+  DebugAssert(FFarConfirmations >= 0);
+  return FFarConfirmations;
 }
 
 bool TFarConfiguration::GetConfirmOverwriting() const
@@ -196,11 +193,8 @@ bool TFarConfiguration::GetConfirmOverwriting() const
   {
     return TGUIConfiguration::GetConfirmOverwriting();
   }
-  else
-  {
-    // DebugAssert(GetPlugin());
-    return (FarConfirmations() & FCS_COPYOVERWRITE) != 0;
-  }
+  // DebugAssert(GetPlugin());
+  return (FarConfirmations() & FCS_COPYOVERWRITE) != 0;
 }
 
 void TFarConfiguration::SetConfirmOverwriting(bool Value)

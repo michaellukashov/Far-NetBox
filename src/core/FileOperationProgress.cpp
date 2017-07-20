@@ -10,9 +10,9 @@
 #define TRANSFER_BUF_SIZE 32 * 1024
 
 TFileOperationProgressType::TFileOperationProgressType() :
+  FParent(nullptr),
   FOnProgress(nullptr),
   FOnFinished(nullptr),
-  FParent(nullptr),
   FReset(false)
 {
   Init();
@@ -22,9 +22,9 @@ TFileOperationProgressType::TFileOperationProgressType() :
 TFileOperationProgressType::TFileOperationProgressType(
   TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
   TFileOperationProgressType * Parent) :
+  FParent(Parent),
   FOnProgress(AOnProgress),
   FOnFinished(AOnFinished),
-  FParent(Parent),
   FReset(false)
 {
   Init();
@@ -147,7 +147,6 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, intptr_t ACount, bool ATemp,
   UnicodeString ADirectory, uintptr_t ACPSLimit)
 {
-
   {
     TGuard Guard(*FSection); // not really needed, just for consistency
     Clear();
@@ -196,7 +195,6 @@ void TFileOperationProgressType::SetDone()
 
 void TFileOperationProgressType::Suspend()
 {
-
   {
     TGuard Guard(*FSection);
     DebugAssert(!FSuspended);
@@ -209,7 +207,6 @@ void TFileOperationProgressType::Suspend()
 
 void TFileOperationProgressType::Resume()
 {
-
   {
     TGuard Guard(*FSection);
     DebugAssert(FSuspended);
@@ -272,10 +269,7 @@ intptr_t TFileOperationProgressType::OverallProgress() const
     DebugAssert((FOperation == foCopy) || (FOperation == foMove));
     return TotalTransferProgress();
   }
-  else
-  {
-    return OperationProgress();
-  }
+  return OperationProgress();
 }
 
 void TFileOperationProgressType::Progress()
@@ -417,7 +411,7 @@ intptr_t TFileOperationProgressType::AdjustToCPSLimit(
 uintptr_t TFileOperationProgressType::LocalBlockSize()
 {
   uintptr_t Result = TRANSFER_BUF_SIZE;
-  if (FLocallyUsed + (int64_t)Result > FLocalSize)
+  if (FLocallyUsed + static_cast<int64_t>(Result) > FLocalSize)
   {
     Result = static_cast<uintptr_t>(FLocalSize - FLocallyUsed);
   }
@@ -818,10 +812,7 @@ TDateTime TFileOperationProgressType::TimeExpected() const
   {
     return TDateTime(ToDouble((ToDouble(FTransferSize - FTransferredSize)) / CurCps) / SecsPerDay);
   }
-  else
-  {
-    return TDateTime(0.0);
-  }
+  return TDateTime(0.0);
 }
 
 TDateTime TFileOperationProgressType::TotalTimeLeft() const
@@ -835,10 +826,7 @@ TDateTime TFileOperationProgressType::TotalTimeLeft() const
     return TDateTime(ToDouble(ToDouble(FTotalSize - FTotalSkipped) / CurCps) /
       SecsPerDay);
   }
-  else
-  {
-    return TDateTime(0.0);
-  }
+  return TDateTime(0.0);
 }
 
 int64_t TFileOperationProgressType::GetTotalTransferred() const

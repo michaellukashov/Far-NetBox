@@ -6,14 +6,14 @@
 #include <SysInit.hpp>
 #include <System.hpp>
 
-bool ShouldDisplayException(Exception * E);
-bool ExceptionMessage(const Exception * E, UnicodeString & Message);
-bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message);
-bool ExceptionFullMessage(Exception * E, UnicodeString & Message);
-UnicodeString SysErrorMessageForError(intptr_t LastError);
-UnicodeString LastSysErrorMessage();
-TStrings * ExceptionToMoreMessages(Exception * E);
-bool IsInternalException(const Exception * E);
+NB_CORE_EXPORT bool ShouldDisplayException(Exception * E);
+NB_CORE_EXPORT bool ExceptionMessage(const Exception * E, UnicodeString & Message);
+NB_CORE_EXPORT bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message);
+NB_CORE_EXPORT bool ExceptionFullMessage(Exception * E, UnicodeString & Message);
+NB_CORE_EXPORT UnicodeString SysErrorMessageForError(intptr_t LastError);
+NB_CORE_EXPORT UnicodeString LastSysErrorMessage();
+NB_CORE_EXPORT TStrings * ExceptionToMoreMessages(Exception * E);
+NB_CORE_EXPORT bool IsInternalException(const Exception * E);
 
 enum TOnceDoneOperation
 {
@@ -23,24 +23,11 @@ enum TOnceDoneOperation
   odoShutDown,
 };
 
-class ExtException : public Exception
+class NB_CORE_EXPORT ExtException : public Exception
 {
 public:
-  static bool classof(const Exception * Obj)
-  {
-    TObjectClassId Kind = Obj->GetKind();
-    return
-      Kind == OBJECT_CLASS_ExtException ||
-      Kind == OBJECT_CLASS_EFatal ||
-      Kind == OBJECT_CLASS_ESshTerminate ||
-      Kind == OBJECT_CLASS_ESsh ||
-      Kind == OBJECT_CLASS_ETerminal ||
-      Kind == OBJECT_CLASS_ECommand ||
-      Kind == OBJECT_CLASS_EScp ||
-      Kind == OBJECT_CLASS_ESkipFile ||
-      Kind == OBJECT_CLASS_EFileSkipped ||
-      Kind == OBJECT_CLASS_EStreamError;
-  }
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ExtException); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ExtException) || Exception::is(Kind); }
 public:
   explicit ExtException(Exception * E);
   explicit ExtException(TObjectClassId Kind, Exception * E);
@@ -92,10 +79,11 @@ private:
 };
 
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \
-  class NAME : public BASE \
+  class NB_CORE_EXPORT NAME : public BASE \
   { \
   public: \
-    static inline bool classof(const Exception * Obj) { return Obj->GetKind() == OBJECT_CLASS_##NAME; } \
+    static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
+    virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
     explicit inline NAME(TObjectClassId Kind, const Exception * E, UnicodeString Msg, UnicodeString HelpKeyword = L"") : BASE(Kind, E, Msg, HelpKeyword) {} \
     explicit inline NAME(const Exception * E, UnicodeString Msg, UnicodeString HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
@@ -112,15 +100,11 @@ DERIVE_EXT_EXCEPTION(EScp, ExtException) // SCP protocol fatal error (non-fatal 
 DERIVE_EXT_EXCEPTION(ESkipFile, ExtException)
 DERIVE_EXT_EXCEPTION(EFileSkipped, ESkipFile)
 
-class EOSExtException : public ExtException
+class NB_CORE_EXPORT EOSExtException : public ExtException
 {
 public:
-  static bool classof(const Exception * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_EOSExtException ||
-      Obj->GetKind() == OBJECT_CLASS_ECRTExtException;
-  }
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EOSExtException); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EOSExtException) || ExtException::is(Kind); }
 public:
   explicit EOSExtException();
   explicit EOSExtException(UnicodeString Msg);
@@ -128,29 +112,21 @@ public:
   explicit EOSExtException(TObjectClassId Kind, UnicodeString Msg, intptr_t LastError);
 };
 
-class ECRTExtException : public EOSExtException
+class NB_CORE_EXPORT ECRTExtException : public EOSExtException
 {
 public:
-  static bool classof(const Exception * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_ECRTExtException;
-  }
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ECRTExtException); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ECRTExtException) || EOSExtException::is(Kind); }
 public:
   ECRTExtException();
   explicit ECRTExtException(UnicodeString Msg);
 };
 
-class EFatal : public ExtException
+class NB_CORE_EXPORT EFatal : public ExtException
 {
 public:
-  static inline bool classof(const Exception * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_EFatal ||
-      Obj->GetKind() == OBJECT_CLASS_ESshFatal ||
-      Obj->GetKind() == OBJECT_CLASS_ESshTerminate;
-  }
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EFatal); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFatal) || ExtException::is(Kind); }
 public:
   // fatal errors are always copied, new message is only appended
   explicit EFatal(const Exception * E, UnicodeString Msg, UnicodeString HelpKeyword = L"");
@@ -170,10 +146,11 @@ private:
 };
 
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
-  class NAME : public BASE \
+  class NB_CORE_EXPORT NAME : public BASE \
   { \
   public: \
-    static inline bool classof(const Exception * Obj) { return Obj->GetKind() == OBJECT_CLASS_##NAME; } \
+    static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
+    virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
     explicit inline NAME(const Exception * E, UnicodeString Msg, UnicodeString HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
     virtual ExtException * Clone() const { return new NAME(this, L""); } \
@@ -183,14 +160,11 @@ DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
 
 // exception that closes application, but displays info message (not error message)
 // = close on completion
-class ESshTerminate : public EFatal
+class NB_CORE_EXPORT ESshTerminate : public EFatal
 {
 public:
-  static inline bool classof(const Exception * Obj)
-  {
-   return
-     Obj->GetKind() == OBJECT_CLASS_ESshTerminate;
-  }
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ESshTerminate); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ESshTerminate) || EFatal::is(Kind); }
 public:
   explicit inline ESshTerminate(
     const Exception * E, UnicodeString Msg, TOnceDoneOperation AOperation,
@@ -210,21 +184,18 @@ public:
   UnicodeString DestLocalFileName;
 };
 
-class ECallbackGuardAbort : public EAbort
+class NB_CORE_EXPORT ECallbackGuardAbort : public EAbort
 {
 public:
-  static inline bool classof(const Exception * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_ECallbackGuardAbort;
-  }
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ECallbackGuardAbort); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ECallbackGuardAbort) || EAbort::is(Kind); }
 public:
   ECallbackGuardAbort();
 };
 
-Exception * CloneException(Exception * E);
-void RethrowException(Exception * E);
-UnicodeString GetExceptionHelpKeyword(const Exception* E);
-UnicodeString MergeHelpKeyword(UnicodeString PrimaryHelpKeyword, UnicodeString SecondaryHelpKeyword);
-bool IsInternalErrorHelpKeyword(UnicodeString HelpKeyword);
+NB_CORE_EXPORT Exception * CloneException(Exception * E);
+NB_CORE_EXPORT void RethrowException(Exception * E);
+NB_CORE_EXPORT UnicodeString GetExceptionHelpKeyword(const Exception* E);
+NB_CORE_EXPORT UnicodeString MergeHelpKeyword(UnicodeString PrimaryHelpKeyword, UnicodeString SecondaryHelpKeyword);
+NB_CORE_EXPORT bool IsInternalErrorHelpKeyword(UnicodeString HelpKeyword);
 

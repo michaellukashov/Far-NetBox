@@ -269,7 +269,7 @@ void TCopyParamType::DoGetInfoStr(
       {
         if (FLAGCLEAR(Attrs, ExceptDirs))
         {
-          Str = FMTLOAD(COPY_INFO_PRESERVE_TIME_DIRS, (Str));
+          Str = FMTLOAD(COPY_INFO_PRESERVE_TIME_DIRS, Str.c_str());
           AddPreserveTime = true;
         }
       }
@@ -500,6 +500,8 @@ void TCopyParamType::DoGetInfoStr(
 void TCopyParamType::Assign(const TCopyParamType * Source)
 {
   DebugAssert(Source != nullptr);
+  if (!Source)
+    return;
 #define COPY(Prop) Set ## Prop(Source->Get ## Prop())
   COPY(FileNameCase);
   COPY(PreserveReadOnly);
@@ -712,15 +714,15 @@ UnicodeString TCopyParamType::GetLogStr() const
     FORMAT(
       L"  TM: %c; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s; ResumeL: %d\n"
       L"  AscM: %s\n",
-       ModeC[GetTransferMode()],
-       BooleanToEngStr(GetClearArchive()).c_str(),
-       BooleanToEngStr(GetRemoveCtrlZ()).c_str(),
-       BooleanToEngStr(GetRemoveBOM()).c_str(),
-       int(GetCPSLimit()),
-       BooleanToEngStr(GetNewerOnly()).c_str(),
-       GetIncludeFileMask().GetMasks().c_str(),
-       ((FTransferSkipList.get() != nullptr) ? FTransferSkipList->GetCount() : 0) + (!FTransferResumeFile.IsEmpty() ? 1 : 0),
-       GetAsciiFileMask().GetMasks().c_str());
+      ModeC[GetTransferMode()],
+      BooleanToEngStr(GetClearArchive()).c_str(),
+      BooleanToEngStr(GetRemoveCtrlZ()).c_str(),
+      BooleanToEngStr(GetRemoveBOM()).c_str(),
+      int(GetCPSLimit()),
+      BooleanToEngStr(GetNewerOnly()).c_str(),
+      GetIncludeFileMask().GetMasks().c_str(),
+      ((FTransferSkipList.get() != nullptr) ? FTransferSkipList->GetCount() : 0) + (!FTransferResumeFile.IsEmpty() ? 1 : 0),
+      GetAsciiFileMask().GetMasks().c_str());
 }
 
 DWORD TCopyParamType::LocalFileAttrs(const TRights & Rights) const

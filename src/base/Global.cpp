@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -9,7 +10,6 @@
 #endif // ifdef _DEBUG
 
 #include <Global.h>
-
 
 
 // TGuard
@@ -41,7 +41,8 @@ TUnguard::~TUnguard()
 #ifdef _DEBUG
 
 static HANDLE TraceFile = nullptr;
-BOOL IsTracing = false;
+bool IsTracing = false;
+const uintptr_t CallstackTlsOff = (uintptr_t)-1;
 uintptr_t CallstackTls = CallstackTlsOff;
 TCriticalSection * TracingCriticalSection = nullptr;
 

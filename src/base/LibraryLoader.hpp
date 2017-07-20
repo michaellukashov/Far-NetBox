@@ -6,7 +6,7 @@
 
 
 
-class TLibraryLoader : public TObject
+class NB_CORE_EXPORT TLibraryLoader : public TObject
 {
 NB_DISABLE_COPY(TLibraryLoader)
 public:

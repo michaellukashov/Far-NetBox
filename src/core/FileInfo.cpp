@@ -66,7 +66,7 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
             };
             VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
             const VS_FIXEDFILEINFO * FixedInfo =
-              (VS_FIXEDFILEINFO *)DWORD_ALIGN(VersionInfo, VersionInfo->szKey + wcslen(VersionInfo->szKey) + 1);
+              reinterpret_cast<VS_FIXEDFILEINFO *>(DWORD_ALIGN(VersionInfo, VersionInfo->szKey + wcslen(VersionInfo->szKey) + 1));
 
             if (FixedInfo->dwSignature != VS_FFI_SIGNATURE)
             {
@@ -151,7 +151,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
       if (DataSize >= BufSize)
       {
         uintptr_t ConvBuf = DataSize - VersionInfo->wLength;
-        memmove((static_cast<char *>(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf );
+        memmove((static_cast<char *>(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf);
       }
     }
   }
@@ -196,7 +196,7 @@ void FreeFileInfo(void * FileInfo)
 }
 
 typedef TTranslation TTranslations[65536];
-typedef TTranslation *PTranslations;
+typedef TTranslation * PTranslations;
 
 // Return pointer to fixed file version info
 PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
@@ -286,7 +286,7 @@ intptr_t StrToCompoundVersion(UnicodeString AStr)
   int64_t MinorVer = StrToInt64(CutToChar(S, L'.', false));
   int64_t Release = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
   int64_t Build = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
-  return CalculateCompoundVersion((intptr_t)MajorVer, (intptr_t)MinorVer, (intptr_t)Release, (intptr_t)Build);
+  return CalculateCompoundVersion(static_cast<intptr_t>(MajorVer), static_cast<intptr_t>(MinorVer), static_cast<intptr_t>(Release), static_cast<intptr_t>(Build));
 }
 
 intptr_t CompareVersion(UnicodeString V1, UnicodeString V2)

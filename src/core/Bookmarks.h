@@ -6,7 +6,7 @@ class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
 
-class TBookmarks : public TObject
+class NB_CORE_EXPORT TBookmarks : public TObject
 {
 NB_DISABLE_COPY(TBookmarks)
 public:
@@ -40,17 +40,14 @@ private:
 };
 
 class TBookmark;
-class TBookmarkList : public TPersistent
+class NB_CORE_EXPORT TBookmarkList : public TPersistent
 {
 friend class TBookmarks;
 friend class TBookmark;
 NB_DISABLE_COPY(TBookmarkList)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TBookmarkList;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TBookmarkList); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBookmarkList) || TPersistent::is(Kind); }
 public:
   explicit TBookmarkList();
   virtual ~TBookmarkList();
@@ -96,16 +93,13 @@ public:
   void SetNodeOpened(UnicodeString AIndex, bool Value);
 };
 
-class TBookmark : public TPersistent
+class NB_CORE_EXPORT TBookmark : public TPersistent
 {
 friend class TBookmarkList;
 NB_DISABLE_COPY(TBookmark)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TBookmark;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TBookmark); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBookmark) || TPersistent::is(Kind); }
 public:
   TBookmark();
 

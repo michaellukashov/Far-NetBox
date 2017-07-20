@@ -120,12 +120,8 @@ bool TLoopDetector::IsUnvisitedDirectory(UnicodeString Directory)
 struct TMoveFileParams : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TMoveFileParams;
-  }
-
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TMoveFileParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TMoveFileParams) || TObject::is(Kind); }
 public:
   TMoveFileParams() : TObject(OBJECT_CLASS_TMoveFileParams)
   {
@@ -138,12 +134,8 @@ public:
 struct TFilesFindParams : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TFilesFindParams;
-  }
-
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFilesFindParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFilesFindParams) || TObject::is(Kind); }
 public:
   TFilesFindParams() :
     TObject(OBJECT_CLASS_TFilesFindParams),
@@ -344,20 +336,17 @@ class TTunnelThread : public TSimpleThread
 {
 NB_DISABLE_COPY(TTunnelThread)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TTunnelThread;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TTunnelThread); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTunnelThread) || TSimpleThread::is(Kind); }
 public:
   explicit TTunnelThread(TSecureShell * SecureShell);
   virtual ~TTunnelThread();
 
   virtual void InitTunnelThread();
-  virtual void Terminate();
+  virtual void Terminate() override;
 
 protected:
-  virtual void Execute();
+  virtual void Execute() override;
 
 private:
   TSecureShell * FSecureShell;
@@ -413,25 +402,26 @@ class TTunnelUI : public TSessionUI
 NB_DISABLE_COPY(TTunnelUI)
 public:
   explicit TTunnelUI(TTerminal * Terminal);
+
   virtual ~TTunnelUI()
   {
   }
 
-  virtual void Information(UnicodeString Str, bool Status);
+  virtual void Information(UnicodeString Str, bool Status) override;
   virtual uintptr_t QueryUser(UnicodeString Query,
     TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
-    TQueryType QueryType);
+    TQueryType QueryType) override;
   virtual uintptr_t QueryUserException(UnicodeString Query,
     Exception * E, uintptr_t Answers, const TQueryParams * Params,
-    TQueryType QueryType);
+    TQueryType QueryType) override;
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
     UnicodeString AName, UnicodeString AInstructions, TStrings * Prompts,
-    TStrings * Results);
-  virtual void DisplayBanner(UnicodeString Banner);
-  virtual void FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpContext);
-  virtual void HandleExtendedException(Exception * E);
-  virtual void Closed();
-  virtual void ProcessGUI();
+    TStrings * Results) override;
+  virtual void DisplayBanner(UnicodeString Banner) override;
+  virtual void FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpContext) override;
+  virtual void HandleExtendedException(Exception * E) override;
+  virtual void Closed() override;
+  virtual void ProcessGUI() override;
 
 private:
   TTerminal * FTerminal;
@@ -886,7 +876,7 @@ bool TParallelOperation::IsInitialized() const
   return (FMainOperationProgress != nullptr);
 }
 
-bool TParallelOperation::ShouldAddClient()
+bool TParallelOperation::ShouldAddClient() const
 {
   bool Result;
   // TTransferQueueItem::ProgressUpdated() already checks IsInitialized() before calling this
@@ -943,7 +933,6 @@ void TParallelOperation::WaitFor()
   {
     DebugAssert(FClients == 0);
   }
-
 }
 
 void TParallelOperation::Done(UnicodeString FileName, bool Dir, bool Success)
@@ -2164,7 +2153,7 @@ void TTerminal::HandleExtendedException(Exception * E)
     try
     {
       // the event handler may destroy 'this' ...
-    GetOnShowExtendedException()(this, E, nullptr);
+      GetOnShowExtendedException()(this, E, nullptr);
       // .. hence guard is dismissed from destructor, to make following call no-op
       Guard.Verify();
     }
@@ -2215,7 +2204,6 @@ void TTerminal::Information(UnicodeString Str, bool Status)
 
 void TTerminal::DoProgress(TFileOperationProgressType & ProgressData)
 {
-
   if ((FConfiguration->GetActualLogProtocol() >= 1) &&
       ((ProgressData.GetOperation() == foCopy) || (ProgressData.GetOperation() == foMove)))
   {
@@ -2701,7 +2689,7 @@ UnicodeString TTerminal::TerminalGetUserName() const
 {
   // in future might also be implemented to detect username similar to GetUserGroups
   DebugAssert(FFileSystem != nullptr);
-  UnicodeString Result = FFileSystem->RemoteGetUserName();
+  UnicodeString Result = FFileSystem ? FFileSystem->RemoteGetUserName() : L"";
   // Is empty also when stored username was used
   if (Result.IsEmpty())
   {
@@ -3218,7 +3206,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(
         case qaNoToAll:
           BatchOverwrite = boNone;
           break;
-       }
+        }
 
         // we user has not selected another batch overwrite mode,
         // keep the current one. note that we may get here even
@@ -3413,10 +3401,7 @@ void TTerminal::EnsureNonExistence(UnicodeString AFileName)
       {
         throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_DIR_EXISTS, AFileName.c_str()));
       }
-      else
-      {
-        throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_FILE_EXISTS, AFileName.c_str()));
-      }
+      throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_FILE_EXISTS, AFileName.c_str()));
     }
   }
 }
@@ -3580,7 +3565,6 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
       {
         SCOPE_EXIT
         {
-
           DoReadDirectoryProgress(-1, 0, Cancel);
           FReadingCurrentDirectory = false;
           FOldFiles->Reset();
@@ -3660,8 +3644,8 @@ UnicodeString TTerminal::GetRemoteFileInfo(TRemoteFile * AFile) const
   return
     FORMAT(L"%s;%c;%lld;%s;%d;%s;%s;%s;%d",
       AFile->GetFileName().c_str(), AFile->GetType(), AFile->GetSize(), StandardTimestamp(AFile->GetModification()).c_str(), int(AFile->GetModificationFmt()),
-       AFile->GetFileOwner().GetLogText().c_str(), AFile->GetFileGroup().GetLogText().c_str(), AFile->GetRights()->GetText().c_str(),
-       AFile->GetAttr());
+      AFile->GetFileOwner().GetLogText().c_str(), AFile->GetFileGroup().GetLogText().c_str(), AFile->GetRights()->GetText().c_str(),
+      AFile->GetAttr());
 }
 
 void TTerminal::LogRemoteFile(TRemoteFile * AFile)
@@ -4194,7 +4178,7 @@ bool TTerminal::ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
 TStrings * TTerminal::GetFixedPaths() const
 {
   DebugAssert(FFileSystem != nullptr);
-  return FFileSystem->GetFixedPaths();
+  return FFileSystem ? FFileSystem->GetFixedPaths() : nullptr;
 }
 
 bool TTerminal::GetResolvingSymlinks() const
@@ -4516,7 +4500,7 @@ void TTerminal::ChangeFileProperties(UnicodeString AFileName,
     LocalFileName = AFile->GetFileName();
   }
   StartOperationWithFile(LocalFileName, foSetProperties);
-  if (GetLog()->GetLogging())
+  if (GetLog()->GetLogging() && RProperties)
   {
     LogEvent(FORMAT(L"Changing properties of \"%s\" (%s)",
       LocalFileName.c_str(), BooleanToEngStr(RProperties->Recursive).c_str()));
@@ -4783,7 +4767,7 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
   DebugAssert(AFile && AFile->GetDirectory() == FFiles);
   bool Proceed = true;
   // if filename doesn't contain path, we check for existence of file
-  if ((AFile->GetFileName() != ANewName) && CheckExistence &&
+  if ((AFile && AFile->GetFileName() != ANewName) && CheckExistence &&
     FConfiguration->GetConfirmOverwriting() &&
     base::UnixSamePath(RemoteGetCurrentDirectory(), FFiles->GetDirectory()))
   {
@@ -4815,7 +4799,7 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
     }
   }
 
-  if (Proceed)
+  if (Proceed && AFile)
   {
     FileModified(AFile, AFile->GetFileName());
     TerminalRenameFile(AFile->GetFileName(), ANewName);
@@ -5269,7 +5253,7 @@ public:
       FAction.AddOutput(Str, true);
       break;
     case cotExitCode:
-      FAction.ExitCode((int)::StrToInt64(Str));
+      FAction.ExitCode(static_cast<int>(::StrToInt64(Str)));
       break;
     }
 
@@ -5289,7 +5273,6 @@ private:
 void TTerminal::AnyCommand(UnicodeString Command,
   TCaptureOutputEvent OutputEvent)
 {
-
 #if 0
   #pragma warn -inl
   class TOutputProxy
@@ -5372,10 +5355,7 @@ void TTerminal::DoAnyCommand(UnicodeString ACommand,
     {
       throw;
     }
-    else
-    {
-      HandleExtendedException(&E);
-    }
+    HandleExtendedException(&E);
   }
 }
 
@@ -5429,22 +5409,22 @@ bool TTerminal::DoCreateLocalFile(UnicodeString AFileName,
                 qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, nullptr);
               }
 
-            switch (Answer)
-            {
-            case qaYesToAll:
-              OperationProgress->SetBatchOverwrite(boAll);
-              break;
-            case qaCancel:
-              OperationProgress->SetCancel(csCancel); // continue on next case
-              Result = false;
-              break;
-            case qaNoToAll:
-              OperationProgress->SetBatchOverwrite(boNone);
-              Result = false;
-              break;
-            case qaNo:
-              Result = false;
-              break;
+              switch (Answer)
+              {
+              case qaYesToAll:
+                OperationProgress->SetBatchOverwrite(boAll);
+                break;
+              case qaCancel:
+                OperationProgress->SetCancel(csCancel); // continue on next case
+                Result = false;
+                break;
+              case qaNoToAll:
+                OperationProgress->SetBatchOverwrite(boNone);
+                Result = false;
+                break;
+              case qaNo:
+                Result = false;
+                break;
               }
             }
           }
@@ -5836,15 +5816,18 @@ bool TTerminal::CalculateLocalFilesSize(const TStrings * AFileList,
 struct TSynchronizeFileData : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TSynchronizeFileData;
-  }
-
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeFileData); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSynchronizeFileData) || TObject::is(Kind); }
 public:
-  TSynchronizeFileData() : TObject(OBJECT_CLASS_TSynchronizeFileData)
+  TSynchronizeFileData() :
+    TObject(OBJECT_CLASS_TSynchronizeFileData),
+    Modified(false),
+    New(false),
+    IsDirectory(false),
+    MatchingRemoteFileFile(nullptr),
+    MatchingRemoteFileImageIndex(0)
   {
+    ClearStruct(LocalLastWriteTime);
   }
 
   bool Modified;
@@ -5862,12 +5845,8 @@ const intptr_t sfFirstLevel = 0x01;
 struct TSynchronizeData : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TSynchronizeData;
-  }
-
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeData); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSynchronizeData) || TObject::is(Kind); }
 public:
   TSynchronizeData() : TObject(OBJECT_CLASS_TSynchronizeData)
   {
@@ -6907,7 +6886,7 @@ const TFileSystemInfo & TTerminal::GetFileSystemInfo(bool Retrieve)
   return FFileSystem->GetFileSystemInfo(Retrieve);
 }
 
-void TTerminal::GetSupportedChecksumAlgs(TStrings * Algs)
+void TTerminal::GetSupportedChecksumAlgs(TStrings * Algs) const
 {
   FFileSystem->GetSupportedChecksumAlgs(Algs);
 }
@@ -7311,14 +7290,14 @@ bool TTerminal::CopyToLocal(const TStrings * AFilesToCopy,
     };
 
     OperationProgress.Start(((Params & cpDelete) != 0 ? foMove : foCopy), osRemote,
-      AFilesToCopy->GetCount(), (Params & cpTemporary) != 0, TargetDir, CopyParam->GetCPSLimit());
+      AFilesToCopy ? AFilesToCopy->GetCount() : 0, (Params & cpTemporary) != 0, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = &OperationProgress; //-V506
     //bool CollectingUsage = false;
     try__finally
     {
-        SCOPE_EXIT
-        {
+      SCOPE_EXIT
+      {
 #if 0
           if (CollectingUsage)
           {
@@ -7466,22 +7445,16 @@ HANDLE TTerminal::TerminalCreateLocalFile(UnicodeString LocalFileName, DWORD Des
   {
     return GetOnCreateLocalFile()(ApiPath(LocalFileName), DesiredAccess, ShareMode, CreationDisposition, FlagsAndAttributes);
   }
-  else
-  {
-    return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
-  }
+  return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
 }
 
-DWORD TTerminal::GetLocalFileAttributes(UnicodeString LocalFileName)
+DWORD TTerminal::GetLocalFileAttributes(UnicodeString LocalFileName) const
 {
   if (GetOnGetLocalFileAttributes())
   {
     return GetOnGetLocalFileAttributes()(ApiPath(LocalFileName));
   }
-  else
-  {
-    return ::FileGetAttrFix(LocalFileName);
-  }
+  return ::FileGetAttrFix(LocalFileName);
 }
 
 bool TTerminal::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes)
@@ -7490,10 +7463,7 @@ bool TTerminal::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAt
   {
     return GetOnSetLocalFileAttributes()(ApiPath(LocalFileName), FileAttributes);
   }
-  else
-  {
-    return ::FileSetAttr(LocalFileName, FileAttributes);
-  }
+  return ::FileSetAttr(LocalFileName, FileAttributes);
 }
 
 bool TTerminal::MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags)
@@ -7502,10 +7472,7 @@ bool TTerminal::MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLoca
   {
     return GetOnMoveLocalFile()(LocalFileName, NewLocalFileName, Flags);
   }
-  else
-  {
-    return ::MoveFileEx(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), Flags) != FALSE;
-  }
+  return ::MoveFileEx(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), Flags) != FALSE;
 }
 
 bool TTerminal::RemoveLocalDirectory(UnicodeString LocalDirName)
@@ -7514,10 +7481,7 @@ bool TTerminal::RemoveLocalDirectory(UnicodeString LocalDirName)
   {
     return GetOnRemoveLocalDirectory()(LocalDirName);
   }
-  else
-  {
-    return ::RemoveDir(LocalDirName);
-  }
+  return RemoveDir(LocalDirName);
 }
 
 bool TTerminal::CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
@@ -7526,10 +7490,7 @@ bool TTerminal::CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTR
   {
     return GetOnCreateLocalDirectory()(LocalDirName, SecurityAttributes);
   }
-  else
-  {
-    return ::CreateDir(LocalDirName, SecurityAttributes);
-  }
+  return ::CreateDir(LocalDirName, SecurityAttributes);
 }
 
 void TTerminal::ReflectSettings() const
@@ -7605,12 +7566,11 @@ void TTerminal::CollectUsage()
   FCollectFileSystemUsage = true;
 }
 
-bool TTerminal::CheckForEsc()
+bool TTerminal::CheckForEsc() const
 {
   if (FOnCheckForEsc)
     return FOnCheckForEsc();
-  else
-    return (FOperationProgress && FOperationProgress->GetCancel() == csCancel);
+  return (FOperationProgress && FOperationProgress->GetCancel() == csCancel);
 }
 
 static UnicodeString FormatCertificateData(UnicodeString Fingerprint, int Failures)

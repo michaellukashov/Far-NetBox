@@ -6,7 +6,7 @@
 #include <Exceptions.h>
 #include "SessionData.h"
 
-class EFileMasksException : public Exception
+class NB_CORE_EXPORT EFileMasksException : public Exception
 {
 public:
   explicit EFileMasksException(UnicodeString AMessage, intptr_t AErrorStart, intptr_t AErrorLen);
@@ -17,10 +17,10 @@ public:
 extern const wchar_t IncludeExcludeFileMasksDelimiter;
 #define MASK_INDEX(DIRECTORY, INCLUDE) ((DIRECTORY ? 2 : 0) + (INCLUDE ? 0 : 1))
 
-class TFileMasks : public TObject
+class NB_CORE_EXPORT TFileMasks : public TObject
 {
 public:
-  struct TParams : public TObject
+  struct NB_CORE_EXPORT TParams : public TObject
   {
     TParams();
     int64_t Size;
@@ -169,7 +169,7 @@ typedef nb::FastDelegate5<void,
   intptr_t /*Index*/, UnicodeString /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
   bool & /*LastPass*/> TCustomCommandPatternEvent;
 
-class TCustomCommand : public TObject
+class NB_CORE_EXPORT TCustomCommand : public TObject
 {
 friend class TInteractiveCustomCommand;
 
@@ -202,7 +202,7 @@ protected:
   virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 };
 
-class TInteractiveCustomCommand : public TCustomCommand
+class NB_CORE_EXPORT TInteractiveCustomCommand : public TCustomCommand
 {
 NB_DISABLE_COPY(TInteractiveCustomCommand)
 public:
@@ -226,7 +226,7 @@ private:
 
 class TTerminal;
 
-struct TCustomCommandData : public TObject
+struct NB_CORE_EXPORT TCustomCommandData : public TObject
 {
 //NB_DISABLE_COPY(TCustomCommandData)
 public:
@@ -253,7 +253,7 @@ private:
   TSessionData * GetSessionDataPrivate() const;
 };
 
-class TFileCustomCommand : public TCustomCommand
+class NB_CORE_EXPORT TFileCustomCommand : public TCustomCommand
 {
 public:
   TFileCustomCommand();

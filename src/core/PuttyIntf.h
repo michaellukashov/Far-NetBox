@@ -4,10 +4,10 @@
 
 #include "PuttyTools.h"
 
-void PuttyInitialize();
-void PuttyFinalize();
+NB_CORE_EXPORT void PuttyInitialize();
+NB_CORE_EXPORT void PuttyFinalize();
 
-void DontSaveRandomSeed();
+NB_CORE_EXPORT void DontSaveRandomSeed();
 
 #ifndef MPEXT
 #define MPEXT

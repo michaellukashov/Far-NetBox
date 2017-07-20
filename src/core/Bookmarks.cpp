@@ -241,10 +241,7 @@ TBookmarkList * TBookmarks::GetBookmarks(UnicodeString AIndex)
   {
     return FBookmarkLists->GetAs<TBookmarkList>(Index);
   }
-  else
-  {
-    return nullptr;
-  }
+  return nullptr;
 }
 
 void TBookmarks::SetBookmarks(UnicodeString AIndex, TBookmarkList * Value)
@@ -348,9 +345,9 @@ void TBookmarkList::MoveTo(TBookmark * ToBookmark,
   TBookmark * Bookmark, bool Before)
 {
   DebugAssert(ToBookmark != nullptr);
-  intptr_t NewIndex = FBookmarks->IndexOf(ToBookmark->GetKey());
+  intptr_t NewIndex = ToBookmark ? FBookmarks->IndexOf(ToBookmark->GetKey()) : 0;
   DebugAssert(Bookmark != nullptr);
-  intptr_t OldIndex = FBookmarks->IndexOf(Bookmark->GetKey());
+  intptr_t OldIndex = Bookmark ? FBookmarks->IndexOf(Bookmark->GetKey()) : 0;
   if (Before && (NewIndex > OldIndex))
   {
     // otherwise item is moved after the item in the target index

@@ -587,7 +587,7 @@ bool TSecureShell::TryFtp()
           Address.sin_addr.s_addr = *(reinterpret_cast<uint32_t *>(*HostEntry->h_addr_list));
 
           HANDLE Event = ::CreateEvent(nullptr, false, false, nullptr);
-          Result = (::WSAEventSelect(Socket, (WSAEVENT)Event, FD_CONNECT | FD_CLOSE) != SOCKET_ERROR);
+          Result = (::WSAEventSelect(Socket, static_cast<WSAEVENT>(Event), FD_CONNECT | FD_CLOSE) != SOCKET_ERROR);
 
           if (Result)
           {
@@ -672,15 +672,12 @@ UnicodeString TSecureShell::ConvertFromPutty(const char * Str, intptr_t Length) 
   {
     return UTF8ToString(Str + BomLength, Length - BomLength);
   }
-  else
-  {
-    return AnsiToString(Str, Length);
-  }
+  return AnsiToString(Str, Length);
 }
 
 void TSecureShell::PuttyLogEvent(const char * AStr)
 {
-  UnicodeString Str = ConvertFromPutty(AStr, (intptr_t)strlen(AStr));
+  UnicodeString Str = ConvertFromPutty(AStr, static_cast<intptr_t>(strlen(AStr)));
 #define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
   if (Str.Pos(SERVER_VERSION_MSG) == 1)
@@ -1180,7 +1177,7 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
         {
           PendUsed = OutLen;
         }
-        memmove(OutPtr, Pending, PendUsed);  //-V575
+        memmove(OutPtr, Pending, PendUsed); //-V575
         memmove(Pending, Pending + PendUsed, PendLen - PendUsed);
         OutPtr += PendUsed;
         OutLen -= PendUsed;
@@ -1203,12 +1200,12 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
       }
 
       // This seems ambiguous
-/*
+#if 0
       if (Length <= 0)
       {
         FatalError(LoadStr(LOST_CONNECTION));
       }
-*/
+#endif // #if 0
     }
     __finally
     {
@@ -1647,7 +1644,7 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
     LogEvent(FORMAT(L"Selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
   }
 
-  if (::WSAEventSelect(Socket, (WSAEVENT)Event, Events) == SOCKET_ERROR)
+  if (::WSAEventSelect(Socket, static_cast<WSAEVENT>(Event), Events) == SOCKET_ERROR)
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
@@ -1960,7 +1957,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
   static const struct
   {
     int Bit, Mask;
-    const wchar_t* Desc;
+    const wchar_t * Desc;
   } EventTypes[] =
   {
     { FD_WRITE_BIT, FD_WRITE, L"write" },
@@ -2037,7 +2034,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       uint32_t WaitResult;
       do
       {
-        uint32_t TimeoutStep = Min(GUIUpdateInterval, (uint32_t)Timeout);
+        uint32_t TimeoutStep = Min(GUIUpdateInterval, static_cast<uint32_t>(Timeout));
         Timeout -= TimeoutStep;
         WaitResult = ::WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, TimeoutStep);
         FUI->ProcessGUI();
@@ -2190,14 +2187,11 @@ uint32_t TSecureShell::MinPacketSize() const
   {
     return 0;
   }
-  else
+  if (FMinPacketSize == nullptr)
   {
-    if (FMinPacketSize == nullptr)
-    {
-      FMinPacketSize = &minPacketSize;
-    }
-    return *FMinPacketSize;
+    FMinPacketSize = &minPacketSize;
   }
+  return *FMinPacketSize;
 }
 
 uint32_t TSecureShell::MaxPacketSize() const
@@ -2211,14 +2205,11 @@ uint32_t TSecureShell::MaxPacketSize() const
   {
     return 0;
   }
-  else
+  if (FMaxPacketSize == nullptr)
   {
-    if (FMaxPacketSize == nullptr)
-    {
-      FMaxPacketSize = ssh2_remmaxpkt(FBackendHandle);
-    }
-    return *FMaxPacketSize;
+    FMaxPacketSize = ssh2_remmaxpkt(FBackendHandle);
   }
+  return *FMaxPacketSize;
 }
 
 UnicodeString TSecureShell::FuncToCompression(
@@ -2233,15 +2224,12 @@ UnicodeString TSecureShell::FuncToCompression(
   {
     return get_ssh1_compressing(FBackendHandle) ? L"ZLib" : L"";
   }
-  else
-  {
-    return reinterpret_cast<ssh_compress *>(const_cast<void *>(Compress)) == &ssh_zlib ? L"ZLib" : L"";
-  }
+  return reinterpret_cast<ssh_compress *>(const_cast<void *>(Compress)) == &ssh_zlib ? L"ZLib" : L"";
 }
 
 TCipher TSecureShell::FuncToSsh1Cipher(const void * Cipher)
 {
-  const ssh_cipher *CipherFuncs[] =
+  const ssh_cipher * CipherFuncs[] =
     {&ssh_3des, &ssh_des, &ssh_blowfish_ssh1};
   const TCipher TCiphers[] = {cip3DES, cipDES, cipBlowfish};
   DebugAssert(_countof(CipherFuncs) == _countof(TCiphers));
@@ -2261,7 +2249,7 @@ TCipher TSecureShell::FuncToSsh1Cipher(const void * Cipher)
 
 TCipher TSecureShell::FuncToSsh2Cipher(const void * Cipher)
 {
-  const ssh2_ciphers *CipherFuncs[] =
+  const ssh2_ciphers * CipherFuncs[] =
     {&ssh2_3des, &ssh2_des, &ssh2_aes, &ssh2_blowfish, &ssh2_arcfour, &ssh2_ccp};
   const TCipher TCiphers[] = {cip3DES, cipDES, cipAES, cipBlowfish, cipArcfour, cipChaCha20};
   DebugAssert(_countof(CipherFuncs) == _countof(TCiphers));

@@ -103,10 +103,9 @@ void THttp::SendRequest(const char * Method, UnicodeString Request)
           }
         }
 
-        UTF8String RequestUtf;
         if (!Request.IsEmpty())
         {
-          RequestUtf = UTF8String(Request);
+          UTF8String RequestUtf = UTF8String(Request);
           ne_set_request_body_buffer(NeonRequest, RequestUtf.c_str(), RequestUtf.Length());
         }
 

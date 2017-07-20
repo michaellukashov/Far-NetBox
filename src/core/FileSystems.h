@@ -43,14 +43,11 @@ const int tfFirstLevel   = 0x01;
 const int tfAutoResume   = 0x02;
 const int tfNewDirectory = 0x04;
 
-struct TSinkFileParams : public TObject
+struct NB_CORE_EXPORT TSinkFileParams : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TSinkFileParams;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSinkFileParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSinkFileParams) || TObject::is(Kind); }
 public:
   TSinkFileParams() : TObject(OBJECT_CLASS_TSinkFileParams), CopyParam(nullptr), OperationProgress(nullptr), Params(0), Flags(0), Skipped(false) {}
   UnicodeString TargetDir;
@@ -61,15 +58,12 @@ public:
   bool Skipped;
 };
 
-struct TFileTransferData : public TObject
+struct NB_CORE_EXPORT TFileTransferData : public TObject
 {
 NB_DISABLE_COPY(TFileTransferData)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TFileTransferData;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFileTransferData); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFileTransferData) || TObject::is(Kind); }
 public:
   TFileTransferData() :
     TObject(OBJECT_CLASS_TFileTransferData),
@@ -90,14 +84,11 @@ public:
   bool AutoResume;
 };
 
-struct TOverwriteFileParams : public TObject
+struct NB_CORE_EXPORT TOverwriteFileParams : public TObject
 {
 public:
-  static bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TOverwriteFileParams;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TOverwriteFileParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TOverwriteFileParams) || TObject::is(Kind); }
 public:
   TOverwriteFileParams() :
     TObject(OBJECT_CLASS_TOverwriteFileParams),
@@ -116,15 +107,12 @@ public:
   TModificationFmt DestPrecision;
 };
 
-struct TOpenRemoteFileParams : public TObject
+struct NB_CORE_EXPORT TOpenRemoteFileParams : public TObject
 {
 NB_DISABLE_COPY(TOpenRemoteFileParams)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TOpenRemoteFileParams;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TOpenRemoteFileParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TOpenRemoteFileParams) || TObject::is(Kind); }
 public:
   TOpenRemoteFileParams() :
     TObject(OBJECT_CLASS_TOpenRemoteFileParams),
@@ -167,19 +155,12 @@ public:
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;
 };
 
-class TCustomFileSystem : public TObject, public TFileSystemIntf
+class NB_CORE_EXPORT TCustomFileSystem : public TObject, public TFileSystemIntf
 {
 NB_DISABLE_COPY(TCustomFileSystem)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TCustomFileSystem ||
-      Obj->GetKind() == OBJECT_CLASS_TFTPFileSystem ||
-      Obj->GetKind() == OBJECT_CLASS_TSCPFileSystem ||
-      Obj->GetKind() == OBJECT_CLASS_TSFTPFileSystem ||
-      Obj->GetKind() == OBJECT_CLASS_TWebDAVFileSystem;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomFileSystem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFileSystem) || TObject::is(Kind); }
 public:
   virtual ~TCustomFileSystem();
 

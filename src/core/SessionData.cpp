@@ -72,6 +72,7 @@ static TDateTime SecToDateTime(intptr_t Sec)
 {
   return TDateTime(double(Sec) / SecsPerDay);
 }
+
 //--- TSessionData ----------------------------------------------------
 TSessionData::TSessionData(UnicodeString AName) :
   TNamedObject(OBJECT_CLASS_TSessionData, AName),
@@ -1839,7 +1840,7 @@ bool TSessionData::ParseUrl(UnicodeString AUrl, TOptions * Options,
           else if ((Name.Length() < DecodedUrl.Length()) &&
             // (DecodedUrl[Name.Length() + 1] == L'/') &&
             // StrLIComp is an equivalent of SameText
-            (nb::StrLIComp(Name.c_str(), DecodedUrl.c_str(), (int)Name.Length()) == 0))
+            (nb::StrLIComp(Name.c_str(), DecodedUrl.c_str(), Name.Length()) == 0))
           {
             Match = true;
           }
@@ -2262,10 +2263,7 @@ UnicodeString TSessionData::GetInternalStorageKey() const
   {
     return GetSessionKey();
   }
-  else
-  {
-    return GetName();
-  }
+  return GetName();
 }
 
 UnicodeString TSessionData::GetStorageKey() const
@@ -2275,7 +2273,7 @@ UnicodeString TSessionData::GetStorageKey() const
 
 UnicodeString TSessionData::FormatSiteKey(UnicodeString HostName, intptr_t PortNumber)
 {
-  return FORMAT(L"%s:%d", HostName.c_str(), (int)PortNumber);
+  return FORMAT(L"%s:%d", HostName.c_str(), static_cast<int>(PortNumber));
 }
 
 UnicodeString TSessionData::GetSiteKey() const
@@ -2491,7 +2489,7 @@ TCipher TSessionData::GetCipher(intptr_t Index) const
   return FCiphers[Index];
 }
 
-template<class AlgoT>
+template <class AlgoT>
 void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
   intptr_t Count, AlgoT WarnAlgo, UnicodeString AValue)
 {
@@ -2524,7 +2522,7 @@ void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const Un
       if (!AlgoStr.CompareIC(Names[Algo]) &&
         !Used[Algo] && DebugAlwaysTrue(Index < Count))
       {
-        NewList[Index] = (AlgoT)Algo;
+        NewList[Index] = static_cast<AlgoT>(Algo);
         Used[Algo] = true;
         ++Index;
         break;
@@ -4411,7 +4409,7 @@ TFSProtocol TSessionData::TranslateFSProtocol(UnicodeString ProtocolID) const
       break;
     }
   }
-  if (Result == (TFSProtocol)-1)
+  if (Result == static_cast<TFSProtocol>(-1))
     Result = CONST_DEFAULT_PROTOCOL;
   DebugAssert(Result != static_cast<TFSProtocol>(-1));
   return Result;
@@ -4765,7 +4763,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
   {
     HostKeyStorage->GetValueNames(KeyList.get());
   }
-  HostKeyStorage.reset(NULL);
+  HostKeyStorage.reset(nullptr);
 
   UnicodeString FirstError;
   for (intptr_t Index = 0; Index < Lines->GetCount(); ++Index)
@@ -4812,7 +4810,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
               if (P > 0)
               {
                 UnicodeString PortNumberStr = HostNameStr.SubString(P + 1, HostNameStr.Length() - P);
-                PortNumber = (intptr_t)::StrToInt64(PortNumberStr);
+                PortNumber = static_cast<intptr_t>(::StrToInt64(PortNumberStr));
                 HostNameStr.SetLength(P - 1);
               }
               if ((HostNameStr.Length() >= 2) &&
@@ -4843,12 +4841,12 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
               }
 
               const struct ssh_signkey * Algorithm = find_pubkey_alg(AlgorithmName);
-              if (Algorithm == NULL)
+              if (Algorithm == nullptr)
               {
                 throw Exception(FORMAT(L"Unknown public key algorithm \"%s\".", (AlgorithmName)));
               }
 
-              void *Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char *>(PubBlob), PubBlobLen);
+              void * Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char *>(PubBlob), PubBlobLen);
               try__finally
               {
                 SCOPE_EXIT
@@ -4881,7 +4879,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
 #endif // if 0
               };
 
-              if (SessionDataOwner.get() != NULL)
+              if (SessionDataOwner.get() != nullptr)
               {
                 Add(SessionDataOwner.release());
               }
@@ -5240,7 +5238,7 @@ void TStoredSessionList::ImportHostKeys(
       SourceStorage->GetValueNames(KeyList.get());
 
       DebugAssert(Sessions != nullptr);
-      for (intptr_t Index = 0; Index < Sessions->GetCount(); ++Index)
+      for (intptr_t Index = 0; Index < (Sessions ? Sessions->GetCount() : 0); ++Index)
       {
         TSessionData * Session = Sessions->GetSession(Index);
         if (!OnlySelected || Session->GetSelected())
@@ -5353,7 +5351,7 @@ bool TStoredSessionList::GetIsWorkspace(UnicodeString Name) const
 TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
   TSessionData * Data, UnicodeString Name)
 {
-  if (Data->IsInFolderOrWorkspace(Name))
+  if (Data && Data->IsInFolderOrWorkspace(Name))
   {
     Data = ResolveWorkspaceData(Data);
 
@@ -5551,23 +5549,23 @@ UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Starte
       switch (::LowCase(Result[Index + 1]))
       {
       case L'y':
-          // Replacement = FormatDateTime(L"yyyy", N);
-          Replacement = FORMAT(L"%04d", Y);
+        // Replacement = FormatDateTime(L"yyyy", N);
+        Replacement = FORMAT(L"%04d", Y);
         break;
 
       case L'm':
-          // Replacement = FormatDateTime(L"mm", N);
-          Replacement = FORMAT(L"%02d", M);
+        // Replacement = FormatDateTime(L"mm", N);
+        Replacement = FORMAT(L"%02d", M);
         break;
 
       case L'd':
-          // Replacement = FormatDateTime(L"dd", N);
-          Replacement = FORMAT(L"%02d", D);
+        // Replacement = FormatDateTime(L"dd", N);
+        Replacement = FORMAT(L"%02d", D);
         break;
 
       case L't':
-          // Replacement = FormatDateTime("hhnnss", N);
-          Replacement = FORMAT(L"%02d%02d%02d", H, NN, S);
+        // Replacement = FormatDateTime("hhnnss", N);
+        Replacement = FORMAT(L"%02d%02d%02d", H, NN, S);
         break;
 
       case 'p':
@@ -5575,25 +5573,25 @@ UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Starte
         break;
 
       case L'@':
-          if (SessionData != nullptr)
-          {
-            Replacement = MakeValidFileName(SessionData->GetHostNameExpanded());
-          }
-          else
-          {
-            Replacement = L"nohost";
-          }
+        if (SessionData != nullptr)
+        {
+          Replacement = MakeValidFileName(SessionData->GetHostNameExpanded());
+        }
+        else
+        {
+          Replacement = L"nohost";
+        }
         break;
 
       case L's':
-          if (SessionData != nullptr)
-          {
-            Replacement = MakeValidFileName(SessionData->GetSessionName());
-          }
-          else
-          {
-            Replacement = L"nosession";
-          }
+        if (SessionData != nullptr)
+        {
+          Replacement = MakeValidFileName(SessionData->GetSessionName());
+        }
+        else
+        {
+          Replacement = L"nosession";
+        }
         break;
 
       case L'&':

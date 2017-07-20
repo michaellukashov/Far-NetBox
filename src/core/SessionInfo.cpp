@@ -80,11 +80,8 @@ static UnicodeString XmlAttributeEscape(UnicodeString Str)
 class TSessionActionRecord : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TSessionActionRecord;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSessionActionRecord); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionActionRecord) || TObject::is(Kind); }
 public:
   explicit TSessionActionRecord(TActionLog * Log, TLogAction Action) :
     TObject(OBJECT_CLASS_TSessionActionRecord),
@@ -532,14 +529,14 @@ void TRmSessionAction::Recursive()
 }
 
 TMvSessionAction::TMvSessionAction(TActionLog * Log,
-    UnicodeString AFileName, UnicodeString ADestination) :
+  UnicodeString AFileName, UnicodeString ADestination) :
   TFileLocationSessionAction(Log, laMv, AFileName)
 {
   Destination(ADestination);
 }
 
 TCallSessionAction::TCallSessionAction(TActionLog * Log,
-    UnicodeString Command, UnicodeString Destination) :
+  UnicodeString Command, UnicodeString Destination) :
   TSessionAction(Log, laCall)
 {
   if (FRecord != nullptr)
@@ -566,7 +563,7 @@ void TCallSessionAction::ExitCode(int ExitCode)
 }
 
 TLsSessionAction::TLsSessionAction(TActionLog * Log,
-    UnicodeString Destination) :
+  UnicodeString Destination) :
   TSessionAction(Log, laLs)
 {
   if (FRecord != nullptr)
@@ -649,6 +646,7 @@ static FILE * OpenFile(UnicodeString LogFileName, TDateTime Started, TSessionDat
 }
 
 const wchar_t * LogLineMarks = L"<>!.*";
+
 TSessionLog::TSessionLog(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
   TConfiguration * Configuration) :
   FConfiguration(Configuration),
@@ -656,9 +654,9 @@ TSessionLog::TSessionLog(TSessionUI * UI, TDateTime Started, TSessionData * Sess
   FLogging(false),
   FFile(nullptr),
   FCurrentFileSize(0),
-  FStarted(Started),
   FUI(UI),
   FSessionData(SessionData),
+  FStarted(Started),
   FClosed(false)
 {
 }
@@ -705,7 +703,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, UnicodeString ALine)
       }
       intptr_t Writting = UtfLine.Length();
       CheckSize(Writting);
-      FCurrentFileSize += fwrite(UtfLine.c_str(), 1, Writting, (FILE *)FFile);
+      FCurrentFileSize += fwrite(UtfLine.c_str(), 1, Writting, static_cast<FILE *>(FFile));
     }}
     catch (...)
     {
@@ -844,7 +842,6 @@ void TSessionLog::ReflectSettings()
   {
     CheckSize(0);
   }
-
 }
 
 bool TSessionLog::LogToFileProtected() const
@@ -865,10 +862,12 @@ void TSessionLog::CloseLogFile()
 
 void TSessionLog::OpenLogFile()
 {
+  DebugAssert(FConfiguration != nullptr);
+  if (!FConfiguration)
+    return;
   try
   {
     DebugAssert(FFile == nullptr);
-    DebugAssert(FConfiguration != nullptr);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
     FFile = OpenFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
     TSearchRec SearchRec;
@@ -959,10 +958,7 @@ UnicodeString TSessionLog::LogSensitive(UnicodeString Str)
   {
     return Str;
   }
-  else
-  {
-    return BooleanToEngStr(!Str.IsEmpty());
-  }
+  return BooleanToEngStr(!Str.IsEmpty());
 }
 
 UnicodeString TSessionLog::GetCmdLineLog() const
@@ -1203,25 +1199,25 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       UnicodeString Ftps;
       switch (Data->GetFtps())
       {
-        case ftpsImplicit:
-          Ftps = L"Implicit TLS/SSL";
-          FtpsOn = true;
-          break;
+      case ftpsImplicit:
+        Ftps = L"Implicit TLS/SSL";
+        FtpsOn = true;
+        break;
 
-        case ftpsExplicitSsl:
-          Ftps = L"Explicit SSL/TLS";
-          FtpsOn = true;
-          break;
+      case ftpsExplicitSsl:
+        Ftps = L"Explicit SSL/TLS";
+        FtpsOn = true;
+        break;
 
-        case ftpsExplicitTls:
-          Ftps = L"Explicit TLS/SSL";
-          FtpsOn = true;
-          break;
+      case ftpsExplicitTls:
+        Ftps = L"Explicit TLS/SSL";
+        FtpsOn = true;
+        break;
 
-        default:
-          DebugAssert(Data->GetFtps() == ftpsNone);
-          Ftps = L"None";
-          break;
+      default:
+        DebugAssert(Data->GetFtps() == ftpsNone);
+        Ftps = L"None";
+        break;
       }
       // kind of hidden option, so do not reveal it unless it is set
       if (Data->GetFtpTransferActiveImmediately() != asAuto)
@@ -1499,7 +1495,6 @@ void TActionLog::ReflectSettings()
     CloseLogFile();
     FLogging = false;
   }
-
 }
 
 void TActionLog::CloseLogFile()
@@ -1515,10 +1510,12 @@ void TActionLog::CloseLogFile()
 
 void TActionLog::OpenLogFile()
 {
+  DebugAssert(FConfiguration != nullptr);
+  if (!FConfiguration)
+    return;
   try
   {
     DebugAssert(FFile == nullptr);
-    DebugAssert(FConfiguration != nullptr);
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
     FFile = OpenFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
   }

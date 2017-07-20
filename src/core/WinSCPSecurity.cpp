@@ -28,10 +28,7 @@ uint8_t SimpleDecryptNextChar(RawByteString & Str)
     Str.Delete(1, 2);
     return Result;
   }
-  else
-  {
-    return 0x00;
-  }
+  return 0x00;
 }
 
 RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString UnicodeKey, Integer /* Algorithm */)
@@ -40,7 +37,6 @@ RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString Unico
   UTF8String Key = UTF8String(UnicodeKey);
 
   RawByteString Result("");
-  intptr_t Shift, Index;
 
   if (!::RandSeed)
   {
@@ -48,15 +44,15 @@ RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString Unico
     ::RandSeed = 1;
   }
   Password = Key + Password;
-  Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?
-            static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - static_cast<int>(Password.Length()))) : 0;
+  intptr_t Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?
+                     static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - static_cast<int>(Password.Length()))) : 0;
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG)); // Flag
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_INTERNAL)); // Dummy
   Result += SimpleEncryptChar(static_cast<uint8_t>(Password.Length()));
   Result += SimpleEncryptChar(static_cast<uint8_t>(Shift));
-  for (Index = 0; Index < Shift; ++Index)
+  for (intptr_t Index = 0; Index < Shift; ++Index)
     Result += SimpleEncryptChar(static_cast<uint8_t>(random(256)));
-  for (Index = 0; Index < Password.Length(); ++Index)
+  for (intptr_t Index = 0; Index < Password.Length(); ++Index)
     Result += SimpleEncryptChar(static_cast<uint8_t>(Password.c_str()[Index]));
   while (Result.Length() < PWALG_SIMPLE_MAXLEN * 2)
     Result += SimpleEncryptChar(static_cast<uint8_t>(random(256)));
@@ -72,7 +68,8 @@ UnicodeString DecryptPassword(RawByteString Password, UnicodeString UnicodeKey, 
   uint8_t Flag = SimpleDecryptNextChar(Password);
   if (Flag == PWALG_SIMPLE_FLAG)
   {
-    /* Dummy = */ SimpleDecryptNextChar(Password);
+    /* Dummy = */
+    SimpleDecryptNextChar(Password);
     Length = SimpleDecryptNextChar(Password);
   }
   else
@@ -156,9 +153,9 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
     {
       const CERT_CHAIN_CONTEXT * ChainContext = nullptr;
       if (CertGetCertificateChain(ChainEngine, CertContext, nullptr, nullptr, &ChainPara,
-            CERT_CHAIN_CACHE_END_CERT |
-            CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
-            nullptr, &ChainContext))
+        CERT_CHAIN_CACHE_END_CERT |
+        CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
+        nullptr, &ChainContext))
       {
         CERT_CHAIN_POLICY_PARA PolicyPara;
 
@@ -170,7 +167,7 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
         PolicyStatus.cbSize = sizeof(PolicyStatus);
 
         if (CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_SSL,
-              ChainContext, &PolicyPara, &PolicyStatus))
+          ChainContext, &PolicyPara, &PolicyStatus))
         {
           // Windows thinks the certificate is valid.
           Result = (PolicyStatus.dwError == S_OK);

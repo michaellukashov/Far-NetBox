@@ -42,8 +42,7 @@ void TGUICopyParamType::Assign(const TCopyParamType * Source)
 {
   TCopyParamType::Assign(Source);
 
-  const TGUICopyParamType * GUISource;
-  GUISource = dyn_cast<TGUICopyParamType>(Source);
+  const TGUICopyParamType * GUISource = dyn_cast<TGUICopyParamType>(Source);
   if (GUISource != nullptr)
   {
     GUIAssign(GUISource);
@@ -132,7 +131,7 @@ TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source) :
 
 #define C(Property) (Property == rhp.Property)
 
-bool TCopyParamRule::operator==(const TCopyParamRule& rhp) const
+bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
 {
   return
     C(FData.HostName) &&
@@ -436,20 +435,20 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
         }
         __finally
         {
-/*
+#if 0
           Storage->CloseSubKey();
-*/
+#endif // #if 0
         };
       }
     }
-/*
+#if 0
     catch(...)
     {
       delete CopyParam;
       delete Rule;
       throw;
     }
-*/
+#endif // #if 0
 
     FCopyParams->Add(CopyParam.release());
     FRules->Add(Rule.release());
@@ -484,9 +483,9 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
       }
       __finally
       {
-/*
+#if 0
         Storage->CloseSubKey();
-*/
+#endif // #if 0
       };
     }
   }
@@ -540,8 +539,6 @@ bool TCopyParamList::GetAnyRule() const
 
 TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) :
   TConfiguration(Kind),
-  FAppliedLocale(0),
-  FLocale(0),
   FLocales(CreateSortedStringList()),
   FLastLocalesExts(L"*"),
   FContinueOnError(false),
@@ -562,7 +559,9 @@ TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) :
   FCopyParamList(new TCopyParamList()),
   FCopyParamListDefaults(false),
   FKeepUpToDateChangeDelay(0),
-  FSessionReopenAutoIdle(0)
+  FSessionReopenAutoIdle(0),
+  FAppliedLocale(0),
+  FLocale(0)
 {
   CoreSetResourceModule(nullptr);
   FLocales = new TObjectList();
@@ -733,9 +732,9 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     }
     __finally
     {
-  /*
+#if 0
       Storage->CloseSubKey();
-  */
+#endif // #if 0
     };
   }
 
@@ -751,9 +750,9 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     }
     __finally
     {
-  /*
+#if 0
       Storage->CloseSubKey();
-  */
+#endif // #if 0
     };
   }
 }
@@ -783,7 +782,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
       FDefaultCopyParam.Load(Storage);
 
       intptr_t CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
-      FCopyParamListDefaults = ((int)CopyParamListCount <= 0);
+      FCopyParamListDefaults = (static_cast<int>(CopyParamListCount) <= 0);
       if (!FCopyParamListDefaults)
       {
         FCopyParamList->Clear();
@@ -798,9 +797,9 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     __finally
     {
-  /*
+#if 0
       Storage->CloseSubKey();
-  */
+#endif // #if 0
     };
   }
 
@@ -830,9 +829,9 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     __finally
     {
-  /*
+#if 0
       Storage->CloseSubKey();
-  */
+#endif // #if 0
     };
   }
 }
@@ -913,7 +912,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
       {
         Module.SetLength(Module.Length() - 1);
         ModulePath = GetTranslationModule(Module);
-        NewInstance = LoadLibraryEx(ModulePath.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
+        NewInstance = LoadLibraryEx(ModulePath.c_str(), nullptr, LOAD_LIBRARY_AS_DATAFILE);
         if (NewInstance)
         {
           LibraryFileName = ModulePath;
@@ -926,13 +925,10 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   {
     throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
   }
-  else
+  if (Internal)
   {
-    if (Internal)
-    {
-      ThrowNotImplemented(90);
-      NewInstance = nullptr; // FIXME  HInstance;
-    }
+    ThrowNotImplemented(90);
+    NewInstance = nullptr; // FIXME  HInstance;
   }
 
   AFileName = LibraryFileName;
@@ -1139,9 +1135,7 @@ void TGUIConfiguration::FindLocales(UnicodeString LocalesMask, TStrings * Exts, 
 {
   int FindAttrs = faReadOnly | faArchive;
   TSearchRecChecked SearchRec;
-  bool Found;
-
-  Found =
+  bool Found =
     (FindFirstUnchecked(LocalesMask, FindAttrs, SearchRec) == 0);
   try__finally
   {

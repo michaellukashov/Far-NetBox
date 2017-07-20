@@ -206,7 +206,7 @@ inline void ThrowSkipFile(Exception * Exception, UnicodeString Message)
 }
 inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
 
-void FileOperationLoopCustom(TTerminal * Terminal,
+NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal * Terminal,
   TFileOperationProgressType * OperationProgress,
   bool AllowSkip, UnicodeString Message,
   UnicodeString HelpKeyword,
@@ -230,17 +230,12 @@ const int ropNoReadDirectory = 0x02;
 
 const int boDisableNeverShowAgain = 0x01;
 
-class TTerminal : public TSessionUI
+class NB_CORE_EXPORT TTerminal : public TSessionUI
 {
 NB_DISABLE_COPY(TTerminal)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TTerminal ||
-      Obj->GetKind() == OBJECT_CLASS_TSecondaryTerminal ||
-      Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TTerminal); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTerminal) || TSessionUI::is(Kind); }
 public:
   // TScript::SynchronizeProc relies on the order
 #if 0
@@ -675,7 +670,7 @@ public:
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
   void inline LogEvent(UnicodeString Str);
-  void GetSupportedChecksumAlgs(TStrings * Algs);
+  void GetSupportedChecksumAlgs(TStrings * Algs) const;
   UnicodeString ChangeFileName(const TCopyParamType * CopyParam,
     UnicodeString AFileName, TOperationSide Side, bool FirstLevel) const;
   UnicodeString GetBaseFileName(UnicodeString AFileName) const;
@@ -734,7 +729,7 @@ public:
     const TDateTime & Modification);
   void SetLocalFileTime(UnicodeString LocalFileName,
     FILETIME * AcTime, FILETIME * WrTime);
-  DWORD GetLocalFileAttributes(UnicodeString LocalFileName);
+  DWORD GetLocalFileAttributes(UnicodeString LocalFileName) const;
   bool SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes);
   bool MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags);
   bool RemoveLocalDirectory(UnicodeString LocalDirName);
@@ -805,7 +800,7 @@ public:
   TCustomFileSystem * GetFileSystem() const { return FFileSystem; }
   TCustomFileSystem * GetFileSystem() { return FFileSystem; }
 
-  bool CheckForEsc();
+  bool CheckForEsc() const;
   void SetupTunnelLocalPortNumber();
 
 private:
@@ -814,16 +809,12 @@ private:
   void InitFileSystem();
 };
 
-class TSecondaryTerminal : public TTerminal
+class NB_CORE_EXPORT TSecondaryTerminal : public TTerminal
 {
 NB_DISABLE_COPY(TSecondaryTerminal)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TSecondaryTerminal ||
-      Obj->GetKind() == OBJECT_CLASS_TBackgroundTerminal;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSecondaryTerminal); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecondaryTerminal) || TTerminal::is(Kind); }
 public:
   TSecondaryTerminal() : TTerminal(OBJECT_CLASS_TSecondaryTerminal), FMainTerminal(nullptr) {}
   explicit TSecondaryTerminal(TTerminal * MainTerminal);
@@ -850,7 +841,7 @@ private:
   TTerminal * FMainTerminal;
 };
 
-class TTerminalList : public TObjectList
+class NB_CORE_EXPORT TTerminalList : public TObjectList
 {
 NB_DISABLE_COPY(TTerminalList)
 public:
@@ -876,14 +867,11 @@ public:
   TTerminal * GetTerminal(intptr_t Index);
 };
 
-struct TCustomCommandParams : public TObject
+struct NB_CORE_EXPORT TCustomCommandParams : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TCustomCommandParams;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomCommandParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomCommandParams) || TObject::is(Kind); }
 public:
   TCustomCommandParams() : TObject(OBJECT_CLASS_TCustomCommandParams), Params(0) {}
   UnicodeString Command;
@@ -891,7 +879,7 @@ public:
   TCaptureOutputEvent OutputEvent;
 };
 
-struct TCalculateSizeStats : public TObject
+struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
 {
   TCalculateSizeStats();
 
@@ -901,14 +889,11 @@ struct TCalculateSizeStats : public TObject
   TStrings * FoundFiles;
 };
 
-struct TCalculateSizeParams : public TObject
+struct NB_CORE_EXPORT TCalculateSizeParams : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TCalculateSizeParams;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCalculateSizeParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCalculateSizeParams) || TObject::is(Kind); }
 public:
   TCalculateSizeParams() : TObject(OBJECT_CLASS_TCalculateSizeParams), Size(0), Params(0), CopyParam(nullptr), Stats(nullptr), Files(nullptr), AllowDirs(false), Result(false) {}
   int64_t Size;
@@ -937,14 +922,11 @@ struct TOverwriteFileParams
 
 typedef rde::vector<TDateTime> TDateTimes;
 
-struct TMakeLocalFileListParams : public TObject
+struct NB_CORE_EXPORT TMakeLocalFileListParams : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TMakeLocalFileListParams;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TMakeLocalFileListParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TMakeLocalFileListParams) || TObject::is(Kind); }
 public:
   TMakeLocalFileListParams() : TObject(OBJECT_CLASS_TMakeLocalFileListParams), FileList(nullptr), FileTimes(nullptr), IncludeDirs(false), Recursive(false) {}
   TStrings * FileList;
@@ -953,7 +935,7 @@ public:
   bool Recursive;
 };
 
-struct TSynchronizeOptions : public TObject
+struct NB_CORE_EXPORT TSynchronizeOptions : public TObject
 {
 NB_DISABLE_COPY(TSynchronizeOptions)
 public:
@@ -978,16 +960,13 @@ enum TChecklistAction
 };
 
 
-class TChecklistItem : public TObject
+class NB_CORE_EXPORT TChecklistItem : public TObject
 {
 friend class TTerminal;
 NB_DISABLE_COPY(TChecklistItem)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TChecklistItem;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TChecklistItem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TChecklistItem) || TObject::is(Kind); }
 public:
 
   struct TFileInfo : public TObject
@@ -1017,7 +996,7 @@ private:
   TChecklistItem();
 };
 
-class TSynchronizeChecklist : public TObject
+class NB_CORE_EXPORT TSynchronizeChecklist : public TObject
 {
 NB_DISABLE_COPY(TSynchronizeChecklist)
 friend class TTerminal;
@@ -1092,7 +1071,7 @@ private:
   static intptr_t Compare(const void * AItem1, const void * AItem2);
 };
 
-struct TSpaceAvailable // : public TObject
+struct NB_CORE_EXPORT TSpaceAvailable
 {
 CUSTOM_MEM_ALLOCATION_IMPL
   TSpaceAvailable();
@@ -1104,7 +1083,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   uintptr_t BytesPerAllocationUnit;
 };
 
-class TRobustOperationLoop : public TObject
+class NB_CORE_EXPORT TRobustOperationLoop : public TObject
 {
 NB_DISABLE_COPY(TRobustOperationLoop)
 public:
@@ -1126,11 +1105,8 @@ private:
 class TCollectedFileList : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TCollectedFileList;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCollectedFileList); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCollectedFileList) || TObject::is(Kind); }
 public:
   TCollectedFileList();
   intptr_t Add(UnicodeString FileName, TObject * Object, bool Dir);
@@ -1168,7 +1144,7 @@ public:
 
   bool IsInitialized() const;
   void WaitFor();
-  bool ShouldAddClient();
+  bool ShouldAddClient() const;
   void AddClient();
   void RemoveClient();
   intptr_t GetNext(
@@ -1217,5 +1193,5 @@ private:
   bool CheckEnd(TCollectedFileList * Files);
 };
 
-UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName = false);
+NB_CORE_EXPORT UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName = false);
 

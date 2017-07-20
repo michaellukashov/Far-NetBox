@@ -11,7 +11,7 @@ static const char * CONST_VERSION_ATTR = "version";
 static const char * CONST_NAME_ATTR = "name";
 
 TXmlStorage::TXmlStorage(UnicodeString AStorage,
-                         UnicodeString StoredSessionsSubKey) :
+  UnicodeString StoredSessionsSubKey) :
   THierarchicalStorage(::ExcludeTrailingBackslash(AStorage)),
   FXmlDoc(nullptr),
   FCurrentElement(nullptr),
@@ -249,10 +249,7 @@ UnicodeString TXmlStorage::GetSubKeyText(UnicodeString Name) const
   {
     return ToUnicodeString(Element->Attribute(CONST_NAME_ATTR));
   }
-  else
-  {
-    return ToUnicodeString(Element->GetText());
-  }
+  return ToUnicodeString(Element->GetText());
 }
 
 tinyxml2::XMLElement * TXmlStorage::FindElement(UnicodeString Name) const
@@ -338,10 +335,7 @@ bool TXmlStorage::ReadBool(UnicodeString Name, bool Default) const
   {
     return Default;
   }
-  else
-  {
-    return ::AnsiCompareIC(Result, ::BooleanToEngStr(true)) == 0;
-  }
+  return AnsiCompareIC(Result, BooleanToEngStr(true)) == 0;
 }
 
 TDateTime TXmlStorage::ReadDateTime(UnicodeString Name, const TDateTime & Default) const

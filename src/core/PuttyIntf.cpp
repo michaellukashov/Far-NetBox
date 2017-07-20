@@ -147,8 +147,12 @@ int get_userpass_input(prompts_t * p, const uint8_t * in, int inlen)
 int GetUserpassInput(prompts_t * p, const uint8_t * /*in*/, int /*inlen*/)
 {
   DebugAssert(p != nullptr);
+  if (!p)
+    return -1;
   TSecureShell * SecureShell = get_as<TSecureShell>(p->frontend);
   DebugAssert(SecureShell != nullptr);
+  if (!SecureShell)
+    return -1;
 
   int Result;
   std::unique_ptr<TStrings> Prompts(new TStringList());
@@ -236,7 +240,7 @@ void connection_fatal(void * frontend, const char * fmt, ...)
   std::string Buf;
   Buf.resize(32 * 1024);
   va_start(Param, fmt);
-  vsnprintf_s((char *)Buf.c_str(), Buf.size(), _TRUNCATE, fmt, Param);
+  vsnprintf_s(const_cast<char *>(Buf.c_str()), Buf.size(), _TRUNCATE, fmt, Param);
   Buf[Buf.size() - 1] = '\0';
   va_end(Param);
 
@@ -273,7 +277,7 @@ int askalg(void * frontend, const char * algtype, const char * algname,
 }
 
 int askhk(void * /*frontend*/, const char * /*algname*/, const char * /*betteralgs*/,
-  void (* /*callback*/)(void *ctx, int result), void * /*ctx*/)
+  void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   return 1;
 }
@@ -294,7 +298,7 @@ static void SSHFatalError(const char * Format, va_list Param)
 {
   std::string Buf;
   Buf.resize(32 * 1024);
-  vsnprintf_s((char *)Buf.c_str(), Buf.size(), _TRUNCATE, Format, Param);
+  vsnprintf_s(const_cast<char *>(Buf.c_str()), Buf.size(), _TRUNCATE, Format, Param);
   Buf[Buf.size() - 1] = '\0';
 
   // Only few calls from putty\winnet.c might be connected with specific
@@ -503,7 +507,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     }
   }
 
-  if (R == ERROR_SUCCESS)
+  if ((R == ERROR_SUCCESS) && Type)
   {
     DebugAssert(Type != nullptr);
     *Type = REG_SZ;
@@ -617,7 +621,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, UnicodeString FileName, UnicodeString Pa
   case ktOpenSSHPEM:
   case ktOpenSSHNew:
   case ktSSHCom:
-    Ssh2Key = import_ssh2(KeyFile, KeyType, (char *)AnsiPassphrase.c_str(), &ErrorStr);
+    Ssh2Key = import_ssh2(KeyFile, KeyType, const_cast<char *>(AnsiPassphrase.c_str()), &ErrorStr);
     break;
 
   default:
@@ -636,7 +640,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, UnicodeString FileName, UnicodeString Pa
     // and handle ktUnopenable accordingly.
     throw Exception(Error);
   }
-  else if (Ssh2Key == SSH2_WRONG_PASSPHRASE)
+  if (Ssh2Key == SSH2_WRONG_PASSPHRASE)
   {
     throw Exception(LoadStr(AUTH_TRANSL_WRONG_PASSPHRASE));
   }
@@ -753,7 +757,7 @@ static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & 
       KeyType = UnicodeString(SignKey->keytype);
       return;
     }
-    else if (::StartsStr(Name + NormalizedSeparator, Fingerprint))
+    if (StartsStr(Name + NormalizedSeparator, Fingerprint))
     {
       KeyType = UnicodeString(SignKey->keytype);
       return;

@@ -3,7 +3,7 @@
 
 #include <Option.h>
 
-class TProgramParams : public TOptions
+class NB_CORE_EXPORT TProgramParams : public TOptions
 {
 public:
   // static TProgramParams * Instance();

@@ -20,7 +20,9 @@ UnicodeString AnyMask = L"*.*";
 
 EFileMasksException::EFileMasksException(
   UnicodeString AMessage, intptr_t AErrorStart, intptr_t AErrorLen) :
-  Exception(AMessage), ErrorStart(AErrorStart), ErrorLen(AErrorLen)
+  Exception(AMessage),
+  ErrorStart(AErrorStart),
+  ErrorLen(AErrorLen)
 {
 }
 
@@ -151,16 +153,13 @@ bool TFileMasks::IsMask(const UnicodeString Mask)
   return (Mask.LastDelimiter(L"?*[") > 0);
 }
 
-UnicodeString TFileMasks::NormalizeMask(UnicodeString Mask, UnicodeString AnyMask)
+UnicodeString TFileMasks::NormalizeMask(UnicodeString Mask, UnicodeString AAnyMask)
 {
   if (!IsEffectiveFileNameMask(Mask))
   {
-    return AnyMask;
+    return AAnyMask;
   }
-  else
-  {
-    return Mask;
-  }
+  return Mask;
 }
 
 UnicodeString TFileMasks::ComposeMaskStr(
@@ -828,12 +827,9 @@ void TCustomCommand::GetToken(
     {
       throw Exception(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
     }
-    else
+    if ((Command.Length() - Index + 1) < Len)
     {
-      if ((Command.Length() - Index + 1) < Len)
-      {
-        throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
-      }
+      throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
     }
   }
   else
@@ -1193,7 +1189,7 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
 intptr_t TFileCustomCommand::PatternLen(UnicodeString Command, intptr_t Index) const
 {
   intptr_t Len;
-  wchar_t PatternCmd = (Index < Command.Length()) ? (wchar_t)::tolower(Command[Index + 1]) : L'\0';
+  wchar_t PatternCmd = (Index < Command.Length()) ? static_cast<wchar_t>(::tolower(Command[Index + 1])) : L'\0';
   switch (PatternCmd)
   {
   case L's':

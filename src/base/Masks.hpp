@@ -4,7 +4,7 @@
 
 namespace Masks {
 
-class TMask : public TObject
+class NB_CORE_EXPORT TMask : public TObject
 {
 public:
   explicit TMask(UnicodeString Mask);

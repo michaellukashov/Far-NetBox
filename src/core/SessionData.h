@@ -118,46 +118,46 @@ enum TSessionUrlFlags
   sufOpen = sufUserName | sufPassword,
 };
 
-extern const UnicodeString CipherNames[CIPHER_COUNT];
-extern const UnicodeString KexNames[KEX_COUNT];
-extern const UnicodeString GssLibNames[GSSLIB_COUNT];
-extern const wchar_t SshProtList[][10];
-extern const TCipher DefaultCipherList[CIPHER_COUNT];
-extern const TKex DefaultKexList[KEX_COUNT];
-extern const TGssLib DefaultGssLibList[GSSLIB_COUNT];
-extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][16];
-extern const intptr_t DefaultSendBuf;
-extern const UnicodeString AnonymousUserName;
-extern const UnicodeString AnonymousPassword;
-extern const intptr_t SshPortNumber;
-extern const intptr_t FtpPortNumber;
-extern const intptr_t FtpsImplicitPortNumber;
-extern const intptr_t HTTPPortNumber;
-extern const intptr_t HTTPSPortNumber;
-extern const intptr_t TelnetPortNumber;
-extern const intptr_t ProxyPortNumber;
-extern const UnicodeString PuttySshProtocol;
-extern const UnicodeString PuttyTelnetProtocol;
-extern const UnicodeString SftpProtocol;
-extern const UnicodeString ScpProtocol;
-extern const UnicodeString FtpProtocol;
-extern const UnicodeString FtpsProtocol;
-extern const UnicodeString FtpesProtocol;
-extern const UnicodeString WebDAVProtocol;
-extern const UnicodeString WebDAVSProtocol;
-extern const UnicodeString SshProtocol;
-extern const UnicodeString WinSCPProtocolPrefix;
-extern const wchar_t UrlParamSeparator;
-extern const wchar_t UrlParamValueSeparator;
-extern const UnicodeString UrlHostKeyParamName;
-extern const UnicodeString UrlSaveParamName;
-extern const UnicodeString PassphraseOption;
+NB_CORE_EXPORT extern const UnicodeString CipherNames[CIPHER_COUNT];
+NB_CORE_EXPORT extern const UnicodeString KexNames[KEX_COUNT];
+NB_CORE_EXPORT extern const UnicodeString GssLibNames[GSSLIB_COUNT];
+NB_CORE_EXPORT extern const wchar_t SshProtList[][10];
+NB_CORE_EXPORT extern const TCipher DefaultCipherList[CIPHER_COUNT];
+NB_CORE_EXPORT extern const TKex DefaultKexList[KEX_COUNT];
+NB_CORE_EXPORT extern const TGssLib DefaultGssLibList[GSSLIB_COUNT];
+NB_CORE_EXPORT extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][16];
+NB_CORE_EXPORT extern const intptr_t DefaultSendBuf;
+NB_CORE_EXPORT extern const UnicodeString AnonymousUserName;
+NB_CORE_EXPORT extern const UnicodeString AnonymousPassword;
+NB_CORE_EXPORT extern const intptr_t SshPortNumber;
+NB_CORE_EXPORT extern const intptr_t FtpPortNumber;
+NB_CORE_EXPORT extern const intptr_t FtpsImplicitPortNumber;
+NB_CORE_EXPORT extern const intptr_t HTTPPortNumber;
+NB_CORE_EXPORT extern const intptr_t HTTPSPortNumber;
+NB_CORE_EXPORT extern const intptr_t TelnetPortNumber;
+NB_CORE_EXPORT extern const intptr_t ProxyPortNumber;
+NB_CORE_EXPORT extern const UnicodeString PuttySshProtocol;
+NB_CORE_EXPORT extern const UnicodeString PuttyTelnetProtocol;
+NB_CORE_EXPORT extern const UnicodeString SftpProtocol;
+NB_CORE_EXPORT extern const UnicodeString ScpProtocol;
+NB_CORE_EXPORT extern const UnicodeString FtpProtocol;
+NB_CORE_EXPORT extern const UnicodeString FtpsProtocol;
+NB_CORE_EXPORT extern const UnicodeString FtpesProtocol;
+NB_CORE_EXPORT extern const UnicodeString WebDAVProtocol;
+NB_CORE_EXPORT extern const UnicodeString WebDAVSProtocol;
+NB_CORE_EXPORT extern const UnicodeString SshProtocol;
+NB_CORE_EXPORT extern const UnicodeString WinSCPProtocolPrefix;
+NB_CORE_EXPORT extern const wchar_t UrlParamSeparator;
+NB_CORE_EXPORT extern const wchar_t UrlParamValueSeparator;
+NB_CORE_EXPORT extern const UnicodeString UrlHostKeyParamName;
+NB_CORE_EXPORT extern const UnicodeString UrlSaveParamName;
+NB_CORE_EXPORT extern const UnicodeString PassphraseOption;
 
 
-extern const intptr_t SFTPMinVersion;
-extern const intptr_t SFTPMaxVersion;
+NB_CORE_EXPORT extern const intptr_t SFTPMinVersion;
+NB_CORE_EXPORT extern const intptr_t SFTPMaxVersion;
 
-struct TIEProxyConfig : public TObject
+struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 {
   TIEProxyConfig() :
     AutoDetect(false),
@@ -176,15 +176,13 @@ struct TIEProxyConfig : public TObject
 
 class TStoredSessionList;
 
-class TSessionData : public TNamedObject
+class NB_CORE_EXPORT TSessionData : public TNamedObject
 {
 friend class TStoredSessionList;
 NB_DISABLE_COPY(TSessionData)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return Obj->GetKind() == OBJECT_CLASS_TSessionData;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
 private:
   UnicodeString FHostName;
   intptr_t FPortNumber;
@@ -893,15 +891,12 @@ private:
   void AdjustHostName(UnicodeString & HostName, UnicodeString Prefix) const;
 };
 
-class TStoredSessionList : public TNamedObjectList
+class NB_CORE_EXPORT TStoredSessionList : public TNamedObjectList
 {
 NB_DISABLE_COPY(TStoredSessionList)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TStoredSessionList); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStoredSessionList) || TNamedObjectList::is(Kind); }
 public:
   explicit TStoredSessionList(bool AReadOnly = false);
   void Load();
@@ -974,11 +969,11 @@ private:
   static bool OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate);
 };
 
-bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
-uintptr_t GetCodePageAsNumber(UnicodeString CodePage);
-UnicodeString GetCodePageAsString(uintptr_t CodePage);
+NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
+NB_CORE_EXPORT uintptr_t GetCodePageAsNumber(UnicodeString CodePage);
+NB_CORE_EXPORT UnicodeString GetCodePageAsString(uintptr_t CodePage);
 
-UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData * SessionData);
-bool GetIsSshProtocol(TFSProtocol FSProtocol);
-intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
+NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData * SessionData);
+NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
+NB_CORE_EXPORT intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 

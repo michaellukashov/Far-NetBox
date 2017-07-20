@@ -11,11 +11,8 @@ class TSCPFileSystem : public TCustomFileSystem
 {
 NB_DISABLE_COPY(TSCPFileSystem)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TSCPFileSystem;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSCPFileSystem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSCPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
   explicit TSCPFileSystem(TTerminal * ATerminal);
   virtual ~TSCPFileSystem();

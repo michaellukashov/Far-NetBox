@@ -138,13 +138,13 @@ public:
     StrPair() : _flags( 0 ), _start( 0 ), _end( 0 ) {}
     ~StrPair();
 
-    void Set( char* start, char* end, int flags ) {
+    void Set( char* start, char* end, int param_flags ) {
         TIXMLASSERT( start );
         TIXMLASSERT( end );
         Reset();
         _start  = start;
         _end    = end;
-        _flags  = flags | NEEDS_FLUSH;
+        _flags  = param_flags | NEEDS_FLUSH;
     }
 
     const char* GetStr();

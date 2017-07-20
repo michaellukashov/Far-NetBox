@@ -55,8 +55,8 @@ enum FileAttributesEnum
   faAnyFile = 0x0000003f,
 };
 
-intptr_t __cdecl debug_printf(const wchar_t * format, ...);
-intptr_t __cdecl debug_printf2(const char * format, ...);
+NB_CORE_EXPORT intptr_t __cdecl debug_printf(const wchar_t * format, ...);
+NB_CORE_EXPORT intptr_t __cdecl debug_printf2(const char * format, ...);
 
 #define NB_TEXT(T) L#T
 #ifndef NDEBUG
@@ -77,35 +77,18 @@ intptr_t __cdecl debug_printf2(const char * format, ...);
 #define DEBUG_PRINTF2(format, ...)
 #endif
 
-UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
-AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
+NB_CORE_EXPORT UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
+NB_CORE_EXPORT AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
 
 typedef int TDayTable[12];
 extern const TDayTable MonthDays[];
 
-class Exception : public std::runtime_error//, public TObject
+class NB_CORE_EXPORT Exception : public std::runtime_error
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  inline TObjectClassId GetKind() const { return FKind; }
-  static bool classof(const Exception * Obj)
-  {
-    TObjectClassId Kind = Obj->GetKind();
-    return
-      Kind == OBJECT_CLASS_Exception ||
-      Kind == OBJECT_CLASS_ExtException ||
-      Kind == OBJECT_CLASS_EAbort ||
-      Kind == OBJECT_CLASS_EAccessViolation ||
-      Kind == OBJECT_CLASS_EFileNotFoundError ||
-      Kind == OBJECT_CLASS_EOSError ||
-      Kind == OBJECT_CLASS_EInvalidOperation ||
-      Kind == OBJECT_CLASS_EFatal ||
-      Kind == OBJECT_CLASS_ESshFatal ||
-      Kind == OBJECT_CLASS_ESshTerminate ||
-      Kind == OBJECT_CLASS_ECallbackGuardAbort ||
-      Kind == OBJECT_CLASS_EFileSkipped ||
-      Kind == OBJECT_CLASS_ESkipFile;
-  }
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_Exception); }
+  virtual bool is(TObjectClassId Kind) const { return (Kind == FKind); }
 public:
   explicit Exception(TObjectClassId Kind, const wchar_t * Msg);
   explicit Exception(const wchar_t * Msg);
@@ -126,15 +109,11 @@ public:
   UnicodeString Message;
 };
 
-class EAbort : public Exception
+class NB_CORE_EXPORT EAbort : public Exception
 {
 public:
-  static inline bool classof(const Exception * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_EAbort ||
-      Obj->GetKind() == OBJECT_CLASS_ECallbackGuardAbort;
-  }
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EAbort); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAbort) || Exception::is(Kind); }
 public:
   explicit EAbort(UnicodeString what) : Exception(OBJECT_CLASS_EAbort, what)
   {
@@ -144,42 +123,33 @@ public:
   }
 };
 
-class EAccessViolation : public Exception
+class NB_CORE_EXPORT EAccessViolation : public Exception
 {
 public:
-  static inline bool classof(const Exception * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_EAccessViolation;
-  }
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EAccessViolation); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAccessViolation) || Exception::is(Kind); }
 public:
   explicit EAccessViolation(UnicodeString what) : Exception(OBJECT_CLASS_EAccessViolation, what)
   {
   }
 };
 
-class EFileNotFoundError : public Exception
+class NB_CORE_EXPORT EFileNotFoundError : public Exception
 {
 public:
-  static inline bool classof(const Exception * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_EFileNotFoundError;
-  }
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EFileNotFoundError); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFileNotFoundError) || Exception::is(Kind); }
 public:
   EFileNotFoundError() : Exception(OBJECT_CLASS_EFileNotFoundError, L"")
   {
   }
 };
 
-class EOSError : public Exception
+class NB_CORE_EXPORT EOSError : public Exception
 {
 public:
-  static inline bool classof(const Exception * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_EOSError;
-  }
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EOSError); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EOSError) || Exception::is(Kind); }
 public:
   explicit EOSError(UnicodeString Msg, DWORD code) :
     Exception(OBJECT_CLASS_EOSError, Msg),
@@ -192,11 +162,8 @@ public:
 class EInvalidOperation : public Exception
 {
 public:
-  static inline bool classof(const Exception * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_EInvalidOperation;
-  }
+  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EInvalidOperation); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EInvalidOperation) || Exception::is(Kind); }
 public:
   explicit EInvalidOperation(UnicodeString Msg) :
     Exception(OBJECT_CLASS_EInvalidOperation, Msg)
@@ -214,7 +181,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
 
 namespace Sysutils {
 
-struct TFormatSettings : public TObject
+struct NB_CORE_EXPORT TFormatSettings : public TObject
 {
 public:
   explicit TFormatSettings(int /*LCID*/);
@@ -237,147 +204,147 @@ public:
   uint16_t TwoDigitYearCenturyWindow;
 };
 
-void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings);
+NB_CORE_EXPORT void GetLocaleFormatSettings(int LCID, TFormatSettings & FormatSettings);
 
-UnicodeString ExtractShortPathName(UnicodeString APath);
-UnicodeString ExtractDirectory(UnicodeString APath, wchar_t Delimiter = L'/');
-UnicodeString ExtractFilename(UnicodeString APath, wchar_t Delimiter = L'/');
-UnicodeString ExtractFileExtension(UnicodeString APath, wchar_t Delimiter = L'/');
-UnicodeString ChangeFileExtension(UnicodeString APath, UnicodeString Ext, wchar_t Delimiter = L'/');
+NB_CORE_EXPORT UnicodeString ExtractShortPathName(UnicodeString APath);
+NB_CORE_EXPORT UnicodeString ExtractDirectory(UnicodeString APath, wchar_t Delimiter = L'/');
+NB_CORE_EXPORT UnicodeString ExtractFilename(UnicodeString APath, wchar_t Delimiter = L'/');
+NB_CORE_EXPORT UnicodeString ExtractFileExtension(UnicodeString APath, wchar_t Delimiter = L'/');
+NB_CORE_EXPORT UnicodeString ChangeFileExtension(UnicodeString APath, UnicodeString Ext, wchar_t Delimiter = L'/');
 
-UnicodeString IncludeTrailingBackslash(UnicodeString Str);
-UnicodeString ExcludeTrailingBackslash(UnicodeString Str);
-UnicodeString ExtractFileDir(UnicodeString Str);
-UnicodeString ExtractFilePath(UnicodeString Str);
-UnicodeString GetCurrentDir();
+NB_CORE_EXPORT UnicodeString IncludeTrailingBackslash(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString ExcludeTrailingBackslash(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString ExtractFileDir(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString ExtractFilePath(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString GetCurrentDir();
 
-UnicodeString IncludeTrailingPathDelimiter(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString IncludeTrailingPathDelimiter(UnicodeString Str);
 
-UnicodeString StrToHex(UnicodeString Str, bool UpperCase = true, wchar_t Separator = L'\0');
-UnicodeString HexToStr(UnicodeString Hex);
-uintptr_t HexToInt(UnicodeString Hex, uintptr_t MinChars = 0);
-UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
-char HexToChar(UnicodeString Hex, uintptr_t MinChars = 0);
+NB_CORE_EXPORT UnicodeString StrToHex(UnicodeString Str, bool UpperCase = true, wchar_t Separator = L'\0');
+NB_CORE_EXPORT UnicodeString HexToStr(UnicodeString Hex);
+NB_CORE_EXPORT uintptr_t HexToInt(UnicodeString Hex, uintptr_t MinChars = 0);
+NB_CORE_EXPORT UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
+NB_CORE_EXPORT char HexToChar(UnicodeString Hex, uintptr_t MinChars = 0);
 
-UnicodeString ReplaceStrAll(UnicodeString Str, UnicodeString What, UnicodeString ByWhat);
-UnicodeString SysErrorMessage(intptr_t ErrorCode);
+NB_CORE_EXPORT UnicodeString ReplaceStrAll(UnicodeString Str, UnicodeString What, UnicodeString ByWhat);
+NB_CORE_EXPORT UnicodeString SysErrorMessage(intptr_t ErrorCode);
 
-bool TryStrToDateTime(UnicodeString StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
-UnicodeString DateTimeToStr(UnicodeString & Result, UnicodeString Format,
+NB_CORE_EXPORT bool TryStrToDateTime(UnicodeString StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
+NB_CORE_EXPORT UnicodeString DateTimeToStr(UnicodeString & Result, UnicodeString Format,
   const TDateTime & DateTime);
-UnicodeString DateTimeToString(const TDateTime & DateTime);
-uint32_t DayOfWeek(const TDateTime & DateTime);
+NB_CORE_EXPORT UnicodeString DateTimeToString(const TDateTime & DateTime);
+NB_CORE_EXPORT uint32_t DayOfWeek(const TDateTime & DateTime);
 
-TDateTime Date();
-void DecodeDate(const TDateTime & DateTime, uint16_t & Year,
+NB_CORE_EXPORT TDateTime Date();
+NB_CORE_EXPORT void DecodeDate(const TDateTime & DateTime, uint16_t & Year,
   uint16_t & Month, uint16_t & Day);
-void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
+NB_CORE_EXPORT void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
   uint16_t & Min, uint16_t & Sec, uint16_t & MSec);
 
-UnicodeString FormatDateTime(UnicodeString Fmt, const TDateTime & ADateTime);
-TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
+NB_CORE_EXPORT UnicodeString FormatDateTime(UnicodeString Fmt, const TDateTime & ADateTime);
+NB_CORE_EXPORT TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 
-TDateTime EncodeDate(int Year, int Month, int Day);
-TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec);
+NB_CORE_EXPORT TDateTime EncodeDate(int Year, int Month, int Day);
+NB_CORE_EXPORT TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec);
 
-UnicodeString Trim(UnicodeString Str);
-UnicodeString TrimLeft(UnicodeString Str);
-UnicodeString TrimRight(UnicodeString Str);
-UnicodeString UpperCase(UnicodeString Str);
-UnicodeString LowerCase(UnicodeString Str);
-wchar_t UpCase(const wchar_t Ch);
-wchar_t LowCase(const wchar_t Ch);
-UnicodeString AnsiReplaceStr(UnicodeString Str, UnicodeString From, UnicodeString To);
-intptr_t AnsiPos(UnicodeString Str, wchar_t Ch);
-intptr_t Pos(UnicodeString Str, UnicodeString Substr);
-UnicodeString StringReplaceAll(UnicodeString Str, UnicodeString From, UnicodeString To);
-bool IsDelimiter(UnicodeString Delimiters, UnicodeString Str, intptr_t AIndex);
-intptr_t FirstDelimiter(UnicodeString Delimiters, UnicodeString Str);
-intptr_t LastDelimiter(UnicodeString Delimiters, UnicodeString Str);
+NB_CORE_EXPORT UnicodeString Trim(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString TrimLeft(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString TrimRight(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString UpperCase(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString LowerCase(UnicodeString Str);
+NB_CORE_EXPORT wchar_t UpCase(const wchar_t Ch);
+NB_CORE_EXPORT wchar_t LowCase(const wchar_t Ch);
+NB_CORE_EXPORT UnicodeString AnsiReplaceStr(UnicodeString Str, UnicodeString From, UnicodeString To);
+NB_CORE_EXPORT intptr_t AnsiPos(UnicodeString Str, wchar_t Ch);
+NB_CORE_EXPORT intptr_t Pos(UnicodeString Str, UnicodeString Substr);
+NB_CORE_EXPORT UnicodeString StringReplaceAll(UnicodeString Str, UnicodeString From, UnicodeString To);
+NB_CORE_EXPORT bool IsDelimiter(UnicodeString Delimiters, UnicodeString Str, intptr_t AIndex);
+NB_CORE_EXPORT intptr_t FirstDelimiter(UnicodeString Delimiters, UnicodeString Str);
+NB_CORE_EXPORT intptr_t LastDelimiter(UnicodeString Delimiters, UnicodeString Str);
 
-intptr_t CompareText(UnicodeString Str1, UnicodeString Str2);
-intptr_t AnsiCompare(UnicodeString Str1, UnicodeString Str2);
-intptr_t AnsiCompareStr(UnicodeString Str1, UnicodeString Str2);
-bool AnsiSameText(UnicodeString Str1, UnicodeString Str2);
-bool SameText(UnicodeString Str1, UnicodeString Str2);
-intptr_t AnsiCompareText(UnicodeString Str1, UnicodeString Str2);
-intptr_t AnsiCompareIC(UnicodeString Str1, UnicodeString Str2);
-bool AnsiSameStr(UnicodeString Str1, UnicodeString Str2);
-bool AnsiContainsText(UnicodeString Str1, UnicodeString Str2);
-bool ContainsStr(const AnsiString & Str1, const AnsiString & Str2);
-bool ContainsText(UnicodeString Str1, UnicodeString Str2);
-UnicodeString RightStr(UnicodeString Str, intptr_t ACount);
-intptr_t PosEx(UnicodeString SubStr, UnicodeString Str, intptr_t Offset = 1);
+NB_CORE_EXPORT intptr_t CompareText(UnicodeString Str1, UnicodeString Str2);
+NB_CORE_EXPORT intptr_t AnsiCompare(UnicodeString Str1, UnicodeString Str2);
+NB_CORE_EXPORT intptr_t AnsiCompareStr(UnicodeString Str1, UnicodeString Str2);
+NB_CORE_EXPORT bool AnsiSameText(UnicodeString Str1, UnicodeString Str2);
+NB_CORE_EXPORT bool SameText(UnicodeString Str1, UnicodeString Str2);
+NB_CORE_EXPORT intptr_t AnsiCompareText(UnicodeString Str1, UnicodeString Str2);
+NB_CORE_EXPORT intptr_t AnsiCompareIC(UnicodeString Str1, UnicodeString Str2);
+NB_CORE_EXPORT bool AnsiSameStr(UnicodeString Str1, UnicodeString Str2);
+NB_CORE_EXPORT bool AnsiContainsText(UnicodeString Str1, UnicodeString Str2);
+NB_CORE_EXPORT bool ContainsStr(const AnsiString & Str1, const AnsiString & Str2);
+NB_CORE_EXPORT bool ContainsText(UnicodeString Str1, UnicodeString Str2);
+NB_CORE_EXPORT UnicodeString RightStr(UnicodeString Str, intptr_t ACount);
+NB_CORE_EXPORT intptr_t PosEx(UnicodeString SubStr, UnicodeString Str, intptr_t Offset = 1);
 
-UnicodeString UTF8ToString(const RawByteString & Str);
-UnicodeString UTF8ToString(const char * Str, intptr_t Len);
+NB_CORE_EXPORT UnicodeString UTF8ToString(const RawByteString & Str);
+NB_CORE_EXPORT UnicodeString UTF8ToString(const char * Str, intptr_t Len);
 
-int StringCmp(const wchar_t * S1, const wchar_t * S2);
-int StringCmpI(const wchar_t * S1, const wchar_t * S2);
+NB_CORE_EXPORT int StringCmp(const wchar_t * S1, const wchar_t * S2);
+NB_CORE_EXPORT int StringCmpI(const wchar_t * S1, const wchar_t * S2);
 
-UnicodeString IntToStr(intptr_t Value);
-UnicodeString Int64ToStr(int64_t Value);
-intptr_t StrToInt(UnicodeString Value);
-int64_t ToInt(UnicodeString Value);
-intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal);
-int64_t StrToInt64(UnicodeString Value);
-int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal);
-bool TryStrToInt(UnicodeString StrValue, int64_t & Value);
+NB_CORE_EXPORT UnicodeString IntToStr(intptr_t Value);
+NB_CORE_EXPORT UnicodeString Int64ToStr(int64_t Value);
+NB_CORE_EXPORT intptr_t StrToInt(UnicodeString Value);
+NB_CORE_EXPORT int64_t ToInt(UnicodeString Value);
+NB_CORE_EXPORT intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal);
+NB_CORE_EXPORT int64_t StrToInt64(UnicodeString Value);
+NB_CORE_EXPORT int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal);
+NB_CORE_EXPORT bool TryStrToInt(UnicodeString StrValue, int64_t & Value);
 bool TryStrToInt64(UnicodeString StrValue, int64_t & Value);
 
-double StrToFloat(UnicodeString Value);
-double StrToFloatDef(UnicodeString Value, double DefVal);
-UnicodeString FormatFloat(UnicodeString Format, double Value);
-bool IsZero(double Value);
+NB_CORE_EXPORT double StrToFloat(UnicodeString Value);
+NB_CORE_EXPORT double StrToFloatDef(UnicodeString Value, double DefVal);
+NB_CORE_EXPORT UnicodeString FormatFloat(UnicodeString Format, double Value);
+NB_CORE_EXPORT bool IsZero(double Value);
 
-TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime);
+NB_CORE_EXPORT TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime);
 
-int64_t FileRead(HANDLE AHandle, void * Buffer, int64_t Count);
-int64_t FileWrite(HANDLE AHandle, const void * Buffer, int64_t Count);
-int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin);
+NB_CORE_EXPORT int64_t FileRead(HANDLE AHandle, void * Buffer, int64_t Count);
+NB_CORE_EXPORT int64_t FileWrite(HANDLE AHandle, const void * Buffer, int64_t Count);
+NB_CORE_EXPORT int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin);
 
-bool FileExists(UnicodeString AFileName);
-bool RenameFile(UnicodeString From, UnicodeString To);
-bool DirectoryExists(UnicodeString ADir);
-UnicodeString FileSearch(UnicodeString AFileName, UnicodeString DirectoryList);
-void FileAge(UnicodeString AFileName, TDateTime & ATimestamp);
+NB_CORE_EXPORT bool FileExists(UnicodeString AFileName);
+NB_CORE_EXPORT bool RenameFile(UnicodeString From, UnicodeString To);
+NB_CORE_EXPORT bool DirectoryExists(UnicodeString ADir);
+NB_CORE_EXPORT UnicodeString FileSearch(UnicodeString AFileName, UnicodeString DirectoryList);
+NB_CORE_EXPORT void FileAge(UnicodeString AFileName, TDateTime & ATimestamp);
 
-DWORD FileGetAttr(UnicodeString AFileName, bool FollowLink = true);
-bool FileSetAttr(UnicodeString AFileName, DWORD LocalFileAttrs);
+NB_CORE_EXPORT DWORD FileGetAttr(UnicodeString AFileName, bool FollowLink = true);
+NB_CORE_EXPORT bool FileSetAttr(UnicodeString AFileName, DWORD LocalFileAttrs);
 
-bool ForceDirectories(UnicodeString ADir);
-bool RemoveFile(UnicodeString AFileName);
-bool CreateDir(UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
-bool RemoveDir(UnicodeString ADir);
+NB_CORE_EXPORT bool ForceDirectories(UnicodeString ADir);
+NB_CORE_EXPORT bool RemoveFile(UnicodeString AFileName);
+NB_CORE_EXPORT bool CreateDir(UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
+NB_CORE_EXPORT bool RemoveDir(UnicodeString ADir);
 
-UnicodeString Format(const wchar_t * Format, ...);
-UnicodeString FormatV(const wchar_t * Format, va_list Args);
-AnsiString FormatA(const char * Format, ...);
-AnsiString FormatA(const char * Format, va_list Args);
-UnicodeString FmtLoadStr(intptr_t Id, ...);
+NB_CORE_EXPORT UnicodeString Format(const wchar_t * Format, ...);
+NB_CORE_EXPORT UnicodeString FormatV(const wchar_t * Format, va_list Args);
+NB_CORE_EXPORT AnsiString FormatA(const char * Format, ...);
+NB_CORE_EXPORT AnsiString FormatA(const char * Format, va_list Args);
+NB_CORE_EXPORT UnicodeString FmtLoadStr(intptr_t Id, ...);
 
-UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth = 40);
+NB_CORE_EXPORT UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth = 40);
 
-UnicodeString TranslateExceptionMessage(Exception * E);
+NB_CORE_EXPORT UnicodeString TranslateExceptionMessage(Exception * E);
 
-void AppendWChar(UnicodeString & Str, const wchar_t Ch);
-void AppendChar(std::string & Str, const char Ch);
+NB_CORE_EXPORT void AppendWChar(UnicodeString & Str, const wchar_t Ch);
+NB_CORE_EXPORT void AppendChar(std::string & Str, const char Ch);
 
-void AppendPathDelimiterW(UnicodeString & Str);
+NB_CORE_EXPORT void AppendPathDelimiterW(UnicodeString & Str);
 
-UnicodeString ExpandEnvVars(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString ExpandEnvVars(UnicodeString Str);
 
-UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len);
+NB_CORE_EXPORT UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len);
 
-UnicodeString ChangeFileExt(UnicodeString AFileName, UnicodeString AExt,
+NB_CORE_EXPORT UnicodeString ChangeFileExt(UnicodeString AFileName, UnicodeString AExt,
   wchar_t Delimiter = L'/');
-UnicodeString ExtractFileExt(UnicodeString AFileName);
-UnicodeString ExpandUNCFileName(UnicodeString AFileName);
+NB_CORE_EXPORT UnicodeString ExtractFileExt(UnicodeString AFileName);
+NB_CORE_EXPORT UnicodeString ExpandUNCFileName(UnicodeString AFileName);
 
 typedef WIN32_FIND_DATA TWin32FindData;
 typedef UnicodeString TFileName;
 
-struct TSystemTime
+struct NB_CORE_EXPORT TSystemTime
 {
   Word wYear;
   Word wMonth;
@@ -389,13 +356,13 @@ struct TSystemTime
   Word wMilliseconds;
 };
 
-struct TFileTime
+struct NB_CORE_EXPORT TFileTime
 {
   Integer LowTime;
   Integer HighTime;
 };
 
-struct TSearchRec : public TObject
+struct NB_CORE_EXPORT TSearchRec : public TObject
 {
 NB_DISABLE_COPY(TSearchRec)
 public:
@@ -417,10 +384,10 @@ public:
   TWin32FindData FindData;
 };
 
-void InitPlatformId();
-bool Win32Check(bool RetVal);
+NB_CORE_EXPORT void InitPlatformId();
+NB_CORE_EXPORT bool Win32Check(bool RetVal);
 
-class EConvertError : public Exception
+class NB_CORE_EXPORT EConvertError : public Exception
 {
 public:
   explicit EConvertError(UnicodeString Msg) :
@@ -429,23 +396,23 @@ public:
   }
 };
 
-UnicodeString UnixExcludeLeadingBackslash(UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixExcludeLeadingBackslash(UnicodeString APath);
 
-TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears = 1);
-TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths = 1);
-TDateTime IncWeek(const TDateTime & AValue, const Int64 ANumberOfWeeks = 1);
-TDateTime IncDay(const TDateTime & AValue, const Int64 ANumberOfDays = 1);
-TDateTime IncHour(const TDateTime & AValue, const Int64 ANumberOfHours = 1);
-TDateTime IncMinute(const TDateTime & AValue, const Int64 ANumberOfMinutes = 1);
-TDateTime IncSecond(const TDateTime & AValue, const Int64 ANumberOfSeconds = 1);
-TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSeconds = 1);
+NB_CORE_EXPORT TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears = 1);
+NB_CORE_EXPORT TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths = 1);
+NB_CORE_EXPORT TDateTime IncWeek(const TDateTime & AValue, const Int64 ANumberOfWeeks = 1);
+NB_CORE_EXPORT TDateTime IncDay(const TDateTime & AValue, const Int64 ANumberOfDays = 1);
+NB_CORE_EXPORT TDateTime IncHour(const TDateTime & AValue, const Int64 ANumberOfHours = 1);
+NB_CORE_EXPORT TDateTime IncMinute(const TDateTime & AValue, const Int64 ANumberOfMinutes = 1);
+NB_CORE_EXPORT TDateTime IncSecond(const TDateTime & AValue, const Int64 ANumberOfSeconds = 1);
+NB_CORE_EXPORT TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSeconds = 1);
 
-Boolean IsLeapYear(Word Year);
+NB_CORE_EXPORT Boolean IsLeapYear(Word Year);
 
-UnicodeString StripHotkey(UnicodeString AText);
-bool StartsText(UnicodeString ASubText, UnicodeString AText);
+NB_CORE_EXPORT UnicodeString StripHotkey(UnicodeString AText);
+NB_CORE_EXPORT bool StartsText(UnicodeString ASubText, UnicodeString AText);
 
-struct TVersionInfo
+struct NB_CORE_EXPORT TVersionInfo
 {
   DWORD Major;
   DWORD Minor;
@@ -454,12 +421,12 @@ struct TVersionInfo
 };
 
 #define MAKEVERSIONNUMBER(major, minor, revision) ( ((major)<<16) | ((minor)<<8) | (revision))
-uintptr_t StrToVersionNumber(UnicodeString VersionMumberStr);
-UnicodeString VersionNumberToStr(uintptr_t VersionNumber);
-uintptr_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
-uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
-uintptr_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2,1,21); }
-uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobals()->GetStrVersionNumber()); }
+NB_CORE_EXPORT uintptr_t StrToVersionNumber(UnicodeString VersionMumberStr);
+NB_CORE_EXPORT UnicodeString VersionNumberToStr(uintptr_t VersionNumber);
+NB_CORE_EXPORT uintptr_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2,1,9); }
+NB_CORE_EXPORT uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2,1,10); }
+NB_CORE_EXPORT uintptr_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2,1,21); }
+NB_CORE_EXPORT uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobals()->GetStrVersionNumber()); }
 
 #if defined(__MINGW32__) && (__MINGW_GCC_VERSION < 50100)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
@@ -476,7 +443,7 @@ typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
 } DYNAMIC_TIME_ZONE_INFORMATION, *PDYNAMIC_TIME_ZONE_INFORMATION;
 #endif
 
-class ScopeExit
+class NB_CORE_EXPORT ScopeExit
 {
 public:
   explicit ScopeExit(const std::function<void()> & f) : m_f(f) {}
@@ -632,7 +599,7 @@ const auto ANONYMOUS_VARIABLE(scope_##type##_guard) = scope_exit::make_scope_gua
 
 #endif // #if (defined _MSC_VER && _MSC_VER > 1900)
 
-class TPath : public TObject
+class NB_CORE_EXPORT TPath : public TObject
 {
 public:
   static UnicodeString Combine(UnicodeString APath, UnicodeString FileName);

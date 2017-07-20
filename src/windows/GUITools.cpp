@@ -46,8 +46,8 @@ bool FindFile(UnicodeString & APath)
     UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramFiles"));
     UnicodeString ProgramFiles64 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramW6432"));
     if (!ProgramFiles32.IsEmpty() &&
-        SameText(APath.SubString(1, ProgramFiles32.Length()), ProgramFiles32) &&
-        !ProgramFiles64.IsEmpty())
+      SameText(APath.SubString(1, ProgramFiles32.Length()), ProgramFiles32) &&
+      !ProgramFiles64.IsEmpty())
     {
       UnicodeString Path64 =
         ProgramFiles64 + APath.SubString(ProgramFiles32.Length() + 1, APath.Length() - ProgramFiles32.Length());
@@ -126,7 +126,7 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
             SourceStorage->SetMungeStringValues(false);
             SourceStorage->SetForceAnsi(true);
             if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
-                Storage->OpenSubKey(GetGUIConfiguration()->GetPuttySession(), true))
+              Storage->OpenSubKey(GetGUIConfiguration()->GetPuttySession(), true))
             {
               Storage->Copy(SourceStorage);
               Storage->CloseSubKey();
@@ -173,13 +173,13 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
       intptr_t P = Params2.LowerCase().Pos(LoadSwitch + L" ");
       if ((P == 0) || ((P > 1) && (Params2[P - 1] != L' ')))
       {
-        AddToList(PuttyParams, FORMAT(L"%s %s", (LoadSwitch, EscapePuttyCommandParam(SessionName))), L" ");
+        AddToList(PuttyParams, FORMAT(L"%s %s", LoadSwitch.c_str(), EscapePuttyCommandParam(SessionName).c_str()), L" ");
       }
     }
 
     if (!Password.IsEmpty() && !RemoteCustomCommand.IsPasswordCommand(Params))
     {
-      AddToList(PuttyParams, FORMAT(L"-pw %s", (EscapePuttyCommandParam(Password))), L" ");
+      AddToList(PuttyParams, FORMAT(L"-pw %s", EscapePuttyCommandParam(Password).c_str()), L" ");
     }
 
     AddToList(PuttyParams, Params2, L" ");
@@ -262,7 +262,7 @@ void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params, 
 {
   if (!DoExecuteShell(APath, Params, ChangeWorkingDirectory, nullptr))
   {
-    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (APath)));
+    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, APath.c_str()));
   }
 }
 
@@ -288,29 +288,26 @@ void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command,
   bool Result = DoExecuteShell(Program, Params, false, &ProcessHandle);
   if (!Result)
   {
-    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (Program)));
+    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
+  }
+  if (ProcessMessages != nullptr)
+  {
+    unsigned long WaitResult;
+    do
+    {
+      // Same as in ExecuteProcessAndReadOutput
+      WaitResult = WaitForSingleObject(ProcessHandle, 200);
+      if (WaitResult == WAIT_FAILED)
+      {
+        throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
+      }
+      ProcessMessages();
+    }
+    while (WaitResult == WAIT_TIMEOUT);
   }
   else
   {
-    if (ProcessMessages != nullptr)
-    {
-      unsigned long WaitResult;
-      do
-      {
-        // Same as in ExecuteProcessAndReadOutput
-        WaitResult = WaitForSingleObject(ProcessHandle, 200);
-        if (WaitResult == WAIT_FAILED)
-        {
-          throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
-        }
-        ProcessMessages();
-      }
-      while (WaitResult == WAIT_TIMEOUT);
-    }
-    else
-    {
-      WaitForSingleObject(ProcessHandle, INFINITE);
-    }
+    WaitForSingleObject(ProcessHandle, INFINITE);
   }
 }
 
@@ -318,7 +315,7 @@ bool SpecialFolderLocation(intptr_t PathID, UnicodeString & APath)
 {
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
-  if (::SHGetSpecialFolderLocation(nullptr, (int)PathID, &Pidl) == NO_ERROR &&
+  if (::SHGetSpecialFolderLocation(nullptr, static_cast<int>(PathID), &Pidl) == NO_ERROR &&
     ::SHGetPathFromIDList(Pidl, Buf))
   {
     APath = UnicodeString(Buf);
@@ -354,13 +351,13 @@ UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
 {
   DebugAssert(AFiles != nullptr);
   UnicodeString Item;
-  if (AFiles->GetCount() > 0)
+  if (AFiles && (AFiles->GetCount() > 0))
   {
     Item = Remote ? base::UnixExtractFileName(AFiles->GetString(0)) :
       base::ExtractFileName(AFiles->GetString(0), true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
-    AFiles->GetCount(), Item);
+    AFiles ? AFiles->GetCount() : 0, Item);
 }
 
 UnicodeString UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
@@ -941,7 +938,7 @@ TLocalCustomCommand::TLocalCustomCommand()
 }
 
 TLocalCustomCommand::TLocalCustomCommand(
-    const TCustomCommandData & Data, UnicodeString RemotePath, UnicodeString LocalPath) :
+  const TCustomCommandData & Data, UnicodeString RemotePath, UnicodeString LocalPath) :
   TFileCustomCommand(Data, RemotePath)
 {
   FLocalPath = LocalPath;
