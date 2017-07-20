@@ -223,8 +223,8 @@ UnicodeString TOptions::SwitchValue(UnicodeString Switch,
   UnicodeString Default)
 {
   UnicodeString Value;
-  FindSwitch(Switch, Value);
-  if (Value.IsEmpty())
+
+  if (!FindSwitch(Switch, Value) || Value.IsEmpty())
   {
     Value = Default;
   }
