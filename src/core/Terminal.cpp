@@ -1160,12 +1160,12 @@ TTerminal::TTerminal(TObjectClassId Kind) :
   FRememberedPasswordTried(false),
   FRememberedTunnelPasswordTried(false),
   FNesting(0),
+  FLastProgressLogged(0),
+  FMultipleDestinationFiles(false),
   FReadCurrentDirectoryPending(false),
   FReadDirectoryPending(false),
   FTunnelOpening(false),
   FFileSystem(nullptr),
-  FLastProgressLogged(0),
-  FMultipleDestinationFiles(false)
 {
   FOldFiles = new TRemoteDirectory(this);
 }
