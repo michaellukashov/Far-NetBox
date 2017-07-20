@@ -4822,7 +4822,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
               UnicodeString NameStr = HostNameStr;
               if (PortNumber >= 0)
               {
-                NameStr = FORMAT(L"%s:%d", (NameStr, PortNumber));
+                NameStr = FORMAT(L"%s:%d", NameStr.c_str(), static_cast<int>(PortNumber));
               }
 
               std::unique_ptr<TSessionData> SessionDataOwner;
