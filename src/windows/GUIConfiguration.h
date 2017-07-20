@@ -127,7 +127,7 @@ public:
   bool GetEmpty() const;
 };
 
-class TLocaleInfo : public TObject
+class NB_CORE_EXPORT TLocaleInfo : public TObject
 {
 public:
   LCID Locale;

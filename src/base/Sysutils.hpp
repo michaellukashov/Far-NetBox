@@ -159,7 +159,7 @@ public:
   DWORD ErrorCode;
 };
 
-class EInvalidOperation : public Exception
+class NB_CORE_EXPORT EInvalidOperation : public Exception
 {
 public:
   static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EInvalidOperation); }
@@ -175,9 +175,9 @@ extern int RandSeed;
 extern int random(int range);
 extern void Randomize();
 
-void RaiseLastOSError(DWORD LastError = 0);
-//void ShowExtendedException(Exception * E);
-bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
+NB_CORE_EXPORT void RaiseLastOSError(DWORD LastError = 0);
+//NB_CORE_EXPORT void ShowExtendedException(Exception * E);
+NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
 
 namespace Sysutils {
 
