@@ -625,7 +625,8 @@ TRobustOperationLoop::TRobustOperationLoop(TTerminal * Terminal, TFileOperationP
   FTerminal(Terminal),
   FOperationProgress(OperationProgress),
   FRetry(false),
-  FAnyTransfer(AnyTransfer)
+  FAnyTransfer(AnyTransfer),
+  FPrevAnyTransfer(false)
 {
   if (FAnyTransfer != nullptr)
   {
