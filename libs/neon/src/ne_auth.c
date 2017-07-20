@@ -1426,6 +1426,8 @@ static int passport_challenge(auth_session *sess, int attempt,
         auth_hdr = strchr(auth_hdr, ' ');
         if (auth_hdr == NULL) {
             challenge_error(errmsg, _("missing space in WWW-Authenticate header"));
+            ne_free(tmp_username);
+            ne_free(tmp_password);
             return -1;
         }
         while (*auth_hdr == ' ') auth_hdr++;
