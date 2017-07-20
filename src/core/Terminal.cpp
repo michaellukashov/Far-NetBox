@@ -1159,6 +1159,7 @@ TTerminal::TTerminal(TObjectClassId Kind) :
   FRememberedPasswordTried(false),
   FRememberedTunnelPasswordTried(false),
   FNesting(0),
+  FLastProgressLogged(0),
   FReadCurrentDirectoryPending(false),
   FReadDirectoryPending(false),
   FTunnelOpening(false),
