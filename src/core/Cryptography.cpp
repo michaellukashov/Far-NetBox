@@ -110,7 +110,7 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
 
     /* xor ipad into key value  */
     for (uint32 i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-      ((uint32_t*)cx->key)[i] ^= 0x36363636;
+      reinterpret_cast<uint32_t*>(cx->key)[i] ^= 0x36363636;
 
     /* and start hash operation */
     sha1_begin(cx->ctx);
@@ -133,13 +133,13 @@ static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
 
   /* if no data has been entered perform a null data phase        */
   if (cx->klen != HMAC_IN_DATA)
-    hmac_sha1_data((const uint8_t *)nullptr, 0, cx);
+    hmac_sha1_data(static_cast<const uint8_t *>(nullptr), 0, cx);
 
   sha1_end(dig, cx->ctx); /* complete the inner hash      */
 
   /* set outer key value using opad and removing ipad */
   for (i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-    ((uint32_t*)cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
+    reinterpret_cast<uint32_t*>(cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
 
   /* perform the outer hash operation */
   sha1_begin(cx->ctx);
@@ -249,10 +249,10 @@ static void derive_key(const uint8_t pwd[], /* the PASSWORD     */
     memmove(c3, c2, sizeof(hmac_ctx));
 
     /* enter additional data for 1st block into uu  */
-    uu[0] = (uint8_t)((i + 1) >> 24);
-    uu[1] = (uint8_t)((i + 1) >> 16);
-    uu[2] = (uint8_t)((i + 1) >> 8);
-    uu[3] = (uint8_t)(i + 1);
+    uu[0] = static_cast<uint8_t>((i + 1) >> 24);
+    uu[1] = static_cast<uint8_t>((i + 1) >> 16);
+    uu[2] = static_cast<uint8_t>((i + 1) >> 8);
+    uu[3] = static_cast<uint8_t>(i + 1);
 
     /* this is the key mixing iteration         */
     for (uint32_t j = 0, k = 4; j < iter; ++j)
@@ -515,19 +515,19 @@ RawByteString ScramblePassword(UnicodeString Password)
     int P = 0;
     while ((P <= 0) || (P > 255) || IsDigit(static_cast<wchar_t>(P)))
     {
-      P = (int)((double)rand() / ((double)RAND_MAX / 256.0));
+      P = static_cast<int>(static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) / 256.0));
     }
-    Buf[Index] = (uint8_t)P;
+    Buf[Index] = static_cast<uint8_t>(P);
   }
-  Buf[Padding] = (char)('0' + (Len % 10));
-  Buf[Padding + 1] = (char)('0' + ((Len / 10) % 10));
-  Buf[Padding + 2] = (char)('0' + ((Len / 100) % 10));
+  Buf[Padding] = static_cast<char>('0' + (Len % 10));
+  Buf[Padding + 1] = static_cast<char>('0' + ((Len / 10) % 10));
+  Buf[Padding + 2] = static_cast<char>('0' + ((Len / 100) % 10));
   strcpy_s(Buf + Padding + 3, UtfPassword.Length(), const_cast<char *>((UtfPassword.c_str())));
   char * S = Buf;
   int Last = 31;
   while (*S != '\0')
   {
-    Last = (Last + (uint8_t)*S) % 255 + 1;
+    Last = (Last + static_cast<uint8_t>(*S)) % 255 + 1;
     *S = ScrambleTable[Last];
     S++;
   }
@@ -544,12 +544,12 @@ bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
   int Last = 31;
   while (*S != '\0')
   {
-    int X = (int)UnscrambleTable[(uint8_t)*S] - 1 - (Last % 255);
+    int X = static_cast<int>(UnscrambleTable[(uint8_t)*S]) - 1 - (Last % 255);
     if (X <= 0)
     {
       X += 255;
     }
-    *S = (char)X;
+    *S = static_cast<char>(X);
     Last = (Last + X) % 255 + 1;
     S++;
   }
@@ -587,9 +587,9 @@ void CryptographyInitialize()
   UnscrambleTable = nb::calloc<uint8_t *>(256);
   for (intptr_t Index = 0; Index < 256; ++Index)
   {
-    UnscrambleTable[SScrambleTable[Index]] = (uint8_t)Index;
+    UnscrambleTable[SScrambleTable[Index]] = static_cast<uint8_t>(Index);
   }
-  srand((uint32_t)time(nullptr) ^ (uint32_t)_getpid());
+  srand(static_cast<uint32_t>(time(nullptr)) ^ static_cast<uint32_t>(_getpid()));
 }
 
 void CryptographyFinalize()

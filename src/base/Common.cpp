@@ -92,7 +92,7 @@ void DoShred(T & Str)
   if (!Str.IsEmpty())
   {
     Str.Unique();
-    ::ZeroMemory((void *)(Str.c_str()), Str.Length() * sizeof(*Str.c_str()));
+    ::ZeroMemory((void *)Str.c_str(), Str.Length() * sizeof(*Str.c_str()));
     Str = L"";
   }
 }
@@ -2889,7 +2889,7 @@ UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateT
     }
     // days are decremented, because when there are to many of them,
     // "integer overflow" error occurs
-    Result += FormatDateTime(TimeFormat, DateTime - TDateTime(static_cast<double>((int64_t)DateTime)));
+    Result += FormatDateTime(TimeFormat, DateTime - TDateTime(static_cast<double>(static_cast<int64_t>(DateTime))));
   }
   catch (...)
   {

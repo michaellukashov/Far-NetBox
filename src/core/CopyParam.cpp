@@ -444,7 +444,7 @@ void TCopyParamType::DoGetInfoStr(
   {
     UnicodeString Value;
     UnicodeString CodeState;
-    intptr_t ResumeThresholdKB = (intptr_t)(GetResumeThreshold() / 1024);
+    intptr_t ResumeThresholdKB = static_cast<intptr_t>(GetResumeThreshold() / 1024);
     switch (GetResumeSupport())
     {
     case rsOff:
@@ -708,7 +708,7 @@ UnicodeString TCopyParamType::GetLogStr() const
       CaseC[GetFileNameCase()],
       CharToHex(GetInvalidCharsReplacement()).c_str(),
       ResumeC[GetResumeSupport()],
-      (int)GetResumeThreshold(),
+      static_cast<int>(GetResumeThreshold()),
       BooleanToEngStr(GetCalculateSize()).c_str(),
       GetFileMask().c_str()) +
     FORMAT(
@@ -938,7 +938,7 @@ static bool TryGetSpeedLimit(UnicodeString Text, uintptr_t & Speed)
     Result = TryStrToInt(Text, SSpeed) && (SSpeed >= 0);
     if (Result)
     {
-      Speed = (uintptr_t)SSpeed * 1024;
+      Speed = static_cast<uintptr_t>(SSpeed) * 1024;
     }
   }
   return Result;
