@@ -231,8 +231,8 @@ void TraceDumpToFile()
         FormatDateTime(TimestampFormat,
           IncMilliSecond(N, -static_cast<int>(Ticks - i->Ticks)));
       Buffer = UTF8String(FORMAT(L"[%s] [%.4X] [%s:%d:%s] %s\n",
-        (TimeString, int(i->Thread), SourceFile,
-         i->Line, i->Func, i->Message)));
+        TimeString.c_str(), int(i->Thread), SourceFile,
+         i->Line, i->Func.c_str(), i->Message.c_str()));
       WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, nullptr);
 #else
       WriteFile(TraceFile, i->Message.c_str(), i->Message.Length(), &Written, nullptr);

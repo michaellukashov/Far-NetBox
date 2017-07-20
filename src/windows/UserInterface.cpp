@@ -90,7 +90,7 @@ TCustomScpExplorerForm * CreateScpExplorer()
 
 UnicodeString SshVersionString()
 {
-  return FORMAT(L"WinSCP-release-%s", (Configuration->Version));
+  return FORMAT(L"WinSCP-release-%s", Configuration->GetVersion().c_str());
 }
 
 UnicodeString AppNameString()
