@@ -9,7 +9,6 @@
 #define SECURITY_WIN32
 #endif
 #include <security.h>
-#include <wchar.h>
 #ifdef MPEXT
 #include <assert.h>
 #endif
@@ -637,49 +636,4 @@ FontSpec *fontspec_deserialise(void *vdata, int maxsize, int *used)
                         GET_32BIT_MSB_FIRST(end),
                         GET_32BIT_MSB_FIRST(end + 4),
                         GET_32BIT_MSB_FIRST(end + 8));
-}
-
-
-wchar_t* utf8_to_wide(const char* utf8)
-{
-    wchar_t *w;
-
-    int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, 0, 0);
-    if (len <= 0)
-	return NULL;
-
-    w = snewn(len, wchar_t);
-
-    if (!w)
-	return NULL;
-
-    if (MultiByteToWideChar(CP_UTF8, 0, utf8, -1, w, len) <= 0)
-    {
-	sfree(w);
-	return NULL;
-    }
-
-    return w;
-}
-
-char* wide_to_utf8(const wchar_t* w)
-{
-    char* utf8;
-
-    int len = WideCharToMultiByte(CP_UTF8, 0, w, -1, 0, 0, 0, 0);
-    if (len <= 0)
-	return NULL;
-
-    utf8 = snewn(len, char);
-
-    if (!utf8)
-	return NULL;
-
-    if (WideCharToMultiByte(CP_UTF8, 0, w, -1, utf8, len, 0, 0) <= 0)
-    {
-	sfree(utf8);
-	return NULL;
-    }
-    
-    return utf8;
 }

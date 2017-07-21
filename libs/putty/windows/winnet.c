@@ -39,186 +39,6 @@ const struct in6_addr in6addr_loopback = IN6ADDR_LOOPBACK_INIT;
 #define ipv4_is_loopback(addr) \
 	((p_ntohl(addr.s_addr) & 0xFF000000L) == 0x7F000000L)
 
-#if defined(MPEXT)
-
-int bytesAvailable[2] = { 0, 0 };
-int limit[2] = { 0, 0 };
-
-char* input_pushback = 0;
-
-int ProcessQuotaCmd(const char* line);
-
-static int ReadQuotas(int i)
-{
-#ifdef _WINDOWS
-    HANDLE hin;
-    DWORD savemode, newmode;
-
-    hin = GetStdHandle(STD_INPUT_HANDLE);
-
-    GetConsoleMode(hin, &savemode);
-    newmode = savemode | ENABLE_PROCESSED_INPUT | ENABLE_LINE_INPUT;
-    newmode &= ~ENABLE_ECHO_INPUT;
-    SetConsoleMode(hin, newmode);
-
-    while (bytesAvailable[i] == 0)
-    {
-  DWORD read;
-  BOOL r;
-  char buffer[21];
-
-	r = ReadFile(hin, buffer, 20, &read, 0);
-	if (!r || read == 0)
-		fatalbox("ReadFile failed in ReadQuotas");
-	buffer[read] = 0;
-
-	if (buffer[0] != '-')
-	{
-		if (input_pushback != 0)
-		fatalbox("input_pushback not null!");
-		else {
-		int pos = strcspn(buffer, "\n") + 1;
-		input_pushback = snewn(pos + 1, char);
-		strncpy(input_pushback, buffer, pos);
-		input_pushback[pos] = 0;
-		}
-	}
-	else
-		ProcessQuotaCmd(buffer);
-		}
-
-		SetConsoleMode(hin, savemode);
-#else
-    char* line;
-    while (bytesAvailable[i] == 0)
-    {
-  int error = 0;
-  line = read_input_line(1, &error);
-  if (line == NULL || error)
-  {
-      fatalbox("read_input_line failed in ReadQuotas");
-      break;
-  }
-
-	if (line[0] != '-')
-	{
-		if (input_pushback != 0)
-		fatalbox("input_pushback not null!");
-		else
-		input_pushback = strndup(line, strcspn(line, "\n") + 1);
-	}
-	else
-		ProcessQuotaCmd(line);
-	sfree(line);
-		}
-#endif //_WINDOWS
-		return 1;
-}
-
-int RequestQuota(int i, int bytes)
-{
-	if (bytesAvailable[i] < -100)
-	bytesAvailable[i] = 0;
-	else if (bytesAvailable[i] < 0)
-	{
-	bytesAvailable[i]--;
-	return bytes;
-	}
-	if (bytesAvailable[i] == 0)
-	{
-	bytesAvailable[i] = 0;
-//	fznotify(sftpUsedQuotaRecv + i);
-	}
-	if (bytesAvailable[i] == 0)
-	{
-	ReadQuotas(i);
-	}
-
-	if (bytesAvailable[i] < 0 || bytesAvailable[i] > bytes)
-	return bytes;
-
-	return bytesAvailable[i];
-}
-
-void UpdateQuota(int i, int bytes)
-{
-	if (bytesAvailable[i] < 0)
-	return;
-
-	if (bytesAvailable[i] > bytes)
-	bytesAvailable[i] -= bytes;
-	else
-	bytesAvailable[i] = 0;
-}
-
-int ProcessQuotaCmd(const char* line)
-{
-	int direction = 0, number, pos;
-
-		if (line[0] != '-')
-	return 0;
-
-		if (line[1] == '0')
-	direction = 0;
-		else if (line[1] == '1')
-	direction = 1;
-		else
-	fatalbox("Invalid data received in ReadQuotas: Unknown direction");
-
-		if (line[2] == '-') {
-	bytesAvailable[direction] = -1;
-	limit[direction] = -1;
-	return 0;
-		}
-
-    number = 0;
-    for (pos = 2;; ++pos) {
-  if (line[pos] == ',')
-      break;
-  if (line[pos] < '0' || line[pos] > '9')
-      fatalbox("Invalid data received in ReadQuotas: Bytecount not a number");
-
-	number *= 10;
-	number += line[pos] - '0';
-		}
-
-    ++pos;
-    limit[direction] = 0;
-    for (;; ++pos) {
-  if (line[pos] == 0 || line[pos] == '\r' || line[pos] == '\n')
-      break;
-  if (line[pos] < '0' || line[pos] > '9')
-      fatalbox("Invalid data received in ReadQuotas: Limit not a number");
-
-	limit[direction] *= 10;
-	limit[direction] += line[pos] - '0';
-		}
-
-		if (bytesAvailable[direction] == -1)
-	bytesAvailable[direction] = number;
-		else
-	bytesAvailable[direction] += number;
-
-		return 1;
-}
-
-char* get_input_pushback()
-{
-    char* pushback = input_pushback;
-    input_pushback = 0;
-    return pushback;
-}
-
-int has_input_pushback()
-{
-	if (input_pushback != 0)
-	return 1;
-	else
-	return 0;
-}
-
-#endif // if defined(MPEXT)
-
 /*
  * We used to typedef struct Socket_tag *Socket.
  *
@@ -1270,8 +1090,7 @@ static DWORD try_connect(Actual_Socket sock,
 	  p_setsockopt(s, SOL_SOCKET, SO_OOBINLINE, (void *) &b, sizeof(b));
     }
 
-    //if (sock->nodelay)
-    {
+    if (sock->nodelay) {
 	  BOOL b = TRUE;
 	  p_setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *) &b, sizeof(b));
     }
@@ -1787,27 +1606,12 @@ static void socket_error_callback(void *vs)
                  s->pending_error, 0);
 }
 
-static void update_tcp_send_buffer_size(SOCKET s)
-{
-    ULONG v = 0;
-    DWORD outlen = 0;
-
-#ifndef SIO_IDEAL_SEND_BACKLOG_QUERY
-#define SIO_IDEAL_SEND_BACKLOG_QUERY 0x4004747b
-#endif
-
-    if (!p_WSAIoctl(s, SIO_IDEAL_SEND_BACKLOG_QUERY, 0, 0, &v, sizeof(v), &outlen, 0, 0)) {
-	p_setsockopt(s, SOL_SOCKET, SO_SNDBUF, (const char*)&v, sizeof(v));
-    }
-}
-
 /*
  * The function which tries to send on a socket once it's deemed
  * writable.
  */
 void try_send(Actual_Socket s)
 {
-    int toSend;
     while (s->sending_oob || bufchain_size(&s->output_data) > 0) {
 	int nsent;
 	DWORD err;
@@ -1822,8 +1626,7 @@ void try_send(Actual_Socket s)
 	    urgentflag = 0;
 	    bufchain_prefix(&s->output_data, &data, &len);
 	}
-	toSend = RequestQuota(1, len);
-	nsent = p_send(s->s, data, toSend, urgentflag);
+	nsent = p_send(s->s, data, len, urgentflag);
 	noise_ultralight(nsent);
 	if (nsent <= 0) {
 	    err = (nsent < 0 ? p_WSAGetLastError() : 0);
@@ -1861,14 +1664,7 @@ void try_send(Actual_Socket s)
 		fatalbox("%s", winsock_error_string(err));
 	    }
 	} else {
-	    UpdateQuota(1, nsent);
-#if 0
-			if (fz_timer_check(&s->send_timer)) {
-		update_tcp_send_buffer_size(s->s);
-		fznotify(sftpSend);
-	    }
-#endif // #if 0
-			if (s->sending_oob) {
+	    if (s->sending_oob) {
 		if (nsent < len) {
 		    memmove(s->oobdata, s->oobdata+nsent, len-nsent);
 		    s->sending_oob = len - nsent;
@@ -1954,7 +1750,7 @@ static void sk_tcp_write_eof(Socket sock)
 
 void select_result(WPARAM wParam, LPARAM lParam)
 {
-    int ret, toRecv;
+    int ret;
     DWORD err;
     char buf[20480];		       /* nice big buffer for plenty of speed */
     Actual_Socket s;
@@ -2033,8 +1829,7 @@ void select_result(WPARAM wParam, LPARAM lParam)
 	} else
 	    atmark = 1;
 
-	toRecv = RequestQuota(0, sizeof(buf));
-	ret = p_recv(s->s, buf, toRecv, 0);
+	ret = p_recv(s->s, buf, sizeof(buf), 0);
 	noise_ultralight(ret);
 	if (ret < 0) {
 	    err = p_WSAGetLastError();
@@ -2047,11 +1842,6 @@ void select_result(WPARAM wParam, LPARAM lParam)
 	} else if (0 == ret) {
 	    plug_closing(s->plug, NULL, 0, 0);
 	} else {
-	    UpdateQuota(0, ret);
-#if 0
-	    if (fz_timer_check(&s->recv_timer))
-		fznotify(sftpRecv);
-#endif // #if 0
 	    plug_receive(s->plug, atmark ? 0 : 1, buf, ret);
 	}
 	break;
@@ -2062,8 +1852,7 @@ void select_result(WPARAM wParam, LPARAM lParam)
 	 * and get back OOB data, which we will send to the back
 	 * end with type==2 (urgent data).
 	 */
-	toRecv = RequestQuota(0, sizeof(buf));
-	ret = p_recv(s->s, buf, toRecv, MSG_OOB);
+	ret = p_recv(s->s, buf, sizeof(buf), MSG_OOB);
 	noise_ultralight(ret);
 	if (ret <= 0) {
 	    const char *str = (ret == 0 ? "Internal networking trouble" :
@@ -2073,11 +1862,6 @@ void select_result(WPARAM wParam, LPARAM lParam)
 	    logevent(NULL, str);
 	    fatalbox("%s", str);
 	} else {
-	    UpdateQuota(0, ret);
-#if 0
-	    if (fz_timer_check(&s->recv_timer))
-		fznotify(sftpRecv);
-#endif // #if 0
 	    plug_receive(s->plug, 2, buf, ret);
 	}
 	break;
@@ -2102,9 +1886,8 @@ void select_result(WPARAM wParam, LPARAM lParam)
 		    break;
 		plug_closing(s->plug, winsock_error_string(err), err, 0);
 	    } else {
-		if (ret) {
+		if (ret)
 		    plug_receive(s->plug, 0, buf, ret);
-        }
 		else
 		    plug_closing(s->plug, NULL, 0, 0);
 	    }
@@ -2292,10 +2075,4 @@ SockAddr platform_get_x11_unix_address(const char *display, int displaynum,
     ret->error = "unix sockets not supported on this platform";
     ret->refcount = 1;
     return ret;
-}
-
-int recv_peek(Socket sk, char* buf, int len)
-{
-    Actual_Socket a = (Actual_Socket) sk;
-    return p_recv(a->s, buf, len, MSG_PEEK);
 }

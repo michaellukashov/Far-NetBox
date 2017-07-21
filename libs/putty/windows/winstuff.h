@@ -44,8 +44,6 @@ FILE * mp_wfopen(const char *filename, const char *mode);
 #else
 #define f_open(filename, mode, isprivate) ( fopen((filename)->path, (mode)) )
 #endif
-wchar_t* utf8_to_wide(const char* utf8);
-char* wide_to_utf8(const wchar_t* w);
 
 struct FontSpec {
     char *name;
