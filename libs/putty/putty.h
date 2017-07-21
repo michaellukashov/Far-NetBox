@@ -992,7 +992,7 @@ char *get_remote_username(Conf *conf); /* dynamically allocated */
 char *save_settings(const char *section, Conf *conf);
 void save_open_settings(void *sesskey, Conf *conf);
 void load_settings(const char *section, Conf *conf);
-void load_open_settings(void *sesskey, Conf *conf);
+void load_open_settings(void *sesskey, Conf *conf, int load_proxy_settings);
 void get_sesslist(struct sesslist *, int allocate);
 void do_defaults(const char *, Conf *);
 void registry_cleanup(void);

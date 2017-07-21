@@ -1031,3 +1031,6 @@ void platform_ssh_share_cleanup(const char *name);
  * format.
  */
 void old_keyfile_warning(void);
+
+/* FZ: Very hackish, but we need access to the underlaying socket to peek at it */
+extern Socket ssh_socket;
