@@ -1165,7 +1165,7 @@ TTerminal::TTerminal(TObjectClassId Kind) :
   FReadCurrentDirectoryPending(false),
   FReadDirectoryPending(false),
   FTunnelOpening(false),
-  FFileSystem(nullptr),
+  FFileSystem(nullptr)
 {
   FOldFiles = new TRemoteDirectory(this);
 }
