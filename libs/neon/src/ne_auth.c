@@ -1733,7 +1733,7 @@ static int auth_challenge(auth_session *sess, int attempt,
                           )
 {
     NE_DEBUG_WINSCP_CONTEXT(sess->sess);
-    char *pnt, *key, *val, *hdr, sep;
+    char *pnt, *key, *val = NULL, *hdr, sep;
     struct auth_challenge *chall = NULL, *challenges = NULL;
     ne_buffer *errmsg = NULL;
 
