@@ -1608,7 +1608,7 @@ void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
     FFileZillaIntf->Cancel();
   }
 
-  if (FFileTransferCPSLimit != OperationProgress->GetCPSLimit())
+  if (static_cast<intptr_t>(FFileTransferCPSLimit) != OperationProgress->GetCPSLimit())
   {
     SetCPSLimit(OperationProgress);
   }
