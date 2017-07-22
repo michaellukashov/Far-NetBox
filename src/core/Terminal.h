@@ -669,7 +669,7 @@ public:
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
-  void inline LogEvent(UnicodeString Str);
+  void LogEvent(UnicodeString Str);
   void GetSupportedChecksumAlgs(TStrings * Algs) const;
   UnicodeString ChangeFileName(const TCopyParamType * CopyParam,
     UnicodeString AFileName, TOperationSide Side, bool FirstLevel) const;
