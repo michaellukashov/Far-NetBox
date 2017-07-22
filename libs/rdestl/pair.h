@@ -1,13 +1,14 @@
 #ifndef RDESTL_PAIR_H
 #define RDESTL_PAIR_H
 
+#include "rdestl_common.h"
 #include "type_traits.h"
 
 namespace rde
 {
 //=============================================================================
 template<typename T1, typename T2>
-struct pair
+struct RDESTL_LIB pair
 {
 	typedef T1	first_type;
 	typedef T2	second_type;
