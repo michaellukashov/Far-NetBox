@@ -41,7 +41,7 @@ int APR_DECLARE_DATA apr_app_init_complete = 0;
 static int warrsztoastr(const char * const * *retarr,
                         const wchar_t * arrsz, int args)
 {
-    const apr_wchar_t *wch;
+    const apr_wchar_t *wch = NULL;
     apr_size_t totlen;
     apr_size_t newlen;
     apr_size_t wsize;
