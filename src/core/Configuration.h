@@ -32,7 +32,7 @@ enum TFtpEncryptionSwitch_219
 
 class TStoredSessionList;
 
-class TConfiguration : public TObject
+class NB_CORE_EXPORT TConfiguration : public TObject
 {
 NB_DISABLE_COPY(TConfiguration)
 public:
@@ -357,7 +357,7 @@ public:
 
 };
 
-class TShortCuts : public TObject
+class NB_CORE_EXPORT TShortCuts : public TObject
 {
 public:
   void Add(const TShortCut & ShortCut);
@@ -367,18 +367,18 @@ private:
   rde::vector<TShortCut> FShortCuts;
 };
 
-extern const UnicodeString OriginalPuttyRegistryStorageKey;
-extern const UnicodeString KittyRegistryStorageKey;
-extern const UnicodeString OriginalPuttyExecutable;
-extern const UnicodeString KittyExecutable;
+NB_CORE_EXPORT extern const UnicodeString OriginalPuttyRegistryStorageKey;
+NB_CORE_EXPORT extern const UnicodeString KittyRegistryStorageKey;
+NB_CORE_EXPORT extern const UnicodeString OriginalPuttyExecutable;
+NB_CORE_EXPORT extern const UnicodeString KittyExecutable;
 
-extern const UnicodeString Sha1ChecksumAlg;
-extern const UnicodeString Sha224ChecksumAlg;
-extern const UnicodeString Sha256ChecksumAlg;
-extern const UnicodeString Sha384ChecksumAlg;
-extern const UnicodeString Sha512ChecksumAlg;
-extern const UnicodeString Md5ChecksumAlg;
-extern const UnicodeString Crc32ChecksumAlg;
+NB_CORE_EXPORT extern const UnicodeString Sha1ChecksumAlg;
+NB_CORE_EXPORT extern const UnicodeString Sha224ChecksumAlg;
+NB_CORE_EXPORT extern const UnicodeString Sha256ChecksumAlg;
+NB_CORE_EXPORT extern const UnicodeString Sha384ChecksumAlg;
+NB_CORE_EXPORT extern const UnicodeString Sha512ChecksumAlg;
+NB_CORE_EXPORT extern const UnicodeString Md5ChecksumAlg;
+NB_CORE_EXPORT extern const UnicodeString Crc32ChecksumAlg;
 
-extern const UnicodeString SshFingerprintType;
-extern const UnicodeString TlsFingerprintType;
+NB_CORE_EXPORT extern const UnicodeString SshFingerprintType;
+NB_CORE_EXPORT extern const UnicodeString TlsFingerprintType;

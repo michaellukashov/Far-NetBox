@@ -45,7 +45,7 @@ typedef nb::FastDelegate6<void,
   const UnicodeString & /*FileName*/, bool /*Success*/,
   TOnceDoneOperation & /*OnceDoneOperation*/> TFileOperationFinishedEvent;
 
-class TFileOperationProgressType : public TObject
+class NB_CORE_EXPORT TFileOperationProgressType : public TObject
 {
 private:
   // when it was last time suspended (to calculate suspend time in Resume())
@@ -154,7 +154,7 @@ public:
   void SetSpeedCounters();
 };
 
-class TSuspendFileOperationProgress : public TObject
+class NB_CORE_EXPORT TSuspendFileOperationProgress : public TObject
 {
 NB_DISABLE_COPY(TSuspendFileOperationProgress)
 public:

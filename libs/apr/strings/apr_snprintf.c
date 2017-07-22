@@ -521,7 +521,7 @@ static char *conv_fp(register char format, register double num,
     register char *s = buf;
     register char *p;
     int decimal_point;
-    char buf1[NDIG];
+    char buf1[NDIG + 1];
 
     if (format == 'f')
         p = apr_fcvt(num, precision, &decimal_point, is_negative, buf1);

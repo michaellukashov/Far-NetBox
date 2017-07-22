@@ -126,8 +126,8 @@ protected:
   virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0);
   void KeepaliveThreadCallback();
 
-  inline bool IsSessionList() const;
-  inline bool Connected() const;
+  bool IsSessionList() const;
+  bool Connected() const;
   const TWinSCPPlugin * GetWinSCPPlugin() const;
   TWinSCPPlugin * GetWinSCPPlugin();
   void ShowOperationProgress(TFileOperationProgressType & ProgressData,
