@@ -28,7 +28,7 @@ AFX_GLOBAL_DATA::AFX_GLOBAL_DATA()
 //	bIsRemoteSession = GetSystemMetrics(SM_REMOTESESSION);
 
 	bIsWindowsVista = (osvi.dwMajorVersion >= 6);
-	bIsWindows7 = (osvi.dwMajorVersion == 6) && (osvi.dwMinorVersion >= 1) || (osvi.dwMajorVersion > 6) ;
+	bIsWindows7 = ((osvi.dwMajorVersion == 6) && (osvi.dwMinorVersion >= 1)) || (osvi.dwMajorVersion > 6);
 	bDisableAero = FALSE;
 
 	// Cached system values(updated in CWnd::OnSysColorChange)
