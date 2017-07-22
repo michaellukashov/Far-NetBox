@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 #include "TransferSocket.h"
-#include "mainthread.h"
+#include "MainThread.h"
 #include "AsyncProxySocketLayer.h"
 #include "TextsFileZilla.h"
 #ifndef MPEXT_NO_GSS
