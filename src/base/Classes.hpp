@@ -758,7 +758,7 @@ public:
     TInputDialogInitializeEvent OnInitialize, bool Echo) = 0;
   virtual uintptr_t MoreMessageDialog(UnicodeString Message,
     TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
-      const TMessageParams * Params) = 0;
+    const TMessageParams * Params) = 0;
 };
 
 class NB_CORE_EXPORT TGlobals : public TGlobalsIntf, public TObject

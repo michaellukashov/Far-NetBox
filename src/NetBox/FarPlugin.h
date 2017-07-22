@@ -573,6 +573,6 @@ public:
     TInputDialogInitializeEvent OnInitialize, bool Echo) override;
   virtual uintptr_t MoreMessageDialog(UnicodeString Message,
     TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
-      const TMessageParams * Params) override;
+    const TMessageParams * Params) override;
 };
 
