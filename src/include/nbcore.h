@@ -319,8 +319,8 @@ NB_CORE_DLL(wchar_t*) ltrimw(wchar_t *str);
 NB_CORE_DLL(char *)  ltrimp(char *str);  // returns pointer to the trimmed portion of string
 NB_CORE_DLL(wchar_t *) ltrimpw(wchar_t *str);
 
-NB_CORE_DLL(char *) strdel(char *str, size_t len);
-NB_CORE_DLL(wchar_t *) strdelw(wchar_t *str, size_t len);
+NB_CORE_DLL(char *) strdel(char *str, int len);
+NB_CORE_DLL(wchar_t *) strdelw(wchar_t *str, int len);
 
 NB_CORE_DLL(int) wildcmp(const char *name, const char *mask);
 NB_CORE_DLL(int) wildcmpw(const wchar_t *name, const wchar_t *mask);
