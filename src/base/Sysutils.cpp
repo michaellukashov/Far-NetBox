@@ -1224,7 +1224,7 @@ uintptr_t HexToInt(UnicodeString Hex, uintptr_t MinChars)
     intptr_t A = Digits.FindFirstOf(UpCase(Hex[Index]));
     if (A == NPOS)
     {
-      if ((MinChars == NPOS) || (Index <= static_cast<intptr_t>(MinChars)))
+      if ((static_cast<intptr_t>(MinChars) == NPOS) || (Index <= static_cast<intptr_t>(MinChars)))
       {
         Result = 0;
       }
@@ -1426,12 +1426,12 @@ UnicodeString DateTimeToStr(UnicodeString & Result, UnicodeString Format,
 {
   (void)Result;
   (void)Format;
-  return DateTime.FormatString(static_cast<wchar_t *>(L""));
+  return DateTime.FormatString(const_cast<wchar_t *>(L""));
 }
 
 UnicodeString DateTimeToString(const TDateTime & DateTime)
 {
-  return DateTime.FormatString(static_cast<wchar_t *>(L""));
+  return DateTime.FormatString(const_cast<wchar_t *>(L""));
 }
 
 // DayOfWeek returns the day of the week of the given date. The Result is an
