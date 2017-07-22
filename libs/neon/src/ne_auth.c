@@ -1325,7 +1325,7 @@ static int passport_challenge(auth_session *sess, int attempt,
     ne_session * session = ne_get_session(areq->request);
     ne_uri orig_uri = {0};
     char * org_url;
-    int result;
+    int result = 0;
 
     if (sess->passport == NULL)
     {
