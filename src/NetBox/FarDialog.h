@@ -390,8 +390,8 @@ public:
   virtual intptr_t GetModalResult() const { return FResult; }
   virtual intptr_t GetResult() const { return FResult; }
   virtual void SetResult(intptr_t Value) { FResult = Value; }
-  virtual UnicodeString GetData() const { return const_cast<TFarButton *>(this)->GetData(); }
-  virtual UnicodeString GetData();
+  virtual UnicodeString GetData() const override { return const_cast<TFarButton *>(this)->GetData(); }
+  virtual UnicodeString GetData() override;
   bool GetDefault() const;
   void SetDefault(bool Value);
   TFarButtonBrackets GetBrackets() const { return FBrackets; }
@@ -402,9 +402,9 @@ public:
   virtual void SetOnClick(TFarButtonClickEvent Value) { FOnClick = Value; }
 
 protected:
-  virtual void SetDataInternal(UnicodeString AValue);
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-  virtual bool HotKey(char HotKey);
+  virtual void SetDataInternal(UnicodeString AValue) override;
+  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param) override;
+  virtual bool HotKey(char HotKey) override;
 
 private:
   intptr_t FResult;
@@ -437,9 +437,9 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-  virtual bool GetIsEmpty() const;
-  virtual void SetData(UnicodeString Value);
+  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param) override;
+  virtual bool GetIsEmpty() const override;
+  virtual void SetData(UnicodeString Value) override;
 };
 
 class TFarRadioButton : public TFarDialogItem
@@ -489,8 +489,8 @@ public:
   void SetReadOnly(bool Value) { SetFlag(DIF_READONLY, Value); }
 
 protected:
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-  virtual void Detach();
+  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param) override;
+  virtual void Detach() override;
 
 private:
   UnicodeString GetHistoryMask(size_t Index) const;
@@ -529,7 +529,7 @@ public:
   void SetColor(char Value) { TFarDialogItem::SetColor(0, Value); }
 
 protected:
-  virtual void SetData(UnicodeString Value);
+  virtual void SetData(UnicodeString Value) override;
 };
 
 class TFarListBox;
@@ -549,7 +549,7 @@ public:
   explicit TFarList(TFarDialogItem * ADialogItem = nullptr);
   virtual ~TFarList();
 
-  virtual void Assign(const TPersistent * Source);
+  virtual void Assign(const TPersistent * Source) override;
 
   intptr_t GetSelected() const;
   void SetSelected(intptr_t Value);
@@ -568,7 +568,7 @@ public:
   void SetChecked(intptr_t Index, bool Value) { SetFlag(Index, LIF_CHECKED, Value); }
 
 protected:
-  virtual void Changed();
+  virtual void Changed() override;
   virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
   virtual void Init();
   void UpdatePosition(intptr_t Position);
@@ -622,9 +622,9 @@ public:
   void SetAutoSelect(TFarListBoxAutoSelect Value);
 
 protected:
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-  virtual void Init();
-  virtual bool CloseQuery();
+  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param) override;
+  virtual void Init() override;
+  virtual bool CloseQuery() override;
 
 private:
   void UpdateMouseReaction();

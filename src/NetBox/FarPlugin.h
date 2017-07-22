@@ -434,8 +434,8 @@ protected:
     DWORD & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     DWORD & NumberOfLinks, UnicodeString & Description,
-    UnicodeString & Owner, void *& UserData, int & CustomColumnNumber);
-  virtual UnicodeString GetCustomColumnData(size_t Column);
+    UnicodeString & Owner, void *& UserData, int & CustomColumnNumber) override;
+  virtual UnicodeString GetCustomColumnData(size_t Column) override;
 };
 
 class THintPanelItem : public TCustomFarPanelItem
@@ -506,8 +506,8 @@ public:
   void AddSeparator(bool Visible = true);
   virtual intptr_t Add(UnicodeString Text, bool Visible = true);
 
-  virtual void Clear();
-  virtual void Delete(intptr_t Index);
+  virtual void Clear() override;
+  virtual void Delete(intptr_t Index) override;
 
   intptr_t GetItemFocused() const { return FItemFocused; }
   void SetItemFocused(intptr_t Value);
@@ -520,7 +520,7 @@ public:
   bool GetFlag(intptr_t Index, uintptr_t Flag) const;
 
 protected:
-  virtual void SetObj(intptr_t Index, TObject * AObject);
+  virtual void SetObj(intptr_t Index, TObject * AObject) override;
 
 private:
   intptr_t FItemFocused;
