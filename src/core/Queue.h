@@ -464,7 +464,7 @@ public:
   }
 
 protected:
-  virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation);
+  virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation) override;
 };
 
 class NB_CORE_EXPORT TDownloadQueueItem : public TTransferQueueItem
