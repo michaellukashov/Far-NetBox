@@ -2,8 +2,10 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#if defined(_MSC_VER) && !defined(__clang__)
 #include <shlobj.h>
 #include <shellapi.h>
+#endif // if defined(_MSC_VER) && !defined(__clang__)
 #include <Common.h>
 
 #include "GUITools.h"
@@ -313,6 +315,7 @@ void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command,
 
 bool SpecialFolderLocation(intptr_t PathID, UnicodeString & APath)
 {
+#if defined(_MSC_VER) && !defined(__clang__)
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
   if (::SHGetSpecialFolderLocation(nullptr, static_cast<int>(PathID), &Pidl) == NO_ERROR &&
@@ -321,6 +324,7 @@ bool SpecialFolderLocation(intptr_t PathID, UnicodeString & APath)
     APath = UnicodeString(Buf);
     return true;
   }
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   return false;
 }
 

@@ -8,7 +8,9 @@
 #include <TextsCore.h>
 #include <Terminal.h>
 #include <CoreMain.h>
+#if defined(_MSC_VER) && !defined(__clang__)
 #include <shlobj.h>
+#endif // if defined(_MSC_VER) && !defined(__clang__)
 
 const intptr_t ccLocal = ccUser;
 const intptr_t ccShowResults = ccUser << 1;
@@ -597,7 +599,9 @@ void TGUIConfiguration::Default()
   FQueueAutoPopup = true;
   FSessionRememberPassword = true;
   UnicodeString ProgramsFolder;
+#if defined(_MSC_VER) && !defined(__clang__)
   SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   FDefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + OriginalPuttyExecutable;
   FDefaultPuttyPath = L"%PROGRAMFILES%\\PuTTY\\" + OriginalPuttyExecutable;
   FPuttyPath = FormatCommand(FDefaultPuttyPath, L"");

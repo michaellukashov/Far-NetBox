@@ -450,11 +450,13 @@ UnicodeString GetSystemTemporaryDirectory()
 UnicodeString GetShellFolderPath(intptr_t CSIdl)
 {
   UnicodeString Result;
+#if defined(_MSC_VER) && !defined(__clang__)
   wchar_t Path[2 * MAX_PATH + 10] = L"\0";
   if (SUCCEEDED(::SHGetFolderPath(nullptr, static_cast<int>(CSIdl), nullptr, SHGFP_TYPE_CURRENT, Path)))
   {
     Result = Path;
   }
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   return Result;
 }
 
@@ -487,7 +489,9 @@ static UnicodeString GetWineHomeFolder()
 
 UnicodeString GetPersonalFolder()
 {
-  UnicodeString Result = GetShellFolderPath(CSIDL_PERSONAL);
+  UnicodeString Result;
+#if defined(_MSC_VER) && !defined(__clang__)
+  Result = GetShellFolderPath(CSIDL_PERSONAL);
 
   if (IsWine())
   {
@@ -507,12 +511,15 @@ UnicodeString GetPersonalFolder()
       }
     }
   }
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   return Result;
 }
 
 UnicodeString GetDesktopFolder()
 {
-  UnicodeString Result = GetShellFolderPath(CSIDL_DESKTOPDIRECTORY);
+  UnicodeString Result;
+#if defined(_MSC_VER) && !defined(__clang__)
+  Result = GetShellFolderPath(CSIDL_DESKTOPDIRECTORY);
 
   if (IsWine())
   {
@@ -528,6 +535,7 @@ UnicodeString GetDesktopFolder()
       }
     }
   }
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   return Result;
 }
 
@@ -851,7 +859,7 @@ intptr_t CompareLogicalText(UnicodeString S1, UnicodeString S2)
   {
     return -1;
   }
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__clang__)
   return ::StrCmpNCW(S1.c_str(), S2.c_str(), static_cast<int>(S1.Length()));
 #else
     return S1.Compare(S2);
@@ -905,12 +913,16 @@ static intptr_t PathRootLength(UnicodeString APath)
   // Correction for PathSkipRoot API
 
   // Replace all /'s with \'s because PathSkipRoot can't handle /'s
+#if defined(_MSC_VER) && !defined(__clang__)
   UnicodeString Result = ReplaceChar(APath, L'/', L'\\');
 
   // Now call the API
   LPCTSTR Buffer = ::PathSkipRoot(Result.c_str());
 
   return (Buffer != nullptr) ? (Buffer - Result.c_str()) : -1;
+#else
+  return 0;
+#endif // if defined(_MSC_VER) && !defined(__clang__)
 }
 
 static bool PathIsRelative_CorrectedForMicrosoftStupidity(UnicodeString APath)
@@ -921,7 +933,11 @@ static bool PathIsRelative_CorrectedForMicrosoftStupidity(UnicodeString APath)
   UnicodeString Result = ReplaceChar(APath, L'/', L'\\');
 
   //Now call the API
+#if defined(_MSC_VER) && !defined(__clang__)
   return ::PathIsRelative(Result.c_str()) != FALSE;
+#else
+  return false;
+#endif // if defined(_MSC_VER) && !defined(__clang__)
 }
 
 static intptr_t GetOffsetAfterPathRoot(UnicodeString APath, PATH_PREFIX_TYPE & PrefixType)

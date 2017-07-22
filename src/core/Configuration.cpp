@@ -12,7 +12,9 @@
 #include "Interface.h"
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
+#if defined(_MSC_VER) && !defined(__clang__)
 #include <shlobj.h>
+#endif // if defined(_MSC_VER) && !defined(__clang__)
 #include <System.IOUtils.hpp>
 #include <System.StrUtils.hpp>
 
@@ -92,11 +94,13 @@ TConfiguration::TConfiguration(TObjectClassId Kind) :
   }
   else
   {
+#if defined(_MSC_VER) && !defined(__clang__)
     RandomSeedPath = ::GetShellFolderPath(CSIDL_LOCAL_APPDATA);
     if (RandomSeedPath.IsEmpty())
     {
       RandomSeedPath = ::GetShellFolderPath(CSIDL_APPDATA);
     }
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   }
 
   FDefaultRandomSeedFile = ::IncludeTrailingBackslash(RandomSeedPath) + "winscp.rnd";
@@ -1436,7 +1440,10 @@ TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
-  UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
+  UnicodeString AppDataPath;
+#if defined(_MSC_VER) && !defined(__clang__)
+  AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   UnicodeString FilezillaSiteManagerFile =
     ::IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\sitemanager.xml";
   UnicodeString FilezillaConfigurationFile =
@@ -1483,7 +1490,10 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
-  UnicodeString ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
+  UnicodeString ProfilePath;
+#if defined(_MSC_VER) && !defined(__clang__)
+  ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   UnicodeString KnownHostsFile = IncludeTrailingBackslash(ProfilePath) + L".ssh\\known_hosts";
 
   try
