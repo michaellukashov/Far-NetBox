@@ -969,7 +969,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TChecklistItem) || TObject::is(Kind); }
 public:
 
-  struct TFileInfo : public TObject
+  struct NB_CORE_EXPORT TFileInfo : public TObject
   {
     UnicodeString FileName;
     UnicodeString Directory;

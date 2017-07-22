@@ -741,7 +741,7 @@ enum TQueryType
 
 struct TMessageParams;
 
-class TGlobalsIntf
+class NB_CORE_EXPORT TGlobalsIntf
 {
 public:
   virtual ~TGlobalsIntf()

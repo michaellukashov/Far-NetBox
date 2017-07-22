@@ -146,7 +146,7 @@ public:
 /** @brief Interface for custom filesystems
   *
   */
-class TFileSystemIntf
+class NB_CORE_EXPORT TFileSystemIntf
 {
 public:
   virtual ~TFileSystemIntf() {}

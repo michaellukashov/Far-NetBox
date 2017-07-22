@@ -78,7 +78,7 @@ private:
   bool FQueueParallel;
 };
 
-struct TCopyParamRuleData : public TObject
+struct NB_CORE_EXPORT TCopyParamRuleData : public TObject
 {
   UnicodeString HostName;
   UnicodeString UserName;

@@ -91,7 +91,7 @@ public:
 };
 
 template< typename BaseType >
-class CMSimpleStringT
+class NB_CORE_EXPORT CMSimpleStringT
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:

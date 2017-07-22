@@ -2,7 +2,7 @@
 
 #include <CopyParam.h>
 
-struct TSynchronizeParamType : public TObject
+struct NB_CORE_EXPORT TSynchronizeParamType : public TObject
 {
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;
