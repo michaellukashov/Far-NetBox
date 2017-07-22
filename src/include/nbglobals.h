@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <exception>
 
 #ifdef USE_DLMALLOC
 
