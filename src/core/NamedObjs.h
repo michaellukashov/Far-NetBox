@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <system.hpp>
+#include <System.hpp>
 #include <contnrs.hpp>
 
 #define CONST_HIDDEN_PREFIX L"_!_"

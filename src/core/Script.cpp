@@ -2,7 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <SysUtils.hpp>
+#include <Sysutils.hpp>
 
 #include "Script.h"
 
