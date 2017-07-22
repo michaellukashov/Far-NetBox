@@ -781,6 +781,7 @@ gather_time_entropy(void)
 
   gettimeofday_res = gettimeofday(&tv, NULL);
   assert (gettimeofday_res == 0);
+  (void)gettimeofday_res;
 
   /* Microseconds time is <20 bits entropy */
   return tv.tv_usec;
@@ -806,36 +807,28 @@ ENTROPY_DEBUG(const char * label, unsigned long entropy) {
 static unsigned long
 generate_hash_secret_salt(XML_Parser parser)
 {
-  unsigned long entropy;
-  (void)parser;
-#if defined(HAVE_ARC4RANDOM_BUF) || defined(__CloudABI__)
-  (void)gather_time_entropy;
-  arc4random_buf(&entropy, sizeof(entropy));
-  return ENTROPY_DEBUG("arc4random_buf", entropy);
+#if defined(__UINTPTR_TYPE__)
+# define PARSER_CAST(p)  (__UINTPTR_TYPE__)(p)
+#elif defined(_WIN64) && defined(_MSC_VER)
+# define PARSER_CAST(p)  (unsigned __int64)(p)
 #else
-  /* Try high quality providers first .. */
-#ifdef _WIN32
-  if (writeRandomBytes_RtlGenRandom((void *)&entropy, sizeof(entropy))) {
-    return ENTROPY_DEBUG("RtlGenRandom", entropy);
-  }
-#elif defined(HAVE_GETRANDOM) || defined(HAVE_SYSCALL_GETRANDOM)
-  if (writeRandomBytes_getrandom((void *)&entropy, sizeof(entropy))) {
-    return ENTROPY_DEBUG("getrandom", entropy);
-  }
+# define PARSER_CAST(p)  (p)
 #endif
-  /* .. and self-made low quality for backup: */
-
-  /* Process ID is 0 bits entropy if attacker has local access */
-  entropy = gather_time_entropy() ^ getpid();
 
   /* Factors are 2^31-1 and 2^61-1 (Mersenne primes M31 and M61) */
+  unsigned long small_factory = 2147483647ul;
+  unsigned long long big_factory = 2305843009213693951ull;
+
+  /* Process ID is 0 bits entropy if attacker has local access
+   * XML_Parser address is few bits of entropy if attacker has local access */
+  const unsigned long entropy =
+      gather_time_entropy() ^ getpid() ^ (unsigned long)PARSER_CAST(parser);
+
   if (sizeof(unsigned long) == 4) {
-    return ENTROPY_DEBUG("fallback(4)", entropy * 2147483647);
+    return entropy * small_factory;
   } else {
-    return ENTROPY_DEBUG("fallback(8)",
-        entropy * (unsigned long)2305843009213693951ULL);
+    return entropy * (unsigned long)big_factory;
   }
-#endif
 }
 
 static unsigned long
