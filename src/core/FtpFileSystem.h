@@ -31,8 +31,8 @@ public:
 
   virtual void Init(void *) override;
 
-  virtual void Open();
-  virtual void Close();
+  virtual void Open() override;
+  virtual void Close() override;
   virtual bool GetActive() const override;
   virtual void CollectUsage() override;
   virtual void Idle() override;

@@ -30,11 +30,11 @@ public:
   virtual void Init(void *) override;
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
 
-  virtual void Open();
-  virtual void Close();
+  virtual void Open() override;
+  virtual void Close() override;
   virtual bool GetActive() const override;
-  virtual void CollectUsage();
-  virtual void Idle();
+  virtual void CollectUsage() override;
+  virtual void Idle() override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const override;
   virtual void AnyCommand(UnicodeString Command,

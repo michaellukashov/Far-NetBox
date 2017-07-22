@@ -411,7 +411,7 @@ protected:
   }
 
   virtual void DoExecute(TTerminal * Terminal) override;
-  virtual UnicodeString GetStartupDirectory() const;
+  virtual UnicodeString GetStartupDirectory() const override;
 
 private:
   UnicodeString FCurrentDir;
