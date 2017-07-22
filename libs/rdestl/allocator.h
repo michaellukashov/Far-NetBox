@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <nbglobals.h>
+#include "rdestl_common.h"
 
 namespace rde
 {
