@@ -12,14 +12,14 @@ char * EOLToStr(TEOLType EOLType)
   switch (EOLType)
   {
   case eolLF:
-    return static_cast<char *>("\n");
+    return const_cast<char *>("\n");
   case eolCRLF:
-    return static_cast<char *>("\r\n");
+    return const_cast<char *>("\r\n");
   case eolCR:
-    return static_cast<char *>("\r");
+    return const_cast<char *>("\r");
   default:
     DebugFail();
-    return static_cast<char *>("");
+    return const_cast<char *>("");
   }
 }
 
