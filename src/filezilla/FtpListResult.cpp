@@ -2392,7 +2392,7 @@ BOOL CFtpListResult::parseAsOther(const char *line, const int linelen, t_directo
         {
           direntry.dir = TRUE;
           tokenlen -= 5;
-          while (tokenlen && str[tokenlen - 1] == ' ' || str[tokenlen - 1] == '\t')
+          while (tokenlen && (str[tokenlen - 1] == ' ' || str[tokenlen - 1] == '\t'))
             tokenlen--;
         }
         if (!tokenlen)
