@@ -565,8 +565,8 @@ public:
   void ClearSessionPasswords();
   void Remove();
   void CacheHostKeyIfNotCached();
-  virtual void Assign(const TPersistent * Source);
-  virtual intptr_t Compare(const TNamedObject * Other) const;
+  virtual void Assign(const TPersistent * Source) override;
+  virtual intptr_t Compare(const TNamedObject * Other) const override;
   void CopyData(TSessionData * SourceData);
   void CopyDirectoriesStateData(TSessionData * SourceData);
   bool ParseUrl(UnicodeString AUrl, TOptions * Options,

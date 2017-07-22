@@ -27,12 +27,12 @@ public:
   explicit TWebDAVFileSystem(TTerminal * ATerminal);
   virtual ~TWebDAVFileSystem();
 
-  virtual void Init(void *);
-  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes);
+  virtual void Init(void *) override;
+  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
 
   virtual void Open();
   virtual void Close();
-  virtual bool GetActive() const;
+  virtual bool GetActive() const override;
   virtual void CollectUsage();
   virtual void Idle();
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) override;

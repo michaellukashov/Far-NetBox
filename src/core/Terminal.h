@@ -478,7 +478,7 @@ public:
   TStrings * GetFixedPaths() const;
   void DoStartup();
   virtual bool DoQueryReopen(Exception * E);
-  virtual void FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpKeyword = L"");
+  virtual void FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpKeyword = L"") override;
   void ResetConnection();
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
     UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
@@ -501,20 +501,20 @@ public:
   void DoLockFile(UnicodeString AFileName, const TRemoteFile * AFile);
   void DoUnlockFile(UnicodeString AFileName, const TRemoteFile * AFile);
 
-  virtual void Information(UnicodeString Str, bool Status);
+  virtual void Information(UnicodeString Str, bool Status) override;
   virtual uintptr_t QueryUser(UnicodeString Query,
     TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
-    TQueryType QueryType = qtConfirmation);
+    TQueryType QueryType = qtConfirmation) override;
   virtual uintptr_t QueryUserException(UnicodeString Query,
     Exception * E, uintptr_t Answers, const TQueryParams * Params,
-    TQueryType QueryType = qtConfirmation);
+    TQueryType QueryType = qtConfirmation) override;
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    UnicodeString AName, UnicodeString Instructions, TStrings * Prompts, TStrings * Results);
-  virtual void DisplayBanner(UnicodeString Banner);
-  virtual void Closed();
-  virtual void ProcessGUI();
+    UnicodeString AName, UnicodeString Instructions, TStrings * Prompts, TStrings * Results) override;
+  virtual void DisplayBanner(UnicodeString Banner) override;
+  virtual void Closed() override;
+  virtual void ProcessGUI() override;
   void Progress(TFileOperationProgressType * OperationProgress);
-  virtual void HandleExtendedException(Exception * E);
+  virtual void HandleExtendedException(Exception * E) override;
   bool IsListenerFree(uintptr_t PortNumber) const;
   void DoProgress(TFileOperationProgressType & ProgressData);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
@@ -831,11 +831,11 @@ public:
   TTerminal * GetMainTerminal() const { return FMainTerminal; }
 
 protected:
-  virtual void DirectoryLoaded(TRemoteFileList * FileList);
+  virtual void DirectoryLoaded(TRemoteFileList * FileList) override;
   virtual void DirectoryModified(UnicodeString APath,
-    bool SubDirs);
-  virtual const TTerminal * GetPasswordSource() const { return FMainTerminal; }
-  virtual TTerminal * GetPasswordSource();
+    bool SubDirs) override;
+  virtual const TTerminal * GetPasswordSource() const override { return FMainTerminal; }
+  virtual TTerminal * GetPasswordSource() override;
 
 private:
   TTerminal * FMainTerminal;

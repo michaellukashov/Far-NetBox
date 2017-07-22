@@ -335,9 +335,9 @@ public:
 public:
   explicit TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template = nullptr);
   virtual ~TRemoteDirectory();
-  virtual void AddFile(TRemoteFile * AFile);
-  virtual void DuplicateTo(TRemoteFileList * Copy) const;
-  virtual void Reset();
+  virtual void AddFile(TRemoteFile * AFile) override;
+  virtual void DuplicateTo(TRemoteFileList * Copy) const override;
+  virtual void Reset() override;
 #if 0
   __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
   __property Boolean IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };

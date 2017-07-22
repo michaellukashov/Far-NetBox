@@ -29,13 +29,13 @@ public:
   explicit TFTPFileSystem(TTerminal * ATerminal);
   virtual ~TFTPFileSystem();
 
-  virtual void Init(void *);
+  virtual void Init(void *) override;
 
   virtual void Open();
   virtual void Close();
-  virtual bool GetActive() const;
-  virtual void CollectUsage();
-  virtual void Idle();
+  virtual bool GetActive() const override;
+  virtual void CollectUsage() override;
+  virtual void Idle() override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const override;
   virtual void AnyCommand(UnicodeString Command,
@@ -188,7 +188,7 @@ protected:
   void ReadDirectoryProgress(int64_t Bytes);
   void ResetFileTransfer();
   virtual void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
-  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes);
+  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
   void ResetCaches();
   void CaptureOutput(UnicodeString Str);
   void DoReadDirectory(TRemoteFileList * FileList);

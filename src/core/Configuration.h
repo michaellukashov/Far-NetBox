@@ -173,7 +173,7 @@ protected:
 
 public:
   virtual TStorage GetStorage() const;
-  virtual void Changed();
+  virtual void Changed() override;
   virtual void SaveData(THierarchicalStorage * Storage, bool All);
   virtual void LoadData(THierarchicalStorage * Storage);
   virtual void LoadFrom(THierarchicalStorage * Storage);
