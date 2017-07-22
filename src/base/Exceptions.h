@@ -40,7 +40,7 @@ public:
   explicit ExtException(UnicodeString Msg, UnicodeString MoreMessages, UnicodeString HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, UnicodeString Msg, UnicodeString MoreMessages, UnicodeString HelpKeyword = L"");
   explicit ExtException(UnicodeString Msg, TStrings * MoreMessages, bool Own, UnicodeString HelpKeyword = L"");
-  virtual ~ExtException(void);
+  virtual ~ExtException() noexcept;
 #if 0
   __property TStrings* MoreMessages = {read=FMoreMessages};
   __property UnicodeString HelpKeyword = {read=FHelpKeyword};
