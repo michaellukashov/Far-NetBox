@@ -14,7 +14,7 @@
  * Arithmetic implementations. Note that AND, XOR and NOT can
  * overlap destination with one source, but the others can't.
  */
-#define add(r,x,y) ( r.lo = y.lo + x.lo, \
+#define putty_add(r,x,y) ( r.lo = y.lo + x.lo, \
 		     r.hi = y.hi + x.hi + ((uint32)r.lo < (uint32)y.lo) )
 #define rorB(r,x,y) ( r.lo = ((uint32)x.hi >> ((y)-32)) | ((uint32)x.lo << (64-(y))), \
 		      r.hi = ((uint32)x.lo >> ((y)-32)) | ((uint32)x.hi << (64-(y))) )
@@ -23,9 +23,9 @@
 #define shrB(r,x,y) ( r.lo = (uint32)x.hi >> ((y)-32), r.hi = 0 )
 #define shrL(r,x,y) ( r.lo = ((uint32)x.lo >> (y)) | ((uint32)x.hi << (32-(y))), \
 		      r.hi = (uint32)x.hi >> (y) )
-#define _and(r,x,y) ( r.lo = x.lo & y.lo, r.hi = x.hi & y.hi )
-#define _xor(r,x,y) ( r.lo = x.lo ^ y.lo, r.hi = x.hi ^ y.hi )
-#define _not(r,x) ( r.lo = ~x.lo, r.hi = ~x.hi )
+#define putty_and(r,x,y) ( r.lo = x.lo & y.lo, r.hi = x.hi & y.hi )
+#define putty_xor(r,x,y) ( r.lo = x.lo ^ y.lo, r.hi = x.hi ^ y.hi )
+#define putty_not(r,x) ( r.lo = ~x.lo, r.hi = ~x.hi )
 #define INIT(h,l) { h, l }
 #define BUILD(r,h,l) ( r.hi = h, r.lo = l )
 #define EXTRACT(h,l,r) ( h = r.hi, l = r.lo )
@@ -35,17 +35,17 @@
  * message digest.
  */
 
-#define Ch(r,t,x,y,z) ( _not(t,x), _and(r,t,z), _and(t,x,y), _xor(r,r,t) )
-#define Maj(r,t,x,y,z) ( _and(r,x,y), _and(t,x,z), _xor(r,r,t), \
-			 _and(t,y,z), _xor(r,r,t) )
-#define bigsigma0(r,t,x) ( rorL(r,x,28), rorB(t,x,34), _xor(r,r,t), \
-			   rorB(t,x,39), _xor(r,r,t) )
-#define bigsigma1(r,t,x) ( rorL(r,x,14), rorL(t,x,18), _xor(r,r,t), \
-			   rorB(t,x,41), _xor(r,r,t) )
-#define smallsigma0(r,t,x) ( rorL(r,x,1), rorL(t,x,8), _xor(r,r,t), \
-			     shrL(t,x,7), _xor(r,r,t) )
-#define smallsigma1(r,t,x) ( rorL(r,x,19), rorB(t,x,61), _xor(r,r,t), \
-			     shrL(t,x,6), _xor(r,r,t) )
+#define Ch(r,t,x,y,z) ( putty_not(t,x), putty_and(r,t,z), putty_and(t,x,y), putty_xor(r,r,t) )
+#define Maj(r,t,x,y,z) ( putty_and(r,x,y), putty_and(t,x,z), putty_xor(r,r,t), \
+	putty_and(t,y,z), putty_xor(r,r,t) )
+#define bigsigma0(r,t,x) ( rorL(r,x,28), rorB(t,x,34), putty_xor(r,r,t), \
+	rorB(t,x,39), putty_xor(r,r,t) )
+#define bigsigma1(r,t,x) ( rorL(r,x,14), rorL(t,x,18), putty_xor(r,r,t), \
+	rorB(t,x,41), putty_xor(r,r,t) )
+#define smallsigma0(r,t,x) ( rorL(r,x,1), rorL(t,x,8), putty_xor(r,r,t), \
+	shrL(t,x,7), putty_xor(r,r,t) )
+#define smallsigma1(r,t,x) ( rorL(r,x,19), rorB(t,x,61), putty_xor(r,r,t), \
+	shrL(t,x,6), putty_xor(r,r,t) )
 
 static void SHA512_Core_Init(SHA512_State *s) {
     static const uint64 iv[] = {
@@ -134,9 +134,9 @@ static void SHA512_Block(SHA512_State *s, uint64 *block) {
 	uint64 p, q, r, tmp;
 	smallsigma1(p, tmp, w[t-2]);
 	smallsigma0(q, tmp, w[t-15]);
-	add(r, p, q);
-	add(p, r, w[t-7]);
-	add(w[t], p, w[t-16]);
+	putty_add(r, p, q);
+	putty_add(p, r, w[t-7]);
+	putty_add(w[t], p, w[t-16]);
     }
 
     a = s->h[0]; b = s->h[1]; c = s->h[2]; d = s->h[3];
@@ -148,16 +148,16 @@ static void SHA512_Block(SHA512_State *s, uint64 *block) {
 #define ROUND(j,a,b,c,d,e,f,g,h) \
 	bigsigma1(p, tmp, e); \
 	Ch(q, tmp, e, f, g); \
-	add(r, p, q); \
-	add(p, r, k[j]) ; \
-	add(q, p, w[j]); \
-	add(r, q, h); \
+	putty_add(r, p, q); \
+	putty_add(p, r, k[j]) ; \
+	putty_add(q, p, w[j]); \
+	putty_add(r, q, h); \
 	bigsigma0(p, tmp, a); \
 	Maj(tmp, q, a, b, c); \
-	add(q, tmp, p); \
-	add(p, r, d); \
+	putty_add(q, tmp, p); \
+	putty_add(p, r, d); \
 	d = p; \
-	add(h, q, r);
+	putty_add(h, q, r);
 
 	ROUND(t+0, a,b,c,d,e,f,g,h);
 	ROUND(t+1, h,a,b,c,d,e,f,g);
@@ -171,7 +171,7 @@ static void SHA512_Block(SHA512_State *s, uint64 *block) {
 
     {
 	uint64 tmp;
-#define UPDATE(state, local) ( tmp = state, add(state, tmp, local) )
+#define UPDATE(state, local) ( tmp = state, putty_add(state, tmp, local) )
 	UPDATE(s->h[0], a); UPDATE(s->h[1], b);
 	UPDATE(s->h[2], c); UPDATE(s->h[3], d);
 	UPDATE(s->h[4], e); UPDATE(s->h[5], f);
