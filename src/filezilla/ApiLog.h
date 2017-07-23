@@ -3,9 +3,9 @@
 
 #include "FileZillaIntern.h"
 
-class CApiLog : public TObject
+class CApiLog //: public TObject
 {
-NB_DECLARE_CLASS(CApiLog)
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CApiLog();
   virtual ~CApiLog();

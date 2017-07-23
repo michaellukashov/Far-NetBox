@@ -9,6 +9,10 @@
 #define PWALG_SIMPLE_INTERNAL 0x00
 #define PWALG_SIMPLE_EXTERNAL 0x01
 
+#define PWALG_SIMPLE_STRING ((RawByteString)"0123456789ABCDEF")
+#define PWALG_SIMPLE_MAXLEN 50
+#define PWALG_SIMPLE_FLAG 0xFF
+
 static int random(int range)
 {
   return static_cast<int>(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
@@ -16,7 +20,7 @@ static int random(int range)
 
 RawByteString SimpleEncryptChar(uint8_t Ch)
 {
-  Ch = (uint8_t)((~Ch) ^ PWALG_SIMPLE_MAGIC);
+  Ch = static_cast<uint8_t>((~Ch) ^ PWALG_SIMPLE_MAGIC);
   return
     PWALG_SIMPLE_STRING.SubString(((Ch & 0xF0) >> 4) + 1, 1) +
     PWALG_SIMPLE_STRING.SubString(((Ch & 0x0F) >> 0) + 1, 1);
@@ -26,9 +30,9 @@ uint8_t SimpleDecryptNextChar(RawByteString & Str)
 {
   if (Str.Length() > 0)
   {
-    uint8_t Result = (uint8_t)
-      ~((((PWALG_SIMPLE_STRING.Pos(Str.c_str()[0])-1) << 4) +
-         ((PWALG_SIMPLE_STRING.Pos(Str.c_str()[1])-1) << 0)) ^ PWALG_SIMPLE_MAGIC);
+    uint8_t Result = static_cast<uint8_t>(
+      ~((((PWALG_SIMPLE_STRING.Pos(Str.c_str()[0]) - 1) << 4) +
+        ((PWALG_SIMPLE_STRING.Pos(Str.c_str()[1]) - 1) << 0)) ^ PWALG_SIMPLE_MAGIC));
     Str.Delete(1, 2);
     return Result;
   }
@@ -53,7 +57,7 @@ RawByteString EncryptPassword(const UnicodeString & APassword, const UnicodeStri
   }
   Password = Key + Password;
   Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?
-    static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - static_cast<int>(Password.Length()))) : 0;
+            static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - static_cast<int>(Password.Length()))) : 0;
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG)); // Flag
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_INTERNAL)); // Dummy
   Result += SimpleEncryptChar(static_cast<uint8_t>(Password.Length()));
@@ -72,10 +76,9 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
   RawByteString Password = APassword;
   UTF8String Key = UTF8String(AKey);
   UTF8String Result("");
-  Integer Index;
-  uint8_t Length, Flag;
+  uint8_t Length;
 
-  Flag = SimpleDecryptNextChar(Password);
+  uint8_t Flag = SimpleDecryptNextChar(Password);
   if (Flag == PWALG_SIMPLE_FLAG)
   {
     /* Dummy = */ SimpleDecryptNextChar(Password);
@@ -84,7 +87,7 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
   else
     Length = Flag;
   Password.Delete(1, (static_cast<Integer>(SimpleDecryptNextChar(Password)) * 2));
-  for (Index = 0; Index < Length; ++Index)
+  for (uint8_t Index = 0; Index < Length; ++Index)
     Result += static_cast<char>(SimpleDecryptNextChar(Password));
   if (Flag == PWALG_SIMPLE_FLAG)
   {
@@ -158,7 +161,7 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
     ChainConfig.CycleDetectionModulus = 0;
 
     HCERTCHAINENGINE ChainEngine;
-    bool ChainEngineResult = CertCreateCertificateChainEngine(&ChainConfig, &ChainEngine);
+    bool ChainEngineResult = CertCreateCertificateChainEngine(&ChainConfig, &ChainEngine) != FALSE;
     if (ChainEngineResult)
     {
       const CERT_CHAIN_CONTEXT * ChainContext = nullptr;

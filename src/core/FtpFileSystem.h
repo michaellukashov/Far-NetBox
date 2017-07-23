@@ -4,7 +4,7 @@
 
 #include <time.h>
 #include <rdestl/map.h>
-#include <rdestl/vector.h>
+#include <rdestl/list.h>
 #include <FileSystems.h>
 
 class TFileZillaIntf;
@@ -18,15 +18,18 @@ struct TRemoteFileTime;
 
 struct message_t
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   message_t() : wparam(0), lparam(0)
-  {}
+  {
+  }
   message_t(WPARAM w, LPARAM l) : wparam(w), lparam(l)
-  {}
+  {
+  }
   WPARAM wparam;
   LPARAM lparam;
 };
 
-class TMessageQueue : public TObject, public rde::vector<message_t>
+class TMessageQueue : public TObject, public rde::list<message_t>
 {
 public:
   typedef message_t value_type;
@@ -37,6 +40,12 @@ class TFTPFileSystem : public TCustomFileSystem
 friend class TFileZillaImpl;
 friend class TFTPFileListHelper;
 NB_DISABLE_COPY(TFTPFileSystem)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFTPFileSystem;
+  }
 public:
   explicit TFTPFileSystem(TTerminal * ATerminal);
   virtual ~TFTPFileSystem();
@@ -52,8 +61,8 @@ public:
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const;
   virtual void AnyCommand(const UnicodeString & Command,
     TCaptureOutputEvent OutputEvent);
-  virtual void ChangeDirectory(const UnicodeString & Directory);
-  virtual void CachedChangeDirectory(const UnicodeString & Directory);
+  virtual void ChangeDirectory(const UnicodeString & ADirectory);
+  virtual void CachedChangeDirectory(const UnicodeString & ADirectory);
   virtual void AnnounceFileListOperation();
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
@@ -67,7 +76,7 @@ public:
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CopyToRemote(const TStrings * AFilesToCopy,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
+    const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void RemoteCreateDirectory(const UnicodeString & ADirName);
@@ -90,7 +99,7 @@ public:
     const UnicodeString & ANewName);
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName);
-  virtual TStrings * GetFixedPaths();
+  virtual TStrings * GetFixedPaths() const;
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;
@@ -138,13 +147,13 @@ protected:
   bool KeepWaitingForReply(uintptr_t &ReplyToAwait, bool WantLastCode) const;
   inline bool NoFinalLastCode() const;
 
-  bool HandleStatus(const wchar_t * Status, int Type);
+  bool HandleStatus(const wchar_t * AStatus, int Type);
   bool HandleAsynchRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
-    bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData,
-    HANDLE & LocalFileHandle,
+    bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * AUserData,
+    HANDLE & ALocalFileHandle,
     int & RequestResult);
   bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);
@@ -157,12 +166,13 @@ protected:
   bool HandleReply(intptr_t Command, uintptr_t Reply);
   bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
   bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
-  void PreserveDownloadFileTime(HANDLE AHandle, void * UserData);
+  void PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const;
   bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
   void EnsureLocation();
-  UnicodeString ActualCurrentDirectory();
+  UnicodeString GetActualCurrentDirectory() const;
   void Discard();
   void DoChangeDirectory(const UnicodeString & Directory);
+  bool DoQuit();
 
   void Sink(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & TargetDir,
@@ -208,7 +218,7 @@ protected:
     TFileOperationProgressType * OperationProgress);
   TDateTime ConvertLocalTimestamp(time_t Time);
   void RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source,
-    TDateTime & DateTime, TModificationFmt & ModificationFmt);
+    TDateTime & DateTime, TModificationFmt & ModificationFmt) const;
   void SetLastCode(intptr_t Code);
   void StoreLastResponse(const UnicodeString & Text);
   void SetCPSLimit(TFileOperationProgressType * OperationProgress);
@@ -220,9 +230,9 @@ protected:
   void ApplyTimeDifference(
     const UnicodeString & FileName, TDateTime & Modification, TModificationFmt & ModificationFmt);
   void DummyReadDirectory(const UnicodeString & Directory);
-  bool IsEmptyFileList(TRemoteFileList * FileList);
+  bool IsEmptyFileList(TRemoteFileList * FileList) const;
   void CheckTimeDifference();
-  inline bool NeedAutoDetectTimeDifference();
+  inline bool NeedAutoDetectTimeDifference() const;
   bool LookupUploadModificationTime(
     const UnicodeString & FileName, TDateTime & Modification, TModificationFmt ModificationFmt);
   UnicodeString DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString & Alg, TRemoteFile * File);
@@ -249,7 +259,7 @@ private:
     FEAT
   };
 
-  TFileZillaIntf * FFileZillaIntf;
+  mutable TFileZillaIntf * FFileZillaIntf;
   TCriticalSection FQueueCriticalSection;
   TCriticalSection FTransferStatusCriticalSection;
   TMessageQueue FQueue;

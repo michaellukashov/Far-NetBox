@@ -1,8 +1,8 @@
 
 #include "stdafx.h"
+#include <nbutils.h>
 #include "FtpListResult.h"
 #include "FileZillaApi.h"
-#include <WideStrUtils.hpp>
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
@@ -10,7 +10,7 @@
 //#define LISTDEBUG
 #ifdef LISTDEBUG
   //It's the normal UNIX format (or even another nonstandard format)
-  //Some samples are from http://cr.yp.to/ftpparse/ftpparse.c
+  //Some samples are from https://cr.yp.to/ftpparse/ftpparse.c
   /* UNIX-style listing, without inum and without blocks */
 
   static char data[][110]={
@@ -137,7 +137,7 @@
 
 #endif
 
-CFtpListResult::CFtpListResult(t_server server, bool *bUTF8, int *nCodePage)
+CFtpListResult::CFtpListResult(t_server & server, bool *bUTF8, int *nCodePage)
 {
   listhead=curpos=0;
 
@@ -369,7 +369,7 @@ CFtpListResult::CFtpListResult(t_server server, bool *bUTF8, int *nCodePage)
   int i=-1;
   while (*data[++i])
   {
-    char *pData=static_cast<char *>(nb_calloc(1, strlen(data[i])+3));
+    char *pData=nb::calloc(strlen(data[i])+3);
     sprintf(pData, "%s\r\n", data[i]);
     AddData(pData, strlen(pData));
   }
@@ -405,10 +405,10 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, bool mlst)
   while (line)
   {
     int tmp;
-    char *tmpline = static_cast<char *>(nb_calloc(1, strlen(line) + 1));
+    char *tmpline = nb::chcalloc(strlen(line) + 1);
     strcpy(tmpline, line);
     t_directory::t_direntry direntry;
-    if (parseLine(tmpline, strlen(tmpline), direntry, tmp, mlst))
+    if (parseLine(tmpline, (int)strlen(tmpline), direntry, tmp, mlst))
     {
       nb_free(tmpline);
       if (tmp)
@@ -443,7 +443,7 @@ t_directory::t_direntry *CFtpListResult::getList(int &num, bool mlst)
         }
         else
         {
-          line=static_cast<char *>(nb_calloc(1, strlen(m_prevline)+strlen(m_curline)+2));
+          line=nb::chcalloc(strlen(m_prevline)+strlen(m_curline)+2);
           sprintf(line, "%s %s", m_prevline, m_curline);
         }
       }
@@ -528,7 +528,7 @@ BOOL CFtpListResult::parseLine(const char *lineToParse, const int linelen, t_dir
   // name-only entries
   if (strchr(lineToParse, ' ') == NULL)
   {
-    copyStr(direntry.name, 0, lineToParse, strlen(lineToParse));
+    copyStr(direntry.name, 0, lineToParse, (int)strlen(lineToParse));
     return TRUE;
   }
 
@@ -583,7 +583,7 @@ void CFtpListResult::AddData(char *data, int size)
       break;
     }
     int tmp;
-    char *tmpline = static_cast<char *>(nb_calloc(1, strlen(line) + 1));
+    char *tmpline = nb::chcalloc(strlen(line) + 1);
     strcpy(tmpline, line);
     if (parseLine(tmpline, (const int)strlen(tmpline), direntry, tmp, false))
     {
@@ -620,7 +620,7 @@ void CFtpListResult::AddData(char *data, int size)
         }
         else
         {
-          line=static_cast<char *>(nb_calloc(1, strlen(m_prevline)+strlen(m_curline)+2));
+          line=nb::chcalloc(strlen(m_prevline)+strlen(m_curline)+2);
           sprintf(line, "%s %s", m_prevline, m_curline);
         }
       }
@@ -654,7 +654,7 @@ void CFtpListResult::SendToMessageLog()
     pStatus->post = TRUE;
     pStatus->status = L"<Empty directory listing>";
     pStatus->type = FZ_LOG_INFO;
-    GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus);
+    GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus);
   }
   while (line)
   {
@@ -666,7 +666,7 @@ void CFtpListResult::SendToMessageLog()
     pStatus->post = TRUE;
     pStatus->status = status;
     pStatus->type = FZ_LOG_INFO;
-    if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
+    if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
       delete pStatus;
 
     line = GetLine();
@@ -719,7 +719,7 @@ char * CFtpListResult::GetLine()
     }
   }
 
-  char *res = static_cast<char *>(nb_calloc(1, reslen+1));
+  char *res = nb::chcalloc(reslen+1);
   res[reslen]=0;
   int respos=0;
   while (startptr!=curpos && reslen)
@@ -875,7 +875,7 @@ bool CFtpListResult::ParseShortDate(const char *str, int len, t_directory::t_dir
 
   if (!numeric)
   {
-    char *tmpstr = static_cast<char *>(nb_calloc(1, i + 1));
+    char *tmpstr = nb::chcalloc(i + 1);
     strncpy(tmpstr, str, i);
     tmpstr[i] = 0;
     strlwr(tmpstr);
@@ -1058,10 +1058,10 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
     gotSize = true;
     dir.size = strntoi64(str, tokenlen) * 512;
   }
-  else if (p && p > str && IsNumeric(str, p - str))
+  else if (p && p > str && IsNumeric(str, (int)(p - str)))
   {
     gotSize = true;
-    dir.size = strntoi64(str, p - str) * 512;
+    dir.size = strntoi64(str, (int)(p - str)) * 512;
   }
   else
   {
@@ -1080,7 +1080,7 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
     const char *p = strnchr(str, tokenlen, '/');
     int len;
     if (p)
-      len = p - str;
+      len = (int)(p - str);
     else
       len = tokenlen;
 
@@ -1104,7 +1104,7 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
     if ((++p - str) == tokenlen)
       return 0;
 
-  dir.date.day = static_cast<int>(strntoi64(str, p-str));
+  dir.date.day = static_cast<int>(strntoi64(str, (int)(p-str)));
   if (!dir.date.day || dir.date.day > 31)
     return FALSE;
 
@@ -1125,7 +1125,7 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
   dir.date.month = iter->second;
   p++;
 
-  dir.date.year = static_cast<int>(strntoi64(p, tokenlen - (p - str)));
+  dir.date.year = static_cast<int>(strntoi64(p, (int)(tokenlen - (p - str))));
 
   //Get time
   str = GetNextToken(line, linelen, tokenlen, pos, 0);
@@ -1140,7 +1140,7 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
       if ((++p - str) == tokenlen)
         return 0;
 
-    dir.date.hour = static_cast<int>(strntoi64(str, p - str));
+    dir.date.hour = static_cast<int>(strntoi64(str, (int)(p - str)));
     if (dir.date.hour < 0 || dir.date.hour > 23)
       return FALSE;
     p++;
@@ -1150,7 +1150,7 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
     while (*p && *p != ':' )
       p++;
 
-    dir.date.minute = static_cast<int>(strntoi64(pMinute, p - pMinute));
+    dir.date.minute = static_cast<int>(strntoi64(pMinute, (int)(p - pMinute)));
     if (dir.date.minute < 0 || dir.date.minute > 59)
       return FALSE;
 
@@ -1222,9 +1222,9 @@ BOOL CFtpListResult::parseAsEPLF(const char *line, const int linelen, t_director
     {
       int len;
       if (!nextfact)
-        len = str - fact - 1;
+        len = (int)(str - fact - 1);
       else
-        len = nextfact - fact;
+        len = (int)(nextfact - fact);
       if (len == 1 && fact[0] == '/')
         dir.dir = TRUE;
       else if (*fact=='s')
@@ -1268,7 +1268,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
   #ifdef _DEBUG
   USES_CONVERSION;
   #endif
-  // MLSD format as described here: http://www.ietf.org/internet-drafts/draft-ietf-ftpext-mlst-16.txt
+  // MLSD format as described here: https://tools.ietf.org/html/rfc3659
   // Parsing is done strict, abort on slightest error.
 
   // If we ever add some detection that entry is symlink,
@@ -1330,7 +1330,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
       // http://www.proftpd.org/docs/modules/mod_facts.html
       // They claim it's the correct one.
       // See also
-      // http://www.rfc-editor.org/errata_search.php?rfc=3659&eid=1500
+      // https://www.rfc-editor.org/errata_search.php?rfc=3659&eid=1500
       else if (!value.Left(15).CompareNoCase(L"OS.unix=symlink"))
       {
         direntry.dir = TRUE;
@@ -1372,7 +1372,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
     {
       direntry.size = 0;
 
-      for (unsigned int i = 0; i < value.GetLength(); ++i)
+      for (int i = 0; i < value.GetLength(); ++i)
       {
         if (value[i] < '0' || value[i] > '9')
         {
@@ -1612,7 +1612,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   {
     //Maybe the server has left no space between the group and the size
     //because of stupid alignment
-    char *tmpstr = static_cast<char *>(nb_calloc(1, tokenlen + 1));
+    char *tmpstr = nb::chcalloc(tokenlen + 1);
     strncpy(tmpstr, str, tokenlen);
     tmpstr[tokenlen] = 0;
     strlwr(tmpstr);
@@ -1686,13 +1686,13 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
       if (bRightNumeric && pos>str)
       {
         size = pos + 1;
-        sizelen = pos - str;
+        sizelen = (int)(pos - str);
         direntry.ownergroup += L" ";
 
         if (direntry.ownergroup != L"")
           direntry.ownergroup += L" ";
 
-        copyStr(direntry.ownergroup, direntry.ownergroup.GetLength(), str, pos-str);
+        copyStr(direntry.ownergroup, direntry.ownergroup.GetLength(), str, (int)(pos-str));
 
       }
       else
@@ -1709,7 +1709,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
           }
         }
         size = pos + 1;
-        sizelen = skippedlen + skipped - size;
+        sizelen = (int)(skippedlen + skipped - size);
 
         if (direntry.ownergroup != L"")
           direntry.ownergroup += L" ";
@@ -1767,20 +1767,20 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   const char *p = strnchr(smonth, smonthlen, '-');
   if (p)
   {
-    int plen = smonthlen - (p - smonth);
+    int plen = (int)(smonthlen - (p - smonth));
     const char *pos2 = strnchr(p+1, plen - 1, '-');
     if (!pos2) //26-09 2002
     {
       sday = p + 1;
       sdaylen = plen - 1;
-      smonthlen = p-smonth;
+      smonthlen = (int)(p-smonth);
     }
     else if (p-smonth == 4) //2002-10-14
     {
-      direntry.date.year = static_cast<int>(strntoi64(smonth, p-smonth));
+      direntry.date.year = static_cast<int>(strntoi64(smonth, (int)(p-smonth)));
       sday = pos2 + 1;
-      sdaylen = smonthlen - (pos2 - smonth) - 1;
-      smonthlen = pos2-smonth - (p-smonth) - 1;
+      sdaylen = (int)(smonthlen - (pos2 - smonth) - 1);
+      smonthlen = (int)(pos2-smonth - (p-smonth) - 1);
       smonth = p + 1;
       /* Try to detect difference between yyyy/dd/mm and yyyy/mm/dd
        * Unfortunately we have to guess which one is the right if
@@ -1798,10 +1798,10 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
     }
     else if (p-smonth) //14-10-2002 or 01-jun-99
     {
-      direntry.date.year = static_cast<int>(strntoi64(pos2+1, tokenlen - (pos2-smonth) - 1));
+      direntry.date.year = static_cast<int>(strntoi64(pos2+1, (int)(tokenlen - (pos2-smonth) - 1)));
       sday = smonth;
-      sdaylen = p - smonth;
-      smonthlen = pos2-smonth - (p-smonth) - 1;
+      sdaylen = (int)(p - smonth);
+      smonthlen = (int)(pos2-smonth - (p-smonth) - 1);
       smonth = p + 1;
       /* Try to detect difference between yyyy/dd/mm and yyyy/mm/dd
        * Unfortunately we have to guess which one is the right if
@@ -1829,20 +1829,20 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   else if (strnchr(smonth, smonthlen, '/'))
   {
     const char *p = strnchr(smonth, smonthlen, '/');
-    int plen = smonthlen - (p - smonth);
+    int plen = (int)(smonthlen - (p - smonth));
     const char *pos2 = strnchr(p+1, plen - 1, '/');
     if (!pos2) //Assume 26/09 2002
     {
       sday = p + 1;
       sdaylen = plen - 1;
-      smonthlen = p-smonth;
+      smonthlen = (int)(p-smonth);
     }
     else if (p-smonth==4)
     {
-      direntry.date.year = static_cast<int>(strntoi64(smonth, p-smonth));
+      direntry.date.year = static_cast<int>(strntoi64(smonth, (int)(p-smonth)));
       sday = pos2 + 1;
-      sdaylen = smonthlen - (pos2 - smonth) - 1;
-      smonthlen = pos2-smonth - (p-smonth) - 1;
+      sdaylen = (int)(smonthlen - (pos2 - smonth) - 1);
+      smonthlen = (int)(pos2-smonth - (p-smonth) - 1);
       smonth = p + 1;
       /* Try to detect difference between yyyy/dd/mm and yyyy/mm/dd
        * Unfortunately we have to guess which one is the right if
@@ -1860,10 +1860,10 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
     }
     else if (p-smonth==2)
     {
-      direntry.date.year = static_cast<int>(strntoi64(pos2+1, tokenlen - (pos2-smonth) - 1));
+      direntry.date.year = static_cast<int>(strntoi64(pos2+1, (int)(tokenlen - (pos2-smonth) - 1)));
       sday = smonth;
-      sdaylen = p - smonth;
-      smonthlen = pos2-smonth - (p-smonth) - 1;
+      sdaylen = (int)(p - smonth);
+      smonthlen = (int)(pos2-smonth - (p-smonth) - 1);
       smonth = p + 1;
       /* Try to detect difference between yyyy/dd/mm and yyyy/mm/dd
        * Unfortunately we have to guess which one is the right if
@@ -1952,7 +1952,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
     return FALSE;
   }
 
-  char *lwr = static_cast<char *>(nb_calloc(1, smonthlen + 1));
+  char *lwr = nb::chcalloc(smonthlen + 1);
   memcpy(lwr, smonth, smonthlen);
   lwr[smonthlen] = 0;
   _strlwr(lwr);
@@ -2025,8 +2025,8 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   if (strpos)
   {
     //stimeyear has delimiter, so it's a time
-    direntry.date.hour = static_cast<int>(strntoi64(stimeyear, strpos - stimeyear));
-    int stimeyearrem = stimeyearlen - (strpos - stimeyear) - 1;
+    direntry.date.hour = static_cast<int>(strntoi64(stimeyear, (int)(strpos - stimeyear)));
+    int stimeyearrem = (int)(stimeyearlen - (strpos - stimeyear) - 1);
     const char *strpos2 = strnchr(strpos + 1, stimeyearrem, ':');
     if (strpos2 == NULL)
     {
@@ -2034,8 +2034,8 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
     }
     else
     {
-      direntry.date.minute = static_cast<int>(strntoi64(strpos + 1, strpos2 - strpos - 1));
-      direntry.date.second = static_cast<int>(strntoi64(strpos2 + 1, stimeyearlen - (strpos2 - stimeyear) - 1));
+      direntry.date.minute = static_cast<int>(strntoi64(strpos + 1, (int)(strpos2 - strpos - 1)));
+      direntry.date.second = static_cast<int>(strntoi64(strpos2 + 1, (int)(stimeyearlen - (strpos2 - stimeyear) - 1)));
       direntry.date.hasseconds = TRUE;
     }
     direntry.date.hastime = TRUE;
@@ -2133,8 +2133,8 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
     const char *pos = strnstr(str, tokenlen, " -> ");
     if (pos)
     {
-      copyStr(direntry.linkTarget, 0, pos + 4, tokenlen - (pos - str) - 4);
-      tokenlen = pos - str;
+      copyStr(direntry.linkTarget, 0, pos + 4, (int)(tokenlen - (pos - str) - 4));
+      tokenlen = (int)(pos - str);
     }
 
     if (!tokenlen)
@@ -2203,7 +2203,7 @@ BOOL CFtpListResult::parseAsDos(const char *line, const int linelen, t_directory
   }
   else
   {
-    char * buffer = static_cast<char *>(nb_calloc(1, tokenlen));
+    char * buffer = nb::chcalloc(tokenlen);
     int i, j;
     for (i = 0, j = 0; i < tokenlen; i++)
     {
@@ -2344,8 +2344,8 @@ BOOL CFtpListResult::parseAsOther(const char *line, const int linelen, t_directo
       if (strpos)
       {
         //stimeyear has delimiter, so it's a time
-        direntry.date.hour = static_cast<int>(strntoi64(str, strpos - str));
-        direntry.date.minute = static_cast<int>(strntoi64(strpos+1, tokenlen - (strpos - str) - 1));
+        direntry.date.hour = static_cast<int>(strntoi64(str, (int)(strpos - str)));
+        direntry.date.minute = static_cast<int>(strntoi64(strpos+1, (int)(tokenlen - (strpos - str) - 1)));
         direntry.date.hastime = TRUE;
 
         //Problem: Some servers use times only for files newer than 6 months,
@@ -2428,10 +2428,10 @@ BOOL CFtpListResult::parseAsOther(const char *line, const int linelen, t_directo
       if (!p)
         return FALSE;
 
-      if (p==str || !IsNumeric(str, p-str) || (p-str + 1) >= tokenlen || !IsNumeric(p+1, tokenlen - (p-str) - 1))
+      if (p==str || !IsNumeric(str, (int)(p-str)) || (p-str + 1) >= tokenlen || !IsNumeric(p+1, (int)(tokenlen - (p-str) - 1)))
         return FALSE;
-      direntry.date.hour = static_cast<int>(strntoi64(str, p-str));
-      direntry.date.minute = static_cast<int>(strntoi64(p+1, tokenlen - (p-str) - 1));
+      direntry.date.hour = static_cast<int>(strntoi64(str, (int)(p-str)));
+      direntry.date.minute = static_cast<int>(strntoi64(p+1, (int)(tokenlen - (p-str) - 1)));
 
       if (direntry.date.hour < 0 || direntry.date.hour > 24)
         return FALSE;
@@ -2494,15 +2494,15 @@ const char *CFtpListResult::GetNextToken(const char *line, const int linelen, in
   if (type)
   {
     pos = linelen;
-    len = linelen - (p - line);
+    len = (int)(linelen - (p - line));
   }
   else
   {
     while ((p - line) < linelen && *p && *p != ' ' && *p!='\t')
       p++;
 
-    len = p - res;
-    pos = p - line;
+    len = (int)(p - res);
+    pos = (int)(p - line);
   }
 
   return res;
@@ -2532,7 +2532,7 @@ const char * CFtpListResult::strnstr(const char *str, int len, const char *c) co
     return NULL;
   if (!c)
     return NULL;
-  int clen = strlen(c);
+  size_t clen = strlen(c);
 
   const char *p = str;
   while (len > 0)
@@ -2543,7 +2543,7 @@ const char * CFtpListResult::strnstr(const char *str, int len, const char *c) co
     {
       if (clen == 1)
         return p;
-      else if (len >= clen)
+      else if (len >= (int)clen)
       {
         if (!memcmp(p + 1, c+1, clen-1))
           return p;
@@ -2561,13 +2561,13 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
 {
   USES_CONVERSION;
 
-  char *p = static_cast<char *>(nb_calloc(1, len + 1));
+  char *p = nb::chcalloc(len + 1);
   memcpy(p, source, len);
   p[len] = '\0';
   if (m_bUTF8 && *m_bUTF8)
   {
     // convert from UTF-8 to ANSI
-    if (DetectUTF8Encoding(RawByteString(p, len)) == etANSI)
+    if (nb::DetectUTF8Encoding((const uint8_t *)p, len) == nb::etANSI)
     {
       if (mayInvalidateUTF8 && m_server.nUTF8 != 1)
       {
@@ -2582,7 +2582,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
       int len = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1, NULL, 0);
       if (len != 0)
       {
-        LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
+        LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
         MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1 , (LPWSTR)p1, len + 1);
         target = target.Left(pos) + W2CT(p1);
         nb_free(p1);
@@ -2597,7 +2597,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
     int len = MultiByteToWideChar(*m_nCodePage, 0, (LPCSTR)p, -1, NULL, 0);
     if (len != 0)
     {
-      LPWSTR p1 = static_cast<WCHAR *>(nb_calloc(len + 1, sizeof(WCHAR)));
+      LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
       MultiByteToWideChar(*m_nCodePage, 0, (LPCSTR)p, -1 , (LPWSTR)p1, len + 1);
       target = target.Left(pos) + W2CT(p1);
       nb_free(p1);

@@ -1,4 +1,9 @@
+
+#include <vcl.h>
+#pragma hdrstop
+
 #include <Masks.hpp>
+#include <nbutils.h>
 
 namespace Masks {
 
@@ -6,8 +11,8 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
 {
   for (;; ++str)
   {
-    wchar_t stringc = Upper(*str);
-    wchar_t patternc = Upper(*pattern++);
+    wchar_t stringc = nb::Upper(*str);
+    wchar_t patternc = nb::Upper(*pattern++);
 
     switch (patternc)
     {
@@ -41,7 +46,7 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
               return FALSE;
 
             if (!patdot && dot )
-              return !FarStrCmpI(pattern + 1, dot + 1);
+              return !nb::FarStrCmpI(pattern + 1, dot + 1);
           }
         }
 
@@ -75,7 +80,7 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
 
         int match = 0;
         wchar_t rangec;
-        while ((rangec = Upper(*pattern++)) != 0)
+        while ((rangec = nb::Upper(*pattern++)) != 0)
         {
           if (rangec == L']')
           {
@@ -90,8 +95,8 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
 
           if (rangec == L'-' && *(pattern - 2) != L'[' && *pattern != L']')
           {
-            match = (stringc <= Upper(*pattern) &&
-                     Upper(*(pattern - 2)) <= stringc);
+            match = (stringc <= nb::Upper(*pattern) &&
+                     nb::Upper(*(pattern - 2)) <= stringc);
             pattern++;
           }
           else
@@ -132,10 +137,9 @@ TMask::TMask(const UnicodeString & Mask) :
 {
 }
 
-bool TMask::Matches(const UnicodeString & Str)
+bool TMask::Matches(const UnicodeString & Str) const
 {
   return CmpName(FMask.c_str(), Str.c_str()) == TRUE;
 }
 
 } // namespace Masks
-

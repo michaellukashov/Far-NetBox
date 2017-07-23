@@ -1,62 +1,88 @@
 #pragma once
 
+#include <headers.hpp>
+
 #include <stdexcept>
 #include <limits>
 #include <stdarg.h>
 #include <math.h>
 #include <rdestl/vector.h>
 #include <rdestl/pair.h>
-#include <BaseDefs.hpp>
+
+#include <FastDelegate.h>
+#include <FastDelegateBind.h>
 
 #pragma warning(push, 1)
 
 #include <rtlconsts.h>
-#include <headers.hpp>
+#include <ObjIDs.h>
+#include <UnicodeString.hpp>
 #include <rtti.hpp>
 
 #pragma warning(pop)
 
-#define NPOS static_cast<intptr_t>(-1)
+namespace nb {
+  using fastdelegate::bind;
+  using fastdelegate::FastDelegate0;
+  using fastdelegate::FastDelegate1;
+  using fastdelegate::FastDelegate2;
+  using fastdelegate::FastDelegate3;
+  using fastdelegate::FastDelegate4;
+  using fastdelegate::FastDelegate5;
+  using fastdelegate::FastDelegate6;
+  using fastdelegate::FastDelegate7;
+  using fastdelegate::FastDelegate8;
+} // namespace nb
 
 typedef HANDLE THandle;
 typedef DWORD TThreadID;
 
 class Exception;
 
-extern const intptr_t MonthsPerYear;
-extern const intptr_t DaysPerWeek;
-extern const intptr_t MinsPerHour;
-extern const intptr_t MinsPerDay;
-extern const intptr_t SecsPerMin;
-extern const intptr_t SecsPerHour;
-extern const intptr_t HoursPerDay;
-extern const intptr_t SecsPerDay;
-extern const intptr_t MSecsPerDay;
-extern const intptr_t MSecsPerSec;
-extern const intptr_t OneSecond;
-extern const intptr_t DateDelta;
-extern const intptr_t UnixDateDelta;
+NB_CORE_EXPORT extern const intptr_t MonthsPerYear;
+NB_CORE_EXPORT extern const intptr_t DaysPerWeek;
+NB_CORE_EXPORT extern const intptr_t MinsPerHour;
+NB_CORE_EXPORT extern const intptr_t MinsPerDay;
+NB_CORE_EXPORT extern const intptr_t SecsPerMin;
+NB_CORE_EXPORT extern const intptr_t SecsPerHour;
+NB_CORE_EXPORT extern const intptr_t HoursPerDay;
+NB_CORE_EXPORT extern const intptr_t SecsPerDay;
+NB_CORE_EXPORT extern const intptr_t MSecsPerDay;
+NB_CORE_EXPORT extern const intptr_t MSecsPerSec;
+NB_CORE_EXPORT extern const intptr_t OneSecond;
+NB_CORE_EXPORT extern const intptr_t DateDelta;
+NB_CORE_EXPORT extern const intptr_t UnixDateDelta;
 
 class TObject;
-DEFINE_CALLBACK_TYPE0(TThreadMethod, void);
 
-DEFINE_CALLBACK_TYPE1(TNotifyEvent, void, TObject * /*Sender*/);
+typedef nb::FastDelegate0<void> TThreadMethod;
+typedef nb::FastDelegate1<void, TObject * /*Sender*/> TNotifyEvent;
 
-void Abort();
-void Error(intptr_t Id, intptr_t ErrorId);
-void ThrowNotImplemented(intptr_t ErrorId);
+NB_CORE_EXPORT void Abort();
+NB_CORE_EXPORT void Error(intptr_t Id, intptr_t ErrorId);
+NB_CORE_EXPORT void ThrowNotImplemented(intptr_t ErrorId);
 
-class TObject
+class NB_CORE_EXPORT TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-NB_DECLARE_CLASS(TObject)
 public:
-  TObject() {}
+  inline TObjectClassId GetKind() const { return FKind; }
+  static inline bool classof(const TObject * /*Obj*/) { return true; }
+public:
+  TObject() : FKind(OBJECT_CLASS_TObject) {}
+  explicit TObject(TObjectClassId Kind) : FKind(Kind) {}
   virtual ~TObject() {}
   virtual void Changed() {}
-
-  bool IsKindOf(TObjectClassId ClassId) const;
+private:
+  TObjectClassId FKind;
 };
+
+inline TObject * as_object(void * p) { return static_cast<TObject *>(p); }
+inline const TObject * as_object(const void * p) { return static_cast<const TObject *>(p); }
+template<class T> inline T * get_as(void * p) { return dyn_cast<T>(as_object(p)); }
+template<class T> inline const T * get_as(const void * p) { return dyn_cast<T>(as_object(p)); }
+template <class T>
+inline TObject * ToObj(const T & a) { return reinterpret_cast<TObject *>(static_cast<size_t>(a)); }
 
 struct TPoint
 {
@@ -65,11 +91,13 @@ struct TPoint
   TPoint() :
     x(0),
     y(0)
-  {}
+  {
+  }
   TPoint(int ax, int ay) :
     x(ax),
     y(ay)
-  {}
+  {
+  }
 };
 
 struct TRect
@@ -118,11 +146,42 @@ struct TRect
   }
 };
 
-class TPersistent : public TObject
+class NB_CORE_EXPORT TPersistent : public TObject
 {
-NB_DECLARE_CLASS(TPersistent)
 public:
-  TPersistent();
+  static inline bool classof(const TObject * Obj)
+  {
+    switch(Obj->GetKind())
+    {
+      case OBJECT_CLASS_TPersistent:
+      case OBJECT_CLASS_TList:
+      case OBJECT_CLASS_TLabelList:
+      case OBJECT_CLASS_TObjectList:
+      case OBJECT_CLASS_TNamedObjectList:
+      case OBJECT_CLASS_TRemoteFileList:
+      case OBJECT_CLASS_TTerminalList:
+      case OBJECT_CLASS_TStoredSessionList:
+      case OBJECT_CLASS_TStrings:
+      case OBJECT_CLASS_TStringList:
+      case OBJECT_CLASS_TFarList:
+      case OBJECT_CLASS_TFarMenuItems:
+      case OBJECT_CLASS_TNamedObject:
+      case OBJECT_CLASS_TSessionData:
+      case OBJECT_CLASS_TBookmarkList:
+      case OBJECT_CLASS_TBookmark:
+      case OBJECT_CLASS_TRemoteFile:
+      case OBJECT_CLASS_TRemoteDirectoryFile:
+      case OBJECT_CLASS_TRemoteDirectory:
+      case OBJECT_CLASS_TRemoteParentDirectory:
+        return true;
+    default:
+        return false;
+    }
+    return false;
+  }
+public:
+  TPersistent() : TObject(OBJECT_CLASS_TPersistent) {}
+  explicit TPersistent(TObjectClassId Kind);
   virtual ~TPersistent();
   virtual void Assign(const TPersistent * Source);
   virtual TPersistent * GetOwner();
@@ -141,12 +200,31 @@ enum TListNotification
 
 typedef intptr_t (CompareFunc)(const void * Item1, const void * Item2);
 
-class TList : public TObject
+class NB_CORE_EXPORT TList : public TPersistent
 {
-NB_DECLARE_CLASS(TList)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TList ||
+      Obj->GetKind() == OBJECT_CLASS_TLabelList ||
+      Obj->GetKind() == OBJECT_CLASS_TObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
+      Obj->GetKind() == OBJECT_CLASS_TTerminalList ||
+      Obj->GetKind() == OBJECT_CLASS_TStrings ||
+      Obj->GetKind() == OBJECT_CLASS_TStringList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems ||
+      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
+  }
 public:
   TList();
+  explicit TList(TObjectClassId Kind);
   virtual ~TList();
+
+  template<class T>
+  T * GetAs(intptr_t Index) const { return get_as<T>(GetItem(Index)); }
   void * operator [](intptr_t Index) const;
   virtual void * GetItem(intptr_t Index) const { return FList[Index]; }
   virtual void * GetItem(intptr_t Index) { return FList[Index]; }
@@ -159,38 +237,43 @@ public:
   void Insert(intptr_t Index, void * Item);
   intptr_t IndexOf(const void * Value) const;
   virtual void Clear();
-  virtual void Sort(CompareFunc Func);
+  void Sort(CompareFunc Func);
   virtual void Notify(void * Ptr, TListNotification Action);
   virtual void Sort();
 
   intptr_t GetCount() const;
-  void SetCount(intptr_t Value);
+  void SetCount(intptr_t NewCount);
 
 private:
   rde::vector<void *> FList;
 };
 
-class TObjectList : public TList
+class NB_CORE_EXPORT TObjectList : public TList
 {
-NB_DECLARE_CLASS(TObjectList)
 public:
-  TObjectList();
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TStrings ||
+      Obj->GetKind() == OBJECT_CLASS_TStringList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems ||
+      Obj->GetKind() == OBJECT_CLASS_TNamedObjectList ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFileList ||
+      Obj->GetKind() == OBJECT_CLASS_TTerminalList ||
+      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
+  }
+public:
+  explicit TObjectList(TObjectClassId Kind = OBJECT_CLASS_TObjectList);
   virtual ~TObjectList();
 
+  template<class T>
+  T * GetAs(intptr_t Index) const { return dyn_cast<T>(GetObj(Index)); }
   TObject * operator [](intptr_t Index) const;
   TObject * GetObj(intptr_t Index) const;
-  void SetItem(intptr_t Index, TObject * Value);
-  intptr_t Add(TObject * Value);
-  intptr_t Remove(TObject * Value);
-  void Extract(TObject * Value);
-  virtual void Move(intptr_t Index, intptr_t To);
-  virtual void Delete(intptr_t Index);
-  void Insert(intptr_t Index, TObject * Value);
-  intptr_t IndexOf(const TObject * Value) const;
-  virtual void Clear();
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
-  virtual void Sort(CompareFunc func);
   virtual void Notify(void * Ptr, TListNotification Action);
 
 private:
@@ -206,14 +289,22 @@ enum TDuplicatesEnum
 
 class TStream;
 
-class TStrings : public TPersistent
+class NB_CORE_EXPORT TStrings : public TObjectList
 {
-NB_DECLARE_CLASS(TStrings)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TStrings ||
+      Obj->GetKind() == OBJECT_CLASS_TStringList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
+  }
 public:
   TStrings();
+  explicit TStrings(TObjectClassId Kind);
   virtual ~TStrings();
   intptr_t Add(const UnicodeString & S, TObject * AObject = nullptr);
-  virtual void Delete(intptr_t Index) = 0;
   virtual UnicodeString GetTextStr() const;
   virtual void SetTextStr(const UnicodeString & Text);
   virtual void BeginUpdate();
@@ -222,8 +313,7 @@ public:
   virtual intptr_t AddObject(const UnicodeString & S, TObject * AObject);
   virtual void InsertObject(intptr_t Index, const UnicodeString & Key, TObject * AObject);
   bool Equals(const TStrings * Value) const;
-  virtual void Clear() = 0;
-  void Move(intptr_t CurIndex, intptr_t NewIndex);
+  virtual void Move(intptr_t CurIndex, intptr_t NewIndex);
   virtual intptr_t IndexOf(const UnicodeString & S) const;
   virtual intptr_t IndexOfName(const UnicodeString & Name) const;
   UnicodeString ExtractName(const UnicodeString & S) const;
@@ -243,7 +333,6 @@ public:
   virtual intptr_t GetCount() const = 0;
 
 public:
-  virtual TObject * GetObj(intptr_t Index) const = 0;
   virtual void SetObj(intptr_t Index, TObject * AObject) = 0;
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
@@ -256,9 +345,9 @@ public:
   virtual void SetText(const UnicodeString & Text);
   virtual const UnicodeString & GetString(intptr_t Index) const = 0;
   virtual void SetString(intptr_t Index, const UnicodeString & S) = 0;
-  const UnicodeString GetName(intptr_t Index) const;
+  UnicodeString GetName(intptr_t Index) const;
   void SetName(intptr_t Index, const UnicodeString & Value);
-  const UnicodeString GetValue(const UnicodeString & Name) const;
+  UnicodeString GetValue(const UnicodeString & Name) const;
   void SetValue(const UnicodeString & Name, const UnicodeString & Value);
   UnicodeString GetValueFromIndex(intptr_t Index) const;
 
@@ -272,12 +361,19 @@ protected:
 class TStringList;
 typedef intptr_t (TStringListSortCompare)(TStringList * List, intptr_t Index1, intptr_t Index2);
 
-class TStringList : public TStrings
+class NB_CORE_EXPORT TStringList : public TStrings
 {
 friend intptr_t StringListCompareStrings(TStringList * List, intptr_t Index1, intptr_t Index2);
-NB_DECLARE_CLASS(TStringList)
 public:
-  TStringList();
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TStringList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarList ||
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
+  }
+public:
+  explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList);
   virtual ~TStringList();
 
   intptr_t Add(const UnicodeString & S);
@@ -291,7 +387,6 @@ public:
   void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
   virtual void Assign(const TPersistent * Source);
-  virtual void Clear();
   virtual bool Find(const UnicodeString & S, intptr_t & Index) const;
   virtual intptr_t IndexOf(const UnicodeString & S) const;
   virtual void Delete(intptr_t Index);
@@ -307,7 +402,6 @@ public:
   virtual intptr_t GetCount() const;
 
 public:
-  virtual TObject * GetObj(intptr_t Index) const;
   virtual void SetObj(intptr_t Index, TObject * AObject);
   virtual bool GetSorted() const { return FSorted; }
   virtual void SetSorted(bool Value);
@@ -320,7 +414,6 @@ private:
   TNotifyEvent FOnChange;
   TNotifyEvent FOnChanging;
   rde::vector<UnicodeString> FStrings;
-  rde::vector<TObject *> FObjects;
   bool FSorted;
   bool FCaseSensitive;
 
@@ -333,7 +426,7 @@ private:
 };
 
 /// TDateTime: number of days since 12/30/1899
-class TDateTime : public TObject
+class NB_CORE_EXPORT TDateTime : public TObject
 {
 public:
   TDateTime() :
@@ -394,8 +487,8 @@ public:
     FValue = Value;
     return *this;
   }
-  bool operator == (const TDateTime & rhs);
-  bool operator != (const TDateTime & rhs)
+  bool operator == (const TDateTime & rhs) const;
+  bool operator != (const TDateTime & rhs) const
   {
     return !(operator == (rhs));
   }
@@ -412,13 +505,14 @@ private:
 
 #define MinDateTime TDateTime(-657434.0)
 
-TDateTime Now();
-TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
-double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
-int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
-int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
+NB_CORE_EXPORT TDateTime Now();
+NB_CORE_EXPORT TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
+NB_CORE_EXPORT double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
+NB_CORE_EXPORT int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
+NB_CORE_EXPORT int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
 
-class TSHFileInfo : public TObject
+#if 0
+class NB_CORE_EXPORT TSHFileInfo : public TObject
 {
   typedef DWORD_PTR (WINAPI * TGetFileInfo)(
   _In_ LPCTSTR pszPath,
@@ -440,7 +534,9 @@ public:
 
 private:
   TGetFileInfo FGetFileInfo;
+  TLibraryLoader FSHFileInfoLoader;
 };
+#endif // #if 0
 
 enum TSeekOrigin
 {
@@ -449,7 +545,7 @@ enum TSeekOrigin
   soFromEnd = 2
 };
 
-class TStream : public TObject
+class NB_CORE_EXPORT TStream : public TObject
 {
 public:
   TStream();
@@ -483,7 +579,7 @@ public:
   }
 };
 
-class THandleStream : public TStream
+class NB_CORE_EXPORT THandleStream : public TStream
 {
 NB_DISABLE_COPY(THandleStream)
 public:
@@ -501,7 +597,7 @@ protected:
   HANDLE FHandle;
 };
 
-class TSafeHandleStream : public THandleStream
+class NB_CORE_EXPORT TSafeHandleStream : public THandleStream
 {
 public:
   explicit TSafeHandleStream(THandle AHandle);
@@ -510,7 +606,7 @@ public:
   virtual int64_t Write(const void * Buffer, int64_t Count);
 };
 
-class EReadError : public std::runtime_error
+class NB_CORE_EXPORT EReadError : public std::runtime_error
 {
 public:
   explicit EReadError(const char * Msg) :
@@ -518,7 +614,7 @@ public:
   {}
 };
 
-class EWriteError : public std::runtime_error
+class NB_CORE_EXPORT EWriteError : public std::runtime_error
 {
 public:
   explicit EWriteError(const char * Msg) :
@@ -526,7 +622,7 @@ public:
   {}
 };
 
-class TMemoryStream : public TStream
+class NB_CORE_EXPORT TMemoryStream : public TStream
 {
 NB_DISABLE_COPY(TMemoryStream)
 public:
@@ -554,6 +650,7 @@ protected:
 
 private:
   void SetCapacity(int64_t NewCapacity);
+
 private:
   void * FMemory;
   int64_t FSize;
@@ -582,7 +679,7 @@ struct TRegDataInfo
   DWORD DataSize;
 };
 
-class TRegistry : public TObject
+class NB_CORE_EXPORT TRegistry : public TObject
 {
 NB_DISABLE_COPY(TRegistry)
 public:
@@ -598,16 +695,16 @@ public:
   bool ValueExists(const UnicodeString & Value) const;
   bool GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const;
   TRegDataType GetDataType(const UnicodeString & ValueName) const;
-  DWORD GetDataSize(const UnicodeString & Name) const;
-  bool ReadBool(const UnicodeString & Name);
-  TDateTime ReadDateTime(const UnicodeString & Name);
+  DWORD GetDataSize(const UnicodeString & ValueName) const;
+  bool ReadBool(const UnicodeString & Name) const;
+  TDateTime ReadDateTime(const UnicodeString & Name) const;
   double ReadFloat(const UnicodeString & Name) const;
   intptr_t ReadInteger(const UnicodeString & Name) const;
-  int64_t ReadInt64(const UnicodeString & Name);
-  UnicodeString ReadString(const UnicodeString & Name);
-  UnicodeString ReadStringRaw(const UnicodeString & Name);
+  int64_t ReadInt64(const UnicodeString & Name) const;
+  UnicodeString ReadString(const UnicodeString & Name) const;
+  UnicodeString ReadStringRaw(const UnicodeString & Name) const;
   size_t ReadBinaryData(const UnicodeString & Name,
-    void * Buffer, size_t Size) const;
+    void * Buffer, size_t BufSize) const;
 
   void WriteBool(const UnicodeString & Name, bool Value);
   void WriteDateTime(const UnicodeString & Name, const TDateTime & Value);
@@ -617,7 +714,7 @@ public:
   void WriteInteger(const UnicodeString & Name, intptr_t Value);
   void WriteInt64(const UnicodeString & Name, int64_t Value);
   void WriteBinaryData(const UnicodeString & Name,
-    const void * Buffer, size_t Size);
+    const void * Buffer, size_t BufSize);
 private:
   void ChangeKey(HKEY Value, const UnicodeString & APath);
   HKEY GetBaseKey(bool Relative) const;
@@ -651,7 +748,7 @@ struct TTimeStamp
 };
 
 // FIXME
-class TShortCut : public TObject
+class NB_CORE_EXPORT TShortCut : public TObject
 {
 public:
   explicit TShortCut();
@@ -688,8 +785,8 @@ struct TInputDialogData
 
 //typedef void (__closure *TInputDialogInitialize)
 //  (TObject * Sender, TInputDialogData * Data);
-DEFINE_CALLBACK_TYPE2(TInputDialogInitializeEvent, void,
-  TObject * /*Sender*/, TInputDialogData * /*Data*/);
+typedef nb::FastDelegate2<void,
+  TObject * /*Sender*/, TInputDialogData * /*Data*/> TInputDialogInitializeEvent;
 
 enum TQueryType
 {
@@ -701,10 +798,12 @@ enum TQueryType
 
 struct TMessageParams;
 
-class TGlobalFunctionsIntf
+class TGlobalsIntf
 {
 public:
-  virtual ~TGlobalFunctionsIntf() {}
+  virtual ~TGlobalsIntf()
+  {
+  }
 
   virtual HINSTANCE GetInstanceHandle() const = 0;
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;
@@ -719,5 +818,39 @@ public:
       const TMessageParams * Params) = 0;
 };
 
-TGlobalFunctionsIntf * GetGlobalFunctions();
+class NB_CORE_EXPORT TGlobals : public TGlobalsIntf, public TObject
+{
+public:
+  TGlobals();
+  virtual ~TGlobals();
 
+public:
+  wchar_t Win32CSDVersion[128];
+  int Win32Platform;
+  int Win32MajorVersion;
+  int Win32MinorVersion;
+  int Win32BuildNumber;
+
+private:
+  void InitPlatformId();
+};
+
+NB_CORE_EXPORT TGlobals * GetGlobals();
+NB_CORE_EXPORT void SetGlobals(TGlobals * Value);
+
+template<typename T>
+class TGlobalsIntfInitializer
+{
+public:
+  TGlobalsIntfInitializer()
+  {
+    ::SetGlobals(new T());
+  }
+
+  ~TGlobalsIntfInitializer()
+  {
+    TGlobalsIntf * Intf = GetGlobals();
+    delete Intf;
+    ::SetGlobals(nullptr);
+  }
+};

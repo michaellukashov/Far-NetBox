@@ -16,8 +16,8 @@ enum TStorageAccessMode
   smRead,
   smReadWrite,
 };
-//---------------------------------------------------------------------------
-class THierarchicalStorage : public TObject
+
+class NB_CORE_EXPORT THierarchicalStorage : public TObject
 {
 NB_DISABLE_COPY(THierarchicalStorage)
 public:
@@ -52,7 +52,7 @@ public:
   virtual size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size) const = 0;
 
   virtual UnicodeString ReadString(const UnicodeString & Name, const UnicodeString & Default) const;
-  virtual RawByteString ReadBinaryData(const UnicodeString & Name) const;
+  RawByteString ReadBinaryData(const UnicodeString & Name) const;
   virtual RawByteString ReadStringAsBinaryData(const UnicodeString & Name, const RawByteString & Default) const;
 
   virtual void WriteBool(const UnicodeString & Name, bool Value) = 0;
@@ -64,7 +64,7 @@ public:
   virtual void WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size) = 0;
 
   virtual void WriteString(const UnicodeString & Name, const UnicodeString & Value);
-  virtual void WriteBinaryData(const UnicodeString & Name, const RawByteString & Value);
+  void WriteBinaryData(const UnicodeString & Name, const RawByteString & Value);
   virtual void WriteBinaryDataAsString(const UnicodeString & Name, const RawByteString & Value);
 
   virtual void Flush();
@@ -113,7 +113,7 @@ public:
   virtual UnicodeString GetSource() = 0;
 };
 
-class TRegistryStorage : public THierarchicalStorage
+class NB_CORE_EXPORT TRegistryStorage : public THierarchicalStorage
 {
 NB_DISABLE_COPY(TRegistryStorage)
 public:
@@ -138,7 +138,7 @@ public:
   virtual TDateTime ReadDateTime(const UnicodeString & Name, const TDateTime & Default) const;
   virtual double ReadFloat(const UnicodeString & Name, double Default) const;
   virtual UnicodeString ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) const;
-  virtual size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size) const;
+  size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size) const;
 
   virtual void WriteBool(const UnicodeString & Name, bool Value);
   virtual void WriteInteger(const UnicodeString & Name, intptr_t Value);
@@ -146,12 +146,12 @@ public:
   virtual void WriteDateTime(const UnicodeString & Name, const TDateTime & Value);
   virtual void WriteFloat(const UnicodeString & Name, double Value);
   virtual void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
-  virtual void WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size);
+  void WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size);
 
   virtual void GetValueNames(TStrings * Strings) const;
 
 protected:
-  virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
+  virtual bool DoKeyExists(const UnicodeString & SubKey, bool AForceAnsi);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate);
   virtual UnicodeString GetSource() const;
   virtual UnicodeString GetSource();
@@ -250,6 +250,6 @@ protected:
 };
 */
 
-UnicodeString PuttyMungeStr(const UnicodeString & Str);
-UnicodeString PuttyUnMungeStr(const UnicodeString & Str);
+NB_CORE_EXPORT UnicodeString PuttyMungeStr(const UnicodeString & Str);
+NB_CORE_EXPORT UnicodeString PuttyUnMungeStr(const UnicodeString & Str);
 

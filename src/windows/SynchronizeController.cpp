@@ -4,10 +4,9 @@
 #include <Common.h>
 #include <RemoteFiles.h>
 #include <Terminal.h>
-#include <DiscMon.hpp>
+//#include <DiscMon.hpp>
 #include <Exceptions.h>
 #include "GUIConfiguration.h"
-#include "CoreMain.h"
 #include "TextsCore.h"
 #include "SynchronizeController.h"
 
@@ -21,7 +20,8 @@ TSynchronizeController::TSynchronizeController(
   FSynchronizeAbort(nullptr),
   FOnSynchronizeInvalid(AOnSynchronizeInvalid),
   FOnTooManyDirectories(AOnTooManyDirectories),
-  FSynchronizeLog(nullptr)
+  FSynchronizeLog(nullptr),
+  FCopyParam(OBJECT_CLASS_TCopyParamType)
 {
   FSynchronizeParams.Params = 0;
   FSynchronizeParams.Options = 0;
@@ -70,7 +70,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
       ThrowNotImplemented(256);
       /*
       // FIXME
-      FSynchronizeMonitor = new TDiscMonitor(NB_STATIC_DOWNCAST(TComponent, Sender));
+      FSynchronizeMonitor = new TDiscMonitor(dyn_cast<TComponent>(Sender));
       FSynchronizeMonitor->SubTree = false;
       TMonitorFilters Filters;
       Filters << moFilename << moLastWrite;
@@ -114,10 +114,8 @@ void TSynchronizeController::SynchronizeChange(
 {
   try
   {
-    UnicodeString RemoteDirectory;
-    UnicodeString RootLocalDirectory;
-    RootLocalDirectory = ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
-    RemoteDirectory = core::UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
+    UnicodeString RootLocalDirectory = ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
+    UnicodeString RemoteDirectory = core::UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
 
     UnicodeString LocalDirectory = ::IncludeTrailingBackslash(Directory);
 
@@ -176,7 +174,7 @@ void TSynchronizeController::SynchronizeChange(
   }
   catch (Exception & E)
   {
-    SynchronizeAbort(NB_STATIC_DOWNCAST(EFatal, &E) != nullptr);
+    SynchronizeAbort(isa<EFatal>(&E));
   }
 }
 

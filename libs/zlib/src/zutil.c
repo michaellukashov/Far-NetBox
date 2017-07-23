@@ -1,5 +1,5 @@
 /* zutil.c -- target dependent utility functions for the compression library
- * Copyright (C) 1995-2017 Jean-loup Gailly
+ * Copyright (C) 1995-2016 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -27,18 +27,18 @@ const char * ZEXPORT zlibVersion(void)
     return ZLIB_VERSION;
 }
 
-unsigned long ZEXPORT zlibCompileFlags(void)
+uint64_t ZEXPORT zlibCompileFlags(void)
 {
-    unsigned long flags;
+    uint64_t flags;
 
     flags = 0;
-    switch ((int)(sizeof(unsigned int))) {
+    switch ((int)(sizeof(uint32_t))) {
     case 2:     break;
     case 4:     flags += 1;     break;
     case 8:     flags += 2;     break;
     default:    flags += 3;
     }
-    switch ((int)(sizeof(unsigned long))) {
+    switch ((int)(sizeof(uint64_t))) {
     case 2:     break;
     case 4:     flags += 1 << 2;        break;
     case 8:     flags += 2 << 2;        break;
@@ -132,7 +132,7 @@ const char * ZEXPORT zError(int err)
 
 #ifndef HAVE_MEMCPY
 
-void ZLIB_INTERNAL zmemcpy(unsigned char* dest, const unsigned char* source, unsigned int len)
+void ZLIB_INTERNAL zmemcpy(uint8_t* dest, const uint8_t* source, uint32_t len)
 {
     if (len == 0) return;
     do {
@@ -140,9 +140,9 @@ void ZLIB_INTERNAL zmemcpy(unsigned char* dest, const unsigned char* source, uns
     } while (--len != 0);
 }
 
-int ZLIB_INTERNAL zmemcmp(const unsigned char* s1, const unsigned char* s2, unsigned int len)
+int ZLIB_INTERNAL zmemcmp(const uint8_t* s1, const uint8_t* s2, uint32_t len)
 {
-    uInt j;
+    uint32_t j;
 
     for (j = 0; j < len; j++) {
         if (s1[j] != s2[j]) return 2*(s1[j] > s2[j])-1;
@@ -150,7 +150,7 @@ int ZLIB_INTERNAL zmemcmp(const unsigned char* s1, const unsigned char* s2, unsi
     return 0;
 }
 
-void ZLIB_INTERNAL zmemzero(unsigned char* dest, unsigned int len)
+void ZLIB_INTERNAL zmemzero(uint8_t* dest, uint32_t len)
 {
     if (len == 0) return;
     do {
@@ -162,15 +162,15 @@ void ZLIB_INTERNAL zmemzero(unsigned char* dest, unsigned int len)
 #ifndef MY_ZCALLOC /* Any system without a special alloc function */
 
 #ifndef STDC
-extern voidp  malloc (unsigned int size);
-extern voidp  calloc (unsigned int items, unsigned int size);
+extern void *  malloc (uint32_t size);
+extern void *  calloc (uint32_t items, uint32_t size);
 extern void   free   (void * ptr);
 #endif
 
 void ZLIB_INTERNAL *zcalloc (void *opaque, uint32_t items, uint32_t size)
 {
     (void)opaque;
-    return sizeof(unsigned int) > 2 ? (void *)malloc(items * size) :
+    return sizeof(uint32_t) > 2 ? (void *)malloc(items * size) :
                               (void *)calloc(items, size);
 }
 
@@ -181,5 +181,3 @@ void ZLIB_INTERNAL zcfree (void *opaque, void *ptr)
 }
 
 #endif /* MY_ZCALLOC */
-
-

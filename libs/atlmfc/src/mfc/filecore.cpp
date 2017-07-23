@@ -10,8 +10,8 @@
 
 #include "stdafx.h"
 #include <winnetwk.h>
-#include <shlobj.h>
-#include <shellapi.h>
+//#include <shlobj.h>
+//#include <shellapi.h>
 #include <Strsafe.h>
 #include "sal.h"
 
@@ -172,7 +172,7 @@ BOOL CFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pExcepti
 	m_hFile = INVALID_HANDLE_VALUE;
 	m_strFileName.Empty();
 
-	TCHAR szTemp[_MAX_PATH];
+	/*TCHAR szTemp[_MAX_PATH];
 	if (lpszFileName != NULL && SUCCEEDED(StringCchLength(lpszFileName, _MAX_PATH, NULL)) )
 	{
 		if( _AfxFullPath2(szTemp, lpszFileName,pException) == FALSE )
@@ -187,9 +187,9 @@ BOOL CFile::Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pExcepti
 			pException->m_strFileName = lpszFileName;
 		}
 		return FALSE; // path is too long
-	}
+	}*/
 		
-	m_strFileName = szTemp;
+	m_strFileName = lpszFileName;
 	ASSERT(shareCompat == 0);
 
 	// map read/write mode
@@ -706,8 +706,8 @@ BOOL AFXAPI AfxComparePath(LPCTSTR lpszPath1, LPCTSTR lpszPath2)
 #pragma warning(pop)
 
 	// on non-DBCS systems, we are done
-	if (!GetSystemMetrics(SM_DBCSENABLED))
-		return TRUE;
+//	if (!GetSystemMetrics(SM_DBCSENABLED))
+//		return TRUE;
 
 	// on DBCS systems, the file name may not actually be the same
 	// in particular, the file system is case sensitive with respect to

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <BaseDefs.hpp>
+#include <Classes.hpp>
+#include <FileMasks.H>
 
 // from shlobj.h
 #define CSIDL_DESKTOP                   0x0000        // <desktop>
@@ -11,39 +12,37 @@
 #define CSIDL_PROGRAM_FILES             0x0026        // C:\Program Files
 #define CSIDL_PERSONAL                  0x0005        // My Documents
 
-#include <FileMasks.H>
-
 class TSessionData;
 
-DEFINE_CALLBACK_TYPE0(TProcessMessagesEvent, void);
+typedef nb::FastDelegate0<void> TProcessMessagesEvent;
 
-bool FindFile(UnicodeString & APath);
-bool FindTool(const UnicodeString & Name, UnicodeString & APath);
-bool FileExistsEx(const UnicodeString & APath);
-bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams, bool ChangeWorkingDirectory = false);
-bool ExecuteShell(const UnicodeString & Command);
-bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams,
+NB_CORE_EXPORT bool FindFile(UnicodeString & APath);
+NB_CORE_EXPORT bool FindTool(const UnicodeString & Name, UnicodeString & APath);
+NB_CORE_EXPORT bool FileExistsEx(const UnicodeString & APath);
+NB_CORE_EXPORT bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams, bool ChangeWorkingDirectory = false);
+NB_CORE_EXPORT bool ExecuteShell(const UnicodeString & Command);
+NB_CORE_EXPORT bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams,
   HANDLE & Handle);
-bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & APath,
+NB_CORE_EXPORT bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & APath,
   const UnicodeString & Params, TProcessMessagesEvent ProcessMessages);
-bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Command,
+NB_CORE_EXPORT bool ExecuteShellAndWait(HINSTANCE Handle, const UnicodeString & Command,
   TProcessMessagesEvent ProcessMessages);
-void OpenSessionInPutty(const UnicodeString & PuttyPath,
+NB_CORE_EXPORT void OpenSessionInPutty(const UnicodeString & PuttyPath,
   TSessionData * SessionData);
-bool SpecialFolderLocation(int PathID, UnicodeString & APath);
-UnicodeString GetPersonalFolder();
-UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
+NB_CORE_EXPORT bool SpecialFolderLocation(int PathID, UnicodeString & APath);
+NB_CORE_EXPORT UnicodeString GetPersonalFolder();
+NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, intptr_t Count, const UnicodeString & FirstItem);
-UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
+NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   const UnicodeString & MultiItemsFormat, const TStrings * Items);
-UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
-  const UnicodeString & MultiFileFormat, const TStrings * AFiles, bool Remote);
-UnicodeString UniqTempDir(const UnicodeString & BaseDir,
+NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
+  const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote);
+NB_CORE_EXPORT UnicodeString UniqTempDir(const UnicodeString & BaseDir,
   const UnicodeString & Identity, bool Mask = false);
-bool DeleteDirectory(const UnicodeString & ADirName);
-UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, const TDateTime & DateTime);
+NB_CORE_EXPORT bool DeleteDirectory(const UnicodeString & ADirName);
+NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, const TDateTime & DateTime);
 
-class TLocalCustomCommand : public TFileCustomCommand
+class NB_CORE_EXPORT TLocalCustomCommand : public TFileCustomCommand
 {
 public:
   TLocalCustomCommand();

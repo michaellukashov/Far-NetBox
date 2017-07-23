@@ -40,7 +40,7 @@ void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationP
 
 void TFileOperationProgressType::Clear()
 {
-  FSuspendTime = 0,
+  FSuspendTime = 0;
   FFileStartTime = 0.0;
   FFilesFinished = 0;
   FReset = false;
@@ -408,8 +408,8 @@ void TFileOperationProgressType::AddTransfered(int64_t ASize,
     TotalTransfered += ASize;
     uint32_t Ticks = static_cast<uint32_t>(::GetTickCount());
     if (FTicks.empty() ||
-        (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
-        ((Ticks - FTicks.back()) >= static_cast<uint32_t>(MSecsPerSec)))
+      (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
+      ((Ticks - FTicks.back()) >= static_cast<uint32_t>(MSecsPerSec)))
     {
       FTicks.push_back(Ticks);
       FTotalTransferredThen.push_back(TotalTransfered);

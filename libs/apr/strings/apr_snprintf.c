@@ -521,7 +521,7 @@ static char *conv_fp(register char format, register double num,
     register char *s = buf;
     register char *p;
     int decimal_point;
-    char buf1[NDIG];
+    char buf1[NDIG + 1];
 
     if (format == 'f')
         p = apr_fcvt(num, precision, &decimal_point, is_negative, buf1);
@@ -1328,7 +1328,7 @@ APR_DECLARE(int) apr_vformatter(int (*flush_func)(apr_vformatter_buff_t *),
              */
             if (print_something == YES) {
                 for (i = s_len; i != 0; i--) {
-                      INS_CHAR(*s, sp, bep, cc);
+                    INS_CHAR(*s, sp, bep, cc);
                     s++;
                 }
             }

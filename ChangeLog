@@ -1,15 +1,50 @@
-NetBox 2.4.2.444 27.01.2017
+NetBox 2.4.4.516 23.07.2017
 --------------------
-  * Update openssl sources to 1.0.2k
+  * FTP: use QUIT to disconnect from server
+  * Update expat sources to 2.2.2
+  * Fix AV after reopen connection
+
+NetBox 2.4.3.512 09.07.2017
+--------------------
+  * Update putty sources to 0.70
+  * Issue #245: AV when file is edited in external editor
+    (https://github.com/michaellukashov/Far-NetBox/issues/245)
+  * Issue #244: Fail to change dir on remote server after reconnect
+    (https://github.com/michaellukashov/Far-NetBox/issues/244)
+  * Issue #243: Show session name and current dir if interface option "Show session name in window title" is set
+    (https://github.com/michaellukashov/Far-NetBox/issues/243)
+  * Bugfix: Fix issues #240, #241, #239, #237
+  * Bugfix: Mantis-3439: Far crash when trying to copy to long path
+    (http://bugs.farmanager.com/view.php?id=3439)
+  * Update openssl sources to 1.1.0f
+  * Bugfix: plugin crashes on FAR startup
+    (http://bugs.farmanager.com/view.php?id=3429)
+    (http://forum.farmanager.com/viewtopic.php?p=143678#p143678)
+    (https://github.com/michaellukashov/Far-NetBox/issues/230)
+  * Issue #229: Remove "netbox:" prefix from Far window title
+    (https://github.com/michaellukashov/Far-NetBox/issues/229)
+  * Update WinSCP sources to 5.9.5
+
+NetBox 2.4.2.475 24.03.2017
+--------------------
+  * Bugfix: Mantis-3412: Access Violation when connection is reopened
+    (http://bugs.farmanager.com/view.php?id=3412)
+  * Bugfix: WebDAV: plugin shows error "Cannot change properties of file" after creating directory on remote server
+    (http://forum.farmanager.com/viewtopic.php?p=142479#p142479)
+  * Bugfix: Can't open remote directory stored in Folders history
+    (http://forum.farmanager.com/viewtopic.php?t=6317&p=142882#p142882)
+    (http://bugs.farmanager.com/view.php?id=3402)
+  * Bugfix: Synchronized browsing is not working
+    (http://forum.farmanager.com/viewtopic.php?t=6317&p=142746#p142746)
+  * Update putty sources to 0.68
+  * Update WinSCP sources to 5.9.4
+  * Update openssl sources to 1.1.0e
+  * Bugfix: can't change directory if option [] Cache directories is set
   * Update zlib sources to 1.2.11
   * Bugfix: Issue #218: cannot copy to root folder
     (https://github.com/michaellukashov/Far-NetBox/issues/218)
-
-NetBox 2.4.2.442 07.12.2016
---------------------
   * Bugfix: SCP: cannot copy file
     (http://forum.farmanager.com/viewtopic.php?p=141891#p141891)
-  * Update WinSCP sources to 5.9.3
 
 NetBox 2.4.1.440 07.10.2016
 --------------------

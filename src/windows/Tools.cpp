@@ -5,13 +5,14 @@
 #include <Common.h>
 #include <TextsCore.h>
 #include <Exceptions.h>
-#include <FileMasks.h>
-#include <CoreMain.h>
+//#include <FileMasks.h>
+//#include <CoreMain.h>
 #include <RemoteFiles.h>
 #include <Interface.h>
+#include <LibraryLoader.hpp>
 
 #include "WinInterface.h"
-#include "GUITools.h"
+//#include "GUITools.h"
 #include "PuttyTools.h"
 #include "Tools.h"
 
@@ -123,9 +124,9 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   if (IsKeyEncrypted(Type, FileName, Comment))
   {
     if (!InputDialog(
-          LoadStr(PASSPHRASE_TITLE),
-          FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE).c_str(), Comment.c_str()),
-          Passphrase, HELP_NONE, nullptr, false, nullptr, false))
+      LoadStr(PASSPHRASE_TITLE),
+      FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE).c_str(), Comment.c_str()),
+      Passphrase, HELP_NONE, nullptr, false, nullptr, false))
     {
       Abort();
     }
@@ -139,7 +140,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
     {
       FreeKey(PrivateKey);
     };
-    FileName = ChangeFileExt(FileName, ".ppk", L'\\');
+    FileName = ::ChangeFileExt(FileName, ".ppk", L'\\');
 
     if (!SaveDialog(LoadStr(CONVERTKEY_SAVE_TITLE), LoadStr(CONVERTKEY_SAVE_FILTER), L"ppk", FileName))
     {
@@ -152,7 +153,9 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   }
   __finally
   {
+/*
     FreeKey(PrivateKey);
+*/
   };
 }
 
@@ -290,49 +293,52 @@ void VerifyCertificate(const UnicodeString & AFileName)
 }
 
 
-// Code from http://gentoo.osuosl.org/distfiles/cl331.zip/io/
-
-// this was moved to global scope in past in some attempt to fix crashes,
-// not sure it really helped
-WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyInfo;
-
 static bool GetProxyUrlFromIE(UnicodeString & Proxy)
 {
   bool Result = false;
-  memset(&IEProxyInfo, 0, sizeof(IEProxyInfo));
-  if (WinHttpGetIEProxyConfigForCurrentUser(&IEProxyInfo))
+  // Code from http://gentoo.osuosl.org/distfiles/cl331.zip/io/
+  WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyInfo;
+  ClearStruct(IEProxyInfo);
+  TLibraryLoader LibraryLoader(L"winhttp.dll", true);
+  if (LibraryLoader.Loaded())
   {
-    if (IEProxyInfo.lpszProxy != NULL)
+    typedef BOOL (WINAPI *FWinHttpGetIEProxyConfigForCurrentUser)(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *);
+    FWinHttpGetIEProxyConfigForCurrentUser GetIEProxyConfig = reinterpret_cast<FWinHttpGetIEProxyConfigForCurrentUser>(
+      LibraryLoader.GetProcAddress("WinHttpGetIEProxyConfigForCurrentUser"));
+    if (GetIEProxyConfig && GetIEProxyConfig(&IEProxyInfo))
     {
-      UnicodeString IEProxy = IEProxyInfo.lpszProxy;
-      Proxy = L"";
-      while (Proxy.IsEmpty() && !IEProxy.IsEmpty())
+      if (IEProxyInfo.lpszProxy != nullptr)
       {
-        UnicodeString Str = CutToChar(IEProxy, L';', true);
-        if (Str.Pos(L"=") == 0)
+        UnicodeString IEProxy = IEProxyInfo.lpszProxy;
+        Proxy = L"";
+        while (Proxy.IsEmpty() && !IEProxy.IsEmpty())
         {
-          Proxy = Str;
-        }
-        else
-        {
-          UnicodeString Protocol = CutToChar(Str, L'=', true);
-          if (SameText(Protocol, L"http"))
+          UnicodeString Str = CutToChar(IEProxy, L';', true);
+          if (Str.Pos(L"=") == 0)
           {
             Proxy = Str;
           }
+          else
+          {
+            UnicodeString Protocol = CutToChar(Str, L'=', true);
+            if (SameText(Protocol, L"http"))
+            {
+              Proxy = Str;
+            }
+          }
         }
-      }
 
-      GlobalFree(IEProxyInfo.lpszProxy);
-      Result = true;
-    }
-    if (IEProxyInfo.lpszAutoConfigUrl != NULL)
-    {
-      GlobalFree(IEProxyInfo.lpszAutoConfigUrl);
-    }
-    if (IEProxyInfo.lpszProxyBypass != NULL)
-    {
-      GlobalFree(IEProxyInfo.lpszProxyBypass);
+        GlobalFree(IEProxyInfo.lpszProxy);
+        Result = true;
+      }
+      if (IEProxyInfo.lpszAutoConfigUrl != nullptr)
+      {
+        GlobalFree(IEProxyInfo.lpszAutoConfigUrl);
+      }
+      if (IEProxyInfo.lpszProxyBypass != nullptr)
+      {
+        GlobalFree(IEProxyInfo.lpszProxyBypass);
+      }
     }
   }
   return Result;
@@ -346,18 +352,30 @@ bool AutodetectProxy(UnicodeString & AHostName, intptr_t & APortNumber)
      it's available. */
   UnicodeString Proxy;
   WINHTTP_PROXY_INFO ProxyInfo;
-  memset(&ProxyInfo, 0, sizeof(ProxyInfo));
-  if (WinHttpGetDefaultProxyConfiguration(&ProxyInfo))
+  //memset(&ProxyInfo, 0, sizeof(ProxyInfo));
+  ClearStruct(ProxyInfo);
+  // if (WinHttpGetDefaultProxyConfiguration(&ProxyInfo))
+  TLibraryLoader LibraryLoader(L"winhttp.dll", true);
+  if (LibraryLoader.Loaded())
   {
-    if (ProxyInfo.lpszProxy != NULL)
+    typedef BOOL (WINAPI *FWinHttpGetDefaultProxyConfiguration)(WINHTTP_PROXY_INFO*);
+    FWinHttpGetDefaultProxyConfiguration GetDefaultProxyConfiguration = reinterpret_cast<FWinHttpGetDefaultProxyConfiguration>(
+      LibraryLoader.GetProcAddress("WinHttpGetDefaultProxyConfiguration"));
+    if (GetDefaultProxyConfiguration)
     {
-      Proxy = ProxyInfo.lpszProxy;
-      GlobalFree(ProxyInfo.lpszProxy);
-      Result = true;
-    }
-    if (ProxyInfo.lpszProxyBypass != NULL)
-    {
-      GlobalFree(ProxyInfo.lpszProxyBypass);
+      if (GetDefaultProxyConfiguration(&ProxyInfo))
+      {
+        if (ProxyInfo.lpszProxy != nullptr)
+        {
+          Proxy = ProxyInfo.lpszProxy;
+          GlobalFree(ProxyInfo.lpszProxy);
+          Result = true;
+        }
+        if (ProxyInfo.lpszProxyBypass != nullptr)
+        {
+          GlobalFree(ProxyInfo.lpszProxyBypass);
+        }
+      }
     }
   }
 

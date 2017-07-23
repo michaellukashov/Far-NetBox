@@ -250,7 +250,7 @@ public:
 	CThreadLocal<AFX_MODULE_THREAD_STATE> m_thread;
 
 	//Fusion: declare pointer to array of pointers to isolation aware dll wrappers (ex: comctl32).
-	CDllIsolationWrapperBase** m_pDllIsolationWrappers;
+//	CDllIsolationWrapperBase** m_pDllIsolationWrappers;
 	//Defaults to TRUE. When FALSE - MFC will not activate context in AFX_MAINTAIN_STATE2 (used by AFX_MANAGE_STATE).
 	BOOL	m_bSetAmbientActCtx;
 	//Handle of the module context.

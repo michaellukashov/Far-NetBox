@@ -6,12 +6,10 @@
 #include <StrUtils.hpp>
 
 #include "RemoteFiles.h"
-#include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
-//---------------------------------------------------------------------------
 
 namespace core {
 
@@ -128,15 +126,15 @@ UnicodeString UnixExtractFileExt(const UnicodeString & APath)
     return UnicodeString();
 }
 
-UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix)
+UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
 {
   if (Unix)
   {
-    return UnixExtractFileName(Path);
+    return UnixExtractFileName(APath);
   }
   else
   {
-    return base::ExtractFileName(Path, Unix);
+    return base::ExtractFileName(APath, Unix);
   }
 }
 
@@ -298,10 +296,10 @@ static void CutFirstDirectory(UnicodeString & S, bool Unix)
 
 UnicodeString MinimizeName(const UnicodeString & AFileName, intptr_t MaxLen, bool Unix)
 {
-  UnicodeString Drive, Dir, Name, Result;
+  UnicodeString Drive, Dir, Name;
   UnicodeString Sep = Unix ? SLASH : BACKSLASH;
 
-  Result = AFileName;
+  UnicodeString Result = AFileName;
   if (Unix)
   {
     intptr_t P = Result.LastDelimiter(SLASH);
@@ -529,15 +527,14 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, b
   {
     Dir = ExtractFilePath(ATarget);
     Name = ExtractFileName(ATarget, Unix);
-    Path = IncludeTrailingBackslash(ATarget);
+    Path = ::IncludeTrailingBackslash(ATarget);
   }
   return FMTLOAD(MULTI_FILES_TO_ONE, Name.c_str(), Dir.c_str(), Path.c_str());
 }
 
 } // namespace core
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 TRemoteToken::TRemoteToken() :
   FID(0),
   FIDValid(false)
@@ -551,10 +548,10 @@ TRemoteToken::TRemoteToken(const UnicodeString & Name) :
 {
 }
 
-TRemoteToken::TRemoteToken(const TRemoteToken & rhp) :
-  FName(rhp.FName),
-  FID(rhp.FID),
-  FIDValid(rhp.FIDValid)
+TRemoteToken::TRemoteToken(const TRemoteToken & rhs) :
+  FName(rhs.FName),
+  FID(rhs.FID),
+  FIDValid(rhs.FIDValid)
 {
 }
 
@@ -564,38 +561,38 @@ void TRemoteToken::Clear()
   FIDValid = false;
 }
 
-bool TRemoteToken::operator ==(const TRemoteToken & rht) const
+bool TRemoteToken::operator ==(const TRemoteToken & rhs) const
 {
   return
-    (FName == rht.FName) &&
-    (FIDValid == rht.FIDValid) &&
-    (!FIDValid || (FID == rht.FID));
+    (FName == rhs.FName) &&
+    (FIDValid == rhs.FIDValid) &&
+    (!FIDValid || (FID == rhs.FID));
 }
 
-bool TRemoteToken::operator !=(const TRemoteToken & rht) const
+bool TRemoteToken::operator !=(const TRemoteToken & rhs) const
 {
-  return !(*this == rht);
+  return !(*this == rhs);
 }
 
-TRemoteToken & TRemoteToken::operator =(const TRemoteToken & rht)
+TRemoteToken & TRemoteToken::operator =(const TRemoteToken & rhs)
 {
-  if (this != &rht)
+  if (this != &rhs)
   {
-    FName = rht.FName;
-    FIDValid = rht.FIDValid;
-    FID = rht.FID;
+    FName = rhs.FName;
+    FIDValid = rhs.FIDValid;
+    FID = rhs.FID;
   }
   return *this;
 }
 
-intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
+intptr_t TRemoteToken::Compare(const TRemoteToken & rhs) const
 {
   intptr_t Result;
   if (!FName.IsEmpty())
   {
-    if (!rht.FName.IsEmpty())
+    if (!rhs.FName.IsEmpty())
     {
-      Result = ::AnsiCompareText(FName, rht.FName);
+      Result = ::AnsiCompareText(FName, rhs.FName);
     }
     else
     {
@@ -604,7 +601,7 @@ intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
   }
   else
   {
-    if (!rht.FName.IsEmpty())
+    if (!rhs.FName.IsEmpty())
     {
       Result = 1;
     }
@@ -612,9 +609,9 @@ intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
     {
       if (FIDValid)
       {
-        if (rht.FIDValid)
+        if (rhs.FIDValid)
         {
-          Result = (FID < rht.FID) ? -1 : ((FID > rht.FID) ? 1 : 0);
+          Result = (FID < rhs.FID) ? -1 : ((FID > rhs.FID) ? 1 : 0);
         }
         else
         {
@@ -623,7 +620,7 @@ intptr_t TRemoteToken::Compare(const TRemoteToken & rht) const
       }
       else
       {
-        if (rht.FIDValid)
+        if (rhs.FIDValid)
         {
           Result = 1;
         }
@@ -673,8 +670,8 @@ UnicodeString TRemoteToken::GetLogText() const
 {
   return FORMAT(L"\"%s\" [%d]", FName.c_str(), static_cast<int>(FID));
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TRemoteTokenList * TRemoteTokenList::Duplicate() const
 {
   std::unique_ptr<TRemoteTokenList> Result(new TRemoteTokenList());
@@ -760,14 +757,10 @@ bool TRemoteTokenList::Exists(const UnicodeString & Name) const
 const TRemoteToken * TRemoteTokenList::Find(uintptr_t ID) const
 {
   TIDMap::const_iterator it = FIDMap.find(ID);
-  const TRemoteToken * Result;
+  const TRemoteToken * Result = nullptr;
   if (it != FIDMap.end())
   {
     Result = &FTokens[(*it).second];
-  }
-  else
-  {
-    Result = nullptr;
   }
   return Result;
 }
@@ -775,14 +768,10 @@ const TRemoteToken * TRemoteTokenList::Find(uintptr_t ID) const
 const TRemoteToken * TRemoteTokenList::Find(const UnicodeString & Name) const
 {
   TNameMap::const_iterator it = FNameMap.find(Name);
-  const TRemoteToken * Result;
+  const TRemoteToken * Result = nullptr;
   if (it != FNameMap.end())
   {
     Result = &FTokens[(*it).second];
-  }
-  else
-  {
-    Result = nullptr;
   }
   return Result;
 }
@@ -812,15 +801,15 @@ const TRemoteToken * TRemoteTokenList::Token(intptr_t Index) const
 {
   return &FTokens[Index];
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
-  TPersistent(),
+
+
+TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile) :
+  TPersistent(Kind),
   FDirectory(nullptr),
   FModificationFmt(mfFull),
   FLinkedFile(nullptr),
   FLinkedByFile(ALinkedByFile),
-  FRights(new TRights()),
+  FRights(nullptr),
   FTerminal(nullptr),
   FSize(0),
   FINodeBlocks(0),
@@ -831,6 +820,15 @@ TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
   FSelected(false),
   FCyclicLink(false)
 {
+  Init();
+  FLinkedByFile = ALinkedByFile;
+}
+
+TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
+  TPersistent(OBJECT_CLASS_TRemoteFile)
+{
+  Init();
+  FLinkedByFile = ALinkedByFile;
 }
 
 TRemoteFile::~TRemoteFile()
@@ -900,6 +898,24 @@ void TRemoteFile::LoadTypeInfo() const
   FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);*/
 }
 
+void TRemoteFile::Init()
+{
+  FDirectory = nullptr;
+  FModificationFmt = mfFull;
+  FLinkedFile = nullptr;
+  FLinkedByFile = nullptr;
+  FRights = new TRights();
+  FTerminal = nullptr;
+  FSize = 0;
+  FINodeBlocks = 0;
+  FIconIndex = -1;
+  FIsHidden = -1;
+  FType = 0;
+  FIsSymLink = false;
+  FSelected = false;
+  FCyclicLink = false;
+}
+
 int64_t TRemoteFile::GetSize() const
 {
   return GetIsDirectory() ? 0 : FSize;
@@ -929,17 +945,17 @@ Boolean TRemoteFile::GetIsHidden() const
   bool Result;
   switch (FIsHidden)
   {
-    case 0:
-      Result = false;
-      break;
+  case 0:
+    Result = false;
+    break;
 
-    case 1:
-      Result = true;
-      break;
+  case 1:
+    Result = true;
+    break;
 
-    default:
-      Result = core::IsUnixHiddenFile(GetFileName());
-      break;
+  default:
+    Result = core::IsUnixHiddenFile(GetFileName());
+    break;
   }
 
   return Result;
@@ -1001,7 +1017,7 @@ wchar_t TRemoteFile::GetType() const
 void TRemoteFile::SetType(wchar_t AType)
 {
   FType = AType;
-  FIsSymLink = (static_cast<wchar_t>(towupper(FType)) == FILETYPE_SYMLINK);
+  FIsSymLink = (UpCase(FType) == FILETYPE_SYMLINK);
 }
 
 TRemoteFile * TRemoteFile::GetLinkedFile() const
@@ -1472,12 +1488,14 @@ void TRemoteFile::FindLinkedFile()
       }
       __finally
       {
+/*
         GetTerminal()->SetExceptionOnFail(false);
+*/
       };
     }
     catch (Exception & E)
     {
-      if (NB_STATIC_DOWNCAST(EFatal, &E) != nullptr)
+      if (isa<EFatal>(&E))
       {
         throw;
       }
@@ -1609,9 +1627,21 @@ void TRemoteFile::SetFullFileName(const UnicodeString & Value)
 {
   FFullFileName = Value;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
+
+
+TRemoteDirectoryFile::TRemoteDirectoryFile() :
+  TRemoteFile(OBJECT_CLASS_TRemoteDirectoryFile)
+{
+  Init();
+}
+
+TRemoteDirectoryFile::TRemoteDirectoryFile(TObjectClassId Kind) :
+  TRemoteFile(Kind)
+{
+  Init();
+}
+
+void TRemoteDirectoryFile::Init()
 {
   SetModification(TDateTime(0.0));
   SetModificationFmt(mfNone);
@@ -1619,17 +1649,25 @@ TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
   SetType(L'D');
   SetSize(0);
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal)
-  : TRemoteDirectoryFile()
+
+
+TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal) :
+  TRemoteDirectoryFile(OBJECT_CLASS_TRemoteParentDirectory)
 {
   SetFileName(PARENTDIRECTORY);
   SetTerminal(ATerminal);
 }
+
 //=== TRemoteFileList ------------------------------------------------------
 TRemoteFileList::TRemoteFileList() :
-  TObjectList(),
+  TObjectList(OBJECT_CLASS_TRemoteFileList),
+  FTimestamp(Now())
+{
+  SetOwnsObjects(true);
+}
+
+TRemoteFileList::TRemoteFileList(TObjectClassId Kind) :
+  TObjectList(Kind),
   FTimestamp(Now())
 {
   SetOwnsObjects(true);
@@ -1657,10 +1695,11 @@ void TRemoteFileList::AddFiles(const TRemoteFileList * AFileList)
 TStrings * TRemoteFileList::CloneStrings(TStrings * List)
 {
   std::unique_ptr<TStringList> Result(new TStringList());
+  Result->SetOwnsObjects(true);
   for (intptr_t Index = 0; Index < List->GetCount(); Index++)
   {
     TRemoteFile * File = static_cast<TRemoteFile *>(List->GetObj(Index));
-    Result->AddObject(List->GetString(Index), File);
+    Result->AddObject(List->GetString(Index), File->Duplicate(true));
   }
   return Result.release();
 }
@@ -1695,7 +1734,7 @@ UnicodeString TRemoteFileList::GetFullDirectory() const
 
 TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
-  return NB_STATIC_DOWNCAST(TRemoteFile, GetObj(Index));
+  return GetAs<TRemoteFile>(Index);
 }
 
 Boolean TRemoteFileList::GetIsRoot() const
@@ -1733,14 +1772,14 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
   return nullptr;
 }
 //=== TRemoteDirectory ------------------------------------------------------
-TRemoteDirectory::TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template) :
-  TRemoteFileList(),
-  FIncludeParentDirectory(false),
-  FIncludeThisDirectory(false),
-  FTerminal(aTerminal),
+TRemoteDirectory::TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template) :
+  TRemoteFileList(OBJECT_CLASS_TRemoteDirectory),
+  FTerminal(ATerminal),
   FSelectedFiles(nullptr),
   FParentDirectory(nullptr),
-  FThisDirectory(nullptr)
+  FThisDirectory(nullptr),
+  FIncludeParentDirectory(false),
+  FIncludeThisDirectory(false)
 {
   if (Template == nullptr)
   {
@@ -1901,14 +1940,16 @@ void TRemoteDirectoryCache::Clear()
     };
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
-      TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
+      TRemoteFileList * List = GetAs<TRemoteFileList>(Index);
       SAFE_DESTROY(List);
       SetObj(Index, nullptr);
     }
   }
   __finally
   {
+/*
     TStringList::Clear();
+*/
   };
 }
 
@@ -1935,7 +1976,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   intptr_t Index = IndexOf(core::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
-    TRemoteFileList * FileList = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
+    TRemoteFileList * FileList = GetAs<TRemoteFileList>(Index);
     if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
@@ -1954,7 +1995,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   if (Result)
   {
     DebugAssert(GetObj(Index) != nullptr);
-    NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index))->DuplicateTo(FileList);
+    GetAs<TRemoteFileList>(Index)->DuplicateTo(FileList);
   }
   return Result;
 }
@@ -2008,7 +2049,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & Directory, boo
 
 void TRemoteDirectoryCache::Delete(intptr_t Index)
 {
-  TRemoteFileList * List = NB_STATIC_DOWNCAST(TRemoteFileList, GetObj(Index));
+  TRemoteFileList * List = GetAs<TRemoteFileList>(Index);
   SAFE_DESTROY(List);
   TStringList::Delete(Index);
 }
@@ -2105,13 +2146,12 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
 bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   const UnicodeString & SourceDir, const UnicodeString & Change, UnicodeString & TargetDir) const
 {
-  UnicodeString Key;
-  Key = TTerminal::ExpandFileName(Change, SourceDir);
+  UnicodeString Key = TTerminal::ExpandFileName(Change, SourceDir);
   if (Key.IsEmpty())
   {
     Key = ROOTDIRECTORY;
   }
-  bool Result = (IndexOfName(Key.c_str()) >= 0);
+  bool Result = (IndexOfName(Key) >= 0);
   if (Result)
   {
     TargetDir = GetValue(Key);
@@ -2156,7 +2196,9 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
     }
     __finally
     {
-//      delete Limited;
+/*
+      delete Limited;
+*/
     };
   }
   else
@@ -2207,9 +2249,9 @@ const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
 const wchar_t TRights::ModeGroups[] = L"ugo";
 
 TRights::TRights() :
-  FAllowUndef(false),
   FSet(0),
   FUnset(0),
+  FAllowUndef(false),
   FUnknown(true)
 {
   SetNumber(0);
@@ -2250,7 +2292,7 @@ bool TRights::operator ==(const TRights & rhr) const
     for (int Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
-            rhr.GetRightUndef(static_cast<TRight>(Right)))
+          rhr.GetRightUndef(static_cast<TRight>(Right)))
       {
         return false;
       }
@@ -2577,21 +2619,21 @@ void TRights::SetRightUndef(TRight Right, TState Value)
 
     switch (Value)
     {
-      case rsYes:
-        FSet |= static_cast<uint16_t>(Flag);
-        FUnset &= static_cast<uint16_t>(~Flag);
-        break;
+    case rsYes:
+      FSet |= static_cast<uint16_t>(Flag);
+      FUnset &= static_cast<uint16_t>(~Flag);
+      break;
 
-      case rsNo:
-        FSet &= static_cast<uint16_t>(~Flag);
-        FUnset |= static_cast<uint16_t>(Flag);
-        break;
+    case rsNo:
+      FSet &= static_cast<uint16_t>(~Flag);
+      FUnset |= static_cast<uint16_t>(Flag);
+      break;
 
-      case rsUndef:
-      default:
-        FSet &= static_cast<uint16_t>(~Flag);
-        FUnset &= static_cast<uint16_t>(~Flag);
-        break;
+    case rsUndef:
+    default:
+      FSet &= static_cast<uint16_t>(~Flag);
+      FUnset &= static_cast<uint16_t>(~Flag);
+      break;
     }
 
     FText.Clear();
@@ -2660,16 +2702,16 @@ UnicodeString TRights::GetModeStr() const
       Right = static_cast<TRight>(rrUserRead + Index);
       switch (GetRightUndef(Right))
       {
-        case rsYes:
-          SetModeStr += BasicSymbols[Index];
-          break;
+      case rsYes:
+        SetModeStr += BasicSymbols[Index];
+        break;
 
-        case rsNo:
-          UnsetModeStr += BasicSymbols[Index];
-          break;
+      case rsNo:
+        UnsetModeStr += BasicSymbols[Index];
+        break;
 
-        case rsUndef:
-          break;
+      case rsUndef:
+        break;
       }
     }
 
@@ -2677,16 +2719,16 @@ UnicodeString TRights::GetModeStr() const
     Index = (Group * 3) + 2;
     switch (GetRightUndef(Right))
     {
-      case rsYes:
-        SetModeStr += CombinedSymbols[Index];
-        break;
+    case rsYes:
+      SetModeStr += CombinedSymbols[Index];
+      break;
 
-      case rsNo:
-        UnsetModeStr += CombinedSymbols[Index];
-        break;
+    case rsNo:
+      UnsetModeStr += CombinedSymbols[Index];
+      break;
 
-      case rsUndef:
-        break;
+    case rsUndef:
+      break;
     }
 
     if (!SetModeStr.IsEmpty() || !UnsetModeStr.IsEmpty())
@@ -2748,12 +2790,14 @@ TRights::operator uint32_t() const
   return GetNumber();
 }
 
-TRemoteProperties::TRemoteProperties()
+TRemoteProperties::TRemoteProperties() :
+  TObject(OBJECT_CLASS_TRemoteProperties)
 {
   Default();
 }
 
 TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhp) :
+  TObject(OBJECT_CLASS_TRemoteProperties),
   Valid(rhp.Valid),
   Recursive(rhp.Recursive),
   Rights(rhp.Rights),
@@ -2808,7 +2852,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
   TRemoteProperties CommonProperties;
   for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
   {
-    TRemoteFile * File = NB_STATIC_DOWNCAST(TRemoteFile, AFileList->GetObj(Index));
+    TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
     DebugAssert(File);
     if (!Index)
     {
@@ -2888,7 +2932,7 @@ TRemoteProperties & TRemoteProperties::operator=(const TRemoteProperties & other
   LastAccess = other.Modification;
   return *this;
 }
-//---------------------------------------------------------------------------
+
 void TRemoteProperties::Load(THierarchicalStorage * Storage)
 {
   uint8_t Buf[sizeof(Valid)];
@@ -2917,8 +2961,4 @@ void TRemoteProperties::Save(THierarchicalStorage * Storage) const
 
   // TODO
 }
-
-NB_IMPLEMENT_CLASS(TRemoteFile, NB_GET_CLASS_INFO(TPersistent), nullptr)
-NB_IMPLEMENT_CLASS(TRemoteFileList, NB_GET_CLASS_INFO(TObjectList), nullptr)
-NB_IMPLEMENT_CLASS(TRemoteProperties, NB_GET_CLASS_INFO(TObject), nullptr)
 

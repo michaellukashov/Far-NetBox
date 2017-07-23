@@ -50,12 +50,9 @@ bool FindFile(UnicodeString & APath)
   bool Result = ::FileExists(APath);
   if (!Result)
   {
-    intptr_t Len = ::GetEnvironmentVariable(L"PATH", nullptr, 0);
-    if (Len > 0)
+    UnicodeString Paths = base::GetEnvVariable("PATH");
+    if (Paths.Length() > 0)
     {
-      UnicodeString Paths;
-      Paths.SetLength(Len - 1);
-      ::GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
 
       UnicodeString NewPath = ::FileSearch(base::ExtractFileName(APath, true), Paths);
       Result = !NewPath.IsEmpty();
@@ -103,7 +100,7 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
         SourceStorage->SetMungeStringValues(false);
         SourceStorage->SetForceAnsi(true);
         if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
-            Storage->OpenSubKey(GetGUIConfiguration()->GetPuttySession(), true))
+          Storage->OpenSubKey(GetGUIConfiguration()->GetPuttySession(), true))
         {
           Storage->Copy(SourceStorage.get());
           Storage->CloseSubKey();
@@ -207,16 +204,16 @@ bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams, bo
   return Result;
 }
 
-bool ExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
+bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams,
   HANDLE & Handle)
 {
   TShellExecuteInfoW ExecuteInfo;
   ClearStruct(ExecuteInfo);
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
   ExecuteInfo.lpFile = const_cast<wchar_t *>(APath.data());
-  ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
+  ExecuteInfo.lpParameters = const_cast<wchar_t *>(AParams.data());
   ExecuteInfo.nShow = SW_SHOW;
 
   bool Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
@@ -234,7 +231,7 @@ bool ExecuteShellAndWait(HINSTANCE /*Handle*/, const UnicodeString & APath,
   ClearStruct(ExecuteInfo);
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
   ExecuteInfo.lpFile = const_cast<wchar_t *>(APath.data());
   ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
@@ -277,7 +274,7 @@ bool SpecialFolderLocation(int PathID, UnicodeString & APath)
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
   if (::SHGetSpecialFolderLocation(nullptr, PathID, &Pidl) == NO_ERROR &&
-      ::SHGetPathFromIDList(Pidl, Buf))
+    ::SHGetPathFromIDList(Pidl, Buf))
   {
     APath = UnicodeString(Buf);
     return true;
@@ -292,13 +289,7 @@ UnicodeString GetPersonalFolder()
 
   if (IsWine())
   {
-    UnicodeString WineHostHome;
-    int Len1 = ::GetEnvironmentVariable(L"WINE_HOST_HOME", nullptr, 0);
-    if (Len1 > 0)
-    {
-      WineHostHome.SetLength(Len1 - 1);
-      ::GetEnvironmentVariable(L"WINE_HOST_HOME", const_cast<LPWSTR>(WineHostHome.c_str()), Len1);
-    }
+    UnicodeString WineHostHome = base::GetEnvVariable("WINE_HOST_HOME");
     if (!WineHostHome.IsEmpty())
     {
       UnicodeString WineHome = L"Z:" + core::ToUnixPath(WineHostHome);
@@ -310,13 +301,7 @@ UnicodeString GetPersonalFolder()
     else
     {
       // Should we use WinAPI GetUserName() instead?
-      UnicodeString UserName;
-      int Len2 = ::GetEnvironmentVariable(L"USERNAME", nullptr, 0);
-      if (Len2 > 0)
-      {
-        UserName.SetLength(Len2 - 1);
-        ::GetEnvironmentVariable(L"USERNAME", const_cast<LPWSTR>(UserName.c_str()), Len2);
-      }
+      UnicodeString UserName = base::GetEnvVariable("USERNAME");
       if (!UserName.IsEmpty())
       {
         UnicodeString WineHome = L"Z:\\home\\" + UserName;
@@ -399,7 +384,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
 {
   TSearchRecChecked SearchRec;
   bool retval = true;
-  if (::FindFirst(ADirName + L"\\*", faAnyFile, SearchRec) == 0) // VCL Function
+  if (base::FindFirst(ADirName + L"\\*", faAnyFile, SearchRec) == 0) // VCL Function
   {
     if (FLAGSET(SearchRec.Attr, faDirectory))
     {
@@ -432,7 +417,7 @@ bool DeleteDirectory(const UnicodeString & ADirName)
       }
     }
   }
-  FindClose(SearchRec);
+  base::FindClose(SearchRec);
   if (retval)
   {
     retval = ::RemoveDir(ADirName); // VCL function

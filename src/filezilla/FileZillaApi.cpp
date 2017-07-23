@@ -285,7 +285,7 @@ std::string CFileZillaApi::GetCipherName()
   return m_pMainThread->GetCipherName();
 }
 
-int CFileZillaApi::CustomCommand(CString CustomCommand)
+int CFileZillaApi::CustomCommand(CString ACommand)
 {
   //Check if call allowed
   if (!m_bInitialized)
@@ -298,12 +298,12 @@ int CFileZillaApi::CustomCommand(CString CustomCommand)
   int res=GetCurrentServer(server);
   if (res!=FZ_REPLY_OK)
     return res;
-  if (CustomCommand==L"")
+  if (ACommand==L"")
     return FZ_REPLY_INVALIDPARAM;
 
   t_command command;
   command.id=FZ_COMMAND_CUSTOMCOMMAND;
-  command.param1=CustomCommand;
+  command.param1=ACommand;
   m_pMainThread->Command(command);
   return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
 }

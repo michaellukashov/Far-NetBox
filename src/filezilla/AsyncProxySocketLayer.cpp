@@ -63,17 +63,17 @@ void CAsyncProxySocketLayer::SetProxy(int nProxyType, const char * pProxyHost, i
   m_ProxyData.pProxyPass = NULL;
 
   m_ProxyData.nProxyType = nProxyType;
-  m_ProxyData.pProxyHost = static_cast<char *>(nb_calloc(1, strlen(pProxyHost)+1));
+  m_ProxyData.pProxyHost = nb::chcalloc(strlen(pProxyHost)+1);
   strcpy(m_ProxyData.pProxyHost, pProxyHost);
   m_ProxyData.nProxyPort=ProxyPort;
   if (pProxyUser)
   {
-    m_ProxyData.pProxyUser = static_cast<char *>(nb_calloc(1, strlen(pProxyUser)+1));
+    m_ProxyData.pProxyUser = nb::chcalloc(strlen(pProxyUser)+1);
     strcpy(m_ProxyData.pProxyUser, pProxyUser);
   }
   if (pProxyPass)
   {
-    m_ProxyData.pProxyPass = static_cast<char *>(nb_calloc(1, strlen(pProxyPass)+1));
+    m_ProxyData.pProxyPass = nb::chcalloc(strlen(pProxyPass)+1);
     strcpy(m_ProxyData.pProxyPass, pProxyPass);
   }
   m_ProxyData.bUseLogon = bUseLogon;
@@ -101,11 +101,11 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
     if (m_nProxyOpState==1) //Both for PROXYOP_CONNECT and PROXYOP_BIND
     {
       if (!m_pRecvBuffer)
-        m_pRecvBuffer=static_cast<char *>(nb_calloc(1, 8));
+        m_pRecvBuffer=nb::chcalloc(8);
       int numread=ReceiveNext(m_pRecvBuffer+m_nRecvBufferPos, 8-m_nRecvBufferPos);
       if (numread==SOCKET_ERROR)
       {
-        if (WSAGetLastError()!=WSAEWOULDBLOCK)
+        if (::WSAGetLastError()!=WSAEWOULDBLOCK)
         {
           ConnectionFailed(WSAGetLastError());
         }
@@ -160,11 +160,11 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
     else if (m_nProxyOpID==PROXYOP_LISTEN)
     {
       if (!m_pRecvBuffer)
-        m_pRecvBuffer=static_cast<char *>(nb_calloc(1, 8));
+        m_pRecvBuffer=nb::chcalloc(8);
       int numread=ReceiveNext(m_pRecvBuffer+m_nRecvBufferPos,8-m_nRecvBufferPos);
       if (numread==SOCKET_ERROR)
       {
-        if (WSAGetLastError()!=WSAEWOULDBLOCK)
+        if (::WSAGetLastError()!=WSAEWOULDBLOCK)
         {
           ConnectionFailed(WSAGetLastError());
         }
@@ -188,13 +188,13 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
     if (m_nProxyOpState==1) //Get respone to initialization message
     {
       if (!m_pRecvBuffer)
-        m_pRecvBuffer=static_cast<char *>(nb_calloc(1, 2));
+        m_pRecvBuffer=nb::chcalloc(2);
       int numread=ReceiveNext(m_pRecvBuffer+m_nRecvBufferPos,2-m_nRecvBufferPos);
       if (numread==SOCKET_ERROR)
       {
-        if (WSAGetLastError()!=WSAEWOULDBLOCK)
+        if (::WSAGetLastError()!=WSAEWOULDBLOCK)
         {
-          ConnectionFailed(WSAGetLastError());
+          ConnectionFailed(::WSAGetLastError());
         }
         return;
       }
@@ -238,17 +238,17 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           LPCSTR lpszAsciiPass = m_ProxyData.pProxyPass;
           DebugAssert(strlen(lpszAsciiUser?lpszAsciiUser:"")<=255);
           DebugAssert(strlen(lpszAsciiPass?lpszAsciiPass:"")<=255);
-          uint8_t *buffer = static_cast<uint8_t *>(nb_calloc(1, 3 + (lpszAsciiUser?strlen(lpszAsciiUser):0) + (lpszAsciiPass?strlen(lpszAsciiPass):0) + 1));
+          uint8_t *buffer = nb::calloc<uint8_t *>(3 + (lpszAsciiUser?strlen(lpszAsciiUser):0) + (lpszAsciiPass?strlen(lpszAsciiPass):0) + 1);
           sprintf((char *)buffer, "  %s %s", lpszAsciiUser?lpszAsciiUser:"", lpszAsciiPass?lpszAsciiPass:"");
           buffer[0]=1;
           buffer[1]=static_cast<uint8_t>(strlen(lpszAsciiUser));
           buffer[2+strlen(lpszAsciiUser)]=static_cast<uint8_t>(strlen(lpszAsciiPass?lpszAsciiPass:""));
           intptr_t len=3+strlen(lpszAsciiUser)+strlen(lpszAsciiPass?lpszAsciiPass:"");
-          int res=SendNext(buffer,len);
+          int res=SendNext(buffer,(int)len);
           nb_free(buffer);
           if (res==SOCKET_ERROR || res<len)
           {
-            if ((WSAGetLastError()!=WSAEWOULDBLOCK) || res<len)
+            if ((::WSAGetLastError()!=WSAEWOULDBLOCK) || res<len)
             {
               ConnectionFailed(WSAGetLastError());
               return;
@@ -262,7 +262,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       //No auth needed
       //Send connection request
       const char *lpszAsciiHost = m_pProxyPeerHost?m_pProxyPeerHost:"";
-      char *command=static_cast<char *>(nb_calloc(1, 10+strlen(lpszAsciiHost)+1));
+      char *command=nb::chcalloc(10+strlen(lpszAsciiHost)+1);
       memset(command,0,10+strlen(lpszAsciiHost)+1);
       command[0]=5;
       command[1]=(m_nProxyOpID==PROXYOP_CONNECT)?1:2;
@@ -276,9 +276,9 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       }
       else
       {
-        command[len]=strlen(lpszAsciiHost);
+        command[len]=(char)strlen(lpszAsciiHost);
         strcpy(&command[len+1], lpszAsciiHost);
-        len += strlen(lpszAsciiHost) + 1;
+        len += (int)strlen(lpszAsciiHost) + 1;
       }
       memcpy(&command[len], &m_nProxyPeerPort, 2);
       len+=2;
@@ -286,9 +286,9 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       nb_free(command);
       if (res==SOCKET_ERROR || res<len)
       {
-        if ( ( WSAGetLastError()!=WSAEWOULDBLOCK) || res<len)
+        if ( ( ::WSAGetLastError()!=WSAEWOULDBLOCK) || res<len)
         {
-          ConnectionFailed(WSAGetLastError());
+          ConnectionFailed(::WSAGetLastError());
           return;
         }
       }
@@ -300,13 +300,13 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
     {
       //Response to the auth request
       if (!m_pRecvBuffer)
-        m_pRecvBuffer=static_cast<char *>(nb_calloc(1, 2));
+        m_pRecvBuffer=nb::chcalloc(2);
       int numread=ReceiveNext(m_pRecvBuffer+m_nRecvBufferPos, 2-m_nRecvBufferPos);
       if (numread==SOCKET_ERROR)
       {
-        if (WSAGetLastError()!=WSAEWOULDBLOCK)
+        if (::WSAGetLastError()!=WSAEWOULDBLOCK)
         {
-          ConnectionFailed(WSAGetLastError());
+          ConnectionFailed(::WSAGetLastError());
         }
         return;
       }
@@ -325,7 +325,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           return;
         }
         const char * lpszAsciiHost = m_pProxyPeerHost?m_pProxyPeerHost:"";
-        char *command = static_cast<char *>(nb_calloc(1, 10+strlen(lpszAsciiHost)+1));
+        char *command = nb::chcalloc(10+strlen(lpszAsciiHost)+1);
         memset(command,0,10+strlen(lpszAsciiHost)+1);
         command[0]=5;
         command[1]=(m_nProxyOpID==PROXYOP_CONNECT)?1:2;
@@ -339,9 +339,9 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         }
         else
         {
-          command[len]=strlen(lpszAsciiHost);
+          command[len]=(char)strlen(lpszAsciiHost);
           strcpy(&command[len+1],lpszAsciiHost);
-          len+=strlen(lpszAsciiHost)+1;
+          len+=(int)strlen(lpszAsciiHost)+1;
         }
         memcpy(&command[len],&m_nProxyPeerPort,2);
         len+=2;
@@ -349,9 +349,9 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         nb_free(command);
         if (res==SOCKET_ERROR || res<len)
         {
-          if ((WSAGetLastError()!=WSAEWOULDBLOCK) || res<len)
+          if ((::WSAGetLastError()!=WSAEWOULDBLOCK) || res<len)
           {
-            ConnectionFailed(WSAGetLastError());
+            ConnectionFailed(::WSAGetLastError());
             return;
           }
         }
@@ -365,15 +365,15 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       //Response to the connection request
       if (!m_pRecvBuffer)
       {
-        m_pRecvBuffer=static_cast<char *>(nb_calloc(1, 10));
+        m_pRecvBuffer=nb::chcalloc(10);
         m_nRecvBufferLen=5;
       }
       int numread=ReceiveNext(m_pRecvBuffer+m_nRecvBufferPos,m_nRecvBufferLen-m_nRecvBufferPos);
       if (numread==SOCKET_ERROR)
       {
-        if (WSAGetLastError()!=WSAEWOULDBLOCK)
+        if (::WSAGetLastError()!=WSAEWOULDBLOCK)
         {
-          ConnectionFailed(WSAGetLastError());
+          ConnectionFailed(::WSAGetLastError());
         }
         return;
       }
@@ -393,7 +393,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
             m_nRecvBufferLen=10;
           else
           {
-            char *tmp=static_cast<char *>(nb_calloc(1, m_nRecvBufferLen+=m_pRecvBuffer[4]+2));
+            char *tmp=nb::chcalloc(m_nRecvBufferLen+=m_pRecvBuffer[4]+2);
             memcpy(tmp,m_pRecvBuffer,5);
             nb_free(m_pRecvBuffer);
             m_pRecvBuffer=tmp;
@@ -428,13 +428,13 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
     {
       DebugAssert(m_nProxyOpID == PROXYOP_LISTEN);
       if (!m_pRecvBuffer)
-        m_pRecvBuffer=static_cast<char *>(nb_calloc(1, 10));
+        m_pRecvBuffer=nb::chcalloc(10);
       int numread=ReceiveNext(m_pRecvBuffer+m_nRecvBufferPos,10-m_nRecvBufferPos);
       if (numread==SOCKET_ERROR)
       {
-        if (WSAGetLastError()!=WSAEWOULDBLOCK)
+        if (::WSAGetLastError()!=WSAEWOULDBLOCK)
         {
-          ConnectionFailed(WSAGetLastError());
+          ConnectionFailed(::WSAGetLastError());
         }
         return;
       }
@@ -461,7 +461,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       int numread = ReceiveNext(buffer, m_pStrBuffer?1:8);
       if (numread==SOCKET_ERROR)
       {
-        int nError=WSAGetLastError();
+        int nError=::WSAGetLastError();
         if (nError!=WSAEWOULDBLOCK)
         {
           ConnectionFailed(nError);
@@ -471,13 +471,13 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       //Response begins with HTTP/
       if (!m_pStrBuffer)
       {
-        m_pStrBuffer = static_cast<char *>(nb_calloc(1, strlen(buffer) + 1));
+        m_pStrBuffer = nb::chcalloc(strlen(buffer) + 1);
         strcpy(m_pStrBuffer, buffer);
       }
       else
       {
         char *tmp = m_pStrBuffer;
-        m_pStrBuffer = static_cast<char *>(nb_calloc(1, strlen(tmp) + strlen(buffer) + 1));
+        m_pStrBuffer = nb::chcalloc(strlen(tmp) + strlen(buffer) + 1);
         strcpy(m_pStrBuffer, tmp);
         strcpy(m_pStrBuffer + strlen(tmp), buffer);
         nb_free(tmp);
@@ -486,7 +486,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       const char start[] = "HTTP/";
       if (memcmp(start, m_pStrBuffer, (strlen(start)>strlen(m_pStrBuffer)) ? strlen(m_pStrBuffer) : strlen(start)))
       {
-        char* str = static_cast<char *>(nb_calloc(1, strlen("No valid HTTP response") + 1));
+        char* str = nb::chcalloc(strlen("No valid HTTP response") + 1);
         strcpy(str, "No valid HTTP response");
         ConnectionFailed(WSAECONNABORTED, str);
         return;
@@ -497,7 +497,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         char *pos2 = strstr(m_pStrBuffer, " ");
         if (!pos2 || *(pos2+1)!='2' || pos2>pos)
         {
-          char *tmp = static_cast<char *>(nb_calloc(1, pos-m_pStrBuffer + 1));
+          char *tmp = nb::chcalloc(pos-m_pStrBuffer + 1);
           tmp[pos-m_pStrBuffer] = 0;
           strncpy(tmp, m_pStrBuffer, pos-m_pStrBuffer);
           ConnectionFailed(WSAECONNABORTED, tmp);
@@ -558,7 +558,7 @@ BOOL CAsyncProxySocketLayer::Connect( LPCTSTR lpszHostAddress, UINT nHostPort )
     BOOL res = ConnectNext(A2CT(m_ProxyData.pProxyHost), m_ProxyData.nProxyPort);
     if (!res)
     {
-      if (WSAGetLastError() != WSAEWOULDBLOCK)
+      if (::WSAGetLastError() != WSAEWOULDBLOCK)
       {
         DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYERROR_NOCONN, 0);
         return FALSE;
@@ -567,7 +567,7 @@ BOOL CAsyncProxySocketLayer::Connect( LPCTSTR lpszHostAddress, UINT nHostPort )
     m_nProxyPeerPort = htons((u_short)nHostPort);
     m_nProxyPeerIp = 0;
     nb_free(m_pProxyPeerHost);
-    m_pProxyPeerHost = static_cast<char *>(nb_calloc(1, _tcslen(lpszHostAddress)+1));
+    m_pProxyPeerHost = nb::chcalloc(_tcslen(lpszHostAddress)+1);
     strcpy(m_pProxyPeerHost, T2CA(lpszHostAddress));
     m_nProxyOpID=PROXYOP_CONNECT;
     return TRUE;
@@ -590,17 +590,17 @@ BOOL CAsyncProxySocketLayer::Connect( LPCTSTR lpszHostAddress, UINT nHostPort )
     {
       //Can't resolve hostname
       DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYERROR_CANTRESOLVEHOST, 0);
-      WSASetLastError(WSAEINVAL);
+      ::WSASetLastError(WSAEINVAL);
       return FALSE;
     }
   }
 
   sockAddr.sin_port = htons((u_short)nHostPort);
   BOOL res=CAsyncProxySocketLayer::Connect((SOCKADDR*)&sockAddr, sizeof(sockAddr));
-  if (res || WSAGetLastError()==WSAEWOULDBLOCK)
+  if (res || ::WSAGetLastError()==WSAEWOULDBLOCK)
   {
     nb_free(m_pProxyPeerHost);
-    m_pProxyPeerHost = static_cast<char *>(nb_calloc(1, strlen(T2CA(lpszHostAddress))+1));
+    m_pProxyPeerHost = nb::chcalloc(strlen(T2CA(lpszHostAddress))+1);
     strcpy(m_pProxyPeerHost, T2CA(lpszHostAddress));
   }
   return res;
@@ -630,7 +630,7 @@ BOOL CAsyncProxySocketLayer::Connect( const SOCKADDR* lpSockAddr, int nSockAddrL
   BOOL res = ConnectNext(A2T(m_ProxyData.pProxyHost), m_ProxyData.nProxyPort);
   if (!res)
   {
-    if (WSAGetLastError()!=WSAEWOULDBLOCK)
+    if (::WSAGetLastError()!=WSAEWOULDBLOCK)
     {
       DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYERROR_NOCONN, 0);
       return FALSE;
@@ -652,7 +652,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
   {
     //This should not happen
     return;
-  };
+  }
 
   if (nErrorCode)
   { //Can't connect to proxy
@@ -678,7 +678,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
     { //SOCKS4 proxy
       //Send request
       LPCSTR lpszAscii = m_pProxyPeerHost?m_pProxyPeerHost:"";
-      char *command=static_cast<char *>(nb_calloc(1, 9+strlen(lpszAscii)+1));
+      char *command=nb::chcalloc(9+strlen(lpszAscii)+1);
       memset(command,0,9+strlen(lpszAscii)+1);
       int len=9;
       command[0]=4;
@@ -695,13 +695,13 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
         command[7]=1;
         //Add host as URL
         strcpy(&command[9],lpszAscii);
-        len+=strlen(lpszAscii)+1;
+        len+=(int)strlen(lpszAscii)+1;
       }
       else
         memcpy(&command[4],&m_nProxyPeerIp,4);
       int res=SendNext(command,len); //Send command
       nb_free(command);
-      int nErrorCode=WSAGetLastError();
+      int nErrorCode=::WSAGetLastError();
       if (res==SOCKET_ERROR)//nErrorCode!=WSAEWOULDBLOCK)
       {
         ConnectionFailed((m_nProxyOpID == PROXYOP_CONNECT) && (nErrorCode == WSAEWOULDBLOCK) ? WSAECONNABORTED : nErrorCode);
@@ -726,7 +726,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
       int len=m_ProxyData.bUseLogon?4:3; //length of request
       int res=SendNext(command,len);
 
-      int nErrorCode=WSAGetLastError();
+      int nErrorCode=::WSAGetLastError();
       if (res==SOCKET_ERROR)//nErrorCode!=WSAEWOULDBLOCK)
       {
         ConnectionFailed((m_nProxyOpID == PROXYOP_CONNECT) && (nErrorCode == WSAEWOULDBLOCK) ? WSAECONNABORTED : nErrorCode);
@@ -745,12 +745,12 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
       char * pHost = NULL;
       if (m_pProxyPeerHost && *m_pProxyPeerHost)
       {
-        pHost = static_cast<char *>(nb_calloc(1, strlen(m_pProxyPeerHost)+1));
+        pHost = nb::chcalloc(strlen(m_pProxyPeerHost)+1);
         strcpy(pHost, m_pProxyPeerHost);
       }
       else
       {
-        pHost = static_cast<char *>(nb_calloc(1, 16));
+        pHost = nb::chcalloc(16);
         sprintf(pHost, "%d.%d.%d.%d", m_nProxyPeerIp%256, (m_nProxyPeerIp>>8) % 256, (m_nProxyPeerIp>>16) %256, m_nProxyPeerIp>>24);
       }
       if (!m_ProxyData.bUseLogon)
@@ -767,7 +767,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
         char base64str[4096];
 
         CBase64Coding base64coding;
-        base64coding.Encode(userpass, strlen(userpass), base64str);
+        base64coding.Encode(userpass, (int)strlen(userpass), base64str);
         strcat(str, "Authorization: Basic ");
         strcat(str, base64str);
         strcat(str, "\r\nProxy-Authorization: Basic ");
@@ -777,8 +777,8 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
       nb_free(pHost);
 
       USES_CONVERSION;
-      int numsent=SendNext(str, strlen(str) );
-      int nErrorCode=WSAGetLastError();
+      int numsent=SendNext(str, (int)strlen(str) );
+      int nErrorCode=::WSAGetLastError();
       if (numsent==SOCKET_ERROR)//nErrorCode!=WSAEWOULDBLOCK)
       {
         ConnectionFailed((m_nProxyOpID == PROXYOP_CONNECT) && (nErrorCode == WSAEWOULDBLOCK) ? WSAECONNABORTED : nErrorCode);
@@ -823,7 +823,7 @@ BOOL CAsyncProxySocketLayer::Listen( int nConnectionBacklog)
   BOOL res = ConnectNext(A2T(m_ProxyData.pProxyHost), m_ProxyData.nProxyPort);
   if (!res)
   {
-    if (WSAGetLastError()!=WSAEWOULDBLOCK)
+    if (::WSAGetLastError()!=WSAEWOULDBLOCK)
     {
       DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYERROR_NOCONN, 0);
       return FALSE;
@@ -845,17 +845,17 @@ BOOL CAsyncProxySocketLayer::GetPeerName(CString &rPeerAddress, UINT &rPeerPort)
 
   if (GetLayerState()==notsock)
   {
-    WSASetLastError(WSAENOTSOCK);
+    ::WSASetLastError(WSAENOTSOCK);
     return FALSE;
   }
   else if (GetLayerState()!=connected)
   {
-    WSASetLastError(WSAENOTCONN);
+    ::WSASetLastError(WSAENOTCONN);
     return FALSE;
   }
   else if (!m_nProxyPeerIp || !m_nProxyPeerPort)
   {
-    WSASetLastError(WSAENOTCONN);
+    ::WSASetLastError(WSAENOTCONN);
     return FALSE;
   }
 
@@ -878,17 +878,17 @@ BOOL CAsyncProxySocketLayer::GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrL
 
   if (GetLayerState()==notsock)
   {
-    WSASetLastError(WSAENOTSOCK);
+    ::WSASetLastError(WSAENOTSOCK);
     return FALSE;
   }
   else if (GetLayerState()!=connected)
   {
-    WSASetLastError(WSAENOTCONN);
+    ::WSASetLastError(WSAENOTCONN);
     return FALSE;
   }
   else if (!m_nProxyPeerIp || !m_nProxyPeerPort)
   {
-    WSASetLastError(WSAENOTCONN);
+    ::WSASetLastError(WSAENOTCONN);
     return FALSE;
   }
 
@@ -928,7 +928,7 @@ int CAsyncProxySocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
 {
   if (m_nProxyOpID)
   {
-    WSASetLastError(WSAEWOULDBLOCK);
+    ::WSASetLastError(WSAEWOULDBLOCK);
     return SOCKET_ERROR;
   }
 
@@ -939,7 +939,7 @@ int CAsyncProxySocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
 {
   if (m_nProxyOpID)
   {
-    WSASetLastError(WSAEWOULDBLOCK);
+    ::WSASetLastError(WSAEWOULDBLOCK);
     return SOCKET_ERROR;
   }
 

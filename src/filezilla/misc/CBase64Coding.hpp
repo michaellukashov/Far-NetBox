@@ -26,7 +26,7 @@ class CBase64Coding
       // Don't allow canonical behavior (i.e. don't allow this class
       // to be passed by value)
 
-      CBase64Coding( const CBase64Coding& ) {};
+      CBase64Coding( const CBase64Coding& ) {}
       CBase64Coding& operator=( const CBase64Coding& ) { return( *this ); }
 
    public:
@@ -42,7 +42,7 @@ class CBase64Coding
 
       virtual ~CBase64Coding();
 
-      virtual BOOL Encode( const char * source, int len, char * destination );
+      virtual BOOL Encode( const char * source, int len, char * destination_string );
 };
 
 #endif // BASE_64_CODING_CLASS_HEADER

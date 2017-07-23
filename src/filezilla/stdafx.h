@@ -1,6 +1,4 @@
-
 #pragma once
-
 
 #define _int64 __int64
 
@@ -10,11 +8,13 @@
 #define _AFX_NOFORCE_LIBS
 
 #ifndef LENOF
-#define LENOF(x) (_countof(X))
+#define LENOF(x) (_countof(x))
 #endif
 
 #define _ATL_MIN_CRT
+#ifndef _ATL_NO_DEFAULT_LIBS
 #define _ATL_NO_DEFAULT_LIBS
+#endif
 
 #include "afxpriv.h"
 #include "afxole.h"
@@ -22,7 +22,7 @@
 #include "../src/mfc/afximpl.h"
 
 #include <afx.h>
-#include <wtypes.h>
+//#include <wtypes.h>
 #include <afxmt.h>
 
 // STL includes
@@ -48,15 +48,14 @@ class CFileFix;
 #include <afxconv.h>
 
 #include "FileZillaApi.h"
-#include "afxdll.h"
 
 #define _strlwr strlwr
 
-const int FILEEXISTS_OVERWRITE = 0;
-const int FILEEXISTS_RESUME = 1;
-const int FILEEXISTS_RENAME = 2;
-const int FILEEXISTS_SKIP = 3;
-const int FILEEXISTS_COMPLETE = 4;
+//const int FILEEXISTS_OVERWRITE = 0;
+//const int FILEEXISTS_RESUME = 1;
+//const int FILEEXISTS_RENAME = 2;
+//const int FILEEXISTS_SKIP = 3;
+//const int FILEEXISTS_COMPLETE = 4;
 
 class t_ffam_statusmessage
 {

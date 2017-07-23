@@ -9,7 +9,7 @@
 #include "CoreMain.h"
 
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
-  TGUIConfiguration(),
+  TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin),
   FBookmarks(new TBookmarks()),
   FFarConfirmations(-1)
@@ -36,7 +36,7 @@ void TFarConfiguration::Default()
   SetPluginsMenu(true);
   SetPluginsMenuCommands(true);
   SetCommandPrefixes("netbox,ftp,scp,sftp,ftps,http,https,webdav");
-  SetHostNameInTitle(true);
+  SetSessionNameInTitle(true);
   SetEditorDownloadDefaultMode(true);
   SetEditorUploadSameOptions(true);
   FEditorUploadOnSave = true;
@@ -92,7 +92,7 @@ void TFarConfiguration::Saved()
     KEY(String,   ColumnWidthsDetailed); \
     KEY(String,   StatusColumnTypesDetailed); \
     KEY(String,   StatusColumnWidthsDetailed); \
-    KEY(Bool,     HostNameInTitle); \
+    KEY(Bool,     SessionNameInTitle); \
     KEY(Bool,     ConfirmOverwritingOverride); \
     KEY(Bool,     EditorDownloadDefaultMode); \
     KEY(Bool,     EditorUploadSameOptions); \
@@ -104,16 +104,16 @@ void TFarConfiguration::Saved()
     KEY(String,   ApplyCommandCommand); \
     KEY(Integer,  ApplyCommandParams); \
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
-  );
+  )
 
 void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
   TGUIConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR())
+#define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR())
   REGCONFIG(true);
-  #undef KEY
+#undef KEY
 
   if (Storage->OpenSubKey(L"Bookmarks", /*CanCreate=*/true))
   {
@@ -128,9 +128,9 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
   TGUIConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR()))
+#define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR()))
   REGCONFIG(false);
-  #undef KEY
+#undef KEY
 
   if (Storage->OpenSubKey(L"Bookmarks", false))
   {
@@ -245,8 +245,6 @@ TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
 
 TFarConfiguration * GetFarConfiguration()
 {
-  return NB_STATIC_DOWNCAST(TFarConfiguration, GetConfiguration());
+  return dyn_cast<TFarConfiguration>(GetConfiguration());
 }
-
-NB_IMPLEMENT_CLASS(TFarConfiguration, NB_GET_CLASS_INFO(TGUIConfiguration), nullptr)
 

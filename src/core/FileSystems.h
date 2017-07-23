@@ -41,10 +41,16 @@ const int tfFirstLevel   = 0x01;
 const int tfAutoResume   = 0x02;
 const int tfNewDirectory = 0x04;
 
-struct TSinkFileParams : public TObject
+struct NB_CORE_EXPORT TSinkFileParams : public TObject
 {
-NB_DECLARE_CLASS(TSinkFileParams)
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSinkFileParams;
+  }
+public:
+  TSinkFileParams() : TObject(OBJECT_CLASS_TSinkFileParams), CopyParam(nullptr), OperationProgress(nullptr), Params(0), Flags(0), Skipped(false) {}
   UnicodeString TargetDir;
   const TCopyParamType * CopyParam;
   TFileOperationProgressType * OperationProgress;
@@ -53,12 +59,18 @@ public:
   bool Skipped;
 };
 
-struct TFileTransferData : public TObject
+struct NB_CORE_EXPORT TFileTransferData : public TObject
 {
 NB_DISABLE_COPY(TFileTransferData)
-NB_DECLARE_CLASS(TFileTransferData)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFileTransferData;
+  }
 public:
   TFileTransferData() :
+    TObject(OBJECT_CLASS_TFileTransferData),
     CopyParam(nullptr),
     Modification(0.0),
     Params(0),
@@ -75,16 +87,23 @@ public:
   bool AutoResume;
 };
 
-struct TOverwriteFileParams : public TObject
+struct NB_CORE_EXPORT TOverwriteFileParams : public TObject
 {
-NB_DECLARE_CLASS(TOverwriteFileParams)
+public:
+  static bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TOverwriteFileParams;
+  }
 public:
   TOverwriteFileParams() :
+    TObject(OBJECT_CLASS_TOverwriteFileParams),
     SourceSize(0),
     DestSize(0),
     SourcePrecision(mfFull),
     DestPrecision(mfFull)
-  {}
+  {
+  }
 
   int64_t SourceSize;
   int64_t DestSize;
@@ -94,12 +113,18 @@ public:
   TModificationFmt DestPrecision;
 };
 
-struct TOpenRemoteFileParams : public TObject
+struct NB_CORE_EXPORT TOpenRemoteFileParams : public TObject
 {
 NB_DISABLE_COPY(TOpenRemoteFileParams)
-NB_DECLARE_CLASS(TOpenRemoteFileParams)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TOpenRemoteFileParams;
+  }
 public:
   TOpenRemoteFileParams() :
+    TObject(OBJECT_CLASS_TOpenRemoteFileParams),
     LocalFileAttrs(0),
     OperationProgress(nullptr),
     CopyParam(nullptr),
@@ -110,7 +135,8 @@ public:
     DestFileSize(0),
     FileParams(nullptr),
     Confirmed(false)
-  {}
+  {
+  }
   uintptr_t LocalFileAttrs;
   UnicodeString FileName;
   UnicodeString RemoteFileName;
@@ -138,12 +164,20 @@ public:
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;
 };
 
-class TCustomFileSystem : public TObject, public TFileSystemIntf
+class NB_CORE_EXPORT TCustomFileSystem : public TObject, public TFileSystemIntf
 {
 NB_DISABLE_COPY(TCustomFileSystem)
-NB_DECLARE_CLASS(TCustomFileSystem)
 public:
-  TCustomFileSystem() : FTerminal(nullptr) {}
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCustomFileSystem ||
+      Obj->GetKind() == OBJECT_CLASS_TFTPFileSystem ||
+      Obj->GetKind() == OBJECT_CLASS_TSCPFileSystem ||
+      Obj->GetKind() == OBJECT_CLASS_TSFTPFileSystem ||
+      Obj->GetKind() == OBJECT_CLASS_TWebDAVFileSystem;
+  }
+public:
   virtual ~TCustomFileSystem();
 
   virtual void Open() = 0;
@@ -194,7 +228,7 @@ public:
     const UnicodeString & ANewName) = 0;
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName) = 0;
-  virtual TStrings * GetFixedPaths() = 0;
+  virtual TStrings * GetFixedPaths() const = 0;
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable) = 0;
   virtual const TSessionInfo & GetSessionInfo() const = 0;
@@ -207,12 +241,16 @@ public:
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) = 0;
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) = 0;
 
+/*
+  __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
+*/
   virtual UnicodeString GetCurrDirectory() const = 0;
 
 protected:
   TTerminal * FTerminal;
 
-  explicit TCustomFileSystem(TTerminal * ATerminal);
+  explicit TCustomFileSystem(TObjectClassId Kind) : TObject(Kind), FTerminal(nullptr) {}
+  explicit TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal);
 
   UnicodeString CreateTargetDirectory(
     IN const UnicodeString & AFileName,

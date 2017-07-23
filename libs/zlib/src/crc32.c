@@ -1,5 +1,5 @@
 /* crc32.c -- compute the CRC-32 of a data stream
- * Copyright (C) 1995-2006, 2010, 2011, 2012 Mark Adler
+ * Copyright (C) 1995-2006, 2010, 2011, 2012, 2016 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  *
  * Thanks to Rodney Brown <rbrown64@csc.com.au> for his contribution of faster
@@ -16,12 +16,14 @@
 #elif defined(WIN32) || defined(_WIN32)
 # define LITTLE_ENDIAN 1234
 # define BIG_ENDIAN 4321
-# if defined(_M_IX86) || defined(_M_AMD64) || defined(_M_IA64)
+# if defined(_M_IX86) || defined(_M_AMD64) || defined(_M_IA64) || defined (_M_ARM)
 #  define BYTE_ORDER LITTLE_ENDIAN
 # else
 #  error Unknown endianness!
 # endif
-#elif __APPLE__
+#elif defined(__linux__)
+# include <endian.h>
+#elif defined(__APPLE__) || defined(__arm__) || defined(__aarch64__)
 # include <machine/endian.h>
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
 # include <sys/endian.h>
@@ -63,10 +65,16 @@
 
 #include "deflate.h"
 
+ZLIB_INTERNAL uint32_t crc32_generic(uint32_t, const uint8_t *, z_off64_t);
+
+#ifdef __ARM_FEATURE_CRC32
+extern uint32_t crc32_acle(uint32_t, const uint8_t *, z_off64_t);
+#endif
+
 #if BYTE_ORDER == LITTLE_ENDIAN
-static uint32_t crc32_little(uint32_t, const unsigned char *, z_off64_t);
+ZLIB_INTERNAL uint32_t crc32_little(uint32_t, const uint8_t *, size_t);
 #elif BYTE_ORDER == BIG_ENDIAN
-static uint32_t crc32_big(uint32_t, const unsigned char *, z_off64_t);
+ZLIB_INTERNAL uint32_t crc32_big(uint32_t, const uint8_t *, size_t);
 #endif
 
 /* Local functions for crc concatenation */
@@ -115,7 +123,7 @@ static void make_crc_table()
     uint32_t poly;                       /* polynomial exclusive-or pattern */
     /* terms of polynomial defining this crc (except x^32): */
     static volatile int first = 1;      /* flag to limit concurrent making */
-    static const unsigned char p[] = {0, 1, 2, 4, 5, 7, 8, 10, 11, 12, 16, 22, 23, 26};
+    static const uint8_t p[] = {0, 1, 2, 4, 5, 7, 8, 10, 11, 12, 16, 22, 23, 26};
 
     /* See if another task is already doing this (not thread-safe, but better
        than nothing -- significantly reduces duration of vulnerability in
@@ -125,7 +133,7 @@ static void make_crc_table()
 
         /* make exclusive-or pattern from polynomial (0xedb88320UL) */
         poly = 0;
-        for (n = 0; n < (int)(sizeof(p)/sizeof(unsigned char)); n++)
+        for (n = 0; n < (int)(sizeof(p)/sizeof(uint8_t)); n++)
             poly |= (uint32_t)1 << (31 - p[n]);
 
         /* generate a crc for every 8-bit value */
@@ -209,13 +217,7 @@ const uint32_t * ZEXPORT get_crc_table(void)
     return (const uint32_t *)crc_table;
 }
 
-/* ========================================================================= */
-#define DO1 crc = crc_table[0][((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8)
-#define DO8 DO1; DO1; DO1; DO1; DO1; DO1; DO1; DO1
-#define DO4 DO1; DO1; DO1; DO1
-
-/* ========================================================================= */
-uint32_t ZEXPORT crc32_z(uint32_t crc, const unsigned char *buf, z_off64_t len)
+uint32_t ZEXPORT crc32_z(uint32_t crc, const uint8_t *buf, size_t len)
 {
     if (buf == Z_NULL)
         return 0;
@@ -227,11 +229,27 @@ uint32_t ZEXPORT crc32_z(uint32_t crc, const unsigned char *buf, z_off64_t len)
 
     if (sizeof(void *) == sizeof(ptrdiff_t)) {
 #if BYTE_ORDER == LITTLE_ENDIAN
+#  if __ARM_FEATURE_CRC32
+        return crc32_acle(crc, buf, len);
+#  else
         return crc32_little(crc, buf, len);
+#  endif
 #elif BYTE_ORDER == BIG_ENDIAN
         return crc32_big(crc, buf, len);
 #endif
     }
+
+    return crc32_generic(crc, buf, len);
+}
+
+/* ========================================================================= */
+#define DO1 crc = crc_table[0][((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8)
+#define DO8 DO1; DO1; DO1; DO1; DO1; DO1; DO1; DO1
+#define DO4 DO1; DO1; DO1; DO1
+
+/* ========================================================================= */
+ZLIB_INTERNAL uint32_t crc32_generic(uint32_t crc, const uint8_t *buf, z_off64_t len)
+{
     crc = crc ^ 0xffffffff;
 
 #ifdef UNROLL_LESS
@@ -253,13 +271,13 @@ uint32_t ZEXPORT crc32_z(uint32_t crc, const unsigned char *buf, z_off64_t len)
 }
 
 /* ========================================================================= */
-uint32_t ZEXPORT crc32(uint32_t crc, const unsigned char *buf, z_off64_t len)
+uint32_t ZEXPORT crc32(uint32_t crc, const uint8_t *buf, size_t len)
 {
     return crc32_z(crc, buf, len);
 }
 
 /*
-   This BYFOUR code accesses the passed unsigned char * buffer with a 32-bit
+   This BYFOUR code accesses the passed uint8_t * buffer with a 32-bit
    integer pointer type. This violates the strict aliasing rule, where a
    compiler can assume, for optimization purposes, that two pointers to
    fundamentally different types won't ever point to the same memory. This can
@@ -278,7 +296,7 @@ uint32_t ZEXPORT crc32(uint32_t crc, const unsigned char *buf, z_off64_t len)
 #define DOLIT32 DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4
 
 /* ========================================================================= */
-static uint32_t crc32_little(uint32_t crc, const unsigned char *buf, z_off64_t len)
+ZLIB_INTERNAL uint32_t crc32_little(uint32_t crc, const uint8_t *buf, size_t len)
 {
     register uint32_t c;
     register const uint32_t *buf4;
@@ -303,7 +321,7 @@ static uint32_t crc32_little(uint32_t crc, const unsigned char *buf, z_off64_t l
         DOLIT4;
         len -= 4;
     }
-    buf = (const unsigned char *)buf4;
+    buf = (const uint8_t *)buf4;
 
     if (len) do {
         c = crc_table[0][(c ^ *buf++) & 0xff] ^ (c >> 8);
@@ -321,7 +339,7 @@ static uint32_t crc32_little(uint32_t crc, const unsigned char *buf, z_off64_t l
 #define DOBIG32 DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4
 
 /* ========================================================================= */
-static uint32_t crc32_big(uint32_t crc, const unsigned char *buf, z_off64_t len)
+ZLIB_INTERNAL uint32_t crc32_big(uint32_t crc, const uint8_t *buf, size_t len)
 {
     register uint32_t c;
     register const uint32_t *buf4;
@@ -346,7 +364,7 @@ static uint32_t crc32_big(uint32_t crc, const unsigned char *buf, z_off64_t len)
         DOBIG4;
         len -= 4;
     }
-    buf = (const unsigned char *)buf4;
+    buf = (const uint8_t *)buf4;
 
     if (len) do {
         c = crc_table[4][(c >> 24) ^ *buf++] ^ (c << 8);
@@ -355,6 +373,7 @@ static uint32_t crc32_big(uint32_t crc, const unsigned char *buf, z_off64_t len)
     return ZSWAP32(c);
 }
 #endif /* BYTE_ORDER == BIG_ENDIAN */
+
 
 #define GF2_DIM 32      /* dimension of GF(2) vectors (length of CRC) */
 
@@ -446,40 +465,14 @@ uint32_t ZEXPORT crc32_combine64(uint32_t crc1, uint32_t crc2, z_off64_t len2)
     return crc32_combine_(crc1, crc2, len2);
 }
 
-
-#ifdef X86_PCLMULQDQ_CRC
-#include "arch/x86/x86.h"
-extern void ZLIB_INTERNAL crc_fold_init(deflate_state *const s);
-extern void ZLIB_INTERNAL crc_fold_copy(deflate_state *const s,
-    unsigned char *dst, const unsigned char *src, long len);
-extern uint32_t ZLIB_INTERNAL crc_fold_512to32(deflate_state *const s);
-#endif
-
+#ifndef X86_PCLMULQDQ_CRC
 ZLIB_INTERNAL void crc_reset(deflate_state *const s) {
-#ifdef X86_PCLMULQDQ_CRC
-    if (x86_cpu_has_pclmulqdq) {
-        crc_fold_init(s);
-        return;
-    }
-#endif
-    s->strm->adler = crc32(0L, Z_NULL, 0);
+    s->strm->adler = crc32(0L, NULL, 0);
 }
 
-ZLIB_INTERNAL void crc_finalize(deflate_state *const s) {
-#ifdef X86_PCLMULQDQ_CRC
-    if (x86_cpu_has_pclmulqdq)
-        s->strm->adler = crc_fold_512to32(s);
-#endif
-}
-
-ZLIB_INTERNAL void copy_with_crc(z_stream *strm, unsigned char *dst, long size) {
-#ifdef X86_PCLMULQDQ_CRC
-    if (x86_cpu_has_pclmulqdq) {
-        crc_fold_copy(strm->state, dst, strm->next_in, size);
-        return;
-    }
-#endif
+ZLIB_INTERNAL void copy_with_crc(z_stream *strm, uint8_t *dst, size_t size) {
     zmemcpy(dst, strm->next_in, size);
     strm->adler = crc32(strm->adler, dst, size);
 }
+#endif
 

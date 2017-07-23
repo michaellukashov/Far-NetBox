@@ -90,7 +90,7 @@ private:
 class intrusive_list_base
 {
 public:
-	typedef size_t	size_type;
+	typedef ::size_t	size_type;
 
 	void pop_back()
 	{

@@ -57,11 +57,11 @@ enum TSessionActionEnum
   saConnect
 };
 
-//DEFINE_CALLBACK_TYPE2(TGetSynchronizeOptionsEvent, void,
-//  intptr_t /*Params*/, TSynchronizeOptions & /*Options*/);
-DEFINE_CALLBACK_TYPE3(TGetSpaceAvailableEvent, void,
+//typedef nb::FastDelegate2<void,
+//  intptr_t /*Params*/, TSynchronizeOptions & /*Options*/> TGetSynchronizeOptionsEvent;
+typedef nb::FastDelegate3<void,
   const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
-  bool & /*Close*/);
+  bool & /*Close*/>TGetSpaceAvailableEvent;
 
 struct TMultipleEdit : public TObject
 {
@@ -79,7 +79,7 @@ struct TEditHistory : public TObject
   bool operator==(const TEditHistory & rh) const { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
 
-DEFINE_CALLBACK_TYPE2(TProcessSessionEvent, void, TSessionData * /*Data*/, void * /*Param*/);
+typedef nb::FastDelegate2<void, TSessionData * /*Data*/, void * /*Param*/> TProcessSessionEvent;
 
 class TWinSCPFileSystem : public TCustomFarFileSystem
 {
@@ -88,7 +88,12 @@ friend class TNetBoxPlugin;
 friend class TKeepaliveThread;
 friend class TQueueDialog;
 NB_DISABLE_COPY(TWinSCPFileSystem)
-NB_DECLARE_CLASS(TWinSCPFileSystem)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TWinSCPFileSystem;
+  }
 public:
   explicit TWinSCPFileSystem(TCustomFarPlugin * APlugin);
   void Init(TSecureShell * SecureShell);
@@ -102,7 +107,7 @@ protected:
   void SaveSession();
 
   virtual void GetOpenPluginInfoEx(DWORD & Flags,
-    UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & Format,
+    UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & AFormat,
     UnicodeString & PanelTitle, TFarPanelModes * PanelModes, int & StartPanelMode,
     int & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
     UnicodeString & ShortcutData);
@@ -121,21 +126,21 @@ protected:
   virtual void HandleException(Exception * E, int OpMode = 0);
   void KeepaliveThreadCallback();
 
-  inline bool IsSessionList() const;
-  inline bool Connected() const;
+  bool IsSessionList() const;
+  bool Connected() const;
   TWinSCPPlugin * GetWinSCPPlugin();
   void ShowOperationProgress(TFileOperationProgressType & ProgressData,
     bool Force);
-  bool SessionDialog(TSessionData * Data, TSessionActionEnum & Action);
+  bool SessionDialog(TSessionData * SessionData, TSessionActionEnum & Action);
   void EditConnectSession(TSessionData * Data, bool Edit);
   void EditConnectSession(TSessionData * Data, bool Edit, bool NewData, bool FillInConnect);
   void DuplicateOrRenameSession(TSessionData * Data,
     bool Duplicate);
   void FocusSession(const TSessionData * Data);
-  void DeleteSession(TSessionData * Data, void * Param);
+  void DeleteSession(TSessionData * Data, void * AParam);
   void ProcessSessions(TObjectList * PanelItems,
-    TProcessSessionEvent ProcessSession, void * Param);
-  void ExportSession(TSessionData * Data, void * Param);
+    TProcessSessionEvent ProcessSession, void * AParam);
+  void ExportSession(TSessionData * Data, void * AParam);
   bool ImportSessions(TObjectList * PanelItems, bool Move, int OpMode);
   void FileProperties();
   void CreateLink();
@@ -173,11 +178,11 @@ protected:
     TGetSpaceAvailableEvent OnGetSpaceAvailable);
   bool OpenDirectoryDialog(bool Add, UnicodeString & Directory,
     TBookmarkList * BookmarkList);
-  bool ApplyCommandDialog(UnicodeString & Command, intptr_t & Params);
+  bool ApplyCommandDialog(UnicodeString & Command, intptr_t & Params) const;
   bool FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode,
     intptr_t & Params, UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
     TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, intptr_t Options,
-    const TUsableCopyParamAttrs & CopyParamAttrs);
+    const TUsableCopyParamAttrs & CopyParamAttrs) const;
   bool SynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
     TTerminal::TSynchronizeMode Mode, intptr_t Params,
     const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory);
@@ -208,13 +213,13 @@ protected:
     intptr_t & MaxDirectories);
   void Synchronize(const UnicodeString & LocalDirectory,
     const UnicodeString & RemoteDirectory, TTerminal::TSynchronizeMode Mode,
-    const TCopyParamType & CopyParam, intptr_t Params, TSynchronizeChecklist ** Checklist,
+    const TCopyParamType & CopyParam, intptr_t Params, TSynchronizeChecklist ** AChecklist,
     TSynchronizeOptions * Options);
   bool SynchronizeAllowSelectedOnly();
   void GetSynchronizeOptions(intptr_t Params, TSynchronizeOptions & Options);
   void RequireCapability(intptr_t Capability);
   void RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeString & Message);
-  bool AreCachesEmpty();
+  bool AreCachesEmpty() const;
   void ClearCaches();
   void OpenSessionInPutty();
   void QueueShow(bool ClosingPlugin);
@@ -271,7 +276,7 @@ private:
   void TerminalDeleteLocalFile(const UnicodeString & AFileName, bool Alternative);
   HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
-  inline DWORD TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName);
+  inline DWORD TerminalGetLocalFileAttributes(const UnicodeString & LocalFileName) const;
   inline BOOL TerminalSetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
   BOOL TerminalMoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);
   BOOL TerminalRemoveLocalDirectory(const UnicodeString & LocalDirName);
@@ -286,9 +291,9 @@ private:
     TOperationSide Side, bool SelectedOnly = false, const UnicodeString & Directory = L"",
     bool FileNameOnly = false, TStrings * AFileList = nullptr);
   TStrings * CreateSelectedFileList(TOperationSide Side,
-    TFarPanelInfo ** PanelInfo = nullptr);
+    TFarPanelInfo ** APanelInfo = nullptr);
   TStrings * CreateFocusedFileList(TOperationSide Side,
-    TFarPanelInfo ** PanelInfo = nullptr);
+    TFarPanelInfo ** APanelInfo = nullptr);
   void CustomCommandGetParamValue(
     const UnicodeString & AName, UnicodeString & Value);
   void TerminalSynchronizeDirectory(const UnicodeString & LocalDirectory,
@@ -361,7 +366,6 @@ class TSessionPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TSessionPanelItem)
 public:
-  explicit TSessionPanelItem(const UnicodeString & APath);
   explicit TSessionPanelItem(const TSessionData * ASessionData);
   static void SetPanelModes(TFarPanelModes * PanelModes);
   static void SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles);

@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <FileSystems.h>
@@ -10,10 +11,16 @@ class TSCPFileSystem : public TCustomFileSystem
 {
 NB_DISABLE_COPY(TSCPFileSystem)
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TSCPFileSystem;
+  }
+public:
   explicit TSCPFileSystem(TTerminal * ATerminal);
   virtual ~TSCPFileSystem();
 
-  virtual void Init(void *); // TSecureShell *
+  virtual void Init(void * /*TSecureShell * */);
   virtual void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) {}
 
   virtual void Open();
@@ -63,7 +70,7 @@ public:
     const UnicodeString & ANewName);
   virtual void RemoteCopyFile(const UnicodeString & AFileName,
     const UnicodeString & ANewName);
-  virtual TStrings * GetFixedPaths();
+  virtual TStrings * GetFixedPaths() const;
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo() const;
@@ -77,6 +84,10 @@ public:
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem);
 
 protected:
+/*
+  __property TStrings * Output = { read = FOutput };
+  __property int ReturnCode = { read = FReturnCode };
+*/
   TStrings * GetOutput() const { return FOutput; }
   intptr_t GetReturnCode() const { return FReturnCode; }
 

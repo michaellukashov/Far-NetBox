@@ -18,7 +18,7 @@
 const wchar_t * AutoSwitchNames = L"On;Off;Auto";
 const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
 
-// See http://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
+// See https://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
 const UnicodeString Sha1ChecksumAlg(L"sha-1");
 const UnicodeString Sha224ChecksumAlg(L"sha-224");
 const UnicodeString Sha256ChecksumAlg(L"sha-256");
@@ -31,7 +31,8 @@ const UnicodeString Crc32ChecksumAlg(L"crc32");
 const UnicodeString SshFingerprintType(L"ssh");
 const UnicodeString TlsFingerprintType(L"tls");
 
-TConfiguration::TConfiguration() :
+TConfiguration::TConfiguration(TObjectClassId Kind) :
+  TObject(Kind),
   FDontSave(false),
   FChanged(false),
   FUpdating(0),
@@ -55,7 +56,7 @@ TConfiguration::TConfiguration() :
   FSessionReopenBackground(0),
   FSessionReopenTimeout(0),
   FSessionReopenAutoStall(0),
-  FProgramIniPathWrittable(0),
+  FProgramIniPathWritable(0),
   FTunnelLocalPortNumberLow(0),
   FTunnelLocalPortNumberHigh(0),
   FCacheDirectoryChangesMaxSize(0),
@@ -77,7 +78,7 @@ TConfiguration::TConfiguration() :
   FScripting = false;
 
   UnicodeString RandomSeedPath;
-  if (!base::GetEnvironmentVariable("APPDATA").IsEmpty())
+  if (!base::GetEnvVariable("APPDATA").IsEmpty())
   {
     RandomSeedPath = "%APPDATA%";
   }
@@ -112,7 +113,9 @@ void TConfiguration::Default()
   }
   __finally
   {
-//    delete AdminStorage;
+/*
+    delete AdminStorage;
+*/
   };
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
@@ -150,7 +153,7 @@ void TConfiguration::Default()
   FLogActionsRequired = false;
   FActionsLogFileName = "%TEMP%\\&S.xml";
   FPermanentActionsLogFileName = FActionsLogFileName;
-  FProgramIniPathWrittable = -1;
+  FProgramIniPathWritable = -1;
 
   Changed();
 }
@@ -260,11 +263,11 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
     KEYEX(Integer,PermanentLogProtocol, LogProtocol); \
     KEYEX(Bool,  PermanentLogActions, LogActions); \
     KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
-  );
+  )
 
 void TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 {
-#define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(MB_TEXT(#NAME))), Get ## VAR())
+#define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
   REGCONFIG(true);
 #undef KEYEX
 
@@ -309,7 +312,9 @@ void TConfiguration::DoSave(bool All, bool Explicit)
   }
   __finally
   {
-//    delete AStorage;
+/*
+    delete AStorage;
+*/
   };
 
   Saved();
@@ -403,7 +408,7 @@ void TConfiguration::Import(const UnicodeString & /*AFileName*/)
 
 void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-#define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(MB_TEXT(#NAME))), Get ## VAR()))
+#define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
   REGCONFIG(false);
 #undef KEYEX
 
@@ -454,7 +459,9 @@ void TConfiguration::Load(THierarchicalStorage * Storage)
   }
   __finally
   {
-//    Storage->AccessMode = StorageAccessMode;
+/*
+    Storage->AccessMode = StorageAccessMode;
+*/
   };
 }
 
@@ -529,7 +536,9 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
   }
   __finally
   {
-//    delete Names;
+/*
+    delete Names;
+*/
   };
 }
 
@@ -549,7 +558,9 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 }
 
@@ -570,7 +581,9 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 }
 
@@ -597,11 +610,12 @@ bool TConfiguration::ShowBanner(const UnicodeString & SessionKey,
       !Storage->OpenSubKey("Banners", false) ||
       !Storage->ValueExists(SessionKey) ||
       (Storage->ReadString(SessionKey, L"") != BannerHash(Banner));
-    return Result;
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 
   return Result;
@@ -623,10 +637,12 @@ void TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
   }
   __finally
   {
-//    delete Storage;
+/*
+    delete Storage;
+*/
   };
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TConfiguration::FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType) const
 {
   return FORMAT(L"%s:%s", SiteKey.c_str(), FingerprintType.c_str());
@@ -723,7 +739,9 @@ void TConfiguration::CleanupRegistry(const UnicodeString & CleanupSubKey)
   }
   __finally
   {
-//    delete Registry;
+/*
+    delete Registry;
+*/
   };
 }
 
@@ -883,7 +901,7 @@ UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString & AFileN
   return TrimVersion(GetFileFileInfoString(L"ProductVersion", AFileName));
 }
 
-UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName)
+UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName) const
 {
   return GetFileFileInfoString(L"FileDescription", AFileName);
 }
@@ -895,7 +913,7 @@ UnicodeString TConfiguration::GetFileProductVersion() const
 
 UnicodeString TConfiguration::GetReleaseType() const
 {
-  return GetFileInfoString(L"ReleaseType");
+  return GetFileInfoString("ReleaseType");
 }
 
 bool TConfiguration::GetIsUnofficial() const
@@ -976,10 +994,10 @@ UnicodeString TConfiguration::GetProductVersionStr() const
   return Result;
 }
 
-UnicodeString TConfiguration::GetFileVersion(const UnicodeString & FileName)
+UnicodeString TConfiguration::GetFileVersion(const UnicodeString & AFileName)
 {
   UnicodeString Result;
-  void * FileInfo = CreateFileInfo(FileName);
+  void * FileInfo = CreateFileInfo(AFileName);
   try__finally
   {
     SCOPE_EXIT
@@ -990,7 +1008,9 @@ UnicodeString TConfiguration::GetFileVersion(const UnicodeString & FileName)
   }
   __finally
   {
+/*
     FreeFileInfo(FileInfo);
+*/
   };
   return Result;
 }
@@ -1007,7 +1027,7 @@ UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info)
         HIWORD(Info->dwFileVersionLS));
     return Result;
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     throw ExtException(&E, L"Can't get file version");
   }
@@ -1077,10 +1097,12 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
   }
   __finally
   {
+/*
     if (!AFileName.IsEmpty())
     {
       FreeFileInfo(Info);
     }
+*/
   };
   return Result;
 }
@@ -1147,14 +1169,14 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
       else
       {
         // avoid expensive test if we are interested in existing files only
-        if (!ReadingOnly && (FProgramIniPathWrittable < 0))
+        if (!ReadingOnly && (FProgramIniPathWritable < 0))
         {
           UnicodeString ProgramDir = ExtractFilePath(ProgramPath);
-          FProgramIniPathWrittable = IsDirectoryWriteable(ProgramDir) ? 1 : 0;
+          FProgramIniPathWritable = IsDirectoryWriteable(ProgramDir) ? 1 : 0;
         }
 
         // does not really matter what we return when < 0
-        IniPath = (FProgramIniPathWrittable == 0) ? AppDataIniPath : ProgramIniPath;
+        IniPath = (FProgramIniPathWritable == 0) ? AppDataIniPath : ProgramIniPath;
       }
     }
 
@@ -1255,8 +1277,10 @@ void TConfiguration::SetStorage(TStorage Value)
       }
       __finally
       {
-//        delete SourceStorage;
-//        delete TargetStorage;
+/*
+        delete SourceStorage;
+        delete TargetStorage;
+*/
       };
       // save all and explicit,
       // this also removes an INI file, when switching to registry storage
@@ -1304,7 +1328,7 @@ TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
 
   UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
   UnicodeString FilezillaSiteManagerFile =
-    IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\sitemanager.xml";
+    ::IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\sitemanager.xml";
 
   if (FileExists(ApiPath(FilezillaSiteManagerFile)))
   {
@@ -1332,8 +1356,8 @@ bool TConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
   try
   {
     UnicodeString Error;
-    std::unique_ptr<TStoredSessionList> Sesssions(SelectFilezillaSessionsForImport(Sessions, Error));
-    return (Sesssions->GetCount() > 0);
+    std::unique_ptr<TStoredSessionList> SessionsList(SelectFilezillaSessionsForImport(Sessions, Error));
+    return (SessionsList->GetCount() > 0);
   }
   catch (...)
   {
@@ -1452,7 +1476,7 @@ void TConfiguration::SetLogFileName(const UnicodeString & Value)
     Changed();
   }
 }
-//---------------------------------------------------------------------
+
 void TConfiguration::SetActionsLogFileName(const UnicodeString & Value)
 {
   if (GetActionsLogFileName() != Value)
@@ -1462,7 +1486,7 @@ void TConfiguration::SetActionsLogFileName(const UnicodeString & Value)
     Changed();
   }
 }
-//---------------------------------------------------------------------
+
 void TConfiguration::SetLogToFile(bool Value)
 {
   if (Value != GetLogToFile())
@@ -1668,8 +1692,7 @@ bool TConfiguration::GetPersistent() const
   return (GetStorage() != stNul);
 }
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
 void TShortCuts::Add(const TShortCut & ShortCut)
 {
   FShortCuts.push_back(ShortCut);
@@ -1681,4 +1704,3 @@ bool TShortCuts::Has(const TShortCut & ShortCut) const
   return (it != FShortCuts.end());
 }
 
-NB_IMPLEMENT_CLASS(TConfiguration, NB_GET_CLASS_INFO(TObject), nullptr)

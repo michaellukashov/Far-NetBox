@@ -13,6 +13,7 @@ class TFileZillaIntern;
 
 struct TRemoteFileTime
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   WORD Year;
   WORD Month;
   WORD Day;
@@ -27,6 +28,7 @@ struct TRemoteFileTime
 
 struct TListDataEntry
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   TRemoteFileTime Time;
   __int64 Size;
   const wchar_t * LinkTarget;
@@ -40,8 +42,10 @@ struct TListDataEntry
 
 struct TFtpsCertificateData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   struct TContact
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     const wchar_t * Organization;
     const wchar_t * Unit;
     const wchar_t * CommonName;
@@ -57,6 +61,7 @@ struct TFtpsCertificateData
 
   struct TValidityTime
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     int Year;
     int Month;
     int Day;
@@ -82,6 +87,7 @@ struct TFtpsCertificateData
 
 struct TNeedPassRequestData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   wchar_t * Password;
 };
 
@@ -162,8 +168,8 @@ public:
   bool Init();
   void Destroying();
 
-  bool SetCurrentPath(const wchar_t * Path);
-  bool GetCurrentPath(wchar_t * Path, size_t MaxLen);
+  bool SetCurrentPath(const wchar_t * APath);
+  bool GetCurrentPath(wchar_t * APath, size_t MaxLen);
 
   bool UsingMlsd();
   bool UsingUtf8();
@@ -180,17 +186,17 @@ public:
     X509 * Certificate, EVP_PKEY * PrivateKey);
   bool Close(bool AllowBusy);
 
-  bool List(const wchar_t * Path);
+  bool List(const wchar_t * APath);
   bool ListFile(const wchar_t * FileName, const wchar_t * APath);
 
   bool CustomCommand(const wchar_t * Command);
 
-  bool MakeDir(const wchar_t* Path);
-  bool Chmod(int Value, const wchar_t* FileName, const wchar_t* Path);
-  bool Delete(const wchar_t* FileName, const wchar_t* Path);
-  bool RemoveDir(const wchar_t* FileName, const wchar_t* Path);
+  bool MakeDir(const wchar_t* APath);
+  bool Chmod(int Value, const wchar_t* FileName, const wchar_t* APath);
+  bool Delete(const wchar_t* FileName, const wchar_t* APath);
+  bool RemoveDir(const wchar_t* FileName, const wchar_t* APath);
   bool Rename(const wchar_t* OldName, const wchar_t* NewName,
-    const wchar_t* Path, const wchar_t* NewPath);
+    const wchar_t* APath, const wchar_t* ANewPath);
 
   bool FileTransfer(const wchar_t * LocalFile, const wchar_t * RemoteFile,
     const wchar_t * RemotePath, bool Get, __int64 Size, int Type, void * UserData);
@@ -202,7 +208,7 @@ public:
   bool HandleMessage(WPARAM wParam, LPARAM lParam);
 
 protected:
-  bool PostMessage(WPARAM wParam, LPARAM lParam);
+  bool FZPostMessage(WPARAM wParam, LPARAM lParam);
   virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) = 0;
 
   virtual bool HandleStatus(const wchar_t * Status, int Type) = 0;
@@ -258,13 +264,14 @@ enum ftp_capability_names_t
   rest_stream, // supports REST+STOR in addition to APPE
 };
 
-class TFTPServerCapabilities : public TObject
+class TFTPServerCapabilities //: public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TFTPServerCapabilities)
 public:
   TFTPServerCapabilities(){}
-  ftp_capabilities_t GetCapability(ftp_capability_names_t Name);
-  ftp_capabilities_t GetCapabilityString(ftp_capability_names_t Name, std::string * Option = NULL);
+  ftp_capabilities_t GetCapability(ftp_capability_names_t Name) const;
+  ftp_capabilities_t GetCapabilityString(ftp_capability_names_t Name, std::string * Option = NULL) const;
   void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap);
   void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap, const std::string & Option);
   void Clear() { FCapabilityMap.clear(); }
@@ -283,17 +290,19 @@ public:
 protected:
   struct t_cap
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     t_cap() :
       cap(unknown),
       option(),
       number(0)
-    {}
+    {
+    }
     ftp_capabilities_t cap;
     std::string option;
     int number;
   };
 
-  rde::map<ftp_capability_names_t, t_cap> FCapabilityMap;
+  mutable rde::map<ftp_capability_names_t, t_cap> FCapabilityMap;
 };
 
 #endif // FileZillaIntfH

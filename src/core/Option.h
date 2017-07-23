@@ -9,14 +9,14 @@ enum TOptionType
 };
 
 // typedef void (__closure *TLogOptionEvent)(const UnicodeString & LogStr);
-DEFINE_CALLBACK_TYPE1(TLogOptionEvent, void, const UnicodeString & /*LogStr*/);
+typedef nb::FastDelegate1<void, const UnicodeString & /*LogStr*/> TLogOptionEvent;
 
-class TOptions : public TObject
+class NB_CORE_EXPORT TOptions : public TObject
 {
 public:
   TOptions();
 
-  void Add(const UnicodeString & Option);
+  void Add(const UnicodeString & Value);
 
   // void ParseParams(const UnicodeString & Params);
 
@@ -30,18 +30,19 @@ public:
   bool FindSwitchCaseSensitive(const UnicodeString & Switch);
   bool FindSwitchCaseSensitive(const UnicodeString & Switch, TStrings * Params,
     int ParamsMax = -1);
-  void ParamsProcessed(intptr_t Position, intptr_t Count);
+  void ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount);
   UnicodeString SwitchValue(const UnicodeString & Switch, const UnicodeString & Default = L"");
   bool SwitchValue(const UnicodeString & Switch, bool Default);
   bool SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence);
   bool UnusedSwitch(UnicodeString & Switch) const;
   bool WasSwitchAdded(UnicodeString & Switch, wchar_t & SwitchMark) const;
 
-  void LogOptions(TLogOptionEvent OnEnumOption);
-
-  /*__property int ParamCount = { read = FParamCount };
+  void LogOptions(TLogOptionEvent OnLogOption);
+/*
+ __property int ParamCount = { read = FParamCount };
   __property UnicodeString Param[int Index] = { read = GetParam };
-  __property bool Empty = { read = GetEmpty };*/
+  __property bool Empty = { read = GetEmpty };
+*/
 
   intptr_t GetParamCount() const { return FParamCount; }
   UnicodeString GetParam(intptr_t AIndex);
@@ -56,7 +57,7 @@ protected:
   bool FindSwitch(const UnicodeString & Switch,
     UnicodeString & Value, intptr_t & ParamsStart, intptr_t & ParamsCount, bool CaseSensitive, bool & ValueSet);
   bool DoFindSwitch(const UnicodeString & Switch, TStrings * Params,
-    intptr_t ParamsMax, bool CaseInsensitive);
+    intptr_t ParamsMax, bool CaseSensitive);
 
 private:
   struct TOption : public TObject
@@ -76,7 +77,9 @@ private:
   intptr_t FParamCount;
   bool FNoMoreSwitches;
 
-  /*UnicodeString __fastcall GetParam(int Index);
-  bool __fastcall GetEmpty();*/
+/*
+  UnicodeString __fastcall GetParam(int Index);
+  bool __fastcall GetEmpty();
+*/
 };
 

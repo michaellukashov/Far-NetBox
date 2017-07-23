@@ -12,10 +12,10 @@
 #include "match.h"
 
 struct match {
-    unsigned int match_start;
-    unsigned int match_length;
-    unsigned int strstart;
-    unsigned int orgstart;
+    uint32_t match_start;
+    uint32_t match_length;
+    uint32_t strstart;
+    uint32_t orgstart;
 };
 
 #define MAX_DIST2  ((1 << MAX_WBITS) - MIN_LOOKAHEAD)
@@ -31,7 +31,7 @@ static int tr_tally_lit(deflate_state *s, int c) {
 static int emit_match(deflate_state *s, struct match match) {
     int flush = 0;
 
-    /* matches that are not long enough we need to emit as litterals */
+    /* matches that are not long enough we need to emit as literals */
     if (match.match_length < MIN_MATCH) {
         while (match.match_length) {
             flush += tr_tally_lit(s, s->window[match.strstart]);
@@ -54,7 +54,7 @@ static void insert_match(deflate_state *s, struct match match) {
     if (unlikely(s->lookahead <= match.match_length + MIN_MATCH))
         return;
 
-    /* matches that are not long enough we need to emit as litterals */
+    /* matches that are not long enough we need to emit as literals */
     if (match.match_length < MIN_MATCH) {
 #ifdef NOT_TWEAK_COMPILER
         while (match.match_length) {
@@ -68,17 +68,18 @@ static void insert_match(deflate_state *s, struct match match) {
             }
         }
 #else
-        if (likely(match.match_length == 1)) {
-            match.strstart++;
-            match.match_length = 0;
-        }else{
-            match.strstart++;
-            match.match_length--;
+        match.strstart++;
+        match.match_length--;
+        if (match.match_length > 0) {
             if (match.strstart >= match.orgstart) {
-                bulk_insert_str(s, match.strstart, match.match_length);
+                if (match.strstart + match.match_length - 1 >= match.orgstart) {
+                    insert_string(s, match.strstart, match.match_length);
+                } else {
+                    insert_string(s, match.strstart, match.orgstart - match.strstart + 1);
+                }
+                match.strstart += match.match_length;
+                match.match_length = 0;
             }
-            match.strstart += match.match_length;
-            match.match_length = 0;
         }
 #endif
         return;
@@ -102,7 +103,11 @@ static void insert_match(deflate_state *s, struct match match) {
         } while (--match.match_length != 0);
 #else
         if (likely(match.strstart >= match.orgstart)) {
-            bulk_insert_str(s, match.strstart, match.match_length);
+            if (likely(match.strstart + match.match_length - 1 >= match.orgstart)) {
+                insert_string(s, match.strstart, match.match_length);
+            } else {
+                insert_string(s, match.strstart, match.orgstart - match.strstart + 1);
+            }
         }
         match.strstart += match.match_length;
         match.match_length = 0;
@@ -111,7 +116,7 @@ static void insert_match(deflate_state *s, struct match match) {
         match.strstart += match.match_length;
         match.match_length = 0;
         s->ins_h = s->window[match.strstart];
-        if (match.strstart >= 1)
+        if (match.strstart >= (MIN_MATCH - 2))
             UPDATE_HASH(s, s->ins_h, match.strstart+2-MIN_MATCH);
 #if MIN_MATCH != 3
 #warning Call UPDATE_HASH() MIN_MATCH-3 more times
@@ -124,7 +129,7 @@ static void insert_match(deflate_state *s, struct match match) {
 
 static void fizzle_matches(deflate_state *s, struct match *current, struct match *next) {
     IPos limit;
-    unsigned char *match, *orig;
+    uint8_t *match, *orig;
     int changed = 0;
     struct match c, n;
     /* step zero: sanity checks */
@@ -143,12 +148,6 @@ static void fizzle_matches(deflate_state *s, struct match *current, struct match
 
     /* quick exit check.. if this fails then don't bother with anything else */
     if (likely(*match != *orig))
-        return;
-
-    /* check the overlap case and just give up. We can do better in theory,
-     * but unlikely to be worth it
-     */
-    if (next->match_start + next->match_length >= current->strstart)
         return;
 
     c = *current;
@@ -261,7 +260,7 @@ block_state deflate_medium(deflate_state *s, int flush) {
         insert_match(s, current_match);
 
         /* now, look ahead one */
-        if (s->lookahead > MIN_LOOKAHEAD) {
+        if (s->lookahead > MIN_LOOKAHEAD && (current_match.strstart + current_match.match_length) < (s->window_size - MIN_LOOKAHEAD)) {
             s->strstart = current_match.strstart + current_match.match_length;
             hash_head = insert_string(s, s->strstart);
 

@@ -6,10 +6,10 @@
 #include <Exceptions.h>
 #include "SessionData.h"
 
-class EFileMasksException : public Exception
+class NB_CORE_EXPORT EFileMasksException : public Exception
 {
 public:
-  explicit EFileMasksException(const UnicodeString & AMessage, intptr_t ErrorStart, intptr_t ErrorLen);
+  explicit EFileMasksException(const UnicodeString & AMessage, intptr_t AErrorStart, intptr_t AErrorLen);
   intptr_t ErrorStart;
   intptr_t ErrorLen;
 };
@@ -17,10 +17,10 @@ public:
 #define INCLUDE_EXCLUDE_FILE_MASKS_DELIMITER L'|'
 #define MASK_INDEX(DIRECTORY, INCLUDE) ((DIRECTORY ? 2 : 0) + (INCLUDE ? 0 : 1))
 
-class TFileMasks : public TObject
+class NB_CORE_EXPORT TFileMasks : public TObject
 {
 public:
-  struct TParams : public TObject
+  struct NB_CORE_EXPORT TParams : public TObject
   {
     TParams();
     int64_t Size;
@@ -82,7 +82,8 @@ private:
     TMaskMask() :
       Kind(Any),
       Mask(nullptr)
-    {}
+    {
+    }
     enum
     {
       Any,
@@ -101,7 +102,8 @@ private:
       LowSize(0),
       HighModificationMask(None),
       LowModificationMask(None)
-    {}
+    {
+    }
     TMaskMask FileNameMask;
     TMaskMask DirectoryMask;
 
@@ -159,11 +161,11 @@ UnicodeString DelimitFileNameMask(const UnicodeString & AMask);
 //typedef void __fastcall (__closure * TCustomCommandPatternEvent)
 //  (int Index, const UnicodeString Pattern, void * Arg, UnicodeString & Replacement,
 //   bool & LastPass);
-DEFINE_CALLBACK_TYPE5(TCustomCommandPatternEvent, void,
+typedef nb::FastDelegate5<void,
   int /*Index*/, const UnicodeString & /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
-  bool & /*LastPass*/);
+  bool & /*LastPass*/> TCustomCommandPatternEvent;
 
-class TCustomCommand : public TObject
+class NB_CORE_EXPORT TCustomCommand : public TObject
 {
 friend class TInteractiveCustomCommand;
 
@@ -194,7 +196,7 @@ protected:
   virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 };
 
-class TInteractiveCustomCommand : public TCustomCommand
+class NB_CORE_EXPORT TInteractiveCustomCommand : public TCustomCommand
 {
 NB_DISABLE_COPY(TInteractiveCustomCommand)
 public:
@@ -218,7 +220,7 @@ private:
 
 class TTerminal;
 
-struct TCustomCommandData : public TObject
+struct NB_CORE_EXPORT TCustomCommandData : public TObject
 {
 //NB_DISABLE_COPY(TCustomCommandData)
 public:
@@ -229,21 +231,21 @@ public:
     TSessionData * SessionData, const UnicodeString & AUserName,
     const UnicodeString & APassword);
 
-  // __property TSessionData * SessionData = { read = GetSesssionData };
+  // __property TSessionData * SessionData = { read = GetSessionData };
 
   TCustomCommandData & operator=(const TCustomCommandData & Data);
 
 private:
   std::unique_ptr<TSessionData> FSessionData;
   void Init(
-    TSessionData * SessionData, const UnicodeString & AUserName,
+    TSessionData * ASessionData, const UnicodeString & AUserName,
     const UnicodeString & APassword, const UnicodeString & AHostKey);
 
 public:
   TSessionData * GetSessionData() const;
 };
 
-class TFileCustomCommand : public TCustomCommand
+class NB_CORE_EXPORT TFileCustomCommand : public TCustomCommand
 {
 public:
   TFileCustomCommand();

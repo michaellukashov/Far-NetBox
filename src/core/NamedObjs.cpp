@@ -8,10 +8,11 @@
 
 static intptr_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
-  return static_cast<const TNamedObject *>(Item1)->Compare(static_cast<const TNamedObject *>(Item2));
+  return get_as<TNamedObject>(Item1)->Compare(get_as<TNamedObject>(Item2));
 }
 //--- TNamedObject ----------------------------------------------------------
-TNamedObject::TNamedObject(const UnicodeString & AName) :
+TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString & AName) :
+  TPersistent(Kind),
   FHidden(false)
 {
   SetName(AName);
@@ -71,44 +72,46 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
           N = 0;
         }
       }
-      SetName(Name + L" (" + ::Int64ToStr(N+1) + L")");
+      SetName(Name + L" (" + ::Int64ToStr(N + 1) + L")");
     }
 }
-//--- TNamedObjectList ------------------------------------------------------
-TNamedObjectList::TNamedObjectList() :
-  TObjectList(),
+
+
+TNamedObjectList::TNamedObjectList(TObjectClassId Kind) :
+  TObjectList(Kind),
   FHiddenCount(0),
-  FControlledAdd(false),
-  AutoSort(true)
+  FAutoSort(true),
+  FControlledAdd(false)
 {
 }
-//---------------------------------------------------------------------------
+
 const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const
 {
   return const_cast<TNamedObjectList *>(this)->AtObject(Index);
 }
-//---------------------------------------------------------------------------
+
 TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
-  return NB_STATIC_DOWNCAST(TNamedObject, GetObj(Index + FHiddenCount));
+  return GetAs<TNamedObject>(Index + FHiddenCount);
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::Recount()
 {
   intptr_t Index = 0;
-  while ((Index < TObjectList::GetCount()) && (NB_STATIC_DOWNCAST(TNamedObject, GetObj(Index))->GetHidden()))
+  while ((Index < TObjectList::GetCount()) && GetAs<TNamedObject>(Index)->GetHidden())
   {
     ++Index;
   }
   FHiddenCount = Index;
 }
-//---------------------------------------------------------------------------
+
+
 void TNamedObjectList::AlphaSort()
 {
   Sort(NamedObjectSortProc);
   Recount();
 }
-//---------------------------------------------------------------------------
+
 intptr_t TNamedObjectList::Add(TObject * AObject)
 {
   intptr_t Result;
@@ -116,7 +119,7 @@ intptr_t TNamedObjectList::Add(TObject * AObject)
   TNamedObject * NamedObject = static_cast<TNamedObject *>(AObject);
   // If temporarily not auto-sorting (when loading session list),
   // keep the hidden objects in front, so that HiddenCount is correct
-  if (!AutoSort && NamedObject->GetHidden())
+  if (!FAutoSort && NamedObject->GetHidden())
   {
     Result = 0;
     Insert(Result, AObject);
@@ -128,7 +131,7 @@ intptr_t TNamedObjectList::Add(TObject * AObject)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
 {
   if (Action == lnDeleted)
@@ -146,13 +149,13 @@ void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
     {
       FHiddenCount = -1;
     }
-    if (AutoSort)
+    if (FAutoSort)
     {
       AlphaSort();
     }
   }
 }
-//---------------------------------------------------------------------------
+
 const TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name) const
 {
   return const_cast<TNamedObjectList *>(this)->FindByName(Name);
@@ -172,7 +175,8 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & Name)
   }
   return nullptr;
 }
-//---------------------------------------------------------------------------
+
+
 void TNamedObjectList::SetCount(intptr_t Value)
 {
   TObjectList::SetCount(Value/*+HiddenCount*/);
@@ -189,6 +193,3 @@ intptr_t TNamedObjectList::GetCountIncludingHidden() const
   DebugAssert(FHiddenCount >= 0);
   return TObjectList::GetCount();
 }
-
-NB_IMPLEMENT_CLASS(TNamedObject, NB_GET_CLASS_INFO(TPersistent), nullptr)
-

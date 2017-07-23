@@ -82,8 +82,7 @@ void *res_name_from_filename(const char *file, int global, apr_pool_t *pool);
 
 #define APR_FILE_MAX MAX_PATH
 
-// #define APR_FILE_DEFAULT_BUFSIZE 4096
-#define APR_FILE_DEFAULT_BUFSIZE 64 * 1024
+#define APR_FILE_DEFAULT_BUFSIZE 4096
 /* For backwards-compat */
 #define APR_FILE_BUFSIZE APR_FILE_DEFAULT_BUFSIZE
 

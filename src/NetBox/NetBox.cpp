@@ -3,11 +3,12 @@
 
 #include <Common.h>
 #include <Sysutils.hpp>
-#include <MsgIDs.h>
 
-#include "FarUtil.h"
-#include "resource.h"
+#include "FarUtils.h"
+#include "FarDialog.h"
 
+extern void InitExtensionModule(HINSTANCE HInst);
+extern void TermExtensionModule();
 extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 
 class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
@@ -59,6 +60,20 @@ int WINAPI ConfigureW(int item)
 
 HANDLE WINAPI OpenPluginW(int openFrom, intptr_t item)
 {
+  SELF_TEST(
+    UnicodeString Text = L"text, text text, text text1\ntext text text, text text2\n";
+    TStringList Lines;
+    Lines.SetCommaText(Text);
+    assert(Lines.GetCount() == 5);
+
+    UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
+    UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
+    Instructions2 = ReplaceStrAll(Instructions2, L"\x0A\x0D", L"\x01");
+    Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
+    Instructions2 = ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
+    Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
+    assert(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
+  )
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
   return FarPlugin->OpenPlugin(openFrom, item);
@@ -188,7 +203,7 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const uint8_t * fileHead
     return INVALID_HANDLE_VALUE;
   }
   HANDLE Handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(OPEN_ANALYSE,
-    reinterpret_cast<intptr_t>(fileName)));
+    ToInt(fileName)));
   return Handle;
 }
 

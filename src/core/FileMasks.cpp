@@ -31,40 +31,40 @@ static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeStrin
   {
     switch (Mask[Index])
     {
-      case L'\\':
-        if (!Delim)
-        {
-          Delim = true;
-          Masked = true;
-        }
-        break;
+    case L'\\':
+      if (!Delim)
+      {
+        Delim = true;
+        Masked = true;
+      }
+      break;
 
-      case L'*':
-        if (!Delim)
-        {
-          Result += Part.SubString(RestStart, Part.Length() - RestStart + 1);
-          RestStart = Part.Length() + 1;
-          Masked = true;
-        }
-        break;
+    case L'*':
+      if (!Delim)
+      {
+        Result += Part.SubString(RestStart, Part.Length() - RestStart + 1);
+        RestStart = Part.Length() + 1;
+        Masked = true;
+      }
+      break;
 
-      case L'?':
-        if (!Delim)
+    case L'?':
+      if (!Delim)
+      {
+        if (RestStart <= Part.Length())
         {
-          if (RestStart <= Part.Length())
-          {
-            Result += Part[RestStart];
-            RestStart++;
-          }
-          Masked = true;
+          Result += Part[RestStart];
+          RestStart++;
         }
-        break;
+        Masked = true;
+      }
+      break;
 
-      default:
-        Result += Mask[Index];
-        RestStart++;
-        Delim = false;
-        break;
+    default:
+      Result += Mask[Index];
+      RestStart++;
+      Delim = false;
+      break;
     }
   }
   return Result;
@@ -328,34 +328,34 @@ bool TFileMasks::MatchesMasks(const UnicodeString & AFileName, bool Directory,
 
       switch (Mask.HighSizeMask)
       {
-        case TMask::None:
-          Result = true;
-          break;
+      case TMask::None:
+        Result = true;
+        break;
 
-        case TMask::Open:
-          Result = HasSize && (Params->Size < Mask.HighSize);
-          break;
+      case TMask::Open:
+        Result = HasSize && (Params->Size < Mask.HighSize);
+        break;
 
-        case TMask::Close:
-          Result = HasSize && (Params->Size <= Mask.HighSize);
-          break;
+      case TMask::Close:
+        Result = HasSize && (Params->Size <= Mask.HighSize);
+        break;
       }
 
       if (Result)
       {
         switch (Mask.LowSizeMask)
         {
-          case TMask::None:
-            Result = true;
-            break;
+        case TMask::None:
+          Result = true;
+          break;
 
-          case TMask::Open:
-            Result = HasSize && (Params->Size > Mask.LowSize);
-            break;
+        case TMask::Open:
+          Result = HasSize && (Params->Size > Mask.LowSize);
+          break;
 
-          case TMask::Close:
-            Result = HasSize && (Params->Size >= Mask.LowSize); //-V595
-            break;
+        case TMask::Close:
+          Result = HasSize && (Params->Size >= Mask.LowSize); //-V595
+          break;
         }
       }
 
@@ -365,17 +365,17 @@ bool TFileMasks::MatchesMasks(const UnicodeString & AFileName, bool Directory,
       {
         switch (Mask.HighModificationMask)
         {
-          case TMask::None:
-            Result = true;
-            break;
+        case TMask::None:
+          Result = true;
+          break;
 
-          case TMask::Open:
-            Result = HasModification && (Params->Modification < Mask.HighModification);
-            break;
+        case TMask::Open:
+          Result = HasModification && (Params->Modification < Mask.HighModification);
+          break;
 
-          case TMask::Close:
-            Result = HasModification && (Params->Modification <= Mask.HighModification);
-            break;
+        case TMask::Close:
+          Result = HasModification && (Params->Modification <= Mask.HighModification);
+          break;
         }
       }
 
@@ -383,17 +383,17 @@ bool TFileMasks::MatchesMasks(const UnicodeString & AFileName, bool Directory,
       {
         switch (Mask.LowModificationMask)
         {
-          case TMask::None:
-            Result = true;
-            break;
+        case TMask::None:
+          Result = true;
+          break;
 
-          case TMask::Open:
-            Result = HasModification && (Params->Modification > Mask.LowModification);
-            break;
+        case TMask::Open:
+          Result = HasModification && (Params->Modification > Mask.LowModification);
+          break;
 
-          case TMask::Close:
-            Result = HasModification && (Params->Modification >= Mask.LowModification);
-            break;
+        case TMask::Close:
+          Result = HasModification && (Params->Modification >= Mask.LowModification);
+          break;
         }
       }
     }
@@ -588,7 +588,7 @@ void TFileMasks::CreateMask(
 
       TDateTime Modification;
       if (TryStrToDateTime(PartStr, Modification, FormatSettings) ||
-          TryRelativeStrToDateTime(PartStr, Modification, false))
+        TryRelativeStrToDateTime(PartStr, Modification, false))
       {
         TMask::TMaskBoundary & ModificationMask =
           (Low ? Mask.LowModificationMask : Mask.HighModificationMask);
@@ -729,30 +729,30 @@ void TFileMasks::SetMask(const UnicodeString & Mask)
   SetStr(Mask, true);
 }
 
-void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
+void TFileMasks::SetStr(const UnicodeString & Value, bool SingleMask)
 {
   UnicodeString Backup = FStr;
   try
   {
-    FStr = Str;
+    FStr = Value;
     Clear();
 
     intptr_t NextMaskFrom = 1;
     bool Include = true;
-    while (NextMaskFrom <= Str.Length())
+    while (NextMaskFrom <= Value.Length())
     {
       intptr_t MaskStart = NextMaskFrom;
       wchar_t NextMaskDelimiter;
       UnicodeString MaskStr;
       if (SingleMask)
       {
-        MaskStr = Str;
-        NextMaskFrom = Str.Length() + 1;
+        MaskStr = Value;
+        NextMaskFrom = Value.Length() + 1;
         NextMaskDelimiter = L'\0';
       }
       else
       {
-        MaskStr = CopyToChars(Str, NextMaskFrom, ALL_FILE_MASKS_DELIMITERS, false, &NextMaskDelimiter, true);
+        MaskStr = CopyToChars(Value, NextMaskFrom, ALL_FILE_MASKS_DELIMITERS, false, &NextMaskDelimiter, true);
       }
       intptr_t MaskEnd = NextMaskFrom - 2;
 
@@ -771,7 +771,7 @@ void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
         }
         else
         {
-          ThrowError(NextMaskFrom - 1, Str.Length());
+          ThrowError(NextMaskFrom - 1, Value.Length());
         }
       }
     }
@@ -911,9 +911,9 @@ UnicodeString TCustomCommand::Complete(const UnicodeString & Command,
       wchar_t Quote = NoQuote;
       UnicodeString Quotes(CONST_QUOTES);
       if ((Index > 1) && (Index + Len - 1 < Command.Length()) &&
-          Command.IsDelimiter(Quotes, Index - 1) &&
-          Command.IsDelimiter(Quotes, Index + Len) &&
-          (Command[Index - 1] == Command[Index + Len]))
+        Command.IsDelimiter(Quotes, Index - 1) &&
+        Command.IsDelimiter(Quotes, Index + Len) &&
+        (Command[Index - 1] == Command[Index + Len]))
       {
         Quote = Command[Index - 1];
       }
@@ -984,8 +984,8 @@ bool TCustomCommand::FindPattern(const UnicodeString & Command,
     wchar_t APatternCmd;
     GetToken(Command, Index, Len, APatternCmd);
     if (((PatternCmd != L'!') && (tolower(PatternCmd) == tolower(APatternCmd))) ||
-        ((PatternCmd == L'!') && (Len == 1) && (APatternCmd != TEXT_TOKEN)) ||
-        ((PatternCmd == L'\0') && (APatternCmd != TEXT_TOKEN)))
+      ((PatternCmd == L'!') && (Len == 1) && (APatternCmd != TEXT_TOKEN)) ||
+      ((PatternCmd == L'\0') && (APatternCmd != TEXT_TOKEN)))
     {
       Result = true;
     }
@@ -1031,7 +1031,7 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, in
   wchar_t PatternCmd = (Index < Command.Length()) ? Command[Index + 1] : L'\0';
   switch (PatternCmd)
   {
-    case L'?':
+  case L'?':
     {
       const wchar_t * Ptr = Command.c_str() + Index - 1;
       const wchar_t * PatternEnd = wcschr(Ptr + 1, L'!');
@@ -1043,7 +1043,7 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, in
     }
     break;
 
-    case L'`':
+  case L'`':
     {
       const wchar_t * Ptr = Command.c_str() + Index - 1;
       const wchar_t * PatternEnd = wcschr(Ptr + 2, L'`');
@@ -1055,9 +1055,9 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, in
     }
     break;
 
-    default:
-      Len = FChildCustomCommand->PatternLen(Command, Index);
-      break;
+  default:
+    Len = FChildCustomCommand->PatternLen(Command, Index);
+    break;
   }
   return Len;
 }
@@ -1129,11 +1129,10 @@ TCustomCommandData::TCustomCommandData(const TCustomCommandData & Data)
   this->operator=(Data);
 }
 
-//---------------------------------------------------------------------------
 TCustomCommandData::TCustomCommandData(TTerminal * Terminal)
 {
   Init(Terminal->GetSessionData(), Terminal->TerminalGetUserName(), Terminal->GetPassword(),
-    Terminal->GetSessionInfo().HostKeyFingerprint);
+       Terminal->GetSessionInfo().HostKeyFingerprint);
 }
 
 TCustomCommandData::TCustomCommandData(
@@ -1194,23 +1193,23 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
 intptr_t TFileCustomCommand::PatternLen(const UnicodeString & Command, intptr_t Index) const
 {
   intptr_t Len;
-  wchar_t PatternCmd = (Index < Command.Length()) ? tolower(Command[Index + 1]) : L'\0';
+  wchar_t PatternCmd = (Index < Command.Length()) ? (wchar_t)::tolower(Command[Index + 1]) : L'\0';
   switch (PatternCmd)
   {
-    case L's':
-    case L'@':
-    case L'u':
-    case L'p':
-    case L'#':
-    case L'/':
-    case L'&':
-    case L'n':
-      Len = 2;
-      break;
+  case L's':
+  case L'@':
+  case L'u':
+  case L'p':
+  case L'#':
+  case L'/':
+  case L'&':
+  case L'n':
+    Len = 2;
+    break;
 
-    default:
-      Len = 1;
-      break;
+  default:
+    Len = 1;
+    break;
   }
   return Len;
 }
@@ -1267,7 +1266,7 @@ bool TFileCustomCommand::PatternReplacement(
 
 void TFileCustomCommand::Validate(const UnicodeString & Command)
 {
-  intptr_t Found[2] = { 0, 0 };
+  intptr_t Found[2] = {0, 0};
   CustomValidate(Command, &Found);
   if ((Found[0] > 0) && (Found[1] > 0))
   {

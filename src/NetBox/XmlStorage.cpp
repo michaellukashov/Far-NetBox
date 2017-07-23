@@ -2,8 +2,7 @@
 #include <Classes.hpp>
 #include <Common.h>
 #include "XmlStorage.h"
-#include "TextsCore.h"
-#include "FarUtil.h"
+#include "FarUtils.h"
 
 static const char * CONST_XML_VERSION21 = "2.1";
 static const char * CONST_ROOT_NODE = "NetBox";
@@ -112,18 +111,18 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
   THierarchicalStorage::SetAccessMode(Value);
   switch (GetAccessMode())
   {
-    case smRead:
-      ReadXml();
-      break;
+  case smRead:
+    ReadXml();
+    break;
 
-    case smReadWrite:
-    default:
-      FXmlDoc->LinkEndChild(FXmlDoc->NewDeclaration());
-      DebugAssert(FCurrentElement == nullptr);
-      FCurrentElement = FXmlDoc->NewElement(CONST_ROOT_NODE);
-      FCurrentElement->SetAttribute(CONST_VERSION_ATTR, CONST_XML_VERSION21);
-      FXmlDoc->LinkEndChild(FCurrentElement);
-      break;
+  case smReadWrite:
+  default:
+    FXmlDoc->LinkEndChild(FXmlDoc->NewDeclaration());
+    DebugAssert(FCurrentElement == nullptr);
+    FCurrentElement = FXmlDoc->NewElement(CONST_ROOT_NODE);
+    FCurrentElement->SetAttribute(CONST_VERSION_ATTR, CONST_XML_VERSION21);
+    FXmlDoc->LinkEndChild(FCurrentElement);
+    break;
   }
 }
 

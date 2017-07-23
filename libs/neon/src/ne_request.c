@@ -189,6 +189,7 @@ static int aborted(ne_request *req, const char *doing, ssize_t code)
     ne_session *sess = req->session;
     NE_DEBUG_WINSCP_CONTEXT(sess);
     int ret = NE_ERROR;
+    const char *err = NULL;
 
     NE_DEBUG(NE_DBG_HTTP, "Aborted request (%" NE_FMT_SSIZE_T "): %s\n",
 	     code, doing);
@@ -210,7 +211,11 @@ static int aborted(ne_request *req, const char *doing, ssize_t code)
     case NE_SOCK_ERROR:
     case NE_SOCK_RESET:
     case NE_SOCK_TRUNC:
-        ne_set_error(sess, "%s: %s", doing, ne_sock_error(sess->socket));
+        err = ne_sock_error(sess->socket);
+        if (err && *err)
+          ne_set_error(sess, "%s: %s", doing, err);
+        else
+          ne_set_error(sess, "%s", doing);
         break;
     case 0:
 	ne_set_error(sess, "%s", doing);
@@ -281,7 +286,7 @@ static ssize_t body_string_send(void *userdata, char *buffer, size_t count)
 	req->body.buf.remain -= count;
     }
 
-    return count;
+    return (int)count;
 }    
 
 static ssize_t body_fd_send(void *userdata, char *buffer, size_t count)
@@ -300,7 +305,7 @@ static ssize_t body_fd_send(void *userdata, char *buffer, size_t count)
         if ((ne_off_t)count > req->body.file.remain)
             count = (size_t)req->body.file.remain;
         
-        ret = read(req->body.file.fd, buffer, count);
+        ret = read(req->body.file.fd, buffer, (unsigned int)count);
         if (ret > 0) {
             req->body.file.remain -= ret;
             return ret;
@@ -823,7 +828,7 @@ static int read_response_block(ne_request *req, struct ne_response *resp,
 
             /* Read the chunk size line into a temporary buffer. */
             SOCK_ERR(req,
-                     ne_sock_readline(sock, req->respbuf, sizeof req->respbuf),
+                     ne_sock_readline(sock, req->respbuf, sizeof(req->respbuf) - 1),
                      _("Could not read chunk size"));
             NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "[chunk] < %s", req->respbuf);
             chunk_len = strtoul(req->respbuf, &ptr, 16);
@@ -917,7 +922,7 @@ ssize_t ne_read_response_block(ne_request *req, char *buffer, size_t buflen)
         }
     }
     
-    return readlen;
+    return (int)readlen;
 }
 
 /* Build the request string, returning the buffer. */
@@ -999,7 +1004,7 @@ static int read_status_line(ne_request *req, ne_status *status, int retry)
     char *buffer = req->respbuf;
     ssize_t ret;
 
-    ret = ne_sock_readline(req->session->socket, buffer, sizeof req->respbuf);
+    ret = ne_sock_readline(req->session->socket, buffer, sizeof(req->respbuf) - 1);
     if (ret <= 0) {
 	int aret = aborted(req, _("Could not read status line"), ret);
 	return RETRY_RET(retry, ret, aret);
@@ -1035,7 +1040,7 @@ static int discard_headers(ne_request *req)
     NE_DEBUG_WINSCP_CONTEXT(req->session);
     do {
 	SOCK_ERR(req, ne_sock_readline(req->session->socket, req->respbuf, 
-				       sizeof req->respbuf),
+							 sizeof(req->respbuf) - 1),
 		 _("Could not read interim response headers"));
 	NE_DEBUG(NE_DBG_HTTP, "[discard] < %s", req->respbuf);
     } while (strcmp(req->respbuf, EOL) != 0);
@@ -1210,7 +1215,7 @@ static int read_response_headers(ne_request *req)
     char hdr[MAX_HEADER_LEN];
     int ret, count = 0;
     
-    while ((ret = read_message_header(req, hdr, sizeof hdr)) == NE_RETRY 
+    while ((ret = read_message_header(req, hdr, sizeof(hdr) - 1)) == NE_RETRY
 	   && ++count < MAX_HEADER_FIELDS) {
 	char *pnt;
 	unsigned int hash = 0;

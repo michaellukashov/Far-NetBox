@@ -1,19 +1,11 @@
 
 #include "stdafx.h"
 
-#include <Common.h>
-
 #include "FileZillaIntf.h"
 #include "FileZillaIntern.h"
 #include "FzApiStructures.h"
 #include "FileZillaApi.h"
 #include "structures.h"
-
-#ifndef _DEBUG
-#pragma comment(lib, "uafxcw.lib")
-#else
-#pragma comment(lib, "uafxcwd.lib")
-#endif
 
 static HMODULE winsock_module = NULL;
 #ifndef NO_IPV6
@@ -130,14 +122,14 @@ bool TFileZillaIntf::SetCurrentPath(const wchar_t * APath)
   return Check(FFileZillaApi->SetCurrentPath(Path), L"setcurrentpath");
 }
 
-bool TFileZillaIntf::GetCurrentPath(wchar_t * Path, size_t MaxLen)
+bool TFileZillaIntf::GetCurrentPath(wchar_t * APath, size_t MaxLen)
 {
-  CServerPath APath;
-  bool Result = Check(FFileZillaApi->GetCurrentPath(APath), L"getcurrentpath");
+  CServerPath ServerPath;
+  bool Result = Check(FFileZillaApi->GetCurrentPath(ServerPath), L"getcurrentpath");
   if (Result)
   {
-    wcsncpy(Path, APath.GetPath(), MaxLen);
-    Path[MaxLen - 1] = L'\0';
+    wcsncpy(APath, ServerPath.GetPath(), MaxLen);
+    APath[MaxLen - 1] = L'\0';
   }
   return Result;
 }
@@ -303,7 +295,7 @@ void TFileZillaIntf::SetDebugLevel(TLogLevel Level)
   FIntern->SetDebugLevel(Level - LOG_APIERROR + 1);
 }
 
-bool TFileZillaIntf::PostMessage(WPARAM wParam, LPARAM lParam)
+bool TFileZillaIntf::FZPostMessage(WPARAM wParam, LPARAM lParam)
 {
   unsigned int MessageID = FZ_MSG_ID(wParam);
   TMessageType Type;
@@ -523,7 +515,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         if (Status != NULL)
         {
           Result = HandleTransferStatus(
-            true, Status->transfersize, Status->bytes, Status->bFileTransfer);
+            true, Status->transfersize, Status->bytes, Status->bFileTransfer != FALSE);
           delete Status;
         }
         else

@@ -49,7 +49,7 @@ const int cpaNoRemoveCtrlZ      = 0x200;
 const int cpaNoRemoveBOM        = 0x400;
 const int cpaNoPreserveTimeDirs = 0x800;
 const int cpaNoResumeSupport    = 0x1000;
-//---------------------------------------------------------------------------
+
 struct TUsableCopyParamAttrs
 {
   int General;
@@ -57,9 +57,15 @@ struct TUsableCopyParamAttrs
   int Download;
 };
 
-class TCopyParamType : public TObject
+class NB_CORE_EXPORT TCopyParamType : public TObject
 {
-NB_DECLARE_CLASS(TCopyParamType)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCopyParamType ||
+      Obj->GetKind() == OBJECT_CLASS_TGUICopyParamType;
+  }
 private:
   TFileMasks FAsciiFileMask;
   TFileNameCase FFileNameCase;
@@ -97,7 +103,7 @@ public:
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(const UnicodeString & AFileName) const;
-  void DoGetInfoStr(const UnicodeString & Separator, intptr_t Attrs,
+  void DoGetInfoStr(const UnicodeString & Separator, intptr_t Options,
     UnicodeString & Result, bool & SomeAttrIncluded,
     const UnicodeString & Link, UnicodeString & ScriptArgs, bool & NoScriptArgs,
     /*TAssemblyLanguage Language, UnicodeString & AssemblyCode, */bool & NoCodeProperties) const;
@@ -107,7 +113,7 @@ public:
   void SetTransferResumeFile(const UnicodeString & Value) { FTransferResumeFile = Value; }
 
 public:
-  TCopyParamType();
+  explicit TCopyParamType(TObjectClassId Kind = OBJECT_CLASS_TCopyParamType);
   TCopyParamType(const TCopyParamType & Source);
   virtual ~TCopyParamType();
   TCopyParamType & operator =(const TCopyParamType & rhs);
@@ -131,9 +137,8 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
   UnicodeString GetInfoStr(const UnicodeString & Separator, intptr_t Options) const;
-  bool AnyUsableCopyParam(intptr_t Attrs) const;
-  UnicodeString GenerateTransferCommandArgs(
-    int Attrs, const UnicodeString & Link, bool & NoScriptArgs) const;
+  bool AnyUsableCopyParam(intptr_t Options) const;
+  UnicodeString GenerateTransferCommandArgs(intptr_t Options, const UnicodeString & Link, bool & NoScriptArgs) const;
   //UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs, bool & NoCodeProperties) const;
 
   bool operator==(const TCopyParamType & rhp) const;
@@ -214,6 +219,6 @@ public:
 
 };
 
-uintptr_t GetSpeedLimit(const UnicodeString & Text);
-UnicodeString SetSpeedLimit(uintptr_t Limit);
-void CopySpeedLimits(TStrings * Source, TStrings * Dest);
+NB_CORE_EXPORT uintptr_t GetSpeedLimit(const UnicodeString & Text);
+NB_CORE_EXPORT UnicodeString SetSpeedLimit(uintptr_t Limit);
+NB_CORE_EXPORT void CopySpeedLimits(TStrings * Source, TStrings * Dest);

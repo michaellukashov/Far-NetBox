@@ -2,8 +2,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <neon/src/ne_auth.h>
-#include <neon/src/ne_redirect.h>
+#include <ne_redirect.h>
+#include <ne_auth.h>
 
 #include "NeonIntf.h"
 #include "Interface.h"
@@ -38,6 +38,7 @@ bool IsTlsUri(const ne_uri & uri)
 
 struct TProxyAuthData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   UnicodeString UserName;
   UnicodeString Password;
 };
@@ -66,7 +67,7 @@ static int NeonProxyAuth(
 
 ne_session * CreateNeonSession(
   const ne_uri & uri, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
-  int ProxyPort, const UnicodeString & ProxyUsername, const UnicodeString & ProxyPassword)
+  intptr_t ProxyPort, const UnicodeString & ProxyUsername, const UnicodeString & ProxyPassword)
 {
   ne_session * Session = ne_session_create(uri.scheme, uri.host, uri.port);
 
@@ -75,11 +76,11 @@ ne_session * CreateNeonSession(
     if ((ProxyMethod == pmSocks4) || (ProxyMethod == pmSocks5))
     {
       enum ne_sock_sversion vers = (ProxyMethod == pmSocks4) ? NE_SOCK_SOCKSV4A : NE_SOCK_SOCKSV5;
-      ne_session_socks_proxy(Session, vers, StrToNeon(ProxyHost), ProxyPort, StrToNeon(ProxyUsername), StrToNeon(ProxyPassword));
+      ne_session_socks_proxy(Session, vers, StrToNeon(ProxyHost), (int)ProxyPort, StrToNeon(ProxyUsername), StrToNeon(ProxyPassword));
     }
     else if (!ProxyHost.IsEmpty())
     {
-      ne_session_proxy(Session, StrToNeon(ProxyHost), ProxyPort);
+      ne_session_proxy(Session, StrToNeon(ProxyHost), (int)ProxyPort);
 
       if (!ProxyUsername.IsEmpty())
       {
@@ -122,7 +123,7 @@ UnicodeString GetNeonError(ne_session * Session)
 }
 
 void CheckNeonStatus(ne_session * Session, int NeonStatus,
-  const UnicodeString & HostName, const UnicodeString & CustomError)
+  const UnicodeString & AHostName, const UnicodeString & CustomError)
 {
   if (NeonStatus == NE_OK)
   {
@@ -140,47 +141,47 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
     {
       switch (NeonStatus)
       {
-        case NE_ERROR:
-          // noop
-          DebugAssert(!NeonError.IsEmpty());
-          Error = NeonError;
-          NeonError = L"";
-          break;
+      case NE_ERROR:
+        // noop
+        DebugAssert(!NeonError.IsEmpty());
+        Error = NeonError;
+        NeonError = L"";
+        break;
 
-        case NE_LOOKUP:
-          Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), L"%HOST%", HostName);
-          break;
+      case NE_LOOKUP:
+        Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), L"%HOST%", AHostName);
+        break;
 
-        case NE_AUTH:
-          Error = LoadStr(AUTHENTICATION_FAILED);
-          break;
+      case NE_AUTH:
+        Error = LoadStr(AUTHENTICATION_FAILED);
+        break;
 
-        case NE_PROXYAUTH:
-          Error = LoadStr(PROXY_AUTHENTICATION_FAILED);
-          break;
+      case NE_PROXYAUTH:
+        Error = LoadStr(PROXY_AUTHENTICATION_FAILED);
+        break;
 
-        case NE_CONNECT:
-          Error = LoadStr(CONNECTION_FAILED);
-          break;
+      case NE_CONNECT:
+        Error = LoadStr(CONNECTION_FAILED);
+        break;
 
-        case NE_TIMEOUT:
-          Error = ReplaceStr(LoadStr(NET_TRANSL_TIMEOUT2), L"%HOST%", HostName);
-          break;
+      case NE_TIMEOUT:
+        Error = ReplaceStr(LoadStr(NET_TRANSL_TIMEOUT2), L"%HOST%", AHostName);
+        break;
 
-        case NE_REDIRECT:
-          {
-            char * Uri = ne_uri_unparse(ne_redirect_location(Session));
-            Error = FMTLOAD(REQUEST_REDIRECTED, Uri);
-            ne_free(Uri);
-          }
-          break;
+      case NE_REDIRECT:
+        {
+          char* Uri = ne_uri_unparse(ne_redirect_location(Session));
+          Error = FMTLOAD(REQUEST_REDIRECTED, Uri);
+          ne_free(Uri);
+        }
+        break;
 
-        case NE_FAILED: // never used by neon as of 0.30.0
-        case NE_RETRY: // not sure if this is a public API
-        default:
-          DebugFail();
-          Error = FORMAT(L"Unexpected neon error %d", NeonStatus);
-          break;
+      case NE_FAILED: // never used by neon as of 0.30.0
+      case NE_RETRY: // not sure if this is a public API
+      default:
+        DebugFail();
+        Error = FORMAT(L"Unexpected neon error %d", NeonStatus);
+        break;
       }
     }
 
@@ -233,7 +234,7 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 
 void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit)
 {
-  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, OnNeonTlsInit);
+  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, (void*)OnNeonTlsInit);
 }
 
 AnsiString NeonExportCertificate(const ne_ssl_certificate * Certificate)
@@ -260,8 +261,9 @@ bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert
         Failures &= ~NE_SSL_UNTRUSTED;
         Result = true;
       }
-      ne_free(Certificate);
     }
+    if (Certificate)
+      ne_free(Certificate);
   }
   return Result;
 }

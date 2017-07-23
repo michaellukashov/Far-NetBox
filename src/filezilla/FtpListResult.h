@@ -25,6 +25,7 @@ CRLF pairs and other variants.
 */
 
 #include "ApiLog.h"
+#include "FzApiStructures.h"
 
 class CFtpListResult : public CApiLog
 {
@@ -32,7 +33,7 @@ public:
   t_server m_server;
   void SendToMessageLog();
   void AddData(char * data, int size);
-  CFtpListResult(t_server server, bool * bUTF8 = 0, int * nCodePage = 0);
+  CFtpListResult(t_server & server, bool * bUTF8 = 0, int * nCodePage = 0);
   virtual ~CFtpListResult();
   t_directory::t_direntry * getList(int & num, bool mlst);
 
@@ -63,8 +64,9 @@ private:
   bool parseMlsdDateTime(const CString value, t_directory::t_direntry::t_date & date) const;
 
   int pos;
-  struct t_list : public TObject
+  struct t_list // : public TObject
   {
+  CUSTOM_MEM_ALLOCATION_IMPL
     char * buffer;
     int len;
     t_list * next;

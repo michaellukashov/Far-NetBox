@@ -1,5 +1,6 @@
 
 #include "stdafx.h"
+#include "afxdll.h"
 #include "MainThread.h"
 
 #define ECS m_CriticalSection.Lock()
@@ -150,9 +151,9 @@ BOOL CMainThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
     else if (wParam==FZAPI_THREADMSG_PROCESSREPLY)
       m_pControlSocket->ProcessReply();
     else if (wParam==FZAPI_THREADMSG_TRANSFEREND)
-      m_pControlSocket->TransferEnd(lParam);
+      m_pControlSocket->TransferEnd((int)lParam);
     else if (wParam==FZAPI_THREADMSG_CANCEL)
-      m_pControlSocket->Cancel(lParam);
+      m_pControlSocket->Cancel((BOOL)lParam);
     else if (wParam==FZAPI_THREADMSG_DISCONNECT)
       m_pControlSocket->Disconnect();
     else if (wParam==FZAPI_THREADMSG_POSTKEEPALIVE)
@@ -208,7 +209,7 @@ void CMainThread::Command(const t_command &command)
   m_bBusy=TRUE;
   t_command *pCommand=new t_command;
   *pCommand=command;
-  DebugCheck(PostThreadMessage(m_nInternalMessageID,FZAPI_THREADMSG_COMMAND,(LPARAM)pCommand));
+  DebugCheck(PostThreadMessage(m_nInternalMessageID,FZAPI_THREADMSG_COMMAND,(LPARAM)pCommand) != FALSE);
   m_LastCommand=command;
   LCS;
 }
@@ -356,7 +357,7 @@ void CMainThread::SetWorkingDir(t_directory *pWorkingDir)
 
 void CMainThread::SendDirectoryListing(t_directory * pDirectoryToSend)
 {
-  if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_LISTDATA, 0), (LPARAM)pDirectoryToSend))
+  if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_LISTDATA, 0), (LPARAM)pDirectoryToSend))
   {
     delete pDirectoryToSend;
   }

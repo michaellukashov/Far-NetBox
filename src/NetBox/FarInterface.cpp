@@ -3,7 +3,6 @@
 
 #include <Common.h>
 #include <Queue.h>
-#include <MsgIDs.h>
 
 #include "CoreMain.h"
 #include "FarConfiguration.h"
@@ -19,7 +18,7 @@ TConfiguration * CreateConfiguration()
 void ShowExtendedException(Exception * E)
 {
   DebugAssert(FarPlugin != nullptr);
-  TWinSCPPlugin * WinSCPPlugin = NB_STATIC_DOWNCAST(TWinSCPPlugin, FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
   DebugAssert(WinSCPPlugin != nullptr);
   WinSCPPlugin->ShowExtendedException(E);
 }
@@ -46,7 +45,7 @@ UnicodeString GetSshVersionString()
 
 DWORD WINAPI threadstartroutine(void * Parameter)
 {
-  TSimpleThread * SimpleThread = NB_STATIC_DOWNCAST(TSimpleThread, Parameter);
+  TSimpleThread * SimpleThread = get_as<TSimpleThread>(Parameter);
   return TSimpleThread::ThreadProc(SimpleThread);
 }
 

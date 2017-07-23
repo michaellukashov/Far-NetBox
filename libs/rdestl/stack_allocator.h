@@ -21,14 +21,14 @@ public:
 		/**/
 	}
 
-	void* allocate(size_t bytes, int /*flags*/ = 0)
+	void* allocate(::size_t bytes, int /*flags*/ = 0)
 	{
 		RDE_ASSERT(m_bufferTop + bytes <= TBytes);
 		char* ret = &m_buffer[0] + m_bufferTop;
 		m_bufferTop += bytes;
 		return ret;
 	}
-	void deallocate(void* ptr, size_t /*bytes*/)
+	void deallocate(void* ptr, ::size_t /*bytes*/)
 	{
 		RDE_ASSERT(ptr == 0 || (ptr >= &m_buffer[0] && ptr < &m_buffer[TBytes]));
 		sizeof(ptr);
@@ -42,7 +42,7 @@ private:
 
 	const char*	m_name;
 	char		m_buffer[TBytes];
-	size_t		m_bufferTop;
+	::size_t		m_bufferTop;
 };
 
 } // namespace rde

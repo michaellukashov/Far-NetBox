@@ -258,7 +258,7 @@ int ne_post(ne_session *sess, const char *uri, int fd, const char *buffer)
 int ne_get_content_type(ne_request *req, ne_content_type *ct)
 {
     const char *value;
-    char *sep, *stype;
+    char *sep = NULL, *stype;
 
     value = ne_get_response_header(req, "Content-Type");
     if (value == NULL || strchr(value, '/') == NULL) {
@@ -269,11 +269,11 @@ int ne_get_content_type(ne_request *req, ne_content_type *ct)
     
     stype = strchr(ct->value, '/');
 
-    *stype++ = '\0';
+    if (stype) *stype++ = '\0';
     ct->type = ct->value;
     ct->charset = NULL;
     
-    sep = strchr(stype, ';');
+    if (stype) sep = strchr(stype, ';');
 
     if (sep) {
 	char *tok;

@@ -109,50 +109,51 @@ enum TSessionUrlFlags
   sufOpen = sufUserName | sufPassword,
 };
 
-extern const UnicodeString CipherNames[CIPHER_COUNT];
-extern const UnicodeString KexNames[KEX_COUNT];
-extern const wchar_t SshProtList[][10];
-extern const TCipher DefaultCipherList[CIPHER_COUNT];
-extern const TKex DefaultKexList[KEX_COUNT];
-extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][16];
-extern const intptr_t DefaultSendBuf;
+NB_CORE_EXPORT extern const UnicodeString CipherNames[CIPHER_COUNT];
+NB_CORE_EXPORT extern const UnicodeString KexNames[KEX_COUNT];
+NB_CORE_EXPORT extern const wchar_t SshProtList[][10];
+NB_CORE_EXPORT extern const TCipher DefaultCipherList[CIPHER_COUNT];
+NB_CORE_EXPORT extern const TKex DefaultKexList[KEX_COUNT];
+NB_CORE_EXPORT extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][16];
+NB_CORE_EXPORT extern const intptr_t DefaultSendBuf;
 #define ANONYMOUS_USER_NAME L"anonymous"
 #define ANONYMOUS_PASSWORD L""
-extern const intptr_t SshPortNumber;
-extern const intptr_t FtpPortNumber;
-extern const intptr_t FtpsImplicitPortNumber;
-extern const intptr_t HTTPPortNumber;
-extern const intptr_t HTTPSPortNumber;
-extern const intptr_t TelnetPortNumber;
-extern const intptr_t ProxyPortNumber;
-extern const UnicodeString PuttySshProtocol;
-extern const UnicodeString PuttyTelnetProtocol;
-extern const UnicodeString SftpProtocol;
-extern const UnicodeString ScpProtocol;
-extern const UnicodeString FtpProtocol;
-extern const UnicodeString FtpsProtocol;
-extern const UnicodeString FtpesProtocol;
+NB_CORE_EXPORT extern const intptr_t SshPortNumber;
+NB_CORE_EXPORT extern const intptr_t FtpPortNumber;
+NB_CORE_EXPORT extern const intptr_t FtpsImplicitPortNumber;
+NB_CORE_EXPORT extern const intptr_t HTTPPortNumber;
+NB_CORE_EXPORT extern const intptr_t HTTPSPortNumber;
+NB_CORE_EXPORT extern const intptr_t TelnetPortNumber;
+NB_CORE_EXPORT extern const intptr_t ProxyPortNumber;
+NB_CORE_EXPORT extern const UnicodeString PuttySshProtocol;
+NB_CORE_EXPORT extern const UnicodeString PuttyTelnetProtocol;
+NB_CORE_EXPORT extern const UnicodeString SftpProtocol;
+NB_CORE_EXPORT extern const UnicodeString ScpProtocol;
+NB_CORE_EXPORT extern const UnicodeString FtpProtocol;
+NB_CORE_EXPORT extern const UnicodeString FtpsProtocol;
+NB_CORE_EXPORT extern const UnicodeString FtpesProtocol;
 #define WebDAVProtocol HttpProtocol
 #define WebDAVSProtocol HttpsProtocol
-extern const UnicodeString SshProtocol;
+NB_CORE_EXPORT extern const UnicodeString SshProtocol;
 //#define ProtocolSeparator L"://"
 //#define WinSCPProtocolPrefix L"winscp-"
-extern const wchar_t UrlParamSeparator;
-extern const wchar_t UrlParamValueSeparator;
+NB_CORE_EXPORT extern const wchar_t UrlParamSeparator;
+NB_CORE_EXPORT extern const wchar_t UrlParamValueSeparator;
 //#define UrlHostKeyParamName L"fingerprint"
 //#define UrlSaveParamName L"save"
 //#define PassphraseOption L"passphrase"
 
-extern const intptr_t SFTPMinVersion;
-extern const intptr_t SFTPMaxVersion;
+NB_CORE_EXPORT extern const intptr_t SFTPMinVersion;
+NB_CORE_EXPORT extern const intptr_t SFTPMaxVersion;
 
-struct TIEProxyConfig : public TObject
+struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 {
   TIEProxyConfig() :
     AutoDetect(false),
     ProxyPort(0),
     ProxyMethod(pmNone)
-  {}
+  {
+  }
   bool AutoDetect; // not used
   UnicodeString AutoConfigUrl; // not used
   UnicodeString Proxy; //< string in format "http=host:80;https=host:443;ftp=ftpproxy:20;socks=socksproxy:1080"
@@ -164,12 +165,15 @@ struct TIEProxyConfig : public TObject
 
 class TStoredSessionList;
 
-class TSessionData : public TNamedObject
+class NB_CORE_EXPORT TSessionData : public TNamedObject
 {
 friend class TStoredSessionList;
 NB_DISABLE_COPY(TSessionData)
-NB_DECLARE_CLASS(TSessionData)
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return Obj->GetKind() == OBJECT_CLASS_TSessionData;
+  }
 private:
   UnicodeString FHostName;
   intptr_t FPortNumber;
@@ -310,7 +314,7 @@ public:
   void SetPortNumber(intptr_t Value);
   void SetUserName(const UnicodeString & Value);
   UnicodeString GetUserNameExpanded() const;
-  void SetPassword(const UnicodeString & Value);
+  void SetPassword(const UnicodeString & AValue);
   UnicodeString GetPassword() const;
   void SetPingInterval(intptr_t Value);
   void SetTryAgent(bool Value);
@@ -331,7 +335,7 @@ public:
   TKex GetKex(intptr_t Index) const;
   void SetPublicKeyFile(const UnicodeString & Value);
   UnicodeString GetPassphrase() const;
-  void SetPassphrase(const UnicodeString & Value);
+  void SetPassphrase(const UnicodeString & AValue);
 
   void SetPuttyProtocol(const UnicodeString & Value);
   bool GetCanLogin() const;
@@ -386,7 +390,7 @@ public:
   void SetProxyHost(const UnicodeString & Value);
   void SetProxyPort(intptr_t Value);
   void SetProxyUsername(const UnicodeString & Value);
-  void SetProxyPassword(const UnicodeString & Value);
+  void SetProxyPassword(const UnicodeString & AValue);
   void SetProxyTelnetCommand(const UnicodeString & Value);
   void SetProxyLocalCommand(const UnicodeString & Value);
   void SetProxyDNS(TAutoSwitch Value);
@@ -431,12 +435,12 @@ public:
   void SetTunnelHostName(const UnicodeString & Value);
   void SetTunnelPortNumber(intptr_t Value);
   void SetTunnelUserName(const UnicodeString & Value);
-  void SetTunnelPassword(const UnicodeString & Value);
+  void SetTunnelPassword(const UnicodeString & AValue);
   UnicodeString GetTunnelPassword() const;
   void SetTunnelPublicKeyFile(const UnicodeString & Value);
   void SetTunnelPortFwd(const UnicodeString & Value);
   void SetTunnelLocalPortNumber(intptr_t Value);
-  bool GetTunnelAutoassignLocalPortNumber();
+  bool GetTunnelAutoassignLocalPortNumber() const;
   void SetTunnelHostKey(const UnicodeString & Value);
   void SetFtpPasvMode(bool Value);
   void SetFtpForcePasvIp(TAutoSwitch Value);
@@ -454,7 +458,7 @@ public:
   void SetHostKey(const UnicodeString & Value);
   void SetFingerprintScan(bool Value) { FFingerprintScan = Value; }
   void SetNote(const UnicodeString & Value);
-  TDateTime GetTimeoutDT();
+  TDateTime GetTimeoutDT() const;
   void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport, bool DoNotEncryptPasswords);
   UnicodeString GetLocalName() const;
   UnicodeString GetFolderName() const;
@@ -508,7 +512,7 @@ public:
 public:
   explicit TSessionData(const UnicodeString & AName);
   virtual ~TSessionData();
-  TSessionData * Clone();
+  TSessionData * Clone() const;
   void Default();
   void NonPersistant();
   void Load(THierarchicalStorage * Storage, bool PuttyImport);
@@ -526,21 +530,21 @@ public:
   void CacheHostKeyIfNotCached();
   virtual void Assign(const TPersistent * Source);
   virtual intptr_t Compare(const TNamedObject * Other) const;
-  void CopyData(TSessionData * Source);
+  void CopyData(TSessionData * SourceData);
   void CopyDirectoriesStateData(TSessionData * SourceData);
   bool ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     TStoredSessionList * AStoredSessions, bool & DefaultsOnly,
     UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
   bool ParseOptions(TOptions * Options);
-  void ConfigureTunnel(intptr_t PortNumber);
+  void ConfigureTunnel(intptr_t APortNumber);
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
   bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
   bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const;
-  bool IsSameSite(const TSessionData * Default) const;
-  bool IsInFolderOrWorkspace(const UnicodeString & Name) const;
-  UnicodeString GenerateSessionUrl(uintptr_t Flags);
-  UnicodeString GenerateOpenCommandArgs();
+  bool IsSameSite(const TSessionData * Other) const;
+  bool IsInFolderOrWorkspace(const UnicodeString & AFolder) const;
+  UnicodeString GenerateSessionUrl(uintptr_t Flags) const;
+  UnicodeString GenerateOpenCommandArgs() const;
 //  UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language);
   void LookupLastFingerprint();
   bool GetIsSecure() const;
@@ -751,10 +755,7 @@ public:
   intptr_t GetSendBuf() const { return FSendBuf; }
   bool GetSshSimple() const { return FSshSimple; }
   TProxyMethod GetProxyMethod() const { return FProxyMethod; }
-  TProxyMethod GetActualProxyMethod() const
-  {
-    return GetProxyMethod() == pmSystem ? GetSystemProxyMethod() : GetProxyMethod();
-  }
+  TProxyMethod GetActualProxyMethod() const;
   UnicodeString GetProxyHost() const;
   intptr_t GetProxyPort() const;
   UnicodeString GetProxyUsername() const;
@@ -846,9 +847,15 @@ private:
 
 };
 
-class TStoredSessionList : public TNamedObjectList
+class NB_CORE_EXPORT TStoredSessionList : public TNamedObjectList
 {
 NB_DISABLE_COPY(TStoredSessionList)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TStoredSessionList;
+  }
 public:
   explicit TStoredSessionList(bool AReadOnly = false);
   void Load(const UnicodeString & AKey, bool UseDefaults);
@@ -863,19 +870,18 @@ public:
   void SelectAll(bool Select);
   void Import(TStoredSessionList * From, bool OnlySelected, TList * Imported);
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
-  TSessionData * AtSession(int Index)
-    { return (TSessionData*)AtObject(Index); }
+  TSessionData * AtSession(intptr_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
   void UpdateStaticUsage();
   intptr_t IndexOf(TSessionData * Data) const;
-  const TSessionData * FindSame(TSessionData * Data) const;
+  const TSessionData * FindSame(TSessionData * Data);
   TSessionData * NewSession(const UnicodeString & SessionName, TSessionData * Session);
   void NewWorkspace(const UnicodeString & Name, TList * DataList);
   bool GetIsFolder(const UnicodeString & Name) const;
   bool GetIsWorkspace(const UnicodeString & Name) const;
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
-    UnicodeString * AFileName = nullptr, bool * ProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
+    UnicodeString * AFileName = nullptr, bool * AProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
   bool IsUrl(const UnicodeString & Url);
   bool CanLogin(TSessionData * Data);
   void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);
@@ -888,12 +894,12 @@ public:
   __property TSessionData * Sessions[int Index]  = { read=AtSession };
   __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
 */
-  const TSessionData * GetSession(intptr_t Index) const { return NB_STATIC_DOWNCAST_CONST(TSessionData, AtObject(Index)); }
-  TSessionData * GetSession(intptr_t Index) { return NB_STATIC_DOWNCAST(TSessionData, AtObject(Index)); }
+  const TSessionData * GetSession(intptr_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
+  TSessionData * GetSession(intptr_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
   const TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
   TSessionData * GetDefaultSettings() { return FDefaultSettings; }
-  const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;
   void SetDefaultSettings(const TSessionData * Value);
+  const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;
 
   static void ImportHostKeys(const UnicodeString & TargetKey,
     const UnicodeString & SourceKey, TStoredSessionList * Sessions,
@@ -916,11 +922,11 @@ private:
 //  void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path);
 };
 
-bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
-uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage);
-UnicodeString GetCodePageAsString(uintptr_t CodePage);
+NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
+NB_CORE_EXPORT uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage);
+NB_CORE_EXPORT UnicodeString GetCodePageAsString(uintptr_t CodePage);
 
-UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData);
-bool GetIsSshProtocol(TFSProtocol FSProtocol);
-intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
+NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData);
+NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
+NB_CORE_EXPORT intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 

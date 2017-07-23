@@ -25,10 +25,10 @@ AFX_GLOBAL_DATA::AFX_GLOBAL_DATA()
 
 	::GetVersionEx(&osvi);
 
-	bIsRemoteSession = GetSystemMetrics(SM_REMOTESESSION);
+//	bIsRemoteSession = GetSystemMetrics(SM_REMOTESESSION);
 
 	bIsWindowsVista = (osvi.dwMajorVersion >= 6);
-	bIsWindows7 = (osvi.dwMajorVersion == 6) && (osvi.dwMinorVersion >= 1) || (osvi.dwMajorVersion > 6) ;
+	bIsWindows7 = ((osvi.dwMajorVersion == 6) && (osvi.dwMinorVersion >= 1)) || (osvi.dwMajorVersion > 6);
 	bDisableAero = FALSE;
 
 	// Cached system values(updated in CWnd::OnSysColorChange)
@@ -159,30 +159,30 @@ CString AFX_GLOBAL_DATA::RegisterWindowClass(LPCTSTR lpszClassNamePrefix)
 
 	// Register a new window class:
 	HINSTANCE hInst = AfxGetInstanceHandle();
-	UINT uiClassStyle = CS_DBLCLKS;
-	HCURSOR hCursor = ::LoadCursor(NULL, IDC_ARROW);
-	HBRUSH hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
+//	UINT uiClassStyle = CS_DBLCLKS;
+//	HCURSOR hCursor = ::LoadCursor(NULL, IDC_ARROW);
+//	HBRUSH hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
 
 	CString strClassName;
-	strClassName.Format(_T("%s:%x:%x:%x:%x"), lpszClassNamePrefix, (UINT_PTR)hInst, uiClassStyle, (UINT_PTR)hCursor, (UINT_PTR)hbrBackground);
+//	strClassName.Format(_T("%s:%x:%x:%x:%x"), lpszClassNamePrefix, (UINT_PTR)hInst, uiClassStyle, (UINT_PTR)hCursor, (UINT_PTR)hbrBackground);
 
 	// See if the class already exists:
 	WNDCLASS wndcls;
 	if (::GetClassInfo(hInst, strClassName, &wndcls))
 	{
 		// Already registered, assert everything is good:
-		ASSERT(wndcls.style == uiClassStyle);
+//		ASSERT(wndcls.style == uiClassStyle);
 	}
 	else
 	{
 		// Otherwise we need to register a new class:
-		wndcls.style = uiClassStyle;
+//		wndcls.style = uiClassStyle;
 		wndcls.lpfnWndProc = ::DefWindowProc;
 		wndcls.cbClsExtra = wndcls.cbWndExtra = 0;
 		wndcls.hInstance = hInst;
 		wndcls.hIcon = NULL;
-		wndcls.hCursor = hCursor;
-		wndcls.hbrBackground = hbrBackground;
+//		wndcls.hCursor = hCursor;
+//		wndcls.hbrBackground = hbrBackground;
 		wndcls.lpszMenuName = NULL;
 		wndcls.lpszClassName = strClassName;
 

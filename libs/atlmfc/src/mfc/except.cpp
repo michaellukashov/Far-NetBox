@@ -98,23 +98,23 @@ BOOL CException::GetErrorMessage(_Out_z_cap_(nMaxError) LPTSTR lpszError, _In_ U
 	return const_cast<const CException*>(this)->GetErrorMessage(lpszError, nMaxError, pnHelpContext);
 }
 
-int CException::ReportError(UINT nType /* = MB_OK */,
-	UINT nError /* = 0 */)
-{
-	TCHAR   szErrorMessage[512];
-	int     nDisposition;
-	UINT    nHelpContext;
+//int CException::ReportError(UINT nType /* = MB_OK */,
+//	UINT nError /* = 0 */)
+//{
+//	TCHAR   szErrorMessage[512];
+//	int     nDisposition;
+//	UINT    nHelpContext;
 
-	if (GetErrorMessage(szErrorMessage, _countof(szErrorMessage), &nHelpContext))
-		nDisposition = 0; // AfxMessageBox(szErrorMessage, nType, nHelpContext);
-	else
-	{
-		if (nError == 0)
-			nError = AFX_IDP_NO_ERROR_AVAILABLE;
-		nDisposition = 0; // AfxMessageBox(nError, nType, nHelpContext);
-	}
-	return nDisposition;
-}
+//	if (GetErrorMessage(szErrorMessage, _countof(szErrorMessage), &nHelpContext))
+//		nDisposition = 0; // AfxMessageBox(szErrorMessage, nType, nHelpContext);
+//	else
+//	{
+//		if (nError == 0)
+//			nError = AFX_IDP_NO_ERROR_AVAILABLE;
+//		nDisposition = 0; // AfxMessageBox(nError, nType, nHelpContext);
+//	}
+//	return nDisposition;
+//}
 
 /////////////////////////////////////////////////////////////////////////////
 // AFX_EXCEPTION_LINK linked 'jmpbuf' and out-of-line helpers

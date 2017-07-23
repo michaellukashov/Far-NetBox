@@ -33,12 +33,15 @@ void flush_pending(z_stream *strm);
  */
 
 #ifdef X86_SSE4_2_CRC_HASH
-extern Pos insert_string_sse(deflate_state *const s, const Pos str, uInt count);
+extern Pos insert_string_sse(deflate_state *const s, const Pos str, uint32_t count);
+#elif defined(ARM_ACLE_CRC_HASH)
+extern Pos insert_string_acle(deflate_state *const s, const Pos str, uint32_t count);
 #endif
 
-local inline Pos insert_string_c(deflate_state *const s, const Pos str, uInt count) {
+static inline Pos insert_string_c(deflate_state *const s, const Pos str, uint32_t count)
+{
     Pos ret = 0;
-    uInt idx;
+    uint32_t idx;
 
     for (idx = 0; idx < count; idx++) {
         UPDATE_HASH(s, s->ins_h, str+idx);
@@ -51,16 +54,21 @@ local inline Pos insert_string_c(deflate_state *const s, const Pos str, uInt cou
     return ret;
 }
 
-local inline Pos insert_string(deflate_state *const s, const Pos str) {
+static inline Pos insert_string(deflate_state *const s, const Pos str, uint32_t count)
+{
 #ifdef X86_SSE4_2_CRC_HASH
     if (x86_cpu_has_sse42)
-        return insert_string_sse(s, str, 1);
+        return insert_string_sse(s, str, count);
 #endif
-    return insert_string_c(s, str, 1);
+#if defined(ARM_ACLE_CRC_HASH)
+    return insert_string_acle(s, str, count);
+#else
+    return insert_string_c(s, str, count);
+#endif
 }
 
 #ifndef NOT_TWEAK_COMPILER
-local inline void bulk_insert_str(deflate_state *const s, Pos startpos, uInt count) {
+static inline void bulk_insert_str(deflate_state *const s, Pos startpos, uint32_t count) {
 # ifdef X86_SSE4_2_CRC_HASH
     if (x86_cpu_has_sse42) {
         insert_string_sse(s, startpos, count);
@@ -78,9 +86,9 @@ local inline void bulk_insert_str(deflate_state *const s, Pos startpos, uInt cou
  */
 #define FLUSH_BLOCK_ONLY(s, last) { \
    _tr_flush_block(s, (s->block_start >= 0L ? \
-                   (char *)&s->window[(unsigned)s->block_start] : \
+                   (char *)&s->window[(uint32_t)s->block_start] : \
                    (char *)Z_NULL), \
-                (unsigned long)((long)s->strstart - s->block_start), \
+                   (uint64_t)((int64_t)s->strstart - s->block_start), \
                 (last)); \
    s->block_start = s->strstart; \
    flush_pending(s->strm); \

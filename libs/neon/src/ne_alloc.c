@@ -93,11 +93,11 @@ char *ne_strdup(const char *s)
 
 char *ne_strndup(const char *s, size_t n)
 {
-    char *new;
-    DO_MALLOC(new, n+1);
-    new[n] = '\0';
-    memcpy(new, s, n);
-    return new;
+    char *res;
+    DO_MALLOC(res, n+1);
+    res[n] = '\0';
+    memcpy(res, s, n);
+    return res;
 }
 
 #else /* NEON_MEMLEAK */

@@ -29,16 +29,11 @@
 
 
 #if defined(_MSC_VER) && !defined(__clang__)
-#include <intrin.h>
-/* This is not a general purpose replacement for __builtin_ctzl. The function expects that value is != 0
- * Because of that assumption trailing_zero is not initialized and the return value of _BitScanForward is not checked
- */
-static __forceinline unsigned long __builtin_ctzl(unsigned long value)
-{
-	unsigned long trailing_zero;
-	_BitScanForward(&trailing_zero, value);
-	return trailing_zero;
-}
+# if defined(_M_IX86) || defined(_M_AMD64) || defined(_M_IA64)
+#  include "arch/x86/ctzl.h"
+# elif defined(_M_ARM)
+#  include "arch/arm/ctzl.h"
+# endif
 #endif
 
 
@@ -49,14 +44,14 @@ static __forceinline unsigned long __builtin_ctzl(unsigned long value)
  * Standard longest_match
  *
  */
-ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
-    const unsigned wmask = s->w_mask;
+ZLIB_INTERNAL uint32_t longest_match(deflate_state *const s, IPos cur_match) {
+    const uint32_t wmask = s->w_mask;
     const Pos *prev = s->prev;
 
-    unsigned chain_length;
+    uint32_t chain_length;
     IPos limit;
-    unsigned int len, best_len, nice_match;
-    unsigned char *scan, *match, *strend, scan_end, scan_end1;
+    uint32_t len, best_len, nice_match;
+    uint8_t *scan, *match, *strend, scan_end, scan_end1;
 
     /*
      * The code is optimized for HASH_BITS >= 8 and MAX_MATCH-2 multiple
@@ -76,7 +71,7 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
      * Do not looks for matches beyond the end of the input. This is
      * necessary to make deflate deterministic
      */
-    nice_match = (unsigned int)s->nice_match > s->lookahead ? s->lookahead : s->nice_match;
+    nice_match = (uint32_t)s->nice_match > s->lookahead ? s->lookahead : s->nice_match;
 
     /*
      * Stop when cur_match becomes <= limit. To simplify the code,
@@ -89,9 +84,11 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
     scan_end1 = scan[best_len-1];
     scan_end = scan[best_len];
 
-    Assert((unsigned long)s->strstart <= s->window_size - MIN_LOOKAHEAD, "need lookahead");
+    Assert((uint64_t)s->strstart <= s->window_size - MIN_LOOKAHEAD, "need lookahead");
     do {
-        Assert(cur_match < s->strstart, "no future");
+        if (cur_match >= s->strstart) {
+          break;
+        }
         match = s->window + cur_match;
 
         /*
@@ -132,7 +129,7 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
              *++scan == *++match && *++scan == *++match &&
              scan < strend);
 
-        Assert(scan <= s->window+(unsigned int)(s->window_size-1), "wild scan");
+        Assert(scan <= s->window+(uint32_t)(s->window_size-1), "wild scan");
 
         len = MAX_MATCH - (int)(strend - scan);
         scan = strend - MAX_MATCH;
@@ -155,7 +152,7 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
         }
     } while ((cur_match = prev[cur_match & wmask]) > limit && --chain_length);
 
-    if ((unsigned int)best_len <= s->lookahead)
+    if ((uint32_t)best_len <= s->lookahead)
         return best_len;
     return s->lookahead;
 }
@@ -166,15 +163,15 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
  * UNALIGNED_OK longest_match
  *
  */
-ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
-    const unsigned wmask = s->w_mask;
+ZLIB_INTERNAL uint32_t longest_match(deflate_state *const s, IPos cur_match) {
+    const uint32_t wmask = s->w_mask;
     const Pos *prev = s->prev;
 
     uint16_t scan_start, scan_end;
-    unsigned chain_length;
+    uint32_tnsigned chain_length;
     IPos limit;
-    unsigned int len, best_len, nice_match;
-    unsigned char *scan, *strend;
+    uint32_t len, best_len, nice_match;
+    uint8_t *scan, *strend;
 
     /*
      * The code is optimized for HASH_BITS >= 8 and MAX_MATCH-2 multiple
@@ -194,7 +191,7 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
      * Do not looks for matches beyond the end of the input. This is
      * necessary to make deflate deterministic
      */
-    nice_match = (unsigned int)s->nice_match > s->lookahead ? s->lookahead : s->nice_match;
+    nice_match = (uint32_t)s->nice_match > s->lookahead ? s->lookahead : s->nice_match;
 
     /*
      * Stop when cur_match becomes <= limit. To simplify the code,
@@ -207,10 +204,12 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
     scan_start = *(uint16_t *)scan;
     scan_end = *(uint16_t *)(scan + best_len-1);
 
-    Assert((unsigned long)s->strstart <= s->window_size - MIN_LOOKAHEAD, "need lookahead");
+    Assert((uint64_t)s->strstart <= s->window_size - MIN_LOOKAHEAD, "need lookahead");
     do {
-        unsigned char *match;
-        Assert(cur_match < s->strstart, "no future");
+        uint8_t *match;
+        if (cur_match >= s->strstart) {
+          break;
+        }
         match = s->window + cur_match;
 
         /*
@@ -252,7 +251,7 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
         /*
          * Here, scan <= window + strstart + 257
          */
-        Assert(scan <= s->window+(unsigned)(s->window_size-1), "wild scan");
+        Assert(scan <= s->window+(uint32_t)(s->window_size-1), "wild scan");
         if (*scan == *match)
             scan++;
 
@@ -276,7 +275,7 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
         }
     } while (--chain_length && (cur_match = prev[cur_match & wmask]) > limit);
 
-    if ((unsigned)best_len <= s->lookahead)
+    if ((uint32_t)best_len <= s->lookahead)
         return best_len;
     return s->lookahead;
 }
@@ -286,11 +285,11 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
 /* longest_match() with minor change to improve performance (in terms of
  * execution time).
  *
- * The pristine longest_match() function is sketched bellow (strip the
+ * The pristine longest_match() function is sketched below (strip the
  * then-clause of the "#ifdef UNALIGNED_OK"-directive)
  *
  * ------------------------------------------------------------
- * unsigned int longest_match(...) {
+ * uint32_t longest_match(...) {
  *    ...
  *    do {
  *        match = s->window + cur_match;                //s0
@@ -330,11 +329,11 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
  *       lot easier for compiler to promote this quantity to register and keep
  *       its value throughout the entire small loop.
  *
- * 2) Transfrom s3 such that it examines sizeof(long)-byte-match at a time.
+ * 2) Transfrom s3 such that it examines sizeof(int64_t)-byte-match at a time.
  *    This is done by:
  *        ------------------------------------------------
- *        v1 = load from "scan" by sizeof(long) bytes
- *        v2 = load from "match" by sizeof(lnog) bytes
+ *        v1 = load from "scan" by sizeof(int64_t) bytes
+ *        v2 = load from "match" by sizeof(int64_t) bytes
  *        v3 = v1 xor v2
  *        match-bit = little-endian-machine(yes-for-x86) ?
  *                     count-trailing-zero(v3) :
@@ -346,22 +345,22 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
  *       -------------------------------------------------
  */
 
-ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
-    unsigned chain_length = s->max_chain_length;/* max hash chain length */
-    register unsigned char *scan = s->window + s->strstart; /* current string */
-    register unsigned char *match;                       /* matched string */
-    register unsigned int len;                  /* length of current match */
-    unsigned int best_len = s->prev_length;     /* best match length so far */
-    unsigned int nice_match = s->nice_match;    /* stop if match long enough */
+ZLIB_INTERNAL uint32_t longest_match(deflate_state *const s, IPos cur_match) {
+    uint32_t chain_length = s->max_chain_length;/* max hash chain length */
+    register uint8_t *scan = s->window + s->strstart; /* current string */
+    register uint8_t *match;                       /* matched string */
+    register uint32_t len;                  /* length of current match */
+    uint32_t best_len = s->prev_length;     /* best match length so far */
+    uint32_t nice_match = s->nice_match;    /* stop if match long enough */
     IPos limit = s->strstart > (IPos)MAX_DIST(s) ?
         s->strstart - (IPos)MAX_DIST(s) : NIL;
     /* Stop when cur_match becomes <= limit. To simplify the code,
      * we prevent matches with the string of window index 0.
      */
     Pos *prev = s->prev;
-    unsigned int wmask = s->w_mask;
+    uint32_t wmask = s->w_mask;
 
-    register unsigned char *strend = s->window + s->strstart + MAX_MATCH;
+    register uint8_t *strend = s->window + s->strstart + MAX_MATCH;
     register uint16_t scan_start = *(uint16_t*)scan;
     register uint16_t scan_end   = *(uint16_t*)(scan+best_len-1);
 
@@ -377,12 +376,14 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
     /* Do not look for matches beyond the end of the input. This is necessary
      * to make deflate deterministic.
      */
-    if ((unsigned int)nice_match > s->lookahead) nice_match = s->lookahead;
+    if ((uint32_t)nice_match > s->lookahead) nice_match = s->lookahead;
 
-    Assert((unsigned long)s->strstart <= s->window_size-MIN_LOOKAHEAD, "need lookahead");
+    Assert((uint64_t)s->strstart <= s->window_size-MIN_LOOKAHEAD, "need lookahead");
 
     do {
-        Assert(cur_match < s->strstart, "no future");
+        if (cur_match >= s->strstart) {
+          break;
+        }
 
         /* Skip to next match if the match length cannot increase
          * or if the match length is less than 2.  Note that the checks below
@@ -392,7 +393,7 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
          * However the length of the match is limited to the lookahead, so
          * the output of deflate is not affected by the uninitialized values.
          */
-        unsigned char *win = s->window;
+        uint8_t *win = s->window;
         int cont = 1;
         do {
             match = win + cur_match;
@@ -425,24 +426,24 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
         scan += 2, match+=2;
         Assert(*scan == *match, "match[2]?");
         do {
-            unsigned long sv = *(unsigned long*)(void*)scan;
-            unsigned long mv = *(unsigned long*)(void*)match;
-            unsigned long xor = sv ^ mv;
+            uint64_t sv = *(uint64_t*)(void*)scan;
+            uint64_t mv = *(uint64_t*)(void*)match;
+            uint64_t xor = sv ^ mv;
             if (xor) {
                 int match_byte = __builtin_ctzl(xor) / 8;
                 scan += match_byte;
                 match += match_byte;
                 break;
             } else {
-                scan += sizeof(unsigned long);
-                match += sizeof(unsigned long);
+                scan += sizeof(uint64_t);
+                match += sizeof(uint64_t);
             }
         } while (scan < strend);
 
         if (scan > strend)
             scan = strend;
 
-        Assert(scan <= s->window+(unsigned)(s->window_size-1), "wild scan");
+        Assert(scan <= s->window+(uint32_t)(s->window_size-1), "wild scan");
 
         len = MAX_MATCH - (int)(strend - scan);
         scan = strend - MAX_MATCH;
@@ -464,8 +465,8 @@ ZLIB_INTERNAL unsigned longest_match(deflate_state *const s, IPos cur_match) {
         }
     } while ((cur_match = prev[cur_match & wmask]) > limit && --chain_length != 0);
 
-    if ((unsigned int)best_len <= s->lookahead)
-        return (unsigned int)best_len;
+    if ((uint32_t)best_len <= s->lookahead)
+        return (uint32_t)best_len;
     return s->lookahead;
 }
 #endif

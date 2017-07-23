@@ -6,7 +6,7 @@ class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
 
-class TBookmarks : public TObject
+class NB_CORE_EXPORT TBookmarks : public TObject
 {
 NB_DISABLE_COPY(TBookmarks)
 public:
@@ -27,8 +27,8 @@ private:
   static UnicodeString Keys[];
 
 public:
-  TBookmarkList * GetBookmarks(const UnicodeString & Index);
-  void SetBookmarks(const UnicodeString & Index, TBookmarkList * Value);
+  TBookmarkList * GetBookmarks(const UnicodeString & AIndex);
+  void SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Value);
   TBookmarkList * GetSharedBookmarks();
   void SetSharedBookmarks(TBookmarkList * Value);
 
@@ -38,14 +38,19 @@ private:
 };
 
 class TBookmark;
-class TBookmarkList : public TPersistent
+class NB_CORE_EXPORT TBookmarkList : public TPersistent
 {
 friend class TBookmarks;
 friend class TBookmark;
 NB_DISABLE_COPY(TBookmarkList)
-NB_DECLARE_CLASS(TBookmarkList)
 public:
-  TBookmarkList();
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TBookmarkList;
+  }
+public:
+  explicit TBookmarkList();
   virtual ~TBookmarkList();
 
   void Clear();
@@ -54,11 +59,11 @@ public:
   void InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
   void MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
   void Delete(TBookmark *& Bookmark);
-  TBookmark * FindByName(const UnicodeString & Node, const UnicodeString & Name);
+  TBookmark * FindByName(const UnicodeString & Node, const UnicodeString & Name) const;
   TBookmark * FindByShortCut(const TShortCut & ShortCut);
   virtual void Assign(const TPersistent * Source);
   void LoadOptions(THierarchicalStorage * Storage);
-  void SaveOptions(THierarchicalStorage * Storage);
+  void SaveOptions(THierarchicalStorage * Storage) const;
   void ShortCuts(TShortCuts & ShortCuts);
 
 /*  __property int Count = { read = GetCount };
@@ -66,7 +71,7 @@ public:
   __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };*/
 
 protected:
-  intptr_t IndexOf(TBookmark * Bookmark);
+  intptr_t IndexOf(TBookmark * Bookmark) const;
   void KeyChanged(intptr_t Index);
 
 //  __property bool Modified = { read = FModified, write = FModified };
@@ -81,16 +86,21 @@ private:
 public:
 
   intptr_t GetCount() const;
-  TBookmark * GetBookmarks(intptr_t Index);
-  bool GetNodeOpened(const UnicodeString & Index);
-  void SetNodeOpened(const UnicodeString & Index, bool Value);
+  TBookmark * GetBookmarks(intptr_t AIndex);
+  bool GetNodeOpened(const UnicodeString & AIndex) const;
+  void SetNodeOpened(const UnicodeString & AIndex, bool Value);
 };
 
-class TBookmark : public TPersistent
+class NB_CORE_EXPORT TBookmark : public TPersistent
 {
 friend class TBookmarkList;
 NB_DISABLE_COPY(TBookmark)
-NB_DECLARE_CLASS(TBookmark)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TBookmark;
+  }
 public:
   TBookmark();
 

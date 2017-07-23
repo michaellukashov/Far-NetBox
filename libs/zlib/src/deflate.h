@@ -97,7 +97,7 @@ typedef struct tree_desc_s {
 } tree_desc;
 
 typedef uint16_t Pos;
-typedef unsigned IPos;
+typedef uint32_t IPos;
 
 /* A Pos is an index in the character window. We use short instead of int to
  * save space in the various tables. IPos is used only for parameter passing.
@@ -106,27 +106,27 @@ typedef unsigned IPos;
 typedef struct internal_state {
     z_stream      *strm;             /* pointer back to this zlib stream */
     int           status;            /* as the name implies */
-    unsigned char *pending_buf;      /* output still pending */
-    unsigned long pending_buf_size;  /* size of pending_buf */
-    unsigned char *pending_out;      /* next pending byte to output to the stream */
-    unsigned long pending;           /* nb of bytes in the pending buffer */
+    uint8_t       *pending_buf;      /* output still pending */
+    uint64_t      pending_buf_size;  /* size of pending_buf */
+    uint8_t       *pending_out;      /* next pending byte to output to the stream */
+    uint64_t      pending;           /* nb of bytes in the pending buffer */
     int           wrap;              /* bit 0 true for zlib, bit 1 true for gzip */
     gz_headerp    gzhead;            /* gzip header information to write */
-    unsigned long gzindex;           /* where in extra, name, or comment */
-    unsigned char method;            /* can only be DEFLATED */
+    uint64_t      gzindex;           /* where in extra, name, or comment */
+    uint8_t       method;            /* can only be DEFLATED */
     int           last_flush;        /* value of flush param for previous deflate call */
 
 #ifdef X86_PCLMULQDQ_CRC
-    unsigned ALIGNED_(16) crc0[4 * 5];
+    uint32_t ALIGNED_(16) crc0[4 * 5];
 #endif
 
                 /* used by deflate.c: */
 
-    unsigned int  w_size;            /* LZ77 window size (32K by default) */
-    unsigned int  w_bits;            /* log2(w_size)  (8..16) */
-    unsigned int  w_mask;            /* w_size - 1 */
+    uint32_t  w_size;            /* LZ77 window size (32K by default) */
+    uint32_t  w_bits;            /* log2(w_size)  (8..16) */
+    uint32_t  w_mask;            /* w_size - 1 */
 
-    unsigned char *window;
+    uint8_t *window;
     /* Sliding window. Input bytes are read into the second half of the window,
      * and move to the first half later to keep a dictionary of at least wSize
      * bytes. With this organization, matches are limited to a distance of
@@ -136,7 +136,7 @@ typedef struct internal_state {
      * To do: use the user input buffer as sliding window.
      */
 
-    unsigned long window_size;
+    uint64_t window_size;
     /* Actual size of window: 2*wSize, except when the user input buffer
      * is directly used as sliding window.
      */
@@ -149,12 +149,14 @@ typedef struct internal_state {
 
     Pos *head; /* Heads of the hash chains or NIL. */
 
-    unsigned int  ins_h;             /* hash index of string to be inserted */
-    unsigned int  hash_size;         /* number of elements in hash table */
-    unsigned int  hash_bits;         /* log2(hash_size) */
-    unsigned int  hash_mask;         /* hash_size-1 */
+    uint32_t  ins_h;             /* hash index of string to be inserted */
+    uint32_t  hash_size;         /* number of elements in hash table */
+    uint32_t  hash_bits;         /* log2(hash_size) */
+    uint32_t  hash_mask;         /* hash_size-1 */
 
-    unsigned int  hash_shift;
+    #if !defined(__x86_64) && !defined(__i386_)
+    uint32_t  hash_shift;
+    #endif
     /* Number of bits by which ins_h must be shifted at each input
      * step. It must be such that after MIN_MATCH steps, the oldest
      * byte no longer takes part in the hash key, that is:
@@ -166,25 +168,25 @@ typedef struct internal_state {
      * negative when the window is moved backwards.
      */
 
-    unsigned int match_length;       /* length of best match */
+    uint32_t match_length;       /* length of best match */
     IPos         prev_match;         /* previous match */
     int          match_available;    /* set if previous match exists */
-    unsigned int strstart;           /* start of string to insert */
-    unsigned int match_start;        /* start of matching string */
-    unsigned int lookahead;          /* number of valid bytes ahead in window */
+    uint32_t strstart;           /* start of string to insert */
+    uint32_t match_start;        /* start of matching string */
+    uint32_t lookahead;          /* number of valid bytes ahead in window */
 
-    unsigned int prev_length;
+    uint32_t prev_length;
     /* Length of the best match at previous step. Matches not greater than this
      * are discarded. This is used in the lazy match evaluation.
      */
 
-    unsigned int max_chain_length;
+    uint32_t max_chain_length;
     /* To speed up deflation, hash chains are never searched beyond this
      * length.  A higher limit improves compression ratio but degrades the
      * speed.
      */
 
-    unsigned int max_lazy_match;
+    uint32_t max_lazy_match;
     /* Attempt to find a better match only when the current match is strictly
      * smaller than this value. This mechanism is used only for compression
      * levels >= 4.
@@ -198,7 +200,7 @@ typedef struct internal_state {
     int level;    /* compression level (1..9) */
     int strategy; /* favor or force Huffman coding*/
 
-    unsigned int good_match;
+    uint32_t good_match;
     /* Use a faster search when the previous match is longer than this */
 
     int nice_match; /* Stop searching when current match exceeds this */
@@ -223,13 +225,13 @@ typedef struct internal_state {
      * The same heap array is used to build all trees.
      */
 
-    unsigned char depth[2*L_CODES+1];
+    uint8_t depth[2*L_CODES+1];
     /* Depth of each subtree used as tie breaker for trees of equal frequency
      */
 
-    unsigned char *l_buf;       /* buffer for literals or lengths */
+    uint8_t *l_buf;       /* buffer for literals or lengths */
 
-    unsigned int  lit_bufsize;
+    uint32_t  lit_bufsize;
     /* Size of match buffer for literals/lengths.  There are 4 reasons for
      * limiting lit_bufsize to 64K:
      *   - frequencies can be kept in 16 bit counters
@@ -249,7 +251,7 @@ typedef struct internal_state {
      *   - I can't count above 4
      */
 
-    unsigned int last_lit;        /* running index in l_buf */
+    uint32_t last_lit;        /* running index in l_buf */
 
     uint16_t *d_buf;
     /* Buffer for distances. To simplify the code, d_buf and l_buf have
@@ -257,14 +259,14 @@ typedef struct internal_state {
      * array would be necessary.
      */
 
-    unsigned long opt_len;        /* bit length of current block with optimal trees */
-    unsigned long static_len;     /* bit length of current block with static trees */
-    unsigned int matches;         /* number of string matches in current block */
-    unsigned int insert;          /* bytes at end of window left to insert */
+    uint64_t opt_len;        /* bit length of current block with optimal trees */
+    uint64_t static_len;     /* bit length of current block with static trees */
+    uint32_t matches;         /* number of string matches in current block */
+    uint32_t insert;          /* bytes at end of window left to insert */
 
 #ifdef ZLIB_DEBUG
-    unsigned long compressed_len; /* total bit length of compressed file mod 2^32 */
-    unsigned long bits_sent;      /* bit length of compressed data sent mod 2^32 */
+    uint64_t compressed_len; /* total bit length of compressed file mod 2^32 */
+    uint64_t bits_sent;      /* bit length of compressed data sent mod 2^32 */
 #endif
 
     uint16_t bi_buf;
@@ -276,12 +278,18 @@ typedef struct internal_state {
      * are always zero.
      */
 
-    unsigned long high_water;
+    uint64_t high_water;
     /* High water mark offset in window for initialized bytes -- bytes above
      * this are set to zero in order to avoid memory check warnings when
      * longest match routines access bytes past the input.  This is then
      * updated to the new high water mark.
      */
+    int block_open;
+    /* Whether or not a block is currently open for the QUICK deflation scheme.
+     * This is set to 1 if there is an active block, or 0 if the block was just
+     * closed.
+     */
+
 } deflate_state;
 
 typedef enum {
@@ -294,13 +302,13 @@ typedef enum {
 /* Output a byte on the stream.
  * IN assertion: there is enough room in pending_buf.
  */
-#define put_byte(s, c) {s->pending_buf[s->pending++] = (unsigned char)(c);}
+#define put_byte(s, c) {s->pending_buf[s->pending++] = (uint8_t)(c);}
 
 /* ===========================================================================
  * Output a short LSB first on the stream.
  * IN assertion: there is enough room in pendingBuf.
  */
-#if defined(__x86_64) || defined(__i386_)
+#ifdef UNALIGNED_OK
 /* Compared to the else-clause's implementation, there are few advantages:
  *  - s->pending is loaded only once (else-clause's implementation needs to
  *    load s->pending twice due to the alias between s->pending and
@@ -311,13 +319,13 @@ typedef enum {
  *    cost of penalty of potentially unaligned access. 
  */
 #define put_short(s, w) { \
+    *(uint16_t*)(&s->pending_buf[s->pending]) = (w) ; \
     s->pending += 2; \
-    *(uint16_t*)(&s->pending_buf[s->pending - 2]) = (w) ; \
 }
 #else
 #define put_short(s, w) { \
-    put_byte(s, (unsigned char)((w) & 0xff)); \
-    put_byte(s, (unsigned char)((uint16_t)(w) >> 8)); \
+    put_byte(s, (uint8_t)((w) & 0xff)); \
+    put_byte(s, (uint8_t)((uint16_t)(w) >> 8)); \
 }
 #endif
 
@@ -337,14 +345,14 @@ typedef enum {
 
         /* in trees.c */
 void ZLIB_INTERNAL _tr_init(deflate_state *s);
-int ZLIB_INTERNAL _tr_tally(deflate_state *s, unsigned dist, unsigned lc);
+int ZLIB_INTERNAL _tr_tally(deflate_state *s, uint32_t dist, uint32_t lc);
 void ZLIB_INTERNAL _tr_flush_block(deflate_state *s, char *buf,
-                        unsigned long stored_len, int last);
+                        uint64_t stored_len, int last);
 void ZLIB_INTERNAL _tr_flush_bits(deflate_state *s);
 void ZLIB_INTERNAL _tr_align(deflate_state *s);
 void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf,
-                        unsigned long stored_len, int last);
-void ZLIB_INTERNAL bi_windup(deflate_state *s);
+                        uint64_t stored_len, int last);
+void bi_windup(deflate_state *s);
 
 #define d_code(dist) \
    ((dist) < 256 ? _dist_code[dist] : _dist_code[256+((dist)>>7)])
@@ -357,22 +365,22 @@ void ZLIB_INTERNAL bi_windup(deflate_state *s);
 /* Inline versions of _tr_tally for speed: */
 
 #if defined(GEN_TREES_H) || !defined(STDC)
-    extern unsigned char ZLIB_INTERNAL _length_code[];
-    extern unsigned char ZLIB_INTERNAL _dist_code[];
+    extern uint8_t ZLIB_INTERNAL _length_code[];
+    extern uint8_t ZLIB_INTERNAL _dist_code[];
 # else
-    extern const unsigned char ZLIB_INTERNAL _length_code[];
-    extern const unsigned char ZLIB_INTERNAL _dist_code[];
+    extern const uint8_t ZLIB_INTERNAL _length_code[];
+    extern const uint8_t ZLIB_INTERNAL _dist_code[];
 # endif
 
 # define _tr_tally_lit(s, c, flush) \
-  { unsigned char cc = (c); \
+  { uint8_t cc = (c); \
     s->d_buf[s->last_lit] = 0; \
     s->l_buf[s->last_lit++] = cc; \
     s->dyn_ltree[cc].Freq++; \
     flush = (s->last_lit == s->lit_bufsize-1); \
   }
 # define _tr_tally_dist(s, distance, length, flush) \
-  { unsigned char len = (unsigned char)(length); \
+  { uint8_t len = (uint8_t)(length); \
     uint16_t dist = (uint16_t)(distance); \
     s->d_buf[s->last_lit] = dist; \
     s->l_buf[s->last_lit++] = len; \
@@ -393,10 +401,17 @@ void ZLIB_INTERNAL bi_windup(deflate_state *s);
  *    input characters, so that a running hash key can be computed from the
  *    previous key instead of complete recalculation each time.
  */
-#ifdef X86_SSE4_2_CRC_HASH
+
+#ifdef NOT_TWEAK_COMPILER
+#define TRIGGER_LEVEL 6
+#else
+#define TRIGGER_LEVEL 5
+#endif
+
+#if defined(__x86_64) || defined(__i386_)
 #define UPDATE_HASH(s, h, i) \
     do {\
-        if (s->level < 6) \
+        if (s->level < TRIGGER_LEVEL) \
             h = (3483 * (s->window[i]) +\
                  23081* (s->window[i+1]) +\
                  6954 * (s->window[i+2]) +\
@@ -431,7 +446,7 @@ void ZLIB_INTERNAL bi_windup(deflate_state *s);
 local void send_bits(deflate_state *s, int value, int length) {
     Tracevv((stderr, " l %2d v %4x ", length, value));
     Assert(length > 0 && length <= 15, "invalid length");
-    s->bits_sent += (unsigned long)length;
+    s->bits_sent += (uint64_t)length;
 
     /* If not enough room in bi_buf, use (valid) bits from bi_buf and
      * (16 - bi_valid) bits from value, leaving (width - (16-bi_valid))
@@ -451,7 +466,7 @@ local void send_bits(deflate_state *s, int value, int length) {
 #define send_bits(s, value, length) \
 { int len = length;\
   if (s->bi_valid > (int)Buf_size - len) {\
-    int val = value;\
+    int val = (int)value;\
     s->bi_buf |= (uint16_t)val << s->bi_valid;\
     put_short(s, s->bi_buf);\
     s->bi_buf = (uint16_t)val >> (Buf_size - s->bi_valid);\

@@ -37,11 +37,12 @@ enum THandlesFunction
   hfProcessHostFile,
   hfProcessEvent
 };
-DEFINE_CALLBACK_TYPE1(TFarInputBoxValidateEvent, void, UnicodeString & /*Text*/);
 
-DEFINE_CALLBACK_TYPE1(TFarMessageTimerEvent, void, intptr_t & /*Result*/);
-DEFINE_CALLBACK_TYPE3(TFarMessageClickEvent, void, void * /*Token*/,
-  uintptr_t /*Result*/, bool & /*Close*/);
+typedef nb::FastDelegate1<void, UnicodeString & /*Text*/> TFarInputBoxValidateEvent;
+
+typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TFarMessageTimerEvent;
+typedef nb::FastDelegate3<void, void * /*Token*/,
+  uintptr_t /*Result*/, bool & /*Close*/> TFarMessageClickEvent;
 
 struct TFarMessageParams : public TObject
 {
@@ -63,6 +64,8 @@ public:
   void * Token;
 };
 
+class TGlobalFunctions;
+
 class TCustomFarPlugin : public TObject
 {
 friend class TCustomFarFileSystem;
@@ -72,9 +75,15 @@ friend class TFarDialogItem;
 friend class TFarMessageDialog;
 friend class TFarPluginGuard;
 NB_DISABLE_COPY(TCustomFarPlugin)
-NB_DECLARE_CLASS(TCustomFarPlugin)
 public:
-  explicit TCustomFarPlugin(HINSTANCE HInst);
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCustomFarPlugin ||
+      Obj->GetKind() == OBJECT_CLASS_TWinSCPPlugin;
+  }
+public:
+  explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst);
   virtual ~TCustomFarPlugin();
   virtual intptr_t GetMinFarVersion() const;
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info);
@@ -110,8 +119,8 @@ public:
   intptr_t Message(DWORD Flags, const UnicodeString & Title,
     const UnicodeString & Message, TStrings * Buttons = nullptr,
     TFarMessageParams * Params = nullptr);
-  intptr_t MaxMessageLines();
-  intptr_t MaxMenuItemLength();
+  intptr_t MaxMessageLines() const;
+  intptr_t MaxMenuItemLength() const;
   intptr_t Menu(DWORD Flags, const UnicodeString & Title,
     const UnicodeString & Bottom, TStrings * Items, const int * BreakKeys,
     int & BreakCode);
@@ -166,10 +175,11 @@ public:
   FarStandardFunctions & GetFarStandardFunctions() { return FFarStandardFunctions; }
 
 protected:
+  TGlobalsIntfInitializer<TGlobalFunctions> FGlobalsIntfInitializer;
   PluginStartupInfo FStartupInfo;
   FarStandardFunctions FFarStandardFunctions;
   HINSTANCE FHandle;
-  TObjectList * FOpenedPlugins;
+  TList * FOpenedPlugins;
   TFarDialog * FTopDialog;
   HANDLE FConsoleInput;
   HANDLE FConsoleOutput;
@@ -192,7 +202,7 @@ protected:
   virtual void HandleFileSystemException(TCustomFarFileSystem * FarFileSystem,
     Exception * E, int OpMode = 0);
   void ResetCachedInfo();
-  intptr_t MaxLength(TStrings * Strings);
+  intptr_t MaxLength(TStrings * Strings) const;
   intptr_t FarMessage(DWORD Flags,
     const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
     TFarMessageParams * Params);
@@ -216,7 +226,7 @@ private:
   UnicodeString FCurrentTitle;
   short FCurrentProgress;
 
-  void ClearPluginInfo(PluginInfo & Info);
+  void ClearPluginInfo(PluginInfo & Info) const;
   void UpdateCurrentConsoleTitle();
   UnicodeString FormatConsoleTitle();
   HWND GetConsoleWindow() const;
@@ -236,9 +246,15 @@ class TCustomFarFileSystem : public TObject
 friend class TFarPanelInfo;
 friend class TCustomFarPlugin;
 NB_DISABLE_COPY(TCustomFarFileSystem)
-NB_DECLARE_CLASS(TCustomFarFileSystem)
 public:
-  explicit TCustomFarFileSystem(TCustomFarPlugin * APlugin);
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCustomFarFileSystem ||
+      Obj->GetKind() == OBJECT_CLASS_TWinSCPFileSystem;
+  }
+public:
+  explicit TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin * APlugin);
   void Init();
   virtual ~TCustomFarFileSystem();
 
@@ -371,10 +387,22 @@ private:
 class TCustomFarPanelItem : public TObject
 {
 friend class TCustomFarFileSystem;
-NB_DECLARE_CLASS(TCustomFarPanelItem)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TCustomFarPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_TFarPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_THintPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_TSessionPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_TSessionFolderPanelItem ||
+      Obj->GetKind() == OBJECT_CLASS_TRemoteFilePanelItem;
+  }
 protected:
+  explicit TCustomFarPanelItem(TObjectClassId Kind) : TObject(Kind) {}
   virtual ~TCustomFarPanelItem()
-  {}
+  {
+  }
   virtual void GetData(
     DWORD & Flags, UnicodeString & AFileName, int64_t & Size,
     DWORD & FileAttributes,
@@ -389,7 +417,12 @@ protected:
 class TFarPanelItem : public TCustomFarPanelItem
 {
 NB_DISABLE_COPY(TFarPanelItem)
-NB_DECLARE_CLASS(TFarPanelItem)
+public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFarPanelItem;
+  }
 public:
   explicit TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem);
   virtual ~TFarPanelItem();
@@ -476,6 +509,12 @@ private:
 class TFarMenuItems : public TStringList
 {
 public:
+  static inline bool classof(const TObject * Obj)
+  {
+    return
+      Obj->GetKind() == OBJECT_CLASS_TFarMenuItems;
+  }
+public:
   explicit TFarMenuItems();
   virtual ~TFarMenuItems() {}
   void AddSeparator(bool Visible = true);
@@ -515,37 +554,39 @@ private:
   EditorInfo * FEditorInfo;
 };
 
-class TFarEnvGuard : public TObject
+class TFarEnvGuard // : public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
+NB_DISABLE_COPY(TFarEnvGuard)
 public:
   TFarEnvGuard();
   ~TFarEnvGuard();
 };
 
-class TFarPluginEnvGuard : public TObject
+class TFarPluginEnvGuard // : public TObject
 {
+CUSTOM_MEM_ALLOCATION_IMPL
+NB_DISABLE_COPY(TFarPluginEnvGuard)
 public:
   TFarPluginEnvGuard();
   ~TFarPluginEnvGuard();
 };
 
-void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth);
-
 extern TCustomFarPlugin * FarPlugin;
 
-class TGlobalFunctions : public TGlobalFunctionsIntf, public TObject
+class TGlobalFunctions : public TGlobals
 {
 public:
-  virtual HINSTANCE GetInstanceHandle() const;
-  virtual UnicodeString GetMsg(intptr_t Id) const;
-  virtual UnicodeString GetCurrDirectory() const;
-  virtual UnicodeString GetStrVersionNumber() const;
+  virtual HINSTANCE GetInstanceHandle() const override;
+  virtual UnicodeString GetMsg(intptr_t Id) const override;
+  virtual UnicodeString GetCurrDirectory() const override;
+  virtual UnicodeString GetStrVersionNumber() const override;
   virtual bool InputDialog(const UnicodeString & ACaption,
     const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
     TStrings * History, bool PathInput,
-    TInputDialogInitializeEvent OnInitialize, bool Echo);
+    TInputDialogInitializeEvent OnInitialize, bool Echo) override;
   virtual uintptr_t MoreMessageDialog(const UnicodeString & Message,
     TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
-      const TMessageParams * Params);
+      const TMessageParams * Params) override;
 };
 
