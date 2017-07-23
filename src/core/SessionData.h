@@ -73,13 +73,11 @@ enum TGssLib
   gssCustom,
 };
 #define GSSLIB_COUNT (gssCustom + 1)
+// names have to match PuTTY registry entries (see settings.c)
+enum TSshBug { sbIgnore1, sbPlainPW1, sbRSA1, sbHMAC2, sbDeriveKey2, sbRSAPad2,
+  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2, sbOldGex2, sbWinAdj, sbChanReq };
+#define BUG_COUNT (sbChanReq + 1)
 
-enum TSshBug
-{
-  sbIgnore1, sbPlainPW1, sbRSA1, sbHMAC2, sbDeriveKey2, sbRSAPad2,
-  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2, sbOldGex2, sbWinAdj,
-};
-#define BUG_COUNT (sbWinAdj + 1)
 
 enum TSftpBug
 {

@@ -737,6 +737,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   READ_BUG(Ignore2);
   READ_BUG(OldGex2);
   READ_BUG(WinAdj);
+  READ_BUG(ChanReq);
 #undef READ_BUG
 
   if ((GetBug(sbHMAC2) == asAuto) &&
@@ -1087,6 +1088,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
   WRITE_BUG(Ignore2);
   WRITE_BUG(OldGex2);
   WRITE_BUG(WinAdj);
+  WRITE_BUG(ChanReq);
 #undef WRITE_BUG
 #undef WRITE_DATA_CONV_FUNC
 
