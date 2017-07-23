@@ -15,11 +15,9 @@
 
 namespace nb {
 
-NB_CORE_EXPORT UnicodeString fmtformat(fmt::WCStringRef format_str, fmt::ArgList args);
-FMT_VARIADIC_W(UnicodeString, fmtformat, fmt::WCStringRef)
+NB_CORE_EXPORT UnicodeString fmtformat(UnicodeString format_str, fmt::ArgList args);
+FMT_VARIADIC_W(UnicodeString, fmtformat, UnicodeString)
 
-//NB_CORE_EXPORT UnicodeString fmtsprintf(fmt::WCStringRef format, fmt::ArgList args);
-//FMT_VARIADIC_W(UnicodeString, fmtsprintf, fmt::WCStringRef)
 NB_CORE_EXPORT UnicodeString fmtsprintf(UnicodeString format, fmt::ArgList args);
 FMT_VARIADIC_W(UnicodeString, fmtsprintf, UnicodeString)
 

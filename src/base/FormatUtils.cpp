@@ -6,19 +6,12 @@
 
 namespace nb {
 
-UnicodeString fmtformat(fmt::WCStringRef format_str, fmt::ArgList args)
+UnicodeString fmtformat(UnicodeString format_str, fmt::ArgList args)
 {
   fmt::WMemoryWriter w;
-  w.write(format_str, args);
+  w.write(format_str.c_str(), args);
   return UnicodeString(w.c_str(), w.size());
 }
-
-//UnicodeString fmtsprintf(fmt::WCStringRef format, fmt::ArgList args)
-//{
-//  fmt::WMemoryWriter w;
-//  fmt::printf(w, format, args);
-//  return UnicodeString(w.c_str(), w.size());
-//}
 
 UnicodeString fmtsprintf(UnicodeString format, fmt::ArgList args)
 {
