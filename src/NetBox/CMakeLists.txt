@@ -818,8 +818,8 @@ add_library(libcrypto STATIC
 
 )
 
-target_compile_options(libcrypto
-  PRIVATE ${OPENSSL_COMPILE_FLAGS}
+target_compile_options(libcrypto PRIVATE
+  ${OPENSSL_COMPILE_FLAGS}
 )
 
 target_include_directories(libcrypto SYSTEM BEFORE PRIVATE
@@ -879,8 +879,8 @@ add_library(libssl STATIC
 #  ../../libs/openssl/ssl/tls13_enc.c
 )
 
-target_compile_options(libssl
-  PRIVATE ${OPENSSL_COMPILE_FLAGS}
+target_compile_options(libssl PRIVATE
+  ${OPENSSL_COMPILE_FLAGS}
 )
 
 target_include_directories(libssl SYSTEM BEFORE PRIVATE
@@ -1308,12 +1308,13 @@ add_library(fmt STATIC
   ../../libs/fmt/fmt/format.h
   ../../libs/fmt/fmt/printf.cc
   ../../libs/fmt/fmt/printf.h
-  ../../libs/fmt/fmt/ostream.cc
-  ../../libs/fmt/fmt/ostream.h
-  ../../libs/fmt/fmt/string.h
+#  ../../libs/fmt/fmt/ostream.cc
+#  ../../libs/fmt/fmt/ostream.h
+#  ../../libs/fmt/fmt/string.h
 )
 
 target_compile_options(fmt PRIVATE
+  -DFMT_EXPORT
   ${NETBOX_UNICODE_FLAGS}
 )
 
