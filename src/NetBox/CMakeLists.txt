@@ -1302,6 +1302,22 @@ target_compile_options(rdestl PRIVATE
 )
 
 #-------------------------------------------------------------------------------
+
+add_library(fmt STATIC
+  ../../libs/fmt/fmt/format.cc
+  ../../libs/fmt/fmt/format.h
+  ../../libs/fmt/fmt/printf.cc
+  ../../libs/fmt/fmt/printf.h
+  ../../libs/fmt/fmt/ostream.cc
+  ../../libs/fmt/fmt/ostream.h
+  ../../libs/fmt/fmt/string.h
+)
+
+target_compile_options(fmt PRIVATE
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+#-------------------------------------------------------------------------------
 #NetBox
 
 if(OPT_USE_UNITY_BUILD)
@@ -1577,6 +1593,7 @@ target_include_directories(NetBox PRIVATE
   ../../libs/rdestl
   ../../libs/expat/lib
   ../../libs/atlmfc/include
+  ../../libs/fmt
   ../filezilla
   ../base
   ../core
@@ -1604,7 +1621,6 @@ target_compile_options(NetBox PRIVATE
 #  -wd4251 -wd4275 -wd4661
   ${ATLMFC_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
-  fmt
 )
 
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
@@ -1641,14 +1657,4 @@ add_custom_command(TARGET NetBox POST_BUILD
 add_dependencies(copy_to_plugin_dir create_plugin_dir )
 add_dependencies(NetBox copy_to_plugin_dir)
 
-)
-
 #-------------------------------------------------------------------------------
-
-add_library(fmt STATIC
-  ${LIBS_ROOT}/fmt/format.cc
-  ${LIBS_ROOT}/fmt/format.h
-)
-
-target_compile_options(fmt
-  PRIVATE ${NETBOX_UNICODE_FLAGS}
