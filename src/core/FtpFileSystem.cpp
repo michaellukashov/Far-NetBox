@@ -1031,6 +1031,18 @@ void TFTPFileSystem::AnnounceFileListOperation()
   ResetCaches();
 }
 
+bool TFTPFileSystem::DoQuit()
+{
+  UnicodeString Command = L"QUIT";
+  SendCommand(Command);
+
+  uintptr_t Reply = WaitForCommandReply(true);
+  bool Result =
+      FLAGSET(Reply, TFileZillaIntf::REPLY_OK) ||
+      FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED);
+  return Result;
+}
+
 void TFTPFileSystem::DoChangeDirectory(UnicodeString Directory)
 {
   UnicodeString Command = FORMAT(L"CWD %s", Directory.c_str());
