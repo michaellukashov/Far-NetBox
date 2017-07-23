@@ -1128,7 +1128,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   new TFarSeparator(this);
 
   Text = new TFarText(this);
-  Text->SetCaption(FMTLOAD(PUTTY_BASED_ON, (LoadStr(PUTTY_VERSION))));
+  Text->SetCaption(FMTLOAD(PUTTY_BASED_ON, LoadStr(PUTTY_VERSION)));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
