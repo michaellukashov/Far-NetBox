@@ -860,7 +860,7 @@ public:
 
 //N=0
 template<class RetType=detail::DefaultVoid>
-class FastDelegate0 {
+class FASTDELEGATE_LIB FastDelegate0 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
 	typedef DesiredRetType (*StaticFunctionPtr)();
