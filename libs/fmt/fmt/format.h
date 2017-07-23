@@ -42,6 +42,8 @@
 #include <utility>  // for std::pair
 #undef FMT_INCLUDE
 
+#include <nbglobals.h>
+
 // The fmt library version in the form major * 10000 + minor * 100 + patch.
 #define FMT_VERSION 40001
 
@@ -1058,7 +1060,7 @@ inline void format_decimal(Char *buffer, UInt value, unsigned num_digits) {
 // It is only provided for Windows since other systems support UTF-8 natively.
 class UTF8ToUTF16 {
  private:
-  MemoryBuffer<wchar_t, INLINE_BUFFER_SIZE> buffer_;
+  MemoryBuffer<wchar_t, INLINE_BUFFER_SIZE, custom_nballocator_t<wchar_t> > buffer_;
 
  public:
   FMT_API explicit UTF8ToUTF16(StringRef s);
@@ -1072,7 +1074,7 @@ class UTF8ToUTF16 {
 // It is only provided for Windows since other systems support UTF-8 natively.
 class UTF16ToUTF8 {
  private:
-  MemoryBuffer<char, INLINE_BUFFER_SIZE> buffer_;
+  MemoryBuffer<char, INLINE_BUFFER_SIZE, custom_nballocator_t<char> > buffer_;
 
  public:
   UTF16ToUTF8() {}
@@ -3180,8 +3182,8 @@ class BasicMemoryWriter : public BasicWriter<Char> {
 #endif
 };
 
-typedef BasicMemoryWriter<char> MemoryWriter;
-typedef BasicMemoryWriter<wchar_t> WMemoryWriter;
+typedef BasicMemoryWriter<char, custom_nballocator_t<char> > MemoryWriter;
+typedef BasicMemoryWriter<wchar_t, custom_nballocator_t<wchar_t> > WMemoryWriter;
 
 /**
   \rst
