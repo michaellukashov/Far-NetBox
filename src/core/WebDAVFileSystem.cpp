@@ -2499,7 +2499,7 @@ void TWebDAVFileSystem::CollectTLSSessionInfo()
   FSessionInfo.SCCipher = Cipher;
 
   // see CAsyncSslSocketLayer::PrintSessionInfo()
-  FTerminal->LogEvent(FORMAT(L"Using %s, cipher %s", FTlsVersionStr.c_str(), Cipher.c_str()));
+  FTerminal->LogEvent(FORMAT(L"Using %s, cipher %s", FTlsVersionStr, Cipher));
 }
 
 // A neon-session callback to validate the SSL certificate when the CA
