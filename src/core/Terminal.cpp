@@ -1787,7 +1787,7 @@ void TTerminal::SaveCapabilities(TFileSystemInfo & FileSystemInfo)
   }
 }
 
-bool TTerminal::GetIsCapable(TFSCapability Capability) const
+bool TTerminal::GetIsCapableProtected(TFSCapability Capability) const
 {
   DebugAssert(FFileSystem);
   return FFileSystem->IsCapable(Capability);
