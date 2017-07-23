@@ -240,6 +240,7 @@
     <ClCompile Include="..\base\Exceptions.cpp" />
     <ClCompile Include="..\base\FileBuffer.cpp" />
     <ClCompile Include="..\base\Global.cpp" />
+    <ClCompile Include="..\base\FormatUtils.cpp" />
     <ClCompile Include="..\core\Bookmarks.cpp" />
     <ClCompile Include="..\core\Configuration.cpp" />
     <ClCompile Include="..\core\CopyParam.cpp" />
