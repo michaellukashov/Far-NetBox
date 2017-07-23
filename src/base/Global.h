@@ -1,8 +1,7 @@
 
 #pragma once
 
-//#include "fmt/format.h"
-#include "fmt/printf.h"
+#include "FormatUtils.h"
 
 #include <nbcore.h>
 

@@ -377,11 +377,3 @@ inline bool operator>(const S & lhs, const S & rhs)
 
 }  // namespace rde
 
-template <class T>
-inline UnicodeString ToUnicodeString(const T &a) { return UnicodeString(a.c_str(), (intptr_t)a.size()); }
-
-inline std::basic_ostream<wchar_t>& operator << (std::basic_ostream<wchar_t>& os, const UnicodeString& value)
-{
-  os << std::wstring(value.c_str());
-  return os;
-}
