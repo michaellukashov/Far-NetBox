@@ -1,7 +1,9 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#ifndef PUTTY_DO_GLOBALS
 #define PUTTY_DO_GLOBALS
+#endif
 #include <Exceptions.h>
 #include <StrUtils.hpp>
 

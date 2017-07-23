@@ -1219,9 +1219,6 @@ set(ZLIB_SOURCES
 
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
   ../../libs/zlib/src/arch/x86/crc_folding.c
-  ../../libs/zlib/src/arch/x86/fill_window_sse.c
-  ../../libs/zlib/src/arch/x86/insert_string_sse.c
-  ../../libs/zlib/src/arch/x86/deflate_quick.c
   ../../libs/zlib/src/arch/x86/x86.c
 )
 

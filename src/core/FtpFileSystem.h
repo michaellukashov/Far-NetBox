@@ -172,6 +172,7 @@ protected:
   UnicodeString GetActualCurrentDirectory() const;
   void Discard();
   void DoChangeDirectory(const UnicodeString & Directory);
+  bool DoQuit();
 
   void Sink(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & TargetDir,
