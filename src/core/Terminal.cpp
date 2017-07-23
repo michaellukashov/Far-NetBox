@@ -1461,6 +1461,7 @@ void TTerminal::Reopen(intptr_t Params)
   intptr_t PrevExceptionOnFail = FExceptionOnFail;
   try__finally
   {
+    bool WasInTransaction = InTransaction();
     SCOPE_EXIT
     {
       GetSessionData()->SetRemoteDirectory(PrevRemoteDirectory);
@@ -1470,16 +1471,16 @@ void TTerminal::Reopen(intptr_t Params)
       FReadDirectoryPending = PrevReadDirectoryPending;
       FSuspendTransaction = false;
       FExceptionOnFail = PrevExceptionOnFail;
+      if (WasInTransaction)
+        BeginTransaction();
     };
     FReadCurrentDirectoryPending = false;
     FReadDirectoryPending = false;
-    FExceptionOnFail = 0;
     // reset transactions
-    while (InTransaction())
-    {
+    if (InTransaction())
       EndTransaction();
-    }
     FSuspendTransaction = true;
+    FExceptionOnFail = 0;
     // typically, we avoid reading directory, when there is operation ongoing,
     // for file list which may reference files from current directory
     if (FLAGSET(Params, ropNoReadDirectory))
@@ -5676,7 +5677,6 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
   std::unique_ptr<TStringList> DeleteLocalList(new TStringList());
 
   BeginTransaction();
-
   try__finally
   {
     SCOPE_EXIT
@@ -6230,8 +6230,7 @@ bool TTerminal::CopyToRemote(const TStrings * AFilesToCopy,
           {
             ReactOnCommand(fsCopyToRemote);
           }
-          if (InTransaction())
-            EndTransaction();
+          EndTransaction();
         };
         if (GetLog()->GetLogging())
         {
