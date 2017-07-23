@@ -567,7 +567,10 @@ DECLSPEC_IMPORT DLL_DIRECTORY_COOKIE WINAPI AddDllDirectory (PCWSTR NewDirectory
 #define LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR 0x00000100
 #endif
 #if _MSC_VER < 1400
+#ifndef DLL_DIRECTORY_COOKIE
 typedef PVOID DLL_DIRECTORY_COOKIE;
+DECLSPEC_IMPORT DLL_DIRECTORY_COOKIE WINAPI AddDllDirectory (PCWSTR NewDirectory);
+#endif
 #endif
 
 /* A few pieces of up-to-date Windows API definition needed for older

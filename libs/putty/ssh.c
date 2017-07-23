@@ -10856,6 +10856,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 
 	ssh->mainchan->remoteid = ssh_pkt_getuint32(pktin);
 	ssh->mainchan->halfopen = FALSE;
+	ssh->mainchan->type = CHAN_MAINSESSION;
 	ssh->mainchan->v.v2.remwindow = ssh_pkt_getuint32(pktin);
 	ssh->mainchan->v.v2.remmaxpkt = ssh_pkt_getuint32(pktin);
 	update_specials_menu(ssh->frontend);
@@ -11425,20 +11426,14 @@ static const char *ssh_init(void *frontend_handle, void **backend_handle,
     ssh->gsslibs = NULL;
 #endif
 
-#ifndef MPEXT
     random_ref(); /* do this now - may be needed by sharing setup code */
-#endif
 
     p = connect_to_host(ssh, host, port, realhost, nodelay, keepalive);
     if (p != NULL) {
-#ifndef MPEXT
         random_unref();
-#endif
 	return p;
     }
-#ifndef MPEXT
     random_ref();
-#endif
 
     return NULL;
 }
