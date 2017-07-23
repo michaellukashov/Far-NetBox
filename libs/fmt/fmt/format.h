@@ -496,6 +496,7 @@ class BasicFormatter;
  */
 template <typename Char>
 class BasicStringRef {
+ CUSTOM_MEM_ALLOCATION_IMPL
  private:
   const Char *data_;
   std::size_t size_;
@@ -597,6 +598,7 @@ typedef BasicStringRef<wchar_t> WStringRef;
  */
 template <typename Char>
 class BasicCStringRef {
+ CUSTOM_MEM_ALLOCATION_IMPL
  private:
   const Char *data_;
 
