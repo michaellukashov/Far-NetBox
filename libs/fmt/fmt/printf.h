@@ -14,6 +14,7 @@
 #include <limits>     // std::numeric_limits
 
 #include "ostream.h"
+#include "format.h"
 
 namespace fmt {
 namespace internal {
