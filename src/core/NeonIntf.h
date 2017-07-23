@@ -2,6 +2,7 @@
 #ifndef NeonIntfH
 #define NeonIntfH
 
+#include <openssldefs.h>
 #include <ne_uri.h>
 #include <ne_session.h>
 #include <SessionData.h>
