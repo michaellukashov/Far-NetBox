@@ -553,21 +553,20 @@ void TFTPFileSystem::Open()
 void TFTPFileSystem::Close()
 {
   DebugAssert(FActive);
-  bool Result;
-
-  FFileZillaIntf->CustomCommand(L"QUIT");
-  Result = true;
-
-  /*if (FFileZillaIntf->Close(FOpening))
+  bool Result = DoQuit();
+  if (!Result)
   {
-    DebugCheck(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
-    Result = true;
+    if (FFileZillaIntf->Close(FOpening))
+    {
+      DebugCheck(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
+      Result = true;
+    }
+    else
+    {
+      // See TFileZillaIntf::Close
+      Result = FOpening;
+    }
   }
-  else
-  {
-    // See TFileZillaIntf::Close
-    Result = FOpening;
-  }*/
 
   if (DebugAlwaysTrue(Result))
   {
