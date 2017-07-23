@@ -1310,7 +1310,7 @@ add_library(fmt STATIC
   ../../libs/fmt/fmt/printf.h
 #  ../../libs/fmt/fmt/ostream.cc
 #  ../../libs/fmt/fmt/ostream.h
-#  ../../libs/fmt/fmt/string.h
+  ../../libs/fmt/fmt/string.h
 )
 
 target_compile_options(fmt PRIVATE
