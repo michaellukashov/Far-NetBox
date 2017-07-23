@@ -37,7 +37,7 @@ FMT_VARIADIC_W(UnicodeString, nbsprintf, fmt::WCStringRef)
 //template <class T>
 //inline UnicodeString ToUnicodeString(const T &a) { return UnicodeString(a.c_str(), (intptr_t)a.size()); }
 
-inline std::basic_ostream<wchar_t>& operator << (std::basic_ostream<wchar_t>& os, const UnicodeString& value)
+inline std::basic_ostream<wchar_t>& operator<<(std::basic_ostream<wchar_t>& os, const UnicodeString& value)
 {
   os << value.c_str();
   return os;
