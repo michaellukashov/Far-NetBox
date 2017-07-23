@@ -1536,6 +1536,7 @@ set(NETBOX_LIBRARIES
   expat
   dlmalloc
   rdestl
+
   Ws2_32.lib
   kernel32.lib
   user32.lib
@@ -1604,7 +1605,7 @@ target_link_libraries(NetBox PRIVATE
 
 target_compile_options(NetBox PRIVATE
   -DBUILD_OFFICIAL
-#  -wd4251 -wd4275 -wd4661
+  -wd4251 -wd4275 -wd4661
   ${ATLMFC_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )
