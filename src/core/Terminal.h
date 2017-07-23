@@ -374,7 +374,7 @@ public:
   UnicodeString GetRememberedPassword() const;
   UnicodeString GetRememberedTunnelPassword() const;
   bool GetStoredCredentialsTried() const;
-  inline bool InTransaction() const;
+  bool InTransaction() const;
   void SaveCapabilities(TFileSystemInfo & FileSystemInfo);
   static UnicodeString SynchronizeModeStr(TSynchronizeMode Mode);
   static UnicodeString SynchronizeParamsStr(intptr_t Params);
@@ -385,7 +385,6 @@ protected:
   bool FTunnelOpening;
   TCustomFileSystem * FFileSystem;
 
-public:
   void DoStartReadDirectory();
   void DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel);
   void DoReadDirectory(bool ReloadOnly);
@@ -408,7 +407,7 @@ public:
   intptr_t FileOperationLoop(TFileOperationEvent CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
     UnicodeString Message, void * Param1 = nullptr, void * Param2 = nullptr);
-  bool GetIsCapable(TFSCapability Capability) const;
+  bool GetIsCapableProtected(TFSCapability Capability) const;
   bool ProcessFiles(const TStrings * AFileList, TFileOperation Operation,
     TProcessFileEvent ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote,
     bool Ex = false);
@@ -723,6 +722,7 @@ public:
   __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
 #endif
 
+  bool GetIsCapable(TFSCapability Capability) const { return GetIsCapableProtected(Capability); }
   void SetMasks(UnicodeString Value);
 
   void SetLocalFileTime(UnicodeString LocalFileName,
