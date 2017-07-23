@@ -1348,6 +1348,7 @@ set(NETBOX_SOURCES
   ../base/Exceptions.cpp
   ../base/FileBuffer.cpp
   ../base/Global.cpp
+  ../base/FormatUtils.cpp
 
   ../core/RemoteFiles.cpp
   ../core/Terminal.cpp

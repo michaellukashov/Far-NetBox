@@ -23,6 +23,7 @@
 #include "../base/Exceptions.cpp"
 #include "../base/FileBuffer.cpp"
 #include "../base/Global.cpp"
+#include "../base/FormatUtils.cpp"
 
 #include "../core/RemoteFiles.cpp"
 #include "../core/Terminal.cpp"
