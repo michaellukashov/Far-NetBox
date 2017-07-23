@@ -1,5 +1,7 @@
-NetBox 2.4.4.514 22.07.2017
+NetBox 2.4.4.515 23.07.2017
 --------------------
+  * FTP: use QUIT to disconnect from server
+  * Update expat sources to 2.2.2
   * Fix AV after reopen connection
 
 NetBox 2.4.3.512 09.07.2017
