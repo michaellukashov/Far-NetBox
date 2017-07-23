@@ -11398,20 +11398,14 @@ static const char *ssh_init(void *frontend_handle, void **backend_handle,
     ssh->gsslibs = NULL;
 #endif
 
-#ifndef MPEXT
     random_ref(); /* do this now - may be needed by sharing setup code */
-#endif
 
     p = connect_to_host(ssh, host, port, realhost, nodelay, keepalive);
     if (p != NULL) {
-#ifndef MPEXT
         random_unref();
-#endif
 	return p;
     }
-#ifndef MPEXT
     random_ref();
-#endif
 
     return NULL;
 }
