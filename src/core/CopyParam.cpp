@@ -697,8 +697,8 @@ UnicodeString TCopyParamType::GetLogStr() const
   // OpenArray (ARRAYOFCONST) supports only up to 19 arguments, so we had to split it
   return
     FORMAT(
-      L"  PrTime: %s%s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %c; "
-      L"Resume: %c (%d); CalcS: %s; Mask: %s\n",
+      L"  PrTime: %s%s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %s; RIC: %s; "
+      L"Resume: %s (%d); CalcS: %s; Mask: %s\n",
       BooleanToEngStr(GetPreserveTime()).c_str(),
       UnicodeString(GetPreserveTime() && GetPreserveTimeDirs() ? L"+Dirs" : L"").c_str(),
       BooleanToEngStr(GetPreserveReadOnly()).c_str(),
@@ -712,7 +712,7 @@ UnicodeString TCopyParamType::GetLogStr() const
       BooleanToEngStr(GetCalculateSize()).c_str(),
       GetFileMask().c_str()) +
     FORMAT(
-      L"  TM: %c; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s; ResumeL: %d\n"
+      L"  TM: %s; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s; ResumeL: %d\n"
       L"  AscM: %s\n",
       ModeC[GetTransferMode()],
       BooleanToEngStr(GetClearArchive()).c_str(),

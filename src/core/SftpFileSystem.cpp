@@ -3281,8 +3281,8 @@ void TSFTPFileSystem::DoStartup()
             }
             uint8_t Drive = RootsPacket.GetByte();
             uint8_t MaybeType = RootsPacket.GetByte();
-            FTerminal->LogEvent(FORMAT(L"  %c: (type %d)", static_cast<char>(Drive), static_cast<int>(MaybeType)));
-            FFixedPaths->Add(FORMAT(L"%c:", static_cast<char>(Drive)));
+            FTerminal->LogEvent(FORMAT(L"  %s: (type %d)", static_cast<char>(Drive), static_cast<int>(MaybeType)));
+            FFixedPaths->Add(FORMAT(L"%s:", static_cast<char>(Drive)));
           }
         }
         catch (Exception & E)

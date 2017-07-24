@@ -1169,7 +1169,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       }
       ADF(L"SSH Bugs: %s", Bugs.c_str());
       ADF(L"Simple channel: %s", BooleanToEngStr(Data->GetSshSimple()).c_str());
-      ADF(L"Return code variable: %s; Lookup user groups: %c",
+      ADF(L"Return code variable: %s; Lookup user groups: %s",
           Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
           EnumName(Data->GetLookupUserGroups(), AutoSwitchNames).c_str());
       ADF(L"Shell: %s", Data->GetShell().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetShell().c_str());

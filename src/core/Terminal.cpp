@@ -3647,7 +3647,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 UnicodeString TTerminal::GetRemoteFileInfo(TRemoteFile * AFile) const
 {
   return
-    FORMAT(L"%s;%c;%lld;%s;%d;%s;%s;%s;%d",
+    FORMAT(L"%s;%s;%lld;%s;%d;%s;%s;%s;%d",
       AFile->GetFileName().c_str(), AFile->GetType(), AFile->GetSize(), StandardTimestamp(AFile->GetModification()).c_str(), int(AFile->GetModificationFmt()),
       AFile->GetFileOwner().GetLogText().c_str(), AFile->GetFileGroup().GetLogText().c_str(), AFile->GetRights()->GetText().c_str(),
       AFile->GetAttr());
