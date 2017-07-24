@@ -177,8 +177,12 @@
     <ClCompile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\..\src\include;..\..\libs;</AdditionalIncludeDirectories>
-      <CompileAs>CompileAsCpp</CompileAs>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_LIB;USE_DLMALLOC;USE_DL_PREFIX;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <CompileAs>Default</CompileAs>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_LIB;UNICODE;_UNICODE;_WIN32_WINNT=0x0501;USE_DLMALLOC;USE_DL_PREFIX;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
