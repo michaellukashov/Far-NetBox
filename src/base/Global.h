@@ -9,9 +9,9 @@
 #include <assert.h>
 
 //#define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
-#define FORMAT(S, ...) nb::fmtsprintf(S, __VA_ARGS__)
+#define FORMAT(S, ...) nb::Sprintf(S, __VA_ARGS__)
 //#define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
-#define FMTLOAD(Id, ...) nb::fmtloadstr(Id, __VA_ARGS__)
+#define FMTLOAD(Id, ...) nb::FmtLoadStr(Id, __VA_ARGS__)
 #ifndef LENOF
 #define LENOF(x) (_countof(X))
 #endif
