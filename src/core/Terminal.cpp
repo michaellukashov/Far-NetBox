@@ -23,6 +23,7 @@
 #include "HelpCore.h"
 #include "CoreMain.h"
 #include "Queue.h"
+#include <openssldefs.h>
 #include <openssl/pkcs12.h>
 #include <openssl/err.h>
 

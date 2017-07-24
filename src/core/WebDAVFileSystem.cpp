@@ -13,6 +13,7 @@
 #ifndef WINSCP
 #define WINSCP
 #endif
+#include <openssldefs.h>
 #include <ne_basic.h>
 #include <ne_auth.h>
 #include <ne_props.h>
@@ -2616,7 +2617,7 @@ void TWebDAVFileSystem::CollectTLSSessionInfo()
   FSessionInfo.SCCipher = Cipher;
 
   // see CAsyncSslSocketLayer::PrintSessionInfo()
-  FTerminal->LogEvent(FORMAT(L"Using %s, cipher %s", FTlsVersionStr.c_str(), Cipher.c_str()));
+  FTerminal->LogEvent(FORMAT(L"Using %s, cipher %s", FTlsVersionStr, Cipher));
 }
 
 // A neon-session callback to validate the SSL certificate when the CA

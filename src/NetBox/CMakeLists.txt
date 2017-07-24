@@ -818,8 +818,8 @@ add_library(libcrypto STATIC
 
 )
 
-target_compile_options(libcrypto
-  PRIVATE ${OPENSSL_COMPILE_FLAGS}
+target_compile_options(libcrypto PRIVATE
+  ${OPENSSL_COMPILE_FLAGS}
 )
 
 target_include_directories(libcrypto SYSTEM BEFORE PRIVATE
@@ -879,8 +879,8 @@ add_library(libssl STATIC
 #  ../../libs/openssl/ssl/tls13_enc.c
 )
 
-target_compile_options(libssl
-  PRIVATE ${OPENSSL_COMPILE_FLAGS}
+target_compile_options(libssl PRIVATE
+  ${OPENSSL_COMPILE_FLAGS}
 )
 
 target_include_directories(libssl SYSTEM BEFORE PRIVATE
@@ -1302,6 +1302,23 @@ target_compile_options(rdestl PRIVATE
 )
 
 #-------------------------------------------------------------------------------
+
+add_library(fmt STATIC
+  ../../libs/fmt/fmt/format.cc
+  ../../libs/fmt/fmt/format.h
+  ../../libs/fmt/fmt/printf.cc
+  ../../libs/fmt/fmt/printf.h
+#  ../../libs/fmt/fmt/ostream.cc
+#  ../../libs/fmt/fmt/ostream.h
+  ../../libs/fmt/fmt/string.h
+)
+
+target_compile_options(fmt PRIVATE
+  -DFMT_EXPORT
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+#-------------------------------------------------------------------------------
 #NetBox
 
 if(OPT_USE_UNITY_BUILD)
@@ -1332,6 +1349,7 @@ set(NETBOX_SOURCES
   ../base/FileBuffer.cpp
   ../base/Global.cpp
   ../base/System.SyncObjs.cpp
+  ../base/FormatUtils.cpp
 
   ../core/RemoteFiles.cpp
   ../core/Terminal.cpp
@@ -1536,6 +1554,7 @@ set(NETBOX_LIBRARIES
   expat
   dlmalloc
   rdestl
+  fmt
 
   Ws2_32.lib
   kernel32.lib
@@ -1580,6 +1599,7 @@ target_include_directories(NetBox PRIVATE
   ../../libs/rdestl
   ../../libs/expat/lib
   ../../libs/atlmfc/include
+  ../../libs/fmt
   ../filezilla
   ../base
   ../core
@@ -1644,3 +1664,4 @@ add_custom_command(TARGET NetBox POST_BUILD
 add_dependencies(copy_to_plugin_dir create_plugin_dir )
 add_dependencies(NetBox copy_to_plugin_dir)
 
+#-------------------------------------------------------------------------------

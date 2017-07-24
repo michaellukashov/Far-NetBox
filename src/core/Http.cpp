@@ -2,6 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <openssldefs.h>
 #include <ne_request.h>
 #include <openssl/ssl.h>
 

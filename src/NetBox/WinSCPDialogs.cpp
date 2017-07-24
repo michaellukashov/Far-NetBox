@@ -1063,9 +1063,9 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   if (!ProductName.IsEmpty())
   {
     Text = new TFarText(this);
-    Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_PRODUCT_VERSION).c_str(),
-      ProductName.c_str(),
-      LoadStr(WINSCP_VERSION).c_str()));
+    Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_PRODUCT_VERSION),
+      ProductName,
+      LoadStr(WINSCP_VERSION)));
     Text->SetCenterGroup(true);
   }
 
@@ -1122,7 +1122,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   new TFarSeparator(this);
 
   Text = new TFarText(this);
-  Text->SetCaption(FMTLOAD(PUTTY_BASED_ON, LoadStr(PUTTY_VERSION).c_str()));
+  Text->SetCaption(FMTLOAD(PUTTY_BASED_ON, LoadStr(PUTTY_VERSION)));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
