@@ -347,6 +347,9 @@
     <ProjectReference Include="..\..\libs\apr\build\libapr.vs2015.vcxproj">
       <Project>{74BFD665-A62B-4745-8A2A-EE1A2A63CD08}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\libs\fmt\fmt.vs2015.vcxproj">
+      <Project>{D4974AF2-C241-491B-A257-C0B381494D6B}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
