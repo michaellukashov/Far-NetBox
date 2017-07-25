@@ -28,7 +28,8 @@ void nb_free(const T * ptr) { dlfree(reinterpret_cast<void *>(const_cast<T *>(pt
 #define nb_realloc(ptr, size) ::realloc(ptr, size)
 
 #if defined(__cplusplus)
-#define nb_free(ptr) ::free(reinterpret_cast<void *>(ptr))
+template<typename T>
+void nb_free(const T * ptr) { ::free(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
 #else
 #define nb_free(ptr) ::free((void *)(ptr))
 #endif // if defined(__cplusplus)
