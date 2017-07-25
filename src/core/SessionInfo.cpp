@@ -6,14 +6,12 @@
 #include <lmcons.h>
 #define SECURITY_WIN32
 #include <sspi.h>
-#include <secext.h>
 
 #include <Common.h>
 #include <Exceptions.h>
 
 #include "SessionInfo.h"
 #include "TextsCore.h"
-#include "CoreMain.h"
 #include "Script.h"
 
 static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
@@ -806,10 +804,10 @@ void TSessionLog::Add(TLogLineType Type, UnicodeString ALine)
       {
         throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
-      catch (Exception & E)
+      catch (Exception & E2)
       {
-        AddException(&E);
-        FUI->HandleExtendedException(&E);
+        AddException(&E2);
+        FUI->HandleExtendedException(&E2);
       }
     }
   }
@@ -890,12 +888,12 @@ void TSessionLog::OpenLogFile()
     {
       throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
     }
-    catch (Exception & E)
+    catch (Exception & E2)
     {
-      AddException(&E);
+      AddException(&E2);
       // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
       TUnguard Unguard(FCriticalSection);
-      FUI->HandleExtendedException(&E);
+      FUI->HandleExtendedException(&E2);
     }
   }
 
@@ -1408,11 +1406,11 @@ void TActionLog::Add(UnicodeString Line)
             {
               throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
             }
-            catch (Exception & E)
+            catch (Exception & E2)
             {
               if (FUI != nullptr)
               {
-                FUI->HandleExtendedException(&E);
+                FUI->HandleExtendedException(&E2);
               }
             }
           }
@@ -1535,13 +1533,13 @@ void TActionLog::OpenLogFile()
       {
         throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
-      catch (Exception & E)
+      catch (Exception & E2)
       {
         if (FUI != nullptr)
         {
           // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
           TUnguard Unguard(FCriticalSection);
-          FUI->HandleExtendedException(&E);
+          FUI->HandleExtendedException(&E2);
         }
       }
     }
