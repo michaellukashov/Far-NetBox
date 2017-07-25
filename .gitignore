@@ -58,3 +58,4 @@ cov-int/
 .vs/
 *.VC.db
 *.VC.opendb
+ReSharper.DotSettings
