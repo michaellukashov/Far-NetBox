@@ -254,7 +254,7 @@ UnicodeString TrimRight(UnicodeString Str)
   UnicodeString Result = Str;
   intptr_t Len = Result.Length();
   while (Len > 0 &&
-    ((Result[Len] == L' ') || (Result[Len] == L'\n')))
+    ((Result[Len] == L' ') || (Result[Len] == L'\n') || (Result[Len] == L'\r') || (Result[Len] == L'\x00')))
   {
     Len--;
   }
