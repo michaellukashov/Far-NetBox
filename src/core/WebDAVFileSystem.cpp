@@ -12,7 +12,6 @@
 #ifndef WINSCP
 #define WINSCP
 #endif
-#include <openssldefs.h>
 #include <ne_basic.h>
 #include <ne_auth.h>
 #include <ne_props.h>

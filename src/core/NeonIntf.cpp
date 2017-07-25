@@ -2,7 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <openssldefs.h>
 #include <ne_redirect.h>
 #include <ne_auth.h>
 
