@@ -19,7 +19,6 @@
 #include "HelpCore.h"
 #include "WinSCPSecurity.h"
 #include <StrUtils.hpp>
-#include <DateUtils.hpp>
 #include <openssl/x509_vfy.h>
 
 const int DummyCodeClass = 8;
@@ -491,7 +490,7 @@ void TFTPFileSystem::Open()
 
   intptr_t TimeZoneOffset = Data->GetTimeDifferenceAuto() ? 0 : TimeToMinutes(Data->GetTimeDifference());
 
-  int UTF8 = 0;
+  int UTF8;
   uintptr_t CodePage = Data->GetCodePageAsNumber();
 
   switch (CodePage)
@@ -2905,7 +2904,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   else
   {
     bool GotNoFilesForAll = false;
-    bool Repeat = false;
+    bool Repeat;
 
     do
     {
@@ -3526,7 +3525,7 @@ void TFTPFileSystem::DiscardMessages()
 
 void TFTPFileSystem::WaitForMessages()
 {
-  DWORD Result = 0;
+  DWORD Result;
   do
   {
     Result = ::WaitForSingleObject(FQueueEvent, GUIUpdateInterval);
@@ -3548,7 +3547,7 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
 
   FWaitingForReply = true;
 
-  uintptr_t Reply = 0;
+  uintptr_t Reply;
 
   try__finally
   {
@@ -3646,7 +3645,7 @@ uintptr_t TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
   ResetReply();
   FWaitingForReply = true;
 
-  uintptr_t Reply = 0;
+  uintptr_t Reply;
 
   try__finally
   {
@@ -3996,7 +3995,7 @@ void TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
   }
   else
   {
-    intptr_t Start = 0;
+    intptr_t Start;
     // response with code prefix
     if (HasCodePrefix && (FLastCode == Code))
     {
@@ -4525,7 +4524,7 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & Val
 static bool VerifyNameMask(UnicodeString Name, UnicodeString Mask)
 {
   bool Result = true;
-  intptr_t Pos = 0;
+  intptr_t Pos;
   while (Result && (Pos = Mask.Pos(L"*")) > 0)
   {
     // Pos will typically be 1 here, so not actual comparison is done
