@@ -417,12 +417,12 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
     case mfNone:
       return L"";
     case mfMDY:
-      return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
+      return FORMAT("%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
     case mfMDHM:
-      return FORMAT(L"%3s %2d %2d:%2.2d",
+      return FORMAT("%3s %2d %2d:%2.2d",
         EngShortMonthNames[Month-1], Day, Hour, Min);
     case mfFull:
-      return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
+      return FORMAT("%3s %2d %2d:%2.2d:%2.2d %4d",
         EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
     default:
       DebugAssert(false);
@@ -442,10 +442,10 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
       return L"";
 
     case mfMDY:
-      return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
+      return FORMAT("%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
 
     case mfMDHM:
-      return FORMAT(L"%3s %2d %2d:%2.2d",
+      return FORMAT("%3s %2d %2d:%2.2d",
         EngShortMonthNames[Month-1], Day, Hour, Min);
 
     default:
@@ -453,7 +453,7 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
       // fall thru
 
     case mfFull:
-      return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
+      return FORMAT("%3s %2d %2d:%2.2d:%2.2d %4d",
         EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
   }
 }
@@ -668,7 +668,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
 
 UnicodeString TRemoteToken::GetLogText() const
 {
-  return FORMAT(L"\"%s\" [%d]", FName.c_str(), static_cast<int>(FID));
+  return FORMAT("\"%s\" [%d]", FName, static_cast<int>(FID));
 }
 
 
@@ -780,7 +780,7 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t * Title)
 {
   if (!FTokens.empty())
   {
-    Terminal->LogEvent(FORMAT(L"Following %s found:", Title));
+    Terminal->LogEvent(FORMAT("Following %s found:", Title));
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(FTokens.size()); ++Index)
     {
       Terminal->LogEvent(UnicodeString(L"  ") + FTokens[Index].GetLogText());
@@ -788,7 +788,7 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t * Title)
   }
   else
   {
-    Terminal->LogEvent(FORMAT(L"No %s found.", Title));
+    Terminal->LogEvent(FORMAT("No %s found.", Title));
   }
 }
 
@@ -1516,11 +1516,11 @@ UnicodeString TRemoteFile::GetListingStr() const
   {
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
-  return FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
-    GetType(), GetRights()->GetText().c_str(), ::Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(), GetFileGroup().GetName().c_str(),
-    ::Int64ToStr(GetSize()).c_str(),  // explicitly using size even for directories
-    GetModificationStr().c_str(), GetFileName().c_str(),
-    LinkPart.c_str());
+  return FORMAT("%s%s %3s %-8s %-8s %9s %-12s %s%s",
+    GetType(), GetRights()->GetText(), ::Int64ToStr(FINodeBlocks), GetFileOwner().GetName(), GetFileGroup().GetName(),
+    ::Int64ToStr(GetSize()),  // explicitly using size even for directories
+    GetModificationStr(), GetFileName(),
+    LinkPart);
 }
 
 UnicodeString TRemoteFile::GetFullFileName() const

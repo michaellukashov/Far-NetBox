@@ -338,14 +338,14 @@ void TOptions::LogOptions(TLogOptionEvent OnLogOption)
     switch (Option.Type)
     {
     case otParam:
-      LogStr = FORMAT(L"Parameter: %s", Option.Value.c_str());
+      LogStr = FORMAT("Parameter: %s", Option.Value);
       DebugAssert(Option.Name.IsEmpty());
       break;
 
     case otSwitch:
       LogStr =
-        FORMAT(L"Switch:    %c%s%s%s",
-          FSwitchMarks[1], Option.Name.c_str(), (Option.Value.IsEmpty() ? UnicodeString() : FSwitchValueDelimiters.SubString(1, 1)).c_str(), Option.Value.c_str());
+        FORMAT("Switch:    %c%s%s%s",
+          FSwitchMarks[1], Option.Name, (Option.Value.IsEmpty() ? UnicodeString() : FSwitchValueDelimiters.SubString(1, 1)), Option.Value);
       break;
 
     default:

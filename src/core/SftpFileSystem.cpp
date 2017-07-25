@@ -1123,7 +1123,7 @@ public:
       TYPE_CASE(SSH_FXP_EXTENDED);
       TYPE_CASE(SSH_FXP_EXTENDED_REPLY);
       default:
-        return FORMAT(L"Unknown message (%d)", static_cast<int>(GetType()));
+        return FORMAT("Unknown message (%d)", static_cast<int>(GetType()));
     }
   }
 
@@ -1657,7 +1657,7 @@ protected:
 
         if (FFileSystem->FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
         {
-          FFileSystem->FTerminal->LogEvent(FORMAT(L"Write request offset: %d, len: %d",
+          FFileSystem->FTerminal->LogEvent(FORMAT("Write request offset: %d, len: %d",
             int(FTransfered), int(BlockBuf.GetSize())));
         }
 
@@ -2088,9 +2088,9 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
         }
         else
         {
-          Line = FORMAT(L"%s=%s", Name.c_str(), DisplayableStr(Value).c_str());
+          Line = FORMAT("%s=%s", Name, DisplayableStr(Value));
         }
-        FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", Line.c_str());
+        FFileSystemInfo.AdditionalInfo += FORMAT("  %s\r\n", Line);
       }
     }
     else
@@ -2414,12 +2414,12 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
       {
         if (FNotLoggedPackets)
         {
-          FTerminal->LogEvent(FORMAT(L"%d skipped SSH_FXP_WRITE, SSH_FXP_READ, SSH_FXP_DATA and SSH_FXP_STATUS packets.",
+          FTerminal->LogEvent(FORMAT("%d skipped SSH_FXP_WRITE, SSH_FXP_READ, SSH_FXP_DATA and SSH_FXP_STATUS packets.",
             FNotLoggedPackets));
           FNotLoggedPackets = 0;
         }
-        FTerminal->GetLog()->Add(llInput, FORMAT(L"Type: %s, Size: %d, Number: %d",
-          Packet->GetTypeName().c_str(),
+        FTerminal->GetLog()->Add(llInput, FORMAT("Type: %s, Size: %d, Number: %d",
+          Packet->GetTypeName(),
           static_cast<int>(Packet->GetLength()),
           static_cast<int>(Packet->GetMessageNumber())));
 #if 0
@@ -2528,7 +2528,7 @@ SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
             }
             Principals += Packet->GetAnsiString();
           }
-          MessageStr = FORMAT(MessageStr.c_str(), Principals.c_str());
+          MessageStr = FORMAT(MessageStr, Principals);
         }
       }
     }
@@ -2538,15 +2538,15 @@ SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     }
     if (FTerminal->GetLog()->GetLogging())
     {
-      FTerminal->GetLog()->Add(llOutput, FORMAT(L"Status code: %d, Message: %d, Server: %s, Language: %s ",
+      FTerminal->GetLog()->Add(llOutput, FORMAT("Status code: %d, Message: %d, Server: %s, Language: %s ",
         static_cast<int>(Code),
         static_cast<int>(Packet->GetMessageNumber()),
-        ServerMessage.c_str(),
-        LanguageTag.c_str()));
+        ServerMessage,
+        LanguageTag));
     }
     if (!LanguageTag.IsEmpty())
     {
-      LanguageTag = FORMAT(L" (%s)", LanguageTag.c_str());
+      LanguageTag = FORMAT(" (%s)", LanguageTag);
     }
     UnicodeString HelpKeyword;
     switch (Code)
@@ -2573,7 +2573,7 @@ SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
   {
     if (!FNotLoggedPackets || Code)
     {
-      FTerminal->GetLog()->Add(llOutput, FORMAT(L"Status code: %d", static_cast<int>(Code)));
+      FTerminal->GetLog()->Add(llOutput, FORMAT("Status code: %d", static_cast<int>(Code)));
     }
     return Code;
   }
@@ -2670,12 +2670,12 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
           {
             if (FNotLoggedPackets)
             {
-              FTerminal->LogEvent(FORMAT(L"%d skipped SSH_FXP_WRITE, SSH_FXP_READ, SSH_FXP_DATA and SSH_FXP_STATUS packets.",
+              FTerminal->LogEvent(FORMAT("%d skipped SSH_FXP_WRITE, SSH_FXP_READ, SSH_FXP_DATA and SSH_FXP_STATUS packets.",
                 FNotLoggedPackets));
               FNotLoggedPackets = 0;
             }
-            FTerminal->GetLog()->Add(llOutput, FORMAT(L"Type: %s, Size: %d, Number: %d",
-              Packet->GetTypeName().c_str(),
+            FTerminal->GetLog()->Add(llOutput, FORMAT("Type: %s, Size: %d, Number: %d",
+              Packet->GetTypeName(),
               static_cast<int>(Packet->GetLength()),
               static_cast<int>(Packet->GetMessageNumber())));
 #if 0
@@ -2851,8 +2851,8 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath)
 {
   try
   {
-    FTerminal->LogEvent(FORMAT(L"Getting real path for '%s'",
-      APath.c_str()));
+    FTerminal->LogEvent(FORMAT("Getting real path for '%s'",
+      APath));
 
     TSFTPPacket Packet(SSH_FXP_REALPATH, FCodePage);
     Packet.AddPathString(APath, FUtfStrings);
@@ -2898,7 +2898,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath)
     UnicodeString RealDir = core::UnixExcludeTrailingBackslash(Packet.GetPathString(FUtfStrings));
     // ignore rest of SSH_FXP_NAME packet
 
-    FTerminal->LogEvent(FORMAT(L"Real path is '%s'", RealDir.c_str()));
+    FTerminal->LogEvent(FORMAT("Real path is '%s'", RealDir));
 
     return RealDir;
   }

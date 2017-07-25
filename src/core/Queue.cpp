@@ -1289,7 +1289,7 @@ void TTerminalItem::Init(intptr_t Index)
   std::unique_ptr<TBackgroundTerminal> Terminal(new TBackgroundTerminal(FQueue->FTerminal));
   try__catch
   {
-    Terminal->Init(FQueue->FSessionData, FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
+    Terminal->Init(FQueue->FSessionData, FQueue->FConfiguration, this, FORMAT("Background %d", Index));
     Terminal->SetUseBusyCursor(false);
 
     Terminal->SetOnQueryUser(nb::bind(&TTerminalItem::TerminalQueryUser, this));

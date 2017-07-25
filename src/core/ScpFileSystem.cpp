@@ -272,11 +272,11 @@ UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, va_list args) const
   UnicodeString Result;
   if (!Line.IsEmpty())
   {
-    Result = FORMAT(L"%s%s%s%s", FirstLineCmd.c_str(), Line.c_str(), Separator.c_str(), LastLineCmd.c_str());
+    Result = FORMAT("%s%s%s%s", FirstLineCmd, Line, Separator, LastLineCmd);
   }
   else
   {
-    Result = FORMAT(L"%s%s", FirstLineCmd.c_str(), LastLineCmd.c_str());
+    Result = FORMAT("%s%s", FirstLineCmd, LastLineCmd);
   }
   return Result;
 }
@@ -561,8 +561,8 @@ void TSCPFileSystem::EnsureLocation()
 {
   if (!FCachedDirectoryChange.IsEmpty())
   {
-    FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
-      FCachedDirectoryChange.c_str()));
+    FTerminal->LogEvent(FORMAT("Locating to cached directory \"%s\".",
+      FCachedDirectoryChange));
     UnicodeString Directory = FCachedDirectoryChange;
     FCachedDirectoryChange.Clear();
     try
@@ -944,7 +944,7 @@ void TSCPFileSystem::DetectReturnVar()
 
       try
       {
-        FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index].c_str()));
+        FTerminal->LogEvent(FORMAT("Trying \"$%s\".", ReturnVars[Index]));
         ExecCommand(fsVarValue, 0, ReturnVars[Index].c_str());
         UnicodeString Str = GetOutput()->GetCount() > 0 ? GetOutput()->GetString(0) : L"";
         intptr_t Val = ::StrToIntDef(Str, 256);
@@ -979,8 +979,8 @@ void TSCPFileSystem::DetectReturnVar()
     else
     {
       FCommandSet->SetReturnVar(NewReturnVar);
-      FTerminal->LogEvent(FORMAT(L"Return code variable \"%s\" selected.",
-        FCommandSet->GetReturnVar().c_str()));
+      FTerminal->LogEvent(FORMAT("Return code variable \"%s\" selected.",
+        FCommandSet->GetReturnVar()));
     }
   }
   catch (Exception & E)
@@ -1112,8 +1112,8 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        FTerminal->LogEvent(FORMAT(L"Listing directory \"%s\".",
-          FileList->GetDirectory().c_str()));
+        FTerminal->LogEvent(FORMAT("Listing directory \"%s\".",
+          FileList->GetDirectory()));
         ExecCommand(fsListDirectory, Params,
           FTerminal->GetSessionData()->GetListingCommand().c_str(), Options.c_str(),
             DelimitStr(FileList->GetDirectory().c_str()).c_str());
@@ -1186,9 +1186,9 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       if (FLsFullTime == asAuto)
       {
           FTerminal->LogEvent(
-            FORMAT(L"Directory listing with %s succeed, next time all errors during "
-              L"directory listing will be displayed immediately.",
-              UnicodeString(FullTimeOption).c_str()));
+            FORMAT("Directory listing with %s succeed, next time all errors during "
+              "directory listing will be displayed immediately.",
+              UnicodeString(FullTimeOption)));
           FLsFullTime = asOn;
       }
     }
@@ -1202,8 +1202,8 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           FLsFullTime = asOff;
           Again = true;
           FTerminal->LogEvent(
-            FORMAT(L"Directory listing with %s failed, try again regular listing.",
-              UnicodeString(FullTimeOption).c_str()));
+            FORMAT("Directory listing with %s failed, try again regular listing.",
+              UnicodeString(FullTimeOption)));
         }
         else
         {
@@ -1307,7 +1307,7 @@ void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
     {
       // The -T is GNU switch and may not be available on all platforms.
       // https://lists.gnu.org/archive/html/bug-coreutils/2004-07/msg00000.html
-      FTerminal->LogEvent(FORMAT(L"Attempt with %s failed, trying without", AdditionalSwitches.c_str()));
+      FTerminal->LogEvent(FORMAT("Attempt with %s failed, trying without", AdditionalSwitches));
       ExecCommand(fsCopyFile, 0, L"", DelimitedFileName.c_str(), DelimitedNewName.c_str());
     }
     else
@@ -1883,7 +1883,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
     FTerminal->ChangeFileName(
       CopyParam, base::ExtractFileName(RealFileName, false), osLocal, Level == 0);
 
-  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", RealFileName.c_str()));
+  FTerminal->LogEvent(FORMAT("File: \"%s\"", RealFileName));
 
   OperationProgress->SetFile(RealFileName, false);
 
@@ -1923,7 +1923,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
       DebugAssert(LocalFileHandle != INVALID_HANDLE_VALUE);
 
       // File is regular file (not directory)
-      FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
+      FTerminal->LogEvent(FORMAT("Copying \"%s\" to remote directory started.", RealFileName));
 
       OperationProgress->SetLocalSize(Size);
 
@@ -2045,7 +2045,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
             /* TODO : We can't send file above 32bit size in ASCII mode! */
             if (OperationProgress->AsciiTransfer)
             {
-              FTerminal->LogEvent(FORMAT(L"Sending ASCII data (%u bytes)",
+              FTerminal->LogEvent(FORMAT("Sending ASCII data (%u bytes)",
                 AsciiBuf.GetSize()));
               // Should be equal, just in case it's rounded (see above)
               OperationProgress->ChangeTransferSize(AsciiBuf.GetSize());
@@ -2069,12 +2069,12 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
           {
             if (!OperationProgress->TransferedSize)
             {
-              FTerminal->LogEvent(FORMAT(L"Sending BINARY data (first block, %u bytes)",
+              FTerminal->LogEvent(FORMAT("Sending BINARY data (first block, %u bytes)",
                 BlockBuf.GetSize()));
             }
             else if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
             {
-              FTerminal->LogEvent(FORMAT(L"Sending BINARY data (%u bytes)",
+              FTerminal->LogEvent(FORMAT("Sending BINARY data (%u bytes)",
                 BlockBuf.GetSize()));
             }
             FSecureShell->Send(reinterpret_cast<const uint8_t *>(BlockBuf.GetData()), static_cast<int>(BlockBuf.GetSize()));
@@ -2187,7 +2187,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
     });
   }
 
-  FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory finished.", AFileName.c_str()));
+  FTerminal->LogEvent(FORMAT("Copying \"%s\" to remote directory finished.", AFileName));
 }
 
 void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
@@ -2196,7 +2196,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
 {
   DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
 
-  FTerminal->LogEvent(FORMAT(L"Entering directory \"%s\".", DirectoryName.c_str()));
+  FTerminal->LogEvent(FORMAT("Entering directory \"%s\".", DirectoryName));
 
   OperationProgress->SetFile(DirectoryName);
   UnicodeString DestFileName =
@@ -2219,8 +2219,8 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   /* TODO 1: maybe send filetime */
 
   // Send directory modes (rights), filesize and file name
-  UnicodeString Buf = FORMAT(L"D%s 0 %s",
-    CopyParam->RemoteFileRights(LocalFileAttrs).GetOctal().c_str(), DestFileName.c_str());
+  UnicodeString Buf = FORMAT("D%s 0 %s",
+    CopyParam->RemoteFileRights(LocalFileAttrs).GetOctal(), DestFileName);
   FSecureShell->SendLine(Buf);
   SCPResponse();
 
@@ -2231,7 +2231,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       if (FTerminal->GetActive())
       {
         // Tell remote side, that we're done.
-        FTerminal->LogEvent(FORMAT(L"Leaving directory \"%s\".", DirectoryName.c_str()));
+        FTerminal->LogEvent(FORMAT("Leaving directory \"%s\".", DirectoryName));
         FSecureShell->SendLine(L"E");
         SCPResponse();
       }
@@ -2354,8 +2354,8 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
     Options += L" -1";
   }
 
-  FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory "
-    L"\"%s\"", AFilesToCopy->GetCount(), TargetDir.c_str()));
+  FTerminal->LogEvent(FORMAT("Copying %d files/directories to local directory "
+    "\"%s\"", AFilesToCopy->GetCount(), TargetDir));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
   try__finally
@@ -2522,12 +2522,12 @@ void TSCPFileSystem::SCPError(const UnicodeString & Message, bool Fatal)
 void TSCPFileSystem::SCPSendError(const UnicodeString & Message, bool Fatal)
 {
   uint8_t ErrorLevel = static_cast<uint8_t>(Fatal ? 2 : 1);
-  FTerminal->LogEvent(FORMAT(L"Sending SCP error (%d) to remote side:",
+  FTerminal->LogEvent(FORMAT("Sending SCP error (%d) to remote side:",
     static_cast<int>(ErrorLevel)));
   FSecureShell->Send(&ErrorLevel, 1);
   // We don't send exact error message, because some unspecified
   // characters can terminate remote scp
-  FSecureShell->SendLine(FORMAT(L"scp: error: %s", Message.c_str()));
+  FSecureShell->SendLine(FORMAT("scp: error: %s", Message));
 }
 
 void TSCPFileSystem::SCPSink(
@@ -2681,7 +2681,7 @@ void TSCPFileSystem::SCPSink(
           UnicodeString OnlyFileName = base::UnixExtractFileName(Line);
           if (Line != OnlyFileName)
           {
-            FTerminal->LogEvent(FORMAT(L"Warning: Remote host set a compound pathname '%s'", Line.c_str()));
+            FTerminal->LogEvent(FORMAT("Warning: Remote host set a compound pathname '%s'", Line));
           }
 
           AbsoluteFileName = SourceDir + OnlyFileName;
@@ -2707,8 +2707,8 @@ void TSCPFileSystem::SCPSink(
         UnicodeString BaseFileName = FTerminal->GetBaseFileName(AbsoluteFileName);
         if (!CopyParam->AllowTransfer(BaseFileName, osRemote, Dir, MaskParams))
         {
-          FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer",
-            AbsoluteFileName.c_str()));
+          FTerminal->LogEvent(FORMAT("File \"%s\" excluded from transfer",
+            AbsoluteFileName));
           SkipConfirmed = true;
           SCPError(L"", false);
         }

@@ -146,11 +146,11 @@ void TCopyParamType::DoGetInfoStr(
       Ident = FormatMask ? 4 : 5;
       break;
     }
-    UnicodeString S = FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE2, 1).c_str(),
-      LoadStrPart(COPY_INFO_TRANSFER_TYPE2, Ident).c_str());
+    UnicodeString S = FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE2, 1),
+      LoadStrPart(COPY_INFO_TRANSFER_TYPE2, Ident));
     if (FormatMask)
     {
-      S = FORMAT(S.c_str(), GetAsciiFileMask().GetMasks().c_str());
+      S = FORMAT(S, GetAsciiFileMask().GetMasks());
     }
     AddToList(Result, S, Separator);
 
@@ -181,8 +181,8 @@ void TCopyParamType::DoGetInfoStr(
 
   if (GetFileNameCase() != Defaults.GetFileNameCase())
   {
-    ADD(FORMAT(LoadStrPart(COPY_INFO_FILENAME, 1).c_str(),
-      LoadStrPart(COPY_INFO_FILENAME, GetFileNameCase() + 2).c_str()),
+    ADD(FORMAT(LoadStrPart(COPY_INFO_FILENAME, 1),
+      LoadStrPart(COPY_INFO_FILENAME, GetFileNameCase() + 2)),
       cpaIncludeMaskOnly);
 
     NoScriptArgs = true;
@@ -214,7 +214,7 @@ void TCopyParamType::DoGetInfoStr(
       {
         RightsStr += L", " + LoadStr(COPY_INFO_ADD_X_TO_DIRS);
       }
-      ADD(FORMAT(LoadStr(COPY_INFO_PERMISSIONS).c_str(), RightsStr.c_str()),
+      ADD(FORMAT(LoadStr(COPY_INFO_PERMISSIONS), RightsStr),
         Except);
       if (FLAGCLEAR(Options, Except))
       {
@@ -381,7 +381,7 @@ void TCopyParamType::DoGetInfoStr(
 
   if (!(GetIncludeFileMask() == Defaults.GetIncludeFileMask()))
   {
-    ADD(FORMAT(LoadStr(COPY_INFO_FILE_MASK).c_str(), GetIncludeFileMask().GetMasks().c_str()),
+    ADD(FORMAT(LoadStr(COPY_INFO_FILE_MASK), GetIncludeFileMask().GetMasks()),
       cpaNoIncludeMask);
 
 //    ScriptArgs += RtfSwitch(FILEMASK_SWITCH, Link, IncludeFileMask.Masks);
@@ -459,8 +459,8 @@ void TCopyParamType::DoGetInfoStr(
   if (SomeAttrExcluded)
   {
     Result += (Result.IsEmpty() ? UnicodeString() : Separator) +
-      FORMAT(LoadStrPart(COPY_INFO_NOT_USABLE, 1).c_str(),
-        LoadStrPart(COPY_INFO_NOT_USABLE, (SomeAttrIncluded ? 2 : 3)).c_str());
+      FORMAT(LoadStrPart(COPY_INFO_NOT_USABLE, 1),
+        LoadStrPart(COPY_INFO_NOT_USABLE, (SomeAttrIncluded ? 2 : 3)));
   }
   else if (Result.IsEmpty())
   {
@@ -667,32 +667,32 @@ UnicodeString TCopyParamType::GetLogStr() const
   // OpenArray (ARRAYOFCONST) supports only up to 19 arguments, so we had to split it
   return
     FORMAT(
-      L"  PrTime: %s%s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %c; "
-      L"Resume: %c (%d); CalcS: %s; Mask: %s\n",
-      BooleanToEngStr(GetPreserveTime()).c_str(),
-      UnicodeString(GetPreserveTime() && GetPreserveTimeDirs() ? L"+Dirs" : L"").c_str(),
-      BooleanToEngStr(GetPreserveReadOnly()).c_str(),
-      GetRights().GetText().c_str(),
-      BooleanToEngStr(GetPreserveRights()).c_str(),
-      BooleanToEngStr(GetIgnorePermErrors()).c_str(),
+      "  PrTime: %s%s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %c; "
+      "Resume: %c (%d); CalcS: %s; Mask: %s\n",
+      BooleanToEngStr(GetPreserveTime()),
+      UnicodeString(GetPreserveTime() && GetPreserveTimeDirs() ? L"+Dirs" : L""),
+      BooleanToEngStr(GetPreserveReadOnly()),
+      GetRights().GetText(),
+      BooleanToEngStr(GetPreserveRights()),
+      BooleanToEngStr(GetIgnorePermErrors()),
       CaseC[GetFileNameCase()],
-      CharToHex(GetInvalidCharsReplacement()).c_str(),
+      CharToHex(GetInvalidCharsReplacement()),
       ResumeC[GetResumeSupport()],
       (int)GetResumeThreshold(),
-      BooleanToEngStr(GetCalculateSize()).c_str(),
-      GetFileMask().c_str()) +
+      BooleanToEngStr(GetCalculateSize()),
+      GetFileMask()) +
     FORMAT(
-      L"  TM: %c; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s; ResumeL: %d\n"
-      L"  AscM: %s\n",
+      "  TM: %c; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; InclM: %s; ResumeL: %d\n"
+      "  AscM: %s\n",
        ModeC[GetTransferMode()],
-       BooleanToEngStr(GetClearArchive()).c_str(),
-       BooleanToEngStr(GetRemoveCtrlZ()).c_str(),
-       BooleanToEngStr(GetRemoveBOM()).c_str(),
+       BooleanToEngStr(GetClearArchive()),
+       BooleanToEngStr(GetRemoveCtrlZ()),
+       BooleanToEngStr(GetRemoveBOM()),
        int(GetCPSLimit()),
-       BooleanToEngStr(GetNewerOnly()).c_str(),
-       GetIncludeFileMask().GetMasks().c_str(),
+       BooleanToEngStr(GetNewerOnly()),
+       GetIncludeFileMask().GetMasks(),
        ((FTransferSkipList.get() != nullptr) ? FTransferSkipList->GetCount() : 0) + (!FTransferResumeFile.IsEmpty() ? 1 : 0),
-       GetAsciiFileMask().GetMasks().c_str());
+       GetAsciiFileMask().GetMasks());
 }
 
 DWORD TCopyParamType::LocalFileAttrs(const TRights & Rights) const

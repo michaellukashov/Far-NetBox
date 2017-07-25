@@ -102,7 +102,7 @@ ne_session * CreateNeonSession(
   }
 
   ne_redirect_register(Session);
-  ne_set_useragent(Session, StrToNeon(FORMAT(L"%s/%s", GetAppNameString().c_str(), GetConfiguration()->GetVersion().c_str())));
+  ne_set_useragent(Session, StrToNeon(FORMAT("%s/%s", GetAppNameString(), GetConfiguration()->GetVersion())));
 
   return Session;
 }
@@ -181,7 +181,7 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
       case NE_RETRY: // not sure if this is a public API
       default:
         DebugFail();
-        Error = FORMAT(L"Unexpected neon error %d", NeonStatus);
+        Error = FORMAT("Unexpected neon error %d", NeonStatus);
         break;
       }
     }
