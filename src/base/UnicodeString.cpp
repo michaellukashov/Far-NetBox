@@ -552,9 +552,9 @@ bool operator!=(const UTF8String & lhs, const UTF8String & rhs)
   return lhs.Data != rhs.Data;
 }
 
-UnicodeString::UnicodeString(const UnicodeString & Str)
+UnicodeString::UnicodeString(const UnicodeString & Str) :
+  Data(Str.c_str(), static_cast<int>(Str.GetLength()))
 {
-  Init(Str.c_str(), Str.GetLength());
 }
 
 UnicodeString::UnicodeString(const UTF8String & Str) :
