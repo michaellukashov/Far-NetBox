@@ -701,9 +701,9 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, UnicodeString ALine)
           UtfLine.Insert(L'\r', Index);
         }
       }*/
-      intptr_t Writting = UtfLine.Length();
-      CheckSize(Writting);
-      FCurrentFileSize += fwrite(UtfLine.c_str(), 1, Writting, static_cast<FILE *>(FFile));
+      intptr_t ToWrite = UtfLine.Length();
+      CheckSize(ToWrite);
+      FCurrentFileSize += fwrite(UtfLine.c_str(), 1, ToWrite, static_cast<FILE *>(FFile));
     }}
     catch (...)
     {
