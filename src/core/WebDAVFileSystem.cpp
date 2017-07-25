@@ -444,7 +444,6 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, UnicodeString Url
     FTerminal->LogEvent(FORMAT(L"Warning: %s", LoadStr(UNENCRYPTED_REDIRECT).c_str()));
   }
 
-  TSessionData * Data = FTerminal->GetSessionData();
   DebugAssert(FNeonSession == nullptr);
   FNeonSession = CreateNeonSession(uri);
   InitSession(FNeonSession);
