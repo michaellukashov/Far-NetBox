@@ -150,7 +150,7 @@ typedef int (*FSortFunc)(void *, void *);  // sort function prototype
 
 typedef struct
 {
-  void **  items;
+  void**   items;
   int      realCount;
   int      limit;
   int      increment;
