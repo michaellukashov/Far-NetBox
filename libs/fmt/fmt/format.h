@@ -3152,7 +3152,7 @@ void BasicWriter<Char>::write_double(T value, const Spec &spec) {
   accessed as a C string with ``out.c_str()``.
   \endrst
  */
-template <typename Char, typename Allocator = custom_nballocator_t<T> >
+template <typename Char, typename Allocator = custom_nballocator_t<Char> >
 class BasicMemoryWriter : public BasicWriter<Char> {
  private:
   internal::MemoryBuffer<Char, internal::INLINE_BUFFER_SIZE, Allocator> buffer_;
