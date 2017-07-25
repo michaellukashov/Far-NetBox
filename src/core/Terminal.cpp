@@ -6,8 +6,6 @@
 
 #include <Common.h>
 #include <Sysutils.hpp>
-#include <FileBuffer.h>
-#include <StrUtils.hpp>
 #include <System.IOUtils.hpp>
 
 #include "Interface.h"
@@ -23,7 +21,6 @@
 #include "HelpCore.h"
 #include "CoreMain.h"
 #include "Queue.h"
-#include <openssldefs.h>
 #include <openssl/pkcs12.h>
 #include <openssl/err.h>
 
@@ -176,12 +173,8 @@ TSynchronizeOptions::~TSynchronizeOptions()
 
 bool TSynchronizeOptions::MatchesFilter(UnicodeString AFileName) const
 {
-  bool Result = false;
-  if (Filter == nullptr)
-  {
-    Result = true;
-  }
-  else
+  bool Result = true;
+  if (Filter)
   {
     intptr_t FoundIndex = 0;
     Result = Filter->Find(AFileName, FoundIndex);
@@ -1927,7 +1920,7 @@ void TTerminal::Reopen(intptr_t Params)
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   UnicodeString AName, UnicodeString Instructions, UnicodeString Prompt, bool Echo, intptr_t MaxLen, UnicodeString & AResult)
 {
-  bool Result = false;
+  bool Result;
   std::unique_ptr<TStrings> Prompts(new TStringList());
   std::unique_ptr<TStrings> Results(new TStringList());
   try__finally
@@ -2162,9 +2155,9 @@ void TTerminal::HandleExtendedException(Exception * E)
       // .. hence guard is dismissed from destructor, to make following call no-op
       Guard.Verify();
     }
-    catch (Exception & E)
+    catch (Exception & E2)
     {
-      if (!Guard.Verify(&E))
+      if (!Guard.Verify(&E2))
       {
         throw;
       }
@@ -2420,13 +2413,13 @@ bool TTerminal::QueryReopen(Exception * E, intptr_t Params,
         Reopen(Params);
         FSessionData->SetNumberOfRetries(0);
       }
-      catch (Exception & E)
+      catch (Exception & E2)
       {
         if (!GetActive())
         {
           Result =
             ContinueReopen(Start) &&
-            DoQueryReopen(&E);
+            DoQueryReopen(&E2);
         }
         else
         {
@@ -3743,7 +3736,7 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * AFileList)
 
 TRemoteFileList * TTerminal::ReadDirectoryListing(UnicodeString Directory, const TFileMasks & Mask)
 {
-  TRemoteFileList * FileList = nullptr;
+  TRemoteFileList * FileList;
   TRetryOperationLoop RetryLoop(this);
   do
   {
@@ -3996,7 +3989,7 @@ void TTerminal::ReadFile(UnicodeString AFileName,
 
 bool TTerminal::FileExists(UnicodeString AFileName, TRemoteFile ** AFile)
 {
-  bool Result = false;
+  bool Result;
   TRemoteFile * File = nullptr;
   try
   {
@@ -4853,7 +4846,7 @@ bool TTerminal::MoveFiles(TStrings * AFileList, UnicodeString Target,
   Params.Target = Target;
   Params.FileMask = FileMask;
   DirectoryModified(Target, true);
-  bool Result = false;
+  bool Result;
   BeginTransaction();
   try__finally
   {
@@ -5430,6 +5423,9 @@ bool TTerminal::DoCreateLocalFile(UnicodeString AFileName,
               case qaNo:
                 Result = false;
                 break;
+              default:
+                Result = false;
+                break;
               }
             }
           }
@@ -5747,7 +5743,7 @@ bool TTerminal::CalculateLocalFilesSize(const TStrings * AFileList,
   const TCopyParamType * CopyParam, bool AllowDirs, TStrings * Files,
   OUT int64_t & Size)
 {
-  bool Result = false;
+  bool Result;
   TFileOperationProgressType OperationProgress(nb::bind(&TTerminal::DoProgress, this), nb::bind(&TTerminal::DoFinished, this));
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress.Start(foCalculateSize, osLocal, AFileList->GetCount());
