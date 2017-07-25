@@ -1,7 +1,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <algorithm>
 #include <rdestl/vector.h>
 #include <Winhttp.h>
 
@@ -2501,16 +2500,14 @@ void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const Un
   rde::vector<AlgoT> NewList(Count);
 
   bool HasWarnAlgo = (WarnAlgo >= AlgoT());
-  const AlgoT * WarnPtr;
   intptr_t WarnDefaultIndex;
   if (!HasWarnAlgo)
   {
-    WarnPtr = nullptr;
     WarnDefaultIndex = -1;
   }
   else
   {
-    WarnPtr = std::find(DefaultList, DefaultList + Count, WarnAlgo);
+    const AlgoT * WarnPtr = std::find(DefaultList, DefaultList + Count, WarnAlgo);
     DebugAssert(WarnPtr != nullptr);
     WarnDefaultIndex = (WarnPtr - DefaultList);
   }
@@ -4393,6 +4390,8 @@ TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t FSProtocol)
       SetFtps(ftpsImplicit);
       Result = fsWebDAV;
       break;
+    default: 
+      break;
     }
   }
   // DebugAssert(Result != -1);
@@ -4460,7 +4459,7 @@ TStoredSessionList::~TStoredSessionList()
   SAFE_DESTROY(FDefaultSettings);
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    delete AtObject(Index);
+    delete TNamedObjectList::AtObject(Index);
     SetItem(Index, nullptr);
   }
 }
@@ -4510,11 +4509,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
           // if the list was empty before loading, do not waste time trying to
           // find existing sites to overwrite (we rely on underlying storage
           // to secure uniqueness of the key names)
-          if (WasEmpty)
-          {
-            SessionData = nullptr;
-          }
-          else
+          if (!WasEmpty)
           {
             SessionData = dyn_cast<TSessionData>(FindByName(SessionName));
           }
