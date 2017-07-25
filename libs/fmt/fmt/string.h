@@ -21,7 +21,7 @@ namespace fmt {
 namespace internal {
 
 // A buffer that stores data in ``std::basic_string``.
-template <typename Char, typename Allocator = std::allocator<Char> >
+template <typename Char, typename Allocator = custom_nballocator_t<Char> > 
 class StringBuffer : public Buffer<Char> {
  public:
   typedef std::basic_string<Char, std::char_traits<Char>, Allocator> StringType;
@@ -81,7 +81,7 @@ class StringBuffer : public Buffer<Char> {
   The output can be moved to a ``std::basic_string`` with ``out.move_to()``.
   \endrst
  */
-template <typename Char, typename Allocator = std::allocator<Char> >
+template <typename Char, typename Allocator = custom_nballocator_t<Char> >
 class BasicStringWriter : public BasicWriter<Char> {
  private:
   internal::StringBuffer<Char, Allocator> buffer_;
