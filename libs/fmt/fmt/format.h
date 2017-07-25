@@ -758,7 +758,7 @@ namespace internal {
 
 // A memory buffer for trivially copyable/constructible types with the first
 // SIZE elements stored in the object itself.
-template <typename T, std::size_t SIZE, typename Allocator = std::allocator<T> >
+template <typename T, std::size_t SIZE, typename Allocator = custom_nballocator_t<T> >
 class MemoryBuffer : private Allocator, public Buffer<T> {
  private:
   T data_[SIZE];
@@ -3152,7 +3152,7 @@ void BasicWriter<Char>::write_double(T value, const Spec &spec) {
   accessed as a C string with ``out.c_str()``.
   \endrst
  */
-template <typename Char, typename Allocator = std::allocator<Char> >
+template <typename Char, typename Allocator = custom_nballocator_t<T> >
 class BasicMemoryWriter : public BasicWriter<Char> {
  private:
   internal::MemoryBuffer<Char, internal::INLINE_BUFFER_SIZE, Allocator> buffer_;
