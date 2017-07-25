@@ -1119,7 +1119,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
   int & BreakCode)
 {
   DebugAssert(Items && Items->GetCount());
-  if (Items)
+  if (!Items)
     return -1;
   intptr_t Result = 0;
   FarMenuItemEx * MenuItems = nb::calloc<FarMenuItemEx*>(sizeof(FarMenuItemEx) * (1 + Items->GetCount()));

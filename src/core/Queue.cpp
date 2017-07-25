@@ -1534,7 +1534,7 @@ bool TTerminalItem::WaitForUserAction(
   DebugAssert(FItem != nullptr);
   DebugAssert((FItem->GetStatus() == TQueueItem::qsProcessing) ||
     (FItem->GetStatus() == TQueueItem::qsConnecting));
-  if (FItem)
+  if (!FItem)
     return false;
 
   bool Result;
