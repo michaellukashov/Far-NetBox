@@ -352,7 +352,7 @@ void CopyFileTime(TRemoteFileTime & Dest, const t_directory::t_direntry::t_date 
 
 bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 {
-  bool Result;
+  bool Result = false;
 
   unsigned int MessageID = FZ_MSG_ID(wParam);
 
