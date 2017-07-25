@@ -510,6 +510,13 @@ UTF8String UTF8String::operator+(const UTF8String & rhs) const
   return UTF8String(Result);
 }
 
+UTF8String UTF8String::operator+(const char * rhs) const
+{
+  string_t Result(Data);
+  Result += rhs;
+  return UTF8String(Result);
+}
+
 UTF8String & UTF8String::operator+=(const UTF8String & rhs)
 {
   Data.Append(rhs.Data.c_str(), static_cast<int>(rhs.Length()));
@@ -526,6 +533,12 @@ UTF8String & UTF8String::operator+=(const RawByteString & rhs)
 UTF8String & UTF8String::operator+=(const char Ch)
 {
   Data.AppendChar(Ch);
+  return *this;
+}
+
+UTF8String & UTF8String::operator+=(const char * rhs)
+{
+  Data.Append(rhs);
   return *this;
 }
 

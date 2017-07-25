@@ -48,6 +48,7 @@ public:
 
   UTF8String operator+(const UTF8String & rhs) const;
   UTF8String operator+(const RawByteString & rhs) const;
+  UTF8String operator+(const char * rhs) const;
   UTF8String & operator+=(const UTF8String & rhs);
   UTF8String & operator+=(const RawByteString & rhs);
   UTF8String & operator+=(const char Ch);
