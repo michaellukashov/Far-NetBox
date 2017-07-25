@@ -96,7 +96,7 @@ bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
   MenuItems->AddSeparator();
   intptr_t MAbout = MenuItems->Add(GetMsg(NB_CONFIG_ABOUT));
 
-  intptr_t Result = 0;
+  intptr_t Result;
 
   do
   {
@@ -580,7 +580,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
   const TMessageParams * Params)
 {
-  uintptr_t Result = 0;
+  uintptr_t Result;
   UnicodeString DialogStr = Str;
   std::unique_ptr<TStrings> ButtonLabels(new TStringList());
   uintptr_t Flags = 0;
