@@ -603,7 +603,7 @@ uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
   }
 
   return MoreMessageDialog(
-    FORMAT(UnicodeString(MessageFormat.IsEmpty() ? UnicodeString(L"%s") : MessageFormat).c_str(), Message.c_str()),
+    FORMAT(UnicodeString(MessageFormat.IsEmpty() ? UnicodeString(L"%s") : MessageFormat), Message),
     MoreMessages, Type, Answers, HelpKeyword, Params);
 #endif
   ThrowNotImplemented(3018);

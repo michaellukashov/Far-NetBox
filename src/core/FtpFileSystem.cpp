@@ -4682,12 +4682,12 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       FSessionInfo.Certificate =
         FMTLOAD(CERT_TEXT,
-          FormatContact(Data.Issuer).c_str(),
-          FormatContact(Data.Subject).c_str(),
-          FormatValidityTime(Data.ValidFrom).c_str(),
-          FormatValidityTime(Data.ValidUntil).c_str(),
-          FSessionInfo.CertificateFingerprint.c_str(),
-          Summary.c_str());
+          FormatContact(Data.Issuer),
+          FormatContact(Data.Subject),
+          FormatValidityTime(Data.ValidFrom),
+          FormatValidityTime(Data.ValidUntil),
+          FSessionInfo.CertificateFingerprint,
+          Summary);
 
       RequestResult = VerificationResult ? 1 : 0;
 

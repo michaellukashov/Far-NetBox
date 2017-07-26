@@ -2559,7 +2559,7 @@ SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
         HelpKeyword = HELP_SFTP_STATUS_PERMISSION_DENIED;
         break;
     }
-    UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, MessageStr.c_str(),
+    UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, MessageStr,
       int(Code), LanguageTag.c_str(), ServerMessage.c_str());
     if (Code == SSH_FX_FAILURE)
     {
@@ -4610,7 +4610,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
 
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
-        Answer = FTerminal->QueryUser(FORMAT(LoadStr(APPEND_OR_RESUME2).c_str(), ASourceFullFileName.c_str()),
+        Answer = FTerminal->QueryUser(FORMAT(LoadStr(APPEND_OR_RESUME2), ASourceFullFileName),
           nullptr, qaYes | qaNo | qaNoToAll | qaCancel, &Params);
       }
 

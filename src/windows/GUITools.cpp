@@ -321,11 +321,11 @@ UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   UnicodeString Result;
   if (Count == 1)
   {
-    Result = FORMAT(SingleItemFormat.c_str(), FirstItem.c_str());
+    Result = FORMAT(SingleItemFormat, FirstItem);
   }
   else
   {
-    Result = FORMAT(MultiItemsFormat.c_str(), Count);
+    Result = FORMAT(MultiItemsFormat, Count);
   }
   return Result;
 }

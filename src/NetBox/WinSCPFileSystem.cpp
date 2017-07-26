@@ -604,7 +604,7 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
     TNamedObject * EData = StoredSessions->FindByName(Name);
     if ((EData != nullptr) && (EData != Data))
     {
-      throw Exception(FORMAT(GetMsg(NB_SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
+      throw Exception(FORMAT(GetMsg(NB_SESSION_ALREADY_EXISTS_ERROR), Name));
     }
     else
     {
@@ -698,7 +698,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
           {
             if (StoredSessions->FindByName(Name))
             {
-              throw Exception(FORMAT(GetMsg(NB_SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
+              throw Exception(FORMAT(GetMsg(NB_SESSION_ALREADY_EXISTS_ERROR), Name));
             }
             else
             {
@@ -817,8 +817,8 @@ void TWinSCPFileSystem::RequireCapability(intptr_t Capability)
 {
   if (!FTerminal->GetIsCapable(static_cast<TFSCapability>(Capability)))
   {
-    throw Exception(FORMAT(GetMsg(NB_OPERATION_NOT_SUPPORTED).c_str(),
-      FTerminal->GetFileSystemInfo().ProtocolName.c_str()));
+    throw Exception(FORMAT(GetMsg(NB_OPERATION_NOT_SUPPORTED),
+      FTerminal->GetFileSystemInfo().ProtocolName));
   }
 }
 
@@ -838,9 +838,9 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
       TMessageParams Params(0);
       Params.Params = qpNeverAskAgainCheck;
       uintptr_t Answer = MoreMessageDialog(
-        FORMAT(GetMsg(NB_PERFORM_ON_COMMAND_SESSION).c_str(),
-          FTerminal->GetFileSystemInfo().ProtocolName.c_str(),
-          FTerminal->GetFileSystemInfo().ProtocolName.c_str()),
+        FORMAT(GetMsg(NB_PERFORM_ON_COMMAND_SESSION),
+          FTerminal->GetFileSystemInfo().ProtocolName,
+          FTerminal->GetFileSystemInfo().ProtocolName),
         nullptr,
         qtConfirmation, qaOK | qaCancel, &Params);
       if (Answer == qaNeverAskAgain)
@@ -1696,7 +1696,7 @@ void TWinSCPFileSystem::DoSynchronizeInvalid(
   UnicodeString Message;
   if (!Directory.IsEmpty())
   {
-    Message = FORMAT(GetMsg(NB_WATCH_ERROR_DIRECTORY).c_str(), Directory.c_str());
+    Message = FORMAT(GetMsg(NB_WATCH_ERROR_DIRECTORY), Directory);
   }
   else
   {
@@ -1718,7 +1718,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
     TMessageParams Params(0);
     Params.Params = qpNeverAskAgainCheck;
     uintptr_t Result = MoreMessageDialog(
-      FORMAT(GetMsg(NB_TOO_MANY_WATCH_DIRECTORIES).c_str(), MaxDirectories, MaxDirectories), nullptr,
+      FORMAT(GetMsg(NB_TOO_MANY_WATCH_DIRECTORIES), MaxDirectories, MaxDirectories), nullptr,
       qtConfirmation, qaYes | qaNo, &Params);
 
     if ((Result == qaYes) || (Result == qaNeverAskAgain))
@@ -2293,7 +2293,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & Dir, int OpMode)
 
             if (!SynchronizeBrowsing(LocalPath))
             {
-              if (MoreMessageDialog(FORMAT(GetMsg(NB_SYNC_DIR_BROWSE_CREATE).c_str(), LocalPath.c_str()),
+              if (MoreMessageDialog(FORMAT(GetMsg(NB_SYNC_DIR_BROWSE_CREATE), LocalPath),
                     nullptr, qtInformation, qaYes | qaNo) == qaYes)
               {
                 if (!::ForceDirectories(ApiPath(LocalPath)))
@@ -2452,13 +2452,13 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
       !FTerminal->IsRecycledFile(FFileList->GetString(0));  //-V522
     if (PanelItems->GetCount() > 1)
     {
-      Query = FORMAT(GetMsg(Recycle ? NB_RECYCLE_FILES_CONFIRM : NB_DELETE_FILES_CONFIRM).c_str(),
+      Query = FORMAT(GetMsg(Recycle ? NB_RECYCLE_FILES_CONFIRM : NB_DELETE_FILES_CONFIRM),
         PanelItems->GetCount());
     }
     else
     {
-      Query = FORMAT(GetMsg(Recycle ? NB_RECYCLE_FILE_CONFIRM : NB_DELETE_FILE_CONFIRM).c_str(),
-        PanelItems->GetAs<TFarPanelItem>(0)->GetFileName().c_str());
+      Query = FORMAT(GetMsg(Recycle ? NB_RECYCLE_FILE_CONFIRM : NB_DELETE_FILE_CONFIRM),
+        PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
     }
 
     if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
@@ -2514,12 +2514,12 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     UnicodeString Prompt;
     if (PanelItems->GetCount() == 1)
     {
-      Prompt = FORMAT(GetMsg(NB_EXPORT_SESSION_PROMPT).c_str(),
-        PanelItems->GetAs<TFarPanelItem>(0)->GetFileName().c_str());
+      Prompt = FORMAT(GetMsg(NB_EXPORT_SESSION_PROMPT),
+        PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
     }
     else
     {
-      Prompt = FORMAT(GetMsg(NB_EXPORT_SESSIONS_PROMPT).c_str(), PanelItems->GetCount());
+      Prompt = FORMAT(GetMsg(NB_EXPORT_SESSIONS_PROMPT), PanelItems->GetCount());
     }
 
     bool AResult = (OpMode & OPM_SILENT) ||
@@ -2830,7 +2830,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       }
       if (!AnyData)
       {
-        throw Exception(FORMAT(GetMsg(NB_IMPORT_SESSIONS_EMPTY).c_str(), FileName.c_str()));
+        throw Exception(FORMAT(GetMsg(NB_IMPORT_SESSIONS_EMPTY), FileName));
       }
     }
   }
@@ -3000,7 +3000,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     Result = FTerminal->GetActive();
     if (!Result)
     {
-      throw Exception(FORMAT(GetMsg(NB_CANNOT_INIT_SESSION).c_str(), Data->GetSessionName().c_str()));
+      throw Exception(FORMAT(GetMsg(NB_CANNOT_INIT_SESSION), Data->GetSessionName()));
     }
   }
   catch (Exception & E)
@@ -3194,7 +3194,7 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & AFileName,
   if (!RecursiveDeleteFile(AFileName,
         (FLAGSET(GetWinSCPPlugin()->GetFarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
   {
-    throw Exception(FORMAT(GetMsg(NB_DELETE_LOCAL_FILE_ERROR).c_str(), AFileName.c_str()));
+    throw Exception(FORMAT(GetMsg(NB_DELETE_LOCAL_FILE_ERROR), AFileName));
   }
 }
 
@@ -3260,7 +3260,7 @@ void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
   {
     if (AParams->Params & qpFatalAbort)
     {
-      Query = FORMAT(GetMsg(NB_WARN_FATAL_ERROR).c_str(), Query.c_str());
+      Query = FORMAT(GetMsg(NB_WARN_FATAL_ERROR), Query);
     }
 
     Params.Aliases = AParams->Aliases;
@@ -4016,7 +4016,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     Aliases[2].Alias = GetMsg(NB_EDITOR_NEW_INSTANCE_RO);
     Params.Aliases = Aliases;
     Params.AliasesCount = _countof(Aliases);
-    switch (MoreMessageDialog(FORMAT(GetMsg(NB_EDITOR_ALREADY_LOADED).c_str(), FullFileName.c_str()),
+    switch (MoreMessageDialog(FORMAT(GetMsg(NB_EDITOR_ALREADY_LOADED), FullFileName),
           nullptr, qtConfirmation, qaYes | qaNo | qaOK | qaCancel, &Params))
     {
     case qaYes:

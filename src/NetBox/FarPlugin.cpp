@@ -838,7 +838,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
         (FParams->TimeoutButton == static_cast<size_t>(Index)))
     {
       FTimeoutButtonCaption = Caption;
-      Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
+      Caption = FORMAT(FParams->TimeoutStr, Caption, static_cast<int>(FParams->Timeout / 1000));
       FTimeoutButton = Button;
     }
     Button->SetCaption(FORMAT(" %s ", Caption));

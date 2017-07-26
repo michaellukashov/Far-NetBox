@@ -645,7 +645,7 @@ void TConfiguration::NeverShowBanner(const UnicodeString & SessionKey,
 
 UnicodeString TConfiguration::FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType) const
 {
-  return FORMAT("%s:%s", SiteKey.c_str(), FingerprintType.c_str());
+  return FORMAT("%s:%s", SiteKey, FingerprintType);
 }
 
 void TConfiguration::RememberLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType, const UnicodeString & Fingerprint)

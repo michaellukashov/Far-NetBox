@@ -2711,7 +2711,7 @@ bool IsDirectoryWriteable(const UnicodeString & APath)
 {
   UnicodeString FileName =
     ::IncludeTrailingPathDelimiter(APath) +
-    FORMAT("wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()).c_str(), int(GetCurrentProcessId()));
+    FORMAT("wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()), int(GetCurrentProcessId()));
   HANDLE LocalFileHandle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
     CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
   bool Result = (LocalFileHandle != INVALID_HANDLE_VALUE);

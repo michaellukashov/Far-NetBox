@@ -2422,12 +2422,12 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
     UnicodeString ValidityTimeFormat = L"ddddd tt";
     FSessionInfo.Certificate =
       FMTLOAD(CERT_TEXT,
-        UnicodeString(Data.Issuer + L"\n").c_str(),
-        UnicodeString(Data.Subject + L"\n").c_str(),
-        FormatDateTime(ValidityTimeFormat, Data.ValidFrom).c_str(),
-        FormatDateTime(ValidityTimeFormat, Data.ValidUntil).c_str(),
-        Data.Fingerprint.c_str(),
-        Summary.c_str());
+        UnicodeString(Data.Issuer + L"\n"),
+        UnicodeString(Data.Subject + L"\n"),
+        FormatDateTime(ValidityTimeFormat, Data.ValidFrom),
+        FormatDateTime(ValidityTimeFormat, Data.ValidUntil),
+        Data.Fingerprint,
+        Summary);
 
     if (!Result)
     {

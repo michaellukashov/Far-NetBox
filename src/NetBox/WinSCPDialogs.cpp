@@ -1054,7 +1054,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_VERSION).c_str(), GetConfiguration()->GetProductVersion().c_str(), NETBOX_VERSION_BUILD));
+  Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_VERSION), GetConfiguration()->GetProductVersion(), NETBOX_VERSION_BUILD));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
@@ -1401,7 +1401,7 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
   TWinSCPDialog * Dialog = DialogPtr.get();
 
   Dialog->SetSize(TPoint(70, 21));
-  Dialog->SetCaption(FORMAT(GetMsg(NB_BANNER_TITLE).c_str(), SessionName.c_str()));
+  Dialog->SetCaption(FORMAT(GetMsg(NB_BANNER_TITLE), SessionName));
 
   TFarLister * Lister = new TFarLister(Dialog);
   FarWrapText(Banner, Lister->GetItems(), Dialog->GetBorderBox()->GetWidth() - 4);
@@ -4693,7 +4693,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     Text->SetCenterGroup(true);
     if (AFileList->GetCount() > 1)
     {
-      Text->SetCaption(FORMAT(GetMsg(NB_PROPERTIES_PROMPT_FILES).c_str(), AFileList->GetCount()));
+      Text->SetCaption(FORMAT(GetMsg(NB_PROPERTIES_PROMPT_FILES), AFileList->GetCount()));
     }
     else
     {
@@ -5451,7 +5451,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     UnicodeString Prompt;
     if (FFileList->GetCount() > 1)
     {
-      Prompt = FORMAT(GetMsg(Move ? NB_MOVE_FILES_PROMPT : NB_COPY_FILES_PROMPT).c_str(), FFileList->GetCount());
+      Prompt = FORMAT(GetMsg(Move ? NB_MOVE_FILES_PROMPT : NB_COPY_FILES_PROMPT), FFileList->GetCount());
     }
     else
     {
@@ -5461,7 +5461,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
         base::ExtractFileName(FileName, false) :
         base::UnixExtractFileName(FileName);
       UnicodeString MinimizedName = core::MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
-      Prompt = FORMAT(PromptMsg.c_str(), MinimizedName.c_str());
+      Prompt = FORMAT(PromptMsg, MinimizedName);
     }
 
     TFarText * Text = new TFarText(this);
@@ -5611,13 +5611,13 @@ bool TCopyDialog::CloseQuery()
       {
         TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
 
-        if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(NB_CREATE_LOCAL_DIRECTORY).c_str(), Directory.c_str()),
+        if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(NB_CREATE_LOCAL_DIRECTORY), Directory),
           nullptr, qtConfirmation, qaOK | qaCancel) != qaCancel)
         {
           if (!::ForceDirectories(ApiPath(Directory)))
           {
             DirectoryEdit->SetFocus();
-            throw ExtException(FORMAT(GetMsg(NB_CREATE_LOCAL_DIR_ERROR).c_str(), Directory.c_str()));
+            throw ExtException(FORMAT(GetMsg(NB_CREATE_LOCAL_DIR_ERROR), Directory));
           }
         }
         else
@@ -7548,7 +7548,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
 void TSynchronizeChecklistDialog::UpdateControls()
 {
   ButtonSeparator->SetCaption(
-    FORMAT(GetMsg(NB_CHECKLIST_CHECKED).c_str(), FChecked, ListBox->GetItems()->GetCount()));
+    FORMAT(GetMsg(NB_CHECKLIST_CHECKED), FChecked, ListBox->GetItems()->GetCount()));
   CheckAllButton->SetEnabled(FChecked < ListBox->GetItems()->GetCount());
   UncheckAllButton->SetEnabled(FChecked > 0);
 }
@@ -8197,8 +8197,8 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * AFileList,
 bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * AFile,
   UnicodeString & NewName)
 {
-  return FPlugin->InputBox(GetMsg(NB_RENAME_FILE_TITLE).c_str(),
-    FORMAT(GetMsg(NB_RENAME_FILE).c_str(), AFile->GetFileName().c_str()), NewName, 0) &&
+  return FPlugin->InputBox(GetMsg(NB_RENAME_FILE_TITLE),
+    FORMAT(GetMsg(NB_RENAME_FILE), AFile->GetFileName()), NewName, 0) &&
     !NewName.IsEmpty();
 }
 

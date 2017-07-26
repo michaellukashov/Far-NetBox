@@ -125,7 +125,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   {
     if (!InputDialog(
       LoadStr(PASSPHRASE_TITLE),
-      FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE).c_str(), Comment.c_str()),
+      FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE), Comment),
       Passphrase, HELP_NONE, nullptr, false, nullptr, false))
     {
       Abort();
