@@ -5373,7 +5373,7 @@ bool TTerminal::DoCreateLocalFile(UnicodeString AFileName,
   DWORD FlagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
   do
   {
-    *AHandle = TerminalCreateLocalFile(ApiPath(AFileName).c_str(), DesiredAccess, ShareMode,
+    *AHandle = TerminalCreateLocalFile(ApiPath(AFileName), DesiredAccess, ShareMode,
       CreationDisposition, FlagsAndAttributes);
     Done = (*AHandle != INVALID_HANDLE_VALUE);
     if (!Done)
@@ -5526,7 +5526,7 @@ void TTerminal::TerminalOpenLocalFile(UnicodeString ATargetFileName,
     [&]()
     {
       DWORD Flags = FLAGMASK(FLAGSET(LocalFileAttrs, faDirectory), FILE_FLAG_BACKUP_SEMANTICS);
-      LocalFileHandle = this->TerminalCreateLocalFile(ApiPath(ATargetFileName).c_str(), Access,
+      LocalFileHandle = this->TerminalCreateLocalFile(ApiPath(ATargetFileName), Access,
         Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
         OPEN_EXISTING, Flags);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
