@@ -2329,7 +2329,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
     if (FTerminal->Active)
     {
       // Tell remote side, that we're done.
-      FTerminal->LogEvent(FORMAT(L"Leaving directory \"%s\".", (DirectoryName)));
+      FTerminal->LogEvent(FORMAT("Leaving directory \"%s\".", DirectoryName));
       FSecureShell->SendLine(L"E");
       SCPResponse();
     }

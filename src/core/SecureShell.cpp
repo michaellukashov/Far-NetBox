@@ -944,7 +944,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       if ((Prompts->GetCount() >= 1) &&
         (FLAGSET(ToInt(Prompts->GetObj(0)), pupEcho) || GetConfiguration()->GetLogSensitive()))
       {
-        LogEvent(FORMAT(L"Response: \"%s\"", Results->GetString(0)));
+        LogEvent(FORMAT("Response: \"%s\"", Results->GetString(0)));
       }
 
       if ((PromptKind == pkUserName) && (Prompts->GetCount() == 1))

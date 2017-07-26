@@ -220,7 +220,7 @@ UnicodeString NeonVersion()
 
 UnicodeString ExpatVersion()
 {
-  return FORMAT(L"%d.%d.%d", XML_MAJOR_VERSION, XML_MINOR_VERSION, XML_MICRO_VERSION);
+  return FORMAT("%d.%d.%d", XML_MAJOR_VERSION, XML_MINOR_VERSION, XML_MICRO_VERSION);
 }
 
 
@@ -302,7 +302,7 @@ void TWebDAVFileSystem::Open()
   UnicodeString Path = Data->GetRemoteDirectory();
   // PathToNeon is not used as we cannot call AbsolutePath here
   UnicodeString EscapedPath = StrFromNeon(PathEscape(StrToNeon(Path)).c_str());
-  UnicodeString Url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, EscapedPath.c_str());
+  UnicodeString Url = FORMAT("%s://%s:%d%s", ProtocolName, HostName, Port, EscapedPath);
 
   FTerminal->Information(LoadStr(STATUS_CONNECT), true);
   FActive = false;
@@ -388,7 +388,7 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
 
   if (Ssl != (FTerminal->GetSessionData()->GetFtps() != ftpsNone))
   {
-    FTerminal->LogEvent(FORMAT(L"Warning: %s", LoadStr(UNENCRYPTED_REDIRECT).c_str()));
+    FTerminal->LogEvent(FORMAT("Warning: %s", LoadStr(UNENCRYPTED_REDIRECT)));
   }
 
   TSessionData * Data = FTerminal->GetSessionData();
@@ -463,7 +463,7 @@ void TWebDAVFileSystem::NeonAddAuthentication(bool UseNegotiate)
 UnicodeString TWebDAVFileSystem::GetRedirectUrl() const
 {
   UnicodeString Result = GetNeonRedirectUrl(FNeonSession);
-  FTerminal->LogEvent(FORMAT(L"Redirected to \"%s\".", Result.c_str()));
+  FTerminal->LogEvent(FORMAT("Redirected to \"%s\".", Result));
   return Result;
 }
 
@@ -499,7 +499,7 @@ void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString &
         }
         Capability <<= 1;
       }
-      FTerminal->LogEvent(FORMAT(L"Server capabilities: %s", Str.c_str()));
+      FTerminal->LogEvent(FORMAT("Server capabilities: %s", Str));
       FFileSystemInfo.AdditionalInfo +=
         LoadStr(WEBDAV_EXTENSION_INFO) + sLineBreak +
         L"  " + Str + sLineBreak;
@@ -776,7 +776,7 @@ UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile * AFile) const
 void TWebDAVFileSystem::TryOpenDirectory(const UnicodeString & ADirectory)
 {
   UnicodeString Directory = DirectoryPath(ADirectory);
-  FTerminal->LogEvent(FORMAT(L"Trying to open directory \"%s\".", Directory.c_str()));
+  FTerminal->LogEvent(FORMAT("Trying to open directory \"%s\".", Directory));
   TRemoteFile * File;
   ReadFile(Directory, File);
   delete File;
@@ -1045,7 +1045,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
       LockRights = LoadStr(LOCKED);
       if (!Owner2.IsEmpty())
       {
-        LockRights = FORMAT(L"%s (%s)", LockRights.c_str(), Owner2.c_str());
+        LockRights = FORMAT("%s (%s)", LockRights, Owner2);
       }
     }
 
@@ -1478,7 +1478,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
           CopyParam, base::ExtractFileName(RealFileName, false), osLocal,
           FLAGSET(Flags, tfFirstLevel));
 
-      FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
+      FTerminal->LogEvent(FORMAT("Copying \"%s\" to remote directory started.", RealFileName));
 
       OperationProgress->SetLocalSize(Size);
 
@@ -1551,8 +1551,8 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
 
       if (CopyParam->GetPreserveTime())
       {
-        FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
-          StandardTimestamp(Modification).c_str()));
+        FTerminal->LogEvent(FORMAT("Preserving timestamp [%s]",
+          StandardTimestamp(Modification)));
 
         TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, Modification);
         try
@@ -1567,7 +1567,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
           TDateTime DateTime = ModificationUTC;
           DateTime.DecodeDate(Y, M, D);
           DateTime.DecodeTime(H, NN, S, MS);
-          UnicodeString LastModified = FORMAT(L"%04d, %d %02d %04d %02d:%02d%02d 'GMT'", D, D, M, Y, H, NN, D);
+          UnicodeString LastModified = FORMAT("%04d, %d %02d %04d %02d:%02d%02d 'GMT'", D, D, M, Y, H, NN, D);
 
           UTF8String NeonLastModified(LastModified);
           // second element is "NULL-terminating"
@@ -1582,8 +1582,8 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
           int Status = ne_proppatch(FNeonSession, PathToNeon(DestFullName), Operations);
           if (Status == NE_ERROR)
           {
-            FTerminal->LogEvent(FORMAT(L"Preserving timestamp failed, ignoring: %s",
-              GetNeonError().c_str()));
+            FTerminal->LogEvent(FORMAT("Preserving timestamp failed, ignoring: %s",
+              GetNeonError()));
             // Ignore errors as major WebDAV servers (like IIS), do not support
             // changing getlastmodified.
             // The only server we found that supports this is TradeMicro SafeSync.
@@ -1932,7 +1932,7 @@ void TWebDAVFileSystem::HttpAuthenticationFailed()
       // protocol will itself ensure that other protocols are tried (we haven't seen this behaviour).
       // IIS will return only Negotiate response if the request was Negotiate, so there's no fallback.
       // We have to retry with a fresh request. That's what FAuthenticationRetry does.
-      FTerminal->LogEvent(FORMAT(L"%s challenge failed, will try different challenge", FAuthorizationProtocol.c_str()));
+      FTerminal->LogEvent(FORMAT("%s challenge failed, will try different challenge", FAuthorizationProtocol));
       ne_remove_server_auth(FNeonSession);
       NeonAddAuthentication(false);
       FAuthenticationRetry = true;
@@ -2112,7 +2112,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   UnicodeString BaseFileName = FTerminal->GetBaseFileName(AFileName);
   if (!CopyParam->AllowTransfer(BaseFileName, osRemote, AFile->GetIsDirectory(), MaskParams))
   {
-    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", AFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("File \"%s\" excluded from transfer", AFileName));
     ThrowSkipFileNull();
   }
 
@@ -2178,7 +2178,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   }
   else
   {
-    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", AFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("Copying \"%s\" to local directory started.", AFileName));
     if (::FileExists(ApiPath(DestFullName)))
     {
       int64_t Size = 0;
@@ -2281,8 +2281,8 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
         {
           TDateTime Modification = AFile->GetModification();
           FILETIME WrTime = DateTimeToFileTime(Modification, FTerminal->GetSessionData()->GetDSTMode());
-          FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
-            StandardTimestamp(Modification).c_str()));
+          FTerminal->LogEvent(FORMAT("Preserving timestamp [%s]",
+            StandardTimestamp(Modification)));
           SetFileTime(LocalFileHandle, nullptr, nullptr, &WrTime);
         }
       }
@@ -2384,8 +2384,8 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
   else
   {
     FTerminal->LogEvent(
-      FORMAT(L"Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
-        Data.Subject.c_str(), Data.Fingerprint.c_str(), Data.Failures));
+      FORMAT("Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
+        Data.Subject, Data.Fingerprint, Data.Failures));
 
     int Failures = Data.Failures;
 
@@ -2405,7 +2405,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
       else
       {
         FTerminal->LogEvent(
-          FORMAT(L"Certificate failed to verify against Windows certificate store: %s", DefaultStr(WindowsCertificateError, L"no details").c_str()));
+          FORMAT("Certificate failed to verify against Windows certificate store: %s", DefaultStr(WindowsCertificateError, L"no details")));
       }
     }
 
@@ -2500,7 +2500,7 @@ void TWebDAVFileSystem::CollectTLSSessionInfo()
   FSessionInfo.SCCipher = Cipher;
 
   // see CAsyncSslSocketLayer::PrintSessionInfo()
-  FTerminal->LogEvent(FORMAT(L"Using %s, cipher %s", FTlsVersionStr, Cipher));
+  FTerminal->LogEvent(FORMAT("Using %s, cipher %s", FTlsVersionStr, Cipher));
 }
 
 // A neon-session callback to validate the SSL certificate when the CA

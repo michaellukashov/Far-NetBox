@@ -186,7 +186,7 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
           Result = (PolicyStatus.dwError == S_OK);
           if (!Result)
           {
-            Error = FORMAT(L"Error: %x, Chain index: %d, Element index: %d", PolicyStatus.dwError, PolicyStatus.lChainIndex, PolicyStatus.lElementIndex);
+            Error = FORMAT("Error: %x, Chain index: %d, Element index: %d", PolicyStatus.dwError, PolicyStatus.lChainIndex, PolicyStatus.lElementIndex);
           }
         }
 
