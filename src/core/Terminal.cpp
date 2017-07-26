@@ -5493,7 +5493,7 @@ bool TTerminal::TerminalCreateLocalFile(UnicodeString ATargetFileName,
 }
 
 void TTerminal::TerminalOpenLocalFile(UnicodeString ATargetFileName,
-  DWORD Access, OUT uintptr_t * AAttrs, OUT HANDLE * AHandle, OUT int64_t * ACTime,
+  DWORD Access, uintptr_t * AAttrs, HANDLE * AHandle, int64_t * ACTime,
   int64_t * AMTime, int64_t * AATime, int64_t * ASize,
   bool TryWriteReadOnly)
 {

@@ -3140,7 +3140,7 @@ bool CFtpListResult::ParseSize(const char *str, int len, int64_t &size) const
       return false;
   }
 
-  // Check for digit before or after delimiterr
+  // Check for digit before or after delimiter
   if (!delimiter || delimiter == len)
     return false;
 

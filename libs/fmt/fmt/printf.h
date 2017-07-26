@@ -16,6 +16,12 @@
 #include "ostream.h"
 #include "format.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4244) // 'argument' : conversion from 'const int' to 'char', possible loss of data
+#pragma warning(disable: 4127) // conditional expression is constant
+#endif // _MSC_VER
+
 namespace fmt {
 namespace internal {
 
@@ -600,5 +606,9 @@ FMT_VARIADIC(int, fprintf, std::ostream &, CStringRef)
 #ifdef FMT_HEADER_ONLY
 # include "printf.cc"
 #endif
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
 
 #endif  // FMT_PRINTF_H_

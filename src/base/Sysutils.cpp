@@ -156,15 +156,13 @@ namespace Sysutils {
 
 UnicodeString IntToStr(intptr_t Value)
 {
-  UnicodeString Result;
-  Result.sprintf(L"%d", Value);
+  UnicodeString Result = FORMAT("%d", Value);
   return Result;
 }
 
 UnicodeString Int64ToStr(int64_t Value)
 {
-  UnicodeString Result;
-  Result.sprintf(L"%lld", Value);
+  UnicodeString Result = FORMAT(L"%lld", Value);
   return Result;
 }
 
@@ -1237,8 +1235,7 @@ uintptr_t HexToInt(UnicodeString Hex, uintptr_t MinChars)
 
 UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
 {
-  UnicodeString Result;
-  Result.sprintf(L"%X", Int);
+  UnicodeString Result = FORMAT("%X", Int);
   intptr_t Pad = MinChars - Result.Length();
   if (Pad > 0)
   {
