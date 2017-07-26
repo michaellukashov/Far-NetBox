@@ -493,7 +493,7 @@ bool TFileMasks::operator ==(const UnicodeString & rhs) const
 void TFileMasks::ThrowError(intptr_t Start, intptr_t End) const
 {
   throw EFileMasksException(
-    FMTLOAD(MASK_ERROR, GetMasks().SubString(Start, End - Start + 1).c_str()),
+    FMTLOAD(MASK_ERROR, GetMasks().SubString(Start, End - Start + 1)),
     Start, End - Start + 1);
 }
 

@@ -2015,7 +2015,7 @@ void TSessionData::ValidateName(const UnicodeString & Name)
   // keep consistent with MakeValidName
   if (Name.LastDelimiter(L"/") > 0)
   {
-    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
+    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name, L"/"));
   }
 }
 

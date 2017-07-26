@@ -1063,7 +1063,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->SetCaption(FMTLOAD(WINSCPFAR_BASED_VERSION, LoadStr(WINSCPFAR_VERSION).c_str()));
+  Text->SetCaption(FMTLOAD(WINSCPFAR_BASED_VERSION, LoadStr(WINSCPFAR_VERSION)));
   Text->SetCenterGroup(true);
 
   if (!ProductName.IsEmpty())
@@ -3979,13 +3979,13 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
     switch (KeyType)
     {
       case ktOpenSSHAuto:
-        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName.c_str(), L"OpenSSH SSH-2");
+        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName, L"OpenSSH SSH-2");
         break;
 
       case ktOpenSSHPEM:
       case ktOpenSSHNew:
       case ktSSHCom:
-        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName.c_str(), L"ssh.com SSH-2");
+        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName, L"ssh.com SSH-2");
         break;
 
       case ktSSH1Public:
@@ -4013,7 +4013,7 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
         // fallthru
       case ktUnopenable:
       case ktUnknown:
-        Message = FMTLOAD(KEY_TYPE_UNKNOWN2, AFileName.c_str());
+        Message = FMTLOAD(KEY_TYPE_UNKNOWN2, AFileName);
         break;
     }
 

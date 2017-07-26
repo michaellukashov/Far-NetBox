@@ -210,7 +210,7 @@ UnicodeString TCopyParamRule::GetInfoStr(const UnicodeString & Separator) const
   UnicodeString Result;
 #define ADD(FMT, ELEM) \
     if (!FData.ELEM.IsEmpty()) \
-      Result += (Result.IsEmpty() ? UnicodeString() : Separator) + FMTLOAD(FMT, FData.ELEM.c_str());
+      Result += (Result.IsEmpty() ? UnicodeString() : Separator) + FMTLOAD(FMT, FData.ELEM);
   ADD(COPY_RULE_HOSTNAME, HostName);
   ADD(COPY_RULE_USERNAME, UserName);
   ADD(COPY_RULE_REMOTE_DIR, RemoteDirectory);
@@ -268,7 +268,7 @@ void TCopyParamList::ValidateName(const UnicodeString & Name)
 {
   if (Name.LastDelimiter(CONST_INVALID_CHARS) > 0)
   {
-    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), CONST_INVALID_CHARS));
+    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name, CONST_INVALID_CHARS));
   }
 }
 
@@ -1320,7 +1320,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
   else
   {
-    // Error = FMTLOAD(PUTTY_NO_SITES, PuttySessionsKey.c_str());
+    // Error = FMTLOAD(PUTTY_NO_SITES, PuttySessionsKey);
   }
 
   return ImportSessionList.release();

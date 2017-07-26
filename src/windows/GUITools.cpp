@@ -150,12 +150,12 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
     // when opening PuTTY's own stored session.
     if (!ExecuteShell(Program, Params))
     {
-      throw Exception(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
+      throw Exception(FMTLOAD(EXECUTE_APP_ERROR, Program));
     }
   }
   else
   {
-    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
+    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program));
   }
 }
 

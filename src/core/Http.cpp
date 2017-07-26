@@ -144,7 +144,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
             {
               GetOnError()(this, StatusCode, Message);
             }
-            throw Exception(FMTLOAD(HTTP_ERROR2, StatusCode, Message.c_str(), FHostName.c_str()));
+            throw Exception(FMTLOAD(HTTP_ERROR2, StatusCode, Message, FHostName));
           }
 
           void * Cursor = nullptr;

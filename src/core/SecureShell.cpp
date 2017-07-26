@@ -621,7 +621,7 @@ void TSecureShell::Init()
     {
       if (FAuthenticating && !FAuthenticationLog.IsEmpty())
       {
-        FUI->FatalError(&E, FMTLOAD(AUTHENTICATION_LOG, FAuthenticationLog.c_str()));
+        FUI->FatalError(&E, FMTLOAD(AUTHENTICATION_LOG, FAuthenticationLog));
       }
       else
       {
@@ -2417,7 +2417,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
 
-      UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY3 : DIFFERENT_KEY4), AKeyType.c_str(), AFingerprint.c_str());
+      UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY3 : DIFFERENT_KEY4), AKeyType, AFingerprint);
       if (GetConfiguration()->GetScripting())
       {
         AddToList(Message, LoadStr(SCRIPTING_USE_HOSTKEY), L"\n");
@@ -2455,7 +2455,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
       UnicodeString Message;
       if (ConfiguredKeyNotMatch)
       {
-        Message = FMTLOAD(CONFIGURED_KEY_NOT_MATCH, FSessionData->GetHostKey().c_str());
+        Message = FMTLOAD(CONFIGURED_KEY_NOT_MATCH, FSessionData->GetHostKey());
       }
       else if (!GetConfiguration()->GetPersistent() && GetConfiguration()->GetScripting())
       {
@@ -2469,7 +2469,7 @@ void TSecureShell::VerifyHostKey(const UnicodeString & AHost, intptr_t Port,
       std::unique_ptr<Exception> E(new Exception(MainInstructions(Message)));
       try__finally
       {
-        FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, AFingerprint.c_str()));
+        FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, AFingerprint));
       }
       __finally
       {
@@ -2519,8 +2519,8 @@ void TSecureShell::AskAlg(const UnicodeString & AlgType,
   UnicodeString Error;
   if (AlgType == L"key-exchange algorithm")
   {
-    Msg = FMTLOAD(KEX_BELOW_TRESHOLD, AlgName.c_str());
-    Error = FMTLOAD(KEX_NOT_VERIFIED, AlgName.c_str());
+    Msg = FMTLOAD(KEX_BELOW_TRESHOLD, AlgName);
+    Error = FMTLOAD(KEX_NOT_VERIFIED, AlgName);
   }
   else if (AlgType == L"hostkey type")
   {
@@ -2550,8 +2550,8 @@ void TSecureShell::AskAlg(const UnicodeString & AlgType,
 
     if (CipherType != 0)
     {
-      Msg = FMTLOAD(CIPHER_BELOW_TRESHOLD, LoadStr(CipherType).c_str(), AlgName.c_str());
-      Error = FMTLOAD(CIPHER_NOT_VERIFIED, AlgName.c_str());
+      Msg = FMTLOAD(CIPHER_BELOW_TRESHOLD, LoadStr(CipherType), AlgName);
+      Error = FMTLOAD(CIPHER_NOT_VERIFIED, AlgName);
     }
   }
 

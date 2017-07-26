@@ -592,7 +592,7 @@ void SplitCommand(const UnicodeString & Command, UnicodeString & Program,
     }
     else
     {
-      throw Exception(FMTLOAD(INVALID_SHELL_COMMAND, UnicodeString(L"\"" + Cmd).c_str()));
+      throw Exception(FMTLOAD(INVALID_SHELL_COMMAND, UnicodeString(L"\"" + Cmd)));
     }
   }
   else
@@ -1250,7 +1250,7 @@ DWORD FindCheck(DWORD Result, const UnicodeString & APath)
     (Result != ERROR_FILE_NOT_FOUND) &&
     (Result != ERROR_NO_MORE_FILES))
   {
-    throw EOSExtException(FMTLOAD(FIND_FILE_ERROR, APath.c_str()), Result);
+    throw EOSExtException(FMTLOAD(FIND_FILE_ERROR, APath), Result);
   }
   return Result;
 }
@@ -2249,7 +2249,7 @@ void RecursiveDeleteFileChecked(const UnicodeString & AFileName, bool ToRecycleB
   UnicodeString ErrorPath;
   if (!DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath))
   {
-    throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, ErrorPath.c_str()));
+    throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, ErrorPath));
   }
 }
 
@@ -2257,7 +2257,7 @@ void DeleteFileChecked(const UnicodeString & AFileName)
 {
   if (!::RemoveFile(AFileName))
   {
-    throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()));
+    throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName));
   }
 }
 
@@ -2867,7 +2867,7 @@ static FILE* OpenCertificate(const UnicodeString & Path)
   if (Result == nullptr)
   {
     int Error = errno;
-    throw EOSExtException(MainInstructions(FMTLOAD(CERTIFICATE_OPEN_ERROR, Path.c_str())), Error);
+    throw EOSExtException(MainInstructions(FMTLOAD(CERTIFICATE_OPEN_ERROR, Path)), Error);
   }
 
   return Result;
@@ -2913,7 +2913,7 @@ static void ThrowTlsCertificateErrorIgnorePassphraseErrors(const UnicodeString &
   int Error = ERR_get_error();
   if (!IsTlsPassphraseError(Error, HasPassphrase))
   {
-    throw ExtException(MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, Path.c_str())), GetTlsErrorStr(Error));
+    throw ExtException(MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, Path)), GetTlsErrorStr(Error));
   }
 }
 
@@ -3035,7 +3035,7 @@ void ParseCertificate(const UnicodeString& Path,
 
           if (!FileExists(CertificatePath))
           {
-            throw Exception(MainInstructions(FMTLOAD(CERTIFICATE_PUBLIC_KEY_NOT_FOUND, Path.c_str())));
+            throw Exception(MainInstructions(FMTLOAD(CERTIFICATE_PUBLIC_KEY_NOT_FOUND, Path)));
           }
           else
           {
@@ -3061,7 +3061,7 @@ void ParseCertificate(const UnicodeString& Path,
               {
                 int DERError = ERR_get_error();
 
-                UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, CertificatePath.c_str()));
+                UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, CertificatePath));
                 UnicodeString MoreMessages =
                   FORMAT("Base64: %s\nDER: %s", GetTlsErrorStr(Base64Error), GetTlsErrorStr(DERError));
                 throw ExtException(Message, MoreMessages);

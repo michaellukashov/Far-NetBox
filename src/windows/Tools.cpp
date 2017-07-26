@@ -149,7 +149,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 
     SaveKey(ktSSH2, FileName, Passphrase, PrivateKey);
 
-    MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName.c_str())), qtInformation, qaOK);
+    MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName)), qtInformation, qaOK);
   }
   __finally
   {
@@ -180,12 +180,12 @@ static bool DoVerifyKey(
       case ktSSHCom:
         {
           UnicodeString TypeName = ((Type == ktOpenSSHPEM) || (Type == ktOpenSSHNew)) ? L"OpenSSH" : L"ssh.com";
-          Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName.c_str(), TypeName.c_str());
+          Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName, TypeName);
 
           if (Convert)
           {
             // Configuration->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
-            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName.c_str(), RemoveMainInstructionsTag(Message).c_str());
+            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName, RemoveMainInstructionsTag(Message));
             Message = UnicodeString();
             if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
             {
@@ -231,7 +231,7 @@ static bool DoVerifyKey(
         break;
 
       case ktUnopenable:
-        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, AFileName.c_str()));
+        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, AFileName));
         if (Error != ERROR_SUCCESS)
         {
           MoreMessages.reset(TextToStringList(SysErrorMessageForError(Error)));
@@ -242,7 +242,7 @@ static bool DoVerifyKey(
         DebugFail();
         // fallthru
       case ktUnknown:
-        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, AFileName.c_str()));
+        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, AFileName));
         break;
     }
 

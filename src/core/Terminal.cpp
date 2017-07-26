@@ -1238,7 +1238,7 @@ void TTerminal::InitFileSystem()
           // the only case where we expect this to happen
           UnicodeString ErrorMessage = LoadStr(UNEXPECTED_CLOSE_ERROR);
           DebugAssert(E.Message == ErrorMessage);
-          FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
+          FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError));
         }
         else
         {
@@ -1324,7 +1324,7 @@ void TTerminal::OpenTunnel()
   {
     FTunnelData = new TSessionData(L"");
     FTunnelData->Assign(StoredSessions->GetDefaultSettings());
-    FTunnelData->SetName(FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName().c_str()));
+    FTunnelData->SetName(FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName()));
     FTunnelData->SetTunnel(false);
     FTunnelData->SetHostName(FSessionData->GetTunnelHostName());
     FTunnelData->SetPortNumber(FSessionData->GetTunnelPortNumber());
@@ -2599,15 +2599,15 @@ uintptr_t TTerminal::ConfirmFileOverwrite(const UnicodeString & ASourceFullFileN
     {
       // Side refers to destination side here
       Message = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE2 :
-        REMOTE_FILE_OVERWRITE2), ATargetFileName.c_str(), ATargetFileName.c_str());
+        REMOTE_FILE_OVERWRITE2), ATargetFileName, ATargetFileName);
     }
     if (FileParams != nullptr)
     {
-      Message = FMTLOAD(FILE_OVERWRITE_DETAILS, Message.c_str(),
-        ::Int64ToStr(FileParams->SourceSize).c_str(),
-        core::UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision).c_str(),
-        ::Int64ToStr(FileParams->DestSize).c_str(),
-        core::UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision).c_str());
+      Message = FMTLOAD(FILE_OVERWRITE_DETAILS, Message,
+        ::Int64ToStr(FileParams->SourceSize),
+        core::UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision),
+        ::Int64ToStr(FileParams->DestSize),
+        core::UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision));
     }
     if (DebugAlwaysTrue(QueryParams->HelpKeyword.IsEmpty()))
     {
@@ -2815,11 +2815,11 @@ void TTerminal::EnsureNonExistence(const UnicodeString & AFileName, bool IsDirec
     {
       if (File->GetIsDirectory() && IsDirectory)
       {
-        throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_DIR_EXISTS, AFileName.c_str()));
+        throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_DIR_EXISTS, AFileName));
       }
       else if (!File->GetIsDirectory() && !IsDirectory)
       {
-        throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_FILE_EXISTS, AFileName.c_str()));
+        throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_FILE_EXISTS, AFileName));
       }
     }
   }
@@ -3053,7 +3053,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     }
     catch (Exception & E)
     {
-      CommandError(&E, FMTLOAD(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
+      CommandError(&E, FMTLOAD(LIST_DIR_ERROR, FFiles->GetDirectory()));
     }
   }
 }
@@ -3351,7 +3351,7 @@ void TTerminal::ReadDirectory(TRemoteFileList * AFileList)
   }
   catch (Exception & E)
   {
-    CommandError(&E, FMTLOAD(LIST_DIR_ERROR, AFileList->GetDirectory().c_str()));
+    CommandError(&E, FMTLOAD(LIST_DIR_ERROR, AFileList->GetDirectory()));
   }
 }
 
@@ -3390,7 +3390,7 @@ void TTerminal::ReadFile(const UnicodeString & AFileName,
       SAFE_DESTROY(AFile);
     }
     AFile = nullptr;
-    CommandError(&E, FMTLOAD(CANT_GET_ATTRS, AFileName.c_str()));
+    CommandError(&E, FMTLOAD(CANT_GET_ATTRS, AFileName));
   }
 }
 
@@ -3737,7 +3737,7 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, Action, FMTLOAD(DELETE_FILE_ERROR, AFileName.c_str()));
+      RetryLoop.Error(E, Action, FMTLOAD(DELETE_FILE_ERROR, AFileName));
     }
   }
   while (RetryLoop.Retry());
@@ -3833,7 +3833,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, FMTLOAD(CUSTOM_COMMAND_ERROR, Command.c_str(), AFileName.c_str()));
+      RetryLoop.Error(E, FMTLOAD(CUSTOM_COMMAND_ERROR, Command, AFileName));
     }
   }
   while (RetryLoop.Retry());
@@ -3948,7 +3948,7 @@ void TTerminal::DoChangeFileProperties(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, Action, FMTLOAD(CHANGE_PROPERTIES_ERROR, AFileName.c_str()));
+      RetryLoop.Error(E, Action, FMTLOAD(CHANGE_PROPERTIES_ERROR, AFileName));
     }
   }
   while (RetryLoop.Retry());
@@ -4064,7 +4064,7 @@ void TTerminal::DoCalculateDirectorySize(const UnicodeString & AFileName,
     {
       if (!GetActive() || ((Params->Params & csIgnoreErrors) == 0))
       {
-        RetryLoop.Error(E, FMTLOAD(CALCULATE_SIZE_ERROR, AFileName.c_str()));
+        RetryLoop.Error(E, FMTLOAD(CALCULATE_SIZE_ERROR, AFileName));
       }
     }
   }
@@ -4168,7 +4168,7 @@ void TTerminal::DoRenameFile(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-      UnicodeString Message = FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName.c_str(), ANewName.c_str());
+      UnicodeString Message = FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName, ANewName);
       RetryLoop.Error(E, Action, Message);
     }
   }
@@ -4312,7 +4312,7 @@ void TTerminal::DoCopyFile(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, FMTLOAD(COPY_FILE_ERROR, AFileName.c_str(), ANewName.c_str()));
+      RetryLoop.Error(E, FMTLOAD(COPY_FILE_ERROR, AFileName, ANewName));
     }
   }
   while (RetryLoop.Retry());
@@ -4372,7 +4372,7 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName)
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, Action, FMTLOAD(CREATE_DIR_ERROR, ADirName.c_str()));
+      RetryLoop.Error(E, Action, FMTLOAD(CREATE_DIR_ERROR, ADirName));
     }
   }
   while (RetryLoop.Retry());
@@ -4407,7 +4407,7 @@ void TTerminal::DoCreateLink(const UnicodeString & AFileName,
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, FMTLOAD(CREATE_LINK_ERROR, AFileName.c_str()));
+      RetryLoop.Error(E, FMTLOAD(CREATE_LINK_ERROR, AFileName));
     }
   }
   while (RetryLoop.Retry());
@@ -4457,7 +4457,7 @@ void TTerminal::RemoteChangeDirectory(const UnicodeString & Directory)
   }
   catch (Exception & E)
   {
-    CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, DirectoryNormalized.c_str()));
+    CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, DirectoryNormalized));
   }
 }
 
@@ -4702,7 +4702,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
             {
               TSuspendFileOperationProgress Suspend(OperationProgress);
               Answer = QueryUser(
-                MainInstructions(FMTLOAD(READ_ONLY_OVERWRITE, AFileName.c_str())), nullptr,
+                MainInstructions(FMTLOAD(READ_ONLY_OVERWRITE, AFileName)), nullptr,
                 qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, nullptr);
             }
 
@@ -4737,7 +4737,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
             FLAGMASK(FLAGSET(LocalFileAttrs, faHidden), FILE_ATTRIBUTE_HIDDEN) |
             FLAGMASK(FLAGSET(LocalFileAttrs, faReadOnly), FILE_ATTRIBUTE_READONLY);
 
-          FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()), "",
+          FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, AFileName), "",
           [&]()
           {
             if (!this->SetLocalFileAttributes(ApiPath(AFileName), LocalFileAttrs & ~(faReadOnly | faHidden)))
@@ -4771,7 +4771,7 @@ bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
   DebugAssert(OperationProgress);
   DebugAssert(AHandle);
   bool Result = true;
-  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CREATE_FILE_ERROR, ATargetFileName.c_str()), "",
+  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CREATE_FILE_ERROR, ATargetFileName), "",
   [&]()
   {
     Result = DoCreateLocalFile(ATargetFileName, OperationProgress, Resume, NoConfirmation,
@@ -4791,7 +4791,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
-  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, ATargetFileName.c_str()), "",
+  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, ATargetFileName), "",
   [&]()
   {
     UnicodeString FileNameApi = ApiPath(ATargetFileName);
@@ -4812,7 +4812,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
       NoHandle = true;
     }
 
-    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(OPENFILE_ERROR, ATargetFileName.c_str()), "",
+    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(OPENFILE_ERROR, ATargetFileName), "",
     [&]()
     {
       DWORD Flags = FLAGMASK(FLAGSET(LocalFileAttrs, faDirectory), FILE_FLAG_BACKUP_SEMANTICS);
@@ -4834,7 +4834,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
         FILETIME CTime;
 
         // Get last file access and modification time
-        FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, ATargetFileName.c_str()), "",
+        FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, ATargetFileName), "",
         [&]()
         {
           THROWOSIFFALSE(::GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime));
@@ -4856,7 +4856,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
       if (ASize)
       {
         // Get file size
-        FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, ATargetFileName.c_str()), "",
+        FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, ATargetFileName), "",
         [&]()
         {
           uint32_t LSize;
@@ -4902,7 +4902,7 @@ bool TTerminal::AllowLocalFileTransfer(const UnicodeString & AFileName,
   {
     WIN32_FIND_DATA FindData = {};
     HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()), "",
+    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, AFileName), "",
     [&]()
     {
       LocalFileHandle = ::FindFirstFile(ApiPath(::ExcludeTrailingBackslash(AFileName)).c_str(), &FindData);
@@ -5240,7 +5240,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
     TSearchRecChecked SearchRec;
     Data.LocalFileList = CreateSortedStringList();
 
-    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, ALocalDirectory.c_str()), "",
+    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, ALocalDirectory), "",
     [&]()
     {
       DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
@@ -5303,7 +5303,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
               FormatFileDetailsForLog(FullLocalFileName, Modification, Size)));
           }
 
-          FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, ALocalDirectory.c_str()), "",
+          FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, ALocalDirectory), "",
           [&]()
           {
             Found = (::FindNextChecked(SearchRec) == 0);
@@ -5866,7 +5866,7 @@ void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*FileName*/,
   UnicodeString LocalFile =
     ::IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
       ChecklistItem->Local.FileName;
-  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, LocalFile.c_str()), "",
+  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, LocalFile), "",
   [&]()
   {
     SetLocalFileTime(LocalFile, ChecklistItem->Remote.Modification);
@@ -6004,7 +6004,7 @@ void TTerminal::SpaceAvailable(const UnicodeString & APath,
   }
   catch (Exception & E)
   {
-    CommandError(&E, FMTLOAD(SPACE_AVAILABLE_ERROR, APath.c_str()));
+    CommandError(&E, FMTLOAD(SPACE_AVAILABLE_ERROR, APath));
   }
 }
 
@@ -6031,7 +6031,7 @@ void TTerminal::DoLockFile(const UnicodeString & AFileName, const TRemoteFile * 
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, FMTLOAD(LOCK_FILE_ERROR, AFileName.c_str()));
+      RetryLoop.Error(E, FMTLOAD(LOCK_FILE_ERROR, AFileName));
     }
   }
   while (RetryLoop.Retry());
@@ -6060,7 +6060,7 @@ void TTerminal::DoUnlockFile(const UnicodeString & AFileName, const TRemoteFile 
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, FMTLOAD(UNLOCK_FILE_ERROR, AFileName.c_str()));
+      RetryLoop.Error(E, FMTLOAD(UNLOCK_FILE_ERROR, AFileName));
     }
   }
   while (RetryLoop.Retry());
@@ -6481,7 +6481,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   FILETIME * AcTime, FILETIME * WrTime)
 {
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
-  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, LocalFileName.c_str()), "",
+  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, LocalFileName), "",
   [&]()
   {
     HANDLE LocalFileHandle;

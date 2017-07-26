@@ -643,7 +643,7 @@ static FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * Session
   }
   else
   {
-    throw ECRTExtException(FMTLOAD(LOG_OPENERROR, NewFileName.c_str()));
+    throw ECRTExtException(FMTLOAD(LOG_OPENERROR, NewFileName));
   }
   return Result;
 }

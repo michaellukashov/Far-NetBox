@@ -1532,7 +1532,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
       // (not really true as we do not support changing file name on overwrite dialog)
       Action.Destination(DestFullName);
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, RealFileName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, RealFileName), "",
       [&]()
       {
         SetFilePointer(File, 0, nullptr, FILE_BEGIN);
@@ -1628,7 +1628,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
   {
     if (!Dir)
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, RealFileName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, RealFileName), "",
       [&]()
       {
         THROWOSIFFALSE(::RemoveFile(RealFileName));
@@ -1637,7 +1637,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
   }
   else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
   {
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, RealFileName.c_str()), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, RealFileName), "",
     [&]()
     {
       THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(RealFileName), LocalFileAttrs & ~faArchive) == 0);
@@ -1674,7 +1674,7 @@ void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
 
   UnicodeString FindPath = ApiPath(DirectoryName) + L"*.*";
 
-  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
+  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
   [&]()
   {
     FindOK =
@@ -1711,7 +1711,7 @@ void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
         }
       }
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
       [&]()
       {
         FindOK = FindNextChecked(SearchRec) == 0;
@@ -1734,7 +1734,7 @@ void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName), "",
       [&]()
       {
         THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DirectoryName), Attrs & ~faArchive) == 0);
@@ -2136,7 +2136,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     Action.Cancel();
     if (DebugAlwaysTrue(FTerminal->CanRecurseToDirectory(AFile)))
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "",
       [&]()
       {
         DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
@@ -2146,7 +2146,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
         }
       });
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName), "",
       [&]()
       {
         THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFullName)));
@@ -2205,7 +2205,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName), "",
     [&]()
     {
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
@@ -2225,7 +2225,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 
     Action.Destination(::ExpandUNCFileName(DestFullName));
 
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName.c_str()), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName), "",
     [&]()
     {
       HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName,
@@ -2257,7 +2257,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 
           if (DeleteLocalFile)
           {
-            FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName.c_str()), "",
+            FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
             [&]()
             {
               THROWOSIFFALSE(::RemoveFile(DestFullName));
@@ -2302,7 +2302,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 
         if (DeleteLocalFile)
         {
-          FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName.c_str()), "",
+          FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
           [&]()
           {
             THROWOSIFFALSE(::RemoveFile(DestFullName));
@@ -2319,7 +2319,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName), "",
       [&]()
       {
         THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFullName), LocalFileAttrs | NewAttrs) == 0);
@@ -2445,7 +2445,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
       Params.Aliases = Aliases;
       Params.AliasesCount = _countof(Aliases);
       uintptr_t Answer = FTerminal->QueryUser(
-        FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate.c_str()),
+        FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate),
         nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
       switch (Answer)
       {
@@ -2839,7 +2839,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & AFileName, const TRemot
 
     if ((Lock2 == nullptr) && (LockToken.IsEmpty()))
     {
-      throw Exception(FMTLOAD(NOT_LOCKED, AFileName.c_str()));
+      throw Exception(FMTLOAD(NOT_LOCKED, AFileName));
     }
     else
     {
