@@ -5,7 +5,6 @@
 #include <Common.h>
 #include <Exceptions.h>
 #include <WideStrUtils.hpp>
-#include <limits>
 #include <memory>
 
 #include "SftpFileSystem.h"
@@ -413,7 +412,7 @@ public:
     AddString(Value, Utf);
   }
 
-  SSH_FILEXFER_ATTR_TYPES AllocationSizeAttribute(intptr_t Version) const
+  static SSH_FILEXFER_ATTR_TYPES AllocationSizeAttribute(intptr_t Version)
   {
     return (Version >= 6) ? SSH_FILEXFER_ATTR_ALLOCATION_SIZE : SSH_FILEXFER_ATTR_SIZE;
   }
@@ -1316,7 +1315,7 @@ public:
     SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1, void ** Token = nullptr, bool TryOnly = false)
   {
     DebugAssert(FRequests->GetCount());
-    bool Result = false;
+    bool Result;
     std::unique_ptr<TSFTPQueuePacket> Request(FRequests->GetAs<TSFTPQueuePacket>(0));
     try__finally
     {
@@ -1877,7 +1876,7 @@ public:
   bool ReceivePacket(TSFTPPacket * Packet, TRemoteFile *& File)
   {
     void * Token = nullptr;
-    bool Result = false;
+    bool Result;
     try__finally
     {
       SCOPE_EXIT
@@ -4277,7 +4276,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
     if (Queue.Init(CalculateFilesChecksumQueueLen, SftpAlg, AFileList))
     {
       TSFTPPacket Packet(FCodePage);
-      bool Next = false;
+      bool Next;
       do
       {
         bool Success = false;
@@ -4588,7 +4587,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
   bool CanResume =
     (FileParams != nullptr) &&
     (FileParams->DestSize < FileParams->SourceSize);
-  uintptr_t Answer = 0;
+  uintptr_t Answer;
 
   {
     TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -4736,7 +4735,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(UnicodeString DestFileName,
   DebugAssert(OperationProgress);
   if (PartialBiggerThanSource)
   {
-    uintptr_t Answer = 0;
+    uintptr_t Answer;
     {
       TSuspendFileOperationProgress Suspend(OperationProgress);
       TQueryParams Params(qpAllowContinueOnError, HELP_PARTIAL_BIGGER_THAN_SOURCE);
@@ -4754,7 +4753,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(UnicodeString DestFileName,
   }
   else if (FTerminal->GetConfiguration()->GetConfirmResume())
   {
-    uintptr_t Answer = 0;
+    uintptr_t Answer;
 
     {
       TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -5401,7 +5400,7 @@ RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
       FLAGMASK(FLAGSET(OpenType, SSH_FXF_READ), ACE4_READ_DATA) |
       FLAGMASK(FLAGSET(OpenType, SSH_FXF_WRITE), ACE4_WRITE_DATA | ACE4_APPEND_DATA);
 
-    SSH_FXF_TYPES Flags = 0;
+    SSH_FXF_TYPES Flags;
 
     if (FLAGSET(OpenType, SSH_FXF_CREAT | SSH_FXF_EXCL))
     {
@@ -6131,8 +6130,7 @@ void TSFTPFileSystem::SFTPSink(UnicodeString AFileName,
         OperationProgress->Progress();
       });
 
-      TDateTime Modification(0.0);
-      TDateTime LastAccess(0.0);
+      TDateTime Modification;
       FILETIME AcTime;
       ClearStruct(AcTime);
       FILETIME WrTime;
@@ -6167,8 +6165,7 @@ void TSFTPFileSystem::SFTPSink(UnicodeString AFileName,
 
         Modification =
           (File != nullptr) && (File->GetModification() != TDateTime()) ? File->GetModification() : AFile->GetModification();
-        LastAccess =
-          (File != nullptr) && (File->GetLastAccess() != TDateTime()) ? File->GetLastAccess() : AFile->GetLastAccess();
+        TDateTime LastAccess = (File != nullptr) && (File->GetLastAccess() != TDateTime()) ? File->GetLastAccess() : AFile->GetLastAccess();
         AcTime = ::DateTimeToFileTime(LastAccess, GetSessionData()->GetDSTMode());
         WrTime = ::DateTimeToFileTime(Modification, GetSessionData()->GetDSTMode());
       }
