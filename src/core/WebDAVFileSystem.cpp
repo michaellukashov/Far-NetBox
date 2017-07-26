@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
-#include <WinCrypt.h>
 
 #ifndef NE_LFS
 #define NE_LFS
@@ -20,7 +19,6 @@
 #include <ne_session.h>
 #include <ne_request.h>
 #include <ne_xml.h>
-#include <ne_redirect.h>
 #include <ne_xmlreq.h>
 #include <ne_locks.h>
 #include <expat.h>
