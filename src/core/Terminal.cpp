@@ -4666,7 +4666,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
   TFileOperationProgressType * OperationProgress,
   bool Resume,
   bool NoConfirmation,
-  OUT HANDLE * AHandle)
+  HANDLE * AHandle)
 {
   DebugAssert(OperationProgress);
   DebugAssert(AHandle);
@@ -4766,7 +4766,7 @@ bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
   TFileOperationProgressType * OperationProgress,
   bool Resume,
   bool NoConfirmation,
-  OUT HANDLE * AHandle)
+  HANDLE * AHandle)
 {
   DebugAssert(OperationProgress);
   DebugAssert(AHandle);
@@ -4783,8 +4783,8 @@ bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
 
 void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
   DWORD Access,
-  OUT HANDLE * AHandle, OUT uintptr_t * AAttrs, OUT int64_t * ACTime,
-  OUT int64_t * AMTime, OUT int64_t * AATime, OUT int64_t * ASize,
+  HANDLE * AHandle, uintptr_t * AAttrs, int64_t * ACTime,
+  int64_t * AMTime, int64_t * AATime, int64_t * ASize,
   bool TryWriteReadOnly)
 {
   DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
@@ -5002,7 +5002,7 @@ void TTerminal::CalculateLocalFileSize(const UnicodeString & AFileName,
 
 bool TTerminal::CalculateLocalFilesSize(const TStrings * AFileList,
   const TCopyParamType * CopyParam, bool AllowDirs,
-  OUT int64_t & Size)
+  int64_t & Size)
 {
   bool Result = true;
   TFileOperationProgressType OperationProgress(nb::bind(&TTerminal::DoProgress, this), nb::bind(&TTerminal::DoFinished, this));

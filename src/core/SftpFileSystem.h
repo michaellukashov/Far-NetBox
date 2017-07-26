@@ -193,7 +193,7 @@ protected:
   void SFTPConfirmOverwrite(const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
     const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams,
-    OUT TOverwriteMode & OverwriteMode);
+    TOverwriteMode & OverwriteMode);
   bool SFTPConfirmResume(const UnicodeString & DestFileName, bool PartialBiggerThanSource,
     TFileOperationProgressType * OperationProgress);
   void SFTPSinkRobust(const UnicodeString & AFileName,

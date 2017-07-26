@@ -125,8 +125,8 @@ protected:
     TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
     intptr_t Params,
-    OUT TOverwriteMode & OverwriteMode,
-    OUT uintptr_t & Answer);
+    TOverwriteMode & OverwriteMode,
+    uintptr_t & Answer);
   void CheckStatus(int NeonStatus);
   void ClearNeonError();
   static void NeonPropsResult(

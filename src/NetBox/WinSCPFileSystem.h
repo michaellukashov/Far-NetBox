@@ -169,8 +169,8 @@ protected:
   bool CopyDialog(bool ToRemote, bool Move, const TStrings * AFileList,
     intptr_t Options,
     intptr_t CopyParamAttrs,
-    OUT UnicodeString & TargetDirectory,
-    OUT TGUICopyParamType * Params);
+    UnicodeString & TargetDirectory,
+    TGUICopyParamType * Params);
   bool LinkDialog(UnicodeString & AFileName, UnicodeString & PointTo, bool & Symbolic,
     bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo & SessionInfo,
