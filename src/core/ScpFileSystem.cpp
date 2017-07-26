@@ -727,7 +727,8 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
            WrongReturnCode))
       {
         DebugAssert(Cmd != nullptr);
-        FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED, Cmd->c_str(), GetReturnCode(), Message));
+        if (Cmd)
+          FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED, *Cmd, GetReturnCode(), Message));
       }
     }
   }
