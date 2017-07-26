@@ -185,7 +185,7 @@ protected:
     bool AutoResume,
     const TOverwriteFileParams * FileParams,
     const TCopyParamType * CopyParam,
-    OUT TOverwriteMode & OverwriteMode);
+    TOverwriteMode & OverwriteMode);
   void ReadDirectoryProgress(int64_t Bytes);
   void ResetFileTransfer();
   virtual void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);

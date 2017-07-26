@@ -4582,7 +4582,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
   UnicodeString ASourceFullFileName, UnicodeString & ATargetFileName,
   const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams,
-  OUT TOverwriteMode & OverwriteMode)
+  TOverwriteMode & OverwriteMode)
 {
   bool CanAppend = (FVersion < 4) || !OperationProgress->GetAsciiTransfer();
   bool CanResume =
