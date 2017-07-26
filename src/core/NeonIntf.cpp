@@ -21,7 +21,7 @@ void NeonParseUrl(UnicodeString Url, ne_uri & uri)
   if (ne_uri_parse(StrToNeon(Url), &uri) != 0)
   {
     // should never happen
-    throw Exception(FMTLOAD(INVALID_URL, Url.c_str()));
+    throw Exception(FMTLOAD(INVALID_URL, Url));
   }
 
   // Will never happen for initial URL, but may happen for redirect URLs
@@ -103,7 +103,7 @@ void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, UnicodeStri
   }
 
   ne_redirect_register(Session);
-  ne_set_useragent(Session, StrToNeon(FORMAT(L"%s/%s", GetAppNameString().c_str(), GetConfiguration()->GetVersion().c_str())));
+  ne_set_useragent(Session, StrToNeon(FORMAT("%s/%s", GetAppNameString(), GetConfiguration()->GetVersion())));
 }
 
 void DestroyNeonSession(ne_session * Session)
@@ -180,7 +180,7 @@ void CheckNeonStatus(ne_session * Session, intptr_t NeonStatus,
       case NE_RETRY: // not sure if this is a public API
       default:
         DebugFail();
-        Error = FORMAT(L"Unexpected neon error %d", NeonStatus);
+        Error = FORMAT("Unexpected neon error %d", NeonStatus);
         break;
       }
     }
@@ -286,7 +286,7 @@ UnicodeString NeonCertificateFailuresErrorStr(int Failures, UnicodeString HostNa
   // NEON checks certificate host name on its own
   if (FLAGSET(FailuresToList, NE_SSL_IDMISMATCH))
   {
-    AddToList(Result, FMTLOAD(CERT_NAME_MISMATCH, HostName.c_str()), L" ");
+    AddToList(Result, FMTLOAD(CERT_NAME_MISMATCH, HostName), L" ");
     FailuresToList &= ~NE_SSL_IDMISMATCH;
   }
   if (FLAGSET(FailuresToList, NE_SSL_UNTRUSTED))

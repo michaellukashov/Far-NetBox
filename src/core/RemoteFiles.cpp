@@ -424,12 +424,12 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
     case mfNone:
       return L"";
     case mfMDY:
-      return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
+      return FORMAT("%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
     case mfMDHM:
-      return FORMAT(L"%3s %2d %2d:%2.2d",
+      return FORMAT("%3s %2d %2d:%2.2d",
         EngShortMonthNames[Month-1], Day, Hour, Min);
     case mfFull:
-      return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
+      return FORMAT("%3s %2d %2d:%2.2d:%2.2d %4d",
         EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
     default:
       DebugAssert(false);
@@ -449,10 +449,10 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
       return L"";
 
     case mfMDY:
-      return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
+      return FORMAT("%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
 
     case mfMDHM:
-      return FORMAT(L"%3s %2d %2d:%2.2d",
+      return FORMAT("%3s %2d %2d:%2.2d",
         EngShortMonthNames[Month-1], Day, Hour, Min);
 
     default:
@@ -460,7 +460,7 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
       // fall thru
 
     case mfFull:
-      return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
+      return FORMAT("%3s %2d %2d:%2.2d:%2.2d %4d",
         EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
   }
 }
@@ -536,7 +536,7 @@ UnicodeString FormatMultiFilesToOneConfirmation(UnicodeString ATarget, bool Unix
     Name = ExtractFileName(ATarget, Unix);
     Path = ::IncludeTrailingBackslash(ATarget);
   }
-  return FMTLOAD(MULTI_FILES_TO_ONE, Name.c_str(), Dir.c_str(), Path.c_str());
+  return FMTLOAD(MULTI_FILES_TO_ONE, Name, Dir, Path);
 }
 
 #endif // #if 0
@@ -671,7 +671,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
 
 UnicodeString TRemoteToken::GetLogText() const
 {
-  return FORMAT(L"\"%s\" [%d]", FName.c_str(), static_cast<int>(FID));
+  return FORMAT("\"%s\" [%d]", FName, static_cast<int>(FID));
 }
 
 
@@ -785,7 +785,7 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t * Title)
 {
   if (!FTokens.empty())
   {
-    Terminal->LogEvent(FORMAT(L"Following %s found:", Title));
+    Terminal->LogEvent(FORMAT("Following %s found:", Title));
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(FTokens.size()); ++Index)
     {
       Terminal->LogEvent(UnicodeString(L"  ") + FTokens[Index].GetLogText());
@@ -793,7 +793,7 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t * Title)
   }
   else
   {
-    Terminal->LogEvent(FORMAT(L"No %s found.", Title));
+    Terminal->LogEvent(FORMAT("No %s found.", Title));
   }
 }
 
@@ -1421,7 +1421,7 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
   }
   catch (Exception & E)
   {
-    throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, Value.c_str()), HELP_LIST_LINE_ERROR);
+    throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, Value), HELP_LIST_LINE_ERROR);
   }
 }
 
@@ -1513,11 +1513,11 @@ UnicodeString TRemoteFile::GetListingStr() const
   {
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
-  return FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
-    UnicodeString(GetType()).c_str(), GetRights()->GetText().c_str(), ::Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(), GetFileGroup().GetName().c_str(),
-    ::Int64ToStr(GetSize()).c_str(), // explicitly using size even for directories
-    GetModificationStr().c_str(), GetFileName().c_str(),
-    LinkPart.c_str());
+  return FORMAT("%s%s %3s %-8s %-8s %9s %-12s %s%s",
+    GetType(), GetRights()->GetText(), ::Int64ToStr(FINodeBlocks), GetFileOwner().GetName(), GetFileGroup().GetName(),
+    ::Int64ToStr(GetSize()),  // explicitly using size even for directories
+    GetModificationStr(), GetFileName(),
+    LinkPart);
 }
 
 UnicodeString TRemoteFile::GetFullFileName() const
@@ -2325,7 +2325,7 @@ void TRights::SetText(UnicodeString Value)
         (!GetAllowUndef() && (Value.Pos(UndefSymbol) > 0)) ||
         (Value.Pos(L" ") > 0))
     {
-      throw Exception(FMTLOAD(RIGHTS_ERROR, Value.c_str()));
+      throw Exception(FMTLOAD(RIGHTS_ERROR, Value));
     }
 
     FSet = 0;
@@ -2452,7 +2452,7 @@ void TRights::SetOctal(UnicodeString AValue)
 
     if (!Correct)
     {
-      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue.c_str()));
+      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue));
     }
 
     SetNumber(static_cast<uint16_t>(

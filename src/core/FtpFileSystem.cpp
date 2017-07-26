@@ -1044,7 +1044,7 @@ bool TFTPFileSystem::DoQuit()
 
 void TFTPFileSystem::DoChangeDirectory(UnicodeString Directory)
 {
-  UnicodeString Command = FORMAT(L"CWD %s", Directory.c_str());
+  UnicodeString Command = FORMAT("CWD %s", Directory);
   SendCommand(Command);
 
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
@@ -1215,10 +1215,10 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(
   // XSHA512 filename;start;end
   if (FileName.Pos(L" ") > 0)
   {
-    FileName = FORMAT(L"\"%s\"", FileName.c_str());
+    FileName = FORMAT("\"%s\"", FileName);
   }
 
-  UnicodeString Command = FORMAT(L"%s %s", CommandName.c_str(), FileName.c_str());
+  UnicodeString Command = FORMAT("%s %s", CommandName, FileName);
   SendCommand(Command);
   UnicodeString ResponseText = GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_SINGLE_LINE);
 
@@ -1269,7 +1269,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(
 
   if (Hash.IsEmpty())
   {
-    throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, CommandName.c_str(), ResponseText.c_str()));
+    throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, CommandName, ResponseText));
   }
 
   return LowerCase(Hash);
@@ -1404,7 +1404,7 @@ void TFTPFileSystem::CalculateFilesChecksum(UnicodeString Alg,
     {
       // The server should understand lowercase alg name by spec,
       // but we should use uppercase anyway
-      SendCommand(FORMAT(L"OPTS %s %s", HashCommand.c_str(), UpperCase(NormalizedAlg).c_str()));
+      SendCommand(FORMAT("OPTS %s %s", HashCommand, UpperCase(NormalizedAlg)));
       GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
     }
     else if (FChecksumAlgs->IndexOf(NormalizedAlg) >= 0)
@@ -1413,7 +1413,7 @@ void TFTPFileSystem::CalculateFilesChecksum(UnicodeString Alg,
     }
     else
     {
-      throw Exception(FMTLOAD(UNKNOWN_CHECKSUM, Alg.c_str()));
+      throw Exception(FMTLOAD(UNKNOWN_CHECKSUM, Alg));
     }
 
     DoCalculateFilesChecksum(UsingHashCommand, NormalizedAlg, AFileList, Checksums, OnCalculatedChecksum,
@@ -1646,7 +1646,7 @@ void TFTPFileSystem::FileTransfer(UnicodeString AFileName,
   UnicodeString RemotePath, bool Get, int64_t Size, intptr_t Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
-  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName.c_str()), "",
+  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName), "",
   [&]()
   {
     FFileZillaIntf->FileTransfer(ApiPath(LocalFile).c_str(), RemoteFile.c_str(),
@@ -1785,7 +1785,7 @@ void TFTPFileSystem::Sink(UnicodeString AFileName,
   UnicodeString BaseFileName = FTerminal->GetBaseFileName(AFileName);
   if (!CopyParam->AllowTransfer(BaseFileName, osRemote, AFile->GetIsDirectory(), MaskParams))
   {
-    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", AFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("File \"%s\" excluded from transfer", AFileName));
     ThrowSkipFileNull();
   }
 
@@ -1809,7 +1809,7 @@ void TFTPFileSystem::Sink(UnicodeString AFileName,
     Action.Cancel();
     if (FTerminal->CanRecurseToDirectory(AFile))
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "",
       [&]()
       {
         DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
@@ -1819,7 +1819,7 @@ void TFTPFileSystem::Sink(UnicodeString AFileName,
         }
       });
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName), "",
       [&]()
       {
         THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFullName)));
@@ -1848,14 +1848,14 @@ void TFTPFileSystem::Sink(UnicodeString AFileName,
     }
     else
     {
-      FTerminal->LogEvent(FORMAT(L"Skipping symlink to directory \"%s\".", AFileName.c_str()));
+      FTerminal->LogEvent(FORMAT("Skipping symlink to directory \"%s\".", AFileName));
     }
   }
   else
   {
     AutoDetectTimeDifference(base::UnixExtractFileDir(AFileName), CopyParam, AParams);
 
-    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", AFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("Copying \"%s\" to local directory started.", AFileName));
 
     // Will we use ASCII of BINARY file transfer?
     OperationProgress->SetAsciiTransfer(
@@ -1868,7 +1868,7 @@ void TFTPFileSystem::Sink(UnicodeString AFileName,
     OperationProgress->SetLocalSize(OperationProgress->GetTransferSize());
 
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName), "",
     [&]()
     {
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
@@ -1920,7 +1920,7 @@ void TFTPFileSystem::Sink(UnicodeString AFileName,
     DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName), "",
       [&]()
       {
         THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFullName), (LocalFileAttrs | NewAttrs)));
@@ -2131,7 +2131,7 @@ void TFTPFileSystem::Source(UnicodeString AFileName,
         CopyParam, base::ExtractFileName(RealFileName, false), osLocal,
         FLAGSET(Flags, tfFirstLevel));
 
-    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("Copying \"%s\" to remote directory started.", RealFileName));
 
     OperationProgress->SetLocalSize(Size);
 
@@ -2223,8 +2223,8 @@ void TFTPFileSystem::Source(UnicodeString AFileName,
         if ((FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
         {
           FTerminal->LogEvent(
-            FORMAT(L"Remembering modification time of \"%s\" as [%s]",
-                   DestFullName.c_str(), StandardTimestamp(FUploadedTimes[DestFullName]).c_str()));
+            FORMAT("Remembering modification time of \"%s\" as [%s]",
+                   DestFullName, StandardTimestamp(FUploadedTimes[DestFullName])));
         }
       }
     }
@@ -2237,7 +2237,7 @@ void TFTPFileSystem::Source(UnicodeString AFileName,
   {
     if (!Dir)
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName), "",
       [&]()
       {
         THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(AFileName)));
@@ -2246,7 +2246,7 @@ void TFTPFileSystem::Source(UnicodeString AFileName,
   }
   else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams->LocalFileAttrs, faArchive))
   {
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, AFileName), "",
     [&]()
     {
       THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(AFileName), OpenParams->LocalFileAttrs & ~faArchive));
@@ -2276,7 +2276,7 @@ void TFTPFileSystem::DirectorySource(UnicodeString DirectoryName,
     TSearchRecChecked SearchRec;
     bool FindOK = false;
 
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
     [&]()
     {
       FindOK =
@@ -2318,7 +2318,7 @@ void TFTPFileSystem::DirectorySource(UnicodeString DirectoryName,
           }
         }
 
-        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
+        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
         [&]()
         {
           FindOK = (::FindNextChecked(SearchRec) == 0);
@@ -2388,7 +2388,7 @@ void TFTPFileSystem::DirectorySource(UnicodeString DirectoryName,
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName), "",
       [&]()
       {
         THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DirectoryName), Attrs & ~faArchive));
@@ -2419,7 +2419,7 @@ void TFTPFileSystem::CreateLink(UnicodeString AFileName,
   {
     EnsureLocation();
 
-    UnicodeString Command = FORMAT(L"%s %s %s %s", SiteCommand.c_str(), SymlinkSiteCommand.c_str(), PointTo.c_str(), AFileName.c_str());
+    UnicodeString Command = FORMAT("%s %s %s %s", SiteCommand, SymlinkSiteCommand, PointTo, AFileName);
     SendCommand(Command);
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
   }
@@ -2662,7 +2662,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
       }
       else
       {
-        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, Command.c_str(), Response->GetText().c_str()));
+        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, Command, Response->GetText()));
       }
     }
     __finally
@@ -2761,8 +2761,8 @@ bool TFTPFileSystem::LookupUploadModificationTime(
         if ((FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
         {
           FTerminal->LogEvent(
-            FORMAT(L"Enriching modification time of \"%s\" from [%s] to [%s]",
-                   FileName.c_str(), StandardTimestamp(Modification).c_str(), StandardTimestamp(UploadModification).c_str()));
+            FORMAT("Enriching modification time of \"%s\" from [%s] to [%s]",
+                   FileName, StandardTimestamp(Modification), StandardTimestamp(UploadModification)));
         }
         Modification = UploadModification;
         Result = true;
@@ -2772,8 +2772,8 @@ bool TFTPFileSystem::LookupUploadModificationTime(
         if ((FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
         {
           FTerminal->LogEvent(
-            FORMAT(L"Remembered modification time [%s]/[%s] of \"%s\" is obsolete, keeping [%s]",
-                   StandardTimestamp(UploadModification).c_str(), StandardTimestamp(UploadModificationReduced).c_str(), FileName.c_str(), StandardTimestamp(Modification).c_str()));
+            FORMAT("Remembered modification time [%s]/[%s] of \"%s\" is obsolete, keeping [%s]",
+                   StandardTimestamp(UploadModification), StandardTimestamp(UploadModificationReduced), FileName, StandardTimestamp(Modification)));
         }
         FUploadedTimes.erase(AbsPath);
       }
@@ -2829,7 +2829,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
           {
             throw;
           }
-          FTerminal->LogEvent(FORMAT(L"Failed to retrieve file %s attributes to detect timezone difference", File->GetFullFileName().c_str()));
+          FTerminal->LogEvent(FORMAT("Failed to retrieve file %s attributes to detect timezone difference", File->GetFullFileName()));
           break;
         }
 
@@ -2859,11 +2859,11 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
           UnicodeString LogMessage;
           if (FTimeDifference == 0)
           {
-            LogMessage = FORMAT(L"No timezone difference detected using file %s", FileLog.c_str());
+            LogMessage = FORMAT("No timezone difference detected using file %s", FileLog);
           }
           else
           {
-            LogMessage = FORMAT(L"Timezone difference of %s detected using file %s", FormatTimeZone(static_cast<intptr_t>(FTimeDifference)).c_str(), FileLog.c_str());
+            LogMessage = FORMAT("Timezone difference of %s detected using file %s", FormatTimeZone(static_cast<intptr_t>(FTimeDifference)), FileLog);
           }
           FTerminal->LogEvent(LogMessage);
 
@@ -3034,7 +3034,7 @@ void TFTPFileSystem::ReadFile(UnicodeString AFileName,
   {
     if (base::IsUnixRootPath(AFileName))
     {
-      FTerminal->LogEvent(FORMAT(L"%s is a root path", AFileName.c_str()));
+      FTerminal->LogEvent(FORMAT("%s is a root path", AFileName));
       File = new TRemoteDirectoryFile();
       File->SetFullFileName(AFileName);
       File->SetFileName(L"");
@@ -3084,7 +3084,7 @@ void TFTPFileSystem::ReadFile(UnicodeString AFileName,
   if (File == nullptr)
   {
     AFile = nullptr;
-    throw Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()));
+    throw Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName));
   }
 
   DebugAssert(File != nullptr);
@@ -3145,11 +3145,11 @@ void TFTPFileSystem::RemoteCopyFile(UnicodeString AFileName,
   DebugAssert(SupportsSiteCommand(CopySiteCommand));
   EnsureLocation();
 
-  UnicodeString Command = FORMAT(L"%s CPFR %s", SiteCommand.c_str(), AFileName.c_str());
+  UnicodeString Command = FORMAT("%s CPFR %s", SiteCommand, AFileName);
   SendCommand(Command);
   GotReply(WaitForCommandReply(), REPLY_3XX_CODE);
 
-  Command = FORMAT(L"%s CPTO %s", SiteCommand.c_str(), ANewName.c_str());
+  Command = FORMAT("%s CPTO %s", SiteCommand, ANewName);
   SendCommand(Command);
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
@@ -3212,7 +3212,7 @@ void TFTPFileSystem::SpaceAvailable(UnicodeString APath,
   {
     // draft-peterson-streamlined-ftp-command-extensions-10
     // Implemented by Serv-U.
-    UnicodeString Command = FORMAT(L"%s %s", AvblCommand.c_str(), APath.c_str());
+    UnicodeString Command = FORMAT("%s %s", AvblCommand, APath);
     SendCommand(Command);
     UnicodeString Response = GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_SINGLE_LINE);
     ASpaceAvailable.UnusedBytesAvailableToUser = StrToInt64(Response);
@@ -3238,11 +3238,11 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     else
     {
       FFileSystemInfo.AdditionalInfo =
-        FORMAT(L"%s\r\n", LoadStr(FTP_FEATURE_INFO).c_str());
+        FORMAT("%s\r\n", LoadStr(FTP_FEATURE_INFO));
       for (intptr_t Index = 0; Index < FFeatures->GetCount(); ++Index)
       {
         // For TrimLeft, refer to HandleFeatReply
-        FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", TrimLeft(FFeatures->GetString(Index)).c_str());
+        FFileSystemInfo.AdditionalInfo += FORMAT("  %s\r\n", TrimLeft(FFeatures->GetString(Index)));
       }
     }
 
@@ -3535,7 +3535,7 @@ void TFTPFileSystem::WaitForMessages()
 
   if (Result != WAIT_OBJECT_0)
   {
-    FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", ::IntToStr(Result).c_str()));
+    FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", ::IntToStr(Result)));
   }
 }
 
@@ -3742,7 +3742,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
            TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
            TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
     {
-      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#2", FORMAT(L"0x%x", static_cast<int>(Reply)).c_str()));
+      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, "ftp#2", FORMAT("0x%x", static_cast<int>(Reply))));
     }
     else
     {
@@ -3887,7 +3887,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
     {
       if (FLastResponse->GetCount() != 1)
       {
-        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, FLastCommandSent.c_str(), FLastResponse->GetText().c_str()));
+        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, FLastCommandSent, FLastResponse->GetText()));
       }
       Result = FLastResponse->GetString(0);
     }
@@ -4465,7 +4465,7 @@ static UnicodeString FormatContactList(UnicodeString Entry1, UnicodeString Entry
 {
   if (!Entry1.IsEmpty() && !Entry2.IsEmpty())
   {
-    return FORMAT(L"%s, %s", Entry1.c_str(), Entry2.c_str());
+    return FORMAT("%s, %s", Entry1, Entry2);
   }
   return Entry1 + Entry2;
 }
@@ -4473,23 +4473,23 @@ static UnicodeString FormatContactList(UnicodeString Entry1, UnicodeString Entry
 UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
 {
   UnicodeString Result =
-    FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
+    FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1),
       FormatContactList(FormatContactList(FormatContactList(
-        Contact.Organization, Contact.Unit).c_str(), Contact.CommonName).c_str(), Contact.Mail).c_str());
+        Contact.Organization, Contact.Unit), Contact.CommonName), Contact.Mail));
 
   if ((wcslen(Contact.Country) > 0) ||
     (wcslen(Contact.StateProvince) > 0) ||
     (wcslen(Contact.Town) > 0))
   {
     Result +=
-      FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 2).c_str(),
+      FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 2),
         FormatContactList(FormatContactList(
-          Contact.Country, Contact.StateProvince).c_str(), Contact.Town).c_str());
+        Contact.Country, Contact.StateProvince), Contact.Town));
   }
 
   if (wcslen(Contact.Other) > 0)
   {
-    Result += FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 3).c_str(), Contact.Other);
+    Result += FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 3), Contact.Other);
   }
 
   return Result;
@@ -4517,7 +4517,7 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & Val
       static_cast<uint16_t>(ValidityTime.Sec), 0);
   DateTime.DecodeDate(Y, M, D);
   DateTime.DecodeTime(H, Mm, S, MS);
-  UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
+  UnicodeString dt = FORMAT("%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
   return dt;
 }
 
@@ -4560,13 +4560,13 @@ bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data
   bool Result = !NoMask && VerifyNameMask(HostName, CommonName);
   if (Result)
   {
-    FTerminal->LogEvent(FORMAT(L"Certificate common name \"%s\" matches hostname", CommonName.c_str()));
+    FTerminal->LogEvent(FORMAT("Certificate common name \"%s\" matches hostname", CommonName));
   }
   else
   {
     if (!NoMask && (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1))
     {
-      FTerminal->LogEvent(FORMAT(L"Certificate common name \"%s\" does not match hostname", CommonName.c_str()));
+      FTerminal->LogEvent(FORMAT("Certificate common name \"%s\" does not match hostname", CommonName));
     }
     UnicodeString SubjectAltName = Data.SubjectAltName;
     while (!Result && !SubjectAltName.IsEmpty())
@@ -4579,13 +4579,13 @@ bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data
         Result = VerifyNameMask(HostName, Entry);
         if (Result)
         {
-          FTerminal->LogEvent(FORMAT(L"Certificate subject alternative name \"%s\" matches hostname", Entry.c_str()));
+          FTerminal->LogEvent(FORMAT("Certificate subject alternative name \"%s\" matches hostname", Entry));
         }
         else
         {
           if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
           {
-            FTerminal->LogEvent(FORMAT(L"Certificate subject alternative name \"%s\" does not match hostname", Entry.c_str()));
+            FTerminal->LogEvent(FORMAT("Certificate subject alternative name \"%s\" does not match hostname", Entry));
           }
         }
       }
@@ -4644,8 +4644,8 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     else
     {
       UnicodeString CertificateSubject = Data.Subject.Organization;
-      FTerminal->LogEvent(FORMAT(L"Verifying certificate for \"%s\" with fingerprint %s and %d failures",
-                                 CertificateSubject.c_str(), FSessionInfo.CertificateFingerprint.c_str(), Data.VerificationResult));
+      FTerminal->LogEvent(FORMAT("Verifying certificate for \"%s\" with fingerprint %s and %d failures",
+                                 CertificateSubject, FSessionInfo.CertificateFingerprint, Data.VerificationResult));
 
       bool Trusted = false;
       bool TryWindowsSystemCertificateStore = false;
@@ -4720,8 +4720,8 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         break;
       default:
         VerificationResultStr =
-          FORMAT(L"%s (%s)",
-            LoadStr(CERT_ERR_UNKNOWN).c_str(), UnicodeString(X509_verify_cert_error_string(Data.VerificationResult)).c_str());
+          FORMAT("%s (%s)",
+            LoadStr(CERT_ERR_UNKNOWN), UnicodeString(X509_verify_cert_error_string(Data.VerificationResult)));
         break;
       }
 
@@ -4765,7 +4765,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         else
         {
           FTerminal->LogEvent(
-            FORMAT(L"Certificate failed to verify against Windows certificate store: %s", DefaultStr(WindowsCertificateError, L"no details").c_str()));
+            FORMAT("Certificate failed to verify against Windows certificate store: %s", DefaultStr(WindowsCertificateError, L"no details")));
         }
       }
 
@@ -4779,11 +4779,11 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       if (IsHostNameIPAddress)
       {
-        AddToList(Summary, FMTLOAD(CERT_IP_CANNOT_VERIFY, FTerminal->GetSessionData()->GetHostNameExpanded().c_str()), SummarySeparator);
+        AddToList(Summary, FMTLOAD(CERT_IP_CANNOT_VERIFY, FTerminal->GetSessionData()->GetHostNameExpanded()), SummarySeparator);
       }
       else if (!CertificateHostNameVerified)
       {
-        AddToList(Summary, FMTLOAD(CERT_NAME_MISMATCH, FTerminal->GetSessionData()->GetHostNameExpanded().c_str()), SummarySeparator);
+        AddToList(Summary, FMTLOAD(CERT_NAME_MISMATCH, FTerminal->GetSessionData()->GetHostNameExpanded()), SummarySeparator);
       }
 
       if (Summary.IsEmpty())
@@ -4793,12 +4793,12 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       FSessionInfo.Certificate =
         FMTLOAD(CERT_TEXT,
-          FormatContact(Data.Issuer).c_str(),
-          FormatContact(Data.Subject).c_str(),
-          FormatValidityTime(Data.ValidFrom).c_str(),
-          FormatValidityTime(Data.ValidUntil).c_str(),
-          FSessionInfo.CertificateFingerprint.c_str(),
-          Summary.c_str());
+          FormatContact(Data.Issuer),
+          FormatContact(Data.Subject),
+          FormatValidityTime(Data.ValidFrom),
+          FormatValidityTime(Data.ValidUntil),
+          FSessionInfo.CertificateFingerprint,
+          Summary);
 
       RequestResult = VerificationResult ? 1 : 0;
 
@@ -4818,7 +4818,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         Params.Aliases = Aliases;
         Params.AliasesCount = _countof(Aliases);
         uintptr_t Answer = FTerminal->QueryUser(
-          FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate.c_str()),
+          FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate),
           nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
 
         switch (Answer)
@@ -5059,7 +5059,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
              Entry->Name, Entry->Permissions, Entry->HumanPerm, Entry->Owner, Entry->Group, Entry->OwnerGroup, ::Int64ToStr(Entry->Size),
              int(Entry->Dir), int(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
              Entry->Time.Hour, Entry->Time.Minute, TmStr);
-        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), HELP_LIST_LINE_ERROR);
+        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData), HELP_LIST_LINE_ERROR);
       }
 
       FFileList->AddFile(File.release());
@@ -5098,7 +5098,7 @@ bool TFTPFileSystem::HandleReply(intptr_t Command, uintptr_t Reply)
   }
   if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", static_cast<int>(Reply), Command));
+    FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", static_cast<int>(Reply), Command));
   }
 
   // reply with Command 0 is not associated with current operation
@@ -5149,7 +5149,7 @@ bool TFTPFileSystem::CheckError(intptr_t ReturnCode, const wchar_t * Context)
   else
   {
     FTerminal->FatalError(nullptr,
-      FMTLOAD(INTERNAL_ERROR, FORMAT(L"fz#%s", Context).c_str(), ::IntToHex(ReturnCode, 4).c_str()));
+      FMTLOAD(INTERNAL_ERROR, FORMAT("fz#%s", Context), ::IntToHex(ReturnCode, 4)));
     DebugFail();
   }
 

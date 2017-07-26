@@ -111,7 +111,7 @@ void TSecureShell::UpdateSessionInfo() const
     FSshVersion = get_ssh_version(FBackendHandle);
     FSessionInfo.ProtocolBaseName = L"SSH";
     FSessionInfo.ProtocolName =
-      FORMAT(L"%s-%d", FSessionInfo.ProtocolBaseName.c_str(), get_ssh_version(FBackendHandle));
+      FORMAT("%s-%d", FSessionInfo.ProtocolBaseName, get_ssh_version(FBackendHandle));
     FSessionInfo.SecurityProtocolName = FSessionInfo.ProtocolName;
 
     FSessionInfo.CSCompression =
@@ -644,7 +644,7 @@ void TSecureShell::Init()
     {
       if (FAuthenticating && !FAuthenticationLog.IsEmpty())
       {
-        FUI->FatalError(&E, FMTLOAD(AUTHENTICATION_LOG, FAuthenticationLog.c_str()));
+        FUI->FatalError(&E, FMTLOAD(AUTHENTICATION_LOG, FAuthenticationLog));
       }
       else
       {
@@ -878,11 +878,11 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
 
   UnicodeString InstructionsLog =
-    (AInstructions.IsEmpty() ? UnicodeString(L"<no instructions>") : FORMAT(L"\"%s\"", AInstructions.c_str()));
+    (AInstructions.IsEmpty() ? UnicodeString(L"<no instructions>") : FORMAT("\"%s\"", AInstructions));
   UnicodeString PromptsLog =
-    (Prompts->GetCount() > 0 ? FORMAT(L"\"%s\"", Prompts->GetString(0).c_str()) : UnicodeString(L"<no prompt>")) +
-    (Prompts->GetCount() > 1 ? FORMAT(L"%d more", Prompts->GetCount() - 1) : UnicodeString());
-  LogEvent(FORMAT(L"Prompt (%s, \"%s\", %s, %s)", PromptDesc.c_str(), AName.c_str(), InstructionsLog.c_str(), PromptsLog.c_str()));
+    (Prompts->GetCount() > 0 ? FORMAT("\"%s\"", Prompts->GetString(0)) : UnicodeString(L"<no prompt>")) +
+    (Prompts->GetCount() > 1 ? FORMAT("%d more", Prompts->GetCount() - 1) : UnicodeString());
+  LogEvent(FORMAT("Prompt (%s, \"%s\", %s, %s)", PromptDesc, AName, InstructionsLog, PromptsLog));
 
   Name = Name.Trim();
 
@@ -982,7 +982,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       if ((Prompts->GetCount() >= 1) &&
         (FLAGSET(ToInt(Prompts->GetObj(0)), pupEcho) || GetConfiguration()->GetLogSensitive()))
       {
-        LogEvent(FORMAT(L"Response: \"%s\"", Results->GetString(0).c_str()));
+        LogEvent(FORMAT("Response: \"%s\"", Results->GetString(0)));
       }
 
       if ((PromptKind == pkUserName) && (Prompts->GetCount() == 1))
@@ -1055,7 +1055,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t * Data, intptr_t Len
 
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Received %u bytes (%d)", Length, static_cast<int>(IsStdErr)));
+    LogEvent(FORMAT("Received %u bytes (%d)", Length, static_cast<int>(IsStdErr)));
   }
 
   // Following is taken from scp.c from_backend() and modified
@@ -1195,7 +1195,7 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
       {
         if (GetConfiguration()->GetActualLogProtocol() >= 1)
         {
-          LogEvent(FORMAT(L"Waiting for another %u bytes", static_cast<int>(OutLen)));
+          LogEvent(FORMAT("Waiting for another %u bytes", static_cast<int>(OutLen)));
         }
         WaitForData();
       }
@@ -1217,7 +1217,7 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Read %d bytes (%d pending)",
+    LogEvent(FORMAT("Read %d bytes (%d pending)",
       static_cast<int>(Length), static_cast<int>(PendLen)));
   }
   return Length;
@@ -1284,7 +1284,7 @@ UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uintptr_t 
 
 void TSecureShell::SendSpecial(intptr_t Code)
 {
-  LogEvent(FORMAT(L"Sending special code: %d", Code));
+  LogEvent(FORMAT("Sending special code: %d", Code));
   CheckConnection();
   FBackend->special(FBackendHandle, static_cast<Telnet_Special>(Code));
   CheckConnection();
@@ -1362,15 +1362,15 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
     CheckConnection();
     if (GetConfiguration()->GetActualLogProtocol() >= 1)
     {
-      LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer, "
-        L"need to send at least another %u bytes",
+      LogEvent(FORMAT("There are %u bytes remaining in the send buffer, "
+        "need to send at least another %u bytes",
         BufSize, BufSize - MAX_BUFSIZE));
     }
     EventSelectLoop(100, false, nullptr);
     BufSize = FBackend->sendbuffer(FBackendHandle);
     if (GetConfiguration()->GetActualLogProtocol() >= 1)
     {
-      LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
+      LogEvent(FORMAT("There are %u bytes remaining in the send buffer", BufSize));
     }
 
     if (Now() - Start > FSessionData->GetTimeoutDT())
@@ -1406,8 +1406,8 @@ void TSecureShell::Send(const uint8_t * Buf, intptr_t Length)
   int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), static_cast<int>(Length));
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Sent %d bytes", static_cast<int>(Length)));
-    LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
+    LogEvent(FORMAT("Sent %d bytes", static_cast<int>(Length)));
+    LogEvent(FORMAT("There are %u bytes remaining in the send buffer", BufSize));
   }
   FLastDataSent = Now();
   // among other forces receive of pending data to free the servers's send buffer
@@ -1642,14 +1642,14 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
-    LogEvent(FORMAT(L"Selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
+    LogEvent(FORMAT("Selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
   }
 
   if (::WSAEventSelect(Socket, static_cast<WSAEVENT>(Event), Events) == SOCKET_ERROR)
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(FORMAT(L"Error selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
+      LogEvent(FORMAT("Error selecting events %d for socket %d", static_cast<int>(Events), static_cast<int>(Socket)));
     }
 
     if (Startup)
@@ -1702,7 +1702,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET Value, bool Startup)
 {
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
-    LogEvent(FORMAT(L"Updating forwarding socket %d (%d)", static_cast<int>(Value), static_cast<int>(Startup)));
+    LogEvent(FORMAT("Updating forwarding socket %d (%d)", static_cast<int>(Value), static_cast<int>(Startup)));
   }
 
   SocketEventSelect(Value, FSocketEvent, Startup);
@@ -1915,7 +1915,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
-    LogEvent(FORMAT(L"Enumerating network events for socket %d", static_cast<int>(Socket)));
+    LogEvent(FORMAT("Enumerating network events for socket %d", static_cast<int>(Socket)));
   }
 
   // see winplink.c
@@ -1936,7 +1936,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(FORMAT(L"Enumerated %d network events making %d cumulative events for socket %d",
+      LogEvent(FORMAT("Enumerated %d network events making %d cumulative events for socket %d",
         static_cast<int>(AEvents.lNetworkEvents), static_cast<int>(Events.lNetworkEvents), static_cast<int>(Socket)));
     }
   }
@@ -1944,7 +1944,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(FORMAT(L"Error enumerating network events for socket %d", static_cast<int>(Socket)));
+      LogEvent(FORMAT("Error enumerating network events for socket %d", static_cast<int>(Socket)));
     }
   }
 
@@ -1979,7 +1979,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 
       if (GetConfiguration()->GetActualLogProtocol() >= 2)
       {
-        LogEvent(FORMAT(L"Handling network %s event on socket %d with error %d",
+        LogEvent(FORMAT("Handling network %s event on socket %d with error %d",
           EventTypes[Event].Desc, int(Socket), Err));
       }
       LPARAM SelectEvent = WSAMAKESELECTREPLY(EventTypes[Event].Mask, Err);
@@ -2095,7 +2095,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       {
         if (GetConfiguration()->GetActualLogProtocol() >= 2)
         {
-          LogEvent(FORMAT(L"Unknown waiting result %d", static_cast<int>(WaitResult)));
+          LogEvent(FORMAT("Unknown waiting result %d", static_cast<int>(WaitResult)));
         }
 
         MSec = 0;
@@ -2134,7 +2134,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
         DebugAssert(OutBuffLen == sizeof(BufferLen));
         if (FSendBuf < static_cast<intptr_t>(BufferLen))
         {
-          LogEvent(FORMAT(L"Increasing send buffer from %d to %d", FSendBuf, static_cast<int>(BufferLen)));
+          LogEvent(FORMAT("Increasing send buffer from %d to %d", FSendBuf, static_cast<int>(BufferLen)));
           FSendBuf = BufferLen;
           setsockopt(FSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&BufferLen), sizeof(BufferLen));
         }
@@ -2325,7 +2325,7 @@ void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
 {
   UnicodeString Host = AHost;
   UnicodeString KeyStr = AKeyStr;
-  LogEvent(FORMAT(L"Verifying host key %s %s with fingerprint %s", AKeyType.c_str(), FormatKeyStr(KeyStr).c_str(), AFingerprint.c_str()));
+  LogEvent(FORMAT("Verifying host key %s %s with fingerprint %s", AKeyType, FormatKeyStr(KeyStr), AFingerprint));
 
   GotHostKey();
 
@@ -2368,7 +2368,7 @@ void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
     else
     {
       UnicodeString FormattedKey = Fingerprint ? StoredKey : FormatKeyStr(StoredKey);
-      LogEvent(FORMAT(L"Host key does not match cached key %s", FormattedKey.c_str()));
+      LogEvent(FORMAT("Host key does not match cached key %s", FormattedKey));
     }
   }
 
@@ -2396,7 +2396,7 @@ void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
       }
       else
       {
-        LogEvent(FORMAT(L"Host key does not match configured key %s", ExpectedKey.c_str()));
+        LogEvent(FORMAT("Host key does not match configured key %s", ExpectedKey));
       }
     }
 
@@ -2454,7 +2454,7 @@ void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
 
-      UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY3 : DIFFERENT_KEY4), AKeyType.c_str(), AFingerprint.c_str());
+      UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY3 : DIFFERENT_KEY4), AKeyType, AFingerprint);
       if (GetConfiguration()->GetScripting())
       {
         AddToList(Message, LoadStr(SCRIPTING_USE_HOSTKEY), L"\n");
@@ -2491,7 +2491,7 @@ void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
       UnicodeString Message;
       if (ConfiguredKeyNotMatch)
       {
-        Message = FMTLOAD(CONFIGURED_KEY_NOT_MATCH, FSessionData->GetHostKey().c_str());
+        Message = FMTLOAD(CONFIGURED_KEY_NOT_MATCH, FSessionData->GetHostKey());
       }
       else if (!GetConfiguration()->GetPersistent() && GetConfiguration()->GetScripting())
       {
@@ -2505,7 +2505,7 @@ void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
       std::unique_ptr<Exception> E(new Exception(MainInstructions(Message)));
       try__finally
       {
-        FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, AFingerprint.c_str()));
+        FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, AFingerprint));
       }
       __finally
       {
@@ -2541,7 +2541,7 @@ bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString
 
   if (Result)
   {
-    LogEvent(FORMAT(L"Have a known host key of type %s", KeyType.c_str()));
+    LogEvent(FORMAT("Have a known host key of type %s", KeyType));
   }
 
   return Result;
@@ -2554,8 +2554,8 @@ void TSecureShell::AskAlg(const UnicodeString AlgType,
   UnicodeString Error;
   if (AlgType == L"key-exchange algorithm")
   {
-    Msg = FMTLOAD(KEX_BELOW_TRESHOLD, AlgName.c_str());
-    Error = FMTLOAD(KEX_NOT_VERIFIED, AlgName.c_str());
+    Msg = FMTLOAD(KEX_BELOW_TRESHOLD, AlgName);
+    Error = FMTLOAD(KEX_NOT_VERIFIED, AlgName);
   }
   else if (AlgType == L"hostkey type")
   {
@@ -2585,8 +2585,8 @@ void TSecureShell::AskAlg(const UnicodeString AlgType,
 
     if (CipherType != 0)
     {
-      Msg = FMTLOAD(CIPHER_BELOW_TRESHOLD, LoadStr(CipherType).c_str(), AlgName.c_str());
-      Error = FMTLOAD(CIPHER_NOT_VERIFIED, AlgName.c_str());
+      Msg = FMTLOAD(CIPHER_BELOW_TRESHOLD, LoadStr(CipherType), AlgName);
+      Error = FMTLOAD(CIPHER_NOT_VERIFIED, AlgName);
     }
   }
 

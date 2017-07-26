@@ -181,7 +181,7 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
 
     if (!Password.IsEmpty() && !RemoteCustomCommand.IsPasswordCommand(Params))
     {
-      AddToList(PuttyParams, FORMAT(L"-pw %s", EscapePuttyCommandParam(Password).c_str()), L" ");
+      AddToList(PuttyParams, FORMAT("-pw %s", EscapePuttyCommandParam(Password)), L" ");
     }
 
     AddToList(PuttyParams, Params2, L" ");
@@ -192,7 +192,7 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
   }
   else
   {
-    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
+    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program));
   }
 }
 
@@ -334,11 +334,11 @@ UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
   UnicodeString Result;
   if (Count == 1)
   {
-    Result = FORMAT(SingleItemFormat.c_str(), FirstItem.c_str());
+    Result = FORMAT(SingleItemFormat, FirstItem);
   }
   else
   {
-    Result = FORMAT(MultiItemsFormat.c_str(), Count);
+    Result = FORMAT(MultiItemsFormat, Count);
   }
   return Result;
 }

@@ -1482,7 +1482,7 @@ UnicodeString FormatDateTime(UnicodeString Fmt, const TDateTime & ADateTime)
       EncodeTimeVerbose(Hour, Minutes, Seconds, Milliseconds);
     DateTime.DecodeDate(Y, M, D);
     DateTime.DecodeTime(H, Mm, S, MS);
-    Result = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
+    Result = FORMAT("%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
   }
   else if (Fmt == L"nnzzz")
   {
@@ -1677,7 +1677,7 @@ UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
   DWORD Major = (VersionNumber >> 16) & 0xFF;
   DWORD Minor = (VersionNumber >> 8) & 0xFF;
   DWORD Revision = (VersionNumber & 0xFF);
-  UnicodeString Result = FORMAT(L"%d.%d.%d", Major, Minor, Revision);
+  UnicodeString Result = FORMAT("%d.%d.%d", Major, Minor, Revision);
   return Result;
 }
 

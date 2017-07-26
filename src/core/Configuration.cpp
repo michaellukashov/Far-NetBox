@@ -721,7 +721,7 @@ void TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
 
 UnicodeString TConfiguration::FormatFingerprintKey(UnicodeString SiteKey, UnicodeString FingerprintType) const
 {
-  return FORMAT(L"%s:%s", SiteKey.c_str(), FingerprintType.c_str());
+  return FORMAT("%s:%s", SiteKey, FingerprintType);
 }
 
 void TConfiguration::RememberLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType, UnicodeString Fingerprint)
@@ -1060,7 +1060,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
       FullVersion += L" " + AReleaseType;
     }
 
-    Result = FMTLOAD(VERSION2, GetProductVersion().c_str(), Build);
+    Result = FMTLOAD(VERSION2, GetProductVersion(), Build);
 
 #if 0
 #ifndef BUILD_OFFICIAL
@@ -1459,12 +1459,12 @@ TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
     }
     else
     {
-      Error = FMTLOAD(FILEZILLA_NO_SITES, FilezillaSiteManagerFile.c_str());
+      Error = FMTLOAD(FILEZILLA_NO_SITES, FilezillaSiteManagerFile);
     }
   }
   else
   {
-    Error = FMTLOAD(FILEZILLA_SITE_MANAGER_NOT_FOUND, FilezillaSiteManagerFile.c_str());
+    Error = FMTLOAD(FILEZILLA_SITE_MANAGER_NOT_FOUND, FilezillaSiteManagerFile);
   }
 
   return ImportSessionList.release();

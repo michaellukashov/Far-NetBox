@@ -1437,7 +1437,7 @@ void TTerminal::Open()
   }
   catch (Exception & E)
   {
-    LogEvent(FORMAT(L"Got error: \"%s\"", E.Message.c_str()));
+    LogEvent(FORMAT("Got error: \"%s\"", E.Message));
     // any exception while opening session is fatal
     FatalError(&E, L"");
   }
@@ -1535,8 +1535,8 @@ void TTerminal::InternalDoTryOpen()
     FSessionData->ConfigureTunnel(FTunnelLocalPortNumber);
 
     DoInformation(LoadStr(USING_TUNNEL), false);
-    LogEvent(FORMAT(L"Connecting via tunnel interface %s:%d.",
-      FSessionData->GetHostNameExpanded().c_str(), FSessionData->GetPortNumber()));
+    LogEvent(FORMAT("Connecting via tunnel interface %s:%d.",
+      FSessionData->GetHostNameExpanded(), FSessionData->GetPortNumber()));
   }
   else
   {
@@ -1622,7 +1622,7 @@ void TTerminal::InitFileSystem()
           // the only case where we expect this to happen
           UnicodeString ErrorMessage = LoadStr(UNEXPECTED_CLOSE_ERROR);
           DebugAssert(E.Message == ErrorMessage);
-          FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
+          FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError));
         }
         else
         {
@@ -1696,7 +1696,7 @@ void TTerminal::SetupTunnelLocalPortNumber()
           FConfiguration->GetTunnelLocalPortNumberLow(), FConfiguration->GetTunnelLocalPortNumberHigh()));
       }
     }
-    LogEvent(FORMAT(L"Autoselected tunnel local port number %d", FTunnelLocalPortNumber));
+    LogEvent(FORMAT("Autoselected tunnel local port number %d", FTunnelLocalPortNumber));
   }
 }
 
@@ -1708,15 +1708,15 @@ void TTerminal::OpenTunnel()
   {
     FTunnelData = new TSessionData(L"");
     FTunnelData->Assign(StoredSessions->GetDefaultSettings());
-    FTunnelData->SetName(FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName().c_str()));
+    FTunnelData->SetName(FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName()));
     FTunnelData->SetTunnel(false);
     FTunnelData->SetHostName(FSessionData->GetTunnelHostName());
     FTunnelData->SetPortNumber(FSessionData->GetTunnelPortNumber());
     FTunnelData->SetUserName(FSessionData->GetTunnelUserName());
     FTunnelData->SetPassword(FSessionData->GetTunnelPassword());
     FTunnelData->SetPublicKeyFile(FSessionData->GetTunnelPublicKeyFile());
-    FTunnelData->SetTunnelPortFwd(FORMAT(L"L%d\t%s:%d",
-      FTunnelLocalPortNumber, FSessionData->GetHostNameExpanded().c_str(), FSessionData->GetPortNumber()));
+    FTunnelData->SetTunnelPortFwd(FORMAT("L%d\t%s:%d",
+      FTunnelLocalPortNumber, FSessionData->GetHostNameExpanded(), FSessionData->GetPortNumber()));
     FTunnelData->SetHostKey(FSessionData->GetTunnelHostKey());
 
     // inherit proxy options on the main session
@@ -2036,7 +2036,7 @@ uintptr_t TTerminal::QueryUser(UnicodeString Query,
   TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
-  LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), UnicodeString(MoreMessages ? MoreMessages->GetCommaText() : L"").c_str()));
+  LogEvent(FORMAT("Asking user:\n%s (%s)", Query, UnicodeString(MoreMessages ? MoreMessages->GetCommaText() : L"")));
   uintptr_t Answer = AbortAnswer(Answers);
   if (FOnQueryUser)
   {
@@ -2360,7 +2360,7 @@ bool TTerminal::DoQueryReopen(Exception * E)
     intptr_t NumberOfRetries = FSessionData->GetNumberOfRetries();
     if (FConfiguration->GetSessionReopenAutoMaximumNumberOfRetries() > 0 && NumberOfRetries >= FConfiguration->GetSessionReopenAutoMaximumNumberOfRetries())
     {
-      LogEvent(FORMAT(L"Reached maximum number of retries: %d", FConfiguration->GetSessionReopenAutoMaximumNumberOfRetries()));
+      LogEvent(FORMAT("Reached maximum number of retries: %d", FConfiguration->GetSessionReopenAutoMaximumNumberOfRetries()));
     }
     else
     {
@@ -3397,7 +3397,7 @@ void TTerminal::EnsureNonExistence(UnicodeString AFileName)
     {
       if (File->GetIsDirectory())
       {
-        throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_DIR_EXISTS, AFileName.c_str()));
+        throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_DIR_EXISTS, AFileName));
       }
       throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_FILE_EXISTS, AFileName.c_str()));
     }
@@ -3632,7 +3632,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     }
     catch (Exception & E)
     {
-      CommandError(&E, FMTLOAD(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
+      CommandError(&E, FMTLOAD(LIST_DIR_ERROR, FFiles->GetDirectory()));
     }
   }
 }
@@ -3661,7 +3661,7 @@ UnicodeString TTerminal::FormatFileDetailsForLog(UnicodeString AFileName, const 
   // optimization
   if (GetLog()->GetLogging())
   {
-    Result = FORMAT(L"'%s' [%s] [%s]", AFileName.c_str(), UnicodeString(AModification != TDateTime() ? StandardTimestamp(AModification) : UnicodeString(L"n/a")).c_str(), ::Int64ToStr(Size).c_str());
+    Result = FORMAT("'%s' [%s] [%s]", AFileName, UnicodeString(AModification != TDateTime() ? StandardTimestamp(AModification) : UnicodeString(L"n/a")), ::Int64ToStr(Size));
   }
   return Result;
 }
@@ -3671,7 +3671,7 @@ void TTerminal::LogFileDetails(UnicodeString AFileName, const TDateTime & AModif
   // optimization
   if (GetLog()->GetLogging())
   {
-    LogEvent(FORMAT(L"File: %s", FormatFileDetailsForLog(AFileName, AModification, Size).c_str()));
+    LogEvent(FORMAT("File: %s", FormatFileDetailsForLog(AFileName, AModification, Size)));
   }
 }
 
@@ -3944,7 +3944,7 @@ void TTerminal::ReadDirectory(TRemoteFileList * AFileList)
   }
   catch (Exception & E)
   {
-    CommandError(&E, FMTLOAD(LIST_DIR_ERROR, AFileList->GetDirectory().c_str()));
+    CommandError(&E, FMTLOAD(LIST_DIR_ERROR, AFileList->GetDirectory()));
   }
 }
 
@@ -3954,13 +3954,13 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
   DebugAssert(FFileSystem);
   try
   {
-    LogEvent(FORMAT(L"Reading symlink \"%s\".", SymlinkFile->GetFileName().c_str()));
+    LogEvent(FORMAT("Reading symlink \"%s\".", SymlinkFile->GetFileName()));
     FFileSystem->ReadSymlink(SymlinkFile, File);
     ReactOnCommand(fsReadSymlink);
   }
   catch (Exception & E)
   {
-    CommandError(&E, FMTLOAD(READ_SYMLINK_ERROR, SymlinkFile->GetFileName().c_str()));
+    CommandError(&E, FMTLOAD(READ_SYMLINK_ERROR, SymlinkFile->GetFileName()));
   }
 }
 
@@ -3971,7 +3971,7 @@ void TTerminal::ReadFile(UnicodeString AFileName,
   AFile = nullptr;
   try
   {
-    LogEvent(FORMAT(L"Listing file \"%s\".", AFileName.c_str()));
+    LogEvent(FORMAT("Listing file \"%s\".", AFileName));
     FFileSystem->ReadFile(AFileName, AFile);
     ReactOnCommand(fsListFile);
     LogRemoteFile(AFile);
@@ -3983,7 +3983,7 @@ void TTerminal::ReadFile(UnicodeString AFileName,
       SAFE_DESTROY(AFile);
     }
     AFile = nullptr;
-    CommandError(&E, FMTLOAD(CANT_GET_ATTRS, AFileName.c_str()));
+    CommandError(&E, FMTLOAD(CANT_GET_ATTRS, AFileName));
   }
 }
 
@@ -4241,8 +4241,8 @@ void TTerminal::RecycleFile(UnicodeString AFileName,
 
   if (!IsRecycledFile(FileName))
   {
-    LogEvent(FORMAT(L"Moving file \"%s\" to remote recycle bin '%s'.",
-      FileName.c_str(), GetSessionData()->GetRecycleBinPath().c_str()));
+    LogEvent(FORMAT("Moving file \"%s\" to remote recycle bin '%s'.",
+      FileName, GetSessionData()->GetRecycleBinPath()));
 
     TMoveFileParams Params;
     Params.Target = GetSessionData()->GetRecycleBinPath();
@@ -4312,7 +4312,7 @@ void TTerminal::RemoteDeleteFile(const UnicodeString AFileName,
   }
   else
   {
-    LogEvent(FORMAT(L"Deleting file \"%s\".", FileName.c_str()));
+    LogEvent(FORMAT("Deleting file \"%s\".", FileName));
     FileModified(AFile, FileName, true);
     DoDeleteFile(FileName, AFile, Params);
     ReactOnCommand(fsDeleteFile);
@@ -4334,7 +4334,7 @@ void TTerminal::DoDeleteFile(UnicodeString AFileName,
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, Action, FMTLOAD(DELETE_FILE_ERROR, AFileName.c_str()));
+      RetryLoop.Error(E, Action, FMTLOAD(DELETE_FILE_ERROR, AFileName));
     }
   }
   while (RetryLoop.Retry());
@@ -4380,8 +4380,8 @@ void TTerminal::CustomCommandOnFile(UnicodeString AFileName,
     LocalFileName = AFile->GetFileName();
   }
   StartOperationWithFile(LocalFileName, foCustomCommand);
-  LogEvent(FORMAT(L"Executing custom command \"%s\" (%d) on file \"%s\".",
-    Params->Command.c_str(), Params->Params, LocalFileName.c_str()));
+  LogEvent(FORMAT("Executing custom command \"%s\" (%d) on file \"%s\".",
+    Params->Command, Params->Params, LocalFileName));
   FileModified(AFile, LocalFileName);
   DoCustomCommandOnFile(LocalFileName, AFile, Params->Command, Params->Params,
     Params->OutputEvent);
@@ -4430,7 +4430,7 @@ void TTerminal::DoCustomCommandOnFile(UnicodeString AFileName,
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, FMTLOAD(CUSTOM_COMMAND_ERROR, Command.c_str(), AFileName.c_str()));
+      RetryLoop.Error(E, FMTLOAD(CUSTOM_COMMAND_ERROR, Command, AFileName));
     }
   }
   while (RetryLoop.Retry());
@@ -4500,19 +4500,19 @@ void TTerminal::ChangeFileProperties(UnicodeString AFileName,
   StartOperationWithFile(LocalFileName, foSetProperties);
   if (GetLog()->GetLogging() && RProperties)
   {
-    LogEvent(FORMAT(L"Changing properties of \"%s\" (%s)",
-      LocalFileName.c_str(), BooleanToEngStr(RProperties->Recursive).c_str()));
+    LogEvent(FORMAT("Changing properties of \"%s\" (%s)",
+      LocalFileName, BooleanToEngStr(RProperties->Recursive)));
     if (RProperties->Valid.Contains(vpRights))
     {
-      LogEvent(FORMAT(L" - mode: \"%s\"", RProperties->Rights.GetModeStr().c_str()));
+      LogEvent(FORMAT(" - mode: \"%s\"", RProperties->Rights.GetModeStr()));
     }
     if (RProperties->Valid.Contains(vpGroup))
     {
-      LogEvent(FORMAT(L" - group: %s", RProperties->Group.GetLogText().c_str()));
+      LogEvent(FORMAT(" - group: %s", RProperties->Group.GetLogText()));
     }
     if (RProperties->Valid.Contains(vpOwner))
     {
-      LogEvent(FORMAT(L" - owner: %s", RProperties->Owner.GetLogText().c_str()));
+      LogEvent(FORMAT(" - owner: %s", RProperties->Owner.GetLogText()));
     }
     if (RProperties->Valid.Contains(vpModification))
     {
@@ -4520,11 +4520,11 @@ void TTerminal::ChangeFileProperties(UnicodeString AFileName,
       TDateTime DateTime = ::UnixToDateTime(RProperties->Modification, GetSessionData()->GetDSTMode());
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
-      UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
-      LogEvent(FORMAT(L" - modification: \"%s\"",
+      UnicodeString dt = FORMAT("%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
+      LogEvent(FORMAT(" - modification: \"%s\"",
 //       FormatDateTime(L"dddddd tt",
 //         ::UnixToDateTime(RProperties->Modification, GetSessionData()->GetDSTMode())).c_str()));
-         dt.c_str()));
+         dt));
     }
     if (RProperties->Valid.Contains(vpLastAccess))
     {
@@ -4532,11 +4532,11 @@ void TTerminal::ChangeFileProperties(UnicodeString AFileName,
       TDateTime DateTime = ::UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode());
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
-      UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
-      LogEvent(FORMAT(L" - last access: \"%s\"",
+      UnicodeString dt = FORMAT("%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
+      LogEvent(FORMAT(" - last access: \"%s\"",
 //       FormatDateTime(L"dddddd tt",
 //         ::UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode())).c_str()));
-         dt.c_str()));
+         dt));
     }
   }
   FileModified(AFile, LocalFileName);
@@ -4558,7 +4558,7 @@ void TTerminal::DoChangeFileProperties(UnicodeString AFileName,
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, Action, FMTLOAD(CHANGE_PROPERTIES_ERROR, AFileName.c_str()));
+      RetryLoop.Error(E, Action, FMTLOAD(CHANGE_PROPERTIES_ERROR, AFileName));
     }
   }
   while (RetryLoop.Retry());
@@ -4662,7 +4662,7 @@ void TTerminal::CalculateFileSize(UnicodeString AFileName,
         }
         else
         {
-          LogEvent(FORMAT(L"Getting size of directory \"%s\"", LocalFileName.c_str()));
+          LogEvent(FORMAT("Getting size of directory \"%s\"", LocalFileName));
           // pass in full path so we get it back in file list for AllowTransfer() exclusion
           if (!DoCalculateDirectorySize(AFile->GetFullFileName(), AFile, AParams))
           {
@@ -4713,7 +4713,7 @@ bool TTerminal::DoCalculateDirectorySize(UnicodeString AFileName,
       // We can probably replace the csIgnoreErrors with IgnoreErrors argument of the ProcessDirectory
       if (!GetActive() || ((Params->Params & csIgnoreErrors) == 0))
       {
-        RetryLoop.Error(E, FMTLOAD(CALCULATE_SIZE_ERROR, AFileName.c_str()));
+        RetryLoop.Error(E, FMTLOAD(CALCULATE_SIZE_ERROR, AFileName));
       }
     }
   }
@@ -4754,7 +4754,7 @@ void TTerminal::CalculateFilesChecksum(UnicodeString Alg,
 void TTerminal::TerminalRenameFile(UnicodeString AFileName,
   UnicodeString ANewName)
 {
-  LogEvent(FORMAT(L"Renaming file \"%s\" to \"%s\".", AFileName.c_str(), ANewName.c_str()));
+  LogEvent(FORMAT("Renaming file \"%s\" to \"%s\".", AFileName, ANewName));
   DoRenameFile(AFileName, ANewName, false);
   ReactOnCommand(fsRenameFile);
 }
@@ -4782,7 +4782,7 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * AFile,
         QuestionFmt = LoadStr(PROMPT_FILE_OVERWRITE);
       }
       TQueryParams Params(qpNeverAskAgainCheck);
-      UnicodeString Question = MainInstructions(FORMAT(QuestionFmt.c_str(), ANewName.c_str()));
+      UnicodeString Question = MainInstructions(FORMAT(QuestionFmt, ANewName));
       intptr_t Result = QueryUser(Question, nullptr,
         qaYes | qaNo, &Params);
       if (Result == qaNeverAskAgain)
@@ -4818,7 +4818,7 @@ void TTerminal::DoRenameFile(UnicodeString AFileName,
     }
     catch (Exception & E)
     {
-      UnicodeString Message = FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName.c_str(), ANewName.c_str());
+      UnicodeString Message = FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, AFileName, ANewName);
       RetryLoop.Error(E, Action, Message);
     }
   }
@@ -4833,7 +4833,7 @@ void TTerminal::TerminalMoveFile(UnicodeString AFileName,
   const TMoveFileParams & Params = *get_as<TMoveFileParams>(Param);
   UnicodeString NewName = base::UnixIncludeTrailingBackslash(Params.Target) +
     MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask);
-  LogEvent(FORMAT(L"Moving file \"%s\" to \"%s\".", AFileName.c_str(), NewName.c_str()));
+  LogEvent(FORMAT("Moving file \"%s\" to \"%s\".", AFileName, NewName));
   FileModified(AFile, AFileName);
   DoRenameFile(AFileName, NewName, true);
   ReactOnCommand(fsMoveFile);
@@ -4962,7 +4962,7 @@ void TTerminal::DoCopyFile(UnicodeString AFileName,
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, FMTLOAD(COPY_FILE_ERROR, AFileName.c_str(), ANewName.c_str()));
+      RetryLoop.Error(E, FMTLOAD(COPY_FILE_ERROR, AFileName, ANewName));
     }
   }
   while (RetryLoop.Retry());
@@ -4976,7 +4976,7 @@ void TTerminal::TerminalCopyFile(UnicodeString AFileName,
   const TMoveFileParams & Params = *get_as<TMoveFileParams>(Param);
   UnicodeString NewName = base::UnixIncludeTrailingBackslash(Params.Target) +
     MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask);
-  LogEvent(FORMAT(L"Copying file \"%s\" to \"%s\".", AFileName.c_str(), NewName.c_str()));
+  LogEvent(FORMAT("Copying file \"%s\" to \"%s\".", AFileName, NewName));
   DoCopyFile(AFileName, NewName);
   ReactOnCommand(fsCopyFile);
 }
@@ -4998,7 +4998,7 @@ void TTerminal::RemoteCreateDirectory(UnicodeString ADirName,
   EnsureNonExistence(ADirName);
   FileModified(nullptr, ADirName);
 
-  LogEvent(FORMAT(L"Creating directory \"%s\".", ADirName.c_str()));
+  LogEvent(FORMAT("Creating directory \"%s\".", ADirName));
   DoCreateDirectory(ADirName);
 
   if ((Properties != nullptr) && !Properties->Valid.Empty())
@@ -5022,7 +5022,7 @@ void TTerminal::DoCreateDirectory(UnicodeString ADirName)
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, Action, FMTLOAD(CREATE_DIR_ERROR, ADirName.c_str()));
+      RetryLoop.Error(E, Action, FMTLOAD(CREATE_DIR_ERROR, ADirName));
     }
   }
   while (RetryLoop.Retry());
@@ -5038,8 +5038,8 @@ void TTerminal::CreateLink(UnicodeString AFileName,
     DirectoryModified(RemoteGetCurrentDirectory(), false);
   }
 
-  LogEvent(FORMAT(L"Creating link \"%s\" to \"%s\" (symbolic: %s).",
-    AFileName.c_str(), PointTo.c_str(), BooleanToEngStr(Symbolic).c_str()));
+  LogEvent(FORMAT("Creating link \"%s\" to \"%s\" (symbolic: %s).",
+    AFileName, PointTo, BooleanToEngStr(Symbolic)));
   DoCreateLink(AFileName, PointTo, Symbolic);
   ReactOnCommand(fsCreateDirectory);
 }
@@ -5057,7 +5057,7 @@ void TTerminal::DoCreateLink(UnicodeString AFileName,
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, FMTLOAD(CREATE_LINK_ERROR, AFileName.c_str()));
+      RetryLoop.Error(E, FMTLOAD(CREATE_LINK_ERROR, AFileName));
     }
   }
   while (RetryLoop.Retry());
@@ -5093,13 +5093,13 @@ void TTerminal::RemoteChangeDirectory(UnicodeString Directory)
         FDirectoryChangesCache->GetDirectoryChange(PeekCurrentDirectory(),
           DirectoryNormalized, CachedDirectory))
     {
-      LogEvent(FORMAT(L"Cached directory change via \"%s\" to \"%s\".",
-        DirectoryNormalized.c_str(), CachedDirectory.c_str()));
+      LogEvent(FORMAT("Cached directory change via \"%s\" to \"%s\".",
+        DirectoryNormalized, CachedDirectory));
       FFileSystem->CachedChangeDirectory(CachedDirectory);
     }
     else
     {
-      LogEvent(FORMAT(L"Changing directory to \"%s\".", DirectoryNormalized.c_str()));
+      LogEvent(FORMAT("Changing directory to \"%s\".", DirectoryNormalized));
       FFileSystem->ChangeDirectory(DirectoryNormalized);
     }
     FLastDirectoryChange = DirectoryNormalized;
@@ -5107,7 +5107,7 @@ void TTerminal::RemoteChangeDirectory(UnicodeString Directory)
   }
   catch (Exception & E)
   {
-    CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, DirectoryNormalized.c_str()));
+    CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, DirectoryNormalized));
   }
 }
 
@@ -5403,7 +5403,7 @@ bool TTerminal::DoCreateLocalFile(UnicodeString AFileName,
               {
                 TSuspendFileOperationProgress Suspend(OperationProgress);
                 Answer = QueryUser(
-                MainInstructions(FMTLOAD(READ_ONLY_OVERWRITE, AFileName.c_str())), nullptr,
+                MainInstructions(FMTLOAD(READ_ONLY_OVERWRITE, AFileName)), nullptr,
                 qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, nullptr);
               }
 
@@ -5448,7 +5448,7 @@ bool TTerminal::DoCreateLocalFile(UnicodeString AFileName,
             FLAGMASK(FLAGSET(LocalFileAttrs, faHidden), FILE_ATTRIBUTE_HIDDEN) |
             FLAGMASK(FLAGSET(LocalFileAttrs, faReadOnly), FILE_ATTRIBUTE_READONLY);
 
-          FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()), "",
+          FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, AFileName), "",
           [&]()
           {
             if (!this->SetLocalFileAttributes(ApiPath(AFileName), LocalFileAttrs & ~(faReadOnly | faHidden)))
@@ -5482,7 +5482,7 @@ bool TTerminal::TerminalCreateLocalFile(UnicodeString ATargetFileName,
   DebugAssert(OperationProgress);
   DebugAssert(AHandle);
   bool Result = true;
-  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CREATE_FILE_ERROR, ATargetFileName.c_str()), "",
+  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CREATE_FILE_ERROR, ATargetFileName), "",
   [&]()
   {
     Result = DoCreateLocalFile(ATargetFileName, OperationProgress, Resume, NoConfirmation,
@@ -5501,7 +5501,7 @@ void TTerminal::TerminalOpenLocalFile(UnicodeString ATargetFileName,
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
-  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, ATargetFileName.c_str()), "",
+  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, ATargetFileName), "",
   [&]()
   {
     UnicodeString FileNameApi = ApiPath(ATargetFileName);
@@ -5522,7 +5522,7 @@ void TTerminal::TerminalOpenLocalFile(UnicodeString ATargetFileName,
       NoHandle = true;
     }
 
-    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(OPENFILE_ERROR, ATargetFileName.c_str()), "",
+    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(OPENFILE_ERROR, ATargetFileName), "",
     [&]()
     {
       DWORD Flags = FLAGMASK(FLAGSET(LocalFileAttrs, faDirectory), FILE_FLAG_BACKUP_SEMANTICS);
@@ -5544,7 +5544,7 @@ void TTerminal::TerminalOpenLocalFile(UnicodeString ATargetFileName,
         FILETIME CTime;
 
         // Get last file access and modification time
-        FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, ATargetFileName.c_str()), "",
+        FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, ATargetFileName), "",
         [&]()
         {
           THROWOSIFFALSE(::GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime));
@@ -5566,7 +5566,7 @@ void TTerminal::TerminalOpenLocalFile(UnicodeString ATargetFileName,
       if (ASize)
       {
         // Get file size
-        FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, ATargetFileName.c_str()), "",
+        FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, ATargetFileName), "",
         [&]()
         {
           uint32_t LSize;
@@ -5612,7 +5612,7 @@ bool TTerminal::AllowLocalFileTransfer(UnicodeString AFileName,
   {
     WIN32_FIND_DATA FindData = {};
     HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()), "",
+    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(FILE_NOT_EXISTS, AFileName), "",
     [&]()
     {
       LocalFileHandle = ::FindFirstFileW(ApiPath(::ExcludeTrailingBackslash(AFileName)).c_str(), &FindData);
@@ -5633,7 +5633,7 @@ bool TTerminal::AllowLocalFileTransfer(UnicodeString AFileName,
     UnicodeString BaseFileName = GetBaseFileName(AFileName);
     if (!CopyParam->AllowTransfer(BaseFileName, osLocal, Directory, Params))
     {
-      LogEvent(FORMAT(L"File \"%s\" excluded from transfer", AFileName.c_str()));
+      LogEvent(FORMAT("File \"%s\" excluded from transfer", AFileName));
       Result = false;
     }
     else if (CopyParam->SkipTransfer(AFileName, Directory))
@@ -5953,7 +5953,7 @@ UnicodeString TTerminal::SynchronizeParamsStr(intptr_t Params)
   AddFlagName(ParamsStr, Params, spMirror, L"Mirror");
   if (Params > 0)
   {
-    AddToList(ParamsStr, FORMAT(L"0x%x", static_cast<int>(Params)), L", ");
+    AddToList(ParamsStr, FORMAT("0x%x", static_cast<int>(Params)), L", ");
   }
   return ParamsStr;
 }
@@ -5978,9 +5978,9 @@ void TTerminal::DoSynchronizeCollectDirectory(UnicodeString ALocalDirectory,
   Data.Flags = Level;
   Data.Checklist = Checklist;
 
-  LogEvent(FORMAT(L"Collecting synchronization list for local directory '%s' and remote directory '%s', "
-    L"mode = %s, params = 0x%x (%s), file mask = '%s'", ALocalDirectory.c_str(), ARemoteDirectory.c_str(),
-    SynchronizeModeStr(Mode).c_str(), int(Params), SynchronizeParamsStr(Params).c_str(), CopyParam->GetIncludeFileMask().GetMasks().c_str())
+  LogEvent(FORMAT("Collecting synchronization list for local directory '%s' and remote directory '%s', "
+    "mode = %s, params = 0x%x (%s), file mask = '%s'", ALocalDirectory, ARemoteDirectory,
+    SynchronizeModeStr(Mode), int(Params), SynchronizeParamsStr(Params), CopyParam->GetIncludeFileMask().GetMasks())
   );
 
   if (FLAGCLEAR(Params, spDelayProgress))
@@ -5998,7 +5998,7 @@ void TTerminal::DoSynchronizeCollectDirectory(UnicodeString ALocalDirectory,
     TSearchRecChecked SearchRec;
     Data.LocalFileList = CreateSortedStringList();
 
-    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, ALocalDirectory.c_str()), "",
+    FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, ALocalDirectory), "",
     [&]()
     {
       DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
@@ -6052,16 +6052,16 @@ void TTerminal::DoSynchronizeCollectDirectory(UnicodeString ALocalDirectory,
             FileData->New = true;
             FileData->Modified = false;
             Data.LocalFileList->AddObject(FileName, FileData);
-            LogEvent(FORMAT(L"Local file %s included to synchronization",
-              FormatFileDetailsForLog(FullLocalFileName, Modification, Size).c_str()));
+            LogEvent(FORMAT("Local file %s included to synchronization",
+              FormatFileDetailsForLog(FullLocalFileName, Modification, Size)));
           }
           else
           {
-            LogEvent(FORMAT(L"Local file %s excluded from synchronization",
-              FormatFileDetailsForLog(FullLocalFileName, Modification, Size).c_str()));
+            LogEvent(FORMAT("Local file %s excluded from synchronization",
+              FormatFileDetailsForLog(FullLocalFileName, Modification, Size)));
           }
 
-          FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, ALocalDirectory.c_str()), "",
+          FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, ALocalDirectory), "",
           [&]()
           {
             Found = (::FindNextChecked(SearchRec) == 0);
@@ -6102,9 +6102,9 @@ void TTerminal::DoSynchronizeCollectDirectory(UnicodeString ALocalDirectory,
 
         if (New)
         {
-          LogEvent(FORMAT(L"Local file %s is new",
+          LogEvent(FORMAT("Local file %s is new",
             FormatFileDetailsForLog(UnicodeString(FileData->Info.Directory) + UnicodeString(FileData->Info.FileName),
-            FileData->Info.Modification, FileData->Info.Size).c_str()));
+            FileData->Info.Modification, FileData->Info.Size)));
         }
 
         if (Modified || New)
@@ -6243,7 +6243,7 @@ void TTerminal::DoSynchronizeCollectFile(UnicodeString /*AFileName*/,
       bool New = false;
       if (AFile->GetIsDirectory() && !CanRecurseToDirectory(AFile))
       {
-        LogEvent(FORMAT(L"Skipping symlink to directory \"%s\".", AFile->GetFileName().c_str()));
+        LogEvent(FORMAT("Skipping symlink to directory \"%s\".", AFile->GetFileName()));
       }
       else
       {
@@ -6258,8 +6258,8 @@ void TTerminal::DoSynchronizeCollectFile(UnicodeString /*AFileName*/,
 
           if (AFile->GetIsDirectory() != LocalData->IsDirectory)
           {
-            LogEvent(FORMAT(L"%s is directory on one side, but file on the another",
-              AFile->GetFileName().c_str()));
+            LogEvent(FORMAT("%s is directory on one side, but file on the another",
+              AFile->GetFileName()));
           }
           else if (!AFile->GetIsDirectory())
           {
@@ -6324,16 +6324,16 @@ void TTerminal::DoSynchronizeCollectFile(UnicodeString /*AFileName*/,
               // we need this for custom commands over checklist only,
               // not for sync itself
               LocalData->MatchingRemoteFileFile = AFile->Duplicate();
-              LogEvent(FORMAT(L"Local file %s is modified comparing to remote file %s",
+              LogEvent(FORMAT("Local file %s is modified comparing to remote file %s",
                 FormatFileDetailsForLog(UnicodeString(LocalData->Info.Directory) + UnicodeString(LocalData->Info.FileName),
-                LocalData->Info.Modification, LocalData->Info.Size).c_str(),
+                LocalData->Info.Modification, LocalData->Info.Size),
                 FormatFileDetailsForLog(FullRemoteFileName,
-                  AFile->GetModification(), AFile->GetSize()).c_str()));
+                  AFile->GetModification(), AFile->GetSize())));
             }
 
             if (Modified)
             {
-              LogEvent(FORMAT(L"Remote file %s is modified comparing to local file %s",
+              LogEvent(FORMAT("Remote file %s is modified comparing to local file %s",
                  FormatFileDetailsForLog(FullRemoteFileName,
                  AFile->GetModification(),
                  AFile->GetSize()).c_str(),
@@ -6354,8 +6354,8 @@ void TTerminal::DoSynchronizeCollectFile(UnicodeString /*AFileName*/,
         else
         {
           ChecklistItem->Local.Directory = Data->LocalDirectory;
-          LogEvent(FORMAT(L"Remote file %s is new",
-            FormatFileDetailsForLog(FullRemoteFileName, AFile->GetModification(), AFile->GetSize()).c_str()));
+          LogEvent(FORMAT("Remote file %s is new",
+            FormatFileDetailsForLog(FullRemoteFileName, AFile->GetModification(), AFile->GetSize())));
         }
       }
 
@@ -6405,8 +6405,8 @@ void TTerminal::DoSynchronizeCollectFile(UnicodeString /*AFileName*/,
   }
   else
   {
-    LogEvent(FORMAT(L"Remote file %s excluded from synchronization",
-       FormatFileDetailsForLog(FullRemoteFileName, AFile->GetModification(), AFile->GetSize()).c_str()));
+    LogEvent(FORMAT("Remote file %s excluded from synchronization",
+       FormatFileDetailsForLog(FullRemoteFileName, AFile->GetModification(), AFile->GetSize())));
   }
 }
 
@@ -6455,9 +6455,9 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
       UnicodeString CurrentLocalDirectory = ChecklistItem->Local.Directory;
       UnicodeString CurrentRemoteDirectory = ChecklistItem->Remote.Directory;
 
-      LogEvent(FORMAT(L"Synchronizing local directory '%s' with remote directory '%s', "
-        L"params = 0x%x (%s)", CurrentLocalDirectory.c_str(), CurrentRemoteDirectory.c_str(),
-        int(Params), SynchronizeParamsStr(Params).c_str()));
+      LogEvent(FORMAT("Synchronizing local directory '%s' with remote directory '%s', "
+        "params = 0x%x (%s)", CurrentLocalDirectory, CurrentRemoteDirectory,
+        int(Params), SynchronizeParamsStr(Params)));
 
       intptr_t Count = 0;
 
@@ -6624,7 +6624,7 @@ void TTerminal::SynchronizeLocalTimestamp(UnicodeString /*FileName*/,
   UnicodeString LocalFile =
     ::IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
       ChecklistItem->Local.FileName;
-  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, LocalFile.c_str()), "",
+  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, LocalFile), "",
   [&]()
   {
     this->SetLocalFileTime(LocalFile, ChecklistItem->Remote.Modification);
@@ -6708,7 +6708,7 @@ void TTerminal::FileFind(UnicodeString AFileName,
 
         if (!AParams->LoopDetector.IsUnvisitedDirectory(RealDirectory))
         {
-          LogEvent(FORMAT(L"Already searched \"%s\" directory, link loop detected", FullFileName.c_str()));
+          LogEvent(FORMAT("Already searched \"%s\" directory, link loop detected", FullFileName));
         }
         else
         {
@@ -6721,7 +6721,7 @@ void TTerminal::FileFind(UnicodeString AFileName,
 
 void TTerminal::DoFilesFind(UnicodeString Directory, TFilesFindParams & Params, UnicodeString RealDirectory)
 {
-  LogEvent(FORMAT(L"Searching directory \"%s\" (real path \"%s\")", Directory.c_str(), RealDirectory.c_str()));
+  LogEvent(FORMAT("Searching directory \"%s\" (real path \"%s\")", Directory, RealDirectory));
   Params.OnFindingFile(this, Directory, Params.Cancel);
   if (!Params.Cancel)
   {
@@ -6776,7 +6776,7 @@ void TTerminal::SpaceAvailable(UnicodeString APath,
   }
   catch (Exception & E)
   {
-    CommandError(&E, FMTLOAD(SPACE_AVAILABLE_ERROR, APath.c_str()));
+    CommandError(&E, FMTLOAD(SPACE_AVAILABLE_ERROR, APath));
   }
 }
 
@@ -6785,7 +6785,7 @@ void TTerminal::LockFile(UnicodeString AFileName,
 {
   StartOperationWithFile(AFileName, foLock);
 
-  LogEvent(FORMAT(L"Locking file \"%s\".", AFileName.c_str()));
+  LogEvent(FORMAT("Locking file \"%s\".", AFileName));
   FileModified(AFile, AFileName, true);
 
   DoLockFile(AFileName, AFile);
@@ -6803,7 +6803,7 @@ void TTerminal::DoLockFile(UnicodeString AFileName, const TRemoteFile * AFile)
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, FMTLOAD(LOCK_FILE_ERROR, AFileName.c_str()));
+      RetryLoop.Error(E, FMTLOAD(LOCK_FILE_ERROR, AFileName));
     }
   }
   while (RetryLoop.Retry());
@@ -6814,7 +6814,7 @@ void TTerminal::UnlockFile(UnicodeString AFileName,
 {
   StartOperationWithFile(AFileName, foUnlock);
 
-  LogEvent(FORMAT(L"Unlocking file \"%s\".", AFileName.c_str()));
+  LogEvent(FORMAT("Unlocking file \"%s\".", AFileName));
   FileModified(AFile, AFileName, true);
 
   DoUnlockFile(AFileName, AFile);
@@ -6832,7 +6832,7 @@ void TTerminal::DoUnlockFile(UnicodeString AFileName, const TRemoteFile * AFile)
     }
     catch (Exception & E)
     {
-      RetryLoop.Error(E, FMTLOAD(UNLOCK_FILE_ERROR, AFileName.c_str()));
+      RetryLoop.Error(E, FMTLOAD(UNLOCK_FILE_ERROR, AFileName));
     }
   }
   while (RetryLoop.Retry());
@@ -7423,7 +7423,7 @@ void TTerminal::SetLocalFileTime(UnicodeString LocalFileName,
   FILETIME * AcTime, FILETIME * WrTime)
 {
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
-  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, LocalFileName.c_str()), "",
+  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, LocalFileName), "",
   [&]()
   {
     HANDLE LocalFileHandle;
@@ -7574,7 +7574,7 @@ bool TTerminal::CheckForEsc() const
 
 static UnicodeString FormatCertificateData(UnicodeString Fingerprint, int Failures)
 {
-  return FORMAT(L"%s;%2.2X", Fingerprint.c_str(), Failures);
+  return FORMAT("%s;%2.2X", Fingerprint, Failures);
 }
 
 bool TTerminal::VerifyCertificate(
@@ -7596,13 +7596,13 @@ bool TTerminal::VerifyCertificate(
       UnicodeString CachedCertificateData = Storage->ReadString(SiteKey, L"");
       if (CertificateData == CachedCertificateData)
       {
-        LogEvent(FORMAT(L"Certificate for \"%s\" matches cached fingerprint and failures", CertificateSubject.c_str()));
+        LogEvent(FORMAT("Certificate for \"%s\" matches cached fingerprint and failures", CertificateSubject));
         Result = true;
       }
     }
     else if (Storage->ValueExists(Fingerprint))
     {
-      LogEvent(FORMAT(L"Certificate for \"%s\" matches legacy cached fingerprint", CertificateSubject.c_str()));
+      LogEvent(FORMAT("Certificate for \"%s\" matches legacy cached fingerprint", CertificateSubject));
       Result = true;
     }
   }
@@ -7622,7 +7622,7 @@ bool TTerminal::VerifyCertificate(
       }
       else if (ExpectedKey == Fingerprint)
       {
-        LogEvent(FORMAT(L"Certificate for \"%s\" matches configured fingerprint", CertificateSubject.c_str()));
+        LogEvent(FORMAT("Certificate for \"%s\" matches configured fingerprint", CertificateSubject));
         Result = true;
       }
     }
@@ -7889,11 +7889,11 @@ UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName)
   intptr_t Port = Terminal->GetSessionData()->GetPortNumber();
   if (WithUserName && !UserName.IsEmpty())
   {
-    Result = FORMAT(L"%s://%s:@%s:%d", Protocol.Lower().c_str(), UserName.c_str(), HostName.c_str(), Port);
+    Result = FORMAT("%s://%s:@%s:%d", Protocol.Lower(), UserName, HostName, Port);
   }
   else
   {
-    Result = FORMAT(L"%s://%s:%d", Protocol.Lower().c_str(), HostName.c_str(), Port);
+    Result = FORMAT("%s://%s:%d", Protocol.Lower(), HostName, Port);
   }
   return Result;
 }

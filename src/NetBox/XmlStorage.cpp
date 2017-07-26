@@ -386,7 +386,7 @@ void TXmlStorage::WriteDateTime(UnicodeString Name, const TDateTime & Value)
 void TXmlStorage::WriteFloat(UnicodeString Name, double Value)
 {
   RemoveIfExists(Name);
-  AddNewElement(Name, FORMAT(L"%.5f", Value));
+  AddNewElement(Name, FORMAT("%.5f", Value));
 }
 
 void TXmlStorage::WriteStringRaw(UnicodeString Name, UnicodeString Value)

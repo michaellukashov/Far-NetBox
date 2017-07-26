@@ -1135,7 +1135,7 @@ UnicodeString TDateTime::DateString() const
 {
   uint16_t Y, M, D;
   DecodeDate(Y, M, D);
-  UnicodeString Result = FORMAT(L"%02d.%02d.%04d", D, M, Y);
+  UnicodeString Result = FORMAT("%02d.%02d.%04d", D, M, Y);
   return Result;
 }
 
@@ -1145,9 +1145,9 @@ UnicodeString TDateTime::TimeString(bool Short) const
   DecodeTime(H, N, S, MS);
   UnicodeString Result;
   if (Short)
-    Result = FORMAT(L"%02d.%02d.%02d", H, N, S);
+    Result = FORMAT("%02d.%02d.%02d", H, N, S);
   else
-    Result = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
+    Result = FORMAT("%02d.%02d.%02d.%03d", H, N, S, MS);
   return Result;
 }
 
@@ -1156,7 +1156,7 @@ UnicodeString TDateTime::FormatString(wchar_t * fmt) const
   (void)fmt;
   uint16_t H, N, S, MS;
   DecodeTime(H, N, S, MS);
-  UnicodeString Result = FORMAT(L"%02d.%02d.%02d.%03d", H, N, S, MS);
+  UnicodeString Result = FORMAT("%02d.%02d.%02d.%03d", H, N, S, MS);
   return Result;
 }
 
@@ -1329,7 +1329,7 @@ void TStream::WriteBuffer(const void * Buffer, int64_t Count)
 
 void ReadError(UnicodeString Name)
 {
-  throw Exception(FORMAT(L"InvalidRegType: %s", Name.c_str())); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
+  throw Exception(FORMAT("InvalidRegType: %s", Name)); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
 
 THandleStream::THandleStream(HANDLE AHandle) :
