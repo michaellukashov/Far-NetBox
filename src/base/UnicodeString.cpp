@@ -759,14 +759,6 @@ void UnicodeString::Unique()
   Init(Data.c_str(), Data.GetLength());
 }
 
-void UnicodeString::sprintf(const wchar_t * fmt, ...)
-{
-  va_list args;
-  va_start(args, fmt);
-  Data = ::FormatV(fmt, args).c_str();
-  va_end(args);
-}
-
 UnicodeString & UnicodeString::operator=(const UnicodeString & StrCopy)
 {
   Init(StrCopy.c_str(), StrCopy.GetLength());

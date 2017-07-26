@@ -147,8 +147,6 @@ public:
 
   void Unique();
 
-  void sprintf(const wchar_t * fmt, ...);
-
 public:
   UnicodeString & operator=(const UnicodeString & StrCopy);
   UnicodeString & operator=(const RawByteString & StrCopy);

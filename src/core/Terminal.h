@@ -375,12 +375,12 @@ protected:
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,
-    OUT HANDLE * AHandle);
+    HANDLE * AHandle);
   HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
     DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
   void TerminalOpenLocalFile(const UnicodeString & AFileName, DWORD Access,
-    OUT OPTIONAL HANDLE * AHandle, OUT OPTIONAL uintptr_t * AAttrs, OUT OPTIONAL int64_t * ACTime, OUT OPTIONAL int64_t * AMTime,
-    OUT OPTIONAL int64_t * AATime, OUT OPTIONAL int64_t * ASize, bool TryWriteReadOnly = true);
+    HANDLE * AHandle, uintptr_t * AAttrs, int64_t * ACTime, int64_t * AMTime,
+    int64_t * AATime, int64_t * ASize, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(const UnicodeString & AFileName,
     const TCopyParamType * CopyParam, TFileOperationProgressType * OperationProgress);
   bool HandleException(Exception * E);
@@ -392,7 +392,7 @@ protected:
     const TSearchRec & Rec, /*int64_t*/ void * AParams);
   bool CalculateLocalFilesSize(const TStrings * AFileList,
     const TCopyParamType * CopyParam, bool AllowDirs,
-    OUT int64_t & Size);
+    int64_t & Size);
   TBatchOverwrite EffectiveBatchOverwrite(
     const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, bool Special) const;
@@ -434,14 +434,14 @@ protected:
   void DoInformation(const UnicodeString & Str, bool Status, intptr_t Phase = -1);
   bool PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & AName, const UnicodeString & Instructions, const UnicodeString & Prompt, bool Echo,
-    intptr_t MaxLen, OUT UnicodeString & AResult);
+    intptr_t MaxLen, UnicodeString & AResult);
   void FileFind(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
   void DoFilesFind(const UnicodeString & Directory, TFilesFindParams & Params, const UnicodeString & RealDirectory);
   bool DoCreateLocalFile(const UnicodeString & AFileName,
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,
-    OUT HANDLE * AHandle);
+    HANDLE * AHandle);
   void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * AParam);
   void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * AParam);
   void DoLockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);

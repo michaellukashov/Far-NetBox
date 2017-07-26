@@ -314,6 +314,12 @@ typedef __int64          intmax_t;
 # endif
 #endif
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4244) // 'argument' : conversion from 'const int' to 'char', possible loss of data
+#pragma warning(disable: 4127) // conditional expression is constant
+#endif // _MSC_VER
+
 // Some compilers masquerade as both MSVC and GCC-likes or
 // otherwise support __builtin_clz and __builtin_clzll, so
 // only define FMT_BUILTIN_CLZ using the MSVC intrinsics
@@ -4029,4 +4035,9 @@ operator"" _a(const wchar_t *s, std::size_t) { return {s}; }
 # define FMT_FUNC
 #endif
 
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
+
 #endif  // FMT_FORMAT_H_
+
