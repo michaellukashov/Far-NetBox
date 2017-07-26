@@ -759,13 +759,6 @@ void UnicodeString::Unique()
   Init(Data.c_str(), Data.GetLength());
 }
 
-void UnicodeString::sprintf(const wchar_t * fmt, fmt::ArgList args)
-{
-  fmt::WMemoryWriter w;
-  fmt::printf(w, fmt, args);
-  Init(w.c_str(), w.size());
-}
-
 UnicodeString & UnicodeString::operator=(const UnicodeString & StrCopy)
 {
   Init(StrCopy.c_str(), StrCopy.GetLength());

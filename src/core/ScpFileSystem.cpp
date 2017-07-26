@@ -2020,7 +2020,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
             {
               // Send last file access and modification time
               // TVarRec don't understand 'uint32_t' -> we use sprintf()
-              Buf.sprintf(L"T%lu 0 %lu 0", static_cast<uint32_t>(MTime),
+              Buf = FORMAT(L"T%lu 0 %lu 0", static_cast<uint32_t>(MTime),
                 static_cast<uint32_t>(ATime));
               FSecureShell->SendLine(Buf.c_str());
               SCPResponse();
@@ -2030,7 +2030,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
             // TVarRec don't understand 'uint32_t' -> we use sprintf()
             int64_t sz = OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
               OperationProgress->LocalSize;
-            Buf.sprintf(L"C%s %lld %s",
+            Buf = FORMAT("C%s %lld %s",
               Rights.GetOctal(),
               sz,
               DestFileName);

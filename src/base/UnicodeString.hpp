@@ -1,7 +1,5 @@
 #pragma once
 
-#include <fmt/printf.h>
-
 #include <nbstring.h>
 
 class RawByteString;
@@ -148,9 +146,6 @@ public:
   UnicodeString TrimRight() const;
 
   void Unique();
-
-  void sprintf(const wchar_t * fmt, fmt::ArgList args);
-  FMT_VARIADIC_W(void, sprintf, const wchar_t *)
 
 public:
   UnicodeString & operator=(const UnicodeString & StrCopy);
