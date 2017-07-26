@@ -9,7 +9,6 @@
 #include <Common.h>
 #include <Global.h>
 #include <StrUtils.hpp>
-#include <DateUtils.hpp>
 #include <math.h>
 #include <rdestl/map.h>
 #include <rdestl/vector.h>
@@ -94,7 +93,7 @@ void DoShred(T & Str)
   if (!Str.IsEmpty())
   {
     Str.Unique();
-    ::ZeroMemory((void *)Str.c_str(), Str.Length() * sizeof(*Str.c_str()));
+    ::ZeroMemory(ToPtr(Str.c_str()), Str.Length() * sizeof(*Str.c_str()));
     Str = L"";
   }
 }
@@ -489,9 +488,8 @@ static UnicodeString GetWineHomeFolder()
 
 UnicodeString GetPersonalFolder()
 {
-  UnicodeString Result;
 #if defined(_MSC_VER) && !defined(__clang__)
-  Result = GetShellFolderPath(CSIDL_PERSONAL);
+  UnicodeString Result = GetShellFolderPath(CSIDL_PERSONAL);
 
   if (IsWine())
   {
@@ -517,9 +515,8 @@ UnicodeString GetPersonalFolder()
 
 UnicodeString GetDesktopFolder()
 {
-  UnicodeString Result;
 #if defined(_MSC_VER) && !defined(__clang__)
-  Result = GetShellFolderPath(CSIDL_DESKTOPDIRECTORY);
+  UnicodeString Result = GetShellFolderPath(CSIDL_DESKTOPDIRECTORY);
 
   if (IsWine())
   {
@@ -3666,8 +3663,8 @@ static void CutFirstDirectory(UnicodeString & S, bool Unix)
   }
   else
   {
-    bool Root = false;
-    intptr_t P = 0;
+    bool Root;
+    intptr_t P;
     if (S[1] == Sep[1])
     {
       Root = true;

@@ -671,7 +671,7 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
     };
     if (Params & coWaitForLastLine)
     {
-      bool IsLast = true;
+      bool IsLast;
       intptr_t Total = 0;
       // #55: fixed so, even when last line of command output does not
       // contain CR/LF, we can recognize last line

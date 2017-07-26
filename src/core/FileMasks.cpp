@@ -7,8 +7,6 @@
 #include "FileMasks.h"
 
 #include "TextsCore.h"
-#include "RemoteFiles.h"
-#include "PuttyTools.h"
 #include "Terminal.h"
 
 const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
@@ -200,13 +198,6 @@ UnicodeString TFileMasks::ComposeMaskStr(
       AddToList(ResultNoDirMask, StrNoDirMask, FileMasksDelimiterStr);
     }
   }
-
-  // For directories, the above will add slash by the end of masks,
-  // breaking size and time masks and thus circumventing their validation.
-  // This performs as hoc validation to cover the scenario.
-  // For files this makes no difference, but no harm either
-  TFileMasks Temp(Directory ? 1 : 0);
-  Temp = ResultNoDirMask;
 
   return Result;
 }
@@ -1023,7 +1014,7 @@ void TInteractiveCustomCommand::Execute(
 
 intptr_t TInteractiveCustomCommand::PatternLen(UnicodeString Command, intptr_t Index) const
 {
-  intptr_t Len = 0;
+  intptr_t Len;
   wchar_t PatternCmd = (Index < Command.Length()) ? Command[Index + 1] : L'\0';
   switch (PatternCmd)
   {

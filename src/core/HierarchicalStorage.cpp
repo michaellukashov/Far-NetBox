@@ -99,7 +99,7 @@ THierarchicalStorage::THierarchicalStorage(UnicodeString AStorage) :
   FStorage(AStorage),
   FKeyHistory(new TStringList())
 {
-  SetAccessMode(smRead);
+  THierarchicalStorage::SetAccessMode(smRead);
   SetExplicit(false);
   // While this was implemented in 5.0 already, for some reason
   // it was disabled (by mistake?). So although enabled for 5.6.1 only,
@@ -237,7 +237,7 @@ void THierarchicalStorage::RecursiveDeleteSubKey(UnicodeString Key)
 
 bool THierarchicalStorage::HasSubKeys()
 {
-  bool Result = false;
+  bool Result;
   std::unique_ptr<TStrings> SubKeys(new TStringList());
   try__finally
   {
@@ -427,7 +427,7 @@ TRegistryStorage::TRegistryStorage(UnicodeString AStorage) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(nullptr)
 {
-  Init();
+  TRegistryStorage::Init();
 }
 
 TRegistryStorage::TRegistryStorage(UnicodeString AStorage, HKEY ARootKey) :
@@ -435,7 +435,7 @@ TRegistryStorage::TRegistryStorage(UnicodeString AStorage, HKEY ARootKey) :
   FRegistry(nullptr),
   FFailed(0)
 {
-  Init();
+  TRegistryStorage::Init();
   FRegistry->SetRootKey(ARootKey);
 }
 
@@ -466,7 +466,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
       UnicodeString Name = MungeStr(Names->GetString(Index), GetForceAnsi());
       DWORD Size = static_cast<DWORD>(Buffer.size());
       DWORD Type;
-      int RegResult = 0;
+      int RegResult;
       do
       {
         RegResult = ::RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), nullptr,

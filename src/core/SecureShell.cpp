@@ -455,7 +455,7 @@ void TSecureShell::Open()
   {
     char * RealHost = nullptr;
     FreeBackend(); // in case we are reconnecting
-    const char * InitError = nullptr;
+    const char * InitError;
     Conf * conf = StoreToConfig(FSessionData, GetSimple());
     FSendBuf = FSessionData->GetSendBuf();
     try__finally
@@ -1225,7 +1225,6 @@ intptr_t TSecureShell::Receive(uint8_t * Buf, intptr_t Length)
 
 UnicodeString TSecureShell::ReceiveLine()
 {
-  intptr_t Index = 0;
   RawByteString Line;
   Boolean EOL = False;
 
@@ -1234,7 +1233,7 @@ UnicodeString TSecureShell::ReceiveLine()
     // If there is any buffer of received chars
     if (PendLen > 0)
     {
-      Index = 0;
+      intptr_t Index = 0;
       // Repeat until we walk thru whole buffer or reach end-of-line
       while ((Index < PendLen) && (!Index || (Pending[Index - 1] != '\n')))
       {
@@ -1300,7 +1299,7 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 {
   ++FWaiting;
 
-  uintptr_t Answer = 0;
+  uintptr_t Answer;
   try__finally
   {
     SCOPE_EXIT
@@ -1521,7 +1520,7 @@ void TSecureShell::AddStdError(UnicodeString AStr)
 {
   FStdError += AStr;
 
-  intptr_t P = 0;
+  intptr_t P;
   UnicodeString Str = DeleteChar(AStr, L'\r');
   // We send only whole line at once to log, so we have to cache
   // incoming std error data
@@ -2564,7 +2563,7 @@ void TSecureShell::AskAlg(const UnicodeString AlgType,
   }
   else
   {
-    int CipherType = 0;
+    int CipherType;
     if (AlgType == L"cipher")
     {
       CipherType = CIPHER_TYPE_BOTH;

@@ -1840,14 +1840,14 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
 
 TRemoteDirectoryCache::TRemoteDirectoryCache() : TStringList()
 {
-  SetSorted(true);
+  TStringList::SetSorted(true);
   SetDuplicates(dupError);
-  SetCaseSensitive(true);
+  TStringList::SetCaseSensitive(true);
 }
 
 TRemoteDirectoryCache::~TRemoteDirectoryCache()
 {
-  Clear();
+  TRemoteDirectoryCache::Clear();
 }
 
 void TRemoteDirectoryCache::Clear()

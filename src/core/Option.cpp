@@ -233,7 +233,7 @@ UnicodeString TOptions::SwitchValue(UnicodeString Switch,
 
 bool TOptions::SwitchValue(UnicodeString Switch, bool Default, bool DefaultOnNonExistence)
 {
-  bool Result = false;
+  bool Result;
   int64_t IntValue = 0;
   UnicodeString Value;
   if (!FindSwitch(Switch, Value))

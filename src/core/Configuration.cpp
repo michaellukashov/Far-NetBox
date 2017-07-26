@@ -676,7 +676,7 @@ UnicodeString TConfiguration::BannerHash(UnicodeString Banner) const
 bool TConfiguration::ShowBanner(const UnicodeString SessionKey,
   UnicodeString Banner)
 {
-  bool Result = false;
+  bool Result;
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   try__finally
   {
