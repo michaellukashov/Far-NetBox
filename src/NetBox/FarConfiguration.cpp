@@ -14,7 +14,7 @@ TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   FBookmarks(new TBookmarks()),
   FFarConfirmations(-1)
 {
-  Default();
+  TFarConfiguration::Default();
   CacheFarSettings();
 }
 
