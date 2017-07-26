@@ -2,13 +2,10 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <iostream>
-
 #include <Classes.hpp>
 #include <Common.h>
 #include <Exceptions.h>
 #include <Sysutils.hpp>
-#include <LibraryLoader.hpp>
 #include <rtlconsts.h>
 #include <FileBuffer.h>
 
@@ -99,7 +96,7 @@ TList::TList(TObjectClassId Kind) :
 
 TList::~TList()
 {
-  Clear();
+  TList::Clear();
 }
 
 intptr_t TList::GetCount() const
@@ -292,7 +289,7 @@ TObjectList::TObjectList(TObjectClassId Kind) :
 
 TObjectList::~TObjectList()
 {
-  Clear();
+  TList::Clear();
 }
 
 TObject * TObjectList::operator[](intptr_t Index) const
@@ -1174,10 +1171,9 @@ void TDateTime::DecodeTime(uint16_t & H,
 
 TDateTime Now()
 {
-  TDateTime Result(0.0);
   SYSTEMTIME SystemTime;
   ::GetLocalTime(&SystemTime);
-  Result = ::EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay) +
+  TDateTime Result = ::EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay) +
     ::EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds);
   return Result;
 }
@@ -1437,7 +1433,7 @@ TMemoryStream::~TMemoryStream()
 
 int64_t TMemoryStream::Read(void * Buffer, int64_t Count)
 {
-  int64_t Result = 0;
+  int64_t Result;
   if ((FPosition >= 0) && (Count >= 0))
   {
     Result = FSize - FPosition;
@@ -1616,7 +1612,7 @@ TRegDataType DataTypeToRegData(DWORD Value)
 
 DWORD RegDataToDataType(TRegDataType Value)
 {
-  DWORD Result = 0;
+  DWORD Result;
   switch (Value)
   {
   case rdString:
@@ -1725,7 +1721,7 @@ void TRegistry::CloseKey()
 
 bool TRegistry::OpenKey(UnicodeString Key, bool CanCreate)
 {
-  bool Result = false;
+  bool Result;
   UnicodeString S = Key;
   bool Relative = IsRelative(S);
 
@@ -1753,7 +1749,6 @@ bool TRegistry::OpenKey(UnicodeString Key, bool CanCreate)
 
 bool TRegistry::DeleteKey(UnicodeString Key)
 {
-  bool Result = false;
   UnicodeString S = Key;
   bool Relative = IsRelative(S);
   HKEY OldKey = GetCurrentKey();
@@ -1782,7 +1777,7 @@ bool TRegistry::DeleteKey(UnicodeString Key)
       }
     }
   }
-  Result = RegDeleteKey(GetBaseKey(Relative), S.c_str()) == ERROR_SUCCESS;
+  bool Result = RegDeleteKey(GetBaseKey(Relative), S.c_str()) == ERROR_SUCCESS;
   return Result;
 }
 
@@ -1794,7 +1789,6 @@ bool TRegistry::DeleteValue(UnicodeString Value) const
 
 bool TRegistry::KeyExists(UnicodeString SubKey) const
 {
-  bool Result = false;
   uint32_t OldAccess = FAccess;
   SCOPE_EXIT
   {
@@ -1806,7 +1800,7 @@ bool TRegistry::KeyExists(UnicodeString SubKey) const
   {
     ::RegCloseKey(TempKey);
   }
-  Result = TempKey != nullptr;
+  bool Result = TempKey != nullptr;
   return Result;
 }
 
@@ -1844,7 +1838,7 @@ TRegDataType TRegistry::GetDataType(UnicodeString ValueName) const
 
 DWORD TRegistry::GetDataSize(UnicodeString ValueName) const
 {
-  DWORD Result = 0;
+  DWORD Result;
   TRegDataInfo Info;
   if (GetDataInfo(ValueName, Info))
   {
@@ -1934,7 +1928,7 @@ UnicodeString TRegistry::ReadStringRaw(UnicodeString Name) const
 ::size_t TRegistry::ReadBinaryData(UnicodeString Name,
   void * Buffer, ::size_t BufSize) const
 {
-  ::size_t Result = 0;
+  ::size_t Result;
   TRegDataInfo Info;
   if (GetDataInfo(Name, Info))
   {
@@ -2034,7 +2028,7 @@ void TRegistry::ChangeKey(HKEY Value, UnicodeString APath)
 
 HKEY TRegistry::GetBaseKey(bool Relative) const
 {
-  HKEY Result = nullptr;
+  HKEY Result;
   if ((FCurrentKey == nullptr) || !Relative)
   {
     Result = GetRootKey();

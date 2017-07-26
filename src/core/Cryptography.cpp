@@ -544,7 +544,7 @@ bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
   int Last = 31;
   while (*S != '\0')
   {
-    int X = static_cast<int>(UnscrambleTable[(uint8_t)*S]) - 1 - (Last % 255);
+    int X = static_cast<int>(UnscrambleTable[static_cast<uint8_t>(*S)]) - 1 - (Last % 255);
     if (X <= 0)
     {
       X += 255;

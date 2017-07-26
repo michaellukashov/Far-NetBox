@@ -553,7 +553,7 @@ LONG_PTR TFarDialog::DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2
 
 LONG_PTR TFarDialog::FailDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
-  intptr_t Result = 0;
+  intptr_t Result;
   switch (Msg)
   {
   case DN_CLOSE:
@@ -705,7 +705,7 @@ intptr_t TFarDialog::ShowModal()
     DebugAssert(GetDefaultButton()->GetDefault());
 
     UnicodeString HelpTopic = GetHelpTopic();
-    intptr_t BResult = 0;
+    intptr_t BResult;
 
     {
       TFarEnvGuard Guard;
@@ -1068,7 +1068,7 @@ void TFarDialogItem::UpdateBounds()
   if (GetDialog()->GetHandle())
   {
     TRect B = GetActualBounds();
-    SMALL_RECT Rect = {0};
+    SMALL_RECT Rect;
     Rect.Left = static_cast<short int>(B.Left);
     Rect.Top = static_cast<short int>(B.Top);
     Rect.Right = static_cast<short int>(B.Right);
@@ -1295,7 +1295,7 @@ bool TFarDialogItem::GetIsEmpty() const
 
 LONG_PTR TFarDialogItem::FailItemProc(int Msg, LONG_PTR Param)
 {
-  intptr_t Result = 0;
+  intptr_t Result;
   switch (Msg)
   {
   case DN_KILLFOCUS:
@@ -2408,7 +2408,7 @@ TFarListBox::~TFarListBox()
 
 LONG_PTR TFarListBox::ItemProc(int Msg, LONG_PTR Param)
 {
-  intptr_t Result = 0;
+  intptr_t Result;
   // FAR WORKAROUND
   // Since 1.70 final, hotkeys do not work when list box has focus.
   if ((Msg == DN_KEY) && GetDialog()->HotKey(Param))

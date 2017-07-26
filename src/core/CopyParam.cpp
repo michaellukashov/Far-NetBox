@@ -14,13 +14,13 @@ const int TransferModeNamesCount = _countof(TransferModeNames);
 TCopyParamType::TCopyParamType(TObjectClassId Kind) :
   TObject(Kind)
 {
-  Default();
+  TCopyParamType::Default();
 }
 
 TCopyParamType::TCopyParamType(const TCopyParamType & Source) :
   TObject(OBJECT_CLASS_TCopyParamType)
 {
-  Assign(&Source);
+  TCopyParamType::Assign(&Source);
 }
 
 TCopyParamType::~TCopyParamType()

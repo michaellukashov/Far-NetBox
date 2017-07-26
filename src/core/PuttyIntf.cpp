@@ -77,7 +77,7 @@ void DontSaveRandomSeed()
 
 extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
 {
-  void * frontend = nullptr;
+  void * frontend;
 
   if (!is_ssh(plug) && !is_pfwd(plug))
   {
@@ -284,7 +284,7 @@ int askhk(void * /*frontend*/, const char * /*algname*/, const char * /*betteral
   return 1;
 }
 
-void old_keyfile_warning(void)
+void old_keyfile_warning()
 {
   // no reference to TSecureShell instance available
 }

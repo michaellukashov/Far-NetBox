@@ -425,12 +425,12 @@ protected:
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,
-    OUT HANDLE * AHandle);
+    HANDLE * AHandle);
   HANDLE TerminalCreateLocalFile(UnicodeString LocalFileName, DWORD DesiredAccess,
     DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
   void TerminalOpenLocalFile(UnicodeString AFileName, DWORD Access,
-    OUT OPTIONAL uintptr_t * AAttrs, OUT OPTIONAL HANDLE * AHandle, OUT OPTIONAL int64_t * ACTime,
-    OUT OPTIONAL int64_t * AMTime, OUT OPTIONAL int64_t * AATime, OUT OPTIONAL int64_t * ASize,
+    uintptr_t * AAttrs, HANDLE * AHandle, int64_t * ACTime,
+    int64_t * AMTime, int64_t * AATime, int64_t * ASize,
     bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(UnicodeString AFileName,
     const TCopyParamType * CopyParam, TFileOperationProgressType * OperationProgress);
@@ -445,7 +445,7 @@ protected:
     const TSearchRec & Rec, /*int64_t*/ void * Size);
   bool CalculateLocalFilesSize(const TStrings * AFileList,
     const TCopyParamType * CopyParam, bool AllowDirs, TStrings * Files,
-    OUT int64_t & Size);
+    int64_t & Size);
   TBatchOverwrite EffectiveBatchOverwrite(
     UnicodeString ASourceFullFileName, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, bool Special) const;
@@ -487,14 +487,14 @@ protected:
   void DoInformation(UnicodeString Str, bool Status, intptr_t Phase = -1);
   bool PromptUser(TSessionData * Data, TPromptKind Kind,
     UnicodeString AName, UnicodeString Instructions, UnicodeString Prompt, bool Echo,
-    intptr_t MaxLen, OUT UnicodeString & AResult);
+    intptr_t MaxLen, UnicodeString & AResult);
   void FileFind(UnicodeString AFileName, const TRemoteFile * AFile, void * Param);
   void DoFilesFind(UnicodeString Directory, TFilesFindParams & Params, UnicodeString RealDirectory);
   bool DoCreateLocalFile(UnicodeString AFileName,
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,
-    OUT HANDLE * AHandle);
+    HANDLE * AHandle);
   void LockFile(UnicodeString AFileName, const TRemoteFile * AFile, void * AParam);
   void UnlockFile(UnicodeString AFileName, const TRemoteFile * AFile, void * AParam);
   void DoLockFile(UnicodeString AFileName, const TRemoteFile * AFile);

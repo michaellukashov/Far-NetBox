@@ -8,7 +8,6 @@
 #include "Configuration.h"
 #include "PuttyIntf.h"
 #include "Cryptography.h"
-#include <DateUtils.hpp>
 #ifndef NO_FILEZILLA
 #include "FileZillaIntf.h"
 #endif
@@ -118,7 +117,7 @@ void CoreLoad()
 {
   bool SessionList = false;
   std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateStorage(SessionList));
-  THierarchicalStorage * ConfigStorage = nullptr;
+  THierarchicalStorage * ConfigStorage;
   std::unique_ptr<THierarchicalStorage> ConfigStorageAuto;
   if (!SessionList)
   {

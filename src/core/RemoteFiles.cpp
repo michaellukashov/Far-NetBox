@@ -145,7 +145,7 @@ UnicodeString ExtractFileName(UnicodeString APath, bool Unix)
   }
 }
 
-bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
+bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & APath)
 {
   DebugAssert(AFiles->GetCount() > 0);
 
@@ -172,7 +172,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
   return Result;
 }
 
-bool UnixExtractCommonPath(const TStrings * const AFiles, OUT UnicodeString & APath)
+bool UnixExtractCommonPath(const TStrings * const AFiles, UnicodeString & APath)
 {
   DebugAssert(AFiles->GetCount() > 0);
 
@@ -1840,14 +1840,14 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
 
 TRemoteDirectoryCache::TRemoteDirectoryCache() : TStringList()
 {
-  SetSorted(true);
+  TStringList::SetSorted(true);
   SetDuplicates(dupError);
-  SetCaseSensitive(true);
+  TStringList::SetCaseSensitive(true);
 }
 
 TRemoteDirectoryCache::~TRemoteDirectoryCache()
 {
-  Clear();
+  TRemoteDirectoryCache::Clear();
 }
 
 void TRemoteDirectoryCache::Clear()

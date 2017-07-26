@@ -1987,7 +1987,7 @@ bool TQueueItemProxy::ProcessUserAction()
 {
   DebugAssert(FQueueItem != nullptr);
 
-  bool Result = false;
+  bool Result;
   FProcessingUserAction = true;
   try__finally
   {

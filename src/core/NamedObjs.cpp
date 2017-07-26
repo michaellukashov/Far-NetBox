@@ -56,7 +56,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
     while (List->FindByName(GetName()))
     {
       int64_t N = 0;
-      intptr_t P = 0;
+      intptr_t P;
       // If name already contains number parenthesis remove it (and remember it)
       UnicodeString Name = GetName();
       if ((Name[Name.Length()] == L')') && ((P = Name.LastDelimiter(L'(')) > 0))

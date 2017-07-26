@@ -5384,7 +5384,7 @@ public:
   explicit TCopyDialog(TCustomFarPlugin * AFarPlugin,
     bool ToRemote, bool Move, const TStrings * AFileList, intptr_t Options, intptr_t CopyParamAttrs);
 
-  bool Execute(OUT UnicodeString & TargetDirectory, OUT TGUICopyParamType * Params);
+  bool Execute(UnicodeString & TargetDirectory, TGUICopyParamType * Params);
 
 protected:
   virtual bool CloseQuery() override;
@@ -5513,8 +5513,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCenterGroup(true);
 }
 
-bool TCopyDialog::Execute(OUT UnicodeString & TargetDirectory,
-  OUT TGUICopyParamType * Params)
+bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
+  TGUICopyParamType * Params)
 {
   FCopyParams.Assign(Params);
 
@@ -5656,8 +5656,8 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   bool Move, const TStrings * AFileList,
   intptr_t Options,
   intptr_t CopyParamAttrs,
-  OUT UnicodeString & TargetDirectory,
-  OUT TGUICopyParamType * Params)
+  UnicodeString & TargetDirectory,
+  TGUICopyParamType * Params)
 {
   std::unique_ptr<TCopyDialog> Dialog(new TCopyDialog(FPlugin, ToRemote,
     Move, AFileList, Options, CopyParamAttrs));
