@@ -2031,9 +2031,9 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
             int64_t sz = OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
               OperationProgress->LocalSize;
             Buf.sprintf(L"C%s %lld %s",
-              Rights.GetOctal().data(),
+              Rights.GetOctal(),
               sz,
-              DestFileName.data());
+              DestFileName);
             FSecureShell->SendLine(Buf.c_str());
             SCPResponse();
             // Indicate we started transferring file, we need to finish it
