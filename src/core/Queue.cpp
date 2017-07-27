@@ -1532,10 +1532,10 @@ bool TTerminalItem::WaitForUserAction(
   TQueueItem::TStatus ItemStatus, TUserAction * UserAction)
 {
   DebugAssert(FItem != nullptr);
+  if (!FItem)
+	  return false;
   DebugAssert((FItem->GetStatus() == TQueueItem::qsProcessing) ||
     (FItem->GetStatus() == TQueueItem::qsConnecting));
-  if (!FItem)
-    return false;
 
   bool Result;
 
