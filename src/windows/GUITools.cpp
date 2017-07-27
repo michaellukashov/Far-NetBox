@@ -139,23 +139,23 @@ void OpenSessionInPutty(const UnicodeString & PuttyPath,
     }
     if (!Psw.IsEmpty())
     {
-      Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(Psw).c_str());
+      Params += FORMAT("-pw %s ", EscapePuttyCommandParam(Psw));
     }
-    //Params += FORMAT(L"-load %s", EscapePuttyCommandParam(SessionName).c_str());
-    Params += FORMAT(L"-l %s ", EscapePuttyCommandParam(SessionData->GetUserNameExpanded()).c_str());
-    Params += FORMAT(L"-P %d ", SessionData->GetPortNumber());
-    Params += FORMAT(L"%s ", EscapePuttyCommandParam(SessionData->GetHostNameExpanded()).c_str());
+    //Params += FORMAT("-load %s", EscapePuttyCommandParam(SessionName));
+    Params += FORMAT("-l %s ", EscapePuttyCommandParam(SessionData->GetUserNameExpanded()));
+    Params += FORMAT("-P %d ", SessionData->GetPortNumber());
+    Params += FORMAT("%s ", EscapePuttyCommandParam(SessionData->GetHostNameExpanded()));
 
     // PuTTY is started in its binary directory to allow relative paths in private key,
     // when opening PuTTY's own stored session.
     if (!ExecuteShell(Program, Params))
     {
-      throw Exception(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
+      throw Exception(FMTLOAD(EXECUTE_APP_ERROR, Program));
     }
   }
   else
   {
-    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
+    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program));
   }
 }
 
@@ -321,11 +321,11 @@ UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
   UnicodeString Result;
   if (Count == 1)
   {
-    Result = FORMAT(SingleItemFormat.c_str(), FirstItem.c_str());
+    Result = FORMAT(SingleItemFormat, FirstItem);
   }
   else
   {
-    Result = FORMAT(MultiItemsFormat.c_str(), Count);
+    Result = FORMAT(MultiItemsFormat, Count);
   }
   return Result;
 }
@@ -371,7 +371,7 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
       TDateTime dt = Now();
       uint16_t H, M, S, MS;
       dt.DecodeTime(H, M, S, MS);
-      TempDir += ::IncludeTrailingBackslash(FORMAT(L"%02d%03d", M, MS));
+      TempDir += ::IncludeTrailingBackslash(FORMAT("%02d%03d", M, MS));
 #endif
     }
   }
@@ -440,7 +440,7 @@ UnicodeString FormatDateTimeSpan(const UnicodeString & /*TimeFormat*/, const TDa
   TDateTime dt(DateTime - static_cast<int>(DateTime));
   uint16_t H, M, S, MS;
   dt.DecodeTime(H, M, S, MS);
-  Result += FORMAT(L"%02d:%02d:%02d", H, M, S);
+  Result += FORMAT("%02d:%02d:%02d", H, M, S);
 #endif
   return Result;
 }

@@ -374,7 +374,7 @@ void TBookmarkList::Insert(intptr_t Index, TBookmark * Bookmark)
   Bookmark->FOwner = this;
   if (FBookmarks->IndexOf(Bookmark->GetKey()) >= 0)
   {
-    throw Exception(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName().c_str()));
+    throw Exception(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName()));
   }
   FBookmarks->InsertObject(Index, Bookmark->GetKey(), Bookmark);
 }
@@ -403,7 +403,7 @@ void TBookmarkList::KeyChanged(intptr_t Index)
   DebugAssert(FBookmarks->GetString(Index) != Bookmark->GetKey());
   if (FBookmarks->IndexOf(Bookmark->GetKey()) >= 0)
   {
-    throw Exception(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName().c_str()));
+    throw Exception(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName()));
   }
   FBookmarks->SetString(Index, Bookmark->GetKey());
 }

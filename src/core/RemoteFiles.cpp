@@ -529,7 +529,7 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, b
     Name = ExtractFileName(ATarget, Unix);
     Path = ::IncludeTrailingBackslash(ATarget);
   }
-  return FMTLOAD(MULTI_FILES_TO_ONE, Name.c_str(), Dir.c_str(), Path.c_str());
+  return FMTLOAD(MULTI_FILES_TO_ONE, Name, Dir, Path);
 }
 
 } // namespace core
@@ -1421,7 +1421,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
   }
   catch (Exception & E)
   {
-    throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, Value.c_str()), HELP_LIST_LINE_ERROR);
+    throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, Value), HELP_LIST_LINE_ERROR);
   }
 }
 
@@ -2416,7 +2416,7 @@ void TRights::SetText(const UnicodeString & Value)
         (!GetAllowUndef() && (Value.Pos(UndefSymbol) > 0)) ||
         (Value.Pos(L" ") > 0))
     {
-      throw Exception(FMTLOAD(RIGHTS_ERROR, Value.c_str()));
+      throw Exception(FMTLOAD(RIGHTS_ERROR, Value));
     }
 
     FSet = 0;
@@ -2543,7 +2543,7 @@ void TRights::SetOctal(const UnicodeString & AValue)
 
     if (!Correct)
     {
-      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue.c_str()));
+      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue));
     }
 
     SetNumber(static_cast<uint16_t>(

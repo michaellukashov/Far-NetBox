@@ -22,7 +22,7 @@ void NeonParseUrl(const UnicodeString & Url, ne_uri & uri)
   if (ne_uri_parse(StrToNeon(Url), &uri) != 0)
   {
     // should never happen
-    throw Exception(FMTLOAD(INVALID_URL, Url.c_str()));
+    throw Exception(FMTLOAD(INVALID_URL, Url));
   }
 
   // Will never happen for initial URL, but may happen for redirect URLs
@@ -287,7 +287,7 @@ UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString 
   // NEON checks certificate host name on its own
   if (FLAGSET(FailuresToList, NE_SSL_IDMISMATCH))
   {
-    AddToList(Result, FMTLOAD(CERT_NAME_MISMATCH, HostName.c_str()), L" ");
+    AddToList(Result, FMTLOAD(CERT_NAME_MISMATCH, HostName), L" ");
     FailuresToList &= ~NE_SSL_IDMISMATCH;
   }
   if (FLAGSET(FailuresToList, NE_SSL_UNTRUSTED))

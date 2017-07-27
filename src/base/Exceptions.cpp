@@ -156,7 +156,7 @@ static bool ExceptionMessage(const Exception * E, bool /*Count*/,
 
   if (InternalError)
   {
-    Message = FMTLOAD(REPORT_ERROR, Message.c_str());
+    Message = FMTLOAD(REPORT_ERROR, Message);
   }
 /*
   if (Count && (CounterName != nullptr) && (Configuration->Usage != nullptr))
@@ -447,8 +447,8 @@ UnicodeString SysErrorMessageForError(intptr_t LastError)
   UnicodeString Result;
   if (LastError != 0)
   {
-    //Result = FORMAT("System Error. Code: %d.\r\n%s", LastError, SysErrorMessage(LastError).c_str());
-    Result = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError).c_str(), L"");
+    //Result = FORMAT("System Error. Code: %d.\r\n%s", LastError, SysErrorMessage(LastError));
+    Result = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError), L"");
   }
   return Result;
 }

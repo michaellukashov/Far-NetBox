@@ -919,7 +919,7 @@ uintptr_t GetSpeedLimit(const UnicodeString & Text)
   uintptr_t Speed = 0;
   if (!TryGetSpeedLimit(Text, Speed))
   {
-    throw Exception(FMTLOAD(SPEED_INVALID, Text.c_str()));
+    throw Exception(FMTLOAD(SPEED_INVALID, Text));
   }
   return Speed;
 }

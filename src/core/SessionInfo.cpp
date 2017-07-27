@@ -135,12 +135,12 @@ public:
           UnicodeString Value = FValues->GetString(Index);
           if (Value.IsEmpty())
           {
-            FLog->AddIndented(FORMAT("  <%s />", FNames->GetString(Index).c_str()));
+            FLog->AddIndented(FORMAT("  <%s />", FNames->GetString(Index)));
           }
           else
           {
             FLog->AddIndented(FORMAT("  <%s value=\"%s\" />",
-              FNames->GetString(Index).c_str(), XmlAttributeEscape(Value).c_str()));
+              FNames->GetString(Index), XmlAttributeEscape(Value)));
           }
         }
         if (FFileList != nullptr)
@@ -151,14 +151,14 @@ public:
             TRemoteFile * File = FFileList->GetFile(Index);
 
             FLog->AddIndented(L"    <file>");
-            FLog->AddIndented(FORMAT("      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName()).c_str()));
-            FLog->AddIndented(FORMAT("      <type value=\"%s\" />", XmlAttributeEscape(File->GetType()).c_str()));
+            FLog->AddIndented(FORMAT("      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName())));
+            FLog->AddIndented(FORMAT("      <type value=\"%s\" />", XmlAttributeEscape(File->GetType())));
             if (!File->GetIsDirectory())
             {
-              FLog->AddIndented(FORMAT("      <size value=\"%s\" />", ::Int64ToStr(File->GetSize()).c_str()));
+              FLog->AddIndented(FORMAT("      <size value=\"%s\" />", ::Int64ToStr(File->GetSize())));
             }
-            FLog->AddIndented(FORMAT("      <modification value=\"%s\" />", StandardTimestamp(File->GetModification()).c_str()));
-            FLog->AddIndented(FORMAT("      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText()).c_str()));
+            FLog->AddIndented(FORMAT("      <modification value=\"%s\" />", StandardTimestamp(File->GetModification())));
+            FLog->AddIndented(FORMAT("      <permissions value=\"%s\" />", XmlAttributeEscape(File->GetRights()->GetText())));
             FLog->AddIndented(L"    </file>");
           }
           FLog->AddIndented(L"  </files>");
@@ -174,13 +174,13 @@ public:
         if (FFile != nullptr)
         {
           FLog->AddIndented(L"  <file>");
-          FLog->AddIndented(FORMAT("    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType()).c_str()));
+          FLog->AddIndented(FORMAT("    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType())));
           if (!FFile->GetIsDirectory())
           {
-            FLog->AddIndented(FORMAT("    <size value=\"%s\" />", ::Int64ToStr(FFile->GetSize()).c_str()));
+            FLog->AddIndented(FORMAT("    <size value=\"%s\" />", ::Int64ToStr(FFile->GetSize())));
           }
-          FLog->AddIndented(FORMAT("    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification()).c_str()));
-          FLog->AddIndented(FORMAT("    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText()).c_str()));
+          FLog->AddIndented(FORMAT("    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification())));
+          FLog->AddIndented(FORMAT("    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText())));
           FLog->AddIndented(L"  </file>");
         }
         if (FState == RolledBack)
@@ -643,7 +643,7 @@ static FILE * OpenFile(const UnicodeString & LogFileName, TSessionData * Session
   }
   else
   {
-    throw ECRTExtException(FMTLOAD(LOG_OPENERROR, NewFileName.c_str()));
+    throw ECRTExtException(FMTLOAD(LOG_OPENERROR, NewFileName));
   }
   return Result;
 }

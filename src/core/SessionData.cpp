@@ -2015,7 +2015,7 @@ void TSessionData::ValidateName(const UnicodeString & Name)
   // keep consistent with MakeValidName
   if (Name.LastDelimiter(L"/") > 0)
   {
-    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
+    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name, L"/"));
   }
 }
 
@@ -2963,20 +2963,20 @@ UnicodeString TSessionData::AssemblyString(TAssemblyLanguage Language, const Uni
     case alCSharp:
       if (Result.Pos(L"\\") > 0)
       {
-        Result = FORMAT(L"@\"%s\"", ReplaceStr(Result, L"\"", L"\"\"").c_str());
+        Result = FORMAT(L"@\"%s\"", ReplaceStr(Result, L"\"", L"\"\""));
       }
       else
       {
-        Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"\\\"").c_str());
+        Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"\\\""));
       }
       break;
 
     case alVBNET:
-      Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"\"\"").c_str());
+      Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"\"\""));
       break;
 
     case alPowerShell:
-      Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"`\"").c_str());
+      Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"`\""));
       break;
 
     default:
@@ -3008,7 +3008,7 @@ void TSessionData::AddAssemblyPropertyRaw(
       break;
   }
 
-  Result += FORMAT(PropertyCode.c_str(), Name.c_str(), Value.c_str());
+  Result += FORMAT(PropertyCode, Name, Value);
 }
 //---------------------------------------------------------------------
 void TSessionData::AddAssemblyProperty(
@@ -3076,7 +3076,7 @@ UnicodeString TSessionData::GenerateAssemblyCode(
 
     case alPowerShell:
       SessionOptionsPreamble =
-        FORMAT(L"# %s\n", LoadStr(CODE_PS_ADD_TYPE).c_str()) +
+        FORMAT(L"# %s\n", LoadStr(CODE_PS_ADD_TYPE)) +
         L"Add-Type -Path \"WinSCPnet.dll\"\n"
         L"\n"
         L"# %s\n"
@@ -3088,7 +3088,7 @@ UnicodeString TSessionData::GenerateAssemblyCode(
       break;
   }
 
-  Result = FORMAT(SessionOptionsPreamble.c_str(), LoadStr(CODE_SESSION_OPTIONS).c_str());
+  Result = FORMAT(SessionOptionsPreamble, LoadStr(CODE_SESSION_OPTIONS));
 
   UnicodeString ProtocolMember;
   switch (SessionData->GetFSProtocol())
@@ -3260,7 +3260,7 @@ UnicodeString TSessionData::GenerateAssemblyCode(
           SettingsCode = L"$sessionOptions.AddRawSettings(\"%s\", %s)\n";
           break;
       }
-      Result += FORMAT(SettingsCode, Name.c_str(), AssemblyString(Language, Value).c_str());
+      Result += FORMAT(SettingsCode, Name, AssemblyString(Language, Value));
     }
 #endif
   }
@@ -3314,7 +3314,7 @@ UnicodeString TSessionData::GenerateAssemblyCode(
   }
 #endif
 
-  Result += FORMAT(SessionCode.c_str(), LoadStr(CODE_CONNECT).c_str(), LoadStr(CODE_YOUR_CODE).c_str());
+  Result += FORMAT(SessionCode, LoadStr(CODE_CONNECT), LoadStr(CODE_YOUR_CODE));
 
   return Result;
 }

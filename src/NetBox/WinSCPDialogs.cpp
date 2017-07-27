@@ -206,7 +206,7 @@ void TTabbedDialog::SelectTab(intptr_t Tab)
   {
     FOrigCaption = GetCaption();
   }
-  SetCaption(FORMAT(L"%s - %s", GetTabName(Tab).c_str(), FOrigCaption.c_str()));
+  SetCaption(FORMAT("%s - %s", GetTabName(Tab), FOrigCaption));
 }
 
 TTabButton * TTabbedDialog::GetTabButton(intptr_t Tab) const
@@ -308,8 +308,8 @@ bool TWinSCPPlugin::ConfigurationDialog()
   TWinSCPDialog * Dialog = DialogPtr.get();
 
   Dialog->SetSize(TPoint(67, 22));
-  Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_INTERFACE)).c_str()));
+  Dialog->SetCaption(FORMAT("%s - %s",
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTERFACE))));
 
   TFarCheckBox * DisksMenuCheck = new TFarCheckBox(Dialog);
   DisksMenuCheck->SetCaption(GetMsg(NB_CONFIG_DISKS_MENU));
@@ -442,8 +442,8 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
 {
   std::unique_ptr<TWinSCPDialog> Dialog(new TWinSCPDialog(this));
   Dialog->SetSize(TPoint(65, 7));
-  Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_PANEL)).c_str()));
+  Dialog->SetCaption(FORMAT("%s - %s",
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_PANEL))));
 
   TFarCheckBox * AutoReadDirectoryAfterOpCheck = new TFarCheckBox(Dialog.get());
   AutoReadDirectoryAfterOpCheck->SetCaption(GetMsg(NB_CONFIG_AUTO_READ_DIRECTORY_AFTER_OP));
@@ -475,8 +475,8 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   TFarText * Text;
 
   Dialog->SetSize(TPoint(65, 15));
-  Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_LOGGING)).c_str()));
+  Dialog->SetCaption(FORMAT("%s - %s",
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_LOGGING))));
 
   TFarCheckBox * LoggingCheck = new TFarCheckBox(Dialog);
   LoggingCheck->SetCaption(GetMsg(NB_LOGGING_ENABLE));
@@ -564,8 +564,8 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 
 bool TWinSCPPlugin::TransferConfigurationDialog()
 {
-  UnicodeString Caption = FORMAT(L"%s - %s",
-    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER)).c_str());
+  UnicodeString Caption = FORMAT("%s - %s",
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER)));
 
   TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   bool Result = CopyParamDialog(Caption, CopyParam, 0);
@@ -583,8 +583,8 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   TWinSCPDialog * Dialog = DialogPtr.get();
 
   Dialog->SetSize(TPoint(76, 13));
-  Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_ENDURANCE)).c_str()));
+  Dialog->SetCaption(FORMAT("%s - %s",
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ENDURANCE))));
 
   TFarSeparator * Separator = new TFarSeparator(Dialog);
   Separator->SetCaption(GetMsg(NB_TRANSFER_RESUME));
@@ -711,8 +711,8 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   TWinSCPDialog * Dialog = DialogPtr.get();
 
   Dialog->SetSize(TPoint(76, 11));
-  Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_BACKGROUND)).c_str()));
+  Dialog->SetCaption(FORMAT("%s - %s",
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_BACKGROUND))));
 
   TFarText * Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_QUEUE_LIMIT));
@@ -796,8 +796,8 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
   TWinSCPDialog(AFarPlugin)
 {
   SetSize(TPoint(65, 14));
-  SetCaption(FORMAT(L"%s - %s",
-    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER_EDITOR)).c_str()));
+  SetCaption(FORMAT("%s - %s",
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER_EDITOR))));
 
   EditorMultipleCheck = new TFarCheckBox(this);
   EditorMultipleCheck->SetCaption(GetMsg(NB_TRANSFER_EDITOR_MULTIPLE));
@@ -892,8 +892,8 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   TWinSCPDialog * Dialog = DialogPtr.get();
 
   Dialog->SetSize(TPoint(67, 10));
-  Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_CONFIRMATIONS)).c_str()));
+  Dialog->SetCaption(FORMAT("%s - %s",
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_CONFIRMATIONS))));
 
   TFarCheckBox * ConfirmOverwritingCheck = new TFarCheckBox(Dialog);
   ConfirmOverwritingCheck->SetAllowGrayed(true);
@@ -946,8 +946,8 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
   TWinSCPDialog * Dialog = DialogPtr.get();
 
   Dialog->SetSize(TPoint(65, 14));
-  Dialog->SetCaption(FORMAT(L"%s - %s",
-    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_INTEGRATION)).c_str()));
+  Dialog->SetCaption(FORMAT("%s - %s",
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTEGRATION))));
 
   TFarText * Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(NB_INTEGRATION_PUTTY));
@@ -1047,14 +1047,14 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   }
   SetSize(TPoint(55, Height));
 
-  SetCaption(FORMAT(L"%s - %s",
-    GetMsg(NB_PLUGIN_TITLE).c_str(), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT)).c_str()));
+  SetCaption(FORMAT("%s - %s",
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT))));
   TFarText * Text = new TFarText(this);
   Text->SetCaption(GetConfiguration()->GetFileInfoString("FileDescription"));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_VERSION).c_str(), GetConfiguration()->GetProductVersion().c_str(), NETBOX_VERSION_BUILD));
+  Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_VERSION), GetConfiguration()->GetProductVersion(), NETBOX_VERSION_BUILD));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
@@ -1063,7 +1063,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->SetCaption(FMTLOAD(WINSCPFAR_BASED_VERSION, LoadStr(WINSCPFAR_VERSION).c_str()));
+  Text->SetCaption(FMTLOAD(WINSCPFAR_BASED_VERSION, LoadStr(WINSCPFAR_VERSION)));
   Text->SetCenterGroup(true);
 
   if (!ProductName.IsEmpty())
@@ -1401,7 +1401,7 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
   TWinSCPDialog * Dialog = DialogPtr.get();
 
   Dialog->SetSize(TPoint(70, 21));
-  Dialog->SetCaption(FORMAT(GetMsg(NB_BANNER_TITLE).c_str(), SessionName.c_str()));
+  Dialog->SetCaption(FORMAT(GetMsg(NB_BANNER_TITLE), SessionName));
 
   TFarLister * Lister = new TFarLister(Dialog);
   FarWrapText(Banner, Lister->GetItems(), Dialog->GetBorderBox()->GetWidth() - 4);
@@ -3979,13 +3979,13 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
     switch (KeyType)
     {
       case ktOpenSSHAuto:
-        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName.c_str(), L"OpenSSH SSH-2");
+        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName, L"OpenSSH SSH-2");
         break;
 
       case ktOpenSSHPEM:
       case ktOpenSSHNew:
       case ktSSHCom:
-        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName.c_str(), L"ssh.com SSH-2");
+        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName, L"ssh.com SSH-2");
         break;
 
       case ktSSH1Public:
@@ -4013,7 +4013,7 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool TypeOnly)
         // fallthru
       case ktUnopenable:
       case ktUnknown:
-        Message = FMTLOAD(KEY_TYPE_UNKNOWN2, AFileName.c_str());
+        Message = FMTLOAD(KEY_TYPE_UNKNOWN2, AFileName);
         break;
     }
 
@@ -4693,7 +4693,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     Text->SetCenterGroup(true);
     if (AFileList->GetCount() > 1)
     {
-      Text->SetCaption(FORMAT(GetMsg(NB_PROPERTIES_PROMPT_FILES).c_str(), AFileList->GetCount()));
+      Text->SetCaption(FORMAT(GetMsg(NB_PROPERTIES_PROMPT_FILES), AFileList->GetCount()));
     }
     else
     {
@@ -5451,7 +5451,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     UnicodeString Prompt;
     if (FFileList->GetCount() > 1)
     {
-      Prompt = FORMAT(GetMsg(Move ? NB_MOVE_FILES_PROMPT : NB_COPY_FILES_PROMPT).c_str(), FFileList->GetCount());
+      Prompt = FORMAT(GetMsg(Move ? NB_MOVE_FILES_PROMPT : NB_COPY_FILES_PROMPT), FFileList->GetCount());
     }
     else
     {
@@ -5461,7 +5461,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
         base::ExtractFileName(FileName, false) :
         base::UnixExtractFileName(FileName);
       UnicodeString MinimizedName = core::MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
-      Prompt = FORMAT(PromptMsg.c_str(), MinimizedName.c_str());
+      Prompt = FORMAT(PromptMsg, MinimizedName);
     }
 
     TFarText * Text = new TFarText(this);
@@ -5611,13 +5611,13 @@ bool TCopyDialog::CloseQuery()
       {
         TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
 
-        if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(NB_CREATE_LOCAL_DIRECTORY).c_str(), Directory.c_str()),
+        if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(NB_CREATE_LOCAL_DIRECTORY), Directory),
           nullptr, qtConfirmation, qaOK | qaCancel) != qaCancel)
         {
           if (!::ForceDirectories(ApiPath(Directory)))
           {
             DirectoryEdit->SetFocus();
-            throw ExtException(FORMAT(GetMsg(NB_CREATE_LOCAL_DIR_ERROR).c_str(), Directory.c_str()));
+            throw ExtException(FORMAT(GetMsg(NB_CREATE_LOCAL_DIR_ERROR), Directory));
           }
         }
         else
@@ -6041,7 +6041,7 @@ UnicodeString TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability)
 UnicodeString TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2)
 {
-  return FORMAT(L"%s/%s", CapabilityStr(Capability1).c_str(), CapabilityStr(Capability2).c_str());
+  return FORMAT("%s/%s", CapabilityStr(Capability1), CapabilityStr(Capability2));
 }
 
 UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes) const
@@ -6057,7 +6057,7 @@ UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes) const
     UnicodeString SizeUnorderedStr = FormatBytes(Bytes, false);
     if (Result != SizeUnorderedStr)
     {
-      Result = FORMAT(L"%s (%s)", Result.c_str(), SizeUnorderedStr.c_str());
+      Result = FORMAT("%s (%s)", Result, SizeUnorderedStr);
     }
   }
   return Result;
@@ -6072,14 +6072,14 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
   UnicodeString Str = FSessionInfo.CSCipher;
   if (FSessionInfo.CSCipher != FSessionInfo.SCCipher)
   {
-    Str += FORMAT(L"/%s", FSessionInfo.SCCipher.c_str());
+    Str += FORMAT("/%s", FSessionInfo.SCCipher);
   }
   AddItem(ServerLabels, NB_SERVER_CIPHER, Str);
 
   Str = DefaultStr(FSessionInfo.CSCompression, LoadStr(NO_STR));
   if (FSessionInfo.CSCompression != FSessionInfo.SCCompression)
   {
-    Str += FORMAT(L"/%s", DefaultStr(FSessionInfo.SCCompression, LoadStr(NO_STR)).c_str());
+    Str += FORMAT("/%s", DefaultStr(FSessionInfo.SCCompression, LoadStr(NO_STR)));
   }
   AddItem(ServerLabels, NB_SERVER_COMPRESSION, Str);
   if (FSessionInfo.ProtocolName != FFileSystemInfo.ProtocolName)
@@ -6160,7 +6160,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
       TFarText * Text = List->GetAs<TFarText>(FLastListItem);
       FLastListItem++;
 
-      Text->SetCaption(FORMAT(L"%d-%s  %s", List->MaxLen, GetMsg(Label).c_str(), Value.c_str()));
+      Text->SetCaption(FORMAT("%d-%s  %s", List->MaxLen, GetMsg(Label), Value));
     }
   }
 }
@@ -6226,7 +6226,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
         Value2.SetLength(Value2.Length() - 2);
       }
 
-      FClipboard += FORMAT(L"%s\r\n%s\r\n", LabelStr.c_str(), Value2.c_str());
+      FClipboard += FORMAT("%s\r\n%s\r\n", LabelStr, Value2);
     }
     else
     {
@@ -6236,7 +6236,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       {
         LabelStr.SetLength(LabelStr.Length() - 1);
       }
-      FClipboard += FORMAT(L"%s = %s\r\n", LabelStr.c_str(), Value.c_str());
+      FClipboard += FORMAT("%s = %s\r\n", LabelStr, Value);
     }
   }
 }
@@ -7363,21 +7363,21 @@ UnicodeString TSynchronizeChecklistDialog::FormatSize(
   int64_t Size, int Column)
 {
   intptr_t Width = static_cast<intptr_t>(FWidths[Column]);
-  UnicodeString Result = FORMAT(L"%lu", Size);
+  UnicodeString Result = FORMAT("%lu", Size);
 
   if (Result.Length() > Width)
   {
-    Result = FORMAT(L"%.2f 'K'", Size / 1024.0);
+    Result = FORMAT("%.2f 'K'", Size / 1024.0);
     if (Result.Length() > Width)
     {
-      Result = FORMAT(L"%.2f 'M'", Size / (1024.0 * 1024));
+      Result = FORMAT("%.2f 'M'", Size / (1024.0 * 1024));
       if (Result.Length() > Width)
       {
-        Result = FORMAT(L"%.2f 'G'", Size / (1024.0 * 1024 * 1024));
+        Result = FORMAT("%.2f 'G'", Size / (1024.0 * 1024 * 1024));
         if (Result.Length() > Width)
         {
           // back to default
-          Result = FORMAT(L"%lu", Size);
+          Result = FORMAT("%lu", Size);
         }
       }
     }
@@ -7548,7 +7548,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
 void TSynchronizeChecklistDialog::UpdateControls()
 {
   ButtonSeparator->SetCaption(
-    FORMAT(GetMsg(NB_CHECKLIST_CHECKED).c_str(), FChecked, ListBox->GetItems()->GetCount()));
+    FORMAT(GetMsg(NB_CHECKLIST_CHECKED), FChecked, ListBox->GetItems()->GetCount()));
   CheckAllButton->SetEnabled(FChecked < ListBox->GetItems()->GetCount());
   UncheckAllButton->SetEnabled(FChecked > 0);
 }
@@ -8197,8 +8197,8 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * AFileList,
 bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * AFile,
   UnicodeString & NewName)
 {
-  return FPlugin->InputBox(GetMsg(NB_RENAME_FILE_TITLE).c_str(),
-    FORMAT(GetMsg(NB_RENAME_FILE).c_str(), AFile->GetFileName().c_str()), NewName, 0) &&
+  return FPlugin->InputBox(GetMsg(NB_RENAME_FILE_TITLE),
+    FORMAT(GetMsg(NB_RENAME_FILE), AFile->GetFileName()), NewName, 0) &&
     !NewName.IsEmpty();
 }
 
@@ -8653,7 +8653,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
       {
         if (ProgressData->Operation == Info->Operation)
         {
-          Values[1] = FORMAT(L"%d%%", ProgressData->OverallProgress());
+          Values[1] = FORMAT("%d%%", ProgressData->OverallProgress());
         }
         else if (ProgressData->Operation == foCalculateSize)
         {
@@ -8674,7 +8674,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
         (Info->Side == osRemote));
       if (ProgressData->Operation == Info->Operation)
       {
-        Values[1] = FORMAT(L"%d%%", ProgressData->TransferProgress());
+        Values[1] = FORMAT("%d%%", ProgressData->TransferProgress());
       }
     }
     else
@@ -8683,8 +8683,8 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
     }
   }
 
-  Line = FORMAT(L"%1s %1s  %-49s %s",
-    Operation.c_str(), Direction.c_str(), Values[0].c_str(), Values[1].c_str());
+  Line = FORMAT("%1s %1s  %-49s %s",
+    Operation, Direction, Values[0], Values[1]);
 
   return true;
 }

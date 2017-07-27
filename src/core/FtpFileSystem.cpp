@@ -1193,7 +1193,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(
 
   if (Hash.IsEmpty())
   {
-    throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, CommandName.c_str(), ResponseText.c_str()));
+    throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, CommandName, ResponseText));
   }
 
   return LowerCase(Hash);
@@ -1340,7 +1340,7 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
     }
     else
     {
-      throw Exception(FMTLOAD(UNKNOWN_CHECKSUM, Alg.c_str()));
+      throw Exception(FMTLOAD(UNKNOWN_CHECKSUM, Alg));
     }
 
     DoCalculateFilesChecksum(UsingHashCommand, NormalizedAlg, AFileList, Checksums, OnCalculatedChecksum,
@@ -1569,7 +1569,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
   const UnicodeString & RemotePath, bool Get, int64_t Size, intptr_t Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
-  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName.c_str()), "",
+  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName), "",
   [&]()
   {
     FFileZillaIntf->FileTransfer(ApiPath(LocalFile).c_str(), RemoteFile.c_str(),
@@ -1732,7 +1732,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     Action.Cancel();
     if (FTerminal->CanRecurseToDirectory(AFile))
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "",
       [&]()
       {
         DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
@@ -1742,7 +1742,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
         }
       });
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName), "",
       [&]()
       {
         THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFullName)));
@@ -1788,7 +1788,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName), "",
     [&]()
     {
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
@@ -1845,7 +1845,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName), "",
       [&]()
       {
         THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFullName), (LocalFileAttrs | NewAttrs)) == 0);
@@ -2160,7 +2160,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   {
     if (!Dir)
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName), "",
       [&]()
       {
         THROWOSIFFALSE(::RemoveFile(AFileName));
@@ -2169,7 +2169,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   }
   else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams->LocalFileAttrs, faArchive))
   {
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, AFileName), "",
     [&]()
     {
       THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, OpenParams->LocalFileAttrs & ~faArchive) == 0);
@@ -2196,7 +2196,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
   TSearchRecChecked SearchRec;
   bool FindOK = false;
 
-  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
+  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
   [&]()
   {
     FindOK =
@@ -2241,7 +2241,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
         }
       }
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
       [&]()
       {
         FindOK = (::FindNextChecked(SearchRec) == 0);
@@ -2313,7 +2313,7 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName), "",
       [&]()
       {
         THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
@@ -2580,7 +2580,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
       }
       else
       {
-        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, Command.c_str(), Response->GetText().c_str()));
+        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, Command, Response->GetText()));
       }
     }
     __finally
@@ -2988,7 +2988,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
   if (File == nullptr)
   {
     AFile = nullptr;
-    throw Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()));
+    throw Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName));
   }
 
   DebugAssert(File != nullptr);
@@ -3442,7 +3442,7 @@ void TFTPFileSystem::WaitForMessages()
 
   if (Result != WAIT_OBJECT_0)
   {
-    FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", ::IntToStr(Result).c_str()));
+    FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", ::IntToStr(Result)));
   }
 }
 
@@ -3796,7 +3796,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
     {
       if (FLastResponse->GetCount() != 1)
       {
-        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, FLastCommandSent.c_str(), FLastResponse->GetText().c_str()));
+        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, FLastCommandSent, FLastResponse->GetText()));
       }
       Result = FLastResponse->GetString(0);
     }
@@ -4668,11 +4668,11 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       if (IsHostNameIPAddress)
       {
-        AddToList(Summary, FMTLOAD(CERT_IP_CANNOT_VERIFY, FTerminal->GetSessionData()->GetHostNameExpanded().c_str()), SummarySeparator);
+        AddToList(Summary, FMTLOAD(CERT_IP_CANNOT_VERIFY, FTerminal->GetSessionData()->GetHostNameExpanded()), SummarySeparator);
       }
       else if (!CertificateHostNameVerified)
       {
-        AddToList(Summary, FMTLOAD(CERT_NAME_MISMATCH, FTerminal->GetSessionData()->GetHostNameExpanded().c_str()), SummarySeparator);
+        AddToList(Summary, FMTLOAD(CERT_NAME_MISMATCH, FTerminal->GetSessionData()->GetHostNameExpanded()), SummarySeparator);
       }
 
       if (Summary.IsEmpty())
@@ -4682,12 +4682,12 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       FSessionInfo.Certificate =
         FMTLOAD(CERT_TEXT,
-          FormatContact(Data.Issuer).c_str(),
-          FormatContact(Data.Subject).c_str(),
-          FormatValidityTime(Data.ValidFrom).c_str(),
-          FormatValidityTime(Data.ValidUntil).c_str(),
-          FSessionInfo.CertificateFingerprint.c_str(),
-          Summary.c_str());
+          FormatContact(Data.Issuer),
+          FormatContact(Data.Subject),
+          FormatValidityTime(Data.ValidFrom),
+          FormatValidityTime(Data.ValidUntil),
+          FSessionInfo.CertificateFingerprint,
+          Summary);
 
       RequestResult = VerificationResult ? 1 : 0;
 
@@ -4707,7 +4707,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         Params.Aliases = Aliases;
         Params.AliasesCount = _countof(Aliases);
         uintptr_t Answer = FTerminal->QueryUser(
-          FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate.c_str()),
+          FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate),
           nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
 
         switch (Answer)
@@ -4931,12 +4931,12 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
       {
 //        delete File;
         UnicodeString EntryData =
-          FORMAT(L"%s/%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",
+          FORMAT("%s/%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",
              Entry->Name, Entry->Permissions, Entry->HumanPerm, Entry->OwnerGroup, ::Int64ToStr(Entry->Size),
              int(Entry->Dir), int(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
              Entry->Time.Hour, Entry->Time.Minute, int(Entry->Time.HasTime),
              int(Entry->Time.HasSeconds), int(Entry->Time.HasDate));
-        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), HELP_LIST_LINE_ERROR);
+        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData), HELP_LIST_LINE_ERROR);
       }
 
       FFileList->AddFile(File.release());
@@ -4976,7 +4976,7 @@ bool TFTPFileSystem::HandleReply(intptr_t Command, uintptr_t Reply)
   {
     if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
     {
-      FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", static_cast<int>(Reply), Command));
+      FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", static_cast<int>(Reply), Command));
     }
 
     // reply with Command 0 is not associated with current operation
