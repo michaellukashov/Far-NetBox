@@ -630,7 +630,7 @@ static FILE * OpenFile(UnicodeString LogFileName, TDateTime Started, TSessionDat
 {
   UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
   FILE * Result = _fsopen(::W2MB(ApiPath(NewFileName).c_str()).c_str(),
-    Append ? "a" : "w", SH_DENYWR);
+    Append ? "ab" : "wb", SH_DENYWR);
   if (Result != nullptr)
   {
     setvbuf(Result, nullptr, _IONBF, BUFSIZ);
