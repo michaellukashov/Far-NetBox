@@ -2029,7 +2029,7 @@ void TSCPFileSystem::SCPSource(UnicodeString AFileName,
               // TVarRec don't understand 'uint32_t' -> we use sprintf()
               Buf = FORMAT(L"T%lu 0 %lu 0", static_cast<uint32_t>(MTime),
                 static_cast<uint32_t>(ATime));
-              FSecureShell->SendLine(Buf.c_str());
+              FSecureShell->SendLine(Buf);
               SCPResponse();
             }
 
