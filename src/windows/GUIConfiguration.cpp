@@ -272,6 +272,8 @@ void TCopyParamList::ValidateName(UnicodeString Name)
 
 TCopyParamList & TCopyParamList::operator=(const TCopyParamList & rhl)
 {
+  if (this == &rhl)
+    return *this;
   Clear();
 
   for (intptr_t Index = 0; Index < rhl.GetCount(); ++Index)
