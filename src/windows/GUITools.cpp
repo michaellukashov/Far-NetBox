@@ -175,7 +175,7 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
       intptr_t P = Params2.LowerCase().Pos(LoadSwitch + L" ");
       if ((P == 0) || ((P > 1) && (Params2[P - 1] != L' ')))
       {
-        AddToList(PuttyParams, FORMAT(L"%s %s", LoadSwitch.c_str(), EscapePuttyCommandParam(SessionName).c_str()), L" ");
+        AddToList(PuttyParams, FORMAT(L"%s %s", LoadSwitch, EscapePuttyCommandParam(SessionName)), L" ");
       }
     }
 

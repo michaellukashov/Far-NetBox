@@ -969,7 +969,7 @@ void TFTPFileSystem::EnsureLocation(UnicodeString ADirectory, bool Log)
     if (Log)
     {
       FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
-        Directory.c_str()));
+        Directory));
     }
 
     DoChangeDirectory(Directory);
@@ -2838,7 +2838,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
         {
           FTerminal->LogEvent(
             FORMAT(L"Not using file %s to detect timezone difference as it has the timestamp in the future [%s]",
-              File->GetFullFileName().c_str(), StandardTimestamp(UtcModification).c_str()));
+              File->GetFullFileName(), StandardTimestamp(UtcModification)));
         }
         else
         {
@@ -2853,7 +2853,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
           FTimeDifference = static_cast<int64_t>(SecsPerDay * (UtcModification - File->GetModification()));
 
           UnicodeString FileLog =
-            FORMAT(L"%s (Listing: %s, UTF: %s)", File->GetFullFileName().c_str(), StandardTimestamp(File->GetModification()).c_str(), StandardTimestamp(UtcModification).c_str());
+            FORMAT(L"%s (Listing: %s, UTF: %s)", File->GetFullFileName(), StandardTimestamp(File->GetModification()), StandardTimestamp(UtcModification));
           UnicodeString LogMessage;
           if (FTimeDifference == 0)
           {

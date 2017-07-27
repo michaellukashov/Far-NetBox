@@ -3255,9 +3255,9 @@ uintptr_t TTerminal::ConfirmFileOverwrite(
               qaYes : qaNo;
 
           LogEvent(FORMAT(L"Source file timestamp is [%s], destination timestamp is [%s], will%s overwrite",
-            StandardTimestamp(ReducedSourceTimestamp).c_str(),
-            StandardTimestamp(ReducedDestTimestamp).c_str(),
-            UnicodeString(Result == qaYes ? L"" : L" not").c_str()));
+            StandardTimestamp(ReducedSourceTimestamp),
+            StandardTimestamp(ReducedDestTimestamp),
+            UnicodeString(Result == qaYes ? L"" : L" not")));
         }
       }
       break;
@@ -3689,7 +3689,7 @@ void TTerminal::LogFileDone(TFileOperationProgressType * OperationProgress, Unic
   // optimization
   if (GetLog()->GetLogging())
   {
-    LogEvent(FORMAT(L"Transfer done: '%s' => '%s' [%s]", OperationProgress->GetFullFileName().c_str(), DestFileName.c_str(), Int64ToStr(OperationProgress->GetTransferredSize()).c_str()));
+    LogEvent(FORMAT(L"Transfer done: '%s' => '%s' [%s]", OperationProgress->GetFullFileName(), DestFileName, Int64ToStr(OperationProgress->GetTransferredSize())));
   }
 }
 
@@ -4255,8 +4255,8 @@ void TTerminal::RecycleFile(UnicodeString AFileName,
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
       UnicodeString dt = FORMAT(L"%04d%02d%02d-%02d%02d%02d", Y, M, D, H, N, S);
-      // Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()).c_str());
-      Params.FileMask = FORMAT(L"*-%s.*", dt.c_str());
+      // Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()));
+      Params.FileMask = FORMAT(L"*-%s.*", dt);
     }
 #endif
     TerminalMoveFile(FileName, AFile, &Params);
@@ -4523,7 +4523,7 @@ void TTerminal::ChangeFileProperties(UnicodeString AFileName,
       UnicodeString dt = FORMAT("%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
       LogEvent(FORMAT(" - modification: \"%s\"",
 //       FormatDateTime(L"dddddd tt",
-//         ::UnixToDateTime(RProperties->Modification, GetSessionData()->GetDSTMode())).c_str()));
+//         ::UnixToDateTime(RProperties->Modification, GetSessionData()->GetDSTMode()))));
          dt));
     }
     if (RProperties->Valid.Contains(vpLastAccess))
@@ -6336,9 +6336,9 @@ void TTerminal::DoSynchronizeCollectFile(UnicodeString /*AFileName*/,
               LogEvent(FORMAT("Remote file %s is modified comparing to local file %s",
                  FormatFileDetailsForLog(FullRemoteFileName,
                  AFile->GetModification(),
-                 AFile->GetSize()).c_str(),
+                 AFile->GetSize()),
                  FormatFileDetailsForLog(UnicodeString(LocalData->Info.Directory) + UnicodeString(LocalData->Info.FileName),
-                   LocalData->Info.Modification, LocalData->Info.Size).c_str()));
+                   LocalData->Info.Modification, LocalData->Info.Size)));
             }
           }
           else if (FLAGCLEAR(Data->Params, spNoRecurse))
@@ -7046,7 +7046,7 @@ void TTerminal::LogParallelTransfer(TParallelOperation * ParallelOperation)
 {
   LogEvent(
     FORMAT(L"Adding a parallel transfer to the transfer started on the connection \"%s\"",
-    ParallelOperation->GetMainName().c_str()));
+    ParallelOperation->GetMainName()));
 }
 
 void TTerminal::LogTotalTransferDetails(
@@ -7059,7 +7059,7 @@ void TTerminal::LogTotalTransferDetails(
     UnicodeString S =
       FORMAT(
         L"Copying %d files/directories to %s directory \"%s\"",
-        OperationProgress->GetCount(), TargetSide.c_str(), TargetDir.c_str());
+        OperationProgress->GetCount(), TargetSide, TargetDir);
     if (Parallel && DebugAlwaysTrue(Files != nullptr))
     {
       intptr_t Count = 0;
@@ -7072,7 +7072,7 @@ void TTerminal::LogTotalTransferDetails(
     }
     if (OperationProgress->GetTotalSizeSet())
     {
-      S += FORMAT(L" - total size: %s", FormatSize(OperationProgress->GetTotalSize()).c_str());
+      S += FORMAT(L" - total size: %s", FormatSize(OperationProgress->GetTotalSize()));
     }
     LogEvent(S);
     LogEvent(CopyParam->GetLogStr());

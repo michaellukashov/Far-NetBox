@@ -427,7 +427,7 @@ void ExecuteNewInstance(UnicodeString Param)
   UnicodeString Arg = Param;
   if (!Arg.IsEmpty())
   {
-    Arg = FORMAT(L"\"%s\" %s", Arg.c_str(), TProgramParams::FormatSwitch(NEWINSTANCE_SWICH).c_str());
+    Arg = FORMAT(L"\"%s\" %s", Arg, TProgramParams::FormatSwitch(NEWINSTANCE_SWICH));
   }
 
   ExecuteShellChecked(Application->ExeName, Arg);
@@ -567,7 +567,7 @@ IShellLink * CreateDesktopSessionShortCut(
 
   return
     CreateDesktopShortCut(ValidLocalFileName(Name), Application->ExeName,
-      FORMAT(L"\"%s\"%s%s", EncodeUrlString(SessionName).c_str(), (AdditionalParams.IsEmpty() ? L"" : L" ").c_str(), AdditionalParams.c_str()),
+      FORMAT(L"\"%s\"%s%s", EncodeUrlString(SessionName), (AdditionalParams.IsEmpty() ? L"" : L" "), AdditionalParams),
       InfoTip, SpecialFolder, IconIndex, Return);
 }
 
@@ -757,19 +757,19 @@ static bool GetResource(
     Size = SizeofResource(HInstance, Resource);
     if (!Size)
     {
-      throw Exception(FORMAT(L"Cannot get size of resource %s", ResName.c_str()));
+      throw Exception(FORMAT(L"Cannot get size of resource %s", ResName));
     }
 
     Content = LoadResource(HInstance, Resource);
     if (!Content)
     {
-      throw Exception(FORMAT(L"Cannot read resource %s", ResName.c_str()));
+      throw Exception(FORMAT(L"Cannot read resource %s", ResName));
     }
 
     Content = LockResource(Content);
     if (!Content)
     {
-      throw Exception(FORMAT(L"Cannot lock resource %s", ResName.c_str()));
+      throw Exception(FORMAT(L"Cannot lock resource %s", ResName));
     }
   }
 
@@ -788,11 +788,11 @@ bool DumpResourceToFile(const UnicodeString ResName,
     FILE * f = _wfopen(ApiPath(FileName).c_str(), L"wb");
     if (!f)
     {
-      throw Exception(FORMAT(L"Cannot create file %s", FileName.c_str()));
+      throw Exception(FORMAT(L"Cannot create file %s", FileName));
     }
     if (fwrite(Content, 1, Size, f) != Size)
     {
-      throw Exception(FORMAT(L"Cannot write to file %s", FileName.c_str()));
+      throw Exception(FORMAT(L"Cannot write to file %s", FileName));
     }
     fclose(f);
   }

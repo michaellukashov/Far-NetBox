@@ -715,7 +715,7 @@ UnicodeString TSessionLog::LogPartFileName(UnicodeString BaseName, intptr_t Inde
   UnicodeString Result;
   if (Index >= 1)
   {
-    Result = FORMAT(L"%s.%d", BaseName.c_str(), Index);
+    Result = FORMAT(L"%s.%d", BaseName, Index);
   }
   else
   {
@@ -995,7 +995,7 @@ UnicodeString EnumName(T Value, UnicodeString Names)
 }
 
 #define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this));
-#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, ##__VA_ARGS__), nb::bind(&TSessionLog::DoAddToSelf, this));
+#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), nb::bind(&TSessionLog::DoAddToSelf, this));
 
 void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
@@ -1044,7 +1044,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 #endif // #if 0
     if (FConfiguration->GetLogMaxSize() > 0)
     {
-      LogStr += FORMAT(L", Rotating after: %s", SizeToStr(FConfiguration->GetLogMaxSize()).c_str());
+      LogStr += FORMAT(L", Rotating after: %s", SizeToStr(FConfiguration->GetLogMaxSize()));
       if (FConfiguration->GetLogMaxCount() > 0)
       {
         LogStr += FORMAT(L", Keeping at most %d logs", FConfiguration->GetLogMaxCount());
@@ -1265,7 +1265,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     UnicodeString TimeInfo;
     if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
     {
-      AddToList(TimeInfo, FORMAT(L"DST mode: %s", EnumName(static_cast<int>(Data->GetDSTMode()), DSTModeNames).c_str()), L";");
+      AddToList(TimeInfo, FORMAT(L"DST mode: %s", EnumName(static_cast<int>(Data->GetDSTMode()), DSTModeNames)), L";");
     }
     if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
     {

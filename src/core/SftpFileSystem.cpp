@@ -3231,7 +3231,7 @@ void TSFTPFileSystem::DoStartup()
             L"Server support information (%s):\n"
             L"  Attribute mask: %x, Attribute bits: %x, Open flags: %x\n"
             L"  Access mask: %x, Open block vector: %x, Block vector: %x, Max read size: %d\n",
-            ExtensionName.c_str(),
+            ExtensionName,
             int(FSupport->AttributeMask),
             int(FSupport->AttributeBits),
             int(FSupport->OpenFlags),
@@ -6338,7 +6338,7 @@ void TSFTPFileSystem::SFTPSink(UnicodeString AFileName,
                 FTerminal->LogEvent(FORMAT(
                   L"Received incomplete data packet before end of file, "
                   L"offset: %s, size: %d, requested: %d",
-                  ::Int64ToStr(OperationProgress->GetTransferredSize()).c_str(), static_cast<int>(DataLen),
+                  ::Int64ToStr(OperationProgress->GetTransferredSize()), static_cast<int>(DataLen),
                   static_cast<int>(BlockSize)));
                 FTerminal->TerminalError(nullptr, LoadStr(SFTP_INCOMPLETE_BEFORE_EOF));
               }

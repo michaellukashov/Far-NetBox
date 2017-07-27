@@ -1513,7 +1513,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
   }
   catch (Exception & E)
   {
-    Error = FORMAT(L"%s\n(%s)", E.Message.c_str(), KnownHostsFile.c_str());
+    Error = FORMAT(L"%s\n(%s)", E.Message, KnownHostsFile);
   }
 
   return ImportSessionList.release();

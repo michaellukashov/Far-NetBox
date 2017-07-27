@@ -4819,7 +4819,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
               UnicodeString NameStr = HostNameStr;
               if (PortNumber >= 0)
               {
-                NameStr = FORMAT(L"%s:%d", NameStr.c_str(), static_cast<int>(PortNumber));
+                NameStr = FORMAT(L"%s:%d", NameStr, static_cast<int>(PortNumber));
               }
 
               std::unique_ptr<TSessionData> SessionDataOwner;
@@ -4856,9 +4856,9 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
                 }
                 char * Fingerprint = Algorithm->fmtkey(Key);
                 UnicodeString KeyKey =
-                  FORMAT(L"%s@%d:%s", Algorithm->keytype, SessionData->GetPortNumber(), HostNameStr.c_str());
+                  FORMAT(L"%s@%d:%s", Algorithm->keytype, SessionData->GetPortNumber(), HostNameStr);
                 UnicodeString HostKey =
-                  FORMAT(L"%s:%s=%s", Algorithm->name, KeyKey.c_str(), Fingerprint);
+                  FORMAT(L"%s:%s=%s", Algorithm->name, KeyKey, Fingerprint);
                 sfree(Fingerprint);
                 UnicodeString HostKeyList = SessionData->GetHostKey();
                 AddToList(HostKeyList, HostKey, L";");
@@ -4907,7 +4907,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
     UnicodeString Message = LoadStr(KNOWN_HOSTS_NO_SITES);
     if (!FirstError.IsEmpty())
     {
-      Message = FORMAT(L"%s\n(%s)", Message.c_str(), FirstError.c_str());
+      Message = FORMAT(L"%s\n(%s)", Message, FirstError);
     }
 
     throw Exception(Message);

@@ -883,5 +883,5 @@ UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
   }
   UnicodeString TimeStr = FormatDateTimeSpan(GetConfiguration()->TimeFormat(), Time);
   UnicodeString CPSStr = FormatSize(CPS());
-  return FORMAT(L"Transferred: %s, %s: %s, CPS: %s/s", Transferred.c_str(), TimeLabel.c_str(), TimeStr.c_str(), CPSStr.c_str());
+  return FORMAT(L"Transferred: %s, %s: %s, CPS: %s/s", Transferred, TimeLabel, TimeStr, CPSStr);
 }
