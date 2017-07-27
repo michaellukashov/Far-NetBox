@@ -2022,7 +2022,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
               // TVarRec don't understand 'uint32_t' -> we use sprintf()
               Buf = FORMAT(L"T%lu 0 %lu 0", static_cast<uint32_t>(MTime),
                 static_cast<uint32_t>(ATime));
-              FSecureShell->SendLine(Buf.c_str());
+              FSecureShell->SendLine(Buf);
               SCPResponse();
             }
 
@@ -2034,7 +2034,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
               Rights.GetOctal(),
               sz,
               DestFileName);
-            FSecureShell->SendLine(Buf.c_str());
+            FSecureShell->SendLine(Buf);
             SCPResponse();
             // Indicate we started transferring file, we need to finish it
             // If not, it's fatal error
