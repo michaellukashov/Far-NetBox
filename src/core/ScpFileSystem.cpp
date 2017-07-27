@@ -2041,7 +2041,7 @@ void TSCPFileSystem::SCPSource(UnicodeString AFileName,
               Rights.GetOctal(),
               sz,
               DestFileName);
-            FSecureShell->SendLine(Buf.c_str());
+            FSecureShell->SendLine(Buf);
             SCPResponse();
             // Indicate we started transferring file, we need to finish it
             // If not, it's fatal error
