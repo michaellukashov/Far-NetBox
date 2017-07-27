@@ -690,15 +690,17 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, UnicodeString ALine)
     if (FFile != nullptr)
     {
       UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
-      UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + TrimRight(ALine)) + "\n";
-      /*for (intptr_t Index = 1; Index <= UtfLine.Length(); Index++)
+      UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + TrimRight(ALine)) + "\r\n";
+#if 0
+      for (intptr_t Index = 1; Index <= UtfLine.Length(); Index++)
       {
         if ((UtfLine[Index] == '\n') &&
             (UtfLine[Index - 1] != '\r'))
         {
           UtfLine.Insert(L'\r', Index);
         }
-      }*/
+      }
+#endif // #if 0
       intptr_t ToWrite = UtfLine.Length();
       CheckSize(ToWrite);
       FCurrentFileSize += fwrite(UtfLine.c_str(), 1, ToWrite, static_cast<FILE *>(FFile));
