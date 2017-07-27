@@ -900,7 +900,7 @@ __fastcall TCustomCommandPromptsDialog::TCustomCommandPromptsDialog(
 {
 
   FCustomCommandName = CustomCommandName;
-  Caption = FMTLOAD(CUSTOM_COMMANDS_PARAMS_TITLE, (FCustomCommandName));
+  Caption = FMTLOAD(CUSTOM_COMMANDS_PARAMS_TITLE, FCustomCommandName);
 
   FPrompts = Prompts;
   DebugAssert(FPrompts.size() == Defaults.size());

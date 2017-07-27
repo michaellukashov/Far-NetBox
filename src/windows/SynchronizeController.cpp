@@ -126,7 +126,7 @@ void TSynchronizeController::SynchronizeChange(
         LocalDirectory.Length() - RootLocalDirectory.Length()));
 
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
-      ::ExcludeTrailingBackslash(LocalDirectory).c_str()));
+      ::ExcludeTrailingBackslash(LocalDirectory)));
 
     if (FOnSynchronize != nullptr)
     {

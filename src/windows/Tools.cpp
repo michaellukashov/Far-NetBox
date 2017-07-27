@@ -317,7 +317,7 @@ static void ExecuteProcessAndReadOutput(const
     if (!CreatePipe(&PipeRead, &PipeWrite, &SecurityAttributes, 0) ||
         !SetHandleInformation(PipeRead, HANDLE_FLAG_INHERIT, 0))
     {
-      throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (Command)));
+      throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Command));
     }
 
     PROCESS_INFORMATION ProcessInformation;
@@ -337,7 +337,7 @@ static void ExecuteProcessAndReadOutput(const
 
         if (!CreateProcess(NULL, Command.c_str(), NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInformation))
         {
-          throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (Command)));
+          throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Command));
         }
       }
       __finally
@@ -542,7 +542,7 @@ IShellLink * CreateDesktopSessionShortCut(
   {
     InfoTip = FMTLOAD(
       (IsFolder ? SHORTCUT_INFO_TIP_FOLDER : SHORTCUT_INFO_TIP_WORKSPACE),
-      (SessionName));
+      SessionName);
 
     if (Name.IsEmpty())
     {
@@ -556,7 +556,7 @@ IShellLink * CreateDesktopSessionShortCut(
     TSessionData * SessionData =
       StoredSessions->ParseUrl(EncodeUrlString(SessionName), NULL, DefaultsOnly);
     InfoTip =
-      FMTLOAD(SHORTCUT_INFO_TIP, (SessionName, SessionData->InfoTip));
+      FMTLOAD(SHORTCUT_INFO_TIP, SessionName, SessionData->InfoTip);
     if (Name.IsEmpty())
     {
       // no slashes in filename
@@ -662,7 +662,7 @@ void OpenFolderInExplorer(UnicodeString Path)
   if ((int)ShellExecute(Application->Handle, L"explore",
       (wchar_t*)Path.data(), NULL, NULL, SW_SHOWNORMAL) <= 32)
   {
-    throw Exception(FMTLOAD(EXPLORE_LOCAL_DIR_ERROR, (Path)));
+    throw Exception(FMTLOAD(EXPLORE_LOCAL_DIR_ERROR, Path));
   }
 }
 
@@ -678,7 +678,7 @@ void ShowHelp(UnicodeString AHelpKeyword)
   UnicodeString HelpKeyword = AHelpKeyword;
   const wchar_t FragmentSeparator = L'#';
   UnicodeString HelpPath = CutToChar(HelpKeyword, FragmentSeparator, false);
-  UnicodeString HelpUrl = FMTLOAD(DOCUMENTATION_KEYWORD_URL2, (HelpPath, Configuration->ProductVersion, GUIConfiguration->AppliedLocaleHex));
+  UnicodeString HelpUrl = FMTLOAD(DOCUMENTATION_KEYWORD_URL2, HelpPath, Configuration->ProductVersion, GUIConfiguration->AppliedLocaleHex);
   AddToList(HelpUrl, HelpKeyword, FragmentSeparator);
   OpenBrowser(HelpUrl);
 }
@@ -1215,7 +1215,7 @@ static void DoVerifyKey(
           Message =
             MainInstructions(
               FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
-                AFileName.c_str(), (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2")));
+                AFileName, Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"));
         }
         break;
 

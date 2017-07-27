@@ -479,7 +479,7 @@ bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
     if (IsAuthenticationPrompt(Kind))
     {
       Instructions =
-        FMTLOAD(TUNNEL_INSTRUCTION2, Data->GetHostName().c_str()) +
+        FMTLOAD(TUNNEL_INSTRUCTION2, Data->GetHostName()) +
         (AInstructions.IsEmpty() ? L"" : L"\n") +
         AInstructions;
     }
@@ -3171,15 +3171,15 @@ uintptr_t TTerminal::ConfirmFileOverwrite(
         {
           // Side refers to destination side here
           Message = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE2 :
-            REMOTE_FILE_OVERWRITE2), ATargetFileName.c_str(), ATargetFileName.c_str());
+            REMOTE_FILE_OVERWRITE2), ATargetFileName, ATargetFileName);
         }
         if (FileParams != nullptr)
         {
-          Message = FMTLOAD(FILE_OVERWRITE_DETAILS, Message.c_str(),
-            ::Int64ToStr(FileParams->SourceSize).c_str(),
-            base::UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision).c_str(),
-            ::Int64ToStr(FileParams->DestSize).c_str(),
-            base::UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision).c_str());
+          Message = FMTLOAD(FILE_OVERWRITE_DETAILS, Message,
+            ::Int64ToStr(FileParams->SourceSize),
+            base::UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision),
+            ::Int64ToStr(FileParams->DestSize),
+            base::UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision));
         }
         if (DebugAlwaysTrue(QueryParams->HelpKeyword.IsEmpty()))
         {
@@ -3399,7 +3399,7 @@ void TTerminal::EnsureNonExistence(UnicodeString AFileName)
       {
         throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_DIR_EXISTS, AFileName));
       }
-      throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_FILE_EXISTS, AFileName.c_str()));
+      throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_FILE_EXISTS, AFileName));
     }
   }
 }

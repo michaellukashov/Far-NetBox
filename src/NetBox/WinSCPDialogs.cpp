@@ -3993,7 +3993,7 @@ bool TSessionDialog::VerifyKey(UnicodeString AFileName, bool TypeOnly)
               (SshProt1onlyButton->GetChecked() || SshProt1Button->GetChecked()))
           {
             Message = FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
-              AFileName.c_str(), (KeyType == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"));
+              AFileName, (KeyType == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"));
           }
         }
         break;

@@ -269,7 +269,7 @@ void TCopyParamType::DoGetInfoStr(
       {
         if (FLAGCLEAR(Attrs, ExceptDirs))
         {
-          Str = FMTLOAD(COPY_INFO_PRESERVE_TIME_DIRS, Str.c_str());
+          Str = FMTLOAD(COPY_INFO_PRESERVE_TIME_DIRS, Str);
           AddPreserveTime = true;
         }
       }
@@ -416,7 +416,7 @@ void TCopyParamType::DoGetInfoStr(
   if (GetCPSLimit() > 0)
   {
     intptr_t LimitKB = intptr_t(GetCPSLimit() / 1024);
-    ADD(FMTLOAD(COPY_INFO_CPS_LIMIT2, (LimitKB)), cpaIncludeMaskOnly);
+    ADD(FMTLOAD(COPY_INFO_CPS_LIMIT2, LimitKB), cpaIncludeMaskOnly);
 
 #if 0
     ScriptArgs += RtfSwitch(SPEED_SWITCH, Link, LimitKB);

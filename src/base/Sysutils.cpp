@@ -130,7 +130,7 @@ void RaiseLastOSError(DWORD LastError)
   UnicodeString ErrorMsg;
   if (LastError != 0)
   {
-    ErrorMsg = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError).c_str());
+    ErrorMsg = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError));
   }
   else
   {

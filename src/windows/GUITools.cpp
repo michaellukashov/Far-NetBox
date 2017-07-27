@@ -264,7 +264,7 @@ void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params, 
 {
   if (!DoExecuteShell(APath, Params, ChangeWorkingDirectory, nullptr))
   {
-    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, APath.c_str()));
+    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, APath));
   }
 }
 
@@ -290,7 +290,7 @@ void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command,
   bool Result = DoExecuteShell(Program, Params, false, &ProcessHandle);
   if (!Result)
   {
-    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
+    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Program));
   }
   if (ProcessMessages != nullptr)
   {
