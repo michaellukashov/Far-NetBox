@@ -1368,9 +1368,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
         FTerminal->RollbackAction(Action, OperationProgress, &E);
 
         // Error formatting expanded from inline to avoid strange exceptions
-        UnicodeString Error =
-          FMTLOAD(CHECKSUM_ERROR,
-            (File != nullptr ? File->GetFullFileName().c_str() : L""));
+        UnicodeString Error = FMTLOAD(CHECKSUM_ERROR, File->GetFullFileName());
         FTerminal->CommandError(&E, Error);
         // Abort loop.
         TODO("retries? resume?");
