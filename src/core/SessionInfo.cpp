@@ -708,6 +708,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, UnicodeString ALine)
     catch (...)
     {
       // TODO: log error
+      DEBUG_PRINTF("TSessionLog::DoAddToSelf: error");
     }
   }
 }

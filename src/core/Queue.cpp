@@ -1354,8 +1354,8 @@ void TTerminalItem::InitTerminalItem(intptr_t Index)
   {
 #if 0
     delete FTerminal;
-    throw;
 #endif
+    throw;
   }
 
   Start();

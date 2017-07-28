@@ -4454,6 +4454,7 @@ void TRightsContainer::UpdateControls()
       }
       catch (...)
       {
+        DEBUG_PRINTF("TRightsContainer::UpdateControls: error during OctalEditExit");
       }
     }
   }
@@ -6637,6 +6638,7 @@ void TApplyCommandDialog::Change()
     }
     catch (...)
     {
+      DEBUG_PRINTF("TApplyCommandDialog::Change: error");
     }
 
     RecursiveCheck->SetEnabled(AllowRecursive);

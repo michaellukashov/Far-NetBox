@@ -2212,6 +2212,7 @@ bool AdjustClockForDSTEnabled()
   }
   catch (...)
   {
+    DEBUG_PRINTF("AdjustClockForDSTEnabled: error");
   }
   return !DynamicDaylightTimeDisabled;
 }
@@ -2841,6 +2842,7 @@ UnicodeString WindowsProductName()
   }
   catch (...)
   {
+    DEBUG_PRINTF("WindowsProductName: error");
   }
   return Result;
 }
@@ -2908,7 +2910,8 @@ UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateT
   }
   catch (...)
   {
-    //TODO: log error
+    //log error
+    DEBUG_PRINTF("FormatDateTimeSpan: error, params: %s, %f", TimeFormat, DateTime.GetValue());
   }
   return Result;
 }

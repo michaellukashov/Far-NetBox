@@ -1144,6 +1144,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(TStrings * AFileList, TCopyPara
       }
       catch (...)
       {
+        DEBUG_PRINTF("TWinSCPFileSystem::TemporarilyDownloadFiles: error during RecursiveDeleteFile");
       }
       throw;
     }

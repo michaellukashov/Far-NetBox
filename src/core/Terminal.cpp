@@ -5735,6 +5735,7 @@ void TTerminal::CalculateLocalFileSize(UnicodeString AFileName,
     catch (...)
     {
       // ignore
+      DEBUG_PRINTF("TTerminal::CalculateLocalFileSize: error occured");
     }
   }
 }
