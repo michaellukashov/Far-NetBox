@@ -1,14 +1,22 @@
 #pragma once
 
-//#include <pthread.h>
 #include <apr_portable.h>
+
+#ifdef TINYLOG_EXPORT
+#define TINYLOG_API __declspec(dllexport)
+#elif defined(TINYLOG_IMPORT)
+#define TINYLOG_API __declspec(dllimport)
+#endif
+#ifndef TINYLOG_API
+#define TINYLOG_API
+#endif
 
 #include "LogStream.h"
 #include "Utils.h"
 
 namespace tinylog {
 
-class TinyLog
+class TINYLOG_API TinyLog
 {
 public:
   static TinyLog& GetInstance()
