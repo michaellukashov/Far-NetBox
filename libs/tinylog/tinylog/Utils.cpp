@@ -1,48 +1,67 @@
-//
-// Created by Administrator on 2016/12/15.
-//
-
 #include "Utils.h"
 
-std::string Utils::GetCurrentTime()
+namespace tinylog {
+
+std::string Utils::CurrentTime()
 {
-    struct timeval tv;
-    struct tm *time_ptr;
+  apr_time_t now = apr_time_now();
+  apr_time_exp_t result;
+  apr_time_exp_t * time_ptr = &result;
 
-    gettimeofday(&tv, NULL);
-
-    time_ptr = localtime(&tv.tv_sec);
+  if (apr_time_exp_lt(time_ptr, now) == APR_SUCCESS)
+  {
     char buff[128];
 
     sprintf(buff, "%d-%02d-%02d %02d:%02d:%02d.%.03ld",
-            time_ptr->tm_year + 1900,
-            time_ptr->tm_mon + 1,
-            time_ptr->tm_mday,
-            time_ptr->tm_hour,
-            time_ptr->tm_min,
-            time_ptr->tm_sec,
-            (long)tv.tv_usec / 1000);
+    time_ptr->tm_year + 1900,
+    time_ptr->tm_mon + 1,
+    time_ptr->tm_mday,
+    time_ptr->tm_hour,
+    time_ptr->tm_min,
+    time_ptr->tm_sec,
+    (long)time_ptr->tm_usec / 1000);
 
     return std::string(buff);
+  }
+  return std::string();
 }
 
-void Utils::GetCurrentTime(std::string &ref_time)
+void Utils::CurrentTime(std::string &ref_time)
 {
-    struct timeval tv;
-    struct tm *pt_tm;
+//  struct timeval tv;
+//  struct tm *pt_tm;
 
-    gettimeofday(&tv, NULL);
-    pt_tm = localtime(&tv.tv_sec);
+//  gettimeofday(&tv, NULL);
+//  pt_tm = localtime(&tv.tv_sec);
+  apr_time_t now = apr_time_now();
+  apr_time_exp_t result;
+  apr_time_exp_t * time_ptr = &result;
 
+  if (apr_time_exp_lt(time_ptr, now) == APR_SUCCESS)
+  {
     char buff[128];
-    sprintf(buff, "%04d/%02d/%02d %2d:%2d:%2d.%3ld", 1900 + pt_tm->tm_year, pt_tm->tm_mon, pt_tm->tm_mday,
-            pt_tm->tm_hour, pt_tm->tm_min, pt_tm->tm_sec, tv.tv_usec);
+    sprintf(buff, "%04d/%02d/%02d %2d:%2d:%2d.%3ld",
+      1900 + time_ptr->tm_year, time_ptr->tm_mon, time_ptr->tm_mday,
+      time_ptr->tm_hour, time_ptr->tm_min, time_ptr->tm_sec, time_ptr->tm_usec);
 
     ref_time = buff;
+  }
 }
 
-void Utils::GetCurrentTime(struct timeval *tv, struct tm **tm)
+void Utils::CurrentTime(apr_time_exp_t *aprtime, apr_os_exp_time_t ** ostime)
 {
-    gettimeofday(tv, NULL);
-    *tm = localtime(&tv->tv_sec);
+//  gettimeofday(tv, NULL);
+//  *tm = localtime(&tv->tv_sec);
+
+  apr_time_t now = apr_time_now();
+//  apr_time_exp_t result;
+//  apr_time_exp_t * time_ptr = &result;
+
+  if (apr_time_exp_lt(aprtime, now) == APR_SUCCESS)
+  {
+    // *tm = localtime(time_ptr->tm_sec);
+    apr_os_exp_time_get(ostime, aprtime);
+  }
 }
+
+} // namespace tinylog

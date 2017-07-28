@@ -1,31 +1,33 @@
-//
-// Created by Administrator on 2016/12/15.
-//
-
-#ifndef TINYLOG_UTILS_H
-#define TINYLOG_UTILS_H
+#pragma once
 
 #include <iostream>
-#include <sys/time.h>
+#include <stdint.h>
+//#include <sys/time.h>
+#include <apr_portable.h>
+#include <apr_time.h>
 #include <string>
 
-class Utils {
+namespace tinylog {
+
+class Utils
+{
 public:
-    enum LogLevel {
-        TRACE   = 0,
-        DEBUG   = 1,
-        INFO    = 2,
-        WARNING = 3,
-        ERROR   = 4,
-        FATAL   = 5,
-    };
+  typedef uint32_t LogLevel;
 
-    static std::string GetCurrentTime();
+  static const LogLevel
+    LL_TRACE   = 0,
+    LL_DEBUG   = 1,
+    LL_INFO    = 2,
+    LL_WARNING = 3,
+    LL_ERROR   = 4,
+    LL_FATAL   = 5;
 
-    static void GetCurrentTime(std::string &ref_time);
+  static std::string CurrentTime();
 
-    static void GetCurrentTime(struct timeval *tv, struct tm **tm);
+  static void CurrentTime(std::string &ref_time);
+
+//  static void CurrentTime(timeval *tv, tm **tm);
+  static void CurrentTime(apr_time_exp_t *aprtime, apr_os_exp_time_t ** ostime);
 };
 
-
-#endif //TINYLOG_UTILS_H
+} // namespace tinylog
