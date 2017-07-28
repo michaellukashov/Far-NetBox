@@ -36,7 +36,7 @@ int32_t Buffer::TryAppend(apr_os_exp_time_t *pt_time, long u_sec, const char *pt
      * line number: at most 5 byte
      * log level: 9 byte
      */
-  std::string::size_type append_len = 24 + strlen(pt_file) + 5 + strlen(pt_func) + 9 + strlen(pt_log);
+  apr_ssize_t append_len = 24 + strlen(pt_file) + 5 + strlen(pt_func) + 9 + strlen(pt_log);
 
   if (append_len + l_size_ > l_capacity_)
   {

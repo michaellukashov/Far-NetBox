@@ -15,7 +15,7 @@ extern bool g_already_swap;
 
 LogStream::LogStream()
 {
-  log_file_fd_ = open(LOG_PATH, _O_WRONLY | _O_CREAT); // , _S_IRUSR | _S_IWUSR);
+  log_file_fd_ = open(LOG_PATH, _O_WRONLY | _O_CREAT);
 
   pt_front_buff_ = new Buffer(BUFFER_SIZE);
   pt_back_buff_  = new Buffer(BUFFER_SIZE);
@@ -78,8 +78,6 @@ LogStream& LogStream::operator<<(const std::string &ref_log)
 
 void LogStream::UpdateBaseTime()
 {
-//  struct timeval tv_now;
-//  gettimeofday(&tv_now, NULL);
   apr_time_exp_t aprexptime;
   apr_time_t now = apr_time_now();
   apr_time_exp_lt(&aprexptime, now);

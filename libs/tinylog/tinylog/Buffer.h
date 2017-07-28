@@ -10,7 +10,6 @@ namespace tinylog {
 class Buffer {
 public:
     Buffer(uint32_t l_capacity);
-
     ~Buffer();
 
     int32_t TryAppend(apr_os_exp_time_t *pt_time, long u_sec, const char *pt_file, int i_line,

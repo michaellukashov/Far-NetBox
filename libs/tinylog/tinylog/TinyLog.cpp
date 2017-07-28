@@ -1,13 +1,7 @@
-//
-// Created by ouyangliduo on 2016/12/13.
-//
-
-//#include <time.h>
 #include <assert.h>
 #include <apr_portable.h>
 #include <apr_arch_thread_cond.h>
 #include <apr_arch_thread_mutex.h>
-//#include <apr_thread_cond.h>
 
 #include "TinyLog.h"
 #include "Config.h"
@@ -31,16 +25,10 @@ TinyLog::TinyLog()
   pt_logstream_ = new LogStream();
   e_log_level_ = Utils::LL_INFO;
   b_run_ = true;
-//  pthread_create(&tid_, NULL, ThreadFunc, this);
-//  apr_thread_t **new_thread = NULL;
   apr_threadattr_t *attr = NULL;
-//  apr_thread_start_t func;
-  void *data = NULL;
+  void *data = this;
   apr_pool_t *cont = NULL;
-  if (apr_thread_create(&thrd_, attr, ThreadFunc, data, cont) != APR_SUCCESS)
-  {
-    assert(false);
-  }
+  apr_thread_create(&thrd_, attr, ThreadFunc, data, cont);
 }
 
 TinyLog::~TinyLog()

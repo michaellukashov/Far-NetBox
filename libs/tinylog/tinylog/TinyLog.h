@@ -18,15 +18,11 @@ public:
   }
 
   TinyLog();
-
   ~TinyLog();
 
   int32_t MainLoop();
-
   void SetLogLevel(Utils::LogLevel e_log_level);
-
   Utils::LogLevel GetLogLevel() const;
-
   LogStream& GetLogStream(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level);
 
 private:
@@ -34,7 +30,6 @@ private:
   void operator=(TinyLog const &);
 
   LogStream *pt_logstream_;
-//  apr_os_thread_t tid_;
   apr_thread_t * thrd_;
   Utils::LogLevel e_log_level_;
   bool b_run_;

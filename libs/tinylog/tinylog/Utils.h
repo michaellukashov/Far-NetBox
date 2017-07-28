@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <stdint.h>
-//#include <sys/time.h>
 #include <apr_portable.h>
 #include <apr_time.h>
 #include <string>
@@ -23,11 +22,8 @@ public:
     LL_FATAL   = 5;
 
   static std::string CurrentTime();
-
   static void CurrentTime(std::string &ref_time);
-
-//  static void CurrentTime(timeval *tv, tm **tm);
-  static void CurrentTime(apr_time_exp_t *aprtime, apr_os_exp_time_t ** ostime);
+  static void CurrentTime(apr_time_exp_t *aprexptime, apr_os_exp_time_t ** ostime);
 };
 
 } // namespace tinylog
