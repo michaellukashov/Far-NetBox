@@ -1305,13 +1305,13 @@ target_compile_options(rdestl PRIVATE
 #tinylog
 
 add_library(tinylog STATIC
-  ../../libs/tinylog/tinylog/Utils.cpp
   ../../libs/tinylog/tinylog/TinyLog.cpp
+  ../../libs/tinylog/tinylog/Utils.cpp
   ../../libs/tinylog/tinylog/LogStream.cpp
   ../../libs/tinylog/tinylog/Buffer.cpp
 
-  ../../libs/tinylog/tinylog/Utils.h
   ../../libs/tinylog/tinylog/TinyLog.h
+  ../../libs/tinylog/tinylog/Utils.h
   ../../libs/tinylog/tinylog/LogStream.h
   ../../libs/tinylog/tinylog/Config.h
   ../../libs/tinylog/tinylog/Buffer.h
