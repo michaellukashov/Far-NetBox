@@ -1317,7 +1317,14 @@ add_library(tinylog STATIC
   ../../libs/tinylog/tinylog/Buffer.h
 )
 
+target_include_directories(tinylog PRIVATE
+  ../../libs/apr/include
+  ../../libs/apr/include/arch/win32
+
+)
+
 target_compile_options(tinylog PRIVATE
+  -DWIN32
   -DTINYLOG_EXPORT
   ${NETBOX_UNICODE_FLAGS}
 )
