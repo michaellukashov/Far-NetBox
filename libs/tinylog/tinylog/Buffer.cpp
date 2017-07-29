@@ -16,8 +16,8 @@ Buffer::Buffer(uint32_t l_capacity)
 
 Buffer::~Buffer()
 {
-  // TODO
-  delete pt_data_;
+  // TODO: custom allocator/deallocator
+  delete[] pt_data_;
 }
 
 /*
@@ -74,7 +74,7 @@ size_t Buffer::Capacity() const
 
 int32_t Buffer::Flush(int fd)
 {
-  size_t n_write = 0;
+  int n_write = 0;
   while ((n_write = _write(fd, pt_data_ + n_write, (uint32_t)(l_size_ - n_write))) != 0)
   {
     if ((n_write < 0) && (errno != EINTR))

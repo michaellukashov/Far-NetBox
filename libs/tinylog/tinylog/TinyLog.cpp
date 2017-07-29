@@ -18,7 +18,7 @@ bool g_already_swap = false;
 
 static DWORD WINAPI ThreadFunc(void *pt_arg)
 {
-  TinyLog *pt_tinylog = (TinyLog *)pt_arg;
+  TinyLog *pt_tinylog = static_cast<TinyLog *>(pt_arg);
   pt_tinylog->MainLoop();
 
   return 0;

@@ -23,6 +23,9 @@ public:
   void UpdateBaseTime();
 
 private:
+  LogStream(const LogStream &);
+  LogStream &operator=(const LogStream &);
+  
   Buffer *pt_front_buff_;
   Buffer *pt_back_buff_;
   int log_file_fd_;

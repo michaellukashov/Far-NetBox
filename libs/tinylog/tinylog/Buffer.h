@@ -10,7 +10,7 @@ namespace tinylog {
 class Buffer
 {
 public:
-    Buffer(uint32_t l_capacity);
+    explicit Buffer(uint32_t l_capacity);
     ~Buffer();
 
     int32_t TryAppend(struct tm *pt_time, long u_sec, const char *pt_file, int i_line,
@@ -22,6 +22,9 @@ public:
     int32_t Flush(int fd);
 
 private:
+    Buffer(const Buffer &);
+    Buffer &operator=(const Buffer &);
+
     char *pt_data_;
     size_t l_size_;
     size_t l_capacity_;
