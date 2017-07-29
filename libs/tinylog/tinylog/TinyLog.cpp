@@ -3,15 +3,6 @@
 
 namespace tinylog {
 
-//struct thread_cond_t
-//{
-//  HANDLE semaphore;
-//  CRITICAL_SECTION csection;
-//  unsigned long num_waiting;
-//  unsigned long num_wake;
-//  unsigned long generation;
-//};
-
 pthread_mutex_t g_mutex;
 pthread_cond_t g_cond;
 bool g_already_swap = false;

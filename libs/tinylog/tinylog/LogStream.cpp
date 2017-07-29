@@ -10,9 +10,13 @@ extern pthread_mutex_t g_mutex;
 extern pthread_cond_t g_cond;
 extern bool g_already_swap;
 
-LogStream::LogStream()
+LogStream::LogStream() :
+  file_(nullptr),
+  pt_file_(nullptr),
+  i_line_(0),
+  pt_func_(nullptr),
+  pt_tm_base_(nullptr)
 {
-  file_ = nullptr;
 
   pt_front_buff_ = new Buffer(BUFFER_SIZE);
   pt_back_buff_  = new Buffer(BUFFER_SIZE);

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <stdint.h>
-#include <string>
-
 #include "platform_win32.h"
 
 namespace tinylog {
