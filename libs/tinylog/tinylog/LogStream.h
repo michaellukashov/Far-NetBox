@@ -12,8 +12,10 @@ class LogStream
 public:
   friend class TinyLog;
 
-  explicit LogStream(pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap);
+  explicit LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap);
   ~LogStream();
+
+  intptr_t Write(const void *data, intptr_t ToWrite);
 
   void SwapBuffer();
   void WriteBuffer();
@@ -30,6 +32,8 @@ public:
 private:
   LogStream(const LogStream &);
   LogStream &operator=(const LogStream &);
+
+  intptr_t InternalWrite(const void *data, intptr_t ToWrite);
 
   Buffer *pt_front_buff_;
   Buffer *pt_back_buff_;

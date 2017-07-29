@@ -6,8 +6,8 @@
 
 namespace tinylog {
 
-LogStream::LogStream(pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap) :
-  file_(nullptr),
+LogStream::LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap) :
+  file_(file),
   pt_file_(nullptr),
   i_line_(0),
   pt_func_(nullptr),
@@ -35,6 +35,11 @@ LogStream::~LogStream()
   }
 }
 
+intptr_t LogStream::Write(const void *data, intptr_t ToWrite)
+{
+  return InternalWrite(data, ToWrite);
+}
+
 /*
  * Swap front buffer and back buffer.
  * This function should be locked.
@@ -58,19 +63,7 @@ void LogStream::WriteBuffer()
 
 LogStream &LogStream::operator<<(const char *pt_log)
 {
-  UpdateBaseTime();
-
-  pthread_mutex_lock(&mutex_);
-
-  if (pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tv_usec, pt_file_, i_line_, pt_func_, str_log_level_, pt_log) < 0)
-  {
-    SwapBuffer();
-    already_swap_ = true;
-    pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tv_usec, pt_file_, i_line_, pt_func_, str_log_level_, pt_log);
-  }
-
-  pthread_cond_signal(&cond_);
-  pthread_mutex_unlock(&mutex_);
+  InternalWrite(pt_log, strlen(pt_log));
 
   return *this;
 }
@@ -119,6 +112,25 @@ void LogStream::UpdateBaseTime()
   {
     tv_base_.tv_usec = tv.tv_usec;
   }
+}
+
+intptr_t LogStream::InternalWrite(const void *data, intptr_t ToWrite)
+{
+  intptr_t Result = ToWrite;
+  UpdateBaseTime();
+
+  pthread_mutex_lock(&mutex_);
+
+  if (pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tv_usec, pt_file_, i_line_, pt_func_, str_log_level_, data, ToWrite) < 0)
+  {
+    SwapBuffer();
+    already_swap_ = true;
+    pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tv_usec, pt_file_, i_line_, pt_func_, str_log_level_, data, ToWrite);
+  }
+
+  pthread_cond_signal(&cond_);
+  pthread_mutex_unlock(&mutex_);
+  return Result;
 }
 
 } // namespace tinylog
