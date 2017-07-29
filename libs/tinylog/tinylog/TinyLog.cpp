@@ -35,10 +35,10 @@ TinyLog::TinyLog()
   DWORD ThreadId;
 
   thrd_ = ::CreateThread(nullptr,
-    0,
-    static_cast<LPTHREAD_START_ROUTINE>(&ThreadFunc),
-    Parameter,
-    CREATE_SUSPENDED, &ThreadId);
+      0,
+      static_cast<LPTHREAD_START_ROUTINE>(&ThreadFunc),
+      Parameter,
+      CREATE_SUSPENDED, &ThreadId);
 
 }
 

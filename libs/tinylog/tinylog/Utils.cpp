@@ -37,7 +37,7 @@ void Utils::CurrentTime(std::string &ref_time)
 }
 #endif // #if 0
 
-void Utils::CurrentTime(struct timeval *tv, struct tm ** tm)
+void Utils::CurrentTime(struct timeval *tv, struct tm **tm)
 {
   time_t now = time(nullptr);
   tv->tv_sec = (long)now;

@@ -8,7 +8,7 @@ namespace tinylog {
 class TinyLog
 {
 public:
-  static TinyLog& GetInstance()
+  static TinyLog &GetInstance()
   {
     static TinyLog instance;
     return instance;
@@ -20,7 +20,7 @@ public:
   int32_t MainLoop();
   void SetLogLevel(Utils::LogLevel e_log_level);
   Utils::LogLevel GetLogLevel() const;
-  LogStream& GetLogStream(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level);
+  LogStream &GetLogStream(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level);
 
 private:
   TinyLog(TinyLog const &);

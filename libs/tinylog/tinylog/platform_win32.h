@@ -58,15 +58,15 @@ typedef uint64_t            off64_t;
 #define FMT64               "I64"
 #endif // #if 0
 
-static int pthread_create(pthread_t* th, pthread_attr_t* attr, void* (*func) (void*), void* ctx)
+static int pthread_create(pthread_t *th, pthread_attr_t *attr, void *(*func) (void *), void *ctx)
 {
-  th[0] = (pthread_t)_beginthreadex(0, 0, (unsigned(__stdcall *)(void*))func, ctx, 0, 0);
+  th[0] = (pthread_t)_beginthreadex(0, 0, (unsigned(__stdcall *)(void *))func, ctx, 0, 0);
   if (attr && attr[0])
     SetThreadAffinityMask(th[0], attr[0]);
   return 0;
 }
 
-static int pthread_join(pthread_t th, void** p)
+static int pthread_join(pthread_t th, void **p)
 {
   (void)p;
   WaitForSingleObject(th, INFINITE);
@@ -74,9 +74,9 @@ static int pthread_join(pthread_t th, void** p)
   return 0;
 }
 
-static void* atomic_exchange_acq_rel_ptr(void** p, void* xchg)
+static void *atomic_exchange_acq_rel_ptr(void **p, void *xchg)
 {
-  return (void*)_InterlockedExchange64((int64_t*)p, (int64_t)xchg);
+  return (void *)_InterlockedExchange64((int64_t *)p, (int64_t)xchg);
 }
 
 static int get_cpu_count()
@@ -86,7 +86,7 @@ static int get_cpu_count()
   return info.dwNumberOfProcessors;
 }
 
-static void* mmap(void* addr, size_t len, int prot, int flags, int fd, off_t off)
+static void *mmap(void *addr, size_t len, int prot, int flags, int fd, off_t off)
 {
   (void)prot;
   (void)flags;
@@ -96,7 +96,7 @@ static void* mmap(void* addr, size_t len, int prot, int flags, int fd, off_t off
   return VirtualAlloc(addr, len, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 }
 
-static int munmap(void* addr, size_t len)
+static int munmap(void *addr, size_t len)
 {
   (void)len;
   VirtualFree(addr, 0, MEM_RELEASE);
@@ -111,7 +111,7 @@ static int munmap(void* addr, size_t len)
 #define MAP_SHARED 1
 #define MAP_ANON 0
 
-static size_t pread64(int fd, void* buf, size_t nbytes, uint64_t offset)
+static size_t pread64(int fd, void *buf, size_t nbytes, uint64_t offset)
 {
   _lseeki64(fd, (int64_t)offset, SEEK_SET);
   return _read(fd, buf, (uint32_t)nbytes);
@@ -120,51 +120,51 @@ static size_t pread64(int fd, void* buf, size_t nbytes, uint64_t offset)
 #define pthread_spinlock_t CRITICAL_SECTION
 #define pthread_mutex_t CRITICAL_SECTION
 
-static int pthread_spin_init(pthread_spinlock_t* mtx, int pshared)
+static int pthread_spin_init(pthread_spinlock_t *mtx, int pshared)
 {
   (void)pshared;
   InitializeCriticalSection(mtx);
   return 0;
 }
 
-static int pthread_spin_destroy(pthread_spinlock_t* mtx)
+static int pthread_spin_destroy(pthread_spinlock_t *mtx)
 {
   DeleteCriticalSection(mtx);
   return 0;
 }
 
-static int pthread_spin_lock(pthread_spinlock_t* mtx)
+static int pthread_spin_lock(pthread_spinlock_t *mtx)
 {
   EnterCriticalSection(mtx);
   return 0;
 }
 
-static int pthread_spin_unlock(pthread_spinlock_t* mtx)
+static int pthread_spin_unlock(pthread_spinlock_t *mtx)
 {
   LeaveCriticalSection(mtx);
   return 0;
 }
 
-static int pthread_mutex_init(pthread_mutex_t* mtx, void* attr)
+static int pthread_mutex_init(pthread_mutex_t *mtx, void *attr)
 {
   (void)attr;
   InitializeCriticalSection(mtx);
   return 0;
 }
 
-static int pthread_mutex_destroy(pthread_mutex_t* mtx)
+static int pthread_mutex_destroy(pthread_mutex_t *mtx)
 {
   DeleteCriticalSection(mtx);
   return 0;
 }
 
-static int pthread_mutex_lock(pthread_mutex_t* mtx)
+static int pthread_mutex_lock(pthread_mutex_t *mtx)
 {
   EnterCriticalSection(mtx);
   return 0;
 }
 
-static int pthread_mutex_unlock(pthread_mutex_t* mtx)
+static int pthread_mutex_unlock(pthread_mutex_t *mtx)
 {
   LeaveCriticalSection(mtx);
   return 0;
@@ -174,26 +174,26 @@ static int pthread_mutex_unlock(pthread_mutex_t* mtx)
 
 typedef HANDLE sem_t;
 
-static int sem_init(sem_t* sem, int pshared, unsigned value)
+static int sem_init(sem_t *sem, int pshared, unsigned value)
 {
   (void)pshared;
   *sem = CreateSemaphoreW(0, value, 1 << 30, 0);
   return 0;
 }
 
-static int sem_destroy(sem_t* sem)
+static int sem_destroy(sem_t *sem)
 {
   CloseHandle(*sem);
   return 0;
 }
 
-static int sem_wait(sem_t* sem)
+static int sem_wait(sem_t *sem)
 {
   WaitForSingleObject(*sem, INFINITE);
   return 0;
 }
 
-static int sem_post(sem_t* sem)
+static int sem_post(sem_t *sem)
 {
   ReleaseSemaphore(*sem, 1, 0);
   return 0;
@@ -224,7 +224,7 @@ static int sem_post(sem_t* sem)
 typedef struct pthread_cond_t_
 {
   u_int waiters_count_;
-    // Count of the number of waiters.
+  // Count of the number of waiters.
 
   CRITICAL_SECTION waiters_count_lock_;
   // Serialize access to <waiters_count_>.
@@ -235,7 +235,8 @@ typedef struct pthread_cond_t_
   HANDLE waiters_done_;
   size_t was_broadcast_;
 
-  enum {
+  enum
+  {
     E_SIGNAL = 0,
     E_BROADCAST = 1,
     E_MAX_EVENTS = 2
@@ -251,45 +252,45 @@ typedef struct pthread_condattr_t_
 } pthread_condattr_t;
 
 inline int pthread_cond_init(pthread_cond_t *cv,
-                   const pthread_condattr_t *)
+  const pthread_condattr_t *)
 {
   // Create an auto-reset event.
   cv->events_[pthread_cond_t_::E_SIGNAL] = CreateEvent(NULL,  // no security
-                                     FALSE, // auto-reset event
-                                     FALSE, // non-signaled initially
-                                     NULL); // unnamed
+      FALSE, // auto-reset event
+      FALSE, // non-signaled initially
+      NULL); // unnamed
 
   // Create a manual-reset event.
   cv->events_[pthread_cond_t_::E_BROADCAST] = CreateEvent(NULL,  // no security
-                                        TRUE,  // manual-reset
-                                        FALSE, // non-signaled initially
-                                        NULL); // unnamed
+      TRUE,  // manual-reset
+      FALSE, // non-signaled initially
+      NULL); // unnamed
   cv->waiters_count_ = 0;
   cv->was_broadcast_ = 0;
   cv->sema_ = CreateSemaphoreW (NULL,       // no security
-                                0,          // initially 0
-                                0x7fffffff, // max count
-                                NULL);      // unnamed
+      0,          // initially 0
+      0x7fffffff, // max count
+      NULL);      // unnamed
   InitializeCriticalSection(&cv->waiters_count_lock_);
   cv->waiters_done_ = CreateEvent (NULL,  // no security
-                                   FALSE, // auto-reset
-                                   FALSE, // non-signaled initially
-                                   NULL); // unnamed
+      FALSE, // auto-reset
+      FALSE, // non-signaled initially
+      NULL); // unnamed
   return 0;
 }
 
 inline int pthread_cond_timedwait(pthread_cond_t *cv,
-                   pthread_mutex_t *external_mutex,
-                   const struct timespec * abstime)
+  pthread_mutex_t *external_mutex,
+  const struct timespec *abstime)
 {
   // Release the <external_mutex> here and wait for either event
   // to become signaled, due to <pthread_cond_signal> being
   // called or <pthread_cond_broadcast> being called.
   LeaveCriticalSection(external_mutex);
   WaitForMultipleObjects(2, // Wait on both <events_>
-                          cv->events_,
-                          FALSE, // Wait for either event to be signaled
-                          (DWORD)abstime->tv_sec * 1000);
+    cv->events_,
+    FALSE, // Wait for either event to be signaled
+    (DWORD)abstime->tv_sec * 1000);
 
   // Reacquire the mutex before returning.
   EnterCriticalSection(external_mutex);

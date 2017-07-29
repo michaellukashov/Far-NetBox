@@ -49,7 +49,7 @@ void LogStream::WriteBuffer()
   pt_back_buff_->Clear();
 }
 
-LogStream& LogStream::operator<<(const char *pt_log)
+LogStream &LogStream::operator<<(const char *pt_log)
 {
   UpdateBaseTime();
 
@@ -79,7 +79,7 @@ void LogStream::UpdateBaseTime()
   time_t now = time(nullptr);
   tv.tv_sec = (long)now;
   tv.tv_usec = 0;
-  struct tm * tm = localtime(&now);
+  struct tm *tm = localtime(&now);
 
   if (tv.tv_sec != tv_base_.tv_sec)
   {
