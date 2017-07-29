@@ -117,8 +117,8 @@ static size_t pread64(int fd, void *buf, size_t nbytes, uint64_t offset)
   return _read(fd, buf, (uint32_t)nbytes);
 }
 
-#define pthread_spinlock_t CRITICAL_SECTION
-#define pthread_mutex_t CRITICAL_SECTION
+typedef CRITICAL_SECTION pthread_spinlock_t;
+typedef CRITICAL_SECTION pthread_mutex_t;
 
 static int pthread_spin_init(pthread_spinlock_t *mtx, int pshared)
 {
