@@ -1059,7 +1059,7 @@ void TSCPFileSystem::ChangeDirectory(const UnicodeString & Directory)
   {
     ToDir = DelimitStr(Directory);
   }
-  ExecCommand(fsChangeDirectory, 0, ToDir.c_str());
+  ExecCommand(fsChangeDirectory, 0, ToDir);
   FCachedDirectoryChange.Clear();
 }
 
@@ -1090,15 +1090,15 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
         FTerminal->LogEvent("Listing current directory.");
         ExecCommand(fsListCurrentDirectory, Params,
-          (FTerminal->GetSessionData()->GetListingCommand(), Options));
+          FTerminal->GetSessionData()->GetListingCommand(), Options);
       }
       else
       {
         FTerminal->LogEvent(FORMAT("Listing directory \"%s\".",
           FileList->GetDirectory()));
         ExecCommand(fsListDirectory, Params,
-          FTerminal->GetSessionData()->GetListingCommand().c_str(), Options.c_str(),
-            DelimitStr(FileList->GetDirectory().c_str()).c_str());
+          FTerminal->GetSessionData()->GetListingCommand(), Options,
+            DelimitStr(FileList->GetDirectory()));
       }
 
       // If output is not empty, we have successfully got file listing,
@@ -1243,7 +1243,7 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & AFileName,
   // so we use it only if we already know that it is supported (asOn).
   UnicodeString Options = (FLsFullTime == asOn) ? FullTimeOption : "";
   ExecCommand(fsListFile, Params,
-    FTerminal->GetSessionData()->GetListingCommand().c_str(), Options.c_str(), DelimitStr(AFileName).c_str());
+    FTerminal->GetSessionData()->GetListingCommand(), Options, DelimitStr(AFileName));
   if (FOutput->GetCount())
   {
     intptr_t LineIndex = 0;
@@ -1263,13 +1263,13 @@ void TSCPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   DebugUsedParam(Params);
   Action.Recursive();
   DebugAssert(FLAGCLEAR(Params, dfNoRecursive) || (AFile && AFile->GetIsSymLink()));
-  ExecCommand(fsDeleteFile, Params, DelimitStr(AFileName).c_str());
+  ExecCommand(fsDeleteFile, Params, DelimitStr(AFileName));
 }
 
 void TSCPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   const UnicodeString & ANewName)
 {
-  ExecCommand(fsRenameFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(ANewName).c_str());
+  ExecCommand(fsRenameFile, 0, DelimitStr(AFileName), DelimitStr(ANewName));
 }
 
 void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
@@ -1281,7 +1281,7 @@ void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   const UnicodeString AdditionalSwitches = L"-T";
   try
   {
-    ExecCommand(fsCopyFile, 0, AdditionalSwitches.c_str(), DelimitedFileName.c_str(), DelimitedNewName.c_str());
+    ExecCommand(fsCopyFile, 0, AdditionalSwitches, DelimitedFileName, DelimitedNewName);
   }
   catch (Exception &)
   {
@@ -1290,7 +1290,7 @@ void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
       // The -T is GNU switch and may not be available on all platforms.
       // https://lists.gnu.org/archive/html/bug-coreutils/2004-07/msg00000.html
       FTerminal->LogEvent(FORMAT("Attempt with %s failed, trying without", AdditionalSwitches));
-      ExecCommand(fsCopyFile, 0, L"", DelimitedFileName.c_str(), DelimitedNewName.c_str());
+      ExecCommand(fsCopyFile, 0, L"", DelimitedFileName, DelimitedNewName);
     }
     else
     {
@@ -1301,14 +1301,14 @@ void TSCPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
 
 void TSCPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
 {
-  ExecCommand(fsCreateDirectory, 0, DelimitStr(ADirName).c_str());
+  ExecCommand(fsCreateDirectory, 0, DelimitStr(ADirName));
 }
 
 void TSCPFileSystem::CreateLink(const UnicodeString & AFileName,
   const UnicodeString & PointTo, bool Symbolic)
 {
   ExecCommand(fsCreateLink, 0,
-    Symbolic ? L"-s" : L"", DelimitStr(PointTo).c_str(), DelimitStr(AFileName).c_str());
+    Symbolic ? L"-s" : L"", DelimitStr(PointTo), DelimitStr(AFileName));
 }
 
 void TSCPFileSystem::ChangeFileToken(const UnicodeString & DelimitedName,
@@ -1326,7 +1326,7 @@ void TSCPFileSystem::ChangeFileToken(const UnicodeString & DelimitedName,
 
   if (!Str.IsEmpty())
   {
-    ExecCommand(Cmd, 0, RecursiveStr.c_str(), Str.c_str(), DelimitedName.c_str());
+    ExecCommand(Cmd, 0, RecursiveStr, Str, DelimitedName);
   }
 }
 
@@ -1367,7 +1367,7 @@ void TSCPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
     if ((Rights.GetNumberSet() | Rights.GetNumberUnset()) != TRights::rfNo)
     {
       ExecCommand(fsChangeMode, 0,
-        RecursiveStr.c_str(), Rights.GetSimplestStr().c_str(), DelimitedName.c_str());
+        RecursiveStr, Rights.GetSimplestStr(), DelimitedName);
     }
 
     // if file is directory and we do recursive mode settings with
@@ -1376,7 +1376,7 @@ void TSCPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
     {
       Rights.AddExecute();
       ExecCommand(fsChangeMode, 0,
-        L"", Rights.GetSimplestStr().c_str(), DelimitedName.c_str());
+        L"", Rights.GetSimplestStr(), DelimitedName);
     }
   }
   else
@@ -1460,7 +1460,7 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
       FSecureShell->SetOnCaptureOutput(nullptr);
     };
     ExecCommand(fsAnyCommand,
-      ecDefault | ecIgnoreWarnings, Command.c_str());
+      ecDefault | ecIgnoreWarnings, Command);
   }
   __finally
   {
