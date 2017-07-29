@@ -4239,9 +4239,9 @@ UnicodeString TSessionData::GetInfoTip() const
   if (GetUsesSsh())
   {
     return FMTLOAD(SESSION_INFO_TIP2,
-        GetHostName().c_str(), SessionGetUserName(),
-         (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR) : LoadStr(YES_STR)),
-         GetFSProtocolStr());
+        GetHostName(), SessionGetUserName(),
+        (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR) : LoadStr(YES_STR)),
+        GetFSProtocolStr());
   }
   else
   {
