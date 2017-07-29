@@ -217,7 +217,7 @@ static bool DoVerifyKey(
             Message =
               MainInstructions(
                 FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
-                  AFileName.c_str(), (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2")));
+                  AFileName, (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2")));
           }
         }
         break;

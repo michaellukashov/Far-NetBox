@@ -2560,7 +2560,7 @@ SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
         break;
     }
     UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, MessageStr,
-      int(Code), LanguageTag.c_str(), ServerMessage.c_str());
+      int(Code), LanguageTag, ServerMessage);
     if (Code == SSH_FX_FAILURE)
     {
       // FTerminal->Configuration->Usage->Inc(L"SftpFailureErrors");
@@ -2605,7 +2605,7 @@ intptr_t TSFTPFileSystem::PacketLength(uint8_t * LenBuf, SSH_FXP_TYPES ExpectedT
     {
       RawByteString LenString(reinterpret_cast<char *>(LenBuf), 4);
       Message = FMTLOAD(SFTP_PACKET_TOO_BIG_INIT_EXPLAIN,
-        Message.c_str(), DisplayableStr(LenString).c_str());
+        Message, DisplayableStr(LenString));
     }
     FTerminal->FatalError(nullptr, Message, HELP_SFTP_PACKET_TOO_BIG);
   }
@@ -4268,7 +4268,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
             // Error formatting expanded from inline to avoid strange exceptions
             UnicodeString Error =
               FMTLOAD(CHECKSUM_ERROR,
-                (File != nullptr ? File->GetFullFileName().c_str() : L""));
+                (File != nullptr ? File->GetFullFileName() : L""));
             FTerminal->CommandError(&E, Error);
             TODO("retries? resume?");
             Next = false;
@@ -5198,7 +5198,7 @@ void TSFTPFileSystem::SFTPSource(const UnicodeString & AFileName,
         // on VShell it failed
         FileOperationLoopCustom(FTerminal, OperationProgress, true,
           FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-            base::UnixExtractFileName(OpenParams.RemoteFileName.c_str()).c_str(), DestFileName.c_str()),
+            base::UnixExtractFileName(OpenParams.RemoteFileName.c_str()), DestFileName),
           HELP_RENAME_AFTER_RESUME_ERROR,
         [&]()
         {
@@ -6375,7 +6375,7 @@ void TSFTPFileSystem::SFTPSink(const UnicodeString & AFileName,
       if (ResumeAllowed)
       {
         FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-          base::ExtractFileName(DestPartialFullName, true).c_str(), DestFileName.c_str()), "",
+          base::ExtractFileName(DestPartialFullName, true), DestFileName), "",
         [&]()
         {
           if (::FileExists(ApiPath(DestFullName)))

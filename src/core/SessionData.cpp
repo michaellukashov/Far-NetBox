@@ -3964,14 +3964,14 @@ UnicodeString TSessionData::GetInfoTip() const
   if (GetUsesSsh())
   {
     return FMTLOAD(SESSION_INFO_TIP2,
-        GetHostName().c_str(), SessionGetUserName().c_str(),
-         (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
-         GetFSProtocolStr().c_str());
+        GetHostName(), SessionGetUserName(),
+         (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR) : LoadStr(YES_STR)),
+         GetFSProtocolStr());
   }
   else
   {
     return FMTLOAD(SESSION_INFO_TIP_NO_SSH,
-      GetHostName().c_str(), SessionGetUserName().c_str(), GetFSProtocolStr().c_str());
+      GetHostName(), SessionGetUserName(), GetFSProtocolStr());
   }
 }
 
