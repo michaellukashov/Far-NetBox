@@ -89,11 +89,13 @@ public:
   explicit TCommandSet(TSessionData * ASessionData);
   void Default();
   void CopyFrom(TCommandSet * Source);
-  UnicodeString Command(TFSCommand Cmd, ...) const;
-  UnicodeString Command(TFSCommand Cmd, va_list args) const;
+  UnicodeString Command(TFSCommand Cmd, fmt::ArgList args);
+  FMT_VARIADIC_W(UnicodeString, Command, TFSCommand)
+
   TStrings * CreateCommandList() const;
-  UnicodeString FullCommand(TFSCommand Cmd, ...) const;
-  UnicodeString FullCommand(TFSCommand Cmd, va_list args) const;
+  UnicodeString FullCommand(TFSCommand Cmd, fmt::ArgList args);
+  FMT_VARIADIC_W(UnicodeString, FullCommand, TFSCommand)
+
   static UnicodeString ExtractCommand(const UnicodeString & ACommand);
 /*
   __property int MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
@@ -225,31 +227,13 @@ UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
   return CommandSet[Cmd].Command;
 }
 
-UnicodeString TCommandSet::Command(TFSCommand Cmd, ...) const
+UnicodeString TCommandSet::Command(TFSCommand Cmd, fmt::ArgList args)
 {
-  va_list args;
-  va_start(args, Cmd);
-  UnicodeString Result = Command(Cmd, args);
-  va_end(args);
+  UnicodeString Result = nb::Sprintf(GetCommands(Cmd), args);
   return Result;
 }
 
-UnicodeString TCommandSet::Command(TFSCommand Cmd, va_list args) const
-{
-  UnicodeString Result = ::FormatV(GetCommands(Cmd).c_str(), args);
-  return Result.c_str();
-}
-
-UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, ...) const
-{
-  va_list args;
-  va_start(args, Cmd);
-  UnicodeString Result = FullCommand(Cmd, args);
-  va_end(args);
-  return Result.c_str();
-}
-
-UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, va_list args) const
+UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, fmt::ArgList args)
 {
   UnicodeString Separator;
   if (GetOneLineCommand(Cmd))
@@ -262,11 +246,11 @@ UnicodeString TCommandSet::FullCommand(TFSCommand Cmd, va_list args) const
   }
   UnicodeString Line = Command(Cmd, args);
   UnicodeString LastLineCmd =
-    Command(fsLastLine, GetLastLine().c_str(), GetReturnVar().c_str());
+    nb::Sprintf(GetCommands(fsLastLine), GetLastLine(), GetReturnVar());
   UnicodeString FirstLineCmd;
   if (GetInteractiveCommand(Cmd))
   {
-    FirstLineCmd = Command(fsFirstLine, GetFirstLine().c_str()) + Separator;
+    FirstLineCmd = nb::Sprintf(GetCommands(fsFirstLine), GetFirstLine()) + Separator;
   }
 
   UnicodeString Result;
@@ -740,7 +724,7 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
   };
 }
 
-void TSCPFileSystem::ExecCommand2(const UnicodeString & Cmd, intptr_t Params,
+void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
   const UnicodeString & CmdString)
 {
   if (Params < 0)
@@ -791,14 +775,11 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
 }
 #endif
 
-void TSCPFileSystem::ExecCommand(TFSCommand Cmd, intptr_t Params, ...)
+void TSCPFileSystem::ExecCommand(TFSCommand Cmd, intptr_t Params, fmt::ArgList args)
 {
-  va_list args;
-  va_start(args, Params);
   UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args);
   UnicodeString Command = FCommandSet->Command(Cmd, args);
-  ExecCommand2(FullCommand, Params, Command);
-  va_end(args);
+  ExecCommand(FullCommand, Params, Command);
   if (Params & ecRaiseExcept)
   {
     int MinL = FCommandSet->GetMinLines(Cmd);
@@ -866,7 +847,7 @@ void TSCPFileSystem::DetectUtf()
     FSecureShell->SetUtfStrings(false); // noop
     try
     {
-      ExecCommand(fsLang, 0, false);
+      ExecCommand(fsLang, 0);
 
       if ((FOutput->GetCount() >= 1) &&
         ::AnsiContainsText(FOutput->GetString(0), L"UTF-8"))
@@ -946,7 +927,7 @@ void TSCPFileSystem::DetectReturnVar()
       try
       {
         FTerminal->LogEvent(FORMAT("Trying \"$%s\".", ReturnVars[Index]));
-        ExecCommand(fsVarValue, 0, ReturnVars[Index].c_str());
+        ExecCommand(fsVarValue, 0, ReturnVars[Index]);
         UnicodeString Str = GetOutput()->GetCount() > 0 ? GetOutput()->GetString(0) : L"";
         intptr_t Val = ::StrToIntDef(Str, 256);
         if ((GetOutput()->GetCount() != 1) || Str.IsEmpty() || (Val > 255))
@@ -996,7 +977,7 @@ void TSCPFileSystem::ClearAlias(const UnicodeString & Alias)
   {
     // this command usually fails, because there will never be
     // aliases on all commands -> see last False parameter
-    ExecCommand(fsUnalias, 0, Alias.c_str(), false);
+    ExecCommand(fsUnalias, 0, Alias);
   }
 }
 
@@ -1034,7 +1015,7 @@ void TSCPFileSystem::UnsetNationalVars()
     FTerminal->LogEvent("Clearing national user variables.");
     for (intptr_t Index = 0; Index < NationalVarCount; ++Index)
     {
-      ExecCommand(fsUnset, 0, UnicodeString(NationalVars[Index]).c_str(), false);
+      ExecCommand(fsUnset, 0, UnicodeString(NationalVars[Index]));
     }
   }
   catch (Exception & E)
@@ -1109,7 +1090,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
         FTerminal->LogEvent("Listing current directory.");
         ExecCommand(fsListCurrentDirectory, Params,
-          FTerminal->GetSessionData()->GetListingCommand().c_str(), Options.c_str());
+          (FTerminal->GetSessionData()->GetListingCommand(), Options));
       }
       else
       {
