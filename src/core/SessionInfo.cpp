@@ -650,7 +650,7 @@ TSessionLog::TSessionLog(TSessionUI * UI, TDateTime Started, TSessionData * Sess
   FConfiguration(Configuration),
   FParent(nullptr),
   FLogging(false),
-  FFile(nullptr),
+  FLogger(nullptr),
   FCurrentFileSize(0),
   FUI(UI),
   FSessionData(SessionData),
@@ -663,7 +663,7 @@ TSessionLog::~TSessionLog()
 {
   FClosed = true;
   ReflectSettings();
-  DebugAssert(FFile == nullptr);
+  DebugAssert(FLogger == nullptr);
 }
 
 void TSessionLog::SetParent(TSessionLog * AParent, UnicodeString AName)
@@ -682,12 +682,12 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, UnicodeString ALine)
 {
   if (LogToFile()) { try
   {
-    if (FFile == nullptr)
+    if (FLogger == nullptr)
     {
       OpenLogFile();
     }
 
-    if (FFile != nullptr)
+    if (FLogger != nullptr)
     {
       UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
       UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + TrimRight(ALine)) + "\r\n";
@@ -703,7 +703,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, UnicodeString ALine)
 #endif // #if 0
       intptr_t ToWrite = UtfLine.Length();
       CheckSize(ToWrite);
-      FCurrentFileSize += fwrite(UtfLine.c_str(), 1, ToWrite, static_cast<FILE *>(FFile));
+      FCurrentFileSize += FLogger->Write(UtfLine.c_str(), ToWrite);
     }}
     catch (...)
     {
@@ -832,13 +832,13 @@ void TSessionLog::ReflectSettings()
     ((FParent != nullptr) || FConfiguration->GetLogging());
 
   // if logging to file was turned off or log file was changed -> close current log file
-  if ((FFile != nullptr) &&
+  if ((FLogger != nullptr) &&
       (!LogToFile() || (FCurrentLogFileName != FConfiguration->GetLogFileName())))
   {
     CloseLogFile();
   }
 
-  if (FFile != nullptr)
+  if (FLogger != nullptr)
   {
     CheckSize(0);
   }
@@ -851,10 +851,10 @@ bool TSessionLog::LogToFileProtected() const
 
 void TSessionLog::CloseLogFile()
 {
-  if (FFile != nullptr)
+  if (FLogger != nullptr)
   {
-    fclose(static_cast<FILE *>(FFile));
-    FFile = nullptr;
+    delete FLogger;
+    FLogger = nullptr;
   }
   FCurrentLogFileName.Clear();
   FCurrentFileName.Clear();
@@ -867,9 +867,10 @@ void TSessionLog::OpenLogFile()
     return;
   try
   {
-    DebugAssert(FFile == nullptr);
+    DebugAssert(FLogger == nullptr);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
-    FFile = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
+    FILE * file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
+    FLogger = new tinylog::TinyLog(file);
     TSearchRec SearchRec;
     if (FileSearchRec(FCurrentFileName, SearchRec))
     {
@@ -900,7 +901,7 @@ void TSessionLog::OpenLogFile()
   }
 
   // in case we are appending and the existing log file is already too large
-  if (FFile != nullptr)
+  if (FLogger != nullptr)
   {
     CheckSize(0);
   }
@@ -1309,7 +1310,7 @@ TActionLog::TActionLog(TSessionUI * UI, TDateTime Started, TSessionData * Sessio
   TConfiguration * Configuration) :
   FConfiguration(Configuration),
   FLogging(false),
-  FFile(nullptr),
+  FLogger(nullptr),
   FIndent(L"  "),
   FUI(UI),
   FSessionData(SessionData),
@@ -1338,7 +1339,7 @@ void TActionLog::Init(TSessionUI * UI, TDateTime Started, TSessionData * Session
   FUI = UI;
   FSessionData = SessionData;
   FStarted = Started;
-  FFile = nullptr;
+  FLogger = nullptr;
   FCurrentLogFileName.Clear();
   FCurrentFileName.Clear();
   FLogging = false;
@@ -1356,7 +1357,7 @@ TActionLog::~TActionLog()
   SAFE_DESTROY(FPendingActions);
   FClosed = true;
   ReflectSettings();
-  DebugAssert(FFile == nullptr);
+  DebugAssert(FLogger == nullptr);
 }
 
 void TActionLog::Add(UnicodeString Line)
@@ -1365,24 +1366,24 @@ void TActionLog::Add(UnicodeString Line)
   if (FLogging)
   {
     TGuard Guard(FCriticalSection);
-    if (FFile == nullptr)
+    if (FLogger == nullptr)
     {
       OpenLogFile();
     }
 
-    if (FFile != nullptr)
+    if (FLogger != nullptr)
     {
       try
       {
         UTF8String UtfLine = UTF8String(Line);
         size_t Written =
-          fwrite(UtfLine.c_str(), 1, UtfLine.Length(), static_cast<FILE *>(FFile));
+          FLogger->Write(UtfLine.c_str(), UtfLine.Length());
         if (Written != static_cast<size_t>(UtfLine.Length()))
         {
           throw ECRTExtException(L"");
         }
         Written =
-          fwrite("\n", 1, 1, static_cast<FILE *>(FFile));
+          FLogger->Write("\n", 1);
         if (Written != 1)
         {
           throw ECRTExtException(L"");
@@ -1486,7 +1487,7 @@ void TActionLog::ReflectSettings()
       EndGroup();
     }
     // do not try to close the file, if it has not been opened, to avoid recursion
-    if (FFile != nullptr)
+    if (FLogger != nullptr)
     {
 #if 0
       Add(L"</session>");
@@ -1499,10 +1500,10 @@ void TActionLog::ReflectSettings()
 
 void TActionLog::CloseLogFile()
 {
-  if (FFile != nullptr)
+  if (FLogger != nullptr)
   {
-    fclose(static_cast<FILE *>(FFile));
-    FFile = nullptr;
+    delete FLogger;
+    FLogger = nullptr;
   }
   FCurrentLogFileName.Clear();
   FCurrentFileName.Clear();
@@ -1515,9 +1516,10 @@ void TActionLog::OpenLogFile()
     return;
   try
   {
-    DebugAssert(FFile == nullptr);
+    DebugAssert(FLogger == nullptr);
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
-    FFile = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
+    FILE *file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
+    FLogger = new tinylog::TinyLog(file);
   }
   catch (Exception & E)
   {
@@ -1580,7 +1582,7 @@ void TActionLog::EndGroup()
   FIndent = L"  ";
   // this is called from ReflectSettings that in turn is called when logging fails,
   // so do not try to close the group, if it has not been opened, to avoid recursion
-  if (FFile != nullptr)
+  if (FLogger != nullptr)
   {
     AddIndented("</group>");
   }
