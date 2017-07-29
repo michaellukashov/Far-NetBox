@@ -82,18 +82,15 @@ void TinyLog::Close()
 
 int32_t TinyLog::MainLoop()
 {
-  struct timespec st_time_out;
-
   while (b_run_)
   {
-    st_time_out.tv_sec = pt_logstream_->tv_base_.tv_sec + TIME_OUT_SECOND;
-    st_time_out.tv_nsec = pt_logstream_->tv_base_.tv_usec * 1000;
+    DWORD timeout_millisecs = 1000 * TIME_OUT_SECOND;
 
     pthread_mutex_lock(&mutex_);
 
     while (!already_swap_)
     {
-      if (pthread_cond_timedwait(&cond_, &mutex_, &st_time_out) == WAIT_TIMEOUT)
+      if (pthread_cond_timedwait(&cond_, &mutex_, timeout_millisecs) == WAIT_TIMEOUT)
       {
         pt_logstream_->SwapBuffer();
         pt_logstream_->UpdateBaseTime();

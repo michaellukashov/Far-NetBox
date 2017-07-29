@@ -26,7 +26,7 @@
 #include <winsock2.h>
 #include <windows.h>
 #include <process.h>
-//#include <intrin.h>
+#include <intrin.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -77,7 +77,7 @@ static int pthread_join(pthread_t th, void **p)
 
 static void *atomic_exchange_acq_rel_ptr(void **p, void *xchg)
 {
-  return (void *)_InterlockedExchange64((int64_t *)p, (int64_t)xchg);
+  return (void *)InterlockedExchange((long *)p, (long)xchg);
 }
 
 static int get_cpu_count()
@@ -258,8 +258,7 @@ inline int pthread_cond_init(pthread_cond_t *cv,
 }
 
 inline int pthread_cond_timedwait(pthread_cond_t *cv,
-  pthread_mutex_t *external_mutex,
-  const struct timespec *abstime)
+  pthread_mutex_t *external_mutex, DWORD timeout_millisecs)
 {
   // Release the <external_mutex> here and wait for either event
   // to become signaled, due to <pthread_cond_signal> being
@@ -268,7 +267,7 @@ inline int pthread_cond_timedwait(pthread_cond_t *cv,
   DWORD res = WaitForMultipleObjects(2, // Wait on both <events_>
     cv->events_,
     FALSE, // Wait for either event to be signaled
-    (DWORD)abstime->tv_sec * 1000);
+    timeout_millisecs);
 
   // Reacquire the mutex before returning.
   EnterCriticalSection(external_mutex);
