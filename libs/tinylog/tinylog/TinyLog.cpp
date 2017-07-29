@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <apr_portable.h>
 #include <apr_arch_thread_cond.h>
 #include <apr_arch_thread_mutex.h>
@@ -49,7 +48,7 @@ Utils::LogLevel TinyLog::GetLogLevel() const
   return e_log_level_;
 }
 
-LogStream& TinyLog::GetLogStream(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level)
+LogStream &TinyLog::GetLogStream(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level)
 {
   pt_logstream_->SetPrefix(pt_file, i_line, pt_func, e_log_level);
   return *pt_logstream_;
