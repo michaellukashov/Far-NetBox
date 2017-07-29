@@ -28,6 +28,7 @@ private:
 
   LogStream *pt_logstream_;
   pthread_t thrd_;
+  DWORD ThreadId_;
   Utils::LogLevel e_log_level_;
   bool b_run_;
 };

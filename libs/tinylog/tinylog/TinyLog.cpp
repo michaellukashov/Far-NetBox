@@ -32,14 +32,12 @@ TinyLog::TinyLog()
   e_log_level_ = Utils::LEVEL_INFO;
   b_run_ = true;
   void *Parameter = this;
-  DWORD ThreadId;
 
   thrd_ = ::CreateThread(nullptr,
       0,
       static_cast<LPTHREAD_START_ROUTINE>(&ThreadFunc),
       Parameter,
-      CREATE_SUSPENDED, &ThreadId);
-
+      CREATE_SUSPENDED, &ThreadId_);
 }
 
 TinyLog::~TinyLog()
