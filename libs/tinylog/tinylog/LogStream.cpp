@@ -16,7 +16,6 @@ LogStream::LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, b
   cond_(cond),
   already_swap_(already_swap)
 {
-
   pt_front_buff_ = new Buffer(BUFFER_SIZE);
   pt_back_buff_  = new Buffer(BUFFER_SIZE);
 
@@ -121,11 +120,11 @@ intptr_t LogStream::InternalWrite(const void *data, intptr_t ToWrite)
 
   pthread_mutex_lock(&mutex_);
 
-  if (pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tv_usec, pt_file_, i_line_, pt_func_, str_log_level_, data, ToWrite) < 0)
+  if (pt_front_buff_->TryAppend(data, ToWrite) < 0)
   {
     SwapBuffer();
     already_swap_ = true;
-    pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tv_usec, pt_file_, i_line_, pt_func_, str_log_level_, data, ToWrite);
+    pt_front_buff_->TryAppend(data, ToWrite);
   }
 
   pthread_cond_signal(&cond_);

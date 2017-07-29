@@ -19,7 +19,9 @@ public:
 
   void SwapBuffer();
   void WriteBuffer();
+#if 0
   void SetPrefix(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level);
+#endif // #if 0
   LogStream &operator<<(const char *pt_log);
   template<typename StringType>
   LogStream &operator<<(const StringType &ref_log)
@@ -41,7 +43,9 @@ private:
   const char *pt_file_;
   int i_line_;
   const char *pt_func_;
+#if 0
   std::string str_log_level_;
+#endif // #if 0
   struct timeval tv_base_;
   struct tm *pt_tm_base_;
   pthread_mutex_t &mutex_;
@@ -49,6 +53,7 @@ private:
   bool &already_swap_;
 };
 
+#if 0
 inline
 void LogStream::SetPrefix(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level)
 {
@@ -78,5 +83,6 @@ void LogStream::SetPrefix(const char *pt_file, int i_line, const char *pt_func, 
     break;
   }
 }
+#endif // #if 0
 
 } // namespace tinylog

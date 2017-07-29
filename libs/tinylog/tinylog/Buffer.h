@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Utils.h"
 
 namespace tinylog {
@@ -12,9 +10,7 @@ public:
   explicit Buffer(uint32_t l_capacity);
   ~Buffer();
 
-  int32_t TryAppend(struct tm *pt_time, long u_sec, const char *pt_file, int i_line,
-    const char *pt_func, std::string &str_log_level,
-    const void *pt_log, intptr_t ToWrite);
+  int32_t TryAppend(const void *pt_log, intptr_t ToWrite);
 
   void Clear();
   size_t Size() const;

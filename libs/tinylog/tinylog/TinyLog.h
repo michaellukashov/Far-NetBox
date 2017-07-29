@@ -8,13 +8,6 @@ namespace tinylog {
 class TinyLog
 {
 public:
-//  static TinyLog &GetInstance()
-//  {
-//    static TinyLog instance;
-//    return instance;
-//  }
-
-//  TinyLog();
   explicit TinyLog(FILE * file);
   ~TinyLog();
 

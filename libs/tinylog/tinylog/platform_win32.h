@@ -77,7 +77,11 @@ static int pthread_join(pthread_t th, void **p)
 
 static void *atomic_exchange_acq_rel_ptr(void **p, void *xchg)
 {
+#if (defined _MSC_VER && _MSC_VER < 1900)
   return (void *)InterlockedExchange((long *)p, (long)xchg);
+#else
+  return (void *)_InterlockedExchange64((int64_t *)p, (int64_t)xchg);
+#endif
 }
 
 static int get_cpu_count()

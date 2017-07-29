@@ -1,6 +1,4 @@
-#include <string.h>
-#include <string>
-#include <cerrno>
+//#include <cerrno>
 #include <io.h>
 
 #include "Buffer.h"
@@ -27,10 +25,7 @@ Buffer::~Buffer()
  * 0  : success
  * -1 : fail, buffer full
  */
-int32_t Buffer::TryAppend(
-  struct tm * /*pt_time*/, long /*u_sec*/, const char * /*pt_file*/, int /*i_line*/,
-  const char * /*pt_func*/, std::string & /*str_log_level*/,
-  const void *pt_log, intptr_t ToWrite)
+int32_t Buffer::TryAppend(const void *pt_log, intptr_t ToWrite)
 {
   /*
    * date: 11 byte
@@ -45,11 +40,6 @@ int32_t Buffer::TryAppend(
     return -1;
   }
 
-//  int n_append = sprintf(pt_data_ + l_size_, "%d-%02d-%02d %02d:%02d:%02d.%.03ld %s %d %s %s %s\n",
-//      pt_time->tm_year + 1900, pt_time->tm_mon + 1, pt_time->tm_mday,
-//      pt_time->tm_hour, pt_time->tm_min, pt_time->tm_sec, u_sec / 1000,
-//      pt_file, i_line, pt_func, str_log_level.c_str(),
-//      pt_log);
   memmove(pt_data_ + l_size_, pt_log, ToWrite);
   intptr_t n_append = ToWrite;
   if (n_append > 0)

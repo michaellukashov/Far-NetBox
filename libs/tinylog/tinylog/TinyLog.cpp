@@ -11,16 +11,6 @@ DWORD WINAPI TinyLog::ThreadFunc(void *pt_arg)
   return 0;
 }
 
-//TinyLog::TinyLog() :
-//  pt_logstream_(nullptr),
-//  thrd_(INVALID_HANDLE_VALUE),
-//  ThreadId_(0),
-//  e_log_level_(Utils::LEVEL_INFO),
-//  b_run_(true),
-//  already_swap_(false)
-//{
-//}
-
 TinyLog::TinyLog(FILE *file) :
   pt_logstream_(nullptr),
   thrd_(INVALID_HANDLE_VALUE),
@@ -38,7 +28,7 @@ TinyLog::TinyLog(FILE *file) :
       0,
       static_cast<LPTHREAD_START_ROUTINE>(&TinyLog::ThreadFunc),
       Parameter,
-      CREATE_SUSPENDED, &ThreadId_);
+      0, &ThreadId_);
 }
 
 TinyLog::~TinyLog()
@@ -60,7 +50,9 @@ Utils::LogLevel TinyLog::GetLogLevel() const
 
 LogStream &TinyLog::GetLogStream(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level)
 {
+#if 0
   pt_logstream_->SetPrefix(pt_file, i_line, pt_func, e_log_level);
+#endif // #if 0
   return *pt_logstream_;
 }
 
