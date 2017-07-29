@@ -19,7 +19,12 @@ public:
   void WriteBuffer();
   void SetPrefix(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level);
   LogStream &operator<<(const char *pt_log);
-//  LogStream &operator<<(const std::string &ref_log);
+  template<typename StringType>
+  LogStream &operator<<(const StringType &ref_log)
+  {
+    return this->operator<<(ref_log.c_str());
+  }
+
   void UpdateBaseTime();
 
 private:
