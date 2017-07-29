@@ -1223,9 +1223,6 @@ add_library(tinylog STATIC
 )
 
 target_include_directories(tinylog PRIVATE
-  ../../libs/apr/include
-  ../../libs/apr/include/arch/win32
-
 )
 
 target_compile_options(tinylog PRIVATE
@@ -1488,6 +1485,7 @@ set(NETBOX_LIBRARIES
   dlmalloc
   rdestl
   fmt
+  tinylog
 
   Ws2_32.lib
   kernel32.lib
