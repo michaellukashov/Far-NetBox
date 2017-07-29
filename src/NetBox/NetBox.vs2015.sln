@@ -25,8 +25,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libneon.vs2015", "..\..\lib
 		{27250AA6-FED6-F96F-E32B-E8E9719F8FEB} = {27250AA6-FED6-F96F-E32B-E8E9719F8FEB}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libapr.vs2015", "..\..\libs\apr\build\libapr.vs2015.vcxproj", "{74BFD665-A62B-4745-8A2A-EE1A2A63CD08}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mfc.vs2015", "..\..\libs\atlmfc\mfc.vs2015.vcxproj", "{EC262402-898F-49D4-8599-850B0C19C1C6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dlmalloc.vs2015", "..\..\libs\dlmalloc\dlmalloc.vs2015.vcxproj", "{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}"
