@@ -250,22 +250,6 @@ typedef struct pthread_condattr_t_
   int pshared;
 } pthread_condattr_t;
 
-//inline int pthread_cond_init (pthread_cond_t *cv,
-//                   const pthread_condattr_t *)
-//{
-//  cv->waiters_count_ = 0;
-//  cv->was_broadcast_ = 0;
-//  cv->sema_ = CreateSemaphoreW (NULL,       // no security
-//                                0,          // initially 0
-//                                0x7fffffff, // max count
-//                                NULL);      // unnamed
-//  InitializeCriticalSection (&cv->waiters_count_lock_);
-//  cv->waiters_done_ = CreateEvent (NULL,  // no security
-//                                   FALSE, // auto-reset
-//                                   FALSE, // non-signaled initially
-//                                   NULL); // unnamed
-//}
-
 inline int pthread_cond_init(pthread_cond_t *cv,
                    const pthread_condattr_t *)
 {
@@ -280,11 +264,23 @@ inline int pthread_cond_init(pthread_cond_t *cv,
                                         TRUE,  // manual-reset
                                         FALSE, // non-signaled initially
                                         NULL); // unnamed
+  cv->waiters_count_ = 0;
+  cv->was_broadcast_ = 0;
+  cv->sema_ = CreateSemaphoreW (NULL,       // no security
+                                0,          // initially 0
+                                0x7fffffff, // max count
+                                NULL);      // unnamed
+  InitializeCriticalSection(&cv->waiters_count_lock_);
+  cv->waiters_done_ = CreateEvent (NULL,  // no security
+                                   FALSE, // auto-reset
+                                   FALSE, // non-signaled initially
+                                   NULL); // unnamed
   return 0;
 }
 
-inline int pthread_cond_wait(pthread_cond_t *cv,
-                   pthread_mutex_t *external_mutex)
+inline int pthread_cond_timedwait(pthread_cond_t *cv,
+                   pthread_mutex_t *external_mutex,
+                   const struct timespec * abstime)
 {
   // Release the <external_mutex> here and wait for either event
   // to become signaled, due to <pthread_cond_signal> being
@@ -293,7 +289,7 @@ inline int pthread_cond_wait(pthread_cond_t *cv,
   WaitForMultipleObjects(2, // Wait on both <events_>
                           cv->events_,
                           FALSE, // Wait for either event to be signaled
-                          INFINITE); // Wait "forever"
+                          (DWORD)abstime->tv_sec * 1000);
 
   // Reacquire the mutex before returning.
   EnterCriticalSection(external_mutex);
@@ -344,5 +340,15 @@ inline int pthread_cond_broadcast(pthread_cond_t *cv)
   }
   else
     LeaveCriticalSection(&cv->waiters_count_lock_);
+  return 0;
+}
+
+inline int pthread_cond_destroy(pthread_cond_t *cv)
+{
+  DeleteCriticalSection(&cv->waiters_count_lock_);
+  CloseHandle(cv->sema_);
+  CloseHandle(cv->waiters_done_);
+  CloseHandle(cv->events_[pthread_cond_t_::E_SIGNAL]);
+  CloseHandle(cv->events_[pthread_cond_t_::E_BROADCAST]);
   return 0;
 }
