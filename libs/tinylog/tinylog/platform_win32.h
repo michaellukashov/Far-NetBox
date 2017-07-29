@@ -26,7 +26,7 @@
 #include <winsock2.h>
 #include <windows.h>
 #include <process.h>
-#include <intrin.h>
+//#include <intrin.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -38,8 +38,9 @@
 #include <stdint.h>
 #include <time.h>
 
-#define pthread_t           HANDLE
-#define pthread_attr_t      DWORD
+typedef HANDLE pthread_t;
+typedef DWORD pthread_attr_t;
+typedef HANDLE sem_t;
 
 #if 0
 typedef __int8              int8_t;
@@ -172,8 +173,6 @@ static int pthread_mutex_unlock(pthread_mutex_t *mtx)
 
 #define sparc_prefetch_read_many(p)
 
-typedef HANDLE sem_t;
-
 static int sem_init(sem_t *sem, int pshared, unsigned value)
 {
   (void)pshared;
@@ -199,38 +198,17 @@ static int sem_post(sem_t *sem)
   return 0;
 }
 
-//typedef struct
-//{
-//  int waiters_count_;
-//  // Number of waiting threads.
-
-//  CRITICAL_SECTION waiters_count_lock_;
-//  // Serialize access to <waiters_count_>.
-
-//  HANDLE sema_;
-//  // Semaphore used to queue up threads waiting for the condition to
-//  // become signaled.
-
-//  HANDLE waiters_done_;
-//  // An auto-reset event used by the broadcast/signal thread to wait
-//  // for all the waiting thread(s) to wake up and be released from the
-//  // semaphore.
-
-//  size_t was_broadcast_;
-//  // Keeps track of whether we were broadcasting or signaling.  This
-//  // allows us to optimize the code if we're just signaling.
-//} pthread_cond_t;
-
 typedef struct pthread_cond_t_
 {
-  u_int waiters_count_;
   // Count of the number of waiters.
+  u_int waiters_count_;
 
-  CRITICAL_SECTION waiters_count_lock_;
   // Serialize access to <waiters_count_>.
-  HANDLE sema_;
+  CRITICAL_SECTION waiters_count_lock_;
+
   // Semaphore used to queue up threads waiting for the condition to
   // become signaled.
+  HANDLE sema_;
 
   HANDLE waiters_done_;
   size_t was_broadcast_;
@@ -242,8 +220,8 @@ typedef struct pthread_cond_t_
     E_MAX_EVENTS = 2
   };
 
-  HANDLE events_[E_MAX_EVENTS];
   // Signal and broadcast event HANDLEs.
+  HANDLE events_[E_MAX_EVENTS];
 } pthread_cond_t;
 
 typedef struct pthread_condattr_t_
@@ -255,24 +233,24 @@ inline int pthread_cond_init(pthread_cond_t *cv,
   const pthread_condattr_t *)
 {
   // Create an auto-reset event.
-  cv->events_[pthread_cond_t_::E_SIGNAL] = CreateEvent(NULL,  // no security
+  cv->events_[pthread_cond_t_::E_SIGNAL] = CreateEvent(NULL, // no security
       FALSE, // auto-reset event
       FALSE, // non-signaled initially
       NULL); // unnamed
 
   // Create a manual-reset event.
-  cv->events_[pthread_cond_t_::E_BROADCAST] = CreateEvent(NULL,  // no security
+  cv->events_[pthread_cond_t_::E_BROADCAST] = CreateEvent(NULL, // no security
       TRUE,  // manual-reset
       FALSE, // non-signaled initially
       NULL); // unnamed
   cv->waiters_count_ = 0;
   cv->was_broadcast_ = 0;
-  cv->sema_ = CreateSemaphoreW (NULL,       // no security
+  cv->sema_ = CreateSemaphoreW(NULL, // no security
       0,          // initially 0
       0x7fffffff, // max count
       NULL);      // unnamed
   InitializeCriticalSection(&cv->waiters_count_lock_);
-  cv->waiters_done_ = CreateEvent (NULL,  // no security
+  cv->waiters_done_ = CreateEvent(NULL, // no security
       FALSE, // auto-reset
       FALSE, // non-signaled initially
       NULL); // unnamed
@@ -287,14 +265,14 @@ inline int pthread_cond_timedwait(pthread_cond_t *cv,
   // to become signaled, due to <pthread_cond_signal> being
   // called or <pthread_cond_broadcast> being called.
   LeaveCriticalSection(external_mutex);
-  WaitForMultipleObjects(2, // Wait on both <events_>
+  DWORD res = WaitForMultipleObjects(2, // Wait on both <events_>
     cv->events_,
     FALSE, // Wait for either event to be signaled
     (DWORD)abstime->tv_sec * 1000);
 
   // Reacquire the mutex before returning.
   EnterCriticalSection(external_mutex);
-  return 0;
+  return res;
 }
 
 inline int pthread_cond_signal(pthread_cond_t *cv)
