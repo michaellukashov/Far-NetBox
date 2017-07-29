@@ -626,7 +626,7 @@ TFileSystemInfo::TFileSystemInfo()
   ClearArray(IsCapable);
 }
 
-static FILE * OpenFile(UnicodeString LogFileName, TDateTime Started, TSessionData * SessionData, bool Append, UnicodeString & ANewFileName)
+static FILE * LocalOpenLogFile(UnicodeString LogFileName, TDateTime Started, TSessionData * SessionData, bool Append, UnicodeString & ANewFileName)
 {
   UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
   FILE * Result = _fsopen(::W2MB(ApiPath(NewFileName).c_str()).c_str(),
@@ -869,7 +869,7 @@ void TSessionLog::OpenLogFile()
   {
     DebugAssert(FFile == nullptr);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
-    FFile = OpenFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
+    FFile = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
     TSearchRec SearchRec;
     if (FileSearchRec(FCurrentFileName, SearchRec))
     {
@@ -1517,7 +1517,7 @@ void TActionLog::OpenLogFile()
   {
     DebugAssert(FFile == nullptr);
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
-    FFile = OpenFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
+    FFile = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
   }
   catch (Exception & E)
   {
