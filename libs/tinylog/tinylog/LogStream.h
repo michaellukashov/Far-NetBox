@@ -33,7 +33,7 @@ private:
 
   Buffer *pt_front_buff_;
   Buffer *pt_back_buff_;
-  int log_file_fd_;
+  FILE *file_;
   const char *pt_file_;
   int i_line_;
   const char *pt_func_;

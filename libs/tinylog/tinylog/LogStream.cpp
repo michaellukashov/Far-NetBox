@@ -12,7 +12,7 @@ extern bool g_already_swap;
 
 LogStream::LogStream()
 {
-  log_file_fd_ = _open(LOG_PATH, _O_WRONLY | _O_CREAT);
+  file_ = nullptr;
 
   pt_front_buff_ = new Buffer(BUFFER_SIZE);
   pt_back_buff_  = new Buffer(BUFFER_SIZE);
@@ -25,7 +25,11 @@ LogStream::~LogStream()
   delete pt_front_buff_;
   delete pt_back_buff_;
 
-  _close(log_file_fd_);
+  if (file_ != nullptr)
+  {
+    fclose(file_);
+    file_ = nullptr;
+  }
 }
 
 /*
@@ -45,7 +49,7 @@ void LogStream::SwapBuffer()
  */
 void LogStream::WriteBuffer()
 {
-  pt_back_buff_->Flush(log_file_fd_);
+  pt_back_buff_->Flush(file_);
   pt_back_buff_->Clear();
 }
 

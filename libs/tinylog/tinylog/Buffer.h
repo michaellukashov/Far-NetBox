@@ -19,7 +19,7 @@ public:
   void Clear();
   size_t Size() const;
   size_t Capacity() const;
-  int32_t Flush(int fd);
+  int32_t Flush(FILE *file);
 
 private:
   Buffer(const Buffer &);

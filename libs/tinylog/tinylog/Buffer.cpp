@@ -73,30 +73,14 @@ size_t Buffer::Capacity() const
   return l_capacity_;
 }
 
-int32_t Buffer::Flush(int fd)
+int32_t Buffer::Flush(FILE *file)
 {
-  int n_write = 0;
-  while ((n_write = _write(fd, pt_data_ + n_write, (uint32_t)(l_size_ - n_write))) != 0)
+  size_t n_write = fwrite(pt_data_, 1, l_size_, file);
+  if (n_write != l_size_)
   {
-    if ((n_write < 0) && (errno != EINTR))
-    {
-      // error
-      break;
-    }
-    else if (n_write == l_size_)
-    {
-      // All write
-      break;
-    }
-    else if (n_write > 0)
-    {
-      // Half write
-    }
-  }
-
-  // error
-  if (n_write < 0)
+    // error
     return -1;
+  }
 
   return 0;
 }
