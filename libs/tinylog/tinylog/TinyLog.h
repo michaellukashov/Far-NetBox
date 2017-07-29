@@ -31,6 +31,9 @@ private:
   DWORD ThreadId_;
   Utils::LogLevel e_log_level_;
   bool b_run_;
+  pthread_mutex_t mutex_;
+  pthread_cond_t cond_;
+  bool already_swap_;
 };
 
 } // namespace tinylog

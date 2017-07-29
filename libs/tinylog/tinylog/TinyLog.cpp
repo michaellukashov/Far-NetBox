@@ -3,10 +3,6 @@
 
 namespace tinylog {
 
-pthread_mutex_t g_mutex;
-pthread_cond_t g_cond;
-bool g_already_swap = false;
-
 static DWORD WINAPI ThreadFunc(void *pt_arg)
 {
   TinyLog *pt_tinylog = static_cast<TinyLog *>(pt_arg);
@@ -15,13 +11,17 @@ static DWORD WINAPI ThreadFunc(void *pt_arg)
   return 0;
 }
 
-TinyLog::TinyLog()
+TinyLog::TinyLog() :
+  pt_logstream_(nullptr),
+  thrd_(INVALID_HANDLE_VALUE),
+  ThreadId_(0),
+  e_log_level_(Utils::LEVEL_INFO),
+  b_run_(true),
+  already_swap_(false)
 {
-  pthread_mutex_init(&g_mutex, nullptr);
-  pthread_cond_init(&g_cond, nullptr);
-  pt_logstream_ = new LogStream();
-  e_log_level_ = Utils::LEVEL_INFO;
-  b_run_ = true;
+  pthread_mutex_init(&mutex_, nullptr);
+  pthread_cond_init(&cond_, nullptr);
+  pt_logstream_ = new LogStream(mutex_, cond_, already_swap_);
   void *Parameter = this;
 
   thrd_ = ::CreateThread(nullptr,
@@ -36,8 +36,8 @@ TinyLog::~TinyLog()
   b_run_ = false;
   pthread_join(thrd_, nullptr);
   delete pt_logstream_;
-  pthread_cond_destroy(&g_cond);
-  pthread_mutex_destroy(&g_mutex);
+  pthread_cond_destroy(&cond_);
+  pthread_mutex_destroy(&mutex_);
 }
 
 void TinyLog::SetLogLevel(Utils::LogLevel e_log_level)
@@ -65,11 +65,11 @@ int32_t TinyLog::MainLoop()
     st_time_out.tv_sec = pt_logstream_->tv_base_.tv_sec + TIME_OUT_SECOND;
     st_time_out.tv_nsec = pt_logstream_->tv_base_.tv_usec * 1000;
 
-    pthread_mutex_lock(&g_mutex);
+    pthread_mutex_lock(&mutex_);
 
-    while (!g_already_swap)
+    while (!already_swap_)
     {
-      if (pthread_cond_timedwait(&g_cond, &g_mutex, &st_time_out) == ETIMEDOUT)
+      if (pthread_cond_timedwait(&cond_, &mutex_, &st_time_out) == WAIT_TIMEOUT)
       {
         pt_logstream_->SwapBuffer();
         pt_logstream_->UpdateBaseTime();
@@ -77,14 +77,14 @@ int32_t TinyLog::MainLoop()
       }
     }
 
-    if (g_already_swap)
+    if (already_swap_)
     {
-      g_already_swap = false;
+      already_swap_ = false;
     }
 
     pt_logstream_->WriteBuffer();
 
-    pthread_mutex_unlock(&g_mutex);
+    pthread_mutex_unlock(&mutex_);
   }
 
   return 0;

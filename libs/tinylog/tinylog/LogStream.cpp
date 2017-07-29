@@ -6,16 +6,15 @@
 
 namespace tinylog {
 
-extern pthread_mutex_t g_mutex;
-extern pthread_cond_t g_cond;
-extern bool g_already_swap;
-
-LogStream::LogStream() :
+LogStream::LogStream(pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap) :
   file_(nullptr),
   pt_file_(nullptr),
   i_line_(0),
   pt_func_(nullptr),
-  pt_tm_base_(nullptr)
+  pt_tm_base_(nullptr),
+  mutex_(mutex),
+  cond_(cond),
+  already_swap_(already_swap)
 {
 
   pt_front_buff_ = new Buffer(BUFFER_SIZE);
@@ -61,17 +60,17 @@ LogStream &LogStream::operator<<(const char *pt_log)
 {
   UpdateBaseTime();
 
-  pthread_mutex_lock(&g_mutex);
+  pthread_mutex_lock(&mutex_);
 
   if (pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tv_usec, pt_file_, i_line_, pt_func_, str_log_level_, pt_log) < 0)
   {
     SwapBuffer();
-    g_already_swap = true;
+    already_swap_ = true;
     pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tv_usec, pt_file_, i_line_, pt_func_, str_log_level_, pt_log);
   }
 
-  pthread_cond_signal(&g_cond);
-  pthread_mutex_unlock(&g_mutex);
+  pthread_cond_signal(&cond_);
+  pthread_mutex_unlock(&mutex_);
 
   return *this;
 }

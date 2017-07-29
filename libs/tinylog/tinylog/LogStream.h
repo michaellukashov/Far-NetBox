@@ -12,7 +12,7 @@ class LogStream
 public:
   friend class TinyLog;
 
-  LogStream();
+  explicit LogStream(pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap);
   ~LogStream();
 
   void SwapBuffer();
@@ -40,6 +40,9 @@ private:
   std::string str_log_level_;
   struct timeval tv_base_;
   struct tm *pt_tm_base_;
+  pthread_mutex_t &mutex_;
+  pthread_cond_t &cond_;
+  bool &already_swap_;
 };
 
 inline
