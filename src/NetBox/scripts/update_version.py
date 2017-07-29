@@ -12,14 +12,10 @@ plugin_version_h = \
 //------------------------------------------------------------------------------
 #pragma once
 
-#include <string>
-
 #define NETBOX_VERSION_MAJOR         %(version_major)s
 #define NETBOX_VERSION_MINOR         %(version_minor)s
 #define NETBOX_VERSION_PATCH         %(version_patch)s
 #define NETBOX_VERSION_BUILD         %(build)s
-
-static const std::wstring NETBOX_VERSION_NUMBER(L"%(version_major)s.%(version_minor)s.%(version_patch)s");
 
 """
 

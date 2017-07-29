@@ -486,7 +486,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       const char start[] = "HTTP/";
       if (memcmp(start, m_pStrBuffer, (strlen(start)>strlen(m_pStrBuffer)) ? strlen(m_pStrBuffer) : strlen(start)))
       {
-        char* str = nb::chcalloc(strlen("No valid HTTP response") + 1);
+        char *str = nb::chcalloc(strlen("No valid HTTP response") + 1);
         strcpy(str, "No valid HTTP response");
         ConnectionFailed(WSAECONNABORTED, str);
         return;
@@ -494,6 +494,9 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       char *pos = strstr(m_pStrBuffer, "\r\n");
       if (pos)
       {
+        CString status;
+        status.Format(L"HTTP proxy response: %s", (LPCWSTR)CString(m_pStrBuffer));
+        LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
         char *pos2 = strstr(m_pStrBuffer, " ");
         if (!pos2 || *(pos2+1)!='2' || pos2>pos)
         {
@@ -777,8 +780,11 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
       nb_free(pHost);
 
       USES_CONVERSION;
+      CString status;
+      status.Format(L"HTTP proxy command: %s", (LPCWSTR)CString(str));
       int numsent=SendNext(str, (int)strlen(str) );
       int nErrorCode=::WSAGetLastError();
+      LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
       if (numsent==SOCKET_ERROR)//nErrorCode!=WSAEWOULDBLOCK)
       {
         ConnectionFailed((m_nProxyOpID == PROXYOP_CONNECT) && (nErrorCode == WSAEWOULDBLOCK) ? WSAECONNABORTED : nErrorCode);
@@ -924,7 +930,7 @@ void CAsyncProxySocketLayer::Reset()
   m_nProxyOpID=0;
 }
 
-int CAsyncProxySocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
+int CAsyncProxySocketLayer::Send(const void * lpBuf, int nBufLen, int nFlags)
 {
   if (m_nProxyOpID)
   {
@@ -935,7 +941,7 @@ int CAsyncProxySocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
   return SendNext(lpBuf, nBufLen, nFlags);
 }
 
-int CAsyncProxySocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
+int CAsyncProxySocketLayer::Receive(void * lpBuf, int nBufLen, int nFlags)
 {
   if (m_nProxyOpID)
   {

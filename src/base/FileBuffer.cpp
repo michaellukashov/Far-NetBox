@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -11,14 +12,14 @@ char * EOLToStr(TEOLType EOLType)
   switch (EOLType)
   {
   case eolLF:
-    return (char *)"\n";
+    return const_cast<char *>("\n");
   case eolCRLF:
-    return (char *)"\r\n";
+    return const_cast<char *>("\r\n");
   case eolCR:
-    return (char *)"\r";
+    return const_cast<char *>("\r");
   default:
     DebugFail();
-    return (char *)"";
+    return const_cast<char *>("");
   }
 }
 
@@ -106,7 +107,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
 
   const std::string Bom(CONST_BOM);
   if (FLAGSET(Params, cpRemoveBOM) && (GetSize() >= 3) &&
-    (memcmp(GetData(), Bom.c_str(), Bom.size()) == 0))
+      (memcmp(GetData(), Bom.c_str(), Bom.size()) == 0))
   {
     Delete(0, 3);
   }
@@ -132,7 +133,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
     for (intptr_t Index = 0; Index < GetSize(); ++Index)
     {
       // EOL already in destination format, make sure to pass it unmodified
-      if ((Index < GetSize() - 1) && (*Ptr == Dest[0]) && (*(Ptr+1) == Dest[1]))
+      if ((Index < GetSize() - 1) && (*Ptr == Dest[0]) && (*(Ptr + 1) == Dest[1]))
       {
         ++Index;
         Ptr++;

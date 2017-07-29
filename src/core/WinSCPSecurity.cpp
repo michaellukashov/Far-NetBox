@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -8,15 +9,6 @@
 
 #define PWALG_SIMPLE_INTERNAL 0x00
 #define PWALG_SIMPLE_EXTERNAL 0x01
-
-#define PWALG_SIMPLE_STRING ((RawByteString)"0123456789ABCDEF")
-#define PWALG_SIMPLE_MAXLEN 50
-#define PWALG_SIMPLE_FLAG 0xFF
-
-static int random(int range)
-{
-  return static_cast<int>(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
-}
 
 RawByteString SimpleEncryptChar(uint8_t Ch)
 {
@@ -36,19 +28,15 @@ uint8_t SimpleDecryptNextChar(RawByteString & Str)
     Str.Delete(1, 2);
     return Result;
   }
-  else
-  {
-    return 0x00;
-  }
+  return 0x00;
 }
 
-RawByteString EncryptPassword(const UnicodeString & APassword, const UnicodeString & AKey, Integer /*Algorithm*/)
+RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString UnicodeKey, Integer /* Algorithm */)
 {
-  UTF8String Password = UTF8String(APassword);
-  UTF8String Key = UTF8String(AKey);
+  UTF8String Password = UTF8String(UnicodePassword);
+  UTF8String Key = UTF8String(UnicodeKey);
 
   RawByteString Result("");
-  intptr_t Shift, Index;
 
   if (!::RandSeed)
   {
@@ -56,32 +44,32 @@ RawByteString EncryptPassword(const UnicodeString & APassword, const UnicodeStri
     ::RandSeed = 1;
   }
   Password = Key + Password;
-  Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?
-            static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - static_cast<int>(Password.Length()))) : 0;
+  intptr_t Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?
+                     static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - static_cast<int>(Password.Length()))) : 0;
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG)); // Flag
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_INTERNAL)); // Dummy
   Result += SimpleEncryptChar(static_cast<uint8_t>(Password.Length()));
   Result += SimpleEncryptChar(static_cast<uint8_t>(Shift));
-  for (Index = 0; Index < Shift; ++Index)
+  for (intptr_t Index = 0; Index < Shift; ++Index)
     Result += SimpleEncryptChar(static_cast<uint8_t>(random(256)));
-  for (Index = 0; Index < Password.Length(); ++Index)
+  for (intptr_t Index = 0; Index < Password.Length(); ++Index)
     Result += SimpleEncryptChar(static_cast<uint8_t>(Password.c_str()[Index]));
   while (Result.Length() < PWALG_SIMPLE_MAXLEN * 2)
     Result += SimpleEncryptChar(static_cast<uint8_t>(random(256)));
   return Result;
 }
 
-UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeString & AKey, Integer /*Algorithm*/)
+UnicodeString DecryptPassword(RawByteString Password, UnicodeString UnicodeKey, Integer /*Algorithm*/)
 {
-  RawByteString Password = APassword;
-  UTF8String Key = UTF8String(AKey);
+  UTF8String Key = UTF8String(UnicodeKey);
   UTF8String Result("");
   uint8_t Length;
 
   uint8_t Flag = SimpleDecryptNextChar(Password);
   if (Flag == PWALG_SIMPLE_FLAG)
   {
-    /* Dummy = */ SimpleDecryptNextChar(Password);
+    /* Dummy = */
+    SimpleDecryptNextChar(Password);
     Length = SimpleDecryptNextChar(Password);
   }
   else
@@ -99,24 +87,23 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
   return UnicodeString(Result);
 }
 
-RawByteString SetExternalEncryptedPassword(const RawByteString & APassword)
+RawByteString SetExternalEncryptedPassword(RawByteString Password)
 {
   RawByteString Result;
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG));
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_EXTERNAL));
-  Result += UTF8String(BytesToHex(reinterpret_cast<const uint8_t *>(APassword.c_str()), APassword.Length()));
+  Result += UTF8String(BytesToHex(reinterpret_cast<const uint8_t *>(Password.c_str()), Password.Length()));
   return Result;
 }
 
-bool GetExternalEncryptedPassword(const RawByteString & AEncrypted, RawByteString & APassword)
+bool GetExternalEncryptedPassword(RawByteString Encrypted, RawByteString & Password)
 {
-  RawByteString Encrypted = AEncrypted;
   bool Result =
     (SimpleDecryptNextChar(Encrypted) == PWALG_SIMPLE_FLAG) &&
     (SimpleDecryptNextChar(Encrypted) == PWALG_SIMPLE_EXTERNAL);
   if (Result)
   {
-    APassword = HexToBytes(UTF8ToString(Encrypted));
+    Password = HexToBytes(UTF8ToString(Encrypted));
   }
   return Result;
 }
@@ -166,9 +153,9 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
     {
       const CERT_CHAIN_CONTEXT * ChainContext = nullptr;
       if (CertGetCertificateChain(ChainEngine, CertContext, nullptr, nullptr, &ChainPara,
-            CERT_CHAIN_CACHE_END_CERT |
-            CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
-            nullptr, &ChainContext))
+        CERT_CHAIN_CACHE_END_CERT |
+        CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
+        nullptr, &ChainContext))
       {
         CERT_CHAIN_POLICY_PARA PolicyPara;
 
@@ -180,7 +167,7 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
         PolicyStatus.cbSize = sizeof(PolicyStatus);
 
         if (CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_SSL,
-              ChainContext, &PolicyPara, &PolicyStatus))
+          ChainContext, &PolicyPara, &PolicyStatus))
         {
           // Windows thinks the certificate is valid.
           Result = (PolicyStatus.dwError == S_OK);

@@ -148,7 +148,7 @@ public:
 	{
 		string_rep* rep = get_rep();
 		make_unique(size);
-		rep->size = (short)size;
+		rep->size = static_cast<short>(size);
 		m_data[size] = 0;
 	}
 

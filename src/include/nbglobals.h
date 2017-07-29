@@ -16,7 +16,9 @@
 #define nb_realloc(ptr, size) dlrealloc(ptr, size)
 
 #if defined(__cplusplus)
-#define nb_free(ptr) dlfree(reinterpret_cast<void *>(ptr))
+//#define nb_free(ptr) dlfree(reinterpret_cast<void *>(const_cast<T>(ptr)))
+template<typename T>
+void nb_free(const T * ptr) { dlfree(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
 #else
 #define nb_free(ptr) dlfree((void *)(ptr))
 #endif // if defined(__cplusplus)
@@ -59,8 +61,8 @@ inline T calloc(size_t size) { return static_cast<T>(nb_calloc(1, size)); }
 template<typename T>
 inline T realloc(T ptr, size_t size) { return static_cast<T>(nb_realloc(ptr, size)); }
 
-inline char* chcalloc(size_t size) { return calloc<char*>(size); }
-inline wchar_t* wchcalloc(size_t size) { return calloc<wchar_t*>(size); }
+inline char *chcalloc(size_t size) { return calloc<char *>(size); }
+inline wchar_t *wchcalloc(size_t size) { return calloc<wchar_t *>(size); }
 
 inline void * operator_new(size_t size)
 {

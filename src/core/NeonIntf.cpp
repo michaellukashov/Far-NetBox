@@ -16,7 +16,7 @@
 #define SESSION_PROXY_AUTH_KEY "proxyauth"
 #define SESSION_TLS_INIT_KEY "tlsinit"
 
-void NeonParseUrl(const UnicodeString & Url, ne_uri & uri)
+void NeonParseUrl(UnicodeString Url, ne_uri & uri)
 {
   if (ne_uri_parse(StrToNeon(Url), &uri) != 0)
   {
@@ -33,7 +33,7 @@ void NeonParseUrl(const UnicodeString & Url, ne_uri & uri)
 
 bool IsTlsUri(const ne_uri & uri)
 {
-  return SameText(StrFromNeon(uri.scheme), WebDAVSProtocol);
+  return SameText(StrFromNeon(uri.scheme), HttpsProtocol);
 }
 
 struct TProxyAuthData
@@ -65,22 +65,24 @@ static int NeonProxyAuth(
   return Result;
 }
 
-ne_session * CreateNeonSession(
-  const ne_uri & uri, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
-  intptr_t ProxyPort, const UnicodeString & ProxyUsername, const UnicodeString & ProxyPassword)
+ne_session * CreateNeonSession(const ne_uri & uri)
 {
-  ne_session * Session = ne_session_create(uri.scheme, uri.host, uri.port);
+  return ne_session_create(uri.scheme, uri.host, uri.port);
+}
 
+void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, UnicodeString ProxyHost,
+                     intptr_t ProxyPort, UnicodeString ProxyUsername, UnicodeString ProxyPassword)
+{
   if (ProxyMethod != ::pmNone)
   {
     if ((ProxyMethod == pmSocks4) || (ProxyMethod == pmSocks5))
     {
       enum ne_sock_sversion vers = (ProxyMethod == pmSocks4) ? NE_SOCK_SOCKSV4A : NE_SOCK_SOCKSV5;
-      ne_session_socks_proxy(Session, vers, StrToNeon(ProxyHost), (int)ProxyPort, StrToNeon(ProxyUsername), StrToNeon(ProxyPassword));
+      ne_session_socks_proxy(Session, vers, StrToNeon(ProxyHost), static_cast<int>(ProxyPort), StrToNeon(ProxyUsername), StrToNeon(ProxyPassword));
     }
     else if (!ProxyHost.IsEmpty())
     {
-      ne_session_proxy(Session, StrToNeon(ProxyHost), (int)ProxyPort);
+      ne_session_proxy(Session, StrToNeon(ProxyHost), static_cast<int>(ProxyPort));
 
       if (!ProxyUsername.IsEmpty())
       {
@@ -102,8 +104,6 @@ ne_session * CreateNeonSession(
 
   ne_redirect_register(Session);
   ne_set_useragent(Session, StrToNeon(FORMAT("%s/%s", GetAppNameString(), GetConfiguration()->GetVersion())));
-
-  return Session;
 }
 
 void DestroyNeonSession(ne_session * Session)
@@ -122,8 +122,8 @@ UnicodeString GetNeonError(ne_session * Session)
   return StrFromNeon(ne_get_error(Session));
 }
 
-void CheckNeonStatus(ne_session * Session, int NeonStatus,
-  const UnicodeString & AHostName, const UnicodeString & CustomError)
+void CheckNeonStatus(ne_session * Session, intptr_t NeonStatus,
+  UnicodeString AHostName, UnicodeString CustomError)
 {
   if (NeonStatus == NE_OK)
   {
@@ -170,7 +170,7 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
 
       case NE_REDIRECT:
         {
-          char* Uri = ne_uri_unparse(ne_redirect_location(Session));
+          char * Uri = ne_uri_unparse(ne_redirect_location(Session));
           Error = FMTLOAD(REQUEST_REDIRECTED, Uri);
           ne_free(Uri);
         }
@@ -200,7 +200,7 @@ UnicodeString GetNeonRedirectUrl(ne_session * Session)
 
 #define MAX_REDIRECT_ATTEMPTS 5
 
-void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls)
+void CheckRedirectLoop(UnicodeString RedirectUrl, TStrings * AttemptedUrls)
 {
   if (AttemptedUrls->GetCount() > MAX_REDIRECT_ATTEMPTS)
   {
@@ -234,7 +234,7 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 
 void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit)
 {
-  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, (void*)OnNeonTlsInit);
+  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, static_cast<void *>(OnNeonTlsInit));
 }
 
 AnsiString NeonExportCertificate(const ne_ssl_certificate * Certificate)
@@ -268,7 +268,7 @@ bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert
   return Result;
 }
 
-UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString & HostName)
+UnicodeString NeonCertificateFailuresErrorStr(int Failures, UnicodeString HostName)
 {
   int FailuresToList = Failures;
 

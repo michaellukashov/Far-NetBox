@@ -422,7 +422,7 @@ public:
 		UINT_PTR nOffset = pszSrc-GetString();
 
 		UINT nOldLength = GetLength();
-		if (nOldLength < 0)
+		if ((int)nOldLength < 0)
 		{
 			// protects from underflow
 			nOldLength = 0;

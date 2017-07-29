@@ -8,7 +8,7 @@ struct TTranslation
 };
 
 // Return pointer to file version info block
-NB_CORE_EXPORT void * CreateFileInfo(const UnicodeString & AFileName);
+NB_CORE_EXPORT void * CreateFileInfo(UnicodeString AFileName);
 
 // Free file version info block memory
 NB_CORE_EXPORT void FreeFileInfo(void * FileInfo);
@@ -28,11 +28,11 @@ NB_CORE_EXPORT UnicodeString GetLanguage(Word Language);
 // Return the value of the specified file version info string using the
 // specified translation
 NB_CORE_EXPORT UnicodeString GetFileInfoString(void * FileInfo,
-  TTranslation Translation, const UnicodeString & StringName, bool AllowEmpty);
+  TTranslation Translation, UnicodeString StringName, bool AllowEmpty);
 
 NB_CORE_EXPORT intptr_t CalculateCompoundVersion(intptr_t MajorVer,
   intptr_t MinorVer, intptr_t Release, intptr_t Build);
 
-NB_CORE_EXPORT intptr_t StrToCompoundVersion(const UnicodeString & AStr);
+NB_CORE_EXPORT intptr_t StrToCompoundVersion(UnicodeString AStr);
 
 NB_CORE_EXPORT intptr_t CompareVersion(UnicodeString V1, UnicodeString V2);

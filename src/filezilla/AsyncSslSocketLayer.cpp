@@ -349,7 +349,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
   }
 }
 
-int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
+int CAsyncSslSocketLayer::Send(const void * lpBuf, int nBufLen, int nFlags)
 {
   if (m_bUseSSL)
   {
@@ -450,7 +450,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
   }
 }
 
-int CAsyncSslSocketLayer::Receive(void* lpBuf, int nBufLen, int nFlags)
+int CAsyncSslSocketLayer::Receive(void * lpBuf, int nBufLen, int nFlags)
 {
   if (m_bUseSSL)
   {
@@ -1086,11 +1086,11 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
 
   if (where & SSL_CB_LOOP)
   {
-    char* debug = NULL;
+    char *debug = NULL;
     // exact SSL_CB_LOOP is abused for debugging
     if (where == SSL_CB_LOOP)
     {
-      debug = reinterpret_cast<char*>((intptr_t)ret);
+      debug = reinterpret_cast<char *>((intptr_t)ret);
     }
     char *buffer = nb::chcalloc(4096 + ((debug != NULL) ? strlen(debug) : 0));
     sprintf(buffer, "%s: %s",
@@ -1108,7 +1108,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
   else if (where & SSL_CB_ALERT)
   {
     str=(where & SSL_CB_READ)? "read" : "write";
-    const char* desc = SSL_alert_desc_string_long(ret);
+    const char *desc = SSL_alert_desc_string_long(ret);
 
     // Don't send close notify warning
     if (desc)

@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <Common.h>
@@ -29,6 +30,7 @@ const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
 const int dfForceDelete = 0x04;
 
+// from FtpFileSystem.h
 enum TOverwriteMode
 {
   omOverwrite,
@@ -44,11 +46,8 @@ const int tfNewDirectory = 0x04;
 struct NB_CORE_EXPORT TSinkFileParams : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TSinkFileParams;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSinkFileParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSinkFileParams) || TObject::is(Kind); }
 public:
   TSinkFileParams() : TObject(OBJECT_CLASS_TSinkFileParams), CopyParam(nullptr), OperationProgress(nullptr), Params(0), Flags(0), Skipped(false) {}
   UnicodeString TargetDir;
@@ -63,16 +62,14 @@ struct NB_CORE_EXPORT TFileTransferData : public TObject
 {
 NB_DISABLE_COPY(TFileTransferData)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TFileTransferData;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFileTransferData); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFileTransferData) || TObject::is(Kind); }
 public:
   TFileTransferData() :
     TObject(OBJECT_CLASS_TFileTransferData),
+    FileName(),
     CopyParam(nullptr),
-    Modification(0.0),
+    Modification(),
     Params(0),
     OverwriteResult(-1),
     AutoResume(false)
@@ -90,11 +87,8 @@ public:
 struct NB_CORE_EXPORT TOverwriteFileParams : public TObject
 {
 public:
-  static bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TOverwriteFileParams;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TOverwriteFileParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TOverwriteFileParams) || TObject::is(Kind); }
 public:
   TOverwriteFileParams() :
     TObject(OBJECT_CLASS_TOverwriteFileParams),
@@ -117,11 +111,8 @@ struct NB_CORE_EXPORT TOpenRemoteFileParams : public TObject
 {
 NB_DISABLE_COPY(TOpenRemoteFileParams)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TOpenRemoteFileParams;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TOpenRemoteFileParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TOpenRemoteFileParams) || TObject::is(Kind); }
 public:
   TOpenRemoteFileParams() :
     TObject(OBJECT_CLASS_TOpenRemoteFileParams),
@@ -155,7 +146,7 @@ public:
 /** @brief Interface for custom filesystems
   *
   */
-class TFileSystemIntf
+class NB_CORE_EXPORT TFileSystemIntf
 {
 public:
   virtual ~TFileSystemIntf() {}
@@ -168,15 +159,8 @@ class NB_CORE_EXPORT TCustomFileSystem : public TObject, public TFileSystemIntf
 {
 NB_DISABLE_COPY(TCustomFileSystem)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TCustomFileSystem ||
-      Obj->GetKind() == OBJECT_CLASS_TFTPFileSystem ||
-      Obj->GetKind() == OBJECT_CLASS_TSCPFileSystem ||
-      Obj->GetKind() == OBJECT_CLASS_TSFTPFileSystem ||
-      Obj->GetKind() == OBJECT_CLASS_TWebDAVFileSystem;
-  }
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomFileSystem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFileSystem) || TObject::is(Kind); }
 public:
   virtual ~TCustomFileSystem();
 
@@ -185,76 +169,77 @@ public:
   virtual bool GetActive() const = 0;
   virtual void CollectUsage() = 0;
   virtual void Idle() = 0;
-  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) = 0;
-  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const = 0;
-  virtual void AnyCommand(const UnicodeString & Command,
+  virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) = 0;
+  virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const = 0;
+  virtual void AnyCommand(UnicodeString Command,
     TCaptureOutputEvent OutputEvent) = 0;
-  virtual void ChangeDirectory(const UnicodeString & Directory) = 0;
-  virtual void CachedChangeDirectory(const UnicodeString & Directory) = 0;
+  virtual void ChangeDirectory(UnicodeString Directory) = 0;
+  virtual void CachedChangeDirectory(UnicodeString Directory) = 0;
   virtual void AnnounceFileListOperation() = 0;
-  virtual void ChangeFileProperties(const UnicodeString & AFileName,
+  virtual void ChangeFileProperties(UnicodeString AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action) = 0;
   virtual bool LoadFilesProperties(TStrings * AFileList) = 0;
-  virtual void CalculateFilesChecksum(const UnicodeString & Alg,
+  virtual void CalculateFilesChecksum(UnicodeString Alg,
     TStrings * AFileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) = 0;
   virtual void CopyToLocal(const TStrings * AFilesToCopy,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
+    UnicodeString TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
   virtual void CopyToRemote(const TStrings * AFilesToCopy,
-    const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
+    UnicodeString TargetDir, const TCopyParamType * CopyParam,
     intptr_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
-  virtual void RemoteCreateDirectory(const UnicodeString & ADirName) = 0;
-  virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & PointTo, bool Symbolic) = 0;
-  virtual void RemoteDeleteFile(const UnicodeString & AFileName,
+  virtual void RemoteCreateDirectory(UnicodeString ADirName) = 0;
+  virtual void CreateLink(UnicodeString AFileName, UnicodeString PointTo, bool Symbolic) = 0;
+  virtual void RemoteDeleteFile(UnicodeString AFileName,
     const TRemoteFile * AFile, intptr_t Params,
     TRmSessionAction & Action) = 0;
-  virtual void CustomCommandOnFile(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, const UnicodeString & Command, intptr_t Params, TCaptureOutputEvent OutputEvent) = 0;
+  virtual void CustomCommandOnFile(UnicodeString AFileName,
+    const TRemoteFile * AFile, UnicodeString Command, intptr_t Params, TCaptureOutputEvent OutputEvent) = 0;
   virtual void DoStartup() = 0;
   virtual void HomeDirectory() = 0;
   virtual bool IsCapable(intptr_t Capability) const = 0;
   virtual void LookupUsersGroups() = 0;
   virtual void ReadCurrentDirectory() = 0;
   virtual void ReadDirectory(TRemoteFileList * FileList) = 0;
-  virtual void ReadFile(const UnicodeString & AFileName,
+  virtual void ReadFile(UnicodeString AFileName,
     TRemoteFile *& File) = 0;
   virtual void ReadSymlink(TRemoteFile * SymLinkFile,
     TRemoteFile *& File) = 0;
-  virtual void RemoteRenameFile(const UnicodeString & AFileName,
-    const UnicodeString & ANewName) = 0;
-  virtual void RemoteCopyFile(const UnicodeString & AFileName,
-    const UnicodeString & ANewName) = 0;
+  virtual void RemoteRenameFile(UnicodeString AFileName,
+    UnicodeString ANewName) = 0;
+  virtual void RemoteCopyFile(UnicodeString AFileName,
+    UnicodeString ANewName) = 0;
   virtual TStrings * GetFixedPaths() const = 0;
-  virtual void SpaceAvailable(const UnicodeString & APath,
+  virtual void SpaceAvailable(UnicodeString APath,
     TSpaceAvailable & ASpaceAvailable) = 0;
   virtual const TSessionInfo & GetSessionInfo() const = 0;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) = 0;
-  virtual bool TemporaryTransferFile(const UnicodeString & AFileName) = 0;
+  virtual bool TemporaryTransferFile(UnicodeString AFileName) = 0;
   virtual bool GetStoredCredentialsTried() const = 0;
-  virtual UnicodeString FSGetUserName() const = 0;
+  virtual UnicodeString RemoteGetUserName() const = 0;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs) = 0;
-  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) = 0;
-  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) = 0;
+  virtual void LockFile(UnicodeString AFileName, const TRemoteFile * AFile) = 0;
+  virtual void UnlockFile(UnicodeString AFileName, const TRemoteFile * AFile) = 0;
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) = 0;
 
-/*
+#if 0
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
-*/
-  virtual UnicodeString GetCurrDirectory() const = 0;
+#endif // #if 0
+  UnicodeString RemoteCurrentDirectory() const { return RemoteGetCurrentDirectory(); }
 
 protected:
   TTerminal * FTerminal;
 
   explicit TCustomFileSystem(TObjectClassId Kind) : TObject(Kind), FTerminal(nullptr) {}
   explicit TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal);
+  virtual UnicodeString RemoteGetCurrentDirectory() const = 0;
 
   UnicodeString CreateTargetDirectory(
-    IN const UnicodeString & AFileName,
-    IN const UnicodeString & ADirectory,
+    IN UnicodeString AFileName,
+    IN UnicodeString ADirectory,
     IN const TCopyParamType * CopyParam);
 };
 

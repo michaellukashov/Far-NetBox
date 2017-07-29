@@ -62,14 +62,11 @@ message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 set(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB") #" -DUSE_GETADDRINFO")
 set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
 set(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
-set(APR_DEFS "-DAPR_DECLARE_STATIC")
-set(APR_DEFS "${APR_DEFS} -DAPR_HAS_LARGE_FILES")
 set(NETBOX_DEFS "-DMPEXT -DWINSCP -DFARPLUGIN")
 set(NETBOX_DEFS "${NETBOX_DEFS} -DNO_GZIP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS")
 set(NETBOX_DEFS "${NETBOX_DEFS} -DCOM_NO_WINDOWS_H")
-set(NETBOX_DEFS "${NETBOX_DEFS} ${APR_DEFS}")
 set(NETBOX_DEFS "${NETBOX_DEFS} ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} ${DLMALLOC_DEFS}")
 #-D_WINDLL -D_USRDLL
 if (MSVC_VERSION GREATER 1899)
@@ -1091,98 +1088,6 @@ target_include_directories(neon PRIVATE
 )
 
 #-------------------------------------------------------------------------------
-#apr
-
-add_library(apr STATIC
-  ../../libs/apr/atomic/win32/apr_atomic.c
-#  ../../libs/apr/dso/win32/dso.c
-  ../../libs/apr/file_io/win32/buffer.c
-#  ../../libs/apr/file_io/unix/copy.c
-  ../../libs/apr/file_io/win32/dir.c
-  ../../libs/apr/file_io/unix/fileacc.c
-  ../../libs/apr/file_io/win32/filedup.c
-  ../../libs/apr/file_io/win32/filepath.c
-  ../../libs/apr/file_io/unix/filepath_util.c
-  ../../libs/apr/file_io/win32/filestat.c
-  ../../libs/apr/file_io/win32/filesys.c
-  ../../libs/apr/file_io/win32/flock.c
-  ../../libs/apr/file_io/unix/fullrw.c
-  ../../libs/apr/file_io/unix/mktemp.c
-  ../../libs/apr/file_io/win32/open.c
-  ../../libs/apr/file_io/win32/pipe.c
-  ../../libs/apr/file_io/win32/readwrite.c
-  ../../libs/apr/file_io/win32/seek.c
-#  ../../libs/apr/file_io/unix/tempdir.c
-  ../../libs/apr/locks/win32/proc_mutex.c
-  ../../libs/apr/locks/win32/thread_cond.c
-  ../../libs/apr/locks/win32/thread_mutex.c
-  ../../libs/apr/locks/win32/thread_rwlock.c
-  ../../libs/apr/memory/unix/apr_pools.c
-  ../../libs/apr/misc/win32/apr_app.c
-  ../../libs/apr/misc/win32/charset.c
-#  ../../libs/apr/misc/win32/env.c
-  ../../libs/apr/misc/unix/errorcodes.c
-#  ../../libs/apr/misc/unix/getopt.c
-  ../../libs/apr/misc/win32/internal.c
-  ../../libs/apr/misc/win32/misc.c
-#  ../../libs/apr/misc/unix/otherchild.c
-  ../../libs/apr/misc/win32/rand.c
-  ../../libs/apr/misc/win32/start.c
-  ../../libs/apr/misc/win32/utf8.c
-#  ../../libs/apr/misc/unix/version.c
-  ../../libs/apr/mmap/unix/common.c
-#  ../../libs/apr/mmap/win32/mmap.c
-  ../../libs/apr/network_io/unix/inet_ntop.c
-  ../../libs/apr/network_io/unix/inet_pton.c
-#  ../../libs/apr/network_io/unix/multicast.c
-  ../../libs/apr/network_io/win32/sendrecv.c
-  ../../libs/apr/network_io/unix/sockaddr.c
-  ../../libs/apr/network_io/win32/sockets.c
-  ../../libs/apr/network_io/unix/socket_util.c
-  ../../libs/apr/network_io/win32/sockopt.c
-#  ../../libs/apr/passwd/apr_getpass.c
-#  ../../libs/apr/poll/unix/poll.c
-#  ../../libs/apr/poll/unix/pollcb.c
-#  ../../libs/apr/poll/unix/pollset.c
-#  ../../libs/apr/poll/unix/select.c
-#  ../../libs/apr/poll/unix/wakeup.c
-#  ../../libs/apr/poll/unix/z_asio.c
-  ../../libs/apr/random/unix/apr_random.c
-#  ../../libs/apr/random/unix/sha2.c
-#  ../../libs/apr/random/unix/sha2_glue.c
-#  ../../libs/apr/shmem/win32/shm.c
-  ../../libs/apr/strings/apr_cpystrn.c
-  ../../libs/apr/strings/apr_fnmatch.c
-  ../../libs/apr/strings/apr_snprintf.c
-  ../../libs/apr/strings/apr_strings.c
-  ../../libs/apr/strings/apr_strnatcmp.c
-  ../../libs/apr/strings/apr_strtok.c
-  ../../libs/apr/strings/apr_cstr.c
-  ../../libs/apr/tables/apr_hash.c
-  ../../libs/apr/tables/apr_tables.c
-#  ../../libs/apr/tables/apr_skiplist.c
-  ../../libs/apr/threadproc/win32/proc.c
-  ../../libs/apr/threadproc/win32/signals.c
-  ../../libs/apr/threadproc/win32/thread.c
-  ../../libs/apr/threadproc/win32/threadpriv.c
-  ../../libs/apr/time/win32/time.c
-  ../../libs/apr/time/win32/timestr.c
-#  ../../libs/apr/user/win32/groupinfo.c
-  ../../libs/apr/user/win32/userinfo.c
-  ../../libs/apr/encoding/apr_escape.c
-)
-
-target_compile_options(apr PRIVATE
-  -U_UNICODE -UUNICODE
-)
-
-target_include_directories(apr PRIVATE
-  ../../libs/apr/include
-  ../../libs/apr/include/arch/win32
-  ../../libs/apr/include/arch/unix
-)
-
-#-------------------------------------------------------------------------------
 #expat
 
 add_library(expat STATIC
@@ -1377,6 +1282,7 @@ set(NETBOX_SOURCES
   ../base/Exceptions.cpp
   ../base/FileBuffer.cpp
   ../base/Global.cpp
+  ../base/System.SyncObjs.cpp
   ../base/FormatUtils.cpp
 
   ../core/RemoteFiles.cpp
@@ -1385,6 +1291,7 @@ set(NETBOX_SOURCES
   ../core/Queue.cpp
   ../core/SecureShell.cpp
   ../core/SessionInfo.cpp
+  ../core/Script.cpp
   ../core/CoreMain.cpp
   ../core/FileMasks.cpp
   ../core/CopyParam.cpp
@@ -1410,6 +1317,8 @@ set(NETBOX_SOURCES
   ../windows/GUIConfiguration.cpp
   ../windows/Tools.cpp
   ../windows/ProgParams.cpp
+  ../windows/UserInterface.cpp
+  ../windows/WinInterface.cpp
 
 #  UnityBuildFilezilla.cpp
 #  ../filezilla/stdafx.cpp
@@ -1444,7 +1353,6 @@ set(NETBOX_SOURCES
   FarInterface.cpp
   XmlStorage.cpp
   FarPluginStrings.cpp
-  ../windows/WinInterface.cpp
 )
 
 endif(OPT_USE_UNITY_BUILD)
@@ -1576,11 +1484,11 @@ set(NETBOX_LIBRARIES
   tinyxml2
   libssl libcrypto
   neon
-  apr
   expat
   dlmalloc
   rdestl
   fmt
+
   Ws2_32.lib
   kernel32.lib
   user32.lib
@@ -1618,7 +1526,6 @@ target_include_directories(NetBox PRIVATE
   ../../libs/openssl/include
   ../../libs/putty
   ../../libs/putty/windows
-  ../../libs/apr/include
   ../../libs/neon/src
   ../../libs/tinyxml2
   ../../libs/rdestl
@@ -1650,7 +1557,8 @@ target_link_libraries(NetBox PRIVATE
 )
 
 target_compile_options(NetBox PRIVATE
-#  -wd4251 -wd4275 -wd4661
+  -DBUILD_OFFICIAL
+  -wd4251 -wd4275 -wd4661
   ${ATLMFC_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )

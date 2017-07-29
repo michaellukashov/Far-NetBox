@@ -8,7 +8,9 @@
 #include <TextsCore.h>
 #include <Terminal.h>
 #include <CoreMain.h>
-//#include <shlobj.h>
+#if defined(_MSC_VER) && !defined(__clang__)
+#include <shlobj.h>
+#endif // if defined(_MSC_VER) && !defined(__clang__)
 
 const intptr_t ccLocal = ccUser;
 const intptr_t ccShowResults = ccUser << 1;
@@ -17,7 +19,8 @@ const intptr_t ccRemoteFiles = ccUser << 3;
 const intptr_t ccSet = 0x80000000;
 
 static const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
-#define ADDITIONAL_LANGUAGE_PREFIX L"XX"
+static const UnicodeString AdditionaLanguagePrefix(L"XX");
+static const UnicodeString TranslationsSubFolder(L"Translations");
 
 TGUICopyParamType::TGUICopyParamType() :
   TCopyParamType(OBJECT_CLASS_TGUICopyParamType)
@@ -41,8 +44,7 @@ void TGUICopyParamType::Assign(const TCopyParamType * Source)
 {
   TCopyParamType::Assign(Source);
 
-  const TGUICopyParamType * GUISource;
-  GUISource = dyn_cast<TGUICopyParamType>(Source);
+  const TGUICopyParamType * GUISource = dyn_cast<TGUICopyParamType>(Source);
   if (GUISource != nullptr)
   {
     GUIAssign(GUISource);
@@ -53,7 +55,7 @@ void TGUICopyParamType::GUIAssign(const TGUICopyParamType * Source)
 {
   SetQueue(Source->GetQueue());
   SetQueueNoConfirmation(Source->GetQueueNoConfirmation());
-  SetQueueIndividually(Source->GetQueueIndividually());
+  SetQueueParallel(Source->GetQueueParallel());
 }
 
 void TGUICopyParamType::Default()
@@ -67,7 +69,7 @@ void TGUICopyParamType::GUIDefault()
 
   SetQueue(false);
   SetQueueNoConfirmation(true);
-  SetQueueIndividually(false);
+  SetQueueParallel(false);
 }
 
 void TGUICopyParamType::Load(THierarchicalStorage * Storage)
@@ -76,7 +78,7 @@ void TGUICopyParamType::Load(THierarchicalStorage * Storage)
 
   SetQueue(Storage->ReadBool("Queue", GetQueue()));
   SetQueueNoConfirmation(Storage->ReadBool("QueueNoConfirmation", GetQueueNoConfirmation()));
-  SetQueueIndividually(Storage->ReadBool("QueueIndividually", GetQueueIndividually()));
+  SetQueueParallel(Storage->ReadBool("QueueParallel", GetQueueParallel()));
 }
 
 void TGUICopyParamType::Save(THierarchicalStorage * Storage)
@@ -85,20 +87,21 @@ void TGUICopyParamType::Save(THierarchicalStorage * Storage)
 
   Storage->WriteBool("Queue", GetQueue());
   Storage->WriteBool("QueueNoConfirmation", GetQueueNoConfirmation());
-  Storage->WriteBool("QueueIndividually", GetQueueIndividually());
+  Storage->WriteBool("QueueQueueParallel", GetQueueParallel());
 }
 
-TGUICopyParamType & TGUICopyParamType::operator =(const TCopyParamType & rhp)
+TGUICopyParamType & TGUICopyParamType::operator=(const TCopyParamType & rhp)
 {
   Assign(&rhp);
   return *this;
 }
 
-TGUICopyParamType & TGUICopyParamType::operator =(const TGUICopyParamType & rhp)
+TGUICopyParamType & TGUICopyParamType::operator=(const TGUICopyParamType & rhp)
 {
   Assign(&rhp);
   return *this;
 }
+
 
 void TCopyParamRuleData::Default()
 {
@@ -130,7 +133,7 @@ TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source) :
 
 #define C(Property) (Property == rhp.Property)
 
-bool TCopyParamRule::operator==(const TCopyParamRule& rhp) const
+bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
 {
   return
     C(FData.HostName) &&
@@ -141,8 +144,8 @@ bool TCopyParamRule::operator==(const TCopyParamRule& rhp) const
 }
 #undef C
 
-bool TCopyParamRule::Match(const UnicodeString & Mask,
-  const UnicodeString & Value, bool Path, bool Local, int ForceDirectoryMasks) const
+bool TCopyParamRule::Match(UnicodeString Mask,
+  UnicodeString Value, bool Path, bool Local, int ForceDirectoryMasks) const
 {
   bool Result;
   if (Mask.IsEmpty())
@@ -205,7 +208,7 @@ TCopyParamRule & TCopyParamRule::operator=(const TCopyParamRule & other)
   return *this;
 }
 
-UnicodeString TCopyParamRule::GetInfoStr(const UnicodeString & Separator) const
+UnicodeString TCopyParamRule::GetInfoStr(UnicodeString Separator) const
 {
   UnicodeString Result;
 #define ADD(FMT, ELEM) \
@@ -217,11 +220,6 @@ UnicodeString TCopyParamRule::GetInfoStr(const UnicodeString & Separator) const
   ADD(COPY_RULE_LOCAL_DIR, LocalDirectory);
 #undef ADD
   return Result;
-}
-
-void TCopyParamRule::SetData(const TCopyParamRuleData & Value)
-{
-  FData = Value;
 }
 
 TCopyParamList::TCopyParamList() :
@@ -264,7 +262,7 @@ void TCopyParamList::Modify()
   FModified = true;
 }
 
-void TCopyParamList::ValidateName(const UnicodeString & Name)
+void TCopyParamList::ValidateName(UnicodeString Name)
 {
   if (Name.LastDelimiter(CONST_INVALID_CHARS) > 0)
   {
@@ -274,6 +272,8 @@ void TCopyParamList::ValidateName(const UnicodeString & Name)
 
 TCopyParamList & TCopyParamList::operator=(const TCopyParamList & rhl)
 {
+  if (this == &rhl)
+    return *this;
   Clear();
 
   for (intptr_t Index = 0; Index < rhl.GetCount(); ++Index)
@@ -308,7 +308,7 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
   return Result;
 }
 
-intptr_t TCopyParamList::IndexOfName(const UnicodeString & Name) const
+intptr_t TCopyParamList::IndexOfName(UnicodeString Name) const
 {
   return FNames->IndexOf(Name);
 }
@@ -335,13 +335,13 @@ void TCopyParamList::Clear()
   FNames->Clear();
 }
 
-void TCopyParamList::Add(const UnicodeString & Name,
+void TCopyParamList::Add(UnicodeString Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   Insert(GetCount(), Name, CopyParam, Rule);
 }
 
-void TCopyParamList::Insert(intptr_t Index, const UnicodeString & Name,
+void TCopyParamList::Insert(intptr_t Index, UnicodeString Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   DebugAssert(FNames->IndexOf(Name) < 0);
@@ -352,7 +352,7 @@ void TCopyParamList::Insert(intptr_t Index, const UnicodeString & Name,
   Modify();
 }
 
-void TCopyParamList::Change(intptr_t Index, const UnicodeString & Name,
+void TCopyParamList::Change(intptr_t Index, UnicodeString Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
@@ -439,20 +439,20 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
         }
         __finally
         {
-/*
+#if 0
           Storage->CloseSubKey();
-*/
+#endif // #if 0
         };
       }
     }
-/*
+#if 0
     catch(...)
     {
       delete CopyParam;
       delete Rule;
       throw;
     }
-*/
+#endif // #if 0
 
     FCopyParams->Add(CopyParam.release());
     FRules->Add(Rule.release());
@@ -487,9 +487,9 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
       }
       __finally
       {
-/*
+#if 0
         Storage->CloseSubKey();
-*/
+#endif // #if 0
       };
     }
   }
@@ -543,8 +543,6 @@ bool TCopyParamList::GetAnyRule() const
 
 TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) :
   TConfiguration(Kind),
-  FAppliedLocale(0),
-  FLocale(0),
   FLocales(CreateSortedStringList()),
   FLastLocalesExts(L"*"),
   FContinueOnError(false),
@@ -565,9 +563,12 @@ TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) :
   FCopyParamList(new TCopyParamList()),
   FCopyParamListDefaults(false),
   FKeepUpToDateChangeDelay(0),
-  FSessionReopenAutoIdle(0)
+  FSessionReopenAutoIdle(0),
+  FAppliedLocale(0),
+  FLocale(0)
 {
   CoreSetResourceModule(nullptr);
+  FLocales = new TObjectList();
 }
 
 TGUIConfiguration::~TGUIConfiguration()
@@ -598,13 +599,15 @@ void TGUIConfiguration::Default()
   FQueueKeepDoneItems = true;
   FQueueKeepDoneItemsFor = 15;
   FQueueAutoPopup = true;
-  FSessionRememberPassword = false;
+  FSessionRememberPassword = true;
   UnicodeString ProgramsFolder;
+#if defined(_MSC_VER) && !defined(__clang__)
   SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
-  FDefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + "PuTTY\\putty.exe";
-  FDefaultPuttyPath = FormatCommand("%PROGRAMFILES%\\PuTTY\\putty.exe", L"");
-  FPuttyPath = FDefaultPuttyPath;
-  SetPSftpPath(FormatCommand("%PROGRAMFILES%\\PuTTY\\psftp.exe", L""));
+#endif // if defined(_MSC_VER) && !defined(__clang__)
+  FDefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + OriginalPuttyExecutable;
+  FDefaultPuttyPath = L"%PROGRAMFILES%\\PuTTY\\" + OriginalPuttyExecutable;
+  FPuttyPath = FormatCommand(FDefaultPuttyPath, L"");
+  //SetPSftpPath(FormatCommand("%PROGRAMFILES%\\PuTTY\\psftp.exe", L""));
   FPuttyPassword = false;
   FTelnetForFtpInPutty = true;
   FPuttySession = "WinSCP temporary session";
@@ -655,7 +658,7 @@ void TGUIConfiguration::UpdateStaticUsage()
   // Usage->Set(L"CopyParamsCount", (FCopyParamListDefaults ? 0 : FCopyParamList->GetCount()));
 }
 
-static UnicodeString PropertyToKey(const UnicodeString & Property)
+static UnicodeString PropertyToKey(UnicodeString Property)
 {
   // no longer useful
   intptr_t P = Property.LastDelimiter(L".>");
@@ -735,9 +738,9 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     }
     __finally
     {
-  /*
+#if 0
       Storage->CloseSubKey();
-  */
+#endif // #if 0
     };
   }
 
@@ -753,9 +756,9 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     }
     __finally
     {
-  /*
+#if 0
       Storage->CloseSubKey();
-  */
+#endif // #if 0
     };
   }
 }
@@ -785,7 +788,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
       FDefaultCopyParam.Load(Storage);
 
       intptr_t CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
-      FCopyParamListDefaults = ((int)CopyParamListCount <= 0);
+      FCopyParamListDefaults = (static_cast<int>(CopyParamListCount) <= 0);
       if (!FCopyParamListDefaults)
       {
         FCopyParamList->Clear();
@@ -800,9 +803,9 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     __finally
     {
-  /*
+#if 0
       Storage->CloseSubKey();
-  */
+#endif // #if 0
     };
   }
 
@@ -832,9 +835,9 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     __finally
     {
-  /*
+#if 0
       Storage->CloseSubKey();
-  */
+#endif // #if 0
     };
   }
 }
@@ -844,6 +847,30 @@ void TGUIConfiguration::Saved()
   TConfiguration::Saved();
 
   FCopyParamList->Reset();
+}
+
+
+UnicodeString TGUIConfiguration::GetTranslationModule(UnicodeString Path) const
+{
+  UnicodeString SubPath = AddTranslationsSubFolder(Path);
+  UnicodeString Result;
+  // Prefer the SubPath. Default to SubPath.
+  if (FileExists(Path) && !FileExists(SubPath))
+  {
+    Result = Path;
+  }
+  else
+  {
+    Result = SubPath;
+  }
+  return Result;
+}
+
+UnicodeString TGUIConfiguration::AddTranslationsSubFolder(UnicodeString Path) const
+{
+  return
+    ::IncludeTrailingBackslash(::IncludeTrailingBackslash(::ExtractFilePath(Path)) + TranslationsSubFolder) +
+    base::ExtractFileName(Path, false);
 }
 
 HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
@@ -859,33 +886,44 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     UnicodeString Module = ModuleFileName();
     if ((ALocale & AdditionaLanguageMask) != AdditionaLanguageMask)
     {
-      LOCALESIGNATURE LocSig;
-      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, reinterpret_cast<LPWSTR>(&LocSig), sizeof(LocSig) / sizeof(TCHAR));
-      LocaleName = *reinterpret_cast<LPWSTR>(&LocSig);
+      wchar_t LocaleStr[4];
+      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, LocaleStr, _countof(LocaleStr));
+      LocaleName = LocaleStr;
       DebugAssert(!LocaleName.IsEmpty());
     }
     else
     {
-      LocaleName = UnicodeString(ADDITIONAL_LANGUAGE_PREFIX) +
-        static_cast<wchar_t>(ALocale & ~AdditionaLanguageMask);
+      LocaleName = AdditionaLanguagePrefix +
+        char(ALocale & ~AdditionaLanguageMask);
     }
 
     Module = ::ChangeFileExt(Module, UnicodeString(L".") + LocaleName);
     // Look for a potential language/country translation
-    NewInstance = ::LoadLibraryEx(Module.c_str(), nullptr, LOAD_LIBRARY_AS_DATAFILE);
-    if (!NewInstance)
+    UnicodeString ModulePath = GetTranslationModule(Module);
+    NewInstance = ::LoadLibraryEx(ModulePath.c_str(), nullptr, LOAD_LIBRARY_AS_DATAFILE);
+    if (NewInstance)
     {
-      // Finally look for a language only translation
-      Module.SetLength(Module.Length() - 1);
-      NewInstance = ::LoadLibraryEx(Module.c_str(), nullptr, LOAD_LIBRARY_AS_DATAFILE);
-      if (NewInstance)
-      {
-        LibraryFileName = Module;
-      }
+      LibraryFileName = ModulePath;
     }
     else
     {
-      LibraryFileName = Module;
+      DWORD PrimaryLang = PRIMARYLANGID(ALocale);
+      DWORD SubLang = SUBLANGID(ALocale);
+      DebugAssert(SUBLANG_DEFAULT == SUBLANG_CHINESE_TRADITIONAL);
+      // Finally look for a language-only translation.
+      // But for Chinese, never use "traditional" (what is the "default" Chinese), if we want "Simplified"
+      // (the same what Inno Setup does)
+      if ((PrimaryLang != LANG_CHINESE) ||
+          (SubLang == SUBLANG_CHINESE_TRADITIONAL))
+      {
+        Module.SetLength(Module.Length() - 1);
+        ModulePath = GetTranslationModule(Module);
+        NewInstance = LoadLibraryEx(ModulePath.c_str(), nullptr, LOAD_LIBRARY_AS_DATAFILE);
+        if (NewInstance)
+        {
+          LibraryFileName = ModulePath;
+        }
+      }
     }
   }
 
@@ -893,13 +931,10 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   {
     throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
   }
-  else
+  if (Internal)
   {
-    if (Internal)
-    {
-      ThrowNotImplemented(90);
-      NewInstance = nullptr; // FIXME  HInstance;
-    }
+    ThrowNotImplemented(90);
+    NewInstance = nullptr; // FIXME  HInstance;
   }
 
   AFileName = LibraryFileName;
@@ -926,62 +961,85 @@ LCID TGUIConfiguration::InternalLocale() const
 
 LCID TGUIConfiguration::GetLocale()
 {
-  if (!FLocale)
-  {
-    SetInitialLocale(InternalLocale());
-  }
   return FLocale;
 }
 
 void TGUIConfiguration::SetLocale(LCID Value)
 {
-  SetLocaleInternal(Value, false);
+  if (FLocale != Value)
+  {
+    SetLocaleInternal(Value, false, false);
+  }
 }
 
 void TGUIConfiguration::SetLocaleSafe(LCID Value)
 {
-  SetLocaleInternal(Value, true);
-}
-
-UnicodeString TGUIConfiguration::GetLocaleHex()
-{
-  return IntToHex(int64_t(GetGUIConfiguration()->GetLocale()), 4);
-}
-
-void TGUIConfiguration::SetLocaleInternal(LCID Value, bool Safe)
-{
-  if (GetLocale() != Value)
+  if (FLocale != Value)
   {
-    HINSTANCE Module = nullptr;
-    UnicodeString FileName;
+    SetLocaleInternal(Value, true, false);
+  }
+}
 
-    try
-    {
-      Module = LoadNewResourceModule(Value, FileName);
-      DebugAssert(Module != nullptr);
-    }
-    catch (...)
-    {
-      if (Safe)
-      {
-        // ignore any exception while loading locale
-        Module = nullptr;
-      }
-      else
-      {
-        throw;
-      }
-    }
+UnicodeString TGUIConfiguration::GetAppliedLocaleHex() const
+{
+  return IntToHex(int64_t(GetAppliedLocale()), 4);
+}
 
+int TGUIConfiguration::GetResourceModuleCompleteness(HINSTANCE /*Module*/)
+{
+  return 100;
+}
+
+bool TGUIConfiguration::IsTranslationComplete(HINSTANCE /*Module*/)
+{
+  return true;
+}
+
+void TGUIConfiguration::SetLocaleInternal(LCID Value, bool Safe, bool CompleteOnly)
+{
+  LCID L = Value;
+  if (L == 0)
+  {
+    L = GetUserDefaultUILanguage();
+  }
+
+  HINSTANCE Module = nullptr;
+  UnicodeString FileName;
+
+  try
+  {
+    Module = LoadNewResourceModule(L, FileName);
+    DebugAssert(Module != nullptr);
+    if (CompleteOnly && !IsTranslationComplete(Module))
+    {
+      Abort();
+    }
+  }
+  catch (...)
+  {
     if (Module != nullptr)
     {
-      FLocale = Value;
-      if (GetCanApplyLocaleImmediately())
-      {
-        FAppliedLocale = Value;
-        SetResourceModule(Module);
-        FLocaleModuleName = FileName;
-      }
+      FreeResourceModule(Module);
+      Module = nullptr;
+    }
+
+    if (Safe)
+    {
+      // ignore any exception while loading locale
+    }
+    else
+    {
+      throw;
+    }
+  }
+
+  if (Module != nullptr)
+  {
+    FLocale = Value;
+    if (GetCanApplyLocaleImmediately())
+    {
+      SetAppliedLocale(L, FileName);
+      SetResourceModule(Module);
     }
   }
 }
@@ -989,11 +1047,13 @@ void TGUIConfiguration::SetLocaleInternal(LCID Value, bool Safe)
 bool TGUIConfiguration::GetCanApplyLocaleImmediately() const
 {
   return true;
-//    (Screen->FormCount == 0) &&
-//    (Screen->DataModuleCount == 0);
+#if 0
+    (Screen->FormCount == 0) &&
+    (Screen->DataModuleCount == 0);
+#endif // #if 0
 }
 
-UnicodeString TGUIConfiguration::LocaleCopyright()
+UnicodeString TGUIConfiguration::AppliedLocaleCopyright() const
 {
   UnicodeString Result;
   if ((FAppliedLocale == 0) || (FAppliedLocale == InternalLocale()))
@@ -1009,7 +1069,7 @@ UnicodeString TGUIConfiguration::LocaleCopyright()
   return Result;
 }
 
-UnicodeString TGUIConfiguration::LocaleVersion()
+UnicodeString TGUIConfiguration::AppliedLocaleVersion()
 {
   UnicodeString Result;
   if ((FAppliedLocale == 0) || (FAppliedLocale == InternalLocale()))
@@ -1023,21 +1083,21 @@ UnicodeString TGUIConfiguration::LocaleVersion()
   return Result;
 }
 
-void TGUIConfiguration::SetInitialLocale(LCID Value)
+void TGUIConfiguration::SetAppliedLocale(LCID AppliedLocale, UnicodeString LocaleModuleName)
 {
-  FLocale = Value;
-  FAppliedLocale = Value;
+  FAppliedLocale = AppliedLocale;
+  FLocaleModuleName = LocaleModuleName;
 }
 
-void TGUIConfiguration::FreeResourceModule(HANDLE /*Instance*/)
+void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
 {
-/*
+#if 0
   TLibModule * MainModule = FindModule(HInstance);
   if ((unsigned)Instance != MainModule->Instance)
   {
     FreeLibrary(static_cast<HMODULE>(Instance));
   }
-*/
+#endif // #if 0
 }
 
 HANDLE TGUIConfiguration::ChangeToDefaultResourceModule()
@@ -1047,7 +1107,7 @@ HANDLE TGUIConfiguration::ChangeToDefaultResourceModule()
 
 HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE /*Instance*/)
 {
-  /*
+#if 0
   if (Instance == nullptr)
   {
     Instance = HInstance;
@@ -1057,13 +1117,15 @@ HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE /*Instance*/)
   MainModule->ResInstance = (unsigned)Instance;
   CoreSetResourceModule(Instance);
   return Result;
-  */
+#endif // #if 0
   return nullptr;
 }
 
 HANDLE TGUIConfiguration::GetResourceModule()
 {
-//  return (HANDLE)FindModule(HInstance)->ResInstance;
+#if 0
+  return (HANDLE)FindModule(HInstance)->ResInstance;
+#endif // #if 0
   return nullptr;
 }
 
@@ -1075,17 +1137,13 @@ void TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
   DefaultLocalized();
 }
 
-TStrings * TGUIConfiguration::GetLocales()
+void TGUIConfiguration::FindLocales(UnicodeString LocalesMask, TStrings * Exts, UnicodeString & LocalesExts)
 {
-  ThrowNotImplemented(93);
-  UnicodeString LocalesExts;
-  std::unique_ptr<TStringList> Exts(CreateSortedStringList());
-
-  DWORD FindAttrs = faReadOnly | faArchive;
+  int FindAttrs = faReadOnly | faArchive;
   TSearchRecChecked SearchRec;
-
-  bool Found = (base::FindFirst(::ChangeFileExt(ModuleFileName(), L".*"),
-    FindAttrs, SearchRec) == 0);
+  bool Found =
+    (FindFirstUnchecked(LocalesMask, FindAttrs, SearchRec) == 0);
+  try__finally
   {
     SCOPE_EXIT
     {
@@ -1094,8 +1152,9 @@ TStrings * TGUIConfiguration::GetLocales()
     while (Found)
     {
       UnicodeString Ext = ::ExtractFileExt(SearchRec.Name).UpperCase();
+      // DLL is a remnant from times the .NET assembly was winscp.dll, not winscpnet.dll
       if ((Ext.Length() >= 3) && (Ext != L".EXE") && (Ext != L".COM") &&
-        (Ext != L".DLL") && (Ext != L".INI"))
+        (Ext != L".DLL") && (Ext != L".INI") && (Ext != L".MAP"))
       {
         Ext = Ext.SubString(2, Ext.Length() - 1);
         LocalesExts += Ext;
@@ -1104,30 +1163,90 @@ TStrings * TGUIConfiguration::GetLocales()
       Found = (FindNextChecked(SearchRec) == 0);
     }
   }
+  __finally
+  {
+#if 0
+    FindClose(SearchRec);
+#endif // #if 0
+  };
+}
+
+void TGUIConfiguration::AddLocale(LCID Locale, UnicodeString Name)
+{
+  std::unique_ptr<TLocaleInfo> LocaleInfo(new TLocaleInfo());
+  LocaleInfo->Locale = Locale;
+  LocaleInfo->Name = Name;
+
+  try
+  {
+    UnicodeString FileName;
+    HINSTANCE Module = LoadNewResourceModule(Locale, FileName);
+    try__finally
+    {
+      SCOPE_EXIT
+      {
+        FreeResourceModule(Module);
+      };
+      LocaleInfo->Completeness = GetResourceModuleCompleteness(Module);
+    }
+    __finally
+    {
+#if 0
+      FreeResourceModule(Module);
+#endif // #if 0
+    };
+  }
+  catch (...)
+  {
+    LocaleInfo->Completeness = -1;
+  }
+
+  FLocales->Add(LocaleInfo.release());
+}
+
+intptr_t TGUIConfiguration::LocalesCompare(void * Item1, void * Item2)
+{
+  TLocaleInfo * LocaleInfo1 = static_cast<TLocaleInfo *>(Item1);
+  TLocaleInfo * LocaleInfo2 = static_cast<TLocaleInfo *>(Item2);
+  return CompareText(LocaleInfo1->Name, LocaleInfo2->Name);
+}
+
+TObjectList * TGUIConfiguration::GetLocales()
+{
+  UnicodeString LocalesMask = ChangeFileExt(ModuleFileName(), L".*");
+  UnicodeString SubLocalesMask = AddTranslationsSubFolder(LocalesMask);
+
+  UnicodeString LocalesExts;
+  std::unique_ptr<TStringList> Exts(CreateSortedStringList());
+  FindLocales(SubLocalesMask, Exts.get(), LocalesExts);
+  FindLocales(LocalesMask, Exts.get(), LocalesExts);
 
   if (FLastLocalesExts != LocalesExts)
   {
     FLastLocalesExts = LocalesExts;
     FLocales->Clear();
 
-    /* // FIXME
-    TLanguages * Langs = nullptr; // FIXME LanguagesDEPF();
-    int Ext, Index, Count;
-    wchar_t LocaleStr[255];
-    LCID Locale;
+#if 0
+    TLanguages * Langs = Languages();
 
-    Count = Langs->GetCount();
-    Index = -1;
+    int Count = Langs->Count;
+    int Index = -1;
     while (Index < Count)
     {
+      LCID Locale;
       if (Index >= 0)
       {
         Locale = Langs->LocaleID[Index];
-        Ext = Exts->IndexOf(Langs->Ext[Index]);
-        if (Ext < 0)
+        DWORD SubLang = SUBLANGID(Locale);
+        int Ext = Exts->IndexOf(Langs->Ext[Index]);
+        if ((Ext >= 0) && (Exts->Objects[Ext] == nullptr))
+        {
+          // noop
+        }
+        else if (SubLang == SUBLANG_DEFAULT)
         {
           Ext = Exts->IndexOf(Langs->Ext[Index].SubString(1, 2));
-          if (Ext >= 0)
+          if ((Ext >= 0) && (Exts->Objects[Ext] == nullptr))
           {
             Locale = MAKELANGID(PRIMARYLANGID(Locale), SUBLANG_DEFAULT);
           }
@@ -1149,35 +1268,41 @@ TStrings * TGUIConfiguration::GetLocales()
 
       if (Locale)
       {
-        UnicodeString Name;
+        wchar_t LocaleStr[255];
         GetLocaleInfo(Locale, LOCALE_SENGLANGUAGE,
-          LocaleStr, sizeof(LocaleStr));
-        Name = LocaleStr;
-        Name += " - ";
+          LocaleStr, LENOF(LocaleStr));
+        UnicodeString Name = LocaleStr;
+        Name += L" - ";
         // LOCALE_SNATIVELANGNAME
         GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
-          LocaleStr, sizeof(LocaleStr));
+          LocaleStr, LENOF(LocaleStr));
         Name += LocaleStr;
+        // AddLocale(Locale, Name);
         FLocales->AddObject(Name, ToObj(Locale));
       }
-      ++Index;
+      Index++;
     }
-    */
-    for (intptr_t Index = 0; Index < Exts->GetCount(); ++Index)
+
+    for (int Index = 0; Index < Exts->Count; Index++)
     {
-      if ((Exts->GetObj(Index) == nullptr) &&
-        (Exts->GetString(Index).Length() == 3) &&
-        ::SameText(Exts->GetString(Index).SubString(1, 2), ADDITIONAL_LANGUAGE_PREFIX))
+      if ((Exts->Objects[Index] == nullptr) &&
+          (Exts->Strings[Index].Length() == 3) &&
+          SameText(Exts->Strings[Index].SubString(1, 2), AdditionaLanguagePrefix))
       {
-        UnicodeString LangName = GetFileFileInfoString(L"LangName",
-          ::ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->GetString(Index)));
+        UnicodeString ModulePath = ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->Strings[Index]);
+        ModulePath = GetTranslationModule(ModulePath);
+        UnicodeString LangName = GetFileFileInfoString(L"LangName", ModulePath);
         if (!LangName.IsEmpty())
         {
+          //AddLocale(AdditionaLanguageMask + Exts->Strings[Index][3], LangName);
           FLocales->AddObject(LangName, ToObj(
             AdditionaLanguageMask + Exts->GetString(Index)[3]));
         }
       }
     }
+
+    FLocales->Sort(LocalesCompare);
+#endif // #if 0
   }
 
   return FLocales;
@@ -1191,7 +1316,24 @@ void TGUIConfiguration::SetDefaultCopyParam(const TGUICopyParamType & Value)
 
 bool TGUIConfiguration::GetRememberPassword() const
 {
-  return GetSessionRememberPassword() || GetPuttyPassword();
+  bool Result = GetSessionRememberPassword() || GetPuttyPassword();
+
+  if (!Result)
+  {
+    try
+    {
+      TRemoteCustomCommand RemoteCustomCommand;
+      TInteractiveCustomCommand InteractiveCustomCommand(&RemoteCustomCommand);
+      UnicodeString APuttyPath = InteractiveCustomCommand.Complete(FPuttyPath, false);
+      Result = RemoteCustomCommand.IsPasswordCommand(FPuttyPath);
+    }
+    catch (...)
+    {
+      // noop
+    }
+  }
+
+  return Result;
 }
 
 TCopyParamList * TGUIConfiguration::GetCopyParamList() const
@@ -1237,7 +1379,7 @@ void TGUIConfiguration::SetCopyParamIndex(intptr_t Value)
   SetCopyParamCurrent(Name);
 }
 
-void TGUIConfiguration::SetCopyParamCurrent(const UnicodeString & Value)
+void TGUIConfiguration::SetCopyParamCurrent(UnicodeString Value)
 {
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
@@ -1247,7 +1389,7 @@ TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam() const
   return GetCopyParamPreset(GetCopyParamCurrent());
 }
 
-TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Name) const
+TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(UnicodeString Name) const
 {
   TGUICopyParamType Result = FDefaultCopyParam;
   if (!Name.IsEmpty())
@@ -1269,7 +1411,7 @@ TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Na
   return Result;
 }
 
-bool TGUIConfiguration::GetHasCopyParamPreset(const UnicodeString & Name) const
+bool TGUIConfiguration::GetHasCopyParamPreset(UnicodeString Name) const
 {
   return Name.IsEmpty() || (FCopyParamList->IndexOfName(Name) >= 0);
 }
@@ -1345,7 +1487,7 @@ UnicodeString TGUIConfiguration::GetPuttyPath() const
   return FPuttyPath;
 }
 
-void TGUIConfiguration::SetPuttyPath(const UnicodeString & Value)
+void TGUIConfiguration::SetPuttyPath(UnicodeString Value)
 {
   FPuttyPath = Value;
 }
@@ -1355,22 +1497,12 @@ UnicodeString TGUIConfiguration::GetDefaultPuttyPath() const
   return FDefaultPuttyPath;
 }
 
-UnicodeString TGUIConfiguration::GetPSftpPath() const
-{
-  return FPSftpPath;
-}
-
-void TGUIConfiguration::SetPSftpPath(const UnicodeString & Value)
-{
-  FPSftpPath = Value;
-}
-
 UnicodeString TGUIConfiguration::GetPuttySession() const
 {
   return FPuttySession;
 }
 
-void TGUIConfiguration::SetPuttySession(const UnicodeString & Value)
+void TGUIConfiguration::SetPuttySession(UnicodeString Value)
 {
   FPuttySession = Value;
 }
@@ -1385,7 +1517,7 @@ UnicodeString TGUIConfiguration::GetChecksumAlg() const
   return FChecksumAlg;
 }
 
-void TGUIConfiguration::SetChecksumAlg(const UnicodeString & Value)
+void TGUIConfiguration::SetChecksumAlg(UnicodeString Value)
 {
   FChecksumAlg = Value;
 }

@@ -52,7 +52,7 @@ namespace rde
 							{/**/}
 							template<typename UNodePtr, typename UPtr, typename URef>
 								node_iterator(const node_iterator<UNodePtr, UPtr, URef>& rhs)
-								:	m_node(const_cast<typename rde::hash_map<TKey, TValue>::node*>(rhs.node())), m_map(const_cast<typename rde::hash_map<TKey, TValue>*>(rhs.get_map()))
+								:	m_node(const_cast<typename rde::hash_map<TKey, TValue>::node*>(rhs.node())), m_map(const_cast<rde::hash_map<TKey, TValue>*>(rhs.get_map()))
 								{/**/}
 
 							TRef operator*() const
@@ -202,7 +202,7 @@ namespace rde
 					{
 						hash_value_t hash;
 						node* n = find_for_insert(key, &hash);
-						if (n == 0 || !n->is_occupied())
+						if (n == nullptr || !n->is_occupied())
 						{
 							return insert_at(value_type(key, TValue()), n, hash).first->second;
 						}
@@ -376,7 +376,7 @@ namespace rde
 							hash_value_t hash)
 					{
 						RDE_ASSERT(invariant());
-						if (n == 0 || m_numUsed * TLoadFactor4 >= m_capacity * 4)
+						if (n == nullptr || m_numUsed * TLoadFactor4 >= m_capacity * 4)
 							return insert(v);
 
 						RDE_ASSERT(!n->is_occupied());
@@ -391,7 +391,7 @@ namespace rde
 					node* find_for_insert(const key_type& key, hash_value_t* out_hash)
 					{
 						if (m_capacity == 0)
-							return 0;
+							return nullptr;
 
 						const hash_value_t hash = hash_func(key);
 						*out_hash = hash;
@@ -401,7 +401,7 @@ namespace rde
 						if (n->hash == hash && m_keyEqualFunc(key, n->data.first))
 							return n;
 
-						node* freeNode(0);
+						node* freeNode(nullptr);
 						if (n->is_deleted())
 							freeNode = n;
 						uint32 numProbes(0);
@@ -414,7 +414,7 @@ namespace rde
 							n = m_nodes + i;
 							if (compare_key(n, key, hash))
 								return n;
-							if (n->is_deleted() && freeNode == 0)
+							if (n->is_deleted() && freeNode == nullptr)
 								freeNode = n;
 						}
 						return freeNode ? freeNode : n;

@@ -22,7 +22,7 @@ t_server::~t_server()
 {
 }
 
-const bool operator == (const t_server & a, const t_server & b)
+const bool operator==(const t_server & a, const t_server & b)
 {
   if (a.host!=b.host)
       return false;
@@ -51,7 +51,7 @@ const bool operator == (const t_server & a, const t_server & b)
   return true;
 }
 
-const bool operator != (const t_server & a, const t_server & b)
+const bool operator!=(const t_server & a, const t_server & b)
 {
   return !(a == b);
 }

@@ -10,6 +10,7 @@
 #define SCRIPT_SWITCH "script"
 #define COMMAND_SWITCH L"Command"
 #define SESSIONNAME_SWITCH L"SessionName"
+#define NEWPASSWORD_SWITCH L"newpassword"
 #define INI_NUL L"nul"
 #define PRESERVETIME_SWITCH L"preservetime"
 #define PRESERVETIMEDIRS_SWITCH_VALUE L"all"
@@ -39,8 +40,10 @@ NB_CORE_EXPORT TOptions * GetGlobalOptions();
 
 NB_CORE_EXPORT void ShowExtendedException(Exception * E);
 NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
-//void IgnoreException(const std::type_info & ExceptionType);
-//UnicodeString GetExceptionDebugInfo();
+#if 0
+void IgnoreException(const std::type_info & ExceptionType);
+UnicodeString GetExceptionDebugInfo();
+#endif // #if 0
 
 NB_CORE_EXPORT UnicodeString GetCompanyRegistryKey();
 NB_CORE_EXPORT UnicodeString GetRegistryKey();
@@ -51,13 +54,44 @@ NB_CORE_EXPORT void SetNoGUI();
 NB_CORE_EXPORT bool ProcessGUI(bool Force = false);
 NB_CORE_EXPORT UnicodeString GetAppNameString();
 NB_CORE_EXPORT UnicodeString GetSshVersionString();
-NB_CORE_EXPORT void CopyToClipboard(const UnicodeString & Text);
+NB_CORE_EXPORT void CopyToClipboard(UnicodeString Text);
 NB_CORE_EXPORT HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
   /*TThreadFunc ThreadFunc,*/ void * Parameter, DWORD CreationFlags,
   TThreadID & ThreadId);
 
 NB_CORE_EXPORT void WinInitialize();
 NB_CORE_EXPORT void WinFinalize();
+
+#if 0
+// moved to Common.h
+// Order of the values also define order of the buttons/answers on the prompts
+// MessageDlg relies on these to be <= 0x0000FFFF
+const unsigned int qaYes =      0x00000001;
+// MessageDlg relies that answer do not conflict with mrCancel (=0x2)
+const unsigned int qaNo =       0x00000004;
+const unsigned int qaOK =       0x00000008;
+const unsigned int qaCancel =   0x00000010;
+const unsigned int qaYesToAll = 0x00000020;
+const unsigned int qaNoToAll =  0x00000040;
+const unsigned int qaAbort =    0x00000080;
+const unsigned int qaRetry =    0x00000100;
+const unsigned int qaIgnore =   0x00000200;
+const unsigned int qaSkip =     0x00000400;
+const unsigned int qaAll =      0x00000800;
+const unsigned int qaHelp =     0x00001000;
+const unsigned int qaReport =   0x00002000;
+
+const unsigned int qaFirst = qaYes;
+const unsigned int qaLast = qaReport;
+
+const unsigned int qaNeverAskAgain = 0x00010000;
+
+const int qpFatalAbort =           0x01;
+const int qpNeverAskAgainCheck =   0x02;
+const int qpAllowContinueOnError = 0x04;
+const int qpIgnoreAbort =          0x08;
+const int qpWaitInBatch =          0x10;
+#endif // #if 0
 
 struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 {
@@ -70,16 +104,28 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
   bool Default;
   TShiftStateFlag GrouppedShiftState;
   bool ElevationRequired;
+  bool MenuButton;
 };
 
-/*
-typedef void (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
-*/
+#if 0
+typedef void (__closure *TQueryParamsTimerEvent)(uintptr_t & Result);
+#endif // #if 0
 typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TQueryParamsTimerEvent;
+
+#if 0
+// moved to Classes.h
+enum TQueryType
+{
+  qtConfirmation,
+  qtWarning,
+  qtError,
+  qtInformation,
+};
+#endif // #if 0
 
 struct NB_CORE_EXPORT TQueryParams : public TObject
 {
-  explicit TQueryParams(uintptr_t AParams = 0, const UnicodeString & AHelpKeyword = HELP_NONE);
+  explicit TQueryParams(uintptr_t AParams = 0, UnicodeString AHelpKeyword = HELP_NONE);
   explicit TQueryParams(const TQueryParams & Source);
 
   void Assign(const TQueryParams & Source);
@@ -114,7 +160,7 @@ enum TPromptKind
   pkCryptoCard,
   pkKeybInteractive,
   pkPassword,
-  pkNewPassword
+  pkNewPassword,
 };
 
 enum TPromptUserParam
@@ -130,21 +176,21 @@ NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
 class TTerminal;
 class TRemoteFile;
 
-/*
+#if 0
 typedef void (__closure *TFileFoundEvent)
   (TTerminal * Terminal, const UnicodeString FileName, const TRemoteFile * File,
    bool & Cancel);
-*/
+#endif // #if 0
 typedef nb::FastDelegate4<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*FileName*/,
+  TTerminal * /*Terminal*/, UnicodeString /*FileName*/,
   const TRemoteFile * /*File*/,
   bool & /*Cancel*/> TFileFoundEvent;
-/*
+#if 0
 typedef void (__closure *TFindingFileEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
-*/
+#endif // #if 0
 typedef nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool & /*Cancel*/> TFindingFileEvent;
+  TTerminal * /*Terminal*/, UnicodeString /*Directory*/, bool & /*Cancel*/> TFindingFileEvent;
 
 class NB_CORE_EXPORT TOperationVisualizer
 {

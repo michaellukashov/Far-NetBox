@@ -3,12 +3,13 @@
 
 #include <stdlib.h>
 #include <nbglobals.h>
+#include "rdestl_common.h"
 
 namespace rde
 {
 
 // CONCEPT!
-class allocator
+class RDESTL_LIB allocator
 {
 public:
 	explicit allocator()	{}

@@ -4,7 +4,6 @@
 #include <Common.h>
 #include <Sysutils.hpp>
 
-#include "FarUtils.h"
 #include "FarDialog.h"
 
 extern void InitExtensionModule(HINSTANCE HInst);
@@ -14,7 +13,7 @@ extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
 {
 public:
-  inline TFarPluginGuard() :
+  TFarPluginGuard() :
     TGuard(FarPlugin->GetCriticalSection())
   {
   }

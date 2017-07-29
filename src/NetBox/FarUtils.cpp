@@ -136,7 +136,7 @@ DWORD CNBFile::LoadFile(const wchar_t * fileName, rde::vector<char> & fileConten
   return f.LastError();
 }
 
-void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth)
+void FarWrapText(UnicodeString Text, TStrings * Result, intptr_t MaxWidth)
 {
   size_t TabSize = 8;
   TStringList Lines;
@@ -164,7 +164,7 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidt
           UnicodeString Line = FullLine.SubString(1, MaxWidth);
           FullLine.Delete(1, MaxWidth);
 
-          intptr_t P = 0;
+          intptr_t P;
           while ((P = Line.Pos(L'\t')) > 0)
           {
             Line.Delete(P, 1);

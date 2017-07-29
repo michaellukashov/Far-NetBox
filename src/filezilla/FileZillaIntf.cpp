@@ -234,11 +234,11 @@ bool TFileZillaIntf::Chmod(int Value, const wchar_t* FileName,
   return Check(FFileZillaApi->Chmod(Value, FileName, Path), L"chmod");
 }
 
-bool TFileZillaIntf::Delete(const wchar_t* FileName, const wchar_t* APath)
+bool TFileZillaIntf::Delete(const wchar_t* FileName, const wchar_t* APath, bool FileNameOnly)
 {
   DebugAssert(FFileZillaApi != NULL);
   CServerPath Path(APath);
-  return Check(FFileZillaApi->Delete(FileName, Path), L"delete");
+  return Check(FFileZillaApi->Delete(FileName, Path, FileNameOnly), L"delete");
 }
 
 bool TFileZillaIntf::RemoveDir(const wchar_t* FileName, const wchar_t* APath)
@@ -272,7 +272,7 @@ bool TFileZillaIntf::ListFile(const wchar_t * FileName, const wchar_t * APath)
 }
 
 bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile,
-  const wchar_t * RemoteFile, const wchar_t * RemotePath, bool Get, __int64 Size,
+  const wchar_t * RemoteFile, const wchar_t * RemotePath, bool Get, int64_t Size,
   int Type, void * UserData)
 {
   t_transferfile Transfer;
@@ -352,7 +352,7 @@ void CopyFileTime(TRemoteFileTime & Dest, const t_directory::t_direntry::t_date 
 
 bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 {
-  bool Result;
+  bool Result = false;
 
   unsigned int MessageID = FZ_MSG_ID(wParam);
 
@@ -375,9 +375,10 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         int RequestResult = 0;
         wchar_t FileName1[MAX_PATH];
         COverwriteRequestData * Data = (COverwriteRequestData *)lParam;
+        DebugAssert(Data != NULL);
+        if (Data)
         try
         {
-          DebugAssert(Data != NULL);
           wcsncpy(FileName1, Data->FileName1, _countof(FileName1));
           FileName1[_countof(FileName1) - 1] = L'\0';
           TRemoteFileTime RemoteTime;
@@ -409,9 +410,10 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       {
         int RequestResult;
         CVerifyCertRequestData * AData = (CVerifyCertRequestData *)lParam;
+        DebugAssert(AData != NULL);
+        if (AData)
         try
         {
-          DebugAssert(AData != NULL);
           TFtpsCertificateData Data;
           CopyContact(Data.Subject, AData->pCertData->subject);
           CopyContact(Data.Issuer, AData->pCertData->issuer);
@@ -493,6 +495,8 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.Permissions = Source.permissionstr;
           Dest.HumanPerm = Source.humanpermstr;
           Dest.OwnerGroup = Source.ownergroup;
+          Dest.Owner = Source.owner;
+          Dest.Group = Source.group;
           Dest.Size = Source.size;
           Dest.Dir = Source.dir;
           Dest.Link = Source.bLink;

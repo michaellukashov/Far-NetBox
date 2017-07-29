@@ -1,6 +1,8 @@
+
 #pragma once
 
 #include <Classes.hpp>
+#include <memory>
 
 struct ne_session_s;
 struct ne_request_s;
@@ -8,12 +10,16 @@ struct ne_ssl_certificate_s;
 struct ssl_st;
 
 class THttp;
-//typedef void (__closure * THttpDownloadEvent)(THttp * Sender, int64_t Size, bool & Cancel);
+#if 0
+typedef void (__closure * THttpDownloadEvent)(THttp * Sender, int64_t Size, bool & Cancel);
+#endif // #if 0
 typedef nb::FastDelegate3<void,
   THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/> THttpDownloadEvent;
-//typedef void (__closure * THttpErrorEvent)(THttp * Sender, int Status, const UnicodeString & Message);
+#if 0
+typedef void (__closure * THttpErrorEvent)(THttp * Sender, int Status, UnicodeString Message);
+#endif // #if 0
 typedef nb::FastDelegate3<void,
-  THttp * /*Sender*/, int /*Status*/, const UnicodeString & /*Message*/> THttpErrorEvent;
+  THttp * /*Sender*/, int /*Status*/, UnicodeString /*Message*/> THttpErrorEvent;
 
 class THttp : public TObject
 {
@@ -22,10 +28,11 @@ public:
   ~THttp();
 
   void Get();
-  void Post(const UnicodeString & Request);
+  void Post(UnicodeString Request);
   bool IsCertificateError() const;
 
-  /*__property UnicodeString URL = { read = FURL, write = FURL };
+#if 0
+  __property UnicodeString URL = { read = FURL, write = FURL };
   __property UnicodeString ProxyHost = { read = FProxyHost, write = FProxyHost };
   __property int ProxyPort = { read = FProxyPort, write = FProxyPort };
   __property TStrings * RequestHeaders = { read = FRequestHeaders, write = FRequestHeaders };
@@ -34,13 +41,14 @@ public:
   __property TStrings * ResponseHeaders = { read = FResponseHeaders };
   __property __int64 ResponseLength = { read = GetResponseLength };
   __property __int64 ResponseLimit = { read = FResponseLimit, write = FResponseLimit };
-  __property THttpDownloadEvent OnDownload = { read = FOnDownload, write = FOnDownload};
-  __property THttpErrorEvent OnError = { read = FOnError, write = FOnError };*/
+  __property THttpDownloadEvent OnDownload = { read = FOnDownload, write = FOnDownload };
+  __property THttpErrorEvent OnError = { read = FOnError, write = FOnError };
+#endif // #if 0
 
   UnicodeString GetURL() const { return FURL; }
-  void SetURL(const UnicodeString & Value) { FURL = Value; }
+  void SetURL(UnicodeString Value) { FURL = Value; }
   UnicodeString GetProxyHost() const { return FProxyHost; }
-  void SetProxyHost(const UnicodeString & Value) { FProxyHost = Value; }
+  void SetProxyHost(UnicodeString Value) { FProxyHost = Value; }
   intptr_t GetProxyPort() const { return FProxyPort; }
   void SetProxyPort(intptr_t Value) { FProxyPort = Value; }
   TStrings * GetRequestHeaders() const { return FRequestHeaders; }
@@ -70,7 +78,7 @@ private:
 
   static int NeonBodyReader(void * UserData, const char * Buf, size_t Len);
   int NeonBodyReaderImpl(const char * Buf, size_t Len);
-  void SendRequest(const char * Method, const UnicodeString & Request);
+  void SendRequest(const char * Method, UnicodeString Request);
   UnicodeString GetResponse() const;
   int64_t GetResponseLength() const;
   static void InitSslSession(ssl_st * Ssl, ne_session_s * Session);
