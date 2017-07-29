@@ -2,9 +2,9 @@
 
 #include <iostream>
 #include <stdint.h>
-#include <apr_portable.h>
-#include <apr_time.h>
 #include <string>
+
+#include "platform_win32.h"
 
 namespace tinylog {
 
@@ -14,16 +14,16 @@ public:
   typedef uint32_t LogLevel;
 
   static const LogLevel
-    LL_TRACE   = 0,
-    LL_DEBUG   = 1,
-    LL_INFO    = 2,
-    LL_WARNING = 3,
-    LL_ERROR   = 4,
-    LL_FATAL   = 5;
+    LEVEL_TRACE   = 0,
+    LEVEL_DEBUG   = 1,
+    LEVEL_INFO    = 2,
+    LEVEL_WARNING = 3,
+    LEVEL_ERROR   = 4,
+    LEVEL_FATAL   = 5;
 
-  static std::string CurrentTime();
-  static void CurrentTime(std::string &ref_time);
-  static void CurrentTime(apr_time_exp_t *aprexptime, apr_os_exp_time_t ** ostime);
+//  static std::string CurrentTime();
+//  static void CurrentTime(std::string &ref_time);
+  static void CurrentTime(struct timeval *tv, struct tm ** tm);
 };
 
 } // namespace tinylog

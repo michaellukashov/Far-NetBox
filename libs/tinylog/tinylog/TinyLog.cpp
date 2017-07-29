@@ -1,41 +1,54 @@
-#include <apr_portable.h>
-#include <apr_arch_thread_cond.h>
-#include <apr_arch_thread_mutex.h>
-
 #include "TinyLog.h"
 #include "Config.h"
 
 namespace tinylog {
 
-apr_thread_mutex_t g_mutex;
-apr_thread_cond_t g_cond;
+//struct thread_cond_t
+//{
+//  HANDLE semaphore;
+//  CRITICAL_SECTION csection;
+//  unsigned long num_waiting;
+//  unsigned long num_wake;
+//  unsigned long generation;
+//};
+
+pthread_mutex_t g_mutex;
+sem_t g_cond;
 bool g_already_swap = false;
 
-static void * APR_THREAD_FUNC ThreadFunc(apr_thread_t *, void *pt_arg)
+static DWORD WINAPI ThreadFunc(void *pt_arg)
 {
   TinyLog *pt_tinylog = (TinyLog *)pt_arg;
   pt_tinylog->MainLoop();
 
-  return nullptr;
+  return 0;
 }
 
 TinyLog::TinyLog()
 {
+  pthread_mutex_init(&g_mutex, nullptr);
+  sem_init(&g_cond, 0, 0);
   pt_logstream_ = new LogStream();
-  e_log_level_ = Utils::LL_INFO;
+  e_log_level_ = Utils::LEVEL_INFO;
   b_run_ = true;
-  apr_threadattr_t *attr = nullptr;
-  void *data = this;
-  apr_pool_t *cont = nullptr;
-  apr_thread_create(&thrd_, attr, ThreadFunc, data, cont);
+  void *Parameter = this;
+  DWORD ThreadId;
+
+  thrd_ = ::CreateThread(nullptr,
+    0,
+    static_cast<LPTHREAD_START_ROUTINE>(&ThreadFunc),
+    Parameter,
+    CREATE_SUSPENDED, &ThreadId);
+
 }
 
 TinyLog::~TinyLog()
 {
   b_run_ = false;
-  apr_status_t retval;
-  apr_thread_join(&retval, nullptr);
+  pthread_join(thrd_, nullptr);
   delete pt_logstream_;
+  sem_destroy(&g_cond);
+  pthread_mutex_destroy(&g_mutex);
 }
 
 void TinyLog::SetLogLevel(Utils::LogLevel e_log_level)
@@ -56,17 +69,19 @@ LogStream &TinyLog::GetLogStream(const char *pt_file, int i_line, const char *pt
 
 int32_t TinyLog::MainLoop()
 {
-  apr_interval_time_t st_time_out;
+  struct timespec st_time_out;
 
   while (b_run_)
   {
-    st_time_out = apr_time_from_sec(pt_logstream_->tv_base_.tm_sec + TIME_OUT_SECOND);
+    st_time_out.tv_sec = pt_logstream_->tv_base_.tv_sec + TIME_OUT_SECOND;
+    st_time_out.tv_nsec = pt_logstream_->tv_base_.tv_usec * 1000;
+    // st_time_out = apr_time_from_sec(pt_logstream_->tv_base_.tm_sec + TIME_OUT_SECOND);
 
-    apr_thread_mutex_lock(&g_mutex);
+    pthread_mutex_lock(&g_mutex);
 
     while (!g_already_swap)
     {
-      if (apr_thread_cond_timedwait(&g_cond, &g_mutex, st_time_out) == ETIMEDOUT)
+      if (sem_wait(&g_cond)) // , &g_mutex, st_time_out) == ETIMEDOUT)
       {
         pt_logstream_->SwapBuffer();
         pt_logstream_->UpdateBaseTime();
@@ -81,7 +96,7 @@ int32_t TinyLog::MainLoop()
 
     pt_logstream_->WriteBuffer();
 
-    apr_thread_mutex_unlock(&g_mutex);
+    pthread_mutex_unlock(&g_mutex);
   }
 
   return 0;

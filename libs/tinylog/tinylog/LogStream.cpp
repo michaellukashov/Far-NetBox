@@ -1,21 +1,19 @@
 #include <io.h>
 #include <fcntl.h>
 
-#include <apr_arch_threadproc.h>
-#include <apr_arch_thread_cond.h>
-
 #include "LogStream.h"
 #include "Config.h"
 
 namespace tinylog {
 
-extern apr_thread_mutex_t g_mutex;
-extern apr_thread_cond_t g_cond;
+extern pthread_mutex_t g_mutex;
+//extern pthread_cond_t g_cond;
+extern sem_t g_cond;
 extern bool g_already_swap;
 
 LogStream::LogStream()
 {
-  log_file_fd_ = open(LOG_PATH, _O_WRONLY | _O_CREAT);
+  log_file_fd_ = _open(LOG_PATH, _O_WRONLY | _O_CREAT);
 
   pt_front_buff_ = new Buffer(BUFFER_SIZE);
   pt_back_buff_  = new Buffer(BUFFER_SIZE);
@@ -25,10 +23,10 @@ LogStream::LogStream()
 
 LogStream::~LogStream()
 {
-  delete(pt_front_buff_);
-  delete(pt_back_buff_);
+  delete pt_front_buff_;
+  delete pt_back_buff_;
 
-  close(log_file_fd_);
+  _close(log_file_fd_);
 }
 
 /*
@@ -56,17 +54,17 @@ LogStream& LogStream::operator<<(const char *pt_log)
 {
   UpdateBaseTime();
 
-  apr_thread_mutex_lock(&g_mutex);
+  pthread_mutex_lock(&g_mutex);
 
-  if (pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tm_usec, pt_file_, i_line_, pt_func_, str_log_level_, pt_log) < 0)
+  if (pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tv_usec, pt_file_, i_line_, pt_func_, str_log_level_, pt_log) < 0)
   {
     SwapBuffer();
     g_already_swap = true;
-    pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tm_usec, pt_file_, i_line_, pt_func_, str_log_level_, pt_log);
+    pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tv_usec, pt_file_, i_line_, pt_func_, str_log_level_, pt_log);
   }
 
-  apr_thread_cond_signal(&g_cond);
-  apr_thread_mutex_unlock(&g_mutex);
+  pthread_cond_signal(&g_cond);
+  pthread_mutex_unlock(&g_mutex);
 
   return *this;
 }
@@ -78,47 +76,45 @@ LogStream& LogStream::operator<<(const std::string &ref_log)
 
 void LogStream::UpdateBaseTime()
 {
-  apr_time_exp_t aprexptime;
-  apr_time_t now = apr_time_now();
-  apr_time_exp_lt(&aprexptime, now);
+  struct timeval tv;
+  time_t now = time(nullptr);
+  struct tm * tm = localtime(&now);
 
-  apr_os_exp_time_get(&pt_tm_base_, &aprexptime);
-
-  if (aprexptime.tm_sec != tv_base_.tm_sec)
+  if (tv.tv_sec != tv_base_.tv_sec)
   {
-    int new_sec = pt_tm_base_->wSecond + int(aprexptime.tm_sec - tv_base_.tm_sec);
+    int new_sec = pt_tm_base_->tm_sec + int(tm->tm_sec - tv_base_.tv_sec);
     if (new_sec >= 60)
     {
-      pt_tm_base_->wSecond = new_sec % 60;
-      int new_min = pt_tm_base_->wMinute + new_sec / 60;
+      pt_tm_base_->tm_sec = new_sec % 60;
+      int new_min = pt_tm_base_->tm_min + new_sec / 60;
       if (new_min >= 60)
       {
-        pt_tm_base_->wMinute = new_min % 60;
-        int new_hour = pt_tm_base_->wHour + new_min / 60;
+        pt_tm_base_->tm_min = new_min % 60;
+        int new_hour = pt_tm_base_->tm_hour + new_min / 60;
         if (new_hour >= 24)
         {
-          Utils::CurrentTime(&aprexptime, &pt_tm_base_);
+          Utils::CurrentTime(&tv, &pt_tm_base_);
         }
         else
         {
-          pt_tm_base_->wHour = new_hour;
+          pt_tm_base_->tm_hour = new_hour;
         }
       }
       else
       {
-        pt_tm_base_->wMinute = new_min;
+        pt_tm_base_->tm_min = new_min;
       }
     }
     else
     {
-      pt_tm_base_->wSecond = new_sec;
+      pt_tm_base_->tm_sec = new_sec;
     }
 
-    tv_base_ = aprexptime;
+    tv_base_ = tv;
   }
   else
   {
-    tv_base_.tm_usec = aprexptime.tm_usec;
+    tv_base_.tv_usec = tv.tv_usec;
   }
 }
 

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <apr_portable.h>
-#include <apr_time.h>
+#include "platform_win32.h"
 
 #include "Buffer.h"
 #include "Utils.h"
@@ -31,8 +30,8 @@ private:
   int i_line_;
   const char *pt_func_;
   std::string str_log_level_;
-  apr_time_exp_t tv_base_;
-  apr_os_exp_time_t *pt_tm_base_;
+  struct timeval tv_base_;
+  struct tm *pt_tm_base_;
 };
 
 inline
@@ -44,19 +43,19 @@ void LogStream::SetPrefix(const char *pt_file, int i_line, const char *pt_func, 
 
   switch (e_log_level)
   {
-  case Utils::LL_DEBUG  :
+  case Utils::LEVEL_DEBUG:
     str_log_level_ = "[DEBUG  ]";
     break;
-  case Utils::LL_INFO   :
+  case Utils::LEVEL_INFO:
     str_log_level_ = "[INFO   ]";
     break;
-  case Utils::LL_WARNING:
+  case Utils::LEVEL_WARNING:
     str_log_level_ = "[WARNING]";
     break;
-  case Utils::LL_ERROR  :
+  case Utils::LEVEL_ERROR:
     str_log_level_ = "[ERROR  ]";
     break;
-  case Utils::LL_FATAL  :
+  case Utils::LEVEL_FATAL:
     str_log_level_ = "[FATAL  ]";
     break;
   default:
