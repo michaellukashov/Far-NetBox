@@ -47,7 +47,7 @@ NB_CORE_DLL(void) nbstr_unlock(CMStringData* pThis);
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-enum CMStringDataFormat { FORMAT };
+enum CMStringDataFormat { CM_FORMAT };
 
 struct CMStringData
 {
