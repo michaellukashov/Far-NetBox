@@ -39,20 +39,20 @@ private:
 
 #define g_tinylog (tinylog::TinyLog::GetInstance())
 
-#define LOG_TRACE if (g_tinylog.GetLogLevel() <= Utils::TRACE)\
-  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::TRACE)
+#define LOG_TRACE if (g_tinylog.GetLogLevel() <= Utils::LL_TRACE)\
+  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::LL_TRACE)
 
-#define LOG_DEBUG if (g_tinylog.GetLogLevel() <= Utils::DEBUG)\
-  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::DEBUG)
+#define LOG_DEBUG if (g_tinylog.GetLogLevel() <= Utils::LL_DEBUG)\
+  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::LL_DEBUG)
 
-#define LOG_INFO if (g_tinylog.GetLogLevel() <= Utils::INFO)\
-  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::INFO)
+#define LOG_INFO if (g_tinylog.GetLogLevel() <= Utils::LL_INFO)\
+  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::LL_INFO)
 
-#define LOG_WARNING if (g_tinylog.GetLogLevel() <= Utils::WARNING) \
-  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::WARNING)
+#define LOG_WARNING if (g_tinylog.GetLogLevel() <= Utils::LL_WARNING) \
+  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::LL_WARNING)
 
-#define LOG_ERROR if (g_tinylog.GetLogLevel() <= Utils::ERROR) \
-  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::ERROR)
+#define LOG_ERROR if (g_tinylog.GetLogLevel() <= Utils::LL_ERROR) \
+  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::LL_ERROR)
 
-#define LOG_FATAL if (g_tinylog.GetLogLevel() <= Utils::FATAL) \
-  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::FATAL)
+#define LOG_FATAL if (g_tinylog.GetLogLevel() <= Utils::LL_FATAL) \
+  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::LL_FATAL)
