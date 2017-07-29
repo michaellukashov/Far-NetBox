@@ -16,7 +16,7 @@ static void * APR_THREAD_FUNC ThreadFunc(apr_thread_t *, void *pt_arg)
   TinyLog *pt_tinylog = (TinyLog *)pt_arg;
   pt_tinylog->MainLoop();
 
-  return NULL;
+  return nullptr;
 }
 
 TinyLog::TinyLog()
@@ -24,9 +24,9 @@ TinyLog::TinyLog()
   pt_logstream_ = new LogStream();
   e_log_level_ = Utils::LL_INFO;
   b_run_ = true;
-  apr_threadattr_t *attr = NULL;
+  apr_threadattr_t *attr = nullptr;
   void *data = this;
-  apr_pool_t *cont = NULL;
+  apr_pool_t *cont = nullptr;
   apr_thread_create(&thrd_, attr, ThreadFunc, data, cont);
 }
 
@@ -34,7 +34,7 @@ TinyLog::~TinyLog()
 {
   b_run_ = false;
   apr_status_t retval;
-  apr_thread_join(&retval, NULL);
+  apr_thread_join(&retval, nullptr);
   delete pt_logstream_;
 }
 
