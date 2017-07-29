@@ -3,14 +3,6 @@
 
 namespace tinylog {
 
-DWORD WINAPI TinyLog::ThreadFunc(void *pt_arg)
-{
-  TinyLog *pt_tinylog = static_cast<TinyLog *>(pt_arg);
-  pt_tinylog->MainLoop();
-
-  return 0;
-}
-
 TinyLog::TinyLog(FILE *file) :
   pt_logstream_(nullptr),
   thrd_(INVALID_HANDLE_VALUE),
@@ -48,13 +40,13 @@ Utils::LogLevel TinyLog::GetLogLevel() const
   return e_log_level_;
 }
 
+#if 0
 LogStream &TinyLog::GetLogStream(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level)
 {
-#if 0
   pt_logstream_->SetPrefix(pt_file, i_line, pt_func, e_log_level);
-#endif // #if 0
   return *pt_logstream_;
 }
+#endif // #if 0
 
 intptr_t TinyLog::Write(const void *data, intptr_t ToWrite)
 {
@@ -70,6 +62,14 @@ void TinyLog::Close()
     delete pt_logstream_;
     pt_logstream_ = nullptr;
   }
+}
+
+DWORD WINAPI TinyLog::ThreadFunc(void *pt_arg)
+{
+  TinyLog *pt_tinylog = static_cast<TinyLog *>(pt_arg);
+  pt_tinylog->MainLoop();
+
+  return 0;
 }
 
 int32_t TinyLog::MainLoop()
