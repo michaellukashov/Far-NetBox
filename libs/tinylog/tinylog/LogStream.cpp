@@ -68,10 +68,10 @@ LogStream& LogStream::operator<<(const char *pt_log)
   return *this;
 }
 
-LogStream& LogStream::operator<<(const std::string &ref_log)
-{
-  return this->operator<<(ref_log.c_str());
-}
+//LogStream &LogStream::operator<<(const std::string &ref_log)
+//{
+//  return this->operator<<(ref_log.c_str());
+//}
 
 void LogStream::UpdateBaseTime()
 {

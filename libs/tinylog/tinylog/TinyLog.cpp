@@ -13,7 +13,7 @@ namespace tinylog {
 //};
 
 pthread_mutex_t g_mutex;
-sem_t g_cond;
+pthread_cond_t g_cond;
 bool g_already_swap = false;
 
 static DWORD WINAPI ThreadFunc(void *pt_arg)
@@ -27,7 +27,7 @@ static DWORD WINAPI ThreadFunc(void *pt_arg)
 TinyLog::TinyLog()
 {
   pthread_mutex_init(&g_mutex, nullptr);
-  sem_init(&g_cond, 0, 0);
+  pthread_cond_init(&g_cond, nullptr);
   pt_logstream_ = new LogStream();
   e_log_level_ = Utils::LEVEL_INFO;
   b_run_ = true;
@@ -47,7 +47,7 @@ TinyLog::~TinyLog()
   b_run_ = false;
   pthread_join(thrd_, nullptr);
   delete pt_logstream_;
-  sem_destroy(&g_cond);
+  pthread_cond_destroy(&g_cond);
   pthread_mutex_destroy(&g_mutex);
 }
 
@@ -75,13 +75,12 @@ int32_t TinyLog::MainLoop()
   {
     st_time_out.tv_sec = pt_logstream_->tv_base_.tv_sec + TIME_OUT_SECOND;
     st_time_out.tv_nsec = pt_logstream_->tv_base_.tv_usec * 1000;
-    // st_time_out = apr_time_from_sec(pt_logstream_->tv_base_.tm_sec + TIME_OUT_SECOND);
 
     pthread_mutex_lock(&g_mutex);
 
     while (!g_already_swap)
     {
-      if (sem_wait(&g_cond)) // , &g_mutex, st_time_out) == ETIMEDOUT)
+      if (pthread_cond_timedwait(&g_cond, &g_mutex, &st_time_out) == ETIMEDOUT)
       {
         pt_logstream_->SwapBuffer();
         pt_logstream_->UpdateBaseTime();

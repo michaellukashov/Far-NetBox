@@ -18,8 +18,8 @@ public:
   void SwapBuffer();
   void WriteBuffer();
   void SetPrefix(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level);
-  LogStream& operator<<(const char *pt_log);
-  LogStream& operator<<(const std::string &ref_log);
+  LogStream &operator<<(const char *pt_log);
+//  LogStream &operator<<(const std::string &ref_log);
   void UpdateBaseTime();
 
 private:
