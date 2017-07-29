@@ -198,3 +198,151 @@ static int sem_post(sem_t* sem)
   ReleaseSemaphore(*sem, 1, 0);
   return 0;
 }
+
+//typedef struct
+//{
+//  int waiters_count_;
+//  // Number of waiting threads.
+
+//  CRITICAL_SECTION waiters_count_lock_;
+//  // Serialize access to <waiters_count_>.
+
+//  HANDLE sema_;
+//  // Semaphore used to queue up threads waiting for the condition to
+//  // become signaled.
+
+//  HANDLE waiters_done_;
+//  // An auto-reset event used by the broadcast/signal thread to wait
+//  // for all the waiting thread(s) to wake up and be released from the
+//  // semaphore.
+
+//  size_t was_broadcast_;
+//  // Keeps track of whether we were broadcasting or signaling.  This
+//  // allows us to optimize the code if we're just signaling.
+//} pthread_cond_t;
+
+typedef struct pthread_cond_t_
+{
+  u_int waiters_count_;
+    // Count of the number of waiters.
+
+  CRITICAL_SECTION waiters_count_lock_;
+  // Serialize access to <waiters_count_>.
+  HANDLE sema_;
+  // Semaphore used to queue up threads waiting for the condition to
+  // become signaled.
+
+  HANDLE waiters_done_;
+  size_t was_broadcast_;
+
+  enum {
+    E_SIGNAL = 0,
+    E_BROADCAST = 1,
+    E_MAX_EVENTS = 2
+  };
+
+  HANDLE events_[E_MAX_EVENTS];
+  // Signal and broadcast event HANDLEs.
+} pthread_cond_t;
+
+typedef struct pthread_condattr_t_
+{
+  int pshared;
+} pthread_condattr_t;
+
+//inline int pthread_cond_init (pthread_cond_t *cv,
+//                   const pthread_condattr_t *)
+//{
+//  cv->waiters_count_ = 0;
+//  cv->was_broadcast_ = 0;
+//  cv->sema_ = CreateSemaphoreW (NULL,       // no security
+//                                0,          // initially 0
+//                                0x7fffffff, // max count
+//                                NULL);      // unnamed
+//  InitializeCriticalSection (&cv->waiters_count_lock_);
+//  cv->waiters_done_ = CreateEvent (NULL,  // no security
+//                                   FALSE, // auto-reset
+//                                   FALSE, // non-signaled initially
+//                                   NULL); // unnamed
+//}
+
+inline int pthread_cond_init(pthread_cond_t *cv,
+                   const pthread_condattr_t *)
+{
+  // Create an auto-reset event.
+  cv->events_[pthread_cond_t_::E_SIGNAL] = CreateEvent(NULL,  // no security
+                                     FALSE, // auto-reset event
+                                     FALSE, // non-signaled initially
+                                     NULL); // unnamed
+
+  // Create a manual-reset event.
+  cv->events_[pthread_cond_t_::E_BROADCAST] = CreateEvent(NULL,  // no security
+                                        TRUE,  // manual-reset
+                                        FALSE, // non-signaled initially
+                                        NULL); // unnamed
+  return 0;
+}
+
+inline int pthread_cond_wait(pthread_cond_t *cv,
+                   pthread_mutex_t *external_mutex)
+{
+  // Release the <external_mutex> here and wait for either event
+  // to become signaled, due to <pthread_cond_signal> being
+  // called or <pthread_cond_broadcast> being called.
+  LeaveCriticalSection(external_mutex);
+  WaitForMultipleObjects(2, // Wait on both <events_>
+                          cv->events_,
+                          FALSE, // Wait for either event to be signaled
+                          INFINITE); // Wait "forever"
+
+  // Reacquire the mutex before returning.
+  EnterCriticalSection(external_mutex);
+  return 0;
+}
+
+inline int pthread_cond_signal(pthread_cond_t *cv)
+{
+  EnterCriticalSection(&cv->waiters_count_lock_);
+  int have_waiters = cv->waiters_count_ > 0;
+  LeaveCriticalSection(&cv->waiters_count_lock_);
+
+  // If there aren't any waiters, then this is a no-op.
+  if (have_waiters)
+    ReleaseSemaphore(cv->sema_, 1, 0);
+  return 0;
+}
+
+inline int pthread_cond_broadcast(pthread_cond_t *cv)
+{
+  // This is needed to ensure that <waiters_count_> and <was_broadcast_> are
+  // consistent relative to each other.
+  EnterCriticalSection(&cv->waiters_count_lock_);
+  int have_waiters = 0;
+
+  if (cv->waiters_count_ > 0)
+  {
+    // We are broadcasting, even if there is just one waiter...
+    // Record that we are broadcasting, which helps optimize
+    // <pthread_cond_wait> for the non-broadcast case.
+    cv->was_broadcast_ = 1;
+    have_waiters = 1;
+  }
+
+  if (have_waiters)
+  {
+    // Wake up all the waiters atomically.
+    ReleaseSemaphore(cv->sema_, cv->waiters_count_, 0);
+
+    LeaveCriticalSection(&cv->waiters_count_lock_);
+
+    // Wait for all the awakened threads to acquire the counting
+    // semaphore.
+    WaitForSingleObject(cv->waiters_done_, INFINITE);
+    // This assignment is okay, even without the <waiters_count_lock_> held
+    // because no other waiter threads can wake up to access it.
+    cv->was_broadcast_ = 0;
+  }
+  else
+    LeaveCriticalSection(&cv->waiters_count_lock_);
+  return 0;
+}

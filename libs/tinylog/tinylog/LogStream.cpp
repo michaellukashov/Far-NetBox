@@ -7,8 +7,7 @@
 namespace tinylog {
 
 extern pthread_mutex_t g_mutex;
-//extern pthread_cond_t g_cond;
-extern sem_t g_cond;
+extern pthread_cond_t g_cond;
 extern bool g_already_swap;
 
 LogStream::LogStream()
@@ -78,6 +77,8 @@ void LogStream::UpdateBaseTime()
 {
   struct timeval tv;
   time_t now = time(nullptr);
+  tv.tv_sec = (long)now;
+  tv.tv_usec = 0;
   struct tm * tm = localtime(&now);
 
   if (tv.tv_sec != tv_base_.tv_sec)

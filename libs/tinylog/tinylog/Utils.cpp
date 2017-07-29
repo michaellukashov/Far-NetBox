@@ -39,11 +39,10 @@ void Utils::CurrentTime(std::string &ref_time)
 
 void Utils::CurrentTime(struct timeval *tv, struct tm ** tm)
 {
-  time_t result = time(nullptr);
-  // gettimeofday(tv, NULL);
-  tv->tv_sec = (long)result;
+  time_t now = time(nullptr);
+  tv->tv_sec = (long)now;
   tv->tv_usec = 0;
-  *tm = localtime(&result);
+  *tm = localtime(&now);
 }
 
 } // namespace tinylog
