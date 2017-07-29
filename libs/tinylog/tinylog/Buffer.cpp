@@ -76,7 +76,7 @@ apr_ssize_t Buffer::Capacity() const
 int32_t Buffer::Flush(int fd)
 {
   apr_ssize_t n_write = 0;
-  while ((n_write = write(fd, pt_data_ + n_write, l_size_ - n_write)) != 0)
+  while ((n_write = write(fd, pt_data_ + n_write, (uint32_t)(l_size_ - n_write))) != 0)
   {
     if ((n_write < 0) && (errno != EINTR))
     {
