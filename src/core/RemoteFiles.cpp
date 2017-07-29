@@ -1257,152 +1257,149 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             // do not trim leading space of filename
             GetNCol();
           }
-        }
-        else
+        } else {
+        // format dd mmm or mmm dd ?
+        Day = ::ToWord(::StrToIntDef(Col, 0));
+        if (Day > 0)
         {
-          // format dd mmm or mmm dd ?
-          Day = ::ToWord(::StrToIntDef(Col, 0));
-          if (Day > 0)
-          {
-            DayMonthFormat = true;
-            GetCol();
-          }
-          Month = 0;
-          auto Col2Month = [&]()
-          {
-            for (Word IMonth = 0; IMonth < 12; IMonth++)
-              if (!Col.CompareIC(EngShortMonthNames[IMonth]))
-              {
-                Month = IMonth;
-                Month++;
-                break;
-              }
-          };
+          DayMonthFormat = true;
+          GetCol();
+        }
+        Month = 0;
+        auto Col2Month = [&]()
+        {
+          for (Word IMonth = 0; IMonth < 12; IMonth++)
+            if (!Col.CompareIC(EngShortMonthNames[IMonth]))
+            {
+              Month = IMonth;
+              Month++;
+              break;
+            }
+        };
 
-          Col2Month();
-          // if the column is not known month name, it may have been "yyyy-mm-dd"
-          // for --full-time format
-          if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
+        Col2Month();
+        // if the column is not known month name, it may have been "yyyy-mm-dd"
+        // for --full-time format
+        if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
+        {
+          Year = ToWord(Col.SubString(1, 4).ToInt());
+          Month = ToWord(Col.SubString(6, 2).ToInt());
+          Day = ToWord(Col.SubString(9, 2).ToInt());
+          GetCol();
+          Hour = ToWord(Col.SubString(1, 2).ToInt());
+          Min = ToWord(Col.SubString(4, 2).ToInt());
+          if (Col.Length() >= 8)
           {
-            Year = ToWord(Col.SubString(1, 4).ToInt());
-            Month = ToWord(Col.SubString(6, 2).ToInt());
-            Day = ToWord(Col.SubString(9, 2).ToInt());
-            GetCol();
-            Hour = ToWord(Col.SubString(1, 2).ToInt());
-            Min = ToWord(Col.SubString(4, 2).ToInt());
-            if (Col.Length() >= 8)
-            {
-              Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
-            }
-            else
-            {
-              Sec = 0;
-            }
-            FModificationFmt = mfFull;
-            // skip TZ (TODO)
-            // do not trim leading space of filename
-            GetNCol();
+            Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
           }
           else
           {
-            bool FullTime = false;
-            // or it may have been day name for another format of --full-time
+            Sec = 0;
+          }
+          FModificationFmt = mfFull;
+          // skip TZ (TODO)
+          // do not trim leading space of filename
+          GetNCol();
+        }
+        else
+        {
+          bool FullTime = false;
+          // or it may have been day name for another format of --full-time
+          if (Month == 0)
+          {
+            GetCol();
+            Col2Month();
+            // neither standard, not --full-time format
             if (Month == 0)
-            {
-              GetCol();
-              Col2Month();
-              // neither standard, not --full-time format
-              if (Month == 0)
-              {
-                Abort();
-              }
-              else
-              {
-                FullTime = true;
-              }
-            }
-
-            if (Day == 0)
-            {
-              GetNCol();
-              Day = ToWord(::StrToInt64(Col));
-            }
-            if ((Day < 1) || (Day > 31))
             {
               Abort();
             }
+            else
+            {
+              FullTime = true;
+            }
+          }
 
-            // second full-time format
-            // ddd mmm dd hh:nn:ss yyyy
-            if (FullTime)
+          if (Day == 0)
+          {
+            GetNCol();
+            Day = ToWord(::StrToInt64(Col));
+          }
+          if ((Day < 1) || (Day > 31))
+          {
+            Abort();
+          }
+
+          // second full-time format
+          // ddd mmm dd hh:nn:ss yyyy
+          if (FullTime)
+          {
+            GetCol();
+            if (Col.Length() != 8)
+            {
+              Abort();
+            }
+            Hour = ToWord(::StrToInt64(Col.SubString(1, 2)));
+            Min = ToWord(::StrToInt64(Col.SubString(4, 2)));
+            Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
+            FModificationFmt = mfFull;
+            // do not trim leading space of filename
+            GetNCol();
+            Year = ToWord(::StrToInt64(Col));
+          }
+          else
+          {
+            // for format dd mmm the below description seems not to be true,
+            // the year is not aligned to 5 characters
+            if (DayMonthFormat)
             {
               GetCol();
-              if (Col.Length() != 8)
-              {
-                Abort();
-              }
-              Hour = ToWord(::StrToInt64(Col.SubString(1, 2)));
-              Min = ToWord(::StrToInt64(Col.SubString(4, 2)));
-              Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
-              FModificationFmt = mfFull;
-              // do not trim leading space of filename
-              GetNCol();
-              Year = ToWord(::StrToInt64(Col));
             }
             else
             {
-              // for format dd mmm the below description seems not to be true,
-              // the year is not aligned to 5 characters
-              if (DayMonthFormat)
-              {
-                GetCol();
-              }
-              else
-              {
-                // Time/Year indicator is always 5 characters long (???), on most
-                // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
-                // we must ensure that trailing space is also deleted, so real
-                // separator space is not treated as part of file name
-                Col = ListingStr.SubString(1, 6).Trim();
-                ListingStr.Delete(1, 6);
-              }
-            }
-            {
-              // GetNCol(); // We don't want to trim input strings (name with space at beginning???)
-              // Check if we got time (contains :) or year
-              intptr_t P;
-              if ((P = ToWord(Col.Pos(L':'))) > 0)
-              {
-                Hour = ToWord(::StrToInt64(Col.SubString(1, P - 1)));
-                Min = ToWord(::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
-                if ((Hour > 23) || (Min > 59))
-                  Abort();
-                // When we don't got year, we assume current year
-                // with exception that the date would be in future
-                // in this case we assume last year.
-                ::DecodeDate(::Date(), Year, CurrMonth, CurrDay);
-                if ((Month > CurrMonth) ||
-                    (Month == CurrMonth && Day > CurrDay))
-                {
-                  Year--;
-                }
-                Sec = 0;
-                FModificationFmt = mfMDHM;
-              }
-              else
-              {
-                Year = ToWord(::StrToInt64(Col));
-                if (Year > 10000)
-                  Abort();
-                // When we don't got time we assume midnight
-                Hour = 0;
-                Min = 0;
-                Sec = 0;
-                FModificationFmt = mfMDY;
-              }
+              // Time/Year indicator is always 5 characters long (???), on most
+              // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
+              // we must ensure that trailing space is also deleted, so real
+              // separator space is not treated as part of file name
+              Col = ListingStr.SubString(1, 6).Trim();
+              ListingStr.Delete(1, 6);
             }
           }
-        }
+          {
+            // GetNCol(); // We don't want to trim input strings (name with space at beginning???)
+            // Check if we got time (contains :) or year
+            intptr_t P;
+            if ((P = ToWord(Col.Pos(L':'))) > 0)
+            {
+              Hour = ToWord(::StrToInt64(Col.SubString(1, P - 1)));
+              Min = ToWord(::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
+              if ((Hour > 23) || (Min > 59))
+                Abort();
+              // When we don't got year, we assume current year
+              // with exception that the date would be in future
+              // in this case we assume last year.
+              ::DecodeDate(::Date(), Year, CurrMonth, CurrDay);
+              if ((Month > CurrMonth) ||
+                  (Month == CurrMonth && Day > CurrDay))
+              {
+                Year--;
+              }
+              Sec = 0;
+              FModificationFmt = mfMDHM;
+            }
+            else
+            {
+              Year = ToWord(::StrToInt64(Col));
+              if (Year > 10000)
+                Abort();
+              // When we don't got time we assume midnight
+              Hour = 0;
+              Min = 0;
+              Sec = 0;
+              FModificationFmt = mfMDY;
+            }
+          }
+        }}
 
         if (Year == 0)
           Year = CurrYear;
