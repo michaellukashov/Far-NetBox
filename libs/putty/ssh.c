@@ -1225,7 +1225,7 @@ static void c_write_untrusted(Ssh ssh, const char *buf, int len)
 
 static void c_write_str(Ssh ssh, const char *buf)
 {
-	c_write(ssh, buf, (int)strlen(buf));
+    c_write(ssh, buf, (int)strlen(buf));
 }
 
 static void ssh_free_packet(struct Packet *pkt)
@@ -2050,9 +2050,9 @@ static void s_wrpkt(Ssh ssh, struct Packet *pkt)
     len = s_wrpkt_prepare(ssh, pkt, &offset);
     backlog = s_write(ssh, pkt->data + offset, len);
     if (backlog > SSH_MAX_BACKLOG)
-	{
-      ssh_throttle_all(ssh, 1, backlog);
-	}
+    {
+        ssh_throttle_all(ssh, 1, backlog);
+    }
     ssh_free_packet(pkt);
 }
 
@@ -2454,9 +2454,9 @@ static void ssh2_pkt_send_noqueue(Ssh ssh, struct Packet *pkt)
     len = ssh2_pkt_construct(ssh, pkt);
     backlog = s_write(ssh, pkt->body, len);
     if (backlog > SSH_MAX_BACKLOG)
-	{
-       ssh_throttle_all(ssh, 1, backlog);
-	}
+    {
+        ssh_throttle_all(ssh, 1, backlog);
+    }
 
     ssh->outgoing_data_size += pkt->encrypted_len;
     if (!ssh->kex_in_progress &&
@@ -2558,9 +2558,9 @@ static void ssh_pkt_defersend(Ssh ssh)
     sfree(ssh->deferred_send_data);
     ssh->deferred_send_data = NULL;
     if (backlog > SSH_MAX_BACKLOG)
-	{
-      ssh_throttle_all(ssh, 1, backlog);
-	}
+    {
+        ssh_throttle_all(ssh, 1, backlog);
+    }
 
     if (ssh->version == 2) {
 	ssh->outgoing_data_size += ssh->deferred_data_size;
@@ -3105,7 +3105,7 @@ static void ssh_send_verstring(Ssh ssh, const char *protoname, char *svers)
 
     logeventf(ssh, "We claim version: %.*s",
 	      strcspn(verstring, "\015\012"), verstring);
-		s_write(ssh, verstring, (int)strlen(verstring));
+    s_write(ssh, verstring, (int)strlen(verstring));
     sfree(verstring);
 }
 
@@ -3613,8 +3613,8 @@ static void ssh_sent(Plug plug, int bufsize)
      * should unthrottle the whole world if it was throttled.
      */
     if (bufsize < SSH_MAX_BACKLOG)
-	{
-	  ssh_throttle_all(ssh, 0, bufsize);
+    {
+        ssh_throttle_all(ssh, 0, bufsize);
     }
 }
 
@@ -3695,10 +3695,10 @@ static const char *connect_to_host(Ssh ssh, const char *host, int port,
     ssh_hostport_setup(host, port, ssh->conf,
                        &ssh->savedhost, &ssh->savedport, &loghost);
 
-    #ifdef MPEXT
+#ifdef MPEXT
     // make sure the field is initialized, in case lookup below fails
     ssh->fullhostname = NULL;
-    #endif
+#endif
 
     ssh->fn = &fn_table;               /* make 'ssh' usable as a Plug */
 
@@ -4554,7 +4554,7 @@ static int do_ssh1_login(Ssh ssh, const unsigned char *in, int inlen,
 			    s->commentlen = toint(GET_32BIT(s->p));
 			    s->p += 4;
 			    if (s->commentlen < 0 ||
-					toint((unsigned int)(s->responselen - (s->p-s->response))) <
+                                toint((unsigned int)(s->responselen - (s->p-s->response))) <
 				s->commentlen)
 				break;
 			    s->commentp = (char *)s->p;
@@ -6087,8 +6087,10 @@ static void do_ssh1_connection(Ssh ssh, const unsigned char *in, int inlen,
     if (ssh->eof_needed)
 	ssh_special(ssh, TS_EOF);
 
-    //if (ssh->ldisc)
-	//ldisc_echoedit_update(ssh->ldisc);  /* cause ldisc to notice changes */
+#if 0
+    if (ssh->ldisc)
+	ldisc_echoedit_update(ssh->ldisc);  /* cause ldisc to notice changes */
+#endif // #if 0
     ssh->send_ok = 1;
     ssh->channels = newtree234(ssh_channelcmp);
     while (1) {
@@ -6201,10 +6203,10 @@ static int first_in_commasep_string(char const *needle, char const *haystack,
 {
     size_t needlen;
     if (!needle || !haystack)	       /* protect against null pointers */
-      return 0;
+        return 0;
     needlen = strlen(needle);
 
-		if (haylen >= (int)needlen &&       /* haystack is long enough */
+    if (haylen >= (int)needlen &&       /* haystack is long enough */
 	!memcmp(needle, haystack, needlen) &&	/* initial match */
 	(haylen == needlen || haystack[needlen] == ',')
 	/* either , or EOS follows */
@@ -8131,6 +8133,8 @@ static void ssh2_msg_channel_response(Ssh ssh, struct Packet *pktin)
 	return;
     }
     ocr->handler(c, pktin, ocr->ctx);
+    if (ssh->state == SSH_STATE_CLOSED)
+        return; /* in case the handler called bomb_out(), which some can */
     c->v.v2.chanreq_head = ocr->next;
     sfree(ocr);
     /*
@@ -9381,14 +9385,14 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 	s->keyfile = conf_get_filename(ssh->conf, CONF_keyfile);
 	if (!filename_is_null(s->keyfile)) {
 	    int keytype;
-	    #ifdef _DEBUG
+#ifdef _DEBUG
 	    // To suppress CodeGuard warning
 	    logeventf(ssh, MPEXT_BOM "Reading key file \"%s\"",
 		      filename_to_str(s->keyfile));
-	    #else
+#else
 	    logeventf(ssh, MPEXT_BOM "Reading key file \"%.150s\"",
 		      filename_to_str(s->keyfile));
-	    #endif
+#endif
 	    keytype = key_type(s->keyfile);
 	    if (keytype == SSH_KEYTYPE_SSH2 ||
                 keytype == SSH_KEYTYPE_SSH2_PUBLIC_RFC4716 ||
@@ -9926,9 +9930,9 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 					     GET_32BIT(s->ret + 5));
 			    ssh2_pkt_send(ssh, s->pktout);
 			    s->type = AUTH_TYPE_PUBLICKEY;
-			    #ifdef MPEXT
+#ifdef MPEXT
 			    sfree(s->ret);
-			    #endif
+#endif
 			} else {
 			    /* FIXME: less drastic response */
 			    bombout(("Pageant failed to answer challenge"));
@@ -10195,7 +10199,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 		ssh2_pkt_addbyte(s->pktout, (unsigned char) s->gss_buf.length);
 
 		ssh_pkt_adddata(s->pktout, s->gss_buf.value,
-		(int)s->gss_buf.length);
+				(int)s->gss_buf.length);
 		ssh2_pkt_send(ssh, s->pktout);
 		crWaitUntilV(pktin);
 		if (pktin->type != SSH2_MSG_USERAUTH_GSSAPI_RESPONSE) {
@@ -10785,6 +10789,7 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
     } else {
 	ssh->mainchan = snew(struct ssh_channel);
 	ssh->mainchan->ssh = ssh;
+	ssh->mainchan->type = CHAN_MAINSESSION;
 	ssh_channel_init(ssh->mainchan);
 
 	if (*conf_get_str(ssh->conf, CONF_ssh_nc_host)) {
@@ -10824,7 +10829,6 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
 
 	ssh->mainchan->remoteid = ssh_pkt_getuint32(pktin);
 	ssh->mainchan->halfopen = FALSE;
-	ssh->mainchan->type = CHAN_MAINSESSION;
 	ssh->mainchan->v.v2.remwindow = ssh_pkt_getuint32(pktin);
 	ssh->mainchan->v.v2.remmaxpkt = ssh_pkt_getuint32(pktin);
 	update_specials_menu(ssh->frontend);
@@ -10990,8 +10994,10 @@ static void do_ssh2_authconn(Ssh ssh, const unsigned char *in, int inlen,
     /*
      * Transfer data!
      */
-    //if (ssh->ldisc)
-	//ldisc_echoedit_update(ssh->ldisc);  /* cause ldisc to notice changes */
+#if 0
+    if (ssh->ldisc)
+	ldisc_echoedit_update(ssh->ldisc);  /* cause ldisc to notice changes */
+#endif // #if 0
     if (ssh->mainchan)
 	ssh->send_ok = 1;
     while (1) {
@@ -11206,7 +11212,7 @@ static void ssh2_timer(void *ctx, unsigned long now)
     if (!ssh->kex_in_progress && !ssh->bare_connection &&
         conf_get_int(ssh->conf, CONF_ssh_rekey_time) != 0 &&
 #ifdef MPEXT
-// our call from call_ssh_timer() does not guarantee the `now` to be exactly as scheduled
+	// our call from call_ssh_timer() does not guarantee the `now` to be exactly as scheduled
 	(now >= ssh->next_rekey)) {
 #else
 	now == ssh->next_rekey) {
@@ -11349,7 +11355,7 @@ static const char *ssh_init(void *frontend_handle, void **backend_handle,
     *backend_handle = ssh;
 
 #ifdef MPEXT
-    // random_unref is always called from ssh_free,
+	// random_unref is always called from ssh_free,
     // so we must call random_ref also always, even if we fail, to match it
     random_ref();
 #endif
@@ -11392,20 +11398,14 @@ static const char *ssh_init(void *frontend_handle, void **backend_handle,
     ssh->gsslibs = NULL;
 #endif
 
-#ifndef MPEXT
     random_ref(); /* do this now - may be needed by sharing setup code */
-#endif
 
     p = connect_to_host(ssh, host, port, realhost, nodelay, keepalive);
     if (p != NULL) {
-#ifndef MPEXT
         random_unref();
-#endif
 	return p;
     }
-#ifndef MPEXT
     random_ref();
-#endif
 
     return NULL;
 }

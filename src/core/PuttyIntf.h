@@ -4,8 +4,8 @@
 
 #include "PuttyTools.h"
 
-void PuttyInitialize();
-void PuttyFinalize();
+NB_CORE_EXPORT void PuttyInitialize();
+NB_CORE_EXPORT void PuttyFinalize();
 
 void DontSaveRandomSeed();
 

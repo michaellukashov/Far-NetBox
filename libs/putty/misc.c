@@ -11,6 +11,10 @@
 #include "putty.h"
 #include "misc.h"
 
+#ifdef USE_DLMALLOC
+#include <nbglobals.h>
+#endif
+
 /*
  * Parse a string block size specification. This is approximately a
  * subset of the block size specs supported by GNU fileutils:
@@ -20,10 +24,10 @@
  * All numbers are decimal, and suffixes refer to powers of two.
  * Case-insensitive.
  */
-__int64 parse_blocksize64(const char *bs)
+int64_t parse_blocksize64(const char *bs)
 {
     char *suf;
-    __int64 r = strtoul(bs, &suf, 10);
+    int64_t r = strtoul(bs, &suf, 10);
     if (*suf != '\0') {
 	while (*suf && isspace((unsigned char)*suf)) suf++;
 	switch (*suf) {
@@ -685,14 +689,14 @@ void bufchain_add(bufchain *ch, const void *data, size_t len)
 
     while (len > 0) {
 	if (ch->tail && ch->tail->bufend < ch->tail->bufmax) {
-			size_t copylen = min(len, (size_t)(ch->tail->bufmax - ch->tail->bufend));
+	    size_t copylen = min(len, (size_t)(ch->tail->bufmax - ch->tail->bufend));
 	    memcpy(ch->tail->bufend, buf, copylen);
 	    buf += copylen;
 	    len -= copylen;
 	    ch->tail->bufend += copylen;
 	}
 	if (len > 0) {
-			size_t grainlen =
+	    size_t grainlen =
 		max(sizeof(struct bufchain_granule) + len, BUFFER_MIN_GRANULE);
 	    struct bufchain_granule *newbuf;
 	    newbuf = smalloc(grainlen);
@@ -715,10 +719,10 @@ void bufchain_consume(bufchain *ch, int len)
 
     assert(ch->buffersize >= len);
     while (len > 0) {
-  int remlen = len;
-	assert(ch->head != NULL);
-	if (remlen >= ch->head->bufend - ch->head->bufpos) {
-			remlen = (int)(ch->head->bufend - ch->head->bufpos);
+		int remlen = len;
+		assert(ch->head != NULL);
+		if (remlen >= ch->head->bufend - ch->head->bufpos) {
+	    remlen = (int)(ch->head->bufend - ch->head->bufpos);
 	    tmp = ch->head;
 	    ch->head = tmp->next;
 	    if (!ch->head)
@@ -806,7 +810,11 @@ void *safemalloc(size_t n, size_t size)
 #ifdef MINEFIELD
 	p = minefield_c_malloc(size);
 #else
-	p = malloc(size);
+#ifdef USE_DLMALLOC
+    p = nb_malloc(size);
+#else
+    p = malloc(size);
+#endif
 #endif
     }
 
@@ -841,13 +849,21 @@ void *saferealloc(void *ptr, size_t n, size_t size)
 #ifdef MINEFIELD
 	    p = minefield_c_malloc(size);
 #else
-	    p = malloc(size);
+#ifdef USE_DLMALLOC
+        p = nb_malloc(size);
+#else
+        p = malloc(size);
+#endif
 #endif
 	} else {
 #ifdef MINEFIELD
 	    p = minefield_c_realloc(ptr, size);
 #else
-	    p = realloc(ptr, size);
+#ifdef USE_DLMALLOC
+        p = nb_realloc(ptr, size);
+#else
+        p = realloc(ptr, size);
+#endif
 #endif
 	}
     }
@@ -881,7 +897,11 @@ void safefree(void *ptr)
 #ifdef MINEFIELD
 	minefield_c_free(ptr);
 #else
-	free(ptr);
+#ifdef USE_DLMALLOC
+    nb_free(ptr);
+#else
+    free(ptr);
+#endif
 #endif
     }
 #ifdef MALLOC_LOG
@@ -1222,6 +1242,9 @@ char *buildinfo(const char *newline)
     }
 #endif
 
+#if defined _WINDOWS && defined MINEFIELD
+    strbuf_catf(buf, "%sBuild option: MINEFIELD", newline);
+#endif
 #ifdef NO_SECURITY
     strbuf_catf(buf, "%sBuild option: NO_SECURITY", newline);
 #endif
@@ -1247,7 +1270,9 @@ char *buildinfo(const char *newline)
     strbuf_catf(buf, "%sBuild option: DEBUG", newline);
 #endif
 
-//    strbuf_catf(buf, "%sSource commit: %s", newline, commitid);
+#if 0
+    strbuf_catf(buf, "%sSource commit: %s", newline, commitid);
+#endif // #if 0
 
     return strbuf_to_str(buf);
 }

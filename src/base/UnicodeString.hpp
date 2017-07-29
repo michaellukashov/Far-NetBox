@@ -6,7 +6,7 @@ class RawByteString;
 class UnicodeString;
 class AnsiString;
 
-class UTF8String
+class NB_CORE_EXPORT UTF8String
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
@@ -52,8 +52,8 @@ public:
   UTF8String & operator +=(const char Ch);
   UTF8String & operator +=(const char * rhs);
 
-  friend bool operator ==(const UTF8String & lhs, const UTF8String & rhs);
-  friend bool operator !=(const UTF8String & lhs, const UTF8String & rhs);
+  NB_CORE_EXPORT friend bool operator ==(const UTF8String & lhs, const UTF8String & rhs);
+  NB_CORE_EXPORT friend bool operator !=(const UTF8String & lhs, const UTF8String & rhs);
 
 private:
   void Init(const wchar_t * Str, intptr_t Length);
@@ -63,7 +63,7 @@ private:
   string_t Data;
 };
 
-class UnicodeString
+class NB_CORE_EXPORT UnicodeString
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
@@ -163,11 +163,11 @@ public:
   UnicodeString operator +(const AnsiString & rhs) const;
   UnicodeString operator +(const UTF8String & rhs) const;
 
-  friend UnicodeString operator +(const wchar_t lhs, const UnicodeString & rhs);
-  friend UnicodeString operator +(const UnicodeString & lhs, wchar_t rhs);
-  friend UnicodeString operator +(const wchar_t * lhs, const UnicodeString & rhs);
-  friend UnicodeString operator +(const UnicodeString & lhs, const wchar_t * rhs);
-  friend UnicodeString operator +(const UnicodeString & lhs, const char * rhs);
+  NB_CORE_EXPORT friend UnicodeString operator +(const wchar_t lhs, const UnicodeString & rhs);
+  NB_CORE_EXPORT friend UnicodeString operator +(const UnicodeString & lhs, wchar_t rhs);
+  NB_CORE_EXPORT friend UnicodeString operator +(const wchar_t * lhs, const UnicodeString & rhs);
+  NB_CORE_EXPORT friend UnicodeString operator +(const UnicodeString & lhs, const wchar_t * rhs);
+  NB_CORE_EXPORT friend UnicodeString operator +(const UnicodeString & lhs, const char * rhs);
 
   UnicodeString & operator +=(const UnicodeString & rhs);
   UnicodeString & operator +=(const wchar_t * rhs);
@@ -180,10 +180,10 @@ public:
   bool operator ==(const UnicodeString & Str) const { return Data == Str.Data; }
   bool operator !=(const UnicodeString & Str) const { return Data != Str.Data; }
 
-  friend bool operator ==(const UnicodeString & lhs, const wchar_t * rhs);
-  friend bool operator ==(const wchar_t * lhs, const UnicodeString & rhs);
-  friend bool operator !=(const UnicodeString & lhs, const wchar_t * rhs);
-  friend bool operator !=(const wchar_t * lhs, const UnicodeString & rhs);
+  NB_CORE_EXPORT friend bool operator ==(const UnicodeString & lhs, const wchar_t * rhs);
+  NB_CORE_EXPORT friend bool operator ==(const wchar_t * lhs, const UnicodeString & rhs);
+  NB_CORE_EXPORT friend bool operator !=(const UnicodeString & lhs, const wchar_t * rhs);
+  NB_CORE_EXPORT friend bool operator !=(const wchar_t * lhs, const UnicodeString & rhs);
 
   wchar_t operator [](intptr_t Idx) const;
   wchar_t & operator [](intptr_t Idx);
@@ -199,7 +199,7 @@ private:
 
 class RawByteString;
 
-class AnsiString
+class NB_CORE_EXPORT AnsiString
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
@@ -282,7 +282,7 @@ private:
   string_t Data;
 };
 
-class RawByteString
+class NB_CORE_EXPORT RawByteString
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:

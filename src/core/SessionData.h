@@ -109,44 +109,44 @@ enum TSessionUrlFlags
   sufOpen = sufUserName | sufPassword,
 };
 
-extern const UnicodeString CipherNames[CIPHER_COUNT];
-extern const UnicodeString KexNames[KEX_COUNT];
-extern const wchar_t SshProtList[][10];
-extern const TCipher DefaultCipherList[CIPHER_COUNT];
-extern const TKex DefaultKexList[KEX_COUNT];
-extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][16];
-extern const intptr_t DefaultSendBuf;
+NB_CORE_EXPORT extern const UnicodeString CipherNames[CIPHER_COUNT];
+NB_CORE_EXPORT extern const UnicodeString KexNames[KEX_COUNT];
+NB_CORE_EXPORT extern const wchar_t SshProtList[][10];
+NB_CORE_EXPORT extern const TCipher DefaultCipherList[CIPHER_COUNT];
+NB_CORE_EXPORT extern const TKex DefaultKexList[KEX_COUNT];
+NB_CORE_EXPORT extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][16];
+NB_CORE_EXPORT extern const intptr_t DefaultSendBuf;
 #define ANONYMOUS_USER_NAME L"anonymous"
 #define ANONYMOUS_PASSWORD L""
-extern const intptr_t SshPortNumber;
-extern const intptr_t FtpPortNumber;
-extern const intptr_t FtpsImplicitPortNumber;
-extern const intptr_t HTTPPortNumber;
-extern const intptr_t HTTPSPortNumber;
-extern const intptr_t TelnetPortNumber;
-extern const intptr_t ProxyPortNumber;
-extern const UnicodeString PuttySshProtocol;
-extern const UnicodeString PuttyTelnetProtocol;
-extern const UnicodeString SftpProtocol;
-extern const UnicodeString ScpProtocol;
-extern const UnicodeString FtpProtocol;
-extern const UnicodeString FtpsProtocol;
-extern const UnicodeString FtpesProtocol;
+NB_CORE_EXPORT extern const intptr_t SshPortNumber;
+NB_CORE_EXPORT extern const intptr_t FtpPortNumber;
+NB_CORE_EXPORT extern const intptr_t FtpsImplicitPortNumber;
+NB_CORE_EXPORT extern const intptr_t HTTPPortNumber;
+NB_CORE_EXPORT extern const intptr_t HTTPSPortNumber;
+NB_CORE_EXPORT extern const intptr_t TelnetPortNumber;
+NB_CORE_EXPORT extern const intptr_t ProxyPortNumber;
+NB_CORE_EXPORT extern const UnicodeString PuttySshProtocol;
+NB_CORE_EXPORT extern const UnicodeString PuttyTelnetProtocol;
+NB_CORE_EXPORT extern const UnicodeString SftpProtocol;
+NB_CORE_EXPORT extern const UnicodeString ScpProtocol;
+NB_CORE_EXPORT extern const UnicodeString FtpProtocol;
+NB_CORE_EXPORT extern const UnicodeString FtpsProtocol;
+NB_CORE_EXPORT extern const UnicodeString FtpesProtocol;
 #define WebDAVProtocol HttpProtocol
 #define WebDAVSProtocol HttpsProtocol
-extern const UnicodeString SshProtocol;
+NB_CORE_EXPORT extern const UnicodeString SshProtocol;
 //#define ProtocolSeparator L"://"
 //#define WinSCPProtocolPrefix L"winscp-"
-extern const wchar_t UrlParamSeparator;
-extern const wchar_t UrlParamValueSeparator;
+NB_CORE_EXPORT extern const wchar_t UrlParamSeparator;
+NB_CORE_EXPORT extern const wchar_t UrlParamValueSeparator;
 //#define UrlHostKeyParamName L"fingerprint"
 //#define UrlSaveParamName L"save"
 //#define PassphraseOption L"passphrase"
 
-extern const intptr_t SFTPMinVersion;
-extern const intptr_t SFTPMaxVersion;
+NB_CORE_EXPORT extern const intptr_t SFTPMinVersion;
+NB_CORE_EXPORT extern const intptr_t SFTPMaxVersion;
 
-struct TIEProxyConfig : public TObject
+struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 {
   TIEProxyConfig() :
     AutoDetect(false),
@@ -165,7 +165,7 @@ struct TIEProxyConfig : public TObject
 
 class TStoredSessionList;
 
-class TSessionData : public TNamedObject
+class NB_CORE_EXPORT TSessionData : public TNamedObject
 {
 friend class TStoredSessionList;
 NB_DISABLE_COPY(TSessionData)
@@ -847,7 +847,7 @@ private:
 
 };
 
-class TStoredSessionList : public TNamedObjectList
+class NB_CORE_EXPORT TStoredSessionList : public TNamedObjectList
 {
 NB_DISABLE_COPY(TStoredSessionList)
 public:
@@ -898,8 +898,8 @@ public:
   TSessionData * GetSession(intptr_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
   const TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
   TSessionData * GetDefaultSettings() { return FDefaultSettings; }
-  const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;
   void SetDefaultSettings(const TSessionData * Value);
+  const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;
 
   static void ImportHostKeys(const UnicodeString & TargetKey,
     const UnicodeString & SourceKey, TStoredSessionList * Sessions,
@@ -922,11 +922,11 @@ private:
 //  void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path);
 };
 
-bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
-uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage);
-UnicodeString GetCodePageAsString(uintptr_t CodePage);
+NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
+NB_CORE_EXPORT uintptr_t GetCodePageAsNumber(const UnicodeString & CodePage);
+NB_CORE_EXPORT UnicodeString GetCodePageAsString(uintptr_t CodePage);
 
-UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData);
-bool GetIsSshProtocol(TFSProtocol FSProtocol);
-intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
+NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TSessionData * SessionData);
+NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
+NB_CORE_EXPORT intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 

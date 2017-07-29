@@ -3,7 +3,7 @@
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 
-class TSimpleThread : public TObject
+class NB_CORE_EXPORT TSimpleThread : public TObject
 {
 NB_DISABLE_COPY(TSimpleThread)
 public:
@@ -41,7 +41,7 @@ public:
   static int ThreadProc(void * Thread);
 };
 
-class TSignalThread : public TSimpleThread
+class NB_CORE_EXPORT TSignalThread : public TSimpleThread
 {
 NB_DISABLE_COPY(TSignalThread)
 public:
@@ -107,7 +107,7 @@ typedef nb::FastDelegate2<void,
 
 class TTerminalItem;
 
-class TTerminalQueue : public TSignalThread
+class NB_CORE_EXPORT TTerminalQueue : public TSignalThread
 {
 friend class TQueueItem;
 friend class TQueueItemProxy;
@@ -217,7 +217,7 @@ public:
 };
 
 
-class TQueueItem : public TObject
+class NB_CORE_EXPORT TQueueItem : public TObject
 {
 friend class TTerminalQueue;
 friend class TTerminalItem;
@@ -295,7 +295,7 @@ public:
   void Complete();
 };
 
-class TQueueItemProxy : public TObject
+class NB_CORE_EXPORT TQueueItemProxy : public TObject
 {
 friend class TQueueItem;
 friend class TTerminalQueueStatus;
@@ -355,7 +355,7 @@ public:
   int64_t GetTotalTransferred() const;
 };
 
-class TTerminalQueueStatus : public TObject
+class NB_CORE_EXPORT TTerminalQueueStatus : public TObject
 {
 friend class TTerminalQueue;
 friend class TQueueItemProxy;
@@ -396,7 +396,7 @@ public:
   TQueueItemProxy * GetItem(intptr_t Index);
 };
 
-class TLocatedQueueItem : public TQueueItem
+class NB_CORE_EXPORT TLocatedQueueItem : public TQueueItem
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -418,7 +418,7 @@ private:
   UnicodeString FCurrentDir;
 };
 
-class TTransferQueueItem : public TLocatedQueueItem
+class NB_CORE_EXPORT TTransferQueueItem : public TLocatedQueueItem
 {
 NB_DISABLE_COPY(TTransferQueueItem)
 public:
@@ -445,7 +445,7 @@ protected:
   virtual uintptr_t DefaultCPSLimit() const;
 };
 
-class TUploadQueueItem : public TTransferQueueItem
+class NB_CORE_EXPORT TUploadQueueItem : public TTransferQueueItem
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -463,7 +463,7 @@ protected:
   virtual void DoExecute(TTerminal * Terminal);
 };
 
-class TDownloadQueueItem : public TTransferQueueItem
+class NB_CORE_EXPORT TDownloadQueueItem : public TTransferQueueItem
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -482,7 +482,7 @@ protected:
 };
 
 class TUserAction;
-class TTerminalThread : public TSignalThread
+class NB_CORE_EXPORT TTerminalThread : public TSignalThread
 {
 NB_DISABLE_COPY(TTerminalThread)
 public:

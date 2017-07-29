@@ -232,7 +232,7 @@ RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
 {
   PanelInfo Info;
   ClearStruct(Info);
-  FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<intptr_t>(&Info), PanelHandle);
+  FarControl(FCTL_GETPANELINFO, 0, ToInt(&Info), PanelHandle);
   RECT Bounds;
   ClearStruct(Bounds);
   if (Info.Plugin)
@@ -307,10 +307,11 @@ void * TCustomFarPlugin::OpenPlugin(int OpenFrom, intptr_t Item)
   {
     ResetCachedInfo();
 
+    UnicodeString Buf;
     if ((OpenFrom == OPEN_SHORTCUT) || (OpenFrom == OPEN_COMMANDLINE))
     {
-      UnicodeString Buf = reinterpret_cast<wchar_t *>(Item);
-      Item = reinterpret_cast<intptr_t>(Buf.c_str());
+      Buf = reinterpret_cast<wchar_t *>(Item);
+      Item = ToInt(Buf.c_str());
     }
 
     TCustomFarFileSystem * Result = OpenPluginEx(OpenFrom, Item);
@@ -516,9 +517,10 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
     {
       DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
+      UnicodeString Buf;
       if ((Event == FE_CHANGEVIEWMODE) || (Event == FE_COMMAND))
       {
-        UnicodeString Buf = static_cast<wchar_t *>(Param);
+        Buf = static_cast<wchar_t *>(Param);
         Param = const_cast<void *>(reinterpret_cast<const void *>(Buf.c_str()));
       }
       else if ((Event == FE_GOTFOCUS) || (Event == FE_KILLFOCUS))
@@ -844,7 +846,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     Button->SetBottom(Button->GetTop());
     Button->SetResult(Index + 1);
     Button->SetCenterGroup(true);
-    Button->SetTag(reinterpret_cast<intptr_t>(Buttons->GetObj(Index)));
+    Button->SetTag(ToInt(Buttons->GetObj(Index)));
     if (PrevButton != nullptr)
     {
       Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -1163,9 +1165,9 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString & Title,
     Result = MenuItems[ResultItem].UserData;
     if (Selected >= 0)
     {
-      Items->SetObj(Selected, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObj(Selected)) & ~MIF_SELECTED));
+      Items->SetObj(Selected, ToObj(ToInt(Items->GetObj(Selected)) & ~MIF_SELECTED));
     }
-    Items->SetObj(Result, reinterpret_cast<TObject *>(reinterpret_cast<size_t>(Items->GetObj(Result)) | MIF_SELECTED));
+    Items->SetObj(Result, ToObj(ToInt(Items->GetObj(Result)) | MIF_SELECTED));
   }
   else
   {
@@ -1750,7 +1752,7 @@ TCustomFarFileSystem::TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin
   FClosed(false),
   FOpenPluginInfoValid(false)
 {
-  ::ZeroMemory(FPanelInfo, sizeof(FPanelInfo));
+  ClearArray(FPanelInfo);
   ClearStruct(FOpenPluginInfo);
 }
 
@@ -2017,7 +2019,7 @@ TFarPanelInfo ** TCustomFarFileSystem::GetPanelInfo(int Another)
   if (FPanelInfo[bAnother] == nullptr)
   {
     PanelInfo * Info = nb::calloc<PanelInfo*>(sizeof(PanelInfo));
-    bool Res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<intptr_t>(Info),
+    bool Res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, ToInt(Info),
       !bAnother ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
     if (!Res)
     {
@@ -2048,7 +2050,7 @@ bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
 
 void TCustomFarFileSystem::RedrawPanel(bool Another)
 {
-  FPlugin->FarControl(FCTL_REDRAWPANEL, 0, reinterpret_cast<intptr_t>(static_cast<void *>(nullptr)), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+  FPlugin->FarControl(FCTL_REDRAWPANEL, 0, ToInt(static_cast<void *>(nullptr)), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
 }
 
 void TCustomFarFileSystem::ClosePlugin()
@@ -2140,7 +2142,7 @@ TObjectList * TCustomFarFileSystem::CreatePanelItemList(
 TFarPanelModes::TFarPanelModes() : TObject(),
   FReferenced(false)
 {
-  ::ZeroMemory(&FPanelModes, sizeof(FPanelModes));
+  ClearArray(FPanelModes);
 }
 
 TFarPanelModes::~TFarPanelModes()
@@ -2506,7 +2508,7 @@ intptr_t TFarPanelInfo::GetSelectedCount(bool CountCurrentItem) const
   {
     intptr_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, 0);
     PluginPanelItem * ppi = nb::calloc<PluginPanelItem *>(size);
-    FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, reinterpret_cast<intptr_t>(ppi));
+    FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, ToInt(ppi));
     if ((ppi->Flags & PPIF_SELECTED) == 0)
     {
       Count = 0;
@@ -2533,7 +2535,7 @@ TObjectList * TFarPanelInfo::GetItems()
       TODO("move to common function");
       intptr_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, 0);
       PluginPanelItem * ppi = nb::calloc<PluginPanelItem *>(size);
-      FOwner->FarControl(FCTL_GETPANELITEM, Index, reinterpret_cast<intptr_t>(ppi));
+      FOwner->FarControl(FCTL_GETPANELITEM, Index, ToInt(ppi));
       FItems->Add(new TFarPanelItem(ppi, /*OwnsItem=*/true));
     }
   }
@@ -2579,7 +2581,7 @@ void TFarPanelInfo::ApplySelection()
 {
   // for "another panel info", there's no owner
   DebugAssert(FOwner != nullptr);
-  FOwner->FarControl(FCTL_SETSELECTION, 0, reinterpret_cast<intptr_t>(FPanelInfo));
+  FOwner->FarControl(FCTL_SETSELECTION, 0, ToInt(FPanelInfo));
 }
 
 TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
@@ -2626,7 +2628,7 @@ void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
     ClearStruct(PanelInfo);
     PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
     PanelInfo.TopPanelItem = FPanelInfo->TopPanelItem;
-    FOwner->FarControl(FCTL_REDRAWPANEL, 0, reinterpret_cast<intptr_t>(&PanelInfo));
+    FOwner->FarControl(FCTL_REDRAWPANEL, 0, ToInt(&PanelInfo));
   }
 }
 
@@ -2669,7 +2671,7 @@ UnicodeString TFarPanelInfo::GetCurrDirectory() const
     Result.SetLength(Size);
     FarPlugin->FarControl(FCTL_GETPANELDIR,
       Size,
-      reinterpret_cast<intptr_t>(Result.c_str()),
+      ToInt(Result.c_str()),
       FOwner != nullptr ? PANEL_ACTIVE : PANEL_PASSIVE);
   }
   return Result.c_str();
@@ -2760,7 +2762,7 @@ void TFarMenuItems::SetFlag(intptr_t Index, uintptr_t Flag, bool Value)
     {
       F &= ~Flag;
     }
-    SetObj(Index, reinterpret_cast<TObject *>(F));
+    SetObj(Index, ToObj(F));
   }
 }
 

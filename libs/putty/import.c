@@ -2051,13 +2051,13 @@ static struct sshcom_key *load_sshcom_key(const Filename *filename,
 	    }
 	    *p++ = '\0';
 	    while (*p && isspace((unsigned char)*p)) p++;
-			hdrstart = (int)(p - line);
+	    hdrstart = (int)(p - line);
 
             /*
              * Header lines can end in a trailing backslash for
              * continuation.
              */
-      len = hdrstart + (int)strlen(line+hdrstart);
+	    len = hdrstart + (int)strlen(line+hdrstart);
 	    assert(!line[len]);
             while (line[len-1] == '\\') {
 		char *line2;
@@ -2589,8 +2589,8 @@ int sshcom_write(const Filename *filename, struct ssh2_userkey *key,
     pos += 4;			       /* length field, fill in later */
     pos += put_string(outblob+pos, type, (int)strlen(type));
     {
-	const char *ciphertype = passphrase ? "3des-cbc" : "none";
-	pos += put_string(outblob+pos, ciphertype, (int)strlen(ciphertype));
+	    const char *ciphertype = passphrase ? "3des-cbc" : "none";
+	    pos += put_string(outblob+pos, ciphertype, (int)strlen(ciphertype));
     }
     lenpos = pos;		       /* remember this position */
     pos += 4;			       /* encrypted-blob size */

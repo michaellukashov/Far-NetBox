@@ -775,8 +775,8 @@ static void share_try_cleanup(struct ssh_sharing_connstate *cs)
      * from downstream, should be responded to with OPEN_FAILURE.
      */
     static const char reason[] = "PuTTY downstream no longer available";
-    const int strlen_reason = (int)strlen(reason);
     static const char lang[] = "en";
+    const int strlen_reason = (int)strlen(reason);
     const int strlen_lang = (int)strlen(lang);
     static const char request[] = "cancel-tcpip-forward";
     const int strlen_request = (int)strlen(request);

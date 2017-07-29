@@ -80,6 +80,9 @@ inline double ToDouble(const T a) { return static_cast<double>(a); }
 template <class T>
 inline Word ToWord(const T a) { return static_cast<Word>(a); }
 
+template <class T>
+inline intptr_t ToInt(T a) { return reinterpret_cast<intptr_t>(a); }
+
 template<typename T>
 inline void ClearStruct(T & s) { ::ZeroMemory(&s, sizeof(s)); }
 

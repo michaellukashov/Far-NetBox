@@ -148,7 +148,7 @@ inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 }
 inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
 
-void FileOperationLoopCustom(TTerminal * Terminal,
+NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal * Terminal,
   TFileOperationProgressType * OperationProgress,
   bool AllowSkip, const UnicodeString & Message,
   const UnicodeString & HelpKeyword,
@@ -181,7 +181,7 @@ const int ropNoReadDirectory = 0x02;
 
 const int boDisableNeverShowAgain = 0x01;
 
-class TTerminal : public TSessionUI
+class NB_CORE_EXPORT TTerminal : public TSessionUI
 {
 NB_DISABLE_COPY(TTerminal)
 public:
@@ -324,7 +324,7 @@ public:
   UnicodeString GetRememberedPassword() const;
   UnicodeString GetRememberedTunnelPassword() const;
   bool GetStoredCredentialsTried() const;
-  inline bool InTransaction() const;
+  bool InTransaction() const;
   void SaveCapabilities(TFileSystemInfo & FileSystemInfo);
   static UnicodeString SynchronizeModeStr(TSynchronizeMode Mode);
   static UnicodeString SynchronizeParamsStr(intptr_t Params);
@@ -335,7 +335,6 @@ protected:
   bool FTunnelOpening;
   TCustomFileSystem * FFileSystem;
 
-public:
   void DoStartReadDirectory();
   void DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel);
   void DoReadDirectory(bool ReloadOnly);
@@ -358,7 +357,7 @@ public:
   intptr_t FileOperationLoop(TFileOperationEvent CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
     const UnicodeString & Message, void * Param1 = nullptr, void * Param2 = nullptr);
-  bool GetIsCapable(TFSCapability Capability) const;
+  bool GetIsCapableProtected(TFSCapability Capability) const;
   bool ProcessFiles(const TStrings * AFileList, TFileOperation Operation,
     TProcessFileEvent ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote,
     bool Ex = false);
@@ -656,6 +655,7 @@ public:
   __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
 #endif
 
+  bool GetIsCapable(TFSCapability Capability) const { return GetIsCapableProtected(Capability); }
   void SetMasks(const UnicodeString & Value);
 
   void SetLocalFileTime(const UnicodeString & LocalFileName,
@@ -740,7 +740,7 @@ private:
   void InitFileSystem();
 };
 
-class TSecondaryTerminal : public TTerminal
+class NB_CORE_EXPORT TSecondaryTerminal : public TTerminal
 {
 NB_DISABLE_COPY(TSecondaryTerminal)
 public:
@@ -774,7 +774,7 @@ private:
   TTerminal * FMainTerminal;
 };
 
-class TTerminalList : public TObjectList
+class NB_CORE_EXPORT TTerminalList : public TObjectList
 {
 NB_DISABLE_COPY(TTerminalList)
 public:
@@ -798,7 +798,7 @@ private:
   TConfiguration * FConfiguration;
 };
 
-struct TCustomCommandParams : public TObject
+struct NB_CORE_EXPORT TCustomCommandParams : public TObject
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -813,7 +813,7 @@ public:
   TCaptureOutputEvent OutputEvent;
 };
 
-struct TCalculateSizeStats : public TObject
+struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
 {
   TCalculateSizeStats();
 
@@ -822,7 +822,7 @@ struct TCalculateSizeStats : public TObject
   intptr_t SymLinks;
 };
 
-struct TCalculateSizeParams : public TObject
+struct NB_CORE_EXPORT TCalculateSizeParams : public TObject
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -842,7 +842,7 @@ public:
 
 typedef rde::vector<TDateTime> TDateTimes;
 
-struct TMakeLocalFileListParams : public TObject
+struct NB_CORE_EXPORT TMakeLocalFileListParams : public TObject
 {
 public:
   static inline bool classof(const TObject * Obj)
@@ -858,7 +858,7 @@ public:
   bool Recursive;
 };
 
-struct TSynchronizeOptions : public TObject
+struct NB_CORE_EXPORT TSynchronizeOptions : public TObject
 {
 NB_DISABLE_COPY(TSynchronizeOptions)
 public:
@@ -883,7 +883,7 @@ enum TChecklistAction
 };
 
 
-class TChecklistItem : public TObject
+class NB_CORE_EXPORT TChecklistItem : public TObject
 {
 friend class TTerminal;
 NB_DISABLE_COPY(TChecklistItem)
@@ -921,7 +921,7 @@ private:
   TChecklistItem();
 };
 
-class TSynchronizeChecklist : public TObject
+class NB_CORE_EXPORT TSynchronizeChecklist : public TObject
 {
 friend class TTerminal;
 NB_DISABLE_COPY(TSynchronizeChecklist)
@@ -956,7 +956,7 @@ private:
   static intptr_t Compare(const void * AItem1, const void * AItem2);
 };
 
-struct TSpaceAvailable : public TObject
+struct NB_CORE_EXPORT TSpaceAvailable : public TObject
 {
   TSpaceAvailable();
 
@@ -967,7 +967,7 @@ struct TSpaceAvailable : public TObject
   uintptr_t BytesPerAllocationUnit;
 };
 
-class TRobustOperationLoop : public TObject
+class NB_CORE_EXPORT TRobustOperationLoop : public TObject
 {
 NB_DISABLE_COPY(TRobustOperationLoop)
 public:
@@ -982,5 +982,5 @@ private:
   bool FRetry;
 };
 
-UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName = false);
+NB_CORE_EXPORT UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName = false);
 

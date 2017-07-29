@@ -1325,7 +1325,7 @@ static int passport_challenge(auth_session *sess, int attempt,
     ne_session * session = ne_get_session(areq->request);
     ne_uri orig_uri = {0};
     char * org_url;
-    int result;
+    int result = 0;
 
     if (sess->passport == NULL)
     {
@@ -1426,6 +1426,8 @@ static int passport_challenge(auth_session *sess, int attempt,
         auth_hdr = strchr(auth_hdr, ' ');
         if (auth_hdr == NULL) {
             challenge_error(errmsg, _("missing space in WWW-Authenticate header"));
+            ne_free(tmp_username);
+            ne_free(tmp_password);
             return -1;
         }
         while (*auth_hdr == ' ') auth_hdr++;
@@ -1731,7 +1733,7 @@ static int auth_challenge(auth_session *sess, int attempt,
                           )
 {
     NE_DEBUG_WINSCP_CONTEXT(sess->sess);
-    char *pnt, *key, *val, *hdr, sep;
+    char *pnt, *key, *val = NULL, *hdr, sep;
     struct auth_challenge *chall = NULL, *challenges = NULL;
     ne_buffer *errmsg = NULL;
 
@@ -2125,9 +2127,8 @@ static void auth_register(ne_session *sess, int isproxy, unsigned protomask,
         if (uri.host) ahs->sspi_host = ne_strdup(uri.host);
 #else
         ahs->sspi_host = uri.host;
-#endif
-
         uri.host = NULL;
+#endif
 
         ne_uri_free(&uri);
     }
