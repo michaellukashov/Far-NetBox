@@ -1122,10 +1122,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     TProxyMethod ProxyMethod = Data->GetActualProxyMethod();
     {
       UnicodeString fp = FORMAT(L"FTP proxy %d", Data->GetFtpProxyLogonType());
-      ADF(L"Proxy: %s",
-        (Data->GetFtpProxyLogonType() != 0) ?
-          fp.c_str() :
-          EnumName(ProxyMethod, ProxyMethodNames).c_str());
+      ADF("Proxy: %s",
+          (Data->GetFtpProxyLogonType() != 0) ? fp : EnumName(ProxyMethod, ProxyMethodNames));
     }
     if ((Data->GetFtpProxyLogonType() != 0) || (ProxyMethod != ::pmNone))
     {
