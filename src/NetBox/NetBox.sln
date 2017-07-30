@@ -16,6 +16,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libputty", "..\..\libs\putty\libputty.vcxproj", "{456AD982-730D-46F8-8BE2-0E00D7433741}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtinyxml2", "..\..\libs\tinyxml2\libtinyxml2.vcxproj", "{593A4FB1-1787-4192-BF73-9C43BF8FC142}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E} = {5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libexpat", "..\..\libs\expat\lib\libexpat.vcxproj", "{27250AA6-FED6-F96F-E32B-E8E9719F8FEB}"
 EndProject
