@@ -1,5 +1,7 @@
 #pragma once
 
+#include <nbglobals.h>
+
 #include "platform_win32.h"
 
 namespace tinylog {

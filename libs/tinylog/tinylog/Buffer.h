@@ -6,6 +6,7 @@ namespace tinylog {
 
 class Buffer
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit Buffer(uint32_t l_capacity);
   ~Buffer();

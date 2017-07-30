@@ -9,8 +9,8 @@ namespace tinylog {
 
 class LogStream
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  friend class TinyLog;
 
   explicit LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap);
   ~LogStream();

@@ -7,6 +7,7 @@ namespace tinylog {
 
 class TinyLog
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TinyLog(FILE * file);
   ~TinyLog();
@@ -14,7 +15,7 @@ public:
   void SetLogLevel(Utils::LogLevel e_log_level);
   Utils::LogLevel GetLogLevel() const;
 #if 0
-  LogStream<Allocator> &GetLogStream(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level);
+  LogStream &GetLogStream(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level);
 #endif // #if 0
 
   intptr_t Write(const void *data, intptr_t ToWrite);
